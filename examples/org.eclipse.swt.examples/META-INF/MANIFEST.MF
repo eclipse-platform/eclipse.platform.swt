@@ -6,7 +6,7 @@ Bundle-Version: 3.103.0.qualifier
 Bundle-ClassPath: swtexamples.jar
 Bundle-Vendor: %providerName
 Bundle-Localization: plugin
-Bundle-RequiredExecutionEnvironment: J2SE-1.4
+Bundle-RequiredExecutionEnvironment: J2SE-1.5
 Export-Package: org.eclipse.swt.examples.accessibility,
  org.eclipse.swt.examples.addressbook,
  org.eclipse.swt.examples.browserexample,

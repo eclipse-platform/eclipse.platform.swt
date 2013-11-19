@@ -471,7 +471,7 @@ public class PaintExample {
 	 * Loads the image resources.
 	 */
 	public void initResources() {
-		final Class clazz = PaintExample.class;
+		final Class<PaintExample> clazz = PaintExample.class;
 		if (resourceBundle != null) {
 			try {
 				for (int i = 0; i < tools.length; ++i) {

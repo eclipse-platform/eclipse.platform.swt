@@ -38,8 +38,8 @@ public class GraphicsExample {
 	ToolItem backItem, dbItem;		// background, double buffer items
 	Menu backMenu;					// background menu item
 	
-	ArrayList resources;			// stores resources that will be disposed
-	ArrayList tabs_in_order;		// stores GraphicsTabs in the order that they appear in the tree
+	ArrayList<Image> resources;			// stores resources that will be disposed
+	ArrayList<GraphicsTab> tabs_in_order;		// stores GraphicsTabs in the order that they appear in the tree
 	boolean animate = true;			// whether animation should happen
 
 	static boolean advanceGraphics, advanceGraphicsInit;
@@ -58,7 +58,7 @@ public GraphicsExample() {
 
 public GraphicsExample(final Composite parent) {
 	this.parent = parent;
-	resources = new ArrayList();
+	resources = new ArrayList<Image>();
 	createControls(parent);
 	setTab(tab);
 	startAnimationTimer();
@@ -237,7 +237,7 @@ void createToolBar(final Composite parent) {
 			int index = tabs_in_order.indexOf(tab) - 1;
 			if (index < 0)
 				index = tabs_in_order.size() - 1;
-			setTab((GraphicsTab)tabs_in_order.get(index));
+			setTab(tabs_in_order.get(index));
 		}
 	});
 	
@@ -247,7 +247,7 @@ void createToolBar(final Composite parent) {
 	next.addListener(SWT.Selection, new Listener() {
 		public void handleEvent(Event event) {
 			int index = (tabs_in_order.indexOf(tab) + 1)%tabs_in_order.size();
-			setTab((GraphicsTab)tabs_in_order.get(index));
+			setTab(tabs_in_order.get(index));
 		}
 	});
 	
@@ -369,12 +369,12 @@ static Image createImage(Device device, Color color) {
 
 void createTabList(Composite parent) {
 	tabList = new Tree(parent, SWT.SINGLE | SWT.H_SCROLL | SWT.V_SCROLL | SWT.BORDER);
-	Arrays.sort(tabs, new Comparator() {
-		public int compare(Object tab0, Object tab1) {
-			return ((GraphicsTab)tab0).getText().compareTo(((GraphicsTab)tab1).getText());
+	Arrays.sort(tabs, new Comparator<GraphicsTab>() {
+		public int compare(GraphicsTab tab0, GraphicsTab tab1) {
+			return tab0.getText().compareTo(tab1.getText());
 		}
 	});
-	HashSet set = new HashSet();
+	HashSet<String> set = new HashSet<String>();
 	for (int i = 0; i < tabs.length; i++) {
 		GraphicsTab tab = tabs[i];
 		set.add(tab.getCategory());
@@ -387,7 +387,7 @@ void createTabList(Composite parent) {
 		TreeItem item = new TreeItem(tabList, SWT.NONE);
 		item.setText(text);
 	}
-	tabs_in_order = new ArrayList();
+	tabs_in_order = new ArrayList<GraphicsTab>();
 	TreeItem[] items = tabList.getItems();
 	for (int i = 0; i < items.length; i++) {
 		TreeItem item = items[i];
@@ -475,7 +475,7 @@ public void dispose() {
 	if (resources != null) {
 		for (int i = 0; i < resources.size(); i++) {
 			if (resources.get(i) instanceof Resource) {
-				((Resource)resources.get(i)).dispose();
+				resources.get(i).dispose();
 			}
 		}
 	}
@@ -519,7 +519,7 @@ static String getResourceString(String key) {
 	}			
 }
 
-static Image loadImage (Device device, Class clazz, String string) {
+static Image loadImage (Device device, Class<GraphicsExample> clazz, String string) {
 	InputStream stream = clazz.getResourceAsStream (string);
 	if (stream == null) return null;
 	Image image = null;

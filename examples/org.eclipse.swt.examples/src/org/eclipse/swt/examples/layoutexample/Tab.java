@@ -59,7 +59,7 @@ abstract class Tab {
 			"Group", "Label", "Link", "List", "ProgressBar", "Scale", "Slider", "StyledText",
 			"Table", "Text", "ToolBar", "Tree"};
 	TableItem newItem, lastSelected;
-	Vector data = new Vector ();
+	Vector<String[]> data = new Vector<String[]> ();
 	/* Controlling instance */
 	final LayoutExample instance;
 

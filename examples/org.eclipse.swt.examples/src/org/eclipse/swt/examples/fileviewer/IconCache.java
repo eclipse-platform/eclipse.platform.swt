@@ -66,7 +66,7 @@ class IconCache {
 		cursorWait = 1;
 	public Cursor stockCursors[];
 	// Cached icons
-	private Hashtable iconCache; /* map Program to Image */
+	private Hashtable<Program, Image> iconCache; /* map Program to Image */
 	
 	public IconCache() {
 	}
@@ -95,7 +95,7 @@ class IconCache {
 				display.getSystemCursor(SWT.CURSOR_WAIT)
 			};
 		}
-		iconCache = new Hashtable();
+		iconCache = new Hashtable<Program, Image>();
 	}
 	/**
 	 * Frees the resources
@@ -109,8 +109,8 @@ class IconCache {
 			stockImages = null;
 		}
 		if (iconCache != null) {
-			for (Enumeration it = iconCache.elements(); it.hasMoreElements(); ) {
-				Image image = (Image) it.nextElement();
+			for (Enumeration<Image> it = iconCache.elements(); it.hasMoreElements(); ) {
+				Image image = it.nextElement();
 				image.dispose();
 			}
 		}
@@ -140,7 +140,7 @@ class IconCache {
 	 * @param program the Program
 	 */
 	public Image getIconFromProgram(Program program) {
-		Image image = (Image) iconCache.get(program);
+		Image image = iconCache.get(program);
 		if (image == null) {
 			ImageData imageData = program.getImageData();
 			if (imageData != null) {

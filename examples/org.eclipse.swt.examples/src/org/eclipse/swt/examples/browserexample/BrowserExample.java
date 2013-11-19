@@ -319,7 +319,7 @@ public class BrowserExample {
 	 * Loads the resources
 	 */
 	void initResources() {
-		final Class clazz = this.getClass();
+		final Class<? extends BrowserExample> clazz = this.getClass();
 		if (resourceBundle != null) {
 			try {
 				if (images == null) {

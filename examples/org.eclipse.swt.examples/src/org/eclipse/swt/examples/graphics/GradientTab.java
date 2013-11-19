@@ -26,7 +26,7 @@ public class GradientTab extends GraphicsTab {
 	ToolItem colorItem1, colorItem2;
 	Menu menu1, menu2;
 	GraphicsBackground colorGB1, colorGB2;
-	ArrayList resources;		// resources to be disposed when the dipose() method is invoked
+	ArrayList<?> resources;		// resources to be disposed when the dipose() method is invoked
 	
 
 public GradientTab(GraphicsExample example) {

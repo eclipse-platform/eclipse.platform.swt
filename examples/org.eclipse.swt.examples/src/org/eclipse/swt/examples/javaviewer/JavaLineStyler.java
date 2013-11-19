@@ -15,6 +15,7 @@ import org.eclipse.swt.*;
 import org.eclipse.swt.custom.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.widgets.*;
+
 import java.util.*;
 import java.io.*;
 
@@ -22,7 +23,7 @@ class JavaLineStyler implements LineStyleListener {
 	JavaScanner scanner = new JavaScanner();
 	int[] tokenColors;
 	Color[] colors;
-	Vector blockComments = new Vector();
+	Vector<int[]> blockComments = new Vector<int[]>();
 
 	public static final int EOF= -1;
 	public static final int EOL= 10;
@@ -51,7 +52,7 @@ Color getColor(int type) {
 
 boolean inBlockComment(int start, int end) {
 	for (int i=0; i<blockComments.size(); i++) {
-		int[] offsets = (int[])blockComments.elementAt(i);
+		int[] offsets = blockComments.elementAt(i);
 		// start of comment in the line
 		if ((offsets[0] >= start) && (offsets[0] <= end)) return true;
 		// end of comment in the line
@@ -92,7 +93,7 @@ void disposeColors() {
  * LineStyleEvent.background 	line background color (output)
  */
 public void lineGetStyle(LineStyleEvent event) {
-	Vector styles = new Vector();
+	Vector<StyleRange> styles = new Vector<StyleRange>();
 	int token;
 	StyleRange lastStyle;
 	// If the line is part of a block comment, create one style for the entire line.
@@ -122,7 +123,7 @@ public void lineGetStyle(LineStyleEvent event) {
 					styles.addElement(style);
 				} else {
 					// Merge similar styles.  Doing so will improve performance.
-					lastStyle = (StyleRange)styles.lastElement();
+					lastStyle = styles.lastElement();
 					if (lastStyle.similarTo(style) && (lastStyle.start + lastStyle.length == style.start)) {
 						lastStyle.length += style.length;
 					} else {
@@ -130,9 +131,9 @@ public void lineGetStyle(LineStyleEvent event) {
 					}
 				} 
 			} 
-		} else if ((!styles.isEmpty()) && ((lastStyle=(StyleRange)styles.lastElement()).fontStyle == SWT.BOLD)) {
+		} else if ((!styles.isEmpty()) && ((lastStyle=styles.lastElement()).fontStyle == SWT.BOLD)) {
 			int start = scanner.getStartOffset() + event.lineOffset;
-			lastStyle = (StyleRange)styles.lastElement();
+			lastStyle = styles.lastElement();
 			// A font style of SWT.BOLD implies that the last style
 			// represents a java keyword.
 			if (lastStyle.start + lastStyle.length == start) {
@@ -148,7 +149,7 @@ public void lineGetStyle(LineStyleEvent event) {
 	styles.copyInto(event.styles);
 }
 public void parseBlockComments(String text) {
-	blockComments = new Vector();
+	blockComments = new Vector<int[]>();
 	StringReader buffer = new StringReader(text);
 	int ch;
 	boolean blkComment = false;
@@ -209,7 +210,7 @@ public void parseBlockComments(String text) {
  */
 public class JavaScanner {
 
-	protected Hashtable fgKeys= null;
+	protected Hashtable<String, Integer> fgKeys= null;
 	protected StringBuffer fBuffer= new StringBuffer();
 	protected String fDoc;
 	protected int fPos;
@@ -250,7 +251,7 @@ public class JavaScanner {
 	 * Initialize the lookup table.
 	 */
 	void initialize() {
-		fgKeys= new Hashtable();
+		fgKeys= new Hashtable<String, Integer>();
 		Integer k= new Integer(KEY);
 		for (int i= 0; i < fgKeywords.length; i++)
 			fgKeys.put(fgKeywords[i], k);
@@ -338,7 +339,7 @@ public class JavaScanner {
 						c= read();
 					} while(Character.isJavaIdentifierPart((char)c));
 					unread(c);
-					Integer i= (Integer) fgKeys.get(fBuffer.toString());
+					Integer i= fgKeys.get(fBuffer.toString());
 					if (i != null)
 						return i.intValue();
 						return WORD;

@@ -11,6 +11,8 @@
 package org.eclipse.swt.examples.controlexample;
 
 
+import java.lang.reflect.Method;
+
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.widgets.*;
@@ -1051,7 +1053,7 @@ abstract class Tab {
 
 	String parameterInfo(String methodRoot) {
 		String typeName = null;
-		Class returnType = getReturnType(methodRoot);
+		Class<?> returnType = getReturnType(methodRoot);
 		boolean isArray = returnType.isArray();
 		if (isArray) {
 			typeName = returnType.getComponentType().getName();
@@ -1074,7 +1076,7 @@ abstract class Tab {
 		Widget[] widgets = getExampleWidgets();
 		for (int i = 0; i < widgets.length; i++) {
 			try {
-				java.lang.reflect.Method method = widgets[i].getClass().getMethod(methodName, null);
+				Method method = widgets[i].getClass().getMethod(methodName, null);
 				Object result = method.invoke(widgets[i], null);
 				if (result == null) {
 					getText.append("null");
@@ -1098,12 +1100,12 @@ abstract class Tab {
 		}
 	}
 
-	Class getReturnType(String methodRoot) {
-		Class returnType = null;
+	Class<?> getReturnType(String methodRoot) {
+		Class<?> returnType = null;
 		String methodName = "get" + methodRoot;
 		Widget[] widgets = getExampleWidgets();
 		try {
-			java.lang.reflect.Method method = widgets[0].getClass().getMethod(methodName, null);
+			Method method = widgets[0].getClass().getMethod(methodName, null);
 			returnType = method.getReturnType();
 		} catch (Exception e) {
 		}
@@ -1113,7 +1115,7 @@ abstract class Tab {
 	void setValue() {
 		/* The parameter type must be the same as the get method's return type */
 		String methodRoot = nameCombo.getText();
-		Class returnType = getReturnType(methodRoot);
+		Class<?> returnType = getReturnType(methodRoot);
 		String methodName = setMethodName(methodRoot);
 		String value = setText.getText();
 		Widget[] widgets = getExampleWidgets();

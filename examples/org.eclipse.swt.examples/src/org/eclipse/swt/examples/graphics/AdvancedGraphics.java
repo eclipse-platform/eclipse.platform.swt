@@ -27,7 +27,7 @@ public class AdvancedGraphics {
 	
 	private static final ResourceBundle RESOURCE_BUNDLE = ResourceBundle.getBundle("examples_graphics");
 	
-	static Image loadImage (Device device, Class clazz, String string) {
+	static Image loadImage (Device device, Class<AdvancedGraphics> clazz, String string) {
 		InputStream stream = clazz.getResourceAsStream (string);
 		if (stream == null) return null;
 		Image image = null;

@@ -36,7 +36,7 @@ public class BallTab extends AnimatedGraphicsTab {
 		float incX, incY; // values by which to move the ball
 		int ball_size; // size (diameter) of the ball
 		int capacity; // number of balls in the collection
-		LinkedList prevx, prevy; // collection of previous x and y positions
+		LinkedList<Float> prevx, prevy; // collection of previous x and y positions
 								 // of ball
 		Color[] colors; // colors used for this ball collection
 
@@ -48,8 +48,8 @@ public class BallTab extends AnimatedGraphicsTab {
 			this.incY = incY;
 			this.ball_size = ball_size;
 			this.capacity = capacity;
-			prevx = new LinkedList();
-			prevy = new LinkedList();
+			prevx = new LinkedList<Float>();
+			prevy = new LinkedList<Float>();
 			this.colors = colors;
 		}
 	}

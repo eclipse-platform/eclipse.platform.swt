@@ -858,7 +858,7 @@ public class FileViewer {
 		 * If not already expanded, recursively expands the parents of the specified
 		 * directory until it is visible.
 		 */
-		Vector /* of File */ path = new Vector();
+		Vector <File> path = new Vector<File>();
 		// Build a stack of paths from the root of the tree
 		while (dir != null) {
 			path.add(dir);
@@ -868,7 +868,7 @@ public class FileViewer {
 		TreeItem[] items = tree.getItems();
 		TreeItem lastItem = null;
 		for (int i = path.size() - 1; i >= 0; --i) {
-			final File pathElement = (File) path.elementAt(i);
+			final File pathElement = path.elementAt(i);
 
 			// Search for a particular File in the array of tree items
 			// No guarantee that the items are sorted in any recognizable fashion, so we'll
@@ -1104,7 +1104,7 @@ public class FileViewer {
 		progressDialog.open();
 
 		// Copy each file
-		Vector /* of File */ processedFiles = new Vector();
+		Vector /* of File */<File> processedFiles = new Vector<File>();
 		for (int i = 0; (i < sourceNames.length) && (! progressDialog.isCancelled()); i++){
 			final File source = new File(sourceNames[i]);
 			final File dest = new File(targetFile, source.getName());
@@ -1149,7 +1149,7 @@ public class FileViewer {
 		}
 		if (isDragging) {
 			// Remember exactly which files we processed
-			processedDropFiles = ((File[]) processedFiles.toArray(new File[processedFiles.size()]));
+			processedDropFiles = processedFiles.toArray(new File[processedFiles.size()]);
 		} else {
 			progressDialog.close();
 			progressDialog = null;
@@ -1225,7 +1225,7 @@ public class FileViewer {
 		 * -- PORTABILITY ISSUES HERE --
 		 */
 		if (System.getProperty ("os.name").indexOf ("Windows") != -1) {
-			Vector /* of File */ list = new Vector();
+			Vector /* of File */<File> list = new Vector<File>();
 			list.add(new File(DRIVE_A));
 			list.add(new File(DRIVE_B));
 			for (char i = 'c'; i <= 'z'; ++i) {
@@ -1238,7 +1238,7 @@ public class FileViewer {
 					}
 				}
 			}
-			File[] roots = (File[]) list.toArray(new File[list.size()]);
+			File[] roots = list.toArray(new File[list.size()]);
 			sortFiles(roots);
 			return roots;
 		}

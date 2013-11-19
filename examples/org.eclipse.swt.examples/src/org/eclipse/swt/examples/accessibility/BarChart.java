@@ -26,7 +26,7 @@ import org.eclipse.swt.accessibility.*;
  */
 public class BarChart extends Canvas {
 	static ResourceBundle bundle = ResourceBundle.getBundle("examples_accessibility");
-	Vector data = new Vector();
+	Vector<Object[]> data = new Vector<Object[]>();
 	String title;
 	int color = SWT.COLOR_RED;
 	int selectedItem = -1;

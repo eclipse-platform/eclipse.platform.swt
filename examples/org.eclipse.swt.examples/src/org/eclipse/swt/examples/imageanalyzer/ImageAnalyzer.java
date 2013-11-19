@@ -18,6 +18,7 @@ import org.eclipse.swt.layout.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.printing.*;
 import org.eclipse.swt.custom.*;
+
 import java.util.*;
 import java.net.*;
 import java.io.*;
@@ -63,7 +64,7 @@ public class ImageAnalyzer {
 	int imageDataIndex; // the index of the current image data
 	ImageData imageData; // the currently-displayed image data
 	Image image; // the currently-displayed image
-	Vector incrementalEvents; // incremental image events
+	Vector<ImageLoaderEvent> incrementalEvents; // incremental image events
 	long loadTime = 0; // the time it took to load the current image
 	
 	static final int INDEX_DIGITS = 4;
@@ -1029,7 +1030,7 @@ public class ImageAnalyzer {
 	 * as they are loaded.
 	 */
 	void incrementalThreadStart() {
-		incrementalEvents = new Vector();
+		incrementalEvents = new Vector<ImageLoaderEvent>();
 		incrementalThread = new Thread("Incremental") {
 			public void run() {
 				// Draw the first ImageData increment.
@@ -1038,7 +1039,7 @@ public class ImageAnalyzer {
 					synchronized (ImageAnalyzer.this) {
 						if (incrementalEvents != null) {
 							if (incrementalEvents.size() > 0) {
-								ImageLoaderEvent event = (ImageLoaderEvent) incrementalEvents.remove(0);
+								ImageLoaderEvent event = incrementalEvents.remove(0);
 								if (image != null) image.dispose();
 								image = new Image(display, event.imageData);
 								imageData = event.imageData;

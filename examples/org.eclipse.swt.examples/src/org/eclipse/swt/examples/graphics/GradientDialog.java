@@ -35,7 +35,7 @@ public class GradientDialog extends Dialog {
 	RGB rgb1, rgb2;			// first and second color used in gradient
 	int returnVal; 			// value to be returned by open(), set to SWT.OK 
 							// if the ok button has been pressed		
-	ArrayList resources;
+	ArrayList<Image> resources;
 			
 	public GradientDialog(Shell parent) {		
 		this (parent, SWT.PRIMARY_MODAL);
@@ -45,7 +45,7 @@ public class GradientDialog extends Dialog {
 		super(parent, style);
 		rgb1 = rgb2 = null;
 		returnVal = SWT.CANCEL;
-		resources = new ArrayList();
+		resources = new ArrayList<Image>();
 	}
 	
 	/**

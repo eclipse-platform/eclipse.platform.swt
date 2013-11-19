@@ -135,7 +135,7 @@ void open(String name) {
 
 	File file = new File(name);
 	if (!file.exists()) {
-		String message = MessageFormat.format(resources.getString("Err_file_no_exist"), new String[] {file.getName()});
+		String message = MessageFormat.format(resources.getString("Err_file_no_exist"), file.getName());
 		displayError(message);
 		return;
 	}
@@ -155,13 +155,13 @@ void open(String name) {
 		}
 		catch (IOException e) {
 			// Err_file_io
-			String message = MessageFormat.format(resources.getString("Err_file_io"), new String[] {file.getName()});
+			String message = MessageFormat.format(resources.getString("Err_file_io"), file.getName());
 			displayError(message);
 			return;
 		}
 	}
 	catch (FileNotFoundException e) {
-		String message = MessageFormat.format(resources.getString("Err_not_found"), new String[] {file.getName()});
+		String message = MessageFormat.format(resources.getString("Err_not_found"), file.getName());
 		displayError(message);
 		return;
 	}

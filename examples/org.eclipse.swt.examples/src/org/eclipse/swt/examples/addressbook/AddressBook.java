@@ -849,7 +849,7 @@ private void createHelpMenu(Menu menuBar) {
 /**
  * To compare entries (rows) by the given column
  */
-private class RowComparator implements Comparator {
+private class RowComparator implements Comparator<String[]> {
 	private int column;
 	
 	/**
@@ -863,15 +863,12 @@ private class RowComparator implements Comparator {
 	/**
 	 * Compares two rows (type String[]) using the specified
 	 * column entry.
-	 * @param obj1 First row to compare
-	 * @param obj2 Second row to compare
-	 * @return negative if obj1 less than obj2, positive if
-	 * 			obj1 greater than obj2, and zero if equal.
+	 * @param row1 First row to compare
+	 * @param row2 Second row to compare
+	 * @return negative if row1 less than row2, positive if
+	 * 			row1 greater than row2, and zero if equal.
 	 */
-	public int compare(Object obj1, Object obj2) {
-		String[] row1 = (String[])obj1;
-		String[] row2 = (String[])obj2;
-		
+	public int compare(String[] row1, String[] row2) {
 		return row1[column].compareTo(row2[column]);
 	}
 }

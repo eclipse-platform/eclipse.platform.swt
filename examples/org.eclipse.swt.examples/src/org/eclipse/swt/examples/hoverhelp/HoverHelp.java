@@ -56,7 +56,7 @@ public class HoverHelp {
 	 */
 	public Shell open(Display display) {		
 		// Load the images
-		Class clazz = HoverHelp.class;
+		Class<HoverHelp> clazz = HoverHelp.class;
 		try {
 			if (images == null) {
 				images = new Image[imageLocations.length];

@@ -175,7 +175,7 @@ public class ControlExample {
 	 * Loads the resources
 	 */
 	void initResources() {
-		final Class clazz = ControlExample.class;
+		final Class<ControlExample> clazz = ControlExample.class;
 		if (resourceBundle != null) {
 			try {
 				if (images == null) {

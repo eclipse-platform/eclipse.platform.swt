@@ -29,7 +29,7 @@ public class CustomFontTab extends GraphicsTab {
 	Combo fontFaceCb, fontStyleCb;
 	Spinner fontPointSpinner;
 	Button colorButton;
-	ArrayList fontNames;
+	ArrayList<String> fontNames;
 	int [] styleValues;
 	String [] fontStyles;
 	Menu menu;
@@ -39,13 +39,13 @@ public CustomFontTab(GraphicsExample example) {
 	
 	// create list of fonts for this platform
 	FontData [] fontData = Display.getCurrent().getFontList(null, true);
-	fontNames = new ArrayList();
+	fontNames = new ArrayList<String>();
 	for (int i=0; i < fontData.length; i++) {
 		// remove duplicates and sort
 		String nextName = fontData[i].getName();
 		if (!fontNames.contains(nextName)) {
 			int j = 0;
-			while(j < fontNames.size() && nextName.compareTo((String)fontNames.get(j)) > 0) {
+			while(j < fontNames.size() && nextName.compareTo(fontNames.get(j)) > 0) {
 				j++;
 			}
 			fontNames.add(j, nextName);
@@ -91,7 +91,7 @@ public void createControlPanel(Composite parent) {
 	new Label(comp, SWT.LEFT).setText(GraphicsExample.getResourceString("FontFace")); //$NON-NLS-1$
 	fontFaceCb = new Combo(comp, SWT.DROP_DOWN);
 	for (int i=0; i < fontNames.size(); i++) {
-		String name = (String)fontNames.get(i);
+		String name = fontNames.get(i);
 		fontFaceCb.add(name);
 	}
 	fontFaceCb.select(0);
@@ -172,7 +172,7 @@ public void paint(GC gc, int width, int height) {
 	if (!example.checkAdvancedGraphics()) return;
 	Device device = gc.getDevice();
 	
-	String fontFace = (String)fontNames.get(fontFaceCb.getSelectionIndex());
+	String fontFace = fontNames.get(fontFaceCb.getSelectionIndex());
 	int points = fontPointSpinner.getSelection();
 	int style = styleValues[fontStyleCb.getSelectionIndex()];
 	

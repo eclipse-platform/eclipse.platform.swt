@@ -118,7 +118,7 @@ public class ColorMenu {
 	
 	/** Adds the colors items to the menu. */
 	private void addColorItems(Menu menu, MenuItemListener menuListener,
-			ArrayList menuResources) {
+			ArrayList<Resource> menuResources) {
 		Display display = menu.getDisplay();
 		
 		if (menu.getItemCount() != 0) {
@@ -173,7 +173,7 @@ public class ColorMenu {
 	
 	/** Adds the pattern items to the menu. */
 	private void addPatternItems(Menu menu, MenuItemListener menuListener,
-			ArrayList menuResources) {
+			ArrayList<Resource> menuResources) {
 		Display display = menu.getDisplay();
 		
 		if (menu.getItemCount() != 0) {
@@ -242,7 +242,7 @@ public class ColorMenu {
 	 * @param resources
 	 *            The list of resources of the menu
 	 */
-	private Image loadImage(Display display, String name, ArrayList resources) {
+	private Image loadImage(Display display, String name, ArrayList<Resource> resources) {
 		Image image = GraphicsExample.loadImage(display, GraphicsExample.class, name);
 		if (image != null) resources.add(image);
 		return image;
@@ -258,11 +258,11 @@ public class ColorMenu {
 		Color customColor;
 		GraphicsBackground background;	// used to store information about the background
 		ColorListener colorListener;
-		ArrayList resources;
+		ArrayList<Resource> resources;
 		
 		public MenuItemListener(Control parent){
 			this.parent = parent; 
-			resources = new ArrayList();
+			resources = new ArrayList<Resource>();
 		}
 		/**
 		 * Method used to set the ColorListener
@@ -275,7 +275,7 @@ public class ColorMenu {
 			this.colorListener = cl;
 		}
 		
-		public ArrayList getMenuResources() {
+		public ArrayList<Resource> getMenuResources() {
 			return resources;
 		}
 
@@ -284,9 +284,9 @@ public class ColorMenu {
 
 			case SWT.Dispose:
 				for (int i = 0; i < resources.size(); i++) {
-					((Resource) resources.get(i)).dispose();
+					resources.get(i).dispose();
 				}
-				resources = new ArrayList();
+				resources = new ArrayList<Resource>();
 				break;
 			case SWT.Selection:
 				Display display = event.display;
