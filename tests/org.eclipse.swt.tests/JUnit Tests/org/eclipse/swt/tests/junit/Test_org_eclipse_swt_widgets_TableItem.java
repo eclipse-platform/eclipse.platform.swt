@@ -729,6 +729,7 @@ public void test_setImageILorg_eclipse_swt_graphics_Image() {
 	}
 }
 
+@SuppressWarnings("deprecation")
 public void test_setImageIndentI() {
 	if (SwtJunit.isCarbon || SwtJunit.isCocoa || SwtJunit.isGTK) {
 		//setImageIndent not implemented on Carbon

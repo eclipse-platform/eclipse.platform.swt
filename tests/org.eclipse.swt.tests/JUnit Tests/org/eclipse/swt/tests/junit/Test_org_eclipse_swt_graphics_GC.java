@@ -567,6 +567,7 @@ public void test_setLineWidthI() {
 	assertTrue(gc.getLineWidth() == 0);
 }
 
+@SuppressWarnings("deprecation")
 public void test_setXORModeZ() {
 	gc.setXORMode(true);
 	assertTrue(gc.getXORMode());
