@@ -299,7 +299,7 @@ public class MozillaGenerator {
 		Arrays.sort(keys);
 		for (int i = 0; i < keys.length; i++) {
 			Vector list = (Vector) vtbls.get(keys[i]);
-			Object[] elts = (Object[]) list.toArray();
+			Object[] elts = list.toArray();
 			Arrays.sort(elts);
 			for (int j = 0; j < elts.length; j++) {
 				System.out.println(elts[j]);

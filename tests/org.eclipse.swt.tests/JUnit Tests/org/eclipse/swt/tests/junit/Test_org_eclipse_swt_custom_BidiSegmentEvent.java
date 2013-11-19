@@ -37,7 +37,7 @@ public static Test suite() {
 	Vector<String> methodNames = methodNames();
 	Enumeration<String> e = methodNames.elements();
 	while (e.hasMoreElements()) {
-		suite.addTest(new Test_org_eclipse_swt_custom_BidiSegmentEvent((String)e.nextElement()));
+		suite.addTest(new Test_org_eclipse_swt_custom_BidiSegmentEvent(e.nextElement()));
 	}
 	return suite;
 }

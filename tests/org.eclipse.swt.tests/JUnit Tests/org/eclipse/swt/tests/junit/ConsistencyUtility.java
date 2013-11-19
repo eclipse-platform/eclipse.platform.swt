@@ -153,7 +153,7 @@ public class ConsistencyUtility {
         names = removeDuplicates(names);
         int[] types = new int[names.length];
         for(int i=0; i<names.length; i++) {
-            types[i] = ((Integer)eventTypes.get(names[i])).intValue();
+            types[i] = eventTypes.get(names[i]).intValue();
         }
         return types;
     }

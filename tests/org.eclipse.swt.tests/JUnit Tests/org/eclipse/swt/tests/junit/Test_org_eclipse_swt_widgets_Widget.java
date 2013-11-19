@@ -229,7 +229,7 @@ protected String[] hookExpectedEvents(String type, final java.util.Vector<String
 }
 
 protected String[] hookExpectedEvents(Widget w, String type, final java.util.Vector<String> events) {
-    String[] expectedEvents = (String[])ConsistencyUtility.eventOrdering.get(type);
+    String[] expectedEvents = ConsistencyUtility.eventOrdering.get(type);
     hookExpectedEvents(w, expectedEvents, events);
     return expectedEvents;
 }

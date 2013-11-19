@@ -274,7 +274,7 @@ public void test_getAlphasIII$BI() {
 		if (i < OFFSET) {
 			assertEquals(":c:", 0, alphaData[i]);
 		} else if (i < OFFSET + values.length) {
-			assertEquals(":d:", (byte) values[i-OFFSET], alphaData[i]);	
+			assertEquals(":d:", values[i-OFFSET], alphaData[i]);	
 		} else if (i < OFFSET+GET_WIDTH) {
 			assertEquals(":e:", 0, alphaData[i]);
 		}
@@ -391,7 +391,7 @@ public void test_getPixelsIII$BI() {
 		if (i < OFFSET) {
 			assertEquals(":b:", 0, pixelData[i]);
 		} else if (i < OFFSET + values.length) {
-			assertEquals(":c:", (byte) values[i-OFFSET], pixelData[i]);
+			assertEquals(":c:", values[i-OFFSET], pixelData[i]);
 		} else if (i < OFFSET+GET_WIDTH) {
 			assertEquals(":d:", 0, pixelData[i]);
 		}
@@ -411,7 +411,7 @@ public void test_getPixelsIII$BI() {
 		if (i < OFFSET) {
 			assertEquals(":f:", 0, pixelData[i]);
 		} else if (i < OFFSET + values.length) {
-			assertEquals(":g:", (byte) values[i-OFFSET], pixelData[i]);	
+			assertEquals(":g:", values[i-OFFSET], pixelData[i]);	
 		} else if (i < OFFSET+GET_WIDTH) {
 			assertEquals(":h:", 0, pixelData[i]);
 		}
@@ -431,7 +431,7 @@ public void test_getPixelsIII$BI() {
 		if (i < OFFSET) {
 			assertEquals(":j:", 0, pixelData[i]);
 		} else if (i < OFFSET + values.length) {
-			assertEquals(":k:", (byte) values[i-OFFSET], pixelData[i]);	
+			assertEquals(":k:", values[i-OFFSET], pixelData[i]);	
 		} else if (i < OFFSET+GET_WIDTH) {
 			assertEquals(":l:", 0, pixelData[i]);
 		}
@@ -451,7 +451,7 @@ public void test_getPixelsIII$BI() {
 		if (i < OFFSET) {
 			assertEquals(":n:", 0, pixelData[i]);
 		} else if (i < OFFSET + values.length) {
-			assertEquals(":o:", (byte) values[i-OFFSET], pixelData[i]);	
+			assertEquals(":o:", values[i-OFFSET], pixelData[i]);	
 		} else if (i < OFFSET+GET_WIDTH) {
 			assertEquals(":p:", 0, pixelData[i]);
 		}
@@ -832,7 +832,7 @@ public void test_setAlphasIII$BI() {
 	imageData.getAlphas(0, 1, IMAGE_DIMENSION, alphaData, 0);
 	for (int i = 0; i < alphaData.length; i++) {
 		if (i + OFFSET < values.length) {
-			assertEquals(":a:", (byte) values[i + OFFSET], alphaData[i]);
+			assertEquals(":a:", values[i + OFFSET], alphaData[i]);
 		} else {
 			assertEquals(":b:", 0, alphaData[i]);
 		}
@@ -928,7 +928,7 @@ public void test_setPixelsIII$BI() {
 	imageData.getPixels(0, 1, IMAGE_DIMENSION, pixelData, 0);
 	for (int i = 0; i < pixelData.length; i++) {
 		if (i + OFFSET < values.length) {
-			assertEquals(":a:", (byte) values[i + OFFSET], pixelData[i]);
+			assertEquals(":a:", values[i + OFFSET], pixelData[i]);
 		} else {
 			assertEquals(":b:", 0, pixelData[i]);
 		}
@@ -941,7 +941,7 @@ public void test_setPixelsIII$BI() {
 	imageData.getPixels(0, 1, IMAGE_DIMENSION, pixelData, 0);
 	for (int i = 0; i < pixelData.length; i++) {
 		if (i + OFFSET < values.length) {
-			assertEquals(":c:", (byte) values[i + OFFSET], pixelData[i]);
+			assertEquals(":c:", values[i + OFFSET], pixelData[i]);
 		} else {
 			assertEquals(":d:", 0, pixelData[i]);
 		}
@@ -954,7 +954,7 @@ public void test_setPixelsIII$BI() {
 	imageData.getPixels(0, 1, IMAGE_DIMENSION, pixelData, 0);
 	for (int i = 0; i < pixelData.length; i++) {
 		if (i + OFFSET < values.length) {
-			assertEquals(":e:", (byte) values[i + OFFSET], pixelData[i]);
+			assertEquals(":e:", values[i + OFFSET], pixelData[i]);
 		} else {
 			assertEquals(":f:", 0, pixelData[i]);
 		}
@@ -967,7 +967,7 @@ public void test_setPixelsIII$BI() {
 	imageData.getPixels(0, 1, IMAGE_DIMENSION, pixelData, 0);
 	for (int i = 0; i < pixelData.length; i++) {
 		if (i + OFFSET < values.length) {
-			assertEquals(":g:", (byte) values[i + OFFSET], pixelData[i]);
+			assertEquals(":g:", values[i + OFFSET], pixelData[i]);
 		} else {
 			assertEquals(":h:", 0, pixelData[i]);
 		}

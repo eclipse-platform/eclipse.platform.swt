@@ -372,7 +372,7 @@ private void createTableTree(Vector<String> events, boolean traverse) {
 		}
 		hookExpectedEvents(subitem, test, events);
 	}
-	String[] types = (String[])ConsistencyUtility.eventOrdering.get("TableTreeTable");
+	String[] types = ConsistencyUtility.eventOrdering.get("TableTreeTable");
 	if(!traverse) {
 	    String[] temp = new String[types.length -1];
 	    System.arraycopy(types, 0, temp, 0, types.length-1);

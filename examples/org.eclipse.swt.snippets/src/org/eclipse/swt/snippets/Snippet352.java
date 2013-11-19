@@ -63,7 +63,7 @@ public class Snippet352 {
 						touchLocations.remove(currTouch.id);
 					} else {
 						CircleInfo info = touchLocations.get(currTouch.id);
-						Point newPoint = Display.getCurrent().map(null, (Control)e.widget, new Point((int)currTouch.x, (int)currTouch.y));
+						Point newPoint = Display.getCurrent().map(null, (Control)e.widget, new Point(currTouch.x, currTouch.y));
 
 						if (info == null) {
 							info = new CircleInfo(newPoint, display.getSystemColor((colorIndex + 2) % PAINTABLE_COLORS));

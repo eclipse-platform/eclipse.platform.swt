@@ -155,7 +155,7 @@ public static Test suite() {
 	Vector<String> methodNames = methodNames();
 	Enumeration<String> e = methodNames.elements();
 	while (e.hasMoreElements()) {
-		suite.addTest(new Test_org_eclipse_swt_accessibility_Accessible((String)e.nextElement()));
+		suite.addTest(new Test_org_eclipse_swt_accessibility_Accessible(e.nextElement()));
 	}
 	return suite;
 }

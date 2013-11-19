@@ -172,7 +172,7 @@ void merge(Document document, Document extraDocument) {
 		parent.appendChild(document.createTextNode(delimiter));
 		NamedNodeMap attributes = node.getAttributes();
 		for (int j = 0, length = attributes.getLength(); j < length; j++) {
-			Node attr = (Node)attributes.item(j);
+			Node attr = attributes.item(j);
 			element.setAttribute(attr.getNodeName(), attr.getNodeValue());
 		}
 		lookup.put(getKey(element), element);
@@ -1058,7 +1058,7 @@ void merge(Node node, HashMap extras, HashMap docLookup) {
 			if (extra != null) {
 				NamedNodeMap attributes = extra.getAttributes();
 				for (int j = 0, length = attributes.getLength(); j < length; j++) {
-					Node attr = (Node)attributes.item(j);
+					Node attr = attributes.item(j);
 					String name = attr.getNodeName();
 					if (name.startsWith("swt_")) {
 						((Element)childNode).setAttribute(name, attr.getNodeValue());
