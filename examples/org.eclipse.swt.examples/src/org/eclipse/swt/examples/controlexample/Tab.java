@@ -1105,8 +1105,8 @@ abstract class Tab {
 		Widget[] widgets = getExampleWidgets();
 		for (int i = 0; i < widgets.length; i++) {
 			try {
-				Method method = widgets[i].getClass().getMethod(methodName, null);
-				Object result = method.invoke(widgets[i], null);
+				Method method = widgets[i].getClass().getMethod(methodName);
+				Object result = method.invoke(widgets[i]);
 				if (result == null) {
 					getText.append("null");
 				} else if (result.getClass().isArray()) {
@@ -1134,7 +1134,7 @@ abstract class Tab {
 		String methodName = "get" + methodRoot;
 		Widget[] widgets = getExampleWidgets();
 		try {
-			Method method = widgets[0].getClass().getMethod(methodName, null);
+			Method method = widgets[0].getClass().getMethod(methodName);
 			returnType = method.getReturnType();
 		} catch (Exception e) {
 		}
