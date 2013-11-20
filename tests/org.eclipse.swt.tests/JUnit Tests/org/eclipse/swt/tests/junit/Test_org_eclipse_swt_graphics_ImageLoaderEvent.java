@@ -62,6 +62,7 @@ public static java.util.Vector<String> methodNames() {
 	methodNames.addElement("test_toString");
 	return methodNames;
 }
+@Override
 protected void runTest() throws Throwable {
 	if (getName().equals("test_ConstructorLorg_eclipse_swt_graphics_ImageLoaderLorg_eclipse_swt_graphics_ImageDataIZ")) test_ConstructorLorg_eclipse_swt_graphics_ImageLoaderLorg_eclipse_swt_graphics_ImageDataIZ();
 	else if (getName().equals("test_toString")) test_toString();

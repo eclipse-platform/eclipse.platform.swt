@@ -149,6 +149,7 @@ public class Snippet288 {
 			final int i = ii;
 			animateThread[i] = new Thread("Animation "+i) {
 				int imageDataIndex = 0;
+				@Override
 				public void run() {
 					try {
 						int repeatCount = loader[i].repeatCount;
@@ -156,6 +157,7 @@ public class Snippet288 {
 							imageDataIndex = (imageDataIndex + 1) % imageDataArray[i].length;
 							if (!display.isDisposed()) {
 								display.asyncExec(new Runnable() {
+									@Override
 									public void run() {
 										if (!item[i].isDisposed())
 											item[i].setImage(image[i][imageDataIndex]);

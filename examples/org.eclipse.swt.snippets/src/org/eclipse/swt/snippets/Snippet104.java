@@ -56,12 +56,14 @@ public static void main(String[] args) {
 	splash.setLocation(x, y);
 	splash.open();
 	display.asyncExec(new Runnable() {
+		@Override
 		public void run() {
 			Shell [] shells = new Shell[count[0]];
 			for (int i=0; i<count[0]; i++) {
 				shells [i] = new Shell(display);
 				shells [i].setSize (300, 300);
 				shells [i].addListener(SWT.Close, new Listener() {
+					@Override
 					public void handleEvent (Event e) {
 						--count[0];
 					}

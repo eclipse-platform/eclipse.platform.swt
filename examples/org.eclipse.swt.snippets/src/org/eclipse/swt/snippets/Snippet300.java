@@ -67,13 +67,16 @@ public class Snippet300 {
 		source.setTransfer(types);
 		source.addDragListener (new DragSourceListener () {
 			Point selection;
+			@Override
 			public void dragStart(DragSourceEvent e) {
 				selection = text.getSelection();
 				e.doit = selection.x != selection.y;
 			}
+			@Override
 			public void dragSetData(DragSourceEvent e) {
 				e.data = text.getText(selection.x, selection.y-1);
 			}
+			@Override
 			public void dragFinished(DragSourceEvent e) {
 				if (e.detail == DND.DROP_MOVE) {
 					text.setSelection(selection);
@@ -86,6 +89,7 @@ public class Snippet300 {
 		DropTarget target = new DropTarget(text, operations);
 		target.setTransfer(types);
 		target.addDropListener (new DropTargetAdapter() {
+			@Override
 			public void drop(DropTargetEvent event) {
 				if (event.data == null) {
 					event.detail = DND.DROP_NONE;

@@ -30,6 +30,7 @@ public static void main(String[] args) {
 	TestRunner.run(suite());
 }
 
+@Override
 protected void setUp() {
 	super.setUp();
 	expandBar = new ExpandBar(shell, 0);
@@ -122,6 +123,7 @@ public void test_setHeightI() {
 	assertEquals(expandItem.getHeight(), 30);
 }
 
+@Override
 public void test_setImageLorg_eclipse_swt_graphics_Image() {
 	assertNull(expandItem.getImage());
 	expandItem.setImage(images[0]);
@@ -131,6 +133,7 @@ public void test_setImageLorg_eclipse_swt_graphics_Image() {
 	assertNull(expandItem.getImage());
 }
 
+@Override
 public void test_setTextLjava_lang_String() {
 	expandItem.setText("ABCDEFG");
 	assertTrue(expandItem.getText().equals("ABCDEFG"));
@@ -169,6 +172,7 @@ public static java.util.Vector<String> methodNames() {
 	methodNames.addAll(Test_org_eclipse_swt_widgets_Item.methodNames()); // add superclass method names
 	return methodNames;
 }
+@Override
 protected void runTest() throws Throwable {
 	if (getName().equals("test_ConstructorLorg_eclipse_swt_widgets_ExpandBarI")) test_ConstructorLorg_eclipse_swt_widgets_ExpandItemI();
 	else if (getName().equals("test_ConstructorLorg_eclipse_swt_widgets_ExpandBarII")) test_ConstructorLorg_eclipse_swt_widgets_ExpandItemII();

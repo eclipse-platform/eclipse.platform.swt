@@ -154,6 +154,7 @@ public static java.util.Vector<String> methodNames() {
 	return methodNames;
 }
 
+@Override
 protected void runTest() throws Throwable {
 	if (getName().equals("test_ConstructorLorg_eclipse_swt_ole_win32_OleClientSite")) test_ConstructorLorg_eclipse_swt_ole_win32_OleClientSite();
 	else if (getName().equals("test_dispose")) test_dispose();

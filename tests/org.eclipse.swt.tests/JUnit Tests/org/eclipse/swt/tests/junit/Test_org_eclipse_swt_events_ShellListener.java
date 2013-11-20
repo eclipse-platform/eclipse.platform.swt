@@ -68,6 +68,7 @@ public static java.util.Vector<String> methodNames() {
 	methodNames.addElement("test_shellIconifiedLorg_eclipse_swt_events_ShellEvent");
 	return methodNames;
 }
+@Override
 protected void runTest() throws Throwable {
 	if (getName().equals("test_shellActivatedLorg_eclipse_swt_events_ShellEvent")) test_shellActivatedLorg_eclipse_swt_events_ShellEvent();
 	else if (getName().equals("test_shellClosedLorg_eclipse_swt_events_ShellEvent")) test_shellClosedLorg_eclipse_swt_events_ShellEvent();

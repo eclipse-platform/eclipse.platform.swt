@@ -29,6 +29,7 @@ public static void main (String [] args) {
 	Rectangle clientArea = shell.getClientArea ();
 	text.setBounds ( clientArea.x + 10, clientArea.y + 10, 200, 200);
 	text.addListener (SWT.Verify, new Listener () {
+		@Override
 		public void handleEvent (Event e) {
 			String string = e.text;
 			char [] chars = new char [string.length ()];

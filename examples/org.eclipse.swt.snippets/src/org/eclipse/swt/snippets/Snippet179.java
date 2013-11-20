@@ -33,6 +33,7 @@ public static void main(String[] args) {
 	final Calendar calendar = Calendar.getInstance();
 	text.addListener(SWT.Verify, new Listener() {
 		boolean ignore;
+		@Override
 		public void handleEvent(Event e) {
 			if (ignore) return;
 			e.doit = false;

@@ -152,6 +152,7 @@ public static void main(String[] args) {
 	final BufferedImage awtImage = convertToAWT(data);
 	final Image swtImage2 = new Image(display, convertToSWT(awtImage));
 	shell.addListener(SWT.Paint, new Listener() {
+		@Override
 		public void handleEvent(Event e) {
 			int y = 10;
 			if (swtImage != null) {
@@ -164,6 +165,7 @@ public static void main(String[] args) {
 		}
 	});
 	Frame frame = new Frame() {
+		@Override
 		public void paint(Graphics g) {
 			Insets insets = getInsets();
 			if (awtImage != null) {

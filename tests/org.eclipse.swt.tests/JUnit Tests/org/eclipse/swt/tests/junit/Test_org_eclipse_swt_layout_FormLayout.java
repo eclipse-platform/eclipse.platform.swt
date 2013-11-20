@@ -28,6 +28,7 @@ public static void main(String[] args) {
 	TestRunner.run(suite());
 }
 
+@Override
 public void test_Constructor() {
 	warnUnimpl("Test test_Constructor not written");
 }
@@ -50,6 +51,7 @@ public static java.util.Vector<String> methodNames() {
 	return methodNames;
 }
 
+@Override
 protected void runTest() throws Throwable {
 	if (getName().equals("test_Constructor")) test_Constructor();
 	else super.runTest();

@@ -35,6 +35,7 @@ public static void main (String [] args) {
 	}
 	final ToolItem item = new ToolItem (toolBar, SWT.DROP_DOWN);
 	item.addListener (SWT.Selection, new Listener () {
+		@Override
 		public void handleEvent (Event event) {
 			if (event.detail == SWT.ARROW) {
 				Rectangle rect = item.getBounds ();

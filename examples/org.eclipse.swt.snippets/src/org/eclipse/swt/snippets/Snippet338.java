@@ -48,6 +48,7 @@ public static void main(String[] args) {
 	final Canvas canvas = new Canvas(composite, SWT.BORDER);
 	canvas.setLayoutData(new GridData(300,200));
 	canvas.addListener(SWT.Paint, new Listener() {
+		@Override
 		public void handleEvent(Event event) {
 			if (canvas.isFocusControl()) {
 				event.gc.drawText("focus is here, custom traverse keys:\n\tN: Tab next\n\tP: Tab previous\n\tR: Return\n\tE: Esc\n\tT: Tab Folder next page", 0, 0);
@@ -57,6 +58,7 @@ public static void main(String[] args) {
 		}
 	});
 	canvas.addListener(SWT.KeyDown, new Listener() {
+		@Override
 		public void handleEvent(Event event) {
 			int traversal = SWT.NONE;
 			switch (event.keyCode) {
@@ -73,9 +75,11 @@ public static void main(String[] args) {
 		}
 	});
 	canvas.addFocusListener(new FocusListener() {
+		@Override
 		public void focusLost(FocusEvent e) {
 			canvas.redraw();
 		}
+		@Override
 		public void focusGained(FocusEvent e) {
 			canvas.redraw();
 		}
@@ -85,6 +89,7 @@ public static void main(String[] args) {
 	Button button = new Button(childShell, SWT.PUSH);
 	button.setText("Default &Button");
 	button.addListener(SWT.Selection, new Listener() {
+		@Override
 		public void handleEvent(Event event) {
 			System.out.println("Default button selected");
 		}
@@ -92,6 +97,7 @@ public static void main(String[] args) {
 	childShell.setDefaultButton(button);
 
 	Listener printTraverseListener = new Listener() {
+		@Override
 		public void handleEvent(Event event) {
 			StringBuffer buffer = new StringBuffer("Traverse ");
 			buffer.append(event.widget);

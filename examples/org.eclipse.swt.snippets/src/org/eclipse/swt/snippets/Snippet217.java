@@ -70,6 +70,7 @@ public class Snippet217 {
 		
 		// use a verify listener to dispose the controls
 		styledText.addVerifyListener(new VerifyListener()  {
+			@Override
 			public void verifyText(VerifyEvent event) {
 				if (event.start == event.end) return;
 				String text = styledText.getText(event.start, event.end - 1);
@@ -87,6 +88,7 @@ public class Snippet217 {
 		
 		// reposition widgets on paint event
 		styledText.addPaintObjectListener(new PaintObjectListener() {
+			@Override
 			public void paintObject(PaintObjectEvent event) {
 				Control control = (Control)event.style.data;
 				Point pt = control.getSize();

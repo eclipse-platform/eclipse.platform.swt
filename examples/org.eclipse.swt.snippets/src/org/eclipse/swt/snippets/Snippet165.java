@@ -54,16 +54,19 @@ public static void main (String [] args) {
 	folder.setMinimizeVisible(true);
 	folder.setMaximizeVisible(true);
 	folder.addCTabFolder2Listener(new CTabFolder2Adapter() {
+		@Override
 		public void minimize(CTabFolderEvent event) {
 			folder.setMinimized(true);
 			folder.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
 			shell.layout(true);
 		}
+		@Override
 		public void maximize(CTabFolderEvent event) {
 			folder.setMaximized(true);
 			folder.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 			shell.layout(true);
 		}
+		@Override
 		public void restore(CTabFolderEvent event) {
 			folder.setMinimized(false);
 			folder.setMaximized(false);

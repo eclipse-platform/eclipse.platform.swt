@@ -38,8 +38,10 @@ public class Snippet308 {
 			return;
 		}
 		browser.addProgressListener(new ProgressListener() {
+			@Override
 			public void changed(ProgressEvent event) {
 			}
+			@Override
 			public void completed(ProgressEvent event) {
 				String value = (String)browser.evaluate("return document.getElementById('myid').childNodes[0].nodeValue;");
 				System.out.println("Node value: "+value);

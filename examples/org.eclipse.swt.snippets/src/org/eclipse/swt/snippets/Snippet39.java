@@ -36,6 +36,7 @@ public class Snippet39 {
 		combo.setText("item0");
 
 		combo.addSelectionListener(new SelectionAdapter() {
+			@Override
 			public void widgetSelected(SelectionEvent e) {
 				System.out.println("Item selected");
 			}

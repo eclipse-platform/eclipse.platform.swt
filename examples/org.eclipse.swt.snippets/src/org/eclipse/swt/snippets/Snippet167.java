@@ -47,6 +47,7 @@ public static void main (String [] args) {
 	final ScrollBar hBar1 = sc1.getHorizontalBar ();
 	final ScrollBar hBar2 = sc2.getHorizontalBar ();
 	SelectionListener listener1 = new SelectionAdapter () {
+		@Override
 		public void widgetSelected (SelectionEvent e) {
 			int x =  hBar1.getSelection() * (hBar2.getMaximum() - hBar2.getThumb()) / Math.max(1, hBar1.getMaximum() - hBar1.getThumb());
 			int y =  vBar1.getSelection() * (vBar2.getMaximum() - vBar2.getThumb()) / Math.max(1, vBar1.getMaximum() - vBar1.getThumb());
@@ -54,6 +55,7 @@ public static void main (String [] args) {
 		}
 	};
 	SelectionListener listener2 = new SelectionAdapter () {
+		@Override
 		public void widgetSelected (SelectionEvent e) {
 			int x =  hBar2.getSelection() * (hBar1.getMaximum() - hBar1.getThumb()) / Math.max(1, hBar2.getMaximum() - hBar2.getThumb());
 			int y =  vBar2.getSelection() * (vBar1.getMaximum() - vBar1.getThumb()) / Math.max(1, vBar2.getMaximum() - vBar2.getThumb());

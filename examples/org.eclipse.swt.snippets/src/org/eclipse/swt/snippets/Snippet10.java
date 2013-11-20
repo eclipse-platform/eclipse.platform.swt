@@ -36,6 +36,7 @@ public class Snippet10 {
 		gc.fillOval(rect.x, rect.y, rect.width, rect.height);
 		gc.dispose();
 		shell.addListener(SWT.Paint, new Listener() {
+			@Override
 			public void handleEvent(Event event) {
 				GC gc = event.gc;				
 				Transform tr = new Transform(display);

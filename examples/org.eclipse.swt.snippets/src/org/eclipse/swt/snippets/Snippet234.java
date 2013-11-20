@@ -65,11 +65,13 @@ public static void main (String [] args) {
 	}
 	// Make selection the same in both tables
 	leftTable.addListener(SWT.Selection, new Listener() {
+		@Override
 		public void handleEvent(Event event) {
 			rightTable.setSelection(leftTable.getSelectionIndices());
 		}
 	});
 	rightTable.addListener(SWT.Selection, new Listener() {
+		@Override
 		public void handleEvent(Event event) {
 			leftTable.setSelection(rightTable.getSelectionIndices());
 		}
@@ -78,6 +80,7 @@ public static void main (String [] args) {
 	// To make both tables appear in focus, draw the selection background here.
 	// This part only works on version 3.2 or later.
 	Listener eraseListener = new Listener() {
+		@Override
 		public void handleEvent(Event event) {
 			event.detail &= ~SWT.HOT;
 			if((event.detail & SWT.SELECTED) != 0) {
@@ -96,12 +99,14 @@ public static void main (String [] args) {
 	// Make vertical scrollbars scroll together
 	ScrollBar vBarLeft = leftTable.getVerticalBar();
 	vBarLeft.addListener(SWT.Selection, new Listener() {
+		@Override
 		public void handleEvent(Event event) {
 			rightTable.setTopIndex(leftTable.getTopIndex());
 		}
 	});
 	ScrollBar vBarRight = rightTable.getVerticalBar();
 	vBarRight.addListener(SWT.Selection, new Listener() {
+		@Override
 		public void handleEvent(Event event) {
 			leftTable.setTopIndex(rightTable.getTopIndex());
 		}

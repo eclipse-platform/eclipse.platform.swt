@@ -33,6 +33,7 @@ public class Snippet183 {
 		Rectangle clientArea = shell.getClientArea();
 		link.setBounds(clientArea.x, clientArea.y, 400, 400);
 		link.addListener (SWT.Selection, new Listener () {
+			@Override
 			public void handleEvent(Event event) {
 				System.out.println("Selection: " + event.text);
 			}

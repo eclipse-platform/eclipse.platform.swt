@@ -33,6 +33,7 @@ public static void main (String [] args) {
 		item.setImage (i % 2 == 0 ? checkedImage : uncheckedImage);
 	}
 	table.addSelectionListener(new SelectionAdapter(){
+		@Override
 		public void widgetDefaultSelected(SelectionEvent e) {
 			TableItem item = (TableItem)e.item;
 			item.setImage(item.getImage() == checkedImage ? uncheckedImage : checkedImage);
@@ -40,9 +41,11 @@ public static void main (String [] args) {
 	});
 
 	table.getAccessible ().addAccessibleControlListener (new AccessibleControlAdapter () {
+		@Override
 		public void getRole(AccessibleControlEvent e) {
 			e.detail = ACC.ROLE_CHECKBUTTON;
 		}
+		@Override
 		public void getState (AccessibleControlEvent e) {
 			if (e.childID >= 0 && e.childID < table.getItemCount ()) {
 				TableItem item = table.getItem (e.childID);

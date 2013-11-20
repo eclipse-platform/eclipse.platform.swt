@@ -33,6 +33,7 @@ public static void main(String[] args) {
 	TestRunner.run(suite());
 }
 
+@Override
 protected void setUp() {
 	super.setUp();
 	menu = new Menu(shell);
@@ -344,6 +345,7 @@ public static java.util.Vector<String> methodNames() {
 	methodNames.addAll(Test_org_eclipse_swt_widgets_Widget.methodNames()); // add superclass method names
 	return methodNames;
 }
+@Override
 protected void runTest() throws Throwable {
 	if (getName().equals("test_ConstructorLorg_eclipse_swt_widgets_Control")) test_ConstructorLorg_eclipse_swt_widgets_Control();
 	else if (getName().equals("test_ConstructorLorg_eclipse_swt_widgets_DecorationsI")) test_ConstructorLorg_eclipse_swt_widgets_DecorationsI();

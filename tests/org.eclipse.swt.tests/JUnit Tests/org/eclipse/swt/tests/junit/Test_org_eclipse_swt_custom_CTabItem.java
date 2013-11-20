@@ -35,6 +35,7 @@ public static void main(String[] args) {
 	TestRunner.run(suite());
 }
 
+@Override
 protected void setUp() {
 	super.setUp();
 	cTabFolder = new CTabFolder(shell, SWT.NONE);
@@ -50,6 +51,7 @@ public void test_ConstructorLorg_eclipse_swt_custom_CTabFolderII() {
 	warnUnimpl("Test test_ConstructorLorg_eclipse_swt_custom_CTabFolderII not written");
 }
 
+@Override
 public void test_dispose() {
 	warnUnimpl("Test test_dispose not written");
 }
@@ -82,10 +84,12 @@ public void test_setDisabledImageLorg_eclipse_swt_graphics_Image() {
 	warnUnimpl("Test test_setDisabledImageLorg_eclipse_swt_graphics_Image not written");
 }
 
+@Override
 public void test_setImageLorg_eclipse_swt_graphics_Image() {
 	warnUnimpl("Test test_setImageLorg_eclipse_swt_graphics_Image not written");
 }
 
+@Override
 public void test_setTextLjava_lang_String() {
 	warnUnimpl("Test test_setTextLjava_lang_String not written");
 }
@@ -123,6 +127,7 @@ public static java.util.Vector<String> methodNames() {
 	return methodNames;
 }
 
+@Override
 protected void runTest() throws Throwable {
 	if (getName().equals("test_ConstructorLorg_eclipse_swt_custom_CTabFolderI")) test_ConstructorLorg_eclipse_swt_custom_CTabFolderI();
 	else if (getName().equals("test_ConstructorLorg_eclipse_swt_custom_CTabFolderII")) test_ConstructorLorg_eclipse_swt_custom_CTabFolderII();

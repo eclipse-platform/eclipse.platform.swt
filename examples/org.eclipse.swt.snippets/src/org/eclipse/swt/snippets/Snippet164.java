@@ -36,6 +36,7 @@ public static void main (String[] args) {
 	Button button2 = new Button (shell, SWT.PUSH);
 	button2.setImage (image);
 	button2.getAccessible ().addAccessibleListener (new AccessibleAdapter() {
+		@Override
 		public void getName (AccessibleEvent e) {
 			e.result = "Eclipse logo";
 		}

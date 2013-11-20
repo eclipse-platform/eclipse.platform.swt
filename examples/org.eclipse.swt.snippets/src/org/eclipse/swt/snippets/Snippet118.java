@@ -34,6 +34,7 @@ public static void main (String [] args) {
 	Point size = button.computeSize(SWT.DEFAULT, SWT.DEFAULT);
 	button.setSize(size);
 	button.addListener(SWT.Selection, new Listener() {
+		@Override
 		public void handleEvent(Event e) {
 			FileDialog dialog = new FileDialog(shell);
 			dialog.setFilterExtensions(new String[] {"*.ico", "*.gif", "*.*"});

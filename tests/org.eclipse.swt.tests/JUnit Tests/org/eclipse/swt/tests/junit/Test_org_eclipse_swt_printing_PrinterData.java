@@ -30,6 +30,7 @@ public static void main(String[] args) {
 	TestRunner.run(suite());
 }
 
+@Override
 public void test_Constructor() {
 	new PrinterData();
 }
@@ -61,6 +62,7 @@ public static java.util.Vector<String> methodNames() {
 	methodNames.addAll(Test_org_eclipse_swt_graphics_DeviceData.methodNames()); // add superclass method names
 	return methodNames;
 }
+@Override
 protected void runTest() throws Throwable {
 	if (getName().equals("test_Constructor")) test_Constructor();
 	else if (getName().equals("test_ConstructorLjava_lang_StringLjava_lang_String")) test_ConstructorLjava_lang_StringLjava_lang_String();

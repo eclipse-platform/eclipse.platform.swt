@@ -31,6 +31,7 @@ public static void main (String [] args) {
 	final Label label = new Label (shell, SWT.NONE);
 	label.setText ("resize the Shell then hover over this Label");
 	label.addListener (SWT.MouseEnter, new Listener () {
+		@Override
 		public void handleEvent (Event event) {
 			Point requiredSize = label.computeSize (SWT.DEFAULT, SWT.DEFAULT);
 			Point labelSize = label.getSize ();

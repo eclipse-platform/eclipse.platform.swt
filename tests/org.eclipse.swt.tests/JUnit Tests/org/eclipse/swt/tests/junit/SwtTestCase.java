@@ -234,6 +234,7 @@ protected boolean isBidi() {
 	return true;
 }
 
+@Override
 protected void setUp() {
 	try {
 		super.setUp();
@@ -244,6 +245,7 @@ protected void setUp() {
 	}
 }
 
+@Override
 protected void tearDown() {
 }
 

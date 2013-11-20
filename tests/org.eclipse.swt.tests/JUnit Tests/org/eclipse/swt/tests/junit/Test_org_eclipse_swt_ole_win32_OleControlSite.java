@@ -28,6 +28,7 @@ public static void main(String[] args) {
 	TestRunner.run(suite());
 }
 
+@Override
 public void test_ConstructorLorg_eclipse_swt_widgets_CompositeILjava_lang_String() {
 	warnUnimpl("Test test_ConstructorLorg_eclipse_swt_widgets_CompositeILjava_lang_String not written");
 }
@@ -44,14 +45,17 @@ public void test_addPropertyListenerILorg_eclipse_swt_ole_win32_OleListener() {
 	warnUnimpl("Test test_addPropertyListenerILorg_eclipse_swt_ole_win32_OleListener not written");
 }
 
+@Override
 public void test_getBackground() {
 	warnUnimpl("Test test_getBackground not written");
 }
 
+@Override
 public void test_getFont() {
 	warnUnimpl("Test test_getFont not written");
 }
 
+@Override
 public void test_getForeground() {
 	warnUnimpl("Test test_getForeground not written");
 }
@@ -76,14 +80,17 @@ public void test_removePropertyListenerILorg_eclipse_swt_ole_win32_OleListener()
 	warnUnimpl("Test test_removePropertyListenerILorg_eclipse_swt_ole_win32_OleListener not written");
 }
 
+@Override
 public void test_setBackgroundLorg_eclipse_swt_graphics_Color() {
 	warnUnimpl("Test test_setBackgroundLorg_eclipse_swt_graphics_Color not written");
 }
 
+@Override
 public void test_setFontLorg_eclipse_swt_graphics_Font() {
 	warnUnimpl("Test test_setFontLorg_eclipse_swt_graphics_Font not written");
 }
 
+@Override
 public void test_setForegroundLorg_eclipse_swt_graphics_Color() {
 	warnUnimpl("Test test_setForegroundLorg_eclipse_swt_graphics_Color not written");
 }
@@ -125,6 +132,7 @@ public static java.util.Vector<String> methodNames() {
 	return methodNames;
 }
 
+@Override
 protected void runTest() throws Throwable {
 	if (getName().equals("test_ConstructorLorg_eclipse_swt_widgets_CompositeILjava_lang_String")) test_ConstructorLorg_eclipse_swt_widgets_CompositeILjava_lang_String();
 	else if (getName().equals("test_addEventListenerILorg_eclipse_swt_ole_win32_OleListener")) test_addEventListenerILorg_eclipse_swt_ole_win32_OleListener();

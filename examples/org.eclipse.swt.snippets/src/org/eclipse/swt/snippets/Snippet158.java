@@ -41,6 +41,7 @@ public static void main(String[] args) {
 	DropTarget target = new DropTarget(control, DND.DROP_DEFAULT | DND.DROP_COPY | DND.DROP_LINK | DND.DROP_MOVE);
 	target.setTransfer(new Transfer[] {Snippet158.getInstance()});
 	target.addDropListener(new DropTargetAdapter() {
+		@Override
 		public void dragEnter(DropTargetEvent event) {			
 			String ops = "";
 			if ((event.operations & DND.DROP_COPY) != 0) ops += "Copy;";
@@ -84,15 +85,19 @@ public static Snippet158 getInstance () {
 }
 Snippet158() {
 }
+@Override
 public void javaToNative (Object object, TransferData transferData) {
 }
+@Override
 public Object nativeToJava(TransferData transferData){
 	return "Hello World";
 }
+@Override
 protected String[] getTypeNames(){
 	return names;
 }
 static int shellHandle;
+@Override
 protected int[] getTypeIds(){
 	if (ids == null) {
 		Display display = Display.getCurrent();

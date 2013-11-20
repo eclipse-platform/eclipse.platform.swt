@@ -56,12 +56,14 @@ public static void main(String [] args) {
 	 * as efficient as possible.
 	 */
 	table.addListener(SWT.PaintItem, new Listener() {
+		@Override
 		public void handleEvent(Event event) {
 			textLayout.draw(event.gc, event.x, event.y);
 		}
 	});
 	final Rectangle textLayoutBounds = textLayout.getBounds();
 	table.addListener(SWT.MeasureItem, new Listener() {
+		@Override
 		public void handleEvent(Event e) {
 			e.width = textLayoutBounds.width + 2;
 			e.height = textLayoutBounds.height + 2;

@@ -31,12 +31,14 @@ public static void main(String[] args) {
 	TestRunner.run(suite());
 }
 
+@Override
 protected void setUp() {
 	super.setUp();
 	printDialog = new PrintDialog(shell, SWT.NONE);
 	setDialog(printDialog);
 }
 
+@Override
 public void test_ConstructorLorg_eclipse_swt_widgets_Shell() {
 	new PrintDialog(shell);
 	
@@ -48,6 +50,7 @@ public void test_ConstructorLorg_eclipse_swt_widgets_Shell() {
 	}
 }
 
+@Override
 public void test_ConstructorLorg_eclipse_swt_widgets_ShellI() {
 	new PrintDialog(shell, SWT.NONE);
 	
@@ -120,6 +123,7 @@ public static java.util.Vector<String> methodNames() {
 	methodNames.addAll(Test_org_eclipse_swt_widgets_Dialog.methodNames()); // add superclass method names
 	return methodNames;
 }
+@Override
 protected void runTest() throws Throwable {
 	if (getName().equals("test_ConstructorLorg_eclipse_swt_widgets_Shell")) test_ConstructorLorg_eclipse_swt_widgets_Shell();
 	else if (getName().equals("test_ConstructorLorg_eclipse_swt_widgets_ShellI")) test_ConstructorLorg_eclipse_swt_widgets_ShellI();

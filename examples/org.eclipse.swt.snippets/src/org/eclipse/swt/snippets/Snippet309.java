@@ -32,6 +32,7 @@ public class Snippet309 {
 		Text text;
 
 		Listener listener = new Listener() {
+			@Override
 			public void handleEvent(Event event) {
 				Text t = (Text) event.widget;
 				String msg = t.getMessage();

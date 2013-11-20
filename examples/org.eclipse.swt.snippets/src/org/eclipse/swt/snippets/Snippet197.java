@@ -30,6 +30,7 @@ public static void main(String[] args) {
 	final TextLayout layout = new TextLayout(display);
 	layout.setText(longString);
 	Listener listener = new Listener() {
+		@Override
 		public void handleEvent (Event event) {
 			switch (event.type) {
 			case SWT.Paint:

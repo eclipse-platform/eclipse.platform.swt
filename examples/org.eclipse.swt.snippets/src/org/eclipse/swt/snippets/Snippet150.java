@@ -59,7 +59,8 @@ public static void main(String[] args) {
     coolData.top = new FormAttachment(0);
     coolBar.setLayoutData(coolData);
     coolBar.addListener(SWT.Resize, new Listener() {
-        public void handleEvent(Event event) {
+        @Override
+		public void handleEvent(Event event) {
             shell.layout();
         }
     });

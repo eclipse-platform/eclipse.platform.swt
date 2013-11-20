@@ -31,6 +31,7 @@ public static void main(String[] args) {
 	TestRunner.run(suite());
 }
 
+@Override
 protected void setUp() {
 	super.setUp();
 	display = Display.getDefault();
@@ -101,6 +102,7 @@ public static java.util.Vector<String> methodNames() {
 	return methodNames;
 }
 
+@Override
 protected void runTest() throws Throwable {
 	if (getName().equals("test_equalsLjava_lang_Object")) test_equalsLjava_lang_Object();
 	else if (getName().equals("test_getBounds")) test_getBounds();

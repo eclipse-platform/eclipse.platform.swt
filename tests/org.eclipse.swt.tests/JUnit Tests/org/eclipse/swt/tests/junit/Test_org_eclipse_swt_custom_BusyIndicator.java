@@ -52,6 +52,7 @@ public static java.util.Vector<String> methodNames() {
 	methodNames.addElement("test_showWhileLorg_eclipse_swt_widgets_DisplayLjava_lang_Runnable");
 	return methodNames;
 }
+@Override
 protected void runTest() throws Throwable {
 	if (getName().equals("test_Constructor")) test_Constructor();
 	else if (getName().equals("test_showWhileLorg_eclipse_swt_widgets_DisplayLjava_lang_Runnable")) test_showWhileLorg_eclipse_swt_widgets_DisplayLjava_lang_Runnable();

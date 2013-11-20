@@ -43,13 +43,15 @@ public static void main(String[] args) {
     data.doubleBuffer = true;
     final GLCanvas canvas = new GLCanvas(shell, SWT.NO_BACKGROUND, data);
     canvas.addControlListener(new ControlAdapter() {
-        public void controlResized(ControlEvent e) {
+        @Override
+		public void controlResized(ControlEvent e) {
             resize(canvas);
         }
     });
     init(canvas);
     new Runnable() {
-        public void run() {
+        @Override
+		public void run() {
             if (canvas.isDisposed()) return;
             render();
             canvas.swapBuffers();

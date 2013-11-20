@@ -32,6 +32,7 @@ public class Snippet315 {
 		button.setText ("Tri-state");
 		/* Make the button toggle between three states */
 		button.addListener (SWT.Selection, new Listener() {
+			@Override
 			public void handleEvent (Event e) {
 				if (button.getSelection()) {
 					if (!button.getGrayed()) {
@@ -47,6 +48,7 @@ public class Snippet315 {
 		});
 		/* Read the tri-state button (application code) */
 		button.addListener (SWT.Selection, new Listener() {
+			@Override
 			public void handleEvent (Event e) {
 				if (button.getGrayed()) {
 					System.out.println("Grayed");

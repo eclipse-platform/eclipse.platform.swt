@@ -33,6 +33,7 @@ public static void main (String [] args) {
 		item.setText ("Item " + i);
 	}
 	menu.addListener (SWT.Show, new Listener () {
+		@Override
 		public void handleEvent (Event event) {
 			MenuItem [] menuItems = menu.getItems ();
 			for (int i=0; i<menuItems.length; i++) {

@@ -35,6 +35,7 @@ public class Snippet216 {
 		};
 		final Shell shell = new Shell (display);
 		Listener mouseListener = new Listener () {
+			@Override
 			public void handleEvent (Event event) {
 				switch (event.type) {
 					case SWT.MouseEnter:
@@ -56,6 +57,7 @@ public class Snippet216 {
 		shell.addListener (SWT.MouseMove, mouseListener);
 		shell.addListener (SWT.MouseEnter, mouseListener);
 		shell.addListener (SWT.Paint, new Listener () {
+			@Override
 			public void handleEvent (Event event) {
 				GC gc = event.gc;
 				for (int i=0; i<rects.length; i++) {

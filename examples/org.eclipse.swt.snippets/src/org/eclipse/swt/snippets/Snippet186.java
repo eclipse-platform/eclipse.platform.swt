@@ -56,6 +56,7 @@ public static void main (String [] args) {
 	
 	final OleAutomation auto = automation;
 	go.addListener(SWT.Selection, new Listener() {
+		@Override
 		public void handleEvent(Event e) {
 			String url = text.getText();
 			int[] rgdispid = auto.getIDsOfNames(new String[]{"Navigate", "URL"}); 

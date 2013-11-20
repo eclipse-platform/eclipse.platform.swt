@@ -54,6 +54,7 @@ public static void main(String [] args) {
 	 * as efficient as possible.
 	 */
 	Listener paintListener = new Listener() {
+		@Override
 		public void handleEvent(Event event) {		
 			switch(event.type) {
 				case SWT.MeasureItem: {

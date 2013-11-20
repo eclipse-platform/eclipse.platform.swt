@@ -64,6 +64,7 @@ public static java.util.Vector<String> methodNames() {
 	return methodNames;
 }
 
+@Override
 protected void runTest() throws Throwable {
 	if (getName().equals("test_getDescriptionLorg_eclipse_swt_accessibility_AccessibleEvent")) test_getDescriptionLorg_eclipse_swt_accessibility_AccessibleEvent();
 	else if (getName().equals("test_getHelpLorg_eclipse_swt_accessibility_AccessibleEvent")) test_getHelpLorg_eclipse_swt_accessibility_AccessibleEvent();

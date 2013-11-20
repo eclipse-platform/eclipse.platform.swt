@@ -34,11 +34,13 @@ public static void main(String[] args) {
 	TestRunner.run(suite());
 }
 
+@Override
 protected void setUp() {
 	super.setUp();
 	makeCleanEnvironment(false); // by default, use multi-select table.	
 }
 
+@Override
 public void test_ConstructorLorg_eclipse_swt_widgets_CompositeI() {
 	try {
 		new Table(null, 0);
@@ -52,6 +54,7 @@ public void test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener()
 	warnUnimpl("Test test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener not written");
 }
 
+@Override
 public void test_computeSizeIIZ() {
 	warnUnimpl("Test test_computeSizeIIZ not written");
 }
@@ -1329,6 +1332,7 @@ public void test_setColumnOrder$I() {
 	} catch (SWTException ex) {}
 }
 
+@Override
 public void test_setFontLorg_eclipse_swt_graphics_Font() {
 	warnUnimpl("Test test_setFontLorg_eclipse_swt_graphics_Font not written");
 }
@@ -1354,6 +1358,7 @@ public void test_setLinesVisibleZ() {
 	assertFalse(table.getLinesVisible());
 }
 
+@Override
 public void test_setRedrawZ() {
 	warnUnimpl("Test test_setRedrawZ not written");
 }
@@ -1733,6 +1738,7 @@ public static java.util.Vector<String> methodNames() {
 	methodNames.addAll(Test_org_eclipse_swt_widgets_Composite.methodNames()); // add superclass method names
 	return methodNames;
 }
+@Override
 protected void runTest() throws Throwable {
 	if (getName().equals("test_ConstructorLorg_eclipse_swt_widgets_CompositeI")) test_ConstructorLorg_eclipse_swt_widgets_CompositeI();
 	else if (getName().equals("test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener")) test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener();

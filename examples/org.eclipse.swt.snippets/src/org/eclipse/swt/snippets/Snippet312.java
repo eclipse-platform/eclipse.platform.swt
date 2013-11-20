@@ -41,6 +41,7 @@ static void createMenuItem(Menu parent, final TreeColumn column) {
 	itemName.setText(column.getText());
 	itemName.setSelection(column.getResizable());
 	itemName.addListener(SWT.Selection, new Listener() {
+		@Override
 		public void handleEvent(Event event) {
 			if (itemName.getSelection()) {
 				column.setWidth(150);
@@ -107,6 +108,7 @@ public static void main (String[] args) {
 	item.setText("Delete");
 	
 	tree.addListener(SWT.MenuDetect, new Listener() {
+		@Override
 		public void handleEvent(Event event) {
 			Point pt = display.map(null, tree, new Point(event.x, event.y));
 			Rectangle clientArea = tree.getClientArea();
@@ -117,6 +119,7 @@ public static void main (String[] args) {
 	
 	/* IMPORTANT: Dispose the menus (only the current menu, set with setMenu(), will be automatically disposed) */
 	tree.addListener(SWT.Dispose, new Listener() {
+		@Override
 		public void handleEvent(Event event) {
 			headerMenu.dispose();
 			treeMenu.dispose();

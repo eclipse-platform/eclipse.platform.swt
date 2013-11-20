@@ -38,6 +38,7 @@ public class Snippet258 {
 			ToolItem item = new ToolItem (toolBar, SWT.PUSH);
 			item.setImage (image);
 			item.addSelectionListener(new SelectionAdapter() {
+				@Override
 				public void widgetSelected(SelectionEvent e) {
 					text.setText("");
 					System.out.println("Search cancelled");
@@ -47,6 +48,7 @@ public class Snippet258 {
 		text.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 		text.setText("Search text");
 		text.addSelectionListener(new SelectionAdapter() {
+			@Override
 			public void widgetDefaultSelected(SelectionEvent e) {
 				if (e.detail == SWT.CANCEL) {
 					System.out.println("Search cancelled");

@@ -49,6 +49,7 @@ public static void main(String[] args) {
 	Button button = new Button (shell, SWT.PUSH);
 	button.setText ("Find '" + SEARCH_STRING + "'");
 	button.addListener (SWT.Selection, new Listener () {
+		@Override
 		public void handleEvent (Event event) {
 			int itemCount = tree.getItemCount ();
 			for (int i = 0; i < itemCount; i++) {

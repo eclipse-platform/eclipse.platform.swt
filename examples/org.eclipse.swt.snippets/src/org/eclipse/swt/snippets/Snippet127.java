@@ -29,6 +29,7 @@ public static void main (String [] args) {
 	Button button1 = new Button(shell, SWT.PUSH);
 	button1.setText("Can't Traverse");
 	button1.addTraverseListener(new TraverseListener () {
+		@Override
 		public void keyTraversed(TraverseEvent e) {
 			switch (e.detail) {
 				case SWT.TRAVERSE_TAB_NEXT:

@@ -26,6 +26,7 @@ public static void main (String [] args) {
 	final Shell shell = new Shell (display);
 	shell.setLayout (new FillLayout ());
 	shell.addListener (SWT.Traverse, new Listener () {
+		@Override
 		public void handleEvent (Event event) {
 			switch (event.detail) {
 				case SWT.TRAVERSE_ESCAPE:

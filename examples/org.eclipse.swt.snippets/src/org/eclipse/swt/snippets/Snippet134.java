@@ -55,6 +55,7 @@ public static void main(String[] args) {
 	//add ability to move shell around
 	Listener l = new Listener() {
 		Point origin;
+		@Override
 		public void handleEvent(Event e) {
 			switch (e.type) {
 				case SWT.MouseDown:
@@ -82,6 +83,7 @@ public static void main(String[] args) {
 	b.pack();
 	b.setLocation(10, 68);
 	b.addListener(SWT.Selection, new Listener() {
+		@Override
 		public void handleEvent(Event e) {
 			shell.close();
 		}

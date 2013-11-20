@@ -378,7 +378,8 @@ public class ConsistencyUtility {
     static boolean postSelection(final Display display, Point pt1, Point pt2) {
         boolean ret = postClick(display, pt1, 1);
         display.syncExec(new Thread() {
-            public void run() {
+            @Override
+			public void run() {
                 display.update();
         }});
         ret &= postClick(display, pt2, 1);

@@ -32,6 +32,7 @@ public static void main (String [] args) {
 	c2.setLayout (new RowLayout ());
 	final Composite [] composites = new Composite [] {c1, c2};
 	Listener radioGroup = new Listener () {
+		@Override
 		public void handleEvent (Event event) {
 			for (int i=0; i<composites.length; i++) {
 				Composite composite = composites [i];

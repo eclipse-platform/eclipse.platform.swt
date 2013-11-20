@@ -28,6 +28,7 @@ public static void main (String [] args) {
 	final Shell shell = new Shell (display, SWT.SHELL_TRIM | SWT.NO_BACKGROUND);
 	shell.setLayout(new FillLayout ());
 	shell.addListener (SWT.Paint, new Listener () {
+		@Override
 		public void handleEvent (Event e) {
 			GC gc = e.gc;
 			Rectangle rect = shell.getClientArea ();

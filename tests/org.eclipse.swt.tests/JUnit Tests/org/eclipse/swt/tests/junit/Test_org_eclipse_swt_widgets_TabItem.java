@@ -32,6 +32,7 @@ public static void main(String[] args) {
 	TestRunner.run(suite());
 }
 
+@Override
 protected void setUp() {
 	super.setUp();
 	tabFolder = new TabFolder(shell, 0);
@@ -109,10 +110,12 @@ public void test_setControlLorg_eclipse_swt_widgets_Control() {
 	assertTrue(":c: ", tabItem.getControl() == null);
 }
 
+@Override
 public void test_setImageLorg_eclipse_swt_graphics_Image() {
 	warnUnimpl("Test test_setImageLorg_eclipse_swt_graphics_Image not written");
 }
 
+@Override
 public void test_setTextLjava_lang_String() {
 	warnUnimpl("Test test_setTextLjava_lang_String not written");
 }
@@ -149,6 +152,7 @@ public static java.util.Vector<String> methodNames() {
 	methodNames.addAll(Test_org_eclipse_swt_widgets_Item.methodNames()); // add superclass method names
 	return methodNames;
 }
+@Override
 protected void runTest() throws Throwable {
 	if (getName().equals("test_ConstructorLorg_eclipse_swt_widgets_TabFolderI")) test_ConstructorLorg_eclipse_swt_widgets_TabFolderI();
 	else if (getName().equals("test_ConstructorLorg_eclipse_swt_widgets_TabFolderII")) test_ConstructorLorg_eclipse_swt_widgets_TabFolderII();

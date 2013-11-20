@@ -27,6 +27,7 @@ public class Snippet252 {
 		final Shell shell = new Shell(display);
 		
 		shell.addListener(SWT.Paint, new Listener() {
+			@Override
 			public void handleEvent(Event event) {
 				GC gc = event.gc;
 				

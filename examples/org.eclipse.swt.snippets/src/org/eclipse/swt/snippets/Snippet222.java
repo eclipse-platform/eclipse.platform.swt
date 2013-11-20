@@ -68,6 +68,7 @@ public static void main(String[] args) {
 	styledText.setLineBullet(16, 4, bullet3);
 
 	styledText.addPaintObjectListener(new PaintObjectListener() {
+		@Override
 		public void paintObject(PaintObjectEvent event) {
 			Display display = event.display;
 			StyleRange style = event.style;

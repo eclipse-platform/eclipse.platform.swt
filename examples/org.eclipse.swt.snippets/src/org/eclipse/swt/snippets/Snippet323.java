@@ -46,6 +46,7 @@ void run () {
 	final Browser browser = new Browser (shell, SWT.MOZILLA);
 	browser.setUrl ("http://www.google.com");
 	browser.addProgressListener (new ProgressAdapter () {
+		@Override
 		public void completed (ProgressEvent event) {
 			nsIWebBrowser webBrowser = (nsIWebBrowser)browser.getWebBrowser ();
 			nsIDOMWindow domWindow = webBrowser.getContentDOMWindow ();
@@ -78,6 +79,7 @@ class DOMEditor {
 		final TreeItem[] lastItem = new TreeItem[1];
 		final TreeEditor editor = new TreeEditor (tree);
 		tree.addSelectionListener (new SelectionAdapter () {
+			@Override
 			public void widgetDefaultSelected (SelectionEvent e) {
 				final TreeItem item = (TreeItem)e.item;
 				final nsIDOMNode node = (nsIDOMNode)item.getData ();
@@ -87,12 +89,14 @@ class DOMEditor {
 					final Text text = new Text (composite, SWT.NONE);
 					final int inset = 1;
 					composite.addListener (SWT.Resize, new Listener () {
+						@Override
 						public void handleEvent (Event e) {
 							Rectangle rect = composite.getClientArea ();
 							text.setBounds (rect.x + inset, rect.y + inset, rect.width - inset * 2, rect.height - inset * 2);
 						}
 					});
 					Listener textListener = new Listener () {
+						@Override
 						public void handleEvent (final Event e) {
 							switch (e.type) {
 								case SWT.FocusOut:

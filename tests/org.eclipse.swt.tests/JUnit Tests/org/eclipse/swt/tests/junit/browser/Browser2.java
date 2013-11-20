@@ -59,6 +59,7 @@ public class Browser2 {
 					 * in case bogus events follow this one.
 					 */
 					new Thread() {
+						@Override
 						public void run() {
 							if (verbose) System.out.println("timer start");
 							try { sleep(2000); } catch (Exception e) {}
@@ -112,6 +113,7 @@ public class Browser2 {
 				}
 				event.doit = false;
 				new Thread() {
+					@Override
 					public void run() {
 						if (verbose) System.out.println("timer start");
 						try { sleep(2000); } catch (Exception e) {}
@@ -170,6 +172,7 @@ public class Browser2 {
 	static boolean runLoopTimer(final Display display, final Shell shell, final int seconds) {
 		final boolean[] timeout = {false};
 		new Thread() {
+			@Override
 			public void run() {
 				try {
 					for (int i = 0; i < seconds; i++) {

@@ -57,6 +57,7 @@ public static java.util.Vector<String> methodNames() {
 	methodNames.addElement("test_handleEventLorg_eclipse_swt_widgets_Event");
 	return methodNames;
 }
+@Override
 protected void runTest() throws Throwable {
 	if (getName().equals("test_ConstructorLorg_eclipse_swt_internal_SWTEventListener")) test_ConstructorLorg_eclipse_swt_internal_SWTEventListener();
 	else if (getName().equals("test_getEventListener")) test_getEventListener();

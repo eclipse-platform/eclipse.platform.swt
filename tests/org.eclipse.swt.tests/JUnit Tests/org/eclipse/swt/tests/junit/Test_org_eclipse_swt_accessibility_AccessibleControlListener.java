@@ -99,6 +99,7 @@ public static java.util.Vector<String> methodNames() {
 	return methodNames;
 }
 
+@Override
 protected void runTest() throws Throwable {
 	if (getName().equals("test_getChildAtPointLorg_eclipse_swt_accessibility_AccessibleControlEvent")) test_getChildAtPointLorg_eclipse_swt_accessibility_AccessibleControlEvent();
 	else if (getName().equals("test_getChildCountLorg_eclipse_swt_accessibility_AccessibleControlEvent")) test_getChildCountLorg_eclipse_swt_accessibility_AccessibleControlEvent();

@@ -42,6 +42,7 @@ public static void main(String[] args) {
 	 * for performance that this method be as efficient as possible.
 	 */
 	table.addListener(SWT.MeasureItem, new Listener() {
+		@Override
 		public void handleEvent(Event event) {
 			int clientWidth = table.getClientArea().width;
 			event.height = event.gc.getFontMetrics().getHeight() * 2;

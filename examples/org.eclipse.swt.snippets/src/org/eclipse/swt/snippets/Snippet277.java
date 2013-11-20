@@ -112,6 +112,7 @@ public class Snippet277 {
 				button.setText ("Cancel");
 				button.pack ();
 				button.addListener (SWT.Selection, new Listener () {
+					@Override
 					public void handleEvent (Event event) {
 						cancelable.cancel (Mozilla.NS_ERROR_ABORT);
 						removeFromTable ();

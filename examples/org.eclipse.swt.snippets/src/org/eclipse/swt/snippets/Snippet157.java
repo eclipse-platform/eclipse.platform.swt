@@ -27,8 +27,10 @@ public class Snippet157 extends Applet {
 	org.eclipse.swt.widgets.Shell swtParent;
 	java.awt.Canvas awtParent;
 
+@Override
 public void init () {
 	Thread thread = new Thread (new Runnable () {
+		@Override
 		public void run () {
 			setLayout(new java.awt.GridLayout (1, 1));
 			awtParent = new java.awt.Canvas ();
@@ -56,10 +58,12 @@ public void init () {
 	});
 	thread.start ();
 }
- public void stop (){
+ @Override
+public void stop (){
  	if (display != null && !display.isDisposed ()){
  		display.syncExec(new Runnable () {
- 			public void run () {
+ 			@Override
+			public void run () {
  				if (swtParent != null && !swtParent.isDisposed ()) swtParent.dispose ();
  				swtParent = null;
  				display.dispose ();

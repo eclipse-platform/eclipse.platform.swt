@@ -40,6 +40,7 @@ public static void main(String[] args) {
 	button.pack();
 	button.setLocation(10, 140);
 	button.addListener(SWT.Selection, new Listener() {
+		@Override
 		public void handleEvent(Event event) {
 			Point tableSize = table.getSize();
 			GC gc = new GC(table);
@@ -51,6 +52,7 @@ public static void main(String[] args) {
 			Shell popup = new Shell(shell);
 			popup.setText("Image");
 			popup.addListener(SWT.Close, new Listener() {
+				@Override
 				public void handleEvent(Event e) {
 					image.dispose();
 				}
@@ -59,6 +61,7 @@ public static void main(String[] args) {
 			Canvas canvas = new Canvas(popup, SWT.NONE);
 			canvas.setBounds(10, 10, tableSize.x+10, tableSize.y+10);
 			canvas.addPaintListener(new PaintListener() {
+				@Override
 				public void paintControl(PaintEvent e) {
 					e.gc.drawImage(image, 0, 0);
 				}

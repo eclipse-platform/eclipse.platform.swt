@@ -108,6 +108,7 @@ public static void main(String[] args) {
 	Shell shell = new Shell(display);
 	// draw the results on the shell
 	shell.addPaintListener(new PaintListener(){
+		@Override
 		public void paintControl(PaintEvent e) {
 			e.gc.drawText("Original Image:", 10, 10, true);
 			e.gc.drawImage(image0, 10, 40);

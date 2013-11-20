@@ -56,6 +56,7 @@ public static void main(String [] args) {
 	 * critical for performance that these methods be as efficient as possible.
 	 */
 	tree.addListener(SWT.MeasureItem, new Listener() {
+		@Override
 		public void handleEvent(Event event) {
 			TreeItem item = (TreeItem)event.item;
 			Image trailingImage = (Image)item.getData();
@@ -65,6 +66,7 @@ public static void main(String [] args) {
 		}
 	});
 	tree.addListener(SWT.PaintItem, new Listener() {
+		@Override
 		public void handleEvent(Event event) {
 			TreeItem item = (TreeItem)event.item;
 			Image trailingImage = (Image)item.getData();

@@ -33,12 +33,14 @@ public static void main(String[] args) {
 	TestRunner.run(suite());
 }
 
+@Override
 protected void setUp() {
 	super.setUp();
 	ccombo = new CCombo(shell, 0);
 	setWidget(ccombo);
 }
 
+@Override
 public void test_ConstructorLorg_eclipse_swt_widgets_CompositeI() {
 	warnUnimpl("Test test_ConstructorLorg_eclipse_swt_widgets_CompositeI not written");
 }
@@ -79,6 +81,7 @@ public void test_clearSelection() {
 	warnUnimpl("Test test_clearSelection not written");
 }
 
+@Override
 public void test_computeSizeIIZ() {
 	warnUnimpl("Test test_computeSizeIIZ not written");
 }
@@ -91,6 +94,7 @@ public void test_deselectI() {
 	warnUnimpl("Test test_deselectI not written");
 }
 
+@Override
 public void test_getChildren() {
 	warnUnimpl("Test test_getChildren not written");
 }
@@ -123,6 +127,7 @@ public void test_getSelectionIndex() {
 	warnUnimpl("Test test_getSelectionIndex not written");
 }
 
+@Override
 public void test_getStyle() {
 	warnUnimpl("Test test_getStyle not written");
 }
@@ -147,6 +152,7 @@ public void test_indexOfLjava_lang_StringI() {
 	warnUnimpl("Test test_indexOfLjava_lang_StringI not written");
 }
 
+@Override
 public void test_isFocusControl() {
 	warnUnimpl("Test test_isFocusControl not written");
 }
@@ -160,10 +166,12 @@ public void test_paste() {
 	assertTrue(":a:", ccombo.getText().equals("123456"));
 }
 
+@Override
 public void test_redraw() {
 	warnUnimpl("Test test_redraw not written");
 }
 
+@Override
 public void test_redrawIIIIZ() {
 	warnUnimpl("Test test_redrawIIIIZ not written");
 }
@@ -196,6 +204,7 @@ public void test_selectI() {
 	warnUnimpl("Test test_selectI not written");
 }
 
+@Override
 public void test_setBackgroundLorg_eclipse_swt_graphics_Color() {
 	warnUnimpl("Test test_setBackgroundLorg_eclipse_swt_graphics_Color not written");
 }
@@ -204,18 +213,22 @@ public void test_setEditableZ() {
 	warnUnimpl("Test test_setEditableZ not written");
 }
 
+@Override
 public void test_setEnabledZ() {
 	warnUnimpl("Test test_setEnabledZ not written");
 }
 
+@Override
 public void test_setFocus() {
 	warnUnimpl("Test test_setFocus not written");
 }
 
+@Override
 public void test_setFontLorg_eclipse_swt_graphics_Font() {
 	warnUnimpl("Test test_setFontLorg_eclipse_swt_graphics_Font not written");
 }
 
+@Override
 public void test_setForegroundLorg_eclipse_swt_graphics_Color() {
 	warnUnimpl("Test test_setForegroundLorg_eclipse_swt_graphics_Color not written");
 }
@@ -240,10 +253,12 @@ public void test_setTextLjava_lang_String() {
 	warnUnimpl("Test test_setTextLjava_lang_String not written");
 }
 
+@Override
 public void test_setToolTipTextLjava_lang_String() {
 	warnUnimpl("Test test_setToolTipTextLjava_lang_String not written");
 }
 
+@Override
 public void test_setVisibleZ() {
 	warnUnimpl("Test test_setVisibleZ not written");
 }
@@ -318,6 +333,7 @@ public static java.util.Vector<String> methodNames() {
 	return methodNames;
 }
 
+@Override
 protected void runTest() throws Throwable {
 	if (getName().equals("test_ConstructorLorg_eclipse_swt_widgets_CompositeI")) test_ConstructorLorg_eclipse_swt_widgets_CompositeI();
 	else if (getName().equals("test_addLjava_lang_String")) test_addLjava_lang_String();

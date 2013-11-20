@@ -89,6 +89,7 @@ public static java.util.Vector<String> methodNames() {
 	methodNames.addElement("test_toString");
 	return methodNames;
 }
+@Override
 protected void runTest() throws Throwable {
 	if (getName().equals("test_ConstructorII")) test_ConstructorII();
 	else if (getName().equals("test_equalsLjava_lang_Object")) test_equalsLjava_lang_Object();

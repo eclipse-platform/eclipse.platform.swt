@@ -107,6 +107,7 @@ public static Vector<String> methodNames() {
 	return methodNames;
 }
 
+@Override
 protected void runTest() throws Throwable {
 	if (getName().equals("test_Constructor")) test_Constructor();
 	else if (getName().equals("test_getChildAtPointLorg_eclipse_swt_accessibility_AccessibleControlEvent")) test_getChildAtPointLorg_eclipse_swt_accessibility_AccessibleControlEvent();

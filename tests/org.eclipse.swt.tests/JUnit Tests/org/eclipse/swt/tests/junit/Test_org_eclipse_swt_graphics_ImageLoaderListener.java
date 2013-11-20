@@ -48,6 +48,7 @@ public static java.util.Vector<String> methodNames() {
 	methodNames.addElement("test_imageDataLoadedLorg_eclipse_swt_graphics_ImageLoaderEvent");
 	return methodNames;
 }
+@Override
 protected void runTest() throws Throwable {
 	if (getName().equals("test_imageDataLoadedLorg_eclipse_swt_graphics_ImageLoaderEvent")) test_imageDataLoadedLorg_eclipse_swt_graphics_ImageLoaderEvent();
 }

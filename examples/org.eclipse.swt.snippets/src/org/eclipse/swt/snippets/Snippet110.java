@@ -48,6 +48,7 @@ public static void main (String [] args) {
 	table.setSize (size);
 	shell.pack ();
 	table.addListener (SWT.MouseDown, new Listener () {
+		@Override
 		public void handleEvent (Event event) {
 			Rectangle clientArea = table.getClientArea ();
 			Point pt = new Point (event.x, event.y);

@@ -33,6 +33,7 @@ public static void main( String[] args) {
 	Button copy = new Button(shell, SWT.PUSH);
 	copy.setText("Copy");
 	copy.addListener (SWT.Selection, new Listener () {
+		@Override
 		public void handleEvent (Event e) {
 			String textData = text.getSelectionText();
 			if (textData.length() > 0) {
@@ -45,6 +46,7 @@ public static void main( String[] args) {
 	Button paste = new Button(shell, SWT.PUSH);
 	paste.setText("Paste");
 	paste.addListener (SWT.Selection, new Listener () {
+		@Override
 		public void handleEvent (Event e) {
 			TextTransfer transfer = TextTransfer.getInstance();
 			String data = (String)cb.getContents(transfer);

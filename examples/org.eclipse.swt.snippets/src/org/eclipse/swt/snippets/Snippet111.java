@@ -41,6 +41,7 @@ public static void main (String [] args) {
 	final TreeItem [] lastItem = new TreeItem [1];
 	final TreeEditor editor = new TreeEditor (tree);
 	tree.addListener (SWT.Selection, new Listener () {
+		@Override
 		public void handleEvent (Event event) {
 			final TreeItem item = (TreeItem) event.item;
 			if (item != null && item == lastItem [0]) {
@@ -50,12 +51,14 @@ public static void main (String [] args) {
 				final Text text = new Text (composite, SWT.NONE);
 				final int inset = showBorder ? 1 : 0;
 				composite.addListener (SWT.Resize, new Listener () {
+					@Override
 					public void handleEvent (Event e) {
 						Rectangle rect = composite.getClientArea ();
 						text.setBounds (rect.x + inset, rect.y + inset, rect.width - inset * 2, rect.height - inset * 2);
 					}
 				});
 				Listener textListener = new Listener () {
+					@Override
 					public void handleEvent (final Event e) {
 						switch (e.type) {
 							case SWT.FocusOut:

@@ -63,6 +63,7 @@ public class Snippet328 {
 			Display display = getDisplay();
 			setBackground(display.getSystemColor(SWT.COLOR_INFO_BACKGROUND));
 			Listener listener = new Listener() {
+				@Override
 				public void handleEvent(Event e) {
 					switch (e.type) {
 						case SWT.Paint:
@@ -89,6 +90,7 @@ public class Snippet328 {
 		public void setEditor(StyledText editor) {
 			styledText = editor;
 			styledText.addCaretListener(new CaretListener() {
+				@Override
 				public void caretMoved(CaretEvent event) {
 					int caretLine = styledText.getLineAtOffset(event.caretOffset);
 					if (caretLine != line) {

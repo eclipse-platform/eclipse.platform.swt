@@ -40,6 +40,7 @@ public static void main (String [] args) {
 	DragSource dragSource = new DragSource(label1, DND.DROP_COPY);
 	dragSource.setTransfer(new Transfer[] {TextTransfer.getInstance(), FileTransfer.getInstance()});
 	dragSource.addDragListener(new DragSourceAdapter() {
+		@Override
 		public void dragSetData(DragSourceEvent event) {
 			if (FileTransfer.getInstance().isSupportedType(event.dataType)) {
 				File file = new File("temp");
@@ -55,12 +56,15 @@ public static void main (String [] args) {
 	dropTarget.addDropListener(new DropTargetAdapter() {
 		FileTransfer fileTransfer = FileTransfer.getInstance();
 		TextTransfer textTransfer = TextTransfer.getInstance();
+		@Override
 		public void dragEnter(DropTargetEvent event) {
 			if (event.detail == DND.DROP_DEFAULT) event.detail = DND.DROP_COPY;
 		}
+		@Override
 		public void dragOperationChanged(DropTargetEvent event) {
 			if (event.detail == DND.DROP_DEFAULT) event.detail = DND.DROP_COPY;
 		}
+		@Override
 		public void dragOver(DropTargetEvent event) {
 			event.detail = DND.DROP_NONE;
 			TableItem item = (TableItem)event.item;
@@ -91,6 +95,7 @@ public static void main (String [] args) {
 			}
 		}
 
+		@Override
 		public void drop(DropTargetEvent event) {
 			TableItem item = (TableItem)event.item;
 			if (item == null) {

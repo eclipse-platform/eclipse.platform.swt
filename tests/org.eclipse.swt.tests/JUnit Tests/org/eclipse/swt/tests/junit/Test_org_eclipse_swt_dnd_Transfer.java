@@ -63,6 +63,7 @@ public static java.util.Vector<String> methodNames() {
 	methodNames.addElement("test_registerTypeLjava_lang_String");
 	return methodNames;
 }
+@Override
 protected void runTest() throws Throwable {
 	if (getName().equals("test_Constructor")) test_Constructor();
 	else if (getName().equals("test_getSupportedTypes")) test_getSupportedTypes();

@@ -36,11 +36,13 @@ public static void main (String [] args) {
 	final Table table = new Table (shell, SWT.BORDER | SWT.MULTI);
 	table.setSize (200, 200);
 	Thread thread = new Thread () {
+		@Override
 		public void run () {
 			for (int i=0; i<20000; i++) {
 				if (table.isDisposed ()) return;
 				final int [] index = new int [] {i};
 				display.syncExec (new Runnable () {
+					@Override
 					public void run () {
 						if (table.isDisposed ()) return;
 						TableItem item = new TableItem (table, SWT.NONE);

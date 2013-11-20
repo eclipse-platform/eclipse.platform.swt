@@ -30,6 +30,7 @@ public static void main (String [] args) {
 
 	DateTime calendar = new DateTime (shell, SWT.CALENDAR);
 	calendar.addSelectionListener (new SelectionAdapter () {
+		@Override
 		public void widgetSelected (SelectionEvent e) {
 			System.out.println ("calendar date changed");
 		}
@@ -37,6 +38,7 @@ public static void main (String [] args) {
 
 	DateTime time = new DateTime (shell, SWT.TIME);
 	time.addSelectionListener (new SelectionAdapter () {
+		@Override
 		public void widgetSelected (SelectionEvent e) {
 			System.out.println ("time changed");
 		}

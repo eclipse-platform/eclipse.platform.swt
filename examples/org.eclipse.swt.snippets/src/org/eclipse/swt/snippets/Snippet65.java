@@ -47,6 +47,7 @@ public static void main (String [] args) {
 	labelData.right = new FormAttachment (100, 0);
 	label.setLayoutData (labelData);
 	shell.addListener (SWT.Resize, new Listener () {
+		@Override
 		public void handleEvent (Event e) {
 			Rectangle rect = shell.getClientArea ();
 			labelData.width = rect.width - insetX * 2;

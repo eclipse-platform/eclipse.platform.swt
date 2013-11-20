@@ -34,12 +34,14 @@ public static void main(String[] args) {
 	TestRunner.run(suite());
 }
 
+@Override
 protected void setUp() {
 	super.setUp();
 	link = new Link(shell, SWT.NONE);
 	setWidget(link);
 }
 
+@Override
 public void test_ConstructorLorg_eclipse_swt_widgets_CompositeI() {
 	// Test Link(Composite parent, int style)
 	link = new Link(shell, SWT.NULL);
@@ -87,6 +89,7 @@ public void test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener()
 	assertFalse(listenerCalled);
 }
 
+@Override
 public void test_computeSizeIIZ() {
 	link.computeSize(0, 0);
 
@@ -173,6 +176,7 @@ public static java.util.Vector<String> methodNames() {
 	methodNames.addAll(Test_org_eclipse_swt_widgets_Control.methodNames()); // add superclass method names
 	return methodNames;
 }
+@Override
 protected void runTest() throws Throwable {
 	if (getName().equals("test_ConstructorLorg_eclipse_swt_widgets_CompositeI")) test_ConstructorLorg_eclipse_swt_widgets_CompositeI();
 	else if (getName().equals("test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener")) test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener();

@@ -53,6 +53,7 @@ public static void main(String [] args) {
 	Button zoomIn = new Button(shell, SWT.PUSH);
 	zoomIn.setText("Zoom In");
 	zoomIn.addListener(SWT.Selection, new Listener() {
+		@Override
 		public void handleEvent(Event event) {
 			setZoom(++zoom);
 		}
@@ -60,6 +61,7 @@ public static void main(String [] args) {
 	Button zoomOut = new Button(shell, SWT.PUSH);
 	zoomOut.setText("Zoom Out");
 	zoomOut.addListener(SWT.Selection, new Listener() {
+		@Override
 		public void handleEvent(Event event) {
 			if (zoom > 1) {
 				setZoom(--zoom);

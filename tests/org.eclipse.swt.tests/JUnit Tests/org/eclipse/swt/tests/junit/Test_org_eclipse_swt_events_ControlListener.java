@@ -53,6 +53,7 @@ public static java.util.Vector<String> methodNames() {
 	methodNames.addElement("test_controlResizedLorg_eclipse_swt_events_ControlEvent");
 	return methodNames;
 }
+@Override
 protected void runTest() throws Throwable {
 	if (getName().equals("test_controlMovedLorg_eclipse_swt_events_ControlEvent")) test_controlMovedLorg_eclipse_swt_events_ControlEvent();
 	else if (getName().equals("test_controlResizedLorg_eclipse_swt_events_ControlEvent")) test_controlResizedLorg_eclipse_swt_events_ControlEvent();

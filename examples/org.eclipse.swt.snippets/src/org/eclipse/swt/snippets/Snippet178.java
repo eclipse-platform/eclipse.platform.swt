@@ -123,6 +123,7 @@ static void hookApplicationMenu(Display display, final String aboutName) {
 
 	// schedule disposal of callback object
 	display.disposeExec(new Runnable() {
+		@Override
 		public void run() {
 			commandCallback.dispose();
 		}

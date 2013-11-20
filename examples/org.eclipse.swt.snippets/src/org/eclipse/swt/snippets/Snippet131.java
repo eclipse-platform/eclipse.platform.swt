@@ -26,11 +26,13 @@ public static void main (String [] args) {
 	final Display display = new Display ();
 	final Shell shell = new Shell (display);
 	shell.addListener (SWT.MenuDetect, new Listener () {
+		@Override
 		public void handleEvent (Event event) {
 			Menu menu = new Menu (shell, SWT.POP_UP);
 			MenuItem item = new MenuItem (menu, SWT.PUSH);
 			item.setText ("Menu Item");
 			item.addListener (SWT.Selection, new Listener () {
+				@Override
 				public void handleEvent (Event e) {
 					System.out.println ("Item Selected");
 				}

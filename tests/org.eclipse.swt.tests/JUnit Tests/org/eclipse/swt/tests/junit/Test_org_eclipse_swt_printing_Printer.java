@@ -114,6 +114,7 @@ public void test_endPage() {
 	warnUnimpl("Test test_endPage not written");
 }
 
+@Override
 public void test_getBounds() {
 	PrinterData data = Printer.getDefaultPrinterData();
 	// if there aren't any printers, don't do this test
@@ -124,6 +125,7 @@ public void test_getBounds() {
 	printer.dispose();
 }
 
+@Override
 public void test_getClientArea() {
 	PrinterData data = Printer.getDefaultPrinterData();
 	// if there aren't any printers, don't do this test
@@ -134,6 +136,7 @@ public void test_getClientArea() {
 	printer.dispose();
 }
 
+@Override
 public void test_getDPI() {
 	PrinterData data = Printer.getDefaultPrinterData();
 	// if there aren't any printers, don't do this test
@@ -186,10 +189,12 @@ public void test_getPrinterList() {
 	}
 }
 
+@Override
 public void test_internal_dispose_GCILorg_eclipse_swt_graphics_GCData() {
 	warnUnimpl("Test test_internal_dispose_GCILorg_eclipse_swt_graphics_GCData not written");
 }
 
+@Override
 public void test_internal_new_GCLorg_eclipse_swt_graphics_GCData() {
 	warnUnimpl("Test test_internal_new_GCLorg_eclipse_swt_graphics_GCData not written");
 }
@@ -233,6 +238,7 @@ public static java.util.Vector<String> methodNames() {
 	methodNames.addAll(Test_org_eclipse_swt_graphics_Device.methodNames()); // add superclass method names
 	return methodNames;
 }
+@Override
 protected void runTest() throws Throwable {
 	if (getName().equals("test_Constructor")) test_Constructor();
 	else if (getName().equals("test_ConstructorLorg_eclipse_swt_printing_PrinterData")) test_ConstructorLorg_eclipse_swt_printing_PrinterData();

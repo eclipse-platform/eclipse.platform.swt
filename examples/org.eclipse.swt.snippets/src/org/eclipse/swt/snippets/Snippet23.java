@@ -27,6 +27,7 @@ public static void main (String [] args) {
 	final Shell shell = new Shell (display);
 	shell.open ();
 	shell.addListener (SWT.MouseDown, new Listener () {
+		@Override
 		public void handleEvent (Event e) {
 			Tracker tracker = new Tracker (shell, SWT.NONE);
 			tracker.setRectangles (new Rectangle [] {

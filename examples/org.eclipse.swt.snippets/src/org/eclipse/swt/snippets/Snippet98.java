@@ -36,6 +36,7 @@ public static void main(String args[]) {
 	pageComposite.setLayoutData(new GridData());
 
 	button.addListener(SWT.Selection, new Listener() {
+		@Override
 		public void handleEvent(Event event) {
 			if ((pageComposite != null) && (!pageComposite.isDisposed())) {
 				pageComposite.dispose();

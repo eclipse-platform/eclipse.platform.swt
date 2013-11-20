@@ -30,6 +30,7 @@ public static void main (String [] args) {
 	composite.setSize (700, 600);
 	final Color red = display.getSystemColor (SWT.COLOR_RED);
 	composite.addPaintListener (new PaintListener() {
+		@Override
 		public void paintControl (PaintEvent e) {
 			e.gc.setBackground (red);
 			e.gc.fillOval (5, 5, 690, 590);
@@ -37,6 +38,7 @@ public static void main (String [] args) {
 	});
 	final ScrollBar hBar = shell.getHorizontalBar ();
 	hBar.addListener (SWT.Selection, new Listener () {
+		@Override
 		public void handleEvent (Event e) {
 			Point location = composite.getLocation ();
 			location.x = -hBar.getSelection ();
@@ -45,6 +47,7 @@ public static void main (String [] args) {
 	});
 	final ScrollBar vBar = shell.getVerticalBar ();
 	vBar.addListener (SWT.Selection, new Listener () {
+		@Override
 		public void handleEvent (Event e) {
 			Point location = composite.getLocation ();
 			location.y = -vBar.getSelection ();
@@ -52,6 +55,7 @@ public static void main (String [] args) {
 		}
 	});
 	shell.addListener (SWT.Resize,  new Listener () {
+		@Override
 		public void handleEvent (Event e) {
 			Point size = composite.getSize ();
 			Rectangle rect = shell.getClientArea ();

@@ -59,6 +59,7 @@ public static void main(String[] args) {
 	 * critical for performance that these methods be as efficient as possible.
 	 */
 	table.addListener(SWT.MeasureItem, new Listener() {
+		@Override
 		public void handleEvent(Event event) {
 			int itemIndex = table.indexOf((TableItem)event.item);
 			int rightX = (HIGHS[itemIndex] - SCALE_MIN) * clientWidth / SCALE_RANGE;
@@ -66,6 +67,7 @@ public static void main(String[] args) {
 		}
 	});
 	table.addListener(SWT.EraseItem, new Listener() {
+		@Override
 		public void handleEvent(Event event) {
 			int itemIndex = table.indexOf((TableItem)event.item);
 			int leftX = (LOWS[itemIndex] - SCALE_MIN) * clientWidth / SCALE_RANGE;

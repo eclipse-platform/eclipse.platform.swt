@@ -36,6 +36,7 @@ public static void main(String[] args) {
 	TestRunner.run(suite());
 }
 
+@Override
 protected void setUp() throws Exception {
 	super.setUp();
 	display = Display.getDefault();
@@ -401,6 +402,7 @@ public static java.util.Vector<String> methodNames() {
 	methodNames.addElement("test_layout");
 	return methodNames;
 }
+@Override
 protected void runTest() throws Throwable {
 	if (getName().equals("test_createComposites")) test_createComposites();
 	else if (getName().equals("test_createWidgets")) test_createWidgets();

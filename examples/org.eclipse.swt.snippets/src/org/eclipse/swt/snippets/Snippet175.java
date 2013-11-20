@@ -53,6 +53,7 @@ public static void main(String[] args) {
 	b.setText("hide");
 	b.setSelection(true);
 	b.addListener(SWT.Selection, new Listener() {
+		@Override
 		public void handleEvent(Event e) {
 			Button b = (Button) e.widget;
 			GridData data = (GridData) bHidden.getLayoutData();

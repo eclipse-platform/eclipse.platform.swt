@@ -328,6 +328,7 @@ public static java.util.Vector<String> methodNames() {
 	methodNames.addElement("test_unionLorg_eclipse_swt_graphics_Rectangle");
 	return methodNames;
 }
+@Override
 protected void runTest() throws Throwable {
 	if (getName().equals("test_ConstructorIIII")) test_ConstructorIIII();
 	else if (getName().equals("test_addLorg_eclipse_swt_graphics_Rectangle")) test_addLorg_eclipse_swt_graphics_Rectangle();

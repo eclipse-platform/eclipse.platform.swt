@@ -44,6 +44,7 @@ public static MyTransfer getInstance () {
 	return _instance;
 }
 
+@Override
 public void javaToNative (Object object, TransferData transferData) {
 	if (!checkMyType(object) || !isSupportedType (transferData)) {
 		DND.error(DND.ERROR_INVALID_DATA);
@@ -67,6 +68,7 @@ public void javaToNative (Object object, TransferData transferData) {
 	catch (IOException e) {}
 }
 
+@Override
 public Object nativeToJava (TransferData transferData) {
 	if (isSupportedType (transferData)) {
 		byte [] buffer = (byte []) super.nativeToJava (transferData);
@@ -100,10 +102,12 @@ public Object nativeToJava (TransferData transferData) {
 	return null;
 }
 
+@Override
 protected String [] getTypeNames () {
 	return new String [] {MYTYPENAME};
 }
 
+@Override
 protected int [] getTypeIds () {
 	return new int [] {MYTYPEID};
 }
@@ -125,6 +129,7 @@ boolean checkMyType(Object object) {
 	return true;
 }
 
+@Override
 protected boolean validate(Object object) {
 	return checkMyType(object);
 }
@@ -142,6 +147,7 @@ public static void main (String [] args) {
 	DragSource source = new DragSource (label1, DND.DROP_COPY);
 	source.setTransfer (new Transfer [] {MyTransfer.getInstance ()});
 	source.addDragListener (new DragSourceAdapter () {
+		@Override
 		public void dragSetData (DragSourceEvent event) {
 			MyType myType1 = new MyType ();
 			myType1.fileName = "C:\\abc.txt";
@@ -157,18 +163,21 @@ public static void main (String [] args) {
 	DropTarget target = new DropTarget (label2, DND.DROP_COPY | DND.DROP_DEFAULT);
 	target.setTransfer (new Transfer [] {MyTransfer.getInstance ()});
 	target.addDropListener (new DropTargetAdapter () {
+		@Override
 		public void dragEnter (DropTargetEvent event) {
 			if (event.detail == DND.DROP_DEFAULT) {
 				event.detail = DND.DROP_COPY;
 			}
 		}
 
+		@Override
 		public void dragOperationChanged (DropTargetEvent event) {
 			if (event.detail == DND.DROP_DEFAULT) {
 				event.detail = DND.DROP_COPY;
 			}
 		}
 
+		@Override
 		public void drop (DropTargetEvent event) {
 			if (event.data != null) {
 				MyType [] myTypes = (MyType []) event.data;

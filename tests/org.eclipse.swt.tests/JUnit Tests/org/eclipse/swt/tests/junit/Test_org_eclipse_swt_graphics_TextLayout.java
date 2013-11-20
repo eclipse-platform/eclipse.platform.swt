@@ -19,6 +19,7 @@ public Test_org_eclipse_swt_graphics_TextLayout(String name) {
 public static void main(String[] args) {
 	TestRunner.run(suite());
 }
+@Override
 protected void setUp() {
 	super.setUp();
 	display = Display.getDefault();
@@ -824,6 +825,7 @@ public static java.util.Vector<String> methodNames() {
 	methodNames.addElement("test_setStyle");
 	return methodNames;
 }
+@Override
 protected void runTest() throws Throwable {
 	String name = getName();
 	if (name.equals("test_getLevel")) test_getLevel();

@@ -41,6 +41,7 @@ public class Snippet324 {
 		Display display = new Display ();
 		final Shell shell = new Shell (display);
 		Listener listener = new Listener () {
+			@Override
 			public void handleEvent (Event e) {
 				String string = "Unknown";
 				switch (e.type) {

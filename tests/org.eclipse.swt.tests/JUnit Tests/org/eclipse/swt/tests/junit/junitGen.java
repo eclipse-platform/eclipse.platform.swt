@@ -537,6 +537,7 @@ public class junitGen {
 			this.newConstructors = newConstructors;
 		}
 		
+		@Override
 		public String toString() {
 			switch (type) {
 				case NEW: {

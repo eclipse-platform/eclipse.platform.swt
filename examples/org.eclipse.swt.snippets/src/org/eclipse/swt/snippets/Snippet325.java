@@ -60,6 +60,7 @@ public class Snippet325 {
 			Display display = getDisplay();
 			setBackground(display.getSystemColor(SWT.COLOR_INFO_BACKGROUND));
 			Listener listener = new Listener() {
+				@Override
 				public void handleEvent(Event e) {
 					switch (e.type) {
 						case SWT.Paint:

@@ -39,9 +39,11 @@ public static void main(String [] args) {
 	}
 	final BrowserFunction function = new CustomFunction (browser, "mouseDownHappened");
 	browser.addProgressListener (new ProgressAdapter () {
+		@Override
 		public void completed (ProgressEvent event) {
 			browser.execute(SCRIPT);
 			browser.addLocationListener (new LocationAdapter () {
+				@Override
 				public void changed (LocationEvent event) {
 					browser.removeLocationListener (this);
 					function.dispose ();
@@ -62,6 +64,7 @@ static class CustomFunction extends BrowserFunction {
 	CustomFunction (Browser browser, String name) {
 		super (browser, name);
 	}
+	@Override
 	public Object function (Object[] arguments) {
 		System.out.println ("mouseDown: " + ((Number)arguments[0]).intValue() + "," + ((Number)arguments[1]).intValue());
 		return null;

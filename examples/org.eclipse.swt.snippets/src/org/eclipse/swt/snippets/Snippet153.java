@@ -36,7 +36,8 @@ public static void main(String[] args) {
     new ToolItem(bar, SWT.NONE).setText("item 2");
     new ToolItem(bar, SWT.NONE).setText("item 3");
     bar.addMouseMoveListener(new MouseMoveListener() {
-        public void mouseMove(MouseEvent e) {
+        @Override
+		public void mouseMove(MouseEvent e) {
             ToolItem item = bar.getItem(new Point(e.x, e.y));
             String name = "";
             if (item != null) {

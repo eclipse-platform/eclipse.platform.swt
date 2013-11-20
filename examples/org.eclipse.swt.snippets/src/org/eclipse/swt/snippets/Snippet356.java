@@ -45,6 +45,7 @@ public class Snippet356 {
 		styledText.setStyleRanges(ranges, styles);
 		
 		styledText.addListener(SWT.MouseDown, new Listener() {
+			@Override
 			public void handleEvent(Event event) {
 				// It is up to the application to determine when and how a link should be activated.
 				// In this snippet links are activated on mouse down when the control key is held down 

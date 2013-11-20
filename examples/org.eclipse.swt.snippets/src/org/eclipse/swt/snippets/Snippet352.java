@@ -52,6 +52,7 @@ public class Snippet352 {
 		shell.setText ("Touch demonstration");
 		
 		TouchListener tl = new TouchListener() {
+			@Override
 			public void touch(TouchEvent e) {
 				
 				Touch touches[] = e.touches;
@@ -82,6 +83,7 @@ public class Snippet352 {
 		};
 
 		PaintListener pl = new PaintListener() {
+			@Override
 			public void paintControl(PaintEvent e) {
 				Iterator<Map.Entry<Long, CircleInfo>> iter = touchLocations.entrySet().iterator();
 				while (iter.hasNext()) {

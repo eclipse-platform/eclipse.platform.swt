@@ -32,12 +32,14 @@ public static void main(String[] args) {
 	TestRunner.run(suite());
 }
 
+@Override
 protected void setUp() {
 	super.setUp();
 	label = new Label(shell, 0);
 	setWidget(label);
 }
 
+@Override
 public void test_ConstructorLorg_eclipse_swt_widgets_CompositeI(){
 	try {
 		label = new Label(null, 0);
@@ -53,6 +55,7 @@ public void test_ConstructorLorg_eclipse_swt_widgets_CompositeI(){
 		label = new Label(shell, cases[i]);
 }
 
+@Override
 public void test_computeSizeIIZ() {
 	// super class test is sufficient
 }
@@ -93,6 +96,7 @@ public void test_setAlignmentI(){
 	} 
 }
 
+@Override
 public void test_setFocus() {
 	// super class test is sufficient
 }
@@ -135,6 +139,7 @@ public static java.util.Vector<String> methodNames() {
 	methodNames.addAll(Test_org_eclipse_swt_widgets_Control.methodNames()); // add superclass method names
 	return methodNames;
 }
+@Override
 protected void runTest() throws Throwable {
 	if (getName().equals("test_ConstructorLorg_eclipse_swt_widgets_CompositeI")) test_ConstructorLorg_eclipse_swt_widgets_CompositeI();
 	else if (getName().equals("test_computeSizeIIZ")) test_computeSizeIIZ();

@@ -48,12 +48,15 @@ public static void setDragDrop (final Label label) {
 	final DragSource source = new DragSource (label, operations);
 	source.setTransfer(types);
 	source.addDragListener (new DragSourceListener () {
+		@Override
 		public void dragStart(DragSourceEvent event) {
 			event.doit = (label.getText ().length () != 0);
 		}
+		@Override
 		public void dragSetData (DragSourceEvent event) {
 			event.data = label.getText ();
 		}
+		@Override
 		public void dragFinished(DragSourceEvent event) {
 			if (event.detail == DND.DROP_MOVE)
 				label.setText ("");
@@ -63,6 +66,7 @@ public static void setDragDrop (final Label label) {
 	DropTarget target = new DropTarget(label, operations);
 	target.setTransfer(types);
 	target.addDropListener (new DropTargetAdapter() {
+		@Override
 		public void drop(DropTargetEvent event) {
 			if (event.data == null) {
 				event.detail = DND.DROP_NONE;

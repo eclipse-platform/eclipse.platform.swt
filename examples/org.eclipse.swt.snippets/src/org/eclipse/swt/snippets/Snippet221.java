@@ -61,6 +61,7 @@ public static void main(String[] args) {
 	column2.pack();
 	
 	Heartbeat = new Runnable() {
+		@Override
 		public void run() {
 			if (!Tracking || tree.isDisposed()) return;
 			Point cursor = display.getCursorLocation();
@@ -70,6 +71,7 @@ public static void main(String[] args) {
 		}
 	};
 	Listener listener = new Listener() {
+		@Override
 		public void handleEvent(Event event) {
 			switch (event.type) {
 			case SWT.MouseEnter:

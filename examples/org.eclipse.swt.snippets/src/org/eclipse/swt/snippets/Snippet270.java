@@ -54,6 +54,7 @@ public static void main(String[] args) {
 /* register WindowEvent listeners */
 static void initialize(final Display display, Browser browser) {
 	browser.addOpenWindowListener(new OpenWindowListener() {
+		@Override
 		public void open(WindowEvent event) {
 			if (!event.required) return;	/* only do it if necessary */
 			Shell shell = new Shell(display);
@@ -65,11 +66,13 @@ static void initialize(final Display display, Browser browser) {
 		}
 	});
 	browser.addVisibilityWindowListener(new VisibilityWindowListener() {
+		@Override
 		public void hide(WindowEvent event) {
 			Browser browser = (Browser)event.widget;
 			Shell shell = browser.getShell();
 			shell.setVisible(false);
 		}
+		@Override
 		public void show(WindowEvent event) {
 			Browser browser = (Browser)event.widget;
 			final Shell shell = browser.getShell();
@@ -82,6 +85,7 @@ static void initialize(final Display display, Browser browser) {
 		}
 	});
 	browser.addCloseWindowListener(new CloseWindowListener() {
+		@Override
 		public void close(WindowEvent event) {
 			Browser browser = (Browser)event.widget;
 			Shell shell = browser.getShell();

@@ -72,6 +72,7 @@ public class Snippet209 {
 		final GLContext context = GLDrawableFactory.getFactory().createExternalGLContext();
 
 		canvas.addListener(SWT.Resize, new Listener() {
+			@Override
 			public void handleEvent(Event event) {
 				Rectangle bounds = canvas.getBounds();
 				float fAspect = (float) bounds.width / (float) bounds.height;
@@ -105,6 +106,7 @@ public class Snippet209 {
 
 		display.asyncExec(new Runnable() {
 			int rot = 0;
+			@Override
 			public void run() {
 				if (!canvas.isDisposed()) {
 					canvas.setCurrent();

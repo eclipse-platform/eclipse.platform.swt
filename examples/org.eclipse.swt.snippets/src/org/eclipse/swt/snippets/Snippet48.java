@@ -50,6 +50,7 @@ public static void main (String [] args) {
 			SWT.NO_REDRAW_RESIZE | SWT.V_SCROLL | SWT.H_SCROLL);
 	final ScrollBar hBar = canvas.getHorizontalBar ();
 	hBar.addListener (SWT.Selection, new Listener () {
+		@Override
 		public void handleEvent (Event e) {
 			int hSelection = hBar.getSelection ();
 			int destX = -hSelection - origin.x;
@@ -60,6 +61,7 @@ public static void main (String [] args) {
 	});
 	final ScrollBar vBar = canvas.getVerticalBar ();
 	vBar.addListener (SWT.Selection, new Listener () {
+		@Override
 		public void handleEvent (Event e) {
 			int vSelection = vBar.getSelection ();
 			int destY = -vSelection - origin.y;
@@ -69,6 +71,7 @@ public static void main (String [] args) {
 		}
 	});
 	canvas.addListener (SWT.Resize,  new Listener () {
+		@Override
 		public void handleEvent (Event e) {
 			Rectangle rect = image.getBounds ();
 			Rectangle client = canvas.getClientArea ();
@@ -92,6 +95,7 @@ public static void main (String [] args) {
 		}
 	});
 	canvas.addListener (SWT.Paint, new Listener () {
+		@Override
 		public void handleEvent (Event e) {
 			GC gc = e.gc;
 			gc.drawImage (image, origin.x, origin.y);

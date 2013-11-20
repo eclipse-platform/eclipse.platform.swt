@@ -29,6 +29,7 @@ public static void main (String [] args) {
 	Rectangle clientArea = shell.getClientArea ();
 	slider.setBounds (clientArea.x + 10, clientArea.y + 10, 200, 32);
 	slider.addListener (SWT.Selection, new Listener () {
+		@Override
 		public void handleEvent (Event event) {
 			String string = "SWT.NONE";
 			switch (event.detail) {

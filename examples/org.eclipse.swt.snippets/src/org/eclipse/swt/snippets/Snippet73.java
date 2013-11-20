@@ -35,6 +35,7 @@ public static void main (String [] args) {
 		menuItem.setText (treeItem.getText ());
 	}
 	menu.addListener (SWT.Show, new Listener () {
+		@Override
 		public void handleEvent (Event event) {
 			MenuItem [] menuItems = menu.getItems ();
 			TreeItem [] treeItems = tree.getSelection ();

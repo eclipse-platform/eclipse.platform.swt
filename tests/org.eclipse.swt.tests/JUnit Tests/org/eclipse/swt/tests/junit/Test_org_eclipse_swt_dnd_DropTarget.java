@@ -45,6 +45,7 @@ public void test_getTransfer() {
 	warnUnimpl("Test test_getTransfer not written");
 }
 
+@Override
 public void test_notifyListenersILorg_eclipse_swt_widgets_Event() {
 	warnUnimpl("Test test_notifyListenersILorg_eclipse_swt_widgets_Event not written");
 }
@@ -78,6 +79,7 @@ public static java.util.Vector<String> methodNames() {
 	methodNames.addAll(Test_org_eclipse_swt_widgets_Widget.methodNames()); // add superclass method names
 	return methodNames;
 }
+@Override
 protected void runTest() throws Throwable {
 	if (getName().equals("test_ConstructorLorg_eclipse_swt_widgets_ControlI")) test_ConstructorLorg_eclipse_swt_widgets_ControlI();
 	else if (getName().equals("test_addDropListenerLorg_eclipse_swt_dnd_DropTargetListener")) test_addDropListenerLorg_eclipse_swt_dnd_DropTargetListener();

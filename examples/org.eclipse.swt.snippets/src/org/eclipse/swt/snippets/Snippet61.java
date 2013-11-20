@@ -40,6 +40,7 @@ public static void main (String [] args) {
 		}
 	}
 	tree.addListener (SWT.Selection, new Listener () {
+		@Override
 		public void handleEvent (Event e) {
 			String string = "";
 			TreeItem [] selection = tree.getSelection ();
@@ -48,6 +49,7 @@ public static void main (String [] args) {
 		}
 	});
 	tree.addListener (SWT.DefaultSelection, new Listener () {
+		@Override
 		public void handleEvent (Event e) {
 			String string = "";
 			TreeItem [] selection = tree.getSelection ();
@@ -56,11 +58,13 @@ public static void main (String [] args) {
 		}
 	});
 	tree.addListener (SWT.Expand, new Listener () {
+		@Override
 		public void handleEvent (Event e) {
 			System.out.println ("Expand={" + e.item + "}");
 		}
 	});
 	tree.addListener (SWT.Collapse, new Listener () {
+		@Override
 		public void handleEvent (Event e) {
 			System.out.println ("Collapse={" + e.item + "}");
 		}

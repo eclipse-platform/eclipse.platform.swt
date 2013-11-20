@@ -42,6 +42,7 @@ public static void main(String[] args) {
 	}
 	
 	tree.addSelectionListener(new SelectionAdapter() {
+		@Override
 		public void widgetSelected(SelectionEvent e) {
 			TreeItem[] selection = tree.getSelection();
 			TreeItem[] revisedSelection = new TreeItem[0];

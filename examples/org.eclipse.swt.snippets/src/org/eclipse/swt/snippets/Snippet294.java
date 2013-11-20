@@ -62,6 +62,7 @@ public class Snippet294 {
 		b2.setLocation(100,50);
 		
 		b2.addListener(SWT.Selection, new Listener() {
+			@Override
 			public void handleEvent(Event e) {
 				shell.close();
 			}

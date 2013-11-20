@@ -30,6 +30,7 @@ public static void main (String [] args) {
 	Rectangle clientArea = shell.getClientArea ();
 	list.setBounds (clientArea.x, clientArea.y, 100, 100);
 	list.addListener (SWT.Selection, new Listener () {
+		@Override
 		public void handleEvent (Event e) {
 			String string = "";
 			int [] selection = list.getSelectionIndices ();
@@ -38,6 +39,7 @@ public static void main (String [] args) {
 		}
 	});
 	list.addListener (SWT.DefaultSelection, new Listener () {
+		@Override
 		public void handleEvent (Event e) {
 			String string = "";
 			int [] selection = list.getSelectionIndices ();

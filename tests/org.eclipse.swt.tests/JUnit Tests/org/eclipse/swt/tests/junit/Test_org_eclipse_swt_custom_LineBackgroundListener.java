@@ -33,6 +33,7 @@ public Test_org_eclipse_swt_custom_LineBackgroundListener(String name) {
 public static void main(String[] args) {
 	TestRunner.run(suite());
 }
+@Override
 protected void setUp() {
 	super.setUp();
 	shell = new Shell();
@@ -69,6 +70,7 @@ public static java.util.Vector<String> methodNames() {
 	methodNames.addElement("test_lineGetBackgroundLorg_eclipse_swt_custom_LineBackgroundEvent");
 	return methodNames;
 }
+@Override
 protected void runTest() throws Throwable {
 	if (getName().equals("test_lineGetBackgroundLorg_eclipse_swt_custom_LineBackgroundEvent")) test_lineGetBackgroundLorg_eclipse_swt_custom_LineBackgroundEvent();
 }

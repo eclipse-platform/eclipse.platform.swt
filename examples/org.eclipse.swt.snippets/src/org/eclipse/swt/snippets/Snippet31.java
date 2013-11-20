@@ -31,6 +31,7 @@ public static void main (String [] args) {
 	Listener listener = new Listener () {
 		Point point = null;
 		static final int JITTER = 8;
+		@Override
 		public void handleEvent (Event event) {
 			switch (event.type) {
 				case SWT.MouseDown:

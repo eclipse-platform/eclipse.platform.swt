@@ -60,6 +60,7 @@ public static void main(String [] args) {
 	 * as efficient as possible.
 	 */
 	table.addListener(SWT.MeasureItem, new Listener() {
+		@Override
 		public void handleEvent(Event event) {
 			TableItem item = (TableItem)event.item;
 			String text = item.getText(event.index);
@@ -69,11 +70,13 @@ public static void main(String [] args) {
 		}
 	});
 	table.addListener(SWT.EraseItem, new Listener() {
+		@Override
 		public void handleEvent(Event event) {
 			event.detail &= ~SWT.FOREGROUND;
 		}
 	});
 	table.addListener(SWT.PaintItem, new Listener() {
+		@Override
 		public void handleEvent(Event event) {
 			TableItem item = (TableItem)event.item;
 			String text = item.getText(event.index);

@@ -36,6 +36,7 @@ public static void main(String[] args) {
 	TestRunner.run(suite());
 }
 
+@Override
 protected void setUp() {
 	super.setUp();
 	testShell = new Shell(shell, SWT.NULL);
@@ -152,6 +153,7 @@ public void test_close() {
 	shell.open();
 }
 
+@Override
 public void test_dispose() {
 	Shell newShell = new Shell();
 	newShell.dispose();
@@ -163,10 +165,12 @@ public void test_forceActive() {
 	/* assertTrue(":a:", shell.getDisplay().getActiveShell() == shell); */
 }
 
+@Override
 public void test_getBounds() {
 	// tested in test_setBoundsIIII and test_setBoundsLorg_eclipse_swt_graphics_Rectangle
 }
 
+@Override
 public void test_getEnabled() {
 	assertTrue(":a0:", shell.getEnabled());
 	shell.setEnabled(false);
@@ -180,6 +184,7 @@ public void test_getImeInputMode() {
 	assertTrue(":a:", mode >= 0);
 }
 
+@Override
 public void test_getLocation() {
 	shell.setLocation(10,15);
 	assertTrue(":a:", shell.getLocation().x == 10);
@@ -190,6 +195,7 @@ public void test_getRegion() {
 	// tested in test_setRegion()
 }
 
+@Override
 public void test_getShell() {
 	assertTrue(":a:", shell.getShell()==shell);
 	Shell shell_1 = new Shell(shell);
@@ -206,6 +212,7 @@ public void test_getShells() {
 	shell_1.dispose();
 }
 
+@Override
 public void test_isEnabled() {
 	assertTrue(":a:", shell.isEnabled());
 	shell.setEnabled(false);
@@ -261,6 +268,7 @@ public void test_setActive() {
 	shell2.dispose();
 }
 
+@Override
 public void test_setEnabledZ() {
 	// tested in getEnabled method
 }
@@ -274,6 +282,7 @@ public void test_setRegionLorg_eclipse_swt_graphics_Region() {
 	warnUnimpl("Test test_setRegionLorg_eclipse_swt_graphics_Region not written");
 }
 
+@Override
 public void test_setVisibleZ() {
 	shell.setVisible(false);
 	assertTrue(":a:", !shell.isVisible());
@@ -331,6 +340,7 @@ public static java.util.Vector<String> methodNames() {
 	methodNames.addElement("test_win32_newLorg_eclipse_swt_widgets_DisplayI");
 	return methodNames;
 }
+@Override
 protected void runTest() throws Throwable {
 	if (getName().equals("test_Constructor")) test_Constructor();
 	else if (getName().equals("test_ConstructorI")) test_ConstructorI();
@@ -366,12 +376,14 @@ protected void runTest() throws Throwable {
 }
 
 /* custom */
+@Override
 public void test_getParent () {
 	// overriding Control.test_getParent
 	assertTrue(shell.getParent()==null);
 	assertTrue(testShell.getParent() == shell);
 }
 
+@Override
 public void test_getStyle() {
 	// overriding Widget.test_getStyle
 	assertTrue("testShell not modeless", (testShell.getStyle () & SWT.MODELESS) == SWT.MODELESS);
@@ -383,6 +395,7 @@ public void test_getStyle() {
 	}
 }
 
+@Override
 public void test_isVisible() {
 	// overriding Control.test_isVisible
 	testShell.setVisible(true);
@@ -399,10 +412,12 @@ public void test_isVisible() {
 		assertTrue("testShell.isVisible() c:", !testShell.isVisible());
 }
 
+@Override
 public void test_setBoundsIIII() {
 	// overridden from Control because Shells have a minimum size
 }
 
+@Override
 public void test_setBoundsLorg_eclipse_swt_graphics_Rectangle() {
 	// overridden from Control because Shells have a minimum size
 //	/* windows */
@@ -473,6 +488,7 @@ public void test_setRegion() {
 	shell2.setRegion(null);
 	assertTrue(":g:", shell2.getRegion() == null);
 }
+@Override
 public void test_setSizeII() {
 	/* windows */
 	/* note that there is a minimum size for a shell, this test will fail if p1.x < 112 or p1.y < 27 */
@@ -515,6 +531,7 @@ public void test_setSizeII() {
 	}
 }
 
+@Override
 public void test_setSizeLorg_eclipse_swt_graphics_Point() {
 	/* windows */
 	/* note that there is a minimum size for a shell, this test will fail if p1.x < 112 or p1.y < 27 */
@@ -581,9 +598,11 @@ public void test_consistency_Open() {
 	    testShell.pack();
 	    testShell.open();
 	    new Thread() {
-	        public void run() {
+	        @Override
+			public void run() {
 	            display.asyncExec(new Thread() {
-				    public void run() {
+				    @Override
+					public void run() {
 				        shell.dispose();
 				    }
 				});
@@ -620,7 +639,8 @@ public void test_consistency_Dispose() {
     final Button button = new Button(testShell, SWT.PUSH);
     button.setText("dispose");
     button.addSelectionListener( new SelectionAdapter() {
-        public void widgetSelected(SelectionEvent se) {
+        @Override
+		public void widgetSelected(SelectionEvent se) {
             button.dispose();
             testShell.dispose();
         }

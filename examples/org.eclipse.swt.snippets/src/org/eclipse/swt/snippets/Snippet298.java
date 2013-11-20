@@ -26,6 +26,7 @@ public static void main (String [] args) {
 	final Display display = new Display();
 	final Shell shell = new Shell(display);
 	shell.addListener(SWT.Paint, new Listener() {
+		@Override
 		public void handleEvent(Event event) {
 			int[] icons = new int[]{SWT.ICON_ERROR, SWT.ICON_WARNING, SWT.ICON_INFORMATION, SWT.ICON_QUESTION, SWT.ICON_WORKING};
 			int x = 10;

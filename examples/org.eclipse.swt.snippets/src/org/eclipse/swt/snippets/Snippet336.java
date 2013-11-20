@@ -47,6 +47,7 @@ public static void main(String[] args) {
 	composite.setLayout(new GridLayout());
 	item.setControl(composite);
 	Listener listener = new Listener () {
+		@Override
 		public void handleEvent(Event event) {
 			Button button = (Button)event.widget;
 			if (!button.getSelection()) return;
@@ -80,6 +81,7 @@ public static void main(String[] args) {
 	final Scale scale = new Scale (group, SWT.NONE);
 	scale.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 	scale.addListener(SWT.Selection, new Listener() {
+		@Override
 		public void handleEvent(Event event) {
 			TaskItem item = getTaskBarItem();
 			if (item != null) item.setProgress(scale.getSelection());
@@ -103,6 +105,7 @@ public static void main(String[] args) {
 	button = new Button(group, SWT.PUSH);
 	button.setText("Set");
 	button.addListener(SWT.Selection, new Listener() {
+		@Override
 		public void handleEvent(Event event) {
 			TaskItem item = getTaskBarItem();
 			if (item != null) item.setOverlayText(text.getText());
@@ -111,6 +114,7 @@ public static void main(String[] args) {
 	button = new Button(group, SWT.PUSH);
 	button.setText("Clear");
 	button.addListener(SWT.Selection, new Listener() {
+		@Override
 		public void handleEvent(Event event) {
 			text.setText("");
 			TaskItem item = getTaskBarItem();
@@ -125,6 +129,7 @@ public static void main(String[] args) {
 	composite.setLayout(new GridLayout());
 	item.setControl(composite);
 	Listener listener3 = new Listener() {
+		@Override
 		public void handleEvent(Event event) {
 			Button button = (Button)event.widget;
 			if (!button.getSelection()) return;

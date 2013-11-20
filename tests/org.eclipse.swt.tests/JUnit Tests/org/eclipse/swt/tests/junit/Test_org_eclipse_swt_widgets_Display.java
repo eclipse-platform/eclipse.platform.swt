@@ -43,6 +43,7 @@ public static void main(String[] args) {
 	TestRunner.run(suite());
 }
 
+@Override
 protected void setUp() {
 	// There can only be one Display object per thread.
 	// If a second Display is created on the same thread, an 
@@ -52,6 +53,7 @@ protected void setUp() {
 	// before completing.
 }
 
+@Override
 protected void tearDown() {
 }
 
@@ -60,6 +62,7 @@ public void test_Constructor() {
 	disp.dispose();
 }
 
+@Override
 public void test_ConstructorLorg_eclipse_swt_graphics_DeviceData() {
 	Display disp;
 	disp = new Display(null);
@@ -209,6 +212,7 @@ public void test_getActiveShell() {
 	}
 }
 
+@Override
 public void test_getBounds() {
 	Display display = new Display();
 	try {
@@ -219,6 +223,7 @@ public void test_getBounds() {
 	}
 }
 
+@Override
 public void test_getClientArea() {
 	Display display = new Display();
 	try {
@@ -398,6 +403,7 @@ public void test_getSyncThread() {
 	}
 }
 
+@Override
 public void test_getSystemColorI() {
 	Display display = new Display();
 	try {
@@ -417,6 +423,7 @@ public void test_getSystemColorI() {
 	}
 }
 
+@Override
 public void test_getSystemFont() {
 	Display display = new Display();
 	try {
@@ -436,10 +443,12 @@ public void test_getThread() {
 	}
 }
 
+@Override
 public void test_internal_dispose_GCILorg_eclipse_swt_graphics_GCData() {
 	// do not test internal API
 }
 
+@Override
 public void test_internal_new_GCLorg_eclipse_swt_graphics_GCData() {
 	// do not test internal API
 }
@@ -984,6 +993,7 @@ public void test_setSynchronizerLorg_eclipse_swt_widgets_Synchronizer() {
 			MySynchronizer(Display d) {
 				super(d);
 			}
+			@Override
 			protected void asyncExec (Runnable runnable) {
 				invoked = true;
 				super.asyncExec(runnable);
@@ -1014,6 +1024,7 @@ public void test_sleep() {
 		// Ensure event queue is empty, otherwise sleep() will just return.
 		while(display.readAndDispatch()) {}
 		thread = new Thread() {
+			@Override
 			public void run() {
 				try {
 					// Delay to ensure the UI thread has been put to sleep.
@@ -1032,6 +1043,7 @@ public void test_sleep() {
 		// Ensure event queue is empty, otherwise sleep() will just return.
 		while(display.readAndDispatch()) {}
 		thread = new Thread() {
+			@Override
 			public void run() {
 				try {
 					// Delay to ensure the UI thread has been put to sleep.
@@ -1194,6 +1206,7 @@ public static java.util.Vector<String> methodNames() {
 	methodNames.addAll(Test_org_eclipse_swt_graphics_Device.methodNames()); // add superclass method names
 	return methodNames;
 }
+@Override
 protected void runTest() throws Throwable {
 	if (getName().equals("test_Constructor")) test_Constructor();
 	else if (getName().equals("test_ConstructorLorg_eclipse_swt_graphics_DeviceData")) test_ConstructorLorg_eclipse_swt_graphics_DeviceData();
@@ -1254,12 +1267,14 @@ protected void runTest() throws Throwable {
 /* custom */
 boolean disposeExecRan;
 
+@Override
 public void test_dispose() {
 	// tested in virtually every method and in particular
 	//   test_disposeExecLjava_lang_Runnable
 }
 
 /* Overloaded tests from Test_org_eclipse_swt_graphics_Device */
+@Override
 public void test_getDPI() {
 	Display display = new Display();
 	try {
@@ -1271,6 +1286,7 @@ public void test_getDPI() {
 	}
 }
 
+@Override
 public void test_getDepth() {
 	Display display = new Display();
 	try {
@@ -1281,6 +1297,7 @@ public void test_getDepth() {
 	}
 }
 
+@Override
 public void test_getFontListLjava_lang_StringZ() {
 	Display display = new Display();
 	try {
@@ -1292,6 +1309,7 @@ public void test_getFontListLjava_lang_StringZ() {
 	}
 }
 
+@Override
 public void test_getWarnings() {
 	Display display = new Display();
 	try {
@@ -1303,6 +1321,7 @@ public void test_getWarnings() {
 	}
 }
 
+@Override
 public void test_isDisposed() {
 	Display disp = new Display();
 	assertFalse(disp.isDisposed());
@@ -1310,6 +1329,7 @@ public void test_isDisposed() {
 	assertTrue(disp.isDisposed());
 }
 
+@Override
 public void test_setWarningsZ() {
 	Display display = new Display();
 	try {

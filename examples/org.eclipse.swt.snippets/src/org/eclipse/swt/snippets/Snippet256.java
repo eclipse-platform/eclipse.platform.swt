@@ -43,6 +43,7 @@ public static void main(String[] args) {
 	style3.strikeout = true;
 	layout.setStyle(style3, 54, 57);
 	shell.addListener(SWT.Paint, new Listener() {
+		@Override
 		public void handleEvent(Event event) {
 			Point point = new Point(10, 10);
 			int width = shell.getClientArea().width - 2 * point.x;

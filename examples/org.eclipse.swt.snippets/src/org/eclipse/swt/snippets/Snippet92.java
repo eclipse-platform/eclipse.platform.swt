@@ -53,6 +53,7 @@ public static void main (String [] args) {
 	final Image mask = new Image (display, maskData);
 	//Draw source and mask just to show what they look like
 	shell.addPaintListener(new PaintListener() {
+		@Override
 		public void paintControl(PaintEvent e) {
 			GC gc = e.gc;
 			gc.drawString("source: ", 10, 10);

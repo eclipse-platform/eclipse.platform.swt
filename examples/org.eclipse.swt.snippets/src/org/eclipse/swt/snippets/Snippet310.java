@@ -35,6 +35,7 @@ public class Snippet310 {
 		spinner.setLayoutData(new GridData(200, SWT.DEFAULT));
 		final ToolTip toolTip = new ToolTip(shell, SWT.BALLOON | SWT.ICON_WARNING);
 		spinner.addModifyListener(new ModifyListener() {
+			@Override
 			public void modifyText(ModifyEvent e) {
 				String string = spinner.getText();
 				String message = null;

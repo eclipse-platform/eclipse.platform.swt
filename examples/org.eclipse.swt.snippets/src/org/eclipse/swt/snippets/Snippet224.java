@@ -36,6 +36,7 @@ public static void main (String [] args) {
 	Button button = new Button (shell, SWT.PUSH);
 	button.setText ("Set Selection to B4");
 	button.addListener (SWT.Selection, new Listener () {
+		@Override
 		public void handleEvent (Event event) {
 			Control [] children = shell.getChildren ();
 			Button newButton = (Button) children [4];

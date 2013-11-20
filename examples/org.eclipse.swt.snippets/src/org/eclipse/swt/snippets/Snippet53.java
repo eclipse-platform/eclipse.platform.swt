@@ -37,6 +37,7 @@ public static void main (String [] args) {
 	MenuItem item = new MenuItem (menu, SWT.PUSH);
 	item.setText ("Delete Selection");
 	item.addListener (SWT.Selection, new Listener () {
+		@Override
 		public void handleEvent (Event event) {
 			table.remove (table.getSelectionIndices ());
 		}

@@ -44,6 +44,7 @@ public static void main(String[] args) {
 	Button button = new Button (shell, SWT.PUSH);
 	button.setText("Press for balloon tip");
 	button.addListener(SWT.Selection, new Listener() {
+		@Override
 		public void handleEvent(Event event) {
 			tip.setVisible(true);
 		}

@@ -32,6 +32,7 @@ public static void main(String[] args) {
 	Button button = new Button(shell, SWT.PUSH);
 	button.setText("Capture");
 	button.addListener(SWT.Selection, new Listener() {
+		@Override
 		public void handleEvent(Event event) {
 			
 			/* Take the screen shot */
@@ -45,6 +46,7 @@ public static void main(String[] args) {
 			popup.setText("Image");
 			popup.setBounds(50, 50, 200, 200);
 			popup.addListener(SWT.Close, new Listener() {
+				@Override
 				public void handleEvent(Event e) {
 					image.dispose();
 				}
@@ -55,6 +57,7 @@ public static void main(String[] args) {
 			sc.setContent(canvas);
 			canvas.setBounds(display.getBounds ());
 			canvas.addPaintListener(new PaintListener() {
+				@Override
 				public void paintControl(PaintEvent e) {
 					e.gc.drawImage(image, 0, 0);
 				}

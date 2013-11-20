@@ -31,6 +31,7 @@ public static void main(String args[]) {
 	final Display display = new Display();
 
 	EventQueue.invokeLater(new Runnable() {
+		@Override
 		public void run() {
 			JFrame mainFrame = new JFrame("Main Window");
 			mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -38,6 +39,7 @@ public static void main(String args[]) {
 			mainPanel.setLayout(new FlowLayout());
 			JButton launchBrowserButton = new JButton("Launch Browser");
 			launchBrowserButton.addActionListener(new ActionListener() {
+				@Override
 				public void actionPerformed(ActionEvent e) {
 					JFrame childFrame = new JFrame();
 					final Canvas canvas = new Canvas();
@@ -45,6 +47,7 @@ public static void main(String args[]) {
 					childFrame.getContentPane().add(canvas);
 					childFrame.setVisible(true);
 					display.asyncExec(new Runnable() {
+						@Override
 						public void run() {
 							Shell shell = SWT_AWT.new_Shell(display, canvas);
 							shell.setSize(800, 600);
@@ -66,8 +69,10 @@ public static void main(String args[]) {
 		}
 	});
 	display.addListener(SWT.Close, new Listener() {
+		@Override
 		public void handleEvent(Event event) {
 			EventQueue.invokeLater(new Runnable() {
+				@Override
 				public void run() {
 					Frame[] frames = JFrame.getFrames();
 					for (int i = 0; i < frames.length; i++) {

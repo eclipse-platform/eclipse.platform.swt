@@ -42,6 +42,7 @@ public MyList (Composite parent, int style) {
 	super (parent, checkStyle (style));
 	super.setDragDetect (false);
 	addMouseListener (new MouseAdapter () {
+		@Override
 		public void mouseDown (MouseEvent event) {
 			GC gc = new GC (MyList.this);
 			Rectangle client = getClientArea();
@@ -65,6 +66,7 @@ public MyList (Composite parent, int style) {
 		}
 	});
 	addPaintListener (new PaintListener () {
+		@Override
 		public void paintControl (PaintEvent event) {
 			GC gc = event.gc;
 			Color foreground = event.display.getSystemColor (SWT.COLOR_LIST_FOREGROUND);
@@ -87,6 +89,7 @@ public MyList (Composite parent, int style) {
 	});
 }
 
+@Override
 public Point computeSize (int wHint, int hHint, boolean changed) {
 	GC gc = new GC (this);
 	int index = 0, width = 0, height = 0;
@@ -123,6 +126,7 @@ public static void main (String [] args) {
 	MyList t1 = new MyList (shell, SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL);
 	t1.setItems (new String [] {"Some", "items", "in", "the", "list"});
 	t1.addDragDetectListener (new DragDetectListener () {
+		@Override
 		public void dragDetected (DragDetectEvent event) {
 			System.out.println ("Drag started ...");
 		}
@@ -130,6 +134,7 @@ public static void main (String [] args) {
 	MyList t2 = new MyList (shell, SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL);
 	t2.setItems (new String [] {"Some", "items", "in", "another", "list"});
 	t2.addDragDetectListener (new DragDetectListener () {
+		@Override
 		public void dragDetected (DragDetectEvent event) {
 			System.out.println ("Drag started ...");
 		}

@@ -75,6 +75,7 @@ public class Snippet333 {
 		new Text(child3, SWT.BORDER).setText("Text in pane3");
 		
 		display.addListener(SWT.Skin, new Listener() {
+			@Override
 			public void handleEvent(Event event) {
 				System.out.println("Skin: " + event.widget);
 				setBackground (event.display, (Control) event.widget);
@@ -85,6 +86,7 @@ public class Snippet333 {
 		Button reskin = new Button(buttonContainer, SWT.PUSH);
 		reskin.setText("Reskin All");
 		reskin.addSelectionListener(new SelectionAdapter() {
+			@Override
 			public void widgetSelected(SelectionEvent e) {
 				System.out.println("=======");
 				shell.reskin(SWT.ALL);
@@ -93,6 +95,7 @@ public class Snippet333 {
 		Button reskin2 = new Button(buttonContainer, SWT.PUSH);
 		reskin2.setText("Reskin Shell");
 		reskin2.addSelectionListener(new SelectionAdapter() {
+			@Override
 			public void widgetSelected(SelectionEvent e) {
 				System.out.println("=======");
 				shell.reskin(SWT.None);
@@ -101,6 +104,7 @@ public class Snippet333 {
 		Button reskin3 = new Button(buttonContainer, SWT.PUSH);
 		reskin3.setText("Reskin Right Composite");
 		reskin3.addSelectionListener(new SelectionAdapter() {
+			@Override
 			public void widgetSelected(SelectionEvent e) {
 				System.out.println("=======");
 				child3.reskin(SWT.ALL);

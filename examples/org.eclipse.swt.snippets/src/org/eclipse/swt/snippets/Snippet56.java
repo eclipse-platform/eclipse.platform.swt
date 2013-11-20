@@ -31,11 +31,13 @@ public class Snippet56 {
 		shell.open();
 		final int maximum = bar.getMaximum();
 		new Thread() {
+			@Override
 			public void run() {
 				for (final int[] i = new int[1]; i[0] <= maximum; i[0]++) {
 				try {Thread.sleep (100);} catch (Throwable th) {}
 					if (display.isDisposed()) return;
 					display.asyncExec(new Runnable() {
+						@Override
 						public void run() {
 						if (bar.isDisposed ()) return;
 							bar.setSelection(i[0]);

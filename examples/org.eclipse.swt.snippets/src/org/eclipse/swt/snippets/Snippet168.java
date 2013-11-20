@@ -29,6 +29,7 @@ public static void main(String[] args) {
 	final Display display = new Display();
 	Shell shell = new Shell(display);
 	shell.addListener(SWT.Paint, new Listener() {
+		@Override
 		public void handleEvent(Event event) {
 			int x = 20, y = 20, w = 120, h = 60;
 			GC gc = event.gc;

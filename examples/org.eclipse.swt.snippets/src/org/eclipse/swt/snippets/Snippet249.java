@@ -56,6 +56,7 @@ public static void main (String [] args) {
 	pageButton.setText ("Push");
 	pageButton.setBounds (clientArea.x + 10, clientArea.y + 10, 80, 25);
 	pageButton.addListener (SWT.Selection, new Listener () {
+		@Override
 		public void handleEvent (Event event) {
 			pageNum = ++pageNum % 2;
 			layout.topControl = pageNum == 0 ? page0 : page1;

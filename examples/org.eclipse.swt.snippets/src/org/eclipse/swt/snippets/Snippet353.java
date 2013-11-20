@@ -34,6 +34,7 @@ public class Snippet353 {
 		final Shell shell = new Shell(display);
 
 		GestureListener gl = new GestureListener() {
+			@Override
 			public void gesture(GestureEvent ge) {
 				if (ge.detail == SWT.GESTURE_BEGIN) {
 					currentRotation = rotation;
@@ -71,6 +72,7 @@ public class Snippet353 {
 		};
 
 		PaintListener pl = new PaintListener() {
+			@Override
 			public void paintControl(PaintEvent e) {
 				Transform t = new Transform(Display.getCurrent());
 				t.translate(origin.x, origin.y);

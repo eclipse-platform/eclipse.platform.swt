@@ -49,6 +49,7 @@ public static void main(String[] args) {
 	table.setSize(size);
 	shell.pack();
 	table.addListener(SWT.MouseDown, new Listener() {
+		@Override
 		public void handleEvent(Event event) {
 			Point pt = new Point(event.x, event.y);
 			TableItem item = table.getItem(pt);

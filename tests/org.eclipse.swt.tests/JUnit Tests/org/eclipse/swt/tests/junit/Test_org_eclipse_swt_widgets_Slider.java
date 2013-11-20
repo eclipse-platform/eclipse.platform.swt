@@ -32,6 +32,7 @@ public static void main(String[] args) {
 	TestRunner.run(suite());
 }
 
+@Override
 protected void setUp() {
 	super.setUp();
 	slider = new Slider(shell, 0);
@@ -42,6 +43,7 @@ protected String valueString(int[] intArray) {
 	return " ("+intArray[1]+","+intArray[2]+","+intArray[3]+","+intArray[4]+")";
 }
 
+@Override
 public void test_ConstructorLorg_eclipse_swt_widgets_CompositeI() {
 	try {
 		slider = new Slider(null, 0);
@@ -86,10 +88,12 @@ public void test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener()
 	assertTrue("Expected exception not thrown", exceptionThrown);
 }
 
+@Override
 public void test_computeSizeIIZ() {
 	// super class method sufficient test
 }
 
+@Override
 public void test_getEnabled() {
 	// tested in setEnabled method
 }
@@ -152,6 +156,7 @@ public void test_removeSelectionListenerLorg_eclipse_swt_events_SelectionListene
 	// tested in addSelectionListener method
 }
 
+@Override
 public void test_setEnabledZ() {
 	slider.setEnabled(true);
 	assertTrue(slider.getEnabled());
@@ -267,6 +272,7 @@ public static java.util.Vector<String> methodNames() {
 	methodNames.addAll(Test_org_eclipse_swt_widgets_Control.methodNames()); // add superclass method names
 	return methodNames;
 }
+@Override
 protected void runTest() throws Throwable {
 	if (getName().equals("test_ConstructorLorg_eclipse_swt_widgets_CompositeI")) test_ConstructorLorg_eclipse_swt_widgets_CompositeI();
 	else if (getName().equals("test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener")) test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener();
@@ -297,6 +303,7 @@ protected void runTest() throws Throwable {
 }
 
 /* custom */
+@Override
 public void test_setFontLorg_eclipse_swt_graphics_Font() {
 	// overridden from Control because it does not make sense
 	// to set the font of a Slider.

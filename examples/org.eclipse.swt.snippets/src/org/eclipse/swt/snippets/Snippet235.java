@@ -51,6 +51,7 @@ public static void main(String [] args) {
 	columns[0].pack();
 	columns[2].pack();
 	display.addListener(SWT.Settings, new Listener() {
+		@Override
 		public void handleEvent(Event event) {
 			for (int i = 0; i < colorIds.length; i++) {
 				Color color = display.getSystemColor(colorIds[i]);

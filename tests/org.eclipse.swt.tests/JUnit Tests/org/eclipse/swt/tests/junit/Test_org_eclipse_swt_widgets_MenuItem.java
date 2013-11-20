@@ -32,6 +32,7 @@ public static void main(String[] args) {
 	TestRunner.run(suite());
 }
 
+@Override
 protected void setUp() {
 	super.setUp();
 	menu = new Menu(shell);
@@ -220,6 +221,7 @@ public void test_setEnabledZ() {
 	assertEquals(menuItem.getEnabled(), false);
 }
 
+@Override
 public void test_setImageLorg_eclipse_swt_graphics_Image() {
 	assertNull(menuItem.getImage());
 	menuItem.setImage(images[0]);
@@ -251,6 +253,7 @@ public void test_setSelectionZ() {
 	} 
 }
 
+@Override
 public void test_setTextLjava_lang_String() {
 	menuItem.setText("ABCDEFG");
 	assertTrue(menuItem.getText().equals("ABCDEFG"));
@@ -301,6 +304,7 @@ public static java.util.Vector<String> methodNames() {
 	methodNames.addAll(Test_org_eclipse_swt_widgets_Item.methodNames()); // add superclass method names
 	return methodNames;
 }
+@Override
 protected void runTest() throws Throwable {
 	if (getName().equals("test_ConstructorLorg_eclipse_swt_widgets_MenuI")) test_ConstructorLorg_eclipse_swt_widgets_MenuI();
 	else if (getName().equals("test_ConstructorLorg_eclipse_swt_widgets_MenuII")) test_ConstructorLorg_eclipse_swt_widgets_MenuII();

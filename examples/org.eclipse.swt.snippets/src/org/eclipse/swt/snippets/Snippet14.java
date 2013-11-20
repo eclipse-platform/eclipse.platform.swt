@@ -26,16 +26,19 @@ public static void main (String [] args) {
 	Shell shell = new Shell (display);
 	shell.setSize (100, 100);
 	shell.addListener (SWT.MouseEnter, new Listener () {
+		@Override
 		public void handleEvent (Event e) {
 			System.out.println ("ENTER");
 		}
 	});
 	shell.addListener (SWT.MouseExit, new Listener () {
+		@Override
 		public void handleEvent (Event e) {
 			System.out.println ("EXIT");
 		}
 	});
 	shell.addListener (SWT.MouseHover, new Listener () {
+		@Override
 		public void handleEvent (Event e) {
 			System.out.println ("HOVER");
 		}

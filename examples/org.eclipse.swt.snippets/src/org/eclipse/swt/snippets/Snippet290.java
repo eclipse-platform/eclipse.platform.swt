@@ -26,11 +26,13 @@ public static void main(String [] args) {
 	final Display display = new Display();
 	final Shell shell = new Shell(display);
 	shell.addMouseListener(new MouseAdapter() {
+		@Override
 		public void mouseUp(MouseEvent e) {
 			if (e.count == 1) {
 				System.out.println("Mouse up");
 			}
 		}
+		@Override
 		public void mouseDoubleClick(MouseEvent e) {
 			System.out.println("Double-click");
 		}

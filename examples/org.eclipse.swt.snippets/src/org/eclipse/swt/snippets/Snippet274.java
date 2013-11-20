@@ -59,7 +59,8 @@ public class Snippet274 {
 	    Shell shell = new Shell(display);
 	    Tree tree = new Tree(shell, SWT.BORDER | SWT.CHECK);
 	    tree.addListener(SWT.Selection, new Listener() {
-	        public void handleEvent(Event event) {
+	        @Override
+			public void handleEvent(Event event) {
 	            if (event.detail == SWT.CHECK) {
 	                TreeItem item = (TreeItem) event.item;
 	                boolean checked = item.getChecked();

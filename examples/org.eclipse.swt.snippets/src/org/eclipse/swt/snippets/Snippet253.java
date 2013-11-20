@@ -35,6 +35,7 @@ public class Snippet253 {
 		final Button button = new Button (shell, SWT.PUSH);
 		button.setText ("Visible Items []");
 		button.addListener (SWT.Selection, new Listener () {
+			@Override
 			public void handleEvent (Event e) {
 				Rectangle rect = table.getClientArea ();
 				int itemHeight = table.getItemHeight ();

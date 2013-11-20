@@ -84,6 +84,7 @@ static class MyTransfer extends ByteArrayTransfer {
 		return data;
 	}
 
+	@Override
 	public void javaToNative(Object object, TransferData transferData) {
 		if (!checkMyType(object) || !isSupportedType(transferData)) {
 			DND.error(DND.ERROR_INVALID_DATA);
@@ -92,6 +93,7 @@ static class MyTransfer extends ByteArrayTransfer {
 		super.javaToNative(buffer, transferData);
 	}
 
+	@Override
 	public Object nativeToJava(TransferData transferData) {
 		if (isSupportedType(transferData)) {
 			byte[] buffer = (byte[]) super.nativeToJava(transferData);
@@ -102,10 +104,12 @@ static class MyTransfer extends ByteArrayTransfer {
 		return null;
 	}
 
+	@Override
 	protected String[] getTypeNames() {
 		return new String[] { MYTYPENAME };
 	}
 
+	@Override
 	protected int[] getTypeIds() {
 		return new int[] { MYTYPEID };
 	}
@@ -114,6 +118,7 @@ static class MyTransfer extends ByteArrayTransfer {
 		return object != null && object instanceof MyType;
 	}
 
+	@Override
 	protected boolean validate(Object object) {
 		return checkMyType(object);
 	}
@@ -137,14 +142,17 @@ static class MyTransfer2 extends MyTransfer {
 		return _instance;
 	}
 
+	@Override
 	protected String[] getTypeNames() {
 		return new String[] { MYTYPE2NAME };
 	}
 
+	@Override
 	protected int[] getTypeIds() {
 		return new int[] { MYTYPE2ID };
 	}
 
+	@Override
 	byte[] javaToByteArray(Object object) {
 		MyType2 data = (MyType2) object;
 		try {
@@ -166,6 +174,7 @@ static class MyTransfer2 extends MyTransfer {
 		return null;
 	}
 
+	@Override
 	Object byteArrayToJava(byte[] bytes) {
 		MyType2 data = new MyType2();
 		try {
@@ -188,6 +197,7 @@ static class MyTransfer2 extends MyTransfer {
 		return data;
 	}
 
+	@Override
 	public void javaToNative(Object object, TransferData transferData) {
 		if (!checkMyType2(object)) {
 			DND.error(DND.ERROR_INVALID_DATA);
@@ -201,6 +211,7 @@ static class MyTransfer2 extends MyTransfer {
 		return object != null && object instanceof MyType2;
 	}
 
+	@Override
 	protected boolean validate(Object object) {
 		return checkMyType2(object);
 	}
@@ -221,6 +232,7 @@ public static void main(String[] args) {
 	source.setTransfer(new Transfer[] { MyTransfer.getInstance(),
 			MyTransfer2.getInstance() });
 	source.addDragListener(new DragSourceAdapter() {
+		@Override
 		public void dragSetData(DragSourceEvent event) {
 			MyType2 myType = new MyType2();
 			myType.fileName = "abc.txt";
@@ -233,16 +245,19 @@ public static void main(String[] args) {
 	DropTarget targetMyType = new DropTarget(label2, DND.DROP_COPY | DND.DROP_DEFAULT);
 	targetMyType.setTransfer(new Transfer[] { MyTransfer.getInstance() });
 	targetMyType.addDropListener(new DropTargetAdapter() {
+		@Override
 		public void dragEnter(DropTargetEvent event) {
 			if (event.detail == DND.DROP_DEFAULT)
 				event.detail = DND.DROP_COPY;
 		}
 
+		@Override
 		public void dragOperationChanged(DropTargetEvent event) {
 			if (event.detail == DND.DROP_DEFAULT)
 				event.detail = DND.DROP_COPY;
 		}
 
+		@Override
 		public void drop(DropTargetEvent event) {
 			if (event.data != null) {
 				MyType myType = (MyType) event.data;
@@ -257,16 +272,19 @@ public static void main(String[] args) {
 	DropTarget targetMyType2 = new DropTarget(label3, DND.DROP_COPY	| DND.DROP_DEFAULT);
 	targetMyType2.setTransfer(new Transfer[] { MyTransfer2.getInstance() });
 	targetMyType2.addDropListener(new DropTargetAdapter() {
+		@Override
 		public void dragEnter(DropTargetEvent event) {
 			if (event.detail == DND.DROP_DEFAULT)
 				event.detail = DND.DROP_COPY;
 		}
 
+		@Override
 		public void dragOperationChanged(DropTargetEvent event) {
 			if (event.detail == DND.DROP_DEFAULT)
 				event.detail = DND.DROP_COPY;
 		}
 
+		@Override
 		public void drop(DropTargetEvent event) {
 			if (event.data != null) {
 				MyType2 myType = (MyType2) event.data;

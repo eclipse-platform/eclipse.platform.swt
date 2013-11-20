@@ -30,11 +30,13 @@ public static void main(String[] args) {
 	TestRunner.run(suite());
 }
 
+@Override
 protected void setUp() {
 	super.setUp();
 	shell = new Shell();
 }
 
+@Override
 protected void tearDown() {
 	shell.dispose();
 	super.tearDown();
@@ -97,6 +99,7 @@ public static java.util.Vector<String> methodNames() {
 	methodNames.addElement("test_setTextLjava_lang_String");
 	return methodNames;
 }
+@Override
 protected void runTest() throws Throwable {
 	if (getName().equals("test_ConstructorLorg_eclipse_swt_widgets_Shell")) test_ConstructorLorg_eclipse_swt_widgets_Shell();
 	else if (getName().equals("test_ConstructorLorg_eclipse_swt_widgets_ShellI")) test_ConstructorLorg_eclipse_swt_widgets_ShellI();

@@ -33,16 +33,19 @@ public static void main(String[] args) {
 	TestRunner.run(suite());
 }
 
+@Override
 protected void setUp() {
 	super.setUp();
 	loadImages();
 }
 
+@Override
 protected void tearDown() {
 	super.tearDown();
 	freeImages();
 }
 
+@Override
 public void test_ConstructorLorg_eclipse_swt_widgets_WidgetI() {
 	// abstract class
 }
@@ -103,6 +106,7 @@ public static java.util.Vector<String> methodNames() {
 	methodNames.addAll(Test_org_eclipse_swt_widgets_Widget.methodNames()); // add superclass method names
 	return methodNames;
 }
+@Override
 protected void runTest() throws Throwable {
 	if (getName().equals("test_ConstructorLorg_eclipse_swt_widgets_WidgetI")) test_ConstructorLorg_eclipse_swt_widgets_WidgetI();
 	else if (getName().equals("test_ConstructorLorg_eclipse_swt_widgets_WidgetII")) test_ConstructorLorg_eclipse_swt_widgets_WidgetII();
@@ -135,6 +139,7 @@ private void loadImages() {
 		}
 	}
 }
+@Override
 protected void setWidget(Widget widget) {
 	item = (Item) widget;
 	super.setWidget(widget);

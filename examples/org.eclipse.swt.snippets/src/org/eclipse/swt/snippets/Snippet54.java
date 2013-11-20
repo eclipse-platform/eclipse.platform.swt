@@ -30,6 +30,7 @@ public static void main (String [] args) {
 	Rectangle clientArea = shell.getClientArea ();
 	sash.setBounds (180, clientArea.y, 32, clientArea.height);
 	sash.addListener (SWT.Selection, new Listener () {
+		@Override
 		public void handleEvent (Event e) {
 			sash.setBounds (e.x, e.y, e.width, e.height);
 		}

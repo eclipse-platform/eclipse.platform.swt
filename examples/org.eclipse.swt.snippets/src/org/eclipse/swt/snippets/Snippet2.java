@@ -45,7 +45,8 @@ public static void main (String [] args) {
     column1.setWidth(100);
     column2.setWidth(100);
     Listener sortListener = new Listener() {
-        public void handleEvent(Event e) {
+        @Override
+		public void handleEvent(Event e) {
             TableItem[] items = table.getItems();
             Collator collator = Collator.getInstance(Locale.getDefault());
             TableColumn column = (TableColumn)e.widget;

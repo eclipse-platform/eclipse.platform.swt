@@ -38,6 +38,7 @@ public static void main(String [] args) {
 	upButton.setText("Scroll up one page");
 	upButton.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
 	upButton.addListener(SWT.Selection, new Listener() {
+		@Override
 		public void handleEvent(Event event) {
 			int height = table.getClientArea().height;
 			int visibleItemCount = height / table.getItemHeight();
@@ -52,6 +53,7 @@ public static void main(String [] args) {
 	downButton.setText("Scroll down one page");
 	downButton.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
 	downButton.addListener(SWT.Selection, new Listener() {
+		@Override
 		public void handleEvent(Event event) {
 			int height = table.getClientArea().height;
 			int visibleItemCount = height / table.getItemHeight();

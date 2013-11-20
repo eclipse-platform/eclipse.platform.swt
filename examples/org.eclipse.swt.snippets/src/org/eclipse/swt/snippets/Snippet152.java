@@ -32,14 +32,16 @@ public static void main(String[] args) {
     shell.setLayout(layout);
     final Label label = new Label(shell, SWT.BORDER);
     Listener armListener = new Listener() {
-        public void handleEvent(Event event) {
+        @Override
+		public void handleEvent(Event event) {
             MenuItem item = (MenuItem) event.widget;
             label.setText(item.getText());
             label.update();
         }
     };
     Listener showListener = new Listener() {
-        public void handleEvent(Event event) {
+        @Override
+		public void handleEvent(Event event) {
             Menu menu = (Menu) event.widget;
             MenuItem item = menu.getParentItem();
             if (item != null) {
@@ -49,7 +51,8 @@ public static void main(String[] args) {
         }
     };
     Listener hideListener = new Listener() {
-        public void handleEvent(Event event) {
+        @Override
+		public void handleEvent(Event event) {
             label.setText("");
             label.update();
         }

@@ -41,7 +41,8 @@ public static void main (String [] args) {
     b.setText("add a new button at row 2 column 1");
     final int[] index = new int[1];
     b.addListener(SWT.Selection, new Listener() {
-        public void handleEvent(Event e) {
+        @Override
+		public void handleEvent(Event e) {
             Button s = new Button(c, SWT.PUSH);
             s.setText("Special "+index[0]);
             index[0]++;

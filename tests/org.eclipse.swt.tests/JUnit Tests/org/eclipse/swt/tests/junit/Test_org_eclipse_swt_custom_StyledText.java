@@ -80,6 +80,7 @@ public static void main(String[] args) {
 	TestRunner.run(suite());
 }
 
+@Override
 protected void setUp() {
 	super.setUp();
 	initializeColors();
@@ -87,6 +88,7 @@ protected void setUp() {
 	setWidget(text);
 }
 
+@Override
 protected void tearDown() {
 	Enumeration<RGB> elements = colors.keys();
 	while (elements.hasMoreElements()) {
@@ -143,6 +145,7 @@ protected void initializeColors() {
 	colors.put(PURPLE, new Color (display, PURPLE));
 }
 
+@Override
 public void test_ConstructorLorg_eclipse_swt_widgets_CompositeI(){
 	StyledText text = new StyledText(shell, SWT.READ_ONLY);
 	
@@ -571,6 +574,7 @@ public void test_appendLjava_lang_String() {
 	assertEquals("append multi line string", text2 + text3, text.getText());	
 }
 
+@Override
 public void test_computeSizeIIZ() {
 	// inherited test is sufficient
 }
@@ -2187,10 +2191,12 @@ public void test_printLorg_eclipse_swt_printing_PrinterLorg_eclipse_swt_custom_S
 	warnUnimpl("Test test_printLorg_eclipse_swt_printing_PrinterLorg_eclipse_swt_custom_StyledTextPrintOptions not written");
 }
 
+@Override
 public void test_redraw() {
 	// inherited test is sufficient
 }
 
+@Override
 public void test_redrawIIIIZ() {
 	// inherited test is sufficient
 }
@@ -2970,6 +2976,7 @@ public void test_selectAll() {
 	assertEquals("", text.getSelectionText());
 }
 
+@Override
 public void test_setCaretLorg_eclipse_swt_widgets_Caret() {
 	Caret caret = new Caret(text, SWT.NONE);
 	final int XINSET = isBidiCaret() ? 2 : 0;
@@ -3093,6 +3100,7 @@ public void test_setEditableZ(){
 	assertTrue(":d:", text.getEditable() == true);
 }
 
+@Override
 public void test_setFontLorg_eclipse_swt_graphics_Font(){
 	FontData fontData = text.getFont().getFontData()[0];
 	int lineHeight;
@@ -4593,6 +4601,7 @@ public static java.util.Vector<String> methodNames() {
 	return methodNames;
 }
 
+@Override
 protected void runTest() throws Throwable {
 	if (getName().equals("test_ConstructorLorg_eclipse_swt_widgets_CompositeI")) test_ConstructorLorg_eclipse_swt_widgets_CompositeI();
 	else if (getName().equals("test_addBidiSegmentListenerLorg_eclipse_swt_custom_BidiSegmentListener")) test_addBidiSegmentListenerLorg_eclipse_swt_custom_BidiSegmentListener();
@@ -4776,10 +4785,12 @@ public void test_consistency_Modify() {
     consistencyEvent('a', 0, 0, 0, ConsistencyUtility.KEY_PRESS);
 }
 
+@Override
 public void test_consistency_MenuDetect () {
     consistencyEvent(10, 10, 3, ConsistencyUtility.ESCAPE_MENU, ConsistencyUtility.MOUSE_CLICK);
 }
 
+@Override
 public void test_consistency_DragDetect () {
     consistencyEvent(30, 10, 50, 0, ConsistencyUtility.MOUSE_DRAG);
 }

@@ -47,6 +47,7 @@ public static void main(String[] args) {
 	Rectangle size = region.getBounds();
 	shell.setSize(size.width, size.height);
 	shell.addPaintListener(new PaintListener() {
+		@Override
 		public void paintControl(PaintEvent e) {
 			Rectangle bounds = image.getBounds();
 			Point size = shell.getSize();
@@ -54,6 +55,7 @@ public static void main(String[] args) {
 		}
 	});
 	shell.addListener(SWT.KeyDown, new Listener() {
+		@Override
 		public void handleEvent(Event e)  {
 			if (e.character == SWT.ESC) {
 				shell.dispose();

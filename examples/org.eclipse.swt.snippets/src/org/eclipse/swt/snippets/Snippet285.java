@@ -71,6 +71,7 @@ public class Snippet285 {
 		loadPath(region, data.points, data.types);
 		shell.setRegion(region);
 		Listener listener = new Listener() {
+			@Override
 			public void handleEvent(Event event) {
 				switch (event.type) {
 					case SWT.MouseDown: {

@@ -25,6 +25,7 @@ public static void main (String [] args) {
 	Display display = new Display ();
 	final Shell shell = new Shell (display);
 	shell.addListener (SWT.Close, new Listener () {
+		@Override
 		public void handleEvent (Event event) {
 			int style = SWT.APPLICATION_MODAL | SWT.YES | SWT.NO;
 			MessageBox messageBox = new MessageBox (shell, style);

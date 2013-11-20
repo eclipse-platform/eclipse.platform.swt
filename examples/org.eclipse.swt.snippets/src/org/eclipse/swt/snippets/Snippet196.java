@@ -47,6 +47,7 @@ public static void main(String[] args) {
 		Pattern pattern = Pattern.compile(REGEX);	
 		//ignore event when caused by inserting text inside event handler
 		boolean ignore;
+		@Override
 		public void handleEvent(Event e) {
 			if (ignore) return;
 			e.doit = false;

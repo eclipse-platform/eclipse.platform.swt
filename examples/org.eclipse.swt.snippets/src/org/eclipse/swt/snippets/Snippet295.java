@@ -35,6 +35,7 @@ public static void main (String [] args) {
 	Button open = new Button (shell, SWT.PUSH);
 	open.setText ("Prompt for a String");
 	open.addSelectionListener (new SelectionAdapter () {
+		@Override
 		public void widgetSelected (SelectionEvent e) {
 			final Shell dialog = new Shell (shell, SWT.DIALOG_TRIM | SWT.APPLICATION_MODAL);
 			dialog.setText("Dialog Shell");
@@ -57,6 +58,7 @@ public static void main (String [] args) {
 			data.bottom = new FormAttachment (100, 0);
 			cancel.setLayoutData (data);
 			cancel.addSelectionListener (new SelectionAdapter () {
+				@Override
 				public void widgetSelected (SelectionEvent e) {
 					System.out.println("User cancelled dialog");
 					dialog.close ();
@@ -80,6 +82,7 @@ public static void main (String [] args) {
 			data.bottom = new FormAttachment (100, 0);
 			ok.setLayoutData (data);
 			ok.addSelectionListener (new SelectionAdapter () {
+				@Override
 				public void widgetSelected (SelectionEvent e) {
 					System.out.println ("User typed: " + text.getText ());
 					dialog.close ();

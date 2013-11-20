@@ -38,6 +38,7 @@ public class Snippet283 {
 			if (i % 2 == 1) item.setImage (image);
 		}
 		table.addListener(SWT.MouseDown, new Listener() {
+			@Override
 			public void handleEvent(Event event) {
 				Rectangle rect = table.getClientArea ();
 				Point point = new Point (event.x, event.y);
@@ -64,6 +65,7 @@ public class Snippet283 {
 		 * as efficient as possible.
 		 */
 		table.addListener(SWT.EraseItem, new Listener() {
+			@Override
 			public void handleEvent(Event event) {
 				event.detail &= ~SWT.FOREGROUND;
 				String osName = System.getProperty("os.name");
@@ -84,6 +86,7 @@ public class Snippet283 {
 			}
 		});
 		table.addListener(SWT.PaintItem, new Listener() {
+			@Override
 			public void handleEvent(Event event) {
 				TableItem item = (TableItem)event.item;
 				GC gc = event.gc;

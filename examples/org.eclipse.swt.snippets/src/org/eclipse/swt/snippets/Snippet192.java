@@ -49,6 +49,7 @@ public static void main(String[] args) {
 	column2.setText("Value");
 	column2.setWidth(200);
 	table.addListener(SWT.SetData, new Listener() {
+		@Override
 		public void handleEvent(Event e) {
 			TableItem item = (TableItem) e.item;
 			int index = table.indexOf(item);
@@ -59,6 +60,7 @@ public static void main(String[] args) {
 	});
 	// Add sort indicator and sort data when column selected
 	Listener sortListener = new Listener() {
+		@Override
 		public void handleEvent(Event e) {
 			// determine new sort column and direction
 			TableColumn sortColumn = table.getSortColumn();
@@ -74,6 +76,7 @@ public static void main(String[] args) {
 			final int index = currentColumn == column1 ? 0 : 1;
 			final int direction = dir;
 			Arrays.sort(data, new Comparator<int[]>() {
+				@Override
 				public int compare(int[] a, int[] b) {
 					if (a[index] == b[index]) return 0;
 					if (direction == SWT.UP) {

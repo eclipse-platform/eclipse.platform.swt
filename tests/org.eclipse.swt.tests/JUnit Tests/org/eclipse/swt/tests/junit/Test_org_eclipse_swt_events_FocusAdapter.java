@@ -58,6 +58,7 @@ public static java.util.Vector<String> methodNames() {
 	methodNames.addElement("test_focusLostLorg_eclipse_swt_events_FocusEvent");
 	return methodNames;
 }
+@Override
 protected void runTest() throws Throwable {
 	if (getName().equals("test_Constructor")) test_Constructor();
 	else if (getName().equals("test_focusGainedLorg_eclipse_swt_events_FocusEvent")) test_focusGainedLorg_eclipse_swt_events_FocusEvent();

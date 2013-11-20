@@ -48,6 +48,7 @@ public static void main (String [] args) {
 	sashData.bottom = new FormAttachment (100, 0);
 	sash.setLayoutData (sashData);
 	sash.addListener (SWT.Selection, new Listener () {
+		@Override
 		public void handleEvent (Event e) {
 			Rectangle sashRect = sash.getBounds ();
 			Rectangle shellRect = shell.getClientArea ();

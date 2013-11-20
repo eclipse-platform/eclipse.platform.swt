@@ -60,6 +60,7 @@ public class Snippet261 {
 		MenuItem menuFileControl = new MenuItem(menuFile, SWT.CASCADE);
 		menuFileControl.setText("Exit");
 		menuFileControl.addSelectionListener(new SelectionAdapter() {
+			@Override
 			public void widgetSelected(SelectionEvent e) {
 				shell.dispose();
 			}

@@ -42,6 +42,7 @@ public class Snippet214 {
 			button.setText ("Button " + i);
 		}
 		shell.addListener (SWT.Resize, new Listener () {
+			@Override
 			public void handleEvent (Event event) {
 				Rectangle rect = shell.getClientArea ();
 				Image newImage = new Image (display, Math.max (1, rect.width), 1);	

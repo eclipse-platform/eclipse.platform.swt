@@ -247,6 +247,7 @@ public static java.util.Vector<String> methodNames() {
 	methodNames.addElement("test_win32_newLorg_eclipse_swt_internal_win32_LOGFONTI");
 	return methodNames;
 }
+@Override
 protected void runTest() throws Throwable {
 	if (getName().equals("test_Constructor")) test_Constructor();
 	else if (getName().equals("test_ConstructorLjava_lang_String")) test_ConstructorLjava_lang_String();

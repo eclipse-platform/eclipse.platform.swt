@@ -78,6 +78,7 @@ public static java.util.Vector<String> methodNames() {
 	methodNames.addElement("test_ConstructorII");
 	return methodNames;
 }
+@Override
 protected void runTest() throws Throwable {
 	if (getName().equals("test_Constructor")) test_Constructor();
 	else if (getName().equals("test_ConstructorI")) test_ConstructorI();

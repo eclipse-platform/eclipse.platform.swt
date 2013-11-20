@@ -42,6 +42,7 @@ public static void main(String[] args) {
 	}
 	Shell shell = new Shell(display);
 	shell.addListener(SWT.Paint, new Listener() {
+		@Override
 		public void handleEvent(Event e) {			
 			GC gc = e.gc;
 			gc.setBackground(green);

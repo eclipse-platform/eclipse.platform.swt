@@ -50,6 +50,7 @@ public class Snippet313 {
 		composite.setLayoutData (up);
 
 		button.addSelectionListener(new SelectionAdapter() {
+			@Override
 			public void widgetSelected(SelectionEvent e) {
 				if (composite.getLayoutData() == up) {
 					composite.setLayoutData (down);

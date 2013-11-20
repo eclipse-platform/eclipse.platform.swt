@@ -31,6 +31,7 @@ public static void main (String [] args) {
 		treeItem.setText ("Item " + i);
 	}
 	tree.addListener (SWT.MouseDown, new Listener () {
+		@Override
 		public void handleEvent (Event event) {
 			Point point = new Point (event.x, event.y);
 			TreeItem item = tree.getItem (point);

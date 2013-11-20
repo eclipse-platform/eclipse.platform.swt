@@ -33,6 +33,7 @@ public static void main(String[] args) {
 	shell.pack();
 	shell.open();
 	button.addListener(SWT.MouseDown, new Listener() {
+		@Override
 		public void handleEvent(Event e){
 			System.out.println("Mouse Down (button: " + e.button + " x: " + e.x + " y: " + e.y + ")");
 		}
@@ -40,6 +41,7 @@ public static void main(String[] args) {
 	final Point pt = display.map(shell, null, 50, 50);
 	new Thread(){
 		Event event;
+		@Override
 		public void run(){
 			try {
 				Thread.sleep(300);

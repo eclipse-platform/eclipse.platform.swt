@@ -33,6 +33,7 @@ public void test_ConstructorLorg_eclipse_swt_widgets_Tree() {
 	warnUnimpl("Test test_ConstructorLorg_eclipse_swt_widgets_Tree not written");
 }
 
+@Override
 public void test_dispose() {
 	warnUnimpl("Test test_dispose not written");
 }
@@ -68,6 +69,7 @@ public static java.util.Vector<String> methodNames() {
 	methodNames.addAll(Test_org_eclipse_swt_custom_ControlEditor.methodNames()); // add superclass method names
 	return methodNames;
 }
+@Override
 protected void runTest() throws Throwable {
 	if (getName().equals("test_ConstructorLorg_eclipse_swt_widgets_Tree")) test_ConstructorLorg_eclipse_swt_widgets_Tree();
 	else if (getName().equals("test_dispose")) test_dispose();

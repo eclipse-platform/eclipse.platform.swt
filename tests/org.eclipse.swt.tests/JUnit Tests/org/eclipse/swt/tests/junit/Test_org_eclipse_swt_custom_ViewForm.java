@@ -29,14 +29,17 @@ public static void main(String[] args) {
 	TestRunner.run(suite());
 }
 
+@Override
 public void test_ConstructorLorg_eclipse_swt_widgets_CompositeI() {
 	warnUnimpl("Test test_ConstructorLorg_eclipse_swt_widgets_CompositeI not written");
 }
 
+@Override
 public void test_computeSizeIIZ() {
 	warnUnimpl("Test test_computeSizeIIZ not written");
 }
 
+@Override
 public void test_getClientArea() {
 	warnUnimpl("Test test_getClientArea not written");
 }
@@ -57,6 +60,7 @@ public void test_getTopRight() {
 	warnUnimpl("Test test_getTopRight not written");
 }
 
+@Override
 public void test_layoutZ() {
 	warnUnimpl("Test test_layoutZ not written");
 }
@@ -69,10 +73,12 @@ public void test_setContentLorg_eclipse_swt_widgets_Control() {
 	warnUnimpl("Test test_setContentLorg_eclipse_swt_widgets_Control not written");
 }
 
+@Override
 public void test_setFontLorg_eclipse_swt_graphics_Font() {
 	warnUnimpl("Test test_setFontLorg_eclipse_swt_graphics_Font not written");
 }
 
+@Override
 public void test_setLayoutLorg_eclipse_swt_widgets_Layout() {
 	warnUnimpl("Test test_setLayoutLorg_eclipse_swt_widgets_Layout not written");
 }
@@ -124,6 +130,7 @@ public static java.util.Vector<String> methodNames() {
 	methodNames.addAll(Test_org_eclipse_swt_widgets_Composite.methodNames()); // add superclass method names
 	return methodNames;
 }
+@Override
 protected void runTest() throws Throwable {
 	if (getName().equals("test_ConstructorLorg_eclipse_swt_widgets_CompositeI")) test_ConstructorLorg_eclipse_swt_widgets_CompositeI();
 	else if (getName().equals("test_computeSizeIIZ")) test_computeSizeIIZ();

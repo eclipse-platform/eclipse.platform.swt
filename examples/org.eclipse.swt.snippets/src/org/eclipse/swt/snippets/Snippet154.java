@@ -51,6 +51,7 @@ public class Snippet154 {
 		/* Create and setting up frame */
 		Frame frame = SWT_AWT.new_Frame(composite);
 		Panel panel = new Panel(new BorderLayout()) {
+			@Override
 			public void update(java.awt.Graphics g) {
 				/* Do not erase the background */ 
 				paint(g);

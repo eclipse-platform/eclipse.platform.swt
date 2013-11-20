@@ -35,6 +35,7 @@ public static void main (String [] args) {
 	final Canvas c = new Canvas (shell, SWT.BORDER);
 	c.setBounds (10, 50, 100, 32);
 	c.addListener (SWT.Traverse, new Listener () {
+		@Override
 		public void handleEvent (Event e) {
 			switch (e.detail) {
 				/* Do tab group traversal */
@@ -50,16 +51,19 @@ public static void main (String [] args) {
 		}
 	});
 	c.addListener (SWT.FocusIn, new Listener () {
+		@Override
 		public void handleEvent (Event e) {
 			c.setBackground (red);
 		}
 	});
 	c.addListener (SWT.FocusOut, new Listener () {
+		@Override
 		public void handleEvent (Event e) {
 			c.setBackground (blue);
 		}
 	});
 	c.addListener (SWT.KeyDown, new Listener () {
+		@Override
 		public void handleEvent (Event e) {
 			System.out.println ("KEY");
 		}

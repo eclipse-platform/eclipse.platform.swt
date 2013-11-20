@@ -35,10 +35,12 @@ public static void main(String[] args) {
 	TestRunner.run(suite());
 }
 
+@Override
 protected void setUp() {
 	shell = new Shell();
 }
 
+@Override
 protected void tearDown() {
 	if (widget != null) {
 		assertEquals(false, widget.isDisposed());
@@ -192,6 +194,7 @@ public static java.util.Vector<String> methodNames() {
 	methodNames.addElement("test_toString");
 	return methodNames;
 }
+@Override
 protected void runTest() throws Throwable {
 	if (getName().equals("test_ConstructorLorg_eclipse_swt_widgets_WidgetI")) test_ConstructorLorg_eclipse_swt_widgets_WidgetI();
 	else if (getName().equals("test_addDisposeListenerLorg_eclipse_swt_events_DisposeListener")) test_addDisposeListenerLorg_eclipse_swt_events_DisposeListener();

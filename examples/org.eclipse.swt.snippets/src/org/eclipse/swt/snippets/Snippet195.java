@@ -73,6 +73,7 @@ public class Snippet195 {
 		} catch(LWJGLException e) { e.printStackTrace(); }
 
 		canvas.addListener(SWT.Resize, new Listener() {
+			@Override
 			public void handleEvent(Event event) {
 				Rectangle bounds = canvas.getBounds();
 				float fAspect = (float) bounds.width / (float) bounds.height;
@@ -102,6 +103,7 @@ public class Snippet195 {
 
 		final Runnable run = new Runnable() {
 			int rot = 0;
+			@Override
 			public void run() {
 				if (!canvas.isDisposed()) {
 					canvas.setCurrent();
@@ -125,6 +127,7 @@ public class Snippet195 {
 			}
 		};
 		canvas.addListener(SWT.Paint, new Listener() {
+			@Override
 			public void handleEvent(Event event) {
 				run.run();
 			}

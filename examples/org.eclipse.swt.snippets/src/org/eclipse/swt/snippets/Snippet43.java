@@ -40,6 +40,7 @@ public static void main (String [] args) {
 	caret.setImage (image);
 	caret.setVisible (true);
 	shell.addListener(SWT.Paint, new Listener() {
+		@Override
 		public void handleEvent(Event event) {
 			GC gc = event.gc;
 			gc.drawImage (image, 10, 64);

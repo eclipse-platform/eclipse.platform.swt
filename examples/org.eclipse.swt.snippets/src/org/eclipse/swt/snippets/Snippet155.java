@@ -39,6 +39,7 @@ public class Snippet155 {
 		/* Draw an X using AWT */
 		Frame frame = SWT_AWT.new_Frame(composite);
 		Canvas canvas = new Canvas() {
+			@Override
 			public void paint (Graphics g) {
 				Dimension d = getSize();
 				g.drawLine(0, 0, d.width, d.height);

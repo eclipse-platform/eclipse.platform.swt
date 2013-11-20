@@ -38,16 +38,19 @@ public static void main(String[] args) {
 	TestRunner.run(suite());
 }
 
+@Override
 protected void setUp() {
 	super.setUp();
 	coolBar = new CoolBar(shell, 0);
 	setWidget(coolBar);
 }
 
+@Override
 public void test_ConstructorLorg_eclipse_swt_widgets_CompositeI() {
 	warnUnimpl("Test test_ConstructorLorg_eclipse_swt_widgets_CompositeI not written");
 }
 
+@Override
 public void test_computeSizeIIZ() {
 	warnUnimpl( "Test test_computeSizeIIZ not written");
 }
@@ -129,6 +132,7 @@ public static java.util.Vector<String> methodNames() {
 	methodNames.addAll(Test_org_eclipse_swt_widgets_Composite.methodNames()); // add superclass method names
 	return methodNames;
 }
+@Override
 protected void runTest() throws Throwable {
 	if (getName().equals("test_ConstructorLorg_eclipse_swt_widgets_CompositeI")) test_ConstructorLorg_eclipse_swt_widgets_CompositeI();
 	else if (getName().equals("test_computeSizeIIZ")) test_computeSizeIIZ();
@@ -235,6 +239,7 @@ public void test_consistency_ChevronMouseSelection() {
 class CoolItemSelectionListener extends SelectionAdapter {
 	private Menu menu = null;
 	
+	@Override
 	public void widgetSelected(SelectionEvent event) {
 		/**
 		 * A selection event will be fired when the cool item

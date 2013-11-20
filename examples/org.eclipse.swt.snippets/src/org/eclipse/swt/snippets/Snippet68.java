@@ -35,6 +35,7 @@ public static void main (String [] args) {
 	label.setBackground (red);
 	final int time = 500;
 	final Runnable timer = new Runnable () {
+		@Override
 		public void run () {
 			if (label.isDisposed ()) return;
 			Color color = label.getBackground ().equals (red) ? blue : red;
@@ -44,6 +45,7 @@ public static void main (String [] args) {
 	};
 	display.timerExec (time, timer);
 	button.addListener (SWT.Selection, new Listener () {
+		@Override
 		public void handleEvent (Event event) {
 			display.timerExec (-1, timer);
 		}

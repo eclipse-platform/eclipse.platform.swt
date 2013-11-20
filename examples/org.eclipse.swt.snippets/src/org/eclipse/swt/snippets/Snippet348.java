@@ -43,10 +43,12 @@ public class Snippet348 {
 			item.setMenu(menu);
 			menu.addMenuListener(new MenuListener() {
 
+				@Override
 				public void menuHidden(MenuEvent e) {
 					System.out.println("Menu closed: " + e);
 				}
 
+				@Override
 				public void menuShown(MenuEvent e) {
 					System.out.println("Menu open: " + e);
 				}
@@ -56,6 +58,7 @@ public class Snippet348 {
 			newWindow.setText("New Window");
 			newWindow.setAccelerator(SWT.MOD1 | 'N');
 			newWindow.addListener(SWT.Selection, new Listener() {
+				@Override
 				public void handleEvent(Event event) {
 					Shell s = createShell();
 					s.open();
@@ -65,6 +68,7 @@ public class Snippet348 {
 				MenuItem exit = new MenuItem(menu, SWT.PUSH);
 				exit.setText("Exit");
 				exit.addListener(SWT.Selection, new Listener() {
+					@Override
 					public void handleEvent(Event event) {
 						Display d = Display.getCurrent();
 						Shell[] shells = d.getShells();
@@ -84,6 +88,7 @@ public class Snippet348 {
 		createMenuBar(shell);
 		
 		shell.addDisposeListener(new DisposeListener() {
+			@Override
 			public void widgetDisposed(DisposeEvent e) {
 				Display d = Display.getCurrent();
 				Menu bar = d.getMenuBar();

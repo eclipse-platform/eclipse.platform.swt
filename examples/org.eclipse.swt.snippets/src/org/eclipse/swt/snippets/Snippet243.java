@@ -31,6 +31,7 @@ public static void main(String [] args) {
 	final Text text0 = new Text (shell, SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL);
 	final Text text1 = new Text (shell, SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL);
 	text0.addVerifyListener (new VerifyListener () {
+		@Override
 		public void verifyText (VerifyEvent event) {
 			text1.setTopIndex (text0.getTopIndex ());
 			text1.setSelection (event.start, event.end);

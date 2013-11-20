@@ -27,6 +27,7 @@ public static void main (String [] args) {
 	final Shell shell = new Shell (display);
 	shell.setLayout (new FillLayout ());
 	Listener listener = new Listener () {
+		@Override
 		public void handleEvent (Event e) {
 			Control [] children = shell.getChildren ();
 			for (int i=0; i<children.length; i++) {

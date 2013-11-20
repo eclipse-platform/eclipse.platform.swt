@@ -48,6 +48,7 @@ public static java.util.Vector<String> methodNames() {
 	methodNames.addElement("test_helpRequestedLorg_eclipse_swt_events_HelpEvent");
 	return methodNames;
 }
+@Override
 protected void runTest() throws Throwable {
 	if (getName().equals("test_helpRequestedLorg_eclipse_swt_events_HelpEvent")) test_helpRequestedLorg_eclipse_swt_events_HelpEvent();
 }

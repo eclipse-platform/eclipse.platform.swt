@@ -36,12 +36,14 @@ public static void main(String[] args) {
 	TestRunner.run(suite());
 }
 
+@Override
 protected void setUp() {
 	super.setUp();
 	combo = new Combo(shell, 0);
 	setWidget(combo);
 }
 
+@Override
 public void test_ConstructorLorg_eclipse_swt_widgets_CompositeI() {
 	try {
 		combo = new Combo(null, 0);
@@ -206,6 +208,7 @@ public void test_clearSelection() {
 	assertTrue(":d:", combo.getSelection().x==combo.getSelection().y);
 }
 
+@Override
 public void test_computeSizeIIZ() {
 	// super class test is sufficient
 }
@@ -257,6 +260,7 @@ public void test_deselectI() {
 	}
 }
 
+@Override
 public void test_getChildren() {
 	// Combo cannot have children
 }
@@ -828,6 +832,7 @@ public static java.util.Vector<String> methodNames() {
 	methodNames.addAll(Test_org_eclipse_swt_widgets_Composite.methodNames()); // add superclass method names
 	return methodNames;
 }
+@Override
 protected void runTest() throws Throwable {
 	if (getName().equals("test_ConstructorLorg_eclipse_swt_widgets_CompositeI")) test_ConstructorLorg_eclipse_swt_widgets_CompositeI();
 	else if (getName().equals("test_addLjava_lang_String")) test_addLjava_lang_String();
@@ -875,6 +880,7 @@ protected void runTest() throws Throwable {
 }
 
 /* custom */
+@Override
 public void test_setBoundsIIII() {
 	combo.setBounds(10, 20, 30, 40);
 	// only check x, y, and width - you can't set the height of a combo
@@ -883,6 +889,7 @@ public void test_setBoundsIIII() {
 	assertTrue(combo.getBounds().width == 30);
 }
 
+@Override
 public void test_setBoundsLorg_eclipse_swt_graphics_Rectangle() {
 	combo.setBounds(new Rectangle(10, 20, 30, 40));
 	// only check x, y, and width - you can't set the height of a combo
@@ -891,6 +898,7 @@ public void test_setBoundsLorg_eclipse_swt_graphics_Rectangle() {
 	assertTrue(combo.getBounds().width == 30);
 }
 
+@Override
 public void test_setSizeII() {
 	combo.setSize(30, 40);
 	// only check the width - you can't set the height of a combo
@@ -901,6 +909,7 @@ public void test_setSizeII() {
 	assertTrue(combo.getSize().x == 32);
 }
 
+@Override
 public void test_setSizeLorg_eclipse_swt_graphics_Point() {
 	combo.setSize(new Point(30, 40));
 	// only check the width - you can't set the height of a combo

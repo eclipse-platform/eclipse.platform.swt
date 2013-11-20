@@ -34,6 +34,7 @@ public static void main(String[] args) {
 	text.setSelection (0);
 	Listener listener = new Listener () {
 		int lastIndex = text.getTopIndex ();
+		@Override
 		public void handleEvent (Event e) {
 			int index = text.getTopIndex ();
 			if (index != lastIndex) {

@@ -31,6 +31,7 @@ public class Snippet344 {
 		Button button = new Button(shell, SWT.PUSH);
 		button.setText("Click me");
 		button.addSelectionListener(new SelectionAdapter() {
+			@Override
 			public void widgetSelected(SelectionEvent e) {
 				Shell shell2 = new Shell(SWT.TOOL | SWT.RESIZE | SWT.CLOSE | SWT.MAX);
 				shell2.setLayout(new GridLayout(1, false));

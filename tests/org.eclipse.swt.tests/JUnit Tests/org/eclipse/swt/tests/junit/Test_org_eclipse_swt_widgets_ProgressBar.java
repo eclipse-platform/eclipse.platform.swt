@@ -31,12 +31,14 @@ public static void main(String[] args) {
 	TestRunner.run(suite());
 }
 
+@Override
 protected void setUp() {
 	super.setUp();
 	progressBar = new ProgressBar(shell, 0);
 	setWidget(progressBar);
 }
 
+@Override
 public void test_ConstructorLorg_eclipse_swt_widgets_CompositeI() {
 	try {
 		progressBar = new ProgressBar(null, 0);
@@ -50,6 +52,7 @@ public void test_ConstructorLorg_eclipse_swt_widgets_CompositeI() {
 		progressBar = new ProgressBar(shell, cases[i]);
 }
 
+@Override
 public void test_computeSizeIIZ() {
 	warnUnimpl("Test test_computeSizeIIZ not written");
 }
@@ -66,6 +69,7 @@ public void test_getSelection() {
 	warnUnimpl("Test test_getSelection not written");
 }
 
+@Override
 public void test_setFocus() {
 	warnUnimpl("Test test_setFocus not written");
 }
@@ -129,6 +133,7 @@ public static java.util.Vector<String> methodNames() {
 	methodNames.addAll(Test_org_eclipse_swt_widgets_Control.methodNames()); // add superclass method names
 	return methodNames;
 }
+@Override
 protected void runTest() throws Throwable {
 	if (getName().equals("test_ConstructorLorg_eclipse_swt_widgets_CompositeI")) test_ConstructorLorg_eclipse_swt_widgets_CompositeI();
 	else if (getName().equals("test_computeSizeIIZ")) test_computeSizeIIZ();

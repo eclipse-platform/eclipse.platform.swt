@@ -29,10 +29,12 @@ public static void main(String[] args) {
 	TestRunner.run(suite());
 }
 
+@Override
 public void test_ConstructorLorg_eclipse_swt_widgets_CompositeI() {
 	warnUnimpl("Test test_ConstructorLorg_eclipse_swt_widgets_CompositeI not written");
 }
 
+@Override
 public void test_computeSizeIIZ() {
 	warnUnimpl("Test test_computeSizeIIZ not written");
 }
@@ -49,18 +51,22 @@ public void test_getWeights() {
 	warnUnimpl("Test test_getWeights not written");
 }
 
+@Override
 public void test_layoutZ() {
 	warnUnimpl("Test test_layoutZ not written");
 }
 
+@Override
 public void test_setBackgroundLorg_eclipse_swt_graphics_Color() {
 	warnUnimpl("Test test_setBackgroundLorg_eclipse_swt_graphics_Color not written");
 }
 
+@Override
 public void test_setForegroundLorg_eclipse_swt_graphics_Color() {
 	warnUnimpl("Test test_setForegroundLorg_eclipse_swt_graphics_Color not written");
 }
 
+@Override
 public void test_setLayoutLorg_eclipse_swt_widgets_Layout() {
 	warnUnimpl("Test test_setLayoutLorg_eclipse_swt_widgets_Layout not written");
 }
@@ -105,6 +111,7 @@ public static java.util.Vector<String> methodNames() {
 	return methodNames;
 }
 
+@Override
 protected void runTest() throws Throwable {
 	if (getName().equals("test_ConstructorLorg_eclipse_swt_widgets_CompositeI")) test_ConstructorLorg_eclipse_swt_widgets_CompositeI();
 	else if (getName().equals("test_computeSizeIIZ")) test_computeSizeIIZ();

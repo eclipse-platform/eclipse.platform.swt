@@ -64,6 +64,7 @@ public void go() {
 	Transfer[] transfers = new Transfer[] {new MyTypeTransfer()};
 	dragSource.setTransfer(transfers);
 	dragSource.addDragListener(new DragSourceAdapter() {
+		@Override
 		public void dragSetData(DragSourceEvent event) {
 			MyType object = new MyType();
 			object.name = "content dragged from SWT";
@@ -100,6 +101,7 @@ public void go() {
 
 	/* add drop target */
 	DropTargetListener dropTargetListener = new DropTargetAdapter() {
+		@Override
 		public void drop(DropTargetDropEvent dropTargetDropEvent) {
 			try {
 				dropTargetDropEvent.acceptDrop(DnDConstants.ACTION_COPY);
@@ -131,14 +133,17 @@ class MyTypeTransfer extends ByteArrayTransfer {
 
 	final int MIME_TYPE_ID = registerType(MIME_TYPE);
 
+	@Override
 	protected int[] getTypeIds() {
 		return new int[] {MIME_TYPE_ID};
 	}
 
+	@Override
 	protected String[] getTypeNames() {
 		return new String[] {MIME_TYPE};
 	}
 
+@Override
 public void javaToNative(Object object, TransferData transferData) {
 	if (!checkMyType(object) || !isSupportedType(transferData)) {
 		DND.error(DND.ERROR_INVALID_DATA);
@@ -150,6 +155,7 @@ public void javaToNative(Object object, TransferData transferData) {
 	}
 }
 
+@Override
 public Object nativeToJava(TransferData transferData) {
 	if (!isSupportedType(transferData)) return null;
 	byte[] bytes = (byte[])super.nativeToJava(transferData);
@@ -162,6 +168,7 @@ boolean checkMyType(Object object) {
 	return myType != null && myType.name != null && myType.name.length() > 0 && myType.time > 0;
 }
 
+@Override
 protected boolean validate(Object object) {
 	return checkMyType(object);
 }

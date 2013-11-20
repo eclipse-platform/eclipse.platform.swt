@@ -50,7 +50,8 @@ public static void main(String [] args) {
     liveLabel.setLayoutData(data);
     liveLabel.setText("");
     liveLabel.getAccessible().addAccessibleAttributeListener(new AccessibleAttributeAdapter() {
-            public void getAttributes(AccessibleAttributeEvent e) {
+            @Override
+			public void getAttributes(AccessibleAttributeEvent e) {
                     e.attributes = new String[] {
                                     "container-live", "polite",
                                     "live", "polite",
@@ -72,7 +73,8 @@ public static void main(String [] args) {
     okButton.setEnabled(false);
 
     textField.addModifyListener(new ModifyListener() {
-            public void modifyText(ModifyEvent e) {
+            @Override
+			public void modifyText(ModifyEvent e) {
                     boolean isNumber = false;
                     String textValue = textField.getText();
                     try {

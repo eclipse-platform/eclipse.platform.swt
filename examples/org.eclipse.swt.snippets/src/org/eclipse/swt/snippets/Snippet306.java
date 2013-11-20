@@ -44,6 +44,7 @@ public static void main (String [] args) {
 		return;
 	}
 	browser.addProgressListener (new ProgressAdapter () {
+		@Override
 		public void completed (ProgressEvent event) {
 			nsIWebBrowser webBrowser = (nsIWebBrowser)browser.getWebBrowser ();
 			nsIDOMWindow domWindow = webBrowser.getContentDOMWindow ();

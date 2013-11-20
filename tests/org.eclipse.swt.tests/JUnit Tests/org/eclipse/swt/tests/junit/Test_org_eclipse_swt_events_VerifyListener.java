@@ -48,6 +48,7 @@ public static java.util.Vector<String> methodNames() {
 	methodNames.addElement("test_verifyTextLorg_eclipse_swt_events_VerifyEvent");
 	return methodNames;
 }
+@Override
 protected void runTest() throws Throwable {
 	if (getName().equals("test_verifyTextLorg_eclipse_swt_events_VerifyEvent")) test_verifyTextLorg_eclipse_swt_events_VerifyEvent();
 }

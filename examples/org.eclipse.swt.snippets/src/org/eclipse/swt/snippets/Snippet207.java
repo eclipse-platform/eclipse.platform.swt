@@ -43,6 +43,7 @@ public class Snippet207 {
 		shell.setLayout(new FillLayout());
 		final Canvas canvas = new Canvas(shell, SWT.DOUBLE_BUFFERED);
 		canvas.addPaintListener(new PaintListener () {
+			@Override
 			public void paintControl(PaintEvent e) {	
 				GC gc = e.gc;
 				gc.setAdvanced(true);

@@ -67,6 +67,7 @@ public static java.util.Vector<String> methodNames() {
 	return methodNames;
 }
 
+@Override
 protected void runTest() throws Throwable {
 	if (getName().equals("test_changedLorg_eclipse_swt_browser_LocationEvent")) test_changedLorg_eclipse_swt_browser_LocationEvent();
 	else if (getName().equals("test_changingLorg_eclipse_swt_browser_LocationEvent")) test_changingLorg_eclipse_swt_browser_LocationEvent();

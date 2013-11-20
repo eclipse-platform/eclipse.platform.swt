@@ -70,6 +70,7 @@ public static void main(String [] args) {
 	 * as efficient as possible.
 	 */
 	tree.addListener(SWT.EraseItem, new Listener() {
+		@Override
 		public void handleEvent(Event event) {
 			event.detail &= ~SWT.HOT;
 			if ((event.detail & SWT.SELECTED) != 0) {

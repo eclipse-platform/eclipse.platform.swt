@@ -33,6 +33,7 @@ public static void main(String[] args) {
 	shell.setLayout (new RowLayout (SWT.VERTICAL));
 	final Table table = new Table (shell, SWT.VIRTUAL | SWT.BORDER);
 	table.addListener (SWT.SetData, new Listener () {
+		@Override
 		public void handleEvent (Event event) {
 			TableItem item = (TableItem) event.item;
 			int index = table.indexOf (item);
@@ -49,6 +50,7 @@ public static void main(String[] args) {
 	button.setText ("Add Items");
 	final Label label = new Label(shell, SWT.NONE);
 	button.addListener (SWT.Selection, new Listener () {
+		@Override
 		public void handleEvent (Event event) {
 			long t1 = System.currentTimeMillis ();
 			table.setItemCount (COUNT);

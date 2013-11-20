@@ -31,6 +31,7 @@ public static void main (String [] args) {
 	Button open = new Button (shell, SWT.PUSH);
 	open.setText ("Open Dialog");
 	open.addSelectionListener (new SelectionAdapter () {
+		@Override
 		public void widgetSelected (SelectionEvent e) {
 			final Shell dialog = new Shell (shell, SWT.DIALOG_TRIM);
 			dialog.setLayout (new GridLayout (3, false));
@@ -45,6 +46,7 @@ public static void main (String [] args) {
 			ok.setText ("OK");
 			ok.setLayoutData(new GridData (SWT.FILL, SWT.CENTER, false, false));
 			ok.addSelectionListener (new SelectionAdapter () {
+				@Override
 				public void widgetSelected (SelectionEvent e) {
 					System.out.println ("Calendar date selected (MM/DD/YYYY) = " + (calendar.getMonth () + 1) + "/" + calendar.getDay () + "/" + calendar.getYear ());
 					System.out.println ("Date selected (MM/YYYY) = " + (date.getMonth () + 1) + "/" + date.getYear ());

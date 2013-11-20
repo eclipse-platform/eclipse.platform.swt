@@ -35,6 +35,7 @@ public Test_org_eclipse_swt_custom_VerifyKeyListener(String name) {
 public static void main(String[] args) {
 	TestRunner.run(suite());
 }
+@Override
 protected void setUp() {
 	super.setUp();
 	shell = new Shell();
@@ -78,6 +79,7 @@ public static java.util.Vector<String> methodNames() {
 	methodNames.addElement("test_verifyKeyLorg_eclipse_swt_events_VerifyEvent");
 	return methodNames;
 }
+@Override
 protected void runTest() throws Throwable {
 	if (getName().equals("test_verifyKeyLorg_eclipse_swt_events_VerifyEvent")) test_verifyKeyLorg_eclipse_swt_events_VerifyEvent();
 }

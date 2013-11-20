@@ -43,6 +43,7 @@ public class Snippet292 {
 		new Button(group, SWT.PUSH).setText("Button");
 		final Label label = new Label (shell, SWT.NONE);
 		label.addListener (SWT.Dispose, new Listener () {
+			@Override
 			public void handleEvent (Event e) {
 				Image image = label.getImage ();
 				if (image != null) image.dispose ();
@@ -51,6 +52,7 @@ public class Snippet292 {
 		Button button = new Button (shell, SWT.PUSH);
 		button.setText ("Snapshot");
 		button.addListener (SWT.Selection, new Listener () {
+			@Override
 			public void handleEvent (Event e) {
 				Image image = label.getImage ();
 				if (image != null) image.dispose ();

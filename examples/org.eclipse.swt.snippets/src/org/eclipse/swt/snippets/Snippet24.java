@@ -31,11 +31,13 @@ public static void main (String [] args) {
 	Text text = new Text (shell, SWT.SINGLE | SWT.BORDER);
 	text.setText ("some text");
 	combo.addListener (SWT.DefaultSelection, new Listener () {
+		@Override
 		public void handleEvent (Event e) {
 			System.out.println (e.widget + " - Default Selection");
 		}
 	});
 	text.addListener (SWT.DefaultSelection, new Listener () {
+		@Override
 		public void handleEvent (Event e) {
 			System.out.println (e.widget + " - Default Selection");
 		}

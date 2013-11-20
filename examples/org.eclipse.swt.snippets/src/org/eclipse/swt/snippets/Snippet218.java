@@ -45,6 +45,7 @@ public class Snippet218 {
 		styledText.setFont(font);
 		styledText.setForeground(display.getSystemColor (SWT.COLOR_BLUE));
 		styledText.addListener (SWT.Resize, new Listener () {
+			@Override
 			public void handleEvent (Event event) {
 				Rectangle rect = styledText.getClientArea ();
 				Image newImage = new Image (display, 1, Math.max (1, rect.height));

@@ -35,12 +35,14 @@ public static void main(String[] args) {
 	TestRunner.run(suite());
 }
 
+@Override
 protected void setUp() {
 	super.setUp();
 	button = new Button(shell, SWT.PUSH);
 	setWidget(button);
 }
 
+@Override
 public void test_ConstructorLorg_eclipse_swt_widgets_CompositeI() {
 	// Test Button(Composite parent, int style)
 	new Button(shell, SWT.NULL);
@@ -94,6 +96,7 @@ public void test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener()
 	assertFalse(listenerCalled);
 }
 
+@Override
 public void test_computeSizeIIZ() {
 	button.computeSize(0, 0);
 
@@ -167,6 +170,7 @@ public void test_setAlignmentI() {
 	assertTrue(alignment != button.getAlignment());
 }
 
+@Override
 public void test_setFocus() {
 	Button btn = new Button(shell, SWT.ARROW);
 	btn.setFocus();
@@ -285,6 +289,7 @@ public static java.util.Vector<String> methodNames() {
 	methodNames.addAll(Test_org_eclipse_swt_widgets_Control.methodNames()); // add superclass method names
 	return methodNames;
 }
+@Override
 protected void runTest() throws Throwable {
 	if (getName().equals("test_ConstructorLorg_eclipse_swt_widgets_CompositeI")) test_ConstructorLorg_eclipse_swt_widgets_CompositeI();
 	else if (getName().equals("test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener")) test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener();

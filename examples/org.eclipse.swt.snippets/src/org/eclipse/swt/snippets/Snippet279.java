@@ -28,6 +28,7 @@ public class Snippet279 {
 		shell.setLayout(new FillLayout ());
 		final Image image = display.getSystemImage (SWT.ICON_QUESTION);
 		shell.addListener (SWT.Paint, new Listener () {
+			@Override
 			public void handleEvent (Event e) {
 				Rectangle rect = image.getBounds ();
 				GC gc = e.gc;

@@ -57,6 +57,7 @@ public static java.util.Vector<String> methodNames() {
 	methodNames.addElement("test_widgetSelectedLorg_eclipse_swt_events_SelectionEvent");
 	return methodNames;
 }
+@Override
 protected void runTest() throws Throwable {
 	if (getName().equals("test_Constructor")) test_Constructor();
 	else if (getName().equals("test_widgetDefaultSelectedLorg_eclipse_swt_events_SelectionEvent")) test_widgetDefaultSelectedLorg_eclipse_swt_events_SelectionEvent();

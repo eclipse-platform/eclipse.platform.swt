@@ -61,6 +61,7 @@ public static void main(String [] args) {
 	 */
 	tree.addListener(SWT.PaintItem, new Listener() {
 		int[] percents = new int[] {50, 30, 5, 15};
+		@Override
 		public void handleEvent(Event event) {
 			if (event.index == 1) {
 				TreeItem item = (TreeItem)event.item;

@@ -31,16 +31,19 @@ public static void main(String[] args) {
 	TestRunner.run(suite());
 }
 
+@Override
 protected void setUp() {
 	super.setUp();
 	label = new CLabel(shell, 0);
 	setWidget(label);
 }
 
+@Override
 public void test_ConstructorLorg_eclipse_swt_widgets_CompositeI() {
 	warnUnimpl("Test test_ConstructorLorg_eclipse_swt_widgets_CompositeI not written");
 }
 
+@Override
 public void test_computeSizeIIZ() {
 	warnUnimpl("Test test_computeSizeIIZ not written");
 }
@@ -57,6 +60,7 @@ public void test_getText() {
 	warnUnimpl("Test test_getText not written");
 }
 
+@Override
 public void test_getToolTipText() {
 	warnUnimpl("Test test_getToolTipText not written");
 }
@@ -69,6 +73,7 @@ public void test_setBackground$Lorg_eclipse_swt_graphics_Color$I() {
 	warnUnimpl("Test test_setBackground$Lorg_eclipse_swt_graphics_Color$I not written");
 }
 
+@Override
 public void test_setBackgroundLorg_eclipse_swt_graphics_Color() {
 	warnUnimpl("Test test_setBackgroundLorg_eclipse_swt_graphics_Color not written");
 }
@@ -77,6 +82,7 @@ public void test_setBackgroundLorg_eclipse_swt_graphics_Image() {
 	warnUnimpl("Test test_setBackgroundLorg_eclipse_swt_graphics_Image not written");
 }
 
+@Override
 public void test_setFontLorg_eclipse_swt_graphics_Font() {
 	warnUnimpl("Test test_setFontLorg_eclipse_swt_graphics_Font not written");
 }
@@ -89,6 +95,7 @@ public void test_setTextLjava_lang_String() {
 	warnUnimpl("Test test_setTextLjava_lang_String not written");
 }
 
+@Override
 public void test_setToolTipTextLjava_lang_String() {
 	warnUnimpl("Test test_setToolTipTextLjava_lang_String not written");
 }
@@ -123,6 +130,7 @@ public static java.util.Vector<String> methodNames() {
 	methodNames.addAll(Test_org_eclipse_swt_widgets_Canvas.methodNames()); // add superclass method names
 	return methodNames;
 }
+@Override
 protected void runTest() throws Throwable {
 	if (getName().equals("test_ConstructorLorg_eclipse_swt_widgets_CompositeI")) test_ConstructorLorg_eclipse_swt_widgets_CompositeI();
 	else if (getName().equals("test_computeSizeIIZ")) test_computeSizeIIZ();
@@ -146,10 +154,12 @@ protected void runTest() throws Throwable {
 /* custom */
 CLabel label;
 
+@Override
 public void test_consistency_MenuDetect () {
     consistencyEvent(10, 5, 3, 0, ConsistencyUtility.MOUSE_CLICK);
 }
 
+@Override
 public void test_consistency_DragDetect () {
     consistencyEvent(10, 5, 20, 10, ConsistencyUtility.MOUSE_DRAG);
 }

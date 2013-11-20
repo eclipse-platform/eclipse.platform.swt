@@ -33,6 +33,7 @@ public static void main(String[] args) {
 	TestRunner.run(suite());
 }
 
+@Override
 protected void setUp() {
 	super.setUp();
 	shell.pack();
@@ -40,6 +41,7 @@ protected void setUp() {
 	makeCleanEnvironment(false); // use multi-line by default
 }
 
+@Override
 public void test_ConstructorLorg_eclipse_swt_widgets_CompositeI() {
 	try {
 		text = new Text(null, 0);
@@ -280,6 +282,7 @@ public void test_clearSelection() {
 	assertEquals("", text.getSelectionText());
 }
 
+@Override
 public void test_computeSizeIIZ() {
 	// super class test is sufficient
 }
@@ -879,6 +882,7 @@ public void test_insertLjava_lang_String() {
 	}
 }
 
+@Override
 public void test_isVisible() {
 	// overriding test_isVisible() from Control
 	control.setVisible(true);
@@ -1047,6 +1051,7 @@ public void test_setEditableZ() {
 	assertTrue(":d:", text.getEditable() == true);
 }
 
+@Override
 public void test_setFontLorg_eclipse_swt_graphics_Font() {
 	FontData fontData = text.getFont().getFontData()[0];
 	int lineHeight;
@@ -1073,6 +1078,7 @@ public void test_setOrientationI() {
 	assertTrue(":b:", text.getOrientation()==SWT.LEFT_TO_RIGHT);
 }
 
+@Override
 public void test_setRedrawZ() {
 	text.setRedraw(false);
 	text.setRedraw(true);
@@ -1391,6 +1397,7 @@ public static java.util.Vector<String> methodNames() {
 	methodNames.addAll(Test_org_eclipse_swt_widgets_Scrollable.methodNames()); // add superclass method names
 	return methodNames;
 }
+@Override
 protected void runTest() throws Throwable {
 	if (getName().equals("test_ConstructorLorg_eclipse_swt_widgets_CompositeI")) test_ConstructorLorg_eclipse_swt_widgets_CompositeI();
 	else if (getName().equals("test_addModifyListenerLorg_eclipse_swt_events_ModifyListener")) test_addModifyListenerLorg_eclipse_swt_events_ModifyListener();
@@ -1475,6 +1482,7 @@ private void makeCleanEnvironment(boolean single, boolean border) {
 	delimiterString = Text.DELIMITER;
 }
 
+@Override
 protected void setWidget(Widget w) {
 	text = (Text)w;
 	super.setWidget(w);

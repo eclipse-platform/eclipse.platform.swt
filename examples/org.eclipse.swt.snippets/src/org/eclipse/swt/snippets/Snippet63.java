@@ -35,6 +35,7 @@ public static void main (String [] args) {
 	Button cancel = new Button (dialog, SWT.PUSH);
 	cancel.setText ("Cancel");
 	Listener listener =new Listener () {
+		@Override
 		public void handleEvent (Event event) {
 			result [0] = event.widget == ok;
 			dialog.close ();

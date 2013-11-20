@@ -807,6 +807,7 @@ public static java.util.Vector<String> methodNames() {
 	methodNames.addAll(Test_org_eclipse_swt_widgets_Widget.methodNames()); // add superclass method names
 	return methodNames;
 }
+@Override
 protected void runTest() throws Throwable {
 	if (getName().equals("test_ConstructorLorg_eclipse_swt_widgets_CompositeI")) test_ConstructorLorg_eclipse_swt_widgets_CompositeI();
 	else if (getName().equals("test_addControlListenerLorg_eclipse_swt_events_ControlListener")) test_addControlListenerLorg_eclipse_swt_events_ControlListener();
@@ -890,6 +891,7 @@ protected void runTest() throws Throwable {
 	Control control;
 	boolean eventOccurred;
 
+@Override
 protected void setWidget(Widget w) {
 	control = (Control)w;
 	super.setWidget(w);
@@ -959,7 +961,8 @@ protected void consistencyEvent(final int paramA, final int paramB,
             control.forceFocus();
         String[] expectedEvents = hookExpectedEvents(test, events);
         new Thread() {
-            public void run() {
+            @Override
+			public void run() {
                 display.wake();
                 switch(method) {
                 	case ConsistencyUtility.MOUSE_CLICK:
@@ -1002,7 +1005,8 @@ protected void consistencyEvent(final int paramA, final int paramB,
                                 ConsistencyUtility.postShellIconify(display, pt[1], paramA));
                     	if(control instanceof Shell) {
                     	    display.syncExec(new Thread() {
-                    	        public void run() {
+                    	        @Override
+								public void run() {
                     	            ((Shell)control).setMinimized(false);
                     	        }});
                     	} else
@@ -1010,7 +1014,8 @@ protected void consistencyEvent(final int paramA, final int paramB,
                     	break;
                 }
 				display.asyncExec(new Thread() {
-				    public void run() {
+				    @Override
+					public void run() {
 				        shell.dispose();
 				    }
 				});

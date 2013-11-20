@@ -32,6 +32,7 @@ public static void main(String[] args) {
 	TestRunner.run(suite());
 }
 
+@Override
 protected void setUp() {
 	super.setUp();
 	display = Display.getDefault();
@@ -39,6 +40,7 @@ protected void setUp() {
 	gc = new GC(shell);
 }
 
+@Override
 protected void tearDown() {
 	gc.dispose();
 	shell.dispose();
@@ -109,6 +111,7 @@ public static java.util.Vector<String> methodNames() {
 	methodNames.addElement("test_win32_newLorg_eclipse_swt_internal_win32_TEXTMETRIC");
 	return methodNames;
 }
+@Override
 protected void runTest() throws Throwable {
 	if (getName().equals("test_equalsLjava_lang_Object")) test_equalsLjava_lang_Object();
 	else if (getName().equals("test_getAscent")) test_getAscent();

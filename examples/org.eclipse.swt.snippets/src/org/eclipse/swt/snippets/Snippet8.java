@@ -39,6 +39,7 @@ public static void main (String [] args) {
 		new TreeItem (root, 0);
 	}
 	tree.addListener (SWT.Expand, new Listener () {
+		@Override
 		public void handleEvent (final Event event) {
 			final TreeItem root = (TreeItem) event.item;
 			TreeItem [] items = root.getItems ();

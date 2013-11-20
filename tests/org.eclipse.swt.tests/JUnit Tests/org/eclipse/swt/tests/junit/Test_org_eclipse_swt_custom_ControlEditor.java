@@ -67,6 +67,7 @@ public static java.util.Vector<String> methodNames() {
 	methodNames.addElement("test_setEditorLorg_eclipse_swt_widgets_Control");
 	return methodNames;
 }
+@Override
 protected void runTest() throws Throwable {
 	if (getName().equals("test_ConstructorLorg_eclipse_swt_widgets_Composite")) test_ConstructorLorg_eclipse_swt_widgets_Composite();
 	else if (getName().equals("test_dispose")) test_dispose();

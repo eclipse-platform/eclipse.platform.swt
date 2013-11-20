@@ -44,6 +44,7 @@ public static void main (String [] args) {
 	final int index = 1;
 	button.setText ("Insert Column " + index + "a");
 	button.addListener (SWT.Selection, new Listener () {
+		@Override
 		public void handleEvent (Event e) {
 			TableColumn column = new TableColumn (table, SWT.NONE, index);
 			column.setText ("Column " + index + "a");

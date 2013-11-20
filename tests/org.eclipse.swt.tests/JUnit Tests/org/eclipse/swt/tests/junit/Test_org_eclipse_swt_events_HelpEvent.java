@@ -32,6 +32,7 @@ public static void main(String[] args) {
 	TestRunner.run(suite());
 }
 
+@Override
 public void test_ConstructorLorg_eclipse_swt_widgets_Event() {
 	warnUnimpl("Test test_ConstructorLorg_eclipse_swt_widgets_Event not written");
 }
@@ -51,12 +52,14 @@ public static java.util.Vector<String> methodNames() {
 	methodNames.addAll(Test_org_eclipse_swt_events_TypedEvent.methodNames()); // add superclass method names
 	return methodNames;
 }
+@Override
 protected void runTest() throws Throwable {
 	if (getName().equals("test_ConstructorLorg_eclipse_swt_widgets_Event")) test_ConstructorLorg_eclipse_swt_widgets_Event();
 	else super.runTest();
 }
 
 /* custom */
+@Override
 protected TypedEvent newTypedEvent(Event event) {
 	return new HelpEvent(event);
 }

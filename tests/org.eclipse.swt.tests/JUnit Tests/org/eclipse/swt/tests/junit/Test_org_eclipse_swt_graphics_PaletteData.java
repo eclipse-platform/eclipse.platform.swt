@@ -147,6 +147,7 @@ public static java.util.Vector<String> methodNames() {
 	methodNames.addElement("test_getRGBs");
 	return methodNames;
 }
+@Override
 protected void runTest() throws Throwable {
 	if (getName().equals("test_Constructor$Lorg_eclipse_swt_graphics_RGB")) test_Constructor$Lorg_eclipse_swt_graphics_RGB();
 	else if (getName().equals("test_ConstructorIII")) test_ConstructorIII();

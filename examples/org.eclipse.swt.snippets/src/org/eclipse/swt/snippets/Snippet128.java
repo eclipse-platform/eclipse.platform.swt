@@ -84,6 +84,7 @@ public class Snippet128 {
 
 		/* event handling */
 		Listener listener = new Listener() {
+			@Override
 			public void handleEvent(Event event) {
 				ToolItem item = (ToolItem)event.widget;
 				String string = item.getText();
@@ -95,24 +96,29 @@ public class Snippet128 {
 		   }
 		};
 		browser.addProgressListener(new ProgressListener() {
+			@Override
 			public void changed(ProgressEvent event) {
 					if (event.total == 0) return;                            
 					int ratio = event.current * 100 / event.total;
 					progressBar.setSelection(ratio);
 			}
+			@Override
 			public void completed(ProgressEvent event) {
 				progressBar.setSelection(0);
 			}
 		});
 		browser.addStatusTextListener(new StatusTextListener() {
+			@Override
 			public void changed(StatusTextEvent event) {
 				status.setText(event.text);	
 			}
 		});
 		browser.addLocationListener(new LocationListener() {
+			@Override
 			public void changed(LocationEvent event) {
 				if (event.top) location.setText(event.location);
 			}
+			@Override
 			public void changing(LocationEvent event) {
 			}
 		});
@@ -122,6 +128,7 @@ public class Snippet128 {
 		itemRefresh.addListener(SWT.Selection, listener);
 		itemGo.addListener(SWT.Selection, listener);
 		location.addListener(SWT.DefaultSelection, new Listener() {
+			@Override
 			public void handleEvent(Event e) {
 				browser.setUrl(location.getText());
 			}

@@ -33,6 +33,7 @@ public static void main (String [] args) {
 	Rectangle clientArea = shell.getClientArea ();
 	table.setBounds (clientArea.x, clientArea.y, 100, 100);
 	table.addListener (SWT.Selection, new Listener () {
+		@Override
 		public void handleEvent (Event event) {
 			String string = event.detail == SWT.CHECK ? "Checked" : "Selected";
 			System.out.println (event.item + " " + string);

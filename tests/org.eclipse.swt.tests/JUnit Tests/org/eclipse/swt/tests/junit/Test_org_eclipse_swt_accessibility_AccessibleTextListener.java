@@ -54,6 +54,7 @@ public static java.util.Vector<String> methodNames() {
 	return methodNames;
 }
 
+@Override
 protected void runTest() throws Throwable {
 	if (getName().equals("test_getCaretOffsetLorg_eclipse_swt_accessibility_AccessibleTextEvent")) test_getCaretOffsetLorg_eclipse_swt_accessibility_AccessibleTextEvent();
 	else if (getName().equals("test_getSelectionRangeLorg_eclipse_swt_accessibility_AccessibleTextEvent")) test_getSelectionRangeLorg_eclipse_swt_accessibility_AccessibleTextEvent();

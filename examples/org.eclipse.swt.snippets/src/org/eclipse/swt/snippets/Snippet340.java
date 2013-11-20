@@ -44,6 +44,7 @@ public static void main(String[] args) {
 	final Text textField = new Text(shell, SWT.SINGLE | SWT.BORDER);
 	textField.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 	textField.addModifyListener(new ModifyListener() {
+		@Override
 		public void modifyText(ModifyEvent e) {
 			String textValue = textField.getText();
 			String message = textValue + " is not valid input.";
@@ -64,6 +65,7 @@ public static void main(String[] args) {
 	textField.getAccessible().addRelation(ACC.RELATION_DESCRIBED_BY, liveLabel.getAccessible());
 	liveLabel.getAccessible().addRelation(ACC.RELATION_DESCRIPTION_FOR, textField.getAccessible());
 	textField.getAccessible().addAccessibleListener(new AccessibleAdapter() {
+		@Override
 		public void getDescription(AccessibleEvent event) {
 			event.result = liveLabel.getText();
 		}

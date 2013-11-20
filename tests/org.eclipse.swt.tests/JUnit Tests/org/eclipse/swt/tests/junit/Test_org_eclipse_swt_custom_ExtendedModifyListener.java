@@ -35,6 +35,7 @@ public Test_org_eclipse_swt_custom_ExtendedModifyListener(String name) {
 public static void main(String[] args) {
 	TestRunner.run(suite());
 }
+@Override
 protected void setUp() {
 	super.setUp();
 	shell = new Shell();
@@ -318,6 +319,7 @@ public static java.util.Vector<String> methodNames() {
 	methodNames.addElement("test_modifyTextLorg_eclipse_swt_custom_ExtendedModifyEvent");
 	return methodNames;
 }
+@Override
 protected void runTest() throws Throwable {
 	if (getName().equals("test_modifyTextLorg_eclipse_swt_custom_ExtendedModifyEvent")) test_modifyTextLorg_eclipse_swt_custom_ExtendedModifyEvent();
 }

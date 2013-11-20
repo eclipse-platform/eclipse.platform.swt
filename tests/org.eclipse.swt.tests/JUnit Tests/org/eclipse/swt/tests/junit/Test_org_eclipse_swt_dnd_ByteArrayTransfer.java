@@ -28,14 +28,17 @@ public static void main(String[] args) {
 	TestRunner.run(suite());
 }
 
+@Override
 public void test_Constructor() {
 	warnUnimpl("Test test_Constructor not written");
 }
 
+@Override
 public void test_getSupportedTypes() {
 	warnUnimpl("Test test_getSupportedTypes not written");
 }
 
+@Override
 public void test_isSupportedTypeLorg_eclipse_swt_dnd_TransferData() {
 	warnUnimpl("Test test_isSupportedTypeLorg_eclipse_swt_dnd_TransferData not written");
 }
@@ -59,6 +62,7 @@ public static java.util.Vector<String> methodNames() {
 	methodNames.addAll(Test_org_eclipse_swt_dnd_Transfer.methodNames()); // add superclass method names
 	return methodNames;
 }
+@Override
 protected void runTest() throws Throwable {
 	if (getName().equals("test_Constructor")) test_Constructor();
 	else if (getName().equals("test_getSupportedTypes")) test_getSupportedTypes();

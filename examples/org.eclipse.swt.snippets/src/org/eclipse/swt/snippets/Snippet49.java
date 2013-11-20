@@ -31,6 +31,7 @@ public static void main (String [] args) {
 		item.setText ("Item " + i);
 	}
 	shell.addListener (SWT.Resize, new Listener () {
+		@Override
 		public void handleEvent (Event e) {
 			Rectangle rect = shell.getClientArea ();
 			Point size = toolBar.computeSize (rect.width, SWT.DEFAULT);

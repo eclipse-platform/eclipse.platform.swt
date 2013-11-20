@@ -35,23 +35,28 @@ public static void main(String[] args) {
 	TestRunner.run(suite());
 }
 
+@Override
 public void test_ConstructorLorg_eclipse_swt_widgets_CompositeI() {
 	// do nothing, even though this is not an abstract class, it was never meant to 
 	// be instantiated
 }
 
+@Override
 public void test_computeTrimIIII() {
 	decorations.computeTrim(0,0,0,0);
 	decorations.computeTrim(0,0,10,20);
 }
+@Override
 public void test_dispose() {
 	warnUnimpl("Test test_dispose not written");
 }
 
+@Override
 public void test_getBounds() {
 	warnUnimpl("Test test_getBounds not written");
 }
 
+@Override
 public void test_getClientArea() {
 	Rectangle rect = decorations.getClientArea();
 	assertTrue(":a:", rect.height >= 0);
@@ -78,6 +83,7 @@ public void test_getImages() {
 	warnUnimpl("Test test_getImages not written");
 }
 
+@Override
 public void test_getLocation() {
 	decorations.setLocation(10,15);
 	assertTrue(":a:", decorations.getLocation().x == 10);
@@ -99,6 +105,7 @@ public void test_getMinimized() {
 	// tested in setMinimized method
 }
 
+@Override
 public void test_getSize() {
 	// super class test sufficient
 }
@@ -108,6 +115,7 @@ public void test_getText() {
 	assertTrue(":a:", decorations.getText().equals("test"));
 }
 
+@Override
 public void test_isReparentable() {
 	/* Decorations are not reparentable, see win32 implementation of isReparentable() */
 	assertFalse(decorations.isReparentable());
@@ -185,6 +193,7 @@ public void test_setTextLjava_lang_String() {
 	}
 }
 
+@Override
 public void test_setVisibleZ() {
 	// test in subclasses
 }
@@ -226,6 +235,7 @@ public static java.util.Vector<String> methodNames() {
 	methodNames.addAll(Test_org_eclipse_swt_widgets_Canvas.methodNames()); // add superclass method names
 	return methodNames;
 }
+@Override
 protected void runTest() throws Throwable {
 	if (getName().equals("test_ConstructorLorg_eclipse_swt_widgets_CompositeI")) test_ConstructorLorg_eclipse_swt_widgets_CompositeI();
 	else if (getName().equals("test_computeTrimIIII")) test_computeTrimIIII();
@@ -257,6 +267,7 @@ protected void runTest() throws Throwable {
 Decorations decorations;
 Image[] images = new Image [SwtTestCase.imageFormats.length*SwtTestCase.imageFilenames.length];
 
+@Override
 protected void setWidget(Widget w) {
 	if (decorations != null && !decorations.isDisposed())
 		decorations.dispose();

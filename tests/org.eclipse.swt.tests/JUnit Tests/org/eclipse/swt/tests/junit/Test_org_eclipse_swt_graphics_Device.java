@@ -132,6 +132,7 @@ public static java.util.Vector<String> methodNames() {
 	methodNames.addElement("test_setWarningsZ");
 	return methodNames;
 }
+@Override
 protected void runTest() throws Throwable {
 	if (getName().equals("test_ConstructorLorg_eclipse_swt_graphics_DeviceData")) test_ConstructorLorg_eclipse_swt_graphics_DeviceData();
 	else if (getName().equals("test_dispose")) test_dispose();

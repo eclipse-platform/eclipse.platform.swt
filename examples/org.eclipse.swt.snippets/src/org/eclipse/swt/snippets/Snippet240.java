@@ -63,6 +63,7 @@ public static void main(String [] args) {
 	gc.dispose();
 	final Color red = display.getSystemColor(SWT.COLOR_RED);
 	Listener paintListener = new Listener() {
+		@Override
 		public void handleEvent(Event event) {
 			switch(event.type) {		
 				case SWT.MeasureItem: {

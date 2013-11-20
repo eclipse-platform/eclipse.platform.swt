@@ -67,6 +67,7 @@ public static java.util.Vector<String> methodNames() {
 	methodNames.addElement("test_toString");
 	return methodNames;
 }
+@Override
 protected void runTest() throws Throwable {
 	if (getName().equals("test_Constructor")) test_Constructor();
 	else if (getName().equals("test_getBounds")) test_getBounds();

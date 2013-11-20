@@ -60,6 +60,7 @@ public static java.util.Vector<String> methodNames() {
 	return methodNames;
 }
 
+@Override
 protected void runTest() throws Throwable {
 	if (getName().equals("test_openWindowLorg_eclipse_swt_browser_WindowEvent")) test_openWindowLorg_eclipse_swt_browser_WindowEvent();
 }

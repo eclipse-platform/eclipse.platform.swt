@@ -126,6 +126,7 @@ public static void main (String [] args) {
 	Display display = new Display ();
 	Shell shell = new Shell (display);
 	Listener listener = new Listener () {
+		@Override
 		public void handleEvent (Event e) {
 			String string = e.type == SWT.KeyDown ? "DOWN:" : "UP  :";
 			string += " stateMask=0x" + Integer.toHexString (e.stateMask) + stateMask (e.stateMask) + ",";

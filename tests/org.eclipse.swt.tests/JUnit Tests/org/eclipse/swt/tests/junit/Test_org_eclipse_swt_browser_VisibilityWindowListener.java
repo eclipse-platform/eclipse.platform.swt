@@ -67,6 +67,7 @@ public static java.util.Vector<String> methodNames() {
 	return methodNames;
 }
 
+@Override
 protected void runTest() throws Throwable {
 	if (getName().equals("test_hideLorg_eclipse_swt_browser_WindowEvent")) test_hideLorg_eclipse_swt_browser_WindowEvent();
 	else if (getName().equals("test_showLorg_eclipse_swt_browser_WindowEvent")) test_showLorg_eclipse_swt_browser_WindowEvent();

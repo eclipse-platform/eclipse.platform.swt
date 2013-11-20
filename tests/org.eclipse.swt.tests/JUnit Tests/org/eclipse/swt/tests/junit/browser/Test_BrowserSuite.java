@@ -110,6 +110,7 @@ public static java.util.Vector<String> methodNames() {
 	return methodNames;
 }
 
+@Override
 protected void runTest() throws Throwable {
 	/*
 	 * The tests in this suite manage their own Display and event loop

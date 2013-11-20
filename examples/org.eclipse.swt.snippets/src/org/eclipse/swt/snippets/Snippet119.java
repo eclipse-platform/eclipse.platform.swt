@@ -97,6 +97,7 @@ public static void main (String [] args) {
 	final Image source = new Image (display,sourceData);
 	final Image mask = new Image (display, maskData);
 	shell.addPaintListener(new PaintListener() {
+		@Override
 		public void paintControl(PaintEvent e) {
 			GC gc = e.gc;
 			int x = 10, y = 10;

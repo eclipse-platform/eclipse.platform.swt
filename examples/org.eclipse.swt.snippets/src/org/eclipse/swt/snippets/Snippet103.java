@@ -45,6 +45,7 @@ public static void main(String[] args) {
 	button.pack();
 	button.setLocation(10, 180);
 	button.addListener(SWT.Selection, new Listener() {
+		@Override
 		public void handleEvent(Event event) {
 			for (int i = 0; i < 4; i++) {
 				populateItem(items[i]);

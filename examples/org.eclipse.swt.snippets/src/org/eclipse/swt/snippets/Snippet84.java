@@ -33,9 +33,11 @@ public static void main(String[] args) {
 	DragSource source = new DragSource(label, DND.DROP_COPY | DND.DROP_MOVE | DND.DROP_LINK);
 	source.setTransfer(new Transfer[] {TextTransfer.getInstance()});
 	source.addDragListener(new DragSourceAdapter() {
+		@Override
 		public void dragSetData(DragSourceEvent event) {
 			event.data = "Text Transferred";
 		}
+		@Override
 		public void dragFinished(DragSourceEvent event) {
 			if (event.doit) {
 				String operation = null;
@@ -63,12 +65,15 @@ public static void main(String[] args) {
 	DropTarget target = new DropTarget(text, DND.DROP_DEFAULT | DND.DROP_COPY | DND.DROP_MOVE | DND.DROP_LINK);
 	target.setTransfer(new Transfer[] {TextTransfer.getInstance()});
 	target.addDropListener(new DropTargetAdapter() {
+		@Override
 		public void dragEnter(DropTargetEvent event) {
 			if (event.detail == DND.DROP_DEFAULT) event.detail = DND.DROP_COPY;
 		}
+		@Override
 		public void dragOperationChanged(DropTargetEvent event) {
 			if (event.detail == DND.DROP_DEFAULT) event.detail = DND.DROP_COPY;
 		}
+		@Override
 		public void drop(DropTargetEvent event) {
 			String operation = null;
 			switch (event.detail) {

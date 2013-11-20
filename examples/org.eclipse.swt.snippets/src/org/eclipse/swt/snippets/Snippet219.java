@@ -58,6 +58,7 @@ public class Snippet219 {
 
 		Listener l = new Listener() {
 			int startX, startY;
+			@Override
 			public void handleEvent(Event e)  {
 				if (e.type == SWT.KeyDown && e.character == SWT.ESC) {
 					shell.dispose();

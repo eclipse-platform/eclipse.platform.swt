@@ -40,6 +40,7 @@ public class Snippet347 {
 		MenuItem exit = new MenuItem(dropdown, SWT.PUSH);
 		exit.setText("Exit");
 		exit.addSelectionListener(new SelectionAdapter() {
+			@Override
 			public void widgetSelected(SelectionEvent e) {
 				display.dispose();
 			}

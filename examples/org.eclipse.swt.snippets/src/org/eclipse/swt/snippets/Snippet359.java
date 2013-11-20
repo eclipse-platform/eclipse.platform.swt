@@ -31,11 +31,13 @@ public class Snippet359 {
 		shell.setLayout(new FillLayout());
 		final Combo combo = new Combo(shell, SWT.DROP_DOWN);
 		combo.addKeyListener(new KeyListener() {
+			@Override
 			public void keyReleased(KeyEvent e) {
 			   if (e.keyCode == SWT.CR) {
 				   combo.add(combo.getText());
 			   }
 			}
+			@Override
 			public void keyPressed(KeyEvent e) {
 				System.out.println("caret position: " + combo.getCaretPosition());
 				System.out.println("caret location: " + combo.getCaretLocation()); 

@@ -45,6 +45,7 @@ public class Snippet286 {
 			MenuItem item = new MenuItem (menu, SWT.PUSH);
 			item.setText ("Item " + i);
 			item.addArmListener(new ArmListener() {
+				@Override
 				public void widgetArmed(ArmEvent e) {
 					statusLine.setText(((MenuItem)e.getSource()).getText());
 				}

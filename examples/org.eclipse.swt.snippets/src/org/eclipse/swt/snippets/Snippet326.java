@@ -52,6 +52,7 @@ public static void main(String[] args) {
 	final Button button = new Button(shell, SWT.PUSH);
 	button.setText("Invoke Browser.close()");
 	button.addListener(SWT.Selection, new Listener() {
+		@Override
 		public void handleEvent(Event event) {
 			boolean result = browser.close();
 			System.out.println("was Browser disposed: " + result);

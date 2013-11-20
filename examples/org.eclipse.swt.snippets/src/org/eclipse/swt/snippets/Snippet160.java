@@ -40,13 +40,16 @@ public class Snippet160 {
 			return;
 		}
 		browser.addStatusTextListener(new StatusTextListener() {
+			@Override
 			public void changed(StatusTextEvent event) {
 				browser.setData("query", event.text);
 			}
 		});
 		browser.addProgressListener(new ProgressListener() {
+			@Override
 			public void changed(ProgressEvent event) {
 			}
+			@Override
 			public void completed(ProgressEvent event) {
 				/* 
 				 * Use JavaScript to query the desired node content through the Document Object Model

@@ -26,11 +26,13 @@ public static void main (String [] args) {
 	shell.setSize (200, 200);
 	shell.open ();
 	display.timerExec (5000, new Runnable () {
+		@Override
 		public void run () {
 			System.out.println ("5000");
 		}
 	});
 	display.timerExec (2000, new Runnable () {
+		@Override
 		public void run () {
 			System.out.println ("2000");
 		}

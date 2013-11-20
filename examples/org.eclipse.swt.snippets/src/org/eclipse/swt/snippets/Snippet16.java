@@ -26,6 +26,7 @@ public static void main (String [] args) {
 	final Shell shell = new Shell (display);
 	final int time = 500;
 	Runnable timer = new Runnable () {
+		@Override
 		public void run () {
 			if (shell.isDisposed()) return;
 			Point point = display.getCursorLocation ();

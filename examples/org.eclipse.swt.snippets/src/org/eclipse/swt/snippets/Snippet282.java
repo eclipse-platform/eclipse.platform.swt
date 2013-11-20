@@ -46,6 +46,7 @@ public class Snippet282 {
 		Button button = new Button(buttons, SWT.PUSH);
 		button.setText("Open");
 		button.addListener(SWT.Selection, new Listener() {
+			@Override
 			public void handleEvent(Event event) {
 				FileDialog dialog = new FileDialog (shell, SWT.OPEN);
 				dialog.setText("Open an image file or cancel");
@@ -64,6 +65,7 @@ public class Snippet282 {
 		button = new Button(buttons, SWT.PUSH);
 		button.setText("Copy");
 		button.addListener(SWT.Selection, new Listener() {
+			@Override
 			public void handleEvent(Event event) {
 				Image image = imageButton.getImage();
 				if (image != null) {
@@ -78,6 +80,7 @@ public class Snippet282 {
 		button = new Button(buttons, SWT.PUSH);
 		button.setText("Paste");
 		button.addListener(SWT.Selection, new Listener() {
+			@Override
 			public void handleEvent(Event event) {
 				ImageData imageData = (ImageData)clipboard.getContents(ImageTransfer.getInstance());
 				if (imageData != null) {
@@ -102,6 +105,7 @@ public class Snippet282 {
 		button = new Button(buttons, SWT.PUSH);
 		button.setText("Clear");
 		button.addListener(SWT.Selection, new Listener() {
+			@Override
 			public void handleEvent(Event event) {
 				imageButton.setText("");
 				Image image = imageButton.getImage();

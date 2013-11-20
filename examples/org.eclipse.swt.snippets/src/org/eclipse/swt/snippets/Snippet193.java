@@ -57,6 +57,7 @@ public class Snippet193 {
 			}
 		}
 		Listener listener = new Listener() {
+			@Override
 			public void handleEvent(Event e) {
 				System.out.println("Move "+e.widget);
 			}
@@ -70,6 +71,7 @@ public class Snippet193 {
 		Button b = new Button(shell, SWT.PUSH);
 		b.setText("invert column order");
 		b.addListener(SWT.Selection, new Listener() {
+			@Override
 			public void handleEvent(Event e) {
 				int[] order = tree.getColumnOrder();
 				for (int i = 0; i < order.length / 2; i++) {

@@ -36,6 +36,7 @@ public class Snippet291 {
 			}
 		}
 		tree.getAccessible().addAccessibleListener(new AccessibleAdapter() {
+			@Override
 			public void getName(AccessibleEvent e) {
 				if (e.childID == ACC.CHILDID_SELF) {
 					e.result = "This is the Accessible Name for the Tree";

@@ -31,6 +31,7 @@ public static void main(String[] args) {
 	combo.setItems(new String [] {"1111", "2222", "3333", "4444"});
 	combo.setText(combo.getItem(0));
 	combo.addVerifyListener(new VerifyListener() {
+		@Override
 		public void verifyText(VerifyEvent e) {
 			String text = combo.getText();
 			String newText = text.substring(0, e.start) + e.text + text.substring(e.end);
@@ -42,6 +43,7 @@ public static void main(String[] args) {
 		}
 	});
 	combo.addTraverseListener(new TraverseListener() {
+		@Override
 		public void keyTraversed(TraverseEvent e) {
 			if (e.detail == SWT.TRAVERSE_RETURN) {
 				e.doit = false;

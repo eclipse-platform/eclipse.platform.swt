@@ -48,6 +48,7 @@ public static java.util.Vector<String> methodNames() {
 	methodNames.addElement("test_widgetDisposedLorg_eclipse_swt_events_DisposeEvent");
 	return methodNames;
 }
+@Override
 protected void runTest() throws Throwable {
 	if (getName().equals("test_widgetDisposedLorg_eclipse_swt_events_DisposeEvent")) test_widgetDisposedLorg_eclipse_swt_events_DisposeEvent();
 }

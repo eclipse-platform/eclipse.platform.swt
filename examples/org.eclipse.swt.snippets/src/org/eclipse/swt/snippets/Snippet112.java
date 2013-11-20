@@ -40,6 +40,7 @@ public static void main (String [] args) {
 	group.setText ("a square");
 	Canvas canvas = new Canvas (group, SWT.NONE);
 	canvas.addPaintListener (new PaintListener () {
+		@Override
 		public void paintControl (PaintEvent e) {
 			e.gc.drawImage (image, 0, 0);
 		}

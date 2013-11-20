@@ -53,6 +53,7 @@ public static void main(String[] args) {
 	scrollComposite.setExpandVertical(true);
 	scrollComposite.setExpandHorizontal(true);
 	scrollComposite.addControlListener(new ControlAdapter() {
+		@Override
 		public void controlResized(ControlEvent e) {
 			Rectangle r = scrollComposite.getClientArea();
 			scrollComposite.setMinSize(parent.computeSize(r.width, SWT.DEFAULT));

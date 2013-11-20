@@ -50,11 +50,13 @@ protected void initializeColors() {
 	colors.put(BLUE, new Color (display, BLUE));
 }
 
+@Override
 protected void setUp() {
 	super.setUp();
 	initializeColors();
 }
 
+@Override
 protected void tearDown() {
 	Enumeration<RGB> elements = colors.keys();
 	while (elements.hasMoreElements()) {
@@ -179,6 +181,7 @@ public static java.util.Vector<String> methodNames() {
 	methodNames.addElement("test_toString");
 	return methodNames;
 }
+@Override
 protected void runTest() throws Throwable {
 	if (getName().equals("test_Constructor")) test_Constructor();
 	else if (getName().equals("test_ConstructorIILorg_eclipse_swt_graphics_ColorLorg_eclipse_swt_graphics_Color")) test_ConstructorIILorg_eclipse_swt_graphics_ColorLorg_eclipse_swt_graphics_Color();

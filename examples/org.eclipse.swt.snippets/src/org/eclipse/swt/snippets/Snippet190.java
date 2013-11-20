@@ -43,6 +43,7 @@ public static void main (String [] args) {
 	// set the seletion to 3.456
 	spinner.setSelection(3456);
 	spinner.addSelectionListener(new SelectionAdapter() {
+		@Override
 		public void widgetSelected(SelectionEvent e) {
 			int selection = spinner.getSelection();
 			int digits = spinner.getDigits();

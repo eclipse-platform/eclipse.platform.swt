@@ -37,6 +37,7 @@ public static void main (String[] args) {
 	
 	// Implement a "fake" tooltip
 	final Listener labelListener = new Listener () {
+		@Override
 		public void handleEvent (Event event) {
 			Label label = (Label)event.widget;
 			Shell shell = label.getShell ();
@@ -61,6 +62,7 @@ public static void main (String[] args) {
 	Listener tableListener = new Listener () {
 		Shell tip = null;
 		Label label = null;
+		@Override
 		public void handleEvent (Event event) {
 			switch (event.type) {
 				case SWT.Dispose:

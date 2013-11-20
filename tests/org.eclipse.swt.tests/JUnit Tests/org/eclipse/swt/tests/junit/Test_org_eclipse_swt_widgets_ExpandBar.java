@@ -35,6 +35,7 @@ public static void main(String[] args) {
 	TestRunner.run(suite());
 }
 
+@Override
 protected void setUp() {
 	super.setUp();
 	expandBar = new ExpandBar(shell, 0);
@@ -78,6 +79,7 @@ public void test_addExpandListenerLorg_eclipse_swt_events_ExpandListener() {
 	assertFalse(listenerCalled[0]);
 }
 
+@Override
 public void test_ConstructorLorg_eclipse_swt_widgets_CompositeI() {
 	try {
 		new ExpandBar(null, 0);
@@ -215,6 +217,7 @@ public static java.util.Vector<String> methodNames() {
 	return methodNames;
 }
 
+@Override
 protected void runTest() throws Throwable {
 	if (getName().equals("test_addExpandListenerLorg_eclipse_swt_events_ExpandListener")) test_addExpandListenerLorg_eclipse_swt_events_ExpandListener();
 	else if (getName().equals("test_ConstructorLorg_eclipse_swt_widgets_CompositeI")) test_ConstructorLorg_eclipse_swt_widgets_CompositeI();

@@ -32,11 +32,13 @@ public static void main(String[] args) {
 	TestRunner.run(suite());
 }
 
+@Override
 protected void setUp() {
 	super.setUp();
 	shell = new Shell();
 }
 
+@Override
 protected void tearDown() {
 	shell.dispose();
 	super.tearDown();
@@ -101,6 +103,7 @@ public static java.util.Vector<String> methodNames() {
 	return methodNames;
 }
 
+@Override
 protected void runTest() throws Throwable {
 	if (getName().equals("test_ConstructorI")) test_ConstructorI();
 	else if (getName().equals("test_ConstructorII")) test_ConstructorII();

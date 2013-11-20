@@ -48,6 +48,7 @@ public class Snippet267 {
 		final Button offButton = new Button(shell, SWT.RADIO);
 		offButton.setText("Design Mode Off");
 		offButton.addListener(SWT.Selection, new Listener() {
+			@Override
 			public void handleEvent(Event event) {
 				if (!offButton.getSelection()) return;
 				setDesignMode("off");
@@ -56,6 +57,7 @@ public class Snippet267 {
 		final Button onButton = new Button(shell, SWT.RADIO);
 		onButton.setText("Design Mode On");
 		onButton.addListener(SWT.Selection, new Listener() {
+			@Override
 			public void handleEvent(Event event) {
 				if (!onButton.getSelection()) return;
 				boolean success = setDesignMode("on");

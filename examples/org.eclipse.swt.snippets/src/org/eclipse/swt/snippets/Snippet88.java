@@ -48,6 +48,7 @@ public static void main(String[] args) {
 	final int EDITABLECOLUMN = 1;
 	
 	table.addSelectionListener(new SelectionAdapter() {
+		@Override
 		public void widgetSelected(SelectionEvent e) {
 			// Clean up any previous editor control
 			Control oldEditor = editor.getEditor();
@@ -61,6 +62,7 @@ public static void main(String[] args) {
 			Text newEditor = new Text(table, SWT.NONE);
 			newEditor.setText(item.getText(EDITABLECOLUMN));
 			newEditor.addModifyListener(new ModifyListener() {
+				@Override
 				public void modifyText(ModifyEvent me) {
 					Text text = (Text)editor.getEditor();
 					editor.getItem().setText(EDITABLECOLUMN, text.getText());

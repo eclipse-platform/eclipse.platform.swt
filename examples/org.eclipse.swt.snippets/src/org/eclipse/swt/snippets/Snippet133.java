@@ -66,6 +66,7 @@ public class Snippet133 {
 		item.setText("&Open...");
 		item.setAccelerator(SWT.CTRL + 'O');
 		item.addSelectionListener(new SelectionAdapter() {
+			@Override
 			public void widgetSelected(SelectionEvent event) {
 				menuOpen();
 			}
@@ -73,6 +74,7 @@ public class Snippet133 {
 		item = new MenuItem(fileMenu, SWT.PUSH);
 		item.setText("Font...");
 		item.addSelectionListener(new SelectionAdapter() {
+			@Override
 			public void widgetSelected(SelectionEvent event) {
 				menuFont();
 			}
@@ -80,6 +82,7 @@ public class Snippet133 {
 		item = new MenuItem(fileMenu, SWT.PUSH);
 		item.setText("Foreground Color...");
 		item.addSelectionListener(new SelectionAdapter() {
+			@Override
 			public void widgetSelected(SelectionEvent event) {
 				menuForegroundColor();
 			}
@@ -87,6 +90,7 @@ public class Snippet133 {
 		item = new MenuItem(fileMenu, SWT.PUSH);
 		item.setText("Background Color...");
 		item.addSelectionListener(new SelectionAdapter() {
+			@Override
 			public void widgetSelected(SelectionEvent event) {
 				menuBackgroundColor();
 			}
@@ -95,6 +99,7 @@ public class Snippet133 {
 		item.setText("&Print...");
 		item.setAccelerator(SWT.CTRL + 'P');
 		item.addSelectionListener(new SelectionAdapter() {
+			@Override
 			public void widgetSelected(SelectionEvent event) {
 				menuPrint();
 			}
@@ -103,6 +108,7 @@ public class Snippet133 {
 		item = new MenuItem(fileMenu, SWT.PUSH);
 		item.setText("E&xit");
 		item.addSelectionListener(new SelectionAdapter() {
+			@Override
 			public void widgetSelected(SelectionEvent event) {
 				System.exit(0);
 			}
@@ -205,6 +211,7 @@ public class Snippet133 {
 		/* Do the printing in a background thread so that spooling does not freeze the UI. */
 		printer = new Printer(data);
 		Thread printingThread = new Thread("Printing") {
+			@Override
 			public void run() {
 				print(printer);
 				printer.dispose();

@@ -38,12 +38,14 @@ public static void main(String[] args) {
 	shell.setSize(styledText.computeSize(SWT.DEFAULT, 400));
 	shell.open();
 	styledText.addListener(SWT.MouseWheel, new Listener() {
+		@Override
 		public void handleEvent(Event e){
 			System.out.println("Mouse Wheel event " + e);
 		}
 	});
 	new Thread(){
 		Event event;
+		@Override
 		public void run() {
 			for (int i = 0; i < 50; i++) {
 				event = new Event();

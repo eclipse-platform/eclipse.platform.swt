@@ -78,6 +78,7 @@ public static java.util.Vector<String> methodNames() {
 	methodNames.addElement("test_setContents$Ljava_lang_Object$Lorg_eclipse_swt_dnd_Transfer");
 	return methodNames;
 }
+@Override
 protected void runTest() throws Throwable {
 	if (getName().equals("test_ConstructorLorg_eclipse_swt_widgets_Display")) test_ConstructorLorg_eclipse_swt_widgets_Display();
 	else if (getName().equals("test_dispose")) test_dispose();

@@ -41,6 +41,7 @@ public class Snippet332 {
 	    text.setStyleRanges(segments, ranges);
 	    text.setFont(new Font(display, "Tahoma", 16, 0));
 	    text.addBidiSegmentListener(new BidiSegmentListener() {
+			@Override
 			public void lineGetSegments(BidiSegmentEvent event) {
 				String string = event.lineText;
 				int start = string.indexOf(segment);

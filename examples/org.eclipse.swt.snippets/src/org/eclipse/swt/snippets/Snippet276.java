@@ -29,6 +29,7 @@ public static void main (String[] args) {
 	Label label = new Label (shell, SWT.NONE);
 	label.setText ("click in shell to print display-relative coordinate");
 	Listener listener = new Listener () {
+		@Override
 		public void handleEvent (Event event) {
 			Point point = new Point (event.x, event.y);
 			System.out.println (display.map ((Control)event.widget, null, point));

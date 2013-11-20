@@ -45,6 +45,7 @@ public static void main(String[] args) {
 	specialItem.setControl(text);
 		
 	folder.addCTabFolder2Listener(new CTabFolder2Adapter() {
+		@Override
 		public void close(CTabFolderEvent event) {
 			if (event.item.equals(specialItem)) {
 				event.doit = false;

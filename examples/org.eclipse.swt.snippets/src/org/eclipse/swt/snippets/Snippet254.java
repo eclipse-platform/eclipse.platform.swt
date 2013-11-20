@@ -68,6 +68,7 @@ public class Snippet254 {
 		final Button button = new Button (shell, SWT.PUSH);
 		button.setText ("Visible Items []");
 		button.addListener (SWT.Selection, new Listener () {
+			@Override
 			public void handleEvent (Event e) {
 				int visibleCount = 0;
 				Rectangle rect = tree.getClientArea ();

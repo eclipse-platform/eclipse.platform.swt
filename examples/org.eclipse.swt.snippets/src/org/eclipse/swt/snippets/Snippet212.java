@@ -57,6 +57,7 @@ public class Snippet212 {
 
 		// use a verify listener to dispose the images
 		styledText.addVerifyListener(new VerifyListener()  {
+			@Override
 			public void verifyText(VerifyEvent event) {
 				if (event.start == event.end) return;
 				String text = styledText.getText(event.start, event.end - 1);
@@ -73,6 +74,7 @@ public class Snippet212 {
 		});
 		// draw images on paint event
 		styledText.addPaintObjectListener(new PaintObjectListener() {
+			@Override
 			public void paintObject(PaintObjectEvent event) {
 				StyleRange style = event.style;
 				Image image = (Image)style.data;
@@ -84,6 +86,7 @@ public class Snippet212 {
 			}
 		});
 		styledText.addListener(SWT.Dispose, new Listener() {
+			@Override
 			public void handleEvent(Event event) {
 				StyleRange[] styles = styledText.getStyleRanges();
 				for (int i = 0; i < styles.length; i++) {
@@ -99,6 +102,7 @@ public class Snippet212 {
 		button.setText("Add Image");
 		button.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, false, false));
 		button.addListener(SWT.Selection, new Listener() {
+			@Override
 			public void handleEvent(Event event) {
 				FileDialog dialog = new FileDialog(shell);
 				String filename = dialog.open();

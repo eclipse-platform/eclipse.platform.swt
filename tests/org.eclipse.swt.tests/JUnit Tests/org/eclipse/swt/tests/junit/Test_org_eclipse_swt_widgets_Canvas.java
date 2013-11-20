@@ -35,12 +35,14 @@ public static void main(String[] args) {
 	TestRunner.run(suite());
 }
 
+@Override
 protected void setUp() {
 	super.setUp();
 	canvas = new Canvas(shell, 0);
 	super.setWidget(canvas);
 }
 
+@Override
 protected void setWidget(Widget w) {
 	if (!canvas.isDisposed())
 		canvas.dispose();
@@ -48,6 +50,7 @@ protected void setWidget(Widget w) {
 	super.setWidget(w);
 }
 
+@Override
 public void test_ConstructorLorg_eclipse_swt_widgets_CompositeI() {
 	try {
 		new Canvas(null, SWT.NONE);
@@ -93,6 +96,7 @@ public void test_setCaretLorg_eclipse_swt_widgets_Caret() {
 	assertNull("Caret should be null" , canvas.getCaret());
 }
 
+@Override
 public void test_setFontLorg_eclipse_swt_graphics_Font() {
 	FontData fontData = canvas.getFont().getFontData()[0];
 	Font font = new Font(canvas.getDisplay(), fontData.getName(), 8, fontData.getStyle());
@@ -123,6 +127,7 @@ public static java.util.Vector<String> methodNames() {
 	methodNames.addAll(Test_org_eclipse_swt_widgets_Composite.methodNames()); // add superclass method names
 	return methodNames;
 }
+@Override
 protected void runTest() throws Throwable {
 	if (getName().equals("test_ConstructorLorg_eclipse_swt_widgets_CompositeI")) test_ConstructorLorg_eclipse_swt_widgets_CompositeI();
 	else if (getName().equals("test_getCaret")) test_getCaret();

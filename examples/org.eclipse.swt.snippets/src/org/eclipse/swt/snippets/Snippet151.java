@@ -33,6 +33,7 @@ public static void main (String [] args) {
 	shell.setLayout(new FillLayout());
 	final Table table = new Table(shell, SWT.BORDER | SWT.VIRTUAL);
 	table.addListener(SWT.SetData, new Listener() {
+		@Override
 		public void handleEvent(Event e) {
 			TableItem item = (TableItem)e.item;
 			int index = table.indexOf(item);
@@ -40,6 +41,7 @@ public static void main (String [] args) {
 		}
 	});
 	Thread thread = new Thread() {
+		@Override
 		public void run() {
 			int count = 0;
 			Random random = new Random();
@@ -56,6 +58,7 @@ public static void main (String [] args) {
 				}
 				Arrays.sort(data);
 				display.syncExec(new Runnable() {
+					@Override
 					public void run() {
 						if (table.isDisposed()) return;
 						table.setItemCount(data.length);

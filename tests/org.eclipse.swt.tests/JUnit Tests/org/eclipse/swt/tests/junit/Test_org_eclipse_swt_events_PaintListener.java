@@ -48,6 +48,7 @@ public static java.util.Vector<String> methodNames() {
 	methodNames.addElement("test_paintControlLorg_eclipse_swt_events_PaintEvent");
 	return methodNames;
 }
+@Override
 protected void runTest() throws Throwable {
 	if (getName().equals("test_paintControlLorg_eclipse_swt_events_PaintEvent")) test_paintControlLorg_eclipse_swt_events_PaintEvent();
 }

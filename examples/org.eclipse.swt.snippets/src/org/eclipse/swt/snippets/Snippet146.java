@@ -31,6 +31,7 @@ public static void main(String[] args) {
 	shell.pack();
 	shell.open();
 	new Thread(){
+		@Override
 		public void run(){
 			String string = "Love the method.";
 			for (int i = 0; i < string.length(); i++) {

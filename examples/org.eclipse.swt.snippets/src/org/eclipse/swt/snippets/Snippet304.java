@@ -34,10 +34,12 @@ public class Snippet304 {
         text.setText("< cursor was there\na\nmulti\nline\ntext\nnow it's here >");
 
         text.addKeyListener(new KeyListener() {
-            public void keyPressed(KeyEvent e) {
+            @Override
+			public void keyPressed(KeyEvent e) {
                 System.out.println("KeyDown " + e);
             }
-            public void keyReleased(KeyEvent e) {
+            @Override
+			public void keyReleased(KeyEvent e) {
                 System.out.println("KeyUp   " + e);
             }
         });
@@ -50,7 +52,8 @@ public class Snippet304 {
         * to move the I-beam to the end of a text control.
         */
     	new Thread(){
-    		public void run(){
+    		@Override
+			public void run(){
     			int key = SWT.END;
     			String platform = SWT.getPlatform();
     			if (platform.equals("carbon") || platform.equals("cocoa") ) {

@@ -64,6 +64,7 @@ public void test_isDirty() {
 	warnUnimpl("Test test_isDirty not written");
 }
 
+@Override
 public void test_isFocusControl() {
 	warnUnimpl("Test test_isFocusControl not written");
 }
@@ -115,6 +116,7 @@ public static java.util.Vector<String> methodNames() {
 	return methodNames;
 }
 
+@Override
 protected void runTest() throws Throwable {
 	if (getName().equals("test_ConstructorLorg_eclipse_swt_widgets_CompositeILjava_io_File")) test_ConstructorLorg_eclipse_swt_widgets_CompositeILjava_io_File();
 	else if (getName().equals("test_ConstructorLorg_eclipse_swt_widgets_CompositeILjava_lang_String")) test_ConstructorLorg_eclipse_swt_widgets_CompositeILjava_lang_String();

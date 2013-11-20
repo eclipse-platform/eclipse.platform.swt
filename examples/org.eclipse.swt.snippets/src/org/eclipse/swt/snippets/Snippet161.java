@@ -49,6 +49,7 @@ public class Snippet161 {
 		final Button button = new Button(comp, SWT.PUSH);
 		button.setText("Execute Script");
 		button.addListener(SWT.Selection, new Listener() {
+			@Override
 			public void handleEvent(Event event) {
 				boolean result = browser.execute(text.getText());
 				if (!result) {

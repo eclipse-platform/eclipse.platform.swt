@@ -39,11 +39,13 @@ public static void main(String[] args) {
 	final TableColumn column1 = new TableColumn(table, SWT.NONE);
 	column1.setWidth(100);
 	column0.addListener(SWT.Selection, new Listener() {
+		@Override
 		public void handleEvent(Event event) {
 			column0.pack();
 		}
 	});
 	column1.addListener(SWT.Selection, new Listener() {
+		@Override
 		public void handleEvent(Event event) {
 			column1.pack();
 		}
@@ -59,6 +61,7 @@ public static void main(String[] args) {
 	 * for performance that this method be as efficient as possible.
 	 */
 	table.addListener(SWT.MeasureItem, new Listener() {
+		@Override
 		public void handleEvent(Event event) {
 			event.width *= 2;
 		}

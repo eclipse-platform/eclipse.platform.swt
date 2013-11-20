@@ -34,6 +34,7 @@ public static void main(String[] args) {
 	TestRunner.run(suite());
 }
 
+@Override
 protected void setUp() {
 	super.setUp();
 	list = new List(shell, SWT.MULTI);
@@ -41,6 +42,7 @@ protected void setUp() {
 	setWidget(list);
 }
 
+@Override
 public void test_ConstructorLorg_eclipse_swt_widgets_CompositeI() {
 	try {
 		list = new List(null, 0);
@@ -210,6 +212,7 @@ public void test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener()
 	
 }
 
+@Override
 public void test_computeSizeIIZ() {
 	// super class test is sufficient
 }
@@ -1539,6 +1542,7 @@ public void test_selectII() {
 	selectII_helper(items, -1, -1, new int[]{});
 }
 
+@Override
 public void test_setFontLorg_eclipse_swt_graphics_Font() {
 	FontData fontData = list.getFont().getFontData()[0];
 	int lineHeight;
@@ -2310,6 +2314,7 @@ public static java.util.Vector<String> methodNames() {
 	methodNames.addAll(Test_org_eclipse_swt_widgets_Scrollable.methodNames()); // add superclass method names
 	return methodNames;
 }
+@Override
 protected void runTest() throws Throwable {
 	if (getName().equals("test_ConstructorLorg_eclipse_swt_widgets_CompositeI")) test_ConstructorLorg_eclipse_swt_widgets_CompositeI();
 	else if (getName().equals("test_addLjava_lang_String")) test_addLjava_lang_String();

@@ -39,23 +39,28 @@ public class Snippet135 {
 		public FileTableModel (File[] files) {
 			this.files = files;
 		}
+		@Override
 		public int getColumnCount () {
 			return columnsName.length;
 		}
+		@Override
 		public Class<?> getColumnClass (int col) {
 			if (col == 1) return Long.class;
 			if (col == 2) return Date.class;
 			return String.class;
 		}
+		@Override
 		public int getRowCount () {
 			return files == null ? 0 : files.length;
 		}
+		@Override
 		public Object getValueAt (int row, int col) {
 			if (col == 0) return files[row].getName();
 			if (col == 1) return new Long(files[row].length());
 			if (col == 2) return new Date(files[row].lastModified());
 			return "";
 		}
+		@Override
 		public String getColumnName (int col) {
 			return columnsName[col];
 		}
@@ -67,6 +72,7 @@ public class Snippet135 {
 		shell.setText("SWT and Swing/AWT Example");
 
 		Listener exitListener = new Listener() {
+			@Override
 			public void handleEvent(Event e) {
 				MessageBox dialog = new MessageBox(shell, SWT.OK | SWT.CANCEL | SWT.ICON_QUESTION);
 				dialog.setText("Question");
@@ -77,6 +83,7 @@ public class Snippet135 {
 			}
 		};	
 		Listener aboutListener = new Listener() {
+			@Override
 			public void handleEvent(Event e) {
 				final Shell s = new Shell(shell, SWT.DIALOG_TRIM | SWT.APPLICATION_MODAL);
 				s.setText("About");
@@ -92,6 +99,7 @@ public class Snippet135 {
 				data.horizontalAlignment = GridData.CENTER;
 				button.setLayoutData(data);
 				button.addListener(SWT.Selection, new Listener() {
+					@Override
 					public void handleEvent(Event event) {
 						s.dispose();
 					}
@@ -165,6 +173,7 @@ public class Snippet135 {
 		statusLabel.setText("Select a file");
 
 		sash.addListener(SWT.Selection, new Listener() {
+			@Override
 			public void handleEvent(Event e) {
 				if (e.detail == SWT.DRAG) return;
 				GridData data = (GridData)fileTree.getLayoutData();
@@ -183,6 +192,7 @@ public class Snippet135 {
 			new TreeItem(treeItem, SWT.NONE);
 		}
 		fileTree.addListener(SWT.Expand, new Listener() {
+			@Override
 			public void handleEvent(Event e) {
 				TreeItem item = (TreeItem)e.item;
 				if (item == null) return;
@@ -208,11 +218,13 @@ public class Snippet135 {
 			}
 		});
 		fileTree.addListener(SWT.Selection, new Listener() {
+			@Override
 			public void handleEvent(Event e) {
 				TreeItem item = (TreeItem)e.item;
 				if (item == null) return;
 				final File root = (File)item.getData();
 				EventQueue.invokeLater(new Runnable() {
+					@Override
 					public void run() {
 						statusLabel.setText(root.getAbsolutePath());
 						locationText.setText(root.getAbsolutePath());

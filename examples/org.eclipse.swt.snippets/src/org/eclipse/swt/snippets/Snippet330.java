@@ -48,6 +48,7 @@ public static void main(String [] args) {
 	data.horizontalAlignment = GridData.FILL;
 	headersButton.setLayoutData(data);
 	headersButton.addListener(SWT.Selection, new Listener() {
+		@Override
 		public void handleEvent(Event event) {
 			browser.setUrl(
 				"http://www.ericgiguere.com/tools/http-header-viewer.html",
@@ -61,6 +62,7 @@ public static void main(String [] args) {
 	data.horizontalAlignment = GridData.FILL;
 	postDataButton.setLayoutData(data);
 	postDataButton.addListener(SWT.Selection, new Listener() {
+		@Override
 		public void handleEvent(Event event) {
 			browser.setUrl(
 				"https://bugs.eclipse.org/bugs/buglist.cgi",

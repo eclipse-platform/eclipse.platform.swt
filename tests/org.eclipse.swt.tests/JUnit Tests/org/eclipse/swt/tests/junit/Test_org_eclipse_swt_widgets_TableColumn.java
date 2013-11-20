@@ -32,6 +32,7 @@ public static void main(String[] args) {
 	TestRunner.run(suite());
 }
 
+@Override
 protected void setUp() {
 	super.setUp();
 	table = new Table(shell, SWT.SINGLE);		
@@ -134,6 +135,7 @@ public void test_removeControlListenerLorg_eclipse_swt_events_ControlListener() 
 
 public void test_removeSelectionListenerLorg_eclipse_swt_events_SelectionListener() {
 	SelectionListener listener = new SelectionAdapter() {
+		@Override
 		public void widgetSelected(SelectionEvent e) {}};
 
 	tableColumn.removeSelectionListener(listener);	
@@ -171,6 +173,7 @@ public void test_setAlignmentI() {
 	assertTrue(":f:", column2.getAlignment() == SWT.LEFT);	
 }
 
+@Override
 public void test_setImageLorg_eclipse_swt_graphics_Image() {
 	warnUnimpl("Test test_setImageLorg_eclipse_swt_graphics_Image not written");
 }
@@ -212,6 +215,7 @@ public void test_setResizableZ() {
 	assertTrue(":d:", tableColumn.getResizable() == true);
 }
 
+@Override
 public void test_setTextLjava_lang_String() {
 	assertEquals(":a:", tableColumn.getText(), "");
 
@@ -262,6 +266,7 @@ public static java.util.Vector<String> methodNames() {
 	methodNames.addAll(Test_org_eclipse_swt_widgets_Item.methodNames()); // add superclass method names
 	return methodNames;
 }
+@Override
 protected void runTest() throws Throwable {
 	if (getName().equals("test_ConstructorLorg_eclipse_swt_widgets_TableI")) test_ConstructorLorg_eclipse_swt_widgets_TableI();
 	else if (getName().equals("test_ConstructorLorg_eclipse_swt_widgets_TableII")) test_ConstructorLorg_eclipse_swt_widgets_TableII();

@@ -28,6 +28,7 @@ public class Snippet233 {
 		final Shell shell = new Shell (display);
 		shell.setText ("Parent Shell");
 		shell.addMouseListener (new MouseAdapter() {
+			@Override
 			public void mouseDown (MouseEvent e) {
 				Shell dialog = new Shell (shell, SWT.DIALOG_TRIM | SWT.APPLICATION_MODAL);
 				Point pt = display.getCursorLocation ();

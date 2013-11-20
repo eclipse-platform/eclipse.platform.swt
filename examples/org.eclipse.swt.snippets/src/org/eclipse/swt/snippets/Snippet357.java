@@ -40,6 +40,7 @@ public class Snippet357 {
 		text.setStyleRanges(new int[] {4, 5}, new StyleRange[] {new StyleRange(textStyle)});
 
 		text.getAccessible().addAccessibleEditableTextListener(new AccessibleEditableTextAdapter() {
+			@Override
 			public void setTextAttributes(AccessibleTextAttributeEvent e) {
 				TextStyle textStyle = e.textStyle;
 				if (textStyle != null) {

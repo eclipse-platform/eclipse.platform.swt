@@ -40,6 +40,7 @@ public static void main(String [] args) {
 	Button button = new Button(shell, SWT.PUSH);
 	button.setText("Print item visibilities");
 	button.addListener(SWT.Selection, new Listener() {
+		@Override
 		public void handleEvent(Event event) {
 			Rectangle treeBounds = new Rectangle(0, 0, 0, 0);
 			Point treeSize = tree.getSize();

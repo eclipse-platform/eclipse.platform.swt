@@ -42,6 +42,7 @@ public static void main(String[] args) {
 		item.setText(new String[] {"item 0" + i, "item 1"+i});
 	}
 	comp.addControlListener(new ControlAdapter() {
+		@Override
 		public void controlResized(ControlEvent e) {
 			Rectangle area = comp.getClientArea();
 			Point size = table.computeSize(SWT.DEFAULT, SWT.DEFAULT);

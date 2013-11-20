@@ -73,6 +73,7 @@ public static java.util.Vector<String> methodNames() {
 	methodNames.addElement("test_dropLorg_eclipse_swt_dnd_DropTargetEvent");
 	return methodNames;
 }
+@Override
 protected void runTest() throws Throwable {
 	if (getName().equals("test_dragEnterLorg_eclipse_swt_dnd_DropTargetEvent")) test_dragEnterLorg_eclipse_swt_dnd_DropTargetEvent();
 	else if (getName().equals("test_dragLeaveLorg_eclipse_swt_dnd_DropTargetEvent")) test_dragLeaveLorg_eclipse_swt_dnd_DropTargetEvent();

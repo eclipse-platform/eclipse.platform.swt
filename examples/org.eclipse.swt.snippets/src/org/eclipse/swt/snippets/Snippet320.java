@@ -40,6 +40,7 @@ public static void main(String [] args) {
 	}
 
 	text.addListener(SWT.KeyDown, new Listener() {
+		@Override
 		public void handleEvent(Event event) {
 			switch (event.keyCode) {
 				case SWT.ARROW_DOWN:
@@ -66,6 +67,7 @@ public static void main(String [] args) {
 		}
 	});
 	text.addListener(SWT.Modify, new Listener() {
+		@Override
 		public void handleEvent(Event event) {
 			String string = text.getText();
 			if (string.length() == 0) {
@@ -83,12 +85,14 @@ public static void main(String [] args) {
 	});
 
 	table.addListener(SWT.DefaultSelection, new Listener() {
+		@Override
 		public void handleEvent(Event event) {
 			text.setText(table.getSelection()[0].getText());
 			popupShell.setVisible(false);
 		}
 	});
 	table.addListener(SWT.KeyDown, new Listener() {
+		@Override
 		public void handleEvent(Event event) {
 			if (event.keyCode == SWT.ESC) {
 				popupShell.setVisible(false);
@@ -97,9 +101,11 @@ public static void main(String [] args) {
 	});
 
 	Listener focusOutListener = new Listener() {
+		@Override
 		public void handleEvent(Event event) {
 			/* async is needed to wait until focus reaches its new Control */
 			display.asyncExec(new Runnable() {
+				@Override
 				public void run() {
 					if (display.isDisposed()) return;
 					Control control = display.getFocusControl();
@@ -114,6 +120,7 @@ public static void main(String [] args) {
 	text.addListener(SWT.FocusOut, focusOutListener);
 
 	shell.addListener(SWT.Move, new Listener() {
+		@Override
 		public void handleEvent(Event event) {
 			popupShell.setVisible(false);
 		}

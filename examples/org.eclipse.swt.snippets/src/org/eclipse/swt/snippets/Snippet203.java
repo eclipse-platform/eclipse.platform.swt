@@ -44,6 +44,7 @@ public static void main(String[] args) {
 		layouts[i] = layout;
 	}
 	shell.addListener(SWT.Paint, new Listener() {
+		@Override
 		public void handleEvent(Event event) {
 			Point point = new Point(10, 10);
 			int width = shell.getClientArea().width - 2 * point.x;

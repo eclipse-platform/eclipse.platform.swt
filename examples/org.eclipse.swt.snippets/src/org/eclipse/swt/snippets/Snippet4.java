@@ -32,9 +32,11 @@ public class Snippet4 {
 		Rectangle clientArea = shell.getClientArea();
 		b.setLocation(clientArea.x + 10, clientArea.y + 10);
 		b.addSelectionListener(new SelectionAdapter() {
+			@Override
 			public void widgetSelected(SelectionEvent se) {
 				Shell dialog = new Shell(shell, SWT.DIALOG_TRIM);
 				dialog.addListener(SWT.Traverse, new Listener() {
+					@Override
 					public void handleEvent(Event e) {
 						if (e.detail == SWT.TRAVERSE_ESCAPE) {
 							e.doit = false;

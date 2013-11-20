@@ -48,6 +48,7 @@ public static java.util.Vector<String> methodNames() {
 	methodNames.addElement("test_mouseMoveLorg_eclipse_swt_events_MouseEvent");
 	return methodNames;
 }
+@Override
 protected void runTest() throws Throwable {
 	if (getName().equals("test_mouseMoveLorg_eclipse_swt_events_MouseEvent")) test_mouseMoveLorg_eclipse_swt_events_MouseEvent();
 }

@@ -49,6 +49,7 @@ public class Snippet145 {
 					
 		shell.setBackground(display.getSystemColor(SWT.COLOR_WHITE));
 		shell.addListener(SWT.Paint, new Listener() {
+			@Override
 			public void handleEvent (Event event) {
 				layout.draw(event.gc, 10, 10);
 			}

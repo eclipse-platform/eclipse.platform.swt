@@ -36,11 +36,13 @@ public static void main(String[] args) {
 	TestRunner.run(suite());
 }
 
+@Override
 protected void setUp() {
 	super.setUp();
 	makeCleanEnvironment();
 }
 
+@Override
 public void test_ConstructorLorg_eclipse_swt_widgets_CompositeI() {
 	warnUnimpl("Test test_ConstructorLorg_eclipse_swt_widgets_CompositeI not written");
 }
@@ -53,14 +55,17 @@ public void test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener()
 	warnUnimpl("Test test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener not written");
 }
 
+@Override
 public void test_computeSizeIIZ() {
 	warnUnimpl("Test test_computeSizeIIZ not written");
 }
 
+@Override
 public void test_computeTrimIIII() {
 	warnUnimpl("Test test_computeTrimIIII not written");
 }
 
+@Override
 public void test_getClientArea() {
 	warnUnimpl("Test test_getClientArea not written");
 }
@@ -109,6 +114,7 @@ public void test_removeSelectionListenerLorg_eclipse_swt_events_SelectionListene
 	warnUnimpl("Test test_removeSelectionListenerLorg_eclipse_swt_events_SelectionListener not written");
 }
 
+@Override
 public void test_setBackgroundLorg_eclipse_swt_graphics_Color() {
 	warnUnimpl("Test test_setBackgroundLorg_eclipse_swt_graphics_Color not written");
 }
@@ -117,6 +123,7 @@ public void test_setBorderVisibleZ() {
 	warnUnimpl("Test test_setBorderVisibleZ not written");
 }
 
+@Override
 public void test_setFontLorg_eclipse_swt_graphics_Font() {
 	warnUnimpl("Test test_setFontLorg_eclipse_swt_graphics_Font not written");
 }
@@ -217,6 +224,7 @@ public static java.util.Vector<String> methodNames() {
 	methodNames.addAll(Test_org_eclipse_swt_widgets_Composite.methodNames()); // add superclass method names
 	return methodNames;
 }
+@Override
 protected void runTest() throws Throwable {
 	if (getName().equals("test_ConstructorLorg_eclipse_swt_widgets_CompositeI")) test_ConstructorLorg_eclipse_swt_widgets_CompositeI();
 	else if (getName().equals("test_addCTabFolderListenerLorg_eclipse_swt_custom_CTabFolderListener")) test_addCTabFolderListenerLorg_eclipse_swt_custom_CTabFolderListener();

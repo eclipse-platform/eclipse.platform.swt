@@ -33,12 +33,14 @@ public static void main(String[] args) {
 	TestRunner.run(suite());
 }
 
+@Override
 protected void setUp() {
 	super.setUp();
 	shell.setLayout(new FillLayout());
 	browser = new Browser(shell, SWT.NONE);
 }
 
+@Override
 public void test_ConstructorLorg_eclipse_swt_widgets_CompositeI() {
 	shell.setText("test_ConstructorLorg_eclipse_swt_widgets_CompositeI");
 	Browser browser = new Browser(shell, SWT.NONE);
@@ -413,6 +415,7 @@ public static java.util.Vector<String> methodNames() {
 	return methodNames;
 }
 
+@Override
 protected void runTest() throws Throwable {
 	if (getName().equals("test_ConstructorLorg_eclipse_swt_widgets_CompositeI")) test_ConstructorLorg_eclipse_swt_widgets_CompositeI();
 	else if (getName().equals("test_addCloseWindowListenerLorg_eclipse_swt_browser_CloseWindowListener")) test_addCloseWindowListenerLorg_eclipse_swt_browser_CloseWindowListener();
@@ -448,6 +451,7 @@ Browser browser;
 void runLoopTimer(final int seconds) {
 	final boolean[] exit = {false};
 	new Thread() {
+		@Override
 		public void run() {
 			try {Thread.sleep(seconds * 1000);} catch (Exception e) {}
 			exit[0] = true;

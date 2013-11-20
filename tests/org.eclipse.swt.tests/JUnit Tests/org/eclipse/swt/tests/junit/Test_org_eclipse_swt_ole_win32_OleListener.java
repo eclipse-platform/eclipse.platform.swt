@@ -49,6 +49,7 @@ public static java.util.Vector<String> methodNames() {
 	return methodNames;
 }
 
+@Override
 protected void runTest() throws Throwable {
 	if (getName().equals("test_handleEventLorg_eclipse_swt_ole_win32_OleEvent")) test_handleEventLorg_eclipse_swt_ole_win32_OleEvent();
 }

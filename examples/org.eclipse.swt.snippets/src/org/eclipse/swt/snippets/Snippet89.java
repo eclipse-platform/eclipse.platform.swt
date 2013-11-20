@@ -29,6 +29,7 @@ public static void main (String [] args) {
 		MenuItem item = new MenuItem (menu, SWT.RADIO);
 		item.setText ("Item " + i);
 		item.addSelectionListener(new SelectionAdapter() {
+			@Override
 			public void widgetSelected(SelectionEvent e) {
 				MenuItem item = (MenuItem)e.widget;
 				if (item.getSelection ()) {

@@ -39,6 +39,7 @@ public static void main(String[] args) {
 public Test_org_eclipse_swt_custom_BidiSegmentListener(String name) {
 	super(name);
 }
+@Override
 protected void setUp() {
 	shell = new Shell();
 	text = new StyledText(shell, SWT.NULL);
@@ -52,6 +53,7 @@ public static Test suite() {
 	}
 	return suite;
 }
+@Override
 protected void tearDown() {
 	shell.dispose();
 	super.tearDown();
@@ -181,6 +183,7 @@ public static java.util.Vector<String> methodNames() {
 	methodNames.addElement("test_lineGetSegmentsLorg_eclipse_swt_custom_BidiSegmentEvent");
 	return methodNames;
 }
+@Override
 protected void runTest() throws Throwable {
 	if (getName().equals("test_lineGetSegmentsLorg_eclipse_swt_custom_BidiSegmentEvent")) test_lineGetSegmentsLorg_eclipse_swt_custom_BidiSegmentEvent();
 }

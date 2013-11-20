@@ -34,15 +34,19 @@ public class Snippet130 {
 		Button b = new Button(shell, SWT.PUSH);
 		b.setText("invoke long running job");
 		b.addSelectionListener(new SelectionAdapter() {
+			@Override
 			public void widgetSelected(SelectionEvent e) {
 				Runnable longJob = new Runnable() {
 					boolean done = false;
 					int id;
+					@Override
 					public void run() {
 						Thread thread = new Thread(new Runnable() {
+							@Override
 							public void run() {
 								id = nextId[0]++;
 								display.syncExec(new Runnable() {
+									@Override
 									public void run() {
 										if (text.isDisposed()) return;
 										text.append("\nStart long running task "+id);
@@ -54,6 +58,7 @@ public class Snippet130 {
 								}
 								if (display.isDisposed()) return;
 								display.syncExec(new Runnable() {
+									@Override
 									public void run() {
 										if (text.isDisposed()) return;
 										text.append("\nCompleted long running task "+id);

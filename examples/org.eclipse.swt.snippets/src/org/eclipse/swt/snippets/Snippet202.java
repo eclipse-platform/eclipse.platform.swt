@@ -30,6 +30,7 @@ public static void main(String[] args) {
 	shell.setLayout (new FillLayout());
 	final Tree tree = new Tree(shell, SWT.VIRTUAL | SWT.BORDER);
 	tree.addListener(SWT.SetData, new Listener() {
+		@Override
 		public void handleEvent(Event event) {
 			TreeItem item = (TreeItem)event.item;
 			TreeItem parentItem = item.getParentItem();

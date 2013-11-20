@@ -60,6 +60,7 @@ public static void main(String[] args) {
 	layout1.setStyle(superscript1, 15, 25);
 	
 	shell.addListener(SWT.Paint, new Listener() {
+		@Override
 		public void handleEvent(Event event) {
 			Display display = event.display;
 			GC gc = event.gc;

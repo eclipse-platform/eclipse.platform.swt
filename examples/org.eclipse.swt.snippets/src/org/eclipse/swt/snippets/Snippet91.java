@@ -50,6 +50,7 @@ public static void main (String [] args) {
 	source.setTransfer(types);
 	final TreeItem[] dragSourceItem = new TreeItem[1];
 	source.addDragListener (new DragSourceListener () {
+		@Override
 		public void dragStart(DragSourceEvent event) {
 			TreeItem[] selection = tree.getSelection();
 			if (selection.length > 0 && selection[0].getItemCount() == 0) {
@@ -59,9 +60,11 @@ public static void main (String [] args) {
 				event.doit = false;
 			}
 		}
+		@Override
 		public void dragSetData (DragSourceEvent event) {
 			event.data = dragSourceItem[0].getText();
 		}
+		@Override
 		public void dragFinished(DragSourceEvent event) {
 			if (event.detail == DND.DROP_MOVE)
 				dragSourceItem[0].dispose();
@@ -72,6 +75,7 @@ public static void main (String [] args) {
 	DropTarget target = new DropTarget(tree, operations);
 	target.setTransfer(types);
 	target.addDropListener (new DropTargetAdapter() {
+		@Override
 		public void dragOver(DropTargetEvent event) {
 			event.feedback = DND.FEEDBACK_EXPAND | DND.FEEDBACK_SCROLL;
 			if (event.item != null) {
@@ -87,6 +91,7 @@ public static void main (String [] args) {
 				}
 			}
 		}
+		@Override
 		public void drop(DropTargetEvent event) {
 			if (event.data == null) {
 				event.detail = DND.DROP_NONE;

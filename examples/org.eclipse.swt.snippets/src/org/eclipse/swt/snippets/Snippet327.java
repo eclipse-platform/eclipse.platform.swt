@@ -40,7 +40,8 @@ public static void main(String[] args) {
 	}
 	browser.setText(createPage(0));
 	browser.addLocationListener(new LocationAdapter() {
-	    public void changing(LocationEvent event) {
+	    @Override
+		public void changing(LocationEvent event) {
 			String location = event.location;
 			int index = location.indexOf(PREAMBLE); 
 			if (index != -1) {

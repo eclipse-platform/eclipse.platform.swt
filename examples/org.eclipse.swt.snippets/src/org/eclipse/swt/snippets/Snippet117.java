@@ -36,6 +36,7 @@ public static void main(String[] args) {
 
 	MenuItem item = new MenuItem (submenu, SWT.PUSH);
 	item.addListener (SWT.Selection, new Listener () {
+		@Override
 		public void handleEvent (Event e) {
 			t.selectAll();
 		}

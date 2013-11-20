@@ -34,6 +34,7 @@ public static void main (String [] args) {
 	composite.setLocation (10, 10);
 	final Point [] offset = new Point [1];
 	Listener listener = new Listener () {
+		@Override
 		public void handleEvent (Event event) {
 			switch (event.type) {
 				case SWT.MouseDown:

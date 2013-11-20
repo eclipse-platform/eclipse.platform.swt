@@ -62,12 +62,14 @@ public static void main(String [] args) {
 	browser.setLayoutData(data);
 	browser.setUrl ("eclipse.org");
 	browser.addLocationListener(new LocationAdapter() {
+		@Override
 		public void changed(LocationEvent event) {
 			location.setText(event.location);
 		}
 	});
 
 	Listener navigateListener = new Listener() {
+		@Override
 		public void handleEvent(Event event) {
 			browser.setUrl(location.getText());
 		}
@@ -76,6 +78,7 @@ public static void main(String [] args) {
 	location.addListener(SWT.DefaultSelection, navigateListener);
 
 	browser.addAuthenticationListener(new AuthenticationListener(){
+		@Override
 		public void authenticate(AuthenticationEvent event) {
 			try {
 				URL url = new URL(event.location);

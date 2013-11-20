@@ -67,6 +67,7 @@ public class Snippet265 {
 		MenuItem menuFileOpen = new MenuItem(menuFile, SWT.CASCADE);
 		menuFileOpen.setText("Open...");
 		menuFileOpen.addSelectionListener(new SelectionAdapter() {
+			@Override
 			public void widgetSelected(SelectionEvent e) {
 				fileOpen();
 			}
@@ -74,6 +75,7 @@ public class Snippet265 {
 		MenuItem menuFileExit = new MenuItem(menuFile, SWT.CASCADE);
 		menuFileExit.setText("Exit");
 		menuFileExit.addSelectionListener(new SelectionAdapter() {
+			@Override
 			public void widgetSelected(SelectionEvent e) {
 				shell.dispose();
 			}

@@ -33,6 +33,7 @@ public static void main (String [] args) {
 	Rectangle clientArea = shell.getClientArea ();
 	table.setBounds (clientArea.x, clientArea.y, 100, 100);
 	table.addListener (SWT.Selection, new Listener () {
+		@Override
 		public void handleEvent (Event e) {
 			String string = "";
 			TableItem [] selection = table.getSelection ();
@@ -41,6 +42,7 @@ public static void main (String [] args) {
 		}
 	});
 	table.addListener (SWT.DefaultSelection, new Listener () {
+		@Override
 		public void handleEvent (Event e) {
 			String string = "";
 			TableItem [] selection = table.getSelection ();

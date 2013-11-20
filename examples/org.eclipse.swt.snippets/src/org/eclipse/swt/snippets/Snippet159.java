@@ -38,14 +38,17 @@ public class Snippet159 {
 			return;
 		}
 		browser.addTitleListener(new TitleListener() {
+			@Override
 			public void changed(TitleEvent event) {
 				System.out.println("TitleEvent: "+event.title);
 				shell.setText(event.title);
 			}
 		});
 		browser.addProgressListener(new ProgressListener() {
+			@Override
 			public void changed(ProgressEvent event) {
 			}
+			@Override
 			public void completed(ProgressEvent event) {
 				/* Set HTML title tag using JavaScript and DOM when page has been loaded */
 				boolean result = browser.execute("document.title='"+newTitle+"'");

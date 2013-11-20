@@ -37,6 +37,7 @@ public static void main (String[] args) {
 	final Canvas canvas = new Canvas (shell, SWT.NONE);
 	canvas.setBounds (10, 10, 750, 750);
 	canvas.addListener (SWT.Paint, new Listener () {
+		@Override
 		public void handleEvent (Event event) {
 			value = String.valueOf (System.currentTimeMillis ());
 			event.gc.drawImage (image, 0, 0);
@@ -44,6 +45,7 @@ public static void main (String[] args) {
 		}
 	});
 	display.timerExec (INTERVAL, new Runnable () {
+		@Override
 		public void run () {
 			if (canvas.isDisposed ()) return;
 			// canvas.redraw (); // <-- bad, damages more than is needed

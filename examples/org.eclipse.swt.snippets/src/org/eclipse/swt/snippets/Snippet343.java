@@ -48,6 +48,7 @@ public static void main(String[] args) {
 	final int TRIAL_WIDTH = 100;
 	final int trimWidth = text.computeTrim(0, 0, TRIAL_WIDTH, 100).width - TRIAL_WIDTH;
 	text.addListener(SWT.Modify, new Listener() {
+		@Override
 		public void handleEvent(Event event) {
 			Point size = text.computeSize(text.getSize().x - trimWidth, SWT.DEFAULT);
 			if (expandItem1.getHeight() != size.y) {
@@ -56,12 +57,14 @@ public static void main(String[] args) {
 		}
 	});
 	expandBar.addListener(SWT.Resize, new Listener() {
+		@Override
 		public void handleEvent(Event event) {
 			/* 
 			 * The following is done asynchronously to allow the Text's width
 			 * to be changed before re-calculating its preferred height. 
 			 */
 			display.asyncExec(new Runnable() {
+				@Override
 				public void run() {
 					if (text.isDisposed()) return;
 					Point size = text.computeSize(text.getSize().x - trimWidth, SWT.DEFAULT);

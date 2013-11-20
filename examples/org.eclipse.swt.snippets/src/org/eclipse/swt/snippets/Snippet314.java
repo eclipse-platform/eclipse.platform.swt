@@ -37,6 +37,7 @@ public class Snippet314 {
 		saveItem.setText ("&Save\tCtrl+S");
 		saveItem.setAccelerator (SWT.MOD1 + 'S');
 		saveItem.addListener (SWT.Selection, new Listener () {
+			@Override
 			public void handleEvent (Event e) {
 				//SAVE CODE GOES HERE ...
 				shell.setModified (false);
@@ -45,17 +46,20 @@ public class Snippet314 {
 		MenuItem exitItem =  new MenuItem (fileMenu, SWT.PUSH);
 		exitItem.setText ("Exit");
 		exitItem.addListener (SWT.Selection, new Listener () {
+			@Override
 			public void handleEvent (Event e) {
 				shell.close ();
 			}
 		});
 		Text text = new Text (shell, SWT.H_SCROLL | SWT.V_SCROLL | SWT.BORDER);
 		text.addListener (SWT.Modify, new Listener () {
+			@Override
 			public void handleEvent (Event e) {
 				shell.setModified (true);
 			}
 		});
 		shell.addListener (SWT.Close, new Listener () {
+			@Override
 			public void handleEvent (Event e) {
 				if (shell.getModified()) {
 					MessageBox box = new MessageBox (shell, SWT.PRIMARY_MODAL | SWT.OK | SWT.CANCEL);

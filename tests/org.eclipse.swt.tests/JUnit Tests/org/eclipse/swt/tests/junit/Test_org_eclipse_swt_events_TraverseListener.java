@@ -48,6 +48,7 @@ public static java.util.Vector<String> methodNames() {
 	methodNames.addElement("test_keyTraversedLorg_eclipse_swt_events_TraverseEvent");
 	return methodNames;
 }
+@Override
 protected void runTest() throws Throwable {
 	if (getName().equals("test_keyTraversedLorg_eclipse_swt_events_TraverseEvent")) test_keyTraversedLorg_eclipse_swt_events_TraverseEvent();
 }

@@ -97,6 +97,7 @@ public class Browser6 {
 	static boolean runLoopTimer(final Display display, final Shell shell, final int seconds) {
 		final boolean[] timeout = {false};
 		new Thread() {
+			@Override
 			public void run() {
 				try {
 					for (int i = 0; i < seconds; i++) {

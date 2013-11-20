@@ -30,6 +30,7 @@ public static void main (String [] args) {
 	String modifier = SWT.MOD1 == SWT.CTRL ? "Ctrl" : "Command";
 	text.setText("Hit " + modifier + "+Return\nto see\nthe default button\nrun");
 	text.addTraverseListener(new TraverseListener () {
+		@Override
 		public void keyTraversed(TraverseEvent e) {
 			switch (e.detail) {
 				case SWT.TRAVERSE_RETURN:
@@ -41,6 +42,7 @@ public static void main (String [] args) {
 	button.pack();
 	button.setText("OK");
 	button.addSelectionListener(new SelectionAdapter () {
+		@Override
 		public void widgetSelected(SelectionEvent e) {
 			System.out.println("OK selected");
 		}

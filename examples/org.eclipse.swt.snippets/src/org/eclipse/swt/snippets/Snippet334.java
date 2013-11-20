@@ -40,6 +40,7 @@ public static void main(String[] arg) {
 		canvas = new Canvas(shell, SWT.MULTI | SWT.BORDER);
 		final Caret caret = new Caret (canvas, SWT.NONE);
 		canvas.addPaintListener(new PaintListener() {
+			@Override
 			public void paintControl(PaintEvent e) {
 				GC gc = e.gc;
 				gc.drawText(text, 10, 10);
@@ -51,6 +52,7 @@ public static void main(String[] arg) {
 			}
 		});
 		canvas.addTraverseListener(new TraverseListener() {
+			@Override
 			public void keyTraversed(TraverseEvent e) {
 				switch (e.detail) {
 					case SWT.TRAVERSE_TAB_NEXT:
@@ -61,19 +63,23 @@ public static void main(String[] arg) {
 			}
 		});
 		canvas.addKeyListener(new KeyAdapter() {
+			@Override
 			public void keyPressed(KeyEvent e) {
 				// key listener enables traversal out
 			}
 		});
 		canvas.addFocusListener(new FocusAdapter() {
+			@Override
 			public void focusGained(FocusEvent e) {
 				canvas.redraw();
 			}
+			@Override
 			public void focusLost(FocusEvent e) {
 				canvas.redraw();
 			}
 		});
 		canvas.addMouseListener(new MouseAdapter() {
+			@Override
 			public void mouseDown(MouseEvent e) {
 				canvas.setFocus();
 			}
@@ -81,9 +87,11 @@ public static void main(String[] arg) {
 		Accessible acc = canvas.getAccessible();
 		acc.addRelation(ACC.RELATION_LABELLED_BY, label.getAccessible());
 		acc.addAccessibleControlListener(new AccessibleControlAdapter() {
+			@Override
 			public void getRole(AccessibleControlEvent e) {
 				e.detail = ACC.ROLE_TEXT;
 			}
+			@Override
 			public void getLocation(AccessibleControlEvent e) {
 				Rectangle rect = canvas.getBounds();
 				Point pt = shell.toDisplay(rect.x, rect.y);
@@ -92,29 +100,36 @@ public static void main(String[] arg) {
 				e.width = rect.width;
 				e.height = rect.height;
 			}
+			@Override
 			public void getValue(AccessibleControlEvent e) {
 				e.result = text;
 			}
+			@Override
 			public void getFocus(AccessibleControlEvent e) {
 				e.childID = ACC.CHILDID_SELF;
 			}
+			@Override
 			public void getChildCount (AccessibleControlEvent e) {
 				e.detail = 0;
 			}
+			@Override
 			public void getState (AccessibleControlEvent e) {
 				e.detail = ACC.STATE_NORMAL | ACC.STATE_FOCUSABLE;
 				if (canvas.isFocusControl()) e.detail |= ACC.STATE_FOCUSED | ACC.STATE_SELECTABLE;
 			}
 		});
 		acc.addAccessibleTextListener(new AccessibleTextExtendedAdapter() {
+			@Override
 			public void getSelectionRange(AccessibleTextEvent e) {
 				// select the first 4 characters for testing
 				e.offset = 0;
 				e.length = 4;
 			}
+			@Override
 			public void getCaretOffset(AccessibleTextEvent e) {
 				e.offset = 0;
 			}
+			@Override
 			public void getTextBounds(AccessibleTextEvent e) {
 				// for now, assume that start = 0 and end = text.length
 				GC gc = new GC(canvas);
@@ -126,6 +141,7 @@ public static void main(String[] arg) {
 				e.width = rect.width;
 				e.height = rect.height;
 			}
+			@Override
 			public void getText(AccessibleTextEvent e) {
 				int start = 0, end = text.length();
 				switch (e.type) {
@@ -179,23 +195,28 @@ public static void main(String[] arg) {
 				}
 				e.result = text.substring(start, end);
 			}
+			@Override
 			public void getSelectionCount(AccessibleTextEvent e) {
 				e.count = 1;
 			}
+			@Override
 			public void getSelection(AccessibleTextEvent e) {
 				// there is only 1 selection, so index = 0
 				getSelectionRange(e);
 				e.start = e.offset;
 				e.end = e.offset + e.length;
 			}
+			@Override
 			public void getRanges(AccessibleTextEvent e) {
 				// for now, ignore bounding box
 				e.start = 0;
 				e.end = text.length() - 1;
 			}
+			@Override
 			public void getCharacterCount(AccessibleTextEvent e) {
 				e.count = text.length();
 			}
+			@Override
 			public void getVisibleRanges(AccessibleTextEvent e) {
 				e.start = 0;
 				e.end = text.length() - 1;

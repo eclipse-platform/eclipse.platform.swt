@@ -40,21 +40,25 @@ public static void main(String[] args) {
 		final TrayItem item = new TrayItem (tray, SWT.NONE);
 		item.setToolTipText("SWT TrayItem");
 		item.addListener (SWT.Show, new Listener () {
+			@Override
 			public void handleEvent (Event event) {
 				System.out.println("show");
 			}
 		});
 		item.addListener (SWT.Hide, new Listener () {
+			@Override
 			public void handleEvent (Event event) {
 				System.out.println("hide");
 			}
 		});
 		item.addListener (SWT.Selection, new Listener () {
+			@Override
 			public void handleEvent (Event event) {
 				System.out.println("selection");
 			}
 		});
 		item.addListener (SWT.DefaultSelection, new Listener () {
+			@Override
 			public void handleEvent (Event event) {
 				System.out.println("default selection");
 			}
@@ -64,6 +68,7 @@ public static void main(String[] args) {
 			MenuItem mi = new MenuItem (menu, SWT.PUSH);
 			mi.setText ("Item" + i);
 			mi.addListener (SWT.Selection, new Listener () {
+				@Override
 				public void handleEvent (Event event) {
 					System.out.println("selection " + event.widget);
 				}
@@ -71,6 +76,7 @@ public static void main(String[] args) {
 			if (i == 0) menu.setDefaultItem(mi);
 		}
 		item.addListener (SWT.MenuDetect, new Listener () {
+			@Override
 			public void handleEvent (Event event) {
 				menu.setVisible (true);
 			}

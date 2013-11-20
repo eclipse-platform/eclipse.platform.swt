@@ -53,6 +53,7 @@ public static java.util.Vector<String> methodNames() {
 	methodNames.addElement("test_menuShownLorg_eclipse_swt_events_MenuEvent");
 	return methodNames;
 }
+@Override
 protected void runTest() throws Throwable {
 	if (getName().equals("test_menuHiddenLorg_eclipse_swt_events_MenuEvent")) test_menuHiddenLorg_eclipse_swt_events_MenuEvent();
 	else if (getName().equals("test_menuShownLorg_eclipse_swt_events_MenuEvent")) test_menuShownLorg_eclipse_swt_events_MenuEvent();

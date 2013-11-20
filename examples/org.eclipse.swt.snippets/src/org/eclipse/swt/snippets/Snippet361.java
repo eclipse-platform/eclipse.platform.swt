@@ -56,6 +56,7 @@ public class Snippet361 {
 		Button fileButton = new Button(shell, SWT.PUSH);
 		fileButton.setText("&Open Image File");
 		fileButton.addSelectionListener(new SelectionAdapter() {
+			@Override
 			public void widgetSelected(SelectionEvent e) {
 				String filename = new FileDialog(shell).open();
 				if (filename != null) {
@@ -70,6 +71,7 @@ public class Snippet361 {
 		translateXCombo.setItems(new String[] {"0", "image width", "image height", "100", "200"});
 		translateXCombo.select(0);
 		translateXCombo.addModifyListener(new ModifyListener() {
+			@Override
 			public void modifyText(ModifyEvent e) {
 				translateX = numericValue(translateXCombo);
 				canvas.repaint();
@@ -81,6 +83,7 @@ public class Snippet361 {
 		translateYCombo.setItems(new String[] {"0", "image width", "image height", "100", "200"});
 		translateYCombo.select(0);
 		translateYCombo.addModifyListener(new ModifyListener() {
+			@Override
 			public void modifyText(ModifyEvent e) {
 				translateY = numericValue(translateYCombo);
 				canvas.repaint();
@@ -92,6 +95,7 @@ public class Snippet361 {
 		rotateCombo.setItems(new String[] {"0", "Pi", "Pi/2", "Pi/4", "Pi/8"});
 		rotateCombo.select(0);
 		rotateCombo.addModifyListener(new ModifyListener() {
+			@Override
 			public void modifyText(ModifyEvent e) {
 				rotate = numericValue(rotateCombo);
 				canvas.repaint();
@@ -101,6 +105,7 @@ public class Snippet361 {
 		Button printButton = new Button(shell, SWT.PUSH);
 		printButton.setText("&Print Image");
 		printButton.addSelectionListener(new SelectionAdapter() {
+			@Override
 			public void widgetSelected(SelectionEvent e) {
 				Rectangle r = composite.getBounds();
 				Point p = shell.toDisplay(r.x, r.y);
@@ -154,6 +159,7 @@ public class Snippet361 {
 		composite.setLayoutData(data);
 		Frame frame = SWT_AWT.new_Frame(composite);
 		canvas = new Canvas() {
+			@Override
 			public void paint (Graphics g) {
 				if (image != null) {
 					g.setColor(Color.WHITE);
@@ -173,6 +179,7 @@ public class Snippet361 {
 		};
 		frame.add(canvas);
 		composite.getAccessible().addAccessibleListener(new AccessibleAdapter() {
+			@Override
 			public void getName(AccessibleEvent e) {
 				e.result = "Image drawn in AWT Canvas";
 			}

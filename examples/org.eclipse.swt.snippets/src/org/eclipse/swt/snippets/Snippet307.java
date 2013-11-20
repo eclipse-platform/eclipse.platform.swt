@@ -43,8 +43,10 @@ public static void main (String [] args) {
 	final BrowserFunction function = new CustomFunction (browser, "theJavaFunction");
 
 	browser.addProgressListener (new ProgressAdapter () {
+		@Override
 		public void completed (ProgressEvent event) {
 			browser.addLocationListener (new LocationAdapter () {
+				@Override
 				public void changed (LocationEvent event) {
 					browser.removeLocationListener (this);
 					System.out.println ("left java function-aware page, so disposed CustomFunction");
@@ -66,6 +68,7 @@ static class CustomFunction extends BrowserFunction {
 	CustomFunction (Browser browser, String name) {
 		super (browser, name);
 	}
+	@Override
 	public Object function (Object[] arguments) {
 		System.out.println ("theJavaFunction() called from javascript with args:");
 		for (int i = 0; i < arguments.length; i++) {

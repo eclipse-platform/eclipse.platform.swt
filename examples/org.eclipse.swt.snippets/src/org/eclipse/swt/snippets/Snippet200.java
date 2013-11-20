@@ -56,6 +56,7 @@ public static void main(String[] args) {
 	shell.setLayout(new FillLayout());
 	Composite c = new Composite(shell, SWT.DOUBLE_BUFFERED);
 	c.addListener(SWT.Paint, new Listener() {
+		@Override
 		public void handleEvent(Event event) {
 			Rectangle r = ((Composite)event.widget).getClientArea();
 			GC gc = event.gc;

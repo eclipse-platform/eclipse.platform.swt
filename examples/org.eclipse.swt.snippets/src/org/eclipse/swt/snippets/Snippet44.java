@@ -32,6 +32,7 @@ public static void main (String [] args) {
 	Rectangle clientArea = shell.getClientArea ();
 	b.setBounds (clientArea.x + 10, clientArea.y + 10, 200, 200);
 	b.addListener (SWT.Selection, new Listener () {
+		@Override
 		public void handleEvent (Event e) {
 			b.setCursor (cursor);
 		}

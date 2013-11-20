@@ -59,6 +59,7 @@ public static java.util.Vector<String> methodNames() {
 	return methodNames;
 }
 
+@Override
 protected void runTest() throws Throwable {
 	if (getName().equals("test_Constructor")) test_Constructor();
 	else if (getName().equals("test_new_FrameLorg_eclipse_swt_widgets_Composite")) test_new_FrameLorg_eclipse_swt_widgets_Composite();

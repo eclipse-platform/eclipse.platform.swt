@@ -50,13 +50,16 @@ public static void main (String [] args) {
 	source.setTransfer(new Transfer[] {TextTransfer.getInstance()});
 	source.addDragListener(new DragSourceAdapter() {
 		Point selection;
+		@Override
 		public void dragStart(DragSourceEvent e) {
 			selection = text1.getSelection();
 			e.doit = selection.x != selection.y;
 		}
+		@Override
 		public void dragSetData(DragSourceEvent e) {
 			e.data = text1.getText(selection.x, selection.y-1);
 		}
+		@Override
 		public void dragFinished(DragSourceEvent e) {
 			if (e.detail == DND.DROP_MOVE) {
 				text1.replaceTextRange(selection.x, selection.y - selection.x, "");
@@ -70,14 +73,17 @@ public static void main (String [] args) {
 	DropTarget target = new DropTarget(text2, DND.DROP_DEFAULT | DND.DROP_MOVE | DND.DROP_COPY | DND.DROP_LINK);
 	target.setTransfer(new Transfer[] {TextTransfer.getInstance()});
 	target.addDropListener(new DropTargetAdapter() {
+		@Override
 		public void dragEnter(DropTargetEvent e) {
 			if (e.detail == DND.DROP_DEFAULT)
 				e.detail = DND.DROP_COPY;
 		}
+		@Override
 		public void dragOperationChanged(DropTargetEvent e) {
 			if (e.detail == DND.DROP_DEFAULT)
 				e.detail = DND.DROP_COPY;
 		}
+		@Override
 		public void drop(DropTargetEvent e) {
 			text2.insert((String)e.data);
 		}

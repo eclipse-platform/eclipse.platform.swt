@@ -33,12 +33,14 @@ public static void main(String[] args) {
 	TestRunner.run(suite());
 }
 
+@Override
 protected void setUp() {
 	super.setUp();
 	shell = new Shell();
 	composite = new Composite(shell, 0);
 }
 
+@Override
 protected void tearDown() {
 	if (composite != null) {
 		composite.dispose();
@@ -68,6 +70,7 @@ public static java.util.Vector<String> methodNames() {
 	methodNames.addElement("test_Constructor");
 	return methodNames;
 }
+@Override
 protected void runTest() throws Throwable {
 	if (getName().equals("test_Constructor")) test_Constructor();
 }

@@ -32,6 +32,7 @@ public static void main (String [] args) {
 	
 	display.timerExec(100, new Runnable() {
 		int i = 0;
+		@Override
 		public void run() {
 			if (bar.isDisposed()) return;
 			bar.setSelection(i++);

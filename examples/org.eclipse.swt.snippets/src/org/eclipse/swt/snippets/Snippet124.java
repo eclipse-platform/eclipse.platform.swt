@@ -41,6 +41,7 @@ public static void main (String[] args) {
 	editor.horizontalAlignment = SWT.LEFT;
 	editor.grabHorizontal = true;
 	table.addListener (SWT.MouseDown, new Listener () {
+		@Override
 		public void handleEvent (Event event) {
 			Rectangle clientArea = table.getClientArea ();
 			Point pt = new Point (event.x, event.y);
@@ -54,6 +55,7 @@ public static void main (String[] args) {
 						final int column = i;
 						final Text text = new Text (table, SWT.NONE);
 						Listener textListener = new Listener () {
+							@Override
 							public void handleEvent (final Event e) {
 								switch (e.type) {
 									case SWT.FocusOut:

@@ -46,6 +46,7 @@ public static void main (String [] args) {
 	text.setText(string1);
 	final DragSource source = new DragSource(text, DND.DROP_COPY | DND.DROP_MOVE);
 	source.setDragSourceEffect(new DragSourceEffect(text) {
+		@Override
 		public void dragStart(DragSourceEvent event) {
 			event.image = display.getSystemImage(SWT.ICON_WARNING);
 		}
@@ -53,14 +54,17 @@ public static void main (String [] args) {
 	source.setTransfer(new Transfer[] {TextTransfer.getInstance()});
 	source.addDragListener(new DragSourceAdapter() {
 		Point selection;
+		@Override
 		public void dragStart(DragSourceEvent event) {
 			selection = text.getSelection();
 			event.doit = selection.x != selection.y;
 			text.setData(DRAG_START_DATA, selection);
 		}
+		@Override
 		public void dragSetData(DragSourceEvent e) {
 			e.data = text.getText(selection.x, selection.y-1);
 		}
+		@Override
 		public void dragFinished(DragSourceEvent event) {
 			if (event.detail == DND.DROP_MOVE) {
 				Point newSelection= text.getSelection();
@@ -78,6 +82,7 @@ public static void main (String [] args) {
 	DropTarget target = new DropTarget(text, DND.DROP_DEFAULT | DND.DROP_MOVE | DND.DROP_COPY | DND.DROP_LINK);
 	target.setTransfer(new Transfer[] {TextTransfer.getInstance()});
 	target.addDropListener(new DropTargetAdapter() {
+		@Override
 		public void dragEnter(DropTargetEvent event) {
 			if (event.detail == DND.DROP_DEFAULT) {
 				if (text.getData(DRAG_START_DATA) == null)
@@ -86,6 +91,7 @@ public static void main (String [] args) {
 					event.detail = DND.DROP_MOVE;
 			}
 		}
+		@Override
 		public void dragOperationChanged(DropTargetEvent event) {
 			if (event.detail == DND.DROP_DEFAULT) {
 				if (text.getData(DRAG_START_DATA) == null)
@@ -94,9 +100,11 @@ public static void main (String [] args) {
 					event.detail = DND.DROP_MOVE;
 			}
 		}
+		@Override
 		public void dragOver(DropTargetEvent event) {
 			event.feedback = DND.FEEDBACK_SCROLL | DND.FEEDBACK_SELECT;
 		}
+		@Override
 		public void drop(DropTargetEvent event) {
 			if (event.detail != DND.DROP_NONE) {
 				Point selection = (Point) text.getData(DRAG_START_DATA);

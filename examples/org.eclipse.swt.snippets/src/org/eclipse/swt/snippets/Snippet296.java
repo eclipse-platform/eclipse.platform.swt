@@ -46,10 +46,12 @@ public static void main (String[] args) {
 	 * enough to not need to show its own vertical scrollbar.
 	 */
 	tree.addTreeListener (new TreeListener () {
+		@Override
 		public void treeExpanded (TreeEvent e) {
 			int prefHeight = tree.computeSize (SWT.DEFAULT, SWT.DEFAULT).y;
 			tree.setSize (clientWidth, prefHeight);
 		}
+		@Override
 		public void treeCollapsed (TreeEvent e) {
 			int prefHeight = tree.computeSize (SWT.DEFAULT, SWT.DEFAULT).y;
 			tree.setSize (clientWidth, prefHeight);
@@ -60,6 +62,7 @@ public static void main (String[] args) {
 	 * in the Tree is always visible.
 	 */
 	tree.addSelectionListener(new SelectionAdapter() {
+		@Override
 		public void widgetSelected(SelectionEvent e) {
 			TreeItem [] selectedItems = tree.getSelection();
 			if (selectedItems.length > 0) {
@@ -79,6 +82,7 @@ public static void main (String[] args) {
 	 * in response to MouseWheel events.
 	 */
 	tree.addListener(SWT.MouseWheel, new Listener() {
+		@Override
 		public void handleEvent(Event event) {
 			Point origin = sc.getOrigin();
 			if (event.count < 0) {
@@ -94,6 +98,7 @@ public static void main (String[] args) {
 	downButton.setBounds (10, 220, 120, 30);
 	downButton.setText ("Down 10px");
 	downButton.addListener (SWT.Selection, new Listener () {
+		@Override
 		public void handleEvent (Event event) {
 			sc.setOrigin (0, sc.getOrigin ().y + 10);
 		}
@@ -102,6 +107,7 @@ public static void main (String[] args) {
 	upButton.setBounds (140, 220, 120, 30);
 	upButton.setText ("Up 10px");
 	upButton.addListener (SWT.Selection, new Listener () {
+		@Override
 		public void handleEvent (Event event) {
 			sc.setOrigin (0, sc.getOrigin ().y - 10);
 		}

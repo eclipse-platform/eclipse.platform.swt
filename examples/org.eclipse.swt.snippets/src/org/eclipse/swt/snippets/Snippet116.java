@@ -30,11 +30,13 @@ public static void main(String[] args) {
 	text.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 	text.setText("Here is some text");
 	text.addSelectionListener(new SelectionAdapter() {
+		@Override
 		public void widgetDefaultSelected(SelectionEvent e) {
 			System.out.println("Text default selected (overrides default button)");
 		}
 	});
 	text.addTraverseListener(new TraverseListener() {
+		@Override
 		public void keyTraversed(TraverseEvent e) {
 			if (e.detail == SWT.TRAVERSE_RETURN) {
 				e.doit = false;
@@ -45,6 +47,7 @@ public static void main(String[] args) {
 	Button button = new Button(shell, SWT.PUSH);
 	button.setText("Ok");
 	button.addSelectionListener(new SelectionAdapter() {
+		@Override
 		public void widgetSelected(SelectionEvent e) {
 			System.out.println("Button selected");
 		}

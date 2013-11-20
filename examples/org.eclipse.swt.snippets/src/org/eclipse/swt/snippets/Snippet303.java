@@ -44,11 +44,13 @@ public static void main(String [] args) {
 		return;
 	}
 	browser.addProgressListener(new ProgressAdapter() {
+		@Override
 		public void completed(ProgressEvent event) {
 			browser.execute(SCRIPT);
 		}
 	});
 	browser.addStatusTextListener(new StatusTextListener() {
+		@Override
 		public void changed(StatusTextEvent event) {
 			if (event.text.startsWith("MOUSEDOWN: ")) {
 				System.out.println(event.text);

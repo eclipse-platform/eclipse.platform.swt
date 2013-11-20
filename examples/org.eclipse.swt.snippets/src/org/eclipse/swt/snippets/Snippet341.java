@@ -77,6 +77,7 @@ public class Snippet341 {
 		} catch(LWJGLException e) { e.printStackTrace(); }
 
 		canvas.addListener(SWT.Resize, new Listener() {
+			@Override
 			public void handleEvent(Event event) {
 				Rectangle bounds = canvas.getBounds();
 				float fAspect = (float) bounds.width / (float) bounds.height;
@@ -103,6 +104,7 @@ public class Snippet341 {
 		Button button = new Button(shell, SWT.PUSH);
 		button.setText("Capture");
 		button.addListener(SWT.Selection, new Listener() {
+			@Override
 			public void handleEvent(Event event) {
 				capture(canvas);
 			}
@@ -112,6 +114,7 @@ public class Snippet341 {
 
 		display.asyncExec(new Runnable() {
 			int rot = 0;
+			@Override
 			public void run() {
 				if (!canvas.isDisposed()) {
 					canvas.setCurrent();
@@ -171,6 +174,7 @@ public class Snippet341 {
 		Canvas canvas = new Canvas(shell, SWT.NONE);
 		canvas.setLayoutData(new GridData(bounds.width, bounds.height));
 		canvas.addListener(SWT.Paint, new Listener() {
+			@Override
 			public void handleEvent(Event event) {
 				event.gc.drawImage(image, 0, 0);
 			}
@@ -178,6 +182,7 @@ public class Snippet341 {
 		shell.pack();
 		shell.open();
 		shell.addListener(SWT.Dispose, new Listener() {
+			@Override
 			public void handleEvent(Event event) {
 				image.dispose();
 			}

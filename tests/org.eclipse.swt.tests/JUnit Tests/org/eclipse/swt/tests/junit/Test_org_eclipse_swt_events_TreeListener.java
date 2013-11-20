@@ -53,6 +53,7 @@ public static java.util.Vector<String> methodNames() {
 	methodNames.addElement("test_treeExpandedLorg_eclipse_swt_events_TreeEvent");
 	return methodNames;
 }
+@Override
 protected void runTest() throws Throwable {
 	if (getName().equals("test_treeCollapsedLorg_eclipse_swt_events_TreeEvent")) test_treeCollapsedLorg_eclipse_swt_events_TreeEvent();
 	else if (getName().equals("test_treeExpandedLorg_eclipse_swt_events_TreeEvent")) test_treeExpandedLorg_eclipse_swt_events_TreeEvent();

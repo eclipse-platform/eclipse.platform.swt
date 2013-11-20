@@ -46,11 +46,14 @@ public static void setDragSource (final Label label) {
 	final DragSource source = new DragSource (label, operations);
 	source.setTransfer(new Transfer[] {URLTransfer.getInstance()});
 	source.addDragListener (new DragSourceListener () {
+		@Override
 		public void dragStart(DragSourceEvent e) {
 		}
+		@Override
 		public void dragSetData(DragSourceEvent e) {
 			e.data = label.getText();
 		}
+		@Override
 		public void dragFinished(DragSourceEvent event) {
 		}
 	});
@@ -61,14 +64,17 @@ public static void setDropTarget (final Label label) {
 	DropTarget target = new DropTarget(label, operations);
 	target.setTransfer(new Transfer[] {URLTransfer.getInstance()});
 	target.addDropListener (new DropTargetAdapter() {
+		@Override
 		public void dragEnter(DropTargetEvent e) {
 			if (e.detail == DND.DROP_NONE)
 				e.detail = DND.DROP_LINK;
 		}
+		@Override
 		public void dragOperationChanged(DropTargetEvent e) {
 			if (e.detail == DND.DROP_NONE)
 				e.detail = DND.DROP_LINK;
 		}
+		@Override
 		public void drop(DropTargetEvent event) {
 			if (event.data == null) {
 				event.detail = DND.DROP_NONE;

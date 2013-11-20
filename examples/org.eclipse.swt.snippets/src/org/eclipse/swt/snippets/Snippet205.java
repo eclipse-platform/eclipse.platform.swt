@@ -59,6 +59,7 @@ public static void main(String[] args) {
 	layout.setStyle(buttonStyle, buttonOffset, buttonOffset);
 	
 	shell.addListener(SWT.Paint, new Listener() {
+		@Override
 		public void handleEvent(Event event) {
 			GC gc = event.gc;
 			Point margin = new Point(10, 10);

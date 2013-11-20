@@ -34,6 +34,7 @@ public Test_org_eclipse_swt_custom_TextChangeListener(String name) {
 public static void main(String[] args) {
 	TestRunner.run(suite());
 }
+@Override
 protected void setUp() {
 	super.setUp();
 	shell = new Shell();
@@ -558,6 +559,7 @@ public static java.util.Vector<String> methodNames() {
 	methodNames.addElement("test_textSetLorg_eclipse_swt_custom_TextChangedEvent");
 	return methodNames;
 }
+@Override
 protected void runTest() throws Throwable {
 	if (getName().equals("test_textChangedLorg_eclipse_swt_custom_TextChangedEvent")) test_textChangedLorg_eclipse_swt_custom_TextChangedEvent();
 	else if (getName().equals("test_textChangingLorg_eclipse_swt_custom_TextChangingEvent")) test_textChangingLorg_eclipse_swt_custom_TextChangingEvent();

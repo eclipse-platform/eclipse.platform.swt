@@ -35,6 +35,7 @@ public static void main(String[] args) {
 	TestRunner.run(suite());
 }
 
+@Override
 protected void setUp() {
 	super.setUp();
 	tableTree = new TableTree(shell, 0);
@@ -82,6 +83,7 @@ public void test_getGrayed() {
 	warnUnimpl("Test test_getGrayed not written");
 }
 
+@Override
 public void test_getImage() {
 	warnUnimpl("Test test_getImage not written");
 }
@@ -106,6 +108,7 @@ public void test_getParentItem() {
 	warnUnimpl("Test test_getParentItem not written");
 }
 
+@Override
 public void test_getText() {
 	warnUnimpl("Test test_getText not written");
 }
@@ -142,6 +145,7 @@ public void test_setImageILorg_eclipse_swt_graphics_Image() {
 	warnUnimpl("Test test_setImageILorg_eclipse_swt_graphics_Image not written");
 }
 
+@Override
 public void test_setImageLorg_eclipse_swt_graphics_Image() {
 	warnUnimpl("Test test_setImageLorg_eclipse_swt_graphics_Image not written");
 }
@@ -150,6 +154,7 @@ public void test_setTextILjava_lang_String() {
 	warnUnimpl("Test test_setTextILjava_lang_String not written");
 }
 
+@Override
 public void test_setTextLjava_lang_String() {
 	warnUnimpl("Test test_setTextLjava_lang_String not written");
 }
@@ -196,6 +201,7 @@ public static java.util.Vector<String> methodNames() {
 	methodNames.addAll(Test_org_eclipse_swt_widgets_Item.methodNames()); // add superclass method names
 	return methodNames;
 }
+@Override
 protected void runTest() throws Throwable {
 	if (getName().equals("test_ConstructorLorg_eclipse_swt_custom_TableTreeI")) test_ConstructorLorg_eclipse_swt_custom_TableTreeI();
 	else if (getName().equals("test_ConstructorLorg_eclipse_swt_custom_TableTreeII")) test_ConstructorLorg_eclipse_swt_custom_TableTreeII();

@@ -27,6 +27,7 @@ public static void main (String [] args) {
 	final Shell shell = new Shell (display);
 	Listener listener = new Listener () {
 		int lastX = 0, lastY = 0;
+		@Override
 		public void handleEvent (Event event) {
 			switch (event.type) {
 				case SWT.MouseMove:
