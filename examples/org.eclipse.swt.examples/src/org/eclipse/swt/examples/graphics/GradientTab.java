@@ -11,11 +11,22 @@
 
 package org.eclipse.swt.examples.graphics;
 
-import java.util.*;
-
-import org.eclipse.swt.*;
-import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.widgets.*;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.Device;
+import org.eclipse.swt.graphics.GC;
+import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.Path;
+import org.eclipse.swt.graphics.Pattern;
+import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Listener;
+import org.eclipse.swt.widgets.Menu;
+import org.eclipse.swt.widgets.ToolBar;
+import org.eclipse.swt.widgets.ToolItem;
 
 /**
  * This tab draws an image consisting of gradients of two colors.
@@ -26,12 +37,10 @@ public class GradientTab extends GraphicsTab {
 	ToolItem colorItem1, colorItem2;
 	Menu menu1, menu2;
 	GraphicsBackground colorGB1, colorGB2;
-	ArrayList<?> resources;		// resources to be disposed when the dipose() method is invoked
 	
 
 public GradientTab(GraphicsExample example) {
 	super(example);
-	resources = new ArrayList();
 }
 
 /**
@@ -39,13 +48,6 @@ public GradientTab(GraphicsExample example) {
  * */
 @Override
 public void dispose() {
-	for (int i = 0; i < resources.size(); i++) {
-		Object obj = resources.get(i);
-		if (obj != null && obj instanceof Resource) 
-			((Resource) obj).dispose();
-	}
-	resources = new ArrayList();
-	
 	if (menu1 != null) {
 		menu1.dispose();
 		menu1 = null;
