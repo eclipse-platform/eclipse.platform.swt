@@ -13,7 +13,7 @@
             class="org.eclipse.swt.examples.browser.demos.views.BrowserDemoView"
             icon="icons/pawn.gif"
             category="org.eclipse.swt.examples.category"
-            name="Browser Demo"
+            name="%view.name"
             id="org.eclipse.swt.examples.browser.demos.views.BrowserDemoView">
       </view>
    </extension>

@@ -34,7 +34,7 @@ public class BrowserDemoPlugin extends AbstractUIPlugin {
 	@Override
 	public void start(BundleContext context) throws Exception {
 		super.start(context);
-		PLUGIN_PATH = Platform.resolve(plugin.getBundle().getEntry(".")).toString();
+		PLUGIN_PATH = FileLocator.resolve(plugin.getBundle().getEntry(".")).toString();
 	}
 
 	@Override
