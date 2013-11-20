@@ -74,7 +74,7 @@ public static void main(String args[]) {
 			EventQueue.invokeLater(new Runnable() {
 				@Override
 				public void run() {
-					Frame[] frames = JFrame.getFrames();
+					Frame[] frames = Frame.getFrames();
 					for (int i = 0; i < frames.length; i++) {
 						frames[i].dispose();
 					}
