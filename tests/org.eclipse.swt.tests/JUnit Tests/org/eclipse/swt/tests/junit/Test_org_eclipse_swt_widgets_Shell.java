@@ -645,7 +645,7 @@ public void test_consistency_Dispose() {
             testShell.dispose();
         }
     });
-    Vector events = new Vector();
+    Vector<String> events = new Vector<String>();
     consistencyPrePackShell(testShell);
     Point pt = button.getLocation();
     consistencyEvent(pt.x, pt.y, 1, 0, ConsistencyUtility.MOUSE_CLICK, events);

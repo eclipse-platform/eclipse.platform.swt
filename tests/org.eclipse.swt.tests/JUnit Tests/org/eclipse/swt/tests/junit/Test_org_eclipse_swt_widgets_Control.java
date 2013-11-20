@@ -940,11 +940,11 @@ protected void setWidget(Widget w) {
  */
 protected void consistencyEvent(final int paramA, final int paramB, 
         						final int paramC, final int paramD,
-        						final int method, Vector events, boolean focus) {
+        						final int method, Vector<String> events, boolean focus) {
     if(fTestConsistency) {
         final Display display = shell.getDisplay();
         if(events == null) 
-            events = new Vector();
+            events = new Vector<String>();
         final String test = getTestName();
         
         shell.setLayout(new org.eclipse.swt.layout.FillLayout());
@@ -1034,7 +1034,7 @@ protected void consistencyEvent(final int paramA, final int paramB,
 
 protected void consistencyEvent(int paramA, int paramB, 
 								int paramC, int paramD,
-								int method, Vector events) {
+								int method, Vector<String> events) {
     consistencyEvent(paramA, paramB, paramC, paramD, method, events, true);
 }
 
