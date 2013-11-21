@@ -5269,9 +5269,10 @@ int getVerticalScrollOffset() {
 int getVisualLineIndex(TextLayout layout, int offsetInLine) {
 	int lineIndex = layout.getLineIndex(offsetInLine);
 	int[] offsets = layout.getLineOffsets();
-	if (lineIndex != 0 && offsetInLine == offsets[lineIndex]) {
+	Caret caret = getCaret();
+	if (caret != null && lineIndex != 0 && offsetInLine == offsets[lineIndex]) {
 		int lineY = layout.getLineBounds(lineIndex).y;
-		int caretY = getCaret().getLocation().y - getLinePixel(getCaretLine());
+		int caretY = caret.getLocation().y - getLinePixel(getCaretLine());
 		if (lineY > caretY) lineIndex--;
 		caretAlignment = OFFSET_LEADING;
  	}
