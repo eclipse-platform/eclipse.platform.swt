@@ -1116,7 +1116,7 @@ static class ImageLoader {
 	/*
 	 * the set of ImageLoader event listeners, created on demand
 	 */
-	Vector imageLoaderListeners;
+	Vector<?> imageLoaderListeners;
 
 /**
  * Construct a new empty ImageLoader.

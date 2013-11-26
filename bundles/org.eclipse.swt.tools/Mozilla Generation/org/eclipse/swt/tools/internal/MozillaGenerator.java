@@ -32,7 +32,7 @@ public class MozillaGenerator {
 	String[][] argTypes;
 	String[][] argNames;
 	String bodyOrder;
-	Hashtable vtbls;
+	Hashtable<Integer, Vector<String>> vtbls;
 
 	static boolean DEBUG = false;
 
@@ -139,7 +139,7 @@ public class MozillaGenerator {
 	}
 
 	public MozillaGenerator() {
-		vtbls = new Hashtable();
+		vtbls = new Hashtable<Integer, Vector<String>>();
 	}
 
 	/** Write callbacks */
@@ -264,15 +264,15 @@ public class MozillaGenerator {
 		}
 		vtbl += ");";
 		Integer key = new Integer(argTypes.length);
-		Vector list = (Vector) vtbls.get(key);
+		Vector<String> list = vtbls.get(key);
 		if (list == null) {
-			list = new Vector();
+			list = new Vector<String>();
 			vtbls.put(key, list);
 		}
 		boolean duplicate = false;
-		Enumeration e = list.elements();
+		Enumeration<String> e = list.elements();
 		while (e.hasMoreElements()) {
-			String s = (String) e.nextElement();
+			String s = e.nextElement();
 			if (vtbl.equals(s)) {
 				duplicate = true;
 				break;
@@ -283,7 +283,7 @@ public class MozillaGenerator {
 	}
 
 	public void outputVtblCall() {
-		Enumeration e = vtbls.keys();
+		Enumeration<Integer> e = vtbls.keys();
 		int n = 0;
 		while (e.hasMoreElements()) {
 			e.nextElement();
@@ -293,12 +293,12 @@ public class MozillaGenerator {
 		e = vtbls.keys();
 		n = 0;
 		while (e.hasMoreElements()) {
-			keys[n] = (Integer) e.nextElement();
+			keys[n] = e.nextElement();
 			n++;
 		}
 		Arrays.sort(keys);
 		for (int i = 0; i < keys.length; i++) {
-			Vector list = (Vector) vtbls.get(keys[i]);
+			Vector<?> list = vtbls.get(keys[i]);
 			Object[] elts = list.toArray();
 			Arrays.sort(elts);
 			for (int j = 0; j < elts.length; j++) {

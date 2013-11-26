@@ -110,16 +110,14 @@ public class DOMWriter {
 				NodeList children = node.getChildNodes();
 				if (children != null) {
 					int len = children.getLength();
-					ArrayList nodes = new ArrayList();
+					ArrayList<Node> nodes = new ArrayList<Node>();
 					for (int i = 0; i < len; i++) {
 						Node child = children.item(i);
 						if (child.getNodeType() == Node.ELEMENT_NODE) nodes.add(child);
 					}
 					int count = nodes.size();
-					Collections.sort(nodes, new Comparator() {
-						public int compare(Object arg0, Object arg1) {
-							Node a = (Node)arg0;
-							Node b = (Node)arg1;
+					Collections.sort(nodes, new Comparator<Node>() {
+						public int compare(Node a, Node b) {
 							String nameA = a.getNodeName();
 							String nameB = b.getNodeName();
 							if ("arg".equals(nameA)) {
@@ -138,7 +136,7 @@ public class DOMWriter {
 					});
 					if (count > 0) println();
 					for (int i = 0; i < count; i++) {
-						print((Node)nodes.get(i), level + 1);
+						print(nodes.get(i), level + 1);
 					}
 					if (count > 0) {
 						for (int i = 0; i < level; i++) print("\t");
@@ -161,9 +159,9 @@ public class DOMWriter {
 		for (int i = 0; i < result.length; i++) {
 			result[i] = (Attr) attrs.item(i);
 		}
-		Arrays.sort(result, new Comparator() {
-			public int compare(Object arg0, Object arg1) {
-				return nodeName((Node) arg0).compareTo(nodeName((Node) arg1));
+		Arrays.sort(result, new Comparator<Node>() {
+			public int compare(Node arg0, Node arg1) {
+				return nodeName(arg0).compareTo(nodeName(arg1));
 			}
 		});
 		return result;

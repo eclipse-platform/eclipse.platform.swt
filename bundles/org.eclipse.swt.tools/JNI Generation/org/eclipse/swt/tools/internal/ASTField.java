@@ -37,7 +37,7 @@ public ASTField(ASTClass declaringClass, String source, FieldDeclaration field, 
 	if (doc != null) {
 		tags = doc.tags();
 		for (Iterator<TagElement> iterator = tags.iterator(); iterator.hasNext();) {
-			TagElement tag = (TagElement) iterator.next();
+			TagElement tag = iterator.next();
 			if ("@field".equals(tag.getTagName())) {
 				String data = tag.fragments().get(0).toString();
 				setMetaData(data);

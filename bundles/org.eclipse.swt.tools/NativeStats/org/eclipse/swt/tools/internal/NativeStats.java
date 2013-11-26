@@ -10,11 +10,9 @@
  *******************************************************************************/
 package org.eclipse.swt.tools.internal;
 
-import java.io.PrintStream;
-import java.lang.reflect.Method;
-import java.util.Arrays;
-import java.util.Enumeration;
-import java.util.Hashtable;
+import java.io.*;
+import java.lang.reflect.*;
+import java.util.*;
 
 /**
  * Instructions on how to use the NativeStats tool with a standlaone SWT example:
@@ -36,12 +34,12 @@ import java.util.Hashtable;
  */
 public class NativeStats {
 	
-	Hashtable snapshot;
+	Hashtable<String, NativeFunction[]> snapshot;
 	
 	final static String[] classes = new String[]{"OS", "ATK", "CDE", "GNOME", "GTK", "XPCOM", "COM", "AGL", "Gdip", "GLX", "Cairo", "WGL"};
 
 	
-	public static class NativeFunction implements Comparable {
+	public static class NativeFunction implements Comparable<Object> {
 		String name;
 		int callCount;
 		
@@ -70,13 +68,13 @@ public NativeStats() {
 	snapshot = snapshot();
 }
 	
-public Hashtable diff() {
-	Hashtable newSnapshot = snapshot();
-	Enumeration keys = newSnapshot.keys();
+public Hashtable<String, NativeFunction[]> diff() {
+	Hashtable<String, NativeFunction[]> newSnapshot = snapshot();
+	Enumeration<String> keys = newSnapshot.keys();
 	while (keys.hasMoreElements()) {
-		String className = (String)keys.nextElement();
-		NativeFunction[] newFuncs = (NativeFunction[])newSnapshot.get(className);
-		NativeFunction[] funcs = (NativeFunction[])snapshot.get(className);
+		String className = keys.nextElement();
+		NativeFunction[] newFuncs = newSnapshot.get(className);
+		NativeFunction[] funcs = snapshot.get(className);
 		if (funcs != null) {
 			for (int i = 0; i < newFuncs.length; i++) {
 				newFuncs[i].subtract(funcs[i]);
@@ -95,16 +93,16 @@ public void dumpSnapshot(PrintStream ps) {
 }
 
 public void dumpSnapshot(String className, PrintStream ps) {
-	Hashtable snapshot = new Hashtable();
+	Hashtable<String, NativeFunction[]> snapshot = new Hashtable<String, NativeFunction[]>();
 	snapshot(className, snapshot);
-	dump(className, (NativeFunction[])snapshot.get(className), ps);
+	dump(className, snapshot.get(className), ps);
 }
 
-public void dump(Hashtable snapshot, PrintStream ps) {
-	Enumeration keys = snapshot.keys();
+public void dump(Hashtable<String, NativeFunction[]> snapshot, PrintStream ps) {
+	Enumeration<String> keys = snapshot.keys();
 	while (keys.hasMoreElements()) {
-		String className = (String)keys.nextElement();
-		dump(className, (NativeFunction[])snapshot.get(className), ps);
+		String className = keys.nextElement();
+		dump(className, snapshot.get(className), ps);
 	}
 }
 	
@@ -136,8 +134,8 @@ public void reset() {
 	snapshot = snapshot(); 
 }
 
-public Hashtable snapshot() {
-	Hashtable snapshot = new Hashtable();
+public Hashtable<String, NativeFunction[]> snapshot() {
+	Hashtable<String, NativeFunction[]> snapshot = new Hashtable<String, NativeFunction[]>();
 	for (int i = 0; i < classes.length; i++) {
 		String className = classes[i];
 		snapshot(className, snapshot);
@@ -145,9 +143,9 @@ public Hashtable snapshot() {
 	return snapshot;
 }
 
-public Hashtable snapshot(String className, Hashtable snapshot) {
+public Hashtable<String, NativeFunction[]> snapshot(String className, Hashtable<String, NativeFunction[]> snapshot) {
 	try {
-		Class clazz = getClass();
+		Class<? extends NativeStats> clazz = getClass();
 		Method functionCount = clazz.getMethod(className + "_GetFunctionCount", new Class[0]);
 		Method functionCallCount = clazz.getMethod(className + "_GetFunctionCallCount", new Class[]{int.class});
 		Method functionName = clazz.getMethod(className + "_GetFunctionName", new Class[]{int.class});

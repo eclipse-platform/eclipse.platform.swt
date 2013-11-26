@@ -413,7 +413,7 @@ public class MacGeneratorUI {
 		cleanup();
 	}
 	
-	ArrayList flatNodes;
+	ArrayList<Node> flatNodes;
 	void searchFor(String name) {
 		TreeItem[] selection = nodesTree.getSelection();
 		Node node = null;
@@ -432,7 +432,7 @@ public class MacGeneratorUI {
 		    while (index < documents.length && (node = documents[index]) == null) index++;
 		}
 		if (flatNodes == null) {
-			flatNodes = new ArrayList();
+			flatNodes = new ArrayList<Node>();
 			for (int i = 0; i < documents.length; i++) {
 				if (documents[i] != null) addNodes(documents[i], flatNodes);
 			}
@@ -441,7 +441,7 @@ public class MacGeneratorUI {
 		while (flatNodes.get(index++) != node);		
 		int start = index;
 		while (index < flatNodes.size()) {
-			Node child = (Node)flatNodes.get(index);
+			Node child = flatNodes.get(index);
 			Node attribName = gen.getIDAttribute(child);
 			if (attribName != null && attribName.getNodeValue().matches(name)) {
 				selectNode(child);
@@ -451,7 +451,7 @@ public class MacGeneratorUI {
 		}
 		index = 0;
 		while (index < start) {
-			Node child = (Node)flatNodes.get(index);
+			Node child = flatNodes.get(index);
 			Node attribName = gen.getIDAttribute(child);
 			if (attribName != null && attribName.getNodeValue().matches(name)) {
 				selectNode(child);
@@ -463,7 +463,7 @@ public class MacGeneratorUI {
 	}
 	
 	void selectNode(Node node) {
-		ArrayList path = new ArrayList();
+		ArrayList<Node> path = new ArrayList<Node>();
 		do {
 			path.add(node);
 			node = node.getParentNode();
@@ -472,7 +472,7 @@ public class MacGeneratorUI {
 		Collections.reverse(path);
 		path.remove(0);
 		while (true) {
-			TreeItem item = findItem(items, (Node)path.remove(0));
+			TreeItem item = findItem(items, path.remove(0));
 			if (item == null) return;
 			if (path.isEmpty()) {
 				nodesTree.setSelection(item);
@@ -496,7 +496,7 @@ public class MacGeneratorUI {
 		return null;
 	}
 	
-	void addNodes(Node node, ArrayList list) {
+	void addNodes(Node node, ArrayList<Node> list) {
 		if (node.getNodeType() == Node.TEXT_NODE) return;
 		list.add(node);
 		NodeList children = node.getChildNodes();

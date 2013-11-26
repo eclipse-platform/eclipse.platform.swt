@@ -14,6 +14,7 @@ import java.io.*;
 import java.util.*;
 
 import javax.xml.parsers.DocumentBuilderFactory;
+
 import org.w3c.dom.*;
 import org.xml.sax.InputSource;
 
@@ -42,7 +43,7 @@ public class MacGenerator {
 public MacGenerator() {
 }
 
-static void list(File path, ArrayList list) {
+static void list(File path, ArrayList<String> list) {
 	if (path == null) return;
 	File[] frameworks = path.listFiles();
 	if (frameworks == null) return;
@@ -133,19 +134,19 @@ void merge(Document document, Document extraDocument) {
 	if (extraDocument == null) return;
 	
 	/* Build a lookup table for extraDocument */
-	HashMap extras = new HashMap();
+	HashMap<String, Node> extras = new HashMap<String, Node>();
 	buildLookup(extraDocument, extras);
 
 	/* Merge attributes on existing elements building a lookup table for document */
-	HashMap lookup = new HashMap();
+	HashMap<String, Node> lookup = new HashMap<String, Node>();
 	merge(document, extras, lookup);
 	
 	/* 
 	 * Merge new elements. Extras at this point contains only elements that were
 	 * not found in the document.
 	 */
-	ArrayList sortedNodes = Collections.list(Collections.enumeration(extras.values()));
-	Collections.sort(sortedNodes, new Comparator() {
+	ArrayList<Node> sortedNodes = Collections.list(Collections.enumeration(extras.values()));
+	Collections.sort(sortedNodes, new Comparator<Object>() {
 		public int compare(Object arg0, Object arg1) {
 			int compare = getLevel((Node)arg0) - getLevel((Node)arg1);
 			if (compare == 0) {
@@ -155,13 +156,13 @@ void merge(Document document, Document extraDocument) {
 		}
 	});
 	String delimiter = System.getProperty("line.separator");
-	for (Iterator iterator = sortedNodes.iterator(); iterator.hasNext();) {
-		Node node = (Node) iterator.next();
+	for (Iterator<Node> iterator = sortedNodes.iterator(); iterator.hasNext();) {
+		Node node = iterator.next();
 		String name = node.getNodeName();
 		if ("arg".equals(name) || "retval".equals(name)) {
 			if (!sortedNodes.contains(node.getParentNode())) continue;
 		}
-		Node parent = (Node)lookup.get(getKey(node.getParentNode()));
+		Node parent = lookup.get(getKey(node.getParentNode()));
 		Element element = document.createElement(node.getNodeName());
 		String text = parent.getChildNodes().getLength() == 0 ? delimiter : "";
 		for (int i = 0, level = getLevel(parent) - 1; i < level; i++) {
@@ -264,8 +265,8 @@ String getParamName(Node param, int i) {
 	return paramName;
 }
 
-void generateFields(String structName, ArrayList fields) {
-	for (Iterator iterator = fields.iterator(); iterator.hasNext();) {
+void generateFields(String structName, ArrayList<?> fields) {
+	for (Iterator<?> iterator = fields.iterator(); iterator.hasNext();) {
 		Node field = (Node)iterator.next();
 		NamedNodeMap fieldAttributes = field.getAttributes();
 		String fieldName = fieldAttributes.getNamedItem("name").getNodeValue();
@@ -291,8 +292,8 @@ void generateFields(String structName, ArrayList fields) {
 	}
 }
 
-void generateMethods(String className, ArrayList methods) {
-	for (Iterator iterator = methods.iterator(); iterator.hasNext();) {
+void generateMethods(String className, ArrayList<?> methods) {
+	for (Iterator<?> iterator = methods.iterator(); iterator.hasNext();) {
 		Node method = (Node)iterator.next();
 		NamedNodeMap mthAttributes = method.getAttributes();
 		String sel = mthAttributes.getNamedItem("selector").getNodeValue();
@@ -562,8 +563,8 @@ void generateExtraMethods(String className) {
 	}	
 }
 
-TreeMap getGeneratedClasses() {
-	TreeMap classes = new TreeMap();
+TreeMap<String, Object[]> getGeneratedClasses() {
+	TreeMap<String, Object[]> classes = new TreeMap<String, Object[]>();
 	for (int x = 0; x < xmls.length; x++) {
 		Document document = documents[x];
 		if (document == null) continue;
@@ -571,14 +572,14 @@ TreeMap getGeneratedClasses() {
 		for (int i = 0; i < list.getLength(); i++) {
 			Node node = list.item(i);
 			if ("class".equals(node.getNodeName()) && getGen(node)) {
-				ArrayList methods;
+				ArrayList<Node> methods;
 				String name = node.getAttributes().getNamedItem("name").getNodeValue();
-				Object[] clazz = (Object[])classes.get(name);
+				Object[] clazz = classes.get(name);
 				if (clazz == null) {
-					methods = new ArrayList();
+					methods = new ArrayList<Node>();
 					classes.put(name, new Object[]{node, methods});
 				} else {
-					methods = (ArrayList)clazz[1];
+					methods = (ArrayList<Node>)clazz[1];
 				}
 				NodeList methodList = node.getChildNodes();
 				for (int j = 0; j < methodList.getLength(); j++) {
@@ -593,8 +594,8 @@ TreeMap getGeneratedClasses() {
 	return classes;
 }
 
-TreeMap getGeneratedStructs() {
-	TreeMap structs = new TreeMap();
+TreeMap<String, Object[]> getGeneratedStructs() {
+	TreeMap<String, Object[]> structs = new TreeMap<String, Object[]>();
 	for (int x = 0; x < xmls.length; x++) {
 		Document document = documents[x];
 		if (document == null) continue;
@@ -602,14 +603,14 @@ TreeMap getGeneratedStructs() {
 		for (int i = 0; i < list.getLength(); i++) {
 			Node node = list.item(i);
 			if ("struct".equals(node.getNodeName()) && getGen(node)) {
-				ArrayList fields;
+				ArrayList<Node> fields;
 				String name = node.getAttributes().getNamedItem("name").getNodeValue();
-				Object[] clazz = (Object[])structs.get(name);
+				Object[] clazz = structs.get(name);
 				if (clazz == null) {
-					fields = new ArrayList();
+					fields = new ArrayList<Node>();
 					structs.put(name, new Object[]{node, fields});
 				} else {
-					fields = (ArrayList)clazz[1];
+					fields = (ArrayList<Node>)clazz[1];
 				}
 				NodeList fieldList = node.getChildNodes();
 				for (int j = 0; j < fieldList.getLength(); j++) {
@@ -624,15 +625,15 @@ TreeMap getGeneratedStructs() {
 	return structs;
 }
 
-void copyClassMethodsDown(final Map classes) {
-	ArrayList sortedClasses = Collections.list(Collections.enumeration(classes.values()));
-	Collections.sort(sortedClasses, new Comparator() {
+void copyClassMethodsDown(final Map<String, Object[]> classes) {
+	ArrayList<Object[]> sortedClasses = Collections.list(Collections.enumeration(classes.values()));
+	Collections.sort(sortedClasses, new Comparator<Object>() {
 		int getHierarchyLevel(Node node) {
 			String superclass = getSuperclassName(node);
 			int level = 0;
 			while (!superclass.equals("id") && !superclass.equals("NSObject")) {
 				level++;
-				superclass = getSuperclassName((Node)((Object[])classes.get(superclass))[0]);
+				superclass = getSuperclassName((Node)classes.get(superclass)[0]);
 			}
 			return level;			
 		}
@@ -640,13 +641,13 @@ void copyClassMethodsDown(final Map classes) {
 			return getHierarchyLevel((Node)((Object[])arg0)[0]) - getHierarchyLevel((Node)((Object[])arg1)[0]);  
 		}
 	});
-	for (Iterator iterator = sortedClasses.iterator(); iterator.hasNext();) {
-		Object[] clazz = (Object[]) iterator.next();
+	for (Iterator<Object[]> iterator = sortedClasses.iterator(); iterator.hasNext();) {
+		Object[] clazz = iterator.next();
 		Node node = (Node)clazz[0];
-		ArrayList methods = (ArrayList)clazz[1];
-		Object[] superclass = (Object[])classes.get(getSuperclassName(node));
+		ArrayList<Node> methods = (ArrayList<Node>)clazz[1];
+		Object[] superclass = classes.get(getSuperclassName(node));
 		if (superclass != null) {
-			for (Iterator iterator2 = ((ArrayList)superclass[1]).iterator(); iterator2.hasNext();) {
+			for (Iterator<?> iterator2 = ((ArrayList<?>)superclass[1]).iterator(); iterator2.hasNext();) {
 				Node method = (Node) iterator2.next();
 				if (isStatic(method)) {
 					methods.add(method);
@@ -673,20 +674,20 @@ String getSuperclassName (Node node) {
 
 void generateClasses() {
 	MetaData metaData = new MetaData(mainClassName);	
-	TreeMap classes = getGeneratedClasses();
+	TreeMap<String, Object[]> classes = getGeneratedClasses();
 	copyClassMethodsDown(classes);
 	
-	Set classNames = classes.keySet();
-	for (Iterator iterator = classNames.iterator(); iterator.hasNext();) {
+	Set<String> classNames = classes.keySet();
+	for (Iterator<String> iterator = classNames.iterator(); iterator.hasNext();) {
 		CharArrayWriter out = new CharArrayWriter();
 		this.out = new PrintWriter(out);
 
 		out(fixDelimiter(metaData.getCopyright()));
 
-		String className = (String) iterator.next();
-		Object[] clazz = (Object[])classes.get(className);
+		String className = iterator.next();
+		Object[] clazz = classes.get(className);
 		Node node = (Node)clazz[0];
-		ArrayList methods = (ArrayList)clazz[1];
+		ArrayList<?> methods = (ArrayList<?>)clazz[1];
 		out("package ");
 		String packageName = getPackageName(mainClassName);
 		out(packageName);
@@ -714,18 +715,18 @@ void generateClasses() {
 
 void generateStructs() {
 	MetaData metaData = new MetaData(mainClassName);	
-	TreeMap structs = getGeneratedStructs();
+	TreeMap<String, Object[]> structs = getGeneratedStructs();
 
-	Set structNames = structs.keySet();
-	for (Iterator iterator = structNames.iterator(); iterator.hasNext();) {
+	Set<String> structNames = structs.keySet();
+	for (Iterator<String> iterator = structNames.iterator(); iterator.hasNext();) {
 		CharArrayWriter out = new CharArrayWriter();
 		this.out = new PrintWriter(out);
 
 		out(fixDelimiter(metaData.getCopyright()));
 
-		String className = (String) iterator.next();
-		Object[] clazz = (Object[])structs.get(className);
-		ArrayList methods = (ArrayList)clazz[1];
+		String className = iterator.next();
+		Object[] clazz = structs.get(className);
+		ArrayList<?> methods = (ArrayList<?>)clazz[1];
 		out("package ");
 		String packageName = getPackageName(mainClassName);
 		out(packageName);
@@ -857,7 +858,7 @@ public Document[] getDocuments() {
 
 public String[] getXmls() {
 	if (xmls == null || xmls.length == 0) {
-		ArrayList array = new ArrayList();
+		ArrayList<String> array = new ArrayList<String>();
 		if (USE_SYSTEM_BRIDGE_FILES) {
 			list(new File("/System/Library/Frameworks"), array);
 			list(new File("/System/Library/Frameworks/CoreServices.framework/Frameworks"), array);
@@ -874,12 +875,12 @@ public String[] getXmls() {
 				array.add(files[i].getAbsolutePath());
 			}
 		}
-		Collections.sort(array, new Comparator() {
+		Collections.sort(array, new Comparator<Object>() {
 			public int compare(Object o1, Object o2) {
 				return new File((String)o1).getName().compareTo(new File((String)o2).getName());
 			}
 		});
-		xmls = (String[])array.toArray(new String[array.size()]);
+		xmls = array.toArray(new String[array.size()]);
 	}
 	return xmls;
 }
@@ -1045,7 +1046,7 @@ public String[] getIDAttributeNames() {
 	};
 }
 
-void merge(Node node, HashMap extras, HashMap docLookup) {
+void merge(Node node, HashMap<String, Node> extras, HashMap<String, Node> docLookup) {
 	NodeList list = node.getChildNodes();
 	for (int i = 0; i < list.getLength(); i++) {
 		Node childNode = list.item(i);
@@ -1054,7 +1055,7 @@ void merge(Node node, HashMap extras, HashMap docLookup) {
 			if (docLookup != null && docLookup.get(key) == null) {
 				docLookup.put(key, childNode);
 			}
-			Node extra = (Node)extras.remove(key);
+			Node extra = extras.remove(key);
 			if (extra != null) {
 				NamedNodeMap attributes = extra.getAttributes();
 				for (int j = 0, length = attributes.getLength(); j < length; j++) {
@@ -1223,7 +1224,7 @@ boolean isBoolean(Node node) {
 	return code.equals("B");
 }
 
-void buildLookup(Node node, HashMap table) {
+void buildLookup(Node node, HashMap<String, Node> table) {
 	NodeList list = node.getChildNodes();
 	for (int i = 0; i < list.getLength(); i++) {
 		Node childNode = list.item(i);
@@ -1235,7 +1236,7 @@ void buildLookup(Node node, HashMap table) {
 	}
 }
 
-boolean isUnique(Node method, ArrayList methods) {
+boolean isUnique(Node method, ArrayList<?> methods) {
 	String methodName = method.getAttributes().getNamedItem("selector").getNodeValue();
 	String signature = "";
 	NodeList params = method.getChildNodes();
@@ -1247,7 +1248,7 @@ boolean isUnique(Node method, ArrayList methods) {
 	}
 	int index = methodName.indexOf(":");
 	if (index != -1) methodName = methodName.substring(0, index);
-	for (Iterator iterator = methods.iterator(); iterator.hasNext();) {
+	for (Iterator<?> iterator = methods.iterator(); iterator.hasNext();) {
 		Node other = (Node) iterator.next();
 		NamedNodeMap attributes = other.getAttributes();
 		Node otherSel = null;
@@ -1275,7 +1276,7 @@ boolean isUnique(Node method, ArrayList methods) {
 }
 
 void generateSelectorsConst() {
-	TreeSet set = new TreeSet();
+	TreeSet<String> set = new TreeSet<String>();
 	for (int x = 0; x < xmls.length; x++) {
 		Document document = documents[x];
 		if (document == null) continue;
@@ -1301,8 +1302,8 @@ void generateSelectorsConst() {
 		set.add("alloc");
 		set.add("dealloc");
 	}
-	for (Iterator iterator = set.iterator(); iterator.hasNext();) {
-		String sel = (String) iterator.next();
+	for (Iterator<String> iterator = set.iterator(); iterator.hasNext();) {
+		String sel = iterator.next();
 		String selConst = getSelConst(sel);
 		out("public static final int /*long*/ ");
 		out(selConst);
@@ -1315,7 +1316,7 @@ void generateSelectorsConst() {
 }
 
 void generateStructNatives() {
-	TreeSet set = new TreeSet();
+	TreeSet<String> set = new TreeSet<String>();
 	for (int x = 0; x < xmls.length; x++) {
 		Document document = documents[x];
 		if (document == null) continue;
@@ -1329,8 +1330,8 @@ void generateStructNatives() {
 	}
 	out("/** Sizeof natives */");
 	outln();
-	for (Iterator iterator = set.iterator(); iterator.hasNext();) {
-		String struct = (String) iterator.next();
+	for (Iterator<String> iterator = set.iterator(); iterator.hasNext();) {
+		String struct = iterator.next();
 		out("public static final native int ");
 		out(struct);
 		out("_sizeof();");
@@ -1340,8 +1341,8 @@ void generateStructNatives() {
 	out("/** Memmove natives */");
 	outln();
 	outln();
-	for (Iterator iterator = set.iterator(); iterator.hasNext();) {
-		String struct = (String) iterator.next();
+	for (Iterator<String> iterator = set.iterator(); iterator.hasNext();) {
+		String struct = iterator.next();
 		out("/**");
 		outln();
 		out(" * @param dest cast=(void *),flags=no_in critical");
@@ -1489,7 +1490,7 @@ Node findNSObjectMethod(Node method) {
 }
 
 void generateCustomCallbacks() {
-	TreeMap set = new TreeMap();
+	TreeMap<String, Node> set = new TreeMap<String, Node>();
 	for (int x = 0; x < xmls.length; x++) {
 		Document document = documents[x];
 		if (document == null) continue;
@@ -1509,9 +1510,9 @@ void generateCustomCallbacks() {
 			}
 		}
 	}
-	for (Iterator iterator = set.keySet().iterator(); iterator.hasNext();) {
-		String key = (String)iterator.next();
-		Node method = (Node)set.get(key);
+	for (Iterator<String> iterator = set.keySet().iterator(); iterator.hasNext();) {
+		String key = iterator.next();
+		Node method = set.get(key);
 		if ("informal_protocol".equals(method.getParentNode().getNodeName())) {
 			method = findNSObjectMethod(method);
 			if (method == null) continue;
@@ -1549,8 +1550,8 @@ void generateCustomCallbacks() {
 }
 
 void generateSends(boolean superCall) {
-	TreeMap set = new TreeMap();
-	TreeMap set64 = new TreeMap();
+	TreeMap<String, Node> set = new TreeMap<String, Node>();
+	TreeMap<String, Node> set64 = new TreeMap<String, Node>();
 	for (int x = 0; x < xmls.length; x++) {
 		Document document = documents[x];
 		if (document == null) continue;
@@ -1576,10 +1577,10 @@ void generateSends(boolean superCall) {
 		}
 	}
 	outln();
-	TreeMap tagsSet = new TreeMap();
-	for (Iterator iterator = set.keySet().iterator(); iterator.hasNext();) {
-		String key = (String)iterator.next();
-		Node method = (Node)set.get(key);
+	TreeMap<String, Node> tagsSet = new TreeMap<String, Node>();
+	for (Iterator<String> iterator = set.keySet().iterator(); iterator.hasNext();) {
+		String key = iterator.next();
+		Node method = set.get(key);
 		String tagCode = buildSend(method, false, true, superCall);
 		if (set64.get(tagCode) != null) {
 			tagsSet.put(key, method);
@@ -1587,25 +1588,25 @@ void generateSends(boolean superCall) {
 			set64.remove(tagCode);
 		}
 	}
-	TreeMap all = new TreeMap();
-	for (Iterator iterator = tagsSet.keySet().iterator(); iterator.hasNext();) {
-		String key = (String) iterator.next();
-		Node method = (Node)tagsSet.get(key);
+	TreeMap<String, Node> all = new TreeMap<String, Node>();
+	for (Iterator<String> iterator = tagsSet.keySet().iterator(); iterator.hasNext();) {
+		String key = iterator.next();
+		Node method = tagsSet.get(key);
 		all.put(buildSend(method, true, false, superCall), method);
 	}
-	for (Iterator iterator = set.keySet().iterator(); iterator.hasNext();) {
-		String key = (String) iterator.next();
+	for (Iterator<String> iterator = set.keySet().iterator(); iterator.hasNext();) {
+		String key = iterator.next();
 		all.put(key, set.get(key));
 	}
-	for (Iterator iterator = set64.keySet().iterator(); iterator.hasNext();) {
-		String key = (String) iterator.next();
+	for (Iterator<String> iterator = set64.keySet().iterator(); iterator.hasNext();) {
+		String key = iterator.next();
 		all.put(key, set64.get(key));
 	}
-	for (Iterator iterator = all.keySet().iterator(); iterator.hasNext();) {
-		String key = (String)iterator.next();
-		Node method = (Node)all.get(key);
+	for (Iterator<String> iterator = all.keySet().iterator(); iterator.hasNext();) {
+		String key = iterator.next();
+		Node method = all.get(key);
 		NodeList params = method.getChildNodes();
-		ArrayList tags = new ArrayList();
+		ArrayList<String> tags = new ArrayList<String>();
 		int count = 0;
 		for (int k = 0; k < params.getLength(); k++) {
 			Node param = params.item(k);
@@ -1623,8 +1624,8 @@ void generateSends(boolean superCall) {
 		}
 		out(" @method flags=cast");
 		if (tags.size() > 0) outln();
-		for (Iterator iterator2 = tags.iterator(); iterator2.hasNext();) {
-			String tag = (String) iterator2.next();
+		for (Iterator<String> iterator2 = tags.iterator(); iterator2.hasNext();) {
+			String tag = iterator2.next();
 			out(tag);
 			outln();
 		}
@@ -1640,7 +1641,7 @@ String getSelConst(String sel) {
 }
 
 void generateClassesConst() {
-	TreeSet set = new TreeSet();
+	TreeSet<String> set = new TreeSet<String>();
 	for (int x = 0; x < xmls.length; x++) {
 		Document document = documents[x];
 		if (document == null) continue;
@@ -1656,8 +1657,8 @@ void generateClassesConst() {
 			}
 		}
 	}
-	for (Iterator iterator = set.iterator(); iterator.hasNext();) {
-		String cls = (String) iterator.next();
+	for (Iterator<String> iterator = set.iterator(); iterator.hasNext();) {
+		String cls = iterator.next();
 		String clsConst = "class_" + cls;
 		out("public static final int /*long*/ ");
 		out(clsConst);
@@ -1670,7 +1671,7 @@ void generateClassesConst() {
 }
 
 void generateProtocolsConst() {
-	TreeSet set = new TreeSet();
+	TreeSet<String> set = new TreeSet<String>();
 	for (int x = 0; x < xmls.length; x++) {
 		Document document = documents[x];
 		if (document == null) continue;
@@ -1686,8 +1687,8 @@ void generateProtocolsConst() {
 			}
 		}
 	}
-	for (Iterator iterator = set.iterator(); iterator.hasNext();) {
-		String cls = (String) iterator.next();
+	for (Iterator<String> iterator = set.iterator(); iterator.hasNext();) {
+		String cls = iterator.next();
 		String clsConst = "protocol_" + cls;
 		out("public static final int /*long*/ ");
 		out(clsConst);
@@ -1867,11 +1868,11 @@ String getJavaType(String code, NamedNodeMap attributes, boolean is64) {
 
 static String[] split(String str, String separator) {
 	StringTokenizer tk = new StringTokenizer(str, separator);
-	ArrayList result = new ArrayList();
-	while (tk.hasMoreElements()) {
-		result.add(tk.nextElement());
+	ArrayList<String> result = new ArrayList<String>();
+	while (tk.hasMoreTokens()) {
+		result.add(tk.nextToken());
 	}
-	return (String[])result.toArray(new String[result.size()]);
+	return result.toArray(new String[result.size()]);
 }
 
 void generateFunctions() {
