@@ -48,6 +48,7 @@ public class SleakView extends ViewPart {
 	 * This is a callback that will allow us
 	 * to create the viewer and initialize it.
 	 */
+	@Override
 	public void createPartControl(Composite parent) {
 		this.parent = new Composite(parent, SWT.NONE);
 		sleak = new Sleak ();
@@ -57,6 +58,7 @@ public class SleakView extends ViewPart {
 	/**
 	 * Passing the focus request to the viewer's control.
 	 */
+	@Override
 	public void setFocus() {
 		parent.setFocus();
 	}

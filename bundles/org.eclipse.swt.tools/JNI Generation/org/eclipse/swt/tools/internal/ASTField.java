@@ -60,10 +60,12 @@ public ASTField(ASTClass declaringClass, String source, FieldDeclaration field, 
 	}
 }
 
+@Override
 public int hashCode() {
 	return getName().hashCode();
 }
 
+@Override
 public boolean equals(Object obj) {
 	if (this == obj) return true;
 	if (!(obj instanceof ASTField)) return false;
@@ -107,6 +109,7 @@ public String getExclude() {
 	return (String)getParam("exclude");
 }
 
+@Override
 public String getMetaData() {
 	if (data != null) return data;
 	String className = getDeclaringClass().getSimpleName();
@@ -126,10 +129,12 @@ public void setExclude(String str) {
 	setParam("exclude", str);
 }
 
+@Override
 public void setMetaData(String value) {
 	data = value;
 }
 
+@Override
 public String toString() {
 	return getName();
 }

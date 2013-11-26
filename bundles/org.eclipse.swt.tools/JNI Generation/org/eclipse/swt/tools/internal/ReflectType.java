@@ -17,6 +17,7 @@ public ReflectType(Class clazz) {
 	this.clazz = clazz;
 }
 
+@Override
 public boolean equals(Object obj) {
 	if (obj == this) return true;
 	if (!(obj instanceof ReflectType)) return false;
@@ -123,6 +124,7 @@ public String getTypeSignature4(boolean define, boolean struct) {
 	return struct ? sig : sig + " *";
 }
 
+@Override
 public int hashCode() {
 	return clazz.hashCode();
 }

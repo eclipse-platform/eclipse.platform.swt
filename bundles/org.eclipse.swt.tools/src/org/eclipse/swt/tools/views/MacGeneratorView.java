@@ -34,6 +34,7 @@ public class MacGeneratorView extends ViewPart {
 		public GenJob() {
 			super("Mac Generator");
 		}
+		@Override
 		protected IStatus run(final IProgressMonitor monitor) {
 			try {
 				ui.generate(new ProgressMonitor() {
@@ -98,6 +99,7 @@ public class MacGeneratorView extends ViewPart {
 	 * This is a callback that will allow us
 	 * to create the viewer and initialize it.
 	 */
+	@Override
 	public void createPartControl(Composite parent) {
 		MacGenerator gen = new MacGenerator();
 		gen.setOutputDir(root.getLocation().toPortableString());
@@ -116,6 +118,7 @@ public class MacGeneratorView extends ViewPart {
 		fillLocalToolBar(bars.getToolBarManager());
 	}
 	
+	@Override
 	public void dispose() {
 		IWorkspace workspace = ResourcesPlugin.getWorkspace();
 		workspace.removeResourceChangeListener(listener);
@@ -146,6 +149,7 @@ public class MacGeneratorView extends ViewPart {
 
 	private void makeActions() {
 		generateAction = new Action() {
+			@Override
 			public void run() {
 				generate();
 			}
@@ -159,6 +163,7 @@ public class MacGeneratorView extends ViewPart {
 	/**
 	 * Passing the focus request to the viewer's control.
 	 */
+	@Override
 	public void setFocus() {
 		ui.setFocus();
 	}

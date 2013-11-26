@@ -56,10 +56,12 @@ public ReflectField(ReflectClass declaringClass, Field field, String source, Com
 	}	
 }
 
+@Override
 public int hashCode() {
 	return field.hashCode();
 }
 
+@Override
 public boolean equals(Object obj) {
 	if (!(obj instanceof ReflectField)) return false;
 	return ((ReflectField)obj).field.equals(field);
@@ -102,6 +104,7 @@ public String getExclude() {
 	return (String)getParam("exclude");
 }
 
+@Override
 public String getMetaData() {
 	String className = getDeclaringClass().getSimpleName();
 	String key = className + "_" + field.getName();
@@ -120,12 +123,14 @@ public void setExclude(String str) {
 	setParam("exclude", str);
 }
 
+@Override
 public void setMetaData(String value) {
 	String className = declaringClass.getSimpleName();
 	String key = className + "_" + field.getName();
 	declaringClass.metaData.setMetaData(key, value);
 }
 
+@Override
 public String toString() {
 	return field.toString();
 }

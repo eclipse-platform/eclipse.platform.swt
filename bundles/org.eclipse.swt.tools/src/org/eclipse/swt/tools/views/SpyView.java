@@ -35,6 +35,7 @@ public class SpyView extends ViewPart {
 	 * This is a callback that will allow us
 	 * to create the viewer and initialize it.
 	 */
+	@Override
 	public void createPartControl(Composite parent) {
 		output = new StyledText(parent, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL | SWT.READ_ONLY);
 		
@@ -145,6 +146,7 @@ public class SpyView extends ViewPart {
 	/**
 	 * Passing the focus request to the viewer's control.
 	 */
+	@Override
 	public void setFocus() {
 		if (output != null & !output.isDisposed()) output.setFocus();
 	}
@@ -171,6 +173,7 @@ public class SpyView extends ViewPart {
 		fillLocalToolBar(bars.getToolBarManager());
 	}
 	
+	@Override
 	public void dispose() {
 		if (keyFilter != null) {
 			Display.getCurrent().removeFilter(SWT.KeyDown, keyFilter);
@@ -189,6 +192,7 @@ public class SpyView extends ViewPart {
 	
 	private void makeActions() {
 		spyAction = new Action("Spy", IAction.AS_CHECK_BOX) {
+			@Override
 			public void run() {
 				Display.getCurrent().timerExec(TIMEOUT, timer);
 			}
@@ -197,6 +201,7 @@ public class SpyView extends ViewPart {
 		spyAction.setImageDescriptor(Activator.getImageDescriptor("icons/spy.gif"));
 		
 		fullyQualifiedAction = new Action("Fully Qualify Names", IAction.AS_CHECK_BOX) {
+			@Override
 			public void run() {
 			}
 		};

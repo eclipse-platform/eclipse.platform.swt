@@ -31,6 +31,7 @@ public String getCast() {
 	return cast;
 }
 
+@Override
 public String getMetaData() {
 	if (data != null) return data;
 	String className = method.getDeclaringClass().getSimpleName();
@@ -87,6 +88,7 @@ public void setCast(String str) {
 	setParam("cast", str);
 }
 
+@Override
 public void setMetaData(String value) {
 	data = value;
 }

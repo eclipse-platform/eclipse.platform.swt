@@ -24,10 +24,12 @@ public StructsGenerator(boolean header) {
 	this.header = header;
 }
 
+@Override
 public void generateCopyright() {
 	outputln(fixDelimiter(getMetaData().getCopyright()));
 }
 
+@Override
 public void generateIncludes() {
 	if (header) {
 		output("#include \"");
@@ -42,6 +44,7 @@ public void generateIncludes() {
 	outputln();
 }
 
+@Override
 public void generate(JNIClass clazz) {
 	int j = 0;
 	JNIField[] fields = clazz.getDeclaredFields();
@@ -60,15 +63,18 @@ public void generate(JNIClass clazz) {
 	}
 }
 
+@Override
 public void generate() {
 	if (!header && getClasses().length == 0) return;
 	super.generate();
 }
 
+@Override
 public String getExtension() {
 	return header ? ".h" : super.getExtension();
 }
 
+@Override
 public String getSuffix() {
 	return "_structs";
 }

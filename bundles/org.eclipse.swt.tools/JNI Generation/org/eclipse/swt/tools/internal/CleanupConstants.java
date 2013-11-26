@@ -29,6 +29,7 @@ String getFieldValue(JNIField field) {
 	}
 }
 
+@Override
 public void generate(JNIClass clazz) {
 	unusedCount = usedCount = 0;
 	super.generate(clazz);

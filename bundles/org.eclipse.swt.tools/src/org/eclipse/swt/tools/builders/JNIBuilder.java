@@ -35,6 +35,7 @@ public class JNIBuilder extends IncrementalProjectBuilder {
 		public String sourceDir;
 		public boolean build;
 		
+		@Override
 		public String toString() {
 			return mainClassName + "->" + outputDir;
 		}
@@ -55,6 +56,7 @@ public class JNIBuilder extends IncrementalProjectBuilder {
 		}
 	}
 	
+	@Override
 	protected IProject[] build(int kind, Map args, final IProgressMonitor monitor) throws CoreException {
 		IResourceDelta delta = getDelta(getProject());
 		if (delta == null) return null;

@@ -128,10 +128,12 @@ public ASTClass(String sourcePath, MetaData metaData) {
 	this.methods = (ASTMethod[])mid.toArray(new ASTMethod[mid.size()]);
 }
 
+@Override
 public int hashCode() {
 	return getName().hashCode();
 }
 
+@Override
 public boolean equals(Object obj) {
 	if (this == obj) return true;
 	if (!(obj instanceof ASTClass)) return false;
@@ -169,6 +171,7 @@ public String getExclude() {
 	return (String)getParam("exclude");
 }
 
+@Override
 public String getMetaData() {
 	if (data != null) return data;
 	String key = JNIGenerator.toC(getName());
@@ -179,10 +182,12 @@ public void setExclude(String str) {
 	setParam("exclude", str);
 }
 
+@Override
 public void setMetaData(String value) {
 	data = value;
 }
 
+@Override
 public String toString() {
 	return getName();
 }

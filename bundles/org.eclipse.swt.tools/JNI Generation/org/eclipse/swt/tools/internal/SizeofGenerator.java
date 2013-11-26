@@ -15,6 +15,7 @@ import java.lang.reflect.Modifier;
 public class SizeofGenerator extends JNIGenerator {
 
 
+@Override
 public void generate(JNIClass clazz) {
 	String className = clazz.getSimpleName();
 	output("\tprintf(\"");
@@ -26,6 +27,7 @@ public void generate(JNIClass clazz) {
 //	generate(fields);	
 }
 	
+@Override
 public void generate() {
 	outputln("int main() {");
 	super.generate();

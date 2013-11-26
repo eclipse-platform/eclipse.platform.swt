@@ -110,6 +110,7 @@ void loadDirectory(File file) {
 	}
 }
 
+@Override
 public void generate(JNIClass clazz) {
 	loadFiles ();
 	loadClassSource();

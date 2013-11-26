@@ -345,6 +345,7 @@ boolean is64bit(IJavaProject project) {
 	return false;
 }
 
+@Override
 public void buildFinished(IJavaProject project) {
 	try {
 		if (sources == null) return;
@@ -361,6 +362,7 @@ public void buildFinished(IJavaProject project) {
 	}
 }
 	
+@Override
 public void buildStarting(BuildContext[] files, boolean isBatch) {
 	if (sources == null) sources = new HashSet();
 //	long time = System.currentTimeMillis();
@@ -386,6 +388,7 @@ public void buildStarting(BuildContext[] files, boolean isBatch) {
 //	System.out.println("copying time=" + (System.currentTimeMillis() - time));	
 }
 
+@Override
 public void cleanStarting(IJavaProject project) {
 	if (!isActive(project)) return;
 	sources = null;
@@ -399,6 +402,7 @@ public void cleanStarting(IJavaProject project) {
 	}
 }
 
+@Override
 public boolean isActive(IJavaProject project) {
 	if (project.getProject().getName().equals(plugin)) {
 		return true;

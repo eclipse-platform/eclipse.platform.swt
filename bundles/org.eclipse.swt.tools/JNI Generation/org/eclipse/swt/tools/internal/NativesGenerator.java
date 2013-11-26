@@ -22,10 +22,12 @@ public NativesGenerator() {
 	enterExitMacro = true;
 }
 
+@Override
 public void generateCopyright() {
 	outputln(fixDelimiter(getMetaData().getCopyright()));
 }
 
+@Override
 public void generateIncludes() {
 	String outputName = getOutputName();
 	outputln("#include \"swt.h\"");
@@ -52,6 +54,7 @@ public void generate(JNIClass clazz, String methodName) {
 	generate(result);
 }
 
+@Override
 public void generate(JNIClass clazz) {
 	JNIMethod[] methods = clazz.getDeclaredMethods();
 	int i = 0;

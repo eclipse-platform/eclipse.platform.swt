@@ -14,10 +14,12 @@ import java.lang.reflect.Modifier;
 
 public class MetaDataGenerator extends JNIGenerator {
 
+@Override
 public void generateCopyright() {
 	generateMetaData("swt_properties_copyright");
 }
 
+@Override
 public void generate(JNIClass clazz) {
 	output(toC(clazz.getName()));
 	output("=");
@@ -85,14 +87,17 @@ public void generate(JNIMethod method) {
 	}
 }
 
+@Override
 public String getExtension() {
 	return ".properties";
 }
 
+@Override
 protected boolean getGenerate(JNIItem item) {
 	return true;
 }
 
+@Override
 public String getOutputName() {
 	return getMainClass().getName();
 }

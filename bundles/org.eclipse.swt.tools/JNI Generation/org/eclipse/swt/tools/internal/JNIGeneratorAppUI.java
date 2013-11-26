@@ -166,6 +166,7 @@ void generateAll() {
 	}
 	final boolean[] done = new boolean[1];
 	new Thread() {
+		@Override
 		public void run() {
 			try {
 				app.generate(!finalShowProgress ? null : new ProgressMonitor() {

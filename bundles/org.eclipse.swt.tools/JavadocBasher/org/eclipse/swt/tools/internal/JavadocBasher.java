@@ -277,9 +277,11 @@ public class JavadocBasher {
 		final HashMap comments = new HashMap();
 		sourceUnit.accept(new ASTVisitor() {
 			String prefix = "";
+			@Override
 			public boolean visit(Block node) {
 				return false;
 			}
+			@Override
 			public boolean visit(VariableDeclarationFragment node) {
 				FieldDeclaration field = (FieldDeclaration)node.getParent();
 				int mods = field.getModifiers();
@@ -296,6 +298,7 @@ public class JavadocBasher {
 				}
 				return false;
 			}
+			@Override
 			public boolean visit(MethodDeclaration node) {
 				int mods = node.getModifiers();
 				if (Modifier.isPublic(mods) || Modifier.isProtected(mods)) {
@@ -312,6 +315,7 @@ public class JavadocBasher {
 				}
 				return false;
 			}
+			@Override
 			public boolean visit(TypeDeclaration node) {
 				int mods = node.getModifiers();
 				if (Modifier.isPublic(mods) || Modifier.isProtected(mods)) {
@@ -331,9 +335,11 @@ public class JavadocBasher {
 		final List edits = new ArrayList();
 		targetUnit.accept(new ASTVisitor() {
 			String prefix = "";
+			@Override
 			public boolean visit(Block node) {
 				return false;
 			}
+			@Override
 			public boolean visit(VariableDeclarationFragment node) {
 				FieldDeclaration field = (FieldDeclaration)node.getParent();
 				int mods = field.getModifiers();
@@ -356,6 +362,7 @@ public class JavadocBasher {
 				}
 				return false;
 			}
+			@Override
 			public boolean visit(MethodDeclaration node) {
 				int mods = node.getModifiers();
 				if (Modifier.isPublic(mods) || Modifier.isProtected(mods)) {
@@ -378,6 +385,7 @@ public class JavadocBasher {
 				}
 				return false;
 			}
+			@Override
 			public boolean visit(TypeDeclaration node) {
 				int mods = node.getModifiers();
 				if (Modifier.isPublic(mods) || Modifier.isProtected(mods)) {

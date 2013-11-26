@@ -64,6 +64,7 @@ String from(TypeResolver resolver, Type type, int extraDimensions) {
 	return name;
 }
 
+@Override
 public boolean equals(Object obj) {
 	if (obj == this) return true;
 	if (!(obj instanceof ASTType)) return false;
@@ -191,6 +192,7 @@ public String getTypeSignature4(boolean define, boolean struct) {
 	return struct ? sig : sig + " *";
 }
 
+@Override
 public int hashCode() {
 	return name.hashCode();
 }
@@ -207,6 +209,7 @@ public boolean isType(String type) {
 	return getName().equals(type);
 }
 
+@Override
 public String toString() {
 	return name;
 }

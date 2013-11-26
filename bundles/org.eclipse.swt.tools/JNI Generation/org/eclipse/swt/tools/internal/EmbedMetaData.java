@@ -20,6 +20,7 @@ import java.util.ArrayList;
 public class EmbedMetaData extends JNIGenerator {
 	TreeMap inserts;
 
+@Override
 public void generate(JNIClass clazz) {
 	inserts = new TreeMap();
 	String data = ((AbstractItem)clazz).flatten();

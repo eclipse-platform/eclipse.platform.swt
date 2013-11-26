@@ -18,6 +18,7 @@ public class CleanupNatives extends CleanupClass {
 public CleanupNatives() {
 }
 
+@Override
 public void generate(JNIClass clazz) {
 	unusedCount = usedCount = 0;
 	super.generate(clazz);

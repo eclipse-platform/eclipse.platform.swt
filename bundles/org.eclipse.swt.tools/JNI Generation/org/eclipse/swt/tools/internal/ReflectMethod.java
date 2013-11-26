@@ -100,10 +100,12 @@ public ReflectMethod(ReflectClass declaringClass, Method method, String source, 
 	}
 }
 
+@Override
 public int hashCode() {
 	return method.hashCode();
 }
 
+@Override
 public boolean equals(Object obj) {
 	if (!(obj instanceof ReflectMethod)) return false;
 	return ((ReflectMethod)obj).method.equals(method);
@@ -173,6 +175,7 @@ public String getExclude() {
 	return (String)getParam("exclude");
 }
 
+@Override
 public String getMetaData() {
 	String className = getDeclaringClass().getSimpleName();
 	String key = className + "_" + JNIGenerator.getFunctionName(this);
@@ -222,6 +225,7 @@ public void setExclude(String str) {
 	setParam("exclude", str);
 }
 
+@Override
 public void setMetaData(String value) {
 	String key;
 	String className = declaringClass.getSimpleName();
@@ -233,6 +237,7 @@ public void setMetaData(String value) {
 	declaringClass.metaData.setMetaData(key, value);
 }
 
+@Override
 public String toString() {
 	return method.toString();
 }

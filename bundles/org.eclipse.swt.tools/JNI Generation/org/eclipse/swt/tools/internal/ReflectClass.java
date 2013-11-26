@@ -57,10 +57,12 @@ void checkMembers() {
 	}
 }
 
+@Override
 public int hashCode() {
 	return clazz.hashCode();
 }
 
+@Override
 public boolean equals(Object obj) {
 	if (!(obj instanceof ReflectClass)) return false;
 	return ((ReflectClass)obj).clazz.equals(clazz);
@@ -104,6 +106,7 @@ public String getExclude() {
 	return (String)getParam("exclude");
 }
 
+@Override
 public String getMetaData() {
 	String key = JNIGenerator.toC(clazz.getName());
 	return metaData.getMetaData(key, "");
@@ -113,11 +116,13 @@ public void setExclude(String str) {
 	setParam("exclude", str);
 }
 
+@Override
 public void setMetaData(String value) {
 	String key = JNIGenerator.toC(clazz.getName());
 	metaData.setMetaData(key, value);
 }
 
+@Override
 public String toString() {
 	return clazz.toString();
 }

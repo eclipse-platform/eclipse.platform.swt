@@ -30,6 +30,7 @@ public String getCast() {
 	return cast;
 }
 
+@Override
 public String getMetaData() {
 	String className = method.getDeclaringClass().getSimpleName();
 	String key = className + "_" + JNIGenerator.getFunctionName(method) + "_" + parameter;
@@ -99,6 +100,7 @@ public void setCast(String str) {
 	setParam("cast", str);
 }
 
+@Override
 public void setMetaData(String value) {
 	String key;
 	String className = method.getDeclaringClass().getSimpleName();

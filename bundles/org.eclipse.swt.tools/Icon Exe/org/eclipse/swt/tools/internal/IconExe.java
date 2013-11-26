@@ -879,6 +879,7 @@ public RGB(int red, int green, int blue) {
  *
  * @see #hashCode()
  */
+@Override
 public boolean equals (Object object) {
 	if (object == this) return true;
 	if (!(object instanceof RGB)) return false;
@@ -896,6 +897,7 @@ public boolean equals (Object object) {
  *
  * @see #equals(Object)
  */
+@Override
 public int hashCode () {
 	return (blue << 16) | (green << 8) | red;
 }
@@ -906,6 +908,7 @@ public int hashCode () {
  *
  * @return a string representation of the <code>RGB</code>
  */
+@Override
 public String toString () {
 	return "RGB {" + red + ", " + green + ", " + blue + "}"; //$NON-NLS-1$//$NON-NLS-2$ //$NON-NLS-3$ 
 
@@ -2569,6 +2572,7 @@ static class LEDataInputStream extends InputStream {
 		else throw new IllegalArgumentException();
 	}
 	
+	@Override
 	public void close() throws IOException {
 		buf = null;
 		if (in != null) {
@@ -2587,6 +2591,7 @@ static class LEDataInputStream extends InputStream {
 	/**
 	 * Answers how many bytes are available for reading without blocking
 	 */
+	@Override
 	public int available() throws IOException {
 		if (buf == null) throw new IOException();
 		return (buf.length - pos) + in.available();
@@ -2595,6 +2600,7 @@ static class LEDataInputStream extends InputStream {
 	/**
 	 * Answer the next byte of the input stream.
 	 */
+	@Override
 	public int read() throws IOException {
 		if (buf == null) throw new IOException();
 		position++;
@@ -2606,6 +2612,7 @@ static class LEDataInputStream extends InputStream {
 	 * Don't imitate the JDK behaviour of reading a random number
 	 * of bytes when you can actually read them all.
 	 */
+	@Override
 	public int read(byte b[], int off, int len) throws IOException {
 		int result;
 		int left = len;
@@ -2898,6 +2905,7 @@ int decompressRLE8Data(byte[] src, int numBytes, int stride, byte[] dest, int de
 	}
 	return 1;
 }
+@Override
 boolean isFileFormat(LEDataInputStream stream) {
 	try {
 		byte[] header = new byte[18];
@@ -2959,6 +2967,7 @@ int[] loadFileHeader() {
 		SWT.error(SWT.ERROR_INVALID_IMAGE);
 	return header;
 }
+@Override
 ImageData[] loadFromByteStream() {
 	int[] fileHeader = loadFileHeader();
 	byte[] infoHeader = new byte[BMPHeaderFixedSize];
@@ -3102,6 +3111,7 @@ int iconSize(ImageData i) {
 	int paletteSize = i.palette.colors != null ? i.palette.colors.length * 4 : 0;
 	return WinBMPFileFormat.BMPHeaderFixedSize + paletteSize + dataSize;
 }
+@Override
 boolean isFileFormat(LEDataInputStream stream) {
 	try {
 		byte[] header = new byte[4];
@@ -3163,6 +3173,7 @@ int loadFileHeader(LEDataInputStream byteStream, boolean hasHeader) {
 		SWT.error(SWT.ERROR_INVALID_IMAGE);
 	return numIcons;
 }
+@Override
 ImageData[] loadFromByteStream() {
 	int numIcons = loadFileHeader(inputStream);
 	int[][] headers = loadIconHeaders(numIcons);

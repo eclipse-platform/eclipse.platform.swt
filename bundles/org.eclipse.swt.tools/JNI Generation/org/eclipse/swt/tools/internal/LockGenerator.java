@@ -56,6 +56,7 @@ String getReturn(JNIMethod method) {
 	return new ReflectType(Integer.TYPE).getTypeSignature3(false);
 }
 
+@Override
 public void generate(JNIClass clazz) {
 	super.generate(clazz);
 	JNIMethod[] methods = clazz.getDeclaredMethods();

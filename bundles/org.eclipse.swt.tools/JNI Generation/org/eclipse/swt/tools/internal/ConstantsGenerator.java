@@ -14,6 +14,7 @@ import java.lang.reflect.Modifier;
 
 public class ConstantsGenerator extends JNIGenerator {
 
+@Override
 public void generate(JNIClass clazz) {
 	JNIField[] fields = clazz.getDeclaredFields();
 	generate(fields);

@@ -20,10 +20,12 @@ public StatsGenerator(boolean header) {
 	this.header = header;
 }
 
+@Override
 public void generateCopyright() {
 	outputln(fixDelimiter(getMetaData().getCopyright()));
 }
 
+@Override
 public void generateIncludes() {
 	if (!header) {
 		outputln("#include \"swt.h\"");
@@ -34,6 +36,7 @@ public void generateIncludes() {
 	}
 }
 
+@Override
 public void generate(JNIClass clazz) {
 	if (header) {
 		generateHeaderFile(clazz);
@@ -42,10 +45,12 @@ public void generate(JNIClass clazz) {
 	}
 }
 
+@Override
 public String getExtension() {
 	return header ? ".h" : super.getExtension();
 }
 
+@Override
 public String getSuffix() {
 	return "_stats";
 }
