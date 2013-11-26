@@ -33,10 +33,10 @@ public ASTField(ASTClass declaringClass, String source, FieldDeclaration field, 
 	start = field.getStartPosition();
 	
 	Javadoc doc = field.getJavadoc();
-	List tags = null;
+	List<TagElement> tags = null;
 	if (doc != null) {
 		tags = doc.tags();
-		for (Iterator iterator = tags.iterator(); iterator.hasNext();) {
+		for (Iterator<TagElement> iterator = tags.iterator(); iterator.hasNext();) {
 			TagElement tag = (TagElement) iterator.next();
 			if ("@field".equals(tag.getTagName())) {
 				String data = tag.fragments().get(0).toString();

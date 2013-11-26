@@ -22,7 +22,7 @@ public class MetaData {
 public MetaData(String mainClass) {
 	data = new Properties();
 	int index = 0;
-	Class clazz = getClass();
+	Class<?> clazz = getClass();
 	int length = mainClass.length();
 	while (index < length) {
 		index = mainClass.indexOf('.', index);

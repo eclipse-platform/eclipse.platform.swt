@@ -11,9 +11,9 @@
 package org.eclipse.swt.tools.internal;
 
 public class ReflectType implements JNIType {
-	Class clazz;
+	Class<?> clazz;
 
-public ReflectType(Class clazz) {
+public ReflectType(Class<?> clazz) {
 	this.clazz = clazz;
 }
 

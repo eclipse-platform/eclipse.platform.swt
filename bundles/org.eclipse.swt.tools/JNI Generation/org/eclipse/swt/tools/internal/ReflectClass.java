@@ -19,17 +19,17 @@ import org.eclipse.jdt.core.dom.ASTParser;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 
 public class ReflectClass extends ReflectItem implements JNIClass {
-	Class clazz;
+	Class<?> clazz;
 	ReflectField[] fields;
 	ReflectMethod[] methods;
 	MetaData metaData;
 	String sourcePath;
 
-public ReflectClass(Class clazz) {
+public ReflectClass(Class<?> clazz) {
 	this(clazz, null, null);
 }
 
-public ReflectClass(Class clazz, MetaData data, String sourcePath) {
+public ReflectClass(Class<?> clazz, MetaData data, String sourcePath) {
 	this.clazz = clazz;
 	this.metaData = data;
 	this.sourcePath = sourcePath;
@@ -87,12 +87,12 @@ public String getName() {
 }
 
 public JNIClass getSuperclass() {
-	Class superclazz = clazz.getSuperclass();
+	Class<?> superclazz = clazz.getSuperclass();
 	String path = new File(sourcePath).getParent() + "/" + getSimpleName(superclazz) + ".java";
 	return new ReflectClass(superclazz, metaData, path);
 }
 
-String getSimpleName(Class type) {
+String getSimpleName(Class<?> type) {
 	String name = type.getName();
 	int index = name.lastIndexOf('.') + 1;
 	return name.substring(index, name.length());

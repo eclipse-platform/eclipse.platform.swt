@@ -80,7 +80,7 @@ public String getSuffix() {
 }
 
 void generateExcludes(JNIClass[] classes) {
-	HashSet excludes = new HashSet();
+	HashSet<String> excludes = new HashSet<String>();
 	for (int i = 0; i < classes.length; i++) {
 		JNIClass clazz = classes[i];
 		String exclude = clazz.getExclude();
@@ -88,8 +88,8 @@ void generateExcludes(JNIClass[] classes) {
 			excludes.add(exclude);
 		}
 	}
-	for (Iterator iter = excludes.iterator(); iter.hasNext();) {
-		String exclude = (String)iter.next();
+	for (Iterator<String> iter = excludes.iterator(); iter.hasNext();) {
+		String exclude = iter.next();
 		outputln(exclude);
 		for (int i = 0; i < classes.length; i++) {
 			JNIClass clazz = classes[i];

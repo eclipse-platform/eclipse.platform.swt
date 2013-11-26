@@ -31,8 +31,8 @@ public class ReflectMethod extends ReflectItem implements JNIMethod {
 public ReflectMethod(ReflectClass declaringClass, Method method, String source, CompilationUnit unit) {
 	this.method = method;
 	this.declaringClass = declaringClass;	
-	Class returnType = method.getReturnType();
-	Class[] paramTypes = method.getParameterTypes();
+	Class<?> returnType = method.getReturnType();
+	Class<?>[] paramTypes = method.getParameterTypes();
 	this.returnType = new ReflectType(returnType);
 	this.returnType64 = this.returnType;
 	this.paramTypes = new ReflectType[paramTypes.length];
@@ -58,7 +58,7 @@ public ReflectMethod(ReflectClass declaringClass, Method method, String source, 
 			MethodDeclaration node = methods[i];
 			if (node.getName().getIdentifier().equals(name)) {
 				if (!declaringClass.getSimpleName(returnType).equals(node.getReturnType2().toString())) continue;
-				List parameters = node.parameters();
+				List<?> parameters = node.parameters();
 				if (parameters.size() != paramTypes.length) continue;
 				decl = node;
 				for (int j = 0; j < paramTypes.length; j++) {
@@ -71,7 +71,7 @@ public ReflectMethod(ReflectClass declaringClass, Method method, String source, 
 		}
 		for (int i = 0; i < paramTypes.length; i++) {
 			if (canChange64(paramTypes[i])) {
-				Class clazz = paramTypes[i];
+				Class<?> clazz = paramTypes[i];
 				SingleVariableDeclaration node = (SingleVariableDeclaration)decl.parameters().get(i);
 				String s = source.substring(node.getStartPosition(), node.getStartPosition() + node.getLength());
 				if (clazz == int.class && s.indexOf("int /*long*/") != -1) this.paramTypes64[i] = new ReflectType(long.class);
@@ -85,7 +85,7 @@ public ReflectMethod(ReflectClass declaringClass, Method method, String source, 
 			}
 		}
 		if (canChange64(returnType)) {
-			Class clazz = returnType;
+			Class<?> clazz = returnType;
 			ASTNode node = decl.getReturnType2();
 			String s = source.substring(node.getStartPosition(), decl.getName().getStartPosition());
 			if (clazz == int.class && s.indexOf("int /*long*/") != -1) this.returnType64 = new ReflectType(long.class);
@@ -151,7 +151,7 @@ public JNIType[] getParameterTypes64() {
 }
 
 public JNIParameter[] getParameters() {
-	Class[] paramTypes = method.getParameterTypes();
+	Class<?>[] paramTypes = method.getParameterTypes();
 	ReflectParameter[] result = new ReflectParameter[paramTypes.length];
 	for (int i = 0; i < paramTypes.length; i++) {
 		result[i] = new ReflectParameter(this, i);

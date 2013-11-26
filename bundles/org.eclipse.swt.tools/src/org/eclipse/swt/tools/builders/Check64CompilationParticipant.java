@@ -62,7 +62,7 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 
 public class Check64CompilationParticipant extends CompilationParticipant {
-	HashSet sources;
+	HashSet<String> sources;
 
 	static final char[] INT_LONG = "int /*long*/".toCharArray();
 	static final char[] INT_LONG_ARRAY = "int[] /*long[]*/".toCharArray();
@@ -118,7 +118,7 @@ void build(IJavaProject project, String root) throws CoreException {
 		String bin = root + "/bin";
 		if (cp.length() > 0) cp.append(File.pathSeparator);
 		cp.append(bin);
-		ArrayList args = new ArrayList();
+		ArrayList<String> args = new ArrayList<String>();
 		args.addAll(Arrays.asList(new String[]{
 			"-nowarn",
 //			"-verbose",
@@ -129,7 +129,7 @@ void build(IJavaProject project, String root) throws CoreException {
 		}));
 		args.addAll(sources);
 		writer = new PrintWriter(new BufferedOutputStream(new FileOutputStream(root + "/out.txt")));
-		BatchCompiler.compile((String[])args.toArray(new String[args.size()]), writer, writer, null);
+		BatchCompiler.compile(args.toArray(new String[args.size()]), writer, writer, null);
 		writer.close();
 		writer = null;
 		project.getProject().findMember(new Path(buildDir)).refreshLocal(IResource.DEPTH_INFINITE, null);
@@ -223,7 +223,7 @@ String resolvePath(String sourcePath, String simpleName) {
 	return null;
 }
 
-TypeDeclaration loadType(HashMap cache, String path) {
+TypeDeclaration loadType(HashMap<String, TypeDeclaration> cache, String path) {
 	if (path == null) return null;
 	Object value = cache.get(path);
 	if (value != null) return (TypeDeclaration)value;
@@ -243,14 +243,14 @@ boolean is64Type(String type) {
 void createBadOverwrittenMethodProblems(IJavaProject project, String root) throws CoreException {
 	if (sources == null) return;
 	IProject proj = project.getProject();
-	HashMap cache = new HashMap();
-	for (Iterator iterator = sources.iterator(); iterator.hasNext();) {
-		String path = (String) iterator.next();
+	HashMap<String, TypeDeclaration> cache = new HashMap<String, TypeDeclaration>();
+	for (Iterator<String> iterator = sources.iterator(); iterator.hasNext();) {
+		String path = iterator.next();
 		IResource resource = getResourceWithoutErrors(proj, path, false);
 		if (resource == null) continue;
 		TypeDeclaration type = loadType(cache, path);
 		MethodDeclaration[] methods = type.getMethods();
-		List superclasses = new ArrayList();
+		List<TypeDeclaration> superclasses = new ArrayList<TypeDeclaration>();
 		TypeDeclaration temp = type;
 		while (true) {
 			Type supertype = temp.getSuperclassType();
@@ -262,17 +262,17 @@ void createBadOverwrittenMethodProblems(IJavaProject project, String root) throw
 		}
 		for (int i = 0; i < methods.length; i++) {
 			MethodDeclaration method = methods[i];
-			for (Iterator iterator2 = superclasses.iterator(); iterator2.hasNext();) {
-				TypeDeclaration supertype = (TypeDeclaration) iterator2.next();
+			for (Iterator<TypeDeclaration> iterator2 = superclasses.iterator(); iterator2.hasNext();) {
+				TypeDeclaration supertype = iterator2.next();
 				MethodDeclaration[] supermethods = supertype.getMethods();
 				for (int j = 0; j < supermethods.length; j++) {
 					MethodDeclaration supermethod = supermethods[j];
 					if (method.getName().getIdentifier().equals(supermethod.getName().getIdentifier()) && method.parameters().size() == supermethod.parameters().size()) {
-						List mParams = method.parameters();
-						List sParams = supermethod.parameters();
+						List<SingleVariableDeclaration> mParams = method.parameters();
+						List<SingleVariableDeclaration> sParams = supermethod.parameters();
 						for (int k=0; k<sParams.size(); k++) {
-							SingleVariableDeclaration p1 = (SingleVariableDeclaration) mParams.get(k);
-							SingleVariableDeclaration p2 = (SingleVariableDeclaration) sParams.get(k);
+							SingleVariableDeclaration p1 = mParams.get(k);
+							SingleVariableDeclaration p2 = sParams.get(k);
 							String r1 = p1.getType().toString();
 							String r2 = p2.getType().toString();
 							if (is64Type(r1) && is64Type(r2)) {
@@ -364,7 +364,7 @@ public void buildFinished(IJavaProject project) {
 	
 @Override
 public void buildStarting(BuildContext[] files, boolean isBatch) {
-	if (sources == null) sources = new HashSet();
+	if (sources == null) sources = new HashSet<String>();
 //	long time = System.currentTimeMillis();
 	for (int i = 0; i < files.length; i++) {
 		BuildContext context = files[i];

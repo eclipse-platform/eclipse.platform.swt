@@ -38,11 +38,11 @@ public ASTMethod(ASTClass declaringClass, String source, MethodDeclaration metho
 	start = method.getStartPosition();
 	
 	Javadoc doc = method.getJavadoc();
-	List tags = null;
+	List<TagElement> tags = null;
 	if (doc != null) {
 		tags = doc.tags();
-		for (Iterator iterator = tags.iterator(); iterator.hasNext();) {
-			TagElement tag = (TagElement) iterator.next();
+		for (Iterator<TagElement> iterator = tags.iterator(); iterator.hasNext();) {
+			TagElement tag = iterator.next();
 			if ("@method".equals(tag.getTagName())) {
 				String data = tag.fragments().get(0).toString();
 				setMetaData(data);
@@ -64,13 +64,13 @@ public ASTMethod(ASTClass declaringClass, String source, MethodDeclaration metho
 		else if (returnType.isType("[D") && (s.indexOf("double /*float*/") != -1|| s.indexOf("double[] /*float[]*/") != -1)) returnType = new ASTType("[F");
 	}
 	
-	List parameters = method.parameters();
+	List<SingleVariableDeclaration> parameters = method.parameters();
 	paramTypes = new ASTType[parameters.size()];
 	paramTypes64 = new ASTType[parameters.size()];
 	this.parameters = new ASTParameter[paramTypes.length];
 	int i = 0;
-	for (Iterator iterator = parameters.iterator(); iterator.hasNext(); i++) {
-		SingleVariableDeclaration param = (SingleVariableDeclaration) iterator.next();
+	for (Iterator<SingleVariableDeclaration> iterator = parameters.iterator(); iterator.hasNext(); i++) {
+		SingleVariableDeclaration param = iterator.next();
 		paramTypes[i] = new ASTType(declaringClass.resolver, param.getType(), param.getExtraDimensions());
 		paramTypes64[i] = paramTypes[i];
 		this.parameters[i] = new ASTParameter(this, i, param.getName().getIdentifier());
@@ -87,10 +87,10 @@ public ASTMethod(ASTClass declaringClass, String source, MethodDeclaration metho
 		}
 		if (tags != null) {
 			String name = param.getName().getIdentifier();
-			for (Iterator iterator1 = tags.iterator(); iterator1.hasNext();) {
-				TagElement tag = (TagElement) iterator1.next();
+			for (Iterator<TagElement> iterator1 = tags.iterator(); iterator1.hasNext();) {
+				TagElement tag = iterator1.next();
 				if ("@param".equals(tag.getTagName())) {
-					List fragments = tag.fragments();
+					List<?> fragments = tag.fragments();
 					if (name.equals(fragments.get(0).toString())) {
 						String data = fragments.get(1).toString();
 						this.parameters[i].setMetaData(data);

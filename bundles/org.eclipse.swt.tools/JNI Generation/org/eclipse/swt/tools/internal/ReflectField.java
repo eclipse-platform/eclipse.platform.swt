@@ -27,17 +27,17 @@ public class ReflectField extends ReflectItem implements JNIField {
 public ReflectField(ReflectClass declaringClass, Field field, String source, CompilationUnit unit) {
 	this.declaringClass = declaringClass;
 	this.field = field;
-	Class clazz = field.getType();
+	Class<?> clazz = field.getType();
 	type = new ReflectType(clazz);
 	type64 = type;
 	boolean changes = canChange64(clazz);
 	if (changes && new File(declaringClass.sourcePath).exists()) {
 		TypeDeclaration type1 = (TypeDeclaration)unit.types().get(0);
-		Class result = null;
+		Class<?> result = null;
 		FieldDeclaration[] fields = type1.getFields();
 		for (int i = 0; i < fields.length && result == null; i++) {
 			FieldDeclaration node = fields[i];
-			for (Iterator iterator = node.fragments().iterator(); iterator.hasNext();) {
+			for (Iterator<?> iterator = node.fragments().iterator(); iterator.hasNext();) {
 				VariableDeclarationFragment decl = (VariableDeclarationFragment) iterator.next();
 				if (decl.getName().getIdentifier().equals(field.getName())) {
 					String s = source.substring(node.getStartPosition(), node.getStartPosition() + node.getLength());

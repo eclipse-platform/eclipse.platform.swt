@@ -132,7 +132,7 @@ public static void main(String[] args) {
 		LockGenerator gen = new LockGenerator();
 		String clazzName = args[0];
 		String classSource = args[1]; 
-		Class clazz = Class.forName(clazzName);
+		Class<?> clazz = Class.forName(clazzName);
 		gen.setClassSourcePath(classSource);
 		gen.generate(new ReflectClass(clazz));
 	} catch (Exception e) {

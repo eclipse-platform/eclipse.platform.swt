@@ -10,9 +10,8 @@
  *******************************************************************************/
 package org.eclipse.swt.tools.internal;
 
-import java.lang.reflect.Modifier;
-import java.util.HashSet;
-import java.util.Iterator;
+import java.lang.reflect.*;
+import java.util.*;
 
 public class NativesGenerator extends JNIGenerator {
 
@@ -221,7 +220,7 @@ public void setEnterExitMacro(boolean enterExitMacro) {
 }
 
 void generateExcludes(JNIMethod[] methods) {
-	HashSet excludes = new HashSet();
+	HashSet<String> excludes = new HashSet<String>();
 	for (int i = 0; i < methods.length; i++) {
 		JNIMethod method = methods[i];
 		if ((method.getModifiers() & Modifier.NATIVE) == 0) continue;
@@ -230,8 +229,7 @@ void generateExcludes(JNIMethod[] methods) {
 			excludes.add(exclude);
 		}
 	}
-	for (Iterator iter = excludes.iterator(); iter.hasNext();) {
-		String exclude = (String)iter.next();
+	for (String exclude: excludes) {
 		outputln(exclude);
 		for (int i = 0; i < methods.length; i++) {
 			JNIMethod method = methods[i];

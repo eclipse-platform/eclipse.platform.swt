@@ -49,10 +49,10 @@ public void generate(JNIField[] fields) {
 
 public void generate(JNIField field) {
 	String name = field.getName();
-	Enumeration keys = files.keys();
+	Enumeration<?> keys = files.keys();
 	while (keys.hasMoreElements()) {
 		Object key = keys.nextElement();
-		String str = (String)files.get(key);
+		String str = files.get(key);
 		if (str.indexOf(name) != -1) {
 			int modifiers = field.getModifiers();
 			String modifiersStr = Modifier.toString(modifiers);
@@ -84,7 +84,7 @@ public static void main(String[] args) {
 		String classSource = args[1];
 		String[] sourcePath = new String[args.length - 2];
 		System.arraycopy(args, 2, sourcePath, 0, sourcePath.length);
-		Class clazz = Class.forName(clazzName);
+		Class<?> clazz = Class.forName(clazzName);
 		gen.setSourcePath(sourcePath);
 		gen.setClassSourcePath(classSource);
 		gen.generate(new ReflectClass(clazz));

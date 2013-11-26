@@ -17,7 +17,7 @@ import java.util.Set;
 
 public abstract class AbstractItem implements JNIItem {
 
-	HashMap params;
+	HashMap<String, Object> params;
 
 static String[] split(String str, String separator) {
 	return JNIGenerator.split(str, separator);
@@ -31,8 +31,8 @@ void checkParams() {
 public String flatten() {
 	checkParams();
 	StringBuffer buffer = new StringBuffer();
-	Set set = params.keySet();
-	String[] keys = (String[])set.toArray(new String[set.size()]);
+	Set<String> set = params.keySet();
+	String[] keys = set.toArray(new String[set.size()]);
 	Arrays.sort(keys);
 	for (int j = 0; j < keys.length; j++) {
 		String key = keys[j];
@@ -101,7 +101,7 @@ public void setFlags(String[] flags) {
 }
 
 public void parse(String str) {
-	this.params = new HashMap();
+	this.params = new HashMap<String, Object>();
 	int length = str.length();
 	if (length == 0) return;
 	int index = 0;
@@ -135,13 +135,13 @@ public void parse(String str) {
 
 public void setFlag(String flag, boolean value) {
 	String[] flags = getFlags();
-	HashSet set = new HashSet(Arrays.asList(flags));
+	HashSet<String> set = new HashSet<String>(Arrays.asList(flags));
 	if (value) {
 		set.add(flag);
 	} else {
 		set.remove(flag);
 	}
-	setFlags((String[])set.toArray(new String[set.size()]));
+	setFlags(set.toArray(new String[set.size()]));
 }
 
 public void setGenerate(boolean value) {

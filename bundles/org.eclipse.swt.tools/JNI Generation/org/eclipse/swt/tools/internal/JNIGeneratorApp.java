@@ -273,7 +273,7 @@ String[] getClassNames(String mainClassName) {
 	if (classpath == null) classpath = System.getProperty("java.class.path");
 	String pkgPath = pkgName.replace('.', File.separatorChar);
 	String pkgZipPath = pkgName.replace('.', '/');
-	ArrayList classes = new ArrayList();	
+	ArrayList<String> classes = new ArrayList<String>();	
 	int start = 0;
 	int index = 0;
 	while (index < classpath.length()) {
@@ -284,9 +284,9 @@ String[] getClassNames(String mainClassName) {
 			ZipFile zipFile = null;
 			try {
 				zipFile = new ZipFile(path);
-				Enumeration entries = zipFile.entries();
+				Enumeration<? extends ZipEntry> entries = zipFile.entries();
 				while (entries.hasMoreElements()) {
-					ZipEntry entry = (ZipEntry)entries.nextElement();
+					ZipEntry entry = entries.nextElement();
 					String name = entry.getName();
 					if (name.startsWith(pkgZipPath) && name.indexOf('/', pkgZipPath.length() + 1) == -1 && name.endsWith(".class")) {
 						String className = name.substring(pkgZipPath.length() + 1, name.length() - 6);
@@ -318,7 +318,7 @@ String[] getClassNames(String mainClassName) {
 		}
 		start = index + 1;
 	}
-	return (String[])classes.toArray(new String[classes.size()]);
+	return classes.toArray(new String[classes.size()]);
 }
 
 public JNIClass[] getClasses() {
@@ -352,7 +352,7 @@ JNIClass[] getASTClasses() {
 	if (mainClassName == null) return new JNIClass[0];
 	String root = classesDir != null ? classesDir : new File(outputDir).getParent() + "/";
 	String mainPath = new File(root + mainClassName.replace('.', '/') + ".java").getAbsolutePath();
-	ArrayList classes = new ArrayList();
+	ArrayList<JNIClass> classes = new ArrayList<JNIClass>();
 	String packageName = getPackageName(mainClassName);
 	File dir = new File(root + "/" + packageName.replace('.', '/'));
 	File[] files = dir.listFiles();
@@ -371,12 +371,12 @@ JNIClass[] getASTClasses() {
 			e.printStackTrace();
 		}
 	}
-	return (JNIClass[])classes.toArray(new JNIClass[classes.size()]);
+	return classes.toArray(new JNIClass[classes.size()]);
 }
 
 public JNIClass[] getNativesClasses(JNIClass[] classes) {
 	if (mainClass == null) return new JNIClass[0];
-	ArrayList result = new ArrayList();
+	ArrayList<JNIClass> result = new ArrayList<JNIClass>();
 	for (int i = 0; i < classes.length; i++) {
 		JNIClass clazz = classes[i];
 		JNIMethod[] methods = clazz.getDeclaredMethods();
@@ -389,12 +389,12 @@ public JNIClass[] getNativesClasses(JNIClass[] classes) {
 			}
 		}
 	}
-	return (JNIClass[])result.toArray(new JNIClass[result.size()]);
+	return result.toArray(new JNIClass[result.size()]);
 }
 
 public JNIClass[] getStructureClasses(JNIClass[] classes) {
 	if (mainClass == null) return new JNIClass[0];
-	ArrayList result = new ArrayList();
+	ArrayList<JNIClass> result = new ArrayList<JNIClass>();
 	outer:
 	for (int i = 0; i < classes.length; i++) {
 		JNIClass clazz = classes[i];
@@ -417,7 +417,7 @@ public JNIClass[] getStructureClasses(JNIClass[] classes) {
 		if (!hasPublicFields) continue;
 		result.add(clazz);
 	}
-	return (JNIClass[])result.toArray(new JNIClass[result.size()]);
+	return result.toArray(new JNIClass[result.size()]);
 }
 
 public void setClasspath(String classpath) {

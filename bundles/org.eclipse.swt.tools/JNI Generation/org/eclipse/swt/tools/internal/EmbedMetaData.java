@@ -18,11 +18,11 @@ import java.util.TreeMap;
 import java.util.ArrayList;
 
 public class EmbedMetaData extends JNIGenerator {
-	TreeMap inserts;
+	TreeMap<Integer, String> inserts;
 
 @Override
 public void generate(JNIClass clazz) {
-	inserts = new TreeMap();
+	inserts = new TreeMap<Integer, String>();
 	String data = ((AbstractItem)clazz).flatten();
 	if (data != null && data.length() != 0) {
 		String doc = "/** @jniclass " + data + " */" + delimiter;
@@ -35,14 +35,14 @@ public void generate(JNIClass clazz) {
 	if (inserts.size() == 0) return;
 	String sourcePath = ((ASTClass)clazz).sourcePath;
 	String source = JNIGenerator.loadFile(sourcePath);
-	Set set = inserts.keySet();
-	ArrayList keys = new ArrayList();
+	Set<Integer> set = inserts.keySet();
+	ArrayList<Integer> keys = new ArrayList<Integer>();
 	keys.addAll(set);
 	Collections.reverse(keys);
 	StringBuffer buffer = new StringBuffer(source);
-	for (Iterator iterator = keys.iterator(); iterator.hasNext();) {
-		Integer index = (Integer) iterator.next();
-		String doc = (String)inserts.get(index);
+	for (Iterator<Integer> iterator = keys.iterator(); iterator.hasNext();) {
+		Integer index = iterator.next();
+		String doc = inserts.get(index);
 		buffer.insert(index.intValue(), doc);
 	}
 	try {
@@ -83,7 +83,7 @@ public void generate(JNIMethod[] methods) {
 }
 
 public void generate(JNIMethod method) {
-	ArrayList tags = new ArrayList();
+	ArrayList<String> tags = new ArrayList<String>();
 	String data = ((AbstractItem)method).flatten();
 	if (data != null && data.length() != 0) {
 		tags.add("@method " + data);
@@ -100,14 +100,14 @@ public void generate(JNIMethod method) {
 	}
 	if (tags.size() == 0) return;
 	if (tags.size() == 1) {
-		String doc = "/** " + (String)tags.get(0) + " */" + delimiter;
+		String doc = "/** " + tags.get(0) + " */" + delimiter;
 		inserts.put(new Integer(((ASTMethod)method).start), doc);
 	} else {
 		StringBuffer buffer = new StringBuffer();
 		buffer.append("/**");
 		buffer.append(delimiter);
-		for (Iterator iterator = tags.iterator(); iterator.hasNext();) {
-			String tag = (String) iterator.next();
+		for (Iterator<String> iterator = tags.iterator(); iterator.hasNext();) {
+			String tag = iterator.next();
 			buffer.append(" * ");
 			buffer.append(tag);
 			buffer.append(delimiter);

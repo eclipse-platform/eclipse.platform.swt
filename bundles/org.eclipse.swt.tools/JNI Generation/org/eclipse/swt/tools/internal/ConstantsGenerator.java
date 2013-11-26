@@ -54,7 +54,7 @@ public static void main(String[] args) {
 		ConstantsGenerator gen = new ConstantsGenerator();
 		for (int i = 0; i < args.length; i++) {
 			String clazzName = args[i];
-			Class clazz = Class.forName(clazzName);
+			Class<?> clazz = Class.forName(clazzName);
 			gen.generate(new ReflectClass(clazz));
 		}
 	} catch (Exception e) {

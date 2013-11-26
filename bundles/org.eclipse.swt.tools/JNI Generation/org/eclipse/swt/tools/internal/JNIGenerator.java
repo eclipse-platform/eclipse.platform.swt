@@ -170,10 +170,8 @@ static String loadFile (String file) {
 }
 
 static void sort(JNIMethod[] methods) {
-	Arrays.sort(methods, new Comparator() {
-		public int compare(Object a, Object b) {
-			JNIMethod mth1 = (JNIMethod)a;
-			JNIMethod mth2 = (JNIMethod)b;
+	Arrays.sort(methods, new Comparator<JNIMethod>() {
+		public int compare(JNIMethod mth1, JNIMethod mth2) {
 			int result = mth1.getName().compareTo(mth2.getName());
 			return result != 0 ? result : getFunctionName(mth1).compareTo(getFunctionName(mth2));
 		}
@@ -181,28 +179,28 @@ static void sort(JNIMethod[] methods) {
 }
 
 static void sort(JNIField[] fields) {
-	Arrays.sort(fields, new Comparator() {
-		public int compare(Object a, Object b) {
-			return ((JNIField)a).getName().compareTo(((JNIField)b).getName());
+	Arrays.sort(fields, new Comparator<JNIField>() {
+		public int compare(JNIField a, JNIField b) {
+			return a.getName().compareTo(b.getName());
 		}
 	});
 }
 
 static void sort(JNIClass[] classes) {
-	Arrays.sort(classes, new Comparator() {
-		public int compare(Object a, Object b) {
-			return ((JNIClass)a).getName().compareTo(((JNIClass)b).getName());
+	Arrays.sort(classes, new Comparator<JNIClass>() {
+		public int compare(JNIClass a, JNIClass b) {
+			return a.getName().compareTo(b.getName());
 		}
 	});	
 }
 
 static String[] split(String str, String separator) {
 	StringTokenizer tk = new StringTokenizer(str, separator);
-	ArrayList result = new ArrayList();
-	while (tk.hasMoreElements()) {
-		result.add(tk.nextElement());
+	ArrayList<String> result = new ArrayList<String>();
+	while (tk.hasMoreTokens()) {
+		result.add(tk.nextToken());
 	}
-	return (String[])result.toArray(new String[result.size()]);
+	return result.toArray(new String[result.size()]);
 }
 
 static String toC(String str) {
