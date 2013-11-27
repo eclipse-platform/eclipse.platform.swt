@@ -438,7 +438,7 @@ public class MacGeneratorUI {
 			}
 		}
 		int index = 0;
-		while (flatNodes.get(index++) != node);		
+		while (flatNodes.get(index++) != node){}		
 		int start = index;
 		while (index < flatNodes.size()) {
 			Node child = flatNodes.get(index);

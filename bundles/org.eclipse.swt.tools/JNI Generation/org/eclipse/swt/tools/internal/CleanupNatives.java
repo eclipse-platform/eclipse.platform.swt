@@ -38,7 +38,7 @@ public void generate(JNIMethod[] methods) {
 
 public void generate(JNIMethod method) {
 	String name = method.getName();
-	Enumeration keys = files.keys();
+	Enumeration<?> keys = files.keys();
 	while (keys.hasMoreElements()) {
 		Object key = keys.nextElement();
 		String str = files.get(key);

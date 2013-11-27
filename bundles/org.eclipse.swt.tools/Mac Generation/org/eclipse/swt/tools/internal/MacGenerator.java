@@ -17,7 +17,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.w3c.dom.*;
 import org.xml.sax.InputSource;
-
+@SuppressWarnings("unchecked")
 public class MacGenerator {
 	String[] xmls;
 	Document[] documents;

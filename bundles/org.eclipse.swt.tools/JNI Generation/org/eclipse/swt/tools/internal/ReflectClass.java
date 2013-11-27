@@ -35,6 +35,7 @@ public ReflectClass(Class<?> clazz, MetaData data, String sourcePath) {
 	this.sourcePath = sourcePath;
 }
 
+@SuppressWarnings("deprecation")
 void checkMembers() {
 	if (fields != null) return;
 	String source = null;

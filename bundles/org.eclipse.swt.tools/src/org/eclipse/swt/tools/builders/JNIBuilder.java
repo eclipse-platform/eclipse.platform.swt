@@ -56,6 +56,7 @@ public class JNIBuilder extends IncrementalProjectBuilder {
 		}
 	}
 	
+	@SuppressWarnings("rawtypes")
 	@Override
 	protected IProject[] build(int kind, Map args, final IProgressMonitor monitor) throws CoreException {
 		IResourceDelta delta = getDelta(getProject());

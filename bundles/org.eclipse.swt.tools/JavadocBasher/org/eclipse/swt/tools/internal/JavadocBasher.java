@@ -59,14 +59,14 @@ import org.eclipse.jface.text.*;
  */
 public class JavadocBasher {
 	static final boolean fVerbose = false; // set to true for verbose output
-	List fBashed;
-	List fUnchanged;
-	List fSkipped;
+	List<String> fBashed;
+	List<String> fUnchanged;
+	List<String> fSkipped;
 
 	public JavadocBasher() {
-		fBashed = new ArrayList();
-		fUnchanged = new ArrayList();
-		fSkipped = new ArrayList();
+		fBashed = new ArrayList<String>();
+		fUnchanged = new ArrayList<String>();
+		fSkipped = new ArrayList<String>();
 	}
 	
 	public static class Edit {
@@ -145,7 +145,7 @@ public class JavadocBasher {
 				JavadocBasher basher = new JavadocBasher();
 				System.out.println("\n==== Start Bashing " + targetSubdir);
 				basher.bashJavaSourceTree(source, target, out);
-				List bashedList = basher.getBashed();
+				List<String> bashedList = basher.getBashed();
 				basher.status("Bashed", bashedList, targetSubdir);
 				if (bashedList.size() > 0) {
 					totalBashed += bashedList.size();
@@ -161,13 +161,13 @@ public class JavadocBasher {
 				+ " files in total) - Be sure to Refresh (F5) project(s) ====");
 	}
 
-	void status(String label, List list, String targetSubdir) {
+	void status(String label, List<String> list, String targetSubdir) {
 		int count = list.size();
 		System.out.println(label + " " + count
 				+ ((count == 1) ? " file" : " files") + " in " + targetSubdir
 				+ ((count > 0) ? ":" : "."));
 		if (count > 0) {
-			Iterator i = list.iterator();
+			Iterator<String> i = list.iterator();
 			while (i.hasNext())
 				System.out.println(label + ": " + i.next());
 			System.out.println();
@@ -274,7 +274,7 @@ public class JavadocBasher {
 		parser.setSource(contents);
 		CompilationUnit targetUnit = (CompilationUnit)parser.createAST(null);
 
-		final HashMap comments = new HashMap();
+		final HashMap<String, String> comments = new HashMap<String, String>();
 		sourceUnit.accept(new ASTVisitor() {
 			String prefix = "";
 			@Override
@@ -298,6 +298,7 @@ public class JavadocBasher {
 				}
 				return false;
 			}
+			@SuppressWarnings("unchecked")
 			@Override
 			public boolean visit(MethodDeclaration node) {
 				int mods = node.getModifiers();
@@ -305,8 +306,8 @@ public class JavadocBasher {
 					Javadoc javadoc = node.getJavadoc();
 					try {
 						String key = prefix + "." + node.getName().getFullyQualifiedName();
-						for (Iterator iterator = node.parameters().iterator(); iterator.hasNext();) {
-							SingleVariableDeclaration param = (SingleVariableDeclaration) iterator.next();
+						for (Iterator<SingleVariableDeclaration> iterator = node.parameters().iterator(); iterator.hasNext();) {
+							SingleVariableDeclaration param = iterator.next();
 							key += param.getType().toString();
 						}
 						comments.put(key, javadoc != null ? sourceDocument.get(javadoc.getStartPosition(), getJavadocLength(sourceDocument, javadoc)) : "");
@@ -332,7 +333,7 @@ public class JavadocBasher {
 		});
 
 
-		final List edits = new ArrayList();
+		final List<Edit> edits = new ArrayList<Edit>();
 		targetUnit.accept(new ASTVisitor() {
 			String prefix = "";
 			@Override
@@ -349,7 +350,7 @@ public class JavadocBasher {
 						System.err.println("Field declaration with multiple variables is not supported. -> " + target + " " + node.getName().getFullyQualifiedName());
 					}
 					String key = prefix + "." + node.getName().getFullyQualifiedName();
-					String newComment = (String)comments.get(key);
+					String newComment = comments.get(key);
 					if (newComment != null) {
 						comments.remove(key);
 						if (javadoc != null) {
@@ -362,17 +363,18 @@ public class JavadocBasher {
 				}
 				return false;
 			}
+			@SuppressWarnings("unchecked")
 			@Override
 			public boolean visit(MethodDeclaration node) {
 				int mods = node.getModifiers();
 				if (Modifier.isPublic(mods) || Modifier.isProtected(mods)) {
 					Javadoc javadoc = node.getJavadoc();
 					String key = prefix + "." + node.getName().getFullyQualifiedName();
-					for (Iterator iterator = node.parameters().iterator(); iterator.hasNext();) {
-						SingleVariableDeclaration param = (SingleVariableDeclaration) iterator.next();
+					for (Iterator<SingleVariableDeclaration> iterator = node.parameters().iterator(); iterator.hasNext();) {
+						SingleVariableDeclaration param = iterator.next();
 						key += param.getType().toString();
 					}
-					String newComment = (String)comments.get(key);
+					String newComment = comments.get(key);
 					if (newComment != null) {
 						comments.remove(key);
 						if (javadoc != null) {
@@ -391,7 +393,7 @@ public class JavadocBasher {
 				if (Modifier.isPublic(mods) || Modifier.isProtected(mods)) {
 					Javadoc javadoc = node.getJavadoc();
 					String key = prefix + "." + node.getName().getFullyQualifiedName();
-					String newComment = (String)comments.get(key);
+					String newComment = comments.get(key);
 					if (newComment != null) {
 						comments.remove(key);
 						if (javadoc != null) {
@@ -408,7 +410,7 @@ public class JavadocBasher {
 		});
 
 		for (int i = edits.size() - 1; i >=0 ; i--) {
-			Edit edit = (Edit)edits.get(i);
+			Edit edit = edits.get(i);
 			try {
 				targetDocument.replace(edit.start, edit.length, edit.text);
 			} catch (BadLocationException e) {
@@ -472,9 +474,9 @@ public class JavadocBasher {
 				"Display.getClientArea",
 				"TreeItem.handle",
 			};
-			for (Iterator iterator = comments.keySet().iterator(); iterator.hasNext();) {
-				String name = (String) iterator.next();
-				if (((String) comments.get(name)).length() > 0){
+			for (Iterator<String> iterator = comments.keySet().iterator(); iterator.hasNext();) {
+				String name = iterator.next();
+				if (comments.get(name).length() > 0){
 					int i = 0;
 					for (i = 0; i < filter.length; i++) {
 						if (name.equals(filter[i])) break;
@@ -490,12 +492,12 @@ public class JavadocBasher {
 		if (!targetContents.equals(newContents)) {
 			if (makeDirectory(out.getParentFile())) {
 				writeFile(newContents.toCharArray(), out);
-				fBashed.add(target);
+				fBashed.add(target.toString());
 			} else {
 				System.out.println("*** Could not create " + out.getParent());
 			}
 		} else {
-			fUnchanged.add(target);
+			fUnchanged.add(target.toString());
 		}
 	}
 
@@ -519,15 +521,15 @@ public class JavadocBasher {
 		return directory.mkdirs();
 	}
 
-	List getBashed() {
+	List<String> getBashed() {
 		return fBashed;
 	}
 
-	List getUnchanged() {
+	List<String> getUnchanged() {
 		return fUnchanged;
 	}
 
-	List getSkipped() {
+	List<String> getSkipped() {
 		return fSkipped;
 	}
 }

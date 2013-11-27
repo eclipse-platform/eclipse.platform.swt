@@ -30,6 +30,7 @@ public class ASTMethod extends ASTItem implements JNIMethod {
 	String data;
 	int start;
 	
+@SuppressWarnings("unchecked")
 public ASTMethod(ASTClass declaringClass, String source, MethodDeclaration method) {
 	this.declaringClass = declaringClass;
 	

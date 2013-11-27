@@ -26,6 +26,7 @@ public class ASTField extends ASTItem implements JNIField {
 	String data;
 	int start;
 	
+@SuppressWarnings("unchecked")
 public ASTField(ASTClass declaringClass, String source, FieldDeclaration field, VariableDeclarationFragment fragment) {
 	this.declaringClass = declaringClass;	
 	name = fragment.getName().getIdentifier();
