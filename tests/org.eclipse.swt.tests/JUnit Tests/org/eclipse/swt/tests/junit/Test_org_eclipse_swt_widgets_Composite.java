@@ -11,6 +11,7 @@
 package org.eclipse.swt.tests.junit;
 
 
+import static org.junit.Assert.assertArrayEquals;
 import junit.framework.*;
 import junit.textui.*;
 
@@ -56,24 +57,24 @@ public void test_ConstructorLorg_eclipse_swt_widgets_CompositeI() {
 }
 
 public void test_getChildren() {
-	assertEquals(":a:", new Control[]{}, composite.getChildren());
+	assertArrayEquals(":a:", new Control[]{}, composite.getChildren());
 	Composite c1 = new Composite(composite, 0);
-	assertEquals(":b:", new Control[]{c1}, composite.getChildren());
+	assertArrayEquals(":b:", new Control[]{c1}, composite.getChildren());
 
 	List c2 = new List(composite, 0);
-	assertEquals(":c:", new Control[]{c1, c2}, composite.getChildren());
+	assertArrayEquals(":c:", new Control[]{c1, c2}, composite.getChildren());
 
 	Button c3 = new Button(composite, 0);
-	assertEquals(":d:", new Control[]{c1, c2, c3}, composite.getChildren());
+	assertArrayEquals(":d:", new Control[]{c1, c2, c3}, composite.getChildren());
 
 	c2.dispose();
-	assertEquals(":e:", new Control[]{c1, c3}, composite.getChildren());
+	assertArrayEquals(":e:", new Control[]{c1, c3}, composite.getChildren());
 	
 	Control[] children = composite.getChildren();
 	for (int i = 0; i < children.length; i++)
 		children[i].dispose();
 
-	assertEquals(":f:", new Control[]{}, composite.getChildren());
+	assertArrayEquals(":f:", new Control[]{}, composite.getChildren());
 }
 
 public void test_getLayout() {
@@ -101,7 +102,7 @@ public void test_setTabList$Lorg_eclipse_swt_widgets_Control() {
 	Button button2 = new Button(composite, SWT.PUSH);
 	Control[] tablist = new Control[] {button1, button2};
 	composite.setTabList(tablist);
-	assertEquals(tablist, composite.getTabList());
+	assertArrayEquals(tablist, composite.getTabList());
 	button1.dispose();
 	button2.dispose();
 }

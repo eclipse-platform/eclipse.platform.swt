@@ -11,14 +11,15 @@
 package org.eclipse.swt.tests.junit.performance;
 
 
-import java.io.*;
+import java.io.File;
 import java.net.URL;
 
 import junit.framework.TestCase;
 
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.internal.*;
-import org.eclipse.test.performance.*;
+import org.eclipse.test.performance.Dimension;
+import org.eclipse.test.performance.Performance;
+import org.eclipse.test.performance.PerformanceMeter;
 
 
 public class SwtPerformanceTestCase extends TestCase {
@@ -88,16 +89,6 @@ protected String getPath(String fileName) {
 		System.out.println("Resolved file name for " + fileName + " = " + urlPath);
 	}
 	return urlPath;
-}
-
-protected boolean isJ2ME() {
-	try {
-		Compatibility.newFileInputStream("");
-	} catch (FileNotFoundException e) {
-		return false;
-	} catch (IOException e) {
-	}
-	return true;
 }
 
 }

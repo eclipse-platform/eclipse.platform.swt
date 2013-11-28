@@ -11,6 +11,8 @@
 package org.eclipse.swt.tests.junit;
 
 
+import static org.junit.Assert.assertArrayEquals;
+
 import org.eclipse.swt.graphics.*;
 
 import junit.framework.*;
@@ -121,7 +123,7 @@ public void test_getRGBs() {
 	RGB[] rgbs = {new RGB(0, 0, 0), new RGB(255, 255, 255)};
 	PaletteData data = new PaletteData(rgbs);
 	
-	assertEquals(":a:", rgbs, data.getRGBs());
+	assertArrayEquals(":a:", rgbs, data.getRGBs());
 	
 	// direct palette tests	
 	data = new PaletteData(0xff0000, 0x00ff00, 0x0000ff);

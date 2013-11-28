@@ -10,6 +10,8 @@
  *******************************************************************************/
 package org.eclipse.swt.tests.junit;
 
+import static org.junit.Assert.assertArrayEquals;
+
 import java.util.Vector;
 
 import junit.framework.*;
@@ -131,16 +133,16 @@ public void test_getItems() {
 	for (int i = 0; i<number ; i++) {
 	  	items[i] = new ExpandItem(expandBar, 0);
 	}
-	assertEquals(items, expandBar.getItems());
+	assertArrayEquals(items, expandBar.getItems());
 	
 	expandBar.getItems()[0].dispose();
-	assertEquals(new ExpandItem[] {items[1], items[2], items[3], items[4]}, expandBar.getItems());
+	assertArrayEquals(new ExpandItem[] {items[1], items[2], items[3], items[4]}, expandBar.getItems());
 
 	expandBar.getItems()[3].dispose();
-	assertEquals(new ExpandItem[] {items[1], items[2], items[3]}, expandBar.getItems());
+	assertArrayEquals(new ExpandItem[] {items[1], items[2], items[3]}, expandBar.getItems());
 
 	expandBar.getItems()[1].dispose();
-	assertEquals(new ExpandItem[] {items[1], items[3]}, expandBar.getItems());
+	assertArrayEquals(new ExpandItem[] {items[1], items[3]}, expandBar.getItems());
 }
 
 public void test_getSpacing() {

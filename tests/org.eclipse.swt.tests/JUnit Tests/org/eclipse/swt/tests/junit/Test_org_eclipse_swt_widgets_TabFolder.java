@@ -10,6 +10,8 @@
  *******************************************************************************/
 package org.eclipse.swt.tests.junit;
 
+import static org.junit.Assert.assertArrayEquals;
+
 import java.util.Vector;
 
 import junit.framework.*;
@@ -117,16 +119,16 @@ public void test_getItems() {
 	for (int i = 0; i<number ; i++){
 	  	items[i] = new TabItem(tabFolder, 0);
 	}
-	assertEquals(items, tabFolder.getItems());
+	assertArrayEquals(items, tabFolder.getItems());
 	
 	tabFolder.getItems()[0].dispose();
-	assertEquals(new TabItem[]{items[1], items[2], items[3], items[4]}, tabFolder.getItems());
+	assertArrayEquals(new TabItem[]{items[1], items[2], items[3], items[4]}, tabFolder.getItems());
 
 	tabFolder.getItems()[3].dispose();
-	assertEquals(new TabItem[]{items[1], items[2], items[3]}, tabFolder.getItems());
+	assertArrayEquals(new TabItem[]{items[1], items[2], items[3]}, tabFolder.getItems());
 
 	tabFolder.getItems()[1].dispose();
-	assertEquals(new TabItem[]{items[1], items[3]}, tabFolder.getItems());
+	assertArrayEquals(new TabItem[]{items[1], items[3]}, tabFolder.getItems());
 }
 
 public void test_getSelection() {
@@ -269,7 +271,7 @@ public void test_setSelectionI() {
 	catch (IllegalArgumentException e) {
 	}
 	finally {
-		assertEquals(new TabItem[]{items[0]}, tabFolder.getSelection());
+		assertArrayEquals(new TabItem[]{items[0]}, tabFolder.getSelection());
 	}
 	
 	try {
@@ -279,7 +281,7 @@ public void test_setSelectionI() {
 	catch (IllegalArgumentException e) {
 	}
 	finally {
-		assertEquals(new TabItem[]{items[0]}, tabFolder.getSelection());
+		assertArrayEquals(new TabItem[]{items[0]}, tabFolder.getSelection());
 	}
 
 	//
@@ -290,25 +292,25 @@ public void test_setSelectionI() {
 		items[i] = new TabItem(tabFolder, 0);
 
 	tabFolder.setSelection(0);
-	assertEquals(new TabItem[]{items[0]}, tabFolder.getSelection());
+	assertArrayEquals(new TabItem[]{items[0]}, tabFolder.getSelection());
 
 	tabFolder.setSelection(4);
-	assertEquals(new TabItem[]{items[4]}, tabFolder.getSelection());
+	assertArrayEquals(new TabItem[]{items[4]}, tabFolder.getSelection());
 
 	tabFolder.setSelection(2);
-	assertEquals(new TabItem[]{items[2]}, tabFolder.getSelection());	
+	assertArrayEquals(new TabItem[]{items[2]}, tabFolder.getSelection());	
 
 	tabFolder.setSelection(1);
-	assertEquals(new TabItem[]{items[1]}, tabFolder.getSelection());
+	assertArrayEquals(new TabItem[]{items[1]}, tabFolder.getSelection());
 
 	tabFolder.setSelection(number + 1);
-	assertEquals(new TabItem[]{items[1]}, tabFolder.getSelection());	
+	assertArrayEquals(new TabItem[]{items[1]}, tabFolder.getSelection());	
 
 //	tabFolder.setSelection(-1);
 //	assertEquals(0, tabFolder.getSelection().length);	
 	
 	tabFolder.setSelection(3);
-	assertEquals(new TabItem[]{items[3]}, tabFolder.getSelection());
+	assertArrayEquals(new TabItem[]{items[3]}, tabFolder.getSelection());
 
 //	tabFolder.setSelection(-2);
 //	assertEquals(0, tabFolder.getSelection().length);	
@@ -320,22 +322,22 @@ public void test_setSelectionI() {
 		items[i] = new TabItem(tabFolder, 0);
 
 	tabFolder.setSelection(items[0]);
-	assertEquals(new TabItem[]{items[0]}, tabFolder.getSelection());
+	assertArrayEquals(new TabItem[]{items[0]}, tabFolder.getSelection());
 	
 	tabFolder.setSelection(new TabItem[] {items[0]});
-	assertEquals(new TabItem[] {items[0]}, tabFolder.getSelection());
+	assertArrayEquals(new TabItem[] {items[0]}, tabFolder.getSelection());
 
 	tabFolder.setSelection(new TabItem[] {items[3]});
-	assertEquals(new TabItem[] {items[3]}, tabFolder.getSelection());	
+	assertArrayEquals(new TabItem[] {items[3]}, tabFolder.getSelection());	
 
 	tabFolder.setSelection(new TabItem[] {items[4]});
-	assertEquals(new TabItem[] {items[4]}, tabFolder.getSelection());
+	assertArrayEquals(new TabItem[] {items[4]}, tabFolder.getSelection());
 
 	tabFolder.setSelection(new TabItem[] {items[2]});
-	assertEquals(new TabItem[] {items[2]}, tabFolder.getSelection());	
+	assertArrayEquals(new TabItem[] {items[2]}, tabFolder.getSelection());	
 
 	tabFolder.setSelection(new TabItem[] {items[1]});
-	assertEquals(new TabItem[] {items[1]}, tabFolder.getSelection());	
+	assertArrayEquals(new TabItem[] {items[1]}, tabFolder.getSelection());	
 
 	//
 	makeCleanEnvironment();
@@ -350,7 +352,7 @@ public void test_setSelectionI() {
 	catch (IllegalArgumentException e) {
 	}
 	finally {
-		assertEquals(new TabItem[]{items[0]}, tabFolder.getSelection());
+		assertArrayEquals(new TabItem[]{items[0]}, tabFolder.getSelection());
 	}
 }
 

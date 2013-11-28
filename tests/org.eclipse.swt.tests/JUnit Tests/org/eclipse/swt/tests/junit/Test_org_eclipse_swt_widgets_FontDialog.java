@@ -10,6 +10,7 @@
  *******************************************************************************/
 package org.eclipse.swt.tests.junit;
 
+import static org.junit.Assert.assertArrayEquals;
 import junit.framework.*;
 import junit.textui.*;
 
@@ -83,7 +84,7 @@ public void test_setFontDataLorg_eclipse_swt_graphics_FontData() {
 	assertNull(fontDialog.getFontList());	
 		
 	fontDialog.setFontList(fontData);
-	assertEquals(fontDialog.getFontList(), fontData);
+	assertArrayEquals(fontDialog.getFontList(), fontData);
 
 	fontDialog.setFontList(null);
 	assertNull(fontDialog.getFontList());	

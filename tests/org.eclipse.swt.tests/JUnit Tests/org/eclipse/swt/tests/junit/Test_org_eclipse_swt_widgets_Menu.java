@@ -10,6 +10,7 @@
  *******************************************************************************/
 package org.eclipse.swt.tests.junit;
 
+import static org.junit.Assert.assertArrayEquals;
 import junit.framework.*;
 import junit.textui.*;
 
@@ -173,16 +174,16 @@ public void test_getItems() {
 	for (int i = 0; i<number ; i++){
 	  	items[i] = new MenuItem(menu, 0);
 	}
-	assertEquals(":a:", items, menu.getItems());
+	assertArrayEquals(":a:", items, menu.getItems());
 	
 	menu.getItems()[0].dispose();
-	assertEquals(":b:", new MenuItem[]{items[1], items[2], items[3], items[4]}, menu.getItems());
+	assertArrayEquals(":b:", new MenuItem[]{items[1], items[2], items[3], items[4]}, menu.getItems());
 
 	menu.getItems()[3].dispose();
-	assertEquals(":c:", new MenuItem[]{items[1], items[2], items[3]}, menu.getItems());
+	assertArrayEquals(":c:", new MenuItem[]{items[1], items[2], items[3]}, menu.getItems());
 
 	menu.getItems()[1].dispose();
-	assertEquals(":d:", new MenuItem[]{items[1], items[3]}, menu.getItems());
+	assertArrayEquals(":d:", new MenuItem[]{items[1], items[3]}, menu.getItems());
 }
 
 public void test_getParent() {

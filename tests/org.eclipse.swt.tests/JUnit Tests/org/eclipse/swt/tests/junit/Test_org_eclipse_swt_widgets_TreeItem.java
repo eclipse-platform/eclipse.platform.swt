@@ -10,6 +10,7 @@
  *******************************************************************************/
 package org.eclipse.swt.tests.junit;
 
+import static org.junit.Assert.assertArrayEquals;
 import junit.framework.*;
 import junit.textui.*;
 
@@ -685,7 +686,7 @@ public void test_getItems() {
 			TreeItem ti = new TreeItem(treeItem, 0);
 			items [j][i] = ti;
 		}
-		assertEquals(items[j], treeItem.getItems());
+		assertArrayEquals(items[j], treeItem.getItems());
 		for (int i = 0; i < cases[j]; i++) {
 			items [j][i].dispose();
 		}

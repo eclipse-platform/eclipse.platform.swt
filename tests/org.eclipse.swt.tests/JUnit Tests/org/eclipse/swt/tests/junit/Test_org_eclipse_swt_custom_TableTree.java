@@ -11,6 +11,8 @@
 package org.eclipse.swt.tests.junit;
 
 
+import static org.junit.Assert.assertArrayEquals;
+
 import java.util.Vector;
 
 import junit.framework.*;
@@ -82,7 +84,7 @@ public void test_getSelection() {
 	for (int i = 0; i < number; i++) {
 		items[i] = new TableTreeItem(tableTree, SWT.NONE);
 	}
-	assertEquals("MULTI: After adding items, but before selecting any", new TableTreeItem[] {}, tableTree.getSelection());
+	assertArrayEquals("MULTI: After adding items, but before selecting any", new TableTreeItem[] {}, tableTree.getSelection());
 
 	// getSelection() is further tested in test_selectAll and test_setSelection$Lorg_eclipse_swt_custom_TableTreeItem
 }

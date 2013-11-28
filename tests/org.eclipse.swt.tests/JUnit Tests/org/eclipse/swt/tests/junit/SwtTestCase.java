@@ -130,24 +130,6 @@ static public void assertSame(String message, int expected[], int actual[]) {
 static public void assertSame(int expected[], int actual[]) {
 	assertSame(null, expected, actual);
 }
-static public void assertEquals(String message, Object expected[], Object actual[]) {
-	if (expected == null && actual == null)
-		return;
-	boolean equal = false;
-	if (expected != null && actual != null && expected.length == actual.length) {
-		if (expected.length == 0)
-			return;
-		equal = true;
-		for (int i = 0; i < expected.length; i++) {
-			if (!expected[i].equals(actual[i])) {
-				equal = false;
-			}
-		}
-	}
-	if (!equal) {
-		failNotEquals(message, expected, actual);
-	}
-}
 static public void assertEquals(String message, int expectedCode, Throwable actualThrowable) {
 	if (actualThrowable instanceof SWTError) {
 		SWTError error = (SWTError) actualThrowable;
@@ -162,30 +144,6 @@ static public void assertEquals(String message, int expectedCode, Throwable actu
 			assertEquals(message, expectedThrowable.getMessage(), actualThrowable.getMessage());
 		}
 	}
-}
-static public void assertEquals(Object expected[], Object actual[]) {
-    assertEquals(null, expected, actual);
-}
-static public void assertEquals(String message, int expected[], int actual[]) {
-	if (expected == null && actual == null)
-		return;
-	boolean equal = false;
-	if (expected != null && actual != null && expected.length == actual.length) {
-		if (expected.length == 0)
-			return;
-		equal = true;
-		for (int i = 0; i < expected.length; i++) {
-			if (expected[i] != actual[i]) {
-				equal = false;
-			}
-		}
-	}
-	if (!equal) {
-		failNotEquals(message, expected, actual);
-	}
-}
-static public void assertEquals(int expected[], int actual[]) {
-    assertEquals(null, expected, actual);
 }
 
 static private void failNotEquals(String message, Object[] expected, Object[] actual) {
@@ -226,7 +184,7 @@ protected boolean isReparentablePlatform() {
 	String platform = SWT.getPlatform();
 	for (int i=0; i<reparentablePlatforms.length; i++) {
 		if (reparentablePlatforms[i].equals(platform)) return true;
-	}
+	}	
 	return false;
 }
 

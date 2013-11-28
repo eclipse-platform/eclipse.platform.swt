@@ -11,6 +11,7 @@
 package org.eclipse.swt.tests.junit;
 
 
+import static org.junit.Assert.assertArrayEquals;
 import junit.framework.*;
 import junit.textui.*;
 
@@ -68,11 +69,11 @@ public void test_addLjava_lang_String() {
 	}
 
 	combo.add("");
-	assertEquals(":a:", new String[]{""}, combo.getItems());
+	assertArrayEquals(":a:", new String[]{""}, combo.getItems());
 	combo.add("");
-	assertEquals(":b:", new String[]{"", ""}, combo.getItems());
+	assertArrayEquals(":b:", new String[]{"", ""}, combo.getItems());
 	combo.add("fred");
-	assertEquals(":c:", new String[]{"", "", "fred"}, combo.getItems());
+	assertArrayEquals(":c:", new String[]{"", "", "fred"}, combo.getItems());
 
 }
 
@@ -101,29 +102,29 @@ public void test_addLjava_lang_StringI() {
 	combo.removeAll();
 	
 	combo.add("fred", 0);
-	assertEquals("fred", new String[]{"fred"}, combo.getItems());
+	assertArrayEquals("fred", new String[]{"fred"}, combo.getItems());
 	combo.add("fred", 0);
-	assertEquals("fred fred", new String[]{"fred", "fred"}, combo.getItems());
+	assertArrayEquals("fred fred", new String[]{"fred", "fred"}, combo.getItems());
 	combo.add("fred");
-	assertEquals("fred fred fred", new String[]{"fred", "fred", "fred"}, combo.getItems());
+	assertArrayEquals("fred fred fred", new String[]{"fred", "fred", "fred"}, combo.getItems());
 	combo.removeAll();
 	
 	int number = 3;
 	for (int i = 0; i < number; i++)
 		combo.add("fred" + i);
 	combo.add("fred", number);
-	assertEquals("fred0 fred1 fred2 fred", new String[]{"fred0", "fred1", "fred2", "fred"}, combo.getItems());
+	assertArrayEquals("fred0 fred1 fred2 fred", new String[]{"fred0", "fred1", "fred2", "fred"}, combo.getItems());
 
 	combo.removeAll();
 	number = 3;
 	for (int i = 0; i < number; i++)
 		combo.add("fred" + i);
 	combo.add("fred", 1);
-	assertEquals("fred0 fred fred1 fred2", new String[]{"fred0", "fred", "fred1", "fred2"}, combo.getItems());
+	assertArrayEquals("fred0 fred fred1 fred2", new String[]{"fred0", "fred", "fred1", "fred2"}, combo.getItems());
 	combo.add("fred", 0);
-	assertEquals("fred fred0 fred fred1 fred2", new String[]{"fred", "fred0", "fred", "fred1", "fred2"}, combo.getItems());
+	assertArrayEquals("fred fred0 fred fred1 fred2", new String[]{"fred", "fred0", "fred", "fred1", "fred2"}, combo.getItems());
 	combo.add("fred", 4);
-	assertEquals("fred fred0 fred fred1 fred fred2", new String[]{"fred", "fred0", "fred", "fred1", "fred", "fred2"}, combo.getItems());
+	assertArrayEquals("fred fred0 fred fred1 fred fred2", new String[]{"fred", "fred0", "fred", "fred1", "fred", "fred2"}, combo.getItems());
 }
 
 public void test_addModifyListenerLorg_eclipse_swt_events_ModifyListener() {
@@ -690,7 +691,7 @@ public void test_setItemILjava_lang_String() {
 		combo.add("fred");
 	for (int i = 0; i < number; i++)
 		combo.setItem(i, "fred" + i);
-	assertEquals(":a:", new String[]{"fred0", "fred1", "fred2", "fred3", "fred4"}, combo.getItems());
+	assertArrayEquals(":a:", new String[]{"fred0", "fred1", "fred2", "fred3", "fred4"}, combo.getItems());
 }
 
 public void test_setItems$Ljava_lang_String() {
@@ -705,7 +706,7 @@ public void test_setItems$Ljava_lang_String() {
 
 	for (int i = 0 ; i< items.length; i++){
 		combo.setItems(items[i]);
-		assertEquals(":a:" + i, items[i], combo.getItems());}
+		assertArrayEquals(":a:" + i, items[i], combo.getItems());}
 }
 
 public void test_setOrientationI() {

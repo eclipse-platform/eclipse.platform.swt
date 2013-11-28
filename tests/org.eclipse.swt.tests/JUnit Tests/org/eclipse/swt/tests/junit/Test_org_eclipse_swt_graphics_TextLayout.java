@@ -1,5 +1,7 @@
 package org.eclipse.swt.tests.junit;
 
+import static org.junit.Assert.assertArrayEquals;
+
 import org.eclipse.swt.*;
 import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.graphics.*;
@@ -219,7 +221,7 @@ public void test_getSegmentsChars() {
 	for (int i = 0; i < segments.length; i++) {
 		layout.setSegments(segments[i]);
 		layout.setSegmentsChars(chars[i]);
-		assertEquals("Test line offsets" + ": group: " + i, offsets, layout.getLineOffsets());
+		assertArrayEquals("Test line offsets" + ": group: " + i, offsets, layout.getLineOffsets());
 		for (int j = 0; j < textLength; j++) {
 			assertEquals(messages[i] + ": group: " + i + ", index: " + j, levels[i][j], layout.getLevel(j));
 		}

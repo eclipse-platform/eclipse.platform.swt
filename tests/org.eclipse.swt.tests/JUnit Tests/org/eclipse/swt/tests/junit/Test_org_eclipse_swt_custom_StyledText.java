@@ -11,6 +11,8 @@
 package org.eclipse.swt.tests.junit;
 
 
+import static org.junit.Assert.assertArrayEquals;
+
 import java.util.Enumeration;
 import java.util.Hashtable;
 
@@ -1256,8 +1258,8 @@ void testStyles (String msg, int[] resultRanges, int[] expectedRanges, StyleRang
 	assertNotNull("expectedStyles is null on: " + msg, expectedStyles);
 	assertEquals("result ranges and styles length don't match on: " + msg, resultRanges.length, resultStyles.length * 2);
 	assertEquals("expected ranges and styles length don't match on: " + msg, expectedRanges.length, expectedStyles.length * 2);
-	assertEquals("expected and result ranges are differnt on: " + msg, expectedRanges, resultRanges);
-	assertEquals("expected and result styles are differnt on: " + msg, expectedStyles, resultStyles);
+	assertArrayEquals("expected and result ranges are differnt on: " + msg, expectedRanges, resultRanges);
+	assertArrayEquals("expected and result styles are differnt on: " + msg, expectedStyles, resultStyles);
 }
 
 public void test_getRanges(){

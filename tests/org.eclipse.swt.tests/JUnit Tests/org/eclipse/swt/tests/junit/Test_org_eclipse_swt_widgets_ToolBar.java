@@ -10,6 +10,8 @@
  *******************************************************************************/
 package org.eclipse.swt.tests.junit;
 
+import static org.junit.Assert.assertArrayEquals;
+
 import java.util.Vector;
 
 import junit.framework.*;
@@ -102,16 +104,16 @@ public void test_getItems() {
 	for (int i = 0; i<number ; i++){
 	  	items[i] = new ToolItem(toolBar, 0);
 	}
-	assertEquals(items, toolBar.getItems());
+	assertArrayEquals(items, toolBar.getItems());
 	
 	toolBar.getItems()[0].dispose();
-	assertEquals(new ToolItem[]{items[1], items[2], items[3], items[4]}, toolBar.getItems());
+	assertArrayEquals(new ToolItem[]{items[1], items[2], items[3], items[4]}, toolBar.getItems());
 
 	toolBar.getItems()[3].dispose();
-	assertEquals(new ToolItem[]{items[1], items[2], items[3]}, toolBar.getItems());
+	assertArrayEquals(new ToolItem[]{items[1], items[2], items[3]}, toolBar.getItems());
 
 	toolBar.getItems()[1].dispose();
-	assertEquals(new ToolItem[]{items[1], items[3]}, toolBar.getItems());
+	assertArrayEquals(new ToolItem[]{items[1], items[3]}, toolBar.getItems());
 }
 
 public void test_getRowCount() {

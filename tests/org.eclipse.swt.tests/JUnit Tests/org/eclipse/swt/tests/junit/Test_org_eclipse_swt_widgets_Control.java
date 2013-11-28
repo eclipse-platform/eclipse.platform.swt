@@ -10,6 +10,8 @@
  *******************************************************************************/
 package org.eclipse.swt.tests.junit;
 
+import static org.junit.Assert.assertArrayEquals;
+
 import java.util.Vector;
 
 import junit.framework.Test;
@@ -1028,7 +1030,7 @@ protected void consistencyEvent(final int paramA, final int paramB,
         setUp();        
         String[] results = new String[events.size()];
         events.copyInto(results);
-        assertEquals(test + " event ordering", expectedEvents, results);
+        assertArrayEquals(test + " event ordering", expectedEvents, results);
     }
 }
 
