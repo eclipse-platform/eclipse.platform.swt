@@ -23,6 +23,7 @@ import org.eclipse.swt.internal.webkit.*;
 import org.eclipse.swt.layout.*;
 import org.eclipse.swt.widgets.*;
 
+@SuppressWarnings({"rawtypes", "unchecked"})
 class WebKit extends WebBrowser {
 	long /*int*/ webView, webViewData, scrolledWindow;
 	int failureCount, lastKeyCode, lastCharCode;

@@ -20,6 +20,7 @@ import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.accessibility.gtk.*;
 import org.eclipse.swt.internal.gtk.*;
 
+@SuppressWarnings({"rawtypes", "unchecked"})
 class AccessibleObject {
 	long /*int*/ handle;
 	int index = -1, id = ACC.CHILDID_SELF;

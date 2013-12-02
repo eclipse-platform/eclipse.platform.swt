@@ -39,6 +39,7 @@ import org.eclipse.swt.internal.gtk.*;
  * 
  * @since 2.0
  */
+@SuppressWarnings({"rawtypes", "unchecked"})
 public class Accessible {
 	Vector accessibleListeners, accessibleControlListeners, accessibleTextListeners, accessibleActionListeners,
 		accessibleEditableTextListeners, accessibleHyperlinkListeners, accessibleTableListeners, accessibleTableCellListeners,

@@ -17,6 +17,7 @@ import org.eclipse.swt.internal.accessibility.gtk.*;
 import org.eclipse.swt.internal.gtk.*;
 import org.eclipse.swt.*;
 
+@SuppressWarnings({"rawtypes", "unchecked"})
 class AccessibleFactory {
 	static final Hashtable Accessibles = new Hashtable (9);
 	static final Hashtable Factories = new Hashtable (9);	

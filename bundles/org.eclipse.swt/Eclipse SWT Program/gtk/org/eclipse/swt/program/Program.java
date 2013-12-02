@@ -30,6 +30,7 @@ import java.util.*;
  * @see <a href="http://www.eclipse.org/swt/snippets/#program">Program snippets</a>
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  */
+@SuppressWarnings({"rawtypes", "unchecked"})
 public final class Program {
 	String name = ""; //$NON-NLS-1$
 	String command;

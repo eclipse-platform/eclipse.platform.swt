@@ -23,6 +23,7 @@ import org.eclipse.swt.internal.gtk.*;
  *
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  */
+@SuppressWarnings({"rawtypes"})
 public abstract class Device implements Drawable {
 	/**
 	 * the handle to the X Display
