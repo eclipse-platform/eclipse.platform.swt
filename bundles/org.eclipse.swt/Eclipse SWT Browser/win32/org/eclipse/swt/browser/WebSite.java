@@ -19,6 +19,7 @@ import org.eclipse.swt.ole.win32.*;
 import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.internal.win32.*;
 
+@SuppressWarnings("rawtypes")
 class WebSite extends OleControlSite {
 	COMObject iDocHostUIHandler;
 	COMObject iDocHostShowUI;

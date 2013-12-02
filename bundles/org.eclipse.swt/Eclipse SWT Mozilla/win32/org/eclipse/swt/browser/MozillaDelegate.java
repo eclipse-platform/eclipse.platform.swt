@@ -19,6 +19,7 @@ import org.eclipse.swt.internal.mozilla.*;
 import org.eclipse.swt.internal.win32.*;
 import org.eclipse.swt.widgets.*;
 
+@SuppressWarnings({"rawtypes", "unchecked"})
 class MozillaDelegate {
 	Browser browser;
 	Vector childWindows = new Vector (9);

@@ -15,7 +15,7 @@ import org.eclipse.swt.*;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.win32.*;
 
-
+@SuppressWarnings({"rawtypes", "unchecked"})
 public class COMObject {
 
 	public long /*int*/ ppVtable;

@@ -25,6 +25,7 @@ import org.eclipse.swt.internal.win32.*;
 import org.eclipse.swt.layout.*;
 import org.eclipse.swt.widgets.*;
 
+@SuppressWarnings("rawtypes")
 class WebFrameLoadDelegate {
 	COMObject iWebFrameLoadDelegate;
 	int refCount = 0;

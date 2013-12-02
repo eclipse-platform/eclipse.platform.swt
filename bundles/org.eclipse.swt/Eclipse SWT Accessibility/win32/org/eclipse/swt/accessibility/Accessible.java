@@ -42,6 +42,7 @@ import org.eclipse.swt.internal.ole.win32.*;
  * 
  * @since 2.0
  */
+@SuppressWarnings({"rawtypes", "unchecked"})
 public class Accessible {
 	static final int MAX_RELATION_TYPES = 15;
 	static final int TABLE_MODEL_CHANGE_SIZE = 5;

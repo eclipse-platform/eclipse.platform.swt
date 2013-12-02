@@ -21,6 +21,7 @@ import org.eclipse.swt.internal.win32.*;
 import org.eclipse.swt.ole.win32.*;
 import org.eclipse.swt.widgets.*;
 
+@SuppressWarnings("rawtypes")
 class IE extends WebBrowser {
 
 	OleFrame frame;

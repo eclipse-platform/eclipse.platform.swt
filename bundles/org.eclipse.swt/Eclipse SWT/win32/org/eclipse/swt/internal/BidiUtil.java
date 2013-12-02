@@ -20,6 +20,7 @@ import org.eclipse.swt.widgets.*;
 /*
  * Wraps Win32 API used to bidi enable the StyledText widget.
  */
+@SuppressWarnings({"rawtypes", "unchecked"})
 public class BidiUtil {
 
 	// Keyboard language ids
