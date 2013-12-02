@@ -28,6 +28,7 @@ import java.util.Vector;
  * @see <a href="http://www.eclipse.org/swt/snippets/#program">Program snippets</a>
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  */
+@SuppressWarnings({"rawtypes", "unchecked"})
 public final class Program {
 	String name, fullPath, identifier;
 

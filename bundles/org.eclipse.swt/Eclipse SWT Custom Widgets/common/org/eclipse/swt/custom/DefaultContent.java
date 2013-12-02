@@ -13,8 +13,10 @@ package org.eclipse.swt.custom;
 import org.eclipse.swt.*;
 import org.eclipse.swt.internal.Compatibility;
 import org.eclipse.swt.widgets.*;
+
 import java.util.Vector;
 
+@SuppressWarnings({"rawtypes", "unchecked"})
 class DefaultContent implements StyledTextContent {
 	private final static String LineDelimiter = System.getProperty("line.separator");
 

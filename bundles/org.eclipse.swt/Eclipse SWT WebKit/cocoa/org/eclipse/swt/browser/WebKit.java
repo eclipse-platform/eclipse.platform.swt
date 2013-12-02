@@ -20,6 +20,7 @@ import org.eclipse.swt.internal.cocoa.*;
 import org.eclipse.swt.layout.*;
 import org.eclipse.swt.widgets.*;
 
+@SuppressWarnings({"rawtypes"})
 class WebKit extends WebBrowser {
 	WebView webView;
 	WebPreferences preferences;

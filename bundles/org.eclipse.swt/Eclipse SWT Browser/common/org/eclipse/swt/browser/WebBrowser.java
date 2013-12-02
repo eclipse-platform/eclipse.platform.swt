@@ -15,6 +15,7 @@ import java.util.*;
 import org.eclipse.swt.*;
 import org.eclipse.swt.widgets.*;
 
+@SuppressWarnings({"rawtypes", "unchecked"})
 abstract class WebBrowser {
 	Browser browser;
 	Hashtable functions = new Hashtable ();

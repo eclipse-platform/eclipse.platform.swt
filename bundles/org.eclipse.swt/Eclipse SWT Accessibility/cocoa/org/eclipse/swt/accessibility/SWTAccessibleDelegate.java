@@ -15,6 +15,7 @@ import org.eclipse.swt.*;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.cocoa.*;
 
+@SuppressWarnings("rawtypes")
 class SWTAccessibleDelegate extends NSObject {
 
 	/**

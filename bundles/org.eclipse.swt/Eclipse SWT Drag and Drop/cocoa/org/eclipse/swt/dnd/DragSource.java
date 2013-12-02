@@ -97,6 +97,7 @@ import org.eclipse.swt.widgets.*;
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  * @noextend This class is not intended to be subclassed by clients.
  */
+@SuppressWarnings({"rawtypes"})
 public class DragSource extends Widget {
 
 	// TODO: These should either move out of Display or be accessible to this class.

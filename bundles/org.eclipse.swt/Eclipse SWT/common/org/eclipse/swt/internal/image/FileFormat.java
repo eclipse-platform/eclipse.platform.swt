@@ -20,6 +20,7 @@ import org.eclipse.swt.graphics.*;
  * in various image file formats.
  *
  */
+@SuppressWarnings({"rawtypes"})
 public abstract class FileFormat {
 	static final String FORMAT_PACKAGE = "org.eclipse.swt.internal.image"; //$NON-NLS-1$
 	static final String FORMAT_SUFFIX = "FileFormat"; //$NON-NLS-1$

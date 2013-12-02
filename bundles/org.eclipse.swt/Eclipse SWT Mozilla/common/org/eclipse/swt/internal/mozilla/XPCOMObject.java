@@ -11,9 +11,11 @@
 package org.eclipse.swt.internal.mozilla;
 
 import java.util.*;
+
 import org.eclipse.swt.*;
 import org.eclipse.swt.internal.*;
 
+@SuppressWarnings({"rawtypes", "unchecked"})
 public class XPCOMObject {
 	static boolean IsSolaris;
 	static {

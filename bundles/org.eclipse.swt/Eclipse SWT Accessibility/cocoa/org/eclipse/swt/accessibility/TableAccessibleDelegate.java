@@ -28,6 +28,7 @@ import org.eclipse.swt.widgets.*;
  * and column objects and a header as its children, and identifies which cell the mouse is
  * over.
  */
+@SuppressWarnings({"rawtypes", "unchecked"})
 class TableAccessibleDelegate {
 
 	Map /*<Integer, AccessibleTableColumn>*/ childColumnToIdMap = new HashMap();

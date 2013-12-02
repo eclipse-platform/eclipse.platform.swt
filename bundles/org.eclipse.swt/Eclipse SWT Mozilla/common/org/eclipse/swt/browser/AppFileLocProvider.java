@@ -15,6 +15,7 @@ import java.util.Vector;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.mozilla.*;
 
+@SuppressWarnings({"rawtypes", "unchecked"})
 class AppFileLocProvider {
 	XPCOMObject supports;
 	XPCOMObject directoryServiceProvider;

@@ -117,6 +117,7 @@ import org.eclipse.swt.internal.cocoa.*;
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  * @noextend This class is not intended to be subclassed by clients.
  */
+@SuppressWarnings({"rawtypes", "unchecked"})
 public class Shell extends Decorations {
 	NSWindow window;
 	SWTWindowDelegate windowDelegate;

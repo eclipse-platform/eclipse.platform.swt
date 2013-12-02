@@ -22,6 +22,7 @@ import org.eclipse.swt.internal.mozilla.*;
 import org.eclipse.swt.internal.mozilla.init.*;
 import org.eclipse.swt.layout.*;
 
+@SuppressWarnings({"rawtypes", "unchecked"})
 class Mozilla extends WebBrowser {
 	long /*int*/ embedHandle;
 	nsIWebBrowser webBrowser;
