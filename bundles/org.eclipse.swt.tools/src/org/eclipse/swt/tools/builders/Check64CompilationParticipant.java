@@ -241,7 +241,6 @@ boolean is64Type(String type) {
 			type.equals("int[]") || type.equals("long[]") || type.equals("float[]") || type.equals("double[]");
 }
 
-@SuppressWarnings("unchecked")
 void createBadOverwrittenMethodProblems(IJavaProject project, String root) throws CoreException {
 	if (sources == null) return;
 	IProject proj = project.getProject();

@@ -298,7 +298,6 @@ public class JavadocBasher {
 				}
 				return false;
 			}
-			@SuppressWarnings("unchecked")
 			@Override
 			public boolean visit(MethodDeclaration node) {
 				int mods = node.getModifiers();
@@ -363,7 +362,6 @@ public class JavadocBasher {
 				}
 				return false;
 			}
-			@SuppressWarnings("unchecked")
 			@Override
 			public boolean visit(MethodDeclaration node) {
 				int mods = node.getModifiers();

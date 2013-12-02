@@ -27,7 +27,7 @@ import org.eclipse.jdt.core.dom.TypeDeclaration;
 import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
 import org.eclipse.swt.tools.internal.ASTType.TypeResolver;
 
-@SuppressWarnings({ "unchecked", "deprecation" })
+@SuppressWarnings("deprecation")
 public class ASTClass extends ASTItem implements JNIClass {
 	String sourcePath;
 	MetaData metaData;
