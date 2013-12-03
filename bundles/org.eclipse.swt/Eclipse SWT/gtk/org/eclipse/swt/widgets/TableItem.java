@@ -1131,6 +1131,7 @@ public void setImage (Image [] images) {
  * 
  * @deprecated this functionality is not supported on most platforms
  */
+@Deprecated
 public void setImageIndent (int indent) {
 	checkWidget ();
 	if (indent < 0) return;

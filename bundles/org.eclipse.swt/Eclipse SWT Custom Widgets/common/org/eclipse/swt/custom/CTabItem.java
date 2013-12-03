@@ -175,6 +175,7 @@ public Control getControl () {
  * 
  * @deprecated the disabled image is not used
  */
+@Deprecated
 public Image getDisabledImage(){
 	checkWidget();
 	return disabledImage;
@@ -319,6 +320,7 @@ public void setControl (Control control) {
  * 
  * @deprecated This image is not used
  */
+@Deprecated
 public void setDisabledImage (Image image) {
 	checkWidget();
 	if (image != null && image.isDisposed ()) {

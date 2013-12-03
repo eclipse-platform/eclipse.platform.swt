@@ -22,6 +22,7 @@ import org.eclipse.swt.widgets.*;
  * 
  * @deprecated As of 3.1 use Tree, TreeItem and TreeColumn
  */
+@Deprecated
 public class TableTreeItem extends Item {
 	TableItem tableItem;
 	TableTree parent;

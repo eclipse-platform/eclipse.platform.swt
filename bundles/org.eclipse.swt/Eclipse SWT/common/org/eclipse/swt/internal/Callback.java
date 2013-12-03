@@ -219,6 +219,7 @@ public static final native synchronized boolean getEnabled ();
  *
  * @param ignore true if callbacks should not be invoked
  */
+@Deprecated
 static final void ignoreCallbacks (boolean ignore) {
 	setEnabled (!ignore);
 } 

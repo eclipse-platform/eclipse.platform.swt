@@ -3496,6 +3496,7 @@ public int getBaseline(int offset) {
  * 
  * @deprecated use BidiSegmentListener instead.
  */
+@Deprecated
 public boolean getBidiColoring() {
 	checkWidget();
 	return bidiColoring;
@@ -8448,6 +8449,7 @@ public void setCaret(Caret caret) {
  * 
  * @deprecated use BidiSegmentListener instead.
  */
+@Deprecated
 public void setBidiColoring(boolean mode) {
 	checkWidget();
 	bidiColoring = mode;

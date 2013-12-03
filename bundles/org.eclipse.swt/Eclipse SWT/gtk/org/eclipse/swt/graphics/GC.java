@@ -4043,6 +4043,7 @@ public void setTransform(Transform transform) {
  * 
  * @deprecated this functionality is not supported on some platforms
  */
+@Deprecated
 public void setXORMode(boolean xor) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	long /*int*/ cairo = data.cairo;

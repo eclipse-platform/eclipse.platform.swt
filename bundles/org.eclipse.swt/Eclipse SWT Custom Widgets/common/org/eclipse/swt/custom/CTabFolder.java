@@ -76,6 +76,7 @@ public class CTabFolder extends Composite {
 	 * 
 	 * @deprecated This field is no longer used.  See setMinimumCharacters(int)
 	 */
+	@Deprecated
 	public int MIN_TAB_WIDTH = 4;
 	
 	/**
@@ -86,6 +87,7 @@ public class CTabFolder extends Composite {
 	 * 
 	 * @deprecated drop shadow border is no longer drawn in 3.0
 	 */
+	@Deprecated
 	public static RGB borderInsideRGB  = new RGB (132, 130, 132);
 	/**
 	 * Color of middle line of drop shadow border.
@@ -95,6 +97,7 @@ public class CTabFolder extends Composite {
 	 * 
 	 * @deprecated drop shadow border is no longer drawn in 3.0
 	 */
+	@Deprecated
 	public static RGB borderMiddleRGB  = new RGB (143, 141, 138);
 	/**
 	 * Color of outermost line of drop shadow border.
@@ -104,6 +107,7 @@ public class CTabFolder extends Composite {
 	 * 
 	 * @deprecated drop shadow border is no longer drawn in 3.0
 	 */
+	@Deprecated
 	public static RGB borderOutsideRGB = new RGB (171, 168, 165); 
 
 	/* sizing, positioning */
@@ -390,6 +394,7 @@ public void addCTabFolder2Listener(CTabFolder2Listener listener) {
  * 
  * @deprecated use addCTabFolder2Listener(CTabFolder2Listener)
  */
+@Deprecated
 public void addCTabFolderListener(CTabFolderListener listener) {
 	checkWidget();
 	if (listener == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
@@ -2201,6 +2206,7 @@ public void removeCTabFolder2Listener(CTabFolder2Listener listener) {
  * 
  * @deprecated see removeCTabFolderCloseListener(CTabFolderListener)
  */
+@Deprecated
 public void removeCTabFolderListener(CTabFolderListener listener) {
 	checkWidget();
 	if (listener == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);

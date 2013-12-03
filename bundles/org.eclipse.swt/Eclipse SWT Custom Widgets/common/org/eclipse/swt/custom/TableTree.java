@@ -39,6 +39,7 @@ import org.eclipse.swt.widgets.*;
  * 
  * @deprecated As of 3.1 use Tree, TreeItem and TreeColumn
  */
+@Deprecated
 public class TableTree extends Composite {
 	Table table;
 	TableTreeItem[] items = EMPTY_ITEMS;

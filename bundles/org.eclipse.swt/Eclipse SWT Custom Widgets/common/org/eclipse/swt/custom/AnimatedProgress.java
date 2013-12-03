@@ -26,6 +26,7 @@ import org.eclipse.swt.events.*;
  *
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  */
+@Deprecated
 public class AnimatedProgress extends Canvas {
 
 	static final int SLEEP = 70;

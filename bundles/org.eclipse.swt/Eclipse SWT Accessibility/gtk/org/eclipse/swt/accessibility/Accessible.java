@@ -93,6 +93,7 @@ public class Accessible {
 	 * @since 3.5
 	 * @deprecated
 	 */
+	@Deprecated
 	protected Accessible() {
 	}
 
