@@ -32,7 +32,7 @@ import org.eclipse.swt.widgets.Event;
  * 
  * @since 3.0
  */
-@SuppressWarnings({"rawtypes", "unchecked"})
+@SuppressWarnings("rawtypes")
 public class SWT_AWT {
 	
 	/**

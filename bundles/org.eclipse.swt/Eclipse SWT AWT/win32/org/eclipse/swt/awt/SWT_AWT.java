@@ -46,7 +46,7 @@ import java.awt.event.FocusEvent;
  * 
  * @since 3.0
  */
-@SuppressWarnings({"rawtypes", "unchecked"})
+@SuppressWarnings("rawtypes")
 public class SWT_AWT {
 
 	/**

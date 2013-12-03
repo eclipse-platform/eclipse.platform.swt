@@ -48,7 +48,7 @@ import java.awt.event.WindowEvent;
  * 
  * @since 3.0
  */
-@SuppressWarnings({"rawtypes", "unchecked"})
+@SuppressWarnings("rawtypes")
 public class SWT_AWT {
 
 	/**
