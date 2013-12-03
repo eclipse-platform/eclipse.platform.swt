@@ -21,6 +21,7 @@ final class JPEGComment extends JPEGVariableSizeSegment {
 		super(byteStream);
 	}
 	
+	@Override
 	public int signature() {
 		return JPEGFileFormat.COM;
 	}

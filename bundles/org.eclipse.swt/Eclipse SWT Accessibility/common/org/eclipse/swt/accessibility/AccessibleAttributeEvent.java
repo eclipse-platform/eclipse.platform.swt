@@ -129,6 +129,7 @@ public AccessibleAttributeEvent(Object source) {
  *
  * @return a string representation of the event
  */
+@Override
 public String toString () {
 	return "AccessibleAttributeEvent {" //$NON-NLS-1$
 		+ " topMargin=" + topMargin   //$NON-NLS-1$

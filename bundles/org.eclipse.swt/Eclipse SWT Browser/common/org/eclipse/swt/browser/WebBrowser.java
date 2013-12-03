@@ -182,6 +182,7 @@ public class EvaluateFunction extends BrowserFunction {
 	public EvaluateFunction (Browser browser, String name) {
 		super (browser, name, true, new String[0], false);
 	}
+	@Override
 	public Object function (Object[] arguments) {
 		if (arguments[0] instanceof String) {
 			String string = (String)arguments[0];

@@ -152,6 +152,7 @@ static int checkStyle (int style) {
 	return checkBits (style, SWT.HORIZONTAL, SWT.VERTICAL, 0, 0, 0, 0);
 }
 
+@Override
 void deregister () {
 	super.deregister ();
 	if (adjustmentHandle != 0) display.removeWidget (adjustmentHandle);
@@ -161,6 +162,7 @@ void destroyHandle () {
 	super.destroyWidget ();
 }
 
+@Override
 void destroyWidget () {
 	parent.destroyScrollBar (this);
 	releaseHandle ();
@@ -465,6 +467,7 @@ public boolean getVisible () {
 	}
 }
 
+@Override
 long /*int*/ gtk_button_press_event (long /*int*/ widget, long /*int*/ eventPtr) {
 	long /*int*/ result = super.gtk_button_press_event (widget, eventPtr);
 	if (result != 0) return result;
@@ -473,6 +476,7 @@ long /*int*/ gtk_button_press_event (long /*int*/ widget, long /*int*/ eventPtr)
 	return result;
 }
 
+@Override
 long /*int*/ gtk_change_value (long /*int*/ widget, long /*int*/ scroll, long /*int*/ value1, long /*int*/ value2) {
 	detail = (int)/*64*/scroll;
 	return 0;
@@ -487,6 +491,7 @@ void gtk_range_get_slider_range (long /*int*/ widget, int [] slider_start, int [
 	}
 }
 
+@Override
 long /*int*/ gtk_value_changed (long /*int*/ adjustment) {
 	Event event = new Event ();
 	dragSent = detail == OS.GTK_SCROLL_JUMP;
@@ -514,6 +519,7 @@ long /*int*/ gtk_value_changed (long /*int*/ adjustment) {
 	return 0;
 }
 
+@Override
 long /*int*/ gtk_event_after (long /*int*/ widget, long /*int*/ gdkEvent) {
 	GdkEvent gtkEvent = new GdkEvent ();
 	OS.memmove (gtkEvent, gdkEvent, GdkEvent.sizeof);
@@ -537,6 +543,7 @@ long /*int*/ gtk_event_after (long /*int*/ widget, long /*int*/ gdkEvent) {
 	return super.gtk_event_after (widget, gdkEvent);
 }
 
+@Override
 void hookEvents () {
 	super.hookEvents ();
 	OS.g_signal_connect_closure (handle, OS.change_value, display.getClosure (CHANGE_VALUE), false);
@@ -584,16 +591,19 @@ public boolean isVisible () {
 	return getVisible () && getParent ().isVisible ();
 }
 
+@Override
 void register () {
 	super.register ();
 	if (adjustmentHandle != 0) display.addWidget (adjustmentHandle, this);
 }
 
+@Override
 void releaseHandle () {
 	super.releaseHandle ();
 	parent = null;
 }
 
+@Override
 void releaseParent () {
 	super.releaseParent ();
 	if (parent.horizontalBar == this) parent.horizontalBar = null;
@@ -727,6 +737,7 @@ public void setMinimum (int value) {
 	OS.g_signal_handlers_unblock_matched (adjustmentHandle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, VALUE_CHANGED);
 }
 
+@Override
 void setOrientation (boolean create) {
 	super.setOrientation (create);
 	if ((parent.style & SWT.MIRRORED) != 0 || !create) {

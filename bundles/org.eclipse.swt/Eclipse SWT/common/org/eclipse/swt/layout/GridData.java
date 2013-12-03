@@ -528,6 +528,7 @@ String getName () {
  *
  * @return a string representation of the GridData object
  */
+@Override
 public String toString () {
 	String hAlign = "";
 	switch (horizontalAlignment) {

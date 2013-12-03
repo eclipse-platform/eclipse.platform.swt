@@ -23,6 +23,7 @@ public ButtonDrawData() {
 }
 
 
+@Override
 void draw(Theme theme, GC gc, Rectangle bounds) {
 	int state = this.state[DrawData.WIDGET_WHOLE];
 
@@ -213,6 +214,7 @@ void draw(Theme theme, GC gc, Rectangle bounds) {
 	}
 }
 
+@Override
 int hit(Theme theme, Point position, Rectangle bounds) {
 	return bounds.contains(position) ? DrawData.WIDGET_WHOLE : DrawData.WIDGET_NOWHERE;
 }

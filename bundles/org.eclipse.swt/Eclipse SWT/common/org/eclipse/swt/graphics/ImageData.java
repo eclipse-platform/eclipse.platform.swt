@@ -551,6 +551,7 @@ static byte[] checkData(byte [] data) {
  *
  * @return a copy of the receiver.
  */
+@Override
 public Object clone() {
 	byte[] cloneData = new byte[data.length];
 	System.arraycopy(data, 0, cloneData, 0, data.length);

@@ -43,6 +43,7 @@ final class LEDataInputStream extends InputStream {
 		else throw new IllegalArgumentException();
 	}
 	
+	@Override
 	public void close() throws IOException {
 		buf = null;
 		if (in != null) {
@@ -61,6 +62,7 @@ final class LEDataInputStream extends InputStream {
 	/**
 	 * Answers how many bytes are available for reading without blocking
 	 */
+	@Override
 	public int available() throws IOException {
 		if (buf == null) throw new IOException();
 		return (buf.length - pos) + in.available();
@@ -69,6 +71,7 @@ final class LEDataInputStream extends InputStream {
 	/**
 	 * Answer the next byte of the input stream.
 	 */
+	@Override
 	public int read() throws IOException {
 		if (buf == null) throw new IOException();
 		if (pos < buf.length) {
@@ -84,6 +87,7 @@ final class LEDataInputStream extends InputStream {
 	 * Don't imitate the JDK behaviour of reading a random number
 	 * of bytes when you can actually read them all.
 	 */
+	@Override
 	public int read(byte b[], int off, int len) throws IOException {
 		int read = 0, count;
 		while (read != len && (count = readData(b, off, len - read)) != -1) {

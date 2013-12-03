@@ -75,10 +75,12 @@ TaskItem (TaskBar parent, int style) {
 	parent.createItem (this, -1);
 }
 
+@Override
 protected void checkSubclass () {
 	if (!isValidSubclass ()) error (SWT.ERROR_INVALID_SUBCLASS);
 }
 
+@Override
 void destroyWidget () {
 	parent.destroyItem (this);
 	releaseHandle ();
@@ -178,11 +180,13 @@ public int getProgressState () {
 	return progressState;
 }
 
+@Override
 void releaseHandle () {
 	super.releaseHandle ();
 	parent = null;
 }
 
+@Override
 void releaseWidget () {
 	super.releaseWidget ();
 	overlayImage = null;

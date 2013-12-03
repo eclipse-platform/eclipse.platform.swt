@@ -86,6 +86,7 @@ public AccessibleTextAttributeEvent(Object source) {
  *
  * @return a string representation of the event
  */
+@Override
 public String toString () {
 	return "AccessibleAttributeEvent {" //$NON-NLS-1$
 		+ " offset=" + offset   //$NON-NLS-1$

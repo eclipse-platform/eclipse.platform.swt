@@ -122,6 +122,7 @@ public Caret getCaret () {
 	return caret;
 }
 
+@Override
 Point getIMCaretPos () {
 	if (caret == null) return super.getIMCaretPos ();
 	return new Point (caret.x, caret.y);
@@ -144,6 +145,7 @@ public IME getIME () {
 	return ime;
 }
 
+@Override
 long /*int*/ gtk_button_press_event (long /*int*/ widget, long /*int*/ event) {
 	if (ime != null) {
 		long /*int*/ result = ime.gtk_button_press_event (widget, event);
@@ -152,6 +154,7 @@ long /*int*/ gtk_button_press_event (long /*int*/ widget, long /*int*/ event) {
 	return  super.gtk_button_press_event (widget, event);
 }
 
+@Override
 long /*int*/ gtk_commit (long /*int*/ imcontext, long /*int*/ text) {
 	if (ime != null) {
 		long /*int*/ result = ime.gtk_commit (imcontext, text);
@@ -160,6 +163,7 @@ long /*int*/ gtk_commit (long /*int*/ imcontext, long /*int*/ text) {
 	return super.gtk_commit (imcontext, text);
 }
 
+@Override
 long /*int*/ gtk_draw (long /*int*/ widget, long /*int*/ cairo) {
 	if ((state & OBSCURED) != 0) return 0;
 	boolean isFocus = caret != null && caret.isFocusCaret ();
@@ -169,6 +173,7 @@ long /*int*/ gtk_draw (long /*int*/ widget, long /*int*/ cairo) {
 	return result;
 }
 
+@Override
 long /*int*/ gtk_expose_event (long /*int*/ widget, long /*int*/ event) {
 	if ((state & OBSCURED) != 0) return 0;
 	boolean isFocus = caret != null && caret.isFocusCaret ();
@@ -178,18 +183,21 @@ long /*int*/ gtk_expose_event (long /*int*/ widget, long /*int*/ event) {
 	return result;
 }
 
+@Override
 long /*int*/ gtk_focus_in_event (long /*int*/ widget, long /*int*/ event) {
 	long /*int*/ result = super.gtk_focus_in_event (widget, event);
 	if (caret != null) caret.setFocus ();
 	return result;
 }
 
+@Override
 long /*int*/ gtk_focus_out_event (long /*int*/ widget, long /*int*/ event) {
 	long /*int*/ result = super.gtk_focus_out_event (widget, event);
 	if (caret != null) caret.killFocus ();
 	return result;
 }
 
+@Override
 long /*int*/ gtk_preedit_changed (long /*int*/ imcontext) {
 	if (ime != null) {
 		long /*int*/ result = ime.gtk_preedit_changed (imcontext);
@@ -198,6 +206,7 @@ long /*int*/ gtk_preedit_changed (long /*int*/ imcontext) {
 	return super.gtk_preedit_changed (imcontext);
 }
 
+@Override
 void redrawWidget (int x, int y, int width, int height, boolean redrawAll, boolean all, boolean trim) {
 	boolean isFocus = caret != null && caret.isFocusCaret ();
 	if (isFocus) caret.killFocus ();
@@ -205,6 +214,7 @@ void redrawWidget (int x, int y, int width, int height, boolean redrawAll, boole
 	if (isFocus) caret.setFocus ();
 }
 
+@Override
 void releaseChildren (boolean destroy) {
 	if (caret != null) {
 		caret.release (false);
@@ -217,6 +227,7 @@ void releaseChildren (boolean destroy) {
 	super.releaseChildren (destroy);
 }
 
+@Override
 void reskinChildren (int flags) {
 	if (caret != null) caret.reskin (flags);
 	if (ime != null)  ime.reskin (flags);
@@ -356,6 +367,7 @@ public void scroll (int destX, int destY, int x, int y, int width, int height, b
 	if (isFocus) caret.setFocus ();
 }
 
+@Override
 int setBounds (int x, int y, int width, int height, boolean move, boolean resize) {
 	boolean isFocus = caret != null && caret.isFocusCaret ();
 	if (isFocus) caret.killFocus ();
@@ -398,6 +410,7 @@ public void setCaret (Caret caret) {
 	}
 }
 
+@Override
 public void setFont (Font font) {
 	checkWidget();
 	if (caret != null) caret.setFont (font);

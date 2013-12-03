@@ -25,10 +25,12 @@ final class JPEGStartOfImage extends JPEGFixedSizeSegment {
 		super(byteStream);
 	}
 	
+	@Override
 	public int signature() {
 		return JPEGFileFormat.SOI;
 	}
 	
+	@Override
 	public int fixedSize() {
 		return 2;
 	}

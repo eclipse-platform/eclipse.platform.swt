@@ -90,6 +90,7 @@ public void setStartOfSpectralSelection(int anInteger) {
 	reference[(2 * getNumberOfImageComponents()) + 5] = (byte)anInteger;
 }
 
+@Override
 public int signature() {
 	return JPEGFileFormat.SOS;
 }

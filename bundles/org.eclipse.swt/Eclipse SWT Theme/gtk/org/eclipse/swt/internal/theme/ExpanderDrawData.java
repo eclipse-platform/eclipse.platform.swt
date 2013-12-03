@@ -22,6 +22,7 @@ public ExpanderDrawData() {
 	state = new int[1];
 }
 
+@Override
 void draw(Theme theme, GC gc, Rectangle bounds) {
 	long /*int*/ treeHandle = theme.treeHandle;
 	long /*int*/ gtkStyle = OS.gtk_widget_get_style (treeHandle);
@@ -44,6 +45,7 @@ void draw(Theme theme, GC gc, Rectangle bounds) {
 	}
 }
 
+@Override
 int hit(Theme theme, Point position, Rectangle bounds) {
 	if (!bounds.contains(position)) return DrawData.WIDGET_NOWHERE;
 	long /*int*/ treeHandle = theme.treeHandle;

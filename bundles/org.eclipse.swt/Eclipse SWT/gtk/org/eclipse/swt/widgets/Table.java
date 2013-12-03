@@ -133,6 +133,7 @@ public Table (Composite parent, int style) {
 	super (parent, checkStyle (style));
 }
 
+@Override
 void _addListener (int eventType, Listener listener) {
 	super._addListener (eventType, listener);
 	if (!ownerDraw) {
@@ -171,6 +172,7 @@ static int checkStyle (int style) {
 	return checkBits (style, SWT.SINGLE, SWT.MULTI, 0, 0, 0, 0);
 }
 
+@Override
 long /*int*/ cellDataProc (long /*int*/ tree_column, long /*int*/ cell, long /*int*/ tree_model, long /*int*/ iter, long /*int*/ data) {
 	if (cell == ignoreCell) return 0;
 	long /*int*/ path = OS.gtk_tree_model_get_path (tree_model, iter);
@@ -273,6 +275,7 @@ boolean checkData (TableItem item) {
 	return true;
 }
 
+@Override
 protected void checkSubclass () {
 	if (!isValidSubclass ()) error (SWT.ERROR_INVALID_SUBCLASS);
 }
@@ -482,6 +485,7 @@ public void clearAll () {
 	}
 }
 
+@Override
 public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget ();
 	if (wHint != SWT.DEFAULT && wHint < 0) wHint = 0;
@@ -590,6 +594,7 @@ void createColumn (TableColumn column, int index) {
 	}
 }
 
+@Override
 void createHandle (int index) {
 	state |= HANDLE;
 	fixedHandle = OS.g_object_new (display.gtk_fixed_get_type (), 0);
@@ -797,6 +802,7 @@ void createRenderers (long /*int*/ columnHandle, int modelIndex, boolean check, 
 	}
 }
 
+@Override
 void createWidget (int index) {
 	super.createWidget (index);
 	items = new TableItem [4];
@@ -812,6 +818,7 @@ GdkColor defaultForeground () {
 	return display.COLOR_LIST_FOREGROUND;
 }
 
+@Override
 void deregister () {
 	super.deregister ();
 	display.removeWidget (OS.gtk_tree_view_get_selection (handle));
@@ -1044,6 +1051,7 @@ void destroyItem (TableItem item) {
 	if (itemCount == 0) resetCustomDraw ();
 }
 
+@Override
 boolean dragDetect (int x, int y, boolean filter, boolean dragOnTimeout, boolean [] consume) {
 	boolean selected = false;
 	if (filter) {
@@ -1063,6 +1071,7 @@ boolean dragDetect (int x, int y, boolean filter, boolean dragOnTimeout, boolean
 	return dragDetect;
 }
 
+@Override
 long /*int*/ eventWindow () {
 	return paintWindow ();
 }
@@ -1082,6 +1091,7 @@ boolean fixAccessibility () {
 	return OS.GTK_VERSION >= OS.VERSION (2, 12, 0);
 }
 
+@Override
 void fixChildren (Shell newShell, Shell oldShell, Decorations newDecorations, Decorations oldDecorations, Menu [] menus) {
 	super.fixChildren (newShell, oldShell, newDecorations, oldDecorations, menus);
 	for (int i=0; i<columnCount; i++) {
@@ -1093,10 +1103,12 @@ void fixChildren (Shell newShell, Shell oldShell, Decorations newDecorations, De
 	}
 }
 
+@Override
 GdkColor getBackgroundColor () {
 	return getBaseColor ();
 }
 
+@Override
 public Rectangle getClientArea () {
 	checkWidget ();
 	forceResize ();
@@ -1115,6 +1127,7 @@ public Rectangle getClientArea () {
 	return new Rectangle (fixedX [0] - binX [0], fixedY [0] - binY [0], width, height);
 }
 
+@Override
 int getClientWidth () {
 	int [] w = new int [1], h = new int [1];
 	OS.gtk_widget_realize (handle);
@@ -1294,6 +1307,7 @@ TableItem getFocusItem () {
 	return item;
 } 
 
+@Override
 GdkColor getForegroundColor () {
 	return getTextColor ();
 }
@@ -1797,6 +1811,7 @@ public int getTopIndex () {
 	return index [0];
 }
 
+@Override
 long /*int*/ gtk_button_press_event (long /*int*/ widget, long /*int*/ event) {
 	GdkEventButton gdkEvent = new GdkEventButton ();
 	OS.memmove (gdkEvent, event, GdkEventButton.sizeof);
@@ -1854,12 +1869,14 @@ long /*int*/ gtk_button_press_event (long /*int*/ widget, long /*int*/ event) {
 	return result;
 }
 
+@Override
 long /*int*/ gtk_button_release_event (long /*int*/ widget, long /*int*/ event) {
 	long /*int*/ window = OS.GDK_EVENT_WINDOW (event);
 	if (window != OS.gtk_tree_view_get_bin_window (handle)) return 0;
 	return super.gtk_button_release_event (widget, event);
 }
 
+@Override
 long /*int*/ gtk_changed (long /*int*/ widget) {
 	TableItem item = getFocusItem ();
 	if (item != null) {
@@ -1870,6 +1887,7 @@ long /*int*/ gtk_changed (long /*int*/ widget) {
 	return 0;
 }
 
+@Override
 long /*int*/ gtk_event_after (long /*int*/ widget, long /*int*/ gdkEvent) {
 	switch (OS.GDK_EVENT_TYPE (gdkEvent)) {
 		case OS.GDK_EXPOSE: {
@@ -1921,24 +1939,28 @@ void drawInheritedBackground (long /*int*/ eventPtr, long /*int*/ cairo) {
 	}
 }
 
+@Override
 long /*int*/ gtk_draw (long /*int*/ widget, long /*int*/ cairo) {
 	if ((state & OBSCURED) != 0) return 0;
 	drawInheritedBackground (0, cairo);
 	return super.gtk_draw (widget, cairo);
 }
 
+@Override
 long /*int*/ gtk_expose_event (long /*int*/ widget, long /*int*/ eventPtr) {
 	if ((state & OBSCURED) != 0) return 0;
 	drawInheritedBackground (eventPtr, 0);
 	return super.gtk_expose_event (widget, eventPtr);
 }
 
+@Override
 long /*int*/ gtk_motion_notify_event (long /*int*/ widget, long /*int*/ event) {
 	long /*int*/ window = OS.GDK_EVENT_WINDOW (event);
 	if (window != OS.gtk_tree_view_get_bin_window (handle)) return 0;
 	return super.gtk_motion_notify_event (widget, event);
 }
 
+@Override
 long /*int*/ gtk_row_activated (long /*int*/ tree, long /*int*/ path, long /*int*/ column) {
 	TableItem item = null;
 	long /*int*/ indices = OS.gtk_tree_path_get_indices (path);
@@ -1953,6 +1975,7 @@ long /*int*/ gtk_row_activated (long /*int*/ tree, long /*int*/ path, long /*int
 	return 0;
 }
 
+@Override
 long /*int*/ gtk_row_deleted (long /*int*/ model, long /*int*/ path) {
 	if (ignoreAccessibility) {
 		OS.g_signal_stop_emission_by_name (model, OS.row_deleted);
@@ -1960,12 +1983,14 @@ long /*int*/ gtk_row_deleted (long /*int*/ model, long /*int*/ path) {
 	return 0;
 }
 
+@Override
 long /*int*/ gtk_row_inserted (long /*int*/ model, long /*int*/ path, long /*int*/ iter) {
 	if (ignoreAccessibility) {
 		OS.g_signal_stop_emission_by_name (model, OS.row_inserted);
 	}
 	return 0;
 }
+@Override
 long /*int*/ gtk_start_interactive_search(long /*int*/ widget) {
 	if (!searchEnabled()) {
 		OS.g_signal_stop_emission_by_name(widget, OS.start_interactive_search); 
@@ -1973,6 +1998,7 @@ long /*int*/ gtk_start_interactive_search(long /*int*/ widget) {
 	}
 	return 0;
 }
+@Override
 long /*int*/ gtk_toggled (long /*int*/ renderer, long /*int*/ pathStr) {
 	long /*int*/ path = OS.gtk_tree_path_new_from_string (pathStr);
 	if (path == 0) return 0;
@@ -1991,6 +2017,7 @@ long /*int*/ gtk_toggled (long /*int*/ renderer, long /*int*/ pathStr) {
 	return 0;
 }
 
+@Override
 void gtk_widget_size_request (long /*int*/ widget, GtkRequisition requisition) {
 	/*
 	 * Bug in GTK.  For some reason, gtk_widget_size_request() fails
@@ -2029,6 +2056,7 @@ void hideFirstColumn () {
 	OS.gtk_tree_view_column_set_visible (firstColumn, false);	
 }
 
+@Override
 void hookEvents () {
 	super.hookEvents ();
 	long /*int*/ selection = OS.gtk_tree_view_get_selection(handle);
@@ -2130,6 +2158,7 @@ public boolean isSelected (int index) {
 	return answer;
 }
 
+@Override
 boolean mnemonicHit (char key) {
 	for (int i=0; i<columnCount; i++) {
 		long /*int*/ labelHandle = columns [i].labelHandle;
@@ -2138,6 +2167,7 @@ boolean mnemonicHit (char key) {
 	return false;
 }
 
+@Override
 boolean mnemonicMatch (char key) {
 	for (int i=0; i<columnCount; i++) {
 		long /*int*/ labelHandle = columns [i].labelHandle;
@@ -2146,6 +2176,7 @@ boolean mnemonicMatch (char key) {
 	return false;
 }
 
+@Override
 long /*int*/ paintWindow () {
 	OS.gtk_widget_realize (handle);
 	return OS.gtk_tree_view_get_bin_window (handle);
@@ -2171,6 +2202,7 @@ void recreateRenderers () {
 	}
 }
 
+@Override
 void redrawBackgroundImage () {
 	Control control = findBackgroundControl ();
 	if (control != null && control.backgroundImage != null) {
@@ -2178,6 +2210,7 @@ void redrawBackgroundImage () {
 	}
 }
 
+@Override
 void register () {
 	super.register ();
 	display.addWidget (OS.gtk_tree_view_get_selection (handle), this);
@@ -2185,6 +2218,7 @@ void register () {
 	display.addWidget (modelHandle, this);
 }
 
+@Override
 void releaseChildren (boolean destroy) {
 	if (items != null) {
 		for (int i=0; i<itemCount; i++) {
@@ -2207,6 +2241,7 @@ void releaseChildren (boolean destroy) {
 	super.releaseChildren (destroy);
 }
 
+@Override
 void releaseWidget () {
 	super.releaseWidget ();
 	if (modelHandle != 0) OS.g_object_unref (modelHandle);
@@ -2498,6 +2533,7 @@ void sendMeasureEvent (long /*int*/ cell, long /*int*/ width, long /*int*/ heigh
 	}
 }
 
+@Override
 long /*int*/ rendererGetPreferredWidthProc (long /*int*/ cell, long /*int*/ handle, long /*int*/ minimun_size, long /*int*/ natural_size) {
 	long /*int*/ g_class = OS.g_type_class_peek_parent (OS.G_OBJECT_GET_CLASS (cell));
 	GtkCellRendererClass klass = new GtkCellRendererClass ();
@@ -2507,6 +2543,7 @@ long /*int*/ rendererGetPreferredWidthProc (long /*int*/ cell, long /*int*/ hand
 	return 0;
 }
 
+@Override
 long /*int*/ rendererGetSizeProc (long /*int*/ cell, long /*int*/ widget, long /*int*/ cell_area, long /*int*/ x_offset, long /*int*/ y_offset, long /*int*/ width, long /*int*/ height) {
 	long /*int*/ g_class = OS.g_type_class_peek_parent (OS.G_OBJECT_GET_CLASS (cell));
 	GtkCellRendererClass klass = new GtkCellRendererClass ();
@@ -2517,11 +2554,13 @@ long /*int*/ rendererGetSizeProc (long /*int*/ cell, long /*int*/ widget, long /
 }
 
 
+@Override
 long /*int*/ rendererRenderProc (long /*int*/ cell, long /*int*/ cr, long /*int*/ widget, long /*int*/ background_area, long /*int*/ cell_area, long /*int*/ flags) {
 	rendererRender (cell, cr, 0, widget, background_area, cell_area, 0, flags);
 	return 0;
 }
 
+@Override
 long /*int*/ rendererRenderProc (long /*int*/ cell, long /*int*/ window, long /*int*/ widget, long /*int*/ background_area, long /*int*/ cell_area, long /*int*/ expose_area, long /*int*/ flags) {
 	rendererRender (cell, 0, window, widget, background_area, cell_area, expose_area, flags);
 	return 0;
@@ -2754,6 +2793,7 @@ void resetCustomDraw () {
 	firstCustomDraw = false;
 }
 
+@Override
 void reskinChildren (int flags) {
 	if (items != null) {
 		for (int i=0; i<itemCount; i++) {
@@ -2929,6 +2969,7 @@ void selectFocusIndex (int index) {
 	OS.gtk_tree_path_free (path);
 }
 
+@Override
 void setBackgroundColor (GdkColor color) {
 	super.setBackgroundColor (color);
 	if (!OS.GTK3) {
@@ -2936,11 +2977,13 @@ void setBackgroundColor (GdkColor color) {
 	}
 }
 
+@Override
 void setBackgroundPixmap (Image image) {
 	ownerDraw = true;
 	recreateRenderers ();
 }
 
+@Override
 int setBounds (int x, int y, int width, int height, boolean move, boolean resize) {
 	int result = super.setBounds (x, y, width, height, move, resize);
 	/*
@@ -3001,6 +3044,7 @@ public void setColumnOrder (int [] order) {
 	}
 }
 
+@Override
 void setFontDescription (long /*int*/ font) {
 	super.setFontDescription (font);
 	TableColumn[] columns = getColumns ();
@@ -3011,6 +3055,7 @@ void setFontDescription (long /*int*/ font) {
 	}
 }
 
+@Override
 void setForegroundColor (GdkColor color) {
 	setForegroundColor (handle, color, false);
 }
@@ -3118,6 +3163,7 @@ void setModel (long /*int*/ newModel) {
 	}
 }
 
+@Override
 void setOrientation (boolean create) {
 	super.setOrientation (create);
 	for (int i=0; i<itemCount; i++) {
@@ -3128,16 +3174,19 @@ void setOrientation (boolean create) {
 	}
 }
 
+@Override
 void setParentBackground () {
 	ownerDraw = true;
 	recreateRenderers ();
 }
 
+@Override
 void setParentWindow (long /*int*/ widget) {
 	long /*int*/ window = eventWindow ();
 	OS.gtk_widget_set_parent_window (widget, window);
 }
 
+@Override
 public void setRedraw (boolean redraw) {
 	checkWidget();
 	super.setRedraw (redraw);
@@ -3558,6 +3607,7 @@ public void showSelection () {
 	showItem (item.handle);
 }
 
+@Override
 void updateScrollBarValue (ScrollBar bar) {
 	super.updateScrollBarValue (bar);
 	/*
@@ -3579,6 +3629,7 @@ void updateScrollBarValue (ScrollBar bar) {
 	OS.g_list_free (list);
 }
 
+@Override
 long /*int*/ windowProc (long /*int*/ handle, long /*int*/ arg0, long /*int*/ user_data) {
 	switch ((int)/*64*/user_data) {
 		case EXPOSE_EVENT_INVERSE: {

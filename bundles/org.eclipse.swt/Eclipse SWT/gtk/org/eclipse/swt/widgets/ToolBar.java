@@ -122,10 +122,12 @@ static int checkStyle (int style) {
 	return style & ~(SWT.H_SCROLL | SWT.V_SCROLL);
 }
 
+@Override
 protected void checkSubclass () {
 	if (!isValidSubclass ()) error (SWT.ERROR_INVALID_SUBCLASS);
 }
 
+@Override
 void createHandle (int index) {
 	state |= HANDLE | THEME_BACKGROUND;
 	fixedHandle = OS.g_object_new (display.gtk_fixed_get_type (), 0);
@@ -163,6 +165,7 @@ void createHandle (int index) {
 	OS.gtk_toolbar_set_icon_size (handle, OS.GTK3 ? OS.GTK_ICON_SIZE_SMALL_TOOLBAR : OS.GTK_ICON_SIZE_LARGE_TOOLBAR);
 }
 
+@Override
 public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget ();
 	if (wHint != SWT.DEFAULT && wHint < 0) wHint = 0;
@@ -179,6 +182,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	return size;
 }
 
+@Override
 Widget computeTabGroup () {
 	ToolItem [] items = _getItems ();
 	if (tabItemList == null) {
@@ -196,6 +200,7 @@ Widget computeTabGroup () {
 	return super.computeTabGroup ();
 }
 
+@Override
 Widget [] computeTabList () {
 	ToolItem [] items = _getItems ();
 	if (tabItemList == null) {
@@ -220,14 +225,17 @@ Widget [] computeTabList () {
 	return result;
 }
 
+@Override
 long /*int*/ eventHandle () {
 	return fixedHandle;
 }
 
+@Override
 long /*int*/ enterExitHandle() {
 	return handle;
 }
 
+@Override
 void fixChildren (Shell newShell, Shell oldShell, Decorations newDecorations, Decorations oldDecorations, Menu [] menus) {
 	super.fixChildren (newShell, oldShell, newDecorations, oldDecorations, menus);
 	ToolItem [] items = getItems ();
@@ -242,6 +250,7 @@ void fixChildren (Shell newShell, Shell oldShell, Decorations newDecorations, De
 	}
 }
 
+@Override
 boolean forceFocus (long /*int*/ focusHandle) {
 	int dir = OS.GTK_DIR_TAB_FORWARD;
 	if ((style & SWT.MIRRORED) != 0) dir = OS.GTK_DIR_TAB_BACKWARD;
@@ -399,16 +408,19 @@ ToolItem [] _getTabItemList () {
 	return tabItemList;
 }
 
+@Override
 long /*int*/ gtk_key_press_event (long /*int*/ widget, long /*int*/ eventPtr) {
 	if (!hasFocus ()) return 0;
 	long /*int*/ result = super.gtk_key_press_event (widget, eventPtr);
 	return result;
 }
 
+@Override
 long /*int*/ gtk_focus (long /*int*/ widget, long /*int*/ directionType) {
 	return 0;
 }
 
+@Override
 boolean hasFocus () {
 	if (hasChildFocus) return true;
 	return super.hasFocus();
@@ -480,6 +492,7 @@ long /*int*/ menuItemSelected (long /*int*/ widget, ToolItem item) {
 	return 0;
 }
 
+@Override
 boolean mnemonicHit (char key) {
 	ToolItem [] items = getItems ();
 	for (int i=0; i<items.length; i++) {
@@ -489,6 +502,7 @@ boolean mnemonicHit (char key) {
 	return false;
 }
 
+@Override
 boolean mnemonicMatch (char key) {
 	ToolItem [] items = getItems ();
 	for (int i=0; i<items.length; i++) {
@@ -524,6 +538,7 @@ void relayout () {
 	OS.gtk_toolbar_set_style (handle, type);
 }
 
+@Override
 void releaseChildren (boolean destroy) {
 	ToolItem [] items = getItems ();
 	for (int i=0; i<items.length; i++) {
@@ -535,12 +550,14 @@ void releaseChildren (boolean destroy) {
 	super.releaseChildren (destroy);
 }
 
+@Override
 void releaseWidget () {
 	super.releaseWidget ();
 	if (imageList != null) imageList.dispose ();
 	imageList = null;
 }
 
+@Override
 void removeControl (Control control) {
 	super.removeControl (control);
 	ToolItem [] items = getItems ();
@@ -550,6 +567,7 @@ void removeControl (Control control) {
 	}
 }
 
+@Override
 void reskinChildren (int flags) {
 	ToolItem[] items = _getItems();
 	if (items != null) {
@@ -561,6 +579,7 @@ void reskinChildren (int flags) {
 	super.reskinChildren (flags);
 }
 
+@Override
 int setBounds (int x, int y, int width, int height, boolean move, boolean resize) {
 	OS.gtk_toolbar_set_show_arrow (handle, false);
 	int result = super.setBounds (x, y, width, height, move, resize);
@@ -569,6 +588,7 @@ int setBounds (int x, int y, int width, int height, boolean move, boolean resize
 	return result;
 }
 
+@Override
 void setFontDescription (long /*int*/ font) {
 	super.setFontDescription (font);
 	ToolItem [] items = getItems ();
@@ -578,6 +598,7 @@ void setFontDescription (long /*int*/ font) {
 	relayout ();
 }
 
+@Override
 void setForegroundColor (GdkColor color) {
 	super.setForegroundColor (color);
 	ToolItem [] items = getItems ();
@@ -586,6 +607,7 @@ void setForegroundColor (GdkColor color) {
 	}
 }
 
+@Override
 void setOrientation (boolean create) {
 	super.setOrientation (create);
 	ToolItem [] items = _getItems ();
@@ -610,6 +632,7 @@ void setOrientation (boolean create) {
 	this.tabItemList = tabList;
 }
 
+@Override
 public void setToolTipText (String string) {
 	checkWidget();
 	super.setToolTipText (string);

@@ -236,11 +236,13 @@ public TreeCursor(Tree parent, int style) {
 	}
 	
 	getAccessible().addAccessibleControlListener(new AccessibleControlAdapter() {
+		@Override
 		public void getRole(AccessibleControlEvent e) {
 			e.detail = ACC.ROLE_TABLECELL;
 		}
 	});
 	getAccessible().addAccessibleListener(new AccessibleAdapter() {
+		@Override
 		public void getName(AccessibleEvent e) {
 			if (row == null) return;
 			int columnIndex = column == null ? 0 : tree.indexOf(column);
@@ -375,6 +377,7 @@ TreeItem findItem(TreeItem[] items, Point pt) {
  *
  * @return the receiver's background color
  */
+@Override
 public Color getBackground() {
 	checkWidget();
 	if (background == null) {
@@ -403,6 +406,7 @@ public int getColumn() {
  *
  * @return the receiver's foreground color
  */
+@Override
 public Color getForeground() {
 	checkWidget();
 	if (foreground == null) {
@@ -741,6 +745,7 @@ void _resize() {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  */
+@Override
 public void setBackground (Color color) {
 	background = color;
 	super.setBackground(getBackground());
@@ -763,6 +768,7 @@ public void setBackground (Color color) {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  */
+@Override
 public void setForeground (Color color) {
 	foreground = color;
 	super.setForeground(getForeground());
@@ -857,6 +863,7 @@ public void setSelection(TreeItem row, int column) {
 	setRowColumn(row, col, false);
 }
 
+@Override
 public void setVisible(boolean visible) {
 	checkWidget();
 	if (visible) {

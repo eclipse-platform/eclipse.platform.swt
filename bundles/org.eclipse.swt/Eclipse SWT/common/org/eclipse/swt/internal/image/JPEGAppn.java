@@ -21,6 +21,7 @@ final class JPEGAppn extends JPEGVariableSizeSegment {
 		super(byteStream);
 	}
 	
+	@Override
 	public boolean verify() {
 		int marker = getSegmentMarker();
 		return marker >= JPEGFileFormat.APP0 && marker <= JPEGFileFormat.APP15;

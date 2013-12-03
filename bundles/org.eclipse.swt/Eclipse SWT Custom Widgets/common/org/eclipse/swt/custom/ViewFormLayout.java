@@ -21,6 +21,7 @@ import org.eclipse.swt.widgets.*;
  */
 class ViewFormLayout extends Layout {
 
+@Override
 protected Point computeSize(Composite composite, int wHint, int hHint, boolean flushCache) {
 	ViewForm form = (ViewForm)composite;
 	Control left = form.topLeft;
@@ -97,12 +98,14 @@ int computeTrim(Control c) {
 	return c.getBorderWidth () * 2;
 }
 
+@Override
 protected boolean flushCache(Control control) {
 	Object data = control.getLayoutData();
 	if (data != null && data instanceof CLayoutData) ((CLayoutData)data).flushCache();
 	return true;
 }
 
+@Override
 protected void layout(Composite composite, boolean flushCache) {
 	ViewForm form = (ViewForm)composite;
 	Control left = form.topLeft;

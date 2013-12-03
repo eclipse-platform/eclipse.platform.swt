@@ -24,6 +24,7 @@ public ComboDrawData() {
 	state = new int[2];
 }
 
+@Override
 void draw(Theme theme, GC gc, Rectangle bounds) {
 	long /*int*/ buttonHandle = theme.buttonHandle;
 	long /*int*/ gtkStyle = OS.gtk_widget_get_style(buttonHandle);
@@ -88,6 +89,7 @@ void draw(Theme theme, GC gc, Rectangle bounds) {
 	}	
 }
 
+@Override
 int getStateType(int part) {
 	if (part == DrawData.WIDGET_WHOLE) {
 		int state_type = OS.GTK_STATE_NORMAL;
@@ -99,6 +101,7 @@ int getStateType(int part) {
 	return super.getStateType(part);
 }
 
+@Override
 int hit(Theme theme, Point position, Rectangle bounds) {
 	if (!bounds.contains(position)) return DrawData.WIDGET_NOWHERE;
 	long /*int*/ buttonHandle = theme.buttonHandle;

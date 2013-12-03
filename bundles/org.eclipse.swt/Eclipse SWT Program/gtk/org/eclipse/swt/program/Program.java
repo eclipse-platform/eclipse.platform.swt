@@ -1018,6 +1018,7 @@ static boolean launch (Display display, String fileName, String workingDir) {
  *
  * @see #hashCode()
  */
+@Override
 public boolean equals(Object other) {
 	if (this == other) return true;
 	if (!(other instanceof Program)) return false;
@@ -1087,6 +1088,7 @@ public String getName() {
  *
  * @see #equals(Object)
  */
+@Override
 public int hashCode() {
 	return name.hashCode() ^ command.hashCode() ^ display.hashCode();
 }
@@ -1097,6 +1099,7 @@ public int hashCode() {
  *
  * @return a string representation of the program
  */
+@Override
 public String toString() {
 	return "Program {" + name + "}";
 }

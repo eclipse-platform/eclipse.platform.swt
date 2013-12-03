@@ -80,6 +80,7 @@ public GlyphMetrics(int ascent, int descent, int width) {
  *
  * @see #hashCode()
  */
+@Override
 public boolean equals (Object object) {
 	if (object == this) return true;
 	if (!(object instanceof GlyphMetrics)) return false;
@@ -97,6 +98,7 @@ public boolean equals (Object object) {
  *
  * @see #equals(Object)
  */
+@Override
 public int hashCode () {
 	return ascent ^ descent ^ width;
 }
@@ -107,6 +109,7 @@ public int hashCode () {
  *
  * @return a string representation of the <code>GlyphMetrics</code>
  */
+@Override
 public String toString () {
 	return "GlyphMetrics {" + ascent + ", " + descent + ", " + width + "}"; //$NON-NLS-1$//$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
 }

@@ -186,10 +186,12 @@ static int checkStyle (int style) {
 	return checkBits (style, SWT.LEFT, SWT.CENTER, SWT.RIGHT, 0, 0, 0);
 }
 
+@Override
 protected void checkSubclass () {
 	if (!isValidSubclass ()) error (SWT.ERROR_INVALID_SUBCLASS);
 }
 
+@Override
 void createWidget (int index) {
 	parent.createItem (this, index);
 	setOrientation (true);
@@ -198,6 +200,7 @@ void createWidget (int index) {
 	text = "";
 }
 
+@Override
 void deregister() {
 	super.deregister ();
 	display.removeWidget (handle);
@@ -205,6 +208,7 @@ void deregister() {
 	if (labelHandle != 0) display.removeWidget (labelHandle);
 }
 
+@Override
 void destroyWidget () {
 	parent.destroyItem (this);
 	releaseHandle ();
@@ -324,6 +328,7 @@ public int getWidth () {
 	return OS.gtk_tree_view_column_get_width (handle);
 }
 
+@Override
 long /*int*/ gtk_clicked (long /*int*/ widget) {
 	/*
 	* There is no API to get a double click on a table column.  Normally, when
@@ -356,6 +361,7 @@ long /*int*/ gtk_clicked (long /*int*/ widget) {
 	return 0;
 }
 
+@Override
 long /*int*/ gtk_event_after (long /*int*/ widget, long /*int*/ gdkEvent) {
 	GdkEvent event = new GdkEvent ();
 	OS.memmove (event, gdkEvent, GdkEvent.sizeof);
@@ -372,10 +378,12 @@ long /*int*/ gtk_event_after (long /*int*/ widget, long /*int*/ gdkEvent) {
 	return 0;
 }
 
+@Override
 long /*int*/ gtk_mnemonic_activate (long /*int*/ widget, long /*int*/ arg1) {
 	return parent.gtk_mnemonic_activate (widget, arg1);
 }
 
+@Override
 long /*int*/ gtk_size_allocate (long /*int*/ widget, long /*int*/ allocation) {
 	useFixedWidth = false;
 	GtkAllocation widgetAllocation = new GtkAllocation ();
@@ -393,6 +401,7 @@ long /*int*/ gtk_size_allocate (long /*int*/ widget, long /*int*/ allocation) {
 	return 0;
 }
 
+@Override
 void hookEvents () {
 	super.hookEvents ();
 	OS.g_signal_connect_closure (handle, OS.clicked, display.getClosure (CLICKED), false);
@@ -441,6 +450,7 @@ public void pack () {
 	setWidth(width);
 }
 
+@Override
 void register () {
 	super.register ();
 	display.addWidget (handle, this);
@@ -448,6 +458,7 @@ void register () {
 	if (labelHandle != 0) display.addWidget (labelHandle, this);
 }
 
+@Override
 void releaseHandle () {
 	super.releaseHandle ();
 	handle = buttonHandle = labelHandle = imageHandle = 0;
@@ -455,6 +466,7 @@ void releaseHandle () {
 	parent = null;
 }
 
+@Override
 void releaseParent () {
 	super.releaseParent ();
 	if (parent.sortColumn == this) {
@@ -542,6 +554,7 @@ void setFontDescription (long /*int*/ font) {
 	setFontDescription (imageHandle, font);
 }
 
+@Override
 public void setImage (Image image) {
 	checkWidget ();
 	super.setImage (image);
@@ -606,6 +619,7 @@ public void setMoveable (boolean moveable) {
 	OS.gtk_tree_view_column_set_reorderable (handle, moveable);
 }
 
+@Override
 void setOrientation (boolean create) {
 	if ((parent.style & SWT.RIGHT_TO_LEFT) != 0 || !create) {
 		if (buttonHandle != 0) {
@@ -616,6 +630,7 @@ void setOrientation (boolean create) {
 	}
 }
 
+@Override
 public void setText (String string) {
 	checkWidget();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);

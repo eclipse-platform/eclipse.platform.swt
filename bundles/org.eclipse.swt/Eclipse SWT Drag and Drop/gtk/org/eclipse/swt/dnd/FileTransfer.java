@@ -63,6 +63,7 @@ public static FileTransfer getInstance () {
  * 
  * @see Transfer#nativeToJava
  */
+@Override
 public void javaToNative(Object object, TransferData transferData) {
 	transferData.result = 0;
 	if (!checkFile(object) || !isSupportedType(transferData)) {
@@ -130,6 +131,7 @@ public void javaToNative(Object object, TransferData transferData) {
  * 
  * @see Transfer#javaToNative
  */
+@Override
 public Object nativeToJava(TransferData transferData) {
 	if ( !isSupportedType(transferData) ||  transferData.pValue == 0 ||  transferData.length <= 0 ) return null;
 	int length = transferData.length;
@@ -196,10 +198,12 @@ public Object nativeToJava(TransferData transferData) {
 	return fileNames;
 }
 
+@Override
 protected int[] getTypeIds(){
 	return new int[]{URI_LIST_ID, GNOME_LIST_ID};
 }
 
+@Override
 protected String[] getTypeNames(){
 	return new String[]{URI_LIST, GNOME_LIST};
 }
@@ -213,6 +217,7 @@ boolean checkFile(Object object) {
 	return true;
 }
 
+@Override
 protected boolean validate(Object object) {
 	return checkFile(object);
 }

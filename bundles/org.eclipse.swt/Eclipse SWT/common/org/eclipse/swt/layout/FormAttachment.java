@@ -308,6 +308,7 @@ int solveY (int value) {
  *
  * @return a string representation of the FormAttachment
  */
+@Override
 public String toString () {
  	String string = control != null ? control.toString () : numerator + "/" + denominator;
 	return "{y = (" + string + (offset >= 0 ? ")x + " + offset: ")x - " + (-offset))+"}";

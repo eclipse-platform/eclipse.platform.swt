@@ -657,6 +657,7 @@ void disposeLayout() {
 	data.layout = data.context = 0;
 }
 
+@Override
 void destroy() {
 	if (data.disposeCairo) {
 		long /*int*/ cairo = data.cairo;
@@ -1791,6 +1792,7 @@ public void drawText (String string, int x, int y, int flags) {
  *
  * @see #hashCode
  */
+@Override
 public boolean equals(Object object) {
 	if (object == this) return true;
 	if (!(object instanceof GC)) return false;
@@ -2888,6 +2890,7 @@ public boolean getXORMode() {
  *
  * @see #equals
  */
+@Override
 public int hashCode() {
 	return (int)/*64*/handle;
 }
@@ -3024,6 +3027,7 @@ public boolean isClipped() {
  *
  * @return <code>true</code> when the GC is disposed and <code>false</code> otherwise
  */
+@Override
 public boolean isDisposed() {
 	return handle == 0;
 }
@@ -4147,6 +4151,7 @@ public Point textExtent(String string, int flags) {
  *
  * @return a string representation of the receiver
  */
+@Override
 public String toString () {
 	if (isDisposed()) return "GC {*DISPOSED*}";
 	return "GC {" + handle + "}";

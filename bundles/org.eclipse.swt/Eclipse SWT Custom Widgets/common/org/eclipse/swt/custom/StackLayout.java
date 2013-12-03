@@ -89,6 +89,7 @@ public class StackLayout extends Layout {
  	 */
  	public Control topControl;
 
+@Override
 protected Point computeSize(Composite composite, int wHint, int hHint, boolean flushCache) {
 	Control children[] = composite.getChildren();
 	int maxWidth = 0;
@@ -105,10 +106,12 @@ protected Point computeSize(Composite composite, int wHint, int hHint, boolean f
 	return new Point(width, height);
 }
 
+@Override
 protected boolean flushCache(Control control) {
 	return true;
 }
 
+@Override
 protected void layout(Composite composite, boolean flushCache) {
 	Control children[] = composite.getChildren();
 	Rectangle rect = composite.getClientArea();
@@ -135,6 +138,7 @@ String getName () {
  *
  * @return a string representation of the layout
  */
+@Override
 public String toString () {
  	String string = getName ()+" {";
  	if (marginWidth != 0) string += "marginWidth="+marginWidth+" ";

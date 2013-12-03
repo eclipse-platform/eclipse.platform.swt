@@ -47,6 +47,7 @@ void assertImageDataAtEnd() throws IOException {
 	lzBlockReader.assertCompressedDataAtEnd();
 }
 
+@Override
 public void close() throws IOException {
 	assertImageDataAtEnd();
 	checkAdler();
@@ -83,12 +84,14 @@ void updateAdler(byte value) {
 	adlerValue = (high << 16) | low;
 }
 
+@Override
 public int read() throws IOException {
 	byte nextDecodedByte = lzBlockReader.getNextByte();
 	updateAdler(nextDecodedByte);
 	return nextDecodedByte & 0xFF;
 }
 
+@Override
 public int read(byte[] buffer, int off, int len) throws IOException {
 	for (int i = 0; i < len; i++) {
 		int b = read();

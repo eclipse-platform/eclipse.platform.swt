@@ -116,10 +116,12 @@ public ExpandItem (ExpandBar parent, int style, int index) {
 	createWidget (index);
 }
 
+@Override
 protected void checkSubclass () {
 	if (!isValidSubclass ()) error (SWT.ERROR_INVALID_SUBCLASS);
 }
 
+@Override
 void createHandle (int index) {
 	state |= HANDLE;
 	handle = OS.gtk_expander_new (null);
@@ -139,12 +141,14 @@ void createHandle (int index) {
 	gtk_widget_set_can_focus (handle, true);
 }
 
+@Override
 void createWidget (int index) {
 	super.createWidget (index);
 	showWidget (index);
 	parent.createItem (this, style, index);
 }
 
+@Override
 void deregister() {
 	super.deregister();
 	display.removeWidget (clientHandle);
@@ -153,6 +157,7 @@ void deregister() {
 	display.removeWidget (imageHandle);
 }
 
+@Override
 void destroyWidget () {
 	parent.destroyItem (this);
 	super.destroyWidget ();
@@ -311,6 +316,7 @@ int getPreferredWidth (GC gc) {
 	return width;
 }
 
+@Override
 long /*int*/ gtk_activate (long /*int*/ widget) {
 	Event event = new Event ();
 	event.item = this;
@@ -319,22 +325,26 @@ long /*int*/ gtk_activate (long /*int*/ widget) {
 	return 0;
 }
 
+@Override
 long /*int*/ gtk_button_press_event (long /*int*/ widget, long /*int*/ event) {
 	setFocus ();
 	return 0;
 }
 
+@Override
 long /*int*/ gtk_focus_out_event (long /*int*/ widget, long /*int*/ event) {
 	gtk_widget_set_can_focus (handle, false);
 	parent.lastFocus = this;
 	return 0;
 }
 
+@Override
 long /*int*/ gtk_size_allocate (long /*int*/ widget, long /*int*/ allocation) {
 	parent.layoutItems (0, false);
 	return 0;
 }
 
+@Override
 long /*int*/ gtk_enter_notify_event (long /*int*/ widget, long /*int*/ event) {
 	parent.gtk_enter_notify_event(widget, event);
 	return 0;
@@ -344,6 +354,7 @@ boolean hasFocus () {
 	return gtk_widget_has_focus (handle);
 }
 
+@Override
 void hookEvents () {
 	super.hookEvents ();
 	OS.g_signal_connect_closure (handle, OS.activate, display.getClosure (ACTIVATE), false);
@@ -357,6 +368,7 @@ void hookEvents () {
 void redraw () {
 }
 
+@Override
 void register () {
 	super.register ();
 	display.addWidget (clientHandle, this);
@@ -365,12 +377,14 @@ void register () {
 	display.addWidget (imageHandle, this);
 }
 
+@Override
 void releaseHandle () {
 	super.releaseHandle ();
 	clientHandle = boxHandle = labelHandle = imageHandle = 0;
 	parent = null;
 }
 
+@Override
 void releaseWidget () {
 	super.releaseWidget ();
 	if (imageList != null) imageList.dispose ();
@@ -526,6 +540,7 @@ public void setHeight (int height) {
 	parent.layoutItems (0, false);
 }
 
+@Override
 public void setImage (Image image) {
 	super.setImage (image);
 	if (imageList != null) imageList.dispose ();
@@ -545,6 +560,7 @@ public void setImage (Image image) {
 	}
 }
 
+@Override
 void setOrientation (boolean create) {
 	super.setOrientation (create);
 	if ((parent.style & SWT.RIGHT_TO_LEFT) != 0 || !create) {
@@ -554,6 +570,7 @@ void setOrientation (boolean create) {
 	}
 }
 	
+@Override
 public void setText (String string) {
 	super.setText (string);
 	byte [] buffer = Converter.wcsToMbcs (null, string, true);
@@ -569,6 +586,7 @@ void showWidget (int index) {
 	if (labelHandle != 0) OS.gtk_widget_show (labelHandle);
 }
 
+@Override
 long /*int*/ windowProc (long /*int*/ handle, long /*int*/ user_data) {
 	switch ((int)/*64*/user_data) {
 		case ACTIVATE_INVERSE: {

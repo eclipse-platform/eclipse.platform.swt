@@ -406,6 +406,7 @@ int decompressRLE8Data(byte[] src, int numBytes, int stride, byte[] dest, int de
 	}
 	return 1;
 }
+@Override
 boolean isFileFormat(LEDataInputStream stream) {
 	try {
 		byte[] header = new byte[18];
@@ -483,6 +484,7 @@ int[] loadFileHeader() {
 		SWT.error(SWT.ERROR_INVALID_IMAGE);
 	return header;
 }
+@Override
 ImageData[] loadFromByteStream() {
 	int[] fileHeader = loadFileHeader();
 	byte[] infoHeader = new byte[BMPHeaderFixedSize];
@@ -690,6 +692,7 @@ int unloadDataNoCompression(ImageData image, byte[] data, OutputStream out) {
  * Unload a DeviceIndependentImage using Windows .BMP format into the given
  * byte stream.
  */
+@Override
 void unloadIntoByteStream(ImageLoader loader) {
 	ImageData image = loader.data[0];
 	byte[] rgbs;

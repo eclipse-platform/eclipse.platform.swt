@@ -25,6 +25,7 @@ PngIendChunk(byte[] reference){
 	super(reference);
 }
 
+@Override
 int getChunkType() {
 	return CHUNK_IEND;
 }
@@ -32,6 +33,7 @@ int getChunkType() {
 /**
  * Answer whether the chunk is a valid IEND chunk.
  */
+@Override
 void validate(PngFileReadState readState, PngIhdrChunk headerChunk) {
 	// An IEND chunk is invalid if no IHDR has been read.
 	// Or if a palette is required and has not been read.

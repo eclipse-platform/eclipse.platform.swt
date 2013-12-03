@@ -79,6 +79,7 @@ static int checkStyle (int style) {
 	return checkBits (style, SWT.HORIZONTAL, SWT.VERTICAL, 0, 0, 0, 0);
 }
 
+@Override
 void createHandle (int index) {
 	state |= HANDLE;
 	fixedHandle = OS.g_object_new (display.gtk_fixed_get_type (), 0);
@@ -94,6 +95,7 @@ void createHandle (int index) {
 	}
 }
 
+@Override
 long /*int*/ eventHandle () {
 	return OS.GTK3 ? fixedHandle : super.eventHandle ();
 }
@@ -165,6 +167,7 @@ public int getState () {
 	return SWT.NORMAL;
 }
 
+@Override
 long /*int*/ gtk_realize (long /*int*/ widget) {
 	long /*int*/ result = super.gtk_realize (widget);
 	if (result != 0) return result;
@@ -178,12 +181,14 @@ long /*int*/ gtk_realize (long /*int*/ widget) {
 	return 0;
 }
 
+@Override
 void releaseWidget () {
 	super.releaseWidget ();
 	if (timerId != 0) OS.g_source_remove (timerId);
 	timerId = 0;
 }
 
+@Override
 void setParentBackground () {
 	/*
 	* Bug in GTK.  For some reason, some theme managers will crash
@@ -279,6 +284,7 @@ public void setState (int state) {
 	//NOT IMPLEMENTED
 }
 
+@Override
 long /*int*/ timerProc (long /*int*/ widget) {
 	if (isVisible ()) OS.gtk_progress_bar_pulse (handle);
 	return 1;

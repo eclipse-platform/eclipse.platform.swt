@@ -35,6 +35,7 @@ PngIdatChunk(byte[] reference) {
 	super(reference);
 }
 
+@Override
 int getChunkType() {
 	return CHUNK_IDAT;
 }
@@ -42,6 +43,7 @@ int getChunkType() {
 /**
  * Answer whether the chunk is a valid IDAT chunk.
  */
+@Override
 void validate(PngFileReadState readState, PngIhdrChunk headerChunk) {
 	if (!readState.readIHDR
 		|| (headerChunk.getMustHavePalette() && !readState.readPLTE)

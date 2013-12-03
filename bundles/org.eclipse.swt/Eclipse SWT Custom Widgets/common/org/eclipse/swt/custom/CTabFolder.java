@@ -630,6 +630,7 @@ int getControlHeight(Point ctrlSize) {
 //		SWT.error (SWT.ERROR_INVALID_SUBCLASS);
 //	}
 //}
+@Override
 public Rectangle computeTrim (int x, int y, int width, int height) {
 	checkWidget();
 	Rectangle trim =  renderer.computeTrim(CTabFolderRenderer.PART_BODY, SWT.NONE, x, y, width, height);
@@ -791,6 +792,7 @@ ToolBar getChevron() {
 	checkWidget();
 	return chevronVisible;
 }
+@Override
 public Rectangle getClientArea() {
 	checkWidget();
 	//TODO: HACK - find a better way to get padding
@@ -1161,6 +1163,7 @@ public boolean getSingle() {
 	return single;
 }
 
+@Override
 public int getStyle() {
 	int style = super.getStyle();
 	style &= ~(SWT.TOP | SWT.BOTTOM);
@@ -1289,6 +1292,7 @@ public int indexOf(CTabItem item) {
 void initAccessible() {
 	final Accessible accessible = getAccessible();
 	accessible.addAccessibleListener(new AccessibleAdapter() {
+		@Override
 		public void getName(AccessibleEvent e) {
 			CTabItem item = null;
 			int childID = e.childID;
@@ -1302,6 +1306,7 @@ void initAccessible() {
 			e.result = item == null ? null : stripMnemonic(item.getText());
 		}
 
+		@Override
 		public void getHelp(AccessibleEvent e) {
 			String help = null;
 			int childID = e.childID;
@@ -1313,6 +1318,7 @@ void initAccessible() {
 			e.result = help;
 		}
 		
+		@Override
 		public void getKeyboardShortcut(AccessibleEvent e) {
 			String shortcut = null;
 			int childID = e.childID;
@@ -1333,6 +1339,7 @@ void initAccessible() {
 	});
 	
 	accessible.addAccessibleControlListener(new AccessibleControlAdapter() {
+		@Override
 		public void getChildAtPoint(AccessibleControlEvent e) {
 			Point testPoint = toControl(e.x, e.y);
 			int childID = ACC.CHILDID_NONE;
@@ -1353,6 +1360,7 @@ void initAccessible() {
 			e.childID = childID;
 		}
 
+		@Override
 		public void getLocation(AccessibleControlEvent e) {
 			Rectangle location = null;
 			Point pt = null;
@@ -1376,10 +1384,12 @@ void initAccessible() {
 			}
 		}
 		
+		@Override
 		public void getChildCount(AccessibleControlEvent e) {
 			e.detail = items.length;
 		}
 		
+		@Override
 		public void getDefaultAction(AccessibleControlEvent e) {
 			String action = null;
 			int childID = e.childID;
@@ -1389,6 +1399,7 @@ void initAccessible() {
 			e.result = action;
 		}
 
+		@Override
 		public void getFocus(AccessibleControlEvent e) {
 			int childID = ACC.CHILDID_NONE;
 			if (isFocusControl()) {
@@ -1401,6 +1412,7 @@ void initAccessible() {
 			e.childID = childID;
 		}
 
+		@Override
 		public void getRole(AccessibleControlEvent e) {
 			int role = 0;
 			int childID = e.childID;
@@ -1412,10 +1424,12 @@ void initAccessible() {
 			e.detail = role;
 		}
 		
+		@Override
 		public void getSelection(AccessibleControlEvent e) {
 			e.childID = (selectedIndex == -1) ? ACC.CHILDID_NONE : selectedIndex;
 		}
 		
+		@Override
 		public void getState(AccessibleControlEvent e) {
 			int state = 0;
 			int childID = e.childID;
@@ -1436,6 +1450,7 @@ void initAccessible() {
 			e.detail = state;
 		}
 		
+		@Override
 		public void getChildren(AccessibleControlEvent e) {
 			int childIdCount = items.length;
 			Object[] children = new Object[childIdCount];
@@ -1470,6 +1485,7 @@ void initAccessible() {
 }
 void initAccessibleMinMaxTb() {
 	minMaxTb.getAccessible().addAccessibleListener(new AccessibleAdapter() {
+		@Override
 		public void getName(AccessibleEvent e) {
 			if (e.childID != ACC.CHILDID_SELF) {
 				if (minItem != null && e.childID == minMaxTb.indexOf(minItem)) {
@@ -1483,6 +1499,7 @@ void initAccessibleMinMaxTb() {
 }
 void initAccessibleChevronTb() {
 	chevronTb.getAccessible().addAccessibleListener(new AccessibleAdapter() {
+		@Override
 		public void getName(AccessibleEvent e) {
 			if (e.childID != ACC.CHILDID_SELF) {
 				if (chevronItem != null && e.childID == chevronTb.indexOf(chevronItem)) {
@@ -2231,6 +2248,7 @@ public void removeSelectionListener(SelectionListener listener) {
 	removeListener(SWT.DefaultSelection, listener);	
 }
 
+@Override
 public void reskin(int flags) {
 	super.reskin(flags);
 	for (int i = 0; i < items.length; i++) {
@@ -2238,6 +2256,7 @@ public void reskin(int flags) {
 	}
 }
 
+@Override
 public void setBackground (Color color) {
 	super.setBackground(color);
 	renderer.createAntialiasColors(); //TODO: need better caching strategy
@@ -2366,6 +2385,7 @@ public void setBackground(Color[] colors, int[] percents, boolean vertical) {
 	// Refresh with the new settings
 	redraw();
 }
+@Override
 public void setBackgroundImage(Image image) {
     	super.setBackgroundImage(image);
     	renderer.createAntialiasColors(); //TODO: need better caching strategy
@@ -2508,6 +2528,7 @@ void setButtonBounds(GC gc) {
 	controlRects = rects;
 	if (changed || hovering) updateBkImages();
 }
+@Override
 public boolean setFocus () {
 	checkWidget ();
 	
@@ -2537,6 +2558,7 @@ boolean isAncestor (Control control) {
 	}
 	return control == this;
 }
+@Override
 public void setFont(Font font) {
 	checkWidget();
 	if (font != null && font.equals(getFont())) return;
@@ -2544,6 +2566,7 @@ public void setFont(Font font) {
 	oldFont = getFont();
 	updateFolder(REDRAW);
 }
+@Override
 public void setForeground (Color color) {
 	super.setForeground(color);
 	redraw();
@@ -2841,6 +2864,7 @@ public void setMaximizeVisible(boolean visible) {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  */
+@Override
 public void setLayout (Layout layout) {
 	checkWidget();
 	return;
@@ -3563,6 +3587,7 @@ void showList (Rectangle rect) {
 		item.setImage(tab.getImage());
 		item.setData(id, tab);
 		item.addSelectionListener(new SelectionAdapter() {
+			@Override
 			public void widgetSelected(SelectionEvent e) {
 				MenuItem menuItem = (MenuItem)e.widget;
 				int index = indexOf((CTabItem)menuItem.getData(id));

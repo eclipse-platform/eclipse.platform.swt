@@ -324,6 +324,7 @@ public void addDropListener(DropTargetListener listener) {
 	addListener (DND.DropAccept, typedListener);	
 }	
 
+@Override
 protected void checkSubclass () {
 	String name = getClass().getName ();
 	String validName = DropTarget.class.getName();

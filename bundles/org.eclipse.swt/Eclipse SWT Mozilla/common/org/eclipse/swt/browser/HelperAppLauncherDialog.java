@@ -38,16 +38,24 @@ int AddRef () {
 void createCOMInterfaces () {
 	/* Create each of the interfaces that this object implements */
 	supports = new XPCOMObject (new int[] {2, 0, 0}) {
+		@Override
 		public long /*int*/ method0 (long /*int*/[] args) {return QueryInterface (args[0], args[1]);}
+		@Override
 		public long /*int*/ method1 (long /*int*/[] args) {return AddRef ();}
+		@Override
 		public long /*int*/ method2 (long /*int*/[] args) {return Release ();}
 	};
 	
 	helperAppLauncherDialog = new XPCOMObject (new int[] {2, 0, 0, 3, 5}) {
+		@Override
 		public long /*int*/ method0 (long /*int*/[] args) {return QueryInterface (args[0], args[1]);}
+		@Override
 		public long /*int*/ method1 (long /*int*/[] args) {return AddRef ();}
+		@Override
 		public long /*int*/ method2 (long /*int*/[] args) {return Release ();}
+		@Override
 		public long /*int*/ method3 (long /*int*/[] args) {return Show (args[0], args[1], (int)/*64*/args[2]);}
+		@Override
 		public long /*int*/ method4 (long /*int*/[] args) {return PromptForSaveToFile (args[0], args[1], args[2], args[3], args[4]);}
 	};		
 }

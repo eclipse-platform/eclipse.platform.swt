@@ -74,6 +74,7 @@ public AnimatedProgress(Composite parent, int style) {
 	showBorder = (style & SWT.BORDER) != 0;
 	
 	addControlListener(new ControlAdapter() {
+		@Override
 		public void controlResized(ControlEvent e) {
 			redraw();
 		}
@@ -108,6 +109,7 @@ public synchronized void clear(){
 	showStripes = false;
 	redraw();
 }
+@Override
 public Point computeSize(int wHint, int hHint, boolean changed) {
 	checkWidget();
 	Point size = null;

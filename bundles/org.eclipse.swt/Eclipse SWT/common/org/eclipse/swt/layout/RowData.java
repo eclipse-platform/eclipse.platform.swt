@@ -113,6 +113,7 @@ String getName () {
  *
  * @return a string representation of the RowData object
  */
+@Override
 public String toString () {
 	String string = getName ()+" {";
 	if (width != SWT.DEFAULT) string += "width="+width+" ";

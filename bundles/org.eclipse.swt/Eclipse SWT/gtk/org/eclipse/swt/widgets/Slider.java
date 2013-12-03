@@ -148,6 +148,7 @@ static int checkStyle (int style) {
 	return checkBits (style, SWT.HORIZONTAL, SWT.VERTICAL, 0, 0, 0, 0);
 }
 
+@Override
 void createHandle (int index) {
 	state |= HANDLE;
 	fixedHandle = OS.g_object_new (display.gtk_fixed_get_type (), 0);
@@ -175,6 +176,7 @@ void createHandle (int index) {
 	OS.gtk_container_add (fixedHandle, handle);
 }
 
+@Override
 long /*int*/ gtk_button_press_event (long /*int*/ widget, long /*int*/ eventPtr) {
 	long /*int*/ result = super.gtk_button_press_event (widget, eventPtr);
 	if (result != 0) return result;
@@ -183,11 +185,13 @@ long /*int*/ gtk_button_press_event (long /*int*/ widget, long /*int*/ eventPtr)
 	return result;
 }
 
+@Override
 long /*int*/ gtk_change_value (long /*int*/ widget, long /*int*/ scroll, long /*int*/ value1, long /*int*/ value2) {
 	detail = (int)/*64*/scroll;
 	return 0;
 }
 
+@Override
 long /*int*/ gtk_value_changed (long /*int*/ adjustment) {
 	Event event = new Event ();
 	dragSent = detail == OS.GTK_SCROLL_JUMP;
@@ -214,6 +218,7 @@ long /*int*/ gtk_value_changed (long /*int*/ adjustment) {
 	return 0;
 }
 
+@Override
 long /*int*/ gtk_event_after (long /*int*/ widget, long /*int*/ gdkEvent) {
 	GdkEvent gtkEvent = new GdkEvent ();
 	OS.memmove (gtkEvent, gdkEvent, GdkEvent.sizeof);
@@ -237,24 +242,28 @@ long /*int*/ gtk_event_after (long /*int*/ widget, long /*int*/ gdkEvent) {
 	return super.gtk_event_after (widget, gdkEvent);
 }
 
+@Override
 void hookEvents () {
 	super.hookEvents ();
 	OS.g_signal_connect_closure (handle, OS.change_value, display.getClosure (CHANGE_VALUE), false);
 	OS.g_signal_connect_closure (handle, OS.value_changed, display.getClosure (VALUE_CHANGED), false);
 }
 
+@Override
 void register () {
 	super.register ();
 	long /*int*/ hAdjustment = OS.gtk_range_get_adjustment (handle);
 	display.addWidget (hAdjustment, this);
 }
 
+@Override
 void deregister () {
 	super.deregister ();
 	long /*int*/ hAdjustment = OS.gtk_range_get_adjustment (handle);
 	display.removeWidget (hAdjustment);
 }
 
+@Override
 public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget();
 	OS.gtk_widget_realize(handle);
@@ -472,6 +481,7 @@ public void setMinimum (int value) {
 	OS.g_signal_handlers_unblock_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, VALUE_CHANGED);
 }
 
+@Override
 void setOrientation (boolean create) {
 	super.setOrientation (create);
 	if ((style & SWT.RIGHT_TO_LEFT) != 0 || !create) {

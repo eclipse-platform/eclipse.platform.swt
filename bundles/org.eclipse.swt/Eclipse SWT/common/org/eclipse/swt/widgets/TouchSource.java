@@ -82,6 +82,7 @@ public Rectangle getBounds () {
  *
  * @return a string representation of the event
  */
+@Override
 public String toString () {
 	return "TouchSource {handle=" + handle + " direct=" + direct + " bounds=" + bounds + "}";
 }

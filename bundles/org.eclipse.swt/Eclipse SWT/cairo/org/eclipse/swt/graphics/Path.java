@@ -642,6 +642,7 @@ public void quadTo(float cx, float cy, float x, float y) {
 	closed = false;
 }
 
+@Override
 void destroy() {
 	Cairo.cairo_destroy(handle);
 	handle = 0;
@@ -684,6 +685,7 @@ void init(PathData data) {
  *
  * @return <code>true</code> when the Path is disposed, and <code>false</code> otherwise
  */
+@Override
 public boolean isDisposed() {
 	return handle == 0;
 }
@@ -694,6 +696,7 @@ public boolean isDisposed() {
  *
  * @return a string representation of the receiver
  */
+@Override
 public String toString() {
 	if (isDisposed()) return "Path {*DISPOSED*}";
 	return "Path {" + handle + "}";

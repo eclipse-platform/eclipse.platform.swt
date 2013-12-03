@@ -206,6 +206,7 @@ static int checkStyle(int style) {
 	return style;
 }
 
+@Override
 protected void checkWidget () {
 	super.checkWidget ();
 }
@@ -497,6 +498,7 @@ public boolean back () {
 	return webBrowser.back ();
 }
 
+@Override
 protected void checkSubclass () {
 	String name = getClass ().getName ();
 	int index = name.lastIndexOf ('.');
@@ -667,6 +669,7 @@ public boolean getJavascriptEnabled () {
 	return webBrowser.jsEnabledOnNextPage;
 }
 
+@Override
 public int getStyle () {
 	/*
 	* If SWT.BORDER was specified at creation time then getStyle() should answer
@@ -748,6 +751,7 @@ public boolean isBackEnabled () {
 	return webBrowser.isBackEnabled ();
 }
 
+@Override
 public boolean isFocusControl () {
 	checkWidget();
 	if (webBrowser.isFocusControl ()) return true;

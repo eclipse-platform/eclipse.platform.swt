@@ -510,6 +510,7 @@ long /*int*/ createCursor(byte[] sourceData, byte[] maskData, int width, int hei
 	return cursor;
 }
 
+@Override
 void destroy() {
 	gdk_cursor_unref(handle);
 	handle = 0;
@@ -525,6 +526,7 @@ void destroy() {
  *
  * @see #hashCode
  */
+@Override
 public boolean equals(Object object) {
 	if (object == this) return true;
 	if (!(object instanceof Cursor)) return false;
@@ -563,6 +565,7 @@ public static Cursor gtk_new(Device device, long /*int*/ handle) {
  *
  * @see #equals
  */
+@Override
 public int hashCode() {
 	return (int)/*64*/handle;
 }
@@ -577,6 +580,7 @@ public int hashCode() {
  *
  * @return <code>true</code> when the cursor is disposed and <code>false</code> otherwise
  */
+@Override
 public boolean isDisposed() {
 	return handle == 0;
 }
@@ -587,6 +591,7 @@ public boolean isDisposed() {
  *
  * @return a string representation of the receiver
  */
+@Override
 public String toString () {
 	if (isDisposed()) return "Cursor {*DISPOSED*}";
 	return "Cursor {" + handle + "}";

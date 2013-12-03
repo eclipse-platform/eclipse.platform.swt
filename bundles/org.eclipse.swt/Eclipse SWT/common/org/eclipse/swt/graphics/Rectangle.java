@@ -150,6 +150,7 @@ public boolean contains (Point pt) {
  *
  * @see #hashCode()
  */
+@Override
 public boolean equals (Object object) {
 	if (object == this) return true;
 	if (!(object instanceof Rectangle)) return false;
@@ -167,6 +168,7 @@ public boolean equals (Object object) {
  *
  * @see #equals(Object)
  */
+@Override
 public int hashCode () {
 	return x ^ y ^ width ^ height;
 }
@@ -308,6 +310,7 @@ public boolean isEmpty () {
  *
  * @return a string representation of the rectangle
  */
+@Override
 public String toString () {
 	return "Rectangle {" + x + ", " + y + ", " + width + ", " + height + "}"; //$NON-NLS-1$//$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
 }

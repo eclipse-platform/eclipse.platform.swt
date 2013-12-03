@@ -75,6 +75,7 @@ PngIhdrChunk(byte[] reference) {
 	interlaceMethod = reference[INTERLACE_METHOD_OFFSET];
 }
 
+@Override
 int getChunkType() {
 	return CHUNK_IHDR;
 }
@@ -211,6 +212,7 @@ void setInterlaceMethod(byte value) {
 /**
  * Answer whether the chunk is a valid IHDR chunk.
  */
+@Override
 void validate(PngFileReadState readState, PngIhdrChunk headerChunk) {
 	// An IHDR chunk is invalid if any other chunk has
 	// been read.
@@ -294,6 +296,7 @@ String getInterlaceMethodString() {
 	}
 }
 
+@Override
 void contributeToString(StringBuffer buffer) {
 	buffer.append("\n\tWidth: ");
 	buffer.append(width);

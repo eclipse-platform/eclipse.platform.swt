@@ -121,6 +121,7 @@ int indexOf (int lineIndex) {
 	}
 	return -1;
 }
+@Override
 public int hashCode() {
 	return style.hashCode() ^ type;
 }

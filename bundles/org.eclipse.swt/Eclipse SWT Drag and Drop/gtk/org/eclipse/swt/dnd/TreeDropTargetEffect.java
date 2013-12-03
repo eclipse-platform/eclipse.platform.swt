@@ -88,6 +88,7 @@ public class TreeDropTargetEffect extends DropTargetEffect {
 	 * @see DropTargetAdapter
 	 * @see DropTargetEvent
 	 */
+	@Override
 	public void dragEnter(DropTargetEvent event) {
 		expandBeginTime = 0;
 		expandIndex = -1;	
@@ -109,6 +110,7 @@ public class TreeDropTargetEffect extends DropTargetEffect {
 	 * @see DropTargetAdapter
 	 * @see DropTargetEvent
 	 */
+	@Override
 	public void dragLeave(DropTargetEvent event) {
 		Tree tree = (Tree) control;
 		long /*int*/ handle = tree.handle;
@@ -138,6 +140,7 @@ public class TreeDropTargetEffect extends DropTargetEffect {
 	 * @see DND#FEEDBACK_INSERT_AFTER
 	 * @see DND#FEEDBACK_SCROLL
 	 */
+	@Override
 	public void dragOver(DropTargetEvent event) {
 		Tree tree = (Tree) control;
 		int effect = checkEffect(event.feedback);

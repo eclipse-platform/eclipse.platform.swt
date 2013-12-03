@@ -37,6 +37,7 @@ FontMetrics() {
  *
  * @see #hashCode
  */
+@Override
 public boolean equals (Object object) {
 	if (object == this) return true;
 	if (!(object instanceof FontMetrics)) return false;
@@ -126,6 +127,7 @@ public static FontMetrics gtk_new(int ascent, int descent, int averageCharWidth,
  *
  * @see #equals
  */
+@Override
 public int hashCode() {
 	return ascent ^ descent ^ averageCharWidth ^ leading ^ height;
 }

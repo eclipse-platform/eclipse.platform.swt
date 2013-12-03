@@ -197,6 +197,7 @@ public float[] getHSB() {
  *
  * @see #hashCode()
  */
+@Override
 public boolean equals(Object object) {
 	if (object == this) return true;
 	if (!(object instanceof RGB)) return false;
@@ -214,6 +215,7 @@ public boolean equals(Object object) {
  *
  * @see #equals(Object)
  */
+@Override
 public int hashCode() {
 	return (blue << 16) | (green << 8) | red;
 }
@@ -224,6 +226,7 @@ public int hashCode() {
  *
  * @return a string representation of the <code>RGB</code>
  */
+@Override
 public String toString() {
 	return "RGB {" + red + ", " + green + ", " + blue + "}"; //$NON-NLS-1$//$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
 }

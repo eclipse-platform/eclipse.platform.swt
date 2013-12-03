@@ -35,10 +35,12 @@ abstract class JPEGFixedSizeSegment extends JPEGSegment {
 	
 	abstract public int fixedSize();
 
+	@Override
 	public int getSegmentLength() {
 		return fixedSize() - 2;
 	}
 	
+	@Override
 	public void setSegmentLength(int length) {
 	}
 }

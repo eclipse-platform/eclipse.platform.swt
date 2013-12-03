@@ -258,6 +258,7 @@ void initialize() {
 	System.arraycopy(huffTables, 0, allTables, 0, huffTableCount);
 }
 
+@Override
 public int signature() {
 	return JPEGFileFormat.DHT;
 }

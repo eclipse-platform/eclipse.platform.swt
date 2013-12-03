@@ -358,6 +358,7 @@ void arrowEvent (Event event) {
 		}
 	}
 }
+@Override
 protected void checkSubclass () {
 	String name = getClass ().getName ();
 	int index = name.lastIndexOf ('.');
@@ -426,6 +427,7 @@ void comboEvent (Event event) {
 	}
 }
 
+@Override
 public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget ();
 	int width = 0, height = 0;
@@ -643,6 +645,7 @@ String getAssociatedLabel () {
 	}
 	return null;
 }
+@Override
 public Control [] getChildren () {
 	checkWidget();
 	return new Control [0];
@@ -755,6 +758,7 @@ public boolean getListVisible () {
 	checkWidget ();
 	return isDropped();
 }
+@Override
 public Menu getMenu() {
 	return text.getMenu();
 }
@@ -791,6 +795,7 @@ public int getSelectionIndex () {
 	checkWidget ();
 	return list.getSelectionIndex ();
 }
+@Override
 public Shell getShell () {
 	checkWidget ();
 	Shell shell = super.getShell ();
@@ -802,6 +807,7 @@ public Shell getShell () {
 	}
 	return _shell;
 }
+@Override
 public int getStyle () {
 	int style = super.getStyle ();
 	style &= ~SWT.READ_ONLY;
@@ -957,6 +963,7 @@ public int indexOf (String string, int start) {
 
 void initAccessible() {
 	AccessibleAdapter accessibleAdapter = new AccessibleAdapter () {
+		@Override
 		public void getName (AccessibleEvent e) {
 			String name = null;
 			String text = getAssociatedLabel ();
@@ -965,6 +972,7 @@ void initAccessible() {
 			}
 			e.result = name;
 		}
+		@Override
 		public void getKeyboardShortcut(AccessibleEvent e) {
 			String shortcut = null;
 			String text = getAssociatedLabel ();
@@ -976,6 +984,7 @@ void initAccessible() {
 			}
 			e.result = shortcut;
 		}
+		@Override
 		public void getHelp (AccessibleEvent e) {
 			e.result = getToolTipText ();
 		}
@@ -985,21 +994,26 @@ void initAccessible() {
 	list.getAccessible ().addAccessibleListener (accessibleAdapter);
 	
 	arrow.getAccessible ().addAccessibleListener (new AccessibleAdapter() {
+		@Override
 		public void getName (AccessibleEvent e) {
 			e.result = isDropped () ? SWT.getMessage ("SWT_Close") : SWT.getMessage ("SWT_Open"); //$NON-NLS-1$ //$NON-NLS-2$
 		}
+		@Override
 		public void getKeyboardShortcut (AccessibleEvent e) {
 			e.result = "Alt+Down Arrow"; //$NON-NLS-1$
 		}
+		@Override
 		public void getHelp (AccessibleEvent e) {
 			e.result = getToolTipText ();
 		}
 	});
 
 	getAccessible().addAccessibleTextListener (new AccessibleTextAdapter() {
+		@Override
 		public void getCaretOffset (AccessibleTextEvent e) {
 			e.offset = text.getCaretPosition ();
 		}
+		@Override
 		public void getSelectionRange(AccessibleTextEvent e) {
 			Point sel = text.getSelection();
 			e.offset = sel.x;
@@ -1008,6 +1022,7 @@ void initAccessible() {
 	});
 	
 	getAccessible().addAccessibleControlListener (new AccessibleControlAdapter() {
+		@Override
 		public void getChildAtPoint (AccessibleControlEvent e) {
 			Point testPoint = toControl (e.x, e.y);
 			if (getBounds ().contains (testPoint)) {
@@ -1015,6 +1030,7 @@ void initAccessible() {
 			}
 		}
 		
+		@Override
 		public void getLocation (AccessibleControlEvent e) {
 			Rectangle location = getBounds ();
 			Point pt = getParent().toDisplay (location.x, location.y);
@@ -1024,30 +1040,36 @@ void initAccessible() {
 			e.height = location.height;
 		}
 		
+		@Override
 		public void getChildCount (AccessibleControlEvent e) {
 			e.detail = 0;
 		}
 		
+		@Override
 		public void getRole (AccessibleControlEvent e) {
 			e.detail = ACC.ROLE_COMBOBOX;
 		}
 		
+		@Override
 		public void getState (AccessibleControlEvent e) {
 			e.detail = ACC.STATE_NORMAL;
 		}
 
+		@Override
 		public void getValue (AccessibleControlEvent e) {
 			e.result = getText ();
 		}
 	});
 
 	text.getAccessible ().addAccessibleControlListener (new AccessibleControlAdapter () {
+		@Override
 		public void getRole (AccessibleControlEvent e) {
 			e.detail = text.getEditable () ? ACC.ROLE_TEXT : ACC.ROLE_LABEL;
 		}
 	});
 
 	arrow.getAccessible ().addAccessibleControlListener (new AccessibleControlAdapter() {
+		@Override
 		public void getDefaultAction (AccessibleControlEvent e) {
 			e.result = isDropped () ? SWT.getMessage ("SWT_Close") : SWT.getMessage ("SWT_Open"); //$NON-NLS-1$ //$NON-NLS-2$
 		}
@@ -1056,6 +1078,7 @@ void initAccessible() {
 boolean isDropped () {
 	return !isDisposed() && popup.getVisible ();
 }
+@Override
 public boolean isFocusControl () {
 	checkWidget();
 	if (text.isFocusControl () || arrow.isFocusControl () || list.isFocusControl () || popup.isFocusControl ()) {
@@ -1242,12 +1265,14 @@ void popupEvent(Event event) {
 			break;
 	}
 }
+@Override
 public void redraw () {
 	super.redraw();
 	text.redraw();
 	arrow.redraw();
 	if (popup.isVisible()) list.redraw();
 }
+@Override
 public void redraw (int x, int y, int width, int height, boolean all) {
 	super.redraw(x, y, width, height, true);
 }
@@ -1422,6 +1447,7 @@ public void select (int index) {
 		}
 	}
 }
+@Override
 public void setBackground (Color color) {
 	super.setBackground(color);
 	background = color;
@@ -1445,18 +1471,21 @@ public void setEditable (boolean editable) {
 	checkWidget ();
 	text.setEditable(editable);
 }
+@Override
 public void setEnabled (boolean enabled) {
 	super.setEnabled(enabled);
 	if (popup != null) popup.setVisible (false);
 	if (text != null) text.setEnabled(enabled);
 	if (arrow != null) arrow.setEnabled(enabled);
 }
+@Override
 public boolean setFocus () {
 	checkWidget();
 	if (!isEnabled () || !getVisible ()) return false;
 	if (isFocusControl ()) return true;
 	return text.setFocus ();
 }
+@Override
 public void setFont (Font font) {
 	super.setFont (font);
 	this.font = font;
@@ -1464,6 +1493,7 @@ public void setFont (Font font) {
 	list.setFont (font);
 	internalLayout (true);
 }
+@Override
 public void setForeground (Color color) {
 	super.setForeground(color);
 	foreground = color;
@@ -1527,6 +1557,7 @@ public void setItems (String [] items) {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  */
+@Override
 public void setLayout (Layout layout) {
 	checkWidget ();
 	return;
@@ -1553,6 +1584,7 @@ public void setListVisible (boolean visible) {
 	checkWidget ();
 	dropDown(visible);
 }
+@Override
 public void setMenu(Menu menu) {
 	text.setMenu(menu);
 }
@@ -1632,6 +1664,7 @@ public void setTextLimit (int limit) {
 	text.setTextLimit (limit);
 }
 
+@Override
 public void setToolTipText (String string) {
 	checkWidget();
 	super.setToolTipText(string);
@@ -1639,6 +1672,7 @@ public void setToolTipText (String string) {
 	text.setToolTipText (string);		
 }
 
+@Override
 public void setVisible (boolean visible) {
 	super.setVisible(visible);
 	/* 
@@ -1884,6 +1918,7 @@ void textEvent (Event event) {
 		}
 	}
 }
+@Override
 public boolean traverse(int event){
     /*
      * When the traverse event is sent to the CCombo, it will create a list of

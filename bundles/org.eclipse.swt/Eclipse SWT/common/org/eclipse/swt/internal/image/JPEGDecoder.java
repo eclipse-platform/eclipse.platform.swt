@@ -389,10 +389,12 @@ public class JPEGDecoder {
 		boolean[] dc_needed = new boolean[D_MAX_BLOCKS_IN_MCU];
 		boolean[] ac_needed = new boolean[D_MAX_BLOCKS_IN_MCU];
 		
+		@Override
 		void start_pass (jpeg_decompress_struct cinfo) {
 			start_pass_huff_decoder(cinfo);
 		}
 
+		@Override
 		boolean decode_mcu (jpeg_decompress_struct cinfo, short[][] MCU_data) {
 			huff_entropy_decoder entropy = this;
 			int blkn;
@@ -761,10 +763,12 @@ public class JPEGDecoder {
 		
 		int[] newnz_pos = new int[DCTSIZE2];
 			
+		@Override
 		void start_pass (jpeg_decompress_struct cinfo) {
 			start_pass_phuff_decoder(cinfo);
 		}
 			
+		@Override
 		boolean decode_mcu (jpeg_decompress_struct cinfo, short[][] MCU_data) {
 			boolean is_DC_band = (cinfo.Ss == 0);
 			if (cinfo.Ah == 0) {

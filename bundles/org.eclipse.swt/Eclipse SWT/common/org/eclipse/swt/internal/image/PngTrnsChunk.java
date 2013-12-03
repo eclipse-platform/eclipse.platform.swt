@@ -32,6 +32,7 @@ PngTrnsChunk(byte[] reference){
 	super(reference);
 }
 
+@Override
 int getChunkType() {
 	return CHUNK_tRNS;
 }

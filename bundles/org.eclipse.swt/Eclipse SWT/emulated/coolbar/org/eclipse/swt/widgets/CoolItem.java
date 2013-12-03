@@ -163,6 +163,7 @@ public void addSelectionListener(SelectionListener listener) {
 	addListener (SWT.Selection,typedListener);
 	addListener (SWT.DefaultSelection,typedListener);
 }
+@Override
 protected void checkSubclass () {
 	if (!isValidSubclass ()) error (SWT.ERROR_INVALID_SUBCLASS);
 }
@@ -221,6 +222,7 @@ public Point computeSize (int wHint, int hHint) {
 	}	
 	return new Point (width, height);
 }
+@Override
 public void dispose () {
 	if (isDisposed()) return;
 	

@@ -17,6 +17,7 @@ final class JPEGArithmeticConditioningTable extends JPEGVariableSizeSegment {
 		super(byteStream);
 	}
 	
+	@Override
 	public int signature() {
 		return JPEGFileFormat.DAC;
 	}

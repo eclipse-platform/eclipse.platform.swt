@@ -76,6 +76,7 @@ public AccessibleTextEvent (Object source) {
  *
  * @return a string representation of the event
  */
+@Override
 public String toString () {
 	return "AccessibleTextEvent {childID=" + childID +  //$NON-NLS-1$
 		" offset=" + offset +  //$NON-NLS-1$

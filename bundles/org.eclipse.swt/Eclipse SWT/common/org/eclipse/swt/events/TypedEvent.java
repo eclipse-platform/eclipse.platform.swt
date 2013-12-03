@@ -94,6 +94,7 @@ String getName () {
  *
  * @return a string representation of the event
  */
+@Override
 public String toString() {
 	return getName ()
 		+ "{" + widget

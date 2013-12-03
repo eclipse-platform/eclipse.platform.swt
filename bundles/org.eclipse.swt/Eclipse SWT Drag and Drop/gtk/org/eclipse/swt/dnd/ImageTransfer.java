@@ -80,6 +80,7 @@ public static ImageTransfer getInstance () {
  * 
  * @see Transfer#nativeToJava
  */
+@Override
 public void javaToNative(Object object, TransferData transferData) {
 	if (!checkImage(object) || !isSupportedType(transferData)) {
 		DND.error(DND.ERROR_INVALID_DATA);
@@ -125,6 +126,7 @@ public void javaToNative(Object object, TransferData transferData) {
  * 
  * @see Transfer#javaToNative
  */
+@Override
 public Object nativeToJava(TransferData transferData) {
 	ImageData imgData = null;
 	if (transferData.length > 0) {
@@ -145,10 +147,12 @@ public Object nativeToJava(TransferData transferData) {
 	return imgData;
 }
 
+@Override
 protected int[] getTypeIds(){
 	return new int[]{PNG_ID, BMP_ID, EPS_ID, JPEG_ID, PCX_ID, PPM_ID, RGB_ID, TGA_ID, XBM_ID, XPM_ID, XV_ID};	
 }
 
+@Override
 protected String[] getTypeNames(){
 	return new String[]{PNG, BMP, EPS, JPEG, PCX, PPM, RGB, TGA, XBM, XPM, XV};
 }
@@ -158,6 +162,7 @@ boolean checkImage(Object object) {
 	return true;
 }
 
+@Override
 protected boolean validate(Object object) {
 	return checkImage(object);
 }

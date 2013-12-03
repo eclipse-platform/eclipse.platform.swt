@@ -20,6 +20,7 @@ public final class OS2BMPFileFormat extends FileFormat {
 	static final int BMPHeaderFixedSize = 12;
 	int width, height, bitCount;
 
+@Override
 boolean isFileFormat(LEDataInputStream stream) {
 	try {
 		byte[] header = new byte[18];
@@ -64,6 +65,7 @@ int[] loadFileHeader() {
 		SWT.error(SWT.ERROR_INVALID_IMAGE);
 	return header;
 }
+@Override
 ImageData[] loadFromByteStream() {
 	int[] fileHeader = loadFileHeader();
 	byte[] infoHeader = new byte[BMPHeaderFixedSize];
@@ -201,6 +203,7 @@ int unloadData(ImageData image, OutputStream out) {
  * Unload a DeviceIndependentImage using Windows .BMP format into the given
  * byte stream.
  */
+@Override
 void unloadIntoByteStream(ImageLoader loader) {
 	ImageData image = loader.data[0];
 	byte[] rgbs;

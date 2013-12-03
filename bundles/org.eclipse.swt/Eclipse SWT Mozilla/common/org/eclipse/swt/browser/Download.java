@@ -46,62 +46,110 @@ int AddRef () {
 void createCOMInterfaces () {
 	/* Create each of the interfaces that this object implements */
 	supports = new XPCOMObject (new int[] {2, 0, 0}) {
+		@Override
 		public long /*int*/ method0 (long /*int*/[] args) {return QueryInterface (args[0], args[1]);}
+		@Override
 		public long /*int*/ method1 (long /*int*/[] args) {return AddRef ();}
+		@Override
 		public long /*int*/ method2 (long /*int*/[] args) {return Release ();}
 	};
 	
 	download = new XPCOMObject (new int[] {2, 0, 0, 7, 1, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1}) {
+		@Override
 		public long /*int*/ method0 (long /*int*/[] args) {return QueryInterface (args[0], args[1]);}
+		@Override
 		public long /*int*/ method1 (long /*int*/[] args) {return AddRef ();}
+		@Override
 		public long /*int*/ method2 (long /*int*/[] args) {return Release ();}
+		@Override
 		public long /*int*/ method3 (long /*int*/[] args) {return Init (args[0], args[1], args[2], args[3], args[4], args[5], args[6]);}
+		@Override
 		public long /*int*/ method4 (long /*int*/[] args) {return GetSource (args[0]);}
+		@Override
 		public long /*int*/ method5 (long /*int*/[] args) {return GetTarget (args[0]);}
+		@Override
 		public long /*int*/ method6 (long /*int*/[] args) {return GetPersist (args[0]);}
+		@Override
 		public long /*int*/ method7 (long /*int*/[] args) {return GetPercentComplete (args[0]);}
+		@Override
 		public long /*int*/ method8 (long /*int*/[] args) {return GetDisplayName (args[0]);}
+		@Override
 		public long /*int*/ method9 (long /*int*/[] args) {return SetDisplayName (args[0]);}
+		@Override
 		public long /*int*/ method10 (long /*int*/[] args) {return GetStartTime (args[0]);}
+		@Override
 		public long /*int*/ method11 (long /*int*/[] args) {return GetMIMEInfo (args[0]);}
+		@Override
 		public long /*int*/ method12 (long /*int*/[] args) {return GetListener (args[0]);}
+		@Override
 		public long /*int*/ method13 (long /*int*/[] args) {return SetListener (args[0]);}
+		@Override
 		public long /*int*/ method14 (long /*int*/[] args) {return GetObserver (args[0]);}
+		@Override
 		public long /*int*/ method15 (long /*int*/[] args) {return SetObserver (args[0]);}
 	};
 	
 	progressDialog = new XPCOMObject (new int[] {2, 0, 0, 7, 1, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}) {
+		@Override
 		public long /*int*/ method0 (long /*int*/[] args) {return QueryInterface (args[0], args[1]);}
+		@Override
 		public long /*int*/ method1 (long /*int*/[] args) {return AddRef ();}
+		@Override
 		public long /*int*/ method2 (long /*int*/[] args) {return Release ();}
+		@Override
 		public long /*int*/ method3 (long /*int*/[] args) {return Init (args[0], args[1], args[2], args[3], args[4], args[5], args[6]);}
+		@Override
 		public long /*int*/ method4 (long /*int*/[] args) {return GetSource (args[0]);}
+		@Override
 		public long /*int*/ method5 (long /*int*/[] args) {return GetTarget (args[0]);}
+		@Override
 		public long /*int*/ method6 (long /*int*/[] args) {return GetPersist (args[0]);}
+		@Override
 		public long /*int*/ method7 (long /*int*/[] args) {return GetPercentComplete (args[0]);}
+		@Override
 		public long /*int*/ method8 (long /*int*/[] args) {return GetDisplayName (args[0]);}
+		@Override
 		public long /*int*/ method9 (long /*int*/[] args) {return SetDisplayName (args[0]);}
+		@Override
 		public long /*int*/ method10 (long /*int*/[] args) {return GetStartTime (args[0]);}
+		@Override
 		public long /*int*/ method11 (long /*int*/[] args) {return GetMIMEInfo (args[0]);}
+		@Override
 		public long /*int*/ method12 (long /*int*/[] args) {return GetListener (args[0]);}
+		@Override
 		public long /*int*/ method13 (long /*int*/[] args) {return SetListener (args[0]);}
+		@Override
 		public long /*int*/ method14 (long /*int*/[] args) {return GetObserver (args[0]);}
+		@Override
 		public long /*int*/ method15 (long /*int*/[] args) {return SetObserver (args[0]);}
+		@Override
 		public long /*int*/ method16 (long /*int*/[] args) {return Open (args[0]);}
+		@Override
 		public long /*int*/ method17 (long /*int*/[] args) {return GetCancelDownloadOnClose (args[0]);}
+		@Override
 		public long /*int*/ method18 (long /*int*/[] args) {return SetCancelDownloadOnClose ((int)/*64*/args[0]);}
+		@Override
 		public long /*int*/ method19 (long /*int*/[] args) {return GetDialog (args[0]);}
+		@Override
 		public long /*int*/ method20 (long /*int*/[] args) {return SetDialog (args[0]);}
 	};
 	
 	webProgressListener = new XPCOMObject (new int[] {2, 0, 0, 4, 6, 3, 4, 3}) {
+		@Override
 		public long /*int*/ method0 (long /*int*/[] args) {return QueryInterface (args[0], args[1]);}
+		@Override
 		public long /*int*/ method1 (long /*int*/[] args) {return AddRef ();}
+		@Override
 		public long /*int*/ method2 (long /*int*/[] args) {return Release ();}
+		@Override
 		public long /*int*/ method3 (long /*int*/[] args) {return OnStateChange (args[0], args[1], (int)/*64*/args[2], (int)/*64*/args[3]);}
+		@Override
 		public long /*int*/ method4 (long /*int*/[] args) {return OnProgressChange (args[0], args[1], (int)/*64*/args[2], (int)/*64*/args[3], (int)/*64*/args[4], (int)/*64*/args[5]);}
+		@Override
 		public long /*int*/ method5 (long /*int*/[] args) {return OnLocationChange (args[0], args[1], args[2]);}
+		@Override
 		public long /*int*/ method6 (long /*int*/[] args) {return OnStatusChange (args[0], args[1], (int)/*64*/args[2], args[3]);}
+		@Override
 		public long /*int*/ method7 (long /*int*/[] args) {return OnSecurityChange (args[0], args[1], (int)/*64*/args[2]);}
 	};
 }

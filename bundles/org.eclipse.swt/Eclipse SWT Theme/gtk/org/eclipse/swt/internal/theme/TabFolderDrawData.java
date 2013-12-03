@@ -31,6 +31,7 @@ public TabFolderDrawData() {
 	}
 }
 
+@Override
 void draw(Theme theme, GC gc, Rectangle bounds) {
 	long /*int*/ notebookHandle = theme.notebookHandle;
 	long /*int*/ gtkStyle = OS.gtk_widget_get_style (notebookHandle);
@@ -57,10 +58,12 @@ void draw(Theme theme, GC gc, Rectangle bounds) {
 	}
 }
 
+@Override
 int getStateType(int part) {
 	return OS.GTK_STATE_NORMAL;
 }
 
+@Override
 int hit(Theme theme, Point position, Rectangle bounds) {
 	return bounds.contains(position) ? DrawData.WIDGET_WHOLE : DrawData.WIDGET_NOWHERE;
 }

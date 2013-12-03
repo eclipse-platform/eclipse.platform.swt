@@ -25,6 +25,7 @@ class ScrolledCompositeLayout extends Layout {
 	static final int DEFAULT_WIDTH	= 64;
 	static final int DEFAULT_HEIGHT	= 64;
 	
+@Override
 protected Point computeSize(Composite composite, int wHint, int hHint, boolean flushCache) {
 	ScrolledComposite sc = (ScrolledComposite)composite;
 	Point size = new Point(DEFAULT_WIDTH, DEFAULT_HEIGHT);
@@ -41,10 +42,12 @@ protected Point computeSize(Composite composite, int wHint, int hHint, boolean f
 	return size;
 }
 
+@Override
 protected boolean flushCache(Control control) {
 	return true;
 }
 
+@Override
 protected void layout(Composite composite, boolean flushCache) {
 	if (inLayout) return;
 	ScrolledComposite sc = (ScrolledComposite)composite;

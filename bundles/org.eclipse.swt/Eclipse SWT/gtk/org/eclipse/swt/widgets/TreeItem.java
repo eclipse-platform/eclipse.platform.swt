@@ -207,6 +207,7 @@ static Tree checkNull (Tree control) {
 	return control;
 }
 
+@Override
 protected void checkSubclass () {
 	if (!isValidSubclass ()) error (SWT.ERROR_INVALID_SUBCLASS);
 }
@@ -360,6 +361,7 @@ public void clearAll (boolean all) {
 	parent.clearAll (all, handle);
 }
 
+@Override
 void destroyWidget () {
 	parent.releaseItem (this, false);
 	parent.destroyItem (this);
@@ -647,6 +649,7 @@ public boolean getGrayed () {
 	return grayed;
 }
 
+@Override
 public Image getImage () {
 	checkWidget ();
 	if (!parent.checkData (this)) error (SWT.ERROR_WIDGET_DISPOSED);
@@ -782,6 +785,7 @@ public TreeItem [] getItems () {
 	return parent.getItems (handle);
 }
 
+@Override
 String getNameText () {
 	if ((parent.style & SWT.VIRTUAL) != 0) {
 		if (!cached) return "*virtual*"; //$NON-NLS-1$
@@ -833,6 +837,7 @@ public TreeItem getParentItem () {
 	return item;
 }
 
+@Override
 public String getText () {
 	checkWidget ();
 	if (!parent.checkData (this)) error (SWT.ERROR_WIDGET_DISPOSED);
@@ -974,6 +979,7 @@ public int indexOf (TreeItem item) {
 	return index;
 }
 
+@Override
 void releaseChildren (boolean destroy) {
 	if (destroy) {
 		parent.releaseItems (handle);
@@ -981,6 +987,7 @@ void releaseChildren (boolean destroy) {
 	super.releaseChildren (destroy);
 }
 
+@Override
 void releaseHandle () {
 	if (handle != 0) OS.g_free (handle);
 	handle = 0;
@@ -988,6 +995,7 @@ void releaseHandle () {
 	parent = null;
 }
 
+@Override
 void releaseWidget () {
 	super.releaseWidget ();
 	font = null;
@@ -1450,6 +1458,7 @@ public void setImage (int index, Image image) {
 	cached = true;
 }
 
+@Override
 public void setImage (Image image) {
 	checkWidget ();
 	setImage (0, image);
@@ -1525,6 +1534,7 @@ public void setText (int index, String string) {
 	cached = true;
 }
 
+@Override
 public void setText (String string) {
 	checkWidget ();
 	setText (0, string);

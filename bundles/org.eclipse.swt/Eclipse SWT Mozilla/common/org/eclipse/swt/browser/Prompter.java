@@ -33,23 +33,38 @@ int AddRef () {
 void createCOMInterfaces () {
 	/* Create each of the interfaces that this object implements */
 	supports = new XPCOMObject (new int[] {2, 0, 0}) {
+		@Override
 		public long /*int*/ method0 (long /*int*/[] args) {return QueryInterface (args[0], args[1]);}
+		@Override
 		public long /*int*/ method1 (long /*int*/[] args) {return AddRef ();}
+		@Override
 		public long /*int*/ method2 (long /*int*/[] args) {return Release ();}
 	};
 	
 	prompt = new XPCOMObject (new int[] {2, 0, 0, 2, 4, 3, 5, 9, 6, 6, 7, 6}) {
+		@Override
 		public long /*int*/ method0 (long /*int*/[] args) {return QueryInterface (args[0], args[1]);}
+		@Override
 		public long /*int*/ method1 (long /*int*/[] args) {return AddRef ();}
+		@Override
 		public long /*int*/ method2 (long /*int*/[] args) {return Release ();}
+		@Override
 		public long /*int*/ method3 (long /*int*/[] args) {return Alert (args[0], args[1] );}
+		@Override
 		public long /*int*/ method4 (long /*int*/[] args) {return AlertCheck (args[0], args[1], args[2], args[3]);}
+		@Override
 		public long /*int*/ method5 (long /*int*/[] args) {return Confirm (args[0], args[1], args[2]);}
+		@Override
 		public long /*int*/ method6 (long /*int*/[] args) {return ConfirmCheck (args[0], args[1], args[2], args[3], args[4]);}
+		@Override
 		public long /*int*/ method7 (long /*int*/[] args) {return ConfirmEx (args[0], args[1], (int)/*64*/args[2], args[3], args[4], args[5], args[6], args[7], args[8]);}
+		@Override
 		public long /*int*/ method8 (long /*int*/[] args) {return Prompt (args[0], args[1], args[2], args[3], args[4], args[5]);}
+		@Override
 		public long /*int*/ method9 (long /*int*/[] args) {return PromptPassword (args[0], args[1], args[2], args[3], args[4], args[5]);}
+		@Override
 		public long /*int*/ method10 (long /*int*/[] args) {return PromptUsernameAndPassword (args[0], args[1], args[2], args[3], args[4], args[5], args[6]);}
+		@Override
 		public long /*int*/ method11 (long /*int*/[] args) {return Select (args[0], args[1], (int)/*64*/args[2], args[3], args[4], args[5]);}
 	};
 }

@@ -21,6 +21,7 @@ public ProgressBarDrawData() {
 	state = new int[1];
 }
 
+@Override
 void draw(Theme theme, GC gc, Rectangle bounds) {
 	long /*int*/ progressHandle = theme.progressHandle;
 	long /*int*/ gtkStyle = OS.gtk_widget_get_style (progressHandle);
@@ -50,10 +51,12 @@ void draw(Theme theme, GC gc, Rectangle bounds) {
 	gtk_render_box (gtkStyle, drawable, OS.GTK_STATE_PRELIGHT, OS.GTK_SHADOW_OUT, null, progressHandle, detail, x, y, width, height);
 }
 
+@Override
 int getStateType(int part) {
 	return OS.GTK_STATE_NORMAL;
 }
 
+@Override
 int hit(Theme theme, Point position, Rectangle bounds) {
 	return bounds.contains(position) ? DrawData.WIDGET_WHOLE : DrawData.WIDGET_NOWHERE;
 }

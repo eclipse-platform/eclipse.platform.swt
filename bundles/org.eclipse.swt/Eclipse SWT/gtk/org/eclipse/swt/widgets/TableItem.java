@@ -206,6 +206,7 @@ String _getText (int index) {
 	return new String (Converter.mbcsToWcs (null, buffer));
 }
 
+@Override
 protected void checkSubclass () {
 	if (!isValidSubclass ()) error (SWT.ERROR_INVALID_SUBCLASS);
 }
@@ -227,6 +228,7 @@ void clear () {
 	cellFont = null;
 }
 
+@Override
 void destroyWidget () {
 	parent.destroyItem (this);
 	releaseHandle ();
@@ -490,6 +492,7 @@ public boolean getGrayed () {
 	return grayed;
 }
 
+@Override
 public Image getImage () {
 	checkWidget ();
 	if (!parent.checkData (this)) error (SWT.ERROR_WIDGET_DISPOSED);
@@ -572,6 +575,7 @@ public int getImageIndent () {
 	return 0;
 }
 
+@Override
 String getNameText () {
 	if ((parent.style & SWT.VIRTUAL) != 0) {
 		if (!cached) return "*virtual*"; //$NON-NLS-1$
@@ -594,6 +598,7 @@ public Table getParent () {
 	return parent;
 }
 
+@Override
 public String getText () {
 	checkWidget ();
 	if (!parent.checkData (this)) error (SWT.ERROR_WIDGET_DISPOSED);
@@ -690,6 +695,7 @@ public Rectangle getTextBounds (int index) {
 	return new Rectangle (rect.x, rect.y, width, rect.height + 1);
 }
 
+@Override
 void releaseHandle () {
 	if (handle != 0) OS.g_free (handle);
 	handle = 0;
@@ -697,6 +703,7 @@ void releaseHandle () {
 	parent = null;
 }
 
+@Override
 void releaseWidget () {
 	super.releaseWidget ();
 	font = null;
@@ -1083,6 +1090,7 @@ public void setImage (int index, Image image) {
 	cached = true;
 }
 
+@Override
 public void setImage (Image image) {
 	checkWidget ();
 	setImage (0, image);
@@ -1156,6 +1164,7 @@ public void setText (int index, String string) {
 	cached = true;
 }
 
+@Override
 public void setText (String string) {
 	checkWidget ();
 	setText (0, string);

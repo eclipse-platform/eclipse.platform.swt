@@ -210,6 +210,7 @@ public TextStyle (TextStyle style) {
  *
  * @see #hashCode()
  */
+@Override
 public boolean equals(Object object) {
 	if (object == this) return true;
 	if (object == null) return false;
@@ -256,6 +257,7 @@ public boolean equals(Object object) {
  *
  * @see #equals(Object)
  */
+@Override
 public int hashCode() {
 	int hash = 0;
 	if (foreground != null) hash ^= foreground.hashCode();
@@ -324,6 +326,7 @@ boolean isAdherentStrikeout(TextStyle style) {
  *
  * @return a string representation of the <code>TextStyle</code>
  */
+@Override
 public String toString () {
 	StringBuffer buffer = new StringBuffer("TextStyle {"); //$NON-NLS-1$
 	int startLength = buffer.length();

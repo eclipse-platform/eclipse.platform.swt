@@ -105,6 +105,7 @@ static int checkStyle (int style) {
 	return checkBits (style, SWT.LEFT, SWT.CENTER, SWT.RIGHT, 0, 0, 0);
 }
 
+@Override
 void addRelation (Control control) {
 	if (!control.isDescribedByLabel ()) return;
 	if (labelHandle == 0) return;
@@ -112,6 +113,7 @@ void addRelation (Control control) {
 	control.labelRelation = this;
 }
 
+@Override
 public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget ();
 	if (wHint != SWT.DEFAULT && wHint < 0) wHint = 0;
@@ -197,6 +199,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	return size;
 }
 
+@Override
 void createHandle (int index) {
 	state |= HANDLE | THEME_BACKGROUND;
 	fixedHandle = OS.g_object_new (display.gtk_fixed_get_type (), 0);
@@ -238,11 +241,13 @@ void createHandle (int index) {
 	setAlignment ();
 }
 
+@Override
 void createWidget (int index) {
 	super.createWidget (index);
 	text = "";
 }
 
+@Override
 void deregister () {
 	super.deregister ();
 	if (frameHandle != 0) display.removeWidget (frameHandle);
@@ -250,6 +255,7 @@ void deregister () {
 	if (imageHandle != 0) display.removeWidget (imageHandle);
 }
 
+@Override
 long /*int*/ eventHandle () {
 	return fixedHandle;
 }
@@ -277,6 +283,7 @@ public int getAlignment () {
 	return SWT.LEFT;
 }
 
+@Override
 public int getBorderWidth () {
 	checkWidget();
 	if (frameHandle != 0) {
@@ -301,6 +308,7 @@ public Image getImage () {
 	return image;
 }
 
+@Override
 String getNameText () {
 	return getText ();
 }
@@ -323,6 +331,7 @@ public String getText () {
 	return text;
 }
 
+@Override
 void hookEvents () {
 	super.hookEvents();
 	if (labelHandle != 0) {
@@ -330,10 +339,12 @@ void hookEvents () {
 	}
 }
 
+@Override
 boolean isDescribedByLabel () {
 	return false;
 }
 
+@Override
 boolean mnemonicHit (char key) {
 	if (labelHandle == 0) return false;
 	boolean result = super.mnemonicHit (labelHandle, key);
@@ -356,11 +367,13 @@ boolean mnemonicHit (char key) {
 	return result;
 }
 
+@Override
 boolean mnemonicMatch (char key) {
 	if (labelHandle == 0) return false;
 	return mnemonicMatch (labelHandle, key);
 }
 
+@Override
 void register () {
 	super.register ();
 	if (frameHandle != 0) display.addWidget (frameHandle, this);
@@ -368,11 +381,13 @@ void register () {
 	if (imageHandle != 0) display.addWidget (imageHandle, this);
 }
 
+@Override
 void releaseHandle () {
 	super.releaseHandle ();
 	frameHandle = imageHandle = labelHandle = 0;
 }
 
+@Override
 void releaseWidget () {
 	super.releaseWidget ();
 	if (imageList != null) imageList.dispose ();
@@ -381,6 +396,7 @@ void releaseWidget () {
 	text = null;
 }
 
+@Override
 void resizeHandle (int width, int height) {
 	if (OS.GTK3) {
 		OS.swt_fixed_resize (OS.gtk_widget_get_parent (fixedHandle), fixedHandle, width, height);
@@ -435,6 +451,7 @@ void setAlignment () {
 	}
 }
 
+@Override
 void setBackgroundColor (GdkColor color) {
 	super.setBackgroundColor (color);
 	setBackgroundColor(fixedHandle, color);
@@ -442,6 +459,7 @@ void setBackgroundColor (GdkColor color) {
 	if (imageHandle != 0) setBackgroundColor(imageHandle, color);
 }
 
+@Override
 int setBounds (int x, int y, int width, int height, boolean move, boolean resize) {
 	/*
 	* Bug in GTK.  For some reason, when the label is
@@ -489,12 +507,14 @@ int setBounds (int x, int y, int width, int height, boolean move, boolean resize
 	return result;
 }
 
+@Override
 void setFontDescription (long /*int*/ font) {
 	super.setFontDescription (font);
 	if (labelHandle != 0) setFontDescription (labelHandle, font);
 	if (imageHandle != 0) setFontDescription (imageHandle, font);
 }
 
+@Override
 void setForegroundColor (GdkColor color) {
 	super.setForegroundColor (color);
 	setForegroundColor (fixedHandle, color);
@@ -502,6 +522,7 @@ void setForegroundColor (GdkColor color) {
 	if (imageHandle != 0) setForegroundColor (imageHandle, color);
 }
 
+@Override
 void setOrientation (boolean create) {
 	super.setOrientation (create);
 	if ((style & SWT.RIGHT_TO_LEFT) != 0 || !create) {
@@ -584,6 +605,7 @@ public void setText (String string) {
 	OS.gtk_widget_show (labelHandle);
 }
 
+@Override
 void showWidget () {
 	super.showWidget ();
 	if (frameHandle != 0) OS.gtk_widget_show (frameHandle);

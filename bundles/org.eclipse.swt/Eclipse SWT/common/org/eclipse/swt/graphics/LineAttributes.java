@@ -130,6 +130,7 @@ public LineAttributes(float width, int cap, int join, int style, float[] dash, f
  *
  * @see #hashCode()
  */
+@Override
 public boolean equals (Object object) {
 	if (object == this) return true;
 	if (!(object instanceof LineAttributes)) return false;
@@ -161,6 +162,7 @@ public boolean equals (Object object) {
  *
  * @see #equals(Object)
  */
+@Override
 public int hashCode () {
 	int hashCode = Float.floatToIntBits(width);
 	hashCode = 31 * hashCode + cap;

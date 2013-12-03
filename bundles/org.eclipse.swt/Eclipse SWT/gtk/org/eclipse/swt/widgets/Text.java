@@ -185,6 +185,7 @@ static int checkStyle (int style) {
 	return style | SWT.SINGLE;
 }
 
+@Override
 void createHandle (int index) {
 	state |= HANDLE | MENU;
 	if ((style & SWT.READ_ONLY) != 0) {
@@ -238,6 +239,7 @@ void createHandle (int index) {
 	}
 }
 
+@Override
 void createWidget (int index) {
 	super.createWidget (index);
 	doubleClick = true;
@@ -529,6 +531,7 @@ public void clearSelection () {
 	}
 }
 
+@Override
 public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget ();
 	if (wHint != SWT.DEFAULT && wHint < 0) wHint = 0;
@@ -565,6 +568,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	return new Point (trim.width, trim.height);
 }
 
+@Override
 public Rectangle computeTrim (int x, int y, int width, int height) {
 	checkWidget ();
 	Rectangle trim = super.computeTrim (x, y, width, height);
@@ -699,6 +703,7 @@ char [] deprocessText (char [] text, int start, int end) {
 	return text;
 }
 
+@Override
 void deregister () {
 	super.deregister ();
 	if (bufferHandle != 0) display.removeWidget (bufferHandle);
@@ -706,6 +711,7 @@ void deregister () {
 	if (imContext != 0) display.removeWidget (imContext);
 }
 
+@Override
 boolean dragDetect (int x, int y, boolean filter, boolean dragOnTimeout, boolean [] consume) {
 	if (filter) {
 		int start = 0, end = 0;
@@ -751,10 +757,12 @@ boolean dragDetect (int x, int y, boolean filter, boolean dragOnTimeout, boolean
 	return super.dragDetect (x, y, filter, dragOnTimeout, consume);
 }
 
+@Override
 long /*int*/ eventWindow () {
 	return paintWindow ();
 }
 
+@Override
 boolean filterKey (int keyval, long /*int*/ event) {
 	int time = OS.gdk_event_get_time (event);
 	if (time != lastEventTime) {
@@ -788,10 +796,12 @@ void fixIM () {
 	gdkEventKey = 0;
 }
 
+@Override
 GdkColor getBackgroundColor () {
 	return getBaseColor ();
 }
 
+@Override
 public int getBorderWidth () {
 	checkWidget();
 	if ((style & SWT.MULTI) != 0) return super.getBorderWidth ();
@@ -983,6 +993,7 @@ public boolean getEditable () {
 	return OS.gtk_text_view_get_editable (handle);
 }
 
+@Override
 GdkColor getForegroundColor () {
 	return getTextColor ();
 }
@@ -1069,6 +1080,7 @@ public String getMessage () {
  * 
  * @since 2.1.2
  */
+@Override
 public int getOrientation () {
 	return super.getOrientation ();
 }
@@ -1379,11 +1391,13 @@ public int getTopPixel () {
 	return lineTop [0];
 }
 
+@Override
 long /*int*/ gtk_activate (long /*int*/ widget) {
 	sendSelectionEvent (SWT.DefaultSelection);
 	return 0;
 }
 
+@Override
 long /*int*/ gtk_button_press_event (long /*int*/ widget, long /*int*/ event) {
 	long /*int*/ result = super.gtk_button_press_event (widget, event);
 	if (result != 0) return result;
@@ -1400,6 +1414,7 @@ long /*int*/ gtk_button_press_event (long /*int*/ widget, long /*int*/ event) {
 }
 
 
+@Override
 long /*int*/ gtk_changed (long /*int*/ widget) {
 	/*
 	* Feature in GTK.  When the user types, GTK positions
@@ -1434,6 +1449,7 @@ long /*int*/ gtk_changed (long /*int*/ widget) {
 	return 0;
 }
 
+@Override
 long /*int*/ gtk_commit (long /*int*/ imContext, long /*int*/ text) {
 	if (text == 0) return 0;
 	if ((style & SWT.SINGLE) != 0) {
@@ -1476,6 +1492,7 @@ long /*int*/ gtk_commit (long /*int*/ imContext, long /*int*/ text) {
 	return 0;
 }
 
+@Override
 long /*int*/ gtk_delete_range (long /*int*/ widget, long /*int*/ iter1, long /*int*/ iter2) {
 	if (!hooks (SWT.Verify) && !filters (SWT.Verify)) return 0;
 	byte [] startIter = new byte [ITER_SIZEOF];
@@ -1518,6 +1535,7 @@ long /*int*/ gtk_delete_range (long /*int*/ widget, long /*int*/ iter1, long /*i
 	return 0;
 }
 
+@Override
 long /*int*/ gtk_delete_text (long /*int*/ widget, long /*int*/ start_pos, long /*int*/ end_pos) {
 	if (!hooks (SWT.Verify) && !filters (SWT.Verify)) return 0;
 	long /*int*/ ptr = OS.gtk_entry_get_text (handle);
@@ -1550,6 +1568,7 @@ long /*int*/ gtk_delete_text (long /*int*/ widget, long /*int*/ start_pos, long 
 	return 0;
 }
 
+@Override
 long /*int*/ gtk_event_after (long /*int*/ widget, long /*int*/ gdkEvent) {
 	if (cursor != null) setCursor (cursor.handle);
 	/*
@@ -1650,6 +1669,7 @@ void drawMessage (long /*int*/ cr) {
 	}
 }
 
+@Override
 long /*int*/ gtk_draw (long /*int*/ widget, long /*int*/ cairo) {
 	if ((state & OBSCURED) != 0) return 0;
 	long /*int*/ result = super.gtk_draw (widget, cairo);
@@ -1657,6 +1677,7 @@ long /*int*/ gtk_draw (long /*int*/ widget, long /*int*/ cairo) {
 	return result;
 }
 
+@Override
 long /*int*/ gtk_expose_event (long /*int*/ widget, long /*int*/ event) {
 	if ((state & OBSCURED) != 0) return 0;
 	long /*int*/ result = super.gtk_expose_event (widget, event);
@@ -1664,11 +1685,13 @@ long /*int*/ gtk_expose_event (long /*int*/ widget, long /*int*/ event) {
 	return result;
 }
 
+@Override
 long /*int*/ gtk_focus_out_event (long /*int*/ widget, long /*int*/ event) {
 	fixIM ();
 	return super.gtk_focus_out_event (widget, event);
 }
 
+@Override
 long /*int*/ gtk_grab_focus (long /*int*/ widget) {
 	long /*int*/ result = super.gtk_grab_focus (widget);
 	/*
@@ -1685,6 +1708,7 @@ long /*int*/ gtk_grab_focus (long /*int*/ widget) {
 	return result;
 }
 
+@Override
 long /*int*/ gtk_icon_release (long /*int*/ widget, long /*int*/ icon_pos, long /*int*/ event) {
 	Event e = new Event();
 	if (icon_pos == OS.GTK_ENTRY_ICON_PRIMARY) {
@@ -1697,6 +1721,7 @@ long /*int*/ gtk_icon_release (long /*int*/ widget, long /*int*/ icon_pos, long 
 	return 0;
 }
 
+@Override
 long /*int*/ gtk_insert_text (long /*int*/ widget, long /*int*/ new_text, long /*int*/ new_text_length, long /*int*/ position) {
 	if (!hooks (SWT.Verify) && !filters (SWT.Verify)) return 0;
 	if (new_text == 0 || new_text_length == 0) return 0;
@@ -1745,6 +1770,7 @@ long /*int*/ gtk_insert_text (long /*int*/ widget, long /*int*/ new_text, long /
 	return 0;
 }
 
+@Override
 long /*int*/ gtk_key_press_event (long /*int*/ widget, long /*int*/ event) {
 	boolean handleSegments = false, segmentsCleared = false;
 	if (hooks (SWT.Segments) || filters (SWT.Segments)) {
@@ -1768,6 +1794,7 @@ long /*int*/ gtk_key_press_event (long /*int*/ widget, long /*int*/ event) {
 	return result;
 }
 
+@Override
 long /*int*/ gtk_populate_popup (long /*int*/ widget, long /*int*/ menu) {
 	if ((style & SWT.RIGHT_TO_LEFT) != 0) {
 		OS.gtk_widget_set_direction (menu, OS.GTK_TEXT_DIR_RTL);
@@ -1776,6 +1803,7 @@ long /*int*/ gtk_populate_popup (long /*int*/ widget, long /*int*/ menu) {
 	return 0;
 }
 
+@Override
 long /*int*/ gtk_text_buffer_insert_text (long /*int*/ widget, long /*int*/ iter, long /*int*/ text, long /*int*/ length) {
 	if (!hooks (SWT.Verify) && !filters (SWT.Verify)) return 0;
 	byte [] position = new byte [ITER_SIZEOF];
@@ -1811,6 +1839,7 @@ long /*int*/ gtk_text_buffer_insert_text (long /*int*/ widget, long /*int*/ iter
 	return 0;
 }
 
+@Override
 void hookEvents () {
 	super.hookEvents();
 	if ((style & SWT.SINGLE) != 0) {
@@ -1900,6 +1929,7 @@ public void insert (String string) {
 	applySegments ();
 }
 
+@Override
 long /*int*/ paintWindow () {
 	if ((style & SWT.SINGLE) != 0) {
 		long /*int*/ window = super.paintWindow ();
@@ -1946,6 +1976,7 @@ public void paste () {
 	}
 }
 
+@Override
 void register () {
 	super.register ();
 	if (bufferHandle != 0) display.addWidget (bufferHandle, this);
@@ -1953,6 +1984,7 @@ void register () {
 	if (imContext != 0) display.addWidget (imContext, this);
 }
 
+@Override
 void releaseWidget () {
 	super.releaseWidget ();
 	fixIM ();	
@@ -2081,6 +2113,7 @@ public void selectAll () {
 	}
 }
 
+@Override
 void setBackgroundColor (GdkColor color) {
 	super.setBackgroundColor (color);
 	if (!OS.GTK3) {
@@ -2088,6 +2121,7 @@ void setBackgroundColor (GdkColor color) {
 	}
 }
 
+@Override
 void setBackgroundColor (long /*int*/ context, long /*int*/ handle, GdkRGBA rgba) {
 	if ((style & SWT.MULTI) != 0) {
 		super.setBackgroundColor (context, handle, rgba);
@@ -2096,6 +2130,7 @@ void setBackgroundColor (long /*int*/ context, long /*int*/ handle, GdkRGBA rgba
 	setBackgroundColorGradient (context, handle, rgba);
 }
 
+@Override
 void setCursor (long /*int*/ cursor) {
 	long /*int*/ defaultCursor = 0;
 	if (cursor == 0) defaultCursor = OS.gdk_cursor_new (OS.GDK_XTERM);
@@ -2176,11 +2211,13 @@ public void setEditable (boolean editable) {
 	}
 }
 
+@Override
 void setFontDescription (long /*int*/ font) {
 	super.setFontDescription (font);
 	setTabStops (tabs);
 }
 
+@Override
 void setForegroundColor (GdkColor color) {
 	setForegroundColor (handle, color, false);
 }
@@ -2235,6 +2272,7 @@ public void setMessage (String message) {
  * 
  * @since 2.1.2
  */
+@Override
 public void setOrientation (int orientation) {
 	checkWidget();
 }
@@ -2588,6 +2626,7 @@ int translateOffset (int offset) {
 	return offset;
 }
 
+@Override
 boolean translateTraversal (GdkEventKey keyEvent) {
 	int key = keyEvent.keyval;
 	switch (key) {
@@ -2608,6 +2647,7 @@ boolean translateTraversal (GdkEventKey keyEvent) {
 	return super.translateTraversal (keyEvent);
 }
 
+@Override
 int traversalCode (int key, GdkEventKey event) {
 	int bits = super.traversalCode (key, event);
 	if ((style & SWT.READ_ONLY) != 0)  return bits;
@@ -2659,6 +2699,7 @@ String verifyText (String string, int start, int end) {
 	return event.text;
 }
 
+@Override
 long /*int*/ windowProc (long /*int*/ handle, long /*int*/ user_data) {
 	if (hooks (SWT.Segments) || filters (SWT.Segments) || segments != null) {
 		switch ((int)/*64*/user_data) {
@@ -2681,6 +2722,7 @@ long /*int*/ windowProc (long /*int*/ handle, long /*int*/ user_data) {
 	return super.windowProc (handle, user_data);
 }
 
+@Override
 long /*int*/ windowProc (long /*int*/ handle, long /*int*/ arg0, long /*int*/ user_data) {
 	if (hooks (SWT.Segments) || filters (SWT.Segments) || segments != null) {
 		switch ((int)/*64*/user_data) {
@@ -2694,6 +2736,7 @@ long /*int*/ windowProc (long /*int*/ handle, long /*int*/ arg0, long /*int*/ us
 	return super.windowProc (handle, arg0, user_data);
 }
 
+@Override
 long /*int*/ windowProc (long /*int*/ handle, long /*int*/ arg0, long /*int*/ arg1, long /*int*/ user_data) {
 	if (hooks (SWT.Segments) || filters (SWT.Segments) || segments != null) {
 		switch ((int)/*64*/user_data) {
@@ -2710,6 +2753,7 @@ long /*int*/ windowProc (long /*int*/ handle, long /*int*/ arg0, long /*int*/ ar
 	return super.windowProc (handle, arg0, arg1, user_data);
 }
 
+@Override
 long /*int*/ windowProc (long /*int*/ handle, long /*int*/ arg0, long /*int*/ arg1, long /*int*/ arg2, long /*int*/ user_data) {
 	if (hooks (SWT.Segments) || filters (SWT.Segments) || segments != null) {
 		switch ((int)/*64*/user_data) {

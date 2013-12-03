@@ -114,6 +114,7 @@ Sash createSash() {
  * 
  * @return SWT.HORIZONTAL or SWT.VERTICAL
  */
+@Override
 public int getOrientation() {
 	//checkWidget();
 	return (sashStyle & SWT.VERTICAL) != 0 ? SWT.HORIZONTAL : SWT.VERTICAL;
@@ -135,6 +136,7 @@ public int getSashWidth() {
 	checkWidget();
 	return SASH_WIDTH;
 }
+@Override
 public int getStyle() {
 	int style = super.getStyle();
 	style |= getOrientation() == SWT.VERTICAL ? SWT.VERTICAL : SWT.HORIZONTAL;
@@ -306,6 +308,7 @@ void onDragSash(Event event) {
  *    <li>ERROR_INVALID_ARGUMENT - if the value of orientation is not SWT.HORIZONTAL or SWT.VERTICAL, SWT.RIGHT_TO_LEFT or SWT.LEFT_TO_RIGHT
  * </ul>
  */
+@Override
 public void setOrientation(int orientation) {
 	checkWidget();
 	if (orientation == SWT.RIGHT_TO_LEFT || orientation == SWT.LEFT_TO_RIGHT) {
@@ -324,6 +327,7 @@ public void setOrientation(int orientation) {
 	}
 	layout(false);
 }
+@Override
 public void setBackground (Color color) {
 	super.setBackground(color);
 	background = color;
@@ -331,6 +335,7 @@ public void setBackground (Color color) {
 		sashes[i].setBackground(background);
 	}
 }
+@Override
 public void setForeground (Color color) {
 	super.setForeground(color);
 	foreground = color;
@@ -353,6 +358,7 @@ public void setForeground (Color color) {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  */
+@Override
 public void setLayout (Layout layout) {
 	checkWidget();
 	return;
@@ -410,6 +416,7 @@ public void setSashWidth(int width) {
 	SASH_WIDTH = width;
 	layout(false);
 }
+@Override
 public void setToolTipText(String string) {
 	super.setToolTipText(string);
 	for (int i = 0; i < sashes.length; i++) {

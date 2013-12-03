@@ -607,14 +607,17 @@ void center () {
 	setLocation (x, y);
 }
 
+@Override
 void checkBorder () {
 	/* Do nothing */
 }
 
+@Override
 void checkOpen () {
 	if (!opened) resized = false;
 }
 
+@Override
 long /*int*/ childStyle () {
 	return 0;
 }
@@ -644,6 +647,7 @@ void closeWidget () {
 	if (event.doit && !isDisposed ()) dispose ();
 }
 
+@Override
 public Rectangle computeTrim (int x, int y, int width, int height) {
 	checkWidget();
 	Rectangle trim = super.computeTrim (x, y, width, height);
@@ -670,6 +674,7 @@ public Rectangle computeTrim (int x, int y, int width, int height) {
 	return trim;
 }
 
+@Override
 void createHandle (int index) {
 	state |= HANDLE | CANVAS;
 	if (shellHandle == 0) {
@@ -732,6 +737,7 @@ void createHandle (int index) {
 	OS.gtk_widget_realize (shellHandle);
 }
 
+@Override
 long /*int*/ filterProc (long /*int*/ xEvent, long /*int*/ gdkEvent, long /*int*/ data2) {
 	int eventType = OS.X_EVENT_TYPE (xEvent);
 	if (eventType != OS.FocusOut && eventType != OS.FocusIn) return 0;
@@ -786,10 +792,12 @@ long /*int*/ filterProc (long /*int*/ xEvent, long /*int*/ gdkEvent, long /*int*
 	return 0;
 }
 
+@Override
 Control findBackgroundControl () {
 	return (state & BACKGROUND) != 0 || backgroundImage != null ? this : null;
 }
 
+@Override
 Composite findDeferredControl () {
 	return layoutCount > 0 ? this : null;
 }
@@ -815,10 +823,12 @@ public ToolBar getToolBar() {
 	return null;
 }
 
+@Override
 boolean hasBorder () {
 	return false;
 }
 
+@Override
 void hookEvents () {
 	super.hookEvents ();
 	OS.g_signal_connect_closure_by_id (shellHandle, display.signalIds [KEY_PRESS_EVENT], 0, display.getClosure (KEY_PRESS_EVENT), false);
@@ -846,6 +856,7 @@ void hookEvents () {
 	}
 }
 
+@Override
 public boolean isEnabled () {
 	checkWidget ();
 	return getEnabled ();
@@ -861,20 +872,24 @@ boolean isCustomResize () {
 	return (style & SWT.NO_TRIM) == 0 && (style & (SWT.RESIZE | SWT.ON_TOP)) == (SWT.RESIZE | SWT.ON_TOP);
 }
 
+@Override
 public boolean isVisible () {
 	checkWidget();
 	return getVisible ();
 }
 
+@Override
 void register () {
 	super.register ();
 	display.addWidget (shellHandle, this);
 }
 
+@Override
 void releaseParent () {
 	/* Do nothing */
 }
 
+@Override
 long /*int*/ topHandle () {
 	return shellHandle;
 }
@@ -906,6 +921,7 @@ void fixShell (Shell newShell, Control control) {
 	}
 }
 
+@Override
 long /*int*/ fixedSizeAllocateProc(long /*int*/ widget, long /*int*/ allocationPtr) {
 	int clientWidth = 0;
 	if ((style & SWT.MIRRORED) != 0) clientWidth = getClientWidth ();
@@ -914,9 +930,11 @@ long /*int*/ fixedSizeAllocateProc(long /*int*/ widget, long /*int*/ allocationP
 	return result;
 }
 
+@Override
 void fixStyle (long /*int*/ handle) {
 }
 
+@Override
 void forceResize () {
 	GtkAllocation allocation = new GtkAllocation ();
 	gtk_widget_get_allocation (vboxHandle, allocation);
@@ -1004,6 +1022,7 @@ public boolean getFullScreen () {
 	return fullScreen;
 }
 
+@Override
 public Point getLocation () {
 	checkWidget ();
 	int [] x = new int [1], y = new int [1];
@@ -1011,6 +1030,7 @@ public Point getLocation () {
 	return new Point (x [0], y [0]);
 }
 
+@Override
 public boolean getMaximized () {
 	checkWidget();
 	return !fullScreen && super.getMaximized ();
@@ -1083,6 +1103,7 @@ public boolean getModified () {
 	return modified;
 }
 
+@Override
 public Point getSize () {
 	checkWidget ();
 	GtkAllocation allocation = new GtkAllocation ();
@@ -1096,6 +1117,7 @@ public Point getSize () {
 	return new Point (width + trimWidth () + 2*border, height + trimHeight () + 2*border);
 }
 
+@Override
 public boolean getVisible () {
 	checkWidget();
 	return gtk_widget_get_visible (shellHandle); 
@@ -1115,6 +1137,7 @@ public boolean getVisible () {
  * @since 3.0
  *
  */
+@Override
 public Region getRegion () {
 	/* This method is needed for @since 3.0 Javadoc */
 	checkWidget ();
@@ -1143,6 +1166,7 @@ public int getImeInputMode () {
 	return SWT.NONE;
 }
 
+@Override
 Shell _getShell () {
 	return this;
 }
@@ -1182,6 +1206,7 @@ public Shell [] getShells () {
 	return result;
 }
 
+@Override
 long /*int*/ gtk_button_press_event (long /*int*/ widget, long /*int*/ event) {
 	if (widget == shellHandle) {
 		if (isCustomResize ()) {
@@ -1208,6 +1233,7 @@ long /*int*/ gtk_button_press_event (long /*int*/ widget, long /*int*/ event) {
 	return super.gtk_button_press_event (widget, event);
 }
 
+@Override
 long /*int*/ gtk_configure_event (long /*int*/ widget, long /*int*/ event) {
 	int [] x = new int [1], y = new int [1];
 	OS.gtk_window_get_position (shellHandle, x, y);
@@ -1221,11 +1247,13 @@ long /*int*/ gtk_configure_event (long /*int*/ widget, long /*int*/ event) {
 	return 0;
 }
 
+@Override
 long /*int*/ gtk_delete_event (long /*int*/ widget, long /*int*/ event) {
 	if (isEnabled()) closeWidget ();
 	return 1;
 }
 
+@Override
 long /*int*/ gtk_enter_notify_event (long /*int*/ widget, long /*int*/ event) {
 	if (widget != shellHandle) {
 		return super.gtk_enter_notify_event (widget, event);
@@ -1233,6 +1261,7 @@ long /*int*/ gtk_enter_notify_event (long /*int*/ widget, long /*int*/ event) {
 	return 0;
 }
 
+@Override
 long /*int*/ gtk_draw (long /*int*/ widget, long /*int*/ cairo) {
 	if (widget == shellHandle) {
 		if (isCustomResize ()) {
@@ -1257,6 +1286,7 @@ long /*int*/ gtk_draw (long /*int*/ widget, long /*int*/ cairo) {
 	return super.gtk_draw (widget, cairo);
 }
 
+@Override
 long /*int*/ gtk_expose_event (long /*int*/ widget, long /*int*/ event) {
 	if (widget == shellHandle) {
 		if (isCustomResize ()) {
@@ -1287,6 +1317,7 @@ long /*int*/ gtk_expose_event (long /*int*/ widget, long /*int*/ event) {
 	return super.gtk_expose_event (widget, event);
 }
 
+@Override
 long /*int*/ gtk_focus (long /*int*/ widget, long /*int*/ directionType) {
 	switch ((int)/*64*/directionType) {
 		case OS.GTK_DIR_TAB_FORWARD:
@@ -1304,6 +1335,7 @@ long /*int*/ gtk_focus (long /*int*/ widget, long /*int*/ directionType) {
 	return super.gtk_focus (widget, directionType);
 }
 
+@Override
 long /*int*/ gtk_focus_in_event (long /*int*/ widget, long /*int*/ event) {
 	if (widget != shellHandle) {
 		return super.gtk_focus_in_event (widget, event);
@@ -1314,6 +1346,7 @@ long /*int*/ gtk_focus_in_event (long /*int*/ widget, long /*int*/ event) {
 	return 0;
 }
 
+@Override
 long /*int*/ gtk_focus_out_event (long /*int*/ widget, long /*int*/ event) {
 	if (widget != shellHandle) {
 		return super.gtk_focus_out_event (widget, event);
@@ -1328,6 +1361,7 @@ long /*int*/ gtk_focus_out_event (long /*int*/ widget, long /*int*/ event) {
 	return 0;
 }
 
+@Override
 long /*int*/ gtk_leave_notify_event (long /*int*/ widget, long /*int*/ event) {
 	if (widget == shellHandle) {
 		if (isCustomResize ()) {
@@ -1344,6 +1378,7 @@ long /*int*/ gtk_leave_notify_event (long /*int*/ widget, long /*int*/ event) {
 	return super.gtk_leave_notify_event (widget, event);
 }
 
+@Override
 long /*int*/ gtk_move_focus (long /*int*/ widget, long /*int*/ directionType) {
 	Control control = display.getFocusControl ();
 	if (control != null) {
@@ -1354,6 +1389,7 @@ long /*int*/ gtk_move_focus (long /*int*/ widget, long /*int*/ directionType) {
 	return 1;
 }
 
+@Override
 long /*int*/ gtk_motion_notify_event (long /*int*/ widget, long /*int*/ event) {
 	if (widget == shellHandle) {
 		if (isCustomResize ()) {
@@ -1426,6 +1462,7 @@ long /*int*/ gtk_motion_notify_event (long /*int*/ widget, long /*int*/ event) {
 	return super.gtk_motion_notify_event (widget, event);
 }
 
+@Override
 long /*int*/ gtk_key_press_event (long /*int*/ widget, long /*int*/ event) {
 	if (widget == shellHandle) {
 		/* Stop menu mnemonics when the shell is disabled */
@@ -1458,6 +1495,7 @@ long /*int*/ gtk_key_press_event (long /*int*/ widget, long /*int*/ event) {
 	return super.gtk_key_press_event (widget, event);
 }
 
+@Override
 long /*int*/ gtk_size_allocate (long /*int*/ widget, long /*int*/ allocation) {
 	GtkAllocation widgetAllocation = new GtkAllocation ();
 	gtk_widget_get_allocation (shellHandle, widgetAllocation);
@@ -1471,6 +1509,7 @@ long /*int*/ gtk_size_allocate (long /*int*/ widget, long /*int*/ allocation) {
 	return 0;
 }
 
+@Override
 long /*int*/ gtk_realize (long /*int*/ widget) {
 	long /*int*/ result = super.gtk_realize (widget);
 	long /*int*/ window = gtk_widget_get_window (shellHandle);
@@ -1499,6 +1538,7 @@ long /*int*/ gtk_realize (long /*int*/ widget) {
 	return result;
 }
 
+@Override
 long /*int*/ gtk_window_state_event (long /*int*/ widget, long /*int*/ event) {
 	GdkEventWindowState gdkEvent = new GdkEventWindowState ();
 	OS.memmove (gdkEvent, event, GdkEventWindowState.sizeof);
@@ -1545,6 +1585,7 @@ public void open () {
 	if (!restoreFocus () && !traverseGroup (true)) setFocus ();
 }
 
+@Override
 public boolean print (GC gc) {
 	checkWidget ();
 	if (gc == null) error (SWT.ERROR_NULL_ARGUMENT);
@@ -1590,6 +1631,7 @@ void removeTooTip (ToolTip toolTip) {
 	}
 }
 
+@Override
 void reskinChildren (int flags) {
 	Shell [] shells = getShells ();
 	for (int i=0; i<shells.length; i++) {
@@ -1726,6 +1768,7 @@ void resizeBounds (int width, int height, boolean notify) {
 	}
 }
 
+@Override
 int setBounds (int x, int y, int width, int height, boolean move, boolean resize) {
 	if (fullScreen) setFullScreen (false);
 	/*
@@ -1775,6 +1818,7 @@ int setBounds (int x, int y, int width, int height, boolean move, boolean resize
 	return result;
 }
 
+@Override
 void setCursor (long /*int*/ cursor) {
 	if (enableWindow != 0) {
 		OS.gdk_window_set_cursor (enableWindow, cursor);
@@ -1788,6 +1832,7 @@ void setCursor (long /*int*/ cursor) {
 	super.setCursor (cursor);
 }
 
+@Override
 public void setEnabled (boolean enabled) {
 	checkWidget();
 	if (((state & DISABLED) == 0) == enabled) return;
@@ -1901,6 +1946,7 @@ public void setImeInputMode (int mode) {
 	checkWidget();
 }
 
+@Override
 void setInitialBounds () {
 	int width, height;
 	if ((state & FOREIGN_HANDLE) != 0) {
@@ -1928,6 +1974,7 @@ void setInitialBounds () {
 	resizeBounds (width, height, false);
 }
 
+@Override
 public void setMaximized (boolean maximized) {
 	checkWidget();
 	super.setMaximized (maximized);
@@ -1938,6 +1985,7 @@ public void setMaximized (boolean maximized) {
 	}
 }
 
+@Override
 public void setMenuBar (Menu menu) {
 	checkWidget();
 	if (menuBar == menu) return;
@@ -1965,6 +2013,7 @@ public void setMenuBar (Menu menu) {
 	resizeBounds (width, height, !both);
 }
 
+@Override
 public void setMinimized (boolean minimized) {
 	checkWidget();
 	if (this.minimized == minimized) return;
@@ -2061,6 +2110,7 @@ public void setModified (boolean modified) {
  * @since 3.0
  *
  */
+@Override
 public void setRegion (Region region) {
 	checkWidget ();
 	if ((style & SWT.NO_TRIM) == 0) return;
@@ -2070,9 +2120,11 @@ public void setRegion (Region region) {
 /*
  * Shells are never labelled by other widgets, so no initialization is needed.
  */
+@Override
 void setRelations() {
 }
 
+@Override
 public void setText (String string) {
 	super.setText (string);
 
@@ -2091,6 +2143,7 @@ public void setText (String string) {
 	OS.gtk_window_set_title (shellHandle, buffer);
 }
 
+@Override
 public void setVisible (boolean visible) {
 	checkWidget();
 	int mask = SWT.PRIMARY_MODAL | SWT.APPLICATION_MODAL | SWT.SYSTEM_MODAL;
@@ -2198,6 +2251,7 @@ public void setVisible (boolean visible) {
 	}
 }
 
+@Override
 void setZOrder (Control sibling, boolean above, boolean fixRelations) {
 	/*
 	* Bug in GTK+.  Changing the toplevel window Z-order causes
@@ -2210,12 +2264,14 @@ void setZOrder (Control sibling, boolean above, boolean fixRelations) {
 	if (mapped) setZOrder (sibling, above, false, false);
 }
 
+@Override
 long /*int*/ shellMapProc (long /*int*/ handle, long /*int*/ arg0, long /*int*/ user_data) {
 	mapped = true;
 	display.dispatchEvents = null;
 	return 0;
 }
 
+@Override
 void showWidget () {
 	if ((state & FOREIGN_HANDLE) != 0) {
 		/*
@@ -2240,6 +2296,7 @@ void showWidget () {
 	if (vboxHandle != 0) OS.gtk_widget_show (vboxHandle);
 }
 
+@Override
 long /*int*/ sizeAllocateProc (long /*int*/ handle, long /*int*/ arg0, long /*int*/ user_data) {
 	int offset = 16;
 	int [] x = new int [1], y = new int [1];
@@ -2265,11 +2322,13 @@ long /*int*/ sizeAllocateProc (long /*int*/ handle, long /*int*/ arg0, long /*in
 	return 0;
 }
 
+@Override
 long /*int*/ sizeRequestProc (long /*int*/ handle, long /*int*/ arg0, long /*int*/ user_data) {
 	OS.gtk_widget_hide (handle);
 	return 0;
 }
 
+@Override
 boolean traverseEscape () {
 	if (parent == null) return false;
 	if (!isVisible () || !isEnabled ()) return false;
@@ -2399,11 +2458,13 @@ void updateMinimized (boolean minimized) {
 	}
 }
 
+@Override
 void deregister () {
 	super.deregister ();
 	display.removeWidget (shellHandle);
 }
 
+@Override
 public void dispose () {
 	/*
 	* Note:  It is valid to attempt to dispose a widget
@@ -2441,6 +2502,7 @@ public void forceActive () {
 	bringToTop (true);
 }
 
+@Override
 public Rectangle getBounds () {
 	checkWidget ();
 	int [] x = new int [1], y = new int [1];
@@ -2456,11 +2518,13 @@ public Rectangle getBounds () {
 	return new Rectangle (x [0], y [0], width + trimWidth () + 2*border, height + trimHeight () + 2*border);
 }
 
+@Override
 void releaseHandle () {
 	super.releaseHandle ();
 	shellHandle = 0;
 }
 
+@Override
 void releaseChildren (boolean destroy) {
 	Shell [] shells = getShells ();
 	for (int i=0; i<shells.length; i++) {
@@ -2481,6 +2545,7 @@ void releaseChildren (boolean destroy) {
 	super.releaseChildren (destroy);
 }
 
+@Override
 void releaseWidget () {
 	super.releaseWidget ();
 	destroyAccelGroup ();

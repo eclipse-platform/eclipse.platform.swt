@@ -49,6 +49,7 @@ public AccessibleActionEvent(Object source) {
  *
  * @return a string representation of the event
  */
+@Override
 public String toString () {
 	return "AccessibleActionEvent {" //$NON-NLS-1$
 		+ "string=" + result   //$NON-NLS-1$

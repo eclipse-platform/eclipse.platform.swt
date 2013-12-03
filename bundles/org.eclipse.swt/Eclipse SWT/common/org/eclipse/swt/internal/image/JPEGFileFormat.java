@@ -1356,6 +1356,7 @@ void inverseDCT(int[] dataUnit) {
 		}
 	}
 }
+@Override
 boolean isFileFormat(LEDataInputStream stream) {
 	try {
 		JPEGStartOfImage soi = new JPEGStartOfImage(stream);
@@ -1377,6 +1378,7 @@ boolean isZeroInRow(int[] dataUnit, int rIndex) {
 			&& dataUnit[rIndex + 5] == 0 && dataUnit[rIndex + 6] == 0
 			&& dataUnit[rIndex + 7] == 0;
 }
+@Override
 ImageData[] loadFromByteStream() {
 	//TEMPORARY CODE
 	if (System.getProperty("org.eclipse.swt.internal.image.JPEGFileFormat_3.2") == null) {
@@ -1757,6 +1759,7 @@ void storeData(int[] dataUnit, int iComp, int xmcu, int ymcu, int hi, int ihi, i
 		destIndex += compWidth;
 	}
 }
+@Override
 void unloadIntoByteStream(ImageLoader loader) {
 	ImageData image = loader.data[0];
 	if (!new JPEGStartOfImage().writeToStream(outputStream)) {

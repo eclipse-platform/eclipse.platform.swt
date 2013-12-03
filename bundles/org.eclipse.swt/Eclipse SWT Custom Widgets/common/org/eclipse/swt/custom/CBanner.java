@@ -180,6 +180,7 @@ public Control getBottom() {
 	checkWidget();
 	return bottom;
 }
+@Override
 public Rectangle getClientArea() {
 	return new Rectangle(0, 0, 0, 0);
 }
@@ -417,6 +418,7 @@ public void setBottom(Control control) {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  */
+@Override
 public void setLayout (Layout layout) {
 	checkWidget();
 	return;

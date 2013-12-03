@@ -242,6 +242,7 @@ public boolean getWideCaret () {
 	return false; 
 }
 
+@Override
 long /*int*/ gtk_button_press_event (long /*int*/ widget, long /*int*/ event) {
 	if (!isInlineEnabled ()) return 0;
 	long /*int*/ imHandle = imHandle ();
@@ -249,6 +250,7 @@ long /*int*/ gtk_button_press_event (long /*int*/ widget, long /*int*/ event) {
 	return 0;
 }
 
+@Override
 long /*int*/ gtk_commit (long /*int*/ imcontext, long /*int*/ textPtr) {
 	if (!isInlineEnabled ()) return 0;
 	boolean doit = true;
@@ -278,6 +280,7 @@ long /*int*/ gtk_commit (long /*int*/ imcontext, long /*int*/ textPtr) {
 	return doit ? 0 : 1;
 }
 
+@Override
 long /*int*/ gtk_preedit_changed (long /*int*/ imcontext) {
 	if (!isInlineEnabled ()) return 0;
 	ranges = null;
@@ -403,11 +406,13 @@ boolean isInlineEnabled () {
 	return hooks (SWT.ImeComposition);
 }
 
+@Override
 void releaseParent () {
 	super.releaseParent ();
 	if (this == parent.getIME ()) parent.setIME (null);
 }
 
+@Override
 void releaseWidget () {
 	super.releaseWidget ();
 	parent = null;

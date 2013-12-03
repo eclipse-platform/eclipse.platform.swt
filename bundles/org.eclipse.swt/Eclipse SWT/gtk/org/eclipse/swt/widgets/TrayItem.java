@@ -141,15 +141,18 @@ public void addSelectionListener(SelectionListener listener) {
 	addListener (SWT.DefaultSelection, typedListener);
 }
 
+@Override
 protected void checkSubclass () {
 	if (!isValidSubclass ()) error (SWT.ERROR_INVALID_SUBCLASS);
 }
 
+@Override
 void createWidget (int index) {
 	super.createWidget (index);
 	parent.createItem (this, index);
 }
 
+@Override
 void createHandle (int index) {
 	state |= HANDLE;
 	handle = OS.gtk_status_icon_new ();
@@ -158,11 +161,13 @@ void createHandle (int index) {
 	OS.gtk_status_icon_set_visible (handle,true);
 }
 
+@Override
 void deregister () {
 	super.deregister ();
 	display.removeWidget (imageHandle);
 }
 
+@Override
 void destroyWidget () {
 	parent.destroyItem (this);
 	releaseHandle ();
@@ -237,6 +242,7 @@ public String getToolTipText () {
 	return toolTipText;
 }
 
+@Override
 long /*int*/ gtk_activate (long /*int*/ widget) {
 	sendSelectionEvent (SWT.Selection);
 	/*
@@ -262,6 +268,7 @@ long /*int*/ gtk_activate (long /*int*/ widget) {
 	return 0;
 }
 
+@Override
 long /*int*/ gtk_button_press_event (long /*int*/ widget, long /*int*/ eventPtr) {
 	GdkEventButton gdkEvent = new GdkEventButton ();
 	OS.memmove (gdkEvent, eventPtr, GdkEventButton.sizeof);
@@ -278,6 +285,7 @@ long /*int*/ gtk_button_press_event (long /*int*/ widget, long /*int*/ eventPtr)
 	return 0;
 }
 
+@Override
 long /*int*/ gtk_size_allocate (long /*int*/ widget, long /*int*/ allocation) {
 	if (image != null && image.mask != 0) {
 		if (OS.gdk_drawable_get_depth (image.mask) == 1) {
@@ -313,6 +321,7 @@ long /*int*/ gtk_size_allocate (long /*int*/ widget, long /*int*/ allocation) {
 	return 0;
 }
 
+@Override
 long /*int*/ gtk_status_icon_popup_menu (long /*int*/ widget, long /*int*/ button, long /*int*/ activate_time) {
 	/*
 	* GTK provides a MenuPositionFunc for GtkStatusIcon in order
@@ -326,6 +335,7 @@ long /*int*/ gtk_status_icon_popup_menu (long /*int*/ widget, long /*int*/ butto
 	return 0;
 }
 
+@Override
 void hookEvents () {
 	OS.g_signal_connect_closure (handle, OS.activate, display.getClosure (ACTIVATE), false);
 	OS.g_signal_connect_closure (handle, OS.popup_menu, display.getClosure (STATUS_ICON_POPUP_MENU), false);
@@ -347,11 +357,13 @@ public boolean getVisible () {
 	return OS.gtk_status_icon_get_visible (handle);
 }
 
+@Override
 void register () {
 	super.register ();
 	display.addWidget (imageHandle, this);
 }
 
+@Override
 void releaseHandle () {
 	if (handle != 0) {
 		OS.g_object_unref (handle);
@@ -361,6 +373,7 @@ void releaseHandle () {
 	parent = null;
 }
 
+@Override
 void releaseWidget () {
 	super.releaseWidget ();
 	if (tooltipsHandle != 0) OS.g_object_unref (tooltipsHandle);
@@ -457,6 +470,7 @@ public void setHighlightImage (Image image) {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  */
+@Override
 public void setImage (Image image) {
 	checkWidget ();
 	if (image != null && image.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);

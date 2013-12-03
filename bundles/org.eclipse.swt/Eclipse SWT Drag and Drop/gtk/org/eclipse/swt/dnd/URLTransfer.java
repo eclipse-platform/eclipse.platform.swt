@@ -56,6 +56,7 @@ public static URLTransfer getInstance () {
  * 
  * @see Transfer#nativeToJava
  */
+@Override
 public void javaToNative (Object object, TransferData transferData){
 	transferData.result = 0;
 	if (!checkURL(object) || !isSupportedType(transferData)) {
@@ -85,6 +86,7 @@ public void javaToNative (Object object, TransferData transferData){
  * 
  * @see Transfer#javaToNative
  */
+@Override
 public Object nativeToJava(TransferData transferData){
 	if (!isSupportedType(transferData) ||  transferData.pValue == 0) return null;
 	/* Ensure byteCount is a multiple of 2 bytes */
@@ -97,10 +99,12 @@ public Object nativeToJava(TransferData transferData){
 	return (end == -1) ? string : string.substring(0, end);
 }
 
+@Override
 protected int[] getTypeIds(){
 	return new int[] {TEXT_XMOZURL_ID, TEXT_UNICODE_ID};
 }
 
+@Override
 protected String[] getTypeNames(){
 	return new String[] {TEXT_XMOZURL, TEXT_UNICODE}; 
 }
@@ -109,6 +113,7 @@ boolean checkURL(Object object) {
 	return object != null && (object instanceof String) && ((String)object).length() > 0;
 }
 
+@Override
 protected boolean validate(Object object) {
 	return checkURL(object);
 }

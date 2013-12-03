@@ -319,6 +319,7 @@ public static Shell new_Shell (final Display display, final Canvas parent) {
 
 	final Shell shell = Shell.gtk_new (display, handle);
 	final ComponentListener listener = new ComponentAdapter () {
+		@Override
 		public void componentResized (ComponentEvent e) {
 			display.syncExec (new Runnable () {
 				public void run () {

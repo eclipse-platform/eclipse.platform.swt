@@ -98,6 +98,7 @@ public Item (Widget parent, int style, int index) {
 	this (parent, style);
 }
 
+@Override
 protected void checkSubclass () {
 	/* Do Nothing - Subclassing is allowed */
 }
@@ -118,6 +119,7 @@ public Image getImage () {
 	return image;
 }
 
+@Override
 String getNameText () {
 	return getText ();
 }
@@ -138,6 +140,7 @@ public String getText () {
 	return text;
 }
 
+@Override
 void releaseWidget () {
 	super.releaseWidget ();
 	text = null;

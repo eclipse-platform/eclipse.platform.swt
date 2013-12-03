@@ -328,6 +328,7 @@ FormAttachment getTopAttachment (Control control, int spacing, boolean flushCach
  *
  * @return a string representation of the FormData object
  */
+@Override
 public String toString () {
  	String string = getName()+" {";
  	if (width != SWT.DEFAULT) string += "width="+width+" ";

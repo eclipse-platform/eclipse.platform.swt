@@ -159,6 +159,7 @@ public GridLayout (int numColumns, boolean makeColumnsEqualWidth) {
 	this.makeColumnsEqualWidth = makeColumnsEqualWidth;
 }
 
+@Override
 protected Point computeSize (Composite composite, int wHint, int hHint, boolean flushCache) {
 	Point size = layout (composite, false, 0, 0, wHint, hHint, flushCache);
 	if (wHint != SWT.DEFAULT) size.x = wHint;
@@ -166,6 +167,7 @@ protected Point computeSize (Composite composite, int wHint, int hHint, boolean 
 	return size;
 }
 
+@Override
 protected boolean flushCache (Control control) {
 	Object data = control.getLayoutData ();
 	if (data != null) ((GridData) data).flushCache ();
@@ -189,6 +191,7 @@ GridData getData (Control [][] grid, int row, int column, int rowCount, int colu
 	return null;
 }
 
+@Override
 protected void layout (Composite composite, boolean flushCache) {
 	Rectangle rect = composite.getClientArea ();
 	layout (composite, true, rect.x, rect.y, rect.width, rect.height, flushCache);
@@ -727,6 +730,7 @@ String getName () {
  *
  * @return a string representation of the layout
  */
+@Override
 public String toString () {
  	String string = getName ()+" {";
  	if (numColumns != 1) string += "numColumns="+numColumns+" ";

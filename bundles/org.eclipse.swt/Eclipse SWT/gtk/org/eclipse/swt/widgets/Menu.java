@@ -297,6 +297,7 @@ public void addHelpListener (HelpListener listener) {
 	addListener (SWT.Help, typedListener);
 }
 
+@Override
 void createHandle (int index) {
 	state |= HANDLE;
 	if ((style & SWT.BAR) != 0) {
@@ -350,6 +351,7 @@ void createIMMenu (long /*int*/ imHandle) {
 	OS.gtk_menu_item_set_submenu (imItem, imSubmenu);
 }
 
+@Override
 void createWidget (int index) {
 	checkOrientation (parent);
 	super.createWidget (index);
@@ -509,6 +511,7 @@ public MenuItem [] getItems () {
 	return items;
 }
 
+@Override
 String getNameText () {
 	String result = "";
 	MenuItem [] items = getItems ();
@@ -640,6 +643,7 @@ public boolean getVisible () {
 	return gtk_widget_get_mapped (handle);
 }
 
+@Override
 long /*int*/ gtk_hide (long /*int*/ widget) {
 	if ((style & SWT.POP_UP) != 0) {
 		if (display.activeShell != null) display.activeShell = getShell ();
@@ -655,6 +659,7 @@ long /*int*/ gtk_hide (long /*int*/ widget) {
 	return 0;
 }
 
+@Override
 long /*int*/ gtk_show (long /*int*/ widget) {
 	if ((style & SWT.POP_UP) != 0) {
 		if (display.activeShell != null) display.activeShell = getShell ();
@@ -672,6 +677,7 @@ long /*int*/ gtk_show (long /*int*/ widget) {
 }
 
 
+@Override
 long /*int*/ gtk_show_help (long /*int*/ widget, long /*int*/ helpType) {
 	if (sendHelpEvent (helpType)) {
 		OS.gtk_menu_shell_deactivate (handle);
@@ -680,6 +686,7 @@ long /*int*/ gtk_show_help (long /*int*/ widget, long /*int*/ helpType) {
 	return 0;
 }
 
+@Override
 void hookEvents () {
 	super.hookEvents ();
 	OS.g_signal_connect_closure_by_id (handle, display.signalIds [SHOW], 0, display.getClosure (SHOW), false);
@@ -757,6 +764,7 @@ public boolean isVisible () {
 	return getVisible ();
 }
 
+@Override
 long /*int*/ menuPositionProc (long /*int*/ menu, long /*int*/ x, long /*int*/ y, long /*int*/ push_in, long /*int*/ user_data) {
 	/*
 	* Feature in GTK.  The menu position function sets the position of the
@@ -787,6 +795,7 @@ long /*int*/ menuPositionProc (long /*int*/ menu, long /*int*/ x, long /*int*/ y
 	return 0;
 }
 
+@Override
 void releaseChildren (boolean destroy) {
 	MenuItem [] items = getItems ();
 	for (int i=0; i<items.length; i++) {
@@ -798,6 +807,7 @@ void releaseChildren (boolean destroy) {
 	super.releaseChildren (destroy);
 }
 
+@Override
 void releaseParent () {
 	super.releaseParent ();
 	if (cascade != null) cascade.setMenu (null);
@@ -810,6 +820,7 @@ void releaseParent () {
 	}
 }
 
+@Override
 void releaseWidget () {
 	super.releaseWidget ();
 	if (parent != null) parent.removeMenu (this); 
@@ -877,6 +888,7 @@ public void removeHelpListener (HelpListener listener) {
 	eventTable.unhook (SWT.Help, listener);
 }
 
+@Override
 void reskinChildren (int flags) {
 	MenuItem [] items = getItems ();
 	for (int i=0; i<items.length; i++) {
@@ -1022,6 +1034,7 @@ void _setOrientation (int orientation) {
     setOrientation (false);
 }
 
+@Override
 void setOrientation (boolean create) {
     if ((style & SWT.RIGHT_TO_LEFT) != 0 || !create) {
     	int dir = (style & SWT.RIGHT_TO_LEFT) != 0 ? OS.GTK_TEXT_DIR_RTL : OS.GTK_TEXT_DIR_LTR;

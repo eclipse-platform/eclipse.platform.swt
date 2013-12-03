@@ -91,6 +91,7 @@ public class StyledTextDropTargetEffect extends DropTargetEffect {
 	 * @see DropTargetAdapter
 	 * @see DropTargetEvent
 	 */
+	@Override
 	public void dragEnter(DropTargetEvent event) {
 		currentOffset = -1;
 		scrollBeginTime = 0;
@@ -114,6 +115,7 @@ public class StyledTextDropTargetEffect extends DropTargetEffect {
 	 * @see DropTargetAdapter
 	 * @see DropTargetEvent
 	 */
+	@Override
 	public void dragLeave(DropTargetEvent event) {
 		StyledText text = (StyledText) getControl();
 		if (currentOffset != -1) {
@@ -141,6 +143,7 @@ public class StyledTextDropTargetEffect extends DropTargetEffect {
 	 * @see DND#FEEDBACK_SELECT
 	 * @see DND#FEEDBACK_SCROLL
 	 */
+	@Override
 	public void dragOver(DropTargetEvent event) {
 		int effect = event.feedback;
 		StyledText text = (StyledText) getControl();
@@ -232,6 +235,7 @@ public class StyledTextDropTargetEffect extends DropTargetEffect {
 	 * @see DropTargetAdapter
 	 * @see DropTargetEvent
 	 */
+	@Override
 	public void dropAccept(DropTargetEvent event) {
 		if (currentOffset != -1) {
 			StyledText text = (StyledText) getControl();

@@ -64,6 +64,7 @@ public static TextTransfer getInstance () {
  *  
  * @see Transfer#nativeToJava
  */
+@Override
 public void javaToNative (Object object, TransferData transferData) {
 	transferData.result = 0;
 	if (!checkText(object) || !isSupportedType(transferData)) {
@@ -119,6 +120,7 @@ public void javaToNative (Object object, TransferData transferData) {
  * 
  * @see Transfer#javaToNative
  */
+@Override
 public Object nativeToJava(TransferData transferData){
 	if (!isSupportedType(transferData) ||  transferData.pValue == 0) return null;
 	long /*int*/[] list = new long /*int*/[1];
@@ -137,10 +139,12 @@ public Object nativeToJava(TransferData transferData){
 	return (end == -1) ? string : string.substring(0, end);
 }
 
+@Override
 protected int[] getTypeIds() {
 	return new int[] {UTF8_STRING_ID, COMPOUND_TEXT_ID, STRING_ID};
 }
 
+@Override
 protected String[] getTypeNames() {
 	return new String[] {UTF8_STRING, COMPOUND_TEXT, STRING};
 }
@@ -149,6 +153,7 @@ boolean checkText(Object object) {
 	return (object != null && object instanceof String && ((String)object).length() > 0);
 }
 
+@Override
 protected boolean validate(Object object) {
 	return checkText(object);
 }

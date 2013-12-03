@@ -304,10 +304,12 @@ public void addSelectionListener (SelectionListener listener) {
 	addListener (SWT.DefaultSelection, typedListener);
 }
 
+@Override
 protected void checkSubclass () {
 	if (!isValidSubclass ()) error (SWT.ERROR_INVALID_SUBCLASS);
 }
 
+@Override
 public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget ();
 	int width = 0, height = 0;
@@ -334,6 +336,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	return new Point (width + 2*borderWidth, height+ 2*borderWidth);
 }
 
+@Override
 void createHandle (int index) {
 	if ((style & SWT.CALENDAR) != 0) {
 		state |= HANDLE;
@@ -349,10 +352,12 @@ void createHandle (int index) {
 	}
 }
 
+@Override
 boolean checkSubwindow () {
 	return false;
 }
 
+@Override
 void createWidget (int index) {
 	super.createWidget (index);
 	if ((style & SWT.CALENDAR) != 0) {
@@ -435,6 +440,7 @@ void dropDownCalendar(boolean drop) {
 	display.addFilter(SWT.MouseDown, clickListener);
 }
 	
+@Override
 long /*int*/ focusHandle () {
 	if (text != null) return text.handle;
 	return super.focusHandle ();
@@ -456,6 +462,7 @@ String formattedStringValue(int fieldName, int value, boolean adjust) {
 	return String.valueOf(value);
 }
 
+@Override
 GdkColor getBackgroundColor () {
 	if ((style & SWT.CALENDAR) != 0) {
 		return getBaseColor ();
@@ -599,6 +606,7 @@ public int getMonth () {
 	}
 }
 
+@Override
 String getNameText() {
 	return (style & SWT.TIME) != 0 ? getHours() + ":" + getMinutes() + ":" + getSeconds()
 			: (getMonth() + 1) + "/" + getDay() + "/" + getYear();
@@ -687,16 +695,19 @@ public int getYear () {
 	}
 }
 
+@Override
 long /*int*/ gtk_day_selected (long /*int*/ widget) {
 	sendSelectionEvent ();
 	return 0;
 }
 
+@Override
 long /*int*/ gtk_day_selected_double_click (long /*int*/ widget) {
 	sendSelectionEvent (SWT.DefaultSelection);
 	return 0;
 }
 
+@Override
 long /*int*/ gtk_month_changed (long /*int*/ widget) {
 	/*
 	* Feature in GTK. "month-changed" signal is emitted when the
@@ -713,6 +724,7 @@ long /*int*/ gtk_month_changed (long /*int*/ widget) {
 	return 0;
 }
 
+@Override
 boolean hasFocus () {
 	if (super.hasFocus ()) return true;
 	Control focusControl = display.getFocusControl();
@@ -720,6 +732,7 @@ boolean hasFocus () {
 	return false;
 }
 
+@Override
 void hookEvents () {
 	super.hookEvents();
 	if ((style & SWT.CALENDAR) != 0) {
@@ -749,6 +762,7 @@ boolean isDropped () {
 	return popupShell.getVisible ();
 }
 
+@Override
 public boolean isFocusControl () {
 	checkWidget();
 	if ((style & SWT.DROP_DOWN) != 0 && (text.isFocusControl () || popupShell.isFocusControl () || popupCalendar.isFocusControl())) {
@@ -760,20 +774,24 @@ public boolean isFocusControl () {
 void initAccessible() {
 	Accessible accessible = getAccessible ();
 	accessible.addAccessibleListener (new AccessibleAdapter () {
+		@Override
 		public void getName (AccessibleEvent e) {
 			e.result = getSpokenText ();
 		}
 
+		@Override
 		public void getHelp(AccessibleEvent e) {
 			e.result = getToolTipText ();
 		}
 	});
 
 	accessible.addAccessibleControlListener (new AccessibleControlAdapter () {
+		@Override
 		public void getChildAtPoint (AccessibleControlEvent e) {
 			e.childID = ACC.CHILDID_SELF;
 		}
 
+		@Override
 		public void getLocation (AccessibleControlEvent e) {
 			Rectangle rect = display.map (getParent (), null, getBounds ());
 			e.x = rect.x;
@@ -782,23 +800,28 @@ void initAccessible() {
 			e.height = rect.height;
 		}
 
+		@Override
 		public void getChildCount (AccessibleControlEvent e) {
 			e.detail = 0;
 		}
 
+		@Override
 		public void getRole (AccessibleControlEvent e) {
 			e.detail = ((style & SWT.CALENDAR) != 0) ? ACC.ROLE_LABEL : ACC.ROLE_TEXT;
 		}
 
+		@Override
 		public void getState (AccessibleControlEvent e) {
 			e.detail = ACC.STATE_FOCUSABLE;
 			if (hasFocus ()) e.detail |= ACC.STATE_FOCUSED;
 		}
 
+		@Override
 		public void getSelection (AccessibleControlEvent e) {
 			if (hasFocus ()) e.childID = ACC.CHILDID_SELF;
 		}
 
+		@Override
 		public void getFocus (AccessibleControlEvent e) {
 			if (hasFocus ()) e.childID = ACC.CHILDID_SELF;
 		}
@@ -1063,6 +1086,7 @@ void sendSelectionEvent () {
 	}
 }
 
+@Override
 public void setBackground(Color color) {
 	super.setBackground(color);
 	if (!OS.GTK3) {
@@ -1075,6 +1099,7 @@ public void setBackground(Color color) {
 	if (popupCalendar != null) popupCalendar.setBackground(color);
 }
 
+@Override
 void setBackgroundColor (GdkColor color) {
 	if ((style & SWT.CALENDAR) != 0 && !OS.GTK3) {
 		OS.gtk_widget_modify_base(handle, 0, color);
@@ -1083,6 +1108,7 @@ void setBackgroundColor (GdkColor color) {
 	}
 }
 
+@Override
 public void setEnabled (boolean enabled){
 	super.setEnabled(enabled);
 	if ((style & SWT.CALENDAR) == 0) {
@@ -1092,6 +1118,7 @@ public void setEnabled (boolean enabled){
 	}
 }
 
+@Override
 public void setFont(Font font) {
 	super.setFont(font);
 	this.font = font;
@@ -1100,10 +1127,12 @@ public void setFont(Font font) {
 	redraw();
 }
 
+@Override
 void setForegroundColor (GdkColor color) {
 	setForegroundColor (handle, color, false);
 }
 
+@Override
 public void setForeground(Color color) {
 	super.setForeground(color);
 	fg = color;
@@ -1281,6 +1310,7 @@ public void setHours (int hours) {
 	}
 }
 
+@Override
 public void setMenu (Menu menu) {
 	super.setMenu(menu);
 	if (up != null) up.setMenu(menu);

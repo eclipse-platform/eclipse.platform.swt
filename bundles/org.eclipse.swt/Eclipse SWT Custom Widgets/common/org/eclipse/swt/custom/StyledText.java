@@ -698,6 +698,7 @@ public class StyledText extends Canvas {
 	 * <b>NOTE:</b>  <code>toString()</code> does not return a valid RTF string until 
 	 * <code>close()</code> has been called.
 	 */
+	@Override
 	public void close() {
 		if (!isClosed()) {
 			writeHeader();
@@ -866,6 +867,7 @@ public class StyledText extends Canvas {
 	 *   <li>ERROR_IO when the writer is closed.</li>
 	 * </ul>
 	 */
+	@Override
 	public void writeLine(String line, int lineOffset) {
 		if (isClosed()) {
 			SWT.error(SWT.ERROR_IO);
@@ -903,6 +905,7 @@ public class StyledText extends Canvas {
 	 *   <li>ERROR_IO when the writer is closed.</li>
 	 * </ul>
 	 */
+	@Override
 	public void writeLineDelimiter(String lineDelimiter) {
 		if (isClosed()) {
 			SWT.error(SWT.ERROR_IO);
@@ -1104,6 +1107,7 @@ public class StyledText extends Canvas {
 	 *
 	 * @return the string
 	 */
+	@Override
 	public String toString() {
 		return buffer.toString();
 	}
@@ -1704,6 +1708,7 @@ void clearSelection(boolean sendEvent) {
 		}
 	}
 }
+@Override
 public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget();
 	int lineCount = (getStyle() & SWT.SINGLE) != 0 ? 1 : content.getLineCount();
@@ -3418,6 +3423,7 @@ void doWordPrevious() {
 void endAutoScroll() {
 	autoScrollDirection = SWT.NULL;
 }
+@Override
 public Color getBackground() {
 	checkWidget();
 	if (background == null) {
@@ -3713,6 +3719,7 @@ public StyledTextContent getContent() {
 	checkWidget();
 	return content;
 }
+@Override
 public boolean getDragDetect () {
 	checkWidget ();
 	return dragDetect;
@@ -3744,6 +3751,7 @@ public boolean getEditable() {
 	checkWidget();
 	return editable;
 }
+@Override
 public Color getForeground() {
 	checkWidget();
 	if (foreground == null) {
@@ -4478,6 +4486,7 @@ int getOffsetAtPoint(int x, int y, int[] trailing, boolean inTextOnly) {
  * 
  * @since 2.1.2
  */
+@Override
 public int getOrientation () {
 	return super.getOrientation ();
 }
@@ -6338,6 +6347,7 @@ void handleVerticalScroll(Event event) {
 void initializeAccessible() {
 	final Accessible accessible = getAccessible();
 	accessible.addAccessibleListener(new AccessibleAdapter() {
+		@Override
 		public void getName (AccessibleEvent e) {
 			String name = null;
 			String text = getAssociatedLabel ();
@@ -6346,9 +6356,11 @@ void initializeAccessible() {
 			}
 			e.result = name;
 		}
+		@Override
 		public void getHelp(AccessibleEvent e) {
 			e.result = getToolTipText();
 		}
+		@Override
 		public void getKeyboardShortcut(AccessibleEvent e) {
 			String shortcut = null;
 			String text = getAssociatedLabel ();
@@ -6362,18 +6374,22 @@ void initializeAccessible() {
 		}
 	});
 	accessible.addAccessibleTextListener(new AccessibleTextExtendedAdapter() {
+		@Override
 		public void getCaretOffset(AccessibleTextEvent e) {
 			e.offset = StyledText.this.getCaretOffset();
 		}
+		@Override
 		public void setCaretOffset(AccessibleTextEvent e) {
 			StyledText.this.setCaretOffset(e.offset);
 			e.result = ACC.OK;
 		}
+		@Override
 		public void getSelectionRange(AccessibleTextEvent e) {
 			Point selection = StyledText.this.getSelectionRange();
 			e.offset = selection.x;
 			e.length = selection.y;
 		}
+		@Override
 		public void addSelection(AccessibleTextEvent e) {
 			StyledText st = StyledText.this;
 			Point point = st.getSelection();
@@ -6384,6 +6400,7 @@ void initializeAccessible() {
 				e.result = ACC.OK;
 			}
 		}
+		@Override
 		public void getSelection(AccessibleTextEvent e) {
 			StyledText st = StyledText.this;
 			if (st.blockSelection && st.blockXLocation != -1) {
@@ -6408,6 +6425,7 @@ void initializeAccessible() {
 				}
 			}
 		}
+		@Override
 		public void getSelectionCount(AccessibleTextEvent e) {
 			StyledText st = StyledText.this;
 			if (st.blockSelection && st.blockXLocation != -1) {
@@ -6418,6 +6436,7 @@ void initializeAccessible() {
 				e.count = point.x == point.y ? 0 : 1; 
 			}
 		}
+		@Override
 		public void removeSelection(AccessibleTextEvent e) {
 			StyledText st = StyledText.this;
 			if (e.index == 0) {
@@ -6429,6 +6448,7 @@ void initializeAccessible() {
 				e.result = ACC.OK;
 			}
 		}
+		@Override
 		public void setSelection(AccessibleTextEvent e) {
 			if (e.index != 0) return;
 			StyledText st = StyledText.this;
@@ -6439,9 +6459,11 @@ void initializeAccessible() {
 			st.setSelection(e.start, end);
 			e.result = ACC.OK;
 		}
+		@Override
 		public void getCharacterCount(AccessibleTextEvent e) {
 			e.count = StyledText.this.getCharCount();
 		}
+		@Override
 		public void getOffsetAtPoint(AccessibleTextEvent e) {
 			StyledText st = StyledText.this;
 			Point point = new Point (e.x, e.y);
@@ -6449,6 +6471,7 @@ void initializeAccessible() {
 			point = display.map(null, st, point);
 			e.offset = st.getOffsetAtPoint(point.x, point.y, null, true);
 		}
+		@Override
 		public void getTextBounds(AccessibleTextEvent e) {
 			StyledText st = StyledText.this;
 			int start = e.start;
@@ -6531,6 +6554,7 @@ void initializeAccessible() {
 			}
 			return ranges;
 		}
+		@Override
 		public void getRanges(AccessibleTextEvent e) {
 			StyledText st = StyledText.this;
 			Point point = new Point (e.x, e.y);
@@ -6542,6 +6566,7 @@ void initializeAccessible() {
 				e.end = e.ranges[e.ranges.length - 1];
 			}
 		}
+		@Override
 		public void getText(AccessibleTextEvent e) {
 			StyledText st = StyledText.this;
 			int start = e.start;
@@ -6635,6 +6660,7 @@ void initializeAccessible() {
 			e.count = count;
 			e.result = st.content.getTextRange(start, end - start);
 		}
+		@Override
 		public void getVisibleRanges(AccessibleTextEvent e) {
 			e.ranges = getRanges(leftMargin, topMargin, clientAreaWidth - rightMargin, clientAreaHeight - bottomMargin);
 			if (e.ranges.length > 0) {
@@ -6642,6 +6668,7 @@ void initializeAccessible() {
 				e.end = e.ranges[e.ranges.length - 1];
 			}
 		}
+		@Override
 		public void scrollText(AccessibleTextEvent e) {
 			StyledText st = StyledText.this;
 			int topPixel = getTopPixel(), horizontalPixel = st.getHorizontalPixel();
@@ -6716,6 +6743,7 @@ void initializeAccessible() {
 		}
 	});
 	accessible.addAccessibleAttributeListener(new AccessibleAttributeAdapter() {
+		@Override
 		public void getAttributes(AccessibleAttributeEvent e) {
 			StyledText st = StyledText.this;
 			e.leftMargin = st.getLeftMargin();
@@ -6727,6 +6755,7 @@ void initializeAccessible() {
 			e.alignment = st.getAlignment();
 			e.indent = st.getIndent(); 
 		}
+		@Override
 		public void getTextAttributes(AccessibleTextAttributeEvent e) {
 			StyledText st = StyledText.this;
 			int contentLength = st.getCharCount();
@@ -6802,9 +6831,11 @@ void initializeAccessible() {
 		}
 	});
 	accessible.addAccessibleControlListener(new AccessibleControlAdapter() {
+		@Override
 		public void getRole(AccessibleControlEvent e) {
 			e.detail = ACC.ROLE_TEXT;
 		}
+		@Override
 		public void getState(AccessibleControlEvent e) {
 			int state = 0;
 			if (isEnabled()) state |= ACC.STATE_FOCUSABLE;
@@ -6815,6 +6846,7 @@ void initializeAccessible() {
 			else state |= ACC.STATE_MULTILINE;
 			e.detail = state;
 		}
+		@Override
 		public void getValue(AccessibleControlEvent e) {
 			e.result = StyledText.this.getText();
 		}
@@ -7372,6 +7404,7 @@ public Runnable print(Printer printer, StyledTextPrintOptions options) {
  *
  * @see Control#update()
  */
+@Override
 public void redraw() {
 	super.redraw();
 	int itemCount = getPartialBottomIndex() - topIndex + 1;
@@ -7410,6 +7443,7 @@ public void redraw() {
  *
  * @see Control#update()
  */
+@Override
 public void redraw(int x, int y, int width, int height, boolean all) {
 	super.redraw(x, y, width, height, all);
 	if (height > 0) {
@@ -7867,6 +7901,7 @@ void resetSelection() {
 	sendAccessibleTextCaretMoved();
 }
 
+@Override
 public void scroll(int destX, int destY, int x, int y, int width, int height, boolean all) {
 	super.scroll(destX, destY, x, y, width, height, false);
 	if (all) {
@@ -8236,6 +8271,7 @@ public void setAlwaysShowScrollBars(boolean show) {
 /**
  * @see Control#setBackground(Color)
  */
+@Override
 public void setBackground(Color color) {
 	checkWidget();
 	background = color;
@@ -8390,6 +8426,7 @@ void setBlockSelectionOffset (int anchorOffset, int offset, boolean sendEvent) {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  */
+@Override
 public void setCaret(Caret caret) {
 	checkWidget ();
 	super.setCaret(caret);
@@ -8598,6 +8635,7 @@ public void setContent(StyledTextContent newContent) {
  *
  * @see Control#setCursor(Cursor)
  */
+@Override
 public void setCursor (Cursor cursor) {
 	checkWidget();
 	if (cursor != null && cursor.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
@@ -8625,6 +8663,7 @@ public void setDoubleClickEnabled(boolean enable) {
 	checkWidget();
 	doubleClickEnabled = enable;
 }
+@Override
 public void setDragDetect (boolean dragDetect) {
 	checkWidget ();
 	this.dragDetect = dragDetect;
@@ -8657,6 +8696,7 @@ public void setEditable(boolean editable) {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  */
+@Override
 public void setFont(Font font) {
 	checkWidget();
 	int oldLineHeight = renderer.getLineHeight();
@@ -8678,6 +8718,7 @@ public void setFont(Font font) {
 	setCaretLocation();
 	super.redraw();
 }
+@Override
 public void setForeground(Color color) {
 	checkWidget();
 	foreground = color;
@@ -9323,6 +9364,7 @@ void setMouseWordSelectionAnchor() {
  * 
  * @since 2.1.2
  */
+@Override
 public void setOrientation(int orientation) {
 	int oldOrientation = getOrientation();
 	super.setOrientation(orientation);

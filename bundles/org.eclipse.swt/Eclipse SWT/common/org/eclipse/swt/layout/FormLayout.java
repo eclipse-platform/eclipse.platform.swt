@@ -237,6 +237,7 @@ int computeHeight (Control control, FormData data, boolean flushCache) {
 	return height.solveY (data.getHeight (control, flushCache));
 }
 
+@Override
 protected Point computeSize (Composite composite, int wHint, int hHint, boolean flushCache) {
 	Point size = layout (composite, false, 0, 0, wHint, hHint, flushCache);
 	if (wHint != SWT.DEFAULT) size.x = wHint;
@@ -244,6 +245,7 @@ protected Point computeSize (Composite composite, int wHint, int hHint, boolean 
 	return size;
 }
 
+@Override
 protected boolean flushCache (Control control) {
 	Object data = control.getLayoutData ();
 	if (data != null) ((FormData) data).flushCache ();
@@ -277,6 +279,7 @@ int computeWidth (Control control, FormData data, boolean flushCache) {
 	return width.solveY (data.getWidth (control, flushCache));
 }
 
+@Override
 protected void layout (Composite composite, boolean flushCache) {
 	Rectangle rect = composite.getClientArea ();
 	int x = rect.x + marginLeft + marginWidth;
@@ -369,6 +372,7 @@ Point layout (Composite composite, boolean move, int x, int y, int width, int he
  *
  * @return a string representation of the layout
  */
+@Override
 public String toString () {
  	String string =  getName ()+" {";
  	if (marginWidth != 0) string += "marginWidth="+marginWidth+" ";

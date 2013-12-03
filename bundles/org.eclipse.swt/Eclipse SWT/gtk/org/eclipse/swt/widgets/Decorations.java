@@ -161,6 +161,7 @@ static int checkStyle (int style) {
 	return style;
 }
 
+@Override
 protected void checkSubclass () {
 	if (!isValidSubclass ()) error (SWT.ERROR_INVALID_SUBCLASS);
 }
@@ -220,10 +221,12 @@ int compare (ImageData data1, ImageData data2) {
 	return data1.width > data2.width || data1.height > data2.height ? -1 : 1;
 }
 
+@Override
 Widget computeTabGroup () {
 	return this;
 }
 
+@Override
 Control computeTabRoot () {
 	return this;
 }
@@ -237,6 +240,7 @@ void createAccelGroup () {
 	OS.gtk_window_add_accel_group (shellHandle, accelGroup);
 }
 
+@Override
 void createWidget (int index) {
 	super.createWidget (index);
 	text = "";
@@ -413,6 +417,7 @@ public boolean getMinimized () {
 	return minimized;
 }
 
+@Override
 String getNameText () {
 	return getText ();
 }
@@ -435,19 +440,23 @@ public String getText () {
 	return text;
 }
 
+@Override
 public boolean isReparentable () {
 	checkWidget ();
 	return false;
 }
 
+@Override
 boolean isTabGroup () {
 	return true;
 }
 
+@Override
 boolean isTabItem () {
 	return false;
 }
 
+@Override
 Decorations menuShell () {
 	return this;
 }
@@ -462,6 +471,7 @@ void removeMenu (Menu menu) {
 	}
 }
 
+@Override
 void releaseChildren (boolean destroy) {
 	if (menuBar != null) {
 		menuBar.release (false);
@@ -479,11 +489,13 @@ void releaseChildren (boolean destroy) {
 	}
 }
 
+@Override
 void releaseHandle () {
 	super.releaseHandle ();
 	vboxHandle = 0;
 }
 
+@Override
 void releaseWidget () {
 	super.releaseWidget ();
 	image = null;
@@ -492,6 +504,7 @@ void releaseWidget () {
 	defaultButton = saveDefault = null;
 }
 
+@Override
 void reskinChildren (int flags) {
 	if (menuBar != null) menuBar.reskin (flags);
 	if (menus != null) {
@@ -695,6 +708,7 @@ public void setMinimized (boolean minimized) {
 	this.minimized = minimized;
 }
 
+@Override
 void setOrientation (boolean create) {
     super.setOrientation (create);
     if (!create) {
@@ -752,10 +766,12 @@ void sort (Image [] images) {
 	}
 }
 
+@Override
 boolean traverseItem (boolean next) {
 	return false;
 }
 
+@Override
 boolean traverseReturn () {
 	Button button = defaultButton != null ? defaultButton: saveDefault;
 	if (button == null || button.isDisposed ()) return false;

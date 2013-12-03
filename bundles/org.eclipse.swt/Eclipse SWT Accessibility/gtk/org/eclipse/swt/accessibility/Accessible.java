@@ -59,6 +59,7 @@ public class Accessible {
 			this.target = target;
 		}
 
+		@Override
 		public boolean equals(Object object) {
 			if (object == this) return true;
 			if (!(object instanceof Relation)) return false;

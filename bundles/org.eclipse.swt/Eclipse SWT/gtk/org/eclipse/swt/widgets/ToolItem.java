@@ -175,10 +175,12 @@ static int checkStyle (int style) {
 	return checkBits (style, SWT.PUSH, SWT.CHECK, SWT.RADIO, SWT.SEPARATOR, SWT.DROP_DOWN, 0);
 }
 
+@Override
 protected void checkSubclass () {
 	if (!isValidSubclass ()) error (SWT.ERROR_INVALID_SUBCLASS);
 }
 
+@Override
 void createHandle (int index) {
 	state |= HANDLE;
 	int bits = SWT.SEPARATOR | SWT.RADIO | SWT.CHECK | SWT.PUSH | SWT.DROP_DOWN;
@@ -246,6 +248,7 @@ void createHandle (int index) {
 	if ((style & SWT.SEPARATOR) == 0) OS.gtk_tool_button_set_use_underline (handle, true);
 }
 
+@Override
 void createWidget (int index) {
 	super.createWidget (index);
 	showWidget (index);
@@ -265,12 +268,14 @@ Widget [] computeTabList () {
 	return new Widget [0];
 }
 
+@Override
 void deregister() {
 	super.deregister ();
 	if (eventHandle != 0) display.removeWidget (eventHandle);
 	if (arrowHandle != 0) display.removeWidget (arrowHandle);
 }
 
+@Override
 public void dispose () {
 	if (isDisposed ()) return;
 	ToolBar parent = this.parent;
@@ -452,6 +457,7 @@ public int getWidth () {
 	return allocation.width;
 }
 
+@Override
 long /*int*/ gtk_button_press_event (long /*int*/ widget, long /*int*/ event) {
 	GdkEventButton gdkEvent = new GdkEventButton ();
 	OS.memmove (gdkEvent, event, GdkEventButton.sizeof);
@@ -467,6 +473,7 @@ long /*int*/ gtk_button_press_event (long /*int*/ widget, long /*int*/ event) {
 	return result;
 }
 
+@Override
 long /*int*/ gtk_button_release_event (long /*int*/ widget, long /*int*/ event) {
 	GdkEventButton gdkEvent = new GdkEventButton ();
 	OS.memmove (gdkEvent, event, GdkEventButton.sizeof);
@@ -482,6 +489,7 @@ long /*int*/ gtk_button_release_event (long /*int*/ widget, long /*int*/ event) 
 	return result;
 }
 
+@Override
 long /*int*/ gtk_clicked (long /*int*/ widget) {
 	Event event = new Event ();
 	if ((style & SWT.DROP_DOWN) != 0) {
@@ -530,6 +538,7 @@ long /*int*/ gtk_clicked (long /*int*/ widget) {
 	return 0;
 }
 
+@Override
 long /*int*/ gtk_create_menu_proxy (long /*int*/ widget) {
 	/*
 	 * Feature in GTK. If the item is a radio/check button 
@@ -599,6 +608,7 @@ long /*int*/ gtk_create_menu_proxy (long /*int*/ widget) {
 	return 0;
 }
 
+@Override
 long /*int*/ gtk_enter_notify_event (long /*int*/ widget, long /*int*/ event) {
 	parent.gtk_enter_notify_event (widget, event);
 	drawHotImage = (parent.style & SWT.FLAT) != 0 && hotImage != null;
@@ -615,6 +625,7 @@ long /*int*/ gtk_enter_notify_event (long /*int*/ widget, long /*int*/ event) {
 	return 0;
 }
 
+@Override
 long /*int*/ gtk_event_after (long /*int*/ widget, long /*int*/ gdkEvent) {
 	GdkEvent event = new GdkEvent ();
 	OS.memmove (event, gdkEvent, GdkEvent.sizeof);
@@ -631,17 +642,20 @@ long /*int*/ gtk_event_after (long /*int*/ widget, long /*int*/ gdkEvent) {
 	return 0;
 }
 
+@Override
 long /*int*/ gtk_focus_in_event (long /*int*/ widget, long /*int*/ event) {
 	parent.hasChildFocus = true;
 	parent.currentFocusItem = this;
 	return 0;
 }
 
+@Override
 long /*int*/ gtk_focus_out_event (long /*int*/ widget, long /*int*/ event) {
 	parent.hasChildFocus = false;
 	return 0;
 }
 
+@Override
 long /*int*/ gtk_leave_notify_event (long /*int*/ widget, long /*int*/ event) {
 	parent.gtk_leave_notify_event (widget, event);
 	if (drawHotImage) {
@@ -660,15 +674,18 @@ long /*int*/ gtk_leave_notify_event (long /*int*/ widget, long /*int*/ event) {
 	return 0;
 }
 
+@Override
 long /*int*/ gtk_map (long /*int*/ widget) {
 	parent.fixZOrder ();
 	return 0;
 }
 
+@Override
 long /*int*/ gtk_mnemonic_activate (long /*int*/ widget, long /*int*/ arg1) {
 	return parent.gtk_mnemonic_activate (widget, arg1);
 }
 
+@Override
 void hookEvents () {
 	super.hookEvents ();
 	if ((style & SWT.SEPARATOR) != 0) return;
@@ -747,17 +764,20 @@ boolean isTabGroup () {
 	return (previous.getStyle () & SWT.SEPARATOR) != 0;
 }
 
+@Override
 void register () {
 	super.register ();
 	if (eventHandle != 0) display.addWidget (eventHandle, this);
 	if (arrowHandle != 0) display.addWidget (arrowHandle, this);
 }
 
+@Override
 void releaseHandle () {
 	super.releaseHandle ();
 	arrowHandle = labelHandle = imageHandle = eventHandle = 0;
 }
 
+@Override
 void releaseWidget () {
 	super.releaseWidget ();
 	if (parent.currentFocusItem == this) parent.currentFocusItem = null;
@@ -984,6 +1004,7 @@ public void setHotImage (Image image) {
 	}
 }
 
+@Override
 public void setImage (Image image) {
 	checkWidget();
 	if ((style & SWT.SEPARATOR) != 0) return;
@@ -1015,6 +1036,7 @@ public void setImage (Image image) {
 	parent.relayout ();
 }
 
+@Override
 void setOrientation (boolean create) {
 	if ((parent.style & SWT.RIGHT_TO_LEFT) != 0 || !create) {
 		int dir = (parent.style & SWT.RIGHT_TO_LEFT) != 0 ? OS.GTK_TEXT_DIR_RTL : OS.GTK_TEXT_DIR_LTR;
@@ -1054,6 +1076,7 @@ public void setSelection (boolean selected) {
 	OS.g_signal_handlers_unblock_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CLICKED);
 }
 
+@Override
 boolean setTabItemFocus (boolean next) {
 	return setFocus ();
 }
@@ -1083,6 +1106,7 @@ boolean setTabItemFocus (boolean next) {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  */
+@Override
 public void setText (String string) {
 	checkWidget();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);

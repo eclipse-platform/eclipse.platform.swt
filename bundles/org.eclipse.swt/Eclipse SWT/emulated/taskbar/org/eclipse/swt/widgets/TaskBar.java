@@ -150,6 +150,7 @@ public TaskItem [] getItems () {
 	return result;
 }
 
+@Override
 void releaseChildren (boolean destroy) {
 	if (items != null) {
 		for (int i=0; i<items.length; i++) {
@@ -163,6 +164,7 @@ void releaseChildren (boolean destroy) {
 	super.releaseChildren (destroy);
 }
 
+@Override
 void reskinChildren (int flags) {	
 	if (items != null) {
 		for (int i=0; i<items.length; i++) {

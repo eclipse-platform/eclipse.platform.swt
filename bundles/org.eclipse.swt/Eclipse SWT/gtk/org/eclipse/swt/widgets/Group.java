@@ -92,20 +92,24 @@ static int checkStyle (int style) {
 	return style & ~(SWT.H_SCROLL | SWT.V_SCROLL);
 }
 
+@Override
 protected void checkSubclass () {
 	if (!isValidSubclass ()) error (SWT.ERROR_INVALID_SUBCLASS);
 }
 
+@Override
 long /*int*/ clientHandle () {
 	return clientHandle;
 }
 
+@Override
 public Point computeSize (int wHint, int hHint, boolean changed) {
 	Point size = super.computeSize(wHint, hHint, changed);
 	int width = computeNativeSize (handle, SWT.DEFAULT, SWT.DEFAULT, false).x;
 	size.x = Math.max (size.x, width);
 	return size;
 }
+@Override
 public Rectangle computeTrim (int x, int y, int width, int height) {
 	checkWidget();
 	forceResize ();
@@ -120,6 +124,7 @@ public Rectangle computeTrim (int x, int y, int width, int height) {
 	return new Rectangle (x, y, width, height);
 }
 
+@Override
 void createHandle(int index) {
 	state |= HANDLE | THEME_BACKGROUND;
 	fixedHandle = OS.g_object_new (display.gtk_fixed_get_type (), 0);
@@ -155,20 +160,24 @@ void createHandle(int index) {
 	}
 }
 
+@Override
 void deregister () {
 	super.deregister ();
 	display.removeWidget (clientHandle);
 	display.removeWidget (labelHandle);
 }
 
+@Override
 void enableWidget (boolean enabled) {
 	OS.gtk_widget_set_sensitive (labelHandle, enabled);
 }
 
+@Override
 long /*int*/ eventHandle () {
 	return fixedHandle;
 }
 
+@Override
 String getNameText () {
 	return getText ();
 }
@@ -190,6 +199,7 @@ public String getText () {
 	return text;
 }
 
+@Override
 void hookEvents () {
 	super.hookEvents();
 	if (labelHandle != 0) {
@@ -197,6 +207,7 @@ void hookEvents () {
 	}
 }
 
+@Override
 boolean mnemonicHit (char key) {
 	if (labelHandle == 0) return false;
 	boolean result = super.mnemonicHit (labelHandle, key);
@@ -204,47 +215,56 @@ boolean mnemonicHit (char key) {
 	return result;
 }
 
+@Override
 boolean mnemonicMatch (char key) {
 	if (labelHandle == 0) return false;
 	return mnemonicMatch (labelHandle, key);
 }
 
+@Override
 long /*int*/ parentingHandle() {
 	return fixedHandle;
 }
 
+@Override
 void register () {
 	super.register ();
 	display.addWidget (clientHandle, this);
 	display.addWidget (labelHandle, this);
 }
 
+@Override
 void releaseHandle () {
 	super.releaseHandle ();
 	clientHandle = labelHandle = 0;
 }
 
+@Override
 void releaseWidget () {
 	super.releaseWidget ();
 	if (labelHandle != 0) OS.g_object_unref (labelHandle);
 	text = null;
 }
 
+@Override
 void setBackgroundColor (GdkColor color) {
 	super.setBackgroundColor (color);
 	setBackgroundColor(fixedHandle, color);
 }
 
+@Override
 void setFontDescription (long /*int*/ font) {
 	super.setFontDescription (font);
 	setFontDescription (labelHandle, font);
 }
 
+@Override
 void setForegroundColor (GdkColor color) {
 	super.setForegroundColor (color);
 	setForegroundColor (labelHandle, color);
 }
 
+@Override
 void setOrientation (boolean create) {
 	super.setOrientation (create);
 	if ((style & SWT.RIGHT_TO_LEFT) != 0 || !create) {
@@ -293,6 +313,7 @@ public void setText (String string) {
 	}
 }
 
+@Override
 void showWidget () {
 	super.showWidget ();
 	if (clientHandle != 0) OS.gtk_widget_show (clientHandle);

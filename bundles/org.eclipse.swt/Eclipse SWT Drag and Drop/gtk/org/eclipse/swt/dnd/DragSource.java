@@ -275,6 +275,7 @@ public void addDragListener(DragSourceListener listener) {
 	addListener (DND.DragEnd, typedListener);
 }
 
+@Override
 protected void checkSubclass () {
 	String name = getClass().getName ();
 	String validName = DragSource.class.getName();

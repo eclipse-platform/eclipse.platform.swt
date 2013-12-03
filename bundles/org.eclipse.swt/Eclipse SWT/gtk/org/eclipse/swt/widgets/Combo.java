@@ -294,6 +294,7 @@ static int checkStyle (int style) {
 	return style;
 }
 
+@Override
 protected void checkSubclass () {
 	if (!isValidSubclass ()) error (SWT.ERROR_INVALID_SUBCLASS);
 }
@@ -344,6 +345,7 @@ void clearText () {
 	OS.g_signal_handlers_unblock_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
 }
 
+@Override
 public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget ();
 	if ((style & SWT.READ_ONLY) != 0 || OS.GTK3) {
@@ -397,6 +399,7 @@ public void copy () {
 	if (entryHandle != 0) OS.gtk_editable_copy_clipboard (entryHandle);
 }
 
+@Override
 void createHandle (int index) {
 	state |= HANDLE | MENU;
 	fixedHandle = OS.g_object_new (display.gtk_fixed_get_type (), 0);
@@ -487,6 +490,7 @@ public void cut () {
 	if (entryHandle != 0) OS.gtk_editable_cut_clipboard (entryHandle);
 }
 
+@Override
 void deregister () {
 	super.deregister ();
 	if (buttonHandle != 0) display.removeWidget (buttonHandle);
@@ -497,6 +501,7 @@ void deregister () {
 	if (imContext != 0) display.removeWidget (imContext);
 }
 
+@Override
 boolean filterKey (int keyval, long /*int*/ event) {
 	int time = OS.gdk_event_get_time (event);
 	if (time != lastEventTime) {
@@ -584,6 +589,7 @@ long /*int*/ findMenuHandle() {
 	return result;
 }
 	
+@Override
 void fixModal (long /*int*/ group, long /*int*/ modalGroup) {
 	if (popupHandle != 0) {
 		if (group != 0) {
@@ -616,22 +622,26 @@ void fixIM () {
 	gdkEventKey = 0;
 }
 
+@Override
 long /*int*/ fontHandle () {
 	if (entryHandle != 0) return entryHandle;
 	return super.fontHandle ();
 }
 
+@Override
 long /*int*/ focusHandle () {
 	if (entryHandle != 0) return entryHandle;
 	return super.focusHandle ();
 }
 
+@Override
 boolean hasFocus () {
 	if (super.hasFocus ()) return true;
 	if (entryHandle != 0 && gtk_widget_has_focus (entryHandle)) return true;
 	return false;
 }
 
+@Override
 void hookEvents () {
 	super.hookEvents ();
 	OS.g_signal_connect_closure (handle, OS.changed, display.getClosure (CHANGED), true);
@@ -731,6 +741,7 @@ public void deselectAll () {
 	clearText ();
 }
 
+@Override
 boolean dragDetect(int x, int y, boolean filter, boolean dragOnTimeout, boolean[] consume) {
 	if (filter && entryHandle != 0) {
 		int [] index = new int [1];
@@ -753,14 +764,17 @@ boolean dragDetect(int x, int y, boolean filter, boolean dragOnTimeout, boolean[
 	return super.dragDetect (x, y, filter, dragOnTimeout, consume);
 }
 
+@Override
 long /*int*/ enterExitHandle () {
 	return fixedHandle;
 }
 
+@Override
 long /*int*/ eventWindow () {
 	return paintWindow ();
 }
 
+@Override
 GdkColor getBackgroundColor () {
 	return getBaseColor ();
 }
@@ -819,6 +833,7 @@ public int getCaretPosition () {
 	return (int)/*64*/OS.g_utf8_offset_to_utf16_offset (ptr, OS.gtk_editable_get_position (entryHandle));
 }
 
+@Override
 GdkColor getForegroundColor () {
 	return getTextColor ();
 }
@@ -925,6 +940,7 @@ public boolean getListVisible () {
 	return popupHandle != 0 && gtk_widget_get_visible (popupHandle); 
 }
 
+@Override
 String getNameText () {
 	return getText ();
 }
@@ -941,6 +957,7 @@ String getNameText () {
  * 
  * @since 2.1.2
  */
+@Override
 public int getOrientation () {
 	return super.getOrientation ();
 }
@@ -1099,11 +1116,13 @@ public int getVisibleItemCount () {
 	return visibleCount;
 }
 
+@Override
 long /*int*/ gtk_activate (long /*int*/ widget) {
 	sendSelectionEvent (SWT.DefaultSelection);
 	return 0;
 }
 
+@Override
 long /*int*/ gtk_button_press_event (long /*int*/ widget, long /*int*/ event) {
 	/*
 	* Feature in GTK. Depending on where the user clicks, GTK prevents 
@@ -1118,6 +1137,7 @@ long /*int*/ gtk_button_press_event (long /*int*/ widget, long /*int*/ event) {
 	return super.gtk_button_press_event (widget, event);
 }
 
+@Override
 long /*int*/ gtk_changed (long /*int*/ widget) {
 	if (widget == handle) {
 		if (entryHandle == 0) {
@@ -1167,6 +1187,7 @@ long /*int*/ gtk_changed (long /*int*/ widget) {
 	return 0;
 }
 
+@Override
 long /*int*/ gtk_commit (long /*int*/ imContext, long /*int*/ text) {
 	if (text == 0) return 0;
 	if (!OS.gtk_editable_get_editable (entryHandle)) return 0;
@@ -1205,6 +1226,7 @@ long /*int*/ gtk_commit (long /*int*/ imContext, long /*int*/ text) {
 	return 0;
 }
 
+@Override
 long /*int*/ gtk_delete_text (long /*int*/ widget, long /*int*/ start_pos, long /*int*/ end_pos) {
 	if (!hooks (SWT.Verify) && !filters (SWT.Verify)) return 0;
 	long /*int*/ ptr = OS.gtk_entry_get_text (entryHandle);
@@ -1230,6 +1252,7 @@ long /*int*/ gtk_delete_text (long /*int*/ widget, long /*int*/ start_pos, long 
 	return 0;
 }
 
+@Override
 long /*int*/ gtk_event_after (long /*int*/ widget, long /*int*/ gdkEvent)  {
 	/*
 	* Feature in GTK. Depending on where the user clicks, GTK prevents 
@@ -1276,11 +1299,13 @@ long /*int*/ gtk_event_after (long /*int*/ widget, long /*int*/ gdkEvent)  {
 	return super.gtk_event_after(widget, gdkEvent);
 }
 
+@Override
 long /*int*/ gtk_focus_out_event (long /*int*/ widget, long /*int*/ event) {
 	fixIM ();
 	return super.gtk_focus_out_event (widget, event);
 }
 
+@Override
 long /*int*/ gtk_insert_text (long /*int*/ widget, long /*int*/ new_text, long /*int*/ new_text_length, long /*int*/ position) {
 	if (!hooks (SWT.Verify) && !filters (SWT.Verify)) return 0;	
 	if (new_text == 0 || new_text_length == 0) return 0;
@@ -1321,6 +1346,7 @@ long /*int*/ gtk_insert_text (long /*int*/ widget, long /*int*/ new_text, long /
 	return 0;
 }
 
+@Override
 long /*int*/ gtk_key_press_event (long /*int*/ widget, long /*int*/ event) {
 	long /*int*/ result = super.gtk_key_press_event (widget, event);
 	if (result != 0) {
@@ -1372,6 +1398,7 @@ long /*int*/ gtk_key_press_event (long /*int*/ widget, long /*int*/ event) {
 	return result;
 }
 
+@Override
 long /*int*/ gtk_populate_popup (long /*int*/ widget, long /*int*/ menu) {
 	if ((style & SWT.RIGHT_TO_LEFT) != 0) {
 		OS.gtk_widget_set_direction (menu, OS.GTK_TEXT_DIR_RTL);
@@ -1380,6 +1407,7 @@ long /*int*/ gtk_populate_popup (long /*int*/ widget, long /*int*/ menu) {
 	return 0;
 }
 
+@Override
 long /*int*/ gtk_selection_done(long /*int*/ menushell) {
 	int index = OS.gtk_combo_box_get_active (handle);
 	if (indexSelected == -1){
@@ -1391,6 +1419,7 @@ long /*int*/ gtk_selection_done(long /*int*/ menushell) {
 	return 0;
 }
 
+@Override
 long /*int*/ gtk_style_set (long /*int*/ widget, long /*int*/ previousStyle) {
 	setButtonHandle (findButtonHandle ());
 	setMenuHandle (findMenuHandle ());
@@ -1448,12 +1477,14 @@ public int indexOf (String string, int start) {
 	return -1;
 }
 
+@Override
 boolean isFocusHandle(long /*int*/ widget) {
 	if (buttonHandle != 0 && widget == buttonHandle) return true;
 	if (entryHandle != 0 && widget == entryHandle) return true;
 	return super.isFocusHandle (widget);
 }
 
+@Override
 long /*int*/ paintWindow () {
 	long /*int*/ childHandle =  entryHandle != 0 ? entryHandle : handle;	
 	OS.gtk_widget_realize (childHandle);
@@ -1484,10 +1515,12 @@ public void paste () {
 	if (entryHandle != 0) OS.gtk_editable_paste_clipboard (entryHandle);
 }
 
+@Override
 long /*int*/ parentingHandle() {
 	return fixedHandle;
 }
 
+@Override
 void register () {
 	super.register ();
 	if (buttonHandle != 0) display.addWidget (buttonHandle, this);
@@ -1498,6 +1531,7 @@ void register () {
 	if (imContext != 0) display.addWidget (imContext, this);
 }
 
+@Override
 void releaseHandle () {
 	super.releaseHandle ();
 	if (menuHandle != 0) {
@@ -1509,6 +1543,7 @@ void releaseHandle () {
 	menuHandle = buttonHandle = entryHandle = 0;
 }
 
+@Override
 void releaseWidget () {
 	super.releaseWidget ();
 	textRenderer = 0;
@@ -1736,6 +1771,7 @@ public void select (int index) {
 	}
 }
 
+@Override
 void setBackgroundColor (long /*int*/ context, long /*int*/ handle, GdkRGBA rgba) {
 	if (entryHandle == 0 || (style & SWT.READ_ONLY) != 0) {
 		super.setBackgroundColor (context, handle, rgba);
@@ -1744,6 +1780,7 @@ void setBackgroundColor (long /*int*/ context, long /*int*/ handle, GdkRGBA rgba
 	setBackgroundColorGradient (OS.gtk_widget_get_style_context (entryHandle), handle, rgba);
 }
 
+@Override
 void setBackgroundColor (GdkColor color) {
 	super.setBackgroundColor (color);
 	if (!OS.GTK3) {
@@ -1753,6 +1790,7 @@ void setBackgroundColor (GdkColor color) {
 	}
 }
 
+@Override
 int setBounds (int x, int y, int width, int height, boolean move, boolean resize) {
 	int newHeight = height;
 	if (resize) newHeight = Math.max (getTextHeight (), height);
@@ -1787,6 +1825,7 @@ void setMenuHandle (long /*int*/ widget) {
 	}
 }
 
+@Override
 void setFontDescription (long /*int*/ font) {
 	super.setFontDescription (font);
 	if (entryHandle != 0) setFontDescription (entryHandle, font);
@@ -1805,6 +1844,7 @@ void setFontDescription (long /*int*/ font) {
 	}
 }
 
+@Override
 void setForegroundColor (GdkColor color) {
 	super.setForegroundColor (handle, color, false);
 	if (entryHandle != 0) setForegroundColor (entryHandle, color, false);
@@ -1919,6 +1959,7 @@ public void setListVisible (boolean visible) {
 	}
 }
 
+@Override
 void setOrientation (boolean create) {
 	super.setOrientation (create);
 	if ((style & SWT.RIGHT_TO_LEFT) != 0 || !create) {
@@ -1945,6 +1986,7 @@ void setOrientation (boolean create) {
  * 
  * @since 2.1.2
  */
+@Override
 public void setOrientation (int orientation) {
 	super.setOrientation (orientation);
 }
@@ -2061,6 +2103,7 @@ public void setTextLimit (int limit) {
 	if (entryHandle != 0) OS.gtk_entry_set_max_length (entryHandle, limit);
 }
 
+@Override
 void setToolTipText (Shell shell, String newString) {
 	if (entryHandle != 0) shell.setToolTipText (entryHandle, newString);
 	if (buttonHandle != 0) shell.setToolTipText (buttonHandle, newString);
@@ -2089,10 +2132,12 @@ public void setVisibleItemCount (int count) {
 	visibleCount = count;
 }
 
+@Override
 boolean checkSubwindow () {
 	return false;
 }
 
+@Override
 boolean translateTraversal (GdkEventKey keyEvent) {
 	int key = keyEvent.keyval;
 	switch (key) {

@@ -185,6 +185,7 @@ static int checkStyle (int style) {
 	return checkBits (style, SWT.SINGLE, SWT.MULTI, 0, 0, 0, 0);
 }
 
+@Override
 void createHandle (int index) {
 	state |= HANDLE;
 	fixedHandle = OS.g_object_new (display.gtk_fixed_get_type (), 0);
@@ -232,6 +233,7 @@ void createHandle (int index) {
 	}
 }
 
+@Override
 public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget ();
 	if (wHint != SWT.DEFAULT && wHint < 0) wHint = 0;
@@ -245,6 +247,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	return size;
 }
 
+@Override
 void deregister() {
 	super.deregister ();
 	display.removeWidget (OS.gtk_tree_view_get_selection (handle));
@@ -357,6 +360,7 @@ public void deselectAll () {
 	OS.g_signal_handlers_unblock_matched (selection, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
 }
 
+@Override
 boolean dragDetect (int x, int y, boolean filter, boolean dragOnTimeout, boolean [] consume) {
 	boolean selected = false;
 	if (filter) {
@@ -376,10 +380,12 @@ boolean dragDetect (int x, int y, boolean filter, boolean dragOnTimeout, boolean
 	return dragDetect;
 }
 
+@Override
 long /*int*/ eventWindow () {
 	return paintWindow ();
 }
 
+@Override
 GdkColor getBackgroundColor () {
 	return getBaseColor ();
 }
@@ -407,6 +413,7 @@ public int getFocusIndex () {
 	return index [0];
 }
 
+@Override
 GdkColor getForegroundColor () {
 	return getTextColor ();
 }
@@ -702,11 +709,13 @@ public int getTopIndex () {
 	return index [0];
 }
 
+@Override
 long /*int*/ gtk_changed (long /*int*/ widget) {
 	sendSelectionEvent (SWT.Selection);
 	return 0;
 }
 
+@Override
 long /*int*/ gtk_event_after (long /*int*/ widget, long /*int*/ gdkEvent) {
 	switch (OS.GDK_EVENT_TYPE (gdkEvent)) {
 		case OS.GDK_EXPOSE: {
@@ -726,6 +735,7 @@ long /*int*/ gtk_event_after (long /*int*/ widget, long /*int*/ gdkEvent) {
 	return super.gtk_event_after (widget, gdkEvent);
 }
 
+@Override
 long /*int*/ gtk_button_press_event (long /*int*/ widget, long /*int*/ event) {
 	long /*int*/ result = super.gtk_button_press_event (widget, event);
 	if (result != 0) return result;
@@ -782,11 +792,13 @@ long /*int*/ gtk_button_press_event (long /*int*/ widget, long /*int*/ event) {
 	return result;
 }
 
+@Override
 long /*int*/ gtk_row_activated (long /*int*/ tree, long /*int*/ path, long /*int*/ column) {
 	sendSelectionEvent (SWT.DefaultSelection);
 	return 0;
 }
 
+@Override
 void hookEvents () {
 	super.hookEvents();
 	long /*int*/ selection = OS.gtk_tree_view_get_selection(handle);
@@ -870,16 +882,19 @@ public boolean isSelected (int index) {
 	return answer;
 }
 
+@Override
 long /*int*/ paintWindow () {
 	OS.gtk_widget_realize (handle);
 	return OS.gtk_tree_view_get_bin_window (handle);
 }
 
+@Override
 void register () {
 	super.register ();
 	display.addWidget (OS.gtk_tree_view_get_selection (handle), this);
 }
 
+@Override
 void releaseWidget () {
 	super.releaseWidget ();
 	if (modelHandle != 0) OS.g_object_unref (modelHandle);
@@ -1224,6 +1239,7 @@ void selectFocusIndex (int index) {
 	OS.g_free (iter);
 }
 
+@Override
 void setBackgroundColor (GdkColor color) {
 	super.setBackgroundColor (color);
 	if (!OS.GTK3) {
@@ -1231,6 +1247,7 @@ void setBackgroundColor (GdkColor color) {
 	}
 }
 
+@Override
 int setBounds (int x, int y, int width, int height, boolean move, boolean resize) {
 	int result = super.setBounds (x, y, width, height, move, resize);
 	/*
@@ -1309,6 +1326,7 @@ public void setItems (String [] items) {
 	OS.g_free (iter);
 }
 
+@Override
 void setForegroundColor (GdkColor color) {
 	setForegroundColor (handle, color, false);
 }

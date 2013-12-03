@@ -756,6 +756,7 @@ long /*int*/ cellDataProc (long /*int*/ tree_column, long /*int*/ cell, long /*i
 	return widget.cellDataProc (tree_column, cell, tree_model, iter, data);
 }
 
+@Override
 protected void checkDevice () {
 	if (thread == null) error (SWT.ERROR_WIDGET_DISPOSED);
 	if (thread != Thread.currentThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
@@ -905,6 +906,7 @@ public void close () {
  *
  * @see #init
  */
+@Override
 protected void create (DeviceData data) {
 	checkSubclass ();
 	checkDisplay(thread = Thread.currentThread (), false);
@@ -1128,6 +1130,7 @@ static void deregister (Display display) {
  * @see Device#dispose
  * @see #release
  */
+@Override
 protected void destroy () {
 	if (this == Default) Default = null;
 	deregister (this);
@@ -1432,6 +1435,7 @@ public Shell getActiveShell () {
  *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
  * </ul>
  */
+@Override
 public Rectangle getBounds () {
 	checkDevice ();
 	return new Rectangle (0, 0, OS.gdk_screen_width (), OS.gdk_screen_height ());
@@ -1839,6 +1843,7 @@ public boolean getHighContrast () {
 	return false;
 }
 
+@Override
 public int getDepth () {
 	checkDevice ();
 	if (OS.GTK_VERSION >= OS.VERSION(2, 22, 0)) {
@@ -2105,6 +2110,7 @@ public Thread getSyncThread () {
  *
  * @see SWT
  */
+@Override
 public Color getSystemColor (int id) {
 	checkDevice ();
 	GdkColor gdkColor = null;
@@ -2565,6 +2571,7 @@ long /*int*/ idleProc (long /*int*/ data) {
  * 
  * @see #create
  */
+@Override
 protected void init () {
 	super.init ();
 	initializeCallbacks ();
@@ -2863,6 +2870,7 @@ void initializeWindowManager () {
  * 
  * @noreference This method is not intended to be referenced by clients.
  */
+@Override
 public void internal_dispose_GC (long /*int*/ hDC, GCData data) {
 	long /*int*/ gc = hDC;
 	if (OS.USE_CAIRO) {
@@ -2894,6 +2902,7 @@ public void internal_dispose_GC (long /*int*/ hDC, GCData data) {
  * 
  * @noreference This method is not intended to be referenced by clients.
  */
+@Override
 public long /*int*/ internal_new_GC (GCData data) {
 	if (isDisposed()) error(SWT.ERROR_DEVICE_DISPOSED);
 	long /*int*/ root = OS.gdk_get_default_root_window();
@@ -3424,6 +3433,7 @@ static void register (Display display) {
  * @see Device#dispose
  * @see #destroy
  */
+@Override
 protected void release () {
 	sendEvent (SWT.Dispose, new Event ());
 	Shell [] shells = getShells ();

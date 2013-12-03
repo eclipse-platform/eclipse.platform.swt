@@ -165,6 +165,7 @@ public void addSelectionListener (SelectionListener listener) {
 	addListener (SWT.DefaultSelection,typedListener);
 }
 
+@Override
 public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget ();
 	if (wHint != SWT.DEFAULT && wHint < 0) wHint = 0;
@@ -252,6 +253,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	return size;
 }
 
+@Override
 void createHandle (int index) {
 	state |= HANDLE;
 	if ((style & (SWT.PUSH | SWT.TOGGLE)) == 0) state |= THEME_BACKGROUND; 	
@@ -328,11 +330,13 @@ void createHandle (int index) {
 	_setAlignment (style & (SWT.LEFT | SWT.CENTER | SWT.RIGHT));
 }
 
+@Override
 void createWidget (int index) {
 	super.createWidget (index);
 	text = "";
 }
 
+@Override
 void deregister () {
 	super.deregister ();
 	if (boxHandle != 0) display.removeWidget (boxHandle);
@@ -341,6 +345,7 @@ void deregister () {
 	if (arrowHandle != 0) display.removeWidget (arrowHandle);
 }
 
+@Override
 long /*int*/ fontHandle () {
 	if (labelHandle != 0) return labelHandle;
 	return super.fontHandle ();
@@ -413,6 +418,7 @@ public Image getImage () {
 	return image;
 }
 
+@Override
 String getNameText () {
 	return getText ();
 }
@@ -457,6 +463,7 @@ public String getText () {
 	return text;
 }
 
+@Override
 long /*int*/ gtk_button_press_event (long /*int*/ widget, long /*int*/ event) {
 	long /*int*/ result = super.gtk_button_press_event (widget, event);
 	if (result != 0) return result;
@@ -464,6 +471,7 @@ long /*int*/ gtk_button_press_event (long /*int*/ widget, long /*int*/ event) {
 	return result;
 }
 
+@Override
 long /*int*/ gtk_clicked (long /*int*/ widget) {
 	if ((style & SWT.RADIO) != 0) {
 		if ((parent.getStyle () & SWT.NO_RADIO_GROUP) != 0) {
@@ -486,6 +494,7 @@ long /*int*/ gtk_clicked (long /*int*/ widget) {
 	return 0;
 }
 
+@Override
 long /*int*/ gtk_focus_in_event (long /*int*/ widget, long /*int*/ event) {
 	long /*int*/ result = super.gtk_focus_in_event (widget, event);
 	// widget could be disposed at this point
@@ -504,6 +513,7 @@ long /*int*/ gtk_focus_in_event (long /*int*/ widget, long /*int*/ event) {
 	return result;
 }
 
+@Override
 long /*int*/ gtk_focus_out_event (long /*int*/ widget, long /*int*/ event) {
 	long /*int*/ result = super.gtk_focus_out_event (widget, event);
 	// widget could be disposed at this point
@@ -517,6 +527,7 @@ long /*int*/ gtk_focus_out_event (long /*int*/ widget, long /*int*/ event) {
 	return result;
 }
 
+@Override
 long /*int*/ gtk_key_press_event (long /*int*/ widget, long /*int*/ event) {
 	long /*int*/ result = super.gtk_key_press_event (widget, event);
 	if (result != 0) return result;
@@ -524,6 +535,7 @@ long /*int*/ gtk_key_press_event (long /*int*/ widget, long /*int*/ event) {
 	return result;
 }
 
+@Override
 void hookEvents () {
 	super.hookEvents();
 	OS.g_signal_connect_closure (handle, OS.clicked, display.getClosure (CLICKED), false);
@@ -532,10 +544,12 @@ void hookEvents () {
 	}
 }
 
+@Override
 boolean isDescribedByLabel () {
 	return false;
 }
 
+@Override
 boolean mnemonicHit (char key) {
 	if (labelHandle == 0) return false;
 	boolean result = super.mnemonicHit (labelHandle, key);
@@ -543,11 +557,13 @@ boolean mnemonicHit (char key) {
 	return result;
 }
 
+@Override
 boolean mnemonicMatch (char key) {
 	if (labelHandle == 0) return false;
 	return mnemonicMatch (labelHandle, key);
 }
 
+@Override
 void register () {
 	super.register ();
 	if (boxHandle != 0) display.addWidget (boxHandle, this);
@@ -556,11 +572,13 @@ void register () {
 	if (arrowHandle != 0) display.addWidget (arrowHandle, this);
 }
 
+@Override
 void releaseHandle () {
 	super.releaseHandle ();
 	boxHandle = imageHandle = labelHandle = arrowHandle = 0;
 }
 
+@Override
 void releaseWidget () {
 	super.releaseWidget ();
 	if (groupHandle != 0) OS.g_object_unref (groupHandle);
@@ -596,6 +614,7 @@ public void removeSelectionListener (SelectionListener listener) {
 	eventTable.unhook (SWT.DefaultSelection,listener);	
 }
 
+@Override
 void resizeHandle (int width, int height) {
 	super.resizeHandle (width, height);
 	/*
@@ -731,6 +750,7 @@ void _setAlignment (int alignment) {
 	}
 }
 
+@Override
 void setBackgroundColor (GdkColor color) {
 	super.setBackgroundColor (color);
 	setBackgroundColor(fixedHandle, color);
@@ -738,6 +758,7 @@ void setBackgroundColor (GdkColor color) {
 	if (imageHandle != 0) setBackgroundColor(imageHandle, color);
 }
 
+@Override
 int setBounds (int x, int y, int width, int height, boolean move, boolean resize) {
 	/*
 	* Bug in GTK.  For some reason, when the label is
@@ -799,12 +820,14 @@ int setBounds (int x, int y, int width, int height, boolean move, boolean resize
 	return result;
 }
 
+@Override
 void setFontDescription (long /*int*/ font) {
 	super.setFontDescription (font);
 	if (labelHandle != 0) setFontDescription (labelHandle, font);
 	if (imageHandle != 0) setFontDescription (imageHandle, font);
 }
 
+@Override
 boolean setRadioSelection (boolean value) {
 	if ((style & SWT.RADIO) == 0) return false;
 	if (getSelection () != value) {
@@ -814,6 +837,7 @@ boolean setRadioSelection (boolean value) {
 	return true;
 }
 
+@Override
 void setForegroundColor (GdkColor color) {
 	super.setForegroundColor (color);
 	setForegroundColor (fixedHandle, color);
@@ -887,6 +911,7 @@ public void setImage (Image image) {
 	_setAlignment (style);
 }
 
+@Override
 void setOrientation (boolean create) {
 	super.setOrientation (create);
 	if ((style & SWT.RIGHT_TO_LEFT) != 0 || !create) {
@@ -980,6 +1005,7 @@ public void setText (String string) {
 	_setAlignment (style);
 }
 
+@Override
 void showWidget () {
 	super.showWidget ();
 	if (boxHandle != 0) OS.gtk_widget_show (boxHandle);
@@ -987,6 +1013,7 @@ void showWidget () {
 	if (arrowHandle != 0) OS.gtk_widget_show (arrowHandle);
 }
 
+@Override
 int traversalCode (int key, GdkEventKey event) {
 	int code = super.traversalCode (key, event);
 	if ((style & SWT.ARROW) != 0) code &= ~(SWT.TRAVERSE_TAB_NEXT | SWT.TRAVERSE_TAB_PREVIOUS);

@@ -359,6 +359,7 @@ void contributeToString(StringBuffer buffer) {}
  *
  * @return a string representation of the event
  */
+@Override
 public String toString() {
 	StringBuffer buffer = new StringBuffer();
 	buffer.append("{");

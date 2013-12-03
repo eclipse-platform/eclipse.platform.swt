@@ -73,6 +73,7 @@ public Point (int x, int y) {
  *
  * @see #hashCode()
  */
+@Override
 public boolean equals (Object object) {
 	if (object == this) return true;
 	if (!(object instanceof Point)) return false;
@@ -90,6 +91,7 @@ public boolean equals (Object object) {
  *
  * @see #equals(Object)
  */
+@Override
 public int hashCode () {
 	return x ^ y;
 }
@@ -100,6 +102,7 @@ public int hashCode () {
  *
  * @return a string representation of the point
  */
+@Override
 public String toString () {
 	return "Point {" + x + ", " + y + "}"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 }

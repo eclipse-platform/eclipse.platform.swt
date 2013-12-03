@@ -42,6 +42,7 @@ public AccessibleValueEvent(Object source) {
  *
  * @return a string representation of the event
  */
+@Override
 public String toString () {
 	return "AccessibleValueEvent {" //$NON-NLS-1$
 		+ "value=" + value   //$NON-NLS-1$

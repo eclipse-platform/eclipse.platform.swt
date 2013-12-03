@@ -50,6 +50,7 @@ public AccessibleHyperlinkEvent(Object source) {
  *
  * @return a string representation of the event
  */
+@Override
 public String toString () {
 	return "AccessibleHyperlinkEvent {" //$NON-NLS-1$
 		+ "accessible=" + accessible   //$NON-NLS-1$

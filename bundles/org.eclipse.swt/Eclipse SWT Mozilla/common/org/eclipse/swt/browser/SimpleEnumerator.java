@@ -36,16 +36,24 @@ int AddRef () {
 void createCOMInterfaces () {
 	/* Create each of the interfaces that this object implements */
 	supports = new XPCOMObject (new int[] {2, 0, 0}) {
+		@Override
 		public long /*int*/ method0 (long /*int*/[] args) {return QueryInterface (args[0], args[1]);}
+		@Override
 		public long /*int*/ method1 (long /*int*/[] args) {return AddRef ();}
+		@Override
 		public long /*int*/ method2 (long /*int*/[] args) {return Release ();}
 	};
 
 	simpleEnumerator = new XPCOMObject (new int[] {2, 0, 0, 1, 1}) {
+		@Override
 		public long /*int*/ method0 (long /*int*/[] args) {return QueryInterface (args[0], args[1]);}
+		@Override
 		public long /*int*/ method1 (long /*int*/[] args) {return AddRef ();}
+		@Override
 		public long /*int*/ method2 (long /*int*/[] args) {return Release ();}
+		@Override
 		public long /*int*/ method3 (long /*int*/[] args) {return HasMoreElements (args[0]);}
+		@Override
 		public long /*int*/ method4 (long /*int*/[] args) {return GetNext (args[0]);}
 	};
 }

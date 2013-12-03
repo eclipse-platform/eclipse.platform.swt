@@ -158,6 +158,7 @@ static int checkStyleBit (Shell parent, int style) {
 	return checkBits (style, SWT.LEFT_TO_RIGHT, SWT.RIGHT_TO_LEFT, 0, 0, 0, 0);
 }
 
+@Override
 protected void checkSubclass() {
 }
 

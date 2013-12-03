@@ -20,6 +20,7 @@ import org.eclipse.swt.widgets.*;
  * @see CTabFolder
  */
 class CTabFolderLayout extends Layout {
+@Override
 protected Point computeSize(Composite composite, int wHint, int hHint, boolean flushCache) {
 	CTabFolder folder = (CTabFolder)composite;
 	CTabItem[] items = folder.items;
@@ -101,9 +102,11 @@ protected Point computeSize(Composite composite, int wHint, int hHint, boolean f
 	
 	return new Point (minWidth, minHeight);
 }
+@Override
 protected boolean flushCache(Control control) {
 	return true;
 }
+@Override
 protected void layout(Composite composite, boolean flushCache) {
 	CTabFolder folder = (CTabFolder)composite;
 	// resize content

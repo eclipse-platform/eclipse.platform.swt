@@ -101,6 +101,7 @@ public SWTException (int code, String message) {
  * 
  * @since 3.1
  */
+@Override
 public Throwable getCause() {
 	return throwable;
 }
@@ -113,6 +114,7 @@ public Throwable getCause() {
  *  </p>
  *  @return the error message string of this SWTException object
  */
+@Override
 public String getMessage () {
 	if (throwable == null) return super.getMessage ();
 	return super.getMessage () + " (" + throwable.toString () + ")"; //$NON-NLS-1$ //$NON-NLS-2$
@@ -126,6 +128,7 @@ public String getMessage () {
  * are not provided in order to maintain compatibility with CLDC.
  * </p>
  */
+@Override
 public void printStackTrace () {
 	super.printStackTrace ();
 	if (Library.JAVA_VERSION < Library.JAVA_VERSION(1, 4, 0) && throwable != null) {

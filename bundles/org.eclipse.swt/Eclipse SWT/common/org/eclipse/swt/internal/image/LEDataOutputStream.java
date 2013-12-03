@@ -22,12 +22,14 @@ public LEDataOutputStream(OutputStream output) {
  * Write the specified number of bytes of the given byte array,
  * starting at the specified offset, to the output stream.
  */
+@Override
 public void write(byte b[], int off, int len) throws IOException {
 	out.write(b, off, len);
 }
 /**
  * Write the given byte to the output stream.
  */
+@Override
 public void write(int b) throws IOException {
 	out.write(b);
 }

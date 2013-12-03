@@ -101,6 +101,7 @@ Font defaultFont () {
 	return display.getSystemFont ();
 }
 
+@Override
 void deregister () {
 	super.deregister ();
 	if (fixedHandle != 0) display.removeWidget (fixedHandle);
@@ -291,6 +292,7 @@ boolean hasFocus () {
 	return this == display.getFocusControl();
 }
 
+@Override
 void hookEvents () {
 	/* Connect the keyboard signals */
 	long /*int*/ focusHandle = focusHandle ();
@@ -377,6 +379,7 @@ boolean hooksPaint () {
 	return hooks (SWT.Paint) || filters (SWT.Paint);
 }
 
+@Override
 long /*int*/ hoverProc (long /*int*/ widget) {
 	int [] x = new int [1], y = new int [1], mask = new int [1];
 	gdk_window_get_device_position (0, x, y, mask);
@@ -385,6 +388,7 @@ long /*int*/ hoverProc (long /*int*/ widget) {
 	return 0;
 }
 
+@Override
 long /*int*/ topHandle() {
 	if (fixedHandle != 0) return fixedHandle;
 	return super.topHandle ();
@@ -400,6 +404,7 @@ long /*int*/ paintHandle () {
 	return paintHandle;
 }
 
+@Override
 long /*int*/ paintWindow () {
 	long /*int*/ paintHandle = paintHandle ();
 	OS.gtk_widget_realize (paintHandle);
@@ -654,6 +659,7 @@ long /*int*/ childStyle () {
 	return parent.childStyle ();
 }
 
+@Override
 void createWidget (int index) {
 	state |= DRAG_DETECT;
 	checkOrientation (parent);
@@ -877,6 +883,7 @@ void markLayout (boolean changed, boolean all) {
 	/* Do nothing */
 }
 
+@Override
 void modifyStyle (long /*int*/ handle, long /*int*/ style) {
 	super.modifyStyle(handle, style);
 	/*
@@ -1224,6 +1231,7 @@ public void setSize (int width, int height) {
 }
 
 
+@Override
 boolean isActive () {
 	return getShell ().getModalShell () == null && display.getModalDialog () == null;
 }
@@ -2395,6 +2403,7 @@ void fixChildren (Shell newShell, Shell oldShell, Decorations newDecorations, De
 	oldDecorations.fixDecorations (newDecorations, this, menus);
 }
 
+@Override
 long /*int*/ fixedMapProc (long /*int*/ widget) {
 	gtk_widget_set_mapped (widget, true);
 	long /*int*/ widgetList = OS.gtk_container_get_children (widget);
@@ -2946,6 +2955,7 @@ Point getThickness (long /*int*/ widget) {
 	return new Point (OS.gtk_style_get_xthickness (style), OS.gtk_style_get_ythickness (style));
 }
 
+@Override
 long /*int*/ gtk_button_press_event (long /*int*/ widget, long /*int*/ event) {
 	return gtk_button_press_event (widget, event, true);
 }
@@ -3015,12 +3025,14 @@ long /*int*/ gtk_button_press_event (long /*int*/ widget, long /*int*/ event, bo
 	return result;
 }
 
+@Override
 long /*int*/ gtk_button_release_event (long /*int*/ widget, long /*int*/ event) {
 	GdkEventButton gdkEvent = new GdkEventButton ();
 	OS.memmove (gdkEvent, event, GdkEventButton.sizeof);
 	return sendMouseEvent (SWT.MouseUp, gdkEvent.button, display.clickCount, 0, false, gdkEvent.time, gdkEvent.x_root, gdkEvent.y_root, false, gdkEvent.state) ? 0 : 1;
 }
 
+@Override
 long /*int*/ gtk_commit (long /*int*/ imcontext, long /*int*/ text) {
 	if (text == 0) return 0;
 	int length = OS.strlen (text);
@@ -3032,6 +3044,7 @@ long /*int*/ gtk_commit (long /*int*/ imcontext, long /*int*/ text) {
 	return 0;
 }
 
+@Override
 long /*int*/ gtk_enter_notify_event (long /*int*/ widget, long /*int*/ event) {
 	if (OS.GTK_VERSION >= OS.VERSION (2, 12, 0)) {
 		/*
@@ -3075,6 +3088,7 @@ boolean checkSubwindow () {
 	return false;
 }
 
+@Override
 long /*int*/ gtk_event_after (long /*int*/ widget, long /*int*/ gdkEvent) {
 	GdkEvent event = new GdkEvent ();
 	OS.memmove (event, gdkEvent, GdkEvent.sizeof);
@@ -3133,6 +3147,7 @@ long /*int*/ gtk_event_after (long /*int*/ widget, long /*int*/ gdkEvent) {
 	return 0;
 }
 
+@Override
 long /*int*/ gtk_draw (long /*int*/ widget, long /*int*/ cairo) {
 	if ((state & OBSCURED) != 0) return 0;
 	if (!hooksPaint ()) return 0;
@@ -3156,6 +3171,7 @@ long /*int*/ gtk_draw (long /*int*/ widget, long /*int*/ cairo) {
 	return 0;
 }
 
+@Override
 long /*int*/ gtk_expose_event (long /*int*/ widget, long /*int*/ eventPtr) {
 	if ((state & OBSCURED) != 0) return 0;
 	if (!hooksPaint ()) return 0;
@@ -3178,11 +3194,13 @@ long /*int*/ gtk_expose_event (long /*int*/ widget, long /*int*/ eventPtr) {
 	return 0;
 }
 
+@Override
 long /*int*/ gtk_focus (long /*int*/ widget, long /*int*/ directionType) {
 	/* Stop GTK traversal for every widget */
 	return 1;
 }
 
+@Override
 long /*int*/ gtk_focus_in_event (long /*int*/ widget, long /*int*/ event) {
 	// widget could be disposed at this point
 	if (handle != 0) {
@@ -3201,6 +3219,7 @@ long /*int*/ gtk_focus_in_event (long /*int*/ widget, long /*int*/ event) {
 	return 0;
 }
 
+@Override
 long /*int*/ gtk_focus_out_event (long /*int*/ widget, long /*int*/ event) {
 	// widget could be disposed at this point
 	if (handle != 0) {
@@ -3214,6 +3233,7 @@ long /*int*/ gtk_focus_out_event (long /*int*/ widget, long /*int*/ event) {
 	return 0;
 }
 
+@Override
 long /*int*/ gtk_key_press_event (long /*int*/ widget, long /*int*/ event) {
 	if (!hasFocus ()) {
 		/*
@@ -3246,6 +3266,7 @@ long /*int*/ gtk_key_press_event (long /*int*/ widget, long /*int*/ event) {
 	return super.gtk_key_press_event (widget, event);
 }
 
+@Override
 long /*int*/ gtk_key_release_event (long /*int*/ widget, long /*int*/ event) {
 	if (!hasFocus ()) return 0;
 	long /*int*/ imHandle = imHandle ();
@@ -3255,6 +3276,7 @@ long /*int*/ gtk_key_release_event (long /*int*/ widget, long /*int*/ event) {
 	return super.gtk_key_release_event (widget, event);
 }
 
+@Override
 long /*int*/ gtk_leave_notify_event (long /*int*/ widget, long /*int*/ event) {
 	if (display.currentControl != this) return 0;
 	display.removeMouseHoverTimeout (handle);
@@ -3270,6 +3292,7 @@ long /*int*/ gtk_leave_notify_event (long /*int*/ widget, long /*int*/ event) {
 	return result;
 }
 
+@Override
 long /*int*/ gtk_mnemonic_activate (long /*int*/ widget, long /*int*/ arg1) {
 	int result = 0;
 	long /*int*/ eventPtr = OS.gtk_get_current_event ();
@@ -3291,6 +3314,7 @@ long /*int*/ gtk_mnemonic_activate (long /*int*/ widget, long /*int*/ arg1) {
 	return result;
 }
 
+@Override
 long /*int*/ gtk_motion_notify_event (long /*int*/ widget, long /*int*/ event) {
 	GdkEventMotion gdkEvent = new GdkEventMotion ();
 	OS.memmove (gdkEvent, event, GdkEventMotion.sizeof);
@@ -3321,6 +3345,7 @@ long /*int*/ gtk_motion_notify_event (long /*int*/ widget, long /*int*/ event) {
 	return result;
 }
 
+@Override
 long /*int*/ gtk_popup_menu (long /*int*/ widget) {
 	if (!hasFocus()) return 0;
 	int [] x = new int [1], y = new int [1];
@@ -3328,11 +3353,13 @@ long /*int*/ gtk_popup_menu (long /*int*/ widget) {
 	return showMenu (x [0], y [0], SWT.MENU_KEYBOARD) ? 1 : 0;
 }
 
+@Override
 long /*int*/ gtk_preedit_changed (long /*int*/ imcontext) {
 	display.showIMWindow (this);
 	return 0;
 }
 
+@Override
 long /*int*/ gtk_realize (long /*int*/ widget) {
 	long /*int*/ imHandle = imHandle ();
 	if (imHandle != 0) {
@@ -3345,6 +3372,7 @@ long /*int*/ gtk_realize (long /*int*/ widget) {
 	return 0;
 }
 
+@Override
 long /*int*/ gtk_scroll_event (long /*int*/ widget, long /*int*/ eventPtr) {
 	GdkEventScroll gdkEvent = new GdkEventScroll ();
 	OS.memmove (gdkEvent, eventPtr, GdkEventScroll.sizeof);
@@ -3373,11 +3401,13 @@ long /*int*/ gtk_scroll_event (long /*int*/ widget, long /*int*/ eventPtr) {
 	return 0;
 }
 
+@Override
 long /*int*/ gtk_show_help (long /*int*/ widget, long /*int*/ helpType) {
 	if (!hasFocus ()) return 0;
 	return sendHelpEvent (helpType) ? 1 : 0;
 }
 
+@Override
 long /*int*/ gtk_style_set (long /*int*/ widget, long /*int*/ previousStyle) {
 	if (backgroundImage != null) {
 		setBackgroundPixmap (backgroundImage);
@@ -3385,12 +3415,14 @@ long /*int*/ gtk_style_set (long /*int*/ widget, long /*int*/ previousStyle) {
 	return 0;
 }
 
+@Override
 long /*int*/ gtk_unrealize (long /*int*/ widget) {
 	long /*int*/ imHandle = imHandle ();
 	if (imHandle != 0) OS.gtk_im_context_set_client_window (imHandle, 0);
 	return 0;	
 }
 
+@Override
 long /*int*/ gtk_visibility_notify_event (long /*int*/ widget, long /*int*/ event) {
 	/*
 	* As of GTK 2.17.11, obscured controls no longer send expose 
@@ -3643,6 +3675,7 @@ boolean mnemonicMatch (char key) {
 	return false;
 }
 
+@Override
 void register () {
 	super.register ();
 	if (fixedHandle != 0) display.addWidget (fixedHandle, this);
@@ -3738,6 +3771,7 @@ void redrawWidget (int x, int y, int width, int height, boolean redrawAll, boole
 	OS.gdk_window_invalidate_rect (window, rect, all);
 }
 
+@Override
 void release (boolean destroy) {
 	Control next = null, previous = null;
 	if (destroy && parent != null) {
@@ -3762,16 +3796,19 @@ void release (boolean destroy) {
 	}
 }
 
+@Override
 void releaseHandle () {
 	super.releaseHandle ();
 	fixedHandle = 0;
 	parent = null;
 }
 
+@Override
 void releaseParent () {
 	parent.removeControl (this);
 }
 
+@Override
 void releaseWidget () {
 	super.releaseWidget ();
 	if (display.currentControl == this) display.currentControl = null;
@@ -4459,6 +4496,7 @@ public void setMenu (Menu menu) {
 	this.menu = menu;
 }
 
+@Override
 void setOrientation (boolean create) {
 	if ((style & SWT.RIGHT_TO_LEFT) != 0 || !create) {
 		int dir = (style & SWT.RIGHT_TO_LEFT) != 0 ? OS.GTK_TEXT_DIR_RTL : OS.GTK_TEXT_DIR_LTR;
@@ -4641,6 +4679,7 @@ public void setRedraw (boolean redraw) {
 	}
 }
 
+@Override
 boolean setTabItemFocus (boolean next) {
 	if (!isShowing ()) return false;
 	return forceFocus ();
@@ -5422,6 +5461,7 @@ void updateLayout (boolean all) {
 	/* Do nothing */
 }
 
+@Override
 long /*int*/ windowProc (long /*int*/ handle, long /*int*/ arg0, long /*int*/ user_data) {
 	switch ((int)/*64*/user_data) {
 		case EXPOSE_EVENT_INVERSE: {

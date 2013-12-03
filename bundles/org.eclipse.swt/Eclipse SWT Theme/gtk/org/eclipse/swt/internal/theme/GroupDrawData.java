@@ -29,6 +29,7 @@ public GroupDrawData() {
 
 static final int GROUP_HEADER_X = 9;
 static final int GROUP_HEADER_PAD = 2;
+@Override
 void draw(Theme theme, GC gc, Rectangle bounds) {
 	long /*int*/ frameHandle = theme.frameHandle;
 	long /*int*/ gtkStyle = OS.gtk_widget_get_style (frameHandle);
@@ -55,6 +56,7 @@ void draw(Theme theme, GC gc, Rectangle bounds) {
 	}
 }
 
+@Override
 int getStateType(int part) {
 	int state = this.state[part];
 	int state_type = OS.GTK_STATE_NORMAL;
@@ -62,6 +64,7 @@ int getStateType(int part) {
 	return state_type;
 }
 
+@Override
 int hit(Theme theme, Point position, Rectangle bounds) {
    	return bounds.contains(position) ? DrawData.WIDGET_WHOLE : DrawData.WIDGET_NOWHERE;
 }

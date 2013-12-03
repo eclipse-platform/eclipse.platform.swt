@@ -132,9 +132,11 @@ void _setCursor (Cursor cursor) {
 	if (this.cursor != null) return;
 	super.setCursor (cursor);
 }
+@Override
 protected void checkSubclass () {
 	if (!isValidSubclass ()) error (SWT.ERROR_INVALID_SUBCLASS);
 }
+@Override
 public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget();
 	int width = 0, height = 0;
@@ -763,6 +765,7 @@ void onPaint(Event event) {
 void onResize () {
 	layoutItems ();
 }
+@Override
 void removeControl (Control control) {
 	super.removeControl (control);
 	CoolItem [] items = getItems ();
@@ -1100,6 +1103,7 @@ public void setWrapIndices (int[] indices) {
 	relayout();
 }
 
+@Override
 void reskinChildren (int flags) {
 	if (items != null) {
 		for (int row = 0; row < items.length; row++) {
@@ -1112,6 +1116,7 @@ void reskinChildren (int flags) {
 	super.reskinChildren (flags);
 }
 
+@Override
 public void setCursor (Cursor cursor) {
 	checkWidget ();
 	super.setCursor (this.cursor = cursor);
@@ -1156,6 +1161,7 @@ public void setItemLayout (int[] itemOrder, int[] wrapIndices, Point[] sizes) {
 	setItemSizes(sizes);	
 	relayout();
 }
+@Override
 public void setOrientation (int orientation) {
 	super.setOrientation(orientation);
 	for (int row = 0; row < items.length; row++) {

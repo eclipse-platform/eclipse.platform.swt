@@ -130,6 +130,7 @@ void updateEvent(DNDEvent e) {
  *
  * @return a string representation of the event
  */
+@Override
 public String toString() {
 	String string = super.toString ();
 	return string.substring (0, string.length() - 1) // remove trailing '}'

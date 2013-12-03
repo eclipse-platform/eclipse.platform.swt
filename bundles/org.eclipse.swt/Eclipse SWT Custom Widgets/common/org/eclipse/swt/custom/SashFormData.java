@@ -27,6 +27,7 @@ String getName () {
  *
  * @return a string representation of the event
  */
+@Override
 public String toString () {
 	return getName()+" {weight="+weight+"}"; //$NON-NLS-2$
 }

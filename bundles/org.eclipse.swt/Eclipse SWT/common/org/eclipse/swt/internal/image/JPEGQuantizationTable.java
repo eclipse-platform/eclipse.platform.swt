@@ -159,6 +159,7 @@ public void scaleBy(int qualityFactor) {
 	}
 }
 
+@Override
 public int signature() {
 	return JPEGFileFormat.DQT;
 }

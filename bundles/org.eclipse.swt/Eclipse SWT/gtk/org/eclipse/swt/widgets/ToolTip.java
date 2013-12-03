@@ -261,6 +261,7 @@ void configure () {
 	region.dispose ();
 }
 
+@Override
 void createHandle (int index) {
 	if ((style & SWT.BALLOON) != 0) {
 		state |= HANDLE;
@@ -291,6 +292,7 @@ void createHandle (int index) {
 	}
 }
 
+@Override
 void createWidget (int index) {
 	super.createWidget (index);
 	text = "";
@@ -299,6 +301,7 @@ void createWidget (int index) {
 	autohide = true;
 }
 
+@Override
 void deregister () {
 	super.deregister ();
 	if ((style & SWT.BALLOON) == 0) {
@@ -309,6 +312,7 @@ void deregister () {
 	}
 }
 
+@Override
 void destroyWidget () {
 	long /*int*/ topHandle = topHandle ();
 	if (parent != null) parent.removeTooTip (this);
@@ -374,6 +378,7 @@ public String getMessage () {
 	return message;
 }
 
+@Override
 String getNameText () {
 	return getText ();
 }
@@ -469,6 +474,7 @@ public boolean getVisible () {
 	return false;
 }
 
+@Override
 long /*int*/ gtk_button_press_event (long /*int*/ widget, long /*int*/ event) {
 	sendSelectionEvent (SWT.Selection, null, true);
 	setVisible (false);
@@ -575,18 +581,21 @@ void drawTooltip (long /*int*/ cr) {
 	OS.g_object_unref (gdkGC);
 }
 
+@Override
 long /*int*/ gtk_draw (long /*int*/ widget, long /*int*/ cairo) {
 	if ((state & OBSCURED) != 0) return 0;
 	drawTooltip (cairo);
 	return 0;
 }
 
+@Override
 long /*int*/ gtk_expose_event (long /*int*/ widget, long /*int*/ eventPtr) {
 	if ((state & OBSCURED) != 0) return 0;
 	drawTooltip (0);
 	return 0;
 }
 
+@Override
 long /*int*/ gtk_size_allocate (long /*int*/ widget, long /*int*/ allocation) {
 	Point point = getLocation (); 
 	int x = point.x;
@@ -606,6 +615,7 @@ long /*int*/ gtk_size_allocate (long /*int*/ widget, long /*int*/ allocation) {
 	return 0;
 }
 
+@Override
 void hookEvents () {
 	if ((style & SWT.BALLOON) != 0) {
 		OS.g_signal_connect_closure_by_id (handle, display.signalIds [EXPOSE_EVENT], 0, display.getClosure (EXPOSE_EVENT), true);
@@ -642,6 +652,7 @@ public boolean isVisible () {
 	return getVisible ();
 }
 
+@Override
 void register () {
 	super.register ();
 	if ((style & SWT.BALLOON) == 0) {
@@ -652,6 +663,7 @@ void register () {
 	}
 }
 
+@Override
 void releaseWidget () {
 	super.releaseWidget ();
 	setVisible(false);
@@ -895,6 +907,7 @@ public void setVisible (boolean visible) {
 	}
 }
 
+@Override
 long /*int*/ timerProc (long /*int*/ widget) {
 	if ((style & SWT.BALLOON) != 0) {
 		OS.gtk_widget_hide (handle);

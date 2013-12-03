@@ -40,6 +40,7 @@ public final class TextLayout extends Resource {
 		TextStyle style;
 		int start;
 
+		@Override
 		public String toString () {
 			return "StyleItem {" + start + ", " + style + "}";
 		}
@@ -336,6 +337,7 @@ int[] computePolyline(int left, int top, int right, int bottom) {
 	return coordinates;
 }
 
+@Override
 void destroy() {
 	font = null;
 	text = null;
@@ -1627,6 +1629,7 @@ public int getWrapIndent () {
  *
  * @return <code>true</code> when the text layout is disposed and <code>false</code> otherwise
  */
+@Override
 public boolean isDisposed () {
 	return layout == 0;
 }
@@ -2176,6 +2179,7 @@ static final boolean isAlef(int ch) {
  *
  * @return a string representation of the receiver
  */
+@Override
 public String toString () {
 	if (isDisposed()) return "TextLayout {*DISPOSED*}";
 	return "TextLayout {" + layout + "}";

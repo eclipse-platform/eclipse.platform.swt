@@ -72,23 +72,35 @@ int AddRef () {
 void createCOMInterfaces () {
 	/* Create each of the interfaces that this object implements */
 	supports = new XPCOMObject (new int[] {2, 0, 0}) {
+		@Override
 		public long /*int*/ method0 (long /*int*/[] args) {return QueryInterface (args[0], args[1]);}
+		@Override
 		public long /*int*/ method1 (long /*int*/[] args) {return AddRef ();}
+		@Override
 		public long /*int*/ method2 (long /*int*/[] args) {return Release ();}
 	};
 	
 	directoryServiceProvider = new XPCOMObject (new int[] {2, 0, 0, 3}) {
+		@Override
 		public long /*int*/ method0 (long /*int*/[] args) {return QueryInterface (args[0], args[1]);}
+		@Override
 		public long /*int*/ method1 (long /*int*/[] args) {return AddRef ();}
+		@Override
 		public long /*int*/ method2 (long /*int*/[] args) {return Release ();}
+		@Override
 		public long /*int*/ method3 (long /*int*/[] args) {return getFile (args[0], args[1], args[2]);}
 	};
 		
 	directoryServiceProvider2 = new XPCOMObject (new int[] {2, 0, 0, 3, 2}) {
+		@Override
 		public long /*int*/ method0 (long /*int*/[] args) {return QueryInterface (args[0], args[1]);}
+		@Override
 		public long /*int*/ method1 (long /*int*/[] args) {return AddRef ();}
+		@Override
 		public long /*int*/ method2 (long /*int*/[] args) {return Release ();}
+		@Override
 		public long /*int*/ method3 (long /*int*/[] args) {return getFile (args[0], args[1], args[2]);}
+		@Override
 		public long /*int*/ method4 (long /*int*/[] args) {return getFiles (args[0], args[1]);}
 	};
 }

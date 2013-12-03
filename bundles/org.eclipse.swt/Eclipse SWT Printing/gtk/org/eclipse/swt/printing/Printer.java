@@ -402,6 +402,7 @@ static byte [] restoreBytes(String key, boolean nullTerminate) {
  * 
  * @noreference This method is not intended to be referenced by clients.
  */
+@Override
 public long /*int*/ internal_new_GC(GCData data) {
 	long /*int*/ gc, drawable = 0;
 	if (OS.USE_CAIRO) {
@@ -457,6 +458,7 @@ public long /*int*/ internal_new_GC(GCData data) {
  * 
  * @noreference This method is not intended to be referenced by clients.
  */
+@Override
 public void internal_dispose_GC(long /*int*/ hDC, GCData data) {
 	long /*int*/ gc = hDC;
 	if (data != null) isGCCreated = false;
@@ -514,6 +516,7 @@ public boolean startJob(String jobName) {
  * This method is called internally by the dispose
  * mechanism of the <code>Device</code> class.
  */
+@Override
 protected void destroy () {
 	if (printer != 0) OS.g_object_unref (printer);
 	if (settings != 0) OS.g_object_unref (settings);
@@ -621,6 +624,7 @@ public void endPage() {
  *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
  * </ul>
  */
+@Override
 public Point getDPI() {
 	checkDevice();
 	int resolution = OS.gtk_print_settings_get_resolution(settings);
@@ -645,6 +649,7 @@ public Point getDPI() {
  * @see #getClientArea
  * @see #computeTrim
  */
+@Override
 public Rectangle getBounds() {
 	checkDevice();
 	Point dpi = getDPI(), screenDPI = getIndependentDPI();
@@ -670,6 +675,7 @@ public Rectangle getBounds() {
  * @see #getBounds
  * @see #computeTrim
  */
+@Override
 public Rectangle getClientArea() {
 	checkDevice();
 	Point dpi = getDPI(), screenDPI = getIndependentDPI();
@@ -737,6 +743,7 @@ public Rectangle computeTrim(int x, int y, int width, int height) {
  * mechanism of the <code>Device</code> class.
  * @param deviceData the device data
  */
+@Override
 protected void create(DeviceData deviceData) {
 	this.data = (PrinterData)deviceData;
 	if (disablePrinting) SWT.error(SWT.ERROR_NO_HANDLES);
@@ -756,6 +763,7 @@ protected void create(DeviceData deviceData) {
  * 
  * @see #create
  */
+@Override
 protected void init() {
 	settings = OS.gtk_print_settings_new();
 	pageSetup = OS.gtk_page_setup_new();

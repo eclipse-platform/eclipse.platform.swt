@@ -198,6 +198,7 @@ public RowLayout (int type) {
 	this.type = type;
 }
 
+@Override
 protected Point computeSize (Composite composite, int wHint, int hHint, boolean flushCache) {
 	Point extent;
 	if (type == SWT.HORIZONTAL) {
@@ -220,6 +221,7 @@ Point computeSize (Control control, boolean flushCache) {
 	return control.computeSize (wHint, hHint, flushCache);
 }
 
+@Override
 protected boolean flushCache (Control control) {
 	return true;
 }
@@ -231,6 +233,7 @@ String getName () {
 	return string.substring (index + 1, string.length ());
 }
 
+@Override
 protected void layout (Composite composite, boolean flushCache) {
 	Rectangle clientArea = composite.getClientArea ();
 	if (type == SWT.HORIZONTAL) {
@@ -485,6 +488,7 @@ Point layoutVertical (Composite composite, boolean move, boolean wrap, int heigh
  *
  * @return a string representation of the layout
  */
+@Override
 public String toString () {
  	String string = getName ()+" {";
  	string += "type="+((type != SWT.HORIZONTAL) ? "SWT.VERTICAL" : "SWT.HORIZONTAL")+" ";

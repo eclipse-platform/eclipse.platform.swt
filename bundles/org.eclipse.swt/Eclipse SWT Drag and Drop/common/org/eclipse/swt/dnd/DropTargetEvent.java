@@ -122,6 +122,7 @@ void updateEvent(DNDEvent e) {
  *
  * @return a string representation of the event
  */
+@Override
 public String toString() {
 	String string = super.toString ();
 	StringBuffer sb = new StringBuffer();

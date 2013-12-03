@@ -1008,6 +1008,7 @@ void destroyMask() {
 	mask = 0;
 }
 
+@Override
 void destroy() {
 	if (memGC != null) memGC.dispose();
 	if (pixmap != 0) OS.g_object_unref(pixmap);
@@ -1027,6 +1028,7 @@ void destroy() {
  *
  * @see #hashCode
  */
+@Override
 public boolean equals (Object object) {
 	if (object == this) return true;
 	if (!(object instanceof Image)) return false;
@@ -1278,6 +1280,7 @@ public static Image gtk_new_from_pixbuf(Device device, int type, long /*int*/ pi
  *
  * @see #equals
  */
+@Override
 public int hashCode () {
 	if (OS.USE_CAIRO) {
 		return (int)/*64*/surface;
@@ -1628,6 +1631,7 @@ public void internal_dispose_GC (long /*int*/ hDC, GCData data) {
  *
  * @return <code>true</code> when the image is disposed and <code>false</code> otherwise
  */
+@Override
 public boolean isDisposed() {
 	if (OS.USE_CAIRO) {
 		return surface == 0;
@@ -1684,6 +1688,7 @@ public void setBackground(Color color) {
  *
  * @return a string representation of the receiver
  */
+@Override
 public String toString () {
 	if (isDisposed()) return "Image {*DISPOSED*}";
 	if (OS.USE_CAIRO) {

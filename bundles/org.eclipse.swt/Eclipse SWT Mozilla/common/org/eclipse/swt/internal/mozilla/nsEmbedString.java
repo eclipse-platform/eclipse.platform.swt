@@ -46,6 +46,7 @@ public long /*int*/ getAddress() {
 	return handle;
 }	
 	
+@Override
 public String toString() {
 	if (handle == 0) return null;
 	int length = XPCOM.nsEmbedString_Length(handle);

@@ -113,6 +113,7 @@ public void addSelectionListener (SelectionListener listener) {
 	addListener (SWT.DefaultSelection, typedListener);
 }
 
+@Override
 public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget ();
 	if (wHint != SWT.DEFAULT && wHint < 0) wHint = 0;
@@ -140,6 +141,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	return new Point (width, height);
 }
 
+@Override
 void createHandle(int index) {
 	state |= HANDLE | THEME_BACKGROUND;
 	handle = OS.g_object_new (display.gtk_fixed_get_type (), 0);
@@ -156,6 +158,7 @@ void createHandle(int index) {
 	focusIndex = -1;
 }
 
+@Override
 void createWidget (int index) {
 	super.createWidget (index);
 	layout.setFont (getFont ());
@@ -163,6 +166,7 @@ void createWidget (int index) {
 	initAccessible ();
 }
 
+@Override
 void drawWidget(GC gc) {
 	int selStart = selection.x;
 	int selEnd = selection.y;
@@ -183,6 +187,7 @@ void drawWidget(GC gc) {
 	}
 }
 
+@Override
 void enableWidget (boolean enabled) {
 	super.enableWidget (enabled);
 	if (isDisposed ()) return;
@@ -195,6 +200,7 @@ void enableWidget (boolean enabled) {
 	redraw ();
 }
 
+@Override
 void fixStyle () {
 	fixStyle (handle);
 }
@@ -202,16 +208,19 @@ void fixStyle () {
 void initAccessible () {
 	Accessible accessible = getAccessible ();
 	accessible.addAccessibleListener (new AccessibleAdapter () {
+		@Override
 		public void getName (AccessibleEvent e) {
 			e.result = parse (text);
 		}
 	});
 		
 	accessible.addAccessibleControlListener (new AccessibleControlAdapter () {
+		@Override
 		public void getChildAtPoint (AccessibleControlEvent e) {
 			e.childID = ACC.CHILDID_SELF;
 		}
 		
+		@Override
 		public void getLocation (AccessibleControlEvent e) {
 			Rectangle rect = display.map (getParent (), null, getBounds ());
 			e.x = rect.x;
@@ -220,33 +229,40 @@ void initAccessible () {
 			e.height = rect.height;
 		}
 		
+		@Override
 		public void getChildCount (AccessibleControlEvent e) {
 			e.detail = 0;
 		}
 		
+		@Override
 		public void getRole (AccessibleControlEvent e) {
 			e.detail = ACC.ROLE_LINK;
 		}
 		
+		@Override
 		public void getState (AccessibleControlEvent e) {
 			e.detail = ACC.STATE_FOCUSABLE;
 			if (hasFocus ()) e.detail |= ACC.STATE_FOCUSED;
 		}
 		
+		@Override
 		public void getDefaultAction (AccessibleControlEvent e) {
 			e.result = SWT.getMessage ("SWT_Press"); //$NON-NLS-1$
 		}
 		
+		@Override
 		public void getSelection (AccessibleControlEvent e) {
 			if (hasFocus ()) e.childID = ACC.CHILDID_SELF;
 		}
 		
+		@Override
 		public void getFocus (AccessibleControlEvent e) {
 			if (hasFocus ()) e.childID = ACC.CHILDID_SELF;
 		}
 	});
 }
 
+@Override
 String getNameText () {
 	return getText ();
 }
@@ -280,6 +296,7 @@ Rectangle [] getRectangles (int linkIndex) {
 	return rects;
 }
 
+@Override
 int getClientWidth () {
 	if ((state & ZERO_WIDTH) != 0) return 0;
 	GtkAllocation allocation = new GtkAllocation();
@@ -303,6 +320,7 @@ public String getText () {
 	return text;
 }
 
+@Override
 long /*int*/ gtk_button_press_event (long /*int*/ widget, long /*int*/ event) {
 	long /*int*/ result = super.gtk_button_press_event (widget, event);	
 	if (result != 0) return result;
@@ -342,6 +360,7 @@ long /*int*/ gtk_button_press_event (long /*int*/ widget, long /*int*/ event) {
 	return result;
 }
 
+@Override
 long /*int*/ gtk_button_release_event (long /*int*/ widget, long /*int*/ event) {
 	long /*int*/ result = super.gtk_button_release_event (widget, event);
 	if (result != 0) return result;
@@ -366,6 +385,7 @@ long /*int*/ gtk_button_release_event (long /*int*/ widget, long /*int*/ event) 
 	return result;
 }
 
+@Override
 long /*int*/ gtk_event_after (long /*int*/ widget, long /*int*/ gdkEvent) {
 	long /*int*/ result = super.gtk_event_after (widget, gdkEvent);
 	GdkEvent event = new GdkEvent ();
@@ -378,6 +398,7 @@ long /*int*/ gtk_event_after (long /*int*/ widget, long /*int*/ gdkEvent) {
 	return result;
 }
 
+@Override
 long /*int*/ gtk_key_press_event (long /*int*/ widget, long /*int*/ eventPtr) {
 	long /*int*/ result = super.gtk_key_press_event (widget, eventPtr);
 	if (result != 0) return result;
@@ -408,6 +429,7 @@ long /*int*/ gtk_key_press_event (long /*int*/ widget, long /*int*/ eventPtr) {
 	return result;
 }
 
+@Override
 long /*int*/ gtk_motion_notify_event (long /*int*/ widget, long /*int*/ event) {
 	long /*int*/ result = super.gtk_motion_notify_event (widget, event);
 	if (result != 0) return result;
@@ -445,10 +467,12 @@ long /*int*/ gtk_motion_notify_event (long /*int*/ widget, long /*int*/ event) {
 	return result;
 }
 
+@Override
 boolean hooksPaint () {
 	return true;
 }
 
+@Override
 boolean mnemonicHit (char key) {
 	char uckey = Character.toUpperCase (key);
 	String parsedText = layout.getText();
@@ -466,6 +490,7 @@ boolean mnemonicHit (char key) {
 	return false;
 }
 
+@Override
 boolean mnemonicMatch (char key) {
 	char uckey = Character.toUpperCase (key);
 	String parsedText = layout.getText();
@@ -481,6 +506,7 @@ boolean mnemonicMatch (char key) {
 }
 
 
+@Override
 void releaseWidget () {
 	super.releaseWidget ();
 	if (layout != null)	layout.dispose ();
@@ -668,6 +694,7 @@ int parseMnemonics (char[] buffer, int start, int end, StringBuffer result) {
 	return mnemonic;
 }
 
+@Override
 int setBounds(int x, int y, int width, int height, boolean move, boolean resize) {
 	int result = super.setBounds (x, y, width,height, move, resize);
 	if ((result & RESIZED) != 0) {		
@@ -677,11 +704,13 @@ int setBounds(int x, int y, int width, int height, boolean move, boolean resize)
 	return result;
 }
 
+@Override
 void setFontDescription (long /*int*/ font) {
 	super.setFontDescription (font);
 	layout.setFont (Font.gtk_new (display, font));
 }
 
+@Override
 void setOrientation (boolean create) {
     super.setOrientation (create);
     layout.setOrientation (style & (SWT.LEFT_TO_RIGHT | SWT.RIGHT_TO_LEFT));
@@ -754,11 +783,13 @@ public void setText (String string) {
 	redraw ();
 }
 
+@Override
 void showWidget () {
 	super.showWidget ();
 	fixStyle (handle);
 }
 
+@Override
 int traversalCode (int key, GdkEventKey event) {
 	if (offsets.length == 0) return 0;
 	int bits = super.traversalCode (key, event);

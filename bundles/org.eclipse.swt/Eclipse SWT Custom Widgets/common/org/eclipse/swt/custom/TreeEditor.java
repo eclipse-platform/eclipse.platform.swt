@@ -129,6 +129,7 @@ public TreeEditor (Tree tree) {
 	grabVertical = true;
 }
 
+@Override
 Rectangle computeBounds () {
 	if (item == null || column == -1 || item.isDisposed()) return new Rectangle(0, 0, 0, 0);
 	Rectangle cell = item.getBounds(column);
@@ -180,6 +181,7 @@ Rectangle computeBounds () {
  * Removes all associations between the TreeEditor and the row in the tree.  The
  * tree and the editor Control are <b>not</b> disposed.
  */
+@Override
 public void dispose () {
 	if (tree != null && !tree.isDisposed()) {
 		if (this.column > -1 && this.column < tree.getColumnCount()){
@@ -289,6 +291,7 @@ public void setEditor (Control editor, TreeItem item, int column) {
 	setColumn(column);
 	setEditor(editor);
 }
+@Override
 public void setEditor (Control editor) {
 	super.setEditor(editor);
 	resize();
@@ -308,6 +311,7 @@ public void setEditor (Control editor, TreeItem item) {
 	setEditor(editor);
 }
 
+@Override
 public void layout () {
 	if (tree == null || tree.isDisposed()) return;
 	if (item == null || item.isDisposed()) return;	

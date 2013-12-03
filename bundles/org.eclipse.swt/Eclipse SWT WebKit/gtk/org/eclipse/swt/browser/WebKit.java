@@ -485,6 +485,7 @@ long /*int*/ webViewProc (long /*int*/ handle, long /*int*/ arg0, long /*int*/ a
 	}
 }
 
+@Override
 public void create (Composite parent, int style) {
 	if (ExternalClass == 0) {
 		if (Device.DEBUG) {
@@ -648,6 +649,7 @@ public void create (Composite parent, int style) {
 	}
 
 	eventFunction = new BrowserFunction (browser, "HandleWebKitEvent") { //$NON-NLS-1$
+		@Override
 		public Object function(Object[] arguments) {
 			return handleEventFromFunction (arguments) ? Boolean.TRUE : Boolean.FALSE;
 		}
@@ -759,12 +761,14 @@ void addEventHandlers (long /*int*/ web_view, boolean top) {
 	execute (buffer.toString ());
 }
 
+@Override
 public boolean back () {
 	if (WebKitGTK.webkit_web_view_can_go_back (webView) == 0) return false;
 	WebKitGTK.webkit_web_view_go_back (webView);
 	return true;
 }
 
+@Override
 public boolean close () {
 	return close (true);
 }
@@ -800,6 +804,7 @@ boolean close (boolean showPrompters) {
 	return result.booleanValue ();
 }
 
+@Override
 public boolean execute (String script) {
 	long /*int*/ frame = WebKitGTK.webkit_web_view_get_main_frame (webView);
 	long /*int*/ context = WebKitGTK.webkit_web_frame_get_global_context (frame);
@@ -825,16 +830,19 @@ public boolean execute (String script) {
 	return result != 0;
 }
 
+@Override
 public boolean forward () {
 	if (WebKitGTK.webkit_web_view_can_go_forward (webView) == 0) return false;
 	WebKitGTK.webkit_web_view_go_forward (webView);
 	return true;
 }
 
+@Override
 public String getBrowserType () {
 	return "webkit"; //$NON-NLS-1$
 }
 
+@Override
 public String getText () {
 	long /*int*/ frame = WebKitGTK.webkit_web_view_get_main_frame (webView);
 	long /*int*/ source = WebKitGTK.webkit_web_frame_get_data_source (frame);
@@ -860,6 +868,7 @@ public String getText () {
 	return new String (Converter.mbcsToWcs (null, bytes));
 }
 
+@Override
 public String getUrl () {
 	long /*int*/ uri = WebKitGTK.webkit_web_view_get_uri (webView);
 
@@ -1371,10 +1380,12 @@ long /*int*/ handleLoadFinished (long /*int*/ uri, boolean top) {
 	return 0;
 }
 
+@Override
 public boolean isBackEnabled () {
 	return WebKitGTK.webkit_web_view_can_go_back (webView) != 0;
 }
 
+@Override
 public boolean isForwardEnabled () {
 	return WebKitGTK.webkit_web_view_can_go_forward (webView) != 0;
 }
@@ -1496,10 +1507,12 @@ void openDownloadWindow (final long /*int*/ webkitDownload) {
 	shell.open ();
 }
 
+@Override
 public void refresh () {
 	WebKitGTK.webkit_web_view_reload (webView);
 }
 
+@Override
 public boolean setText (String html, boolean trusted) {
 	/* convert the String containing HTML to an array of bytes with UTF-8 data */
 	byte[] bytes = null;
@@ -1523,6 +1536,7 @@ public boolean setText (String html, boolean trusted) {
 	return true;
 }
 
+@Override
 public boolean setUrl (String url, String postData, String[] headers) {
 	this.postData = postData;
 	this.headers = headers;
@@ -1582,6 +1596,7 @@ public boolean setUrl (String url, String postData, String[] headers) {
 	return true;
 }
 
+@Override
 public void stop () {
 	WebKitGTK.webkit_web_view_stop_loading (webView);
 }

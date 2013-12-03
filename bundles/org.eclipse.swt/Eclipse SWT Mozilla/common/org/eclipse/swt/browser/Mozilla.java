@@ -676,6 +676,7 @@ static void LoadLibraries () {
 	}
 }
 
+@Override
 public void create (Composite parent, int style) {
 	delegate = new MozillaDelegate (browser);
 	final Display display = parent.getDisplay ();
@@ -1064,6 +1065,7 @@ public void create (Composite parent, int style) {
 	}
 }
 
+@Override
 public boolean back () {
 	htmlBytes = null;
 
@@ -1078,11 +1080,13 @@ public boolean back () {
 	return rc == XPCOM.NS_OK;
 }
 
+@Override
 public boolean close () {
 	final boolean[] result = new boolean[] {false};
 	LocationListener[] oldListeners = locationListeners;
 	locationListeners = new LocationListener[] {
 		new LocationAdapter () {
+			@Override
 			public void changing (LocationEvent event) {
 				/* implies that the user did not veto the page unload */
 				result[0] = true;
@@ -1097,151 +1101,252 @@ public boolean close () {
 void createCOMInterfaces () {
 	// Create each of the interfaces that this object implements
 	supports = new XPCOMObject (new int[] {2, 0, 0}) {
+		@Override
 		public long /*int*/ method0 (long /*int*/[] args) {return QueryInterface (args[0], args[1]);}
+		@Override
 		public long /*int*/ method1 (long /*int*/[] args) {return AddRef ();}
+		@Override
 		public long /*int*/ method2 (long /*int*/[] args) {return Release ();}
 	};
 	
 	weakReference = new XPCOMObject (new int[] {2, 0, 0, 2}) {
+		@Override
 		public long /*int*/ method0 (long /*int*/[] args) {return QueryInterface (args[0], args[1]);}
+		@Override
 		public long /*int*/ method1 (long /*int*/[] args) {return AddRef ();}
+		@Override
 		public long /*int*/ method2 (long /*int*/[] args) {return Release ();}
+		@Override
 		public long /*int*/ method3 (long /*int*/[] args) {return QueryReferent (args[0], args[1]);}
 	};
 
 	webProgressListener = new XPCOMObject (new int[] {2, 0, 0, 4, 6, 3, 4, 3}) {
+		@Override
 		public long /*int*/ method0 (long /*int*/[] args) {return QueryInterface (args[0], args[1]);}
+		@Override
 		public long /*int*/ method1 (long /*int*/[] args) {return AddRef ();}
+		@Override
 		public long /*int*/ method2 (long /*int*/[] args) {return Release ();}
+		@Override
 		public long /*int*/ method3 (long /*int*/[] args) {return OnStateChange (args[0], args[1], (int)/*64*/args[2], (int)/*64*/args[3]);}
+		@Override
 		public long /*int*/ method4 (long /*int*/[] args) {return OnProgressChange (args[0], args[1], (int)/*64*/args[2], (int)/*64*/args[3], (int)/*64*/args[4], (int)/*64*/args[5]);}
+		@Override
 		public long /*int*/ method5 (long /*int*/[] args) {return OnLocationChange (args[0], args[1], args[2]);}
+		@Override
 		public long /*int*/ method6 (long /*int*/[] args) {return OnStatusChange (args[0], args[1], (int)/*64*/args[2], args[3]);}
+		@Override
 		public long /*int*/ method7 (long /*int*/[] args) {return OnSecurityChange (args[0], args[1], (int)/*64*/args[2]);}
 	};
 	
 	webProgressListener_17 = new XPCOMObject (new int[] {2, 0, 0, 4, 6, 4, 4, 3}) {
+		@Override
 		public long /*int*/ method0 (long /*int*/[] args) {return QueryInterface (args[0], args[1]);}
+		@Override
 		public long /*int*/ method1 (long /*int*/[] args) {return AddRef ();}
+		@Override
 		public long /*int*/ method2 (long /*int*/[] args) {return Release ();}
+		@Override
 		public long /*int*/ method3 (long /*int*/[] args) {return OnStateChange (args[0], args[1], (int)/*64*/args[2], (int)/*64*/args[3]);}
+		@Override
 		public long /*int*/ method4 (long /*int*/[] args) {return OnProgressChange (args[0], args[1], (int)/*64*/args[2], (int)/*64*/args[3], (int)/*64*/args[4], (int)/*64*/args[5]);}
+		@Override
 		public long /*int*/ method5 (long /*int*/[] args) {return OnLocationChange (args[0], args[1], args[2], (int)/*64*/args[3]);}
+		@Override
 		public long /*int*/ method6 (long /*int*/[] args) {return OnStatusChange (args[0], args[1], (int)/*64*/args[2], args[3]);}
+		@Override
 		public long /*int*/ method7 (long /*int*/[] args) {return OnSecurityChange (args[0], args[1], (int)/*64*/args[2]);}
 	};
 
 	webBrowserChrome = new XPCOMObject (new int[] {2, 0, 0, 2, 1, 1, 1, 1, 0, 2, 0, 1, 1}) {
+		@Override
 		public long /*int*/ method0 (long /*int*/[] args) {return QueryInterface (args[0], args[1]);}
+		@Override
 		public long /*int*/ method1 (long /*int*/[] args) {return AddRef ();}
+		@Override
 		public long /*int*/ method2 (long /*int*/[] args) {return Release ();}
+		@Override
 		public long /*int*/ method3 (long /*int*/[] args) {return SetStatus ((int)/*64*/args[0], args[1]);}
+		@Override
 		public long /*int*/ method4 (long /*int*/[] args) {return GetWebBrowser (args[0]);}
+		@Override
 		public long /*int*/ method5 (long /*int*/[] args) {return SetWebBrowser (args[0]);}
+		@Override
 		public long /*int*/ method6 (long /*int*/[] args) {return GetChromeFlags (args[0]);}
+		@Override
 		public long /*int*/ method7 (long /*int*/[] args) {return SetChromeFlags ((int)/*64*/args[0]);}
+		@Override
 		public long /*int*/ method8 (long /*int*/[] args) {return DestroyBrowserWindow ();}
+		@Override
 		public long /*int*/ method9 (long /*int*/[] args) {return SizeBrowserTo ((int)/*64*/args[0], (int)/*64*/args[1]);}
+		@Override
 		public long /*int*/ method10 (long /*int*/[] args) {return ShowAsModal ();}
+		@Override
 		public long /*int*/ method11 (long /*int*/[] args) {return IsWindowModal (args[0]);}
+		@Override
 		public long /*int*/ method12 (long /*int*/[] args) {return ExitModalEventLoop ((int)/*64*/args[0]);}
 	};
 	
 	webBrowserChromeFocus = new XPCOMObject (new int[] {2, 0, 0, 0, 0}) {
+		@Override
 		public long /*int*/ method0 (long /*int*/[] args) {return QueryInterface (args[0], args[1]);}
+		@Override
 		public long /*int*/ method1 (long /*int*/[] args) {return AddRef ();}
+		@Override
 		public long /*int*/ method2 (long /*int*/[] args) {return Release ();}
+		@Override
 		public long /*int*/ method3 (long /*int*/[] args) {return FocusNextElement ();}
+		@Override
 		public long /*int*/ method4 (long /*int*/[] args) {return FocusPrevElement ();}
 	};
 		
 	embeddingSiteWindow = new XPCOMObject (new int[] {2, 0, 0, 5, 5, 0, 1, 1, 1, 1, 1}) {
+		@Override
 		public long /*int*/ method0 (long /*int*/[] args) {return QueryInterface (args[0], args[1]);}
+		@Override
 		public long /*int*/ method1 (long /*int*/[] args) {return AddRef ();}
+		@Override
 		public long /*int*/ method2 (long /*int*/[] args) {return Release ();}
+		@Override
 		public long /*int*/ method3 (long /*int*/[] args) {return SetDimensions ((int)/*64*/args[0], (int)/*64*/args[1], (int)/*64*/args[2], (int)/*64*/args[3], (int)/*64*/args[4]);}
+		@Override
 		public long /*int*/ method4 (long /*int*/[] args) {return GetDimensions ((int)/*64*/args[0], args[1], args[2], args[3], args[4]);}
+		@Override
 		public long /*int*/ method5 (long /*int*/[] args) {return SetFocus ();}
+		@Override
 		public long /*int*/ method6 (long /*int*/[] args) {return GetVisibility (args[0]);}
+		@Override
 		public long /*int*/ method7 (long /*int*/[] args) {return SetVisibility ((int)/*64*/args[0]);}
+		@Override
 		public long /*int*/ method8 (long /*int*/[] args) {return GetTitle (args[0]);}
+		@Override
 		public long /*int*/ method9 (long /*int*/[] args) {return SetTitle (args[0]);}
+		@Override
 		public long /*int*/ method10 (long /*int*/[] args) {return GetSiteWindow (args[0]);}
 	};
 	
 	embeddingSiteWindow_17 = new XPCOMObject (new int[] {2, 0, 0, 5, 5, 0, 1, 1, 1, 1, 1, 0}) {
+		@Override
 		public long /*int*/ method0 (long /*int*/[] args) {return QueryInterface (args[0], args[1]);}
+		@Override
 		public long /*int*/ method1 (long /*int*/[] args) {return AddRef ();}
+		@Override
 		public long /*int*/ method2 (long /*int*/[] args) {return Release ();}
+		@Override
 		public long /*int*/ method3 (long /*int*/[] args) {return SetDimensions ((int)/*64*/args[0], (int)/*64*/args[1], (int)/*64*/args[2], (int)/*64*/args[3], (int)/*64*/args[4]);}
+		@Override
 		public long /*int*/ method4 (long /*int*/[] args) {return GetDimensions ((int)/*64*/args[0], args[1], args[2], args[3], args[4]);}
+		@Override
 		public long /*int*/ method5 (long /*int*/[] args) {return SetFocus ();}
+		@Override
 		public long /*int*/ method6 (long /*int*/[] args) {return GetVisibility (args[0]);}
+		@Override
 		public long /*int*/ method7 (long /*int*/[] args) {return SetVisibility ((int)/*64*/args[0]);}
+		@Override
 		public long /*int*/ method8 (long /*int*/[] args) {return GetTitle (args[0]);}
+		@Override
 		public long /*int*/ method9 (long /*int*/[] args) {return SetTitle (args[0]);}
+		@Override
 		public long /*int*/ method10 (long /*int*/[] args) {return GetSiteWindow (args[0]);}
+		@Override
 		public long /*int*/ method11 (long /*int*/[] args) {return Blur ();}
 	};
 
 	interfaceRequestor = new XPCOMObject (new int[] {2, 0, 0, 2} ){
+		@Override
 		public long /*int*/ method0 (long /*int*/[] args) {return QueryInterface (args[0], args[1]);}
+		@Override
 		public long /*int*/ method1 (long /*int*/[] args) {return AddRef ();}
+		@Override
 		public long /*int*/ method2 (long /*int*/[] args) {return Release ();}
+		@Override
 		public long /*int*/ method3 (long /*int*/[] args) {return GetInterface (args[0], args[1]);}
 	};
 		
 	supportsWeakReference = new XPCOMObject (new int[] {2, 0, 0, 1}) {
+		@Override
 		public long /*int*/ method0 (long /*int*/[] args) {return QueryInterface (args[0], args[1]);}
+		@Override
 		public long /*int*/ method1 (long /*int*/[] args) {return AddRef ();}
+		@Override
 		public long /*int*/ method2 (long /*int*/[] args) {return Release ();}
+		@Override
 		public long /*int*/ method3 (long /*int*/[] args) {return GetWeakReference (args[0]);}
 	};
 	
 	contextMenuListener = new XPCOMObject (new int[] {2, 0, 0, 3}) {
+		@Override
 		public long /*int*/ method0 (long /*int*/[] args) {return QueryInterface (args[0], args[1]);}
+		@Override
 		public long /*int*/ method1 (long /*int*/[] args) {return AddRef ();}
+		@Override
 		public long /*int*/ method2 (long /*int*/[] args) {return Release ();}
+		@Override
 		public long /*int*/ method3 (long /*int*/[] args) {return OnShowContextMenu ((int)/*64*/args[0], args[1], args[2]);}
 	};
 	
 	uriContentListener = new XPCOMObject (new int[] {2, 0, 0, 2, 5, 3, 4, 1, 1, 1, 1}) {
+		@Override
 		public long /*int*/ method0 (long /*int*/[] args) {return QueryInterface (args[0], args[1]);}
+		@Override
 		public long /*int*/ method1 (long /*int*/[] args) {return AddRef ();}
+		@Override
 		public long /*int*/ method2 (long /*int*/[] args) {return Release ();}
+		@Override
 		public long /*int*/ method3 (long /*int*/[] args) {return OnStartURIOpen (args[0], args[1]);}
+		@Override
 		public long /*int*/ method4 (long /*int*/[] args) {return DoContent (args[0], (int)/*64*/args[1], args[2], args[3], args[4]);}
+		@Override
 		public long /*int*/ method5 (long /*int*/[] args) {return IsPreferred (args[0], args[1], args[2]);}
+		@Override
 		public long /*int*/ method6 (long /*int*/[] args) {return CanHandleContent (args[0], (int)/*64*/args[1], args[2], args[3]);}
+		@Override
 		public long /*int*/ method7 (long /*int*/[] args) {return GetLoadCookie (args[0]);}
+		@Override
 		public long /*int*/ method8 (long /*int*/[] args) {return SetLoadCookie (args[0]);}
+		@Override
 		public long /*int*/ method9 (long /*int*/[] args) {return GetParentContentListener (args[0]);}
+		@Override
 		public long /*int*/ method10 (long /*int*/[] args) {return SetParentContentListener (args[0]);}		
 	};
 	
 	tooltipListener = new XPCOMObject (new int[] {2, 0, 0, 3, 0}) {
+		@Override
 		public long /*int*/ method0 (long /*int*/[] args) {return QueryInterface (args[0], args[1]);}
+		@Override
 		public long /*int*/ method1 (long /*int*/[] args) {return AddRef ();}
+		@Override
 		public long /*int*/ method2 (long /*int*/[] args) {return Release ();}
+		@Override
 		public long /*int*/ method3 (long /*int*/[] args) {return OnShowTooltip ((int)/*64*/args[0], (int)/*64*/args[1], args[2]);}
+		@Override
 		public long /*int*/ method4 (long /*int*/[] args) {return OnHideTooltip ();}		
 	};
 
 	domEventListener = new XPCOMObject (new int[] {2, 0, 0, 1}) {
+		@Override
 		public long /*int*/ method0 (long /*int*/[] args) {return QueryInterface (args[0], args[1]);}
+		@Override
 		public long /*int*/ method1 (long /*int*/[] args) {return AddRef ();}
+		@Override
 		public long /*int*/ method2 (long /*int*/[] args) {return Release ();}
+		@Override
 		public long /*int*/ method3 (long /*int*/[] args) {return HandleEvent (args[0]);}
 	};
 
 	badCertListener = new XPCOMObject (new int[] {2, 0, 0, 4}) {
+		@Override
 		public long /*int*/ method0 (long /*int*/[] args) {return QueryInterface (args[0], args[1]);}
+		@Override
 		public long /*int*/ method1 (long /*int*/[] args) {return AddRef ();}
+		@Override
 		public long /*int*/ method2 (long /*int*/[] args) {return Release ();}
+		@Override
 		public long /*int*/ method3 (long /*int*/[] args) {return NotifyCertProblem (args[0], args[1], args[2], args[3]);}
 	};
 }
 
+@Override
 void deregisterFunction (BrowserFunction function) {
 	super.deregisterFunction (function);
 	AllFunctions.remove (new Integer (function.index));
@@ -1310,6 +1415,7 @@ void disposeCOMInterfaces () {
 	}
 }
 
+@Override
 public boolean execute (String script) {
 	/*
 	* This could be the first content that is set into the browser, so
@@ -1541,6 +1647,7 @@ static Browser getBrowser (long /*int*/ aDOMWindow) {
 	return findBrowser (result[0]); 
 }
 
+@Override
 public boolean forward () {
 	htmlBytes = null;
 
@@ -1556,6 +1663,7 @@ public boolean forward () {
 	return rc == XPCOM.NS_OK;
 }
 
+@Override
 public String getBrowserType () {
 	return "mozilla"; //$NON-NLS-1$
 }
@@ -1626,10 +1734,12 @@ static String getMozillaPath () {
 	return new String (chars) + SEPARATOR_OS;
 }
 
+@Override
 int getNextFunctionIndex () {
 	return NextJSFunctionIndex++;
 }
 
+@Override
 public String getText () {
 	long /*int*/[] result = new long /*int*/[1];
 	int rc = webBrowser.GetContentDOMWindow (result);
@@ -1689,6 +1799,7 @@ public String getText () {
 	return new String (chars);
 }
 
+@Override
 public String getUrl () {
 	long /*int*/[] result = new long /*int*/[1];
 	int rc = webBrowser.QueryInterface (nsIWebNavigation.NS_IWEBNAVIGATION_IID, result);
@@ -1732,6 +1843,7 @@ public String getUrl () {
 	return location;
 }
 
+@Override
 public Object getWebBrowser () {
 	if ((browser.getStyle () & SWT.MOZILLA) == 0) return null;
 	if (webBrowserObject != null) return webBrowserObject;
@@ -2697,6 +2809,7 @@ String initXULRunner (String mozillaPath) {
 	return mozillaDirPath;
 }
 
+@Override
 public boolean isBackEnabled () {
 	long /*int*/[] result = new long /*int*/[1];
 	int rc = webBrowser.QueryInterface (nsIWebNavigation.NS_IWEBNAVIGATION_IID, result);
@@ -2710,6 +2823,7 @@ public boolean isBackEnabled () {
 	return aCanGoBack[0] != 0;
 }
 
+@Override
 public boolean isForwardEnabled () {
 	long /*int*/[] result = new long /*int*/[1];
 	int rc = webBrowser.QueryInterface (nsIWebNavigation.NS_IWEBNAVIGATION_IID, result);
@@ -2898,6 +3012,7 @@ void navigate (long /*int*/ requestHandle) {
 	/* get the request headers */
 	XPCOMObject visitor = new XPCOMObject (new int[] {2, 0, 0, 2}) {
 		int refCount = 0;
+		@Override
 		public long /*int*/ method0 (long /*int*/[] args) {
 			/* QueryInterface */
 			long /*int*/ riid = args[0];
@@ -2913,15 +3028,18 @@ void navigate (long /*int*/ requestHandle) {
 			XPCOM.memmove (ppvObject, new long /*int*/[] {0}, C.PTR_SIZEOF);
 			return XPCOM.NS_ERROR_NO_INTERFACE;
 		}
+		@Override
 		public long /*int*/ method1 (long /*int*/[] args) {
 			/* AddRef */
 			return ++refCount;
 		}
+		@Override
 		public long /*int*/ method2 (long /*int*/[] args) {
 			/* Release */
 			if (--refCount == 0) dispose ();
 			return refCount;
 		}
+		@Override
 		public long /*int*/ method3 (long /*int*/[] args) {
 			/* VisitHeader */
 			long /*int*/ aHeader = args[0];
@@ -2998,6 +3116,7 @@ void onResize () {
 	baseWindow.Release ();
 }
 
+@Override
 public void refresh () {
 	htmlBytes = null;
 
@@ -3031,6 +3150,7 @@ public void refresh () {
 	error (rc);
 }
 
+@Override
 void registerFunction (BrowserFunction function) {
 	super.registerFunction (function);
 	AllFunctions.put (new Integer (function.index), function);
@@ -3091,6 +3211,7 @@ boolean sendChangingEvent (String url) {
 	return doit;
 }
 
+@Override
 public boolean setText (String html, boolean trusted) {
 	/*
 	*  Feature in Mozilla.  The focus memory of Mozilla must be 
@@ -3224,6 +3345,7 @@ public boolean setText (String html, boolean trusted) {
 	return true;
 }
 
+@Override
 public boolean setUrl (String url, String postData, String[] headers) {
 	byte[] postDataBytes = null;
 	if (postData != null) {
@@ -3334,6 +3456,7 @@ boolean setUrl (String url, byte[] postData, String[] headers) {
 	return rc == XPCOM.NS_OK;
 }
 
+@Override
 public void stop () {
 	htmlBytes = null;
 

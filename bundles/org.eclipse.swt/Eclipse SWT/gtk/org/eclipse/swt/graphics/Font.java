@@ -144,6 +144,7 @@ public Font(Device device, String name, int height, int style) {
 	init();
 }
 
+@Override
 void destroy() {
 	OS.pango_font_description_free(handle);
 	handle = 0;
@@ -159,6 +160,7 @@ void destroy() {
  *
  * @see #hashCode
  */
+@Override
 public boolean equals(Object object) {
 	if (object == this) return true;
 	if (!(object instanceof Font)) return false;
@@ -235,6 +237,7 @@ public static Font gtk_new(Device device, long /*int*/ handle) {
  *
  * @see #equals
  */
+@Override
 public int hashCode() {
 	return (int)/*64*/handle;
 }
@@ -276,6 +279,7 @@ void init(String name, float height, int style, byte[] fontString) {
  *
  * @return <code>true</code> when the font is disposed and <code>false</code> otherwise
  */
+@Override
 public boolean isDisposed() {
 	return handle == 0;
 }
@@ -286,6 +290,7 @@ public boolean isDisposed() {
  *
  * @return a string representation of the receiver
  */
+@Override
 public String toString () {
 	if (isDisposed()) return "Font {*DISPOSED*}";
 	return "Font {" + handle + "}";

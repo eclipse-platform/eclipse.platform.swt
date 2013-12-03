@@ -136,6 +136,7 @@ public class GLData {
  *
  * @return a string representation of the data
  */
+@Override
 public String toString() {
 	return (doubleBuffer ? "doubleBuffer," : "") +
 		(stereo ? "stereo," : "") +

@@ -32,11 +32,13 @@ HelperAppLauncherDialog_10 () {
 
 /* nsIHelperAppLauncherDialog */
 
+@Override
 int Show (long /*int*/ aLauncher, long /*int*/ aContext, int aReason) {
 	nsIHelperAppLauncher_8 helperAppLauncher = new nsIHelperAppLauncher_8 (aLauncher);
 	return helperAppLauncher.SaveToDisk (0, 0);
 }
 
+@Override
 int PromptForSaveToFile (long /*int*/ aLauncher, long /*int*/ aWindowContext, long /*int*/ aDefaultFileName, long /*int*/ aSuggestedFileExtension, int aForcePrompt, long /*int*/ _retval) {
 	int length = XPCOM.strlen_PRUnichar (aDefaultFileName);
 	char[] dest = new char[length];

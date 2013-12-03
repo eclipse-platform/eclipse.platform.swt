@@ -34,13 +34,21 @@ int AddRef () {
 void createCOMInterfaces () {
 	/* Create each of the interfaces that this object implements */
 	inputStream = new XPCOMObject (new int[] {2, 0, 0, 0, 1, 3, 4, 1}) {
+		@Override
 		public long /*int*/ method0 (long /*int*/[] args) {return QueryInterface (args[0], args[1]);}
+		@Override
 		public long /*int*/ method1 (long /*int*/[] args) {return AddRef ();}
+		@Override
 		public long /*int*/ method2 (long /*int*/[] args) {return Release ();}
+		@Override
 		public long /*int*/ method3 (long /*int*/[] args) {return Close ();}
+		@Override
 		public long /*int*/ method4 (long /*int*/[] args) {return Available (args[0]);}
+		@Override
 		public long /*int*/ method5 (long /*int*/[] args) {return Read (args[0], (int)/*64*/args[1], args[2]);}
+		@Override
 		public long /*int*/ method6 (long /*int*/[] args) {return ReadSegments (args[0], args[1], (int)/*64*/args[2], args[3]);}
+		@Override
 		public long /*int*/ method7 (long /*int*/[] args) {return IsNonBlocking (args[0]);}
 	};
 }

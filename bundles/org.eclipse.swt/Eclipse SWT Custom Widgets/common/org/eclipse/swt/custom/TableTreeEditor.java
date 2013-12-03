@@ -130,6 +130,7 @@ public TableTreeEditor (TableTree tableTree) {
 	// To be consistent with older versions of SWT, grabVertical defaults to true
 	grabVertical = true;
 }
+@Override
 Rectangle computeBounds () {
 	if (item == null || column == -1 || item.isDisposed() || item.tableItem == null) return new Rectangle(0, 0, 0, 0);
 	Rectangle cell = item.getBounds(column);
@@ -170,6 +171,7 @@ Rectangle computeBounds () {
  * Removes all associations between the TableTreeEditor and the cell in the table tree.  The
  * TableTree and the editor Control are <b>not</b> disposed.
  */
+@Override
 public void dispose () {
 	if (tableTree != null && !tableTree.isDisposed()) {
 		Table table = tableTree.getTable();
@@ -247,6 +249,7 @@ public void setEditor (Control editor, TableTreeItem item, int column) {
 	setColumn(column);
 	setEditor(editor);
 }
+@Override
 public void layout () {
 	if (tableTree == null || tableTree.isDisposed()) return;
 	if (item == null || item.isDisposed()) return;

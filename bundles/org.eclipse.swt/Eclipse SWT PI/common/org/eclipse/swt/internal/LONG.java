@@ -18,6 +18,7 @@ public class LONG {
 		this.value = value;
 	}
 
+	@Override
 	public boolean equals (Object object) {
 		if (object == this) return true;
 		if (!(object instanceof LONG)) return false;
@@ -25,6 +26,7 @@ public class LONG {
 		return obj.value == this.value;
 	}
 
+	@Override
 	public int hashCode () {
 		return (int)/*64*/(value ^ (value >>> 32));
 	}

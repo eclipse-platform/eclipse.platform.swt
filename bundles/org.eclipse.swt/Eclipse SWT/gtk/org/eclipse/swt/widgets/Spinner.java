@@ -194,10 +194,12 @@ static int checkStyle (int style) {
 	return style & ~(SWT.H_SCROLL | SWT.V_SCROLL);
 }
 
+@Override
 protected void checkSubclass () {
 	if (!isValidSubclass ()) error (SWT.ERROR_INVALID_SUBCLASS);
 }
 
+@Override
 public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget ();
 	if (wHint != SWT.DEFAULT && wHint < 0) wHint = 0;
@@ -245,6 +247,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	return new Point (trim.width, trim.height);
 }
 
+@Override
 public Rectangle computeTrim (int x, int y, int width, int height) {
 	checkWidget ();
 	int xborder = 0, yborder = 0;
@@ -307,6 +310,7 @@ public void copy () {
 	OS.gtk_editable_copy_clipboard (handle);
 }
 
+@Override
 void createHandle (int index) {
 	state |= HANDLE | MENU;
 	fixedHandle = OS.g_object_new (display.gtk_fixed_get_type (), 0);
@@ -342,20 +346,24 @@ public void cut () {
 	OS.gtk_editable_cut_clipboard (handle);
 }
 
+@Override
 void deregister () {
 	super.deregister ();
 	long /*int*/ imContext = imContext ();
 	if (imContext != 0) display.removeWidget (imContext);
 }
 
+@Override
 long /*int*/ eventWindow () {
 	return paintWindow ();
 }
 
+@Override
 long /*int*/ enterExitHandle () {
 	return fixedHandle;
 }
 
+@Override
 boolean filterKey (int keyval, long /*int*/ event) {
 	int time = OS.gdk_event_get_time (event);
 	if (time != lastEventTime) {
@@ -389,10 +397,12 @@ void fixIM () {
 	gdkEventKey = 0;
 }
 
+@Override
 GdkColor getBackgroundColor () {
 	return getBaseColor ();
 }
 
+@Override
 public int getBorderWidth () {
 	checkWidget();
 	if ((this.style & SWT.BORDER) != 0) {
@@ -401,6 +411,7 @@ public int getBorderWidth () {
 	return 0;
 }
 
+@Override
 GdkColor getForegroundColor () {
 	return getTextColor ();
 }
@@ -572,11 +583,13 @@ String getDecimalSeparator () {
 	return new String (Converter.mbcsToWcs (null, buffer));
 }
 
+@Override
 long /*int*/ gtk_activate (long /*int*/ widget) {
 	sendSelectionEvent (SWT.DefaultSelection);
 	return 0;
 }
 
+@Override
 long /*int*/ gtk_changed (long /*int*/ widget) {
 	long /*int*/ str = OS.gtk_entry_get_text (handle);
 	int length = OS.strlen (str);
@@ -620,6 +633,7 @@ long /*int*/ gtk_changed (long /*int*/ widget) {
 	return 0;
 }
 
+@Override
 long /*int*/ gtk_commit (long /*int*/ imContext, long /*int*/ text) {
 	if (text == 0) return 0;
 	if (!OS.gtk_editable_get_editable (handle)) return 0;
@@ -658,6 +672,7 @@ long /*int*/ gtk_commit (long /*int*/ imContext, long /*int*/ text) {
 	return 0;
 }
 
+@Override
 long /*int*/ gtk_delete_text (long /*int*/ widget, long /*int*/ start_pos, long /*int*/ end_pos) {
 	if (!hooks (SWT.Verify) && !filters (SWT.Verify)) return 0;
 	long /*int*/ ptr = OS.gtk_entry_get_text (handle);
@@ -683,16 +698,19 @@ long /*int*/ gtk_delete_text (long /*int*/ widget, long /*int*/ start_pos, long 
 	return 0;
 }
 
+@Override
 long /*int*/ gtk_event_after (long /*int*/ widget, long /*int*/ gdkEvent) {
 	if (cursor != null) setCursor (cursor.handle);
 	return super.gtk_event_after (widget, gdkEvent);
 }
 
+@Override
 long /*int*/ gtk_focus_out_event (long /*int*/ widget, long /*int*/ event) {
 	fixIM ();
 	return super.gtk_focus_out_event (widget, event);
 }
 
+@Override
 long /*int*/ gtk_insert_text (long /*int*/ widget, long /*int*/ new_text, long /*int*/ new_text_length, long /*int*/ position) {
 //	if (!hooks (SWT.Verify) && !filters (SWT.Verify)) return 0;
 	if (new_text == 0 || new_text_length == 0) return 0;
@@ -733,6 +751,7 @@ long /*int*/ gtk_insert_text (long /*int*/ widget, long /*int*/ new_text, long /
 	return 0;
 }
 
+@Override
 long /*int*/ gtk_key_press_event (long /*int*/ widget, long /*int*/ event) {
 	long /*int*/ result = super.gtk_key_press_event (widget, event);
 	if (result != 0) fixIM ();
@@ -741,6 +760,7 @@ long /*int*/ gtk_key_press_event (long /*int*/ widget, long /*int*/ event) {
 	return result;
 }
 
+@Override
 long /*int*/ gtk_populate_popup (long /*int*/ widget, long /*int*/ menu) {
 	if ((style & SWT.RIGHT_TO_LEFT) != 0) {
 		OS.gtk_widget_set_direction (menu, OS.GTK_TEXT_DIR_RTL);
@@ -749,11 +769,13 @@ long /*int*/ gtk_populate_popup (long /*int*/ widget, long /*int*/ menu) {
 	return 0;
 }
 
+@Override
 long /*int*/ gtk_value_changed (long /*int*/ widget) {
 	sendSelectionEvent (SWT.Selection);
 	return 0;
 }
 
+@Override
 void hookEvents () {
 	super.hookEvents();
 	OS.g_signal_connect_closure (handle, OS.changed, display.getClosure (CHANGED), true);
@@ -776,6 +798,7 @@ long /*int*/ imContext () {
 	return OS.GTK_ENTRY_IM_CONTEXT (handle);
 }
 
+@Override
 long /*int*/ paintWindow () {
 	long /*int*/ window = super.paintWindow ();
 	long /*int*/ children = OS.gdk_window_get_children (window);
@@ -801,12 +824,14 @@ public void paste () {
 	OS.gtk_editable_paste_clipboard (handle);
 }
 
+@Override
 void register () {
 	super.register ();
 	long /*int*/ imContext = imContext ();
 	if (imContext != 0) display.addWidget (imContext, this);
 }
 
+@Override
 void releaseWidget () {
 	super.releaseWidget ();
 	fixIM ();
@@ -885,10 +910,12 @@ void removeVerifyListener (VerifyListener listener) {
 	eventTable.unhook (SWT.Verify, listener);	
 }
 
+@Override
 void setBackgroundColor (long /*int*/ context, long /*int*/ handle, GdkRGBA rgba) {
 	setBackgroundColorGradient (context, handle, rgba);
 }
 
+@Override
 void setBackgroundColor (GdkColor color) {
 	super.setBackgroundColor (color);
 	if (!OS.GTK3) {
@@ -896,6 +923,7 @@ void setBackgroundColor (GdkColor color) {
 	}
 }
 
+@Override
 void setCursor (long /*int*/ cursor) {
 	long /*int*/ defaultCursor = 0;
 	if (cursor == 0) defaultCursor = OS.gdk_cursor_new (OS.GDK_XTERM);
@@ -903,6 +931,7 @@ void setCursor (long /*int*/ cursor) {
 	if (cursor == 0) gdk_cursor_unref (defaultCursor);
 }
 
+@Override
 void setForegroundColor (GdkColor color) {
 	setForegroundColor (handle, color, false);
 }
@@ -1160,10 +1189,12 @@ public void setValues (int selection, int minimum, int maximum, int digits, int 
 	OS.g_signal_handlers_unblock_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, VALUE_CHANGED);
 }
 
+@Override
 boolean checkSubwindow () {
 	return false;
 }
 
+@Override
 boolean translateTraversal (GdkEventKey keyEvent) {
 	int key = keyEvent.keyval;
 	switch (key) {

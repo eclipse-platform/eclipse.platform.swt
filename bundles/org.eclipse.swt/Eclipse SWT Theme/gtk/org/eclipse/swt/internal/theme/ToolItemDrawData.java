@@ -27,6 +27,7 @@ public ToolItemDrawData() {
 	state = new int[2];
 }
 
+@Override
 Rectangle computeTrim(Theme theme, GC gc) {
 	long /*int*/ buttonHandle = theme.buttonHandle;
 	long /*int*/ gtkStyle = OS.gtk_widget_get_style(buttonHandle);
@@ -46,6 +47,7 @@ Rectangle computeTrim(Theme theme, GC gc) {
 	return new Rectangle(x, y, width, height);
 }
 
+@Override
 void draw(Theme theme, GC gc, Rectangle bounds) {
 	int state = this.state[DrawData.WIDGET_WHOLE];
 	long /*int*/ drawable = gc.getGCData().drawable;
@@ -158,6 +160,7 @@ void draw(Theme theme, GC gc, Rectangle bounds) {
     }
 }
 
+@Override
 int hit(Theme theme, Point position, Rectangle bounds) {
 	if (!bounds.contains(position)) return DrawData.WIDGET_NOWHERE;
 	if ((style & SWT.DROP_DOWN) != 0) {

@@ -230,10 +230,12 @@ static int checkStyle (int style) {
 	return checkBits (style, SWT.PUSH, SWT.CHECK, SWT.RADIO, SWT.SEPARATOR, SWT.CASCADE, 0);
 }
 
+@Override
 protected void checkSubclass () {
 	if (!isValidSubclass ()) error (SWT.ERROR_INVALID_SUBCLASS);
 }
 
+@Override
 void createHandle (int index) {
 	state |= HANDLE;
 	byte [] buffer = new byte [1];
@@ -387,6 +389,7 @@ public Menu getMenu () {
 	return menu;
 }
 
+@Override
 String getNameText () {
 	if ((style & SWT.SEPARATOR) != 0) return "|";
 	return super.getNameText ();
@@ -427,6 +430,7 @@ public boolean getSelection () {
 	return OS.gtk_check_menu_item_get_active(handle);
 }
 
+@Override
 long /*int*/ gtk_activate (long /*int*/ widget) {
 	if ((style & SWT.CASCADE) != 0 && menu != null) return 0;
 	/*
@@ -446,12 +450,14 @@ long /*int*/ gtk_activate (long /*int*/ widget) {
 	return 0;
 }
 
+@Override
 long /*int*/ gtk_select (long /*int*/ item) {
 	parent.selectedItem = this;
 	sendEvent (SWT.Arm);
 	return 0;
 }
 
+@Override
 long /*int*/ gtk_show_help (long /*int*/ widget, long /*int*/ helpType) {
 	boolean handled = hooks (SWT.Help);
 	if (handled) {
@@ -466,6 +472,7 @@ long /*int*/ gtk_show_help (long /*int*/ widget, long /*int*/ helpType) {
 	return 0;
 }
 
+@Override
 void hookEvents () {
 	super.hookEvents ();
 	OS.g_signal_connect_closure (handle, OS.activate, display.getClosure (ACTIVATE), false);
@@ -492,6 +499,7 @@ public boolean isEnabled () {
 	return getEnabled () && parent.isEnabled ();
 }
 
+@Override
 void releaseChildren (boolean destroy) {
 	if (menu != null) {
 		menu.release (false);
@@ -500,6 +508,7 @@ void releaseChildren (boolean destroy) {
 	super.releaseChildren (destroy);
 }
 
+@Override
 void releaseParent () {
 	super.releaseParent ();
 	if (menu != null) {
@@ -509,6 +518,7 @@ void releaseParent () {
 	menu = null;
 }
 
+@Override
 void releaseWidget () {
 	super.releaseWidget ();
 	long /*int*/ accelGroup = getAccelGroup ();
@@ -600,6 +610,7 @@ public void removeSelectionListener (SelectionListener listener) {
 	eventTable.unhook (SWT.Selection, listener);
 	eventTable.unhook (SWT.DefaultSelection,listener);	
 }
+@Override
 void reskinChildren (int flags) {
 	if (menu != null) {
 		menu.reskin (flags);
@@ -699,6 +710,7 @@ public void setID (int id) {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  */
+@Override
 public void setImage (Image image) {
 	checkWidget();
 	if ((style & SWT.SEPARATOR) != 0) return;
@@ -788,6 +800,7 @@ public void setMenu (Menu menu) {
 	if (accelGroup != 0) addAccelerators (accelGroup);
 }
 
+@Override
 void setOrientation (boolean create) {
     super.setOrientation (create);
     if ((parent.style & SWT.RIGHT_TO_LEFT) != 0 || !create) {
@@ -866,6 +879,7 @@ public void setSelection (boolean selected) {
  * 
  * @see #setAccelerator
  */
+@Override
 public void setText (String string) {
 	checkWidget();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);

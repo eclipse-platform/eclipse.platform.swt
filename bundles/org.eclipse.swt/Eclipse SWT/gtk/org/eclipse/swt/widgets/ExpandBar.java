@@ -109,10 +109,12 @@ public void addExpandListener (ExpandListener listener) {
 	addListener (SWT.Collapse, typedListener);
 }
 
+@Override
 protected void checkSubclass () {
 	if (!isValidSubclass ()) error (SWT.ERROR_INVALID_SUBCLASS);
 }
 
+@Override
 public Point computeSize (int wHint, int hHint, boolean changed) {
 	if (wHint != SWT.DEFAULT && wHint < 0) wHint = 0;
 	if (hHint != SWT.DEFAULT && hHint < 0) hHint = 0;
@@ -125,6 +127,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	return size;
 }
 
+@Override
 void createHandle (int index) {
 	state |= HANDLE;
 	fixedHandle = OS.g_object_new (display.gtk_fixed_get_type (), 0);
@@ -164,6 +167,7 @@ void createItem (ExpandItem item, int style, int index) {
 	layoutItems (index, true);
 }
 
+@Override
 void createWidget (int index) {
 	super.createWidget (index);
 	items = new ExpandItem [4];	
@@ -182,10 +186,12 @@ void destroyItem (ExpandItem item) {
 	layoutItems (index, true);
 }
 
+@Override
 long /*int*/ eventHandle () {
 	return fixedHandle;
 }
 
+@Override
 boolean forceFocus (long /*int*/ focusHandle) {
 	if (lastFocus != null && lastFocus.setFocus ()) return true;
 	for (int i = 0; i < itemCount; i++) {
@@ -195,6 +201,7 @@ boolean forceFocus (long /*int*/ focusHandle) {
 	return super.forceFocus (focusHandle);
 }
 
+@Override
 boolean hasFocus () {
 	for (int i=0; i<itemCount; i++) {
 		ExpandItem item = items [i];
@@ -203,6 +210,7 @@ boolean hasFocus () {
 	return super.hasFocus();
 }
 
+@Override
 void hookEvents () {
 	super.hookEvents ();
 	if (scrolledHandle != 0) {
@@ -292,6 +300,7 @@ public int getSpacing () {
 	return spacing;
 }
 
+@Override
 long /*int*/ gtk_key_press_event (long /*int*/ widget, long /*int*/ event) {
 	if (!hasFocus ()) return 0;
 	long /*int*/ result = super.gtk_key_press_event (widget, event);
@@ -353,16 +362,19 @@ void layoutItems (int index, boolean setScrollbar) {
 	}
 }
 
+@Override
 long /*int*/ gtk_size_allocate (long /*int*/ widget, long /*int*/ allocation) {
 	long /*int*/ result = super.gtk_size_allocate (widget, allocation);
 	layoutItems (0, false);
 	return result;
 }
 
+@Override
 long /*int*/ parentingHandle () {
 	return fixedHandle;
 }
 
+@Override
 void releaseChildren (boolean destroy) {
 	for (int i = 0; i < itemCount; i++) {
 		ExpandItem item = items [i];
@@ -398,6 +410,7 @@ public void removeExpandListener (ExpandListener listener) {
 	eventTable.unhook (SWT.Collapse, listener);
 }
 
+@Override
 void reskinChildren (int flags) {
 	if (items != null) {
 		for (int i=0; i<items.length; i++) {
@@ -408,6 +421,7 @@ void reskinChildren (int flags) {
 	super.reskinChildren (flags);
 }
 
+@Override
 void setFontDescription (long /*int*/ font) {
 	super.setFontDescription (font);
 	for (int i = 0; i < itemCount; i++) {
@@ -416,6 +430,7 @@ void setFontDescription (long /*int*/ font) {
 	layoutItems (0, true);
 }
 
+@Override
 void setForegroundColor (GdkColor color) {
 	super.setForegroundColor (color);
 	for (int i = 0; i < itemCount; i++) {
@@ -423,6 +438,7 @@ void setForegroundColor (GdkColor color) {
 	}
 }
 
+@Override
 void setOrientation (boolean create) {
 	super.setOrientation (create);
 	if (items != null) {
@@ -503,6 +519,7 @@ void showItem (ExpandItem item) {
 	layoutItems (index + 1, true);
 }
 
+@Override
 void updateScrollBarValue (ScrollBar bar) {
 	yCurrentScroll = bar.getSelection();
 	layoutItems (0, false);

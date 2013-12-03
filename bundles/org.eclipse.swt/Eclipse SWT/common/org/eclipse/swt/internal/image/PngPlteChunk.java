@@ -31,6 +31,7 @@ PngPlteChunk(byte[] reference){
 	paletteSize = length / 3;
 }
 
+@Override
 int getChunkType() {
 	return CHUNK_PLTE;
 }
@@ -79,6 +80,7 @@ void setPaletteData(PaletteData palette) {
 /**
  * Answer whether the chunk is a valid PLTE chunk.
  */
+@Override
 void validate(PngFileReadState readState, PngIhdrChunk headerChunk) {
 	// A PLTE chunk is invalid if no IHDR has been read or if any PLTE,
 	// IDAT, or IEND chunk has been read.
@@ -115,6 +117,7 @@ void validate(PngFileReadState readState, PngIhdrChunk headerChunk) {
 	if (256 < paletteSize) SWT.error(SWT.ERROR_INVALID_IMAGE);
 }
 
+@Override
 void contributeToString(StringBuffer buffer) {
 	buffer.append("\n\tPalette size:");
 	buffer.append(paletteSize);

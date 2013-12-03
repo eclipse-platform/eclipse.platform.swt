@@ -46,6 +46,7 @@ public AccessibleTableCellEvent(Object source) {
  *
  * @return a string representation of the event
  */
+@Override
 public String toString () {
 	return "AccessibleTableCellEvent {" //$NON-NLS-1$
 		+ " accessibles=" + accessibles   //$NON-NLS-1$

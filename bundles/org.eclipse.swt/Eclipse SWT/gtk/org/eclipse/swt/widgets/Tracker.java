@@ -401,10 +401,12 @@ boolean grab () {
 	return result == OS.GDK_GRAB_SUCCESS;
 }
 
+@Override
 long /*int*/ gtk_button_release_event (long /*int*/ widget, long /*int*/ event) {
 	return gtk_mouse (OS.GDK_BUTTON_RELEASE, widget, event);
 }
 
+@Override
 long /*int*/ gtk_key_press_event (long /*int*/ widget, long /*int*/ eventPtr) {
 	long /*int*/ result = super.gtk_key_press_event (widget, eventPtr);
 	if (result != 0) return result;
@@ -542,6 +544,7 @@ long /*int*/ gtk_key_press_event (long /*int*/ widget, long /*int*/ eventPtr) {
 	return result;
 }
 
+@Override
 long /*int*/ gtk_motion_notify_event (long /*int*/ widget, long /*int*/ eventPtr) {
 	long /*int*/ cursor = this.cursor != null ? this.cursor.handle : 0;
 	if (cursor != lastCursor) {
@@ -827,6 +830,7 @@ boolean processEvent (long /*int*/ eventPtr) {
 	return false;
 }
 
+@Override
 void releaseWidget () {
 	super.releaseWidget ();
 	parent = null;

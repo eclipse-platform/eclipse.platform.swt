@@ -38,10 +38,12 @@ private boolean checkChunk() throws IOException {
 	return true;
 }
 
+@Override
 public void close() throws IOException {
 	chunk = null;
 }
 
+@Override
 public int read() throws IOException {
 	if (chunk == null) throw new IOException();
 	if (offset == length && !checkChunk()) return -1;
@@ -50,6 +52,7 @@ public int read() throws IOException {
 	return b;
 }
 
+@Override
 public int read(byte[] b, int off, int len) throws IOException {
 	if (chunk == null) throw new IOException();
 	if (offset == length && !checkChunk()) return -1;

@@ -23,6 +23,7 @@ class DNDListener extends TypedListener {
 DNDListener(SWTEventListener listener) {
 	super(listener);
 }
+@Override
 public void handleEvent (Event e) {
 	switch (e.type) {
 		case DND.DragStart: {

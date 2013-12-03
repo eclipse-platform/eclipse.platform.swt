@@ -120,6 +120,7 @@ public CTabItem (CTabFolder parent, int style, int index) {
 }
 
 
+@Override
 public void dispose() {
 	if (isDisposed ()) return;
 	//if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
@@ -355,6 +356,7 @@ public void setFont (Font font){
 	this.font = font;
 	parent.updateFolder(CTabFolder.UPDATE_TAB_HEIGHT | CTabFolder.REDRAW_TABS);
 }
+@Override
 public void setImage (Image image) {
 	checkWidget();
 	if (image != null && image.isDisposed ()) {
@@ -386,6 +388,7 @@ public void setShowClose(boolean close) {
 	showClose = close;
 	parent.updateFolder(CTabFolder.REDRAW_TABS);
 }
+@Override
 public void setText (String string) {
 	checkWidget();
 	if (string == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);

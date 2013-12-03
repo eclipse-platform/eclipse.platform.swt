@@ -56,6 +56,7 @@ public static HTMLTransfer getInstance () {
  * 
  * @see Transfer#nativeToJava
  */
+@Override
 public void javaToNative (Object object, TransferData transferData){
 	transferData.result = 0;
 	if (!checkHTML(object) || !isSupportedType(transferData)) {
@@ -83,6 +84,7 @@ public void javaToNative (Object object, TransferData transferData){
  * 
  * @see Transfer#javaToNative
  */
+@Override
 public Object nativeToJava(TransferData transferData){
 	if ( !isSupportedType(transferData) ||  transferData.pValue == 0 ) return null;
 	/* Ensure byteCount is a multiple of 2 bytes */
@@ -106,10 +108,12 @@ public Object nativeToJava(TransferData transferData){
 	int end = string.indexOf('\0');
 	return (end == -1) ? string : string.substring(0, end);
 }
+@Override
 protected int[] getTypeIds() {
 	return new int[] {TEXT_HTML_ID, TEXT_HTML2_ID};
 }
 
+@Override
 protected String[] getTypeNames() {
 	return new String[] {TEXT_HTML, TEXT_HTML2};
 }
@@ -118,6 +122,7 @@ boolean checkHTML(Object object) {
 	return (object != null && object instanceof String && ((String)object).length() > 0);
 }
 
+@Override
 protected boolean validate(Object object) {
 	return checkHTML(object);
 }

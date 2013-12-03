@@ -119,6 +119,7 @@ import org.eclipse.swt.internal.gtk.*;
  */
 public abstract class ByteArrayTransfer extends Transfer {
 
+@Override
 public TransferData[] getSupportedTypes() {
 	int[] types = getTypeIds();
 	TransferData[] data = new TransferData[types.length];
@@ -129,6 +130,7 @@ public TransferData[] getSupportedTypes() {
 	return data;
 }
 
+@Override
 public boolean isSupportedType(TransferData transferData){
 	if (transferData == null) return false;
 	int[] types = getTypeIds();
@@ -148,6 +150,7 @@ public boolean isSupportedType(TransferData transferData){
  * 
  * @see Transfer#nativeToJava
  */
+@Override
 protected void javaToNative (Object object, TransferData transferData) {
 	transferData.result = 0;
 	if (!checkByteArray(object) || !isSupportedType(transferData)) {
@@ -174,6 +177,7 @@ protected void javaToNative (Object object, TransferData transferData) {
  * 
  * @see Transfer#javaToNative
  */
+@Override
 protected Object nativeToJava(TransferData transferData) {
 	if ( !isSupportedType(transferData) || transferData.pValue == 0) return null;
 	int size = transferData.format * transferData.length / 8;

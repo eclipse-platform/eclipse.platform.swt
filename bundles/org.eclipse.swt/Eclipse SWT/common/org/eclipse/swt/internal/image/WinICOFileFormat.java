@@ -50,6 +50,7 @@ int iconSize(ImageData i) {
 	int paletteSize = i.palette.colors != null ? i.palette.colors.length * 4 : 0;
 	return WinBMPFileFormat.BMPHeaderFixedSize + paletteSize + dataSize;
 }
+@Override
 boolean isFileFormat(LEDataInputStream stream) {
 	try {
 		byte[] header = new byte[4];
@@ -111,6 +112,7 @@ int loadFileHeader(LEDataInputStream byteStream, boolean hasHeader) {
 		SWT.error(SWT.ERROR_INVALID_IMAGE);
 	return numIcons;
 }
+@Override
 ImageData[] loadFromByteStream() {
 	int numIcons = loadFileHeader(inputStream);
 	int[][] headers = loadIconHeaders(numIcons);
@@ -276,6 +278,7 @@ void unloadIconHeader(ImageData i) {
 		SWT.error(SWT.ERROR_IO, e);
 	}
 }
+@Override
 void unloadIntoByteStream(ImageLoader loader) {
 	/* We do not currently support writing multi-image ico,
 	 * so we use the first image data in the loader's array. */

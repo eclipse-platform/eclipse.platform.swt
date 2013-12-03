@@ -39,6 +39,7 @@ void readSignature() throws IOException {
 /**
  * Load the PNG image from the byte stream.
  */
+@Override
 ImageData[] loadFromByteStream() {
 	try {
 		readSignature();
@@ -141,10 +142,12 @@ void readNextChunk(PngChunkReader chunkReader) throws IOException {
 			}
 	}
 }
+@Override
 void unloadIntoByteStream(ImageLoader loader) {
 	PngEncoder encoder = new PngEncoder(loader);
 	encoder.encode(outputStream);
 }
+@Override
 boolean isFileFormat(LEDataInputStream stream) {
 	try {
 		byte[] signature = new byte[SIGNATURE_LENGTH];

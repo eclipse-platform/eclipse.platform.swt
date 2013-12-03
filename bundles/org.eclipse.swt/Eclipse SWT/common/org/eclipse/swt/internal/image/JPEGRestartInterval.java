@@ -17,6 +17,7 @@ final class JPEGRestartInterval extends JPEGFixedSizeSegment {
 		super(byteStream);
 	}
 	
+	@Override
 	public int signature() {
 		return JPEGFileFormat.DRI;
 	}
@@ -25,6 +26,7 @@ final class JPEGRestartInterval extends JPEGFixedSizeSegment {
 		return ((reference[4] & 0xFF) << 8 | (reference[5] & 0xFF));
 	}
 
+	@Override
 	public int fixedSize() {
 		return 6;
 	}

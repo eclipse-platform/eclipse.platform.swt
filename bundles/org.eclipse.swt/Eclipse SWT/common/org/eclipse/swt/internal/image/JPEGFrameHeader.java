@@ -192,6 +192,7 @@ final class JPEGFrameHeader extends JPEGVariableSizeSegment {
 	 *	SOF_14 - Differential progressive, arithmetic coding
 	 *	SOF_15 - Differential lossless, arithmetic coding
 	 */
+	@Override
 	public boolean verify() {
 		int marker = getSegmentMarker();
 		return (marker >= JPEGFileFormat.SOF0 && marker <= JPEGFileFormat.SOF3) ||

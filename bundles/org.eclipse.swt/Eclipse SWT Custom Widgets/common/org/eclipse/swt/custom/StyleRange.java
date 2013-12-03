@@ -104,6 +104,7 @@ public StyleRange(int start, int length, Color foreground, Color background, int
  *
  * @see #hashCode()
  */
+@Override
 public boolean equals(Object object) {
 	if (object == this) return true;
 	if (object instanceof StyleRange) {
@@ -125,6 +126,7 @@ public boolean equals(Object object) {
  *
  * @see #equals(Object)
  */
+@Override
 public int hashCode() {
 	return super.hashCode() ^ fontStyle;
 }
@@ -169,6 +171,7 @@ public boolean similarTo(StyleRange style) {
  *
  * @return a shallow copy of this StyleRange
  */	
+@Override
 public Object clone() {
 	try {
 		return super.clone();
@@ -183,6 +186,7 @@ public Object clone() {
  *
  * @return a string representation of the StyleRange
  */
+@Override
 public String toString() {
 	StringBuffer buffer = new StringBuffer();
 	buffer.append("StyleRange {");

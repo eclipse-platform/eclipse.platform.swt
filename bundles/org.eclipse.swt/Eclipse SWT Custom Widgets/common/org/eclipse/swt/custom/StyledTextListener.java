@@ -25,6 +25,7 @@ StyledTextListener(SWTEventListener listener) {
  *
  * @param e the event to handle
  */
+@Override
 public void handleEvent(Event e) {
 	
 	switch (e.type) {

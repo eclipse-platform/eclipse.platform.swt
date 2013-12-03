@@ -56,6 +56,7 @@ public AccessibleControlEvent(Object source) {
  *
  * @return a string representation of the event
  */
+@Override
 public String toString () {
 	return "AccessibleControlEvent {childID=" + childID +  //$NON-NLS-1$
 		" accessible=" + accessible +  //$NON-NLS-1$

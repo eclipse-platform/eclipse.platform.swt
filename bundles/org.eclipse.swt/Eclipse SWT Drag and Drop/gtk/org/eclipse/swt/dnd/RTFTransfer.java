@@ -58,6 +58,7 @@ public static RTFTransfer getInstance () {
  * 
  * @see Transfer#nativeToJava
  */
+@Override
 public void javaToNative (Object object, TransferData transferData){
 	transferData.result = 0;
 	if (!checkRTF(object) || !isSupportedType(transferData)) {
@@ -84,6 +85,7 @@ public void javaToNative (Object object, TransferData transferData){
  * 
  * @see Transfer#javaToNative
  */
+@Override
 public Object nativeToJava(TransferData transferData){
 	if ( !isSupportedType(transferData) ||  transferData.pValue == 0 ) return null;
 	int size = transferData.format * transferData.length / 8;
@@ -96,10 +98,12 @@ public Object nativeToJava(TransferData transferData){
 	return (end == -1) ? string : string.substring(0, end);
 }
 
+@Override
 protected int[] getTypeIds() {
 	return new int[] {TEXT_RTF_ID, TEXT_RTF2_ID, APPLICATION_RTF_ID};
 }
 
+@Override
 protected String[] getTypeNames() {
 	return new String[] {TEXT_RTF, TEXT_RTF2, APPLICATION_RTF};
 }
@@ -108,6 +112,7 @@ boolean checkRTF(Object object) {
 	return (object != null && object instanceof String && ((String)object).length() > 0);
 }
 
+@Override
 protected boolean validate(Object object) {
 	return checkRTF(object);
 }

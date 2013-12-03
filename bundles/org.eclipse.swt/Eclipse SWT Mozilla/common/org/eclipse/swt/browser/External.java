@@ -438,47 +438,77 @@ int AddRef () {
 void createCOMInterfaces () {
 	/* Create each of the interfaces that this object implements */
 	supports = new XPCOMObject (new int[] {2, 0, 0}) {
+		@Override
 		public long /*int*/ method0 (long /*int*/[] args) {return QueryInterface (args[0], args[1]);}
+		@Override
 		public long /*int*/ method1 (long /*int*/[] args) {return AddRef ();}
+		@Override
 		public long /*int*/ method2 (long /*int*/[] args) {return Release ();}
 	};
 
 	classInfo = new XPCOMObject (new int[] {2, 0, 0, 2, 2, 1, 1, 1, 1, 1, 1}) {
+		@Override
 		public long /*int*/ method0 (long /*int*/[] args) {return QueryInterface (args[0], args[1]);}
+		@Override
 		public long /*int*/ method1 (long /*int*/[] args) {return AddRef ();}
+		@Override
 		public long /*int*/ method2 (long /*int*/[] args) {return Release ();}
+		@Override
 		public long /*int*/ method3 (long /*int*/[] args) {return getInterfaces (args[0], args[1]);}
+		@Override
 		public long /*int*/ method4 (long /*int*/[] args) {return getHelperForLanguage ((int)/*64*/args[0], args[1]);}
+		@Override
 		public long /*int*/ method5 (long /*int*/[] args) {return getContractID (args[0]);}
+		@Override
 		public long /*int*/ method6 (long /*int*/[] args) {return getClassDescription (args[0]);}
+		@Override
 		public long /*int*/ method7 (long /*int*/[] args) {return getClassID (args[0]);}
+		@Override
 		public long /*int*/ method8 (long /*int*/[] args) {return getImplementationLanguage (args[0]);}
+		@Override
 		public long /*int*/ method9 (long /*int*/[] args) {return getFlags (args[0]);}
+		@Override
 		public long /*int*/ method10 (long /*int*/[] args) {return getClassIDNoAlloc (args[0]);}
 	};
 
 	securityCheckedComponent = new XPCOMObject (new int[] {2, 0, 0, 2, 3, 3, 3}) {
+		@Override
 		public long /*int*/ method0 (long /*int*/[] args) {return QueryInterface (args[0], args[1]);}
+		@Override
 		public long /*int*/ method1 (long /*int*/[] args) {return AddRef ();}
+		@Override
 		public long /*int*/ method2 (long /*int*/[] args) {return Release ();}
+		@Override
 		public long /*int*/ method3 (long /*int*/[] args) {return canCreateWrapper (args[0], args[1]);}
+		@Override
 		public long /*int*/ method4 (long /*int*/[] args) {return canCallMethod (args[0], args[1], args[2]);}
+		@Override
 		public long /*int*/ method5 (long /*int*/[] args) {return canGetProperty (args[0], args[1], args[2]);}
+		@Override
 		public long /*int*/ method6 (long /*int*/[] args) {return canSetProperty (args[0], args[1], args[2]);}
 	};
 
 	external = new XPCOMObject (new int[] {2, 0, 0, 4}) {
+		@Override
 		public long /*int*/ method0 (long /*int*/[] args) {return QueryInterface (args[0], args[1]);}
+		@Override
 		public long /*int*/ method1 (long /*int*/[] args) {return AddRef ();}
+		@Override
 		public long /*int*/ method2 (long /*int*/[] args) {return Release ();}
+		@Override
 		public long /*int*/ method3 (long /*int*/[] args) {return callJava ((int)/*64*/args[0], args[1], args[2], args[3]);}
 	};
 
 	scriptObjectOwner = new XPCOMObject (new int[] {2, 0, 0, 2, 1}) {
+		@Override
 		public long /*int*/ method0 (long /*int*/[] args) {return QueryInterface (args[0], args[1]);}
+		@Override
 		public long /*int*/ method1 (long /*int*/[] args) {return AddRef ();}
+		@Override
 		public long /*int*/ method2 (long /*int*/[] args) {return Release ();}
+		@Override
 		public long /*int*/ method3 (long /*int*/[] args) {return getScriptObject (args[0], args[1]);}
+		@Override
 		public long /*int*/ method4 (long /*int*/[] args) {return setScriptObject (args[0]);}
 	};
 }

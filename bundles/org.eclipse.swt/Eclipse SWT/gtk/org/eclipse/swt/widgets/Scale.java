@@ -108,6 +108,7 @@ static int checkStyle (int style) {
 	return checkBits (style, SWT.HORIZONTAL, SWT.VERTICAL, 0, 0, 0, 0);
 }
 
+@Override
 public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget();
 	if (wHint != SWT.DEFAULT && wHint < 0) wHint = 0;
@@ -121,6 +122,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	return size;
 }
 
+@Override
 void createHandle (int index) {
 	state |= HANDLE | THEME_BACKGROUND;
 	fixedHandle = OS.g_object_new (display.gtk_fixed_get_type (), 0);
@@ -139,6 +141,7 @@ void createHandle (int index) {
 	OS.gtk_scale_set_draw_value (handle, false);
 }
 
+@Override
 void hookEvents () {
 	super.hookEvents ();
 	OS.g_signal_connect_closure (handle, OS.value_changed, display.getClosure (VALUE_CHANGED), false);
@@ -228,6 +231,7 @@ public int getSelection () {
 	return (int) gtk_adjustment_get_value (hAdjustment);
 }
 
+@Override
 long /*int*/ gtk_value_changed (long /*int*/ adjustment) {
 	sendSelectionEvent  (SWT.Selection);
 	return 0;

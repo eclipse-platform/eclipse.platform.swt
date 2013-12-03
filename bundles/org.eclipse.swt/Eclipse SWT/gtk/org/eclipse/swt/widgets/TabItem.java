@@ -113,10 +113,12 @@ public TabItem (TabFolder parent, int style, int index) {
 	createWidget (index);
 }
 
+@Override
 protected void checkSubclass () {
 	if (!isValidSubclass ()) error (SWT.ERROR_INVALID_SUBCLASS);
 }
 
+@Override
 void createWidget (int index) {
 	parent.createItem (this, index);
 	setOrientation (true);
@@ -125,11 +127,13 @@ void createWidget (int index) {
 	text = "";
 }
 
+@Override
 void deregister() {
 	super.deregister ();
 	if (labelHandle != 0) display.removeWidget (labelHandle);
 }
 
+@Override
 void destroyWidget () {
 	parent.destroyItem (this);
 	releaseHandle ();
@@ -208,32 +212,38 @@ public String getToolTipText () {
 	return toolTipText;
 }
 
+@Override
 long /*int*/ gtk_enter_notify_event (long /*int*/ widget, long /*int*/ event) {
 	parent.gtk_enter_notify_event (widget, event);
 	return 0;
 }
 
+@Override
 long /*int*/ gtk_mnemonic_activate (long /*int*/ widget, long /*int*/ arg1) {
 	return parent.gtk_mnemonic_activate (widget, arg1);
 }
 
+@Override
 void hookEvents () {
 	super.hookEvents ();
 	if (labelHandle != 0) OS.g_signal_connect_closure_by_id (labelHandle, display.signalIds [MNEMONIC_ACTIVATE], 0, display.getClosure (MNEMONIC_ACTIVATE), false);
 	OS.g_signal_connect_closure_by_id (handle, display.signalIds [ENTER_NOTIFY_EVENT], 0, display.getClosure (ENTER_NOTIFY_EVENT), false);
 }
 
+@Override
 void register () {
 	super.register ();
 	if (labelHandle != 0) display.addWidget (labelHandle, this);
 }
 
+@Override
 void releaseHandle () {
 	super.releaseHandle ();
 	pageHandle = labelHandle = imageHandle = 0;
 	parent = null;
 }
 
+@Override
 void releaseParent () {
 	super.releaseParent ();
 	int index = parent.indexOf (this);
@@ -294,6 +304,7 @@ void setForegroundColor (GdkColor color) {
 	setForegroundColor (imageHandle, color, false);
 }
 
+@Override
 public void setImage (Image image) {
 	checkWidget ();
 	super.setImage (image);
@@ -315,6 +326,7 @@ public void setImage (Image image) {
 	}
 }
 
+@Override
 void setOrientation (boolean create) {
 	if ((parent.style & SWT.RIGHT_TO_LEFT) != 0 || !create) {
 		int dir = (parent.style & SWT.RIGHT_TO_LEFT) != 0 ? OS.GTK_TEXT_DIR_RTL : OS.GTK_TEXT_DIR_LTR;
@@ -351,6 +363,7 @@ void setOrientation (boolean create) {
  * </ul>
  * 
  */
+@Override
 public void setText (String string) {
 	checkWidget ();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);

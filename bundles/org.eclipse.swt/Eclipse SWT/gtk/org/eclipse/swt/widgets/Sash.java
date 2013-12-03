@@ -119,6 +119,7 @@ static int checkStyle (int style) {
 	return checkBits (style, SWT.HORIZONTAL, SWT.VERTICAL, 0, 0, 0, 0);
 }
 
+@Override
 public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget ();
 	if (wHint != SWT.DEFAULT && wHint < 0) wHint = 0;
@@ -135,6 +136,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	return new Point (width, height);
 }
 
+@Override
 void createHandle (int index) {
 	state |= HANDLE | THEME_BACKGROUND;
 	handle = OS.g_object_new (display.gtk_fixed_get_type (), 0);
@@ -165,6 +167,7 @@ void drawBand (int x, int y, int width, int height) {
 	OS.g_object_unref (gc);
 }
 
+@Override
 long /*int*/ gtk_button_press_event (long /*int*/ widget, long /*int*/ eventPtr) {
 	long /*int*/ result = super.gtk_button_press_event (widget, eventPtr);
 	if (result != 0) return result;
@@ -214,6 +217,7 @@ long /*int*/ gtk_button_press_event (long /*int*/ widget, long /*int*/ eventPtr)
 	return result;	
 }
 
+@Override
 long /*int*/ gtk_button_release_event (long /*int*/ widget, long /*int*/ eventPtr) {
 	long /*int*/ result = super.gtk_button_release_event (widget, eventPtr);
 	if (result != 0) return result;
@@ -246,6 +250,7 @@ long /*int*/ gtk_button_release_event (long /*int*/ widget, long /*int*/ eventPt
 	return result;
 }
 
+@Override
 long /*int*/ gtk_focus_in_event (long /*int*/ widget, long /*int*/ event) {
 	long /*int*/ result = super.gtk_focus_in_event (widget, event);
 	if (result != 0) return result;
@@ -259,6 +264,7 @@ long /*int*/ gtk_focus_in_event (long /*int*/ widget, long /*int*/ event) {
 	return 0;
 }
 
+@Override
 long /*int*/ gtk_key_press_event (long /*int*/ widget, long /*int*/ eventPtr) {
 	long /*int*/ result = super.gtk_key_press_event (widget, eventPtr);
 	if (result != 0) return result;
@@ -336,6 +342,7 @@ long /*int*/ gtk_key_press_event (long /*int*/ widget, long /*int*/ eventPtr) {
 	return result;
 }
 
+@Override
 long /*int*/ gtk_motion_notify_event (long /*int*/ widget, long /*int*/ eventPtr) {
 	long /*int*/ result = super.gtk_motion_notify_event (widget, eventPtr);
 	if (result != 0) return result;
@@ -402,16 +409,19 @@ long /*int*/ gtk_motion_notify_event (long /*int*/ widget, long /*int*/ eventPtr
 	return result;
 }
 
+@Override
 long /*int*/ gtk_realize (long /*int*/ widget) {
 	setCursor (cursor != null ? cursor.handle : 0);
 	return super.gtk_realize (widget);
 }
 
+@Override
 void hookEvents () {
 	super.hookEvents ();
 	OS.gtk_widget_add_events (handle, OS.GDK_POINTER_MOTION_HINT_MASK);
 }
 
+@Override
 void releaseWidget () {
 	super.releaseWidget ();
 	if (defaultCursor != 0) gdk_cursor_unref (defaultCursor);
@@ -443,10 +453,12 @@ public void removeSelectionListener(SelectionListener listener) {
 	eventTable.unhook (SWT.DefaultSelection,listener);	
 }
 
+@Override
 void setCursor (long /*int*/ cursor) {
 	super.setCursor (cursor != 0 ? cursor : defaultCursor);
 }
 
+@Override
 int traversalCode (int key, GdkEventKey event) {
 	return 0;
 }

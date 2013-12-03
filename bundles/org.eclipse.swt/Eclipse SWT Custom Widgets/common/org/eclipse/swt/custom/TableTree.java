@@ -212,10 +212,12 @@ private static int checkStyle (int style) {
 	style = style & mask;
 	return style;
 } 
+@Override
 public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget();
 	return table.computeSize (wHint, hHint, changed);
 }
+@Override
 public Rectangle computeTrim (int x, int y, int width, int height) {
 	checkWidget();
 	return table.computeTrim(x, y, width, height);
@@ -249,6 +251,7 @@ void expandItem (TableTreeItem item) {
 		notifyListeners(SWT.Expand, event);
 	}
 }
+@Override
 public Color getBackground () {
 	// This method must be overridden otherwise, in a TableTree in which the first
 	// item has no sub items, a grey (Widget background colour) square will appear in
@@ -258,12 +261,15 @@ public Color getBackground () {
 	// the TableTree adapting to changes in the System color settings.
 	return table.getBackground();
 }
+@Override
 public Rectangle getClientArea () {
 	return table.getClientArea();
 }
+@Override
 public Color getForeground () {
 	return table.getForeground();
 }
+@Override
 public Font getFont () {
 	return table.getFont();
 }
@@ -348,6 +354,7 @@ public int getSelectionCount () {
 	return table.getSelectionCount();
 }
 
+@Override
 public int getStyle () {
 	checkWidget();
 	return table.getStyle();
@@ -701,6 +708,7 @@ public void selectAll () {
 	checkWidget();
 	table.selectAll();
 }
+@Override
 public void setBackground (Color color) {
 	super.setBackground(color);
 	table.setBackground(color);
@@ -712,18 +720,22 @@ public void setBackground (Color color) {
 		gc.dispose();
 	}
 }
+@Override
 public void setEnabled (boolean enabled) {
 	super.setEnabled(enabled);
 	table.setEnabled(enabled);
 }
+@Override
 public void setFont (Font font) {
 	super.setFont(font);
 	table.setFont(font);
 }
+@Override
 public void setForeground (Color color) {
 	super.setForeground(color);
 	table.setForeground(color);
 }
+@Override
 public void setMenu (Menu menu) {
 	super.setMenu(menu);
 	table.setMenu(menu);
@@ -766,6 +778,7 @@ public void setSelection (TableTreeItem[] items) {
 	}
 	table.setSelection(tableItems);
 }
+@Override
 public void setToolTipText (String string) {
 	super.setToolTipText(string);
 	table.setToolTipText(string);

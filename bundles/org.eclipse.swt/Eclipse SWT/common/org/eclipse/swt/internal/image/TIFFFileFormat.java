@@ -21,6 +21,7 @@ import java.io.*;
  */
 public final class TIFFFileFormat extends FileFormat {
 
+@Override
 boolean isFileFormat(LEDataInputStream stream) {
 	try {
 		byte[] header = new byte[4];
@@ -37,6 +38,7 @@ boolean isFileFormat(LEDataInputStream stream) {
 	}
 }
 
+@Override
 ImageData[] loadFromByteStream() {	
 	byte[] header = new byte[8];
 	boolean isLittleEndian;
@@ -70,6 +72,7 @@ ImageData[] loadFromByteStream() {
 	return images;
 }
 
+@Override
 void unloadIntoByteStream(ImageLoader loader) {
 	/* We do not currently support writing multi-page tiff,
 	 * so we use the first image data in the loader's array. */

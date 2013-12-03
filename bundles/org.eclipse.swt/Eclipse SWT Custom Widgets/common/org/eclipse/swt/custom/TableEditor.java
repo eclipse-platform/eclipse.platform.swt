@@ -107,6 +107,7 @@ public TableEditor (Table table) {
 	// To be consistent with older versions of SWT, grabVertical defaults to true
 	grabVertical = true;
 }
+@Override
 Rectangle computeBounds () {
 	if (item == null || column == -1 || item.isDisposed()) return new Rectangle(0, 0, 0, 0);
 	Rectangle cell = item.getBounds(column);
@@ -153,6 +154,7 @@ Rectangle computeBounds () {
  * Removes all associations between the TableEditor and the cell in the table.  The
  * Table and the editor Control are <b>not</b> disposed.
  */
+@Override
 public void dispose () {
 	if (table != null && !table.isDisposed()) {
 		if (this.column > -1 && this.column < table.getColumnCount()){
@@ -233,6 +235,7 @@ public void setItem (TableItem item) {
 	this.item = item;
 	resize();
 }
+@Override
 public void setEditor (Control editor) {
 	super.setEditor(editor);
 	resize();
@@ -252,6 +255,7 @@ public void setEditor (Control editor, TableItem item, int column) {
 	setColumn(column);
 	setEditor(editor);
 }
+@Override
 public void layout () {
 	if (table == null || table.isDisposed()) return;
 	if (item == null || item.isDisposed()) return;

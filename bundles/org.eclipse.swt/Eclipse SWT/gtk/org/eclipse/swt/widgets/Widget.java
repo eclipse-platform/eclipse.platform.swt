@@ -2000,6 +2000,7 @@ void gdk_pointer_ungrab (long /*int*/ window, int time_) {
  *
  * @return a string representation of the receiver
  */
+@Override
 public String toString () {
 	String string = "*Disposed*";
 	if (!isDisposed ()) {

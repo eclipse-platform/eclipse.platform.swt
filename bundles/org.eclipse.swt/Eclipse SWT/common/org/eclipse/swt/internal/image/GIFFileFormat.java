@@ -47,6 +47,7 @@ public final class GIFFileFormat extends FileFormat {
 		return new PaletteData(colors);
 	}
 
+	@Override
 	boolean isFileFormat(LEDataInputStream stream) {
 		try {
 			byte[] signature = new byte[3];
@@ -62,6 +63,7 @@ public final class GIFFileFormat extends FileFormat {
 	 * Load the GIF image(s) stored in the input stream.
 	 * Return an array of ImageData representing the image(s).
 	 */
+	@Override
 	ImageData[] loadFromByteStream() {
 		byte[] signature = new byte[3];
 		byte[] versionBytes = new byte[3];
@@ -404,6 +406,7 @@ public final class GIFFileFormat extends FileFormat {
 		return new PaletteData(colors);
 	}
 
+	@Override
 	void unloadIntoByteStream(ImageLoader loader) {
 		
  		/* Step 1: Acquire GIF parameters. */

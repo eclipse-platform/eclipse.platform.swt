@@ -109,6 +109,7 @@ public Color(Device device, RGB rgb) {
 	init();
 }
 
+@Override
 void destroy() {
 	int pixel = handle.pixel;
 	if (device.colorRefCount != null) {
@@ -134,6 +135,7 @@ void destroy() {
  *
  * @see #hashCode
  */
+@Override
 public boolean equals(Object object) {
 	if (object == this) return true;
 	if (!(object instanceof Color)) return false;
@@ -196,6 +198,7 @@ public int getRed() {
  *
  * @see #equals
  */
+@Override
 public int hashCode() {
 	if (isDisposed()) return 0;
 	return handle.red ^ handle.green ^ handle.blue;
@@ -277,6 +280,7 @@ void init(int red, int green, int blue) {
  *
  * @return <code>true</code> when the color is disposed and <code>false</code> otherwise
  */
+@Override
 public boolean isDisposed() {
 	return handle == null;
 }
@@ -287,6 +291,7 @@ public boolean isDisposed() {
  *
  * @return a string representation of the receiver
  */
+@Override
 public String toString () {
 	if (isDisposed()) return "Color {*DISPOSED*}";
 	return "Color {" + getRed() + ", " + getGreen() + ", " + getBlue() + "}";

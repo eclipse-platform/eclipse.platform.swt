@@ -148,12 +148,14 @@ ScrollBar createScrollBar (int style) {
 	return bar;
 }
 
+@Override
 void createWidget (int index) {
 	super.createWidget (index);
 	if ((style & SWT.H_SCROLL) != 0) horizontalBar = createScrollBar (SWT.H_SCROLL);
 	if ((style & SWT.V_SCROLL) != 0) verticalBar = createScrollBar (SWT.V_SCROLL);
 }
 
+@Override
 void deregister () {
 	super.deregister ();
 	if (scrolledHandle != 0) display.removeWidget (scrolledHandle);
@@ -165,6 +167,7 @@ void destroyScrollBar (ScrollBar bar) {
 	//bar.destroyHandle ();
 }
 
+@Override
 public int getBorderWidth () {
 	checkWidget();
 	int border = 0;
@@ -260,6 +263,7 @@ public ScrollBar getVerticalBar () {
 	return verticalBar;
 }
 
+@Override
 long /*int*/ gtk_scroll_event (long /*int*/ widget, long /*int*/ eventPtr) {
 	long /*int*/ result = super.gtk_scroll_event (widget, eventPtr);
 	
@@ -334,16 +338,19 @@ int hScrollBarWidth() {
 	return requisition.height + spacing;
 }
 
+@Override
 void reskinChildren (int flags) {
 	if (horizontalBar != null) horizontalBar.reskin (flags);
 	if (verticalBar != null) verticalBar.reskin (flags);
 	super.reskinChildren (flags);
 }
 
+@Override
 boolean sendLeaveNotify () {
 	return scrolledHandle != 0;
 }
 
+@Override
 void setOrientation (boolean create) {
 	super.setOrientation (create);
 	if ((style & SWT.RIGHT_TO_LEFT) != 0 || !create) {
@@ -375,6 +382,7 @@ boolean setScrollBarVisible (ScrollBar bar, boolean visible) {
 void redrawBackgroundImage () {
 }
 
+@Override
 void redrawWidget (int x, int y, int width, int height, boolean redrawAll, boolean all, boolean trim) {
 	super.redrawWidget (x, y, width, height, redrawAll, all, trim);
 	if (!gtk_widget_get_realized (handle)) return;
@@ -399,16 +407,19 @@ void redrawWidget (int x, int y, int width, int height, boolean redrawAll, boole
 	OS.gdk_window_invalidate_rect (window, rect, all);
 }
 
+@Override
 void register () {
 	super.register ();
 	if (scrolledHandle != 0) display.addWidget (scrolledHandle, this);
 }
 
+@Override
 void releaseHandle () {
 	super.releaseHandle ();
 	scrolledHandle = 0;
 }
 
+@Override
 void releaseChildren (boolean destroy) {
 	if (horizontalBar != null) {
 		horizontalBar.release (false);
@@ -421,6 +432,7 @@ void releaseChildren (boolean destroy) {
 	super.releaseChildren (destroy);
 }
 
+@Override
 void resizeHandle (int width, int height) {
 	if (OS.GTK3) {
 		if (fixedHandle != 0) {
@@ -434,11 +446,13 @@ void resizeHandle (int width, int height) {
 	}
 }
 
+@Override
 void showWidget () {
 	super.showWidget ();
 	if (scrolledHandle != 0) OS.gtk_widget_show (scrolledHandle);
 }
 
+@Override
 long /*int*/ topHandle () {
 	if (fixedHandle != 0) return fixedHandle;
 	if (scrolledHandle != 0) return scrolledHandle;

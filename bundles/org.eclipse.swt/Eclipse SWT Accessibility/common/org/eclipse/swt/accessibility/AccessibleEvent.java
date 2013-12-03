@@ -62,6 +62,7 @@ public AccessibleEvent(Object source) {
  *
  * @return a string representation of the event
  */
+@Override
 public String toString () {
 	return "AccessibleEvent {childID=" + childID + " result=" + result + "}"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 }	
