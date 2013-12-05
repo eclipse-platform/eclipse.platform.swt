@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2011 IBM Corporation and others.
+ * Copyright (c) 2000, 2013 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -55,7 +55,18 @@ public class DND {
 	
 	/**
 	 * Drag and Drop Operation: a copy of the data is added to the drop target and 
-	 * the original data is removed from the drag source (value is 1 &lt;&lt; 1).
+	 * the drag source removes the original data and any references to the data,
+	 * and updates its display (value is 1 &lt;&lt; 1).
+	 * <p>
+	 * <b>Warning:</b> Some applications (most notably Firefox, Thunderbird, and Safari) return
+	 * {@link DND#DROP_MOVE} even if they just open a dropped file and don't copy
+	 * anything, see <a href="https://bugs.eclipse.org/bugs/show_bug.cgi?id=30543">bug 30543</a>.
+	 * </p>
+	 * <p>
+	 * <b>To avoid data loss</b>, you may want to not remove the original data
+	 * when you handle a {@link DND#DragEnd} for a {@link FileTransfer} whose
+	 * {@link org.eclipse.swt.widgets.Event#detail} is {@link #DROP_MOVE}.
+	 * </p>
 	 */
 	public final static int DROP_MOVE = 1 << 1;
 	
