@@ -160,6 +160,11 @@ void _addListener (int eventType, Listener listener) {
 	eventTable.hook (eventType, listener);
 }
 
+void _removeListener (int eventType, Listener listener) {
+	if (eventTable == null) return;
+	eventTable.unhook (eventType, listener);
+}
+
 /**
  * Adds the listener to the collection of listeners who will
  * be notified when an event of the given type occurs. When the
@@ -923,8 +928,7 @@ void releaseWidget () {
 public void removeListener (int eventType, Listener listener) {
 	checkWidget();
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
-	if (eventTable == null) return;
-	eventTable.unhook (eventType, listener);
+	_removeListener (eventType, listener);
 }
 
 /**

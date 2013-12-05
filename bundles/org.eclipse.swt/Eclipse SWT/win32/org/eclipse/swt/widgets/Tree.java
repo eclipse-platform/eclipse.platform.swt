@@ -255,6 +255,25 @@ TreeItem _getItem (long /*int*/ hItem, int id) {
 	return id != -1 ? items [id] : new TreeItem (this, SWT.NONE, -1, -1, hItem);
 }
 
+void _removeListener (int eventType, Listener listener) {
+	super._removeListener (eventType, listener);
+	switch (eventType) {
+		case SWT.MeasureItem: {
+			/**
+			 * If H_SCROLL is set, reverting the TVS_NOHSCROLL settings which
+			 * was applied while adding SWT.MeasureItem event Listener.
+			 */
+			if ((style & SWT.H_SCROLL) != 0) {
+				int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
+				bits &= ~OS.TVS_NOHSCROLL;
+				OS.SetWindowLong (handle, OS.GWL_STYLE, bits);
+				OS.InvalidateRect (handle, null, true);
+			}
+			break;
+		}
+	}
+}
+
 void _setBackgroundPixel (int newPixel) {
 	int oldPixel = (int)/*64*/OS.SendMessage (handle, OS.TVM_GETBKCOLOR, 0, 0);
 	if (oldPixel != newPixel) {
