@@ -912,9 +912,13 @@ void drawImage(Image srcImage, int srcX, int srcY, int srcWidth, int srcHeight, 
 			}
 			Cairo.cairo_rectangle(cairo, destX , destY, destWidth, destHeight);
 			Cairo.cairo_clip(cairo);
-			Cairo.cairo_translate(cairo, destX - srcX, destY - srcY);
 			if (srcWidth != destWidth || srcHeight != destHeight) {
-				Cairo.cairo_scale(cairo, destWidth / (float)srcWidth,  destHeight / (float)srcHeight);
+				float scaleX = destWidth / (float)srcWidth;
+				float scaleY = destHeight / (float)srcHeight;
+				Cairo.cairo_translate(cairo, destX - (int)(srcX * scaleX), destY - (int)(srcY * scaleY));
+				Cairo.cairo_scale(cairo, scaleX, scaleY);
+			} else {
+				Cairo.cairo_translate(cairo, destX - srcX, destY - srcY);
 			}
 			int filter = Cairo.CAIRO_FILTER_GOOD;
 			switch (data.interpolation) {
