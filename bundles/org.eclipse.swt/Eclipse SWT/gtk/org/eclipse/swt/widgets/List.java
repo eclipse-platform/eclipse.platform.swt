@@ -238,6 +238,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget ();
 	if (wHint != SWT.DEFAULT && wHint < 0) wHint = 0;
 	if (hHint != SWT.DEFAULT && hHint < 0) hHint = 0;
+	OS.gtk_widget_realize(handle);
 	Point size = computeNativeSize (handle, wHint, hHint, changed);
 	if (size.x == 0 && wHint == SWT.DEFAULT) size.x = DEFAULT_WIDTH;
 	if (size.y == 0 && hHint == SWT.DEFAULT) size.y = DEFAULT_HEIGHT;
