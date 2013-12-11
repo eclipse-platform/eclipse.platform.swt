@@ -121,6 +121,7 @@ void build(IJavaProject project, String root) throws CoreException {
 		ArrayList<String> args = new ArrayList<String>();
 		args.addAll(Arrays.asList(new String[]{
 			"-nowarn",
+			"-1.5",
 //			"-verbose",
 			"-d", bin,
 			"-cp", cp.toString(),
@@ -223,12 +224,11 @@ String resolvePath(String sourcePath, String simpleName) {
 	return null;
 }
 
-@SuppressWarnings("deprecation")
 TypeDeclaration loadType(HashMap<String, TypeDeclaration> cache, String path) {
 	if (path == null) return null;
 	Object value = cache.get(path);
 	if (value != null) return (TypeDeclaration)value;
-	ASTParser parser = ASTParser.newParser(AST.JLS3);
+	ASTParser parser = ASTParser.newParser(AST.JLS4);
 	parser.setSource(loadFile(path).toCharArray());
 	CompilationUnit unit = (CompilationUnit)parser.createAST(null);
 	TypeDeclaration type = (TypeDeclaration)unit.types().get(0);

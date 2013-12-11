@@ -35,14 +35,13 @@ public ReflectClass(Class<?> clazz, MetaData data, String sourcePath) {
 	this.sourcePath = sourcePath;
 }
 
-@SuppressWarnings("deprecation")
 void checkMembers() {
 	if (fields != null) return;
 	String source = null;
 	CompilationUnit unit = null;
 	if (JNIItem.GEN64) {
 		source = JNIGenerator.loadFile(sourcePath);
-		ASTParser parser = ASTParser.newParser(AST.JLS3);
+		ASTParser parser = ASTParser.newParser(AST.JLS4);
 		parser.setSource(source.toCharArray());
 		unit = (CompilationUnit)parser.createAST(null);
 	}

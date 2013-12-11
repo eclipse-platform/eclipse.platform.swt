@@ -27,7 +27,6 @@ import org.eclipse.jdt.core.dom.TypeDeclaration;
 import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
 import org.eclipse.swt.tools.internal.ASTType.TypeResolver;
 
-@SuppressWarnings("deprecation")
 public class ASTClass extends ASTItem implements JNIClass {
 	String sourcePath;
 	MetaData metaData;
@@ -78,7 +77,7 @@ public ASTClass(String sourcePath, MetaData metaData) {
 	this.metaData = metaData;
 	
 	String source = JNIGenerator.loadFile(sourcePath);
-	ASTParser parser = ASTParser.newParser(AST.JLS3);
+	ASTParser parser = ASTParser.newParser(AST.JLS4);
 	parser.setSource(source.toCharArray());
 	CompilationUnit unit = (CompilationUnit)parser.createAST(null);
 	TypeDeclaration type = (TypeDeclaration)unit.types().get(0);
