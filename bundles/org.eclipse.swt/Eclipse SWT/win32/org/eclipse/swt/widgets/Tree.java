@@ -263,7 +263,7 @@ void _removeListener (int eventType, Listener listener) {
 			 * If H_SCROLL is set, reverting the TVS_NOHSCROLL settings which
 			 * was applied while adding SWT.MeasureItem event Listener.
 			 */
-			if ((style & SWT.H_SCROLL) != 0) {
+			if ((style & SWT.H_SCROLL) != 0 && (state & DISPOSE_SENT) == 0) {
 				int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
 				bits &= ~OS.TVS_NOHSCROLL;
 				OS.SetWindowLong (handle, OS.GWL_STYLE, bits);
