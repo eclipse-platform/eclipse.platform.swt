@@ -10,7 +10,6 @@
  *******************************************************************************/
 package org.eclipse.swt.tests.junit.browser;
 
-import org.eclipse.swt.tests.junit.SwtJunit;
 import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.layout.*;
 import org.eclipse.swt.browser.*;
@@ -23,8 +22,6 @@ public class Browser7 {
 	
 	static int cntOpen = 0;
 	static int cntShow = 0;
-	
-	public static boolean isMozilla = SwtJunit.isGTK || SwtJunit.isMotif;
 	
 	public static boolean test(String url) {
 		if (verbose) System.out.println("window.open, verify get Window.open and Window.show events - args: "+url+" Expected Event Sequence: Window.open, Window.show multiple times");
@@ -130,12 +127,9 @@ public class Browser7 {
 		else url = pluginPath + "/data/browser7.html";
 		String[] urls = new String[] {url};
 		for (int i = 0; i < urls.length; i++) {
-			// TEST TEMPORARILY NOT RUN FOR MOZILLA
-			if (!isMozilla) {			
-				boolean result = test(urls[i]); 
-				if (verbose) System.out.print(result ? "." : "E");
-				if (!result) fail++;
-			}
+			boolean result = test(urls[i]); 
+			if (verbose) System.out.print(result ? "." : "E");
+			if (!result) fail++; 
 		}
 		return fail == 0;
 	}

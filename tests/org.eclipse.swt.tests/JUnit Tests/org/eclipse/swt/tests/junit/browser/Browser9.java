@@ -10,7 +10,6 @@
  *******************************************************************************/
 package org.eclipse.swt.tests.junit.browser;
 
-import org.eclipse.swt.tests.junit.SwtJunit;
 import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.layout.*;
 import org.eclipse.swt.browser.*;
@@ -24,8 +23,6 @@ public class Browser9 {
 	static String script[] = {
 		"changeStatus('new title');"};
 	static String status[] = {"new title"};
-	
-	public static boolean isMozilla = SwtJunit.isGTK || SwtJunit.isMotif;
 	
 	public static boolean test(String url, final String script, final String status) {
 		if (verbose) System.out.println("Javascript - verify execute("+script+") works on a static HTML file "+url);
@@ -100,14 +97,11 @@ public class Browser9 {
 		if (verbose) System.out.println("PLUGIN_PATH <"+pluginPath+">");
 		String url;
 		for (int i = 0; i < html.length; i++) {
-			// TEST TEMPORARILY NOT RUN FOR MOZILLA
-			if (!isMozilla) {
-				if (pluginPath == null) url = Browser9.class.getClassLoader().getResource(html[i]).toString();
-				else url = pluginPath + "/data/"+html[i];
-				boolean result = test(url, script[i], status[i]); 
-				if (verbose) System.out.print(result ? "." : "E");
-				if (!result) fail++;
-			}
+			if (pluginPath == null) url = Browser9.class.getClassLoader().getResource(html[i]).toString();
+			else url = pluginPath + "/data/"+html[i];
+			boolean result = test(url, script[i], status[i]); 
+			if (verbose) System.out.print(result ? "." : "E");
+			if (!result) fail++; 
 		}
 		return fail == 0;
 	}
