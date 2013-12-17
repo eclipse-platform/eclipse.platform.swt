@@ -8879,15 +8879,7 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1clipboard_1set_1can_1store)
 	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jint arg2)
 {
 	OS_NATIVE_ENTER(env, that, _1gtk_1clipboard_1set_1can_1store_FUNC);
-/*
 	gtk_clipboard_set_can_store((GtkClipboard *)arg0, (const GtkTargetEntry *)arg1, (gint)arg2);
-*/
-	{
-		OS_LOAD_FUNCTION(fp, gtk_clipboard_set_can_store)
-		if (fp) {
-			((void (CALLING_CONVENTION*)(GtkClipboard *, const GtkTargetEntry *, gint))fp)((GtkClipboard *)arg0, (const GtkTargetEntry *)arg1, (gint)arg2);
-		}
-	}
 	OS_NATIVE_EXIT(env, that, _1gtk_1clipboard_1set_1can_1store_FUNC);
 }
 #endif
@@ -8909,15 +8901,7 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1clipboard_1store)
 	(JNIEnv *env, jclass that, jintLong arg0)
 {
 	OS_NATIVE_ENTER(env, that, _1gtk_1clipboard_1store_FUNC);
-/*
 	gtk_clipboard_store((GtkClipboard *)arg0);
-*/
-	{
-		OS_LOAD_FUNCTION(fp, gtk_clipboard_store)
-		if (fp) {
-			((void (CALLING_CONVENTION*)(GtkClipboard *))fp)((GtkClipboard *)arg0);
-		}
-	}
 	OS_NATIVE_EXIT(env, that, _1gtk_1clipboard_1store_FUNC);
 }
 #endif

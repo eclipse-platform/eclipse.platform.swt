@@ -6475,7 +6475,6 @@ public static final boolean gtk_clipboard_set_with_owner(long /*int*/ clipboard,
 	}
 }
 /**
- * @method flags=dynamic
  * @param clipboard cast=(GtkClipboard *)
  * @param targets cast=(const GtkTargetEntry *)
  * @param n_targets cast=(gint)
@@ -6490,7 +6489,6 @@ public static final void gtk_clipboard_set_can_store(long /*int*/ clipboard, lon
 	}
 }
 /**
- * @method flags=dynamic
  * @param clipboard cast=(GtkClipboard *)
  */
 public static final native void _gtk_clipboard_store(long /*int*/ clipboard);
