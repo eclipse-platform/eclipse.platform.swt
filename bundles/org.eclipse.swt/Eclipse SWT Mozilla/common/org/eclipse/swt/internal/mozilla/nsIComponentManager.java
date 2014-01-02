@@ -29,19 +29,19 @@ package org.eclipse.swt.internal.mozilla;
 
 public class nsIComponentManager extends nsISupports {
 
-	static final int LAST_METHOD_ID = nsISupports.LAST_METHOD_ID + (IsXULRunner17 ? 6 : 4);
+	static final int LAST_METHOD_ID = nsISupports.LAST_METHOD_ID + (IsXULRunner24 ? 6 : 4);
 
 	public static final String NS_ICOMPONENTMANAGER_IID_STR =
 		"a88e5a60-205a-4bb1-94e1-2628daf51eae";
 
-	public static final String NS_ICOMPONENTMANAGER_17_IID_STR =
+	public static final String NS_ICOMPONENTMANAGER_24_IID_STR =
 		"1d940426-5fe5-42c3-84ae-a300f2d9ebd5";
 
 	public static final nsID NS_ICOMPONENTMANAGER_IID =
 		new nsID(NS_ICOMPONENTMANAGER_IID_STR);
 		
-	public static final nsID NS_ICOMPONENTMANAGER_17_IID =
-		new nsID(NS_ICOMPONENTMANAGER_17_IID_STR);
+	public static final nsID NS_ICOMPONENTMANAGER_24_IID =
+		new nsID(NS_ICOMPONENTMANAGER_24_IID_STR);
 
 	public nsIComponentManager(long /*int*/ address) {
 		super(address);

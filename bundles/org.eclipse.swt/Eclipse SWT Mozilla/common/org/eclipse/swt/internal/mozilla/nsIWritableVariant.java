@@ -47,7 +47,7 @@ public class nsIWritableVariant extends nsIVariant {
 
 	public int SetAsBool(int aValue) {
 		/* mozilla's representation of boolean changed from 4 bytes to 1 byte as of XULRunner 4.x */
-		if (IsXULRunner10 || IsXULRunner17) {
+		if (IsXULRunner10 || IsXULRunner24) {
 			return XPCOM.VtblCall(nsIVariant.LAST_METHOD_ID + 13, getAddress(), (byte)aValue);
 		}
 		return XPCOM.VtblCall(nsIVariant.LAST_METHOD_ID + 13, getAddress(), aValue);

@@ -11,6 +11,7 @@
 package org.eclipse.swt.browser;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.gtk.GTK;
 import org.eclipse.swt.internal.mozilla.*;
@@ -82,7 +83,7 @@ static String getCacheParentPath () {
 	return getProfilePath ();
 }
 
-static String getLibraryName () {
+static String getLibraryName (String mozillaPath) {
 	return "libxpcom.so"; //$NON-NLS-1$
 }
 
@@ -103,7 +104,7 @@ static String getSWTInitLibraryName () {
 	return "swt-xpcominit"; //$NON-NLS-1$
 }
 
-static void loadAdditionalLibraries (String mozillaPath) {
+static void loadAdditionalLibraries (String mozillaPath, boolean isGlued) {
 // the following is intentionally commented
 
 //	if (!Mozilla.IsPre_4) {
@@ -119,10 +120,6 @@ static char[] mbcsToWcs (String codePage, byte [] buffer) {
 
 static boolean needsSpinup () {
 	return true;
-}
-
-static boolean supportsXULRunner17 () {
-	return false;
 }
 
 static byte[] wcsToMbcs (String codePage, String string, boolean terminate) {
@@ -154,6 +151,10 @@ int getHandle() {
 	embedHandle = GTK.gtk_plug_new (browser.embeddedHandle);
 	GTK.gtk_widget_show (embedHandle);
 	return embedHandle;
+}
+
+Point getNativeSize (int width, int height) {
+	return new Point (width, height);
 }
 
 long /*int*/ getSiteWindow () {

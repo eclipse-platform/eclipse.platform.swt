@@ -141,10 +141,15 @@ int CreateChromeWindow2 (long /*int*/ parent, int chromeFlags, int contextFlags,
 
 		nsIWebBrowser webBrowser = new nsIWebBrowser (aWebBrowser[0]);
 		long /*int*/[] result = new long /*int*/[1];
-		rc = webBrowser.QueryInterface (nsIBaseWindow.NS_IBASEWINDOW_10_IID, result);
+		rc = webBrowser.QueryInterface (nsIBaseWindow.NS_IBASEWINDOW_24_IID, result);
 		if (rc != XPCOM.NS_OK) {
-			rc = webBrowser.QueryInterface (nsIBaseWindow.NS_IBASEWINDOW_IID, result);
-			if (rc != XPCOM.NS_OK) Mozilla.error (rc);
+			rc = webBrowser.QueryInterface (nsIBaseWindow.NS_IBASEWINDOW_10_IID, result);
+			if (rc != XPCOM.NS_OK) {
+				rc = webBrowser.QueryInterface (nsIBaseWindow.NS_IBASEWINDOW_IID, result);
+				if (rc != XPCOM.NS_OK) {
+					SWT.error (rc);
+				}
+			}
 		}
 		if (result[0] == 0) Mozilla.error (XPCOM.NS_ERROR_NO_INTERFACE);
 		webBrowser.Release ();

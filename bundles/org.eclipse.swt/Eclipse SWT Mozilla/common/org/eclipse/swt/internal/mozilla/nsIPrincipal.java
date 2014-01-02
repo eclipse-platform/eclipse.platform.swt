@@ -29,25 +29,25 @@ package org.eclipse.swt.internal.mozilla;
 
 public class nsIPrincipal extends nsISerializable {
 
-	static final int LAST_METHOD_ID = nsISerializable.LAST_METHOD_ID + (IsXULRunner17 ? 27 : (IsXULRunner10 ? 26 : 23));
+	static final int LAST_METHOD_ID = nsISerializable.LAST_METHOD_ID + (IsXULRunner24 ? 21 : (IsXULRunner10 ? 26 : 23));
 
 	public static final String NS_IPRINCIPAL_IID_STR =
 		"b8268b9a-2403-44ed-81e3-614075c92034";
 
-	public static final nsID NS_IPRINCIPAL_IID =
-		new nsID(NS_IPRINCIPAL_IID_STR);
-
 	public static final String NS_IPRINCIPAL_10_IID_STR =
 		"b406a2db-e547-4c95-b8e2-ad09ecb54ce0";
+	
+	public static final String NS_IPRINCIPAL_24_IID_STR =
+		"dbda8bb0-3023-4aec-ad98-8e9931a29d70";
+	
+	public static final nsID NS_IPRINCIPAL_IID =
+		new nsID(NS_IPRINCIPAL_IID_STR);
 
 	public static final nsID NS_IPRINCIPAL_10_IID =
 		new nsID(NS_IPRINCIPAL_10_IID_STR);
 	
-	public static final String NS_IPRINCIPAL_17_IID_STR =
-		"825ffce8-962d-11e1-aef3-8f2b6188709b";
-
-	public static final nsID NS_IPRINCIPAL_17_IID =
-		new nsID(NS_IPRINCIPAL_17_IID_STR);
+	public static final nsID NS_IPRINCIPAL_24_IID =
+		new nsID(NS_IPRINCIPAL_24_IID_STR);
 
 	public nsIPrincipal(long /*int*/ address) {
 		super(address);
@@ -59,7 +59,7 @@ public class nsIPrincipal extends nsISerializable {
 	public static final int ENABLE_GRANTED = 4;
 
 	public int GetJSPrincipals(long /*int*/ cx, long /*int*/[] _retval) {
-		if (IsXULRunner17) return XPCOM.NS_COMFALSE;
+		if (IsXULRunner24) return XPCOM.NS_COMFALSE;
 		return XPCOM.VtblCall(nsISerializable.LAST_METHOD_ID + (IsXULRunner10 ? 5 : 4), getAddress(), cx, _retval);
 	}
 }

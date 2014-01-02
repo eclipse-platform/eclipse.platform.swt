@@ -29,13 +29,19 @@ package org.eclipse.swt.internal.mozilla;
 
 public class nsIX509Cert extends nsISupports {
 
-	static final int LAST_METHOD_ID = nsISupports.LAST_METHOD_ID + 27;
+	static final int LAST_METHOD_ID = nsISupports.LAST_METHOD_ID + (IsXULRunner24 ? 26 : 27);
 
 	public static final String NS_IX509CERT_IID_STR =
 		"f0980f60-ee3d-11d4-998b-00b0d02354a0";
 
+	public static final String NS_IX509CERT_24_IID_STR =
+		"45b24b0a-6189-4b05-af0b-8d4d66d57c59";
+
 	public static final nsID NS_IX509CERT_IID =
 		new nsID(NS_IX509CERT_IID_STR);
+
+	public static final nsID NS_IX509CERT_24_IID =
+		new nsID(NS_IX509CERT_24_IID_STR);
 
 	public nsIX509Cert(long /*int*/ address) {
 		super(address);

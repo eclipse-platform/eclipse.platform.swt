@@ -29,7 +29,7 @@ package org.eclipse.swt.internal.mozilla;
 
 public class nsISSLStatus extends nsISupports {
 
-	static final int LAST_METHOD_ID = nsISupports.LAST_METHOD_ID + ((IsXULRunner10 || IsXULRunner17) ? 8 : 7);
+	static final int LAST_METHOD_ID = nsISupports.LAST_METHOD_ID + ((IsXULRunner10 || IsXULRunner24) ? 8 : 7);
 
 	public static final String NS_ISSLSTATUS_IID_STR =
 		"cfede939-def1-49be-81ed-d401b3a07d1c";

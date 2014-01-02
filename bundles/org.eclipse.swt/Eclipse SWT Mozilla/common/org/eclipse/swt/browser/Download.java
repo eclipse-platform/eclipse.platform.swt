@@ -187,7 +187,7 @@ int QueryInterface (long /*int*/ riid, long /*int*/ ppvObject) {
 		AddRef();
 		return XPCOM.NS_OK;
 	}
-	if (guid.Equals (nsIDownload.NS_IDOWNLOAD_IID)) {
+	if (guid.Equals (XPCOM.NS_IDOWNLOAD_IID)) {
 		XPCOM.memmove (ppvObject, new long /*int*/[] {download.getAddress ()}, C.PTR_SIZEOF);
 		AddRef();
 		return XPCOM.NS_OK;

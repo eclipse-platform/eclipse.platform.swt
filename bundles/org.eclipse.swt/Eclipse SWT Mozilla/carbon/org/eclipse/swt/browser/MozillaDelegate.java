@@ -14,6 +14,7 @@ import java.util.Hashtable;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.browser.Browser;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.carbon.*;
 import org.eclipse.swt.internal.cocoa.*;
@@ -46,7 +47,7 @@ static String getCacheParentPath () {
 	return getProfilePath ();
 }
 
-static String getLibraryName () {
+static String getLibraryName (String mozillaPath) {
 	return "libxpcom.dylib"; //$NON-NLS-1$
 }
 
@@ -58,6 +59,10 @@ static String getJSLibraryName_Pre4 () {
 	return "libmozjs.dylib"; //$NON-NLS-1$
 }
 
+Point getNativeSize (int width, int height) {
+	return new Point (width, height);
+}
+
 static String getProfilePath () {
 	String baseDir = System.getProperty ("user.home"); //$NON-NLS-1$
 	return baseDir + Mozilla.SEPARATOR_OS + ".mozilla" + Mozilla.SEPARATOR_OS + "eclipse"; //$NON-NLS-1$ //$NON-NLS-2$
@@ -67,7 +72,9 @@ static String getSWTInitLibraryName () {
 	return "swt-xulrunner"; //$NON-NLS-1$
 }
 
-static void loadAdditionalLibraries (String mozillaPath) {
+static void loadAdditionalLibraries (String mozillaPath, boolean isGlued) {
+	// the following is intentionally commented
+
 	// workaround for https://bugzilla.mozilla.org/show_bug.cgi?id=727616
 //	String utilsPath = mozillaPath + Mozilla.SEPARATOR_OS + "libmozutils.dylib"; //$NON-NLS-1$
 //	byte[] bytes = MozillaDelegate.wcsToMbcs (null, utilsPath, true);
@@ -92,10 +99,6 @@ static char[] mbcsToWcs (String codePage, byte [] buffer) {
 }
 
 static boolean needsSpinup () {
-	return false;
-}
-
-static boolean supportsXULRunner17 () {
 	return false;
 }
 

@@ -29,13 +29,19 @@ package org.eclipse.swt.internal.mozilla;
 
 public class nsIWebProgress extends nsISupports {
 
-	static final int LAST_METHOD_ID = nsISupports.LAST_METHOD_ID + 4;
+	static final int LAST_METHOD_ID = nsISupports.LAST_METHOD_ID + (IsXULRunner24 ? 6 : 4);
 
 	public static final String NS_IWEBPROGRESS_IID_STR =
 		"570f39d0-efd0-11d3-b093-00a024ffc08c";
 
+	public static final String NS_IWEBPROGRESS_24_IID_STR =
+		"1c3437b0-9e2c-11e2-9e96-0800200c9a66";
+
 	public static final nsID NS_IWEBPROGRESS_IID =
 		new nsID(NS_IWEBPROGRESS_IID_STR);
+
+	public static final nsID NS_IWEBPROGRESS_24_IID =
+		new nsID(NS_IWEBPROGRESS_24_IID_STR);
 
 	public nsIWebProgress(long /*int*/ address) {
 		super(address);

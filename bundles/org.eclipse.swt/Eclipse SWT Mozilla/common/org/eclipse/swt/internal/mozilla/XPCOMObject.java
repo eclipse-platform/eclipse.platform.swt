@@ -23,7 +23,7 @@ public class XPCOMObject {
 		IsSolaris = osName.startsWith ("sunos") || osName.startsWith("solaris"); //$NON-NLS-1$
 	}
 	
-	private long /*int*/ ppVtable;
+	public long /*int*/ ppVtable;
 
 	static private final int MAX_ARG_COUNT = 12;
 	static private final int MAX_VTABLE_LENGTH = 80;

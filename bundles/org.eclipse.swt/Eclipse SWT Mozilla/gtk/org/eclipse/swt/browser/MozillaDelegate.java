@@ -14,6 +14,7 @@ import java.io.*;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.browser.Browser;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.gtk.*;
 import org.eclipse.swt.internal.mozilla.*;
@@ -27,7 +28,12 @@ class MozillaDelegate {
 	Listener listener;
 	static Callback eventCallback;
 	static long /*int*/ eventProc;
+	static Boolean IsXULRunner24;
 	static final int STOP_PROPOGATE = 1;
+	static final String LIB_FIX_XULRUNNER10 = "libswt-xulrunner-fix10.so"; //$NON-NLS-1$
+	static final String LIB_FIX_XULRUNNER24 = "libswt-xulrunner-fix24.so"; //$NON-NLS-1$
+	static final String LIB_XPCOM = "libxpcom.so"; //$NON-NLS-1$
+	static final String LIB_XUL = "libxul.so"; //$NON-NLS-1$
 
 	static boolean IsSparc;
 	static {
@@ -83,8 +89,21 @@ static String getJSLibraryName_Pre4() {
 	return "libmozjs.so"; //$NON-NLS-1$
 }
 
-static String getLibraryName () {
-	return "libxpcom.so"; //$NON-NLS-1$
+static String getLibraryName (String mozillaPath) {
+	/*
+	 * The name of the Gecko library to glue to changed between the XULRunner 10 and
+	 * 24 releases.  However it's not possible to programmatically know the version
+	 * of a XULRunner that's being used before it has been glued.  To determine the
+	 * appropriate Gecko library name to return, look for the presence of an "xpcom"
+	 * library in the mozilla path, which is present in all supported XULRunner releases
+	 * prior to XULRunner 24.  If this library is there then return it, and if it's not
+	 * there then assume that XULRunner 24 is being used and return the new library name
+	 * instead ("xul").
+	 */
+	if (IsXULRunner24 == null) { /* IsXULRunner24 not yet initialized */
+		IsXULRunner24 = new File (mozillaPath, LIB_XPCOM).exists () ? Boolean.FALSE : Boolean.TRUE;
+	}
+	return IsXULRunner24.booleanValue () ? LIB_XUL : LIB_XPCOM;
 }
 
 static String getProfilePath () {
@@ -112,15 +131,35 @@ static String getSWTInitLibraryName () {
 	return "swt-xpcominit"; //$NON-NLS-1$
 }
 
-static void loadAdditionalLibraries (String mozillaPath) {
-	if (Mozilla.IsPre_4) return;
-
+static void loadAdditionalLibraries (String mozillaPath, boolean isGlued) {
 	/*
-	* The use of the swt-xulrunner-fix library works around mozilla bug
-	* https://bugzilla.mozilla.org/show_bug.cgi?id=720682 (XULRunner 10).
-	*/
-	String libName = "libswt-xulrunner-fix.so"; //$NON-NLS-1$
-	File libsDir = new File (getProfilePath () + "/libs/" + Mozilla.OS() + '/' + Mozilla.Arch ()); //$NON-NLS-1$
+	 * This function is invoked twice, once before gluing (the fix library for
+	 * XULRunner 24, if appropriate, must be loaded before attempting to glue),
+	 * and once after gluing (to load the XULRunner 10 fix library, if appropriate).
+	 */
+	String libName = null;
+	if (!isGlued) {
+		if (IsXULRunner24.booleanValue ()) {
+			/*
+			* Works around https://bugzilla.mozilla.org/show_bug.cgi?id=720682
+			* and https://bugzilla.mozilla.org/show_bug.cgi?id=763327.
+			*/
+			libName = LIB_FIX_XULRUNNER24;
+		}
+	} else {
+		/*
+		* This is the second invocation of loadAdditionalLibraries(), so the
+		* specific xulrunner runtime version is now better known.
+		*/
+		if (nsISupports.IsXULRunner10) {
+			/* works around https://bugzilla.mozilla.org/show_bug.cgi?id=720682 */
+			libName = LIB_FIX_XULRUNNER10;
+		}
+	}
+
+	if (libName == null) return;
+
+	File libsDir = new File (getProfilePath () + "/libs/" + Mozilla.OS () + '/' + Mozilla.Arch ()); //$NON-NLS-1$
 	File file = new File (libsDir, libName);
 	if (!file.exists()) {
 		java.io.InputStream is = Library.class.getResourceAsStream ('/' + libName);
@@ -156,10 +195,6 @@ static boolean needsSpinup () {
 	return true;
 }
 
-static boolean supportsXULRunner17 () {
-	return false;
-}
-
 static byte[] wcsToMbcs (String codePage, String string, boolean terminate) {
 	return Converter.wcsToMbcs (codePage, string, terminate);
 }
@@ -191,6 +226,10 @@ long /*int*/ getHandle () {
 	OS.gtk_container_add (browser.handle, embedHandle);
 	OS.gtk_widget_show (embedHandle);
 	return embedHandle;
+}
+
+Point getNativeSize (int width, int height) {
+	return new Point (width, height);
 }
 
 long /*int*/ getSiteWindow () {

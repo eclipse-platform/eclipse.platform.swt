@@ -29,31 +29,31 @@ package org.eclipse.swt.internal.mozilla;
 
 public class nsIScriptSecurityManager extends nsIXPCSecurityManager {
 
-	static final int LAST_METHOD_ID = nsIXPCSecurityManager.LAST_METHOD_ID + ((IsXULRunner17 || IsXULRunner10) ? 27 : 26);
+	static final int LAST_METHOD_ID = nsIXPCSecurityManager.LAST_METHOD_ID + (IsXULRunner24 ? 21 : (IsXULRunner10 ? 27 : 26));
 
 	public static final String NS_ISCRIPTSECURITYMANAGER_IID_STR =
 		"3fffd8e8-3fea-442e-a0ed-2ba81ae197d5";
 
-	public static final nsID NS_ISCRIPTSECURITYMANAGER_IID =
-		new nsID(NS_ISCRIPTSECURITYMANAGER_IID_STR);
-
 	public static final String NS_ISCRIPTSECURITYMANAGER_191_IID_STR =
 		"f8e350b9-9f31-451a-8c8f-d10fea26b780";
+	
+	public static final String NS_ISCRIPTSECURITYMANAGER_10_IID_STR =
+		"50eda256-4dd2-4c7c-baed-96983910af9f";
+	
+	public static final String NS_ISCRIPTSECURITYMANAGER_24_IID_STR =
+		"ae486501-ec57-4ec8-a565-6880ca4ae6c4";
+
+	public static final nsID NS_ISCRIPTSECURITYMANAGER_IID =
+		new nsID(NS_ISCRIPTSECURITYMANAGER_IID_STR);
 
 	public static final nsID NS_ISCRIPTSECURITYMANAGER_191_IID =
 		new nsID(NS_ISCRIPTSECURITYMANAGER_191_IID_STR);
 
-	public static final String NS_ISCRIPTSECURITYMANAGER_10_IID_STR =
-		"50eda256-4dd2-4c7c-baed-96983910af9f";
-
 	public static final nsID NS_ISCRIPTSECURITYMANAGER_10_IID =
 		new nsID(NS_ISCRIPTSECURITYMANAGER_10_IID_STR);
-	
-	public static final String NS_ISCRIPTSECURITYMANAGER_17_IID_STR =
-		"45e12581-2c3f-4142-8e0d-4075e5a67d2d";
 
-	public static final nsID NS_ISCRIPTSECURITYMANAGER_17_IID =
-		new nsID(NS_ISCRIPTSECURITYMANAGER_17_IID_STR);
+	public static final nsID NS_ISCRIPTSECURITYMANAGER_24_IID =
+		new nsID(NS_ISCRIPTSECURITYMANAGER_24_IID_STR);
 
 	public nsIScriptSecurityManager(long /*int*/ address) {
 		super(address);
@@ -67,6 +67,20 @@ public class nsIScriptSecurityManager extends nsIXPCSecurityManager {
 	public static final int DISALLOW_SCRIPT = 8;
 
 	public int GetSystemPrincipal(long /*int*/[] _retval) {
-		return XPCOM.VtblCall(nsIXPCSecurityManager.LAST_METHOD_ID + (IsXULRunner17 ? 8 : (IsXULRunner10 ? 10 : 11)), getAddress(), _retval);
+		return XPCOM.VtblCall(nsIXPCSecurityManager.LAST_METHOD_ID + (IsXULRunner24 ? 8 : (IsXULRunner10 ? 10 : 11)), getAddress(), _retval);
 	}
+	
+	public int GetSubjectPrincipal(long /*int*/[] _retval) {
+		return XPCOM.VtblCall(nsIXPCSecurityManager.LAST_METHOD_ID + (IsXULRunner24 ? 7 : (IsXULRunner10 ? 10 : 11)), getAddress(), _retval);
+	}
+	public int GetObjectPrincipal(long /*int*/ cx, long /*int*/ object, long /*int*/[] _retval) {
+		return XPCOM.VtblCall(nsIXPCSecurityManager.LAST_METHOD_ID + (IsXULRunner24 ? 14 : (IsXULRunner10 ? 10 : 11)), getAddress(), cx, object, _retval);
+	}
+//	public int GetSystemPrincipal(long /*int*/[] _retval) {
+//		return XPCOM.VtblCall(nsIXPCSecurityManager.LAST_METHOD_ID + (IsXULRunner24 ? 8 : (IsXULRunner10 ? 10 : 11)), getAddress(), _retval);
+//	}
+//	public int GetSystemPrincipal(long /*int*/[] _retval) {
+//		return XPCOM.VtblCall(nsIXPCSecurityManager.LAST_METHOD_ID + (IsXULRunner24 ? 8 : (IsXULRunner10 ? 10 : 11)), getAddress(), _retval);
+//	}
+
 }

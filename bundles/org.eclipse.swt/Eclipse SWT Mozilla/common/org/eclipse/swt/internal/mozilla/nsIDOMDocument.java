@@ -29,7 +29,7 @@ package org.eclipse.swt.internal.mozilla;
 
 public class nsIDOMDocument extends nsIDOMNode {
 
-	static final int LAST_METHOD_ID = nsIDOMNode.LAST_METHOD_ID + (IsXULRunner17 ? 63 : (IsXULRunner10 ? 61 : 17));
+	static final int LAST_METHOD_ID = nsIDOMNode.LAST_METHOD_ID + (IsXULRunner24 ? 68 : (IsXULRunner10 ? 61 : 17));
 
 	public static final String NS_IDOMDOCUMENT_IID_STR =
 		"a6cf9075-15b3-11d2-932e-00805f8add32";
@@ -37,8 +37,8 @@ public class nsIDOMDocument extends nsIDOMNode {
 	public static final String NS_IDOMDOCUMENT_10_IID_STR =
 		"5c3bff4d-ae7f-4c93-948c-519589672c30";
 	
-	public static final String NS_IDOMDOCUMENT_17_IID_STR =
-		"fdb92f4f-c6b4-4509-a29d-a309981e28ac";
+	public static final String NS_IDOMDOCUMENT_24_IID_STR =
+		"75996de6-6b0f-43e5-ae79-c98fa669da9a";
 
 	public static final nsID NS_IDOMDOCUMENT_IID =
 		new nsID(NS_IDOMDOCUMENT_IID_STR);
@@ -46,8 +46,8 @@ public class nsIDOMDocument extends nsIDOMNode {
 	public static final nsID NS_IDOMDOCUMENT_10_IID =
 		new nsID(NS_IDOMDOCUMENT_10_IID_STR);
 
-	public static final nsID NS_IDOMDOCUMENT_17_IID =
-		new nsID(NS_IDOMDOCUMENT_17_IID_STR);
+	public static final nsID NS_IDOMDOCUMENT_24_IID =
+		new nsID(NS_IDOMDOCUMENT_24_IID_STR);
 
 	public nsIDOMDocument(long /*int*/ address) {
 		super(address);

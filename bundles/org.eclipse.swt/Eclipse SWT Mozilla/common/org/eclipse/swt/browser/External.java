@@ -27,12 +27,24 @@ class External {
 	XPCOMObject classInfo;
 	XPCOMObject securityCheckedComponent;
 	XPCOMObject scriptObjectOwner;
+	XPCOMObject xpcScriptable;
 	int refCount = 0;
 	
-	static Callback CallJavaProc;
+	static final String CALLJAVA = "callJava"; //$NON-NLS-1$
+
+	static Callback CallJavaProc, GetScriptableFlags24Proc = null;
 	static {
-		CallJavaProc = new Callback (External.class, "callJava", 3); //$NON-NLS-1$
+		CallJavaProc = new Callback (External.class, CALLJAVA, 3);
 		if (CallJavaProc.getAddress () == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
+
+		/*
+		 * On win32 a substitute callback is provided for nsIXPCScriptable.getScriptableFlags()
+		 * because it does not use the standard XPCOM calling convention.
+		 */
+		if (nsISupports.IsXULRunner24 && SWT.getPlatform ().equals ("win32")) { //$NON-NLS-1$
+			GetScriptableFlags24Proc = new Callback (External.class, "getScriptableFlags", 0); //$NON-NLS-1$
+			if (GetScriptableFlags24Proc.getAddress () == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
+		}
 	}
 
 External () {
@@ -58,7 +70,7 @@ static long /*int*/ callJava (long /*int*/ cx, long /*int*/ argc, long /*int*/ v
 
 	nsIServiceManager serviceManager = new nsIServiceManager (result[0]);
 	result[0] = 0;
-	rc = serviceManager.GetService (XPCOM.NS_IXPCONNECT_CID, nsIXPConnect.NS_IXPCONNECT_IID, result);
+	rc = serviceManager.GetService (XPCOM.NS_IXPCONNECT_CID, nsISupports.IsXULRunner24 ? nsIXPConnect.NS_IXPCONNECT_24_IID : nsIXPConnect.NS_IXPCONNECT_IID, result);
 	if (rc != XPCOM.NS_OK) Mozilla.error (rc);
 	if (result[0] == 0) Mozilla.error (XPCOM.NS_NOINTERFACE);
 
@@ -117,7 +129,10 @@ static long /*int*/ callJava (long /*int*/ cx, long /*int*/ argc, long /*int*/ v
 
 	/* convert the resulting variant to a jsval */
 	byte[] aContractID = MozillaDelegate.wcsToMbcs (null, XPCOM.NS_MEMORY_CONTRACTID, true);
-	rc = serviceManager.GetServiceByContractID (aContractID, nsIMemory.NS_IMEMORY_IID, result);
+	rc = serviceManager.GetServiceByContractID (aContractID, nsIMemory.NS_IMEMORY_24_IID, result);
+	if (rc != XPCOM.NS_OK) {
+		rc = serviceManager.GetServiceByContractID (aContractID, nsIMemory.NS_IMEMORY_IID, result);
+	}
 	if (rc != XPCOM.NS_OK) Mozilla.error (rc);
 	if (result[0] == 0) Mozilla.error (XPCOM.NS_NOINTERFACE);
 	serviceManager.Release();
@@ -126,7 +141,12 @@ static long /*int*/ callJava (long /*int*/ cx, long /*int*/ argc, long /*int*/ v
 	result[0] = 0;
 	long /*int*/ jsVal = memory.Alloc (jsval_sizeof);
 	C.memset (jsVal, 0, jsval_sizeof);
-	long /*int*/ globalObject = XPCOM.JS_GetGlobalObject (Mozilla.getJSLibPathBytes (), cx);
+	long /*int*/ globalObject = 0;
+	if (nsISupports.IsXULRunner24) {
+		globalObject = XPCOM.JS_GetGlobalForScopeChain24 (cx);
+	} else {
+		globalObject = XPCOM.JS_GetGlobalObject (Mozilla.getJSLibPathBytes (), cx);
+	}
 	rc = connect.VariantToJS (cx, globalObject, resultVariant.getAddress (), jsVal);
 	resultVariant.Release ();
 	connect.Release ();
@@ -204,7 +224,10 @@ static Object convertToJava (nsIVariant variant, short type) {
 			nsIServiceManager serviceManager = new nsIServiceManager (result[0]);
 			result[0] = 0;
 			byte[] aContractID = MozillaDelegate.wcsToMbcs (null, XPCOM.NS_MEMORY_CONTRACTID, true);
-			rc = serviceManager.GetServiceByContractID (aContractID, nsIMemory.NS_IMEMORY_IID, result);
+			rc = serviceManager.GetServiceByContractID (aContractID, nsIMemory.NS_IMEMORY_24_IID, result);
+			if (rc != XPCOM.NS_OK) {
+				rc = serviceManager.GetServiceByContractID (aContractID, nsIMemory.NS_IMEMORY_IID, result);
+			}
 			if (rc != XPCOM.NS_OK) Mozilla.error (rc);
 			if (result[0] == 0) Mozilla.error (XPCOM.NS_NOINTERFACE);		
 			serviceManager.Release ();
@@ -252,7 +275,7 @@ static Object convertToJava (nsIVariant variant, short type) {
 						arrayReturn = new Object[count[0]];
 						for (int i = 0; i < count[0]; i++) {
 							/* mozilla's representation of boolean changed from 4 bytes to 1 byte as of XULRunner 4.x */
-							if (nsISupports.IsXULRunner10 || nsISupports.IsXULRunner17) {
+							if (nsISupports.IsXULRunner10 || nsISupports.IsXULRunner24) {
 								byte[] byteValue = new byte[1];
 								C.memmove (byteValue, ptr[0] + i, 1);
 								arrayReturn[i] = new Boolean (byteValue[0] != 0);
@@ -511,6 +534,25 @@ void createCOMInterfaces () {
 		@Override
 		public long /*int*/ method4 (long /*int*/[] args) {return setScriptObject (args[0]);}
 	};
+
+	xpcScriptable = new XPCOMObject (new int[] {2, 0, 0, 1, 0, 4, 3, 3, 3, 6, 5, 6, 6, 4, 7, 7, 6, 3, 7, 5, 5, 6, 4, 2}) {
+		public long /*int*/ method0 (long /*int*/[] args) {return QueryInterface (args[0], args[1]);}
+		public long /*int*/ method1 (long /*int*/[] args) {return AddRef ();}
+		public long /*int*/ method2 (long /*int*/[] args) {return Release ();}
+		public long /*int*/ method3 (long /*int*/[] args) {return getClassName (args[0]);}
+		public long /*int*/ method4 (long /*int*/[] args) {return getScriptableFlags ();}
+		public long /*int*/ method7 (long /*int*/[] args) {return postCreate (args[0], args[1], args[2]);}
+	};
+
+	if (GetScriptableFlags24Proc != null) {
+		long /*int*/ ppVtable = xpcScriptable.ppVtable;
+		long /*int*/[] pVtable = new long /*int*/[1];
+		C.memmove (pVtable, ppVtable, C.PTR_SIZEOF);
+		long /*int*/[] funcs = new long /*int*/[24];
+		C.memmove (funcs, pVtable[0], C.PTR_SIZEOF * funcs.length);
+		funcs[4] = XPCOM.CALLBACK_GetScriptableFlags24 (GetScriptableFlags24Proc.getAddress ());
+		C.memmove (pVtable[0], funcs, C.PTR_SIZEOF * funcs.length);
+	}
 }
 
 void disposeCOMInterfaces () {
@@ -533,6 +575,10 @@ void disposeCOMInterfaces () {
 	if (scriptObjectOwner != null) {
 		scriptObjectOwner.dispose ();
 		scriptObjectOwner = null;
+	}
+	if (xpcScriptable != null) {
+		xpcScriptable.dispose ();
+		xpcScriptable = null;
 	}
 }
 
@@ -567,10 +613,17 @@ int QueryInterface (long /*int*/ riid, long /*int*/ ppvObject) {
 	}
 
 	if (!Mozilla.IsPre_4) {
-		if (guid.Equals(XPCOM.NS_ISCRIPTOBJECTOWNER_IID)) {
+		if (guid.Equals (XPCOM.NS_ISCRIPTOBJECTOWNER_IID)) {
 			XPCOM.memmove (ppvObject, new long /*int*/[] {scriptObjectOwner.getAddress ()}, C.PTR_SIZEOF);
 			AddRef();
 			return XPCOM.NS_OK;
+		}
+		if (nsISupports.IsXULRunner24) {
+			if (guid.Equals (XPCOM.NS_IXPCSCRIPTABLE_IID)) {
+				XPCOM.memmove (ppvObject, new long /*int*/[] {xpcScriptable.getAddress ()}, C.PTR_SIZEOF);
+				AddRef();
+				return XPCOM.NS_OK;
+			}
 		}
 	}
 
@@ -595,7 +648,10 @@ int getClassDescription (long /*int*/ _retValue) {
 	nsIServiceManager serviceManager = new nsIServiceManager (result[0]);
 	result[0] = 0;
 	byte[] aContractID = MozillaDelegate.wcsToMbcs (null, XPCOM.NS_MEMORY_CONTRACTID, true);
-	rc = serviceManager.GetServiceByContractID (aContractID, nsIMemory.NS_IMEMORY_IID, result);
+	rc = serviceManager.GetServiceByContractID (aContractID, nsIMemory.NS_IMEMORY_24_IID, result);
+	if (rc != XPCOM.NS_OK) {
+		rc = serviceManager.GetServiceByContractID (aContractID, nsIMemory.NS_IMEMORY_IID, result);
+	}
 	if (rc != XPCOM.NS_OK) Mozilla.error (rc);
 	if (result[0] == 0) Mozilla.error (XPCOM.NS_NOINTERFACE);		
 	serviceManager.Release ();
@@ -647,7 +703,10 @@ int getInterfaces (long /*int*/ count, long /*int*/ array) {
 	nsIServiceManager serviceManager = new nsIServiceManager (result[0]);
 	result[0] = 0;
 	byte[] aContractID = MozillaDelegate.wcsToMbcs (null, XPCOM.NS_MEMORY_CONTRACTID, true);
-	rc = serviceManager.GetServiceByContractID (aContractID, nsIMemory.NS_IMEMORY_IID, result);
+	rc = serviceManager.GetServiceByContractID (aContractID, nsIMemory.NS_IMEMORY_24_IID, result);
+	if (rc != XPCOM.NS_OK) {
+		rc = serviceManager.GetServiceByContractID (aContractID, nsIMemory.NS_IMEMORY_IID, result);
+	}
 	if (rc != XPCOM.NS_OK) Mozilla.error (rc);
 	if (result[0] == 0) Mozilla.error (XPCOM.NS_NOINTERFACE);		
 	serviceManager.Release ();
@@ -661,16 +720,11 @@ int getInterfaces (long /*int*/ count, long /*int*/ array) {
 	long /*int*/ ptrArray = memory.Alloc (3 * C.PTR_SIZEOF);
 	C.memmove (ptrArray, new long /*int*/[] {securityCheckedComponentIID}, C.PTR_SIZEOF);
 	C.memmove (ptrArray + C.PTR_SIZEOF, new long /*int*/[] {externalIID}, C.PTR_SIZEOF);
-	
-	nsID NS_ASDF_IID = new nsID("a40ce52e-2d8c-400f-9af2-f8784a656070");
-	long /*int*/ asdfIID = memory.Alloc (nsID.sizeof);
-	XPCOM.memmove (asdfIID, NS_ASDF_IID, nsID.sizeof);
-	C.memmove (ptrArray + 2 * C.PTR_SIZEOF, new long /*int*/[] {asdfIID}, C.PTR_SIZEOF);
 
 	C.memmove (array, new long /*int*/[] {ptrArray}, C.PTR_SIZEOF);
 	memory.Release ();
 
-	C.memmove (count, new int[] {3}, 4); /* PRUint */
+	C.memmove (count, new int[] {2}, 4); /* PRUint */
 	return XPCOM.NS_OK;
 }
 
@@ -682,7 +736,7 @@ int getScriptObject (long /*int*/ aContext, long /*int*/ aScriptObject) {
 	long /*int*/ globalJSObject = XPCOM.JS_GetGlobalObject (jsLibPath, nativeContext);
 	long /*int*/ newObject = XPCOM.JS_NewObject (jsLibPath, nativeContext, 0, 0, globalJSObject);
 
-	byte[] functionName = MozillaDelegate.wcsToMbcs (null, "callJava", true); //$NON-NLS-1$
+	byte[] functionName = MozillaDelegate.wcsToMbcs (null, CALLJAVA, true);
 	int flags = XPCOM.JSPROP_ENUMERATE | XPCOM.JSPROP_READONLY | XPCOM.JSPROP_PERMANENT;
 	XPCOM.JS_DefineFunction (jsLibPath, nativeContext, newObject, functionName, XPCOM.CALLBACK_JSNative (CallJavaProc.getAddress ()), 3, flags);
 	XPCOM.memmove (aScriptObject, new long /*int*/[] {newObject}, C.PTR_SIZEOF);
@@ -704,7 +758,10 @@ int canCreateWrapper (long /*int*/ iid, long /*int*/ _retVal) {
 	nsIServiceManager serviceManager = new nsIServiceManager (result[0]);
 	result[0] = 0;
 	byte[] aContractID = MozillaDelegate.wcsToMbcs (null, XPCOM.NS_MEMORY_CONTRACTID, true);
-	rc = serviceManager.GetServiceByContractID (aContractID, nsIMemory.NS_IMEMORY_IID, result);
+	rc = serviceManager.GetServiceByContractID (aContractID, nsIMemory.NS_IMEMORY_24_IID, result);
+	if (rc != XPCOM.NS_OK) {
+		rc = serviceManager.GetServiceByContractID (aContractID, nsIMemory.NS_IMEMORY_IID, result);
+	}
 	if (rc != XPCOM.NS_OK) Mozilla.error (rc);
 	if (result[0] == 0) Mozilla.error (XPCOM.NS_NOINTERFACE);		
 	serviceManager.Release ();
@@ -729,7 +786,10 @@ int canCallMethod (long /*int*/ iid, long /*int*/ methodName, long /*int*/ _retV
 	nsIServiceManager serviceManager = new nsIServiceManager (result[0]);
 	result[0] = 0;
 	byte[] aContractID = MozillaDelegate.wcsToMbcs (null, XPCOM.NS_MEMORY_CONTRACTID, true);
-	rc = serviceManager.GetServiceByContractID (aContractID, nsIMemory.NS_IMEMORY_IID, result);
+	rc = serviceManager.GetServiceByContractID (aContractID, nsIMemory.NS_IMEMORY_24_IID, result);
+	if (rc != XPCOM.NS_OK) {
+		rc = serviceManager.GetServiceByContractID (aContractID, nsIMemory.NS_IMEMORY_IID, result);
+	}
 	if (rc != XPCOM.NS_OK) Mozilla.error (rc);
 	if (result[0] == 0) Mozilla.error (XPCOM.NS_NOINTERFACE);		
 	serviceManager.Release ();
@@ -741,7 +801,7 @@ int canCallMethod (long /*int*/ iid, long /*int*/ methodName, long /*int*/ _retV
 	XPCOM.memmove (dest, methodName, length * 2);
 	String string = new String (dest);
 	byte[] bytes;
-	if (string.equals("callJava")) { //$NON-NLS-1$
+	if (string.equals (CALLJAVA)) {
 		bytes = MozillaDelegate.wcsToMbcs (null, "allAccess", true); //$NON-NLS-1$ 
 	} else {
 		bytes = MozillaDelegate.wcsToMbcs (null, "noAccess", true); //$NON-NLS-1$
@@ -763,7 +823,10 @@ int canGetProperty (long /*int*/ iid, long /*int*/ propertyName, long /*int*/ _r
 	nsIServiceManager serviceManager = new nsIServiceManager (result[0]);
 	result[0] = 0;
 	byte[] aContractID = MozillaDelegate.wcsToMbcs (null, XPCOM.NS_MEMORY_CONTRACTID, true);
-	rc = serviceManager.GetServiceByContractID (aContractID, nsIMemory.NS_IMEMORY_IID, result);
+	rc = serviceManager.GetServiceByContractID (aContractID, nsIMemory.NS_IMEMORY_24_IID, result);
+	if (rc != XPCOM.NS_OK) {
+		rc = serviceManager.GetServiceByContractID (aContractID, nsIMemory.NS_IMEMORY_IID, result);
+	}
 	if (rc != XPCOM.NS_OK) Mozilla.error (rc);
 	if (result[0] == 0) Mozilla.error (XPCOM.NS_NOINTERFACE);		
 	serviceManager.Release ();
@@ -788,7 +851,10 @@ int canSetProperty (long /*int*/ iid, long /*int*/ propertyName, long /*int*/ _r
 	nsIServiceManager serviceManager = new nsIServiceManager (result[0]);
 	result[0] = 0;
 	byte[] aContractID = MozillaDelegate.wcsToMbcs (null, XPCOM.NS_MEMORY_CONTRACTID, true);
-	rc = serviceManager.GetServiceByContractID (aContractID, nsIMemory.NS_IMEMORY_IID, result);
+	rc = serviceManager.GetServiceByContractID (aContractID, nsIMemory.NS_IMEMORY_24_IID, result);
+	if (rc != XPCOM.NS_OK) {
+		rc = serviceManager.GetServiceByContractID (aContractID, nsIMemory.NS_IMEMORY_IID, result);
+	}
 	if (rc != XPCOM.NS_OK) Mozilla.error (rc);
 	if (result[0] == 0) Mozilla.error (XPCOM.NS_NOINTERFACE);		
 	serviceManager.Release ();
@@ -802,6 +868,47 @@ int canSetProperty (long /*int*/ iid, long /*int*/ propertyName, long /*int*/ _r
 	memory.Release ();
 
 	return XPCOM.NS_OK;
+}
+
+/* nsIXPCScriptable */
+
+long /*int*/ getClassName (long /*int*/ aClassName) {
+	long /*int*/[] result = new long /*int*/[1];
+	int rc = XPCOM.NS_GetServiceManager (result);
+	if (rc != XPCOM.NS_OK) Mozilla.error (rc);
+	if (result[0] == 0) Mozilla.error (XPCOM.NS_NOINTERFACE);
+
+	nsIServiceManager serviceManager = new nsIServiceManager (result[0]);
+	result[0] = 0;
+	byte[] aContractID = MozillaDelegate.wcsToMbcs (null, XPCOM.NS_MEMORY_CONTRACTID, true);
+	rc = serviceManager.GetServiceByContractID (aContractID, nsIMemory.NS_IMEMORY_24_IID, result);
+	if (rc != XPCOM.NS_OK) {
+		rc = serviceManager.GetServiceByContractID (aContractID, nsIMemory.NS_IMEMORY_IID, result);
+	}
+	if (rc != XPCOM.NS_OK) Mozilla.error (rc);
+	if (result[0] == 0) Mozilla.error (XPCOM.NS_NOINTERFACE);		
+	serviceManager.Release ();
+
+	nsIMemory memory = new nsIMemory (result[0]);
+	result[0] = 0;
+	byte[] bytes = MozillaDelegate.wcsToMbcs (null, "external", true); //$NON-NLS-1$
+	long /*int*/ ptr = memory.Alloc (bytes.length);
+	C.memmove (ptr, bytes, bytes.length);
+	C.memmove (aClassName, new long /*int*/[] {ptr}, C.PTR_SIZEOF);
+	memory.Release ();
+
+	return 0;
+}
+
+static int getScriptableFlags () {
+	return XPCOM.WANT_POSTCREATE | XPCOM.USE_JSSTUB_FOR_ADDPROPERTY;
+}
+
+int postCreate (long /*int*/ wrapper, long /*int*/ cx, long /*int*/ obj) {
+	byte[] functionName = MozillaDelegate.wcsToMbcs (null, CALLJAVA, true);
+	int flags = XPCOM.JSPROP_ENUMERATE | XPCOM.JSPROP_READONLY | XPCOM.JSPROP_PERMANENT;
+	XPCOM.JS_DefineFunction24 (cx, obj, functionName, XPCOM.CALLBACK_JSNative (CallJavaProc.getAddress ()), 3, flags);
+	return 0;
 }
 
 }

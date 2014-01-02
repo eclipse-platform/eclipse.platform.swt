@@ -34,8 +34,14 @@ public class nsIUploadChannel extends nsISupports {
 	public static final String NS_IUPLOADCHANNEL_IID_STR =
 		"ddf633d8-e9a4-439d-ad88-de636fd9bb75";
 
+	public static final String NS_IUPLOADCHANNEL_24_IID_STR =
+		"5cfe15bd-5adb-4a7f-9e55-4f5a67d15794";
+
 	public static final nsID NS_IUPLOADCHANNEL_IID =
 		new nsID(NS_IUPLOADCHANNEL_IID_STR);
+
+	public static final nsID NS_IUPLOADCHANNEL_24_IID =
+		new nsID(NS_IUPLOADCHANNEL_24_IID_STR);
 
 	public nsIUploadChannel(long /*int*/ address) {
 		super(address);

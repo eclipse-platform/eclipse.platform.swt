@@ -29,13 +29,19 @@ package org.eclipse.swt.internal.mozilla;
 
 public class nsICertificateDialogs extends nsISupports {
 
-	static final int LAST_METHOD_ID = nsISupports.LAST_METHOD_ID + 6;
+	static final int LAST_METHOD_ID = nsISupports.LAST_METHOD_ID + (IsXULRunner24 ? 5 : 6);
 
 	public static final String NS_ICERTIFICATEDIALOGS_IID_STR =
 		"a03ca940-09be-11d5-ac5d-000064657374";
 
+	public static final String NS_ICERTIFICATEDIALOGS_24_IID_STR =
+		"da871dab-f69e-4173-ab26-99fcd47b0e85";
+
 	public static final nsID NS_ICERTIFICATEDIALOGS_IID =
 		new nsID(NS_ICERTIFICATEDIALOGS_IID_STR);
+
+	public static final nsID NS_ICERTIFICATEDIALOGS_24_IID =
+		new nsID(NS_ICERTIFICATEDIALOGS_24_IID_STR);
 
 	public nsICertificateDialogs(long /*int*/ address) {
 		super(address);

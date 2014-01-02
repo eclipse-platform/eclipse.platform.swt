@@ -29,10 +29,16 @@ package org.eclipse.swt.internal.mozilla;
 
 public class nsIMemory extends nsISupports {
 
-	static final int LAST_METHOD_ID = nsISupports.LAST_METHOD_ID + 5;
+	static final int LAST_METHOD_ID = nsISupports.LAST_METHOD_ID + (IsXULRunner24 ? 6 : 5);
+
+	public static final String NS_IMEMORY_24_IID_STR =
+		"6aef11c4-8615-44a6-9711-98f43805693d";
 
 	public static final String NS_IMEMORY_IID_STR =
 		"59e7e77a-38e4-11d4-8cf5-0060b0fc14a3";
+
+	public static final nsID NS_IMEMORY_24_IID =
+		new nsID(NS_IMEMORY_24_IID_STR);
 
 	public static final nsID NS_IMEMORY_IID =
 		new nsID(NS_IMEMORY_IID_STR);

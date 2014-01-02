@@ -29,13 +29,19 @@ package org.eclipse.swt.internal.mozilla;
 
 public class nsITransfer extends nsIWebProgressListener2 {
 
-	static final int LAST_METHOD_ID = nsIWebProgressListener2.LAST_METHOD_ID + 1;
+	static final int LAST_METHOD_ID = nsIWebProgressListener2.LAST_METHOD_ID + (IsXULRunner24 ? 2 : 1);
 
 	public static final String NS_ITRANSFER_IID_STR =
 		"23c51569-e9a1-4a92-adeb-3723db82ef7c";
 
+	public static final String NS_ITRANSFER_24_IID_STR =
+		"b1c81100-9d66-11e2-9e96-0800200c9a66";
+
 	public static final nsID NS_ITRANSFER_IID =
 		new nsID(NS_ITRANSFER_IID_STR);
+
+	public static final nsID NS_ITRANSFER_24_IID =
+		new nsID(NS_ITRANSFER_24_IID_STR);
 
 	public nsITransfer(long /*int*/ address) {
 		super(address);

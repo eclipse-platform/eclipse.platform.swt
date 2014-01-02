@@ -10,10 +10,12 @@
  *******************************************************************************/
 package org.eclipse.swt.browser;
 
+import java.io.File;
 import java.util.*;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.browser.Browser;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.mozilla.*;
 import org.eclipse.swt.internal.win32.*;
@@ -25,8 +27,11 @@ class MozillaDelegate {
 	Vector childWindows = new Vector (9);
 	static long /*int*/ MozillaProc;
 	static Callback SubclassProc;
-	static Callback SubclassProc_UpdateUIState;
 	
+	static Boolean IsXULRunner24;
+	static final String LIB_XPCOM = "xpcom.dll"; //$NON-NLS-1$
+	static final String LIB_XUL = "xul.dll"; //$NON-NLS-1$
+
 MozillaDelegate (Browser browser) {
 	super ();
 	this.browser = browser;
@@ -54,8 +59,21 @@ static String getJSLibraryName_Pre4 () {
 	return "js3250.dll"; //$NON-NLS-1$
 }
 
-static String getLibraryName () {
-	return "xpcom.dll"; //$NON-NLS-1$
+static String getLibraryName (String mozillaPath) {
+	/*
+	 * The name of the Gecko library to glue to changed between the XULRunner 10 and
+	 * 24 releases.  However it's not possible to programmatically know the version
+	 * of a XULRunner that's being used before it has been glued.  To determine the
+	 * appropriate Gecko library name to return, look for the presence of an "xpcom"
+	 * library in the mozilla path, which is present in all supported XULRunner releases
+	 * prior to XULRunner 24.  If this library is there then return it, and if it's not
+	 * there then assume that XULRunner 24 is being used and return the new library name
+	 * instead ("xul").
+	 */
+	if (IsXULRunner24 == null) { /* IsXULRunner24 not yet initialized */
+		IsXULRunner24 = new File (mozillaPath, LIB_XPCOM).exists () ? Boolean.FALSE : Boolean.TRUE;
+	}
+	return IsXULRunner24.booleanValue () ? LIB_XUL : LIB_XPCOM;
 }
 
 static String getProfilePath () {
@@ -74,7 +92,7 @@ static String getSWTInitLibraryName () {
 	return "swt-xulrunner"; //$NON-NLS-1$
 }
 
-static void loadAdditionalLibraries (String mozillaPath) {
+static void loadAdditionalLibraries (String mozillaPath, boolean isGlued) {
 }
 
 static char[] mbcsToWcs (String codePage, byte[] buffer) {
@@ -88,10 +106,6 @@ static char[] mbcsToWcs (String codePage, byte[] buffer) {
 
 static boolean needsSpinup () {
 	return false;
-}
-
-static boolean supportsXULRunner17 () {
-	return true;
 }
 
 static byte[] wcsToMbcs (String codePage, String string, boolean terminate) {
@@ -129,18 +143,6 @@ static long /*int*/ windowProc (long /*int*/ hwnd, long /*int*/ msg, long /*int*
 	return OS.CallWindowProc (MozillaProc, hwnd, (int)/*64*/msg, wParam, lParam);
 }
 
-static long /*int*/ windowProc1 (long /*int*/ hwnd, long /*int*/ msg, long /*int*/ wParam, long /*int*/ lParam) {
-	switch ((int)/*64*/msg) {
-		case OS.WM_UPDATEUISTATE:
-			/*
-			 * In XULRunner 17, calling the default windowProc for WM_UPDATEUISTATE message
-			 * terminates the program. Workaround is to prevent the call to default windowProc.
-			 */
-			return 0;
-	}
-	return OS.CallWindowProc (MozillaProc, hwnd, (int)/*64*/msg, wParam, lParam);
-}
-
 void addWindowSubclass () {
 	long /*int*/ hwndChild = OS.GetWindow (browser.handle, OS.GW_CHILD);
 	if (SubclassProc == null) {
@@ -156,6 +158,10 @@ int createBaseWindow (nsIBaseWindow baseWindow) {
 
 long /*int*/ getHandle () {
 	return browser.handle;
+}
+
+Point getNativeSize (int width, int height) {
+	return new Point (width, height);
 }
 
 long /*int*/ getSiteWindow () {
@@ -255,7 +261,7 @@ void init () {
 }
 
 void onDispose (long /*int*/ embedHandle) {
-	if (SubclassProc == null && SubclassProc_UpdateUIState == null) return;
+	if (SubclassProc == null) return;
 	long /*int*/ hwndChild = OS.GetWindow (browser.handle, OS.GW_CHILD);
 	OS.SetWindowLongPtr (hwndChild, OS.GWL_WNDPROC, MozillaProc);
 	childWindows = null;
@@ -264,15 +270,8 @@ void onDispose (long /*int*/ embedHandle) {
 
 void removeWindowSubclass () {
 	long /*int*/ hwndChild = OS.GetWindow (browser.handle, OS.GW_CHILD);
-	if (Mozilla.IsPre_17) {
-		if (SubclassProc != null) {
-			OS.SetWindowLongPtr (hwndChild, OS.GWL_WNDPROC, MozillaProc);
-		}
-	} else {
-		if (SubclassProc_UpdateUIState == null) {
-			SubclassProc_UpdateUIState = new Callback (MozillaDelegate.class, "windowProc1", 4); //$NON-NLS-1$
-		}
-		OS.SetWindowLongPtr (hwndChild, OS.GWL_WNDPROC, SubclassProc_UpdateUIState.getAddress ());
+	if (SubclassProc != null) {
+		OS.SetWindowLongPtr (hwndChild, OS.GWL_WNDPROC, MozillaProc);
 	}
 }
 

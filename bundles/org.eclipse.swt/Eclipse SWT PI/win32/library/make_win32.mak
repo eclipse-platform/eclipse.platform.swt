@@ -58,6 +58,11 @@ XULRUNNER_LIBS = Advapi32.lib $(XULRUNNER_SDK)\lib\xpcomglue.lib
 XULRUNNER_OBJS = xpcom.obj xpcom_custom.obj xpcom_structs.obj xpcom_stats.obj
 XPCOMINIT_OBJS = xpcominit.obj xpcominit_structs.obj xpcominit_stats.obj
 
+XULRUNNER24_PREFIX = swt-xulrunner24
+XULRUNNER24_LIB = $(XULRUNNER24_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).dll
+XULRUNNER24_LIBS = Advapi32.lib $(XULRUNNER24_SDK)\lib\mozjs.lib
+XULRUNNER24_OBJS = xpcom24_custom.obj
+
 MOZILLACFLAGS = -c \
 	-O1 \
 	$(MOZILLACFLAGS) \
@@ -111,6 +116,9 @@ xpcominit_structs.obj: xpcominit_structs.cpp
 	cl $(MOZILLACFLAGS) xpcominit_structs.cpp
 xpcominit.obj: xpcominit.cpp
 	cl $(MOZILLACFLAGS) xpcominit.cpp
+
+xpcom24_custom.obj: xpcom24_custom.cpp
+	cl $(MOZILLACFLAGS) xpcom24_custom.cpp
 
 .c.obj:
 	cl $(CFLAGS) $*.c
@@ -171,8 +179,17 @@ make_xulrunner: $(XULRUNNER_OBJS) $(XPCOMINIT_OBJS) swt_xpcom.res
 	echo -out:$(XULRUNNER_LIB) >>templrf
 	link @templrf
 	del templrf
-	
-make_xulrunner64: $(XULRUNNER_OBJS) swt_xpcom.res
+
+make_xulrunner24: $(XULRUNNER24_OBJS) swt_xpcom.res
+	echo $(ldebug) $(dlllflags) >templrf
+	echo $(XULRUNNER24_LIBS) >>templrf
+	echo $(XULRUNNER24_OBJS) >>templrf
+	echo swt_xpcom.res >>templrf
+	echo -out:$(XULRUNNER24_LIB) >>templrf
+	link @templrf
+	del templrf
+
+make_xulrunner_64: $(XULRUNNER_OBJS) swt_xpcom.res
 	echo $(ldebug) $(dlllflags) >templrf
 	echo $(XULRUNNER_LIBS) >>templrf
 	echo $(XULRUNNER_OBJS) >>templrf

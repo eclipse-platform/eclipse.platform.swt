@@ -34,14 +34,14 @@ public class nsIWebProgressListener extends nsISupports {
 	public static final String NS_IWEBPROGRESSLISTENER_IID_STR =
 		"570f39d1-efd0-11d3-b093-00a024ffc08c";
 
+	public static final String NS_IWEBPROGRESSLISTENER_24_IID_STR =
+		"a0cda7e4-c6ca-11e0-b6a5-001320257da5";
+	
 	public static final nsID NS_IWEBPROGRESSLISTENER_IID =
 		new nsID(NS_IWEBPROGRESSLISTENER_IID_STR);
 	
-	public static final String NS_IWEBPROGRESSLISTENER_17_IID_STR =
-		"a0cda7e4-c6ca-11e0-b6a5-001320257da5";
-
-	public static final nsID NS_IWEBPROGRESSLISTENER_17_IID =
-		new nsID(NS_IWEBPROGRESSLISTENER_17_IID_STR);
+	public static final nsID NS_IWEBPROGRESSLISTENER_24_IID =
+		new nsID(NS_IWEBPROGRESSLISTENER_24_IID_STR);
 
 	public nsIWebProgressListener(long /*int*/ address) {
 		super(address);

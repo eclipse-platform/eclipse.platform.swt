@@ -29,7 +29,7 @@ package org.eclipse.swt.internal.mozilla;
 
 public class nsIChannel extends nsIRequest {
 
-	static final int LAST_METHOD_ID = nsIRequest.LAST_METHOD_ID + ((IsXULRunner10 || IsXULRunner17) ? 19 : 16);
+	static final int LAST_METHOD_ID = nsIRequest.LAST_METHOD_ID + (IsXULRunner24 ? 21 : (IsXULRunner10 ? 19 : 16));
 
 	public static final String NS_ICHANNEL_IID_STR =
 		"c63a055a-a676-4e71-bf3c-6cfa11082018";
@@ -37,11 +37,17 @@ public class nsIChannel extends nsIRequest {
 	public static final String NS_ICHANNEL_10_IID_STR =
 		"06f6ada3-7729-4e72-8d3f-bf8ba630ff9b";
 
+	public static final String NS_ICHANNEL_24_IID_STR =
+		"2a8a7237-c1e2-4de7-b669-2002af29e42d";
+	
 	public static final nsID NS_ICHANNEL_IID =
 		new nsID(NS_ICHANNEL_IID_STR);
 
 	public static final nsID NS_ICHANNEL_10_IID =
 		new nsID(NS_ICHANNEL_10_IID_STR);
+
+	public static final nsID NS_ICHANNEL_24_IID =
+		new nsID(NS_ICHANNEL_24_IID_STR);
 
 	public nsIChannel(long /*int*/ address) {
 		super(address);

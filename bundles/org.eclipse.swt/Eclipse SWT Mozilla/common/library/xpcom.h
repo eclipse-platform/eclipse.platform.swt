@@ -26,8 +26,6 @@
 #ifndef nsIScriptContext_h__
 #include "nsIScriptContext.h"
 #include "nsIScriptGlobalObject.h"
-#include "nsIScriptContext_17.h"
-#include "nsIScriptGlobalObject_17.h"
 #endif /* nsIScriptContext_h__ */
 
 #define XPCOM_LOAD_FUNCTION LOAD_FUNCTION

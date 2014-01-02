@@ -38,8 +38,8 @@ public class nsIFilePicker {
 	public static final String NS_IFILEPICKER_10_IID_STR =
 		"f2c0e216-5d07-4df4-bbcb-37683077ae7e";
 
-	public static final String NS_IFILEPICKER_17_IID_STR =
-		"60e2dfb6-3fc7-4a2c-8137-16bef44536fc";
+	public static final String NS_IFILEPICKER_24_IID_STR =
+		"a6a24df3-d20a-4b6a-96d4-4736b10a51b7";
 
 	public static final nsID NS_IFILEPICKER_IID =
 		new nsID(NS_IFILEPICKER_IID_STR);
@@ -50,8 +50,8 @@ public class nsIFilePicker {
 	public static final nsID NS_IFILEPICKER_10_IID =
 		new nsID(NS_IFILEPICKER_10_IID_STR);
 
-	public static final nsID NS_IFILEPICKER_17_IID =
-		new nsID(NS_IFILEPICKER_17_IID_STR);
+	public static final nsID NS_IFILEPICKER_24_IID =
+		new nsID(NS_IFILEPICKER_24_IID_STR);
 
 	public static final int modeOpen = 0;
 	public static final int modeSave = 1;
