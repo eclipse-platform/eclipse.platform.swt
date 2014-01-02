@@ -992,7 +992,7 @@
 				<equals arg1="${swt.os}" arg2="wce_ppc"/>
 			</or>
 		</condition>
-		<condition property="xulrunner_target" value="make_xulrunner_64" else="make_xulrunner">
+		<condition property="xulrunner_target" value="make_xulrunner_64" else="make_xulrunner make_xulrunner24">
 			<equals arg1="${swt.arch}" arg2="x86_64"/>
 		</condition>
 		<condition property="xul_cmd" value="cmd /c build.bat ${swt.arch} ${xulrunner_target} install;" else="">
