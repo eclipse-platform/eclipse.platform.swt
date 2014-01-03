@@ -900,7 +900,7 @@ long /*int*/ getClassName (long /*int*/ aClassName) {
 	return 0;
 }
 
-static int getScriptableFlags () {
+static long /*int*/ getScriptableFlags () {
 	return XPCOM.WANT_POSTCREATE | XPCOM.USE_JSSTUB_FOR_ADDPROPERTY;
 }
 
