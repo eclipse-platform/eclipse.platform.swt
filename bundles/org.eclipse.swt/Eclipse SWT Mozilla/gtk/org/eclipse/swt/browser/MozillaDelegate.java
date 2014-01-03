@@ -139,6 +139,9 @@ static void loadAdditionalLibraries (String mozillaPath, boolean isGlued) {
 	 */
 	String libName = null;
 	if (!isGlued) {
+		if (IsXULRunner24 == null) { /* IsXULRunner24 not yet initialized */
+			IsXULRunner24 = new File (mozillaPath, LIB_XPCOM).exists () ? Boolean.FALSE : Boolean.TRUE;
+		}
 		if (IsXULRunner24.booleanValue ()) {
 			/*
 			* Works around https://bugzilla.mozilla.org/show_bug.cgi?id=720682
