@@ -11,12 +11,14 @@
 package org.eclipse.swt.browser;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.internal.gtk.OS;
 
 class BrowserFactory {
 
 WebBrowser createWebBrowser (int style) {
 	boolean webkitInstalled = WebKit.IsInstalled ();
 	if ((style & SWT.MOZILLA) != 0 || (!webkitInstalled && (style & SWT.WEBKIT) == 0)) {
+		if (OS.GTK3) return null; // avoid libxul.so crash with Eclipse/SWT GTK 3 (XULRunner is not ported to GTK 3 yet)
 		return new Mozilla ();
 	}
 	if (!webkitInstalled) return null;
