@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2013 IBM Corporation and others. All rights reserved.
+ * Copyright (c) 2000, 2014 IBM Corporation and others. All rights reserved.
  * The contents of this file are made available under the terms
  * of the GNU Lesser General Public License (LGPL) Version 2.1 that
  * accompanies this distribution (lgpl-v21.txt).  The LGPL is also
@@ -14354,15 +14354,7 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(_1gtk_1scrolled_1window_1get_1hscrollbar)
 {
 	jintLong rc = 0;
 	OS_NATIVE_ENTER(env, that, _1gtk_1scrolled_1window_1get_1hscrollbar_FUNC);
-/*
 	rc = (jintLong)gtk_scrolled_window_get_hscrollbar((GtkScrolledWindow *)arg0);
-*/
-	{
-		OS_LOAD_FUNCTION(fp, gtk_scrolled_window_get_hscrollbar)
-		if (fp) {
-			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(GtkScrolledWindow *))fp)((GtkScrolledWindow *)arg0);
-		}
-	}
 	OS_NATIVE_EXIT(env, that, _1gtk_1scrolled_1window_1get_1hscrollbar_FUNC);
 	return rc;
 }
@@ -14415,15 +14407,7 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(_1gtk_1scrolled_1window_1get_1vscrollbar)
 {
 	jintLong rc = 0;
 	OS_NATIVE_ENTER(env, that, _1gtk_1scrolled_1window_1get_1vscrollbar_FUNC);
-/*
 	rc = (jintLong)gtk_scrolled_window_get_vscrollbar((GtkScrolledWindow *)arg0);
-*/
-	{
-		OS_LOAD_FUNCTION(fp, gtk_scrolled_window_get_vscrollbar)
-		if (fp) {
-			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(GtkScrolledWindow *))fp)((GtkScrolledWindow *)arg0);
-		}
-	}
 	OS_NATIVE_EXIT(env, that, _1gtk_1scrolled_1window_1get_1vscrollbar_FUNC);
 	return rc;
 }

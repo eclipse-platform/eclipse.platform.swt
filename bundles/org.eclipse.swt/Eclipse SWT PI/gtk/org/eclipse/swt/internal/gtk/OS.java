@@ -10433,7 +10433,6 @@ public static final long /*int*/ gtk_scrolled_window_get_hadjustment(long /*int*
 	}
 }
 /** 
- * @method flags=dynamic
  * @param scrolled_window cast=(GtkScrolledWindow *) 
  */
 public static final native long /*int*/ _gtk_scrolled_window_get_hscrollbar(long /*int*/ scrolled_window);
@@ -10480,7 +10479,6 @@ public static final long /*int*/ gtk_scrolled_window_get_vadjustment(long /*int*
 	}
 }
 /** 
- * @method flags=dynamic
  * @param scrolled_window cast=(GtkScrolledWindow *) 
  */
 public static final native long /*int*/ _gtk_scrolled_window_get_vscrollbar(long /*int*/ scrolled_window);
