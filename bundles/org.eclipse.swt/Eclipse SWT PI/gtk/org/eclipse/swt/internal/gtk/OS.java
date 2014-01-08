@@ -10810,7 +10810,10 @@ public static final void gtk_spin_button_update(long /*int*/ spin_button) {
 	}
 }
 /**
- * @method flags=dynamic
+ * @param handle cast=(GtkStatusIcon*) 
+ * @param screen cast=(GdkScreen**)
+ * @param area cast=(GdkRectangle*)
+ * @param orientation cast=(GtkOrientation*)
  */
 public static final native boolean _gtk_status_icon_get_geometry(long /*int*/ handle, long /*int*/ screen, GdkRectangle area, long /*int*/ orientation);
 public static final boolean gtk_status_icon_get_geometry(long /*int*/ handle, long /*int*/ screen, GdkRectangle area, long /*int*/ orientation) {
@@ -10821,9 +10824,7 @@ public static final boolean gtk_status_icon_get_geometry(long /*int*/ handle, lo
 		lock.unlock();
 	}
 }
-/**
- * @method flags=dynamic
- */
+/** @param handle cast=(GtkStatusIcon*) */
 public static final native boolean _gtk_status_icon_get_visible(long /*int*/ handle);
 public static final boolean gtk_status_icon_get_visible(long /*int*/ handle) {
 	lock.lock();
@@ -10833,7 +10834,6 @@ public static final boolean gtk_status_icon_get_visible(long /*int*/ handle) {
 		lock.unlock();
 	}
 }
-/** @method flags=dynamic */
 public static final native long /*int*/ _gtk_status_icon_new();
 public static final long /*int*/ gtk_status_icon_new() {
 	lock.lock();
@@ -10844,7 +10844,8 @@ public static final long /*int*/ gtk_status_icon_new() {
 	}
 }
 /**
- * @method flags=dynamic
+ * @param handle cast=(GtkStatusIcon*)
+ * @param pixbuf cast=(GdkPixbuf*)
  */
 public static final native void _gtk_status_icon_set_from_pixbuf(long /*int*/ handle, long /*int*/ pixbuf);
 public static final void gtk_status_icon_set_from_pixbuf(long /*int*/ handle, long /*int*/ pixbuf) {
@@ -10856,7 +10857,8 @@ public static final void gtk_status_icon_set_from_pixbuf(long /*int*/ handle, lo
 	}
 }
 /**
- * @method flags=dynamic
+ * @param handle cast=(GtkStatusIcon*)
+ * @param visible cast=(gboolean)
  */
 public static final native void _gtk_status_icon_set_visible(long /*int*/ handle, boolean visible);
 public static final void gtk_status_icon_set_visible(long /*int*/ handle, boolean visible) {

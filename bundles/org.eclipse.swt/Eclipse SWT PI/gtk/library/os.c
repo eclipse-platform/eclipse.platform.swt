@@ -14809,15 +14809,7 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(_1gtk_1status_1icon_1get_1geometry)
 	jboolean rc = 0;
 	OS_NATIVE_ENTER(env, that, _1gtk_1status_1icon_1get_1geometry_FUNC);
 	if (arg2) if ((lparg2 = getGdkRectangleFields(env, arg2, &_arg2)) == NULL) goto fail;
-/*
-	rc = (jboolean)gtk_status_icon_get_geometry(arg0, arg1, lparg2, arg3);
-*/
-	{
-		OS_LOAD_FUNCTION(fp, gtk_status_icon_get_geometry)
-		if (fp) {
-			rc = (jboolean)((jboolean (CALLING_CONVENTION*)(jintLong, jintLong, GdkRectangle *, jintLong))fp)(arg0, arg1, lparg2, arg3);
-		}
-	}
+	rc = (jboolean)gtk_status_icon_get_geometry((GtkStatusIcon*)arg0, (GdkScreen**)arg1, (GdkRectangle*)lparg2, (GtkOrientation*)arg3);
 fail:
 	if (arg2 && lparg2) setGdkRectangleFields(env, arg2, lparg2);
 	OS_NATIVE_EXIT(env, that, _1gtk_1status_1icon_1get_1geometry_FUNC);
@@ -14831,15 +14823,7 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(_1gtk_1status_1icon_1get_1visible)
 {
 	jboolean rc = 0;
 	OS_NATIVE_ENTER(env, that, _1gtk_1status_1icon_1get_1visible_FUNC);
-/*
-	rc = (jboolean)gtk_status_icon_get_visible(arg0);
-*/
-	{
-		OS_LOAD_FUNCTION(fp, gtk_status_icon_get_visible)
-		if (fp) {
-			rc = (jboolean)((jboolean (CALLING_CONVENTION*)(jintLong))fp)(arg0);
-		}
-	}
+	rc = (jboolean)gtk_status_icon_get_visible((GtkStatusIcon*)arg0);
 	OS_NATIVE_EXIT(env, that, _1gtk_1status_1icon_1get_1visible_FUNC);
 	return rc;
 }
@@ -14851,15 +14835,7 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(_1gtk_1status_1icon_1new)
 {
 	jintLong rc = 0;
 	OS_NATIVE_ENTER(env, that, _1gtk_1status_1icon_1new_FUNC);
-/*
 	rc = (jintLong)gtk_status_icon_new();
-*/
-	{
-		OS_LOAD_FUNCTION(fp, gtk_status_icon_new)
-		if (fp) {
-			rc = (jintLong)((jintLong (CALLING_CONVENTION*)())fp)();
-		}
-	}
 	OS_NATIVE_EXIT(env, that, _1gtk_1status_1icon_1new_FUNC);
 	return rc;
 }
@@ -14882,15 +14858,7 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1status_1icon_1set_1from_1pixbuf)
 	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1)
 {
 	OS_NATIVE_ENTER(env, that, _1gtk_1status_1icon_1set_1from_1pixbuf_FUNC);
-/*
-	gtk_status_icon_set_from_pixbuf(arg0, arg1);
-*/
-	{
-		OS_LOAD_FUNCTION(fp, gtk_status_icon_set_from_pixbuf)
-		if (fp) {
-			((void (CALLING_CONVENTION*)(jintLong, jintLong))fp)(arg0, arg1);
-		}
-	}
+	gtk_status_icon_set_from_pixbuf((GtkStatusIcon*)arg0, (GdkPixbuf*)arg1);
 	OS_NATIVE_EXIT(env, that, _1gtk_1status_1icon_1set_1from_1pixbuf_FUNC);
 }
 #endif
@@ -14922,15 +14890,7 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1status_1icon_1set_1visible)
 	(JNIEnv *env, jclass that, jintLong arg0, jboolean arg1)
 {
 	OS_NATIVE_ENTER(env, that, _1gtk_1status_1icon_1set_1visible_FUNC);
-/*
-	gtk_status_icon_set_visible(arg0, arg1);
-*/
-	{
-		OS_LOAD_FUNCTION(fp, gtk_status_icon_set_visible)
-		if (fp) {
-			((void (CALLING_CONVENTION*)(jintLong, jboolean))fp)(arg0, arg1);
-		}
-	}
+	gtk_status_icon_set_visible((GtkStatusIcon*)arg0, (gboolean)arg1);
 	OS_NATIVE_EXIT(env, that, _1gtk_1status_1icon_1set_1visible_FUNC);
 }
 #endif
