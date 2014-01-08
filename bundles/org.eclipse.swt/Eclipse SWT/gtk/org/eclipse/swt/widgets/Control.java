@@ -3390,10 +3390,10 @@ long /*int*/ gtk_scroll_event (long /*int*/ widget, long /*int*/ eventPtr) {
 			double[] delta_x = new double[1], delta_y = new double [1];
 			if (OS.gdk_event_get_scroll_deltas (eventPtr, delta_x, delta_y)) {
 				if (delta_x [0] != 0) {
-					result = (sendMouseEvent (SWT.MouseHorizontalWheel, 0, (int)(3 * delta_x [0]), 0, true, gdkEvent.time, gdkEvent.x_root, gdkEvent.y_root, false, gdkEvent.state) ? 0 : 1);
+					result = (sendMouseEvent (SWT.MouseHorizontalWheel, 0, (int)(-3 * delta_x [0]), 0, true, gdkEvent.time, gdkEvent.x_root, gdkEvent.y_root, false, gdkEvent.state) ? 0 : 1);
 				}
 				if (delta_y [0] != 0) {
-					result = (sendMouseEvent (SWT.MouseWheel, 0, (int)(3 * delta_y [0]), SWT.SCROLL_LINE, true, gdkEvent.time, gdkEvent.x_root, gdkEvent.y_root, false, gdkEvent.state) ? 0 : 1);
+					result = (sendMouseEvent (SWT.MouseWheel, 0, (int)(-3 * delta_y [0]), SWT.SCROLL_LINE, true, gdkEvent.time, gdkEvent.x_root, gdkEvent.y_root, false, gdkEvent.state) ? 0 : 1);
 				}
 			}
 			return result;
