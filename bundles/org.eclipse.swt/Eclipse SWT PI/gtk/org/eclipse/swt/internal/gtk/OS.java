@@ -70,7 +70,6 @@ public class OS extends C {
 
 	/** Constants */
 	public static final long /*int*/ AnyPropertyType = 0;
-	public static final int ATK_RELATION_LABELLED_BY = 4;
 	public static final int G_FILE_TEST_IS_DIR = 1 << 2;
 	public static final int G_FILE_TEST_IS_EXECUTABLE = 1 << 3;
 	public static final int G_SIGNAL_MATCH_FUNC = 1 << 3;
