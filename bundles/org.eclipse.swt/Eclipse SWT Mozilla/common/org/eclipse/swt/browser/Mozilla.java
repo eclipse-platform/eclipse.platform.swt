@@ -21,6 +21,7 @@ import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.mozilla.*;
 import org.eclipse.swt.internal.mozilla.init.*;
 import org.eclipse.swt.layout.*;
+import org.eclipse.swt.internal.gtk.OS;
 
 @SuppressWarnings({"rawtypes", "unchecked"})
 class Mozilla extends WebBrowser {
@@ -681,6 +682,10 @@ static void LoadLibraries () {
 
 @Override
 public void create (Composite parent, int style) {
+	if ((style & SWT.MOZILLA) != 0 && OS.GTK3) {
+		String errorString = " [Browser style SWT.MOZILLA and Java system property org.eclipse.swt.browser.DefaultType=mozilla are not supported with GTK 3 as XULRunner is not available for GTK 3]"; // $NON-NLS-1$
+		SWT.error (SWT.ERROR_NO_HANDLES, null, errorString);
+	}
 	delegate = new MozillaDelegate (browser);
 	final Display display = parent.getDisplay ();
 
