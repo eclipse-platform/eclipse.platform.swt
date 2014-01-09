@@ -1112,11 +1112,11 @@ public boolean close () {
 void createCOMInterfaces () {
 	// Create each of the interfaces that this object implements
 	supports = new XPCOMObject (new int[] {2, 0, 0}) {
-//		@Override
+		@Override
 		public long /*int*/ method0 (long /*int*/[] args) {return QueryInterface (args[0], args[1]);}
-//		@Override
+		@Override
 		public long /*int*/ method1 (long /*int*/[] args) {return AddRef ();}
-//		@Override
+		@Override
 		public long /*int*/ method2 (long /*int*/[] args) {return Release ();}
 	};
 	
@@ -1151,6 +1151,7 @@ void createCOMInterfaces () {
 	};
 	
 	webProgressListener_24 = new XPCOMObject (new int[] {2, 0, 0, 4, 6, 4, 4, 3}) {
+		@Override
 		public long /*int*/ method0 (long /*int*/[] args) {return QueryInterface (args[0], args[1]);}
 		@Override
 		public long /*int*/ method1 (long /*int*/[] args) {return AddRef ();}
@@ -1236,6 +1237,7 @@ void createCOMInterfaces () {
 	};
 
 	embeddingSiteWindow_24 = new XPCOMObject (new int[] {2, 0, 0, 5, 5, 0, 1, 1, 1, 1, 1, 0}) {
+		@Override
 		public long /*int*/ method0 (long /*int*/[] args) {return QueryInterface (args[0], args[1]);}
 		@Override
 		public long /*int*/ method1 (long /*int*/[] args) {return AddRef ();}
