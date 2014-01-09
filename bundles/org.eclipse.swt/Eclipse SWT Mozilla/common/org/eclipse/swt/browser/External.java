@@ -536,11 +536,17 @@ void createCOMInterfaces () {
 	};
 
 	xpcScriptable = new XPCOMObject (new int[] {2, 0, 0, 1, 0, 4, 3, 3, 3, 6, 5, 6, 6, 4, 7, 7, 6, 3, 7, 5, 5, 6, 4, 2}) {
+		@Override
 		public long /*int*/ method0 (long /*int*/[] args) {return QueryInterface (args[0], args[1]);}
+		@Override
 		public long /*int*/ method1 (long /*int*/[] args) {return AddRef ();}
+		@Override
 		public long /*int*/ method2 (long /*int*/[] args) {return Release ();}
+		@Override
 		public long /*int*/ method3 (long /*int*/[] args) {return getClassName (args[0]);}
+		@Override
 		public long /*int*/ method4 (long /*int*/[] args) {return getScriptableFlags ();}
+		@Override
 		public long /*int*/ method7 (long /*int*/[] args) {return postCreate (args[0], args[1], args[2]);}
 	};
 
