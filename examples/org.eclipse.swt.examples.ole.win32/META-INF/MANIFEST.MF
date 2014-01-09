@@ -3,7 +3,6 @@ Bundle-ManifestVersion: 2
 Bundle-Name: %plugin.SWTOLEExample.name
 Bundle-SymbolicName: org.eclipse.swt.examples.ole.win32; singleton:=true
 Bundle-Version: 3.103.0.qualifier
-Bundle-ClassPath: olewin32.jar
 Bundle-Activator: org.eclipse.swt.examples.ole.win32.OlePlugin
 Bundle-Vendor: %providerName
 Bundle-Localization: plugin

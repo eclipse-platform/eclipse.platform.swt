@@ -3,7 +3,6 @@ Bundle-ManifestVersion: 2
 Bundle-Name: %plugin.SWTBrowserDemos.name
 Bundle-SymbolicName: org.eclipse.swt.examples.browser.demos; singleton:=true
 Bundle-Version: 3.103.0.qualifier
-Bundle-ClassPath: BrowserDemo.jar
 Bundle-Activator: org.eclipse.swt.examples.browser.demos.BrowserDemoPlugin
 Bundle-Vendor: %providerName
 Bundle-Localization: plugin
