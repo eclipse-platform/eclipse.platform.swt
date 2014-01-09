@@ -22,7 +22,7 @@
 		<property name="temp.folder" value="${fragmentdir}/temp.folder" />
 		<property name="plugin.destination" value="${fragmentdir}" />
 		<property name="build.result.folder" value="${fragmentdir}" />
-		<property name="destination" value="${fragmentdir}" />
+		<property name="destination" value="${fragmentdir}/target" />
 		<property name="javacVerbose" value="false" />
 		<property name="logExtension" value=".xml" />
 		<property name="javacSource" value="1.5" />
@@ -524,7 +524,6 @@
 		<zip zipfile="${destination}/${zipfilename}">
 			<zipfileset dir="${temp.folder}/swtdownload/" />
 		</zip>
-		<copy file="${zipfilename}" todir="target" />
 		<delete dir="${temp.folder}" />
 	</target>
 
