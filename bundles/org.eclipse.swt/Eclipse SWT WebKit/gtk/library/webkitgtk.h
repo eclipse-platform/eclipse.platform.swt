@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2009, 2014 IBM Corporation and others. All rights reserved.
+ * Copyright (c) 2009, 2012 IBM Corporation and others. All rights reserved.
  * The contents of this file are made available under the terms
  * of the GNU Lesser General Public License (LGPL) Version 2.1 that
  * accompanies this distribution (lgpl-v21.txt).  The LGPL is also
@@ -28,7 +28,12 @@
 		void* handle = 0; \
 		char *gtk3 = getenv("SWT_GTK3"); \
 		if (gtk3 == NULL || strcmp(gtk3, "1") == 0) { \
-			handle = dlopen("libwebkitgtk-3.0.so.0", LOAD_FLAGS); /* webkitgtk >= 3.x lib */ \
+			char *webkit2 = getenv("SWT_WEBKIT2"); \
+			if (webkit2 != NULL && strcmp(webkit2, "1") == 0) { \
+				handle = dlopen("libwebkit2gtk-3.0.so.25", LOAD_FLAGS); /* webkit2 */ \
+			} else { \
+				handle = dlopen("libwebkitgtk-3.0.so.0", LOAD_FLAGS); /* webkitgtk >= 3.x lib */ \
+			} \
 		} else { \
 			handle = dlopen("libwebkit-1.0.so.2", LOAD_FLAGS); /* webkitgtk 1.2.x lib */ \
 			if (!handle) { \

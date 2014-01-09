@@ -33,27 +33,52 @@ public class WebKitGTK extends C {
 	public static final int WEBKIT_LOAD_COMMITTED = 1;
 	public static final int WEBKIT_LOAD_FINISHED = 2;
 
+	public static final int WEBKIT2_LOAD_STARTED = 0;
+	public static final int WEBKIT2_LOAD_REDIRECTED = 1;
+	public static final int WEBKIT2_LOAD_COMMITTED = 2;
+	public static final int WEBKIT2_LOAD_FINISHED = 3;
+
+	public static final int WEBKIT_POLICY_DECISION_TYPE_NAVIGATION_ACTION = 0;
+	public static final int WEBKIT_POLICY_DECISION_TYPE_NEW_WINDOW_ACTION = 1;
+	public static final int WEBKIT_POLICY_DECISION_TYPE_RESPONSE = 2;
+
+	public static final int WEBKIT_CREDENTIAL_PERSISTENCE_NONE = 0;
+	public static final int WEBKIT_CREDENTIAL_PERSISTENCE_FOR_SESSION = 1;
+	public static final int WEBKIT_CREDENTIAL_PERSISTENCE_PERMANENT = 2;
+
 	/** Signals */
 	public static final byte[] authenticate = ascii ("authenticate"); // $NON-NLS-1$
 	public static final byte[] close_web_view = ascii ("close-web-view"); // $NON-NLS-1$
 	public static final byte[] console_message = ascii ("console-message"); // $NON-NLS-1$
+	public static final byte[] context_menu = ascii ("context-menu"); // $NON-NLS-1$
+	public static final byte[] close = ascii ("close"); // $NON-NLS-1$
+	public static final byte[] create = ascii ("create"); // $NON-NLS-1$
 	public static final byte[] create_web_view = ascii ("create-web-view"); // $NON-NLS-1$
+	public static final byte[] decide_policy = ascii ("decide-policy"); // $NON-NLS-1$
 	public static final byte[] download_requested = ascii ("download-requested"); // $NON-NLS-1$
+	public static final byte[] download_started = ascii ("download-started"); // $NON-NLS-1$
 	public static final byte[] hovering_over_link = ascii ("hovering-over-link"); // $NON-NLS-1$
+	public static final byte[] load_changed = ascii ("load-changed"); // $NON-NLS-1$
 	public static final byte[] mime_type_policy_decision_requested = ascii ("mime-type-policy-decision-requested"); // $NON-NLS-1$
+	public static final byte[] mouse_target_changed = ascii ("mouse-target-changed"); // $NON-NLS-1$
 	public static final byte[] navigation_policy_decision_requested = ascii ("navigation-policy-decision-requested"); // $NON-NLS-1$
 	public static final byte[] notify_load_status = ascii ("notify::load-status"); // $NON-NLS-1$
 	public static final byte[] notify_progress = ascii ("notify::progress"); // $NON-NLS-1$
+	public static final byte[] notify_estimated_load_progress = ascii ("notify::estimated-load-progress"); // $NON-NLS-1$
 	public static final byte[] notify_title = ascii ("notify::title"); // $NON-NLS-1$
 	public static final byte[] populate_popup = ascii ("populate-popup"); // $NON-NLS-1$
-	public static final byte[] resource_request_starting = ascii ("resource_request_starting"); // $NON-NLS-1$
+	public static final byte[] resource_request_starting = ascii ("resource-request-starting"); // $NON-NLS-1$
+	public static final byte[] resource_load_started = ascii ("resource-load-started"); // $NON-NLS-1$
 	public static final byte[] status_bar_text_changed = ascii ("status-bar-text-changed"); // $NON-NLS-1$
 	public static final byte[] web_view_ready = ascii ("web-view-ready"); // $NON-NLS-1$
+	public static final byte[] ready_to_show = ascii ("ready-to-show"); // $NON-NLS-1$
 	public static final byte[] window_object_cleared = ascii ("window-object-cleared"); // $NON-NLS-1$
 
 	/** Properties */
 	public static final byte[] default_encoding = ascii ("default-encoding"); // $NON-NLS-1$
+	public static final byte[] default_charset = ascii ("default-charset"); // $NON-NLS-1$
 	public static final byte[] enable_scripts = ascii ("enable-scripts"); // $NON-NLS-1$
+	public static final byte[] enable_plugins = ascii("enable-plugins");
 	public static final byte[] enable_universal_access_from_file_uris = ascii ("enable-universal-access-from-file-uris"); // $NON-NLS-1$
 	public static final byte[] height = ascii ("height"); // $NON-NLS-1$
 	public static final byte[] javascript_can_open_windows_automatically = ascii ("javascript-can-open-windows-automatically"); // $NON-NLS-1$
@@ -600,6 +625,62 @@ public static final long /*int*/ soup_uri_to_string (long /*int*/ uri, int just_
 /* --------------------- start WebKitGTK natives --------------------- */
 
 /** @method flags=dynamic */
+public static final native void _webkit_authentication_request_authenticate (long /*int*/ request, long /*int*/ credential);
+public static final void webkit_authentication_request_authenticate (long /*int*/ request, long /*int*/ credential) {
+	lock.lock();
+	try {
+		_webkit_authentication_request_authenticate (request, credential);
+	} finally {
+		lock.unlock();
+	}
+}
+
+/** @method flags=dynamic */
+public static final native void _webkit_authentication_request_cancel (long /*int*/ request);
+public static final void webkit_authentication_request_cancel (long /*int*/ request) {
+	lock.lock();
+	try {
+		_webkit_authentication_request_cancel (request);
+	} finally {
+		lock.unlock();
+	}
+}
+
+/** @method flags=dynamic */
+public static final native boolean _webkit_authentication_request_is_retry (long /*int*/ request);
+public static final boolean webkit_authentication_request_is_retry (long /*int*/ request) {
+	lock.lock();
+	try {
+		return _webkit_authentication_request_is_retry (request);
+	} finally {
+		lock.unlock();
+	}
+}
+
+/** @method flags=dynamic */
+public static final native void _webkit_credential_free (long /*int*/ credential);
+public static final void webkit_credential_free (long /*int*/ credential) {
+	lock.lock();
+	try {
+		_webkit_credential_free (credential);
+	} finally {
+		lock.unlock();
+	}
+}
+
+/** @method flags=dynamic */
+public static final native long /*int*/ _webkit_credential_new (byte[] username, byte[] password, int persistence);
+public static final long /*int*/ webkit_credential_new (byte[] username, byte[] password, int persistence) {
+	lock.lock();
+	try {
+		return _webkit_credential_new (username, password, persistence);
+	} finally {
+		lock.unlock();
+	}
+}
+
+
+/** @method flags=dynamic */
 public static final native int _webkit_dom_event_target_add_event_listener (long /*int*/ target, byte[] name, long /*int*/ handler, int bubble, long /*int*/ userData);
 public static final int webkit_dom_event_target_add_event_listener (long /*int*/ target, byte[] name, long /*int*/ handler, int bubble, long /*int*/ userData) {
 	lock.lock();
@@ -864,11 +945,55 @@ public static final long /*int*/ webkit_get_favicon_database () {
 }
 
 /** @method flags=dynamic */
+public static final native boolean _webkit_hit_test_result_context_is_link (long /*int*/ hit_test_result);
+public static final boolean webkit_hit_test_result_context_is_link (long /*int*/ hit_test_result) {
+	lock.lock();
+	try {
+		return _webkit_hit_test_result_context_is_link (hit_test_result);
+	} finally {
+		lock.unlock();
+	}
+}
+
+/** @method flags=dynamic */
+public static final native long _webkit_hit_test_result_get_link_uri (long /*int*/ hit_test_result);
+public static final long webkit_hit_test_result_get_link_uri (long /*int*/ hit_test_result) {
+	lock.lock();
+	try {
+		return _webkit_hit_test_result_get_link_uri (hit_test_result);
+	} finally {
+		lock.unlock();
+	}
+}
+
+/** @method flags=dynamic */
+public static final native long _webkit_hit_test_result_get_link_title (long /*int*/ hit_test_result);
+public static final long webkit_hit_test_result_get_link_title (long /*int*/ hit_test_result) {
+	lock.lock();
+	try {
+		return _webkit_hit_test_result_get_link_title (hit_test_result);
+	} finally {
+		lock.unlock();
+	}
+}
+
+/** @method flags=dynamic */
 public static final native int _webkit_major_version ();
 public static final int webkit_major_version () {
 	lock.lock();
 	try {
 		return _webkit_major_version ();
+	} finally {
+		lock.unlock();
+	}
+}
+
+/** @method flags=dynamic */
+public static final native int _webkit_get_major_version ();
+public static final int webkit_get_major_version () {
+	lock.lock();
+	try {
+		return _webkit_get_major_version ();
 	} finally {
 		lock.unlock();
 	}
@@ -886,11 +1011,44 @@ public static final int webkit_micro_version () {
 }
 
 /** @method flags=dynamic */
+public static final native int _webkit_get_micro_version ();
+public static final int webkit_get_micro_version () {
+	lock.lock();
+	try {
+		return _webkit_get_micro_version ();
+	} finally {
+		lock.unlock();
+	}
+}
+
+/** @method flags=dynamic */
 public static final native int _webkit_minor_version ();
 public static final int webkit_minor_version () {
 	lock.lock();
 	try {
 		return _webkit_minor_version ();
+	} finally {
+		lock.unlock();
+	}
+}
+
+/** @method flags=dynamic */
+public static final native int _webkit_get_minor_version ();
+public static final int webkit_get_minor_version () {
+	lock.lock();
+	try {
+		return _webkit_get_minor_version ();
+	} finally {
+		lock.unlock();
+	}
+}
+
+/** @method flags=dynamic */
+public static final native long /*int*/ _webkit_navigation_policy_decision_get_request (long /*int*/ decision);
+public static final long /*int*/ webkit_navigation_policy_decision_get_request (long /*int*/ decision) {
+	lock.lock();
+	try {
+		return _webkit_navigation_policy_decision_get_request (decision);
 	} finally {
 		lock.unlock();
 	}
@@ -930,6 +1088,28 @@ public static final long /*int*/ webkit_network_request_new (byte[] uri) {
 }
 
 /** @method flags=dynamic */
+public static final native void _webkit_policy_decision_download (long /*int*/ decision);
+public static final void webkit_policy_decision_download (long /*int*/ decision) {
+	lock.lock();
+	try {
+		_webkit_policy_decision_download (decision);
+	} finally {
+		lock.unlock();
+	}
+}
+
+/** @method flags=dynamic */
+public static final native void _webkit_policy_decision_ignore (long /*int*/ decision);
+public static final void webkit_policy_decision_ignore (long /*int*/ decision) {
+	lock.lock();
+	try {
+		_webkit_policy_decision_ignore (decision);
+	} finally {
+		lock.unlock();
+	}
+}
+
+/** @method flags=dynamic */
 public static final native long /*int*/ _webkit_soup_auth_dialog_get_type ();
 public static final long /*int*/ webkit_soup_auth_dialog_get_type () {
 	lock.lock();
@@ -939,6 +1119,29 @@ public static final long /*int*/ webkit_soup_auth_dialog_get_type () {
 		lock.unlock();
 	}
 }
+
+/** @method flags=dynamic */
+public static final native long /*int*/ _webkit_web_context_get_default ();
+public static final long /*int*/ webkit_web_context_get_default () {
+	lock.lock();
+	try {
+		return _webkit_web_context_get_default ();
+	} finally {
+		lock.unlock();
+	}
+}
+
+/** @method flags=dynamic */
+public static final native long /*int*/ _webkit_web_context_set_favicon_database_directory (long /*int*/ context, long /*int*/ path);
+public static final long /*int*/ webkit_web_context_set_favicon_database_directory (long /*int*/ context, long /*int*/ path) {
+	lock.lock();
+	try {
+		return _webkit_web_context_set_favicon_database_directory (context, path);
+	} finally {
+		lock.unlock();
+	}
+}
+
 
 /** @method flags=dynamic */
 public static final native long /*int*/ _webkit_web_data_source_get_data (long /*int*/ data_source);
@@ -1128,6 +1331,17 @@ public static final long /*int*/ webkit_web_view_get_dom_document (long /*int*/ 
 }
 
 /** @method flags=dynamic */
+public static final native double /*int*/ _webkit_web_view_get_estimated_load_progress (long /*int*/ web_view);
+public static final double /*int*/ webkit_web_view_get_estimated_load_progress (long /*int*/ web_view) {
+	lock.lock();
+	try {
+		return _webkit_web_view_get_estimated_load_progress (web_view);
+	} finally {
+		lock.unlock();
+	}
+}
+
+/** @method flags=dynamic */
 public static final native int _webkit_web_view_get_load_status (long /*int*/ web_view);
 public static final int webkit_web_view_get_load_status (long /*int*/ web_view) {
 	lock.lock();
@@ -1238,11 +1452,33 @@ public static final void webkit_web_view_go_forward (long /*int*/ web_view) {
 }
 
 /** @method flags=dynamic */
+public static final native void _webkit_web_view_load_html (long /*int*/ web_view, byte[] content, byte[] base_uri);
+public static final void webkit_web_view_load_html (long /*int*/ web_view, byte[] content, byte[] base_uri) {
+	lock.lock();
+	try {
+		_webkit_web_view_load_html (web_view, content, base_uri);
+	} finally {
+		lock.unlock();
+	}
+}
+
+/** @method flags=dynamic */
 public static final native void _webkit_web_view_load_string (long /*int*/ web_view, byte[] content, byte[] mime_type, byte[] encoding, byte[] base_uri);
 public static final void webkit_web_view_load_string (long /*int*/ web_view, byte[] content, byte[] mime_type, byte[] encoding, byte[] base_uri) {
 	lock.lock();
 	try {
 		_webkit_web_view_load_string (web_view, content, mime_type, encoding, base_uri);
+	} finally {
+		lock.unlock();
+	}
+}
+
+/** @method flags=dynamic */
+public static final native void _webkit_web_view_load_request (long /*int*/ web_view, long /*int*/ request);
+public static final void webkit_web_view_load_request (long /*int*/ web_view, long /*int*/ request) {
+	lock.lock();
+	try {
+		_webkit_web_view_load_request (web_view, request);
 	} finally {
 		lock.unlock();
 	}
@@ -1282,11 +1518,88 @@ public static final void webkit_web_view_reload (long /*int*/ web_view) {
 }
 
 /** @method flags=dynamic */
+public static final native void _webkit_web_view_run_javascript (long /*int*/ web_view, long /*int*/ script, long /*int*/ cancellable, long /*int*/  callback, long /*int*/ user_data);
+public static final void webkit_web_view_run_javascript (long /*int*/ web_view, long /*int*/ script, long /*int*/ cancellable, long /*int*/  callback, long /*int*/ user_data) {
+	lock.lock();
+	try {
+		_webkit_web_view_run_javascript (web_view, script, cancellable, callback, user_data);
+	} finally {
+		lock.unlock();
+	}
+}
+
+/** @method flags=dynamic */
 public static final native void _webkit_web_view_stop_loading (long /*int*/ web_view);
 public static final void webkit_web_view_stop_loading (long /*int*/ web_view) {
 	lock.lock();
 	try {
 		_webkit_web_view_stop_loading (web_view);
+	} finally {
+		lock.unlock();
+	}
+}
+
+/** @method flags=dynamic */
+public static final native long /*int*/ _webkit_response_policy_decision_get_request (long /*int*/ decision);
+public static final long /*int*/  webkit_response_policy_decision_get_request (long /*int*/ decision) {
+	lock.lock();
+	try {
+		return _webkit_response_policy_decision_get_request (decision);
+	} finally {
+		lock.unlock();
+	}
+}
+
+/** @method flags=dynamic */
+public static final native long /*int*/ _webkit_response_policy_decision_get_response (long /*int*/ decision);
+public static final long /*int*/  webkit_response_policy_decision_get_response (long /*int*/ decision) {
+	lock.lock();
+	try {
+		return _webkit_response_policy_decision_get_response (decision);
+	} finally {
+		lock.unlock();
+	}
+}
+
+/** @method flags=dynamic */
+public static final native long /*int*/ _webkit_uri_request_new (byte[] uri);
+public static final long /*int*/  webkit_uri_request_new (byte[] uri) {
+	lock.lock();
+	try {
+		return _webkit_uri_request_new (uri);
+	} finally {
+		lock.unlock();
+	}
+}
+
+/** @method flags=dynamic */
+public static final native long /*int*/ _webkit_uri_request_get_http_headers (long /*int*/ request);
+public static final long /*int*/  webkit_uri_request_get_http_headers (long /*int*/ request) {
+	lock.lock();
+	try {
+		return _webkit_uri_request_get_http_headers (request);
+	} finally {
+		lock.unlock();
+	}
+}
+
+/** @method flags=dynamic */
+public static final native long /*int*/ _webkit_uri_request_get_uri (long /*int*/ request);
+public static final long /*int*/  webkit_uri_request_get_uri (long /*int*/ request) {
+	lock.lock();
+	try {
+		return _webkit_uri_request_get_uri (request);
+	} finally {
+		lock.unlock();
+	}
+}
+
+/** @method flags=dynamic */
+public static final native long /*int*/ _webkit_uri_response_get_mime_type (long /*int*/ responce);
+public static final long /*int*/  webkit_uri_response_get_mime_type (long /*int*/ response) {
+	lock.lock();
+	try {
+		return _webkit_uri_response_get_mime_type (response);
 	} finally {
 		lock.unlock();
 	}
