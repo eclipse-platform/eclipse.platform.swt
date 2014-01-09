@@ -88,7 +88,7 @@ static long /*int*/ callJava (long /*int*/ cx, long /*int*/ argc, long /*int*/ v
 			int[] intResult = new int[1];
 			rc = idVariant.GetAsInt32 (intResult); /* PRInt32 */
 			if (rc == XPCOM.NS_OK) {
-				int functionId = (int)intResult[0];
+				int functionId = intResult[0];
 
 				/* get the second argument variant (the token string) */
 				argsPtr += jsval_sizeof;

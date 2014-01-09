@@ -316,7 +316,7 @@ class AccessibleFactory {
 			widgetType = OS.g_type_parent (widgetType);
 		}
 		if (type == null) return 0;
-		return ((LONG)type).value;
+		return type.value;
 	}
 
 	static long /*int*/ atkObjectFactory_create_accessible (long /*int*/ widget) {
