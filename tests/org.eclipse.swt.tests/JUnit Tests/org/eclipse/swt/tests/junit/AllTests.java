@@ -131,7 +131,6 @@ public AllTests() {
 	addTest(Test_org_eclipse_swt_custom_LineBackgroundEvent.suite());
 	addTest(Test_org_eclipse_swt_custom_LineStyleEvent.suite());
 	addTest(Test_org_eclipse_swt_custom_SashForm.suite());
-	addTest(Test_org_eclipse_swt_custom_TableEditor.suite());
 	addTest(Test_org_eclipse_swt_custom_AnimatedProgress.suite());
 	addTest(Test_org_eclipse_swt_custom_StyleRange.suite());
 	addTest(Test_org_eclipse_swt_custom_TextChangedEvent.suite());
@@ -142,13 +141,10 @@ public AllTests() {
 	addTest(Test_org_eclipse_swt_custom_TableTreeItem.suite());
 	addTest(Test_org_eclipse_swt_custom_ViewForm.suite());
 	addTest(Test_org_eclipse_swt_custom_CLabel.suite());
-	addTest(Test_org_eclipse_swt_custom_TableTreeEditor.suite());
 	addTest(Test_org_eclipse_swt_custom_TextChangingEvent.suite());
 	addTest(Test_org_eclipse_swt_custom_ScrolledComposite.suite());
-	addTest(Test_org_eclipse_swt_custom_TreeEditor.suite());
 	addTest(Test_org_eclipse_swt_custom_CTabItem.suite());
 	addTest(Test_org_eclipse_swt_custom_StyledText.suite());
-	addTest(Test_org_eclipse_swt_custom_ControlEditor.suite());
 	addTest(Test_org_eclipse_swt_custom_CTabFolder.suite());
 
 	addTest(Test_org_eclipse_swt_events_ControlEvent.suite());

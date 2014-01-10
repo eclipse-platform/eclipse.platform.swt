@@ -73,7 +73,6 @@ public static Test suite() {
 	suite.addTest(Test_org_eclipse_swt_custom_LineBackgroundEvent.suite());
 	suite.addTest(Test_org_eclipse_swt_custom_LineStyleEvent.suite());
 	suite.addTest(Test_org_eclipse_swt_custom_SashForm.suite());
-	suite.addTest(Test_org_eclipse_swt_custom_TableEditor.suite());
 	suite.addTest(Test_org_eclipse_swt_custom_AnimatedProgress.suite());
 	suite.addTest(Test_org_eclipse_swt_custom_StyleRange.suite());
 	suite.addTest(Test_org_eclipse_swt_custom_TextChangedEvent.suite());
@@ -84,13 +83,10 @@ public static Test suite() {
 	suite.addTest(Test_org_eclipse_swt_custom_TableTreeItem.suite());
 	suite.addTest(Test_org_eclipse_swt_custom_ViewForm.suite());
 	suite.addTest(Test_org_eclipse_swt_custom_CLabel.suite());
-	suite.addTest(Test_org_eclipse_swt_custom_TableTreeEditor.suite());
 	suite.addTest(Test_org_eclipse_swt_custom_TextChangingEvent.suite());
 	suite.addTest(Test_org_eclipse_swt_custom_ScrolledComposite.suite());
-	suite.addTest(Test_org_eclipse_swt_custom_TreeEditor.suite());
 	suite.addTest(Test_org_eclipse_swt_custom_CTabItem.suite());
 	suite.addTest(Test_org_eclipse_swt_custom_StyledText.suite());
-	suite.addTest(Test_org_eclipse_swt_custom_ControlEditor.suite());
 	suite.addTest(Test_org_eclipse_swt_custom_CTabFolder.suite());
 
 	return suite;
