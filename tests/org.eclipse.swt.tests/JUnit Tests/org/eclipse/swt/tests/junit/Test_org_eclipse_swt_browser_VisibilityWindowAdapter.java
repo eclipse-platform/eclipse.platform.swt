@@ -44,11 +44,6 @@ public void test_hideLorg_eclipse_swt_browser_WindowEvent() {
 	shell.close();
 }
 
-public void test_showLorg_eclipse_swt_browser_WindowEvent() {
-	// tested in test_hideLorg_eclipse_swt_browser_WindowEvent
-}
-
-
 public static Test suite() {
 	TestSuite suite = new TestSuite();
 	java.util.Vector<String> methodNames = methodNames();
@@ -63,7 +58,6 @@ public static java.util.Vector<String> methodNames() {
 	java.util.Vector<String> methodNames = new java.util.Vector<String>();
 	methodNames.addElement("test_Constructor");
 	methodNames.addElement("test_hideLorg_eclipse_swt_browser_WindowEvent");
-	methodNames.addElement("test_showLorg_eclipse_swt_browser_WindowEvent");
 	return methodNames;
 }
 
@@ -71,6 +65,5 @@ public static java.util.Vector<String> methodNames() {
 protected void runTest() throws Throwable {
 	if (getName().equals("test_Constructor")) test_Constructor();
 	else if (getName().equals("test_hideLorg_eclipse_swt_browser_WindowEvent")) test_hideLorg_eclipse_swt_browser_WindowEvent();
-	else if (getName().equals("test_showLorg_eclipse_swt_browser_WindowEvent")) test_showLorg_eclipse_swt_browser_WindowEvent();
 }
 }

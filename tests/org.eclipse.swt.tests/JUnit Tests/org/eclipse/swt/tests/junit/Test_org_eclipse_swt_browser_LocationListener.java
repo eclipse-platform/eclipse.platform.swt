@@ -45,11 +45,6 @@ public void test_changedLorg_eclipse_swt_browser_LocationEvent() {
 	shell.close();
 }
 
-public void test_changingLorg_eclipse_swt_browser_LocationEvent() {
-	// tested in test_changedLorg_eclipse_swt_browser_LocationEvent
-}
-
-
 public static Test suite() {
 	TestSuite suite = new TestSuite();
 	java.util.Vector<String> methodNames = methodNames();
@@ -63,13 +58,11 @@ public static Test suite() {
 public static java.util.Vector<String> methodNames() {
 	java.util.Vector<String> methodNames = new java.util.Vector<String>();
 	methodNames.addElement("test_changedLorg_eclipse_swt_browser_LocationEvent");
-	methodNames.addElement("test_changingLorg_eclipse_swt_browser_LocationEvent");
 	return methodNames;
 }
 
 @Override
 protected void runTest() throws Throwable {
 	if (getName().equals("test_changedLorg_eclipse_swt_browser_LocationEvent")) test_changedLorg_eclipse_swt_browser_LocationEvent();
-	else if (getName().equals("test_changingLorg_eclipse_swt_browser_LocationEvent")) test_changingLorg_eclipse_swt_browser_LocationEvent();
 }
 }

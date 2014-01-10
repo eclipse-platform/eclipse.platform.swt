@@ -145,18 +145,14 @@ public AllTests() {
 	addTest(Test_org_eclipse_swt_custom_CCombo.suite());
 	addTest(Test_org_eclipse_swt_custom_TableTreeItem.suite());
 	addTest(Test_org_eclipse_swt_custom_ViewForm.suite());
-	addTest(Test_org_eclipse_swt_custom_CTabFolderAdapter.suite());
 	addTest(Test_org_eclipse_swt_custom_CLabel.suite());
 	addTest(Test_org_eclipse_swt_custom_TableTreeEditor.suite());
 	addTest(Test_org_eclipse_swt_custom_TextChangingEvent.suite());
 	addTest(Test_org_eclipse_swt_custom_ScrolledComposite.suite());
 	addTest(Test_org_eclipse_swt_custom_TreeEditor.suite());
-	addTest(Test_org_eclipse_swt_custom_PopupList.suite());
 	addTest(Test_org_eclipse_swt_custom_CTabItem.suite());
-	addTest(Test_org_eclipse_swt_custom_BusyIndicator.suite());
 	addTest(Test_org_eclipse_swt_custom_StyledText.suite());
 	addTest(Test_org_eclipse_swt_custom_ControlEditor.suite());
-	addTest(Test_org_eclipse_swt_custom_ST.suite());
 	addTest(Test_org_eclipse_swt_custom_CTabFolder.suite());
 
 	addTest(Test_org_eclipse_swt_events_ControlEvent.suite());
@@ -168,7 +164,6 @@ public AllTests() {
 	addTest(Test_org_eclipse_swt_events_VerifyEvent.suite());
 	addTest(Test_org_eclipse_swt_events_KeyEvent.suite());
 	addTest(Test_org_eclipse_swt_events_TraverseEvent.suite());
-	addTest(Test_org_eclipse_swt_events_MouseTrackAdapter.suite());
 	addTest(Test_org_eclipse_swt_events_DisposeEvent.suite());
 	addTest(Test_org_eclipse_swt_events_SelectionEvent.suite());
 	addTest(Test_org_eclipse_swt_events_HelpEvent.suite());
@@ -184,26 +179,16 @@ public AllTests() {
 	addTest(Test_org_eclipse_swt_program_Program.suite());
 
 //	addTest(Test_org_eclipse_swt_dnd_FileTransfer.suite());
-//	addTest(Test_org_eclipse_swt_dnd_DragSourceAdapter.suite());
-//	addTest(Test_org_eclipse_swt_dnd_DropTargetAdapter.suite());
 //	addTest(Test_org_eclipse_swt_dnd_TextTransfer.suite());
 //	addTest(Test_org_eclipse_swt_dnd_DragSourceEvent.suite());
 //	addTest(Test_org_eclipse_swt_dnd_DragSource.suite());
-//	addTest(Test_org_eclipse_swt_dnd_DND.suite());
-//	addTest(Test_org_eclipse_swt_dnd_TransferData.suite());
 //	addTest(Test_org_eclipse_swt_dnd_RTFTransfer.suite());
-//	addTest(Test_org_eclipse_swt_dnd_Clipboard.suite());
 //	addTest(Test_org_eclipse_swt_dnd_DropTargetEvent.suite());
 //	addTest(Test_org_eclipse_swt_dnd_DropTarget.suite());
 
-	addTest(Test_org_eclipse_swt_accessibility_ACC.suite());
 	addTest(Test_org_eclipse_swt_accessibility_Accessible.suite());
-	addTest(Test_org_eclipse_swt_accessibility_AccessibleAdapter.suite());
-	addTest(Test_org_eclipse_swt_accessibility_AccessibleControlAdapter.suite());
 	addTest(Test_org_eclipse_swt_accessibility_AccessibleControlEvent.suite());
-	addTest(Test_org_eclipse_swt_accessibility_AccessibleControlListener.suite());
 	addTest(Test_org_eclipse_swt_accessibility_AccessibleEvent.suite());
-	addTest(Test_org_eclipse_swt_accessibility_AccessibleListener.suite());
 
 	addTest(Test_org_eclipse_swt_ole_win32_OLE.suite());
 	addTest(Test_org_eclipse_swt_ole_win32_OleAutomation.suite());

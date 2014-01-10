@@ -83,10 +83,6 @@ protected void setUp() {
 	styledText.setContent(content);
 }
 
-public void test_addTextChangeListenerLorg_eclipse_swt_custom_TextChangeListener() {
-	// does not make sense to test, not called by StyledText
-}
-
 public void test_getCharCount() {
 	assertTrue(":a:", styledText.getCharCount() == 0);
 }
@@ -143,7 +139,6 @@ public static Test suite() {
 
 public static java.util.Vector<String> methodNames() {
 	java.util.Vector<String> methodNames = new java.util.Vector<String>();
-	methodNames.addElement("test_addTextChangeListenerLorg_eclipse_swt_custom_TextChangeListener");
 	methodNames.addElement("test_getCharCount");
 	methodNames.addElement("test_getLineAtOffsetI");
 	methodNames.addElement("test_getLineCount");
@@ -159,8 +154,7 @@ public static java.util.Vector<String> methodNames() {
 
 @Override
 protected void runTest() throws Throwable {
-	if (getName().equals("test_addTextChangeListenerLorg_eclipse_swt_custom_TextChangeListener")) test_addTextChangeListenerLorg_eclipse_swt_custom_TextChangeListener();
-	else if (getName().equals("test_getCharCount")) test_getCharCount();
+	if (getName().equals("test_getCharCount")) test_getCharCount();
 	else if (getName().equals("test_getLineAtOffsetI")) test_getLineAtOffsetI();
 	else if (getName().equals("test_getLineCount")) test_getLineCount();
 	else if (getName().equals("test_getLineDelimiter")) test_getLineDelimiter();

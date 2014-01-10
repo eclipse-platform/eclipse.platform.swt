@@ -45,11 +45,6 @@ public void test_changedLorg_eclipse_swt_browser_ProgressEvent() {
 	shell.close();
 }
 
-public void test_completedLorg_eclipse_swt_browser_ProgressEvent() {
-	// tested in test_changedLorg_eclipse_swt_browser_ProgressEvent
-}
-
-
 public static Test suite() {
 	TestSuite suite = new TestSuite();
 	java.util.Vector<String> methodNames = methodNames();
@@ -63,13 +58,11 @@ public static Test suite() {
 public static java.util.Vector<String> methodNames() {
 	java.util.Vector<String> methodNames = new java.util.Vector<String>();
 	methodNames.addElement("test_changedLorg_eclipse_swt_browser_ProgressEvent");
-	methodNames.addElement("test_completedLorg_eclipse_swt_browser_ProgressEvent");
 	return methodNames;
 }
 
 @Override
 protected void runTest() throws Throwable {
 	if (getName().equals("test_changedLorg_eclipse_swt_browser_ProgressEvent")) test_changedLorg_eclipse_swt_browser_ProgressEvent();
-	else if (getName().equals("test_completedLorg_eclipse_swt_browser_ProgressEvent")) test_completedLorg_eclipse_swt_browser_ProgressEvent();
 }
 }
