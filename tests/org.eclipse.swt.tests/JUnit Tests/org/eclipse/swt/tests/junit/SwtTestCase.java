@@ -50,9 +50,6 @@ public class SwtTestCase extends TestCase {
 	// variable to keep track of the number of unimplemented methods
 	public static int unimplementedMethods;
 	
-	// variable to keep track of the number of unimplemented API methods
-	public static int unimplementedAPI;
-	
 	// used to specify verbose mode, if true unimplemented warning messages will 
 	// be written to System.out
 	public static boolean verbose = false;
@@ -197,11 +194,5 @@ protected void warnUnimpl(String message) {
 		System.out.println(this.getClass() + ": " + message);
 	}
 	unimplementedMethods++;
-}
-protected void warnUnimplAPI(String message) {
-	if (verbose) {
-		System.out.println("API not implemented " + this.getClass() + " " + getName());
-	}
-	unimplementedAPI++;
 }
 }
