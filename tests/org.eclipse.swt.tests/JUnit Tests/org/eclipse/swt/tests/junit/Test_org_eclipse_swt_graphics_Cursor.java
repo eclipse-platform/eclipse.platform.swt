@@ -131,10 +131,6 @@ public void test_ConstructorLorg_eclipse_swt_graphics_DeviceI() {
 	}
 }
 
-public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_graphics_ImageDataII() {
-	warnUnimpl("Test test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_graphics_ImageDataII not written");
-}
-
 public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_graphics_ImageDataLorg_eclipse_swt_graphics_ImageDataII() {
 	// Test new Cursor(Device device, ImageData source, ImageData mask, int hotspotX, int hotspotY)
 	int numFormats = SwtTestCase.imageFormats.length;
@@ -156,9 +152,6 @@ public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_gra
 		}
 	}
 }
-public void test_dispose() {
-	// tested in test_isDisposed
-}
 
 public void test_equalsLjava_lang_Object() {
 	/* Note: Two cursors are only considered equal if their handles are equal.
@@ -179,10 +172,6 @@ public void test_equalsLjava_lang_Object() {
 		cursor.dispose();
 		otherCursor.dispose();
 	}
-}
-
-public void test_hashCode() {
-	warnUnimpl("Test test_hashCode not written");
 }
 
 public void test_isDisposed() {
@@ -207,10 +196,6 @@ public void test_toString() {
 	}
 }
 
-public void test_win32_newLorg_eclipse_swt_graphics_DeviceI() {
-	// do not test - Windows only
-}
-
 public static Test suite() {
 	TestSuite suite = new TestSuite();
 	java.util.Vector<String> methodNames = methodNames();
@@ -223,27 +208,19 @@ public static Test suite() {
 public static java.util.Vector<String> methodNames() {
 	java.util.Vector<String> methodNames = new java.util.Vector<String>();
 	methodNames.addElement("test_ConstructorLorg_eclipse_swt_graphics_DeviceI");
-	methodNames.addElement("test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_graphics_ImageDataII");
 	methodNames.addElement("test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_graphics_ImageDataLorg_eclipse_swt_graphics_ImageDataII");
-	methodNames.addElement("test_dispose");
 	methodNames.addElement("test_equalsLjava_lang_Object");
-	methodNames.addElement("test_hashCode");
 	methodNames.addElement("test_isDisposed");
 	methodNames.addElement("test_toString");
-	methodNames.addElement("test_win32_newLorg_eclipse_swt_graphics_DeviceI");
 	return methodNames;
 }
 @Override
 protected void runTest() throws Throwable {
 	if (getName().equals("test_ConstructorLorg_eclipse_swt_graphics_DeviceI")) test_ConstructorLorg_eclipse_swt_graphics_DeviceI();
-	else if (getName().equals("test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_graphics_ImageDataII")) test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_graphics_ImageDataII();
 	else if (getName().equals("test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_graphics_ImageDataLorg_eclipse_swt_graphics_ImageDataII")) test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_graphics_ImageDataLorg_eclipse_swt_graphics_ImageDataII();
-	else if (getName().equals("test_dispose")) test_dispose();
 	else if (getName().equals("test_equalsLjava_lang_Object")) test_equalsLjava_lang_Object();
-	else if (getName().equals("test_hashCode")) test_hashCode();
 	else if (getName().equals("test_isDisposed")) test_isDisposed();
 	else if (getName().equals("test_toString")) test_toString();
-	else if (getName().equals("test_win32_newLorg_eclipse_swt_graphics_DeviceI")) test_win32_newLorg_eclipse_swt_graphics_DeviceI();
 }
 
 /* custom */

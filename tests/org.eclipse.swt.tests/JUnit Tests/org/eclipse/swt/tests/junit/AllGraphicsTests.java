@@ -31,7 +31,6 @@ public static Test suite() {
 	suite.addTest(Test_org_eclipse_swt_graphics_FontData.suite());
 	suite.addTest(Test_org_eclipse_swt_graphics_FontMetrics.suite());
 	suite.addTest(Test_org_eclipse_swt_graphics_GC.suite());
-	suite.addTest(Test_org_eclipse_swt_graphics_GCData.suite());
 	suite.addTest(Test_org_eclipse_swt_graphics_Image.suite());
 	suite.addTest(Test_org_eclipse_swt_graphics_ImageData.suite());
 	suite.addTest(Test_org_eclipse_swt_graphics_PaletteData.suite());

@@ -70,7 +70,6 @@ public AllTests() {
 	addTest(Test_org_eclipse_swt_graphics_GC.suite());
 	addTest(Test_org_eclipse_swt_graphics_ImageData.suite());
 	addTest(Test_org_eclipse_swt_graphics_Region.suite());
-	addTest(Test_org_eclipse_swt_graphics_GCData.suite());
 	addTest(Test_org_eclipse_swt_graphics_FontMetrics.suite());
 	addTest(Test_org_eclipse_swt_graphics_Color.suite());
 	addTest(Test_org_eclipse_swt_graphics_Point.suite());
@@ -88,10 +87,8 @@ public AllTests() {
 	addTest(Test_org_eclipse_swt_widgets_TreeItem.suite());
 	addTest(Test_org_eclipse_swt_widgets_Caret.suite());
 	addTest(Test_org_eclipse_swt_widgets_Event.suite());
-	addTest(Test_org_eclipse_swt_widgets_TypedListener.suite());
 	addTest(Test_org_eclipse_swt_widgets_Menu.suite());
 	//addTest(Test_org_eclipse_swt_widgets_Tracker.suite());
-	addTest(Test_org_eclipse_swt_widgets_Synchronizer.suite());
 	
 	addTest(Test_org_eclipse_swt_widgets_Shell.suite());
 	//addTest(Test_org_eclipse_swt_widgets_Decorations.suite());
@@ -124,7 +121,6 @@ public AllTests() {
 	addTest(Test_org_eclipse_swt_widgets_MessageBox.suite());
 	addTest(Test_org_eclipse_swt_widgets_Monitor.suite());
 	addTest(Test_org_eclipse_swt_layout_GridData.suite());
-	addTest(Test_org_eclipse_swt_layout_RowData.suite());
 	addTest(Test_org_eclipse_swt_layout_GridLayout.suite());
 	addTest(Test_org_eclipse_swt_layout_FillLayout.suite());
 	addTest(Test_org_eclipse_swt_layout_RowLayout.suite());
@@ -191,15 +187,9 @@ public AllTests() {
 	addTest(Test_org_eclipse_swt_accessibility_AccessibleEvent.suite());
 
 	addTest(Test_org_eclipse_swt_ole_win32_OLE.suite());
-	addTest(Test_org_eclipse_swt_ole_win32_OleAutomation.suite());
 	addTest(Test_org_eclipse_swt_ole_win32_OleClientSite.suite());
 	addTest(Test_org_eclipse_swt_ole_win32_OleControlSite.suite());
-	addTest(Test_org_eclipse_swt_ole_win32_OleEvent.suite());
 	addTest(Test_org_eclipse_swt_ole_win32_OleFrame.suite());
-	addTest(Test_org_eclipse_swt_ole_win32_OleFunctionDescription.suite());
-	addTest(Test_org_eclipse_swt_ole_win32_OleListener.suite());
-	addTest(Test_org_eclipse_swt_ole_win32_OleParameterDescription.suite());
-	addTest(Test_org_eclipse_swt_ole_win32_Variant.suite());
 
 	addTest(Test_org_eclipse_swt_browser_Browser.suite());
 	addTest(Test_org_eclipse_swt_browser_CloseWindowListener.suite());

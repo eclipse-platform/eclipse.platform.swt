@@ -93,22 +93,6 @@ public void test_equalsLjava_lang_Object() {
 	assertEquals(fd1,fd2);
 }
 
-public void test_getHeight() {
-	// Font.getHeight() tested in test_setHeightI
-}
-
-public void test_getLocale() {
-	// FontData.getLocale() tested in test_setLocaleLjava_lang_String
-}
-
-public void test_getName() {
-	// Font.getName() tested in test_setNameLjava_lang_String
-}
-
-public void test_getStyle() {
-	// Font.getStyle() tested in test_setStyleI
-}
-
 public void test_hashCode() {
 	FontData fd1 = new FontData(SwtJunit.testFontName, 10, SWT.NORMAL);
 	FontData fd2 = new FontData(SwtJunit.testFontName, 10, SWT.NORMAL);
@@ -234,10 +218,6 @@ public static java.util.Vector<String> methodNames() {
 	methodNames.addElement("test_ConstructorLjava_lang_String");
 	methodNames.addElement("test_ConstructorLjava_lang_StringII");
 	methodNames.addElement("test_equalsLjava_lang_Object");
-	methodNames.addElement("test_getHeight");
-	methodNames.addElement("test_getLocale");
-	methodNames.addElement("test_getName");
-	methodNames.addElement("test_getStyle");
 	methodNames.addElement("test_hashCode");
 	methodNames.addElement("test_setHeightI");
 	methodNames.addElement("test_setLocaleLjava_lang_String");
@@ -253,10 +233,6 @@ protected void runTest() throws Throwable {
 	else if (getName().equals("test_ConstructorLjava_lang_String")) test_ConstructorLjava_lang_String();
 	else if (getName().equals("test_ConstructorLjava_lang_StringII")) test_ConstructorLjava_lang_StringII();
 	else if (getName().equals("test_equalsLjava_lang_Object")) test_equalsLjava_lang_Object();
-	else if (getName().equals("test_getHeight")) test_getHeight();
-	else if (getName().equals("test_getLocale")) test_getLocale();
-	else if (getName().equals("test_getName")) test_getName();
-	else if (getName().equals("test_getStyle")) test_getStyle();
 	else if (getName().equals("test_hashCode")) test_hashCode();
 	else if (getName().equals("test_setHeightI")) test_setHeightI();
 	else if (getName().equals("test_setLocaleLjava_lang_String")) test_setLocaleLjava_lang_String();

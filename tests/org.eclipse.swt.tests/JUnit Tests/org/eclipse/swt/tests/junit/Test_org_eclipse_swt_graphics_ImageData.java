@@ -751,16 +751,6 @@ public void test_getTransparencyType() {
 	image.dispose();
 }
 
-public void test_internal_newIIILorg_eclipse_swt_graphics_PaletteDataI$BI$B$BIIIIIII() {
-	// do not test internal API
-	// javadoc states:
-	// <b>IMPORTANT:</b> This method is <em>not</em> part of the public
-	// API for <code>ImageData</code>. It is marked public only so that it
-	// can be shared within the packages provided by SWT. It is subject
-	// to change without notice, and should never be called from
-	// application code.
-}
-
 public void test_scaledToII() {
 	final int imageDimension = 8;
 	RGB[] rgbs = new RGB[]{new RGB(0, 0, 0), new RGB(255, 255, 255)};
@@ -1190,7 +1180,6 @@ public static java.util.Vector<String> methodNames() {
 	methodNames.addElement("test_getRGBs");
 	methodNames.addElement("test_getTransparencyMask");
 	methodNames.addElement("test_getTransparencyType");
-	methodNames.addElement("test_internal_newIIILorg_eclipse_swt_graphics_PaletteDataI$BI$B$BIIIIIII");
 	methodNames.addElement("test_scaledToII");
 	methodNames.addElement("test_setAlphaIII");
 	methodNames.addElement("test_setAlphasIII$BI");
@@ -1214,7 +1203,6 @@ protected void runTest() throws Throwable {
 	else if (getName().equals("test_getRGBs")) test_getRGBs();
 	else if (getName().equals("test_getTransparencyMask")) test_getTransparencyMask();
 	else if (getName().equals("test_getTransparencyType")) test_getTransparencyType();
-	else if (getName().equals("test_internal_newIIILorg_eclipse_swt_graphics_PaletteDataI$BI$B$BIIIIIII")) test_internal_newIIILorg_eclipse_swt_graphics_PaletteDataI$BI$B$BIIIIIII();
 	else if (getName().equals("test_scaledToII")) test_scaledToII();
 	else if (getName().equals("test_setAlphaIII")) test_setAlphaIII();
 	else if (getName().equals("test_setAlphasIII$BI")) test_setAlphasIII$BI();

@@ -36,14 +36,6 @@ public void test_Constructor() {
 	assertNotNull(event);
 }
 
-public void test_getBounds() {
-	warnUnimpl("Test test_getBounds not written");
-}
-
-public void test_setBoundsLorg_eclipse_swt_graphics_Rectangle() {
-	warnUnimpl("Test test_setBoundsLorg_eclipse_swt_graphics_Rectangle not written");
-}
-
 public void test_toString() {
 	Event event = new Event();
 	assertNotNull(event.toString());
@@ -62,16 +54,12 @@ public static Test suite() {
 public static java.util.Vector<String> methodNames() {
 	java.util.Vector<String> methodNames = new java.util.Vector<String>();
 	methodNames.addElement("test_Constructor");
-	methodNames.addElement("test_getBounds");
-	methodNames.addElement("test_setBoundsLorg_eclipse_swt_graphics_Rectangle");
 	methodNames.addElement("test_toString");
 	return methodNames;
 }
 @Override
 protected void runTest() throws Throwable {
 	if (getName().equals("test_Constructor")) test_Constructor();
-	else if (getName().equals("test_getBounds")) test_getBounds();
-	else if (getName().equals("test_setBoundsLorg_eclipse_swt_graphics_Rectangle")) test_setBoundsLorg_eclipse_swt_graphics_Rectangle();
 	else if (getName().equals("test_toString")) test_toString();
 }
 }

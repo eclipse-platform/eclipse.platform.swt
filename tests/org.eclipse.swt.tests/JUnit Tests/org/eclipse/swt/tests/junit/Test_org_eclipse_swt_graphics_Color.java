@@ -143,10 +143,6 @@ public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_gra
 	}
 }
 
-public void test_dispose() {
-	// tested in test_isDisposed
-}
-
 public void test_equalsLjava_lang_Object() {
 	Color color = new Color(display, 1, 2, 3);
 	Color sameColor = new Color(display, 1, 2, 3);
@@ -258,7 +254,6 @@ public static java.util.Vector<String> methodNames() {
 	java.util.Vector<String> methodNames = new java.util.Vector<String>();
 	methodNames.addElement("test_ConstructorLorg_eclipse_swt_graphics_DeviceIII");
 	methodNames.addElement("test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_graphics_RGB");
-	methodNames.addElement("test_dispose");
 	methodNames.addElement("test_equalsLjava_lang_Object");
 	methodNames.addElement("test_getBlue");
 	methodNames.addElement("test_getGreen");
@@ -274,7 +269,6 @@ public static java.util.Vector<String> methodNames() {
 protected void runTest() throws Throwable {
 	if (getName().equals("test_ConstructorLorg_eclipse_swt_graphics_DeviceIII")) test_ConstructorLorg_eclipse_swt_graphics_DeviceIII();
 	else if (getName().equals("test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_graphics_RGB")) test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_graphics_RGB();
-	else if (getName().equals("test_dispose")) test_dispose();
 	else if (getName().equals("test_equalsLjava_lang_Object")) test_equalsLjava_lang_Object();
 	else if (getName().equals("test_getBlue")) test_getBlue();
 	else if (getName().equals("test_getGreen")) test_getGreen();

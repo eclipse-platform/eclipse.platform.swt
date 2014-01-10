@@ -162,10 +162,6 @@ public void test_getPrograms() {
 	}
 }
 
-public void test_hashCode() {
-	// tested in test_getPrograms
-}
-
 public void test_launchLjava_lang_String() {
 
 	// This test is incomplete because a true test of launch would open
@@ -215,7 +211,6 @@ public static java.util.Vector<String> methodNames() {
 	methodNames.addElement("test_getImageData");
 	methodNames.addElement("test_getName");
 	methodNames.addElement("test_getPrograms");
-	methodNames.addElement("test_hashCode");
 	methodNames.addElement("test_launchLjava_lang_String");
 	methodNames.addElement("test_toString");
 	return methodNames;
@@ -229,7 +224,6 @@ protected void runTest() throws Throwable {
 	else if (getName().equals("test_getImageData")) test_getImageData();
 	else if (getName().equals("test_getName")) test_getName();
 	else if (getName().equals("test_getPrograms")) test_getPrograms();
-	else if (getName().equals("test_hashCode")) test_hashCode();
 	else if (getName().equals("test_launchLjava_lang_String")) test_launchLjava_lang_String();
 	else if (getName().equals("test_toString")) test_toString();
 }

@@ -34,10 +34,8 @@ public static Test suite() {
 	suite.addTest(Test_org_eclipse_swt_widgets_TreeItem.suite());
 	suite.addTest(Test_org_eclipse_swt_widgets_Caret.suite());
 	suite.addTest(Test_org_eclipse_swt_widgets_Event.suite());
-	suite.addTest(Test_org_eclipse_swt_widgets_TypedListener.suite());
 	suite.addTest(Test_org_eclipse_swt_widgets_Menu.suite());
 	//suite.addTest(Test_org_eclipse_swt_widgets_Tracker.suite());
-	suite.addTest(Test_org_eclipse_swt_widgets_Synchronizer.suite());
 	
 	suite.addTest(Test_org_eclipse_swt_widgets_Shell.suite());
 	//suite.addTest(Test_org_eclipse_swt_widgets_Decorations.suite());

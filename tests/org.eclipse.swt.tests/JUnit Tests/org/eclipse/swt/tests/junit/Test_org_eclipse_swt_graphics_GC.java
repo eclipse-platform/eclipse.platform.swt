@@ -388,42 +388,14 @@ public void test_getAdvanceWidthC() {
 	assertTrue(w > 0);
 }
 
-public void test_getBackground() {
-	// tested in setBackground method
-}
-
 public void test_getCharWidthC() {
 	int w = gc.getCharWidth('a');
 	assertTrue(w > 0);
 }
 
-public void test_getClipping() {
-	// tested in setClipping methods
-}
-
-public void test_getClippingLorg_eclipse_swt_graphics_Region() {
-	warnUnimpl("Test test_getClippingLorg_eclipse_swt_graphics_Region not written");
-}
-
-public void test_getFont() {
-	// tested in setFont method
-}
-
 public void test_getFontMetrics() {
 	FontMetrics fm = gc.getFontMetrics();
 	assertTrue(fm.getHeight() > 0);
-}
-
-public void test_getForeground() {
-	// tested in setForeground method
-}
-
-public void test_getLineStyle() {
-	// tested in setLineStyle method
-}
-
-public void test_getLineWidth() {
-	// tested in setLineWidth method
 }
 
 public void test_getStyle() {
@@ -440,10 +412,6 @@ public void test_getStyle() {
 	style = testGC.getStyle();
 	assertTrue((style &  SWT.RIGHT_TO_LEFT) != 0);
 	testGC.dispose();
-}
-
-public void test_getXORMode() {
-	// tested in setXORMode method
 }
 
 public void test_hashCode() {
@@ -517,10 +485,6 @@ public void test_setClippingLorg_eclipse_swt_graphics_Rectangle() {
 //	assertTrue(rect.height == 20);
 //	testGc.dispose();
 //	canvas.dispose();
-}
-
-public void test_setClippingLorg_eclipse_swt_graphics_Region() {
-	warnUnimpl("Test test_setClippingLorg_eclipse_swt_graphics_Region not written");
 }
 
 public void test_setFontLorg_eclipse_swt_graphics_Font() {
@@ -599,14 +563,6 @@ public void test_toString() {
 	assertTrue(s.length() > 0);
 }
 
-public void test_win32_newILorg_eclipse_swt_graphics_GCData() {
-	// do not test - Windows only
-}
-
-public void test_win32_newLorg_eclipse_swt_graphics_DrawableLorg_eclipse_swt_graphics_GCData() {
-	// do not test - Windows only
-}
-
 public static Test suite() {
 	TestSuite suite = new TestSuite();
 	java.util.Vector<String> methodNames = methodNames();
@@ -649,24 +605,15 @@ public static java.util.Vector<String> methodNames() {
 	methodNames.addElement("test_fillRectangleLorg_eclipse_swt_graphics_Rectangle");
 	methodNames.addElement("test_fillRoundRectangleIIIIII");
 	methodNames.addElement("test_getAdvanceWidthC");
-	methodNames.addElement("test_getBackground");
 	methodNames.addElement("test_getCharWidthC");
-	methodNames.addElement("test_getClipping");
-	methodNames.addElement("test_getClippingLorg_eclipse_swt_graphics_Region");
-	methodNames.addElement("test_getFont");
 	methodNames.addElement("test_getFontMetrics");
-	methodNames.addElement("test_getForeground");
-	methodNames.addElement("test_getLineStyle");
-	methodNames.addElement("test_getLineWidth");
 	methodNames.addElement("test_getStyle");
-	methodNames.addElement("test_getXORMode");
 	methodNames.addElement("test_hashCode");
 	methodNames.addElement("test_isClipped");
 	methodNames.addElement("test_isDisposed");
 	methodNames.addElement("test_setBackgroundLorg_eclipse_swt_graphics_Color");
 	methodNames.addElement("test_setClippingIIII");
 	methodNames.addElement("test_setClippingLorg_eclipse_swt_graphics_Rectangle");
-	methodNames.addElement("test_setClippingLorg_eclipse_swt_graphics_Region");
 	methodNames.addElement("test_setFontLorg_eclipse_swt_graphics_Font");
 	methodNames.addElement("test_setForegroundLorg_eclipse_swt_graphics_Color");
 	methodNames.addElement("test_setLineStyleI");
@@ -676,8 +623,6 @@ public static java.util.Vector<String> methodNames() {
 	methodNames.addElement("test_textExtentLjava_lang_String");
 	methodNames.addElement("test_textExtentLjava_lang_StringI");
 	methodNames.addElement("test_toString");
-	methodNames.addElement("test_win32_newILorg_eclipse_swt_graphics_GCData");
-	methodNames.addElement("test_win32_newLorg_eclipse_swt_graphics_DrawableLorg_eclipse_swt_graphics_GCData");
 	return methodNames;
 }
 @Override
@@ -713,24 +658,15 @@ protected void runTest() throws Throwable {
 	else if (getName().equals("test_fillRectangleLorg_eclipse_swt_graphics_Rectangle")) test_fillRectangleLorg_eclipse_swt_graphics_Rectangle();
 	else if (getName().equals("test_fillRoundRectangleIIIIII")) test_fillRoundRectangleIIIIII();
 	else if (getName().equals("test_getAdvanceWidthC")) test_getAdvanceWidthC();
-	else if (getName().equals("test_getBackground")) test_getBackground();
 	else if (getName().equals("test_getCharWidthC")) test_getCharWidthC();
-	else if (getName().equals("test_getClipping")) test_getClipping();
-	else if (getName().equals("test_getClippingLorg_eclipse_swt_graphics_Region")) test_getClippingLorg_eclipse_swt_graphics_Region();
-	else if (getName().equals("test_getFont")) test_getFont();
 	else if (getName().equals("test_getFontMetrics")) test_getFontMetrics();
-	else if (getName().equals("test_getForeground")) test_getForeground();
-	else if (getName().equals("test_getLineStyle")) test_getLineStyle();
-	else if (getName().equals("test_getLineWidth")) test_getLineWidth();
 	else if (getName().equals("test_getStyle")) test_getStyle();
-	else if (getName().equals("test_getXORMode")) test_getXORMode();
 	else if (getName().equals("test_hashCode")) test_hashCode();
 	else if (getName().equals("test_isClipped")) test_isClipped();
 	else if (getName().equals("test_isDisposed")) test_isDisposed();
 	else if (getName().equals("test_setBackgroundLorg_eclipse_swt_graphics_Color")) test_setBackgroundLorg_eclipse_swt_graphics_Color();
 	else if (getName().equals("test_setClippingIIII")) test_setClippingIIII();
 	else if (getName().equals("test_setClippingLorg_eclipse_swt_graphics_Rectangle")) test_setClippingLorg_eclipse_swt_graphics_Rectangle();
-	else if (getName().equals("test_setClippingLorg_eclipse_swt_graphics_Region")) test_setClippingLorg_eclipse_swt_graphics_Region();
 	else if (getName().equals("test_setFontLorg_eclipse_swt_graphics_Font")) test_setFontLorg_eclipse_swt_graphics_Font();
 	else if (getName().equals("test_setForegroundLorg_eclipse_swt_graphics_Color")) test_setForegroundLorg_eclipse_swt_graphics_Color();
 	else if (getName().equals("test_setLineStyleI")) test_setLineStyleI();
@@ -740,8 +676,6 @@ protected void runTest() throws Throwable {
 	else if (getName().equals("test_textExtentLjava_lang_String")) test_textExtentLjava_lang_String();
 	else if (getName().equals("test_textExtentLjava_lang_StringI")) test_textExtentLjava_lang_StringI();
 	else if (getName().equals("test_toString")) test_toString();
-	else if (getName().equals("test_win32_newILorg_eclipse_swt_graphics_GCData")) test_win32_newILorg_eclipse_swt_graphics_GCData();
-	else if (getName().equals("test_win32_newLorg_eclipse_swt_graphics_DrawableLorg_eclipse_swt_graphics_GCData")) test_win32_newLorg_eclipse_swt_graphics_DrawableLorg_eclipse_swt_graphics_GCData();
 }
 
 /* custom */
