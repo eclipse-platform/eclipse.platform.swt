@@ -34,7 +34,6 @@ public static void main(String[] args) {
 
 @Override
 protected void setUp() {
-	super.setUp();
 	display = Display.getDefault();
 	shell = new Shell(display);
 	gc = new GC(shell);
@@ -44,7 +43,6 @@ protected void setUp() {
 protected void tearDown() {
 	gc.dispose();
 	shell.dispose();
-	super.tearDown();
 }
 
 public void test_equalsLjava_lang_Object() {

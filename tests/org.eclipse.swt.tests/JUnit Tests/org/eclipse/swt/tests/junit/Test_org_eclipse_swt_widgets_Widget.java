@@ -37,7 +37,6 @@ public static void main(String[] args) {
 
 @Override
 protected void setUp() {
-	super.setUp();
 	shell = new Shell();
 }
 
@@ -52,7 +51,6 @@ protected void tearDown() {
 		assertTrue(widget.isDisposed());
 	}
 	assertTrue(shell.isDisposed());
-	super.tearDown();
 }
 
 public void test_ConstructorLorg_eclipse_swt_widgets_WidgetI() {

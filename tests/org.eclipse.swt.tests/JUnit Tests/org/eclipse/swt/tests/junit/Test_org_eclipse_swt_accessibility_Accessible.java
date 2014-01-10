@@ -24,7 +24,7 @@ import org.eclipse.swt.accessibility.*;
  *
  * @see org.eclipse.swt.accessibility.Accessible
  */
-public class Test_org_eclipse_swt_accessibility_Accessible extends SwtTestCase {
+public class Test_org_eclipse_swt_accessibility_Accessible extends SwtTestCase {	
 
 public Test_org_eclipse_swt_accessibility_Accessible(String name) {
 	super(name);
@@ -36,7 +36,6 @@ public static void main(String[] args) {
 
 @Override
 protected void setUp() {
-	super.setUp();
 	shell = new Shell();
 	accessible = shell.getAccessible();
 }
@@ -46,7 +45,6 @@ protected void tearDown() {
 	assertEquals(false, shell.isDisposed());
 	shell.dispose();
 	assertTrue(shell.isDisposed());
-	super.tearDown();
 }
 
 public void test_addAccessibleControlListenerLorg_eclipse_swt_accessibility_AccessibleControlListener() {

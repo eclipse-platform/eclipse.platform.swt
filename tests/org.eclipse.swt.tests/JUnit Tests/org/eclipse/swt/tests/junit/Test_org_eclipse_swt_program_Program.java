@@ -37,7 +37,6 @@ public static void main(String[] args) {
 
 @Override
 protected void setUp() {
-	super.setUp();
 	Display.getDefault();
 }
 

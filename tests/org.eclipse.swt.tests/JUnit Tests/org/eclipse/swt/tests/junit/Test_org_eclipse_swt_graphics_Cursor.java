@@ -38,7 +38,6 @@ public static void main(String[] args) {
 @Override
 protected void setUp() {
 	display = Display.getDefault();
-	super.setUp();
 }
 
 public void test_ConstructorLorg_eclipse_swt_graphics_DeviceI() {

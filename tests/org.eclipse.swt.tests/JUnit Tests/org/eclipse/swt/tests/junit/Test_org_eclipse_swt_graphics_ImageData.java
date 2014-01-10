@@ -39,7 +39,6 @@ public static void main(String[] args) {
 
 @Override
 protected void setUp() {
-	super.setUp();
 	imageData = new ImageData(IMAGE_DIMENSION, IMAGE_DIMENSION, 32, new PaletteData(0xFF0000, 0xFF00, 0xFF));
 }
 

@@ -34,7 +34,6 @@ public static void main(String[] args) {
 
 @Override
 protected void setUp() {
-	super.setUp();
 	display = Display.getDefault();
 	shell = new Shell(display);
 	shell.setBounds(0,30,240,290);
@@ -47,7 +46,6 @@ protected void tearDown() {
 	gc.dispose();
 	image.dispose();
 	shell.dispose();
-	super.tearDown();
 }
 public void test_ConstructorLorg_eclipse_swt_graphics_Drawable() {
 	try {

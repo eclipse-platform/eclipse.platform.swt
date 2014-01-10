@@ -56,7 +56,6 @@ public static Test suite() {
 @Override
 protected void tearDown() {
 	shell.dispose();
-	super.tearDown();
 }
 private void testListener(final String message, final int[] segments, boolean exceptionExpected) {
 	boolean exceptionThrown = false;

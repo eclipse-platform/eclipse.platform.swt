@@ -36,7 +36,6 @@ public static void main(String[] args) {
 }
 @Override
 protected void setUp() {
-	super.setUp();
 	shell = new Shell();
 	styledText = new StyledText(shell, SWT.NULL);
 }

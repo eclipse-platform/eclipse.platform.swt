@@ -33,14 +33,12 @@ public static void main(String[] args) {
 
 @Override
 protected void setUp() {
-	super.setUp();
 	shell = new Shell();
 }
 
 @Override
 protected void tearDown() {
 	shell.dispose();
-	super.tearDown();
 }
 
 public void test_ConstructorLjava_lang_Object() {

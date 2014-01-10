@@ -52,7 +52,6 @@ protected void initializeColors() {
 
 @Override
 protected void setUp() {
-	super.setUp();
 	initializeColors();
 }
 
@@ -63,7 +62,6 @@ protected void tearDown() {
 		Color color = colors.get(elements.nextElement());
 		color.dispose();
 	}
-	super.tearDown();
 }
 
 public void test_Constructor() {

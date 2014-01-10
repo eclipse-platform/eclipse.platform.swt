@@ -192,15 +192,6 @@ protected boolean isBidi() {
 	return true;
 }
 
-@Override
-protected void setUp() {
-	System.out.println("SwtTestCase#setUp(): " + getClass().getName() + "#" + getName());
-}
-
-@Override
-protected void tearDown() {
-}
-
 protected void warnUnimpl(String message) {
 	if (verbose) {
 		System.out.println(this.getClass() + ": " + message);

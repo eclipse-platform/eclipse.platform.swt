@@ -76,7 +76,6 @@ public static void main(String[] args) {
 
 @Override
 protected void setUp() {
-	super.setUp();
 	if (isBidi()) XINSET = 2;
 	else XINSET = 0;
 	shell = new Shell();
