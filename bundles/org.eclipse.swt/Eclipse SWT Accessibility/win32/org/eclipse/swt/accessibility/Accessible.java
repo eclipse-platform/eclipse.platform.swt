@@ -5142,9 +5142,11 @@ public class Accessible {
 	}
 
 	boolean isATRunning () {
-		/* Currently there is no accurate way to get this information from 'refCount'
+		/* 
+		 * Currently there is no accurate way to check if AT is running from 'refCount'.
 		 * JAWS screen reader cannot be detected using 'refCount' approach,
-		 * as 'refCount' continues to be 1 even when JAWS is running. */
+		 * because 'refCount' continues to be 1 even when JAWS is running. 
+		 */
 		// if (refCount <= 1) return false;
 		return true;
 	}
