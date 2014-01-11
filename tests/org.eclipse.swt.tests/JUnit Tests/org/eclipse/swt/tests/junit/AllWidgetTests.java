@@ -76,7 +76,6 @@ public static Test suite() {
 	suite.addTest(Test_org_eclipse_swt_custom_AnimatedProgress.suite());
 	suite.addTest(Test_org_eclipse_swt_custom_StyleRange.suite());
 	suite.addTest(Test_org_eclipse_swt_custom_TextChangedEvent.suite());
-	suite.addTest(Test_org_eclipse_swt_custom_StackLayout.suite());
 	suite.addTest(Test_org_eclipse_swt_custom_CTabFolderEvent.suite());
 	suite.addTest(Test_org_eclipse_swt_custom_ExtendedModifyEvent.suite());
 	suite.addTest(Test_org_eclipse_swt_custom_CCombo.suite());

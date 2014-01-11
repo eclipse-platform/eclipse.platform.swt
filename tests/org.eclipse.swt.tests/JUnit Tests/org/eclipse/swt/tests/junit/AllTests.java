@@ -121,10 +121,6 @@ public AllTests() {
 	addTest(Test_org_eclipse_swt_widgets_MessageBox.suite());
 	addTest(Test_org_eclipse_swt_widgets_Monitor.suite());
 	addTest(Test_org_eclipse_swt_layout_GridData.suite());
-	addTest(Test_org_eclipse_swt_layout_GridLayout.suite());
-	addTest(Test_org_eclipse_swt_layout_FillLayout.suite());
-	addTest(Test_org_eclipse_swt_layout_RowLayout.suite());
-	addTest(Test_org_eclipse_swt_layout_FormLayout.suite());
 
 	addTest(Test_org_eclipse_swt_custom_TableTree.suite());
 	addTest(Test_org_eclipse_swt_custom_BidiSegmentEvent.suite());
@@ -134,7 +130,6 @@ public AllTests() {
 	addTest(Test_org_eclipse_swt_custom_AnimatedProgress.suite());
 	addTest(Test_org_eclipse_swt_custom_StyleRange.suite());
 	addTest(Test_org_eclipse_swt_custom_TextChangedEvent.suite());
-	addTest(Test_org_eclipse_swt_custom_StackLayout.suite());
 	addTest(Test_org_eclipse_swt_custom_CTabFolderEvent.suite());
 	addTest(Test_org_eclipse_swt_custom_ExtendedModifyEvent.suite());
 	addTest(Test_org_eclipse_swt_custom_CCombo.suite());
