@@ -34,21 +34,9 @@ public void test_ConstructorLorg_eclipse_swt_widgets_CompositeI() {
 	warnUnimpl("Test test_ConstructorLorg_eclipse_swt_widgets_CompositeI not written");
 }
 
-public void test_clear() {
-	warnUnimpl("Test test_clear not written");
-}
-
 @Override
 public void test_computeSizeIIZ() {
 	warnUnimpl("Test test_computeSizeIIZ not written");
-}
-
-public void test_start() {
-	warnUnimpl("Test test_start not written");
-}
-
-public void test_stop() {
-	warnUnimpl("Test test_stop not written");
 }
 
 public static Test suite() {
@@ -63,20 +51,14 @@ public static Test suite() {
 public static java.util.Vector<String> methodNames() {
 	java.util.Vector<String> methodNames = new java.util.Vector<String>();
 	methodNames.addElement("test_ConstructorLorg_eclipse_swt_widgets_CompositeI");
-	methodNames.addElement("test_clear");
 	methodNames.addElement("test_computeSizeIIZ");
-	methodNames.addElement("test_start");
-	methodNames.addElement("test_stop");
 	methodNames.addAll(Test_org_eclipse_swt_widgets_Canvas.methodNames()); // add superclass method names
 	return methodNames;
 }
 @Override
 protected void runTest() throws Throwable {
 	if (getName().equals("test_ConstructorLorg_eclipse_swt_widgets_CompositeI")) test_ConstructorLorg_eclipse_swt_widgets_CompositeI();
-	else if (getName().equals("test_clear")) test_clear();
 	else if (getName().equals("test_computeSizeIIZ")) test_computeSizeIIZ();
-	else if (getName().equals("test_start")) test_start();
-	else if (getName().equals("test_stop")) test_stop();
 	else super.runTest();
 }
 }

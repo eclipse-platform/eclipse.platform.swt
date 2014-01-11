@@ -113,10 +113,6 @@ public void test_getTextRangeII() {
 	assertTrue(":g:", styledText.getTextRange(0,0).equals(""));
 }
 
-public void test_removeTextChangeListenerLorg_eclipse_swt_custom_TextChangeListener() {
-	// does not make sense to test, not called by StyledText
-}
-
 public void test_replaceTextRangeIILjava_lang_String() {
 	styledText.replaceTextRange(0,0,"test1");
 	assertTrue(":h:", styledText.getText().equals("test1"));
@@ -146,7 +142,6 @@ public static java.util.Vector<String> methodNames() {
 	methodNames.addElement("test_getLineI");
 	methodNames.addElement("test_getOffsetAtLineI");
 	methodNames.addElement("test_getTextRangeII");
-	methodNames.addElement("test_removeTextChangeListenerLorg_eclipse_swt_custom_TextChangeListener");
 	methodNames.addElement("test_replaceTextRangeIILjava_lang_String");
 	methodNames.addElement("test_setTextLjava_lang_String");
 	return methodNames;
@@ -161,7 +156,6 @@ protected void runTest() throws Throwable {
 	else if (getName().equals("test_getLineI")) test_getLineI();
 	else if (getName().equals("test_getOffsetAtLineI")) test_getOffsetAtLineI();
 	else if (getName().equals("test_getTextRangeII")) test_getTextRangeII();
-	else if (getName().equals("test_removeTextChangeListenerLorg_eclipse_swt_custom_TextChangeListener")) test_removeTextChangeListenerLorg_eclipse_swt_custom_TextChangeListener();
 	else if (getName().equals("test_replaceTextRangeIILjava_lang_String")) test_replaceTextRangeIILjava_lang_String();
 	else if (getName().equals("test_setTextLjava_lang_String")) test_setTextLjava_lang_String();
 }

@@ -48,46 +48,14 @@ public void test_computeSizeIIZ() {
 	warnUnimpl("Test test_computeSizeIIZ not written");
 }
 
-public void test_getAlignment() {
-	warnUnimpl("Test test_getAlignment not written");
-}
-
-public void test_getImage() {
-	warnUnimpl("Test test_getImage not written");
-}
-
-public void test_getText() {
-	warnUnimpl("Test test_getText not written");
-}
-
-public void test_setAlignmentI() {
-	warnUnimpl("Test test_setAlignmentI not written");
-}
-
-public void test_setBackground$Lorg_eclipse_swt_graphics_Color$I() {
-	warnUnimpl("Test test_setBackground$Lorg_eclipse_swt_graphics_Color$I not written");
-}
-
 @Override
 public void test_setBackgroundLorg_eclipse_swt_graphics_Color() {
 	warnUnimpl("Test test_setBackgroundLorg_eclipse_swt_graphics_Color not written");
 }
 
-public void test_setBackgroundLorg_eclipse_swt_graphics_Image() {
-	warnUnimpl("Test test_setBackgroundLorg_eclipse_swt_graphics_Image not written");
-}
-
 @Override
 public void test_setFontLorg_eclipse_swt_graphics_Font() {
 	warnUnimpl("Test test_setFontLorg_eclipse_swt_graphics_Font not written");
-}
-
-public void test_setImageLorg_eclipse_swt_graphics_Image() {
-	warnUnimpl("Test test_setImageLorg_eclipse_swt_graphics_Image not written");
-}
-
-public void test_setTextLjava_lang_String() {
-	warnUnimpl("Test test_setTextLjava_lang_String not written");
 }
 
 @Override
@@ -108,16 +76,8 @@ public static java.util.Vector<String> methodNames() {
 	java.util.Vector<String> methodNames = new java.util.Vector<String>();
 	methodNames.addElement("test_ConstructorLorg_eclipse_swt_widgets_CompositeI");
 	methodNames.addElement("test_computeSizeIIZ");
-	methodNames.addElement("test_getAlignment");
-	methodNames.addElement("test_getImage");
-	methodNames.addElement("test_getText");
-	methodNames.addElement("test_setAlignmentI");
-	methodNames.addElement("test_setBackground$Lorg_eclipse_swt_graphics_Color$I");
 	methodNames.addElement("test_setBackgroundLorg_eclipse_swt_graphics_Color");
-	methodNames.addElement("test_setBackgroundLorg_eclipse_swt_graphics_Image");
 	methodNames.addElement("test_setFontLorg_eclipse_swt_graphics_Font");
-	methodNames.addElement("test_setImageLorg_eclipse_swt_graphics_Image");
-	methodNames.addElement("test_setTextLjava_lang_String");
 	methodNames.addElement("test_setToolTipTextLjava_lang_String");
 	methodNames.addElement("test_consistency_MenuDetect");
 	methodNames.addElement("test_consistency_DragDetect");
@@ -128,16 +88,8 @@ public static java.util.Vector<String> methodNames() {
 protected void runTest() throws Throwable {
 	if (getName().equals("test_ConstructorLorg_eclipse_swt_widgets_CompositeI")) test_ConstructorLorg_eclipse_swt_widgets_CompositeI();
 	else if (getName().equals("test_computeSizeIIZ")) test_computeSizeIIZ();
-	else if (getName().equals("test_getAlignment")) test_getAlignment();
-	else if (getName().equals("test_getImage")) test_getImage();
-	else if (getName().equals("test_getText")) test_getText();
-	else if (getName().equals("test_setAlignmentI")) test_setAlignmentI();
-	else if (getName().equals("test_setBackground$Lorg_eclipse_swt_graphics_Color$I")) test_setBackground$Lorg_eclipse_swt_graphics_Color$I();
 	else if (getName().equals("test_setBackgroundLorg_eclipse_swt_graphics_Color")) test_setBackgroundLorg_eclipse_swt_graphics_Color();
-	else if (getName().equals("test_setBackgroundLorg_eclipse_swt_graphics_Image")) test_setBackgroundLorg_eclipse_swt_graphics_Image();
 	else if (getName().equals("test_setFontLorg_eclipse_swt_graphics_Font")) test_setFontLorg_eclipse_swt_graphics_Font();
-	else if (getName().equals("test_setImageLorg_eclipse_swt_graphics_Image")) test_setImageLorg_eclipse_swt_graphics_Image();
-	else if (getName().equals("test_setTextLjava_lang_String")) test_setTextLjava_lang_String();
 	else if (getName().equals("test_setToolTipTextLjava_lang_String")) test_setToolTipTextLjava_lang_String();
 	else if (getName().equals("test_consistency_MenuDetect")) test_consistency_MenuDetect();
 	else if (getName().equals("test_consistency_DragDetect")) test_consistency_DragDetect();

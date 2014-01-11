@@ -50,34 +50,6 @@ public void test_ConstructorLorg_eclipse_swt_widgets_CompositeI() {
 	warnUnimpl("Test test_ConstructorLorg_eclipse_swt_widgets_CompositeI not written");
 }
 
-public void test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener() {
-	warnUnimpl("Test test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener not written");
-}
-
-public void test_addTreeListenerLorg_eclipse_swt_events_TreeListener() {
-	warnUnimpl("Test test_addTreeListenerLorg_eclipse_swt_events_TreeListener not written");
-}
-
-public void test_deselectAll() {
-	warnUnimpl("Test test_deselectAll not written");
-}
-
-public void test_getItemCount() {
-	warnUnimpl("Test test_getItemCount not written");
-}
-
-public void test_getItemHeight() {
-	warnUnimpl("Test test_getItemHeight not written");
-}
-
-public void test_getItemLorg_eclipse_swt_graphics_Point() {
-	warnUnimpl("Test test_getItemLorg_eclipse_swt_graphics_Point not written");
-}
-
-public void test_getItems() {
-	warnUnimpl("Test test_getItems not written");
-}
-
 public void test_getSelection() {
 	int number = 8;
 	TableTreeItem[] items = new TableTreeItem[number];
@@ -98,26 +70,6 @@ public void test_getSelectionCount() {
 	assertEquals("MULTI: After adding items, but before selecting any", 0, tableTree.getSelectionCount());
 	
 	// getSelectionCount() is further tested in test_selectAll and test_setSelection$Lorg_eclipse_swt_custom_TableTreeItem
-}
-
-public void test_getTable() {
-	warnUnimpl("Test test_getTable not written");
-}
-
-public void test_indexOfLorg_eclipse_swt_custom_TableTreeItem() {
-	warnUnimpl("Test test_indexOfLorg_eclipse_swt_custom_TableTreeItem not written");
-}
-
-public void test_removeAll() {
-	warnUnimpl("Test test_removeAll not written");
-}
-
-public void test_removeSelectionListenerLorg_eclipse_swt_events_SelectionListener() {
-	warnUnimpl("Test test_removeSelectionListenerLorg_eclipse_swt_events_SelectionListener not written");
-}
-
-public void test_removeTreeListenerLorg_eclipse_swt_events_TreeListener() {
-	warnUnimpl("Test test_removeTreeListenerLorg_eclipse_swt_events_TreeListener not written");
 }
 
 @Override
@@ -238,14 +190,6 @@ public void test_setSelection$Lorg_eclipse_swt_custom_TableTreeItem() {
 	setSelection_helper("Select multiple items multiple times", new TableTreeItem[] {items[4], items[0], items[2], items[4], items[4], items[0], items[4], items[2]}, new TableTreeItem[] {});
 }
 
-public void test_showItemLorg_eclipse_swt_custom_TableTreeItem() {
-	warnUnimpl("Test test_showItemLorg_eclipse_swt_custom_TableTreeItem not written");
-}
-
-public void test_showSelection() {
-	warnUnimpl("Test test_showSelection not written");
-}
-
 public static Test suite() {
 	TestSuite suite = new TestSuite();
 	java.util.Vector<String> methodNames = methodNames();
@@ -258,24 +202,10 @@ public static Test suite() {
 public static java.util.Vector<String> methodNames() {
 	java.util.Vector<String> methodNames = new java.util.Vector<String>();
 	methodNames.addElement("test_ConstructorLorg_eclipse_swt_widgets_CompositeI");
-	methodNames.addElement("test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener");
-	methodNames.addElement("test_addTreeListenerLorg_eclipse_swt_events_TreeListener");
-	methodNames.addElement("test_deselectAll");
-	methodNames.addElement("test_getItemCount");
-	methodNames.addElement("test_getItemHeight");
-	methodNames.addElement("test_getItemLorg_eclipse_swt_graphics_Point");
-	methodNames.addElement("test_getItems");
 	methodNames.addElement("test_getSelection");
 	methodNames.addElement("test_getSelectionCount");
-	methodNames.addElement("test_getTable");
-	methodNames.addElement("test_indexOfLorg_eclipse_swt_custom_TableTreeItem");
-	methodNames.addElement("test_removeAll");
-	methodNames.addElement("test_removeSelectionListenerLorg_eclipse_swt_events_SelectionListener");
-	methodNames.addElement("test_removeTreeListenerLorg_eclipse_swt_events_TreeListener");
 	methodNames.addElement("test_selectAll");
 	methodNames.addElement("test_setSelection$Lorg_eclipse_swt_custom_TableTreeItem");
-	methodNames.addElement("test_showItemLorg_eclipse_swt_custom_TableTreeItem");
-	methodNames.addElement("test_showSelection");
 	methodNames.addElement("test_consistency_MouseSelection");
 	methodNames.addElement("test_consistency_KeySelection");
 	methodNames.addElement("test_consistency_SpaceSelection");
@@ -291,24 +221,10 @@ public static java.util.Vector<String> methodNames() {
 @Override
 protected void runTest() throws Throwable {
 	if (getName().equals("test_ConstructorLorg_eclipse_swt_widgets_CompositeI")) test_ConstructorLorg_eclipse_swt_widgets_CompositeI();
-	else if (getName().equals("test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener")) test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener();
-	else if (getName().equals("test_addTreeListenerLorg_eclipse_swt_events_TreeListener")) test_addTreeListenerLorg_eclipse_swt_events_TreeListener();
-	else if (getName().equals("test_deselectAll")) test_deselectAll();
-	else if (getName().equals("test_getItemCount")) test_getItemCount();
-	else if (getName().equals("test_getItemHeight")) test_getItemHeight();
-	else if (getName().equals("test_getItemLorg_eclipse_swt_graphics_Point")) test_getItemLorg_eclipse_swt_graphics_Point();
-	else if (getName().equals("test_getItems")) test_getItems();
 	else if (getName().equals("test_getSelection")) test_getSelection();
 	else if (getName().equals("test_getSelectionCount")) test_getSelectionCount();
-	else if (getName().equals("test_getTable")) test_getTable();
-	else if (getName().equals("test_indexOfLorg_eclipse_swt_custom_TableTreeItem")) test_indexOfLorg_eclipse_swt_custom_TableTreeItem();
-	else if (getName().equals("test_removeAll")) test_removeAll();
-	else if (getName().equals("test_removeSelectionListenerLorg_eclipse_swt_events_SelectionListener")) test_removeSelectionListenerLorg_eclipse_swt_events_SelectionListener();
-	else if (getName().equals("test_removeTreeListenerLorg_eclipse_swt_events_TreeListener")) test_removeTreeListenerLorg_eclipse_swt_events_TreeListener();
 	else if (getName().equals("test_selectAll")) test_selectAll();
 	else if (getName().equals("test_setSelection$Lorg_eclipse_swt_custom_TableTreeItem")) test_setSelection$Lorg_eclipse_swt_custom_TableTreeItem();
-	else if (getName().equals("test_showItemLorg_eclipse_swt_custom_TableTreeItem")) test_showItemLorg_eclipse_swt_custom_TableTreeItem();
-	else if (getName().equals("test_showSelection")) test_showSelection();
 	else if (getName().equals("test_consistency_MouseSelection")) test_consistency_MouseSelection();
 	else if (getName().equals("test_consistency_KeySelection")) test_consistency_KeySelection();
 	else if (getName().equals("test_consistency_EnterSelection")) test_consistency_EnterSelection();

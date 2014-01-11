@@ -60,10 +60,6 @@ public void test_ConstructorLorg_eclipse_swt_widgets_CompositeI() {
 	}
 }
 
-public void test_getCaret() {
-	// tested in test_setCaretLorg_eclipse_swt_widgets_Caret
-}
-
 public void test_scrollIIIIIIZ() {
 	canvas.scroll(100, 100, 0, 0, 50, 50, false);
 	canvas.scroll(100, 100, 0, 0, 50, 50, true);
@@ -118,7 +114,6 @@ public static Test suite() {
 public static java.util.Vector<String> methodNames() {
 	java.util.Vector<String> methodNames = new java.util.Vector<String>();
 	methodNames.addElement("test_ConstructorLorg_eclipse_swt_widgets_CompositeI");
-	methodNames.addElement("test_getCaret");
 	methodNames.addElement("test_scrollIIIIIIZ");
 	methodNames.addElement("test_setCaretLorg_eclipse_swt_widgets_Caret");
 	methodNames.addElement("test_setFontLorg_eclipse_swt_graphics_Font");
@@ -130,7 +125,6 @@ public static java.util.Vector<String> methodNames() {
 @Override
 protected void runTest() throws Throwable {
 	if (getName().equals("test_ConstructorLorg_eclipse_swt_widgets_CompositeI")) test_ConstructorLorg_eclipse_swt_widgets_CompositeI();
-	else if (getName().equals("test_getCaret")) test_getCaret();
 	else if (getName().equals("test_scrollIIIIIIZ")) test_scrollIIIIIIZ();
 	else if (getName().equals("test_setCaretLorg_eclipse_swt_widgets_Caret")) test_setCaretLorg_eclipse_swt_widgets_Caret();
 	else if (getName().equals("test_setFontLorg_eclipse_swt_graphics_Font")) test_setFontLorg_eclipse_swt_graphics_Font();
