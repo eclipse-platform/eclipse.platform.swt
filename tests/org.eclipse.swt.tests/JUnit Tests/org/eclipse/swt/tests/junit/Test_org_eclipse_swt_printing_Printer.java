@@ -92,10 +92,6 @@ public void test_ConstructorLorg_eclipse_swt_printing_PrinterData() {
 	}
 }
 
-public void test_cancelJob() {
-	warnUnimpl("Test test_cancelJob not written");
-}
-
 public void test_computeTrimIIII() {
 	PrinterData data = Printer.getDefaultPrinterData();
 	// if there aren't any printers, don't do this test
@@ -104,14 +100,6 @@ public void test_computeTrimIIII() {
 	Rectangle trim = printer.computeTrim(0, 0, 10, 10);
 	assertTrue("trim width or height is incorrect", trim.width >= 10 && trim.height >= 10);
 	printer.dispose();
-}
-
-public void test_endJob() {
-	warnUnimpl("Test test_endJob not written");
-}
-
-public void test_endPage() {
-	warnUnimpl("Test test_endPage not written");
 }
 
 @Override
@@ -145,10 +133,6 @@ public void test_getDPI() {
 	Point dpi = printer.getDPI();
 	assertTrue("dpi x or y is zero", dpi.x > 0 && dpi.y > 0);
 	printer.dispose();
-}
-
-public void test_getDefaultPrinterData() {
-	// Tested in test_getPrinterData.
 }
 
 public void test_getPrinterData() {
@@ -199,15 +183,6 @@ public void test_internal_new_GCLorg_eclipse_swt_graphics_GCData() {
 	warnUnimpl("Test test_internal_new_GCLorg_eclipse_swt_graphics_GCData not written");
 }
 
-public void test_startJobLjava_lang_String() {
-	warnUnimpl("Test test_startJobLjava_lang_String not written");
-}
-
-public void test_startPage() {
-	warnUnimpl("Test test_startPage not written");
-}
-
-
 public static Test suite() {
 	TestSuite suite = new TestSuite();
 	java.util.Vector<String> methodNames = methodNames();
@@ -221,20 +196,14 @@ public static java.util.Vector<String> methodNames() {
 	java.util.Vector<String> methodNames = new java.util.Vector<String>();
 //	methodNames.addElement("test_Constructor");
 //	methodNames.addElement("test_ConstructorLorg_eclipse_swt_printing_PrinterData");
-//	methodNames.addElement("test_cancelJob");
 //	methodNames.addElement("test_computeTrimIIII");
-//	methodNames.addElement("test_endJob");
-//	methodNames.addElement("test_endPage");
 //	methodNames.addElement("test_getBounds");
 //	methodNames.addElement("test_getClientArea");
 //	methodNames.addElement("test_getDPI");
-//	methodNames.addElement("test_getDefaultPrinterData");
 	methodNames.addElement("test_getPrinterData");
 	methodNames.addElement("test_getPrinterList");
 //	methodNames.addElement("test_internal_dispose_GCILorg_eclipse_swt_graphics_GCData");
 //	methodNames.addElement("test_internal_new_GCLorg_eclipse_swt_graphics_GCData");
-//	methodNames.addElement("test_startJobLjava_lang_String");
-//	methodNames.addElement("test_startPage");
 	methodNames.addAll(Test_org_eclipse_swt_graphics_Device.methodNames()); // add superclass method names
 	return methodNames;
 }
@@ -242,20 +211,14 @@ public static java.util.Vector<String> methodNames() {
 protected void runTest() throws Throwable {
 	if (getName().equals("test_Constructor")) test_Constructor();
 	else if (getName().equals("test_ConstructorLorg_eclipse_swt_printing_PrinterData")) test_ConstructorLorg_eclipse_swt_printing_PrinterData();
-	else if (getName().equals("test_cancelJob")) test_cancelJob();
 	else if (getName().equals("test_computeTrimIIII")) test_computeTrimIIII();
-	else if (getName().equals("test_endJob")) test_endJob();
-	else if (getName().equals("test_endPage")) test_endPage();
 	else if (getName().equals("test_getBounds")) test_getBounds();
 	else if (getName().equals("test_getClientArea")) test_getClientArea();
 	else if (getName().equals("test_getDPI")) test_getDPI();
-	else if (getName().equals("test_getDefaultPrinterData")) test_getDefaultPrinterData();
 	else if (getName().equals("test_getPrinterData")) test_getPrinterData();
 	else if (getName().equals("test_getPrinterList")) test_getPrinterList();
 	else if (getName().equals("test_internal_dispose_GCILorg_eclipse_swt_graphics_GCData")) test_internal_dispose_GCILorg_eclipse_swt_graphics_GCData();
 	else if (getName().equals("test_internal_new_GCLorg_eclipse_swt_graphics_GCData")) test_internal_new_GCLorg_eclipse_swt_graphics_GCData();
-	else if (getName().equals("test_startJobLjava_lang_String")) test_startJobLjava_lang_String();
-	else if (getName().equals("test_startPage")) test_startPage();
 	else super.runTest();
 }
 }

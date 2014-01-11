@@ -29,30 +29,6 @@ public static void main(String[] args) {
 	TestRunner.run(suite());
 }
 
-public void test_ConstructorLorg_eclipse_swt_widgets_ControlI() {
-	warnUnimpl("Test test_ConstructorLorg_eclipse_swt_widgets_ControlI not written");
-}
-
-public void test_addDragListenerLorg_eclipse_swt_dnd_DragSourceListener() {
-	warnUnimpl("Test test_addDragListenerLorg_eclipse_swt_dnd_DragSourceListener not written");
-}
-
-public void test_getControl() {
-	warnUnimpl("Test test_getControl not written");
-}
-
-public void test_getTransfer() {
-	warnUnimpl("Test test_getTransfer not written");
-}
-
-public void test_removeDragListenerLorg_eclipse_swt_dnd_DragSourceListener() {
-	warnUnimpl("Test test_removeDragListenerLorg_eclipse_swt_dnd_DragSourceListener not written");
-}
-
-public void test_setTransfer$Lorg_eclipse_swt_dnd_Transfer() {
-	warnUnimpl("Test test_setTransfer$Lorg_eclipse_swt_dnd_Transfer not written");
-}
-
 public static Test suite() {
 	TestSuite suite = new TestSuite();
 	java.util.Vector<String> methodNames = methodNames();
@@ -64,23 +40,11 @@ public static Test suite() {
 }
 public static java.util.Vector<String> methodNames() {
 	java.util.Vector<String> methodNames = new java.util.Vector<String>();
-	methodNames.addElement("test_ConstructorLorg_eclipse_swt_widgets_ControlI");
-	methodNames.addElement("test_addDragListenerLorg_eclipse_swt_dnd_DragSourceListener");
-	methodNames.addElement("test_getControl");
-	methodNames.addElement("test_getTransfer");
-	methodNames.addElement("test_removeDragListenerLorg_eclipse_swt_dnd_DragSourceListener");
-	methodNames.addElement("test_setTransfer$Lorg_eclipse_swt_dnd_Transfer");
 	methodNames.addAll(Test_org_eclipse_swt_widgets_Widget.methodNames()); // add superclass method names
 	return methodNames;
 }
 @Override
 protected void runTest() throws Throwable {
-	if (getName().equals("test_ConstructorLorg_eclipse_swt_widgets_ControlI")) test_ConstructorLorg_eclipse_swt_widgets_ControlI();
-	else if (getName().equals("test_addDragListenerLorg_eclipse_swt_dnd_DragSourceListener")) test_addDragListenerLorg_eclipse_swt_dnd_DragSourceListener();
-	else if (getName().equals("test_getControl")) test_getControl();
-	else if (getName().equals("test_getTransfer")) test_getTransfer();
-	else if (getName().equals("test_removeDragListenerLorg_eclipse_swt_dnd_DragSourceListener")) test_removeDragListenerLorg_eclipse_swt_dnd_DragSourceListener();
-	else if (getName().equals("test_setTransfer$Lorg_eclipse_swt_dnd_Transfer")) test_setTransfer$Lorg_eclipse_swt_dnd_Transfer();
-	else super.runTest();
+	super.runTest();
 }
 }

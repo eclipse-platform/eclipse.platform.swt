@@ -29,33 +29,9 @@ public static void main(String[] args) {
 	TestRunner.run(suite());
 }
 
-public void test_ConstructorLorg_eclipse_swt_widgets_ControlI() {
-	warnUnimpl("Test test_ConstructorLorg_eclipse_swt_widgets_ControlI not written");
-}
-
-public void test_addDropListenerLorg_eclipse_swt_dnd_DropTargetListener() {
-	warnUnimpl("Test test_addDropListenerLorg_eclipse_swt_dnd_DropTargetListener not written");
-}
-
-public void test_getControl() {
-	warnUnimpl("Test test_getControl not written");
-}
-
-public void test_getTransfer() {
-	warnUnimpl("Test test_getTransfer not written");
-}
-
 @Override
 public void test_notifyListenersILorg_eclipse_swt_widgets_Event() {
 	warnUnimpl("Test test_notifyListenersILorg_eclipse_swt_widgets_Event not written");
-}
-
-public void test_removeDropListenerLorg_eclipse_swt_dnd_DropTargetListener() {
-	warnUnimpl("Test test_removeDropListenerLorg_eclipse_swt_dnd_DropTargetListener not written");
-}
-
-public void test_setTransfer$Lorg_eclipse_swt_dnd_Transfer() {
-	warnUnimpl("Test test_setTransfer$Lorg_eclipse_swt_dnd_Transfer not written");
 }
 
 public static Test suite() {
@@ -69,25 +45,13 @@ public static Test suite() {
 }
 public static java.util.Vector<String> methodNames() {
 	java.util.Vector<String> methodNames = new java.util.Vector<String>();
-	methodNames.addElement("test_ConstructorLorg_eclipse_swt_widgets_ControlI");
-	methodNames.addElement("test_addDropListenerLorg_eclipse_swt_dnd_DropTargetListener");
-	methodNames.addElement("test_getControl");
-	methodNames.addElement("test_getTransfer");
 	methodNames.addElement("test_notifyListenersILorg_eclipse_swt_widgets_Event");
-	methodNames.addElement("test_removeDropListenerLorg_eclipse_swt_dnd_DropTargetListener");
-	methodNames.addElement("test_setTransfer$Lorg_eclipse_swt_dnd_Transfer");
 	methodNames.addAll(Test_org_eclipse_swt_widgets_Widget.methodNames()); // add superclass method names
 	return methodNames;
 }
 @Override
 protected void runTest() throws Throwable {
-	if (getName().equals("test_ConstructorLorg_eclipse_swt_widgets_ControlI")) test_ConstructorLorg_eclipse_swt_widgets_ControlI();
-	else if (getName().equals("test_addDropListenerLorg_eclipse_swt_dnd_DropTargetListener")) test_addDropListenerLorg_eclipse_swt_dnd_DropTargetListener();
-	else if (getName().equals("test_getControl")) test_getControl();
-	else if (getName().equals("test_getTransfer")) test_getTransfer();
-	else if (getName().equals("test_notifyListenersILorg_eclipse_swt_widgets_Event")) test_notifyListenersILorg_eclipse_swt_widgets_Event();
-	else if (getName().equals("test_removeDropListenerLorg_eclipse_swt_dnd_DropTargetListener")) test_removeDropListenerLorg_eclipse_swt_dnd_DropTargetListener();
-	else if (getName().equals("test_setTransfer$Lorg_eclipse_swt_dnd_Transfer")) test_setTransfer$Lorg_eclipse_swt_dnd_Transfer();
+	if (getName().equals("test_notifyListenersILorg_eclipse_swt_widgets_Event")) test_notifyListenersILorg_eclipse_swt_widgets_Event();
 	else super.runTest();
 }
 }
