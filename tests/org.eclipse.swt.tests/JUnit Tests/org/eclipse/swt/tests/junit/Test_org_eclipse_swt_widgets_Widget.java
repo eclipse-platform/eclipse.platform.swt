@@ -82,24 +82,8 @@ public void test_addListenerILorg_eclipse_swt_widgets_Listener() {
 	widget.removeListener(SWT.Dispose, listener);
 }
 
-public void test_dispose() {
-	// tested in tearDown
-}
-
-public void test_getData() {
-	// tested in test_setDataLjava_lang_Object
-}
-
-public void test_getDataLjava_lang_String() {
-	// tested in test_setDataLjava_lang_StringLjava_lang_Object
-}
-
 public void test_getDisplay() {
 	assertEquals(widget.getDisplay(), widget.getDisplay());
-}
-
-public void test_getStyle() {
-	// this test should be overridden by leaf subclasses
 }
 
 public void test_isDisposed() {
@@ -115,10 +99,6 @@ public void test_notifyListenersILorg_eclipse_swt_widgets_Event() {
 	}
 	widget.notifyListeners(SWT.Paint, event);
 	if (gc != null) gc.dispose();
-}
-
-public void test_removeDisposeListenerLorg_eclipse_swt_events_DisposeListener() {
-	// tested in test_addDisposeListenerLorg_eclipse_swt_events_DisposeListener
 }
 
 public void test_removeListenerILorg_eclipse_swt_widgets_Listener() {
@@ -179,14 +159,9 @@ public static java.util.Vector<String> methodNames() {
 	methodNames.addElement("test_ConstructorLorg_eclipse_swt_widgets_WidgetI");
 	methodNames.addElement("test_addDisposeListenerLorg_eclipse_swt_events_DisposeListener");
 	methodNames.addElement("test_addListenerILorg_eclipse_swt_widgets_Listener");
-	methodNames.addElement("test_dispose");
-	methodNames.addElement("test_getData");
-	methodNames.addElement("test_getDataLjava_lang_String");
 	methodNames.addElement("test_getDisplay");
-	methodNames.addElement("test_getStyle");
 	methodNames.addElement("test_isDisposed");
 	methodNames.addElement("test_notifyListenersILorg_eclipse_swt_widgets_Event");
-	methodNames.addElement("test_removeDisposeListenerLorg_eclipse_swt_events_DisposeListener");
 	methodNames.addElement("test_removeListenerILorg_eclipse_swt_widgets_Listener");
 	methodNames.addElement("test_setDataLjava_lang_Object");
 	methodNames.addElement("test_setDataLjava_lang_StringLjava_lang_Object");
@@ -198,14 +173,9 @@ protected void runTest() throws Throwable {
 	if (getName().equals("test_ConstructorLorg_eclipse_swt_widgets_WidgetI")) test_ConstructorLorg_eclipse_swt_widgets_WidgetI();
 	else if (getName().equals("test_addDisposeListenerLorg_eclipse_swt_events_DisposeListener")) test_addDisposeListenerLorg_eclipse_swt_events_DisposeListener();
 	else if (getName().equals("test_addListenerILorg_eclipse_swt_widgets_Listener")) test_addListenerILorg_eclipse_swt_widgets_Listener();
-	else if (getName().equals("test_dispose")) test_dispose();
-	else if (getName().equals("test_getData")) test_getData();
-	else if (getName().equals("test_getDataLjava_lang_String")) test_getDataLjava_lang_String();
 	else if (getName().equals("test_getDisplay")) test_getDisplay();
-	else if (getName().equals("test_getStyle")) test_getStyle();
 	else if (getName().equals("test_isDisposed")) test_isDisposed();
 	else if (getName().equals("test_notifyListenersILorg_eclipse_swt_widgets_Event")) test_notifyListenersILorg_eclipse_swt_widgets_Event();
-	else if (getName().equals("test_removeDisposeListenerLorg_eclipse_swt_events_DisposeListener")) test_removeDisposeListenerLorg_eclipse_swt_events_DisposeListener();
 	else if (getName().equals("test_removeListenerILorg_eclipse_swt_widgets_Listener")) test_removeListenerILorg_eclipse_swt_widgets_Listener();
 	else if (getName().equals("test_setDataLjava_lang_Object")) test_setDataLjava_lang_Object();
 	else if (getName().equals("test_setDataLjava_lang_StringLjava_lang_Object")) test_setDataLjava_lang_StringLjava_lang_Object();

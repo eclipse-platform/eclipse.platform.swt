@@ -46,15 +46,6 @@ public void test_computeTrimIIII() {
 	decorations.computeTrim(0,0,0,0);
 	decorations.computeTrim(0,0,10,20);
 }
-@Override
-public void test_dispose() {
-	warnUnimpl("Test test_dispose not written");
-}
-
-@Override
-public void test_getBounds() {
-	warnUnimpl("Test test_getBounds not written");
-}
 
 @Override
 public void test_getClientArea() {
@@ -99,15 +90,6 @@ public void test_getMenuBar() {
 	Menu bar = new Menu (decorations, SWT.BAR);
 	decorations.setMenuBar (bar);
 	assertTrue(":b:", decorations.getMenuBar() == bar);
-}
-
-public void test_getMinimized() {
-	// tested in setMinimized method
-}
-
-@Override
-public void test_getSize() {
-	// super class test sufficient
 }
 
 public void test_getText() {
@@ -212,7 +194,6 @@ public static java.util.Vector<String> methodNames() {
 	methodNames.addElement("test_ConstructorLorg_eclipse_swt_widgets_CompositeI");
 	methodNames.addElement("test_computeTrimIIII");
 	methodNames.addElement("test_dispose");
-	methodNames.addElement("test_getBounds");
 	methodNames.addElement("test_getClientArea");
 	methodNames.addElement("test_getDefaultButton");
 	methodNames.addElement("test_getImage");
@@ -220,8 +201,6 @@ public static java.util.Vector<String> methodNames() {
 	methodNames.addElement("test_getLocation");
 	methodNames.addElement("test_getMaximized");
 	methodNames.addElement("test_getMenuBar");
-	methodNames.addElement("test_getMinimized");
-	methodNames.addElement("test_getSize");
 	methodNames.addElement("test_getText");
 	methodNames.addElement("test_isReparentable");
 	methodNames.addElement("test_setDefaultButtonLorg_eclipse_swt_widgets_Button");
@@ -239,8 +218,6 @@ public static java.util.Vector<String> methodNames() {
 protected void runTest() throws Throwable {
 	if (getName().equals("test_ConstructorLorg_eclipse_swt_widgets_CompositeI")) test_ConstructorLorg_eclipse_swt_widgets_CompositeI();
 	else if (getName().equals("test_computeTrimIIII")) test_computeTrimIIII();
-	else if (getName().equals("test_dispose")) test_dispose();
-	else if (getName().equals("test_getBounds")) test_getBounds();
 	else if (getName().equals("test_getClientArea")) test_getClientArea();
 	else if (getName().equals("test_getDefaultButton")) test_getDefaultButton();
 	else if (getName().equals("test_getImage")) test_getImage();
@@ -248,8 +225,6 @@ protected void runTest() throws Throwable {
 	else if (getName().equals("test_getLocation")) test_getLocation();
 	else if (getName().equals("test_getMaximized")) test_getMaximized();
 	else if (getName().equals("test_getMenuBar")) test_getMenuBar();
-	else if (getName().equals("test_getMinimized")) test_getMinimized();
-	else if (getName().equals("test_getSize")) test_getSize();
 	else if (getName().equals("test_getText")) test_getText();
 	else if (getName().equals("test_isReparentable")) test_isReparentable();
 	else if (getName().equals("test_setDefaultButtonLorg_eclipse_swt_widgets_Button")) test_setDefaultButtonLorg_eclipse_swt_widgets_Button();

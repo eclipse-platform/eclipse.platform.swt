@@ -51,11 +51,6 @@ public void test_ConstructorLorg_eclipse_swt_custom_CTabFolderII() {
 	warnUnimpl("Test test_ConstructorLorg_eclipse_swt_custom_CTabFolderII not written");
 }
 
-@Override
-public void test_dispose() {
-	warnUnimpl("Test test_dispose not written");
-}
-
 public void test_getBounds() {
 	warnUnimpl("Test test_getBounds not written");
 }
@@ -112,7 +107,6 @@ public static java.util.Vector<String> methodNames() {
 	java.util.Vector<String> methodNames = new java.util.Vector<String>();
 	methodNames.addElement("test_ConstructorLorg_eclipse_swt_custom_CTabFolderI");
 	methodNames.addElement("test_ConstructorLorg_eclipse_swt_custom_CTabFolderII");
-	methodNames.addElement("test_dispose");
 	methodNames.addElement("test_getBounds");
 	methodNames.addElement("test_getControl");
 	methodNames.addElement("test_getDisabledImage");
@@ -131,7 +125,6 @@ public static java.util.Vector<String> methodNames() {
 protected void runTest() throws Throwable {
 	if (getName().equals("test_ConstructorLorg_eclipse_swt_custom_CTabFolderI")) test_ConstructorLorg_eclipse_swt_custom_CTabFolderI();
 	else if (getName().equals("test_ConstructorLorg_eclipse_swt_custom_CTabFolderII")) test_ConstructorLorg_eclipse_swt_custom_CTabFolderII();
-	else if (getName().equals("test_dispose")) test_dispose();
 	else if (getName().equals("test_getBounds")) test_getBounds();
 	else if (getName().equals("test_getControl")) test_getControl();
 	else if (getName().equals("test_getDisabledImage")) test_getDisabledImage();

@@ -249,51 +249,19 @@ public void test_computeSizeIIZ() {
 	assertEquals(size.y, control.getSize().y);
 }
 
-public void test_forceFocus() {
-	// this is difficult to test in Control.
-	// subclasses that wish to test this should override.
-}
-
 public void test_getAccessible() {
 	Accessible accessible = control.getAccessible();
 	assertTrue(":a:", accessible != null);
-}
-
-public void test_getBackground() {
-	// tested in test_setBackgroundLorg_eclipse_swt_graphics_Color
 }
 
 public void test_getBorderWidth() {
 	control.getBorderWidth();
 }
 
-public void test_getBounds() {
-	// tested in test_setBoundsIIII and test_setBoundsLorg_eclipse_swt_graphics_Rectangle
-}
-
-public void test_getEnabled() {
-	// tested in test_setEnabledZ
-}
-
-public void test_getFont() {
-	// tested in test_setFontLorg_eclipse_swt_graphics_Font
-}
-
-public void test_getForeground() {
-	// tested in test_setForegroundLorg_eclipse_swt_graphics_Color
-}
-
-public void test_getLayoutData() {
-	// tested in test_setLayoutDataLjava_lang_Object
-}
 
 public void test_getLocation() {
 	control.setBounds(32, 43, 30, 40);
 	assertTrue(control.getLocation().equals(new Point(32, 43)));
-}
-
-public void test_getMenu() {
-	// tested in test_setMenuLorg_eclipse_swt_widgets_Menu
 }
 
 public void test_getMonitor() {
@@ -317,26 +285,6 @@ public void test_getParent() {
 
 public void test_getShell() {
 	assertEquals(shell, control.getShell());
-}
-
-public void test_getSize() {
-	// tested in test_setSizeII
-}
-
-public void test_getToolTipText() {
-	// tested in test_setToolTipTextLjava_lang_String
-}
-
-public void test_getVisible() {
-	// tested in test_setVisibleZ
-}
-
-public void test_internal_dispose_GCILorg_eclipse_swt_graphics_GCData() {
-	// tested in test_internal_new_GCLorg_eclipse_swt_graphics_GCData
-}
-
-public void test_internal_new_GCLorg_eclipse_swt_graphics_GCData() {
-	// intentionally not tested - not public API
 }
 
 public void test_isEnabled() {
@@ -416,42 +364,6 @@ public void test_redrawIIIIZ() {
 	control.redraw(10, 10, 10, 10, false);
 
 	control.redraw(10000, 10000, 10000, 10000, false);
-}
-
-public void test_removeControlListenerLorg_eclipse_swt_events_ControlListener() {
-	// tested in test_addControlListenerLorg_eclipse_swt_events_ControlListener
-}
-
-public void test_removeFocusListenerLorg_eclipse_swt_events_FocusListener() {
-	// tested in test_addFocusListenerLorg_eclipse_swt_events_FocusListener
-}
-
-public void test_removeHelpListenerLorg_eclipse_swt_events_HelpListener() {
-	// tested in test_addHelpListenerLorg_eclipse_swt_events_HelpListener
-}
-
-public void test_removeKeyListenerLorg_eclipse_swt_events_KeyListener() {
-	// tested in test_addKeyListenerLorg_eclipse_swt_events_KeyListener
-}
-
-public void test_removeMouseListenerLorg_eclipse_swt_events_MouseListener() {
-	// tested in test_addMouseListenerLorg_eclipse_swt_events_MouseListener
-}
-
-public void test_removeMouseMoveListenerLorg_eclipse_swt_events_MouseMoveListener() {
-	// tested in test_addMouseMoveListenerLorg_eclipse_swt_events_MouseMoveListener
-}
-
-public void test_removeMouseTrackListenerLorg_eclipse_swt_events_MouseTrackListener() {
-	// tested in test_addMouseTrackListenerLorg_eclipse_swt_events_MouseTrackListener
-}
-
-public void test_removePaintListenerLorg_eclipse_swt_events_PaintListener() {
-	// tested in test_addPaintListenerLorg_eclipse_swt_events_PaintListener
-}
-
-public void test_removeTraverseListenerLorg_eclipse_swt_events_TraverseListener() {
-	// tested in test_addTraverseListenerLorg_eclipse_swt_events_TraverseListener
 }
 
 public void test_setBackgroundLorg_eclipse_swt_graphics_Color() {
@@ -743,25 +655,12 @@ public static java.util.Vector<String> methodNames() {
 	methodNames.addElement("test_addTraverseListenerLorg_eclipse_swt_events_TraverseListener");
 	methodNames.addElement("test_computeSizeII");
 	methodNames.addElement("test_computeSizeIIZ");
-	methodNames.addElement("test_forceFocus");
 	methodNames.addElement("test_getAccessible");
-	methodNames.addElement("test_getBackground");
 	methodNames.addElement("test_getBorderWidth");
-	methodNames.addElement("test_getBounds");
-	methodNames.addElement("test_getEnabled");
-	methodNames.addElement("test_getFont");
-	methodNames.addElement("test_getForeground");
-	methodNames.addElement("test_getLayoutData");
 	methodNames.addElement("test_getLocation");
-	methodNames.addElement("test_getMenu");
 	methodNames.addElement("test_getMonitor");
 	methodNames.addElement("test_getParent");
 	methodNames.addElement("test_getShell");
-	methodNames.addElement("test_getSize");
-	methodNames.addElement("test_getToolTipText");
-	methodNames.addElement("test_getVisible");
-	methodNames.addElement("test_internal_dispose_GCILorg_eclipse_swt_graphics_GCData");
-	methodNames.addElement("test_internal_new_GCLorg_eclipse_swt_graphics_GCData");
 	methodNames.addElement("test_isEnabled");
 	methodNames.addElement("test_isFocusControl");
 	methodNames.addElement("test_isReparentable");
@@ -772,15 +671,6 @@ public static java.util.Vector<String> methodNames() {
 	methodNames.addElement("test_packZ");
 	methodNames.addElement("test_redraw");
 	methodNames.addElement("test_redrawIIIIZ");
-	methodNames.addElement("test_removeControlListenerLorg_eclipse_swt_events_ControlListener");
-	methodNames.addElement("test_removeFocusListenerLorg_eclipse_swt_events_FocusListener");
-	methodNames.addElement("test_removeHelpListenerLorg_eclipse_swt_events_HelpListener");
-	methodNames.addElement("test_removeKeyListenerLorg_eclipse_swt_events_KeyListener");
-	methodNames.addElement("test_removeMouseListenerLorg_eclipse_swt_events_MouseListener");
-	methodNames.addElement("test_removeMouseMoveListenerLorg_eclipse_swt_events_MouseMoveListener");
-	methodNames.addElement("test_removeMouseTrackListenerLorg_eclipse_swt_events_MouseTrackListener");
-	methodNames.addElement("test_removePaintListenerLorg_eclipse_swt_events_PaintListener");
-	methodNames.addElement("test_removeTraverseListenerLorg_eclipse_swt_events_TraverseListener");
 	methodNames.addElement("test_setBackgroundLorg_eclipse_swt_graphics_Color");
 	methodNames.addElement("test_setBoundsIIII");
 	methodNames.addElement("test_setBoundsLorg_eclipse_swt_graphics_Rectangle");
@@ -823,25 +713,12 @@ protected void runTest() throws Throwable {
 	else if (getName().equals("test_addTraverseListenerLorg_eclipse_swt_events_TraverseListener")) test_addTraverseListenerLorg_eclipse_swt_events_TraverseListener();
 	else if (getName().equals("test_computeSizeII")) test_computeSizeII();
 	else if (getName().equals("test_computeSizeIIZ")) test_computeSizeIIZ();
-	else if (getName().equals("test_forceFocus")) test_forceFocus();
 	else if (getName().equals("test_getAccessible")) test_getAccessible();
-	else if (getName().equals("test_getBackground")) test_getBackground();
 	else if (getName().equals("test_getBorderWidth")) test_getBorderWidth();
-	else if (getName().equals("test_getBounds")) test_getBounds();
-	else if (getName().equals("test_getEnabled")) test_getEnabled();
-	else if (getName().equals("test_getFont")) test_getFont();
-	else if (getName().equals("test_getForeground")) test_getForeground();
-	else if (getName().equals("test_getLayoutData")) test_getLayoutData();
 	else if (getName().equals("test_getLocation")) test_getLocation();
-	else if (getName().equals("test_getMenu")) test_getMenu();
 	else if (getName().equals("test_getMonitor")) test_getMonitor();
 	else if (getName().equals("test_getParent")) test_getParent();
 	else if (getName().equals("test_getShell")) test_getShell();
-	else if (getName().equals("test_getSize")) test_getSize();
-	else if (getName().equals("test_getToolTipText")) test_getToolTipText();
-	else if (getName().equals("test_getVisible")) test_getVisible();
-	else if (getName().equals("test_internal_dispose_GCILorg_eclipse_swt_graphics_GCData")) test_internal_dispose_GCILorg_eclipse_swt_graphics_GCData();
-	else if (getName().equals("test_internal_new_GCLorg_eclipse_swt_graphics_GCData")) test_internal_new_GCLorg_eclipse_swt_graphics_GCData();
 	else if (getName().equals("test_isEnabled")) test_isEnabled();
 	else if (getName().equals("test_isFocusControl")) test_isFocusControl();
 	else if (getName().equals("test_isReparentable")) test_isReparentable();
@@ -852,15 +729,6 @@ protected void runTest() throws Throwable {
 	else if (getName().equals("test_packZ")) test_packZ();
 	else if (getName().equals("test_redraw")) test_redraw();
 	else if (getName().equals("test_redrawIIIIZ")) test_redrawIIIIZ();
-	else if (getName().equals("test_removeControlListenerLorg_eclipse_swt_events_ControlListener")) test_removeControlListenerLorg_eclipse_swt_events_ControlListener();
-	else if (getName().equals("test_removeFocusListenerLorg_eclipse_swt_events_FocusListener")) test_removeFocusListenerLorg_eclipse_swt_events_FocusListener();
-	else if (getName().equals("test_removeHelpListenerLorg_eclipse_swt_events_HelpListener")) test_removeHelpListenerLorg_eclipse_swt_events_HelpListener();
-	else if (getName().equals("test_removeKeyListenerLorg_eclipse_swt_events_KeyListener")) test_removeKeyListenerLorg_eclipse_swt_events_KeyListener();
-	else if (getName().equals("test_removeMouseListenerLorg_eclipse_swt_events_MouseListener")) test_removeMouseListenerLorg_eclipse_swt_events_MouseListener();
-	else if (getName().equals("test_removeMouseMoveListenerLorg_eclipse_swt_events_MouseMoveListener")) test_removeMouseMoveListenerLorg_eclipse_swt_events_MouseMoveListener();
-	else if (getName().equals("test_removeMouseTrackListenerLorg_eclipse_swt_events_MouseTrackListener")) test_removeMouseTrackListenerLorg_eclipse_swt_events_MouseTrackListener();
-	else if (getName().equals("test_removePaintListenerLorg_eclipse_swt_events_PaintListener")) test_removePaintListenerLorg_eclipse_swt_events_PaintListener();
-	else if (getName().equals("test_removeTraverseListenerLorg_eclipse_swt_events_TraverseListener")) test_removeTraverseListenerLorg_eclipse_swt_events_TraverseListener();
 	else if (getName().equals("test_setBackgroundLorg_eclipse_swt_graphics_Color")) test_setBackgroundLorg_eclipse_swt_graphics_Color();
 	else if (getName().equals("test_setBoundsIIII")) test_setBoundsIIII();
 	else if (getName().equals("test_setBoundsLorg_eclipse_swt_graphics_Rectangle")) test_setBoundsLorg_eclipse_swt_graphics_Rectangle();

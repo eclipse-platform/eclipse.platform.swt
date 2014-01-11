@@ -60,11 +60,6 @@ public void test_getTopRight() {
 	warnUnimpl("Test test_getTopRight not written");
 }
 
-@Override
-public void test_layoutZ() {
-	warnUnimpl("Test test_layoutZ not written");
-}
-
 public void test_setBorderVisibleZ() {
 	warnUnimpl("Test test_setBorderVisibleZ not written");
 }
@@ -76,11 +71,6 @@ public void test_setContentLorg_eclipse_swt_widgets_Control() {
 @Override
 public void test_setFontLorg_eclipse_swt_graphics_Font() {
 	warnUnimpl("Test test_setFontLorg_eclipse_swt_graphics_Font not written");
-}
-
-@Override
-public void test_setLayoutLorg_eclipse_swt_widgets_Layout() {
-	warnUnimpl("Test test_setLayoutLorg_eclipse_swt_widgets_Layout not written");
 }
 
 public void test_setTopCenterLorg_eclipse_swt_widgets_Control() {
@@ -118,11 +108,9 @@ public static java.util.Vector<String> methodNames() {
 	methodNames.addElement("test_getTopCenter");
 	methodNames.addElement("test_getTopLeft");
 	methodNames.addElement("test_getTopRight");
-	methodNames.addElement("test_layoutZ");
 	methodNames.addElement("test_setBorderVisibleZ");
 	methodNames.addElement("test_setContentLorg_eclipse_swt_widgets_Control");
 	methodNames.addElement("test_setFontLorg_eclipse_swt_graphics_Font");
-	methodNames.addElement("test_setLayoutLorg_eclipse_swt_widgets_Layout");
 	methodNames.addElement("test_setTopCenterLorg_eclipse_swt_widgets_Control");
 	methodNames.addElement("test_setTopCenterSeparateZ");
 	methodNames.addElement("test_setTopLeftLorg_eclipse_swt_widgets_Control");
@@ -139,11 +127,9 @@ protected void runTest() throws Throwable {
 	else if (getName().equals("test_getTopCenter")) test_getTopCenter();
 	else if (getName().equals("test_getTopLeft")) test_getTopLeft();
 	else if (getName().equals("test_getTopRight")) test_getTopRight();
-	else if (getName().equals("test_layoutZ")) test_layoutZ();
 	else if (getName().equals("test_setBorderVisibleZ")) test_setBorderVisibleZ();
 	else if (getName().equals("test_setContentLorg_eclipse_swt_widgets_Control")) test_setContentLorg_eclipse_swt_widgets_Control();
 	else if (getName().equals("test_setFontLorg_eclipse_swt_graphics_Font")) test_setFontLorg_eclipse_swt_graphics_Font();
-	else if (getName().equals("test_setLayoutLorg_eclipse_swt_widgets_Layout")) test_setLayoutLorg_eclipse_swt_widgets_Layout();
 	else if (getName().equals("test_setTopCenterLorg_eclipse_swt_widgets_Control")) test_setTopCenterLorg_eclipse_swt_widgets_Control();
 	else if (getName().equals("test_setTopCenterSeparateZ")) test_setTopCenterSeparateZ();
 	else if (getName().equals("test_setTopLeftLorg_eclipse_swt_widgets_Control")) test_setTopLeftLorg_eclipse_swt_widgets_Control();

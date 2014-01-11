@@ -93,11 +93,6 @@ public void test_computeSizeIIZ() {
 	// super class method sufficient test
 }
 
-@Override
-public void test_getEnabled() {
-	// tested in setEnabled method
-}
-
 public void test_getIncrement() {
 	int[] cases = {1, 10, 10000};
 	for (int i=0; i<cases.length; i++)
@@ -247,7 +242,6 @@ public static java.util.Vector<String> methodNames() {
 	methodNames.addElement("test_ConstructorLorg_eclipse_swt_widgets_CompositeI");
 	methodNames.addElement("test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener");
 	methodNames.addElement("test_computeSizeIIZ");
-	methodNames.addElement("test_getEnabled");
 	methodNames.addElement("test_getIncrement");
 	methodNames.addElement("test_getMaximum");
 	methodNames.addElement("test_getMinimum");
@@ -277,7 +271,6 @@ protected void runTest() throws Throwable {
 	if (getName().equals("test_ConstructorLorg_eclipse_swt_widgets_CompositeI")) test_ConstructorLorg_eclipse_swt_widgets_CompositeI();
 	else if (getName().equals("test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener")) test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener();
 	else if (getName().equals("test_computeSizeIIZ")) test_computeSizeIIZ();
-	else if (getName().equals("test_getEnabled")) test_getEnabled();
 	else if (getName().equals("test_getIncrement")) test_getIncrement();
 	else if (getName().equals("test_getMaximum")) test_getMaximum();
 	else if (getName().equals("test_getMinimum")) test_getMinimum();

@@ -77,25 +77,6 @@ public void test_getChildren() {
 	assertArrayEquals(":f:", new Control[]{}, composite.getChildren());
 }
 
-public void test_getLayout() {
-	// tested in test_setLayoutLorg_eclipse_swt_widgets_Layout
-}
-
-public void test_getTabList() {
-	// tested in test_setTabList$Lorg_eclipse_swt_widgets_Control
-}
-
-public void test_layout() {
-	// tested in test_layoutZ
-}
-
-public void test_layoutZ() {
-	// tested in specific Layout classes
-}
-
-public void test_setLayoutLorg_eclipse_swt_widgets_Layout() {
-	// tested in specific Layout classes
-}
 
 public void test_setTabList$Lorg_eclipse_swt_widgets_Control() {
 	Button button1 = new Button(composite, SWT.PUSH);
@@ -120,11 +101,6 @@ public static java.util.Vector<String> methodNames() {
 	java.util.Vector<String> methodNames = new java.util.Vector<String>();
 	methodNames.addElement("test_ConstructorLorg_eclipse_swt_widgets_CompositeI");
 	methodNames.addElement("test_getChildren");
-	methodNames.addElement("test_getLayout");
-	methodNames.addElement("test_getTabList");
-	methodNames.addElement("test_layout");
-	methodNames.addElement("test_layoutZ");
-	methodNames.addElement("test_setLayoutLorg_eclipse_swt_widgets_Layout");
 	methodNames.addElement("test_setTabList$Lorg_eclipse_swt_widgets_Control");
 	methodNames.addAll(Test_org_eclipse_swt_widgets_Scrollable.methodNames()); // add superclass method names
 	return methodNames;
@@ -133,11 +109,6 @@ public static java.util.Vector<String> methodNames() {
 protected void runTest() throws Throwable {
 	if (getName().equals("test_ConstructorLorg_eclipse_swt_widgets_CompositeI")) test_ConstructorLorg_eclipse_swt_widgets_CompositeI();
 	else if (getName().equals("test_getChildren")) test_getChildren();
-	else if (getName().equals("test_getLayout")) test_getLayout();
-	else if (getName().equals("test_getTabList")) test_getTabList();
-	else if (getName().equals("test_layout")) test_layout();
-	else if (getName().equals("test_layoutZ")) test_layoutZ();
-	else if (getName().equals("test_setLayoutLorg_eclipse_swt_widgets_Layout")) test_setLayoutLorg_eclipse_swt_widgets_Layout();
 	else if (getName().equals("test_setTabList$Lorg_eclipse_swt_widgets_Control")) test_setTabList$Lorg_eclipse_swt_widgets_Control();
 	else super.runTest();
 }

@@ -77,11 +77,6 @@ public void test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener()
 	assertTrue("Expected exception not thrown", exceptionThrown);
 }
 
-@Override
-public void test_dispose() {
-	// tested in tearDown
-}
-
 public void test_getEnabled() {
 	// tested in test_setEnabled() method
 }
@@ -252,7 +247,6 @@ public static Test suite() {
 public static java.util.Vector<String> methodNames() {
 	java.util.Vector<String> methodNames = new java.util.Vector<String>();
 	methodNames.addElement("test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener");
-	methodNames.addElement("test_dispose");
 	methodNames.addElement("test_getEnabled");
 	methodNames.addElement("test_getIncrement");
 	methodNames.addElement("test_getMaximum");
@@ -281,7 +275,6 @@ public static java.util.Vector<String> methodNames() {
 @Override
 protected void runTest() throws Throwable {
 	if (getName().equals("test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener")) test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener();
-	else if (getName().equals("test_dispose")) test_dispose();
 	else if (getName().equals("test_getEnabled")) test_getEnabled();
 	else if (getName().equals("test_getIncrement")) test_getIncrement();
 	else if (getName().equals("test_getMaximum")) test_getMaximum();

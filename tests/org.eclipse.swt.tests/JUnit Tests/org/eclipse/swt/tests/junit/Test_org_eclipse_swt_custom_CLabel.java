@@ -60,11 +60,6 @@ public void test_getText() {
 	warnUnimpl("Test test_getText not written");
 }
 
-@Override
-public void test_getToolTipText() {
-	warnUnimpl("Test test_getToolTipText not written");
-}
-
 public void test_setAlignmentI() {
 	warnUnimpl("Test test_setAlignmentI not written");
 }
@@ -116,7 +111,6 @@ public static java.util.Vector<String> methodNames() {
 	methodNames.addElement("test_getAlignment");
 	methodNames.addElement("test_getImage");
 	methodNames.addElement("test_getText");
-	methodNames.addElement("test_getToolTipText");
 	methodNames.addElement("test_setAlignmentI");
 	methodNames.addElement("test_setBackground$Lorg_eclipse_swt_graphics_Color$I");
 	methodNames.addElement("test_setBackgroundLorg_eclipse_swt_graphics_Color");
@@ -137,7 +131,6 @@ protected void runTest() throws Throwable {
 	else if (getName().equals("test_getAlignment")) test_getAlignment();
 	else if (getName().equals("test_getImage")) test_getImage();
 	else if (getName().equals("test_getText")) test_getText();
-	else if (getName().equals("test_getToolTipText")) test_getToolTipText();
 	else if (getName().equals("test_setAlignmentI")) test_setAlignmentI();
 	else if (getName().equals("test_setBackground$Lorg_eclipse_swt_graphics_Color$I")) test_setBackground$Lorg_eclipse_swt_graphics_Color$I();
 	else if (getName().equals("test_setBackgroundLorg_eclipse_swt_graphics_Color")) test_setBackgroundLorg_eclipse_swt_graphics_Color();

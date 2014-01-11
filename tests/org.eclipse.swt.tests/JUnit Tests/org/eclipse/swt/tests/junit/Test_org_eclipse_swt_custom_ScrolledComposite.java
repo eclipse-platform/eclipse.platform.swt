@@ -51,11 +51,6 @@ public void test_getOrigin() {
 	warnUnimpl("Test test_getOrigin not written");
 }
 
-@Override
-public void test_layoutZ() {
-	warnUnimpl("Test test_layoutZ not written");
-}
-
 public void test_setAlwaysShowScrollBarsZ() {
 	warnUnimpl("Test test_setAlwaysShowScrollBarsZ not written");
 }
@@ -70,11 +65,6 @@ public void test_setExpandHorizontalZ() {
 
 public void test_setExpandVerticalZ() {
 	warnUnimpl("Test test_setExpandVerticalZ not written");
-}
-
-@Override
-public void test_setLayoutLorg_eclipse_swt_widgets_Layout() {
-	warnUnimpl("Test test_setLayoutLorg_eclipse_swt_widgets_Layout not written");
 }
 
 public void test_setMinHeightI() {
@@ -118,12 +108,10 @@ public static java.util.Vector<String> methodNames() {
 	methodNames.addElement("test_getAlwaysShowScrollBars");
 	methodNames.addElement("test_getContent");
 	methodNames.addElement("test_getOrigin");
-	methodNames.addElement("test_layoutZ");
 	methodNames.addElement("test_setAlwaysShowScrollBarsZ");
 	methodNames.addElement("test_setContentLorg_eclipse_swt_widgets_Control");
 	methodNames.addElement("test_setExpandHorizontalZ");
 	methodNames.addElement("test_setExpandVerticalZ");
-	methodNames.addElement("test_setLayoutLorg_eclipse_swt_widgets_Layout");
 	methodNames.addElement("test_setMinHeightI");
 	methodNames.addElement("test_setMinSizeII");
 	methodNames.addElement("test_setMinSizeLorg_eclipse_swt_graphics_Point");
@@ -140,12 +128,10 @@ protected void runTest() throws Throwable {
 	else if (getName().equals("test_getAlwaysShowScrollBars")) test_getAlwaysShowScrollBars();
 	else if (getName().equals("test_getContent")) test_getContent();
 	else if (getName().equals("test_getOrigin")) test_getOrigin();
-	else if (getName().equals("test_layoutZ")) test_layoutZ();
 	else if (getName().equals("test_setAlwaysShowScrollBarsZ")) test_setAlwaysShowScrollBarsZ();
 	else if (getName().equals("test_setContentLorg_eclipse_swt_widgets_Control")) test_setContentLorg_eclipse_swt_widgets_Control();
 	else if (getName().equals("test_setExpandHorizontalZ")) test_setExpandHorizontalZ();
 	else if (getName().equals("test_setExpandVerticalZ")) test_setExpandVerticalZ();
-	else if (getName().equals("test_setLayoutLorg_eclipse_swt_widgets_Layout")) test_setLayoutLorg_eclipse_swt_widgets_Layout();
 	else if (getName().equals("test_setMinHeightI")) test_setMinHeightI();
 	else if (getName().equals("test_setMinSizeII")) test_setMinSizeII();
 	else if (getName().equals("test_setMinSizeLorg_eclipse_swt_graphics_Point")) test_setMinSizeLorg_eclipse_swt_graphics_Point();

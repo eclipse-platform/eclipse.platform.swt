@@ -155,7 +155,6 @@ public void test_close() {
 	shell.open();
 }
 
-@Override
 public void test_dispose() {
 	Shell newShell = new Shell();
 	newShell.dispose();
@@ -167,12 +166,6 @@ public void test_forceActive() {
 	/* assertTrue(":a:", shell.getDisplay().getActiveShell() == shell); */
 }
 
-@Override
-public void test_getBounds() {
-	// tested in test_setBoundsIIII and test_setBoundsLorg_eclipse_swt_graphics_Rectangle
-}
-
-@Override
 public void test_getEnabled() {
 	assertTrue(":a0:", shell.getEnabled());
 	shell.setEnabled(false);
@@ -324,13 +317,13 @@ public static java.util.Vector<String> methodNames() {
 	methodNames.addElement("test_close");
 	methodNames.addElement("test_dispose");
 	methodNames.addElement("test_forceActive");
-	methodNames.addElement("test_getBounds");
 	methodNames.addElement("test_getEnabled");
 	methodNames.addElement("test_getImeInputMode");
 	methodNames.addElement("test_getLocation");
 	methodNames.addElement("test_getRegion");
 	methodNames.addElement("test_getShell");
 	methodNames.addElement("test_getShells");
+	methodNames.addElement("test_getStyle");
 	methodNames.addElement("test_isEnabled");
 	methodNames.addElement("test_open");
 	methodNames.addElement("test_removeShellListenerLorg_eclipse_swt_events_ShellListener");
@@ -354,13 +347,13 @@ protected void runTest() throws Throwable {
 	else if (getName().equals("test_close")) test_close();
 	else if (getName().equals("test_dispose")) test_dispose();
 	else if (getName().equals("test_forceActive")) test_forceActive();
-	else if (getName().equals("test_getBounds")) test_getBounds();
 	else if (getName().equals("test_getEnabled")) test_getEnabled();
 	else if (getName().equals("test_getImeInputMode")) test_getImeInputMode();
 	else if (getName().equals("test_getLocation")) test_getLocation();
 	else if (getName().equals("test_getRegion")) test_getRegion();
 	else if (getName().equals("test_getShell")) test_getShell();
 	else if (getName().equals("test_getShells")) test_getShells();
+	else if (getName().equals("test_getStyle")) test_getStyle();
 	else if (getName().equals("test_isEnabled")) test_isEnabled();
 	else if (getName().equals("test_open")) test_open();
 	else if (getName().equals("test_removeShellListenerLorg_eclipse_swt_events_ShellListener")) test_removeShellListenerLorg_eclipse_swt_events_ShellListener();
@@ -385,7 +378,6 @@ public void test_getParent () {
 	assertTrue(testShell.getParent() == shell);
 }
 
-@Override
 public void test_getStyle() {
 	// overriding Widget.test_getStyle
 	assertTrue("testShell not modeless", (testShell.getStyle () & SWT.MODELESS) == SWT.MODELESS);

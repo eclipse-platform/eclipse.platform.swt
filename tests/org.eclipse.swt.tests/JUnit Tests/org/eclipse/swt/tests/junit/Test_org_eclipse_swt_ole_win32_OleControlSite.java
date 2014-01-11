@@ -45,21 +45,6 @@ public void test_addPropertyListenerILorg_eclipse_swt_ole_win32_OleListener() {
 	warnUnimpl("Test test_addPropertyListenerILorg_eclipse_swt_ole_win32_OleListener not written");
 }
 
-@Override
-public void test_getBackground() {
-	warnUnimpl("Test test_getBackground not written");
-}
-
-@Override
-public void test_getFont() {
-	warnUnimpl("Test test_getFont not written");
-}
-
-@Override
-public void test_getForeground() {
-	warnUnimpl("Test test_getForeground not written");
-}
-
 public void test_getSitePropertyI() {
 	warnUnimpl("Test test_getSitePropertyI not written");
 }
@@ -116,9 +101,6 @@ public static java.util.Vector<String> methodNames() {
 	methodNames.addElement("test_addEventListenerILorg_eclipse_swt_ole_win32_OleListener");
 	methodNames.addElement("test_addEventListenerLorg_eclipse_swt_ole_win32_OleAutomationILorg_eclipse_swt_ole_win32_OleListener");
 	methodNames.addElement("test_addPropertyListenerILorg_eclipse_swt_ole_win32_OleListener");
-	methodNames.addElement("test_getBackground");
-	methodNames.addElement("test_getFont");
-	methodNames.addElement("test_getForeground");
 	methodNames.addElement("test_getSitePropertyI");
 	methodNames.addElement("test_removeEventListenerILorg_eclipse_swt_ole_win32_OleListener");
 	methodNames.addElement("test_removeEventListenerLorg_eclipse_swt_ole_win32_OleAutomationILorg_eclipse_swt_ole_win32_OleListener");
@@ -138,9 +120,6 @@ protected void runTest() throws Throwable {
 	else if (getName().equals("test_addEventListenerILorg_eclipse_swt_ole_win32_OleListener")) test_addEventListenerILorg_eclipse_swt_ole_win32_OleListener();
 	else if (getName().equals("test_addEventListenerLorg_eclipse_swt_ole_win32_OleAutomationILorg_eclipse_swt_ole_win32_OleListener")) test_addEventListenerLorg_eclipse_swt_ole_win32_OleAutomationILorg_eclipse_swt_ole_win32_OleListener();
 	else if (getName().equals("test_addPropertyListenerILorg_eclipse_swt_ole_win32_OleListener")) test_addPropertyListenerILorg_eclipse_swt_ole_win32_OleListener();
-	else if (getName().equals("test_getBackground")) test_getBackground();
-	else if (getName().equals("test_getFont")) test_getFont();
-	else if (getName().equals("test_getForeground")) test_getForeground();
 	else if (getName().equals("test_getSitePropertyI")) test_getSitePropertyI();
 	else if (getName().equals("test_removeEventListenerILorg_eclipse_swt_ole_win32_OleListener")) test_removeEventListenerILorg_eclipse_swt_ole_win32_OleListener();
 	else if (getName().equals("test_removeEventListenerLorg_eclipse_swt_ole_win32_OleAutomationILorg_eclipse_swt_ole_win32_OleListener")) test_removeEventListenerLorg_eclipse_swt_ole_win32_OleAutomationILorg_eclipse_swt_ole_win32_OleListener();

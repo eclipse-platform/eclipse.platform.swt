@@ -4511,7 +4511,6 @@ public static java.util.Vector<String> methodNames() {
 	methodNames.addElement("test_getContent");
 	methodNames.addElement("test_getDoubleClickEnabled");
 	methodNames.addElement("test_getEditable");
-	methodNames.addElement("test_getForeground");
 	methodNames.addElement("test_getHorizontalIndex");
 	methodNames.addElement("test_getHorizontalPixel");
 	methodNames.addElement("test_getKeyBindingI");
@@ -4533,7 +4532,6 @@ public static java.util.Vector<String> methodNames() {
 	methodNames.addElement("test_getSelectionForeground");
 	methodNames.addElement("test_getSelectionRange");
 	methodNames.addElement("test_getSelectionText");
-	methodNames.addElement("test_getStyle");
 	methodNames.addElement("test_getStyleRangeAtOffsetI");
 	methodNames.addElement("test_getStyleRanges");
 	methodNames.addElement("test_getStyleRangesII");
@@ -4618,14 +4616,12 @@ protected void runTest() throws Throwable {
 	else if (getName().equals("test_computeSizeIIZ")) test_computeSizeIIZ();
 	else if (getName().equals("test_copy")) test_copy();
 	else if (getName().equals("test_cut")) test_cut();
-	else if (getName().equals("test_getBackground")) test_getBackground();
 	else if (getName().equals("test_getBidiColoring")) test_getBidiColoring();
 	else if (getName().equals("test_getCaretOffset")) test_getCaretOffset();
 	else if (getName().equals("test_getCharCount")) test_getCharCount();
 	else if (getName().equals("test_getContent")) test_getContent();
 	else if (getName().equals("test_getDoubleClickEnabled")) test_getDoubleClickEnabled();
 	else if (getName().equals("test_getEditable")) test_getEditable();
-	else if (getName().equals("test_getForeground")) test_getForeground();
 	else if (getName().equals("test_getHorizontalIndex")) test_getHorizontalIndex();
 	else if (getName().equals("test_getHorizontalPixel")) test_getHorizontalPixel();
 	else if (getName().equals("test_getKeyBindingI")) test_getKeyBindingI();
@@ -4647,7 +4643,6 @@ protected void runTest() throws Throwable {
 	else if (getName().equals("test_getSelectionForeground")) test_getSelectionForeground();
 	else if (getName().equals("test_getSelectionRange")) test_getSelectionRange();
 	else if (getName().equals("test_getSelectionText")) test_getSelectionText();
-	else if (getName().equals("test_getStyle")) test_getStyle();
 	else if (getName().equals("test_getStyleRangeAtOffsetI")) test_getStyleRangeAtOffsetI();
 	else if (getName().equals("test_getStyleRanges")) test_getStyleRanges();
 	else if (getName().equals("test_getStyleRangesII")) test_getStyleRangesII();
