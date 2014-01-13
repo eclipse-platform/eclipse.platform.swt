@@ -698,11 +698,6 @@ public void test_cut() {
 	clipboard.dispose();
 }
 
-public void test_getBidiColoring() {
-	/// getBidiColoring is deprecated and will be removed.
-	warnUnimpl("Test test_getBidiColoring not written");
-}
-
 public void test_getCaretOffset() {
 	assertTrue(":a:", text.getCaretOffset() == 0);
 	text.setText("Line0\r\n");
@@ -1245,10 +1240,6 @@ public void test_getOffsetAtLocationLorg_eclipse_swt_graphics_Point() {
 	assertTrue(":m:", text.getOffsetAtLocation(text.getLocationAtOffset(2)) == 2);
 	text.setHorizontalIndex(0);
 	assertTrue(":n:", text.getOffsetAtLocation(text.getLocationAtOffset(2)) == 2);
-}
-
-public void test_getOrientation() {
-	warnUnimpl("Test test_getOrientation not written");
 }
 
 void testStyles (String msg, int[] resultRanges, int[] expectedRanges, StyleRange[] resultStyles, StyleRange[] expectedStyles) {
@@ -2189,10 +2180,6 @@ public void test_printLorg_eclipse_swt_printing_Printer() {
 	printer.dispose();
 }
 
-public void test_printLorg_eclipse_swt_printing_PrinterLorg_eclipse_swt_custom_StyledTextPrintOptions() {
-	warnUnimpl("Test test_printLorg_eclipse_swt_printing_PrinterLorg_eclipse_swt_custom_StyledTextPrintOptions not written");
-}
-
 @Override
 public void test_redraw() {
 	// inherited test is sufficient
@@ -2997,11 +2984,6 @@ public void test_setCaretLorg_eclipse_swt_widgets_Caret() {
 	assertEquals(text.getLineHeight(), text.getCaret().getLocation().y);
 }
 
-public void test_setBidiColoringZ() {
-	/// setBidiColoring is deprecated and will be removed.
-	warnUnimpl("Test test_setBidiColoringZ not written");
-}
-
 public void test_setCaretOffsetI(){
 	text.setCaretOffset(-2);
 	assertTrue(":a:", text.getCaretOffset() == 0);
@@ -3338,10 +3320,6 @@ public void test_setLineBackgroundIILorg_eclipse_swt_graphics_Color(){
 	text.replaceTextRange(0,18,"L1\n");
 	assertTrue(":7:", text.getLineBackground(0) == null);
 	assertTrue(":7:", text.getLineBackground(1) == getColor(GREEN));
-}
-
-public void test_setOrientationI() {
-	warnUnimpl("Test test_setOrientationI not written");
 }
 
 public void test_setSelectionI() {
@@ -4505,7 +4483,6 @@ public static java.util.Vector<String> methodNames() {
 	methodNames.addElement("test_copy");
 	methodNames.addElement("test_cut");
 	methodNames.addElement("test_getBackground");
-	methodNames.addElement("test_getBidiColoring");
 	methodNames.addElement("test_getCaretOffset");
 	methodNames.addElement("test_getCharCount");
 	methodNames.addElement("test_getContent");
@@ -4524,7 +4501,6 @@ public static java.util.Vector<String> methodNames() {
 	methodNames.addElement("test_getLocationAtOffsetI");
 	methodNames.addElement("test_getOffsetAtLineI");
 	methodNames.addElement("test_getOffsetAtLocationLorg_eclipse_swt_graphics_Point");
-	methodNames.addElement("test_getOrientation");
 	methodNames.addElement("test_getRanges");
 	methodNames.addElement("test_getSelection");
 	methodNames.addElement("test_getSelectionBackground");
@@ -4549,7 +4525,6 @@ public static java.util.Vector<String> methodNames() {
 	methodNames.addElement("test_paste");
 	methodNames.addElement("test_print");
 	methodNames.addElement("test_printLorg_eclipse_swt_printing_Printer");
-	methodNames.addElement("test_printLorg_eclipse_swt_printing_PrinterLorg_eclipse_swt_custom_StyledTextPrintOptions");
 	methodNames.addElement("test_redraw");
 	methodNames.addElement("test_redrawIIIIZ");
 	methodNames.addElement("test_redrawRangeIIZ");
@@ -4565,7 +4540,6 @@ public static java.util.Vector<String> methodNames() {
 	methodNames.addElement("test_replaceTextRangeIILjava_lang_String");
 	methodNames.addElement("test_selectAll");
 	methodNames.addElement("test_setBackgroundLorg_eclipse_swt_graphics_Color");
-	methodNames.addElement("test_setBidiColoringZ");
 	methodNames.addElement("test_setCaretLorg_eclipse_swt_widgets_Caret");
 	methodNames.addElement("test_setCaretOffsetI");
 	methodNames.addElement("test_setContentLorg_eclipse_swt_custom_StyledTextContent");
@@ -4578,7 +4552,6 @@ public static java.util.Vector<String> methodNames() {
 	methodNames.addElement("test_setHorizontalPixelI");
 	methodNames.addElement("test_setKeyBindingII");
 	methodNames.addElement("test_setLineBackgroundIILorg_eclipse_swt_graphics_Color");
-	methodNames.addElement("test_setOrientationI");
 	methodNames.addElement("test_setSelectionBackgroundLorg_eclipse_swt_graphics_Color");
 	methodNames.addElement("test_setSelectionForegroundLorg_eclipse_swt_graphics_Color");
 	methodNames.addElement("test_setSelectionI");
@@ -4616,7 +4589,6 @@ protected void runTest() throws Throwable {
 	else if (getName().equals("test_computeSizeIIZ")) test_computeSizeIIZ();
 	else if (getName().equals("test_copy")) test_copy();
 	else if (getName().equals("test_cut")) test_cut();
-	else if (getName().equals("test_getBidiColoring")) test_getBidiColoring();
 	else if (getName().equals("test_getCaretOffset")) test_getCaretOffset();
 	else if (getName().equals("test_getCharCount")) test_getCharCount();
 	else if (getName().equals("test_getContent")) test_getContent();
@@ -4635,7 +4607,6 @@ protected void runTest() throws Throwable {
 	else if (getName().equals("test_getLocationAtOffsetI")) test_getLocationAtOffsetI();
 	else if (getName().equals("test_getOffsetAtLineI")) test_getOffsetAtLineI();
 	else if (getName().equals("test_getOffsetAtLocationLorg_eclipse_swt_graphics_Point")) test_getOffsetAtLocationLorg_eclipse_swt_graphics_Point();
-	else if (getName().equals("test_getOrientation")) test_getOrientation();
 	else if (getName().equals("test_getRanges")) test_getRanges();
 	else if (getName().equals("test_getSelection")) test_getSelection();
 	else if (getName().equals("test_getSelectionBackground")) test_getSelectionBackground();
@@ -4660,7 +4631,6 @@ protected void runTest() throws Throwable {
 	else if (getName().equals("test_paste")) test_paste();
 	else if (getName().equals("test_print")) test_print();
 	else if (getName().equals("test_printLorg_eclipse_swt_printing_Printer")) test_printLorg_eclipse_swt_printing_Printer();
-	else if (getName().equals("test_printLorg_eclipse_swt_printing_PrinterLorg_eclipse_swt_custom_StyledTextPrintOptions")) test_printLorg_eclipse_swt_printing_PrinterLorg_eclipse_swt_custom_StyledTextPrintOptions();
 	else if (getName().equals("test_redraw")) test_redraw();
 	else if (getName().equals("test_redrawIIIIZ")) test_redrawIIIIZ();
 	else if (getName().equals("test_redrawRangeIIZ")) test_redrawRangeIIZ();
@@ -4676,7 +4646,6 @@ protected void runTest() throws Throwable {
 	else if (getName().equals("test_replaceTextRangeIILjava_lang_String")) test_replaceTextRangeIILjava_lang_String();
 	else if (getName().equals("test_selectAll")) test_selectAll();
 	else if (getName().equals("test_setBackgroundLorg_eclipse_swt_graphics_Color")) test_setBackgroundLorg_eclipse_swt_graphics_Color();
-	else if (getName().equals("test_setBidiColoringZ")) test_setBidiColoringZ();
 	else if (getName().equals("test_setCaretLorg_eclipse_swt_widgets_Caret")) test_setCaretLorg_eclipse_swt_widgets_Caret();
 	else if (getName().equals("test_setCaretOffsetI")) test_setCaretOffsetI();
 	else if (getName().equals("test_setContentLorg_eclipse_swt_custom_StyledTextContent")) test_setContentLorg_eclipse_swt_custom_StyledTextContent();
@@ -4689,7 +4658,6 @@ protected void runTest() throws Throwable {
 	else if (getName().equals("test_setHorizontalPixelI")) test_setHorizontalPixelI();
 	else if (getName().equals("test_setKeyBindingII")) test_setKeyBindingII();
 	else if (getName().equals("test_setLineBackgroundIILorg_eclipse_swt_graphics_Color")) test_setLineBackgroundIILorg_eclipse_swt_graphics_Color();
-	else if (getName().equals("test_setOrientationI")) test_setOrientationI();
 	else if (getName().equals("test_setSelectionBackgroundLorg_eclipse_swt_graphics_Color")) test_setSelectionBackgroundLorg_eclipse_swt_graphics_Color();
 	else if (getName().equals("test_setSelectionForegroundLorg_eclipse_swt_graphics_Color")) test_setSelectionForegroundLorg_eclipse_swt_graphics_Color();
 	else if (getName().equals("test_setSelectionI")) test_setSelectionI();

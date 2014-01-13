@@ -186,10 +186,6 @@ public void test_getLocation() {
 	assertTrue(":b:", shell.getLocation().y == 15);
 }
 
-public void test_getRegion() {
-	// tested in test_setRegion()
-}
-
 @Override
 public void test_getShell() {
 	assertTrue(":a:", shell.getShell()==shell);
@@ -227,10 +223,6 @@ public void test_open() {
 	shell.open();
 }
 
-
-public void test_removeShellListenerLorg_eclipse_swt_events_ShellListener() {
-	// tested in removeShellListener method
-}
 
 public void test_setActive() {
 	/* Create shell2 and make it active. */
@@ -273,20 +265,12 @@ public void test_setImeInputModeI() {
 	assertTrue(":a:", shell.getImeInputMode() == SWT.NONE);
 }
 
-public void test_setRegionLorg_eclipse_swt_graphics_Region() {
-	warnUnimpl("Test test_setRegionLorg_eclipse_swt_graphics_Region not written");
-}
-
 @Override
 public void test_setVisibleZ() {
 	shell.setVisible(false);
 	assertTrue(":a:", !shell.isVisible());
 	shell.setVisible(true);
 	assertTrue(":b:", shell.isVisible());
-}
-
-public void test_win32_newLorg_eclipse_swt_widgets_DisplayI() {
-	warnUnimpl("Test test_win32_newLorg_eclipse_swt_widgets_DisplayI not written");
 }
 
 public static Test suite() {
@@ -320,19 +304,15 @@ public static java.util.Vector<String> methodNames() {
 	methodNames.addElement("test_getEnabled");
 	methodNames.addElement("test_getImeInputMode");
 	methodNames.addElement("test_getLocation");
-	methodNames.addElement("test_getRegion");
 	methodNames.addElement("test_getShell");
 	methodNames.addElement("test_getShells");
 	methodNames.addElement("test_getStyle");
 	methodNames.addElement("test_isEnabled");
 	methodNames.addElement("test_open");
-	methodNames.addElement("test_removeShellListenerLorg_eclipse_swt_events_ShellListener");
 	methodNames.addElement("test_setActive");
 	methodNames.addElement("test_setEnabledZ");
 	methodNames.addElement("test_setImeInputModeI");
-	methodNames.addElement("test_setRegionLorg_eclipse_swt_graphics_Region");
 	methodNames.addElement("test_setVisibleZ");
-	methodNames.addElement("test_win32_newLorg_eclipse_swt_widgets_DisplayI");
 	return methodNames;
 }
 @Override
@@ -350,19 +330,15 @@ protected void runTest() throws Throwable {
 	else if (getName().equals("test_getEnabled")) test_getEnabled();
 	else if (getName().equals("test_getImeInputMode")) test_getImeInputMode();
 	else if (getName().equals("test_getLocation")) test_getLocation();
-	else if (getName().equals("test_getRegion")) test_getRegion();
 	else if (getName().equals("test_getShell")) test_getShell();
 	else if (getName().equals("test_getShells")) test_getShells();
 	else if (getName().equals("test_getStyle")) test_getStyle();
 	else if (getName().equals("test_isEnabled")) test_isEnabled();
 	else if (getName().equals("test_open")) test_open();
-	else if (getName().equals("test_removeShellListenerLorg_eclipse_swt_events_ShellListener")) test_removeShellListenerLorg_eclipse_swt_events_ShellListener();
 	else if (getName().equals("test_setActive")) test_setActive();
 	else if (getName().equals("test_setEnabledZ")) test_setEnabledZ();
 	else if (getName().equals("test_setImeInputModeI")) test_setImeInputModeI();
-	else if (getName().equals("test_setRegionLorg_eclipse_swt_graphics_Region")) test_setRegionLorg_eclipse_swt_graphics_Region();
 	else if (getName().equals("test_setVisibleZ")) test_setVisibleZ();
-	else if (getName().equals("test_win32_newLorg_eclipse_swt_widgets_DisplayI")) test_win32_newLorg_eclipse_swt_widgets_DisplayI();
 	else if (getName().equals("test_consistency_Iconify")) test_consistency_Iconify();
 	else if (getName().equals("test_consistency_Close")) test_consistency_Close();
 	else if (getName().equals("test_consistency_Dispose")) test_consistency_Dispose();
