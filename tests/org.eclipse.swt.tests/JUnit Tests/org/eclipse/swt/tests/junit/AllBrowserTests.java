@@ -35,7 +35,7 @@ public static Test suite() {
 	suite.addTestSuite(Test_org_eclipse_swt_browser_TitleListener.class);
 	suite.addTestSuite(Test_org_eclipse_swt_browser_VisibilityWindowAdapter.class);
 	suite.addTestSuite(Test_org_eclipse_swt_browser_VisibilityWindowListener.class);
-	suite.addTest(org.eclipse.swt.tests.junit.browser.Test_BrowserSuite.suite());
+	suite.addTestSuite(org.eclipse.swt.tests.junit.browser.Test_BrowserSuite.class);
 
 	return suite;
 }

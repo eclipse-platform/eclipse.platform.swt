@@ -177,7 +177,7 @@ public AllTests() {
 	addTestSuite(Test_org_eclipse_swt_browser_TitleListener.class);
 	addTestSuite(Test_org_eclipse_swt_browser_VisibilityWindowAdapter.class);
 	addTestSuite(Test_org_eclipse_swt_browser_VisibilityWindowListener.class);
-	addTest(org.eclipse.swt.tests.junit.browser.Test_BrowserSuite.suite());
+	addTestSuite(org.eclipse.swt.tests.junit.browser.Test_BrowserSuite.class);
 
 }
 }
