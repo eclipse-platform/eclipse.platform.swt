@@ -98,35 +98,7 @@ static public void assertSame(String message, Object expected[], Object actual[]
 static public void assertSame(Object expected[], Object actual[]) {
 	assertSame(null, expected, actual);
 }
-static public void assertSame(String message, int expected[], int actual[]) {
-	if (expected == null && actual == null) return;
-	boolean same = false;
-	if (expected != null && actual != null && expected.length == actual.length) {
-		if (expected.length == 0) return;
-		same = true;
-		boolean[] matched = new boolean[expected.length];
-		for (int i = 0; i < actual.length; i++) {
-			boolean match = false;
-			for (int j = 0; j < expected.length; j++) {
-				if (!matched[j] && actual[i] == expected[j]) {
-					match = true;
-					matched[j] = true;
-					break;
-				}
-			}
-			if (!match) {
-				same = false;
-				break;
-			}
-		}
-	}
-	if (!same) {
-		failNotEquals(message, expected, actual);
-	}
-}
-static public void assertSame(int expected[], int actual[]) {
-	assertSame(null, expected, actual);
-}
+
 static public void assertEquals(String message, int expectedCode, Throwable actualThrowable) {
 	if (actualThrowable instanceof SWTError) {
 		SWTError error = (SWTError) actualThrowable;
