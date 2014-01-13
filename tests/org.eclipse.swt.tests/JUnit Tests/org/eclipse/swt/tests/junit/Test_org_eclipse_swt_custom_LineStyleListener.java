@@ -11,28 +11,23 @@
 package org.eclipse.swt.tests.junit;
 
 
-import org.eclipse.swt.*;
-import org.eclipse.swt.widgets.*;
-import org.eclipse.swt.custom.*;
+import junit.framework.TestCase;
 
-import junit.framework.*;
-import junit.textui.*;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.LineStyleEvent;
+import org.eclipse.swt.custom.LineStyleListener;
+import org.eclipse.swt.custom.StyledText;
+import org.eclipse.swt.widgets.Shell;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.custom.LineStyleListener
  *
  * @see org.eclipse.swt.custom.LineStyleListener
  */
-public class Test_org_eclipse_swt_custom_LineStyleListener extends SwtTestCase {
+public class Test_org_eclipse_swt_custom_LineStyleListener extends TestCase {
 	Shell shell;
 	StyledText styledText;
 
-public Test_org_eclipse_swt_custom_LineStyleListener(String name) {
-	super(name);
-}
-public static void main(String[] args) {
-	TestRunner.run(suite());
-}
 @Override
 protected void setUp() {
 	shell = new Shell();
@@ -52,24 +47,5 @@ public void test_lineGetStyleLorg_eclipse_swt_custom_LineStyleEvent() {
 	// force get line styles callback
 	styledText.getLocationAtOffset(5);
 	styledText.removeLineStyleListener(listener);
-}
-
-public static Test suite() {
-	TestSuite suite = new TestSuite();
-	java.util.Vector<String> methodNames = methodNames();
-	java.util.Enumeration<String> e = methodNames.elements();
-	while (e.hasMoreElements()) {
-		suite.addTest(new Test_org_eclipse_swt_custom_LineStyleListener(e.nextElement()));
-	}
-	return suite;
-}
-public static java.util.Vector<String> methodNames() {
-	java.util.Vector<String> methodNames = new java.util.Vector<String>();
-	methodNames.addElement("test_lineGetStyleLorg_eclipse_swt_custom_LineStyleEvent");
-	return methodNames;
-}
-@Override
-protected void runTest() throws Throwable {
-	if (getName().equals("test_lineGetStyleLorg_eclipse_swt_custom_LineStyleEvent")) test_lineGetStyleLorg_eclipse_swt_custom_LineStyleEvent();
 }
 }

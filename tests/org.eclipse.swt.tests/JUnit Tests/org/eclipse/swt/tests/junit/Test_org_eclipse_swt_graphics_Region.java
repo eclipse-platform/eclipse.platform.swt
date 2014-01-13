@@ -10,27 +10,20 @@
  *******************************************************************************/
 package org.eclipse.swt.tests.junit;
 
-import junit.framework.*;
-import junit.textui.*;
+import junit.framework.TestCase;
 
-import org.eclipse.swt.*;
-import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.widgets.*;
+import org.eclipse.swt.SWTException;
+import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.graphics.Region;
+import org.eclipse.swt.widgets.Display;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.graphics.Region
  *
  * @see org.eclipse.swt.graphics.Region
  */
-public class Test_org_eclipse_swt_graphics_Region extends SwtTestCase {
-
-public Test_org_eclipse_swt_graphics_Region(String name) {
-	super(name);
-}
-
-public static void main(String[] args) {
-	TestRunner.run(suite());
-}
+public class Test_org_eclipse_swt_graphics_Region extends TestCase {
 
 @Override
 protected void setUp() {
@@ -917,65 +910,6 @@ public void test_add_intArray() {
 	points = new int[] {1,2,3,4,5,6};
 	reg6.add(points);
 	reg6.dispose();
-}
-
-public static Test suite() {
-	TestSuite suite = new TestSuite();
-	java.util.Vector<String> methodNames = methodNames();
-	java.util.Enumeration<String> e = methodNames.elements();
-	while (e.hasMoreElements()) {
-		suite.addTest(new Test_org_eclipse_swt_graphics_Region(e.nextElement()));
-	}
-	return suite;
-}
-public static java.util.Vector<String> methodNames() {
-	java.util.Vector<String> methodNames = new java.util.Vector<String>();
-	methodNames.addElement("test_Constructor");
-	methodNames.addElement("test_ConstructorLorg_eclipse_swt_graphics_Device");
-	methodNames.addElement("test_add$I");
-	methodNames.addElement("test_addLorg_eclipse_swt_graphics_Rectangle");
-	methodNames.addElement("test_addLorg_eclipse_swt_graphics_Region");
-	methodNames.addElement("test_containsII");
-	methodNames.addElement("test_containsLorg_eclipse_swt_graphics_Point");
-	methodNames.addElement("test_dispose");
-	methodNames.addElement("test_equalsLjava_lang_Object");
-	methodNames.addElement("test_getBounds");
-	methodNames.addElement("test_hashCode");
-	methodNames.addElement("test_intersectLorg_eclipse_swt_graphics_Rectangle");
-	methodNames.addElement("test_intersectLorg_eclipse_swt_graphics_Region");
-	methodNames.addElement("test_intersectsIIII");
-	methodNames.addElement("test_intersectsLorg_eclipse_swt_graphics_Rectangle");
-	methodNames.addElement("test_isEmpty");
-	methodNames.addElement("test_subtract$I");
-	methodNames.addElement("test_subtractLorg_eclipse_swt_graphics_Rectangle");
-	methodNames.addElement("test_subtractLorg_eclipse_swt_graphics_Region");
-	methodNames.addElement("test_toString");
-	methodNames.addElement("test_add_intArray");
-	return methodNames;
-}
-@Override
-protected void runTest() throws Throwable {
-	if (getName().equals("test_Constructor")) test_Constructor();
-	else if (getName().equals("test_ConstructorLorg_eclipse_swt_graphics_Device")) test_ConstructorLorg_eclipse_swt_graphics_Device();
-	else if (getName().equals("test_add$I")) test_add$I();
-	else if (getName().equals("test_addLorg_eclipse_swt_graphics_Rectangle")) test_addLorg_eclipse_swt_graphics_Rectangle();
-	else if (getName().equals("test_addLorg_eclipse_swt_graphics_Region")) test_addLorg_eclipse_swt_graphics_Region();
-	else if (getName().equals("test_containsII")) test_containsII();
-	else if (getName().equals("test_containsLorg_eclipse_swt_graphics_Point")) test_containsLorg_eclipse_swt_graphics_Point();
-	else if (getName().equals("test_dispose")) test_dispose();
-	else if (getName().equals("test_equalsLjava_lang_Object")) test_equalsLjava_lang_Object();
-	else if (getName().equals("test_getBounds")) test_getBounds();
-	else if (getName().equals("test_hashCode")) test_hashCode();
-	else if (getName().equals("test_intersectLorg_eclipse_swt_graphics_Rectangle")) test_intersectLorg_eclipse_swt_graphics_Rectangle();
-	else if (getName().equals("test_intersectLorg_eclipse_swt_graphics_Region")) test_intersectLorg_eclipse_swt_graphics_Region();
-	else if (getName().equals("test_intersectsIIII")) test_intersectsIIII();
-	else if (getName().equals("test_intersectsLorg_eclipse_swt_graphics_Rectangle")) test_intersectsLorg_eclipse_swt_graphics_Rectangle();
-	else if (getName().equals("test_isEmpty")) test_isEmpty();
-	else if (getName().equals("test_subtract$I")) test_subtract$I();
-	else if (getName().equals("test_subtractLorg_eclipse_swt_graphics_Rectangle")) test_subtractLorg_eclipse_swt_graphics_Rectangle();
-	else if (getName().equals("test_subtractLorg_eclipse_swt_graphics_Region")) test_subtractLorg_eclipse_swt_graphics_Region();
-	else if (getName().equals("test_toString")) test_toString();
-	else if (getName().equals("test_add_intArray")) test_add_intArray();
 }
 
 /* custom */

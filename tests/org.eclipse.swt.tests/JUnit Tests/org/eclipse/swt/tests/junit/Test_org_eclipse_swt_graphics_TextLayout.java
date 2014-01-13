@@ -1,26 +1,19 @@
 package org.eclipse.swt.tests.junit;
 
 import static org.junit.Assert.assertArrayEquals;
+import junit.framework.TestCase;
 
-import org.eclipse.swt.*;
-import org.eclipse.swt.widgets.*;
-import org.eclipse.swt.graphics.*;
-
-import junit.framework.*;
-import junit.textui.*;
-
-import java.util.*;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.graphics.TextLayout;
+import org.eclipse.swt.graphics.TextStyle;
+import org.eclipse.swt.widgets.Display;
 
 
-public class Test_org_eclipse_swt_graphics_TextLayout extends SwtTestCase {
+public class Test_org_eclipse_swt_graphics_TextLayout extends TestCase {
 	Display display;
 	
-public Test_org_eclipse_swt_graphics_TextLayout(String name) {
-	super(name);
-}
-public static void main(String[] args) {
-	TestRunner.run(suite());
-}
 @Override
 protected void setUp() {
 	display = Display.getDefault();
@@ -795,55 +788,5 @@ public void test_getTabs() {
 	layout.setTabs(null);
 	assertEquals(null, layout.getTabs());
 	layout.dispose();
-}
-/*Test suite end*/
-public static Test suite() {
-	TestSuite suite = new TestSuite();
-	Vector<String> methodNames = methodNames();
-	Enumeration<String> e = methodNames.elements();
-	while (e.hasMoreElements()) {
-		suite.addTest(new Test_org_eclipse_swt_graphics_TextLayout(e.nextElement()));
-	}
-	return suite;
-}
-public static java.util.Vector<String> methodNames() {
-	java.util.Vector<String> methodNames = new java.util.Vector<String>();
-	methodNames.addElement("test_getLevel");
-	methodNames.addElement("test_getLineOffsets");
-	methodNames.addElement("test_getLineIndex");
-	methodNames.addElement("test_getLineBounds");
-	methodNames.addElement("test_getAlignment");
-	methodNames.addElement("test_getOrientation");
-	methodNames.addElement("test_getText");
-	methodNames.addElement("test_getLineSpacing");
-	methodNames.addElement("test_getLocation");
-	methodNames.addElement("test_getNextOffset");
-	methodNames.addElement("test_getNextOffset2");
-	methodNames.addElement("test_getOffset");
-	methodNames.addElement("test_getTabs");
-	methodNames.addElement("test_getSegments");
-	methodNames.addElement("test_getSegmentsChars");
-	methodNames.addElement("test_setStyle");
-	return methodNames;
-}
-@Override
-protected void runTest() throws Throwable {
-	String name = getName();
-	if (name.equals("test_getLevel")) test_getLevel();
-	else if (name.equals("test_getLineOffsets")) test_getLineOffsets();	
-	else if (name.equals("test_getLineIndex")) test_getLineIndex();
-	else if (name.equals("test_getLineBounds")) test_getLineBounds();
-	else if (name.equals("test_getAlignment")) test_getAlignment();
-	else if (name.equals("test_getOrientation")) test_getOrientation();
-	else if (name.equals("test_getText")) test_getText();
-	else if (name.equals("test_getLineSpacing")) test_getLineSpacing();
-	else if (name.equals("test_getLocation")) test_getLocation();
-	else if (name.equals("test_getNextOffset")) test_getNextOffset();
-	else if (name.equals("test_getNextOffset2")) test_getNextOffset2();
-	else if (name.equals("test_getOffset")) test_getOffset();	
-	else if (name.equals("test_getTabs")) test_getTabs();	
-	else if (name.equals("test_getSegments")) test_getSegments();
-	else if (name.equals("test_getSegmentsChars")) test_getSegmentsChars();	
-	else if (name.equals("test_setStyle")) test_setStyle();	
 }
 }

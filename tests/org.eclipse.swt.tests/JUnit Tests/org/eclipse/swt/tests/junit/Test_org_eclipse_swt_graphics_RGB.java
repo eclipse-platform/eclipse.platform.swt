@@ -10,25 +10,16 @@
  *******************************************************************************/
 package org.eclipse.swt.tests.junit;
 
-import junit.framework.*;
-import junit.textui.*;
+import junit.framework.TestCase;
 
-import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.graphics.RGB;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.graphics.RGB
  *
  * @see org.eclipse.swt.graphics.RGB
  */
-public class Test_org_eclipse_swt_graphics_RGB extends SwtTestCase {
-
-public Test_org_eclipse_swt_graphics_RGB(String name) {
-	super(name);
-}
-
-public static void main(String[] args) {
-	TestRunner.run(suite());
-}
+public class Test_org_eclipse_swt_graphics_RGB extends TestCase {
 
 public void test_ConstructorIII() {
 	// Test RGB(int red, int green, int blue)
@@ -396,33 +387,5 @@ public void test_toString() {
 	if (s == null || s.length() == 0) {
 		fail("RGB.toString returns a null or empty String");
 	}
-}
-public static Test suite() {
-	TestSuite suite = new TestSuite();
-	java.util.Vector<String> methodNames = methodNames();
-	java.util.Enumeration<String> e = methodNames.elements();
-	while (e.hasMoreElements()) {
-		suite.addTest(new Test_org_eclipse_swt_graphics_RGB(e.nextElement()));
-	}
-	return suite;
-}
-public static java.util.Vector<String> methodNames() {
-	java.util.Vector<String> methodNames = new java.util.Vector<String>();
-	methodNames.addElement("test_ConstructorIII");
-	methodNames.addElement("test_ConstructorFFF");
-	methodNames.addElement("test_equalsLjava_lang_Object");
-	methodNames.addElement("test_getHSB");
-	methodNames.addElement("test_hashCode");
-	methodNames.addElement("test_toString");
-	return methodNames;
-}
-@Override
-protected void runTest() throws Throwable {
-	if (getName().equals("test_ConstructorIII")) test_ConstructorIII();
-	else if (getName().equals("test_ConstructorFFF")) test_ConstructorFFF();
-	else if (getName().equals("test_equalsLjava_lang_Object")) test_equalsLjava_lang_Object();
-	else if (getName().equals("test_getHSB")) test_getHSB();
-	else if (getName().equals("test_hashCode")) test_hashCode();
-	else if (getName().equals("test_toString")) test_toString();
 }
 }

@@ -11,25 +11,16 @@
 package org.eclipse.swt.tests.junit;
 
 
-import org.eclipse.swt.graphics.*;
+import junit.framework.TestCase;
 
-import junit.framework.*;
-import junit.textui.*;
+import org.eclipse.swt.graphics.Point;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.graphics.Point
  *
  * @see org.eclipse.swt.graphics.Point
  */
-public class Test_org_eclipse_swt_graphics_Point extends SwtTestCase {
-
-public Test_org_eclipse_swt_graphics_Point(String name) {
-	super(name);
-}
-
-public static void main(String[] args) {
-	TestRunner.run(suite());
-}
+public class Test_org_eclipse_swt_graphics_Point extends TestCase {
 
 public void test_ConstructorII() {
 	// Test new Point (int x, int y)
@@ -70,30 +61,5 @@ public void test_toString() {
 	assertNotNull(p.toString());
 	assertTrue(p.toString().length() > 0);
 	assertEquals("Point {3, 4}", p.toString());
-}
-
-public static Test suite() {
-	TestSuite suite = new TestSuite();
-	java.util.Vector<String> methodNames = methodNames();
-	java.util.Enumeration<String> e = methodNames.elements();
-	while (e.hasMoreElements()) {
-		suite.addTest(new Test_org_eclipse_swt_graphics_Point(e.nextElement()));
-	}
-	return suite;
-}
-public static java.util.Vector<String> methodNames() {
-	java.util.Vector<String> methodNames = new java.util.Vector<String>();
-	methodNames.addElement("test_ConstructorII");
-	methodNames.addElement("test_equalsLjava_lang_Object");
-	methodNames.addElement("test_hashCode");
-	methodNames.addElement("test_toString");
-	return methodNames;
-}
-@Override
-protected void runTest() throws Throwable {
-	if (getName().equals("test_ConstructorII")) test_ConstructorII();
-	else if (getName().equals("test_equalsLjava_lang_Object")) test_equalsLjava_lang_Object();
-	else if (getName().equals("test_hashCode")) test_hashCode();
-	else if (getName().equals("test_toString")) test_toString();
 }
 }

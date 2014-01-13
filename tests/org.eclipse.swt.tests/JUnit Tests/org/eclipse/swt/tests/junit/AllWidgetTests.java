@@ -33,7 +33,7 @@ public static Test suite() {
 	suite.addTest(Test_org_eclipse_swt_widgets_TableColumn.suite());
 	suite.addTest(Test_org_eclipse_swt_widgets_TreeItem.suite());
 	suite.addTest(Test_org_eclipse_swt_widgets_Caret.suite());
-	suite.addTest(Test_org_eclipse_swt_widgets_Event.suite());
+	suite.addTestSuite(Test_org_eclipse_swt_widgets_Event.class);
 	suite.addTest(Test_org_eclipse_swt_widgets_Menu.suite());
 	//suite.addTest(Test_org_eclipse_swt_widgets_Tracker.suite());
 	
@@ -66,10 +66,10 @@ public static Test suite() {
 	suite.addTest(Test_org_eclipse_swt_widgets_DirectoryDialog.suite());
 	suite.addTest(Test_org_eclipse_swt_widgets_FontDialog.suite());
 	suite.addTest(Test_org_eclipse_swt_widgets_MessageBox.suite());
-	suite.addTest(Test_org_eclipse_swt_widgets_Monitor.suite());
+	suite.addTestSuite(Test_org_eclipse_swt_widgets_Monitor.class);
 
 	suite.addTest(Test_org_eclipse_swt_custom_TableTree.suite());
-	suite.addTest(Test_org_eclipse_swt_custom_StyleRange.suite());
+	suite.addTestSuite(Test_org_eclipse_swt_custom_StyleRange.class);
 	suite.addTest(Test_org_eclipse_swt_custom_CCombo.suite());
 	suite.addTest(Test_org_eclipse_swt_custom_TableTreeItem.suite());
 	suite.addTest(Test_org_eclipse_swt_custom_CLabel.suite());

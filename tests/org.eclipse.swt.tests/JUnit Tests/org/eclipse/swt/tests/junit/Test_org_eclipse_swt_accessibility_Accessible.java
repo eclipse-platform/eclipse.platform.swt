@@ -10,29 +10,23 @@
  *******************************************************************************/
 package org.eclipse.swt.tests.junit;
 
-import java.util.Enumeration;
-import java.util.Vector;
+import junit.framework.TestCase;
 
-import junit.framework.*;
-import junit.textui.*;
-
-import org.eclipse.swt.widgets.*;
-import org.eclipse.swt.accessibility.*;
+import org.eclipse.swt.accessibility.Accessible;
+import org.eclipse.swt.accessibility.AccessibleControlEvent;
+import org.eclipse.swt.accessibility.AccessibleControlListener;
+import org.eclipse.swt.accessibility.AccessibleEvent;
+import org.eclipse.swt.accessibility.AccessibleListener;
+import org.eclipse.swt.accessibility.AccessibleTextEvent;
+import org.eclipse.swt.accessibility.AccessibleTextListener;
+import org.eclipse.swt.widgets.Shell;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.accessibility.Accessible
  *
  * @see org.eclipse.swt.accessibility.Accessible
  */
-public class Test_org_eclipse_swt_accessibility_Accessible extends SwtTestCase {	
-
-public Test_org_eclipse_swt_accessibility_Accessible(String name) {
-	super(name);
-}
-
-public static void main(String[] args) {
-	TestRunner.run(suite());
-}
+public class Test_org_eclipse_swt_accessibility_Accessible extends TestCase {	
 
 @Override
 protected void setUp() {
@@ -104,33 +98,6 @@ public void test_addAccessibleTextListenerLorg_eclipse_swt_accessibility_Accessi
 
 public void test_getControl() {
 	assertEquals(shell, accessible.getControl());
-}
-
-public static Test suite() {
-	TestSuite suite = new TestSuite();
-	Vector<String> methodNames = methodNames();
-	Enumeration<String> e = methodNames.elements();
-	while (e.hasMoreElements()) {
-		suite.addTest(new Test_org_eclipse_swt_accessibility_Accessible(e.nextElement()));
-	}
-	return suite;
-}
-
-public static Vector<String> methodNames() {
-	Vector<String> methodNames = new Vector<String>();
-	methodNames.addElement("test_addAccessibleControlListenerLorg_eclipse_swt_accessibility_AccessibleControlListener");
-	methodNames.addElement("test_addAccessibleListenerLorg_eclipse_swt_accessibility_AccessibleListener");
-	methodNames.addElement("test_addAccessibleTextListenerLorg_eclipse_swt_accessibility_AccessibleTextListener");
-	methodNames.addElement("test_getControl");
-	return methodNames;
-}
-
-@Override
-protected void runTest() throws Throwable {
-	if (getName().equals("test_addAccessibleControlListenerLorg_eclipse_swt_accessibility_AccessibleControlListener")) test_addAccessibleControlListenerLorg_eclipse_swt_accessibility_AccessibleControlListener();
-	else if (getName().equals("test_addAccessibleListenerLorg_eclipse_swt_accessibility_AccessibleListener")) test_addAccessibleListenerLorg_eclipse_swt_accessibility_AccessibleListener();
-	else if (getName().equals("test_addAccessibleTextListenerLorg_eclipse_swt_accessibility_AccessibleTextListener")) test_addAccessibleTextListenerLorg_eclipse_swt_accessibility_AccessibleTextListener();
-	else if (getName().equals("test_getControl")) test_getControl();
 }
 
 /* custom */

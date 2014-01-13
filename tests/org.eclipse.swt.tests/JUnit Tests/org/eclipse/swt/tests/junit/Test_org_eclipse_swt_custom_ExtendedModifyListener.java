@@ -11,30 +11,24 @@
 package org.eclipse.swt.tests.junit;
 
 
-import org.eclipse.swt.*;
-import org.eclipse.swt.widgets.*;
-import org.eclipse.swt.custom.*;
+import junit.framework.TestCase;
 
-import junit.framework.*;
-import junit.textui.*;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.ExtendedModifyEvent;
+import org.eclipse.swt.custom.ExtendedModifyListener;
+import org.eclipse.swt.custom.StyledText;
+import org.eclipse.swt.widgets.Shell;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.custom.ExtendedModifyListener
  *
  * @see org.eclipse.swt.custom.ExtendedModifyListener
  */
-public class Test_org_eclipse_swt_custom_ExtendedModifyListener extends SwtTestCase {
+public class Test_org_eclipse_swt_custom_ExtendedModifyListener extends TestCase {
 	Shell shell;
 	StyledText styledText;
 	int verify = -1;
 
-public Test_org_eclipse_swt_custom_ExtendedModifyListener(String name) {
-	super(name);
-}
-
-public static void main(String[] args) {
-	TestRunner.run(suite());
-}
 @Override
 protected void setUp() {
 	shell = new Shell();
@@ -302,24 +296,5 @@ public void test_modifyTextLorg_eclipse_swt_custom_ExtendedModifyEvent() {
 	verify = 21;
 	styledText.setText("L1\r\nL2\r\nL3\r\nL4\r\n");
 	styledText.removeExtendedModifyListener(listener);
-}
-
-public static Test suite() {
-	TestSuite suite = new TestSuite();
-	java.util.Vector<String> methodNames = methodNames();
-	java.util.Enumeration<String> e = methodNames.elements();
-	while (e.hasMoreElements()) {
-		suite.addTest(new Test_org_eclipse_swt_custom_ExtendedModifyListener(e.nextElement()));
-	}
-	return suite;
-}
-public static java.util.Vector<String> methodNames() {
-	java.util.Vector<String> methodNames = new java.util.Vector<String>();
-	methodNames.addElement("test_modifyTextLorg_eclipse_swt_custom_ExtendedModifyEvent");
-	return methodNames;
-}
-@Override
-protected void runTest() throws Throwable {
-	if (getName().equals("test_modifyTextLorg_eclipse_swt_custom_ExtendedModifyEvent")) test_modifyTextLorg_eclipse_swt_custom_ExtendedModifyEvent();
 }
 }

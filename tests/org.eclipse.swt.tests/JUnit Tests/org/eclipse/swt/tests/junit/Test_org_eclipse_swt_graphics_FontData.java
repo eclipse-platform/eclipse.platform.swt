@@ -10,28 +10,19 @@
  *******************************************************************************/
 package org.eclipse.swt.tests.junit;
 
-import java.util.*;
+import java.util.Locale;
 
-import junit.framework.*;
-import junit.textui.*;
+import junit.framework.TestCase;
 
-import org.eclipse.swt.*;
-import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.FontData;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.graphics.FontData
  *
  * @see org.eclipse.swt.graphics.FontData
  */
-public class Test_org_eclipse_swt_graphics_FontData extends SwtTestCase {
-
-public Test_org_eclipse_swt_graphics_FontData(String name) {
-	super(name);
-}
-
-public static void main(String[] args) {
-	TestRunner.run(suite());
-}
+public class Test_org_eclipse_swt_graphics_FontData extends TestCase {
 
 public void test_Constructor() {
 	// Test new FontData()
@@ -197,48 +188,5 @@ public void test_toString() {
 	FontData data = new FontData();
 	assertNotNull(data.toString());
 	assertTrue(data.toString().length() > 0);
-}
-
-public void test_win32_newLorg_eclipse_swt_internal_win32_LOGFONTI() {
-	// do not test - Windows only
-}
-
-public static Test suite() {
-	TestSuite suite = new TestSuite();
-	java.util.Vector<String> methodNames = methodNames();
-	java.util.Enumeration<String> e = methodNames.elements();
-	while (e.hasMoreElements()) {
-		suite.addTest(new Test_org_eclipse_swt_graphics_FontData(e.nextElement()));
-	}
-	return suite;
-}
-public static java.util.Vector<String> methodNames() {
-	java.util.Vector<String> methodNames = new java.util.Vector<String>();
-	methodNames.addElement("test_Constructor");
-	methodNames.addElement("test_ConstructorLjava_lang_String");
-	methodNames.addElement("test_ConstructorLjava_lang_StringII");
-	methodNames.addElement("test_equalsLjava_lang_Object");
-	methodNames.addElement("test_hashCode");
-	methodNames.addElement("test_setHeightI");
-	methodNames.addElement("test_setLocaleLjava_lang_String");
-	methodNames.addElement("test_setNameLjava_lang_String");
-	methodNames.addElement("test_setStyleI");
-	methodNames.addElement("test_toString");
-	methodNames.addElement("test_win32_newLorg_eclipse_swt_internal_win32_LOGFONTI");
-	return methodNames;
-}
-@Override
-protected void runTest() throws Throwable {
-	if (getName().equals("test_Constructor")) test_Constructor();
-	else if (getName().equals("test_ConstructorLjava_lang_String")) test_ConstructorLjava_lang_String();
-	else if (getName().equals("test_ConstructorLjava_lang_StringII")) test_ConstructorLjava_lang_StringII();
-	else if (getName().equals("test_equalsLjava_lang_Object")) test_equalsLjava_lang_Object();
-	else if (getName().equals("test_hashCode")) test_hashCode();
-	else if (getName().equals("test_setHeightI")) test_setHeightI();
-	else if (getName().equals("test_setLocaleLjava_lang_String")) test_setLocaleLjava_lang_String();
-	else if (getName().equals("test_setNameLjava_lang_String")) test_setNameLjava_lang_String();
-	else if (getName().equals("test_setStyleI")) test_setStyleI();
-	else if (getName().equals("test_toString")) test_toString();
-	else if (getName().equals("test_win32_newLorg_eclipse_swt_internal_win32_LOGFONTI")) test_win32_newLorg_eclipse_swt_internal_win32_LOGFONTI();
 }
 }

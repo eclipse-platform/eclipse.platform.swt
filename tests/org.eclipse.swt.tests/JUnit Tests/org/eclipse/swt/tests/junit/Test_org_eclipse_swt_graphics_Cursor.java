@@ -11,13 +11,15 @@
 package org.eclipse.swt.tests.junit;
 
 
-import java.io.*;
+import java.io.IOException;
+import java.io.InputStream;
 
-import junit.framework.*;
-import junit.textui.TestRunner;
+import junit.framework.TestCase;
 
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.graphics.Cursor;
+import org.eclipse.swt.graphics.ImageData;
+import org.eclipse.swt.graphics.ImageLoader;
 import org.eclipse.swt.widgets.Display;
 
 /**
@@ -25,15 +27,7 @@ import org.eclipse.swt.widgets.Display;
  *
  * @see org.eclipse.swt.graphics.Cursor
  */
-public class Test_org_eclipse_swt_graphics_Cursor extends SwtTestCase {
-
-public Test_org_eclipse_swt_graphics_Cursor(String name) {
-	super(name);
-}
-
-public static void main(String[] args) {
-	TestRunner.run(suite());
-}
+public class Test_org_eclipse_swt_graphics_Cursor extends TestCase {
 
 @Override
 protected void setUp() {
@@ -194,33 +188,6 @@ public void test_toString() {
 	} finally {
 		cursor.dispose();
 	}
-}
-
-public static Test suite() {
-	TestSuite suite = new TestSuite();
-	java.util.Vector<String> methodNames = methodNames();
-	java.util.Enumeration<String> e = methodNames.elements();
-	while (e.hasMoreElements()) {
-		suite.addTest(new Test_org_eclipse_swt_graphics_Cursor(e.nextElement()));
-	}
-	return suite;
-}
-public static java.util.Vector<String> methodNames() {
-	java.util.Vector<String> methodNames = new java.util.Vector<String>();
-	methodNames.addElement("test_ConstructorLorg_eclipse_swt_graphics_DeviceI");
-	methodNames.addElement("test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_graphics_ImageDataLorg_eclipse_swt_graphics_ImageDataII");
-	methodNames.addElement("test_equalsLjava_lang_Object");
-	methodNames.addElement("test_isDisposed");
-	methodNames.addElement("test_toString");
-	return methodNames;
-}
-@Override
-protected void runTest() throws Throwable {
-	if (getName().equals("test_ConstructorLorg_eclipse_swt_graphics_DeviceI")) test_ConstructorLorg_eclipse_swt_graphics_DeviceI();
-	else if (getName().equals("test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_graphics_ImageDataLorg_eclipse_swt_graphics_ImageDataII")) test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_graphics_ImageDataLorg_eclipse_swt_graphics_ImageDataII();
-	else if (getName().equals("test_equalsLjava_lang_Object")) test_equalsLjava_lang_Object();
-	else if (getName().equals("test_isDisposed")) test_isDisposed();
-	else if (getName().equals("test_toString")) test_toString();
 }
 
 /* custom */

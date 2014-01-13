@@ -48,9 +48,9 @@ public AllTests() {
 	 * - OLE
 	 * - browser
 	 */
-	addTest(Test_org_eclipse_swt_SWT.suite());
-	addTest(Test_org_eclipse_swt_SWTException.suite());
-	addTest(Test_org_eclipse_swt_SWTError.suite());
+	addTestSuite(Test_org_eclipse_swt_SWT.class);
+	addTestSuite(Test_org_eclipse_swt_SWTException.class);
+	addTestSuite(Test_org_eclipse_swt_SWTError.class);
 
 	/* NOTE: If the Display test suite is run, it must be run
 	 * before any other tests that need a display (i.e. graphics
@@ -60,22 +60,22 @@ public AllTests() {
 	addTest(Test_org_eclipse_swt_widgets_Display.suite());
 
 	addTest(Test_org_eclipse_swt_graphics_Image.suite());
-	addTest(Test_org_eclipse_swt_graphics_Cursor.suite());
+	addTestSuite(Test_org_eclipse_swt_graphics_Cursor.class);
 	addTest(Test_org_eclipse_swt_graphics_DeviceData.suite());
-	addTest(Test_org_eclipse_swt_graphics_ImageLoaderEvent.suite());
-	addTest(Test_org_eclipse_swt_graphics_RGB.suite());
-	addTest(Test_org_eclipse_swt_graphics_Font.suite());
-	addTest(Test_org_eclipse_swt_graphics_Rectangle.suite());
-	addTest(Test_org_eclipse_swt_graphics_FontData.suite());
-	addTest(Test_org_eclipse_swt_graphics_GC.suite());
+	addTestSuite(Test_org_eclipse_swt_graphics_ImageLoaderEvent.class);
+	addTestSuite(Test_org_eclipse_swt_graphics_RGB.class);
+	addTestSuite(Test_org_eclipse_swt_graphics_Font.class);
+	addTestSuite(Test_org_eclipse_swt_graphics_Rectangle.class);
+	addTestSuite(Test_org_eclipse_swt_graphics_FontData.class);
+	addTestSuite(Test_org_eclipse_swt_graphics_GC.class);
 	addTest(Test_org_eclipse_swt_graphics_ImageData.suite());
-	addTest(Test_org_eclipse_swt_graphics_Region.suite());
-	addTest(Test_org_eclipse_swt_graphics_FontMetrics.suite());
-	addTest(Test_org_eclipse_swt_graphics_Color.suite());
-	addTest(Test_org_eclipse_swt_graphics_Point.suite());
-	addTest(Test_org_eclipse_swt_graphics_PaletteData.suite());
+	addTestSuite(Test_org_eclipse_swt_graphics_Region.class);
+	addTestSuite(Test_org_eclipse_swt_graphics_FontMetrics.class);
+	addTestSuite(Test_org_eclipse_swt_graphics_Color.class);
+	addTestSuite(Test_org_eclipse_swt_graphics_Point.class);
+	addTestSuite(Test_org_eclipse_swt_graphics_PaletteData.class);
 	addTest(Test_org_eclipse_swt_graphics_ImageLoader.suite());
-	addTest(Test_org_eclipse_swt_graphics_TextLayout.suite());
+	addTestSuite(Test_org_eclipse_swt_graphics_TextLayout.class);
 
 	addTest(Test_org_eclipse_swt_widgets_ExpandItem.suite());
 	addTest(Test_org_eclipse_swt_widgets_MenuItem.suite());
@@ -86,7 +86,7 @@ public AllTests() {
 	addTest(Test_org_eclipse_swt_widgets_TableColumn.suite());
 	addTest(Test_org_eclipse_swt_widgets_TreeItem.suite());
 	addTest(Test_org_eclipse_swt_widgets_Caret.suite());
-	addTest(Test_org_eclipse_swt_widgets_Event.suite());
+	addTestSuite(Test_org_eclipse_swt_widgets_Event.class);
 	addTest(Test_org_eclipse_swt_widgets_Menu.suite());
 	//addTest(Test_org_eclipse_swt_widgets_Tracker.suite());
 	
@@ -119,11 +119,11 @@ public AllTests() {
 	addTest(Test_org_eclipse_swt_widgets_DirectoryDialog.suite());
 	addTest(Test_org_eclipse_swt_widgets_FontDialog.suite());
 	addTest(Test_org_eclipse_swt_widgets_MessageBox.suite());
-	addTest(Test_org_eclipse_swt_widgets_Monitor.suite());
-	addTest(Test_org_eclipse_swt_layout_GridData.suite());
+	addTestSuite(Test_org_eclipse_swt_widgets_Monitor.class);
+	addTestSuite(Test_org_eclipse_swt_layout_GridData.class);
 
 	addTest(Test_org_eclipse_swt_custom_TableTree.suite());
-	addTest(Test_org_eclipse_swt_custom_StyleRange.suite());
+	addTestSuite(Test_org_eclipse_swt_custom_StyleRange.class);
 	addTest(Test_org_eclipse_swt_custom_CCombo.suite());
 	addTest(Test_org_eclipse_swt_custom_TableTreeItem.suite());
 	addTest(Test_org_eclipse_swt_custom_CLabel.suite());
@@ -152,7 +152,7 @@ public AllTests() {
 	addTest(Test_org_eclipse_swt_printing_PrinterData.suite());
 	addTest(Test_org_eclipse_swt_printing_Printer.suite());
 
-	addTest(Test_org_eclipse_swt_program_Program.suite());
+	addTestSuite(Test_org_eclipse_swt_program_Program.class);
 
 //	addTest(Test_org_eclipse_swt_dnd_FileTransfer.suite());
 //	addTest(Test_org_eclipse_swt_dnd_TextTransfer.suite());
@@ -162,21 +162,21 @@ public AllTests() {
 //	addTest(Test_org_eclipse_swt_dnd_DropTargetEvent.suite());
 //	addTest(Test_org_eclipse_swt_dnd_DropTarget.suite());
 
-	addTest(Test_org_eclipse_swt_accessibility_Accessible.suite());
-	addTest(Test_org_eclipse_swt_accessibility_AccessibleControlEvent.suite());
-	addTest(Test_org_eclipse_swt_accessibility_AccessibleEvent.suite());
+	addTestSuite(Test_org_eclipse_swt_accessibility_Accessible.class);
+	addTestSuite(Test_org_eclipse_swt_accessibility_AccessibleControlEvent.class);
+	addTestSuite(Test_org_eclipse_swt_accessibility_AccessibleEvent.class);
 
 	addTest(Test_org_eclipse_swt_browser_Browser.suite());
-	addTest(Test_org_eclipse_swt_browser_CloseWindowListener.suite());
-	addTest(Test_org_eclipse_swt_browser_LocationAdapter.suite());
-	addTest(Test_org_eclipse_swt_browser_LocationListener.suite());
-	addTest(Test_org_eclipse_swt_browser_OpenWindowListener.suite());
-	addTest(Test_org_eclipse_swt_browser_ProgressAdapter.suite());
-	addTest(Test_org_eclipse_swt_browser_ProgressListener.suite());
-	addTest(Test_org_eclipse_swt_browser_StatusTextListener.suite());
-	addTest(Test_org_eclipse_swt_browser_TitleListener.suite());
-	addTest(Test_org_eclipse_swt_browser_VisibilityWindowAdapter.suite());
-	addTest(Test_org_eclipse_swt_browser_VisibilityWindowListener.suite());
+	addTestSuite(Test_org_eclipse_swt_browser_CloseWindowListener.class);
+	addTestSuite(Test_org_eclipse_swt_browser_LocationAdapter.class);
+	addTestSuite(Test_org_eclipse_swt_browser_LocationListener.class);
+	addTestSuite(Test_org_eclipse_swt_browser_OpenWindowListener.class);
+	addTestSuite(Test_org_eclipse_swt_browser_ProgressAdapter.class);
+	addTestSuite(Test_org_eclipse_swt_browser_ProgressListener.class);
+	addTestSuite(Test_org_eclipse_swt_browser_StatusTextListener.class);
+	addTestSuite(Test_org_eclipse_swt_browser_TitleListener.class);
+	addTestSuite(Test_org_eclipse_swt_browser_VisibilityWindowAdapter.class);
+	addTestSuite(Test_org_eclipse_swt_browser_VisibilityWindowListener.class);
 	addTest(org.eclipse.swt.tests.junit.browser.Test_BrowserSuite.suite());
 
 }

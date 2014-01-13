@@ -11,29 +11,21 @@
 package org.eclipse.swt.tests.junit;
 
 
-import org.eclipse.swt.*;
-import org.eclipse.swt.widgets.*;
-import org.eclipse.swt.graphics.*;
+import junit.framework.TestCase;
 
-import junit.framework.*;
-import junit.textui.*;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Font;
+import org.eclipse.swt.graphics.FontData;
+import org.eclipse.swt.widgets.Display;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.graphics.Font
  *
  * @see org.eclipse.swt.graphics.Font
  */
-public class Test_org_eclipse_swt_graphics_Font extends SwtTestCase {
+public class Test_org_eclipse_swt_graphics_Font extends TestCase {
 
 Display display;
-
-public Test_org_eclipse_swt_graphics_Font(String name) {
-	super(name);
-}
-
-public static void main(String[] args) {
-	TestRunner.run(suite());
-}
 
 @Override
 protected void setUp() {
@@ -346,44 +338,4 @@ public void test_toString() {
 	assertNotNull(font.toString());
 }
 
-public void test_win32_newLorg_eclipse_swt_graphics_DeviceI() {
-	// do not test - Windows only
-}
-
-public static Test suite() {
-	TestSuite suite = new TestSuite();
-	java.util.Vector<String> methodNames = methodNames();
-	java.util.Enumeration<String> e = methodNames.elements();
-	while (e.hasMoreElements()) {
-		suite.addTest(new Test_org_eclipse_swt_graphics_Font(e.nextElement()));
-	}
-	return suite;
-}
-public static java.util.Vector<String> methodNames() {
-	java.util.Vector<String> methodNames = new java.util.Vector<String>();
-	methodNames.addElement("test_ConstructorLorg_eclipse_swt_graphics_Device$Lorg_eclipse_swt_graphics_FontData");
-	methodNames.addElement("test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_graphics_FontData");
-	methodNames.addElement("test_ConstructorLorg_eclipse_swt_graphics_DeviceLjava_lang_StringII");
-	methodNames.addElement("test_dispose");
-	methodNames.addElement("test_equalsLjava_lang_Object");
-	methodNames.addElement("test_getFontData");
-	methodNames.addElement("test_hashCode");
-	methodNames.addElement("test_isDisposed");
-	methodNames.addElement("test_toString");
-	methodNames.addElement("test_win32_newLorg_eclipse_swt_graphics_DeviceI");
-	return methodNames;
-}
-@Override
-protected void runTest() throws Throwable {
-	if (getName().equals("test_ConstructorLorg_eclipse_swt_graphics_Device$Lorg_eclipse_swt_graphics_FontData")) test_ConstructorLorg_eclipse_swt_graphics_Device$Lorg_eclipse_swt_graphics_FontData();
-	else if (getName().equals("test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_graphics_FontData")) test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_graphics_FontData();
-	else if (getName().equals("test_ConstructorLorg_eclipse_swt_graphics_DeviceLjava_lang_StringII")) test_ConstructorLorg_eclipse_swt_graphics_DeviceLjava_lang_StringII();
-	else if (getName().equals("test_dispose")) test_dispose();
-	else if (getName().equals("test_equalsLjava_lang_Object")) test_equalsLjava_lang_Object();
-	else if (getName().equals("test_getFontData")) test_getFontData();
-	else if (getName().equals("test_hashCode")) test_hashCode();
-	else if (getName().equals("test_isDisposed")) test_isDisposed();
-	else if (getName().equals("test_toString")) test_toString();
-	else if (getName().equals("test_win32_newLorg_eclipse_swt_graphics_DeviceI")) test_win32_newLorg_eclipse_swt_graphics_DeviceI();
-}
 }

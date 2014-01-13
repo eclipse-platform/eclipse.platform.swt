@@ -10,26 +10,18 @@
  *******************************************************************************/
 package org.eclipse.swt.tests.junit;
 
-import junit.framework.*;
-import junit.textui.*;
+import junit.framework.TestCase;
 
-import org.eclipse.swt.widgets.*;
-import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Monitor;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.widgets.Monitor
  *
  * @see org.eclipse.swt.widgets.Monitor
  */
-public class Test_org_eclipse_swt_widgets_Monitor extends SwtTestCase {
-	
-public Test_org_eclipse_swt_widgets_Monitor(String name) {
-	super(name);
-}
-
-public static void main(String[] args) {
-	TestRunner.run(suite());
-}
+public class Test_org_eclipse_swt_widgets_Monitor extends TestCase {
 
 @Override
 protected void setUp() {
@@ -79,34 +71,6 @@ public void test_hashCode() {
 			break;
 		}
 	}
-}
-
-
-public static Test suite() {
-	TestSuite suite = new TestSuite();
-	java.util.Vector<String> methodNames = methodNames();
-	java.util.Enumeration<String> e = methodNames.elements();
-	while (e.hasMoreElements()) {
-		suite.addTest(new Test_org_eclipse_swt_widgets_Monitor(e.nextElement()));
-	}
-	return suite;
-}
-
-public static java.util.Vector<String> methodNames() {
-	java.util.Vector<String> methodNames = new java.util.Vector<String>();
-	methodNames.addElement("test_equalsLjava_lang_Object");
-	methodNames.addElement("test_getBounds");
-	methodNames.addElement("test_getClientArea");
-	methodNames.addElement("test_hashCode");
-	return methodNames;
-}
-
-@Override
-protected void runTest() throws Throwable {
-	if (getName().equals("test_equalsLjava_lang_Object")) test_equalsLjava_lang_Object();
-	else if (getName().equals("test_getBounds")) test_getBounds();
-	else if (getName().equals("test_getClientArea")) test_getClientArea();
-	else if (getName().equals("test_hashCode")) test_hashCode();
 }
 
 /* custom */

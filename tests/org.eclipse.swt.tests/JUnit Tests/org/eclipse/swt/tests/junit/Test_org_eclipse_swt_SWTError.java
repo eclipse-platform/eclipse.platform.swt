@@ -10,27 +10,20 @@
  *******************************************************************************/
 package org.eclipse.swt.tests.junit;
 
-import java.io.*;
+import java.io.ByteArrayOutputStream;
+import java.io.PrintStream;
 
-import junit.framework.*;
-import junit.textui.*;
+import junit.framework.TestCase;
 
-import org.eclipse.swt.*;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.SWTError;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.SWTError
  *
  * @see org.eclipse.swt.SWTError
  */
-public class Test_org_eclipse_swt_SWTError extends SwtTestCase {
-
-public Test_org_eclipse_swt_SWTError(String name) {
-	super(name);
-}
-
-public static void main(String[] args) {
-	TestRunner.run(suite());
-}
+public class Test_org_eclipse_swt_SWTError extends TestCase {
 
 public void test_Constructor() {
 	assertTrue (
@@ -92,34 +85,5 @@ public void test_printStackTrace() {
 	error.printStackTrace();
 	assertTrue(out.size() > 0);
 	assertTrue(new String(out.toByteArray()).indexOf("test_printStackTrace") != -1);
-}
-
-public static Test suite() {
-	TestSuite suite = new TestSuite();
-	java.util.Vector<String> methodNames = methodNames();
-	java.util.Enumeration<String> e = methodNames.elements();
-	while (e.hasMoreElements()) {
-		suite.addTest(new Test_org_eclipse_swt_SWTError(e.nextElement()));
-	}
-	return suite;
-}
-public static java.util.Vector<String> methodNames() {
-	java.util.Vector<String> methodNames = new java.util.Vector<String>();
-	methodNames.addElement("test_Constructor");
-	methodNames.addElement("test_ConstructorI");
-	methodNames.addElement("test_ConstructorILjava_lang_String");
-	methodNames.addElement("test_ConstructorLjava_lang_String");
-	methodNames.addElement("test_getMessage");
-	methodNames.addElement("test_printStackTrace");
-	return methodNames;
-}
-@Override
-protected void runTest() throws Throwable {
-	if (getName().equals("test_Constructor")) test_Constructor();
-	else if (getName().equals("test_ConstructorI")) test_ConstructorI();
-	else if (getName().equals("test_ConstructorILjava_lang_String")) test_ConstructorILjava_lang_String();
-	else if (getName().equals("test_ConstructorLjava_lang_String")) test_ConstructorLjava_lang_String();
-	else if (getName().equals("test_getMessage")) test_getMessage();
-	else if (getName().equals("test_printStackTrace")) test_printStackTrace();
 }
 }

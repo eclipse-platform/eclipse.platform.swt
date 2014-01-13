@@ -11,28 +11,23 @@
 package org.eclipse.swt.tests.junit;
 
 
-import org.eclipse.swt.*;
-import org.eclipse.swt.widgets.*;
-import org.eclipse.swt.custom.*;
+import junit.framework.TestCase;
 
-import junit.framework.*;
-import junit.textui.*;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.LineBackgroundEvent;
+import org.eclipse.swt.custom.LineBackgroundListener;
+import org.eclipse.swt.custom.StyledText;
+import org.eclipse.swt.widgets.Shell;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.custom.LineBackgroundListener
  *
  * @see org.eclipse.swt.custom.LineBackgroundListener
  */
-public class Test_org_eclipse_swt_custom_LineBackgroundListener extends SwtTestCase {
+public class Test_org_eclipse_swt_custom_LineBackgroundListener extends TestCase {
 	Shell shell;
 	StyledText styledText;
 
-public Test_org_eclipse_swt_custom_LineBackgroundListener(String name) {
-	super(name);
-}
-public static void main(String[] args) {
-	TestRunner.run(suite());
-}
 @Override
 protected void setUp() {
 	shell = new Shell();
@@ -53,24 +48,5 @@ public void test_lineGetBackgroundLorg_eclipse_swt_custom_LineBackgroundEvent() 
 	styledText.selectAll();
 	styledText.copy();
 	styledText.removeLineBackgroundListener(listener);
-}
-
-public static Test suite() {
-	TestSuite suite = new TestSuite();
-	java.util.Vector<String> methodNames = methodNames();
-	java.util.Enumeration<String> e = methodNames.elements();
-	while (e.hasMoreElements()) {
-		suite.addTest(new Test_org_eclipse_swt_custom_LineBackgroundListener(e.nextElement()));
-	}
-	return suite;
-}
-public static java.util.Vector<String> methodNames() {
-	java.util.Vector<String> methodNames = new java.util.Vector<String>();
-	methodNames.addElement("test_lineGetBackgroundLorg_eclipse_swt_custom_LineBackgroundEvent");
-	return methodNames;
-}
-@Override
-protected void runTest() throws Throwable {
-	if (getName().equals("test_lineGetBackgroundLorg_eclipse_swt_custom_LineBackgroundEvent")) test_lineGetBackgroundLorg_eclipse_swt_custom_LineBackgroundEvent();
 }
 }

@@ -24,24 +24,24 @@ public static void main(String[] args) {
 public static Test suite() {
 	TestSuite suite = new TestSuite();
 
-	suite.addTest(Test_org_eclipse_swt_graphics_Color.suite());
-	suite.addTest(Test_org_eclipse_swt_graphics_Cursor.suite());
+	suite.addTestSuite(Test_org_eclipse_swt_graphics_Color.class);
+	suite.addTestSuite(Test_org_eclipse_swt_graphics_Cursor.class);
 	suite.addTest(Test_org_eclipse_swt_graphics_DeviceData.suite());
-	suite.addTest(Test_org_eclipse_swt_graphics_Font.suite());
-	suite.addTest(Test_org_eclipse_swt_graphics_FontData.suite());
-	suite.addTest(Test_org_eclipse_swt_graphics_FontMetrics.suite());
-	suite.addTest(Test_org_eclipse_swt_graphics_GC.suite());
+	suite.addTestSuite(Test_org_eclipse_swt_graphics_Font.class);
+	suite.addTestSuite(Test_org_eclipse_swt_graphics_FontData.class);
+	suite.addTestSuite(Test_org_eclipse_swt_graphics_FontMetrics.class);
+	suite.addTestSuite(Test_org_eclipse_swt_graphics_GC.class);
 	suite.addTest(Test_org_eclipse_swt_graphics_Image.suite());
 	suite.addTest(Test_org_eclipse_swt_graphics_ImageData.suite());
-	suite.addTest(Test_org_eclipse_swt_graphics_PaletteData.suite());
-	suite.addTest(Test_org_eclipse_swt_graphics_Point.suite());
-	suite.addTest(Test_org_eclipse_swt_graphics_Rectangle.suite());
-	suite.addTest(Test_org_eclipse_swt_graphics_Region.suite());
-	suite.addTest(Test_org_eclipse_swt_graphics_RGB.suite());
-	suite.addTest(Test_org_eclipse_swt_graphics_TextLayout.suite());
+	suite.addTestSuite(Test_org_eclipse_swt_graphics_PaletteData.class);
+	suite.addTestSuite(Test_org_eclipse_swt_graphics_Point.class);
+	suite.addTestSuite(Test_org_eclipse_swt_graphics_Rectangle.class);
+	suite.addTestSuite(Test_org_eclipse_swt_graphics_Region.class);
+	suite.addTestSuite(Test_org_eclipse_swt_graphics_RGB.class);
+	suite.addTestSuite(Test_org_eclipse_swt_graphics_TextLayout.class);
 	
 	suite.addTest(Test_org_eclipse_swt_graphics_ImageLoader.suite());
-	suite.addTest(Test_org_eclipse_swt_graphics_ImageLoaderEvent.suite());
+	suite.addTestSuite(Test_org_eclipse_swt_graphics_ImageLoaderEvent.class);
 
 	return suite;
 }

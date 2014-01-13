@@ -11,25 +11,16 @@
 package org.eclipse.swt.tests.junit;
 
 
-import junit.framework.*;
-import junit.textui.*;
+import junit.framework.TestCase;
 
-import org.eclipse.swt.widgets.*;
+import org.eclipse.swt.widgets.Event;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.widgets.Event
  *
  * @see org.eclipse.swt.widgets.Event
  */
-public class Test_org_eclipse_swt_widgets_Event extends SwtTestCase {
-
-public Test_org_eclipse_swt_widgets_Event(String name) {
-	super(name);
-}
-
-public static void main(String[] args) {
-	TestRunner.run(suite());
-}
+public class Test_org_eclipse_swt_widgets_Event extends TestCase {
 
 public void test_Constructor() {
 	Event event = new Event();
@@ -40,26 +31,5 @@ public void test_toString() {
 	Event event = new Event();
 	assertNotNull(event.toString());
 	assertTrue(event.toString().length() > 0);
-}
-
-public static Test suite() {
-	TestSuite suite = new TestSuite();
-	java.util.Vector<String> methodNames = methodNames();
-	java.util.Enumeration<String> e = methodNames.elements();
-	while (e.hasMoreElements()) {
-		suite.addTest(new Test_org_eclipse_swt_widgets_Event(e.nextElement()));
-	}
-	return suite;
-}
-public static java.util.Vector<String> methodNames() {
-	java.util.Vector<String> methodNames = new java.util.Vector<String>();
-	methodNames.addElement("test_Constructor");
-	methodNames.addElement("test_toString");
-	return methodNames;
-}
-@Override
-protected void runTest() throws Throwable {
-	if (getName().equals("test_Constructor")) test_Constructor();
-	else if (getName().equals("test_toString")) test_toString();
 }
 }

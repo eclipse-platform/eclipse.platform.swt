@@ -11,26 +11,19 @@
 package org.eclipse.swt.tests.junit;
 
 
-import junit.framework.*;
-import junit.textui.*;
+import junit.framework.TestCase;
 
-import org.eclipse.swt.widgets.*;
-import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.graphics.FontMetrics;
+import org.eclipse.swt.graphics.GC;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Shell;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.graphics.FontMetrics
  *
  * @see org.eclipse.swt.graphics.FontMetrics
  */
-public class Test_org_eclipse_swt_graphics_FontMetrics extends SwtTestCase {
-
-public Test_org_eclipse_swt_graphics_FontMetrics(String name) {
-	super(name);
-}
-
-public static void main(String[] args) {
-	TestRunner.run(suite());
-}
+public class Test_org_eclipse_swt_graphics_FontMetrics extends TestCase {
 
 @Override
 protected void setUp() {
@@ -82,37 +75,6 @@ public void test_hashCode() {
 	if (fm1.equals(fm2)) {
 		assertEquals(fm1.hashCode(), fm2.hashCode());
 	}
-}
-
-public static Test suite() {
-	TestSuite suite = new TestSuite();
-	java.util.Vector<String> methodNames = methodNames();
-	java.util.Enumeration<String> e = methodNames.elements();
-	while (e.hasMoreElements()) {
-		suite.addTest(new Test_org_eclipse_swt_graphics_FontMetrics(e.nextElement()));
-	}
-	return suite;
-}
-public static java.util.Vector<String> methodNames() {
-	java.util.Vector<String> methodNames = new java.util.Vector<String>();
-	methodNames.addElement("test_equalsLjava_lang_Object");
-	methodNames.addElement("test_getAscent");
-	methodNames.addElement("test_getAverageCharWidth");
-	methodNames.addElement("test_getDescent");
-	methodNames.addElement("test_getHeight");
-	methodNames.addElement("test_getLeading");
-	methodNames.addElement("test_hashCode");
-	return methodNames;
-}
-@Override
-protected void runTest() throws Throwable {
-	if (getName().equals("test_equalsLjava_lang_Object")) test_equalsLjava_lang_Object();
-	else if (getName().equals("test_getAscent")) test_getAscent();
-	else if (getName().equals("test_getAverageCharWidth")) test_getAverageCharWidth();
-	else if (getName().equals("test_getDescent")) test_getDescent();
-	else if (getName().equals("test_getHeight")) test_getHeight();
-	else if (getName().equals("test_getLeading")) test_getLeading();
-	else if (getName().equals("test_hashCode")) test_hashCode();
 }
 
 /* custom */

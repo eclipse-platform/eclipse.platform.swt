@@ -10,27 +10,21 @@
  *******************************************************************************/
 package org.eclipse.swt.tests.junit;
 
-import junit.framework.*;
-import junit.textui.*;
+import junit.framework.TestCase;
 
-import org.eclipse.swt.*;
-import org.eclipse.swt.browser.*;
-import org.eclipse.swt.widgets.*;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.browser.Browser;
+import org.eclipse.swt.browser.OpenWindowListener;
+import org.eclipse.swt.browser.WindowEvent;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Shell;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.browser.OpenWindowListener
  *
  * @see org.eclipse.swt.browser.OpenWindowListener
  */
-public class Test_org_eclipse_swt_browser_OpenWindowListener extends SwtTestCase {
-
-public Test_org_eclipse_swt_browser_OpenWindowListener(String name) {
-	super(name);
-}
-
-public static void main(String[] args) {
-	TestRunner.run(suite());
-}
+public class Test_org_eclipse_swt_browser_OpenWindowListener extends TestCase {
 
 public void test_openWindowLorg_eclipse_swt_browser_WindowEvent() {
 	Display display = Display.getCurrent();
@@ -41,27 +35,5 @@ public void test_openWindowLorg_eclipse_swt_browser_WindowEvent() {
 		}
 	});
 	shell.close();
-}
-
-
-public static Test suite() {
-	TestSuite suite = new TestSuite();
-	java.util.Vector<String> methodNames = methodNames();
-	java.util.Enumeration<String> e = methodNames.elements();
-	while (e.hasMoreElements()) {
-		suite.addTest(new Test_org_eclipse_swt_browser_OpenWindowListener(e.nextElement()));
-	}
-	return suite;
-}
-
-public static java.util.Vector<String> methodNames() {
-	java.util.Vector<String> methodNames = new java.util.Vector<String>();
-	methodNames.addElement("test_openWindowLorg_eclipse_swt_browser_WindowEvent");
-	return methodNames;
-}
-
-@Override
-protected void runTest() throws Throwable {
-	if (getName().equals("test_openWindowLorg_eclipse_swt_browser_WindowEvent")) test_openWindowLorg_eclipse_swt_browser_WindowEvent();
 }
 }

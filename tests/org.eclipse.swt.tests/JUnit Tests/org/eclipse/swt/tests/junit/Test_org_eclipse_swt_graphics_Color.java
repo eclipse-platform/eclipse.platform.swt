@@ -10,26 +10,18 @@
  *******************************************************************************/
 package org.eclipse.swt.tests.junit;
 
-import junit.framework.*;
-import junit.textui.*;
+import junit.framework.TestCase;
 
-import org.eclipse.swt.widgets.*;
-import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.RGB;
+import org.eclipse.swt.widgets.Display;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.graphics.Color
  *
  * @see org.eclipse.swt.graphics.Color
  */
-public class Test_org_eclipse_swt_graphics_Color extends SwtTestCase {
-
-public Test_org_eclipse_swt_graphics_Color(String name) {
-	super(name);
-}
-
-public static void main(String[] args) {
-	TestRunner.run(suite());
-}
+public class Test_org_eclipse_swt_graphics_Color extends TestCase {
 
 @Override
 protected void setUp() {
@@ -235,49 +227,6 @@ public void test_toString() {
 	} finally {
 		color.dispose();
 	}
-}
-
-public void test_win32_newLorg_eclipse_swt_graphics_DeviceI() {
-	// do not test - Windows platform only
-}
-
-public static Test suite() {
-	TestSuite suite = new TestSuite();
-	java.util.Vector<String> methodNames = methodNames();
-	java.util.Enumeration<String> e = methodNames.elements();
-	while (e.hasMoreElements()) {
-		suite.addTest(new Test_org_eclipse_swt_graphics_Color(e.nextElement()));
-	}
-	return suite;
-}
-public static java.util.Vector<String> methodNames() {
-	java.util.Vector<String> methodNames = new java.util.Vector<String>();
-	methodNames.addElement("test_ConstructorLorg_eclipse_swt_graphics_DeviceIII");
-	methodNames.addElement("test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_graphics_RGB");
-	methodNames.addElement("test_equalsLjava_lang_Object");
-	methodNames.addElement("test_getBlue");
-	methodNames.addElement("test_getGreen");
-	methodNames.addElement("test_getRGB");
-	methodNames.addElement("test_getRed");
-	methodNames.addElement("test_hashCode");
-	methodNames.addElement("test_isDisposed");
-	methodNames.addElement("test_toString");
-	methodNames.addElement("test_win32_newLorg_eclipse_swt_graphics_DeviceI");
-	return methodNames;
-}
-@Override
-protected void runTest() throws Throwable {
-	if (getName().equals("test_ConstructorLorg_eclipse_swt_graphics_DeviceIII")) test_ConstructorLorg_eclipse_swt_graphics_DeviceIII();
-	else if (getName().equals("test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_graphics_RGB")) test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_graphics_RGB();
-	else if (getName().equals("test_equalsLjava_lang_Object")) test_equalsLjava_lang_Object();
-	else if (getName().equals("test_getBlue")) test_getBlue();
-	else if (getName().equals("test_getGreen")) test_getGreen();
-	else if (getName().equals("test_getRGB")) test_getRGB();
-	else if (getName().equals("test_getRed")) test_getRed();
-	else if (getName().equals("test_hashCode")) test_hashCode();
-	else if (getName().equals("test_isDisposed")) test_isDisposed();
-	else if (getName().equals("test_toString")) test_toString();
-	else if (getName().equals("test_win32_newLorg_eclipse_swt_graphics_DeviceI")) test_win32_newLorg_eclipse_swt_graphics_DeviceI();
 }
 
 /* custom */

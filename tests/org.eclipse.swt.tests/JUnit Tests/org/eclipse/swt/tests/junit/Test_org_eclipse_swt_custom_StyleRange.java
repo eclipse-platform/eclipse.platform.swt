@@ -11,11 +11,12 @@
 package org.eclipse.swt.tests.junit;
 
 
-import java.util.*;
+import java.util.Enumeration;
+import java.util.HashSet;
+import java.util.Hashtable;
+import java.util.Set;
 
-import junit.framework.Test;
-import junit.framework.TestSuite;
-import junit.textui.TestRunner;
+import junit.framework.TestCase;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StyleRange;
@@ -28,18 +29,11 @@ import org.eclipse.swt.widgets.Display;
  *
  * @see org.eclipse.swt.custom.StyleRange
  */
-public class Test_org_eclipse_swt_custom_StyleRange extends SwtTestCase {
+public class Test_org_eclipse_swt_custom_StyleRange extends TestCase {
 	final static RGB RED = new RGB(255,0,0);
 	final static RGB BLUE = new RGB(0,0,255);
 	final static RGB GREEN = new RGB(0,255,0);
 	Hashtable<RGB, Color> colors = new Hashtable<RGB, Color>();
-public Test_org_eclipse_swt_custom_StyleRange(String name) {
-	super(name);
-}
-
-public static void main(String[] args) {
-	TestRunner.run(suite());
-}
 private Color getColor(RGB rgb) {
 	return colors.get(rgb);
 }
@@ -155,40 +149,5 @@ public void test_similarToLorg_eclipse_swt_custom_StyleRange() {
 public void test_toString() {
 	StyleRange styleRange = new StyleRange(6, 10, null, getColor(BLUE), SWT.NORMAL);
 	styleRange.toString();
-}
-
-public static Test suite() {
-	TestSuite suite = new TestSuite();
-	java.util.Vector<String> methodNames = methodNames();
-	java.util.Enumeration<String> e = methodNames.elements();
-	while (e.hasMoreElements()) {
-		suite.addTest(new Test_org_eclipse_swt_custom_StyleRange(e.nextElement()));
-	}
-	return suite;
-}
-public static java.util.Vector<String> methodNames() {
-	java.util.Vector<String> methodNames = new java.util.Vector<String>();
-	methodNames.addElement("test_Constructor");
-	methodNames.addElement("test_ConstructorIILorg_eclipse_swt_graphics_ColorLorg_eclipse_swt_graphics_Color");
-	methodNames.addElement("test_ConstructorIILorg_eclipse_swt_graphics_ColorLorg_eclipse_swt_graphics_ColorI");
-	methodNames.addElement("test_clone");
-	methodNames.addElement("test_equalsLjava_lang_Object");
-	methodNames.addElement("test_hashCode");
-	methodNames.addElement("test_isUnstyled");
-	methodNames.addElement("test_similarToLorg_eclipse_swt_custom_StyleRange");
-	methodNames.addElement("test_toString");
-	return methodNames;
-}
-@Override
-protected void runTest() throws Throwable {
-	if (getName().equals("test_Constructor")) test_Constructor();
-	else if (getName().equals("test_ConstructorIILorg_eclipse_swt_graphics_ColorLorg_eclipse_swt_graphics_Color")) test_ConstructorIILorg_eclipse_swt_graphics_ColorLorg_eclipse_swt_graphics_Color();
-	else if (getName().equals("test_ConstructorIILorg_eclipse_swt_graphics_ColorLorg_eclipse_swt_graphics_ColorI")) test_ConstructorIILorg_eclipse_swt_graphics_ColorLorg_eclipse_swt_graphics_ColorI();
-	else if (getName().equals("test_clone")) test_clone();
-	else if (getName().equals("test_equalsLjava_lang_Object")) test_equalsLjava_lang_Object();
-	else if (getName().equals("test_hashCode")) test_hashCode();
-	else if (getName().equals("test_isUnstyled")) test_isUnstyled();
-	else if (getName().equals("test_similarToLorg_eclipse_swt_custom_StyleRange")) test_similarToLorg_eclipse_swt_custom_StyleRange();
-	else if (getName().equals("test_toString")) test_toString();
 }
 }

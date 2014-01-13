@@ -11,29 +11,26 @@
 package org.eclipse.swt.tests.junit;
 
 
-import org.eclipse.swt.widgets.*;
-import org.eclipse.swt.custom.*;
-import org.eclipse.swt.*;
+import junit.framework.TestCase;
 
-import junit.framework.*;
-import junit.textui.*;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.StyledText;
+import org.eclipse.swt.custom.StyledTextContent;
+import org.eclipse.swt.custom.TextChangeListener;
+import org.eclipse.swt.custom.TextChangedEvent;
+import org.eclipse.swt.custom.TextChangingEvent;
+import org.eclipse.swt.widgets.Shell;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.custom.TextChangeListener
  *
  * @see org.eclipse.swt.custom.TextChangeListener
  */
-public class Test_org_eclipse_swt_custom_TextChangeListener extends SwtTestCase {
+public class Test_org_eclipse_swt_custom_TextChangeListener extends TestCase {
 	Shell shell;
 	StyledText styledText;
 	int verify = -1;
 
-public Test_org_eclipse_swt_custom_TextChangeListener(String name) {
-	super(name);
-}
-public static void main(String[] args) {
-	TestRunner.run(suite());
-}
 @Override
 protected void setUp() {
 	shell = new Shell();
@@ -539,29 +536,5 @@ public void test_textSetLorg_eclipse_swt_custom_TextChangedEvent() {
 	try {styledText.setText(null);}
 	catch (IllegalArgumentException ex) {assertTrue(":4:", true);}	
 	content.removeTextChangeListener(listener);
-}
-
-public static Test suite() {
-	TestSuite suite = new TestSuite();
-	java.util.Vector<String> methodNames = methodNames();
-	java.util.Enumeration<String> e = methodNames.elements();
-	while (e.hasMoreElements()) {
-		suite.addTest(new Test_org_eclipse_swt_custom_TextChangeListener(e.nextElement()));
-	}
-	return suite;
-}
-
-public static java.util.Vector<String> methodNames() {
-	java.util.Vector<String> methodNames = new java.util.Vector<String>();
-	methodNames.addElement("test_textChangedLorg_eclipse_swt_custom_TextChangedEvent");
-	methodNames.addElement("test_textChangingLorg_eclipse_swt_custom_TextChangingEvent");
-	methodNames.addElement("test_textSetLorg_eclipse_swt_custom_TextChangedEvent");
-	return methodNames;
-}
-@Override
-protected void runTest() throws Throwable {
-	if (getName().equals("test_textChangedLorg_eclipse_swt_custom_TextChangedEvent")) test_textChangedLorg_eclipse_swt_custom_TextChangedEvent();
-	else if (getName().equals("test_textChangingLorg_eclipse_swt_custom_TextChangingEvent")) test_textChangingLorg_eclipse_swt_custom_TextChangingEvent();
-	else if (getName().equals("test_textSetLorg_eclipse_swt_custom_TextChangedEvent")) test_textSetLorg_eclipse_swt_custom_TextChangedEvent();
 }
 }

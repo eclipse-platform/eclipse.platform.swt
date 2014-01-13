@@ -11,27 +11,21 @@
 package org.eclipse.swt.tests.junit;
 
 
-import junit.framework.*;
-import junit.textui.*;
+import junit.framework.TestCase;
 
-import org.eclipse.swt.*;
-import org.eclipse.swt.browser.*;
-import org.eclipse.swt.widgets.*;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.browser.Browser;
+import org.eclipse.swt.browser.TitleEvent;
+import org.eclipse.swt.browser.TitleListener;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Shell;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.browser.TitleListener
  *
  * @see org.eclipse.swt.browser.TitleListener
  */
-public class Test_org_eclipse_swt_browser_TitleListener extends SwtTestCase {
-
-public Test_org_eclipse_swt_browser_TitleListener(String name) {
-	super(name);
-}
-
-public static void main(String[] args) {
-	TestRunner.run(suite());
-}
+public class Test_org_eclipse_swt_browser_TitleListener extends TestCase {
 
 public void test_changedLorg_eclipse_swt_browser_TitleEvent() {
 	Display display = Display.getCurrent();
@@ -42,26 +36,5 @@ public void test_changedLorg_eclipse_swt_browser_TitleEvent() {
 		}
 	});
 	shell.close();
-}
-
-public static Test suite() {
-	TestSuite suite = new TestSuite();
-	java.util.Vector<String> methodNames = methodNames();
-	java.util.Enumeration<String> e = methodNames.elements();
-	while (e.hasMoreElements()) {
-		suite.addTest(new Test_org_eclipse_swt_browser_TitleListener(e.nextElement()));
-	}
-	return suite;
-}
-
-public static java.util.Vector<String> methodNames() {
-	java.util.Vector<String> methodNames = new java.util.Vector<String>();
-	methodNames.addElement("test_changedLorg_eclipse_swt_browser_TitleEvent");
-	return methodNames;
-}
-
-@Override
-protected void runTest() throws Throwable {
-	if (getName().equals("test_changedLorg_eclipse_swt_browser_TitleEvent")) test_changedLorg_eclipse_swt_browser_TitleEvent();
 }
 }

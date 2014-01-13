@@ -12,26 +12,17 @@ package org.eclipse.swt.tests.junit;
 
 
 import static org.junit.Assert.assertArrayEquals;
+import junit.framework.TestCase;
 
-import org.eclipse.swt.graphics.*;
-
-import junit.framework.*;
-import junit.textui.*;
+import org.eclipse.swt.graphics.PaletteData;
+import org.eclipse.swt.graphics.RGB;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.graphics.PaletteData
  *
  * @see org.eclipse.swt.graphics.PaletteData
  */
-public class Test_org_eclipse_swt_graphics_PaletteData extends SwtTestCase {
-
-public Test_org_eclipse_swt_graphics_PaletteData(String name) {
-	super(name);
-}
-
-public static void main(String[] args) {
-	TestRunner.run(suite());
-}
+public class Test_org_eclipse_swt_graphics_PaletteData extends TestCase {
 
 public void test_Constructor$Lorg_eclipse_swt_graphics_RGB() {
 	try {
@@ -131,30 +122,4 @@ public void test_getRGBs() {
 	assertNull(":b:", data.getRGBs());
 }
 
-public static Test suite() {
-	TestSuite suite = new TestSuite();
-	java.util.Vector<String> methodNames = methodNames();
-	java.util.Enumeration<String> e = methodNames.elements();
-	while (e.hasMoreElements()) {
-		suite.addTest(new Test_org_eclipse_swt_graphics_PaletteData(e.nextElement()));
-	}
-	return suite;
-}
-public static java.util.Vector<String> methodNames() {
-	java.util.Vector<String> methodNames = new java.util.Vector<String>();
-	methodNames.addElement("test_Constructor$Lorg_eclipse_swt_graphics_RGB");
-	methodNames.addElement("test_ConstructorIII");
-	methodNames.addElement("test_getPixelLorg_eclipse_swt_graphics_RGB");
-	methodNames.addElement("test_getRGBI");
-	methodNames.addElement("test_getRGBs");
-	return methodNames;
-}
-@Override
-protected void runTest() throws Throwable {
-	if (getName().equals("test_Constructor$Lorg_eclipse_swt_graphics_RGB")) test_Constructor$Lorg_eclipse_swt_graphics_RGB();
-	else if (getName().equals("test_ConstructorIII")) test_ConstructorIII();
-	else if (getName().equals("test_getPixelLorg_eclipse_swt_graphics_RGB")) test_getPixelLorg_eclipse_swt_graphics_RGB();
-	else if (getName().equals("test_getRGBI")) test_getRGBI();
-	else if (getName().equals("test_getRGBs")) test_getRGBs();
-}
 }

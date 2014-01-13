@@ -10,25 +10,18 @@
  *******************************************************************************/
 package org.eclipse.swt.tests.junit;
 
-import junit.framework.*;
-import junit.textui.*;
+import junit.framework.TestCase;
 
-import org.eclipse.swt.*;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.SWTError;
+import org.eclipse.swt.SWTException;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.SWT
  *
  * @see org.eclipse.swt.SWT
  */
-public class Test_org_eclipse_swt_SWT extends SwtTestCase {
-
-public Test_org_eclipse_swt_SWT(String name) {
-	super(name);
-}
-
-public static void main(String[] args) {
-	TestRunner.run(suite());
-}
+public class Test_org_eclipse_swt_SWT extends TestCase {
 
 public void test_Constructor() {
 	// Do nothing. Class SWT is not intended to be subclassed.
@@ -122,34 +115,5 @@ public void test_getVersion() {
 	// Test that the version number which is returned is reasonable.
 	int ver = SWT.getVersion();
 	assertTrue ("unreasonable value returned", ver > 0 && ver < 1000000);
-}
-
-public static Test suite() {
-	TestSuite suite = new TestSuite();
-	java.util.Vector<String> methodNames = methodNames();
-	java.util.Enumeration<String> e = methodNames.elements();
-	while (e.hasMoreElements()) {
-		suite.addTest(new Test_org_eclipse_swt_SWT(e.nextElement()));
-	}
-	return suite;
-}
-public static java.util.Vector<String> methodNames() {
-	java.util.Vector<String> methodNames = new java.util.Vector<String>();
-	methodNames.addElement("test_Constructor");
-	methodNames.addElement("test_errorI");
-	methodNames.addElement("test_errorILjava_lang_Throwable");
-	methodNames.addElement("test_getMessageLjava_lang_String");
-	methodNames.addElement("test_getPlatform");
-	methodNames.addElement("test_getVersion");
-	return methodNames;
-}
-@Override
-protected void runTest() throws Throwable {
-	if (getName().equals("test_Constructor")) test_Constructor();
-	else if (getName().equals("test_errorI")) test_errorI();
-	else if (getName().equals("test_errorILjava_lang_Throwable")) test_errorILjava_lang_Throwable();
-	else if (getName().equals("test_getMessageLjava_lang_String")) test_getMessageLjava_lang_String();
-	else if (getName().equals("test_getPlatform")) test_getPlatform();
-	else if (getName().equals("test_getVersion")) test_getVersion();
 }
 }

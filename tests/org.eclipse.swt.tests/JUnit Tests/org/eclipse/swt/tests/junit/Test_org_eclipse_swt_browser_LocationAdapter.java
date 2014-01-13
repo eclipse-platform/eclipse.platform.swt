@@ -10,27 +10,20 @@
  *******************************************************************************/
 package org.eclipse.swt.tests.junit;
 
-import junit.framework.*;
-import junit.textui.*;
+import junit.framework.TestCase;
 
-import org.eclipse.swt.*;
-import org.eclipse.swt.browser.*;
-import org.eclipse.swt.widgets.*;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.browser.Browser;
+import org.eclipse.swt.browser.LocationAdapter;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Shell;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.browser.LocationAdapter
  *
  * @see org.eclipse.swt.browser.LocationAdapter
  */
-public class Test_org_eclipse_swt_browser_LocationAdapter extends SwtTestCase {
-
-public Test_org_eclipse_swt_browser_LocationAdapter(String name) {
-	super(name);
-}
-
-public static void main(String[] args) {
-	TestRunner.run(suite());
-}
+public class Test_org_eclipse_swt_browser_LocationAdapter extends TestCase {
 
 public void test_Constructor() {
 	new LocationAdapter() {};
@@ -46,26 +39,4 @@ public void test_changedLorg_eclipse_swt_browser_LocationEvent() {
 	shell.close();
 }
 
-public static Test suite() {
-	TestSuite suite = new TestSuite();
-	java.util.Vector<String> methodNames = methodNames();
-	java.util.Enumeration<String> e = methodNames.elements();
-	while (e.hasMoreElements()) {
-		suite.addTest(new Test_org_eclipse_swt_browser_LocationAdapter(e.nextElement()));
-	}
-	return suite;
-}
-
-public static java.util.Vector<String> methodNames() {
-	java.util.Vector<String> methodNames = new java.util.Vector<String>();
-	methodNames.addElement("test_Constructor");
-	methodNames.addElement("test_changedLorg_eclipse_swt_browser_LocationEvent");
-	return methodNames;
-}
-
-@Override
-protected void runTest() throws Throwable {
-	if (getName().equals("test_Constructor")) test_Constructor();
-	else if (getName().equals("test_changedLorg_eclipse_swt_browser_LocationEvent")) test_changedLorg_eclipse_swt_browser_LocationEvent();
-}
 }

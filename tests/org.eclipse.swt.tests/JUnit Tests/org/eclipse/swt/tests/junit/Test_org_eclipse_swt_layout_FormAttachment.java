@@ -10,27 +10,18 @@
  *******************************************************************************/
 package org.eclipse.swt.tests.junit;
 
-import junit.framework.*;
-import junit.textui.*;
+import junit.framework.TestCase;
 
-import org.eclipse.swt.*;
-import org.eclipse.swt.widgets.*;
-import org.eclipse.swt.layout.*;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.layout.FormAttachment;
+import org.eclipse.swt.widgets.Shell;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.layout.FormAttachment
  *
  * @see org.eclipse.swt.layout.FormAttachment
  */
-public class Test_org_eclipse_swt_layout_FormAttachment extends SwtTestCase {
-
-public Test_org_eclipse_swt_layout_FormAttachment(String name) {
-	super(name);
-}
-
-public static void main(String[] args) {
-	TestRunner.run(suite());
-}
+public class Test_org_eclipse_swt_layout_FormAttachment extends TestCase {
 
 @Override
 protected void setUp() {
@@ -76,40 +67,6 @@ public void test_toString() {
 	FormAttachment attachment = new FormAttachment(50);
 	assertNotNull(attachment.toString());
 	assertTrue(attachment.toString().length() > 0);
-}
-
-
-public static Test suite() {
-	TestSuite suite = new TestSuite();
-	java.util.Vector<String> methodNames = methodNames();
-	java.util.Enumeration<String> e = methodNames.elements();
-	while (e.hasMoreElements()) {
-		suite.addTest(new Test_org_eclipse_swt_layout_FormAttachment(e.nextElement()));
-	}
-	return suite;
-}
-
-public static java.util.Vector<String> methodNames() {
-	java.util.Vector<String> methodNames = new java.util.Vector<String>();
-	methodNames.addElement("test_ConstructorI");
-	methodNames.addElement("test_ConstructorII");
-	methodNames.addElement("test_ConstructorIII");
-	methodNames.addElement("test_ConstructorLorg_eclipse_swt_widgets_Control");
-	methodNames.addElement("test_ConstructorLorg_eclipse_swt_widgets_ControlI");
-	methodNames.addElement("test_ConstructorLorg_eclipse_swt_widgets_ControlII");
-	methodNames.addElement("test_toString");
-	return methodNames;
-}
-
-@Override
-protected void runTest() throws Throwable {
-	if (getName().equals("test_ConstructorI")) test_ConstructorI();
-	else if (getName().equals("test_ConstructorII")) test_ConstructorII();
-	else if (getName().equals("test_ConstructorIII")) test_ConstructorIII();
-	else if (getName().equals("test_ConstructorLorg_eclipse_swt_widgets_Control")) test_ConstructorLorg_eclipse_swt_widgets_Control();
-	else if (getName().equals("test_ConstructorLorg_eclipse_swt_widgets_ControlI")) test_ConstructorLorg_eclipse_swt_widgets_ControlI();
-	else if (getName().equals("test_ConstructorLorg_eclipse_swt_widgets_ControlII")) test_ConstructorLorg_eclipse_swt_widgets_ControlII();
-	else if (getName().equals("test_toString")) test_toString();
 }
 
 /* custom */
