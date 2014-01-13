@@ -32,11 +32,6 @@ public static void main(String[] args) {
 	TestRunner.run(suite());
 }
 
-@Override
-public void test_ConstructorLorg_eclipse_swt_widgets_Event() {
-	warnUnimpl("Test test_ConstructorLorg_eclipse_swt_widgets_Event not written");
-}
-
 public static Test suite() {
 	TestSuite suite = new TestSuite();
 	java.util.Vector<String> methodNames = methodNames();
@@ -45,17 +40,6 @@ public static Test suite() {
 		suite.addTest(new Test_org_eclipse_swt_events_MouseEvent(e.nextElement()));
 	}
 	return suite;
-}
-public static java.util.Vector<String> methodNames() {
-	java.util.Vector<String> methodNames = new java.util.Vector<String>();
-	methodNames.addElement("test_ConstructorLorg_eclipse_swt_widgets_Event");
-	methodNames.addAll(Test_org_eclipse_swt_events_TypedEvent.methodNames()); // add superclass method names
-	return methodNames;
-}
-@Override
-protected void runTest() throws Throwable {
-	if (getName().equals("test_ConstructorLorg_eclipse_swt_widgets_Event")) test_ConstructorLorg_eclipse_swt_widgets_Event();
-	else super.runTest();
 }
 
 /* custom */

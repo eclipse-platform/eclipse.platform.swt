@@ -42,10 +42,6 @@ protected void tearDown() {
 	shell.dispose();
 }
 
-public void test_ConstructorLjava_lang_Object() {
-	warnUnimpl("Test test_ConstructorLjava_lang_Object not written");
-}
-
 public void test_ConstructorLorg_eclipse_swt_widgets_Event() {
 	Event event = new Event();
 	event.widget = shell;
@@ -72,15 +68,13 @@ public static Test suite() {
 }
 public static java.util.Vector<String> methodNames() {
 	java.util.Vector<String> methodNames = new java.util.Vector<String>();
-	methodNames.addElement("test_ConstructorLjava_lang_Object");
 	methodNames.addElement("test_ConstructorLorg_eclipse_swt_widgets_Event");
 	methodNames.addElement("test_toString");
 	return methodNames;
 }
 @Override
 protected void runTest() throws Throwable {
-	if (getName().equals("test_ConstructorLjava_lang_Object")) test_ConstructorLjava_lang_Object();
-	else if (getName().equals("test_ConstructorLorg_eclipse_swt_widgets_Event")) test_ConstructorLorg_eclipse_swt_widgets_Event();
+	if (getName().equals("test_ConstructorLorg_eclipse_swt_widgets_Event")) test_ConstructorLorg_eclipse_swt_widgets_Event();
 	else if (getName().equals("test_toString")) test_toString();
 }
 
