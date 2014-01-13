@@ -94,10 +94,6 @@ public void test_getItemI() {
 	}
 }
 
-public void test_getItemLorg_eclipse_swt_graphics_Point() {
-	warnUnimpl("Test test_getItemLorg_eclipse_swt_graphics_Point not written");
-}
-
 public void test_getItems() {
 	int number = 5;
 	ToolItem[] items = new ToolItem[number];
@@ -175,7 +171,6 @@ public static java.util.Vector<String> methodNames() {
 	methodNames.addElement("test_computeTrimIIII");
 	methodNames.addElement("test_getItemCount");
 	methodNames.addElement("test_getItemI");
-	methodNames.addElement("test_getItemLorg_eclipse_swt_graphics_Point");
 	methodNames.addElement("test_getItems");
 	methodNames.addElement("test_getRowCount");
 	methodNames.addElement("test_indexOfLorg_eclipse_swt_widgets_ToolItem");
@@ -194,7 +189,6 @@ protected void runTest() throws Throwable {
 	else if (getName().equals("test_computeTrimIIII")) test_computeTrimIIII();
 	else if (getName().equals("test_getItemCount")) test_getItemCount();
 	else if (getName().equals("test_getItemI")) test_getItemI();
-	else if (getName().equals("test_getItemLorg_eclipse_swt_graphics_Point")) test_getItemLorg_eclipse_swt_graphics_Point();
 	else if (getName().equals("test_getItems")) test_getItems();
 	else if (getName().equals("test_getRowCount")) test_getRowCount();
 	else if (getName().equals("test_indexOfLorg_eclipse_swt_widgets_ToolItem")) test_indexOfLorg_eclipse_swt_widgets_ToolItem();

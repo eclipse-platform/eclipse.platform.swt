@@ -174,20 +174,8 @@ public void test_getAccelerator() {
 	assertEquals(menuItem.getAccelerator(), SWT.MOD3 + 'Z');
 }
 
-public void test_getEnabled() {
-	// tested in test_setEnabledZ()
-}
-
-public void test_getMenu() {
-	// tested in test_setMenuLorg_eclipse_swt_widgets_Menu
-}
-
 public void test_getParent() {
 	assertEquals(menuItem.getParent(), menu);
-}
-
-public void test_getSelection() {
-	// tested in test_setSelectionZ()
 }
 
 public void test_isEnabled() {
@@ -195,18 +183,6 @@ public void test_isEnabled() {
 	assertTrue(menuItem.isEnabled());
 	menuItem.setEnabled(false);
 	assertEquals(menuItem.isEnabled(), false);
-}
-
-public void test_removeArmListenerLorg_eclipse_swt_events_ArmListener() {
-	// tested in test_addArmListenerLorg_eclipse_swt_events_ArmListener()
-}
-
-public void test_removeHelpListenerLorg_eclipse_swt_events_HelpListener() {
-	// tested in test_addHelpListenerLorg_eclipse_swt_events_HelpListener()
-}
-
-public void test_removeSelectionListenerLorg_eclipse_swt_events_SelectionListener() {
-	// tested in test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener
 }
 
 public void test_setAcceleratorI() {
@@ -287,14 +263,8 @@ public static java.util.Vector<String> methodNames() {
 	methodNames.addElement("test_addHelpListenerLorg_eclipse_swt_events_HelpListener");
 	methodNames.addElement("test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener");
 	methodNames.addElement("test_getAccelerator");
-	methodNames.addElement("test_getEnabled");
-	methodNames.addElement("test_getMenu");
 	methodNames.addElement("test_getParent");
-	methodNames.addElement("test_getSelection");
 	methodNames.addElement("test_isEnabled");
-	methodNames.addElement("test_removeArmListenerLorg_eclipse_swt_events_ArmListener");
-	methodNames.addElement("test_removeHelpListenerLorg_eclipse_swt_events_HelpListener");
-	methodNames.addElement("test_removeSelectionListenerLorg_eclipse_swt_events_SelectionListener");
 	methodNames.addElement("test_setAcceleratorI");
 	methodNames.addElement("test_setEnabledZ");
 	methodNames.addElement("test_setImageLorg_eclipse_swt_graphics_Image");
@@ -312,14 +282,8 @@ protected void runTest() throws Throwable {
 	else if (getName().equals("test_addHelpListenerLorg_eclipse_swt_events_HelpListener")) test_addHelpListenerLorg_eclipse_swt_events_HelpListener();
 	else if (getName().equals("test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener")) test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener();
 	else if (getName().equals("test_getAccelerator")) test_getAccelerator();
-	else if (getName().equals("test_getEnabled")) test_getEnabled();
-	else if (getName().equals("test_getMenu")) test_getMenu();
 	else if (getName().equals("test_getParent")) test_getParent();
-	else if (getName().equals("test_getSelection")) test_getSelection();
 	else if (getName().equals("test_isEnabled")) test_isEnabled();
-	else if (getName().equals("test_removeArmListenerLorg_eclipse_swt_events_ArmListener")) test_removeArmListenerLorg_eclipse_swt_events_ArmListener();
-	else if (getName().equals("test_removeHelpListenerLorg_eclipse_swt_events_HelpListener")) test_removeHelpListenerLorg_eclipse_swt_events_HelpListener();
-	else if (getName().equals("test_removeSelectionListenerLorg_eclipse_swt_events_SelectionListener")) test_removeSelectionListenerLorg_eclipse_swt_events_SelectionListener();
 	else if (getName().equals("test_setAcceleratorI")) test_setAcceleratorI();
 	else if (getName().equals("test_setEnabledZ")) test_setEnabledZ();
 	else if (getName().equals("test_setImageLorg_eclipse_swt_graphics_Image")) test_setImageLorg_eclipse_swt_graphics_Image();

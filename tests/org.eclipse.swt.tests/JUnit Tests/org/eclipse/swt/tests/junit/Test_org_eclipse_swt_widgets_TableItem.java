@@ -63,14 +63,6 @@ public void test_ConstructorLorg_eclipse_swt_widgets_TableII() {
 	}
 }
 
-public void test_getBackground() {
-	// tested in test_setBackgroundLorg_eclipse_swt_graphics_Color
-}
-
-public void test_getBackgroundI() {
-	// tested in test_setBackgroundILorg_eclipse_swt_graphics_Color
-}
-
 public void test_getBoundsI() {
 	Image image = images[0];
 	Rectangle bounds;
@@ -321,30 +313,6 @@ public void test_getBoundsI() {
 	assertTrue(":4s:", bounds.x > 0 && bounds.height > 0 && bounds.width  == 0);
 }
 
-public void test_getChecked() {
-	// tested in test_setCheckedZ
-}
-
-public void test_getFont() {
-	// tested in test_setFontLorg_eclipse_swt_graphics_Font
-}
-
-public void test_getFontI() {
-	// tested in test_setFontILorg_eclipse_swt_graphics_Font
-}
-
-public void test_getForeground() {
-	// tested in test_setForegroundLorg_eclipse_swt_graphics_Color
-}
-
-public void test_getForegroundI() {
-	// tested in test_setForegroundILorg_eclipse_swt_graphics_Color
-}
-
-public void test_getGrayed() {
-	// tested in test_setGrayedZ
-}
-
 public void test_getImageBoundsI() {
 /**
  * Test without item image
@@ -417,20 +385,8 @@ public void test_getImageBoundsI() {
  	assertEquals(new Rectangle(0, 0, 0, 0), tableItem2.getImageBounds(1));
 }
 
-public void test_getImageI() {
-	// tested in test_setImageILorg_eclipse_swt_graphics_Image
-}
-
-public void test_getImageIndent() {
-	warnUnimpl("Test test_getImageIndent not written");
-}
-
 public void test_getParent() {
 	assertEquals(table, tableItem.getParent());
-}
-
-public void test_getTextI() {
-	// tested in test_setTextILJava_lang_String
 }
 
 public void test_setBackgroundILorg_eclipse_swt_graphics_Color() {
@@ -870,20 +826,9 @@ public static java.util.Vector<String> methodNames() {
 	java.util.Vector<String> methodNames = new java.util.Vector<String>();
 	methodNames.addElement("test_ConstructorLorg_eclipse_swt_widgets_TableI");
 	methodNames.addElement("test_ConstructorLorg_eclipse_swt_widgets_TableII");
-	methodNames.addElement("test_getBackground");
-	methodNames.addElement("test_getBackgroundI");
 	methodNames.addElement("test_getBoundsI");
-	methodNames.addElement("test_getChecked");
-	methodNames.addElement("test_getFont");
-	methodNames.addElement("test_getFontI");
-	methodNames.addElement("test_getForeground");
-	methodNames.addElement("test_getForegroundI");
-	methodNames.addElement("test_getGrayed");
 	methodNames.addElement("test_getImageBoundsI");
-	methodNames.addElement("test_getImageI");
-	methodNames.addElement("test_getImageIndent");
 	methodNames.addElement("test_getParent");
-	methodNames.addElement("test_getTextI");
 	methodNames.addElement("test_setBackgroundILorg_eclipse_swt_graphics_Color");
 	methodNames.addElement("test_setBackgroundLorg_eclipse_swt_graphics_Color");
 	methodNames.addElement("test_setCheckedZ");
@@ -906,20 +851,9 @@ public static java.util.Vector<String> methodNames() {
 protected void runTest() throws Throwable {
 	if (getName().equals("test_ConstructorLorg_eclipse_swt_widgets_TableI")) test_ConstructorLorg_eclipse_swt_widgets_TableI();
 	else if (getName().equals("test_ConstructorLorg_eclipse_swt_widgets_TableII")) test_ConstructorLorg_eclipse_swt_widgets_TableII();
-	else if (getName().equals("test_getBackground")) test_getBackground();
-	else if (getName().equals("test_getBackgroundI")) test_getBackgroundI();
 	else if (getName().equals("test_getBoundsI")) test_getBoundsI();
-	else if (getName().equals("test_getChecked")) test_getChecked();
-	else if (getName().equals("test_getFont")) test_getFont();
-	else if (getName().equals("test_getFontI")) test_getFontI();
-	else if (getName().equals("test_getForeground")) test_getForeground();
-	else if (getName().equals("test_getForegroundI")) test_getForegroundI();
-	else if (getName().equals("test_getGrayed")) test_getGrayed();
 	else if (getName().equals("test_getImageBoundsI")) test_getImageBoundsI();
-	else if (getName().equals("test_getImageI")) test_getImageI();
-	else if (getName().equals("test_getImageIndent")) test_getImageIndent();
 	else if (getName().equals("test_getParent")) test_getParent();
-	else if (getName().equals("test_getTextI")) test_getTextI();
 	else if (getName().equals("test_setBackgroundILorg_eclipse_swt_graphics_Color")) test_setBackgroundILorg_eclipse_swt_graphics_Color();
 	else if (getName().equals("test_setBackgroundLorg_eclipse_swt_graphics_Color")) test_setBackgroundLorg_eclipse_swt_graphics_Color();
 	else if (getName().equals("test_setCheckedZ")) test_setCheckedZ();

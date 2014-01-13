@@ -79,26 +79,9 @@ public void test_ConstructorLorg_eclipse_swt_widgets_ShellI() {
 	assertTrue(style==SWT.SYSTEM_MODAL);
 }
 
-
-public void test_getFileName() {
-	//	tested in test_setFileNameLjava_lang_String()
-}
-
 public void test_getFileNames() {
 	String[] names = fileDialog.getFileNames();
 	assertTrue(names.length==0);
-}
-
-public void test_getFilterExtensions() {
-	// tested in test_setFilterExtensions$Ljava_lang_String()
-}
-
-public void test_getFilterNames() {
-	// tested in test_setFilterNames$Ljava_lang_String()
-}
-
-public void test_getFilterPath() {
-	// tested in test_setFilterPathLjava_lang_String
 }
 
 public void test_open() {
@@ -170,11 +153,7 @@ public static java.util.Vector<String> methodNames() {
 	java.util.Vector<String> methodNames = new java.util.Vector<String>();
 	methodNames.addElement("test_ConstructorLorg_eclipse_swt_widgets_Shell");
 	methodNames.addElement("test_ConstructorLorg_eclipse_swt_widgets_ShellI");
-	methodNames.addElement("test_getFileName");
 	methodNames.addElement("test_getFileNames");
-	methodNames.addElement("test_getFilterExtensions");
-	methodNames.addElement("test_getFilterNames");
-	methodNames.addElement("test_getFilterPath");
 	methodNames.addElement("test_open");
 	methodNames.addElement("test_setFileNameLjava_lang_String");
 	methodNames.addElement("test_setFilterExtensions$Ljava_lang_String");
@@ -187,11 +166,7 @@ public static java.util.Vector<String> methodNames() {
 protected void runTest() throws Throwable {
 	if (getName().equals("test_ConstructorLorg_eclipse_swt_widgets_Shell")) test_ConstructorLorg_eclipse_swt_widgets_Shell();
 	else if (getName().equals("test_ConstructorLorg_eclipse_swt_widgets_ShellI")) test_ConstructorLorg_eclipse_swt_widgets_ShellI();
-	else if (getName().equals("test_getFileName")) test_getFileName();
 	else if (getName().equals("test_getFileNames")) test_getFileNames();
-	else if (getName().equals("test_getFilterExtensions")) test_getFilterExtensions();
-	else if (getName().equals("test_getFilterNames")) test_getFilterNames();
-	else if (getName().equals("test_getFilterPath")) test_getFilterPath();
 	else if (getName().equals("test_open")) test_open();
 	else if (getName().equals("test_setFileNameLjava_lang_String")) test_setFileNameLjava_lang_String();
 	else if (getName().equals("test_setFilterExtensions$Ljava_lang_String")) test_setFilterExtensions$Ljava_lang_String();

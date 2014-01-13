@@ -77,45 +77,13 @@ public void test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener()
 	assertTrue("Expected exception not thrown", exceptionThrown);
 }
 
-public void test_getEnabled() {
-	// tested in test_setEnabled() method
-}
-
-public void test_getIncrement() {
-	// tested in test_setIncrement() method
-}
-
-public void test_getMaximum() {
-	// tested in test_setMaximum() method
-}
-
-public void test_getMinimum() {
-	// tested in test_setMinimum() method
-}
-
-public void test_getPageIncrement() {
-	// tested in test_setPageIncrement() method
-}
-
 public void test_getParent() {
 	assertEquals(canvas, scrollBar.getParent());
-}
-
-public void test_getSelection() {
-	// tested in test_setSelection() method
 }
 
 public void test_getSize() {
 	assertTrue(scrollBar.getSize().x > 0);
 	assertTrue(scrollBar.getSize().y > 0);
-}
-
-public void test_getThumb() {
-	// tested in test_setThumb() method
-}
-
-public void test_getVisible() {
-	// tested in test_setVisible() method
 }
 
 public void test_isEnabled() {
@@ -131,10 +99,6 @@ public void test_isVisible() {
 	assertTrue(scrollBar.isVisible()); 
 	scrollBar.setVisible(false);
 	assertTrue(!scrollBar.isVisible());
-}
-
-public void test_removeSelectionListenerLorg_eclipse_swt_events_SelectionListener() {
-	// tested in addSelectionListener method
 }
 
 public void test_setEnabledZ() {
@@ -247,19 +211,10 @@ public static Test suite() {
 public static java.util.Vector<String> methodNames() {
 	java.util.Vector<String> methodNames = new java.util.Vector<String>();
 	methodNames.addElement("test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener");
-	methodNames.addElement("test_getEnabled");
-	methodNames.addElement("test_getIncrement");
-	methodNames.addElement("test_getMaximum");
-	methodNames.addElement("test_getMinimum");
-	methodNames.addElement("test_getPageIncrement");
 	methodNames.addElement("test_getParent");
-	methodNames.addElement("test_getSelection");
 	methodNames.addElement("test_getSize");
-	methodNames.addElement("test_getThumb");
-	methodNames.addElement("test_getVisible");
 	methodNames.addElement("test_isEnabled");
 	methodNames.addElement("test_isVisible");
-	methodNames.addElement("test_removeSelectionListenerLorg_eclipse_swt_events_SelectionListener");
 	methodNames.addElement("test_setEnabledZ");
 	methodNames.addElement("test_setIncrementI");
 	methodNames.addElement("test_setMaximumI");
@@ -275,19 +230,10 @@ public static java.util.Vector<String> methodNames() {
 @Override
 protected void runTest() throws Throwable {
 	if (getName().equals("test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener")) test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener();
-	else if (getName().equals("test_getEnabled")) test_getEnabled();
-	else if (getName().equals("test_getIncrement")) test_getIncrement();
-	else if (getName().equals("test_getMaximum")) test_getMaximum();
-	else if (getName().equals("test_getMinimum")) test_getMinimum();
-	else if (getName().equals("test_getPageIncrement")) test_getPageIncrement();
 	else if (getName().equals("test_getParent")) test_getParent();
-	else if (getName().equals("test_getSelection")) test_getSelection();
 	else if (getName().equals("test_getSize")) test_getSize();
-	else if (getName().equals("test_getThumb")) test_getThumb();
-	else if (getName().equals("test_getVisible")) test_getVisible();
 	else if (getName().equals("test_isEnabled")) test_isEnabled();
 	else if (getName().equals("test_isVisible")) test_isVisible();
-	else if (getName().equals("test_removeSelectionListenerLorg_eclipse_swt_events_SelectionListener")) test_removeSelectionListenerLorg_eclipse_swt_events_SelectionListener();
 	else if (getName().equals("test_setEnabledZ")) test_setEnabledZ();
 	else if (getName().equals("test_setIncrementI")) test_setIncrementI();
 	else if (getName().equals("test_setMaximumI")) test_setMaximumI();

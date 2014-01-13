@@ -115,26 +115,6 @@ public void test_computeSizeIIZ() {
 	button.computeSize(10000, 10000, false);
 }
 
-public void test_getAlignment() {
-	// tested in test_setAlignmentI()
-}
-
-public void test_getImage() {
-	// tested in test_setImageLorg_eclipse_swt_graphics_Image
-}
-
-public void test_getSelection() {
-	// tested in test_setSelectionZ
-}
-
-public void test_getText() {
-	// tested in  test_setTextLjava_lang_String()
-}
-
-public void test_removeSelectionListenerLorg_eclipse_swt_events_SelectionListener() {
-	// tested in test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener()
-}
-
 public void test_setAlignmentI() {
 	button.setAlignment(SWT.LEFT);
 	assertEquals(SWT.LEFT, button.getAlignment());
@@ -271,11 +251,6 @@ public static java.util.Vector<String> methodNames() {
 	methodNames.addElement("test_ConstructorLorg_eclipse_swt_widgets_CompositeI");
 	methodNames.addElement("test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener");
 	methodNames.addElement("test_computeSizeIIZ");
-	methodNames.addElement("test_getAlignment");
-	methodNames.addElement("test_getImage");
-	methodNames.addElement("test_getSelection");
-	methodNames.addElement("test_getText");
-	methodNames.addElement("test_removeSelectionListenerLorg_eclipse_swt_events_SelectionListener");
 	methodNames.addElement("test_setAlignmentI");
 	methodNames.addElement("test_setFocus");
 	methodNames.addElement("test_setImageLorg_eclipse_swt_graphics_Image");
@@ -294,11 +269,6 @@ protected void runTest() throws Throwable {
 	if (getName().equals("test_ConstructorLorg_eclipse_swt_widgets_CompositeI")) test_ConstructorLorg_eclipse_swt_widgets_CompositeI();
 	else if (getName().equals("test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener")) test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener();
 	else if (getName().equals("test_computeSizeIIZ")) test_computeSizeIIZ();
-	else if (getName().equals("test_getAlignment")) test_getAlignment();
-	else if (getName().equals("test_getImage")) test_getImage();
-	else if (getName().equals("test_getSelection")) test_getSelection();
-	else if (getName().equals("test_getText")) test_getText();
-	else if (getName().equals("test_removeSelectionListenerLorg_eclipse_swt_events_SelectionListener")) test_removeSelectionListenerLorg_eclipse_swt_events_SelectionListener();
 	else if (getName().equals("test_setAlignmentI")) test_setAlignmentI();
 	else if (getName().equals("test_setFocus")) test_setFocus();
 	else if (getName().equals("test_setImageLorg_eclipse_swt_graphics_Image")) test_setImageLorg_eclipse_swt_graphics_Image();

@@ -72,10 +72,6 @@ public void test_ConstructorLorg_eclipse_swt_widgets_TableII() {
 	}
 }
 
-public void test_addControlListenerLorg_eclipse_swt_events_ControlListener() {
-	warnUnimpl("Test test_addControlListenerLorg_eclipse_swt_events_ControlListener not written");
-}
-
 public void test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener() {
 	try {
 		tableColumn.addSelectionListener(null);		
@@ -83,22 +79,6 @@ public void test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener()
 	}
 	catch (IllegalArgumentException e) {
 	}
-}
-
-public void test_getAlignment() {
-	// tested in test_setAlignmentI
-}
-
-public void test_getMoveable() {
-	// tested in test_setMoveableZ
-}
-
-public void test_getParent() {
-	warnUnimpl("Test test_getParent not written");
-}
-
-public void test_getResizable() {
-	// tested in test_setResizeableZ
 }
 
 public void test_getWidth() {
@@ -123,14 +103,6 @@ public void test_getWidth() {
 
 	tableColumn.setWidth(testWidth);
 	assertTrue(":c: width=" + tableColumn.getWidth() + " should be=" + testWidth, tableColumn.getWidth() == testWidth);
-}
-
-public void test_pack() {
-	warnUnimpl("Test test_pack not written");
-}
-
-public void test_removeControlListenerLorg_eclipse_swt_events_ControlListener() {
-	warnUnimpl("Test test_removeControlListenerLorg_eclipse_swt_events_ControlListener not written");
 }
 
 public void test_removeSelectionListenerLorg_eclipse_swt_events_SelectionListener() {
@@ -230,10 +202,6 @@ public void test_setTextLjava_lang_String() {
 	}
 }
 
-public void test_setWidthI() {
-	warnUnimpl("Test test_setWidthI not written");
-}
-
 public static Test suite() {
 	TestSuite suite = new TestSuite();
 	java.util.Vector<String> methodNames = methodNames();
@@ -247,22 +215,14 @@ public static java.util.Vector<String> methodNames() {
 	java.util.Vector<String> methodNames = new java.util.Vector<String>();
 	methodNames.addElement("test_ConstructorLorg_eclipse_swt_widgets_TableI");
 	methodNames.addElement("test_ConstructorLorg_eclipse_swt_widgets_TableII");
-	methodNames.addElement("test_addControlListenerLorg_eclipse_swt_events_ControlListener");
 	methodNames.addElement("test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener");
-	methodNames.addElement("test_getAlignment");
-	methodNames.addElement("test_getMoveable");
-	methodNames.addElement("test_getParent");
-	methodNames.addElement("test_getResizable");
 	methodNames.addElement("test_getWidth");
-	methodNames.addElement("test_pack");
-	methodNames.addElement("test_removeControlListenerLorg_eclipse_swt_events_ControlListener");
 	methodNames.addElement("test_removeSelectionListenerLorg_eclipse_swt_events_SelectionListener");
 	methodNames.addElement("test_setAlignmentI");
 	methodNames.addElement("test_setImageLorg_eclipse_swt_graphics_Image");
 	methodNames.addElement("test_setMoveableZ");
 	methodNames.addElement("test_setResizableZ");
 	methodNames.addElement("test_setTextLjava_lang_String");
-	methodNames.addElement("test_setWidthI");
 	methodNames.addAll(Test_org_eclipse_swt_widgets_Item.methodNames()); // add superclass method names
 	return methodNames;
 }
@@ -270,22 +230,14 @@ public static java.util.Vector<String> methodNames() {
 protected void runTest() throws Throwable {
 	if (getName().equals("test_ConstructorLorg_eclipse_swt_widgets_TableI")) test_ConstructorLorg_eclipse_swt_widgets_TableI();
 	else if (getName().equals("test_ConstructorLorg_eclipse_swt_widgets_TableII")) test_ConstructorLorg_eclipse_swt_widgets_TableII();
-	else if (getName().equals("test_addControlListenerLorg_eclipse_swt_events_ControlListener")) test_addControlListenerLorg_eclipse_swt_events_ControlListener();
 	else if (getName().equals("test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener")) test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener();
-	else if (getName().equals("test_getAlignment")) test_getAlignment();
-	else if (getName().equals("test_getMoveable")) test_getMoveable();
-	else if (getName().equals("test_getParent")) test_getParent();
-	else if (getName().equals("test_getResizable")) test_getResizable();
 	else if (getName().equals("test_getWidth")) test_getWidth();
-	else if (getName().equals("test_pack")) test_pack();
-	else if (getName().equals("test_removeControlListenerLorg_eclipse_swt_events_ControlListener")) test_removeControlListenerLorg_eclipse_swt_events_ControlListener();
 	else if (getName().equals("test_removeSelectionListenerLorg_eclipse_swt_events_SelectionListener")) test_removeSelectionListenerLorg_eclipse_swt_events_SelectionListener();
 	else if (getName().equals("test_setAlignmentI")) test_setAlignmentI();
 	else if (getName().equals("test_setImageLorg_eclipse_swt_graphics_Image")) test_setImageLorg_eclipse_swt_graphics_Image();
 	else if (getName().equals("test_setMoveableZ")) test_setMoveableZ();
 	else if (getName().equals("test_setResizableZ")) test_setResizableZ();
 	else if (getName().equals("test_setTextLjava_lang_String")) test_setTextLjava_lang_String();
-	else if (getName().equals("test_setWidthI")) test_setWidthI();
 	else super.runTest();
 }
 

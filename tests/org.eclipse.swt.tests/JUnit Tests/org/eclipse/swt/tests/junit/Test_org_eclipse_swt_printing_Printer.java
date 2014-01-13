@@ -173,16 +173,6 @@ public void test_getPrinterList() {
 	}
 }
 
-@Override
-public void test_internal_dispose_GCILorg_eclipse_swt_graphics_GCData() {
-	warnUnimpl("Test test_internal_dispose_GCILorg_eclipse_swt_graphics_GCData not written");
-}
-
-@Override
-public void test_internal_new_GCLorg_eclipse_swt_graphics_GCData() {
-	warnUnimpl("Test test_internal_new_GCLorg_eclipse_swt_graphics_GCData not written");
-}
-
 public static Test suite() {
 	TestSuite suite = new TestSuite();
 	java.util.Vector<String> methodNames = methodNames();
@@ -202,8 +192,6 @@ public static java.util.Vector<String> methodNames() {
 //	methodNames.addElement("test_getDPI");
 	methodNames.addElement("test_getPrinterData");
 	methodNames.addElement("test_getPrinterList");
-//	methodNames.addElement("test_internal_dispose_GCILorg_eclipse_swt_graphics_GCData");
-//	methodNames.addElement("test_internal_new_GCLorg_eclipse_swt_graphics_GCData");
 	methodNames.addAll(Test_org_eclipse_swt_graphics_Device.methodNames()); // add superclass method names
 	return methodNames;
 }
@@ -217,8 +205,6 @@ protected void runTest() throws Throwable {
 	else if (getName().equals("test_getDPI")) test_getDPI();
 	else if (getName().equals("test_getPrinterData")) test_getPrinterData();
 	else if (getName().equals("test_getPrinterList")) test_getPrinterList();
-	else if (getName().equals("test_internal_dispose_GCILorg_eclipse_swt_graphics_GCData")) test_internal_dispose_GCILorg_eclipse_swt_graphics_GCData();
-	else if (getName().equals("test_internal_new_GCLorg_eclipse_swt_graphics_GCData")) test_internal_new_GCLorg_eclipse_swt_graphics_GCData();
 	else super.runTest();
 }
 }

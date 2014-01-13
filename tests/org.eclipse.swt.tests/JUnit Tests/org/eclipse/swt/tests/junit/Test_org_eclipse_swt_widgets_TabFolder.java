@@ -51,10 +51,6 @@ public void test_ConstructorLorg_eclipse_swt_widgets_CompositeI() {
 	}
 }
 
-public void test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener() {
-	warnUnimpl("Test test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener not written");
-}
-
 @Override
 public void test_computeSizeIIZ() {
 	warnUnimpl("Test test_computeSizeIIZ not written");
@@ -216,14 +212,6 @@ public void test_indexOfLorg_eclipse_swt_widgets_TabItem() {
 	assertTrue(":a:", tabFolder.indexOf(tabItem) == -1);
 }
 
-public void test_removeSelectionListenerLorg_eclipse_swt_events_SelectionListener() {
-	warnUnimpl("Test test_removeSelectionListenerLorg_eclipse_swt_events_SelectionListener not written");
-}
-
-public void test_setSelection$Lorg_eclipse_swt_widgets_TabItem() {
-	warnUnimpl("Test test_setSelection$Lorg_eclipse_swt_widgets_TabItem not written");
-}
-
 public void test_setSelectionEmpty() {
 	int number = 10;
 	for (int i = 0; i<number ; i++){
@@ -368,7 +356,6 @@ public static Test suite() {
 public static java.util.Vector<String> methodNames() {
 	java.util.Vector<String> methodNames = new java.util.Vector<String>();
 	methodNames.addElement("test_ConstructorLorg_eclipse_swt_widgets_CompositeI");
-	methodNames.addElement("test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener");
 	methodNames.addElement("test_computeSizeIIZ");
 	methodNames.addElement("test_computeTrimIIII");
 	methodNames.addElement("test_getClientArea");
@@ -378,8 +365,6 @@ public static java.util.Vector<String> methodNames() {
 	methodNames.addElement("test_getSelection");
 	methodNames.addElement("test_getSelectionIndex");
 	methodNames.addElement("test_indexOfLorg_eclipse_swt_widgets_TabItem");
-	methodNames.addElement("test_removeSelectionListenerLorg_eclipse_swt_events_SelectionListener");
-	methodNames.addElement("test_setSelection$Lorg_eclipse_swt_widgets_TabItem");
 	methodNames.addElement("test_setSelectionI");
 	methodNames.addElement("test_setSelectionEmpty");
 	methodNames.addElement("test_consistency_KeySelection");
@@ -394,7 +379,6 @@ public static java.util.Vector<String> methodNames() {
 @Override
 protected void runTest() throws Throwable {
 	if (getName().equals("test_ConstructorLorg_eclipse_swt_widgets_CompositeI")) test_ConstructorLorg_eclipse_swt_widgets_CompositeI();
-	else if (getName().equals("test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener")) test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener();
 	else if (getName().equals("test_computeSizeIIZ")) test_computeSizeIIZ();
 	else if (getName().equals("test_computeTrimIIII")) test_computeTrimIIII();
 	else if (getName().equals("test_getClientArea")) test_getClientArea();
@@ -404,8 +388,6 @@ protected void runTest() throws Throwable {
 	else if (getName().equals("test_getSelection")) test_getSelection();
 	else if (getName().equals("test_getSelectionIndex")) test_getSelectionIndex();
 	else if (getName().equals("test_indexOfLorg_eclipse_swt_widgets_TabItem")) test_indexOfLorg_eclipse_swt_widgets_TabItem();
-	else if (getName().equals("test_removeSelectionListenerLorg_eclipse_swt_events_SelectionListener")) test_removeSelectionListenerLorg_eclipse_swt_events_SelectionListener();
-	else if (getName().equals("test_setSelection$Lorg_eclipse_swt_widgets_TabItem")) test_setSelection$Lorg_eclipse_swt_widgets_TabItem();
 	else if (getName().equals("test_setSelectionI")) test_setSelectionI();
 	else if (getName().equals("test_setSelectionEmpty")) test_setSelectionEmpty();
 	else if (getName().equals("test_consistency_KeySelection")) test_consistency_KeySelection();

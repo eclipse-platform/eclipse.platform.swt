@@ -83,16 +83,6 @@ public void test_getWarnings() {
 	warnUnimpl("Test test_getWarnings not written");
 }
 
-public void test_internal_dispose_GCILorg_eclipse_swt_graphics_GCData() {
-	// Device is abstract - test in subclasses
-	warnUnimpl("Test test_internal_dispose_GCILorg_eclipse_swt_graphics_GCData not written");
-}
-
-public void test_internal_new_GCLorg_eclipse_swt_graphics_GCData() {
-	// Device is abstract - test in subclasses
-	warnUnimpl("Test test_internal_new_GCLorg_eclipse_swt_graphics_GCData not written");
-}
-
 public void test_isDisposed() {
 	// Device is abstract - test in subclasses
 	warnUnimpl("Test test_isDisposed not written");
@@ -126,8 +116,6 @@ public static java.util.Vector<String> methodNames() {
 	methodNames.addElement("test_getSystemColorI");
 	methodNames.addElement("test_getSystemFont");
 	methodNames.addElement("test_getWarnings");
-	methodNames.addElement("test_internal_dispose_GCILorg_eclipse_swt_graphics_GCData");
-	methodNames.addElement("test_internal_new_GCLorg_eclipse_swt_graphics_GCData");
 	methodNames.addElement("test_isDisposed");
 	methodNames.addElement("test_setWarningsZ");
 	return methodNames;
@@ -145,8 +133,6 @@ protected void runTest() throws Throwable {
 	else if (getName().equals("test_getSystemColorI")) test_getSystemColorI();
 	else if (getName().equals("test_getSystemFont")) test_getSystemFont();
 	else if (getName().equals("test_getWarnings")) test_getWarnings();
-	else if (getName().equals("test_internal_dispose_GCILorg_eclipse_swt_graphics_GCData")) test_internal_dispose_GCILorg_eclipse_swt_graphics_GCData();
-	else if (getName().equals("test_internal_new_GCLorg_eclipse_swt_graphics_GCData")) test_internal_new_GCLorg_eclipse_swt_graphics_GCData();
 	else if (getName().equals("test_isDisposed")) test_isDisposed();
 	else if (getName().equals("test_setWarningsZ")) test_setWarningsZ();
 }

@@ -65,14 +65,6 @@ public void test_ConstructorLorg_eclipse_swt_widgets_CompositeI() {
 	}
 }
 
-public void test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener() {
-	warnUnimpl("Test test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener not written");
-}
-
-public void test_addTreeListenerLorg_eclipse_swt_events_TreeListener() {
-	warnUnimpl("Test test_addTreeListenerLorg_eclipse_swt_events_TreeListener not written");
-}
-
 @Override
 public void test_computeSizeIIZ() {
 	warnUnimpl("Test test_computeSizeIIZ not written");
@@ -182,14 +174,6 @@ public void test_getHeaderHeight() {
 	assertEquals(0, tree.getHeaderHeight());
 }
 
-public void test_getHeaderVisible() {
-	// tested in test_setHeaderVisibleZ
-}
-
-public void test_getItemCount() {
-	//tested in test_setItemCountI
-}
-
 public void test_getItemHeight() {
 	assertTrue(":a: Item height is 0", tree.getItemHeight() > 0);
 	new TreeItem(tree, 0);
@@ -226,10 +210,6 @@ public void test_getItemI() {
 	}
 }
 
-public void test_getItemLorg_eclipse_swt_graphics_Point() {
-	warnUnimpl("Test test_getItemLorg_eclipse_swt_graphics_Point not written");
-}
-
 public void test_getItems() {
 	int[] cases = {0, 10, 100};
 	TreeItem [][] items = new TreeItem [cases.length][];
@@ -262,16 +242,8 @@ public void test_getItems() {
 	}
 }
 
-public void test_getLinesVisible() {
-	// tested in test_setHeaderVisibleZ
-}
-
 public void test_getParentItem() {
 	assertNull(tree.getParentItem());
-}
-
-public void test_getSelection() {
-	// Tested in setSelection.
 }
 
 public void test_getSelectionCount() {
@@ -328,10 +300,6 @@ public void test_getSelectionCount() {
 	assertEquals(0, tree.getSelectionCount());
 }
 
-public void test_getTopItem() {
-// tested in test_setTopItemLorg_eclipse_swt_widgets_TreeItem
-}
-
 public void test_removeAll() {
 	tree.removeAll();
 	assertEquals(0, tree.getItemCount());
@@ -345,14 +313,6 @@ public void test_removeAll() {
 
 	tree.removeAll();
 	assertEquals(0, tree.getItemCount());
-}
-
-public void test_removeSelectionListenerLorg_eclipse_swt_events_SelectionListener() {
-	warnUnimpl("Test test_removeSelectionListenerLorg_eclipse_swt_events_SelectionListener not written");
-}
-
-public void test_removeTreeListenerLorg_eclipse_swt_events_TreeListener() {
-	warnUnimpl("Test test_removeTreeListenerLorg_eclipse_swt_events_TreeListener not written");
 }
 
 public void test_selectAll() {
@@ -374,10 +334,6 @@ public void test_selectAll() {
 	assertEquals(0, tree.getSelectionCount());
 	tree.selectAll();
 	assertEquals(0, tree.getSelectionCount());
-}
-
-public void test_setInsertMarkLorg_eclipse_swt_widgets_TreeItemZ() {
-	warnUnimpl("Test test_setInsertMarkLorg_eclipse_swt_widgets_TreeItemZ not written");
 }
 
 public void test_setHeaderVisibleZ() {
@@ -632,10 +588,6 @@ public void test_setTopItemLorg_eclipse_swt_widgets_TreeItem() {
 	}
 }
 
-public void test_showColumnLorg_eclipse_swt_widgets_TreeColumn() {
-	warnUnimpl("Test test_showColumnLorg_eclipse_swt_widgets_TreeColumn not written");
-}
-
 public void test_showItemLorg_eclipse_swt_widgets_TreeItem() {
 	try {
 		tree.showItem(null);
@@ -695,8 +647,6 @@ public static Test suite() {
 public static java.util.Vector<String> methodNames() {
 	java.util.Vector<String> methodNames = new java.util.Vector<String>();
 	methodNames.addElement("test_ConstructorLorg_eclipse_swt_widgets_CompositeI");
-	methodNames.addElement("test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener");
-	methodNames.addElement("test_addTreeListenerLorg_eclipse_swt_events_TreeListener");
 	methodNames.addElement("test_computeSizeIIZ");
 	methodNames.addElement("test_deselectAll");
 	methodNames.addElement("test_getColumnCount");
@@ -704,29 +654,19 @@ public static java.util.Vector<String> methodNames() {
 	methodNames.addElement("test_getColumns");
 	methodNames.addElement("test_getGridLineWidth");
 	methodNames.addElement("test_getHeaderHeight");
-	methodNames.addElement("test_getHeaderVisible");
-	methodNames.addElement("test_getItemCount");
 	methodNames.addElement("test_getItemHeight");
 	methodNames.addElement("test_getItemI");
-	methodNames.addElement("test_getItemLorg_eclipse_swt_graphics_Point");
 	methodNames.addElement("test_getItems");
-	methodNames.addElement("test_getLinesVisible");
 	methodNames.addElement("test_getParentItem");
-	methodNames.addElement("test_getSelection");
 	methodNames.addElement("test_getSelectionCount");
-	methodNames.addElement("test_getTopItem");
 	methodNames.addElement("test_removeAll");
-	methodNames.addElement("test_removeSelectionListenerLorg_eclipse_swt_events_SelectionListener");
-	methodNames.addElement("test_removeTreeListenerLorg_eclipse_swt_events_TreeListener");
 	methodNames.addElement("test_selectAll");
 	methodNames.addElement("test_setHeaderVisibleZ");
-	methodNames.addElement("test_setInsertMarkLorg_eclipse_swt_widgets_TreeItemZ");
 	methodNames.addElement("test_setItemCountI");
 	methodNames.addElement("test_setLinesVisibleZ");
 	methodNames.addElement("test_setRedrawZ");
 	methodNames.addElement("test_setSelection$Lorg_eclipse_swt_widgets_TreeItem");
 	methodNames.addElement("test_setTopItemLorg_eclipse_swt_widgets_TreeItem");
-	methodNames.addElement("test_showColumnLorg_eclipse_swt_widgets_TreeColumn");
 	methodNames.addElement("test_showItemLorg_eclipse_swt_widgets_TreeItem");
 	methodNames.addElement("test_showSelection");
 	methodNames.addElement("test_consistency_MouseSelection");
@@ -744,8 +684,6 @@ public static java.util.Vector<String> methodNames() {
 @Override
 protected void runTest() throws Throwable {
 	if (getName().equals("test_ConstructorLorg_eclipse_swt_widgets_CompositeI")) test_ConstructorLorg_eclipse_swt_widgets_CompositeI();
-	else if (getName().equals("test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener")) test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener();
-	else if (getName().equals("test_addTreeListenerLorg_eclipse_swt_events_TreeListener")) test_addTreeListenerLorg_eclipse_swt_events_TreeListener();
 	else if (getName().equals("test_computeSizeIIZ")) test_computeSizeIIZ();
 	else if (getName().equals("test_deselectAll")) test_deselectAll();
 	else if (getName().equals("test_getColumnCount")) test_getColumnCount();
@@ -753,30 +691,20 @@ protected void runTest() throws Throwable {
 	else if (getName().equals("test_getColumns")) test_getColumns();
 	else if (getName().equals("test_getGridLineWidth")) test_getGridLineWidth();
 	else if (getName().equals("test_getHeaderHeight")) test_getHeaderHeight();
-	else if (getName().equals("test_getHeaderVisible")) test_getHeaderVisible();
-	else if (getName().equals("test_getItemCount")) test_getItemCount();
 	else if (getName().equals("test_getItemHeight")) test_getItemHeight();
 	else if (getName().equals("test_getItemI")) test_getItemI();
-	else if (getName().equals("test_getItemLorg_eclipse_swt_graphics_Point")) test_getItemLorg_eclipse_swt_graphics_Point();
 	else if (getName().equals("test_getItems")) test_getItems();
-	else if (getName().equals("test_getLinesVisible")) test_getLinesVisible();
 	else if (getName().equals("test_getParentItem")) test_getParentItem();
-	else if (getName().equals("test_getSelection")) test_getSelection();
 	else if (getName().equals("test_getSelectionCount")) test_getSelectionCount();
-	else if (getName().equals("test_getTopItem")) test_getTopItem();
 	else if (getName().equals("test_removeAll")) test_removeAll();
-	else if (getName().equals("test_removeSelectionListenerLorg_eclipse_swt_events_SelectionListener")) test_removeSelectionListenerLorg_eclipse_swt_events_SelectionListener();
-	else if (getName().equals("test_removeTreeListenerLorg_eclipse_swt_events_TreeListener")) test_removeTreeListenerLorg_eclipse_swt_events_TreeListener();
 	else if (getName().equals("test_selectAll")) test_selectAll();
 	else if (getName().equals("test_setFontLorg_eclipse_swt_graphics_Font")) test_setFontLorg_eclipse_swt_graphics_Font();
 	else if (getName().equals("test_setHeaderVisibleZ")) test_setHeaderVisibleZ();
-	else if (getName().equals("test_setInsertMarkLorg_eclipse_swt_widgets_TreeItemZ")) test_setInsertMarkLorg_eclipse_swt_widgets_TreeItemZ();
 	else if (getName().equals("test_setItemCountI")) test_setItemCountI();
 	else if (getName().equals("test_setLinesVisibleZ")) test_setLinesVisibleZ();
 	else if (getName().equals("test_setRedrawZ")) test_setRedrawZ();
 	else if (getName().equals("test_setSelection$Lorg_eclipse_swt_widgets_TreeItem")) test_setSelection$Lorg_eclipse_swt_widgets_TreeItem();
 	else if (getName().equals("test_setTopItemLorg_eclipse_swt_widgets_TreeItem")) test_setTopItemLorg_eclipse_swt_widgets_TreeItem();
-	else if (getName().equals("test_showColumnLorg_eclipse_swt_widgets_TreeColumn")) test_showColumnLorg_eclipse_swt_widgets_TreeColumn();
 	else if (getName().equals("test_showItemLorg_eclipse_swt_widgets_TreeItem")) test_showItemLorg_eclipse_swt_widgets_TreeItem();
 	else if (getName().equals("test_showSelection")) test_showSelection();
 	else if (getName().equals("test_consistency_MouseSelection")) test_consistency_MouseSelection();

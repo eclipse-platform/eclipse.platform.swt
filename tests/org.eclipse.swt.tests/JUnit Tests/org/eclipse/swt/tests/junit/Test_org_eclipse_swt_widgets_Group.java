@@ -62,10 +62,6 @@ public void test_getClientArea() {
 	warnUnimpl("Test test_getClientArea not written");
 }
 
-public void test_getText() {
-	// tested in test_setTextLjava_lang_String
-}
-
 public void test_setTextLjava_lang_String() {
 	String[] cases = {"", "some text", "ldkashdoehufweovcnhslvhregojebckreavbkuhxbiufvcyhbifuyewvbiureyd.,cmnesljliewjfchvbwoifivbeworixuieurvbiuvbohflksjeahfcliureafgyciabelitvyrwtlicuyrtliureybcliuyreuceyvbliureybct"};
 	for (int i = 0; i < cases.length; i++) {
@@ -89,7 +85,6 @@ public static java.util.Vector<String> methodNames() {
 	methodNames.addElement("test_computeSizeIIZ");
 	methodNames.addElement("test_computeTrimIIII");
 	methodNames.addElement("test_getClientArea");
-	methodNames.addElement("test_getText");
 	methodNames.addElement("test_setTextLjava_lang_String");
 	methodNames.addElement("test_consistency_MenuDetect");
 	methodNames.addElement("test_consistency_DragDetect");
@@ -102,7 +97,6 @@ protected void runTest() throws Throwable {
 	else if (getName().equals("test_computeSizeIIZ")) test_computeSizeIIZ();
 	else if (getName().equals("test_computeTrimIIII")) test_computeTrimIIII();
 	else if (getName().equals("test_getClientArea")) test_getClientArea();
-	else if (getName().equals("test_getText")) test_getText();
 	else if (getName().equals("test_setTextLjava_lang_String")) test_setTextLjava_lang_String();
 	else if (getName().equals("test_consistency_MenuDetect")) test_consistency_MenuDetect();
 	else if (getName().equals("test_consistency_DragDetect")) test_consistency_DragDetect();

@@ -38,19 +38,6 @@ public void test_errorI() {
 	warnUnimpl("Test test_errorI not written");
 }
 
-public void test_errorII() {
-	warnUnimpl("Test test_errorII not written");
-}
-
-public void test_findProgramIDLjava_lang_String() {
-	warnUnimpl("Test test_findProgramIDLjava_lang_String not written");
-}
-
-public void test_isOleFileLjava_io_File() {
-	warnUnimpl("Test test_isOleFileLjava_io_File not written");
-}
-
-
 public static Test suite() {
 	TestSuite suite = new TestSuite();
 	java.util.Vector<String> methodNames = methodNames();
@@ -65,9 +52,6 @@ public static java.util.Vector<String> methodNames() {
 	java.util.Vector<String> methodNames = new java.util.Vector<String>();
 	methodNames.addElement("test_Constructor");
 	methodNames.addElement("test_errorI");
-	methodNames.addElement("test_errorII");
-	methodNames.addElement("test_findProgramIDLjava_lang_String");
-	methodNames.addElement("test_isOleFileLjava_io_File");
 	methodNames.addAll(Test_org_eclipse_swt_SWT.methodNames()); // add superclass method names
 	return methodNames;
 }
@@ -76,9 +60,6 @@ public static java.util.Vector<String> methodNames() {
 protected void runTest() throws Throwable {
 	if (getName().equals("test_Constructor")) test_Constructor();
 	else if (getName().equals("test_errorI")) test_errorI();
-	else if (getName().equals("test_errorII")) test_errorII();
-	else if (getName().equals("test_findProgramIDLjava_lang_String")) test_findProgramIDLjava_lang_String();
-	else if (getName().equals("test_isOleFileLjava_io_File")) test_isOleFileLjava_io_File();
 	else super.runTest();
 }
 }

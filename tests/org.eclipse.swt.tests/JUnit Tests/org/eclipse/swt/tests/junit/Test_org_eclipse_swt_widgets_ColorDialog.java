@@ -66,14 +66,6 @@ public void test_ConstructorLorg_eclipse_swt_widgets_ShellI() {
 	}
 }
 
-public void test_getRGB() {
-	// tested in test_setRGBLorg_eclipse_swt_graphics_RGB
-}
-
-public void test_open() {
-	warnUnimpl("Test test_open not written");
-}
-
 public void test_setRGBLorg_eclipse_swt_graphics_RGB() {
 	RGB rgb = new RGB(0, 0, 0);
 
@@ -99,8 +91,6 @@ public static java.util.Vector<String> methodNames() {
 	java.util.Vector<String> methodNames = new java.util.Vector<String>();
 	methodNames.addElement("test_ConstructorLorg_eclipse_swt_widgets_Shell");
 	methodNames.addElement("test_ConstructorLorg_eclipse_swt_widgets_ShellI");
-	methodNames.addElement("test_getRGB");
-	methodNames.addElement("test_open");
 	methodNames.addElement("test_setRGBLorg_eclipse_swt_graphics_RGB");
 	methodNames.addAll(Test_org_eclipse_swt_widgets_Dialog.methodNames()); // add superclass method names
 	return methodNames;
@@ -109,8 +99,6 @@ public static java.util.Vector<String> methodNames() {
 protected void runTest() throws Throwable {
 	if (getName().equals("test_ConstructorLorg_eclipse_swt_widgets_Shell")) test_ConstructorLorg_eclipse_swt_widgets_Shell();
 	else if (getName().equals("test_ConstructorLorg_eclipse_swt_widgets_ShellI")) test_ConstructorLorg_eclipse_swt_widgets_ShellI();
-	else if (getName().equals("test_getRGB")) test_getRGB();
-	else if (getName().equals("test_open")) test_open();
 	else if (getName().equals("test_setRGBLorg_eclipse_swt_graphics_RGB")) test_setRGBLorg_eclipse_swt_graphics_RGB();
 	else super.runTest();
 }

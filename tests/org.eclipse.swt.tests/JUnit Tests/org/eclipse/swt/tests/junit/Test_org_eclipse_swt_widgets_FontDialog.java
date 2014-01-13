@@ -61,22 +61,6 @@ public void test_ConstructorLorg_eclipse_swt_widgets_ShellI() {
 	}
 }
 
-public void test_getFontData() {
-	// tested in test_setFontDataLorg_eclipse_swt_graphics_FontData
-}
-
-public void test_getFontList() {
-	warnUnimpl("Test test_getFontList not written");
-}
-
-public void test_getRGB() {
-	// tested in test_setRGBLorg_eclipse_swt_graphics_RGB
-}
-
-public void test_open() {
-	warnUnimpl("Test test_open not written");
-}
-
 public void test_setFontDataLorg_eclipse_swt_graphics_FontData() {
 	FontData [] fontData = new FontData [1];
 	fontData [0] = new FontData ();
@@ -88,10 +72,6 @@ public void test_setFontDataLorg_eclipse_swt_graphics_FontData() {
 
 	fontDialog.setFontList(null);
 	assertNull(fontDialog.getFontList());	
-}
-
-public void test_setFontList$Lorg_eclipse_swt_graphics_FontData() {
-	warnUnimpl("Test test_setFontList$Lorg_eclipse_swt_graphics_FontData not written");
 }
 
 public void test_setRGBLorg_eclipse_swt_graphics_RGB() {
@@ -114,12 +94,7 @@ public static java.util.Vector<String> methodNames() {
 	java.util.Vector<String> methodNames = new java.util.Vector<String>();
 	methodNames.addElement("test_ConstructorLorg_eclipse_swt_widgets_Shell");
 	methodNames.addElement("test_ConstructorLorg_eclipse_swt_widgets_ShellI");
-	methodNames.addElement("test_getFontData");
-	methodNames.addElement("test_getFontList");
-	methodNames.addElement("test_getRGB");
-	methodNames.addElement("test_open");
 	methodNames.addElement("test_setFontDataLorg_eclipse_swt_graphics_FontData");
-	methodNames.addElement("test_setFontList$Lorg_eclipse_swt_graphics_FontData");
 	methodNames.addElement("test_setRGBLorg_eclipse_swt_graphics_RGB");
 	methodNames.addAll(Test_org_eclipse_swt_widgets_Dialog.methodNames()); // add superclass method names
 	return methodNames;
@@ -128,12 +103,7 @@ public static java.util.Vector<String> methodNames() {
 protected void runTest() throws Throwable {
 	if (getName().equals("test_ConstructorLorg_eclipse_swt_widgets_Shell")) test_ConstructorLorg_eclipse_swt_widgets_Shell();
 	else if (getName().equals("test_ConstructorLorg_eclipse_swt_widgets_ShellI")) test_ConstructorLorg_eclipse_swt_widgets_ShellI();
-	else if (getName().equals("test_getFontData")) test_getFontData();
-	else if (getName().equals("test_getFontList")) test_getFontList();
-	else if (getName().equals("test_getRGB")) test_getRGB();
-	else if (getName().equals("test_open")) test_open();
 	else if (getName().equals("test_setFontDataLorg_eclipse_swt_graphics_FontData")) test_setFontDataLorg_eclipse_swt_graphics_FontData();
-	else if (getName().equals("test_setFontList$Lorg_eclipse_swt_graphics_FontData")) test_setFontList$Lorg_eclipse_swt_graphics_FontData();
 	else if (getName().equals("test_setRGBLorg_eclipse_swt_graphics_RGB")) test_setRGBLorg_eclipse_swt_graphics_RGB();
 	else super.runTest();
 }

@@ -517,10 +517,6 @@ public void test_getLineHeight() {
 	assertTrue(":a:", text.getLineHeight() > 0);
 }
 
-public void test_getOrientation() {
-	// tested in setOrientation
-}
-
 public void test_getSelection() {
 	text.setText("01234567890");
 	text.setSelection(new Point(2, 2));
@@ -948,18 +944,6 @@ public void test_paste() {
 		assertEquals("0" + delimiterString + "1" + "0" + delimiterString + "1", text.getText());
 }
 
-public void test_removeModifyListenerLorg_eclipse_swt_events_ModifyListener() {
-	// tested in addModifyListener method
-}
-
-public void test_removeSelectionListenerLorg_eclipse_swt_events_SelectionListener() {
-	// tested in addSelectionListener method
-}
-
-public void test_removeVerifyListenerLorg_eclipse_swt_events_VerifyListener() {
-	// tested in addVerifyListener method
-}
-
 public void test_selectAll() {
 	text.setText("01234567890");
 	assertEquals("01234567890", text.getText());
@@ -1359,7 +1343,6 @@ public static java.util.Vector<String> methodNames() {
 	methodNames.addElement("test_getLineCount");
 	methodNames.addElement("test_getLineDelimiter");
 	methodNames.addElement("test_getLineHeight");
-	methodNames.addElement("test_getOrientation");
 	methodNames.addElement("test_getSelection");
 	methodNames.addElement("test_getSelectionCount");
 	methodNames.addElement("test_getSelectionText");
@@ -1371,9 +1354,6 @@ public static java.util.Vector<String> methodNames() {
 	methodNames.addElement("test_getTopPixel");
 	methodNames.addElement("test_insertLjava_lang_String");
 	methodNames.addElement("test_paste");
-	methodNames.addElement("test_removeModifyListenerLorg_eclipse_swt_events_ModifyListener");
-	methodNames.addElement("test_removeSelectionListenerLorg_eclipse_swt_events_SelectionListener");
-	methodNames.addElement("test_removeVerifyListenerLorg_eclipse_swt_events_VerifyListener");
 	methodNames.addElement("test_selectAll");
 	methodNames.addElement("test_setDoubleClickEnabledZ");
 	methodNames.addElement("test_setEchoCharC");
@@ -1418,7 +1398,6 @@ protected void runTest() throws Throwable {
 	else if (getName().equals("test_getLineCount")) test_getLineCount();
 	else if (getName().equals("test_getLineDelimiter")) test_getLineDelimiter();
 	else if (getName().equals("test_getLineHeight")) test_getLineHeight();
-	else if (getName().equals("test_getOrientation")) test_getOrientation();
 	else if (getName().equals("test_getSelection")) test_getSelection();
 	else if (getName().equals("test_getSelectionCount")) test_getSelectionCount();
 	else if (getName().equals("test_getSelectionText")) test_getSelectionText();
@@ -1430,9 +1409,6 @@ protected void runTest() throws Throwable {
 	else if (getName().equals("test_getTopPixel")) test_getTopPixel();
 	else if (getName().equals("test_insertLjava_lang_String")) test_insertLjava_lang_String();
 	else if (getName().equals("test_paste")) test_paste();
-	else if (getName().equals("test_removeModifyListenerLorg_eclipse_swt_events_ModifyListener")) test_removeModifyListenerLorg_eclipse_swt_events_ModifyListener();
-	else if (getName().equals("test_removeSelectionListenerLorg_eclipse_swt_events_SelectionListener")) test_removeSelectionListenerLorg_eclipse_swt_events_SelectionListener();
-	else if (getName().equals("test_removeVerifyListenerLorg_eclipse_swt_events_VerifyListener")) test_removeVerifyListenerLorg_eclipse_swt_events_VerifyListener();
 	else if (getName().equals("test_selectAll")) test_selectAll();
 	else if (getName().equals("test_setDoubleClickEnabledZ")) test_setDoubleClickEnabledZ();
 	else if (getName().equals("test_setEchoCharC")) test_setEchoCharC();

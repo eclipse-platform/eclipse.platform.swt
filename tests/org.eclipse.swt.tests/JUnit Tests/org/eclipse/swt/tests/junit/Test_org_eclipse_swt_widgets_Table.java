@@ -52,10 +52,6 @@ public void test_ConstructorLorg_eclipse_swt_widgets_CompositeI() {
 	}
 }
 
-public void test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener() {
-	warnUnimpl("Test test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener not written");
-}
-
 @Override
 public void test_computeSizeIIZ() {
 	warnUnimpl("Test test_computeSizeIIZ not written");
@@ -302,10 +298,6 @@ public void test_getColumns() {
 	assertEquals(0, table.getColumns().length);
 }
 
-public void test_getColumnOrder() {
-	//in test_setAColumnOrder$I
-}
-
 public void test_getGridLineWidth() {
 	// execute method but there is no way to check the value since it may be anything including 0
 	table.getGridLineWidth();
@@ -317,10 +309,6 @@ public void test_getHeaderHeight() {
 	assertTrue(table.getHeaderHeight() > 0);
 	table.setHeaderVisible(false);
 	assertEquals(0, table.getHeaderHeight());
-}
-
-public void test_getHeaderVisible() {
-	// tested in test_setHeaderVisibleZ
 }
 
 public void test_getItemCount() {
@@ -395,10 +383,6 @@ public void test_getItemI() {
 	}
 }
 
-public void test_getItemLorg_eclipse_swt_graphics_Point() {
-	warnUnimpl("Test test_getItemLorg_eclipse_swt_graphics_Point not written");
-}
-
 public void test_getItems() {
 	int[] cases = {0, 10, 100};
 	for (int j = 0; j < cases.length; j++) {
@@ -445,10 +429,6 @@ public void test_getItems() {
 		}
 		table.removeAll();
 	}
-}
-
-public void test_getLinesVisible() {
-	// tested in test_setLinesVisibleZ
 }
 
 public void test_getSelection() {
@@ -612,14 +592,6 @@ public void test_getSelectionIndices() {
 
 	table.setSelection(items);
 	assertArrayEquals(new int[]{}, table.getSelectionIndices());
-}
-
-public void test_getTopIndex() {
-	warnUnimpl("Test test_getTopIndex not written");
-}
-
-public void test_indexOfLorg_eclipse_swt_widgets_TableColumn() {
-	warnUnimpl("Test test_indexOfLorg_eclipse_swt_widgets_TableColumn not written");
 }
 
 public void test_indexOfLorg_eclipse_swt_widgets_TableItem() {
@@ -827,10 +799,6 @@ public void test_removeAll() {
 	table.removeAll();
 }
 
-public void test_removeI() {
-	warnUnimpl("Test test_removeI not written");
-}
-
 public void test_removeII() {
 	int number = 5;
 	TableItem[] items = new TableItem[number];
@@ -1008,10 +976,6 @@ public void test_removeII() {
 
 	table.remove(new int[] {2, 1, 0, 5, 5});
 	assertEquals(number-4, table.getItemCount());
-}
-
-public void test_removeSelectionListenerLorg_eclipse_swt_events_SelectionListener() {
-	warnUnimpl("Test test_removeSelectionListenerLorg_eclipse_swt_events_SelectionListener not written");
 }
 
 public void test_select$I() {
@@ -1654,18 +1618,6 @@ public void test_setSelectionII() {
 		assertArrayEquals(new int[] {4}, table.getSelectionIndices());
 }
 
-public void test_setTopIndexI() {
-	warnUnimpl("Test test_setTopIndexI not written");
-}
-
-public void test_showColumnLorg_eclipse_swt_widgets_TableColumn() {
-	warnUnimpl("Test test_showColumnLorg_eclipse_swt_widgets_TableColumn not written");
-}
-
-public void test_showItemLorg_eclipse_swt_widgets_TableItem() {
-	warnUnimpl("Test test_showItemLorg_eclipse_swt_widgets_TableItem not written");
-}
-
 public void test_showSelection() {
 	table.showSelection();
 }
@@ -1682,7 +1634,6 @@ public static Test suite() {
 public static java.util.Vector<String> methodNames() {
 	java.util.Vector<String> methodNames = new java.util.Vector<String>();
 	methodNames.addElement("test_ConstructorLorg_eclipse_swt_widgets_CompositeI");
-	methodNames.addElement("test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener");
 	methodNames.addElement("test_computeSizeIIZ");
 	methodNames.addElement("test_deselect$I");
 	methodNames.addElement("test_deselectAll");
@@ -1690,30 +1641,22 @@ public static java.util.Vector<String> methodNames() {
 	methodNames.addElement("test_deselectII");
 	methodNames.addElement("test_getColumnCount");
 	methodNames.addElement("test_getColumnI");
-	methodNames.addElement("test_getColumnOrder");
 	methodNames.addElement("test_getColumns");
 	methodNames.addElement("test_getGridLineWidth");
 	methodNames.addElement("test_getHeaderHeight");
-	methodNames.addElement("test_getHeaderVisible");
 	methodNames.addElement("test_getItemCount");
 	methodNames.addElement("test_getItemHeight");
 	methodNames.addElement("test_getItemI");
-	methodNames.addElement("test_getItemLorg_eclipse_swt_graphics_Point");
 	methodNames.addElement("test_getItems");
-	methodNames.addElement("test_getLinesVisible");
 	methodNames.addElement("test_getSelection");
 	methodNames.addElement("test_getSelectionCount");
 	methodNames.addElement("test_getSelectionIndex");
 	methodNames.addElement("test_getSelectionIndices");
-	methodNames.addElement("test_getTopIndex");
-	methodNames.addElement("test_indexOfLorg_eclipse_swt_widgets_TableColumn");
 	methodNames.addElement("test_indexOfLorg_eclipse_swt_widgets_TableItem");
 	methodNames.addElement("test_isSelectedI");
 	methodNames.addElement("test_remove$I");
 	methodNames.addElement("test_removeAll");
-	methodNames.addElement("test_removeI");
 	methodNames.addElement("test_removeII");
-	methodNames.addElement("test_removeSelectionListenerLorg_eclipse_swt_events_SelectionListener");
 	methodNames.addElement("test_select$I");
 	methodNames.addElement("test_selectAll");
 	methodNames.addElement("test_selectI");
@@ -1727,9 +1670,6 @@ public static java.util.Vector<String> methodNames() {
 	methodNames.addElement("test_setSelection$Lorg_eclipse_swt_widgets_TableItem");
 	methodNames.addElement("test_setSelectionI");
 	methodNames.addElement("test_setSelectionII");
-	methodNames.addElement("test_setTopIndexI");
-	methodNames.addElement("test_showColumnLorg_eclipse_swt_widgets_TableColumn");
-	methodNames.addElement("test_showItemLorg_eclipse_swt_widgets_TableItem");
 	methodNames.addElement("test_showSelection");
 	methodNames.addElement("test_consistency_KeySelection");
 	methodNames.addElement("test_consistency_MouseSelection");
@@ -1743,7 +1683,6 @@ public static java.util.Vector<String> methodNames() {
 @Override
 protected void runTest() throws Throwable {
 	if (getName().equals("test_ConstructorLorg_eclipse_swt_widgets_CompositeI")) test_ConstructorLorg_eclipse_swt_widgets_CompositeI();
-	else if (getName().equals("test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener")) test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener();
 	else if (getName().equals("test_computeSizeIIZ")) test_computeSizeIIZ();
 	else if (getName().equals("test_deselect$I")) test_deselect$I();
 	else if (getName().equals("test_deselectAll")) test_deselectAll();
@@ -1751,30 +1690,22 @@ protected void runTest() throws Throwable {
 	else if (getName().equals("test_deselectII")) test_deselectII();
 	else if (getName().equals("test_getColumnCount")) test_getColumnCount();
 	else if (getName().equals("test_getColumnI")) test_getColumnI();
-	else if (getName().equals("test_getColumnOrder")) test_getColumnOrder();
 	else if (getName().equals("test_getColumns")) test_getColumns();
 	else if (getName().equals("test_getGridLineWidth")) test_getGridLineWidth();
 	else if (getName().equals("test_getHeaderHeight")) test_getHeaderHeight();
-	else if (getName().equals("test_getHeaderVisible")) test_getHeaderVisible();
 	else if (getName().equals("test_getItemCount")) test_getItemCount();
 	else if (getName().equals("test_getItemHeight")) test_getItemHeight();
 	else if (getName().equals("test_getItemI")) test_getItemI();
-	else if (getName().equals("test_getItemLorg_eclipse_swt_graphics_Point")) test_getItemLorg_eclipse_swt_graphics_Point();
 	else if (getName().equals("test_getItems")) test_getItems();
-	else if (getName().equals("test_getLinesVisible")) test_getLinesVisible();
 	else if (getName().equals("test_getSelection")) test_getSelection();
 	else if (getName().equals("test_getSelectionCount")) test_getSelectionCount();
 	else if (getName().equals("test_getSelectionIndex")) test_getSelectionIndex();
 	else if (getName().equals("test_getSelectionIndices")) test_getSelectionIndices();
-	else if (getName().equals("test_getTopIndex")) test_getTopIndex();
-	else if (getName().equals("test_indexOfLorg_eclipse_swt_widgets_TableColumn")) test_indexOfLorg_eclipse_swt_widgets_TableColumn();
 	else if (getName().equals("test_indexOfLorg_eclipse_swt_widgets_TableItem")) test_indexOfLorg_eclipse_swt_widgets_TableItem();
 	else if (getName().equals("test_isSelectedI")) test_isSelectedI();
 	else if (getName().equals("test_remove$I")) test_remove$I();
 	else if (getName().equals("test_removeAll")) test_removeAll();
-	else if (getName().equals("test_removeI")) test_removeI();
 	else if (getName().equals("test_removeII")) test_removeII();
-	else if (getName().equals("test_removeSelectionListenerLorg_eclipse_swt_events_SelectionListener")) test_removeSelectionListenerLorg_eclipse_swt_events_SelectionListener();
 	else if (getName().equals("test_select$I")) test_select$I();
 	else if (getName().equals("test_selectAll")) test_selectAll();
 	else if (getName().equals("test_selectI")) test_selectI();
@@ -1788,9 +1719,6 @@ protected void runTest() throws Throwable {
 	else if (getName().equals("test_setSelection$Lorg_eclipse_swt_widgets_TableItem")) test_setSelection$Lorg_eclipse_swt_widgets_TableItem();
 	else if (getName().equals("test_setSelectionI")) test_setSelectionI();
 	else if (getName().equals("test_setSelectionII")) test_setSelectionII();
-	else if (getName().equals("test_setTopIndexI")) test_setTopIndexI();
-	else if (getName().equals("test_showColumnLorg_eclipse_swt_widgets_TableColumn")) test_showColumnLorg_eclipse_swt_widgets_TableColumn();
-	else if (getName().equals("test_showItemLorg_eclipse_swt_widgets_TableItem")) test_showItemLorg_eclipse_swt_widgets_TableItem();
 	else if (getName().equals("test_showSelection")) test_showSelection();
 	else if (getName().equals("test_consistency_KeySelection")) test_consistency_KeySelection();
 	else if (getName().equals("test_consistency_MouseSelection")) test_consistency_MouseSelection();

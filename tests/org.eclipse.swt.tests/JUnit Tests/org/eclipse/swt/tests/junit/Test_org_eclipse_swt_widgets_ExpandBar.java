@@ -123,10 +123,6 @@ public void test_getItemI() {
 	}
 }
 
-public void test_getItemLorg_eclipse_swt_graphics_Point() {
-	warnUnimpl("Test test_getItemLorg_eclipse_swt_graphics_Point not written");
-}
-
 public void test_getItems() {
 	int number = 5;
 	ExpandItem[] items = new ExpandItem[number];
@@ -143,10 +139,6 @@ public void test_getItems() {
 
 	expandBar.getItems()[1].dispose();
 	assertArrayEquals(new ExpandItem[] {items[1], items[3]}, expandBar.getItems());
-}
-
-public void test_getSpacing() {
-//tested in test_setSpacingI
 }
 
 public void test_indexOfLorg_eclipse_swt_widgets_ExpandItem() {
@@ -171,10 +163,6 @@ public void test_indexOfLorg_eclipse_swt_widgets_ExpandItem() {
 		catch (IllegalArgumentException e) {
 		}
 	}
-}
-
-public void test_removeExpandListenerLorg_eclipse_swt_events_ExpandListener() {
-//tested in test_addExpandListenerLorg_eclipse_swt_events_ExpandListener 
 }
 
 public void test_setSpacingI() {
@@ -204,12 +192,9 @@ public static java.util.Vector<String> methodNames() {
 	methodNames.addElement("test_ConstructorLorg_eclipse_swt_widgets_CompositeI");
 	methodNames.addElement("test_getItemCount");
 	methodNames.addElement("test_getItemI");
-	methodNames.addElement("test_getItemLorg_eclipse_swt_graphics_Point");
 	methodNames.addElement("test_getItems");
-	methodNames.addElement("test_getSpacing");
 	methodNames.addElement("test_setSpacingI");
 	methodNames.addElement("test_indexOfLorg_eclipse_swt_widgets_ExpandItem");
-	methodNames.addElement("test_removeExpandListenerLorg_eclipse_swt_events_ExpandListener");
 	methodNames.addElement("test_consistency_MouseSelection");
 	methodNames.addElement("test_consistency_SpaceSelection");
 	methodNames.addElement("test_consistency_EnterSelection");
@@ -225,12 +210,9 @@ protected void runTest() throws Throwable {
 	else if (getName().equals("test_ConstructorLorg_eclipse_swt_widgets_CompositeI")) test_ConstructorLorg_eclipse_swt_widgets_CompositeI();
 	else if (getName().equals("test_getItemCount")) test_getItemCount();
 	else if (getName().equals("test_getItemI")) test_getItemI();
-	else if (getName().equals("test_getItemLorg_eclipse_swt_graphics_Point")) test_getItemLorg_eclipse_swt_graphics_Point();
 	else if (getName().equals("test_getItems")) test_getItems();
-	else if (getName().equals("test_getSpacing")) test_getSpacing();
 	else if (getName().equals("test_setSpacingI")) test_setSpacingI();
 	else if (getName().equals("test_indexOfLorg_eclipse_swt_widgets_ExpandItem")) test_indexOfLorg_eclipse_swt_widgets_ExpandItem();
-	else if (getName().equals("test_removeExpandListenerLorg_eclipse_swt_events_ExpandListener")) test_removeExpandListenerLorg_eclipse_swt_events_ExpandListener();
 	else if (getName().equals("test_consistency_MouseSelection")) test_consistency_MouseSelection();
 	else if (getName().equals("test_consistency_EnterSelection")) test_consistency_EnterSelection();
 	else if (getName().equals("test_consistency_SpaceSelection")) test_consistency_SpaceSelection();

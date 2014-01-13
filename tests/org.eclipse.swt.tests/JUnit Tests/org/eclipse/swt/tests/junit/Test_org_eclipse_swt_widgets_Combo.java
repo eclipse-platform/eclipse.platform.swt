@@ -618,13 +618,6 @@ public void test_removeLjava_lang_String() {
 	assertEquals(number, combo.getItemCount());
 }
 
-public void test_removeModifyListenerLorg_eclipse_swt_events_ModifyListener() {
-	// tested in addModifyListener method
-}
-
-public void test_removeSelectionListenerLorg_eclipse_swt_events_SelectionListener() {
-	// tested in addSelectionListener method
-}
 public void test_selectI() {
 	combo.add("123");
 	combo.add("456");
@@ -816,8 +809,6 @@ public static java.util.Vector<String> methodNames() {
 	methodNames.addElement("test_removeI");
 	methodNames.addElement("test_removeII");
 	methodNames.addElement("test_removeLjava_lang_String");
-	methodNames.addElement("test_removeModifyListenerLorg_eclipse_swt_events_ModifyListener");
-	methodNames.addElement("test_removeSelectionListenerLorg_eclipse_swt_events_SelectionListener");
 	methodNames.addElement("test_selectI");
 	methodNames.addElement("test_setItemILjava_lang_String");
 	methodNames.addElement("test_setItems$Ljava_lang_String");
@@ -863,8 +854,6 @@ protected void runTest() throws Throwable {
 	else if (getName().equals("test_removeI")) test_removeI();
 	else if (getName().equals("test_removeII")) test_removeII();
 	else if (getName().equals("test_removeLjava_lang_String")) test_removeLjava_lang_String();
-	else if (getName().equals("test_removeModifyListenerLorg_eclipse_swt_events_ModifyListener")) test_removeModifyListenerLorg_eclipse_swt_events_ModifyListener();
-	else if (getName().equals("test_removeSelectionListenerLorg_eclipse_swt_events_SelectionListener")) test_removeSelectionListenerLorg_eclipse_swt_events_SelectionListener();
 	else if (getName().equals("test_selectI")) test_selectI();
 	else if (getName().equals("test_setItemILjava_lang_String")) test_setItemILjava_lang_String();
 	else if (getName().equals("test_setItems$Ljava_lang_String")) test_setItems$Ljava_lang_String();

@@ -86,16 +86,8 @@ public void test_ConstructorLorg_eclipse_swt_widgets_TabFolderII() {
 	}
 }
 
-public void test_getControl() {
-	warnUnimpl("Test test_getControl not written");
-}
-
 public void test_getParent() {
 	assertTrue(":a: ", tabItem.getParent() == tabFolder);
-}
-
-public void test_getToolTipText() {
-	warnUnimpl("Test test_getToolTipText not written");
 }
 
 public void test_setControlLorg_eclipse_swt_widgets_Control() {
@@ -142,9 +134,7 @@ public static java.util.Vector<String> methodNames() {
 	java.util.Vector<String> methodNames = new java.util.Vector<String>();
 	methodNames.addElement("test_ConstructorLorg_eclipse_swt_widgets_TabFolderI");
 	methodNames.addElement("test_ConstructorLorg_eclipse_swt_widgets_TabFolderII");
-	methodNames.addElement("test_getControl");
 	methodNames.addElement("test_getParent");
-	methodNames.addElement("test_getToolTipText");
 	methodNames.addElement("test_setControlLorg_eclipse_swt_widgets_Control");
 	methodNames.addElement("test_setImageLorg_eclipse_swt_graphics_Image");
 	methodNames.addElement("test_setTextLjava_lang_String");
@@ -156,9 +146,7 @@ public static java.util.Vector<String> methodNames() {
 protected void runTest() throws Throwable {
 	if (getName().equals("test_ConstructorLorg_eclipse_swt_widgets_TabFolderI")) test_ConstructorLorg_eclipse_swt_widgets_TabFolderI();
 	else if (getName().equals("test_ConstructorLorg_eclipse_swt_widgets_TabFolderII")) test_ConstructorLorg_eclipse_swt_widgets_TabFolderII();
-	else if (getName().equals("test_getControl")) test_getControl();
 	else if (getName().equals("test_getParent")) test_getParent();
-	else if (getName().equals("test_getToolTipText")) test_getToolTipText();
 	else if (getName().equals("test_setControlLorg_eclipse_swt_widgets_Control")) test_setControlLorg_eclipse_swt_widgets_Control();
 	else if (getName().equals("test_setImageLorg_eclipse_swt_graphics_Image")) test_setImageLorg_eclipse_swt_graphics_Image();
 	else if (getName().equals("test_setTextLjava_lang_String")) test_setTextLjava_lang_String();

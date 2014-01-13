@@ -196,10 +196,6 @@ public void test_findDisplayLjava_lang_Thread() {
 	}
 }
 
-public void test_findWidgetI() {
-	warnUnimpl("Test test_findWidgetI not written");
-}
-
 public void test_getActiveShell() {
 	Display display = new Display();
 	try {
@@ -262,18 +258,6 @@ public void test_getCursorLocation() {
 	} finally {
 		display.dispose();
 	}
-}
-
-public void test_getCursorSize() {
-	warnUnimpl("Test test_getCursorSize not written");
-}
-
-public void test_getData() {
-	// tested in setData(Object) method
-}
-
-public void test_getDataLjava_lang_String() {
-	// tested in setData(String, Object) method
 }
 
 public void test_getDefault() {
@@ -441,16 +425,6 @@ public void test_getThread() {
 	} finally {
 		display.dispose();
 	}
-}
-
-@Override
-public void test_internal_dispose_GCILorg_eclipse_swt_graphics_GCData() {
-	// do not test internal API
-}
-
-@Override
-public void test_internal_new_GCLorg_eclipse_swt_graphics_GCData() {
-	// do not test internal API
 }
 
 public void test_mapLorg_eclipse_swt_widgets_ControlLorg_eclipse_swt_widgets_ControlII() {
@@ -796,13 +770,6 @@ public void test_postLorg_eclipse_swt_widgets_Event() {
 	}
 }
 
-public void test_readAndDispatch() {
-	// The following tests rely on readAndDispatch in order to succeed,
-	// thus no test is needed here.
-	//    test_getSyncThread()
-	//    test_postLorg_eclipse_swt_widgets_Event()
-}
-
 public void test_LongEventWatchdog() {
 	final int DURATION_MILLIS = 10;
 	Display display = new Display();
@@ -913,10 +880,6 @@ public void test_removeListenerILorg_eclipse_swt_widgets_Listener() {
 	}
 	assertFalse(callbackReceived[CLOSE_CALLBACK]);
 	assertFalse(callbackReceived[DISPOSE_CALLBACK]);
-}
-
-public void test_release() {
-	// Overriding test_release from Device.
 }
 
 public void test_setAppNameLjava_lang_String() {
@@ -1135,10 +1098,6 @@ public void test_update() {
 	}
 }
 
-public void test_wake() {
-	// tested in sleep() method
-}
-
 public static Test suite() {
 	TestSuite suite = new TestSuite();
 	java.util.Vector<String> methodNames = methodNames();
@@ -1159,16 +1118,12 @@ public static java.util.Vector<String> methodNames() {
 	methodNames.addElement("test_close");
 	methodNames.addElement("test_disposeExecLjava_lang_Runnable");
 	methodNames.addElement("test_findDisplayLjava_lang_Thread");
-	methodNames.addElement("test_findWidgetI");
 	methodNames.addElement("test_getActiveShell");
 	methodNames.addElement("test_getBounds");
 	methodNames.addElement("test_getClientArea");
 	methodNames.addElement("test_getCurrent");
 	methodNames.addElement("test_getCursorControl");
 	methodNames.addElement("test_getCursorLocation");
-	methodNames.addElement("test_getCursorSize");
-	methodNames.addElement("test_getData");
-	methodNames.addElement("test_getDataLjava_lang_String");
 	methodNames.addElement("test_getDefault");
 	methodNames.addElement("test_getDismissalAlignment");
 	methodNames.addElement("test_getDoubleClickTime");
@@ -1181,14 +1136,11 @@ public static java.util.Vector<String> methodNames() {
 	methodNames.addElement("test_getSystemColorI");
 	methodNames.addElement("test_getSystemFont");
 	methodNames.addElement("test_getThread");
-	methodNames.addElement("test_internal_dispose_GCILorg_eclipse_swt_graphics_GCData");
-	methodNames.addElement("test_internal_new_GCLorg_eclipse_swt_graphics_GCData");
 	methodNames.addElement("test_mapLorg_eclipse_swt_widgets_ControlLorg_eclipse_swt_widgets_ControlII");
 	methodNames.addElement("test_mapLorg_eclipse_swt_widgets_ControlLorg_eclipse_swt_widgets_ControlIIII");
 	methodNames.addElement("test_mapLorg_eclipse_swt_widgets_ControlLorg_eclipse_swt_widgets_ControlLorg_eclipse_swt_graphics_Point");
 	methodNames.addElement("test_mapLorg_eclipse_swt_widgets_ControlLorg_eclipse_swt_widgets_ControlLorg_eclipse_swt_graphics_Rectangle");
 	methodNames.addElement("test_postLorg_eclipse_swt_widgets_Event");
-	methodNames.addElement("test_readAndDispatch");
 	methodNames.addElement("test_removeFilterILorg_eclipse_swt_widgets_Listener");
 	methodNames.addElement("test_removeListenerILorg_eclipse_swt_widgets_Listener");
 	methodNames.addElement("test_setAppNameLjava_lang_String");
@@ -1201,7 +1153,6 @@ public static java.util.Vector<String> methodNames() {
 	methodNames.addElement("test_syncExecLjava_lang_Runnable");
 	methodNames.addElement("test_timerExecILjava_lang_Runnable");
 	methodNames.addElement("test_update");
-	methodNames.addElement("test_wake");
 	methodNames.addElement("test_LongEventWatchdog");
 	methodNames.addAll(Test_org_eclipse_swt_graphics_Device.methodNames()); // add superclass method names
 	return methodNames;
@@ -1217,16 +1168,12 @@ protected void runTest() throws Throwable {
 	else if (getName().equals("test_close")) test_close();
 	else if (getName().equals("test_disposeExecLjava_lang_Runnable")) test_disposeExecLjava_lang_Runnable();
 	else if (getName().equals("test_findDisplayLjava_lang_Thread")) test_findDisplayLjava_lang_Thread();
-	else if (getName().equals("test_findWidgetI")) test_findWidgetI();
 	else if (getName().equals("test_getActiveShell")) test_getActiveShell();
 	else if (getName().equals("test_getBounds")) test_getBounds();
 	else if (getName().equals("test_getClientArea")) test_getClientArea();
 	else if (getName().equals("test_getCurrent")) test_getCurrent();
 	else if (getName().equals("test_getCursorControl")) test_getCursorControl();
 	else if (getName().equals("test_getCursorLocation")) test_getCursorLocation();
-	else if (getName().equals("test_getCursorSize")) test_getCursorSize();
-	else if (getName().equals("test_getData")) test_getData();
-	else if (getName().equals("test_getDataLjava_lang_String")) test_getDataLjava_lang_String();
 	else if (getName().equals("test_getDefault")) test_getDefault();
 	else if (getName().equals("test_getDismissalAlignment")) test_getDismissalAlignment();
 	else if (getName().equals("test_getDoubleClickTime")) test_getDoubleClickTime();
@@ -1239,14 +1186,11 @@ protected void runTest() throws Throwable {
 	else if (getName().equals("test_getSystemColorI")) test_getSystemColorI();
 	else if (getName().equals("test_getSystemFont")) test_getSystemFont();
 	else if (getName().equals("test_getThread")) test_getThread();
-	else if (getName().equals("test_internal_dispose_GCILorg_eclipse_swt_graphics_GCData")) test_internal_dispose_GCILorg_eclipse_swt_graphics_GCData();
-	else if (getName().equals("test_internal_new_GCLorg_eclipse_swt_graphics_GCData")) test_internal_new_GCLorg_eclipse_swt_graphics_GCData();
 	else if (getName().equals("test_mapLorg_eclipse_swt_widgets_ControlLorg_eclipse_swt_widgets_ControlII")) test_mapLorg_eclipse_swt_widgets_ControlLorg_eclipse_swt_widgets_ControlII();
 	else if (getName().equals("test_mapLorg_eclipse_swt_widgets_ControlLorg_eclipse_swt_widgets_ControlIIII")) test_mapLorg_eclipse_swt_widgets_ControlLorg_eclipse_swt_widgets_ControlIIII();
 	else if (getName().equals("test_mapLorg_eclipse_swt_widgets_ControlLorg_eclipse_swt_widgets_ControlLorg_eclipse_swt_graphics_Point")) test_mapLorg_eclipse_swt_widgets_ControlLorg_eclipse_swt_widgets_ControlLorg_eclipse_swt_graphics_Point();
 	else if (getName().equals("test_mapLorg_eclipse_swt_widgets_ControlLorg_eclipse_swt_widgets_ControlLorg_eclipse_swt_graphics_Rectangle")) test_mapLorg_eclipse_swt_widgets_ControlLorg_eclipse_swt_widgets_ControlLorg_eclipse_swt_graphics_Rectangle();
 	else if (getName().equals("test_postLorg_eclipse_swt_widgets_Event")) test_postLorg_eclipse_swt_widgets_Event();
-	else if (getName().equals("test_readAndDispatch")) test_readAndDispatch();
 	else if (getName().equals("test_LongEventWatchdog")) test_LongEventWatchdog();
 	else if (getName().equals("test_removeFilterILorg_eclipse_swt_widgets_Listener")) test_removeFilterILorg_eclipse_swt_widgets_Listener();
 	else if (getName().equals("test_removeListenerILorg_eclipse_swt_widgets_Listener")) test_removeListenerILorg_eclipse_swt_widgets_Listener();
@@ -1260,7 +1204,6 @@ protected void runTest() throws Throwable {
 	else if (getName().equals("test_syncExecLjava_lang_Runnable")) test_syncExecLjava_lang_Runnable();
 	else if (getName().equals("test_timerExecILjava_lang_Runnable")) test_timerExecILjava_lang_Runnable();
 	else if (getName().equals("test_update")) test_update();
-	else if (getName().equals("test_wake")) test_wake();
 	else super.runTest();
 }
 

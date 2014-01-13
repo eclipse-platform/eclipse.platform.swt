@@ -1231,10 +1231,6 @@ public void test_removeLjava_lang_String() {
 
 }
 
-public void test_removeSelectionListenerLorg_eclipse_swt_events_SelectionListener() {
-	// tested in addSelectionListener method
-}
-
 public void test_select$I() {
 	try {
 		list.select((int[]) null);
@@ -2291,7 +2287,6 @@ public static java.util.Vector<String> methodNames() {
 	methodNames.addElement("test_removeI");
 	methodNames.addElement("test_removeII");
 	methodNames.addElement("test_removeLjava_lang_String");
-	methodNames.addElement("test_removeSelectionListenerLorg_eclipse_swt_events_SelectionListener");
 	methodNames.addElement("test_select$I");
 	methodNames.addElement("test_selectAll");
 	methodNames.addElement("test_selectI");
@@ -2343,7 +2338,6 @@ protected void runTest() throws Throwable {
 	else if (getName().equals("test_removeI")) test_removeI();
 	else if (getName().equals("test_removeII")) test_removeII();
 	else if (getName().equals("test_removeLjava_lang_String")) test_removeLjava_lang_String();
-	else if (getName().equals("test_removeSelectionListenerLorg_eclipse_swt_events_SelectionListener")) test_removeSelectionListenerLorg_eclipse_swt_events_SelectionListener();
 	else if (getName().equals("test_select$I")) test_select$I();
 	else if (getName().equals("test_selectAll")) test_selectAll();
 	else if (getName().equals("test_selectI")) test_selectI();

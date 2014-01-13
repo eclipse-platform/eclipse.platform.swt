@@ -53,41 +53,9 @@ public void test_ConstructorLorg_eclipse_swt_widgets_CompositeI() {
 		scale = new Scale(shell, cases[i]);
 }
 
-public void test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener() {
-	warnUnimpl("Test test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener not written");
-}
-
 @Override
 public void test_computeSizeIIZ() {
 	warnUnimpl("Test test_computeSizeIIZ not written");
-}
-
-public void test_getIncrement() {
-	warnUnimpl("Test test_getIncrement not written");
-}
-
-public void test_getMaximum() {
-	warnUnimpl("Test test_getMaximum not written");
-}
-
-public void test_getMinimum() {
-	warnUnimpl("Test test_getMinimum not written");
-}
-
-public void test_getPageIncrement() {
-	warnUnimpl("Test test_getPageIncrement not written");
-}
-
-public void test_getSelection() {
-	warnUnimpl("Test test_getSelection not written");
-}
-
-public void test_removeSelectionListenerLorg_eclipse_swt_events_SelectionListener() {
-	warnUnimpl("Test test_removeSelectionListenerLorg_eclipse_swt_events_SelectionListener not written");
-}
-
-public void test_setIncrementI() {
-	warnUnimpl("Test test_setIncrementI not written");
 }
 
 public void test_setMaximumI() {
@@ -115,10 +83,6 @@ public void test_setMinimumI() {
 	}
 }
 
-public void test_setPageIncrementI() {
-	warnUnimpl("Test test_setPageIncrementI not written");
-}
-
 public void test_setSelectionI() {
 	int [][] testValues = getSetSelectionValues();
 	for (int i = 0; i < testValues.length; i++) {
@@ -141,18 +105,9 @@ public static Test suite() {
 public static java.util.Vector<String> methodNames() {
 	java.util.Vector<String> methodNames = new java.util.Vector<String>();
 	methodNames.addElement("test_ConstructorLorg_eclipse_swt_widgets_CompositeI");
-	methodNames.addElement("test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener");
 	methodNames.addElement("test_computeSizeIIZ");
-	methodNames.addElement("test_getIncrement");
-	methodNames.addElement("test_getMaximum");
-	methodNames.addElement("test_getMinimum");
-	methodNames.addElement("test_getPageIncrement");
-	methodNames.addElement("test_getSelection");
-	methodNames.addElement("test_removeSelectionListenerLorg_eclipse_swt_events_SelectionListener");
-	methodNames.addElement("test_setIncrementI");
 	methodNames.addElement("test_setMaximumI");
 	methodNames.addElement("test_setMinimumI");
-	methodNames.addElement("test_setPageIncrementI");
 	methodNames.addElement("test_setSelectionI");
 	methodNames.addElement("test_consistency_KeySelection");
 	methodNames.addElement("test_consistency_TroughSelection");
@@ -165,18 +120,9 @@ public static java.util.Vector<String> methodNames() {
 @Override
 protected void runTest() throws Throwable {
 	if (getName().equals("test_ConstructorLorg_eclipse_swt_widgets_CompositeI")) test_ConstructorLorg_eclipse_swt_widgets_CompositeI();
-	else if (getName().equals("test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener")) test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener();
 	else if (getName().equals("test_computeSizeIIZ")) test_computeSizeIIZ();
-	else if (getName().equals("test_getIncrement")) test_getIncrement();
-	else if (getName().equals("test_getMaximum")) test_getMaximum();
-	else if (getName().equals("test_getMinimum")) test_getMinimum();
-	else if (getName().equals("test_getPageIncrement")) test_getPageIncrement();
-	else if (getName().equals("test_getSelection")) test_getSelection();
-	else if (getName().equals("test_removeSelectionListenerLorg_eclipse_swt_events_SelectionListener")) test_removeSelectionListenerLorg_eclipse_swt_events_SelectionListener();
-	else if (getName().equals("test_setIncrementI")) test_setIncrementI();
 	else if (getName().equals("test_setMaximumI")) test_setMaximumI();
 	else if (getName().equals("test_setMinimumI")) test_setMinimumI();
-	else if (getName().equals("test_setPageIncrementI")) test_setPageIncrementI();
 	else if (getName().equals("test_setSelectionI")) test_setSelectionI();
 	else if (getName().equals("test_consistency_KeySelection")) test_consistency_KeySelection();
 	else if (getName().equals("test_consistency_TroughSelection")) test_consistency_TroughSelection();

@@ -101,10 +101,6 @@ public void test_setFocus() {
 	// super class test is sufficient
 }
 
-public void test_setImageLorg_eclipse_swt_graphics_Image() {
-	// tested in getImage method
-}
-
 public void test_setTextLjava_lang_String(){
 	try {
 		label.setText(null);
@@ -132,7 +128,6 @@ public static java.util.Vector<String> methodNames() {
 	methodNames.addElement("test_getText");
 	methodNames.addElement("test_setAlignmentI");
 	methodNames.addElement("test_setFocus");
-	methodNames.addElement("test_setImageLorg_eclipse_swt_graphics_Image");
 	methodNames.addElement("test_setTextLjava_lang_String");
 	methodNames.addElement("test_consistency_MenuDetect");
 	methodNames.addElement("test_consistency_DragDetect");
@@ -148,7 +143,6 @@ protected void runTest() throws Throwable {
 	else if (getName().equals("test_getText")) test_getText();
 	else if (getName().equals("test_setAlignmentI")) test_setAlignmentI();
 	else if (getName().equals("test_setFocus")) test_setFocus();
-	else if (getName().equals("test_setImageLorg_eclipse_swt_graphics_Image")) test_setImageLorg_eclipse_swt_graphics_Image();
 	else if (getName().equals("test_setTextLjava_lang_String")) test_setTextLjava_lang_String();
 	else if (getName().equals("test_consistency_MenuDetect")) test_consistency_MenuDetect();
 	else if (getName().equals("test_consistency_DragDetect")) test_consistency_DragDetect();

@@ -114,30 +114,6 @@ public void test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener()
 	assertFalse(listenerCalled);
 }
 
-public void test_getDay() {
-	// tested in test_setDayI
-}
-
-public void test_getHours() {
-	// tested in test_setHoursI
-}
-
-public void test_getMinutes() {
-	// tested in test_setMinutesI
-}
-
-public void test_getMonth() {
-	// tested in test_setMonthI
-}
-
-public void test_getSeconds() {
-	// tested in test_setSecondsI
-}
-
-public void test_getYear() {
-	// tested in test_setYearI
-}
-
 public void test_setDateIII() {
 	datetime.setDate(2008, AUG, 31);
 	assertEquals(31, datetime.getDay());
@@ -464,12 +440,6 @@ public static java.util.Vector<String> methodNames() {
 	methodNames.addElement("test_removeSelectionListenerLorg_eclipse_swt_events_SelectionListener");
 	methodNames.addElement("test_setDateIII");
 	methodNames.addElement("test_setTimeIII");
-	methodNames.addElement("test_getDay");
-	methodNames.addElement("test_getHours");
-	methodNames.addElement("test_getMinutes");
-	methodNames.addElement("test_getMonth");
-	methodNames.addElement("test_getSeconds");
-	methodNames.addElement("test_getYear");
 	methodNames.addElement("test_setDayI");
 	methodNames.addElement("test_setHoursI");
 	methodNames.addElement("test_setMinutesI");
@@ -490,12 +460,6 @@ protected void runTest() throws Throwable {
 	else if (getName().equals("test_removeSelectionListenerLorg_eclipse_swt_events_SelectionListener")) test_removeSelectionListenerLorg_eclipse_swt_events_SelectionListener();
 	else if (getName().equals("test_setDateIII")) test_setDateIII();
 	else if (getName().equals("test_setTimeIII")) test_setTimeIII();
-	else if (getName().equals("test_getDay")) test_getDay();
-	else if (getName().equals("test_getHours")) test_getHours();
-	else if (getName().equals("test_getMinutes")) test_getMinutes();
-	else if (getName().equals("test_getMonth")) test_getMonth();
-	else if (getName().equals("test_getSeconds")) test_getSeconds();
-	else if (getName().equals("test_getYear")) test_getYear();
 	else if (getName().equals("test_setDayI")) test_setDayI();
 	else if (getName().equals("test_setHoursI")) test_setHoursI();
 	else if (getName().equals("test_setMinutesI")) test_setMinutesI();

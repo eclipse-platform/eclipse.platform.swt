@@ -50,18 +50,6 @@ public void test_ConstructorLorg_eclipse_swt_widgets_WidgetI() {
 	// abstract class
 }
 
-public void test_ConstructorLorg_eclipse_swt_widgets_WidgetII() {
-	// abstract class
-}
-
-public void test_getImage() {
-	// tested in test_setImageLorg_eclipse_swt_graphics_Image
-}
-
-public void test_getText() {
-	// tested in test_setTextLjava_lang_String
-}
-
 public void test_setImageLorg_eclipse_swt_graphics_Image() {
 	assertNull(item.getImage());
 	item.setImage(images[0]);
@@ -98,9 +86,6 @@ public static Test suite() {
 public static java.util.Vector<String> methodNames() {
 	java.util.Vector<String> methodNames = new java.util.Vector<String>();
 	methodNames.addElement("test_ConstructorLorg_eclipse_swt_widgets_WidgetI");
-	methodNames.addElement("test_ConstructorLorg_eclipse_swt_widgets_WidgetII");
-	methodNames.addElement("test_getImage");
-	methodNames.addElement("test_getText");
 	methodNames.addElement("test_setImageLorg_eclipse_swt_graphics_Image");
 	methodNames.addElement("test_setTextLjava_lang_String");
 	methodNames.addAll(Test_org_eclipse_swt_widgets_Widget.methodNames()); // add superclass method names
@@ -109,9 +94,6 @@ public static java.util.Vector<String> methodNames() {
 @Override
 protected void runTest() throws Throwable {
 	if (getName().equals("test_ConstructorLorg_eclipse_swt_widgets_WidgetI")) test_ConstructorLorg_eclipse_swt_widgets_WidgetI();
-	else if (getName().equals("test_ConstructorLorg_eclipse_swt_widgets_WidgetII")) test_ConstructorLorg_eclipse_swt_widgets_WidgetII();
-	else if (getName().equals("test_getImage")) test_getImage();
-	else if (getName().equals("test_getText")) test_getText();
 	else if (getName().equals("test_setImageLorg_eclipse_swt_graphics_Image")) test_setImageLorg_eclipse_swt_graphics_Image();
 	else if (getName().equals("test_setTextLjava_lang_String")) test_setTextLjava_lang_String();
 	else super.runTest();

@@ -57,18 +57,6 @@ public void test_computeSizeIIZ() {
 	warnUnimpl("Test test_computeSizeIIZ not written");
 }
 
-public void test_getMaximum() {
-	warnUnimpl("Test test_getMaximum not written");
-}
-
-public void test_getMinimum() {
-	warnUnimpl("Test test_getMinimum not written");
-}
-
-public void test_getSelection() {
-	warnUnimpl("Test test_getSelection not written");
-}
-
 @Override
 public void test_setFocus() {
 	warnUnimpl("Test test_setFocus not written");
@@ -121,9 +109,6 @@ public static java.util.Vector<String> methodNames() {
 	java.util.Vector<String> methodNames = new java.util.Vector<String>();
 	methodNames.addElement("test_ConstructorLorg_eclipse_swt_widgets_CompositeI");
 	methodNames.addElement("test_computeSizeIIZ");
-	methodNames.addElement("test_getMaximum");
-	methodNames.addElement("test_getMinimum");
-	methodNames.addElement("test_getSelection");
 	methodNames.addElement("test_setFocus");
 	methodNames.addElement("test_setMaximumI");
 	methodNames.addElement("test_setMinimumI");
@@ -137,9 +122,6 @@ public static java.util.Vector<String> methodNames() {
 protected void runTest() throws Throwable {
 	if (getName().equals("test_ConstructorLorg_eclipse_swt_widgets_CompositeI")) test_ConstructorLorg_eclipse_swt_widgets_CompositeI();
 	else if (getName().equals("test_computeSizeIIZ")) test_computeSizeIIZ();
-	else if (getName().equals("test_getMaximum")) test_getMaximum();
-	else if (getName().equals("test_getMinimum")) test_getMinimum();
-	else if (getName().equals("test_getSelection")) test_getSelection();
 	else if (getName().equals("test_setFocus")) test_setFocus();
 	else if (getName().equals("test_setMaximumI")) test_setMaximumI();
 	else if (getName().equals("test_setMinimumI")) test_setMinimumI();

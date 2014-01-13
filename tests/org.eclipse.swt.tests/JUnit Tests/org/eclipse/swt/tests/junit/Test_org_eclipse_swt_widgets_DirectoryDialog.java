@@ -54,14 +54,6 @@ public void test_ConstructorLorg_eclipse_swt_widgets_ShellI() {
 	warnUnimpl("Test test_ConstructorLorg_eclipse_swt_widgets_ShellI not written");
 }
 
-public void test_getFilterPath() {
-	// tested in test_setFilterPathLjava_lang_String
-}
-
-public void test_getMessage() {
-	// tested in test_setMessageLjava_lang_String
-}
-
 public void test_open() {
 	if (fTestDialogOpen)
 		dirDialog.open();
@@ -105,8 +97,6 @@ public static java.util.Vector<String> methodNames() {
 	java.util.Vector<String> methodNames = new java.util.Vector<String>();
 	methodNames.addElement("test_ConstructorLorg_eclipse_swt_widgets_Shell");
 	methodNames.addElement("test_ConstructorLorg_eclipse_swt_widgets_ShellI");
-	methodNames.addElement("test_getFilterPath");
-	methodNames.addElement("test_getMessage");
 	methodNames.addElement("test_open");
 	methodNames.addElement("test_setFilterPathLjava_lang_String");
 	methodNames.addElement("test_setMessageLjava_lang_String");
@@ -117,8 +107,6 @@ public static java.util.Vector<String> methodNames() {
 protected void runTest() throws Throwable {
 	if (getName().equals("test_ConstructorLorg_eclipse_swt_widgets_Shell")) test_ConstructorLorg_eclipse_swt_widgets_Shell();
 	else if (getName().equals("test_ConstructorLorg_eclipse_swt_widgets_ShellI")) test_ConstructorLorg_eclipse_swt_widgets_ShellI();
-	else if (getName().equals("test_getFilterPath")) test_getFilterPath();
-	else if (getName().equals("test_getMessage")) test_getMessage();
 	else if (getName().equals("test_open")) test_open();
 	else if (getName().equals("test_setFilterPathLjava_lang_String")) test_setFilterPathLjava_lang_String();
 	else if (getName().equals("test_setMessageLjava_lang_String")) test_setMessageLjava_lang_String();

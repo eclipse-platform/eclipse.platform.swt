@@ -33,31 +33,6 @@ public void test_ConstructorLorg_eclipse_swt_widgets_CompositeI() {
 	warnUnimpl("Test test_ConstructorLorg_eclipse_swt_widgets_CompositeI not written");
 }
 
-public void test_getContainerMenus() {
-	warnUnimpl("Test test_getContainerMenus not written");
-}
-
-public void test_getFileMenus() {
-	warnUnimpl("Test test_getFileMenus not written");
-}
-
-public void test_getWindowMenus() {
-	warnUnimpl("Test test_getWindowMenus not written");
-}
-
-public void test_setContainerMenus$Lorg_eclipse_swt_widgets_MenuItem() {
-	warnUnimpl("Test test_setContainerMenus$Lorg_eclipse_swt_widgets_MenuItem not written");
-}
-
-public void test_setFileMenus$Lorg_eclipse_swt_widgets_MenuItem() {
-	warnUnimpl("Test test_setFileMenus$Lorg_eclipse_swt_widgets_MenuItem not written");
-}
-
-public void test_setWindowMenus$Lorg_eclipse_swt_widgets_MenuItem() {
-	warnUnimpl("Test test_setWindowMenus$Lorg_eclipse_swt_widgets_MenuItem not written");
-}
-
-
 public static Test suite() {
 	TestSuite suite = new TestSuite();
 	java.util.Vector<String> methodNames = methodNames();
@@ -71,12 +46,6 @@ public static Test suite() {
 public static java.util.Vector<String> methodNames() {
 	java.util.Vector<String> methodNames = new java.util.Vector<String>();
 	methodNames.addElement("test_ConstructorLorg_eclipse_swt_widgets_CompositeI");
-	methodNames.addElement("test_getContainerMenus");
-	methodNames.addElement("test_getFileMenus");
-	methodNames.addElement("test_getWindowMenus");
-	methodNames.addElement("test_setContainerMenus$Lorg_eclipse_swt_widgets_MenuItem");
-	methodNames.addElement("test_setFileMenus$Lorg_eclipse_swt_widgets_MenuItem");
-	methodNames.addElement("test_setWindowMenus$Lorg_eclipse_swt_widgets_MenuItem");
 	methodNames.addAll(Test_org_eclipse_swt_widgets_Composite.methodNames()); // add superclass method names
 	return methodNames;
 }
@@ -84,12 +53,6 @@ public static java.util.Vector<String> methodNames() {
 @Override
 protected void runTest() throws Throwable {
 	if (getName().equals("test_ConstructorLorg_eclipse_swt_widgets_CompositeI")) test_ConstructorLorg_eclipse_swt_widgets_CompositeI();
-	else if (getName().equals("test_getContainerMenus")) test_getContainerMenus();
-	else if (getName().equals("test_getFileMenus")) test_getFileMenus();
-	else if (getName().equals("test_getWindowMenus")) test_getWindowMenus();
-	else if (getName().equals("test_setContainerMenus$Lorg_eclipse_swt_widgets_MenuItem")) test_setContainerMenus$Lorg_eclipse_swt_widgets_MenuItem();
-	else if (getName().equals("test_setFileMenus$Lorg_eclipse_swt_widgets_MenuItem")) test_setFileMenus$Lorg_eclipse_swt_widgets_MenuItem();
-	else if (getName().equals("test_setWindowMenus$Lorg_eclipse_swt_widgets_MenuItem")) test_setWindowMenus$Lorg_eclipse_swt_widgets_MenuItem();
 	else super.runTest();
 }
 }

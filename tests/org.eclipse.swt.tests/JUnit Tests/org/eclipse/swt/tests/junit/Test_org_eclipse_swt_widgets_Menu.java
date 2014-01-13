@@ -145,14 +145,6 @@ public void test_addMenuListenerLorg_eclipse_swt_events_MenuListener() {
 	assertFalse(listenerCalled);
 }
 
-public void test_getDefaultItem() {
-	// tested in setDefaultItem method
-}
-
-public void test_getEnabled() {
-	// tested in setEnabled method
-}
-
 public void test_getItemCount() {
 	int number = 10;
 	for (int i = 0; i<number ; i++){
@@ -210,10 +202,6 @@ public void test_getShell() {
 	assertEquals(menu.getShell(), shell);
 }
 
-public void test_getVisible() {
-	// tested in setVisible method
-}
-
 public void test_indexOfLorg_eclipse_swt_widgets_MenuItem() {
 	int number = 10;
 	MenuItem[] mis = new MenuItem[number];
@@ -225,36 +213,6 @@ public void test_indexOfLorg_eclipse_swt_widgets_MenuItem() {
 		if (i>1)
 			assertTrue(menu.indexOf(mis[i-1]) != i);
 	}
-}
-
-public void test_isEnabled() {
-	// tested in setEnabled method
-}
-
-public void test_isVisible() {
-	// This test can not be run as it currently is written.  On Windows, if a 
-	// menu has no menu items, it will not become visible.
-	// If we add menu items to the menu then a second problem is encountered 
-	// because menu.setVisible() enters into a modal loop and execution of 
-	// the JUnit test case will not continue until the menu is selected and closed.
-	return;
-	
-//	menu.setVisible(true);
-//	assertTrue(menu.isVisible());
-//
-//	// api not implemented yet
-//	if (fCheckVisibility) {
-//		menu.setVisible(false);
-//		assertEquals(menu.isVisible(), false);
-//	}
-}
-
-public void test_removeHelpListenerLorg_eclipse_swt_events_HelpListener() {
-	// tested in addHelpListener method
-}
-
-public void test_removeMenuListenerLorg_eclipse_swt_events_MenuListener() {
-	// tested in addMenuListener method
 }
 
 public void test_setDefaultItemLorg_eclipse_swt_widgets_MenuItem() {
@@ -289,23 +247,6 @@ public void test_setLocationLorg_eclipse_swt_graphics_Point() {
 	}	
 }
 
-public void test_setVisibleZ() {
-	// This test can not be run as it currently is written.  On Windows, if a 
-	// menu has no menu items, it will not become visible.
-	// If we add menu items to the menu then a second problem is encountered 
-	// because menu.setVisible() enters into a modal loop and execution of 
-	// the JUnit test case will not continue until the menu is selected and closed.
-	return;
-	
-//	menu.setVisible(true);
-//	assertTrue(menu.getVisible());
-//	// API not implemented yet 
-//	if (fCheckVisibility) {
-//		menu.setVisible(false);
-//		assertEquals(menu.getVisible(), false);
-//	}
-}
-
 public static Test suite() {
 	TestSuite suite = new TestSuite();
 	java.util.Vector<String> methodNames = methodNames();
@@ -323,8 +264,6 @@ public static java.util.Vector<String> methodNames() {
 	methodNames.addElement("test_ConstructorLorg_eclipse_swt_widgets_MenuItem");
 	methodNames.addElement("test_addHelpListenerLorg_eclipse_swt_events_HelpListener");
 	methodNames.addElement("test_addMenuListenerLorg_eclipse_swt_events_MenuListener");
-	methodNames.addElement("test_getDefaultItem");
-	methodNames.addElement("test_getEnabled");
 	methodNames.addElement("test_getItemCount");
 	methodNames.addElement("test_getItemI");
 	methodNames.addElement("test_getItems");
@@ -332,17 +271,11 @@ public static java.util.Vector<String> methodNames() {
 	methodNames.addElement("test_getParentItem");
 	methodNames.addElement("test_getParentMenu");
 	methodNames.addElement("test_getShell");
-	methodNames.addElement("test_getVisible");
 	methodNames.addElement("test_indexOfLorg_eclipse_swt_widgets_MenuItem");
-	methodNames.addElement("test_isEnabled");
-	methodNames.addElement("test_isVisible");
-	methodNames.addElement("test_removeHelpListenerLorg_eclipse_swt_events_HelpListener");
-	methodNames.addElement("test_removeMenuListenerLorg_eclipse_swt_events_MenuListener");
 	methodNames.addElement("test_setDefaultItemLorg_eclipse_swt_widgets_MenuItem");
 	methodNames.addElement("test_setEnabledZ");
 	methodNames.addElement("test_setLocationII");
 	methodNames.addElement("test_setLocationLorg_eclipse_swt_graphics_Point");
-	methodNames.addElement("test_setVisibleZ");
 	methodNames.addAll(Test_org_eclipse_swt_widgets_Widget.methodNames()); // add superclass method names
 	return methodNames;
 }
@@ -354,8 +287,6 @@ protected void runTest() throws Throwable {
 	else if (getName().equals("test_ConstructorLorg_eclipse_swt_widgets_MenuItem")) test_ConstructorLorg_eclipse_swt_widgets_MenuItem();
 	else if (getName().equals("test_addHelpListenerLorg_eclipse_swt_events_HelpListener")) test_addHelpListenerLorg_eclipse_swt_events_HelpListener();
 	else if (getName().equals("test_addMenuListenerLorg_eclipse_swt_events_MenuListener")) test_addMenuListenerLorg_eclipse_swt_events_MenuListener();
-	else if (getName().equals("test_getDefaultItem")) test_getDefaultItem();
-	else if (getName().equals("test_getEnabled")) test_getEnabled();
 	else if (getName().equals("test_getItemCount")) test_getItemCount();
 	else if (getName().equals("test_getItemI")) test_getItemI();
 	else if (getName().equals("test_getItems")) test_getItems();
@@ -363,17 +294,11 @@ protected void runTest() throws Throwable {
 	else if (getName().equals("test_getParentItem")) test_getParentItem();
 	else if (getName().equals("test_getParentMenu")) test_getParentMenu();
 	else if (getName().equals("test_getShell")) test_getShell();
-	else if (getName().equals("test_getVisible")) test_getVisible();
 	else if (getName().equals("test_indexOfLorg_eclipse_swt_widgets_MenuItem")) test_indexOfLorg_eclipse_swt_widgets_MenuItem();
-	else if (getName().equals("test_isEnabled")) test_isEnabled();
-	else if (getName().equals("test_isVisible")) test_isVisible();
-	else if (getName().equals("test_removeHelpListenerLorg_eclipse_swt_events_HelpListener")) test_removeHelpListenerLorg_eclipse_swt_events_HelpListener();
-	else if (getName().equals("test_removeMenuListenerLorg_eclipse_swt_events_MenuListener")) test_removeMenuListenerLorg_eclipse_swt_events_MenuListener();
 	else if (getName().equals("test_setDefaultItemLorg_eclipse_swt_widgets_MenuItem")) test_setDefaultItemLorg_eclipse_swt_widgets_MenuItem();
 	else if (getName().equals("test_setEnabledZ")) test_setEnabledZ();
 	else if (getName().equals("test_setLocationII")) test_setLocationII();
 	else if (getName().equals("test_setLocationLorg_eclipse_swt_graphics_Point")) test_setLocationLorg_eclipse_swt_graphics_Point();
-	else if (getName().equals("test_setVisibleZ")) test_setVisibleZ();
 	else super.runTest();
 }
 

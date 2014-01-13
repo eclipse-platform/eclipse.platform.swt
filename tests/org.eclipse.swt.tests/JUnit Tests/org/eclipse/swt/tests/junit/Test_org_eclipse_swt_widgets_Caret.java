@@ -63,30 +63,10 @@ public void test_getBounds() {
 	assertTrue(!caret.getBounds().equals(new Rectangle (0,0,60,70)));
 }
 
-public void test_getFont() {
-	// tested in test_setFontLorg_eclipse_swt_graphics_Font
-}
-
-public void test_getImage() {
-	// tested in test_setImageLorg_eclipse_swt_graphics_Image
-}
-
-public void test_getLocation() {
-	warnUnimpl("Test test_getLocation not written");
-}
-
 public void test_getParent() {
 	assertEquals(canvas, caret.getParent());
 
 	assertTrue(caret.getDisplay()==shell.getDisplay());
-}
-
-public void test_getSize() {
-	warnUnimpl("Test test_getSize not written");
-}
-
-public void test_getVisible() {
-	// tested in test_setVisibleZ
 }
 
 public void test_isVisible() {
@@ -168,22 +148,6 @@ public void test_setImageLorg_eclipse_swt_graphics_Image() {
 	}
 }
 
-public void test_setLocationII() {
-	warnUnimpl("Test test_setLocationII not written");
-}
-
-public void test_setLocationLorg_eclipse_swt_graphics_Point() {
-	warnUnimpl("Test test_setLocationLorg_eclipse_swt_graphics_Point not written");
-}
-
-public void test_setSizeII() {
-	warnUnimpl("Test test_setSizeII not written");
-}
-
-public void test_setSizeLorg_eclipse_swt_graphics_Point() {
-	warnUnimpl("Test test_setSizeLorg_eclipse_swt_graphics_Point not written");
-}
-
 public void test_setVisibleZ() {
 	caret.setVisible(true);
 	assertTrue("Caret should be visible", caret.getVisible()==true);
@@ -205,21 +169,12 @@ public static java.util.Vector<String> methodNames() {
 	java.util.Vector<String> methodNames = new java.util.Vector<String>();
 	methodNames.addElement("test_ConstructorLorg_eclipse_swt_widgets_CanvasI");
 	methodNames.addElement("test_getBounds");
-	methodNames.addElement("test_getFont");
-	methodNames.addElement("test_getImage");
-	methodNames.addElement("test_getLocation");
 	methodNames.addElement("test_getParent");
-	methodNames.addElement("test_getSize");
-	methodNames.addElement("test_getVisible");
 	methodNames.addElement("test_isVisible");
 	methodNames.addElement("test_setBoundsIIII");
 	methodNames.addElement("test_setBoundsLorg_eclipse_swt_graphics_Rectangle");
 	methodNames.addElement("test_setFontLorg_eclipse_swt_graphics_Font");
 	methodNames.addElement("test_setImageLorg_eclipse_swt_graphics_Image");
-	methodNames.addElement("test_setLocationII");
-	methodNames.addElement("test_setLocationLorg_eclipse_swt_graphics_Point");
-	methodNames.addElement("test_setSizeII");
-	methodNames.addElement("test_setSizeLorg_eclipse_swt_graphics_Point");
 	methodNames.addElement("test_setVisibleZ");
 	methodNames.addAll(Test_org_eclipse_swt_widgets_Widget.methodNames()); // add superclass method names
 	return methodNames;
@@ -228,21 +183,12 @@ public static java.util.Vector<String> methodNames() {
 protected void runTest() throws Throwable {
 	if (getName().equals("test_ConstructorLorg_eclipse_swt_widgets_CanvasI")) test_ConstructorLorg_eclipse_swt_widgets_CanvasI();
 	else if (getName().equals("test_getBounds")) test_getBounds();
-	else if (getName().equals("test_getFont")) test_getFont();
-	else if (getName().equals("test_getImage")) test_getImage();
-	else if (getName().equals("test_getLocation")) test_getLocation();
 	else if (getName().equals("test_getParent")) test_getParent();
-	else if (getName().equals("test_getSize")) test_getSize();
-	else if (getName().equals("test_getVisible")) test_getVisible();
 	else if (getName().equals("test_isVisible")) test_isVisible();
 	else if (getName().equals("test_setBoundsIIII")) test_setBoundsIIII();
 	else if (getName().equals("test_setBoundsLorg_eclipse_swt_graphics_Rectangle")) test_setBoundsLorg_eclipse_swt_graphics_Rectangle();
 	else if (getName().equals("test_setFontLorg_eclipse_swt_graphics_Font")) test_setFontLorg_eclipse_swt_graphics_Font();
 	else if (getName().equals("test_setImageLorg_eclipse_swt_graphics_Image")) test_setImageLorg_eclipse_swt_graphics_Image();
-	else if (getName().equals("test_setLocationII")) test_setLocationII();
-	else if (getName().equals("test_setLocationLorg_eclipse_swt_graphics_Point")) test_setLocationLorg_eclipse_swt_graphics_Point();
-	else if (getName().equals("test_setSizeII")) test_setSizeII();
-	else if (getName().equals("test_setSizeLorg_eclipse_swt_graphics_Point")) test_setSizeLorg_eclipse_swt_graphics_Point();
 	else if (getName().equals("test_setVisibleZ")) test_setVisibleZ();
 	else super.runTest();
 }

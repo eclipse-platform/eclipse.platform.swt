@@ -70,18 +70,6 @@ public void test_getControl() {
 	assertEquals(button, control);
 }
 
-public void test_getExpanded() {
-//tested in test_setExpandedZ()
-}
-
-public void test_getHeaderHeight() {
-	warnUnimpl("Test test_getHeaderHeight not written");
-}
-
-public void test_getHeight() {
-//tested in test_setHeightI()	
-}
-
 public void test_getParent() {	
 	assertEquals(expandItem.getParent(), expandBar);
 }
@@ -160,9 +148,6 @@ public static java.util.Vector<String> methodNames() {
 	methodNames.addElement("test_ConstructorLorg_eclipse_swt_widgets_ExpandItemI");
 	methodNames.addElement("test_ConstructorLorg_eclipse_swt_widgets_ExpandItemII");
 	methodNames.addElement("test_getControl");
-	methodNames.addElement("test_getExpanded");
-	methodNames.addElement("test_getHeaderHeight");
-	methodNames.addElement("test_getHeight");
 	methodNames.addElement("test_getParent");
 	methodNames.addElement("test_setControlLorg_eclipse_swt_widgets_Control");
 	methodNames.addElement("test_setExpandedZ");
@@ -177,9 +162,6 @@ protected void runTest() throws Throwable {
 	if (getName().equals("test_ConstructorLorg_eclipse_swt_widgets_ExpandBarI")) test_ConstructorLorg_eclipse_swt_widgets_ExpandItemI();
 	else if (getName().equals("test_ConstructorLorg_eclipse_swt_widgets_ExpandBarII")) test_ConstructorLorg_eclipse_swt_widgets_ExpandItemII();
 	else if (getName().equals("test_getControl")) test_getControl();
-	else if (getName().equals("test_getExpanded")) test_getExpanded();
-	else if (getName().equals("test_getHeaderHeight")) test_getHeaderHeight();
-	else if (getName().equals("test_getHeight")) test_getHeight();
 	else if (getName().equals("test_getParent")) test_getParent();
 	else if (getName().equals("test_setControlLorg_eclipse_swt_widgets_Control")) test_setControlLorg_eclipse_swt_widgets_Control();
 	else if (getName().equals("test_setExpandedZ")) test_setExpandedZ();

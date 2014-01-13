@@ -82,14 +82,6 @@ public void test_ConstructorLorg_eclipse_swt_widgets_TreeItemII() {
 	assertEquals(1, tree.getItemCount());
 }
 
-public void test_getBackground() {
-	// tested in test_setBackgroundLorg_eclipse_swt_graphics_Color
-}
-
-public void test_getBackgroundI() {
-	// tested in test_setBackgroundILorg_eclipse_swt_graphics_Color
-}
-
 public void test_getBounds() {
 	Image image = images[0];
 	Rectangle bounds;
@@ -525,9 +517,6 @@ public void test_getBoundsI() {
 	test_getBoundsIC();
 	test_getBoundsID();
 }
-public void test_getChecked() {
-	// tested in test_setCheckedZ
-}
 
 public void test_getExpanded() {
 	assertEquals(false, treeItem.getExpanded());
@@ -537,26 +526,6 @@ public void test_getExpanded() {
 	assertTrue(treeItem.getExpanded());
 	treeItem.setExpanded(false);
 	assertEquals(false, treeItem.getExpanded());
-}
-
-public void test_getFont() {
-	// tested in test_setFontLorg_eclipse_swt_graphics_Font
-}
-
-public void test_getFontI() {
-	// tested in test_setFontILorg_eclipse_swt_graphics_Font
-}
-
-public void test_getForeground() {
-	// tested in test_setForegroundLorg_eclipse_swt_graphics_Color
-}
-
-public void test_getForegroundI() {
-	// tested in test_setForegroundILorg_eclipse_swt_graphics_Color
-}
-
-public void test_getGrayed() {
-	// tested in test_setGrayedZ
 }
 
 public void test_getImageBoundsI() {
@@ -633,10 +602,6 @@ public void test_getImageBoundsI() {
  	assertEquals(new Rectangle(0, 0, 0, 0), treeItem2.getImageBounds(1));
 }
 
-public void test_getImageI() {
-	// tested in test_setImageILorg_eclipse_swt_graphics_Image
-}
-
 public void test_getItemI() {
 	int number = 15;
 	TreeItem[] items = new TreeItem[number];
@@ -701,10 +666,6 @@ public void test_getParent() {
 public void test_getParentItem() {
 	TreeItem tItem = new TreeItem(treeItem, SWT.NULL);
 	assertEquals(treeItem, tItem.getParentItem());
-}
-
-public void test_getTextI() {
-	// tested in test_setTextILJava_lang_String
 }
 
 public void test_setBackgroundILorg_eclipse_swt_graphics_Color() {
@@ -1138,15 +1099,6 @@ public void test_setTextILjava_lang_String(){
 
 }
 
-//public void test_setTextLjava_lang_String() {
-//	try {
-//		treeItem.setText((String)null);		
-//		fail("No exception thrown for string == null");
-//	}
-//	catch (IllegalArgumentException e) {
-//	}
-//}
-
 public static Test suite() {
 	TestSuite suite = new TestSuite();
 	java.util.Vector<String> methodNames = methodNames();
@@ -1162,25 +1114,15 @@ public static java.util.Vector<String> methodNames() {
 	methodNames.addElement("test_ConstructorLorg_eclipse_swt_widgets_TreeII");
 	methodNames.addElement("test_ConstructorLorg_eclipse_swt_widgets_TreeItemI");
 	methodNames.addElement("test_ConstructorLorg_eclipse_swt_widgets_TreeItemII");
-	methodNames.addElement("test_getBackground");
-	methodNames.addElement("test_getBackgroundI");
 	methodNames.addElement("test_getBoundsI");
 	methodNames.addElement("test_getBounds");
-	methodNames.addElement("test_getChecked");
 	methodNames.addElement("test_getExpanded");
-	methodNames.addElement("test_getFont");
-	methodNames.addElement("test_getFontI");
-	methodNames.addElement("test_getForeground");
-	methodNames.addElement("test_getForegroundI");
-	methodNames.addElement("test_getGrayed");
 	methodNames.addElement("test_getImageBoundsI");
-	methodNames.addElement("test_getImageI");
 	methodNames.addElement("test_getItemI");
 	methodNames.addElement("test_getItemCount");
 	methodNames.addElement("test_getItems");
 	methodNames.addElement("test_getParent");
 	methodNames.addElement("test_getParentItem");
-	methodNames.addElement("test_getTextI");
 	methodNames.addElement("test_setBackgroundILorg_eclipse_swt_graphics_Color");
 	methodNames.addElement("test_setBackgroundLorg_eclipse_swt_graphics_Color");
 	methodNames.addElement("test_setCheckedZ");
@@ -1205,25 +1147,15 @@ protected void runTest() throws Throwable {
 	else if (getName().equals("test_ConstructorLorg_eclipse_swt_widgets_TreeII")) test_ConstructorLorg_eclipse_swt_widgets_TreeII();
 	else if (getName().equals("test_ConstructorLorg_eclipse_swt_widgets_TreeItemI")) test_ConstructorLorg_eclipse_swt_widgets_TreeItemI();
 	else if (getName().equals("test_ConstructorLorg_eclipse_swt_widgets_TreeItemII")) test_ConstructorLorg_eclipse_swt_widgets_TreeItemII();
-	else if (getName().equals("test_getBackground")) test_getBackground();
-	else if (getName().equals("test_getBackgroundI")) test_getBackgroundI();
 	else if (getName().equals("test_getBoundsI")) test_getBoundsI();
 	else if (getName().equals("test_getBounds")) test_getBounds();
-	else if (getName().equals("test_getChecked")) test_getChecked();
 	else if (getName().equals("test_getExpanded")) test_getExpanded();
-	else if (getName().equals("test_getFont")) test_getFont();
-	else if (getName().equals("test_getFontI")) test_getFontI();
-	else if (getName().equals("test_getForeground")) test_getForeground();
-	else if (getName().equals("test_getForegroundI")) test_getForegroundI();
-	else if (getName().equals("test_getGrayed")) test_getGrayed();
 	else if (getName().equals("test_getImageBoundsI")) test_getImageBoundsI();
-	else if (getName().equals("test_getImageI")) test_getImageI();
 	else if (getName().equals("test_getItemI"))  test_getItemI();
 	else if (getName().equals("test_getItemCount")) test_getItemCount();
 	else if (getName().equals("test_getItems")) test_getItems();
 	else if (getName().equals("test_getParent")) test_getParent();
 	else if (getName().equals("test_getParentItem")) test_getParentItem();
-	else if (getName().equals("test_getTextI")) test_getTextI();
 	else if (getName().equals("test_setBackgroundILorg_eclipse_swt_graphics_Color")) test_setBackgroundILorg_eclipse_swt_graphics_Color();
 	else if (getName().equals("test_setBackgroundLorg_eclipse_swt_graphics_Color")) test_setBackgroundLorg_eclipse_swt_graphics_Color();
 	else if (getName().equals("test_setCheckedZ")) test_setCheckedZ();
