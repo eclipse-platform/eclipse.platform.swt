@@ -59,7 +59,7 @@ public AllTests() {
 	 */
 	addTest(Test_org_eclipse_swt_widgets_Display.suite());
 
-	addTest(Test_org_eclipse_swt_graphics_Image.suite());
+	addTestSuite(Test_org_eclipse_swt_graphics_Image.class);
 	addTestSuite(Test_org_eclipse_swt_graphics_Cursor.class);
 	addTest(Test_org_eclipse_swt_graphics_DeviceData.suite());
 	addTestSuite(Test_org_eclipse_swt_graphics_ImageLoaderEvent.class);
@@ -68,13 +68,13 @@ public AllTests() {
 	addTestSuite(Test_org_eclipse_swt_graphics_Rectangle.class);
 	addTestSuite(Test_org_eclipse_swt_graphics_FontData.class);
 	addTestSuite(Test_org_eclipse_swt_graphics_GC.class);
-	addTest(Test_org_eclipse_swt_graphics_ImageData.suite());
+	addTestSuite(Test_org_eclipse_swt_graphics_ImageData.class);
 	addTestSuite(Test_org_eclipse_swt_graphics_Region.class);
 	addTestSuite(Test_org_eclipse_swt_graphics_FontMetrics.class);
 	addTestSuite(Test_org_eclipse_swt_graphics_Color.class);
 	addTestSuite(Test_org_eclipse_swt_graphics_Point.class);
 	addTestSuite(Test_org_eclipse_swt_graphics_PaletteData.class);
-	addTest(Test_org_eclipse_swt_graphics_ImageLoader.suite());
+	addTestSuite(Test_org_eclipse_swt_graphics_ImageLoader.class);
 	addTestSuite(Test_org_eclipse_swt_graphics_TextLayout.class);
 
 	addTest(Test_org_eclipse_swt_widgets_ExpandItem.suite());

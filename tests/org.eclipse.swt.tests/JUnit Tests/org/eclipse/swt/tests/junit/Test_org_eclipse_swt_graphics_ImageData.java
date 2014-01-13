@@ -13,14 +13,16 @@ package org.eclipse.swt.tests.junit;
 
 import static org.junit.Assert.assertArrayEquals;
 
-import java.io.*;
+import java.io.IOException;
+import java.io.InputStream;
 
-import org.eclipse.swt.*;
-import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.widgets.*;
-
-import junit.framework.*;
-import junit.textui.*;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.SWTException;
+import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.ImageData;
+import org.eclipse.swt.graphics.PaletteData;
+import org.eclipse.swt.graphics.RGB;
+import org.eclipse.swt.widgets.Display;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.graphics.ImageData
@@ -31,10 +33,6 @@ public class Test_org_eclipse_swt_graphics_ImageData extends SwtTestCase {
 
 public Test_org_eclipse_swt_graphics_ImageData(String name) {
 	super(name);
-}
-
-public static void main(String[] args) {
-	TestRunner.run(suite());
 }
 
 @Override
@@ -1154,61 +1152,6 @@ public void test_setPixelsIII$II() {
 	} catch (IllegalArgumentException e) {
 		assertEquals("Incorrect exception thrown for putWidth < 0", SWT.ERROR_INVALID_ARGUMENT, e);
 	}
-}
-
-public static Test suite() {
-	TestSuite suite = new TestSuite();
-	java.util.Vector<String> methodNames = methodNames();
-	java.util.Enumeration<String> e = methodNames.elements();
-	while (e.hasMoreElements()) {
-		suite.addTest(new Test_org_eclipse_swt_graphics_ImageData(e.nextElement()));
-	}
-	return suite;
-}
-public static java.util.Vector<String> methodNames() {
-	java.util.Vector<String> methodNames = new java.util.Vector<String>();
-	methodNames.addElement("test_ConstructorIIILorg_eclipse_swt_graphics_PaletteData");
-	methodNames.addElement("test_ConstructorIIILorg_eclipse_swt_graphics_PaletteDataI$B");
-	methodNames.addElement("test_ConstructorLjava_io_InputStream");
-	methodNames.addElement("test_ConstructorLjava_lang_String");
-	methodNames.addElement("test_clone");
-	methodNames.addElement("test_getAlphaII");
-	methodNames.addElement("test_getAlphasIII$BI");
-	methodNames.addElement("test_getPixelII");
-	methodNames.addElement("test_getPixelsIII$BI");
-	methodNames.addElement("test_getPixelsIII$II");
-	methodNames.addElement("test_getRGBs");
-	methodNames.addElement("test_getTransparencyMask");
-	methodNames.addElement("test_getTransparencyType");
-	methodNames.addElement("test_scaledToII");
-	methodNames.addElement("test_setAlphaIII");
-	methodNames.addElement("test_setAlphasIII$BI");
-	methodNames.addElement("test_setPixelIII");
-	methodNames.addElement("test_setPixelsIII$BI");
-	methodNames.addElement("test_setPixelsIII$II");
-	return methodNames;
-}
-@Override
-protected void runTest() throws Throwable {
-	if (getName().equals("test_ConstructorIIILorg_eclipse_swt_graphics_PaletteData")) test_ConstructorIIILorg_eclipse_swt_graphics_PaletteData();
-	else if (getName().equals("test_ConstructorIIILorg_eclipse_swt_graphics_PaletteDataI$B")) test_ConstructorIIILorg_eclipse_swt_graphics_PaletteDataI$B();
-	else if (getName().equals("test_ConstructorLjava_io_InputStream")) test_ConstructorLjava_io_InputStream();
-	else if (getName().equals("test_ConstructorLjava_lang_String")) test_ConstructorLjava_lang_String();
-	else if (getName().equals("test_clone")) test_clone();
-	else if (getName().equals("test_getAlphaII")) test_getAlphaII();
-	else if (getName().equals("test_getAlphasIII$BI")) test_getAlphasIII$BI();
-	else if (getName().equals("test_getPixelII")) test_getPixelII();
-	else if (getName().equals("test_getPixelsIII$BI")) test_getPixelsIII$BI();
-	else if (getName().equals("test_getPixelsIII$II")) test_getPixelsIII$II();
-	else if (getName().equals("test_getRGBs")) test_getRGBs();
-	else if (getName().equals("test_getTransparencyMask")) test_getTransparencyMask();
-	else if (getName().equals("test_getTransparencyType")) test_getTransparencyType();
-	else if (getName().equals("test_scaledToII")) test_scaledToII();
-	else if (getName().equals("test_setAlphaIII")) test_setAlphaIII();
-	else if (getName().equals("test_setAlphasIII$BI")) test_setAlphasIII$BI();
-	else if (getName().equals("test_setPixelIII")) test_setPixelIII();
-	else if (getName().equals("test_setPixelsIII$BI")) test_setPixelsIII$BI();
-	else if (getName().equals("test_setPixelsIII$II")) test_setPixelsIII$II();
 }
 /* custom */
 ImageData imageData;

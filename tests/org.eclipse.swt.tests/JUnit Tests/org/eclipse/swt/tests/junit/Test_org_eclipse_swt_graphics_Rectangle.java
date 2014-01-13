@@ -10,11 +10,9 @@
  *******************************************************************************/
 package org.eclipse.swt.tests.junit;
 
-import junit.framework.*;
-import junit.textui.*;
-
-import org.eclipse.swt.*;
-import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.graphics.Rectangle;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.graphics.Rectangle
@@ -25,10 +23,6 @@ public class Test_org_eclipse_swt_graphics_Rectangle extends SwtTestCase {
 
 public Test_org_eclipse_swt_graphics_Rectangle(String name) {
 	super(name);
-}
-
-public static void main(String[] args) {
-	TestRunner.run(suite());
 }
 
 public void test_ConstructorIIII() {
@@ -302,46 +296,4 @@ public void test_unionLorg_eclipse_swt_graphics_Rectangle() {
 	}
 }
 
-public static Test suite() {
-	TestSuite suite = new TestSuite();
-	java.util.Vector<String> methodNames = methodNames();
-	java.util.Enumeration<String> e = methodNames.elements();
-	while (e.hasMoreElements()) {
-		suite.addTest(new Test_org_eclipse_swt_graphics_Rectangle(e.nextElement()));
-	}
-	return suite;
-}
-public static java.util.Vector<String> methodNames() {
-	java.util.Vector<String> methodNames = new java.util.Vector<String>();
-	methodNames.addElement("test_ConstructorIIII");
-	methodNames.addElement("test_addLorg_eclipse_swt_graphics_Rectangle");
-	methodNames.addElement("test_containsII");
-	methodNames.addElement("test_containsLorg_eclipse_swt_graphics_Point");
-	methodNames.addElement("test_equalsLjava_lang_Object");
-	methodNames.addElement("test_hashCode");
-	methodNames.addElement("test_intersectLorg_eclipse_swt_graphics_Rectangle");
-	methodNames.addElement("test_intersectionLorg_eclipse_swt_graphics_Rectangle");
-	methodNames.addElement("test_intersectsIIII");
-	methodNames.addElement("test_intersectsLorg_eclipse_swt_graphics_Rectangle");
-	methodNames.addElement("test_isEmpty");
-	methodNames.addElement("test_toString");
-	methodNames.addElement("test_unionLorg_eclipse_swt_graphics_Rectangle");
-	return methodNames;
-}
-@Override
-protected void runTest() throws Throwable {
-	if (getName().equals("test_ConstructorIIII")) test_ConstructorIIII();
-	else if (getName().equals("test_addLorg_eclipse_swt_graphics_Rectangle")) test_addLorg_eclipse_swt_graphics_Rectangle();
-	else if (getName().equals("test_containsII")) test_containsII();
-	else if (getName().equals("test_containsLorg_eclipse_swt_graphics_Point")) test_containsLorg_eclipse_swt_graphics_Point();
-	else if (getName().equals("test_equalsLjava_lang_Object")) test_equalsLjava_lang_Object();
-	else if (getName().equals("test_hashCode")) test_hashCode();
-	else if (getName().equals("test_intersectLorg_eclipse_swt_graphics_Rectangle")) test_intersectLorg_eclipse_swt_graphics_Rectangle();
-	else if (getName().equals("test_intersectionLorg_eclipse_swt_graphics_Rectangle")) test_intersectionLorg_eclipse_swt_graphics_Rectangle();
-	else if (getName().equals("test_intersectsIIII")) test_intersectsIIII();
-	else if (getName().equals("test_intersectsLorg_eclipse_swt_graphics_Rectangle")) test_intersectsLorg_eclipse_swt_graphics_Rectangle();
-	else if (getName().equals("test_isEmpty")) test_isEmpty();
-	else if (getName().equals("test_toString")) test_toString();
-	else if (getName().equals("test_unionLorg_eclipse_swt_graphics_Rectangle")) test_unionLorg_eclipse_swt_graphics_Rectangle();
-}
 }

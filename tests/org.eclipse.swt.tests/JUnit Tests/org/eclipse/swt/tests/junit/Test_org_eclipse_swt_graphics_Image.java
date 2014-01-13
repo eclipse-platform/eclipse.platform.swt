@@ -11,15 +11,21 @@
 package org.eclipse.swt.tests.junit;
 
 
-import java.io.*;
-import java.net.*;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
 
-import junit.framework.*;
-import junit.textui.*;
-
-import org.eclipse.swt.*;
-import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.widgets.*;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.SWTException;
+import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.GC;
+import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.ImageData;
+import org.eclipse.swt.graphics.PaletteData;
+import org.eclipse.swt.graphics.RGB;
+import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.widgets.Display;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.graphics.Image
@@ -30,10 +36,6 @@ public class Test_org_eclipse_swt_graphics_Image extends SwtTestCase {
 
 public Test_org_eclipse_swt_graphics_Image(String name) {
 	super(name);
-}
-
-public static void main(String[] args) {
-	TestRunner.run(suite());
 }
 
 @Override
@@ -581,50 +583,6 @@ public void test_toString() {
 	}
 }
 
-public static Test suite() {
-	TestSuite suite = new TestSuite();
-	java.util.Vector<String> methodNames = methodNames();
-	java.util.Enumeration<String> e = methodNames.elements();
-	while (e.hasMoreElements()) {
-		suite.addTest(new Test_org_eclipse_swt_graphics_Image(e.nextElement()));
-	}
-	return suite;
-}
-public static java.util.Vector<String> methodNames() {
-	java.util.Vector<String> methodNames = new java.util.Vector<String>();
-	methodNames.addElement("test_ConstructorLorg_eclipse_swt_graphics_DeviceII");
-	methodNames.addElement("test_ConstructorLorg_eclipse_swt_graphics_DeviceLjava_io_InputStream");
-	methodNames.addElement("test_ConstructorLorg_eclipse_swt_graphics_DeviceLjava_lang_String");
-	methodNames.addElement("test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_graphics_ImageData");
-	methodNames.addElement("test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_graphics_ImageDataLorg_eclipse_swt_graphics_ImageData");
-	methodNames.addElement("test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_graphics_Rectangle");
-	methodNames.addElement("test_equalsLjava_lang_Object");
-	methodNames.addElement("test_getBackground");
-	methodNames.addElement("test_getBounds");
-	methodNames.addElement("test_getImageData");
-	methodNames.addElement("test_hashCode");
-	methodNames.addElement("test_isDisposed");
-	methodNames.addElement("test_setBackgroundLorg_eclipse_swt_graphics_Color");
-	methodNames.addElement("test_toString");
-	return methodNames;
-}
-@Override
-protected void runTest() throws Throwable {
-	if (getName().equals("test_ConstructorLorg_eclipse_swt_graphics_DeviceII")) test_ConstructorLorg_eclipse_swt_graphics_DeviceII();
-	else if (getName().equals("test_ConstructorLorg_eclipse_swt_graphics_DeviceLjava_io_InputStream")) test_ConstructorLorg_eclipse_swt_graphics_DeviceLjava_io_InputStream();
-	else if (getName().equals("test_ConstructorLorg_eclipse_swt_graphics_DeviceLjava_lang_String")) test_ConstructorLorg_eclipse_swt_graphics_DeviceLjava_lang_String();
-	else if (getName().equals("test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_graphics_ImageData")) test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_graphics_ImageData();
-	else if (getName().equals("test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_graphics_ImageDataLorg_eclipse_swt_graphics_ImageData")) test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_graphics_ImageDataLorg_eclipse_swt_graphics_ImageData();
-	else if (getName().equals("test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_graphics_Rectangle")) test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_graphics_Rectangle();
-	else if (getName().equals("test_equalsLjava_lang_Object")) test_equalsLjava_lang_Object();
-	else if (getName().equals("test_getBackground")) test_getBackground();
-	else if (getName().equals("test_getBounds")) test_getBounds();
-	else if (getName().equals("test_getImageData")) test_getImageData();
-	else if (getName().equals("test_hashCode")) test_hashCode();
-	else if (getName().equals("test_isDisposed")) test_isDisposed();
-	else if (getName().equals("test_setBackgroundLorg_eclipse_swt_graphics_Color")) test_setBackgroundLorg_eclipse_swt_graphics_Color();
-	else if (getName().equals("test_toString")) test_toString();
-}
 /* custom */
 Display display;
 

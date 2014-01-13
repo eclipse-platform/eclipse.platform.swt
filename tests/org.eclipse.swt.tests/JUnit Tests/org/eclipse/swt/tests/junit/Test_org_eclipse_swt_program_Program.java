@@ -11,14 +11,11 @@
 package org.eclipse.swt.tests.junit;
 
 
-import java.util.*;
+import java.util.Hashtable;
 
-import junit.framework.*;
-import junit.textui.*;
-
-import org.eclipse.swt.*;
-import org.eclipse.swt.program.*;
-import org.eclipse.swt.widgets.*;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.program.Program;
+import org.eclipse.swt.widgets.Display;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.program.Program
@@ -29,10 +26,6 @@ public class Test_org_eclipse_swt_program_Program extends SwtTestCase {
 	
 public Test_org_eclipse_swt_program_Program(String name) {
 	super(name);
-}
-
-public static void main(String[] args) {
-	TestRunner.run(suite());
 }
 
 @Override
@@ -193,38 +186,4 @@ public void test_toString() {
 	}
 }
 
-public static Test suite() {
-	TestSuite suite = new TestSuite();
-	java.util.Vector<String> methodNames = methodNames();
-	java.util.Enumeration<String> e = methodNames.elements();
-	while (e.hasMoreElements()) {
-		suite.addTest(new Test_org_eclipse_swt_program_Program(e.nextElement()));
-	}
-	return suite;
-}
-public static java.util.Vector<String> methodNames() {
-	java.util.Vector<String> methodNames = new java.util.Vector<String>();
-	methodNames.addElement("test_equalsLjava_lang_Object");
-	methodNames.addElement("test_executeLjava_lang_String");
-	methodNames.addElement("test_getExtensions");
-	methodNames.addElement("test_findProgramLjava_lang_String");
-	methodNames.addElement("test_getImageData");
-	methodNames.addElement("test_getName");
-	methodNames.addElement("test_getPrograms");
-	methodNames.addElement("test_launchLjava_lang_String");
-	methodNames.addElement("test_toString");
-	return methodNames;
-}
-@Override
-protected void runTest() throws Throwable {
-	if (getName().equals("test_equalsLjava_lang_Object")) test_equalsLjava_lang_Object();
-	else if (getName().equals("test_executeLjava_lang_String")) test_executeLjava_lang_String();
-	else if (getName().equals("test_findProgramLjava_lang_String")) test_findProgramLjava_lang_String();
-	else if (getName().equals("test_getExtensions")) test_getExtensions();
-	else if (getName().equals("test_getImageData")) test_getImageData();
-	else if (getName().equals("test_getName")) test_getName();
-	else if (getName().equals("test_getPrograms")) test_getPrograms();
-	else if (getName().equals("test_launchLjava_lang_String")) test_launchLjava_lang_String();
-	else if (getName().equals("test_toString")) test_toString();
-}
 }

@@ -33,9 +33,6 @@ public class Test_org_eclipse_swt_custom_BidiSegmentListener extends SwtTestCase
 	boolean listenerCalled;	
 	String line = "Line1";
 			
-public static void main(String[] args) {
-	TestRunner.run(suite());
-}
 public Test_org_eclipse_swt_custom_BidiSegmentListener(String name) {
 	super(name);
 }
@@ -43,15 +40,6 @@ public Test_org_eclipse_swt_custom_BidiSegmentListener(String name) {
 protected void setUp() {
 	shell = new Shell();
 	text = new StyledText(shell, SWT.NULL);
-}
-public static Test suite() {
-	TestSuite suite = new TestSuite();
-	java.util.Vector<String> methodNames = methodNames();
-	java.util.Enumeration<String> e = methodNames.elements();
-	while (e.hasMoreElements()) {
-		suite.addTest(new Test_org_eclipse_swt_custom_BidiSegmentListener(e.nextElement()));
-	}
-	return suite;
 }
 @Override
 protected void tearDown() {
@@ -177,13 +165,4 @@ public void test_lineGetSegmentsLorg_eclipse_swt_custom_BidiSegmentEvent() {
 	testStyleRangeSegmenting(new int[] {0,5}, new int[] {10,2});
 }
 
-public static java.util.Vector<String> methodNames() {
-	java.util.Vector<String> methodNames = new java.util.Vector<String>();
-	methodNames.addElement("test_lineGetSegmentsLorg_eclipse_swt_custom_BidiSegmentEvent");
-	return methodNames;
-}
-@Override
-protected void runTest() throws Throwable {
-	if (getName().equals("test_lineGetSegmentsLorg_eclipse_swt_custom_BidiSegmentEvent")) test_lineGetSegmentsLorg_eclipse_swt_custom_BidiSegmentEvent();
-}
 }

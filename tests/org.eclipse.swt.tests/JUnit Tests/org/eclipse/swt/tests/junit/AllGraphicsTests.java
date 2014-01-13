@@ -31,8 +31,8 @@ public static Test suite() {
 	suite.addTestSuite(Test_org_eclipse_swt_graphics_FontData.class);
 	suite.addTestSuite(Test_org_eclipse_swt_graphics_FontMetrics.class);
 	suite.addTestSuite(Test_org_eclipse_swt_graphics_GC.class);
-	suite.addTest(Test_org_eclipse_swt_graphics_Image.suite());
-	suite.addTest(Test_org_eclipse_swt_graphics_ImageData.suite());
+	suite.addTestSuite(Test_org_eclipse_swt_graphics_Image.class);
+	suite.addTestSuite(Test_org_eclipse_swt_graphics_ImageData.class);
 	suite.addTestSuite(Test_org_eclipse_swt_graphics_PaletteData.class);
 	suite.addTestSuite(Test_org_eclipse_swt_graphics_Point.class);
 	suite.addTestSuite(Test_org_eclipse_swt_graphics_Rectangle.class);
@@ -40,7 +40,7 @@ public static Test suite() {
 	suite.addTestSuite(Test_org_eclipse_swt_graphics_RGB.class);
 	suite.addTestSuite(Test_org_eclipse_swt_graphics_TextLayout.class);
 	
-	suite.addTest(Test_org_eclipse_swt_graphics_ImageLoader.suite());
+	suite.addTestSuite(Test_org_eclipse_swt_graphics_ImageLoader.class);
 	suite.addTestSuite(Test_org_eclipse_swt_graphics_ImageLoaderEvent.class);
 
 	return suite;
