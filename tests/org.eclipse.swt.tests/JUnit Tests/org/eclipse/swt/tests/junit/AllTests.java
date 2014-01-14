@@ -61,7 +61,7 @@ public AllTests() {
 
 	addTestSuite(Test_org_eclipse_swt_graphics_Image.class);
 	addTestSuite(Test_org_eclipse_swt_graphics_Cursor.class);
-	addTest(Test_org_eclipse_swt_graphics_DeviceData.suite());
+	addTestSuite(Test_org_eclipse_swt_graphics_DeviceData.class);
 	addTestSuite(Test_org_eclipse_swt_graphics_ImageLoaderEvent.class);
 	addTestSuite(Test_org_eclipse_swt_graphics_RGB.class);
 	addTestSuite(Test_org_eclipse_swt_graphics_Font.class);
@@ -149,7 +149,7 @@ public AllTests() {
 	addTest(Test_org_eclipse_swt_events_TreeEvent.suite());
 	
 	addTest(Test_org_eclipse_swt_printing_PrintDialog.suite());
-	addTest(Test_org_eclipse_swt_printing_PrinterData.suite());
+	addTestSuite(Test_org_eclipse_swt_printing_PrinterData.class);
 	addTest(Test_org_eclipse_swt_printing_Printer.suite());
 
 	addTestSuite(Test_org_eclipse_swt_program_Program.class);

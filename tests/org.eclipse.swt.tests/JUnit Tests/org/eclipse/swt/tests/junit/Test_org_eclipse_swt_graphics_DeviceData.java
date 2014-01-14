@@ -11,25 +11,16 @@
 package org.eclipse.swt.tests.junit;
 
 
-import junit.framework.*;
-import junit.textui.*;
+import junit.framework.TestCase;
 
-import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.graphics.DeviceData;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.graphics.DeviceData
  *
  * @see org.eclipse.swt.graphics.DeviceData
  */
-public class Test_org_eclipse_swt_graphics_DeviceData extends SwtTestCase {
-
-public Test_org_eclipse_swt_graphics_DeviceData(String name) {
-	super(name);
-}
-
-public static void main(String[] args) {
-	TestRunner.run(suite());
-}
+public class Test_org_eclipse_swt_graphics_DeviceData extends TestCase {
 
 public void test_Constructor() {
 	DeviceData data = new DeviceData();
@@ -37,22 +28,4 @@ public void test_Constructor() {
 	data.tracking = true;
 }
 
-public static Test suite() {
-	TestSuite suite = new TestSuite();
-	java.util.Vector<String> methodNames = methodNames();
-	java.util.Enumeration<String> e = methodNames.elements();
-	while (e.hasMoreElements()) {
-		suite.addTest(new Test_org_eclipse_swt_graphics_DeviceData(e.nextElement()));
-	}
-	return suite;
-}
-public static java.util.Vector<String> methodNames() {
-	java.util.Vector<String> methodNames = new java.util.Vector<String>();
-	methodNames.addElement("test_Constructor");
-	return methodNames;
-}
-@Override
-protected void runTest() throws Throwable {
-	if (getName().equals("test_Constructor")) test_Constructor();
-}
 }

@@ -26,7 +26,7 @@ public static Test suite() {
 
 	suite.addTestSuite(Test_org_eclipse_swt_graphics_Color.class);
 	suite.addTestSuite(Test_org_eclipse_swt_graphics_Cursor.class);
-	suite.addTest(Test_org_eclipse_swt_graphics_DeviceData.suite());
+	suite.addTestSuite(Test_org_eclipse_swt_graphics_DeviceData.class);
 	suite.addTestSuite(Test_org_eclipse_swt_graphics_Font.class);
 	suite.addTestSuite(Test_org_eclipse_swt_graphics_FontData.class);
 	suite.addTestSuite(Test_org_eclipse_swt_graphics_FontMetrics.class);
