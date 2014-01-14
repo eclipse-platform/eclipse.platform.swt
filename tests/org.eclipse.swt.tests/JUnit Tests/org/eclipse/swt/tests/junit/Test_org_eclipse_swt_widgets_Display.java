@@ -12,7 +12,6 @@ package org.eclipse.swt.tests.junit;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
-import junit.textui.TestRunner;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.DeviceData;
@@ -33,28 +32,10 @@ import org.eclipse.swt.widgets.Synchronizer;
  *
  * @see org.eclipse.swt.widgets.Display
  */
-public class Test_org_eclipse_swt_widgets_Display extends Test_org_eclipse_swt_graphics_Device {
+public class Test_org_eclipse_swt_widgets_Display extends SwtTestCase {
 
 public Test_org_eclipse_swt_widgets_Display(String name) {
 	super(name);
-}
-
-public static void main(String[] args) {
-	TestRunner.run(suite());
-}
-
-@Override
-protected void setUp() {
-	// There can only be one Display object per thread.
-	// If a second Display is created on the same thread, an 
-	// InvalidThreadAccessException is thrown.
-	//
-	// Each test will create its own Display and must dispose of it 
-	// before completing.
-}
-
-@Override
-protected void tearDown() {
 }
 
 public void test_Constructor() {
@@ -62,7 +43,6 @@ public void test_Constructor() {
 	disp.dispose();
 }
 
-@Override
 public void test_ConstructorLorg_eclipse_swt_graphics_DeviceData() {
 	Display disp;
 	disp = new Display(null);
@@ -208,7 +188,6 @@ public void test_getActiveShell() {
 	}
 }
 
-@Override
 public void test_getBounds() {
 	Display display = new Display();
 	try {
@@ -219,7 +198,6 @@ public void test_getBounds() {
 	}
 }
 
-@Override
 public void test_getClientArea() {
 	Display display = new Display();
 	try {
@@ -387,7 +365,6 @@ public void test_getSyncThread() {
 	}
 }
 
-@Override
 public void test_getSystemColorI() {
 	Display display = new Display();
 	try {
@@ -407,7 +384,6 @@ public void test_getSystemColorI() {
 	}
 }
 
-@Override
 public void test_getSystemFont() {
 	Display display = new Display();
 	try {
@@ -1154,70 +1130,21 @@ public static java.util.Vector<String> methodNames() {
 	methodNames.addElement("test_timerExecILjava_lang_Runnable");
 	methodNames.addElement("test_update");
 	methodNames.addElement("test_LongEventWatchdog");
-	methodNames.addAll(Test_org_eclipse_swt_graphics_Device.methodNames()); // add superclass method names
+	methodNames.addElement("test_getBounds");
+	methodNames.addElement("test_getClientArea");
+	methodNames.addElement("test_getDPI");
+	methodNames.addElement("test_getDepth");
+	methodNames.addElement("test_getFontListLjava_lang_StringZ");
+	methodNames.addElement("test_getWarnings");
+	methodNames.addElement("test_isDisposed");
+	methodNames.addElement("test_setWarningsZ");
 	return methodNames;
-}
-@Override
-protected void runTest() throws Throwable {
-	if (getName().equals("test_Constructor")) test_Constructor();
-	else if (getName().equals("test_ConstructorLorg_eclipse_swt_graphics_DeviceData")) test_ConstructorLorg_eclipse_swt_graphics_DeviceData();
-	else if (getName().equals("test_addFilterILorg_eclipse_swt_widgets_Listener")) test_addFilterILorg_eclipse_swt_widgets_Listener();
-	else if (getName().equals("test_addListenerILorg_eclipse_swt_widgets_Listener")) test_addListenerILorg_eclipse_swt_widgets_Listener();
-	else if (getName().equals("test_asyncExecLjava_lang_Runnable")) test_asyncExecLjava_lang_Runnable();
-	else if (getName().equals("test_beep")) test_beep();
-	else if (getName().equals("test_close")) test_close();
-	else if (getName().equals("test_disposeExecLjava_lang_Runnable")) test_disposeExecLjava_lang_Runnable();
-	else if (getName().equals("test_findDisplayLjava_lang_Thread")) test_findDisplayLjava_lang_Thread();
-	else if (getName().equals("test_getActiveShell")) test_getActiveShell();
-	else if (getName().equals("test_getBounds")) test_getBounds();
-	else if (getName().equals("test_getClientArea")) test_getClientArea();
-	else if (getName().equals("test_getCurrent")) test_getCurrent();
-	else if (getName().equals("test_getCursorControl")) test_getCursorControl();
-	else if (getName().equals("test_getCursorLocation")) test_getCursorLocation();
-	else if (getName().equals("test_getDefault")) test_getDefault();
-	else if (getName().equals("test_getDismissalAlignment")) test_getDismissalAlignment();
-	else if (getName().equals("test_getDoubleClickTime")) test_getDoubleClickTime();
-	else if (getName().equals("test_getFocusControl")) test_getFocusControl();
-	else if (getName().equals("test_getIconDepth")) test_getIconDepth();
-	else if (getName().equals("test_getMonitors")) test_getMonitors();
-	else if (getName().equals("test_getPrimaryMonitor")) test_getPrimaryMonitor();
-	else if (getName().equals("test_getShells")) test_getShells();
-	else if (getName().equals("test_getSyncThread")) test_getSyncThread();
-	else if (getName().equals("test_getSystemColorI")) test_getSystemColorI();
-	else if (getName().equals("test_getSystemFont")) test_getSystemFont();
-	else if (getName().equals("test_getThread")) test_getThread();
-	else if (getName().equals("test_mapLorg_eclipse_swt_widgets_ControlLorg_eclipse_swt_widgets_ControlII")) test_mapLorg_eclipse_swt_widgets_ControlLorg_eclipse_swt_widgets_ControlII();
-	else if (getName().equals("test_mapLorg_eclipse_swt_widgets_ControlLorg_eclipse_swt_widgets_ControlIIII")) test_mapLorg_eclipse_swt_widgets_ControlLorg_eclipse_swt_widgets_ControlIIII();
-	else if (getName().equals("test_mapLorg_eclipse_swt_widgets_ControlLorg_eclipse_swt_widgets_ControlLorg_eclipse_swt_graphics_Point")) test_mapLorg_eclipse_swt_widgets_ControlLorg_eclipse_swt_widgets_ControlLorg_eclipse_swt_graphics_Point();
-	else if (getName().equals("test_mapLorg_eclipse_swt_widgets_ControlLorg_eclipse_swt_widgets_ControlLorg_eclipse_swt_graphics_Rectangle")) test_mapLorg_eclipse_swt_widgets_ControlLorg_eclipse_swt_widgets_ControlLorg_eclipse_swt_graphics_Rectangle();
-	else if (getName().equals("test_postLorg_eclipse_swt_widgets_Event")) test_postLorg_eclipse_swt_widgets_Event();
-	else if (getName().equals("test_LongEventWatchdog")) test_LongEventWatchdog();
-	else if (getName().equals("test_removeFilterILorg_eclipse_swt_widgets_Listener")) test_removeFilterILorg_eclipse_swt_widgets_Listener();
-	else if (getName().equals("test_removeListenerILorg_eclipse_swt_widgets_Listener")) test_removeListenerILorg_eclipse_swt_widgets_Listener();
-	else if (getName().equals("test_setAppNameLjava_lang_String")) test_setAppNameLjava_lang_String();
-	else if (getName().equals("test_setCursorLocationII")) test_setCursorLocationII();
-	else if (getName().equals("test_setCursorLocationLorg_eclipse_swt_graphics_Point")) test_setCursorLocationLorg_eclipse_swt_graphics_Point();
-	else if (getName().equals("test_setDataLjava_lang_Object")) test_setDataLjava_lang_Object();
-	else if (getName().equals("test_setDataLjava_lang_StringLjava_lang_Object")) test_setDataLjava_lang_StringLjava_lang_Object();
-	else if (getName().equals("test_setSynchronizerLorg_eclipse_swt_widgets_Synchronizer")) test_setSynchronizerLorg_eclipse_swt_widgets_Synchronizer();
-	else if (getName().equals("test_sleep")) test_sleep();
-	else if (getName().equals("test_syncExecLjava_lang_Runnable")) test_syncExecLjava_lang_Runnable();
-	else if (getName().equals("test_timerExecILjava_lang_Runnable")) test_timerExecILjava_lang_Runnable();
-	else if (getName().equals("test_update")) test_update();
-	else super.runTest();
 }
 
 /* custom */
 boolean disposeExecRan;
 
-@Override
-public void test_dispose() {
-	// tested in virtually every method and in particular
-	//   test_disposeExecLjava_lang_Runnable
-}
-
 /* Overloaded tests from Test_org_eclipse_swt_graphics_Device */
-@Override
 public void test_getDPI() {
 	Display display = new Display();
 	try {
@@ -1229,7 +1156,6 @@ public void test_getDPI() {
 	}
 }
 
-@Override
 public void test_getDepth() {
 	Display display = new Display();
 	try {
@@ -1240,7 +1166,6 @@ public void test_getDepth() {
 	}
 }
 
-@Override
 public void test_getFontListLjava_lang_StringZ() {
 	Display display = new Display();
 	try {
@@ -1252,7 +1177,6 @@ public void test_getFontListLjava_lang_StringZ() {
 	}
 }
 
-@Override
 public void test_getWarnings() {
 	Display display = new Display();
 	try {
@@ -1264,7 +1188,6 @@ public void test_getWarnings() {
 	}
 }
 
-@Override
 public void test_isDisposed() {
 	Display disp = new Display();
 	assertFalse(disp.isDisposed());
@@ -1272,7 +1195,6 @@ public void test_isDisposed() {
 	assertTrue(disp.isDisposed());
 }
 
-@Override
 public void test_setWarningsZ() {
 	Display display = new Display();
 	try {

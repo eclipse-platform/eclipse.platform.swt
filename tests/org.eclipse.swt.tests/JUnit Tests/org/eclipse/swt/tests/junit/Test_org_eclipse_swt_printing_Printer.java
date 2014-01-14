@@ -11,27 +11,21 @@
 package org.eclipse.swt.tests.junit;
 
 
-import junit.framework.*;
-import junit.textui.*;
+import junit.framework.TestCase;
 
-import org.eclipse.swt.*;
-import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.printing.*;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.SWTError;
+import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.printing.Printer;
+import org.eclipse.swt.printing.PrinterData;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.printing.Printer
  *
  * @see org.eclipse.swt.printing.Printer
  */
-public class Test_org_eclipse_swt_printing_Printer extends Test_org_eclipse_swt_graphics_Device {
-
-public Test_org_eclipse_swt_printing_Printer(String name) {
-	super(name);
-}
-
-public static void main(String[] args) {
-	TestRunner.run(suite());
-}
+public class Test_org_eclipse_swt_printing_Printer extends TestCase {
 
 public void test_Constructor() {
 	boolean exceptionThrown = false;
@@ -102,7 +96,6 @@ public void test_computeTrimIIII() {
 	printer.dispose();
 }
 
-@Override
 public void test_getBounds() {
 	PrinterData data = Printer.getDefaultPrinterData();
 	// if there aren't any printers, don't do this test
@@ -113,7 +106,6 @@ public void test_getBounds() {
 	printer.dispose();
 }
 
-@Override
 public void test_getClientArea() {
 	PrinterData data = Printer.getDefaultPrinterData();
 	// if there aren't any printers, don't do this test
@@ -124,7 +116,6 @@ public void test_getClientArea() {
 	printer.dispose();
 }
 
-@Override
 public void test_getDPI() {
 	PrinterData data = Printer.getDefaultPrinterData();
 	// if there aren't any printers, don't do this test
@@ -171,40 +162,5 @@ public void test_getPrinterList() {
 		PrinterData list[] = Printer.getPrinterList();
 		assertTrue("printer list is empty", list.length > 0);
 	}
-}
-
-public static Test suite() {
-	TestSuite suite = new TestSuite();
-	java.util.Vector<String> methodNames = methodNames();
-	java.util.Enumeration<String> e = methodNames.elements();
-	while (e.hasMoreElements()) {
-		suite.addTest(new Test_org_eclipse_swt_printing_Printer(e.nextElement()));
-	}
-	return suite;
-}
-public static java.util.Vector<String> methodNames() {
-	java.util.Vector<String> methodNames = new java.util.Vector<String>();
-//	methodNames.addElement("test_Constructor");
-//	methodNames.addElement("test_ConstructorLorg_eclipse_swt_printing_PrinterData");
-//	methodNames.addElement("test_computeTrimIIII");
-//	methodNames.addElement("test_getBounds");
-//	methodNames.addElement("test_getClientArea");
-//	methodNames.addElement("test_getDPI");
-	methodNames.addElement("test_getPrinterData");
-	methodNames.addElement("test_getPrinterList");
-	methodNames.addAll(Test_org_eclipse_swt_graphics_Device.methodNames()); // add superclass method names
-	return methodNames;
-}
-@Override
-protected void runTest() throws Throwable {
-	if (getName().equals("test_Constructor")) test_Constructor();
-	else if (getName().equals("test_ConstructorLorg_eclipse_swt_printing_PrinterData")) test_ConstructorLorg_eclipse_swt_printing_PrinterData();
-	else if (getName().equals("test_computeTrimIIII")) test_computeTrimIIII();
-	else if (getName().equals("test_getBounds")) test_getBounds();
-	else if (getName().equals("test_getClientArea")) test_getClientArea();
-	else if (getName().equals("test_getDPI")) test_getDPI();
-	else if (getName().equals("test_getPrinterData")) test_getPrinterData();
-	else if (getName().equals("test_getPrinterList")) test_getPrinterList();
-	else super.runTest();
 }
 }

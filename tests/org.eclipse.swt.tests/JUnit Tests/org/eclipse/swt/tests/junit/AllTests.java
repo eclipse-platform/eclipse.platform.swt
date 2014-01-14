@@ -150,7 +150,7 @@ public AllTests() {
 	
 	addTest(Test_org_eclipse_swt_printing_PrintDialog.suite());
 	addTestSuite(Test_org_eclipse_swt_printing_PrinterData.class);
-	addTest(Test_org_eclipse_swt_printing_Printer.suite());
+	addTestSuite(Test_org_eclipse_swt_printing_Printer.class);
 
 	addTestSuite(Test_org_eclipse_swt_program_Program.class);
 
