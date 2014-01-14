@@ -131,22 +131,22 @@ public AllTests() {
 	addTest(Test_org_eclipse_swt_custom_StyledText.suite());
 	addTest(Test_org_eclipse_swt_custom_CTabFolder.suite());
 
-	addTest(Test_org_eclipse_swt_events_ControlEvent.suite());
-	addTest(Test_org_eclipse_swt_events_ModifyEvent.suite());
-	addTest(Test_org_eclipse_swt_events_ArmEvent.suite());
-	addTest(Test_org_eclipse_swt_events_ShellEvent.suite());
-	addTest(Test_org_eclipse_swt_events_TypedEvent.suite());
-	addTest(Test_org_eclipse_swt_events_PaintEvent.suite());
-	addTest(Test_org_eclipse_swt_events_VerifyEvent.suite());
-	addTest(Test_org_eclipse_swt_events_KeyEvent.suite());
-	addTest(Test_org_eclipse_swt_events_TraverseEvent.suite());
-	addTest(Test_org_eclipse_swt_events_DisposeEvent.suite());
-	addTest(Test_org_eclipse_swt_events_SelectionEvent.suite());
-	addTest(Test_org_eclipse_swt_events_HelpEvent.suite());
-	addTest(Test_org_eclipse_swt_events_FocusEvent.suite());
-	addTest(Test_org_eclipse_swt_events_MouseEvent.suite());
-	addTest(Test_org_eclipse_swt_events_MenuEvent.suite());
-	addTest(Test_org_eclipse_swt_events_TreeEvent.suite());
+	addTestSuite(Test_org_eclipse_swt_events_ControlEvent.class);
+	addTestSuite(Test_org_eclipse_swt_events_ModifyEvent.class);
+	addTestSuite(Test_org_eclipse_swt_events_ArmEvent.class);
+	addTestSuite(Test_org_eclipse_swt_events_ShellEvent.class);
+	addTestSuite(Test_org_eclipse_swt_events_TypedEvent.class);
+	addTestSuite(Test_org_eclipse_swt_events_PaintEvent.class);
+	addTestSuite(Test_org_eclipse_swt_events_VerifyEvent.class);
+	addTestSuite(Test_org_eclipse_swt_events_KeyEvent.class);
+	addTestSuite(Test_org_eclipse_swt_events_TraverseEvent.class);
+	addTestSuite(Test_org_eclipse_swt_events_DisposeEvent.class);
+	addTestSuite(Test_org_eclipse_swt_events_SelectionEvent.class);
+	addTestSuite(Test_org_eclipse_swt_events_HelpEvent.class);
+	addTestSuite(Test_org_eclipse_swt_events_FocusEvent.class);
+	addTestSuite(Test_org_eclipse_swt_events_MouseEvent.class);
+	addTestSuite(Test_org_eclipse_swt_events_MenuEvent.class);
+	addTestSuite(Test_org_eclipse_swt_events_TreeEvent.class);
 	
 	addTest(Test_org_eclipse_swt_printing_PrintDialog.suite());
 	addTestSuite(Test_org_eclipse_swt_printing_PrinterData.class);

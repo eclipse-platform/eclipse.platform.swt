@@ -11,11 +11,9 @@
 package org.eclipse.swt.tests.junit;
 
 
-import junit.framework.*;
-import junit.textui.*;
-
-import org.eclipse.swt.events.*;
-import org.eclipse.swt.widgets.*;
+import org.eclipse.swt.events.ArmEvent;
+import org.eclipse.swt.events.TypedEvent;
+import org.eclipse.swt.widgets.Event;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.events.ArmEvent
@@ -23,24 +21,6 @@ import org.eclipse.swt.widgets.*;
  * @see org.eclipse.swt.events.ArmEvent
  */
 public class Test_org_eclipse_swt_events_ArmEvent extends Test_org_eclipse_swt_events_TypedEvent {
-
-public Test_org_eclipse_swt_events_ArmEvent(String name) {
-	super(name);
-}
-
-public static void main(String[] args) {
-	TestRunner.run(suite());
-}
-
-public static Test suite() {
-	TestSuite suite = new TestSuite();
-	java.util.Vector<String> methodNames = methodNames();
-	java.util.Enumeration<String> e = methodNames.elements();
-	while (e.hasMoreElements()) {
-		suite.addTest(new Test_org_eclipse_swt_events_ArmEvent(e.nextElement()));
-	}
-	return suite;
-}
 
 /* custom */
 @Override
