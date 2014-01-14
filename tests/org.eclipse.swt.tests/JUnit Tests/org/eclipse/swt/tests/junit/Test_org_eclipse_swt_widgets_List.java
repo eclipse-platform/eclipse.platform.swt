@@ -69,11 +69,11 @@ public void test_addLjava_lang_String() {
 	} catch (IllegalArgumentException e) {
 	}
 	list.add("");
-	assertSame(":a:", new String[] {""}, list.getItems());
+	assertArrayEquals(":a:", new String[] {""}, list.getItems());
 	list.add("some \n text");
-	assertSame(":b:", new String[] {"", "some \n text"}, list.getItems());
+	assertArrayEquals(":b:", new String[] {"", "some \n text"}, list.getItems());
 	list.add("some text");
-	assertSame(":c:", new String[] {"", "some \n text", "some text"}, list.getItems());
+	assertArrayEquals(":c:", new String[] {"", "some \n text", "some text"}, list.getItems());
 	
 	// test single-selection list
 
@@ -86,11 +86,11 @@ public void test_addLjava_lang_String() {
 	}
 	
 	list.add("");
-	assertSame(":a:", new String[] {""}, list.getItems());
+	assertArrayEquals(":a:", new String[] {""}, list.getItems());
 	list.add("some \n text");
-	assertSame(":b:", new String[] {"", "some \n text"}, list.getItems());
+	assertArrayEquals(":b:", new String[] {"", "some \n text"}, list.getItems());
 	list.add("some text");
-	assertSame(":c:", new String[] {"", "some \n text", "some text"}, list.getItems());
+	assertArrayEquals(":c:", new String[] {"", "some \n text", "some text"}, list.getItems());
 }
 
 public void test_addLjava_lang_StringI() {
@@ -102,11 +102,11 @@ public void test_addLjava_lang_StringI() {
 	assertEquals(0, list.getItemCount());
 
 	list.add("", 0);
-	assertSame(":a:", new String[] {""}, list.getItems());
+	assertArrayEquals(":a:", new String[] {""}, list.getItems());
 	list.add("some \n text", 1);
-	assertSame(":b:", new String[] {"", "some \n text"}, list.getItems());
+	assertArrayEquals(":b:", new String[] {"", "some \n text"}, list.getItems());
 	list.add("some text", 0);
-	assertSame(":c:", new String[] {"some text", "", "some \n text" }, list.getItems());
+	assertArrayEquals(":c:", new String[] {"some text", "", "some \n text" }, list.getItems());
 	
 	try {
 		list.add(null, 0);
@@ -133,11 +133,11 @@ public void test_addLjava_lang_StringI() {
 	assertEquals(0, list.getItemCount());
 	
 	list.add("", 0);
-	assertSame(":a:", new String[] {""}, list.getItems());
+	assertArrayEquals(":a:", new String[] {""}, list.getItems());
 	list.add("some \n text", 1);
-	assertSame(":b:", new String[] {"", "some \n text"}, list.getItems());
+	assertArrayEquals(":b:", new String[] {"", "some \n text"}, list.getItems());
 	list.add("some text", 0);
-	assertSame(":c:", new String[] {"some text", "", "some \n text" }, list.getItems());
+	assertArrayEquals(":c:", new String[] {"some text", "", "some \n text" }, list.getItems());
 	
 	try {
 		list.add(null, 0);
@@ -221,16 +221,16 @@ public void test_deselect$I() {
 	String[] items = { "item0", "item1", "item2", "item3" };
 	list.setItems(items);
 	list.setSelection(items);
-	assertSame(":a:", list.getSelection(), items);
+	assertArrayEquals(":a:", list.getSelection(), items);
 	try {
 		list.deselect(null);
 		fail("No exception thrown");
 	} catch (IllegalArgumentException e) {
 	}
-	assertSame(list.getSelection(), items);
+	assertArrayEquals(list.getSelection(), items);
 	list.deselect(new int[] {
 	});
-	assertSame(list.getSelection(), items);
+	assertArrayEquals(list.getSelection(), items);
 	list.deselect(new int[] { 0 });
 	assertEquals(list.isSelected(0), false);
 	assertTrue(list.isSelected(1));
@@ -272,7 +272,7 @@ public void test_deselectAll() {
 	};
 	list.setItems(items);
 	list.setSelection(items);
-	assertSame(items, list.getSelection());
+	assertArrayEquals(items, list.getSelection());
 	list.deselectAll();
 	assertArrayEquals(empty, list.getSelection());
 
@@ -297,9 +297,9 @@ public void test_deselectI() {
 	String[] items2 = { "item0", "item1", "item2", "item3" };
 	list.setItems(items2);
 	list.setSelection(items2);
-	assertSame(items2, list.getSelection());
+	assertArrayEquals(items2, list.getSelection());
 	list.deselect(5);
-	assertSame(items2, list.getSelection());
+	assertArrayEquals(items2, list.getSelection());
 	list.deselect(1);
 	assertEquals(false, list.isSelected(1));
 	list.deselect(1);
@@ -351,7 +351,7 @@ public void test_deselectII() {
 	String[] items2 = { "item0", "item1", "item2", "item3" };
 	list.setItems(items2);
 	list.setSelection(items2);
-	assertSame(":a:", items2, list.getSelection());
+	assertArrayEquals(":a:", items2, list.getSelection());
 	list.deselect(0, 0);
 	assertArrayEquals(":b:", list.getSelectionIndices(), new int[] { 1, 2, 3 });
 	list.deselect(0, 0);
@@ -525,7 +525,7 @@ public void test_getSelection() {
 		list.setSelection(cases[i]);
 		//		System.out.println("list:" + list.getSelection());
 		//		System.out.println("case:" + i + cases[i]);
-		assertSame("case: " + i, cases[i], list.getSelection());
+		assertArrayEquals("case: " + i, cases[i], list.getSelection());
 	}
 
 	for (int i = 1; i < cases.length; i++) {
@@ -542,12 +542,12 @@ public void test_getSelection() {
 	list.setSelection(sel);
 	assertEquals(list.getSelection().length, 2);
 	String[] selItems = new String[] {items[0], items[2]};
-	assertSame(list.getSelection(), selItems);
+	assertArrayEquals(list.getSelection(), selItems);
 
 	list.setSelection(0, 1);
 	assertEquals(list.getSelection().length, 2);
 	selItems = new String[] {items[0], items[1]};
-	assertSame(list.getSelection(), selItems);
+	assertArrayEquals(list.getSelection(), selItems);
 	
 	list.setSelection(1, 1);
 	assertEquals(list.getSelection().length, 1);
@@ -1893,7 +1893,7 @@ public void test_setSelection$Ljava_lang_String() {
 	assertArrayEquals(list.getSelection(), new String [0]);
 	
 	list.setSelection(new String [] {"fred 1", "fred 0"});
-	assertSame(list.getSelection(), new String [] {"fred 0", "fred 1"});
+	assertArrayEquals(list.getSelection(), new String [] {"fred 0", "fred 1"});
 
 	list.setSelection(new String [] {"fred -1", "fred " + number});
 	assertArrayEquals(list.getSelection(), new String [0]);
@@ -1909,7 +1909,7 @@ public void test_setSelection$Ljava_lang_String() {
 		items[i] = "fred " + i;
 	}
 	list.setSelection(items);
-	assertSame(list.getSelection(), items);
+	assertArrayEquals(list.getSelection(), items);
 	
 	list.setSelection(new String [] {"fred " + number, "fred " + number});
 	assertArrayEquals(list.getSelection(), new String [0]);
@@ -1918,7 +1918,7 @@ public void test_setSelection$Ljava_lang_String() {
 	assertArrayEquals(list.getSelection(), new String[] {"fred " + (number - 1)});
 	
 	list.setSelection(new String [] {"fred 0", "fred " + number, "fred 1"});
-	assertSame(list.getSelection(), new String[] {"fred 0", "fred 1"});
+	assertArrayEquals(list.getSelection(), new String[] {"fred 0", "fred 1"});
 	
 	list.removeAll();
 		
@@ -2381,7 +2381,7 @@ protected void deselectII_helper(
 
 	list.setSelection(items);
 	if ( 0 != (list.getStyle() & SWT.MULTI) ) {
-		assertSame("setSelection(items):", items, list.getSelection());
+		assertArrayEquals("setSelection(items):", items, list.getSelection());
 	}
 
 	for (int i = start; i <= end; ++i) {

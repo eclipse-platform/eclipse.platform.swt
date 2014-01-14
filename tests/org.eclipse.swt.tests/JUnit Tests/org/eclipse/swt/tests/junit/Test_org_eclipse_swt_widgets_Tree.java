@@ -410,13 +410,13 @@ public void test_setSelection$Lorg_eclipse_swt_widgets_TreeItem() {
 	assertArrayEquals(new TreeItem[] {}, tree.getSelection());
 
 	tree.setSelection(new TreeItem[] {items[5], items[16], items[19]});
-	assertSame(new TreeItem[] {items[5], items[16], items[19]}, tree.getSelection());
+	assertArrayEquals(new TreeItem[] {items[5], items[16], items[19]}, tree.getSelection());
 
 	tree.setSelection(items);
-	assertSame(items, tree.getSelection());
+	assertArrayEquals(items, tree.getSelection());
 	
 	tree.setSelection(tree.getItems());
-	assertSame(tree.getItems(), tree.getSelection());
+	assertArrayEquals(tree.getItems(), tree.getSelection());
 	
 	tree.setSelection(new TreeItem[] {});
 	assertArrayEquals(new TreeItem[] {}, tree.getSelection());
@@ -442,22 +442,22 @@ public void test_setSelection$Lorg_eclipse_swt_widgets_TreeItem() {
 	assertArrayEquals(new TreeItem[] {items[2]}, tree.getSelection());
 	
 	tree.setSelection(new TreeItem[]{items[10], items[number-1], items[2]});
-	assertSame(new TreeItem[] {items[2], items[10], items[number - 1]}, tree.getSelection());
+	assertArrayEquals(new TreeItem[] {items[2], items[10], items[number - 1]}, tree.getSelection());
 	
 	tree.setSelection(new TreeItem[]{items[0], items[3], items[2]});
-	assertSame(new TreeItem[]{items[0], items[2], items[3]}, tree.getSelection());	
+	assertArrayEquals(new TreeItem[]{items[0], items[2], items[3]}, tree.getSelection());	
 
 	tree.setSelection(new TreeItem[]{items[3], items[2], items[1]});
-	assertSame(new TreeItem[]{items[1], items[2], items[3]}, tree.getSelection());	
+	assertArrayEquals(new TreeItem[]{items[1], items[2], items[3]}, tree.getSelection());	
 
 	tree.setSelection(new TreeItem[]{items[1], items[4], items[0]});
-	assertSame(new TreeItem[]{items[0], items[1], items[4]}, tree.getSelection());	
+	assertArrayEquals(new TreeItem[]{items[0], items[1], items[4]}, tree.getSelection());	
 
 	tree.setSelection(new TreeItem[]{items[0], items[4], items[0]});
-	assertSame(new TreeItem[]{items[0], items[4]}, tree.getSelection());	
+	assertArrayEquals(new TreeItem[]{items[0], items[4]}, tree.getSelection());	
 
 	tree.setSelection(new TreeItem[]{items[2], items[3], items[4]});
-	assertSame(new TreeItem[]{items[2], items[3], items[4]}, tree.getSelection());	
+	assertArrayEquals(new TreeItem[]{items[2], items[3], items[4]}, tree.getSelection());	
 
 	tree.setSelection(new TreeItem[]{items[4], items[4], items[4], items[4], items[4], items[4]});
 	assertArrayEquals(new TreeItem[]{items[4]}, tree.getSelection());	

@@ -440,13 +440,13 @@ public void test_getSelection() {
 	assertArrayEquals(new TableItem[] {}, table.getSelection());
 
 	table.setSelection(new TableItem[]{items[2], items[number-1], items[10]});
-	assertSame(new TableItem[] {items[2], items[10], items[number-1]}, table.getSelection());
+	assertArrayEquals(new TableItem[] {items[2], items[10], items[number-1]}, table.getSelection());
 	
 	table.setSelection(items);
-	assertSame(items, table.getSelection());
+	assertArrayEquals(items, table.getSelection());
 	
 	table.setSelection(items[0]);
-	assertSame(new TableItem[] {items[0]}, table.getSelection());
+	assertArrayEquals(new TableItem[] {items[0]}, table.getSelection());
 	
 	// note: SWT.SINGLE
 	makeCleanEnvironment(true);
@@ -1444,17 +1444,17 @@ public void test_setSelection$Lorg_eclipse_swt_widgets_TableItem() {
 	assertEquals(1, table.getSelectionCount());
 
 	table.setSelection(new TableItem[]{items[0], items[3], items[2]});
-	assertSame(new TableItem[]{items[0], items[2], items[3]}, table.getSelection());	
+	assertArrayEquals(new TableItem[]{items[0], items[2], items[3]}, table.getSelection());	
 	table.setSelection(new TableItem[]{items[3], items[2], items[1]});
-	assertSame(new TableItem[]{items[1], items[2], items[3]}, table.getSelection());	
+	assertArrayEquals(new TableItem[]{items[1], items[2], items[3]}, table.getSelection());	
 
 	table.setSelection(new TableItem[]{items[1], items[4], items[0]});
-	assertSame(new TableItem[]{items[0], items[1], items[4]}, table.getSelection());	
+	assertArrayEquals(new TableItem[]{items[0], items[1], items[4]}, table.getSelection());	
 	table.setSelection(new TableItem[]{items[0], items[4], items[0]});
-	assertSame(new TableItem[]{items[0], items[4]}, table.getSelection());	
+	assertArrayEquals(new TableItem[]{items[0], items[4]}, table.getSelection());	
 
 	table.setSelection(new TableItem[]{items[2], items[3], items[4]});
-	assertSame(new TableItem[]{items[2], items[3], items[4]}, table.getSelection());	
+	assertArrayEquals(new TableItem[]{items[2], items[3], items[4]}, table.getSelection());	
 
 	table.setSelection(new TableItem[]{items[4], items[4], items[4], items[4], items[4], items[4]});
 	assertArrayEquals(new TableItem[]{items[4]}, table.getSelection());	

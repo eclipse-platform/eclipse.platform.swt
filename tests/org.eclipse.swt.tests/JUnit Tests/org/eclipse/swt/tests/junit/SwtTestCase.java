@@ -11,12 +11,15 @@
 package org.eclipse.swt.tests.junit;
 
 
-import java.io.*;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 
-import junit.framework.*;
+import junit.framework.TestCase;
 
-import org.eclipse.swt.*;
-import org.eclipse.swt.internal.*;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.SWTError;
+import org.eclipse.swt.SWTException;
+import org.eclipse.swt.internal.Compatibility;
 
 public class SwtTestCase extends TestCase {
 	/**
@@ -66,38 +69,6 @@ public class SwtTestCase extends TestCase {
 public SwtTestCase(String name) {
 	super(name);
 }
-static public void assertSame(String message, Object expected[], Object actual[]) {
-	if (expected == null && actual == null) return;
-	boolean same = false;
-	if (expected != null && actual != null && expected.length == actual.length) {
-		if (expected.length == 0) return;
-		same = true;
-		boolean[] matched = new boolean[expected.length];
-		for (int i = 0; i < actual.length; i++) {
-			boolean match = false;
-			for (int j = 0; j < expected.length; j++) {
-				if (!matched[j]) {
-					if ((actual[i] == null && expected [j] == null) ||
-					    (actual[i] != null && actual[i].equals(expected[j]))) {
-						match = true;
-						matched[j] = true;
-						break;
-					}
-				}
-			}
-			if (!match) {
-				same = false;
-				break;
-			}
-		}
-	}
-	if (!same) {
-		failNotEquals(message, expected, actual);
-	}
-}
-static public void assertSame(Object expected[], Object actual[]) {
-	assertSame(null, expected, actual);
-}
 
 static public void assertEquals(String message, int expectedCode, Throwable actualThrowable) {
 	if (actualThrowable instanceof SWTError) {
@@ -113,31 +84,6 @@ static public void assertEquals(String message, int expectedCode, Throwable actu
 			assertEquals(message, expectedThrowable.getMessage(), actualThrowable.getMessage());
 		}
 	}
-}
-
-static private void failNotEquals(String message, Object[] expected, Object[] actual) {
-	String formatted= "";
-	if (message != null)
-		formatted= message+" ";
-	formatted += "expected:<";
-	if(expected != null) {
-	    for(int i=0; i<Math.min(expected.length, 5); i++)
-	        formatted += expected[i] +", ";
-	    if(expected.length != 0)
-	        formatted = formatted.substring(0, formatted.length()-2);
-	}
-	if(expected.length > 5)
-	    formatted += "...";
-	formatted += "> but was:<";
-	if(actual != null) {
-	    for(int i=0; i<Math.min(actual.length, 5); i++)
-	        formatted += actual[i] +", ";
-	    if(actual.length != 0)
-	        formatted = formatted.substring(0, formatted.length()-2);
-	}
-	if(actual.length > 5)
-	    formatted += "...";
-	fail(formatted+">");
 }
 
 protected boolean isJ2ME() {

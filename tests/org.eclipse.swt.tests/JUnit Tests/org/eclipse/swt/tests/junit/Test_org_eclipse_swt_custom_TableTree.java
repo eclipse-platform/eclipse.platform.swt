@@ -259,7 +259,7 @@ private void selectAll_helper(String message, TableTreeItem[] expectedSelection)
 	tableTree.selectAll();
 	message = (style == SWT.MULTI ? "MULTI" : "SINGLE") + ": " + message;
 	assertEquals(message, expectedSelection.length, tableTree.getSelectionCount());
-	assertSame(message, expectedSelection, tableTree.getSelection());
+	assertArrayEquals(message, expectedSelection, tableTree.getSelection());
 }
 
 /*
@@ -270,7 +270,7 @@ private void setSelection_helper(String message, TableTreeItem[] itemsToSelect, 
 	tableTree.setSelection(itemsToSelect);
 	message = (style == SWT.MULTI ? "MULTI" : "SINGLE") + ": " + message;
 	assertEquals(message, expectedSelection.length, tableTree.getSelectionCount());
-	assertSame(message, expectedSelection, tableTree.getSelection());	
+	assertArrayEquals(message, expectedSelection, tableTree.getSelection());	
 }
 
 private void createTableTree(Vector<String> events, boolean traverse) {
