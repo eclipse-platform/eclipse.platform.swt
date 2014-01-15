@@ -58,9 +58,6 @@ public void test_getStyle() {
 	dialog.getStyle();
 }
 
-public void test_getText() {
-	// tested in test_setTextLjava_lang_String()
-}
 
 public void test_setTextLjava_lang_String() {
 	assertTrue(":1:", dialog.getText() == "");
@@ -93,7 +90,6 @@ public static java.util.Vector<String> methodNames() {
 	methodNames.addElement("test_ConstructorLorg_eclipse_swt_widgets_ShellI");
 	methodNames.addElement("test_getParent");
 	methodNames.addElement("test_getStyle");
-	methodNames.addElement("test_getText");
 	methodNames.addElement("test_setTextLjava_lang_String");
 	return methodNames;
 }
@@ -103,7 +99,6 @@ protected void runTest() throws Throwable {
 	else if (getName().equals("test_ConstructorLorg_eclipse_swt_widgets_ShellI")) test_ConstructorLorg_eclipse_swt_widgets_ShellI();
 	else if (getName().equals("test_getParent")) test_getParent();
 	else if (getName().equals("test_getStyle")) test_getStyle();
-	else if (getName().equals("test_getText")) test_getText();
 	else if (getName().equals("test_setTextLjava_lang_String")) test_setTextLjava_lang_String();
 }
 
