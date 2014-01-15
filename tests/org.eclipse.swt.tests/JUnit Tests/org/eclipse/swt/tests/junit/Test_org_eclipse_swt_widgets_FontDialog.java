@@ -40,7 +40,6 @@ protected void setUp() {
 	setDialog(fontDialog);
 }
 
-@Override
 public void test_ConstructorLorg_eclipse_swt_widgets_Shell() {
 	new FontDialog(shell);
 	try {
@@ -51,7 +50,6 @@ public void test_ConstructorLorg_eclipse_swt_widgets_Shell() {
 	}
 }
 
-@Override
 public void test_ConstructorLorg_eclipse_swt_widgets_ShellI() {
 	try {
 		new FontDialog(null, SWT.NULL);

@@ -11,6 +11,7 @@
 package org.eclipse.swt.tests.junit;
 
 import junit.framework.Test;
+import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
 import org.eclipse.swt.widgets.Dialog;
@@ -21,7 +22,7 @@ import org.eclipse.swt.widgets.Shell;
  *
  * @see org.eclipse.swt.widgets.Dialog
  */
-public class Test_org_eclipse_swt_widgets_Dialog extends SwtTestCase {
+public class Test_org_eclipse_swt_widgets_Dialog extends TestCase {
 
 public Test_org_eclipse_swt_widgets_Dialog(String name) {
 	super(name);
@@ -35,14 +36,6 @@ protected void setUp() {
 @Override
 protected void tearDown() {
 	shell.dispose();
-}
-
-public void test_ConstructorLorg_eclipse_swt_widgets_Shell() {
-	warnUnimpl("Test test_ConstructorLorg_eclipse_swt_widgets_Shell not written");
-}
-
-public void test_ConstructorLorg_eclipse_swt_widgets_ShellI() {
-	warnUnimpl("Test test_ConstructorLorg_eclipse_swt_widgets_ShellI not written");
 }
 
 public void test_getParent() {
@@ -83,8 +76,6 @@ public static Test suite() {
 
 public static java.util.Vector<String> methodNames() {
 	java.util.Vector<String> methodNames = new java.util.Vector<String>();
-	methodNames.addElement("test_ConstructorLorg_eclipse_swt_widgets_Shell");
-	methodNames.addElement("test_ConstructorLorg_eclipse_swt_widgets_ShellI");
 	methodNames.addElement("test_getParent");
 	methodNames.addElement("test_getStyle");
 	methodNames.addElement("test_setTextLjava_lang_String");
@@ -92,9 +83,7 @@ public static java.util.Vector<String> methodNames() {
 }
 @Override
 protected void runTest() throws Throwable {
-	if (getName().equals("test_ConstructorLorg_eclipse_swt_widgets_Shell")) test_ConstructorLorg_eclipse_swt_widgets_Shell();
-	else if (getName().equals("test_ConstructorLorg_eclipse_swt_widgets_ShellI")) test_ConstructorLorg_eclipse_swt_widgets_ShellI();
-	else if (getName().equals("test_getParent")) test_getParent();
+	if (getName().equals("test_getParent")) test_getParent();
 	else if (getName().equals("test_getStyle")) test_getStyle();
 	else if (getName().equals("test_setTextLjava_lang_String")) test_setTextLjava_lang_String();
 }

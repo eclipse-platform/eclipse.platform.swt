@@ -38,7 +38,6 @@ protected void setUp() {
 	setDialog(printDialog);
 }
 
-@Override
 public void test_ConstructorLorg_eclipse_swt_widgets_Shell() {
 	new PrintDialog(shell);
 	
@@ -50,7 +49,6 @@ public void test_ConstructorLorg_eclipse_swt_widgets_Shell() {
 	}
 }
 
-@Override
 public void test_ConstructorLorg_eclipse_swt_widgets_ShellI() {
 	new PrintDialog(shell, SWT.NONE);
 	

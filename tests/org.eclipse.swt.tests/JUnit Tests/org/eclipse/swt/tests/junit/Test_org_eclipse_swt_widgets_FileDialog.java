@@ -38,7 +38,6 @@ protected void setUp() {
 	setDialog(fileDialog);
 }
 
-@Override
 public void test_ConstructorLorg_eclipse_swt_widgets_Shell() {
 	// Test FileDialog(Shell)
 	new FileDialog(shell);
@@ -50,7 +49,6 @@ public void test_ConstructorLorg_eclipse_swt_widgets_Shell() {
 	}
 }
 
-@Override
 public void test_ConstructorLorg_eclipse_swt_widgets_ShellI() {
 	// Test FileDialog(Shell, int)
 	FileDialog fd;
@@ -85,7 +83,7 @@ public void test_getFileNames() {
 }
 
 public void test_open() {
-	if (fTestDialogOpen)
+	if (SwtTestCase.fTestDialogOpen)
 		fileDialog.open();
 }
 

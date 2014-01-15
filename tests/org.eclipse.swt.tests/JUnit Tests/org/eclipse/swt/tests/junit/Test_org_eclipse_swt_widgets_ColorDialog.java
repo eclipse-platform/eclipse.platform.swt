@@ -42,7 +42,6 @@ protected void setUp() {
 	setDialog(colorDialog);
 }
 
-@Override
 public void test_ConstructorLorg_eclipse_swt_widgets_Shell() {
 	new ColorDialog(shell);
 	
@@ -54,7 +53,6 @@ public void test_ConstructorLorg_eclipse_swt_widgets_Shell() {
 	}
 }
 
-@Override
 public void test_ConstructorLorg_eclipse_swt_widgets_ShellI() {
 	new ColorDialog(shell, SWT.NULL);
 	

@@ -49,7 +49,6 @@ protected void setUp() {
  *    <li>ERROR_INVALID_SUBCLASS - if this class is not an allowed subclass</li>
  * </ul>
  */
-@Override
 public void test_ConstructorLorg_eclipse_swt_widgets_Shell(){
 	new MessageBox(shell);
 	try {
@@ -60,11 +59,6 @@ public void test_ConstructorLorg_eclipse_swt_widgets_Shell(){
 	}
 }
 
-@Override
-public void test_ConstructorLorg_eclipse_swt_widgets_ShellI() {
-	warnUnimpl("Test test_ConstructorLorg_eclipse_swt_widgets_ShellI not written");
-}
-
 /**
  * Makes the dialog visible and brings it to the front
  * of the display.
@@ -73,7 +67,7 @@ public void test_ConstructorLorg_eclipse_swt_widgets_ShellI() {
  *         message box (e.g. SWT.OK, SWT.CANCEL, etc...)
  */
 public void test_open(){
-	if (fTestDialogOpen)
+	if (SwtTestCase.fTestDialogOpen)
 		messageBox.open();
 }
 
@@ -109,7 +103,6 @@ public static Test suite() {
 public static java.util.Vector<String> methodNames() {
 	java.util.Vector<String> methodNames = new java.util.Vector<String>();
 	methodNames.addElement("test_ConstructorLorg_eclipse_swt_widgets_Shell");
-	methodNames.addElement("test_ConstructorLorg_eclipse_swt_widgets_ShellI");
 	methodNames.addElement("test_open");
 	methodNames.addElement("test_setMessageLjava_lang_String");
 	methodNames.addAll(Test_org_eclipse_swt_widgets_Dialog.methodNames()); // add superclass method names
@@ -118,7 +111,6 @@ public static java.util.Vector<String> methodNames() {
 @Override
 protected void runTest() throws Throwable {
 	if (getName().equals("test_ConstructorLorg_eclipse_swt_widgets_Shell")) test_ConstructorLorg_eclipse_swt_widgets_Shell();
-	else if (getName().equals("test_ConstructorLorg_eclipse_swt_widgets_ShellI")) test_ConstructorLorg_eclipse_swt_widgets_ShellI();
 	else if (getName().equals("test_open")) test_open();
 	else if (getName().equals("test_setMessageLjava_lang_String")) test_setMessageLjava_lang_String();
 	else super.runTest();
