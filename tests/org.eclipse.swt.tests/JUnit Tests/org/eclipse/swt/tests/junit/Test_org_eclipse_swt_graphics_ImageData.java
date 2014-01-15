@@ -191,14 +191,14 @@ public void test_clone() {
 		ImageData data2 = (ImageData) data1.clone();
 		// imageData does not implement an equals(Object) method
 		assertEquals(":a:", data1.alpha, data2.alpha);
-		assertEquals(":b:", data1.alphaData, data2.alphaData);
+		assertArrayEquals(":b:", data1.alphaData, data2.alphaData);
 		assertEquals(":c:", data1.bytesPerLine, data2.bytesPerLine);
-		assertEquals(":d:", data1.data, data2.data);
+		assertArrayEquals(":d:", data1.data, data2.data);
 		assertEquals(":e:", data1.delayTime, data2.delayTime);
 		assertEquals(":f:", data1.depth, data2.depth);
 		assertEquals(":g:", data1.disposalMethod, data2.disposalMethod);
 		assertEquals(":h:", data1.height, data2.height);
-		assertEquals(":i:", data1.maskData, data2.maskData);
+		assertArrayEquals(":i:", data1.maskData, data2.maskData);
 		assertEquals(":j:", data1.maskPad, data2.maskPad);
 		assertEquals(":k:", data1.palette, data2.palette);
 		assertEquals(":l:", data1.scanlinePad, data2.scanlinePad);
@@ -761,7 +761,7 @@ public void test_scaledToII() {
 	byte[] scaledPixelData = new byte[imageDimension];
 	scaledImageData.getPixels(0, imageDimension - 1, scaledPixelData.length, scaledPixelData, 0);	
 	byte[] expectedPixelData = new byte[] {0x1, 0x1, 0x1, 0x1, 0, 0, 0x1, 0};
-	assertEquals(":a:", expectedPixelData, scaledPixelData);
+	assertArrayEquals(":a:", expectedPixelData, scaledPixelData);
 
 	scaledImageData = imageData.scaledTo(imageDimension * 10, imageDimension);
 	scaledPixelData = new byte[imageDimension * 10];
@@ -773,7 +773,7 @@ public void test_scaledToII() {
 	scaledPixelData = new byte[imageDimension];
 	scaledImageData.getPixels(0, 0, scaledPixelData.length, scaledPixelData, 0);	
 	expectedPixelData = new byte[] {0, 0x1, 0, 0, 0x1, 0x1, 0x1, 0x1};
-	assertEquals(":d:", expectedPixelData, scaledPixelData);
+	assertArrayEquals(":d:", expectedPixelData, scaledPixelData);
 }
 
 public void test_setAlphaIII() {
@@ -1156,27 +1156,5 @@ public void test_setPixelsIII$II() {
 /* custom */
 ImageData imageData;
 final int IMAGE_DIMENSION = 10;
-
-void assertEquals(String message, byte expected[], byte actual[]) {
-	if (expected == null && actual == null)
-		return;
-	boolean equal = false;
-	if (expected != null && actual != null && expected.length == actual.length) {
-		if (expected.length == 0)
-			return;
-		equal = true;
-		for (int i = 0; i < expected.length; i++) {
-			if (expected[i] != actual[i]) {
-				equal = false;
-			}
-		}
-	}
-	if (!equal) {
-		String formatted= "";
-		if (message != null)
-			formatted= message+" ";
-		fail(formatted+"expected:<"+expected+"> but was:<"+actual+">");
-	}
-}
 
 }
