@@ -10,10 +10,11 @@
  *******************************************************************************/
 package org.eclipse.swt.tests.junit;
 
-import junit.framework.*;
-import junit.textui.*;
+import junit.framework.Test;
+import junit.framework.TestSuite;
 
-import org.eclipse.swt.widgets.*;
+import org.eclipse.swt.widgets.Dialog;
+import org.eclipse.swt.widgets.Shell;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.widgets.Dialog
@@ -24,10 +25,6 @@ public class Test_org_eclipse_swt_widgets_Dialog extends SwtTestCase {
 
 public Test_org_eclipse_swt_widgets_Dialog(String name) {
 	super(name);
-}
-
-public static void main(String[] args) {
-	TestRunner.run(suite());
 }
 
 @Override
@@ -105,12 +102,8 @@ protected void runTest() throws Throwable {
 /* custom */
 public Shell shell;
 private Dialog dialog;
-private int junitStyle;
 
 protected void setDialog(Dialog newDialog) {
 	dialog = newDialog;
-}
-protected void setStyle(int style) {
-	style = junitStyle;
 }
 }
