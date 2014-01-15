@@ -10,6 +10,9 @@
  *******************************************************************************/
 package org.eclipse.swt.tests.junit;
 
+import static org.eclipse.swt.tests.junit.SwtTestCase.assertSWTProblem;
+import junit.framework.TestCase;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
@@ -19,11 +22,7 @@ import org.eclipse.swt.graphics.Rectangle;
  *
  * @see org.eclipse.swt.graphics.Rectangle
  */
-public class Test_org_eclipse_swt_graphics_Rectangle extends SwtTestCase {
-
-public Test_org_eclipse_swt_graphics_Rectangle(String name) {
-	super(name);
-}
+public class Test_org_eclipse_swt_graphics_Rectangle extends TestCase {
 
 public void test_ConstructorIIII() {
 	// Test new Rectangle (int x, int y, int width, int height)
@@ -78,7 +77,7 @@ public void test_addLorg_eclipse_swt_graphics_Rectangle() {
 		r1.add(null);
 		fail("No exception thrown for rectangle == null");
 	} catch (IllegalArgumentException e) {
-		assertEquals("Incorrect exception thrown for rectangle == null", SWT.ERROR_NULL_ARGUMENT, e);
+		assertSWTProblem("Incorrect exception thrown for rectangle == null", SWT.ERROR_NULL_ARGUMENT, e);
 	}
 }
 
@@ -135,7 +134,7 @@ public void test_containsLorg_eclipse_swt_graphics_Point() {
 		r.contains(null);
 		fail("No exception thrown for rectangle == null");
 	} catch (IllegalArgumentException e) {
-		assertEquals("Incorrect exception thrown for rectangle == null", SWT.ERROR_NULL_ARGUMENT, e);
+		assertSWTProblem("Incorrect exception thrown for rectangle == null", SWT.ERROR_NULL_ARGUMENT, e);
 	}
 }
 
@@ -184,7 +183,7 @@ public void test_intersectLorg_eclipse_swt_graphics_Rectangle() {
 		r1.intersect(null);
 		fail("No exception thrown for rectangle == null");
 	} catch (IllegalArgumentException e) {
-		assertEquals("Incorrect exception thrown for rectangle == null", SWT.ERROR_NULL_ARGUMENT, e);
+		assertSWTProblem("Incorrect exception thrown for rectangle == null", SWT.ERROR_NULL_ARGUMENT, e);
 	}
 }
 
@@ -203,7 +202,7 @@ public void test_intersectionLorg_eclipse_swt_graphics_Rectangle() {
 		r1.intersection(null);
 		fail("No exception thrown for rectangle == null");
 	} catch (IllegalArgumentException e) {
-		assertEquals("Incorrect exception thrown for rectangle == null", SWT.ERROR_NULL_ARGUMENT, e);
+		assertSWTProblem("Incorrect exception thrown for rectangle == null", SWT.ERROR_NULL_ARGUMENT, e);
 	}
 }
 
@@ -229,7 +228,7 @@ public void test_intersectsIIII() {
 		r1.intersects(null);
 		fail("No exception thrown for rectangle == null");
 	} catch (IllegalArgumentException e) {
-		assertEquals("Incorrect exception thrown for rectangle == null", SWT.ERROR_NULL_ARGUMENT, e);
+		assertSWTProblem("Incorrect exception thrown for rectangle == null", SWT.ERROR_NULL_ARGUMENT, e);
 	}
 }
 
@@ -255,7 +254,7 @@ public void test_intersectsLorg_eclipse_swt_graphics_Rectangle() {
 		r1.intersects(null);
 		fail("No exception thrown for rectangle == null");
 	} catch (IllegalArgumentException e) {
-		assertEquals("Incorrect exception thrown for rectangle == null", SWT.ERROR_NULL_ARGUMENT, e);
+		assertSWTProblem("Incorrect exception thrown for rectangle == null", SWT.ERROR_NULL_ARGUMENT, e);
 	}
 }
 
@@ -292,7 +291,7 @@ public void test_unionLorg_eclipse_swt_graphics_Rectangle() {
 		r1.union(null);
 		fail("No exception thrown for rectangle == null");
 	} catch (IllegalArgumentException e) {
-		assertEquals("Incorrect exception thrown for rectangle == null", SWT.ERROR_NULL_ARGUMENT, e);
+		assertSWTProblem("Incorrect exception thrown for rectangle == null", SWT.ERROR_NULL_ARGUMENT, e);
 	}
 }
 

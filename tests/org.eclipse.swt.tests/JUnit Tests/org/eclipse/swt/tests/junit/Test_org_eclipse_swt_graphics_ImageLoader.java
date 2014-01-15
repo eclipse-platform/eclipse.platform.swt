@@ -15,6 +15,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
+import junit.framework.TestCase;
+
 import org.eclipse.swt.SWTException;
 import org.eclipse.swt.graphics.ImageLoader;
 import org.eclipse.swt.graphics.ImageLoaderEvent;
@@ -25,11 +27,7 @@ import org.eclipse.swt.graphics.ImageLoaderListener;
  *
  * @see org.eclipse.swt.graphics.ImageLoader
  */
-public class Test_org_eclipse_swt_graphics_ImageLoader extends SwtTestCase {
-
-public Test_org_eclipse_swt_graphics_ImageLoader(String name) {
-	super(name);
-}
+public class Test_org_eclipse_swt_graphics_ImageLoader extends TestCase {
 
 public void test_Constructor() {
 	new ImageLoader();
@@ -144,8 +142,8 @@ public void test_saveLjava_io_OutputStreamI() {
 		} catch (SWTException e) {
 		}
 		boolean jpgSupported = false;
-		for (int i=0; i<imageFormats.length; i++) {
-			if (imageFormats[i].equals("jpg")) {
+		for (int i=0; i<SwtTestCase.imageFormats.length; i++) {
+			if (SwtTestCase.imageFormats[i].equals("jpg")) {
 				jpgSupported = true;
 				break;
 			}
@@ -159,8 +157,8 @@ public void test_saveLjava_io_OutputStreamI() {
 			try {
 				inStream.close();
 			} catch (IOException e) {}
-			for (int i = 0; i < imageFormats.length; i++) {
-				if (imageFormats[i].equals(filetype)) {
+			for (int i = 0; i < SwtTestCase.imageFormats.length; i++) {
+				if (SwtTestCase.imageFormats[i].equals(filetype)) {
 					// save using the appropriate format
 					loader.save(outStream, i);
 					break;

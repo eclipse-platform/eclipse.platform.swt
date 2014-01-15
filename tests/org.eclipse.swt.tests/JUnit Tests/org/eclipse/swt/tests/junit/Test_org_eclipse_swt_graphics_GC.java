@@ -10,6 +10,9 @@
  *******************************************************************************/
 package org.eclipse.swt.tests.junit;
 
+import static org.eclipse.swt.tests.junit.SwtTestCase.assertSWTProblem;
+import junit.framework.TestCase;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
@@ -30,11 +33,7 @@ import org.eclipse.swt.widgets.Shell;
  *
  * @see org.eclipse.swt.graphics.GC
  */
-public class Test_org_eclipse_swt_graphics_GC extends SwtTestCase {
-
-public Test_org_eclipse_swt_graphics_GC(String name) {
-	super(name);
-}
+public class Test_org_eclipse_swt_graphics_GC extends TestCase {
 
 @Override
 protected void setUp() {
@@ -57,7 +56,7 @@ public void test_ConstructorLorg_eclipse_swt_graphics_Drawable() {
 		gc.dispose();
 		fail("No exception thrown for drawable == null");
 	} catch (IllegalArgumentException e) {
-		assertEquals("Incorrect exception thrown for drawable == null", SWT.ERROR_NULL_ARGUMENT, e);
+		assertSWTProblem("Incorrect exception thrown for drawable == null", SWT.ERROR_NULL_ARGUMENT, e);
 	}
 	
 	Image image = null;
@@ -68,7 +67,7 @@ public void test_ConstructorLorg_eclipse_swt_graphics_Drawable() {
 		gc2 = new GC(image);
 		fail("No exception thrown for more than one GC on one image");
 	} catch (IllegalArgumentException e) {
-		assertEquals("Incorrect exception thrown for more than one GC on one image", SWT.ERROR_INVALID_ARGUMENT, e);
+		assertSWTProblem("Incorrect exception thrown for more than one GC on one image", SWT.ERROR_INVALID_ARGUMENT, e);
 	} finally {
 		if (image != null) image.dispose();
 		if (gc1 != null) gc1.dispose();
@@ -82,7 +81,7 @@ public void test_ConstructorLorg_eclipse_swt_graphics_DrawableI() {
 		gc.dispose();
 		fail("No exception thrown for drawable == null");
 	} catch (IllegalArgumentException e) {
-		assertEquals("Incorrect exception thrown for drawable == null", SWT.ERROR_NULL_ARGUMENT, e);
+		assertSWTProblem("Incorrect exception thrown for drawable == null", SWT.ERROR_NULL_ARGUMENT, e);
 	}
 
 	Image image = null;
@@ -93,7 +92,7 @@ public void test_ConstructorLorg_eclipse_swt_graphics_DrawableI() {
 		gc2 = new GC(image, SWT.LEFT_TO_RIGHT);
 		fail("No exception thrown for more than one GC on one image");
 	} catch (IllegalArgumentException e) {
-		assertEquals("Incorrect exception thrown for more than one GC on one image", SWT.ERROR_INVALID_ARGUMENT, e);
+		assertSWTProblem("Incorrect exception thrown for more than one GC on one image", SWT.ERROR_INVALID_ARGUMENT, e);
 	} finally {
 		if (image != null) image.dispose();
 		if (gc1 != null) gc1.dispose();

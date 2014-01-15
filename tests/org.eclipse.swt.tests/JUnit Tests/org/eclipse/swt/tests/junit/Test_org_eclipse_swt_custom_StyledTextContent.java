@@ -11,6 +11,8 @@
 package org.eclipse.swt.tests.junit;
 
 
+import junit.framework.TestCase;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.custom.StyledTextContent;
@@ -23,7 +25,7 @@ import org.eclipse.swt.widgets.Shell;
  *
  * @see org.eclipse.swt.custom.StyledTextContent
  */
-public class Test_org_eclipse_swt_custom_StyledTextContent extends SwtTestCase {
+public class Test_org_eclipse_swt_custom_StyledTextContent extends TestCase {
 	int XINSET = 0;
 
 	class ContentImplementation implements StyledTextContent {
@@ -65,13 +67,9 @@ public class Test_org_eclipse_swt_custom_StyledTextContent extends SwtTestCase {
 	Shell shell;
 	StyledText styledText;
 	
-public Test_org_eclipse_swt_custom_StyledTextContent(String name) {
-	super(name);
-}
-
 @Override
 protected void setUp() {
-	if (isBidi()) XINSET = 2;
+	if (SwtTestCase.isBidi()) XINSET = 2;
 	else XINSET = 0;
 	shell = new Shell();
 	styledText = new StyledText(shell, SWT.NULL);

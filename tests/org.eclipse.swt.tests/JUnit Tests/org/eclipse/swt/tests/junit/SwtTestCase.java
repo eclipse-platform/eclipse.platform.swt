@@ -11,15 +11,11 @@
 package org.eclipse.swt.tests.junit;
 
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
-
 import junit.framework.TestCase;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.SWTError;
 import org.eclipse.swt.SWTException;
-import org.eclipse.swt.internal.Compatibility;
 
 public class SwtTestCase extends TestCase {
 	/**
@@ -70,7 +66,7 @@ public SwtTestCase(String name) {
 	super(name);
 }
 
-static public void assertEquals(String message, int expectedCode, Throwable actualThrowable) {
+public static void assertSWTProblem(String message, int expectedCode, Throwable actualThrowable) {
 	if (actualThrowable instanceof SWTError) {
 		SWTError error = (SWTError) actualThrowable;
 		assertEquals(message, expectedCode, error.code);
@@ -86,15 +82,6 @@ static public void assertEquals(String message, int expectedCode, Throwable actu
 	}
 }
 
-protected boolean isJ2ME() {
-	try {
-		Compatibility.newFileInputStream("");
-	} catch (FileNotFoundException e) {
-		return false;
-	} catch (IOException e) {
-	}
-	return true;
-}
 protected boolean isReparentablePlatform() {
 	String platform = SWT.getPlatform();
 	for (int i=0; i<reparentablePlatforms.length; i++) {
@@ -103,7 +90,7 @@ protected boolean isReparentablePlatform() {
 	return false;
 }
 
-protected boolean isBidi() {
+public static boolean isBidi() {
 	return true;
 }
 

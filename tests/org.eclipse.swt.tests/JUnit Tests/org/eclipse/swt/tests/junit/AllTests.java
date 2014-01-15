@@ -57,7 +57,7 @@ public AllTests() {
 	 * or widget tests, etc). Otherwise, an InvalidThreadAccess
 	 * exception will be thrown for each Display test.
 	 */
-	addTest(Test_org_eclipse_swt_widgets_Display.suite());
+	addTestSuite(Test_org_eclipse_swt_widgets_Display.class);
 
 	addTestSuite(Test_org_eclipse_swt_graphics_Image.class);
 	addTestSuite(Test_org_eclipse_swt_graphics_Cursor.class);

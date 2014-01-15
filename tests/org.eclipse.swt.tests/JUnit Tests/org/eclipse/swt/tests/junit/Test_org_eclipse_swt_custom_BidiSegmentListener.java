@@ -11,6 +11,8 @@
 package org.eclipse.swt.tests.junit;
 
 
+import junit.framework.TestCase;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.BidiSegmentEvent;
 import org.eclipse.swt.custom.BidiSegmentListener;
@@ -23,15 +25,12 @@ import org.eclipse.swt.widgets.Shell;
  *
  * @see org.eclipse.swt.custom.BidiSegmentListener
  */
-public class Test_org_eclipse_swt_custom_BidiSegmentListener extends SwtTestCase {
+public class Test_org_eclipse_swt_custom_BidiSegmentListener extends TestCase {
 	Shell shell;
 	StyledText text;
 	boolean listenerCalled;	
 	String line = "Line1";
 			
-public Test_org_eclipse_swt_custom_BidiSegmentListener(String name) {
-	super(name);
-}
 @Override
 protected void setUp() {
 	shell = new Shell();
@@ -70,7 +69,7 @@ private void testListener(final String message, final int[] segments, boolean ex
 	else {
 		assertTrue(message + " unexpected exception thrown", exceptionThrown == false);
 	}
-	if (isBidi()) {
+	if (SwtTestCase.isBidi()) {
 		assertTrue(message + " listener not called", listenerCalled);	
 	}
 	else {
@@ -106,7 +105,7 @@ private void testStyleRangeSegmenting(final int[] segments, int[] boldRanges) {
 		text.removeBidiSegmentListener(listener);
 	}
 	assertTrue(" unexpected exception thrown", exceptionThrown == false);
-	if (isBidi()) {
+	if (SwtTestCase.isBidi()) {
 		assertTrue(" listener not called", listenerCalled);	
 	}
 	else {
@@ -124,7 +123,7 @@ public void test_lineGetSegmentsLorg_eclipse_swt_custom_BidiSegmentEvent() {
 	testListener(":c:", new int[] {0, lineLength / 2}, false);
 			
 	// should all cause an exception on a bidi platform
-	if (isBidi()) {
+	if (SwtTestCase.isBidi()) {
 		testListener(":d:", new int[] {lineLength / 2}, true);
 		testListener(":e:", new int[] {0, 1, 1, lineLength / 2}, true);
 		testListener(":f:", new int[] {0, 1, 2, lineLength + 1}, true);

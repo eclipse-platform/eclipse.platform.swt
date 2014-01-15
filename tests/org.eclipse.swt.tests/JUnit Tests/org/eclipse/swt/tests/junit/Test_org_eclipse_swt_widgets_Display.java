@@ -10,8 +10,8 @@
  *******************************************************************************/
 package org.eclipse.swt.tests.junit;
 
-import junit.framework.Test;
-import junit.framework.TestSuite;
+import static org.eclipse.swt.tests.junit.SwtTestCase.assertSWTProblem;
+import junit.framework.TestCase;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.DeviceData;
@@ -32,11 +32,7 @@ import org.eclipse.swt.widgets.Synchronizer;
  *
  * @see org.eclipse.swt.widgets.Display
  */
-public class Test_org_eclipse_swt_widgets_Display extends SwtTestCase {
-
-public Test_org_eclipse_swt_widgets_Display(String name) {
-	super(name);
-}
+public class Test_org_eclipse_swt_widgets_Display extends TestCase {
 
 public void test_Constructor() {
 	Display disp = new Display();
@@ -72,7 +68,7 @@ public void test_addFilterILorg_eclipse_swt_widgets_Listener() {
 			display.addFilter(SWT.Dispose, null);
 			fail("No exception thrown for addFilter with null argument");
 		} catch (IllegalArgumentException e) {
-			assertEquals("Incorrect exception thrown for addFilter with null argument", SWT.ERROR_NULL_ARGUMENT, e);
+			assertSWTProblem("Incorrect exception thrown for addFilter with null argument", SWT.ERROR_NULL_ARGUMENT, e);
 		}
 		
 		display.addFilter(SWT.Close, listener);
@@ -103,7 +99,7 @@ public void test_addListenerILorg_eclipse_swt_widgets_Listener() {
 			display.addListener(SWT.Close, null);
 			fail("No exception thrown for addListener with null argument");
 		} catch (IllegalArgumentException e) {
-			assertEquals("Incorrect exception thrown for addListener with null argument", SWT.ERROR_NULL_ARGUMENT, e);
+			assertSWTProblem("Incorrect exception thrown for addListener with null argument", SWT.ERROR_NULL_ARGUMENT, e);
 		}
 		
 		display.addListener(SWT.Dispose, listener);
@@ -450,13 +446,13 @@ public void test_mapLorg_eclipse_swt_widgets_ControlLorg_eclipse_swt_widgets_Con
 			result = display.map(button1, button2, 0, 0);
 			fail("No exception thrown for map from control being disposed");
 		} catch (IllegalArgumentException e) {
-			assertEquals("Incorrect exception thrown for map from control being disposed", SWT.ERROR_INVALID_ARGUMENT, e);
+			assertSWTProblem("Incorrect exception thrown for map from control being disposed", SWT.ERROR_INVALID_ARGUMENT, e);
 		}
 		try {
 			result = display.map(button2, button1, 0, 0);
 			fail("No exception thrown for map to control being disposed");
 		} catch (IllegalArgumentException e) {
-			assertEquals("Incorrect exception thrown for map to control being disposed", SWT.ERROR_INVALID_ARGUMENT, e);
+			assertSWTProblem("Incorrect exception thrown for map to control being disposed", SWT.ERROR_INVALID_ARGUMENT, e);
 		}
 		
 		shell.dispose();
@@ -512,13 +508,13 @@ public void test_mapLorg_eclipse_swt_widgets_ControlLorg_eclipse_swt_widgets_Con
 			result = display.map(button1, button2, 0, 0, 100, 100);
 			fail("No exception thrown for map from control being disposed");
 		} catch (IllegalArgumentException e) {
-			assertEquals("Incorrect exception thrown for map from control being disposed", SWT.ERROR_INVALID_ARGUMENT, e);
+			assertSWTProblem("Incorrect exception thrown for map from control being disposed", SWT.ERROR_INVALID_ARGUMENT, e);
 		}
 		try {
 			result = display.map(button2, button1, 0, 0, 100, 100);
 			fail("No exception thrown for map to control being disposed");
 		} catch (IllegalArgumentException e) {
-			assertEquals("Incorrect exception thrown for map to control being disposed", SWT.ERROR_INVALID_ARGUMENT, e);
+			assertSWTProblem("Incorrect exception thrown for map to control being disposed", SWT.ERROR_INVALID_ARGUMENT, e);
 		}
 		
 		shell.dispose();
@@ -576,20 +572,20 @@ public void test_mapLorg_eclipse_swt_widgets_ControlLorg_eclipse_swt_widgets_Con
 			result = display.map(button1, button2, point);
 			fail("No exception thrown for map from control being disposed");
 		} catch (IllegalArgumentException e) {
-			assertEquals("Incorrect exception thrown for map from control being disposed", SWT.ERROR_INVALID_ARGUMENT, e);
+			assertSWTProblem("Incorrect exception thrown for map from control being disposed", SWT.ERROR_INVALID_ARGUMENT, e);
 		}
 		try {
 			result = display.map(button2, button1, point);
 			fail("No exception thrown for map to control being disposed");
 		} catch (IllegalArgumentException e) {
-			assertEquals("Incorrect exception thrown for map to control being disposed", SWT.ERROR_INVALID_ARGUMENT, e);
+			assertSWTProblem("Incorrect exception thrown for map to control being disposed", SWT.ERROR_INVALID_ARGUMENT, e);
 		}
 		
 		try {
 			result = display.map(button2, button1, (Point) null);
 			fail("No exception thrown for null point");
 		} catch (IllegalArgumentException e) {
-			assertEquals("Incorrect exception thrown for point being null", SWT.ERROR_NULL_ARGUMENT, e);
+			assertSWTProblem("Incorrect exception thrown for point being null", SWT.ERROR_NULL_ARGUMENT, e);
 		}
 		
 		shell.dispose();
@@ -647,20 +643,20 @@ public void test_mapLorg_eclipse_swt_widgets_ControlLorg_eclipse_swt_widgets_Con
 			result = display.map(button1, button2, rect);
 			fail("No exception thrown for map from control being disposed");
 		} catch (IllegalArgumentException e) {
-			assertEquals("Incorrect exception thrown for map from control being disposed", SWT.ERROR_INVALID_ARGUMENT, e);
+			assertSWTProblem("Incorrect exception thrown for map from control being disposed", SWT.ERROR_INVALID_ARGUMENT, e);
 		}
 		try {
 			result = display.map(button2, button1, rect);
 			fail("No exception thrown for map to control being disposed");
 		} catch (IllegalArgumentException e) {
-			assertEquals("Incorrect exception thrown for map to control being disposed", SWT.ERROR_INVALID_ARGUMENT, e);
+			assertSWTProblem("Incorrect exception thrown for map to control being disposed", SWT.ERROR_INVALID_ARGUMENT, e);
 		}
 		
 		try {
 			result = display.map(button2, button1, (Rectangle) null);
 			fail("No exception thrown for null point");
 		} catch (IllegalArgumentException e) {
-			assertEquals("Incorrect exception thrown for rectangle being null", SWT.ERROR_NULL_ARGUMENT, e);
+			assertSWTProblem("Incorrect exception thrown for rectangle being null", SWT.ERROR_NULL_ARGUMENT, e);
 		}
 		
 		shell.dispose();
@@ -678,7 +674,7 @@ public void test_postLorg_eclipse_swt_widgets_Event() {
 			display.post(null);
 			fail("No exception thrown for post with null argument");
 		} catch (IllegalArgumentException e) {
-			assertEquals("Incorrect exception thrown for post with null argument", SWT.ERROR_NULL_ARGUMENT, e);
+			assertSWTProblem("Incorrect exception thrown for post with null argument", SWT.ERROR_NULL_ARGUMENT, e);
 		}
 		
 		Shell shell = new Shell(display, SWT.NO_TRIM);
@@ -814,7 +810,7 @@ public void test_removeFilterILorg_eclipse_swt_widgets_Listener() {
 			display.removeFilter(SWT.Dispose, null);
 			fail("No exception thrown for removeFilter with null argument");
 		} catch (IllegalArgumentException e) {
-			assertEquals("Incorrect exception thrown for removeFilter with null argument", SWT.ERROR_NULL_ARGUMENT, e);
+			assertSWTProblem("Incorrect exception thrown for removeFilter with null argument", SWT.ERROR_NULL_ARGUMENT, e);
 		}
 		
 		display.addFilter(SWT.Close, listener);
@@ -846,7 +842,7 @@ public void test_removeListenerILorg_eclipse_swt_widgets_Listener() {
 			display.removeListener(SWT.Close, null);
 			fail("No exception thrown for removeListener with null argument");
 		} catch (IllegalArgumentException e) {
-			assertEquals("Incorrect exception thrown for removeListener with null argument", SWT.ERROR_NULL_ARGUMENT, e);
+			assertSWTProblem("Incorrect exception thrown for removeListener with null argument", SWT.ERROR_NULL_ARGUMENT, e);
 		}
 		
 		display.addListener(SWT.Dispose, listener);
@@ -880,7 +876,7 @@ public void test_setCursorLocationLorg_eclipse_swt_graphics_Point() {
 			fail("No exception thrown for null argument");
 		}
 		catch (IllegalArgumentException e) {
-			assertEquals("Incorrect exception thrown for setCursorLocation with null argument", SWT.ERROR_NULL_ARGUMENT, e);
+			assertSWTProblem("Incorrect exception thrown for setCursorLocation with null argument", SWT.ERROR_NULL_ARGUMENT, e);
 		}
 	} finally {
 		display.dispose();
@@ -924,7 +920,7 @@ public void test_setSynchronizerLorg_eclipse_swt_widgets_Synchronizer() {
 			display.setSynchronizer(null);
 			fail("No exception thrown for post with null argument");
 		} catch (IllegalArgumentException e) {
-			assertEquals("Incorrect exception thrown for set synchronizer with null argument", SWT.ERROR_NULL_ARGUMENT, e);
+			assertSWTProblem("Incorrect exception thrown for set synchronizer with null argument", SWT.ERROR_NULL_ARGUMENT, e);
 		}
 		
 		class MySynchronizer extends Synchronizer {
@@ -1030,7 +1026,7 @@ public void test_timerExecILjava_lang_Runnable() {
 			display.timerExec(0, null);
 			fail("No exception thrown for timerExec with null runnable");
 		} catch (IllegalArgumentException e) {
-			assertEquals("Incorrect exception thrown for timerExec with null runnable", SWT.ERROR_NULL_ARGUMENT, e);
+			assertSWTProblem("Incorrect exception thrown for timerExec with null runnable", SWT.ERROR_NULL_ARGUMENT, e);
 		}
 		
 		display.timerExec(-100, new Runnable() {
@@ -1074,72 +1070,6 @@ public void test_update() {
 	}
 }
 
-public static Test suite() {
-	TestSuite suite = new TestSuite();
-	java.util.Vector<String> methodNames = methodNames();
-	java.util.Enumeration<String> e = methodNames.elements();
-	while (e.hasMoreElements()) {
-		suite.addTest(new Test_org_eclipse_swt_widgets_Display(e.nextElement()));
-	}
-	return suite;
-}
-public static java.util.Vector<String> methodNames() {
-	java.util.Vector<String> methodNames = new java.util.Vector<String>();
-	methodNames.addElement("test_Constructor");
-	methodNames.addElement("test_ConstructorLorg_eclipse_swt_graphics_DeviceData");
-	methodNames.addElement("test_addFilterILorg_eclipse_swt_widgets_Listener");
-	methodNames.addElement("test_addListenerILorg_eclipse_swt_widgets_Listener");
-	methodNames.addElement("test_asyncExecLjava_lang_Runnable");
-	methodNames.addElement("test_beep");
-	methodNames.addElement("test_close");
-	methodNames.addElement("test_disposeExecLjava_lang_Runnable");
-	methodNames.addElement("test_findDisplayLjava_lang_Thread");
-	methodNames.addElement("test_getActiveShell");
-	methodNames.addElement("test_getBounds");
-	methodNames.addElement("test_getClientArea");
-	methodNames.addElement("test_getCurrent");
-	methodNames.addElement("test_getCursorControl");
-	methodNames.addElement("test_getCursorLocation");
-	methodNames.addElement("test_getDefault");
-	methodNames.addElement("test_getDismissalAlignment");
-	methodNames.addElement("test_getDoubleClickTime");
-	methodNames.addElement("test_getFocusControl");
-	methodNames.addElement("test_getIconDepth");
-	methodNames.addElement("test_getMonitors");
-	methodNames.addElement("test_getPrimaryMonitor");
-	methodNames.addElement("test_getShells");
-	methodNames.addElement("test_getSyncThread");
-	methodNames.addElement("test_getSystemColorI");
-	methodNames.addElement("test_getSystemFont");
-	methodNames.addElement("test_getThread");
-	methodNames.addElement("test_mapLorg_eclipse_swt_widgets_ControlLorg_eclipse_swt_widgets_ControlII");
-	methodNames.addElement("test_mapLorg_eclipse_swt_widgets_ControlLorg_eclipse_swt_widgets_ControlIIII");
-	methodNames.addElement("test_mapLorg_eclipse_swt_widgets_ControlLorg_eclipse_swt_widgets_ControlLorg_eclipse_swt_graphics_Point");
-	methodNames.addElement("test_mapLorg_eclipse_swt_widgets_ControlLorg_eclipse_swt_widgets_ControlLorg_eclipse_swt_graphics_Rectangle");
-	methodNames.addElement("test_postLorg_eclipse_swt_widgets_Event");
-	methodNames.addElement("test_removeFilterILorg_eclipse_swt_widgets_Listener");
-	methodNames.addElement("test_removeListenerILorg_eclipse_swt_widgets_Listener");
-	methodNames.addElement("test_setAppNameLjava_lang_String");
-	methodNames.addElement("test_setCursorLocationII");
-	methodNames.addElement("test_setCursorLocationLorg_eclipse_swt_graphics_Point");
-	methodNames.addElement("test_setDataLjava_lang_Object");
-	methodNames.addElement("test_setDataLjava_lang_StringLjava_lang_Object");
-	methodNames.addElement("test_setSynchronizerLorg_eclipse_swt_widgets_Synchronizer");
-	methodNames.addElement("test_sleep");
-	methodNames.addElement("test_syncExecLjava_lang_Runnable");
-	methodNames.addElement("test_timerExecILjava_lang_Runnable");
-	methodNames.addElement("test_update");
-	methodNames.addElement("test_LongEventWatchdog");
-	methodNames.addElement("test_getBounds");
-	methodNames.addElement("test_getClientArea");
-	methodNames.addElement("test_getDPI");
-	methodNames.addElement("test_getDepth");
-	methodNames.addElement("test_getFontListLjava_lang_StringZ");
-	methodNames.addElement("test_getWarnings");
-	methodNames.addElement("test_isDisposed");
-	methodNames.addElement("test_setWarningsZ");
-	return methodNames;
-}
 
 /* custom */
 boolean disposeExecRan;

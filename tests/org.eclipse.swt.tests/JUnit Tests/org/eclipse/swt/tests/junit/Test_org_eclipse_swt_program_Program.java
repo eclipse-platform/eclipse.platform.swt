@@ -10,8 +10,10 @@
  *******************************************************************************/
 package org.eclipse.swt.tests.junit;
 
-
+import static org.eclipse.swt.tests.junit.SwtTestCase.assertSWTProblem;
 import java.util.Hashtable;
+
+import junit.framework.TestCase;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.program.Program;
@@ -22,7 +24,7 @@ import org.eclipse.swt.widgets.Display;
  *
  * @see org.eclipse.swt.program.Program
  */
-public class Test_org_eclipse_swt_program_Program extends SwtTestCase {
+public class Test_org_eclipse_swt_program_Program extends TestCase {
 	
 public Test_org_eclipse_swt_program_Program(String name) {
 	super(name);
@@ -65,7 +67,7 @@ public void test_executeLjava_lang_String() {
 			fail("Failed to throw ERROR_NULL_ARGUMENT");
 		}
 	} catch (IllegalArgumentException e) {
-		assertEquals("Failed to throw ERROR_NULL_ARGUMENT", SWT.ERROR_NULL_ARGUMENT, e);
+		assertSWTProblem("Failed to throw ERROR_NULL_ARGUMENT", SWT.ERROR_NULL_ARGUMENT, e);
 	}
 }
 
@@ -83,7 +85,7 @@ public void test_findProgramLjava_lang_String() {
 		Program.findProgram(null);
 		fail("Failed to throw ERROR_NULL_ARGUMENT");
 	} catch (IllegalArgumentException e) {
-		assertEquals("Failed to throw ERROR_NULL_ARGUMENT", SWT.ERROR_NULL_ARGUMENT, e);
+		assertSWTProblem("Failed to throw ERROR_NULL_ARGUMENT", SWT.ERROR_NULL_ARGUMENT, e);
 	} catch (Exception e) {
 		fail("Invalid Exception thrown of type "+e.getClass());
 	} catch (Error e) {
@@ -168,7 +170,7 @@ public void test_launchLjava_lang_String() {
 		Program.launch(null);
 		fail("Failed to throw ERROR_NULL_ARGUMENT");
 	} catch (IllegalArgumentException e) {
-		assertEquals("Failed to throw ERROR_NULL_ARGUMENT", SWT.ERROR_NULL_ARGUMENT, e);
+		assertSWTProblem("Failed to throw ERROR_NULL_ARGUMENT", SWT.ERROR_NULL_ARGUMENT, e);
 	}
 }
 
