@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2013 IBM Corporation and others.
+ * Copyright (c) 2000, 2014 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -9426,7 +9426,7 @@ void setScrollBars(boolean vertical) {
 	if (verticalBar != null) {
 		setScrollBar(verticalBar, clientAreaHeight, renderer.getHeight(), topMargin + bottomMargin);
 	}
-	if (horizontalBar != null) {
+	if (horizontalBar != null && !wordWrap) {
 		setScrollBar(horizontalBar, clientAreaWidth, renderer.getWidth(), leftMargin + rightMargin);
 		if (!alwaysShowScroll && horizontalBar.getVisible() && verticalBar != null) {
 			setScrollBar(verticalBar, clientAreaHeight, renderer.getHeight(), topMargin + bottomMargin);
