@@ -120,7 +120,8 @@ public class StyledText extends Canvas {
 	int selectionAnchor;				// position of selection anchor. 0 based offset from beginning of text
 	Point doubleClickSelection;			// selection after last mouse double click
 	boolean editable = true;
-	boolean wordWrap = false;
+	boolean wordWrap = false;			// text is wrapped automatically
+	boolean visualWrap = false;		// process line breaks inside logical lines (inserted by BidiSegmentEvent)
 	boolean doubleClickEnabled = true;	// see getDoubleClickEnabled 
 	boolean overwrite = false;			// insert/overwrite edit mode
 	int textLimit = -1;					// limits the number of characters the user can type in the widget. Unlimited by default.
@@ -2597,7 +2598,7 @@ void doLineDown(boolean select) {
 	int lineCount = content.getLineCount();
 	int y = 0;
 	boolean lastLine = false;
-	if (wordWrap) {
+	if (wordWrap || visualWrap) {
 		int lineOffset = content.getOffsetAtLine(caretLine);
 		int offsetInLine = caretOffset - lineOffset;
 		TextLayout layout = renderer.getTextLayout(caretLine);
@@ -2642,7 +2643,7 @@ void doLineEnd() {
 	int caretLine = getCaretLine();
 	int lineOffset = content.getOffsetAtLine(caretLine);	
 	int lineEndOffset;
-	if (wordWrap) {
+	if (wordWrap || visualWrap) {
 		TextLayout layout = renderer.getTextLayout(caretLine);
 		int offsetInLine = caretOffset - lineOffset;
 		int lineIndex = getVisualLineIndex(layout, offsetInLine);
@@ -2662,7 +2663,7 @@ void doLineEnd() {
 void doLineStart() {
 	int caretLine = getCaretLine();
 	int lineOffset = content.getOffsetAtLine(caretLine);
-	if (wordWrap) {
+	if (wordWrap || visualWrap) {
 		TextLayout layout = renderer.getTextLayout(caretLine);
 		int offsetInLine = caretOffset - lineOffset;
 		int lineIndex = getVisualLineIndex(layout, offsetInLine);
@@ -2681,7 +2682,7 @@ void doLineStart() {
 void doLineUp(boolean select) {
 	int caretLine = getCaretLine(), y = 0;
 	boolean firstLine = false;
-	if (wordWrap) {
+	if (wordWrap || visualWrap) {
 		int lineOffset = content.getOffsetAtLine(caretLine);
 		int offsetInLine = caretOffset - lineOffset;
 		TextLayout layout = renderer.getTextLayout(caretLine);
@@ -2948,7 +2949,7 @@ void doPageDown(boolean select, int height) {
 			if (topY + lineHeight <= clientAreaHeight) {
 				height += lineHeight;
 			} else {
-				if (wordWrap) {
+				if (wordWrap || visualWrap) {
 					TextLayout layout = renderer.getTextLayout(lineIndex);
 					int y = clientAreaHeight - topY;
 					for (int i = 0; i < layout.getLineCount(); i++) {
@@ -2964,7 +2965,7 @@ void doPageDown(boolean select, int height) {
 		} else {
 			lineIndex = getLineIndex(height);
 			int topLineY = getLinePixel(lineIndex);
-			if (wordWrap) {
+			if (wordWrap || visualWrap) {
 				TextLayout layout = renderer.getTextLayout(lineIndex);
 				int y = height - topLineY;
 				for (int i = 0; i < layout.getLineCount(); i++) {
@@ -2980,7 +2981,7 @@ void doPageDown(boolean select, int height) {
 			}
 		}
 		int caretHeight = height;
-		if (wordWrap) {
+		if (wordWrap || visualWrap) {
 			TextLayout layout = renderer.getTextLayout(caretLine);
 			int offsetInLine = caretOffset - content.getOffsetAtLine(caretLine);
 			lineIndex = getVisualLineIndex(layout, offsetInLine);
@@ -3014,7 +3015,7 @@ void doPageEnd() {
 		doLineEnd();
 	} else {
 		int bottomOffset;
-		if (wordWrap) {
+		if (wordWrap || visualWrap) {
 			int lineIndex = getPartialBottomIndex();
 			TextLayout layout = renderer.getTextLayout(lineIndex);
 			int y = (clientAreaHeight - bottomMargin) - getLinePixel(lineIndex);
@@ -3045,7 +3046,7 @@ void doPageEnd() {
  */
 void doPageStart() {
 	int topOffset;
-	if (wordWrap) {
+	if (wordWrap || visualWrap) {
 		int y, lineIndex;
 		if (topIndexY > 0) {
 			lineIndex = topIndex - 1;
@@ -3126,7 +3127,7 @@ void doPageUp(boolean select, int height) {
 					height = clientAreaHeight - (lineHeight + topIndexY);
 					y = -topIndexY;
 				}
-				if (wordWrap) {
+				if (wordWrap || visualWrap) {
 					TextLayout layout = renderer.getTextLayout(lineIndex);
 					for (int i = 0; i < layout.getLineCount(); i++) {
 						Rectangle bounds = layout.getLineBounds(i);
@@ -3141,7 +3142,7 @@ void doPageUp(boolean select, int height) {
 		} else {
 			lineIndex = getLineIndex(clientAreaHeight - height);
 			int topLineY = getLinePixel(lineIndex);
-			if (wordWrap) {
+			if (wordWrap || visualWrap) {
 				TextLayout layout = renderer.getTextLayout(lineIndex);
 				int y = topLineY;
 				for (int i = 0; i < layout.getLineCount(); i++) {
@@ -3157,7 +3158,7 @@ void doPageUp(boolean select, int height) {
 			}
 		}
 		int caretHeight = height;
-		if (wordWrap) {
+		if (wordWrap || visualWrap) {
 			TextLayout layout = renderer.getTextLayout(caretLine);
 			int offsetInLine = caretOffset - content.getOffsetAtLine(caretLine);
 			lineIndex = getVisualLineIndex(layout, offsetInLine);
@@ -3645,12 +3646,18 @@ Rectangle getBoundsAtOffset(int offset) {
 	if (line.length() != 0) {
 		int offsetInLine = offset - lineOffset;
 		TextLayout layout = renderer.getTextLayout(lineIndex);
-		bounds = layout.getBounds(offsetInLine, offsetInLine);
+		if (caretAlignment == PREVIOUS_OFFSET_TRAILING && offsetInLine != 0) {
+			offsetInLine = layout.getPreviousOffset(offsetInLine, SWT.MOVEMENT_CLUSTER); 
+			Point point = layout.getLocation(offsetInLine, true);
+			bounds = new Rectangle (point.x, point.y, 0, renderer.getLineHeight());
+		} else {
+			bounds = layout.getBounds(offsetInLine, offsetInLine);
+		}
 		renderer.disposeTextLayout(layout);
 	} else {
 		bounds = new Rectangle (0, 0, 0, renderer.getLineHeight());
 	}
-	if (offset == caretOffset && !wordWrap) {
+	if (offset == caretOffset && !(wordWrap || visualWrap)) {
 		int lineEnd = lineOffset + line.length();
 		if (offset == lineEnd) {
 			bounds.width += getCaretWidth();
@@ -4785,6 +4792,7 @@ public String getSelectionText() {
 }
 StyledTextEvent getBidiSegments(int lineOffset, String line) {
 	if (!isListening(ST.LineGetSegments)) {
+		if (!bidiColoring) return null;
 		StyledTextEvent event = new StyledTextEvent(content);
 		event.segments = getBidiSegmentsCompatibility(line, lineOffset);
 		return event;
@@ -4796,10 +4804,20 @@ StyledTextEvent getBidiSegments(int lineOffset, String line) {
 	if (segments[0] > lineLength) {
 		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
-	boolean hasSegmentsChars = event.segmentsChars != null;
+	char[] segmentsChars = event.segmentsChars;
+	boolean hasSegmentsChars = segmentsChars != null;
 	for (int i = 1; i < segments.length; i++) {
 		if ((hasSegmentsChars ? segments[i] < segments[i - 1] : segments[i] <= segments[i - 1]) || segments[i] > lineLength) {
 			SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+		}
+	}
+	if (hasSegmentsChars && !visualWrap) {
+		for (int i= 0; i < segmentsChars.length; i++) {
+			if (segmentsChars[i] == '\n' || segmentsChars[i] == '\r') {
+				visualWrap = true;
+				setVariableLineHeight();
+				break;
+			}
 		}
 	}
 	return event;
@@ -4810,9 +4828,6 @@ StyledTextEvent getBidiSegments(int lineOffset, String line) {
  */
 int [] getBidiSegmentsCompatibility(String line, int lineOffset) {
 	int lineLength = line.length();
-	if (!bidiColoring) {
-		return new int[] {0, lineLength};
-	}
 	StyleRange [] styles = null;
 	StyledTextEvent event = getLineStyleData(lineOffset, line);
 	if (event != null) {
@@ -5720,7 +5735,7 @@ void internalRedrawRange(int start, int length) {
 	int startIndex = layout.getLineIndex(Math.min(start, layout.getText().length()));
 	
 	/* Redraw end of line before start line if wrapped and start offset is first char */
-	if (wordWrap && startIndex > 0 && offsets[startIndex] == start) {
+	if ((wordWrap || visualWrap) && startIndex > 0 && offsets[startIndex] == start) {
 		Rectangle rect = layout.getLineBounds(startIndex - 1);
 		rect.x = rect.width;
 		rect.width = clientAreaWidth - rightMargin - rect.x;
@@ -6237,7 +6252,7 @@ void handleTextChanged(TextChangedEvent event) {
 	if (!(blockSelection && blockXLocation != -1)) {
 		updateSelection(lastTextChangeStart, lastTextChangeReplaceCharCount, lastTextChangeNewCharCount);
 	}
-	if (lastTextChangeReplaceLineCount > 0 || wordWrap) {
+	if (lastTextChangeReplaceLineCount > 0 || wordWrap || visualWrap) {
 		claimBottomFreeSpace();
 	}
 	if (lastTextChangeReplaceCharCount > 0) {
@@ -10288,7 +10303,7 @@ void updateCaretVisibility() {
 void updateSelection(int startOffset, int replacedLength, int newLength) {
 	if (selection.y <= startOffset) {
 		// selection ends before text change
-		if (wordWrap) setCaretLocation();
+		if (wordWrap || visualWrap) setCaretLocation();
 		return;
 	}
 	if (selection.x < startOffset) {
