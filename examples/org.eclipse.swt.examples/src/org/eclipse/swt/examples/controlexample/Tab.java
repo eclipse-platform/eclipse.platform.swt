@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2012 IBM Corporation and others.
+ * Copyright (c) 2000, 2014 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -11,13 +11,13 @@
 package org.eclipse.swt.examples.controlexample;
 
 
-import java.lang.reflect.Method;
+import java.lang.reflect.*;
 
 import org.eclipse.swt.*;
-import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.widgets.*;
-import org.eclipse.swt.layout.*;
 import org.eclipse.swt.events.*;
+import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.layout.*;
+import org.eclipse.swt.widgets.*;
 
 /**
  * <code>Tab</code> is the abstract superclass of every page
@@ -1175,6 +1175,13 @@ abstract class Tab {
 						ints[j] = new Integer(strings[j]).intValue();
 					}
 					parameter = new Object[] {ints};
+				} else if (typeName.equals("[C")) {
+					String strings[] = split(value, ',');
+					char[] chars = new char[strings.length];
+					for (int j = 0; j < strings.length; j++) {
+						chars[j] = strings[j].charAt(0);
+					}
+					parameter = new Object[] {chars};
 				} else if (typeName.equals("[Ljava.lang.String;")) {
 					parameter = new Object[] {split(value, ',')};
 				} else {

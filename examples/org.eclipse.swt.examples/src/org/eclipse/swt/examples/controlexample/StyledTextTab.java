@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2009 IBM Corporation and others.
+ * Copyright (c) 2000, 2014 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -12,12 +12,13 @@ package org.eclipse.swt.examples.controlexample;
 
 
 import java.io.*;
+
 import org.eclipse.swt.*;
-import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.widgets.*;
-import org.eclipse.swt.layout.*;
-import org.eclipse.swt.events.*;
 import org.eclipse.swt.custom.*;
+import org.eclipse.swt.events.*;
+import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.layout.*;
+import org.eclipse.swt.widgets.*;
 
 class StyledTextTab extends ScrollableTab {
 	/* Example widgets and groups that contain them */
@@ -328,7 +329,7 @@ class StyledTextTab extends ScrollableTab {
 	 */
 	@Override
 	String[] getMethodNames() {
-		return new String[] {"Alignment", "BlockSelection", "BottomMargin", "CaretOffset", "DoubleClickEnabled", "Editable", "HorizontalIndex", "HorizontalPixel", "Indent", "Justify", "LeftMargin", "LineSpacing", "Orientation", "RightMargin", "Selection", "Tabs", "Text", "TextLimit", "ToolTipText", "TopIndex", "TopMargin", "TopPixel", "WordWrap"};
+		return new String[] {"Alignment", "AlwaysShowScrollBars", "BlockSelection", "BottomMargin", "CaretOffset", "DoubleClickEnabled", "Editable", "HorizontalIndex", "HorizontalPixel", "Indent", "Justify", "LeftMargin", "LineSpacing", "Orientation", "RightMargin", "Selection", "Tabs", "TabStops", "Text", "TextLimit", "ToolTipText", "TopIndex", "TopMargin", "TopPixel", "WrapIndent", "WordWrap"};
 	}
 
 	
