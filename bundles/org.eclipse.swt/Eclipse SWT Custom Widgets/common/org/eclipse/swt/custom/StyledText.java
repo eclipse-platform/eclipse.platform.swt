@@ -8264,7 +8264,7 @@ public void setAlignment(int alignment) {
 }
 /**
  * Set the Always Show Scrollbars flag.  True if the scrollbars are 
- * always shown even if they are not required.  False if the scrollbars are only 
+ * always shown even if they are not required (default value).  False if the scrollbars are only 
  * visible when some part of the content needs to be scrolled to be seen.
  * The H_SCROLL and V_SCROLL style bits are also required to enable scrollbars in the 
  * horizontal and vertical directions.
@@ -9434,9 +9434,13 @@ void setScrollBars(boolean vertical) {
 	ScrollBar horizontalBar = getHorizontalBar();
 	int oldHeight = clientAreaHeight;
 	int oldWidth = clientAreaWidth;
-	if (!alwaysShowScroll) {
-		if (verticalBar != null) verticalBar.setVisible(false);
-		if (horizontalBar != null) horizontalBar.setVisible(false);
+	if (verticalBar != null) {
+		verticalBar.setVisible(alwaysShowScroll);
+		if (alwaysShowScroll) verticalBar.setValues(0, 0, 0, 1, 1, 1);
+	}
+	if (horizontalBar != null) {
+		horizontalBar.setVisible(alwaysShowScroll);
+		if (alwaysShowScroll) horizontalBar.setValues(0, 0, 0, 1, 1, 1);
 	}
 	if (verticalBar != null) {
 		setScrollBar(verticalBar, clientAreaHeight, renderer.getHeight(), topMargin + bottomMargin);
