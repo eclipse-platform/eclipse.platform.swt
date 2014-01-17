@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2013 IBM Corporation and others.
+ * Copyright (c) 2000, 2014 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -118,6 +118,9 @@ public DateTime (Composite parent, int style) {
 	if ((this.style & SWT.CALENDAR) == 0) {
 		/* SWT.DATE and SWT.TIME */
 		createText((this.style & SWT.DROP_DOWN) != 0);
+	} else {
+		/* Highlight the current(today) date */
+		OS.gtk_calendar_mark_day(handle, Calendar.getInstance().get(Calendar.DAY_OF_MONTH));
 	}
 	initAccessible ();
 }
@@ -885,7 +888,6 @@ void popupCalendarEvent (Event event) {
 			*/
 			if (popupCalendar.monthChanged) {
 				popupCalendar.monthChanged = false;
-				OS.gtk_calendar_clear_marks(popupCalendar.handle);
 			} else {
 				dropDownCalendar (false);
 			}
@@ -1082,6 +1084,12 @@ void sendSelectionEvent () {
 		year = y[0];
 		month = m[0];
 		day = d[0];
+		/* Highlight the current(today) date */
+		if (year == Calendar.getInstance().get(Calendar.YEAR) && month == Calendar.getInstance().get(Calendar.MONTH)) {
+			OS.gtk_calendar_mark_day(handle, Calendar.getInstance().get(Calendar.DAY_OF_MONTH));
+		} else {
+			OS.gtk_calendar_clear_marks(handle);
+		}
 		sendSelectionEvent (SWT.Selection);
 	}
 }
