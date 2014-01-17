@@ -1868,6 +1868,9 @@ boolean gtk_widget_get_has_window (long /*int*/ widget) {
 
 long /*int*/ gtk_widget_get_window (long /*int*/ widget){
 	if (OS.GTK_VERSION >= OS.VERSION(2, 14, 0)){
+		if (OS.GTK3) {
+			OS.gtk_widget_realize(widget);
+		}
 		return OS.gtk_widget_get_window (widget);
 	} else {
 		return OS.GTK_WIDGET_WINDOW (widget);
