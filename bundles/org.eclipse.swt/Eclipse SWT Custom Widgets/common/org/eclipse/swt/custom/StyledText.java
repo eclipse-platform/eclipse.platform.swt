@@ -9434,13 +9434,9 @@ void setScrollBars(boolean vertical) {
 	ScrollBar horizontalBar = getHorizontalBar();
 	int oldHeight = clientAreaHeight;
 	int oldWidth = clientAreaWidth;
-	if (verticalBar != null) {
-		verticalBar.setVisible(alwaysShowScroll);
-		if (alwaysShowScroll) verticalBar.setValues(0, 0, 0, 1, 1, 1);
-	}
-	if (horizontalBar != null) {
-		horizontalBar.setVisible(alwaysShowScroll);
-		if (alwaysShowScroll) horizontalBar.setValues(0, 0, 0, 1, 1, 1);
+	if (!alwaysShowScroll) {
+		if (verticalBar != null) verticalBar.setVisible(false);
+		if (horizontalBar != null) horizontalBar.setVisible(false);
 	}
 	if (verticalBar != null) {
 		setScrollBar(verticalBar, clientAreaHeight, renderer.getHeight(), topMargin + bottomMargin);
