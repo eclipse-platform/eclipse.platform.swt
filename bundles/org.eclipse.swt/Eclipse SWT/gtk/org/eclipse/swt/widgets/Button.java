@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2013 IBM Corporation and others.
+ * Copyright (c) 2000, 2014 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -900,13 +900,10 @@ public void setImage (Image image) {
 		int imageIndex = imageList.add (image);
 		long /*int*/ pixbuf = imageList.getPixbuf (imageIndex);
 		gtk_image_set_from_pixbuf(imageHandle, pixbuf);
-		if (text.length () == 0) OS.gtk_widget_hide (labelHandle);
-		OS.gtk_widget_show (imageHandle);
 	} else {
 		gtk_image_set_from_pixbuf (imageHandle, 0);
-		OS.gtk_widget_show (labelHandle);
-		OS.gtk_widget_hide (imageHandle);
 	}
+	updateWidgetsVisibility();
 	this.image = image;
 	_setAlignment (style);
 }
@@ -1000,16 +997,33 @@ public void setText (String string) {
 	char [] chars = fixMnemonic (string);
 	byte [] buffer = Converter.wcsToMbcs (null, chars, true);
 	OS.gtk_label_set_text_with_mnemonic (labelHandle, buffer);
-	if (image == null) OS.gtk_widget_hide (imageHandle);
-	OS.gtk_widget_show (labelHandle);
+	updateWidgetsVisibility();
 	_setAlignment (style);
+}
+
+private void updateWidgetsVisibility() {
+	if (text.length() == 0 && image == null) {
+		OS.gtk_widget_hide (boxHandle);
+		OS.gtk_widget_hide (labelHandle);
+		OS.gtk_widget_hide (imageHandle);
+	} else {
+		OS.gtk_widget_show (boxHandle);
+		if (text.length() == 0)
+			OS.gtk_widget_hide (labelHandle);
+		else
+			OS.gtk_widget_show (labelHandle);
+		if (image == null)
+			OS.gtk_widget_hide (imageHandle);
+		else 
+			OS.gtk_widget_show (imageHandle);
+	}
 }
 
 @Override
 void showWidget () {
 	super.showWidget ();
-	if (boxHandle != 0) OS.gtk_widget_show (boxHandle);
-	if (labelHandle != 0) OS.gtk_widget_show (labelHandle);
+	if (boxHandle != 0 && ((text != null && text.length() != 0) || image != null)) OS.gtk_widget_show (boxHandle);
+	if (labelHandle != 0  && text != null && text.length() != 0) OS.gtk_widget_show (labelHandle);
 	if (arrowHandle != 0) OS.gtk_widget_show (arrowHandle);
 }
 
