@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2013 IBM Corporation and others.
+ * Copyright (c) 2000, 2014 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -3756,12 +3756,6 @@ void updateBkImages() {
 							bounds.y = -bounds.y;
 							bounds.height -= 2*bounds.y - 1;
 						} else {
-							Rectangle trim = renderer.computeTrim(CTabFolderRenderer.PART_BORDER, SWT.NONE, 0, 0, 0, 0);
-							int borderRight = trim.width + trim.x;
-							int borderLeft = -trim.x;
-							int borderBottom = trim.height + trim.y;
-							int borderTop = -trim.y;
-							int origY = bounds.y + bounds.height;
 							bounds.height += height - (bounds.y + bounds.height);
 							bounds.y = -1; 
 						}
