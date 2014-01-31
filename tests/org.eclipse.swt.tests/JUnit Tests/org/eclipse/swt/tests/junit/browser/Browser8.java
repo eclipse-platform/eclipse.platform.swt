@@ -10,7 +10,7 @@
  *******************************************************************************/
 package org.eclipse.swt.tests.junit.browser;
 
-import org.eclipse.swt.tests.junit.SwtJunit;
+import org.eclipse.swt.tests.junit.SwtTestUtil;
 import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.layout.*;
 import org.eclipse.swt.browser.*;
@@ -19,7 +19,7 @@ import org.eclipse.swt.*;
 public class Browser8 {
 	public static boolean verbose = false;
 	public static boolean passed = false;
-	public static boolean isMozilla = SwtJunit.isGTK || SwtJunit.isMotif;
+	public static boolean isMozilla = SwtTestUtil.isGTK || SwtTestUtil.isMotif;
 	
 	static String html[] = {"<html><title>Snippet</title><body><p id='myid'>Best Friends</p><p id='myid2'>Cat and Dog</p></body></html>"};
 	static String script[] = {

@@ -771,7 +771,7 @@ public void test_setFontLorg_eclipse_swt_graphics_Font() {
 	treeItem.setFont(font);
 	assertTrue(font.equals(treeItem.getFont()));
 	
-	font = new Font(treeItem.getDisplay(), SwtJunit.testFontName, 10, SWT.NORMAL);
+	font = new Font(treeItem.getDisplay(), SwtTestUtil.testFontName, 10, SWT.NORMAL);
 	treeItem.setFont(font);
 	assertTrue(font.equals(treeItem.getFont()));
 
@@ -789,7 +789,7 @@ public void test_setFontLorg_eclipse_swt_graphics_Font() {
 
 public void test_setFontILorg_eclipse_swt_graphics_Font() {
 	Display display = treeItem.getDisplay();
-	Font font = new Font(display, SwtJunit.testFontName, 10, SWT.NORMAL);
+	Font font = new Font(display, SwtTestUtil.testFontName, 10, SWT.NORMAL);
 	
 	// no columns
 	assertTrue(tree.getFont().equals( treeItem.getFont(0)));
@@ -814,7 +814,7 @@ public void test_setFontILorg_eclipse_swt_graphics_Font() {
 	treeItem.setFont(0, null);
 	assertTrue(tree.getFont().equals(treeItem.getFont(0)));
 	
-	Font font2 = new Font(display, SwtJunit.testFontName, 20, SWT.NORMAL);
+	Font font2 = new Font(display, SwtTestUtil.testFontName, 20, SWT.NORMAL);
 	
 	treeItem.setFont(0, font);
 	treeItem.setFont(font2);

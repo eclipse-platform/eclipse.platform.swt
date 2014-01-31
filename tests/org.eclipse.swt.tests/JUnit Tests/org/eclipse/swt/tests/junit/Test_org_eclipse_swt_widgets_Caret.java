@@ -81,7 +81,7 @@ public void test_isVisible() {
 	shell.setVisible(true);
 	assertTrue(caret.getVisible() == true);
 	canvas.setVisible(false);
-	if (fCheckVisibility) {
+	if (SwtTestUtil.fCheckVisibility) {
 		assertTrue(!caret.getVisible());
 	}
 
@@ -112,7 +112,7 @@ public void test_setFontLorg_eclipse_swt_graphics_Font() {
 	assertEquals(font, caret.getFont());
 	caret.setFont(null);
 	
-	font = new Font(caret.getDisplay(), SwtJunit.testFontName, 10, SWT.NORMAL);
+	font = new Font(caret.getDisplay(), SwtTestUtil.testFontName, 10, SWT.NORMAL);
 	caret.setFont(font);
 	assertEquals(font, caret.getFont());
 

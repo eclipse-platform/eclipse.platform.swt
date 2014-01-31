@@ -471,7 +471,7 @@ public void test_setFontLorg_eclipse_swt_graphics_Font() {
 	tableItem.setFont(font);
 	assertTrue(font.equals(tableItem.getFont()));
 	
-	font = new Font(display, SwtJunit.testFontName, 10, SWT.NORMAL);
+	font = new Font(display, SwtTestUtil.testFontName, 10, SWT.NORMAL);
 	tableItem.setFont(font);
 	assertTrue(font.equals( tableItem.getFont()));
 
@@ -489,7 +489,7 @@ public void test_setFontLorg_eclipse_swt_graphics_Font() {
 
 public void test_setFontILorg_eclipse_swt_graphics_Font() {
 	Display display = tableItem.getDisplay();
-	Font font = new Font(display, SwtJunit.testFontName, 10, SWT.NORMAL);
+	Font font = new Font(display, SwtTestUtil.testFontName, 10, SWT.NORMAL);
 	
 	// no columns
 	assertTrue(table.getFont().equals(tableItem.getFont(0)));
@@ -514,7 +514,7 @@ public void test_setFontILorg_eclipse_swt_graphics_Font() {
 	tableItem.setFont(0, null);
 	assertTrue(table.getFont().equals(tableItem.getFont(0)));
 	
-	Font font2 = new Font(display, SwtJunit.testFontName, 20, SWT.NORMAL);
+	Font font2 = new Font(display, SwtTestUtil.testFontName, 20, SWT.NORMAL);
 	
 	tableItem.setFont(0, font);
 	tableItem.setFont(font2);
@@ -688,7 +688,7 @@ public void test_setImageILorg_eclipse_swt_graphics_Image() {
 
 @SuppressWarnings("deprecation")
 public void test_setImageIndentI() {
-	if (SwtJunit.isCarbon || SwtJunit.isCocoa || SwtJunit.isGTK) {
+	if (SwtTestUtil.isCarbon || SwtTestUtil.isCocoa || SwtTestUtil.isGTK) {
 		//setImageIndent not implemented on Carbon
 		tableItem.setImageIndent(1);
 		return; 

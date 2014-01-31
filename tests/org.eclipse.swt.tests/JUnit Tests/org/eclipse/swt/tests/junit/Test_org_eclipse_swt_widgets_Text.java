@@ -436,13 +436,13 @@ public void test_getCharCount() {
 	assertEquals(0, text.getCharCount());
 	text.setText("01234567890");
 	assertEquals(11, text.getCharCount());
-	if (fCheckBogusTestCases) {
+	if (SwtTestUtil.fCheckBogusTestCases) {
 		text.setText("012345"+ delimiterString + "67890");
 		assertEquals(11  + delimiterString.length(), text.getCharCount()); //might be bogus on UNIX
 	}
 	text.setText("");
 	assertEquals(0, text.getCharCount());
-	if (!SwtJunit.isAIX) {	
+	if (!SwtTestUtil.isAIX) {	
 		text.setText("01234\t567890");
 		assertEquals(12, text.getCharCount());
 	}
@@ -887,7 +887,7 @@ public void test_isVisible() {
 	control.setVisible(false);
 	assertTrue(!control.isVisible());
 
-	if (!SwtJunit.isAIX) {
+	if (!SwtTestUtil.isAIX) {
 		control.setVisible(true);
 		shell.setVisible(true);
 		assertTrue("Window should be visible", control.isVisible());
@@ -940,7 +940,7 @@ public void test_paste() {
 	text.setSelection(0);
 	text.paste();
 
-	if (fCheckSWTPolicy)
+	if (SwtTestUtil.fCheckSWTPolicy)
 		assertEquals("0" + delimiterString + "1" + "0" + delimiterString + "1", text.getText());
 }
 
@@ -970,7 +970,7 @@ public void test_selectAll() {
 	assertEquals("", text.getText());
 
 	// tests a SINGLE line text editor
-	if (fCheckBogusTestCases) {
+	if (SwtTestUtil.fCheckBogusTestCases) {
 		text.setText("01234" + delimiterString+"567890");
 		assertEquals("01234" + delimiterString+"567890", text.getText());
 		text.selectAll();
@@ -1109,7 +1109,7 @@ public void test_setSelectionII() {
 	assertEquals(0, text.getSelectionCount());
 	text.setSelection(2, 4);
 	assertEquals(2, text.getSelectionCount());
-	if (fCheckBogusTestCases) {
+	if (SwtTestUtil.fCheckBogusTestCases) {
 		text.setSelection(2, 100);
 		assertEquals(9 +delimiterString.length(), text.getSelectionCount());
 	}
@@ -1178,7 +1178,7 @@ public void test_setSelectionLorg_eclipse_swt_graphics_Point() {
 }
 
 public void test_setTabsI() {
-	if (SwtJunit.isMotif) {
+	if (SwtTestUtil.isMotif) {
 		for (int i = 0; i < 200; i++) {
 			text.setTabs(i);
 			assertEquals(8, text.getTabs());
@@ -1227,7 +1227,7 @@ public void test_setTextLjava_lang_String() {
 	assertEquals("01234567890", text.getText());
 	text.setText("");
 	assertEquals("", text.getText());
-	if (fCheckBogusTestCases) {
+	if (SwtTestUtil.fCheckBogusTestCases) {
 		text.setText("012345" + delimiterString+ "67890");
 		assertEquals("012345" + delimiterString +"67890", text.getText());
 	}

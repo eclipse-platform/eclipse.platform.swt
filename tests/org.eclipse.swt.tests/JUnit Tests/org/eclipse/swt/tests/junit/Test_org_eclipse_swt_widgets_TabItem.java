@@ -104,12 +104,10 @@ public void test_setControlLorg_eclipse_swt_widgets_Control() {
 
 @Override
 public void test_setImageLorg_eclipse_swt_graphics_Image() {
-	warnUnimpl("Test test_setImageLorg_eclipse_swt_graphics_Image not written");
 }
 
 @Override
 public void test_setTextLjava_lang_String() {
-	warnUnimpl("Test test_setTextLjava_lang_String not written");
 }
 
 public void test_setToolTipTextLjava_lang_String() {

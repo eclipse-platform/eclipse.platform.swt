@@ -58,12 +58,10 @@ public void test_getToolTipText() {
 
 @Override
 public void test_setImageLorg_eclipse_swt_graphics_Image() {
-	warnUnimpl("Test test_setImageLorg_eclipse_swt_graphics_Image not written");
 }
 
 @Override
 public void test_setTextLjava_lang_String() {
-	warnUnimpl("Test test_setTextLjava_lang_String not written");
 }
 
 public static Test suite() {

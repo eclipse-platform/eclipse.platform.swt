@@ -67,7 +67,7 @@ public void test_ConstructorLorg_eclipse_swt_widgets_Shell(){
  *         message box (e.g. SWT.OK, SWT.CANCEL, etc...)
  */
 public void test_open(){
-	if (SwtTestCase.fTestDialogOpen)
+	if (SwtTestUtil.fTestDialogOpen)
 		messageBox.open();
 }
 

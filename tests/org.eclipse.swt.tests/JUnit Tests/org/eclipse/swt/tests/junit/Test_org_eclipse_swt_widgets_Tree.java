@@ -67,7 +67,6 @@ public void test_ConstructorLorg_eclipse_swt_widgets_CompositeI() {
 
 @Override
 public void test_computeSizeIIZ() {
-	warnUnimpl("Test test_computeSizeIIZ not written");
 }
 
 public void test_deselectAll() {
@@ -383,7 +382,7 @@ public void test_setItemCountI() {
 }
 
 public void test_setLinesVisibleZ() {
-	if (SwtJunit.isCarbon) {
+	if (SwtTestUtil.isCarbon) {
 		// carbon does not support lines
 		tree.getLinesVisible();
 		return;
@@ -397,7 +396,6 @@ public void test_setLinesVisibleZ() {
 
 @Override
 public void test_setRedrawZ() {
-	warnUnimpl("Test test_setRedrawZ not written");
 }
 
 public void test_setSelection$Lorg_eclipse_swt_widgets_TreeItem() {
@@ -771,7 +769,7 @@ public void test_consistency_KeyExpand() {
     Vector<String> events = new Vector<String>();
     createTree(events);
     int code=SWT.ARROW_RIGHT;
-    if(SwtJunit.isGTK)
+    if(SwtTestUtil.isGTK)
         code = SWT.KEYPAD_ADD;
     consistencyEvent(0, code, 0, 0, ConsistencyUtility.KEY_PRESS, events);
 }

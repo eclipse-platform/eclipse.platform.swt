@@ -69,7 +69,7 @@ private void testListener(final String message, final int[] segments, boolean ex
 	else {
 		assertTrue(message + " unexpected exception thrown", exceptionThrown == false);
 	}
-	if (SwtTestCase.isBidi()) {
+	if (SwtTestUtil.isBidi()) {
 		assertTrue(message + " listener not called", listenerCalled);	
 	}
 	else {
@@ -105,7 +105,7 @@ private void testStyleRangeSegmenting(final int[] segments, int[] boldRanges) {
 		text.removeBidiSegmentListener(listener);
 	}
 	assertTrue(" unexpected exception thrown", exceptionThrown == false);
-	if (SwtTestCase.isBidi()) {
+	if (SwtTestUtil.isBidi()) {
 		assertTrue(" listener not called", listenerCalled);	
 	}
 	else {
@@ -123,7 +123,7 @@ public void test_lineGetSegmentsLorg_eclipse_swt_custom_BidiSegmentEvent() {
 	testListener(":c:", new int[] {0, lineLength / 2}, false);
 			
 	// should all cause an exception on a bidi platform
-	if (SwtTestCase.isBidi()) {
+	if (SwtTestUtil.isBidi()) {
 		testListener(":d:", new int[] {lineLength / 2}, true);
 		testListener(":e:", new int[] {0, 1, 1, lineLength / 2}, true);
 		testListener(":f:", new int[] {0, 1, 2, lineLength + 1}, true);

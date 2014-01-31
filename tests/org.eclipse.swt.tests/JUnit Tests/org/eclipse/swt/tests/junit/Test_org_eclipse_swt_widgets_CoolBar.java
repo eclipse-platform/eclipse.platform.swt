@@ -47,12 +47,10 @@ protected void setUp() {
 
 @Override
 public void test_ConstructorLorg_eclipse_swt_widgets_CompositeI() {
-	warnUnimpl("Test test_ConstructorLorg_eclipse_swt_widgets_CompositeI not written");
 }
 
 @Override
 public void test_computeSizeIIZ() {
-	warnUnimpl( "Test test_computeSizeIIZ not written");
 }
 
 public static Test suite() {

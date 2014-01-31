@@ -300,7 +300,7 @@ public void test_isFocusControl() {
 }
 
 public void test_isReparentable() {
-	assertEquals ("isReparentable", control.isReparentable(), isReparentablePlatform());
+	assertEquals ("isReparentable", control.isReparentable(), SwtTestUtil.isReparentablePlatform());
 }
 
 public void test_isVisible() {
@@ -310,7 +310,7 @@ public void test_isVisible() {
 	control.setVisible(false);
 	assertTrue(!control.isVisible());
 
-	if (!SwtJunit.isAIX) {
+	if (!SwtTestUtil.isAIX) {
 		control.setVisible(true);
 		shell.setVisible(true);
 		assertTrue("Window should be visible", control.isVisible());
@@ -433,7 +433,7 @@ public void test_setFontLorg_eclipse_swt_graphics_Font() {
 	control.setFont(font);
 	assertEquals(font, control.getFont());
 	
-	font = new Font(control.getDisplay(), SwtJunit.testFontName, 10, SWT.NORMAL);
+	font = new Font(control.getDisplay(), SwtTestUtil.testFontName, 10, SWT.NORMAL);
 	control.setFont(font);
 	assertEquals(font, control.getFont());
 
@@ -811,7 +811,7 @@ protected void setWidget(Widget w) {
 protected void consistencyEvent(final int paramA, final int paramB, 
         						final int paramC, final int paramD,
         						final int method, Vector<String> events, boolean focus) {
-    if(fTestConsistency) {
+    if(SwtTestUtil.fTestConsistency) {
         final Display display = shell.getDisplay();
         if(events == null) 
             events = new Vector<String>();
@@ -867,7 +867,7 @@ protected void consistencyEvent(final int paramA, final int paramB,
                                     pt[0], pt[1]));
                         break;
                     case ConsistencyUtility.SHELL_ICONIFY:
-                        if(SwtJunit.isCarbon)
+                        if(SwtTestUtil.isCarbon)
                             Assert.assertTrue(test,
                                 ConsistencyUtility.postShellIconify(display, pt[0], paramA));
                         else

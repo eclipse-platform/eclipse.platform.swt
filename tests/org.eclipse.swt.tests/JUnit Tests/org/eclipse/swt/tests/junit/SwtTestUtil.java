@@ -11,13 +11,13 @@
 package org.eclipse.swt.tests.junit;
 
 
-import junit.framework.TestCase;
+import static org.junit.Assert.assertEquals;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.SWTError;
 import org.eclipse.swt.SWTException;
 
-public class SwtTestCase extends TestCase {
+public class SwtTestUtil {
 	/**
 	 * The following flags are used to mark test cases that
 	 * are not handled correctly by SWT at this time, or test
@@ -59,10 +59,28 @@ public class SwtTestCase extends TestCase {
 	// specify reparentable platforms
 	public static String[] reparentablePlatforms = new String[] {"win32", "gtk", "carbon", "cocoa"};
 	
-public SwtTestCase(String name) {
-	super(name);
-}
-
+	public static final String testFontName;
+	public final static boolean isWindows = SWT.getPlatform().startsWith("win32");
+	public final static boolean isCarbon = SWT.getPlatform().startsWith("carbon");
+	public final static boolean isCocoa = SWT.getPlatform().startsWith("cocoa");
+	public final static boolean isMotif = SWT.getPlatform().equals("motif");
+	public final static boolean isGTK = SWT.getPlatform().equals("gtk");
+	public final static boolean isPhoton = SWT.getPlatform().equals("photon");
+	public final static boolean isLinux = System.getProperty("os.name").equals("Linux");
+	public final static boolean isAIX = System.getProperty("os.name").equals("AIX");
+	public final static boolean isSolaris = System.getProperty("os.name").equals("Solaris") || System.getProperty("os.name").equals("SunOS");
+	public final static boolean isHPUX = System.getProperty("os.name").equals("HP-UX");
+	public final static boolean isWPF = SWT.getPlatform().startsWith("wpf");
+	
+	static {
+		if (isMotif) {
+			testFontName = "misc-fixed";
+		}
+		else {
+			testFontName = "Helvetica";
+		}
+	}
+	
 public static void assertSWTProblem(String message, int expectedCode, Throwable actualThrowable) {
 	if (actualThrowable instanceof SWTError) {
 		SWTError error = (SWTError) actualThrowable;
@@ -79,7 +97,7 @@ public static void assertSWTProblem(String message, int expectedCode, Throwable 
 	}
 }
 
-protected boolean isReparentablePlatform() {
+protected static boolean isReparentablePlatform() {
 	String platform = SWT.getPlatform();
 	for (int i=0; i<reparentablePlatforms.length; i++) {
 		if (reparentablePlatforms[i].equals(platform)) return true;
@@ -89,11 +107,5 @@ protected boolean isReparentablePlatform() {
 
 public static boolean isBidi() {
 	return true;
-}
-
-protected void warnUnimpl(String message) {
-	if (verbose) {
-		System.out.println(this.getClass() + ": " + message);
-	}
 }
 }

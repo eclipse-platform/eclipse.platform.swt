@@ -31,7 +31,7 @@ public void test_Constructor() {
 
 public void test_ConstructorLjava_lang_String() {
 	// Test new FontData(String string)
-	FontData fd = new FontData(SwtJunit.testFontName, 10, SWT.NORMAL);
+	FontData fd = new FontData(SwtTestUtil.testFontName, 10, SWT.NORMAL);
 	FontData reconstructedFontData = new FontData(fd.toString());
 	assertEquals(fd, reconstructedFontData);
 }
@@ -45,22 +45,22 @@ public void test_ConstructorLjava_lang_StringII() {
 	new FontData("bad-font", 10, SWT.NORMAL);
 
 	// valid font data with 0 height (strange, but apparently valid)
-	new FontData(SwtJunit.testFontName, 0, SWT.NORMAL);
+	new FontData(SwtTestUtil.testFontName, 0, SWT.NORMAL);
 
 	// valid font data with 1000 height (pretty big, but apparently valid)
 	
 
 	// valid normal 10-point font data
-	new FontData(SwtJunit.testFontName, 10, SWT.NORMAL);
+	new FontData(SwtTestUtil.testFontName, 10, SWT.NORMAL);
 
 	// valid bold 10-point font data
-	new FontData(SwtJunit.testFontName, 10, SWT.BOLD);
+	new FontData(SwtTestUtil.testFontName, 10, SWT.BOLD);
 
 	// valid italic 10-point font data
-	new FontData(SwtJunit.testFontName, 10, SWT.ITALIC);
+	new FontData(SwtTestUtil.testFontName, 10, SWT.ITALIC);
 
 	// valid bold italic 10-point font data
-	new FontData(SwtJunit.testFontName, 10, SWT.BOLD | SWT.ITALIC);
+	new FontData(SwtTestUtil.testFontName, 10, SWT.BOLD | SWT.ITALIC);
 
 	// illegal argument, name == null
 	try {
@@ -71,53 +71,53 @@ public void test_ConstructorLjava_lang_StringII() {
 
 	// illegal argument, height < 0
 	try {
-		new FontData(SwtJunit.testFontName, -10, SWT.NORMAL);
+		new FontData(SwtTestUtil.testFontName, -10, SWT.NORMAL);
 		fail("No exception thrown for height < 0");
 	} catch (IllegalArgumentException e) {
 	}
 }
 
 public void test_equalsLjava_lang_Object() {
-	FontData fd1 = new FontData(SwtJunit.testFontName, 10, SWT.NORMAL);
-	FontData fd2 = new FontData(SwtJunit.testFontName, 10, SWT.NORMAL);
+	FontData fd1 = new FontData(SwtTestUtil.testFontName, 10, SWT.NORMAL);
+	FontData fd2 = new FontData(SwtTestUtil.testFontName, 10, SWT.NORMAL);
 	assertEquals(fd1,fd1);
 	assertEquals(fd1,fd2);
 }
 
 public void test_hashCode() {
-	FontData fd1 = new FontData(SwtJunit.testFontName, 10, SWT.NORMAL);
-	FontData fd2 = new FontData(SwtJunit.testFontName, 10, SWT.NORMAL);
+	FontData fd1 = new FontData(SwtTestUtil.testFontName, 10, SWT.NORMAL);
+	FontData fd2 = new FontData(SwtTestUtil.testFontName, 10, SWT.NORMAL);
 	assertEquals(fd1,fd2);
 	assertEquals(fd1.hashCode(),fd2.hashCode());
-	FontData fd3 = new FontData(SwtJunit.testFontName, 10, SWT.BOLD);
+	FontData fd3 = new FontData(SwtTestUtil.testFontName, 10, SWT.BOLD);
 	assertFalse(fd1.hashCode() == fd3.hashCode());
 }
 
 public void test_setHeightI() {
 	// Test Font.setHeight(int  height)
 	// valid normal font data for various heights
-	FontData fontData = new FontData(SwtJunit.testFontName, 10, SWT.NORMAL);	
+	FontData fontData = new FontData(SwtTestUtil.testFontName, 10, SWT.NORMAL);	
 	for (int height = 0; height < 1000; height++) {
 		fontData.setHeight(height);
 		assertEquals("Wrong height", fontData.getHeight(), height);
 	}
 
 	// valid bold font data for various heights
-	fontData = new FontData(SwtJunit.testFontName, 10, SWT.BOLD);	
+	fontData = new FontData(SwtTestUtil.testFontName, 10, SWT.BOLD);	
 	for (int height = 0; height < 1000; height++) {
 		fontData.setHeight(height);
 		assertEquals("Wrong height", fontData.getHeight(), height);
 	}
 
 	// valid italic font data for various heights
-	fontData = new FontData(SwtJunit.testFontName, 10, SWT.ITALIC);	
+	fontData = new FontData(SwtTestUtil.testFontName, 10, SWT.ITALIC);	
 	for (int height = 0; height < 1000; height++) {
 		fontData.setHeight(height);
 		assertEquals("Wrong height", fontData.getHeight(), height);
 	}
 
 	// valid bold italic font data for various heights
-	fontData = new FontData(SwtJunit.testFontName, 10, SWT.BOLD | SWT.ITALIC);	
+	fontData = new FontData(SwtTestUtil.testFontName, 10, SWT.BOLD | SWT.ITALIC);	
 	for (int height = 0; height < 1000; height++) {
 		fontData.setHeight(height);
 		assertEquals("Wrong height", fontData.getHeight(), height);
@@ -125,7 +125,7 @@ public void test_setHeightI() {
 }
 
 public void test_setLocaleLjava_lang_String() {
-	FontData fd = new FontData(SwtJunit.testFontName, 10, SWT.NORMAL);
+	FontData fd = new FontData(SwtTestUtil.testFontName, 10, SWT.NORMAL);
 	Locale locale = Locale.ENGLISH;
 	fd.setLocale(locale.toString());
 	assertEquals(Locale.ENGLISH.toString(),fd.getLocale());
@@ -134,8 +134,8 @@ public void test_setLocaleLjava_lang_String() {
 public void test_setNameLjava_lang_String() {
 	// Test Font.setName(String name)
 	// valid name
-	FontData fontData = new FontData(SwtJunit.testFontName, 10, SWT.NORMAL);
-	assertEquals("Wrong name", fontData.getName(), SwtJunit.testFontName);
+	FontData fontData = new FontData(SwtTestUtil.testFontName, 10, SWT.NORMAL);
+	assertEquals("Wrong name", fontData.getName(), SwtTestUtil.testFontName);
 
 	// valid name (unknown name, but valid)
 	fontData.setName("bad-font");
@@ -143,14 +143,14 @@ public void test_setNameLjava_lang_String() {
 
 	// valid name (empty string, but valid)
 	// only on windows since motif supports separate font foundries
-	if (SwtJunit.isWindows) {
+	if (SwtTestUtil.isWindows) {
 		fontData.setName("");
 		assertEquals("Wrong name", fontData.getName(), "");
 	}
 
 	// valid name
-	fontData.setName(SwtJunit.testFontName);	
-	assertEquals("Wrong name", fontData.getName(), SwtJunit.testFontName);
+	fontData.setName(SwtTestUtil.testFontName);	
+	assertEquals("Wrong name", fontData.getName(), SwtTestUtil.testFontName);
 	// illegal argument, name == null
 	try {
 		fontData.setName(null);
@@ -163,7 +163,7 @@ public void test_setStyleI() {
 	// Test Font.setStyle(int  style)
 	for (int height = 0; height < 1000; height++) {
 		// valid normal font data
-		FontData fontData = new FontData(SwtJunit.testFontName, height, SWT.NORMAL);	
+		FontData fontData = new FontData(SwtTestUtil.testFontName, height, SWT.NORMAL);	
 		assertEquals("Wrong style", fontData.getStyle(), SWT.NORMAL);
 
 		// valid bold font data

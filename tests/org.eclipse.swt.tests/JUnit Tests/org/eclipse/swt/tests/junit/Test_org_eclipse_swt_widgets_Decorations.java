@@ -100,7 +100,7 @@ public void test_setDefaultButtonLorg_eclipse_swt_widgets_Button() {
 	Button button = new Button(decorations, SWT.NULL);
 	decorations.setDefaultButton(button);
 	assertTrue("button not default", decorations.getDefaultButton() == button);
-	if (fCheckBogusTestCases) {
+	if (SwtTestUtil.fCheckBogusTestCases) {
 		decorations.setDefaultButton(null);
 		assertNull(decorations.getDefaultButton());
 	}
@@ -222,7 +222,7 @@ protected void runTest() throws Throwable {
 
 /* custom */
 Decorations decorations;
-Image[] images = new Image [SwtTestCase.imageFormats.length*SwtTestCase.imageFilenames.length];
+Image[] images = new Image [SwtTestUtil.imageFormats.length*SwtTestUtil.imageFilenames.length];
 
 @Override
 protected void setWidget(Widget w) {
@@ -234,13 +234,13 @@ protected void setWidget(Widget w) {
 
 // this method must be private or protected so the auto-gen tool keeps it
 private void loadImages() {
-	int numFormats = SwtTestCase.imageFormats.length;
-	int numFiles = SwtTestCase.imageFilenames.length;
+	int numFormats = SwtTestUtil.imageFormats.length;
+	int numFiles = SwtTestUtil.imageFilenames.length;
 	for (int i=0; i<numFormats; i++) {
-		String format = SwtTestCase.imageFormats[i];
+		String format = SwtTestUtil.imageFormats[i];
 		int index = i*numFiles;
 		for (int j=0; j<numFiles; j++){
-			String fileName = SwtTestCase.imageFilenames[j];
+			String fileName = SwtTestUtil.imageFilenames[j];
 			InputStream  resource = this.getClass().getResourceAsStream(fileName + "." + format);
 			images [index+j] = new Image (shell.getDisplay(), resource);
 			try {

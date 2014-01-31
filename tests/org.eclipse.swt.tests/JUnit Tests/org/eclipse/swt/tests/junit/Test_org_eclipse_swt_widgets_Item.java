@@ -94,16 +94,16 @@ protected void runTest() throws Throwable {
 
 /* custom */
 Item item;
-Image[] images = new Image [SwtTestCase.imageFormats.length*SwtTestCase.imageFilenames.length];
+Image[] images = new Image [SwtTestUtil.imageFormats.length*SwtTestUtil.imageFilenames.length];
 
 private void loadImages() {
-	int numFormats = SwtTestCase.imageFormats.length;
-	int numFiles = SwtTestCase.imageFilenames.length;
+	int numFormats = SwtTestUtil.imageFormats.length;
+	int numFiles = SwtTestUtil.imageFilenames.length;
 	for (int i=0; i<numFormats; i++) {
-		String format = SwtTestCase.imageFormats[i];
+		String format = SwtTestUtil.imageFormats[i];
 		int index = i*numFiles;
 		for (int j=0; j<numFiles; j++){
-			String fileName = SwtTestCase.imageFilenames[j];
+			String fileName = SwtTestUtil.imageFilenames[j];
 			InputStream  resource = this.getClass().getResourceAsStream(fileName + "." + format);
 			images [index+j] = new Image (shell.getDisplay(), resource);
 			try {

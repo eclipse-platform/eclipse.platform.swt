@@ -69,7 +69,7 @@ public class Test_org_eclipse_swt_custom_StyledTextContent extends TestCase {
 	
 @Override
 protected void setUp() {
-	if (SwtTestCase.isBidi()) XINSET = 2;
+	if (SwtTestUtil.isBidi()) XINSET = 2;
 	else XINSET = 0;
 	shell = new Shell();
 	styledText = new StyledText(shell, SWT.NULL);

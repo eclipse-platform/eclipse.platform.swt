@@ -54,7 +54,6 @@ public void test_ConstructorLorg_eclipse_swt_widgets_CompositeI() {
 
 @Override
 public void test_computeSizeIIZ() {
-	warnUnimpl("Test test_computeSizeIIZ not written");
 }
 
 @Override

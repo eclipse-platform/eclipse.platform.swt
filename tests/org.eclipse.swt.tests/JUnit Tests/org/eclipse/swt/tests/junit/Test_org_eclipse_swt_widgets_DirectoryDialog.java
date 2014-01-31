@@ -49,7 +49,7 @@ public void test_ConstructorLorg_eclipse_swt_widgets_Shell() {
 }
 
 public void test_open() {
-	if (SwtTestCase.fTestDialogOpen)
+	if (SwtTestUtil.fTestDialogOpen)
 		dirDialog.open();
 }
 

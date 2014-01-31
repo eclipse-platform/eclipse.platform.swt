@@ -147,7 +147,6 @@ public void test_setAlignmentI() {
 
 @Override
 public void test_setImageLorg_eclipse_swt_graphics_Image() {
-	warnUnimpl("Test test_setImageLorg_eclipse_swt_graphics_Image not written");
 }
 
 public void test_setMoveableZ() {

@@ -11,7 +11,7 @@
 package org.eclipse.swt.tests.junit;
 
 
-import static org.eclipse.swt.tests.junit.SwtTestCase.assertSWTProblem;
+import static org.eclipse.swt.tests.junit.SwtTestUtil.assertSWTProblem;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -274,7 +274,7 @@ public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLjava_io_InputStream
 			assertSWTProblem("Incorrect exception thrown for InputStream == null", SWT.ERROR_NULL_ARGUMENT, e);
 		}
 		
-		stream = SwtTestCase.class.getResourceAsStream("empty.txt");
+		stream = SwtTestUtil.class.getResourceAsStream("empty.txt");
 		try {
 			image = new Image(display, stream);
 			image.dispose();
@@ -286,14 +286,14 @@ public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLjava_io_InputStream
 			assertSWTProblem("Incorrect exception thrown for invalid InputStream", SWT.ERROR_UNSUPPORTED_FORMAT, e);
 		}
 
-		int numFormats = SwtTestCase.imageFormats.length;
-		String fileName = SwtTestCase.invalidImageFilenames[0];
+		int numFormats = SwtTestUtil.imageFormats.length;
+		String fileName = SwtTestUtil.invalidImageFilenames[0];
 		Display[] displays = {display, null};
 		for (int j = 0; j < displays.length; j++) {
 //			Display tempDisplay = displays[j];
 			for (int i=0; i<numFormats; i++) {
-				String format = SwtTestCase.imageFormats[i];
-				stream = SwtTestCase.class.getResourceAsStream(fileName + "." + format);
+				String format = SwtTestUtil.imageFormats[i];
+				stream = SwtTestUtil.class.getResourceAsStream(fileName + "." + format);
 
 				try {
 					image = new Image(display, stream);
@@ -310,7 +310,7 @@ public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLjava_io_InputStream
 			}
 		}
 
-		stream = SwtTestCase.class.getResourceAsStream(SwtTestCase.invalidImageFilenames[1]);
+		stream = SwtTestUtil.class.getResourceAsStream(SwtTestUtil.invalidImageFilenames[1]);
 		try {
 			image = new Image(display, stream);
 			image.dispose();
@@ -325,12 +325,12 @@ public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLjava_io_InputStream
 		// create valid images
 		for (int j = 0; j < displays.length; j++) {
 			Display tempDisplay = displays[j];
-			int numFileNames = SwtTestCase.imageFilenames.length;
+			int numFileNames = SwtTestUtil.imageFilenames.length;
 			for (int k=0; k<numFileNames; k++) {
-				fileName = SwtTestCase.imageFilenames[k];		
+				fileName = SwtTestUtil.imageFilenames[k];		
 				for (int i=0; i<numFormats; i++) {
-					String format = SwtTestCase.imageFormats[i];
-					stream = SwtTestCase.class.getResourceAsStream(fileName + "." + format);
+					String format = SwtTestUtil.imageFormats[i];
+					stream = SwtTestUtil.class.getResourceAsStream(fileName + "." + format);
 					image = new Image(tempDisplay, stream);
 					image.dispose();
 					try {
@@ -375,13 +375,13 @@ public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLjava_lang_String() 
 			assertSWTProblem("Incorrect exception thrown for invalid file name", SWT.ERROR_UNSUPPORTED_FORMAT, e);
 		}
 	
-		int numFormats = SwtTestCase.imageFormats.length;
-		fileName = SwtTestCase.invalidImageFilenames[0];
+		int numFormats = SwtTestUtil.imageFormats.length;
+		fileName = SwtTestUtil.invalidImageFilenames[0];
 		Display[] displays = {display, null};
 		for (int j = 0; j < displays.length; j++) {
 //			Display tempDisplay = displays[j];
 			for (int i=0; i<numFormats; i++) {
-				String format = SwtTestCase.imageFormats[i];
+				String format = SwtTestUtil.imageFormats[i];
 	
 				try {
 					String pathName = getPath(fileName + "." + format);
@@ -397,7 +397,7 @@ public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLjava_lang_String() 
 		}
 	
 		try {
-			String pathName = getPath(SwtTestCase.invalidImageFilenames[1]);
+			String pathName = getPath(SwtTestUtil.invalidImageFilenames[1]);
 			Image image = new Image(display, pathName);
 			image.dispose();
 			fail("No exception thrown for invalid file name");
@@ -408,11 +408,11 @@ public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLjava_lang_String() 
 		// create valid images
 		for (int j = 0; j < displays.length; j++) {
 //			Display tempDisplay = displays[j];
-			int numFileNames = SwtTestCase.imageFilenames.length;
+			int numFileNames = SwtTestUtil.imageFilenames.length;
 			for (int k=0; k<numFileNames; k++) {
-				fileName = SwtTestCase.imageFilenames[k];
+				fileName = SwtTestUtil.imageFilenames[k];
 				for (int i=0; i<numFormats; i++) {
-					String format = SwtTestCase.imageFormats[i];
+					String format = SwtTestUtil.imageFormats[i];
 					String pathName = getPath(fileName + "." + format);
 					Image image = new Image(display, pathName);
 					image.dispose();
@@ -591,11 +591,11 @@ Display display;
 /** Test implementation **/
 
 void getImageData1() {
-	int numFormats = SwtTestCase.imageFormats.length;
-	String fileName = SwtTestCase.imageFilenames[0];
+	int numFormats = SwtTestUtil.imageFormats.length;
+	String fileName = SwtTestUtil.imageFilenames[0];
 	for (int i=0; i<numFormats; i++) {
-		String format = SwtTestCase.imageFormats[i];
-		InputStream stream = SwtTestCase.class.getResourceAsStream(fileName + "." + format);
+		String format = SwtTestUtil.imageFormats[i];
+		InputStream stream = SwtTestUtil.class.getResourceAsStream(fileName + "." + format);
 		ImageData data1 = new ImageData(stream);
 		Image image = new Image(display, data1);
 		ImageData data2 = image.getImageData();
@@ -656,7 +656,7 @@ String getPath(String fileName) {
 	}
 	
 	if (File.separatorChar != '/') urlPath = urlPath.replace('/', File.separatorChar);	
-	if (SwtJunit.isWindows && urlPath.indexOf(File.separatorChar) == 0) urlPath = urlPath.substring(1);
+	if (SwtTestUtil.isWindows && urlPath.indexOf(File.separatorChar) == 0) urlPath = urlPath.substring(1);
 	urlPath = urlPath.replaceAll("%20", " ");	
 	
 	return urlPath;

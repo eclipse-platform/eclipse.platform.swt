@@ -23,7 +23,7 @@ import org.eclipse.swt.graphics.GC;
  *
  * @see org.eclipse.swt.widgets.Widget
  */
-public class Test_org_eclipse_swt_widgets_Widget extends SwtTestCase {
+public class Test_org_eclipse_swt_widgets_Widget extends TestCase {
 	// Use this variable to help validate callbacks
 	boolean listenerCalled;
 

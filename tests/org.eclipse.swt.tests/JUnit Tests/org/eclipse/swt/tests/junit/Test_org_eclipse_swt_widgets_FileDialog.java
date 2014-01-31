@@ -83,7 +83,7 @@ public void test_getFileNames() {
 }
 
 public void test_open() {
-	if (SwtTestCase.fTestDialogOpen)
+	if (SwtTestUtil.fTestDialogOpen)
 		fileDialog.open();
 }
 

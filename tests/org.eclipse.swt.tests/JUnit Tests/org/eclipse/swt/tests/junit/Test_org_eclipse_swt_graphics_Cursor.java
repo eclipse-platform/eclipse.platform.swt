@@ -127,12 +127,12 @@ public void test_ConstructorLorg_eclipse_swt_graphics_DeviceI() {
 
 public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_graphics_ImageDataLorg_eclipse_swt_graphics_ImageDataII() {
 	// Test new Cursor(Device device, ImageData source, ImageData mask, int hotspotX, int hotspotY)
-	int numFormats = SwtTestCase.imageFormats.length;
-	String fileName = SwtTestCase.imageFilenames[0];
+	int numFormats = SwtTestUtil.imageFormats.length;
+	String fileName = SwtTestUtil.imageFilenames[0];
 	for (int i=0; i<numFormats; i++) {
-		String format = SwtTestCase.imageFormats[i];
+		String format = SwtTestUtil.imageFormats[i];
 		ImageLoader loader = new ImageLoader();
-		InputStream stream = SwtTestCase.class.getResourceAsStream(fileName + "." + format);
+		InputStream stream = SwtTestUtil.class.getResourceAsStream(fileName + "." + format);
 		ImageData source = loader.load(stream)[0];
 		ImageData mask = source.getTransparencyMask();
 		if (mask != null && (source.depth == 1)) {

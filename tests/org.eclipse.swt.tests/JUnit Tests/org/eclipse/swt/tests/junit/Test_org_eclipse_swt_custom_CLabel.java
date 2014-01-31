@@ -40,27 +40,22 @@ protected void setUp() {
 
 @Override
 public void test_ConstructorLorg_eclipse_swt_widgets_CompositeI() {
-	warnUnimpl("Test test_ConstructorLorg_eclipse_swt_widgets_CompositeI not written");
 }
 
 @Override
 public void test_computeSizeIIZ() {
-	warnUnimpl("Test test_computeSizeIIZ not written");
 }
 
 @Override
 public void test_setBackgroundLorg_eclipse_swt_graphics_Color() {
-	warnUnimpl("Test test_setBackgroundLorg_eclipse_swt_graphics_Color not written");
 }
 
 @Override
 public void test_setFontLorg_eclipse_swt_graphics_Font() {
-	warnUnimpl("Test test_setFontLorg_eclipse_swt_graphics_Font not written");
 }
 
 @Override
 public void test_setToolTipTextLjava_lang_String() {
-	warnUnimpl("Test test_setToolTipTextLjava_lang_String not written");
 }
 
 public static Test suite() {

@@ -52,7 +52,7 @@ public void test_addImageLoaderListenerLorg_eclipse_swt_graphics_ImageLoaderList
 	assertTrue(":b:", loader.hasListeners());
 
 	loaderListenerCalled = false;
-	InputStream stream = SwtTestCase.class.getResourceAsStream("interlaced_target.png");	
+	InputStream stream = SwtTestUtil.class.getResourceAsStream("interlaced_target.png");	
 	loader.load(stream);
 	try {
 		stream.close();
@@ -60,7 +60,7 @@ public void test_addImageLoaderListenerLorg_eclipse_swt_graphics_ImageLoaderList
 	assertTrue(":c:", loaderListenerCalled);
 
 	loaderListenerCalled = false;
-	stream = SwtTestCase.class.getResourceAsStream("target.png");	
+	stream = SwtTestUtil.class.getResourceAsStream("target.png");	
 	loader.load(stream);
 	try {
 		stream.close();
@@ -85,7 +85,7 @@ public void test_loadLjava_io_InputStream() {
 		} catch (IllegalArgumentException e) {
 		}
 		
-		stream = SwtTestCase.class.getResourceAsStream("empty.txt");
+		stream = SwtTestUtil.class.getResourceAsStream("empty.txt");
 		try {
 			loader.load(stream);
 			try {
@@ -95,11 +95,11 @@ public void test_loadLjava_io_InputStream() {
 		} catch (SWTException e) {
 		}
 	
-		int numFormats = SwtTestCase.imageFormats.length;
-		String fileName = SwtTestCase.imageFilenames[0];
+		int numFormats = SwtTestUtil.imageFormats.length;
+		String fileName = SwtTestUtil.imageFilenames[0];
 		for (int i=0; i<numFormats; i++) {
-			String format = SwtTestCase.imageFormats[i];
-			stream = SwtTestCase.class.getResourceAsStream(fileName + "." + format);
+			String format = SwtTestUtil.imageFormats[i];
+			stream = SwtTestUtil.class.getResourceAsStream(fileName + "." + format);
 			loader.load(stream);
 			try {
 				stream.close();
@@ -142,23 +142,23 @@ public void test_saveLjava_io_OutputStreamI() {
 		} catch (SWTException e) {
 		}
 		boolean jpgSupported = false;
-		for (int i=0; i<SwtTestCase.imageFormats.length; i++) {
-			if (SwtTestCase.imageFormats[i].equals("jpg")) {
+		for (int i=0; i<SwtTestUtil.imageFormats.length; i++) {
+			if (SwtTestUtil.imageFormats[i].equals("jpg")) {
 				jpgSupported = true;
 				break;
 			}
 		}
 		if (jpgSupported) {
-			String filename = SwtTestCase.imageFilenames[0];
+			String filename = SwtTestUtil.imageFilenames[0];
 			// must use jpg since save is not implemented yet in png format		
 			String filetype = "jpg";
-			inStream = SwtTestCase.class.getResourceAsStream(filename + "." + filetype);	
+			inStream = SwtTestUtil.class.getResourceAsStream(filename + "." + filetype);	
 			loader.load(inStream);
 			try {
 				inStream.close();
 			} catch (IOException e) {}
-			for (int i = 0; i < SwtTestCase.imageFormats.length; i++) {
-				if (SwtTestCase.imageFormats[i].equals(filetype)) {
+			for (int i = 0; i < SwtTestUtil.imageFormats.length; i++) {
+				if (SwtTestUtil.imageFormats[i].equals(filetype)) {
 					// save using the appropriate format
 					loader.save(outStream, i);
 					break;

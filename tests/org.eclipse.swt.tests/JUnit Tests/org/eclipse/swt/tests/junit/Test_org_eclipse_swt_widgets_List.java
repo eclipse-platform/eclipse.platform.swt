@@ -339,7 +339,7 @@ public void test_deselectII() {
 	for (int i = 0; i < cases.length; ++i) {
 		deselectII_helper(items, cases[i][0], cases[i][1], new int[] { 0, 1, 2, 3, 4 });
 	}
-	if (fCheckSWTPolicy) {
+	if (SwtTestUtil.fCheckSWTPolicy) {
 		deselectII_helper(items, -1, 3, new int[] { 4 });
 		deselectII_helper(items, -1, 30, new int[] {
 		});
@@ -808,7 +808,7 @@ public void test_isSelectedI() {
 
 	list.setItems(items);
 	list.setSelection(items);
-	if (fCheckSWTPolicy) {
+	if (SwtTestUtil.fCheckSWTPolicy) {
 		assertEquals(false, list.isSelected(0));
 		assertTrue(list.isSelected(1));
 		assertEquals(false, list.isSelected(2));
@@ -1875,7 +1875,7 @@ public void test_setSelection$Ljava_lang_String() {
 
 	list.setSelection(new String [0]);
 	assertArrayEquals(list.getSelection(), new String[0]);
-	if (fCheckSWTPolicy) {
+	if (SwtTestUtil.fCheckSWTPolicy) {
 		assertEquals(list.getFocusIndex(), -1);
 	}
 

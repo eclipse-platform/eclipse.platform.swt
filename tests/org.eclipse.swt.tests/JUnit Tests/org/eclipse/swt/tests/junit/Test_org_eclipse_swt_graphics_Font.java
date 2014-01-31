@@ -113,27 +113,27 @@ public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_gra
 	font.dispose();
 
 	// valid font with 0 height (strange, but apparently valid)
-	font = new Font(display, new FontData(SwtJunit.testFontName, 0, SWT.NORMAL));
+	font = new Font(display, new FontData(SwtTestUtil.testFontName, 0, SWT.NORMAL));
 	font.dispose();
 
 	// valid normal 100-point font
-	font = new Font(display, new FontData(SwtJunit.testFontName, 100, SWT.NORMAL));
+	font = new Font(display, new FontData(SwtTestUtil.testFontName, 100, SWT.NORMAL));
 	font.dispose();
 
 	// valid normal 10-point font
-	font = new Font(display, new FontData(SwtJunit.testFontName, 10, SWT.NORMAL));
+	font = new Font(display, new FontData(SwtTestUtil.testFontName, 10, SWT.NORMAL));
 	font.dispose();
 
 	// valid bold 10-point font
-	font = new Font(display, new FontData(SwtJunit.testFontName, 10, SWT.BOLD));
+	font = new Font(display, new FontData(SwtTestUtil.testFontName, 10, SWT.BOLD));
 	font.dispose();
 
 	// valid italic 10-point font
-	font = new Font(display, new FontData(SwtJunit.testFontName, 10, SWT.ITALIC));
+	font = new Font(display, new FontData(SwtTestUtil.testFontName, 10, SWT.ITALIC));
 	font.dispose();
 
 	// valid bold italic 10-point font
-	font = new Font(display, new FontData(SwtJunit.testFontName, 10, SWT.BOLD | SWT.ITALIC));
+	font = new Font(display, new FontData(SwtTestUtil.testFontName, 10, SWT.BOLD | SWT.ITALIC));
 	font.dispose();
 
 	// illegal argument, fontData == null
@@ -154,7 +154,7 @@ public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_gra
 
 	// illegal argument, height < 0
 	try {
-		font = new Font(display, new FontData(SwtJunit.testFontName, -10, SWT.NORMAL));
+		font = new Font(display, new FontData(SwtTestUtil.testFontName, -10, SWT.NORMAL));
 		font.dispose();
 		fail("No exception thrown for height < 0");
 	} catch (IllegalArgumentException e) {
@@ -175,31 +175,31 @@ public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLjava_lang_StringII(
 	font.dispose();
 
 	// valid font with 0 height (strange, but apparently valid)
-	font = new Font(display, SwtJunit.testFontName, 0, SWT.NORMAL);
+	font = new Font(display, SwtTestUtil.testFontName, 0, SWT.NORMAL);
 	font.dispose();
 
 	// valid normal 100-point font
-	font = new Font(display, SwtJunit.testFontName, 100, SWT.NORMAL);
+	font = new Font(display, SwtTestUtil.testFontName, 100, SWT.NORMAL);
 	font.dispose();
 
 	// valid normal 10-point font
-	font = new Font(display, SwtJunit.testFontName, 10, SWT.NORMAL);
+	font = new Font(display, SwtTestUtil.testFontName, 10, SWT.NORMAL);
 	font.dispose();
 
 	// valid bold 10-point font
-	font = new Font(display, SwtJunit.testFontName, 10, SWT.BOLD);
+	font = new Font(display, SwtTestUtil.testFontName, 10, SWT.BOLD);
 	font.dispose();
 
 	// valid italic 10-point font
-	font = new Font(display, SwtJunit.testFontName, 10, SWT.ITALIC);
+	font = new Font(display, SwtTestUtil.testFontName, 10, SWT.ITALIC);
 	font.dispose();
 
 	// valid bold italic 10-point font
-	font = new Font(display, SwtJunit.testFontName, 10, SWT.BOLD | SWT.ITALIC);
+	font = new Font(display, SwtTestUtil.testFontName, 10, SWT.BOLD | SWT.ITALIC);
 	font.dispose();
 
 	// device == null (valid)
-	font = new Font(null, SwtJunit.testFontName, 10, SWT.NORMAL);
+	font = new Font(null, SwtTestUtil.testFontName, 10, SWT.NORMAL);
 	font.dispose();
 
 	// illegal argument, name == null
@@ -212,7 +212,7 @@ public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLjava_lang_StringII(
 
 	// illegal argument, height < 0
 	try {
-		font = new Font(display, SwtJunit.testFontName, -10, SWT.NORMAL);
+		font = new Font(display, SwtTestUtil.testFontName, -10, SWT.NORMAL);
 		font.dispose();
 		fail("No exception thrown for height < 0");
 	} catch (IllegalArgumentException e) {
@@ -220,7 +220,7 @@ public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLjava_lang_StringII(
 }
 
 public void test_dispose() {
-	Font font = new Font(display, SwtJunit.testFontName, 10, SWT.NORMAL);
+	Font font = new Font(display, SwtTestUtil.testFontName, 10, SWT.NORMAL);
 	assertFalse(font.isDisposed());
 	font.dispose();
 	assertTrue(font.isDisposed());
@@ -228,8 +228,8 @@ public void test_dispose() {
 
 public void test_equalsLjava_lang_Object() {
 	// Fonts are only equal if their handles are the same (?!)
-	Font font = new Font(display, SwtJunit.testFontName, 10, SWT.NORMAL);
-	Font otherFont = new Font(display, SwtJunit.testFontName, 20, SWT.NORMAL);
+	Font font = new Font(display, SwtTestUtil.testFontName, 10, SWT.NORMAL);
+	Font otherFont = new Font(display, SwtTestUtil.testFontName, 20, SWT.NORMAL);
 	try {
 		// Test Font.equals(Object)
 		assertTrue("!font.equals((Object)null)", !font.equals((Object)null));
@@ -247,11 +247,11 @@ public void test_equalsLjava_lang_Object() {
 public void test_getFontData() {
 	// Test Font.getFontData()
 	// valid normal 10-point font
-	Font font = new Font(display, SwtJunit.testFontName, 10, SWT.NORMAL);
+	Font font = new Font(display, SwtTestUtil.testFontName, 10, SWT.NORMAL);
 	try {
 		FontData fontData[] = font.getFontData();
 		assertTrue("No font data", fontData != null && fontData.length > 0);
-		assertEquals("Wrong font name", SwtJunit.testFontName, fontData[0].getName());
+		assertEquals("Wrong font name", SwtTestUtil.testFontName, fontData[0].getName());
 		assertEquals("Wrong font height", 10, fontData[0].getHeight());
 		assertEquals("Wrong font style", SWT.NORMAL, fontData[0].getStyle());
 	} finally {
@@ -259,11 +259,11 @@ public void test_getFontData() {
 	}
 
 	// valid bold 20-point font
-	font = new Font(display, SwtJunit.testFontName, 20, SWT.BOLD);
+	font = new Font(display, SwtTestUtil.testFontName, 20, SWT.BOLD);
 	try {
 		FontData fontData[] = font.getFontData();
 		assertTrue("No font data", fontData != null && fontData.length > 0);
-		assertEquals("Wrong font name", SwtJunit.testFontName, fontData[0].getName());
+		assertEquals("Wrong font name", SwtTestUtil.testFontName, fontData[0].getName());
 		assertEquals("Wrong font height", 20, fontData[0].getHeight());
 		assertEquals("Wrong font style", SWT.BOLD, fontData[0].getStyle());
 	} finally {
@@ -271,11 +271,11 @@ public void test_getFontData() {
 	}
 
 	// valid italic 30-point font
-	font = new Font(display, SwtJunit.testFontName, 30, SWT.ITALIC);
+	font = new Font(display, SwtTestUtil.testFontName, 30, SWT.ITALIC);
 	try {
 		FontData fontData[] = font.getFontData();
 		assertTrue("No font data", fontData != null && fontData.length > 0);
-//		assertEquals("Wrong font name", SwtJunit.testFontName, fontData[0].getName());
+//		assertEquals("Wrong font name", SwtTestUtil.testFontName, fontData[0].getName());
 		assertEquals("Wrong font height", 30, fontData[0].getHeight());
 		assertEquals("Wrong font style", SWT.ITALIC, fontData[0].getStyle());
 	} finally {
@@ -283,12 +283,12 @@ public void test_getFontData() {
 	}
 
 	// valid bold italic 40-point font
-	font = new Font(display, SwtJunit.testFontName, 40, SWT.BOLD | SWT.ITALIC);
+	font = new Font(display, SwtTestUtil.testFontName, 40, SWT.BOLD | SWT.ITALIC);
 	try {
 		FontData fontData[] = font.getFontData();
 		font.dispose();
 		assertTrue("No font data", fontData != null && fontData.length > 0);
-//		assertEquals("Wrong font name", SwtJunit.testFontName, fontData[0].getName());
+//		assertEquals("Wrong font name", SwtTestUtil.testFontName, fontData[0].getName());
 		assertEquals("Wrong font height", 40, fontData[0].getHeight());
 		assertEquals("Wrong font style", SWT.BOLD | SWT.ITALIC, fontData[0].getStyle());
 	} finally {
@@ -309,10 +309,10 @@ public void test_getFontData() {
 }
 
 public void test_hashCode() {
-	Font font = new Font(display, SwtJunit.testFontName, 10, SWT.NORMAL);
+	Font font = new Font(display, SwtTestUtil.testFontName, 10, SWT.NORMAL);
 	assertEquals(font,font);
 	assertEquals(font.hashCode(),font.hashCode());
-	Font boldFont = new Font(display, SwtJunit.testFontName, 10, SWT.BOLD);
+	Font boldFont = new Font(display, SwtTestUtil.testFontName, 10, SWT.BOLD);
 	assertFalse(font.hashCode() == boldFont.hashCode());
 	boldFont.dispose();
 	font.dispose();
@@ -320,7 +320,7 @@ public void test_hashCode() {
 
 public void test_isDisposed() {
 	// Test Font.isDisposed() false
-	Font font = new Font(display, SwtJunit.testFontName, 10, SWT.NORMAL);
+	Font font = new Font(display, SwtTestUtil.testFontName, 10, SWT.NORMAL);
 	try {
 		assertTrue("Font should not be disposed", !font.isDisposed());
 	} finally {
@@ -331,7 +331,7 @@ public void test_isDisposed() {
 }
 
 public void test_toString() {
-	Font font = new Font(display, SwtJunit.testFontName, 10, SWT.NORMAL);
+	Font font = new Font(display, SwtTestUtil.testFontName, 10, SWT.NORMAL);
 	assertNotNull(font.toString());
 	
 	font.dispose();

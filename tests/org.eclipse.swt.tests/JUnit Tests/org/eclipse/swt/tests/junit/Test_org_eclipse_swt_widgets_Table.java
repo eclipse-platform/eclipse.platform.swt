@@ -54,7 +54,6 @@ public void test_ConstructorLorg_eclipse_swt_widgets_CompositeI() {
 
 @Override
 public void test_computeSizeIIZ() {
-	warnUnimpl("Test test_computeSizeIIZ not written");
 }
 
 public void test_deselect$I() {
@@ -927,7 +926,7 @@ public void test_removeII() {
 		fail("No exception thrown for illegal index range");
 	} catch (IllegalArgumentException e) {}
 	assertEquals(number, table.getItemCount());
-	if (fCheckSWTPolicy) {
+	if (SwtTestUtil.fCheckSWTPolicy) {
 		table.remove(10, 2);
 		assertEquals(number, table.getItemCount());
 	}
@@ -1300,7 +1299,6 @@ public void test_setColumnOrder$I() {
 
 @Override
 public void test_setFontLorg_eclipse_swt_graphics_Font() {
-	warnUnimpl("Test test_setFontLorg_eclipse_swt_graphics_Font not written");
 }
 
 public void test_setHeaderVisibleZ() {
@@ -1312,7 +1310,7 @@ public void test_setHeaderVisibleZ() {
 }
 
 public void test_setLinesVisibleZ() {
-	if (SwtJunit.isCarbon) {
+	if (SwtTestUtil.isCarbon) {
 		/* only carbon versions >= 10.4 support Table lines */
 		assertFalse(table.getLinesVisible());
 		return;
@@ -1326,7 +1324,6 @@ public void test_setLinesVisibleZ() {
 
 @Override
 public void test_setRedrawZ() {
-	warnUnimpl("Test test_setRedrawZ not written");
 }
 
 public void test_setSelection$I() {
@@ -1600,21 +1597,21 @@ public void test_setSelectionII() {
 	for (int i = 0; i < number; i++)
 		items[i] = new TableItem(table, 0);
 	table.setSelection(0, 1);
-	if (fCheckSWTPolicy)
+	if (SwtTestUtil.fCheckSWTPolicy)
 		assertArrayEquals(new int[] {1}, table.getSelectionIndices());
 	table.setSelection(2, 4);
-	if (fCheckSWTPolicy)
+	if (SwtTestUtil.fCheckSWTPolicy)
 		assertArrayEquals(new int[] {4}, table.getSelectionIndices());
 	table.setSelection(5, 4);
-	if (fCheckSWTPolicy)
+	if (SwtTestUtil.fCheckSWTPolicy)
 		assertArrayEquals(new int[] {}, table.getSelectionIndices());
 	table.setSelection(2, 2);
 	assertArrayEquals(new int[] {2}, table.getSelectionIndices());
 	table.setSelection(1, 4);
-	if (fCheckSWTPolicy)
+	if (SwtTestUtil.fCheckSWTPolicy)
 		assertArrayEquals(new int[] {4}, table.getSelectionIndices());
 	table.setSelection(0, 4);
-	if (fCheckSWTPolicy)
+	if (SwtTestUtil.fCheckSWTPolicy)
 		assertArrayEquals(new int[] {4}, table.getSelectionIndices());
 }
 

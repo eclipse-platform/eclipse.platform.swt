@@ -47,7 +47,6 @@ protected void setUp() {
 
 @Override
 public void test_ConstructorLorg_eclipse_swt_widgets_CompositeI() {
-	warnUnimpl("Test test_ConstructorLorg_eclipse_swt_widgets_CompositeI not written");
 }
 
 public void test_getSelection() {
@@ -327,7 +326,7 @@ public void test_consistency_KeyExpand() {
     createTableTree(events, true);
     tableTree.setSelection(new TableTreeItem[] { tableTree.getItems()[0]});
     int code=SWT.ARROW_RIGHT;
-    if(SwtJunit.isGTK)
+    if(SwtTestUtil.isGTK)
         code = SWT.KEYPAD_ADD;
     consistencyEvent(0, code, 0, 0, ConsistencyUtility.KEY_PRESS, events);
 }

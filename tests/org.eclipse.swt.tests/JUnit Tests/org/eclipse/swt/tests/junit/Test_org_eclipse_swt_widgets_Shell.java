@@ -208,7 +208,7 @@ public void test_isEnabled() {
 	assertTrue(":a:", shell.isEnabled());
 	shell.setEnabled(false);
 	assertTrue(":b:", !shell.isEnabled());
-	if (fCheckBogusTestCases)
+	if (SwtTestUtil.fCheckBogusTestCases)
 		assertTrue(":b1:", !testShell.isEnabled());
 	shell.setEnabled(true);
 	assertTrue(":c:", shell.isEnabled());
@@ -378,7 +378,7 @@ public void test_isVisible() {
 	assertTrue("shell.isVisible() a:", shell.isVisible());
 	shell.setVisible(false);
 	assertTrue("shell.isVisible() b:", !shell.isVisible());
-	if (fCheckBogusTestCases)
+	if (SwtTestUtil.fCheckBogusTestCases)
 		assertTrue("testShell.isVisible() c:", !testShell.isVisible());
 }
 
@@ -393,7 +393,7 @@ public void test_setBoundsLorg_eclipse_swt_graphics_Rectangle() {
 //	/* windows */
 //	/* note that there is a minimum size for a shell, this test will fail if p1.x < 112 or p1.y < 27 */
 //	/* note that there is a maximum size for a shell, this test will fail if p1.x > 1292 or p1.y > 1036 */
-//	if (SwtJunit.isWindows) {
+//	if (SwtTestUtil.isWindows) {
 //		Point p1 = new Point(112, 27);
 //		Rectangle r1 = new Rectangle(20, 30, p1.x, p1.y);
 //		Rectangle r2;
@@ -416,7 +416,7 @@ public void test_setBoundsLorg_eclipse_swt_graphics_Rectangle() {
 //	/* motif */
 //	/* note that there is a minimum size for a shell, this test will fail if p1.x < 112 or p1.y < 27 */
 //	/* note that there is a maximum size for a shell, this test will fail if p1.x > 1292 or p1.y > 1036 */
-//	if (SwtJunit.isMotif) {
+//	if (SwtTestUtil.isMotif) {
 //		Point p1 = new Point(15,35);
 //		Rectangle r1 = new Rectangle(20, 30, p1.x, p1.y);
 //		Rectangle r2;
@@ -463,7 +463,7 @@ public void test_setSizeII() {
 	/* windows */
 	/* note that there is a minimum size for a shell, this test will fail if p1.x < 112 or p1.y < 27 */
 	/* note that there is a maximum size for a shell, this test will fail if p1.x > 1292 or p1.y > 1036 */
-	if (SwtJunit.isWindows) {
+	if (SwtTestUtil.isWindows) {
 		Point newSize = new Point(112, 27);
 		for (int i = 0; i < 10; i++) {
 			testShell.setSize(newSize.x, newSize.y);
@@ -483,7 +483,7 @@ public void test_setSizeII() {
 	/* motif */
 	/* note that there is a minimum size for a shell, this test will fail if p1.x < ?? or p1.y < ?? */
 	/* note that there is a maximum size for a shell, this test will fail if p1.x > ?? or p1.y > ?? */
-	if (SwtJunit.isMotif) {
+	if (SwtTestUtil.isMotif) {
 		Point newSize = new Point(2, 2);
 		for (int i = 0; i < 10; i++) {
 			testShell.setSize(newSize.x, newSize.y);
@@ -506,7 +506,7 @@ public void test_setSizeLorg_eclipse_swt_graphics_Point() {
 	/* windows */
 	/* note that there is a minimum size for a shell, this test will fail if p1.x < 112 or p1.y < 27 */
 	/* note that there is a maximum size for a shell, this test will fail if p1.x > 1292 or p1.y > 1036 */
-	if (SwtJunit.isWindows) {
+	if (SwtTestUtil.isWindows) {
 		Point newSize = new Point(112, 27);
 		for (int i = 0; i < 10; i++) {
 			testShell.setSize(newSize);
@@ -526,7 +526,7 @@ public void test_setSizeLorg_eclipse_swt_graphics_Point() {
 	/* motif */
 	/* note that there is a minimum size for a shell, this test will fail if p1.x < ?? or p1.y < ?? */
 	/* note that there is a maximum size for a shell, this test will fail if p1.x > ?? or p1.y > ?? */
-	if (SwtJunit.isMotif) {
+	if (SwtTestUtil.isMotif) {
 		Point newSize = new Point(2, 2);
 		for (int i = 0; i < 10; i++) {
 			testShell.setSize(newSize);
@@ -558,7 +558,7 @@ private void createShell() {
 }
 
 public void test_consistency_Open() {
-	if (fTestConsistency) {
+	if (SwtTestUtil.fTestConsistency) {
 	    createShell();
 	    final Display display = shell.getDisplay();
 	    Vector<String> events = new Vector<String>();
@@ -596,7 +596,7 @@ public void test_consistency_Iconify() {
 public void test_consistency_Close() {
     createShell();
     consistencyPrePackShell();
-    if(!SwtJunit.isCarbon)
+    if(!SwtTestUtil.isCarbon)
         consistencyEvent(0, SWT.ALT, 0, SWT.F4, ConsistencyUtility.DOUBLE_KEY_PRESS);
     else
         consistencyEvent(10, 10, 1, 0, ConsistencyUtility.MOUSE_CLICK);

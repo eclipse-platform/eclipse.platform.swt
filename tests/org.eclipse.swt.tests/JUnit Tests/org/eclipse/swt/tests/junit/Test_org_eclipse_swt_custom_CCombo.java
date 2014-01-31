@@ -42,7 +42,6 @@ protected void setUp() {
 
 @Override
 public void test_ConstructorLorg_eclipse_swt_widgets_CompositeI() {
-	warnUnimpl("Test test_ConstructorLorg_eclipse_swt_widgets_CompositeI not written");
 }
 
 public void test_copy() {
@@ -63,17 +62,14 @@ public void test_cut() {
 
 @Override
 public void test_computeSizeIIZ() {
-	warnUnimpl("Test test_computeSizeIIZ not written");
 }
 
 @Override
 public void test_getChildren() {
-	warnUnimpl("Test test_getChildren not written");
 }
 
 @Override
 public void test_isFocusControl() {
-	warnUnimpl("Test test_isFocusControl not written");
 }
 
 public void test_paste() {
@@ -87,47 +83,38 @@ public void test_paste() {
 
 @Override
 public void test_redraw() {
-	warnUnimpl("Test test_redraw not written");
 }
 
 @Override
 public void test_redrawIIIIZ() {
-	warnUnimpl("Test test_redrawIIIIZ not written");
 }
 
 @Override
 public void test_setBackgroundLorg_eclipse_swt_graphics_Color() {
-	warnUnimpl("Test test_setBackgroundLorg_eclipse_swt_graphics_Color not written");
 }
 
 @Override
 public void test_setEnabledZ() {
-	warnUnimpl("Test test_setEnabledZ not written");
 }
 
 @Override
 public void test_setFocus() {
-	warnUnimpl("Test test_setFocus not written");
 }
 
 @Override
 public void test_setFontLorg_eclipse_swt_graphics_Font() {
-	warnUnimpl("Test test_setFontLorg_eclipse_swt_graphics_Font not written");
 }
 
 @Override
 public void test_setForegroundLorg_eclipse_swt_graphics_Color() {
-	warnUnimpl("Test test_setForegroundLorg_eclipse_swt_graphics_Color not written");
 }
 
 @Override
 public void test_setToolTipTextLjava_lang_String() {
-	warnUnimpl("Test test_setToolTipTextLjava_lang_String not written");
 }
 
 @Override
 public void test_setVisibleZ() {
-	warnUnimpl("Test test_setVisibleZ not written");
 }
 
 public static Test suite() {

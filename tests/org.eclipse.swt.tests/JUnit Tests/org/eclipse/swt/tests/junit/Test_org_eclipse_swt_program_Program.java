@@ -10,7 +10,7 @@
  *******************************************************************************/
 package org.eclipse.swt.tests.junit;
 
-import static org.eclipse.swt.tests.junit.SwtTestCase.assertSWTProblem;
+import static org.eclipse.swt.tests.junit.SwtTestUtil.assertSWTProblem;
 import java.util.Hashtable;
 
 import junit.framework.TestCase;

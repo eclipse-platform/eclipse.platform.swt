@@ -11,7 +11,7 @@
 package org.eclipse.swt.tests.junit;
 
 
-import static org.eclipse.swt.tests.junit.SwtTestCase.assertSWTProblem;
+import static org.eclipse.swt.tests.junit.SwtTestUtil.assertSWTProblem;
 import static org.junit.Assert.assertArrayEquals;
 
 import java.io.IOException;
@@ -150,18 +150,18 @@ public void test_ConstructorLjava_io_InputStream() {
 		} catch (IllegalArgumentException e) {
 		}
 		
-		stream = SwtTestCase.class.getResourceAsStream("empty.txt");
+		stream = SwtTestUtil.class.getResourceAsStream("empty.txt");
 		try {
 			new ImageData(stream);
 			fail("No exception thrown for invalid InputStream");
 		} catch (SWTException e) {
 		}
 	
-		int numFormats = SwtTestCase.imageFormats.length;
-		String fileName = SwtTestCase.imageFilenames[0];
+		int numFormats = SwtTestUtil.imageFormats.length;
+		String fileName = SwtTestUtil.imageFilenames[0];
 		for (int i=0; i<numFormats; i++) {
-			String format = SwtTestCase.imageFormats[i];
-			stream = SwtTestCase.class.getResourceAsStream(fileName + "." + format);
+			String format = SwtTestUtil.imageFormats[i];
+			stream = SwtTestUtil.class.getResourceAsStream(fileName + "." + format);
 			new ImageData(stream);
 		}
 	} finally {
@@ -185,7 +185,7 @@ public void test_ConstructorLjava_lang_String() {
 public void test_clone() {
 	InputStream stream = null;
 	try {
-		stream = SwtTestCase.class.getResourceAsStream(SwtTestCase.imageFilenames[0] + "." + SwtTestCase.imageFormats[0]);
+		stream = SwtTestUtil.class.getResourceAsStream(SwtTestUtil.imageFilenames[0] + "." + SwtTestUtil.imageFormats[0]);
 		ImageData data1 = new ImageData(stream);
 		ImageData data2 = (ImageData) data1.clone();
 		// imageData does not implement an equals(Object) method
@@ -708,7 +708,7 @@ public void test_getTransparencyMask() {
 //	Bug 71472 - transparency mask should be null	
 //	assertNull(":a:", imageData.getTransparencyMask());
 
-	InputStream stream = getClass().getResourceAsStream(SwtTestCase.transparentImageFilenames[0]);
+	InputStream stream = getClass().getResourceAsStream(SwtTestUtil.transparentImageFilenames[0]);
 	Image image = new Image(Display.getDefault(), stream);
 	try {
 		stream.close();
@@ -729,7 +729,7 @@ public void test_getTransparencyMask() {
 public void test_getTransparencyType() {
 	assertEquals(":a:", SWT.TRANSPARENCY_NONE, imageData.getTransparencyType());
 
-	InputStream stream = getClass().getResourceAsStream(SwtTestCase.transparentImageFilenames[0]);
+	InputStream stream = getClass().getResourceAsStream(SwtTestUtil.transparentImageFilenames[0]);
 	Image image = new Image(Display.getDefault(), stream);
 	try {
 		stream.close();
@@ -738,7 +738,7 @@ public void test_getTransparencyType() {
 	assertFalse(":b:", SWT.TRANSPARENCY_NONE == imageData.getTransparencyType());
 	image.dispose();
 	
-	stream = getClass().getResourceAsStream(SwtTestCase.imageFilenames[0] + '.' + SwtTestCase.imageFormats[SwtTestCase.imageFormats.length-1]);
+	stream = getClass().getResourceAsStream(SwtTestUtil.imageFilenames[0] + '.' + SwtTestUtil.imageFormats[SwtTestUtil.imageFormats.length-1]);
 	image = new Image(Display.getDefault(), stream);
 	try {
 		stream.close();

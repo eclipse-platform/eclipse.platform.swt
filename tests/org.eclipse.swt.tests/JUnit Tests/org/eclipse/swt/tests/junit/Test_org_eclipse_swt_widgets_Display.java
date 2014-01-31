@@ -10,7 +10,7 @@
  *******************************************************************************/
 package org.eclipse.swt.tests.junit;
 
-import static org.eclipse.swt.tests.junit.SwtTestCase.assertSWTProblem;
+import static org.eclipse.swt.tests.junit.SwtTestUtil.assertSWTProblem;
 import junit.framework.TestCase;
 
 import org.eclipse.swt.SWT;
