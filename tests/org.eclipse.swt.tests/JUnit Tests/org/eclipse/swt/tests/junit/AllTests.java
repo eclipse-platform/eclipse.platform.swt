@@ -150,14 +150,6 @@ public AllTests() {
 
 	addTestSuite(Test_org_eclipse_swt_program_Program.class);
 
-//	addTest(Test_org_eclipse_swt_dnd_FileTransfer.suite());
-//	addTest(Test_org_eclipse_swt_dnd_TextTransfer.suite());
-//	addTest(Test_org_eclipse_swt_dnd_DragSourceEvent.suite());
-//	addTest(Test_org_eclipse_swt_dnd_DragSource.suite());
-//	addTest(Test_org_eclipse_swt_dnd_RTFTransfer.suite());
-//	addTest(Test_org_eclipse_swt_dnd_DropTargetEvent.suite());
-//	addTest(Test_org_eclipse_swt_dnd_DropTarget.suite());
-
 	addTestSuite(Test_org_eclipse_swt_accessibility_Accessible.class);
 	addTestSuite(Test_org_eclipse_swt_accessibility_AccessibleControlEvent.class);
 	addTestSuite(Test_org_eclipse_swt_accessibility_AccessibleEvent.class);
