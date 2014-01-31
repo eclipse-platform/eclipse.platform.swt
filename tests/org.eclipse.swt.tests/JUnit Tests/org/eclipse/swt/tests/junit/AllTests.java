@@ -20,11 +20,7 @@ import junit.textui.*;
 public class AllTests extends TestSuite {
 
 public static void main(String[] args) {
-	SwtTestCase.unimplementedMethods = 0;
 	TestRunner.run(suite());
-	if (SwtTestCase.unimplementedMethods > 0) {
-		System.out.println("\nCalls to warnUnimpl: " + SwtTestCase.unimplementedMethods);
-	}
 }
 public static Test suite() {
 	return new AllTests();

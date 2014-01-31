@@ -57,12 +57,8 @@ static boolean isExcluded(String name) {
 }
 
 public static void main(String[] args) {
-	SwtTestCase.unimplementedMethods = 0;
 	TestRunner.run(suite());
-	if (SwtTestCase.unimplementedMethods > 0) {
-		System.out.println("\nCalls to warnUnimpl: " + SwtTestCase.unimplementedMethods);
-		System.out.println("\nExcluded Tests: " + excludeTests.length);
-	}
+	System.out.println("\nExcluded Tests: " + excludeTests.length);
 }
 public static Test suite() {
 	TestSuite fullSuite = (TestSuite)AllTests.suite();

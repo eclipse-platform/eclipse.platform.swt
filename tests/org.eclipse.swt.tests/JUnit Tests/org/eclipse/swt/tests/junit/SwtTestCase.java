@@ -46,9 +46,6 @@ public class SwtTestCase extends TestCase {
 	
 	public static boolean fTestConsistency = false;
 
-	// variable to keep track of the number of unimplemented methods
-	public static int unimplementedMethods;
-	
 	// used to specify verbose mode, if true unimplemented warning messages will 
 	// be written to System.out
 	public static boolean verbose = false;
@@ -98,6 +95,5 @@ protected void warnUnimpl(String message) {
 	if (verbose) {
 		System.out.println(this.getClass() + ": " + message);
 	}
-	unimplementedMethods++;
 }
 }
