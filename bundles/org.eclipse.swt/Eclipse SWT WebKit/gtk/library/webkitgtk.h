@@ -31,9 +31,9 @@
 			handle = dlopen("libwebkitgtk-3.0.so.0", LOAD_FLAGS); /* webkitgtk >= 3.x lib */ \
 		} else { \
 			handle = dlopen("libwebkit-1.0.so.2", LOAD_FLAGS); /* webkitgtk 1.2.x lib */ \
-	    	if (!handle) { \
-		    	handle = dlopen("libwebkitgtk-1.0.so.0", LOAD_FLAGS); /* webkitgtk >= 1.4.x lib */ \
-		    } \
+			if (!handle) { \
+				handle = dlopen("libwebkitgtk-1.0.so.0", LOAD_FLAGS); /* webkitgtk >= 1.4.x lib */ \
+			} \
 		} \
 		if (handle) { \
 			var = dlsym(handle, #name); \
