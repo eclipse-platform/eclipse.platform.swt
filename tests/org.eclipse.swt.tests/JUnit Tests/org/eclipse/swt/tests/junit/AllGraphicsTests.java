@@ -10,39 +10,40 @@
  *******************************************************************************/
 package org.eclipse.swt.tests.junit;
 
+import junit.framework.JUnit4TestAdapter;
+import junit.framework.Test;
+import junit.textui.TestRunner;
 
-import junit.framework.*;
-import junit.textui.*;
+import org.junit.runner.RunWith;
+import org.junit.runners.Suite;
 
 /**
  * Suite for testing all of the graphics test cases.
  */
+@RunWith(Suite.class)
+@Suite.SuiteClasses({ Test_org_eclipse_swt_graphics_Color.class,
+		Test_org_eclipse_swt_graphics_Cursor.class,
+		Test_org_eclipse_swt_graphics_DeviceData.class,
+		Test_org_eclipse_swt_graphics_Font.class,
+		Test_org_eclipse_swt_graphics_FontData.class,
+		Test_org_eclipse_swt_graphics_FontMetrics.class,
+		Test_org_eclipse_swt_graphics_GC.class,
+		Test_org_eclipse_swt_graphics_Image.class,
+		Test_org_eclipse_swt_graphics_ImageData.class,
+		Test_org_eclipse_swt_graphics_PaletteData.class,
+		Test_org_eclipse_swt_graphics_Point.class,
+		Test_org_eclipse_swt_graphics_Rectangle.class,
+		Test_org_eclipse_swt_graphics_Region.class,
+		Test_org_eclipse_swt_graphics_RGB.class,
+		Test_org_eclipse_swt_graphics_TextLayout.class,
+		Test_org_eclipse_swt_graphics_ImageLoader.class,
+		Test_org_eclipse_swt_graphics_ImageLoaderEvent.class })
 public class AllGraphicsTests {
-public static void main(String[] args) {
-	TestRunner.run (suite());
-}
-public static Test suite() {
-	TestSuite suite = new TestSuite();
+	public static void main(String[] args) {
+		TestRunner.run(suite());
+	}
 
-	suite.addTestSuite(Test_org_eclipse_swt_graphics_Color.class);
-	suite.addTestSuite(Test_org_eclipse_swt_graphics_Cursor.class);
-	suite.addTestSuite(Test_org_eclipse_swt_graphics_DeviceData.class);
-	suite.addTestSuite(Test_org_eclipse_swt_graphics_Font.class);
-	suite.addTestSuite(Test_org_eclipse_swt_graphics_FontData.class);
-	suite.addTestSuite(Test_org_eclipse_swt_graphics_FontMetrics.class);
-	suite.addTestSuite(Test_org_eclipse_swt_graphics_GC.class);
-	suite.addTestSuite(Test_org_eclipse_swt_graphics_Image.class);
-	suite.addTestSuite(Test_org_eclipse_swt_graphics_ImageData.class);
-	suite.addTestSuite(Test_org_eclipse_swt_graphics_PaletteData.class);
-	suite.addTestSuite(Test_org_eclipse_swt_graphics_Point.class);
-	suite.addTestSuite(Test_org_eclipse_swt_graphics_Rectangle.class);
-	suite.addTestSuite(Test_org_eclipse_swt_graphics_Region.class);
-	suite.addTestSuite(Test_org_eclipse_swt_graphics_RGB.class);
-	suite.addTestSuite(Test_org_eclipse_swt_graphics_TextLayout.class);
-	
-	suite.addTestSuite(Test_org_eclipse_swt_graphics_ImageLoader.class);
-	suite.addTestSuite(Test_org_eclipse_swt_graphics_ImageLoaderEvent.class);
-
-	return suite;
-}
+	public static Test suite() {
+		return new JUnit4TestAdapter(AllGraphicsTests.class);
+	}
 }
