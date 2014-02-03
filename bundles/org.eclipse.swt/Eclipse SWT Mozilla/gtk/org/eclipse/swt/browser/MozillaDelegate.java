@@ -53,8 +53,8 @@ MozillaDelegate (Browser browser) {
 		byte[] buffer = Converter.wcsToMbcs (null, "libCrun.so.1", true); //$NON-NLS-1$
 		OS.dlopen (buffer, OS.RTLD_NOW | OS.RTLD_GLOBAL);
 	}
-	if ((browser.getStyle() & SWT.MOZILLA) != 0 && OS.GTK3) {
-		String errorString = " [Browser style SWT.MOZILLA and Java system property org.eclipse.swt.browser.DefaultType=mozilla are not supported with GTK 3 as XULRunner is not available for GTK 3]"; // $NON-NLS-1$
+	if (OS.GTK3) {
+		String errorString = " [Browser style SWT.MOZILLA and Java system property org.eclipse.swt.browser.DefaultType=mozilla are not supported with GTK 3 as XULRunner is not ported for GTK 3 yet]"; // $NON-NLS-1$
 		SWT.error (SWT.ERROR_NO_HANDLES, null, errorString);
 	}
 	this.browser = browser;
