@@ -10,7 +10,6 @@
  *******************************************************************************/
 package org.eclipse.swt.tests.junit;
 
-
 import junit.framework.*;
 import junit.textui.*;
 
@@ -19,60 +18,11 @@ import junit.textui.*;
  */
 public class AllGtkTests extends TestSuite {
 
-/**
- * Tests not run because they consistently fail
- */
-static String[] excludeTests = {
-	"test_getActiveShell(org.eclipse.swt.tests.junit.Test_org_eclipse_swt_widgets_Display)",
-	"test_postLorg_eclipse_swt_widgets_Event(org.eclipse.swt.tests.junit.Test_org_eclipse_swt_widgets_Display)",
-	"test_setBackgroundLorg_eclipse_swt_graphics_Color(org.eclipse.swt.tests.junit.Test_org_eclipse_swt_graphics_Image)",
-	"test_getBoundsI(org.eclipse.swt.tests.junit.Test_org_eclipse_swt_widgets_TableItem)",
-	"test_getBoundsI(org.eclipse.swt.tests.junit.Test_org_eclipse_swt_widgets_TreeItem)",
-	"test_getBounds(org.eclipse.swt.tests.junit.Test_org_eclipse_swt_widgets_TreeItem)",
-	"test_setDefaultItemLorg_eclipse_swt_widgets_MenuItem(org.eclipse.swt.tests.junit.Test_org_eclipse_swt_widgets_Menu)",
-	"test_setActive(org.eclipse.swt.tests.junit.Test_org_eclipse_swt_widgets_Shell)",
-	"test_getItemHeight(org.eclipse.swt.tests.junit.Test_org_eclipse_swt_widgets_List)",
-	"test_setFontLorg_eclipse_swt_graphics_Font(org.eclipse.swt.tests.junit.Test_org_eclipse_swt_widgets_List)",
-	"test_setTopIndexI(org.eclipse.swt.tests.junit.Test_org_eclipse_swt_widgets_List)",
-	"test_setFontLorg_eclipse_swt_graphics_Font(org.eclipse.swt.tests.junit.Test_org_eclipse_swt_widgets_List)",
-	"test_getTextLimit(org.eclipse.swt.tests.junit.Test_org_eclipse_swt_widgets_Text)",
-	"test_getTopPixel(org.eclipse.swt.tests.junit.Test_org_eclipse_swt_widgets_Text)",
-	"test_setTextLimitI(org.eclipse.swt.tests.junit.Test_org_eclipse_swt_widgets_Text)",
-	"test_setTopIndexI(org.eclipse.swt.tests.junit.Test_org_eclipse_swt_widgets_Text)",
-	"test_getHeaderHeight(org.eclipse.swt.tests.junit.Test_org_eclipse_swt_widgets_Tree)",
-	"test_setSelectionEmpty(org.eclipse.swt.tests.junit.Test_org_eclipse_swt_widgets_TabFolder)",
-	"test_getSelectionIndex(org.eclipse.swt.tests.junit.Test_org_eclipse_swt_widgets_Combo)",
-	"test_getRowCount(org.eclipse.swt.tests.junit.Test_org_eclipse_swt_widgets_ToolBar)",
-	"test_getHeaderHeight(org.eclipse.swt.tests.junit.Test_org_eclipse_swt_widgets_Table)",
-	
-	//text layout
-	"test_getNextOffset2(org.eclipse.swt.tests.junit.Test_org_eclipse_swt_graphics_TextLayout)",
-};
-
-static boolean isExcluded(String name) {
-	for (int i = 0; i < excludeTests.length; i++) {
-		if (name.equals(excludeTests[i])) return true;
+	public static Test suite() {
+		return AllTests.suite();
 	}
-	return false;
-}
 
-public static void main(String[] args) {
-	TestRunner.run(suite());
-	System.out.println("\nExcluded Tests: " + excludeTests.length);
-}
-public static Test suite() {
-	TestSuite fullSuite = (TestSuite)AllTests.suite();
-	TestSuite filteredSuite = new TestSuite();
-	for (int i = 0; i < fullSuite.testCount(); i++) {
-		Test candidateTest = fullSuite.testAt(i);
-		if (candidateTest instanceof TestSuite) {
-			TestSuite suite = (TestSuite)candidateTest;
-			for (int j = 0; j < suite.testCount(); j++) {
-				Test test = suite.testAt(j);
-				if (!isExcluded(test.toString())) filteredSuite.addTest(test);				
-			}
-		}
+	public static void main(String[] args) {
+		TestRunner.run(AllTests.suite());
 	}
-	return filteredSuite;
-}
 }
