@@ -33,9 +33,6 @@
     <condition property="class-tests" value="org.eclipse.swt.tests.junit.AllCocoaTests">
       <equals arg1="${ws}" arg2="cocoa"/>
     </condition>
-  	<condition property="class-tests" value="org.eclipse.swt.tests.junit.AllCarbonTests">
-      <equals arg1="${ws}" arg2="carbon"/>
-    </condition>
     <condition property="class-tests" value="org.eclipse.swt.tests.junit.AllTests">
       <equals arg1="${os}" arg2="win32"/>
     </condition>
