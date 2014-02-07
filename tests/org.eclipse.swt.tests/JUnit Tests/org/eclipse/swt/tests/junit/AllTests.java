@@ -110,11 +110,11 @@ public AllTests() {
 	addTest(Test_org_eclipse_swt_widgets_DateTime.suite());
 	//addTest(Test_org_eclipse_swt_widgets_CoolBar.suite());
 
-	addTest(Test_org_eclipse_swt_widgets_ColorDialog.suite());
-	addTest(Test_org_eclipse_swt_widgets_FileDialog.suite());
-	addTest(Test_org_eclipse_swt_widgets_DirectoryDialog.suite());
-	addTest(Test_org_eclipse_swt_widgets_FontDialog.suite());
-	addTest(Test_org_eclipse_swt_widgets_MessageBox.suite());
+	addTestSuite(Test_org_eclipse_swt_widgets_ColorDialog.class);
+	addTestSuite(Test_org_eclipse_swt_widgets_FileDialog.class);
+	addTestSuite(Test_org_eclipse_swt_widgets_DirectoryDialog.class);
+	addTestSuite(Test_org_eclipse_swt_widgets_FontDialog.class);
+	addTestSuite(Test_org_eclipse_swt_widgets_MessageBox.class);
 	addTestSuite(Test_org_eclipse_swt_widgets_Monitor.class);
 	addTestSuite(Test_org_eclipse_swt_layout_GridData.class);
 
@@ -144,7 +144,7 @@ public AllTests() {
 	addTestSuite(Test_org_eclipse_swt_events_MenuEvent.class);
 	addTestSuite(Test_org_eclipse_swt_events_TreeEvent.class);
 	
-	addTest(Test_org_eclipse_swt_printing_PrintDialog.suite());
+	addTestSuite(Test_org_eclipse_swt_printing_PrintDialog.class);
 	addTestSuite(Test_org_eclipse_swt_printing_PrinterData.class);
 	addTestSuite(Test_org_eclipse_swt_printing_Printer.class);
 

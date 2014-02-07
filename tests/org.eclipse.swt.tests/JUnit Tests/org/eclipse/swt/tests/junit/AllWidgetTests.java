@@ -61,11 +61,11 @@ public static Test suite() {
 	suite.addTest(Test_org_eclipse_swt_widgets_DateTime.suite());
 	//suite.addTest(Test_org_eclipse_swt_widgets_CoolBar.suite());
 
-	suite.addTest(Test_org_eclipse_swt_widgets_ColorDialog.suite());
-	suite.addTest(Test_org_eclipse_swt_widgets_FileDialog.suite());
-	suite.addTest(Test_org_eclipse_swt_widgets_DirectoryDialog.suite());
-	suite.addTest(Test_org_eclipse_swt_widgets_FontDialog.suite());
-	suite.addTest(Test_org_eclipse_swt_widgets_MessageBox.suite());
+	suite.addTestSuite(Test_org_eclipse_swt_widgets_ColorDialog.class);
+	suite.addTestSuite(Test_org_eclipse_swt_widgets_FileDialog.class);
+	suite.addTestSuite(Test_org_eclipse_swt_widgets_DirectoryDialog.class);
+	suite.addTestSuite(Test_org_eclipse_swt_widgets_FontDialog.class);
+	suite.addTestSuite(Test_org_eclipse_swt_widgets_MessageBox.class);
 	suite.addTestSuite(Test_org_eclipse_swt_widgets_Monitor.class);
 
 	suite.addTest(Test_org_eclipse_swt_custom_TableTree.suite());

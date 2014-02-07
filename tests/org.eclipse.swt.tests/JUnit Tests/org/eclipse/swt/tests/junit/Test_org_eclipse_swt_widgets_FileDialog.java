@@ -10,11 +10,8 @@
  *******************************************************************************/
 package org.eclipse.swt.tests.junit;
 
-import junit.framework.*;
-import junit.textui.*;
-
-import org.eclipse.swt.*;
-import org.eclipse.swt.widgets.*;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.widgets.FileDialog;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.widgets.FileDialog
@@ -25,10 +22,6 @@ public class Test_org_eclipse_swt_widgets_FileDialog extends Test_org_eclipse_sw
 
 public Test_org_eclipse_swt_widgets_FileDialog(String name) {
 	super(name);
-}
-
-public static void main(String[] args) {
-	TestRunner.run(suite());
 }
 
 @Override
@@ -137,42 +130,6 @@ public void test_setFilterPathLjava_lang_String() {
 	fileDialog.setFilterPath(null);
 	assertTrue(":4:", fileDialog.getFilterPath() == null);
 }
-
-public static Test suite() {
-	TestSuite suite = new TestSuite();
-	java.util.Vector<String> methodNames = methodNames();
-	java.util.Enumeration<String> e = methodNames.elements();
-	while (e.hasMoreElements()) {
-		suite.addTest(new Test_org_eclipse_swt_widgets_FileDialog(e.nextElement()));
-	}
-	return suite;
-}
-public static java.util.Vector<String> methodNames() {
-	java.util.Vector<String> methodNames = new java.util.Vector<String>();
-	methodNames.addElement("test_ConstructorLorg_eclipse_swt_widgets_Shell");
-	methodNames.addElement("test_ConstructorLorg_eclipse_swt_widgets_ShellI");
-	methodNames.addElement("test_getFileNames");
-	methodNames.addElement("test_open");
-	methodNames.addElement("test_setFileNameLjava_lang_String");
-	methodNames.addElement("test_setFilterExtensions$Ljava_lang_String");
-	methodNames.addElement("test_setFilterNames$Ljava_lang_String");
-	methodNames.addElement("test_setFilterPathLjava_lang_String");
-	methodNames.addAll(Test_org_eclipse_swt_widgets_Dialog.methodNames()); // add superclass method names
-	return methodNames;
-}
-@Override
-protected void runTest() throws Throwable {
-	if (getName().equals("test_ConstructorLorg_eclipse_swt_widgets_Shell")) test_ConstructorLorg_eclipse_swt_widgets_Shell();
-	else if (getName().equals("test_ConstructorLorg_eclipse_swt_widgets_ShellI")) test_ConstructorLorg_eclipse_swt_widgets_ShellI();
-	else if (getName().equals("test_getFileNames")) test_getFileNames();
-	else if (getName().equals("test_open")) test_open();
-	else if (getName().equals("test_setFileNameLjava_lang_String")) test_setFileNameLjava_lang_String();
-	else if (getName().equals("test_setFilterExtensions$Ljava_lang_String")) test_setFilterExtensions$Ljava_lang_String();
-	else if (getName().equals("test_setFilterNames$Ljava_lang_String")) test_setFilterNames$Ljava_lang_String();
-	else if (getName().equals("test_setFilterPathLjava_lang_String")) test_setFilterPathLjava_lang_String();
-	else super.runTest();
-}
-
 /* custom */
 FileDialog fileDialog;
 }

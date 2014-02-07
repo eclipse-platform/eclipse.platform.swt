@@ -25,8 +25,8 @@ public static void main(String[] args) {
 public static Test suite() {
 	TestSuite suite = new TestSuite();
 
-	suite.addTest(Test_org_eclipse_swt_widgets_ColorDialog.suite());
-	suite.addTest(Test_org_eclipse_swt_widgets_FontDialog.suite());	
+	suite.addTestSuite(Test_org_eclipse_swt_widgets_ColorDialog.class);
+	suite.addTestSuite(Test_org_eclipse_swt_widgets_FontDialog.class);	
 	suite.addTest(Test_org_eclipse_swt_widgets_TabFolder.suite());
 	suite.addTestSuite(Test_org_eclipse_swt_widgets_TabItem.class);
 	suite.addTest(Test_org_eclipse_swt_widgets_Table.suite());

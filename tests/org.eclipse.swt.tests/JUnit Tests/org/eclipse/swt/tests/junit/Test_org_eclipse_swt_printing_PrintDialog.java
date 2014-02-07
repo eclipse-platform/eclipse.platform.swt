@@ -10,11 +10,8 @@
  *******************************************************************************/
 package org.eclipse.swt.tests.junit;
 
-import junit.framework.*;
-import junit.textui.*;
-
-import org.eclipse.swt.*;
-import org.eclipse.swt.printing.*;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.printing.PrintDialog;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.printing.PrintDialog
@@ -25,10 +22,6 @@ public class Test_org_eclipse_swt_printing_PrintDialog extends Test_org_eclipse_
 	
 public Test_org_eclipse_swt_printing_PrintDialog(String name) {
 	super(name);
-}
-
-public static void main(String[] args) {
-	TestRunner.run(suite());
 }
 
 @Override
@@ -58,29 +51,6 @@ public void test_ConstructorLorg_eclipse_swt_widgets_ShellI() {
 	}
 	catch (IllegalArgumentException e) {
 	}
-}
-
-public static Test suite() {
-	TestSuite suite = new TestSuite();
-	java.util.Vector<String> methodNames = methodNames();
-	java.util.Enumeration<String> e = methodNames.elements();
-	while (e.hasMoreElements()) {
-		suite.addTest(new Test_org_eclipse_swt_printing_PrintDialog(e.nextElement()));
-	}
-	return suite;
-}
-public static java.util.Vector<String> methodNames() {
-	java.util.Vector<String> methodNames = new java.util.Vector<String>();
-	methodNames.addElement("test_ConstructorLorg_eclipse_swt_widgets_Shell");
-	methodNames.addElement("test_ConstructorLorg_eclipse_swt_widgets_ShellI");
-	methodNames.addAll(Test_org_eclipse_swt_widgets_Dialog.methodNames()); // add superclass method names
-	return methodNames;
-}
-@Override
-protected void runTest() throws Throwable {
-	if (getName().equals("test_ConstructorLorg_eclipse_swt_widgets_Shell")) test_ConstructorLorg_eclipse_swt_widgets_Shell();
-	else if (getName().equals("test_ConstructorLorg_eclipse_swt_widgets_ShellI")) test_ConstructorLorg_eclipse_swt_widgets_ShellI();
-	else super.runTest();
 }
 
 /* custom */

@@ -10,9 +10,7 @@
  *******************************************************************************/
 package org.eclipse.swt.tests.junit;
 
-import junit.framework.Test;
 import junit.framework.TestCase;
-import junit.framework.TestSuite;
 
 import org.eclipse.swt.widgets.Dialog;
 import org.eclipse.swt.widgets.Shell;
@@ -62,30 +60,6 @@ public void test_setTextLjava_lang_String() {
 	}
 	catch (IllegalArgumentException e) {
 	}
-}
-
-public static Test suite() {
-	TestSuite suite = new TestSuite();
-	java.util.Vector<String> methodNames = methodNames();
-	java.util.Enumeration<String> e = methodNames.elements();
-	while (e.hasMoreElements()) {
-		suite.addTest(new Test_org_eclipse_swt_widgets_Dialog(e.nextElement()));
-	}
-	return suite;
-}
-
-public static java.util.Vector<String> methodNames() {
-	java.util.Vector<String> methodNames = new java.util.Vector<String>();
-	methodNames.addElement("test_getParent");
-	methodNames.addElement("test_getStyle");
-	methodNames.addElement("test_setTextLjava_lang_String");
-	return methodNames;
-}
-@Override
-protected void runTest() throws Throwable {
-	if (getName().equals("test_getParent")) test_getParent();
-	else if (getName().equals("test_getStyle")) test_getStyle();
-	else if (getName().equals("test_setTextLjava_lang_String")) test_setTextLjava_lang_String();
 }
 
 /* custom */
