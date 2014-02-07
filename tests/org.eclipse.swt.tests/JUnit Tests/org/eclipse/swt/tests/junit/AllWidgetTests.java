@@ -24,14 +24,14 @@ public static void main(String[] args) {
 public static Test suite() {
 	TestSuite suite = new TestSuite();
 
-	suite.addTest(Test_org_eclipse_swt_widgets_ExpandItem.suite());
-	suite.addTest(Test_org_eclipse_swt_widgets_MenuItem.suite());
-	suite.addTest(Test_org_eclipse_swt_widgets_ToolItem.suite());
+	suite.addTestSuite(Test_org_eclipse_swt_widgets_ExpandItem.class);
+	suite.addTestSuite(Test_org_eclipse_swt_widgets_MenuItem.class);
+	suite.addTestSuite(Test_org_eclipse_swt_widgets_ToolItem.class);
 	//suite.addTest(Test_org_eclipse_swt_widgets_CoolItem.suite());
-	suite.addTest(Test_org_eclipse_swt_widgets_TabItem.suite());
-	suite.addTest(Test_org_eclipse_swt_widgets_TableItem.suite());
-	suite.addTest(Test_org_eclipse_swt_widgets_TableColumn.suite());
-	suite.addTest(Test_org_eclipse_swt_widgets_TreeItem.suite());
+	suite.addTestSuite(Test_org_eclipse_swt_widgets_TabItem.class);
+	suite.addTestSuite(Test_org_eclipse_swt_widgets_TableItem.class);
+	suite.addTestSuite(Test_org_eclipse_swt_widgets_TableColumn.class);
+	suite.addTestSuite(Test_org_eclipse_swt_widgets_TreeItem.class);
 	suite.addTestSuite(Test_org_eclipse_swt_widgets_Caret.class);
 	suite.addTestSuite(Test_org_eclipse_swt_widgets_Event.class);
 	suite.addTestSuite(Test_org_eclipse_swt_widgets_Menu.class);
@@ -71,9 +71,9 @@ public static Test suite() {
 	suite.addTest(Test_org_eclipse_swt_custom_TableTree.suite());
 	suite.addTestSuite(Test_org_eclipse_swt_custom_StyleRange.class);
 	suite.addTest(Test_org_eclipse_swt_custom_CCombo.suite());
-	suite.addTest(Test_org_eclipse_swt_custom_TableTreeItem.suite());
+	suite.addTestSuite(Test_org_eclipse_swt_custom_TableTreeItem.class);
 	suite.addTest(Test_org_eclipse_swt_custom_CLabel.suite());
-	suite.addTest(Test_org_eclipse_swt_custom_CTabItem.suite());
+	suite.addTestSuite(Test_org_eclipse_swt_custom_CTabItem.class);
 	suite.addTest(Test_org_eclipse_swt_custom_StyledText.suite());
 	suite.addTest(Test_org_eclipse_swt_custom_CTabFolder.suite());
 

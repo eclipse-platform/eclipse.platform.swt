@@ -11,11 +11,11 @@
 package org.eclipse.swt.tests.junit;
 
 
-import junit.framework.*;
-import junit.textui.*;
-
-import org.eclipse.swt.*;
-import org.eclipse.swt.widgets.*;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.TabFolder;
+import org.eclipse.swt.widgets.TabItem;
+import org.eclipse.swt.widgets.Table;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.widgets.TabItem
@@ -26,10 +26,6 @@ public class Test_org_eclipse_swt_widgets_TabItem extends Test_org_eclipse_swt_w
 
 public Test_org_eclipse_swt_widgets_TabItem(String name) {
 	super(name);
-}
-
-public static void main(String[] args) {
-	TestRunner.run(suite());
 }
 
 @Override
@@ -117,39 +113,6 @@ public void test_setToolTipTextLjava_lang_String() {
 	assertTrue(":b: ", tabItem.getToolTipText().equals("fredttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttt"));
 	tabItem.setToolTipText(null);
 	assertTrue(":c: ", tabItem.getToolTipText() == null);
-}
-
-public static Test suite() {
-	TestSuite suite = new TestSuite();
-	java.util.Vector<String> methodNames = methodNames();
-	java.util.Enumeration<String> e = methodNames.elements();
-	while (e.hasMoreElements()) {
-		suite.addTest(new Test_org_eclipse_swt_widgets_TabItem(e.nextElement()));
-	}
-	return suite;
-}
-public static java.util.Vector<String> methodNames() {
-	java.util.Vector<String> methodNames = new java.util.Vector<String>();
-	methodNames.addElement("test_ConstructorLorg_eclipse_swt_widgets_TabFolderI");
-	methodNames.addElement("test_ConstructorLorg_eclipse_swt_widgets_TabFolderII");
-	methodNames.addElement("test_getParent");
-	methodNames.addElement("test_setControlLorg_eclipse_swt_widgets_Control");
-	methodNames.addElement("test_setImageLorg_eclipse_swt_graphics_Image");
-	methodNames.addElement("test_setTextLjava_lang_String");
-	methodNames.addElement("test_setToolTipTextLjava_lang_String");
-	methodNames.addAll(Test_org_eclipse_swt_widgets_Item.methodNames()); // add superclass method names
-	return methodNames;
-}
-@Override
-protected void runTest() throws Throwable {
-	if (getName().equals("test_ConstructorLorg_eclipse_swt_widgets_TabFolderI")) test_ConstructorLorg_eclipse_swt_widgets_TabFolderI();
-	else if (getName().equals("test_ConstructorLorg_eclipse_swt_widgets_TabFolderII")) test_ConstructorLorg_eclipse_swt_widgets_TabFolderII();
-	else if (getName().equals("test_getParent")) test_getParent();
-	else if (getName().equals("test_setControlLorg_eclipse_swt_widgets_Control")) test_setControlLorg_eclipse_swt_widgets_Control();
-	else if (getName().equals("test_setImageLorg_eclipse_swt_graphics_Image")) test_setImageLorg_eclipse_swt_graphics_Image();
-	else if (getName().equals("test_setTextLjava_lang_String")) test_setTextLjava_lang_String();
-	else if (getName().equals("test_setToolTipTextLjava_lang_String")) test_setToolTipTextLjava_lang_String();
-	else super.runTest();
 }
 
 /* custom */

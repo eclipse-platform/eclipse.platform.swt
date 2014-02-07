@@ -10,12 +10,12 @@
  *******************************************************************************/
 package org.eclipse.swt.tests.junit;
 
-import junit.framework.*;
-import junit.textui.*;
-
-import org.eclipse.swt.*;
-import org.eclipse.swt.events.*;
-import org.eclipse.swt.widgets.*;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.widgets.Tree;
+import org.eclipse.swt.widgets.TreeColumn;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.widgets.TreeColumn
@@ -26,10 +26,6 @@ public class Test_org_eclipse_swt_widgets_TreeColumn extends Test_org_eclipse_sw
 
 public Test_org_eclipse_swt_widgets_TreeColumn(String name) {
 	super(name);
-}
-
-public static void main(String[] args) {
-	TestRunner.run(suite());
 }
 
 @Override
@@ -175,43 +171,6 @@ public void test_setTextLjava_lang_String() {
 	}
 	catch (IllegalArgumentException e) {
 	}
-}
-
-public static Test suite() {
-	TestSuite suite = new TestSuite();
-	java.util.Vector<String> methodNames = methodNames();
-	java.util.Enumeration<String> e = methodNames.elements();
-	while (e.hasMoreElements()) {
-		suite.addTest(new Test_org_eclipse_swt_widgets_TreeColumn(e.nextElement()));
-	}
-	return suite;
-}
-public static java.util.Vector<String> methodNames() {
-	java.util.Vector<String> methodNames = new java.util.Vector<String>();
-	methodNames.addElement("test_ConstructorLorg_eclipse_swt_widgets_TreeI");
-	methodNames.addElement("test_ConstructorLorg_eclipse_swt_widgets_TreeII");
-	methodNames.addElement("test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener");
-	methodNames.addElement("test_getWidth");
-	methodNames.addElement("test_removeSelectionListenerLorg_eclipse_swt_events_SelectionListener");
-	methodNames.addElement("test_setAlignmentI");
-	methodNames.addElement("test_setImageLorg_eclipse_swt_graphics_Image");
-	methodNames.addElement("test_setResizableZ");
-	methodNames.addElement("test_setTextLjava_lang_String");
-	methodNames.addAll(Test_org_eclipse_swt_widgets_Item.methodNames()); // add superclass method names
-	return methodNames;
-}
-@Override
-protected void runTest() throws Throwable {
-	if (getName().equals("test_ConstructorLorg_eclipse_swt_widgets_TreeI")) test_ConstructorLorg_eclipse_swt_widgets_TreeI();
-	else if (getName().equals("test_ConstructorLorg_eclipse_swt_widgets_TreeII")) test_ConstructorLorg_eclipse_swt_widgets_TreeII();
-	else if (getName().equals("test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener")) test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener();
-	else if (getName().equals("test_getWidth")) test_getWidth();
-	else if (getName().equals("test_removeSelectionListenerLorg_eclipse_swt_events_SelectionListener")) test_removeSelectionListenerLorg_eclipse_swt_events_SelectionListener();
-	else if (getName().equals("test_setAlignmentI")) test_setAlignmentI();
-	else if (getName().equals("test_setImageLorg_eclipse_swt_graphics_Image")) test_setImageLorg_eclipse_swt_graphics_Image();
-	else if (getName().equals("test_setResizableZ")) test_setResizableZ();
-	else if (getName().equals("test_setTextLjava_lang_String")) test_setTextLjava_lang_String();
-	else super.runTest();
 }
 
 /* custom */

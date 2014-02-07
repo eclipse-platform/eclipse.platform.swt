@@ -11,12 +11,18 @@
 package org.eclipse.swt.tests.junit;
 
 import static org.junit.Assert.assertArrayEquals;
-import junit.framework.*;
-import junit.textui.*;
 
-import org.eclipse.swt.*;
-import org.eclipse.swt.widgets.*;
-import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.Font;
+import org.eclipse.swt.graphics.GC;
+import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Tree;
+import org.eclipse.swt.widgets.TreeColumn;
+import org.eclipse.swt.widgets.TreeItem;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.widgets.TreeItem
@@ -27,10 +33,6 @@ public class Test_org_eclipse_swt_widgets_TreeItem extends Test_org_eclipse_swt_
 
 public Test_org_eclipse_swt_widgets_TreeItem(String name) {
 	super(name);
-}
-
-public static void main(String[] args) {
-	TestRunner.run(suite());
 }
 
 @Override
@@ -150,7 +152,7 @@ public void test_getBounds() {
 	// TODO with columns
 	// TODO with columns and CHECK style
 }
-void test_getBoundsIA() {	
+void getBoundsIA() {	
 	// no columns - plain style
 	Image image = images[0];
 	Rectangle imageBounds = image.getBounds();
@@ -219,7 +221,7 @@ void test_getBoundsIA() {
 	assertTrue(":1o:", bounds2.width > bounds.width);
 	assertTrue(":1p", bounds2.width >= stringExtent.x + imageBounds.width && bounds2.height >= Math.max(stringExtent.y, imageBounds.height));
 }
-void test_getBoundsIB() {
+void getBoundsIB() {
 	// no columns and CHECK style
 	Image image = images[0];
 	Rectangle imageBounds = image.getBounds();
@@ -290,7 +292,7 @@ void test_getBoundsIB() {
 	assertTrue(":2o:", bounds2.width > bounds.width);
 	assertTrue(":1p", bounds2.width >= stringExtent.x + imageBounds.width && bounds2.height >= Math.max(stringExtent.y, imageBounds.height));
 }
-void test_getBoundsIC() {
+void getBoundsIC() {
 	// with columns
 	
 	Image image = images[0];
@@ -402,7 +404,7 @@ void test_getBoundsIC() {
 	assertTrue(":3x:", bounds.x > 0 && bounds.height > stringExtent1.y && bounds.width  == 0);
 }
 
-void test_getBoundsID() {
+void getBoundsID() {
 	// with columns and CHECK style
 	Image image = images[0];
 	Rectangle imageBounds = image.getBounds();
@@ -526,10 +528,10 @@ public void test_getBoundsI() {
 		}
 		return;
 	}
-	test_getBoundsIA();
-	test_getBoundsIB();
-	test_getBoundsIC();
-	test_getBoundsID();
+	getBoundsIA();
+	getBoundsIB();
+	getBoundsIC();
+	getBoundsID();
 }
 
 public void test_getExpanded() {
@@ -1111,81 +1113,6 @@ public void test_setTextILjava_lang_String(){
 	} 
 
 
-}
-
-public static Test suite() {
-	TestSuite suite = new TestSuite();
-	java.util.Vector<String> methodNames = methodNames();
-	java.util.Enumeration<String> e = methodNames.elements();
-	while (e.hasMoreElements()) {
-		suite.addTest(new Test_org_eclipse_swt_widgets_TreeItem(e.nextElement()));
-	}
-	return suite;
-}
-public static java.util.Vector<String> methodNames() {
-	java.util.Vector<String> methodNames = new java.util.Vector<String>();
-	methodNames.addElement("test_ConstructorLorg_eclipse_swt_widgets_TreeI");
-	methodNames.addElement("test_ConstructorLorg_eclipse_swt_widgets_TreeII");
-	methodNames.addElement("test_ConstructorLorg_eclipse_swt_widgets_TreeItemI");
-	methodNames.addElement("test_ConstructorLorg_eclipse_swt_widgets_TreeItemII");
-	methodNames.addElement("test_getBoundsI");
-	methodNames.addElement("test_getBounds");
-	methodNames.addElement("test_getExpanded");
-	methodNames.addElement("test_getImageBoundsI");
-	methodNames.addElement("test_getItemI");
-	methodNames.addElement("test_getItemCount");
-	methodNames.addElement("test_getItems");
-	methodNames.addElement("test_getParent");
-	methodNames.addElement("test_getParentItem");
-	methodNames.addElement("test_setBackgroundILorg_eclipse_swt_graphics_Color");
-	methodNames.addElement("test_setBackgroundLorg_eclipse_swt_graphics_Color");
-	methodNames.addElement("test_setCheckedZ");
-	methodNames.addElement("test_setExpandedZ");
-	methodNames.addElement("test_setFontILorg_eclipse_swt_graphics_Font");
-	methodNames.addElement("test_setFontLorg_eclipse_swt_graphics_Font");
-	methodNames.addElement("test_setForegroundILorg_eclipse_swt_graphics_Color");
-	methodNames.addElement("test_setForegroundLorg_eclipse_swt_graphics_Color");
-	methodNames.addElement("test_setGrayedZ");
-	methodNames.addElement("test_setImage$Lorg_eclipse_swt_graphics_Image");
-	methodNames.addElement("test_setImageILorg_eclipse_swt_graphics_Image");
-	methodNames.addElement("test_setImageLorg_eclipse_swt_graphics_Image");
-	methodNames.addElement("test_setText$Ljava_lang_String");
-	methodNames.addElement("test_setTextILjava_lang_String");
-	methodNames.addElement("test_setTextLjava_lang_String");
-	methodNames.addAll(Test_org_eclipse_swt_widgets_Item.methodNames()); // add superclass method names
-	return methodNames;
-}
-@Override
-protected void runTest() throws Throwable {
-	if (getName().equals("test_ConstructorLorg_eclipse_swt_widgets_TreeI")) test_ConstructorLorg_eclipse_swt_widgets_TreeI();
-	else if (getName().equals("test_ConstructorLorg_eclipse_swt_widgets_TreeII")) test_ConstructorLorg_eclipse_swt_widgets_TreeII();
-	else if (getName().equals("test_ConstructorLorg_eclipse_swt_widgets_TreeItemI")) test_ConstructorLorg_eclipse_swt_widgets_TreeItemI();
-	else if (getName().equals("test_ConstructorLorg_eclipse_swt_widgets_TreeItemII")) test_ConstructorLorg_eclipse_swt_widgets_TreeItemII();
-	else if (getName().equals("test_getBoundsI")) test_getBoundsI();
-	else if (getName().equals("test_getBounds")) test_getBounds();
-	else if (getName().equals("test_getExpanded")) test_getExpanded();
-	else if (getName().equals("test_getImageBoundsI")) test_getImageBoundsI();
-	else if (getName().equals("test_getItemI"))  test_getItemI();
-	else if (getName().equals("test_getItemCount")) test_getItemCount();
-	else if (getName().equals("test_getItems")) test_getItems();
-	else if (getName().equals("test_getParent")) test_getParent();
-	else if (getName().equals("test_getParentItem")) test_getParentItem();
-	else if (getName().equals("test_setBackgroundILorg_eclipse_swt_graphics_Color")) test_setBackgroundILorg_eclipse_swt_graphics_Color();
-	else if (getName().equals("test_setBackgroundLorg_eclipse_swt_graphics_Color")) test_setBackgroundLorg_eclipse_swt_graphics_Color();
-	else if (getName().equals("test_setCheckedZ")) test_setCheckedZ();
-	else if (getName().equals("test_setExpandedZ")) test_setExpandedZ();
-	else if (getName().equals("test_setFontILorg_eclipse_swt_graphics_Font")) test_setFontILorg_eclipse_swt_graphics_Font();
-	else if (getName().equals("test_setFontLorg_eclipse_swt_graphics_Font")) test_setFontLorg_eclipse_swt_graphics_Font();
-	else if (getName().equals("test_setForegroundILorg_eclipse_swt_graphics_Color")) test_setForegroundILorg_eclipse_swt_graphics_Color();
-	else if (getName().equals("test_setForegroundLorg_eclipse_swt_graphics_Color")) test_setForegroundLorg_eclipse_swt_graphics_Color();
-	else if (getName().equals("test_setGrayedZ")) test_setGrayedZ();
-	else if (getName().equals("test_setImage$Lorg_eclipse_swt_graphics_Image")) test_setImage$Lorg_eclipse_swt_graphics_Image();
-	else if (getName().equals("test_setImageILorg_eclipse_swt_graphics_Image")) test_setImageILorg_eclipse_swt_graphics_Image();
-	else if (getName().equals("test_setImageLorg_eclipse_swt_graphics_Image")) test_setImageLorg_eclipse_swt_graphics_Image();
-	else if (getName().equals("test_setText$Ljava_lang_String")) test_setText$Ljava_lang_String();
-	else if (getName().equals("test_setTextILjava_lang_String")) test_setTextILjava_lang_String();
-	else if (getName().equals("test_setTextLjava_lang_String")) test_setTextLjava_lang_String();
-	else super.runTest();
 }
 
 /* custom */

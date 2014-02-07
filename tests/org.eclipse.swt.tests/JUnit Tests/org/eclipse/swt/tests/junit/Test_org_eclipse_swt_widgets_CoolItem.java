@@ -11,12 +11,13 @@
 package org.eclipse.swt.tests.junit;
 
 
-import junit.framework.*;
-import junit.textui.*;
-
-import org.eclipse.swt.widgets.*;
-import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.*;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.CoolBar;
+import org.eclipse.swt.widgets.CoolItem;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.widgets.CoolItem
@@ -27,10 +28,6 @@ public class Test_org_eclipse_swt_widgets_CoolItem extends Test_org_eclipse_swt_
 
 public Test_org_eclipse_swt_widgets_CoolItem(String name) {
 	super(name);
-}
-
-public static void main(String[] args) {
-	TestRunner.run(suite());
 }
 
 @Override
@@ -263,52 +260,6 @@ public void test_setSizeLorg_eclipse_swt_graphics_Point() {
 	Point size2 = coolItem.getSize();
 	coolItem.setSize(50, 50);
 	assertEquals(size2, coolItem.getSize());
-}
-
-
-public static Test suite() {
-	TestSuite suite = new TestSuite();
-	java.util.Vector<String> methodNames = methodNames();
-	java.util.Enumeration<String> e = methodNames.elements();
-	while (e.hasMoreElements()) {
-		suite.addTest(new Test_org_eclipse_swt_widgets_CoolItem(e.nextElement()));
-	}
-	return suite;
-}
-public static java.util.Vector<String> methodNames() {
-	java.util.Vector<String> methodNames = new java.util.Vector<String>();
-	methodNames.addElement("test_ConstructorLorg_eclipse_swt_widgets_CoolBarI");
-	methodNames.addElement("test_ConstructorLorg_eclipse_swt_widgets_CoolBarII");
-	methodNames.addElement("test_computeSizeII");
-	methodNames.addElement("test_getBounds");
-	methodNames.addElement("test_getControl");
-	methodNames.addElement("test_getParent");
-	methodNames.addElement("test_getPreferredSize");
-	methodNames.addElement("test_getSize");
-	methodNames.addElement("test_setControlLorg_eclipse_swt_widgets_Control");
-	methodNames.addElement("test_setPreferredSizeII");
-	methodNames.addElement("test_setPreferredSizeLorg_eclipse_swt_graphics_Point");
-	methodNames.addElement("test_setSizeII");
-	methodNames.addElement("test_setSizeLorg_eclipse_swt_graphics_Point");
-	methodNames.addAll(Test_org_eclipse_swt_widgets_Item.methodNames()); // add superclass method names
-	return methodNames;
-}
-@Override
-protected void runTest() throws Throwable {
-	if (getName().equals("test_ConstructorLorg_eclipse_swt_widgets_CoolBarI")) test_ConstructorLorg_eclipse_swt_widgets_CoolBarI();
-	else if (getName().equals("test_ConstructorLorg_eclipse_swt_widgets_CoolBarII")) test_ConstructorLorg_eclipse_swt_widgets_CoolBarII();
-	else if (getName().equals("test_computeSizeII")) test_computeSizeII();
-	else if (getName().equals("test_getBounds")) test_getBounds();
-	else if (getName().equals("test_getControl")) test_getControl();
-	else if (getName().equals("test_getParent")) test_getParent();
-	else if (getName().equals("test_getPreferredSize")) test_getPreferredSize();
-	else if (getName().equals("test_getSize")) test_getSize();
-	else if (getName().equals("test_setControlLorg_eclipse_swt_widgets_Control")) test_setControlLorg_eclipse_swt_widgets_Control();
-	else if (getName().equals("test_setPreferredSizeII")) test_setPreferredSizeII();
-	else if (getName().equals("test_setPreferredSizeLorg_eclipse_swt_graphics_Point")) test_setPreferredSizeLorg_eclipse_swt_graphics_Point();
-	else if (getName().equals("test_setSizeII")) test_setSizeII();
-	else if (getName().equals("test_setSizeLorg_eclipse_swt_graphics_Point")) test_setSizeLorg_eclipse_swt_graphics_Point();
-	else super.runTest();
 }
 
 /* custom */

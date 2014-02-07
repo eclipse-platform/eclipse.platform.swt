@@ -11,11 +11,9 @@
 package org.eclipse.swt.tests.junit;
 
 
-import junit.framework.*;
-import junit.textui.*;
-
-import org.eclipse.swt.*;
-import org.eclipse.swt.widgets.*;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.widgets.ToolBar;
+import org.eclipse.swt.widgets.ToolItem;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.widgets.ToolItem
@@ -26,10 +24,6 @@ public class Test_org_eclipse_swt_widgets_ToolItem extends Test_org_eclipse_swt_
 
 public Test_org_eclipse_swt_widgets_ToolItem(String name) {
 	super(name);
-}
-
-public static void main(String[] args) {
-	TestRunner.run(suite());
 }
 
 @Override
@@ -62,33 +56,6 @@ public void test_setImageLorg_eclipse_swt_graphics_Image() {
 
 @Override
 public void test_setTextLjava_lang_String() {
-}
-
-public static Test suite() {
-	TestSuite suite = new TestSuite();
-	java.util.Vector<String> methodNames = methodNames();
-	java.util.Enumeration<String> e = methodNames.elements();
-	while (e.hasMoreElements()) {
-		suite.addTest(new Test_org_eclipse_swt_widgets_ToolItem(e.nextElement()));
-	}
-	return suite;
-}
-public static java.util.Vector<String> methodNames() {
-	java.util.Vector<String> methodNames = new java.util.Vector<String>();
-	methodNames.addElement("test_ConstructorLorg_eclipse_swt_widgets_ToolBarI");
-	methodNames.addElement("test_getToolTipText");
-	methodNames.addElement("test_setImageLorg_eclipse_swt_graphics_Image");
-	methodNames.addElement("test_setTextLjava_lang_String");
-	methodNames.addAll(Test_org_eclipse_swt_widgets_Item.methodNames()); // add superclass method names
-	return methodNames;
-}
-@Override
-protected void runTest() throws Throwable {
-	if (getName().equals("test_ConstructorLorg_eclipse_swt_widgets_ToolBarI")) test_ConstructorLorg_eclipse_swt_widgets_ToolBarI();
-	else if (getName().equals("test_getToolTipText")) test_getToolTipText();
-	else if (getName().equals("test_setImageLorg_eclipse_swt_graphics_Image")) test_setImageLorg_eclipse_swt_graphics_Image();
-	else if (getName().equals("test_setTextLjava_lang_String")) test_setTextLjava_lang_String();
-	else super.runTest();
 }
 
 /* custom */

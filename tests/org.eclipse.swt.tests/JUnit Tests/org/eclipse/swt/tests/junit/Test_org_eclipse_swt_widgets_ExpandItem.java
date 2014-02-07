@@ -9,11 +9,11 @@
  *******************************************************************************/
 package org.eclipse.swt.tests.junit;
 
-import junit.framework.*;
-import junit.textui.*;
-
-import org.eclipse.swt.*;
-import org.eclipse.swt.widgets.*;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.ExpandBar;
+import org.eclipse.swt.widgets.ExpandItem;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.widgets.ToolItem
@@ -24,10 +24,6 @@ public class Test_org_eclipse_swt_widgets_ExpandItem extends Test_org_eclipse_sw
 
 public Test_org_eclipse_swt_widgets_ExpandItem(String name) {
 	super(name);
-}
-
-public static void main(String[] args) {
-	TestRunner.run(suite());
 }
 
 @Override
@@ -132,43 +128,6 @@ public void test_setTextLjava_lang_String() {
 	}
 	expandItem.setText("ABCDEFG");
 	assertTrue(expandItem.getText().startsWith("ABCDEFG"));
-}
-
-public static Test suite() {
-	TestSuite suite = new TestSuite();
-	java.util.Vector<String> methodNames = methodNames();
-	java.util.Enumeration<String> e = methodNames.elements();
-	while (e.hasMoreElements()) {
-		suite.addTest(new Test_org_eclipse_swt_widgets_ExpandItem(e.nextElement()));
-	}
-	return suite;
-}
-public static java.util.Vector<String> methodNames() {
-	java.util.Vector<String> methodNames = new java.util.Vector<String>();
-	methodNames.addElement("test_ConstructorLorg_eclipse_swt_widgets_ExpandItemI");
-	methodNames.addElement("test_ConstructorLorg_eclipse_swt_widgets_ExpandItemII");
-	methodNames.addElement("test_getControl");
-	methodNames.addElement("test_getParent");
-	methodNames.addElement("test_setControlLorg_eclipse_swt_widgets_Control");
-	methodNames.addElement("test_setExpandedZ");
-	methodNames.addElement("test_setHeightI");
-	methodNames.addElement("test_setImageLorg_eclipse_swt_graphics_Image");
-	methodNames.addElement("test_setTextLjava_lang_String");
-	methodNames.addAll(Test_org_eclipse_swt_widgets_Item.methodNames()); // add superclass method names
-	return methodNames;
-}
-@Override
-protected void runTest() throws Throwable {
-	if (getName().equals("test_ConstructorLorg_eclipse_swt_widgets_ExpandBarI")) test_ConstructorLorg_eclipse_swt_widgets_ExpandItemI();
-	else if (getName().equals("test_ConstructorLorg_eclipse_swt_widgets_ExpandBarII")) test_ConstructorLorg_eclipse_swt_widgets_ExpandItemII();
-	else if (getName().equals("test_getControl")) test_getControl();
-	else if (getName().equals("test_getParent")) test_getParent();
-	else if (getName().equals("test_setControlLorg_eclipse_swt_widgets_Control")) test_setControlLorg_eclipse_swt_widgets_Control();
-	else if (getName().equals("test_setExpandedZ")) test_setExpandedZ();
-	else if (getName().equals("test_setHeightI")) test_setHeightI();
-	else if (getName().equals("test_setImageLorg_eclipse_swt_graphics_Image")) test_setImageLorg_eclipse_swt_graphics_Image();
-	else if (getName().equals("test_setTextLjava_lang_String")) test_setTextLjava_lang_String();
-	super.runTest();
 }
 
 /* custom */

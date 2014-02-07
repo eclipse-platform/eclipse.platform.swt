@@ -10,12 +10,16 @@
  *******************************************************************************/
 package org.eclipse.swt.tests.junit;
 
-import junit.framework.*;
-import junit.textui.*;
-
-import org.eclipse.swt.*;
-import org.eclipse.swt.events.*;
-import org.eclipse.swt.widgets.*;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.ArmEvent;
+import org.eclipse.swt.events.ArmListener;
+import org.eclipse.swt.events.HelpEvent;
+import org.eclipse.swt.events.HelpListener;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Menu;
+import org.eclipse.swt.widgets.MenuItem;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.widgets.MenuItem
@@ -26,10 +30,6 @@ public class Test_org_eclipse_swt_widgets_MenuItem extends Test_org_eclipse_swt_
 
 public Test_org_eclipse_swt_widgets_MenuItem(String name) {
 	super(name);
-}
-
-public static void main(String[] args) {
-	TestRunner.run(suite());
 }
 
 @Override
@@ -244,53 +244,6 @@ public void test_setTextLjava_lang_String() {
 	menuItem.setAccelerator(0);
 	menuItem.setText("AB&CDEFG");
 	assertTrue(menuItem.getText().equals("AB&CDEFG"));
-}
-
-public static Test suite() {
-	TestSuite suite = new TestSuite();
-	java.util.Vector<String> methodNames = methodNames();
-	java.util.Enumeration<String> e = methodNames.elements();
-	while (e.hasMoreElements()) {
-		suite.addTest(new Test_org_eclipse_swt_widgets_MenuItem(e.nextElement()));
-	}
-	return suite;
-}
-public static java.util.Vector<String> methodNames() {
-	java.util.Vector<String> methodNames = new java.util.Vector<String>();
-	methodNames.addElement("test_ConstructorLorg_eclipse_swt_widgets_MenuI");
-	methodNames.addElement("test_ConstructorLorg_eclipse_swt_widgets_MenuII");
-	methodNames.addElement("test_addArmListenerLorg_eclipse_swt_events_ArmListener");
-	methodNames.addElement("test_addHelpListenerLorg_eclipse_swt_events_HelpListener");
-	methodNames.addElement("test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener");
-	methodNames.addElement("test_getAccelerator");
-	methodNames.addElement("test_getParent");
-	methodNames.addElement("test_isEnabled");
-	methodNames.addElement("test_setAcceleratorI");
-	methodNames.addElement("test_setEnabledZ");
-	methodNames.addElement("test_setImageLorg_eclipse_swt_graphics_Image");
-	methodNames.addElement("test_setMenuLorg_eclipse_swt_widgets_Menu");
-	methodNames.addElement("test_setSelectionZ");
-	methodNames.addElement("test_setTextLjava_lang_String");
-	methodNames.addAll(Test_org_eclipse_swt_widgets_Item.methodNames()); // add superclass method names
-	return methodNames;
-}
-@Override
-protected void runTest() throws Throwable {
-	if (getName().equals("test_ConstructorLorg_eclipse_swt_widgets_MenuI")) test_ConstructorLorg_eclipse_swt_widgets_MenuI();
-	else if (getName().equals("test_ConstructorLorg_eclipse_swt_widgets_MenuII")) test_ConstructorLorg_eclipse_swt_widgets_MenuII();
-	else if (getName().equals("test_addArmListenerLorg_eclipse_swt_events_ArmListener")) test_addArmListenerLorg_eclipse_swt_events_ArmListener();
-	else if (getName().equals("test_addHelpListenerLorg_eclipse_swt_events_HelpListener")) test_addHelpListenerLorg_eclipse_swt_events_HelpListener();
-	else if (getName().equals("test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener")) test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener();
-	else if (getName().equals("test_getAccelerator")) test_getAccelerator();
-	else if (getName().equals("test_getParent")) test_getParent();
-	else if (getName().equals("test_isEnabled")) test_isEnabled();
-	else if (getName().equals("test_setAcceleratorI")) test_setAcceleratorI();
-	else if (getName().equals("test_setEnabledZ")) test_setEnabledZ();
-	else if (getName().equals("test_setImageLorg_eclipse_swt_graphics_Image")) test_setImageLorg_eclipse_swt_graphics_Image();
-	else if (getName().equals("test_setMenuLorg_eclipse_swt_widgets_Menu")) test_setMenuLorg_eclipse_swt_widgets_Menu();
-	else if (getName().equals("test_setSelectionZ")) test_setSelectionZ();
-	else if (getName().equals("test_setTextLjava_lang_String")) test_setTextLjava_lang_String();
-	else super.runTest();
 }
 
 /* custom */
