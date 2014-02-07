@@ -10,12 +10,11 @@
  *******************************************************************************/
 package org.eclipse.swt.tests.junit;
 
-import junit.framework.*;
-import junit.textui.*;
-
-import org.eclipse.swt.*;
-import org.eclipse.swt.events.*;
-import org.eclipse.swt.widgets.*;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.widgets.Canvas;
+import org.eclipse.swt.widgets.ScrollBar;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.widgets.ScrollBar
@@ -26,10 +25,6 @@ public class Test_org_eclipse_swt_widgets_ScrollBar extends Test_org_eclipse_swt
 
 public Test_org_eclipse_swt_widgets_ScrollBar(String name) {
 	super(name);
-}
-
-public static void main(String[] args) {
-	TestRunner.run(suite());
 }
 
 @Override
@@ -197,53 +192,6 @@ public void test_setVisibleZ() {
 
 	scrollBar.setVisible(false);
 	assertTrue(!scrollBar.getVisible());
-}
-
-public static Test suite() {
-	TestSuite suite = new TestSuite();
-	java.util.Vector<String> methodNames = methodNames();
-	java.util.Enumeration<String> e = methodNames.elements();
-	while (e.hasMoreElements()) {
-		suite.addTest(new Test_org_eclipse_swt_widgets_ScrollBar(e.nextElement()));
-	}
-	return suite;
-}
-public static java.util.Vector<String> methodNames() {
-	java.util.Vector<String> methodNames = new java.util.Vector<String>();
-	methodNames.addElement("test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener");
-	methodNames.addElement("test_getParent");
-	methodNames.addElement("test_getSize");
-	methodNames.addElement("test_isEnabled");
-	methodNames.addElement("test_isVisible");
-	methodNames.addElement("test_setEnabledZ");
-	methodNames.addElement("test_setIncrementI");
-	methodNames.addElement("test_setMaximumI");
-	methodNames.addElement("test_setMinimumI");
-	methodNames.addElement("test_setPageIncrementI");
-	methodNames.addElement("test_setSelectionI");
-	methodNames.addElement("test_setThumbI");
-	methodNames.addElement("test_setValuesIIIIII");
-	methodNames.addElement("test_setVisibleZ");
-	methodNames.addAll(Test_org_eclipse_swt_widgets_Widget.methodNames()); // add superclass method names
-	return methodNames;
-}
-@Override
-protected void runTest() throws Throwable {
-	if (getName().equals("test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener")) test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener();
-	else if (getName().equals("test_getParent")) test_getParent();
-	else if (getName().equals("test_getSize")) test_getSize();
-	else if (getName().equals("test_isEnabled")) test_isEnabled();
-	else if (getName().equals("test_isVisible")) test_isVisible();
-	else if (getName().equals("test_setEnabledZ")) test_setEnabledZ();
-	else if (getName().equals("test_setIncrementI")) test_setIncrementI();
-	else if (getName().equals("test_setMaximumI")) test_setMaximumI();
-	else if (getName().equals("test_setMinimumI")) test_setMinimumI();
-	else if (getName().equals("test_setPageIncrementI")) test_setPageIncrementI();
-	else if (getName().equals("test_setSelectionI")) test_setSelectionI();
-	else if (getName().equals("test_setThumbI")) test_setThumbI();
-	else if (getName().equals("test_setValuesIIIIII")) test_setValuesIIIIII();
-	else if (getName().equals("test_setVisibleZ")) test_setVisibleZ();
-	else super.runTest();
 }
 
 /* custom */

@@ -11,13 +11,18 @@
 package org.eclipse.swt.tests.junit;
 
 import static org.junit.Assert.assertArrayEquals;
-import junit.framework.*;
-import junit.textui.*;
 
-import org.eclipse.swt.*;
-import org.eclipse.swt.widgets.*;
-import org.eclipse.swt.events.*;
-import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.HelpEvent;
+import org.eclipse.swt.events.HelpListener;
+import org.eclipse.swt.events.MenuEvent;
+import org.eclipse.swt.events.MenuListener;
+import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Menu;
+import org.eclipse.swt.widgets.MenuItem;
+import org.eclipse.swt.widgets.Shell;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.widgets.Menu
@@ -28,10 +33,6 @@ public class Test_org_eclipse_swt_widgets_Menu extends Test_org_eclipse_swt_widg
 
 public Test_org_eclipse_swt_widgets_Menu(String name) {
 	super(name);
-}
-
-public static void main(String[] args) {
-	TestRunner.run(suite());
 }
 
 @Override
@@ -252,61 +253,6 @@ public void test_setLocationLorg_eclipse_swt_graphics_Point() {
 	}
 	catch (IllegalArgumentException e) {
 	}	
-}
-
-public static Test suite() {
-	TestSuite suite = new TestSuite();
-	java.util.Vector<String> methodNames = methodNames();
-	java.util.Enumeration<String> e = methodNames.elements();
-	while (e.hasMoreElements()) {
-		suite.addTest(new Test_org_eclipse_swt_widgets_Menu(e.nextElement()));
-	}
-	return suite;
-}
-public static java.util.Vector<String> methodNames() {
-	java.util.Vector<String> methodNames = new java.util.Vector<String>();
-	methodNames.addElement("test_ConstructorLorg_eclipse_swt_widgets_Control");
-	methodNames.addElement("test_ConstructorLorg_eclipse_swt_widgets_DecorationsI");
-	methodNames.addElement("test_ConstructorLorg_eclipse_swt_widgets_Menu");
-	methodNames.addElement("test_ConstructorLorg_eclipse_swt_widgets_MenuItem");
-	methodNames.addElement("test_addHelpListenerLorg_eclipse_swt_events_HelpListener");
-	methodNames.addElement("test_addMenuListenerLorg_eclipse_swt_events_MenuListener");
-	methodNames.addElement("test_getItemCount");
-	methodNames.addElement("test_getItemI");
-	methodNames.addElement("test_getItems");
-	methodNames.addElement("test_getParent");
-	methodNames.addElement("test_getParentItem");
-	methodNames.addElement("test_getParentMenu");
-	methodNames.addElement("test_getShell");
-	methodNames.addElement("test_indexOfLorg_eclipse_swt_widgets_MenuItem");
-	methodNames.addElement("test_setDefaultItemLorg_eclipse_swt_widgets_MenuItem");
-	methodNames.addElement("test_setEnabledZ");
-	methodNames.addElement("test_setLocationII");
-	methodNames.addElement("test_setLocationLorg_eclipse_swt_graphics_Point");
-	methodNames.addAll(Test_org_eclipse_swt_widgets_Widget.methodNames()); // add superclass method names
-	return methodNames;
-}
-@Override
-protected void runTest() throws Throwable {
-	if (getName().equals("test_ConstructorLorg_eclipse_swt_widgets_Control")) test_ConstructorLorg_eclipse_swt_widgets_Control();
-	else if (getName().equals("test_ConstructorLorg_eclipse_swt_widgets_DecorationsI")) test_ConstructorLorg_eclipse_swt_widgets_DecorationsI();
-	else if (getName().equals("test_ConstructorLorg_eclipse_swt_widgets_Menu")) test_ConstructorLorg_eclipse_swt_widgets_Menu();
-	else if (getName().equals("test_ConstructorLorg_eclipse_swt_widgets_MenuItem")) test_ConstructorLorg_eclipse_swt_widgets_MenuItem();
-	else if (getName().equals("test_addHelpListenerLorg_eclipse_swt_events_HelpListener")) test_addHelpListenerLorg_eclipse_swt_events_HelpListener();
-	else if (getName().equals("test_addMenuListenerLorg_eclipse_swt_events_MenuListener")) test_addMenuListenerLorg_eclipse_swt_events_MenuListener();
-	else if (getName().equals("test_getItemCount")) test_getItemCount();
-	else if (getName().equals("test_getItemI")) test_getItemI();
-	else if (getName().equals("test_getItems")) test_getItems();
-	else if (getName().equals("test_getParent")) test_getParent();
-	else if (getName().equals("test_getParentItem")) test_getParentItem();
-	else if (getName().equals("test_getParentMenu")) test_getParentMenu();
-	else if (getName().equals("test_getShell")) test_getShell();
-	else if (getName().equals("test_indexOfLorg_eclipse_swt_widgets_MenuItem")) test_indexOfLorg_eclipse_swt_widgets_MenuItem();
-	else if (getName().equals("test_setDefaultItemLorg_eclipse_swt_widgets_MenuItem")) test_setDefaultItemLorg_eclipse_swt_widgets_MenuItem();
-	else if (getName().equals("test_setEnabledZ")) test_setEnabledZ();
-	else if (getName().equals("test_setLocationII")) test_setLocationII();
-	else if (getName().equals("test_setLocationLorg_eclipse_swt_graphics_Point")) test_setLocationLorg_eclipse_swt_graphics_Point();
-	else super.runTest();
 }
 
 /* custom */

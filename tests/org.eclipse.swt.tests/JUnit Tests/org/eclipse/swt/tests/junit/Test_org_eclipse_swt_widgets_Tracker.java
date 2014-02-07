@@ -10,10 +10,7 @@
  *******************************************************************************/
 package org.eclipse.swt.tests.junit;
 
-import junit.framework.*;
-import junit.textui.*;
-
-import org.eclipse.swt.widgets.*;
+import org.eclipse.swt.widgets.Tracker;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.widgets.Tracker
@@ -26,32 +23,11 @@ public Test_org_eclipse_swt_widgets_Tracker(String name) {
 	super(name);
 }
 
-public static void main(String[] args) {
-	TestRunner.run(suite());
-}
-
 @Override
 protected void setUp() {
 	super.setUp();
 	tracker = new Tracker(shell, 0);
 	setWidget(tracker);
-}
-
-public static Test suite() {
-	TestSuite suite = new TestSuite();
-	java.util.Vector<String> methodNames = methodNames();
-	java.util.Enumeration<String> e = methodNames.elements();
-	while (e.hasMoreElements()) {
-		suite.addTest(new Test_org_eclipse_swt_widgets_Tracker(e.nextElement()));
-	}
-	return suite;
-}
-public static java.util.Vector<String> methodNames() {
-	return Test_org_eclipse_swt_widgets_Widget.methodNames(); // add superclass method names
-}
-@Override
-protected void runTest() throws Throwable {
-	super.runTest();
 }
 
 /* custom */
