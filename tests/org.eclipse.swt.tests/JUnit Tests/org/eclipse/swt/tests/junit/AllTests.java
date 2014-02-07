@@ -90,17 +90,17 @@ public AllTests() {
 	//addTest(Test_org_eclipse_swt_widgets_Decorations.suite());
 	addTestSuite(Test_org_eclipse_swt_widgets_Label.class);
 	addTestSuite(Test_org_eclipse_swt_widgets_Button.class);
-	addTest(Test_org_eclipse_swt_widgets_ExpandBar.suite());
-	addTest(Test_org_eclipse_swt_widgets_List.suite());
-	addTest(Test_org_eclipse_swt_widgets_Text.suite());
+	addTestSuite(Test_org_eclipse_swt_widgets_ExpandBar.class);
+	addTestSuite(Test_org_eclipse_swt_widgets_List.class);
+	addTestSuite(Test_org_eclipse_swt_widgets_Text.class);
 	addTestSuite(Test_org_eclipse_swt_widgets_ScrollBar.class);
 	addTestSuite(Test_org_eclipse_swt_widgets_Sash.class);
-	addTest(Test_org_eclipse_swt_widgets_Tree.suite());
-	addTest(Test_org_eclipse_swt_widgets_TabFolder.suite());
-	addTest(Test_org_eclipse_swt_widgets_Combo.suite());
-	addTest(Test_org_eclipse_swt_widgets_Group.suite());
-	addTest(Test_org_eclipse_swt_widgets_ToolBar.suite());
-	addTest(Test_org_eclipse_swt_widgets_Table.suite());
+	addTestSuite(Test_org_eclipse_swt_widgets_Tree.class);
+	addTestSuite(Test_org_eclipse_swt_widgets_TabFolder.class);
+	addTestSuite(Test_org_eclipse_swt_widgets_Combo.class);
+	addTestSuite(Test_org_eclipse_swt_widgets_Group.class);
+	addTestSuite(Test_org_eclipse_swt_widgets_ToolBar.class);
+	addTestSuite(Test_org_eclipse_swt_widgets_Table.class);
 	addTest(Test_org_eclipse_swt_widgets_Canvas.suite());
 	addTestSuite(Test_org_eclipse_swt_widgets_Scale.class);
 	addTestSuite(Test_org_eclipse_swt_widgets_Slider.class);
@@ -108,7 +108,7 @@ public AllTests() {
 	addTest(Test_org_eclipse_swt_widgets_Composite.suite());
 	addTestSuite(Test_org_eclipse_swt_widgets_Link.class);
 	addTest(Test_org_eclipse_swt_widgets_DateTime.suite());
-	//addTest(Test_org_eclipse_swt_widgets_CoolBar.suite());
+	//addTestSuite(Test_org_eclipse_swt_widgets_CoolBar.class);
 
 	addTestSuite(Test_org_eclipse_swt_widgets_ColorDialog.class);
 	addTestSuite(Test_org_eclipse_swt_widgets_FileDialog.class);
@@ -118,14 +118,14 @@ public AllTests() {
 	addTestSuite(Test_org_eclipse_swt_widgets_Monitor.class);
 	addTestSuite(Test_org_eclipse_swt_layout_GridData.class);
 
-	addTest(Test_org_eclipse_swt_custom_TableTree.suite());
+	addTestSuite(Test_org_eclipse_swt_custom_TableTree.class);
 	addTestSuite(Test_org_eclipse_swt_custom_StyleRange.class);
-	addTest(Test_org_eclipse_swt_custom_CCombo.suite());
+	addTestSuite(Test_org_eclipse_swt_custom_CCombo.class);
 	addTestSuite(Test_org_eclipse_swt_custom_TableTreeItem.class);
-	addTest(Test_org_eclipse_swt_custom_CLabel.suite());
+	addTestSuite(Test_org_eclipse_swt_custom_CLabel.class);
 	addTestSuite(Test_org_eclipse_swt_custom_CTabItem.class);
-	addTest(Test_org_eclipse_swt_custom_StyledText.suite());
-	addTest(Test_org_eclipse_swt_custom_CTabFolder.suite());
+	addTestSuite(Test_org_eclipse_swt_custom_StyledText.class);
+	addTestSuite(Test_org_eclipse_swt_custom_CTabFolder.class);
 
 	addTestSuite(Test_org_eclipse_swt_events_ControlEvent.class);
 	addTestSuite(Test_org_eclipse_swt_events_ModifyEvent.class);

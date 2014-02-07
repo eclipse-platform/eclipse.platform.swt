@@ -14,11 +14,10 @@ import static org.junit.Assert.assertArrayEquals;
 
 import java.util.Vector;
 
-import junit.framework.*;
-import junit.textui.*;
-
-import org.eclipse.swt.*;
-import org.eclipse.swt.widgets.*;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.widgets.TabFolder;
+import org.eclipse.swt.widgets.TabItem;
+import org.eclipse.swt.widgets.Text;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.widgets.TabFolder
@@ -29,10 +28,6 @@ public class Test_org_eclipse_swt_widgets_TabFolder extends Test_org_eclipse_swt
 
 public Test_org_eclipse_swt_widgets_TabFolder(String name) {
 	super(name);
-}
-
-public static void main(String[] args) {
-	TestRunner.run(suite());
 }
 
 @Override
@@ -346,61 +341,6 @@ public void test_setSelectionI() {
 	finally {
 		assertArrayEquals(new TabItem[]{items[0]}, tabFolder.getSelection());
 	}
-}
-
-public static Test suite() {
-	TestSuite suite = new TestSuite();
-	java.util.Vector<String> methodNames = methodNames();
-	java.util.Enumeration<String> e = methodNames.elements();
-	while (e.hasMoreElements()) {
-		suite.addTest(new Test_org_eclipse_swt_widgets_TabFolder(e.nextElement()));
-	}
-	return suite;
-}
-public static java.util.Vector<String> methodNames() {
-	java.util.Vector<String> methodNames = new java.util.Vector<String>();
-	methodNames.addElement("test_ConstructorLorg_eclipse_swt_widgets_CompositeI");
-	methodNames.addElement("test_computeSizeIIZ");
-	methodNames.addElement("test_computeTrimIIII");
-	methodNames.addElement("test_getClientArea");
-	methodNames.addElement("test_getItemCount");
-	methodNames.addElement("test_getItemI");
-	methodNames.addElement("test_getItems");
-	methodNames.addElement("test_getSelection");
-	methodNames.addElement("test_getSelectionIndex");
-	methodNames.addElement("test_indexOfLorg_eclipse_swt_widgets_TabItem");
-	methodNames.addElement("test_setSelectionI");
-	methodNames.addElement("test_setSelectionEmpty");
-	methodNames.addElement("test_consistency_KeySelection");
-	methodNames.addElement("test_consistency_MouseSelection");
-	methodNames.addElement("test_consistency_PgupSelection");
-	methodNames.addElement("test_consistency_PgdwnSelection");
-	methodNames.addElement("test_consistency_MenuDetect");
-	methodNames.addElement("test_consistency_DragDetect");
-	methodNames.addAll(Test_org_eclipse_swt_widgets_Composite.methodNames()); // add superclass method names
-	return methodNames;
-}
-@Override
-protected void runTest() throws Throwable {
-	if (getName().equals("test_ConstructorLorg_eclipse_swt_widgets_CompositeI")) test_ConstructorLorg_eclipse_swt_widgets_CompositeI();
-	else if (getName().equals("test_computeSizeIIZ")) test_computeSizeIIZ();
-	else if (getName().equals("test_computeTrimIIII")) test_computeTrimIIII();
-	else if (getName().equals("test_getClientArea")) test_getClientArea();
-	else if (getName().equals("test_getItemCount")) test_getItemCount();
-	else if (getName().equals("test_getItemI")) test_getItemI();
-	else if (getName().equals("test_getItems")) test_getItems();
-	else if (getName().equals("test_getSelection")) test_getSelection();
-	else if (getName().equals("test_getSelectionIndex")) test_getSelectionIndex();
-	else if (getName().equals("test_indexOfLorg_eclipse_swt_widgets_TabItem")) test_indexOfLorg_eclipse_swt_widgets_TabItem();
-	else if (getName().equals("test_setSelectionI")) test_setSelectionI();
-	else if (getName().equals("test_setSelectionEmpty")) test_setSelectionEmpty();
-	else if (getName().equals("test_consistency_KeySelection")) test_consistency_KeySelection();
-	else if (getName().equals("test_consistency_MouseSelection")) test_consistency_MouseSelection();
-	else if (getName().equals("test_consistency_PgdwnSelection")) test_consistency_PgdwnSelection();
-	else if (getName().equals("test_consistency_PgupSelection")) test_consistency_PgupSelection();
-	else if (getName().equals("test_consistency_MenuDetect")) test_consistency_MenuDetect();
-	else if (getName().equals("test_consistency_DragDetect")) test_consistency_DragDetect();
-	else super.runTest();
 }
 
 /* custom */

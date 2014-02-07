@@ -12,15 +12,18 @@ package org.eclipse.swt.tests.junit;
 
 import java.util.Vector;
 
-import junit.framework.*;
-import junit.textui.*;
-
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
-import org.eclipse.swt.widgets.*;
+import org.eclipse.swt.widgets.CoolBar;
+import org.eclipse.swt.widgets.CoolItem;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Menu;
+import org.eclipse.swt.widgets.MenuItem;
+import org.eclipse.swt.widgets.ToolBar;
+import org.eclipse.swt.widgets.ToolItem;
 
 
 /**
@@ -32,10 +35,6 @@ public class Test_org_eclipse_swt_widgets_CoolBar extends Test_org_eclipse_swt_w
 
 public Test_org_eclipse_swt_widgets_CoolBar(String name) {
 	super(name);
-}
-
-public static void main(String[] args) {
-	TestRunner.run(suite());
 }
 
 @Override
@@ -53,43 +52,8 @@ public void test_ConstructorLorg_eclipse_swt_widgets_CompositeI() {
 public void test_computeSizeIIZ() {
 }
 
-public static Test suite() {
-	TestSuite suite = new TestSuite();
-	java.util.Vector<String> methodNames = methodNames();
-	java.util.Enumeration<String> e = methodNames.elements();
-	while (e.hasMoreElements()) {
-		suite.addTest(new Test_org_eclipse_swt_widgets_CoolBar(e.nextElement()));
-	}
-	return suite;
-}
-public static java.util.Vector<String> methodNames() {
-	java.util.Vector<String> methodNames = new java.util.Vector<String>();
-	methodNames.addElement("test_ConstructorLorg_eclipse_swt_widgets_CompositeI");
-	methodNames.addElement("test_computeSizeIIZ");
-	methodNames.addElement("test_consistency_ChevronDragDetect");
-	methodNames.addElement("test_consistency_ChevronMenuDetect");
-	methodNames.addElement("test_consistency_ChevronMouseSelection");
-	methodNames.addElement("test_consistency_DragDetect");
-	methodNames.addElement("test_consistency_MenuDetect");
-	methodNames.addAll(Test_org_eclipse_swt_widgets_Composite.methodNames()); // add superclass method names
-	return methodNames;
-}
-@Override
-protected void runTest() throws Throwable {
-	if (getName().equals("test_ConstructorLorg_eclipse_swt_widgets_CompositeI")) test_ConstructorLorg_eclipse_swt_widgets_CompositeI();
-	else if (getName().equals("test_computeSizeIIZ")) test_computeSizeIIZ();
-	else if (getName().equals("test_consistency_DragDetect")) test_consistency_DragDetect();
-	else if (getName().equals("test_consistency_MenuDetect")) test_consistency_MenuDetect();
-	else if (getName().equals("test_consistency_ChevronDragDetect")) test_consistency_ChevronDragDetect();
-	else if (getName().equals("test_consistency_ChevronMenuDetect")) test_consistency_ChevronMenuDetect();
-	else if (getName().equals("test_consistency_ChevronMouseSelection")) test_consistency_ChevronMouseSelection();
-	else super.runTest();
-}
-
 /* Custom */
-
 CoolBar coolBar;
-
 
 private void createCoolBar(Vector<String> events) {
     tearDown();

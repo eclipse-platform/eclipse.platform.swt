@@ -12,13 +12,15 @@ package org.eclipse.swt.tests.junit;
 
 
 import static org.junit.Assert.assertArrayEquals;
-import junit.framework.*;
-import junit.textui.*;
 
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.*;
-import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.widgets.*;
+import org.eclipse.swt.events.ModifyEvent;
+import org.eclipse.swt.events.ModifyListener;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.widgets.Combo;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.widgets.Combo
@@ -31,10 +33,6 @@ public class Test_org_eclipse_swt_widgets_Combo extends Test_org_eclipse_swt_wid
 
 public Test_org_eclipse_swt_widgets_Combo(String name) {
 	super(name);
-}
-
-public static void main(String[] args) {
-	TestRunner.run(suite());
 }
 
 @Override
@@ -799,105 +797,6 @@ public void test_setTextLjava_lang_String() {
 		combo.setText(cases[i]);
 		assertTrue(":c:" + i, combo.getText().equals(cases[i]));
 	}
-}
-
-public static Test suite() {
-	TestSuite suite = new TestSuite();
-	java.util.Vector<String> methodNames = methodNames();
-	java.util.Enumeration<String> e = methodNames.elements();
-	while (e.hasMoreElements()) {
-		suite.addTest(new Test_org_eclipse_swt_widgets_Combo(e.nextElement()));
-	}
-	return suite;
-}
-public static java.util.Vector<String> methodNames() {
-	java.util.Vector<String> methodNames = new java.util.Vector<String>();
-	methodNames.addElement("test_ConstructorLorg_eclipse_swt_widgets_CompositeI");
-	methodNames.addElement("test_addLjava_lang_String");
-	methodNames.addElement("test_addLjava_lang_StringI");
-	methodNames.addElement("test_addModifyListenerLorg_eclipse_swt_events_ModifyListener");
-	methodNames.addElement("test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener");
-	methodNames.addElement("test_clearSelection");
-	methodNames.addElement("test_computeSizeIIZ");
-	methodNames.addElement("test_copy");
-	methodNames.addElement("test_cut");
-	methodNames.addElement("test_deselectAll");
-	methodNames.addElement("test_deselectI");
-	methodNames.addElement("test_getItemCount");
-	methodNames.addElement("test_getItemHeight");
-	methodNames.addElement("test_getItemI");
-	methodNames.addElement("test_getItems");
-	methodNames.addElement("test_getOrientation");
-	methodNames.addElement("test_getSelection");
-	methodNames.addElement("test_getSelectionIndex");
-	methodNames.addElement("test_getText");
-	methodNames.addElement("test_getTextHeight");
-	methodNames.addElement("test_getTextLimit");
-	methodNames.addElement("test_indexOfLjava_lang_String");
-	methodNames.addElement("test_indexOfLjava_lang_StringI");
-	methodNames.addElement("test_paste");
-	methodNames.addElement("test_removeAll");
-	methodNames.addElement("test_removeI");
-	methodNames.addElement("test_removeII");
-	methodNames.addElement("test_removeLjava_lang_String");
-	methodNames.addElement("test_selectI");
-	methodNames.addElement("test_setItemILjava_lang_String");
-	methodNames.addElement("test_setItems$Ljava_lang_String");
-	methodNames.addElement("test_setOrientationI");
-	methodNames.addElement("test_setSelectionLorg_eclipse_swt_graphics_Point");
-	methodNames.addElement("test_setTextLimitI");
-	methodNames.addElement("test_setTextLjava_lang_String");
-	methodNames.addElement("test_consistency_MouseSelection");
-	methodNames.addElement("test_consistency_KeySelection");
-	methodNames.addElement("test_consistency_EnterSelection");
-	methodNames.addElement("test_consistency_MenuDetect");
-	methodNames.addElement("test_consistency_DragDetect");
-	methodNames.addAll(Test_org_eclipse_swt_widgets_Composite.methodNames()); // add superclass method names
-	return methodNames;
-}
-@Override
-protected void runTest() throws Throwable {
-	if (getName().equals("test_ConstructorLorg_eclipse_swt_widgets_CompositeI")) test_ConstructorLorg_eclipse_swt_widgets_CompositeI();
-	else if (getName().equals("test_addLjava_lang_String")) test_addLjava_lang_String();
-	else if (getName().equals("test_addLjava_lang_StringI")) test_addLjava_lang_StringI();
-	else if (getName().equals("test_addModifyListenerLorg_eclipse_swt_events_ModifyListener")) test_addModifyListenerLorg_eclipse_swt_events_ModifyListener();
-	else if (getName().equals("test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener")) test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener();
-	else if (getName().equals("test_clearSelection")) test_clearSelection();
-	else if (getName().equals("test_computeSizeIIZ")) test_computeSizeIIZ();
-	else if (getName().equals("test_copy")) test_copy();
-	else if (getName().equals("test_cut")) test_cut();
-	else if (getName().equals("test_deselectAll")) test_deselectAll();
-	else if (getName().equals("test_deselectI")) test_deselectI();
-	else if (getName().equals("test_getItemCount")) test_getItemCount();
-	else if (getName().equals("test_getItemHeight")) test_getItemHeight();
-	else if (getName().equals("test_getItemI")) test_getItemI();
-	else if (getName().equals("test_getItems")) test_getItems();
-	else if (getName().equals("test_getOrientation")) test_getOrientation();
-	else if (getName().equals("test_getSelection")) test_getSelection();
-	else if (getName().equals("test_getSelectionIndex")) test_getSelectionIndex();
-	else if (getName().equals("test_getText")) test_getText();
-	else if (getName().equals("test_getTextHeight")) test_getTextHeight();
-	else if (getName().equals("test_getTextLimit")) test_getTextLimit();
-	else if (getName().equals("test_indexOfLjava_lang_String")) test_indexOfLjava_lang_String();
-	else if (getName().equals("test_indexOfLjava_lang_StringI")) test_indexOfLjava_lang_StringI();
-	else if (getName().equals("test_paste")) test_paste();
-	else if (getName().equals("test_removeAll")) test_removeAll();
-	else if (getName().equals("test_removeI")) test_removeI();
-	else if (getName().equals("test_removeII")) test_removeII();
-	else if (getName().equals("test_removeLjava_lang_String")) test_removeLjava_lang_String();
-	else if (getName().equals("test_selectI")) test_selectI();
-	else if (getName().equals("test_setItemILjava_lang_String")) test_setItemILjava_lang_String();
-	else if (getName().equals("test_setItems$Ljava_lang_String")) test_setItems$Ljava_lang_String();
-	else if (getName().equals("test_setOrientationI")) test_setOrientationI();
-	else if (getName().equals("test_setSelectionLorg_eclipse_swt_graphics_Point")) test_setSelectionLorg_eclipse_swt_graphics_Point();
-	else if (getName().equals("test_setTextLimitI")) test_setTextLimitI();
-	else if (getName().equals("test_setTextLjava_lang_String")) test_setTextLjava_lang_String();
-	else if (getName().equals("test_consistency_MouseSelection")) test_consistency_MouseSelection();
-	else if (getName().equals("test_consistency_KeySelection")) test_consistency_KeySelection();
-	else if (getName().equals("test_consistency_EnterSelection")) test_consistency_EnterSelection();
-	else if (getName().equals("test_consistency_MenuDetect")) test_consistency_MenuDetect();
-	else if (getName().equals("test_consistency_DragDetect")) test_consistency_DragDetect();
-	else super.runTest();
 }
 
 /* custom */

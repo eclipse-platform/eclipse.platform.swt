@@ -14,13 +14,12 @@ import static org.junit.Assert.assertArrayEquals;
 
 import java.util.Vector;
 
-import junit.framework.*;
-import junit.textui.*;
-
-import org.eclipse.swt.*;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ExpandEvent;
 import org.eclipse.swt.events.ExpandListener;
-import org.eclipse.swt.widgets.*;
+import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.ExpandBar;
+import org.eclipse.swt.widgets.ExpandItem;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.widgets.ExpandBar
@@ -31,10 +30,6 @@ public class Test_org_eclipse_swt_widgets_ExpandBar extends Test_org_eclipse_swt
 
 public Test_org_eclipse_swt_widgets_ExpandBar(String name) {
 	super(name);
-}
-
-public static void main(String[] args) {
-	TestRunner.run(suite());
 }
 
 @Override
@@ -174,51 +169,6 @@ public void test_setSpacingI() {
 	
 	expandBar.setSpacing(-4);
 	assertEquals(expandBar.getSpacing(), 3);
-}
-
-public static Test suite() {
-	TestSuite suite = new TestSuite();
-	java.util.Vector<String> methodNames = methodNames();
-	java.util.Enumeration<String> e = methodNames.elements();
-	while (e.hasMoreElements()) {
-		suite.addTest(new Test_org_eclipse_swt_widgets_ExpandBar(e.nextElement()));
-	}
-	return suite;
-}
-
-public static java.util.Vector<String> methodNames() {
-	java.util.Vector<String> methodNames = new java.util.Vector<String>();
-	methodNames.addElement("test_addExpandListenerLorg_eclipse_swt_events_ExpandListener");
-	methodNames.addElement("test_ConstructorLorg_eclipse_swt_widgets_CompositeI");
-	methodNames.addElement("test_getItemCount");
-	methodNames.addElement("test_getItemI");
-	methodNames.addElement("test_getItems");
-	methodNames.addElement("test_setSpacingI");
-	methodNames.addElement("test_indexOfLorg_eclipse_swt_widgets_ExpandItem");
-	methodNames.addElement("test_consistency_MouseSelection");
-	methodNames.addElement("test_consistency_SpaceSelection");
-	methodNames.addElement("test_consistency_EnterSelection");
-	methodNames.addElement("test_consistency_MenuDetect");
-	methodNames.addElement("test_consistency_DragDetect");
-	methodNames.addAll(Test_org_eclipse_swt_widgets_Composite.methodNames()); // add superclass method names
-	return methodNames;
-}
-
-@Override
-protected void runTest() throws Throwable {
-	if (getName().equals("test_addExpandListenerLorg_eclipse_swt_events_ExpandListener")) test_addExpandListenerLorg_eclipse_swt_events_ExpandListener();
-	else if (getName().equals("test_ConstructorLorg_eclipse_swt_widgets_CompositeI")) test_ConstructorLorg_eclipse_swt_widgets_CompositeI();
-	else if (getName().equals("test_getItemCount")) test_getItemCount();
-	else if (getName().equals("test_getItemI")) test_getItemI();
-	else if (getName().equals("test_getItems")) test_getItems();
-	else if (getName().equals("test_setSpacingI")) test_setSpacingI();
-	else if (getName().equals("test_indexOfLorg_eclipse_swt_widgets_ExpandItem")) test_indexOfLorg_eclipse_swt_widgets_ExpandItem();
-	else if (getName().equals("test_consistency_MouseSelection")) test_consistency_MouseSelection();
-	else if (getName().equals("test_consistency_EnterSelection")) test_consistency_EnterSelection();
-	else if (getName().equals("test_consistency_SpaceSelection")) test_consistency_SpaceSelection();
-	else if (getName().equals("test_consistency_MenuDetect")) test_consistency_MenuDetect();
-	else if (getName().equals("test_consistency_DragDetect")) test_consistency_DragDetect();
-	else super.runTest();
 }
 
 private void createExpandBar(Vector<String> events) {

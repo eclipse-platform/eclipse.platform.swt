@@ -41,17 +41,17 @@ public static Test suite() {
 	//suite.addTest(Test_org_eclipse_swt_widgets_Decorations.suite());
 	suite.addTestSuite(Test_org_eclipse_swt_widgets_Label.class);
 	suite.addTestSuite(Test_org_eclipse_swt_widgets_Button.class);
-	suite.addTest(Test_org_eclipse_swt_widgets_ExpandBar.suite());
-	suite.addTest(Test_org_eclipse_swt_widgets_List.suite());
-	suite.addTest(Test_org_eclipse_swt_widgets_Text.suite());
+	suite.addTestSuite(Test_org_eclipse_swt_widgets_ExpandBar.class);
+	suite.addTestSuite(Test_org_eclipse_swt_widgets_List.class);
+	suite.addTestSuite(Test_org_eclipse_swt_widgets_Text.class);
 	suite.addTestSuite(Test_org_eclipse_swt_widgets_ScrollBar.class);
 	suite.addTestSuite(Test_org_eclipse_swt_widgets_Sash.class);
-	suite.addTest(Test_org_eclipse_swt_widgets_Tree.suite());
-	suite.addTest(Test_org_eclipse_swt_widgets_TabFolder.suite());
-	suite.addTest(Test_org_eclipse_swt_widgets_Combo.suite());
-	suite.addTest(Test_org_eclipse_swt_widgets_Group.suite());
-	suite.addTest(Test_org_eclipse_swt_widgets_ToolBar.suite());
-	suite.addTest(Test_org_eclipse_swt_widgets_Table.suite());
+	suite.addTestSuite(Test_org_eclipse_swt_widgets_Tree.class);
+	suite.addTestSuite(Test_org_eclipse_swt_widgets_TabFolder.class);
+	suite.addTestSuite(Test_org_eclipse_swt_widgets_Combo.class);
+	suite.addTestSuite(Test_org_eclipse_swt_widgets_Group.class);
+	suite.addTestSuite(Test_org_eclipse_swt_widgets_ToolBar.class);
+	suite.addTestSuite(Test_org_eclipse_swt_widgets_Table.class);
 	suite.addTest(Test_org_eclipse_swt_widgets_Canvas.suite());
 	suite.addTestSuite(Test_org_eclipse_swt_widgets_Scale.class);
 	suite.addTestSuite(Test_org_eclipse_swt_widgets_Slider.class);
@@ -68,14 +68,14 @@ public static Test suite() {
 	suite.addTestSuite(Test_org_eclipse_swt_widgets_MessageBox.class);
 	suite.addTestSuite(Test_org_eclipse_swt_widgets_Monitor.class);
 
-	suite.addTest(Test_org_eclipse_swt_custom_TableTree.suite());
+	suite.addTestSuite(Test_org_eclipse_swt_custom_TableTree.class);
 	suite.addTestSuite(Test_org_eclipse_swt_custom_StyleRange.class);
-	suite.addTest(Test_org_eclipse_swt_custom_CCombo.suite());
+	suite.addTestSuite(Test_org_eclipse_swt_custom_CCombo.class);
 	suite.addTestSuite(Test_org_eclipse_swt_custom_TableTreeItem.class);
-	suite.addTest(Test_org_eclipse_swt_custom_CLabel.suite());
+	suite.addTestSuite(Test_org_eclipse_swt_custom_CLabel.class);
 	suite.addTestSuite(Test_org_eclipse_swt_custom_CTabItem.class);
-	suite.addTest(Test_org_eclipse_swt_custom_StyledText.suite());
-	suite.addTest(Test_org_eclipse_swt_custom_CTabFolder.suite());
+	suite.addTestSuite(Test_org_eclipse_swt_custom_StyledText.class);
+	suite.addTestSuite(Test_org_eclipse_swt_custom_CTabFolder.class);
 
 	return suite;
 }

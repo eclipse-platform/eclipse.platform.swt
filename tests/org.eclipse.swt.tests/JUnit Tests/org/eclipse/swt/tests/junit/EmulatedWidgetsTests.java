@@ -27,12 +27,12 @@ public static Test suite() {
 
 	suite.addTestSuite(Test_org_eclipse_swt_widgets_ColorDialog.class);
 	suite.addTestSuite(Test_org_eclipse_swt_widgets_FontDialog.class);	
-	suite.addTest(Test_org_eclipse_swt_widgets_TabFolder.suite());
+	suite.addTestSuite(Test_org_eclipse_swt_widgets_TabFolder.class);
 	suite.addTestSuite(Test_org_eclipse_swt_widgets_TabItem.class);
-	suite.addTest(Test_org_eclipse_swt_widgets_Table.suite());
+	suite.addTestSuite(Test_org_eclipse_swt_widgets_Table.class);
 	suite.addTestSuite(Test_org_eclipse_swt_widgets_TableItem.class);
 	suite.addTestSuite(Test_org_eclipse_swt_widgets_TableColumn.class);	
-	suite.addTest(Test_org_eclipse_swt_widgets_Tree.suite());
+	suite.addTestSuite(Test_org_eclipse_swt_widgets_Tree.class);
 	suite.addTestSuite(Test_org_eclipse_swt_widgets_TreeItem.class);
 		
 	return suite;

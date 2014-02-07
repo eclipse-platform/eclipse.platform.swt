@@ -15,9 +15,6 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.graphics.Point;
 
-import junit.framework.*;
-import junit.textui.*;
-
 /**
  * Automated Test Suite for class org.eclipse.swt.custom.CCombo
  *
@@ -27,10 +24,6 @@ public class Test_org_eclipse_swt_custom_CCombo extends Test_org_eclipse_swt_wid
 
 public Test_org_eclipse_swt_custom_CCombo(String name) {
 	super(name);
-}
-
-public static void main(String[] args) {
-	TestRunner.run(suite());
 }
 
 @Override
@@ -139,69 +132,6 @@ public void test_setToolTipTextLjava_lang_String() {
 
 @Override
 public void test_setVisibleZ() {
-}
-
-public static Test suite() {
-	TestSuite suite = new TestSuite();
-	java.util.Vector<String> methodNames = methodNames();
-	java.util.Enumeration<String> e = methodNames.elements();
-	while (e.hasMoreElements()) {
-		suite.addTest(new Test_org_eclipse_swt_custom_CCombo(e.nextElement()));
-	}
-	return suite;
-}
-
-public static java.util.Vector<String> methodNames() {
-	java.util.Vector<String> methodNames = new java.util.Vector<String>();
-	methodNames.addElement("test_ConstructorLorg_eclipse_swt_widgets_CompositeI");
-	methodNames.addElement("test_computeSizeIIZ");
-	methodNames.addElement("test_copy");
-	methodNames.addElement("test_cut");
-	methodNames.addElement("test_getChildren");
-	methodNames.addElement("test_isFocusControl");
-	methodNames.addElement("test_paste");
-	methodNames.addElement("test_redraw");
-	methodNames.addElement("test_redrawIIIIZ");
-	methodNames.addElement("test_setBackgroundLorg_eclipse_swt_graphics_Color");
-	methodNames.addElement("test_setEnabledZ");
-	methodNames.addElement("test_setFocus");
-	methodNames.addElement("test_setFontLorg_eclipse_swt_graphics_Font");
-	methodNames.addElement("test_setForegroundLorg_eclipse_swt_graphics_Color");
-	methodNames.addElement("test_setToolTipTextLjava_lang_String");
-	methodNames.addElement("test_setVisibleZ");
-	methodNames.addElement("test_consistency_MouseSelection");
-	methodNames.addElement("test_consistency_KeySelection");
-	methodNames.addElement("test_consistency_EnterSelection");
-	methodNames.addElement("test_consistency_MenuDetect");
-	methodNames.addElement("test_consistency_DragDetect");
-	methodNames.addAll(Test_org_eclipse_swt_widgets_Composite.methodNames()); // add superclass method names
-	return methodNames;
-}
-
-@Override
-protected void runTest() throws Throwable {
-	if (getName().equals("test_ConstructorLorg_eclipse_swt_widgets_CompositeI")) test_ConstructorLorg_eclipse_swt_widgets_CompositeI();
-	else if (getName().equals("test_computeSizeIIZ")) test_computeSizeIIZ();
-	else if (getName().equals("test_copy")) test_copy();
-	else if (getName().equals("test_cut")) test_cut();
-	else if (getName().equals("test_getChildren")) test_getChildren();
-	else if (getName().equals("test_isFocusControl")) test_isFocusControl();
-	else if (getName().equals("test_paste")) test_paste();
-	else if (getName().equals("test_redraw")) test_redraw();
-	else if (getName().equals("test_redrawIIIIZ")) test_redrawIIIIZ();
-	else if (getName().equals("test_setBackgroundLorg_eclipse_swt_graphics_Color")) test_setBackgroundLorg_eclipse_swt_graphics_Color();
-	else if (getName().equals("test_setEnabledZ")) test_setEnabledZ();
-	else if (getName().equals("test_setFocus")) test_setFocus();
-	else if (getName().equals("test_setFontLorg_eclipse_swt_graphics_Font")) test_setFontLorg_eclipse_swt_graphics_Font();
-	else if (getName().equals("test_setForegroundLorg_eclipse_swt_graphics_Color")) test_setForegroundLorg_eclipse_swt_graphics_Color();
-	else if (getName().equals("test_setToolTipTextLjava_lang_String")) test_setToolTipTextLjava_lang_String();
-	else if (getName().equals("test_setVisibleZ")) test_setVisibleZ();
-	else if (getName().equals("test_consistency_MouseSelection")) test_consistency_MouseSelection();
-	else if (getName().equals("test_consistency_KeySelection")) test_consistency_KeySelection();
-	else if (getName().equals("test_consistency_EnterSelection")) test_consistency_EnterSelection();
-	else if (getName().equals("test_consistency_MenuDetect")) test_consistency_MenuDetect();
-	else if (getName().equals("test_consistency_DragDetect")) test_consistency_DragDetect();
-	else super.runTest();
 }
 
 /* Custom */

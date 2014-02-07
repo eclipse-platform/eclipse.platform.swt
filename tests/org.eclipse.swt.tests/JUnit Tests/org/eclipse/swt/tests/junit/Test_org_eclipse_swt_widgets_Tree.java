@@ -14,11 +14,10 @@ import static org.junit.Assert.assertArrayEquals;
 
 import java.util.Vector;
 
-import junit.framework.*;
-import junit.textui.*;
-
-import org.eclipse.swt.*;
-import org.eclipse.swt.widgets.*;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.widgets.Tree;
+import org.eclipse.swt.widgets.TreeColumn;
+import org.eclipse.swt.widgets.TreeItem;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.widgets.Tree
@@ -29,10 +28,6 @@ public class Test_org_eclipse_swt_widgets_Tree extends Test_org_eclipse_swt_widg
 
 public Test_org_eclipse_swt_widgets_Tree(String name) {
 	super(name);
-}
-
-public static void main(String[] args) {
-	TestRunner.run(suite());
 }
 
 @Override
@@ -638,90 +633,6 @@ public void test_showSelection() {
 	item = new TreeItem(tree, 0);
 	tree.setSelection(new TreeItem[]{item});
 	tree.showSelection();	
-}
-
-public static Test suite() {
-	TestSuite suite = new TestSuite();
-	java.util.Vector<String> methodNames = methodNames();
-	java.util.Enumeration<String> e = methodNames.elements();
-	while (e.hasMoreElements()) {
-		suite.addTest(new Test_org_eclipse_swt_widgets_Tree(e.nextElement()));
-	}
-	return suite;
-}
-public static java.util.Vector<String> methodNames() {
-	java.util.Vector<String> methodNames = new java.util.Vector<String>();
-	methodNames.addElement("test_ConstructorLorg_eclipse_swt_widgets_CompositeI");
-	methodNames.addElement("test_computeSizeIIZ");
-	methodNames.addElement("test_deselectAll");
-	methodNames.addElement("test_getColumnCount");
-	methodNames.addElement("test_getColumnI");
-	methodNames.addElement("test_getColumns");
-	methodNames.addElement("test_getGridLineWidth");
-	methodNames.addElement("test_getHeaderHeight");
-	methodNames.addElement("test_getItemHeight");
-	methodNames.addElement("test_getItemI");
-	methodNames.addElement("test_getItems");
-	methodNames.addElement("test_getParentItem");
-	methodNames.addElement("test_getSelectionCount");
-	methodNames.addElement("test_removeAll");
-	methodNames.addElement("test_selectAll");
-	methodNames.addElement("test_setHeaderVisibleZ");
-	methodNames.addElement("test_setItemCountI");
-	methodNames.addElement("test_setLinesVisibleZ");
-	methodNames.addElement("test_setRedrawZ");
-	methodNames.addElement("test_setSelection$Lorg_eclipse_swt_widgets_TreeItem");
-	methodNames.addElement("test_setTopItemLorg_eclipse_swt_widgets_TreeItem");
-	methodNames.addElement("test_showItemLorg_eclipse_swt_widgets_TreeItem");
-	methodNames.addElement("test_showSelection");
-	methodNames.addElement("test_consistency_MouseSelection");
-	methodNames.addElement("test_consistency_KeySelection");
-	methodNames.addElement("test_consistency_SpaceSelection");
-	methodNames.addElement("test_consistency_EnterSelection");
-	methodNames.addElement("test_consistency_MouseExpand");
-	methodNames.addElement("test_consistency_KeyExpand");
-	methodNames.addElement("test_consistency_DoubleClick");
-	methodNames.addElement("test_consistency_MenuDetect");
-	methodNames.addElement("test_consistency_DragDetect");
-	methodNames.addAll(Test_org_eclipse_swt_widgets_Composite.methodNames()); // add superclass method names
-	return methodNames;
-}
-@Override
-protected void runTest() throws Throwable {
-	if (getName().equals("test_ConstructorLorg_eclipse_swt_widgets_CompositeI")) test_ConstructorLorg_eclipse_swt_widgets_CompositeI();
-	else if (getName().equals("test_computeSizeIIZ")) test_computeSizeIIZ();
-	else if (getName().equals("test_deselectAll")) test_deselectAll();
-	else if (getName().equals("test_getColumnCount")) test_getColumnCount();
-	else if (getName().equals("test_getColumnI")) test_getColumnI();
-	else if (getName().equals("test_getColumns")) test_getColumns();
-	else if (getName().equals("test_getGridLineWidth")) test_getGridLineWidth();
-	else if (getName().equals("test_getHeaderHeight")) test_getHeaderHeight();
-	else if (getName().equals("test_getItemHeight")) test_getItemHeight();
-	else if (getName().equals("test_getItemI")) test_getItemI();
-	else if (getName().equals("test_getItems")) test_getItems();
-	else if (getName().equals("test_getParentItem")) test_getParentItem();
-	else if (getName().equals("test_getSelectionCount")) test_getSelectionCount();
-	else if (getName().equals("test_removeAll")) test_removeAll();
-	else if (getName().equals("test_selectAll")) test_selectAll();
-	else if (getName().equals("test_setFontLorg_eclipse_swt_graphics_Font")) test_setFontLorg_eclipse_swt_graphics_Font();
-	else if (getName().equals("test_setHeaderVisibleZ")) test_setHeaderVisibleZ();
-	else if (getName().equals("test_setItemCountI")) test_setItemCountI();
-	else if (getName().equals("test_setLinesVisibleZ")) test_setLinesVisibleZ();
-	else if (getName().equals("test_setRedrawZ")) test_setRedrawZ();
-	else if (getName().equals("test_setSelection$Lorg_eclipse_swt_widgets_TreeItem")) test_setSelection$Lorg_eclipse_swt_widgets_TreeItem();
-	else if (getName().equals("test_setTopItemLorg_eclipse_swt_widgets_TreeItem")) test_setTopItemLorg_eclipse_swt_widgets_TreeItem();
-	else if (getName().equals("test_showItemLorg_eclipse_swt_widgets_TreeItem")) test_showItemLorg_eclipse_swt_widgets_TreeItem();
-	else if (getName().equals("test_showSelection")) test_showSelection();
-	else if (getName().equals("test_consistency_MouseSelection")) test_consistency_MouseSelection();
-	else if (getName().equals("test_consistency_KeySelection")) test_consistency_KeySelection();
-	else if (getName().equals("test_consistency_EnterSelection")) test_consistency_EnterSelection();
-	else if (getName().equals("test_consistency_SpaceSelection")) test_consistency_SpaceSelection();
-	else if (getName().equals("test_consistency_MouseExpand")) test_consistency_MouseExpand();
-	else if (getName().equals("test_consistency_KeyExpand")) test_consistency_KeyExpand();
-	else if (getName().equals("test_consistency_DoubleClick")) test_consistency_DoubleClick();
-	else if (getName().equals("test_consistency_MenuDetect")) test_consistency_MenuDetect();
-	else if (getName().equals("test_consistency_DragDetect")) test_consistency_DragDetect();
-	else super.runTest();
 }
 
 /* custom */

@@ -15,11 +15,9 @@ import static org.junit.Assert.assertArrayEquals;
 
 import java.util.Vector;
 
-import junit.framework.*;
-import junit.textui.*;
-
-import org.eclipse.swt.*;
-import org.eclipse.swt.custom.*;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.TableTree;
+import org.eclipse.swt.custom.TableTreeItem;
 import org.eclipse.swt.widgets.TableColumn;
 
 /**
@@ -32,10 +30,6 @@ public class Test_org_eclipse_swt_custom_TableTree extends Test_org_eclipse_swt_
 
 public Test_org_eclipse_swt_custom_TableTree(String name) {
 	super(name);
-}
-
-public static void main(String[] args) {
-	TestRunner.run(suite());
 }
 
 @Override
@@ -187,53 +181,6 @@ public void test_setSelection$Lorg_eclipse_swt_custom_TableTreeItem() {
 	setSelection_helper("Select same item twice", new TableTreeItem[] {items[0], items[4], items[0]}, new TableTreeItem[] {});
 	setSelection_helper("Select same item multiple times", new TableTreeItem[] {items[4], items[4], items[4], items[4], items[4], items[4]}, new TableTreeItem[] {});
 	setSelection_helper("Select multiple items multiple times", new TableTreeItem[] {items[4], items[0], items[2], items[4], items[4], items[0], items[4], items[2]}, new TableTreeItem[] {});
-}
-
-public static Test suite() {
-	TestSuite suite = new TestSuite();
-	java.util.Vector<String> methodNames = methodNames();
-	java.util.Enumeration<String> e = methodNames.elements();
-	while (e.hasMoreElements()) {
-		suite.addTest(new Test_org_eclipse_swt_custom_TableTree(e.nextElement()));
-	}
-	return suite;
-}
-public static java.util.Vector<String> methodNames() {
-	java.util.Vector<String> methodNames = new java.util.Vector<String>();
-	methodNames.addElement("test_ConstructorLorg_eclipse_swt_widgets_CompositeI");
-	methodNames.addElement("test_getSelection");
-	methodNames.addElement("test_getSelectionCount");
-	methodNames.addElement("test_selectAll");
-	methodNames.addElement("test_setSelection$Lorg_eclipse_swt_custom_TableTreeItem");
-	methodNames.addElement("test_consistency_MouseSelection");
-	methodNames.addElement("test_consistency_KeySelection");
-	methodNames.addElement("test_consistency_SpaceSelection");
-	methodNames.addElement("test_consistency_EnterSelection");
-	methodNames.addElement("test_consistency_MouseExpand");
-	methodNames.addElement("test_consistency_KeyExpand");
-	methodNames.addElement("test_consistency_DoubleClick");
-	methodNames.addElement("test_consistency_MenuDetect");
-	methodNames.addElement("test_consistency_DragDetect");
-	methodNames.addAll(Test_org_eclipse_swt_widgets_Composite.methodNames()); // add superclass method names
-	return methodNames;
-}
-@Override
-protected void runTest() throws Throwable {
-	if (getName().equals("test_ConstructorLorg_eclipse_swt_widgets_CompositeI")) test_ConstructorLorg_eclipse_swt_widgets_CompositeI();
-	else if (getName().equals("test_getSelection")) test_getSelection();
-	else if (getName().equals("test_getSelectionCount")) test_getSelectionCount();
-	else if (getName().equals("test_selectAll")) test_selectAll();
-	else if (getName().equals("test_setSelection$Lorg_eclipse_swt_custom_TableTreeItem")) test_setSelection$Lorg_eclipse_swt_custom_TableTreeItem();
-	else if (getName().equals("test_consistency_MouseSelection")) test_consistency_MouseSelection();
-	else if (getName().equals("test_consistency_KeySelection")) test_consistency_KeySelection();
-	else if (getName().equals("test_consistency_EnterSelection")) test_consistency_EnterSelection();
-	else if (getName().equals("test_consistency_SpaceSelection")) test_consistency_SpaceSelection();
-	else if (getName().equals("test_consistency_MouseExpand")) test_consistency_MouseExpand();
-	else if (getName().equals("test_consistency_KeyExpand")) test_consistency_KeyExpand();
-	else if (getName().equals("test_consistency_DoubleClick")) test_consistency_DoubleClick();
-	else if (getName().equals("test_consistency_MenuDetect")) test_consistency_MenuDetect();
-	else if (getName().equals("test_consistency_DragDetect")) test_consistency_DragDetect();
-	else super.runTest();
 }
 
 /* custom */

@@ -10,13 +10,20 @@
  *******************************************************************************/
 package org.eclipse.swt.tests.junit;
 
-import junit.framework.*;
-import junit.textui.*;
-
-import org.eclipse.swt.*;
-import org.eclipse.swt.events.*;
-import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.widgets.*;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.ModifyEvent;
+import org.eclipse.swt.events.ModifyListener;
+import org.eclipse.swt.events.SegmentEvent;
+import org.eclipse.swt.events.SegmentListener;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.events.VerifyEvent;
+import org.eclipse.swt.events.VerifyListener;
+import org.eclipse.swt.graphics.Font;
+import org.eclipse.swt.graphics.FontData;
+import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.widgets.Text;
+import org.eclipse.swt.widgets.Widget;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.widgets.Text
@@ -27,10 +34,6 @@ public class Test_org_eclipse_swt_widgets_Text extends Test_org_eclipse_swt_widg
 
 public Test_org_eclipse_swt_widgets_Text(String name) {
 	super(name);
-}
-
-public static void main(String[] args) {
-	TestRunner.run(suite());
 }
 
 @Override
@@ -1371,125 +1374,6 @@ public void test_showSelection() {
 
 	text.clearSelection();
 	text.showSelection();
-}
-
-public static Test suite() {
-	TestSuite suite = new TestSuite();
-	java.util.Vector<String> methodNames = methodNames();
-	java.util.Enumeration<String> e = methodNames.elements();
-	while (e.hasMoreElements()) {
-		suite.addTest(new Test_org_eclipse_swt_widgets_Text(e.nextElement()));
-	}
-	return suite;
-}
-public static java.util.Vector<String> methodNames() {
-	java.util.Vector<String> methodNames = new java.util.Vector<String>();
-	methodNames.addElement("test_ConstructorLorg_eclipse_swt_widgets_CompositeI");
-	methodNames.addElement("test_addModifyListenerLorg_eclipse_swt_events_ModifyListener");
-	methodNames.addElement("test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener");
-	methodNames.addElement("test_addVerifyListenerLorg_eclipse_swt_events_VerifyListener");
-	methodNames.addElement("test_appendLjava_lang_String");
-	methodNames.addElement("test_clearSelection");
-	methodNames.addElement("test_computeSizeIIZ");
-	methodNames.addElement("test_copy");
-	methodNames.addElement("test_cut");
-	methodNames.addElement("test_getCaretLineNumber");
-	methodNames.addElement("test_getCaretLocation");
-	methodNames.addElement("test_getCaretPosition");
-	methodNames.addElement("test_getCharCount");
-	methodNames.addElement("test_getDoubleClickEnabled");
-	methodNames.addElement("test_getEchoChar");
-	methodNames.addElement("test_getEditable");
-	methodNames.addElement("test_getLineCount");
-	methodNames.addElement("test_getLineDelimiter");
-	methodNames.addElement("test_getLineHeight");
-	methodNames.addElement("test_getSelection");
-	methodNames.addElement("test_getSelectionCount");
-	methodNames.addElement("test_getSelectionText");
-	methodNames.addElement("test_getTabs");
-	methodNames.addElement("test_getText");
-	methodNames.addElement("test_getTextII");
-	methodNames.addElement("test_getTextLimit");
-	methodNames.addElement("test_getTopIndex");
-	methodNames.addElement("test_getTopPixel");
-	methodNames.addElement("test_insertLjava_lang_String");
-	methodNames.addElement("test_paste");
-	methodNames.addElement("test_selectAll");
-	methodNames.addElement("test_setDoubleClickEnabledZ");
-	methodNames.addElement("test_setEchoCharC");
-	methodNames.addElement("test_setEditableZ");
-	methodNames.addElement("test_setFontLorg_eclipse_swt_graphics_Font");
-	methodNames.addElement("test_setOrientationI");
-	methodNames.addElement("test_setRedrawZ");
-	methodNames.addElement("test_setSelectionI");
-	methodNames.addElement("test_setSelectionII");
-	methodNames.addElement("test_setSelectionLorg_eclipse_swt_graphics_Point");
-	methodNames.addElement("test_setTabsI");
-	methodNames.addElement("test_setTextLimitI");
-	methodNames.addElement("test_setTextLjava_lang_String");
-	methodNames.addElement("test_setTopIndexI");
-	methodNames.addElement("test_showSelection");
-	methodNames.addElement("test_consistency_EnterSelection");
-	methodNames.addElement("test_consistency_Modify");
-	methodNames.addElement("test_consistency_MenuDetect");
-	methodNames.addElement("test_consistency_DragDetect");
-	methodNames.addElement("test_consistency_Segments");
-	methodNames.addAll(Test_org_eclipse_swt_widgets_Scrollable.methodNames()); // add superclass method names
-	return methodNames;
-}
-@Override
-protected void runTest() throws Throwable {
-	if (getName().equals("test_ConstructorLorg_eclipse_swt_widgets_CompositeI")) test_ConstructorLorg_eclipse_swt_widgets_CompositeI();
-	else if (getName().equals("test_addModifyListenerLorg_eclipse_swt_events_ModifyListener")) test_addModifyListenerLorg_eclipse_swt_events_ModifyListener();
-	else if (getName().equals("test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener")) test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener();
-	else if (getName().equals("test_addVerifyListenerLorg_eclipse_swt_events_VerifyListener")) test_addVerifyListenerLorg_eclipse_swt_events_VerifyListener();
-	else if (getName().equals("test_appendLjava_lang_String")) test_appendLjava_lang_String();
-	else if (getName().equals("test_clearSelection")) test_clearSelection();
-	else if (getName().equals("test_computeSizeIIZ")) test_computeSizeIIZ();
-	else if (getName().equals("test_copy")) test_copy();
-	else if (getName().equals("test_cut")) test_cut();
-	else if (getName().equals("test_getCaretLineNumber")) test_getCaretLineNumber();
-	else if (getName().equals("test_getCaretLocation")) test_getCaretLocation();
-	else if (getName().equals("test_getCaretPosition")) test_getCaretPosition();
-	else if (getName().equals("test_getCharCount")) test_getCharCount();
-	else if (getName().equals("test_getDoubleClickEnabled")) test_getDoubleClickEnabled();
-	else if (getName().equals("test_getEchoChar")) test_getEchoChar();
-	else if (getName().equals("test_getEditable")) test_getEditable();
-	else if (getName().equals("test_getLineCount")) test_getLineCount();
-	else if (getName().equals("test_getLineDelimiter")) test_getLineDelimiter();
-	else if (getName().equals("test_getLineHeight")) test_getLineHeight();
-	else if (getName().equals("test_getSelection")) test_getSelection();
-	else if (getName().equals("test_getSelectionCount")) test_getSelectionCount();
-	else if (getName().equals("test_getSelectionText")) test_getSelectionText();
-	else if (getName().equals("test_getTabs")) test_getTabs();
-	else if (getName().equals("test_getText")) test_getText();
-	else if (getName().equals("test_getTextII")) test_getTextII();
-	else if (getName().equals("test_getTextLimit")) test_getTextLimit();
-	else if (getName().equals("test_getTopIndex")) test_getTopIndex();
-	else if (getName().equals("test_getTopPixel")) test_getTopPixel();
-	else if (getName().equals("test_insertLjava_lang_String")) test_insertLjava_lang_String();
-	else if (getName().equals("test_paste")) test_paste();
-	else if (getName().equals("test_selectAll")) test_selectAll();
-	else if (getName().equals("test_setDoubleClickEnabledZ")) test_setDoubleClickEnabledZ();
-	else if (getName().equals("test_setEchoCharC")) test_setEchoCharC();
-	else if (getName().equals("test_setEditableZ")) test_setEditableZ();
-	else if (getName().equals("test_setFontLorg_eclipse_swt_graphics_Font")) test_setFontLorg_eclipse_swt_graphics_Font();
-	else if (getName().equals("test_setOrientationI")) test_setOrientationI();
-	else if (getName().equals("test_setRedrawZ")) test_setRedrawZ();
-	else if (getName().equals("test_setSelectionI")) test_setSelectionI();
-	else if (getName().equals("test_setSelectionII")) test_setSelectionII();
-	else if (getName().equals("test_setSelectionLorg_eclipse_swt_graphics_Point")) test_setSelectionLorg_eclipse_swt_graphics_Point();
-	else if (getName().equals("test_setTabsI")) test_setTabsI();
-	else if (getName().equals("test_setTextLimitI")) test_setTextLimitI();
-	else if (getName().equals("test_setTextLjava_lang_String")) test_setTextLjava_lang_String();
-	else if (getName().equals("test_setTopIndexI")) test_setTopIndexI();
-	else if (getName().equals("test_showSelection")) test_showSelection();
-	else if (getName().equals("test_consistency_EnterSelection")) test_consistency_EnterSelection();
-	else if (getName().equals("test_consistency_Modify")) test_consistency_Modify();
-	else if (getName().equals("test_consistency_MenuDetect")) test_consistency_MenuDetect();
-	else if (getName().equals("test_consistency_DragDetect")) test_consistency_DragDetect();
-	else if (getName().equals("test_consistency_Segments")) test_consistency_Segments();
-	else super.runTest();
 }
 
 /* custom */
