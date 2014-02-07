@@ -11,11 +11,8 @@
 package org.eclipse.swt.tests.junit;
 
 
-import junit.framework.*;
-import junit.textui.*;
-
-import org.eclipse.swt.*;
-import org.eclipse.swt.widgets.*;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.widgets.Scale;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.widgets.Scale
@@ -26,10 +23,6 @@ public class Test_org_eclipse_swt_widgets_Scale extends Test_org_eclipse_swt_wid
 
 public Test_org_eclipse_swt_widgets_Scale(String name) {
 	super(name);
-}
-
-public static void main(String[] args) {
-	TestRunner.run(suite());
 }
 
 @Override
@@ -90,45 +83,6 @@ public void test_setSelectionI() {
 		scale.setSelection(intArray[0]);
 		report("setSelection", intArray[0], intArray[1], intArray[2], intArray[3]);
 	}
-}
-
-public static Test suite() {
-	TestSuite suite = new TestSuite();
-	java.util.Vector<String> methodNames = methodNames();
-	java.util.Enumeration<String> e = methodNames.elements();
-	while (e.hasMoreElements()) {
-		suite.addTest(new Test_org_eclipse_swt_widgets_Scale(e.nextElement()));
-	}
-	return suite;
-}
-public static java.util.Vector<String> methodNames() {
-	java.util.Vector<String> methodNames = new java.util.Vector<String>();
-	methodNames.addElement("test_ConstructorLorg_eclipse_swt_widgets_CompositeI");
-	methodNames.addElement("test_computeSizeIIZ");
-	methodNames.addElement("test_setMaximumI");
-	methodNames.addElement("test_setMinimumI");
-	methodNames.addElement("test_setSelectionI");
-	methodNames.addElement("test_consistency_KeySelection");
-	methodNames.addElement("test_consistency_TroughSelection");
-	methodNames.addElement("test_consistency_ThumbSelection");
-	methodNames.addElement("test_consistency_MenuDetect");
-	methodNames.addElement("test_consistency_DragDetect");
-	methodNames.addAll(Test_org_eclipse_swt_widgets_Control.methodNames()); // add superclass method names
-	return methodNames;
-}
-@Override
-protected void runTest() throws Throwable {
-	if (getName().equals("test_ConstructorLorg_eclipse_swt_widgets_CompositeI")) test_ConstructorLorg_eclipse_swt_widgets_CompositeI();
-	else if (getName().equals("test_computeSizeIIZ")) test_computeSizeIIZ();
-	else if (getName().equals("test_setMaximumI")) test_setMaximumI();
-	else if (getName().equals("test_setMinimumI")) test_setMinimumI();
-	else if (getName().equals("test_setSelectionI")) test_setSelectionI();
-	else if (getName().equals("test_consistency_KeySelection")) test_consistency_KeySelection();
-	else if (getName().equals("test_consistency_TroughSelection")) test_consistency_TroughSelection();
-	else if (getName().equals("test_consistency_ThumbSelection")) test_consistency_ThumbSelection();
-	else if (getName().equals("test_consistency_MenuDetect")) test_consistency_MenuDetect();
-	else if (getName().equals("test_consistency_DragDetect")) test_consistency_DragDetect();
-	else super.runTest();
 }
 
 /* custom */

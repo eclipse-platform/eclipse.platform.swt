@@ -10,11 +10,9 @@
  *******************************************************************************/
 package org.eclipse.swt.tests.junit;
 
-import junit.framework.*;
-import junit.textui.*;
-
-import org.eclipse.swt.*;
-import org.eclipse.swt.widgets.*;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Sash;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.widgets.Sash
@@ -25,10 +23,6 @@ public class Test_org_eclipse_swt_widgets_Sash extends Test_org_eclipse_swt_widg
 
 public Test_org_eclipse_swt_widgets_Sash(String name) {
 	super(name);
-}
-
-public static void main(String[] args) {
-	TestRunner.run(suite());
 }
 
 @Override
@@ -60,35 +54,6 @@ public void test_computeSizeIIZ() {
 public void test_setFontLorg_eclipse_swt_graphics_Font() {
 	// overridden from Control because it does not make sense
 	// to set the font of a Sash.
-}
-
-public static Test suite() {
-	TestSuite suite = new TestSuite();
-	java.util.Vector<String> methodNames = methodNames();
-	java.util.Enumeration<String> e = methodNames.elements();
-	while (e.hasMoreElements()) {
-		suite.addTest(new Test_org_eclipse_swt_widgets_Sash(e.nextElement()));
-	}
-	return suite;
-}
-public static java.util.Vector<String> methodNames() {
-	java.util.Vector<String> methodNames = new java.util.Vector<String>();
-	methodNames.addElement("test_ConstructorLorg_eclipse_swt_widgets_CompositeI");
-	methodNames.addElement("test_computeSizeIIZ");
-	methodNames.addElement("test_consistency_MenuDetect");
-	methodNames.addElement("test_consistency_DragDetect");
-	methodNames.addElement("test_consistency_MouseSelection");
-	methodNames.addAll(Test_org_eclipse_swt_widgets_Control.methodNames()); // add superclass method names
-	return methodNames;
-}
-@Override
-protected void runTest() throws Throwable {
-	if (getName().equals("test_ConstructorLorg_eclipse_swt_widgets_CompositeI")) test_ConstructorLorg_eclipse_swt_widgets_CompositeI();
-	else if (getName().equals("test_computeSizeIIZ")) test_computeSizeIIZ();
-	else if (getName().equals("test_consistency_MenuDetect")) test_consistency_MenuDetect();
-	else if (getName().equals("test_consistency_DragDetect")) test_consistency_DragDetect();
-	else if (getName().equals("test_consistency_MouseSelection")) test_consistency_MouseSelection();
-	else super.runTest();
 }
 
 /* custom */

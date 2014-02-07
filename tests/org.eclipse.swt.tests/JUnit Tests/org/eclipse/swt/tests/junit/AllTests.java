@@ -88,13 +88,13 @@ public AllTests() {
 	
 	addTest(Test_org_eclipse_swt_widgets_Shell.suite());
 	//addTest(Test_org_eclipse_swt_widgets_Decorations.suite());
-	addTest(Test_org_eclipse_swt_widgets_Label.suite());
-	addTest(Test_org_eclipse_swt_widgets_Button.suite());
+	addTestSuite(Test_org_eclipse_swt_widgets_Label.class);
+	addTestSuite(Test_org_eclipse_swt_widgets_Button.class);
 	addTest(Test_org_eclipse_swt_widgets_ExpandBar.suite());
 	addTest(Test_org_eclipse_swt_widgets_List.suite());
 	addTest(Test_org_eclipse_swt_widgets_Text.suite());
 	addTestSuite(Test_org_eclipse_swt_widgets_ScrollBar.class);
-	addTest(Test_org_eclipse_swt_widgets_Sash.suite());
+	addTestSuite(Test_org_eclipse_swt_widgets_Sash.class);
 	addTest(Test_org_eclipse_swt_widgets_Tree.suite());
 	addTest(Test_org_eclipse_swt_widgets_TabFolder.suite());
 	addTest(Test_org_eclipse_swt_widgets_Combo.suite());
@@ -102,11 +102,11 @@ public AllTests() {
 	addTest(Test_org_eclipse_swt_widgets_ToolBar.suite());
 	addTest(Test_org_eclipse_swt_widgets_Table.suite());
 	addTest(Test_org_eclipse_swt_widgets_Canvas.suite());
-	addTest(Test_org_eclipse_swt_widgets_Scale.suite());
-	addTest(Test_org_eclipse_swt_widgets_Slider.suite());
-	addTest(Test_org_eclipse_swt_widgets_ProgressBar.suite());
+	addTestSuite(Test_org_eclipse_swt_widgets_Scale.class);
+	addTestSuite(Test_org_eclipse_swt_widgets_Slider.class);
+	addTestSuite(Test_org_eclipse_swt_widgets_ProgressBar.class);
 	addTest(Test_org_eclipse_swt_widgets_Composite.suite());
-	addTest(Test_org_eclipse_swt_widgets_Link.suite());
+	addTestSuite(Test_org_eclipse_swt_widgets_Link.class);
 	addTest(Test_org_eclipse_swt_widgets_DateTime.suite());
 	//addTest(Test_org_eclipse_swt_widgets_CoolBar.suite());
 
