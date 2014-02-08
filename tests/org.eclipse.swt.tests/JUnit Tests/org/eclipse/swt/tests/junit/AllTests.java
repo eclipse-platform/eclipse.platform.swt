@@ -86,7 +86,7 @@ public AllTests() {
 	addTestSuite(Test_org_eclipse_swt_widgets_Menu.class);
 	//addTest(Test_org_eclipse_swt_widgets_Tracker.suite());
 	
-	addTest(Test_org_eclipse_swt_widgets_Shell.suite());
+	addTestSuite(Test_org_eclipse_swt_widgets_Shell.class);
 	//addTest(Test_org_eclipse_swt_widgets_Decorations.suite());
 	addTestSuite(Test_org_eclipse_swt_widgets_Label.class);
 	addTestSuite(Test_org_eclipse_swt_widgets_Button.class);
@@ -154,7 +154,7 @@ public AllTests() {
 	addTestSuite(Test_org_eclipse_swt_accessibility_AccessibleControlEvent.class);
 	addTestSuite(Test_org_eclipse_swt_accessibility_AccessibleEvent.class);
 
-	addTest(Test_org_eclipse_swt_browser_Browser.suite());
+	addTestSuite(Test_org_eclipse_swt_browser_Browser.class);
 	addTestSuite(Test_org_eclipse_swt_browser_CloseWindowListener.class);
 	addTestSuite(Test_org_eclipse_swt_browser_LocationAdapter.class);
 	addTestSuite(Test_org_eclipse_swt_browser_LocationListener.class);

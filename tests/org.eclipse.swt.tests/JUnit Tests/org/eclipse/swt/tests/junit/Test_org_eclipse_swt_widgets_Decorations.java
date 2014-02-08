@@ -10,15 +10,16 @@
  *******************************************************************************/
 package org.eclipse.swt.tests.junit;
 
-import java.io.*;
-
-import junit.framework.*;
-import junit.textui.TestRunner;
+import java.io.IOException;
+import java.io.InputStream;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Rectangle;
-import org.eclipse.swt.widgets.*;
+import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Decorations;
+import org.eclipse.swt.widgets.Menu;
+import org.eclipse.swt.widgets.Widget;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.widgets.Decorations
@@ -29,10 +30,6 @@ public class Test_org_eclipse_swt_widgets_Decorations extends Test_org_eclipse_s
 
 public Test_org_eclipse_swt_widgets_Decorations(String name) {
 	super(name);
-}
-
-public static void main(String[] args) {
-	TestRunner.run(suite());
 }
 
 @Override
@@ -166,58 +163,6 @@ public void test_setTextLjava_lang_String() {
 @Override
 public void test_setVisibleZ() {
 	// test in subclasses
-}
-
-public static Test suite() {
-	TestSuite suite = new TestSuite();
-	java.util.Vector<String> methodNames = methodNames();
-	java.util.Enumeration<String> e = methodNames.elements();
-	while (e.hasMoreElements()) {
-		suite.addTest(new Test_org_eclipse_swt_widgets_Decorations(e.nextElement()));
-	}
-	return suite;
-}
-public static java.util.Vector<String> methodNames() {
-	java.util.Vector<String> methodNames = new java.util.Vector<String>();
-	methodNames.addElement("test_ConstructorLorg_eclipse_swt_widgets_CompositeI");
-	methodNames.addElement("test_computeTrimIIII");
-	methodNames.addElement("test_dispose");
-	methodNames.addElement("test_getClientArea");
-	methodNames.addElement("test_getDefaultButton");
-	methodNames.addElement("test_getImage");
-	methodNames.addElement("test_getLocation");
-	methodNames.addElement("test_getMenuBar");
-	methodNames.addElement("test_getText");
-	methodNames.addElement("test_isReparentable");
-	methodNames.addElement("test_setDefaultButtonLorg_eclipse_swt_widgets_Button");
-	methodNames.addElement("test_setImageLorg_eclipse_swt_graphics_Image");
-	methodNames.addElement("test_setMaximizedZ");
-	methodNames.addElement("test_setMenuBarLorg_eclipse_swt_widgets_Menu");
-	methodNames.addElement("test_setMinimizedZ");
-	methodNames.addElement("test_setTextLjava_lang_String");
-	methodNames.addElement("test_setVisibleZ");
-	methodNames.addAll(Test_org_eclipse_swt_widgets_Canvas.methodNames()); // add superclass method names
-	return methodNames;
-}
-@Override
-protected void runTest() throws Throwable {
-	if (getName().equals("test_ConstructorLorg_eclipse_swt_widgets_CompositeI")) test_ConstructorLorg_eclipse_swt_widgets_CompositeI();
-	else if (getName().equals("test_computeTrimIIII")) test_computeTrimIIII();
-	else if (getName().equals("test_getClientArea")) test_getClientArea();
-	else if (getName().equals("test_getDefaultButton")) test_getDefaultButton();
-	else if (getName().equals("test_getImage")) test_getImage();
-	else if (getName().equals("test_getLocation")) test_getLocation();
-	else if (getName().equals("test_getMenuBar")) test_getMenuBar();
-	else if (getName().equals("test_getText")) test_getText();
-	else if (getName().equals("test_isReparentable")) test_isReparentable();
-	else if (getName().equals("test_setDefaultButtonLorg_eclipse_swt_widgets_Button")) test_setDefaultButtonLorg_eclipse_swt_widgets_Button();
-	else if (getName().equals("test_setImageLorg_eclipse_swt_graphics_Image")) test_setImageLorg_eclipse_swt_graphics_Image();
-	else if (getName().equals("test_setMaximizedZ")) test_setMaximizedZ();
-	else if (getName().equals("test_setMenuBarLorg_eclipse_swt_widgets_Menu")) test_setMenuBarLorg_eclipse_swt_widgets_Menu();
-	else if (getName().equals("test_setMinimizedZ")) test_setMinimizedZ();
-	else if (getName().equals("test_setTextLjava_lang_String")) test_setTextLjava_lang_String();
-	else if (getName().equals("test_setVisibleZ")) test_setVisibleZ();
-	else super.runTest();
 }
 
 /* custom */

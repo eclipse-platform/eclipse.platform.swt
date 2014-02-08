@@ -24,7 +24,7 @@ public static void main(String[] args) {
 }
 public static Test suite() {
 	TestSuite suite = new TestSuite();
-	suite.addTest(Test_org_eclipse_swt_browser_Browser.suite());	
+	suite.addTestSuite(Test_org_eclipse_swt_browser_Browser.class);	
 	suite.addTestSuite(Test_org_eclipse_swt_browser_CloseWindowListener.class);
 	suite.addTestSuite(Test_org_eclipse_swt_browser_LocationAdapter.class);
 	suite.addTestSuite(Test_org_eclipse_swt_browser_LocationListener.class);
