@@ -52,11 +52,11 @@ public static Test suite() {
 	suite.addTestSuite(Test_org_eclipse_swt_widgets_Group.class);
 	suite.addTestSuite(Test_org_eclipse_swt_widgets_ToolBar.class);
 	suite.addTestSuite(Test_org_eclipse_swt_widgets_Table.class);
-	suite.addTest(Test_org_eclipse_swt_widgets_Canvas.suite());
+	suite.addTestSuite(Test_org_eclipse_swt_widgets_Canvas.class);
 	suite.addTestSuite(Test_org_eclipse_swt_widgets_Scale.class);
 	suite.addTestSuite(Test_org_eclipse_swt_widgets_Slider.class);
 	suite.addTestSuite(Test_org_eclipse_swt_widgets_ProgressBar.class);
-	suite.addTest(Test_org_eclipse_swt_widgets_Composite.suite());
+	suite.addTestSuite(Test_org_eclipse_swt_widgets_Composite.class);
 	suite.addTestSuite(Test_org_eclipse_swt_widgets_Link.class);
 	suite.addTest(Test_org_eclipse_swt_widgets_DateTime.suite());
 	//suite.addTest(Test_org_eclipse_swt_widgets_CoolBar.suite());

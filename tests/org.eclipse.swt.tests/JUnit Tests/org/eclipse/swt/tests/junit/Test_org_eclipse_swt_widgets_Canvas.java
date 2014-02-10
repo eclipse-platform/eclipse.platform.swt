@@ -11,12 +11,12 @@
 package org.eclipse.swt.tests.junit;
 
 
-import junit.framework.*;
-import junit.textui.*;
-
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.widgets.*;
+import org.eclipse.swt.graphics.Font;
+import org.eclipse.swt.graphics.FontData;
+import org.eclipse.swt.widgets.Canvas;
+import org.eclipse.swt.widgets.Caret;
+import org.eclipse.swt.widgets.Widget;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.widgets.Canvas
@@ -29,10 +29,6 @@ Canvas canvas;
 
 public Test_org_eclipse_swt_widgets_Canvas(String name) {
 	super(name);
-}
-
-public static void main(String[] args) {
-	TestRunner.run(suite());
 }
 
 @Override
@@ -100,37 +96,6 @@ public void test_setFontLorg_eclipse_swt_graphics_Font() {
 	assertTrue(":a:", canvas.getFont().equals(font));
 	canvas.setFont(null);
 	font.dispose();
-}
-
-public static Test suite() {
-	TestSuite suite = new TestSuite();
-	java.util.Vector<String> methodNames = methodNames();
-	java.util.Enumeration<String> e = methodNames.elements();
-	while (e.hasMoreElements()) {
-		suite.addTest(new Test_org_eclipse_swt_widgets_Canvas(e.nextElement()));
-	}
-	return suite;
-}
-public static java.util.Vector<String> methodNames() {
-	java.util.Vector<String> methodNames = new java.util.Vector<String>();
-	methodNames.addElement("test_ConstructorLorg_eclipse_swt_widgets_CompositeI");
-	methodNames.addElement("test_scrollIIIIIIZ");
-	methodNames.addElement("test_setCaretLorg_eclipse_swt_widgets_Caret");
-	methodNames.addElement("test_setFontLorg_eclipse_swt_graphics_Font");
-	methodNames.addElement("test_consistency_MenuDetect");
-	methodNames.addElement("test_consistency_DragDetect");
-	methodNames.addAll(Test_org_eclipse_swt_widgets_Composite.methodNames()); // add superclass method names
-	return methodNames;
-}
-@Override
-protected void runTest() throws Throwable {
-	if (getName().equals("test_ConstructorLorg_eclipse_swt_widgets_CompositeI")) test_ConstructorLorg_eclipse_swt_widgets_CompositeI();
-	else if (getName().equals("test_scrollIIIIIIZ")) test_scrollIIIIIIZ();
-	else if (getName().equals("test_setCaretLorg_eclipse_swt_widgets_Caret")) test_setCaretLorg_eclipse_swt_widgets_Caret();
-	else if (getName().equals("test_setFontLorg_eclipse_swt_graphics_Font")) test_setFontLorg_eclipse_swt_graphics_Font();
-	else if (getName().equals("test_consistency_MenuDetect")) test_consistency_MenuDetect();
-	else if (getName().equals("test_consistency_DragDetect")) test_consistency_DragDetect();
-	else super.runTest();
 }
 
 /* custom*/

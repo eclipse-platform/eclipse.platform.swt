@@ -10,10 +10,8 @@
  *******************************************************************************/
 package org.eclipse.swt.tests.junit;
 
-import junit.framework.*;
-import junit.textui.*;
-
-import org.eclipse.swt.widgets.*;
+import org.eclipse.swt.widgets.Scrollable;
+import org.eclipse.swt.widgets.Widget;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.widgets.Scrollable
@@ -24,10 +22,6 @@ public class Test_org_eclipse_swt_widgets_Scrollable extends Test_org_eclipse_sw
 	
 public Test_org_eclipse_swt_widgets_Scrollable(String name) {
 	super(name);
-}
-
-public static void main(String[] args) {
-	TestRunner.run(suite());
 }
 
 @Override
@@ -51,38 +45,8 @@ public void test_getVerticalBar() {
 	scrollable.getVerticalBar();
 }
 
-public static Test suite() {
-	TestSuite suite = new TestSuite();
-	java.util.Vector<String> methodNames = methodNames();
-	java.util.Enumeration<String> e = methodNames.elements();
-	while (e.hasMoreElements()) {
-		suite.addTest(new Test_org_eclipse_swt_widgets_Scrollable(e.nextElement()));
-	}
-	return suite;
-}
-
-public static java.util.Vector<String> methodNames() {
-	java.util.Vector<String> methodNames = new java.util.Vector<String>();
-	methodNames.addElement("test_ConstructorLorg_eclipse_swt_widgets_CompositeI");
-	methodNames.addElement("test_computeTrimIIII");
-	methodNames.addElement("test_getClientArea");
-	methodNames.addElement("test_getHorizontalBar");
-	methodNames.addElement("test_getVerticalBar");
-	methodNames.addAll(Test_org_eclipse_swt_widgets_Control.methodNames()); // add superclass method names
-	return methodNames;
-}
-@Override
-protected void runTest() throws Throwable {
-	if (getName().equals("test_ConstructorLorg_eclipse_swt_widgets_CompositeI")) test_ConstructorLorg_eclipse_swt_widgets_CompositeI();
-	else if (getName().equals("test_computeTrimIIII")) test_computeTrimIIII();
-	else if (getName().equals("test_getClientArea")) test_getClientArea();
-	else if (getName().equals("test_getHorizontalBar")) test_getHorizontalBar();
-	else if (getName().equals("test_getVerticalBar")) test_getVerticalBar();
-	else super.runTest();
-}
-
 /* custom */
-	Scrollable scrollable;
+Scrollable scrollable;
 
 @Override
 protected void setWidget(Widget w) {

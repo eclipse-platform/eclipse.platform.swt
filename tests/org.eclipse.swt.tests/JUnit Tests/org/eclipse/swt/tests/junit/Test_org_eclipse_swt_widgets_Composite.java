@@ -12,11 +12,13 @@ package org.eclipse.swt.tests.junit;
 
 
 import static org.junit.Assert.assertArrayEquals;
-import junit.framework.*;
-import junit.textui.*;
 
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.widgets.*;
+import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.List;
+import org.eclipse.swt.widgets.Widget;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.widgets.Composite
@@ -29,10 +31,6 @@ Composite composite;
 
 public Test_org_eclipse_swt_widgets_Composite(String name) {
 	super(name);
-}
-
-public static void main(String[] args) {
-	TestRunner.run(suite());
 }
 
 @Override
@@ -86,31 +84,6 @@ public void test_setTabList$Lorg_eclipse_swt_widgets_Control() {
 	assertArrayEquals(tablist, composite.getTabList());
 	button1.dispose();
 	button2.dispose();
-}
-
-public static Test suite() {
-	TestSuite suite = new TestSuite();
-	java.util.Vector<String> methodNames = methodNames();
-	java.util.Enumeration<String> e = methodNames.elements();
-	while (e.hasMoreElements()) {
-		suite.addTest(new Test_org_eclipse_swt_widgets_Composite(e.nextElement()));
-	}
-	return suite;
-}
-public static java.util.Vector<String> methodNames() {
-	java.util.Vector<String> methodNames = new java.util.Vector<String>();
-	methodNames.addElement("test_ConstructorLorg_eclipse_swt_widgets_CompositeI");
-	methodNames.addElement("test_getChildren");
-	methodNames.addElement("test_setTabList$Lorg_eclipse_swt_widgets_Control");
-	methodNames.addAll(Test_org_eclipse_swt_widgets_Scrollable.methodNames()); // add superclass method names
-	return methodNames;
-}
-@Override
-protected void runTest() throws Throwable {
-	if (getName().equals("test_ConstructorLorg_eclipse_swt_widgets_CompositeI")) test_ConstructorLorg_eclipse_swt_widgets_CompositeI();
-	else if (getName().equals("test_getChildren")) test_getChildren();
-	else if (getName().equals("test_setTabList$Lorg_eclipse_swt_widgets_Control")) test_setTabList$Lorg_eclipse_swt_widgets_Control();
-	else super.runTest();
 }
 
 /* custom */

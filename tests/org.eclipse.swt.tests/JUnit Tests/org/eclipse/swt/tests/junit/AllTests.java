@@ -101,11 +101,11 @@ public AllTests() {
 	addTestSuite(Test_org_eclipse_swt_widgets_Group.class);
 	addTestSuite(Test_org_eclipse_swt_widgets_ToolBar.class);
 	addTestSuite(Test_org_eclipse_swt_widgets_Table.class);
-	addTest(Test_org_eclipse_swt_widgets_Canvas.suite());
+	addTestSuite(Test_org_eclipse_swt_widgets_Canvas.class);
 	addTestSuite(Test_org_eclipse_swt_widgets_Scale.class);
 	addTestSuite(Test_org_eclipse_swt_widgets_Slider.class);
 	addTestSuite(Test_org_eclipse_swt_widgets_ProgressBar.class);
-	addTest(Test_org_eclipse_swt_widgets_Composite.suite());
+	addTestSuite(Test_org_eclipse_swt_widgets_Composite.class);
 	addTestSuite(Test_org_eclipse_swt_widgets_Link.class);
 	addTest(Test_org_eclipse_swt_widgets_DateTime.suite());
 	//addTestSuite(Test_org_eclipse_swt_widgets_CoolBar.class);
