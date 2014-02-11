@@ -107,7 +107,7 @@ public AllTests() {
 	addTestSuite(Test_org_eclipse_swt_widgets_ProgressBar.class);
 	addTestSuite(Test_org_eclipse_swt_widgets_Composite.class);
 	addTestSuite(Test_org_eclipse_swt_widgets_Link.class);
-	addTest(Test_org_eclipse_swt_widgets_DateTime.suite());
+	addTest(new JUnit4TestAdapter(Test_org_eclipse_swt_widgets_DateTime.class));
 	//addTestSuite(Test_org_eclipse_swt_widgets_CoolBar.class);
 
 	addTestSuite(Test_org_eclipse_swt_widgets_ColorDialog.class);

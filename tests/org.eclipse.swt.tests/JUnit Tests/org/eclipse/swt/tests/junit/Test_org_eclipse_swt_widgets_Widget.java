@@ -10,13 +10,18 @@
  *******************************************************************************/
 package org.eclipse.swt.tests.junit;
 
-import junit.framework.*;
-import junit.textui.*;
+import junit.framework.TestCase;
 
-import org.eclipse.swt.*;
-import org.eclipse.swt.widgets.*;
-import org.eclipse.swt.events.*;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.DisposeEvent;
+import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.graphics.GC;
+import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Listener;
+import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.Widget;
+import org.junit.Test;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.widgets.Widget
@@ -29,10 +34,6 @@ public class Test_org_eclipse_swt_widgets_Widget extends TestCase {
 
 public Test_org_eclipse_swt_widgets_Widget(String name) {
 	super(name);
-}
-
-public static void main(String[] args) {
-	TestRunner.run(suite());
 }
 
 @Override
@@ -52,11 +53,11 @@ protected void tearDown() {
 	}
 	assertTrue(shell.isDisposed());
 }
-
+@Test
 public void test_ConstructorLorg_eclipse_swt_widgets_WidgetI() {
 	// abstract class
 }
-
+@Test
 public void test_addDisposeListenerLorg_eclipse_swt_events_DisposeListener() {
 	DisposeListener listener = new DisposeListener() {
 		public void widgetDisposed(DisposeEvent e) {
@@ -65,7 +66,7 @@ public void test_addDisposeListenerLorg_eclipse_swt_events_DisposeListener() {
 	widget.addDisposeListener(listener);
 	widget.removeDisposeListener(listener);
 }
-
+@Test
 public void test_addListenerILorg_eclipse_swt_widgets_Listener() {
 	try {
 		widget.addListener(SWT.Dispose, null);
@@ -81,15 +82,15 @@ public void test_addListenerILorg_eclipse_swt_widgets_Listener() {
 	widget.addListener(SWT.Dispose, listener);
 	widget.removeListener(SWT.Dispose, listener);
 }
-
+@Test
 public void test_getDisplay() {
 	assertEquals(widget.getDisplay(), widget.getDisplay());
 }
-
+@Test
 public void test_isDisposed() {
 	assertEquals(false, widget.isDisposed());
 }
-
+@Test
 public void test_notifyListenersILorg_eclipse_swt_widgets_Event() {
 	widget.notifyListeners(0, null);
 	Event event = new Event();
@@ -100,7 +101,7 @@ public void test_notifyListenersILorg_eclipse_swt_widgets_Event() {
 	widget.notifyListeners(SWT.Paint, event);
 	if (gc != null) gc.dispose();
 }
-
+@Test
 public void test_removeListenerILorg_eclipse_swt_widgets_Listener() {
 	// this method is further tested by all of the removeTypedListener tests
 	try {
@@ -122,7 +123,7 @@ public void test_removeListenerILorg_eclipse_swt_widgets_Listener() {
 	widget.addListener(SWT.Paint, listener);
 	widget.removeListener(SWT.Paint, listener);
 }
-
+@Test
 public void test_setDataLjava_lang_Object() {
 	widget.setData(widget);
 	assertEquals(widget, widget.getData());
@@ -130,7 +131,7 @@ public void test_setDataLjava_lang_Object() {
 	widget.setData(null);
 	assertNull(widget.getData());
 }
-
+@Test
 public void test_setDataLjava_lang_StringLjava_lang_Object() {
 	widget.setData("the widget", widget);
 	assertEquals(widget, widget.getData("the widget"));
@@ -138,48 +139,10 @@ public void test_setDataLjava_lang_StringLjava_lang_Object() {
 	widget.setData("the widget", null);
 	assertNull(widget.getData("the widget"));
 }
-
+@Test
 public void test_toString() {
 	assertNotNull(widget.toString());
 	assertTrue(widget.toString().length() > 0);
-}
-
-public static Test suite() {
-	TestSuite suite = new TestSuite();
-	java.util.Vector<String> methodNames = methodNames();
-	java.util.Enumeration<String> e = methodNames.elements();
-	while (e.hasMoreElements()) {
-		suite.addTest(new Test_org_eclipse_swt_widgets_Widget(e.nextElement()));
-	}
-	return suite;
-}
-
-public static java.util.Vector<String> methodNames() {
-	java.util.Vector<String> methodNames = new java.util.Vector<String>();
-	methodNames.addElement("test_ConstructorLorg_eclipse_swt_widgets_WidgetI");
-	methodNames.addElement("test_addDisposeListenerLorg_eclipse_swt_events_DisposeListener");
-	methodNames.addElement("test_addListenerILorg_eclipse_swt_widgets_Listener");
-	methodNames.addElement("test_getDisplay");
-	methodNames.addElement("test_isDisposed");
-	methodNames.addElement("test_notifyListenersILorg_eclipse_swt_widgets_Event");
-	methodNames.addElement("test_removeListenerILorg_eclipse_swt_widgets_Listener");
-	methodNames.addElement("test_setDataLjava_lang_Object");
-	methodNames.addElement("test_setDataLjava_lang_StringLjava_lang_Object");
-	methodNames.addElement("test_toString");
-	return methodNames;
-}
-@Override
-protected void runTest() throws Throwable {
-	if (getName().equals("test_ConstructorLorg_eclipse_swt_widgets_WidgetI")) test_ConstructorLorg_eclipse_swt_widgets_WidgetI();
-	else if (getName().equals("test_addDisposeListenerLorg_eclipse_swt_events_DisposeListener")) test_addDisposeListenerLorg_eclipse_swt_events_DisposeListener();
-	else if (getName().equals("test_addListenerILorg_eclipse_swt_widgets_Listener")) test_addListenerILorg_eclipse_swt_widgets_Listener();
-	else if (getName().equals("test_getDisplay")) test_getDisplay();
-	else if (getName().equals("test_isDisposed")) test_isDisposed();
-	else if (getName().equals("test_notifyListenersILorg_eclipse_swt_widgets_Event")) test_notifyListenersILorg_eclipse_swt_widgets_Event();
-	else if (getName().equals("test_removeListenerILorg_eclipse_swt_widgets_Listener")) test_removeListenerILorg_eclipse_swt_widgets_Listener();
-	else if (getName().equals("test_setDataLjava_lang_Object")) test_setDataLjava_lang_Object();
-	else if (getName().equals("test_setDataLjava_lang_StringLjava_lang_Object")) test_setDataLjava_lang_StringLjava_lang_Object();
-	else if (getName().equals("test_toString")) test_toString();
 }
 
 /* custom */

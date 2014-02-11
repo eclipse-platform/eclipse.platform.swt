@@ -10,44 +10,52 @@
  *******************************************************************************/
 package org.eclipse.swt.tests.junit;
 
-import org.eclipse.swt.*;
-import org.eclipse.swt.events.*;
-import org.eclipse.swt.widgets.*;
+import java.util.Arrays;
+import java.util.Collection;
 
-import junit.framework.*;
-import junit.textui.*;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.widgets.DateTime;
+import org.eclipse.swt.widgets.Event;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.Parameters;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.widgets.DateTime
  *
  * @see org.eclipse.swt.widgets.DateTime
  */
+@RunWith(value = Parameterized.class)
 public class Test_org_eclipse_swt_widgets_DateTime extends Test_org_eclipse_swt_widgets_Control {
 	static final int JAN = 0, FEB = 1, AUG = 7, NOV = 10;
 	DateTime datetime;
 	int style = SWT.DATE;
+	
+	@Parameters
+	 public static Collection<Object[]> data() {
+	   Object[][] data = new Object[][] { { SWT.DATE }, { SWT.TIME}, { SWT.CALENDAR }};
+	   return Arrays.asList(data);
+	 }
 
-public Test_org_eclipse_swt_widgets_DateTime(String name) {
-	super(name);
-}
-
-public Test_org_eclipse_swt_widgets_DateTime(String name, int style) {
-	this(name);
+public Test_org_eclipse_swt_widgets_DateTime(int style) {
+	super("");
 	this.style = style;
 }
 
-public static void main(String[] args) {
-	TestRunner.run(suite());
-}
-
 @Override
-protected void setUp() {
+@Before
+public void setUp() {
 	super.setUp();
 	datetime = new DateTime(shell, style);
 	setWidget(datetime);
 }
 
 @Override
+@Test
 public void test_ConstructorLorg_eclipse_swt_widgets_CompositeI() {
 	new DateTime(shell, SWT.NULL);
 
@@ -83,6 +91,7 @@ public void test_ConstructorLorg_eclipse_swt_widgets_CompositeI() {
 	}
 }
 
+@Test
 public void test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener() {
 	listenerCalled = false;
 	SelectionListener listener = new SelectionListener() {
@@ -114,6 +123,7 @@ public void test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener()
 	assertFalse(listenerCalled);
 }
 
+@Test
 public void test_setDateIII() {
 	datetime.setDate(2008, AUG, 31);
 	assertEquals(31, datetime.getDay());
@@ -215,6 +225,7 @@ public void test_setDateIII() {
 	assertEquals(2008, datetime.getYear());
 }
 
+@Test
 public void test_setDayI() {
 	datetime.setDate(2008, AUG, 1);
 	for (int day = 1; day <= 31; day++) {
@@ -238,6 +249,7 @@ public void test_setDayI() {
 	assertEquals(5, datetime.getDay());
 }
 
+@Test
 public void test_setHoursI() {
 	datetime.setTime(2, 10, 30);
 	datetime.setHours(21);
@@ -256,6 +268,7 @@ public void test_setHoursI() {
 	assertEquals(30, datetime.getSeconds());
 }
 
+@Test
 public void test_setMinutesI() {
 	datetime.setTime(2, 10, 30);
 	datetime.setMinutes(22);
@@ -284,6 +297,7 @@ public void test_setMinutesI() {
 	assertEquals(30, datetime.getSeconds());
 }
 
+@Test
 public void test_setMonthI() {
 	datetime.setDate(2008, NOV, 1);
 	datetime.setMonth(AUG);
@@ -311,6 +325,7 @@ public void test_setMonthI() {
 	assertEquals(NOV, datetime.getMonth());
 }
 
+@Test
 public void test_setSecondsI() {
 	datetime.setTime(2, 10, 30);
 	datetime.setSeconds(52);
@@ -339,6 +354,7 @@ public void test_setSecondsI() {
 	assertEquals(59, datetime.getSeconds());
 }
 
+@Test
 public void test_setTimeIII() {
 	datetime.setTime(2, 10, 30);
 	assertEquals(2, datetime.getHours());
@@ -391,6 +407,7 @@ public void test_setTimeIII() {
 	assertEquals(59, datetime.getSeconds());
 }
 
+@Test
 public void test_setYearI() {
 	datetime.setDate(2008, NOV, 1);
 	datetime.setYear(1947);
@@ -415,62 +432,9 @@ public void test_setYearI() {
 	datetime.setYear(2007);
 	assertEquals(2008, datetime.getYear());
 }
-
+@Test
 public void test_removeSelectionListenerLorg_eclipse_swt_events_SelectionListener() {
 	// tested in test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener()
-}
-
-public static Test suite() {
-	TestSuite suite = new TestSuite();
-	java.util.Vector<String> methodNames = methodNames();
-	java.util.Enumeration<String> e = methodNames.elements();
-	while (e.hasMoreElements()) {
-		String methodName = e.nextElement();
-		suite.addTest(new Test_org_eclipse_swt_widgets_DateTime(methodName, SWT.DATE));
-		suite.addTest(new Test_org_eclipse_swt_widgets_DateTime(methodName, SWT.TIME));
-		suite.addTest(new Test_org_eclipse_swt_widgets_DateTime(methodName, SWT.CALENDAR));
-	}
-	return suite;
-}
-
-public static java.util.Vector<String> methodNames() {
-	java.util.Vector<String> methodNames = new java.util.Vector<String>();
-	methodNames.addElement("test_ConstructorLorg_eclipse_swt_widgets_CompositeI");
-	methodNames.addElement("test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener");
-	methodNames.addElement("test_removeSelectionListenerLorg_eclipse_swt_events_SelectionListener");
-	methodNames.addElement("test_setDateIII");
-	methodNames.addElement("test_setTimeIII");
-	methodNames.addElement("test_setDayI");
-	methodNames.addElement("test_setHoursI");
-	methodNames.addElement("test_setMinutesI");
-	methodNames.addElement("test_setMonthI");
-	methodNames.addElement("test_setSecondsI");
-	methodNames.addElement("test_setYearI");
-	methodNames.addElement("test_consistency_MenuDetect");
-	methodNames.addElement("test_consistency_DragDetect");
-	methodNames.addElement("test_consistency_MouseSelection");
-	methodNames.addElement("test_consistency_EnterSelection");
-	methodNames.addAll(Test_org_eclipse_swt_widgets_Control.methodNames()); // add superclass method names
-	return methodNames;
-}
-@Override
-protected void runTest() throws Throwable {
-	if (getName().equals("test_ConstructorLorg_eclipse_swt_widgets_CompositeI")) test_ConstructorLorg_eclipse_swt_widgets_CompositeI();
-	else if (getName().equals("test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener")) test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener();
-	else if (getName().equals("test_removeSelectionListenerLorg_eclipse_swt_events_SelectionListener")) test_removeSelectionListenerLorg_eclipse_swt_events_SelectionListener();
-	else if (getName().equals("test_setDateIII")) test_setDateIII();
-	else if (getName().equals("test_setTimeIII")) test_setTimeIII();
-	else if (getName().equals("test_setDayI")) test_setDayI();
-	else if (getName().equals("test_setHoursI")) test_setHoursI();
-	else if (getName().equals("test_setMinutesI")) test_setMinutesI();
-	else if (getName().equals("test_setMonthI")) test_setMonthI();
-	else if (getName().equals("test_setSecondsI")) test_setSecondsI();
-	else if (getName().equals("test_setYearI")) test_setYearI();
-	else if (getName().equals("test_consistency_MenuDetect")) test_consistency_MenuDetect();
-	else if (getName().equals("test_consistency_DragDetect")) test_consistency_DragDetect();
-	else if (getName().equals("test_consistency_MouseSelection")) test_consistency_MouseSelection();
-	else if (getName().equals("test_consistency_EnterSelection")) test_consistency_EnterSelection();
-	else super.runTest();
 }
 
 protected void setUp(int style) {
@@ -479,6 +443,7 @@ protected void setUp(int style) {
     setWidget(datetime);
 }
 
+@Test
 public void test_consistency_MenuDetect () {
     consistencyEvent(10, 10, 3, 0, ConsistencyUtility.MOUSE_CLICK);
     tearDown();
@@ -493,6 +458,7 @@ public void test_consistency_MenuDetect () {
     
 }
 
+@Test
 public void test_consistency_MouseSelection () {
     consistencyEvent(10, 10, 1, 0, ConsistencyUtility.MOUSE_CLICK);
     tearDown();
@@ -505,7 +471,7 @@ public void test_consistency_MouseSelection () {
     setUp(SWT.CALENDAR);
     consistencyEvent(5, 5, 1, 0, ConsistencyUtility.MOUSE_CLICK);
 }
-
+@Test
 public void test_consistency_EnterSelection () {
     tearDown();
     setUp(SWT.DATE);
@@ -517,7 +483,7 @@ public void test_consistency_EnterSelection () {
     setUp(SWT.CALENDAR);
     consistencyEvent(10, 13, 0, 0, ConsistencyUtility.KEY_PRESS);
 }
-
+@Test
 public void test_consistency_DragDetect () {
     consistencyEvent(10, 10, 20, 20, ConsistencyUtility.MOUSE_DRAG);
     tearDown();

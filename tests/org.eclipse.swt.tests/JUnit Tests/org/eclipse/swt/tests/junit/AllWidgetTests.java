@@ -58,7 +58,7 @@ public static Test suite() {
 	suite.addTestSuite(Test_org_eclipse_swt_widgets_ProgressBar.class);
 	suite.addTestSuite(Test_org_eclipse_swt_widgets_Composite.class);
 	suite.addTestSuite(Test_org_eclipse_swt_widgets_Link.class);
-	suite.addTest(Test_org_eclipse_swt_widgets_DateTime.suite());
+	suite.addTestSuite(Test_org_eclipse_swt_widgets_DateTime.class);
 	//suite.addTest(Test_org_eclipse_swt_widgets_CoolBar.suite());
 
 	suite.addTestSuite(Test_org_eclipse_swt_widgets_ColorDialog.class);

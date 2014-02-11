@@ -14,10 +14,6 @@ import static org.junit.Assert.assertArrayEquals;
 
 import java.util.Vector;
 
-import junit.framework.Test;
-import junit.framework.TestSuite;
-import junit.textui.TestRunner;
-
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.accessibility.Accessible;
 import org.eclipse.swt.events.ControlEvent;
@@ -51,6 +47,7 @@ import org.eclipse.swt.widgets.Monitor;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Widget;
 import org.junit.Assert;
+import org.junit.Test;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.widgets.Control
@@ -63,14 +60,12 @@ public Test_org_eclipse_swt_widgets_Control(String name) {
 	super(name);
 }
 
-public static void main(String[] args) {
-	TestRunner.run(suite());
-}
-
+@Test
 public void test_ConstructorLorg_eclipse_swt_widgets_CompositeI() {
 	// abstract class
 }
 
+@Test
 public void test_addControlListenerLorg_eclipse_swt_events_ControlListener() {
 	ControlListener listener = new ControlListener() {
 		public void controlMoved(ControlEvent e) {
@@ -90,6 +85,7 @@ public void test_addControlListenerLorg_eclipse_swt_events_ControlListener() {
 	control.removeControlListener(listener);
 }
 
+@Test
 public void test_addFocusListenerLorg_eclipse_swt_events_FocusListener() {
 	FocusListener listener = new FocusListener() {
 		public void focusGained(FocusEvent e) {
@@ -109,6 +105,7 @@ public void test_addFocusListenerLorg_eclipse_swt_events_FocusListener() {
 	control.removeFocusListener(listener);
 }
 
+@Test
 public void test_addHelpListenerLorg_eclipse_swt_events_HelpListener() {
 	HelpListener listener = new HelpListener() {
 		public void helpRequested(HelpEvent e) {
@@ -122,6 +119,7 @@ public void test_addHelpListenerLorg_eclipse_swt_events_HelpListener() {
 	control.removeHelpListener(listener);
 }
 
+@Test
 public void test_addKeyListenerLorg_eclipse_swt_events_KeyListener() {
 	KeyListener listener = new KeyListener() {
 		public void keyPressed(KeyEvent e) {
@@ -141,6 +139,7 @@ public void test_addKeyListenerLorg_eclipse_swt_events_KeyListener() {
 	control.removeKeyListener(listener);
 }
 
+@Test
 public void test_addMouseListenerLorg_eclipse_swt_events_MouseListener() {
 	MouseListener listener = new MouseListener() {
 		public void mouseDown(MouseEvent e) {
@@ -166,6 +165,7 @@ public void test_addMouseListenerLorg_eclipse_swt_events_MouseListener() {
 	control.removeMouseListener(listener);
 }
 
+@Test
 public void test_addMouseMoveListenerLorg_eclipse_swt_events_MouseMoveListener() {
 	MouseMoveListener listener = new MouseMoveListener() {
 		public void mouseMove(MouseEvent e) {
@@ -179,6 +179,7 @@ public void test_addMouseMoveListenerLorg_eclipse_swt_events_MouseMoveListener()
 	control.removeMouseMoveListener(listener);
 }
 
+@Test
 public void test_addMouseTrackListenerLorg_eclipse_swt_events_MouseTrackListener() {
 	MouseTrackListener listener = new MouseTrackListener() {
 		public void mouseEnter(MouseEvent e) {
@@ -203,7 +204,7 @@ public void test_addMouseTrackListenerLorg_eclipse_swt_events_MouseTrackListener
 	assertTrue(eventOccurred);
 	control.removeMouseTrackListener(listener);
 }
-
+@Test
 public void test_addPaintListenerLorg_eclipse_swt_events_PaintListener() {
 	PaintListener listener = new PaintListener() {
 		public void paintControl(PaintEvent e) {
@@ -219,7 +220,7 @@ public void test_addPaintListenerLorg_eclipse_swt_events_PaintListener() {
 	assertTrue(eventOccurred);
 	control.removePaintListener(listener);
 }
-
+@Test
 public void test_addTraverseListenerLorg_eclipse_swt_events_TraverseListener() {
 	TraverseListener listener = new TraverseListener() {
 		public void keyTraversed(TraverseEvent e) {
@@ -233,6 +234,7 @@ public void test_addTraverseListenerLorg_eclipse_swt_events_TraverseListener() {
 	control.removeTraverseListener(listener);
 }
 
+@Test
 public void test_computeSizeII() {
 	control.computeSize(SWT.DEFAULT, SWT.DEFAULT);
 	Point size = control.getSize();
@@ -240,7 +242,7 @@ public void test_computeSizeII() {
 	assertEquals(size.x, control.getSize().x);
 	assertEquals(size.y, control.getSize().y);
 }
-
+@Test
 public void test_computeSizeIIZ() {
 	control.computeSize(SWT.DEFAULT, SWT.DEFAULT, true);
 	Point size = control.getSize();
@@ -248,22 +250,22 @@ public void test_computeSizeIIZ() {
 	assertEquals(size.x, control.getSize().x);
 	assertEquals(size.y, control.getSize().y);
 }
-
+@Test
 public void test_getAccessible() {
 	Accessible accessible = control.getAccessible();
 	assertTrue(":a:", accessible != null);
 }
-
+@Test
 public void test_getBorderWidth() {
 	control.getBorderWidth();
 }
 
-
+@Test
 public void test_getLocation() {
 	control.setBounds(32, 43, 30, 40);
 	assertTrue(control.getLocation().equals(new Point(32, 43)));
 }
-
+@Test
 public void test_getMonitor() {
 	Monitor monitor = control.getMonitor();
 	assertNotNull(monitor);
@@ -278,15 +280,15 @@ public void test_getMonitor() {
 		fail("Control.getMonitor does not return a monitor listed in Display.getMonitors");
 	}
 }
-
+@Test
 public void test_getParent() {
 	assertEquals(shell, control.getParent());
 }
-
+@Test
 public void test_getShell() {
 	assertEquals(shell, control.getShell());
 }
-
+@Test
 public void test_isEnabled() {
 	control.setEnabled(true);
 	assertTrue(control.isEnabled());
@@ -294,15 +296,15 @@ public void test_isEnabled() {
 	control.setEnabled(false);
 	assertTrue(!control.isEnabled());
 }
-
+@Test
 public void test_isFocusControl() {
 	assertTrue(!control.isFocusControl());
 }
-
+@Test
 public void test_isReparentable() {
 	assertEquals ("isReparentable", control.isReparentable(), SwtTestUtil.isReparentablePlatform());
 }
-
+@Test
 public void test_isVisible() {
 	control.setVisible(true);
 	assertTrue(!control.isVisible());  //because the shell is not visible
@@ -318,7 +320,7 @@ public void test_isVisible() {
 		assertTrue("Window should not be visible", !control.isVisible());
 	}
 }
-
+@Test
 public void test_moveAboveLorg_eclipse_swt_widgets_Control() {
 	control.moveAbove(null);
 
@@ -328,7 +330,7 @@ public void test_moveAboveLorg_eclipse_swt_widgets_Control() {
 	control.moveAbove(b);
 	b.dispose();
 }
-
+@Test
 public void test_moveBelowLorg_eclipse_swt_widgets_Control() {
 	control.moveBelow(null);
 
@@ -338,20 +340,20 @@ public void test_moveBelowLorg_eclipse_swt_widgets_Control() {
 	control.moveBelow(b);
 	b.dispose();
 }
-
+@Test
 public void test_pack() {
 	control.pack();
 }
-
+@Test
 public void test_packZ() {
 	control.pack(true);
 	control.pack(false);
 }
-
+@Test
 public void test_redraw() {
 	control.redraw();
 }
-
+@Test
 public void test_redrawIIIIZ() {
 	control.redraw(0, 0, 0, 0, false);
 
@@ -365,7 +367,7 @@ public void test_redrawIIIIZ() {
 
 	control.redraw(10000, 10000, 10000, 10000, false);
 }
-
+@Test
 public void test_setBackgroundLorg_eclipse_swt_graphics_Color() {
 	Color color = new Color(control.getDisplay(), 255, 0, 0);
 	control.setBackground(color);
@@ -374,7 +376,7 @@ public void test_setBackgroundLorg_eclipse_swt_graphics_Color() {
 	assertTrue("getBackground unchanged after setBackground(null)", !control.getBackground().equals(color));
 	color.dispose();
 }
-
+@Test
 public void test_setBoundsIIII() {
 	control.setBounds(10, 20, 30, 40);
 	assertEquals(new Rectangle(10, 20, 30, 40), control.getBounds());
@@ -384,7 +386,7 @@ public void test_setBoundsIIII() {
 
 	control.setBounds(10, 20, 30, 40);
 }
-
+@Test
 public void test_setBoundsLorg_eclipse_swt_graphics_Rectangle() {
 	control.setBounds(new Rectangle(10, 20, 30, 40));
 	assertEquals(new Rectangle(10, 20, 30, 40), control.getBounds());
@@ -401,13 +403,13 @@ public void test_setBoundsLorg_eclipse_swt_graphics_Rectangle() {
 
 	control.setBounds(new Rectangle(10, 20, 30, 40));
 }
-
+@Test
 public void test_setCaptureZ() {
 	control.setCapture(true);
 
 	control.setCapture(false);
 }
-
+@Test
 public void test_setCursorLorg_eclipse_swt_graphics_Cursor() {
 	control.setCursor(null);
 
@@ -415,7 +417,7 @@ public void test_setCursorLorg_eclipse_swt_graphics_Cursor() {
 	control.setCursor(c);
 	c.dispose();
 }
-
+@Test
 public void test_setEnabledZ() {
 	control.setEnabled(true);
 	assertTrue(control.getEnabled());
@@ -423,11 +425,11 @@ public void test_setEnabledZ() {
 	control.setEnabled(false);
 	assertTrue(!control.getEnabled());
 }
-
+@Test
 public void test_setFocus() {
 	control.setFocus();
 }
-
+@Test
 public void test_setFontLorg_eclipse_swt_graphics_Font() {
 	Font font = control.getFont();
 	control.setFont(font);
@@ -446,7 +448,7 @@ public void test_setFontLorg_eclipse_swt_graphics_Font() {
 	} catch (IllegalArgumentException e) {
 	}
 }
-
+@Test
 public void test_setForegroundLorg_eclipse_swt_graphics_Color() {
 	Color color = new Color(control.getDisplay(), 255, 0, 0);
 	control.setForeground(color);
@@ -455,7 +457,7 @@ public void test_setForegroundLorg_eclipse_swt_graphics_Color() {
 	assertTrue(!control.getForeground().equals(color));
 	color.dispose();
 }
-
+@Test
 public void test_setLayoutDataLjava_lang_Object() {
 	control.setLayoutData(this);
 	assertEquals(this, control.getLayoutData());
@@ -469,7 +471,7 @@ public void test_setLayoutDataLjava_lang_Object() {
 	control.setLayoutData(null);
 	assertNull(control.getLayoutData());
 }
-
+@Test
 public void test_setLocationII() {
 	control.setBounds(32, 43, 30, 40);
 	control.setLocation(11, 22);
@@ -479,7 +481,7 @@ public void test_setLocationII() {
 	control.setLocation(10, 10);
 	assertEquals(control.getLocation(), new Point(10, 10));
 }
-
+@Test
 public void test_setLocationLorg_eclipse_swt_graphics_Point() {
 	try {
 		control.setLocation(null);
@@ -504,7 +506,7 @@ public void test_setLocationLorg_eclipse_swt_graphics_Point() {
 	control.setLocation(loc);
 	assertEquals(control.getLocation(), loc);
 }
-
+@Test
 public void test_setMenuLorg_eclipse_swt_widgets_Menu () {
 	/* this is a valid thing to do, you can reset a menu to nothing */
 	control.setMenu(null);
@@ -513,7 +515,7 @@ public void test_setMenuLorg_eclipse_swt_widgets_Menu () {
 	control.setMenu(m);
 	assertEquals(m, control.getMenu());
 }
-
+@Test
 public void test_setParentLorg_eclipse_swt_widgets_Composite() {
 	if (control.isReparentable()) {
 		Shell originalParent = new Shell();
@@ -525,13 +527,13 @@ public void test_setParentLorg_eclipse_swt_widgets_Composite() {
 		newParent.dispose();
 	}
 }
-
+@Test
 public void test_setRedrawZ() {
 	control.setRedraw(false);
 
 	control.setRedraw(true);
 }
-
+@Test
 public void test_setSizeII() {
 	control.setBounds(32, 43, 30, 40);
 	assertEquals(new Point(30, 40), control.getSize());
@@ -549,7 +551,7 @@ public void test_setSizeII() {
 
 	control.setSize(-10, -10);
 }
-
+@Test
 public void test_setSizeLorg_eclipse_swt_graphics_Point() {
 	control.setSize(new Point(30, 40));
 	assertEquals(new Point(30, 40), control.getSize());
@@ -569,7 +571,7 @@ public void test_setSizeLorg_eclipse_swt_graphics_Point() {
 
 	control.setSize(new Point(-10, -10));
 }
-
+@Test
 public void test_setToolTipTextLjava_lang_String() {
 	control.setToolTipText("This is a tip");
 	assertEquals("This is a tip", control.getToolTipText());
@@ -577,7 +579,7 @@ public void test_setToolTipTextLjava_lang_String() {
 	control.setToolTipText(null);
 	assertNull(control.getToolTipText());
 }
-
+@Test
 public void test_setVisibleZ() {
 	control.setVisible(true);
 	assertTrue(control.getVisible());
@@ -585,12 +587,12 @@ public void test_setVisibleZ() {
 	control.setVisible(false);
 	assertTrue(!control.getVisible());
 }
-
+@Test
 public void test_toControlII() {
 	Point controlCoords = control.toControl(0, 0);
 	assertEquals(new Point(0, 0), control.toDisplay(controlCoords.x, controlCoords.y));
 }
-
+@Test
 public void test_toControlLorg_eclipse_swt_graphics_Point() {
 	Point controlCoords = control.toControl(new Point(0, 0));
 	assertEquals(new Point(0, 0), control.toDisplay(controlCoords));
@@ -601,12 +603,12 @@ public void test_toControlLorg_eclipse_swt_graphics_Point() {
 	catch (IllegalArgumentException e) {
 	}
 }
-
+@Test
 public void test_toDisplayII() {
 	Point displayCoords = control.toDisplay(0, 0);
 	assertEquals(new Point(0, 0), control.toControl(displayCoords.x, displayCoords.y));
 }
-
+@Test
 public void test_toDisplayLorg_eclipse_swt_graphics_Point() {
 	Point displayCoords = control.toDisplay(new Point(0, 0));
 	assertEquals(new Point(0, 0), control.toControl(displayCoords));
@@ -617,7 +619,7 @@ public void test_toDisplayLorg_eclipse_swt_graphics_Point() {
 	catch (IllegalArgumentException e) {
 	}
 }
-
+@Test
 public void test_traverseI() {
 	control.traverse(SWT.TRAVERSE_ESCAPE);
 	control.traverse(SWT.TRAVERSE_RETURN);
@@ -626,135 +628,9 @@ public void test_traverseI() {
 	control.traverse(SWT.TRAVERSE_ARROW_NEXT);
 	control.traverse(SWT.TRAVERSE_ARROW_PREVIOUS);
 }
-
+@Test
 public void test_update() {
 	control.update();
-}
-
-public static Test suite() {
-	TestSuite suite = new TestSuite();
-	java.util.Vector<String> methodNames = methodNames();
-	java.util.Enumeration<String> e = methodNames.elements();
-	while (e.hasMoreElements()) {
-		suite.addTest(new Test_org_eclipse_swt_widgets_Control(e.nextElement()));
-	}
-	return suite;
-}
-
-public static java.util.Vector<String> methodNames() {
-	java.util.Vector<String> methodNames = new java.util.Vector<String>();
-	methodNames.addElement("test_ConstructorLorg_eclipse_swt_widgets_CompositeI");
-	methodNames.addElement("test_addControlListenerLorg_eclipse_swt_events_ControlListener");
-	methodNames.addElement("test_addFocusListenerLorg_eclipse_swt_events_FocusListener");
-	methodNames.addElement("test_addHelpListenerLorg_eclipse_swt_events_HelpListener");
-	methodNames.addElement("test_addKeyListenerLorg_eclipse_swt_events_KeyListener");
-	methodNames.addElement("test_addMouseListenerLorg_eclipse_swt_events_MouseListener");
-	methodNames.addElement("test_addMouseMoveListenerLorg_eclipse_swt_events_MouseMoveListener");
-	methodNames.addElement("test_addMouseTrackListenerLorg_eclipse_swt_events_MouseTrackListener");
-	methodNames.addElement("test_addPaintListenerLorg_eclipse_swt_events_PaintListener");
-	methodNames.addElement("test_addTraverseListenerLorg_eclipse_swt_events_TraverseListener");
-	methodNames.addElement("test_computeSizeII");
-	methodNames.addElement("test_computeSizeIIZ");
-	methodNames.addElement("test_getAccessible");
-	methodNames.addElement("test_getBorderWidth");
-	methodNames.addElement("test_getLocation");
-	methodNames.addElement("test_getMonitor");
-	methodNames.addElement("test_getParent");
-	methodNames.addElement("test_getShell");
-	methodNames.addElement("test_isEnabled");
-	methodNames.addElement("test_isFocusControl");
-	methodNames.addElement("test_isReparentable");
-	methodNames.addElement("test_isVisible");
-	methodNames.addElement("test_moveAboveLorg_eclipse_swt_widgets_Control");
-	methodNames.addElement("test_moveBelowLorg_eclipse_swt_widgets_Control");
-	methodNames.addElement("test_pack");
-	methodNames.addElement("test_packZ");
-	methodNames.addElement("test_redraw");
-	methodNames.addElement("test_redrawIIIIZ");
-	methodNames.addElement("test_setBackgroundLorg_eclipse_swt_graphics_Color");
-	methodNames.addElement("test_setBoundsIIII");
-	methodNames.addElement("test_setBoundsLorg_eclipse_swt_graphics_Rectangle");
-	methodNames.addElement("test_setCaptureZ");
-	methodNames.addElement("test_setCursorLorg_eclipse_swt_graphics_Cursor");
-	methodNames.addElement("test_setEnabledZ");
-	methodNames.addElement("test_setFocus");
-	methodNames.addElement("test_setFontLorg_eclipse_swt_graphics_Font");
-	methodNames.addElement("test_setForegroundLorg_eclipse_swt_graphics_Color");
-	methodNames.addElement("test_setLayoutDataLjava_lang_Object");
-	methodNames.addElement("test_setLocationII");
-	methodNames.addElement("test_setLocationLorg_eclipse_swt_graphics_Point");
-	methodNames.addElement("test_setMenuLorg_eclipse_swt_widgets_Menu");
-	methodNames.addElement("test_setParentLorg_eclipse_swt_widgets_Composite");
-	methodNames.addElement("test_setRedrawZ");
-	methodNames.addElement("test_setSizeII");
-	methodNames.addElement("test_setSizeLorg_eclipse_swt_graphics_Point");
-	methodNames.addElement("test_setToolTipTextLjava_lang_String");
-	methodNames.addElement("test_setVisibleZ");
-	methodNames.addElement("test_toControlII");
-	methodNames.addElement("test_toControlLorg_eclipse_swt_graphics_Point");
-	methodNames.addElement("test_toDisplayII");
-	methodNames.addElement("test_toDisplayLorg_eclipse_swt_graphics_Point");
-	methodNames.addElement("test_traverseI");
-	methodNames.addElement("test_update");
-	methodNames.addAll(Test_org_eclipse_swt_widgets_Widget.methodNames()); // add superclass method names
-	return methodNames;
-}
-@Override
-protected void runTest() throws Throwable {
-	if (getName().equals("test_ConstructorLorg_eclipse_swt_widgets_CompositeI")) test_ConstructorLorg_eclipse_swt_widgets_CompositeI();
-	else if (getName().equals("test_addControlListenerLorg_eclipse_swt_events_ControlListener")) test_addControlListenerLorg_eclipse_swt_events_ControlListener();
-	else if (getName().equals("test_addFocusListenerLorg_eclipse_swt_events_FocusListener")) test_addFocusListenerLorg_eclipse_swt_events_FocusListener();
-	else if (getName().equals("test_addHelpListenerLorg_eclipse_swt_events_HelpListener")) test_addHelpListenerLorg_eclipse_swt_events_HelpListener();
-	else if (getName().equals("test_addKeyListenerLorg_eclipse_swt_events_KeyListener")) test_addKeyListenerLorg_eclipse_swt_events_KeyListener();
-	else if (getName().equals("test_addMouseListenerLorg_eclipse_swt_events_MouseListener")) test_addMouseListenerLorg_eclipse_swt_events_MouseListener();
-	else if (getName().equals("test_addMouseMoveListenerLorg_eclipse_swt_events_MouseMoveListener")) test_addMouseMoveListenerLorg_eclipse_swt_events_MouseMoveListener();
-	else if (getName().equals("test_addMouseTrackListenerLorg_eclipse_swt_events_MouseTrackListener")) test_addMouseTrackListenerLorg_eclipse_swt_events_MouseTrackListener();
-	else if (getName().equals("test_addPaintListenerLorg_eclipse_swt_events_PaintListener")) test_addPaintListenerLorg_eclipse_swt_events_PaintListener();
-	else if (getName().equals("test_addTraverseListenerLorg_eclipse_swt_events_TraverseListener")) test_addTraverseListenerLorg_eclipse_swt_events_TraverseListener();
-	else if (getName().equals("test_computeSizeII")) test_computeSizeII();
-	else if (getName().equals("test_computeSizeIIZ")) test_computeSizeIIZ();
-	else if (getName().equals("test_getAccessible")) test_getAccessible();
-	else if (getName().equals("test_getBorderWidth")) test_getBorderWidth();
-	else if (getName().equals("test_getLocation")) test_getLocation();
-	else if (getName().equals("test_getMonitor")) test_getMonitor();
-	else if (getName().equals("test_getParent")) test_getParent();
-	else if (getName().equals("test_getShell")) test_getShell();
-	else if (getName().equals("test_isEnabled")) test_isEnabled();
-	else if (getName().equals("test_isFocusControl")) test_isFocusControl();
-	else if (getName().equals("test_isReparentable")) test_isReparentable();
-	else if (getName().equals("test_isVisible")) test_isVisible();
-	else if (getName().equals("test_moveAboveLorg_eclipse_swt_widgets_Control")) test_moveAboveLorg_eclipse_swt_widgets_Control();
-	else if (getName().equals("test_moveBelowLorg_eclipse_swt_widgets_Control")) test_moveBelowLorg_eclipse_swt_widgets_Control();
-	else if (getName().equals("test_pack")) test_pack();
-	else if (getName().equals("test_packZ")) test_packZ();
-	else if (getName().equals("test_redraw")) test_redraw();
-	else if (getName().equals("test_redrawIIIIZ")) test_redrawIIIIZ();
-	else if (getName().equals("test_setBackgroundLorg_eclipse_swt_graphics_Color")) test_setBackgroundLorg_eclipse_swt_graphics_Color();
-	else if (getName().equals("test_setBoundsIIII")) test_setBoundsIIII();
-	else if (getName().equals("test_setBoundsLorg_eclipse_swt_graphics_Rectangle")) test_setBoundsLorg_eclipse_swt_graphics_Rectangle();
-	else if (getName().equals("test_setCaptureZ")) test_setCaptureZ();
-	else if (getName().equals("test_setCursorLorg_eclipse_swt_graphics_Cursor")) test_setCursorLorg_eclipse_swt_graphics_Cursor();
-	else if (getName().equals("test_setEnabledZ")) test_setEnabledZ();
-	else if (getName().equals("test_setFocus")) test_setFocus();
-	else if (getName().equals("test_setFontLorg_eclipse_swt_graphics_Font")) test_setFontLorg_eclipse_swt_graphics_Font();
-	else if (getName().equals("test_setForegroundLorg_eclipse_swt_graphics_Color")) test_setForegroundLorg_eclipse_swt_graphics_Color();
-	else if (getName().equals("test_setLayoutDataLjava_lang_Object")) test_setLayoutDataLjava_lang_Object();
-	else if (getName().equals("test_setLocationII")) test_setLocationII();
-	else if (getName().equals("test_setLocationLorg_eclipse_swt_graphics_Point")) test_setLocationLorg_eclipse_swt_graphics_Point();
-	else if (getName().equals("test_setMenuLorg_eclipse_swt_widgets_Menu")) test_setMenuLorg_eclipse_swt_widgets_Menu();
-	else if (getName().equals("test_setParentLorg_eclipse_swt_widgets_Composite")) test_setParentLorg_eclipse_swt_widgets_Composite();
-	else if (getName().equals("test_setRedrawZ")) test_setRedrawZ();
-	else if (getName().equals("test_setSizeII")) test_setSizeII();
-	else if (getName().equals("test_setSizeLorg_eclipse_swt_graphics_Point")) test_setSizeLorg_eclipse_swt_graphics_Point();
-	else if (getName().equals("test_setToolTipTextLjava_lang_String")) test_setToolTipTextLjava_lang_String();
-	else if (getName().equals("test_setVisibleZ")) test_setVisibleZ();
-	else if (getName().equals("test_toControlII")) test_toControlII();
-	else if (getName().equals("test_toControlLorg_eclipse_swt_graphics_Point")) test_toControlLorg_eclipse_swt_graphics_Point();
-	else if (getName().equals("test_toDisplayII")) test_toDisplayII();
-	else if (getName().equals("test_toDisplayLorg_eclipse_swt_graphics_Point")) test_toDisplayLorg_eclipse_swt_graphics_Point();
-	else if (getName().equals("test_traverseI")) test_traverseI();
-	else if (getName().equals("test_update")) test_update();
-	else super.runTest();
 }
 
 /* custom */
