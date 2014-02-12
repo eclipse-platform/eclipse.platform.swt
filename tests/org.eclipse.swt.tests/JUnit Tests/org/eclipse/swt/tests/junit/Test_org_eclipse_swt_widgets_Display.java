@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2013 IBM Corporation and others.
+ * Copyright (c) 2000, 2014 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -128,6 +128,23 @@ public void test_asyncExecLjava_lang_Runnable() {
 		});
 	} finally {
 		display.dispose();
+	}
+}
+
+public void test_asyncExecLjava_lang_Runnable_dispose() {
+	final Display display = new Display();
+	try {
+		disposeExecRan = false;
+		display.asyncExec(new Runnable() {
+			public void run() {
+				display.dispose();
+				disposeExecRan = true;
+			}
+		});
+	} finally {
+		while (!disposeExecRan) {
+			if (!display.readAndDispatch()) display.sleep ();
+		}
 	}
 }
 
@@ -987,6 +1004,19 @@ public void test_syncExecLjava_lang_Runnable() {
 		});
 	} finally {
 		display.dispose();
+	}
+}
+
+public void test_syncExecLjava_lang_Runnable_dispose() {
+	final Display display = new Display();
+	try {
+		display.syncExec(new Runnable() {
+			public void run() {
+				display.dispose();
+			}
+		});
+	} finally {
+		assertTrue(display.isDisposed());
 	}
 }
 
