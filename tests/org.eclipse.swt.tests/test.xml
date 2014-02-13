@@ -27,10 +27,10 @@
     <property name="data" value="${eclipse-home}/swt_sniff_folder"/>
     <delete dir="${location1}" quiet="true"/>
     <!-- Run all SWT tests on Windows, and either Carbon tests or Gtk tests otherwise. -->
-    <condition property="class-tests" value="org.eclipse.swt.tests.junit.AllGtkTests">
+    <condition property="class-tests" value="org.eclipse.swt.tests.junit.AllTests">
       <equals arg1="${os}" arg2="linux"/>
     </condition>
-    <condition property="class-tests" value="org.eclipse.swt.tests.junit.AllCocoaTests">
+    <condition property="class-tests" value="org.eclipse.swt.tests.junit.AllTests">
       <equals arg1="${ws}" arg2="cocoa"/>
     </condition>
     <condition property="class-tests" value="org.eclipse.swt.tests.junit.AllTests">
