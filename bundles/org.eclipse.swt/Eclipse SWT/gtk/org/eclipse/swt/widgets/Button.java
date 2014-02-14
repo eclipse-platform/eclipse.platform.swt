@@ -903,8 +903,8 @@ public void setImage (Image image) {
 	} else {
 		gtk_image_set_from_pixbuf (imageHandle, 0);
 	}
-	updateWidgetsVisibility();
 	this.image = image;
+	updateWidgetsVisibility();
 	_setAlignment (style);
 }
 
