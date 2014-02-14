@@ -161,6 +161,11 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	OS.gtk_notebook_set_scrollable (handle, false);
 	Point notebookSize = computeNativeSize (handle, wHint, hHint, changed);
 	OS.gtk_notebook_set_scrollable (handle, scrollable);
+	if (OS.GTK_VERSION >= OS.VERSION (3, 2, 0)) {
+		int[] initialGap = new int[1];
+		OS.gtk_widget_style_get (handle, OS.initial_gap, initialGap, 0);
+		notebookSize.x += initialGap[0]*2;
+	}
 	size.x = Math.max (notebookSize.x, size.x);
 	size.y = Math.max (notebookSize.y, size.y);
 	return size;
@@ -198,8 +203,8 @@ void createHandle (int index) {
 	handle = OS.gtk_notebook_new ();
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 	OS.gtk_container_add (fixedHandle, handle);
-	OS.gtk_notebook_set_scrollable (handle, true);
 	OS.gtk_notebook_set_show_tabs (handle, true);
+	OS.gtk_notebook_set_scrollable (handle, true);
 	if ((style & SWT.BOTTOM) != 0) {
 		OS.gtk_notebook_set_tab_pos (handle, OS.GTK_POS_BOTTOM);
 	}
