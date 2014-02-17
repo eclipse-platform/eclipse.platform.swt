@@ -238,6 +238,11 @@ void createHandle (int index) {
 		OS.gtk_label_set_line_wrap (labelHandle, true);
 		OS.gtk_label_set_line_wrap_mode (labelHandle, OS.PANGO_WRAP_WORD_CHAR);
 	}
+	// In GTK 3 font description is inherited from parent widget which is not how SWT has always worked, 
+	// reset to default font to get the usual behavior
+	if (OS.GTK3) {
+		setFontDescription(defaultFont ().handle);
+	}
 	setAlignment ();
 }
 
