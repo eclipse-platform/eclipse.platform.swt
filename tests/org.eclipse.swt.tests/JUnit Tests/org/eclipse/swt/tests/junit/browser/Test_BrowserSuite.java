@@ -59,6 +59,7 @@ public void testBrowser9() {
 
 @Override
 protected void setUp() throws Exception {
+	System.out.println("Browser#setUp(): " + getName());
 	Display display = Display.getCurrent();
 	if (display != null) display.dispose();
 }
