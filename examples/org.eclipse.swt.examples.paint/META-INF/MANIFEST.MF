@@ -3,7 +3,6 @@ Bundle-ManifestVersion: 2
 Bundle-Name: %plugin.SWTPaintExample.name
 Bundle-SymbolicName: org.eclipse.swt.examples.paint; singleton:=true
 Bundle-Version: 3.103.0.qualifier
-Bundle-Activator: org.eclipse.swt.examples.paint.PaintPlugin
 Bundle-Vendor: %providerName
 Bundle-Localization: plugin
 Require-Bundle: org.eclipse.core.runtime,
