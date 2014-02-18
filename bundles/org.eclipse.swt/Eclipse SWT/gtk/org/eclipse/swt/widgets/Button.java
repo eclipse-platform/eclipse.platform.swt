@@ -327,6 +327,11 @@ void createHandle (int index) {
 	OS.gtk_container_add (fixedHandle, handle);
 	
 	if ((style & SWT.ARROW) != 0) return;
+	// In GTK 3 font description is inherited from parent widget which is not how SWT has always worked, 
+	// reset to default font to get the usual behavior
+	if (OS.GTK3) {
+		setFontDescription(defaultFont().handle);
+	}
 	_setAlignment (style & (SWT.LEFT | SWT.CENTER | SWT.RIGHT));
 }
 
