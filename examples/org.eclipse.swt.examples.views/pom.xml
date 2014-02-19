@@ -18,7 +18,7 @@
     <relativePath>../../</relativePath>
   </parent>
   <groupId>org.eclipse.swt</groupId>
-  <artifactId>org.eclipse.swt.examples.browser</artifactId>
+  <artifactId>org.eclipse.swt.examples.views</artifactId>
   <version>3.103.0-SNAPSHOT</version>
   <packaging>eclipse-plugin</packaging>
 </project>

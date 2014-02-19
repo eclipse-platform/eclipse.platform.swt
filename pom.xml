@@ -46,13 +46,10 @@
     <module>bundles/org.eclipse.swt.opengl</module>
     <module>bundles/org.eclipse.swt.tools</module>
     <module>examples/org.eclipse.swt.examples</module>
-    <module>examples/org.eclipse.swt.examples.browser</module>
     <module>examples/org.eclipse.swt.examples.browser.demos</module>
-    <module>examples/org.eclipse.swt.examples.controls</module>
     <module>examples/org.eclipse.swt.examples.launcher</module>
-    <module>examples/org.eclipse.swt.examples.layouts</module>
     <module>examples/org.eclipse.swt.examples.ole.win32</module>
-    <module>examples/org.eclipse.swt.examples.paint</module>
+    <module>examples/org.eclipse.swt.examples.views</module>
     <module>tests/org.eclipse.swt.tests</module>
   </modules>
 </project>
