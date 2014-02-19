@@ -95,8 +95,7 @@ public class SplitLayout extends Layout {
 		clientArea.height -= marginBottom + marginTop;
 		Point position = new Point(clientArea.x, clientArea.y);
 
-		for (int i = 0; i < children.length; ++i) {
-			final Control child = children[i];
+		for (Control child : children) {
 			final Rectangle bounds;
 			if (splitDirection == splitHorizontally) {
 				int height = clientArea.height / children.length;
@@ -116,9 +115,7 @@ public class SplitLayout extends Layout {
 	private Point computeHSplitSize(Composite composite, int wHint, int hHint, boolean flushCache) {
 		Point size = new Point(marginLeft + marginRight, marginTop + marginBottom);
 		Control[] children = composite.getChildren();
-		for (int i = 0; i < children.length; ++i) {
-			final Control child = children[i];
-
+		for (Control child : children) {
 			Point childSize = child.computeSize(wHint, hHint, flushCache);
 			size.x = Math.max(size.x, childSize.x);
 			size.y += childSize.y + spacing;
@@ -129,9 +126,7 @@ public class SplitLayout extends Layout {
 	private Point computeVSplitSize(Composite composite, int wHint, int hHint, boolean flushCache) {
 		Point size = new Point(marginLeft + marginRight, marginTop + marginBottom);
 		Control[] children = composite.getChildren();
-		for (int i = 0; i < children.length; ++i) {
-			final Control child = children[i];
-
+		for (Control child : children) {
 			Point childSize = child.computeSize(wHint, hHint, flushCache);
 			size.x += childSize.x + spacing;
 			size.y = Math.max(size.y, childSize.y);

@@ -185,8 +185,7 @@ class CoolBarTab extends Tab {
 
 		/* Set the sizes after adding all cool items */
 		CoolItem[] coolItems = coolBar.getItems();
-		for (int i = 0; i < coolItems.length; i++) {
-			CoolItem coolItem = coolItems[i];
+		for (CoolItem coolItem : coolItems) {
 			Control control = coolItem.getControl();
 			Point size = control.computeSize(SWT.DEFAULT, SWT.DEFAULT);
 			Point coolSize = coolItem.computeSize(size.x, size.y);

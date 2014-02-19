@@ -95,8 +95,7 @@ public void createControlPanel(Composite parent) {
 	
 	new Label(comp, SWT.LEFT).setText(GraphicsExample.getResourceString("FontFace")); //$NON-NLS-1$
 	fontFaceCb = new Combo(comp, SWT.DROP_DOWN);
-	for (int i=0; i < fontNames.size(); i++) {
-		String name = fontNames.get(i);
+	for (String name : fontNames) {
 		fontFaceCb.add(name);
 	}
 	fontFaceCb.select(0);
@@ -112,8 +111,8 @@ public void createControlPanel(Composite parent) {
 	
 	new Label(comp, SWT.LEFT).setText(GraphicsExample.getResourceString("FontStyle")); //$NON-NLS-1$
 	fontStyleCb = new Combo(comp, SWT.DROP_DOWN);
-	for (int i=0; i < fontStyles.length; i++) {
-		fontStyleCb.add(fontStyles[i]);
+	for (String fontStyle : fontStyles) {
+		fontStyleCb.add(fontStyle);
 	}
 	fontStyleCb.select(0);
 	fontStyleCb.addListener(SWT.Selection, new Listener() {

@@ -110,8 +110,7 @@ public class LauncherPlugin extends AbstractUIPlugin {
 	 */
 	public static void freeResources() {
 		if (images != null) {
-			for (int i = 0; i < images.length; ++i) {
-				final Image image = images[i];
+			for (Image image : images) {
 				if (image != null) image.dispose();
 			}
 			images = null;
@@ -181,8 +180,7 @@ public class LauncherPlugin extends AbstractUIPlugin {
 		
 		/* Collect all launch categories -- coalesce those with same ID */
 		HashMap<String, ItemTreeNode> idMap = new HashMap<String, ItemTreeNode>();
-		for (int i = 0; i < configurationElements.length; ++i) {
-			final IConfigurationElement ce = configurationElements[i];
+		for (IConfigurationElement ce: configurationElements) {
 			final String ceName = ce.getName();
 			final String attribId = getItemAttribute(ce, LAUNCH_ITEMS_XML_ATTRIB_ID, null);
 			
@@ -197,8 +195,7 @@ public class LauncherPlugin extends AbstractUIPlugin {
 		
 		/* Generate launch category hierarchy */
 		Set<String> tempIdSet = new HashSet<String>(); // used to prevent duplicates from being entered into the tree
-		for (int i = 0; i < configurationElements.length; ++i) {
-			final IConfigurationElement ce = configurationElements[i];
+		for (IConfigurationElement ce : configurationElements) {
 			final String ceName = ce.getName();
 			final String attribId = getItemAttribute(ce, LAUNCH_ITEMS_XML_ATTRIB_ID, null);
 			
@@ -211,8 +208,7 @@ public class LauncherPlugin extends AbstractUIPlugin {
 		}
 		
 		/* Generate program tree */
-		for (int i = 0; i < configurationElements.length; ++i) {
-			final IConfigurationElement ce = configurationElements[i];
+		for (IConfigurationElement ce : configurationElements) {
 			final String ceName = ce.getName();
 			final String attribId = getItemAttribute(ce, LAUNCH_ITEMS_XML_ATTRIB_ID, null);
 

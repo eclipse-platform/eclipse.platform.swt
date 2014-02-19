@@ -29,6 +29,7 @@ public class BrowserView extends ViewPart {
 	 * 
 	 * @see ViewPart#createPartControl
 	 */
+	@Override
 	public void createPartControl(Composite frame) {
 		instance = new BrowserExample(frame, true);
 	}
@@ -38,6 +39,7 @@ public class BrowserView extends ViewPart {
 	 * 
 	 * @see org.eclipse.ui.part.ViewPart#setFocus
 	 */
+	@Override
 	public void setFocus() {
 		instance.focus();
 	}
@@ -45,6 +47,7 @@ public class BrowserView extends ViewPart {
 	/**
 	 * Called when the View is to be disposed
 	 */	
+	@Override
 	public void dispose() {
 		instance.dispose();
 		instance = null;

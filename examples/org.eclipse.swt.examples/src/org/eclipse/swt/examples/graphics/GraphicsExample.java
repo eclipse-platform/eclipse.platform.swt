@@ -375,24 +375,20 @@ void createTabList(Composite parent) {
 		}
 	});
 	HashSet<String> set = new HashSet<String>();
-	for (int i = 0; i < tabs.length; i++) {
-		GraphicsTab tab = tabs[i];
+	for (GraphicsTab tab : tabs) {
 		set.add(tab.getCategory());
 	}
 	String[] categories = new String[set.size()];
 	set.toArray(categories);
 	Arrays.sort(categories);
-	for (int i = 0; i < categories.length; i++) {
-		String text = categories[i];
+	for (String text : categories) {
 		TreeItem item = new TreeItem(tabList, SWT.NONE);
 		item.setText(text);
 	}
 	tabs_in_order = new ArrayList<GraphicsTab>();
 	TreeItem[] items = tabList.getItems();
-	for (int i = 0; i < items.length; i++) {
-		TreeItem item = items[i];
-		for (int j = 0; j < tabs.length; j++) {
-			GraphicsTab tab = tabs[j];
+	for (TreeItem item : items) {
+		for (GraphicsTab tab : tabs) {
 			if (item.getText().equals(tab.getCategory())) {
 				TreeItem item1 = new TreeItem(item, SWT.NONE);
 				item1.setText(tab.getText());
@@ -466,16 +462,15 @@ GraphicsTab[] createTabs() {
  */
 public void dispose() {
 	if (tabs != null) {
-		for (int i = 0; i < tabs.length; i++) {
-			GraphicsTab tab = tabs[i];
+		for (GraphicsTab tab : tabs) {
 			tab.dispose();
 		}
 	}
 	tabs = null;
 	if (resources != null) {
-		for (int i = 0; i < resources.size(); i++) {
-			if (resources.get(i) != null) {
-				resources.get(i).dispose();
+		for (Image image : resources) {
+			if (image != null) {
+				image.dispose();
 			}
 		}
 	}
@@ -488,8 +483,7 @@ public void dispose() {
 }
 
 TreeItem findItemByData(TreeItem[] items, Object data) {
-	for (int i = 0; i < items.length; i++) {
-		TreeItem item = items[i];
+	for (TreeItem item : items) {
 		if (item.getData() == data) return item;
 		item = findItemByData(item.getItems(), data);
 		if (item != null) return item;
@@ -580,8 +574,7 @@ public void setFocus() {
  */
 public void setTab(GraphicsTab tab) {
 	Control[] children = tabControlPanel.getChildren();
-	for (int i = 0; i < children.length; i++) {
-		Control control = children[i];
+	for (Control control: children) {
 		control.dispose();
 	}
 	if (this.tab != null) this.tab.dispose();

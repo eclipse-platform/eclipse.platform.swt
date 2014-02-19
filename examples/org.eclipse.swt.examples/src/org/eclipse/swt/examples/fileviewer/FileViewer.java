@@ -668,8 +668,8 @@ public class FileViewer {
 	 */
 	private static void treeItemRemoveAll(TreeItem treeItem) {
 		final TreeItem[] children = treeItem.getItems();
-		for (int i = 0; i < children.length; ++i) {
-			children[i].dispose();
+		for (TreeItem child : children) {
+			child.dispose();
 		}
 	}
 

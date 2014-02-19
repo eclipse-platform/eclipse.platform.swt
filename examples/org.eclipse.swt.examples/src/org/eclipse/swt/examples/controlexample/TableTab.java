@@ -439,8 +439,7 @@ class TableTab extends ScrollableTab {
 	}
 
 	TableItem findItem(String value, TableItem[] items) {
-		for (int i = 0; i < items.length; i++) {
-			TableItem item = items[i];
+		for (TableItem item : items) {
 			if (item.getText().equals(value)) return item;
 		}
 		return null;
@@ -595,8 +594,8 @@ class TableTab extends ScrollableTab {
 	void setColumnsMoveable () {
 		boolean selection = moveableColumns.getSelection();
 		TableColumn[] columns = table1.getColumns();
-		for (int i = 0; i < columns.length; i++) {
-			columns[i].setMoveable(selection);
+		for (TableColumn column : columns) {
+			column.setMoveable(selection);
 		}
 	}
 
@@ -606,8 +605,8 @@ class TableTab extends ScrollableTab {
 	void setColumnsResizable () {
 		boolean selection = resizableColumns.getSelection();
 		TableColumn[] columns = table1.getColumns();
-		for (int i = 0; i < columns.length; i++) {
-			columns[i].setResizable(selection);
+		for (TableColumn column : columns) {
+			column.setResizable(selection);
 		}
 	}
 
@@ -682,9 +681,9 @@ class TableTab extends ScrollableTab {
 			}
 		} else {
 			table1.setSortDirection (SWT.NONE);
-			for (int j = 0; j < columns.length; j++) {
-				SelectionListener listener = (SelectionListener)columns[j].getData("SortListener");	//$NON-NLS-1$
-				if (listener != null) columns[j].removeSelectionListener(listener);
+			for (TableColumn column : columns) {
+				SelectionListener listener = (SelectionListener)column.getData("SortListener");	//$NON-NLS-1$
+				if (listener != null) column.removeSelectionListener(listener);
 			}
 		}
 	}

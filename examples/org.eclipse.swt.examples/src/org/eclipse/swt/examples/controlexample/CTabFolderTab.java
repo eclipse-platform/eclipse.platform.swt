@@ -417,11 +417,11 @@ class CTabFolderTab extends Tab {
 	void setImages () {
 		boolean setImage = imageButton.getSelection ();
 		CTabItem items[] = tabFolder1.getItems ();
-		for (int i = 0; i < items.length; i++) {
+		for (CTabItem item : items) {
 			if (setImage) {
-				items[i].setImage (instance.images[ControlExample.ciClosedFolder]);
+				item.setImage (instance.images[ControlExample.ciClosedFolder]);
 			} else {
-				items[i].setImage (null);
+				item.setImage (null);
 			}
 		}
 		setExampleWidgetSize ();

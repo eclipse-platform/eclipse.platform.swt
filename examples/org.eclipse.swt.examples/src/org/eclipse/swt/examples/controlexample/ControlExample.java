@@ -54,11 +54,11 @@ public class ControlExample {
 		initResources();
 		tabFolder = new TabFolder (parent, SWT.NONE);
 		tabs = createTabs();
-		for (int i=0; i<tabs.length; i++) {
+		for (Tab tab : tabs) {
 			TabItem item = new TabItem (tabFolder, SWT.NONE);
-		    item.setText (tabs [i].getTabText ());
-		    item.setControl (tabs [i].createTabFolderPage (tabFolder));
-		    item.setData (tabs [i]);
+		    item.setText (tab.getTabText ());
+		    item.setControl (tab.createTabFolderPage (tabFolder));
+		    item.setData (tab);
 		}
 		
 		/* Workaround: if the tab folder is wider than the screen,
@@ -133,8 +133,7 @@ public class ControlExample {
 	 */
 	void freeResources() {
 		if (images != null) {
-			for (int i = 0; i < images.length; ++i) {
-				final Image image = images[i];
+			for (Image image : images) {
 				if (image != null) image.dispose();
 			}
 			images = null;

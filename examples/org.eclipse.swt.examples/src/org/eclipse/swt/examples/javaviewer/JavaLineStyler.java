@@ -253,8 +253,8 @@ public class JavaScanner {
 	void initialize() {
 		fgKeys= new Hashtable<String, Integer>();
 		Integer k= new Integer(KEY);
-		for (int i= 0; i < fgKeywords.length; i++)
-			fgKeys.put(fgKeywords[i], k);
+		for (String word : fgKeywords)
+			fgKeys.put(word, k);
 	}
 
 	/**

@@ -38,10 +38,10 @@ public class LayoutExample {
 			new FormLayoutTab (this),
 			new StackLayoutTab (this)
 		};
-		for (int i=0; i<tabs.length; i++) {
+		for (Tab tab : tabs) {
 			TabItem item = new TabItem (tabFolder, SWT.NONE);
-		    item.setText (tabs [i].getTabText ());
-		    item.setControl (tabs [i].createTabFolderPage (tabFolder));
+		    item.setText (tab.getTabText ());
+		    item.setControl (tab.createTabFolderPage (tabFolder));
 		}
 	}
 	

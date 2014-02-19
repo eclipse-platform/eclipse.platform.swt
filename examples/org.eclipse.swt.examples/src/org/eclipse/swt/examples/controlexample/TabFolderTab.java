@@ -141,8 +141,7 @@ class TabFolderTab extends Tab {
 	}
 
 	TabItem findItem(String value, TabItem[] items) {
-		for (int i = 0; i < items.length; i++) {
-			TabItem item = items[i];
+		for (TabItem item : items) {
 			if (item.getText().equals(value)) return item;
 		}
 		return null;

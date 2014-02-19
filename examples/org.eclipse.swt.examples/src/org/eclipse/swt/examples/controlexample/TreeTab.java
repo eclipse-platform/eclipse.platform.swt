@@ -306,10 +306,10 @@ class TreeTab extends ScrollableTab {
 		tree1 = new Tree (treeGroup, style);
 		boolean multiColumn = multipleColumns.getSelection();
 		if (multiColumn) {
-			for (int i = 0; i < columnTitles.length; i++) {
+			for (String columnTitle : columnTitles) {
 				TreeColumn treeColumn = new TreeColumn(tree1, SWT.NONE);
-				treeColumn.setText(columnTitles[i]);
-				treeColumn.setToolTipText(ControlExample.getResourceString("Tooltip", new String [] {columnTitles[i]}));
+				treeColumn.setText(columnTitle);
+				treeColumn.setToolTipText(ControlExample.getResourceString("Tooltip", new String [] {columnTitle}));
 			}
 			tree1.setSortColumn(tree1.getColumn(0));
 		}
@@ -493,8 +493,7 @@ class TreeTab extends ScrollableTab {
 	}
 
 	TreeItem findItem(String value, TreeItem[] items) {
-		for (int i = 0; i < items.length; i++) {
-			TreeItem item = items[i];
+		for (TreeItem item : items) {
 			if (item.getText().equals(value)) return item;
 			item = findItem(value, item.getItems());
 			if (item != null) return item;
@@ -526,12 +525,12 @@ class TreeTab extends ScrollableTab {
 	void setColumnsMoveable () {
 		boolean selection = moveableColumns.getSelection();
 		TreeColumn[] columns1 = tree1.getColumns();
-		for (int i = 0; i < columns1.length; i++) {
-			columns1[i].setMoveable(selection);
+		for (TreeColumn column : columns1) {
+			column.setMoveable(selection);
 		}
 		TreeColumn[] columns2 = tree2.getColumns();
-		for (int i = 0; i < columns2.length; i++) {
-			columns2[i].setMoveable(selection);
+		for (TreeColumn column : columns2) {
+			column.setMoveable(selection);
 		}
 	}
 
@@ -541,12 +540,12 @@ class TreeTab extends ScrollableTab {
 	void setColumnsResizable () {
 		boolean selection = resizableColumns.getSelection();
 		TreeColumn[] columns1 = tree1.getColumns();
-		for (int i = 0; i < columns1.length; i++) {
-			columns1[i].setResizable(selection);
+		for (TreeColumn column : columns1) {
+			column.setResizable(selection);
 		}
 		TreeColumn[] columns2 = tree2.getColumns();
-		for (int i = 0; i < columns2.length; i++) {
-			columns2[i].setResizable(selection);
+		for (TreeColumn column : columns2) {
+			column.setResizable(selection);
 		}
 	}
 
@@ -778,9 +777,9 @@ class TreeTab extends ScrollableTab {
 	void resetSortState (final Tree tree) {
 		tree.setSortDirection (SWT.NONE);
 		TreeColumn [] columns = tree.getColumns();
-		for (int i = 0; i < columns.length; i++) {
-			SelectionListener listener = (SelectionListener)columns[i].getData("SortListener");	//$NON-NLS-1$
-			if (listener != null) columns[i].removeSelectionListener(listener);
+		for (TreeColumn column : columns) {
+			SelectionListener listener = (SelectionListener)column.getData("SortListener");	//$NON-NLS-1$
+			if (listener != null) column.removeSelectionListener(listener);
 		}
 	}
 	

@@ -272,8 +272,8 @@ public class ImageAnalyzer {
 		group.setText(bundle.getString("Save_group"));
 		imageTypeCombo = new Combo(group, SWT.DROP_DOWN | SWT.READ_ONLY);
 		String[] types = {"JPEG", "PNG", "GIF", "ICO", "TIFF", "BMP"};
-		for (int i = 0; i < types.length; i++) {
-			imageTypeCombo.add(types[i]);
+		for (String type : types) {
+			imageTypeCombo.add(type);
 		}
 		imageTypeCombo.select(imageTypeCombo.indexOf("JPEG"));
 		imageTypeCombo.addSelectionListener(new SelectionAdapter() {
