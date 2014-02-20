@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2013 IBM Corporation and others. All rights reserved.
+ * Copyright (c) 2000, 2014 IBM Corporation and others. All rights reserved.
  * The contents of this file are made available under the terms
  * of the GNU Lesser General Public License (LGPL) Version 2.1 that
  * accompanies this distribution (lgpl-v21.txt).  The LGPL is also
@@ -1818,7 +1818,6 @@ char * OS_nativeFunctionNames[] = {
 	"memmove__Lorg_eclipse_swt_internal_gtk_XVisibilityEvent_2JJ",
 #endif
 	"pangoLayoutNewProc_1CALLBACK",
-	"realpath",
 	"strcmp",
 };
 #define NATIVE_FUNCTION_COUNT sizeof(OS_nativeFunctionNames) / sizeof(char*)
