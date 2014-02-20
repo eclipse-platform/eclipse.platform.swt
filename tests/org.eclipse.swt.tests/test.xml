@@ -26,20 +26,10 @@
   <target name="suite" unless="performance">
     <property name="data" value="${eclipse-home}/swt_sniff_folder"/>
     <delete dir="${location1}" quiet="true"/>
-    <!-- Run all SWT tests on Windows, and either Carbon tests or Gtk tests otherwise. -->
-    <condition property="class-tests" value="org.eclipse.swt.tests.junit.AllTests">
-      <equals arg1="${os}" arg2="linux"/>
-    </condition>
-    <condition property="class-tests" value="org.eclipse.swt.tests.junit.AllTests">
-      <equals arg1="${ws}" arg2="cocoa"/>
-    </condition>
-    <condition property="class-tests" value="org.eclipse.swt.tests.junit.AllTests">
-      <equals arg1="${os}" arg2="win32"/>
-    </condition>
     <ant target="core-test" antfile="${library-file}" dir="${eclipse-home}">
       <property name="data-dir" value="${data}"/>
       <property name="plugin-name" value="${plugin-name}"/>
-      <property name="classname" value="${class-tests}"/>
+      <property name="classname" value="org.eclipse.swt.tests.junit.AllTests"/>
     </ant>
   </target>
 
