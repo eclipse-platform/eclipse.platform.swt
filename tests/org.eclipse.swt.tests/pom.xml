@@ -24,4 +24,16 @@
   <properties>
     <code.ignoredWarnings>${tests.ignoredWarnings}</code.ignoredWarnings>
   </properties>
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.eclipse.tycho</groupId>
+        <artifactId>tycho-surefire-plugin</artifactId>
+        <configuration>
+          <testSuite>org.eclipse.swt.tests</testSuite>
+          <testClass>org.eclipse.swt.tests.junit.AllTests</testClass>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
 </project>
