@@ -49,6 +49,7 @@ public class FileDialog extends Dialog {
 	static final char SEPARATOR = System.getProperty ("file.separator").charAt (0);
 	static final char EXTENSION_SEPARATOR = ';';
 	static final char FILE_EXTENSION_SEPARATOR = '.';
+	private static final int PATH_MAX = 1024;
 	
 /**
  * Constructs a new instance of this class given only its parent.
@@ -375,7 +376,27 @@ void presetChooserDialog () {
 			} else {
 				/* filename must be a full path */
 				byte [] buffer = Converter.wcsToMbcs (null, SEPARATOR + filterPath, true);
-				OS.gtk_file_chooser_set_current_folder (handle, buffer);
+				/*
+				 * in GTK version 2.10, gtk_file_chooser_set_current_folder requires path
+				 * to be true canonical path. So using realpath to convert the path to 
+				 * true canonical path.
+				 */
+				if (OS.IsAIX) {
+					byte [] outputBuffer = new byte [PATH_MAX];
+					long /*int*/ ptr = OS.realpath (buffer, outputBuffer);
+					if (ptr != 0) {
+						OS.gtk_file_chooser_set_current_folder (handle, ptr);
+					}
+					/* We are not doing free here because realpath returns the address of outputBuffer
+					 * which is created in this code and we let the garbage collector to take care of this
+					 */
+				} else {
+					long /*int*/ ptr = OS.realpath (buffer, null);
+					if (ptr != 0) {
+						OS.gtk_file_chooser_set_current_folder (handle, ptr);
+						OS.g_free (ptr);
+					}
+				}
 			}
 		}
 		if (fileName.length () > 0) {
@@ -424,10 +445,34 @@ void presetChooserDialog () {
 		if (uriMode) {
 			OS.gtk_file_chooser_set_uri (handle, buffer);
 		} else {
-			if (fileName.length() > 0) {
-				OS.gtk_file_chooser_set_filename (handle, buffer);
+			/*
+			 * in GTK version 2.10, gtk_file_chooser_set_current_folder requires path
+			 * to be true canonical path. So using realpath to convert the path to 
+			 * true canonical path.
+			 */
+			if (OS.IsAIX) {
+				byte [] outputBuffer = new byte [PATH_MAX];
+				long /*int*/ ptr = OS.realpath (buffer, outputBuffer);
+				if (ptr != 0) {
+					if (fileName.length() > 0) {
+						OS.gtk_file_chooser_set_filename (handle, ptr);
+					} else {
+						OS.gtk_file_chooser_set_current_folder (handle, ptr);
+					}
+					/* We are not doing free here because realpath returns the address of outputBuffer
+					 * which is created in this code and we let the garbage collector to take care of this
+					 */
+				}
 			} else {
-				OS.gtk_file_chooser_set_current_folder (handle, buffer);
+				long /*int*/ ptr = OS.realpath (buffer, null);
+				if (ptr != 0) {
+					if (fileName.length() > 0) {
+						OS.gtk_file_chooser_set_filename (handle, ptr);
+					} else {
+						OS.gtk_file_chooser_set_current_folder (handle, ptr);
+					}
+					OS.g_free (ptr);
+				}
 			}
 		}
 	}

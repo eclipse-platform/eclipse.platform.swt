@@ -10312,22 +10312,18 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(_1gtk_1file_1chooser_1get_1uris)
 
 #ifndef NO__1gtk_1file_1chooser_1set_1current_1folder
 JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1file_1chooser_1set_1current_1folder)
-	(JNIEnv *env, jclass that, jintLong arg0, jbyteArray arg1)
+	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1)
 {
-	jbyte *lparg1=NULL;
 	OS_NATIVE_ENTER(env, that, _1gtk_1file_1chooser_1set_1current_1folder_FUNC);
-	if (arg1) if ((lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL)) == NULL) goto fail;
 /*
-	gtk_file_chooser_set_current_folder(arg0, lparg1);
+	gtk_file_chooser_set_current_folder(arg0, arg1);
 */
 	{
 		OS_LOAD_FUNCTION(fp, gtk_file_chooser_set_current_folder)
 		if (fp) {
-			((void (CALLING_CONVENTION*)(jintLong, jbyte *))fp)(arg0, lparg1);
+			((void (CALLING_CONVENTION*)(jintLong, jintLong))fp)(arg0, arg1);
 		}
 	}
-fail:
-	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
 	OS_NATIVE_EXIT(env, that, _1gtk_1file_1chooser_1set_1current_1folder_FUNC);
 }
 #endif
@@ -10414,22 +10410,18 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1file_1chooser_1set_1extra_1widget)
 
 #ifndef NO__1gtk_1file_1chooser_1set_1filename
 JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1file_1chooser_1set_1filename)
-	(JNIEnv *env, jclass that, jintLong arg0, jbyteArray arg1)
+	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1)
 {
-	jbyte *lparg1=NULL;
 	OS_NATIVE_ENTER(env, that, _1gtk_1file_1chooser_1set_1filename_FUNC);
-	if (arg1) if ((lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL)) == NULL) goto fail;
 /*
-	gtk_file_chooser_set_filename(arg0, lparg1);
+	gtk_file_chooser_set_filename(arg0, arg1);
 */
 	{
 		OS_LOAD_FUNCTION(fp, gtk_file_chooser_set_filename)
 		if (fp) {
-			((void (CALLING_CONVENTION*)(jintLong, jbyte *))fp)(arg0, lparg1);
+			((void (CALLING_CONVENTION*)(jintLong, jintLong))fp)(arg0, arg1);
 		}
 	}
-fail:
-	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
 	OS_NATIVE_EXIT(env, that, _1gtk_1file_1chooser_1set_1filename_FUNC);
 }
 #endif
@@ -22418,6 +22410,25 @@ fail:
 #else
 	OS_NATIVE_EXIT(env, that, memmove__Lorg_eclipse_swt_internal_gtk_XVisibilityEvent_2JJ_FUNC);
 #endif
+}
+#endif
+
+#ifndef NO_realpath
+JNIEXPORT jintLong JNICALL OS_NATIVE(realpath)
+	(JNIEnv *env, jclass that, jbyteArray arg0, jbyteArray arg1)
+{
+	jbyte *lparg0=NULL;
+	jbyte *lparg1=NULL;
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, realpath_FUNC);
+	if (arg0) if ((lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL)) == NULL) goto fail;
+	if (arg1) if ((lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL)) == NULL) goto fail;
+	rc = (jintLong)realpath((const char *)lparg0, (char *)lparg1);
+fail:
+	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+	if (arg0 && lparg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
+	OS_NATIVE_EXIT(env, that, realpath_FUNC);
+	return rc;
 }
 #endif
 

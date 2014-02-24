@@ -715,6 +715,12 @@ public static final native int XFocusChangeEvent_sizeof();
 public static final native int XVisibilityEvent_sizeof();
 public static final native int XWindowChanges_sizeof();
 public static final native long /*int*/ localeconv_decimal_point();
+/**
+ * @param path cast=(const char *)
+ * @param realPath cast=(char *)
+ */
+public static final native long /*int*/ realpath(byte[] path, byte[] realPath);
+
 
 
 /** Object private fields accessors */
@@ -7493,8 +7499,8 @@ public static final long /*int*/ gtk_file_chooser_get_filter(long /*int*/ choose
 	}
 }
 /** @method flags=dynamic */
-public static final native void _gtk_file_chooser_set_current_folder(long /*int*/ chooser, byte [] filename);
-public static final void gtk_file_chooser_set_current_folder(long /*int*/ chooser, byte [] filename) {
+public static final native void _gtk_file_chooser_set_current_folder(long /*int*/ chooser, long /*int*/ filename);
+public static final void gtk_file_chooser_set_current_folder(long /*int*/ chooser, long /*int*/ filename) {
 	lock.lock();
 	try {
 		_gtk_file_chooser_set_current_folder(chooser, filename);
@@ -7553,8 +7559,8 @@ public static final void gtk_file_chooser_set_extra_widget(long /*int*/ chooser,
 	}
 }
 /** @method flags=dynamic */
-public static final native void _gtk_file_chooser_set_filename(long /*int*/ chooser, byte [] name);
-public static final void gtk_file_chooser_set_filename(long /*int*/ chooser, byte [] name) {
+public static final native void _gtk_file_chooser_set_filename(long /*int*/ chooser, long /*int*/ name);
+public static final void gtk_file_chooser_set_filename(long /*int*/ chooser, long /*int*/ name) {
 	lock.lock();
 	try {
 		_gtk_file_chooser_set_filename(chooser, name);
