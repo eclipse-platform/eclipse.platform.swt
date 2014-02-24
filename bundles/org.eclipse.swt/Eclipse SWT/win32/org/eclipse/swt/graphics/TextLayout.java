@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2012 IBM Corporation and others.
+ * Copyright (c) 2000, 2014 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -3276,7 +3276,7 @@ boolean shape (long /*int*/ hdc, StyleItem run, char[] chars, int[] glyphCount, 
  * Generate glyphs for one Run.
  */
 void shape (final long /*int*/ hdc, final StyleItem run) {
-	if (run.tab || run.lineBreak) return;
+	if (run.lineBreak) return;
 	if (run.glyphs != 0) return;
 	final int[] buffer = new int[1];
 	final char[] chars = new char[run.length];
