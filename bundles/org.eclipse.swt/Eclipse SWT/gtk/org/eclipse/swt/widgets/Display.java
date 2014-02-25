@@ -2339,8 +2339,6 @@ void initializeSystemColors () {
 	} else {
 		gdkColor.blue = (short)0xeeee;
 	}
-	long /*int*/ colormap = OS.gdk_colormap_get_system();
-	OS.gdk_colormap_alloc_color(colormap, gdkColor, true, true);
 	COLOR_LINK_FOREGROUND = gdkColor;
 
 	if (OS.GTK3) {
@@ -2397,6 +2395,9 @@ void initializeSystemColors () {
 		COLOR_TITLE_INACTIVE_BACKGROUND_GRADIENT = toGdkColor (rgba, 1.3);
 		return;
 	}
+
+	long /*int*/ colormap = OS.gdk_colormap_get_system();
+	OS.gdk_colormap_alloc_color(colormap, gdkColor, true, true);
 
 	/* Get Tooltip resources */
 	long /*int*/ tooltipStyle = OS.gtk_widget_get_style (tooltipShellHandle);
