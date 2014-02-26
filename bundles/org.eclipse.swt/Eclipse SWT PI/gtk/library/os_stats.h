@@ -561,7 +561,6 @@ typedef enum {
 	_1gdk_1window_1add_1filter_FUNC,
 	_1gdk_1window_1at_1pointer_FUNC,
 	_1gdk_1window_1begin_1paint_1rect_FUNC,
-	_1gdk_1window_1begin_1paint_1region_FUNC,
 	_1gdk_1window_1create_1similar_1surface_FUNC,
 	_1gdk_1window_1destroy_FUNC,
 	_1gdk_1window_1end_1paint_FUNC,

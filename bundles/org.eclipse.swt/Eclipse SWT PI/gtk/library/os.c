@@ -7117,24 +7117,6 @@ fail:
 }
 #endif
 
-#ifndef NO__1gdk_1window_1begin_1paint_1region
-JNIEXPORT void JNICALL OS_NATIVE(_1gdk_1window_1begin_1paint_1region)
-	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1)
-{
-	OS_NATIVE_ENTER(env, that, _1gdk_1window_1begin_1paint_1region_FUNC);
-/*
-	gdk_window_begin_paint_region((GdkWindow *)arg0, arg1);
-*/
-	{
-		OS_LOAD_FUNCTION(fp, gdk_window_begin_paint_region)
-		if (fp) {
-			((void (CALLING_CONVENTION*)(GdkWindow *, jintLong))fp)((GdkWindow *)arg0, arg1);
-		}
-	}
-	OS_NATIVE_EXIT(env, that, _1gdk_1window_1begin_1paint_1region_FUNC);
-}
-#endif
-
 #ifndef NO__1gdk_1window_1create_1similar_1surface
 JNIEXPORT jintLong JNICALL OS_NATIVE(_1gdk_1window_1create_1similar_1surface)
 	(JNIEnv *env, jclass that, jintLong arg0, jint arg1, jint arg2, jint arg3)

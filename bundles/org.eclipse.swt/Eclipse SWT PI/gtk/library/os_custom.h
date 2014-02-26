@@ -308,7 +308,6 @@
 #define gdk_window_create_similar_surface_LIB LIB_GDK
 #define gdk_window_lookup_LIB LIB_GDK
 #define gdk_window_restack_LIB LIB_GDK
-#define gdk_window_begin_paint_region_LIB LIB_GDK
 #define gdk_window_get_device_position_LIB LIB_GDK
 #define gdk_window_get_pointer_LIB LIB_GDK
 #define gdk_window_at_pointer_LIB LIB_GDK

@@ -5305,19 +5305,6 @@ public static final void gdk_window_begin_paint_rect(long /*int*/ window, GdkRec
 	}
 }
 /**
- * @method flags=dynamic
- * @param window cast=(GdkWindow *)
- */
-public static final native void _gdk_window_begin_paint_region(long /*int*/ window, long /*int*/ region);
-public static final void gdk_window_begin_paint_region(long /*int*/ window, long /*int*/ region) {
-	lock.lock();
-	try {
-		_gdk_window_begin_paint_region(window, region);
-	} finally {
-		lock.unlock();
-	}
-}
-/**
  * @method flags=dynamic 
  * @param window cast=(GdkWindow *)
  */
