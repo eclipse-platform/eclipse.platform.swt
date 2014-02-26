@@ -43,7 +43,6 @@
 
   <modules>
     <module>bundles/org.eclipse.swt</module>
-    <module>bundles/org.eclipse.swt.opengl</module>
     <module>bundles/org.eclipse.swt.tools</module>
     <module>examples/org.eclipse.swt.examples</module>
     <module>examples/org.eclipse.swt.examples.browser.demos</module>
