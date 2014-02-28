@@ -956,8 +956,8 @@ public static final boolean webkit_hit_test_result_context_is_link (long /*int*/
 }
 
 /** @method flags=dynamic */
-public static final native long _webkit_hit_test_result_get_link_uri (long /*int*/ hit_test_result);
-public static final long webkit_hit_test_result_get_link_uri (long /*int*/ hit_test_result) {
+public static final native long /*int*/ _webkit_hit_test_result_get_link_uri (long /*int*/ hit_test_result);
+public static final long /*int*/ webkit_hit_test_result_get_link_uri (long /*int*/ hit_test_result) {
 	lock.lock();
 	try {
 		return _webkit_hit_test_result_get_link_uri (hit_test_result);
@@ -967,8 +967,8 @@ public static final long webkit_hit_test_result_get_link_uri (long /*int*/ hit_t
 }
 
 /** @method flags=dynamic */
-public static final native long _webkit_hit_test_result_get_link_title (long /*int*/ hit_test_result);
-public static final long webkit_hit_test_result_get_link_title (long /*int*/ hit_test_result) {
+public static final native long /*int*/ _webkit_hit_test_result_get_link_title (long /*int*/ hit_test_result);
+public static final long /*int*/ webkit_hit_test_result_get_link_title (long /*int*/ hit_test_result) {
 	lock.lock();
 	try {
 		return _webkit_hit_test_result_get_link_title (hit_test_result);

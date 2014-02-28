@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2009, 2013 IBM Corporation and others. All rights reserved.
+ * Copyright (c) 2009, 2014 IBM Corporation and others. All rights reserved.
  * The contents of this file are made available under the terms
  * of the GNU Lesser General Public License (LGPL) Version 2.1 that
  * accompanies this distribution (lgpl-v21.txt).  The LGPL is also
@@ -114,8 +114,8 @@ char * WebKitGTK_nativeFunctionNames[] = {
 	"_1webkit_1network_1request_1new",
 	"_1webkit_1policy_1decision_1download",
 	"_1webkit_1policy_1decision_1ignore",
+	"_1webkit_1response_1policy_1decision_1get_1request",
 	"_1webkit_1response_1policy_1decision_1get_1response",
-	"_1webkit_1settings_1new",
 	"_1webkit_1soup_1auth_1dialog_1get_1type",
 	"_1webkit_1uri_1request_1get_1http_1headers",
 	"_1webkit_1uri_1request_1get_1uri",
