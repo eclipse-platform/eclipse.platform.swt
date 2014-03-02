@@ -60,7 +60,12 @@ public class Combo extends Composite {
 	boolean noSelection, ignoreDefaultSelection, ignoreCharacter, ignoreModify, ignoreResize, lockText;
 	int scrollWidth, visibleCount;
 	long /*int*/ cbtHook;
+	String [] items = new String [0];
+	int[] segments;
+	int clearSegmentsCount = 0;
 
+	static final char LTR_MARK = '\u200e';
+	static final char RTL_MARK = '\u200f';
 	static final int VISIBLE_COUNT = 5;
 
 	/**
@@ -223,6 +228,56 @@ public void addModifyListener (ModifyListener listener) {
 }
 
 /**
+ * Adds a segment listener.
+ * <p>
+ * A <code>SegmentEvent</code> is sent whenever text content is being modified or
+ * a segment listener is added or removed. You can 
+ * customize the appearance of text by indicating certain characters to be inserted
+ * at certain text offsets. This may be used for bidi purposes, e.g. when
+ * adjacent segments of right-to-left text should not be reordered relative to
+ * each other. 
+ * E.g., multiple Java string literals in a right-to-left language
+ * should generally remain in logical order to each other, that is, the
+ * way they are stored.
+ * </p>
+ * <p>
+ * <b>Warning</b>: This API is currently only implemented on Windows.
+ * <code>SegmentEvent</code>s won't be sent on GTK and Cocoa.
+ * </p>
+ *
+ * @param listener the listener which should be notified
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see SegmentEvent
+ * @see SegmentListener
+ * @see #removeSegmentListener
+ *
+ * @since 3.103
+ */
+public void addSegmentListener (SegmentListener listener) {
+	checkWidget ();
+	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
+	addListener (SWT.Segments, new TypedListener (listener));
+	int selection = OS.CB_ERR;
+	if (!noSelection) {
+		selection = (int)/*64*/OS.SendMessage (handle, OS.CB_GETCURSEL, 0, 0);
+	}
+	clearSegments (true);
+	applyEditSegments ();
+	applyListSegments ();
+	if (selection != OS.CB_ERR) {
+		OS.SendMessage (handle, OS.CB_SETCURSEL, selection, 0);
+	}
+}
+
+/**
  * Adds the listener to the collection of listeners who will
  * be notified when the user changes the receiver's selection, by sending
  * it one of the messages defined in the <code>SelectionListener</code>
@@ -280,6 +335,118 @@ public void addVerifyListener (VerifyListener listener) {
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	TypedListener typedListener = new TypedListener (listener);
 	addListener (SWT.Verify, typedListener);
+}
+
+void applyEditSegments () {
+	if (--clearSegmentsCount != 0) return;
+	if (!hooks (SWT.Segments) && !filters (SWT.Segments)) return;
+	long /*int*/ hwndText = OS.GetDlgItem (handle, CBID_EDIT);
+	int length = OS.GetWindowTextLength (hwndText);
+	int cp = getCodePage ();
+	TCHAR buffer = new TCHAR (cp, length + 1);
+	if (length > 0) OS.GetWindowText (hwndText, buffer, length + 1);
+	String string = buffer.toString (0, length);
+
+	/* Get segments text */
+	Event event = new Event ();
+	event.text = string;
+	event.segments = segments;
+	sendEvent (SWT.Segments, event);
+	segments = event.segments;
+	if (segments == null) return;
+	int nSegments = segments.length;
+	if (nSegments == 0) return;
+	length = string == null ? 0 : string.length ();
+
+	for (int i = 1; i < nSegments; i++) {
+		if (event.segments [i] < event.segments [i - 1] || event.segments [i] > length) {
+			error (SWT.ERROR_INVALID_ARGUMENT);
+		}
+	}
+	char [] segmentsChars = event.segmentsChars;
+
+	int/*64*/ limit = (int/*64*/)OS.SendMessage (hwndText, OS.EM_GETLIMITTEXT, 0, 0) & 0x7fffffff;
+	OS.SendMessage (hwndText, OS.EM_SETLIMITTEXT, limit + Math.min (nSegments, LIMIT - limit), 0);
+	length += nSegments;
+	char [] newChars = new char [length + 1];
+	int charCount = 0, segmentCount = 0;
+	char defaultSeparator = getOrientation () == SWT.RIGHT_TO_LEFT ? RTL_MARK : LTR_MARK;
+	while (charCount < length) {
+		if (segmentCount < nSegments && charCount - segmentCount == segments [segmentCount]) {
+			char separator = segmentsChars != null && segmentsChars.length > segmentCount ? segmentsChars [segmentCount] : defaultSeparator;
+			newChars [charCount++] = separator;
+			segmentCount++;
+		} else if (string != null) {
+			newChars [charCount] = string.charAt (charCount++ - segmentCount);
+		}
+	}
+	while (segmentCount < nSegments) {
+		segments [segmentCount] = charCount - segmentCount;
+		char separator = segmentsChars != null && segmentsChars.length > segmentCount ? segmentsChars [segmentCount] : defaultSeparator;
+		newChars [charCount++] = separator;
+		segmentCount++;
+	}
+	/* Get the current selection */
+	int [] start = new int [1], end = new int [1];
+	OS.SendMessage (hwndText, OS.EM_GETSEL, start, end);
+	if (!OS.IsUnicode && OS.IsDBLocale) {
+		start [0] = mbcsToWcsPos (start [0]);
+		end [0] = mbcsToWcsPos (end [0]);
+	}
+	boolean oldIgnoreCharacter = ignoreCharacter, oldIgnoreModify = ignoreModify;
+	ignoreCharacter = ignoreModify = true;
+	/*
+	 * SetWindowText empties the undo buffer and disables undo menu item.
+	 * Sending OS.EM_REPLACESEL message instead.
+	 */
+	newChars [length] = 0;
+	buffer = new TCHAR (cp, newChars, false);
+	OS.SendMessage (hwndText, OS.EM_SETSEL, 0, -1);
+	long /*int*/ undo = OS.SendMessage (hwndText, OS.EM_CANUNDO, 0, 0);
+	OS.SendMessage (hwndText, OS.EM_REPLACESEL, undo, buffer);
+	/* Restore selection */
+	start [0] = translateOffset (start [0]);
+	end [0] = translateOffset (end [0]);
+	if (!OS.IsUnicode && OS.IsDBLocale) {
+		start [0] = wcsToMbcsPos (start [0]);
+		end [0] = wcsToMbcsPos (end [0]);
+	}
+	OS.SendMessage (hwndText, OS.EM_SETSEL, start [0], end [0]);
+	ignoreCharacter = oldIgnoreCharacter;
+	ignoreModify = oldIgnoreModify;
+}
+
+void applyListSegments () {
+	int count = (int)/*64*/OS.SendMessage (handle, OS.CB_GETCOUNT, 0, 0);
+	if (count == OS.CB_ERR) return;
+	boolean add = items.length != count;
+	if (add) items = new String [count];
+	int index = items.length;
+	int selection = OS.CB_ERR;
+	int cp = getCodePage ();
+	String string;
+	TCHAR buffer;
+	if (!noSelection) {
+		selection = (int)/*64*/OS.SendMessage (handle, OS.CB_GETCURSEL, 0, 0);
+	}
+	while (index-- > 0) {
+		buffer = null;
+	 	if (add) {
+			int length = (int)/*64*/OS.SendMessage (handle, OS.CB_GETLBTEXTLEN, index, 0);
+			if (length == OS.CB_ERR) error (SWT.ERROR);
+			buffer = new TCHAR (cp, length + 1);
+			if (OS.SendMessage (handle, OS.CB_GETLBTEXT, index, buffer) == OS.CB_ERR) return;
+			items [index] = string = buffer.toString (0, length);
+	 	} else { 
+	 		string = items [index];
+	 	}
+		if (OS.SendMessage (handle, OS.CB_DELETESTRING, index, 0) == OS.CB_ERR) return;
+		if (buffer == null) buffer = new TCHAR (cp, string, true);
+		if (OS.SendMessage (handle, OS.CB_INSERTSTRING, index, buffer) == OS.CB_ERR) return;
+	}
+	if (selection != OS.CB_ERR) {
+		OS.SendMessage (handle, OS.CB_SETCURSEL, selection, 0);
+	}
 }
 
 long /*int*/ callWindowProc (long /*int*/ hwnd, int msg, long /*int*/ wParam, long /*int*/ lParam) {
@@ -368,6 +535,55 @@ static int checkStyle (int style) {
 	style = checkBits (style, SWT.DROP_DOWN, SWT.SIMPLE, 0, 0, 0, 0);
 	if ((style & SWT.SIMPLE) != 0) return style & ~SWT.READ_ONLY;
 	return style;
+}
+
+void clearSegments (boolean applyText) {
+	if (clearSegmentsCount++ != 0) return;
+	if (segments == null) return;
+	int nSegments = segments.length;
+	if (nSegments == 0) return;
+	long /*int*/ hwndText = OS.GetDlgItem (handle, CBID_EDIT);
+	int/*64*/ limit = (int/*64*/)OS.SendMessage (hwndText, OS.EM_GETLIMITTEXT, 0, 0) & 0x7fffffff;
+ 	if (limit < LIMIT) {
+		OS.SendMessage (hwndText, OS.EM_SETLIMITTEXT, Math.max (1, limit - nSegments), 0);
+	}
+	if (!applyText) {
+		segments = null;
+		return;
+	}
+	boolean oldIgnoreCharacter = ignoreCharacter, oldIgnoreModify = ignoreModify;
+	ignoreCharacter = ignoreModify = true;
+	int length = OS.GetWindowTextLength (hwndText);
+	int cp = getCodePage ();
+	TCHAR buffer = new TCHAR (cp, length + 1);
+	if (length > 0) OS.GetWindowText (hwndText, buffer, length + 1);
+	buffer = deprocessText (buffer, 0, -1, true);
+	/* Get the current selection */
+	int [] start = new int [1], end = new int [1];
+	OS.SendMessage (hwndText, OS.EM_GETSEL, start, end);
+	if (!OS.IsUnicode && OS.IsDBLocale) {
+		start [0] = mbcsToWcsPos (start[0]);
+		end [0]= mbcsToWcsPos (end [0]);
+	}
+	start [0] = untranslateOffset (start [0]);
+	end [0] = untranslateOffset (end[0]);
+
+	segments = null;
+	/*
+	 * SetWindowText empties the undo buffer and disables undo in the context
+	 * menu. Sending OS.EM_REPLACESEL message instead.
+	 */
+	OS.SendMessage (hwndText, OS.EM_SETSEL, 0, -1);
+	long /*int*/ undo = OS.SendMessage (hwndText, OS.EM_CANUNDO, 0, 0);
+	OS.SendMessage (hwndText, OS.EM_REPLACESEL, undo, buffer);
+	/* Restore selection */
+	if (!OS.IsUnicode && OS.IsDBLocale) {
+		start [0] = wcsToMbcsPos (start [0]);
+		end [0] = wcsToMbcsPos (end [0]);
+	}
+	OS.SendMessage (hwndText, OS.EM_SETSEL, start [0], end [0]);
+	ignoreCharacter = oldIgnoreCharacter;
+	ignoreModify = oldIgnoreModify;
 }
 
 /**
@@ -584,6 +800,43 @@ int defaultBackground () {
 	return OS.GetSysColor (OS.COLOR_WINDOW);
 }
 
+TCHAR deprocessText (TCHAR text, int start, int end, boolean terminate) {
+	if (text == null || segments == null) return text;
+	int length = text.length();
+	if (length == 0) return text;
+	int nSegments = segments.length;
+	if (nSegments == 0) return text;
+	char [] chars;
+	if (start < 0) start = 0;
+	if (OS.IsUnicode) {
+		chars = text.chars;
+		if (text.chars [length - 1] == 0) length--;
+	} else {
+		chars = new char [length];
+		length = OS.MultiByteToWideChar (getCodePage (), OS.MB_PRECOMPOSED, text.bytes, length, chars, length);
+	}
+	if (end == -1) end = length;
+	if (end > segments [0] && start <= segments [nSegments - 1]) {
+		int nLeadSegments = 0;
+		while (start - nLeadSegments > segments [nLeadSegments]) nLeadSegments++;
+		int segmentCount = nLeadSegments;
+		for (int i = start; i < end; i++) {
+			if (segmentCount < nSegments && i - segmentCount == segments [segmentCount]) {
+				++segmentCount;
+			} else {
+				chars [i - segmentCount + nLeadSegments] = chars [i];
+			}
+		}
+		length = end - start - segmentCount + nLeadSegments;
+	}
+	if (start != 0 || end != length) {
+		char [] newChars = new char [length];
+		System.arraycopy(chars, start, newChars, 0, length);
+		return new TCHAR (getCodePage (), newChars, terminate);
+	}
+	return text;
+}
+
 void deregister () {
 	super.deregister ();
 	long /*int*/ hwndText = OS.GetDlgItem (handle, CBID_EDIT);
@@ -611,6 +864,8 @@ public void deselect (int index) {
 	OS.SendMessage (handle, OS.CB_SETCURSEL, -1, 0);
 	sendEvent (SWT.Modify);
 	// widget could be disposed at this point
+	clearSegments (false);
+	clearSegmentsCount--;
 }
 
 /**
@@ -632,6 +887,8 @@ public void deselectAll () {
 	OS.SendMessage (handle, OS.CB_SETCURSEL, -1, 0);
 	sendEvent (SWT.Modify);
 	// widget could be disposed at this point
+	clearSegments (false);
+	clearSegmentsCount--;
 }
 
 boolean dragDetect (long /*int*/ hwnd, int x, int y, boolean filter, boolean [] detect, boolean [] consume) {
@@ -682,7 +939,7 @@ public Point getCaretLocation () {
 	* If EM_POSFROMCHAR fails for any other reason, return
 	* pixel coordinates (0,0). 
 	*/
-	int position = getCaretPosition ();
+	int position = translateOffset (getCaretPosition ());
 	long /*int*/ hwndText = OS.GetDlgItem (handle, CBID_EDIT);
 	long /*int*/ caretPos = OS.SendMessage (hwndText, OS.EM_POSFROMCHAR, position, 0);
 	if (caretPos == -1) {
@@ -777,7 +1034,7 @@ public int getCaretPosition () {
 	if (!OS.IsUnicode && OS.IsDBLocale) {
 		caret = mbcsToWcsPos (caret);
 	}
-	return caret;
+	return untranslateOffset (caret);
 }
 
 /**
@@ -800,6 +1057,7 @@ public String getItem (int index) {
 	checkWidget ();
 	int length = (int)/*64*/OS.SendMessage (handle, OS.CB_GETLBTEXTLEN, index, 0);
 	if (length != OS.CB_ERR) {
+		if (hooks (SWT.Segments) || filters (SWT.Segments)) return items [index];
 		TCHAR buffer = new TCHAR (getCodePage (), length + 1);
 		int result = (int)/*64*/OS.SendMessage (handle, OS.CB_GETLBTEXT, index, buffer);
 		if (result != OS.CB_ERR) return buffer.toString (0, length);
@@ -863,9 +1121,15 @@ public int getItemHeight () {
  */
 public String [] getItems () {
 	checkWidget ();
-	int count = getItemCount ();
-	String [] result = new String [count];
-	for (int i=0; i<count; i++) result [i] = getItem (i);
+	String [] result;
+	if (hooks (SWT.Segments) || filters (SWT.Segments)) {
+		result = new String [items.length];
+		System.arraycopy (items, 0, result, 0, items.length);
+	} else {
+		int count = getItemCount ();
+		result = new String [count];
+		for (int i=0; i<count; i++) result [i] = getItem (i);
+	}
 	return result;
 }
 
@@ -939,6 +1203,50 @@ public int getOrientation () {
 	return super.getOrientation ();
 }
 
+Event getSegments (String string) {
+	if (!hooks (SWT.Segments) && !filters (SWT.Segments)) return null;
+	Event event = new Event ();
+	event.text = string;
+	sendEvent (SWT.Segments, event);
+	if (event.segments != null) {
+		for (int i = 1, segmentCount = event.segments.length, lineLength = string == null ? 0 : string.length(); i < segmentCount; i++) {
+			if (event.segments[i] < event.segments[i - 1] || event.segments[i] > lineLength) {
+				SWT.error (SWT.ERROR_INVALID_ARGUMENT);
+			}
+		}
+	}
+	return event;
+}
+
+String getSegmentsText (String text, Event event) {
+	if (text == null || event == null) return text;
+	int[] segments = event.segments;
+	if (segments == null) return text;
+	int nSegments = segments.length;
+	if (nSegments == 0) return text;
+	char[] segmentsChars = /*event == null ? this.segmentsChars : */event.segmentsChars;
+	int length = text.length();
+	char[] oldChars = new char[length];
+	text.getChars (0, length, oldChars, 0);
+	char[] newChars = new char[length + nSegments];
+	int charCount = 0, segmentCount = 0;
+	char defaultSeparator = getOrientation () == SWT.RIGHT_TO_LEFT ? RTL_MARK : LTR_MARK;
+	while (charCount < length) {
+		if (segmentCount < nSegments && charCount == segments[segmentCount]) {
+			char separator = segmentsChars != null && segmentsChars.length > segmentCount ? segmentsChars[segmentCount] : defaultSeparator;
+			newChars[charCount + segmentCount++] = separator;
+		} else {
+			newChars[charCount + segmentCount] = oldChars[charCount++];
+		}
+	}
+	while (segmentCount < nSegments) {
+		segments[segmentCount] = charCount;
+		char separator = segmentsChars != null && segmentsChars.length > segmentCount ? segmentsChars[segmentCount] : defaultSeparator;
+		newChars[charCount + segmentCount++] = separator;
+	}
+	return new String(newChars, 0, newChars.length);
+}
+
 /**
  * Returns a <code>Point</code> whose x coordinate is the
  * character position representing the start of the selection
@@ -969,7 +1277,7 @@ public Point getSelection () {
 		start [0] = mbcsToWcsPos (start [0]);
 		end [0] = mbcsToWcsPos (end [0]);
 	}
-	return new Point (start [0], end [0]);
+	return new Point (untranslateOffset (start [0]), untranslateOffset (end [0]));
 }
 
 /**
@@ -1007,6 +1315,11 @@ public String getText () {
 	if (length == 0) return "";
 	TCHAR buffer = new TCHAR (getCodePage (), length + 1);
 	OS.GetWindowText (handle, buffer, length + 1);
+	if (segments != null) {
+		buffer = deprocessText (buffer, 0, -1, false);
+		return buffer.toString ();
+	}
+
 	return buffer.toString (0, length);
 }
 
@@ -1051,7 +1364,9 @@ public int getTextLimit () {
 	checkWidget ();
 	long /*int*/ hwndText = OS.GetDlgItem (handle, CBID_EDIT);
 	if (hwndText == 0) return LIMIT;
-	return (int)/*64*/OS.SendMessage (hwndText, OS.EM_GETLIMITTEXT, 0, 0) & 0x7FFFFFFF;
+	int/*64*/ limit = (int)/*64*/OS.SendMessage (hwndText, OS.EM_GETLIMITTEXT, 0, 0) & 0x7FFFFFFF;
+	if (segments != null && limit < LIMIT) limit = Math.max (1, limit - segments.length);
+	return limit;
 }
 
 /**
@@ -1397,6 +1712,41 @@ public void removeModifyListener (ModifyListener listener) {
 	eventTable.unhook (SWT.Modify, listener);	
 }
 
+/**
+ * Removes the listener from the collection of listeners who will
+ * be notified when the receiver's text is modified.
+ *
+ * @param listener the listener which should no longer be notified
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see SegmentEvent
+ * @see SegmentListener
+ * @see #addSegmentListener
+ * 
+ * @since 3.103
+ */
+public void removeSegmentListener (SegmentListener listener) {
+	checkWidget ();
+	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
+	eventTable.unhook (SWT.Segments, listener);
+	int selection = OS.CB_ERR;
+	if (!noSelection) {
+		selection = (int)/*64*/OS.SendMessage (handle, OS.CB_GETCURSEL, 0, 0);
+	}
+	clearSegments (true);
+	applyEditSegments ();
+	applyListSegments ();
+	if (selection != OS.CB_ERR) {
+		OS.SendMessage (handle, OS.CB_SETCURSEL, selection, 0);
+	}
+}
 /**
  * Removes the listener from the collection of listeners who will
  * be notified when the user changes the receiver's selection.
@@ -1862,7 +2212,7 @@ void setScrollWidth (int newWidth, boolean grow) {
 public void setSelection (Point selection) {
 	checkWidget ();
 	if (selection == null) error (SWT.ERROR_NULL_ARGUMENT);
-	int start = selection.x, end = selection.y;
+	int start = translateOffset (selection.x), end = translateOffset (selection.y);
 	if (!OS.IsUnicode && OS.IsDBLocale) {
 		start = wcsToMbcsPos (start);
 		end = wcsToMbcsPos (end);
@@ -1904,6 +2254,7 @@ public void setText (String string) {
 		if (index != -1) select (index);
 		return;
 	}
+	clearSegments (false);
 	int limit = LIMIT;
 	long /*int*/ hwndText = OS.GetDlgItem (handle, CBID_EDIT);
 	if (hwndText != 0) {
@@ -1912,6 +2263,7 @@ public void setText (String string) {
 	if (string.length () > limit) string = string.substring (0, limit);
 	TCHAR buffer = new TCHAR (getCodePage (), string, true);
 	if (OS.SetWindowText (handle, buffer)) {
+		applyEditSegments ();
 		sendEvent (SWT.Modify);
 		// widget could be disposed at this point
 	}
@@ -1940,7 +2292,11 @@ public void setText (String string) {
 public void setTextLimit (int limit) {
 	checkWidget ();
 	if (limit == 0) error (SWT.ERROR_CANNOT_BE_ZERO);
-	OS.SendMessage (handle, OS.CB_LIMITTEXT, limit, 0);
+	if (segments != null && limit > 0) {
+		OS.SendMessage (handle, OS.CB_LIMITTEXT, limit + Math.min (segments.length, LIMIT - limit), 0);
+	} else {
+		OS.SendMessage (handle, OS.CB_LIMITTEXT, limit, 0);
+	}
 }
 
 void setToolTipText (Shell shell, String string) {
@@ -1986,6 +2342,14 @@ void subclass () {
 	if (hwndList != 0) {	
 		OS.SetWindowLongPtr (hwndList, OS.GWLP_WNDPROC, newProc);
 	}
+}
+
+int translateOffset (int offset) {
+	if (segments == null) return offset;
+	for (int i = 0, nSegments = segments.length; i < nSegments && offset - i >= segments[i]; i++) {
+		offset++;
+	}	
+	return offset;
 }
 
 boolean translateTraversal (MSG msg) {
@@ -2036,6 +2400,14 @@ void unsubclass () {
 	if (hwndList != 0 && ListProc != 0) {
 		OS.SetWindowLongPtr (hwndList, OS.GWLP_WNDPROC, ListProc);
 	}
+}
+
+int untranslateOffset (int offset) {
+	if (segments == null) return offset;
+	for (int i = 0, nSegments = segments.length; i < nSegments && offset > segments[i]; i++) {
+		offset--;
+	}
+	return offset;
 }
 
 void updateDropDownHeight () {
@@ -2131,6 +2503,8 @@ String verifyText (String string, int start, int end, Event keyEvent) {
 		event.start = mbcsToWcsPos (start);
 		event.end = mbcsToWcsPos (end);
 	}
+	event.start = untranslateOffset (event.start);
+	event.end = untranslateOffset (event.end);
 	/*
 	* It is possible (but unlikely), that application
 	* code could have disposed the widget in the verify
@@ -2186,11 +2560,18 @@ long /*int*/ windowProc (long /*int*/ hwnd, int msg, long /*int*/ wParam, long /
 		long /*int*/ hwndList = OS.GetDlgItem (handle, CBID_LIST);
 		if ((hwndText != 0 && hwnd == hwndText) || (hwndList != 0 && hwnd == hwndList)) {
 			LRESULT result = null;
+			boolean processSegments = false, redraw = false;
 			switch (msg) {
 				/* Keyboard messages */
-				case OS.WM_CHAR:		result = wmChar (hwnd, wParam, lParam); break;
+				case OS.WM_CHAR:
+					processSegments = (hooks (SWT.Segments) || filters (SWT.Segments)) && !ignoreCharacter && OS.GetKeyState (OS.VK_CONTROL) >= 0 && OS.GetKeyState (OS.VK_MENU) >= 0;
+					result = wmChar (hwnd, wParam, lParam);
+					break;
 				case OS.WM_IME_CHAR:	result = wmIMEChar (hwnd, wParam, lParam); break;
-				case OS.WM_KEYDOWN:		result = wmKeyDown (hwnd, wParam, lParam); break;
+				case OS.WM_KEYDOWN:
+					processSegments = wParam == OS.VK_DELETE && (hooks (SWT.Segments) || filters (SWT.Segments));
+					result = wmKeyDown (hwnd, wParam, lParam);
+					break;
 				case OS.WM_KEYUP:		result = wmKeyUp (hwnd, wParam, lParam); break;
 				case OS.WM_SYSCHAR:		result = wmSysChar (hwnd, wParam, lParam); break;
 				case OS.WM_SYSKEYDOWN:	result = wmSysKeyDown (hwnd, wParam, lParam); break;
@@ -2220,13 +2601,19 @@ long /*int*/ windowProc (long /*int*/ hwnd, int msg, long /*int*/ wParam, long /
 
 				/* Menu messages */
 				case OS.WM_CONTEXTMENU:		result = wmContextMenu (hwnd, wParam, lParam); break;
-					
+
 				/* Clipboard messages */
+				case OS.EM_CANUNDO:
+					if (hooks (SWT.Segments) || filters (SWT.Segments)) return 0;
+					break;
+				case OS.WM_UNDO:
+				case OS.EM_UNDO:
+					if (hooks (SWT.Segments) || filters (SWT.Segments)) return 0;
+				case OS.WM_COPY:
 				case OS.WM_CLEAR:
 				case OS.WM_CUT:
 				case OS.WM_PASTE:
-				case OS.WM_UNDO:
-				case OS.EM_UNDO:
+					processSegments = hooks (SWT.Segments) || filters (SWT.Segments);
 				case OS.WM_SETTEXT:
 					if (hwnd == hwndText) {
 						result = wmClipboard (hwnd, msg, wParam, lParam);
@@ -2234,33 +2621,120 @@ long /*int*/ windowProc (long /*int*/ hwnd, int msg, long /*int*/ wParam, long /
 					break;
 			}
 			if (result != null) return result.value;
+
+			if (processSegments) {
+				if (getDrawing () && OS.IsWindowVisible (hwndText)) {
+					redraw = true;
+					OS.DefWindowProc (hwndText, OS.WM_SETREDRAW, 0, 0);
+				}
+				clearSegments (true);
+				long /*int*/ code = callWindowProc (hwnd, msg, wParam, lParam);
+				applyEditSegments ();
+				if (redraw) {
+					OS.DefWindowProc (hwndText, OS.WM_SETREDRAW, 1, 0);
+					OS.InvalidateRect (hwndText, null, true);
+				}
+				return code;
+			}
 			return callWindowProc (hwnd, msg, wParam, lParam);
 		}
 	}
-	if (msg == OS.CB_SETCURSEL) {
-		if ((style & SWT.READ_ONLY) != 0) {
-			if (hooks (SWT.Verify) || filters (SWT.Verify)) {
-				String oldText = getText (), newText = null;
-				if (wParam == -1) {
-					newText = "";
-				} else {
-					if (0 <= wParam && wParam < getItemCount ()) {
-						newText = getItem ((int)/*64*/wParam);
+	switch (msg) {
+		case OS.CB_SETCURSEL: {
+			long /*int*/ code = OS.CB_ERR;
+			int index = (int)/*64*/ wParam;
+			if ((style & SWT.READ_ONLY) != 0) {
+				if (hooks (SWT.Verify) || filters (SWT.Verify)) {
+					String oldText = getText (), newText = null;
+					if (wParam == -1) {
+						newText = "";
+					} else {
+						if (0 <= wParam && wParam < getItemCount ()) {
+							newText = getItem ((int)/*64*/wParam);
+						}
 					}
-				}
-				if (newText != null && !newText.equals (oldText)) {
-					int length = OS.GetWindowTextLength (handle);
-					oldText = newText;
-					newText = verifyText (newText, 0, length, null);
-					if (newText == null) return 0;
-					if (!newText.equals (oldText)) {
-						int index = indexOf (newText);
-						if (index != -1 && index != wParam) {
-							return callWindowProc (handle, OS.CB_SETCURSEL, index, lParam);
+					if (newText != null && !newText.equals (oldText)) {
+						int length = OS.GetWindowTextLength (handle);
+						oldText = newText;
+						newText = verifyText (newText, 0, length, null);
+						if (newText == null) return 0;
+						if (!newText.equals (oldText)) {
+							index = indexOf (newText);
+							if (index != -1 && index != wParam) {
+								return callWindowProc (handle, OS.CB_SETCURSEL, index, lParam);
+							}
 						}
 					}
 				}
 			}
+			if (hooks (SWT.Segments) || filters (SWT.Segments)) {
+				code = super.windowProc (hwnd, msg, wParam, lParam);
+				if (!(code == OS.CB_ERR || code == OS.CB_ERRSPACE)) {
+					segments = null;
+					Event event = getSegments (items [index]);
+					if (event != null) segments = event.segments;
+					return code;
+				}
+			}
+		}
+		case OS.CB_ADDSTRING:
+		case OS.CB_INSERTSTRING:
+		case OS.CB_FINDSTRINGEXACT:
+			if (lParam != 0 && (hooks (SWT.Segments) || filters (SWT.Segments))) {
+				long /*int*/ code = OS.CB_ERR;
+				int length = OS.IsUnicode ? OS.wcslen (lParam) : OS.strlen (lParam);
+				TCHAR buffer = new TCHAR (getCodePage (), length);
+				OS.MoveMemory (buffer, lParam, buffer.length () * TCHAR.sizeof);
+				String string = buffer.toString (0, length);
+				Event event = getSegments (string);
+				if (event != null && event.segments != null) {
+					buffer = new TCHAR (getCodePage (), getSegmentsText (string, event), true);
+					long /*int*/ hHeap = OS.GetProcessHeap ();
+					length = buffer.length() * TCHAR.sizeof;
+					long /*int*/ pszText = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, length);
+					OS.MoveMemory (pszText, buffer, length); 
+					code = super.windowProc (hwnd, msg, wParam, pszText);
+					OS.HeapFree (hHeap, 0, pszText);
+				}
+				if (msg == OS.CB_ADDSTRING || msg == OS.CB_INSERTSTRING) {
+					int index = msg == OS.CB_ADDSTRING ? items.length : (int)/*64*/ wParam;
+					String [] newItems = new String [items.length + 1];
+					System.arraycopy (items, 0, newItems, 0, index);
+					newItems [index] = string;
+					System.arraycopy (items, index, newItems, index + 1, items.length - index);
+					items = newItems;
+				}
+				if (code != OS.CB_ERR && code != OS.CB_ERRSPACE) return code;
+			}
+			break;
+		case OS.CB_DELETESTRING: {
+			if (hooks (SWT.Segments) || filters (SWT.Segments)) {
+				long /*int*/ code = super.windowProc (hwnd, msg, wParam, lParam);
+				if (code != OS.CB_ERR && code != OS.CB_ERRSPACE) {
+					int index = (int)/*64*/ wParam;
+					String [] newItems = new String [items.length - 1];
+					System.arraycopy (items, 0, newItems, 0, index);
+					System.arraycopy (items, index + 1, newItems, index, items.length - index - 1);
+					items = newItems;
+					if (!noSelection) {
+						index = (int)/*64*/OS.SendMessage (handle, OS.CB_GETCURSEL, 0, 0);
+						if (index == wParam) {
+							clearSegments (false);
+							applyEditSegments ();
+						}
+					}
+				}
+				return code;
+			}
+			break;
+		}
+		case OS.CB_RESETCONTENT: {
+			if (hooks (SWT.Segments) || filters (SWT.Segments)) {
+				if (items.length > 0) items = new String [0];
+				clearSegments (false);
+				applyEditSegments ();
+			}
+			break;
 		}
 	}
 	return super.windowProc (hwnd, msg, wParam, lParam);
@@ -2489,7 +2963,7 @@ LRESULT wmClipboard (long /*int*/ hwndText, int msg, long /*int*/ wParam, long /
 		case OS.WM_CLEAR:
 		case OS.WM_CUT:
 			OS.SendMessage (hwndText, OS.EM_GETSEL, start, end);
-			if (start [0] != end [0]) {
+			if (untranslateOffset (start [0]) != untranslateOffset (end [0])) {
 				newText = "";
 				call = true;
 			}
@@ -2637,6 +3111,9 @@ LRESULT wmCommandChild (long /*int*/ wParam, long /*int*/ lParam) {
 				}
 				OS.SetWindowLong (hwnd, OS.GWL_EXSTYLE, bits1);
 				OS.SetWindowLong (hwnd, OS.GWL_STYLE, bits2);
+			} else if (hooks (SWT.Segments) || filters (SWT.Segments)) {
+				clearSegments (true);
+				applyEditSegments ();
 			}
 			break;
 	}
@@ -2682,12 +3159,38 @@ LRESULT wmKeyDown (long /*int*/ hwnd, long /*int*/ wParam, long /*int*/ lParam) 
 	LRESULT result = super.wmKeyDown (hwnd, wParam, lParam);
 	if (result != null) return result;
 	ignoreDefaultSelection = false;
-	if (wParam == OS.VK_RETURN) {
-		if ((style & SWT.DROP_DOWN) != 0) {
-			if (OS.SendMessage (handle, OS.CB_GETDROPPEDSTATE, 0, 0) != 0) {
-				ignoreDefaultSelection = true;
+	switch ((int)/*64*/wParam) {
+		case OS.VK_LEFT:
+		case OS.VK_UP:
+		case OS.VK_RIGHT:
+		case OS.VK_DOWN:
+			if (segments != null) {
+				long /*int*/ code = 0;
+				int [] start = new int [1], end = new int [1], newStart = new int [1], newEnd = new int [1];
+				OS.SendMessage (handle, OS.CB_GETEDITSEL, start, end);
+				while (true) {
+					code = callWindowProc (hwnd, OS.WM_KEYDOWN, wParam, lParam);
+					OS.SendMessage (handle, OS.CB_GETEDITSEL, newStart, newEnd);
+					if (newStart [0] != start [0]) {
+						if (untranslateOffset (newStart [0]) != untranslateOffset (start [0])) break;
+					} else if (newEnd [0] != end [0]) {
+						if (untranslateOffset (newEnd [0]) != untranslateOffset (end [0]))  break;
+					} else {
+						break;
+					}
+					start [0] = newStart [0];
+					end [0] = newEnd [0]; 
+				}
+				result = code == 0 ? LRESULT.ZERO : new LRESULT (code);
 			}
-		}
+			break;
+		case OS.VK_RETURN:
+			if ((style & SWT.DROP_DOWN) != 0) {
+				if (OS.SendMessage (handle, OS.CB_GETDROPPEDSTATE, 0, 0) != 0) {
+					ignoreDefaultSelection = true;
+				}
+			}
+			break;
 	}
 	return result;
 }

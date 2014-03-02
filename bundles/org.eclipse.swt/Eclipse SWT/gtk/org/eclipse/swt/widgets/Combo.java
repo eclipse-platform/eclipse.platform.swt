@@ -207,6 +207,46 @@ public void addModifyListener (ModifyListener listener) {
 }
 
 /**
+ * Adds a segment listener.
+ * <p>
+ * A <code>SegmentEvent</code> is sent whenever text content is being modified or
+ * a segment listener is added or removed. You can 
+ * customize the appearance of text by indicating certain characters to be inserted
+ * at certain text offsets. This may be used for bidi purposes, e.g. when
+ * adjacent segments of right-to-left text should not be reordered relative to
+ * each other. 
+ * E.g., multiple Java string literals in a right-to-left language
+ * should generally remain in logical order to each other, that is, the
+ * way they are stored.
+ * </p>
+ * <p>
+ * <b>Warning</b>: This API is currently only implemented on Windows.
+ * <code>SegmentEvent</code>s won't be sent on GTK and Cocoa.
+ * </p>
+ *
+ * @param listener the listener which should be notified
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see SegmentEvent
+ * @see SegmentListener
+ * @see #removeSegmentListener
+ *
+ * @since 3.103
+ */
+public void addSegmentListener (SegmentListener listener) {
+	checkWidget ();
+	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
+	addListener (SWT.Segments, new TypedListener (listener));
+}
+
+/**
  * Adds the listener to the collection of listeners who will
  * be notified when the user changes the receiver's selection, by sending
  * it one of the messages defined in the <code>SelectionListener</code>
@@ -1689,6 +1729,32 @@ public void removeModifyListener (ModifyListener listener) {
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (eventTable == null) return;
 	eventTable.unhook (SWT.Modify, listener);	
+}
+
+/**
+ * Removes the listener from the collection of listeners who will
+ * be notified when the receiver's text is modified.
+ *
+ * @param listener the listener which should no longer be notified
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see SegmentEvent
+ * @see SegmentListener
+ * @see #addSegmentListener
+ * 
+ * @since 3.103
+ */
+public void removeSegmentListener (SegmentListener listener) {
+	checkWidget ();
+	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
+	eventTable.unhook (SWT.Segments, listener);
 }
 
 /**

@@ -16,6 +16,8 @@ import static org.junit.Assert.assertArrayEquals;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
+import org.eclipse.swt.events.SegmentEvent;
+import org.eclipse.swt.events.SegmentListener;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Point;
@@ -881,6 +883,180 @@ public void test_consistency_MenuDetect () {
 public void test_consistency_DragDetect () {
     add();
     consistencyEvent(10, 5, 20, 10, ConsistencyUtility.MOUSE_DRAG);
+}
+
+public void test_consistency_Segments () {
+	final SegmentListener sl1 = new SegmentListener() {
+		public void getSegments(SegmentEvent event) {
+			if ((event.lineText.length() & 1) == 1) {
+				event.segments = new int [] {1, event.lineText.length()};
+				event.segmentsChars = null;
+			} else {
+				event.segments = new int [] {0, 0, event.lineText.length()};
+				event.segmentsChars = new char [] {':', '<', '>'};
+			}
+			listenerCalled = true;
+		}
+	};
+	try {
+		combo.addSegmentListener(null);
+		fail("No exception thrown for addSegmentListener(null)");
+	}
+	catch (IllegalArgumentException e) {
+	}
+	combo.addSegmentListener(sl1);
+	doSegmentsTest(true);
+	
+	combo.addSegmentListener(sl1);
+	doSegmentsTest(true);
+	
+	combo.removeSegmentListener(sl1);
+	doSegmentsTest(true);
+	
+	combo.removeSegmentListener(sl1);
+	combo.setText(combo.getText());
+	doSegmentsTest(false);
+}
+
+private void doSegmentsTest (boolean isListening) {
+	String[] items = { "first", "second", "third" };
+	String string = "1234";
+
+	// Test setItems
+	combo.setItems(items);
+	assertEquals(isListening, listenerCalled);
+	listenerCalled = false;
+	assertArrayEquals(items, combo.getItems());
+
+	// Test setText
+	combo.setText(string);
+	assertEquals(isListening, listenerCalled);
+	listenerCalled = false;
+	assertEquals(string, combo.getText());
+
+	// Test limit, getItem, indexOf, select
+	int limit = string.length() - 1;
+	combo.setTextLimit(limit);
+	assertEquals(limit, combo.getTextLimit());
+	combo.setText(string);
+	assertEquals(string.substring(0, limit), combo.getText());
+
+	combo.setTextLimit(Combo.LIMIT);
+	combo.setText(string);
+	assertEquals(string, combo.getText());
+
+	int count = items.length;
+	for (int i = 0; i < count; i++) {
+		assertEquals(items[i], combo.getItem(i));
+		assertEquals(i, combo.indexOf(items[i]));
+
+		combo.select(i);
+		listenerCalled = false;
+		assertEquals(i, combo.getSelectionIndex());
+		assertEquals(items[i], combo.getText());
+		assertFalse(listenerCalled);
+
+		String currentText = combo.getText();
+		combo.deselect(i ^ 1);
+		assertEquals(currentText, combo.getText());
+
+		combo.deselect(i);
+		assertEquals("", combo.getText());
+	}
+	for (int i = 0; i < count; i++) {
+		combo.setText(combo.getItem(i));
+		assertEquals(items[i], combo.getText());
+	}
+	listenerCalled = false;
+
+	limit = 2;
+	combo.setTextLimit(limit);
+	assertEquals(limit, combo.getTextLimit());
+	combo.setText(string);
+	assertEquals(string.substring(0, limit), combo.getText());
+
+	combo.select(1);
+	assertEquals(limit, combo.getTextLimit());
+
+	combo.remove(1);
+	assertEquals(limit, combo.getTextLimit());
+	assertTrue(combo.getItemCount() == --count);
+	
+	combo.add(items[1], 1);
+	assertEquals(limit, combo.getTextLimit());
+	assertTrue(combo.getItemCount() == ++count);
+
+	combo.deselectAll();
+	assertEquals(limit, combo.getTextLimit());
+
+	combo.remove(1, 2);
+	count -=2;
+	assertEquals(limit, combo.getTextLimit());
+	assertTrue(combo.getItemCount() == count);
+
+	combo.removeAll();
+	assertEquals(limit, combo.getTextLimit());
+	assertTrue(combo.getItemCount() == 0);
+	
+	combo.setItems(items);
+	count = items.length;
+	assertEquals(limit, combo.getTextLimit());
+	
+	combo.setTextLimit(Combo.LIMIT);
+	combo.setText(string);
+	assertEquals(string, combo.getText());
+
+	// Test add item
+	String item = "forth";
+	combo.add(item);
+	assertEquals(isListening, listenerCalled);
+	listenerCalled = false;
+	assertEquals(item, combo.getItem(count++));
+	assertTrue(combo.getItemCount() == count);
+
+	combo.select(1);
+	
+	// Test remove item by name
+	combo.remove(items[1]);
+	assertEquals(--count, combo.getItemCount());
+	assertEquals(1, combo.indexOf(items[2]));
+
+	// Test set item item by name
+	combo.setItem(1, "second");
+	assertEquals(count, combo.getItemCount());
+	assertEquals(1, combo.indexOf(items[1]));
+
+	combo.setText(string);
+	listenerCalled = false;
+
+	// Test selection, copy and paste
+	Point pt = new Point(1, 3);
+	combo.setSelection(pt);
+	assertEquals(pt, combo.getSelection());
+	assertFalse(listenerCalled);
+	combo.copy();
+	assertEquals(isListening, listenerCalled);
+	listenerCalled = false;
+
+	String substr = string.substring(pt.x, pt.y);
+	pt.x = pt.y = 1;
+	combo.setSelection(pt);
+	combo.paste();
+	assertEquals(isListening, listenerCalled);
+	listenerCalled = false;
+	
+	assertEquals(string.substring(0, pt.x) + substr + string.substring(pt.y), combo.getText());
+	pt.x = pt.y = pt.x + substr.length();
+	assertEquals(pt, combo.getSelection());
+
+	// Test cut
+	pt.x -= 2;
+	combo.setSelection(pt);
+	assertEquals(substr, combo.getText().substring(pt.x, pt.y));
+	combo.cut();
+	assertEquals(isListening, listenerCalled);
+	listenerCalled = false;
+	assertEquals(string, combo.getText());
 }
 
 
