@@ -15,7 +15,7 @@
  *
  * IBM
  * -  Binding to permit interfacing between Cairo and SWT
- * -  Copyright (C) 2005, 2013 IBM Corp.  All Rights Reserved.
+ * -  Copyright (C) 2005, 2014 IBM Corp.  All Rights Reserved.
  *
  * ***** END LICENSE BLOCK ***** */
 
@@ -76,16 +76,6 @@ JNIEXPORT void JNICALL Cairo_NATIVE(_1cairo_1clip)
 	Cairo_NATIVE_ENTER(env, that, _1cairo_1clip_FUNC);
 	cairo_clip((cairo_t *)arg0);
 	Cairo_NATIVE_EXIT(env, that, _1cairo_1clip_FUNC);
-}
-#endif
-
-#ifndef NO__1cairo_1clip_1preserve
-JNIEXPORT void JNICALL Cairo_NATIVE(_1cairo_1clip_1preserve)
-	(JNIEnv *env, jclass that, jintLong arg0)
-{
-	Cairo_NATIVE_ENTER(env, that, _1cairo_1clip_1preserve_FUNC);
-	cairo_clip_preserve((cairo_t *)arg0);
-	Cairo_NATIVE_EXIT(env, that, _1cairo_1clip_1preserve_FUNC);
 }
 #endif
 
@@ -165,40 +155,6 @@ JNIEXPORT void JNICALL Cairo_NATIVE(_1cairo_1destroy)
 }
 #endif
 
-#ifndef NO__1cairo_1device_1to_1user
-JNIEXPORT void JNICALL Cairo_NATIVE(_1cairo_1device_1to_1user)
-	(JNIEnv *env, jclass that, jintLong arg0, jdoubleArray arg1, jdoubleArray arg2)
-{
-	jdouble *lparg1=NULL;
-	jdouble *lparg2=NULL;
-	Cairo_NATIVE_ENTER(env, that, _1cairo_1device_1to_1user_FUNC);
-	if (arg1) if ((lparg1 = (*env)->GetDoubleArrayElements(env, arg1, NULL)) == NULL) goto fail;
-	if (arg2) if ((lparg2 = (*env)->GetDoubleArrayElements(env, arg2, NULL)) == NULL) goto fail;
-	cairo_device_to_user((cairo_t *)arg0, lparg1, lparg2);
-fail:
-	if (arg2 && lparg2) (*env)->ReleaseDoubleArrayElements(env, arg2, lparg2, 0);
-	if (arg1 && lparg1) (*env)->ReleaseDoubleArrayElements(env, arg1, lparg1, 0);
-	Cairo_NATIVE_EXIT(env, that, _1cairo_1device_1to_1user_FUNC);
-}
-#endif
-
-#ifndef NO__1cairo_1device_1to_1user_1distance
-JNIEXPORT void JNICALL Cairo_NATIVE(_1cairo_1device_1to_1user_1distance)
-	(JNIEnv *env, jclass that, jintLong arg0, jdoubleArray arg1, jdoubleArray arg2)
-{
-	jdouble *lparg1=NULL;
-	jdouble *lparg2=NULL;
-	Cairo_NATIVE_ENTER(env, that, _1cairo_1device_1to_1user_1distance_FUNC);
-	if (arg1) if ((lparg1 = (*env)->GetDoubleArrayElements(env, arg1, NULL)) == NULL) goto fail;
-	if (arg2) if ((lparg2 = (*env)->GetDoubleArrayElements(env, arg2, NULL)) == NULL) goto fail;
-	cairo_device_to_user_distance((cairo_t *)arg0, lparg1, lparg2);
-fail:
-	if (arg2 && lparg2) (*env)->ReleaseDoubleArrayElements(env, arg2, lparg2, 0);
-	if (arg1 && lparg1) (*env)->ReleaseDoubleArrayElements(env, arg1, lparg1, 0);
-	Cairo_NATIVE_EXIT(env, that, _1cairo_1device_1to_1user_1distance_FUNC);
-}
-#endif
-
 #ifndef NO__1cairo_1fill
 JNIEXPORT void JNICALL Cairo_NATIVE(_1cairo_1fill)
 	(JNIEnv *env, jclass that, jintLong arg0)
@@ -206,39 +162,6 @@ JNIEXPORT void JNICALL Cairo_NATIVE(_1cairo_1fill)
 	Cairo_NATIVE_ENTER(env, that, _1cairo_1fill_FUNC);
 	cairo_fill((cairo_t *)arg0);
 	Cairo_NATIVE_EXIT(env, that, _1cairo_1fill_FUNC);
-}
-#endif
-
-#ifndef NO__1cairo_1fill_1extents
-JNIEXPORT void JNICALL Cairo_NATIVE(_1cairo_1fill_1extents)
-	(JNIEnv *env, jclass that, jintLong arg0, jdoubleArray arg1, jdoubleArray arg2, jdoubleArray arg3, jdoubleArray arg4)
-{
-	jdouble *lparg1=NULL;
-	jdouble *lparg2=NULL;
-	jdouble *lparg3=NULL;
-	jdouble *lparg4=NULL;
-	Cairo_NATIVE_ENTER(env, that, _1cairo_1fill_1extents_FUNC);
-	if (arg1) if ((lparg1 = (*env)->GetDoubleArrayElements(env, arg1, NULL)) == NULL) goto fail;
-	if (arg2) if ((lparg2 = (*env)->GetDoubleArrayElements(env, arg2, NULL)) == NULL) goto fail;
-	if (arg3) if ((lparg3 = (*env)->GetDoubleArrayElements(env, arg3, NULL)) == NULL) goto fail;
-	if (arg4) if ((lparg4 = (*env)->GetDoubleArrayElements(env, arg4, NULL)) == NULL) goto fail;
-	cairo_fill_extents((cairo_t *)arg0, lparg1, lparg2, lparg3, lparg4);
-fail:
-	if (arg4 && lparg4) (*env)->ReleaseDoubleArrayElements(env, arg4, lparg4, 0);
-	if (arg3 && lparg3) (*env)->ReleaseDoubleArrayElements(env, arg3, lparg3, 0);
-	if (arg2 && lparg2) (*env)->ReleaseDoubleArrayElements(env, arg2, lparg2, 0);
-	if (arg1 && lparg1) (*env)->ReleaseDoubleArrayElements(env, arg1, lparg1, 0);
-	Cairo_NATIVE_EXIT(env, that, _1cairo_1fill_1extents_FUNC);
-}
-#endif
-
-#ifndef NO__1cairo_1fill_1preserve
-JNIEXPORT void JNICALL Cairo_NATIVE(_1cairo_1fill_1preserve)
-	(JNIEnv *env, jclass that, jintLong arg0)
-{
-	Cairo_NATIVE_ENTER(env, that, _1cairo_1fill_1preserve_FUNC);
-	cairo_fill_preserve((cairo_t *)arg0);
-	Cairo_NATIVE_EXIT(env, that, _1cairo_1fill_1preserve_FUNC);
 }
 #endif
 
@@ -283,26 +206,6 @@ JNIEXPORT void JNICALL Cairo_NATIVE(_1cairo_1font_1options_1set_1antialias)
 	Cairo_NATIVE_ENTER(env, that, _1cairo_1font_1options_1set_1antialias_FUNC);
 	cairo_font_options_set_antialias((cairo_font_options_t *)arg0, arg1);
 	Cairo_NATIVE_EXIT(env, that, _1cairo_1font_1options_1set_1antialias_FUNC);
-}
-#endif
-
-#ifndef NO__1cairo_1format_1stride_1for_1width
-JNIEXPORT jint JNICALL Cairo_NATIVE(_1cairo_1format_1stride_1for_1width)
-	(JNIEnv *env, jclass that, jint arg0, jint arg1)
-{
-	jint rc = 0;
-	Cairo_NATIVE_ENTER(env, that, _1cairo_1format_1stride_1for_1width_FUNC);
-/*
-	rc = (jint)cairo_format_stride_for_width(arg0, arg1);
-*/
-	{
-		Cairo_LOAD_FUNCTION(fp, cairo_format_stride_for_width)
-		if (fp) {
-			rc = (jint)((jint (CALLING_CONVENTION*)(jint, jint))fp)(arg0, arg1);
-		}
-	}
-	Cairo_NATIVE_EXIT(env, that, _1cairo_1format_1stride_1for_1width_FUNC);
-	return rc;
 }
 #endif
 
@@ -359,56 +262,6 @@ JNIEXPORT jintLong JNICALL Cairo_NATIVE(_1cairo_1get_1font_1face)
 }
 #endif
 
-#ifndef NO__1cairo_1get_1font_1matrix
-JNIEXPORT void JNICALL Cairo_NATIVE(_1cairo_1get_1font_1matrix)
-	(JNIEnv *env, jclass that, jintLong arg0, jdoubleArray arg1)
-{
-	jdouble *lparg1=NULL;
-	Cairo_NATIVE_ENTER(env, that, _1cairo_1get_1font_1matrix_FUNC);
-	if (arg1) if ((lparg1 = (*env)->GetDoubleArrayElements(env, arg1, NULL)) == NULL) goto fail;
-	cairo_get_font_matrix((cairo_t *)arg0, (cairo_matrix_t *)lparg1);
-fail:
-	if (arg1 && lparg1) (*env)->ReleaseDoubleArrayElements(env, arg1, lparg1, 0);
-	Cairo_NATIVE_EXIT(env, that, _1cairo_1get_1font_1matrix_FUNC);
-}
-#endif
-
-#ifndef NO__1cairo_1get_1line_1cap
-JNIEXPORT jint JNICALL Cairo_NATIVE(_1cairo_1get_1line_1cap)
-	(JNIEnv *env, jclass that, jintLong arg0)
-{
-	jint rc = 0;
-	Cairo_NATIVE_ENTER(env, that, _1cairo_1get_1line_1cap_FUNC);
-	rc = (jint)cairo_get_line_cap((cairo_t *)arg0);
-	Cairo_NATIVE_EXIT(env, that, _1cairo_1get_1line_1cap_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO__1cairo_1get_1line_1join
-JNIEXPORT jint JNICALL Cairo_NATIVE(_1cairo_1get_1line_1join)
-	(JNIEnv *env, jclass that, jintLong arg0)
-{
-	jint rc = 0;
-	Cairo_NATIVE_ENTER(env, that, _1cairo_1get_1line_1join_FUNC);
-	rc = (jint)cairo_get_line_join((cairo_t *)arg0);
-	Cairo_NATIVE_EXIT(env, that, _1cairo_1get_1line_1join_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO__1cairo_1get_1line_1width
-JNIEXPORT jdouble JNICALL Cairo_NATIVE(_1cairo_1get_1line_1width)
-	(JNIEnv *env, jclass that, jintLong arg0)
-{
-	jdouble rc = 0;
-	Cairo_NATIVE_ENTER(env, that, _1cairo_1get_1line_1width_FUNC);
-	rc = (jdouble)cairo_get_line_width((cairo_t *)arg0);
-	Cairo_NATIVE_EXIT(env, that, _1cairo_1get_1line_1width_FUNC);
-	return rc;
-}
-#endif
-
 #ifndef NO__1cairo_1get_1matrix
 JNIEXPORT void JNICALL Cairo_NATIVE(_1cairo_1get_1matrix)
 	(JNIEnv *env, jclass that, jintLong arg0, jdoubleArray arg1)
@@ -420,18 +273,6 @@ JNIEXPORT void JNICALL Cairo_NATIVE(_1cairo_1get_1matrix)
 fail:
 	if (arg1 && lparg1) (*env)->ReleaseDoubleArrayElements(env, arg1, lparg1, 0);
 	Cairo_NATIVE_EXIT(env, that, _1cairo_1get_1matrix_FUNC);
-}
-#endif
-
-#ifndef NO__1cairo_1get_1miter_1limit
-JNIEXPORT jdouble JNICALL Cairo_NATIVE(_1cairo_1get_1miter_1limit)
-	(JNIEnv *env, jclass that, jintLong arg0)
-{
-	jdouble rc = 0;
-	Cairo_NATIVE_ENTER(env, that, _1cairo_1get_1miter_1limit_FUNC);
-	rc = (jdouble)cairo_get_miter_limit((cairo_t *)arg0);
-	Cairo_NATIVE_EXIT(env, that, _1cairo_1get_1miter_1limit_FUNC);
-	return rc;
 }
 #endif
 
@@ -483,26 +324,6 @@ JNIEXPORT jdouble JNICALL Cairo_NATIVE(_1cairo_1get_1tolerance)
 }
 #endif
 
-#ifndef NO__1cairo_1glyph_1extents
-JNIEXPORT void JNICALL Cairo_NATIVE(_1cairo_1glyph_1extents)
-	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jint arg2, jintLong arg3)
-{
-	Cairo_NATIVE_ENTER(env, that, _1cairo_1glyph_1extents_FUNC);
-	cairo_glyph_extents((cairo_t *)arg0, (cairo_glyph_t *)arg1, arg2, (cairo_text_extents_t *)arg3);
-	Cairo_NATIVE_EXIT(env, that, _1cairo_1glyph_1extents_FUNC);
-}
-#endif
-
-#ifndef NO__1cairo_1glyph_1path
-JNIEXPORT void JNICALL Cairo_NATIVE(_1cairo_1glyph_1path)
-	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jint arg2)
-{
-	Cairo_NATIVE_ENTER(env, that, _1cairo_1glyph_1path_FUNC);
-	cairo_glyph_path((cairo_t *)arg0, (cairo_glyph_t *)arg1, arg2);
-	Cairo_NATIVE_EXIT(env, that, _1cairo_1glyph_1path_FUNC);
-}
-#endif
-
 #ifndef NO__1cairo_1identity_1matrix
 JNIEXPORT void JNICALL Cairo_NATIVE(_1cairo_1identity_1matrix)
 	(JNIEnv *env, jclass that, jintLong arg0)
@@ -521,18 +342,6 @@ JNIEXPORT jintLong JNICALL Cairo_NATIVE(_1cairo_1image_1surface_1create)
 	Cairo_NATIVE_ENTER(env, that, _1cairo_1image_1surface_1create_FUNC);
 	rc = (jintLong)cairo_image_surface_create(arg0, arg1, arg2);
 	Cairo_NATIVE_EXIT(env, that, _1cairo_1image_1surface_1create_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO__1cairo_1image_1surface_1create_1for_1data
-JNIEXPORT jintLong JNICALL Cairo_NATIVE(_1cairo_1image_1surface_1create_1for_1data)
-	(JNIEnv *env, jclass that, jintLong arg0, jint arg1, jint arg2, jint arg3, jint arg4)
-{
-	jintLong rc = 0;
-	Cairo_NATIVE_ENTER(env, that, _1cairo_1image_1surface_1create_1for_1data_FUNC);
-	rc = (jintLong)cairo_image_surface_create_for_data((unsigned char *)arg0, arg1, arg2, arg3, arg4);
-	Cairo_NATIVE_EXIT(env, that, _1cairo_1image_1surface_1create_1for_1data_FUNC);
 	return rc;
 }
 #endif
@@ -913,16 +722,6 @@ JNIEXPORT void JNICALL Cairo_NATIVE(_1cairo_1path_1destroy)
 }
 #endif
 
-#ifndef NO__1cairo_1pattern_1add_1color_1stop_1rgb
-JNIEXPORT void JNICALL Cairo_NATIVE(_1cairo_1pattern_1add_1color_1stop_1rgb)
-	(JNIEnv *env, jclass that, jintLong arg0, jdouble arg1, jdouble arg2, jdouble arg3, jdouble arg4)
-{
-	Cairo_NATIVE_ENTER(env, that, _1cairo_1pattern_1add_1color_1stop_1rgb_FUNC);
-	cairo_pattern_add_color_stop_rgb((cairo_pattern_t *)arg0, arg1, arg2, arg3, arg4);
-	Cairo_NATIVE_EXIT(env, that, _1cairo_1pattern_1add_1color_1stop_1rgb_FUNC);
-}
-#endif
-
 #ifndef NO__1cairo_1pattern_1add_1color_1stop_1rgba
 JNIEXPORT void JNICALL Cairo_NATIVE(_1cairo_1pattern_1add_1color_1stop_1rgba)
 	(JNIEnv *env, jclass that, jintLong arg0, jdouble arg1, jdouble arg2, jdouble arg3, jdouble arg4, jdouble arg5)
@@ -957,18 +756,6 @@ JNIEXPORT jintLong JNICALL Cairo_NATIVE(_1cairo_1pattern_1create_1linear)
 }
 #endif
 
-#ifndef NO__1cairo_1pattern_1create_1radial
-JNIEXPORT jintLong JNICALL Cairo_NATIVE(_1cairo_1pattern_1create_1radial)
-	(JNIEnv *env, jclass that, jdouble arg0, jdouble arg1, jdouble arg2, jdouble arg3, jdouble arg4, jdouble arg5)
-{
-	jintLong rc = 0;
-	Cairo_NATIVE_ENTER(env, that, _1cairo_1pattern_1create_1radial_FUNC);
-	rc = (jintLong)cairo_pattern_create_radial(arg0, arg1, arg2, arg3, arg4, arg5);
-	Cairo_NATIVE_EXIT(env, that, _1cairo_1pattern_1create_1radial_FUNC);
-	return rc;
-}
-#endif
-
 #ifndef NO__1cairo_1pattern_1destroy
 JNIEXPORT void JNICALL Cairo_NATIVE(_1cairo_1pattern_1destroy)
 	(JNIEnv *env, jclass that, jintLong arg0)
@@ -988,42 +775,6 @@ JNIEXPORT jint JNICALL Cairo_NATIVE(_1cairo_1pattern_1get_1extend)
 	rc = (jint)cairo_pattern_get_extend((cairo_pattern_t *)arg0);
 	Cairo_NATIVE_EXIT(env, that, _1cairo_1pattern_1get_1extend_FUNC);
 	return rc;
-}
-#endif
-
-#ifndef NO__1cairo_1pattern_1get_1filter
-JNIEXPORT jint JNICALL Cairo_NATIVE(_1cairo_1pattern_1get_1filter)
-	(JNIEnv *env, jclass that, jintLong arg0)
-{
-	jint rc = 0;
-	Cairo_NATIVE_ENTER(env, that, _1cairo_1pattern_1get_1filter_FUNC);
-	rc = (jint)cairo_pattern_get_filter((cairo_pattern_t *)arg0);
-	Cairo_NATIVE_EXIT(env, that, _1cairo_1pattern_1get_1filter_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO__1cairo_1pattern_1get_1matrix
-JNIEXPORT void JNICALL Cairo_NATIVE(_1cairo_1pattern_1get_1matrix)
-	(JNIEnv *env, jclass that, jintLong arg0, jdoubleArray arg1)
-{
-	jdouble *lparg1=NULL;
-	Cairo_NATIVE_ENTER(env, that, _1cairo_1pattern_1get_1matrix_FUNC);
-	if (arg1) if ((lparg1 = (*env)->GetDoubleArrayElements(env, arg1, NULL)) == NULL) goto fail;
-	cairo_pattern_get_matrix((cairo_pattern_t *)arg0, (cairo_matrix_t *)lparg1);
-fail:
-	if (arg1 && lparg1) (*env)->ReleaseDoubleArrayElements(env, arg1, lparg1, 0);
-	Cairo_NATIVE_EXIT(env, that, _1cairo_1pattern_1get_1matrix_FUNC);
-}
-#endif
-
-#ifndef NO__1cairo_1pattern_1reference
-JNIEXPORT void JNICALL Cairo_NATIVE(_1cairo_1pattern_1reference)
-	(JNIEnv *env, jclass that, jintLong arg0)
-{
-	Cairo_NATIVE_ENTER(env, that, _1cairo_1pattern_1reference_FUNC);
-	cairo_pattern_reference((cairo_pattern_t *)arg0);
-	Cairo_NATIVE_EXIT(env, that, _1cairo_1pattern_1reference_FUNC);
 }
 #endif
 
@@ -1193,36 +944,6 @@ JNIEXPORT jint JNICALL Cairo_NATIVE(_1cairo_1region_1num_1rectangles)
 }
 #endif
 
-#ifndef NO__1cairo_1rel_1curve_1to
-JNIEXPORT void JNICALL Cairo_NATIVE(_1cairo_1rel_1curve_1to)
-	(JNIEnv *env, jclass that, jintLong arg0, jdouble arg1, jdouble arg2, jdouble arg3, jdouble arg4, jdouble arg5, jdouble arg6)
-{
-	Cairo_NATIVE_ENTER(env, that, _1cairo_1rel_1curve_1to_FUNC);
-	cairo_rel_curve_to((cairo_t *)arg0, arg1, arg2, arg3, arg4, arg5, arg6);
-	Cairo_NATIVE_EXIT(env, that, _1cairo_1rel_1curve_1to_FUNC);
-}
-#endif
-
-#ifndef NO__1cairo_1rel_1line_1to
-JNIEXPORT void JNICALL Cairo_NATIVE(_1cairo_1rel_1line_1to)
-	(JNIEnv *env, jclass that, jintLong arg0, jdouble arg1, jdouble arg2)
-{
-	Cairo_NATIVE_ENTER(env, that, _1cairo_1rel_1line_1to_FUNC);
-	cairo_rel_line_to((cairo_t *)arg0, arg1, arg2);
-	Cairo_NATIVE_EXIT(env, that, _1cairo_1rel_1line_1to_FUNC);
-}
-#endif
-
-#ifndef NO__1cairo_1rel_1move_1to
-JNIEXPORT void JNICALL Cairo_NATIVE(_1cairo_1rel_1move_1to)
-	(JNIEnv *env, jclass that, jintLong arg0, jdouble arg1, jdouble arg2)
-{
-	Cairo_NATIVE_ENTER(env, that, _1cairo_1rel_1move_1to_FUNC);
-	cairo_rel_move_to((cairo_t *)arg0, arg1, arg2);
-	Cairo_NATIVE_EXIT(env, that, _1cairo_1rel_1move_1to_FUNC);
-}
-#endif
-
 #ifndef NO__1cairo_1reset_1clip
 JNIEXPORT void JNICALL Cairo_NATIVE(_1cairo_1reset_1clip)
 	(JNIEnv *env, jclass that, jintLong arg0)
@@ -1328,30 +1049,6 @@ JNIEXPORT void JNICALL Cairo_NATIVE(_1cairo_1set_1font_1face)
 	Cairo_NATIVE_ENTER(env, that, _1cairo_1set_1font_1face_FUNC);
 	cairo_set_font_face((cairo_t *)arg0, (cairo_font_face_t *)arg1);
 	Cairo_NATIVE_EXIT(env, that, _1cairo_1set_1font_1face_FUNC);
-}
-#endif
-
-#ifndef NO__1cairo_1set_1font_1matrix
-JNIEXPORT void JNICALL Cairo_NATIVE(_1cairo_1set_1font_1matrix)
-	(JNIEnv *env, jclass that, jintLong arg0, jdoubleArray arg1)
-{
-	jdouble *lparg1=NULL;
-	Cairo_NATIVE_ENTER(env, that, _1cairo_1set_1font_1matrix_FUNC);
-	if (arg1) if ((lparg1 = (*env)->GetDoubleArrayElements(env, arg1, NULL)) == NULL) goto fail;
-	cairo_set_font_matrix((cairo_t *)arg0, (cairo_matrix_t *)lparg1);
-fail:
-	if (arg1 && lparg1) (*env)->ReleaseDoubleArrayElements(env, arg1, lparg1, 0);
-	Cairo_NATIVE_EXIT(env, that, _1cairo_1set_1font_1matrix_FUNC);
-}
-#endif
-
-#ifndef NO__1cairo_1set_1font_1options
-JNIEXPORT void JNICALL Cairo_NATIVE(_1cairo_1set_1font_1options)
-	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1)
-{
-	Cairo_NATIVE_ENTER(env, that, _1cairo_1set_1font_1options_FUNC);
-	cairo_set_font_options((cairo_t *)arg0, (cairo_font_options_t *)arg1);
-	Cairo_NATIVE_EXIT(env, that, _1cairo_1set_1font_1options_FUNC);
 }
 #endif
 
@@ -1479,16 +1176,6 @@ JNIEXPORT void JNICALL Cairo_NATIVE(_1cairo_1set_1tolerance)
 }
 #endif
 
-#ifndef NO__1cairo_1show_1glyphs
-JNIEXPORT void JNICALL Cairo_NATIVE(_1cairo_1show_1glyphs)
-	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jint arg2)
-{
-	Cairo_NATIVE_ENTER(env, that, _1cairo_1show_1glyphs_FUNC);
-	cairo_show_glyphs((cairo_t *)arg0, (cairo_glyph_t *)arg1, arg2);
-	Cairo_NATIVE_EXIT(env, that, _1cairo_1show_1glyphs_FUNC);
-}
-#endif
-
 #ifndef NO__1cairo_1show_1page
 JNIEXPORT void JNICALL Cairo_NATIVE(_1cairo_1show_1page)
 	(JNIEnv *env, jclass that, jintLong arg0)
@@ -1499,30 +1186,6 @@ JNIEXPORT void JNICALL Cairo_NATIVE(_1cairo_1show_1page)
 }
 #endif
 
-#ifndef NO__1cairo_1status
-JNIEXPORT jint JNICALL Cairo_NATIVE(_1cairo_1status)
-	(JNIEnv *env, jclass that, jintLong arg0)
-{
-	jint rc = 0;
-	Cairo_NATIVE_ENTER(env, that, _1cairo_1status_FUNC);
-	rc = (jint)cairo_status((cairo_t *)arg0);
-	Cairo_NATIVE_EXIT(env, that, _1cairo_1status_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO__1cairo_1status_1to_1string
-JNIEXPORT jintLong JNICALL Cairo_NATIVE(_1cairo_1status_1to_1string)
-	(JNIEnv *env, jclass that, jint arg0)
-{
-	jintLong rc = 0;
-	Cairo_NATIVE_ENTER(env, that, _1cairo_1status_1to_1string_FUNC);
-	rc = (jintLong)cairo_status_to_string(arg0);
-	Cairo_NATIVE_EXIT(env, that, _1cairo_1status_1to_1string_FUNC);
-	return rc;
-}
-#endif
-
 #ifndef NO__1cairo_1stroke
 JNIEXPORT void JNICALL Cairo_NATIVE(_1cairo_1stroke)
 	(JNIEnv *env, jclass that, jintLong arg0)
@@ -1530,39 +1193,6 @@ JNIEXPORT void JNICALL Cairo_NATIVE(_1cairo_1stroke)
 	Cairo_NATIVE_ENTER(env, that, _1cairo_1stroke_FUNC);
 	cairo_stroke((cairo_t *)arg0);
 	Cairo_NATIVE_EXIT(env, that, _1cairo_1stroke_FUNC);
-}
-#endif
-
-#ifndef NO__1cairo_1stroke_1extents
-JNIEXPORT void JNICALL Cairo_NATIVE(_1cairo_1stroke_1extents)
-	(JNIEnv *env, jclass that, jintLong arg0, jdoubleArray arg1, jdoubleArray arg2, jdoubleArray arg3, jdoubleArray arg4)
-{
-	jdouble *lparg1=NULL;
-	jdouble *lparg2=NULL;
-	jdouble *lparg3=NULL;
-	jdouble *lparg4=NULL;
-	Cairo_NATIVE_ENTER(env, that, _1cairo_1stroke_1extents_FUNC);
-	if (arg1) if ((lparg1 = (*env)->GetDoubleArrayElements(env, arg1, NULL)) == NULL) goto fail;
-	if (arg2) if ((lparg2 = (*env)->GetDoubleArrayElements(env, arg2, NULL)) == NULL) goto fail;
-	if (arg3) if ((lparg3 = (*env)->GetDoubleArrayElements(env, arg3, NULL)) == NULL) goto fail;
-	if (arg4) if ((lparg4 = (*env)->GetDoubleArrayElements(env, arg4, NULL)) == NULL) goto fail;
-	cairo_stroke_extents((cairo_t *)arg0, lparg1, lparg2, lparg3, lparg4);
-fail:
-	if (arg4 && lparg4) (*env)->ReleaseDoubleArrayElements(env, arg4, lparg4, 0);
-	if (arg3 && lparg3) (*env)->ReleaseDoubleArrayElements(env, arg3, lparg3, 0);
-	if (arg2 && lparg2) (*env)->ReleaseDoubleArrayElements(env, arg2, lparg2, 0);
-	if (arg1 && lparg1) (*env)->ReleaseDoubleArrayElements(env, arg1, lparg1, 0);
-	Cairo_NATIVE_EXIT(env, that, _1cairo_1stroke_1extents_FUNC);
-}
-#endif
-
-#ifndef NO__1cairo_1stroke_1preserve
-JNIEXPORT void JNICALL Cairo_NATIVE(_1cairo_1stroke_1preserve)
-	(JNIEnv *env, jclass that, jintLong arg0)
-{
-	Cairo_NATIVE_ENTER(env, that, _1cairo_1stroke_1preserve_FUNC);
-	cairo_stroke_preserve((cairo_t *)arg0);
-	Cairo_NATIVE_EXIT(env, that, _1cairo_1stroke_1preserve_FUNC);
 }
 #endif
 
@@ -1690,36 +1320,6 @@ JNIEXPORT void JNICALL Cairo_NATIVE(_1cairo_1surface_1set_1device_1offset)
 }
 #endif
 
-#ifndef NO__1cairo_1surface_1set_1fallback_1resolution
-JNIEXPORT void JNICALL Cairo_NATIVE(_1cairo_1surface_1set_1fallback_1resolution)
-	(JNIEnv *env, jclass that, jintLong arg0, jdouble arg1, jdouble arg2)
-{
-	Cairo_NATIVE_ENTER(env, that, _1cairo_1surface_1set_1fallback_1resolution_FUNC);
-/*
-	cairo_surface_set_fallback_resolution(arg0, arg1, arg2);
-*/
-	{
-		Cairo_LOAD_FUNCTION(fp, cairo_surface_set_fallback_resolution)
-		if (fp) {
-			((void (CALLING_CONVENTION*)(jintLong, jdouble, jdouble))fp)(arg0, arg1, arg2);
-		}
-	}
-	Cairo_NATIVE_EXIT(env, that, _1cairo_1surface_1set_1fallback_1resolution_FUNC);
-}
-#endif
-
-#ifndef NO__1cairo_1surface_1set_1user_1data
-JNIEXPORT jint JNICALL Cairo_NATIVE(_1cairo_1surface_1set_1user_1data)
-	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jintLong arg2, jintLong arg3)
-{
-	jint rc = 0;
-	Cairo_NATIVE_ENTER(env, that, _1cairo_1surface_1set_1user_1data_FUNC);
-	rc = (jint)cairo_surface_set_user_data((cairo_surface_t *)arg0, (cairo_user_data_key_t *)arg1, (void *)arg2, (cairo_destroy_func_t)arg3);
-	Cairo_NATIVE_EXIT(env, that, _1cairo_1surface_1set_1user_1data_FUNC);
-	return rc;
-}
-#endif
-
 #ifndef NO__1cairo_1transform
 JNIEXPORT void JNICALL Cairo_NATIVE(_1cairo_1transform)
 	(JNIEnv *env, jclass that, jintLong arg0, jdoubleArray arg1)
@@ -1741,23 +1341,6 @@ JNIEXPORT void JNICALL Cairo_NATIVE(_1cairo_1translate)
 	Cairo_NATIVE_ENTER(env, that, _1cairo_1translate_FUNC);
 	cairo_translate((cairo_t *)arg0, arg1, arg2);
 	Cairo_NATIVE_EXIT(env, that, _1cairo_1translate_FUNC);
-}
-#endif
-
-#ifndef NO__1cairo_1user_1to_1device
-JNIEXPORT void JNICALL Cairo_NATIVE(_1cairo_1user_1to_1device)
-	(JNIEnv *env, jclass that, jintLong arg0, jdoubleArray arg1, jdoubleArray arg2)
-{
-	jdouble *lparg1=NULL;
-	jdouble *lparg2=NULL;
-	Cairo_NATIVE_ENTER(env, that, _1cairo_1user_1to_1device_FUNC);
-	if (arg1) if ((lparg1 = (*env)->GetDoubleArrayElements(env, arg1, NULL)) == NULL) goto fail;
-	if (arg2) if ((lparg2 = (*env)->GetDoubleArrayElements(env, arg2, NULL)) == NULL) goto fail;
-	cairo_user_to_device((cairo_t *)arg0, lparg1, lparg2);
-fail:
-	if (arg2 && lparg2) (*env)->ReleaseDoubleArrayElements(env, arg2, lparg2, 0);
-	if (arg1 && lparg1) (*env)->ReleaseDoubleArrayElements(env, arg1, lparg1, 0);
-	Cairo_NATIVE_EXIT(env, that, _1cairo_1user_1to_1device_FUNC);
 }
 #endif
 
@@ -1786,38 +1369,6 @@ JNIEXPORT jintLong JNICALL Cairo_NATIVE(_1cairo_1xlib_1surface_1create)
 	Cairo_NATIVE_ENTER(env, that, _1cairo_1xlib_1surface_1create_FUNC);
 	rc = (jintLong)cairo_xlib_surface_create((Display *)arg0, (Drawable)arg1, (Visual *)arg2, arg3, arg4);
 	Cairo_NATIVE_EXIT(env, that, _1cairo_1xlib_1surface_1create_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO__1cairo_1xlib_1surface_1create_1for_1bitmap
-JNIEXPORT jintLong JNICALL Cairo_NATIVE(_1cairo_1xlib_1surface_1create_1for_1bitmap)
-	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jintLong arg2, jint arg3, jint arg4)
-{
-	jintLong rc = 0;
-	Cairo_NATIVE_ENTER(env, that, _1cairo_1xlib_1surface_1create_1for_1bitmap_FUNC);
-	rc = (jintLong)cairo_xlib_surface_create_for_bitmap((Display *)arg0, (Pixmap)arg1, (Screen *)arg2, arg3, arg4);
-	Cairo_NATIVE_EXIT(env, that, _1cairo_1xlib_1surface_1create_1for_1bitmap_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO__1cairo_1xlib_1surface_1get_1drawable
-JNIEXPORT jintLong JNICALL Cairo_NATIVE(_1cairo_1xlib_1surface_1get_1drawable)
-	(JNIEnv *env, jclass that, jintLong arg0)
-{
-	jintLong rc = 0;
-	Cairo_NATIVE_ENTER(env, that, _1cairo_1xlib_1surface_1get_1drawable_FUNC);
-/*
-	rc = (jintLong)cairo_xlib_surface_get_drawable((cairo_surface_t *)arg0);
-*/
-	{
-		Cairo_LOAD_FUNCTION(fp, cairo_xlib_surface_get_drawable)
-		if (fp) {
-			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(cairo_surface_t *))fp)((cairo_surface_t *)arg0);
-		}
-	}
-	Cairo_NATIVE_EXIT(env, that, _1cairo_1xlib_1surface_1get_1drawable_FUNC);
 	return rc;
 }
 #endif
@@ -1859,16 +1410,6 @@ JNIEXPORT jint JNICALL Cairo_NATIVE(_1cairo_1xlib_1surface_1get_1width)
 	}
 	Cairo_NATIVE_EXIT(env, that, _1cairo_1xlib_1surface_1get_1width_FUNC);
 	return rc;
-}
-#endif
-
-#ifndef NO__1cairo_1xlib_1surface_1set_1size
-JNIEXPORT void JNICALL Cairo_NATIVE(_1cairo_1xlib_1surface_1set_1size)
-	(JNIEnv *env, jclass that, jintLong arg0, jint arg1, jint arg2)
-{
-	Cairo_NATIVE_ENTER(env, that, _1cairo_1xlib_1surface_1set_1size_FUNC);
-	cairo_xlib_surface_set_size((cairo_surface_t *)arg0, arg1, arg2);
-	Cairo_NATIVE_EXIT(env, that, _1cairo_1xlib_1surface_1set_1size_FUNC);
 }
 #endif
 

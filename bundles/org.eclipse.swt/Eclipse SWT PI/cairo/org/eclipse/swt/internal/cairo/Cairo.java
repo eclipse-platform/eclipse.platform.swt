@@ -139,16 +139,6 @@ public static final void cairo_clip(long /*int*/ cr) {
 	}
 }
 /** @param cr cast=(cairo_t *) */
-public static final native void _cairo_clip_preserve(long /*int*/ cr);
-public static final void cairo_clip_preserve(long /*int*/ cr) {
-	lock.lock();
-	try {
-		_cairo_clip_preserve(cr);
-	} finally {
-		lock.unlock();
-	}
-}
-/** @param cr cast=(cairo_t *) */
 public static final native void _cairo_close_path(long /*int*/ cr);
 public static final void cairo_close_path(long /*int*/ cr) {
 	lock.lock();
@@ -219,51 +209,11 @@ public static final void cairo_destroy(long /*int*/ cr) {
 	}
 }
 /** @param cr cast=(cairo_t *) */
-public static final native void _cairo_device_to_user(long /*int*/ cr, double[] x, double[] y);
-public static final void cairo_device_to_user(long /*int*/ cr, double[] x, double[] y) {
-	lock.lock();
-	try {
-		_cairo_device_to_user(cr, x, y);
-	} finally {
-		lock.unlock();
-	}
-}
-/** @param cr cast=(cairo_t *) */
-public static final native void _cairo_device_to_user_distance(long /*int*/ cr, double[] dx, double[] dy);
-public static final void cairo_device_to_user_distance(long /*int*/ cr, double[] dx, double[] dy) {
-	lock.lock();
-	try {
-		_cairo_device_to_user_distance(cr, dx, dy);
-	} finally {
-		lock.unlock();
-	}
-}
-/** @param cr cast=(cairo_t *) */
 public static final native void _cairo_fill(long /*int*/ cr);
 public static final void cairo_fill(long /*int*/ cr) {
 	lock.lock();
 	try {
 		_cairo_fill(cr);
-	} finally {
-		lock.unlock();
-	}
-}
-/** @param cr cast=(cairo_t *) */
-public static final native void _cairo_fill_extents(long /*int*/ cr, double[] x1, double[] y1, double[] x2, double[] y2);
-public static final void cairo_fill_extents(long /*int*/ cr, double[] x1, double[] y1, double[] x2, double[] y2) {
-	lock.lock();
-	try {
-		_cairo_fill_extents(cr, x1, y1, x2, y2);
-	} finally {
-		lock.unlock();
-	}
-}
-/** @param cr cast=(cairo_t *) */
-public static final native void _cairo_fill_preserve(long /*int*/ cr);
-public static final void cairo_fill_preserve(long /*int*/ cr) {
-	lock.lock();
-	try {
-		_cairo_fill_preserve(cr);
 	} finally {
 		lock.unlock();
 	}
@@ -303,16 +253,6 @@ public static final void cairo_font_options_set_antialias(long /*int*/ options, 
 	lock.lock();
 	try {
 		_cairo_font_options_set_antialias(options, antialias);
-	} finally {
-		lock.unlock();
-	}
-}
-/** @method flags=dynamic */
-public static final native int _cairo_format_stride_for_width(int format, int width);
-public static final int cairo_format_stride_for_width(int format, int width) {
-	lock.lock();
-	try {
-		return _cairo_format_stride_for_width(format, width);
 	} finally {
 		lock.unlock();
 	}
@@ -361,64 +301,11 @@ public static final long /*int*/ cairo_get_font_face(long /*int*/ cr) {
  * @param cr cast=(cairo_t *)
  * @param matrix cast=(cairo_matrix_t *)
  */
-public static final native void _cairo_get_font_matrix(long /*int*/ cr, double[] matrix);
-public static final void cairo_get_font_matrix(long /*int*/ cr, double[] matrix) {
-	lock.lock();
-	try {
-		_cairo_get_font_matrix(cr, matrix);
-	} finally {
-		lock.unlock();
-	}
-}
-/** @param cr cast=(cairo_t *) */
-public static final native int _cairo_get_line_cap(long /*int*/ cr);
-public static final int cairo_get_line_cap(long /*int*/ cr) {
-	lock.lock();
-	try {
-		return _cairo_get_line_cap(cr);
-	} finally {
-		lock.unlock();
-	}
-}
-/** @param cr cast=(cairo_t *) */
-public static final native int _cairo_get_line_join(long /*int*/ cr);
-public static final int cairo_get_line_join(long /*int*/ cr) {
-	lock.lock();
-	try {
-		return _cairo_get_line_join(cr);
-	} finally {
-		lock.unlock();
-	}
-}
-/** @param cr cast=(cairo_t *) */
-public static final native double _cairo_get_line_width(long /*int*/ cr);
-public static final double cairo_get_line_width(long /*int*/ cr) {
-	lock.lock();
-	try {
-		return _cairo_get_line_width(cr);
-	} finally {
-		lock.unlock();
-	}
-}
-/**
- * @param cr cast=(cairo_t *)
- * @param matrix cast=(cairo_matrix_t *)
- */
 public static final native void _cairo_get_matrix(long /*int*/ cr, double[] matrix);
 public static final void cairo_get_matrix(long /*int*/ cr, double[] matrix) {
 	lock.lock();
 	try {
 		_cairo_get_matrix(cr, matrix);
-	} finally {
-		lock.unlock();
-	}
-}
-/** @param cr cast=(cairo_t *) */
-public static final native double _cairo_get_miter_limit(long /*int*/ cr);
-public static final double cairo_get_miter_limit(long /*int*/ cr) {
-	lock.lock();
-	try {
-		return _cairo_get_miter_limit(cr);
 	} finally {
 		lock.unlock();
 	}
@@ -463,33 +350,6 @@ public static final double cairo_get_tolerance(long /*int*/ cr) {
 		lock.unlock();
 	}
 }
-/**
- * @param cr cast=(cairo_t *)
- * @param glyphs cast=(cairo_glyph_t *)
- * @param extents cast=(cairo_text_extents_t *)
- */
-public static final native void _cairo_glyph_extents(long /*int*/ cr, long /*int*/ glyphs, int num_glyphs, long /*int*/ extents);
-public static final void cairo_glyph_extents(long /*int*/ cr, long /*int*/ glyphs, int num_glyphs, long /*int*/ extents) {
-	lock.lock();
-	try {
-		_cairo_glyph_extents(cr, glyphs, num_glyphs, extents);
-	} finally {
-		lock.unlock();
-	}
-}
-/**
- * @param cr cast=(cairo_t *)
- * @param glyphs cast=(cairo_glyph_t *)
- */
-public static final native void _cairo_glyph_path(long /*int*/ cr, long /*int*/ glyphs, int num_glyphs);
-public static final void cairo_glyph_path(long /*int*/ cr, long /*int*/ glyphs, int num_glyphs) {
-	lock.lock();
-	try {
-		_cairo_glyph_path(cr, glyphs, num_glyphs);
-	} finally {
-		lock.unlock();
-	}
-}
 /** @param cr cast=(cairo_t *) */
 public static final native void _cairo_identity_matrix(long /*int*/ cr);
 public static final void cairo_identity_matrix(long /*int*/ cr) {
@@ -505,16 +365,6 @@ public static final long /*int*/ cairo_image_surface_create(int format, int widt
 	lock.lock();
 	try {
 		return _cairo_image_surface_create(format, width, height);
-	} finally {
-		lock.unlock();
-	}
-}
-/** @param data cast=(unsigned char *) */
-public static final native long /*int*/ _cairo_image_surface_create_for_data(long /*int*/ data, int format, int width, int height, int stride);
-public static final long /*int*/ cairo_image_surface_create_for_data(long /*int*/ data, int format, int width, int height, int stride) {
-	lock.lock();
-	try {
-		return _cairo_image_surface_create_for_data(data, format, width, height, stride);
 	} finally {
 		lock.unlock();
 	}
@@ -809,16 +659,6 @@ public static final void cairo_path_destroy(long /*int*/ path) {
 	}
 }
 /** @param pattern cast=(cairo_pattern_t *) */
-public static final native void _cairo_pattern_add_color_stop_rgb(long /*int*/ pattern, double offset, double red, double green, double blue);
-public static final void cairo_pattern_add_color_stop_rgb(long /*int*/ pattern, double offset, double red, double green, double blue) {
-	lock.lock();
-	try {
-		_cairo_pattern_add_color_stop_rgb(pattern, offset, red, green, blue);
-	} finally {
-		lock.unlock();
-	}
-}
-/** @param pattern cast=(cairo_pattern_t *) */
 public static final native void _cairo_pattern_add_color_stop_rgba(long /*int*/ pattern, double offset, double red, double green, double blue, double alpha);
 public static final void cairo_pattern_add_color_stop_rgba(long /*int*/ pattern, double offset, double red, double green, double blue, double alpha) {
 	lock.lock();
@@ -847,15 +687,6 @@ public static final long /*int*/ cairo_pattern_create_linear(double x0, double y
 		lock.unlock();
 	}
 }
-public static final native long /*int*/ _cairo_pattern_create_radial(double cx0, double cy0, double radius0, double cx1, double cy1, double radius1);
-public static final long /*int*/ cairo_pattern_create_radial(double cx0, double cy0, double radius0, double cx1, double cy1, double radius1) {
-	lock.lock();
-	try {
-		return _cairo_pattern_create_radial(cx0, cy0, radius0, cx1, cy1, radius1);
-	} finally {
-		lock.unlock();
-	}
-}
 /** @param pattern cast=(cairo_pattern_t *) */
 public static final native void _cairo_pattern_destroy(long /*int*/ pattern);
 public static final void cairo_pattern_destroy(long /*int*/ pattern) {
@@ -872,39 +703,6 @@ public static final int cairo_pattern_get_extend(long /*int*/ pattern) {
 	lock.lock();
 	try {
 		return _cairo_pattern_get_extend(pattern);
-	} finally {
-		lock.unlock();
-	}
-}
-/** @param pattern cast=(cairo_pattern_t *) */
-public static final native int _cairo_pattern_get_filter(long /*int*/ pattern);
-public static final int cairo_pattern_get_filter(long /*int*/ pattern) {
-	lock.lock();
-	try {
-		return _cairo_pattern_get_filter(pattern);
-	} finally {
-		lock.unlock();
-	}
-}
-/**
- * @param pattern cast=(cairo_pattern_t *)
- * @param matrix cast=(cairo_matrix_t *)
- */
-public static final native void _cairo_pattern_get_matrix(long /*int*/ pattern, double[] matrix);
-public static final void cairo_pattern_get_matrix(long /*int*/ pattern, double[] matrix) {
-	lock.lock();
-	try {
-		_cairo_pattern_get_matrix(pattern, matrix);
-	} finally {
-		lock.unlock();
-	}
-}
-/** @param pattern cast=(cairo_pattern_t *) */
-public static final native void _cairo_pattern_reference(long /*int*/ pattern);
-public static final void cairo_pattern_reference(long /*int*/ pattern) {
-	lock.lock();
-	try {
-		_cairo_pattern_reference(pattern);
 	} finally {
 		lock.unlock();
 	}
@@ -1015,36 +813,6 @@ public static final long /*int*/ cairo_reference(long /*int*/ cr) {
 	}
 }
 /** @param cr cast=(cairo_t *) */
-public static final native void _cairo_rel_curve_to(long /*int*/ cr, double dx1, double dy1, double dx2, double dy2, double dx3, double dy3);
-public static final void cairo_rel_curve_to(long /*int*/ cr, double dx1, double dy1, double dx2, double dy2, double dx3, double dy3) {
-	lock.lock();
-	try {
-		_cairo_rel_curve_to(cr, dx1, dy1, dx2, dy2, dx3, dy3);
-	} finally {
-		lock.unlock();
-	}
-}
-/** @param cr cast=(cairo_t *) */
-public static final native void _cairo_rel_line_to(long /*int*/ cr, double dx, double dy);
-public static final void cairo_rel_line_to(long /*int*/ cr, double dx, double dy) {
-	lock.lock();
-	try {
-		_cairo_rel_line_to(cr, dx, dy);
-	} finally {
-		lock.unlock();
-	}
-}
-/** @param cr cast=(cairo_t *) */
-public static final native void _cairo_rel_move_to(long /*int*/ cr, double dx, double dy);
-public static final void cairo_rel_move_to(long /*int*/ cr, double dx, double dy) {
-	lock.lock();
-	try {
-		_cairo_rel_move_to(cr, dx, dy);
-	} finally {
-		lock.unlock();
-	}
-}
-/** @param cr cast=(cairo_t *) */
 public static final native void _cairo_reset_clip(long /*int*/ cr);
 public static final void cairo_reset_clip(long /*int*/ cr) {
 	lock.lock();
@@ -1146,32 +914,6 @@ public static final void cairo_set_font_face(long /*int*/ cr, long /*int*/ font_
 	lock.lock();
 	try {
 		_cairo_set_font_face(cr, font_face);
-	} finally {
-		lock.unlock();
-	}
-}
-/**
- * @param cr cast=(cairo_t *)
- * @param matrix cast=(cairo_matrix_t *)
- */
-public static final native void _cairo_set_font_matrix(long /*int*/ cr, double[] matrix);
-public static final void cairo_set_font_matrix(long /*int*/ cr, double[] matrix) {
-	lock.lock();
-	try {
-		_cairo_set_font_matrix(cr, matrix);
-	} finally {
-		lock.unlock();
-	}
-}
-/**
- * @param cr cast=(cairo_t *)
- * @param options cast=(cairo_font_options_t *)
- */
-public static final native void _cairo_set_font_options(long /*int*/ cr, long /*int*/ options);
-public static final void cairo_set_font_options(long /*int*/ cr, long /*int*/ options) {
-	lock.lock();
-	try {
-		_cairo_set_font_options(cr, options);
 	} finally {
 		lock.unlock();
 	}
@@ -1305,19 +1047,6 @@ public static final void cairo_set_tolerance(long /*int*/ cr, double tolerance) 
 		lock.unlock();
 	}
 }
-/**
- * @param cr cast=(cairo_t *)
- * @param glyphs cast=(cairo_glyph_t *)
- */
-public static final native void _cairo_show_glyphs(long /*int*/ cr, long /*int*/ glyphs, int num_glyphs);
-public static final void cairo_show_glyphs(long /*int*/ cr, long /*int*/ glyphs, int num_glyphs) {
-	lock.lock();
-	try {
-		_cairo_show_glyphs(cr, glyphs, num_glyphs);
-	} finally {
-		lock.unlock();
-	}
-}
 /** @param cr cast=(cairo_t *) */
 public static final native void _cairo_show_page(long /*int*/ cr);
 public static final void cairo_show_page(long /*int*/ cr) {
@@ -1329,50 +1058,11 @@ public static final void cairo_show_page(long /*int*/ cr) {
 	}
 }
 /** @param cr cast=(cairo_t *) */
-public static final native int _cairo_status(long /*int*/ cr);
-public static final int cairo_status(long /*int*/ cr) {
-	lock.lock();
-	try {
-		return _cairo_status(cr);
-	} finally {
-		lock.unlock();
-	}
-}
-public static final native long /*int*/ _cairo_status_to_string(int status);
-public static final long /*int*/ cairo_status_to_string(int status) {
-	lock.lock();
-	try {
-		return _cairo_status_to_string(status);
-	} finally {
-		lock.unlock();
-	}
-}
-/** @param cr cast=(cairo_t *) */
 public static final native void _cairo_stroke(long /*int*/ cr);
 public static final void cairo_stroke(long /*int*/ cr) {
 	lock.lock();
 	try {
 		_cairo_stroke(cr);
-	} finally {
-		lock.unlock();
-	}
-}
-/** @param cr cast=(cairo_t *) */
-public static final native void _cairo_stroke_extents(long /*int*/ cr, double[] x1, double[] y1, double[] x2, double[] y2);
-public static final void cairo_stroke_extents(long /*int*/ cr, double[] x1, double[] y1, double[] x2, double[] y2) {
-	lock.lock();
-	try {
-		_cairo_stroke_extents(cr, x1, y1, x2, y2);
-	} finally {
-		lock.unlock();
-	}
-}
-/** @param cr cast=(cairo_t *) */
-public static final native void _cairo_stroke_preserve(long /*int*/ cr);
-public static final void cairo_stroke_preserve(long /*int*/ cr) {
-	lock.lock();
-	try {
-		_cairo_stroke_preserve(cr);
 	} finally {
 		lock.unlock();
 	}
@@ -1486,31 +1176,6 @@ public static final void cairo_surface_set_device_offset(long /*int*/ surface, d
 		lock.unlock();
 	}
 }
-/** @method flags=dynamic */
-public static final native void _cairo_surface_set_fallback_resolution(long /*int*/ surface, double x_pixels_per_inch, double y_pixels_per_inch);
-public static final void cairo_surface_set_fallback_resolution(long /*int*/ surface, double x_pixels_per_inch, double y_pixels_per_inch) {
-	lock.lock();
-	try {
-		_cairo_surface_set_fallback_resolution(surface, x_pixels_per_inch, y_pixels_per_inch);
-	} finally {
-		lock.unlock();
-	}
-}
-/**
- * @param surface cast=(cairo_surface_t *)
- * @param key cast=(cairo_user_data_key_t *)
- * @param user_data cast=(void *)
- * @param destroy cast=(cairo_destroy_func_t)
- */
-public static final native int _cairo_surface_set_user_data(long /*int*/ surface, long /*int*/ key, long /*int*/ user_data, long /*int*/ destroy);
-public static final int cairo_surface_set_user_data(long /*int*/ surface, long /*int*/ key, long /*int*/ user_data, long /*int*/ destroy) {
-	lock.lock();
-	try {
-		return _cairo_surface_set_user_data(surface, key, user_data, destroy);
-	} finally {
-		lock.unlock();
-	}
-}
 /**
  * @param cr cast=(cairo_t *)
  * @param matrix cast=(cairo_matrix_t *)
@@ -1530,16 +1195,6 @@ public static final void cairo_translate(long /*int*/ cr, double tx, double ty) 
 	lock.lock();
 	try {
 		_cairo_translate(cr, tx, ty);
-	} finally {
-		lock.unlock();
-	}
-}
-/** @param cr cast=(cairo_t *) */
-public static final native void _cairo_user_to_device(long /*int*/ cr, double[] x, double[] y);
-public static final void cairo_user_to_device(long /*int*/ cr, double[] x, double[] y) {
-	lock.lock();
-	try {
-		_cairo_user_to_device(cr, x, y);
 	} finally {
 		lock.unlock();
 	}
@@ -1565,43 +1220,6 @@ public static final long /*int*/ cairo_xlib_surface_create(long /*int*/ dpy, lon
 	lock.lock();
 	try {
 		return _cairo_xlib_surface_create(dpy, drawable, visual, width, height);
-	} finally {
-		lock.unlock();
-	}
-}
-/**
- * @param dpy cast=(Display *)
- * @param pixmap cast=(Pixmap)
- * @param screen cast=(Screen *)
- */
-public static final native long /*int*/ _cairo_xlib_surface_create_for_bitmap(long /*int*/ dpy, long /*int*/ pixmap, long /*int*/ screen, int width, int height);
-public static final long /*int*/ cairo_xlib_surface_create_for_bitmap(long /*int*/ dpy, long /*int*/ pixmap, long /*int*/ screen, int width, int height) {
-	lock.lock();
-	try {
-		return _cairo_xlib_surface_create_for_bitmap(dpy, pixmap, screen, width, height);
-	} finally {
-		lock.unlock();
-	}
-}
-/** @param surface cast=(cairo_surface_t *) */
-public static final native void _cairo_xlib_surface_set_size(long /*int*/ surface, int width, int height);
-public static final void cairo_xlib_surface_set_size(long /*int*/ surface, int width, int height) {
-	lock.lock();
-	try {
-		_cairo_xlib_surface_set_size(surface, width, height);
-	} finally {
-		lock.unlock();
-	}
-}
-/**
- * @method flags=dynamic
- * @param surface cast=(cairo_surface_t *)
- */
-public static final native long /*int*/ _cairo_xlib_surface_get_drawable(long /*int*/ surface);
-public static final long /*int*/ cairo_xlib_surface_get_drawable(long /*int*/ surface) {
-	lock.lock();
-	try {
-		return _cairo_xlib_surface_get_drawable(surface);
 	} finally {
 		lock.unlock();
 	}
