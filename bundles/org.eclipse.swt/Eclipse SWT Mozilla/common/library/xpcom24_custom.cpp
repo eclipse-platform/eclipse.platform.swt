@@ -90,7 +90,12 @@ JNIEXPORT jint JNICALL XPCOM_NATIVE(_1JS_1EvaluateUCScriptForPrincipals24)
 		if (!initialized) {
 			HMODULE hm = LoadLibrary((const char *)lpmozillaPath);
 			if (hm) {
+				/* try the 32-bit signature first */
 				fp = GetProcAddress(hm, "?JS_EvaluateUCScriptForPrincipals@@YAHPAUJSContext@@PAVJSObject@@PAUJSPrincipals@@PB_WIPBDIPAVValue@JS@@@Z");
+				if (!fp) {
+					/* fall back to the 64-bit signature */
+					fp = GetProcAddress(hm, "?JS_EvaluateUCScriptForPrincipals@@YAHPEAUJSContext@@PEAVJSObject@@PEAUJSPrincipals@@PEB_WIPEBDIPEAVValue@JS@@@Z");
+				}
 			}
 			initialized = 1;
 		}
