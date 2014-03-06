@@ -29,21 +29,21 @@ import org.eclipse.swt.graphics.*;
 public class Snippet332 {
 	
 	public static void main(String [] args) {
-	    final Display display = new Display();
-	    Shell shell = new Shell(display);
-	    GridLayout layout = new GridLayout();
-	    layout.marginHeight = layout.marginWidth = 10;
-	    shell.setLayout(layout);
-	    StyledText text = new StyledText(shell, SWT.MULTI | SWT.BORDER);
-	    final String segment = "Eclipse";
-	    String string = "Force RTL direction on this segment \""+segment+"\".";
-	    text.setText(string);
-	    int[] segments = {string.indexOf(segment), segment.length()};
-	    StyleRange[] ranges = {new StyleRange(0, 0, display.getSystemColor(SWT.COLOR_RED), null)};
-	    text.setStyleRanges(segments, ranges);
-	    Font font = new Font(display, "Tahoma", 16, 0);
-	    text.setFont(font);
-	    text.addBidiSegmentListener(new BidiSegmentListener() {
+		final Display display = new Display();
+		Shell shell = new Shell(display);
+		GridLayout layout = new GridLayout();
+		layout.marginHeight = layout.marginWidth = 10;
+		shell.setLayout(layout);
+		StyledText text = new StyledText(shell, SWT.MULTI | SWT.BORDER);
+		final String segment = "Eclipse";
+		String string = "Force RTL direction on this segment \""+segment+"\".";
+		text.setText(string);
+		int[] segments = {string.indexOf(segment), segment.length()};
+		StyleRange[] ranges = {new StyleRange(0, 0, display.getSystemColor(SWT.COLOR_RED), null)};
+		text.setStyleRanges(segments, ranges);
+		Font font = new Font(display, "Tahoma", 16, 0);
+		text.setFont(font);
+		text.addBidiSegmentListener(new BidiSegmentListener() {
 			@Override
 			public void lineGetSegments(BidiSegmentEvent event) {
 				String string = event.lineText;
@@ -53,7 +53,7 @@ public class Snippet332 {
 			}
 		});
 		Combo combo = new Combo(shell, SWT.SIMPLE);
-	    combo.setFont(font);
+		combo.setFont(font);
 		combo.setBackground(display.getSystemColor(SWT.COLOR_YELLOW));
 		combo.setItems(new String[] { "Option 1...", "Option 2...", "Option 3...", "Option 4..." });
 		combo.select(1);
@@ -64,12 +64,12 @@ public class Snippet332 {
 				event.segmentsChars = new char [] {'\u202e', '\u202c'};
 			}
 		});
-	    shell.setSize(500, 250);
-	    shell.open();
-	    while (!shell.isDisposed()) {
-	        if (!display.readAndDispatch()) display.sleep();
-	    }
-	    font.dispose();
-	    display.dispose();
+		shell.setSize(500, 250);
+		shell.open();
+		while (!shell.isDisposed()) {
+			if (!display.readAndDispatch()) display.sleep();
+		}
+		font.dispose();
+		display.dispose();
 	}
 }
