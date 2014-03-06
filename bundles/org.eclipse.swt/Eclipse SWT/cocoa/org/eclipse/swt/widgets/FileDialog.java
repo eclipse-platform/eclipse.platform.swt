@@ -251,6 +251,9 @@ public String open () {
 		widget.sizeToFit();
 		panel.setAccessoryView(widget);
 		popup = widget;
+		
+		setAllowedFileType(filterExtensions[0]);
+		panel.setAllowsOtherFileTypes(true);
 	}
 	panel.setTitle(NSString.stringWith(title != null ? title : ""));
 	NSApplication application = NSApplication.sharedApplication();
@@ -277,23 +280,6 @@ public String open () {
 	if (response == OS.NSFileHandlingPanelOKButton) {
 		NSString filename = panel.filename();
 		if ((style & SWT.SAVE) != 0) {
-			if (filterExtensions != null && filterExtensions.length != 0) {
-				if (0 <= filterIndex && filterIndex < filterExtensions.length) {
-					/* Append extension if not present */
-					NSString ext = filename.pathExtension();
-					if (ext == null || ext.length() == 0) {
-						String exts = filterExtensions [filterIndex];
-						int length = exts.length ();
-						int index = exts.indexOf (EXTENSION_SEPARATOR);
-						if (index == -1) index = length;
-						String filter = exts.substring (0, index).trim ();
-						if (!filter.equals ("*") && !filter.equals ("*.*")) {
-							if (filter.startsWith ("*.")) filter = filter.substring (2);
-							filename = filename.stringByAppendingPathExtension(NSString.stringWith(filter));
-						}	
-					}
-				}
-			}
 			fullPath = filename.getString();
 			fileNames = new String [1];
 			fileName = fileNames [0] = filename.lastPathComponent().getString();
@@ -379,7 +365,25 @@ long /*int*/ panel_shouldShowFilename (long /*int*/ id, long /*int*/ sel, long /
 
 void sendSelection (long /*int*/ id, long /*int*/ sel, long /*int*/ arg) {
 	panel.validateVisibleColumns();
+	if (filterExtensions != null && filterExtensions.length > 0) {
+		setAllowedFileType(filterExtensions[(int)/*64*/popup.indexOfSelectedItem()]);
+	}
 }
+
+void setAllowedFileType (String fileType) {
+	if (fileType == null) return;
+	if (fileType.equals("*") || fileType.equals("*.*")) {
+		panel.setAllowedFileTypes(null);
+		return;
+	}
+	if (fileType.startsWith ("*.")) {
+		fileType = fileType.substring (2);
+	}
+	NSMutableArray allowedFileTypes = NSMutableArray.arrayWithCapacity(1);
+	allowedFileTypes.addObject(NSString.stringWith(fileType));
+	panel.setAllowedFileTypes(allowedFileTypes);
+}
+
 
 /**
  * Set the initial filename which the dialog will
