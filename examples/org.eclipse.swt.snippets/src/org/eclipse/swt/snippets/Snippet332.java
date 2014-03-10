@@ -11,8 +11,12 @@
 package org.eclipse.swt.snippets;
 
 /*
- * SWT StyledText and Combo snippet: using BidiSegmentEvent#segmentsChars and
- * SegmentEvent#segmentsChars to implement custom bidi segments
+ * SWT StyledText and Combo snippet: using BidiSegmentListener and
+ * SegmentListener to implement custom bidi segments, such as right-to-left
+ * override
+ * 
+ * Note that SegmentListener in the Combo widget is supported since 4.4 and
+ * currently only on win32 platform
  * 
  * For a list of all SWT example snippets see
  * http://www.eclipse.org/swt/snippets/
