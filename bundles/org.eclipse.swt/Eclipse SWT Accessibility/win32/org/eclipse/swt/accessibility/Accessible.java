@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2013 IBM Corporation and others.
+ * Copyright (c) 2000, 2014 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -47,11 +47,12 @@ public class Accessible {
 	static final int MAX_RELATION_TYPES = 15;
 	static final int TABLE_MODEL_CHANGE_SIZE = 5;
 	static final int TEXT_CHANGE_SIZE = 4;
+	static final int SCROLL_RATE = 100;
 	static final boolean DEBUG = false;
 	static final String PROPERTY_USEIA2 = "org.eclipse.swt.accessibility.UseIA2"; //$NON-NLS-1$
 	static boolean UseIA2 = true;
 	static int UniqueID = -0x10;
-	int refCount = 0, enumIndex = 0;
+	int refCount = 0, enumIndex = 0, textCaretCount = 0;
 	COMObject objIAccessible, objIEnumVARIANT, objIServiceProvider, objIAccessible2, objIAccessibleAction,
 		objIAccessibleApplication, /*objIAccessibleComponent,*/ objIAccessibleEditableText, objIAccessibleHyperlink,
 		objIAccessibleHypertext, /*objIAccessibleImage,*/ objIAccessibleTable2, objIAccessibleTableCell,
@@ -1493,13 +1494,20 @@ public class Accessible {
 	 * @since 3.0
 	 */
 	public void textCaretMoved (int index) {
+		textCaretCount++;
 		checkWidget();
-		if (!isATRunning ()) return;
-		if (DEBUG) print(this + ".NotifyWinEvent EVENT_OBJECT_LOCATIONCHANGE hwnd=" + control.handle + " childID=" + eventChildID());
-		COM.NotifyWinEvent (COM.EVENT_OBJECT_LOCATIONCHANGE, control.handle, COM.OBJID_CARET, eventChildID());
-		if (!UseIA2) return;
-		if (DEBUG) print(this + ".NotifyWinEvent IA2_EVENT_TEXT_CARET_MOVED hwnd=" + control.handle + " childID=" + eventChildID());
-		COM.NotifyWinEvent (COM.IA2_EVENT_TEXT_CARET_MOVED, control.handle, COM.OBJID_CLIENT, eventChildID());
+		Display.getDefault().timerExec(SCROLL_RATE, new Runnable() {
+			final int lCount = textCaretCount;
+			public void run() {
+				if (textCaretCount != lCount) return;
+				if (!isATRunning ()) return;
+				if (DEBUG) print(this + ".NotifyWinEvent EVENT_OBJECT_LOCATIONCHANGE hwnd=" + control.handle + " childID=" + eventChildID());
+				COM.NotifyWinEvent (COM.EVENT_OBJECT_LOCATIONCHANGE, control.handle, COM.OBJID_CARET, eventChildID());
+				if (!UseIA2) return;
+				if (DEBUG) print(this + ".NotifyWinEvent IA2_EVENT_TEXT_CARET_MOVED hwnd=" + control.handle + " childID=" + eventChildID());
+				COM.NotifyWinEvent (COM.IA2_EVENT_TEXT_CARET_MOVED, control.handle, COM.OBJID_CLIENT, eventChildID());
+			}
+		});
 	}
 	
 	/**
