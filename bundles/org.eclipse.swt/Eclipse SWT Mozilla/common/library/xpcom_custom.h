@@ -11,7 +11,6 @@
 
 #ifdef _WIN32
 #include <windows.h>
-#define NS_Free_LIB "xpcom.dll"
 #define XP_WIN
 #else
 #include <dlfcn.h>

@@ -333,7 +333,15 @@ JNIEXPORT jint JNICALL XPCOM_NATIVE(_1NS_1Free)
 	{
 	
 #ifdef _WIN32
-		XPCOM_LOAD_FUNCTION(fp, NS_Free)
+		static int initialized = 0;
+		static FARPROC fp = NULL;
+		if (!initialized) {
+			HMODULE hm = LoadLibrary((const char *)lpmozillaPath);
+			if (hm) {
+				fp = GetProcAddress(hm, "NS_Free");
+			}
+			initialized = 1;
+		}
 		if (fp) {
 			((jint (*)(void *))fp)((void *)arg0);
 			rc = 1;
