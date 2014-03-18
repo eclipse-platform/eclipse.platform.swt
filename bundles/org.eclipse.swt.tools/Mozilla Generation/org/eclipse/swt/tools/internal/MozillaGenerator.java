@@ -175,6 +175,10 @@ public class MozillaGenerator {
 		writeLine(COPYRIGHTS);
 	}
 
+	public void writeImports() {
+		writeLine("import org.eclipse.swt.browser.MozillaVersion;");
+	}
+
 	public void writePackageDeclaration() {
 		writeLine(PACKAGE_DECLARATION);
 	}
@@ -193,13 +197,12 @@ public class MozillaGenerator {
 		writeLine(line);
 	}
 
-	public void writeIID(String uuidName, String uuidValue) {
-		writeLine("\tpublic static final String " + uuidName + " =");
-		writeLine("\t\t\"" + uuidValue + "\";");
+	public void writeIID(String uuidName, String uuidValue, String className) {
+		writeLine("\tstatic final String " + uuidName + " = \"" + uuidValue + "\";");
 		writeLine();
-		String iid = uuidName.substring(0, uuidName.indexOf("_STR"));
-		writeLine("\tpublic static final nsID " + iid + " =");
-		writeLine("\t\tnew nsID(" + uuidName + ");");
+		writeLine("\tstatic {");
+		writeLine("\t\tIIDStore.RegisterIID(" + className + ".class, MozillaVersion.VERSION_BASE, new nsID(" + uuidName + "));");
+		writeLine("\t}");
 	}
 
 	public void writeAddressField() {
@@ -348,11 +351,13 @@ public class MozillaGenerator {
 			writeCopyrights();
 			writePackageDeclaration();
 			writeLine();
+			writeImports();
+			writeLine();
 			writeClassDeclaration(className, parentName);
 			writeLine();
 			writeLastMethodId(parentName, nMethods);
 			writeLine();
-			writeIID(uuidName, uuidValue);
+			writeIID(uuidName, uuidValue, className);
 			writeLine();
 			if (parentName.equals(NO_SUPER_CLASS)) {
 				writeAddressField();
@@ -684,7 +689,7 @@ public class MozillaGenerator {
 		+ " *\r\n" 
 		+ " * IBM\r\n"
 		+ " * -  Binding to permit interfacing between Mozilla and SWT\r\n"
-		+ " * -  Copyright (C) 2003, 2009 IBM Corp.  All Rights Reserved.\r\n"
+		+ " * -  Copyright (C) 2014 IBM Corp.  All Rights Reserved.\r\n"
 		+ " *\r\n" + " * ***** END LICENSE BLOCK ***** */";
 
 	static String PACKAGE_DECLARATION = "package org.eclipse.swt.internal.mozilla;";
