@@ -27,28 +27,22 @@
  * ***** END LICENSE BLOCK ***** */
 package org.eclipse.swt.internal.mozilla;
 
+import org.eclipse.swt.browser.MozillaVersion;
+
 public class nsIDOMKeyEvent extends nsIDOMUIEvent {
 
-	static final int LAST_METHOD_ID = nsIDOMUIEvent.LAST_METHOD_ID + (IsXULRunner24 ? 10 : 7);
+	static final int LAST_METHOD_ID = nsIDOMUIEvent.LAST_METHOD_ID + (IsXULRunner24() ? 10 : 7);
 
-	public static final String NS_IDOMKEYEVENT_IID_STR =
-		"028e0e6e-8b01-11d3-aae7-0010838a3123";
+	static final String NS_IDOMKEYEVENT_IID_STR = "028e0e6e-8b01-11d3-aae7-0010838a3123";
+	static final String NS_IDOMKEYEVENT_10_IID_STR = "def974c3-b491-481b-bc67-29174af4b26a";
+	static final String NS_IDOMKEYEVENT_24_IID_STR = "91a3d7f2-223b-4e09-a566-634e7ee0a31d";
 
-	public static final String NS_IDOMKEYEVENT_10_IID_STR =
-		"def974c3-b491-481b-bc67-29174af4b26a";
-	
-	public static final String NS_IDOMKEYEVENT_24_IID_STR =
-		"91a3d7f2-223b-4e09-a566-634e7ee0a31d";
-		
-	public static final nsID NS_IDOMKEYEVENT_IID =
-		new nsID(NS_IDOMKEYEVENT_IID_STR);
+	static {
+		IIDStore.RegisterIID(nsIDOMKeyEvent.class, MozillaVersion.VERSION_BASE, new nsID(NS_IDOMKEYEVENT_IID_STR));
+		IIDStore.RegisterIID(nsIDOMKeyEvent.class, MozillaVersion.VERSION_XR10, new nsID(NS_IDOMKEYEVENT_10_IID_STR));
+		IIDStore.RegisterIID(nsIDOMKeyEvent.class, MozillaVersion.VERSION_XR24, new nsID(NS_IDOMKEYEVENT_24_IID_STR));
+	}
 
-	public static final nsID NS_IDOMKEYEVENT_10_IID =
-		new nsID(NS_IDOMKEYEVENT_10_IID_STR);
-	
-	public static final nsID NS_IDOMKEYEVENT_24_IID =
-		new nsID(NS_IDOMKEYEVENT_24_IID_STR);
-		
 	public nsIDOMKeyEvent(long /*int*/ address) {
 		super(address);
 	}

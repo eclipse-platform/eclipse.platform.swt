@@ -27,15 +27,17 @@
  * ***** END LICENSE BLOCK ***** */
 package org.eclipse.swt.internal.mozilla;
 
+import org.eclipse.swt.browser.MozillaVersion;
+
 public class nsIMIMEInputStream extends nsIInputStream {
 
 	static final int LAST_METHOD_ID = nsIInputStream.LAST_METHOD_ID + 4;
 
-	public static final String NS_IMIMEINPUTSTREAM_IID_STR =
-		"dcbce63c-1dd1-11b2-b94d-91f6d49a3161";
+	static final String NS_IMIMEINPUTSTREAM_IID_STR = "dcbce63c-1dd1-11b2-b94d-91f6d49a3161";
 
-	public static final nsID NS_IMIMEINPUTSTREAM_IID =
-		new nsID(NS_IMIMEINPUTSTREAM_IID_STR);
+	static {
+		IIDStore.RegisterIID(nsIMIMEInputStream.class, MozillaVersion.VERSION_BASE, new nsID(NS_IMIMEINPUTSTREAM_IID_STR));
+	}
 
 	public nsIMIMEInputStream(long /*int*/ address) {
 		super(address);

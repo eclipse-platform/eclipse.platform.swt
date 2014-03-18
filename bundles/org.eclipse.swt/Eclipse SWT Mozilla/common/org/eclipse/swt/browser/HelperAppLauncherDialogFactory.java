@@ -72,7 +72,7 @@ int QueryInterface (long /*int*/ riid, long /*int*/ ppvObject) {
 	nsID guid = new nsID ();
 	XPCOM.memmove (guid, riid, nsID.sizeof);
 	
-	if (guid.Equals (nsISupports.NS_ISUPPORTS_IID)) {
+	if (guid.Equals (IIDStore.GetIID (nsISupports.class))) {
 		XPCOM.memmove (ppvObject, new long /*int*/[] {supports.getAddress ()}, C.PTR_SIZEOF);
 		AddRef ();
 		return XPCOM.NS_OK;
@@ -96,11 +96,11 @@ int Release () {
 /* nsIFactory */
 
 int CreateInstance (long /*int*/ aOuter, long /*int*/ iid, long /*int*/ result) {
-	if (Mozilla.IsPre_1_9) {
+	if (!MozillaVersion.CheckVersion (MozillaVersion.VERSION_XR1_9)) {
 		HelperAppLauncherDialog helperAppLauncherDialog = new HelperAppLauncherDialog ();
 		helperAppLauncherDialog.AddRef ();
 		XPCOM.memmove (result, new long /*int*/[] {helperAppLauncherDialog.getAddress ()}, C.PTR_SIZEOF);
-	} else if (Mozilla.IsPre_4){
+	} else if (!MozillaVersion.CheckVersion (MozillaVersion.VERSION_XR10)){
 		HelperAppLauncherDialog_1_9 helperAppLauncherDialog = new HelperAppLauncherDialog_1_9 ();
 		helperAppLauncherDialog.AddRef ();
 		XPCOM.memmove (result, new long /*int*/[] {helperAppLauncherDialog.getAddress ()}, C.PTR_SIZEOF);

@@ -27,28 +27,22 @@
  * ***** END LICENSE BLOCK ***** */
 package org.eclipse.swt.internal.mozilla;
 
+import org.eclipse.swt.browser.MozillaVersion;
+
 public class nsIPrefBranch extends nsISupports {
 
-	static final int LAST_METHOD_ID = nsISupports.LAST_METHOD_ID + (IsXULRunner24 ? 21 : 18);
+	static final int LAST_METHOD_ID = nsISupports.LAST_METHOD_ID + (IsXULRunner24() ? 21 : 18);
 
-	public static final String NS_IPREFBRANCH_IID_STR =
-		"56c35506-f14b-11d3-99d3-ddbfac2ccf65";
-
-	public static final String NS_IPREFBRANCH_10_IID_STR =
-		"e162bfa0-01bd-4e9f-9843-8fb2efcd6d1f";
+	static final String NS_IPREFBRANCH_IID_STR = "56c35506-f14b-11d3-99d3-ddbfac2ccf65";
+	static final String NS_IPREFBRANCH_10_IID_STR = "e162bfa0-01bd-4e9f-9843-8fb2efcd6d1f";
+	static final String NS_IPREFBRANCH_24_IID_STR = "55d25e49-793f-4727-a69f-de8b15f4b985";
 	
-	public static final String NS_IPREFBRANCH_24_IID_STR =
-		"55d25e49-793f-4727-a69f-de8b15f4b985";
-	
-	public static final nsID NS_IPREFBRANCH_IID =
-		new nsID(NS_IPREFBRANCH_IID_STR);
+	static {
+		IIDStore.RegisterIID(nsIPrefBranch.class, MozillaVersion.VERSION_BASE, new nsID(NS_IPREFBRANCH_IID_STR));
+		IIDStore.RegisterIID(nsIPrefBranch.class, MozillaVersion.VERSION_XR10, new nsID(NS_IPREFBRANCH_10_IID_STR));
+		IIDStore.RegisterIID(nsIPrefBranch.class, MozillaVersion.VERSION_XR24, new nsID(NS_IPREFBRANCH_24_IID_STR));
+	}
 
-	public static final nsID NS_IPREFBRANCH_10_IID =
-		new nsID(NS_IPREFBRANCH_10_IID_STR);
-
-	public static final nsID NS_IPREFBRANCH_24_IID =
-		new nsID(NS_IPREFBRANCH_24_IID_STR);
-	
 	public nsIPrefBranch(long /*int*/ address) {
 		super(address);
 	}
@@ -63,22 +57,22 @@ public class nsIPrefBranch extends nsISupports {
 	}
 
 	public int GetIntPref(byte[] aPrefName, int[] _retval) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + (IsXULRunner24 ? 8 : 7), getAddress(), aPrefName, _retval);
+		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + (IsXULRunner24() ? 8 : 7), getAddress(), aPrefName, _retval);
 	}
 
 	public int SetIntPref(byte[] aPrefName, int aValue) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + (IsXULRunner24 ? 9 : 8), getAddress(), aPrefName, aValue);
+		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + (IsXULRunner24() ? 9 : 8), getAddress(), aPrefName, aValue);
 	}
 
 	public int GetComplexValue(byte[] aPrefName, nsID aType, long /*int*/[] aValue) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + (IsXULRunner24 ? 10 : 9), getAddress(), aPrefName, aType, aValue);
+		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + (IsXULRunner24() ? 10 : 9), getAddress(), aPrefName, aType, aValue);
 	}
 
 	public int SetComplexValue(byte[] aPrefName, nsID aType, long /*int*/ aValue) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + (IsXULRunner24 ? 11 : 10), getAddress(), aPrefName, aType, aValue);
+		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + (IsXULRunner24() ? 11 : 10), getAddress(), aPrefName, aType, aValue);
 	}
 
 	public int ClearUserPref(byte[] aPrefName) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + (IsXULRunner24 ? 12 : 11), getAddress(), aPrefName);
+		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + (IsXULRunner24() ? 12 : 11), getAddress(), aPrefName);
 	}
 }

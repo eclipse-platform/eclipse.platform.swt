@@ -27,15 +27,17 @@
  * ***** END LICENSE BLOCK ***** */
 package org.eclipse.swt.internal.mozilla;
 
+import org.eclipse.swt.browser.MozillaVersion;
+
 public class nsIHelperAppLauncher extends nsISupports {
 
 	static final int LAST_METHOD_ID = nsISupports.LAST_METHOD_ID + 9;
 
-	public static final String NS_IHELPERAPPLAUNCHER_IID_STR =
-		"9503d0fe-4c9d-11d4-98d0-001083010e9b";
+	public static final String NS_IHELPERAPPLAUNCHER_IID_STR = "9503d0fe-4c9d-11d4-98d0-001083010e9b";
 
-	public static final nsID NS_IHELPERAPPLAUNCHER_IID =
-		new nsID(NS_IHELPERAPPLAUNCHER_IID_STR);
+	static {
+		IIDStore.RegisterIID(nsIHelperAppLauncher.class, MozillaVersion.VERSION_BASE, new nsID(NS_IHELPERAPPLAUNCHER_IID_STR));
+	}
 
 	public nsIHelperAppLauncher(long /*int*/ address) {
 		super(address);

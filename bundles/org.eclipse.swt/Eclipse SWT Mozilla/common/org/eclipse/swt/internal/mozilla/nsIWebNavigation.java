@@ -27,21 +27,19 @@
  * ***** END LICENSE BLOCK ***** */
 package org.eclipse.swt.internal.mozilla;
 
+import org.eclipse.swt.browser.MozillaVersion;
+
 public class nsIWebNavigation extends nsISupports {
 
 	static final int LAST_METHOD_ID = nsISupports.LAST_METHOD_ID + 13;
 
-	public static final String NS_IWEBNAVIGATION_IID_STR =
-		"f5d9e7b0-d930-11d3-b057-00a024ffc08c";
+	static final String NS_IWEBNAVIGATION_IID_STR = "f5d9e7b0-d930-11d3-b057-00a024ffc08c";
+	static final String NS_IWEBNAVIGATION_24_IID_STR = "28404f7e-0f17-4dc3-a21a-2074d8659b02";
 
-	public static final String NS_IWEBNAVIGATION_24_IID_STR =
-		"28404f7e-0f17-4dc3-a21a-2074d8659b02";
-
-	public static final nsID NS_IWEBNAVIGATION_IID =
-		new nsID(NS_IWEBNAVIGATION_IID_STR);
-
-	public static final nsID NS_IWEBNAVIGATION_24_IID =
-		new nsID(NS_IWEBNAVIGATION_24_IID_STR);
+	static {
+		IIDStore.RegisterIID(nsIWebNavigation.class, MozillaVersion.VERSION_BASE, new nsID(NS_IWEBNAVIGATION_IID_STR));
+		IIDStore.RegisterIID(nsIWebNavigation.class, MozillaVersion.VERSION_XR24, new nsID(NS_IWEBNAVIGATION_24_IID_STR));
+	}
 
 	public nsIWebNavigation(long /*int*/ address) {
 		super(address);

@@ -27,15 +27,17 @@
  * ***** END LICENSE BLOCK ***** */
 package org.eclipse.swt.internal.mozilla;
 
+import org.eclipse.swt.browser.MozillaVersion;
+
 public class nsIWebProgressListener2 extends nsIWebProgressListener {
 
 	static final int LAST_METHOD_ID = nsIWebProgressListener.LAST_METHOD_ID + 1;
 
-	public static final String NS_IWEBPROGRESSLISTENER2_IID_STR =
-		"3f24610d-1e1f-4151-9d2e-239884742324";
+	static final String NS_IWEBPROGRESSLISTENER2_IID_STR = "3f24610d-1e1f-4151-9d2e-239884742324";
 
-	public static final nsID NS_IWEBPROGRESSLISTENER2_IID =
-		new nsID(NS_IWEBPROGRESSLISTENER2_IID_STR);
+	static {
+		IIDStore.RegisterIID(nsIWebProgressListener2.class, MozillaVersion.VERSION_BASE, new nsID(NS_IWEBPROGRESSLISTENER2_IID_STR));
+	}
 
 	public nsIWebProgressListener2(long /*int*/ address) {
 		super(address);

@@ -27,15 +27,17 @@
  * ***** END LICENSE BLOCK ***** */
 package org.eclipse.swt.internal.mozilla;
 
+import org.eclipse.swt.browser.MozillaVersion;
+
 public class nsIPrefLocalizedString extends nsISupports {
 
 	static final int LAST_METHOD_ID = nsISupports.LAST_METHOD_ID + 4;
 
-	public static final String NS_IPREFLOCALIZEDSTRING_IID_STR =
-		"ae419e24-1dd1-11b2-b39a-d3e5e7073802";
+	static final String NS_IPREFLOCALIZEDSTRING_IID_STR = "ae419e24-1dd1-11b2-b39a-d3e5e7073802";
 
-	public static final nsID NS_IPREFLOCALIZEDSTRING_IID =
-		new nsID(NS_IPREFLOCALIZEDSTRING_IID_STR);
+	static {
+		IIDStore.RegisterIID(nsIPrefLocalizedString.class, MozillaVersion.VERSION_BASE, new nsID(NS_IPREFLOCALIZEDSTRING_IID_STR));
+	}
 
 	public nsIPrefLocalizedString(long /*int*/ address) {
 		super(address);

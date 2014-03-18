@@ -27,15 +27,19 @@
  * ***** END LICENSE BLOCK ***** */
 package org.eclipse.swt.internal.mozilla;
 
+import org.eclipse.swt.browser.MozillaVersion;
+
 public class nsIHelperAppLauncher_1_8 extends nsICancelable {
 
-	static final int LAST_METHOD_ID = nsICancelable.LAST_METHOD_ID + 9;
+	static final int LAST_METHOD_ID = nsICancelable.LAST_METHOD_ID + (MozillaVersion.CheckVersion(MozillaVersion.VERSION_XR1_9) ? 10 : 9);
 
-	public static final String NS_IHELPERAPPLAUNCHER_IID_STR =
-		"99a0882d-2ff9-4659-9952-9ac531ba5592";
+	static final String NS_IHELPERAPPLAUNCHER_IID_STR = "99a0882d-2ff9-4659-9952-9ac531ba5592";
+	static final String NS_IHELPERAPPLAUNCHER_1_9_IID_STR = "cc75c21a-0a79-4f68-90e1-563253d0c555";
 
-	public static final nsID NS_IHELPERAPPLAUNCHER_IID =
-		new nsID(NS_IHELPERAPPLAUNCHER_IID_STR);
+	static {
+		IIDStore.RegisterIID(nsIHelperAppLauncher_1_8.class, MozillaVersion.VERSION_BASE, new nsID(NS_IHELPERAPPLAUNCHER_IID_STR));
+		IIDStore.RegisterIID(nsIHelperAppLauncher_1_8.class, MozillaVersion.VERSION_XR1_9, new nsID(NS_IHELPERAPPLAUNCHER_1_9_IID_STR));
+	}
 
 	public nsIHelperAppLauncher_1_8(long /*int*/ address) {
 		super(address);

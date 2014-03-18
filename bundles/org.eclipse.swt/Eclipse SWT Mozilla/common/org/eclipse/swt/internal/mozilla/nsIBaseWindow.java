@@ -27,27 +27,21 @@
  * ***** END LICENSE BLOCK ***** */
 package org.eclipse.swt.internal.mozilla;
 
+import org.eclipse.swt.browser.MozillaVersion;
+
 public class nsIBaseWindow extends nsISupports {
 
-	static final int LAST_METHOD_ID = nsISupports.LAST_METHOD_ID + (IsXULRunner10 ? 22 : 24);
+	static final int LAST_METHOD_ID = nsISupports.LAST_METHOD_ID + (IsXULRunner10() ? 22 : 24);
 
-	public static final String NS_IBASEWINDOW_IID_STR =
-		"046bc8a0-8015-11d3-af70-00a024ffc08c";
+	static final String NS_IBASEWINDOW_IID_STR ="046bc8a0-8015-11d3-af70-00a024ffc08c";
+	static final String NS_IBASEWINDOW_10_IID_STR = "7144ac8b-6702-4a4b-a73d-d1d4e9717e46";
+	static final String NS_IBASEWINDOW_24_IID_STR = "9da319f3-eee6-4504-81a5-6a19cf6215bf";
 
-	public static final String NS_IBASEWINDOW_10_IID_STR =
-		"7144ac8b-6702-4a4b-a73d-d1d4e9717e46";
-
-	public static final String NS_IBASEWINDOW_24_IID_STR =
-		"9da319f3-eee6-4504-81a5-6a19cf6215bf";
-	
-	public static final nsID NS_IBASEWINDOW_IID =
-		new nsID(NS_IBASEWINDOW_IID_STR);
-
-	public static final nsID NS_IBASEWINDOW_10_IID =
-		new nsID(NS_IBASEWINDOW_10_IID_STR);
-
-	public static final nsID NS_IBASEWINDOW_24_IID =
-		new nsID(NS_IBASEWINDOW_24_IID_STR);
+	static {
+		IIDStore.RegisterIID(nsIBaseWindow.class, MozillaVersion.VERSION_BASE, new nsID(NS_IBASEWINDOW_IID_STR));
+		IIDStore.RegisterIID(nsIBaseWindow.class, MozillaVersion.VERSION_XR10, new nsID(NS_IBASEWINDOW_10_IID_STR));
+		IIDStore.RegisterIID(nsIBaseWindow.class, MozillaVersion.VERSION_XR24, new nsID(NS_IBASEWINDOW_24_IID_STR));
+	}
 
 	public nsIBaseWindow(long /*int*/ address) {
 		super(address);
@@ -74,10 +68,10 @@ public class nsIBaseWindow extends nsISupports {
 	}
 
 	public int SetVisibility(int aVisibility) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + (IsXULRunner24 ? 17 : 16), getAddress(), aVisibility);
+		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + (IsXULRunner24() ? 17 : 16), getAddress(), aVisibility);
 	}
 
 	public int SetFocus() {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + (IsXULRunner10 ? 20 : 22), getAddress());
+		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + (IsXULRunner10() ? 20 : 22), getAddress());
 	}
 }

@@ -27,21 +27,19 @@
  * ***** END LICENSE BLOCK ***** */
 package org.eclipse.swt.internal.mozilla;
 
+import org.eclipse.swt.browser.MozillaVersion;
+
 public class nsIEmbeddingSiteWindow extends nsISupports {
 
-	static final int LAST_METHOD_ID = nsISupports.LAST_METHOD_ID + (IsXULRunner24 ? 9 : 8);
+	static final int LAST_METHOD_ID = nsISupports.LAST_METHOD_ID + (IsXULRunner24() ? 9 : 8);
 
-	public static final String NS_IEMBEDDINGSITEWINDOW_IID_STR =
-		"3e5432cd-9568-4bd1-8cbe-d50aba110743";
+	static final String NS_IEMBEDDINGSITEWINDOW_IID_STR = "3e5432cd-9568-4bd1-8cbe-d50aba110743";
+	static final String NS_IEMBEDDINGSITEWINDOW_24_IID_STR = "0b976267-4aaa-4f36-a2d4-27b5ca8d73bb";
 
-	public static final String NS_IEMBEDDINGSITEWINDOW_24_IID_STR =
-		"0b976267-4aaa-4f36-a2d4-27b5ca8d73bb";
-
-	public static final nsID NS_IEMBEDDINGSITEWINDOW_IID =
-		new nsID(NS_IEMBEDDINGSITEWINDOW_IID_STR);
-	
-	public static final nsID NS_IEMBEDDINGSITEWINDOW_24_IID =
-		new nsID(NS_IEMBEDDINGSITEWINDOW_24_IID_STR);
+	static {
+		IIDStore.RegisterIID(nsIEmbeddingSiteWindow.class, MozillaVersion.VERSION_BASE, new nsID(NS_IEMBEDDINGSITEWINDOW_IID_STR));
+		IIDStore.RegisterIID(nsIEmbeddingSiteWindow.class, MozillaVersion.VERSION_XR24, new nsID(NS_IEMBEDDINGSITEWINDOW_24_IID_STR));
+	}
 
 	public nsIEmbeddingSiteWindow(long /*int*/ address) {
 		super(address);

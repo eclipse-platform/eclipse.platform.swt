@@ -27,21 +27,19 @@
  * ***** END LICENSE BLOCK ***** */
 package org.eclipse.swt.internal.mozilla;
 
+import org.eclipse.swt.browser.MozillaVersion;
+
 public class nsIUploadChannel extends nsISupports {
 
 	static final int LAST_METHOD_ID = nsISupports.LAST_METHOD_ID + 2;
 
-	public static final String NS_IUPLOADCHANNEL_IID_STR =
-		"ddf633d8-e9a4-439d-ad88-de636fd9bb75";
+	static final String NS_IUPLOADCHANNEL_IID_STR = "ddf633d8-e9a4-439d-ad88-de636fd9bb75";
+	static final String NS_IUPLOADCHANNEL_24_IID_STR = "5cfe15bd-5adb-4a7f-9e55-4f5a67d15794";
 
-	public static final String NS_IUPLOADCHANNEL_24_IID_STR =
-		"5cfe15bd-5adb-4a7f-9e55-4f5a67d15794";
-
-	public static final nsID NS_IUPLOADCHANNEL_IID =
-		new nsID(NS_IUPLOADCHANNEL_IID_STR);
-
-	public static final nsID NS_IUPLOADCHANNEL_24_IID =
-		new nsID(NS_IUPLOADCHANNEL_24_IID_STR);
+	static {
+		IIDStore.RegisterIID(nsIUploadChannel.class, MozillaVersion.VERSION_BASE, new nsID(NS_IUPLOADCHANNEL_IID_STR));
+		IIDStore.RegisterIID(nsIUploadChannel.class, MozillaVersion.VERSION_XR24, new nsID(NS_IUPLOADCHANNEL_24_IID_STR));
+	}
 
 	public nsIUploadChannel(long /*int*/ address) {
 		super(address);

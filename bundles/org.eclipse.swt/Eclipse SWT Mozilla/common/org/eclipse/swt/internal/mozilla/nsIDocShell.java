@@ -27,33 +27,29 @@
  * ***** END LICENSE BLOCK ***** */
 package org.eclipse.swt.internal.mozilla;
 
+import org.eclipse.swt.browser.MozillaVersion;
+
 public class nsIDocShell extends nsISupports {
 
 	static final int LAST_METHOD_ID = nsISupports.LAST_METHOD_ID + 51;
 
-	public static final String NS_IDOCSHELL_IID_STR =
-		"69e5de00-7b8b-11d3-af61-00a024ffc08c";
+	static final String NS_IDOCSHELL_IID_STR = "69e5de00-7b8b-11d3-af61-00a024ffc08c";
+	static final String NS_IDOCSHELL_1_8_IID_STR = "9f0c7461-b9a4-47f6-b88c-421dce1bce66";
+	static final String NS_IDOCSHELL_1_9_IID_STR = "7d1cf6b9-daa3-476d-8f9f-9eb2a971a95c";
+	static final String NS_IDOCSHELL_1_9_1_IID_STR = "dc4daea1-b43d-406f-bd62-c2ee879192ad";
+	static final String NS_IDOCSHELL_1_9_2_IID_STR = "8adfb831-1053-4a19-884d-bcdad7277b4b";
+	static final String NS_IDOCSHELL_10_IID_STR = "0666adf8-8738-4ca7-a917-0348f47d2f40";
+	static final String NS_IDOCSHELL_24_IID_STR = "f453d2ee-bac7-46f9-a553-df918f0cc0d0";
 
-	public static final nsID NS_IDOCSHELL_IID =
-		new nsID(NS_IDOCSHELL_IID_STR);
-
-	public static final String NS_IDOCSHELL_1_8_IID_STR =
-		"9f0c7461-b9a4-47f6-b88c-421dce1bce66";
-
-	public static final nsID NS_IDOCSHELL_1_8_IID =
-		new nsID(NS_IDOCSHELL_1_8_IID_STR);
-
-	public static final String NS_IDOCSHELL_10_IID_STR =
-		"0666adf8-8738-4ca7-a917-0348f47d2f40";
-
-	public static final nsID NS_IDOCSHELL_10_IID =
-		new nsID(NS_IDOCSHELL_10_IID_STR);
-	
-	public static final String NS_IDOCSHELL_24_IID_STR =
-		"f453d2ee-bac7-46f9-a553-df918f0cc0d0";
-
-	public static final nsID NS_IDOCSHELL_24_IID =
-		new nsID(NS_IDOCSHELL_24_IID_STR);
+	static {
+		IIDStore.RegisterIID(nsIDocShell.class, MozillaVersion.VERSION_BASE, new nsID(NS_IDOCSHELL_IID_STR));
+		IIDStore.RegisterIID(nsIDocShell.class, MozillaVersion.VERSION_XR1_8, new nsID(NS_IDOCSHELL_1_8_IID_STR));
+		IIDStore.RegisterIID(nsIDocShell.class, MozillaVersion.VERSION_XR1_9, new nsID(NS_IDOCSHELL_1_9_IID_STR));
+		IIDStore.RegisterIID(nsIDocShell.class, MozillaVersion.VERSION_XR1_9_1, new nsID(NS_IDOCSHELL_1_9_1_IID_STR));
+		IIDStore.RegisterIID(nsIDocShell.class, MozillaVersion.VERSION_XR1_9_2, new nsID(NS_IDOCSHELL_1_9_2_IID_STR));
+		IIDStore.RegisterIID(nsIDocShell.class, MozillaVersion.VERSION_XR10, new nsID(NS_IDOCSHELL_10_IID_STR));
+		IIDStore.RegisterIID(nsIDocShell.class, MozillaVersion.VERSION_XR24, new nsID(NS_IDOCSHELL_24_IID_STR));
+	}
 
 	public nsIDocShell(long /*int*/ address) {
 		super(address);

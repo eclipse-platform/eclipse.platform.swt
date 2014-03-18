@@ -129,7 +129,7 @@ int QueryInterface (long /*int*/ riid, long /*int*/ ppvObject) {
 	nsID guid = new nsID ();
 	XPCOM.memmove (guid, riid, nsID.sizeof);
 	
-	if (guid.Equals (nsISupports.NS_ISUPPORTS_IID)) {
+	if (guid.Equals (IIDStore.GetIID (nsISupports.class))) {
 		XPCOM.memmove (ppvObject, new long /*int*/[] {supports.getAddress ()}, C.PTR_SIZEOF);
 		AddRef ();
 		return XPCOM.NS_OK;
@@ -234,7 +234,7 @@ int getFiles (long /*int*/ prop, long /*int*/ _retval) {
 
 				nsILocalFile localFile = new nsILocalFile (result[0]);
 				result[0] = 0;
-				rc = localFile.QueryInterface (Mozilla.IsPre_24 ? nsIFile.NS_IFILE_IID : nsIFile.NS_IFILE_24_IID, result);
+				rc = localFile.QueryInterface (IIDStore.GetIID (nsIFile.class), result);
 				if (rc != XPCOM.NS_OK) Mozilla.error (rc);
 				if (result[0] == 0) Mozilla.error (XPCOM.NS_ERROR_NO_INTERFACE);
 				localFile.Release ();
@@ -329,7 +329,7 @@ int getFile(long /*int*/ prop, long /*int*/ persistent, long /*int*/ _retval) {
 		
 		nsILocalFile localFile = new nsILocalFile (result [0]);
 		result[0] = 0;
-	    rc = localFile.QueryInterface (Mozilla.IsPre_24 ? nsIFile.NS_IFILE_IID : nsIFile.NS_IFILE_24_IID, result); 
+	    rc = localFile.QueryInterface (IIDStore.GetIID (nsIFile.class), result); 
 		if (rc != XPCOM.NS_OK) Mozilla.error (rc);
 		if (result[0] == 0) Mozilla.error (XPCOM.NS_ERROR_NO_INTERFACE);
 

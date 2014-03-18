@@ -27,21 +27,35 @@
  * ***** END LICENSE BLOCK ***** */
 package org.eclipse.swt.internal.mozilla;
 
+import org.eclipse.swt.browser.MozillaVersion;
+
 public class nsIDOMSerializer extends nsISupports {
 
 	static final int LAST_METHOD_ID = nsISupports.LAST_METHOD_ID + 2;
 
-	public static final String NS_IDOMSERIALIZER_IID_STR =
-		"a6cf9123-15b3-11d2-932e-00805f8add32";
+	static final String NS_IDOMSERIALIZER_IID_STR = "a6cf9123-15b3-11d2-932e-00805f8add32";
+	static final String NS_IDOMSERIALIZER_1_8_IID_STR = "9fd4ba15-e67c-4c98-b52c-7715f62c9196";
 
-	public static final nsID NS_IDOMSERIALIZER_IID =
-		new nsID(NS_IDOMSERIALIZER_IID_STR);
+	static {
+		IIDStore.RegisterIID(nsIDOMSerializer.class, MozillaVersion.VERSION_BASE, new nsID(NS_IDOMSERIALIZER_IID_STR));
+		IIDStore.RegisterIID(nsIDOMSerializer.class, MozillaVersion.VERSION_XR1_8, new nsID(NS_IDOMSERIALIZER_1_8_IID_STR));
+	}
 
 	public nsIDOMSerializer(long /*int*/ address) {
 		super(address);
 	}
 
 	public int SerializeToString(long /*int*/ root, long /*int*/[] _retval) {
+		if (MozillaVersion.CheckVersion (MozillaVersion.VERSION_XR1_8)) { /* >= 1.8.x */
+			return XPCOM.NS_COMFALSE;
+		}
+		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 1, getAddress(), root, _retval);
+	}
+	
+	public int SerializeToString(long /*int*/ root, long /*int*/ _retval) {
+		if (!MozillaVersion.CheckVersion (MozillaVersion.VERSION_XR1_8)) { /* 1.4.x */
+			return XPCOM.NS_COMFALSE;
+		}
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 1, getAddress(), root, _retval);
 	}
 }

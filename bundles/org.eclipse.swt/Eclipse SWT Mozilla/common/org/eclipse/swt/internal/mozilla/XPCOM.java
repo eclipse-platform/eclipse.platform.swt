@@ -27,6 +27,7 @@
  * ***** END LICENSE BLOCK ***** */
 package org.eclipse.swt.internal.mozilla;
 
+import org.eclipse.swt.browser.MozillaVersion;
 import org.eclipse.swt.internal.*;
 
 /** @jniclass flags=cpp */
@@ -80,14 +81,6 @@ public class XPCOM extends C {
 	public static final nsID NS_IPROGRESSDIALOG_1_8_IID = new nsID("20e790a2-76c6-462d-851a-22ab6cbbe48b"); //$NON-NLS-1$
 	public static final nsID NS_IPROMPTFACTORY_IID = new nsID ("2532b748-75db-4732-9173-78d3bf34f694"); //$NON-NLS-1$
 	public static final nsID NS_IPROMPTSERVICE2_IID = new nsID ("cf86d196-dbee-4482-9dfa-3477aa128319"); //$NON-NLS-1$
-	public static final nsID NS_ISCRIPTCONTEXT_1_9_IID = new nsID ("e7b9871d-3adc-4bf7-850d-7fb9554886bf"); //$NON-NLS-1$
-	public static final nsID NS_ISCRIPTCONTEXT_1_9_2_IID = new nsID ("87482b5e-e019-4df5-9bc2-b2a51b1f2d28"); //$NON-NLS-1$
-	public static final nsID NS_ISCRIPTCONTEXT_10_IID = new nsID ("2e583bf4-3c1f-432d-8283-8dee7eccc88b"); //$NON-NLS-1$
-	public static final nsID NS_ISCRIPTCONTEXT_24_IID = new nsID ("ef0c91ce-14f6-41c9-a577-a6ebdc6d447b"); //$NON-NLS-1$
-	public static final nsID NS_ISCRIPTGLOBALOBJECT_1_9_2_IID = new nsID ("e9f3f2c1-2d94-4722-bbd4-2bf6fdf42f48"); //$NON-NLS-1$
-	public static final nsID NS_ISCRIPTGLOBALOBJECT_10_IID = new nsID ("08f73284-26e3-4fa6-bf89-8326f92a94b3"); //$NON-NLS-1$
-	public static final nsID NS_ISCRIPTGLOBALOBJECT_1_9_IID = new nsID ("6afecd40-0b9a-4cfd-8c42-0f645cd91829"); //$NON-NLS-1$
-	public static final nsID NS_ISCRIPTGLOBALOBJECT_24_IID = new nsID ("de24b30a-12c6-4e5f-a85e-90cdfb6c5451"); //$NON-NLS-1$
 	public static final nsID NS_ISCRIPTOBJECTOWNER_IID = new nsID ("8f6bca7e-ce42-11d1-b724-00600891d8c9"); //$NON-NLS-1$
 	public static final nsID NS_ISECURITYCHECKEDCOMPONENT_IID = new nsID ("0dad9e8c-a12d-4dcb-9a6f-7d09839356e1"); //$NON-NLS-1$
 	public static final nsID NS_ISUPPORTSWEAKREFERENCE_IID = new nsID ("9188bc86-f92e-11d2-81ef-0060083a0bcf"); //$NON-NLS-1$
@@ -196,7 +189,7 @@ public class XPCOM extends C {
 public static final native int nsDynamicFunctionLoad_sizeof ();
 
 public static void memmove(long /*int*/ dest, boolean[] src) {
-	if (nsISupports.IsXULRunner10 || nsISupports.IsXULRunner24) { // TODO change this reference
+	if (MozillaVersion.CheckVersion (MozillaVersion.VERSION_XR10)) {
 		memmove (dest, new byte[] {src[0] ? (byte)1 : 0}, 1);
 	} else {
 		memmove (dest, new int[] {src[0] ? 1 : 0}, 4);
@@ -204,7 +197,7 @@ public static void memmove(long /*int*/ dest, boolean[] src) {
 }
 
 public static void memmove(boolean[] dest, long /*int*/ src) {
-	if (nsISupports.IsXULRunner10 || nsISupports.IsXULRunner24) { // TODO change this reference
+	if (MozillaVersion.CheckVersion (MozillaVersion.VERSION_XR10)) {
 		byte[] result = new byte[1];
 		memmove (result, src, 1);
 		dest[0] = result[0] != 0;

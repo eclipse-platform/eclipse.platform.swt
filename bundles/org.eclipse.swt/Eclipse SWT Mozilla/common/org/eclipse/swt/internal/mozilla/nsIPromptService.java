@@ -27,13 +27,19 @@
  * ***** END LICENSE BLOCK ***** */
 package org.eclipse.swt.internal.mozilla;
 
-public class nsIPromptService {
+import org.eclipse.swt.browser.MozillaVersion;
 
-	public static final String NS_IPROMPTSERVICE_IID_STR =
-		"1630c61a-325e-49ca-8759-a31b16c47aa5";
+public class nsIPromptService extends nsISupports {
 
-	public static final nsID NS_IPROMPTSERVICE_IID =
-		new nsID(NS_IPROMPTSERVICE_IID_STR);
+	public static final String NS_IPROMPTSERVICE_IID_STR = "1630c61a-325e-49ca-8759-a31b16c47aa5";
+
+	static {
+		IIDStore.RegisterIID(nsIPromptService.class, MozillaVersion.VERSION_BASE, new nsID(NS_IPROMPTSERVICE_IID_STR));
+	}
+
+	public nsIPromptService(long /*int*/ address) {
+		super(address);
+	}
 
 	public static final int BUTTON_POS_0 = 1;
 	public static final int BUTTON_POS_1 = 256;

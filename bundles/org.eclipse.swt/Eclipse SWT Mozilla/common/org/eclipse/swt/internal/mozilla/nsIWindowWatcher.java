@@ -27,15 +27,17 @@
  * ***** END LICENSE BLOCK ***** */
 package org.eclipse.swt.internal.mozilla;
 
+import org.eclipse.swt.browser.MozillaVersion;
+
 public class nsIWindowWatcher extends nsISupports {
 
 	static final int LAST_METHOD_ID = nsISupports.LAST_METHOD_ID + 11;
 
-	public static final String NS_IWINDOWWATCHER_IID_STR =
-		"002286a8-494b-43b3-8ddd-49e3fc50622b";
+	static final String NS_IWINDOWWATCHER_IID_STR = "002286a8-494b-43b3-8ddd-49e3fc50622b";
 
-	public static final nsID NS_IWINDOWWATCHER_IID =
-		new nsID(NS_IWINDOWWATCHER_IID_STR);
+	static {
+		IIDStore.RegisterIID(nsIWindowWatcher.class, MozillaVersion.VERSION_BASE, new nsID(NS_IWINDOWWATCHER_IID_STR));
+	}
 
 	public nsIWindowWatcher(long /*int*/ address) {
 		super(address);

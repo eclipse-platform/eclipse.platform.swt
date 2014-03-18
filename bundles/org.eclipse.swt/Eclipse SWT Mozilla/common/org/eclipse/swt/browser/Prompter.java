@@ -89,12 +89,12 @@ int QueryInterface (long /*int*/ riid, long /*int*/ ppvObject) {
 	nsID guid = new nsID ();
 	XPCOM.memmove (guid, riid, nsID.sizeof);
 	
-	if (guid.Equals (nsISupports.NS_ISUPPORTS_IID)) {
+	if (guid.Equals (IIDStore.GetIID (nsISupports.class))) {
 		XPCOM.memmove (ppvObject, new long /*int*/[] {supports.getAddress ()}, C.PTR_SIZEOF);
 		AddRef ();
 		return XPCOM.NS_OK;
 	}
-	if (guid.Equals (nsIPrompt.NS_IPROMPT_IID)) {
+	if (guid.Equals (IIDStore.GetIID (nsIPrompt.class))) {
 		XPCOM.memmove (ppvObject, new long /*int*/[] {prompt.getAddress ()}, C.PTR_SIZEOF);
 		AddRef ();
 		return XPCOM.NS_OK;
@@ -328,10 +328,7 @@ int Prompt (long /*int*/ aDialogTitle, long /*int*/ aText, long /*int*/ aValue, 
 			nsIServiceManager serviceManager = new nsIServiceManager (result2[0]);
 			result2[0] = 0;
 			byte[] aContractID = MozillaDelegate.wcsToMbcs (null, XPCOM.NS_MEMORY_CONTRACTID, true);
-			rc = serviceManager.GetServiceByContractID (aContractID, nsIMemory.NS_IMEMORY_24_IID, result2);
-			if (rc != XPCOM.NS_OK) {
-				rc = serviceManager.GetServiceByContractID (aContractID, nsIMemory.NS_IMEMORY_IID, result2);
-			}
+			rc = serviceManager.GetServiceByContractID (aContractID, IIDStore.GetIID (nsIMemory.class), result2);
 			if (rc != XPCOM.NS_OK) SWT.error (rc);
 			if (result2[0] == 0) SWT.error (XPCOM.NS_NOINTERFACE);		
 			serviceManager.Release ();
@@ -593,10 +590,7 @@ int PromptUsernameAndPassword (long /*int*/ aDialogTitle, long /*int*/ aText, lo
 		nsIServiceManager serviceManager = new nsIServiceManager (result[0]);
 		result[0] = 0;
 		byte[] aContractID = MozillaDelegate.wcsToMbcs (null, XPCOM.NS_MEMORY_CONTRACTID, true);
-		rc = serviceManager.GetServiceByContractID (aContractID, nsIMemory.NS_IMEMORY_24_IID, result);
-		if (rc != XPCOM.NS_OK) {
-			rc = serviceManager.GetServiceByContractID (aContractID, nsIMemory.NS_IMEMORY_IID, result);
-		}
+		rc = serviceManager.GetServiceByContractID (aContractID, IIDStore.GetIID (nsIMemory.class), result);
 		if (rc != XPCOM.NS_OK) SWT.error (rc);
 		if (result[0] == 0) SWT.error (XPCOM.NS_NOINTERFACE);		
 		serviceManager.Release ();

@@ -55,7 +55,7 @@ static String[] getJSLibraryNames () {
 	return new String[] {"mozjs.dll", "xul.dll"}; //$NON-NLS-1$ //$NON-NLS-2$
 }
 
-static String getJSLibraryName_Pre4 () {
+static String getJSLibraryName_Pre10 () {
 	return "js3250.dll"; //$NON-NLS-1$
 }
 
@@ -182,7 +182,7 @@ long /*int*/ getSiteWindow () {
 	* if Mozilla.getSiteWindow() is ever invoked by a path other than one of
 	* the two described above. 
 	*/
-	if (Mozilla.IsPre_4 || Mozilla.IsGettingSiteWindow) {
+	if (!MozillaVersion.CheckVersion (MozillaVersion.VERSION_XR10) || Mozilla.IsGettingSiteWindow) {
 		return getHandle ();
 	}
 
@@ -202,7 +202,7 @@ boolean hookEnterExit () {
 }
 
 void init () {
-	if (!Mozilla.IsPre_4) {
+	if (MozillaVersion.CheckVersion (MozillaVersion.VERSION_XR10)) {
 		/*
 		* In XULRunner versions > 4, sending WM_GETDLGCODE to a WM_KEYDOWN's MSG hwnd answers 0
 		* instead of the expected DLGC_WANTALLKEYS.  This causes the default traversal framework
@@ -228,7 +228,7 @@ void init () {
 						nsIServiceManager serviceManager = new nsIServiceManager (result[0]);
 						result[0] = 0;
 						byte[] aContractID = MozillaDelegate.wcsToMbcs (null, XPCOM.NS_FOCUSMANAGER_CONTRACTID, true);
-						rc = serviceManager.GetServiceByContractID (aContractID, nsIFocusManager.NS_IFOCUSMANAGER_10_IID, result);
+						rc = serviceManager.GetServiceByContractID (aContractID, IIDStore.GetIID (nsIFocusManager.class, MozillaVersion.VERSION_XR10), result);
 						serviceManager.Release ();
 
 						if (rc == XPCOM.NS_OK && result[0] != 0) {

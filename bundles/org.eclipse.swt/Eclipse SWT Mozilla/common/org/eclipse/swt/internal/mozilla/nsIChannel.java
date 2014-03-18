@@ -27,30 +27,24 @@
  * ***** END LICENSE BLOCK ***** */
 package org.eclipse.swt.internal.mozilla;
 
+import org.eclipse.swt.browser.MozillaVersion;
+
 public class nsIChannel extends nsIRequest {
 
-	static final int LAST_METHOD_ID = nsIRequest.LAST_METHOD_ID + (IsXULRunner24 ? 21 : (IsXULRunner10 ? 19 : 16));
+	static final int LAST_METHOD_ID = nsIRequest.LAST_METHOD_ID + (IsXULRunner24() ? 21 : (IsXULRunner10() ? 19 : 16));
 
-	public static final String NS_ICHANNEL_IID_STR =
-		"c63a055a-a676-4e71-bf3c-6cfa11082018";
-
-	public static final String NS_ICHANNEL_10_IID_STR =
-		"06f6ada3-7729-4e72-8d3f-bf8ba630ff9b";
-
-	public static final String NS_ICHANNEL_24_IID_STR =
-		"2a8a7237-c1e2-4de7-b669-2002af29e42d";
-	
-	public static final nsID NS_ICHANNEL_IID =
-		new nsID(NS_ICHANNEL_IID_STR);
-
-	public static final nsID NS_ICHANNEL_10_IID =
-		new nsID(NS_ICHANNEL_10_IID_STR);
-
-	public static final nsID NS_ICHANNEL_24_IID =
-		new nsID(NS_ICHANNEL_24_IID_STR);
+	static final String NS_ICHANNEL_IID_STR = "c63a055a-a676-4e71-bf3c-6cfa11082018";
+	static final String NS_ICHANNEL_10_IID_STR = "06f6ada3-7729-4e72-8d3f-bf8ba630ff9b";
+	static final String NS_ICHANNEL_24_IID_STR = "2a8a7237-c1e2-4de7-b669-2002af29e42d";
 
 	public nsIChannel(long /*int*/ address) {
 		super(address);
+	}
+
+	static {
+		IIDStore.RegisterIID(nsIChannel.class, MozillaVersion.VERSION_BASE, new nsID(NS_ICHANNEL_IID_STR));
+		IIDStore.RegisterIID(nsIChannel.class, MozillaVersion.VERSION_XR10, new nsID(NS_ICHANNEL_10_IID_STR));
+		IIDStore.RegisterIID(nsIChannel.class, MozillaVersion.VERSION_XR24, new nsID(NS_ICHANNEL_24_IID_STR));
 	}
 
 	public int GetURI(long /*int*/[] aURI) {

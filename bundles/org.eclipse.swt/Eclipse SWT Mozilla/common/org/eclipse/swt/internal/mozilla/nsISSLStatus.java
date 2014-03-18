@@ -27,21 +27,19 @@
  * ***** END LICENSE BLOCK ***** */
 package org.eclipse.swt.internal.mozilla;
 
+import org.eclipse.swt.browser.MozillaVersion;
+
 public class nsISSLStatus extends nsISupports {
 
-	static final int LAST_METHOD_ID = nsISupports.LAST_METHOD_ID + ((IsXULRunner10 || IsXULRunner24) ? 8 : 7);
+	static final int LAST_METHOD_ID = nsISupports.LAST_METHOD_ID + ((IsXULRunner10() || IsXULRunner24()) ? 8 : 7);
 
-	public static final String NS_ISSLSTATUS_IID_STR =
-		"cfede939-def1-49be-81ed-d401b3a07d1c";
+	static final String NS_ISSLSTATUS_IID_STR = "cfede939-def1-49be-81ed-d401b3a07d1c";
+	static final String NS_ISSLSTATUS_10_IID_STR = "3f1fcd83-c5a9-4cd1-a250-7676ca7c7e34";
 
-	public static final String NS_ISSLSTATUS_10_IID_STR =
-		"3f1fcd83-c5a9-4cd1-a250-7676ca7c7e34";
-	
-	public static final nsID NS_ISSLSTATUS_IID =
-		new nsID(NS_ISSLSTATUS_IID_STR);
-
-	public static final nsID NS_ISSLSTATUS_10_IID =
-		new nsID(NS_ISSLSTATUS_10_IID_STR);
+	static {
+		IIDStore.RegisterIID(nsISSLStatus.class, MozillaVersion.VERSION_BASE, new nsID(NS_ISSLSTATUS_IID_STR));
+		IIDStore.RegisterIID(nsISSLStatus.class, MozillaVersion.VERSION_XR10, new nsID(NS_ISSLSTATUS_10_IID_STR));
+	}
 
 	public nsISSLStatus(long /*int*/ address) {
 		super(address);

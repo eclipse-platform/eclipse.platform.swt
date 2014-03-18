@@ -27,21 +27,19 @@
  * ***** END LICENSE BLOCK ***** */
 package org.eclipse.swt.internal.mozilla;
 
+import org.eclipse.swt.browser.MozillaVersion;
+
 public class nsIWebBrowserChrome extends nsISupports {
 
 	static final int LAST_METHOD_ID = nsISupports.LAST_METHOD_ID + 10;
 
-	public static final String NS_IWEBBROWSERCHROME_IID_STR =
-		"ba434c60-9d52-11d3-afb0-00a024ffc08c";
+	static final String NS_IWEBBROWSERCHROME_IID_STR = "ba434c60-9d52-11d3-afb0-00a024ffc08c";
+	static final String NS_IWEBBROWSERCHROME_24_IID_STR = "e8c414c4-dc38-4ba3-ab4e-ec4cbbe22907";
 
-	public static final String NS_IWEBBROWSERCHROME_24_IID_STR =
-		"e8c414c4-dc38-4ba3-ab4e-ec4cbbe22907";
-	
-	public static final nsID NS_IWEBBROWSERCHROME_IID =
-		new nsID(NS_IWEBBROWSERCHROME_IID_STR);
-	
-	public static final nsID NS_IWEBBROWSERCHROME_24_IID =
-		new nsID(NS_IWEBBROWSERCHROME_24_IID_STR);
+	static {
+		IIDStore.RegisterIID(nsIWebBrowserChrome.class, MozillaVersion.VERSION_BASE, new nsID(NS_IWEBBROWSERCHROME_IID_STR));
+		IIDStore.RegisterIID(nsIWebBrowserChrome.class, MozillaVersion.VERSION_XR24, new nsID(NS_IWEBBROWSERCHROME_24_IID_STR));
+	}
 
 	public nsIWebBrowserChrome(long /*int*/ address) {
 		super(address);

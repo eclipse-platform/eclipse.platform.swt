@@ -55,7 +55,7 @@ static String[] getJSLibraryNames () {
 	return new String[] {"libxpcom.dylib"}; //$NON-NLS-1$
 }
 
-static String getJSLibraryName_Pre4 () {
+static String getJSLibraryName_Pre10 () {
 	return "libmozjs.dylib"; //$NON-NLS-1$
 }
 

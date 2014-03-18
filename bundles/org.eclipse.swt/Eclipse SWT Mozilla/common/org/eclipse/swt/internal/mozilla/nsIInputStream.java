@@ -27,33 +27,31 @@
  * ***** END LICENSE BLOCK ***** */
 package org.eclipse.swt.internal.mozilla;
 
+import org.eclipse.swt.browser.MozillaVersion;
+
 public class nsIInputStream extends nsISupports {
 
 	static final int LAST_METHOD_ID = nsISupports.LAST_METHOD_ID + 5;
 
-	public static final String NS_IINPUTSTREAM_IID_STR =
-		"fa9c7f6c-61b3-11d4-9877-00c04fa0cf4a";
-	
-	public static final String NS_IINPUTSTREAM_24_IID_STR =
-		"53cdbc97-c2d7-4e30-b2c3-45b2ee79db18";
+	static final String NS_IINPUTSTREAM_IID_STR = "fa9c7f6c-61b3-11d4-9877-00c04fa0cf4a";
+	static final String NS_IINPUTSTREAM_24_IID_STR = "53cdbc97-c2d7-4e30-b2c3-45b2ee79db18";
 
-	public static final nsID NS_IINPUTSTREAM_IID =
-		new nsID(NS_IINPUTSTREAM_IID_STR);
-	
-	public static final nsID NS_IINPUTSTREAM_24_IID =
-		new nsID(NS_IINPUTSTREAM_24_IID_STR);
+	static {
+		IIDStore.RegisterIID(nsIInputStream.class, MozillaVersion.VERSION_BASE, new nsID(NS_IINPUTSTREAM_IID_STR));
+		IIDStore.RegisterIID(nsIInputStream.class, MozillaVersion.VERSION_XR24, new nsID(NS_IINPUTSTREAM_24_IID_STR));
+	}
 
 	public nsIInputStream(long /*int*/ address) {
 		super(address);
 	}
 
 	public int Available(int[] _retval) {
-		if (IsXULRunner24) return XPCOM.NS_COMFALSE;
+		if (IsXULRunner24()) return XPCOM.NS_COMFALSE;
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 2, getAddress(), _retval);
 	}
 	
 	public int Available(long[] _retval) {
-		if (!IsXULRunner24) return XPCOM.NS_COMFALSE;
+		if (!IsXULRunner24()) return XPCOM.NS_COMFALSE;
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 2, getAddress(), _retval);
 	}
 

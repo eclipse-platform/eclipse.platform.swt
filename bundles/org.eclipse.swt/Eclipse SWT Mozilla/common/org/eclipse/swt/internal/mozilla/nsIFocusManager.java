@@ -27,21 +27,19 @@
  * ***** END LICENSE BLOCK ***** */
 package org.eclipse.swt.internal.mozilla;
 
+import org.eclipse.swt.browser.MozillaVersion;
+
 public class nsIFocusManager extends nsISupports {
 
-	static final int LAST_METHOD_ID = nsISupports.LAST_METHOD_ID + ((IsXULRunner10 || IsXULRunner24) ? 18 : 17);
+	static final int LAST_METHOD_ID = nsISupports.LAST_METHOD_ID + ((IsXULRunner10() || IsXULRunner24()) ? 18 : 17);
 
-	public static final String NS_IFOCUSMANAGER_IID_STR =
-			"cd6040a8-243f-412a-8a16-0bf2aa1083b9";
-	
-	public static final String NS_IFOCUSMANAGER_10_IID_STR =
-			"51db277b-7ee7-4bce-9b84-fd2efcd2c8bd";
+	static final String NS_IFOCUSMANAGER_IID_STR = "cd6040a8-243f-412a-8a16-0bf2aa1083b9";
+	static final String NS_IFOCUSMANAGER_10_IID_STR = "51db277b-7ee7-4bce-9b84-fd2efcd2c8bd";
 
-	public static final nsID NS_IFOCUSMANAGER_IID =
-		new nsID(NS_IFOCUSMANAGER_IID_STR);
-	
-	public static final nsID NS_IFOCUSMANAGER_10_IID =
-			new nsID(NS_IFOCUSMANAGER_10_IID_STR);
+	static {
+		IIDStore.RegisterIID(nsIFocusManager.class, MozillaVersion.VERSION_BASE, new nsID(NS_IFOCUSMANAGER_IID_STR));
+		IIDStore.RegisterIID(nsIFocusManager.class, MozillaVersion.VERSION_XR10, new nsID(NS_IFOCUSMANAGER_10_IID_STR));
+	}
 
 	public nsIFocusManager(long /*int*/ address) {
 		super(address);

@@ -89,7 +89,7 @@ static String[] getJSLibraryNames () {
 	return new String[] {"libxul.so"}; //$NON-NLS-1$
 }
 
-static String getJSLibraryName_Pre4() {
+static String getJSLibraryName_Pre10() {
 	return "libmozjs.so"; //$NON-NLS-1$
 }
 
@@ -158,7 +158,7 @@ static void loadAdditionalLibraries (String mozillaPath, boolean isGlued) {
 		* This is the second invocation of loadAdditionalLibraries(), so the
 		* specific xulrunner runtime version is now better known.
 		*/
-		if (nsISupports.IsXULRunner10) {
+		if (MozillaVersion.CheckVersion (MozillaVersion.VERSION_XR10, true)) {
 			/* works around https://bugzilla.mozilla.org/show_bug.cgi?id=720682 */
 			libName = LIB_FIX_XULRUNNER10;
 		}

@@ -27,21 +27,19 @@
  * ***** END LICENSE BLOCK ***** */
 package org.eclipse.swt.internal.mozilla;
 
+import org.eclipse.swt.browser.MozillaVersion;
+
 public class nsIXPConnect extends nsISupports {
 
-	static final int LAST_METHOD_ID = nsISupports.LAST_METHOD_ID + (IsXULRunner24 ? 48 : 27);
+	static final int LAST_METHOD_ID = nsISupports.LAST_METHOD_ID + (IsXULRunner24() ? 48 : 27);
 
-	public static final String NS_IXPCONNECT_IID_STR =
-		"a995b541-d514-43f1-ac0e-f49746c0b063";
+	static final String NS_IXPCONNECT_IID_STR = "a995b541-d514-43f1-ac0e-f49746c0b063";
+	static final String NS_IXPCONNECT_24_IID_STR = "3bc074e6-2102-40a4-8c84-38b002c9e2f1";
 
-	public static final nsID NS_IXPCONNECT_IID =
-		new nsID(NS_IXPCONNECT_IID_STR);
-	
-	public static final String NS_IXPCONNECT_24_IID_STR =
-		"3bc074e6-2102-40a4-8c84-38b002c9e2f1";
-
-	public static final nsID NS_IXPCONNECT_24_IID =
-		new nsID(NS_IXPCONNECT_24_IID_STR);
+	static {
+		IIDStore.RegisterIID(nsIXPConnect.class, MozillaVersion.VERSION_BASE, new nsID(NS_IXPCONNECT_IID_STR));
+		IIDStore.RegisterIID(nsIXPConnect.class, MozillaVersion.VERSION_XR24, new nsID(NS_IXPCONNECT_24_IID_STR));
+	}
 
 	public nsIXPConnect(long /*int*/ address) {
 		super(address);
@@ -52,6 +50,6 @@ public class nsIXPConnect extends nsISupports {
 	}
 
 	public int VariantToJS(long /*int*/ ctx, long /*int*/ scope, long /*int*/ value, long /*int*/ _retval) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + (IsXULRunner24 ? 26 : 33), getAddress(), ctx, scope, value, _retval);
+		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + (IsXULRunner24() ? 26 : 33), getAddress(), ctx, scope, value, _retval);
 	}
 }

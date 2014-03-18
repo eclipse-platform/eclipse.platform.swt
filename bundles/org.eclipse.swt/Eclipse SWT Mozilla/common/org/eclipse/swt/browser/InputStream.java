@@ -69,12 +69,12 @@ int QueryInterface (long /*int*/ riid, long /*int*/ ppvObject) {
 	nsID guid = new nsID ();
 	XPCOM.memmove (guid, riid, nsID.sizeof);
 	
-	if (guid.Equals (nsISupports.NS_ISUPPORTS_IID)) {
+	if (guid.Equals (IIDStore.GetIID (nsISupports.class))) {
 		XPCOM.memmove (ppvObject, new long /*int*/[] {inputStream.getAddress ()}, C.PTR_SIZEOF);
 		AddRef ();
 		return XPCOM.NS_OK;
 	}
-	if (guid.Equals (nsIInputStream.NS_IINPUTSTREAM_IID) || guid.Equals (nsIInputStream.NS_IINPUTSTREAM_24_IID)) {
+	if (guid.Equals (IIDStore.GetIID (nsIInputStream.class))) {
 		XPCOM.memmove (ppvObject, new long /*int*/[] {inputStream.getAddress ()}, C.PTR_SIZEOF);
 		AddRef ();
 		return XPCOM.NS_OK;

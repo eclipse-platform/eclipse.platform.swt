@@ -27,21 +27,25 @@
  * ***** END LICENSE BLOCK ***** */
 package org.eclipse.swt.internal.mozilla;
 
+import org.eclipse.swt.browser.MozillaVersion;
+
 public class nsIFile extends nsISupports {
 
-	static final int LAST_METHOD_ID = nsISupports.LAST_METHOD_ID + (IsXULRunner24 ? 62 : 45);
+	/*
+	 * Note: The following value is likely wrong for XULRunner 24 because nsIFile is referenced
+	 * (which initializes this value) before it has been determined whether XULRunner 24
+	 * is being used or not.  However this does not currently cause a problem because the
+	 * only reference to it is nsILocalFile.LAST_METHOD_ID, which is currently not used.  
+	 */
+	static final int LAST_METHOD_ID = nsISupports.LAST_METHOD_ID + (IsXULRunner24() ? 62 : 45);
 
-	public static final String NS_IFILE_IID_STR =
-		"c8c0a080-0868-11d3-915f-d9d889d48e3c";
-	
-	public static final String NS_IFILE_24_IID_STR =
-		"272a5020-64f5-485c-a8c4-44b2882ae0a2";
+	static final String NS_IFILE_IID_STR = "c8c0a080-0868-11d3-915f-d9d889d48e3c";
+	static final String NS_IFILE_24_IID_STR = "272a5020-64f5-485c-a8c4-44b2882ae0a2";
 
-	public static final nsID NS_IFILE_IID =
-		new nsID(NS_IFILE_IID_STR);
-
-	public static final nsID NS_IFILE_24_IID =
-		new nsID(NS_IFILE_24_IID_STR);
+	static {
+		IIDStore.RegisterIID(nsIFile.class, MozillaVersion.VERSION_BASE, new nsID(NS_IFILE_IID_STR));
+		IIDStore.RegisterIID(nsIFile.class, MozillaVersion.VERSION_XR24, new nsID(NS_IFILE_24_IID_STR));
+	}
 
 	public nsIFile(long /*int*/ address) {
 		super(address);

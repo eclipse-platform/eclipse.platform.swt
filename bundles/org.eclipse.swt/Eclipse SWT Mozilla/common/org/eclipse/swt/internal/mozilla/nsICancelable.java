@@ -27,15 +27,17 @@
  * ***** END LICENSE BLOCK ***** */
 package org.eclipse.swt.internal.mozilla;
 
+import org.eclipse.swt.browser.MozillaVersion;
+
 public class nsICancelable extends nsISupports {
 
 	static final int LAST_METHOD_ID = nsISupports.LAST_METHOD_ID + 1;
 
-	public static final String NS_ICANCELABLE_IID_STR =
-		"d94ac0a0-bb18-46b8-844e-84159064b0bd";
+	static final String NS_ICANCELABLE_IID_STR = "d94ac0a0-bb18-46b8-844e-84159064b0bd";
 
-	public static final nsID NS_ICANCELABLE_IID =
-		new nsID(NS_ICANCELABLE_IID_STR);
+	static {
+		IIDStore.RegisterIID(nsICancelable.class, MozillaVersion.VERSION_BASE, new nsID(NS_ICANCELABLE_IID_STR));
+	}
 
 	public nsICancelable(long /*int*/ address) {
 		super(address);

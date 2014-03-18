@@ -27,15 +27,17 @@
  * ***** END LICENSE BLOCK ***** */
 package org.eclipse.swt.internal.mozilla;
 
+import org.eclipse.swt.browser.MozillaVersion;
+
 public class nsIWebBrowserFocus extends nsISupports {
 
 	static final int LAST_METHOD_ID = nsISupports.LAST_METHOD_ID + 8;
 
-	public static final String NS_IWEBBROWSERFOCUS_IID_STR =
-		"9c5d3c58-1dd1-11b2-a1c9-f3699284657a";
+	static final String NS_IWEBBROWSERFOCUS_IID_STR = "9c5d3c58-1dd1-11b2-a1c9-f3699284657a";
 
-	public static final nsID NS_IWEBBROWSERFOCUS_IID =
-		new nsID(NS_IWEBBROWSERFOCUS_IID_STR);
+	static {
+		IIDStore.RegisterIID(nsIWebBrowserFocus.class, MozillaVersion.VERSION_BASE, new nsID(NS_IWEBBROWSERFOCUS_IID_STR));
+	}
 
 	public nsIWebBrowserFocus(long /*int*/ address) {
 		super(address);

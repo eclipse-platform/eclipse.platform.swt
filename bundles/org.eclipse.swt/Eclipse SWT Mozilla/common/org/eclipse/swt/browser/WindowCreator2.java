@@ -93,7 +93,7 @@ int QueryInterface (long /*int*/ riid, long /*int*/ ppvObject) {
 	nsID guid = new nsID ();
 	XPCOM.memmove (guid, riid, nsID.sizeof);
 	
-	if (guid.Equals (nsISupports.NS_ISUPPORTS_IID)) {
+	if (guid.Equals (IIDStore.GetIID (nsISupports.class))) {
 		XPCOM.memmove (ppvObject, new long /*int*/[] {supports.getAddress ()}, C.PTR_SIZEOF);
 		AddRef ();
 		return XPCOM.NS_OK;
@@ -141,15 +141,9 @@ int CreateChromeWindow2 (long /*int*/ parent, int chromeFlags, int contextFlags,
 
 		nsIWebBrowser webBrowser = new nsIWebBrowser (aWebBrowser[0]);
 		long /*int*/[] result = new long /*int*/[1];
-		rc = webBrowser.QueryInterface (nsIBaseWindow.NS_IBASEWINDOW_24_IID, result);
+		rc = webBrowser.QueryInterface (IIDStore.GetIID (nsIBaseWindow.class), result);
 		if (rc != XPCOM.NS_OK) {
-			rc = webBrowser.QueryInterface (nsIBaseWindow.NS_IBASEWINDOW_10_IID, result);
-			if (rc != XPCOM.NS_OK) {
-				rc = webBrowser.QueryInterface (nsIBaseWindow.NS_IBASEWINDOW_IID, result);
-				if (rc != XPCOM.NS_OK) {
-					SWT.error (rc);
-				}
-			}
+			SWT.error (rc);
 		}
 		if (result[0] == 0) Mozilla.error (XPCOM.NS_ERROR_NO_INTERFACE);
 		webBrowser.Release ();

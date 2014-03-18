@@ -27,15 +27,17 @@
  * ***** END LICENSE BLOCK ***** */
 package org.eclipse.swt.internal.mozilla;
 
+import org.eclipse.swt.browser.MozillaVersion;
+
 public class nsISimpleEnumerator extends nsISupports {
 
 	static final int LAST_METHOD_ID = nsISupports.LAST_METHOD_ID + 2;
 
-	public static final String NS_ISIMPLEENUMERATOR_IID_STR =
-		"d1899240-f9d2-11d2-bdd6-000064657374";
+	static final String NS_ISIMPLEENUMERATOR_IID_STR = "d1899240-f9d2-11d2-bdd6-000064657374";
 
-	public static final nsID NS_ISIMPLEENUMERATOR_IID =
-		new nsID(NS_ISIMPLEENUMERATOR_IID_STR);
+	static {
+		IIDStore.RegisterIID(nsISimpleEnumerator.class, MozillaVersion.VERSION_BASE, new nsID(NS_ISIMPLEENUMERATOR_IID_STR));
+	}
 
 	public nsISimpleEnumerator(long /*int*/ address) {
 		super(address);

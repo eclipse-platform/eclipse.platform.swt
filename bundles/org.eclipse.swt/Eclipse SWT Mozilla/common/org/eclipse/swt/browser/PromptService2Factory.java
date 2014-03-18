@@ -72,7 +72,7 @@ int QueryInterface (long /*int*/ riid, long /*int*/ ppvObject) {
 	nsID guid = new nsID ();
 	XPCOM.memmove (guid, riid, nsID.sizeof);
 	
-	if (guid.Equals (nsISupports.NS_ISUPPORTS_IID)) {
+	if (guid.Equals (IIDStore.GetIID (nsISupports.class))) {
 		XPCOM.memmove (ppvObject, new long /*int*/[] {supports.getAddress ()}, C.PTR_SIZEOF);
 		AddRef ();
 		return XPCOM.NS_OK;
@@ -98,7 +98,7 @@ int Release () {
 int CreateInstance (long /*int*/ aOuter, long /*int*/ iid, long /*int*/ result) {
 	nsID guid = new nsID ();
 	XPCOM.memmove (guid, iid, nsID.sizeof);
-	if (guid.Equals (XPCOM.NS_IPROMPTSERVICE2_IID) || guid.Equals(nsIPromptService.NS_IPROMPTSERVICE_IID)) {
+	if (guid.Equals (XPCOM.NS_IPROMPTSERVICE2_IID) || guid.Equals(IIDStore.GetIID (nsIPromptService.class))) {
 		PromptService2 promptService = new PromptService2 ();
 		promptService.AddRef ();
 		XPCOM.memmove (result, new long /*int*/[] {promptService.getAddress ()}, C.PTR_SIZEOF);

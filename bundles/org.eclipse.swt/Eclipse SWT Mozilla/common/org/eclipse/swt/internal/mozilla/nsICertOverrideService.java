@@ -27,15 +27,17 @@
  * ***** END LICENSE BLOCK ***** */
 package org.eclipse.swt.internal.mozilla;
 
+import org.eclipse.swt.browser.MozillaVersion;
+
 public class nsICertOverrideService extends nsISupports {
 
 	static final int LAST_METHOD_ID = nsISupports.LAST_METHOD_ID + 6;
 
-	public static final String NS_ICERTOVERRIDESERVICE_IID_STR =
-		"31738d2a-77d3-4359-84c9-4be2f38fb8c5";
+	static final String NS_ICERTOVERRIDESERVICE_IID_STR = "31738d2a-77d3-4359-84c9-4be2f38fb8c5";
 
-	public static final nsID NS_ICERTOVERRIDESERVICE_IID =
-		new nsID(NS_ICERTOVERRIDESERVICE_IID_STR);
+	static {
+		IIDStore.RegisterIID(nsICertOverrideService.class, MozillaVersion.VERSION_BASE, new nsID(NS_ICERTOVERRIDESERVICE_IID_STR));
+	}
 
 	public nsICertOverrideService(long /*int*/ address) {
 		super(address);

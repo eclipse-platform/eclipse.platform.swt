@@ -22,42 +22,28 @@
  *
  * IBM
  * -  Binding to permit interfacing between Mozilla and SWT
- * -  Copyright (C) 2003, 2012 IBM Corp.  All Rights Reserved.
+ * -  Copyright (C) 2014 IBM Corp.  All Rights Reserved.
  *
  * ***** END LICENSE BLOCK ***** */
 package org.eclipse.swt.internal.mozilla;
 
 import org.eclipse.swt.browser.MozillaVersion;
 
-public class nsICookie extends nsISupports {
+public class nsIScriptContext extends nsISupports {
 
-	static final int LAST_METHOD_ID = nsISupports.LAST_METHOD_ID + 9;
-
-	static final String NS_ICOOKIE_IID_STR = "e9fcb9a4-d376-458f-b720-e65e7df593bc";
-	static final String NS_ICOOKIE_24_IID_STR = "8684966b-1877-4f0f-8155-be4490b96bf7";
+	static final String NS_ISCRIPTCONTEXT_1_9_IID_STR = "e7b9871d-3adc-4bf7-850d-7fb9554886bf";
+	static final String NS_ISCRIPTCONTEXT_1_9_2_IID_STR = "87482b5e-e019-4df5-9bc2-b2a51b1f2d28";
+	static final String NS_ISCRIPTCONTEXT_10_IID_STR = "2e583bf4-3c1f-432d-8283-8dee7eccc88b";
+	static final String NS_ISCRIPTCONTEXT_24_IID_STR = "ef0c91ce-14f6-41c9-a577-a6ebdc6d447b";
 
 	static {
-		IIDStore.RegisterIID(nsICookie.class, MozillaVersion.VERSION_BASE, new nsID(NS_ICOOKIE_IID_STR));
-		IIDStore.RegisterIID(nsICookie.class, MozillaVersion.VERSION_XR24, new nsID(NS_ICOOKIE_24_IID_STR));
+		IIDStore.RegisterIID(nsIScriptContext.class, MozillaVersion.VERSION_BASE, new nsID(NS_ISCRIPTCONTEXT_1_9_IID_STR));
+		IIDStore.RegisterIID(nsIScriptContext.class, MozillaVersion.VERSION_XR1_9_2, new nsID(NS_ISCRIPTCONTEXT_1_9_2_IID_STR));
+		IIDStore.RegisterIID(nsIScriptContext.class, MozillaVersion.VERSION_XR10, new nsID(NS_ISCRIPTCONTEXT_10_IID_STR));
+		IIDStore.RegisterIID(nsIScriptContext.class, MozillaVersion.VERSION_XR24, new nsID(NS_ISCRIPTCONTEXT_24_IID_STR));
 	}
-
-	public nsICookie(long /*int*/ address) {
+	
+	public nsIScriptContext(long /*int*/ address) {
 		super(address);
-	}
-
-	public int GetName(long /*int*/ aName) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 1, getAddress(), aName);
-	}
-
-	public int GetHost(long /*int*/ aHost) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 4, getAddress(), aHost);
-	}
-
-	public int GetPath(long /*int*/ aPath) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 5, getAddress(), aPath);
-	}
-
-	public int GetExpires(long[] aExpires) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 7, getAddress(), aExpires);
 	}
 }

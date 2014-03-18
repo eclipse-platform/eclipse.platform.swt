@@ -17,8 +17,8 @@ import org.eclipse.swt.widgets.*;
 
 /**
  * This class implements the nsIHelperAppLauncherDialog interface for mozilla
- * versions >= 4.  For mozilla versions >= 1.9, < 4 this interface is
- * implemented by class HelperAppLauncherDialog_1_9.  HelperAppLauncherDialogFactory
+ * versions >= 10.  For earlier mozilla versions this interface is implemented
+ * by class HelperAppLauncherDialog(_1_9).  HelperAppLauncherDialogFactory
  * determines at runtime which of these classes to instantiate. 
  */
 class HelperAppLauncherDialog_10 extends HelperAppLauncherDialog_1_9 {
@@ -34,7 +34,7 @@ HelperAppLauncherDialog_10 () {
 
 @Override
 int Show (long /*int*/ aLauncher, long /*int*/ aContext, int aReason) {
-	nsIHelperAppLauncher_8 helperAppLauncher = new nsIHelperAppLauncher_8 (aLauncher);
+	nsIHelperAppLauncher_1_8 helperAppLauncher = new nsIHelperAppLauncher_1_8 (aLauncher);
 	return helperAppLauncher.SaveToDisk (0, 0);
 }
 
@@ -57,7 +57,7 @@ int PromptForSaveToFile (long /*int*/ aLauncher, long /*int*/ aWindowContext, lo
 	String name = fileDialog.open ();
 	shell.close ();
 	if (name == null) {
-		nsIHelperAppLauncher_8 launcher = new nsIHelperAppLauncher_8 (aLauncher);
+		nsIHelperAppLauncher_1_8 launcher = new nsIHelperAppLauncher_1_8 (aLauncher);
 		int rc = launcher.Cancel (XPCOM.NS_BINDING_ABORTED);
 		if (rc != XPCOM.NS_OK) Mozilla.error (rc);
 		return XPCOM.NS_ERROR_FAILURE;

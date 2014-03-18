@@ -65,7 +65,7 @@ class Mozilla extends WebBrowser {
 	static int BrowserCount, NextJSFunctionIndex = 1;
 	static Hashtable AllFunctions = new Hashtable ();
 	static Listener DisplayListener;
-	static boolean Initialized, IsPre_1_8, IsPre_1_9, IsPre_4, IsPre_24, IsXULRunner, PerformedVersionCheck, XPCOMWasGlued, XPCOMInitWasGlued;
+	static boolean Initialized, IsXULRunner, PerformedVersionCheck, XPCOMWasGlued, XPCOMInitWasGlued;
 	static boolean IsGettingSiteWindow;
 	static String MozillaPath;
 	static String oldProxyHostFTP, oldProxyHostHTTP, oldProxyHostSSL;
@@ -81,7 +81,7 @@ class Mozilla extends WebBrowser {
 	static final String GRERANGE_UPPER = "1.9.*"; //$NON-NLS-1$
 	static final boolean UpperRangeInclusive = true;
 	static final String PROPERTY_ABI = "abi"; //$NON-NLS-1$
-
+	
 	static final int MAX_PORT = 65535;
 	static final String DEFAULTVALUE_STRING = "default"; //$NON-NLS-1$
 	static final char SEPARATOR_OS = System.getProperty ("file.separator").charAt (0); //$NON-NLS-1$
@@ -137,7 +137,7 @@ class Mozilla extends WebBrowser {
 				nsIServiceManager serviceManager = new nsIServiceManager (result[0]);
 				result[0] = 0;		
 				byte[] buffer = MozillaDelegate.wcsToMbcs (null, XPCOM.NS_OBSERVER_CONTRACTID, true);
-				rc = serviceManager.GetServiceByContractID (buffer, nsIObserverService.NS_IOBSERVERSERVICE_IID, result);
+				rc = serviceManager.GetServiceByContractID (buffer, IIDStore.GetIID (nsIObserverService.class), result);
 				if (rc != XPCOM.NS_OK) error (rc);
 				if (result[0] == 0) error (XPCOM.NS_NOINTERFACE);
 
@@ -161,7 +161,7 @@ class Mozilla extends WebBrowser {
 
 					nsILocalFile localFile = new nsILocalFile (result [0]);
 					result[0] = 0;
-					rc = localFile.QueryInterface (IsPre_24 ? nsIFile.NS_IFILE_IID : nsIFile.NS_IFILE_24_IID, result); 
+					rc = localFile.QueryInterface (IIDStore.GetIID (nsIFile.class), result); 
 					if (rc != XPCOM.NS_OK) Mozilla.error (rc);
 					if (result[0] == 0) Mozilla.error (XPCOM.NS_ERROR_NO_INTERFACE);
 					localFile.Release ();
@@ -170,7 +170,7 @@ class Mozilla extends WebBrowser {
 					result[0] = 0;
 
 					buffer = MozillaDelegate.wcsToMbcs (null, XPCOM.NS_PREFSERVICE_CONTRACTID, true);
-					rc = serviceManager.GetServiceByContractID (buffer, nsIPrefService.NS_IPREFSERVICE_IID, result);
+					rc = serviceManager.GetServiceByContractID (buffer, IIDStore.GetIID (nsIPrefService.class), result);
 					if (rc != XPCOM.NS_OK) error (rc);
 					if (result[0] == 0) error (XPCOM.NS_NOINTERFACE);
 
@@ -245,7 +245,7 @@ class Mozilla extends WebBrowser {
 					result[0] = 0;
 
 					byte[] contractID = MozillaDelegate.wcsToMbcs (null, XPCOM.NS_PREFLOCALIZEDSTRING_CONTRACTID, true);
-					rc = componentManager.CreateInstanceByContractID (contractID, 0, nsIPrefLocalizedString.NS_IPREFLOCALIZEDSTRING_IID, result);
+					rc = componentManager.CreateInstanceByContractID (contractID, 0, IIDStore.GetIID (nsIPrefLocalizedString.class), result);
 					if (rc != XPCOM.NS_OK) error (rc);
 					if (result[0] == 0) error (XPCOM.NS_NOINTERFACE);
 
@@ -263,7 +263,7 @@ class Mozilla extends WebBrowser {
 							oldProxyHostFTP.getChars (0, length, charBuffer, 0);
 							rc = localizedString.SetDataWithLength (length, charBuffer);
 							if (rc != XPCOM.NS_OK) error (rc);
-							rc = prefBranch.SetComplexValue (buffer, nsIPrefLocalizedString.NS_IPREFLOCALIZEDSTRING_IID, localizedString.getAddress ());
+							rc = prefBranch.SetComplexValue (buffer, IIDStore.GetIID (nsIPrefLocalizedString.class), localizedString.getAddress ());
 							if (rc != XPCOM.NS_OK) error (rc);
 						}
 					}
@@ -279,7 +279,7 @@ class Mozilla extends WebBrowser {
 							oldProxyHostHTTP.getChars (0, length, charBuffer, 0);
 							rc = localizedString.SetDataWithLength (length, charBuffer);
 							if (rc != XPCOM.NS_OK) error (rc);
-							rc = prefBranch.SetComplexValue (buffer, nsIPrefLocalizedString.NS_IPREFLOCALIZEDSTRING_IID, localizedString.getAddress ());
+							rc = prefBranch.SetComplexValue (buffer, IIDStore.GetIID (nsIPrefLocalizedString.class), localizedString.getAddress ());
 							if (rc != XPCOM.NS_OK) error (rc);
 						}
 					}
@@ -295,7 +295,7 @@ class Mozilla extends WebBrowser {
 							oldProxyHostSSL.getChars (0, length, charBuffer, 0);
 							rc = localizedString.SetDataWithLength (length, charBuffer);
 							if (rc != XPCOM.NS_OK) error (rc);
-							rc = prefBranch.SetComplexValue (buffer, nsIPrefLocalizedString.NS_IPREFLOCALIZEDSTRING_IID, localizedString.getAddress ());
+							rc = prefBranch.SetComplexValue (buffer, IIDStore.GetIID (nsIPrefLocalizedString.class), localizedString.getAddress ());
 							if (rc != XPCOM.NS_OK) error (rc);
 						}
 					}
@@ -339,7 +339,7 @@ class Mozilla extends WebBrowser {
 				nsIServiceManager serviceManager = new nsIServiceManager (result[0]);
 				result[0] = 0;
 				byte[] aContractID = MozillaDelegate.wcsToMbcs (null, XPCOM.NS_COOKIEMANAGER_CONTRACTID, true);
-				rc = serviceManager.GetServiceByContractID (aContractID, nsICookieManager.NS_ICOOKIEMANAGER_IID, result);
+				rc = serviceManager.GetServiceByContractID (aContractID, IIDStore.GetIID (nsICookieManager.class), result);
 				if (rc != XPCOM.NS_OK) error (rc);
 				if (result[0] == 0) error (XPCOM.NS_NOINTERFACE);
 				serviceManager.Release ();
@@ -394,7 +394,7 @@ class Mozilla extends WebBrowser {
 
 				nsIServiceManager serviceManager = new nsIServiceManager (result[0]);
 				result[0] = 0;
-				rc = serviceManager.GetService (XPCOM.NS_IOSERVICE_CID, nsIIOService.NS_IIOSERVICE_IID, result);
+				rc = serviceManager.GetService (XPCOM.NS_IOSERVICE_CID, IIDStore.GetIID (nsIIOService.class), result);
 				if (rc != XPCOM.NS_OK) error (rc);
 				if (result[0] == 0) error (XPCOM.NS_NOINTERFACE);
 
@@ -414,40 +414,24 @@ class Mozilla extends WebBrowser {
 				nsIURI aURI = new nsIURI (result[0]);
 				result[0] = 0;
 				byte[] aContractID = MozillaDelegate.wcsToMbcs (null, XPCOM.NS_COOKIESERVICE_CONTRACTID, true);
-				rc = serviceManager.GetServiceByContractID (aContractID, nsICookieService.NS_ICOOKIESERVICE_IID, result);
-				long /*int*/ cookieString;
-				if (rc == XPCOM.NS_OK && result[0] != 0) {
-					nsICookieService cookieService = new nsICookieService (result[0]);
-					result[0] = 0;
-					rc = cookieService.GetCookieString (aURI.getAddress(), 0, result);
-					cookieService.Release ();
-					if (rc != XPCOM.NS_OK) error (rc);
-					if (result[0] == 0) {
-						aURI.Release ();
-						serviceManager.Release ();
-						return;
-					}
-					cookieString = result[0];
-				} else {
-					result[0] = 0;
-					rc = serviceManager.GetServiceByContractID (aContractID, nsICookieService_1_9.NS_ICOOKIESERVICE_IID, result);
-					if (rc != XPCOM.NS_OK) error (rc);
-					if (result[0] == 0) error (XPCOM.NS_NOINTERFACE);
-					nsICookieService_1_9 cookieService = new nsICookieService_1_9 (result[0]);
-					result[0] = 0;
-					rc = cookieService.GetCookieString(aURI.getAddress(), 0, result);
-					cookieService.Release ();
-					if (rc != XPCOM.NS_OK) error (rc);
-					if (result[0] == 0) {
-						aURI.Release ();
-						serviceManager.Release ();
-						return;
-					}
-					cookieString = result[0];
+				rc = serviceManager.GetServiceByContractID (aContractID, IIDStore.GetIID (nsICookieService.class), result);
+				if (rc != XPCOM.NS_OK) error (rc);
+				if (result[0] == 0) error (XPCOM.NS_NOINTERFACE);
+
+				nsICookieService cookieService = new nsICookieService (result[0]);
+				result[0] = 0;
+				rc = cookieService.GetCookieString (aURI.getAddress(), 0, result);
+				cookieService.Release ();
+				if (rc != XPCOM.NS_OK) error (rc);
+				if (result[0] == 0) {
+					aURI.Release ();
+					serviceManager.Release ();
+					return;
 				}
+				long /*int*/ cookieString = result[0];
+				result[0] = 0;
 				aURI.Release ();
 				serviceManager.Release ();
-				result[0] = 0;
 
 				int length = C.strlen (cookieString);
 				bytes = new byte[length];
@@ -498,7 +482,7 @@ class Mozilla extends WebBrowser {
 
 				nsIServiceManager serviceManager = new nsIServiceManager (result[0]);
 				result[0] = 0;
-				rc = serviceManager.GetService (XPCOM.NS_IOSERVICE_CID, nsIIOService.NS_IIOSERVICE_IID, result);
+				rc = serviceManager.GetService (XPCOM.NS_IOSERVICE_CID, IIDStore.GetIID (nsIIOService.class), result);
 				if (rc != XPCOM.NS_OK) error (rc);
 				if (result[0] == 0) error (XPCOM.NS_NOINTERFACE);
 
@@ -519,21 +503,14 @@ class Mozilla extends WebBrowser {
 				result[0] = 0;
 				byte[] aCookie = MozillaDelegate.wcsToMbcs (null, CookieValue, true);
 				byte[] aContractID = MozillaDelegate.wcsToMbcs (null, XPCOM.NS_COOKIESERVICE_CONTRACTID, true);
-				rc = serviceManager.GetServiceByContractID (aContractID, nsICookieService.NS_ICOOKIESERVICE_IID, result);
-				if (rc == XPCOM.NS_OK && result[0] != 0) {
-					nsICookieService cookieService = new nsICookieService (result[0]);
-					rc = cookieService.SetCookieString (aURI.getAddress(), 0, aCookie, 0);
-					cookieService.Release ();
-				} else {
-					result[0] = 0;
-					rc = serviceManager.GetServiceByContractID (aContractID, nsICookieService_1_9.NS_ICOOKIESERVICE_IID, result);
-					if (rc != XPCOM.NS_OK) error (rc);
-					if (result[0] == 0) error (XPCOM.NS_NOINTERFACE);
-					nsICookieService_1_9 cookieService = new nsICookieService_1_9 (result[0]);
-					rc = cookieService.SetCookieString(aURI.getAddress(), 0, aCookie, 0);
-					cookieService.Release ();
-				}
+				rc = serviceManager.GetServiceByContractID (aContractID, IIDStore.GetIID (nsICookieService.class), result);
+				if (rc != XPCOM.NS_OK) error (rc);
+				if (result[0] == 0) error (XPCOM.NS_NOINTERFACE);
+
+				nsICookieService cookieService = new nsICookieService (result[0]);
 				result[0] = 0;
+				rc = cookieService.SetCookieString (aURI.getAddress(), 0, aCookie, 0);
+				cookieService.Release ();
 				aURI.Release ();
 				serviceManager.Release ();
 				CookieResult = rc == 0;
@@ -818,13 +795,10 @@ public void create (Composite parent, int style) {
 	result[0] = 0;
 
 	/* create the nsIWebBrowser instance */
-	rc = componentManager.CreateInstance (XPCOM.NS_IWEBBROWSER_CID, 0, nsIWebBrowser.NS_IWEBBROWSER_10_IID, result);
+	rc = componentManager.CreateInstance (XPCOM.NS_IWEBBROWSER_CID, 0, IIDStore.GetIID (nsIWebBrowser.class), result);
 	if (rc != XPCOM.NS_OK) {
-		rc = componentManager.CreateInstance (XPCOM.NS_IWEBBROWSER_CID, 0, nsIWebBrowser.NS_IWEBBROWSER_IID, result);
-		if (rc != XPCOM.NS_OK) {
-			browser.dispose ();
-			error (rc);
-		}
+		browser.dispose ();
+		error (rc);
 	}
 	if (result[0] == 0) {
 		browser.dispose ();
@@ -841,10 +815,10 @@ public void create (Composite parent, int style) {
 	initWebBrowserWindows ();
 
 	if (!PerformedVersionCheck) {
-		/* IsPre_4 and IsPre_24 are already determined in initXPCOM() */
+		/* The Mozilla version is currently either known to be 24.x or 10.x, or is assumed to be 1.9.2.x */
 		PerformedVersionCheck = true;
 
-		rc = componentManager.QueryInterface (nsIComponentRegistrar.NS_ICOMPONENTREGISTRAR_IID, result);
+		rc = componentManager.QueryInterface (IIDStore.GetIID (nsIComponentRegistrar.class), result);
 		if (rc != XPCOM.NS_OK) {
 			browser.dispose ();
 			error (rc);
@@ -863,28 +837,37 @@ public void create (Composite parent, int style) {
 		boolean factoriesRegistered = Boolean.getBoolean (FACTORIES_REGISTERED);
 
 		/*
-		* Check for the availability of the pre-1.8 implementation of nsIDocShell
-		* to determine if the GRE's version is < 1.8.
+		* If the version is earlier than 10.x then query for the IID of nsIDocShell from
+		* various mozilla releases to determine more precisely which version is being used.
 		*/
-		rc = webBrowser.QueryInterface (nsIInterfaceRequestor.NS_IINTERFACEREQUESTOR_IID, result);
-		if (rc != XPCOM.NS_OK) {
-			browser.dispose ();
-			error (XPCOM.NS_ERROR_FAILURE);
-		}
-		if (result[0] == 0) {
-			browser.dispose ();
-			error (XPCOM.NS_ERROR_NO_INTERFACE);
-		}
-		nsIInterfaceRequestor interfaceRequestor = new nsIInterfaceRequestor (result[0]);
-		result[0] = 0;
+		if (!MozillaVersion.CheckVersion (MozillaVersion.VERSION_XR10)) {
+			rc = webBrowser.QueryInterface (IIDStore.GetIID (nsIInterfaceRequestor.class), result);
+			if (rc != XPCOM.NS_OK) {
+				browser.dispose ();
+				error (XPCOM.NS_ERROR_FAILURE);
+			}
+			if (result[0] == 0) {
+				browser.dispose ();
+				error (XPCOM.NS_ERROR_NO_INTERFACE);
+			}
+			nsIInterfaceRequestor interfaceRequestor = new nsIInterfaceRequestor (result[0]);
+			result[0] = 0;
 
-		rc = interfaceRequestor.GetInterface (nsIDocShell.NS_IDOCSHELL_IID, result);
-		if (rc == XPCOM.NS_OK && result[0] != 0) {
-			IsPre_1_8 = true;
-			new nsISupports (result[0]).Release ();
+			for (int i = MozillaVersion.VERSION_XR1_9_2; MozillaVersion.VERSION_BASE <= i; i--) {
+				nsID iid = IIDStore.GetIID (nsIDocShell.class, i, true);
+				if (iid != null) {
+					result[0] = 0;
+					rc = interfaceRequestor.GetInterface (iid, result);
+					if (rc == XPCOM.NS_OK && result[0] != 0) {
+						new nsISupports (result[0]).Release ();
+						MozillaVersion.SetCurrentVersion (i);
+						break;
+					}
+				}
+			}
+			interfaceRequestor.Release ();
+			result[0] = 0;
 		}
-		IsPre_1_9 = true;
-		result[0] = 0;
 
 		/*
 		* A Download factory for contract "Transfer" must be registered iff the GRE's version is 1.8.x.
@@ -895,32 +878,22 @@ public void create (Composite parent, int style) {
 		* If the GRE version is >= 1.9 then no Download factory is registered because this
 		*   functionality is provided by the GRE.
 		*/
-		if (!IsPre_1_8) {
-			rc = interfaceRequestor.GetInterface (nsIDocShell.NS_IDOCSHELL_1_8_IID, result);
-			if (rc == XPCOM.NS_OK && result[0] != 0) { /* 1.8.x */
-				new nsISupports (result[0]).Release ();
-				result[0] = 0;
-
-				if (!factoriesRegistered) {
-					DownloadFactory_1_8 downloadFactory_1_8 = new DownloadFactory_1_8 ();
-					downloadFactory_1_8.AddRef ();
-					byte[] aContractID = MozillaDelegate.wcsToMbcs (null, XPCOM.NS_TRANSFER_CONTRACTID, true);
-					byte[] aClassName = MozillaDelegate.wcsToMbcs (null, "swtTransfer", true); //$NON-NLS-1$
-					rc = componentRegistrar.RegisterFactory (XPCOM.NS_DOWNLOAD_CID, aClassName, aContractID, downloadFactory_1_8.getAddress ());
-					if (rc != XPCOM.NS_OK) {
-						browser.dispose ();
-						error (rc);
-					}
-					downloadFactory_1_8.Release ();
+		if (MozillaVersion.CheckVersion (MozillaVersion.VERSION_XR1_8, true)) {
+			if (!factoriesRegistered) {
+				DownloadFactory_1_8 downloadFactory_1_8 = new DownloadFactory_1_8 ();
+				downloadFactory_1_8.AddRef ();
+				byte[] aContractID = MozillaDelegate.wcsToMbcs (null, XPCOM.NS_TRANSFER_CONTRACTID, true);
+				byte[] aClassName = MozillaDelegate.wcsToMbcs (null, "swtTransfer", true); //$NON-NLS-1$
+				rc = componentRegistrar.RegisterFactory (XPCOM.NS_DOWNLOAD_CID, aClassName, aContractID, downloadFactory_1_8.getAddress ());
+				if (rc != XPCOM.NS_OK) {
+					browser.dispose ();
+					error (rc);
 				}
-			} else { /* >= 1.9.x */
-				IsPre_1_9 = false;
+				downloadFactory_1_8.Release ();
 			}
 		}
-		result[0] = 0;
-		interfaceRequestor.Release ();
 		componentRegistrar.Release ();
-
+		
 		if (!factoriesRegistered) {
 			HelperAppLauncherDialogFactory dialogFactory = new HelperAppLauncherDialogFactory ();
 			dialogFactory.AddRef ();
@@ -933,7 +906,7 @@ public void create (Composite parent, int style) {
 			}
 			dialogFactory.Release ();
 		}
-		
+
 		System.setProperty (FACTORIES_REGISTERED, TRUE);
 	}
 	componentManager.Release ();
@@ -946,12 +919,12 @@ public void create (Composite parent, int style) {
 	 * The workaround is to subclass the Mozilla window and clear it whenever WM_ERASEBKGND is received.
 	 * This subclass should be removed once content has been set into the browser.
 	 */
-	if (!IsPre_1_9) {
+	if (MozillaVersion.CheckVersion (MozillaVersion.VERSION_XR1_9)) {
 		delegate.addWindowSubclass ();
 	}
 
 	/* add listeners for progress and content */
-	rc = webBrowser.AddWebBrowserListener (weakReference.getAddress (), IsPre_24 ? nsIWebProgressListener.NS_IWEBPROGRESSLISTENER_IID : nsIWebProgressListener.NS_IWEBPROGRESSLISTENER_24_IID);
+	rc = webBrowser.AddWebBrowserListener (weakReference.getAddress (), IIDStore.GetIID (nsIWebProgressListener.class));
 	if (rc != XPCOM.NS_OK) {
 		browser.dispose ();
 		error (rc);
@@ -992,7 +965,7 @@ public void create (Composite parent, int style) {
 					nsIServiceManager serviceManager = new nsIServiceManager (result[0]);
 					result[0] = 0;
 					byte[] aContractID = MozillaDelegate.wcsToMbcs (null, XPCOM.NS_FOCUSMANAGER_CONTRACTID, true);
-					rc = serviceManager.GetServiceByContractID (aContractID, !IsPre_4 ? nsIFocusManager.NS_IFOCUSMANAGER_10_IID : nsIFocusManager.NS_IFOCUSMANAGER_IID, result);
+					rc = serviceManager.GetServiceByContractID (aContractID, IIDStore.GetIID (nsIFocusManager.class), result);
 					serviceManager.Release ();
 
 					if (rc == XPCOM.NS_OK && result[0] != 0) {
@@ -1073,10 +1046,7 @@ public boolean back () {
 	htmlBytes = null;
 
 	long /*int*/[] result = new long /*int*/[1];
-	int rc = webBrowser.QueryInterface (nsIWebNavigation.NS_IWEBNAVIGATION_24_IID, result);
-	if (rc != XPCOM.NS_OK) {
-		rc = webBrowser.QueryInterface (nsIWebNavigation.NS_IWEBNAVIGATION_IID, result);
-	}
+	int rc = webBrowser.QueryInterface (IIDStore.GetIID (nsIWebNavigation.class), result);
 	if (rc != XPCOM.NS_OK) error (rc);
 	if (result[0] == 0) error (XPCOM.NS_ERROR_NO_INTERFACE);
 	
@@ -1438,31 +1408,15 @@ public boolean execute (String script) {
 	* exposed as of mozilla 1.9.
 	*/
 	long /*int*/[] result = new long /*int*/[1];
-	if (!IsPre_1_9) {
+	if (MozillaVersion.CheckVersion (MozillaVersion.VERSION_XR1_9)) {
 		int rc = XPCOM.NS_GetServiceManager (result);
 		if (rc != XPCOM.NS_OK) error (rc);
 		if (result[0] == 0) error (XPCOM.NS_NOINTERFACE);
 
-		boolean isXULRunner190x = false;
 		nsIServiceManager serviceManager = new nsIServiceManager (result[0]);
 		result[0] = 0;
 		byte[] aContractID = MozillaDelegate.wcsToMbcs (null, XPCOM.NS_SCRIPTSECURITYMANAGER_CONTRACTID, true);
-		rc = serviceManager.GetServiceByContractID (aContractID, nsIScriptSecurityManager.NS_ISCRIPTSECURITYMANAGER_24_IID, result);
-		if (!(rc == XPCOM.NS_OK && result[0] != 0)) {
-			result[0] = 0;
-			rc = serviceManager.GetServiceByContractID (aContractID, nsIScriptSecurityManager.NS_ISCRIPTSECURITYMANAGER_10_IID, result);
-			if (!(rc == XPCOM.NS_OK && result[0] != 0)) {
-				result[0] = 0;
-				rc = serviceManager.GetServiceByContractID (aContractID, nsIScriptSecurityManager.NS_ISCRIPTSECURITYMANAGER_191_IID, result);
-				if (!(rc == XPCOM.NS_OK && result[0] != 0)) {
-					result[0] = 0;
-					rc = serviceManager.GetServiceByContractID (aContractID, nsIScriptSecurityManager.NS_ISCRIPTSECURITYMANAGER_IID, result);
-					if (rc == XPCOM.NS_OK && result[0] != 0) {
-						isXULRunner190x = true;
-					}
-				}
-			}
-		}
+		rc = serviceManager.GetServiceByContractID (aContractID, IIDStore.GetIID (nsIScriptSecurityManager.class), result);
 
 		if (rc == XPCOM.NS_OK && result[0] != 0) {
 			nsIScriptSecurityManager securityManager = new nsIScriptSecurityManager (result[0]);
@@ -1473,71 +1427,46 @@ public boolean execute (String script) {
 			if (rc == XPCOM.NS_OK && result[0] != 0) {
 				nsIPrincipal principal = new nsIPrincipal (result[0]);
 				result[0] = 0;
-				rc = webBrowser.QueryInterface (nsIInterfaceRequestor.NS_IINTERFACEREQUESTOR_IID, result);
+				rc = webBrowser.QueryInterface (IIDStore.GetIID (nsIInterfaceRequestor.class), result);
 				if (rc != XPCOM.NS_OK) error (rc);
 				if (result[0] == 0) error (XPCOM.NS_NOINTERFACE);
 
 				nsIInterfaceRequestor interfaceRequestor = new nsIInterfaceRequestor (result[0]);
 				result[0] = 0;
-				rc = interfaceRequestor.GetInterface (XPCOM.NS_ISCRIPTGLOBALOBJECT_24_IID, result);
-				if (!(rc == XPCOM.NS_OK && result[0] != 0)) {
-					result[0] = 0;
-					rc = interfaceRequestor.GetInterface (XPCOM.NS_ISCRIPTGLOBALOBJECT_10_IID, result);
-					if (!(rc == XPCOM.NS_OK && result[0] != 0)) {
-						result[0] = 0;
-						rc = interfaceRequestor.GetInterface (XPCOM.NS_ISCRIPTGLOBALOBJECT_1_9_2_IID, result);
-						if (!(rc == XPCOM.NS_OK && result[0] != 0)) {
-							result[0] = 0;
-							rc = interfaceRequestor.GetInterface (XPCOM.NS_ISCRIPTGLOBALOBJECT_1_9_IID, result);
-						}
-					}
-				}
+				rc = interfaceRequestor.GetInterface (IIDStore.GetIID (nsIScriptGlobalObject.class), result);
 				interfaceRequestor.Release ();
 
 				if (rc == XPCOM.NS_OK && result[0] != 0) {
 					long /*int*/ scriptGlobalObject = result[0];
 					result[0] = 0;
-					if (IsPre_24) {
-						rc = (int/*64*/)XPCOM.nsIScriptGlobalObject_EnsureScriptEnvironment (scriptGlobalObject, 2); /* nsIProgrammingLanguage.JAVASCRIPT */
-					} else {
+					if (MozillaVersion.CheckVersion (MozillaVersion.VERSION_XR24)) { /* >= 24.x */
 						rc = (int/*64*/)XPCOM.nsIScriptGlobalObject24_EnsureScriptEnvironment (scriptGlobalObject);
+					} else {
+						rc = (int/*64*/)XPCOM.nsIScriptGlobalObject_EnsureScriptEnvironment (scriptGlobalObject, 2); /* nsIProgrammingLanguage.JAVASCRIPT */
 					}
 					if (rc != XPCOM.NS_OK) {
 						new nsISupports (scriptGlobalObject).Release ();
 					} else {
 						long /*int*/ scriptContext;
-						if (IsPre_24) {
-							scriptContext = XPCOM.nsIScriptGlobalObject_GetScriptContext (scriptGlobalObject, 2); /* nsIProgrammingLanguage.JAVASCRIPT */
-						} else {
+						if (MozillaVersion.CheckVersion (MozillaVersion.VERSION_XR24)) { /* >= 24.x */
 							scriptContext = XPCOM.nsIScriptGlobalObject24_GetScriptContext (scriptGlobalObject);
+						} else {
+							scriptContext = XPCOM.nsIScriptGlobalObject_GetScriptContext (scriptGlobalObject, 2); /* nsIProgrammingLanguage.JAVASCRIPT */
 						}
 
 						if (scriptContext != 0) {
 							/* ensure that the received nsIScriptContext implements the expected interface */
 							nsISupports supports = new nsISupports (scriptContext);
-							rc = supports.QueryInterface (XPCOM.NS_ISCRIPTCONTEXT_24_IID, result);
-							if (!(rc == XPCOM.NS_OK && result[0] != 0)) {
-								result[0] = 0;
-								rc = supports.QueryInterface (XPCOM.NS_ISCRIPTCONTEXT_10_IID, result);
-								if (!(rc == XPCOM.NS_OK && result[0] != 0)) {
-									result[0] = 0;
-									rc = supports.QueryInterface (XPCOM.NS_ISCRIPTCONTEXT_1_9_2_IID, result);
-									if (!(rc == XPCOM.NS_OK && result[0] != 0)) {
-										result[0] = 0;
-										rc = supports.QueryInterface (XPCOM.NS_ISCRIPTCONTEXT_1_9_IID, result);
-									}
-								}
-							}
-
+							rc = supports.QueryInterface (IIDStore.GetIID (nsIScriptContext.class), result);
 							if (rc == XPCOM.NS_OK && result[0] != 0) {
 								new nsISupports (result[0]).Release ();
 								result[0] = 0;
 
 								long /*int*/ jsContext;
-								if (IsPre_24) {
-									jsContext = XPCOM.nsIScriptContext_GetNativeContext (scriptContext);
-								} else {
+								if (MozillaVersion.CheckVersion (MozillaVersion.VERSION_XR24)) { /* >= 24.x */
 									jsContext = XPCOM.nsIScriptContext24_GetNativeContext (scriptContext);
+								} else {
+									jsContext = XPCOM.nsIScriptContext_GetNativeContext (scriptContext);
 								}
 								if (jsContext != 0) {
 									int length = script.length ();
@@ -1552,45 +1481,45 @@ public boolean execute (String script) {
 									}
 									byte[] jsLibPath = getJSLibPathBytes ();
 									long /*int*/ globalJSObject;
-									if (IsPre_24) {
-										globalJSObject = XPCOM.JS_GetGlobalObject (jsLibPath, jsContext);
-									} else {
+									if (MozillaVersion.CheckVersion (MozillaVersion.VERSION_XR24)) { /* >= 24.x */
 										globalJSObject = XPCOM.nsIScriptGlobalObject24_GetGlobalJSObject (scriptGlobalObject);
+									} else {
+										globalJSObject = XPCOM.JS_GetGlobalObject (jsLibPath, jsContext);
 									}
 									if (globalJSObject != 0) {
-										if (IsPre_24) {
-											aContractID = MozillaDelegate.wcsToMbcs (null, XPCOM.NS_CONTEXTSTACK_CONTRACTID, true);
-											rc = serviceManager.GetServiceByContractID (aContractID, nsIJSContextStack.NS_IJSCONTEXTSTACK_IID, result);
-											if (rc == XPCOM.NS_OK && result[0] != 0) {
-												nsIJSContextStack stack = new nsIJSContextStack (result[0]);
-												result[0] = 0;
-												rc = stack.Push (jsContext);
-												if (rc != XPCOM.NS_OK) {
-													stack.Release ();
-												} else {
-													boolean success;
-													if (isXULRunner190x) {
-														success = XPCOM.JS_EvaluateUCScriptForPrincipals (jsLibPath, jsContext, globalJSObject, principals, scriptChars, length, urlbytes, 0, result) != 0;
-													} else {
-														success = XPCOM.JS_EvaluateUCScriptForPrincipals191 (jsLibPath, jsContext, globalJSObject, principals, scriptChars, length, urlbytes, 0, 0) != 0;
-													}
-													result[0] = 0;
-													rc = stack.Pop (result);
-													stack.Release ();
-													// should principals be Release()d too?
-													new nsISupports (scriptGlobalObject).Release ();
-													principal.Release ();
-													serviceManager.Release ();
-													return success;
-												}
-											}
-										} else {
+										if (MozillaVersion.CheckVersion (MozillaVersion.VERSION_XR24)) { /* >= 24.x */
 											boolean success = XPCOM.JS_EvaluateUCScriptForPrincipals24 (jsLibPath, jsContext, globalJSObject, principals, scriptChars, length, urlbytes, 0, 0) != 0;
 											// should principals be Release()d too?
 											new nsISupports (scriptGlobalObject).Release ();
 											principal.Release ();
 											serviceManager.Release ();
 											return success;
+										}
+										/* 1.9.x - 10.x */
+										aContractID = MozillaDelegate.wcsToMbcs (null, XPCOM.NS_CONTEXTSTACK_CONTRACTID, true);
+										rc = serviceManager.GetServiceByContractID (aContractID, IIDStore.GetIID (nsIJSContextStack.class), result);
+										if (rc == XPCOM.NS_OK && result[0] != 0) {
+											nsIJSContextStack stack = new nsIJSContextStack (result[0]);
+											result[0] = 0;
+											rc = stack.Push (jsContext);
+											if (rc != XPCOM.NS_OK) {
+												stack.Release ();
+											} else {
+												boolean success;
+												if (MozillaVersion.CheckVersion (MozillaVersion.VERSION_XR1_9, true)) {
+													success = XPCOM.JS_EvaluateUCScriptForPrincipals (jsLibPath, jsContext, globalJSObject, principals, scriptChars, length, urlbytes, 0, result) != 0;
+												} else {
+													success = XPCOM.JS_EvaluateUCScriptForPrincipals191 (jsLibPath, jsContext, globalJSObject, principals, scriptChars, length, urlbytes, 0, 0) != 0;
+												}
+												result[0] = 0;
+												rc = stack.Pop (result);
+												stack.Release ();
+												// should principals be Release()d too?
+												new nsISupports (scriptGlobalObject).Release ();
+												principal.Release ();
+												serviceManager.Release ();
+												return success;
+											}
 										}
 									}
 								}
@@ -1608,10 +1537,7 @@ public boolean execute (String script) {
 	/* fall back to the pre-1.9 approach */
 
 	String url = PREFIX_JAVASCRIPT + script + ";void(0);";	//$NON-NLS-1$
-	int rc = webBrowser.QueryInterface (nsIWebNavigation.NS_IWEBNAVIGATION_24_IID, result);
-	if (rc != XPCOM.NS_OK) {
-		rc = webBrowser.QueryInterface (nsIWebNavigation.NS_IWEBNAVIGATION_IID, result);
-	}
+	int rc = webBrowser.QueryInterface (IIDStore.GetIID (nsIWebNavigation.class), result);
 	if (rc != XPCOM.NS_OK) error (rc);
 	if (result[0] == 0) error (XPCOM.NS_ERROR_NO_INTERFACE);
 
@@ -1637,7 +1563,7 @@ static Browser getBrowser (long /*int*/ aDOMWindow) {
 	nsIServiceManager serviceManager = new nsIServiceManager (result[0]);
 	result[0] = 0;
 	byte[] aContractID = MozillaDelegate.wcsToMbcs (null, XPCOM.NS_WINDOWWATCHER_CONTRACTID, true);
-	rc = serviceManager.GetServiceByContractID (aContractID, nsIWindowWatcher.NS_IWINDOWWATCHER_IID, result);
+	rc = serviceManager.GetServiceByContractID (aContractID, IIDStore.GetIID (nsIWindowWatcher.class), result);
 	if (rc != XPCOM.NS_OK) Mozilla.error(rc);
 	if (result[0] == 0) Mozilla.error (XPCOM.NS_NOINTERFACE);		
 	serviceManager.Release ();
@@ -1659,7 +1585,7 @@ static Browser getBrowser (long /*int*/ aDOMWindow) {
 
 	nsIWebBrowserChrome webBrowserChrome = new nsIWebBrowserChrome (result[0]);
 	result[0] = 0;
-	rc = webBrowserChrome.QueryInterface (IsPre_24 ? nsIEmbeddingSiteWindow.NS_IEMBEDDINGSITEWINDOW_IID : nsIEmbeddingSiteWindow.NS_IEMBEDDINGSITEWINDOW_24_IID, result);
+	rc = webBrowserChrome.QueryInterface (IIDStore.GetIID (nsIEmbeddingSiteWindow.class), result);
 	if (rc != XPCOM.NS_OK) Mozilla.error (rc);
 	if (result[0] == 0) Mozilla.error (XPCOM.NS_NOINTERFACE);		
 	webBrowserChrome.Release ();
@@ -1681,10 +1607,7 @@ public boolean forward () {
 	htmlBytes = null;
 
 	long /*int*/[] result = new long /*int*/[1];
-	int rc = webBrowser.QueryInterface (nsIWebNavigation.NS_IWEBNAVIGATION_24_IID, result);
-	if (rc != XPCOM.NS_OK) {
-		rc = webBrowser.QueryInterface (nsIWebNavigation.NS_IWEBNAVIGATION_IID, result);
-	}
+	int rc = webBrowser.QueryInterface (IIDStore.GetIID (nsIWebNavigation.class), result);
 	if (rc != XPCOM.NS_OK) error (rc);
 	if (result[0] == 0) error (XPCOM.NS_ERROR_NO_INTERFACE);
 	
@@ -1702,7 +1625,7 @@ public String getBrowserType () {
 
 static byte[] getJSLibPathBytes () {
 	if (jsLibPathBytes == null) {
-		String[] names = IsPre_4 ? new String[] {MozillaDelegate.getJSLibraryName_Pre4 ()} : MozillaDelegate.getJSLibraryNames ();
+		String[] names = MozillaVersion.CheckVersion (MozillaVersion.VERSION_XR10) ? MozillaDelegate.getJSLibraryNames () : new String[] {MozillaDelegate.getJSLibraryName_Pre10 ()};
 		for (int i = 0; i < names.length; i++) {
 			File file = new File (getMozillaPath (), names[i]);
 			if (file.exists ()) {
@@ -1738,7 +1661,7 @@ static String getMozillaPath () {
 
 	nsISupports directoryService = new nsISupports (result[0]);
 	result[0] = 0;
-	rc = directoryService.QueryInterface (nsIProperties.NS_IPROPERTIES_IID, result);
+	rc = directoryService.QueryInterface (IIDStore.GetIID (nsIProperties.class), result);
 	if (rc != XPCOM.NS_OK) error (rc);
 	if (result[0] == 0) error (XPCOM.NS_NOINTERFACE);
 	directoryService.Release ();
@@ -1746,7 +1669,7 @@ static String getMozillaPath () {
 	nsIProperties properties = new nsIProperties (result[0]);
 	result[0] = 0;
 	buffer = MozillaDelegate.wcsToMbcs (null, XPCOM.NS_GRE_DIR, true);
-	rc = properties.Get (buffer, IsPre_24 ? nsIFile.NS_IFILE_IID : nsIFile.NS_IFILE_24_IID, result);
+	rc = properties.Get (buffer, IIDStore.GetIID (nsIFile.class), result);
 	if (rc != XPCOM.NS_OK) error (rc);
 	if (result[0] == 0) error (XPCOM.NS_NOINTERFACE);
 	properties.Release ();
@@ -1796,34 +1719,29 @@ public String getText () {
 	byte[] contractID = MozillaDelegate.wcsToMbcs (null, XPCOM.NS_DOMSERIALIZER_CONTRACTID, true);
 	char[] chars = null;
 
-	rc = componentManager.CreateInstanceByContractID (contractID, 0, nsIDOMSerializer_1_7.NS_IDOMSERIALIZER_IID, result);
-	if (rc == XPCOM.NS_OK) {	/* mozilla >= 1.7 */
-		if (result[0] == 0) error (XPCOM.NS_NOINTERFACE);
-
-		nsIDOMSerializer_1_7 serializer = new nsIDOMSerializer_1_7 (result[0]);
-		result[0] = 0;
-		long /*int*/ string = XPCOM.nsEmbedString_new ();
-		rc = serializer.SerializeToString (document, string);
-		serializer.Release ();
-
-		int length = XPCOM.nsEmbedString_Length (string);
-		long /*int*/ buffer = XPCOM.nsEmbedString_get (string);
-		chars = new char[length];
-		XPCOM.memmove (chars, buffer, length * 2);
-		XPCOM.nsEmbedString_delete (string);
-	} else {	/* mozilla < 1.7 */
-		rc = componentManager.CreateInstanceByContractID (contractID, 0, nsIDOMSerializer.NS_IDOMSERIALIZER_IID, result);
-		if (rc != XPCOM.NS_OK) error (rc);
-		if (result[0] == 0) error (XPCOM.NS_NOINTERFACE);
-
+	rc = componentManager.CreateInstanceByContractID (contractID, 0, IIDStore.GetIID (nsIDOMSerializer.class), result);
+	if (rc == XPCOM.NS_OK && result[0] != 0) {
 		nsIDOMSerializer serializer = new nsIDOMSerializer (result[0]);
 		result[0] = 0;
-		rc = serializer.SerializeToString (document, result);
+		if (MozillaVersion.CheckVersion (MozillaVersion.VERSION_XR1_8)) {
+			long /*int*/ string = XPCOM.nsEmbedString_new ();
+			rc = serializer.SerializeToString (document, string);
+			if (rc == XPCOM.NS_OK) {
+				int length = XPCOM.nsEmbedString_Length (string);
+				long /*int*/ buffer = XPCOM.nsEmbedString_get (string);
+				chars = new char[length];
+				XPCOM.memmove (chars, buffer, length * 2);
+			}
+			XPCOM.nsEmbedString_delete (string);
+		} else {
+			rc = serializer.SerializeToString (document, result);
+			if (rc == XPCOM.NS_OK) {
+				int length = XPCOM.strlen_PRUnichar (result[0]);
+				chars = new char[length];
+				XPCOM.memmove (chars, result[0], length * 2);
+			}
+		}
 		serializer.Release ();
-
-		int length = XPCOM.strlen_PRUnichar (result[0]);
-		chars = new char[length];
-		XPCOM.memmove (chars, result[0], length * 2);
 	}
 
 	componentManager.Release ();
@@ -1834,10 +1752,7 @@ public String getText () {
 @Override
 public String getUrl () {
 	long /*int*/[] result = new long /*int*/[1];
-	int rc = webBrowser.QueryInterface (nsIWebNavigation.NS_IWEBNAVIGATION_24_IID, result);
-	if (rc != XPCOM.NS_OK) {
-		rc = webBrowser.QueryInterface (nsIWebNavigation.NS_IWEBNAVIGATION_IID, result);
-	}
+	int rc = webBrowser.QueryInterface (IIDStore.GetIID (nsIWebNavigation.class), result);
 	if (rc != XPCOM.NS_OK) error (rc);
 	if (result[0] == 0) error (XPCOM.NS_ERROR_NO_INTERFACE);
 
@@ -1888,7 +1803,11 @@ public Object getWebBrowser () {
 		Method method = clazz.getMethod ("getInstance", new Class[0]); //$NON-NLS-1$
 		Object mozilla = method.invoke (null, new Object[0]);
 		method = clazz.getMethod ("wrapXPCOMObject", new Class[] {Long.TYPE, String.class}); //$NON-NLS-1$
-		webBrowserObject = method.invoke (mozilla, new Object[] {new Long (webBrowser.getAddress ()), !IsPre_4 ? nsIWebBrowser.NS_IWEBBROWSER_10_IID_STR : nsIWebBrowser.NS_IWEBBROWSER_IID_STR});
+		webBrowserObject = method.invoke (
+			mozilla,
+			new Object[] {
+				new Long (webBrowser.getAddress ()),
+				IIDStore.GetIID (nsIWebBrowser.class).toString ()});
 		/*
 		 * The following AddRef() is needed to offset the automatic Release() that
 		 * will be performed by JavaXPCOM when webBrowserObject is finalized.
@@ -2001,7 +1920,7 @@ void initExternal (String profilePath) {
 void initFactories (nsIServiceManager serviceManager, nsIComponentManager componentManager, boolean isXULRunner) {
 	long /*int*/[] result = new long /*int*/[1];
 
-	int rc = componentManager.QueryInterface (nsIComponentRegistrar.NS_ICOMPONENTREGISTRAR_IID, result);
+	int rc = componentManager.QueryInterface (IIDStore.GetIID (nsIComponentRegistrar.class), result);
 	if (rc != XPCOM.NS_OK) {
 		browser.dispose ();
 		error (rc);
@@ -2013,7 +1932,7 @@ void initFactories (nsIServiceManager serviceManager, nsIComponentManager compon
 	
 	nsIComponentRegistrar componentRegistrar = new nsIComponentRegistrar (result[0]);
 	result[0] = 0;
-	if (IsPre_24) {
+	if (!MozillaVersion.CheckVersion (MozillaVersion.VERSION_XR24)) {
 		componentRegistrar.AutoRegister (0);	 /* detect the External component */
 	}
 
@@ -2026,7 +1945,7 @@ void initFactories (nsIServiceManager serviceManager, nsIComponentManager compon
 		browser.dispose ();
 		error (rc);
 	}
-	if (!IsPre_4) {
+	if (MozillaVersion.CheckVersion (MozillaVersion.VERSION_XR10)) { /* > 10.x */
 		aContractID = MozillaDelegate.wcsToMbcs (null, XPCOM.NS_PROMPTER_CONTRACTID, true);
 		aClassName = MozillaDelegate.wcsToMbcs (null, "swtPrompter", true); //$NON-NLS-1$
 		rc = componentRegistrar.RegisterFactory (XPCOM.NS_PROMPTER_CID, aClassName, aContractID, factory.getAddress ());
@@ -2055,7 +1974,7 @@ void initFactories (nsIServiceManager serviceManager, nsIComponentManager compon
 	}
 	externalFactory.Release ();
 
-	rc = serviceManager.GetService (XPCOM.NS_CATEGORYMANAGER_CID, nsICategoryManager.NS_ICATEGORYMANAGER_IID, result);
+	rc = serviceManager.GetService (XPCOM.NS_CATEGORYMANAGER_CID, IIDStore.GetIID (nsICategoryManager.class), result);
 	if (rc != XPCOM.NS_OK) error (rc);
 	if (result[0] == 0) error (XPCOM.NS_NOINTERFACE);
 
@@ -2075,14 +1994,7 @@ void initFactories (nsIServiceManager serviceManager, nsIComponentManager compon
 
 	categoryManager.Release ();
 
-	/*
-	* This Download factory will be used if the GRE version is < 1.8.
-	* If the GRE version is 1.8.x then the Download factory that is registered later for
-	*   contract "Transfer" will be used.
-	* If the GRE version is >= 1.9 then no Download factory is registered because this
-	*   functionality is provided by the GRE.
-	*/
-	if (IsPre_4) {
+	if (!MozillaVersion.CheckVersion (MozillaVersion.VERSION_XR10)) { /* 1.4.x - 3.6.x */
 		DownloadFactory downloadFactory = new DownloadFactory ();
 		downloadFactory.AddRef ();
 		aContractID = MozillaDelegate.wcsToMbcs (null, XPCOM.NS_DOWNLOAD_CONTRACTID, true);
@@ -2095,7 +2007,7 @@ void initFactories (nsIServiceManager serviceManager, nsIComponentManager compon
 		downloadFactory.Release ();
 	}
 
-	if (!nsISupports.IsXULRunner24) {
+	if (!MozillaVersion.CheckVersion (MozillaVersion.VERSION_XR24)) { /* 1.4.x - 10.x */
 		FilePickerFactory pickerFactory = new FilePickerFactory ();
 		pickerFactory.AddRef ();
 		aContractID = MozillaDelegate.wcsToMbcs (null, XPCOM.NS_FILEPICKER_CONTRACTID, true);
@@ -2227,17 +2139,17 @@ void initXPCOM (String mozillaPath, boolean isXULRunner) {
 		rc = XPCOM.XPCOMGlueLoadXULFunctions (ptr);
 		if (rc == XPCOM.NS_OK) { /* > 3.x */
 			result[0] = 0;
-			rc = localFile.QueryInterface(nsIFile.NS_IFILE_24_IID, result);
+			rc = localFile.QueryInterface (IIDStore.GetIID (nsIFile.class, MozillaVersion.VERSION_XR24, true), result);
 			if (rc == XPCOM.NS_OK) { /* 24.x */
-				nsISupports.IsXULRunner24 = true;
+				MozillaVersion.SetCurrentVersion (MozillaVersion.VERSION_XR24);
 			} else { /* 10.x */
-				rc = localFile.QueryInterface (nsILocalFile.NS_ILOCALFILE_IID, result);
+				rc = localFile.QueryInterface (IIDStore.GetIID (nsILocalFile.class, MozillaVersion.VERSION_XR10), result);
 				if (rc != XPCOM.NS_OK) {
+					/* appears to be an unsupported version */
 					browser.dispose ();
 					error (rc);
 				}
-				IsPre_24 = true;
-				nsISupports.IsXULRunner10 = true;
+				MozillaVersion.SetCurrentVersion (MozillaVersion.VERSION_XR10);
 			}
 			if (result[0] != 0) new nsISupports (result[0]).Release();
 			result[0] = 0;
@@ -2252,7 +2164,11 @@ void initXPCOM (String mozillaPath, boolean isXULRunner) {
 			C.memmove (functionLoad.functionName, bytes, bytes.length);
 			XPCOM.memmove (ptr, functionLoad, XPCOM.nsDynamicFunctionLoad_sizeof ());
 			rc = XPCOM.XPCOMGlueLoadXULFunctions (ptr);
-			IsPre_4 = IsPre_24 = true;
+			/*
+			 * For now guess that the version is 1.9.2.x (aka 3.6.x), will determine
+			 * this more precisely once a browser instance has been created.
+			 */
+			MozillaVersion.SetCurrentVersion (MozillaVersion.VERSION_XR1_9_2);
 		}
 
 		C.memmove (result, functionLoad.function, C.PTR_SIZEOF);
@@ -2266,21 +2182,25 @@ void initXPCOM (String mozillaPath, boolean isXULRunner) {
 			error (XPCOM.NS_ERROR_NULL_POINTER);
 		}
 
-		if (nsISupports.IsXULRunner24) {
+		if (MozillaVersion.CheckVersion (MozillaVersion.VERSION_XR24, true)) {
 			Library.loadLibrary("swt-xulrunner24"); //$NON-NLS-1$
 		}
 		MozillaDelegate.loadAdditionalLibraries (mozillaPath, true);
 
-		if (IsPre_4) {
-			rc = XPCOM.Call (functionPtr, localFile.getAddress (), localFile.getAddress (), LocationProvider.getAddress (), 0, 0);
-		} else {
+		if (MozillaVersion.CheckVersion (MozillaVersion.VERSION_XR10)) {
 			rc = XPCOM.Call (functionPtr, localFile.getAddress (), localFile.getAddress (), LocationProvider.getAddress ());
+		} else {
+			rc = XPCOM.Call (functionPtr, localFile.getAddress (), localFile.getAddress (), LocationProvider.getAddress (), 0, 0);
 		}
 		if (rc == XPCOM.NS_OK) {
 			System.setProperty (XULRUNNER_PATH, mozillaPath);
 		}
 	} else {
-		IsPre_4 = IsPre_24 = true;
+		/*
+		 * For now guess that the version is equivalent to Firefox 3.6.x (aka XULRunner 1.9.2.x),
+		 * will determine this more precisely once a browser instance has been created.
+		 */
+		MozillaVersion.SetCurrentVersion (MozillaVersion.VERSION_XR1_9_2);
 		rc = XPCOM.NS_InitXPCOM2 (0, localFile.getAddress(), LocationProvider.getAddress ());
 	}
 	localFile.Release ();
@@ -2300,7 +2220,7 @@ void initPreferences (nsIServiceManager serviceManager, nsIComponentManager comp
 	 * preference values according to the user's current locale and charset.
 	 */
 	byte[] aContractID = MozillaDelegate.wcsToMbcs (null, XPCOM.NS_PREFSERVICE_CONTRACTID, true);
-	int rc = serviceManager.GetServiceByContractID (aContractID, nsIPrefService.NS_IPREFSERVICE_IID, result);
+	int rc = serviceManager.GetServiceByContractID (aContractID, IIDStore.GetIID (nsIPrefService.class), result);
 	if (rc != XPCOM.NS_OK) {
 		browser.dispose ();
 		error (rc);
@@ -2331,7 +2251,7 @@ void initPreferences (nsIServiceManager serviceManager, nsIComponentManager comp
 	String prefLocales = null;
 	nsIPrefLocalizedString localizedString = null;
 	buffer = MozillaDelegate.wcsToMbcs (null, PREFERENCE_LANGUAGES, true);
-	rc = prefBranch.GetComplexValue (buffer, nsIPrefLocalizedString.NS_IPREFLOCALIZEDSTRING_IID, result);
+	rc = prefBranch.GetComplexValue (buffer, IIDStore.GetIID (nsIPrefLocalizedString.class), result);
 	/* 
 	 * Feature of Debian.  For some reason attempting to query for the current locale
 	 * preference fails on Debian.  The workaround for this is to assume a value of
@@ -2405,7 +2325,7 @@ void initPreferences (nsIServiceManager serviceManager, nsIComponentManager comp
 		newLocales.getChars (0, length, charBuffer, 0);
 		if (localizedString == null) {
 			byte[] contractID = MozillaDelegate.wcsToMbcs (null, XPCOM.NS_PREFLOCALIZEDSTRING_CONTRACTID, true);
-			rc = componentManager.CreateInstanceByContractID (contractID, 0, nsIPrefLocalizedString.NS_IPREFLOCALIZEDSTRING_IID, result);
+			rc = componentManager.CreateInstanceByContractID (contractID, 0, IIDStore.GetIID (nsIPrefLocalizedString.class), result);
 			if (rc != XPCOM.NS_OK) {
 				browser.dispose ();
 				error (rc);
@@ -2418,7 +2338,7 @@ void initPreferences (nsIServiceManager serviceManager, nsIComponentManager comp
 			result[0] = 0;
 		}
 		localizedString.SetDataWithLength (length, charBuffer);
-		rc = prefBranch.SetComplexValue (buffer, nsIPrefLocalizedString.NS_IPREFLOCALIZEDSTRING_IID, localizedString.getAddress());
+		rc = prefBranch.SetComplexValue (buffer, IIDStore.GetIID (nsIPrefLocalizedString.class), localizedString.getAddress());
 	}
 	if (localizedString != null) {
 		localizedString.Release ();
@@ -2428,7 +2348,7 @@ void initPreferences (nsIServiceManager serviceManager, nsIComponentManager comp
 	/* get Mozilla's current charset preference value */
 	String prefCharset = null;
 	buffer = MozillaDelegate.wcsToMbcs (null, PREFERENCE_CHARSET, true);
-	rc = prefBranch.GetComplexValue (buffer, nsIPrefLocalizedString.NS_IPREFLOCALIZEDSTRING_IID, result);
+	rc = prefBranch.GetComplexValue (buffer, IIDStore.GetIID (nsIPrefLocalizedString.class), result);
 	/* 
 	 * Feature of Debian.  For some reason attempting to query for the current charset
 	 * preference fails on Debian.  The workaround for this is to assume a value of
@@ -2468,7 +2388,7 @@ void initPreferences (nsIServiceManager serviceManager, nsIComponentManager comp
 		newCharset.getChars (0, length, charBuffer, 0);
 		if (localizedString == null) {
 			byte[] contractID = MozillaDelegate.wcsToMbcs (null, XPCOM.NS_PREFLOCALIZEDSTRING_CONTRACTID, true);
-			rc = componentManager.CreateInstanceByContractID (contractID, 0, nsIPrefLocalizedString.NS_IPREFLOCALIZEDSTRING_IID, result);
+			rc = componentManager.CreateInstanceByContractID (contractID, 0, IIDStore.GetIID (nsIPrefLocalizedString.class), result);
 			if (rc != XPCOM.NS_OK) {
 				browser.dispose ();
 				error (rc);
@@ -2481,7 +2401,7 @@ void initPreferences (nsIServiceManager serviceManager, nsIComponentManager comp
 			result[0] = 0;
 		}
 		localizedString.SetDataWithLength (length, charBuffer);
-		rc = prefBranch.SetComplexValue (buffer, nsIPrefLocalizedString.NS_IPREFLOCALIZEDSTRING_IID, localizedString.getAddress ());
+		rc = prefBranch.SetComplexValue (buffer, IIDStore.GetIID (nsIPrefLocalizedString.class), localizedString.getAddress ());
 	}
 	if (localizedString != null) localizedString.Release ();
 
@@ -2496,7 +2416,7 @@ void initPreferences (nsIServiceManager serviceManager, nsIComponentManager comp
 
 	if (proxyHost != null) {
 		byte[] contractID = MozillaDelegate.wcsToMbcs (null, XPCOM.NS_PREFLOCALIZEDSTRING_CONTRACTID, true);
-		rc = componentManager.CreateInstanceByContractID (contractID, 0, nsIPrefLocalizedString.NS_IPREFLOCALIZEDSTRING_IID, result);
+		rc = componentManager.CreateInstanceByContractID (contractID, 0, IIDStore.GetIID (nsIPrefLocalizedString.class), result);
 		if (rc != XPCOM.NS_OK) error (rc);
 		if (result[0] == 0) error (XPCOM.NS_NOINTERFACE);
 
@@ -2510,7 +2430,7 @@ void initPreferences (nsIServiceManager serviceManager, nsIComponentManager comp
 		if (rc != XPCOM.NS_OK) error (rc);
 
 		buffer = MozillaDelegate.wcsToMbcs (null, PREFERENCE_PROXYHOST_FTP, true);
-		rc = prefBranch.GetComplexValue (buffer, nsIPrefLocalizedString.NS_IPREFLOCALIZEDSTRING_IID, result);
+		rc = prefBranch.GetComplexValue (buffer, IIDStore.GetIID (nsIPrefLocalizedString.class), result);
 		if (rc == XPCOM.NS_OK && result[0] != 0) {
 			nsIPrefLocalizedString value = new nsIPrefLocalizedString (result[0]);
 			result[0] = 0;
@@ -2526,11 +2446,11 @@ void initPreferences (nsIServiceManager serviceManager, nsIComponentManager comp
 			oldProxyHostFTP = DEFAULTVALUE_STRING;
 		}
 		result[0] = 0;
-		rc = prefBranch.SetComplexValue (buffer, nsIPrefLocalizedString.NS_IPREFLOCALIZEDSTRING_IID, localizedString.getAddress ());
+		rc = prefBranch.SetComplexValue (buffer, IIDStore.GetIID (nsIPrefLocalizedString.class), localizedString.getAddress ());
 		if (rc != XPCOM.NS_OK) error (rc);
 
 		buffer = MozillaDelegate.wcsToMbcs (null, PREFERENCE_PROXYHOST_HTTP, true);
-		rc = prefBranch.GetComplexValue (buffer, nsIPrefLocalizedString.NS_IPREFLOCALIZEDSTRING_IID, result);
+		rc = prefBranch.GetComplexValue (buffer, IIDStore.GetIID (nsIPrefLocalizedString.class), result);
 		if (rc == XPCOM.NS_OK && result[0] != 0) {
 			nsIPrefLocalizedString value = new nsIPrefLocalizedString (result[0]);
 			result[0] = 0;
@@ -2546,11 +2466,11 @@ void initPreferences (nsIServiceManager serviceManager, nsIComponentManager comp
 			oldProxyHostHTTP = DEFAULTVALUE_STRING;
 		}
 		result[0] = 0;
-		rc = prefBranch.SetComplexValue (buffer, nsIPrefLocalizedString.NS_IPREFLOCALIZEDSTRING_IID, localizedString.getAddress ());
+		rc = prefBranch.SetComplexValue (buffer, IIDStore.GetIID (nsIPrefLocalizedString.class), localizedString.getAddress ());
 		if (rc != XPCOM.NS_OK) error (rc);
 
 		buffer = MozillaDelegate.wcsToMbcs (null, PREFERENCE_PROXYHOST_SSL, true);
-		rc = prefBranch.GetComplexValue (buffer, nsIPrefLocalizedString.NS_IPREFLOCALIZEDSTRING_IID, result);
+		rc = prefBranch.GetComplexValue (buffer, IIDStore.GetIID (nsIPrefLocalizedString.class), result);
 		if (rc == XPCOM.NS_OK && result[0] != 0) {
 			nsIPrefLocalizedString value = new nsIPrefLocalizedString (result[0]);
 			result[0] = 0;
@@ -2566,7 +2486,7 @@ void initPreferences (nsIServiceManager serviceManager, nsIComponentManager comp
 			oldProxyHostSSL = DEFAULTVALUE_STRING;
 		}
 		result[0] = 0;
-		rc = prefBranch.SetComplexValue (buffer, nsIPrefLocalizedString.NS_IPREFLOCALIZEDSTRING_IID, localizedString.getAddress ());
+		rc = prefBranch.SetComplexValue (buffer, IIDStore.GetIID (nsIPrefLocalizedString.class), localizedString.getAddress ());
 		if (rc != XPCOM.NS_OK) error (rc);
 
 		localizedString.Release ();
@@ -2654,7 +2574,7 @@ void initProfile (nsIServiceManager serviceManager, boolean isXULRunner) {
 	long /*int*/[] result = new long /*int*/[1];
 
 	byte[] buffer = MozillaDelegate.wcsToMbcs (null, XPCOM.NS_OBSERVER_CONTRACTID, true);
-	int rc = serviceManager.GetServiceByContractID (buffer, nsIObserverService.NS_IOBSERVERSERVICE_IID, result);
+	int rc = serviceManager.GetServiceByContractID (buffer, IIDStore.GetIID (nsIObserverService.class), result);
 	if (rc != XPCOM.NS_OK) {
 		browser.dispose ();
 		error (rc);
@@ -2718,7 +2638,7 @@ void initSpinup (nsIComponentManager componentManager) {
 		long /*int*/[] result = new long /*int*/[1];
 
 		/* nsIAppShell is discontinued as of xulrunner 1.9, so do not fail if it is not found */
-		int rc = componentManager.CreateInstance (XPCOM.NS_APPSHELL_CID, 0, nsIAppShell.NS_IAPPSHELL_IID, result);
+		int rc = componentManager.CreateInstance (XPCOM.NS_APPSHELL_CID, 0, IIDStore.GetIID (nsIAppShell.class, MozillaVersion.VERSION_BASE), result);
 		if (rc != XPCOM.NS_ERROR_NO_INTERFACE) {
 			if (rc != XPCOM.NS_OK) {
 				browser.dispose ();
@@ -2753,16 +2673,10 @@ void initWebBrowserWindows () {
 	}
 
 	long /*int*/[] result = new long /*int*/[1];
-	rc = webBrowser.QueryInterface (nsIBaseWindow.NS_IBASEWINDOW_24_IID, result);
+	rc = webBrowser.QueryInterface (IIDStore.GetIID (nsIBaseWindow.class), result);
 	if (rc != XPCOM.NS_OK) {
-		rc = webBrowser.QueryInterface (nsIBaseWindow.NS_IBASEWINDOW_10_IID, result);
-		if (rc != XPCOM.NS_OK) {
-			rc = webBrowser.QueryInterface (nsIBaseWindow.NS_IBASEWINDOW_IID, result);
-			if (rc != XPCOM.NS_OK) {
-				browser.dispose ();
-				error (rc);
-			}
-		}
+		browser.dispose ();
+		error (rc);
 	}
 	if (result[0] == 0) {
 		browser.dispose ();
@@ -2803,7 +2717,7 @@ void initWindowCreator (nsIServiceManager serviceManager) {
 	
 	long /*int*/[] result = new long /*int*/[1];
 	byte[] aContractID = MozillaDelegate.wcsToMbcs (null, XPCOM.NS_WINDOWWATCHER_CONTRACTID, true);
-	int rc = serviceManager.GetServiceByContractID (aContractID, nsIWindowWatcher.NS_IWINDOWWATCHER_IID, result);
+	int rc = serviceManager.GetServiceByContractID (aContractID, IIDStore.GetIID (nsIWindowWatcher.class), result);
 	if (rc != XPCOM.NS_OK) {
 		browser.dispose ();
 		error (rc);
@@ -2851,10 +2765,7 @@ String initXULRunner (String mozillaPath) {
 @Override
 public boolean isBackEnabled () {
 	long /*int*/[] result = new long /*int*/[1];
-	int rc = webBrowser.QueryInterface (nsIWebNavigation.NS_IWEBNAVIGATION_24_IID, result);
-	if (rc != XPCOM.NS_OK) {
-		rc = webBrowser.QueryInterface (nsIWebNavigation.NS_IWEBNAVIGATION_IID, result);
-	}
+	int rc = webBrowser.QueryInterface (IIDStore.GetIID (nsIWebNavigation.class), result);
 	if (rc != XPCOM.NS_OK) error (rc);
 	if (result[0] == 0) error (XPCOM.NS_ERROR_NO_INTERFACE);
 	
@@ -2868,10 +2779,7 @@ public boolean isBackEnabled () {
 @Override
 public boolean isForwardEnabled () {
 	long /*int*/[] result = new long /*int*/[1];
-	int rc = webBrowser.QueryInterface (nsIWebNavigation.NS_IWEBNAVIGATION_24_IID, result);
-	if (rc != XPCOM.NS_OK) {
-		rc = webBrowser.QueryInterface (nsIWebNavigation.NS_IWEBNAVIGATION_IID, result);
-	}
+	int rc = webBrowser.QueryInterface (IIDStore.GetIID (nsIWebNavigation.class), result);
 	if (rc != XPCOM.NS_OK) error (rc);
 	if (result[0] == 0) error (XPCOM.NS_ERROR_NO_INTERFACE);
 	
@@ -2901,7 +2809,7 @@ void onDispose (Display display) {
 		new nsISupports (badCertRequest).Release ();
 	}
 
-	int rc = webBrowser.RemoveWebBrowserListener (weakReference.getAddress (), IsPre_24 ? nsIWebProgressListener.NS_IWEBPROGRESSLISTENER_IID : nsIWebProgressListener.NS_IWEBPROGRESSLISTENER_24_IID);
+	int rc = webBrowser.RemoveWebBrowserListener (weakReference.getAddress (), IIDStore.GetIID (nsIWebProgressListener.class));
 	if (rc != XPCOM.NS_OK) error (rc);
 
 	rc = webBrowser.SetParentURIContentListener (0);
@@ -2913,16 +2821,10 @@ void onDispose (Display display) {
 	unhookDOMListeners ();
 
 	long /*int*/[] result = new long /*int*/[1];
-	rc = webBrowser.QueryInterface (nsIBaseWindow.NS_IBASEWINDOW_24_IID, result);
+	rc = webBrowser.QueryInterface (IIDStore.GetIID (nsIBaseWindow.class), result);
 	if (rc != XPCOM.NS_OK) {
-		rc = webBrowser.QueryInterface (nsIBaseWindow.NS_IBASEWINDOW_10_IID, result);
-		if (rc != XPCOM.NS_OK) {
-			rc = webBrowser.QueryInterface (nsIBaseWindow.NS_IBASEWINDOW_IID, result);
-			if (rc != XPCOM.NS_OK) {
-				browser.dispose ();
-				error (rc);
-			}
-		}
+		browser.dispose ();
+		error (rc);
 	}
 	if (result[0] == 0) error (XPCOM.NS_ERROR_NO_INTERFACE);
 
@@ -2968,7 +2870,7 @@ void onDispose (Display display) {
 void Activate () {
 	isActive = true;
 	long /*int*/[] result = new long /*int*/[1];
-	int rc = webBrowser.QueryInterface (nsIWebBrowserFocus.NS_IWEBBROWSERFOCUS_IID, result);
+	int rc = webBrowser.QueryInterface (IIDStore.GetIID (nsIWebBrowserFocus.class), result);
 	if (rc != XPCOM.NS_OK) error (rc);
 	if (result[0] == 0) error (XPCOM.NS_ERROR_NO_INTERFACE);
 	
@@ -2981,7 +2883,7 @@ void Activate () {
 void Deactivate () {
 	isActive = false;
 	long /*int*/[] result = new long /*int*/[1];
-	int rc = webBrowser.QueryInterface (nsIWebBrowserFocus.NS_IWEBBROWSERFOCUS_IID, result);
+	int rc = webBrowser.QueryInterface (IIDStore.GetIID (nsIWebBrowserFocus.class), result);
 	if (rc != XPCOM.NS_OK) error (rc);
 	if (result[0] == 0) error (XPCOM.NS_ERROR_NO_INTERFACE);
 	
@@ -2998,7 +2900,7 @@ void navigate (long /*int*/ requestHandle) {
 	long /*int*/[] result = new long /*int*/[1];
 	byte[] postData = null;
 	final Vector headers = new Vector ();
-	int rc = request.QueryInterface (nsIUploadChannel.NS_IUPLOADCHANNEL_IID, result);
+	int rc = request.QueryInterface (IIDStore.GetIID (nsIUploadChannel.class), result);
 	if (rc == XPCOM.NS_OK && result[0] != 0) {
 		nsIUploadChannel uploadChannel = new nsIUploadChannel (result[0]);
 		result[0] = 0;
@@ -3006,7 +2908,7 @@ void navigate (long /*int*/ requestHandle) {
 		if (rc == XPCOM.NS_OK && result[0] != 0) {
 			nsIInputStream inputStream = new nsIInputStream (result[0]);
 			result[0] = 0;
-			rc = inputStream.QueryInterface (nsISeekableStream.NS_ISEEKABLESTREAM_IID, result);
+			rc = inputStream.QueryInterface (IIDStore.GetIID (nsISeekableStream.class), result);
 			if (rc == XPCOM.NS_OK && result[0] != 0) {
 				nsISeekableStream seekableStream = new nsISeekableStream (result[0]);
 				result[0] = 0;
@@ -3016,12 +2918,12 @@ void navigate (long /*int*/ requestHandle) {
 					rc = seekableStream.Seek (nsISeekableStream.NS_SEEK_SET, 0);
 					if (rc == XPCOM.NS_OK) {
 						long available;
-						if (IsPre_24) {
-							int[] _retval = new int[1];
+						if (MozillaVersion.CheckVersion (MozillaVersion.VERSION_XR24)) {
+							long[] _retval = new long[1];
 							rc = inputStream.Available (_retval);
 							available = _retval[0];
 						} else {
-							long[] _retval = new long[1];
+							int[] _retval = new int[1];
 							rc = inputStream.Available (_retval);
 							available = _retval[0];
 						}
@@ -3071,7 +2973,7 @@ void navigate (long /*int*/ requestHandle) {
 			if (riid == 0 || ppvObject == 0) return XPCOM.NS_ERROR_NO_INTERFACE;
 			nsID guid = new nsID ();
 			XPCOM.memmove (guid, riid, nsID.sizeof);
-			if (guid.Equals (nsISupports.NS_ISUPPORTS_IID) || guid.Equals (XPCOM.NS_IHTTPHEADERVISITOR_IID) || guid.Equals (XPCOM.NS_IHTTPHEADERVISITOR_10_IID)) {
+			if (guid.Equals (IIDStore.GetIID (nsISupports.class)) || guid.Equals (XPCOM.NS_IHTTPHEADERVISITOR_IID) || guid.Equals (XPCOM.NS_IHTTPHEADERVISITOR_10_IID)) {
 				XPCOM.memmove (ppvObject, new long /*int*/[] {getAddress ()}, C.PTR_SIZEOF);
 				refCount++;
 				return XPCOM.NS_OK;
@@ -3114,10 +3016,7 @@ void navigate (long /*int*/ requestHandle) {
 	};
 
 	new nsISupports (visitor.getAddress ()).AddRef ();
-	rc = request.QueryInterface (nsIHttpChannel.NS_IHTTPCHANNEL_24_IID, result);
-	if (rc != XPCOM.NS_OK) {
-		rc = request.QueryInterface (nsIHttpChannel.NS_IHTTPCHANNEL_IID, result);
-	}
+	rc = request.QueryInterface (IIDStore.GetIID (nsIHttpChannel.class), result);
 	if (rc == XPCOM.NS_OK && result[0] != 0) {
 		nsIHttpChannel httpChannel = new nsIHttpChannel (result[0]);
 		httpChannel.VisitRequestHeaders (visitor.getAddress ());
@@ -3156,16 +3055,10 @@ void onResize () {
 	int height = Math.max (1, rect.height);
 
 	long /*int*/[] result = new long /*int*/[1];
-	int rc = webBrowser.QueryInterface (nsIBaseWindow.NS_IBASEWINDOW_24_IID, result);
+	int rc = webBrowser.QueryInterface (IIDStore.GetIID (nsIBaseWindow.class), result);
 	if (rc != XPCOM.NS_OK) {
-		rc = webBrowser.QueryInterface (nsIBaseWindow.NS_IBASEWINDOW_10_IID, result);
-		if (rc != XPCOM.NS_OK) {
-			rc = webBrowser.QueryInterface (nsIBaseWindow.NS_IBASEWINDOW_IID, result);
-			if (rc != XPCOM.NS_OK) {
-				browser.dispose ();
-				error (rc);
-			}
-		}
+		browser.dispose ();
+		error (rc);
 	}
 	if (result[0] == 0) error (XPCOM.NS_ERROR_NO_INTERFACE);
 
@@ -3182,10 +3075,7 @@ public void refresh () {
 	htmlBytes = null;
 
 	long /*int*/[] result = new long /*int*/[1];
-	int rc = webBrowser.QueryInterface (nsIWebNavigation.NS_IWEBNAVIGATION_24_IID, result);
-	if (rc != XPCOM.NS_OK) {
-		rc = webBrowser.QueryInterface (nsIWebNavigation.NS_IWEBNAVIGATION_IID, result);
-	}
+	int rc = webBrowser.QueryInterface (IIDStore.GetIID (nsIWebNavigation.class), result);
 	if (rc != XPCOM.NS_OK) error (rc);
 	if (result[0] == 0) error (XPCOM.NS_ERROR_NO_INTERFACE);
 	
@@ -3258,7 +3148,7 @@ boolean sendChangingEvent (String url) {
 				if (jsEnabled != jsEnabledOnNextPage) {
 					jsEnabled = jsEnabledOnNextPage;
 					long /*int*/[] result = new long /*int*/[1];
-					int rc = webBrowser.QueryInterface (nsIWebBrowserSetup.NS_IWEBBROWSERSETUP_IID, result);
+					int rc = webBrowser.QueryInterface (IIDStore.GetIID (nsIWebBrowserSetup.class), result);
 					if (rc != XPCOM.NS_OK) error (rc);
 					if (result[0] == 0) error (XPCOM.NS_NOINTERFACE);
 	
@@ -3312,7 +3202,7 @@ public boolean setText (String html, boolean trusted) {
 	delegate.removeWindowSubclass ();
 
 	long /*int*/[] result = new long /*int*/[1];
-	int rc = webBrowser.QueryInterface (nsIWebBrowserStream.NS_IWEBBROWSERSTREAM_IID, result);
+	int rc = webBrowser.QueryInterface (IIDStore.GetIID (nsIWebBrowserStream.class), result);
 	if (rc == XPCOM.NS_OK && result[0] != 0) {
 		/*
 		* Setting mozilla's content through nsIWebBrowserStream does not cause a page
@@ -3333,10 +3223,7 @@ public boolean setText (String html, boolean trusted) {
 		if (blankLoading) return true;
 
 		/* navigate to about:blank */
-		rc = webBrowser.QueryInterface (nsIWebNavigation.NS_IWEBNAVIGATION_24_IID, result);
-		if (rc != XPCOM.NS_OK) {
-			rc = webBrowser.QueryInterface (nsIWebNavigation.NS_IWEBNAVIGATION_IID, result);
-		}
+		rc = webBrowser.QueryInterface (IIDStore.GetIID (nsIWebNavigation.class), result);
 		if (rc != XPCOM.NS_OK) error (rc);
 		if (result[0] == 0) error (XPCOM.NS_ERROR_NO_INTERFACE);
 		nsIWebNavigation webNavigation = new nsIWebNavigation (result[0]);
@@ -3358,7 +3245,7 @@ public boolean setText (String html, boolean trusted) {
 
 		nsIServiceManager serviceManager = new nsIServiceManager (result[0]);
 		result[0] = 0;
-		rc = serviceManager.GetService (XPCOM.NS_IOSERVICE_CID, nsIIOService.NS_IIOSERVICE_IID, result);
+		rc = serviceManager.GetService (XPCOM.NS_IOSERVICE_CID, IIDStore.GetIID (nsIIOService.class), result);
 		if (rc != XPCOM.NS_OK) error (rc);
 		if (result[0] == 0) error (XPCOM.NS_NOINTERFACE);
 
@@ -3380,7 +3267,7 @@ public boolean setText (String html, boolean trusted) {
 		nsIURI uri = new nsIURI (result[0]);
 		result[0] = 0;
 
-		rc = webBrowser.QueryInterface (nsIInterfaceRequestor.NS_IINTERFACEREQUESTOR_IID, result);
+		rc = webBrowser.QueryInterface (IIDStore.GetIID (nsIInterfaceRequestor.class), result);
 		if (rc != XPCOM.NS_OK) error (rc);
 		if (result[0] == 0) error (XPCOM.NS_ERROR_NO_INTERFACE);
 		nsIInterfaceRequestor interfaceRequestor = new nsIInterfaceRequestor (result[0]);
@@ -3395,7 +3282,7 @@ public boolean setText (String html, boolean trusted) {
 		InputStream inputStream = new InputStream (data);
 		inputStream.AddRef ();
 
-		rc = interfaceRequestor.GetInterface (nsIDocShell.NS_IDOCSHELL_IID, result);
+		rc = interfaceRequestor.GetInterface (IIDStore.GetIID (nsIDocShell.class, MozillaVersion.VERSION_BASE), result);
 		if (rc != XPCOM.NS_OK) error (rc);
 		if (result[0] == 0) error (XPCOM.NS_ERROR_NO_INTERFACE);
 		nsIDocShell docShell = new nsIDocShell (result[0]);
@@ -3425,10 +3312,7 @@ boolean setUrl (String url, byte[] postData, String[] headers) {
 	htmlBytes = null;
 
 	long /*int*/[] result = new long /*int*/[1];
-	int rc = webBrowser.QueryInterface (nsIWebNavigation.NS_IWEBNAVIGATION_24_IID, result);
-	if (rc != XPCOM.NS_OK) {
-		rc = webBrowser.QueryInterface (nsIWebNavigation.NS_IWEBNAVIGATION_IID, result);
-	}
+	int rc = webBrowser.QueryInterface (IIDStore.GetIID (nsIWebNavigation.class), result);
 	if (rc != XPCOM.NS_OK) error (rc);
 	if (result[0] == 0) error (XPCOM.NS_ERROR_NO_INTERFACE);
 
@@ -3453,7 +3337,7 @@ boolean setUrl (String url, byte[] postData, String[] headers) {
 		nsIComponentManager componentManager = new nsIComponentManager (result[0]);
 		result[0] = 0;
 		byte[] contractID = MozillaDelegate.wcsToMbcs (null, XPCOM.NS_MIMEINPUTSTREAM_CONTRACTID, true);
-		rc = componentManager.CreateInstanceByContractID (contractID, 0, nsIMIMEInputStream.NS_IMIMEINPUTSTREAM_IID, result);
+		rc = componentManager.CreateInstanceByContractID (contractID, 0, IIDStore.GetIID (nsIMIMEInputStream.class), result);
 		componentManager.Release();
 
 		if (rc == XPCOM.NS_OK && result[0] != 0) { /* nsIMIMEInputStream is not in mozilla 1.4 */
@@ -3531,10 +3415,7 @@ public void stop () {
 	htmlBytes = null;
 
 	long /*int*/[] result = new long /*int*/[1];
-	int rc = webBrowser.QueryInterface (nsIWebNavigation.NS_IWEBNAVIGATION_24_IID, result);
-	if (rc != XPCOM.NS_OK) {
-		rc = webBrowser.QueryInterface (nsIWebNavigation.NS_IWEBNAVIGATION_IID, result);
-	}
+	int rc = webBrowser.QueryInterface (IIDStore.GetIID (nsIWebNavigation.class), result);
 	if (rc != XPCOM.NS_OK) error (rc);
 	if (result[0] == 0) error (XPCOM.NS_ERROR_NO_INTERFACE);
 	
@@ -3598,7 +3479,7 @@ void unhookDOMListeners () {
 
 	nsIDOMWindow window = new nsIDOMWindow (result[0]);
 	result[0] = 0;
-	rc = window.QueryInterface (IsPre_24 ? (IsPre_4 ?  nsIDOMEventTarget.NS_IDOMEVENTTARGET_IID : nsIDOMEventTarget.NS_IDOMEVENTTARGET_10_IID) : nsIDOMEventTarget.NS_IDOMEVENTTARGET_24_IID, result);
+	rc = window.QueryInterface (IIDStore.GetIID (nsIDOMEventTarget.class), result);
 	if (rc != XPCOM.NS_OK) error (rc);
 	if (result[0] == 0) error (XPCOM.NS_ERROR_NO_INTERFACE);
 	nsIDOMEventTarget target = new nsIDOMEventTarget (result[0]);
@@ -3625,7 +3506,7 @@ void unhookDOMListeners () {
 
 			nsIDOMWindow frame = new nsIDOMWindow (result[0]);
 			result[0] = 0;
-			rc = frame.QueryInterface (IsPre_24 ? (IsPre_4 ?  nsIDOMEventTarget.NS_IDOMEVENTTARGET_IID : nsIDOMEventTarget.NS_IDOMEVENTTARGET_10_IID) : nsIDOMEventTarget.NS_IDOMEVENTTARGET_24_IID, result);
+			rc = frame.QueryInterface (IIDStore.GetIID (nsIDOMEventTarget.class), result);
 			if (rc != XPCOM.NS_OK) error (rc);
 			if (result[0] == 0) error (XPCOM.NS_ERROR_NO_INTERFACE);
 
@@ -3687,7 +3568,7 @@ int QueryInterface (long /*int*/ riid, long /*int*/ ppvObject) {
 	nsID guid = new nsID ();
 	XPCOM.memmove (guid, riid, nsID.sizeof);
 
-	if (guid.Equals (nsISupports.NS_ISUPPORTS_IID)) {
+	if (guid.Equals (IIDStore.GetIID (nsISupports.class))) {
 		XPCOM.memmove (ppvObject, new long /*int*/[] {supports.getAddress ()}, C.PTR_SIZEOF);
 		AddRef ();
 		return XPCOM.NS_OK;
@@ -3697,17 +3578,17 @@ int QueryInterface (long /*int*/ riid, long /*int*/ ppvObject) {
 		AddRef ();
 		return XPCOM.NS_OK;
 	}
-	if (guid.Equals (nsIWebProgressListener.NS_IWEBPROGRESSLISTENER_IID)) {
-		XPCOM.memmove (ppvObject, new long /*int*/[] {webProgressListener.getAddress ()}, C.PTR_SIZEOF);
-		AddRef ();
-		return XPCOM.NS_OK;
-	}
-	if (guid.Equals (nsIWebProgressListener.NS_IWEBPROGRESSLISTENER_24_IID)) {
+	if (guid.Equals (IIDStore.GetIID (nsIWebProgressListener.class, MozillaVersion.VERSION_XR24, true))) {
 		XPCOM.memmove (ppvObject, new long /*int*/[] {webProgressListener_24.getAddress ()}, C.PTR_SIZEOF);
 		AddRef ();
 		return XPCOM.NS_OK;
 	}
-	if (guid.Equals (nsIWebBrowserChrome.NS_IWEBBROWSERCHROME_IID) || guid.Equals (nsIWebBrowserChrome.NS_IWEBBROWSERCHROME_24_IID)) {
+	if (guid.Equals (IIDStore.GetIID (nsIWebProgressListener.class, MozillaVersion.VERSION_XR10))) {
+		XPCOM.memmove (ppvObject, new long /*int*/[] {webProgressListener.getAddress ()}, C.PTR_SIZEOF);
+		AddRef ();
+		return XPCOM.NS_OK;
+	}
+	if (guid.Equals (IIDStore.GetIID (nsIWebBrowserChrome.class))) {
 		XPCOM.memmove (ppvObject, new long /*int*/[] {webBrowserChrome.getAddress ()}, C.PTR_SIZEOF);
 		AddRef ();
 		return XPCOM.NS_OK;
@@ -3717,17 +3598,17 @@ int QueryInterface (long /*int*/ riid, long /*int*/ ppvObject) {
 		AddRef ();
 		return XPCOM.NS_OK;
 	}
-	if (guid.Equals (nsIEmbeddingSiteWindow.NS_IEMBEDDINGSITEWINDOW_IID)) {
-		XPCOM.memmove (ppvObject, new long /*int*/[] {embeddingSiteWindow.getAddress ()}, C.PTR_SIZEOF);
-		AddRef ();
-		return XPCOM.NS_OK;
-	}
-	if (guid.Equals (nsIEmbeddingSiteWindow.NS_IEMBEDDINGSITEWINDOW_24_IID)) {
+	if (guid.Equals (IIDStore.GetIID (nsIEmbeddingSiteWindow.class, MozillaVersion.VERSION_XR24, true))) {
 		XPCOM.memmove (ppvObject, new long /*int*/[] {embeddingSiteWindow_24.getAddress ()}, C.PTR_SIZEOF);
 		AddRef ();
 		return XPCOM.NS_OK;
 	}
-	if (guid.Equals (nsIInterfaceRequestor.NS_IINTERFACEREQUESTOR_IID)) {
+	if (guid.Equals (IIDStore.GetIID (nsIEmbeddingSiteWindow.class, MozillaVersion.VERSION_XR10))) {
+		XPCOM.memmove (ppvObject, new long /*int*/[] {embeddingSiteWindow.getAddress ()}, C.PTR_SIZEOF);
+		AddRef ();
+		return XPCOM.NS_OK;
+	}
+	if (guid.Equals (IIDStore.GetIID (nsIInterfaceRequestor.class))) {
 		XPCOM.memmove (ppvObject, new long /*int*/[] {interfaceRequestor.getAddress ()}, C.PTR_SIZEOF);
 		AddRef ();
 		return XPCOM.NS_OK;
@@ -3784,7 +3665,7 @@ int GetInterface (long /*int*/ riid, long /*int*/ ppvObject) {
 	if (riid == 0 || ppvObject == 0) return XPCOM.NS_ERROR_NO_INTERFACE;
 	nsID guid = new nsID ();
 	XPCOM.memmove (guid, riid, nsID.sizeof);
-	if (guid.Equals (nsIDOMWindow.NS_IDOMWINDOW_24_IID) || guid.Equals (nsIDOMWindow.NS_IDOMWINDOW_10_IID) || guid.Equals (nsIDOMWindow.NS_IDOMWINDOW_IID)) {
+	if (guid.Equals (IIDStore.GetIID (nsIDOMWindow.class))) {
 		long /*int*/[] aContentDOMWindow = new long /*int*/[1];
 		int rc = webBrowser.GetContentDOMWindow (aContentDOMWindow);
 		if (rc != XPCOM.NS_OK) error (rc);
@@ -3863,15 +3744,9 @@ int OnStateChange (long /*int*/ aWebProgress, long /*int*/ aRequest, int aStateF
 		*/
 		if (isRetrievingBadCert) {
 			nsIRequest request = new nsIRequest (aRequest);
-			int rc = request.QueryInterface (nsIChannel.NS_ICHANNEL_24_IID, result);
-			if (rc != XPCOM.NS_OK) {
-				rc = request.QueryInterface (nsIChannel.NS_ICHANNEL_10_IID, result);
-				if (rc != XPCOM.NS_OK) {
-					rc = request.QueryInterface (nsIChannel.NS_ICHANNEL_IID, result);
-					if (rc != XPCOM.NS_OK) error (rc);
-				}
-				if (result[0] == 0) error (XPCOM.NS_NOINTERFACE);
-			}
+			int rc = request.QueryInterface (IIDStore.GetIID (nsIChannel.class), result);
+			if (rc != XPCOM.NS_OK) error (rc);
+			if (result[0] == 0) error (XPCOM.NS_NOINTERFACE);
 
 			nsIChannel channel = new nsIChannel (result[0]);
 			result[0] = 0;
@@ -3957,7 +3832,7 @@ int OnStateChange (long /*int*/ aWebProgress, long /*int*/ aRequest, int aStateF
 			result[0] = 0;
 
 			nsIDOMWindow domWindow = new nsIDOMWindow (window[0]);
-			rc = domWindow.QueryInterface (IsPre_24 ? (IsPre_4 ?  nsIDOMEventTarget.NS_IDOMEVENTTARGET_IID : nsIDOMEventTarget.NS_IDOMEVENTTARGET_10_IID) : nsIDOMEventTarget.NS_IDOMEVENTTARGET_24_IID, result);
+			rc = domWindow.QueryInterface (IIDStore.GetIID (nsIDOMEventTarget.class), result);
 			domWindow.Release();
 			if (rc != XPCOM.NS_OK) error (rc);
 			if (result[0] == 0) error (XPCOM.NS_ERROR_NO_INTERFACE);
@@ -4006,7 +3881,7 @@ int OnStateChange (long /*int*/ aWebProgress, long /*int*/ aRequest, int aStateF
 
 				nsIServiceManager serviceManager = new nsIServiceManager (result[0]);
 				result[0] = 0;
-				rc = serviceManager.GetService (XPCOM.NS_IOSERVICE_CID, nsIIOService.NS_IIOSERVICE_IID, result);
+				rc = serviceManager.GetService (XPCOM.NS_IOSERVICE_CID, IIDStore.GetIID (nsIIOService.class), result);
 				if (rc != XPCOM.NS_OK) error (rc);
 				if (result[0] == 0) error (XPCOM.NS_NOINTERFACE);
 				serviceManager.Release ();
@@ -4029,7 +3904,7 @@ int OnStateChange (long /*int*/ aWebProgress, long /*int*/ aRequest, int aStateF
 				nsIURI uri = new nsIURI (result[0]);
 				result[0] = 0;
 
-				rc = webBrowser.QueryInterface (nsIWebBrowserStream.NS_IWEBBROWSERSTREAM_IID, result);
+				rc = webBrowser.QueryInterface (IIDStore.GetIID (nsIWebBrowserStream.class), result);
 				if (rc != XPCOM.NS_OK) error (rc);
 				if (result[0] == 0) error (XPCOM.NS_NOINTERFACE);
 
@@ -4103,7 +3978,7 @@ int OnStateChange (long /*int*/ aWebProgress, long /*int*/ aRequest, int aStateF
 				result[0] = 0;
 
 				nsIDOMWindow domWindow = new nsIDOMWindow (window[0]);
-				rc = domWindow.QueryInterface (IsPre_24 ? (IsPre_4 ?  nsIDOMEventTarget.NS_IDOMEVENTTARGET_IID : nsIDOMEventTarget.NS_IDOMEVENTTARGET_10_IID) : nsIDOMEventTarget.NS_IDOMEVENTTARGET_24_IID, result);
+				rc = domWindow.QueryInterface (IIDStore.GetIID (nsIDOMEventTarget.class), result);
 				domWindow.Release();
 				if (rc != XPCOM.NS_OK) error (rc);
 				if (result[0] == 0) error (XPCOM.NS_ERROR_NO_INTERFACE);
@@ -4155,7 +4030,7 @@ int OnStateChange (long /*int*/ aWebProgress, long /*int*/ aRequest, int aStateF
 			}
 		}
 	} else if ((aStateFlags & nsIWebProgressListener.STATE_TRANSFERRING) != 0) {
-		if (!IsPre_4) {
+		if (MozillaVersion.CheckVersion (MozillaVersion.VERSION_XR10)) {
 			registerFunctionsOnState = nsIWebProgressListener.STATE_IS_REQUEST | nsIWebProgressListener.STATE_STOP;
 		}
 
@@ -4164,13 +4039,7 @@ int OnStateChange (long /*int*/ aWebProgress, long /*int*/ aRequest, int aStateF
 			nsIRequest request = new nsIRequest (aRequest);
 
 			long /*int*/[] result = new long /*int*/[1];
-			int rc = request.QueryInterface (nsIChannel.NS_ICHANNEL_24_IID, result);
-			if (rc != XPCOM.NS_OK) {
-				rc = request.QueryInterface (nsIChannel.NS_ICHANNEL_10_IID, result);
-				if (rc != XPCOM.NS_OK) {
-					rc = request.QueryInterface (nsIChannel.NS_ICHANNEL_IID, result);
-				}
-			}
+			int rc = request.QueryInterface (IIDStore.GetIID (nsIChannel.class), result);
 			if (rc == XPCOM.NS_OK && result[0] != 0) {
 				nsIChannel channel = new nsIChannel (result[0]);
 				result[0] = 0;
@@ -4216,7 +4085,7 @@ int OnStateChange (long /*int*/ aWebProgress, long /*int*/ aRequest, int aStateF
 			new nsISupports (result[0]).Release ();
 			result[0] = 0;
 
-			rc = domWindow.QueryInterface (IsPre_24 ? (IsPre_4 ?  nsIDOMEventTarget.NS_IDOMEVENTTARGET_IID : nsIDOMEventTarget.NS_IDOMEVENTTARGET_10_IID) : nsIDOMEventTarget.NS_IDOMEVENTTARGET_24_IID, result);
+			rc = domWindow.QueryInterface (IIDStore.GetIID (nsIDOMEventTarget.class), result);
 			if (rc != XPCOM.NS_OK) error (rc);
 			if (result[0] == 0) error (XPCOM.NS_ERROR_NO_INTERFACE);
 
@@ -4299,7 +4168,7 @@ int OnLocationChange (long /*int*/ aWebProgress, long /*int*/ aRequest, long /*i
 	 * to about:blank and fires the corresponding navigation events.  Do not send
 	 * this event on to the user since it is not expected.
 	 */
-	if (!IsPre_1_8 && aRequest == 0 && url.startsWith (ABOUT_BLANK)) return XPCOM.NS_OK;
+	if (MozillaVersion.CheckVersion (MozillaVersion.VERSION_XR1_8) && aRequest == 0 && url.startsWith (ABOUT_BLANK)) return XPCOM.NS_OK;
 
 	LocationEvent event = new LocationEvent (browser);
 	event.display = browser.getDisplay ();
@@ -4425,7 +4294,7 @@ int ShowAsModal () {
 	nsIServiceManager serviceManager = new nsIServiceManager (result[0]);
 	result[0] = 0;
 	byte[] aContractID = MozillaDelegate.wcsToMbcs (null, XPCOM.NS_CONTEXTSTACK_CONTRACTID, true);
-	rc = serviceManager.GetServiceByContractID (aContractID, nsIJSContextStack.NS_IJSCONTEXTSTACK_IID, result);
+	rc = serviceManager.GetServiceByContractID (aContractID, IIDStore.GetIID (nsIJSContextStack.class), result);
 	if (rc != XPCOM.NS_OK) error (rc);
 	if (result[0] == 0) error (XPCOM.NS_NOINTERFACE);
 	serviceManager.Release ();
@@ -4502,16 +4371,10 @@ int GetDimensions (int flags, long /*int*/ x, long /*int*/ y, long /*int*/ cx, l
 
 int SetFocus () {
 	long /*int*/[] result = new long /*int*/[1];
-	int rc = webBrowser.QueryInterface (nsIBaseWindow.NS_IBASEWINDOW_24_IID, result);
+	int rc = webBrowser.QueryInterface (IIDStore.GetIID (nsIBaseWindow.class), result);
 	if (rc != XPCOM.NS_OK) {
-		rc = webBrowser.QueryInterface (nsIBaseWindow.NS_IBASEWINDOW_10_IID, result);
-		if (rc != XPCOM.NS_OK) {
-			rc = webBrowser.QueryInterface (nsIBaseWindow.NS_IBASEWINDOW_IID, result);
-			if (rc != XPCOM.NS_OK) {
-				browser.dispose ();
-				error (rc);
-			}
-		}
+		browser.dispose ();
+		error (rc);
 	}
 	if (result[0] == 0) error (XPCOM.NS_ERROR_NO_INTERFACE);
 	
@@ -4655,7 +4518,7 @@ int FocusPrevElement () {
 int OnShowContextMenu (int aContextFlags, long /*int*/ aEvent, long /*int*/ aNode) {
 	nsIDOMEvent domEvent = new nsIDOMEvent (aEvent);
 	long /*int*/[] result = new long /*int*/[1];
-	int rc = domEvent.QueryInterface (IsPre_24 ? (IsPre_4 ? nsIDOMMouseEvent.NS_IDOMMOUSEEVENT_IID : nsIDOMMouseEvent.NS_IDOMMOUSEEVENT_10_IID) :nsIDOMMouseEvent.NS_IDOMMOUSEEVENT_24_IID, result);
+	int rc = domEvent.QueryInterface (IIDStore.GetIID (nsIDOMMouseEvent.class), result);
 	if (rc != XPCOM.NS_OK) error (rc);
 	if (result[0] == 0) error (XPCOM.NS_NOINTERFACE);
 
@@ -4740,7 +4603,7 @@ int IsPreferred (long /*int*/ aContentType, long /*int*/ aDesiredContentType, lo
 
 			/* First try to use the nsIWebNavigationInfo if it's available (>= mozilla 1.8) */
 			byte[] aContractID = MozillaDelegate.wcsToMbcs (null, XPCOM.NS_WEBNAVIGATIONINFO_CONTRACTID, true);
-			rc = serviceManager.GetServiceByContractID (aContractID, nsIWebNavigationInfo.NS_IWEBNAVIGATIONINFO_IID, result);
+			rc = serviceManager.GetServiceByContractID (aContractID, IIDStore.GetIID (nsIWebNavigationInfo.class), result);
 			if (rc == XPCOM.NS_OK) {
 				byte[] bytes = MozillaDelegate.wcsToMbcs (null, contentType, false);
 				long /*int*/ typePtr = XPCOM.nsEmbedCString_new (bytes, bytes.length);
@@ -4755,7 +4618,7 @@ int IsPreferred (long /*int*/ aContentType, long /*int*/ aDesiredContentType, lo
 			} else {
 				/* nsIWebNavigationInfo is not available, so do the type lookup */
 				result[0] = 0;
-				rc = serviceManager.GetService (XPCOM.NS_CATEGORYMANAGER_CID, nsICategoryManager.NS_ICATEGORYMANAGER_IID, result);
+				rc = serviceManager.GetService (XPCOM.NS_CATEGORYMANAGER_CID, IIDStore.GetIID (nsICategoryManager.class), result);
 				if (rc != XPCOM.NS_OK) error (rc);
 				if (result[0] == 0) error (XPCOM.NS_NOINTERFACE);
 
@@ -4867,7 +4730,7 @@ int HandleEvent (long /*int*/ event) {
 
 	if (XPCOM.DOMEVENT_KEYDOWN.equals (typeString)) {
 		long /*int*/[] result = new long /*int*/[1];
-		rc = domEvent.QueryInterface (IsPre_24 ? (IsPre_4 ? nsIDOMKeyEvent.NS_IDOMKEYEVENT_IID : nsIDOMKeyEvent.NS_IDOMKEYEVENT_10_IID) : nsIDOMKeyEvent.NS_IDOMKEYEVENT_24_IID, result);
+		rc = domEvent.QueryInterface (IIDStore.GetIID (nsIDOMKeyEvent.class), result);
 		if (rc != XPCOM.NS_OK) error (rc);
 		if (result[0] == 0) error (XPCOM.NS_NOINTERFACE);
 		nsIDOMKeyEvent domKeyEvent = new nsIDOMKeyEvent (result[0]);
@@ -4975,7 +4838,7 @@ int HandleEvent (long /*int*/ event) {
 		}
 
 		long /*int*/[] result = new long /*int*/[1];
-		rc = domEvent.QueryInterface (IsPre_24 ? (IsPre_4 ? nsIDOMKeyEvent.NS_IDOMKEYEVENT_IID : nsIDOMKeyEvent.NS_IDOMKEYEVENT_10_IID) : nsIDOMKeyEvent.NS_IDOMKEYEVENT_24_IID, result);
+		rc = domEvent.QueryInterface (IIDStore.GetIID (nsIDOMKeyEvent.class), result);
 		if (rc != XPCOM.NS_OK) error (rc);
 		if (result[0] == 0) error (XPCOM.NS_NOINTERFACE);
 		nsIDOMKeyEvent domKeyEvent = new nsIDOMKeyEvent (result[0]);
@@ -5030,7 +4893,7 @@ int HandleEvent (long /*int*/ event) {
 
 	if (XPCOM.DOMEVENT_KEYUP.equals (typeString)) {
 		long /*int*/[] result = new long /*int*/[1];
-		rc = domEvent.QueryInterface (IsPre_24 ? (IsPre_4 ? nsIDOMKeyEvent.NS_IDOMKEYEVENT_IID : nsIDOMKeyEvent.NS_IDOMKEYEVENT_10_IID) : nsIDOMKeyEvent.NS_IDOMKEYEVENT_24_IID, result);
+		rc = domEvent.QueryInterface (IIDStore.GetIID (nsIDOMKeyEvent.class), result);
 		if (rc != XPCOM.NS_OK) error (rc);
 		if (result[0] == 0) error (XPCOM.NS_NOINTERFACE);
 		nsIDOMKeyEvent domKeyEvent = new nsIDOMKeyEvent (result[0]);
@@ -5087,7 +4950,7 @@ int HandleEvent (long /*int*/ event) {
 	/* mouse event */
 
 	long /*int*/[] result = new long /*int*/[1];
-	rc = domEvent.QueryInterface (IsPre_24 ? (IsPre_4 ? nsIDOMMouseEvent.NS_IDOMMOUSEEVENT_IID : nsIDOMMouseEvent.NS_IDOMMOUSEEVENT_10_IID) : nsIDOMMouseEvent.NS_IDOMMOUSEEVENT_24_IID, result);
+	rc = domEvent.QueryInterface (IIDStore.GetIID (nsIDOMMouseEvent.class), result);
 	if (rc != XPCOM.NS_OK) error (rc);
 	if (result[0] == 0) error (XPCOM.NS_NOINTERFACE);
 	nsIDOMMouseEvent domMouseEvent = new nsIDOMMouseEvent (result[0]);
@@ -5219,11 +5082,8 @@ int NotifyCertProblem (long /*int*/ socketInfo, long /*int*/ status, long /*int*
 
 	long /*int*/[] result = new long /*int*/[1];
 	nsISupports supports = new nsISupports (status);
-	int rc = supports.QueryInterface (nsISSLStatus.NS_ISSLSTATUS_10_IID, result);
-	if (rc != XPCOM.NS_OK) {
-		rc = supports.QueryInterface (nsISSLStatus.NS_ISSLSTATUS_IID, result);
-		if (rc != XPCOM.NS_OK) error (rc);
-	}
+	int rc = supports.QueryInterface (IIDStore.GetIID (nsISSLStatus.class), result);
+	if (rc != XPCOM.NS_OK) error (rc);
 	if (result[0] == 0) error (XPCOM.NS_NOINTERFACE);
 
 	nsISSLStatus sslStatus = new nsISSLStatus (result[0]);
@@ -5329,7 +5189,7 @@ int NotifyCertProblem (long /*int*/ socketInfo, long /*int*/ status, long /*int*
 					nsIServiceManager serviceManager = new nsIServiceManager (result[0]);
 					result[0] = 0;
 					byte[] aContractID = MozillaDelegate.wcsToMbcs (null, XPCOM.NS_CERTOVERRIDE_CONTRACTID, true);
-					rc = serviceManager.GetServiceByContractID (aContractID, nsICertOverrideService.NS_ICERTOVERRIDESERVICE_IID, result);
+					rc = serviceManager.GetServiceByContractID (aContractID, IIDStore.GetIID (nsICertOverrideService.class), result);
 					if (rc != XPCOM.NS_OK) error (rc);
 					if (result[0] == 0) error (XPCOM.NS_NOINTERFACE);
 					serviceManager.Release ();

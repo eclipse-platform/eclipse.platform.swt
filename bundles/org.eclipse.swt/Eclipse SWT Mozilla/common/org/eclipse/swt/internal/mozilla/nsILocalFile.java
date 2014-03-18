@@ -27,21 +27,19 @@
  * ***** END LICENSE BLOCK ***** */
 package org.eclipse.swt.internal.mozilla;
 
+import org.eclipse.swt.browser.MozillaVersion;
+
 public class nsILocalFile extends nsIFile {
 
-	static final int LAST_METHOD_ID = nsIFile.LAST_METHOD_ID + (IsXULRunner24 ? 0 : 17);
+	static final int LAST_METHOD_ID = nsIFile.LAST_METHOD_ID + (IsXULRunner24() ? 0 : 17);
 
-	public static final String NS_ILOCALFILE_IID_STR =
-		"aa610f20-a889-11d3-8c81-000064657374";
-	
-	public static final String NS_ILOCALFILE_24_IID_STR =
-		"ce4ef184-7660-445e-9e59-6731bdc65505";
+	static final String NS_ILOCALFILE_IID_STR = "aa610f20-a889-11d3-8c81-000064657374";
+	static final String NS_ILOCALFILE_24_IID_STR = "ce4ef184-7660-445e-9e59-6731bdc65505";
 
-	public static final nsID NS_ILOCALFILE_IID =
-		new nsID(NS_ILOCALFILE_IID_STR);
-	
-	public static final nsID NS_ILOCALFILE_24_IID =
-		new nsID(NS_ILOCALFILE_24_IID_STR);
+	static {
+		IIDStore.RegisterIID(nsILocalFile.class, MozillaVersion.VERSION_BASE, new nsID(NS_ILOCALFILE_IID_STR));
+		IIDStore.RegisterIID(nsILocalFile.class, MozillaVersion.VERSION_XR24, new nsID(NS_ILOCALFILE_24_IID_STR));
+	}
 
 	public nsILocalFile(long /*int*/ address) {
 		super(address);

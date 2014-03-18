@@ -27,6 +27,8 @@
  * ***** END LICENSE BLOCK ***** */
 package org.eclipse.swt.internal.mozilla;
 
+import org.eclipse.swt.browser.MozillaVersion;
+
 public class nsISupports {
 
 	static final boolean IsSolaris;
@@ -34,17 +36,23 @@ public class nsISupports {
 		String osName = System.getProperty ("os.name").toLowerCase (); //$NON-NLS-1$
 		IsSolaris = osName.startsWith ("sunos") || osName.startsWith("solaris"); //$NON-NLS-1$
 	}
-	
+
 	static final int FIRST_METHOD_ID = IsSolaris ? 2 : 0;
 	static final int LAST_METHOD_ID = FIRST_METHOD_ID + 2;
 
-	public static boolean IsXULRunner10, IsXULRunner24;
-	
-	public static final String NS_ISUPPORTS_IID_STR =
-		"00000000-0000-0000-c000-000000000046";
+	protected static boolean IsXULRunner10 () {
+		return MozillaVersion.CheckVersion (MozillaVersion.VERSION_XR10, true);
+	}
 
-	public static final nsID NS_ISUPPORTS_IID =
-		new nsID(NS_ISUPPORTS_IID_STR);
+	protected static boolean IsXULRunner24 () {
+		return MozillaVersion.CheckVersion (MozillaVersion.VERSION_XR24, true);
+	}
+
+	public static final String NS_ISUPPORTS_IID_STR = "00000000-0000-0000-c000-000000000046";
+	
+	static {
+		IIDStore.RegisterIID (nsISupports.class, MozillaVersion.VERSION_BASE, new nsID (NS_ISUPPORTS_IID_STR));	
+	}
 
 	long /*int*/ address;
 

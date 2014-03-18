@@ -17,8 +17,8 @@ import org.eclipse.swt.widgets.*;
 
 /**
  * This class implements the nsIHelperAppLauncherDialog interface for mozilla
- * versions >= 1.9.  For mozilla versions 1.4 - 1.8.x this interface is
- * implemented by class HelperAppLauncherDialog.  HelperAppLauncherDialogFactory
+ * versions 1.9.x.x.  For other mozilla versions this interface is implemented
+ * by class HelperAppLauncherDialog(_10).  HelperAppLauncherDialogFactory
  * determines at runtime which of these classes to instantiate. 
  */
 class HelperAppLauncherDialog_1_9 {
@@ -80,7 +80,7 @@ int QueryInterface (long /*int*/ riid, long /*int*/ ppvObject) {
 	nsID guid = new nsID ();
 	XPCOM.memmove (guid, riid, nsID.sizeof);
 
-	if (guid.Equals (nsISupports.NS_ISUPPORTS_IID)) {
+	if (guid.Equals (IIDStore.GetIID (nsISupports.class))) {
 		XPCOM.memmove (ppvObject, new long /*int*/[] {supports.getAddress ()}, C.PTR_SIZEOF);
 		AddRef ();
 		return XPCOM.NS_OK;
@@ -111,7 +111,7 @@ int Release () {
 /* nsIHelperAppLauncherDialog */
 
 int Show (long /*int*/ aLauncher, long /*int*/ aContext, int aReason) {
-	nsIHelperAppLauncher_1_9 helperAppLauncher = new nsIHelperAppLauncher_1_9 (aLauncher);
+	nsIHelperAppLauncher_1_8 helperAppLauncher = new nsIHelperAppLauncher_1_8 (aLauncher);
 	return helperAppLauncher.SaveToDisk (0, 0);
 }
 
@@ -133,7 +133,7 @@ int PromptForSaveToFile (long /*int*/ aLauncher, long /*int*/ aWindowContext, lo
 	String name = fileDialog.open ();
 	shell.close ();
 	if (name == null) {
-		nsIHelperAppLauncher_1_9 launcher = new nsIHelperAppLauncher_1_9 (aLauncher);
+		nsIHelperAppLauncher_1_8 launcher = new nsIHelperAppLauncher_1_8 (aLauncher);
 		int rc = launcher.Cancel (XPCOM.NS_BINDING_ABORTED);
 		if (rc != XPCOM.NS_OK) Mozilla.error (rc);
 		return XPCOM.NS_ERROR_FAILURE;

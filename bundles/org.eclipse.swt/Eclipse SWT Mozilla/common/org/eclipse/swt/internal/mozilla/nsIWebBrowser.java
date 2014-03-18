@@ -27,22 +27,20 @@
  * ***** END LICENSE BLOCK ***** */
 package org.eclipse.swt.internal.mozilla;
 
+import org.eclipse.swt.browser.MozillaVersion;
+
 public class nsIWebBrowser extends nsISupports {
 
-	static final int LAST_METHOD_ID = nsISupports.LAST_METHOD_ID + ((IsXULRunner10 || IsXULRunner24) ? 9 : 7);
+	static final int LAST_METHOD_ID = nsISupports.LAST_METHOD_ID + ((IsXULRunner10() || IsXULRunner24()) ? 9 : 7);
 
-	public static final String NS_IWEBBROWSER_IID_STR =
-		"69e5df00-7b8b-11d3-af61-00a024ffc08c";
+	static final String NS_IWEBBROWSER_IID_STR = "69e5df00-7b8b-11d3-af61-00a024ffc08c";
+	static final String NS_IWEBBROWSER_10_IID_STR = "33e9d001-caab-4ba9-8961-54902f197202";
 
-	public static final String NS_IWEBBROWSER_10_IID_STR =
-		"33e9d001-caab-4ba9-8961-54902f197202";
-	
-	public static final nsID NS_IWEBBROWSER_IID =
-		new nsID(NS_IWEBBROWSER_IID_STR);
+	static {
+		IIDStore.RegisterIID(nsIWebBrowser.class, MozillaVersion.VERSION_BASE, new nsID(NS_IWEBBROWSER_IID_STR));
+		IIDStore.RegisterIID(nsIWebBrowser.class, MozillaVersion.VERSION_XR10, new nsID(NS_IWEBBROWSER_10_IID_STR));
+	}
 
-	public static final nsID NS_IWEBBROWSER_10_IID =
-		new nsID(NS_IWEBBROWSER_10_IID_STR);
-	
 	public nsIWebBrowser(long /*int*/ address) {
 		super(address);
 	}

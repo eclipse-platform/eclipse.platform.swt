@@ -27,15 +27,17 @@
  * ***** END LICENSE BLOCK ***** */
 package org.eclipse.swt.internal.mozilla;
 
+import org.eclipse.swt.browser.MozillaVersion;
+
 public class nsIWritableVariant extends nsIVariant {
 
 	static final int LAST_METHOD_ID = nsIVariant.LAST_METHOD_ID + 31;
 
-	public static final String NS_IWRITABLEVARIANT_IID_STR =
-		"5586a590-8c82-11d5-90f3-0010a4e73d9a";
+	static final String NS_IWRITABLEVARIANT_IID_STR = "5586a590-8c82-11d5-90f3-0010a4e73d9a";
 
-	public static final nsID NS_IWRITABLEVARIANT_IID =
-		new nsID(NS_IWRITABLEVARIANT_IID_STR);
+	static {
+		IIDStore.RegisterIID(nsIWritableVariant.class, MozillaVersion.VERSION_BASE, new nsID(NS_IWRITABLEVARIANT_IID_STR));
+	}
 
 	public nsIWritableVariant(long /*int*/ address) {
 		super(address);
@@ -47,7 +49,7 @@ public class nsIWritableVariant extends nsIVariant {
 
 	public int SetAsBool(int aValue) {
 		/* mozilla's representation of boolean changed from 4 bytes to 1 byte as of XULRunner 4.x */
-		if (IsXULRunner10 || IsXULRunner24) {
+		if (IsXULRunner10() || IsXULRunner24()) {
 			return XPCOM.VtblCall(nsIVariant.LAST_METHOD_ID + 13, getAddress(), (byte)aValue);
 		}
 		return XPCOM.VtblCall(nsIVariant.LAST_METHOD_ID + 13, getAddress(), aValue);

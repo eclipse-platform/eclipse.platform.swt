@@ -70,7 +70,7 @@ int QueryInterface (long /*int*/ riid, long /*int*/ ppvObject) {
 	nsID guid = new nsID ();
 	XPCOM.memmove (guid, riid, nsID.sizeof);
 	
-	if (guid.Equals (nsISupports.NS_ISUPPORTS_IID)) {
+	if (guid.Equals (IIDStore.GetIID (nsISupports.class))) {
 		XPCOM.memmove (ppvObject, new long /*int*/[] {supports.getAddress ()}, C.PTR_SIZEOF);
 		AddRef ();
 		return XPCOM.NS_OK;
@@ -97,7 +97,7 @@ int GetPrompt (long /*int*/ aParent, long /*int*/ iid, long /*int*/ result) {
 	nsID guid = new nsID ();
 	XPCOM.memmove (guid, iid, nsID.sizeof);
 	
-	if (guid.Equals (nsIPrompt.NS_IPROMPT_IID)) {
+	if (guid.Equals (IIDStore.GetIID (nsIPrompt.class))) {
 		Prompter prompter = new Prompter ();
 		prompter.AddRef ();
 		prompter.setParent (aParent);

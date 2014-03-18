@@ -27,21 +27,19 @@
  * ***** END LICENSE BLOCK ***** */
 package org.eclipse.swt.internal.mozilla;
 
+import org.eclipse.swt.browser.MozillaVersion;
+
 public class nsIURI extends nsISupports {
 	
-	static final int LAST_METHOD_ID = nsISupports.LAST_METHOD_ID + ((IsXULRunner10 || IsXULRunner24) ? 32 : 26);
+	static final int LAST_METHOD_ID = nsISupports.LAST_METHOD_ID + ((IsXULRunner10() || IsXULRunner24()) ? 32 : 26);
 
-	public static final String NS_IURI_IID_STR =
-		"07a22cc0-0ce5-11d3-9331-00104ba0fd40";
+	static final String NS_IURI_IID_STR = "07a22cc0-0ce5-11d3-9331-00104ba0fd40";
+	static final String NS_IURI_10_IID_STR = "395fe045-7d18-4adb-a3fd-af98c8a1af11";
 
-	public static final String NS_IURI_10_IID_STR =
-		"395fe045-7d18-4adb-a3fd-af98c8a1af11";
-
-	public static final nsID NS_IURI_IID =
-		new nsID(NS_IURI_IID_STR);
-	
-	public static final nsID NS_IURI_10_IID =
-			new nsID(NS_IURI_10_IID_STR);
+	static {
+		IIDStore.RegisterIID(nsIURI.class, MozillaVersion.VERSION_BASE, new nsID(NS_IURI_IID_STR));
+		IIDStore.RegisterIID(nsIURI.class, MozillaVersion.VERSION_XR10, new nsID(NS_IURI_10_IID_STR));
+	}
 
 	public nsIURI(long /*int*/ address) {
 		super(address);

@@ -182,7 +182,7 @@ int QueryInterface (long /*int*/ riid, long /*int*/ ppvObject) {
 	nsID guid = new nsID ();
 	XPCOM.memmove (guid, riid, nsID.sizeof);
 
-	if (guid.Equals (nsISupports.NS_ISUPPORTS_IID)) {
+	if (guid.Equals (IIDStore.GetIID (nsISupports.class))) {
 		XPCOM.memmove (ppvObject, new long /*int*/[] {supports.getAddress ()}, C.PTR_SIZEOF);
 		AddRef();
 		return XPCOM.NS_OK;
@@ -197,7 +197,7 @@ int QueryInterface (long /*int*/ riid, long /*int*/ ppvObject) {
 		AddRef();
 		return XPCOM.NS_OK;
 	}
-	if (guid.Equals (nsIWebProgressListener.NS_IWEBPROGRESSLISTENER_IID)) {
+	if (guid.Equals (IIDStore.GetIID (nsIWebProgressListener.class))) {
 		XPCOM.memmove (ppvObject, new long /*int*/[] {webProgressListener.getAddress ()}, C.PTR_SIZEOF);
 		AddRef();
 		return XPCOM.NS_OK;
@@ -235,7 +235,7 @@ int Init (long /*int*/ aSource, long /*int*/ aTarget, long /*int*/ aDisplayName,
 	String filename = null;
 	nsISupports supports = new nsISupports (aTarget);
 	long /*int*/[] result = new long /*int*/[1];
-	rc = supports.QueryInterface (!Mozilla.IsPre_4 ? nsIURI.NS_IURI_10_IID : nsIURI.NS_IURI_IID, result);
+	rc = supports.QueryInterface (IIDStore.GetIID (nsIURI.class), result);
 	if (rc == XPCOM.NS_OK) {	/* >= 1.7 */
 		nsIURI target = new nsIURI (result[0]);
 		result[0] = 0;
@@ -355,7 +355,7 @@ int SetObserver (long /*int*/ aObserver) {
 	if (aObserver != 0) {
 		nsISupports supports = new nsISupports (aObserver);
 		long /*int*/[] result = new long /*int*/[1];
-		int rc = supports.QueryInterface (nsIHelperAppLauncher.NS_IHELPERAPPLAUNCHER_IID, result);
+		int rc = supports.QueryInterface (IIDStore.GetIID (nsIHelperAppLauncher.class), result);
 		if (rc != XPCOM.NS_OK) Mozilla.error (rc);
 		if (result[0] == 0) Mozilla.error (XPCOM.NS_ERROR_NO_INTERFACE);
 		helperAppLauncher = new nsIHelperAppLauncher (result[0]);

@@ -27,15 +27,17 @@
  * ***** END LICENSE BLOCK ***** */
 package org.eclipse.swt.internal.mozilla;
 
+import org.eclipse.swt.browser.MozillaVersion;
+
 public class nsIJSContextStack extends nsISupports {
 
 	static final int LAST_METHOD_ID = nsISupports.LAST_METHOD_ID + 4;
 
-	public static final String NS_IJSCONTEXTSTACK_IID_STR =
-		"c67d8270-3189-11d3-9885-006008962422";
+	static final String NS_IJSCONTEXTSTACK_IID_STR = "c67d8270-3189-11d3-9885-006008962422";
 
-	public static final nsID NS_IJSCONTEXTSTACK_IID =
-		new nsID(NS_IJSCONTEXTSTACK_IID_STR);
+	static {
+		IIDStore.RegisterIID(nsIJSContextStack.class, MozillaVersion.VERSION_BASE, new nsID(NS_IJSCONTEXTSTACK_IID_STR));
+	}
 
 	public nsIJSContextStack(long /*int*/ address) {
 		super(address);

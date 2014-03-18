@@ -27,18 +27,22 @@
  * ***** END LICENSE BLOCK ***** */
 package org.eclipse.swt.internal.mozilla;
 
+import org.eclipse.swt.browser.MozillaVersion;
+
 public class nsICookieService extends nsISupports {
 
 	static final int LAST_METHOD_ID = nsISupports.LAST_METHOD_ID + 5;
 
-	public static final String NS_ICOOKIESERVICE_IID_STR =
-		"011c3190-1434-11d6-a618-0010a401eb10";
-
-	public static final nsID NS_ICOOKIESERVICE_IID =
-		new nsID(NS_ICOOKIESERVICE_IID_STR);
+	static final String NS_ICOOKIESERVICE_IID_STR = "011c3190-1434-11d6-a618-0010a401eb10";
+	static final String NS_ICOOKIESERVICE_1_9_IID_STR = "2aaa897a-293c-4d2b-a657-8c9b7136996d";
 
 	public nsICookieService(long /*int*/ address) {
 		super(address);
+	}
+
+	static {
+		IIDStore.RegisterIID(nsICookieService.class, MozillaVersion.VERSION_BASE, new nsID(NS_ICOOKIESERVICE_IID_STR));
+		IIDStore.RegisterIID(nsICookieService.class, MozillaVersion.VERSION_XR1_9, new nsID(NS_ICOOKIESERVICE_1_9_IID_STR));
 	}
 
 	public int GetCookieString(long /*int*/ aURI, long /*int*/ aChannel, long /*int*/[] _retval) {

@@ -91,7 +91,7 @@ static String[] getJSLibraryNames () {
 	return new String[] {"libmozjs.so"}; //$NON-NLS-1$
 }
 
-static String getJSLibraryName_Pre4() {
+static String getJSLibraryName_Pre10() {
 	return "libxpcom.so"; //$NON-NLS-1$
 }
 
@@ -107,7 +107,7 @@ static String getSWTInitLibraryName () {
 static void loadAdditionalLibraries (String mozillaPath, boolean isGlued) {
 // the following is intentionally commented
 
-//	if (!Mozilla.IsPre_4) {
+//	if (!Mozilla.IsPre_10) {
 //		System.loadLibrary ("swt-xulrunner10"); // get it extracted
 //		byte[] bytes = Converter.wcsToMbcs (null, /* path to libswt-xulrunner10.so */ "", true); //$NON-NLS-1$
 //		OS.dlopen (bytes, OS.RTLD_NOW | OS.RTLD_GLOBAL);
