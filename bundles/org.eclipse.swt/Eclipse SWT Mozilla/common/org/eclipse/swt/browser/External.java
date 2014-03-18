@@ -545,7 +545,7 @@ void createCOMInterfaces () {
 	};
 
 	if (GetScriptableFlags24Proc != null) {
-		long /*int*/ ppVtable = xpcScriptable.ppVtable;
+		long /*int*/ ppVtable = xpcScriptable.getVtable ();
 		long /*int*/[] pVtable = new long /*int*/[1];
 		C.memmove (pVtable, ppVtable, C.PTR_SIZEOF);
 		long /*int*/[] funcs = new long /*int*/[24];

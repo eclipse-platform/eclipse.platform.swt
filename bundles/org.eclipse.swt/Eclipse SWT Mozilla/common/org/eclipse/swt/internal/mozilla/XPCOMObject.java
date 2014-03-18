@@ -23,7 +23,7 @@ public class XPCOMObject {
 		IsSolaris = osName.startsWith ("sunos") || osName.startsWith("solaris"); //$NON-NLS-1$
 	}
 	
-	public long /*int*/ ppVtable;
+	long /*int*/ ppVtable;
 
 	static private final int MAX_ARG_COUNT = 12;
 	static private final int MAX_VTABLE_LENGTH = 80;
@@ -50,7 +50,11 @@ public XPCOMObject (int[] argCounts) {
 	XPCOM.memmove (ppVtable, new long /*int*/[] {pVtable}, C.PTR_SIZEOF);
 	ObjectMap.put (new LONG (ppVtable), this);
 }
-	
+
+public long /*int*/ getVtable () {
+	return ppVtable;
+}
+
 static long /*int*/ callback0 (long /*int*/[] callbackArgs) {
 	// find the object on which this call was invoked
 	long /*int*/ address = callbackArgs[0];
