@@ -317,7 +317,7 @@ public boolean close () {
 }
 
 public void createFunction (BrowserFunction function) {
-	/* 
+	/*
 	 * If an existing function with the same name is found then
 	 * remove it so that it is not recreated on subsequent pages
 	 * (the new function overwrites the old one).
@@ -382,7 +382,7 @@ void deregisterFunction (BrowserFunction function) {
 }
 
 public void destroyFunction (BrowserFunction function) {
-	String deleteString = getDeleteFunctionString (function.name); 
+	String deleteString = getDeleteFunctionString (function.name);
 	StringBuffer buffer = new StringBuffer ("for (var i = 0; i < frames.length; i++) {try {frames[i].eval(\""); //$NON-NLS-1$
 	buffer.append (deleteString);
 	buffer.append ("\");} catch (e) {}}"); //$NON-NLS-1$
@@ -694,13 +694,13 @@ boolean sendKeyEvent (Event event) {
 	boolean doit = true;
 	if (traversal != SWT.TRAVERSE_NONE) {
 		boolean oldEventDoit = event.doit;
-		event.doit = traverseDoit;	
+		event.doit = traverseDoit;
 		doit = !browser.traverse (traversal, event);
 		event.doit = oldEventDoit;
 	}
 	if (doit) {
 		browser.notifyListeners (event.type, event);
-		doit = event.doit; 
+		doit = event.doit;
 	}
 	return doit;
 }

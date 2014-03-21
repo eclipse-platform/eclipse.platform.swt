@@ -305,7 +305,7 @@ static long /*int*/ JSObjectGetPropertyProc (long /*int*/ ctx, long /*int*/ obje
 		bytes = (FUNCTIONNAME_CALLJAVA + '\0').getBytes (CHARSET_UTF8); //$NON-NLS-1$
 	} catch (UnsupportedEncodingException e) {
 		bytes = Converter.wcsToMbcs (null, FUNCTIONNAME_CALLJAVA, true);
-	} 
+	}
 	long /*int*/ name = WebKitGTK.JSStringCreateWithUTF8CString (bytes);
 	long /*int*/ function = WebKitGTK.JSObjectMakeFunctionWithCallback (ctx, name, JSObjectCallAsFunctionProc.getAddress ());
 	WebKitGTK.JSStringRelease (name);
@@ -825,7 +825,7 @@ public void create (Composite parent, int style) {
 void addEventHandlers (long /*int*/ web_view, boolean top) {
 	/*
 	* If JS is disabled (causes DOM events to not be delivered) then do not add event
-	* listeners here, DOM events will be inferred from received GDK events instead. 
+	* listeners here, DOM events will be inferred from received GDK events instead.
 	*/
 	if (!jsEnabled) return;
 
@@ -846,7 +846,7 @@ void addEventHandlers (long /*int*/ web_view, boolean top) {
 			* The following two lines are intentionally commented because they cannot be used to
 			* consistently send MouseEnter/MouseExit events until https://bugs.webkit.org/show_bug.cgi?id=35246
 			* is fixed.
-			*/ 
+			*/
 			//WebKitGTK.webkit_dom_event_target_add_event_listener (domWindow, WebKitGTK.mouseover, JSDOMEventProc.getAddress (), 0, SWT.MouseEnter);
 			//WebKitGTK.webkit_dom_event_target_add_event_listener (domWindow, WebKitGTK.mouseout, JSDOMEventProc.getAddress (), 0, SWT.MouseExit);
 		}
@@ -876,7 +876,7 @@ void addEventHandlers (long /*int*/ web_view, boolean top) {
 		* The following two lines are intentionally commented because they cannot be used to
 		* consistently send MouseEnter/MouseExit events until https://bugs.webkit.org/show_bug.cgi?id=35246
 		* is fixed.
-		*/ 
+		*/
 		//buffer.append ("document.addEventListener('mouseover', SWTmousehandler, true);"); //$NON-NLS-1$
 		//buffer.append ("document.addEventListener('mouseout', SWTmousehandler, true);"); //$NON-NLS-1$
 
@@ -930,7 +930,7 @@ boolean close (boolean showPrompters) {
 		buffer.append (message2);
 		buffer.append ("');"); // $NON-NLS-1$
 		buffer.append ("if (!result) return false;}"); // $NON-NLS-1$
-	}	
+	}
 	buffer.append ("} catch (e) {}}"); // $NON-NLS-1$
 	buffer.append ("try {for (var i = 0; i < win.frames.length; i++) {var result = "); // $NON-NLS-1$
 	buffer.append (functionName);
@@ -1076,15 +1076,15 @@ boolean handleDOMEvent (long /*int*/ event, int type) {
 		}
 		case SWT.KeyDown: {
 			typeString = "keydown"; //$NON-NLS-1$
-			break;	
+			break;
 		}
 		case SWT.KeyUp: {
 			typeString = "keyup"; //$NON-NLS-1$
-			break;	
+			break;
 		}
 		case SENTINEL_KEYPRESS: {
 			typeString = "keypress"; //$NON-NLS-1$
-			break;	
+			break;
 		}
 	}
 
@@ -1132,7 +1132,7 @@ boolean handleEventFromFunction (Object[] arguments) {
 	* handleKeyEvent()/handleMouseEvent() event handler methods.
 	*/
 
-	/* 
+	/*
 	* The arguments for key events are:
 	* 	argument 0: type (String)
 	* 	argument 1: keyCode (Double)
@@ -1142,7 +1142,7 @@ boolean handleEventFromFunction (Object[] arguments) {
 	* 	argument 5: shiftKey (Boolean)
 	* 	argument 6: metaKey (Boolean)
 	* 	returns doit
-	* 
+	*
 	* The arguments for mouse events are:
 	* 	argument 0: type (String)
 	* 	argument 1: screenX (Double)
@@ -1322,7 +1322,7 @@ boolean handleMouseEvent (String type, int screenX, int screenY, int detail, int
 	/*
 	* The following is intentionally commented because MouseOver and MouseOut events
 	* are not being hooked until https://bugs.webkit.org/show_bug.cgi?id=35246 is fixed.
-	*/ 
+	*/
 	//if (type.equals (DOMEVENT_MOUSEOVER) || type.equals (DOMEVENT_MOUSEOUT)) {
 	//	if (((Boolean)arguments[9]).booleanValue ()) return true;
 	//}
@@ -1334,7 +1334,7 @@ boolean handleMouseEvent (String type, int screenX, int screenY, int detail, int
 	 * level page.  Convert screen-relative coordinates to be browser-relative.
 	 */
 	Point position = new Point (screenX, screenY);
-	position = browser.getDisplay ().map (null, browser, position); 
+	position = browser.getDisplay ().map (null, browser, position);
 
 	Event mouseEvent = new Event ();
 	mouseEvent.widget = browser;
@@ -1376,7 +1376,7 @@ boolean handleMouseEvent (String type, int screenX, int screenY, int detail, int
 	/*
 	* The following is intentionally commented because MouseOver and MouseOut events
 	* are not being hooked until https://bugs.webkit.org/show_bug.cgi?id=35246 is fixed.
-	*/ 
+	*/
 	//} else if (type.equals (DOMEVENT_MOUSEOVER)) {
 	//	mouseEvent.type = SWT.MouseEnter;
 	//} else if (type.equals (DOMEVENT_MOUSEOUT)) {
@@ -1431,7 +1431,7 @@ long /*int*/ handleLoadCommitted (long /*int*/ uri, boolean top) {
 	* twice, once for the initial navigate to about:blank, and once for the auto-navigate
 	* to about:blank that WebKit does when webkit_web_view_load_string is invoked.  If
 	* this is the first webkit_notify_load_status callback received for a setText()
-	* invocation then do not send any events or re-install registered BrowserFunctions. 
+	* invocation then do not send any events or re-install registered BrowserFunctions.
 	*/
 	if (top && url.startsWith(ABOUT_BLANK) && htmlBytes != null) return 0;
 
@@ -1487,7 +1487,7 @@ long /*int*/ handleLoadFinished (long /*int*/ uri, boolean top) {
 
 	/*
 	 * If htmlBytes is not null then there is html from a previous setText() call
-	 * waiting to be set into the about:blank page once it has completed loading. 
+	 * waiting to be set into the about:blank page once it has completed loading.
 	 */
 	if (top && htmlBytes != null) {
 		if (url.startsWith(ABOUT_BLANK)) {
@@ -1558,7 +1558,7 @@ void onDispose (Event e) {
 		((BrowserFunction)elements.nextElement ()).dispose (false);
 	}
 	functions = null;
-	
+
 	if (eventFunction != null) {
 		eventFunction.dispose (false);
 		eventFunction = null;
@@ -1722,7 +1722,7 @@ public boolean setUrl (String url, String postData, String[] headers) {
 		String testUrl = null;
 		if (url.charAt (0) == SEPARATOR_FILE) {
 			/* appears to be a local file */
-			testUrl = PROTOCOL_FILE + url; 
+			testUrl = PROTOCOL_FILE + url;
 		} else {
 			testUrl = PROTOCOL_HTTP + url;
 		}
@@ -1918,7 +1918,7 @@ long /*int*/ webkit_mime_type_policy_decision_requested (long /*int*/ web_view, 
 
 long /*int*/ webkit_navigation_policy_decision_requested (long /*int*/ web_view, long /*int*/ frame, long /*int*/ request, long /*int*/ navigation_action, long /*int*/ policy_decision) {
 	if (loadingText) {
-		/* 
+		/*
 		 * WebKit is auto-navigating to about:blank in response to a
 		 * webkit_web_view_load_string() invocation.  This navigate
 		 * should always proceed without sending an event since it is
@@ -1974,12 +1974,12 @@ long /*int*/ webkit_navigation_policy_decision_requested (long /*int*/ web_view,
 		}
 
 		/*
-		* The following line is intentionally commented.  For some reason, invoking 
+		* The following line is intentionally commented.  For some reason, invoking
 		* webkit_web_policy_decision_use(policy_decision) causes the Flash plug-in
 		* to crash when navigating to a page with Flash.  Since returning from this
 		* callback without invoking webkit_web_policy_decision_ignore(policy_decision)
 		* implies that the page should be loaded, it's fine to not invoke
-		* webkit_web_policy_decision_use(policy_decision) here. 
+		* webkit_web_policy_decision_use(policy_decision) here.
 		*/
 		//WebKitGTK.webkit_web_policy_decision_use (policy_decision);
 	} else {
@@ -2099,7 +2099,7 @@ long /*int*/ webkit_notify_progress (long /*int*/ web_view, long /*int*/ pspec) 
 	event.current = (int) (progress * MAX_PROGRESS);
 	event.total = MAX_PROGRESS;
 	for (int i = 0; i < progressListeners.length; i++) {
-		progressListeners[i].changed (event);				
+		progressListeners[i].changed (event);
 	}
 	return 0;
 }
@@ -2317,7 +2317,7 @@ long /*int*/ webkit_window_object_cleared (long /*int*/ web_view, long /*int*/ f
 		bytes = (OBJECTNAME_EXTERNAL + '\0').getBytes (CHARSET_UTF8);
 	} catch (UnsupportedEncodingException e) {
 		bytes = Converter.wcsToMbcs (null, OBJECTNAME_EXTERNAL, true);
-	} 
+	}
 	long /*int*/ name = WebKitGTK.JSStringCreateWithUTF8CString (bytes);
 	WebKitGTK.JSObjectSetProperty (context, globalObject, name, externalObject, 0, null);
 	WebKitGTK.JSStringRelease (name);
