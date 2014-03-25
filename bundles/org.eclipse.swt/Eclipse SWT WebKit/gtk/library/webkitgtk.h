@@ -43,6 +43,7 @@
 		if (handle) { \
 			var = dlsym(handle, #name); \
 		} \
+		CHECK_DLERROR \
 		initialized = 1; \
 	}
 

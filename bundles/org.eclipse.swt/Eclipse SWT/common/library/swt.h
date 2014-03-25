@@ -28,6 +28,19 @@ extern "C" {
 
 extern int IS_JNI_1_2;
 
+/* #define DEBUG */
+
+/* if DEBUG is defined print messages from dlerror */
+#ifdef DEBUG
+#define CHECK_DLERROR \
+    char* error = dlerror(); \
+    if (error != NULL) { \
+        fprintf(stderr, "dlerror: %s\n", error); \
+    }
+#else
+#define CHECK_DLERROR
+#endif
+
 #ifndef JNI64
 #if __x86_64__
 #define JNI64
@@ -131,6 +144,7 @@ extern int IS_JNI_1_2;
 			void* handle = dlopen(name##_LIB, LOAD_FLAGS); \
 			if (handle) var = dlsym(handle, #name); \
 			initialized = 1; \
+	                CHECK_DLERROR \
 		}
 #endif
 
