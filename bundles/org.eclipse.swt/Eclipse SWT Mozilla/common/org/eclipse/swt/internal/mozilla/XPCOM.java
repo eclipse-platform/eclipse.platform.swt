@@ -27,7 +27,6 @@
  * ***** END LICENSE BLOCK ***** */
 package org.eclipse.swt.internal.mozilla;
 
-import org.eclipse.swt.browser.MozillaVersion;
 import org.eclipse.swt.internal.*;
 
 /** @jniclass flags=cpp */

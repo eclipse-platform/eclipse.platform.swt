@@ -8,7 +8,7 @@
  * Contributors:
  *     IBM Corporation - initial API and implementation
  *******************************************************************************/
-package org.eclipse.swt.browser;
+package org.eclipse.swt.internal.mozilla;
 
 
 public class MozillaVersion {

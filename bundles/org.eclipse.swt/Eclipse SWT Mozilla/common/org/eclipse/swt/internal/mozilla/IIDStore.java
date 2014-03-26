@@ -11,7 +11,7 @@
 package org.eclipse.swt.internal.mozilla;
 
 import java.util.HashMap;
-import org.eclipse.swt.browser.MozillaVersion;
+
 import org.eclipse.swt.internal.C;
 
 public abstract class IIDStore {

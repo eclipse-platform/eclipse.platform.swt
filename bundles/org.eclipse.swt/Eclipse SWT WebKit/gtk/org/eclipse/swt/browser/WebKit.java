@@ -464,7 +464,7 @@ long /*int*/ sessionProc (long /*int*/ session, long /*int*/ msg, long /*int*/ a
 	byte[] bytes = new byte[length];
 	OS.memmove (bytes, uriString, length);
 	OS.g_free (uriString);
-	String location = new String (MozillaDelegate.mbcsToWcs (null, bytes));
+	String location = new String (Converter.mbcsToWcs (null, bytes));
 
 	for (int i = 0; i < authenticationListeners.length; i++) {
 		AuthenticationEvent event = new AuthenticationEvent (browser);

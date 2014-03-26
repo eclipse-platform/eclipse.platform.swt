@@ -27,7 +27,6 @@
  * ***** END LICENSE BLOCK ***** */
 package org.eclipse.swt.internal.mozilla;
 
-import org.eclipse.swt.browser.MozillaVersion;
 
 public class nsIComponentRegistrar extends nsISupports {
 
