@@ -376,8 +376,10 @@ void setAllowedFileType (String fileType) {
 		panel.setAllowedFileTypes(null);
 		return;
 	}
-	if (fileType.startsWith ("*.")) {
-		fileType = fileType.substring (2);
+	if (fileType.startsWith("*.")) {
+		fileType = fileType.substring(2);
+	} else if (fileType.startsWith(".")) {
+		fileType = fileType.substring(1);
 	}
 	NSMutableArray allowedFileTypes = NSMutableArray.arrayWithCapacity(1);
 	allowedFileTypes.addObject(NSString.stringWith(fileType));
