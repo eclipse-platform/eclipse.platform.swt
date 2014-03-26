@@ -175,10 +175,6 @@ public class MozillaGenerator {
 		writeLine(COPYRIGHTS);
 	}
 
-	public void writeImports() {
-		writeLine("import org.eclipse.swt.internal.mozilla.MozillaVersion;");
-	}
-
 	public void writePackageDeclaration() {
 		writeLine(PACKAGE_DECLARATION);
 	}
@@ -350,8 +346,6 @@ public class MozillaGenerator {
 			/* writing */
 			writeCopyrights();
 			writePackageDeclaration();
-			writeLine();
-			writeImports();
 			writeLine();
 			writeClassDeclaration(className, parentName);
 			writeLine();
