@@ -290,6 +290,8 @@ public class Display extends Device {
 	
 	/* Pango layout constructor */
 	long /*int*/ pangoLayoutNewProc;
+	long /*int*/ pangoFontFamilyNewProc;
+	long /*int*/ pangoFontFaceNewProc;
 	
 	/* IM Context constructor */
 	long /*int*/ imContextNewProc;
@@ -2810,6 +2812,18 @@ void initializeSubclasses () {
 		imContextNewProc = OS.G_OBJECT_CLASS_CONSTRUCTOR (imContextClass);
 		OS.G_OBJECT_CLASS_SET_CONSTRUCTOR (imContextClass, OS.imContextNewProc_CALLBACK(imContextNewProc));
 		OS.g_type_class_unref (imContextClass);
+		
+		long /*int*/ pangoFontFamilyType = OS.PANGO_TYPE_FONT_FAMILY ();
+		long /*int*/ pangoFontFamilyClass = OS.g_type_class_ref (pangoFontFamilyType);
+		pangoFontFamilyNewProc = OS.G_OBJECT_CLASS_CONSTRUCTOR (pangoFontFamilyClass);
+		OS.G_OBJECT_CLASS_SET_CONSTRUCTOR (pangoFontFamilyClass, OS.pangoFontFamilyNewProc_CALLBACK(pangoFontFamilyNewProc));
+		OS.g_type_class_unref (pangoFontFamilyClass);
+		
+		long /*int*/ pangoFontFaceType = OS.PANGO_TYPE_FONT_FACE ();
+		long /*int*/ pangoFontFaceClass = OS.g_type_class_ref (pangoFontFaceType);
+		pangoFontFaceNewProc = OS.G_OBJECT_CLASS_CONSTRUCTOR (pangoFontFaceClass);
+		OS.G_OBJECT_CLASS_SET_CONSTRUCTOR (pangoFontFaceClass, OS.pangoFontFaceNewProc_CALLBACK(pangoFontFaceNewProc));
+		OS.g_type_class_unref (pangoFontFaceClass);
 	}
 }
 
@@ -3605,6 +3619,16 @@ void releaseDisplay () {
 		OS.G_OBJECT_CLASS_SET_CONSTRUCTOR (imContextClass, imContextNewProc);
 		OS.g_type_class_unref (imContextClass);
 		imContextNewProc = 0;
+		long /*int*/ pangoFontFamilyType = OS.PANGO_TYPE_FONT_FAMILY ();
+		long /*int*/ pangoFontFamilyClass = OS.g_type_class_ref (pangoFontFamilyType);
+		OS.G_OBJECT_CLASS_SET_CONSTRUCTOR (pangoFontFamilyClass, pangoFontFamilyNewProc);
+		OS.g_type_class_unref (pangoFontFamilyClass);
+		pangoFontFamilyNewProc = 0;
+		long /*int*/ pangoFontFaceType = OS.PANGO_TYPE_FONT_FACE ();
+		long /*int*/ pangoFontFaceClass = OS.g_type_class_ref (pangoFontFaceType);
+		OS.G_OBJECT_CLASS_SET_CONSTRUCTOR (pangoFontFaceClass, pangoFontFaceNewProc);
+		OS.g_type_class_unref (pangoFontFaceClass);
+		pangoFontFaceNewProc = 0;
 	}
 	
 	/* Release the sleep resources */

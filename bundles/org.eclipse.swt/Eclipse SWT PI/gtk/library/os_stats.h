@@ -173,6 +173,8 @@ typedef enum {
 	_1G_1TYPE_1STRING_FUNC,
 	_1PANGO_1PIXELS_FUNC,
 	_1PANGO_1TYPE_1FONT_1DESCRIPTION_FUNC,
+	_1PANGO_1TYPE_1FONT_1FACE_FUNC,
+	_1PANGO_1TYPE_1FONT_1FAMILY_FUNC,
 	_1PANGO_1TYPE_1LAYOUT_FUNC,
 	_1XCheckIfEvent_FUNC,
 	_1XDefaultRootWindow_FUNC,
@@ -1826,6 +1828,8 @@ typedef enum {
 #else
 	memmove__Lorg_eclipse_swt_internal_gtk_XVisibilityEvent_2JJ_FUNC,
 #endif
+	pangoFontFaceNewProc_1CALLBACK_FUNC,
+	pangoFontFamilyNewProc_1CALLBACK_FUNC,
 	pangoLayoutNewProc_1CALLBACK_FUNC,
 	realpath_FUNC,
 	strcmp_FUNC,

@@ -118,6 +118,41 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(pangoLayoutNewProc_1CALLBACK)
 	return rc;
 }
 #endif
+#ifndef NO_pangoFontFamilyNewProc_1CALLBACK
+static jintLong superPangoFontFamilyNewProc;
+static PangoFontFamily * pangoFontFamilyNewProc (GType type, guint n_construct_properties, GObjectConstructParam * construct_properties) {
+	PangoFontFamily* fontFamily = ((PangoFontFamily * (*)(GType, guint, GObjectConstructParam *))superPangoFontFamilyNewProc)(type, n_construct_properties, construct_properties);
+	return fontFamily;
+}
+JNIEXPORT jintLong JNICALL OS_NATIVE(pangoFontFamilyNewProc_1CALLBACK)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, pangoFontFamilyNewProc_1CALLBACK_FUNC);
+	superPangoFontFamilyNewProc = arg0;
+	rc = (jintLong)pangoFontFamilyNewProc;
+	OS_NATIVE_EXIT(env, that, pangoFontFamilyNewProc_1CALLBACK_FUNC);
+	return rc;
+}
+#endif
+#ifndef NO_pangoFontFaceNewProc_1CALLBACK
+static jintLong superPangoFontFaceNewProc;
+static PangoFontFace * pangoFontFaceNewProc (GType type, guint n_construct_properties, GObjectConstructParam * construct_properties) {
+	PangoFontFace* fontFace = ((PangoFontFace * (*)(GType, guint, GObjectConstructParam *))superPangoFontFaceNewProc)(type, n_construct_properties, construct_properties);
+	return fontFace;
+}
+JNIEXPORT jintLong JNICALL OS_NATIVE(pangoFontFaceNewProc_1CALLBACK)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, pangoFontFaceNewProc_1CALLBACK_FUNC);
+	superPangoFontFaceNewProc = arg0;
+	rc = (jintLong)pangoFontFaceNewProc;
+	OS_NATIVE_EXIT(env, that, pangoFontFaceNewProc_1CALLBACK_FUNC);
+	return rc;
+}
+#endif
+
 
 #ifndef NO__1gtk_1file_1chooser_1dialog_1new
 JNIEXPORT jintLong JNICALL OS_NATIVE(_1gtk_1file_1chooser_1dialog_1new)

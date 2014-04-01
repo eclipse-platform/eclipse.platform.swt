@@ -163,6 +163,8 @@ char * OS_nativeFunctionNames[] = {
 	"_1G_1TYPE_1STRING",
 	"_1PANGO_1PIXELS",
 	"_1PANGO_1TYPE_1FONT_1DESCRIPTION",
+	"_1PANGO_1TYPE_1FONT_1FACE",
+	"_1PANGO_1TYPE_1FONT_1FAMILY",
 	"_1PANGO_1TYPE_1LAYOUT",
 	"_1XCheckIfEvent",
 	"_1XDefaultRootWindow",
@@ -1816,6 +1818,8 @@ char * OS_nativeFunctionNames[] = {
 #else
 	"memmove__Lorg_eclipse_swt_internal_gtk_XVisibilityEvent_2JJ",
 #endif
+	"pangoFontFaceNewProc_1CALLBACK",
+	"pangoFontFamilyNewProc_1CALLBACK",
 	"pangoLayoutNewProc_1CALLBACK",
 	"realpath",
 	"strcmp",

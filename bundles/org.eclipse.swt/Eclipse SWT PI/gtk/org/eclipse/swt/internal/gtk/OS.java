@@ -1462,6 +1462,10 @@ public static final long /*int*/ XRenderFindVisualFormat(long /*int*/ display, l
 /** @method flags=no_gen */
 public static final native long /*int*/ pangoLayoutNewProc_CALLBACK(long /*int*/ func);
 /** @method flags=no_gen */
+public static final native long /*int*/ pangoFontFamilyNewProc_CALLBACK(long /*int*/ func);
+/** @method flags=no_gen */
+public static final native long /*int*/ pangoFontFaceNewProc_CALLBACK(long /*int*/ func);
+/** @method flags=no_gen */
 public static final native long /*int*/ imContextNewProc_CALLBACK(long /*int*/ func);
 /** @method flags=no_gen */
 public static final native long /*int*/ imContextLast();
@@ -1873,6 +1877,26 @@ public static final long /*int*/ PANGO_TYPE_FONT_DESCRIPTION() {
 	lock.lock();
 	try {
 		return _PANGO_TYPE_FONT_DESCRIPTION();
+	} finally {
+		lock.unlock();
+	}
+}
+/** @method flags=const */
+public static final native long /*int*/ _PANGO_TYPE_FONT_FAMILY();
+public static final long /*int*/ PANGO_TYPE_FONT_FAMILY() {
+	lock.lock();
+	try {
+		return _PANGO_TYPE_FONT_FAMILY();
+	} finally {
+		lock.unlock();
+	}
+}
+/** @method flags=const */
+public static final native long /*int*/ _PANGO_TYPE_FONT_FACE();
+public static final long /*int*/ PANGO_TYPE_FONT_FACE() {
+	lock.lock();
+	try {
+		return _PANGO_TYPE_FONT_FACE();
 	} finally {
 		lock.unlock();
 	}
