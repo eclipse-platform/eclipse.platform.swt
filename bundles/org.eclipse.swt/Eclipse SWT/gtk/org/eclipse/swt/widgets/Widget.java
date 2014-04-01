@@ -1642,7 +1642,7 @@ public void setData (String key, Object value) {
 void setFontDescription (long /*int*/ widget, long /*int*/ font) {
 	if (OS.GTK3) {
 		OS.gtk_widget_override_font (widget, font);
-		long /*int*/ context = OS.gtk_widget_get_style_context (handle);
+		long /*int*/ context = OS.gtk_widget_get_style_context (widget);
 		OS.gtk_style_context_invalidate (context);
 	} else {
 		OS.gtk_widget_modify_font (widget, font);
