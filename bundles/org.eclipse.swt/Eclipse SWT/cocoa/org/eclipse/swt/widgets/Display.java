@@ -122,6 +122,9 @@ public class Display extends Device {
 	Synchronizer synchronizer;
 	Thread thread;
 	boolean allowTimers = true, runAsyncMessages = true;
+	
+	/* AWT Invoke Later */
+	static final String RUN_AWT_INVOKE_LATER_KEY = "org.eclipse.swt.internal.runAWTInvokeLater"; //$NON-NLS-1$
 
 	GCData[] contexts;
 
@@ -3978,6 +3981,18 @@ boolean runAsyncMessages (boolean all) {
 	return synchronizer.runAsyncMessages (all);
 }
 
+boolean runAWTInvokeLater() {
+	long /*int*/ cls = OS.objc_lookUpClass("JNFRunLoop");
+	if (cls == 0) return false;
+	long /*int*/ mode = OS.objc_msgSend(cls, OS.sel_javaRunLoopMode);
+	if (mode == 0) return false;	
+	NSString javaRunLoopMode = new NSString(mode);
+	allowTimers = runAsyncMessages = false;
+	NSRunLoop.currentRunLoop().runMode(javaRunLoopMode, NSDate.distantFuture());
+	allowTimers = runAsyncMessages = true;
+	return true;
+}
+
 boolean runContexts () {
 	if (contexts != null) {
 		for (int i = 0; i < contexts.length; i++) {
@@ -4444,6 +4459,12 @@ public void setData (String key, Object value) {
 	
 	if (key.equals (LOCK_CURSOR)) {
 		lockCursor = ((Boolean)value).booleanValue ();
+	}
+	
+	if (key.equals(RUN_AWT_INVOKE_LATER_KEY)) {
+		if (value != null) {
+			value = new Boolean (runAWTInvokeLater());
+		}
 	}
 
 	/* Remove the key/value pair */

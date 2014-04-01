@@ -47,6 +47,11 @@ public class SWT_AWT {
 	 */
 	static String EMBEDDED_FRAME_KEY = "org.eclipse.swt.awt.SWT_AWT.embeddedFrame";
 	
+	/**
+	 * Key for running pending AWT invokeLater() events. 
+	 */
+	static final String RUN_AWT_INVOKE_LATER_KEY = "org.eclipse.swt.internal.runAWTInvokeLater"; //$NON-NLS-1$
+	
 	static {
 		System.setProperty("apple.awt.usingSWT", "true");
 	}
@@ -136,18 +141,18 @@ public static Frame new_Frame(final Composite parent) {
 	}
 	
 	final long /*int*/ handle = parent.view.id;
-	
-	Class clazz = null;
+
+	final Class [] clazz = new Class [1];
 	try {
 		String className = embeddedFrameClass != null ? embeddedFrameClass : JDK16_FRAME;
 		if (embeddedFrameClass == null) {
-			clazz = Class.forName(className, true, ClassLoader.getSystemClassLoader());
+			clazz[0] = Class.forName(className, true, ClassLoader.getSystemClassLoader());
 		} else {
-			clazz = Class.forName(className);
+			clazz[0] = Class.forName(className);
 		}
 	} catch (ClassNotFoundException cne) {
 		try {
-			clazz = Class.forName(JDK17_FRAME);
+			clazz[0] = Class.forName(JDK17_FRAME);
 		} catch (ClassNotFoundException cne1) {
 			SWT.error (SWT.ERROR_NOT_IMPLEMENTED, cne1);
 		}
@@ -155,18 +160,48 @@ public static Frame new_Frame(final Composite parent) {
 		SWT.error (SWT.ERROR_UNSPECIFIED , e, " [Error while starting AWT]");		
 	}
 	
+	/* NOTE: Swing must not be initialize in an invokeLater() or it hangs */
 	initializeSwing();
-	Object value = null;
-	Constructor constructor = null;
-	try {
-		constructor = clazz.getConstructor (new Class [] {long.class});
-		value = constructor.newInstance (new Object [] {new Long(handle)});
-	} catch (Throwable e) {
-		SWT.error(SWT.ERROR_NOT_IMPLEMENTED, e);
+
+	final Frame [] result = new Frame [1];
+	final Throwable[] exception = new Throwable[1];
+	Runnable runnable = new Runnable () {
+		boolean run;
+		public void run() {
+			if (run) return;
+			run = true;
+			Constructor constructor = null;
+			try {
+				constructor = clazz[0].getConstructor (new Class [] {long.class});
+				result [0] = (Frame) (constructor.newInstance (new Object [] {new Long(handle)}));
+				result [0].addNotify();
+			} catch (Throwable e) {
+				exception[0] = e;
+			}
+		}
+	};
+	if (EventQueue.isDispatchThread() || parent.getDisplay().getSyncThread() != null) {
+		runnable.run();
+	} else {
+		/* Force AWT to process the invokeLater() right away */
+		EventQueue.invokeLater(runnable);
+		Display display = parent.getDisplay();
+		while (result[0] == null && exception[0] == null) {
+			display.setData(RUN_AWT_INVOKE_LATER_KEY, new Boolean (true));
+			Boolean invoked = (Boolean)display.getData(RUN_AWT_INVOKE_LATER_KEY);
+			if (invoked != null && !invoked.booleanValue()) {
+				runnable.run();
+			}
+		}
 	}
-	final Frame frame = (Frame) value;
+	if (exception[0] != null) {
+		SWT.error (SWT.ERROR_NOT_IMPLEMENTED, exception[0]);
+	}
+	final Frame frame = result[0];
 	final boolean isJDK17 = JDK17_FRAME.equals(frame.getClass().getName());
-	frame.addNotify();
+	
+	/* NOTE: addNotify() should not be called in the UI thread or we could hang */
+	//frame.addNotify();
 	
 	parent.setData(EMBEDDED_FRAME_KEY, frame);
 	
