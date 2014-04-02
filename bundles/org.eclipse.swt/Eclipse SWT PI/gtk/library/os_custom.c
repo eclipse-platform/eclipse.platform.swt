@@ -152,6 +152,23 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(pangoFontFaceNewProc_1CALLBACK)
 	return rc;
 }
 #endif
+#ifndef NO_printerOptionWidgetNewProc_1CALLBACK
+static jintLong superPrinterOptionWidgetNewProc;
+static GType * printerOptionWidgetNewProc (GType type, guint n_construct_properties, GObjectConstructParam * construct_properties) {
+	GType* printerOptionWidget = ((GType * (*)(GType, guint, GObjectConstructParam *))superPrinterOptionWidgetNewProc)(type, n_construct_properties, construct_properties);
+	return printerOptionWidget;
+}
+JNIEXPORT jintLong JNICALL OS_NATIVE(printerOptionWidgetNewProc_1CALLBACK)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, printerOptionWidgetNewProc_1CALLBACK_FUNC);
+	superPrinterOptionWidgetNewProc = arg0;
+	rc = (jintLong)printerOptionWidgetNewProc;
+	OS_NATIVE_EXIT(env, that, printerOptionWidgetNewProc_1CALLBACK_FUNC);
+	return rc;
+}
+#endif
 
 
 #ifndef NO__1gtk_1file_1chooser_1dialog_1new

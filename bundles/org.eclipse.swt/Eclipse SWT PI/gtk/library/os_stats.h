@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2013 IBM Corporation and others. All rights reserved.
+ * Copyright (c) 2000, 2014 IBM Corporation and others. All rights reserved.
  * The contents of this file are made available under the terms
  * of the GNU Lesser General Public License (LGPL) Version 2.1 that
  * accompanies this distribution (lgpl-v21.txt).  The LGPL is also
@@ -989,6 +989,7 @@ typedef enum {
 	_1gtk_1printer_1get_1backend_FUNC,
 	_1gtk_1printer_1get_1name_FUNC,
 	_1gtk_1printer_1is_1default_FUNC,
+	_1gtk_1printer_1option_1widget_1get_1type_FUNC,
 	_1gtk_1progress_1bar_1new_FUNC,
 	_1gtk_1progress_1bar_1pulse_FUNC,
 	_1gtk_1progress_1bar_1set_1fraction_FUNC,
@@ -1831,6 +1832,7 @@ typedef enum {
 	pangoFontFaceNewProc_1CALLBACK_FUNC,
 	pangoFontFamilyNewProc_1CALLBACK_FUNC,
 	pangoLayoutNewProc_1CALLBACK_FUNC,
+	printerOptionWidgetNewProc_1CALLBACK_FUNC,
 	realpath_FUNC,
 	strcmp_FUNC,
 } OS_FUNCS;

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2013 IBM Corporation and others. All rights reserved.
+ * Copyright (c) 2000, 2014 IBM Corporation and others. All rights reserved.
  * The contents of this file are made available under the terms
  * of the GNU Lesser General Public License (LGPL) Version 2.1 that
  * accompanies this distribution (lgpl-v21.txt).  The LGPL is also
@@ -979,6 +979,7 @@ char * OS_nativeFunctionNames[] = {
 	"_1gtk_1printer_1get_1backend",
 	"_1gtk_1printer_1get_1name",
 	"_1gtk_1printer_1is_1default",
+	"_1gtk_1printer_1option_1widget_1get_1type",
 	"_1gtk_1progress_1bar_1new",
 	"_1gtk_1progress_1bar_1pulse",
 	"_1gtk_1progress_1bar_1set_1fraction",
@@ -1821,6 +1822,7 @@ char * OS_nativeFunctionNames[] = {
 	"pangoFontFaceNewProc_1CALLBACK",
 	"pangoFontFamilyNewProc_1CALLBACK",
 	"pangoLayoutNewProc_1CALLBACK",
+	"printerOptionWidgetNewProc_1CALLBACK",
 	"realpath",
 	"strcmp",
 };

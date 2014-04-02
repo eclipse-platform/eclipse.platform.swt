@@ -411,6 +411,7 @@
 #define gtk_paint_shadow_gap_LIB LIB_GTK
 #define gtk_paint_option_LIB LIB_GTK
 #define gtk_paint_layout_LIB LIB_GTK
+#define gtk_printer_option_widget_get_type_LIB LIB_GTK
 #define gtk_print_unix_dialog_set_embed_page_setup_LIB LIB_GTK
 #define gtk_render_check_LIB LIB_GTK
 #define gtk_render_extension_LIB LIB_GTK

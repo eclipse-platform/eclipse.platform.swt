@@ -1466,6 +1466,8 @@ public static final native long /*int*/ pangoFontFamilyNewProc_CALLBACK(long /*i
 /** @method flags=no_gen */
 public static final native long /*int*/ pangoFontFaceNewProc_CALLBACK(long /*int*/ func);
 /** @method flags=no_gen */
+public static final native long /*int*/ printerOptionWidgetNewProc_CALLBACK(long /*int*/ func);
+/** @method flags=no_gen */
 public static final native long /*int*/ imContextNewProc_CALLBACK(long /*int*/ func);
 /** @method flags=no_gen */
 public static final native long /*int*/ imContextLast();
@@ -1897,6 +1899,16 @@ public static final long /*int*/ PANGO_TYPE_FONT_FACE() {
 	lock.lock();
 	try {
 		return _PANGO_TYPE_FONT_FACE();
+	} finally {
+		lock.unlock();
+	}
+}
+/** @method flags=dynamic */
+public static final native long /*int*/ _gtk_printer_option_widget_get_type();
+public static final long /*int*/ gtk_printer_option_widget_get_type() {
+	lock.lock();
+	try {
+		return _gtk_printer_option_widget_get_type();
 	} finally {
 		lock.unlock();
 	}
