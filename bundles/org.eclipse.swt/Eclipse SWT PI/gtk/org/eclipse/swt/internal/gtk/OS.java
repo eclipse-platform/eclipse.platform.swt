@@ -9052,7 +9052,6 @@ public static final void gtk_orientable_set_orientation(long /*int*/ orientable,
 		lock.unlock();
 	}
 }
-/** @method flags=dynamic */
 public static final native long /*int*/ _gtk_page_setup_new ();
 public static final long /*int*/ gtk_page_setup_new () {
 	lock.lock();
@@ -9062,7 +9061,9 @@ public static final long /*int*/ gtk_page_setup_new () {
 		lock.unlock();
 	}
 }
-/** @method flags=dynamic */
+/** 
+ * @param setup cast=(GtkPageSetup *)
+ */
 public static final native int _gtk_page_setup_get_orientation(long /*int*/ setup);
 public static final int gtk_page_setup_get_orientation(long /*int*/ setup) {
 	lock.lock();
@@ -9072,7 +9073,10 @@ public static final int gtk_page_setup_get_orientation(long /*int*/ setup) {
 		lock.unlock();
 	}
 }
-/** @method flags=dynamic */
+/** 
+ * @param setup cast=(GtkPageSetup *)
+ * @param orientation cast=(GtkPageOrientation)
+ */
 public static final native void _gtk_page_setup_set_orientation(long /*int*/ setup, int orientation);
 public static final void gtk_page_setup_set_orientation(long /*int*/ setup, int orientation) {
 	lock.lock();
@@ -9082,7 +9086,9 @@ public static final void gtk_page_setup_set_orientation(long /*int*/ setup, int 
 		lock.unlock();
 	}
 }
-/** @method flags=dynamic */
+/** 
+ * @param setup cast=(GtkPageSetup *)
+ */
 public static final native long /*int*/ _gtk_page_setup_get_paper_size(long /*int*/ setup);
 public static final long /*int*/ gtk_page_setup_get_paper_size(long /*int*/ setup) {
 	lock.lock();
@@ -9092,7 +9098,10 @@ public static final long /*int*/ gtk_page_setup_get_paper_size(long /*int*/ setu
 		lock.unlock();
 	}
 }
-/** @method flags=dynamic */
+/** 
+ * @param setup cast=(GtkPageSetup *)
+ * @param size cast=(GtkPaperSize *)
+ */
 public static final native void _gtk_page_setup_set_paper_size(long /*int*/ setup, long /*int*/ size);
 public static final void gtk_page_setup_set_paper_size(long /*int*/ setup, long /*int*/ size) {
 	lock.lock();
@@ -9102,7 +9111,10 @@ public static final void gtk_page_setup_set_paper_size(long /*int*/ setup, long 
 		lock.unlock();
 	}
 }
-/** @method flags=dynamic */
+/** 
+ * @param setup cast=(GtkPageSetup *)
+ * @param unit cast=(GtkUnit)
+ */
 public static final native double _gtk_page_setup_get_top_margin(long /*int*/ setup, int unit);
 public static final double gtk_page_setup_get_top_margin(long /*int*/ setup, int unit) {
 	lock.lock();
@@ -9112,7 +9124,11 @@ public static final double gtk_page_setup_get_top_margin(long /*int*/ setup, int
 		lock.unlock();
 	}
 }
-/** @method flags=dynamic */
+/** 
+ * @param setup cast=(GtkPageSetup *)
+ * @param margin cast=(gdouble)
+ * @param unit cast=(GtkUnit)
+ */
 public static final native void _gtk_page_setup_set_top_margin(long /*int*/ setup, double margin, int unit);
 public static final void gtk_page_setup_set_top_margin(long /*int*/ setup, double margin, int unit) {
 	lock.lock();
@@ -9122,7 +9138,11 @@ public static final void gtk_page_setup_set_top_margin(long /*int*/ setup, doubl
 		lock.unlock();
 	}
 }
-/** @method flags=dynamic */
+/**
+ * @param setup cast=(GtkPageSetup *)
+ * @param unit cast=(GtkUnit)
+ *  
+ */
 public static final native double _gtk_page_setup_get_bottom_margin(long /*int*/ setup, int unit);
 public static final double gtk_page_setup_get_bottom_margin(long /*int*/ setup, int unit) {
 	lock.lock();
@@ -9132,7 +9152,11 @@ public static final double gtk_page_setup_get_bottom_margin(long /*int*/ setup, 
 		lock.unlock();
 	}
 }
-/** @method flags=dynamic */
+/** 
+ * @param setup cast=(GtkPageSetup *)
+ * @param margin cast=(gdouble)
+ * @param unit cast=(GtkUnit)
+ */
 public static final native void _gtk_page_setup_set_bottom_margin(long /*int*/ setup, double margin, int unit);
 public static final void gtk_page_setup_set_bottom_margin(long /*int*/ setup, double margin, int unit) {
 	lock.lock();
@@ -9142,7 +9166,10 @@ public static final void gtk_page_setup_set_bottom_margin(long /*int*/ setup, do
 		lock.unlock();
 	}
 }
-/** @method flags=dynamic */
+/** 
+ * @param setup cast=(GtkPageSetup *)
+ * @param unit cast=(GtkUnit)
+ */
 public static final native double _gtk_page_setup_get_left_margin(long /*int*/ setup, int unit);
 public static final double gtk_page_setup_get_left_margin(long /*int*/ setup, int unit) {
 	lock.lock();
@@ -9152,7 +9179,11 @@ public static final double gtk_page_setup_get_left_margin(long /*int*/ setup, in
 		lock.unlock();
 	}
 }
-/** @method flags=dynamic */
+/** 
+ * @param setup cast=(GtkPageSetup *)
+ * @param margin cast=(gdouble)
+ * @param unit cast=(GtkUnit)
+ */
 public static final native void _gtk_page_setup_set_left_margin(long /*int*/ setup, double margin, int unit);
 public static final void gtk_page_setup_set_left_margin(long /*int*/ setup, double margin, int unit) {
 	lock.lock();
@@ -9162,7 +9193,10 @@ public static final void gtk_page_setup_set_left_margin(long /*int*/ setup, doub
 		lock.unlock();
 	}
 }
-/** @method flags=dynamic */
+/** 
+ * @param setup cast=(GtkPageSetup *)
+ * @param unit cast=(GtkUnit)
+ */
 public static final native double _gtk_page_setup_get_right_margin(long /*int*/ setup, int unit);
 public static final double gtk_page_setup_get_right_margin(long /*int*/ setup, int unit) {
 	lock.lock();
@@ -9172,7 +9206,11 @@ public static final double gtk_page_setup_get_right_margin(long /*int*/ setup, i
 		lock.unlock();
 	}
 }
-/** @method flags=dynamic */
+/** 
+ * @param setup cast=(GtkPageSetup *)
+ * @param margin cast=(gdouble)
+ * @param unit cast=(GtkUnit)
+ */
 public static final native void _gtk_page_setup_set_right_margin(long /*int*/ setup, double margin, int unit);
 public static final void gtk_page_setup_set_right_margin(long /*int*/ setup, double margin, int unit) {
 	lock.lock();
@@ -9182,7 +9220,10 @@ public static final void gtk_page_setup_set_right_margin(long /*int*/ setup, dou
 		lock.unlock();
 	}
 }
-/** @method flags=dynamic */
+/** 
+ * @param setup cast=(GtkPageSetup *)
+ * @param unit cast=(GtkUnit)
+ */
 public static final native double _gtk_page_setup_get_paper_width(long /*int*/ setup, int unit);
 public static final double gtk_page_setup_get_paper_width(long /*int*/ setup, int unit) {
 	lock.lock();
@@ -9192,7 +9233,10 @@ public static final double gtk_page_setup_get_paper_width(long /*int*/ setup, in
 		lock.unlock();
 	}
 }
-/** @method flags=dynamic */
+/** 
+ * @param setup cast=(GtkPageSetup *)
+ * @param unit cast=(GtkUnit)
+ */
 public static final native double _gtk_page_setup_get_paper_height(long /*int*/ setup, int unit);
 public static final double gtk_page_setup_get_paper_height(long /*int*/ setup, int unit) {
 	lock.lock();
@@ -9202,7 +9246,10 @@ public static final double gtk_page_setup_get_paper_height(long /*int*/ setup, i
 		lock.unlock();
 	}
 }
-/** @method flags=dynamic */
+/** 
+ * @param setup cast=(GtkPageSetup *)
+ * @param unit cast=(GtkUnit)
+ */
 public static final native double _gtk_page_setup_get_page_width(long /*int*/ setup, int unit);
 public static final double gtk_page_setup_get_page_width(long /*int*/ setup, int unit) {
 	lock.lock();
@@ -9212,7 +9259,10 @@ public static final double gtk_page_setup_get_page_width(long /*int*/ setup, int
 		lock.unlock();
 	}
 }
-/** @method flags=dynamic */
+/** 
+ * @param setup cast=(GtkPageSetup *)
+ * @param unit cast=(GtkUnit)
+ */
 public static final native double _gtk_page_setup_get_page_height(long /*int*/ setup, int unit);
 public static final double gtk_page_setup_get_page_height(long /*int*/ setup, int unit) {
 	lock.lock();
@@ -9628,7 +9678,9 @@ public static final void gtk_render_line(long /*int*/ context, long /*int*/ cr, 
 		lock.unlock();
 	}
 }
-/** @method flags=dynamic */
+/** 
+ * @param size cast=(GtkPaperSize *)
+ */
 public static final native void _gtk_paper_size_free(long /*int*/ size);
 public static final void gtk_paper_size_free(long /*int*/ size) {
 	lock.lock();
@@ -9638,7 +9690,9 @@ public static final void gtk_paper_size_free(long /*int*/ size) {
 		lock.unlock();
 	}
 }
-/** @method flags=dynamic */
+/** 
+ * @param name cast=(const gchar *)
+ */
 public static final native long /*int*/ _gtk_paper_size_new(byte [] name);
 public static final long /*int*/ gtk_paper_size_new(byte [] name) {
 	lock.lock();
@@ -9648,7 +9702,12 @@ public static final long /*int*/ gtk_paper_size_new(byte [] name) {
 		lock.unlock();
 	}
 }
-/** @method flags=dynamic */
+/** 
+ * @param ppd_name cast=(const gchar *)
+ * @param ppd_display_name cast=(const gchar *)
+ * @param width cast=(gdouble)
+ * @param height cast=(gdouble)
+ */
 public static final native long /*int*/ _gtk_paper_size_new_from_ppd(byte [] ppd_name, byte [] ppd_display_name, double width, double height);
 public static final long /*int*/ gtk_paper_size_new_from_ppd(byte [] ppd_name, byte [] ppd_display_name, double width, double height) {
 	lock.lock();
@@ -9658,7 +9717,13 @@ public static final long /*int*/ gtk_paper_size_new_from_ppd(byte [] ppd_name, b
 		lock.unlock();
 	}
 }
-/** @method flags=dynamic */
+/** 
+ * @param name cast=(const gchar *)
+ * @param display_name cast=(const gchar *)
+ * @param width cast=(gdouble)
+ * @param height cast=(gdouble)
+ * @param unit cast=(GtkUnit)
+ */
 public static final native long /*int*/ _gtk_paper_size_new_custom(byte [] name, byte [] display_name, double width, double height, int unit);
 public static final long /*int*/ gtk_paper_size_new_custom(byte [] name, byte [] display_name, double width, double height, int unit) {
 	lock.lock();
@@ -9668,7 +9733,9 @@ public static final long /*int*/ gtk_paper_size_new_custom(byte [] name, byte []
 		lock.unlock();
 	}
 }
-/** @method flags=dynamic */
+/** 
+ * @param size cast=(GtkPaperSize *)
+ */
 public static final native long /*int*/ _gtk_paper_size_get_name(long /*int*/ size);
 public static final long /*int*/ gtk_paper_size_get_name(long /*int*/ size) {
 	lock.lock();
@@ -9678,7 +9745,9 @@ public static final long /*int*/ gtk_paper_size_get_name(long /*int*/ size) {
 		lock.unlock();
 	}
 }
-/** @method flags=dynamic */
+/** 
+ * @param size cast=(GtkPaperSize *)
+ */
 public static final native long /*int*/ _gtk_paper_size_get_display_name(long /*int*/ size);
 public static final long /*int*/ gtk_paper_size_get_display_name(long /*int*/ size) {
 	lock.lock();
@@ -9688,7 +9757,9 @@ public static final long /*int*/ gtk_paper_size_get_display_name(long /*int*/ si
 		lock.unlock();
 	}
 }
-/** @method flags=dynamic */
+/** 
+ * @param size cast=(GtkPaperSize *)
+ */
 public static final native long /*int*/ _gtk_paper_size_get_ppd_name(long /*int*/ size);
 public static final long /*int*/ gtk_paper_size_get_ppd_name(long /*int*/ size) {
 	lock.lock();
@@ -9698,7 +9769,10 @@ public static final long /*int*/ gtk_paper_size_get_ppd_name(long /*int*/ size) 
 		lock.unlock();
 	}
 }
-/** @method flags=dynamic */
+/** 
+ * @param size cast=(GtkPaperSize *)
+ * @param unit cast=(GtkUnit)
+ */
 public static final native double _gtk_paper_size_get_width(long /*int*/ size, int unit);
 public static final double gtk_paper_size_get_width(long /*int*/ size, int unit) {
 	lock.lock();
@@ -9708,7 +9782,10 @@ public static final double gtk_paper_size_get_width(long /*int*/ size, int unit)
 		lock.unlock();
 	}
 }
-/** @method flags=dynamic */
+/** 
+ * @param size cast=(GtkPaperSize *)
+ * @param unit cast=(GtkUnit)
+ */
 public static final native double _gtk_paper_size_get_height(long /*int*/ size, int unit);
 public static final double gtk_paper_size_get_height(long /*int*/ size, int unit) {
 	lock.lock();
@@ -9718,7 +9795,9 @@ public static final double gtk_paper_size_get_height(long /*int*/ size, int unit
 		lock.unlock();
 	}
 }
-/** @method flags=dynamic */
+/** 
+ * @param size cast=(GtkPaperSize *)
+ */
 public static final native boolean _gtk_paper_size_is_custom(long /*int*/ size);
 public static final boolean gtk_paper_size_is_custom(long /*int*/ size) {
 	lock.lock();
@@ -9737,7 +9816,9 @@ public static final long /*int*/ gtk_plug_new(long /*int*/ socket_id) {
 		lock.unlock();
 	}
 }
-/** @method flags=dynamic */
+/** 
+ * @param printer cast=(GtkPrinter *)
+ */
 public static final native long /*int*/ _gtk_printer_get_backend(long /*int*/ printer);
 public static final long /*int*/ gtk_printer_get_backend(long /*int*/ printer) {
 	lock.lock();
@@ -9747,7 +9828,9 @@ public static final long /*int*/ gtk_printer_get_backend(long /*int*/ printer) {
 		lock.unlock();
 	}
 }
-/** @method flags=dynamic */
+/** 
+ * @param printer cast=(GtkPrinter *)
+ */
 public static final native long /*int*/ _gtk_printer_get_name(long /*int*/ printer);
 public static final long /*int*/ gtk_printer_get_name(long /*int*/ printer) {
 	lock.lock();
@@ -9757,7 +9840,9 @@ public static final long /*int*/ gtk_printer_get_name(long /*int*/ printer) {
 		lock.unlock();
 	}
 }
-/** @method flags=dynamic */
+/** 
+ * @param printer cast=(GtkPrinter *)
+ */
 public static final native boolean _gtk_printer_is_default(long /*int*/ printer);
 public static final boolean gtk_printer_is_default(long /*int*/ printer) {
 	lock.lock();
@@ -9768,7 +9853,7 @@ public static final boolean gtk_printer_is_default(long /*int*/ printer) {
 	}
 }
 /**
- * @method flags=dynamic
+ * @param func cast=(GtkPrinterFunc)
  * @param data cast=(gpointer)
  * @param destroy cast=(GDestroyNotify)
  * @param wait cast=(gboolean)
@@ -9783,8 +9868,10 @@ public static final void gtk_enumerate_printers(long /*int*/ func, long /*int*/d
 	}
 }
 /**
- * @method flags=dynamic
  * @param title cast=(const gchar *)
+ * @param printer cast=(GtkPrinter *)
+ * @param settings cast=(GtkPrintSettings *)
+ * @param page_setup cast=(GtkPageSetup *)
  */
 public static final native long /*int*/ _gtk_print_job_new(byte[] title, long /*int*/ printer, long /*int*/ settings, long /*int*/ page_setup);
 public static final long /*int*/ gtk_print_job_new(byte[] title, long /*int*/ printer, long /*int*/ settings, long /*int*/ page_setup) {
@@ -9796,7 +9883,7 @@ public static final long /*int*/ gtk_print_job_new(byte[] title, long /*int*/ pr
 	}
 }
 /**
- * @method flags=dynamic
+ * @param job cast=(GtkPrintJob *)
  * @param error cast=(GError **)
  */
 public static final native long /*int*/ _gtk_print_job_get_surface(long /*int*/ job, long /*int*/ error[]);
@@ -9809,7 +9896,8 @@ public static final long /*int*/ gtk_print_job_get_surface(long /*int*/ job, lon
 	}
 }
 /**
- * @method flags=dynamic
+ * @param job cast=(GtkPrintJob *)
+ * @param callback cast=(GtkPrintJobCompleteFunc)
  * @param user_data cast=(gpointer)
  * @param dnotify cast=(GDestroyNotify)
  */
@@ -9822,7 +9910,6 @@ public static final void gtk_print_job_send(long /*int*/ job, long /*int*/ callb
 		lock.unlock();
 	}
 }
-/** @method flags=dynamic */
 public static final native long /*int*/ _gtk_print_settings_new();
 public static final long /*int*/ gtk_print_settings_new() {
 	lock.lock();
@@ -9833,7 +9920,8 @@ public static final long /*int*/ gtk_print_settings_new() {
 	}
 }
 /**
- * @method flags=dynamic
+ * @param settings cast=(GtkPrintSettings *)
+ * @param func cast=(GtkPrintSettingsFunc)
  * @param data cast=(gpointer)
  */
 public static final native void _gtk_print_settings_foreach(long /*int*/ settings, long /*int*/ func, long /*int*/ data);
@@ -9846,7 +9934,7 @@ public static final void gtk_print_settings_foreach(long /*int*/ settings, long 
 	}
 }
 /**
- * @method flags=dynamic
+ * @param settings cast=(GtkPrintSettings *)
  * @param key cast=(const gchar *)
  */
 public static final native long /*int*/ _gtk_print_settings_get(long /*int*/ settings, byte [] key);
@@ -9859,7 +9947,7 @@ public static final long /*int*/ gtk_print_settings_get(long /*int*/ settings, b
 	}
 }
 /**
- * @method flags=dynamic
+ * @param settings cast=(GtkPrintSettings *)
  * @param key cast=(const gchar *)
  * @param value cast=(const gchar *)
  */
@@ -9872,7 +9960,10 @@ public static final void gtk_print_settings_set(long /*int*/ settings, byte [] k
 		lock.unlock();
 	}
 }
-/** @method flags=dynamic */
+/**
+ * @param settings cast=(GtkPrintSettings *)
+ * @param printer cast=(const gchar *)
+ */
 public static final native void _gtk_print_settings_set_printer(long /*int*/ settings, byte[] printer);
 public static final void gtk_print_settings_set_printer(long /*int*/ settings, byte[] printer) {
 	lock.lock();
@@ -9882,7 +9973,10 @@ public static final void gtk_print_settings_set_printer(long /*int*/ settings, b
 		lock.unlock();
 	}
 }
-/** @method flags=dynamic */
+/**
+ * @param settings cast=(GtkPrintSettings *)
+ * @param orientation cast=(GtkPageOrientation)
+ */
 public static final native void _gtk_print_settings_set_orientation(long /*int*/ settings, int orientation);
 public static final void gtk_print_settings_set_orientation(long /*int*/ settings, int orientation) {
 	lock.lock();
@@ -9892,7 +9986,9 @@ public static final void gtk_print_settings_set_orientation(long /*int*/ setting
 		lock.unlock();
 	}
 }
-/** @method flags=dynamic */
+/**
+ * @param settings cast=(GtkPrintSettings *)
+ */
 public static final native boolean _gtk_print_settings_get_collate(long /*int*/ settings);
 public static final boolean gtk_print_settings_get_collate(long /*int*/ settings) {
 	lock.lock();
@@ -9903,7 +9999,7 @@ public static final boolean gtk_print_settings_get_collate(long /*int*/ settings
 	}
 }
 /**
- * @method flags=dynamic
+ * @param settings cast=(GtkPrintSettings *)
  * @param collate cast=(gboolean)
  */
 public static final native void _gtk_print_settings_set_collate(long /*int*/ settings, boolean collate);
@@ -9915,7 +10011,9 @@ public static final void gtk_print_settings_set_collate(long /*int*/ settings, b
 		lock.unlock();
 	}
 }
-/** @method flags=dynamic */
+/**
+ * @param settings cast=(GtkPrintSettings *)
+ */
 public static final native int _gtk_print_settings_get_duplex(long /*int*/ settings);
 public static final int gtk_print_settings_get_duplex(long /*int*/ settings) {
 	lock.lock();
@@ -9925,7 +10023,10 @@ public static final int gtk_print_settings_get_duplex(long /*int*/ settings) {
 		lock.unlock();
 	}
 }
-/** @method flags=dynamic */
+/**
+ * @param settings cast=(GtkPrintSettings *)
+ * @param duplex cast=(GtkPrintDuplex)
+ */
 public static final native void _gtk_print_settings_set_duplex(long /*int*/ settings, int duplex);
 public static final void gtk_print_settings_set_duplex(long /*int*/ settings, int duplex) {
 	lock.lock();
@@ -9935,7 +10036,9 @@ public static final void gtk_print_settings_set_duplex(long /*int*/ settings, in
 		lock.unlock();
 	}
 }
-/** @method flags=dynamic */
+/**
+ * @param settings cast=(GtkPrintSettings *)
+ */
 public static final native int _gtk_print_settings_get_n_copies(long /*int*/ settings);
 public static final int gtk_print_settings_get_n_copies(long /*int*/ settings) {
 	lock.lock();
@@ -9946,7 +10049,7 @@ public static final int gtk_print_settings_get_n_copies(long /*int*/ settings) {
 	}
 }
 /**
- * @method flags=dynamic
+ * @param settings cast=(GtkPrintSettings *)
  * @param num_copies cast=(gint)
  */
 public static final native void _gtk_print_settings_set_n_copies(long /*int*/ settings, int num_copies);
@@ -9958,7 +10061,9 @@ public static final void gtk_print_settings_set_n_copies(long /*int*/ settings, 
 		lock.unlock();
 	}
 }
-/** @method flags=dynamic */
+/**
+ * @param settings cast=(GtkPrintSettings *)
+ */
 public static final native int _gtk_print_settings_get_print_pages(long /*int*/ settings);
 public static final int gtk_print_settings_get_print_pages(long /*int*/ settings) {
 	lock.lock();
@@ -9968,7 +10073,10 @@ public static final int gtk_print_settings_get_print_pages(long /*int*/ settings
 		lock.unlock();
 	}
 }
-/** @method flags=dynamic */
+/**
+ * @param settings cast=(GtkPrintSettings *)
+ * @param pages cast=(GtkPrintPages)
+ */
 public static final native void _gtk_print_settings_set_print_pages(long /*int*/ settings, int pages);
 public static final void gtk_print_settings_set_print_pages(long /*int*/ settings, int pages) {
 	lock.lock();
@@ -9979,7 +10087,7 @@ public static final void gtk_print_settings_set_print_pages(long /*int*/ setting
 	}
 }
 /**
- * @method flags=dynamic
+ * @param settings cast=(GtkPrintSettings *)
  * @param num_ranges cast=(gint *)
  */
 public static final native long /*int*/ _gtk_print_settings_get_page_ranges(long /*int*/ settings, int[] num_ranges);
@@ -9992,7 +10100,8 @@ public static final long /*int*/ gtk_print_settings_get_page_ranges(long /*int*/
 	}
 }
 /**
- * @method flags=dynamic
+ * @param settings cast=(GtkPrintSettings *)
+ * @param page_ranges cast=(GtkPageRange *)
  * @param num_ranges cast=(gint)
  */
 public static final native void _gtk_print_settings_set_page_ranges(long /*int*/ settings, int[] page_ranges, int num_ranges);
@@ -10004,7 +10113,9 @@ public static final void gtk_print_settings_set_page_ranges(long /*int*/ setting
 		lock.unlock();
 	}
 }
-/** @method flags=dynamic */
+/**
+ * @param settings cast=(GtkPrintSettings *)
+ */
 public static final native int _gtk_print_settings_get_resolution(long /*int*/ settings);
 public static final int gtk_print_settings_get_resolution(long /*int*/ settings) {
 	lock.lock();
@@ -10015,7 +10126,6 @@ public static final int gtk_print_settings_get_resolution(long /*int*/ settings)
 	}
 }
 /**
- * @method flags=dynamic
  * @param title cast=(const gchar *)
  * @param parent cast=(GtkWindow *)
  */
@@ -10038,7 +10148,10 @@ public static final void gtk_print_unix_dialog_set_embed_page_setup(long /*int*/
 		lock.unlock();
 	}
 }
-/** @method flags=dynamic */
+/** 
+ * @param dialog cast=(GtkPrintUnixDialog *)
+ * @param page_setup cast=(GtkPageSetup *)
+ */
 public static final native void _gtk_print_unix_dialog_set_page_setup(long /*int*/ dialog, long /*int*/ page_setup);
 public static final void gtk_print_unix_dialog_set_page_setup(long /*int*/ dialog, long /*int*/ page_setup) {
 	lock.lock();
@@ -10048,7 +10161,9 @@ public static final void gtk_print_unix_dialog_set_page_setup(long /*int*/ dialo
 		lock.unlock();
 	}
 }
-/** @method flags=dynamic */
+/** 
+ * @param dialog cast=(GtkPrintUnixDialog *)
+ */
 public static final native long /*int*/ _gtk_print_unix_dialog_get_page_setup(long /*int*/ dialog);
 public static final long /*int*/ gtk_print_unix_dialog_get_page_setup(long /*int*/ dialog) {
 	lock.lock();
@@ -10059,7 +10174,7 @@ public static final long /*int*/ gtk_print_unix_dialog_get_page_setup(long /*int
 	}
 }
 /**
- * @method flags=dynamic
+ * @param dialog cast=(GtkPrintUnixDialog *)
  * @param current_page cast=(gint)
  */
 public static final native void _gtk_print_unix_dialog_set_current_page(long /*int*/ dialog, int current_page);
@@ -10071,7 +10186,9 @@ public static final void gtk_print_unix_dialog_set_current_page(long /*int*/ dia
 		lock.unlock();
 	}
 }
-/** @method flags=dynamic */
+/** 
+ * @param dialog cast=(GtkPrintUnixDialog *)
+ */
 public static final native int _gtk_print_unix_dialog_get_current_page(long /*int*/ dialog);
 public static final int gtk_print_unix_dialog_get_current_page(long /*int*/ dialog) {
 	lock.lock();
@@ -10081,7 +10198,10 @@ public static final int gtk_print_unix_dialog_get_current_page(long /*int*/ dial
 		lock.unlock();
 	}
 }
-/** @method flags=dynamic */
+/** 
+ * @param dialog cast=(GtkPrintUnixDialog *)
+ * @param settings cast=(GtkPrintSettings *)
+ */
 public static final native void _gtk_print_unix_dialog_set_settings(long /*int*/ dialog, long /*int*/ settings);
 public static final void gtk_print_unix_dialog_set_settings(long /*int*/ dialog, long /*int*/ settings) {
 	lock.lock();
@@ -10091,7 +10211,9 @@ public static final void gtk_print_unix_dialog_set_settings(long /*int*/ dialog,
 		lock.unlock();
 	}
 }
-/** @method flags=dynamic */
+/** 
+ * @param dialog cast=(GtkPrintUnixDialog *)
+ */
 public static final native long /*int*/ _gtk_print_unix_dialog_get_settings(long /*int*/ dialog);
 public static final long /*int*/ gtk_print_unix_dialog_get_settings(long /*int*/ dialog) {
 	lock.lock();
@@ -10101,7 +10223,9 @@ public static final long /*int*/ gtk_print_unix_dialog_get_settings(long /*int*/
 		lock.unlock();
 	}
 }
-/** @method flags=dynamic */
+/** 
+ * @param dialog cast=(GtkPrintUnixDialog *)
+ */
 public static final native long /*int*/ _gtk_print_unix_dialog_get_selected_printer(long /*int*/ dialog);
 public static final long /*int*/ gtk_print_unix_dialog_get_selected_printer(long /*int*/ dialog) {
 	lock.lock();
@@ -10111,7 +10235,10 @@ public static final long /*int*/ gtk_print_unix_dialog_get_selected_printer(long
 		lock.unlock();
 	}
 }
-/** @method flags=dynamic */
+/** 
+ * @param dialog cast=(GtkPrintUnixDialog *)
+ * @param capabilities cast=(GtkPrintCapabilities)
+ */
 public static final native void _gtk_print_unix_dialog_set_manual_capabilities(long /*int*/ dialog, long /*int*/ capabilities);
 public static final void gtk_print_unix_dialog_set_manual_capabilities(long /*int*/ dialog, long /*int*/ capabilities) {
 	lock.lock();
