@@ -14,6 +14,7 @@
 include make_common.mak
 
 SWT_VERSION=$(maj_ver)$(min_ver)
+GTK_VERSION?=2.0
 
 # Define the various shared libraries to be build.
 WS_PREFIX = gtk
@@ -38,7 +39,7 @@ GLX_LIB = lib$(GLX_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so
 CAIROCFLAGS = `pkg-config --cflags cairo`
 CAIROLIBS = `pkg-config --libs cairo` -lcairo
 
-GTKCFLAGS = `pkg-config --cflags gtk+-2.0`
+GTKCFLAGS = `pkg-config --cflags gtk+-2.0 gtk+-unix-print-$(GTK_VERSION)`
 GTKLIBS = `pkg-config --libs gtk+-2.0 gthread-2.0` $(XLIB64) -L/usr/X11R6/lib -lXtst -lX11
 
 CDE_LIBS = -L$(CDE_HOME)/lib -R$(CDE_HOME)/lib -lXt -lX11 -lDtSvc
@@ -47,7 +48,7 @@ AWT_LFLAGS = -shared -s ${SWT_LFLAGS}
 AWT_LIBS = -L$(AWT_LIB_PATH) -L$(AWT_LIB_PATH)/server -ljawt -lX11
 
 
-ATKCFLAGS = `pkg-config --cflags atk gtk+-2.0`
+ATKCFLAGS = `pkg-config --cflags atk gtk+-2.0 gtk+-unix-print-$(GTK_VERSION)`
 ATKLIBS = `pkg-config --libs atk gtk+-2.0`
 
 GNOMECFLAGS = `pkg-config --cflags gnome-vfs-module-2.0 libgnome-2.0 libgnomeui-2.0`
