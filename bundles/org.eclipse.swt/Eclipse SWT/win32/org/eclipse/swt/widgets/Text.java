@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2013 IBM Corporation and others.
+ * Copyright (c) 2000, 2014 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -459,7 +459,12 @@ public void append (String string) {
 }
 
 void applySegments () {
-	if (--clearSegmentsCount != 0) return;
+	/*
+	 * It is possible (but unlikely), that application code could have
+	 * disposed the widget in the modify event. If this happens, return to
+	 * cancel the operation.
+	 */
+	if (isDisposed() || --clearSegmentsCount != 0) return;
 	if (!hooks (SWT.Segments) && !filters (SWT.Segments)) return;
 	int length = OS.GetWindowTextLength (handle);
 	int cp = getCodePage ();
