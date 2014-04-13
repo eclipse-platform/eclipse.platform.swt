@@ -15,7 +15,6 @@ import java.util.Vector;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.mozilla.*;
 
-@SuppressWarnings({"rawtypes", "unchecked"})
 class AppFileLocProvider {
 	XPCOMObject supports;
 	XPCOMObject directoryServiceProvider;
@@ -176,7 +175,7 @@ int getFiles (long /*int*/ prop, long /*int*/ _retval) {
 				String value = new String (MozillaDelegate.mbcsToWcs (null, buffer));
 				if (value.length () > 0) {
 					String separator = System.getProperty ("path.separator"); // $NON-NLS-1$
-					Vector segments = new Vector ();
+					Vector<String> segments = new Vector<String> ();
 					int start, end = -1;
 					do {
 						start = end + 1;
@@ -192,7 +191,7 @@ int getFiles (long /*int*/ prop, long /*int*/ _retval) {
 					int segmentsSize = segments.size ();
 					pluginDirs = new String [segmentsSize + (IsSparc ? 1 : 2)];
 					for (index = 0; index < segmentsSize; index++) {
-						pluginDirs[index] = (String)segments.elementAt (index);
+						pluginDirs[index] = segments.elementAt (index);
 					}
 				}
 			}
