@@ -2055,12 +2055,19 @@ long /*int*/ windowProc (long /*int*/ handle, long /*int*/ user_data) {
 long /*int*/ windowProc (long /*int*/ handle, long /*int*/ arg0, long /*int*/ user_data) {
 	switch ((int)/*64*/user_data) {
 		case EXPOSE_EVENT_INVERSE: {
-			GdkEventExpose gdkEvent = new GdkEventExpose ();
-			OS.memmove (gdkEvent, arg0, GdkEventExpose.sizeof);
-			long /*int*/ paintWindow = paintWindow();
-			long /*int*/ window = gdkEvent.window;
-			if (window != paintWindow) return 0;
-			return (state & OBSCURED) != 0 ? 1 : 0;
+			if (OS.GTK3) {
+				if (OS.GTK_VERSION >= OS.VERSION(3, 9, 0) && OS.GTK_IS_CONTAINER(handle)) {
+					return gtk_draw(handle, arg0);
+				} 
+			} else {
+				GdkEventExpose gdkEvent = new GdkEventExpose ();
+				OS.memmove (gdkEvent, arg0, GdkEventExpose.sizeof);
+				long /*int*/ paintWindow = paintWindow();
+				long /*int*/ window = gdkEvent.window;
+				if (window != paintWindow) return 0;
+				return (state & OBSCURED) != 0 ? 1 : 0;
+			}
+			return 0;
 		}
 		case BUTTON_PRESS_EVENT_INVERSE:
 		case BUTTON_RELEASE_EVENT_INVERSE:
@@ -2077,10 +2084,13 @@ long /*int*/ windowProc (long /*int*/ handle, long /*int*/ arg0, long /*int*/ us
 		case EVENT_AFTER: return gtk_event_after (handle, arg0);
 		case EXPOSE_EVENT: {
 			if (OS.GTK3) {
-				return gtk_draw (handle, arg0);
+				if (OS.GTK_VERSION < OS.VERSION(3, 9, 0) || !OS.GTK_IS_CONTAINER(handle)) {
+					return gtk_draw(handle, arg0);
+				} 
 			} else {
 				return gtk_expose_event (handle, arg0);
 			}
+			return 0;
 		}
 		case FOCUS: return gtk_focus (handle, arg0);
 		case FOCUS_IN_EVENT: return gtk_focus_in_event (handle, arg0);
