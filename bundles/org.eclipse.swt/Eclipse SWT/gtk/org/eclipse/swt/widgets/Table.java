@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2013 IBM Corporation and others.
+ * Copyright (c) 2000, 2014 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -492,6 +492,21 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	if (hHint != SWT.DEFAULT && hHint < 0) hHint = 0;
 	Point size = computeNativeSize (handle, wHint, hHint, changed);
 	if (size.x == 0 && wHint == SWT.DEFAULT) size.x = DEFAULT_WIDTH;
+
+	/*
+	 * in GTK 3.8 computeNativeSize returning 0 for height.
+	 * So if the height is returned as zero calculate the table height
+	 * based on the number of items in the table
+	 */
+	if (OS.GTK3 && size.y == 0 && hHint == SWT.DEFAULT) {
+		size.y = getItemCount() * getItemHeight();
+	}
+
+	/*
+	 * In case the table doesn't contain any elements,
+	 * getItemCount returns 0 and size.y will be 0
+	 * so need to assign default height
+	 */
 	if (size.y == 0 && hHint == SWT.DEFAULT) size.y = DEFAULT_HEIGHT;
 	Rectangle trim = computeTrim (0, 0, size.x, size.y);
 	size.x = trim.width;

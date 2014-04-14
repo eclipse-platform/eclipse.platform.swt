@@ -548,6 +548,21 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	OS.gtk_widget_realize(handle);
 	Point size = computeNativeSize (handle, wHint, hHint, changed);
 	if (size.x == 0 && wHint == SWT.DEFAULT) size.x = DEFAULT_WIDTH;
+
+	/*
+	 * in GTK 3.8 computeNativeSize returning 0 for height.
+	 * So if the height is returned as zero calculate the tree height
+	 * based on the number of items in the table
+	 */
+	if (OS.GTK3 && size.y == 0 && hHint == SWT.DEFAULT) {
+		size.y = getItemCount() * getItemHeight();
+	}
+
+	/*
+	 * In case the table doesn't contain any elements,
+	 * getItemCount returns 0 and size.y will be 0
+	 * so need to assign default height
+	 */
 	if (size.y == 0 && hHint == SWT.DEFAULT) size.y = DEFAULT_HEIGHT;
 	Rectangle trim = computeTrim (0, 0, size.x, size.y);
 	size.x = trim.width;
