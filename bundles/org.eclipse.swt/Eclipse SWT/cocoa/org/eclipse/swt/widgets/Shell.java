@@ -2284,9 +2284,15 @@ void windowSendEvent (long /*int*/ id, long /*int*/ sel, long /*int*/ event) {
 			* Feature in Cocoa.  For some reason, Cocoa does not perform accelerators
 			* with ESC key code.  The fix is to perform the accelerators ourselves. 
 			*/
-			if (nsEvent.keyCode() == 53 /* ESC */ && menuBar != null && !menuBar.isDisposed()) {
-				if (menuBar.nsMenu.performKeyEquivalent(nsEvent)) {
-					return;
+			if (nsEvent.keyCode() == 53 /* ESC */) {
+				if (menuBar != null && !menuBar.isDisposed()) {
+					if (menuBar.nsMenu.performKeyEquivalent(nsEvent)) {
+						return;
+					}
+				} else if (display.appMenuBar != null && !display.appMenuBar.isDisposed()) {
+					if (display.appMenuBar.nsMenu.performKeyEquivalent(nsEvent)) {
+						return;
+					}
 				}
 			}
 			/**
