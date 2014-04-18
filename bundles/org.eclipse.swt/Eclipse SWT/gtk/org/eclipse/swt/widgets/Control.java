@@ -3162,7 +3162,10 @@ long /*int*/ gtk_draw (long /*int*/ widget, long /*int*/ cairo) {
 	if ((style & SWT.MIRRORED) != 0) event.x = getClientWidth () - event.width - event.x;
 	GCData data = new GCData ();
 //	data.damageRgn = gdkEvent.region;
-	data.cairo = cairo;
+	if (OS.GTK_VERSION <= OS.VERSION(3, 9, 0)) {
+		data.cairo = cairo;
+	}
+
 	GC gc = event.gc = GC.gtk_new (this, data);
 	drawWidget (gc);
 	sendEvent (SWT.Paint, event);
