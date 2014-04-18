@@ -3749,8 +3749,11 @@ void runUpdate() {
 	int flags = updateFlags;
 	updateFlags = 0;
 	Rectangle rectBefore = getClientArea();
-	updateTabHeight(false);
-	updateItems(selectedIndex);
+	boolean updated = updateTabHeight(false);
+	updated |= updateItems(selectedIndex);
+	if (updated && getParent() != null) {
+		getParent().layout(true, true);
+	}
 	if ((flags & REDRAW) != 0) {
 		redraw();
 	} else if ((flags & REDRAW_TABS) != 0) {
