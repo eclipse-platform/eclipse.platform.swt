@@ -155,6 +155,8 @@ public class Display extends Device {
 	
 	Menu menuBar;
 	Menu[] menus, popups;
+	/* Menu items with ESC key as accelerator need to be handled differently on Cocoa */
+	boolean escAsAcceleratorPresent = false;
 
 	NSApplication application;
 	long /*int*/ applicationClass;

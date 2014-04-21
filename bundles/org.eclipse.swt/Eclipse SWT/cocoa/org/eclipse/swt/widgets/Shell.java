@@ -133,6 +133,7 @@ public class Shell extends Decorations {
 	NSRect fullScreenFrame;
 	ToolBar toolBar;
 	Map windowEmbedCounts;
+	MenuItem escMenuItem;
 	
 	static int DEFAULT_CLIENT_WIDTH = -1;
 	static int DEFAULT_CLIENT_HEIGHT = -1;
@@ -2284,14 +2285,17 @@ void windowSendEvent (long /*int*/ id, long /*int*/ sel, long /*int*/ event) {
 			* Feature in Cocoa.  For some reason, Cocoa does not perform accelerators
 			* with ESC key code.  The fix is to perform the accelerators ourselves. 
 			*/
-			if (nsEvent.keyCode() == 53 /* ESC */) {
-				if (menuBar != null && !menuBar.isDisposed()) {
-					if (menuBar.nsMenu.performKeyEquivalent(nsEvent)) {
-						return;
-					}
-				} else if (display.appMenuBar != null && !display.appMenuBar.isDisposed()) {
-					if (display.appMenuBar.nsMenu.performKeyEquivalent(nsEvent)) {
-						return;
+			if (display.escAsAcceleratorPresent && nsEvent.keyCode() == 53 /* ESC */) {
+				if (escMenuItem == null || escMenuItem.getAccelerator() != SWT.ESC) {
+					updateEscMenuItem();
+				}
+				if (escMenuItem != null) {
+					Menu parentMenu = escMenuItem.getParent();
+					if (parentMenu != null) {
+						NSMenu escNSMenu = parentMenu.nsMenu;
+						if (escNSMenu != null) {
+							escNSMenu.performKeyEquivalent(nsEvent);
+						}
 					}
 				}
 			}
@@ -2323,6 +2327,32 @@ void windowSendEvent (long /*int*/ id, long /*int*/ sel, long /*int*/ event) {
 	// Window may have been disposed at this point.
 	if (isDisposed()) return;
 	super.windowSendEvent (id, sel, event);
+}
+
+private void updateEscMenuItem() {
+	if (menuBar != null && !menuBar.isDisposed()){
+		searchForEscMenuItem(menuBar);
+	} else if (display.appMenuBar != null && !display.appMenuBar.isDisposed()) {
+		searchForEscMenuItem(display.appMenuBar);
+	}
+}
+
+private boolean searchForEscMenuItem(Menu menu) {
+	if (menu == null || menu.isDisposed()) return false;
+	MenuItem[] items = menu.getItems();
+	if (items == null) return false;
+	for (MenuItem item:items) {
+		if (item == null || item.isDisposed()) {
+			continue;
+		} else if (item.getAccelerator() == SWT.ESC) {
+			escMenuItem = item;
+			return true;
+		} else if ((item.getStyle() & SWT.CASCADE) != 0) {
+			Menu subMenu = item.getMenu();
+			if (searchForEscMenuItem(subMenu)) return true;
+		}
+	}
+	return false;
 }
 
 boolean windowShouldClose(long /*int*/ id, long /*int*/ sel, long /*int*/ window) {

@@ -595,6 +595,9 @@ public void setAccelerator (int accelerator) {
 	if (this.accelerator == accelerator) return;
 	this.accelerator = accelerator;
 	int key = accelerator & SWT.KEY_MASK;
+	if (key == SWT.ESC && /* no masks */key == accelerator && !display.escAsAcceleratorPresent) {
+		display.escAsAcceleratorPresent = true;
+	}
 	int virtualKey = keyChar (key);
 	String string = virtualKey != 0 ? (char)virtualKey + "" : (char)key + "";
 	NSString nsstring = (NSString) new NSString().alloc();
