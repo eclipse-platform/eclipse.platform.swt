@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2013 IBM Corporation and others.
+ * Copyright (c) 2000, 2014 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -3927,6 +3927,10 @@ public static String getAppVersion () {
  * On Motif, for example, this can be used to set
  * the name used for resource lookup. Accessibility
  * tools may also ask for the application name.
+ * On Windows, if application name is set to any
+ * value other than "SWT" (case insensitive), it is
+ * used to set the application user model ID which
+ * is used by the OS for taskbar grouping.
  * </p><p>
  * Specifying <code>null</code> for the name clears it.
  * </p>

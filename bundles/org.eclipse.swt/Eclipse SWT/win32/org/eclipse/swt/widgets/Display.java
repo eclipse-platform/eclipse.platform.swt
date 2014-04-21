@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2013 IBM Corporation and others.
+ * Copyright (c) 2000, 2014 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -2699,9 +2699,9 @@ public long /*int*/ internal_new_GC (GCData data) {
 protected void init () {
 	super.init ();
 	
-	/* Set the application user model ID */
+	/* Set the application user model ID, if APP_NAME is non Default */
 	char [] appName = null;
-	if (APP_NAME != null) {
+	if (APP_NAME != null && !"SWT".equalsIgnoreCase (APP_NAME)) {
 		if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (6, 1)) {
 			int length = APP_NAME.length ();
 			appName = new char [length + 1];
@@ -4580,6 +4580,10 @@ public static String getAppVersion () {
  * On Motif, for example, this can be used to set
  * the name used for resource lookup. Accessibility
  * tools may also ask for the application name.
+ * On Windows, if application name is set to any
+ * value other than "SWT" (case insensitive), it is
+ * used to set the application user model ID which
+ * is used by the OS for taskbar grouping.
  * </p><p>
  * Specifying <code>null</code> for the name clears it.
  * </p>
