@@ -19,7 +19,7 @@ import org.eclipse.swt.events.*;
 
 /**
  * Instances of this class represent a selectable user interface object that
- * issues notification when pressed and released. 
+ * issues notification when pressed and released.
  * <dl>
  * <dt><b>Styles:</b></dt>
  * <dd>ARROW, CHECK, PUSH, RADIO, TOGGLE, FLAT, WRAP</dd>
@@ -28,7 +28,7 @@ import org.eclipse.swt.events.*;
  * <dd>Selection</dd>
  * </dl>
  * <p>
- * Note: Only one of the styles ARROW, CHECK, PUSH, RADIO, and TOGGLE 
+ * Note: Only one of the styles ARROW, CHECK, PUSH, RADIO, and TOGGLE
  * may be specified.
  * </p><p>
  * Note: Only one of the styles LEFT, RIGHT, and CENTER may be specified.
@@ -38,7 +38,7 @@ import org.eclipse.swt.events.*;
  * </p><p>
  * IMPORTANT: This class is <em>not</em> intended to be subclassed.
  * </p>
- * 
+ *
  * @see <a href="http://www.eclipse.org/swt/snippets/#button">Button snippets</a>
  * @see <a href="http://www.eclipse.org/swt/examples.php">SWT Example: ControlExample</a>
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
@@ -60,7 +60,7 @@ public class Button extends Control {
  * <p>
  * The style value is either one of the style constants defined in
  * class <code>SWT</code> which is applicable to instances of this
- * class, or must be built by <em>bitwise OR</em>'ing together 
+ * class, or must be built by <em>bitwise OR</em>'ing together
  * (that is, using the <code>int</code> "|" operator) two or more
  * of those <code>SWT</code> style constants. The class description
  * lists the style constants that are applicable to the class.
@@ -138,7 +138,7 @@ static GtkBorder getBorder (byte[] border, long /*int*/ handle, int defaultBorde
  * </p>
  * <p>
  * When the <code>SWT.RADIO</code> style bit is set, the <code>widgetSelected</code> method is
- * also called when the receiver loses selection because another item in the same radio group 
+ * also called when the receiver loses selection because another item in the same radio group
  * was selected by the user. During <code>widgetSelected</code> the application can use
  * <code>getSelection()</code> to determine the current selected state of the receiver.
  * </p>
@@ -256,7 +256,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 @Override
 void createHandle (int index) {
 	state |= HANDLE;
-	if ((style & (SWT.PUSH | SWT.TOGGLE)) == 0) state |= THEME_BACKGROUND; 	
+	if ((style & (SWT.PUSH | SWT.TOGGLE)) == 0) state |= THEME_BACKGROUND;
 	int bits = SWT.ARROW | SWT.TOGGLE | SWT.CHECK | SWT.RADIO | SWT.PUSH;
 	fixedHandle = OS.g_object_new (display.gtk_fixed_get_type (), 0);
 	if (fixedHandle == 0) error (SWT.ERROR_NO_HANDLES);
@@ -325,9 +325,9 @@ void createHandle (int index) {
 		}
 	}
 	OS.gtk_container_add (fixedHandle, handle);
-	
+
 	if ((style & SWT.ARROW) != 0) return;
-	// In GTK 3 font description is inherited from parent widget which is not how SWT has always worked, 
+	// In GTK 3 font description is inherited from parent widget which is not how SWT has always worked,
 	// reset to default font to get the usual behavior
 	if (OS.GTK3) {
 		setFontDescription(defaultFont().handle);
@@ -360,12 +360,12 @@ long /*int*/ fontHandle () {
  * Returns a value which describes the position of the
  * text or image in the receiver. The value will be one of
  * <code>LEFT</code>, <code>RIGHT</code> or <code>CENTER</code>
- * unless the receiver is an <code>ARROW</code> button, in 
+ * unless the receiver is an <code>ARROW</code> button, in
  * which case, the alignment will indicate the direction of
- * the arrow (one of <code>LEFT</code>, <code>RIGHT</code>, 
+ * the arrow (one of <code>LEFT</code>, <code>RIGHT</code>,
  * <code>UP</code> or <code>DOWN</code>).
  *
- * @return the alignment 
+ * @return the alignment
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -398,7 +398,7 @@ public int getAlignment () {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 3.4
  */
 public boolean getGrayed () {
@@ -504,7 +504,7 @@ long /*int*/ gtk_focus_in_event (long /*int*/ widget, long /*int*/ event) {
 	long /*int*/ result = super.gtk_focus_in_event (widget, event);
 	// widget could be disposed at this point
 	if (handle == 0) return 0;
-	if (OS.GTK_VERSION >= OS.VERSION (2, 18, 0)) { 
+	if (OS.GTK_VERSION >= OS.VERSION (2, 18, 0)) {
 		if ((style & SWT.PUSH) != 0 && OS.gtk_widget_has_default (handle)) {
 			Decorations menuShell = menuShell ();
 			menuShell.defaultButton = this;
@@ -514,7 +514,7 @@ long /*int*/ gtk_focus_in_event (long /*int*/ widget, long /*int*/ event) {
 			Decorations menuShell = menuShell ();
 			menuShell.defaultButton = this;
 		}
-	}	
+	}
 	return result;
 }
 
@@ -616,7 +616,7 @@ public void removeSelectionListener (SelectionListener listener) {
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (eventTable == null) return;
 	eventTable.unhook (SWT.Selection, listener);
-	eventTable.unhook (SWT.DefaultSelection,listener);	
+	eventTable.unhook (SWT.DefaultSelection,listener);
 }
 
 @Override
@@ -664,12 +664,12 @@ void selectRadio () {
  * Controls how text, images and arrows will be displayed
  * in the receiver. The argument should be one of
  * <code>LEFT</code>, <code>RIGHT</code> or <code>CENTER</code>
- * unless the receiver is an <code>ARROW</code> button, in 
+ * unless the receiver is an <code>ARROW</code> button, in
  * which case, the argument indicates the direction of
- * the arrow (one of <code>LEFT</code>, <code>RIGHT</code>, 
+ * the arrow (one of <code>LEFT</code>, <code>RIGHT</code>,
  * <code>UP</code> or <code>DOWN</code>).
  *
- * @param alignment the new alignment 
+ * @param alignment the new alignment
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -683,7 +683,7 @@ public void setAlignment (int alignment) {
 
 void _setAlignment (int alignment) {
 	if ((style & SWT.ARROW) != 0) {
-		if ((style & (SWT.UP | SWT.DOWN | SWT.LEFT | SWT.RIGHT)) == 0) return; 
+		if ((style & (SWT.UP | SWT.DOWN | SWT.LEFT | SWT.RIGHT)) == 0) return;
 		style &= ~(SWT.UP | SWT.DOWN | SWT.LEFT | SWT.RIGHT);
 		style |= alignment & (SWT.UP | SWT.DOWN | SWT.LEFT | SWT.RIGHT);
 		int arrow_type = OS.GTK_ARROW_UP;
@@ -759,8 +759,10 @@ void _setAlignment (int alignment) {
 void setBackgroundColor (GdkColor color) {
 	super.setBackgroundColor (color);
 	setBackgroundColor(fixedHandle, color);
-	if (labelHandle != 0) setBackgroundColor(labelHandle, color);
-	if (imageHandle != 0) setBackgroundColor(imageHandle, color);
+	if (!OS.GTK3) {
+		if (labelHandle != 0) setBackgroundColor(labelHandle, color);
+		if (imageHandle != 0) setBackgroundColor(imageHandle, color);
+	}
 }
 
 @Override
@@ -772,7 +774,7 @@ int setBounds (int x, int y, int width, int height, boolean move, boolean resize
 	* determine the size that will wrap the label
 	* and expilictly set that size to force the label
 	* to wrap.
-	* 
+	*
 	* This part of the fix causes the label to be
 	* resized to the preferred size but it still
 	* won't draw properly.
@@ -787,7 +789,7 @@ int setBounds (int x, int y, int width, int height, boolean move, boolean resize
 	* determine the size that will wrap the label
 	* and expilictly set that size to force the label
 	* to wrap.
-	* 
+	*
 	* This part of the fix forces the label to be
 	* resized so that it will draw wrapped.
 	*/
@@ -814,7 +816,7 @@ int setBounds (int x, int y, int width, int height, boolean move, boolean resize
 		OS.gtk_widget_set_size_request (labelHandle, Math.min(w [0], boxWidth - imageWidth), -1);
 		/*
 		* Bug in GTK.  Setting the size request should invalidate the label's
-		* layout, but it does not.  The fix is to resize the label directly. 
+		* layout, but it does not.  The fix is to resize the label directly.
 		*/
 		GtkRequisition requisition = new GtkRequisition ();
 		gtk_widget_get_preferred_size (boxHandle, requisition);
@@ -851,7 +853,7 @@ void setForegroundColor (GdkColor color) {
 }
 
 /**
- * Sets the grayed state of the receiver.  This state change 
+ * Sets the grayed state of the receiver.  This state change
  * only applies if the control was created with the SWT.CHECK
  * style.
  *
@@ -861,7 +863,7 @@ void setForegroundColor (GdkColor color) {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 3.4
  */
 public void setGrayed (boolean grayed) {
@@ -888,7 +890,7 @@ public void setGrayed (boolean grayed) {
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_INVALID_ARGUMENT - if the image has been disposed</li>
- * </ul> 
+ * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
@@ -932,7 +934,7 @@ void setOrientation (boolean create) {
 }
 
 /**
- * Sets the selection state of the receiver, if it is of type <code>CHECK</code>, 
+ * Sets the selection state of the receiver, if it is of type <code>CHECK</code>,
  * <code>RADIO</code>, or <code>TOGGLE</code>.
  *
  * <p>
@@ -1019,7 +1021,7 @@ private void updateWidgetsVisibility() {
 			OS.gtk_widget_show (labelHandle);
 		if (image == null)
 			OS.gtk_widget_hide (imageHandle);
-		else 
+		else
 			OS.gtk_widget_show (imageHandle);
 	}
 }
