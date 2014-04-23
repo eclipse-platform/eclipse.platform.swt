@@ -3165,8 +3165,8 @@ long /*int*/ gtk_draw (long /*int*/ widget, long /*int*/ cairo) {
 	if (OS.GTK_VERSION <= OS.VERSION(3, 9, 0)) {
 		data.cairo = cairo;
 	}
-
 	GC gc = event.gc = GC.gtk_new (this, data);
+	gc.setClipping(rect.x, rect.y, rect.width, rect.height);
 	drawWidget (gc);
 	sendEvent (SWT.Paint, event);
 	gc.dispose ();
@@ -5484,7 +5484,12 @@ long /*int*/ windowProc (long /*int*/ handle, long /*int*/ arg0, long /*int*/ us
 						GdkRectangle rect = new GdkRectangle ();
 						OS.gdk_cairo_get_clip_rectangle (cairo, rect);
 						if (control == null) control = this;
-						drawBackground (control, 0, cairo, 0, rect.x, rect.y, rect.width, rect.height);
+						long window = OS.gtk_widget_get_window(handle);
+						if (window != 0) {
+							drawBackground (control, window, 0, 0, rect.x, rect.y, rect.width, rect.height);
+						} else {
+							drawBackground (control, 0, cairo, 0, rect.x, rect.y, rect.width, rect.height);
+						}
 					} else {
 						GdkEventExpose gdkEvent = new GdkEventExpose ();
 						OS.memmove (gdkEvent, arg0, GdkEventExpose.sizeof);
