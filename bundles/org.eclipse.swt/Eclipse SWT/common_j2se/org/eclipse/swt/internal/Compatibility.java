@@ -248,24 +248,6 @@ public static boolean isWhitespace(char c) {
 }
 
 /**
- * Execute a program in a separate platform process if the
- * underlying platform support this.
- * <p>
- * The new process inherits the environment of the caller.
- * </p>
- *
- * @param prog the name of the program to execute
- *
- * @exception IOException
- *  if the program cannot be executed
- * @exception SecurityException
- *  if the current SecurityManager disallows program execution
- */
-public static void exec(String prog) throws java.io.IOException {
-	Runtime.getRuntime().exec(prog);
-}
-
-/**
  * Execute progArray[0] in a separate platform process if the
  * underlying platform support this.
  * <p>
