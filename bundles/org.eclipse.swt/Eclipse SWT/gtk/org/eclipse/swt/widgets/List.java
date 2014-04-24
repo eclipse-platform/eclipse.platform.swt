@@ -17,7 +17,7 @@ import org.eclipse.swt.internal.gtk.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.events.*;
 
-/** 
+/**
  * Instances of this class represent a selectable user interface
  * object that displays a list of strings and issues notification
  * when a string is selected.  A list may be single or multi select.
@@ -50,7 +50,7 @@ public class List extends Scrollable {
  * <p>
  * The style value is either one of the style constants defined in
  * class <code>SWT</code> which is applicable to instances of this
- * class, or must be built by <em>bitwise OR</em>'ing together 
+ * class, or must be built by <em>bitwise OR</em>'ing together
  * (that is, using the <code>int</code> "|" operator) two or more
  * of those <code>SWT</code> style constants. The class description
  * lists the style constants that are applicable to the class.
@@ -138,7 +138,7 @@ public void add (String string, int index) {
 	if (iter == 0) error (SWT.ERROR_ITEM_NOT_ADDED);
 	/*
 	* Feature in GTK.  It is much faster to append to a list store
-	* than to insert at the end using gtk_list_store_insert(). 
+	* than to insert at the end using gtk_list_store_insert().
 	*/
 	if (index == count) {
 		OS.gtk_list_store_append (modelHandle, iter);
@@ -212,20 +212,20 @@ void createHandle (int index) {
 	OS.gtk_tree_view_insert_column (handle, columnHandle, index);
 	OS.gtk_container_add (fixedHandle, scrolledHandle);
 	OS.gtk_container_add (scrolledHandle, handle);
-	
+
 	int mode = (style & SWT.MULTI) != 0 ? OS.GTK_SELECTION_MULTIPLE : OS.GTK_SELECTION_BROWSE;
 	long /*int*/ selectionHandle = OS.gtk_tree_view_get_selection (handle);
 	OS.gtk_tree_selection_set_mode (selectionHandle, mode);
-	OS.gtk_tree_view_set_headers_visible (handle, false);	
+	OS.gtk_tree_view_set_headers_visible (handle, false);
 	int hsp = (style & SWT.H_SCROLL) != 0 ? OS.GTK_POLICY_AUTOMATIC : OS.GTK_POLICY_NEVER;
 	int vsp = (style & SWT.V_SCROLL) != 0 ? OS.GTK_POLICY_AUTOMATIC : OS.GTK_POLICY_NEVER;
 	OS.gtk_scrolled_window_set_policy (scrolledHandle, hsp, vsp);
 	if ((style & SWT.BORDER) != 0) OS.gtk_scrolled_window_set_shadow_type (scrolledHandle, OS.GTK_SHADOW_ETCHED_IN);
 	/*
-	* Bug in GTK. When a treeview is the child of an override shell, 
-	* and if the user has ever invokes the interactive search field, 
+	* Bug in GTK. When a treeview is the child of an override shell,
+	* and if the user has ever invokes the interactive search field,
 	* and the treeview is disposed on a focus out event, it segment
-	* faults. The fix is to disable the search field in an override 
+	* faults. The fix is to disable the search field in an override
 	* shell.
 	*/
 	if ((getShell ().style & SWT.ON_TOP) != 0) {
@@ -241,6 +241,20 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	OS.gtk_widget_realize(handle);
 	Point size = computeNativeSize (handle, wHint, hHint, changed);
 	if (size.x == 0 && wHint == SWT.DEFAULT) size.x = DEFAULT_WIDTH;
+	/*
+	 * in GTK 3.8 computeNativeSize returning 0 for height.
+	 * So if the height is returned as zero calculate the table height
+	 * based on the number of items in the table
+	 */
+	 if (OS.GTK3 && size.y == 0 && hHint == SWT.DEFAULT) {
+	 size.y = getItemCount() * getItemHeight();
+	 }
+
+	 /*
+	 * In case the table doesn't contain any elements,
+	 * getItemCount returns 0 and size.y will be 0
+	 * so need to assign default height
+	 */
 	if (size.y == 0 && hHint == SWT.DEFAULT) size.y = DEFAULT_HEIGHT;
 	Rectangle trim = computeTrim (0, 0, size.x, size.y);
 	size.x = trim.width;
@@ -272,7 +286,7 @@ public void deselect (int index) {
 	long /*int*/ iter = OS.g_malloc (OS.GtkTreeIter_sizeof ());
 	long /*int*/ selection = OS.gtk_tree_view_get_selection (handle);
 	OS.g_signal_handlers_block_matched (selection, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
-	OS.gtk_tree_model_iter_nth_child (modelHandle, iter, 0, index); 
+	OS.gtk_tree_model_iter_nth_child (modelHandle, iter, 0, index);
 	OS.gtk_tree_selection_unselect_iter (selection, iter);
 	OS.g_signal_handlers_unblock_matched (selection, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
 	OS.g_free (iter);
@@ -280,7 +294,7 @@ public void deselect (int index) {
 
 /**
  * Deselects the items at the given zero-relative indices in the receiver.
- * If the item at the given zero-relative index in the receiver 
+ * If the item at the given zero-relative index in the receiver
  * is selected, it is deselected.  If the item at the index
  * was not selected, it remains deselected.  The range of the
  * indices is inclusive. Indices that are out of range are ignored.
@@ -304,7 +318,7 @@ public void deselect (int start, int end) {
 	long /*int*/ selection = OS.gtk_tree_view_get_selection (handle);
 	OS.g_signal_handlers_block_matched (selection, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
 	for (int index=start; index<=end; index++) {
-		OS.gtk_tree_model_iter_nth_child (modelHandle, iter, 0, index); 
+		OS.gtk_tree_model_iter_nth_child (modelHandle, iter, 0, index);
 		OS.gtk_tree_selection_unselect_iter (selection, iter);
 	}
 	OS.g_signal_handlers_unblock_matched (selection, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
@@ -313,7 +327,7 @@ public void deselect (int start, int end) {
 
 /**
  * Deselects the items at the given zero-relative indices in the receiver.
- * If the item at the given zero-relative index in the receiver 
+ * If the item at the given zero-relative index in the receiver
  * is selected, it is deselected.  If the item at the index
  * was not selected, it remains deselected. Indices that are out
  * of range and duplicate indices are ignored.
@@ -338,7 +352,7 @@ public void deselect (int [] indices) {
 	for (int i=0; i<indices.length; i++) {
 		int index = indices [i];
 		if (index < 0 || index > count - 1) continue;
-		OS.gtk_tree_model_iter_nth_child (modelHandle, iter, 0, index); 
+		OS.gtk_tree_model_iter_nth_child (modelHandle, iter, 0, index);
 		OS.gtk_tree_selection_unselect_iter (selection, iter);
 	}
 	OS.g_signal_handlers_unblock_matched (selection, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
@@ -505,11 +519,11 @@ public int getItemHeight () {
 
 /**
  * Returns a (possibly empty) array of <code>String</code>s which
- * are the items in the receiver. 
+ * are the items in the receiver.
  * <p>
  * Note: This is not the actual structure used by the receiver
  * to maintain its list of items, so modifying the array will
- * not affect the receiver. 
+ * not affect the receiver.
  * </p>
  *
  * @return the items in the receiver's list
@@ -547,7 +561,7 @@ public String [] getItems () {
  * <p>
  * Note: This is not the actual structure used by the receiver
  * to maintain its selection, so modifying the array will
- * not affect the receiver. 
+ * not affect the receiver.
  * </p>
  * @return an array representing the selection
  *
@@ -626,7 +640,7 @@ public int getSelectionIndex () {
  * <p>
  * Note: This is not the actual structure used by the receiver
  * to maintain its selection, so modifying the array will
- * not affect the receiver. 
+ * not affect the receiver.
  * </p>
  * @return the array of indices of the selected items
  *
@@ -721,8 +735,8 @@ long /*int*/ gtk_event_after (long /*int*/ widget, long /*int*/ gdkEvent) {
 	switch (OS.GDK_EVENT_TYPE (gdkEvent)) {
 		case OS.GDK_EXPOSE: {
 			/*
-			* Bug in GTK. SWT connects the expose-event 'after' the default 
-			* handler of the signal. If the tree has no children, then GTK 
+			* Bug in GTK. SWT connects the expose-event 'after' the default
+			* handler of the signal. If the tree has no children, then GTK
 			* sends expose signal only 'before' the default signal handler.
 			* The fix is to detect this case in 'event_after' and send the
 			* expose event.
@@ -742,7 +756,7 @@ long /*int*/ gtk_button_press_event (long /*int*/ widget, long /*int*/ event) {
 	if (result != 0) return result;
 	/*
 	* Feature in GTK.  In a multi-select list view, when multiple items are already
-	* selected, the selection state of the item is toggled and the previous selection 
+	* selected, the selection state of the item is toggled and the previous selection
 	* is cleared. This is not the desired behaviour when bringing up a popup menu.
 	* Also, when an item is reselected with the right button, the tree view issues
 	* an unwanted selection event. The workaround is to detect that case and not
@@ -761,7 +775,7 @@ long /*int*/ gtk_button_press_event (long /*int*/ widget, long /*int*/ event) {
 			}
 		}
 	}
-	
+
 	/*
 	* Feature in GTK.  When the user clicks in a single selection GtkTreeView
 	* and there are no selected items, the first item is selected automatically
@@ -832,7 +846,7 @@ public int indexOf (String string) {
 }
 
 /**
- * Searches the receiver's list starting at the given, 
+ * Searches the receiver's list starting at the given,
  * zero-relative index until an item is found that is equal
  * to the argument, and returns the index of that item. If
  * no item is found or the starting index is out of range,
@@ -932,7 +946,7 @@ public void remove (int index) {
 
 /**
  * Removes the items from the receiver which are
- * between the given zero-relative start and end 
+ * between the given zero-relative start and end
  * indices (inclusive).
  *
  * @param start the start of the range
@@ -966,7 +980,7 @@ public void remove (int start, int end) {
 
 /**
  * Searches the receiver's list starting at the first item
- * until an item is found that is equal to the argument, 
+ * until an item is found that is equal to the argument,
  * and removes that item from the list.
  *
  * @param string the item to remove
@@ -1069,11 +1083,11 @@ public void removeSelectionListener(SelectionListener listener) {
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (eventTable == null) return;
 	eventTable.unhook (SWT.Selection, listener);
-	eventTable.unhook (SWT.DefaultSelection,listener);	
+	eventTable.unhook (SWT.DefaultSelection,listener);
 }
 
 /**
- * Selects the item at the given zero-relative index in the receiver's 
+ * Selects the item at the given zero-relative index in the receiver's
  * list.  If the item at the index was already selected, it remains
  * selected. Indices that are out of range are ignored.
  *
@@ -1091,7 +1105,7 @@ public void select (int index) {
 	long /*int*/ selection = OS.gtk_tree_view_get_selection (handle);
 	OS.g_signal_handlers_block_matched (selection, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
 	OS.gtk_tree_model_iter_nth_child (modelHandle, iter, 0, index);
-	OS.gtk_tree_selection_select_iter (selection, iter); 
+	OS.gtk_tree_selection_select_iter (selection, iter);
 	if ((style & SWT.SINGLE) != 0) {
 		long /*int*/ path = OS.gtk_tree_model_get_path (modelHandle, iter);
 		OS.gtk_tree_view_set_cursor (handle, path, 0, false);
@@ -1120,7 +1134,7 @@ public void select (int index) {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @see List#setSelection(int,int)
  */
 public void select (int start, int end) {
@@ -1165,7 +1179,7 @@ public void select (int start, int end) {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @see List#setSelection(int[])
  */
 public void select (int [] indices) {
@@ -1181,7 +1195,7 @@ public void select (int [] indices) {
 		int index = indices [i];
 		if (!(0 <= index && index < count)) continue;
 		OS.gtk_tree_model_iter_nth_child (modelHandle, iter, 0, index);
-		OS.gtk_tree_selection_select_iter (selection, iter); 
+		OS.gtk_tree_selection_select_iter (selection, iter);
 		if ((style & SWT.SINGLE) != 0) {
 			long /*int*/ path = OS.gtk_tree_model_get_path (modelHandle, iter);
 			OS.gtk_tree_view_set_cursor (handle, path, 0, false);
@@ -1231,10 +1245,10 @@ void selectFocusIndex (int index) {
 	* contains a GtkTreeView,  gtk_tree_view_set_cursor() does
 	* not set the cursor or select the item.  The fix is to select the
 	* item with gtk_tree_selection_select_iter() as well.
-	* 
+	*
 	* NOTE: This happens in GTK 2.2.1 and is fixed in GTK 2.2.4.
 	*/
-	OS.gtk_tree_selection_select_iter (selection, iter);	
+	OS.gtk_tree_selection_select_iter (selection, iter);
 	OS.g_signal_handlers_unblock_matched (selection, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
 	OS.gtk_tree_path_free (path);
 	OS.g_free (iter);
@@ -1333,7 +1347,7 @@ void setForegroundColor (GdkColor color) {
 }
 
 /**
- * Selects the item at the given zero-relative index in the receiver. 
+ * Selects the item at the given zero-relative index in the receiver.
  * If the item at the index was already selected, it remains selected.
  * The current selection is first cleared, then the new item is selected,
  * and if necessary the receiver is scrolled to make the new selection visible.
@@ -1527,7 +1541,7 @@ public void showSelection () {
 	* However, what actually happens is the cell is scrolled to the top.
 	* The fix is to determine the new location and use gtk_tree_view_scroll_to_point.
 	* If the widget is a pinhead, calling gtk_tree_view_scroll_to_point
-	* will have no effect. Therefore, it is still neccessary to 
+	* will have no effect. Therefore, it is still neccessary to
 	* call gtk_tree_view_scroll_to_cell.
 	*/
 //	OS.gtk_tree_view_scroll_to_cell (handle, path, 0, false, 0, 0);
