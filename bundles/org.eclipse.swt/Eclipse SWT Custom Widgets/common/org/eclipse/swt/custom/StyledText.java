@@ -7893,6 +7893,14 @@ void reset() {
 	setCaretLocation();
 	super.redraw();
 }
+void resetBidiData() {
+	caretDirection = SWT.NULL;
+	resetCache(0, content.getLineCount());
+	setCaretLocation();
+	keyActionMap.clear();
+	createKeyBindings();
+	super.redraw();
+}
 void resetCache(int firstLine, int count) {
 	int maxLineIndex = renderer.maxWidthLineIndex;
 	renderer.reset(firstLine, count);
@@ -9387,12 +9395,7 @@ public void setOrientation(int orientation) {
 	super.setOrientation(orientation);
 	int newOrientation = getOrientation();
 	if (oldOrientation != newOrientation) {
-		caretDirection = SWT.NULL;
-		resetCache(0, content.getLineCount());
-		setCaretLocation();
-		keyActionMap.clear();
-		createKeyBindings();
-		super.redraw();
+		resetBidiData();
 	}
 }
 /** 
@@ -10015,6 +10018,39 @@ public void setText(String text) {
 		}
 	}
 }
+
+/**
+ * Sets the base text direction (a.k.a. "paragraph direction") of the receiver,
+ * which must be one of the constants <code>SWT.LEFT_TO_RIGHT</code> or
+ * <code>SWT.RIGHT_TO_LEFT</code>.
+ * <p>
+ * <code>setOrientation</code> would override this value with the text direction
+ * that is consistent with the new orientation.
+ * </p>
+ * <p>
+ * <b>Warning</b>: This API is currently only implemented on Windows.
+ * It doesn't set the base text direction on GTK and Cocoa.
+ * </p>
+ *
+ * @param textDirection the base text direction style
+ * 
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @see SWT#FLIP_TEXT_DIRECTION
+ */
+@Override
+public void setTextDirection(int textDirection) {
+	checkWidget();
+	int oldStyle = getStyle();
+	super.setTextDirection(textDirection);
+	if (oldStyle != getStyle()) {
+		resetBidiData();
+	}
+}
+
 /**
  * Sets the text limit to the specified number of characters.
  * <p>

@@ -1523,6 +1523,21 @@ public String getText () {
 }
 
 /**
+ * Returns the text direction of the receiver.
+ *
+ * @return the text direction value
+ * 
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ * @since 3.103
+ */
+public int getTextDirection () {
+	checkLayout();
+	return orientation;
+}
+
+/**
  * Returns the width of the receiver.
  *
  * @return the width
@@ -2116,6 +2131,26 @@ public void setText (String text) {
 	} finally {
 		if (pool != null) pool.release();
 	}
+}
+
+/**
+ * Sets the text direction of the receiver, which must be one
+ * of <code>SWT.LEFT_TO_RIGHT</code> or <code>SWT.RIGHT_TO_LEFT</code>.
+ *
+ * <p>
+ * <b>Warning</b>: This API is currently only implemented on Windows.
+ * It doesn't set the base text direction on GTK and Cocoa.
+ * </p>
+ *
+ * @param textDirection the new text direction
+ * 
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ * @since 3.103
+ */
+public void setTextDirection (int textDirection) {
+	checkLayout();
 }
 
 /**

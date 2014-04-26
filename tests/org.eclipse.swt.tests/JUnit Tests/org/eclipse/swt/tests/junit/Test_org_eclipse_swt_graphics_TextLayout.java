@@ -844,4 +844,40 @@ public void test_getTabs() {
 	assertEquals(null, layout.getTabs());
 	layout.dispose();
 }
+public void test_getTextDirection() {
+	if (!SwtTestUtil.isWindows) {
+		// TODO Fix GTK and Cocoa failure.
+		if (SwtTestUtil.verbose) {
+			System.out
+					.println("Excluded test_getTextDirection(org.eclipse.swt.tests.junit.Test_org_eclipse_swt_graphics_TextLayout).");
+		}
+		return;
+	}
+	int[] styles = {SWT.LEFT_TO_RIGHT, SWT.RIGHT_TO_LEFT, SWT.NONE, -1};
+	int n = styles.length;
+	int prevDirection = SWT.NONE;
+	TextLayout layout = new TextLayout(display);
+	for (int i = 0; i < n; i++) {
+		int orientation = styles[i];
+		if (orientation != -1) {
+			layout.setOrientation(orientation);
+			if (orientation != 0) prevDirection = orientation;
+		}
+		for (int j = n - 1; j >= 0; j--) {
+			int direction = styles[j];
+			if (direction != -1) {
+				layout.setTextDirection(direction);
+			}
+			if (direction == SWT.NONE || direction == -1) {
+				assertEquals("orientation: " + orientation + ", text direction: " + direction,
+						layout.getTextDirection(), prevDirection);
+			} else {
+				prevDirection = direction;
+				assertEquals("orientation: " + orientation + ", text direction: " + direction,
+						layout.getTextDirection(), direction);
+			}
+		}
+	}
+	layout.dispose();
+}
 }

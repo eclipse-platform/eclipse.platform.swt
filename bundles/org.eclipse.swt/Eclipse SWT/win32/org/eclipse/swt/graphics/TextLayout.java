@@ -42,6 +42,7 @@ public final class TextLayout extends Resource {
 	int alignment;
 	int wrapWidth;
 	int orientation;
+	int textDirection;
 	int indent;
 	int wrapIndent;
 	boolean justify;
@@ -175,6 +176,7 @@ public TextLayout (Device device) {
 	wrapWidth = ascent = descent = -1;
 	lineSpacing = 0;
 	orientation = SWT.LEFT_TO_RIGHT;
+	textDirection = SWT.LEFT_TO_RIGHT;
 	styles = new StyleItem[2];
 	styles[0] = new StyleItem();
 	styles[1] = new StyleItem();
@@ -1811,7 +1813,7 @@ public int getLevel (int offset) {
 			return allRuns[i - 1].analysis.s.uBidiLevel;
 		}
 	}
-	return (orientation & SWT.RIGHT_TO_LEFT) != 0 ? 1 : 0;
+	return (textDirection & SWT.RIGHT_TO_LEFT) != 0 ? 1 : 0; 
 }
 
 /**
@@ -2430,7 +2432,7 @@ String getSegmentsText() {
 	text.getChars(0, length, oldChars, 0);
 	char[] newChars = new char[length + nSegments];
 	int charCount = 0, segmentCount = 0;
-	char defaultSeparator = orientation == SWT.RIGHT_TO_LEFT ? RTL_MARK : LTR_MARK;
+	char defaultSeparator = (textDirection & SWT.RIGHT_TO_LEFT) != 0 ? RTL_MARK : LTR_MARK;
 	while (charCount < length) {
 		if (segmentCount < nSegments && charCount == segments[segmentCount]) {
 			char separator = segmentsChars != null && segmentsChars.length > segmentCount ? segmentsChars[segmentCount] : defaultSeparator;
@@ -2546,6 +2548,21 @@ public String getText () {
 }
 
 /**
+ * Returns the text direction of the receiver.
+ *
+ * @return the text direction value
+ * 
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ * @since 3.103
+ */
+public int getTextDirection () {
+	checkLayout();
+	return textDirection;
+}
+
+/**
  * Returns the width of the receiver.
  *
  * @return the width
@@ -2600,7 +2617,7 @@ StyleItem[] itemize () {
 	SCRIPT_STATE scriptState = new SCRIPT_STATE();
 	final int MAX_ITEM = length + 1;
 	
-	if ((orientation & SWT.RIGHT_TO_LEFT) != 0) {
+	if ((textDirection & SWT.RIGHT_TO_LEFT) != 0) {
 		scriptState.uBidiLevel = 1;
 		scriptState.fArabicNumContext = true;
 	}
@@ -2939,7 +2956,7 @@ public void setOrientation (int orientation) {
 	if (orientation == 0) return;
 	if ((orientation & SWT.LEFT_TO_RIGHT) != 0) orientation = SWT.LEFT_TO_RIGHT;
 	if (this.orientation == orientation) return;
-	this.orientation = orientation;
+	textDirection = this.orientation = orientation;
 	freeRuns();
 }
 
@@ -3185,6 +3202,33 @@ public void setText (String text) {
 	styles[1] = new StyleItem();
 	styles[1].start = text.length();
 	stylesCount = 2;
+}
+
+/**
+ * Sets the text direction of the receiver, which must be one
+ * of <code>SWT.LEFT_TO_RIGHT</code> or <code>SWT.RIGHT_TO_LEFT</code>.
+ *
+ * <p>
+ * <b>Warning</b>: This API is currently only implemented on Windows.
+ * It doesn't set the base text direction on GTK and Cocoa.
+ * </p>
+ *
+ * @param textDirection the new text direction
+ * 
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ * @since 3.103
+ */
+public void setTextDirection (int textDirection) {
+	checkLayout();
+	int mask = SWT.LEFT_TO_RIGHT | SWT.RIGHT_TO_LEFT;
+	textDirection &= mask;
+	if (textDirection == 0) return;
+	if ((textDirection & SWT.LEFT_TO_RIGHT) != 0) textDirection = SWT.LEFT_TO_RIGHT;
+	if (this.textDirection == textDirection) return;
+	this.textDirection = textDirection;
+	freeRuns();
 }
 
 /**
