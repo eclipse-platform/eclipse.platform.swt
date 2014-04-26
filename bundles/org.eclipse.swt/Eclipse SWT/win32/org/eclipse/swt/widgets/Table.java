@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2013 IBM Corporation and others.
+ * Copyright (c) 2000, 2014 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -81,7 +81,7 @@ public class Table extends Composite {
 	long /*int*/ headerToolTipHandle;
 	boolean ignoreCustomDraw, ignoreDrawForeground, ignoreDrawBackground, ignoreDrawFocus, ignoreDrawSelection, ignoreDrawHot;
 	boolean customDraw, dragStarted, explorerTheme, firstColumnImage, fixScrollWidth, tipRequested, wasSelected, wasResized, painted;
-	boolean ignoreActivate, ignoreSelect, ignoreShrink, ignoreResize, ignoreColumnMove, ignoreColumnResize, fullRowSelect;
+	boolean ignoreActivate, ignoreSelect, ignoreShrink, ignoreResize, ignoreColumnMove, ignoreColumnResize, fullRowSelect, redraw = true;
 	int itemHeight, lastIndexOf, lastWidth, sortDirection, resizeCount, selectionForeground, hotIndex;
 	static /*final*/ long /*int*/ HeaderProc;
 	static final int INSET = 4;
@@ -2864,7 +2864,12 @@ boolean hasChildren () {
 boolean hitTestSelection (int index, int x, int y) {
 	int count = (int)/*64*/OS.SendMessage (handle, OS.LVM_GETITEMCOUNT, 0, 0);
 	if (count == 0) return false;
-	if (!hooks (SWT.MeasureItem)) return false;
+	/*
+	 * Return when redraw is false & index is 0, to avoid a possible
+	 * recursion, when user sets ItemHeight during SWT.MeasureItem event
+	 * processing & with a non-zero table-row selection, refer bug 400174.
+	 */
+	if (!hooks (SWT.MeasureItem) || (!redraw && index == 0)) return false;
 	boolean result = false;
 	if (0 <= index && index < count) {
 		TableItem item = _getItem (index);
@@ -4762,6 +4767,7 @@ public void setLinesVisible (boolean show) {
 
 public void setRedraw (boolean redraw) {
 	checkWidget ();
+	this.redraw = redraw;
 	/*
 	 * Feature in Windows.  When WM_SETREDRAW is used to turn
 	 * off drawing in a widget, it clears the WS_VISIBLE bits
