@@ -1813,7 +1813,7 @@ public int getLevel (int offset) {
 			return allRuns[i - 1].analysis.s.uBidiLevel;
 		}
 	}
-	return (textDirection & SWT.RIGHT_TO_LEFT) != 0 ? 1 : 0; 
+	return (textDirection & SWT.RIGHT_TO_LEFT) != 0 ? 1 : 0;
 }
 
 /**
