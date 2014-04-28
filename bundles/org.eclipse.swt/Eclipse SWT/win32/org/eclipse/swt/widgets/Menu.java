@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2013 IBM Corporation and others.
+ * Copyright (c) 2000, 2014 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -910,10 +910,10 @@ String getNameText () {
 	MenuItem [] items = getItems ();
 	int length = items.length;
 	if (length > 0) {
-		for (int i=0; i<length-1; i++) {
-			result = result + items [i].getNameText() + ", ";
+		for (int i=0; i<=length-1; i++) {
+			result += (items [i] == null ? "null" : items [i].getNameText())
+					+ (i < (length - 1) ? ", " : "");
 		}
-		result = result + items [length-1].getNameText ();
 	}
 	return result;
 }
