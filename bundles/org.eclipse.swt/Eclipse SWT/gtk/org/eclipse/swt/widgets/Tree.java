@@ -2653,16 +2653,37 @@ void rendererRender (long /*int*/ cell, long /*int*/ cr, long /*int*/ window, lo
 				if (wasSelected) {
 					Control control = findBackgroundControl ();
 					if (control == null) control = this;
-					if (cr != 0) {
-						Cairo.cairo_save (cr);
-						Cairo.cairo_reset_clip (cr);
-					}
-					drawBackground (control, window, cr, 0, rect.x, rect.y, rect.width, rect.height);
-					if (cr != 0) {
-						Cairo.cairo_restore (cr);
+					// GTK >= 3.10 sends a cairo for the window of the tree widget, but not for for the bin window.
+					// Besides, GTK 3.10 >= uses the same cairo for all the tree's children. SWT invalidates the cairo.
+					// The fix is to create a new cairo.
+					if (OS.GTK_VERSION >= OS.VERSION(3, 9, 0)) {
+						if (window == 0) {
+							window = OS.gtk_widget_get_window(handle);
+						}
+						if (window != 0) {
+							GdkRectangle r = new GdkRectangle();
+							OS.gdk_cairo_get_clip_rectangle(cr, r);
+							drawBackground (control, window, 0, 0, rect.x, r.y, r.width, r.height);
+						}
+					} else {
+						if (cr != 0) {
+							Cairo.cairo_save (cr);
+							Cairo.cairo_reset_clip (cr);
+						}
+						drawBackground (control, window, cr, 0, rect.x, rect.y, rect.width, rect.height);
+						if (cr != 0) {
+							Cairo.cairo_restore (cr);
+						}
 					}
 				}
-				GC gc = new GC (this);
+				GC gc;
+				if (OS.GTK_VERSION >= OS.VERSION(3, 9, 0)) {
+					GCData gcData = new GCData();
+					gcData.cairo = OS.gdk_cairo_create(OS.gtk_widget_get_window(handle));
+					gc = GC.gtk_new(this, gcData );
+				} else {
+					gc = new GC (this);
+				}
 				if ((drawState & SWT.SELECTED) != 0) {
 					gc.setBackground (display.getSystemColor (SWT.COLOR_LIST_SELECTION));
 					gc.setForeground (display.getSystemColor (SWT.COLOR_LIST_SELECTION_TEXT));
@@ -2672,7 +2693,14 @@ void rendererRender (long /*int*/ cell, long /*int*/ cr, long /*int*/ window, lo
 				}
 				gc.setFont (item.getFont (columnIndex));
 				if ((style & SWT.MIRRORED) != 0) rect.x = getClientWidth () - rect.width - rect.x;
-				gc.setClipping (rect.x, rect.y, rect.width, rect.height);
+				// Since we create a new cairo, we have to clip it
+				if (OS.GTK_VERSION >= OS.VERSION(3, 9, 0) && cr != 0) {
+					GdkRectangle r = new GdkRectangle();
+					OS.gdk_cairo_get_clip_rectangle(cr, r);
+					gc.setClipping(rect.x, r.y, r.width, r.height);
+				} else {
+					gc.setClipping (rect.x, rect.y, rect.width, rect.height);
+				}
 				Event event = new Event ();
 				event.item = item;
 				event.index = columnIndex;
@@ -2690,6 +2718,8 @@ void rendererRender (long /*int*/ cell, long /*int*/ cr, long /*int*/ window, lo
 				if ((drawState & SWT.FOCUSED) != 0) drawFlags |= OS.GTK_CELL_RENDERER_FOCUSED;
 				if ((drawState & SWT.SELECTED) != 0) {
 					if (OS.GTK3) {
+					 if (OS.GTK_VERSION < OS.VERSION(3, 9, 0)) {
+						// GTK >= 3.10 creates a different background if we use this code
 						Cairo.cairo_save (cr);
 						Cairo.cairo_reset_clip (cr);
 						long /*int*/ context = OS.gtk_widget_get_style_context (widget);
@@ -2699,6 +2729,7 @@ void rendererRender (long /*int*/ cell, long /*int*/ cr, long /*int*/ window, lo
 						OS.gtk_render_background(context, cr, rect.x, rect.y, rect.width, rect.height);
 						OS.gtk_style_context_restore (context);
 						Cairo.cairo_restore (cr);
+					 }
 					} else {
 						long /*int*/ style = OS.gtk_widget_get_style (widget);					
 						//TODO - parity and sorted
@@ -2755,7 +2786,17 @@ void rendererRender (long /*int*/ cell, long /*int*/ cr, long /*int*/ window, lo
 				}
 				contentX [0] -= imageWidth;
 				contentWidth [0] += imageWidth;
-				GC gc = new GC (this);
+				GC gc;
+				// GTK >= 3.10 sends a cairo for the window of the tree widget, but not for for the bin window.
+				// Besides, GTK >= 3.10 uses the same cairo for all the tree's children. SWT invalidates the cairo.
+				// The fix is to create a new cairo.
+				if (OS.GTK_VERSION >= OS.VERSION(3, 9, 0)) {
+					GCData gcData = new GCData();
+					gcData.cairo = OS.gdk_cairo_create(OS.gtk_widget_get_window(handle));
+					gc = GC.gtk_new(this, gcData );
+				} else {
+					gc = new GC(this);
+				}
 				if ((drawState & SWT.SELECTED) != 0) {
 					Color background, foreground;
 					if (gtk_widget_has_focus (handle) || OS.GTK3) {
@@ -2782,7 +2823,14 @@ void rendererRender (long /*int*/ cell, long /*int*/ cr, long /*int*/ window, lo
 					rect.x = getClientWidth () - rect.width - rect.x;
 					clipRect.x = getClientWidth () - clipRect.width - clipRect.x;
 				}
-				gc.setClipping (clipRect.x, clipRect.y, clipRect.width, clipRect.height);
+				// Since we create a new cairo, we have to clip it
+				if (OS.GTK_VERSION >= OS.VERSION(3, 9, 0) && (cr != 0)) {
+					GdkRectangle r = new GdkRectangle();
+					OS.gdk_cairo_get_clip_rectangle(cr, r);
+					gc.setClipping(clipRect.x, r.y, r.width, r.height);
+				} else {
+					gc.setClipping (clipRect.x, clipRect.y, clipRect.width, clipRect.height);
+				}
 				Event event = new Event ();
 				event.item = item;
 				event.index = columnIndex;
@@ -2792,7 +2840,7 @@ void rendererRender (long /*int*/ cell, long /*int*/ cr, long /*int*/ window, lo
 				event.width = contentWidth [0];
 				event.height = rect.height;
 				event.detail = drawState;
-				sendEvent (SWT.PaintItem, event);	
+				sendEvent (SWT.PaintItem, event);
 				gc.dispose();
 			}
 		}
