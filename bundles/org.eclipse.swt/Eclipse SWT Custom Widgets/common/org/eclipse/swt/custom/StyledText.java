@@ -5966,6 +5966,7 @@ void handleKey(Event event) {
  * @param event keyboard event
  */
 void handleKeyDown(Event event) {
+	if (isDisposed()) SWT.error (SWT.ERROR_WIDGET_DISPOSED);
 	if (clipboardSelection == null) {
 		clipboardSelection = new Point(selection.x, selection.y);
 	}
