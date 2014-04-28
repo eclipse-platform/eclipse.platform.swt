@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2012 IBM Corporation and others.
+ * Copyright (c) 2000, 2014 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -341,7 +341,7 @@ long /*int*/ panel_shouldShowFilename (long /*int*/ id, long /*int*/ sel, long /
 		if (found) {
 			if (isDirectory[0] != 0) {
 				return 1;
-			} else {
+			} else if (popup != null) {
 				String fileName = path.lastPathComponent().getString();
 				int filterIndex = (int)/*64*/popup.indexOfSelectedItem();
 				String extensions = filterExtensions [filterIndex];
