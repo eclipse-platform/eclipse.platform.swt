@@ -2657,14 +2657,16 @@ void rendererRender (long /*int*/ cell, long /*int*/ cr, long /*int*/ window, lo
 					// Besides, GTK 3.10 >= uses the same cairo for all the tree's children. SWT invalidates the cairo.
 					// The fix is to create a new cairo.
 					if (OS.GTK_VERSION >= OS.VERSION(3, 9, 0)) {
-						if (window == 0) {
-							window = OS.gtk_widget_get_window(handle);
-						}
-						if (window != 0) {
-							GdkRectangle r = new GdkRectangle();
-							OS.gdk_cairo_get_clip_rectangle(cr, r);
-							drawBackground (control, window, 0, 0, rect.x, r.y, r.width, r.height);
-						}
+						// A temporary fix for https://bugs.eclipse.org/bugs/show_bug.cgi?id=427480
+						// Force native painting
+//						if (window == 0) {
+//							window = OS.gtk_widget_get_window(handle);
+//						}
+//						if (window != 0) {
+//							GdkRectangle r = new GdkRectangle();
+//							OS.gdk_cairo_get_clip_rectangle(cr, r);
+//							drawBackground (control, window, 0, 0, rect.x, r.y, r.width, r.height);
+//						}
 					} else {
 						if (cr != 0) {
 							Cairo.cairo_save (cr);
@@ -2713,6 +2715,11 @@ void rendererRender (long /*int*/ cell, long /*int*/ cr, long /*int*/ window, lo
 				sendEvent (SWT.EraseItem, event);
 				drawForeground = null;
 				drawState = event.doit ? event.detail : 0;
+				// A temporary fix for https://bugs.eclipse.org/bugs/show_bug.cgi?id=427480
+				// Force native painting
+				if (OS.GTK_VERSION >= OS.VERSION(3, 9, 0)) {
+					drawState |= SWT.FOREGROUND;
+				}
 				drawFlags &= ~(OS.GTK_CELL_RENDERER_FOCUSED | OS.GTK_CELL_RENDERER_SELECTED);
 				if ((drawState & SWT.SELECTED) != 0) drawFlags |= OS.GTK_CELL_RENDERER_SELECTED;
 				if ((drawState & SWT.FOCUSED) != 0) drawFlags |= OS.GTK_CELL_RENDERER_FOCUSED;
@@ -2840,7 +2847,11 @@ void rendererRender (long /*int*/ cell, long /*int*/ cr, long /*int*/ window, lo
 				event.width = contentWidth [0];
 				event.height = rect.height;
 				event.detail = drawState;
-				sendEvent (SWT.PaintItem, event);
+				// Temporary fix for https://bugs.eclipse.org/bugs/show_bug.cgi?id=427480
+				// Force native paint
+				if (OS.GTK_VERSION < OS.VERSION(3, 9, 0)) {
+					sendEvent (SWT.PaintItem, event);
+				}
 				gc.dispose();
 			}
 		}
