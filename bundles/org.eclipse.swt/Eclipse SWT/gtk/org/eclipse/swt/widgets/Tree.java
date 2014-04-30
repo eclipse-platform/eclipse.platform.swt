@@ -856,7 +856,14 @@ void createRenderers (long /*int*/ columnHandle, int modelIndex, boolean check, 
 		}
 	}
 	long /*int*/ pixbufRenderer = ownerDraw ? OS.g_object_new (display.gtk_cell_renderer_pixbuf_get_type (), 0) : OS.gtk_cell_renderer_pixbuf_new ();
-	if (pixbufRenderer == 0) error (SWT.ERROR_NO_HANDLES);
+	if (pixbufRenderer == 0) {
+		error (SWT.ERROR_NO_HANDLES);
+	} else {
+		// set default size this size is used for calculating the icon and text positions in a tree
+		if ((!ownerDraw) && (OS.GTK3)) {
+			OS.gtk_cell_renderer_set_fixed_size(pixbufRenderer, 16, 16);
+		}
+	}
 	long /*int*/ textRenderer = ownerDraw ? OS.g_object_new (display.gtk_cell_renderer_text_get_type (), 0) : OS.gtk_cell_renderer_text_new ();
 	if (textRenderer == 0) error (SWT.ERROR_NO_HANDLES);
 	
