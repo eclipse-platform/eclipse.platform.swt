@@ -2864,12 +2864,7 @@ boolean hasChildren () {
 boolean hitTestSelection (int index, int x, int y) {
 	int count = (int)/*64*/OS.SendMessage (handle, OS.LVM_GETITEMCOUNT, 0, 0);
 	if (count == 0) return false;
-	/*
-	 * Return when redraw is false & index is 0, to avoid a possible
-	 * recursion, when user sets ItemHeight during SWT.MeasureItem event
-	 * processing & with a non-zero table-row selection, refer bug 400174.
-	 */
-	if (!hooks (SWT.MeasureItem) || (!redraw && index == 0)) return false;
+	if (!hooks (SWT.MeasureItem)) return false;
 	boolean result = false;
 	if (0 <= index && index < count) {
 		TableItem item = _getItem (index);
@@ -4676,9 +4671,14 @@ void setItemHeight (boolean fixScroll) {
 	* visible and are shown afterwards.  The fix is to
 	* save the top index, scroll to the top of the table
 	* and then restore the original top index.
+	*
+	* Note: Above fix causes recursion when setItemHeight is
+	* called during during SWT.MeasureItem event processing
+	* & with a non-zero table-row selection, bug 400174.
+	* Solution is skip the fix when redraw is false.
 	*/
 	int topIndex = getTopIndex ();
-	if (fixScroll && topIndex != 0) {
+	if (fixScroll && topIndex != 0 && redraw) {
 		setRedraw (false);
 		setTopIndex (0);
 	}
