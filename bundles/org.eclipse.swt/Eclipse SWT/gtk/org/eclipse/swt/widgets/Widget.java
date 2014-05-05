@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2013 IBM Corporation and others.
+ * Copyright (c) 2000, 2014 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -649,56 +649,56 @@ void gtk_adjustment_get (long /*int*/ hAdjustment, GtkAdjustment adjustment) {
 
 double gtk_adjustment_get_step_increment (long /*int*/ hAdjustment) {
 	if (OS.GTK_VERSION >= OS.VERSION (2, 14, 0)) {
-		return (int) OS.gtk_adjustment_get_step_increment (hAdjustment);
+		return OS.gtk_adjustment_get_step_increment (hAdjustment);
 	}
 	GtkAdjustment adjustment = new GtkAdjustment ();
 	OS.memmove (adjustment, hAdjustment);
-	return (int) adjustment.step_increment;
+	return adjustment.step_increment;
 }
 
 double gtk_adjustment_get_page_increment (long /*int*/ hAdjustment) {
 	if (OS.GTK_VERSION >= OS.VERSION (2, 14, 0)) {
-		return (int) OS.gtk_adjustment_get_page_increment (hAdjustment);
+		return OS.gtk_adjustment_get_page_increment (hAdjustment);
 	}
 	GtkAdjustment adjustment = new GtkAdjustment ();
 	OS.memmove (adjustment, hAdjustment);
-	return (int) adjustment.page_increment;
+	return adjustment.page_increment;
 }
 
 double gtk_adjustment_get_lower (long /*int*/ hAdjustment) {
 	if (OS.GTK_VERSION >= OS.VERSION (2, 14, 0)) {
-		return (int) OS.gtk_adjustment_get_lower (hAdjustment);
+		return OS.gtk_adjustment_get_lower (hAdjustment);
 	}
 	GtkAdjustment adjustment = new GtkAdjustment ();
 	OS.memmove (adjustment, hAdjustment);
-	return (int) adjustment.lower;
+	return adjustment.lower;
 }
 
 double gtk_adjustment_get_upper (long /*int*/ hAdjustment) {
 	if (OS.GTK_VERSION >= OS.VERSION (2, 14, 0)) {
-		return (int) OS.gtk_adjustment_get_upper (hAdjustment);
+		return OS.gtk_adjustment_get_upper (hAdjustment);
 	}
 	GtkAdjustment adjustment = new GtkAdjustment ();
 	OS.memmove (adjustment, hAdjustment);
-	return (int) adjustment.upper;
+	return adjustment.upper;
 }
 
 double gtk_adjustment_get_page_size (long /*int*/ hAdjustment) {
 	if (OS.GTK_VERSION >= OS.VERSION (2, 14, 0)) {
-		return (int) OS.gtk_adjustment_get_page_size (hAdjustment);
+		return OS.gtk_adjustment_get_page_size (hAdjustment);
 	}
 	GtkAdjustment adjustment = new GtkAdjustment ();
 	OS.memmove (adjustment, hAdjustment);
-	return (int) adjustment.page_size;
+	return adjustment.page_size;
 }
 
 double gtk_adjustment_get_value (long /*int*/ hAdjustment) {
 	if (OS.GTK_VERSION >= OS.VERSION (2, 14, 0)) {
-		return (int) OS.gtk_adjustment_get_value (hAdjustment);
+		return OS.gtk_adjustment_get_value (hAdjustment);
 	}
 	GtkAdjustment adjustment = new GtkAdjustment ();
 	OS.memmove (adjustment, hAdjustment);
-	return (int) adjustment.value;
+	return adjustment.value;
 }
 
 void gtk_adjustment_configure (long /*int*/ hAdjustment, GtkAdjustment a) {
