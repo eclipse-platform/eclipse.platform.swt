@@ -33,8 +33,8 @@ protected void tearDown() {
 }
 
 public void test_ConstructorLjava_lang_Object() {
-	// Object will typically be a widget.
-	AccessibleControlEvent event = new AccessibleControlEvent(shell);
+	// The source object should be a widget's accessible.
+	AccessibleControlEvent event = new AccessibleControlEvent(shell.getAccessible());
 	assertNotNull(event);
 	
 	// Test with some other object also.
@@ -43,7 +43,7 @@ public void test_ConstructorLjava_lang_Object() {
 }
 
 public void test_toString() {
-	AccessibleControlEvent event = new AccessibleControlEvent(shell);
+	AccessibleControlEvent event = new AccessibleControlEvent(shell.getAccessible());
 	assertNotNull(event.toString());
 	assertTrue(event.toString().length() > 0);
 }
