@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2013 IBM Corporation and others.
+ * Copyright (c) 2000, 2014 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -2224,7 +2224,7 @@ LRESULT WM_ERASEBKGND (long /*int*/ wParam, long /*int*/ lParam) {
 	* 
 	* NOTE: This only happens on Vista.
 	*/
-	if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (6, 0)) {
+	if (!OS.IsWinCE && OS.WIN32_VERSION == OS.VERSION (6, 0)) {
 		drawBackground (wParam);
 		return LRESULT.ONE;
 	}
@@ -2539,8 +2539,14 @@ LRESULT WM_SYSCOMMAND (long /*int*/ wParam, long /*int*/ lParam) {
 	* top-level window in the Z-order while ShowWindow()
 	* with SW_SHOWMINIMIZED does not.  There is no fix for
 	* this at this time.
+	* 
+	* NOTE:  Second guessing the effectiveness of the 
+	* operating system's memory manager and breaking UI 
+	* convention if the JVM has reserved over 32MB
+	* of memory is not necessary on more recent Windows 
+	* versions like Windows Vista.
 	*/
-	if (OS.IsWinNT) {
+	if (OS.IsWinNT && OS.WIN32_VERSION < OS.VERSION (6, 0)) {
 		int cmd = (int)/*64*/wParam & 0xFFF0;
 		switch (cmd) {
 			case OS.SC_MINIMIZE:
