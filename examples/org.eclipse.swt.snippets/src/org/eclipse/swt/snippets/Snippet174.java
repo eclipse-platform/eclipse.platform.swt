@@ -32,6 +32,12 @@ import org.eclipse.swt.layout.*;
 import org.eclipse.swt.opengl.*;
 import org.eclipse.swt.widgets.*;
 
+/**
+ * @deprecated 
+ * This snippet is being deprecated as the org.eclipse.swt.opengl plugin it needs
+ * is not available anymore.
+ *
+ */
 public class Snippet174 {
 
 public static void main(String[] args) {
