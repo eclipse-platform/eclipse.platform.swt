@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2003, 2013 IBM Corporation and others.
+ * Copyright (c) 2003, 2014 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -600,6 +600,21 @@ public void create(Composite parent, int style) {
 								locationListeners[i].changed(locationEvent);
 							}
 							if (browser.isDisposed()) return;
+
+							/*
+							* With the IBM 64-bit JVM an unexpected document complete event occurs before
+							* the native browser's DOM has been built. Filter this premature event based
+							* on the browser's ready state.
+							*/
+							int[] rgdispid = auto.getIDsOfNames(new String[] { "ReadyState" }); //$NON-NLS-1$
+							Variant pVarResult = auto.getProperty(rgdispid[0]);
+							if (pVarResult != null) {
+								int readyState = pVarResult.getInt();
+								pVarResult.dispose ();
+								if (readyState != READYSTATE_COMPLETE) {
+									break;
+								}
+							}
 
 							/*
 							 * Note.  The completion of the page loading is detected as
