@@ -930,6 +930,11 @@ void createWidget (int index) {
 	items = new TreeItem [4];
 	columns = new TreeColumn [4];
 	columnCount = 0;
+	// In GTK 3 font description is inherited from parent widget which is not how SWT has always worked,
+	// reset to default font to get the usual behavior
+	if (OS.GTK3) {
+		setFontDescription(defaultFont().handle);
+	}
 }
 
 GdkColor defaultBackground () {

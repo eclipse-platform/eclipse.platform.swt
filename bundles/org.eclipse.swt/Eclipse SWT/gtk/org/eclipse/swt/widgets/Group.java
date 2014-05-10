@@ -158,6 +158,11 @@ void createHandle(int index) {
 	if ((style & SWT.SHADOW_ETCHED_OUT) != 0) {
 		OS.gtk_frame_set_shadow_type (handle, OS.GTK_SHADOW_ETCHED_OUT);
 	}
+	// In GTK 3 font description is inherited from parent widget which is not how SWT has always worked,
+	// reset to default font to get the usual behavior
+	if (OS.GTK3) {
+		setFontDescription(defaultFont().handle);
+	}
 }
 
 @Override

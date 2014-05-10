@@ -163,6 +163,12 @@ void createHandle (int index) {
 	* when the tool bar item has no image or text.
 	*/
 	OS.gtk_toolbar_set_icon_size (handle, OS.GTK3 ? OS.GTK_ICON_SIZE_SMALL_TOOLBAR : OS.GTK_ICON_SIZE_LARGE_TOOLBAR);
+
+	// In GTK 3 font description is inherited from parent widget which is not how SWT has always worked,
+	// reset to default font to get the usual behavior
+	if (OS.GTK3) {
+		setFontDescription(defaultFont().handle);
+	}
 }
 
 @Override

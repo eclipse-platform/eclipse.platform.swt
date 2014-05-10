@@ -231,6 +231,11 @@ void createHandle (int index) {
 	if ((getShell ().style & SWT.ON_TOP) != 0) {
 		OS.gtk_tree_view_set_search_column (handle, -1);
 	}
+	// In GTK 3 font description is inherited from parent widget which is not how SWT has always worked,
+	// reset to default font to get the usual behavior
+	if (OS.GTK3) {
+		setFontDescription(defaultFont().handle);
+	}
 }
 
 @Override
