@@ -3996,7 +3996,11 @@ public void setBackground (Color color) {
 	}
 	boolean set = false;
 	if (OS.GTK3) {
-		set = !getBackground().equals(color);
+		// TODO: Some widgets like GtkLabel (and others) are transparent
+		// in GTK3, so one needs to set their background. For now, always
+		// set the background. See bug 421836.
+		// set = !getBackground().equals(color);
+		set = true;
 	} else {
 		if (gdkColor == null) {
 			long /*int*/ style = OS.gtk_widget_get_modifier_style (handle);
