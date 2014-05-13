@@ -2696,6 +2696,11 @@ void rendererRender (long /*int*/ cell, long /*int*/ cr, long /*int*/ window, lo
 				sendEvent (SWT.EraseItem, event);
 				drawForeground = null;
 				drawState = event.doit ? event.detail : 0;
+				// A temporary fix for https://bugs.eclipse.org/bugs/show_bug.cgi?id=427480
+				// Force native painting
+				if (OS.GTK_VERSION >= OS.VERSION(3, 9, 0)) {
+					drawState |= SWT.FOREGROUND;
+				}
 				drawFlags &= ~(OS.GTK_CELL_RENDERER_FOCUSED | OS.GTK_CELL_RENDERER_SELECTED);
 				if ((drawState & SWT.SELECTED) != 0) drawFlags |= OS.GTK_CELL_RENDERER_SELECTED;
 				if ((drawState & SWT.FOCUSED) != 0) drawFlags |= OS.GTK_CELL_RENDERER_FOCUSED;
