@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2012 IBM Corporation and others.
+ * Copyright (c) 2000, 2014 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -405,7 +405,27 @@ void set (int index, Image image, int count) {
 			ImageData data = image.getImageData ();
 			switch (data.getTransparencyType ()) {
 				case SWT.TRANSPARENCY_ALPHA:
-					if (OS.COMCTL32_MAJOR >= 6) {
+					/*
+					 * Fully transparent image is rendered as a black image, so such
+					 * image needs to be rendered using ImageData mask approach.
+					 * Refer bug 426247
+					 * 
+					 * TODO: Explore using createMaskFromAlpha() method even
+					 * for newer versions of the COMCTL32 library.
+					 */
+					boolean fullyTransparent = true;
+					if (data.alphaData == null) {
+						fullyTransparent = false;
+					}
+					else {
+						for (byte alphaData : data.alphaData) {
+							if (alphaData != 0) {
+								fullyTransparent = false;
+								break;
+							}
+						}
+					}
+					if (OS.COMCTL32_MAJOR >= 6 && !fullyTransparent) {
 						hBitmap = copyWithAlpha (hImage, -1, data.alphaData, cx [0], cy [0]);
 					} else {
 						hBitmap = copyBitmap (hImage, cx [0], cy [0]);
