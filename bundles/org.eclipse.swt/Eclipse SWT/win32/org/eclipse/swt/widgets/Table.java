@@ -7,6 +7,7 @@
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
+ *     Roland Oldenburg <r.oldenburg@hsp-software.de> - Bug 292199
  *******************************************************************************/
 package org.eclipse.swt.widgets;
 
@@ -212,6 +213,19 @@ void _checkShrink () {
 		if (!ignoreShrink) {
 			/* Resize the item array to match the item count */
 			int count = (int)/*64*/OS.SendMessage (handle, OS.LVM_GETITEMCOUNT, 0, 0);
+
+			/*
+			* Bug in Windows. Call to OS.LVM_GETITEMCOUNT unexpectedly returns zero,
+			* leading to a possible "ArrayIndexOutOfBoundsException: 4" in SWT table.
+			* So, double check for any existing living items in the table and fixing
+			* the count value. Refer bug 292199.
+			*/
+			if (count == 0 && items.length > 4) {
+				while (count<items.length && items[count] != null && !items[count].isDisposed()) {
+					count++;
+				}
+			}
+
 			if (items.length > 4 && items.length - count > 3) {
 				int length = Math.max (4, (count + 3) / 4 * 4);
 				TableItem [] newItems = new TableItem [length];
@@ -252,6 +266,7 @@ TableItem _getItem (int index, boolean create) {
 TableItem _getItem (int index, boolean create, int count) {
 	//TODO - code could be shared but it would mix keyed and non-keyed logic
 	if (keys == null) {
+		if (index >= items.length) return null;
 		if ((style & SWT.VIRTUAL) == 0 || !create) return items [index];
 		if (items [index] != null) return items [index];
 		return items [index] = new TableItem (this, SWT.NONE, -1, false);
