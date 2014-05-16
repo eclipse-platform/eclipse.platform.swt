@@ -427,13 +427,13 @@ if [ ${MODEL} = 'x86_64' -o ${MODEL} = 'ppc64' -o ${MODEL} = 'ia64' -o ${MODEL} 
 		XLIB64=-L/usr/X11R6/lib64
 		export XLIB64
 	fi
-	if [ ${MODEL} = 'ppc64' ]; then
+	if [ ${MODEL} = 'ppc64' -o ${MODEL} = 'ppc64le' ]; then
 		if [ ${OS} = 'AIX' ]; then
 			SWT_PTR_CFLAGS="${SWT_PTR_CFLAGS} -maix64"
 			SWT_LFLAGS=-maix64
 			export SWT_LFLAGS
 		else
-			SWT_PTR_CFLAGS="${SWT_PTR_CFLAGS} -m64"	
+			SWT_PTR_CFLAGS="${SWT_PTR_CFLAGS} -m64"
 			XLIB64="${XLIB64} -L/usr/lib64"
 			SWT_LFLAGS=-m64
 			export SWT_LFLAGS
@@ -455,12 +455,12 @@ if [ ${MODEL} = 'x86_64' -o ${MODEL} = 'ppc64' -o ${MODEL} = 'ia64' -o ${MODEL} 
 	export SWT_PTR_CFLAGS
 fi
 if [ ${MODEL} = 's390' ]; then
-	SWT_PTR_CFLAGS="-m31"	
+	SWT_PTR_CFLAGS="-m31"
 	SWT_LFLAGS=-m31
 	export SWT_LFLAGS SWT_PTR_CFLAGS
 fi
 if [ ${MODEL} = 'x86' -a ${SWT_OS} = 'linux' ]; then
-	SWT_PTR_CFLAGS="-m32"	
+	SWT_PTR_CFLAGS="-m32"
 	SWT_LFLAGS=-m32
 	export SWT_LFLAGS SWT_PTR_CFLAGS
 fi
