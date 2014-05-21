@@ -3044,20 +3044,32 @@ public Point map (Control from, Control to, int x, int y) {
 	Point point = new Point (x, y);
 	if (from == to) return point;
 	if (from != null) {
-		long /*int*/ window = from.eventWindow ();
 		int [] origin_x = new int [1], origin_y = new int [1];
-		OS.gdk_window_get_origin (window, origin_x, origin_y);
-		if ((from.style & SWT.MIRRORED) != 0) point.x = from.getClientWidth () - point.x;
+		boolean fromIsSubshell = from instanceof Shell && from.getParent() != null;
+		if (fromIsSubshell) { // workaround for https://bugs.eclipse.org/bugs/show_bug.cgi?id=434772
+			OS.gtk_window_get_position (((Shell) from).shellHandle, origin_x, origin_y);
+		} else {
+			long /*int*/ window = from.eventWindow ();
+			OS.gdk_window_get_origin (window, origin_x, origin_y);
+			if ((from.style & SWT.MIRRORED) != 0) point.x = from.getClientWidth() - point.x;
+		}
 		point.x += origin_x [0];
 		point.y += origin_y [0];
 	}
 	if (to != null) {
-		long /*int*/ window = to.eventWindow ();
 		int [] origin_x = new int [1], origin_y = new int [1];
-		OS.gdk_window_get_origin (window, origin_x, origin_y);
+		boolean toIsSubshell = to instanceof Shell && to.getParent() != null;
+		if (toIsSubshell) { // workaround for https://bugs.eclipse.org/bugs/show_bug.cgi?id=434772
+			OS.gtk_window_get_position (((Shell) to).shellHandle, origin_x, origin_y);
+		} else {
+			long /*int*/ window = to.eventWindow ();
+			OS.gdk_window_get_origin (window, origin_x, origin_y);
+		}
 		point.x -= origin_x [0];
 		point.y -= origin_y [0];
-		if ((to.style & SWT.MIRRORED) != 0) point.x = to.getClientWidth () - point.x;
+		if (!toIsSubshell) {
+			if ((to.style & SWT.MIRRORED) != 0) point.x = to.getClientWidth () - point.x;
+		}
 	}
 	return point;
 }
@@ -3173,21 +3185,34 @@ public Rectangle map (Control from, Control to, int x, int y, int width, int hei
 	if (from == to) return rect;
 	boolean fromRTL = false, toRTL = false;
 	if (from != null) {
-		long /*int*/ window = from.eventWindow ();
 		int [] origin_x = new int [1], origin_y = new int [1];
-		OS.gdk_window_get_origin (window, origin_x, origin_y);
-		if (fromRTL = (from.style & SWT.MIRRORED) != 0) rect.x = from.getClientWidth() - rect.x;
+		boolean fromIsSubshell = from instanceof Shell && from.getParent() != null;
+		if (fromIsSubshell) { // workaround for https://bugs.eclipse.org/bugs/show_bug.cgi?id=434772
+			OS.gtk_window_get_position (((Shell) from).shellHandle, origin_x, origin_y);
+		} else {
+			long /*int*/ window = from.eventWindow ();
+			OS.gdk_window_get_origin (window, origin_x, origin_y);
+			if (fromRTL = (from.style & SWT.MIRRORED) != 0) rect.x = from.getClientWidth() - rect.x;
+		}
 		rect.x += origin_x [0];
 		rect.y += origin_y [0];
 	}
 	if (to != null) {
-		long /*int*/ window = to.eventWindow ();
 		int [] origin_x = new int [1], origin_y = new int [1];
-		OS.gdk_window_get_origin (window, origin_x, origin_y);
+		boolean toIsSubshell = to instanceof Shell && to.getParent() != null;
+		if (toIsSubshell) { // workaround for https://bugs.eclipse.org/bugs/show_bug.cgi?id=434772
+			OS.gtk_window_get_position (((Shell) to).shellHandle, origin_x, origin_y);
+		} else {
+			long /*int*/ window = to.eventWindow ();
+			OS.gdk_window_get_origin (window, origin_x, origin_y);
+		}
 		rect.x -= origin_x [0];
 		rect.y -= origin_y [0];
-		if (toRTL = (to.style & SWT.MIRRORED) != 0) rect.x = to.getClientWidth () - rect.x;
+		if (!toIsSubshell) {
+			if (toRTL = (to.style & SWT.MIRRORED) != 0) rect.x = to.getClientWidth () - rect.x;
+		}
 	}
+	
 	if (fromRTL != toRTL) rect.x -= rect.width;
 	return rect;
 }
