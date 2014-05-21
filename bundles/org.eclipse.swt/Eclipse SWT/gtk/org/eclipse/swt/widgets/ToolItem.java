@@ -930,31 +930,32 @@ public void setEnabled (boolean enabled) {
 	long /*int*/ topHandle = topHandle ();
 	if (gtk_widget_get_sensitive (topHandle) == enabled) return;
 	OS.gtk_widget_set_sensitive (topHandle, enabled);
-	if (enabled) {
-		/*
-		* Bug in GTK.  GtkButton requires an enter notify before it
-		* allows the button to be pressed, but events are dropped when
-		* widgets are insensitive.  The fix is to hide and show the
-		* button if the pointer is within its bounds.
-		*/
-		int [] x = new int [1], y = new int [1];
-		gdk_window_get_device_position (parent.paintWindow (), x, y, null);
-		if (getBounds ().contains (x [0], y [0])) {
-			OS.gtk_widget_hide (handle);
-			OS.gtk_widget_show (handle);
-		}
-	} else {
-		/*
-		* Bug in GTK. Starting with 2.14, if a button is disabled 
-		* through on a button press, the field which keeps track 
-		* whether the pointer is currently in the button is never updated.
-		* As a result, when it is re-enabled it automatically enters
-		* a PRELIGHT state. The fix is to set a NORMAL state.
-		* 
-		* Note that on GTK 3 this code causes the item to be re-enabled.
-		*/
-		if (OS.GTK_VERSION >= OS.VERSION (2, 14, 0) && !OS.GTK3) {
-			OS.gtk_widget_set_state (topHandle, OS.GTK_STATE_NORMAL);
+
+	if (!OS.GTK3) {
+		if (enabled) {
+			/*
+			* Bug in GTK (see Eclipse bug 82169). GtkButton requires an enter notify before it
+			* allows the button to be pressed, but events are dropped when
+			* widgets are insensitive.  The fix is to hide and show the
+			* button if the pointer is within its bounds.
+			*/
+			int [] x = new int [1], y = new int [1];
+			gdk_window_get_device_position (parent.paintWindow (), x, y, null);
+			if (getBounds ().contains (x [0], y [0])) {
+				OS.gtk_widget_hide (handle);
+				OS.gtk_widget_show (handle);
+			}
+		} else {
+			/*
+			* Bug in GTK. Starting with 2.14, if a button is disabled
+			* through on a button press, the field which keeps track
+			* whether the pointer is currently in the button is never updated.
+			* As a result, when it is re-enabled it automatically enters
+			* a PRELIGHT state. The fix is to set a NORMAL state.
+			*/
+			if (OS.GTK_VERSION >= OS.VERSION (2, 14, 0)) {
+				OS.gtk_widget_set_state (topHandle, OS.GTK_STATE_NORMAL);
+			}
 		}
 	}
 }
