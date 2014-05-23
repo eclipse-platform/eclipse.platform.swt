@@ -422,6 +422,7 @@
 				<equals arg1="${swt.arch}" arg2="x86_64"/>
 				<equals arg1="${swt.arch}" arg2="ia64"/>
 				<equals arg1="${swt.arch}" arg2="ppc64"/>
+				<equals arg1="${swt.arch}" arg2="ppc64le"/>
 				<equals arg1="${swt.arch}" arg2="s390x"/>
 			</or>
 		</condition>

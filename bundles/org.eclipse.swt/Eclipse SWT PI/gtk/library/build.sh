@@ -219,6 +219,36 @@ case $SWT_OS.$SWT_ARCH in
 			export PKG_CONFIG_PATH="/usr/lib64/pkgconfig/:/bluebird/teamswt/swt-builddir/cairo_1.0.2/linux_ppc64/lib/pkgconfig/:/usr/local/GNOME/lib/pkgconfig:/usr/local/gtk2.4/lib/pkgconfig/"
 		fi
 		;;
+	"linux.ppc64le")
+		echo ${JAVA_HOME}
+		if [ "${CC}" = "" ]; then
+			export CC=gcc
+		fi
+		if [ "${JAVA_HOME}" = "" ]; then
+			export JAVA_HOME="/bluebird/teamswt/swt-builddir/JDKs/PPC64LE/jre5u10"
+		fi
+		if [ "${MOZILLA_SDK}" = "" ]; then
+			export MOZILLA_SDK=" /bluebird/teamswt/swt-builddir/mozilla/1.7/ppc64le/mozilla/dist/sdk"
+		fi
+		if [ "${MOZILLA_LIBS}" = "" ]; then
+			export MOZILLA_LIBS="-m64 -L${MOZILLA_SDK}/lib -L${MOZILLA_SDK}/bin -lxpcom -lnspr4 -lplds4 -lplc4"
+		fi
+		if [ "${MOZILLA_INCLUDES}" = "" ]; then
+			export MOZILLA_INCLUDES="-include ${MOZILLA_SDK}/include/mozilla-config.h -I${MOZILLA_SDK}/include"
+		fi
+		if [ "${XULRUNNER_SDK}" = "" ]; then
+			export XULRUNNER_SDK="/bluebird/teamswt/swt-builddir/xulrunner/1.8.1.1/ppc64le/mozilla/dist/sdk/"
+		fi
+		if [ "${XULRUNNER_INCLUDES}" = "" ]; then
+			export XULRUNNER_INCLUDES="-include ${XULRUNNER_SDK}/include/mozilla-config.h -I${XULRUNNER_SDK}/include"
+		fi
+		if [ "${XULRUNNER_LIBS}" = "" ]; then
+			export XULRUNNER_LIBS="-m64 -L${XULRUNNER_SDK}/lib -lxpcomglue"
+		fi
+		if [ "${PKG_CONFIG_PATH}" = "" ]; then
+			export PKG_CONFIG_PATH="/usr/lib64/pkgconfig/:/bluebird/teamswt/swt-builddir/cairo_1.0.2/linux_ppc64le/lib/pkgconfig/:/usr/local/GNOME/lib/pkgconfig:/usr/local/gtk2.4/lib/pkgconfig/"
+		fi
+		;;
 	"solaris.x86")
 		if [ "${CC}" = "" ]; then
 			export CC="cc"
@@ -411,13 +441,13 @@ esac
 
 
 # For 64-bit CPUs, we have a switch
-if [ ${MODEL} = 'x86_64' -o ${MODEL} = 'ppc64' -o ${MODEL} = 'ia64' -o ${MODEL} = 'sparc64'  -o ${MODEL} = 's390x' ]; then
+if [ ${MODEL} = 'x86_64' -o ${MODEL} = 'ppc64' -o ${MODEL} = 'ia64' -o ${MODEL} = 'sparc64'  -o ${MODEL} = 's390x' -o ${MODEL} = 'ppc64le' ]; then
 	SWT_PTR_CFLAGS=-DJNI64
 	if [ -d /lib64 ]; then
 		XLIB64=-L/usr/X11R6/lib64
 		export XLIB64
 	fi
-	if [ ${MODEL} = 'ppc64' ]; then
+	if [ ${MODEL} = 'ppc64' -o ${MODEL} = 'ppc64le' ]; then
 		if [ ${OS} = 'AIX' ]; then
 			SWT_PTR_CFLAGS="${SWT_PTR_CFLAGS} -maix64"
 			SWT_LFLAGS=-maix64
