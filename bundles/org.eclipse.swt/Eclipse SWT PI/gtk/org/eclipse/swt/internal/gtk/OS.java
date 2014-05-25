@@ -136,6 +136,7 @@ public class OS extends C {
 	public static final int GDK_EXPOSURE_MASK = 0x2;
 	public static final int GDK_End = 0xff57;
 	public static final int GDK_Escape = 0xff1b;
+	public static final int GDK_ISO_Enter = 0xfe34;
 	public static final int GDK_F1 = 0xffbe;
 	public static final int GDK_F10 = 0xffc7;
 	public static final int GDK_F11 = 0xffc8;
@@ -508,6 +509,7 @@ public class OS extends C {
 	public static final int XA_WINDOW = 33;
 
 	/** Signals */
+	public static final byte[] accel_closures_changed = ascii("accel-closures-changed");
 	public static final byte[] activate = ascii("activate");
 	public static final byte[] backspace = ascii("backspace");
 	public static final byte[] button_press_event = ascii("button-press-event");
@@ -6186,6 +6188,21 @@ public static final void gtk_accel_label_set_accel_widget(long /*int*/ accel_lab
 	lock.lock();
 	try {
 		_gtk_accel_label_set_accel_widget(accel_label, accel_widget);
+	} finally {
+		lock.unlock();
+	}
+}
+/**
+ * @method flags=dynamic
+ * @param accel_label cast=(GtkAccelLabel *)
+ * @param accel_key cast=(guint)
+ * @param accel_mods cast=(GdkModifierType)
+ */
+public static final native void _gtk_accel_label_set_accel(long /*int*/ accel_label, int accel_key, int accel_mods);
+public static final void gtk_accel_label_set_accel(long /*int*/ accel_label, int accel_key, int accel_mods) {
+	lock.lock();
+	try {
+		_gtk_accel_label_set_accel(accel_label, accel_key, accel_mods);
 	} finally {
 		lock.unlock();
 	}

@@ -656,6 +656,7 @@ typedef enum {
 	_1glib_1minor_1version_FUNC,
 	_1gtk_1accel_1group_1new_FUNC,
 	_1gtk_1accel_1label_1set_1accel_1widget_FUNC,
+	_1gtk_1accel_1label_1set_1accel_FUNC,
 	_1gtk_1accelerator_1get_1default_1mod_1mask_FUNC,
 	_1gtk_1accelerator_1parse_FUNC,
 	_1gtk_1accessible_1get_1widget_FUNC,
