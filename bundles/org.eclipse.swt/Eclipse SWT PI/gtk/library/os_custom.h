@@ -521,7 +521,7 @@
 #define gtk_css_provider_new_LIB LIB_GTK
 #define gtk_icon_set_render_icon_pixbuf_LIB LIB_GTK
 #define gtk_drag_set_icon_surface_LIB LIB_GTK
-
+#define gtk_accel_label_set_accel_LIB LIB_GTK
 #ifndef g_thread_supported
 #define g_thread_supported() 0
 #endif
@@ -532,9 +532,18 @@
 #endif
 #define G_OBJECT_CLASS_CONSTRUCTOR(arg0) (arg0)->constructor
 #define G_OBJECT_CLASS_SET_CONSTRUCTOR(arg0, arg1) (arg0)->constructor = (GObject* (*) (GType, guint, GObjectConstructParam *))arg1
+struct _GtkAccelLabelPrivate
+{
+  GtkWidget     *accel_widget;       /* done */
+  GClosure      *accel_closure;      /* has set function */
+  GtkAccelGroup *accel_group;        /* set by set_accel_closure() */
+  gchar         *accel_string;       /* has set function */
+  guint          accel_padding;      /* should be style property? */
+  guint16        accel_string_width; /* seems to be private */
+};
 #if GTK_CHECK_VERSION(3,0,0)
-#define GTK_ACCEL_LABEL_SET_ACCEL_STRING(arg0, arg1)
-#define GTK_ACCEL_LABEL_GET_ACCEL_STRING(arg0) 0
+#define GTK_ACCEL_LABEL_SET_ACCEL_STRING(arg0, arg1) (arg0)->priv->accel_string = arg1
+#define GTK_ACCEL_LABEL_GET_ACCEL_STRING(arg0) (arg0)->priv->accel_string
 #else
 #define GTK_ACCEL_LABEL_SET_ACCEL_STRING(arg0, arg1) (arg0)->accel_string = arg1
 #define GTK_ACCEL_LABEL_GET_ACCEL_STRING(arg0) (arg0)->accel_string

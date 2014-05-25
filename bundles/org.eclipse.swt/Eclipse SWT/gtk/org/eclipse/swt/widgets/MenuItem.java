@@ -901,16 +901,31 @@ public void setText (String string) {
 		if (OS.GTK_IS_ACCEL_LABEL(label)) {
 			if (OS.GTK3) {
 				OS.gtk_accel_label_set_accel_widget(label, handle);
+				if (OS.GTK_VERSION >= OS.VERSION(3, 6, 0)) {
+					MaskKeysym maskKeysym = getMaskKeysym();
+					if (maskKeysym != null) {
+						OS.gtk_accel_label_set_accel(label,
+							maskKeysym.keysym, maskKeysym.mask);
+					}
+				} else {
+					setAccelLabel(label, accelString);
+				}
 			} else {
-				buffer = Converter.wcsToMbcs (null, accelString, true);
-				long /*int*/ ptr = OS.g_malloc (buffer.length);
-				OS.memmove (ptr, buffer, buffer.length);
-				long /*int*/ oldPtr = OS.GTK_ACCEL_LABEL_GET_ACCEL_STRING (label);
-				OS.GTK_ACCEL_LABEL_SET_ACCEL_STRING (label, ptr);
-				if (oldPtr != 0) OS.g_free (oldPtr);
+				setAccelLabel(label, accelString);
 			}
+			// A workaround for Ubuntu Unity global menu
+			OS.g_signal_emit_by_name(handle, OS.accel_closures_changed);
 		}
 	}
+}
+
+private void setAccelLabel(long /*int*/ label, String accelString) {
+	byte[] buffer = Converter.wcsToMbcs (null, accelString, true);
+	long /*int*/ ptr = OS.g_malloc (buffer.length);
+	OS.memmove (ptr, buffer, buffer.length);
+	long /*int*/ oldPtr = OS.GTK_ACCEL_LABEL_GET_ACCEL_STRING (label);
+	OS.GTK_ACCEL_LABEL_SET_ACCEL_STRING (label, ptr);
+	if (oldPtr != 0) OS.g_free (oldPtr);
 }
 
 void updateAccelerator (long /*int*/ accelGroup, boolean add) {
@@ -940,65 +955,80 @@ void updateAccelerator (long /*int*/ accelGroup, boolean add) {
 	}
 }
 
+private class MaskKeysym {
+	int mask = 0;
+	int keysym = 0;
+}
+
+private MaskKeysym getMaskKeysym() {
+	if (text == null) return null;
+	MaskKeysym maskKeysym = new MaskKeysym();
+	int accelIndex = text.indexOf ('\t');
+	if (accelIndex == -1) return null;
+	int start = accelIndex + 1;
+	int plusIndex = text.indexOf('+', start);
+	while (plusIndex != -1) {
+		String maskStr = text.substring(start, plusIndex);
+		if (maskStr.equals("Ctrl")) maskKeysym.mask |= OS.GDK_CONTROL_MASK;
+		if (maskStr.equals("Shift")) maskKeysym.mask |= OS.GDK_SHIFT_MASK;
+		if (maskStr.equals("Alt")) maskKeysym.mask |= OS.GDK_MOD1_MASK;
+		start = plusIndex + 1;
+		plusIndex = text.indexOf('+', start);
+	}
+	if ("Enter".equals(text.substring(start))) {
+		maskKeysym.keysym = OS.GDK_ISO_Enter;
+	}
+	switch (text.length() - start) {
+		case 1:
+			maskKeysym.keysym = text.charAt(start);
+			maskKeysym.keysym = Display.wcsToMbcs ((char) maskKeysym.keysym);
+			break;
+		case 2:
+			if (text.charAt(start) == 'F') {
+				switch (text.charAt(start + 1)) {
+					case '1': maskKeysym.keysym = OS.GDK_F1; break;
+					case '2': maskKeysym.keysym = OS.GDK_F2; break;
+					case '3': maskKeysym.keysym = OS.GDK_F3; break;
+					case '4': maskKeysym.keysym = OS.GDK_F4; break;
+					case '5': maskKeysym.keysym = OS.GDK_F5; break;
+					case '6': maskKeysym.keysym = OS.GDK_F6; break;
+					case '7': maskKeysym.keysym = OS.GDK_F7; break;
+					case '8': maskKeysym.keysym = OS.GDK_F8; break;
+					case '9': maskKeysym.keysym = OS.GDK_F9; break;
+				}
+			}
+			break;
+		case 3:
+			if (text.charAt(start) == 'F' && text.charAt(start + 1) == '1') {
+				switch (text.charAt(start + 2)) {
+					case '0': maskKeysym.keysym = OS.GDK_F10; break;
+					case '1': maskKeysym.keysym = OS.GDK_F11; break;
+					case '2': maskKeysym.keysym = OS.GDK_F12; break;
+					case '3': maskKeysym.keysym = OS.GDK_F13; break;
+					case '4': maskKeysym.keysym = OS.GDK_F14; break;
+					case '5': maskKeysym.keysym = OS.GDK_F15; break;
+				}
+			}
+			break;
+	}
+	return maskKeysym;
+}
 boolean updateAcceleratorText (boolean show) {
 	if (accelerator != 0) return false;
-	int mask = 0, keysym = 0;
+	MaskKeysym maskKeysym = null;
 	if (show) {
-		int accelIndex = text.indexOf ('\t');
-		if (accelIndex == -1) return true;
-		int start = accelIndex + 1;
-		int plusIndex = text.indexOf('+', start);
-		while (plusIndex != -1) {
-			String maskStr = text.substring(start, plusIndex);
-			if (maskStr.equals("Ctrl")) mask |= OS.GDK_CONTROL_MASK;
-			if (maskStr.equals("Shift")) mask |= OS.GDK_SHIFT_MASK;
-			if (maskStr.equals("Alt")) mask |= OS.GDK_MOD1_MASK;
-			start = plusIndex + 1;
-			plusIndex = text.indexOf('+', start);
-		}
-		switch (text.length() - start) {
-			case 1:
-				keysym = text.charAt(start);
-				keysym = Display.wcsToMbcs ((char) keysym);
-				break;
-			case 2:
-				if (text.charAt(start) == 'F') {
-					switch (text.charAt(start + 1)) {
-						case '1': keysym = OS.GDK_F1; break;
-						case '2': keysym = OS.GDK_F2; break;
-						case '3': keysym = OS.GDK_F3; break;
-						case '4': keysym = OS.GDK_F4; break;
-						case '5': keysym = OS.GDK_F5; break;
-						case '6': keysym = OS.GDK_F6; break;
-						case '7': keysym = OS.GDK_F7; break;
-						case '8': keysym = OS.GDK_F8; break;
-						case '9': keysym = OS.GDK_F9; break;
-					}
-				}
-				break;
-			case 3:
-				if (text.charAt(start) == 'F' && text.charAt(start + 1) == '1') {
-					switch (text.charAt(start + 2)) {
-						case '0': keysym = OS.GDK_F10; break;
-						case '1': keysym = OS.GDK_F11; break;
-						case '2': keysym = OS.GDK_F12; break;
-						case '3': keysym = OS.GDK_F13; break;
-						case '4': keysym = OS.GDK_F14; break;
-						case '5': keysym = OS.GDK_F15; break;
-					}
-				}
-				break;
-		}
+		maskKeysym = getMaskKeysym();
 	}
-	if (keysym != 0) {
+	if (maskKeysym == null) return true;
+	if (maskKeysym.keysym != 0) {
 		long /*int*/ accelGroup = getAccelGroup ();
 		if (show) {
-			OS.gtk_widget_add_accelerator (handle, OS.activate, accelGroup, keysym, mask, OS.GTK_ACCEL_VISIBLE);
+			OS.gtk_widget_add_accelerator (handle, OS.activate, accelGroup, maskKeysym.keysym, maskKeysym.mask, OS.GTK_ACCEL_VISIBLE);
 		} else {
-			OS.gtk_widget_remove_accelerator (handle, accelGroup, keysym, mask);
+			OS.gtk_widget_remove_accelerator (handle, accelGroup, maskKeysym.keysym, maskKeysym.mask);
 		}
 	}
-	return keysym != 0;
+	return maskKeysym.keysym != 0;
 }
 
 }
