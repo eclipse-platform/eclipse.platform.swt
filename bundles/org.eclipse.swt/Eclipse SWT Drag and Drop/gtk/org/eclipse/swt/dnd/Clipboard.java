@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2012 IBM Corporation and others.
+ * Copyright (c) 2000, 2014 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -671,11 +671,19 @@ private int[] getAvailableClipboardTypes () {
 }
 
 long /*int*/ gtk_clipboard_wait_for_contents(long /*int*/ clipboard, long /*int*/ target) {
+	long startTime = System.currentTimeMillis();
 	String key = "org.eclipse.swt.internal.gtk.dispatchEvent";
 	Display display = this.display;
 	display.setData(key, new int[]{OS.GDK_PROPERTY_NOTIFY, OS.GDK_SELECTION_CLEAR, OS.GDK_SELECTION_REQUEST, OS.GDK_SELECTION_NOTIFY});
 	long /*int*/ selection_data = OS.gtk_clipboard_wait_for_contents(clipboard, target);
 	display.setData(key, null);
+	long duration = System.currentTimeMillis() - startTime;
+	if (selection_data == 0 && duration > 5000) {
+		// Bug 241957: In case of timeout take clipboard ownership to unblock future calls
+		ClipboardProxy._getInstance(display).setData(this, new String[] {" "},
+				new Transfer[] { TextTransfer.getInstance() },
+				clipboard == GTKCLIPBOARD ? DND.CLIPBOARD : DND.SELECTION_CLIPBOARD);
+	}
 	return selection_data;
 }
 }
