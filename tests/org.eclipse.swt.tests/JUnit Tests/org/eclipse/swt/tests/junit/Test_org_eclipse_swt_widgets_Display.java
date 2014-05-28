@@ -464,8 +464,74 @@ public void test_mapLorg_eclipse_swt_widgets_ControlLorg_eclipse_swt_widgets_Con
 		assertEquals(new Point(shellOffset.x + 197,shellOffset.y + 94), result);
 		result = display.map(button2, null, 9, 12);
 		assertEquals(new Point(shellOffset.x + 209,shellOffset.y + 112), result);
-		
+
+		Shell shellMapTest1 = new Shell(display,SWT.NO_TRIM);
+		Button buttonTest1 = new Button(shellMapTest1, SWT.PUSH);
+		buttonTest1.setBounds(0,0,100,100);
+		shellMapTest1.setBounds(200, 200, 400, 400);
+		shellMapTest1.open();
+		Shell overlayShell1 = new Shell(shellMapTest1, SWT.NO_TRIM); //subshell
+		overlayShell1.setBounds(shellMapTest1.getBounds());
+		Rectangle r = buttonTest1.getBounds();
+		result = display.map(buttonTest1, null, new Point(r.x, r.y));
+		result = display.map(null, overlayShell1, result);
+		assertEquals(new Point(r.x, r.y), result);
+
+		Shell shellMapTest2 = new Shell(display,SWT.NO_TRIM);
+		Button buttonTest2 = new Button(shellMapTest2, SWT.PUSH);
+		buttonTest2.setBounds(0,0,100,100);
+		shellMapTest2.setBounds(200, 200, 400, 400);
+		shellMapTest2.open();
+		Shell overlayShell2 = new Shell(display, SWT.NO_TRIM); //nativeshell
+		overlayShell2.setBounds(shellMapTest2.getBounds());
+		r = buttonTest2.getBounds();
+		result = display.map(buttonTest2, null, new Point(r.x, r.y));
+		result = display.map(null, overlayShell2, result.x, result.y);
+		assertEquals(new Point(r.x, r.y), result);
+
+		Shell shellMapTestRtoL1 = new Shell(display,SWT.NO_TRIM);
+		shellMapTestRtoL1.setOrientation(SWT.RIGHT_TO_LEFT);
+		Button buttonTestRtoL1 = new Button(shellMapTestRtoL1, SWT.PUSH);
+		buttonTestRtoL1.setBounds(0,0,100,100);
+		shellMapTestRtoL1.setBounds(200, 200, 400, 400);
+		shellMapTestRtoL1.open();
+		Shell overlayShellRtoL1 = new Shell(shellMapTestRtoL1, SWT.NO_TRIM); //subshell
+		overlayShellRtoL1.setOrientation(SWT.RIGHT_TO_LEFT);
+		overlayShellRtoL1.setBounds(shellMapTestRtoL1.getBounds());
+		r = buttonTestRtoL1.getBounds();
+		result = display.map(buttonTestRtoL1, null, new Point(r.x, r.y));
+		result = display.map(null, overlayShellRtoL1, result);
+		assertEquals(new Point(r.x, r.y), result);
+
+		Shell shellMapTestRtoL2 = new Shell(display,SWT.NO_TRIM);
+		shellMapTestRtoL2.setOrientation(SWT.RIGHT_TO_LEFT);
+		Button buttonTestRtoL2 = new Button(shellMapTestRtoL2, SWT.PUSH);
+		buttonTestRtoL2.setBounds(0,0,100,100);
+		shellMapTestRtoL2.setBounds(200, 200, 400, 400);
+		shellMapTestRtoL2.open();
+		Shell overlayShellRtoL2 = new Shell(display, SWT.NO_TRIM); //nativeshell
+		overlayShellRtoL2.setOrientation(SWT.RIGHT_TO_LEFT);
+		overlayShellRtoL2.setBounds(shellMapTestRtoL2.getBounds());
+		r = buttonTestRtoL2.getBounds();
+		result = display.map(buttonTestRtoL2, null, new Point(r.x, r.y));
+		result = display.map(null, overlayShellRtoL2, result.x, result.y);
+		assertEquals(new Point(r.x, r.y), result);
+
 		button1.dispose();
+		buttonTest1.dispose();
+		buttonTest2.dispose();
+		shellMapTest1.dispose();
+		shellMapTest2.dispose();
+		overlayShell1.dispose();
+		overlayShell2.dispose();
+
+		buttonTestRtoL1.dispose();
+		buttonTestRtoL2.dispose();
+		shellMapTestRtoL1.dispose();
+		shellMapTestRtoL2.dispose();
+		overlayShellRtoL1.dispose();
+		overlayShellRtoL2.dispose();
+
 		try {
 			result = display.map(button1, button2, 0, 0);
 			fail("No exception thrown for map from control being disposed");
@@ -478,7 +544,7 @@ public void test_mapLorg_eclipse_swt_widgets_ControlLorg_eclipse_swt_widgets_Con
 		} catch (IllegalArgumentException e) {
 			assertSWTProblem("Incorrect exception thrown for map to control being disposed", SWT.ERROR_INVALID_ARGUMENT, e);
 		}
-		
+
 		shell.dispose();
 	} finally {
 		display.dispose();
@@ -526,8 +592,74 @@ public void test_mapLorg_eclipse_swt_widgets_ControlLorg_eclipse_swt_widgets_Con
 		assertEquals(new Rectangle(shellOffset.x + 197,shellOffset.y + 94,109,112), result);
 		result = display.map(button2, null, 15, 18, 121, 124);
 		assertEquals(new Rectangle(shellOffset.x + 215,shellOffset.y + 118,121,124), result);
-		
+
+		Shell shellMapTest1 = new Shell(display,SWT.NO_TRIM);
+		Button buttonTest1 = new Button(shellMapTest1, SWT.PUSH);
+		buttonTest1.setBounds(0,0,100,100);
+		shellMapTest1.setBounds(200, 200, 400, 400);
+		shellMapTest1.open();
+		Shell overlayShell1 = new Shell(shellMapTest1, SWT.NO_TRIM); //subshell
+		overlayShell1.setBounds(shellMapTest1.getBounds());
+		Rectangle r = buttonTest1.getBounds();
+		result = display.map(buttonTest1, null, r);
+		result = display.map(null, overlayShell1, result);
+		assertEquals(r, result);
+
+		Shell shellMapTest2 = new Shell(display,SWT.NO_TRIM);
+		Button buttonTest2 = new Button(shellMapTest2, SWT.PUSH);
+		buttonTest2.setBounds(0,0,100,100);
+		shellMapTest2.setBounds(200, 200, 400, 400);
+		shellMapTest2.open();
+		Shell overlayShell2 = new Shell(display, SWT.NO_TRIM); //root shell
+		overlayShell2.setBounds(shellMapTest2.getBounds());
+		r = buttonTest2.getBounds();
+		result = display.map(buttonTest2, null, r);
+		result = display.map(null, overlayShell2, result);
+		assertEquals(r, result);
+
+		Shell shellMapTestRtoL1 = new Shell(display,SWT.NO_TRIM);
+		shellMapTestRtoL1.setOrientation(SWT.RIGHT_TO_LEFT);
+		Button buttonTestRtoL1 = new Button(shellMapTestRtoL1, SWT.PUSH);
+		buttonTestRtoL1.setBounds(0,0,100,100);
+		shellMapTestRtoL1.setBounds(200, 200, 400, 400);
+		shellMapTestRtoL1.open();
+		Shell overlayShellRtoL1 = new Shell(shellMapTestRtoL1, SWT.NO_TRIM); //subshell
+		overlayShellRtoL1.setOrientation(SWT.RIGHT_TO_LEFT);
+		overlayShellRtoL1.setBounds(shellMapTestRtoL1.getBounds());
+		r = buttonTest1.getBounds();
+		result = display.map(buttonTestRtoL1, null, r);
+		result = display.map(null, overlayShellRtoL1, result);
+		assertEquals(r, result);
+
+		Shell shellMapTestRtoL2 = new Shell(display,SWT.NO_TRIM);
+		shellMapTestRtoL2.setOrientation(SWT.RIGHT_TO_LEFT);
+		Button buttonTestRtoL2 = new Button(shellMapTestRtoL2, SWT.PUSH);
+		buttonTestRtoL2.setBounds(0,0,100,100);
+		shellMapTestRtoL2.setBounds(200, 200, 400, 400);
+		shellMapTestRtoL2.open();
+		Shell overlayShellRtoL2 = new Shell(display, SWT.NO_TRIM); //root shell
+		overlayShellRtoL2.setOrientation(SWT.RIGHT_TO_LEFT);
+		overlayShellRtoL2.setBounds(shellMapTestRtoL2.getBounds());
+		r = buttonTestRtoL2.getBounds();
+		result = display.map(buttonTestRtoL2, null, r);
+		result = display.map(null, overlayShellRtoL2, result);
+		assertEquals(r, result);
+
 		button1.dispose();
+		buttonTest1.dispose();
+		buttonTest2.dispose();
+		shellMapTest1.dispose();
+		shellMapTest2.dispose();
+		overlayShell1.dispose();
+		overlayShell2.dispose();
+
+		buttonTestRtoL1.dispose();
+		buttonTestRtoL2.dispose();
+		shellMapTestRtoL1.dispose();
+		shellMapTestRtoL2.dispose();
+		overlayShellRtoL1.dispose();
+		overlayShellRtoL2.dispose();
+
 		try {
 			result = display.map(button1, button2, 0, 0, 100, 100);
 			fail("No exception thrown for map from control being disposed");
@@ -540,7 +672,7 @@ public void test_mapLorg_eclipse_swt_widgets_ControlLorg_eclipse_swt_widgets_Con
 		} catch (IllegalArgumentException e) {
 			assertSWTProblem("Incorrect exception thrown for map to control being disposed", SWT.ERROR_INVALID_ARGUMENT, e);
 		}
-		
+
 		shell.dispose();
 	} finally {
 		display.dispose();
@@ -590,8 +722,74 @@ public void test_mapLorg_eclipse_swt_widgets_ControlLorg_eclipse_swt_widgets_Con
 		assertEquals(new Point(shellOffset.x + 197,shellOffset.y + 94), result);
 		result = display.map(button2, null, new Point(9,12));
 		assertEquals(new Point(shellOffset.x + 209,shellOffset.y + 112), result);
-		
+
+		Shell shellMapTest1 = new Shell(display,SWT.NO_TRIM);
+		Button buttonTest1 = new Button(shellMapTest1, SWT.PUSH);
+		buttonTest1.setBounds(0,0,100,100);
+		shellMapTest1.setBounds(200, 200, 400, 400);
+		shellMapTest1.open();
+		Shell overlayShell1 = new Shell(shellMapTest1, SWT.NO_TRIM); //subshell
+		overlayShell1.setBounds(shellMapTest1.getBounds());
+		Rectangle r = buttonTest1.getBounds();
+		result = display.map(buttonTest1, null, new Point(r.x, r.y));
+		result = display.map(null, overlayShell1, result);
+		assertEquals(new Point(r.x, r.y), result);
+
+		Shell shellMapTest2 = new Shell(display,SWT.NO_TRIM);
+		Button buttonTest2 = new Button(shellMapTest2, SWT.PUSH);
+		buttonTest2.setBounds(0,0,100,100);
+		shellMapTest2.setBounds(200, 200, 400, 400);
+		shellMapTest2.open();
+		Shell overlayShell2 = new Shell(display, SWT.NO_TRIM); //nativeshell
+		overlayShell2.setBounds(shellMapTest2.getBounds());
+		r = buttonTest2.getBounds();
+		result = display.map(buttonTest2, null, new Point(r.x, r.y));
+		result = display.map(null, overlayShell2, result.x, result.y);
+		assertEquals(new Point(r.x, r.y), result);
+
+		Shell shellMapTestRtoL1 = new Shell(display,SWT.NO_TRIM);
+		shellMapTestRtoL1.setOrientation(SWT.RIGHT_TO_LEFT);
+		Button buttonTestRtoL1 = new Button(shellMapTestRtoL1, SWT.PUSH);
+		buttonTestRtoL1.setBounds(0,0,100,100);
+		shellMapTestRtoL1.setBounds(200, 200, 400, 400);
+		shellMapTestRtoL1.open();
+		Shell overlayShellRtoL1 = new Shell(shellMapTestRtoL1, SWT.NO_TRIM); //subshell
+		overlayShellRtoL1.setOrientation(SWT.RIGHT_TO_LEFT);
+		overlayShellRtoL1.setBounds(shellMapTestRtoL1.getBounds());
+		r = buttonTestRtoL1.getBounds();
+		result = display.map(buttonTestRtoL1, null, new Point(r.x, r.y));
+		result = display.map(null, overlayShellRtoL1, result);
+		assertEquals(new Point(r.x, r.y), result);
+
+		Shell shellMapTestRtoL2 = new Shell(display,SWT.NO_TRIM);
+		shellMapTestRtoL2.setOrientation(SWT.RIGHT_TO_LEFT);
+		Button buttonTestRtoL2 = new Button(shellMapTestRtoL2, SWT.PUSH);
+		buttonTestRtoL2.setBounds(0,0,100,100);
+		shellMapTestRtoL2.setBounds(200, 200, 400, 400);
+		shellMapTestRtoL2.open();
+		Shell overlayShellRtoL2 = new Shell(display, SWT.NO_TRIM); //nativeshell
+		overlayShellRtoL2.setOrientation(SWT.RIGHT_TO_LEFT);
+		overlayShellRtoL2.setBounds(shellMapTestRtoL2.getBounds());
+		r = buttonTestRtoL2.getBounds();
+		result = display.map(buttonTestRtoL2, null, new Point(r.x, r.y));
+		result = display.map(null, overlayShellRtoL2, result.x, result.y);
+		assertEquals(new Point(r.x, r.y), result);
+
 		button1.dispose();
+		buttonTest1.dispose();
+		buttonTest2.dispose();
+		shellMapTest1.dispose();
+		shellMapTest2.dispose();
+		overlayShell1.dispose();
+		overlayShell2.dispose();
+
+		buttonTestRtoL1.dispose();
+		buttonTestRtoL2.dispose();
+		shellMapTestRtoL1.dispose();
+		shellMapTestRtoL2.dispose();
+		overlayShellRtoL1.dispose();
+		overlayShellRtoL2.dispose();
+
 		try {
 			result = display.map(button1, button2, point);
 			fail("No exception thrown for map from control being disposed");
@@ -611,7 +809,7 @@ public void test_mapLorg_eclipse_swt_widgets_ControlLorg_eclipse_swt_widgets_Con
 		} catch (IllegalArgumentException e) {
 			assertSWTProblem("Incorrect exception thrown for point being null", SWT.ERROR_NULL_ARGUMENT, e);
 		}
-		
+
 		shell.dispose();
 	} finally {
 		display.dispose();
@@ -660,9 +858,74 @@ public void test_mapLorg_eclipse_swt_widgets_ControlLorg_eclipse_swt_widgets_Con
 		assertEquals(new Rectangle(shellOffset.x + 197,shellOffset.y + 94,109,112), result);
 		result = display.map(button2, null, new Rectangle(15, 18, 121, 124));
 		assertEquals(new Rectangle(shellOffset.x + 215,shellOffset.y + 118,121,124), result);
-		
-	
+
+		Shell shellMapTest1 = new Shell(display,SWT.NO_TRIM);
+		Button buttonTest1 = new Button(shellMapTest1, SWT.PUSH);
+		buttonTest1.setBounds(0,0,100,100);
+		shellMapTest1.setBounds(200, 200, 400, 400);
+		shellMapTest1.open();
+		Shell overlayShell1 = new Shell(shellMapTest1, SWT.NO_TRIM); //subshell
+		overlayShell1.setBounds(shellMapTest1.getBounds());
+		Rectangle r = buttonTest1.getBounds();
+		result = display.map(buttonTest1, null, r);
+		result = display.map(null, overlayShell1, result);
+		assertEquals(r, result);
+
+		Shell shellMapTest2 = new Shell(display,SWT.NO_TRIM);
+		Button buttonTest2 = new Button(shellMapTest2, SWT.PUSH);
+		buttonTest2.setBounds(0,0,100,100);
+		shellMapTest2.setBounds(200, 200, 400, 400);
+		shellMapTest2.open();
+		Shell overlayShell2 = new Shell(display, SWT.NO_TRIM); //root shell
+		overlayShell2.setBounds(shellMapTest2.getBounds());
+		r = buttonTest2.getBounds();
+		result = display.map(buttonTest2, null, r);
+		result = display.map(null, overlayShell2, result);
+		assertEquals(r, result);
+
+		Shell shellMapTestRtoL1 = new Shell(display,SWT.NO_TRIM);
+		shellMapTestRtoL1.setOrientation(SWT.RIGHT_TO_LEFT);
+		Button buttonTestRtoL1 = new Button(shellMapTestRtoL1, SWT.PUSH);
+		buttonTestRtoL1.setBounds(0,0,100,100);
+		shellMapTestRtoL1.setBounds(200, 200, 400, 400);
+		shellMapTestRtoL1.open();
+		Shell overlayShellRtoL1 = new Shell(shellMapTestRtoL1, SWT.NO_TRIM); //subshell
+		overlayShellRtoL1.setOrientation(SWT.RIGHT_TO_LEFT);
+		overlayShellRtoL1.setBounds(shellMapTestRtoL1.getBounds());
+		r = buttonTestRtoL1.getBounds();
+		result = display.map(buttonTestRtoL1, null, r);
+		result = display.map(null, overlayShellRtoL1, result);
+		assertEquals(r, result);
+
+		Shell shellMapTestRtoL2 = new Shell(display,SWT.NO_TRIM);
+		shellMapTestRtoL2.setOrientation(SWT.RIGHT_TO_LEFT);
+		Button buttonTestRtoL2 = new Button(shellMapTestRtoL2, SWT.PUSH);
+		buttonTestRtoL2.setBounds(0,0,100,100);
+		shellMapTestRtoL2.setBounds(200, 200, 400, 400);
+		shellMapTestRtoL2.open();
+		Shell overlayShellRtoL2 = new Shell(display, SWT.NO_TRIM); //root shell
+		overlayShellRtoL2.setOrientation(SWT.RIGHT_TO_LEFT);
+		overlayShellRtoL2.setBounds(shellMapTestRtoL2.getBounds());
+		r = buttonTestRtoL2.getBounds();
+		result = display.map(buttonTestRtoL2, null, r);
+		result = display.map(null, overlayShellRtoL2, result);
+		assertEquals(r, result);
+
 		button1.dispose();
+		buttonTest1.dispose();
+		buttonTest2.dispose();
+		shellMapTest1.dispose();
+		shellMapTest2.dispose();
+		overlayShell1.dispose();
+		overlayShell2.dispose();
+
+		buttonTestRtoL1.dispose();
+		buttonTestRtoL2.dispose();
+		shellMapTestRtoL1.dispose();
+		shellMapTestRtoL2.dispose();
+		overlayShellRtoL1.dispose();
+		overlayShellRtoL2.dispose();
+
 		try {
 			result = display.map(button1, button2, rect);
 			fail("No exception thrown for map from control being disposed");
@@ -682,7 +945,7 @@ public void test_mapLorg_eclipse_swt_widgets_ControlLorg_eclipse_swt_widgets_Con
 		} catch (IllegalArgumentException e) {
 			assertSWTProblem("Incorrect exception thrown for rectangle being null", SWT.ERROR_NULL_ARGUMENT, e);
 		}
-		
+
 		shell.dispose();
 	} finally {
 		display.dispose();
