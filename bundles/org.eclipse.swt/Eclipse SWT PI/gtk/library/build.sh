@@ -161,6 +161,38 @@ case $SWT_OS.$SWT_ARCH in
 			export XULRUNNER_LIBS="-L${XULRUNNER_SDK}/lib -lxpcomglue"
 		fi
 		;;
+	"linux.ia64")
+		if [ "${CC}" = "" ]; then
+			export CC=gcc
+		fi
+		if [ "${JAVA_HOME}" = "" ]; then
+			export JAVA_HOME="/bluebird/teamswt/swt-builddir/JDKs/ia64/jdk1.5.0"
+		fi
+		if [ "${PKG_CONFIG_PATH}" = "" ]; then
+			export PKG_CONFIG_PATH="/usr/lib64/pkgconfig"
+		fi
+		if [ "${MOZILLA_SDK}" = "" ]; then
+			export MOZILLA_SDK="/bluebird/teamswt/swt-builddir/mozilla/1.7/amd64/mozilla/dist/sdk"
+		fi
+		if [ "${MOZILLA_INCLUDES}" = "" ]; then
+			export MOZILLA_INCLUDES="-include ${MOZILLA_SDK}/include/mozilla-config.h -I${MOZILLA_SDK}/include"
+		fi
+		if [ "${MOZILLA_LIBS}" = "" ]; then
+			export MOZILLA_LIBS="-L${MOZILLA_SDK}/lib -L${MOZILLA_SDK}/bin -lxpcom -lnspr4 -lplds4 -lplc4"
+		fi
+		if [ "${XULRUNNER_SDK}" = "" ]; then
+			export XULRUNNER_SDK="/bluebird/teamswt/swt-builddir/xulrunner/1.8.0.1/amd64/mozilla/dist/sdk"
+		fi
+		if [ "${XULRUNNER_INCLUDES}" = "" ]; then
+			export XULRUNNER_INCLUDES="-include ${XULRUNNER_SDK}/include/mozilla-config.h -I${XULRUNNER_SDK}/include"
+		fi
+		if [ "${XULRUNNER_LIBS}" = "" ]; then
+			export XULRUNNER_LIBS="-L${XULRUNNER_SDK}/lib -lxpcomglue"
+		fi
+		if [ "${XULRUNNER24_SDK}" = "" ]; then
+			export XULRUNNER24_SDK="/bluebird/teamswt/swt-builddir/geckoSDK/24/ia64"
+		fi
+		;;
 	"linux.ppc")
 		if [ "${CC}" = "" ]; then
 			export CC=gcc
@@ -464,6 +496,11 @@ if [ ${MODEL} = 'x86_64' -o ${MODEL} = 'ppc64' -o ${MODEL} = 'ia64' -o ${MODEL} 
 			SWT_PTR_CFLAGS="${SWT_PTR_CFLAGS} -mlp64"
 			SWT_LFLAGS=-mlp64
 			export SWT_LFLAGS
+		else
+			SWT_PTR_CFLAGS="${SWT_PTR_CFLAGS} -m64"	
+			XLIB64="${XLIB64} -L/usr/lib64"
+			SWT_LFLAGS=-m64
+			export SWT_LFLAGS	
 		fi
 	fi
 	if [ ${MODEL} = 'sparc64' ]; then

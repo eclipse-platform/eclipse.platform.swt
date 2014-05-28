@@ -113,6 +113,10 @@
 			<param name="fragment" value="org.eclipse.swt.gtk.linux.x86_64"/>
 		</antcall>
 		<antcall target="check_fragment_libraries">
+			<param name="library_count" value="13"/>
+			<param name="fragment" value="org.eclipse.swt.gtk.linux.ia64"/>
+		</antcall>
+		<antcall target="check_fragment_libraries">
 			<param name="library_count" value="9"/>
 			<param name="fragment" value="org.eclipse.swt.gtk.solaris.sparc"/>
 		</antcall>
@@ -234,6 +238,13 @@
 			trust="true"
 			outputproperty="m_linux_x86_64_output"
 			command="hostname"/>
+		<sshexec host="${m_linux_ia64}" 
+			username="swtbuild" 
+			keyfile="${keyfile}" 
+			failonerror="false"
+			trust="true"
+			outputproperty="m_linux_ia64_output"
+			command="hostname"/>
 		<!-- These machines are only used for 3.5.x builds. -->
 		<!--sshexec host="${m_linux_rh3_x86}" 
 			username="swtbuild" 
@@ -318,6 +329,12 @@
 		<condition property="m_linux_x86_64_test" value="${success_msg}" else="${fail_msg}">
 			<matches pattern="${m_linux_x86_64}*" string="${m_linux_x86_64_output}"/>
 		</condition>
+		<condition property="m_linux_ia64_test" value="${success_msg}" else="${fail_msg}">
+			<and>
+				<length string="${m_linux_ia64_output}" when="greater" length="0"/>
+				<matches pattern="x${m_linux_ia64_output}*" string="x${m_linux_ia64}"/>
+			</and>
+		</condition>
 		<!--condition property="m_linux_rh3_x86_test" value="${success_msg}" else="${fail_msg}">
 			<matches pattern="${m_linux_rh3_x86}*" string="${m_linux_rh3_x86_output}"/>
 		</condition>
@@ -354,6 +371,7 @@
 		<echo></echo>
 		<echo>${m_linux_x86} - ${m_linux_x86_test}</echo>
 		<echo>${m_linux_x86_64} - ${m_linux_x86_64_test}</echo>
+		<echo>${m_linux_ia64} - ${m_linux_ia64_test}</echo>
 		<!--echo>${m_linux_rh3_x86} ${m_linux_rh3_x86_test}</echo>
 		<echo>${m_linux_rh3_x86_64} ${m_linux_rh3_x86_64_test}</echo-->
 		<echo>${m_linux_ppc} - ${m_linux_ppc_test}</echo>
@@ -366,7 +384,7 @@
 		<echo>${m_mac} - ${m_mac_test}</echo>
 		<echo>-------------------------</echo>
 		<condition property="m_fail">
-			<matches pattern="Fail" string="${m_linux_x86_test} ${m_linux_x86_64_test} ${m_linux_ppc_test} ${m_linux_ppc64_test} ${m_linux_ppc64le_test} ${m_solaris_sparc_test} ${m_solaris_x86_test} ${m_aix_test} ${m_hpux_test} ${m_mac_test}"/>
+			<matches pattern="Fail" string="${m_linux_x86_test} ${m_linux_x86_64_test} ${m_linux_ia64_test} ${m_linux_ppc_test} ${m_linux_ppc64_test} ${m_linux_ppc64le_test} ${m_solaris_sparc_test} ${m_solaris_x86_test} ${m_aix_test} ${m_hpux_test} ${m_mac_test}"/>
 		</condition>
 		<fail if="m_fail" message="Failed"/>
 	</target>
