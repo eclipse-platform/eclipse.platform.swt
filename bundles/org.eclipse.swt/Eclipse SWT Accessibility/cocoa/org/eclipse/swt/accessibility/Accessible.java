@@ -41,7 +41,6 @@ import org.eclipse.swt.widgets.*;
  * 
  * @since 2.0
  */
-
 @SuppressWarnings({"rawtypes", "unchecked"})
 public class Accessible {
 

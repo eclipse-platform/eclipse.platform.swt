@@ -4577,13 +4577,12 @@ public static String getAppVersion () {
  * <p>
  * The application name can be used in several ways,
  * depending on the platform and tools being used.
- * On Motif, for example, this can be used to set
- * the name used for resource lookup. Accessibility
- * tools may also ask for the application name.
- * On Windows, if application name is set to any
- * value other than "SWT" (case insensitive), it is
- * used to set the application user model ID which
- * is used by the OS for taskbar grouping.
+ * Accessibility tools could ask for the application
+ * name. On Windows, if the application name is set 
+ * to any value other than "SWT" (case insensitive),
+ * it is used to set the application user model ID 
+ * which is used by the OS for taskbar grouping.
+ * @see <a href="http://msdn.microsoft.com/en-us/library/windows/desktop/dd378459%28v=vs.85%29.aspx#HOW">AppUserModelID (Windows)</a>
  * </p><p>
  * Specifying <code>null</code> for the name clears it.
  * </p>
