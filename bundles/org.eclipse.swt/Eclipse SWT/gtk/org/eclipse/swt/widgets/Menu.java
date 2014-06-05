@@ -646,7 +646,10 @@ public boolean getVisible () {
 @Override
 long /*int*/ gtk_hide (long /*int*/ widget) {
 	if ((style & SWT.POP_UP) != 0) {
-		if (display.activeShell != null) display.activeShell = getShell ();
+		if (display.activeShell != null) {
+			display.activeShell = getShell ();
+			display.activeShell.ignoreFocusOut = false;
+		}
 	}
 	sendEvent (SWT.Hide);
 	if (OS.ubuntu_menu_proxy_get() != 0) {
@@ -662,7 +665,10 @@ long /*int*/ gtk_hide (long /*int*/ widget) {
 @Override
 long /*int*/ gtk_show (long /*int*/ widget) {
 	if ((style & SWT.POP_UP) != 0) {
-		if (display.activeShell != null) display.activeShell = getShell ();
+		if (display.activeShell != null) {
+			display.activeShell = getShell ();
+			display.activeShell.ignoreFocusOut = true;
+		}
 		return 0;
 	} 
 	sendEvent (SWT.Show);
