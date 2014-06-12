@@ -2049,7 +2049,7 @@ boolean insertText (int /*long*/ id, int /*long*/ sel, int /*long*/ string) {
 			NSEvent nsEvent = NSApplication.sharedApplication ().currentEvent ();
 			if (nsEvent != null) {
 				int /*long*/ type = nsEvent.type ();
-				if (type == OS.NSKeyDown || type == OS.NSSystemDefined) {
+				if (type == OS.NSKeyDown || type == OS.NSKeyUp || type == OS.NSSystemDefined) {
 					NSString str = new NSString (string);
 					if (str.isKindOfClass (OS.class_NSAttributedString)) {
 						str = new NSAttributedString (string).string ();
