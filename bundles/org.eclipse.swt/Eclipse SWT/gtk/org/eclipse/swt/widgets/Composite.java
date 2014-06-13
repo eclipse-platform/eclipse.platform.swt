@@ -641,14 +641,6 @@ public Rectangle getClientArea () {
 	return super.getClientArea();
 }
 
-@Override
-int getClientWidth() {
-	if ((state & ZERO_WIDTH) != 0) return 0;
-	GtkAllocation allocation = new GtkAllocation();
-	gtk_widget_get_allocation(clientHandle (), allocation);
-	return allocation.width;
-}
-
 /**
  * Returns layout which is associated with the receiver, or
  * null if one has not been set.

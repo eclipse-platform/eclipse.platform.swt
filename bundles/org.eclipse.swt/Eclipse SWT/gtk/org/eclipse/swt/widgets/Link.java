@@ -296,14 +296,6 @@ Rectangle [] getRectangles (int linkIndex) {
 	return rects;
 }
 
-@Override
-int getClientWidth () {
-	if ((state & ZERO_WIDTH) != 0) return 0;
-	GtkAllocation allocation = new GtkAllocation();
-	gtk_widget_get_allocation (handle, allocation);
-	return allocation.width;
-}
-
 /**
  * Returns the receiver's text, which will be an empty
  * string if it has never been set.
