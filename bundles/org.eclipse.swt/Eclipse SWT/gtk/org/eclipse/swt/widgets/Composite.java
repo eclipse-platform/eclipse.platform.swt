@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2012 IBM Corporation and others.
+ * Copyright (c) 2000, 2014 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -639,14 +639,6 @@ public Rectangle getClientArea () {
 		return new Rectangle (0, 0, width, height);
 	}
 	return super.getClientArea();
-}
-
-@Override
-int getClientWidth() {
-	if ((state & ZERO_WIDTH) != 0) return 0;
-	GtkAllocation allocation = new GtkAllocation();
-	gtk_widget_get_allocation(clientHandle (), allocation);
-	return allocation.width;
 }
 
 /**
