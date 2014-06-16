@@ -2591,7 +2591,8 @@ void doDeleteWordPrevious() {
 /**
  * Moves the caret one line down and to the same character offset relative 
  * to the beginning of the line. Move the caret to the end of the new line 
- * if the new line is shorter than the character offset.
+ * if the new line is shorter than the character offset. Moves the caret to
+ * the end of the text if the caret already is on the last line.
  */
 void doLineDown(boolean select) {
 	int caretLine = getCaretLine();
@@ -2616,9 +2617,7 @@ void doLineDown(boolean select) {
 		caretLine++;
 	}
 	if (lastLine) {
-		if (select) {
-			setCaretOffset(content.getCharCount(), SWT.DEFAULT);
-		}
+		setCaretOffset(content.getCharCount(), SWT.DEFAULT);
 	} else {
 		int[] alignment = new int[1];
 		int offset = getOffsetAtPoint(columnX, y, caretLine, alignment); 
@@ -2677,7 +2676,8 @@ void doLineStart() {
 /**
  * Moves the caret one line up and to the same character offset relative 
  * to the beginning of the line. Move the caret to the end of the new line 
- * if the new line is shorter than the character offset.
+ * if the new line is shorter than the character offset. Moves the caret to
+ * the beginning of the document if it is already on the first line.
  */
 void doLineUp(boolean select) {
 	int caretLine = getCaretLine(), y = 0;
@@ -2702,9 +2702,7 @@ void doLineUp(boolean select) {
 		caretLine--;
 	}
 	if (firstLine) {
-		if (select) {
-			setCaretOffset(0, SWT.DEFAULT);
-		}
+		setCaretOffset(0, SWT.DEFAULT);
 	} else {
 		int[] alignment = new int[1];
 		int offset = getOffsetAtPoint(columnX, y, caretLine, alignment); 
