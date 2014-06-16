@@ -215,6 +215,8 @@ class ShellTab extends Tab {
 		imageButton.setText (ControlExample.getResourceString("Image"));
 		backgroundImageButton = new Button(otherGroup, SWT.CHECK);
 		backgroundImageButton.setText(ControlExample.getResourceString("BackgroundImage"));
+		
+		createSetGetGroup();
 	
 		/* Create the "create" and "closeAll" buttons */
 		createButton = new Button (controlGroup, SWT.NONE);
@@ -345,4 +347,15 @@ class ShellTab extends Tab {
 	String getTabText () {
 		return "Shell";
 	}
+	
+	@Override
+	String[] getMethodNames() {
+		return new String[] {"Text"};
+	}
+
+	@Override
+	Widget[] getExampleWidgets() {
+		return shellCount == 0 ? new Widget[0] : shells;
+	}
+
 }

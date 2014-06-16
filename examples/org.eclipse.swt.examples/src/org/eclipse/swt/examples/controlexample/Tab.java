@@ -1106,6 +1106,9 @@ abstract class Tab {
 		Widget[] widgets = getExampleWidgets();
 		for (int i = 0; i < widgets.length; i++) {
 			try {
+				if (widgets[i] == null) {
+					continue;
+				}
 				Method method = widgets[i].getClass().getMethod(methodName);
 				Object result = method.invoke(widgets[i]);
 				if (result == null) {
@@ -1151,6 +1154,9 @@ abstract class Tab {
 		Widget[] widgets = getExampleWidgets();
 		for (int i = 0; i < widgets.length; i++) {
 			try {
+				if (widgets[i] == null) {
+					continue;
+				}
 				java.lang.reflect.Method method = widgets[i].getClass().getMethod(methodName, new Class[] {returnType});
 				String typeName = returnType.getName();
 				Object[] parameter = null;
