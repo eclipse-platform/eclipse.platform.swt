@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2012 IBM Corporation and others.
+ * Copyright (c) 2000, 2014 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -694,14 +694,6 @@ public void setWidth (int width) {
 	if (width == lastWidth) return;
 	if (width > 0) {
 		useFixedWidth = true;
-		/*
-		 * From GTK3 docs:
-		 *  Note that fixed_width is only a hint to GTK+; the width actually allocated to the column may be greater or less than requested.
-		 * Thus setting the min_width to is required in order to not be zero.
-		 */
-		if (OS.GTK3) {
-			OS.gtk_tree_view_column_set_min_width (handle, width);
-		}
 		OS.gtk_tree_view_column_set_fixed_width (handle, width);
 	}
 	/*
