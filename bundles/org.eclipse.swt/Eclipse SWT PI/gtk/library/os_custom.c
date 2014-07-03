@@ -68,6 +68,22 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(GDK_1WINDOWING_1X11)
 }
 #endif
 
+#ifndef NO_GDK_1WINDOWING_1WAYLAND
+JNIEXPORT jboolean JNICALL OS_NATIVE(GDK_1WINDOWING_1WAYLAND)
+	(JNIEnv *env, jclass that)
+{
+	jboolean rc;
+	OS_NATIVE_ENTER(env, that, GDK_1WINDOWING_1WAYLAND_FUNC)
+#ifdef GDK_WINDOWING_WAYLAND
+	rc = (jboolean)1;
+#else
+	rc = (jboolean)0;
+#endif
+	OS_NATIVE_EXIT(env, that, GDK_1WINDOWING_1WAYLAND_FUNC)
+	return rc;
+}
+#endif
+
 #ifndef NO_imContextNewProc_1CALLBACK
 static jintLong superIMContextNewProc;
 static GtkIMContext* lastIMContext;

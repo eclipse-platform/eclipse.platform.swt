@@ -5656,6 +5656,21 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gdk_1cursor_1unref)
 }
 #endif
 
+#ifndef NO__1gdk_1device_1warp
+JNIEXPORT void JNICALL OS_NATIVE(_1gdk_1device_1warp)
+	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jint arg2, jint arg3)
+{
+	OS_NATIVE_ENTER(env, that, _1gdk_1device_1warp_FUNC);
+	{
+		OS_LOAD_FUNCTION(fp, gdk_device_warp)
+		if (fp) {
+			((void (CALLING_CONVENTION*)(GdkDevice *, GdkScreen *, gint, gint))fp)((GdkDevice *)arg0, (GdkScreen *)arg1, (gint)arg2, (gint)arg3);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, _1gdk_1device_1warp_FUNC);
+}
+#endif
+
 #ifndef NO__1gdk_1device_1get_1associated_1device
 JNIEXPORT jintLong JNICALL OS_NATIVE(_1gdk_1device_1get_1associated_1device)
 	(JNIEnv *env, jclass that, jintLong arg0)

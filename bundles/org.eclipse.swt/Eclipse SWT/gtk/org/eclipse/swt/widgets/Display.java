@@ -747,7 +747,7 @@ public void asyncExec (Runnable runnable) {
 public void beep () {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	OS.gdk_beep();
-	if (!OS.GDK_WINDOWING_X11 ()) {
+	if (OS.GDK_WINDOWING_WAYLAND () || !OS.GDK_WINDOWING_X11()) {
 		OS.gdk_flush ();
 	} else {
 		long /*int*/ xDisplay = OS.gdk_x11_display_get_xdisplay(OS.gdk_display_get_default());
@@ -933,7 +933,7 @@ void createDisplay (DeviceData data) {
 	if (!OS.gtk_init_check (new long /*int*/ [] {0}, null)) {
 		SWT.error (SWT.ERROR_NO_HANDLES, null, " [gtk_init_check() failed]"); //$NON-NLS-1$
 	}
-	if (OS.GDK_WINDOWING_X11 ()) xDisplay = OS.gdk_x11_get_default_xdisplay();
+	if (!OS.GDK_WINDOWING_WAYLAND () && OS.GDK_WINDOWING_X11()) xDisplay = OS.gdk_x11_get_default_xdisplay();
 	int major = OS.gtk_major_version ();
 	long /*int*/ ptr;
 	if (major == GTK3_MAJOR) {
@@ -1055,7 +1055,7 @@ void createDisplay (DeviceData data) {
 	if (filterProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
 	OS.gdk_window_add_filter  (0, filterProc, 0);
 
-	if (OS.GDK_WINDOWING_X11 ()) {
+	if (!OS.GDK_WINDOWING_WAYLAND () && OS.GDK_WINDOWING_X11 ()) {
 		long /*int*/ xWindow;
 		if (OS.GTK3) {
 			xWindow = OS.gdk_x11_window_get_xid (OS.gtk_widget_get_window (shellHandle));
@@ -1401,7 +1401,7 @@ static long /*int*/ rendererRenderProc (long /*int*/ cell, long /*int*/ window, 
 void flushExposes (long /*int*/ window, boolean all) {
 	OS.gdk_flush ();
 	OS.gdk_flush ();
-	if (OS.GDK_WINDOWING_X11 ()) {
+	if (!OS.GDK_WINDOWING_WAYLAND() && OS.GDK_WINDOWING_X11 ()) {
 		this.flushWindow = window;
 		this.flushAll = all;
 		long /*int*/ xDisplay = OS.gdk_x11_display_get_xdisplay(OS.gdk_display_get_default());
@@ -1512,7 +1512,7 @@ public Control getCursorControl () {
 		* if the pointer is over a foreign embedded window. The fix is to use
 		* XQueryPointer to find the containing GDK window.
 		*/
-		if (!OS.GDK_WINDOWING_X11 ()) return null;
+		if (!OS.GDK_WINDOWING_X11 () || OS.GDK_WINDOWING_WAYLAND()) return null;
 		OS.gdk_error_trap_push ();
 		int[] unusedInt = new int[1];
 		long /*int*/[] unusedPtr = new long /*int*/[1], buffer = new long /*int*/[1];
@@ -2866,15 +2866,17 @@ void initializeWidgetTable () {
 void initializeWindowManager () {
 	/* Get the window manager name */
 	windowManager = ""; //$NON-NLS-1$
-	long /*int*/ screen = OS.gdk_screen_get_default ();
-	if (screen != 0) {
-		long /*int*/ ptr2 = OS.gdk_x11_screen_get_window_manager_name (screen);
-		if (ptr2 != 0) {
-			int length = OS.strlen (ptr2);
-			if (length > 0) {
-				byte [] buffer2 = new byte [length];
-				OS.memmove (buffer2, ptr2, length);
-				windowManager = new String (Converter.mbcsToWcs (null, buffer2));
+	if (!OS.GDK_WINDOWING_WAYLAND () && OS.GDK_WINDOWING_X11 ()) {
+		long /*int*/ screen = OS.gdk_screen_get_default ();
+		if (screen != 0) {
+			long /*int*/ ptr2 = OS.gdk_x11_screen_get_window_manager_name (screen);
+			if (ptr2 != 0) {
+				int length = OS.strlen (ptr2);
+				if (length > 0) {
+					byte [] buffer2 = new byte [length];
+					OS.memmove (buffer2, ptr2, length);
+					windowManager = new String (Converter.mbcsToWcs (null, buffer2));
+				}
 			}
 		}
 	}
@@ -3296,7 +3298,9 @@ public boolean post (Event event) {
 		synchronized (Device.class) {
 			if (isDisposed ()) error (SWT.ERROR_DEVICE_DISPOSED);
 			if (event == null) error (SWT.ERROR_NULL_ARGUMENT);
-			if (!OS.GDK_WINDOWING_X11()) return false;
+			if (!OS.GDK_WINDOWING_X11() || OS.GDK_WINDOWING_WAYLAND()) {
+				return false;
+			}
 			long /*int*/ xDisplay = OS.gdk_x11_display_get_xdisplay(OS.gdk_display_get_default());
 			int type = event.type;
 			switch (type) {
@@ -3993,10 +3997,16 @@ public static void setAppVersion (String version) {
  */
 public void setCursorLocation (int x, int y) {
 	checkDevice ();
-	if (OS.GDK_WINDOWING_X11 ()) {
+	if (OS.GTK_VERSION < OS.VERSION(3, 0, 0)) {
 		long /*int*/ xDisplay = OS.gdk_x11_display_get_xdisplay(OS.gdk_display_get_default());
 		long /*int*/ xWindow = OS.XDefaultRootWindow (xDisplay);
 		OS.XWarpPointer (xDisplay, OS.None, xWindow, 0, 0, 0, 0, x, y);
+	} else {
+		long /*int*/ gdkDisplay = OS.gdk_display_get_default();
+		long /*int*/ gdkDeviceManager = OS.gdk_display_get_device_manager(gdkDisplay);
+		long /*int*/ gdkScreen = OS.gdk_screen_get_default();
+		long /*int*/ gdkPointer = OS.gdk_device_manager_get_client_pointer(gdkDeviceManager);
+		OS.gdk_device_warp(gdkPointer,gdkScreen,x,y); 
 	}
 }
 

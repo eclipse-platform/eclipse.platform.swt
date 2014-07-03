@@ -247,6 +247,7 @@
 #define gtk_tooltips_new_LIB LIB_GTK
 #define gdk_cursor_new_from_pixbuf_LIB LIB_GDK
 #define gdk_cursor_unref_LIB LIB_GDK
+#define gdk_device_warp_LIB LIB_GDK
 #define gdk_device_manager_get_client_pointer_LIB LIB_GDK
 #define gdk_device_get_window_at_position_LIB LIB_GDK
 #define gdk_device_grab_LIB LIB_GDK

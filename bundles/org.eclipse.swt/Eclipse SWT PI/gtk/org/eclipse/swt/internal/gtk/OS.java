@@ -887,6 +887,8 @@ public static final void call_get_size (long /*int*/ function, long /*int*/ arg0
 }
 /** @method flags=no_gen */
 public static final native boolean GDK_WINDOWING_X11();
+/** @method flags=no_gen */
+public static final native boolean GDK_WINDOWING_WAYLAND();
 /** @param pixmap cast=(GdkPixmap *) */
 public static final native long /*int*/ _GDK_PIXMAP_XID(long /*int*/ pixmap);
 public static final long /*int*/ GDK_PIXMAP_XID(long /*int*/ pixmap) {
@@ -4124,6 +4126,18 @@ public static final long /*int*/ gdk_cursor_new_from_pixbuf(long /*int*/ display
 		lock.unlock();
 	}
 }
+
+/** @method flags=dynamic */
+public static final native void _gdk_device_warp(long /*int*/ device, long /*int*/ screen, int x, int y);
+public static final void gdk_device_warp(long /*int*/ device, long /*int*/ screen, int x, int y) {
+		lock.lock();
+		try {
+			_gdk_device_warp(device, screen, x, y);
+		} finally {
+			lock.unlock();
+		}
+	}
+
 /** @method flags=dynamic */
 public static final native long /*int*/ _gdk_display_get_default();
 public static final long /*int*/ gdk_display_get_default() {
