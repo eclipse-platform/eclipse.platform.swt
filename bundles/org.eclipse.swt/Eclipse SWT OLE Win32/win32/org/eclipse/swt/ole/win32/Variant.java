@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2012 IBM Corporation and others.
+ * Copyright (c) 2000, 2014 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -1016,9 +1016,9 @@ void setData(long /*int*/ pData){
 		default :
 			// try coercing it into one of the known forms
 			long /*int*/ newPData = OS.GlobalAlloc(OS.GMEM_FIXED | OS.GMEM_ZEROINIT, sizeof);
-			if (COM.VariantChangeType(newPData, pData, (short) 0, COM.VT_R4) == COM.S_OK) {
+			if (COM.VariantChangeType(newPData, pData, (short) 0, COM.VT_R8) == COM.S_OK) {
 				setData(newPData);
-			} else if (COM.VariantChangeType(newPData, pData, (short) 0, COM.VT_I4) == COM.S_OK) {
+			} else if (COM.VariantChangeType(newPData, pData, (short) 0, COM.VT_I8) == COM.S_OK) {
 				setData(newPData);
 			} else if (COM.VariantChangeType(newPData, pData, (short) 0, COM.VT_BSTR) == COM.S_OK) {
 				setData(newPData);
