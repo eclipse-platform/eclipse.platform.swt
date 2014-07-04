@@ -1097,6 +1097,7 @@ typedef enum {
 	_1gtk_1spin_1button_1new_FUNC,
 	_1gtk_1spin_1button_1set_1digits_FUNC,
 	_1gtk_1spin_1button_1set_1increments_FUNC,
+	_1gtk_1spin_1button_1set_1numeric_FUNC,
 	_1gtk_1spin_1button_1set_1range_FUNC,
 	_1gtk_1spin_1button_1set_1value_FUNC,
 	_1gtk_1spin_1button_1set_1wrap_FUNC,

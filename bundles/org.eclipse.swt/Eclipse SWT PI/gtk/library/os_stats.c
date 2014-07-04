@@ -1087,6 +1087,7 @@ char * OS_nativeFunctionNames[] = {
 	"_1gtk_1spin_1button_1new",
 	"_1gtk_1spin_1button_1set_1digits",
 	"_1gtk_1spin_1button_1set_1increments",
+	"_1gtk_1spin_1button_1set_1numeric",
 	"_1gtk_1spin_1button_1set_1range",
 	"_1gtk_1spin_1button_1set_1value",
 	"_1gtk_1spin_1button_1set_1wrap",

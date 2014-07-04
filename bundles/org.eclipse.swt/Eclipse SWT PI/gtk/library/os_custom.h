@@ -495,6 +495,7 @@
 #define gtk_widget_override_font_LIB LIB_GTK
 #define gtk_widget_get_preferred_height_for_width_LIB LIB_GTK
 #define gtk_widget_get_preferred_width_for_height_LIB LIB_GTK
+#define gtk_spin_button_set_numeric_LIB LIB_GTK
 #define gtk_style_context_get_font_LIB LIB_GTK
 #define gtk_style_context_get_color_LIB LIB_GTK
 #define gtk_style_context_get_background_color_LIB LIB_GTK

@@ -11252,6 +11252,19 @@ public static final long /*int*/ gtk_spin_button_new(long /*int*/ adjustment, do
 	}
 }
 /**
+ * @method flags=dynamic
+ * @param spin_button cast=(GtkSpinButton*)
+ **/
+public static final native void _gtk_spin_button_set_numeric(long /*int*/ spin_button, boolean numeric);
+public static final void gtk_spin_button_set_numeric(long /*int*/ spin_button, boolean numeric) {
+	lock.lock();
+	try {
+		_gtk_spin_button_set_numeric(spin_button, numeric);
+	} finally {
+		lock.unlock();
+	}
+}
+/**
  * @param spin_button cast=(GtkSpinButton*)
  * @param adjustment cast=(GtkAdjustment *)
  **/

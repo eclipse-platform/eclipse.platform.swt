@@ -14978,6 +14978,24 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1spin_1button_1set_1increments)
 }
 #endif
 
+#ifndef NO__1gtk_1spin_1button_1set_1numeric
+JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1spin_1button_1set_1numeric)
+	(JNIEnv *env, jclass that, jintLong arg0, jboolean arg1)
+{
+	OS_NATIVE_ENTER(env, that, _1gtk_1spin_1button_1set_1numeric_FUNC);
+/*
+	gtk_spin_button_set_numeric((GtkSpinButton*)arg0, arg1);
+*/
+	{
+		OS_LOAD_FUNCTION(fp, gtk_spin_button_set_numeric)
+		if (fp) {
+			((void (CALLING_CONVENTION*)(GtkSpinButton*, jboolean))fp)((GtkSpinButton*)arg0, arg1);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, _1gtk_1spin_1button_1set_1numeric_FUNC);
+}
+#endif
+
 #ifndef NO__1gtk_1spin_1button_1set_1range
 JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1spin_1button_1set_1range)
 	(JNIEnv *env, jclass that, jintLong arg0, jdouble arg1, jdouble arg2)
