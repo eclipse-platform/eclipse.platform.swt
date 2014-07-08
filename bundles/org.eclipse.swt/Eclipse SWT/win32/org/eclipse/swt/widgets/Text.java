@@ -2526,9 +2526,11 @@ int widgetStyle () {
 		* WM_CTRCOLOR to draw the theme background results in
 		* pixel corruption.  The fix is to use an ES_MULTILINE
 		* text control instead.
+		* Refer Bug438901:- ES_MULTILINE doesn't apply for:
+		* SWT.PASSWORD | SWT.READ_ONLY style combination.
 		*/
 		if ((style & SWT.READ_ONLY) != 0) {
-			if ((style & (SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL)) == 0) {
+			if ((style & (SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL | SWT.PASSWORD)) == 0) {
 				if (OS.COMCTL32_MAJOR >= 6 && OS.IsAppThemed ()) {
 					bits |= OS.ES_MULTILINE;
 				}
