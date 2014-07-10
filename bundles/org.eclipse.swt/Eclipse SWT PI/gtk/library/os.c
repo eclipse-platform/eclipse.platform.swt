@@ -10000,6 +10000,16 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1combo_1box_1set_1focus_1on_1click)
 }
 #endif
 
+#ifndef NO__1gtk_1combo_1box_1set_1wrap_1width
+JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1combo_1box_1set_1wrap_1width)
+	(JNIEnv *env, jclass that, jintLong arg0, jint arg1)
+{
+	OS_NATIVE_ENTER(env, that, _1gtk_1combo_1box_1set_1wrap_1width_FUNC);
+	gtk_combo_box_set_wrap_width((GtkComboBox *)arg0, (gint)arg1);
+	OS_NATIVE_EXIT(env, that, _1gtk_1combo_1box_1set_1wrap_1width_FUNC);
+}
+#endif
+
 #ifndef NO__1gtk_1combo_1box_1text_1insert
 JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1combo_1box_1text_1insert)
 	(JNIEnv *env, jclass that, jintLong arg0, jint arg1, jbyteArray arg2, jbyteArray arg3)

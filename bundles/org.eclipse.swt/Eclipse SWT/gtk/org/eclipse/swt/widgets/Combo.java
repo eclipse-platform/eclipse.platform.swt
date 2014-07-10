@@ -455,6 +455,8 @@ void createHandle (int index) {
 		if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 		cellHandle = OS.gtk_bin_get_child (handle);
 		if (cellHandle == 0) error (SWT.ERROR_NO_HANDLES);
+		// Setting wrap width has the side effect of removing the whitespace on top in popup bug#438992
+		OS.gtk_combo_box_set_wrap_width(handle, 1);
 	} else {
 		if (OS.GTK3) {
 			handle = OS.gtk_combo_box_text_new_with_entry();
