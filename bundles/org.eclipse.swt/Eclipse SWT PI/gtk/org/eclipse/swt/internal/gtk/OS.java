@@ -7135,6 +7135,19 @@ public static final void gtk_combo_box_set_active(long /*int*/ combo_box, int in
 		lock.unlock();
 	}
 }
+/**
+ * @param combo_box cast=(GtkComboBox *)
+ * @param width cast=(gint)
+ */
+public static final native void _gtk_combo_box_set_wrap_width(long /*int*/ combo_box, int width);
+public static final void gtk_combo_box_set_wrap_width(long /*int*/ combo_box, int width) {
+	lock.lock();
+	try {
+		_gtk_combo_box_set_wrap_width(combo_box, width);
+	} finally {
+		lock.unlock();
+	}
+}
 /**	
 * @param combo_box cast=(GtkComboBox *)	
 */
