@@ -6995,7 +6995,10 @@ public static final void gtk_color_selection_set_has_palette(long /*int*/ colors
 		lock.unlock();
 	}
 }
-/** @method flags=dynamic */
+/**	
+* @param combo cast=(GtkComboBox *)	
+* @param val cast=(gboolean)	
+*/
 public static final native void _gtk_combo_box_set_focus_on_click(long /*int*/ combo, boolean val);
 public static final void gtk_combo_box_set_focus_on_click(long /*int*/ combo, boolean val) {
 	lock.lock();
@@ -7095,7 +7098,9 @@ public static final void gtk_combo_box_text_remove_all(long /*int*/ combo_box) {
 		lock.unlock();
 	}
 }
-/** @method flags=dynamic */
+/**	
+* @param combo_box cast=(GtkComboBox *)	
+*/
 public static final native int _gtk_combo_box_get_active(long /*int*/ combo_box);
 public static final int gtk_combo_box_get_active(long /*int*/ combo_box) {
 	lock.lock();
@@ -7105,7 +7110,9 @@ public static final int gtk_combo_box_get_active(long /*int*/ combo_box) {
 		lock.unlock();
 	}
 }
-/** @method flags=dynamic */
+/**	
+* @param combo_box cast=(GtkComboBox *)	
+*/
 public static final native long /*int*/ _gtk_combo_box_get_model(long /*int*/ combo_box);
 public static final long /*int*/ gtk_combo_box_get_model(long /*int*/ combo_box) {
 	lock.lock();
@@ -7115,7 +7122,10 @@ public static final long /*int*/ gtk_combo_box_get_model(long /*int*/ combo_box)
 		lock.unlock();
 	}
 }
-/** @method flags=dynamic */
+/**	
+* @param combo_box cast=(GtkComboBox *)	
+* @param index cast=(gint)
+*/
 public static final native void _gtk_combo_box_set_active(long /*int*/ combo_box, int index);
 public static final void gtk_combo_box_set_active(long /*int*/ combo_box, int index) {
 	lock.lock();
@@ -7125,7 +7135,9 @@ public static final void gtk_combo_box_set_active(long /*int*/ combo_box, int in
 		lock.unlock();
 	}
 }
-/** @method flags=dynamic */
+/**	
+* @param combo_box cast=(GtkComboBox *)	
+*/
 public static final native void _gtk_combo_box_popup(long /*int*/ combo_box);
 public static final void gtk_combo_box_popup(long /*int*/ combo_box) {
 	lock.lock();
@@ -7135,7 +7147,9 @@ public static final void gtk_combo_box_popup(long /*int*/ combo_box) {
 		lock.unlock();
 	}
 }
-/** @method flags=dynamic */
+/**	
+* @param combo_box cast=(GtkComboBox *)	
+*/
 public static final native void _gtk_combo_box_popdown(long /*int*/ combo_box);
 public static final void gtk_combo_box_popdown(long /*int*/ combo_box) {
 	lock.lock();

@@ -159,12 +159,6 @@
 #define gtk_combo_box_remove_text_LIB LIB_GTK
 #define gtk_combo_box_text_remove_LIB LIB_GTK
 #define gtk_combo_box_text_remove_all_LIB LIB_GTK
-#define gtk_combo_box_get_active_LIB LIB_GTK
-#define gtk_combo_box_get_model_LIB LIB_GTK
-#define gtk_combo_box_set_active_LIB LIB_GTK
-#define gtk_combo_box_set_focus_on_click_LIB LIB_GTK
-#define gtk_combo_box_popup_LIB LIB_GTK
-#define gtk_combo_box_popdown_LIB LIB_GTK
 #define gtk_combo_box_text_new_LIB LIB_GTK
 #define gtk_combo_box_text_new_with_entry_LIB LIB_GTK
 #define gtk_entry_text_index_to_layout_index_LIB LIB_GTK
