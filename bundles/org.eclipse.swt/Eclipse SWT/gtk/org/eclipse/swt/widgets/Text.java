@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2011 IBM Corporation and others.
+ * Copyright (c) 2000, 2015 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -662,6 +662,7 @@ char [] deprocessText (char [] text, int start, int end) {
 	if (start != 0 || end != start + length) {
 		char [] newText = new char [length];
 		System.arraycopy(text, 0, newText, 0, length);
+		for (int i = 0; i < text.length; i++) text [i] = '\0';
 		return newText;
 	}
 	return text;
@@ -1233,6 +1234,11 @@ public String getText (int start, int end) {
  * The text for a text widget is the characters in the widget, or
  * a zero-length array if this has never been set.
  * </p>
+ * <p>
+ * Note: Use the API to protect the text, for example, when widget is used as
+ * a password field. However, the text can't be protected if Segment listener
+ * is added to the widget.
+ * </p>
  *
  * @return a character array that contains the widget's text
  *
@@ -1261,10 +1267,13 @@ public char [] getTextChars () {
 	byte [] buffer = new byte [length];
 	OS.memmove (buffer, address, length);
 	if ((style & SWT.MULTI) != 0) OS.g_free (address);
+
+	char [] result = Converter.mbcsToWcs (null, buffer);
+	for (int i = 0; i < buffer.length; i++) buffer [i] = '\0';
 	if (segments != null) {
-		return deprocessText (Converter.mbcsToWcs (null, buffer), 0, -1);
+		result = deprocessText (result, 0, -1);
 	}
-	return Converter.mbcsToWcs (null, buffer);
+	return result;
 }
 
 /**
@@ -2380,7 +2389,12 @@ public void setText (String string) {
  * Sets the contents of the receiver to the characters in the array. If the receiver
  * has style <code>SWT.SINGLE</code> and the argument contains multiple lines of text
  * then the result of this operation is undefined and may vary between platforms.
- *
+ * <p>
+ * Note: Use the API to protect the text, for example, when widget is used as
+ * a password field. However, the text can't be protected if Verify or
+ * Segment listener is added to the widget.
+ * </p>
+ * 
  * @param text a character array that contains the new text
  *
  * @exception IllegalArgumentException <ul>
