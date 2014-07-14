@@ -11,6 +11,8 @@
 package org.eclipse.swt.widgets;
 
 
+import java.util.Arrays;
+
 import org.eclipse.swt.*;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.cairo.*;
@@ -706,6 +708,7 @@ char [] deprocessText (char [] text, int start, int end) {
 	if (start != 0 || end != start + length) {
 		char [] newText = new char [length];
 		System.arraycopy(text, 0, newText, 0, length);
+		Arrays.fill (text, (char) 0);
 		return newText;
 	}
 	return text;
@@ -1315,10 +1318,13 @@ public char [] getTextChars () {
 	byte [] buffer = new byte [length];
 	OS.memmove (buffer, address, length);
 	if ((style & SWT.MULTI) != 0) OS.g_free (address);
+
+	char [] result = Converter.mbcsToWcs (null, buffer);
+	Arrays.fill (buffer, (byte) 0);
 	if (segments != null) {
-		return deprocessText (Converter.mbcsToWcs (null, buffer), 0, -1);
-	}
-	return Converter.mbcsToWcs (null, buffer);
+		result = deprocessText (result, 0, -1);
+	} 
+	return result;
 }
 
 /**
