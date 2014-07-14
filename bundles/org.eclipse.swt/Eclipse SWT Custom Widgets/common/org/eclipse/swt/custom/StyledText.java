@@ -5976,7 +5976,7 @@ void handleKeyDown(Event event) {
 	verifyEvent.keyCode = event.keyCode;
 	verifyEvent.keyLocation = event.keyLocation;
 	verifyEvent.stateMask = event.stateMask;
-	verifyEvent.doit = true;
+	verifyEvent.doit = event.doit;
 	notifyListeners(ST.VerifyKey, verifyEvent);
 	if (verifyEvent.doit) {
 		if ((event.stateMask & SWT.MODIFIER_MASK) == SWT.CTRL && event.keyCode == SWT.SHIFT && isBidiCaret()) {
