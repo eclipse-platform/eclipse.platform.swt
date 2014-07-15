@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2013 IBM Corporation and others.
+ * Copyright (c) 2000, 2014 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -717,15 +717,24 @@ void layoutItems () {
 			info.dwMask = OS.TBIF_SIZE;
 			long /*int*/ size = OS.SendMessage (handle, OS.TB_GETBUTTONSIZE, 0, 0);
 			info.cx = (short) OS.LOWORD (size);
-			int index = 0;
+			int index = 0, extraPadding = 0;
 			while (index < items.length) {
 				ToolItem item = items [index];
-				if (item != null && (item.style & SWT.DROP_DOWN) != 0) break;
+				if (item != null && (item.style & SWT.DROP_DOWN) != 0) {
+					/*
+					 * Specifying 1 pixel extra padding to avoid truncation
+					 * of widest item in the tool-bar when a tool-bar has
+					 * SWT.VERTICAL style and any of the items in the
+					 * tool-bar has SWT.DROP_DOWN style, Refer bug#437206
+					 */
+					extraPadding = 1;
+					break;
+				}
 				index++;
 			}
 			if (index < items.length) {
 				long /*int*/ padding = OS.SendMessage (handle, OS.TB_GETPADDING, 0, 0);
-				info.cx += OS.LOWORD (padding) * 2;
+				info.cx += OS.LOWORD (padding + extraPadding) * 2;
 			}
 			for (int i=0; i<items.length; i++) {
 				ToolItem item = items [i];
