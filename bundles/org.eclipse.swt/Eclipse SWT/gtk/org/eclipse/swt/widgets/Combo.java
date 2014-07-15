@@ -1660,7 +1660,7 @@ public void remove (int start, int end) {
 	if (start <= index && index <= end) clearText();
 	for (int i = end; i >= start; i--) {
 		if (OS.GTK3) {
-			OS.gtk_combo_box_text_remove(handle, index);
+			OS.gtk_combo_box_text_remove(handle, i);
 		} else {
 			OS.gtk_combo_box_remove_text (handle, i);
 		}
