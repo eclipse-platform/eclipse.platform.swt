@@ -1610,18 +1610,17 @@ long /*int*/ getPixbufRenderer (long /*int*/ column) {
 	}
 	
 	if (list == 0) return 0;
-	int count = OS.g_list_length (list);
+	long /*int*/ originalList = list;
 	long /*int*/ pixbufRenderer = 0;
-	int i = 0;
-	while (i < count) {
-		long /*int*/ renderer = OS.g_list_nth_data (list, i);
-		 if (OS.GTK_IS_CELL_RENDERER_PIXBUF (renderer)) {
+	while (list != 0) {
+		long /*int*/ renderer = OS.g_list_data (list);
+		if (OS.GTK_IS_CELL_RENDERER_PIXBUF (renderer)) {
 			pixbufRenderer = renderer;
 			break;
 		}
-		i++;
+		list = OS.g_list_next (list);
 	}
-	OS.g_list_free (list);
+	OS.g_list_free (originalList);
 	return pixbufRenderer;
 }
 
@@ -1645,12 +1644,13 @@ public TableItem [] getSelection () {
 	checkWidget();
 	long /*int*/ selection = OS.gtk_tree_view_get_selection (handle);
 	long /*int*/ list = OS.gtk_tree_selection_get_selected_rows (selection, null);
+	long /*int*/ originalList = list;
 	if (list != 0) {
 		int count = OS.g_list_length (list);
 		int [] treeSelection = new int [count];
 		int length = 0;
 		for (int i=0; i<count; i++) {
-			long /*int*/ data = OS.g_list_nth_data (list, i);
+			long /*int*/ data = OS.g_list_data (list);
 			long /*int*/ indices = OS.gtk_tree_path_get_indices (data);
 			if (indices != 0) {
 				int [] index = new int [1];
@@ -1659,8 +1659,9 @@ public TableItem [] getSelection () {
 				length++;
 			}
 			OS.gtk_tree_path_free (data);
+			list = OS.g_list_next (list);
 		}
-		OS.g_list_free (list);
+		OS.g_list_free (originalList);
 		TableItem [] result = new TableItem [length];
 		for (int i=0; i<result.length; i++) result [i] = _getItem (treeSelection [i]);
 		return result;
@@ -1699,23 +1700,23 @@ public int getSelectionIndex () {
 	checkWidget();
 	long /*int*/ selection = OS.gtk_tree_view_get_selection (handle);
 	long /*int*/ list = OS.gtk_tree_selection_get_selected_rows (selection, null);
+	long /*int*/ originalList = list;
 	if (list != 0) {
-		int count = OS.g_list_length (list);
 		int [] index = new int [1];
-		for (int i=0; i<count; i++) {
-			long /*int*/ data = OS.g_list_nth_data (list, i);
-			long /*int*/ indices = OS.gtk_tree_path_get_indices (data);
-			if (indices != 0) {
-				OS.memmove (index, indices, 4);
-				for (int j = i; j < count; j++) {
-					data = OS.g_list_nth_data (list, j);
-					OS.gtk_tree_path_free (data);
+		boolean foundIndex = false;
+		while (list != 0) {
+			long /*int*/ data = OS.g_list_data (list);
+			if (foundIndex == false) {
+				long /*int*/ indices = OS.gtk_tree_path_get_indices (data);
+				if (indices != 0) {
+					OS.memmove (index, indices, 4);
+					foundIndex = true;
 				}
-				break;
 			}
+			list = OS.g_list_next (list);
 			OS.gtk_tree_path_free (data);
 		}
-		OS.g_list_free (list);
+		OS.g_list_free (originalList);
 		return index [0];
 	}
 	return -1;
@@ -1741,12 +1742,13 @@ public int [] getSelectionIndices () {
 	checkWidget();
 	long /*int*/ selection = OS.gtk_tree_view_get_selection (handle);
 	long /*int*/ list = OS.gtk_tree_selection_get_selected_rows (selection, null);
+	long /*int*/ originalList = list;
 	if (list != 0) {
 		int count = OS.g_list_length (list);
 		int [] treeSelection = new int [count];
 		int length = 0;
 		for (int i=0; i<count; i++) {
-			long /*int*/ data = OS.g_list_nth_data (list, i);
+			long /*int*/ data = OS.g_list_data (list);
 			long /*int*/ indices = OS.gtk_tree_path_get_indices (data);
 			if (indices != 0) {
 				int [] index = new int [1];
@@ -1754,9 +1756,10 @@ public int [] getSelectionIndices () {
 				treeSelection [length] = index [0];
 				length++;
 			}
+			list = OS.g_list_next (list);
 			OS.gtk_tree_path_free (data);
 		}
-		OS.g_list_free (list);
+		OS.g_list_free (originalList);
 		int [] result = new int [length];
 		System.arraycopy (treeSelection, 0, result, 0, length);
 		return result;
@@ -1814,18 +1817,17 @@ long /*int*/ getTextRenderer (long /*int*/ column) {
 		list = OS.gtk_tree_view_column_get_cell_renderers (column);
 	}
 	if (list == 0) return 0;
-	int count = OS.g_list_length (list);
+	long /*int*/ originalList = list;
 	long /*int*/ textRenderer = 0;
-	int i = 0;
-	while (i < count) {
-		long /*int*/ renderer = OS.g_list_nth_data (list, i);
+	while (list != 0) {
+		long /*int*/ renderer = OS.g_list_data (list);
 		 if (OS.GTK_IS_CELL_RENDERER_TEXT (renderer)) {
 			textRenderer = renderer;
 			break;
 		}
-		i++;
+		list = OS.g_list_next (list);
 	}
-	OS.g_list_free (list);
+	OS.g_list_free (originalList);
 	return textRenderer;
 }
 

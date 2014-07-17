@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2013 IBM Corporation and others.
+ * Copyright (c) 2000, 2014 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -492,20 +492,22 @@ public MenuItem [] getItems () {
 	checkWidget();
 	long /*int*/ list = OS.gtk_container_get_children (handle);
 	if (list == 0) return new MenuItem [0];
+	long /*int*/ originalList = list;
 	int count = OS.g_list_length (list);
 	if (imSeparator != 0) count--;
 	if (imItem != 0) count--;
 	MenuItem [] items = new MenuItem [count];
 	int index = 0;
 	for (int i=0; i<count; i++) {
-		long /*int*/ data = OS.g_list_nth_data (list, i);
+		long /*int*/ data = OS.g_list_data (list);
 		MenuItem item = (MenuItem) display.getWidget (data);
-		if (item != null) items [index++] = item; 
+		if (item != null) items [index++] = item;
+		list = OS.g_list_next (list);
 	}
-	OS.g_list_free (list);
+	OS.g_list_free (originalList);
 	if (index != items.length) {
-		MenuItem [] newItems = new MenuItem[index];
-		System.arraycopy(items, 0, newItems, 0, index);
+		MenuItem [] newItems = new MenuItem [index];
+		System.arraycopy (items, 0, newItems, 0, index);
 		items = newItems;
 	}
 	return items;

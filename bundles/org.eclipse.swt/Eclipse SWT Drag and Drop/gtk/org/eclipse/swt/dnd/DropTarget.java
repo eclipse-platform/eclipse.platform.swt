@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2012 IBM Corporation and others.
+ * Copyright (c) 2000, 2014 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -783,10 +783,9 @@ boolean setEventData(long /*int*/ context, int x, int y, int time, DNDEvent even
 	}
 
 	// Get allowed transfer types
-	int length = OS.g_list_length(targets);
 	TransferData[] dataTypes = new TransferData[0];
-	for (int i = 0; i < length; i++) {
-		long /*int*/ pData = OS.g_list_nth_data(targets, i);
+	while (targets != 0) {
+		long /*int*/ pData = OS.g_list_data(targets);
 		TransferData data = new TransferData();
 		data.type = pData;
 		for (int j = 0; j < transferAgents.length; j++) {
@@ -799,6 +798,7 @@ boolean setEventData(long /*int*/ context, int x, int y, int time, DNDEvent even
 				break;
 			}
 		}
+		targets = OS.g_list_next (targets);
 	}
 	if (dataTypes.length == 0) return false;
 	long /*int*/ window;

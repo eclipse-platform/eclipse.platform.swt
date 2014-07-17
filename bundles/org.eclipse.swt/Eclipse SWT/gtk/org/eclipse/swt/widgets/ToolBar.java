@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2013 IBM Corporation and others.
+ * Copyright (c) 2000, 2014 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -362,13 +362,15 @@ ToolItem [] _getItems () {
 	if (list == 0) return new ToolItem [0];
 	int count = OS.g_list_length (list);
 	ToolItem [] items = new ToolItem [count];
+	long /*int*/ originalList = list;
 	int index = 0;
 	for (int i=0; i<count; i++) {
-		long /*int*/ data = OS.g_list_nth_data (list, i);
+		long /*int*/ data = OS.g_list_data (list);
 		Widget widget = display.getWidget (data);
 		if (widget != null) items [index++] = (ToolItem) widget;
+		list = OS.g_list_next (list);
 	}
-	OS.g_list_free (list);
+	OS.g_list_free (originalList);
 	if (index != items.length) {
 		ToolItem [] newItems = new ToolItem [index];
 		System.arraycopy (items, 0, newItems, 0, index);

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2013 IBM Corporation and others.
+ * Copyright (c) 2000, 2014 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -97,6 +97,7 @@ public class TableDragSourceEffect extends DragSourceEffect {
 		long /*int*/ list = OS.gtk_tree_selection_get_selected_rows (selection, model);
 		if (list == 0) return null;
 		int count = Math.min(10, OS.g_list_length (list));
+		long /*int*/ originalList = list;
 
 		Display display = table.getDisplay();
 		if (count == 1) {
@@ -111,7 +112,7 @@ public class TableDragSourceEffect extends DragSourceEffect {
 			long /*int*/ [] icons = new long /*int*/ [count];
 			GdkRectangle rect = new GdkRectangle ();
 			for (int i=0; i<count; i++) {
-				long /*int*/ path = OS.g_list_nth_data (list, i);
+				long /*int*/ path = OS.g_list_data (list);
 				OS.gtk_tree_view_get_cell_area (handle, path, 0, rect);
 				icons[i] = OS.gtk_tree_view_create_row_drag_icon(handle, path);
 				if (OS.GTK3) {
@@ -126,6 +127,7 @@ public class TableDragSourceEffect extends DragSourceEffect {
 				height = rect.y + h[0] - yy[0];
 				yy[i] = rect.y;
 				hh[i] = h[0];
+				list = OS.g_list_next (list);
 				OS.gtk_tree_path_free (path);
 			}
 			if (OS.GTK3) {
@@ -163,7 +165,7 @@ public class TableDragSourceEffect extends DragSourceEffect {
 				dragSourceImage  = Image.gtk_new(display, SWT.ICON, source, mask);
 			}
 		}
-		OS.g_list_free (list);
+		OS.g_list_free (originalList);
 		return dragSourceImage;
 	}
 }

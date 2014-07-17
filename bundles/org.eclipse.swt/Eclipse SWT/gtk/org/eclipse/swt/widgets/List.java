@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2013 IBM Corporation and others.
+ * Copyright (c) 2000, 2014 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -616,23 +616,23 @@ public int getSelectionIndex () {
 	checkWidget();
 	long /*int*/ selection = OS.gtk_tree_view_get_selection (handle);
 	long /*int*/ list = OS.gtk_tree_selection_get_selected_rows (selection, null);
+	long /*int*/ originalList = list;
 	if (list != 0) {
-		int count = OS.g_list_length (list);
 		int [] index = new int [1];
-		for (int i=0; i<count; i++) {
-			long /*int*/ data = OS.g_list_nth_data (list, i);
-			long /*int*/ indices = OS.gtk_tree_path_get_indices (data);
-			if (indices != 0) {
-				OS.memmove (index, indices, 4);
-				for (int j = i; j < count; j++) {
-					data = OS.g_list_nth_data (list, j);
-					OS.gtk_tree_path_free (data);
+		boolean foundIndex = false;
+		while (list != 0) {
+			long /*int*/ data = OS.g_list_data (list);
+			if (foundIndex == false) {
+				long /*int*/ indices = OS.gtk_tree_path_get_indices (data);
+				if (indices !=0) {
+					OS.memmove (index, indices, 4);
+					foundIndex = true;
 				}
-				break;
 			}
+			list = OS.g_list_next (list);
 			OS.gtk_tree_path_free (data);
 		}
-		OS.g_list_free (list);
+		OS.g_list_free (originalList);
 		return index [0];
 	}
 	return -1;
@@ -658,12 +658,13 @@ public int [] getSelectionIndices () {
 	checkWidget();
 	long /*int*/ selection = OS.gtk_tree_view_get_selection (handle);
 	long /*int*/ list = OS.gtk_tree_selection_get_selected_rows (selection, null);
+	long /*int*/ originalList = list;
 	if (list != 0) {
 		int count = OS.g_list_length (list);
 		int [] treeSelection = new int [count];
 		int length = 0;
 		for (int i=0; i<count; i++) {
-			long /*int*/ data = OS.g_list_nth_data (list, i);
+			long /*int*/ data = OS.g_list_data (list);
 			long /*int*/ indices = OS.gtk_tree_path_get_indices (data);
 			if (indices != 0) {
 				int [] index = new int [1];
@@ -672,8 +673,9 @@ public int [] getSelectionIndices () {
 				length++;
 			}
 			OS.gtk_tree_path_free (data);
+			list = OS.g_list_next (list);
 		}
-		OS.g_list_free (list);
+		OS.g_list_free (originalList);
 		int [] result = new int [length];
 		System.arraycopy (treeSelection, 0, result, 0, length);
 		return result;
@@ -689,18 +691,17 @@ long /*int*/ getTextRenderer (long /*int*/ column) {
 		list = OS.gtk_tree_view_column_get_cell_renderers (column);
 	}
 	if (list == 0) return 0;
-	int count = OS.g_list_length (list);
+	long /*int*/ originalList = list;
 	long /*int*/ textRenderer = 0;
-	int i = 0;
-	while (i < count) {
-		long /*int*/ renderer = OS.g_list_nth_data (list, i);
-		 if (OS.GTK_IS_CELL_RENDERER_TEXT (renderer)) {
+	while (list != 0) {
+		long /*int*/ renderer = OS.g_list_data (list);
+		if (OS.GTK_IS_CELL_RENDERER_TEXT (renderer)) {
 			textRenderer = renderer;
 			break;
 		}
-		i++;
+		list = OS.g_list_next (list);
 	}
-	OS.g_list_free (list);
+	OS.g_list_free (originalList);
 	return textRenderer;
 }
 
