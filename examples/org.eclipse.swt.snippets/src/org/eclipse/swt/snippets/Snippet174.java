@@ -38,6 +38,7 @@ import org.eclipse.swt.widgets.*;
  * is not available anymore.
  *
  */
+@Deprecated
 public class Snippet174 {
 
 public static void main(String[] args) {
