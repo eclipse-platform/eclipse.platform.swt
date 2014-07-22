@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2013 IBM Corporation and others.
+ * Copyright (c) 2000, 2014 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -2169,6 +2169,31 @@ public void test_paste(){
 	assertTrue(":i:", text.getText() != null && text.getText().equals(convertedText));
 	text.setText("");
 
+	// test paste with text limit with no selection
+	clipboard.setContents(new String[]{"abcde"}, new Transfer[]{transfer});
+	text.setTextLimit(3);
+	text.copy();
+	text.paste();
+	assertTrue(":j:", text.getText() != null && text.getText().equals("abc"));
+	text.setText("");
+
+	// test paste with text limit with full selection
+	clipboard.setContents(new String[]{"abcde"}, new Transfer[]{transfer});
+	text.setTextLimit(3);
+	text.setText("123");
+	text.setSelection(0, 3);
+	text.paste();
+	assertTrue(":k:", text.getText() != null && text.getText().equals("abc"));
+	text.setText("");
+
+	// test paste with text limit with partial selection
+	clipboard.setContents(new String[]{"abcde"}, new Transfer[]{transfer});
+	text.setTextLimit(3);
+	text.setText("123");
+	text.setSelection(0, 1);
+	text.paste();
+	assertTrue(":l:", text.getText() != null && text.getText().equals("a23"));
+	text.setText("");
 
 	clipboard.dispose();
 }

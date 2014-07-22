@@ -7319,7 +7319,15 @@ public void paste(){
 		Event event = new Event();
 		event.start = selection.x;
 		event.end = selection.y;
-		event.text = getModelDelimitedText(text);
+		String delimitedText = getModelDelimitedText(text);
+		if (textLimit > 0) {
+			int uneditedTextLength = getCharCount() - (selection.y - selection.x);
+			if ((uneditedTextLength + delimitedText.length()) > textLimit) {
+				int endIndex = textLimit - uneditedTextLength;
+				delimitedText = delimitedText.substring(0, Math.max(endIndex, 0));
+			}
+		}
+		event.text = delimitedText;
 		sendKeyEvent(event);
 	}
 }
