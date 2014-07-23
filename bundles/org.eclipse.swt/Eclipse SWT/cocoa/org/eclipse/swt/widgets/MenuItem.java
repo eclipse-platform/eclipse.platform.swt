@@ -711,7 +711,7 @@ public void setMenu (Menu menu) {
 		error (SWT.ERROR_MENUITEM_NOT_CASCADE);
 	}
 	if (menu != null) {
-		if (menu.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
+		if (menu.isDisposed() || (menu == parent)) error(SWT.ERROR_INVALID_ARGUMENT);
 		if ((menu.style & SWT.DROP_DOWN) == 0) {
 			error (SWT.ERROR_MENU_NOT_DROP_DOWN);
 		}
