@@ -314,7 +314,16 @@ public void create(Composite parent, int style) {
 				int index = path.lastIndexOf(SEPARATOR_OS);
 				String executable = index != -1 ? path.substring(index + 1) : path;
 				final TCHAR lpValueName = new TCHAR(0, executable, true);
-				if (OS.RegQueryValueEx(key[0], lpValueName, 0, null, (int[])null, null) == OS.ERROR_FILE_NOT_FOUND) {
+				/*
+				 * Program name & IE version entry is added to the Windows
+				 * registry and same gets deleted during the dispose cycle.
+				 * There is a possibility if the SWT application crashes or
+				 * is exited forcefully, which leaves the registry entry
+				 * as-is and hence if entry exists, updating it next time
+				 * the SWT application creates embedded IE, refer bug 440300
+				 */
+				int result = OS.RegQueryValueEx(key[0], lpValueName, 0, null, (int[])null, null);
+				if (result == 0 || result == OS.ERROR_FILE_NOT_FOUND) {
 					if (OS.RegSetValueEx(key[0], lpValueName, 0, OS.REG_DWORD, new int[] {version}, 4) == 0) {
 						parent.getDisplay().addListener(SWT.Dispose, new Listener() {			
 							public void handleEvent(Event event) {
