@@ -396,13 +396,17 @@ public void drawBackground (GC gc, int x, int y, int width, int height, int offs
 				y += pt.y + offsetY;
 				long /*int*/ surface = control.backgroundImage.surface;
 				if (surface == 0) {
-					long /*int*/ xDisplay = OS.gdk_x11_display_get_xdisplay(OS.gdk_display_get_default());
-					long /*int*/ xVisual = OS.gdk_x11_visual_get_xvisual (OS.gdk_visual_get_system());
 					long /*int*/ drawable = control.backgroundImage.pixmap;
-					long /*int*/ xDrawable = OS.GDK_PIXMAP_XID (drawable);				
 					int [] w = new int [1], h = new int [1];
 					gdk_pixmap_get_size (drawable, w, h);
-					surface = Cairo.cairo_xlib_surface_create (xDisplay, xDrawable, xVisual, w [0], h [0]);
+					if (OS.GDK_WINDOWING_X11 () && !OS.GDK_WINDOWING_WAYLAND ()) {
+						long /*int*/ xDisplay = OS.gdk_x11_display_get_xdisplay(OS.gdk_display_get_default());
+						long /*int*/ xVisual = OS.gdk_x11_visual_get_xvisual (OS.gdk_visual_get_system());
+						long /*int*/ xDrawable = OS.GDK_PIXMAP_XID (drawable);				
+						surface = Cairo.cairo_xlib_surface_create (xDisplay, xDrawable, xVisual, w [0], h [0]);
+					} else {
+						surface = Cairo.cairo_image_surface_create(Cairo.CAIRO_FORMAT_ARGB32, w [0], h [0]);
+					}
 					if (surface == 0) error (SWT.ERROR_NO_HANDLES);
 				} else {
 					Cairo.cairo_surface_reference(surface);
