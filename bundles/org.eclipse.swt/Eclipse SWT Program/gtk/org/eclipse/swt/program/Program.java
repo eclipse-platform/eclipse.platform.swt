@@ -73,6 +73,12 @@ static int getDesktop(final Display display) {
 	if (desktopValue != null) return desktopValue.intValue();
 	int desktop = DESKTOP_UNKNOWN;
 
+	if (OS.GDK_WINDOWING_WAYLAND ()) {
+		desktop = DESKTOP_GIO;
+		display.setData(DESKTOP_DATA, new Integer(desktop));
+		return desktop;
+	}
+	
 	/* Get the list of properties on the root window. */
 	long /*int*/ xDisplay = OS.gdk_x11_display_get_xdisplay(OS.gdk_display_get_default());
 	long /*int*/ rootWindow = OS.XDefaultRootWindow(xDisplay);
