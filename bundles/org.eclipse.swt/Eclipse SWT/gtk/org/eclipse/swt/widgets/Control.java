@@ -5512,4 +5512,19 @@ long /*int*/ windowProc (long /*int*/ handle, long /*int*/ arg0, long /*int*/ us
 	}
 	return super.windowProc (handle, arg0, user_data);
 }
+
+/**
+ * Gets the coordinates for the top left position of the control with respect to parent
+ *
+ * @return Coordinates for top left position of the control
+ */
+Point getWindowOrigin () {
+	int [] x = new int [1];
+	int [] y = new int [1];
+
+	long /*int*/ window = eventWindow ();
+	OS.gdk_window_get_origin (window, x, y);
+
+	return new Point (x [0], y [0]);
+}
 }
