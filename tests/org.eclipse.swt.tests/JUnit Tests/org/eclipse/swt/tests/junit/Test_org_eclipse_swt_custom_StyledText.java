@@ -227,6 +227,10 @@ public void test_setKeyBindingII(){
 	assertTrue(":c:", text.getKeyBinding(SWT.DEL | SWT.MOD2) == ST.SELECT_PAGE_UP);
 	text.setKeyBinding(SWT.DEL | SWT.MOD2, ST.PAGE_UP);
 	assertTrue(":d:", text.getKeyBinding(SWT.DEL | SWT.MOD2) == ST.PAGE_UP);
+	text.setKeyBinding(SWT.KEYPAD_CR, ST.LINE_END);
+	assertTrue(":e:", text.getKeyBinding(SWT.KEYPAD_CR) == ST.LINE_END);
+	text.setKeyBinding(SWT.KEYPAD_CR | SWT.MOD1, ST.LINE_START);
+	assertTrue(":f:", text.getKeyBinding(SWT.KEYPAD_CR | SWT.MOD1) == ST.LINE_START);
 	text.setKeyBinding(-1, ST.PAGE_UP);
 	text.setKeyBinding(-1, -1);
 }

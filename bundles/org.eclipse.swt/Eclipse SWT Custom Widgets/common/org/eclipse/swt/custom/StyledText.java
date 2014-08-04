@@ -8908,8 +8908,14 @@ public void setJustify(boolean justify) {
 public void setKeyBinding(int key, int action) {
 	checkWidget();
 	int modifierValue = key & SWT.MODIFIER_MASK;
-	char keyChar = (char)(key & SWT.KEY_MASK);
-	if (Compatibility.isLetter(keyChar)) {
+	int keyInt = key & SWT.KEY_MASK;
+	char keyChar = (char)keyInt;
+	/**
+	 * Bug 440535: Make sure the key getting mapped to letter is in defiened
+	 * character range and filter out incorrect int to char typecasting. For
+	 * Example: SWT.KEYPAD_CR int gets wrongly type-cast to char letter 'p'
+	 */
+	if (Character.isDefined(keyInt) && Compatibility.isLetter(keyChar)) {
 		// make the keybinding case insensitive by adding it
 		// in its upper and lower case form
 		char ch = Character.toUpperCase(keyChar);
