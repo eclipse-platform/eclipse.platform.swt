@@ -1,27 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <!--
-    Copyright (c) 2009, 2011 IBM Corporation and others.
+    Copyright (c) 2009, 2014 IBM Corporation and others.
     All rights reserved. This program and the accompanying materials
     are made available under the terms of the Eclipse Public License v1.0
     which accompanies this distribution, and is available at
     http://www.eclipse.org/legal/epl-v10.html
-   
+
     Contributors:
         IBM Corporation - initial API and implementation
  -->
 
-<!-- 
- 
+<!--
+
 	TAG: a tag param can be passed in to work on branch. If no tag is set master is used.
 		For example: ant -f buildSWT.xml increment_version -DTAG=R3_5_maintenance
-		
-	natives_changed: when starting a integration build the increment of the version 
-		can be forced by setting this project. If property is not defined the increment 
-		is determine automatically based on changes in the native code since the last 
+
+	natives_changed: when starting a integration build the increment of the version
+		can be forced by setting this project. If property is not defined the increment
+		is determine automatically based on changes in the native code since the last
 		revision in the swp.map.
 		for Example: ant -f buildSWT.xml increment_version -Dnatives_changed=true
-	
+
 	To build the libraries of a fragment, run
 		ant -f <fragment dir>/build.xml build_libraries
  -->
@@ -30,7 +30,7 @@
 	<property name="gitroot" value="silenio@dev.eclipse.org:/gitroot/platform/"/>
 	<property name="TAG" value="master"/>
 	<property name="tmphome" value="../../../tmp"/>
-	
+
 	<property name="repo.src" value="../../../eclipse.platform.swt"/>
 	<property name="repo.bin" value="../../../eclipse.platform.swt.binaries"/>
 
@@ -41,7 +41,7 @@
 	<property name="src_carbon" value="${src_common} 'bundles/org.eclipse.swt/Eclipse SWT PI/carbon/library' 'bundles/org.eclipse.swt/Eclipse SWT OpenGL/carbon/library'"/>
 	<property name="src_wpf" value="${src_common} 'bundles/org.eclipse.swt/Eclipse SWT PI/wpf/library' 'bundles/org.eclipse.swt/Eclipse SWT PI/wpf_win32/library'"/>
 	<property name="src_photon" value="${src_common} 'bundles/org.eclipse.swt/Eclipse SWT PI/photon/library'"/>
-	
+
 	<property name="file_library_j2se" value="bundles/org.eclipse.swt/Eclipse SWT PI/common_j2se/org/eclipse/swt/internal/Library.java"/>
 	<property name="file_library_j2me" value="bundles/org.eclipse.swt/Eclipse SWT PI/common_j2me/org/eclipse/swt/internal/Library.java"/>
 	<property name="file_make_common" value="bundles/org.eclipse.swt/Eclipse SWT/common/library/make_common.mak"/>
@@ -91,6 +91,10 @@
 		<antcall target="check_fragment_libraries">
 			<param name="library_count" value="11"/>
 			<param name="fragment" value="org.eclipse.swt.gtk.linux.ppc64"/>
+		</antcall>
+		<antcall target="check_fragment_libraries">
+			<param name="library_count" value="8"/>
+			<param name="fragment" value="org.eclipse.swt.gtk.linux.ppc64le"/>
 		</antcall>
 		<antcall target="check_fragment_libraries">
 			<param name="library_count" value="11"/>
@@ -145,11 +149,11 @@
 		</antcall>
 		-->
 	</target>
-	
+
 	<target name="check_fragment_libraries" depends="get_version">
 		<echo>Checking ${fragment}</echo>
 		<property name="checkdir" value="~/build/check_libraries"/>
-		<property name="library_count" value="134"/>
+		<property name="library_count" value="142"/>
 		<property name="fragment" value=""/>
 		<fileset id="match" dir="${repo.bin}/bundles/${fragment}">
 			<filename regex="[0-9][0-9][0-9][0-9]."/>
@@ -183,88 +187,95 @@
 		</condition>
 		<fail if="m_fail" message="Failed. Expecting ${library_count} and 0. Old libraries: ${not_match_text}"/>
 		<echo>Success</echo>
-	</target>	
-	
+	</target>
+
 	<target name="check_machines" depends="init_keyfile">
 		<parallel>
-		<sshexec host="${m_linux_x86}" 
-			username="swtbuild" 
-			keyfile="${keyfile}" 
+		<sshexec host="${m_linux_x86}"
+			username="swtbuild"
+			keyfile="${keyfile}"
 			failonerror="false"
 			trust="true"
 			outputproperty="m_linux_x86_output"
 			command="hostname"/>
-		<sshexec host="${m_linux_x86_64}" 
-			username="swtbuild" 
-			keyfile="${keyfile}" 
+		<sshexec host="${m_linux_x86_64}"
+			username="swtbuild"
+			keyfile="${keyfile}"
 			failonerror="false"
 			trust="true"
 			outputproperty="m_linux_x86_64_output"
 			command="hostname"/>
 		<!-- These machines are only used for 3.5.x builds. -->
-		<!--sshexec host="${m_linux_rh3_x86}" 
-			username="swtbuild" 
-			keyfile="${keyfile}" 
+		<!--sshexec host="${m_linux_rh3_x86}"
+			username="swtbuild"
+			keyfile="${keyfile}"
 			failonerror="false"
 			trust="true"
 			outputproperty="m_linux_rh3_x86_output"
 			command="hostname"/>
-		<sshexec host="${m_linux_rh3_x86_64}" 
-			username="swtbuild" 
-			keyfile="${keyfile}" 
+		<sshexec host="${m_linux_rh3_x86_64}"
+			username="swtbuild"
+			keyfile="${keyfile}"
 			failonerror="false"
 			trust="true"
 			outputproperty="m_linux_rh3_x86_64_output"
 			command="hostname"/-->
-			
-		<sshexec host="${m_linux_ppc}" 
-			username="swtbuild" 
-			keyfile="${keyfile}" 
+
+		<sshexec host="${m_linux_ppc}"
+			username="swtbuild"
+			keyfile="${keyfile}"
 			failonerror="false"
 			trust="true"
 			outputproperty="m_linux_ppc_output"
 			command="hostname"/>
-		<sshexec host="${m_linux_ppc64}" 
-			username="swtbuild" 
-			keyfile="${keyfile}" 
+		<sshexec host="${m_linux_ppc64}"
+			username="swtbuild"
+			keyfile="${keyfile}"
 			failonerror="false"
 			trust="true"
 			outputproperty="m_linux_ppc64_output"
 			command="hostname"/>
-			
-		<sshexec host="${m_solaris_sparc}" 
-			username="swtbuild" 
-			keyfile="${keyfile}" 
+		<sshexec host="${m_linux_ppc64le}"
+			username="swtbuild"
+			keyfile="${keyfile}"
+			failonerror="false"
+			trust="true"
+			outputproperty="m_linux_ppc64le_output"
+			command="hostname"/>
+
+		<sshexec host="${m_solaris_sparc}"
+			username="swtbuild"
+			keyfile="${keyfile}"
 			failonerror="false"
 			trust="true"
 			outputproperty="m_solaris_sparc_output"
 			command="hostname"/>
-		<sshexec host="${m_solaris_x86}" 
-			username="swtbuild" 
-			keyfile="${keyfile}" 
+		<sshexec host="${m_solaris_x86}"
+			username="swtbuild"
+			keyfile="${keyfile}"
 			failonerror="false"
 			trust="true"
 			outputproperty="m_solaris_x86_output"
 			command="hostname"/>
-			
-		<sshexec host="${m_aix}" 
-			username="swtbuild" 
-			keyfile="${keyfile}" 
+
+		<sshexec host="${m_aix}"
+			username="swtbuild"
+			keyfile="${keyfile}"
 			failonerror="false"
 			trust="true"
 			outputproperty="m_aix_output"
 			command="hostname"/>
-			
-		<sshexec host="${m_hpux}" 
-			username="swtbuild" 
-			keyfile="${keyfile}" 
+
+		<sshexec host="${m_hpux}"
+			username="swtbuild"
+			keyfile="${keyfile}"
 			failonerror="false"
 			trust="true"
 			outputproperty="m_hpux_output"
 			command="hostname"/>
-		<sshexec host="${m_mac}" 
-			username="swtbuild" 
-			keyfile="${keyfile}" 
+		<sshexec host="${m_mac}"
+			username="swtbuild"
+			keyfile="${keyfile}"
 			failonerror="false"
 			trust="true"
 			outputproperty="m_mac_output"
@@ -296,7 +307,7 @@
 				<matches pattern="x${m_linux_rh3_x86_64_output}*" string="x${m_linux_rh3_x86_64}"/>
 			</and>
 		</condition-->
-		
+
 		<condition property="m_linux_ppc_test" value="${success_msg}" else="${fail_msg}">
 			<and>
 				<length string="${m_linux_ppc_output}" when="greater" length="0"/>
@@ -307,6 +318,12 @@
 			<and>
 				<length string="${m_linux_ppc64_output}" when="greater" length="0"/>
 				<matches pattern="x${m_linux_ppc64_output}*" string="x${m_linux_ppc64}"/>
+			</and>
+		</condition>
+		<condition property="m_linux_ppc64le_test" value="${success_msg}" else="${fail_msg}">
+			<and>
+				<length string="${m_linux_ppc64le_output}" when="greater" length="0"/>
+				<matches pattern="x${m_linux_ppc64le_output}*" string="x${m_linux_ppc64le}"/>
 			</and>
 		</condition>
 		<condition property="m_solaris_sparc_test" value="${success_msg}" else="${fail_msg}">
@@ -348,6 +365,7 @@
 		<echo>${m_linux_rh3_x86_64} ${m_linux_rh3_x86_64_test}</echo-->
 		<echo>${m_linux_ppc} - ${m_linux_ppc_test}</echo>
 		<echo>${m_linux_ppc64} - ${m_linux_ppc64_test}</echo>
+		<echo>${m_linux_ppc64le} - ${m_linux_ppc64le_test}</echo>
 		<echo>${m_solaris_sparc} - ${m_solaris_sparc_test}</echo>
 		<echo>${m_solaris_x86} - ${m_solaris_x86_test}</echo>
 		<echo>${m_aix} - ${m_aix_test}</echo>
@@ -362,16 +380,16 @@
 
 	<target name="check_s390_machines" depends="init_keyfile">
 		<parallel>
-		<sshexec host="${m_linux_s390}" 
-			username="swtbuild" 
-			keyfile="${keyfile}" 
+		<sshexec host="${m_linux_s390}"
+			username="swtbuild"
+			keyfile="${keyfile}"
 			failonerror="false"
 			trust="true"
 			outputproperty="m_linux_s390_output"
 			command="hostname"/>
-		<sshexec host="${m_linux_s390x}" 
-				username="swtbuild" 
-				keyfile="${keyfile}" 
+		<sshexec host="${m_linux_s390x}"
+				username="swtbuild"
+				keyfile="${keyfile}"
 				failonerror="false"
 				trust="true"
 				outputproperty="m_linux_s390x_output"
@@ -402,7 +420,7 @@
 		</condition>
 		<fail if="m_fail" message="Failed"/>
 	</target>
-	
+
 	<target name="check_source_sha1_file" unless="source_changed">
 		<property name="sha1_file" value="${tmphome}/build.sha1"/>
 		<condition property="source_changed">
@@ -411,10 +429,10 @@
 			</not>
 		</condition>
 	</target>
-	
+
 	<target name="check_source_changed" depends="check_source_sha1_file" unless="source_changed">
 		<loadproperties srcfile="${sha1_file}"/>
-		
+
 		<!-- Check for changes -->
 		<exec dir="${repo.src}" executable="git" failonerror="true" outputproperty="diffs">
 			<arg line="diff ${SHA1}"/>
@@ -430,7 +448,7 @@
 			<arg line="log -1 ${SHA1}"/>
 		</exec>
 	</target>
-	
+
 	<target name="check_preprocessing">
 		<property name="projectDir" value="${repo.src}/bundles/org.eclipse.swt"/>
 		<fileset id="badfilesid" dir="${projectDir}" includes="**/*.java" excludes="**/.build64/**/*.java">
@@ -448,13 +466,13 @@
 		</condition>
 		<fail if="failbadfiles" message="There are files with the wrong long /*int*/ preprocessing."/>
 	</target>
-	
+
 	<target name="check_compilation" depends="check_source_changed" if="source_changed">
 		<mkdir dir="${tmphome}"/>
 		<property name="tmpdir" value="${tmphome}/check.compile.${TAG}"/>
 		<property name="projectDir" value="${repo.src}/bundles/org.eclipse.swt"/>
 		<property name="buildDir" value="${tmpdir}/build"/>
-		
+
 		<antcall target="check_preprocessing"/>
 
 		<!-- 64 bit -->
@@ -470,7 +488,7 @@
 			<param name="cp" value=".classpath_win32"/>
 			<param name="is64" value="64 bit"/>
 		</antcall>
-		
+
 		<!-- 32 bit -->
 		<!-- Not building carbon
 		<antcall target="build_classes">
@@ -496,7 +514,7 @@
 			<param name="cp" value=".classpath_wpf"/>
 		</antcall>
 		-->
-		
+
 		<!-- Update build.sha1 file -->
 		<exec dir="${repo.src}" executable="git" failonerror="true" outputproperty="HEAD_TAG">
 			<arg line="rev-list ${TAG} -1"/>
@@ -507,26 +525,26 @@
 
 		<delete dir="${tmpdir}" quiet="true"/>
 	</target>
-	
+
 	<target name="replace64" unless="is64">
 		<antcall target="replace.64.to.32">
 			<param name="replace_dir" value="${buildDir}"/>
 		</antcall>
 	</target>
-	
+
 	<target name="build_classes">
 		<echo>Building ${cp} ${is64}</echo>
 		<delete file="${tmpdir}/copy.xml"/>
 		<delete dir="${buildDir}"/>
-				
+
 		<xslt style="${projectDir}/tasks/classpath.xls" in="${projectDir}/${cp}" out="${tmpdir}/copy.xml">
 			<param name="srcDir" expression="${projectDir}"/>
 			<param name="outputDir" expression="${buildDir}"/>
 		</xslt>
 		<ant antfile="${tmpdir}/copy.xml" target="copy_files"/>
-		
+
 		<antcall target="replace64"></antcall>
-				
+
 		<javac includeantruntime="false" srcdir="${buildDir}"></javac>
 	</target>
 
@@ -536,7 +554,7 @@
 		<property name="increment_version_target" value="increment_release_version"/>
 		<antcall target="new_build"/>
 	</target>
-	
+
 	<target name="check_build_changed" depends="get_tag" unless="build_changed">
 		<!-- Check for changes -->
 		<exec dir="${repo.src}" executable="git" failonerror="false" outputproperty="src_diffs">
@@ -553,7 +571,7 @@
 		</condition>
 		<echo>Has build changes: ${build_changed} checked against ${swt_tag}</echo>
 	</target>
-	
+
 	<target name="new_build" depends="check_build_changed, check_natives_changed" if="build_changed">
 		<!-- Update the version files -->
 		<property name="increment_version_target" value="increment_version"/>
@@ -562,7 +580,7 @@
 		<!-- Commit the files -->
 		<antcall target="commit_sources"/>
 	</target>
-	
+
 	<target name="commit_sources" depends="get_version" if="natives_changed">
 		<exec dir="${repo.src}" executable="git" failonerror="true">
 			<arg line="add '${file_library_j2se}' '${file_library_j2me}' '${file_version}' '${file_make_common}' "/>
@@ -574,7 +592,7 @@
 			<arg line="commit -m 'v${swt_version}'"/>
 		</exec>
 	</target>
-	
+
 	<target name="increment_version" depends="get_version" if="natives_changed">
 		<antcall target="increment_version_impl"/>
 	</target>
@@ -608,7 +626,7 @@
 		</script>
 		<echo>Current tag=${swt_tag}.</echo>
 	</target>
-	
+
 	<!-- Set swt_new_tag  -->
 	<target name="get_new_tag" unless="swt_new_tag" depends="get_version">
 		<exec dir="${repo.bin}" executable="git" failonerror="true" outputproperty="tags">
@@ -689,7 +707,7 @@
 		<property name="new_version" value="${new_maj_ver}${new_min_ver}"/>
 		<echo>Version=${swt_version}; New=${new_version}; New comma_ver=${new_comma_ver}</echo>
 	</target>
-	
+
 	<!-- Set natives_changed if there are changes in the C code -->
 	<target name="check_natives_changed" unless="natives_changed" depends="get_tag">
 		<exec dir="${repo.src}" executable="git" failonerror="true" outputproperty="diffs">
@@ -709,7 +727,7 @@
 		<!-- These two lines perform the same check. check_libraries is slower because it checks each fragment separetely  -->
 		<!--antcall target="check_libraries"/-->
 		<antcall target="check_fragment_libraries"/>
-		
+
 		<exec dir="${repo.src}" executable="git" failonerror="true">
 			<arg line="tag v${swt_new_tag}"/>
 		</exec>
@@ -717,7 +735,7 @@
 			<arg line="tag v${swt_new_tag}"/>
 		</exec>
 	</target>
-	
+
 	<target name="check_sha1_file" unless="natives_changed">
 		<condition property="natives_changed">
 			<not>
@@ -725,10 +743,10 @@
 			</not>
 		</condition>
 	</target>
-	
+
 	<target name="check_sha1_changed" depends="check_sha1_file" unless="natives_changed">
 		<loadproperties srcfile="${sha1_file}"/>
-		
+
 		<!-- Check for changes -->
 		<exec dir="${repo.src}" executable="git" failonerror="true" outputproperty="diffs">
 			<arg line="diff ${SHA1} ${library_src}"/>
@@ -744,7 +762,7 @@
 			<arg line="log -1 ${SHA1}"/>
 		</exec>
 	</target>
-	
+
 	<target name="init_fragment">
 		<condition property="m_fail">
 			<not><and>
@@ -764,7 +782,7 @@
 	   	 	]]>
 		</script>
 	</target>
-	
+
 	<!-- Params: swt.ws, swt.os, swt.arch
 	Note that the build.sha1 file is updated even if the libraries are not built to ensure there is a change
 	in the GIT repo (see bug#407624).
@@ -772,7 +790,7 @@
 	<target name="build_fragment" depends="init_fragment,check_sha1_changed">
 		<!-- Build natives -->
 		<antcall target="build_fragment_libraries"/>
-		
+
 		<!-- Update build.sha1 file -->
 		<exec dir="${repo.src}" executable="git" failonerror="true" outputproperty="HEAD_TAG">
 			<arg line="rev-list ${TAG} -1"/>
@@ -802,7 +820,7 @@
 			<regexpmapper from="(.*)[0-9][0-9][0-9][0-9](.*)" to="\1${swt_version}\2"/>
 		</copy>
 		<property name="rfiles" refid="removeid"/>
-		
+
 		<!-- Get list of files to commit -->
 		<fileset id="addid" dir="${repo.bin}">
 			<include name="bundles/*/*${swt_version}*"/>
@@ -826,11 +844,11 @@
 			project.setProperty("added_files", project.getProperty("afiles").replace(";", " "));
    	 	]]>
 		</script>
-		
+
 		<chmod perm="755">
 			<fileset dir="${repo.bin}" includes="*${swt_version}*"/>
 		</chmod>
-		
+
 		<antcall target="git_rm"/>
 		<exec dir="${repo.bin}" executable="git" failonerror="true">
 			<arg line="add ${added_files}"/>
@@ -868,7 +886,7 @@
 		<echo>refreshing ${fragment}</echo>
 		<eclipse.refreshLocal resource="${fragment}" depth="infinite"/>
 	</target>
-		
+
 	<target name="copy.library.src">
 		<script language="javascript">
 			<![CDATA[
@@ -922,7 +940,7 @@
 		<delete dir="${build_dir}" quiet="true"/>
 		<antcall target="refresh_fragment"/>
 	</target>
-	
+
 	<target name="build_gtk3" if="machine_gtk3">
 		<antcall target="${build_task}">
 			<param name="build_machine" value="${machine_gtk3}"/>
@@ -932,11 +950,11 @@
 			<param name="gtk_version" value="3.0"/>
 		</antcall>
 	</target>
-	
+
 	<target name="build_remote" depends="init_keyfile">
 		<property name="libs" value="*"/>
 		<property name="exports" value=""/>
-		
+
 		<condition property="remotebuilddir" value="c:/build" else="~/build/">
 			<or>
 				<equals arg1="${swt.os}" arg2="win32"/>
@@ -967,31 +985,31 @@
 		<condition property="build_cmd" value="unix2dos *; if cmd /c build.bat ${build_targets}; ${xul_cmd}" else="if sh build.sh ${build_targets};">
 			<equals arg1="${swt.os}" arg2="win32"/>
 		</condition>
-		
+
 		<property name="remotetmpdir" value="${remotebuilddir}/${fragment}.${TAG}"/>
 		<property name="lib_output" value="${remotetmpdir}/libs"/>
 		<property name="zip_file" value="${fragment}.${TAG}.zip"/>
 		<zip destfile="${build_dir}/${zip_file}" basedir="${build_dir}" excludes="${zip_file}"/>
 		<scp file="${build_dir}/${zip_file}"
-			todir="swtbuild@${build_machine}:${remotebuilddir}" 
+			todir="swtbuild@${build_machine}:${remotebuilddir}"
 			keyfile="${keyfile}"
 			trust="true"/>
-		<sshexec host="${build_machine}" 
-			username="swtbuild" 
-			keyfile="${keyfile}" 
+		<sshexec host="${build_machine}"
+			username="swtbuild"
+			keyfile="${keyfile}"
 			trust="true"
 	 		command="rm -rf ${remotetmpdir}; mkdir ${remotetmpdir}; mkdir ${lib_output}; cd ${remotetmpdir}; unzip -aa ${remotebuilddir}/${zip_file}; ${exports} export MODEL=${swt.arch}; export OUTPUT_DIR=${lib_output}; ${build_cmd} then ${exit_cmd} cd; else ${exit_cmd} cd; rm -rf ${remotetmpdir}; rm ${remotebuilddir}/${zip_file}; exit 1; fi"/>
 		<scp file="swtbuild@${build_machine}:${lib_output}/${libs}"
 			todir="${output_dir}"
 			keyfile="${keyfile}"
 			trust="true"/>
-		<sshexec host="${build_machine}" 
-			username="swtbuild" 
-			keyfile="${keyfile}" 
+		<sshexec host="${build_machine}"
+			username="swtbuild"
+			keyfile="${keyfile}"
 			trust="true"
 	 		command="rm -rf ${remotetmpdir}; rm ${remotebuilddir}/${zip_file}"/>
 	</target>
-	
+
 	<target name="build_local">
 		<property name="gtk_version" value="2.0" />
 		<exec dir="${build_dir}" executable="sh" failonerror="true">
@@ -1040,11 +1058,11 @@
 
 	<target name="check_repo">
 		<echo>Check ${repo}</echo>
-		 <condition property="${repo.exists}">       
-		 	<available file="../../../../${TAG}/${repo}" type="dir"/>     
+		 <condition property="${repo.exists}">
+		 	<available file="../../../../${TAG}/${repo}" type="dir"/>
 		 </condition>
 	</target>
-	
+
 	<target name="init_repo" depends="check_repo" unless="${repo.exists}" >
 		<delete dir="../../../../${TAG}/${repo}" quiet="true"/>
 		<mkdir dir="../../../../${TAG}"/>
@@ -1058,7 +1076,7 @@
 		</condition>
 		<antcall target="checkout_repo"/>
 	</target>
-	
+
 	<target name="checkout_repo" if="perform.checkout">
 		<echo>Checking out ${repo}=${checkout_tag}</echo>
 		<exec dir="../../../../${TAG}/${repo}" executable="git" failonerror="true">
@@ -1123,7 +1141,7 @@
 			<arg line="push origin refs/tags/${swt_tag}"/>
 		</exec>
 	</target>
-	
+
 	<target name="push_integration">
 		<property name="TAG" value="master"/>
 		<!-- src -->

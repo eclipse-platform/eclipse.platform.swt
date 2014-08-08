@@ -1,6 +1,6 @@
 #!/bin/sh
 #*******************************************************************************
-# Copyright (c) 2000, 2012 IBM Corporation and others.
+# Copyright (c) 2000, 2014 IBM Corporation and others.
 # All rights reserved. This program and the accompanying materials
 # are made available under the terms of the Eclipse Public License v1.0
 # which accompanies this distribution, and is available at
@@ -218,6 +218,35 @@ case $SWT_OS.$SWT_ARCH in
 		fi
 		if [ "${XULRUNNER_SDK}" = "" ]; then
 			export XULRUNNER_SDK="/bluebird/teamswt/swt-builddir/xulrunner/1.8.1.1/ppc64/mozilla/dist/sdk/"
+		fi
+		if [ "${XULRUNNER_INCLUDES}" = "" ]; then
+			export XULRUNNER_INCLUDES="-include ${XULRUNNER_SDK}/include/mozilla-config.h -I${XULRUNNER_SDK}/include"
+		fi
+		if [ "${XULRUNNER_LIBS}" = "" ]; then
+			export XULRUNNER_LIBS="-m64 -L${XULRUNNER_SDK}/lib -lxpcomglue"
+		fi
+		if [ "${PKG_CONFIG_PATH}" = "" ]; then
+			export PKG_CONFIG_PATH="/usr/lib64/pkgconfig/"
+		fi
+		;;
+	"linux.ppc64le")
+		if [ "${CC}" = "" ]; then
+			export CC=gcc
+		fi
+		if [ "${JAVA_HOME}" = "" ]; then
+			export JAVA_HOME="/bluebird/teamswt/swt-builddir/JDKs/PPC64LE/jre5u10"
+		fi
+		if [ "${MOZILLA_SDK}" = "" ]; then
+			export MOZILLA_SDK=" /bluebird/teamswt/swt-builddir/mozilla/1.7/ppc64le/mozilla/dist/sdk"
+		fi
+		if [ "${MOZILLA_LIBS}" = "" ]; then
+			export MOZILLA_LIBS="-m64 -L${MOZILLA_SDK}/lib -L${MOZILLA_SDK}/bin -lxpcom -lnspr4 -lplds4 -lplc4"
+		fi
+		if [ "${MOZILLA_INCLUDES}" = "" ]; then
+			export MOZILLA_INCLUDES="-include ${MOZILLA_SDK}/include/mozilla-config.h -I${MOZILLA_SDK}/include"
+		fi
+		if [ "${XULRUNNER_SDK}" = "" ]; then
+			export XULRUNNER_SDK="/bluebird/teamswt/swt-builddir/xulrunner/1.8.1.1/ppc64le/mozilla/dist/sdk/"
 		fi
 		if [ "${XULRUNNER_INCLUDES}" = "" ]; then
 			export XULRUNNER_INCLUDES="-include ${XULRUNNER_SDK}/include/mozilla-config.h -I${XULRUNNER_SDK}/include"
