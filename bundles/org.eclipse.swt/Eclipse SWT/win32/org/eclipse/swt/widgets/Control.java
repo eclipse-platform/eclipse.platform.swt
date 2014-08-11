@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2013 IBM Corporation and others.
+ * Copyright (c) 2000, 2014 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -3846,6 +3846,10 @@ void subclass () {
  * argument, which is specified in display relative coordinates,
  * to coordinates relative to the receiver.
  * <p>
+ * NOTE: To properly map a rectangle or a corner of a rectangle on a right-to-left platform, use
+ * {@link Display#map(Control, Control, Rectangle)}.
+ * </p>
+ * 
  * @param x the x coordinate to be translated
  * @param y the y coordinate to be translated
  * @return the translated coordinates
@@ -3870,6 +3874,10 @@ public Point toControl (int x, int y) {
  * argument, which is specified in display relative coordinates,
  * to coordinates relative to the receiver.
  * <p>
+ * NOTE: To properly map a rectangle or a corner of a rectangle on a right-to-left platform, use
+ * {@link Display#map(Control, Control, Rectangle)}.
+ * </p>
+ * 
  * @param point the point to be translated (must not be null)
  * @return the translated coordinates
  *
@@ -3892,6 +3900,10 @@ public Point toControl (Point point) {
  * argument, which is specified in coordinates relative to
  * the receiver, to display relative coordinates.
  * <p>
+ * NOTE: To properly map a rectangle or a corner of a rectangle on a right-to-left platform, use
+ * {@link Display#map(Control, Control, Rectangle)}.
+ * </p>
+ * 
  * @param x the x coordinate to be translated
  * @param y the y coordinate to be translated
  * @return the translated coordinates
@@ -3916,6 +3928,10 @@ public Point toDisplay (int x, int y) {
  * argument, which is specified in coordinates relative to
  * the receiver, to display relative coordinates.
  * <p>
+ * NOTE: To properly map a rectangle or a corner of a rectangle on a right-to-left platform, use
+ * {@link Display#map(Control, Control, Rectangle)}.
+ * </p>
+ * 
  * @param point the point to be translated (must not be null)
  * @return the translated coordinates
  *
