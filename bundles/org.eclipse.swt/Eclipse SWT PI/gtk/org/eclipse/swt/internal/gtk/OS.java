@@ -668,6 +668,8 @@ public class OS extends C {
 			initCairo  = GTK_VERSION >= VERSION(2, 17, 0);
 		}
 		INIT_CAIRO = initCairo;
+		
+		System.setProperty("org.eclipse.swt.internal.gtk.version", (GTK3 ? "3" : "2") + "; " + GTK_VERSION);
 	}
 
 protected static byte [] ascii (String name) {
