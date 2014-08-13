@@ -2703,12 +2703,17 @@ void setToolTipText (long /*int*/ rootWidget, long /*int*/ tipWidget, String str
 }
 @Override
 Point getWindowOrigin () {
-	/*
-	 * Need to overide this since the handle attribute will not be intialized
-	 * if the shell is not made visible. So need to get the location from the shell handle
-	 * getLocation() method in shell will provide us the location of the control
-	 */
-
-	return getLocation();
+	if (!mapped) {
+		/*
+		 * Special case: The handle attributes are not initialized until the
+		 * shell is made visible, so gdk_window_get_origin () will return {0, 0}.
+		 * 
+		 * Once the shell is realized, gtk_window_get_position () includes
+		 * window trims etc. from the window manager. That's why getLocation ()
+		 * is not safe to use after the shell has been made visible.
+		 */
+		return getLocation ();
+	}
+	return super.getWindowOrigin( );
 }
 }
