@@ -5514,9 +5514,9 @@ long /*int*/ windowProc (long /*int*/ handle, long /*int*/ arg0, long /*int*/ us
 }
 
 /**
- * Gets the coordinates for the top left position of the control with respect to parent
+ * Gets the position of the top left corner of the control in root window (display) coordinates.
  *
- * @return Coordinates for top left position of the control
+ * @return the origin
  */
 Point getWindowOrigin () {
 	int [] x = new int [1];
