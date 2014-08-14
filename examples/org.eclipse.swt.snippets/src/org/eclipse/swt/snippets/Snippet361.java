@@ -197,12 +197,12 @@ public class Snippet361 {
 		String string = combo.getText();
 		if (string.equals("image width")) return image.getWidth(canvas);
 		if (string.equals("image height")) return image.getHeight(canvas);
-		if (string.equals("100")) return (double) 100;
-		if (string.equals("200")) return (double) 200;
+		if (string.equals("100")) return 100;
+		if (string.equals("200")) return 200;
 		if (string.equals("Pi")) return Math.PI;
-		if (string.equals("Pi/2")) return Math.PI / (double) 2;
-		if (string.equals("Pi/4")) return Math.PI / (double) 4;
-		if (string.equals("Pi/8")) return Math.PI / (double) 8;
+		if (string.equals("Pi/2")) return Math.PI / 2;
+		if (string.equals("Pi/4")) return Math.PI / 4;
+		if (string.equals("Pi/8")) return Math.PI / 8;
 		/* Allow user-entered numbers. */
 		Double d = (double) 0;
 		try {
