@@ -11,6 +11,7 @@ package org.eclipse.swt.snippets;
  */
 import java.lang.reflect.*;
 import java.io.*;
+
 import org.eclipse.swt.SWT;
 
 public class SnippetLauncher {
@@ -34,8 +35,9 @@ public class SnippetLauncher {
 				System.out.println("\n" + clazz.getName());
 				if (hasSource) {
 					File sourceFile = new File(sourceDir, className + ".java");
+					FileReader reader = null;
 					try {
-						FileReader reader = new FileReader(sourceFile);
+						reader = new FileReader(sourceFile);
 						char [] buffer = new char [(int)sourceFile.length()];
 						reader.read(buffer);
 						String source = String.valueOf(buffer);
@@ -68,7 +70,16 @@ public class SnippetLauncher {
 							System.out.println("...skipping " + platform + " example...");
 							continue;
 						}
-					} catch (Exception e) {}
+					} catch (Exception e) {
+					} finally {
+						if (reader != null) {
+							try {
+								reader.close();
+							} catch (IOException e) {
+								// Ignore
+							}
+						}
+					}
 				}
 				Method method = null;
 				String [] param = new String [0];
