@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2013 IBM Corporation and others. All rights reserved.
+ * Copyright (c) 2000, 2014 IBM Corporation and others. All rights reserved.
  * The contents of this file are made available under the terms
  * of the GNU Lesser General Public License (LGPL) Version 2.1 that
  * accompanies this distribution (lgpl-v21.txt).  The LGPL is also
@@ -671,7 +671,8 @@ public class OS extends C {
 		}
 		INIT_CAIRO = initCairo;
 		
-		System.setProperty("org.eclipse.swt.internal.gtk.version", (GTK3 ? "3" : "2") + "; " + GTK_VERSION);
+		System.setProperty("org.eclipse.swt.internal.gtk.version",
+				(GTK_VERSION >>> 16) + "." + (GTK_VERSION >>> 8 & 0xFF) + "." + (GTK_VERSION & 0xFF));
 	}
 
 protected static byte [] ascii (String name) {
