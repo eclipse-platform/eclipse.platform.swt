@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2012 IBM Corporation and others.
+ * Copyright (c) 2000, 2014 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -57,6 +57,9 @@ public class Pattern extends Resource {
  * graphics subsystem which may not be available on some
  * platforms.
  * </p>
+ * <p>
+ * You must dispose the pattern when it is no longer required. 
+ * </p>
  * 
  * @param device the device on which to allocate the pattern
  * @param image the image that the pattern will draw
@@ -102,6 +105,9 @@ public Pattern(Device device, Image image) {
  * graphics subsystem which may not be available on some
  * platforms.
  * </p>
+ * <p>
+ * You must dispose the pattern when it is no longer required. 
+ * </p>
  * 
  * @param device the device on which to allocate the pattern
  * @param x1 the x coordinate of the starting corner of the gradient
@@ -137,6 +143,9 @@ public Pattern(Device device, float x1, float y1, float x2, float y2, Color colo
  * This operation requires the operating system's advanced
  * graphics subsystem which may not be available on some
  * platforms.
+ * </p>
+ * <p>
+ * You must dispose the pattern when it is no longer required. 
  * </p>
  * 
  * @param device the device on which to allocate the pattern

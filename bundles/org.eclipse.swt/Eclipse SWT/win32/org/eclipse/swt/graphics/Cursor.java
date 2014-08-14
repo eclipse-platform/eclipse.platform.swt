@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2012 IBM Corporation and others.
+ * Copyright (c) 2000, 2014 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -11,8 +11,8 @@
 package org.eclipse.swt.graphics;
 
 
-import org.eclipse.swt.internal.win32.*;
 import org.eclipse.swt.*;
+import org.eclipse.swt.internal.win32.*;
 
 /**
  * Instances of this class manage operating system resources that
@@ -188,6 +188,7 @@ Cursor(Device device) {
  * @see SWT#CURSOR_IBEAM
  * @see SWT#CURSOR_NO
  * @see SWT#CURSOR_HAND
+ * @see #dispose()
  */
 public Cursor(Device device, int style) {
 	super(device);
@@ -267,6 +268,8 @@ public Cursor(Device device, int style) {
  * @exception SWTError <ul>
  *    <li>ERROR_NO_HANDLES - if a handle could not be obtained for cursor creation</li>
  * </ul>
+ * 
+ * @see #dispose()
  */
 public Cursor(Device device, ImageData source, ImageData mask, int hotspotX, int hotspotY) {
 	super(device);
@@ -326,6 +329,8 @@ public Cursor(Device device, ImageData source, ImageData mask, int hotspotX, int
  * @exception SWTError <ul>
  *    <li>ERROR_NO_HANDLES - if a handle could not be obtained for cursor creation</li>
  * </ul>
+ * 
+ * @see #dispose()
  * 
  * @since 3.0
  */

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2012 IBM Corporation and others.
+ * Copyright (c) 2000, 2014 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -11,8 +11,8 @@
 package org.eclipse.swt.graphics;
 
 
-import org.eclipse.swt.internal.win32.*;
 import org.eclipse.swt.*;
+import org.eclipse.swt.internal.win32.*;
 
 /**
  * Instances of this class represent areas of an x-y coordinate
@@ -45,10 +45,15 @@ public final class Region extends Resource {
 
 /**
  * Constructs a new empty region.
+ * <p>
+ * You must dispose the region when it is no longer required. 
+ * </p>
  * 
  * @exception SWTError <ul>
  *    <li>ERROR_NO_HANDLES if a handle could not be obtained for region creation</li>
  * </ul>
+ * 
+ * @see #dispose()
  */
 public Region () {
 	this(null);
@@ -69,7 +74,7 @@ public Region () {
  *    <li>ERROR_NO_HANDLES if a handle could not be obtained for region creation</li>
  * </ul>
  *
- * @see #dispose
+ * @see #dispose()
  * 
  * @since 3.0
  */

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2012 IBM Corporation and others.
+ * Copyright (c) 2000, 2014 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -11,10 +11,10 @@
 package org.eclipse.swt.graphics;
 
 
+import org.eclipse.swt.*;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.gdip.*;
 import org.eclipse.swt.internal.win32.*;
-import org.eclipse.swt.*;
 
 /**
  * Class <code>GC</code> is where all of the drawing capabilities that are 
@@ -126,6 +126,7 @@ GC() {
  *    <li>ERROR_NO_HANDLES if a handle could not be obtained for GC creation</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS if not called from the thread that created the drawable</li>
  * </ul>
+ * @see #dispose()
  */
 public GC(Drawable drawable) {
 	this(drawable, SWT.NONE);
@@ -155,7 +156,9 @@ public GC(Drawable drawable) {
  *    <li>ERROR_NO_HANDLES if a handle could not be obtained for GC creation</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS if not called from the thread that created the drawable</li>
  * </ul>
- *  
+ * 
+ * @see #dispose()
+ * 
  * @since 2.1.2
  */
 public GC(Drawable drawable, int style) {

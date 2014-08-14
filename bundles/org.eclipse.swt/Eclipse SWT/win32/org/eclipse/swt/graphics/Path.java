@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2012 IBM Corporation and others.
+ * Copyright (c) 2000, 2014 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -60,6 +60,9 @@ public class Path extends Resource {
  * graphics subsystem which may not be available on some
  * platforms.
  * </p>
+ * <p>
+ * You must dispose the path when it is no longer required. 
+ * </p>
  * 
  * @param device the device on which to allocate the path
  * 
@@ -94,6 +97,9 @@ public Path (Device device) {
  * graphics subsystem which may not be available on some
  * platforms.
  * </p>
+ * <p>
+ * You must dispose the path when it is no longer required. 
+ * </p>
  * 
  * @param device the device on which to allocate the path
  * @param path the path to make a copy
@@ -126,11 +132,14 @@ public Path (Device device, Path path, float flatness) {
 }
 
 /**
- * Constructs a new Path with the specifed PathData.
+ * Constructs a new Path with the specified PathData.
  * <p>
  * This operation requires the operating system's advanced
  * graphics subsystem which may not be available on some
  * platforms.
+ * </p>
+ * <p>
+ * You must dispose the path when it is no longer required. 
  * </p>
  * 
  * @param device the device on which to allocate the path

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2012 IBM Corporation and others.
+ * Copyright (c) 2000, 2014 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -11,8 +11,8 @@
 package org.eclipse.swt.graphics;
 
 
-import org.eclipse.swt.internal.win32.*;
 import org.eclipse.swt.*;
+import org.eclipse.swt.internal.win32.*;
 
 /**
  * Instances of this class manage operating system resources that
@@ -70,6 +70,8 @@ Font(Device device) {
  * @exception SWTError <ul>
  *    <li>ERROR_NO_HANDLES - if a font could not be created from the given font data</li>
  * </ul>
+ * 
+ * @see #dispose()
  */
 public Font(Device device, FontData fd) {
 	super(device);
@@ -97,6 +99,8 @@ public Font(Device device, FontData fd) {
  * @exception SWTError <ul>
  *    <li>ERROR_NO_HANDLES - if a font could not be created from the given font data</li>
  * </ul>
+ * 
+ * @see #dispose()
  * 
  * @since 2.1
  */
@@ -132,6 +136,8 @@ public Font(Device device, FontData[] fds) {
  * @exception SWTError <ul>
  *    <li>ERROR_NO_HANDLES - if a font could not be created from the given arguments</li>
  * </ul>
+ * 
+ * @see #dispose()
  */
 public Font(Device device, String name, int height, int style) {
 	super(device);
