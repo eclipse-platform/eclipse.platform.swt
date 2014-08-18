@@ -12,10 +12,11 @@ package org.eclipse.swt.widgets;
 
 
 import org.eclipse.swt.*;
-import org.eclipse.swt.internal.*;
-import org.eclipse.swt.internal.gtk.*;
+import org.eclipse.swt.events.ShellListener;
 import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.events.*;
+import org.eclipse.swt.internal.Converter;
+import org.eclipse.swt.internal.cairo.Cairo;
+import org.eclipse.swt.internal.gtk.*;
 
 /**
  * Instances of this class represent the "windows"
@@ -125,6 +126,7 @@ public class Shell extends Decorations {
 	Control lastActive;
 	ToolTip [] toolTips;
 	boolean ignoreFocusOut;
+	Region originalRegion;
 
 	static final int MAXIMUM_TRIM = 128;
 	static final int BORDER = 3;
@@ -1142,6 +1144,7 @@ public boolean getVisible () {
 public Region getRegion () {
 	/* This method is needed for @since 3.0 Javadoc */
 	checkWidget ();
+	if (originalRegion != null) return originalRegion;
 	return region;
 }
 
@@ -2115,7 +2118,55 @@ public void setModified (boolean modified) {
 public void setRegion (Region region) {
 	checkWidget ();
 	if ((style & SWT.NO_TRIM) == 0) return;
+	
+	Region regionToDispose = null;
+	if ((style & SWT.RIGHT_TO_LEFT) != 0) {
+		if (originalRegion != null) regionToDispose = this.region;
+		originalRegion = region;
+		region = mirrorRegion (region);
+	} else {
+		originalRegion = null;
+	}
+	if (region != null) {
+		Rectangle bounds = region.getBounds();
+		setSize(bounds.x + bounds.width, bounds.y + bounds.height);
+	}
 	super.setRegion (region);
+	if (regionToDispose != null) regionToDispose.dispose();
+}
+
+//copied from Region:
+static void gdk_region_get_rectangles(long /*int*/ region, long /*int*/[] rectangles, int[] n_rectangles) {
+	if (!OS.GTK3) {
+		OS.gdk_region_get_rectangles (region, rectangles, n_rectangles);
+		return;
+	}
+	int num = Cairo.cairo_region_num_rectangles (region);
+	if (n_rectangles != null) n_rectangles[0] = num;
+	rectangles[0] = OS.g_malloc(GdkRectangle.sizeof * num);
+	for (int n = 0; n < num; n++) {
+		Cairo.cairo_region_get_rectangle (region, n, rectangles[0] + (n * GdkRectangle.sizeof));
+	}
+}
+
+static Region mirrorRegion(Region region) {
+	if (region == null) return null;
+	
+	Region mirrored = new Region(region.getDevice());
+
+	long /*int*/ rgn = region.handle;
+	int[] nRects = new int[1];
+	long /*int*/[] rects = new long /*int*/[1];
+	gdk_region_get_rectangles(rgn, rects, nRects);
+	Rectangle bounds = region.getBounds();
+	GdkRectangle rect = new GdkRectangle();
+	for (int i=0; i<nRects[0]; i++) {
+		OS.memmove(rect, rects[0] + (i * GdkRectangle.sizeof), GdkRectangle.sizeof);
+		rect.x = bounds.x + bounds.width - rect.x - rect.width;
+		OS.gdk_region_union_with_rect(mirrored.handle, rect);
+	}
+	if (rects[0] != 0) OS.g_free(rects[0]);
+	return mirrored;
 }
 
 /*
@@ -2548,6 +2599,8 @@ void releaseChildren (boolean destroy) {
 
 @Override
 void releaseWidget () {
+	Region regionToDispose = null;
+	if (originalRegion != null) regionToDispose  = region;
 	super.releaseWidget ();
 	destroyAccelGroup ();
 	display.clearModal (this);
@@ -2561,6 +2614,9 @@ void releaseWidget () {
 		OS.gdk_window_remove_filter(window, display.filterProc, shellHandle);
 	}
 	lastActive = null;
+	if (regionToDispose != null) {
+		regionToDispose.dispose();
+	}
 }
 
 void setToolTipText (long /*int*/ tipWidget, String string) {
@@ -2706,11 +2762,11 @@ Point getWindowOrigin () {
 	if (!mapped) {
 		/*
 		 * Special case: The handle attributes are not initialized until the
-		 * shell is made visible, so gdk_window_get_origin () will return {0, 0}.
+		 * shell is made visible, so gdk_window_get_origin () always returns {0, 0}.
 		 * 
 		 * Once the shell is realized, gtk_window_get_position () includes
 		 * window trims etc. from the window manager. That's why getLocation ()
-		 * is not safe to use after the shell has been made visible.
+		 * is not safe to use for coordinate mappings after the shell has been made visible.
 		 */
 		return getLocation ();
 	}
