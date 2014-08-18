@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2006 IBM Corporation and others.
+ * Copyright (c) 2000, 2014 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -149,6 +149,21 @@ public void test_addModifyListenerLorg_eclipse_swt_events_ModifyListener() {
 	combo.setText("new text");	
 	assertTrue("setText does not send event", listenerCalled);
 
+	combo.removeAll();
+	combo.add("one");
+	combo.select(0);
+	listenerCalled = false;	
+	combo.remove(0);
+	assertTrue("remove(int index) for last item:", listenerCalled);
+
+	combo.removeAll();
+	combo.add("one");
+	combo.add("two");
+	combo.select(0);
+	listenerCalled = false;	
+	combo.remove(0, 1);
+	assertTrue("remove(int start, int end) for all items:", listenerCalled);
+	
 	listenerCalled = false;	
 	combo.removeModifyListener(listener);
 	// cause to call the listener. 
@@ -609,6 +624,18 @@ public void test_removeII() {
 	catch (IllegalArgumentException e) {
 	}
 
+	combo.removeAll();
+	combo.add("one");
+	combo.select(0);
+	combo.remove(0);
+	assertEquals("", combo.getText());
+
+	combo.removeAll();
+	combo.add("one");
+	combo.add("two");
+	combo.select(0);
+	combo.remove(0, 1);
+	assertEquals("", combo.getText());
 }
 
 public void test_removeLjava_lang_String() {

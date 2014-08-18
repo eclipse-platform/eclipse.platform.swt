@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2013 IBM Corporation and others.
+ * Copyright (c) 2000, 2014 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -1556,21 +1556,18 @@ void remove (int index, boolean notify) {
 		if (0 <= index && index < count) error (SWT.ERROR_ITEM_NOT_REMOVED);
 		error (SWT.ERROR_INVALID_RANGE);
 	}
+	else if (code == 0) {
+		/*
+		 * Bug in Windows, when combo had exactly one item, that was
+		 * currently selected & is removed, the combo box does not clear the
+		 * text area. The fix is to reset contents of the Combo. Bug#440671
+		 */
+		OS.SendMessage (handle, OS.CB_RESETCONTENT, 0, 0);
+	}
 	if ((style & SWT.H_SCROLL) != 0) setScrollWidth (buffer, true);
 	if (notify && length != OS.GetWindowTextLength (handle)) {
 		sendEvent (SWT.Modify);
 		if (isDisposed ()) return;
-	}
-	/*
-	* Bug in Windows.  When the combo box is read only
-	* with exactly one item that is currently selected
-	* and that item is removed, the combo box does not
-	* redraw to clear the text area.  The fix is to
-	* force a redraw.
-	*/
-	if ((style & SWT.READ_ONLY) != 0) {		
-		int count = (int)/*64*/OS.SendMessage (handle, OS.CB_GETCOUNT, 0, 0);
-		if (count == 0) OS.InvalidateRect (handle, null, true);
 	}
 }
 
@@ -1619,7 +1616,17 @@ public void remove (int start, int end) {
 			if (result == OS.CB_ERR) break;
 		}
 		int result = (int)/*64*/OS.SendMessage (handle, OS.CB_DELETESTRING, start, 0);
-		if (result == OS.CB_ERR) error (SWT.ERROR_ITEM_NOT_REMOVED);
+		if (result == OS.CB_ERR) {
+			error (SWT.ERROR_ITEM_NOT_REMOVED);
+		}
+		else if (result == 0) {
+			/*
+			 * Bug in Windows, when combo had exactly one item, that was
+			 * currently selected & is removed, the combo box does not clear the
+			 * text area. The fix is to reset contents of the Combo. Bug#440671
+			 */
+			OS.SendMessage (handle, OS.CB_RESETCONTENT, 0, 0);
+		}
 		if ((style & SWT.H_SCROLL) != 0) {
 			OS.DrawText (hDC, buffer, -1, rect, flags);
 			newWidth = Math.max (newWidth, rect.right - rect.left);
@@ -1633,17 +1640,6 @@ public void remove (int start, int end) {
 	if (textLength != OS.GetWindowTextLength (handle)) {
 		sendEvent (SWT.Modify);
 		if (isDisposed ()) return;
-	}
-	/*
-	* Bug in Windows.  When the combo box is read only
-	* with exactly one item that is currently selected
-	* and that item is removed, the combo box does not
-	* redraw to clear the text area.  The fix is to
-	* force a redraw.
-	*/
-	if ((style & SWT.READ_ONLY) != 0) {		
-		count = (int)/*64*/OS.SendMessage (handle, OS.CB_GETCOUNT, 0, 0);
-		if (count == 0) OS.InvalidateRect (handle, null, true);
 	}
 }
 
