@@ -2119,6 +2119,10 @@ public void setRegion (Region region) {
 	checkWidget ();
 	if ((style & SWT.NO_TRIM) == 0) return;
 	
+	if (region != null) {
+		Rectangle bounds = region.getBounds ();
+		setSize (bounds.x + bounds.width, bounds.y + bounds.height);
+	}
 	Region regionToDispose = null;
 	if ((style & SWT.RIGHT_TO_LEFT) != 0) {
 		if (originalRegion != null) regionToDispose = this.region;
@@ -2126,10 +2130,6 @@ public void setRegion (Region region) {
 		region = mirrorRegion (region);
 	} else {
 		originalRegion = null;
-	}
-	if (region != null) {
-		Rectangle bounds = region.getBounds();
-		setSize(bounds.x + bounds.width, bounds.y + bounds.height);
 	}
 	super.setRegion (region);
 	if (regionToDispose != null) regionToDispose.dispose();
@@ -2149,23 +2149,23 @@ static void gdk_region_get_rectangles(long /*int*/ region, long /*int*/[] rectan
 	}
 }
 
-static Region mirrorRegion(Region region) {
+static Region mirrorRegion (Region region) {
 	if (region == null) return null;
 	
-	Region mirrored = new Region(region.getDevice());
+	Region mirrored = new Region (region.getDevice ());
 
 	long /*int*/ rgn = region.handle;
-	int[] nRects = new int[1];
-	long /*int*/[] rects = new long /*int*/[1];
-	gdk_region_get_rectangles(rgn, rects, nRects);
-	Rectangle bounds = region.getBounds();
-	GdkRectangle rect = new GdkRectangle();
-	for (int i=0; i<nRects[0]; i++) {
-		OS.memmove(rect, rects[0] + (i * GdkRectangle.sizeof), GdkRectangle.sizeof);
+	int [] nRects = new int [1];
+	long /*int*/ [] rects = new long /*int*/ [1];
+	gdk_region_get_rectangles (rgn, rects, nRects);
+	Rectangle bounds = region.getBounds ();
+	GdkRectangle rect = new GdkRectangle ();
+	for (int i = 0; i < nRects [0]; i++) {
+		OS.memmove (rect, rects[0] + (i * GdkRectangle.sizeof), GdkRectangle.sizeof);
 		rect.x = bounds.x + bounds.width - rect.x - rect.width;
-		OS.gdk_region_union_with_rect(mirrored.handle, rect);
+		OS.gdk_region_union_with_rect (mirrored.handle, rect);
 	}
-	if (rects[0] != 0) OS.g_free(rects[0]);
+	if (rects [0] != 0) OS.g_free (rects [0]);
 	return mirrored;
 }
 
