@@ -11,10 +11,10 @@
 package org.eclipse.swt.widgets;
 
 
-import org.eclipse.swt.internal.win32.*;
 import org.eclipse.swt.*;
-import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.events.*;
+import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.internal.win32.*;
 
 /**
  * Instances of this class represent the "windows"
@@ -1726,6 +1726,11 @@ void setParent () {
  * default shape of the shell is restored.  The shell
  * must be created with the style SWT.NO_TRIM in order
  * to specify a region.
+ * <p>
+ * NOTE: This method also sets the size of the shell. Clients should
+ * not call {@link #setSize} or {@link #setBounds} on this shell.
+ * Furthermore, the passed region should not be modified any more.
+ * </p>
  *
  * @param region the region that defines the shape of the shell (or null)
  *
@@ -1738,11 +1743,14 @@ void setParent () {
  * </ul>
  *
  * @since 3.0
- *
  */
 public void setRegion (Region region) {
 	checkWidget ();
 	if ((style & SWT.NO_TRIM) == 0) return;
+	if (region != null) {
+		Rectangle bounds = region.getBounds ();
+		setSize (bounds.x + bounds.width, bounds.y + bounds.height);
+	}
 	super.setRegion (region);
 }
 
