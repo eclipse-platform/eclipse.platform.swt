@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2014 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -57,6 +57,7 @@ public class Snippet219 {
 		shell.setRegion(region);
 
 		Listener l = new Listener() {
+			/** The x/y of the MouseDown, relative to top-left of the shell. */
 			int startX, startY;
 			@Override
 			public void handleEvent(Event e)  {
@@ -64,8 +65,10 @@ public class Snippet219 {
 					shell.dispose();
 				}
 				if (e.type == SWT.MouseDown && e.button == 1) {
-					startX = e.x;
-					startY = e.y; 
+					Point p = shell.toDisplay(e.x, e.y);
+					Point loc = shell.getLocation();
+					startX = p.x - loc.x;
+					startY = p.y - loc.y;
 				}
 				if (e.type == SWT.MouseMove && (e.stateMask & SWT.BUTTON1) != 0) {
 					Point p = shell.toDisplay(e.x, e.y);
@@ -83,7 +86,6 @@ public class Snippet219 {
 		shell.addListener(SWT.MouseMove, l);
 		shell.addListener(SWT.Paint, l);
 
-		shell.setSize(imageData.x + imageData.width, imageData.y + imageData.height);
 		shell.open ();
 		while (!shell.isDisposed ()) {
 			if (!display.readAndDispatch ()) display.sleep ();
