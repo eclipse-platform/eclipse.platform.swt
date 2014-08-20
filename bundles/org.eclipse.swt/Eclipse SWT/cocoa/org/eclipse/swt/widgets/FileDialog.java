@@ -11,6 +11,8 @@
 package org.eclipse.swt.widgets;
 
  
+import java.util.StringTokenizer;
+
 import org.eclipse.swt.*;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.cocoa.*;
@@ -370,19 +372,27 @@ void sendSelection (long /*int*/ id, long /*int*/ sel, long /*int*/ arg) {
 	}
 }
 
-void setAllowedFileType (String fileType) {
-	if (fileType == null) return;
-	if (fileType.equals("*") || fileType.equals("*.*")) {
-		panel.setAllowedFileTypes(null);
-		return;
-	}
-	if (fileType.startsWith("*.")) {
-		fileType = fileType.substring(2);
-	} else if (fileType.startsWith(".")) {
-		fileType = fileType.substring(1);
-	}
+void setAllowedFileType (String fileTypes) {
+	if (fileTypes == null) return;
+	
+	StringTokenizer fileTypesToken = new StringTokenizer(fileTypes, String.valueOf(EXTENSION_SEPARATOR));
 	NSMutableArray allowedFileTypes = NSMutableArray.arrayWithCapacity(1);
-	allowedFileTypes.addObject(NSString.stringWith(fileType));
+
+	while(fileTypesToken.hasMoreTokens()) {
+		String fileType = fileTypesToken.nextToken();
+		
+		if (fileType.equals("*") || fileType.equals("*.*")) {
+			panel.setAllowedFileTypes(null);
+			return;
+		}
+		if (fileType.startsWith("*.")) {
+			fileType = fileType.substring(2);
+		} else if (fileType.startsWith(".")) {
+			fileType = fileType.substring(1);
+		}
+		allowedFileTypes.addObject(NSString.stringWith(fileType));
+	}
+	
 	panel.setAllowedFileTypes(allowedFileTypes);
 }
 
