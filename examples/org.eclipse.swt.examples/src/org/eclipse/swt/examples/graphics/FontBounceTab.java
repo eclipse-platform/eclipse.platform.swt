@@ -138,8 +138,6 @@ public void paint(GC gc, int width, int height) {
 static String getPlatformFontFace(int index) {	
 	if(SWT.getPlatform() == "win32") {
 		return new String [] {"Arial", "Impact", "Times", "Verdana"} [index];	
-	} else if (SWT.getPlatform() == "motif") {
-		return new String [] {"URW Chancery L", "URW Gothic L", "Times", "qub"} [index];		
 	} else if (SWT.getPlatform() == "gtk") {
 		return new String [] {"URW Chancery L", "Baekmuk Batang", "Baekmuk Headline", "KacsTitleL"} [index];
 	} else if (SWT.getPlatform() == "carbon") {

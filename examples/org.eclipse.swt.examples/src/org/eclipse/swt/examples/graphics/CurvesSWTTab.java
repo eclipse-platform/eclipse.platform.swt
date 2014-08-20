@@ -380,8 +380,6 @@ public void paint(GC gc, int width, int height) {
 static String getPlatformFont() {
 	if(SWT.getPlatform() == "win32") {
 		return "Arial";	
-	} else if (SWT.getPlatform() == "motif") {
-		return "Helvetica";		
 	} else if (SWT.getPlatform() == "gtk") {
 		return "Baekmuk Batang";		
 	} else if (SWT.getPlatform() == "carbon") {

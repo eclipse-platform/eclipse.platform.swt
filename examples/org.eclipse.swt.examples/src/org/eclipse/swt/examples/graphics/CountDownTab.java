@@ -256,8 +256,6 @@ public class CountDownTab extends AnimatedGraphicsTab {
 	static String getPlatformFontFace(int index) {
 		if (SWT.getPlatform() == "win32") {
 			return new String[] { "Courier", "Impact" }[index];
-		} else if (SWT.getPlatform() == "motif") {
-			return new String[] { "Courier", "URW Gothic L" }[index];
 		} else if (SWT.getPlatform() == "gtk") {
 			return new String[] { "Courier", "Baekmuk Headline" }[index];
 		} else if (SWT.getPlatform() == "carbon") {

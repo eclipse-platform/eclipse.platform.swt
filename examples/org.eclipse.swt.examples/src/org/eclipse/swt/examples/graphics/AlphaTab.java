@@ -227,8 +227,6 @@ public class AlphaTab extends AnimatedGraphicsTab {
 	static Font createFont(Device device, int points, int style) {		
 		if(SWT.getPlatform() == "win32") {
 			return new Font(device, "Verdana", points, style);	
-		} else if (SWT.getPlatform() == "motif") {
-			return new Font(device, "Times", points, style);		
 		} else if (SWT.getPlatform() == "gtk") {
 			return new Font(device, "Baekmuk Batang", points, style);		
 		} else if (SWT.getPlatform() == "carbon") {

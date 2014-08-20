@@ -156,13 +156,12 @@ public class StyledText extends Canvas {
 	Caret defaultCaret = null;
 	boolean updateCaretDirection = true;
 
-	final static boolean IS_CARBON, IS_GTK, IS_MOTIF;
+	final static boolean IS_CARBON, IS_GTK;
 	final static boolean DOUBLE_BUFFER;
 	static {
 		String platform = SWT.getPlatform();
 		IS_CARBON = "carbon".equals(platform);
 		IS_GTK = "gtk".equals(platform);
-		IS_MOTIF = "motif".equals(platform);
 		DOUBLE_BUFFER = !IS_CARBON;
 	}
 
@@ -5062,13 +5061,6 @@ void handleKey(Event event) {
 			// produces characters on the mac.
 			ignore = (event.stateMask ^ SWT.COMMAND) == 0 ||
 					(event.stateMask ^ (SWT.COMMAND | SWT.SHIFT)) == 0;
-		} else if (IS_MOTIF) {
-			// Ignore accelerator key combinations (we do not want to 
-			// insert a character in the text in this instance). Do not  
-			// ignore ALT combinations since this key sequence
-			// produces characters on motif.
-			ignore = (event.stateMask ^ SWT.CTRL) == 0 ||
-					(event.stateMask ^ (SWT.CTRL | SWT.SHIFT)) == 0;
 		} else {
 			// Ignore accelerator key combinations (we do not want to 
 			// insert a character in the text in this instance). Don't  
@@ -6796,7 +6788,7 @@ public void setCaretOffset(int offset) {
  * @see org.eclipse.swt.dnd.Clipboard#setContents
  */
 void setClipboardContent(int start, int length, int clipboardType) throws SWTError {
-	if (clipboardType == DND.SELECTION_CLIPBOARD && !(IS_MOTIF || IS_GTK)) return;
+	if (clipboardType == DND.SELECTION_CLIPBOARD && !IS_GTK) return;
 	TextTransfer plainTextTransfer = TextTransfer.getInstance();
 	TextWriter plainTextWriter = new TextWriter(start, length);
 	String plainText = getPlatformDelimitedText(plainTextWriter);
@@ -7023,7 +7015,6 @@ void setHorizontalScrollBar() {
 		Rectangle clientArea = getClientArea();
 		// only set the real values if the scroll bar can be used 
 		// (ie. because the thumb size is less than the scroll maximum)
-		// avoids flashing on Motif, fixes 1G7RE1J and 1G5SE92
 		if (clientArea.width < lineCache.getWidth()) {
 			horizontalBar.setValues(
 				horizontalBar.getSelection(),
@@ -7172,7 +7163,6 @@ void setScrollBars() {
 		
 		// only set the real values if the scroll bar can be used 
 		// (ie. because the thumb size is less than the scroll maximum)
-		// avoids flashing on Motif, fixes 1G7RE1J and 1G5SE92
 		if (clientArea.height < maximum) {
 			verticalBar.setValues(
 				verticalBar.getSelection(),
