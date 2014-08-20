@@ -39,7 +39,6 @@
 	<property name="src_gtk" value="${src_common} 'bundles/org.eclipse.swt/Eclipse SWT PI/gtk/library' 'bundles/org.eclipse.swt/Eclipse SWT AWT/gtk/library' 'bundles/org.eclipse.swt/Eclipse SWT OpenGL/glx/library' 'bundles/org.eclipse.swt/Eclipse SWT PI/cairo/library' 'bundles/org.eclipse.swt/Eclipse SWT Program/gnome/library' 'bundles/org.eclipse.swt/Eclipse SWT Program/cde/library' 'bundles/org.eclipse.swt/Eclipse SWT WebKit/gtk/library' "/>
 	<property name="src_cocoa" value="${src_common} 'bundles/org.eclipse.swt/Eclipse SWT PI/cocoa/library' 'bundles/org.eclipse.swt/Eclipse SWT AWT/cocoa/library'"/>
 	<property name="src_carbon" value="${src_common} 'bundles/org.eclipse.swt/Eclipse SWT PI/carbon/library' 'bundles/org.eclipse.swt/Eclipse SWT OpenGL/carbon/library'"/>
-	<property name="src_motif" value="${src_common} 'bundles/org.eclipse.swt/Eclipse SWT PI/motif/library' 'bundles/org.eclipse.swt/Eclipse SWT PI/motif_gtk/library'  'bundles/org.eclipse.swt/Eclipse SWT AWT/motif/library' 'bundles/org.eclipse.swt/Eclipse SWT OpenGL/glx/library' 'bundles/org.eclipse.swt/Eclipse SWT PI/cairo/library' 'bundles/org.eclipse.swt/Eclipse SWT Program/gnome/library' 'bundles/org.eclipse.swt/Eclipse SWT Program/cde/library'"/>
 	<property name="src_wpf" value="${src_common} 'bundles/org.eclipse.swt/Eclipse SWT PI/wpf/library' 'bundles/org.eclipse.swt/Eclipse SWT PI/wpf_win32/library'"/>
 	<property name="src_photon" value="${src_common} 'bundles/org.eclipse.swt/Eclipse SWT PI/photon/library'"/>
 	
@@ -117,23 +116,6 @@
 			<param name="library_count" value="8"/>
 			<param name="fragment" value="org.eclipse.swt.gtk.solaris.x86"/>
 		</antcall>
-		<!-- Motif is not being built
-		antcall target="check_fragment_libraries">
-			<param name="library_count" value="9"/>
-			<param name="fragment" value="org.eclipse.swt.motif.linux.x86"/>
-		</antcall>
-		<antcall target="check_fragment_libraries">
-			<param name="library_count" value="4"/>
-			<param name="fragment" value="org.eclipse.swt.motif.aix.ppc"/>
-		</antcall>
-		<antcall target="check_fragment_libraries">
-			<param name="library_count" value="3"/>
-			<param name="fragment" value="org.eclipse.swt.motif.hpux.ia64_32"/>
-		</antcall>
-		<antcall target="check_fragment_libraries">
-			<param name="library_count" value="5"/>
-			<param name="fragment" value="org.eclipse.swt.motif.solaris.sparc"/>
-		</antcall-->
 		<!-- Photon is not being built
 		<antcall target="check_fragment_libraries">
 			<param name="library_count" value="1"/>
@@ -175,11 +157,6 @@
 			<exclude name="**/.git/**"/>
 			<exclude name="**/org.eclipse.swt.carbon.macosx/**"/>
 			<exclude name="**/org.eclipse.swt.gtk.linux.ia64/**"/>
-			<exclude name="**/org.eclipse.swt.motif.aix.ppc/**"/>
-			<exclude name="**/org.eclipse.swt.motif.hpux.ia64_32/**"/>
-			<exclude name="**/org.eclipse.swt.motif.hpux.PA_RISC/**"/>
-			<exclude name="**/org.eclipse.swt.motif.linux.x86/**"/>
-			<exclude name="**/org.eclipse.swt.motif.solaris.sparc/**"/>
 			<exclude name="**/org.eclipse.swt.photon.qnx.x86/**"/>
 			<exclude name="**/org.eclipse.swt.wpf.win32.x86/**"/>
 		</fileset>
@@ -189,11 +166,6 @@
 			<exclude name="**/.git/**"/>
 			<exclude name="**/org.eclipse.swt.carbon.macosx/**"/>
 			<exclude name="**/org.eclipse.swt.gtk.linux.ia64/**"/>
-			<exclude name="**/org.eclipse.swt.motif.aix.ppc/**"/>
-			<exclude name="**/org.eclipse.swt.motif.hpux.ia64_32/**"/>
-			<exclude name="**/org.eclipse.swt.motif.hpux.PA_RISC/**"/>
-			<exclude name="**/org.eclipse.swt.motif.linux.x86/**"/>
-			<exclude name="**/org.eclipse.swt.motif.solaris.sparc/**"/>
 			<exclude name="**/org.eclipse.swt.photon.qnx.x86/**"/>
 			<exclude name="**/org.eclipse.swt.wpf.win32.x86/**"/>
 		</fileset>
@@ -514,11 +486,6 @@
 		<antcall target="build_classes">
 			<param name="cp" value=".classpath_win32"/>
 		</antcall>
-		<!-- Not building motif
-		<antcall target="build_classes">
-			<param name="cp" value=".classpath_motif"/>
-		</antcall>
-		-->
 		<!-- Not building Photon
 		<antcall target="build_classes">
 			<param name="cp" value=".classpath_photon"/>
@@ -825,11 +792,6 @@
 			<exclude name="**/.git/**"/>
 			<exclude name="**/org.eclipse.swt.carbon.macosx/**"/>
 			<exclude name="**/org.eclipse.swt.gtk.linux.ia64/**"/>
-			<exclude name="**/org.eclipse.swt.motif.aix.ppc/**"/>
-			<exclude name="**/org.eclipse.swt.motif.hpux.ia64_32/**"/>
-			<exclude name="**/org.eclipse.swt.motif.hpux.PA_RISC/**"/>
-			<exclude name="**/org.eclipse.swt.motif.linux.x86/**"/>
-			<exclude name="**/org.eclipse.swt.motif.solaris.sparc/**"/>
 			<exclude name="**/org.eclipse.swt.photon.qnx.x86/**"/>
 			<exclude name="**/org.eclipse.swt.wpf.win32.x86/**"/>
 		</fileset>
@@ -850,11 +812,6 @@
 			<exclude name="**/tmpdir/**"/>
 			<exclude name="**/org.eclipse.swt.carbon.macosx/**"/>
 			<exclude name="**/org.eclipse.swt.gtk.linux.ia64/**"/>
-			<exclude name="**/org.eclipse.swt.motif.aix.ppc/**"/>
-			<exclude name="**/org.eclipse.swt.motif.hpux.ia64_32/**"/>
-			<exclude name="**/org.eclipse.swt.motif.hpux.PA_RISC/**"/>
-			<exclude name="**/org.eclipse.swt.motif.linux.x86/**"/>
-			<exclude name="**/org.eclipse.swt.motif.solaris.sparc/**"/>
 			<exclude name="**/org.eclipse.swt.photon.qnx.x86/**"/>
 			<exclude name="**/org.eclipse.swt.wpf.win32.x86/**"/>
 		</fileset>
