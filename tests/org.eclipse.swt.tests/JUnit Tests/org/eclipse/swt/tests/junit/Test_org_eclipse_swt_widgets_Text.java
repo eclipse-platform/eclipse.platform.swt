@@ -527,8 +527,6 @@ public void test_getLineDelimiter() {
 	String delimiter = text.getLineDelimiter();
 	if (platform.equals("win32")) {
 		assertTrue(":a:", delimiter.equals("\r\n"));
-	} else if (platform.equals("motif")) {
-		assertTrue(":a:", delimiter.equals("\n"));
 	}
 }
 
@@ -580,7 +578,7 @@ public void test_getSelectionText() {
 
 public void test_getTabs() {
 	if (SWT.getPlatform().equals("win32")) {
-		// API not supported on all platforms (e.g., Motif)
+		// API not supported on all platforms
 		text.setTabs(1);
 		assertTrue(":a:", text.getTabs() == 1);
 		text.setTabs(8);
@@ -1227,16 +1225,9 @@ public void test_setSelectionLorg_eclipse_swt_graphics_Point() {
 }
 
 public void test_setTabsI() {
-	if (SwtTestUtil.isMotif) {
-		for (int i = 0; i < 200; i++) {
-			text.setTabs(i);
-			assertEquals(8, text.getTabs());
-		}
-	} else {
-		for (int i = 0; i < 200; i++) {
-			text.setTabs(i);
-			assertEquals(i, text.getTabs());
-		}
+	for (int i = 0; i < 200; i++) {
+		text.setTabs(i);
+		assertEquals(i, text.getTabs());
 	}
 }
 

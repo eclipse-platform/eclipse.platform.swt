@@ -142,7 +142,7 @@ public void test_setNameLjava_lang_String() {
 	assertEquals("Wrong name", fontData.getName(), "bad-font");
 
 	// valid name (empty string, but valid)
-	// only on windows since motif supports separate font foundries
+	// only on windows
 	if (SwtTestUtil.isWindows) {
 		fontData.setName("");
 		assertEquals("Wrong name", fontData.getName(), "");

@@ -63,7 +63,6 @@ public class SwtTestUtil {
 	public final static boolean isWindows = SWT.getPlatform().startsWith("win32");
 	public final static boolean isCarbon = SWT.getPlatform().startsWith("carbon");
 	public final static boolean isCocoa = SWT.getPlatform().startsWith("cocoa");
-	public final static boolean isMotif = SWT.getPlatform().equals("motif");
 	public final static boolean isGTK = SWT.getPlatform().equals("gtk");
 	public final static boolean isPhoton = SWT.getPlatform().equals("photon");
 	public final static boolean isLinux = System.getProperty("os.name").equals("Linux");
@@ -73,12 +72,7 @@ public class SwtTestUtil {
 	public final static boolean isWPF = SWT.getPlatform().startsWith("wpf");
 	
 	static {
-		if (isMotif) {
-			testFontName = "misc-fixed";
-		}
-		else {
-			testFontName = "Helvetica";
-		}
+		testFontName = "Helvetica";
 	}
 	
 public static void assertSWTProblem(String message, int expectedCode, Throwable actualThrowable) {

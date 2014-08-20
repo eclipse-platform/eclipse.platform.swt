@@ -22,7 +22,7 @@ public class Browser1 {
 	public static boolean locationChanging = false;
 	public static boolean locationChanged = false;
 	public static boolean progressCompleted = false;
-	public static boolean isMozilla = SwtTestUtil.isGTK || SwtTestUtil.isMotif;
+	public static boolean isMozilla = SwtTestUtil.isGTK;
 	
 	public static boolean test1(String url) {
 		if (verbose) System.out.println("URL Loading - args: "+url+" Expected Event Sequence: Location.changing > Location.changed (top true)> Progress.completed");

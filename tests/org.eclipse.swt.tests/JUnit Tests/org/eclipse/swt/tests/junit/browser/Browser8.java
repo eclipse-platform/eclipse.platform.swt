@@ -19,7 +19,7 @@ import org.eclipse.swt.*;
 public class Browser8 {
 	public static boolean verbose = false;
 	public static boolean passed = false;
-	public static boolean isMozilla = SwtTestUtil.isGTK || SwtTestUtil.isMotif;
+	public static boolean isMozilla = SwtTestUtil.isGTK;
 	
 	static String html[] = {"<html><title>Snippet</title><body><p id='myid'>Best Friends</p><p id='myid2'>Cat and Dog</p></body></html>"};
 	static String script[] = {

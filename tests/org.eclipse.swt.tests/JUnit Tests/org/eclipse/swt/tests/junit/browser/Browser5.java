@@ -28,7 +28,7 @@ public class Browser5 {
 	static int index = 0;
 	static int cntPassed = 0;
 	static int cntClosed = 0;
-	public static boolean isMozilla = SwtTestUtil.isGTK || SwtTestUtil.isMotif;
+	public static boolean isMozilla = SwtTestUtil.isGTK;
 	
 	public static boolean test1(String url) {
 		if (verbose) System.out.println("javascript window.open with location and size parameters - args: "+url+"\n  Expected Event Sequence: Visibility.show");

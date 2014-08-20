@@ -348,30 +348,6 @@ public void test_setBoundsLorg_eclipse_swt_graphics_Rectangle() {
 //			r1.height += 100;
 //		}
 //	}
-//	/* motif */
-//	/* note that there is a minimum size for a shell, this test will fail if p1.x < 112 or p1.y < 27 */
-//	/* note that there is a maximum size for a shell, this test will fail if p1.x > 1292 or p1.y > 1036 */
-//	if (SwtTestUtil.isMotif) {
-//		Point p1 = new Point(15,35);
-//		Rectangle r1 = new Rectangle(20, 30, p1.x, p1.y);
-//		Rectangle r2;
-//		
-//		for (int i = 0; i < 15; i++) {
-//			testShell.setBounds(r1);
-//			r2 = testShell.getBounds();
-//			assert("child shell iteration " + i + " set=" + r1 + " get=" + r2, r1.equals(r2));
-//			r1.width += 100;
-//			r1.height += 100;
-//		}
-//		r1 = new Rectangle(50, 50, p1.x, p1.y);
-//		for (int i = 0; i < 11; i++) {
-//			shell.setBounds(r1);
-//			r2 = shell.getBounds();
-//			assert("parent shell iteration " + i + " set=" + r1 + " get=" + r2, r1.equals(r2));
-//			r1.width += 100;
-//			r1.height += 100;
-//		}
-//	}
 }
 //TODO This test was not hooked for running with the runTest override. It fails on GTK/Cocoa. Investigate.
 public void a_test_setRegion() {
@@ -416,25 +392,6 @@ public void test_setSizeII() {
 		}
 	}
 	
-	/* motif */
-	/* note that there is a minimum size for a shell, this test will fail if p1.x < ?? or p1.y < ?? */
-	/* note that there is a maximum size for a shell, this test will fail if p1.x > ?? or p1.y > ?? */
-	if (SwtTestUtil.isMotif) {
-		Point newSize = new Point(2, 2);
-		for (int i = 0; i < 10; i++) {
-			testShell.setSize(newSize.x, newSize.y);
-			assertEquals(newSize, testShell.getSize());
-			newSize.x += 100;
-			newSize.y += 100;
-		}
-		newSize = new Point(1600, 1600);
-		for (int i = 0; i < 10; i++) {
-			testShell.setSize(newSize.x, newSize.y);
-			assertEquals(newSize, testShell.getSize());
-			newSize.x -= 100;
-			newSize.y -= 100;
-		}
-	}
 }
 
 @Override
@@ -451,26 +408,6 @@ public void test_setSizeLorg_eclipse_swt_graphics_Point() {
 			newSize.y += 100;
 		}
 		newSize = new Point(1292, 1036);
-		for (int i = 0; i < 10; i++) {
-			testShell.setSize(newSize);
-			assertEquals(newSize, testShell.getSize());
-			newSize.x -= 100;
-			newSize.y -= 100;
-		}
-	}
-	
-	/* motif */
-	/* note that there is a minimum size for a shell, this test will fail if p1.x < ?? or p1.y < ?? */
-	/* note that there is a maximum size for a shell, this test will fail if p1.x > ?? or p1.y > ?? */
-	if (SwtTestUtil.isMotif) {
-		Point newSize = new Point(2, 2);
-		for (int i = 0; i < 10; i++) {
-			testShell.setSize(newSize);
-			assertEquals(newSize, testShell.getSize());
-			newSize.x += 100;
-			newSize.y += 100;
-		}
-		newSize = new Point(1600, 1600);
 		for (int i = 0; i < 10; i++) {
 			testShell.setSize(newSize);
 			assertEquals(newSize, testShell.getSize());

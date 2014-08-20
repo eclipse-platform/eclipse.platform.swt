@@ -19,7 +19,7 @@ import org.eclipse.swt.*;
 public class Browser6 {
 	public static boolean verbose = false;
 	public static boolean passed = false;
-	public static boolean isMozilla = SwtTestUtil.isGTK || SwtTestUtil.isMotif;
+	public static boolean isMozilla = SwtTestUtil.isGTK;
 	
 	public static boolean test1(String url) {
 		if (verbose) System.out.println("URL Loading, verify get title event - args: "+url+" Expected Event Sequence: Title.changed");
