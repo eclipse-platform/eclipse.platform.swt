@@ -190,7 +190,6 @@ static int checkStyle(int style) {
 	}
 	if ((style & SWT.MOZILLA) != 0 || (style & SWT.WEBKIT) != 0) {
 		if ("carbon".equals (platform)) return style | SWT.EMBEDDED; //$NON-NLS-1$
-		if ("motif".equals (platform)) return style | SWT.EMBEDDED; //$NON-NLS-1$
 		return style;
 	}
 
@@ -200,9 +199,7 @@ static int checkStyle(int style) {
 		* the style so that the parent Composite will not draw a second border.
 		*/
 		return style & ~SWT.BORDER;
-	} else if ("motif".equals (platform)) { //$NON-NLS-1$
-		return style | SWT.EMBEDDED;
-	}
+	} 
 	return style;
 }
 

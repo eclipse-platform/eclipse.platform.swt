@@ -222,7 +222,7 @@ int CreateChromeWindow2 (long /*int*/ parent, int chromeFlags, int contextFlags,
 		doit = browser != null && !browser.isDisposed ();
 		if (doit) {
 			String platform = Platform.PLATFORM;
-			boolean isMozillaNativePlatform = platform.equals ("gtk") || platform.equals ("motif"); //$NON-NLS-1$ //$NON-NLS-2$
+			boolean isMozillaNativePlatform = platform.equals ("gtk"); //$NON-NLS-1$
 			doit = isMozillaNativePlatform || (browser.getStyle () & SWT.MOZILLA) != 0;
 		}
 	}
