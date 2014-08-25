@@ -1174,6 +1174,10 @@ public boolean execute(String script) {
 	document.dispose();
 	
 	rgdispid = ihtmlWindow2.getIDsOfNames(new String[] { "execScript", "code" }); //$NON-NLS-1$  //$NON-NLS-2$
+	if (rgdispid == null) {
+		ihtmlWindow2.dispose();
+		return false;
+	}
 	Variant[] rgvarg = new Variant[1];
 	rgvarg[0] = new Variant(script);
 	int[] rgdispidNamedArgs = new int[1];
