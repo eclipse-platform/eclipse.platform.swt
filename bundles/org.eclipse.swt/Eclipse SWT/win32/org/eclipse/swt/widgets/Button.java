@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2012 IBM Corporation and others.
+ * Copyright (c) 2000, 2014 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -287,12 +287,12 @@ void _setText (String text) {
 	}
 	/*
 	* Bug in Windows.  When a Button control is right-to-left and
-	* is disabled, the first pixel of the text is clipped.  The
-	* fix is to add a space to both sides of the text.
+	* is disabled, the first pixel of the text is clipped.  The fix
+	* is to append a space to the text.
 	*/
 	if ((style & SWT.RIGHT_TO_LEFT) != 0) {
 		if (OS.COMCTL32_MAJOR < 6 || !OS.IsAppThemed ()) {
-			text = OS.IsWindowEnabled (handle) ? text : " " + text + " ";
+			text = OS.IsWindowEnabled (handle) ? text : text + " ";
 		}
 	}
 	TCHAR buffer = new TCHAR (getCodePage (), text, true);
@@ -576,16 +576,16 @@ int defaultForeground () {
 void enableWidget (boolean enabled) {
 	super.enableWidget (enabled);
 	/*
-	* Bug in Windows.  When a button control is right-to-left and
-	* is disabled, the first pixel of the text is clipped.   The
-	* fix is to add a space to both sides of the text.
+	* Bug in Windows.  When a Button control is right-to-left and
+	* is disabled, the first pixel of the text is clipped.  The fix
+	* is to append a space to the text.
 	*/
 	if ((style & SWT.RIGHT_TO_LEFT) != 0) {
 		if (OS.COMCTL32_MAJOR < 6 || !OS.IsAppThemed ()) {
 			int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
 			boolean hasImage = (bits & (OS.BS_BITMAP | OS.BS_ICON)) != 0;
 			if (!hasImage) {
-				String string = enabled ? text : " " + text + " ";
+				String string = enabled ? text : text + " ";
 				TCHAR buffer = new TCHAR (getCodePage (), string, true);
 				OS.SetWindowText (handle, buffer);
 			}
