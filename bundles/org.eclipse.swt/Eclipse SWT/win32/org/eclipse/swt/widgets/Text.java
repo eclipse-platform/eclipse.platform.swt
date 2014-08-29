@@ -471,7 +471,6 @@ void applySegments () {
 	TCHAR buffer = new TCHAR (cp, length + 1);
 	if (length > 0) OS.GetWindowText (handle, buffer, length + 1);
 	String string = buffer.toString (0, length);
-	buffer.clear ();
 	/* Get segments text */
 	Event event = new Event ();
 	event.text = string;
@@ -599,9 +598,7 @@ void clearSegments (boolean applyText) {
 	int cp = getCodePage ();
 	TCHAR buffer = new TCHAR (cp, length + 1);
 	if (length > 0) OS.GetWindowText (handle, buffer, length + 1);
-	/* Retaining original buffer instance for clearing text data. */
-	TCHAR deprocessBuffer = deprocessText (buffer, 0, -1, true);
-	if (deprocessBuffer != buffer) buffer.clear ();
+	buffer = deprocessText (buffer, 0, -1, true);
 	/* Get the current selection */
 	int [] start = new int [1], end = new int [1];
 	OS.SendMessage (handle, OS.EM_GETSEL, start, end);
@@ -618,8 +615,7 @@ void clearSegments (boolean applyText) {
 	 */
 	OS.SendMessage (handle, OS.EM_SETSEL, 0, -1);
 	long /*int*/ undo = OS.SendMessage (handle, OS.EM_CANUNDO, 0, 0);
-	OS.SendMessage (handle, OS.EM_REPLACESEL, undo, deprocessBuffer);
-	deprocessBuffer.clear ();
+	OS.SendMessage (handle, OS.EM_REPLACESEL, undo, buffer);
 	/* Restore selection */
 	if (!OS.IsUnicode && OS.IsDBLocale) {
 		start [0] = wcsToMbcsPos (start [0]);
@@ -1296,18 +1292,11 @@ public String getSelectionText () {
 	if (start [0] == end [0]) return "";
 	TCHAR buffer = new TCHAR (getCodePage (), length + 1);
 	OS.GetWindowText (handle, buffer, length + 1);
-	String result = null;
 	if (segments != null) {
-		/* Retaining original buffer instance for clearing text data. */
-		TCHAR deprocessBuffer = deprocessText (buffer, start [0], end [0], false);
-		result = deprocessBuffer.toString ();
-		if (deprocessBuffer != buffer) deprocessBuffer.clear ();
+		buffer = deprocessText (buffer, start [0], end [0], false);
+		return buffer.toString ();
 	}
-	else {
-		result = buffer.toString (start [0], end [0] - start [0]);
-	}
-	buffer.clear ();
-	return result;
+	return buffer.toString (start [0], end [0] - start [0]);
 }
 
 /**
@@ -1364,18 +1353,11 @@ public String getText () {
 	if (length == 0) return "";
 	TCHAR buffer = new TCHAR (getCodePage (), length + 1);
 	OS.GetWindowText (handle, buffer, length + 1);
-	String result = null;
 	if (segments != null) {
-		/* Retaining original buffer instance for clearing text data. */
-		TCHAR deprocessBuffer = deprocessText (buffer, 0, -1, false);
-		result = deprocessBuffer.toString ();
-		if (deprocessBuffer != buffer) deprocessBuffer.clear ();
+		buffer = deprocessText (buffer, 0, -1, false);
+		return buffer.toString ();
 	}
-	else {
-		result = buffer.toString (0, length);
-	}
-	buffer.clear ();
-	return result;
+	return buffer.toString (0, length);
 }
 
 /**
@@ -1385,9 +1367,11 @@ public String getText () {
  * a zero-length array if this has never been set.
  * </p>
  * <p>
- * Note: Use the API to protect the text, for example, when widget is used as
- * a password field. However, the text can't be protected if Segment listener
- * is added to the widget.
+ * Note: Use this API to prevent the text from being written into a String
+ * object whose lifecycle is outside of your control. This can help protect
+ * the text, for example, when the widget is used as a password field.
+ * However, the text can't be protected if an {@link SWT#Segments} or
+ * {@link SWT#Verify} listener has been added to the widget.
  * </p>
  * 
  * @return a character array that contains the widget's text
@@ -1407,14 +1391,7 @@ public char[] getTextChars () {
 	if (length == 0) return new char[0];
 	TCHAR buffer = new TCHAR (getCodePage (), length + 1);
 	OS.GetWindowText (handle, buffer, length + 1);
-	if (segments != null) {
-		/* Retaining original buffer instance for clearing text data. */
-		TCHAR deprocessBuffer = deprocessText (buffer, 0, -1, false);
-		if (deprocessBuffer != buffer) {
-			buffer.clear ();
-			buffer = deprocessBuffer;
-		}
-	}
+	if (segments != null) buffer = deprocessText (buffer, 0, -1, false);
 	char [] chars = new char [length];
 	System.arraycopy (buffer.chars, 0, chars, 0, length);
 	buffer.clear ();
@@ -2281,7 +2258,6 @@ public void setText (String string) {
 	if (string.length () > limit) string = string.substring (0, limit);
 	TCHAR buffer = new TCHAR (getCodePage (), string, true);
 	OS.SetWindowText (handle, buffer);
-	buffer.clear ();
 	applySegments ();
 	/*
 	* Bug in Windows.  When the widget is multi line
@@ -2302,9 +2278,11 @@ public void setText (String string) {
  * has style <code>SWT.SINGLE</code> and the argument contains multiple lines of text
  * then the result of this operation is undefined and may vary between platforms.
  * <p>
- * Note: Use the API to protect the text, for example, when the widget is used as
- * a password field. However, the text can't be protected if Verify or
- * Segment listener is added to the widget.
+ * Note: Use this API to prevent the text from being written into a String
+ * object whose lifecycle is outside of your control. This can help protect
+ * the text, for example, when the widget is used as a password field.
+ * However, the text can't be protected if an {@link SWT#Segments} or
+ * {@link SWT#Verify} listener has been added to the widget.
  * </p>
  *
  * @param text a character array that contains the new text
@@ -2921,7 +2899,6 @@ LRESULT wmClipboard (int msg, long /*int*/ wParam, long /*int*/ lParam) {
 					TCHAR buffer = new TCHAR (getCodePage (), length + 1);
 					OS.GetWindowText (handle, buffer, length + 1);
 					newText = buffer.toString (newStart [0], newEnd [0] - newStart [0]);
-					buffer.clear ();
 				} else {
 					newText = "";
 				}
