@@ -566,6 +566,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	if ((style & SWT.SINGLE) != 0 && message.length () > 0) {
 		byte [] buffer = Converter.wcsToMbcs (null, message, true);
 		long /*int*/ layout = OS.gtk_widget_create_pango_layout (handle, buffer);
+		Arrays.fill (buffer, (byte) 0);
 		OS.pango_layout_get_pixel_size (layout, w, h);
 		OS.g_object_unref (layout);
 		width = Math.max (width, w [0]);
@@ -708,7 +709,6 @@ char [] deprocessText (char [] text, int start, int end) {
 	if (start != 0 || end != start + length) {
 		char [] newText = new char [length];
 		System.arraycopy(text, 0, newText, 0, length);
-		Arrays.fill (text, (char) 0);
 		return newText;
 	}
 	return text;
@@ -1474,6 +1474,7 @@ long /*int*/ gtk_commit (long /*int*/ imContext, long /*int*/ text) {
 	byte [] buffer = new byte [length];
 	OS.memmove (buffer, text, length);
 	char [] chars = Converter.mbcsToWcs (null, buffer);
+	Arrays.fill (buffer, (byte) 0);
 	char [] newChars = sendIMKeyEvent (SWT.KeyDown, null, chars);
 	if (newChars == null) return 0;
 	/*
@@ -1493,6 +1494,7 @@ long /*int*/ gtk_commit (long /*int*/ imContext, long /*int*/ text) {
 	} else {
 		buffer = Converter.wcsToMbcs (null, newChars, true);
 		OS.g_signal_emit_by_name (imContext, OS.commit, buffer);
+		Arrays.fill (buffer, (byte) 0);
 	}
 	OS.g_signal_handlers_unblock_matched (imContext, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, COMMIT);
 	OS.g_signal_handlers_block_matched (imContext, mask, id, 0, 0, 0, handle);
@@ -1544,6 +1546,7 @@ long /*int*/ gtk_delete_range (long /*int*/ widget, long /*int*/ iter1, long /*i
 			OS.gtk_text_buffer_insert (bufferHandle, startIter, buffer, buffer.length);
 			OS.g_signal_handlers_unblock_matched (bufferHandle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, TEXT_BUFFER_INSERT_TEXT);
 			OS.g_signal_stop_emission_by_name (bufferHandle, OS.delete_range);
+			Arrays.fill (buffer, (byte) 0);
 		}
 	}
 	return 0;
@@ -1577,6 +1580,7 @@ long /*int*/ gtk_delete_text (long /*int*/ widget, long /*int*/ start_pos, long 
 			OS.g_signal_handlers_unblock_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, INSERT_TEXT);
 			OS.g_signal_handlers_unblock_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
 			OS.gtk_editable_set_position (handle, pos [0]);
+			Arrays.fill (buffer, (byte) 0);
 		}
 	}
 	return 0;
@@ -2534,6 +2538,7 @@ void setText (char [] text) {
 		OS.g_signal_handlers_unblock_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
 		OS.g_signal_handlers_unblock_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, DELETE_TEXT);
 		OS.g_signal_handlers_unblock_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, INSERT_TEXT);
+		Arrays.fill (buffer, (byte) 0);
 	} else {
 		byte [] buffer = Converter.wcsToMbcs (null, text, false);
 		byte [] position =  new byte [ITER_SIZEOF];
@@ -2548,6 +2553,7 @@ void setText (char [] text) {
 		OS.gtk_text_buffer_place_cursor (bufferHandle, position);
 		long /*int*/ mark = OS.gtk_text_buffer_get_insert (bufferHandle);
 		OS.gtk_text_view_scroll_mark_onscreen (handle, mark);
+		Arrays.fill (buffer, (byte) 0);
 	}
 	sendEvent (SWT.Modify);
 	if ((style & SWT.SEARCH) != 0) {
