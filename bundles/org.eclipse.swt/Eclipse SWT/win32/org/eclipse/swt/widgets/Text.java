@@ -677,6 +677,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 			TCHAR buffer = new TCHAR (getCodePage (), length + 1);
 			OS.GetWindowText (handle, buffer, length + 1);
 			OS.DrawText (hDC, buffer, length, rect, flags);
+			buffer.clear ();
 			width = rect.right - rect.left;
 		}
 		if (wrap && hHint == SWT.DEFAULT) {
@@ -1366,9 +1367,11 @@ public String getText () {
  * a zero-length array if this has never been set.
  * </p>
  * <p>
- * Note: Use the API to protect the text, for example, when widget is used as
- * a password field. However, the text can't be protected if Segment listener
- * is added to the widget.
+ * Note: Use this API to prevent the text from being written into a String
+ * object whose lifecycle is outside of your control. This can help protect
+ * the text, for example, when the widget is used as a password field.
+ * However, the text can't be protected if an {@link SWT#Segments} or
+ * {@link SWT#Verify} listener has been added to the widget.
  * </p>
  * 
  * @return a character array that contains the widget's text
@@ -1391,7 +1394,7 @@ public char[] getTextChars () {
 	if (segments != null) buffer = deprocessText (buffer, 0, -1, false);
 	char [] chars = new char [length];
 	System.arraycopy (buffer.chars, 0, chars, 0, length);
-	for (int i = 0; i < buffer.chars.length; i++) buffer.chars [i] = '\0';
+	buffer.clear ();
 	return chars;
 }
 
@@ -2275,9 +2278,11 @@ public void setText (String string) {
  * has style <code>SWT.SINGLE</code> and the argument contains multiple lines of text
  * then the result of this operation is undefined and may vary between platforms.
  * <p>
- * Note: Use the API to protect the text, for example, when the widget is used as
- * a password field. However, the text can't be protected if Verify or
- * Segment listener is added to the widget.
+ * Note: Use this API to prevent the text from being written into a String
+ * object whose lifecycle is outside of your control. This can help protect
+ * the text, for example, when the widget is used as a password field.
+ * However, the text can't be protected if an {@link SWT#Segments} or
+ * {@link SWT#Verify} listener has been added to the widget.
  * </p>
  *
  * @param text a character array that contains the new text
@@ -2314,6 +2319,7 @@ public void setTextChars (char[] text) {
 	}
 	TCHAR buffer = new TCHAR (getCodePage (), text, true);
 	OS.SetWindowText (handle, buffer);
+	buffer.clear ();
 	applySegments ();
 	/*
 	* Bug in Windows.  When the widget is multi line
