@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2006 IBM Corporation and others.
+ * Copyright (c) 2000, 2014 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -22,7 +22,7 @@ public static void main(String[] args) {
 	TestRunner.run (suite());
 }
 public static Test suite() {
-	TestSuite suite = new TestSuite();
+	TestSuite suite = new TestSuite(AllWidgetTests.class.getName());
 
 	suite.addTestSuite(Test_org_eclipse_swt_widgets_ExpandItem.class);
 	suite.addTestSuite(Test_org_eclipse_swt_widgets_MenuItem.class);
@@ -58,7 +58,7 @@ public static Test suite() {
 	suite.addTestSuite(Test_org_eclipse_swt_widgets_ProgressBar.class);
 	suite.addTestSuite(Test_org_eclipse_swt_widgets_Composite.class);
 	suite.addTestSuite(Test_org_eclipse_swt_widgets_Link.class);
-	suite.addTestSuite(Test_org_eclipse_swt_widgets_DateTime.class);
+	suite.addTest(new JUnit4TestAdapter(Test_org_eclipse_swt_widgets_DateTime.class));
 	//suite.addTest(Test_org_eclipse_swt_widgets_CoolBar.suite());
 
 	suite.addTestSuite(Test_org_eclipse_swt_widgets_ColorDialog.class);

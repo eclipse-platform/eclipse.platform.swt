@@ -29,7 +29,18 @@
     <ant target="core-test" antfile="${library-file}" dir="${eclipse-home}">
       <property name="data-dir" value="${data}"/>
       <property name="plugin-name" value="${plugin-name}"/>
-      <property name="classname" value="org.eclipse.swt.tests.junit.AllTests"/>
+      <property name="classname" value="org.eclipse.swt.tests.junit.AllNonBrowserTests"/>
+    </ant>
+  </target>
+	
+  <!-- This target defines the browser tests. -->
+  <target name="browser-suite" unless="performance">
+    <property name="data" value="${eclipse-home}/swt_sniff_folder"/>
+    <ant target="core-test" antfile="${library-file}" dir="${eclipse-home}">
+      <property name="timeout" value="900000"/>
+      <property name="data-dir" value="${data}"/>
+      <property name="plugin-name" value="${plugin-name}"/>
+      <property name="classname" value="org.eclipse.swt.tests.junit.AllBrowserTests"/>
     </ant>
   </target>
 
@@ -59,7 +70,7 @@
 
   <!-- This target runs the test suite. Any actions that need to happen after all -->
   <!-- the tests have been run should go here. -->
-  <target name="run" depends="init,suite,cleanup">
+  <target name="run" depends="init,suite,browser-suite,cleanup">
     <ant target="collect" antfile="${library-file}" dir="${eclipse-home}">
       <property name="includes" value="org*.xml"/>
       <property name="output-file" value="${plugin-name}.xml"/>

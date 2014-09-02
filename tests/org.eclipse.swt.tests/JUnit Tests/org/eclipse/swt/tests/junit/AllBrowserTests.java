@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2004 IBM Corporation and others.
+ * Copyright (c) 2000, 2014 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -23,7 +23,7 @@ public static void main(String[] args) {
 	TestRunner.run (suite());
 }
 public static Test suite() {
-	TestSuite suite = new TestSuite();
+	TestSuite suite = new TestSuite(AllBrowserTests.class.getName());
 	suite.addTestSuite(Test_org_eclipse_swt_browser_Browser.class);	
 	suite.addTestSuite(Test_org_eclipse_swt_browser_CloseWindowListener.class);
 	suite.addTestSuite(Test_org_eclipse_swt_browser_LocationAdapter.class);
