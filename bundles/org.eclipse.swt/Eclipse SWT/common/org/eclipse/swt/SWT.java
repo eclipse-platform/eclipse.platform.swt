@@ -775,7 +775,7 @@ public class SWT {
 	 * The PreEvent event type (value is 50).
 	 *
 	 * <p>
-	 * This event is sent before an event is dispatched.
+	 * This event is sent before an event other than {@link #Sleep} or {@link #Wakeup} is dispatched.
 	 * </p>
 	 *
 	 * @since 3.103
@@ -786,7 +786,7 @@ public class SWT {
 	 * The PostEvent event type (value is 51).
 	 *
 	 * <p>
-	 * This event is sent after an event is dispatched.
+	 * This event is sent after an event other than {@link #Sleep} or {@link #Wakeup} is dispatched.
 	 * </p>
 	 *
 	 * @since 3.103

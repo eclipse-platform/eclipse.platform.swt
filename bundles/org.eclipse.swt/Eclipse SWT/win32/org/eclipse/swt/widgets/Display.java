@@ -4357,7 +4357,8 @@ void sendEvent(EventTable eventTable, Event event) {
 }
 
 void sendPreEvent(Event event) {
-	if (event == null || (event.type != SWT.PreEvent && event.type != SWT.PostEvent)) {
+	if (event == null || (event.type != SWT.PreEvent && event.type != SWT.PostEvent
+			&& event.type != SWT.Sleep && event.type != SWT.Wakeup)) {
 		if (this.eventTable != null && this.eventTable.hooks(SWT.PreEvent)) {
 			sendEvent(SWT.PreEvent, null);
 		}
@@ -4365,7 +4366,8 @@ void sendPreEvent(Event event) {
 }
 
 void sendPostEvent(Event event) {
-	if (event == null || (event.type != SWT.PreEvent && event.type != SWT.PostEvent)) {
+	if (event == null || (event.type != SWT.PreEvent && event.type != SWT.PostEvent
+			&& event.type != SWT.Sleep && event.type != SWT.Wakeup)) {
 		if (this.eventTable != null && this.eventTable.hooks(SWT.PostEvent)) {
 			sendEvent(SWT.PostEvent, null);
 		}
