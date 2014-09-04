@@ -2442,6 +2442,7 @@ public static final int NSPrintPanelShowsCopies = 1;
 public static final int NSPrintPanelShowsOrientation = 8;
 public static final int NSPrintPanelShowsPageRange = 2;
 public static final int NSPrintPanelShowsPageSetupAccessory = 256;
+public static final int NSPrintPanelShowsPrintSelection = 32;
 public static final int NSProgressIndicatorPreferredThickness = 14;
 public static final int NSPushOnPushOffButton = 1;
 public static final int NSRGBColorSpaceModel = 1;
@@ -3061,6 +3062,9 @@ public static final NSString NSPrintSavePath = new NSString(NSPrintSavePath());
 /** @method flags=const */
 public static final native long /*int*/ NSPrintScalingFactor();
 public static final NSString NSPrintScalingFactor = new NSString(NSPrintScalingFactor());
+/** @method flags=const */
+public static final native long /*int*/ NSPrintSelectionOnly();
+public static final NSString NSPrintSelectionOnly = new NSString(NSPrintSelectionOnly());
 /** @method flags=const */
 public static final native long /*int*/ NSPrintSpoolJob();
 public static final NSString NSPrintSpoolJob = new NSString(NSPrintSpoolJob());

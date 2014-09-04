@@ -4679,6 +4679,7 @@
 	<constant name="NSPrintSaveJob" swt_gen="true"></constant>
 	<constant name="NSPrintSavePath" swt_gen="true"></constant>
 	<constant name="NSPrintScalingFactor" swt_gen="true"></constant>
+	<constant name="NSPrintSelectionOnly" swt_gen="true"></constant>
 	<constant name="NSPrintSpoolJob" swt_gen="true"></constant>
 	<constant name="NSRTFPboardType" swt_gen="true"></constant>
 	<constant name="NSSpellingStateAttributeName" swt_gen="true"></constant>
@@ -4853,6 +4854,7 @@
 	<enum name="NSPrintPanelShowsOrientation" swt_gen="true"></enum>
 	<enum name="NSPrintPanelShowsPageRange" swt_gen="true"></enum>
 	<enum name="NSPrintPanelShowsPageSetupAccessory" swt_gen="true"></enum>
+	<enum name="NSPrintPanelShowsPrintSelection" swt_gen="true"></enum>
 	<enum name="NSProgressIndicatorPreferredThickness" swt_gen="true"></enum>
 	<enum name="NSPushOnPushOffButton" swt_gen="true"></enum>
 	<enum name="NSRGBColorSpaceModel" swt_gen="true"></enum>

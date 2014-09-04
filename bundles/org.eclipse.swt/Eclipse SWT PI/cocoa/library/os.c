@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2012 IBM Corporation and others.
+ * Copyright (c) 2000, 2014 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -4995,6 +4995,18 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(NSPrintScalingFactor)
 	OS_NATIVE_ENTER(env, that, NSPrintScalingFactor_FUNC);
 	rc = (jintLong)NSPrintScalingFactor;
 	OS_NATIVE_EXIT(env, that, NSPrintScalingFactor_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_NSPrintSelectionOnly
+JNIEXPORT jintLong JNICALL OS_NATIVE(NSPrintSelectionOnly)
+	(JNIEnv *env, jclass that)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, NSPrintSelectionOnly_FUNC);
+	rc = (jintLong)NSPrintSelectionOnly;
+	OS_NATIVE_EXIT(env, that, NSPrintSelectionOnly_FUNC);
 	return rc;
 }
 #endif
