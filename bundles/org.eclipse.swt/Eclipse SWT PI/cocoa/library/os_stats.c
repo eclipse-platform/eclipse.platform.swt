@@ -377,7 +377,6 @@ char * OS_nativeFunctionNames[] = {
 	"NSPrintSaveJob",
 	"NSPrintSavePath",
 	"NSPrintScalingFactor",
-	"NSPrintSelectionOnly",
 	"NSPrintSpoolJob",
 	"NSRTFPboardType",
 	"NSRange_1sizeof",

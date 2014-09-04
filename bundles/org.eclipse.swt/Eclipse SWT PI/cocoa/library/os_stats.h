@@ -387,7 +387,6 @@ typedef enum {
 	NSPrintSaveJob_FUNC,
 	NSPrintSavePath_FUNC,
 	NSPrintScalingFactor_FUNC,
-	NSPrintSelectionOnly_FUNC,
 	NSPrintSpoolJob_FUNC,
 	NSRTFPboardType_FUNC,
 	NSRange_1sizeof_FUNC,

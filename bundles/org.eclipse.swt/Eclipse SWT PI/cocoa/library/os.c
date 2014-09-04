@@ -4999,18 +4999,6 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(NSPrintScalingFactor)
 }
 #endif
 
-#ifndef NO_NSPrintSelectionOnly
-JNIEXPORT jintLong JNICALL OS_NATIVE(NSPrintSelectionOnly)
-	(JNIEnv *env, jclass that)
-{
-	jintLong rc = 0;
-	OS_NATIVE_ENTER(env, that, NSPrintSelectionOnly_FUNC);
-	rc = (jintLong)NSPrintSelectionOnly;
-	OS_NATIVE_EXIT(env, that, NSPrintSelectionOnly_FUNC);
-	return rc;
-}
-#endif
-
 #ifndef NO_NSPrintSpoolJob
 JNIEXPORT jintLong JNICALL OS_NATIVE(NSPrintSpoolJob)
 	(JNIEnv *env, jclass that)

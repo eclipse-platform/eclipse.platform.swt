@@ -2387,6 +2387,9 @@
 			<arg swt_gen="true"></arg>
 			<retval swt_gen="true" swt_java_type="NSPrintInfo"></retval>
 		</method>
+		<method selector="isSelectionOnly" swt_gen="true">
+			<retval swt_gen="true"></retval>
+		</method>
 		<method selector="jobDisposition" swt_gen="true">
 			<retval swt_gen="true"></retval>
 		</method>
@@ -2404,6 +2407,10 @@
 			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="setPrinter:" swt_gen="true">
+			<arg swt_gen="true"></arg>
+			<retval swt_gen="true"></retval>
+		</method>
+		<method selector="setSelectionOnly:" swt_gen="true">
 			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
@@ -4679,7 +4686,6 @@
 	<constant name="NSPrintSaveJob" swt_gen="true"></constant>
 	<constant name="NSPrintSavePath" swt_gen="true"></constant>
 	<constant name="NSPrintScalingFactor" swt_gen="true"></constant>
-	<constant name="NSPrintSelectionOnly" swt_gen="true"></constant>
 	<constant name="NSPrintSpoolJob" swt_gen="true"></constant>
 	<constant name="NSRTFPboardType" swt_gen="true"></constant>
 	<constant name="NSSpellingStateAttributeName" swt_gen="true"></constant>

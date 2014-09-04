@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2012 IBM Corporation and others.
+ * Copyright (c) 2000, 2014 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -53,6 +53,10 @@ public NSPrintInfo initWithDictionary(NSDictionary attributes) {
 	return result == this.id ? this : (result != 0 ? new NSPrintInfo(result) : null);
 }
 
+public boolean isSelectionOnly() {
+	return OS.objc_msgSend_bool(this.id, OS.sel_isSelectionOnly);
+}
+
 public NSString jobDisposition() {
 	long /*int*/ result = OS.objc_msgSend(this.id, OS.sel_jobDisposition);
 	return result != 0 ? new NSString(result) : null;
@@ -80,6 +84,10 @@ public void setJobDisposition(NSString disposition) {
 
 public void setPrinter(NSPrinter printer) {
 	OS.objc_msgSend(this.id, OS.sel_setPrinter_, printer != null ? printer.id : 0);
+}
+
+public void setSelectionOnly(boolean selectionOnly) {
+	OS.objc_msgSend(this.id, OS.sel_setSelectionOnly_, selectionOnly);
 }
 
 public void setUpPrintOperationDefaultValues() {

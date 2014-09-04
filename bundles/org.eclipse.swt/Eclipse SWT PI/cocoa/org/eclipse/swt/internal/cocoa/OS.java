@@ -1465,6 +1465,7 @@ public static final long /*int*/ sel_isPlanar = sel_registerName("isPlanar");
 public static final long /*int*/ sel_isResting = sel_registerName("isResting");
 public static final long /*int*/ sel_isRowSelected_ = sel_registerName("isRowSelected:");
 public static final long /*int*/ sel_isRunning = sel_registerName("isRunning");
+public static final long /*int*/ sel_isSelectionOnly = sel_registerName("isSelectionOnly");
 public static final long /*int*/ sel_isSeparatorItem = sel_registerName("isSeparatorItem");
 public static final long /*int*/ sel_isSessionOnly = sel_registerName("isSessionOnly");
 public static final long /*int*/ sel_isSheet = sel_registerName("isSheet");
@@ -2016,6 +2017,7 @@ public static final long /*int*/ sel_setSelectedItemIdentifier_ = sel_registerNa
 public static final long /*int*/ sel_setSelectedRange_ = sel_registerName("setSelectedRange:");
 public static final long /*int*/ sel_setSelectedSegment_ = sel_registerName("setSelectedSegment:");
 public static final long /*int*/ sel_setSelectedTextAttributes_ = sel_registerName("setSelectedTextAttributes:");
+public static final long /*int*/ sel_setSelectionOnly_ = sel_registerName("setSelectionOnly:");
 public static final long /*int*/ sel_setServicesMenu_ = sel_registerName("setServicesMenu:");
 public static final long /*int*/ sel_setShouldAntialias_ = sel_registerName("setShouldAntialias:");
 public static final long /*int*/ sel_setShowsHelp_ = sel_registerName("setShowsHelp:");
@@ -3062,9 +3064,6 @@ public static final NSString NSPrintSavePath = new NSString(NSPrintSavePath());
 /** @method flags=const */
 public static final native long /*int*/ NSPrintScalingFactor();
 public static final NSString NSPrintScalingFactor = new NSString(NSPrintScalingFactor());
-/** @method flags=const */
-public static final native long /*int*/ NSPrintSelectionOnly();
-public static final NSString NSPrintSelectionOnly = new NSString(NSPrintSelectionOnly());
 /** @method flags=const */
 public static final native long /*int*/ NSPrintSpoolJob();
 public static final NSString NSPrintSpoolJob = new NSString(NSPrintSpoolJob());
