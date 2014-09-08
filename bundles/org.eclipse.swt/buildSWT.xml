@@ -263,13 +263,14 @@
 			trust="true"
 			outputproperty="m_linux_ppc64_output"
 			command="hostname"/>
-		<sshexec host="${m_linux_ppc64le}"
+		<!-- Enable this only after the ppc64le build machine is ready -->
+		<!-- <sshexec host="${m_linux_ppc64le}"
 			username="swtbuild"
 			keyfile="${keyfile}"
 			failonerror="false"
 			trust="true"
 			outputproperty="m_linux_ppc64le_output"
-			command="hostname"/>
+			command="hostname"/-->
 
 		<sshexec host="${m_solaris_sparc}"
 			username="swtbuild"
@@ -348,12 +349,12 @@
 				<matches pattern="x${m_linux_ppc64_output}*" string="x${m_linux_ppc64}"/>
 			</and>
 		</condition>
-		<condition property="m_linux_ppc64le_test" value="${success_msg}" else="${fail_msg}">
+		<!--<condition property="m_linux_ppc64le_test" value="${success_msg}" else="${fail_msg}">
 			<and>
 				<length string="${m_linux_ppc64le_output}" when="greater" length="0"/>
 				<matches pattern="x${m_linux_ppc64le_output}*" string="x${m_linux_ppc64le}"/>
 			</and>
-		</condition>
+		</condition-->
 		<condition property="m_solaris_sparc_test" value="${success_msg}" else="${fail_msg}">
 			<and>
 				<length string="${m_solaris_sparc_output}" when="greater" length="0"/>
@@ -393,7 +394,7 @@
 		<echo>${m_linux_rh3_x86_64} ${m_linux_rh3_x86_64_test}</echo-->
 		<echo>${m_linux_ppc} - ${m_linux_ppc_test}</echo>
 		<echo>${m_linux_ppc64} - ${m_linux_ppc64_test}</echo>
-		<echo>${m_linux_ppc64le} - ${m_linux_ppc64le_test}</echo>
+		<!--<echo>${m_linux_ppc64le} - ${m_linux_ppc64le_test}</echo-->
 		<echo>${m_solaris_sparc} - ${m_solaris_sparc_test}</echo>
 		<echo>${m_solaris_x86} - ${m_solaris_x86_test}</echo>
 		<echo>${m_aix} - ${m_aix_test}</echo>
