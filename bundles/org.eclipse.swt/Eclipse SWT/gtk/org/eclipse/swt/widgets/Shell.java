@@ -945,6 +945,10 @@ void forceResize () {
 }
 
 void forceResize (int width, int height) {
+	int clientWidth = 0;
+	if (OS.GTK3) {
+		if ((style & SWT.MIRRORED) != 0) clientWidth = getClientWidth ();
+	}
 	GtkRequisition requisition = new GtkRequisition ();
 	gtk_widget_get_preferred_size (vboxHandle, requisition);
 	GtkAllocation allocation = new GtkAllocation ();
@@ -954,6 +958,9 @@ void forceResize (int width, int height) {
 	allocation.width = width;
 	allocation.height = height;
 	OS.gtk_widget_size_allocate (vboxHandle, allocation);
+	if (OS.GTK3) {
+		if ((style & SWT.MIRRORED) != 0) moveChildren (clientWidth);
+	}
 }
 
 /**
