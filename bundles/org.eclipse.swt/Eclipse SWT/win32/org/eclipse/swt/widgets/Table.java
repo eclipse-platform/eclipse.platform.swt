@@ -5498,7 +5498,20 @@ public void showItem (TableItem item) {
 public void showSelection () {
 	checkWidget (); 
 	int index = (int)/*64*/OS.SendMessage (handle, OS.LVM_GETNEXTITEM, -1, OS.LVNI_SELECTED);
-	if (index != -1) showItem (index);
+	if (index != -1) {
+		/*
+		 * Bug in Windows. For some reason, when a table had vertically
+		 * scrolled down, followed by clearAll or clear items call such that
+		 * vertical scroll bar is no more visible/needed, even then top of
+		 * the table is not visible. Fix is to make sure on show selection
+		 * table gets vertically scrolled back to the top, refer bug 442275
+		 */
+		if ((style & SWT.NO_SCROLL) == 0 && (verticalBar == null || !verticalBar.isVisible())) {
+			showItem (0);
+		} else {
+			showItem (index);
+		}
+	}
 }
 
 /*public*/ void sort () {
