@@ -3038,6 +3038,17 @@ void setBackgroundColor (GdkColor color) {
 	super.setBackgroundColor (color);
 	if (!OS.GTK3) {
 		OS.gtk_widget_modify_base (handle, 0, color);
+	} else {
+		// Setting the background color overrides the selected background color
+		// so we have to reset it the default.
+		GdkColor defaultColor = getDisplay().COLOR_LIST_SELECTION;
+		GdkRGBA selectedBackground = new GdkRGBA ();
+		selectedBackground.alpha = 1;
+		selectedBackground.red = (defaultColor.red & 0xFFFF) / (float)0xFFFF;
+		selectedBackground.green = (defaultColor.green & 0xFFFF) / (float)0xFFFF;
+		selectedBackground.blue = (defaultColor.blue & 0xFFFF) / (float)0xFFFF;
+
+		OS.gtk_widget_override_background_color (handle, OS.GTK_STATE_FLAG_SELECTED, selectedBackground);
 	}
 }
 
