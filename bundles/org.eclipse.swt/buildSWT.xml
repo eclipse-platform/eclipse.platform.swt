@@ -165,6 +165,7 @@
 			<exclude name="**/org.eclipse.swt.gtk.linux.ia64/**"/>
 			<exclude name="**/org.eclipse.swt.photon.qnx.x86/**"/>
 			<exclude name="**/org.eclipse.swt.wpf.win32.x86/**"/>
+			<exclude name="**/org.eclipse.swt.cocoa.macosx/**"/>
 		</fileset>
 		<fileset id="not_match" dir="${repo.bin}/bundles/${fragment}">
 			<filename regex="[0-9][0-9][0-9][0-9]."/>
@@ -174,6 +175,7 @@
 			<exclude name="**/org.eclipse.swt.gtk.linux.ia64/**"/>
 			<exclude name="**/org.eclipse.swt.photon.qnx.x86/**"/>
 			<exclude name="**/org.eclipse.swt.wpf.win32.x86/**"/>
+			<exclude name="**/org.eclipse.swt.cocoa.macosx/**"/>
 		</fileset>
 		<property name="not_match_text" refid="not_match"/>
 		<resourcecount refid="match" property="match_count"/>
@@ -817,6 +819,7 @@
 			<exclude name="**/org.eclipse.swt.gtk.linux.ia64/**"/>
 			<exclude name="**/org.eclipse.swt.photon.qnx.x86/**"/>
 			<exclude name="**/org.eclipse.swt.wpf.win32.x86/**"/>
+			<exclude name="**/org.eclipse.swt.cocoa.macosx/**"/>
 		</fileset>
 
 		<!-- Rename libraries that were not built -->
@@ -837,6 +840,7 @@
 			<exclude name="**/org.eclipse.swt.gtk.linux.ia64/**"/>
 			<exclude name="**/org.eclipse.swt.photon.qnx.x86/**"/>
 			<exclude name="**/org.eclipse.swt.wpf.win32.x86/**"/>
+			<exclude name="**/org.eclipse.swt.cocoa.macosx/**"/>
 		</fileset>
 		<property name="afiles" refid="addid"/>
 
