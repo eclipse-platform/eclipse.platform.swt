@@ -1,10 +1,10 @@
 # Copyright by many contributors; see http://babel.eclipse.org/
 SWT_Yes=\u662f
 SWT_No=\u5426
-SWT_OK=\u786e\u5b9a
+SWT_OK=\u6b63\u5e38
 SWT_Cancel=\u53d6\u6d88
-SWT_Help=\u5E2E\u52A9
-SWT_Abort=\u653e\u5f03
+SWT_Help=\u5e2e\u52a9
+SWT_Abort=\u5f02\u5e38\u7ec8\u6b62
 SWT_Retry=\u91cd\u8bd5
 SWT_Ignore=\u5ffd\u7565
 SWT_Sample=\u6837\u672c
@@ -72,5 +72,5 @@ SWT_Field=\u5b57\u6bb5
 SWT_Value=\u503c
 SWT_Version=\u7248\u672c
 SWT_ValidFrom=\u751f\u6548\u65e5\u671f
-SWT_Subject=Subject
+SWT_Subject=\u4e3b\u9898
 SWT_SerialNumber=\u5e8f\u5217\u53f7

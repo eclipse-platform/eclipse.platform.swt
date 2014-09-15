@@ -1,8 +1,9 @@
 # Copyright by many contributors; see http://babel.eclipse.org/
 SWT_Yes=Ano
 SWT_No=Ne
-SWT_OK=OK
+SWT_OK=Ok
 SWT_Cancel=Storno
+SWT_Help=N\u00e1pov\u011bda
 SWT_Abort=P\u0159ed\u010dasn\u011b ukon\u010dit
 SWT_Retry=Zkusit znovu
 SWT_Ignore=Ignorovat
@@ -16,10 +17,9 @@ SWT_Style=Styl
 SWT_Save=Ulo\u017eit
 SWT_ColorDialog_Title=Barvy
 SWT_FontDialog_Title=P\u00edsma
-SWT_Remove=Odstranit
+SWT_Remove=Odebrat
 SWT_Up=Nahoru
 SWT_Down=Dol\u016f
-SWT_Charset_ASCII=ASCII
 SWT_Password=Heslo:
 SWT_Username=U\u017eivatelsk\u00e9 jm\u00e9no:
 SWT_Open=Otev\u0159\u00edt

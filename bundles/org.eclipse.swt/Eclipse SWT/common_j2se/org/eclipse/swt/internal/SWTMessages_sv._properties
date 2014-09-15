@@ -1,8 +1,9 @@
 # Copyright by many contributors; see http://babel.eclipse.org/
 SWT_Yes=Ja
 SWT_No=Nej
-SWT_OK=OK
+SWT_OK=Ok
 SWT_Cancel=Avbryt
+SWT_Help=Hj\u00e4lp
 SWT_Abort=Avbryt
 SWT_Ignore=Ignorera
 SWT_Sample=Exempel
@@ -16,7 +17,6 @@ SWT_FontDialog_Title=Teckensnitt
 SWT_Remove=Ta bort
 SWT_Up=Upp
 SWT_Down=Ned
-SWT_Charset_ASCII=ASCII
 SWT_Password=L\u00f6senord:
 SWT_Open=\u00d6ppna
 SWT_Close=St\u00e4ng
@@ -28,5 +28,4 @@ SWT_General=Allm\u00e4nt
 SWT_Details=Detaljer
 SWT_Field=F\u00e4lt
 SWT_Value=V\u00e4rde
-SWT_Version=Version
 SWT_Subject=\u00c4mne
