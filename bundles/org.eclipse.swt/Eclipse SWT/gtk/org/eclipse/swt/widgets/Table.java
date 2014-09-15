@@ -11,12 +11,28 @@
 package org.eclipse.swt.widgets;
 
 
-import org.eclipse.swt.*;
-import org.eclipse.swt.internal.*;
-import org.eclipse.swt.internal.cairo.*;
-import org.eclipse.swt.internal.gtk.*;
-import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.events.*;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.SWTException;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.Font;
+import org.eclipse.swt.graphics.GC;
+import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.internal.Converter;
+import org.eclipse.swt.internal.ImageList;
+import org.eclipse.swt.internal.cairo.Cairo;
+import org.eclipse.swt.internal.gtk.GdkColor;
+import org.eclipse.swt.internal.gtk.GdkEventButton;
+import org.eclipse.swt.internal.gtk.GdkEventExpose;
+import org.eclipse.swt.internal.gtk.GdkRGBA;
+import org.eclipse.swt.internal.gtk.GdkRectangle;
+import org.eclipse.swt.internal.gtk.GtkAllocation;
+import org.eclipse.swt.internal.gtk.GtkCellRendererClass;
+import org.eclipse.swt.internal.gtk.GtkRequisition;
+import org.eclipse.swt.internal.gtk.OS;
 
 /** 
  * Instances of this class implement a selectable user interface
@@ -3006,6 +3022,17 @@ void setBackgroundColor (GdkColor color) {
 	super.setBackgroundColor (color);
 	if (!OS.GTK3) {
 		OS.gtk_widget_modify_base (handle, 0, color);
+	} else {
+		// Setting the background color overrides the selected background color
+		// so we have to reset it the default.
+		GdkColor defaultColor = getDisplay().COLOR_LIST_SELECTION;
+		GdkRGBA selectedBackground = new GdkRGBA ();
+		selectedBackground.alpha = 1;
+		selectedBackground.red = (defaultColor.red & 0xFFFF) / (float)0xFFFF;
+		selectedBackground.green = (defaultColor.green & 0xFFFF) / (float)0xFFFF;
+		selectedBackground.blue = (defaultColor.blue & 0xFFFF) / (float)0xFFFF;
+
+		OS.gtk_widget_override_background_color (handle, OS.GTK_STATE_FLAG_SELECTED, selectedBackground);
 	}
 }
 
