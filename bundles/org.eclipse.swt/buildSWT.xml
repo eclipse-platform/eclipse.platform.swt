@@ -498,9 +498,11 @@
 			<param name="cp" value=".classpath_carbon"/>
 		</antcall>
 		-->
+		<!-- Not building cocoa 32-bit
 		<antcall target="build_classes">
 			<param name="cp" value=".classpath_cocoa"/>
 		</antcall>
+		-->
 		<antcall target="build_classes">
 			<param name="cp" value=".classpath_gtk"/>
 		</antcall>
