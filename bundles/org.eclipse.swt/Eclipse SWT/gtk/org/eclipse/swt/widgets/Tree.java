@@ -2639,7 +2639,9 @@ void rendererRender (long /*int*/ cell, long /*int*/ cr, long /*int*/ window, lo
 					if (control != null) {
 						if (cr != 0) {
 							Cairo.cairo_save (cr);
-							Cairo.cairo_reset_clip (cr);
+							if (!OS.GTK3) {
+								Cairo.cairo_reset_clip (cr);
+							}
 						}
 						drawBackground (control, window, cr, 0, rect.x, rect.y, rect.width, rect.height);
 						if (cr != 0) {
@@ -2658,21 +2660,7 @@ void rendererRender (long /*int*/ cell, long /*int*/ cr, long /*int*/ window, lo
 				if (wasSelected) {
 					Control control = findBackgroundControl ();
 					if (control == null) control = this;
-					// GTK >= 3.10 sends a cairo for the window of the tree widget, but not for for the bin window.
-					// Besides, GTK 3.10 >= uses the same cairo for all the tree's children. SWT invalidates the cairo.
-					// The fix is to create a new cairo.
-					if (OS.GTK_VERSION >= OS.VERSION(3, 9, 0)) {
-						// A temporary fix for https://bugs.eclipse.org/bugs/show_bug.cgi?id=427480
-						// Force native painting
-//						if (window == 0) {
-//							window = OS.gtk_widget_get_window(handle);
-//						}
-//						if (window != 0) {
-//							GdkRectangle r = new GdkRectangle();
-//							OS.gdk_cairo_get_clip_rectangle(cr, r);
-//							drawBackground (control, window, 0, 0, rect.x, r.y, r.width, r.height);
-//						}
-					} else {
+					if (!OS.GTK3) {
 						if (cr != 0) {
 							Cairo.cairo_save (cr);
 							Cairo.cairo_reset_clip (cr);
@@ -2684,9 +2672,9 @@ void rendererRender (long /*int*/ cell, long /*int*/ cr, long /*int*/ window, lo
 					}
 				}
 				GC gc;
-				if (OS.GTK_VERSION >= OS.VERSION(3, 9, 0)) {
+				if (OS.GTK3){
 					GCData gcData = new GCData();
-					gcData.cairo = OS.gdk_cairo_create(OS.gtk_widget_get_window(handle));
+					gcData.cairo = cr;
 					gc = GC.gtk_new(this, gcData );
 				} else {
 					gc = new GC (this);
@@ -2700,12 +2688,8 @@ void rendererRender (long /*int*/ cell, long /*int*/ cr, long /*int*/ window, lo
 				}
 				gc.setFont (item.getFont (columnIndex));
 				if ((style & SWT.MIRRORED) != 0) rect.x = getClientWidth () - rect.width - rect.x;
-				// Since we create a new cairo, we have to clip it
-				if (OS.GTK_VERSION >= OS.VERSION(3, 9, 0) && cr != 0) {
-					GdkRectangle r = new GdkRectangle();
-					OS.gdk_cairo_get_clip_rectangle(cr, r);
-					gc.setClipping(rect.x, r.y, r.width, r.height);
-				} else {
+
+				if (!OS.GTK3) {
 					gc.setClipping (rect.x, rect.y, rect.width, rect.height);
 				}
 				Event event = new Event ();
@@ -2722,27 +2706,14 @@ void rendererRender (long /*int*/ cell, long /*int*/ cr, long /*int*/ window, lo
 				drawState = event.doit ? event.detail : 0;
 				// A temporary fix for https://bugs.eclipse.org/bugs/show_bug.cgi?id=427480
 				// Force native painting
-				if (OS.GTK_VERSION >= OS.VERSION(3, 9, 0)) {
+				if (OS.GTK3) {
 					drawState |= SWT.FOREGROUND;
 				}
 				drawFlags &= ~(OS.GTK_CELL_RENDERER_FOCUSED | OS.GTK_CELL_RENDERER_SELECTED);
 				if ((drawState & SWT.SELECTED) != 0) drawFlags |= OS.GTK_CELL_RENDERER_SELECTED;
 				if ((drawState & SWT.FOCUSED) != 0) drawFlags |= OS.GTK_CELL_RENDERER_FOCUSED;
 				if ((drawState & SWT.SELECTED) != 0) {
-					if (OS.GTK3) {
-					 if (OS.GTK_VERSION < OS.VERSION(3, 9, 0)) {
-						// GTK >= 3.10 creates a different background if we use this code
-						Cairo.cairo_save (cr);
-						Cairo.cairo_reset_clip (cr);
-						long /*int*/ context = OS.gtk_widget_get_style_context (widget);
-						OS.gtk_style_context_save (context);
-						OS.gtk_style_context_add_class (context, OS.GTK_STYLE_CLASS_CELL);
-						OS.gtk_style_context_set_state (context, OS.GTK_STATE_FLAG_SELECTED);
-						OS.gtk_render_background(context, cr, rect.x, rect.y, rect.width, rect.height);
-						OS.gtk_style_context_restore (context);
-						Cairo.cairo_restore (cr);
-					 }
-					} else {
+					if (!OS.GTK3) {
 						long /*int*/ style = OS.gtk_widget_get_style (widget);					
 						//TODO - parity and sorted
 						byte[] detail = Converter.wcsToMbcs (null, "cell_odd", true);
@@ -2756,7 +2727,15 @@ void rendererRender (long /*int*/ cell, long /*int*/ cr, long /*int*/ window, lo
 		}
 	}
 	if ((drawState & SWT.BACKGROUND) != 0 && (drawState & SWT.SELECTED) == 0) {
-		GC gc = new GC (this);
+
+		GC gc;
+		if (OS.GTK3){
+			GCData gcData = new GCData();
+			gcData.cairo = cr;
+			gc = GC.gtk_new(this, gcData );
+		} else {
+			gc = new GC (this);
+		}
 		gc.setBackground (item.getBackground (columnIndex));
 		GdkRectangle rect = new GdkRectangle ();
 		OS.memmove (rect, background_area, GdkRectangle.sizeof);
@@ -2799,12 +2778,9 @@ void rendererRender (long /*int*/ cell, long /*int*/ cr, long /*int*/ window, lo
 				contentX [0] -= imageWidth;
 				contentWidth [0] += imageWidth;
 				GC gc;
-				// GTK >= 3.10 sends a cairo for the window of the tree widget, but not for for the bin window.
-				// Besides, GTK >= 3.10 uses the same cairo for all the tree's children. SWT invalidates the cairo.
-				// The fix is to create a new cairo.
-				if (OS.GTK_VERSION >= OS.VERSION(3, 9, 0)) {
+				if (OS.GTK3){
 					GCData gcData = new GCData();
-					gcData.cairo = OS.gdk_cairo_create(OS.gtk_widget_get_window(handle));
+					gcData.cairo = cr;
 					gc = GC.gtk_new(this, gcData );
 				} else {
 					gc = new GC(this);
@@ -2835,14 +2811,11 @@ void rendererRender (long /*int*/ cell, long /*int*/ cr, long /*int*/ window, lo
 					rect.x = getClientWidth () - rect.width - rect.x;
 					clipRect.x = getClientWidth () - clipRect.width - clipRect.x;
 				}
-				// Since we create a new cairo, we have to clip it
-				if (OS.GTK_VERSION >= OS.VERSION(3, 9, 0) && (cr != 0)) {
-					GdkRectangle r = new GdkRectangle();
-					OS.gdk_cairo_get_clip_rectangle(cr, r);
-					gc.setClipping(clipRect.x, r.y, r.width, r.height);
-				} else {
+
+				if (!OS.GTK3){
 					gc.setClipping (clipRect.x, clipRect.y, clipRect.width, clipRect.height);
 				}
+
 				Event event = new Event ();
 				event.item = item;
 				event.index = columnIndex;
@@ -2854,7 +2827,7 @@ void rendererRender (long /*int*/ cell, long /*int*/ cr, long /*int*/ window, lo
 				event.detail = drawState;
 				// Temporary fix for https://bugs.eclipse.org/bugs/show_bug.cgi?id=427480
 				// Force native paint
-				if (OS.GTK_VERSION < OS.VERSION(3, 9, 0)) {
+				if (!OS.GTK3) {
 					sendEvent (SWT.PaintItem, event);
 				}
 				gc.dispose();
