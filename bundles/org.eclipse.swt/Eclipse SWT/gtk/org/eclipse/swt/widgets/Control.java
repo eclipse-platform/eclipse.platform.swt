@@ -2337,7 +2337,9 @@ boolean dragDetect (int x, int y, boolean filter, boolean dragOnTimeout, boolean
 			if (eventPtr != 0) {
 				break;
 			} else {
+				display.sendSleepEvent();
 				try {Thread.sleep(50);} catch (Exception ex) {}
+				display.sendWakeupEvent();
 			}
 		}
 		if (eventPtr == 0) return dragOnTimeout;
