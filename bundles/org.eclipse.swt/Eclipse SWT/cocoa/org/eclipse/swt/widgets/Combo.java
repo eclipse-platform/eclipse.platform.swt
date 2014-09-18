@@ -1108,12 +1108,14 @@ void mouseDown(long /*int*/ id, long /*int*/ sel, long /*int*/ theEvent) {
 	// while the view's cell editor is open we crash while tearing down the
 	// popup window. Fix is to retain the view before letting Cocoa track
 	// the mouse events.
-	
+
+	display.sendPreExternalEventDispatchEvent();
 	// 'view' will be cleared if disposed during the mouseDown so cache it.
 	NSView viewCopy = view;
 	viewCopy.retain();
 	super.mouseDown(id, sel, theEvent);
 	viewCopy.release();
+	display.sendPostExternalEventDispatchEvent();
 }
 
 /**

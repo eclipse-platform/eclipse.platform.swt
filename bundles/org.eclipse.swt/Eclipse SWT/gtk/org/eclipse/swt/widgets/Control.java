@@ -2332,16 +2332,16 @@ boolean dragDetect (int x, int y, boolean filter, boolean dragOnTimeout, boolean
 		* half a second. 
 		*/
 		long timeout = System.currentTimeMillis() + 500;
+		display.sendPreExternalEventDispatchEvent();
 		while (System.currentTimeMillis() < timeout) {
 			eventPtr = OS.gdk_event_get ();
 			if (eventPtr != 0) {
 				break;
 			} else {
-				display.sendSleepEvent();
 				try {Thread.sleep(50);} catch (Exception ex) {}
-				display.sendWakeupEvent();
 			}
 		}
+		display.sendPostExternalEventDispatchEvent();
 		if (eventPtr == 0) return dragOnTimeout;
 		switch (OS.GDK_EVENT_TYPE (eventPtr)) {
 			case OS.GDK_MOTION_NOTIFY: {

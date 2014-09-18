@@ -4268,7 +4268,7 @@ public boolean sleep () {
 		return false;
 	}
 	if (getMessageCount () != 0) return true;
-	sendSleepEvent();
+	sendPreExternalEventDispatchEvent ();
 	if (fds == 0) {
 		allocated_nfds = 2;
 		fds = OS.g_malloc (OS.GPollFD_sizeof () * allocated_nfds);
@@ -4313,7 +4313,7 @@ public boolean sleep () {
 		}
 	} while (!result && getMessageCount () == 0 && !wake);
 	wake = false;
-	sendWakeupEvent();
+	sendPostExternalEventDispatchEvent ();
 	return true;
 }
 
@@ -4454,47 +4454,49 @@ void sendEvent (int eventType, Event event) {
 	event.type = eventType;
 	if (event.time == 0) event.time = getLastEventTime ();
 	if (!filterEvent (event)) {
-		if (eventTable != null) sendEvent(eventTable, event);
+		if (eventTable != null) sendEvent (eventTable, event);
 	}
 }
 
-void sendEvent(EventTable eventTable, Event event) {
-	sendPreEvent(event);
+void sendEvent (EventTable eventTable, Event event) {
+	sendPreEvent (event);
 	try {
 		eventTable.sendEvent (event);
 	} finally {
-		sendPostEvent(event);
+		sendPostEvent (event);
 	}
 }
 
 void sendPreEvent(Event event) {
 	if (event == null || (event.type != SWT.PreEvent && event.type != SWT.PostEvent
-			&& event.type != SWT.Sleep && event.type != SWT.Wakeup)) {
-		if (this.eventTable != null && this.eventTable.hooks(SWT.PreEvent)) {
-			sendEvent(SWT.PreEvent, null);
+			&& event.type != SWT.PreExternalEventDispatch
+			&& event.type != SWT.PostExternalEventDispatch)) {
+		if (this.eventTable != null && this.eventTable.hooks (SWT.PreEvent)) {
+			sendEvent (SWT.PreEvent, null);
 		}
 	}
 }
 
 void sendPostEvent(Event event) {
 	if (event == null || (event.type != SWT.PreEvent && event.type != SWT.PostEvent
-			&& event.type != SWT.Sleep && event.type != SWT.Wakeup)) {
-		if (this.eventTable != null && this.eventTable.hooks(SWT.PostEvent)) {
-			sendEvent(SWT.PostEvent, null);
+			&& event.type != SWT.PreExternalEventDispatch
+			&& event.type != SWT.PostExternalEventDispatch)) {
+		if (this.eventTable != null && this.eventTable.hooks (SWT.PostEvent)) {
+			sendEvent (SWT.PostEvent, null);
 		}
 	}
 }
 
-void sendSleepEvent() {
-  if (this.eventTable != null && this.eventTable.hooks(SWT.Sleep)) {
-    sendEvent(SWT.Sleep, null);
-  }
+void sendPreExternalEventDispatchEvent() {
+	if (this.eventTable != null && this.eventTable.hooks (SWT.PreExternalEventDispatch)) {
+		sendEvent(SWT.PreExternalEventDispatch, null);
+	}
 }
 
-void sendWakeupEvent() {
-  if (this.eventTable != null && this.eventTable.hooks(SWT.Wakeup)) {
-    sendEvent(SWT.Wakeup, null);
-  }
+void sendPostExternalEventDispatchEvent() {
+	if (this.eventTable != null && this.eventTable.hooks (SWT.PostExternalEventDispatch)) {
+		sendEvent (SWT.PostExternalEventDispatch, null);
+	}
 }
 
 void setCurrentCaret (Caret caret) {

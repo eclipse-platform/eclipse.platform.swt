@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2013 IBM Corporation and others.
+ * Copyright (c) 2000, 2014 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -794,26 +794,42 @@ public class SWT {
 	public static final int PostEvent = 51;
 
 	/**
-	 * The Sleep event type (value is 52).
+	 * The PreExternalEventDispatch event type (value is 52).
 	 *
 	 * <p>
-	 * This event is sent before Display.sleep goes into an interruptible sleep.
+	 * This event is sent before calling a blocking method that does its own event dispatch outside
+	 * of the SWT code.
 	 * </p>
 	 *
-	 * @since 3.103
+	 * @since 3.104
 	 */
-	public static final int Sleep = 52;
+	public static final int PreExternalEventDispatch = 52;
 
 	/**
-	 * The Wakeup event type (value is 53).
+	 * The PostExternalEventDispatch event type (value is 53).
 	 *
 	 * <p>
-	 * This event is sent after Display.sleep wakes up from an interruptible sleep.
+	 * This event is sent after calling a blocking method that does its own event dispatch outside
+	 * of the SWT code.
 	 * </p>
 	 *
+	 * @since 3.104
+	 */
+	public static final int PostExternalEventDispatch = 53;
+
+	/**
+	 * @deprecated The same as PreExternalEventDispatch (value is 52).
 	 * @since 3.103
 	 */
-	public static final int Wakeup = 53;
+	@Deprecated
+	public static final int Sleep = PreExternalEventDispatch;
+
+	/**
+	 * @deprecated The same as PostExternalEventDispatch (value is 53). 
+	 * @since 3.103
+	 */
+	@Deprecated
+	public static final int Wakeup = PostExternalEventDispatch;
 
 	/* Event Details */
 	

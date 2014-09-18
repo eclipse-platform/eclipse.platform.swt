@@ -11,10 +11,10 @@
 package org.eclipse.swt.widgets;
 
 
-import org.eclipse.swt.internal.*;
-import org.eclipse.swt.internal.win32.*;
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.internal.*;
+import org.eclipse.swt.internal.win32.*;
 
 /**
  * Instances of this class are responsible for managing the
@@ -1380,7 +1380,7 @@ public Widget findWidget (Widget widget, long /*int*/ id) {
 long /*int*/ foregroundIdleProc (long /*int*/ code, long /*int*/ wParam, long /*int*/ lParam) {
 	if (code >= 0) {
 		if (runMessages && getMessageCount () != 0) {
-			sendWakeupEvent();
+			sendPostExternalEventDispatchEvent ();
 			if (runMessagesInIdle) {
 				if (runMessagesInMessageProc) {
 					OS.PostMessage (hwndMessage, SWT_RUNASYNC, 0, 0);
@@ -1404,7 +1404,7 @@ long /*int*/ foregroundIdleProc (long /*int*/ code, long /*int*/ wParam, long /*
 			MSG msg = new MSG();
 			int flags = OS.PM_NOREMOVE | OS.PM_NOYIELD | OS.PM_QS_INPUT;
 			if (!OS.PeekMessage (msg, 0, 0, 0, flags)) wakeThread ();
-			sendSleepEvent();
+			sendPreExternalEventDispatchEvent ();
 		}
 	}
 	return OS.CallNextHookEx (idleHook, (int)/*64*/code, wParam, lParam);
@@ -4343,47 +4343,49 @@ void sendEvent (int eventType, Event event) {
 	event.type = eventType;
 	if (event.time == 0) event.time = getLastEventTime ();
 	if (!filterEvent (event)) {
-		if (eventTable != null) sendEvent(eventTable, event);
+		if (eventTable != null) sendEvent (eventTable, event);
 	}
 }
 
-void sendEvent(EventTable eventTable, Event event) {
-	sendPreEvent(event);
+void sendEvent (EventTable eventTable, Event event) {
+	sendPreEvent (event);
 	try {
 		eventTable.sendEvent (event);
 	} finally {
-		sendPostEvent(event);
+		sendPostEvent (event);
 	}
 }
 
-void sendPreEvent(Event event) {
+void sendPreEvent (Event event) {
 	if (event == null || (event.type != SWT.PreEvent && event.type != SWT.PostEvent
-			&& event.type != SWT.Sleep && event.type != SWT.Wakeup)) {
-		if (this.eventTable != null && this.eventTable.hooks(SWT.PreEvent)) {
-			sendEvent(SWT.PreEvent, null);
+			&& event.type != SWT.PreExternalEventDispatch
+			&& event.type != SWT.PostExternalEventDispatch)) {
+		if (this.eventTable != null && this.eventTable.hooks (SWT.PreEvent)) {
+			sendEvent (SWT.PreEvent, null);
 		}
 	}
 }
 
-void sendPostEvent(Event event) {
+void sendPostEvent (Event event) {
 	if (event == null || (event.type != SWT.PreEvent && event.type != SWT.PostEvent
-			&& event.type != SWT.Sleep && event.type != SWT.Wakeup)) {
-		if (this.eventTable != null && this.eventTable.hooks(SWT.PostEvent)) {
-			sendEvent(SWT.PostEvent, null);
+			&& event.type != SWT.PreExternalEventDispatch
+			&& event.type != SWT.PostExternalEventDispatch)) {
+		if (this.eventTable != null && this.eventTable.hooks (SWT.PostEvent)) {
+			sendEvent (SWT.PostEvent, null);
 		}
 	}
 }
 
-void sendSleepEvent() {
-  if (this.eventTable != null && this.eventTable.hooks(SWT.Sleep)) {
-    sendEvent(SWT.Sleep, null);
-  }
+void sendPreExternalEventDispatchEvent () {
+	if (this.eventTable != null && this.eventTable.hooks (SWT.PreExternalEventDispatch)) {
+		sendEvent (SWT.PreExternalEventDispatch, null);
+	}
 }
 
-void sendWakeupEvent() {
-  if (this.eventTable != null && this.eventTable.hooks(SWT.Wakeup)) {
-    sendEvent(SWT.Wakeup, null);
-  }
+void sendPostExternalEventDispatchEvent() {
+	if (this.eventTable != null && this.eventTable.hooks (SWT.PostExternalEventDispatch)) {
+		sendEvent (SWT.PostExternalEventDispatch, null);
+	}
 }
 
 /**
@@ -4694,14 +4696,14 @@ int shiftedKey (int key) {
 public boolean sleep () {
 	checkDevice ();
 	if (runMessages && getMessageCount () != 0) return true;
-	sendSleepEvent();
+	sendPreExternalEventDispatchEvent ();
 	if (OS.IsWinCE) {
 		OS.MsgWaitForMultipleObjectsEx (0, 0, OS.INFINITE, OS.QS_ALLINPUT, OS.MWMO_INPUTAVAILABLE);
-		sendWakeupEvent();
+		sendPostExternalEventDispatchEvent();
 		return true;
 	}
 	boolean result = OS.WaitMessage ();
-	sendWakeupEvent();
+	sendPostExternalEventDispatchEvent ();
 	return result;
 }
 

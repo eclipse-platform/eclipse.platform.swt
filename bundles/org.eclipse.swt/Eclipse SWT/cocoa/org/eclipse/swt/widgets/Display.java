@@ -4175,7 +4175,7 @@ void sendEvent (int eventType, Event event) {
 	event.display = this;
 	event.type = eventType;
 	if (event.time == 0) event.time = getLastEventTime ();
-	sendEvent(eventTable, event);
+	sendEvent (eventTable, event);
 }
 
 void sendEvent (EventTable table, Event event) {
@@ -4183,11 +4183,11 @@ void sendEvent (EventTable table, Event event) {
 		sendEventCount++;
 		if (!filterEvent (event)) {
 			if (table != null) {
-				sendPreEvent(event);
+				sendPreEvent (event);
 				try {
 					table.sendEvent (event);
 				} finally {
-					sendPostEvent(event);
+					sendPostEvent (event);
 				}
 			}
 		}
@@ -4196,34 +4196,36 @@ void sendEvent (EventTable table, Event event) {
 	}
 }
 
-void sendPreEvent(Event event) {
+void sendPreEvent (Event event) {
 	if (event == null || (event.type != SWT.PreEvent && event.type != SWT.PostEvent
-			&& event.type != SWT.Sleep && event.type != SWT.Wakeup)) {
-		if (this.eventTable != null && this.eventTable.hooks(SWT.PreEvent)) {
-			sendEvent(SWT.PreEvent, null);
+			&& event.type != SWT.PreExternalEventDispatch
+			&& event.type != SWT.PostExternalEventDispatch)) {
+		if (this.eventTable != null && this.eventTable.hooks (SWT.PreEvent)) {
+			sendEvent (SWT.PreEvent, null);
 		}
 	}
 }
 
-void sendPostEvent(Event event) {
+void sendPostEvent (Event event) {
 	if (event == null || (event.type != SWT.PreEvent && event.type != SWT.PostEvent
-			&& event.type != SWT.Sleep && event.type != SWT.Wakeup)) {
-		if (this.eventTable != null && this.eventTable.hooks(SWT.PostEvent)) {
-			sendEvent(SWT.PostEvent, null);
+			&& event.type != SWT.PreExternalEventDispatch
+			&& event.type != SWT.PostExternalEventDispatch)) {
+		if (this.eventTable != null && this.eventTable.hooks (SWT.PostEvent)) {
+			sendEvent (SWT.PostEvent, null);
 		}
 	}
 }
 
-void sendSleepEvent() {
-  if (this.eventTable != null && this.eventTable.hooks(SWT.Sleep)) {
-    sendEvent(SWT.Sleep, null);
-  }
+void sendPreExternalEventDispatchEvent() {
+	if (this.eventTable != null && this.eventTable.hooks (SWT.PreExternalEventDispatch)) {
+		sendEvent (SWT.PreExternalEventDispatch, null);
+	}
 }
 
-void sendWakeupEvent() {
-  if (this.eventTable != null && this.eventTable.hooks(SWT.Wakeup)) {
-    sendEvent(SWT.Wakeup, null);
-  }
+void sendPostExternalEventDispatchEvent() {
+	if (this.eventTable != null && this.eventTable.hooks (SWT.PostExternalEventDispatch)) {
+		sendEvent (SWT.PostExternalEventDispatch, null);
+	}
 }
 
 static NSString getApplicationName() {
@@ -4675,7 +4677,7 @@ public void setSynchronizer (Synchronizer synchronizer) {
 public boolean sleep () {
 	checkDevice ();
 	if (getMessageCount () != 0) return true;
-	sendSleepEvent();
+	sendPreExternalEventDispatchEvent();
 	try {
 		addPool();
 		allowTimers = runAsyncMessages = false;
@@ -4684,7 +4686,7 @@ public boolean sleep () {
 	} finally {
 		removePool();
 	}
-	sendWakeupEvent();
+	sendPostExternalEventDispatchEvent();
 	return true;
 }
 
@@ -4985,37 +4987,42 @@ void applicationDidResignActive (long /*int*/ id, long /*int*/ sel, long /*int*/
 
 long /*int*/ applicationNextEventMatchingMask (long /*int*/ id, long /*int*/ sel, long /*int*/ mask, long /*int*/ expiration, long /*int*/ mode, long /*int*/ dequeue) {
 	if (dequeue != 0 && trackingControl != null && !trackingControl.isDisposed()) runDeferredEvents();
-	objc_super super_struct = new objc_super();
-	super_struct.receiver = id;
-	super_struct.super_class = OS.objc_msgSend(id, OS.sel_superclass);
-	long /*int*/ result = OS.objc_msgSendSuper(super_struct, sel, mask, expiration, mode, dequeue != 0);
-	if (result != 0) {
-		/*
-		 * Feature of Cocoa.  When an NSComboBox's items list is visible it runs an event
-		 * loop that will close the list in response to a processed NSApplicationDefined
-		 * event.
-		 *
-		 * Mozilla-style Browsers are a common source of NSApplicationDefined events that
-		 * will cause this to happen, which is not desirable in the context of SWT.  The
-		 * workaround is to detect this case and to not return the event that would trigger
-		 * this to happen.
-		 */
-		if (dequeue != 0 && currentCombo != null && !currentCombo.isDisposed()) {
-			NSEvent nsEvent = new NSEvent(result);
-			if (mozillaRunning) {
-				if (nsEvent.type() == OS.NSApplicationDefined) {
-					return 0;
+	sendPreExternalEventDispatchEvent();
+	try {
+		objc_super super_struct = new objc_super();
+		super_struct.receiver = id;
+		super_struct.super_class = OS.objc_msgSend(id, OS.sel_superclass);
+		long /*int*/ result = OS.objc_msgSendSuper(super_struct, sel, mask, expiration, mode, dequeue != 0);
+		if (result != 0) {
+			/*
+			 * Feature of Cocoa.  When an NSComboBox's items list is visible it runs an event
+			 * loop that will close the list in response to a processed NSApplicationDefined
+			 * event.
+			 *
+			 * Mozilla-style Browsers are a common source of NSApplicationDefined events that
+			 * will cause this to happen, which is not desirable in the context of SWT.  The
+			 * workaround is to detect this case and to not return the event that would trigger
+			 * this to happen.
+			 */
+			if (dequeue != 0 && currentCombo != null && !currentCombo.isDisposed()) {
+				NSEvent nsEvent = new NSEvent(result);
+				if (mozillaRunning) {
+					if (nsEvent.type() == OS.NSApplicationDefined) {
+						return 0;
+					}
+				}
+				if (nsEvent.type() == OS.NSKeyDown) {
+					currentCombo.sendTrackingKeyEvent(nsEvent, SWT.KeyDown);
 				}
 			}
-			if (nsEvent.type() == OS.NSKeyDown) {
-				currentCombo.sendTrackingKeyEvent(nsEvent, SWT.KeyDown);
+			if (dequeue != 0 && trackingControl != null && !trackingControl.isDisposed()) {
+				applicationSendTrackingEvent(new NSEvent(result), trackingControl);
 			}
 		}
-		if (dequeue != 0 && trackingControl != null && !trackingControl.isDisposed()) {
-			applicationSendTrackingEvent(new NSEvent(result), trackingControl);
-		}
+		return result;
+	} finally {
+		sendPostExternalEventDispatchEvent();
 	}
-	return result;
 }
 
 void applicationSendTrackingEvent (NSEvent nsEvent, Control trackingControl) {
