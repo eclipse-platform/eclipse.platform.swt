@@ -980,9 +980,12 @@ void drawInteriorWithFrame_inView (long /*int*/ id, long /*int*/ sel, NSRect rec
 	NSOutlineView widget = (NSOutlineView)this.view;
 	long /*int*/ [] outValue = new long /*int*/ [1];
 	OS.object_getInstanceVariable(id, Display.SWT_ROW, outValue);
+	long /*int*/ rowIndex = widget.rowForItem(new id(outValue [0]));
+	if (rowIndex == -1) {
+		return;	// the row item doesn't exist or has been disposed
+	}
 	TreeItem item = (TreeItem) display.getWidget (outValue [0]);
 	if (item == null) return;
-	long /*int*/ rowIndex = widget.rowForItem(item.handle);
 	OS.object_getInstanceVariable(id, Display.SWT_COLUMN, outValue);
 	long /*int*/ tableColumn = outValue[0];
 	long /*int*/ nsColumnIndex = widget.tableColumns().indexOfObjectIdenticalTo(new id(tableColumn));
