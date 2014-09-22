@@ -229,9 +229,7 @@ public class AlphaTab extends AnimatedGraphicsTab {
 			return new Font(device, "Verdana", points, style);	
 		} else if (SWT.getPlatform() == "gtk") {
 			return new Font(device, "Baekmuk Batang", points, style);		
-		} else if (SWT.getPlatform() == "carbon") {
-			return new Font(device, "Verdana", points, style);
-		} else { // photon
+		} else { 
 			return new Font(device, "Verdana", points, style);
 		}
 	}

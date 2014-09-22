@@ -4300,7 +4300,7 @@ public static String getMessage(String key, Object[] args) {
 
 /**
  * Returns the SWT platform name.
- * Examples: "win32", "motif", "gtk", "photon", "carbon", "cocoa", "wpf"
+ * Examples: "win32", "gtk", "carbon", "cocoa", "wpf"
  *
  * @return the SWT platform name
  */

@@ -189,7 +189,7 @@ static String getPlatformFontFace(int index) {
 		return new String [] {"Luxi Mono", "KacstTitleL", "Baekmuk Batang", "Baekmuk Headline", "KacstFarsi", "Baekmuk Gulim", "URW Chancery L"} [index];
 	} else if (SWT.getPlatform() == "carbon") {
 		return new String [] {"Apple Chancery", "Brush Script MT", "Comic Sans MS", "Impact", "Herculanum", "Lucida Grande", "Papyrus"} [index];
-	} else { // photon, etc ...
+	} else {
 		return new String [] {"Courier", "Verdana", "Verdana", "Verdana", "Verdana", "Verdana", "Verdana"} [index];
 	}
 }

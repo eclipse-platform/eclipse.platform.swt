@@ -57,7 +57,7 @@ public class SnippetLauncher {
 							platform = "JavaXPCOM";
 							skip = true;
 						} else {
-							String [] platforms = {"win32", "gtk", "photon", "carbon"};
+							String [] platforms = {"win32", "gtk", "carbon"};
 							for (int p = 0; p < platforms.length; p++) {
 								if (!platforms[p].equals(platform) && source.indexOf("." + platforms[p]) != -1) {
 									platform = platforms[p];

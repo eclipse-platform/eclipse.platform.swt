@@ -140,9 +140,7 @@ static String getPlatformFontFace(int index) {
 		return new String [] {"Arial", "Impact", "Times", "Verdana"} [index];	
 	} else if (SWT.getPlatform() == "gtk") {
 		return new String [] {"URW Chancery L", "Baekmuk Batang", "Baekmuk Headline", "KacsTitleL"} [index];
-	} else if (SWT.getPlatform() == "carbon") {
-		return new String [] {"Arial", "Impact", "Times", "Verdana"} [index];
-	} else { // photon, etc ...
+	} else { 
 		return new String [] {"Arial", "Impact", "Times", "Verdana"} [index];
 	}
 }

@@ -52,14 +52,8 @@ class LinkTab extends Tab {
 		if (borderButton.getSelection ()) style |= SWT.BORDER;
 	
 		/* Create the example widgets */		
-		try {
-			link1 = new Link (linkGroup, style);
-			link1.setText (ControlExample.getResourceString("LinkText"));
-		} catch (SWTError e) {
-			// temporary code for photon
-			Label label = new Label (linkGroup, SWT.CENTER | SWT.WRAP);
-			label.setText ("Link widget not suported");
-		}
+		link1 = new Link (linkGroup, style);
+		link1.setText (ControlExample.getResourceString("LinkText"));
 	}
 	
 	/**
@@ -79,9 +73,7 @@ class LinkTab extends Tab {
 	 */
 	@Override
 	Widget [] getExampleWidgets () {
-//		 temporary code for photon
-		if (link1 != null) return new Widget [] {link1};
-		return new Widget[] {};
+		return new Widget [] {link1};
 	}
 	
 	/**
