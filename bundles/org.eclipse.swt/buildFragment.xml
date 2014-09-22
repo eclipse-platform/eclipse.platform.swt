@@ -245,46 +245,6 @@
 		<antcall target="replace64"/>
 	</target>
 		
-	<target name="copy.photon.src">
-		<property name="copy.src.dir" value="${temp.folder}/@dot.src"/>
-		<delete dir="${copy.src.dir}" quiet="true"/>
-		<copy todir="${copy.src.dir}" failonerror="true" overwrite="true">
-			<fileset dir="${plugindir}/Eclipse SWT/common/"/>
-			<fileset dir="${plugindir}/Eclipse SWT/common_j2se/" excludes="**/*._properties"/>
-			<fileset dir="${plugindir}/Eclipse SWT/emulated/graphics/"/>
-			<fileset dir="${plugindir}/Eclipse SWT/emulated/bidi/"/>
-			<fileset dir="${plugindir}/Eclipse SWT/emulated/coolbar/"/>
-			<fileset dir="${plugindir}/Eclipse SWT/emulated/textlayout/"/>
-			<fileset dir="${plugindir}/Eclipse SWT/emulated/tray/"/>
-			<fileset dir="${plugindir}/Eclipse SWT/emulated/treetable/"/>
-			<fileset dir="${plugindir}/Eclipse SWT/emulated/expand/"/>
-			<fileset dir="${plugindir}/Eclipse SWT/emulated/tooltip/"/>
-			<fileset dir="${plugindir}/Eclipse SWT/emulated/ime/"/>
-			<fileset dir="${plugindir}/Eclipse SWT/emulated/taskbar/"/>
-			<fileset dir="${plugindir}/Eclipse SWT/photon/"/>
-			<fileset dir="${plugindir}/Eclipse SWT Accessibility/common/"/>
-			<fileset dir="${plugindir}/Eclipse SWT Accessibility/emulated/"/>
-			<fileset dir="${plugindir}/Eclipse SWT Browser/common/"/>
-			<fileset dir="${plugindir}/Eclipse SWT Browser/photon/"/>
-			<fileset dir="${plugindir}/Eclipse SWT Custom Widgets/common/"/>
-			<fileset dir="${plugindir}/Eclipse SWT Drag and Drop/common/"/>
-			<fileset dir="${plugindir}/Eclipse SWT Drag and Drop/photon/"/>
-			<fileset dir="${plugindir}/Eclipse SWT OpenGL/emulated/"/>
-			<fileset dir="${plugindir}/Eclipse SWT OpenGL/common/"/>
-			<fileset dir="${plugindir}/Eclipse SWT PI/common_j2se/"/>
-			<fileset dir="${plugindir}/Eclipse SWT PI/common/"/>
-			<fileset dir="${plugindir}/Eclipse SWT PI/photon/"/>
-			<fileset dir="${plugindir}/Eclipse SWT Printing/common/"/>
-			<fileset dir="${plugindir}/Eclipse SWT Printing/photon/"/>
-			<fileset dir="${plugindir}/Eclipse SWT Program/common/"/>
-			<fileset dir="${plugindir}/Eclipse SWT Program/photon/"/>
-			<fileset dir="${plugindir}/Eclipse SWT Theme/emulated/"/>
-			<fileset dir="${plugindir}/components/" excludes="**/*.idl" />
-		</copy>
-		<antcall target="copy.translationfiles"/>
-		<antcall target="replace64"/>
-	</target>
-													
 	<target name="copy.win32.src">
 		<property name="copy.src.dir" value="${temp.folder}/@dot.src"/>
 		<delete dir="${copy.src.dir}" quiet="true"/>

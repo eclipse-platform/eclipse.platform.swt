@@ -40,7 +40,6 @@
 	<property name="src_cocoa" value="${src_common} 'bundles/org.eclipse.swt/Eclipse SWT PI/cocoa/library' 'bundles/org.eclipse.swt/Eclipse SWT AWT/cocoa/library'"/>
 	<property name="src_carbon" value="${src_common} 'bundles/org.eclipse.swt/Eclipse SWT PI/carbon/library' 'bundles/org.eclipse.swt/Eclipse SWT OpenGL/carbon/library'"/>
 	<property name="src_wpf" value="${src_common} 'bundles/org.eclipse.swt/Eclipse SWT PI/wpf/library' 'bundles/org.eclipse.swt/Eclipse SWT PI/wpf_win32/library'"/>
-	<property name="src_photon" value="${src_common} 'bundles/org.eclipse.swt/Eclipse SWT PI/photon/library'"/>
 
 	<property name="file_library_j2se" value="bundles/org.eclipse.swt/Eclipse SWT PI/common_j2se/org/eclipse/swt/internal/Library.java"/>
 	<property name="file_library_j2me" value="bundles/org.eclipse.swt/Eclipse SWT PI/common_j2me/org/eclipse/swt/internal/Library.java"/>
@@ -122,12 +121,6 @@
 			<param name="library_count" value="8"/>
 			<param name="fragment" value="org.eclipse.swt.gtk.solaris.x86"/>
 		</antcall>
-		<!-- Photon is not being built
-		<antcall target="check_fragment_libraries">
-			<param name="library_count" value="1"/>
-			<param name="fragment" value="org.eclipse.swt.photon.qnx.x86"/>
-		</antcall>
-		-->
 		<antcall target="check_fragment_libraries">
 			<param name="library_count" value="4"/>
 			<param name="fragment" value="org.eclipse.swt.win32.win32.ia64"/>
@@ -163,7 +156,6 @@
 			<exclude name="**/.git/**"/>
 			<exclude name="**/org.eclipse.swt.carbon.macosx/**"/>
 			<exclude name="**/org.eclipse.swt.gtk.linux.ia64/**"/>
-			<exclude name="**/org.eclipse.swt.photon.qnx.x86/**"/>
 			<exclude name="**/org.eclipse.swt.wpf.win32.x86/**"/>
 			<exclude name="**/org.eclipse.swt.cocoa.macosx/**"/>
 		</fileset>
@@ -173,7 +165,6 @@
 			<exclude name="**/.git/**"/>
 			<exclude name="**/org.eclipse.swt.carbon.macosx/**"/>
 			<exclude name="**/org.eclipse.swt.gtk.linux.ia64/**"/>
-			<exclude name="**/org.eclipse.swt.photon.qnx.x86/**"/>
 			<exclude name="**/org.eclipse.swt.wpf.win32.x86/**"/>
 			<exclude name="**/org.eclipse.swt.cocoa.macosx/**"/>
 		</fileset>
@@ -511,11 +502,6 @@
 		<antcall target="build_classes">
 			<param name="cp" value=".classpath_win32"/>
 		</antcall>
-		<!-- Not building Photon
-		<antcall target="build_classes">
-			<param name="cp" value=".classpath_photon"/>
-		</antcall>
-		-->
 		<!-- Not building WPF
 		<antcall target="build_classes">
 			<param name="cp" value=".classpath_wpf"/>
@@ -817,7 +803,6 @@
 			<exclude name="**/.git/**"/>
 			<exclude name="**/org.eclipse.swt.carbon.macosx/**"/>
 			<exclude name="**/org.eclipse.swt.gtk.linux.ia64/**"/>
-			<exclude name="**/org.eclipse.swt.photon.qnx.x86/**"/>
 			<exclude name="**/org.eclipse.swt.wpf.win32.x86/**"/>
 			<exclude name="**/org.eclipse.swt.cocoa.macosx/**"/>
 		</fileset>
@@ -838,7 +823,6 @@
 			<exclude name="**/tmpdir/**"/>
 			<exclude name="**/org.eclipse.swt.carbon.macosx/**"/>
 			<exclude name="**/org.eclipse.swt.gtk.linux.ia64/**"/>
-			<exclude name="**/org.eclipse.swt.photon.qnx.x86/**"/>
 			<exclude name="**/org.eclipse.swt.wpf.win32.x86/**"/>
 			<exclude name="**/org.eclipse.swt.cocoa.macosx/**"/>
 		</fileset>
