@@ -64,7 +64,6 @@ public class SwtTestUtil {
 	public final static boolean isCarbon = SWT.getPlatform().startsWith("carbon");
 	public final static boolean isCocoa = SWT.getPlatform().startsWith("cocoa");
 	public final static boolean isGTK = SWT.getPlatform().equals("gtk");
-	public final static boolean isPhoton = SWT.getPlatform().equals("photon");
 	public final static boolean isLinux = System.getProperty("os.name").equals("Linux");
 	public final static boolean isAIX = System.getProperty("os.name").equals("AIX");
 	public final static boolean isSolaris = System.getProperty("os.name").equals("Solaris") || System.getProperty("os.name").equals("SunOS");
