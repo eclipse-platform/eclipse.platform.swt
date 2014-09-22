@@ -743,12 +743,8 @@ protected void consistencyEvent(final int paramA, final int paramB,
                                     pt[0], pt[1]));
                         break;
                     case ConsistencyUtility.SHELL_ICONIFY:
-                        if(SwtTestUtil.isCarbon)
-                            Assert.assertTrue(test,
-                                ConsistencyUtility.postShellIconify(display, pt[0], paramA));
-                        else
-                            Assert.assertTrue(test,
-                                ConsistencyUtility.postShellIconify(display, pt[1], paramA));
+                        Assert.assertTrue(test,
+                            ConsistencyUtility.postShellIconify(display, pt[1], paramA));
                     	if(control instanceof Shell) {
                     	    display.syncExec(new Thread() {
                     	        @Override

@@ -61,7 +61,6 @@ public class SwtTestUtil {
 	
 	public static final String testFontName;
 	public final static boolean isWindows = SWT.getPlatform().startsWith("win32");
-	public final static boolean isCarbon = SWT.getPlatform().startsWith("carbon");
 	public final static boolean isCocoa = SWT.getPlatform().startsWith("cocoa");
 	public final static boolean isGTK = SWT.getPlatform().equals("gtk");
 	public final static boolean isLinux = System.getProperty("os.name").equals("Linux");

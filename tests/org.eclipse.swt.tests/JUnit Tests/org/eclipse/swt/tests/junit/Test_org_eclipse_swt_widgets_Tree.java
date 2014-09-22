@@ -384,11 +384,6 @@ public void test_setItemCountI() {
 }
 
 public void test_setLinesVisibleZ() {
-	if (SwtTestUtil.isCarbon) {
-		// carbon does not support lines
-		tree.getLinesVisible();
-		return;
-	}
 	assertFalse(tree.getLinesVisible());
 	tree.setLinesVisible(true);
 	assertTrue(tree.getLinesVisible());

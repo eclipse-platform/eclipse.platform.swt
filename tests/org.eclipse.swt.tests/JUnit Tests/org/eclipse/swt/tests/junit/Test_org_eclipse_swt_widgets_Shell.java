@@ -469,10 +469,7 @@ public void test_consistency_Iconify() {
 public void test_consistency_Close() {
     createShell();
     consistencyPrePackShell();
-    if(!SwtTestUtil.isCarbon)
-        consistencyEvent(0, SWT.ALT, 0, SWT.F4, ConsistencyUtility.DOUBLE_KEY_PRESS);
-    else
-        consistencyEvent(10, 10, 1, 0, ConsistencyUtility.MOUSE_CLICK);
+    consistencyEvent(0, SWT.ALT, 0, SWT.F4, ConsistencyUtility.DOUBLE_KEY_PRESS);
     createShell();
 }
 

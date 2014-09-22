@@ -368,7 +368,7 @@ public class ConsistencyUtility {
 
     //determines which button to drag with
     private static int determineDrag() {
-        if(SwtTestUtil.isWindows || SwtTestUtil.isCarbon || SwtTestUtil.isGTK)
+        if(SwtTestUtil.isWindows || SwtTestUtil.isGTK)
             return 1;
         return 2;
     }
@@ -394,8 +394,6 @@ public class ConsistencyUtility {
             x += -35;
         } else if(SwtTestUtil.isLinux) {
         	x += -16;
-        } else if (SwtTestUtil.isCarbon) {
-        	x += 30;
         }
         return postClick(display, x, y, button);    
     }
