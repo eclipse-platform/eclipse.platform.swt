@@ -66,7 +66,7 @@ public class ControlExample {
 		 * We try to recover some width by using shorter tab names. */
 		Point size = parent.computeSize(SWT.DEFAULT, SWT.DEFAULT);
 		Rectangle monitorArea = parent.getMonitor().getClientArea();
-		boolean isMac = SWT.getPlatform().equals("carbon") || SWT.getPlatform().equals("cocoa");
+		boolean isMac = SWT.getPlatform().equals("cocoa");
 		if (size.x > monitorArea.width && isMac) {
 			TabItem [] tabItems = tabFolder.getItems();
 			for (int i=0; i<tabItems.length; i++) {

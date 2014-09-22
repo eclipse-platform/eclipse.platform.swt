@@ -160,7 +160,6 @@ public class StyledText extends Canvas {
 	final static boolean DOUBLE_BUFFER;
 	static {
 		String platform = SWT.getPlatform();
-		IS_CARBON = "carbon".equals(platform);
 		IS_GTK = "gtk".equals(platform);
 		DOUBLE_BUFFER = !IS_CARBON;
 	}

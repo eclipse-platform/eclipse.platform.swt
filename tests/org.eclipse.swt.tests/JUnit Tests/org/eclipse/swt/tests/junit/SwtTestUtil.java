@@ -57,7 +57,7 @@ public class SwtTestUtil {
 	public static String[] transparentImageFilenames = new String[] {"transparent.png"};
 	
 	// specify reparentable platforms
-	public static String[] reparentablePlatforms = new String[] {"win32", "gtk", "carbon", "cocoa"};
+	public static String[] reparentablePlatforms = new String[] {"win32", "gtk", "cocoa"};
 	
 	public static final String testFontName;
 	public final static boolean isWindows = SWT.getPlatform().startsWith("win32");

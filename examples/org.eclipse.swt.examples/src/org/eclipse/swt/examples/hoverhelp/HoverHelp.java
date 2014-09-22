@@ -142,7 +142,7 @@ public class HoverHelp {
 		String platform = SWT.getPlatform();
 		String helpKey = "F1";
 		if (platform.equals("gtk")) helpKey = "Ctrl+F1";
-		if (platform.equals("carbon") || platform.equals("cocoa")) helpKey = "Help";
+		if (platform.equals("cocoa")) helpKey = "Help";
 
 		ToolBar bar = new ToolBar (frame, SWT.BORDER);
 		for (int i=0; i<5; i++) {

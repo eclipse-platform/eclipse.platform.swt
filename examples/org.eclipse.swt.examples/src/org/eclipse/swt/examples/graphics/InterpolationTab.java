@@ -190,8 +190,6 @@ static String getPlatformFont() {
 		return "Arial";	
 	} else if (SWT.getPlatform() == "gtk") {
 		return "Baekmuk Batang";		
-	} else if (SWT.getPlatform() == "carbon") {
-		return "Arial";
 	} else {
 		return "Verdana";
 	}

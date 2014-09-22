@@ -77,7 +77,7 @@ static void initialize(final Display display, Browser browser) {
 			Browser browser = (Browser)event.widget;
 			final Shell shell = browser.getShell();
 			/* popup blocker - ignore windows with no style */
-			boolean isOSX = SWT.getPlatform().equals ("cocoa") || SWT.getPlatform().equals ("carbon");
+			boolean isOSX = SWT.getPlatform().equals ("cocoa");
 			if (!event.addressBar && !event.statusBar && !event.toolBar && (!event.menuBar || isOSX)) {
 				System.out.println("Popup blocked.");
 				event.display.asyncExec(new Runnable() {

@@ -258,8 +258,6 @@ public class CountDownTab extends AnimatedGraphicsTab {
 			return new String[] { "Courier", "Impact" }[index];
 		} else if (SWT.getPlatform() == "gtk") {
 			return new String[] { "Courier", "Baekmuk Headline" }[index];
-		} else if (SWT.getPlatform() == "carbon") {
-			return new String[] { "Courier", "Impact" }[index];
 		} else { 
 			return new String[] { "Courier", "Verdana" }[index];
 		}

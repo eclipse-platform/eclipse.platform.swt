@@ -56,7 +56,7 @@ public class Snippet304 {
 			public void run(){
     			int key = SWT.END;
     			String platform = SWT.getPlatform();
-    			if (platform.equals("carbon") || platform.equals("cocoa") ) {
+    			if (platform.equals("cocoa") ) {
         			key = SWT.ARROW_DOWN;
     			}
     	        postEvent(SWT.MOD1, SWT.KeyDown);
