@@ -38,7 +38,6 @@
 	<property name="src_win32" value="${src_common} 'bundles/org.eclipse.swt/Eclipse SWT PI/win32/library' 'bundles/org.eclipse.swt/Eclipse SWT AWT/win32/library' 'bundles/org.eclipse.swt/Eclipse SWT OpenGL/win32/library' 'bundles/org.eclipse.swt/Eclipse SWT WebKit/win32/library'"/>
 	<property name="src_gtk" value="${src_common} 'bundles/org.eclipse.swt/Eclipse SWT PI/gtk/library' 'bundles/org.eclipse.swt/Eclipse SWT AWT/gtk/library' 'bundles/org.eclipse.swt/Eclipse SWT OpenGL/glx/library' 'bundles/org.eclipse.swt/Eclipse SWT PI/cairo/library' 'bundles/org.eclipse.swt/Eclipse SWT Program/gnome/library' 'bundles/org.eclipse.swt/Eclipse SWT Program/cde/library' 'bundles/org.eclipse.swt/Eclipse SWT WebKit/gtk/library' "/>
 	<property name="src_cocoa" value="${src_common} 'bundles/org.eclipse.swt/Eclipse SWT PI/cocoa/library' 'bundles/org.eclipse.swt/Eclipse SWT AWT/cocoa/library'"/>
-	<property name="src_carbon" value="${src_common} 'bundles/org.eclipse.swt/Eclipse SWT PI/carbon/library' 'bundles/org.eclipse.swt/Eclipse SWT OpenGL/carbon/library'"/>
 	<property name="src_wpf" value="${src_common} 'bundles/org.eclipse.swt/Eclipse SWT PI/wpf/library' 'bundles/org.eclipse.swt/Eclipse SWT PI/wpf_win32/library'"/>
 
 	<property name="file_library_j2se" value="bundles/org.eclipse.swt/Eclipse SWT PI/common_j2se/org/eclipse/swt/internal/Library.java"/>
@@ -53,12 +52,6 @@
 	</target>
 
 	<target name="check_libraries" depends="get_version">
-		<!-- Carbon is not being built
-		<antcall target="check_fragment_libraries">
-			<param name="library_count" value="5"/>
-			<param name="fragment" value="org.eclipse.swt.carbon.macosx"/>
-		</antcall>
-		-->
 		<!-- Cocoa 32 bit and ppc not being built
 		<antcall target="check_fragment_libraries">
 			<param name="library_count" value="5"/>
@@ -154,7 +147,6 @@
 			<filename regex="[0-9][0-9][0-9][0-9]."/>
 			<filename regex="${swt_version}."/>
 			<exclude name="**/.git/**"/>
-			<exclude name="**/org.eclipse.swt.carbon.macosx/**"/>
 			<exclude name="**/org.eclipse.swt.gtk.linux.ia64/**"/>
 			<exclude name="**/org.eclipse.swt.wpf.win32.x86/**"/>
 			<exclude name="**/org.eclipse.swt.cocoa.macosx/**"/>
@@ -163,7 +155,6 @@
 			<filename regex="[0-9][0-9][0-9][0-9]."/>
 			<filename regex="${swt_version}." negate="true"/>
 			<exclude name="**/.git/**"/>
-			<exclude name="**/org.eclipse.swt.carbon.macosx/**"/>
 			<exclude name="**/org.eclipse.swt.gtk.linux.ia64/**"/>
 			<exclude name="**/org.eclipse.swt.wpf.win32.x86/**"/>
 			<exclude name="**/org.eclipse.swt.cocoa.macosx/**"/>
@@ -485,12 +476,6 @@
 			<param name="is64" value="64 bit"/>
 		</antcall>
 
-		<!-- 32 bit -->
-		<!-- Not building carbon
-		<antcall target="build_classes">
-			<param name="cp" value=".classpath_carbon"/>
-		</antcall>
-		-->
 		<!-- Not building cocoa 32-bit
 		<antcall target="build_classes">
 			<param name="cp" value=".classpath_cocoa"/>
@@ -801,7 +786,6 @@
 			<filename regex="[0-9][0-9][0-9][0-9]."/>
 			<filename regex="${swt_version}." negate="true"/>
 			<exclude name="**/.git/**"/>
-			<exclude name="**/org.eclipse.swt.carbon.macosx/**"/>
 			<exclude name="**/org.eclipse.swt.gtk.linux.ia64/**"/>
 			<exclude name="**/org.eclipse.swt.wpf.win32.x86/**"/>
 			<exclude name="**/org.eclipse.swt.cocoa.macosx/**"/>
@@ -821,7 +805,6 @@
 			<include name="bundles/*/*xulrunner-fix*"/>
 			<exclude name="**/.git/**"/>
 			<exclude name="**/tmpdir/**"/>
-			<exclude name="**/org.eclipse.swt.carbon.macosx/**"/>
 			<exclude name="**/org.eclipse.swt.gtk.linux.ia64/**"/>
 			<exclude name="**/org.eclipse.swt.wpf.win32.x86/**"/>
 			<exclude name="**/org.eclipse.swt.cocoa.macosx/**"/>

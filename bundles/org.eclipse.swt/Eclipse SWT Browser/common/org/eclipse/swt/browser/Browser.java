@@ -189,7 +189,6 @@ static int checkStyle(int style) {
 		style &= ~SWT.WEBKIT;
 	}
 	if ((style & SWT.MOZILLA) != 0 || (style & SWT.WEBKIT) != 0) {
-		if ("carbon".equals (platform)) return style | SWT.EMBEDDED; //$NON-NLS-1$
 		return style;
 	}
 

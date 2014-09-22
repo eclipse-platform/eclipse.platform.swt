@@ -4414,7 +4414,7 @@ int SetVisibility (int aVisibility) {
 				event.size = size;
 				event.addressBar = (chromeFlags & nsIWebBrowserChrome.CHROME_LOCATIONBAR) != 0;
 				/* Feature of OSX.  The menu bar is always displayed. */
-				boolean isOSX = Platform.PLATFORM.equals ("cocoa") || Platform.PLATFORM.equals ("carbon");
+				boolean isOSX = Platform.PLATFORM.equals ("cocoa");
 				event.menuBar = isOSX || (chromeFlags & nsIWebBrowserChrome.CHROME_MENUBAR) != 0;
 				event.statusBar = (chromeFlags & nsIWebBrowserChrome.CHROME_STATUSBAR) != 0;
 				event.toolBar = (chromeFlags & nsIWebBrowserChrome.CHROME_TOOLBAR) != 0;

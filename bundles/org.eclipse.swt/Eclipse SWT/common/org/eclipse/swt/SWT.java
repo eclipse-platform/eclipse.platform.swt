@@ -4300,7 +4300,7 @@ public static String getMessage(String key, Object[] args) {
 
 /**
  * Returns the SWT platform name.
- * Examples: "win32", "gtk", "carbon", "cocoa", "wpf"
+ * Examples: "win32", "gtk", "cocoa", "wpf"
  *
  * @return the SWT platform name
  */
@@ -4491,7 +4491,7 @@ static {
 	* to stop the compiler from inlining.
 	*/
 	String platform = getPlatform ();
-	if ("carbon".equals (platform) || "cocoa".equals (platform)) { //$NON-NLS-1$ //$NON-NLS-2$
+	if ("cocoa".equals (platform)) { //$NON-NLS-1$
 		MOD1 = COMMAND;
 		MOD2 = SHIFT;
 		MOD3 = ALT;

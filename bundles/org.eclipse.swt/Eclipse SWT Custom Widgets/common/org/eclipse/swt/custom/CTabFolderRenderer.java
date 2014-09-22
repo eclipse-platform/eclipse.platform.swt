@@ -195,7 +195,6 @@ public class CTabFolderRenderer {
 		if (parent.simple) return;
 		String platform = SWT.getPlatform();
 		if ("cocoa".equals(platform)) return; //$NON-NLS-1$
-		if ("carbon".equals(platform)) return; //$NON-NLS-1$
 		if ("wpf".equals(platform)) return; //$NON-NLS-1$
 		// Don't perform anti-aliasing on low resolution displays
 		if (parent.getDisplay().getDepth() < 15) return;

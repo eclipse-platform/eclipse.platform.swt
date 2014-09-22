@@ -167,7 +167,7 @@ public class StyledText extends Canvas {
 	final static boolean IS_MAC, IS_GTK, IS_MOTIF;
 	static {
 		String platform = SWT.getPlatform();
-		IS_MAC = "carbon".equals(platform) || "cocoa".equals(platform);
+		IS_MAC = "cocoa".equals(platform);
 		IS_GTK = "gtk".equals(platform);
 		IS_MOTIF = "motif".equals(platform);
 	}

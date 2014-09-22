@@ -1130,15 +1130,13 @@ void listEvent (Event event) {
 			 * show it again. To prevent the popup from showing again, we will detect
 			 * this case and let the selection event of the arrow button hide the popup.
 			 */
-			if (!"carbon".equals(SWT.getPlatform())) {
-				Point point = arrow.toControl(getDisplay().getCursorLocation());
-				Point size = arrow.getSize();
-				Rectangle rect = new Rectangle(0, 0, size.x, size.y);
-				if (rect.contains(point)) {
-					boolean comboShellActivated = getDisplay ().getActiveShell () == getShell ();
-					if (!comboShellActivated) dropDown (false);
-					break;
-				}
+			Point point = arrow.toControl(getDisplay().getCursorLocation());
+			Point size = arrow.getSize();
+			Rectangle rect = new Rectangle(0, 0, size.x, size.y);
+			if (rect.contains(point)) {
+				boolean comboShellActivated = getDisplay ().getActiveShell () == getShell ();
+				if (!comboShellActivated) dropDown (false);
+				break;
 			}
 			dropDown (false);
 			break;
