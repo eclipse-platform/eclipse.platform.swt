@@ -2555,7 +2555,12 @@ GdkColor getBgColor () {
 	long /*int*/ fontHandle = fontHandle ();
 	OS.gtk_widget_realize (fontHandle);
 	GdkColor color = new GdkColor ();
-	OS.gtk_style_get_bg (OS.gtk_widget_get_style (fontHandle), OS.GTK_STATE_NORMAL, color);
+
+	long /*int*/ style = OS.gtk_widget_get_style (fontHandle);
+	if (style != 0){
+		OS.gtk_style_get_bg (style, OS.GTK_STATE_NORMAL, color);
+	}
+
 	return color;
 }
 
@@ -2702,7 +2707,11 @@ GdkColor getFgColor () {
 	long /*int*/ fontHandle = fontHandle ();
 	OS.gtk_widget_realize (fontHandle);
 	GdkColor color = new GdkColor ();
-	OS.gtk_style_get_fg (OS.gtk_widget_get_style (fontHandle), OS.GTK_STATE_NORMAL, color);
+
+	long /*int*/ style = OS.gtk_widget_get_style (fontHandle);
+	if (style != 0){
+		OS.gtk_style_get_fg (style, OS.GTK_STATE_NORMAL, color);
+	}
 	return color;
 }
 
