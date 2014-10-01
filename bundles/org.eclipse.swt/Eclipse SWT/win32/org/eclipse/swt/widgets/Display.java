@@ -4382,7 +4382,7 @@ void sendPreExternalEventDispatchEvent () {
 	}
 }
 
-void sendPostExternalEventDispatchEvent() {
+void sendPostExternalEventDispatchEvent () {
 	if (this.eventTable != null && this.eventTable.hooks (SWT.PostExternalEventDispatch)) {
 		sendEvent (SWT.PostExternalEventDispatch, null);
 	}
@@ -4699,7 +4699,7 @@ public boolean sleep () {
 	sendPreExternalEventDispatchEvent ();
 	if (OS.IsWinCE) {
 		OS.MsgWaitForMultipleObjectsEx (0, 0, OS.INFINITE, OS.QS_ALLINPUT, OS.MWMO_INPUTAVAILABLE);
-		sendPostExternalEventDispatchEvent();
+		sendPostExternalEventDispatchEvent ();
 		return true;
 	}
 	boolean result = OS.WaitMessage ();

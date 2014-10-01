@@ -4216,13 +4216,13 @@ void sendPostEvent (Event event) {
 	}
 }
 
-void sendPreExternalEventDispatchEvent() {
+void sendPreExternalEventDispatchEvent () {
 	if (this.eventTable != null && this.eventTable.hooks (SWT.PreExternalEventDispatch)) {
 		sendEvent (SWT.PreExternalEventDispatch, null);
 	}
 }
 
-void sendPostExternalEventDispatchEvent() {
+void sendPostExternalEventDispatchEvent () {
 	if (this.eventTable != null && this.eventTable.hooks (SWT.PostExternalEventDispatch)) {
 		sendEvent (SWT.PostExternalEventDispatch, null);
 	}
@@ -4677,7 +4677,7 @@ public void setSynchronizer (Synchronizer synchronizer) {
 public boolean sleep () {
 	checkDevice ();
 	if (getMessageCount () != 0) return true;
-	sendPreExternalEventDispatchEvent();
+	sendPreExternalEventDispatchEvent ();
 	try {
 		addPool();
 		allowTimers = runAsyncMessages = false;
@@ -4686,7 +4686,7 @@ public boolean sleep () {
 	} finally {
 		removePool();
 	}
-	sendPostExternalEventDispatchEvent();
+	sendPostExternalEventDispatchEvent ();
 	return true;
 }
 

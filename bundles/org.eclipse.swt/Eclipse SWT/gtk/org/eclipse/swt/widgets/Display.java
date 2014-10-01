@@ -4467,7 +4467,7 @@ void sendEvent (EventTable eventTable, Event event) {
 	}
 }
 
-void sendPreEvent(Event event) {
+void sendPreEvent (Event event) {
 	if (event == null || (event.type != SWT.PreEvent && event.type != SWT.PostEvent
 			&& event.type != SWT.PreExternalEventDispatch
 			&& event.type != SWT.PostExternalEventDispatch)) {
@@ -4477,7 +4477,7 @@ void sendPreEvent(Event event) {
 	}
 }
 
-void sendPostEvent(Event event) {
+void sendPostEvent (Event event) {
 	if (event == null || (event.type != SWT.PreEvent && event.type != SWT.PostEvent
 			&& event.type != SWT.PreExternalEventDispatch
 			&& event.type != SWT.PostExternalEventDispatch)) {
@@ -4487,13 +4487,13 @@ void sendPostEvent(Event event) {
 	}
 }
 
-void sendPreExternalEventDispatchEvent() {
+void sendPreExternalEventDispatchEvent () {
 	if (this.eventTable != null && this.eventTable.hooks (SWT.PreExternalEventDispatch)) {
-		sendEvent(SWT.PreExternalEventDispatch, null);
+		sendEvent (SWT.PreExternalEventDispatch, null);
 	}
 }
 
-void sendPostExternalEventDispatchEvent() {
+void sendPostExternalEventDispatchEvent () {
 	if (this.eventTable != null && this.eventTable.hooks (SWT.PostExternalEventDispatch)) {
 		sendEvent (SWT.PostExternalEventDispatch, null);
 	}
