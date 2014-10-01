@@ -352,7 +352,10 @@ public PrinterData open() {
 	if (!success) {
 		/* Initialize PRINTDLG fields, including DEVMODE, for the default printer. */
 		pd.Flags = OS.PD_RETURNDEFAULT;
-		if (success = OS.PrintDlg(pd)) {
+		getParent ().getDisplay ().sendPreExternalEventDispatchEvent ();
+		success = OS.PrintDlg(pd);
+		getParent ().getDisplay ().sendPostExternalEventDispatchEvent ();
+		if (success) {
 			if (pd.hDevNames != 0) {
 				OS.GlobalFree(pd.hDevNames);
 				pd.hDevNames = 0;
@@ -445,7 +448,9 @@ public PrinterData open() {
 		String key = "org.eclipse.swt.internal.win32.runMessagesInIdle"; //$NON-NLS-1$
 		Object oldValue = display.getData(key);
 		display.setData(key, new Boolean(true));
+		display.sendPreExternalEventDispatchEvent ();
 		success = OS.PrintDlg(pd);
+		display.sendPostExternalEventDispatchEvent ();
 		display.setData(key, oldValue);
 		if ((getStyle() & (SWT.APPLICATION_MODAL | SWT.SYSTEM_MODAL)) != 0) {
 			for (int i=0; i<shells.length; i++) {

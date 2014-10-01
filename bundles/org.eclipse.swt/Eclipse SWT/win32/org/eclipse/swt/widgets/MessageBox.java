@@ -200,10 +200,12 @@ public int open () {
 	}
 
 	/* Open the message box */
+	display.sendPreExternalEventDispatchEvent ();
 	/* Use the character encoding for the default locale */
 	TCHAR buffer1 = new TCHAR (0, message, true);
 	TCHAR buffer2 = new TCHAR (0, title, true);
 	int code = OS.MessageBox (hwndOwner, buffer1, buffer2, bits);
+	display.sendPostExternalEventDispatchEvent ();
 	
 	/* Clear the temporarily dialog modal parent */
 	if ((bits & OS.MB_TASKMODAL) != 0) {

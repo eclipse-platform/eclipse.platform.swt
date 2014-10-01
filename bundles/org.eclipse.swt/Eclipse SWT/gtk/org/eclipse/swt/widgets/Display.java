@@ -4487,13 +4487,23 @@ void sendPostEvent (Event event) {
 	}
 }
 
-void sendPreExternalEventDispatchEvent () {
+/**
+ * Sends a SWT.PreExternalEventDispatch event.
+ *
+ * @noreference This method is not intended to be referenced by clients.
+ */
+public void sendPreExternalEventDispatchEvent () {
 	if (this.eventTable != null && this.eventTable.hooks (SWT.PreExternalEventDispatch)) {
 		sendEvent (SWT.PreExternalEventDispatch, null);
 	}
 }
 
-void sendPostExternalEventDispatchEvent () {
+/**
+ * Sends a SWT.PostExternalEventDispatch event.
+ *
+ * @noreference This method is not intended to be referenced by clients.
+ */
+public void sendPostExternalEventDispatchEvent () {
 	if (this.eventTable != null && this.eventTable.hooks (SWT.PostExternalEventDispatch)) {
 		sendEvent (SWT.PostExternalEventDispatch, null);
 	}

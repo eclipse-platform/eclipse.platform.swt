@@ -225,8 +225,10 @@ public FontData open () {
 		display.setModalDialog (this);
 	}
 	
+	display.sendPreExternalEventDispatchEvent ();
 	/* Open the dialog */
 	boolean success = OS.ChooseFont (lpcf);
+	display.sendPostExternalEventDispatchEvent ();
 	
 	/* Clear the temporary dialog modal parent */
 	if ((style & (SWT.APPLICATION_MODAL | SWT.SYSTEM_MODAL)) != 0) {

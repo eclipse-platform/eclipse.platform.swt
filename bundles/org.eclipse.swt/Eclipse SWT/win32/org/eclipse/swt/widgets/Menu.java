@@ -240,6 +240,7 @@ void _setVisible (boolean visible) {
 			nY = OS.GET_Y_LPARAM (pos);
 		}
 		hasLocation = false;
+		display.sendPreExternalEventDispatchEvent ();
 		/*
 		* Feature in Windows.  It is legal use TrackPopupMenu()
 		* to display an empty menu as long as menu items are added
@@ -254,6 +255,7 @@ void _setVisible (boolean visible) {
 		* the menu is zero and issue a fake WM_MENUSELECT.
 		*/
 		boolean success = OS.TrackPopupMenu (handle, flags, nX, nY, 0, hwndParent, null);
+		display.sendPostExternalEventDispatchEvent ();
 		if (!success && GetMenuItemCount (handle) == 0) {
 			OS.SendMessage (hwndParent, OS.WM_MENUSELECT, OS.MAKEWPARAM (0, 0xFFFF), 0);
 		}

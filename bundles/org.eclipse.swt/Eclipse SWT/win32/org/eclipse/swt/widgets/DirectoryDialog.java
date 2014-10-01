@@ -214,6 +214,7 @@ public String open () {
 	*/
 	int oldErrorMode = OS.SetErrorMode (OS.SEM_FAILCRITICALERRORS);
 	
+	display.sendPreExternalEventDispatchEvent ();
 	/*
 	* Bug in Windows.  When a WH_MSGFILTER hook is used to run code
 	* during the message loop for SHBrowseForFolder(), running code
@@ -229,6 +230,7 @@ public String open () {
 	if (OS.COMCTL32_MAJOR < 6) display.runMessages = false;
 	long /*int*/ lpItemIdList = OS.SHBrowseForFolder (lpbi);
 	if (OS.COMCTL32_MAJOR < 6) display.runMessages = oldRunMessages;
+	display.sendPostExternalEventDispatchEvent ();
 	OS.SetErrorMode (oldErrorMode);
 	
 	/* Clear the temporary dialog modal parent */

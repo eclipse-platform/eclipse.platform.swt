@@ -4718,7 +4718,12 @@ long /*int*/ windowProc (long /*int*/ hwnd, int msg, long /*int*/ wParam, long /
 		case OS.WM_XBUTTONUP:			result = WM_XBUTTONUP (wParam, lParam); break;
 	}
 	if (result != null) return result.value;
-	return callWindowProc (hwnd, msg, wParam, lParam);
+	display.sendPreExternalEventDispatchEvent ();
+	try {
+		return callWindowProc (hwnd, msg, wParam, lParam);
+	} finally {
+		display.sendPostExternalEventDispatchEvent ();
+	}
 }
 
 LRESULT WM_ACTIVATE (long /*int*/ wParam, long /*int*/ lParam) {

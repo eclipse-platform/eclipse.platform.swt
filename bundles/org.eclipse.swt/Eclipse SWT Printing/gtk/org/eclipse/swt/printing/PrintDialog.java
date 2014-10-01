@@ -394,6 +394,7 @@ public PrinterData open() {
 		oldModal = display.getData (GET_MODAL_DIALOG);
 		display.setData (SET_MODAL_DIALOG, this);
 	}
+	display.sendPreExternalEventDispatchEvent ();
 	int response = OS.gtk_dialog_run (handle);
 	/*
 	* This call to gdk_threads_leave() is a temporary work around
@@ -402,6 +403,7 @@ public PrinterData open() {
 	* thread leaves the GTK lock acquired by the function above. 
 	*/
 	OS.gdk_threads_leave();
+	display.sendPostExternalEventDispatchEvent ();
 	if (OS.gtk_window_get_modal (handle)) {
 		display.setData (SET_MODAL_DIALOG, oldModal);
 	}

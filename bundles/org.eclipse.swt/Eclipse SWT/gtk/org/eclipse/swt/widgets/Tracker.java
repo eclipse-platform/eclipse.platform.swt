@@ -774,6 +774,7 @@ public boolean open () {
 			if (parent != null && parent.isDisposed ()) break;
 			display.runSkin ();
 			display.runDeferredLayouts ();
+			display.sendPreExternalEventDispatchEvent ();
 			/*
 			* This call to gdk_threads_leave() is a temporary work around
 			* to avoid deadlocks when gdk_threads_init() is called by native
@@ -782,6 +783,7 @@ public boolean open () {
 			*/
 			OS.gdk_threads_leave();
 			OS.g_main_context_iteration (0, true);
+			display.sendPostExternalEventDispatchEvent ();
 			display.runAsyncMessages (false);
 		}
 	} finally {

@@ -384,15 +384,19 @@ public String open () {
 	*/
 	boolean oldRunMessagesInIdle = display.runMessagesInIdle;
 	display.runMessagesInIdle = !OS.IsWin95;
+	display.sendPreExternalEventDispatchEvent ();
 	/*
 	* Open the dialog.  If the open fails due to an invalid
 	* file name, use an empty file name and open it again.
 	*/
 	boolean success = (save) ? OS.GetSaveFileName (struct) : OS.GetOpenFileName (struct);
+	display.sendPostExternalEventDispatchEvent ();
 	switch (OS.CommDlgExtendedError ()) {
 		case OS.FNERR_INVALIDFILENAME:
 			OS.MoveMemory (lpstrFile, new TCHAR (0, "", true), TCHAR.sizeof);
+			display.sendPreExternalEventDispatchEvent ();
 			success = (save) ? OS.GetSaveFileName (struct) : OS.GetOpenFileName (struct);
+			display.sendPostExternalEventDispatchEvent ();
 			break;
 		case OS.FNERR_BUFFERTOOSMALL: 
 			USE_HOOK = true;

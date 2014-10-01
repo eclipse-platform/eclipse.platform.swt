@@ -240,7 +240,10 @@ int printFrame (long /*int*/ webView, long /*int*/ frame) {
 	PRINTDLG pd = new PRINTDLG ();
 	pd.lStructSize = PRINTDLG.sizeof;
 	pd.Flags = OS.PD_RETURNDC;
-	if (!OS.PrintDlg (pd)) return COM.S_OK;
+	browser.getDisplay ().sendPreExternalEventDispatchEvent ();
+	boolean success = OS.PrintDlg (pd);
+	browser.getDisplay ().sendPostExternalEventDispatchEvent ();
+	if (!success) return COM.S_OK;
 	long /*int*/ printDC = pd.hDC;
 
 	long /*int*/[] result = new long /*int*/[1];

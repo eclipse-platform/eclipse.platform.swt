@@ -252,9 +252,11 @@ public RGB open () {
 		oldModal = display.getModalDialog ();
 		display.setModalDialog (this);
 	}
-	
+
+	display.sendPreExternalEventDispatchEvent ();
 	/* Open the dialog */
 	boolean success = OS.ChooseColor (lpcc);
+	display.sendPostExternalEventDispatchEvent ();
 	
 	/* Clear the temporary dialog modal parent */
 	if ((style & (SWT.APPLICATION_MODAL | SWT.SYSTEM_MODAL)) != 0) {

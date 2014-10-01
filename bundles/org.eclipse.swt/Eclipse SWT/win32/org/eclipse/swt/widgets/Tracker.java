@@ -579,7 +579,9 @@ public boolean open () {
 			if (parent != null && parent.isDisposed ()) break;
 			display.runSkin ();
 			display.runDeferredLayouts ();
+			display.sendPreExternalEventDispatchEvent ();
 			OS.GetMessage (msg, 0, 0, 0);
+			display.sendPostExternalEventDispatchEvent ();
 			OS.TranslateMessage (msg);
 			switch (msg.message) {
 				case OS.WM_LBUTTONUP:
