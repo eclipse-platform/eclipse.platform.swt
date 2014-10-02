@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2006 IBM Corporation and others.
+ * Copyright (c) 2000, 2014 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -12,9 +12,9 @@ package org.eclipse.swt.examples.controlexample;
 
 
 import org.eclipse.swt.*;
-import org.eclipse.swt.widgets.*;
-import org.eclipse.swt.layout.*;
 import org.eclipse.swt.events.*;
+import org.eclipse.swt.layout.*;
+import org.eclipse.swt.widgets.*;
 
 class ShellTab extends Tab {	
 	/* Style widgets added to the "Style" groups, and "Other" group */
@@ -350,7 +350,7 @@ class ShellTab extends Tab {
 	
 	@Override
 	String[] getMethodNames() {
-		return new String[] {"Text"};
+		return new String[] {"Alpha", "Bounds", "MinimumSize", "Modified", "Text"};
 	}
 
 	@Override

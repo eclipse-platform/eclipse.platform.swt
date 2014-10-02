@@ -1174,7 +1174,10 @@ abstract class Tab {
 					parameter = new Object[] {value};
 				} else if (typeName.equals("org.eclipse.swt.graphics.Point")) {
 					String xy[] = split(value, ',');
-					parameter = new Object[] {new Point(new Integer(xy[0]).intValue(),new Integer(xy[1]).intValue())};
+					parameter = new Object[] {new Point(Integer.parseInt(xy[0]),Integer.parseInt(xy[1]))};
+				} else if (typeName.equals("org.eclipse.swt.graphics.Rectangle")) {
+					String xywh[] = split(value, ',');
+					parameter = new Object[] {new Rectangle(Integer.parseInt(xywh[0]),Integer.parseInt(xywh[1]),Integer.parseInt(xywh[2]),Integer.parseInt(xywh[3]))};
 				} else if (typeName.equals("[I")) {
 					String strings[] = split(value, ',');
 					int[] ints = new int[strings.length];
