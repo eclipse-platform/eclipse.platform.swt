@@ -11,11 +11,11 @@
 package org.eclipse.swt.widgets;
 
  
+import org.eclipse.swt.*;
+import org.eclipse.swt.events.*;
+import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.win32.*;
-import org.eclipse.swt.*;
-import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.events.*;
 
 /**
  * Instances of this class are user interface objects that contain
@@ -240,6 +240,7 @@ void _setVisible (boolean visible) {
 			nY = OS.GET_Y_LPARAM (pos);
 		}
 		hasLocation = false;
+		Display display = this.display;
 		display.sendPreExternalEventDispatchEvent ();
 		/*
 		* Feature in Windows.  It is legal use TrackPopupMenu()
@@ -255,6 +256,7 @@ void _setVisible (boolean visible) {
 		* the menu is zero and issue a fake WM_MENUSELECT.
 		*/
 		boolean success = OS.TrackPopupMenu (handle, flags, nX, nY, 0, hwndParent, null);
+		// widget could be disposed at this point
 		display.sendPostExternalEventDispatchEvent ();
 		if (!success && GetMenuItemCount (handle) == 0) {
 			OS.SendMessage (hwndParent, OS.WM_MENUSELECT, OS.MAKEWPARAM (0, 0xFFFF), 0);

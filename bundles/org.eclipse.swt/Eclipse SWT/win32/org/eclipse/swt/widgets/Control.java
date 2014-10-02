@@ -4718,10 +4718,12 @@ long /*int*/ windowProc (long /*int*/ hwnd, int msg, long /*int*/ wParam, long /
 		case OS.WM_XBUTTONUP:			result = WM_XBUTTONUP (wParam, lParam); break;
 	}
 	if (result != null) return result.value;
+	Display display = this.display;
 	display.sendPreExternalEventDispatchEvent ();
 	try {
 		return callWindowProc (hwnd, msg, wParam, lParam);
 	} finally {
+		// widget could be disposed at this point
 		display.sendPostExternalEventDispatchEvent ();
 	}
 }
