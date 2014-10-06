@@ -2161,6 +2161,11 @@ void doAutoScroll(int direction, int distance) {
 	if (direction == SWT.UP) {
 		timer = new Runnable() {
 			public void run() {
+				/* Bug 437357 - NPE in StyledText.getCaretLine
+				 * StyledText.content is null at times, probably because the
+				 * widget itself has been disposed.
+				 */
+				if (isDisposed()) return;
 				if (autoScrollDirection == SWT.UP) {
 					if (blockSelection) {
 						int verticalScrollOffset = getVerticalScrollOffset();
@@ -2182,6 +2187,11 @@ void doAutoScroll(int direction, int distance) {
 	} else if (direction == SWT.DOWN) {
 		timer = new Runnable() {
 			public void run() {
+				/* Bug 437357 - NPE in StyledText.getCaretLine
+				 * StyledText.content is null at times, probably because the
+				 * widget itself has been disposed.
+				 */
+				if (isDisposed()) return;
 				if (autoScrollDirection == SWT.DOWN) {
 					if (blockSelection) {
 						int verticalScrollOffset = getVerticalScrollOffset();
@@ -2204,6 +2214,11 @@ void doAutoScroll(int direction, int distance) {
 	} else if (direction == ST.COLUMN_NEXT) {
 		timer = new Runnable() {
 			public void run() {
+				/* Bug 437357 - NPE in StyledText.getCaretLine
+				 * StyledText.content is null at times, probably because the
+				 * widget itself has been disposed.
+				 */
+				if (isDisposed()) return;
 				if (autoScrollDirection == ST.COLUMN_NEXT) {
 					if (blockSelection) {
 						int x = blockXLocation - horizontalScrollOffset;
@@ -2227,6 +2242,11 @@ void doAutoScroll(int direction, int distance) {
 	} else if (direction == ST.COLUMN_PREVIOUS) {
 		timer = new Runnable() {
 			public void run() {
+				/* Bug 437357 - NPE in StyledText.getCaretLine
+				 * StyledText.content is null at times, probably because the
+				 * widget itself has been disposed.
+				 */
+				if (isDisposed()) return;
 				if (autoScrollDirection == ST.COLUMN_PREVIOUS) {
 					if (blockSelection) {
 						int x = blockXLocation - horizontalScrollOffset;
