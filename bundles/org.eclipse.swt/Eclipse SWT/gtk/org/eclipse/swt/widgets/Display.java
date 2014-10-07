@@ -819,8 +819,8 @@ long /*int*/ checkIfEventProc (long /*int*/ display, long /*int*/ xEvent, long /
 		case OS.GraphicsExpose: {
 			flushRect.x = exposeEvent.x;
 			flushRect.y = exposeEvent.y;
-			flushRect.width = exposeEvent.width;
-			flushRect.height = exposeEvent.height;
+			flushRect.width = Math.max (0, exposeEvent.width);
+			flushRect.height = Math.max (0, exposeEvent.height);
 			OS.gdk_window_invalidate_rect (window, flushRect, true);
 			exposeEvent.type = -1;
 			OS.memmove (xEvent, exposeEvent, XExposeEvent.sizeof);

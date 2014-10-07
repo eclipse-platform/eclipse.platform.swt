@@ -3773,8 +3773,8 @@ void redrawWidget (int x, int y, int width, int height, boolean redrawAll, boole
 	} else {
 		rect.x = x;
 		rect.y = y;
-		rect.width = width;
-		rect.height = height;
+		rect.width = Math.max (0, width);
+		rect.height = Math.max (0, height);
 	}
 	OS.gdk_window_invalidate_rect (window, rect, all);
 }

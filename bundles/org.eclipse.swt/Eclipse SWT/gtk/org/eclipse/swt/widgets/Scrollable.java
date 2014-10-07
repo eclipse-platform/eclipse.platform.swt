@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2013 IBM Corporation and others.
+ * Copyright (c) 2000, 2014 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -401,8 +401,8 @@ void redrawWidget (int x, int y, int width, int height, boolean redrawAll, boole
 		OS.gtk_widget_translate_coordinates (paintHandle, topHandle, x, y, destX, destY);
 		rect.x = destX [0];
 		rect.y = destY [0];
-		rect.width = width;
-		rect.height = height;
+		rect.width = Math.max (0, width);
+		rect.height = Math.max (0, height);
 	}
 	OS.gdk_window_invalidate_rect (window, rect, all);
 }

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2012 IBM Corporation and others.
+ * Copyright (c) 2000, 2014 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -609,8 +609,8 @@ public void copyArea(int srcX, int srcY, int width, int height, int destX, int d
 		if (disjoint) {
 			rect.x = srcX;
 			rect.y = srcY;
-			rect.width = width;
-			rect.height = height;
+			rect.width = Math.max (0, width);
+			rect.height = Math.max (0, height);
 			OS.gdk_window_invalidate_rect (drawable, rect, false);
 //			OS.gdk_window_clear_area_e(drawable, srcX, srcY, width, height);
 		} else {
@@ -620,7 +620,7 @@ public void copyArea(int srcX, int srcY, int width, int height, int destX, int d
 				rect.x = newX;
 				rect.y = srcY;
 				rect.width = Math.abs(deltaX);
-				rect.height = height;
+				rect.height = Math.max (0, height);
 				OS.gdk_window_invalidate_rect (drawable, rect, false);
 //				OS.gdk_window_clear_area_e(drawable, newX, srcY, Math.abs(deltaX), height);
 			}
@@ -629,7 +629,7 @@ public void copyArea(int srcX, int srcY, int width, int height, int destX, int d
 				if (deltaY < 0) newY = destY + height;
 				rect.x = srcX;
 				rect.y = newY;
-				rect.width = width;
+				rect.width = Math.max (0, width);
 				rect.height = Math.abs(deltaY);
 				OS.gdk_window_invalidate_rect (drawable, rect, false);
 //				OS.gdk_window_clear_area_e(drawable, srcX, newY, width, Math.abs(deltaY));
