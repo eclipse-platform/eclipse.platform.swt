@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2007, 2013 IBM Corporation and others.
+ * Copyright (c) 2007, 2014 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -438,49 +438,52 @@ LRESULT WM_IME_COMPOSITION (long /*int*/ wParam, long /*int*/ lParam) {
 							ranges [i * 2] = clauses [i];
 							ranges [i * 2 + 1] = clauses [i + 1] - 1;
 							styles [i] = style = new TextStyle ();
-							attr = getDisplayAttribute (langID, attrs [clauses [i]]);
-							if (attr != null) {
-								switch (attr.crText.type) {
-									case OS.TF_CT_COLORREF:
-										style.foreground = Color.win32_new (display, attr.crText.cr);
-										break;
-									case OS.TF_CT_SYSCOLOR:
-										int colorRef = OS.GetSysColor (attr.crText.cr);
-										style.foreground = Color.win32_new (display, colorRef);
-										break;
-								}
-								switch (attr.crBk.type) {
-									case OS.TF_CT_COLORREF:
-										style.background = Color.win32_new (display, attr.crBk.cr);
-										break;
-									case OS.TF_CT_SYSCOLOR:
-										int colorRef = OS.GetSysColor (attr.crBk.cr);
-										style.background = Color.win32_new (display, colorRef);
-										break;
-								}
-								switch (attr.crLine.type) {
-									case OS.TF_CT_COLORREF:
-										style.underlineColor = Color.win32_new (display, attr.crLine.cr);
-										break;
-									case OS.TF_CT_SYSCOLOR:
-										int colorRef = OS.GetSysColor (attr.crLine.cr);
-										style.underlineColor = Color.win32_new (display, colorRef);
-										break;
-								}
-								style.underline = attr.lsStyle != OS.TF_LS_NONE;
-								switch (attr.lsStyle) {
-									case OS.TF_LS_SQUIGGLE:
-										style.underlineStyle = SWT.UNDERLINE_SQUIGGLE;
-										break;
-									case OS.TF_LS_DASH:
-										style.underlineStyle = UNDERLINE_IME_DASH; 
-										break;
-									case OS.TF_LS_DOT:
-										style.underlineStyle = UNDERLINE_IME_DOT;
-										break;
-									case OS.TF_LS_SOLID:
-										style.underlineStyle = attr.fBoldLine ? UNDERLINE_IME_THICK : SWT.UNDERLINE_SINGLE;
-										break;
+							/* Added length check to avoid possibility of AIOOB, bug 444926 */
+							if (clauses [i] >= 0 && clauses [i] < attrs.length) {
+								attr = getDisplayAttribute (langID, attrs [clauses [i]]);
+								if (attr != null) {
+									switch (attr.crText.type) {
+										case OS.TF_CT_COLORREF:
+											style.foreground = Color.win32_new (display, attr.crText.cr);
+											break;
+										case OS.TF_CT_SYSCOLOR:
+											int colorRef = OS.GetSysColor (attr.crText.cr);
+											style.foreground = Color.win32_new (display, colorRef);
+											break;
+									}
+									switch (attr.crBk.type) {
+										case OS.TF_CT_COLORREF:
+											style.background = Color.win32_new (display, attr.crBk.cr);
+											break;
+										case OS.TF_CT_SYSCOLOR:
+											int colorRef = OS.GetSysColor (attr.crBk.cr);
+											style.background = Color.win32_new (display, colorRef);
+											break;
+									}
+									switch (attr.crLine.type) {
+										case OS.TF_CT_COLORREF:
+											style.underlineColor = Color.win32_new (display, attr.crLine.cr);
+											break;
+										case OS.TF_CT_SYSCOLOR:
+											int colorRef = OS.GetSysColor (attr.crLine.cr);
+											style.underlineColor = Color.win32_new (display, colorRef);
+											break;
+									}
+									style.underline = attr.lsStyle != OS.TF_LS_NONE;
+									switch (attr.lsStyle) {
+										case OS.TF_LS_SQUIGGLE:
+											style.underlineStyle = SWT.UNDERLINE_SQUIGGLE;
+											break;
+										case OS.TF_LS_DASH:
+											style.underlineStyle = UNDERLINE_IME_DASH; 
+											break;
+										case OS.TF_LS_DOT:
+											style.underlineStyle = UNDERLINE_IME_DOT;
+											break;
+										case OS.TF_LS_SOLID:
+											style.underlineStyle = attr.fBoldLine ? UNDERLINE_IME_THICK : SWT.UNDERLINE_SINGLE;
+											break;
+									}
 								}
 							}
 						}
