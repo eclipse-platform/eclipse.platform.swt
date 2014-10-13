@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2010, 2012 IBM Corporation and others.
+ * Copyright (c) 2010, 2014 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -240,9 +240,10 @@ int printFrame (long /*int*/ webView, long /*int*/ frame) {
 	PRINTDLG pd = new PRINTDLG ();
 	pd.lStructSize = PRINTDLG.sizeof;
 	pd.Flags = OS.PD_RETURNDC;
-	browser.getDisplay ().sendPreExternalEventDispatchEvent ();
+	Display display = browser.getDisplay ();
+	display.sendPreExternalEventDispatchEvent ();
 	boolean success = OS.PrintDlg (pd);
-	browser.getDisplay ().sendPostExternalEventDispatchEvent ();
+	display.sendPostExternalEventDispatchEvent ();
 	if (!success) return COM.S_OK;
 	long /*int*/ printDC = pd.hDC;
 

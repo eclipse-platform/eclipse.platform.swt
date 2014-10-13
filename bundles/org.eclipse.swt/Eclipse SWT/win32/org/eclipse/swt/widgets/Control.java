@@ -4618,6 +4618,7 @@ abstract TCHAR windowClass ();
 abstract long /*int*/ windowProc ();
 
 long /*int*/ windowProc (long /*int*/ hwnd, int msg, long /*int*/ wParam, long /*int*/ lParam) {
+	Display display = this.display;
 	LRESULT result = null;
 	switch (msg) {
 		case OS.WM_ACTIVATE:			result = WM_ACTIVATE (wParam, lParam); break;
@@ -4718,7 +4719,7 @@ long /*int*/ windowProc (long /*int*/ hwnd, int msg, long /*int*/ wParam, long /
 		case OS.WM_XBUTTONUP:			result = WM_XBUTTONUP (wParam, lParam); break;
 	}
 	if (result != null) return result.value;
-	Display display = this.display;
+	// widget could be disposed at this point
 	display.sendPreExternalEventDispatchEvent ();
 	try {
 		return callWindowProc (hwnd, msg, wParam, lParam);

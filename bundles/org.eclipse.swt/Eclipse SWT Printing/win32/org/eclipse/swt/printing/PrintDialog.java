@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2012 IBM Corporation and others.
+ * Copyright (c) 2000, 2014 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -12,8 +12,8 @@ package org.eclipse.swt.printing;
 
 
 import org.eclipse.swt.*;
-import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.internal.win32.*;
+import org.eclipse.swt.widgets.*;
 
 /**
  * Instances of this class allow the user to select
@@ -349,12 +349,13 @@ public PrinterData open() {
 			pd.hDevNames = hMem;
 		}
 	}
+	Display display = parent.getDisplay();
 	if (!success) {
 		/* Initialize PRINTDLG fields, including DEVMODE, for the default printer. */
 		pd.Flags = OS.PD_RETURNDEFAULT;
-		getParent ().getDisplay ().sendPreExternalEventDispatchEvent ();
+		display.sendPreExternalEventDispatchEvent ();
 		success = OS.PrintDlg(pd);
-		getParent ().getDisplay ().sendPostExternalEventDispatchEvent ();
+		display.sendPostExternalEventDispatchEvent ();
 		if (success) {
 			if (pd.hDevNames != 0) {
 				OS.GlobalFree(pd.hDevNames);
@@ -434,7 +435,6 @@ public PrinterData open() {
 		pd.nFromPage = (short) Math.min (0xFFFF, Math.max (1, printerData.startPage));
 		pd.nToPage = (short) Math.min (0xFFFF, Math.max (1, printerData.endPage));
 	
-		Display display = parent.getDisplay();
 		Shell [] shells = display.getShells();
 		if ((getStyle() & (SWT.APPLICATION_MODAL | SWT.SYSTEM_MODAL)) != 0) {
 			for (int i=0; i<shells.length; i++) {

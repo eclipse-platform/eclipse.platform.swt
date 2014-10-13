@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2012 IBM Corporation and others.
+ * Copyright (c) 2000, 2014 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -11,9 +11,9 @@
 package org.eclipse.swt.widgets;
 
 
-import org.eclipse.swt.internal.win32.*;
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.internal.win32.*;
 
 /**
  * Instances of this class allow the user to select a font
@@ -218,9 +218,8 @@ public FontData open () {
 	
 	/* Make the parent shell be temporary modal */
 	Dialog oldModal = null;
-	Display display = null;
+	Display display = parent.getDisplay ();
 	if ((style & (SWT.APPLICATION_MODAL | SWT.SYSTEM_MODAL)) != 0) {
-		display = parent.getDisplay ();
 		oldModal = display.getModalDialog ();
 		display.setModalDialog (this);
 	}
