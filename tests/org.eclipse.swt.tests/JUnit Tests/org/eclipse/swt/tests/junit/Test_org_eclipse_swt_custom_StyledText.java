@@ -11,45 +11,18 @@
 package org.eclipse.swt.tests.junit;
 
 
-import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.*;
 
-import java.util.Enumeration;
-import java.util.Hashtable;
+import java.util.*;
 
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.custom.BidiSegmentEvent;
-import org.eclipse.swt.custom.BidiSegmentListener;
-import org.eclipse.swt.custom.ExtendedModifyEvent;
-import org.eclipse.swt.custom.ExtendedModifyListener;
-import org.eclipse.swt.custom.LineBackgroundEvent;
-import org.eclipse.swt.custom.LineBackgroundListener;
-import org.eclipse.swt.custom.LineStyleEvent;
-import org.eclipse.swt.custom.LineStyleListener;
-import org.eclipse.swt.custom.ST;
-import org.eclipse.swt.custom.StyleRange;
-import org.eclipse.swt.custom.StyledText;
-import org.eclipse.swt.custom.StyledTextContent;
-import org.eclipse.swt.custom.TextChangeListener;
-import org.eclipse.swt.custom.VerifyKeyListener;
-import org.eclipse.swt.dnd.Clipboard;
-import org.eclipse.swt.dnd.RTFTransfer;
-import org.eclipse.swt.dnd.TextTransfer;
-import org.eclipse.swt.dnd.Transfer;
-import org.eclipse.swt.events.ModifyEvent;
-import org.eclipse.swt.events.ModifyListener;
-import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.events.SelectionListener;
-import org.eclipse.swt.events.VerifyEvent;
-import org.eclipse.swt.events.VerifyListener;
-import org.eclipse.swt.graphics.Color;
-import org.eclipse.swt.graphics.Font;
-import org.eclipse.swt.graphics.FontData;
-import org.eclipse.swt.graphics.Point;
-import org.eclipse.swt.graphics.RGB;
-import org.eclipse.swt.internal.BidiUtil;
-import org.eclipse.swt.printing.Printer;
-import org.eclipse.swt.widgets.Caret;
-import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.*;
+import org.eclipse.swt.custom.*;
+import org.eclipse.swt.dnd.*;
+import org.eclipse.swt.events.*;
+import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.internal.*;
+import org.eclipse.swt.printing.*;
+import org.eclipse.swt.widgets.*;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.custom.StyledText
@@ -2864,15 +2837,24 @@ public void test_replaceStyleRangesII$Lorg_eclipse_swt_custom_StyleRange() {
 }
 
 public void test_replaceTextRangeIILjava_lang_String(){
-	String defaultText = "line0\n\rline1\n\rline2\n\r";
-	int defaultTextLength = defaultText.length();
-	int selectionStart = 7;
-	int selectionLength = 7;
-	int replaceStart = selectionStart + selectionLength + 1;
-	int replaceLength = 5;
+	final String defaultText = "line0\n\rline1\n\rline2\n\r";
+	final int defaultTextLength = defaultText.length();
+	final int selectionStart = 7;
+	final int selectionLength = 7;
+	final int replaceStart = selectionStart + selectionLength + 1;
+	final int replaceLength = 5;
 	boolean exceptionThrown = false;
-	String newText = "newline0\n\rnewline1";
-	int newTextLength = newText.length();
+	final String newText = "newline0\n\rnewline1";
+	final int newTextLength = newText.length();
+	class TestSelectionListener extends SelectionAdapter {
+		public Point eventSelection = new Point(0, 0);
+		public void widgetSelected(SelectionEvent e) {
+			eventSelection.x = e.x;
+			eventSelection.y = e.y;
+		}
+	}
+	final TestSelectionListener selectionListener = new TestSelectionListener();
+	text.addSelectionListener(selectionListener);
 			
 	// insert text
 	// within range
@@ -2891,6 +2873,7 @@ public void test_replaceTextRangeIILjava_lang_String(){
 	text.replaceTextRange(0, 0, newText);
 	assertTrue(":c:", text.getCharCount() == defaultTextLength + newTextLength);
 	assertTrue(":d:", text.getSelectionRange().x == selectionStart + newTextLength && text.getSelectionRange().y == selectionLength);
+	assertEquals(text.getSelection(), selectionListener.eventSelection);
 
 
 	// intersecting selection
@@ -2900,6 +2883,7 @@ public void test_replaceTextRangeIILjava_lang_String(){
 	text.replaceTextRange(selectionStart + 1, 0, newText);
 	assertTrue(":e:", text.getCharCount() == defaultTextLength + newTextLength);
 	assertTrue(":f:", text.getSelectionRange().x == selectionStart + 1 + newTextLength && text.getSelectionRange().y == 0);
+	assertEquals(text.getSelection(), selectionListener.eventSelection);
 				
 	// out of range
 	text.setText(defaultText);
@@ -2972,6 +2956,7 @@ public void test_replaceTextRangeIILjava_lang_String(){
 	text.replaceTextRange(0, replaceLength, newText);
 	assertTrue(":r:", text.getCharCount() == defaultTextLength + newTextLength - replaceLength);
 	assertTrue(":s:", text.getSelectionRange().x == selectionStart + newTextLength - replaceLength && text.getSelectionRange().y == selectionLength);
+	assertEquals(text.getSelection(), selectionListener.eventSelection);
 	
 	// intersecting selection
 	text.setText(defaultText);
@@ -2980,6 +2965,7 @@ public void test_replaceTextRangeIILjava_lang_String(){
 	text.replaceTextRange(selectionStart + 1, replaceLength, newText);
 	assertTrue(":t:", text.getCharCount() == defaultTextLength + newTextLength - replaceLength);
 	assertTrue(":u:", text.getSelectionRange().x == selectionStart + 1 + newTextLength && text.getSelectionRange().y == 0);
+	assertEquals(text.getSelection(), selectionListener.eventSelection);
 			
 	// out of range
 	text.setText(defaultText);
@@ -3001,6 +2987,7 @@ public void test_replaceTextRangeIILjava_lang_String(){
 	}
 	assertTrue(":w:", exceptionThrown);
 	assertTrue(":x:", text.getSelectionRange().x == selectionStart && text.getSelectionRange().y == selectionLength);
+	text.removeSelectionListener(selectionListener);
 }
 
 public void test_selectAll() {

@@ -9647,7 +9647,11 @@ void setSelection(int start, int length, boolean sendEvent, boolean doBlock) {
 				setBlockSelectionOffset(start, end, sendEvent);
 			}
 		} else {
-			clearSelection(sendEvent);
+			int charCount = content.getCharCount();
+			// called internally to remove selection after text is removed
+			// therefore make sure redraw range is valid.
+			int redrawX = Math.min(selection.x, charCount);
+			int redrawY = Math.min(selection.y, charCount);
 			if (length < 0) {
 				selectionAnchor = selection.y = end;
 				selection.x = start;
@@ -9657,7 +9661,14 @@ void setSelection(int start, int length, boolean sendEvent, boolean doBlock) {
 				selection.y = end;
 				setCaretOffset(end, PREVIOUS_OFFSET_TRAILING);
 			}
-			internalRedrawRange(selection.x, selection.y - selection.x);
+			redrawX = Math.min(redrawX, selection.x);
+			redrawY = Math.max(redrawY, selection.y);
+			if (redrawY - redrawX > 0) {
+				internalRedrawRange(redrawX, redrawY - redrawX);
+			}
+			if (sendEvent) {
+				sendSelectionEvent();
+			}
 			sendAccessibleTextCaretMoved();
 		}
 	}
