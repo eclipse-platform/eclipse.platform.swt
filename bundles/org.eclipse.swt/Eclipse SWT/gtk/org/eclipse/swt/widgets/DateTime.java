@@ -2073,7 +2073,7 @@ long /*int*/ gtk_button_press_event (long /*int*/ widget, long /*int*/ event) {
 
 
 @Override
-long /* int */gtk_button_release_event (long /* int */widget, long /* int */event) {
+long /*int*/ gtk_button_release_event (long /*int*/ widget, long /*int*/ event) {
 	if (isDate () || isTime ()) {
 		GdkEventButton gdkEvent = getEventInfoFromOS (event);
 		if (gdkEvent.button == 1) { // left mouse button.
@@ -2083,7 +2083,7 @@ long /* int */gtk_button_release_event (long /* int */widget, long /* int */even
 	return super.gtk_button_release_event (widget, event);
 }
 
-private GdkEventButton getEventInfoFromOS (long nativeEventPointer) {
+private GdkEventButton getEventInfoFromOS (long /*int*/ nativeEventPointer) {
 	// create place holder.
 	GdkEventButton localEventCopy = new GdkEventButton ();
 
