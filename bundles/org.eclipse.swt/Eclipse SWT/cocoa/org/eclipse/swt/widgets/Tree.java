@@ -2697,6 +2697,17 @@ void setBackgroundColor(NSColor nsColor) {
 	((NSTableView) view).setBackgroundColor (nsColor);
 }
 
+void setBounds(int x, int y, int width, int height, boolean move, boolean resize) {
+	// TODO: add version check
+	/*
+	 * Bug on OSX 10.10: the header view hides the first row of the table view, initially.
+	 * Call tile() to force the header & table views to be placed correctly.
+	 */
+	super.setBounds (x, y, width, height, move, resize);
+	NSOutlineView widget = (NSOutlineView) view;
+	if (widget.headerView() != null) widget.tile ();
+}
+
 /**
  * Sets the order that the items in the receiver should 
  * be displayed in to the given argument which is described
