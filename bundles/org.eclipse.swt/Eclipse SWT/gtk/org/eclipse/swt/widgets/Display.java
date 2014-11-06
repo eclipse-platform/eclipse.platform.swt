@@ -4467,22 +4467,26 @@ void sendEvent (EventTable eventTable, Event event) {
 	}
 }
 
-void sendPreEvent (Event event) {
-	if (event == null || (event.type != SWT.PreEvent && event.type != SWT.PostEvent
-			&& event.type != SWT.PreExternalEventDispatch
-			&& event.type != SWT.PostExternalEventDispatch)) {
-		if (this.eventTable != null && this.eventTable.hooks (SWT.PreEvent)) {
-			sendEvent (SWT.PreEvent, null);
+void sendPreEvent (Event original) {
+	if (original != null && original.type != SWT.PreEvent && original.type != SWT.PostEvent
+			&& original.type != SWT.PreExternalEventDispatch
+			&& original.type != SWT.PostExternalEventDispatch) {
+		if (eventTable != null && eventTable.hooks (SWT.PreEvent)) {
+			Event event = new Event ();
+			event.data = original;
+			sendEvent (SWT.PreEvent, event);
 		}
 	}
 }
 
-void sendPostEvent (Event event) {
-	if (event == null || (event.type != SWT.PreEvent && event.type != SWT.PostEvent
-			&& event.type != SWT.PreExternalEventDispatch
-			&& event.type != SWT.PostExternalEventDispatch)) {
-		if (this.eventTable != null && this.eventTable.hooks (SWT.PostEvent)) {
-			sendEvent (SWT.PostEvent, null);
+void sendPostEvent (Event original) {
+	if (original != null && original.type != SWT.PreEvent && original.type != SWT.PostEvent
+			&& original.type != SWT.PreExternalEventDispatch
+			&& original.type != SWT.PostExternalEventDispatch) {
+		if (eventTable != null && eventTable.hooks (SWT.PostEvent)) {
+			Event event = new Event ();
+			event.data = original;
+			sendEvent (SWT.PostEvent, event);
 		}
 	}
 }
@@ -4493,7 +4497,7 @@ void sendPostEvent (Event event) {
  * @noreference This method is not intended to be referenced by clients.
  */
 public void sendPreExternalEventDispatchEvent () {
-	if (this.eventTable != null && this.eventTable.hooks (SWT.PreExternalEventDispatch)) {
+	if (eventTable != null && eventTable.hooks (SWT.PreExternalEventDispatch)) {
 		sendEvent (SWT.PreExternalEventDispatch, null);
 	}
 }
@@ -4504,7 +4508,7 @@ public void sendPreExternalEventDispatchEvent () {
  * @noreference This method is not intended to be referenced by clients.
  */
 public void sendPostExternalEventDispatchEvent () {
-	if (this.eventTable != null && this.eventTable.hooks (SWT.PostExternalEventDispatch)) {
+	if (eventTable != null && eventTable.hooks (SWT.PostExternalEventDispatch)) {
 		sendEvent (SWT.PostExternalEventDispatch, null);
 	}
 }
