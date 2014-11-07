@@ -226,15 +226,11 @@ int GetFile (long /*int*/ aFile) {
 int SetDisplayDirectory (long /*int*/ aDisplayDirectory) {
 	if (aDisplayDirectory == 0) return XPCOM.NS_OK;
 	nsILocalFile file = new nsILocalFile (aDisplayDirectory);
-	long /*int*/ pathname = XPCOM.nsEmbedString_new ();
-	int rc = file.GetPath (pathname);
+	nsEmbedString pathname = new nsEmbedString ();
+	int rc = file.GetPath (pathname.getAddress());
 	if (rc != XPCOM.NS_OK) Mozilla.error (rc);
-	int length = XPCOM.nsEmbedString_Length (pathname);
-	long /*int*/ buffer = XPCOM.nsEmbedString_get (pathname);
-	char[] chars = new char[length];
-	XPCOM.memmove (chars, buffer, length * 2);
-	XPCOM.nsEmbedString_delete (pathname);
-	directory = new String (chars);
+	directory = pathname.toString ();
+	pathname.dispose ();
 	return XPCOM.NS_OK;
 }
 

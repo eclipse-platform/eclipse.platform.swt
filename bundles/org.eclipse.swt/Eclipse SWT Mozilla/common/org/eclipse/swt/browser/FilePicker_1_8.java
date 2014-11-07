@@ -73,11 +73,6 @@ void createCOMInterfaces () {
  */
 @Override
 String parseAString (long /*int*/ string) {
-	if (string == 0) return null;
-	int length = XPCOM.nsEmbedString_Length (string);
-	long /*int*/ buffer = XPCOM.nsEmbedString_get (string);
-	char[] chars = new char[length];
-	XPCOM.memmove (chars, buffer, length * 2);
-	return new String (chars);
+	return new nsEmbedString (string).toString ();
 }
 }

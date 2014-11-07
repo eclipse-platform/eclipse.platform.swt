@@ -1676,17 +1676,14 @@ static String getMozillaPath () {
 
 	nsIFile mozillaDir = new nsIFile (result[0]);
 	result[0] = 0;
-	long /*int*/ path = XPCOM.nsEmbedString_new ();
-	rc = mozillaDir.GetPath (path);
+	nsEmbedString path = new nsEmbedString ();
+	rc = mozillaDir.GetPath (path.getAddress());
 	if (rc != XPCOM.NS_OK) error (rc);
-	int length = XPCOM.nsEmbedString_Length (path);
-	long /*int*/ ptr = XPCOM.nsEmbedString_get (path);
-	char[] chars = new char[length];
-	XPCOM.memmove (chars, ptr, length * 2);
-	XPCOM.nsEmbedString_delete (path);
+	String mozillaPath = path.toString ();
+	path.dispose ();
 	mozillaDir.Release ();
 
-	return new String (chars) + SEPARATOR_OS;
+	return mozillaPath + SEPARATOR_OS;
 }
 
 @Override
@@ -1717,28 +1714,26 @@ public String getText () {
 	nsIComponentManager componentManager = new nsIComponentManager (result[0]);
 	result[0] = 0;
 	byte[] contractID = MozillaDelegate.wcsToMbcs (null, XPCOM.NS_DOMSERIALIZER_CONTRACTID, true);
-	char[] chars = null;
+	String text = "";
 
 	rc = componentManager.CreateInstanceByContractID (contractID, 0, IIDStore.GetIID (nsIDOMSerializer.class), result);
 	if (rc == XPCOM.NS_OK && result[0] != 0) {
 		nsIDOMSerializer serializer = new nsIDOMSerializer (result[0]);
 		result[0] = 0;
 		if (MozillaVersion.CheckVersion (MozillaVersion.VERSION_XR1_8)) {
-			long /*int*/ string = XPCOM.nsEmbedString_new ();
-			rc = serializer.SerializeToString (document, string);
+			nsEmbedString string = new nsEmbedString ();
+			rc = serializer.SerializeToString (document, string.getAddress());
 			if (rc == XPCOM.NS_OK) {
-				int length = XPCOM.nsEmbedString_Length (string);
-				long /*int*/ buffer = XPCOM.nsEmbedString_get (string);
-				chars = new char[length];
-				XPCOM.memmove (chars, buffer, length * 2);
+				text = string.toString();
 			}
-			XPCOM.nsEmbedString_delete (string);
+			string.dispose ();
 		} else {
 			rc = serializer.SerializeToString (document, result);
 			if (rc == XPCOM.NS_OK) {
 				int length = XPCOM.strlen_PRUnichar (result[0]);
-				chars = new char[length];
+				char[] chars = new char[length];
 				XPCOM.memmove (chars, result[0], length * 2);
+				text = new String (chars);
 			}
 		}
 		serializer.Release ();
@@ -1746,7 +1741,7 @@ public String getText () {
 
 	componentManager.Release ();
 	new nsISupports (document).Release ();
-	return new String (chars);
+	return text;
 }
 
 @Override
@@ -4701,15 +4696,11 @@ int OnHideTooltip () {
 
 int HandleEvent (long /*int*/ event) {
 	nsIDOMEvent domEvent = new nsIDOMEvent (event);
-	long /*int*/ type = XPCOM.nsEmbedString_new ();
-	int rc = domEvent.GetType (type);
+	nsEmbedString type = new nsEmbedString ();
+	int rc = domEvent.GetType (type.getAddress());
 	if (rc != XPCOM.NS_OK) error (rc);
-	int length = XPCOM.nsEmbedString_Length (type);
-	long /*int*/ buffer = XPCOM.nsEmbedString_get (type);
-	char[] chars = new char[length];
-	XPCOM.memmove (chars, buffer, length * 2);
-	String typeString = new String (chars);
-	XPCOM.nsEmbedString_delete (type);
+	String typeString = type.toString();
+	type.dispose();
 
 	if (XPCOM.DOMEVENT_UNLOAD.equals (typeString)) {
 		long /*int*/[] result = new long /*int*/[1];
@@ -5100,17 +5091,13 @@ int NotifyCertProblem (long /*int*/ socketInfo, long /*int*/ status, long /*int*
 
 	rc = sslStatus.GetIsDomainMismatch (intResult);
 	if (intResult[0] != 0) {
-		long /*int*/ ptr = XPCOM.nsEmbedString_new ();
-		rc = cert.GetCommonName (ptr);
+		nsEmbedString ptr = new nsEmbedString ();
+		rc = cert.GetCommonName (ptr.getAddress());
 		if (rc != XPCOM.NS_OK) SWT.error (rc);
-		length = XPCOM.nsEmbedString_Length (ptr);
-		buffer = XPCOM.nsEmbedString_get (ptr);
-		char[] chars = new char[length];
-		XPCOM.memmove (chars, buffer, length * 2);
-		String name = new String (chars);
+		String name = ptr.toString ();
 		problems[problemCount++] = Compatibility.getMessage ("SWT_InvalidCert_InvalidName", new String[] {name}); //$NON-NLS-1$
 		flags |= nsICertOverrideService.ERROR_MISMATCH;
-		XPCOM.nsEmbedString_delete (ptr);
+		ptr.dispose ();
 	}
 	intResult[0] = 0;
 
@@ -5123,25 +5110,17 @@ int NotifyCertProblem (long /*int*/ socketInfo, long /*int*/ status, long /*int*
 		nsIX509CertValidity validity = new nsIX509CertValidity(result[0]);
 		result[0] = 0;
 
-		long /*int*/ ptr = XPCOM.nsEmbedString_new ();
-		rc = validity.GetNotBeforeGMT (ptr);
+		nsEmbedString ptr = new nsEmbedString ();
+		rc = validity.GetNotBeforeGMT (ptr.getAddress());
 		if (rc != XPCOM.NS_OK) SWT.error (rc);
-		length = XPCOM.nsEmbedString_Length (ptr);
-		buffer = XPCOM.nsEmbedString_get (ptr);
-		char[] chars = new char[length];
-		XPCOM.memmove (chars, buffer, length * 2);
-		String notBefore = new String (chars);
-		XPCOM.nsEmbedString_delete (ptr);
+		String notBefore = ptr.toString ();
+		ptr.dispose ();
 
-		ptr = XPCOM.nsEmbedString_new ();
-		rc = validity.GetNotAfterGMT (ptr);
+		ptr = new nsEmbedString ();
+		rc = validity.GetNotAfterGMT (ptr.getAddress());
 		if (rc != XPCOM.NS_OK) SWT.error (rc);
-		length = XPCOM.nsEmbedString_Length (ptr);
-		buffer = XPCOM.nsEmbedString_get (ptr);
-		chars = new char[length];
-		XPCOM.memmove (chars, buffer, length * 2);
-		String notAfter = new String (chars);
-		XPCOM.nsEmbedString_delete (ptr);
+		String notAfter = ptr.toString ();
+		ptr.dispose ();
 
 		String range = notBefore + " - " + notAfter; //$NON-NLS-1$
 		problems[problemCount++] = Compatibility.getMessage ("SWT_InvalidCert_NotValid", new String[] {range}); //$NON-NLS-1$
@@ -5152,17 +5131,13 @@ int NotifyCertProblem (long /*int*/ socketInfo, long /*int*/ status, long /*int*
 
 	rc = sslStatus.GetIsUntrusted (intResult);
 	if (intResult[0] != 0) {
-		long /*int*/ ptr = XPCOM.nsEmbedString_new ();
-		rc = cert.GetIssuerCommonName (ptr);
+		nsEmbedString ptr = new nsEmbedString ();
+		rc = cert.GetIssuerCommonName (ptr.getAddress());
 		if (rc != XPCOM.NS_OK) SWT.error (rc);
-		length = XPCOM.nsEmbedString_Length (ptr);
-		buffer = XPCOM.nsEmbedString_get (ptr);
-		char[] chars = new char[length];
-		XPCOM.memmove (chars, buffer, length * 2);
-		String name = new String (chars);
+		String name = ptr.toString ();
 		problems[problemCount++] = Compatibility.getMessage ("SWT_InvalidCert_NotTrusted", new String[] {name}); //$NON-NLS-1$
 		flags |= nsICertOverrideService.ERROR_UNTRUSTED;
-		XPCOM.nsEmbedString_delete (ptr);
+		ptr.dispose ();
 	}
 	intResult[0] = 0;
 	sslStatus.Release ();

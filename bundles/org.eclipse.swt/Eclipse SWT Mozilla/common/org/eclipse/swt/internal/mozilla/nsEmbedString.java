@@ -42,6 +42,10 @@ public nsEmbedString(String string) {
 	}   
 }
 
+public nsEmbedString(long /*int*/ handle) {
+	this.handle = handle;
+}
+
 public long /*int*/ getAddress() {
 	return handle;
 }	

@@ -151,37 +151,25 @@ int PromptAuth(long /*int*/ aChannel, int level, long /*int*/ authInfo, long /*i
 
 	/* get initial username and password values */
 
-	long /*int*/ ptr = XPCOM.nsEmbedString_new ();
-	int rc = auth.GetUsername (ptr);
+	nsEmbedString ptr = new nsEmbedString ();
+	int rc = auth.GetUsername (ptr.getAddress());
 	if (rc != XPCOM.NS_OK) SWT.error (rc);
-	int length = XPCOM.nsEmbedString_Length (ptr);
-	long /*int*/ buffer = XPCOM.nsEmbedString_get (ptr);
-	char[] chars = new char[length];
-	XPCOM.memmove (chars, buffer, length * 2);
-	userLabel[0] = new String (chars);
-	XPCOM.nsEmbedString_delete (ptr);
+	userLabel[0] = ptr.toString ();
+	ptr.dispose ();
 
-	ptr = XPCOM.nsEmbedString_new ();
-	rc = auth.GetPassword (ptr);
+	ptr = new nsEmbedString ();
+	rc = auth.GetPassword (ptr.getAddress());
 	if (rc != XPCOM.NS_OK) SWT.error (rc);
-	length = XPCOM.nsEmbedString_Length (ptr);
-	buffer = XPCOM.nsEmbedString_get (ptr);
-	chars = new char[length];
-	XPCOM.memmove (chars, buffer, length * 2);
-	passLabel[0] = new String (chars);
-	XPCOM.nsEmbedString_delete (ptr);
+	passLabel[0] = ptr.toString ();
+	ptr.dispose ();
 
 	/* compute the message text */
 
-	ptr = XPCOM.nsEmbedString_new ();
-	rc = auth.GetRealm (ptr);
+	ptr = new nsEmbedString ();
+	rc = auth.GetRealm (ptr.getAddress());
 	if (rc != XPCOM.NS_OK) SWT.error (rc);
-	length = XPCOM.nsEmbedString_Length (ptr);
-	buffer = XPCOM.nsEmbedString_get (ptr);
-	chars = new char[length];
-	XPCOM.memmove (chars, buffer, length * 2);
-	String realm = new String (chars);
-	XPCOM.nsEmbedString_delete (ptr);
+	String realm = ptr.toString ();
+	ptr.dispose ();
 
 	nsIChannel channel = new nsIChannel (aChannel);
 	long /*int*/[] uri = new long /*int*/[1];
@@ -193,8 +181,8 @@ int PromptAuth(long /*int*/ aChannel, int level, long /*int*/ authInfo, long /*i
 	long /*int*/ host = XPCOM.nsEmbedCString_new ();
 	rc = nsURI.GetHost (host);
 	if (rc != XPCOM.NS_OK) SWT.error (rc);
-	length = XPCOM.nsEmbedCString_Length (host);
-	buffer = XPCOM.nsEmbedCString_get (host);
+	int length = XPCOM.nsEmbedCString_Length (host);
+	long buffer = XPCOM.nsEmbedCString_get (host);
 	byte[] bytes = new byte[length];
 	XPCOM.memmove (bytes, buffer, length);
 	String hostString = new String (bytes);
