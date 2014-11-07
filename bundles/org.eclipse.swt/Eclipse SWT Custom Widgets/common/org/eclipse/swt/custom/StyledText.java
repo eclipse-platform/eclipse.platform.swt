@@ -5943,11 +5943,8 @@ void handleKey(Event event) {
 		
 		if (IS_MAC) {
 			// Ignore accelerator key combinations (we do not want to 
-			// insert a character in the text in this instance). Do not  
-			// ignore COMMAND+ALT combinations since that key sequence
-			// produces characters on the mac.
-			ignore = (event.stateMask ^ SWT.COMMAND) == 0 ||
-					(event.stateMask ^ (SWT.COMMAND | SWT.SHIFT)) == 0;
+			// insert a character in the text in this instance).
+			ignore = (event.stateMask & (SWT.COMMAND | SWT.CTRL)) != 0;
 		} else if (IS_MOTIF) {
 			// Ignore accelerator key combinations (we do not want to 
 			// insert a character in the text in this instance). Do not  
