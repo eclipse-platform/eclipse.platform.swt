@@ -40,6 +40,7 @@ public class MenuItem extends Item {
 	Menu parent, menu;
 	long /*int*/ groupHandle;
 	int accelerator, userId;
+	String toolTipText;
 	
 /**
  * Constructs a new instance of this class given its parent
@@ -428,6 +429,23 @@ public boolean getSelection () {
 	checkWidget();
 	if ((style & (SWT.CHECK | SWT.RADIO)) == 0) return false;
 	return OS.gtk_check_menu_item_get_active(handle);
+}
+
+/**
+ * Returns the receiver's tool tip text, or null if it has not been set.
+ *
+ * @return the receiver's tool tip text
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @since 3.104
+ */
+public String getToolTipText () {
+	checkWidget();
+	return toolTipText;
 }
 
 @Override
@@ -926,6 +944,36 @@ private void setAccelLabel(long /*int*/ label, String accelString) {
 	long /*int*/ oldPtr = OS.GTK_ACCEL_LABEL_GET_ACCEL_STRING (label);
 	OS.GTK_ACCEL_LABEL_SET_ACCEL_STRING (label, ptr);
 	if (oldPtr != 0) OS.g_free (oldPtr);
+}
+
+/**
+ * Sets the receiver's tool tip text to the argument, which
+ * may be null indicating that the default tool tip for the
+ * control will be shown. For a control that has a default
+ * tool tip, such as the Tree control on Windows, setting
+ * the tool tip text to an empty string replaces the default,
+ * causing no tool tip text to be shown.
+ * <p>
+ * The mnemonic indicator (character '&amp;') is not displayed in a tool tip.
+ * To display a single '&amp;' in the tool tip, the character '&amp;' can be
+ * escaped by doubling it in the string.
+ * </p>
+ *
+ * @param toolTip the new tool tip text (or null)
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @since 3.104
+ */
+public void setToolTipText (String toolTip) {
+	checkWidget();
+
+	if (toolTip != null && (toolTip.trim().length() == 0 || toolTip.equals (toolTipText))) return;
+
+	this.parent.getShell().setToolTipText (handle, (toolTipText = toolTip));
 }
 
 void updateAccelerator (long /*int*/ accelGroup, boolean add) {

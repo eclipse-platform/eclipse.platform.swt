@@ -119,7 +119,7 @@ import org.eclipse.swt.internal.win32.*;
 public class Shell extends Decorations {
 	Menu activeMenu;
 	ToolTip [] toolTips;
-	long /*int*/ hIMC, hwndMDIClient, lpstrTip, toolTipHandle, balloonTipHandle;
+	long /*int*/ hIMC, hwndMDIClient, lpstrTip, toolTipHandle, balloonTipHandle, menuItemToolTipHandle;
 	int minWidth = SWT.DEFAULT, minHeight = SWT.DEFAULT;
 	long /*int*/ [] brushes;
 	boolean showWithParent, fullScreen, wasMaximized, modified, center;
@@ -474,7 +474,7 @@ long /*int*/ balloonTipHandle () {
 
 long /*int*/ callWindowProc (long /*int*/ hwnd, int msg, long /*int*/ wParam, long /*int*/ lParam) {
 	if (handle == 0) return 0;
-	if (hwnd == toolTipHandle || hwnd == balloonTipHandle) {
+	if (hwnd == toolTipHandle || hwnd == balloonTipHandle || hwnd == menuItemToolTipHandle) {
 		return OS.CallWindowProc (ToolTipProc, hwnd, msg, wParam, lParam);
 	}
 	if (hwndMDIClient != 0) {
@@ -625,6 +625,10 @@ void createHandle () {
 	}
 }
 
+void createMenuItemToolTipHandle() {
+	menuItemToolTipHandle = createToolTipHandle (0);
+}
+
 void createToolTip (ToolTip toolTip) {
 	int id = 0;
 	if (toolTips == null) toolTips = new ToolTip [4];
@@ -647,13 +651,17 @@ void createToolTip (ToolTip toolTip) {
 }
 
 void createToolTipHandle () {
-	toolTipHandle = OS.CreateWindowEx (
+	toolTipHandle = createToolTipHandle (handle);
+}
+
+long /*int*/ createToolTipHandle (long /*int*/ parent) {
+	long /*int*/ toolTipHandle = OS.CreateWindowEx (
 		0,
 		new TCHAR (0, OS.TOOLTIPS_CLASS, true),
 		null,
 		OS.TTS_ALWAYSTIP | OS.TTS_NOPREFIX,
 		OS.CW_USEDEFAULT, 0, OS.CW_USEDEFAULT, 0,
-		handle,
+		parent,
 		0,
 		OS.GetModuleHandle (null),
 		null);
@@ -671,12 +679,14 @@ void createToolTipHandle () {
 	OS.SendMessage (toolTipHandle, OS.TTM_SETMAXTIPWIDTH, 0, 0x7FFF);
 	display.addControl (toolTipHandle, this);
 	OS.SetWindowLongPtr (toolTipHandle, OS.GWLP_WNDPROC, display.windowProc);
+	return toolTipHandle;
 }
 
 void deregister () {
 	super.deregister ();
 	if (toolTipHandle != 0) display.removeControl (toolTipHandle);
 	if (balloonTipHandle != 0) display.removeControl (balloonTipHandle);
+	if (menuItemToolTipHandle != 0) display.removeControl (menuItemToolTipHandle);
 }
 
 void destroyToolTip (ToolTip toolTip) {
@@ -840,6 +850,14 @@ void fixToolTip () {
 				OS.SendMessage (toolTipHandle, OS.TTM_ADDTOOL, 0, lpti);
 			}
 		}
+		TOOLINFO lptiMt = new TOOLINFO ();
+		lptiMt.cbSize = TOOLINFO.sizeof;
+		if (OS.SendMessage (menuItemToolTipHandle, OS.TTM_GETCURRENTTOOL, 0, lptiMt) != 0) {
+			if ((lptiMt.uFlags & OS.TTF_IDISHWND) != 0) {
+				OS.SendMessage (menuItemToolTipHandle, OS.TTM_DELTOOL, 0, lptiMt);
+				OS.SendMessage (menuItemToolTipHandle, OS.TTM_ADDTOOL, 0, lptiMt);
+			}
+		}
 	}
 }
 
@@ -917,6 +935,10 @@ ToolTip getCurrentToolTip () {
 	}
 	if (balloonTipHandle != 0) {
 		ToolTip tip = getCurrentToolTip (balloonTipHandle);
+		if (tip != null) return tip;
+	}
+	if (menuItemToolTipHandle != 0) {
+		ToolTip tip = getCurrentToolTip (menuItemToolTipHandle);
 		if (tip != null) return tip;
 	}
 	return null;
@@ -1189,6 +1211,11 @@ long /*int*/ hwndMDIClient () {
 	return hwndMDIClient;
 }
 
+long /*int*/ menuItemToolTipHandle () {
+	if (menuItemToolTipHandle == 0) createMenuItemToolTipHandle ();
+	return menuItemToolTipHandle;
+}
+
 /**
  * Moves the receiver to the top of the drawing order for
  * the display on which it was created (so that all other
@@ -1259,6 +1286,7 @@ void register () {
 	super.register ();
 	if (toolTipHandle != 0) display.addControl (toolTipHandle, this);
 	if (balloonTipHandle != 0) display.addControl (balloonTipHandle, this);
+	if (menuItemToolTipHandle != 0) display.addControl (menuItemToolTipHandle, this);
 }
 
 void releaseBrushes () {
@@ -1309,7 +1337,7 @@ void releaseWidget () {
 		OS.HeapFree (hHeap, 0, lpstrTip);
 	}
 	lpstrTip = 0;
-	toolTipHandle = balloonTipHandle = 0;
+	toolTipHandle = balloonTipHandle = menuItemToolTipHandle = 0;
 	if (OS.IsDBLocale) {
 		if (hIMC != 0) OS.ImmDestroyContext (hIMC);
 	}
@@ -1823,10 +1851,10 @@ void setToolTipTitle (long /*int*/ hwndToolTip, String text, int icon) {
 	* 
 	* NOTE:  This only happens on Vista.
 	*/
-	if (hwndToolTip != toolTipHandle && hwndToolTip != balloonTipHandle) {
+	if (hwndToolTip != toolTipHandle && hwndToolTip != balloonTipHandle && hwndToolTip != menuItemToolTipHandle) {
 		return;
 	}
-	if (hwndToolTip == toolTipHandle) {
+	if (hwndToolTip == toolTipHandle || hwndToolTip == menuItemToolTipHandle) {
 		if (text == toolTitle || (toolTitle != null && toolTitle.equals (text))) {
 			if (icon == toolIcon) return;
 		}
@@ -1945,6 +1973,9 @@ void subclass () {
 		if (balloonTipHandle != 0) {
 			OS.SetWindowLongPtr (balloonTipHandle, OS.GWLP_WNDPROC, newProc);
 		}
+		if (menuItemToolTipHandle != 0) {
+			OS.SetWindowLongPtr (menuItemToolTipHandle, OS.GWLP_WNDPROC, newProc);
+		}
 	}
 }
 
@@ -1974,6 +2005,9 @@ void unsubclass () {
 		}	
 		if (toolTipHandle != 0) {
 			OS.SetWindowLongPtr (toolTipHandle, OS.GWLP_WNDPROC, ToolTipProc);
+		}
+		if (menuItemToolTipHandle != 0) {
+			OS.SetWindowLongPtr (menuItemToolTipHandle, OS.GWLP_WNDPROC, ToolTipProc);
 		}
 	}
 }
@@ -2059,7 +2093,7 @@ long /*int*/ windowProc () {
 
 long /*int*/ windowProc (long /*int*/ hwnd, int msg, long /*int*/ wParam, long /*int*/ lParam) {
 	if (handle == 0) return 0;
-	if (hwnd == toolTipHandle || hwnd == balloonTipHandle) {
+	if (hwnd == toolTipHandle || hwnd == balloonTipHandle || hwnd == menuItemToolTipHandle) {
 		switch (msg) {
 			case OS.WM_TIMER: {
 				if (wParam != ToolTip.TIMER_ID) break;
@@ -2158,7 +2192,8 @@ LRESULT WM_ACTIVATE (long /*int*/ wParam, long /*int*/ lParam) {
 	/* Process WM_ACTIVATE */
 	LRESULT result = super.WM_ACTIVATE (wParam, lParam);
 	if (OS.LOWORD (wParam) == 0) {
-		if (lParam == 0 || (lParam != toolTipHandle && lParam != balloonTipHandle)) {
+		if (lParam == 0 || (lParam != toolTipHandle && lParam != balloonTipHandle
+				&& lParam != menuItemToolTipHandle)) {
 			ToolTip tip = getCurrentToolTip ();
 			if (tip != null) tip.setVisible (false);
 		}

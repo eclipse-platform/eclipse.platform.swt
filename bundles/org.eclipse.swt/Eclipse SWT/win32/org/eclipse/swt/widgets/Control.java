@@ -60,7 +60,7 @@ public abstract class Control extends Widget implements Drawable {
 	public long /*int*/ handle;
 	Composite parent;
 	Cursor cursor;
-	Menu menu;
+	Menu menu, activeMenu;
 	String toolTipText;
 	Object layoutData;
 	Accessible accessible;
@@ -4795,6 +4795,7 @@ LRESULT WM_CUT (long /*int*/ wParam, long /*int*/ lParam) {
 }
 
 LRESULT WM_DESTROY (long /*int*/ wParam, long /*int*/ lParam) {
+	OS.KillTimer (this.handle, Menu.ID_TOOLTIP_TIMER);
 	return null;
 }
 
@@ -5065,6 +5066,9 @@ LRESULT WM_MENUCHAR (long /*int*/ wParam, long /*int*/ lParam) {
 LRESULT WM_MENUSELECT (long /*int*/ wParam, long /*int*/ lParam) {
 	int code = OS.HIWORD (wParam);
 	Shell shell = getShell ();
+	OS.KillTimer (this.handle, Menu.ID_TOOLTIP_TIMER);
+	if (activeMenu != null)
+		activeMenu.hideCurrentToolTip ();
 	if (code == 0xFFFF && lParam == 0) {
 		Menu menu = shell.activeMenu;
 		while (menu != null) {
@@ -5108,13 +5112,23 @@ LRESULT WM_MENUSELECT (long /*int*/ wParam, long /*int*/ lParam) {
 			info.fMask = OS.MIIM_SUBMENU;
 			if (OS.GetMenuItemInfo (lParam, index, true, info)) {
 				Menu newMenu = menuShell.findMenu (info.hSubMenu);
-				if (newMenu != null) item = newMenu.cascade;
+				if (newMenu != null) {
+					item = newMenu.cascade;
+					activeMenu = newMenu;
+					activeMenu.selectedMenuItem = newMenu.cascade;
+					OS.SetTimer (this.handle, Menu.ID_TOOLTIP_TIMER, OS.TTM_GETDELAYTIME, 0);
+				}
 			}	
 		} else {
 			Menu newMenu = menuShell.findMenu (lParam);
 			if (newMenu != null) {
 				int id = OS.LOWORD (wParam);
 				item = display.getMenuItem (id);
+			}
+			activeMenu = (newMenu == null) ? menu : newMenu;
+			if (item != null && activeMenu != null) {
+				activeMenu.selectedMenuItem = item;
+				OS.SetTimer (this.handle, Menu.ID_TOOLTIP_TIMER, OS.TTM_GETDELAYTIME, 0);
 			}
 		}
 		if (item != null) item.sendEvent (SWT.Arm);
@@ -5493,6 +5507,10 @@ LRESULT WM_TOUCH (long /*int*/ wParam, long /*int*/ lParam) {
 }
 
 LRESULT WM_TIMER (long /*int*/ wParam, long /*int*/ lParam) {
+	if (wParam == Menu.ID_TOOLTIP_TIMER && activeMenu != null) {
+		OS.KillTimer (this.handle, Menu.ID_TOOLTIP_TIMER);
+		activeMenu.wmTimer (wParam, lParam);
+	}
 	return null;
 }
 

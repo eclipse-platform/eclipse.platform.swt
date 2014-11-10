@@ -63,6 +63,7 @@ public class Menu extends Widget {
 	MenuItem cascade;
 	Decorations parent;
 	ImageList imageList;
+	MenuItem selectedMenuItem;
 	
 	/* Resource ID for SHMENUBARINFO */
 	static final int ID_PPC = 100;
@@ -74,6 +75,9 @@ public class Menu extends Widget {
 	static final int ID_SPBB = 105;
 	static final int ID_SPSOFTKEY0 = 106; 
 	static final int ID_SPSOFTKEY1 = 107;
+
+	/* Timer ID for MenuItem ToolTip */
+	static final int ID_TOOLTIP_TIMER = 110;
 
 /**
  * Constructs a new instance of this class given its parent,
@@ -1047,6 +1051,12 @@ public boolean getVisible () {
 	return this == menu;
 }
 
+void hideCurrentToolTip () {
+	if (this.selectedMenuItem != null) {
+		selectedMenuItem.hideToolTip ();
+	}
+}
+
 int imageIndex (Image image) {
 	if (hwndCB == 0 || image == null) return OS.I_IMAGENONE;
 	if (imageList == null) {
@@ -1642,5 +1652,29 @@ void updateForeground () {
 		index++;
 	}
 	redraw ();
+}
+
+LRESULT wmTimer (long /*int*/ wParam, long /*int*/ lParam) {
+	if (wParam == ID_TOOLTIP_TIMER) {
+		POINT pt = new POINT ();
+		OS.GetCursorPos (pt);
+		if (selectedMenuItem != null) {
+			RECT rect = new RECT ();
+			boolean success = OS.GetMenuItemRect (0, selectedMenuItem.parent.handle, selectedMenuItem.index, rect);
+			if (!success) return null;
+			if (OS.PtInRect (rect, pt)) {
+				// Mouse cursor is within the bounds of menu item
+				selectedMenuItem.showTooltip (pt.x, pt.y + OS.GetSystemMetrics(OS.SM_CYCURSOR) / 2 + 5);
+			} else {
+				/*
+				 * Mouse cursor is outside the bounds of the menu item:
+				 * Keyboard or mnemonic was used to select menu item
+				 */
+				selectedMenuItem.showTooltip ((rect.right + rect.left) / 2, rect.bottom + 5);
+			}
+		}
+	}
+
+	return null;
 }
 }

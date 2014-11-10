@@ -117,6 +117,10 @@ public void setTitle(NSString aString) {
 	OS.objc_msgSend(this.id, OS.sel_setTitle_, aString != null ? aString.id : 0);
 }
 
+public void setToolTip(NSString toolTip) {
+	OS.objc_msgSend(this.id, OS.sel_setToolTip_, toolTip != null ? toolTip.id : 0);
+}
+
 public long /*int*/ state() {
 	return OS.objc_msgSend(this.id, OS.sel_state);
 }

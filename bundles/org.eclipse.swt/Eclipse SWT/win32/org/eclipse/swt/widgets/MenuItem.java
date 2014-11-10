@@ -12,6 +12,7 @@ package org.eclipse.swt.widgets;
 
  
 import org.eclipse.swt.internal.win32.*;
+import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.events.*;
@@ -38,7 +39,8 @@ import org.eclipse.swt.events.*;
 public class MenuItem extends Item {
 	Menu parent, menu;
 	long /*int*/ hBitmap;
-	int id, accelerator, userId;
+	int id, accelerator, userId, index;
+	ToolTip itemToolTip;
 	/*
 	* Feature in Windows.  On Windows 98, it is necessary
 	* to add 4 pixels to the width of the image or the image
@@ -87,7 +89,7 @@ public class MenuItem extends Item {
 public MenuItem (Menu parent, int style) {
 	super (parent, checkStyle (style));
 	this.parent = parent;
-	parent.createItem (this, parent.getItemCount ());
+	parent.createItem (this, (index = parent.getItemCount ()));
 }
 
 /**
@@ -129,13 +131,14 @@ public MenuItem (Menu parent, int style) {
 public MenuItem (Menu parent, int style, int index) {
 	super (parent, checkStyle (style));
 	this.parent = parent;
-	parent.createItem (this, index);
+	parent.createItem (this, (this.index = index));
 }
 
 MenuItem (Menu parent, Menu menu, int style, int index) {
 	super (parent, checkStyle (style));
 	this.parent = parent;
 	this.menu = menu;	
+	this.index = index;
 	if (menu != null) menu.cascade = this;
 	display.addMenuItem (this);
 }
@@ -501,6 +504,28 @@ public boolean getSelection () {
 	boolean success = OS.GetMenuItemInfo (hMenu, id, false, info);
 	if (!success) error (SWT.ERROR_CANNOT_GET_SELECTION);
 	return (info.fState & OS.MFS_CHECKED) !=0;
+}
+
+/**
+ * Returns the receiver's tool tip text, or null if it has not been set.
+ *
+ * @return the receiver's tool tip text.
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @since 3.104
+ */
+public String getToolTipText () {
+	checkWidget();
+	return (itemToolTip == null) ? null : itemToolTip.getMessage();
+}
+
+void hideToolTip () {
+	if (itemToolTip == null) return;
+	itemToolTip.setVisible (false);
 }
 
 /**
@@ -1146,6 +1171,50 @@ public void setText (String string) {
 	parent.redraw ();
 }
 
+/**
+ * Sets the receiver's tool tip text to the argument, which
+ * may be null indicating that the default tool tip for the
+ * control will be shown. For a control that has a default
+ * tool tip, such as the Tree control on Windows, setting
+ * the tool tip text to an empty string replaces the default,
+ * causing no tool tip text to be shown.
+ * <p>
+ * The mnemonic indicator (character '&amp;') is not displayed in a tool tip.
+ * To display a single '&amp;' in the tool tip, the character '&amp;' can be
+ * escaped by doubling it in the string.
+ * </p>
+ *
+ * @param toolTip the new tool tip text (or null)
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @since 3.104
+ */
+public void setToolTipText (String toolTip) {
+	checkWidget ();
+
+	if (toolTip == null && itemToolTip != null) {
+		itemToolTip.setVisible (false);
+		itemToolTip = null;
+	}
+
+	if (toolTip == null || toolTip.trim().length() == 0
+			|| (itemToolTip != null && toolTip.equals(itemToolTip.getMessage()))) return;
+
+	itemToolTip = new MenuItemToolTip (this.getParent().getShell());
+	itemToolTip.setMessage (toolTip);
+	itemToolTip.setVisible (false);
+}
+
+void showTooltip (int x, int y) {
+	if (itemToolTip == null) return;
+	itemToolTip.setLocation (x, y);
+	itemToolTip.setVisible (true);
+}
+
 int widgetStyle () {
 	int bits = 0;
 	Decorations shell = parent.parent;
@@ -1243,6 +1312,19 @@ LRESULT wmMeasureChild (long /*int*/ wParam, long /*int*/ lParam) {
 		OS.MoveMemory (lParam, struct, MEASUREITEMSTRUCT.sizeof);
 	}
 	return null;
+}
+
+private static final class MenuItemToolTip extends ToolTip {
+
+	public MenuItemToolTip(Shell parent) {
+		super(parent, 0);
+	}
+
+	@Override
+	long /*int*/ hwndToolTip() {
+		return parent.menuItemToolTipHandle();
+	}
+
 }
 
 }
