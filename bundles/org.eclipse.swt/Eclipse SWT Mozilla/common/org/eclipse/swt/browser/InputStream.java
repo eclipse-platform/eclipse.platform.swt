@@ -99,7 +99,10 @@ int Close () {
 
 int Available (long /*int*/ _retval) {
 	int available = buffer == null ? 0 : buffer.length - index;
-	XPCOM.memmove (_retval, new int[] {available}, 4);
+	if (MozillaVersion.CheckVersion (MozillaVersion.VERSION_XR24))
+		XPCOM.memmove (_retval, new long[] {available}, 8);
+	else
+		XPCOM.memmove (_retval, new int[] {available}, 4);
 	return XPCOM.NS_OK;
 }
 
