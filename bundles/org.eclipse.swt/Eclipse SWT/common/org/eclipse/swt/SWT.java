@@ -779,7 +779,7 @@ public class SWT {
 	 * {@link #PostExternalEventDispatch} is dispatched.
 	 * </p>
 	 * <p>
-	 * The data field of the event contains a reference to the following event.
+	 * The detail field of the event contains the type of the following event.
 	 * </p>
 	 *
 	 * @since 3.103
@@ -794,7 +794,7 @@ public class SWT {
 	 * {@link #PostExternalEventDispatch} is dispatched.
 	 * </p>
 	 * <p>
-	 * The data field of the event contains a reference to the prior event.
+	 * The detail field of the event contains the type of the prior event.
 	 * </p>
 	 *
 	 * @since 3.103

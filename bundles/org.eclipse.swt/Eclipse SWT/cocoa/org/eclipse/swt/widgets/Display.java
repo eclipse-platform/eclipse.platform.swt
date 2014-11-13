@@ -4183,11 +4183,12 @@ void sendEvent (EventTable table, Event event) {
 		sendEventCount++;
 		if (!filterEvent (event)) {
 			if (table != null) {
-				sendPreEvent (event);
+				int type = event.type;
+				sendPreEvent (type);
 				try {
 					table.sendEvent (event);
 				} finally {
-					sendPostEvent (event);
+					sendPostEvent (type);
 				}
 			}
 		}
@@ -4196,25 +4197,25 @@ void sendEvent (EventTable table, Event event) {
 	}
 }
 
-void sendPreEvent (Event original) {
-	if (original != null && original.type != SWT.PreEvent && original.type != SWT.PostEvent
-			&& original.type != SWT.PreExternalEventDispatch
-			&& original.type != SWT.PostExternalEventDispatch) {
+void sendPreEvent (int eventType) {
+	if (eventType != SWT.PreEvent && eventType != SWT.PostEvent
+			&& eventType != SWT.PreExternalEventDispatch
+			&& eventType != SWT.PostExternalEventDispatch) {
 		if (eventTable != null && eventTable.hooks (SWT.PreEvent)) {
 			Event event = new Event ();
-			event.data = original;
+			event.detail = eventType;
 			sendEvent (SWT.PreEvent, event);
 		}
 	}
 }
 
-void sendPostEvent (Event original) {
-	if (original != null && original.type != SWT.PreEvent && original.type != SWT.PostEvent
-			&& original.type != SWT.PreExternalEventDispatch
-			&& original.type != SWT.PostExternalEventDispatch) {
+void sendPostEvent (int eventType) {
+	if (eventType != SWT.PreEvent && eventType != SWT.PostEvent
+			&& eventType != SWT.PreExternalEventDispatch
+			&& eventType != SWT.PostExternalEventDispatch) {
 		if (eventTable != null && eventTable.hooks (SWT.PostEvent)) {
 			Event event = new Event ();
-			event.data = original;
+			event.detail = eventType;
 			sendEvent (SWT.PostEvent, event);
 		}
 	}
