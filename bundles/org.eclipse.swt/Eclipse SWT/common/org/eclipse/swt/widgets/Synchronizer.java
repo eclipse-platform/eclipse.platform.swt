@@ -131,7 +131,7 @@ boolean runAsyncMessages (boolean all) {
 		run = true;
 		synchronized (lock) {
 			syncThread = lock.thread;
-			display.sendPreEvent(null);
+			display.sendPreEvent(SWT.None);
 			try {
 				lock.run();
 			} catch (Throwable t) {
@@ -139,7 +139,7 @@ boolean runAsyncMessages (boolean all) {
 				SWT.error (SWT.ERROR_FAILED_EXEC, t);
 			} finally {
 				if (display != null && !display.isDisposed()) {
-					display.sendPostEvent(null);
+					display.sendPostEvent(SWT.None);
 				}
 				syncThread = null;
 				lock.notifyAll ();
@@ -182,12 +182,12 @@ protected void syncExec (Runnable runnable) {
 	}
 	if (lock == null) {
 		if (runnable != null) {
-			display.sendPreEvent(null);
+			display.sendPreEvent(SWT.None);
 			try {
 				runnable.run();
 			} finally {
 				if (display != null && !display.isDisposed()) {
-					display.sendPostEvent(null);
+					display.sendPostEvent(SWT.None);
 				}
 			}
 		}
