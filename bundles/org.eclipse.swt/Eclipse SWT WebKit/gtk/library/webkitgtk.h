@@ -30,7 +30,7 @@
 		if (gtk3 == NULL || strcmp(gtk3, "1") == 0) { \
 			char *webkit2 = getenv("SWT_WEBKIT2"); \
 			if (webkit2 != NULL && strcmp(webkit2, "1") == 0) { \
-				handle = dlopen("libwebkit2gtk-3.0.so.25", LOAD_FLAGS); /* webkit2 */ \
+				handle = dlopen("libwebkit2gtk-4.0.so.37", LOAD_FLAGS); /* webkit2 */ \
 			} else { \
 				handle = dlopen("libwebkitgtk-3.0.so.0", LOAD_FLAGS); /* webkitgtk >= 3.x lib */ \
 			} \
