@@ -27,11 +27,6 @@
  -->
 
 <project name="swtbuild" basedir=".">
-	<taskdef name="xmltask" classname="com.oopsconsultancy.xmltask.ant.XmlTask">
-		<classpath>
-			<pathelement location="${lib.dir}/xmltask.jar"/>
-		</classpath>
-	</taskdef>
 	
 	<property name="gitroot" value="silenio@dev.eclipse.org:/gitroot/platform/"/>
 	<property name="TAG" value="master"/>
@@ -50,7 +45,15 @@
 	<property name="file_library_j2me" value="bundles/org.eclipse.swt/Eclipse SWT PI/common_j2me/org/eclipse/swt/internal/Library.java"/>
 	<property name="file_make_common" value="bundles/org.eclipse.swt/Eclipse SWT/common/library/make_common.mak"/>
 	<property name="file_version" value="bundles/org.eclipse.swt/Eclipse SWT/common/version.txt"/>
+	
+	<property name="lib.dir" value="/var/lib/hudson/antlib"/>
 
+	<taskdef name="xmltask" classname="com.oopsconsultancy.xmltask.ant.XmlTask">
+		<classpath>
+			<pathelement location="${lib.dir}/xmltask.jar"/>
+		</classpath>
+	</taskdef>
+	
 	<target name="init_keyfile">
 		<condition property="keyfile" value="C:\BUILD\ssh\swtbuild_dsa_private" else="/var/lib/hudson/swt/swtbuild_dsa_private">
 			<os family="windows"/>
