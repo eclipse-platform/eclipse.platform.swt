@@ -27,7 +27,11 @@
  -->
 
 <project name="swtbuild" basedir=".">
-	<taskdef name="xmltask" classname="com.oopsconsultancy.xmltask.ant.XmlTask"/>
+	<taskdef name="xmltask" classname="com.oopsconsultancy.xmltask.ant.XmlTask">
+		<classpath>
+			<pathelement location="${lib.dir}/xmltask.jar"/>
+		</classpath>
+	</taskdef>
 	
 	<property name="gitroot" value="silenio@dev.eclipse.org:/gitroot/platform/"/>
 	<property name="TAG" value="master"/>
