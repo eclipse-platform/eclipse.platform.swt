@@ -2324,6 +2324,18 @@ boolean dragDetect (int button, int count, int stateMask, int x, int y) {
 
 boolean dragDetect (int x, int y, boolean filter, boolean dragOnTimeout, boolean [] consume) {
 	boolean quit = false, dragging = false;
+
+	//428852 DND workaround for GTk3.
+	//Gtk3 no longer sends motion events on the same control during thread sleep
+	//before a drag started. This is due to underlying gdk changes.
+	//Thus for gtk3 we check mouse coords manually
+	//Note, input params x/y are relative, the two points below are absolute coords.
+	Point startPos = null;
+	Point currPos = null;
+	if (OS.GTK3) {
+		startPos = display.getCursorLocation();
+	}
+
 	while (!quit) {
 		long /*int*/ eventPtr = 0;
 		/*
@@ -2338,10 +2350,19 @@ boolean dragDetect (int x, int y, boolean filter, boolean dragOnTimeout, boolean
 			if (eventPtr != 0) {
 				break;
 			} else {
-				try {Thread.sleep(50);} catch (Exception ex) {}
+				if (OS.GTK3) { //428852
+					currPos = display.getCursorLocation();
+					dragging = OS.gtk_drag_check_threshold (handle,
+								startPos.x, startPos.y, currPos.x, currPos.y);
+					if (dragging) break;
+				} else {
+				try {Thread.sleep(50);} 
+				catch (Exception ex) {}
+				}
 			}
 		}
 		display.sendPostExternalEventDispatchEvent();
+		if (dragging) return true;  //428852
 		if (eventPtr == 0) return dragOnTimeout;
 		switch (OS.GDK_EVENT_TYPE (eventPtr)) {
 			case OS.GDK_MOTION_NOTIFY: {
