@@ -106,7 +106,7 @@ class IE extends WebBrowser {
 	
 	static final String ABOUT_BLANK = "about:blank"; //$NON-NLS-1$
 	static final String CLSID_SHELLEXPLORER1 = "{EAB22AC3-30C1-11CF-A7EB-0000C05BAE0B}"; //$NON-NLS-1$
-	static final int DEFAULT_IE_VERSION = 9000;
+	static final int DEFAULT_IE_VERSION = 9999;
 	static final String EXTENSION_PDF = ".pdf";	//$NON-NLS-1$
 	static final String HTML_DOCUMENT = "HTML Document";	//$NON-NLS-1$
 	static final int MAX_PDF = 20;
@@ -290,7 +290,27 @@ public void create(Composite parent, int style) {
 		}
 		if (version == 0) {
 			if (IEVersion != 0) {
-				version = IEVersion * 1000;
+				/*
+				 * By default in Embedded IE the docuemntMode is Quirks(5)
+				 * mode unless !DOCTYPE directives is defined in the HTML.
+				 * As per MSDN IE8 and onwards, there is a way we could hint
+				 * embedded IE to use current documentMode via appropriate
+				 * version value in the registry. Refer bug 342145.
+				 * 
+				 * Complete list of IE emulation modes is listed on MSDN:
+				 * http://msdn.microsoft
+				 * .com/en-us/library/ie/ee330730%28v=vs
+				 * .85%29.aspx#browser_emulation
+				 */
+				if (IEVersion >= 10) {
+					version = IEVersion * 1000 + 1;
+				}
+				else if (IEVersion >= 8) {
+					version = IEVersion * 1111;
+				}
+				else {
+					version = IEVersion * 1000;
+				}
 			} else {
 				version = DEFAULT_IE_VERSION;
 			}
