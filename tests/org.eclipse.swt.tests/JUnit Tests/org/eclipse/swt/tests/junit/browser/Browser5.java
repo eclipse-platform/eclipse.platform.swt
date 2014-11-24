@@ -18,7 +18,7 @@ import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 
 public class Browser5 {
-	public static boolean verbose = false;
+	public static boolean verbose = true;
 	public static boolean passed = false;
 	static Point[][] regressionBounds = {
 				{new Point(100,200), new Point(300,100)},
