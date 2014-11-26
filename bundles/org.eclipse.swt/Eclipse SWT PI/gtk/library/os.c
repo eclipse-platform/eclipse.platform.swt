@@ -8732,16 +8732,6 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(_1gtk_1accel_1group_1new)
 }
 #endif
 
-#ifndef NO__1gtk_1accel_1label_1set_1accel_1widget
-JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1accel_1label_1set_1accel_1widget)
-	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1)
-{
-	OS_NATIVE_ENTER(env, that, _1gtk_1accel_1label_1set_1accel_1widget_FUNC);
-	gtk_accel_label_set_accel_widget((GtkAccelLabel *)arg0, (GtkWidget *)arg1);
-	OS_NATIVE_EXIT(env, that, _1gtk_1accel_1label_1set_1accel_1widget_FUNC);
-}
-#endif
-
 #ifndef NO__1gtk_1accel_1label_1set_1accel
 JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1accel_1label_1set_1accel)
 	(JNIEnv *env, jclass that, jintLong arg0, jint arg1, jint arg2)
@@ -8753,10 +8743,20 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1accel_1label_1set_1accel)
 	{
 		OS_LOAD_FUNCTION(fp, gtk_accel_label_set_accel)
 		if (fp) {
-			((void (CALLING_CONVENTION*)(GtkAccelLabel *, jint, jint))fp)((GtkAccelLabel *)arg0, arg1, arg2);
+			((void (CALLING_CONVENTION*)(GtkAccelLabel *, guint, GdkModifierType))fp)((GtkAccelLabel *)arg0, (guint)arg1, (GdkModifierType)arg2);
 		}
 	}
 	OS_NATIVE_EXIT(env, that, _1gtk_1accel_1label_1set_1accel_FUNC);
+}
+#endif
+
+#ifndef NO__1gtk_1accel_1label_1set_1accel_1widget
+JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1accel_1label_1set_1accel_1widget)
+	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1)
+{
+	OS_NATIVE_ENTER(env, that, _1gtk_1accel_1label_1set_1accel_1widget_FUNC);
+	gtk_accel_label_set_accel_widget((GtkAccelLabel *)arg0, (GtkWidget *)arg1);
+	OS_NATIVE_EXIT(env, that, _1gtk_1accel_1label_1set_1accel_1widget_FUNC);
 }
 #endif
 
@@ -10254,8 +10254,36 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(_1gtk_1drag_1begin)
 {
 	jintLong rc = 0;
 	OS_NATIVE_ENTER(env, that, _1gtk_1drag_1begin_FUNC);
+/*
 	rc = (jintLong)gtk_drag_begin((GtkWidget *)arg0, (GtkTargetList *)arg1, (GdkDragAction)arg2, (gint)arg3, (GdkEvent *)arg4);
+*/
+	{
+		OS_LOAD_FUNCTION(fp, gtk_drag_begin)
+		if (fp) {
+			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(GtkWidget *, GtkTargetList *, GdkDragAction, gint, GdkEvent *))fp)((GtkWidget *)arg0, (GtkTargetList *)arg1, (GdkDragAction)arg2, (gint)arg3, (GdkEvent *)arg4);
+		}
+	}
 	OS_NATIVE_EXIT(env, that, _1gtk_1drag_1begin_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1gtk_1drag_1begin_1with_1coordinates
+JNIEXPORT jintLong JNICALL OS_NATIVE(_1gtk_1drag_1begin_1with_1coordinates)
+	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jint arg2, jint arg3, jintLong arg4, jint arg5, jint arg6)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, _1gtk_1drag_1begin_1with_1coordinates_FUNC);
+/*
+	rc = (jintLong)gtk_drag_begin_with_coordinates((GtkWidget *)arg0, (GtkTargetList *)arg1, (GdkDragAction)arg2, (gint)arg3, (GdkEvent *)arg4, (gint)arg5, (gint)arg6);
+*/
+	{
+		OS_LOAD_FUNCTION(fp, gtk_drag_begin_with_coordinates)
+		if (fp) {
+			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(GtkWidget *, GtkTargetList *, GdkDragAction, gint, GdkEvent *, gint, gint))fp)((GtkWidget *)arg0, (GtkTargetList *)arg1, (GdkDragAction)arg2, (gint)arg3, (GdkEvent *)arg4, (gint)arg5, (gint)arg6);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, _1gtk_1drag_1begin_1with_1coordinates_FUNC);
 	return rc;
 }
 #endif

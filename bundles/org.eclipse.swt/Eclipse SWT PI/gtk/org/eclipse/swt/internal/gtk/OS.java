@@ -7302,6 +7302,7 @@ public static final int gtk_dialog_run(long /*int*/ dialog) {
 	}
 }
 /**
+ * @method flags=dynamic
  * @param widget cast=(GtkWidget *)
  * @param targets cast=(GtkTargetList *)
  * @param actions cast=(GdkDragAction)
@@ -7313,6 +7314,25 @@ public static final long /*int*/ gtk_drag_begin(long /*int*/ widget, long /*int*
 	lock.lock();
 	try {
 		return _gtk_drag_begin(widget, targets, actions, button, event);
+	} finally {
+		lock.unlock();
+	}
+}
+/**
+ * @method flags=dynamic
+ * @param widget cast=(GtkWidget *)
+ * @param targets cast=(GtkTargetList *)
+ * @param actions cast=(GdkDragAction)
+ * @param button cast=(gint)
+ * @param event cast=(GdkEvent *)
+ * @param x cast=(gint)
+ * @param y cast=(gint)
+ */
+public static final native long /*int*/ _gtk_drag_begin_with_coordinates(long /*int*/ widget, long /*int*/ targets, int actions, int button, long /*int*/ event, int x, int y);
+public static final long /*int*/ gtk_drag_begin_with_coordinates(long /*int*/ widget, long /*int*/ targets, int actions, int button, long /*int*/ event, int x, int y) {
+	lock.lock();
+	try {
+		return _gtk_drag_begin_with_coordinates(widget, targets, actions, button, event, x, y);
 	} finally {
 		lock.unlock();
 	}

@@ -298,7 +298,12 @@ void drag(Event dragEvent) {
 	
 	int actions = opToOsOp(getStyle());
 	Image image = event.image; 
-	long /*int*/ context = OS.gtk_drag_begin(control.handle, targetList, actions, 1, 0);
+	long /*int*/ context;
+	if (OS.GTK_VERSION >= OS.VERSION(3, 10, 0)) {
+		context = OS.gtk_drag_begin_with_coordinates(control.handle, targetList, actions, 1, 0, -1, -1);
+	} else {
+		context = OS.gtk_drag_begin(control.handle, targetList, actions, 1, 0);
+	}
 	if (context != 0 && image != null) {
 		if (OS.GTK3) {
 			OS.gtk_drag_set_icon_surface(context, image.surface);
