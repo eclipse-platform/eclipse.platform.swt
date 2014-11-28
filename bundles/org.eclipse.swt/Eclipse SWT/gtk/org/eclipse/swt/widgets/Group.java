@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2012 IBM Corporation and others.
+ * Copyright (c) 2000, 2014 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -125,25 +125,52 @@ public Rectangle computeTrim (int x, int y, int width, int height) {
 }
 
 @Override
+public Rectangle getClientArea () {
+	Rectangle clientRectangle = super.getClientArea ();
+	/*
+	* Bug 453827 Child position fix.
+	* SWT's calls to gtk_widget_size_allocate and gtk_widget_set_allocation 
+	* causes GTK+ to move the clientHandle's SwtFixed down by the size of the label.
+	* These calls can come up from 'shell' and group has no control over these calls.
+	* 
+	* This is an undesired side-effect. Client handle's x & y positions should never
+	* be incremented as this is an internal sub-container.
+	* 
+	* Note: 0 by 0 was chosen as 1 by 1 shifts controls beyond their original pos.
+	* The long term fix would be to not use widget_*_allocation from higher containers 
+	* like shell and to not use	gtkframe in non-group widgets (e.g used in label atm).
+	*/
+	clientRectangle.x = 0;
+	clientRectangle.y = 0;
+	return clientRectangle;
+}
+
+
+@Override
 void createHandle(int index) {
 	state |= HANDLE | THEME_BACKGROUND;
+
 	fixedHandle = OS.g_object_new (display.gtk_fixed_get_type (), 0);
 	if (fixedHandle == 0) error (SWT.ERROR_NO_HANDLES);
 	gtk_widget_set_has_window (fixedHandle, true);
+
 	handle = OS.gtk_frame_new (null);
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
+
 	labelHandle = OS.gtk_label_new (null);
 	if (labelHandle == 0) error (SWT.ERROR_NO_HANDLES);
 	OS.g_object_ref (labelHandle);
 	OS.g_object_ref_sink (labelHandle);
+
 	clientHandle = OS.g_object_new (display.gtk_fixed_get_type (), 0);
 	if (clientHandle == 0) error (SWT.ERROR_NO_HANDLES);
-	if (OS.GTK3) {
-		OS.gtk_widget_override_background_color (clientHandle, OS.GTK_STATE_FLAG_NORMAL, new GdkRGBA ());
-		long /*int*/ region = OS.gdk_region_new ();
-		OS.gtk_widget_input_shape_combine_region (clientHandle, region);
-		OS.gdk_region_destroy (region);
-	}
+	/*
+	 * Bug 453827 - clientHandle now has it's own window so that 
+	 * it can listen to events (clicking/tooltip etc.) and so that 
+	 * background can be drawn on it.
+	 */
+	gtk_widget_set_has_window (clientHandle, true);
+
 	OS.gtk_container_add (fixedHandle, handle);
 	OS.gtk_container_add (handle, clientHandle);
 	if ((style & SWT.SHADOW_IN) != 0) {
@@ -161,7 +188,7 @@ void createHandle(int index) {
 	// In GTK 3 font description is inherited from parent widget which is not how SWT has always worked,
 	// reset to default font to get the usual behavior
 	if (OS.GTK3) {
-		setFontDescription(defaultFont().handle);
+		setFontDescription (defaultFont ().handle);
 	}
 }
 
@@ -179,7 +206,12 @@ void enableWidget (boolean enabled) {
 
 @Override
 long /*int*/ eventHandle () {
-	return fixedHandle;
+	/*
+	 * Bug 453827 - Group's events should be handled via it's internal
+	 * fixed container (clientHandle) and not via it's top level.
+	 * This makes it behave more like composite.
+	 */
+	return clientHandle;
 }
 
 @Override
@@ -228,7 +260,11 @@ boolean mnemonicMatch (char key) {
 
 @Override
 long /*int*/ parentingHandle() {
-	return fixedHandle;
+	/*
+	 * Bug 453827 - Children should be attached to the internal fixed
+	 * subcontainer (clienthandle) and not the top-level fixedHandle.
+	 */
+	return clientHandle;
 }
 
 @Override
@@ -254,7 +290,9 @@ void releaseWidget () {
 @Override
 void setBackgroundColor (GdkColor color) {
 	super.setBackgroundColor (color);
-	setBackgroundColor(fixedHandle, color);
+	setBackgroundColor (fixedHandle, color);
+	// Bug 453827 - client handle should also be painted as it's visible to the user now.
+	setBackgroundColor (clientHandle, color);
 }
 
 @Override
