@@ -296,6 +296,8 @@
 				<equals arg1="${swt.arch}" arg2="ppc64"/>
 				<equals arg1="${swt.arch}" arg2="ppc64le"/>
 				<equals arg1="${swt.arch}" arg2="s390x"/>
+				<equals arg1="${swt.arch}" arg2="sparc64"/>
+				<equals arg1="${swt.arch}" arg2="aarch64"/>
 			</or>
 		</condition>
 		<echo>Is64=${is64}</echo>
