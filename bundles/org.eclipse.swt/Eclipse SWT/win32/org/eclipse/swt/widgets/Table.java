@@ -5508,7 +5508,7 @@ public void showSelection () {
 		 * 
 		 * Make sure above fix is applied on an active shell, bug 450391
 		 */
-		if (display.getActiveShell() != null && (style & SWT.NO_SCROLL) == 0
+		if (display.getActiveShell() == getShell() && (style & SWT.NO_SCROLL) == 0
 					&& (verticalBar == null || !verticalBar.isVisible())) {
 			showItem (0);
 		} else {
