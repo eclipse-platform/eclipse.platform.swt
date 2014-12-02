@@ -5506,7 +5506,7 @@ public void showSelection () {
 		 * the table is not visible. Fix is to make sure on show selection
 		 * table gets vertically scrolled back to the top, refer bug 442275
 		 * 
-		 * Make sure above fix is applied on an active shell, bug 450391
+		 * Make sure above fix is only applied to the active shell, see bug 450391.
 		 */
 		if (display.getActiveShell() == getShell() && (style & SWT.NO_SCROLL) == 0
 					&& (verticalBar == null || !verticalBar.isVisible())) {
