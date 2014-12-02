@@ -2914,17 +2914,17 @@ LRESULT wmChar (long /*int*/ hwnd, long /*int*/ wParam, long /*int*/ lParam) {
 	if (ignoreCharacter) return null;
 	LRESULT result = super.wmChar (hwnd, wParam, lParam);
 	if (result != null) return result;
-	/*
-	* Feature in Windows.  For some reason, when the
-	* widget is a single line text widget, when the
-	* user presses tab, return or escape, Windows beeps.
-	* The fix is to look for these keys and not call
-	* the window proc.
-	* 
-	* NOTE: This only happens when the drop down list
-	* is not visible.
-	*/
 	switch ((int)/*64*/wParam) {
+		/*
+		* Feature in Windows.  For some reason, when the
+		* widget is a single line text widget, when the
+		* user presses tab, return or escape, Windows beeps.
+		* The fix is to look for these keys and not call
+		* the window proc.
+		*
+		* NOTE: This only happens when the drop down list
+		* is not visible.
+		*/
 		case SWT.TAB: return LRESULT.ZERO;
 		case SWT.CR:
 			if (!ignoreDefaultSelection) sendSelectionEvent (SWT.DefaultSelection);
@@ -2944,6 +2944,17 @@ LRESULT wmChar (long /*int*/ hwnd, long /*int*/ wParam, long /*int*/ lParam) {
 				if (OS.SendMessage (handle, OS.CB_GETDROPPEDSTATE, 0, 0) == 0) {
 					return LRESULT.ZERO;
 				}
+			}
+		/*
+		* Bug in Windows.  When the user types CTRL and BS
+		* in a combo control, a DEL character (0x08) is generated.
+		* Rather than deleting the text, the DEL character
+		* is inserted into the control. The fix is to detect
+		* this case and not call the window proc.
+		*/
+		case SWT.DEL:
+			if (OS.GetKeyState (OS.VK_CONTROL) < 0) {
+				return LRESULT.ZERO;
 			}
 	}
 	return result;
