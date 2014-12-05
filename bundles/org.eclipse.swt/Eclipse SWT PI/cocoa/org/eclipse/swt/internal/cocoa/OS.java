@@ -17,11 +17,26 @@ public class OS extends C {
 		Library.loadLibrary("swt-pi"); //$NON-NLS-1$
 	}
 	
+	/**
+	 * NOTE: For new code, use {@link #VERSION_MMB} and {@link #VERSION_MMB(int, int, int)}
+	 */
 	public static final int VERSION;
+	public static final int VERSION_MMB;
 	static {
 		int [] response = new int [1];
 		OS.Gestalt (OS.gestaltSystemVersion, response);
-		VERSION = response [0] & 0xffff;		
+		VERSION = response [0] & 0xffff;
+		OS.Gestalt (OS.gestaltSystemVersionMajor, response);
+		int major = response [0];
+		OS.Gestalt (OS.gestaltSystemVersionMinor, response);
+		int minor = response [0];
+		OS.Gestalt (OS.gestaltSystemVersionBugFix, response);
+		int bugFix = response [0];
+		VERSION_MMB = VERSION_MMB (major, minor, bugFix);
+	}
+	
+	public static int VERSION_MMB (int major, int minor, int bugFix) {
+		return (major << 16) + (minor << 8) + bugFix;
 	}
 	
 	/*
@@ -38,6 +53,9 @@ public class OS extends C {
 	public static final double /*float*/ MAX_TEXT_CONTAINER_SIZE = 0.5e7f;
 	
 	public static final int gestaltSystemVersion = ('s'<<24) + ('y'<<16) + ('s'<<8) + 'v';
+	public static final int gestaltSystemVersionMajor = ('s'<<24) + ('y'<<16) + ('s'<<8) + '1';
+	public static final int gestaltSystemVersionMinor = ('s'<<24) + ('y'<<16) + ('s'<<8) + '2';
+	public static final int gestaltSystemVersionBugFix = ('s'<<24) + ('y'<<16) + ('s'<<8) + '3';
 	public static final int noErr = 0;
 	public static final int kProcessTransformToForegroundApplication = 1;
 	public static final int kSystemIconsCreator = ('m' << 24) + ('a' << 16) + ('c' << 8) + 's';
