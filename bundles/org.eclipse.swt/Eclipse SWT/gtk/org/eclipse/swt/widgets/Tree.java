@@ -2028,6 +2028,7 @@ long /*int*/ gtk_row_has_child_toggled (long /*int*/ model, long /*int*/ path, l
 	*/
 	int [] index = new int [1];
 	OS.gtk_tree_model_get (modelHandle, iter, ID_COLUMN, index, -1);
+	if (index [0] >= items.length) return 0;
 	TreeItem item = items [index [0]];
 	if (item == null) return 0;
 	int childCount = OS.gtk_tree_model_iter_n_children (modelHandle, item.handle);
