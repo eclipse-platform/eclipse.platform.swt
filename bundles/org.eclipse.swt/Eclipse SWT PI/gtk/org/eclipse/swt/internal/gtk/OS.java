@@ -572,6 +572,7 @@ public class OS extends C {
 	public static final byte[] realize = ascii("realize");
 	public static final byte[] row_activated = ascii("row-activated");
 	public static final byte[] row_changed = ascii("row-changed");
+	public static final byte[] row_has_child_toggled = ascii("row-has-child-toggled");
 	public static final byte[] row_inserted = ascii("row-inserted");
 	public static final byte[] row_deleted = ascii("row-deleted");
 	public static final byte[] scroll_child = ascii("scroll-child");

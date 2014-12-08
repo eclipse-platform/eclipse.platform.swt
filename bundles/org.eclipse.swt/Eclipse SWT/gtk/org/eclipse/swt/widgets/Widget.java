@@ -191,7 +191,8 @@ public abstract class Widget {
 	static final int MOVE_CURSOR_INVERSE = 81;
 	static final int DIRECTION_CHANGED = 82;
 	static final int CREATE_MENU_PROXY = 83;
-	static final int LAST_SIGNAL = 84;
+	static final int ROW_HAS_CHILD_TOGGLED = 84;
+	static final int LAST_SIGNAL = 85;
 	
 	static final String IS_ACTIVE = "org.eclipse.swt.internal.control.isactive"; //$NON-NLS-1$
 	static final String KEY_CHECK_SUBWINDOW = "org.eclipse.swt.internal.control.checksubwindow"; //$NON-NLS-1$
@@ -887,6 +888,10 @@ long /*int*/ gtk_row_deleted (long /*int*/ model, long /*int*/ path) {
 }
 
 long /*int*/ gtk_row_inserted (long /*int*/ model, long /*int*/ path, long /*int*/ iter) {
+	return 0;
+}
+
+long /*int*/ gtk_row_has_child_toggled (long /*int*/ model, long /*int*/ path, long /*int*/ iter) {
 	return 0;
 }
 
@@ -2129,6 +2134,7 @@ long /*int*/ windowProc (long /*int*/ handle, long /*int*/ arg0, long /*int*/ ar
 		case TEST_COLLAPSE_ROW: return gtk_test_collapse_row (handle, arg0, arg1);
 		case TEST_EXPAND_ROW: return gtk_test_expand_row(handle, arg0, arg1);
 		case ROW_INSERTED: return gtk_row_inserted (handle, arg0, arg1);
+		case ROW_HAS_CHILD_TOGGLED: return gtk_row_has_child_toggled(handle, arg0, arg1);
 		default: return 0;
 	}
 }

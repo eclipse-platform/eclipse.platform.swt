@@ -2718,6 +2718,7 @@ void initializeCallbacks () {
 	closuresProc [Widget.TEST_COLLAPSE_ROW] = windowProc4;
 	closuresProc [Widget.TEST_EXPAND_ROW] = windowProc4;
 	closuresProc [Widget.ROW_INSERTED] = windowProc4;
+	closuresProc [Widget.ROW_HAS_CHILD_TOGGLED] = windowProc4;
 	closuresProc [Widget.DELETE_FROM_CURSOR] = windowProc4;
 	closuresProc [Widget.DELETE_FROM_CURSOR_INVERSE] = windowProc4;
 

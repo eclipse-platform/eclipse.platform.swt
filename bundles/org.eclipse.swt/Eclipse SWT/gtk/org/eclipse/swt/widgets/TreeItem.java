@@ -38,7 +38,7 @@ public class TreeItem extends Item {
 	Tree parent;
 	Font font;
 	Font[] cellFont;
-	boolean cached, grayed;
+	boolean cached, grayed, isExpanded;
 	static final int EXPANDER_EXTRA_PADDING = 4;
 
 /**

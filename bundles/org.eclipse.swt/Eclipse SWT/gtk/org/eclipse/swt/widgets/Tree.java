@@ -12,11 +12,11 @@ package org.eclipse.swt.widgets;
 
 
 import org.eclipse.swt.*;
+import org.eclipse.swt.events.*;
+import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.cairo.*;
 import org.eclipse.swt.internal.gtk.*;
-import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.events.*;
 
 /**
  * Instances of this class provide a selectable user interface object
@@ -2017,6 +2017,29 @@ long /*int*/ gtk_row_deleted (long /*int*/ model, long /*int*/ path) {
 }
 
 @Override
+long /*int*/ gtk_row_has_child_toggled (long /*int*/ model, long /*int*/ path, long /*int*/ iter) {
+	/*
+	* Feature in GTK. The expanded state of a row that lost
+	* its children is not persisted by GTK. So, the row
+	* doesn't exhibit the expanded state after obtaining the
+	* children. The fix is to preserve the expanded state
+	* and use this callback, as it is invoked when a row has
+	* gotten the first child row or lost its last child row.
+	*/
+	int [] index = new int [1];
+	OS.gtk_tree_model_get (modelHandle, iter, ID_COLUMN, index, -1);
+	TreeItem item = items [index [0]];
+	if (item == null) return 0;
+	int childCount = OS.gtk_tree_model_iter_n_children (modelHandle, item.handle);
+	if (childCount != 0 && item.isExpanded) {
+		OS.g_signal_handlers_block_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, TEST_EXPAND_ROW);
+		OS.gtk_tree_view_expand_row (handle, path, false);
+		OS.g_signal_handlers_unblock_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, TEST_EXPAND_ROW);
+	}
+	return 0;
+}
+
+@Override
 long /*int*/ gtk_row_inserted (long /*int*/ model, long /*int*/ path, long /*int*/ iter) {
 	if (ignoreAccessibility) {
 		OS.g_signal_stop_emission_by_name (model, OS.row_inserted);
@@ -2052,6 +2075,7 @@ long /*int*/ gtk_test_collapse_row (long /*int*/ tree, long /*int*/ iter, long /
 	boolean changed = modelChanged || !OS.gtk_tree_view_row_expanded (handle, path);
 	modelChanged = oldModelChanged;
 	if (isDisposed () || item.isDisposed ()) return 1;
+	item.isExpanded = false;
 	/*
 	* Bug in GTK.  Expanding or collapsing a row which has no more
 	* children causes the model state to become invalid, causing
@@ -2091,6 +2115,7 @@ long /*int*/ gtk_test_expand_row (long /*int*/ tree, long /*int*/ iter, long /*i
 	boolean changed = modelChanged || OS.gtk_tree_view_row_expanded (handle, path);
 	modelChanged = oldModelChanged;
 	if (isDisposed () || item.isDisposed ()) return 1;
+	item.isExpanded = true;
 	/*
 	* Bug in GTK.  Expanding or collapsing a row which has no more
 	* children causes the model state to become invalid, causing
@@ -2184,6 +2209,7 @@ void hookEvents () {
 	OS.g_signal_connect_closure (handle, OS.test_expand_row, display.getClosure (TEST_EXPAND_ROW), false);
 	OS.g_signal_connect_closure (handle, OS.test_collapse_row, display.getClosure (TEST_COLLAPSE_ROW), false);
 	OS.g_signal_connect_closure (handle, OS.expand_collapse_cursor_row, display.getClosure (EXPAND_COLLAPSE_CURSOR_ROW), false);
+	OS.g_signal_connect_closure (modelHandle, OS.row_has_child_toggled, display.getClosure (ROW_HAS_CHILD_TOGGLED), false);
 	if (checkRenderer != 0) {
 		OS.g_signal_connect_closure (checkRenderer, OS.toggled, display.getClosure (TOGGLED), false);
 	}
