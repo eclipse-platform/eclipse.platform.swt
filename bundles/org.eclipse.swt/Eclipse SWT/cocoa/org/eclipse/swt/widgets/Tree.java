@@ -1840,6 +1840,14 @@ public TreeItem getTopItem () {
 	point.x = rect.x;
 	point.y = rect.y;
 	NSOutlineView outlineView = (NSOutlineView)view;
+	/*
+	 * Note: On OSX 10.10, in setBounds(), we reset the origin of NSOutlineView so that it is
+	 * positioned below the header view. Take this into account before calling rowAtPoint().
+	 */
+	if ((outlineView.headerView() != null) && (OS.VERSION_MMB >= OS.VERSION_MMB(10, 10, 0))) {
+		NSRect headerRect = headerView.frame();
+		point.y += headerRect.y + headerRect.height;
+	}
 	long /*int*/ index = outlineView.rowAtPoint (point);
 	if (index == -1) return null; /* empty */
 	id item = outlineView.itemAtRow (index);
@@ -2698,14 +2706,20 @@ void setBackgroundColor(NSColor nsColor) {
 }
 
 void setBounds(int x, int y, int width, int height, boolean move, boolean resize) {
-	// TODO: add version check
 	/*
-	 * Bug on OSX 10.10: the header view hides the first row of the table view, initially.
-	 * Call tile() to force the header & table views to be placed correctly.
+	 * Bug on OSX 10.10: The scrollview's content view and the tree's header view have the same origin. 
+	 * This causes the first row of the NSOutlineView to be hidden by header view.
+	 * Set the origin of NSOutlineView so that it is positioned below the header view.
 	 */
 	super.setBounds (x, y, width, height, move, resize);
 	NSOutlineView widget = (NSOutlineView) view;
-	if (widget.headerView() != null) widget.tile ();
+	if ((widget.headerView() != null) && (OS.VERSION_MMB >= OS.VERSION_MMB(10, 10, 0))) {
+		NSPoint pt = new NSPoint();
+		NSRect headerRect = headerView.frame();
+		pt.y = headerRect.y + headerRect.height;
+		view.setFrameOrigin(pt);
+		view.setNeedsDisplay(true);
+	}
 }
 
 /**

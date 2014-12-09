@@ -1774,7 +1774,16 @@ public int getTopIndex () {
 	point.x = rect.x;
 	point.y = rect.y;
 	
-	int /*64*/ rowAtPoint = (int)/*64*/((NSTableView)view).rowAtPoint(point);
+	NSTableView tableView = (NSTableView)view;
+	/*
+	 * Note: On OSX 10.10, in setBounds(), we reset the origin of NSTableView so that it is
+	 * positioned below the header view. Take this into account before calling rowAtPoint().
+	 */
+	if ((tableView != null) && (OS.VERSION_MMB >= OS.VERSION_MMB(10, 10, 0))) {
+		NSRect headerRect = headerView.frame();
+		point.y += headerRect.y + headerRect.height;
+	}
+	int /*64*/ rowAtPoint = (int)/*64*/(tableView).rowAtPoint(point);
 	if (rowAtPoint == -1) return 0; /* Empty table */ 
 	return rowAtPoint;	
 }
@@ -2432,14 +2441,20 @@ void setBackgroundColor(NSColor nsColor) {
 }
 
 void setBounds(int x, int y, int width, int height, boolean move, boolean resize) {
-	// TODO: add version check
 	/*
-	 * Bug on OSX 10.10: the header view hides the first row of the table view, initially.
-	 * Call tile() to force the header & table views to be placed correctly.
+	 * Bug on OSX 10.10: The scrollview's content view and the table's header view have the same origin. 
+	 * This causes the first row of the NSTableView to be hidden by header view.
+	 * Set the origin of NSTableView so that it is positioned below the header view.
 	 */
 	super.setBounds (x, y, width, height, move, resize);
-	NSTableView widget = (NSTableView) view;
-	if (widget.headerView() != null) widget.tile ();
+	NSTableView tableView = (NSTableView) view;
+	if ((tableView.headerView() != null) && (OS.VERSION_MMB >= OS.VERSION_MMB(10, 10, 0))) {
+		NSPoint pt = new NSPoint();
+		NSRect headerRect = headerView.frame();
+		pt.y = headerRect.y + headerRect.height;
+		view.setFrameOrigin(pt);
+		view.setNeedsDisplay(true);
+	}
 }
 
 /**
