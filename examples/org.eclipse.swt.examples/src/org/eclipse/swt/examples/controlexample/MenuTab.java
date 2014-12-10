@@ -20,7 +20,7 @@ class MenuTab extends Tab {
 	/* Widgets added to the "Menu Style", "MenuItem Style" and "Other" groups */
 	Button barButton, dropDownButton, popUpButton, noRadioGroupButton, leftToRightButton, rightToLeftButton;
 	Button checkButton, cascadeButton, pushButton, radioButton, separatorButton;
-	Button imagesButton, acceleratorsButton, mnemonicsButton, subMenuButton, subSubMenuButton;
+	Button imagesButton, acceleratorsButton, mnemonicsButton, subMenuButton, subSubMenuButton, tooltipButton;
 	Button createButton, closeAllButton;
 	Group menuItemStyleGroup;
 
@@ -197,6 +197,8 @@ class MenuTab extends Tab {
 		subMenuButton.setText (ControlExample.getResourceString("SubMenu"));
 		subSubMenuButton = new Button (otherGroup, SWT.CHECK);
 		subSubMenuButton.setText (ControlExample.getResourceString("SubSubMenu"));
+		tooltipButton = new Button (otherGroup, SWT.CHECK);
+		tooltipButton.setText (ControlExample.getResourceString("Show_Tooltip"));
 		
 		/* Create the "create" and "closeAll" buttons (and a 'filler' label to place them) */
 		new Label(controlGroup, SWT.NONE);
@@ -248,6 +250,7 @@ class MenuTab extends Tab {
 			if (acceleratorsButton.getSelection()) item.setAccelerator(SWT.MOD1 + SWT.MOD2 + 'P');
 			if (imagesButton.getSelection()) item.setImage(instance.images[ControlExample.ciClosedFolder]);
 			item.setEnabled(enabledButton.getSelection());
+			if (tooltipButton.getSelection()) item.setToolTipText(ControlExample.getResourceString("Tooltip", new String[] {item.getText() }));
 			hookListeners(item);
 		}
 		
@@ -261,6 +264,7 @@ class MenuTab extends Tab {
 			if (acceleratorsButton.getSelection()) item.setAccelerator(SWT.MOD1 + SWT.MOD2 + 'C');
 			if (imagesButton.getSelection()) item.setImage(instance.images[ControlExample.ciOpenFolder]);
 			item.setEnabled(enabledButton.getSelection());
+			if (tooltipButton.getSelection()) item.setToolTipText(ControlExample.getResourceString("Tooltip", new String[] {item.getText() }));
 			hookListeners(item);
 		}
 				
@@ -271,6 +275,7 @@ class MenuTab extends Tab {
 			if (imagesButton.getSelection()) item.setImage(instance.images[ControlExample.ciTarget]);
 			item.setSelection(true);
 			item.setEnabled(enabledButton.getSelection());
+			if (tooltipButton.getSelection()) item.setToolTipText(ControlExample.getResourceString("Tooltip", new String[] {item.getText() }));
 			hookListeners(item);
 
 			item = new MenuItem(menu, SWT.RADIO);
@@ -278,6 +283,7 @@ class MenuTab extends Tab {
 			if (acceleratorsButton.getSelection()) item.setAccelerator(SWT.MOD1 + SWT.MOD2 + '2');
 			if (imagesButton.getSelection()) item.setImage(instance.images[ControlExample.ciTarget]);
 			item.setEnabled(enabledButton.getSelection());
+			if (tooltipButton.getSelection()) item.setToolTipText(ControlExample.getResourceString("Tooltip", new String[] {item.getText() }));
 			hookListeners(item);
 		}
 
@@ -291,7 +297,7 @@ class MenuTab extends Tab {
 			item.setMenu(subMenu);
 			item.setEnabled(enabledButton.getSelection());
 			hookListeners(subMenu);
-			
+			if (tooltipButton.getSelection()) item.setToolTipText(ControlExample.getResourceString("Tooltip", new String[] {item.getText() }));
 			createMenuItems(subMenu, createSubSubMenu, false);
 		}
 	}
