@@ -849,11 +849,9 @@ public void setText (String string) {
  * the tool tip text to an empty string replaces the default,
  * causing no tool tip text to be shown.
  * <p>
- * The mnemonic indicator (character '&amp;') is not displayed in a tool tip.
- * To display a single '&amp;' in the tool tip, the character '&amp;' can be
- * escaped by doubling it in the string.
+ * NOTE: Setting tooltips doesn't work for Menu items in the main menubar 
+ * on Mac and Ubuntu Unity desktop.
  * </p>
- *
  * @param toolTip the new tool tip text (or null)
  *
  * @exception SWTException <ul>
@@ -870,7 +868,7 @@ public void setToolTipText (String toolTip) {
 		toolTipText = null;
 		nsItem.setToolTip (null);
 	}
-
+	/*TODO: call fixMnemonic() on toolTip */
 	if (toolTip == null || toolTip.trim().length() == 0 || toolTip.equals(toolTipText)) return;
 
     toolTipText = toolTip;

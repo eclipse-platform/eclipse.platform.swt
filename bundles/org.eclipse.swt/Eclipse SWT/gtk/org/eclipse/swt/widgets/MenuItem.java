@@ -954,9 +954,8 @@ private void setAccelLabel(long /*int*/ label, String accelString) {
  * the tool tip text to an empty string replaces the default,
  * causing no tool tip text to be shown.
  * <p>
- * The mnemonic indicator (character '&amp;') is not displayed in a tool tip.
- * To display a single '&amp;' in the tool tip, the character '&amp;' can be
- * escaped by doubling it in the string.
+ * NOTE: Setting tooltip doesn't work for menu items in the main menubar 
+ * on Mac and Ubuntu Unity desktop.
  * </p>
  *
  * @param toolTip the new tool tip text (or null)
@@ -970,7 +969,7 @@ private void setAccelLabel(long /*int*/ label, String accelString) {
  */
 public void setToolTipText (String toolTip) {
 	checkWidget();
-
+	/*TODO: call fixMnemonic() on toolTip */
 	if (toolTip != null && (toolTip.trim().length() == 0 || toolTip.equals (toolTipText))) return;
 
 	this.parent.getShell().setToolTipText (handle, (toolTipText = toolTip));
