@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2014 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -12,9 +12,9 @@ package org.eclipse.swt.examples.controlexample;
 
 
 import org.eclipse.swt.*;
-import org.eclipse.swt.widgets.*;
-import org.eclipse.swt.layout.*;
 import org.eclipse.swt.events.*;
+import org.eclipse.swt.layout.*;
+import org.eclipse.swt.widgets.*;
 
 class MenuTab extends Tab {	
 	/* Widgets added to the "Menu Style", "MenuItem Style" and "Other" groups */
@@ -84,6 +84,7 @@ class MenuTab extends Tab {
 				MenuItem item = new MenuItem(menuBar, SWT.CASCADE);
 				item.setText(getMenuItemText("Cascade"));
 				if (imagesButton.getSelection()) item.setImage(instance.images[ControlExample.ciOpenFolder]);
+				if (tooltipButton.getSelection()) item.setToolTipText(ControlExample.getResourceString("Tooltip", new String[] {item.getText() }));
 				hookListeners(item);
 				Menu dropDownMenu = new Menu(shell, SWT.DROP_DOWN | radioBehavior);
 				item.setMenu(dropDownMenu);
@@ -255,7 +256,8 @@ class MenuTab extends Tab {
 		}
 		
 		if (separatorButton.getSelection()) {
-			new MenuItem(menu, SWT.SEPARATOR);
+			item = new MenuItem(menu, SWT.SEPARATOR);
+			if (tooltipButton.getSelection()) item.setToolTipText(ControlExample.getResourceString("Tooltip", new String[] {item.getText() }));
 		}
 		
 		if (checkButton.getSelection()) {

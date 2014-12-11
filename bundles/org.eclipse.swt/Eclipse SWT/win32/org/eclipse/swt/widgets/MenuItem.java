@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2012 IBM Corporation and others.
+ * Copyright (c) 2000, 2014 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -11,10 +11,10 @@
 package org.eclipse.swt.widgets;
 
  
-import org.eclipse.swt.internal.win32.*;
 import org.eclipse.swt.*;
-import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.events.*;
+import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.internal.win32.*;
 
 /**
  * Instances of this class represent a selectable user interface object
@@ -508,7 +508,7 @@ public boolean getSelection () {
 /**
  * Returns the receiver's tool tip text, or null if it has not been set.
  *
- * @return the receiver's tool tip text.
+ * @return the receiver's tool tip text
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -1173,8 +1173,8 @@ public void setText (String string) {
 /**
  * Sets the receiver's tool tip text to the argument, which
  * may be null indicating that the default tool tip for the
- * control will be shown. For a control that has a default
- * tool tip, such as the Tree control on Windows, setting
+ * control will be shown. For a menu item that has a default
+ * tool tip, setting
  * the tool tip text to an empty string replaces the default,
  * causing no tool tip text to be shown.
  * <p>
@@ -1183,8 +1183,8 @@ public void setText (String string) {
  * escaped by doubling it in the string.
  * </p>
  * <p>
- * NOTE: Setting tooltips doesn't work for Menu items in the main menubar 
- * on Mac and Ubuntu Unity desktop.
+ * NOTE: Tooltips are currently not shown for top-level menu items in the
+ * {@link Shell#setMenuBar(Menu) shell menubar} on Windows, Mac, and Ubuntu Unity desktop.
  * </p>
  * @param toolTip the new tool tip text (or null)
  *

@@ -14,6 +14,7 @@ package org.eclipse.swt.widgets;
 import org.eclipse.swt.*;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.gtk.*;
+import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.events.*;
 
@@ -949,8 +950,8 @@ private void setAccelLabel(long /*int*/ label, String accelString) {
 /**
  * Sets the receiver's tool tip text to the argument, which
  * may be null indicating that the default tool tip for the
- * control will be shown. For a control that has a default
- * tool tip, such as the Tree control on Windows, setting
+ * control will be shown. For a menu item that has a default
+ * tool tip, setting
  * the tool tip text to an empty string replaces the default,
  * causing no tool tip text to be shown.
  * <p>
@@ -959,10 +960,9 @@ private void setAccelLabel(long /*int*/ label, String accelString) {
  * escaped by doubling it in the string.
  * </p>
  * <p>
- * NOTE: Setting tooltip doesn't work for menu items in the main menubar 
- * on Mac and Ubuntu Unity desktop.
+ * NOTE: Tooltips are currently not shown for top-level menu items in the
+ * {@link Shell#setMenuBar(Menu) shell menubar} on Windows, Mac, and Ubuntu Unity desktop.
  * </p>
- *
  * @param toolTip the new tool tip text (or null)
  *
  * @exception SWTException <ul>
