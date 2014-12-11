@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feature
+      id="org.eclipse.swt.tools.feature"
+      label="%featureName"
+      version="3.104.0.qualifier"
+      provider-name="%providerName"
+      license-feature="org.eclipse.license"
+      license-feature-version="0.0.0">
+
+   <description>
+      %description
+   </description>
+
+   <copyright>
+      %copyright
+   </copyright>
+
+   <license url="%licenseURL">
+      %license
+   </license>
+
+   <url>
+      <discovery label="Generating the SWT JNI Code" url="http://eclipse.org/swt/jnigen.php"/>
+      <discovery label="Generating the SWT PI Code for Cocoa" url="http://eclipse.org/swt/macgen.php"/>
+   </url>
+
+   <plugin
+         id="org.eclipse.swt.tools"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+</feature>
