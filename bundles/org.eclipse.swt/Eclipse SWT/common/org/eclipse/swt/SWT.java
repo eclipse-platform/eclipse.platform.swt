@@ -7,6 +7,7 @@
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
+ *     Lars Vogel <Lars.Vogel@vogella.com> - Bug 455263
  *******************************************************************************/
 package org.eclipse.swt;
 
@@ -4340,7 +4341,7 @@ public static String getMessage(String key, Object[] args) {
 
 /**
  * Returns the SWT platform name.
- * Examples: "win32", "gtk", "cocoa", "wpf"
+ * Examples: "win32", "gtk", "cocoa"
  *
  * @return the SWT platform name
  */

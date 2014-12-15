@@ -39,8 +39,6 @@
 	<property name="src_win32" value="${src_common} 'bundles/org.eclipse.swt/Eclipse SWT PI/win32/library' 'bundles/org.eclipse.swt/Eclipse SWT AWT/win32/library' 'bundles/org.eclipse.swt/Eclipse SWT OpenGL/win32/library' 'bundles/org.eclipse.swt/Eclipse SWT WebKit/win32/library'"/>
 	<property name="src_gtk" value="${src_common} 'bundles/org.eclipse.swt/Eclipse SWT PI/gtk/library' 'bundles/org.eclipse.swt/Eclipse SWT AWT/gtk/library' 'bundles/org.eclipse.swt/Eclipse SWT OpenGL/glx/library' 'bundles/org.eclipse.swt/Eclipse SWT PI/cairo/library' 'bundles/org.eclipse.swt/Eclipse SWT Program/gnome/library' 'bundles/org.eclipse.swt/Eclipse SWT Program/cde/library' 'bundles/org.eclipse.swt/Eclipse SWT WebKit/gtk/library' "/>
 	<property name="src_cocoa" value="${src_common} 'bundles/org.eclipse.swt/Eclipse SWT PI/cocoa/library' 'bundles/org.eclipse.swt/Eclipse SWT AWT/cocoa/library'"/>
-	<property name="src_wpf" value="${src_common} 'bundles/org.eclipse.swt/Eclipse SWT PI/wpf/library' 'bundles/org.eclipse.swt/Eclipse SWT PI/wpf_win32/library'"/>
-
 	<property name="file_library_j2se" value="bundles/org.eclipse.swt/Eclipse SWT PI/common_j2se/org/eclipse/swt/internal/Library.java"/>
 	<property name="file_library_j2me" value="bundles/org.eclipse.swt/Eclipse SWT PI/common_j2me/org/eclipse/swt/internal/Library.java"/>
 	<property name="file_make_common" value="bundles/org.eclipse.swt/Eclipse SWT/common/library/make_common.mak"/>
@@ -133,12 +131,6 @@
 			<param name="library_count" value="1"/>
 			<param name="fragment" value="org.eclipse.swt.win32.wce_ppc.arm"/>
 		</antcall>
-		<!-- WPF is not being built
-		<antcall target="check_fragment_libraries">
-			<param name="library_count" value="2"/>
-			<param name="fragment" value="org.eclipse.swt.wpf.win32.x86"/>
-		</antcall>
-		-->
 	</target>
 
 	<target name="check_fragment_libraries" depends="get_version">
@@ -490,12 +482,6 @@
 		<antcall target="build_classes">
 			<param name="cp" value=".classpath_win32"/>
 		</antcall>
-		<!-- Not building WPF
-		<antcall target="build_classes">
-			<param name="cp" value=".classpath_wpf"/>
-		</antcall>
-		-->
-
 		<!-- Update build.sha1 file -->
 		<exec dir="${repo.src}" executable="git" failonerror="true" outputproperty="HEAD_TAG">
 			<arg line="rev-list ${TAG} -1"/>
@@ -923,7 +909,6 @@
 				</not>
 				<or>
 					<equals arg1="${swt.ws}" arg2="win32"/>
-					<equals arg1="${swt.ws}" arg2="wpf"/>
 				</or>
 			</and>
 		</condition>

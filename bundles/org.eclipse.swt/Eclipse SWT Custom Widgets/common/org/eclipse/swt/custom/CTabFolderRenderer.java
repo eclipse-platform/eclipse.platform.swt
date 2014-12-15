@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2014 IBM Corporation and others.
+ * Copyright (c) 2000, 2015 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -7,6 +7,7 @@
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
+ *     Lars Vogel <Lars.Vogel@vogella.com> - Bug 455263
  *******************************************************************************/
 package org.eclipse.swt.custom;
 
@@ -190,12 +191,11 @@ public class CTabFolderRenderer {
 	}
 	
 	void antialias (int[] shape, Color innerColor, Color outerColor, GC gc){
-		// Don't perform anti-aliasing on Mac and WPF because the platform
+		// Don't perform anti-aliasing on Mac because the platform
 		// already does it.  The simple style also does not require anti-aliasing.
 		if (parent.simple) return;
 		String platform = SWT.getPlatform();
 		if ("cocoa".equals(platform)) return; //$NON-NLS-1$
-		if ("wpf".equals(platform)) return; //$NON-NLS-1$
 		// Don't perform anti-aliasing on low resolution displays
 		if (parent.getDisplay().getDepth() < 15) return;
 		if (outerColor != null) {

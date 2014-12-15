@@ -196,7 +196,7 @@ public void paint(GC gc, int width, int height) {
  *            index is used to determine the appropriate font face
  */
 static String getPlatformFontFace(int index) {
-	if(SWT.getPlatform() == "win32" || SWT.getPlatform() == "wpf") {
+	if(SWT.getPlatform() == "win32") {
 		return new String [] {"Bookman Old Style", "Century Gothic", "Comic Sans MS", "Impact", "Garamond", "Lucida Console", "Monotype Corsiva"} [index];	
 	} else if (SWT.getPlatform() == "gtk") {
 		return new String [] {"Luxi Mono", "KacstTitleL", "Baekmuk Batang", "Baekmuk Headline", "KacstFarsi", "Baekmuk Gulim", "URW Chancery L"} [index];
