@@ -5540,6 +5540,22 @@ public static final int gdk_screen_get_n_monitors(long /*int*/ screen) {
 		lock.unlock();
 	}
 }
+
+/**
+ * @method flags=dynamic
+ * @param screen cast=(GdkScreen *)
+ */
+public static final native int _gdk_screen_get_primary_monitor(long /*int*/ screen);
+public static final int gdk_screen_get_primary_monitor(long /*int*/ screen) {
+	lock.lock();
+	try {
+		return _gdk_screen_get_primary_monitor(screen);
+	} finally {
+		lock.unlock();
+	}
+}
+
+
 public static final native int _gdk_screen_height();
 public static final int gdk_screen_height() {
 	lock.lock();

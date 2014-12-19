@@ -7620,6 +7620,26 @@ JNIEXPORT jint JNICALL OS_NATIVE(_1gdk_1screen_1get_1n_1monitors)
 }
 #endif
 
+#ifndef NO__1gdk_1screen_1get_1primary_1monitor
+JNIEXPORT jint JNICALL OS_NATIVE(_1gdk_1screen_1get_1primary_1monitor)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, _1gdk_1screen_1get_1primary_1monitor_FUNC);
+/*
+	rc = (jint)gdk_screen_get_primary_monitor((GdkScreen *)arg0);
+*/
+	{
+		OS_LOAD_FUNCTION(fp, gdk_screen_get_primary_monitor)
+		if (fp) {
+			rc = (jint)((jint (CALLING_CONVENTION*)(GdkScreen *))fp)((GdkScreen *)arg0);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, _1gdk_1screen_1get_1primary_1monitor_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO__1gdk_1screen_1height
 JNIEXPORT jint JNICALL OS_NATIVE(_1gdk_1screen_1height)
 	(JNIEnv *env, jclass that)

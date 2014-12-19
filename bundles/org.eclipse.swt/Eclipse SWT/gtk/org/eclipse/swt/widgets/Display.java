@@ -2013,10 +2013,24 @@ public Monitor [] getMonitors () {
  * @since 3.0
  */
 public Monitor getPrimaryMonitor () {
+	//Developer note, for testing see:
+	//org.eclipse.swt.tests.junit.Test_org_eclipse_swt_widgets_Display.test_getPrimaryMonitor()
+
 	checkDevice ();
 	Monitor [] monitors = getMonitors ();
-	return monitors [0];
+	int primaryMonitorIndex = 0;
+
+	if (OS.GTK_VERSION >= OS.VERSION(2, 20, 0)) {
+		//attempt to find actual primary monitor if one is configured:
+		long /*int*/ screen = OS.gdk_screen_get_default ();
+		if (screen != 0) {
+			//if no primary monitor is configured by the user, this returns 0.
+			primaryMonitorIndex = OS.gdk_screen_get_primary_monitor (screen);
+		}
+	}
+	return monitors [primaryMonitorIndex];
 }
+
 
 /**
  * Returns a (possibly empty) array containing all shells which have

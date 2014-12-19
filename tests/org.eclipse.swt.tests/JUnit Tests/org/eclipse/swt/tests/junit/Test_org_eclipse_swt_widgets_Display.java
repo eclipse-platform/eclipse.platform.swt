@@ -317,6 +317,19 @@ public void test_getMonitors() {
 	display.dispose();
 }
 
+
+
+/**
+ * Note, this is hard to test via unit tests as you might not have multiple monitors.
+ * When altering this function, it is recommended to perform
+ * the following tests manually:
+ * - Dual monitors with:
+ *   - Primary being on the left
+ *   - Primary being on the right
+ *   - Stacked displays, primary on top
+ *   - Stack displays, primary on bottom
+ * - Single display
+ */
 public void test_getPrimaryMonitor() {
 	Display display = new Display();
 	Monitor monitor = display.getPrimaryMonitor();

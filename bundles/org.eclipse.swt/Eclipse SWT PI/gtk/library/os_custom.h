@@ -309,6 +309,7 @@
 #define gdk_screen_get_monitor_at_window_LIB LIB_GDK
 #define gdk_screen_get_monitor_geometry_LIB LIB_GDK
 #define gdk_screen_get_n_monitors_LIB LIB_GDK
+#define gdk_screen_get_primary_monitor_LIB LIB_GDK
 #define gdk_pixbuf_render_to_drawable_LIB LIB_GDK
 #define gdk_visual_get_depth_LIB LIB_GDK
 #define gtk_scrolled_window_get_hscrollbar_LIB LIB_GTK
