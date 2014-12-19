@@ -236,6 +236,19 @@ void register () {
 	if (labelHandle != 0) display.addWidget (labelHandle, this);
 }
 
+
+@Override
+void release (boolean destroy) {
+	if (OS.GTK3) {
+		//Since controls are now nested under the tabItem,
+		//tabItem is responsible for it's release.
+		if (control != null && !control.isDisposed ()) {
+			control.release (destroy);
+		}
+	}
+	super.release (destroy);
+}
+
 @Override
 void releaseHandle () {
 	super.releaseHandle ();
@@ -273,6 +286,50 @@ public void setControl (Control control) {
 		if (control.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
 		if (control.parent != parent) error (SWT.ERROR_INVALID_PARENT);
 	}
+
+	if (OS.GTK3) {
+		/*
+		* Bug 454936 (see also other 454936 references in TabFolder)
+		* Architecture Fix:
+		*  We reparent the child to be a child of the 'tab' rather than tabfolder's parent swtFixed container.
+		*  Note, this reparenting is only on the GTK side, not on the SWT side.
+		*
+		*  Note, GTK2 and GTK3 child nesting behaviour is different now.
+		*  GTK2:
+		*    swtFixed
+		*    |-- GtkNoteBook
+		*    |   |-- tabLabel1
+		*    |   |-- tabLabel2
+		*    |-- swtFixed (child1)  //child is sibling of Notebook
+		*    |-- swtFixed (child2)
+		*
+		*  GTK3+:
+		*  	swtFixed
+		*  	|--	GtkNoteBook
+		*  		|-- tabLabel1
+		*  		|-- tabLabel2
+		*  		|-- swtFixed (child1) //child now child of Notebook.
+		*  		|-- swtFixed (child2)
+		*
+		*  This corrects the hierarchy so that children are beneath gtkNotebook (as oppose to
+		*  being siblings) and thus fixes DND and background color issues.
+		*  In gtk2, reparenting doesn't function properly (tab content appear blank),
+		*  so this is a gtk3-specific behavior.
+		*
+		*  Note about the reason for reparenting:
+		*   Reparenting (as oppose to adding widget to a tab in the first place) is neccessary
+		*   because you can have a situation where you create a widget before you create a tab. e.g
+		*     TabFolder tabFolder = new TabFolder(shell, 0);
+		*     Composite composite = new Composite(tabFolder, 0);
+		*     TabItem tabItem = new TabItem(tabFolder, 0);
+		*     tabitem.setControl(composite);
+		*/
+		OS.g_object_ref (control.topHandle ()); //so that it won't get destroyed due to lack of references.
+		OS.gtk_container_remove (control.parent.topHandle (), control.topHandle ());
+		OS.gtk_container_add (pageHandle, control.topHandle ());
+		OS.g_object_unref (control.topHandle ());
+	}
+
 	Control oldControl = this.control, newControl = control;
 	this.control = control;
 	int index = parent.indexOf (this), selectionIndex = parent.getSelectionIndex();

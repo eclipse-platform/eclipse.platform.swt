@@ -195,6 +195,33 @@ public Rectangle computeTrim (int x, int y, int width, int height) {
 }
 
 @Override
+public Rectangle getClientArea () {
+	Rectangle clientRectangle = super.getClientArea ();
+
+	if (OS.GTK3) {
+		/*
+		* Bug 454936 (see also other 454936 references)
+		* SWT's calls to gtk_widget_size_allocate and gtk_widget_set_allocation
+		* causes GTK+ to move the clientHandle's SwtFixed down by the size of the labels.
+		* These calls can come up from 'shell' and TabFolder has no control over these calls.
+		*
+		* This is an undesired side-effect. Client handle's x & y positions should never
+		* be incremented as this is an internal sub-container.
+		*
+		* Note: 0 by 0 was chosen as 1 by 1 shifts controls beyond their original pos.
+		* The long term fix would be to not use widget_*_allocation from higher containers,
+		* but this would require removal of swtFixed.
+		*
+		* This is Gtk3-specific for Tabfolder as the architecture is changed in gtk3 only.
+		*/
+		clientRectangle.x = 0;
+		clientRectangle.y = 0;
+	}
+	return clientRectangle;
+}
+
+
+@Override
 void createHandle (int index) {
 	state |= HANDLE;
 	fixedHandle = OS.g_object_new (display.gtk_fixed_get_type (), 0);
@@ -239,12 +266,6 @@ void createItem (TabItem item, int index) {
 	OS.gtk_container_add (boxHandle, labelHandle);
 	long /*int*/ pageHandle = OS.g_object_new (display.gtk_fixed_get_type (), 0);
 	if (pageHandle == 0) error (SWT.ERROR_NO_HANDLES);
-	if (OS.GTK3) {
-		OS.gtk_widget_override_background_color (pageHandle, OS.GTK_STATE_FLAG_NORMAL, new GdkRGBA ());
-		long /*int*/ region = OS.gdk_region_new ();
-		OS.gtk_widget_input_shape_combine_region (pageHandle, region);
-		OS.gdk_region_destroy (region);
-	}
 	OS.g_signal_handlers_block_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, SWITCH_PAGE);
 	OS.gtk_notebook_insert_page (handle, pageHandle, boxHandle, index);
 	OS.g_signal_handlers_unblock_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, SWITCH_PAGE);
@@ -515,7 +536,14 @@ public int indexOf (TabItem item) {
 
 @Override
 Point minimumSize (int wHint, int hHint, boolean flushCache) {
-	Control [] children = _getChildren ();
+	Control [] children;
+	if (OS.GTK3) {
+		//We want the 'Tabcontents' rather than
+		//what's nested under the main swtFixed.
+		children = _getChildren (clientHandle ());
+	} else {
+		children = _getChildren ();
+	}
 	int width = 0, height = 0;
 	for (int i=0; i<children.length; i++) {
 		Control child = children [i];
