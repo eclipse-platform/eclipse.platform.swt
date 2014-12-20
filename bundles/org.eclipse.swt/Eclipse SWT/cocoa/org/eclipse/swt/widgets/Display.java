@@ -2749,6 +2749,16 @@ void initClasses () {
 	cls = registerCellSubclass(NSSearchField.cellClass(), size, align, types);
 	addAccessibilityMethods(cls, proc2, proc3, proc4, accessibilityHitTestProc);
 
+	className = "SWTSearchFieldCell";
+	cls  = OS.objc_allocateClassPair(OS.class_NSSearchFieldCell, className, 0);
+	OS.class_addIvar(cls, SWT_OBJECT, size, (byte)align, types);
+	addAccessibilityMethods(cls, proc2, proc3, proc4, accessibilityHitTestProc);
+	OS.class_addMethod(cls, OS.sel_drawInteriorWithFrame_inView_, drawInteriorWithFrameInViewProc, "@:{NSRect}@");
+	OS.objc_registerClassPair(cls);
+
+	// replace default search field class
+	NSSearchField.setCellClass(cls);
+
 	// Don't subclass NSSecureTextFieldCell -- you'll get an NSException from [NSSecureTextField setCellClass:]!
 	className = "SWTSecureTextField";
 	cls = OS.objc_allocateClassPair(OS.class_NSSecureTextField, className, 0);

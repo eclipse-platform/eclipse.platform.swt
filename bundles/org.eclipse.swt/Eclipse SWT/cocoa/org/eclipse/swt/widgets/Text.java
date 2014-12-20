@@ -692,13 +692,55 @@ void drawInteriorWithFrame_inView(long /*int*/ id, long /*int*/ sel, NSRect cell
 	Control control = findBackgroundControl();
 	if (control == null) control = this;
 	Image image = control.backgroundImage;
+
 	if (image != null && !image.isDisposed()) {
 		NSGraphicsContext context = NSGraphicsContext.currentContext();
  	 	control.fillBackground (view, context, cellFrame, -1);
+	} else if ((style & SWT.SEARCH) != 0) {
+		// If no background image is set, call custom paint code for search field
+		drawInteriorWithFrame_inView_searchfield(id, sel, cellFrame, viewid);
 	}
+
 	super.drawInteriorWithFrame_inView(id, sel, cellFrame, viewid);
 }
 
+
+void drawInteriorWithFrame_inView_searchfield(long /*int*/ id, long /*int*/ sel, NSRect cellFrame, long /*int*/ viewid) {
+	/*
+	 * Cocoa does not support a background color for the search field. Therefore we
+	 * paint it ourselves, if a background color is set.
+	 */
+	if (background == null) {
+		return;
+	}
+	// Shrink the cell frame by 1px on each side, to keep the border drawn by Cocoa visible
+	cellFrame.x += 1.0;
+	cellFrame.width -= 2.0;
+	cellFrame.y = (cellFrame.height - 20.0) / 2.0;
+	cellFrame.height = 20.0; // A search field is always 22px in height. 22-2=20
+
+	// Create a path of the cellFrame with rounded corners
+	NSBezierPath path = NSBezierPath.bezierPathWithRoundedRect(cellFrame, 2.0d, 2.0d);
+	path.addClip();
+
+	// Create the native color and fill the background with it
+	NSColor bgColor = NSColor.colorWithDeviceRed (background [0], background [1], background [2], background [3]);
+	bgColor.setFill();
+	path.fill();
+
+	// Finally, paint the search and cancel icons (if present) on top of the filled background
+	NSSearchField searchField = ((NSSearchField)view);
+	NSCell _cell = (NSCell) searchField.cell();
+	SWTSearchFieldCell cell = new SWTSearchFieldCell(_cell.id);
+
+	if (cell.searchButtonCell() != null) {
+		cell.searchButtonCell().drawInteriorWithFrame(cell.searchButtonRectForBounds(cellFrame), view);
+	}
+
+	if (cell.cancelButtonCell() != null && ((NSSearchField) view).stringValue().length() > 0) {
+		cell.cancelButtonCell().drawInteriorWithFrame(cell.cancelButtonRectForBounds(cellFrame), view);
+	}
+}
 
 @Override
 boolean dragDetect (int x, int y, boolean filter, boolean [] consume) {

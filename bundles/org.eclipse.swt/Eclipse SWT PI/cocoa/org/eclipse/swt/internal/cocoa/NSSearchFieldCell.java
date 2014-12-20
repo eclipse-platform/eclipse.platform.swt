@@ -29,9 +29,21 @@ public NSButtonCell cancelButtonCell() {
 	return result != 0 ? new NSButtonCell(result) : null;
 }
 
+public NSRect cancelButtonRectForBounds(NSRect rect) {
+	NSRect result = new NSRect();
+	OS.objc_msgSend_stret(result, this.id, OS.sel_cancelButtonRectForBounds_, rect);
+	return result;
+}
+
 public NSButtonCell searchButtonCell() {
 	long /*int*/ result = OS.objc_msgSend(this.id, OS.sel_searchButtonCell);
 	return result != 0 ? new NSButtonCell(result) : null;
+}
+
+public NSRect searchButtonRectForBounds(NSRect rect) {
+	NSRect result = new NSRect();
+	OS.objc_msgSend_stret(result, this.id, OS.sel_searchButtonRectForBounds_, rect);
+	return result;
 }
 
 public NSRect searchTextRectForBounds(NSRect rect) {

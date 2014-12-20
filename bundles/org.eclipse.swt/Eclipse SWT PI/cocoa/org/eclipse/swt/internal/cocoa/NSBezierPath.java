@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2012 IBM Corporation and others.
+ * Copyright (c) 2000, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -68,6 +68,11 @@ public NSBezierPath bezierPathByFlatteningPath() {
 
 public static NSBezierPath bezierPathWithRect(NSRect rect) {
 	long /*int*/ result = OS.objc_msgSend(OS.class_NSBezierPath, OS.sel_bezierPathWithRect_, rect);
+	return result != 0 ? new NSBezierPath(result) : null;
+}
+
+public static NSBezierPath bezierPathWithRoundedRect(NSRect rect, double /*float*/ xRadius, double /*float*/ yRadius) {
+	long /*int*/ result = OS.objc_msgSend(OS.class_NSBezierPath, OS.sel_bezierPathWithRoundedRect_xRadius_yRadius_, rect, xRadius, yRadius);
 	return result != 0 ? new NSBezierPath(result) : null;
 }
 

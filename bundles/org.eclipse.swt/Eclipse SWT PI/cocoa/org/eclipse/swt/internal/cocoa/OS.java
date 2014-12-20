@@ -1060,6 +1060,7 @@ public static final long /*int*/ sel_bestRepresentationForDevice_ = sel_register
 public static final long /*int*/ sel_bezierPath = sel_registerName("bezierPath");
 public static final long /*int*/ sel_bezierPathByFlatteningPath = sel_registerName("bezierPathByFlatteningPath");
 public static final long /*int*/ sel_bezierPathWithRect_ = sel_registerName("bezierPathWithRect:");
+public static final long /*int*/ sel_bezierPathWithRoundedRect_xRadius_yRadius_ = sel_registerName("bezierPathWithRoundedRect:xRadius:yRadius:");
 public static final long /*int*/ sel_bitmapData = sel_registerName("bitmapData");
 public static final long /*int*/ sel_bitmapFormat = sel_registerName("bitmapFormat");
 public static final long /*int*/ sel_bitmapImageRepForCachingDisplayInRect_ = sel_registerName("bitmapImageRepForCachingDisplayInRect:");
@@ -1095,6 +1096,7 @@ public static final long /*int*/ sel_canUndo = sel_registerName("canUndo");
 public static final long /*int*/ sel_cancel = sel_registerName("cancel");
 public static final long /*int*/ sel_cancelAuthenticationChallenge_ = sel_registerName("cancelAuthenticationChallenge:");
 public static final long /*int*/ sel_cancelButtonCell = sel_registerName("cancelButtonCell");
+public static final long /*int*/ sel_cancelButtonRectForBounds_ = sel_registerName("cancelButtonRectForBounds:");
 public static final long /*int*/ sel_cancelOperation_ = sel_registerName("cancelOperation:");
 public static final long /*int*/ sel_cancelTracking = sel_registerName("cancelTracking");
 public static final long /*int*/ sel_cascadeTopLeftFromPoint_ = sel_registerName("cascadeTopLeftFromPoint:");
@@ -1804,6 +1806,7 @@ public static final long /*int*/ sel_scrollWheel_ = sel_registerName("scrollWhee
 public static final long /*int*/ sel_scrollerWidth = sel_registerName("scrollerWidth");
 public static final long /*int*/ sel_scrollerWidthForControlSize_ = sel_registerName("scrollerWidthForControlSize:");
 public static final long /*int*/ sel_searchButtonCell = sel_registerName("searchButtonCell");
+public static final long /*int*/ sel_searchButtonRectForBounds_ = sel_registerName("searchButtonRectForBounds:");
 public static final long /*int*/ sel_searchTextRectForBounds_ = sel_registerName("searchTextRectForBounds:");
 public static final long /*int*/ sel_secondOfMinute = sel_registerName("secondOfMinute");
 public static final long /*int*/ sel_secondarySelectedControlColor = sel_registerName("secondarySelectedControlColor");
@@ -3349,7 +3352,7 @@ public static final native void CFRunLoopStop(long /*int*/ rl);
 public static final native long /*int*/ CFStringCreateWithCharacters(long /*int*/ alloc, char[] chars, long /*int*/ numChars);
 /**
  * @param allocator cast=(CFAllocatorRef)
- * @param fsRef cast=(struct FSRef*)
+ * @param fsRef cast=(structFSRef*)
  */
 public static final native long /*int*/ CFURLCreateFromFSRef(long /*int*/ allocator, byte[] fsRef);
 /**
