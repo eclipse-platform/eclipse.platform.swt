@@ -480,7 +480,7 @@ int PromptAuth(long /*int*/ aParent, long /*int*/ aChannel, int level, long /*in
 	rc = nsURI.GetHost (host);
 	if (rc != XPCOM.NS_OK) SWT.error (rc);
 	int length = XPCOM.nsEmbedCString_Length (host);
-	long buffer = XPCOM.nsEmbedCString_get (host);
+	long /*int*/ buffer = XPCOM.nsEmbedCString_get (host);
 	byte[] bytes = new byte[length];
 	XPCOM.memmove (bytes, buffer, length);
 	String hostString = new String (bytes);
