@@ -130,12 +130,11 @@ public class Display extends Device {
 
 	Caret currentCaret;
 	
-	boolean ignoreFocus;
 	boolean sendEvent;
 	int clickCountButton, clickCount;
 	int blinkTime;
 
-	Control currentControl, trackingControl, tooltipControl;
+	Control currentControl, trackingControl, tooltipControl, ignoreFocusControl;
 	Widget tooltipTarget;
 	
 	NSMutableArray isPainting, needsDisplay, needsDisplayInRect, runLoopModes;
@@ -652,9 +651,16 @@ void checkEnterExit (Control control, NSEvent nsEvent, boolean send) {
 }
 
 void checkFocus () {
-	if (ignoreFocus) return;
 	Control oldControl = currentFocusControl;
 	Control newControl = getFocusControl ();
+	if (oldControl == ignoreFocusControl && newControl == null) {
+		/*
+		* Bug in Cocoa. On Mac 10.8, a control loses and gains focus
+		* when its bounds changes.  The fix is to ignore these events.
+		* See Bug 388574 & 433275.
+		*/
+		return;
+	}
 	if (oldControl != newControl) {
 		if (oldControl != null && !oldControl.isDisposed ()) {
 			oldControl.sendFocusEvent (SWT.FocusOut);
