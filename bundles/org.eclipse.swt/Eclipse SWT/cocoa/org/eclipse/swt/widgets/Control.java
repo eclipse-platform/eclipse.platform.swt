@@ -3556,8 +3556,8 @@ void setBounds (int x, int y, int width, int height, boolean move, boolean resiz
 	* when its bounds changes.  The fix is to ignore these events.
 	*/
 	Display display = this.display;
-	boolean oldIgnoreFocus = display.ignoreFocus;
-	display.ignoreFocus = true;
+	Control oldIgnoreFocusControl = display.ignoreFocusControl;
+	display.ignoreFocusControl = this;
 	NSView topView = topView();
 	if (move && resize) {
 		NSRect rect = new NSRect();
@@ -3577,7 +3577,7 @@ void setBounds (int x, int y, int width, int height, boolean move, boolean resiz
 		size.height = height;
 		topView.setFrameSize(size);
 	}
-	display.ignoreFocus = oldIgnoreFocus;
+	display.ignoreFocusControl = oldIgnoreFocusControl;
 }
 
 /**
