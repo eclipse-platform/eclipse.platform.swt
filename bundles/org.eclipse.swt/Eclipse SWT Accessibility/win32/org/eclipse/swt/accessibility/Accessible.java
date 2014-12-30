@@ -1578,6 +1578,7 @@ public class Accessible {
 	 * must be incremented before returning.  Caller is responsible for releasing ppvObject.
 	 */
 	int QueryInterface(long /*int*/ iid, long /*int*/ ppvObject) {
+		if (control != null && control.isDisposed()) return COM.CO_E_OBJNOTCONNECTED;
 		COM.MoveMemory(ppvObject, new long /*int*/[] { 0 }, OS.PTR_SIZEOF);
 		GUID guid = new GUID();
 		COM.MoveMemory(guid, iid, GUID.sizeof);
@@ -1815,6 +1816,7 @@ public class Accessible {
 	}
 
 	int queryAccessible2Interfaces(GUID guid, long /*int*/ ppvObject) {
+		if (control != null && control.isDisposed()) return COM.CO_E_OBJNOTCONNECTED;
 		if (COM.IsEqualGUID(guid, COM.IIDIAccessible2)) {
 			if (accessibleActionListenersSize() > 0 || accessibleAttributeListenersSize() > 0 ||
 					accessibleHyperlinkListenersSize() > 0 || accessibleTableListenersSize() > 0 ||
@@ -2466,6 +2468,7 @@ public class Accessible {
 	
 	/* IAccessible::get_accName([in] varChild, [out] pszName) */
 	int get_accName(long /*int*/ varChild, long /*int*/ pszName) {
+		if (control != null && control.isDisposed()) return COM.CO_E_OBJNOTCONNECTED;
 		VARIANT v = getVARIANT(varChild);
 		if (v.vt != COM.VT_I4) return COM.E_INVALIDARG;
 		int code = COM.S_FALSE;
@@ -2536,6 +2539,7 @@ public class Accessible {
 	
 	/* IAccessible::get_accRole([in] varChild, [out] pvarRole) */
 	int get_accRole(long /*int*/ varChild, long /*int*/ pvarRole) {
+		if (control != null && control.isDisposed()) return COM.CO_E_OBJNOTCONNECTED;
 		VARIANT v = getVARIANT(varChild);
 		if (v.vt != COM.VT_I4) return COM.E_INVALIDARG;
 		int osRole = COM.ROLE_SYSTEM_CLIENT;
@@ -2626,6 +2630,7 @@ public class Accessible {
 	
 	/* IAccessible::get_accState([in] varChild, [out] pvarState) */
 	int get_accState(long /*int*/ varChild, long /*int*/ pvarState) {
+		if (control != null && control.isDisposed()) return COM.CO_E_OBJNOTCONNECTED;
 		VARIANT v = getVARIANT(varChild);
 		if (v.vt != COM.VT_I4) return COM.E_INVALIDARG;
 		int osState = 0;
@@ -2686,6 +2691,7 @@ public class Accessible {
 
 	/* IAccessible::get_accValue([in] varChild, [out] pszValue) */
 	int get_accValue(long /*int*/ varChild, long /*int*/ pszValue) {
+		if (control != null && control.isDisposed()) return COM.CO_E_OBJNOTCONNECTED;
 		VARIANT v = getVARIANT(varChild);
 		if (v.vt != COM.VT_I4) return COM.E_INVALIDARG;
 		int code = COM.DISP_E_MEMBERNOTFOUND;
@@ -2994,6 +3000,7 @@ public class Accessible {
 
 	/* IAccessible2::get_groupPosition([out] pGroupLevel, [out] pSimilarItemsInGroup, [out] pPositionInGroup) */
 	int get_groupPosition(long /*int*/ pGroupLevel, long /*int*/ pSimilarItemsInGroup, long /*int*/ pPositionInGroup) {
+		if (control != null && control.isDisposed()) return COM.CO_E_OBJNOTCONNECTED;
 		AccessibleAttributeEvent event = new AccessibleAttributeEvent(this);
 		event.groupLevel = event.groupCount = event.groupIndex = -1;
 		for (int i = 0; i < accessibleAttributeListenersSize(); i++) {
