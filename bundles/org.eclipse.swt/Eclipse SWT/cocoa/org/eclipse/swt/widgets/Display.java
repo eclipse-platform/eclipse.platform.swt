@@ -873,8 +873,13 @@ void createDisplay (DeviceData data) {
 		long /*int*/ ptr = getApplicationName().UTF8String();
 		if (ptr != 0) OS.CPSSetProcessName (psn, ptr);
 		if (!isBundled ()) {
-			OS.TransformProcessType (psn, OS.kProcessTransformToForegroundApplication);
-			OS.SetFrontProcess (psn);
+			if (OS.VERSION_MMB >= OS.VERSION_MMB (10, 9, 0)) {
+				application.setActivationPolicy (OS.NSApplicationActivationPolicyRegular);
+				NSRunningApplication.currentApplication().activateWithOptions (OS.NSApplicationActivateIgnoringOtherApps);
+			} else {
+				OS.TransformProcessType (psn, OS.kProcessTransformToForegroundApplication);
+				OS.SetFrontProcess (psn);
+			}
 		}
 		ptr = OS.getenv (ascii ("APP_ICON_" + pid));
 		if (ptr != 0) {
