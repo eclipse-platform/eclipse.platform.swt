@@ -150,6 +150,10 @@
 			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
+		<method selector="setActivationPolicy:" swt_gen="true">
+			<arg swt_gen="true"></arg>
+			<retval swt_gen="true"></retval>
+		</method>
 		<method selector="setApplicationIconImage:" swt_gen="true">
 			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
@@ -2704,6 +2708,15 @@
 	</class>
 	<class name="NSRulerView" swt_superclass="NSView">
 	</class>
+	<class name="NSRunningApplication" swt_gen="mixed">
+		<method selector="activateWithOptions:" swt_gen="true">
+			<arg swt_gen="true"></arg>
+			<retval swt_gen="true"></retval>
+		</method>
+		<method class_method="true" selector="currentApplication" swt_gen="true">
+			<retval swt_gen="true"></retval>
+		</method>
+	</class>
 	<class name="NSSavePanel" swt_gen="mixed" swt_superclass="NSPanel">
 		<method selector="filename" swt_gen="true">
 			<retval swt_gen="true"></retval>
@@ -4690,6 +4703,8 @@
 	<enum name="NSAlphaFirstBitmapFormat" swt_gen="true"></enum>
 	<enum name="NSAlphaNonpremultipliedBitmapFormat" swt_gen="true"></enum>
 	<enum name="NSAlternateKeyMask" swt_gen="true"></enum>
+	<enum name="NSApplicationActivateIgnoringOtherApps" swt_gen="true"></enum>
+	<enum name="NSApplicationActivationPolicyRegular" swt_gen="true"></enum>
 	<enum name="NSApplicationDefined" swt_gen="true"></enum>
 	<enum name="NSApplicationDelegateReplySuccess" swt_gen="true"></enum>
 	<enum name="NSAtTop" swt_gen="true"></enum>
