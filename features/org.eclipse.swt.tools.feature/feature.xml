@@ -19,11 +19,6 @@
       %license
    </license>
 
-   <url>
-      <discovery label="Generating the SWT JNI Code" url="http://eclipse.org/swt/jnigen.php"/>
-      <discovery label="Generating the SWT PI Code for Cocoa" url="http://eclipse.org/swt/macgen.php"/>
-   </url>
-
    <plugin
          id="org.eclipse.swt.tools"
          download-size="0"
