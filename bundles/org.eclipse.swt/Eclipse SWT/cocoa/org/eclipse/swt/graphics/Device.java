@@ -364,6 +364,8 @@ NSScreen getPrimaryScreen () {
 public FontData[] getFontList (String faceName, boolean scalable) {
 	checkDevice ();
 	if (!scalable) return new FontData[0];
+	String systemFontName = systemFont.getFontData()[0].getName();
+	boolean systemFontIncluded = false;
 	int count = 0;
 	NSArray families = NSFontManager.sharedFontManager().availableFontFamilies();
 	FontData[] fds = new FontData[100];
@@ -387,6 +389,9 @@ public FontData[] getFontList (String faceName, boolean scalable) {
 					if (faceName == null || Compatibility.equalsIgnoreCase(faceName, name)) {
 						FontData data = new FontData(name, 0, style);
 						data.nsName = nsName;
+						if (Compatibility.equalsIgnoreCase(systemFontName, name)) {
+							systemFontIncluded = true;
+						}
 						if (count == fds.length) {
 							FontData[] newFds = new FontData[fds.length + 100];
 							System.arraycopy(fds, 0, newFds, 0, fds.length);
@@ -397,6 +402,18 @@ public FontData[] getFontList (String faceName, boolean scalable) {
 				}
 			}
 		}
+	}
+	if (!systemFontIncluded && (faceName == null || Compatibility.equalsIgnoreCase(faceName, systemFontName))) {
+		/*
+		 * Feature in Mac OS X 10.10: The default system font ".Helvetica Neue DeskInterface"
+		 * is not available from the NSFontManager. The fix is to include it manually if necessary.
+		 */
+		if (count == fds.length) {
+			FontData[] newFds = new FontData[fds.length + 1];
+			System.arraycopy(fds, 0, newFds, 0, fds.length);
+			fds = newFds;
+		}
+		fds[count++] = systemFont.getFontData()[0];
 	}
 	if (count == fds.length) return fds;
 	FontData[] result = new FontData[count];
