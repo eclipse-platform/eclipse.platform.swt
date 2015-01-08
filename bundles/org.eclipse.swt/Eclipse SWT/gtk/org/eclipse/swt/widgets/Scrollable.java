@@ -47,7 +47,7 @@ Scrollable () {}
  * <p>
  * The style value is either one of the style constants defined in
  * class <code>SWT</code> which is applicable to instances of this
- * class, or must be built by <em>bitwise OR</em>'ing together 
+ * class, or must be built by <em>bitwise OR</em>'ing together
  * (that is, using the <code>int</code> "|" operator) two or more
  * of those <code>SWT</code> style constants. The class description
  * lists the style constants that are applicable to the class.
@@ -91,7 +91,7 @@ long /*int*/ clientHandle () {
  * rectangle described by the arguments (relative to the
  * receiver's parent).
  * </p>
- * 
+ *
  * @param x the desired x coordinate of the client area
  * @param y the desired y coordinate of the client area
  * @param width the desired width of the client area
@@ -185,7 +185,7 @@ public int getBorderWidth () {
  * Returns a rectangle which describes the area of the
  * receiver which is capable of displaying data (that is,
  * not covered by the "trimmings").
- * 
+ *
  * @return the client area
  *
  * @exception SWTException <ul>
@@ -229,18 +229,18 @@ public ScrollBar getHorizontalBar () {
  * <li><code>SWT.SCROLLBAR_OVERLAY</code> - if receiver
  * uses overlay scrollbars</li>
  * <li><code>SWT.NONE</code> - otherwise</li>
- * 
+ *
  * @return the mode of scrollbars
- * 
+ *
  * @exception SWTException <ul>
  * <li>ERROR_WIDGET_DISPOSED - if the receiver has been
  * disposed</li>
  * <li>ERROR_THREAD_INVALID_ACCESS - if not called from the
  * thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @see SWT#SCROLLBAR_OVERLAY
- * 
+ *
  * @since 3.8
  */
 public int getScrollbarsMode () {
@@ -266,7 +266,7 @@ public ScrollBar getVerticalBar () {
 @Override
 long /*int*/ gtk_scroll_event (long /*int*/ widget, long /*int*/ eventPtr) {
 	long /*int*/ result = super.gtk_scroll_event (widget, eventPtr);
-	
+
 	/*
 	* Feature in GTK.  Scrolled windows do not scroll if the scrollbars
 	* are hidden.  This is not a bug, but is inconsistent with other platforms.
@@ -360,7 +360,7 @@ void setOrientation (boolean create) {
 		}
 	}
 	if (horizontalBar != null) horizontalBar.setOrientation (create);
-	if (verticalBar != null) verticalBar.setOrientation (create);	
+	if (verticalBar != null) verticalBar.setOrientation (create);
 }
 
 boolean setScrollBarVisible (ScrollBar bar, boolean visible) {

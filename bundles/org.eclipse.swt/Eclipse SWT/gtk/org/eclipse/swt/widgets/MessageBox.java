@@ -65,7 +65,7 @@ public MessageBox (Shell parent) {
  * <p>
  * The style value is either one of the style constants defined in
  * class <code>SWT</code> which is applicable to instances of this
- * class, or must be built by <em>bitwise OR</em>'ing together 
+ * class, or must be built by <em>bitwise OR</em>'ing together
  * (that is, using the <code>int</code> "|" operator) two or more
  * of those <code>SWT</code> style constants. The class description
  * lists the style constants that are applicable to the class.
@@ -81,7 +81,7 @@ public MessageBox (Shell parent) {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the parent</li>
  *    <li>ERROR_INVALID_SUBCLASS - if this class is not an allowed subclass</li>
  * </ul>
- * 
+ *
  * @see SWT#ICON_ERROR
  * @see SWT#ICON_INFORMATION
  * @see SWT#ICON_QUESTION
@@ -117,7 +117,7 @@ public String getMessage () {
  * visible on the dialog while it is open.
  *
  * @param string the message
- * 
+ *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the string is null</li>
  * </ul>
@@ -149,7 +149,7 @@ public int open () {
 	if ((style & (SWT.ICON_WARNING)) != 0)  messageType = OS.GTK_MESSAGE_WARNING;
 	if ((style & (SWT.ICON_QUESTION)) != 0) messageType = OS.GTK_MESSAGE_QUESTION;
 	if ((style & (SWT.ICON_ERROR)) != 0)    messageType = OS.GTK_MESSAGE_ERROR;
-	
+
 	byte [] buffer = Converter.wcsToMbcs (null, fixPercent (message), true);
 	handle = OS.gtk_message_dialog_new(parentHandle, dialogFlags, messageType, 0, buffer);
 	if (handle == 0) error(SWT.ERROR_NO_HANDLES);
@@ -168,12 +168,12 @@ public int open () {
 	Dialog oldModal = null;
 	/*
 	* In order to allow the dialog to be modal of it's
-	* parent shells, it is required to assign the 
+	* parent shells, it is required to assign the
 	* dialog to the same window group as of the shells.
 	*/
 	long /*int*/ group = OS.gtk_window_get_group(0);
 	OS.gtk_window_group_add_window (group, handle);
-	
+
 	if (OS.gtk_window_get_modal (handle)) {
 		oldModal = display.getModalDialog ();
 		display.setModalDialog (this);
@@ -183,14 +183,14 @@ public int open () {
 	if ((style & SWT.RIGHT_TO_LEFT) != 0) {
 		signalId = OS.g_signal_lookup (OS.map, OS.GTK_TYPE_WIDGET());
 		hookId = OS.g_signal_add_emission_hook (signalId, 0, display.emissionProc, handle, 0);
-	}	
+	}
 	display.sendPreExternalEventDispatchEvent ();
 	int response = OS.gtk_dialog_run (handle);
 	/*
 	* This call to gdk_threads_leave() is a temporary work around
 	* to avoid deadlocks when gdk_threads_init() is called by native
 	* code outside of SWT (i.e AWT, etc). It ensures that the current
-	* thread leaves the GTK lock acquired by the function above. 
+	* thread leaves the GTK lock acquired by the function above.
 	*/
 	OS.gdk_threads_leave();
 	display.sendPostExternalEventDispatchEvent ();
@@ -199,7 +199,7 @@ public int open () {
 	}
 	if (OS.gtk_window_get_modal (handle)) {
 		display.setModalDialog (oldModal);
-	}	
+	}
 	display.removeIdleProc ();
 	OS.gtk_widget_destroy (handle);
 	return response;
@@ -214,7 +214,7 @@ private void createButtons (int alignment) {
 		if ((style & SWT.NO) != 0) OS.gtk_dialog_add_button(handle, Converter.wcsToMbcs (null, "gtk-no", true), SWT.NO);
 		if ((style & SWT.IGNORE) != 0) OS.gtk_dialog_add_button(handle, Converter.wcsToMbcs (null, SWT.getMessage("SWT_Ignore"), true), SWT.IGNORE);
 		if ((style & SWT.CANCEL) != 0) OS.gtk_dialog_add_button(handle, Converter.wcsToMbcs (null, "gtk-cancel", true), SWT.CANCEL);
-	} else {		
+	} else {
 		if ((style & SWT.CANCEL) != 0) OS.gtk_dialog_add_button(handle, Converter.wcsToMbcs (null, "gtk-cancel", true), SWT.CANCEL);
 		if ((style & SWT.OK) != 0) OS.gtk_dialog_add_button(handle, Converter.wcsToMbcs (null, "gtk-ok", true), SWT.OK);
 		if ((style & SWT.NO) != 0) OS.gtk_dialog_add_button(handle, Converter.wcsToMbcs (null, "gtk-no", true), SWT.NO);
@@ -249,6 +249,6 @@ char[] fixPercent (String string) {
 		}
 		result [j++] = text [i++];
 	}
-	return result;    
+	return result;
 }
 }

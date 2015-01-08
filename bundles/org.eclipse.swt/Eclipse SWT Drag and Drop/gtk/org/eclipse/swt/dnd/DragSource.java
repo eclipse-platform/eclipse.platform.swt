@@ -22,34 +22,34 @@ import org.eclipse.swt.internal.gtk.*;
  * <code>DragSource</code> defines the source object for a drag and drop transfer.
  *
  * <p>IMPORTANT: This class is <em>not</em> intended to be subclassed.</p>
- *  
- * <p>A drag source is the object which originates a drag and drop operation. For the specified widget, 
- * it defines the type of data that is available for dragging and the set of operations that can 
- * be performed on that data.  The operations can be any bit-wise combination of DND.MOVE, DND.COPY or 
- * DND.LINK.  The type of data that can be transferred is specified by subclasses of Transfer such as 
- * TextTransfer or FileTransfer.  The type of data transferred can be a predefined system type or it 
+ *
+ * <p>A drag source is the object which originates a drag and drop operation. For the specified widget,
+ * it defines the type of data that is available for dragging and the set of operations that can
+ * be performed on that data.  The operations can be any bit-wise combination of DND.MOVE, DND.COPY or
+ * DND.LINK.  The type of data that can be transferred is specified by subclasses of Transfer such as
+ * TextTransfer or FileTransfer.  The type of data transferred can be a predefined system type or it
  * can be a type defined by the application.  For instructions on how to define your own transfer type,
  * refer to <code>ByteArrayTransfer</code>.</p>
  *
- * <p>You may have several DragSources in an application but you can only have one DragSource 
- * per Control.  Data dragged from this DragSource can be dropped on a site within this application 
+ * <p>You may have several DragSources in an application but you can only have one DragSource
+ * per Control.  Data dragged from this DragSource can be dropped on a site within this application
  * or it can be dropped on another application such as an external Text editor.</p>
- * 
+ *
  * <p>The application supplies the content of the data being transferred by implementing the
  * <code>DragSourceListener</code> and associating it with the DragSource via DragSource#addDragListener.</p>
- * 
- * <p>When a successful move operation occurs, the application is required to take the appropriate 
+ *
+ * <p>When a successful move operation occurs, the application is required to take the appropriate
  * action to remove the data from its display and remove any associated operating system resources or
- * internal references.  Typically in a move operation, the drop target makes a copy of the data 
- * and the drag source deletes the original.  However, sometimes copying the data can take a long 
- * time (such as copying a large file).  Therefore, on some platforms, the drop target may actually 
- * move the data in the operating system rather than make a copy.  This is usually only done in 
+ * internal references.  Typically in a move operation, the drop target makes a copy of the data
+ * and the drag source deletes the original.  However, sometimes copying the data can take a long
+ * time (such as copying a large file).  Therefore, on some platforms, the drop target may actually
+ * move the data in the operating system rather than make a copy.  This is usually only done in
  * file transfers.  In this case, the drag source is informed in the DragEnd event that a
- * DROP_TARGET_MOVE was performed.  It is the responsibility of the drag source at this point to clean 
+ * DROP_TARGET_MOVE was performed.  It is the responsibility of the drag source at this point to clean
  * up its displayed information.  No action needs to be taken on the operating system resources.</p>
  *
  * <p> The following example shows a Label widget that allows text to be dragged from it.</p>
- * 
+ *
  * <code><pre>
  *	// Enable a label as a Drag Source
  *	Label label = new Label(shell, SWT.NONE);
@@ -57,7 +57,7 @@ import org.eclipse.swt.internal.gtk.*;
  *	Transfer[] types = new Transfer[] {TextTransfer.getInstance()};
  *	// This example will allow the text to be copied or moved to the drop target
  *	int operations = DND.DROP_MOVE | DND.DROP_COPY;
- *	
+ *
  *	DragSource source = new DragSource(label, operations);
  *	source.setTransfer(types);
  *	source.addDragListener(new DragSourceListener() {
@@ -69,10 +69,10 @@ import org.eclipse.swt.internal.gtk.*;
  *			}
  *		};
  *		public void dragSetData(DragSourceEvent event) {
- *			// A drop has been performed, so provide the data of the 
+ *			// A drop has been performed, so provide the data of the
  *			// requested type.
- *			// (Checking the type of the requested data is only 
- *			// necessary if the drag source supports more than 
+ *			// (Checking the type of the requested data is only
+ *			// necessary if the drag source supports more than
  *			// one data type but is shown here as an example).
  *			if (TextTransfer.getInstance().isSupportedType(event.dataType)){
  *				event.data = label.getText();
@@ -107,12 +107,12 @@ public class DragSource extends Widget {
 	DragSourceEffect dragEffect;
 
 	long /*int*/ targetList;
-	
+
 	//workaround - remember action performed for DragEnd
 	boolean moveData = false;
-	
+
 	static final String DEFAULT_DRAG_SOURCE_EFFECT = "DEFAULT_DRAG_SOURCE_EFFECT"; //$NON-NLS-1$
-		
+
 	static Callback DragGetData;
 	static Callback DragEnd;
 	static Callback DragDataDelete;
@@ -124,16 +124,16 @@ public class DragSource extends Widget {
 		DragDataDelete = new Callback(DragSource.class, "DragDataDelete", 2); //$NON-NLS-1$
 		if (DragDataDelete.getAddress() == 0) SWT.error(SWT.ERROR_NO_MORE_CALLBACKS);
 	}
-	
+
 /**
  * Creates a new <code>DragSource</code> to handle dragging from the specified <code>Control</code>.
- * Creating an instance of a DragSource may cause system resources to be allocated depending on the platform.  
+ * Creating an instance of a DragSource may cause system resources to be allocated depending on the platform.
  * It is therefore mandatory that the DragSource instance be disposed when no longer required.
  *
  * @param control the <code>Control</code> that the user clicks on to initiate the drag
- * @param style the bitwise OR'ing of allowed operations; this may be a combination of any of 
+ * @param style the bitwise OR'ing of allowed operations; this may be a combination of any of
  *					DND.DROP_NONE, DND.DROP_COPY, DND.DROP_MOVE, DND.DROP_LINK
- * 
+ *
  * @exception SWTException <ul>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the parent</li>
  *    <li>ERROR_INVALID_SUBCLASS - if this class is not an allowed subclass</li>
@@ -143,10 +143,10 @@ public class DragSource extends Widget {
  *        drag source is created for a control or if the operating system will not allow the creation
  *        of the drag source</li>
  * </ul>
- * 
+ *
  * <p>NOTE: ERROR_CANNOT_INIT_DRAG should be an SWTException, since it is a
  * recoverable error, but can not be changed due to backward compatibility.</p>
- * 
+ *
  * @see Widget#dispose
  * @see DragSource#checkSubclass
  * @see DND#DROP_NONE
@@ -165,10 +165,10 @@ public DragSource(Control control, int style) {
 	}
 	control.setData(DND.DRAG_SOURCE_KEY, this);
 
-	OS.g_signal_connect(control.handle, OS.drag_data_get, DragGetData.getAddress(), 0);	
+	OS.g_signal_connect(control.handle, OS.drag_data_get, DragGetData.getAddress(), 0);
 	OS.g_signal_connect(control.handle, OS.drag_end, DragEnd.getAddress(), 0);
 	OS.g_signal_connect(control.handle, OS.drag_data_delete, DragDataDelete.getAddress(), 0);
-	
+
 	controlListener = new Listener () {
 		public void handleEvent (Event event) {
 			if (event.type == SWT.Dispose) {
@@ -194,7 +194,7 @@ public DragSource(Control control, int style) {
 	} else if (control instanceof Table) {
 		dragEffect = new TableDragSourceEffect((Table) control);
 	}
-	
+
 	this.addListener(SWT.Dispose, new Listener() {
 		public void handleEvent(Event e) {
 			onDispose();
@@ -220,7 +220,7 @@ static long /*int*/ DragEnd(long /*int*/ widget, long /*int*/ context){
 	source.dragEnd(widget, context);
 	return 0;
 }
-	
+
 static long /*int*/ DragGetData(long /*int*/ widget, long /*int*/ context, long /*int*/ selection_data,  long /*int*/ info, long /*int*/ time){
 	DragSource source = FindDragSource(widget);
 	if (source == null) return 0;
@@ -241,13 +241,13 @@ static DragSource FindDragSource(long /*int*/ handle) {
  * be notified when a drag and drop operation is in progress, by sending
  * it one of the messages defined in the <code>DragSourceListener</code>
  * interface.
- * 
+ *
  * <p><ul>
- * <li><code>dragStart</code> is called when the user has begun the actions required to drag the widget. 
+ * <li><code>dragStart</code> is called when the user has begun the actions required to drag the widget.
  * This event gives the application the chance to decide if a drag should be started.
  * <li><code>dragSetData</code> is called when the data is required from the drag source.
- * <li><code>dragFinished</code> is called when the drop has successfully completed (mouse up 
- * over a valid target) or has been terminated (such as hitting the ESC key). Perform cleanup 
+ * <li><code>dragFinished</code> is called when the drop has successfully completed (mouse up
+ * over a valid target) or has been terminated (such as hitting the ESC key). Perform cleanup
  * such as removing data from the source side on a successful move operation.
  * </ul></p>
  *
@@ -285,9 +285,9 @@ protected void checkSubclass () {
 }
 
 void drag(Event dragEvent) {
-	moveData = false;	
+	moveData = false;
 	DNDEvent event = new DNDEvent();
-	event.widget = this;	
+	event.widget = this;
 	event.x = dragEvent.x;
 	event.y = dragEvent.y;
 	event.time = dragEvent.time;
@@ -295,9 +295,9 @@ void drag(Event dragEvent) {
 	notifyListeners(DND.DragStart, event);
 	if (!event.doit || transferAgents == null || transferAgents.length == 0) return;
 	if (targetList == 0) return;
-	
+
 	int actions = opToOsOp(getStyle());
-	Image image = event.image; 
+	Image image = event.image;
 	long /*int*/ context;
 	if (OS.GTK_VERSION >= OS.VERSION(3, 10, 0)) {
 		context = OS.gtk_drag_begin_with_coordinates(control.handle, targetList, actions, 1, 0, -1, -1);
@@ -317,11 +317,11 @@ void drag(Event dragEvent) {
 
 void dragEnd(long /*int*/ widget, long /*int*/ context){
 	/*
-	 * Bug in GTK.  If a drag is initiated using gtk_drag_begin and the 
+	 * Bug in GTK.  If a drag is initiated using gtk_drag_begin and the
 	 * mouse is released immediately, the mouse and keyboard remain
 	 * grabbed.  The fix is to release the grab on the mouse and keyboard
 	 * whenever the drag is terminated.
-	 * 
+	 *
 	 * NOTE: We believe that it is never an error to ungrab when
 	 * a drag is finished.
 	 */
@@ -336,7 +336,7 @@ void dragEnd(long /*int*/ widget, long /*int*/ context){
 		OS.gdk_pointer_ungrab(OS.GDK_CURRENT_TIME);
 		OS.gdk_keyboard_ungrab(OS.GDK_CURRENT_TIME);
 	}
-	
+
 	int operation = DND.DROP_NONE;
 	if (context != 0) {
 		long /*int*/ dest_window = 0;
@@ -358,19 +358,19 @@ void dragEnd(long /*int*/ widget, long /*int*/ context){
 				if (operation == DND.DROP_MOVE) operation = DND.DROP_NONE;
 			}
 		}
-	}	
-	
+	}
+
 	DNDEvent event = new DNDEvent();
 	event.widget = this;
 	//event.time = ???
 	event.doit = operation != 0;
-	event.detail = operation; 
+	event.detail = operation;
 	notifyListeners(DND.DragEnd, event);
-	moveData = false;	
-}	
+	moveData = false;
+}
 
 void dragGetData(long /*int*/ widget, long /*int*/ context, long /*int*/ selection_data,  int info, int time){
-	if (selection_data == 0) return;	
+	if (selection_data == 0) return;
 	int length;
 	int format;
 	long /*int*/ data;
@@ -389,19 +389,19 @@ void dragGetData(long /*int*/ widget, long /*int*/ context, long /*int*/ selecti
 		target = gtkSelectionData.target;
 	}
 	if (target == 0) return;
-	
+
 	TransferData transferData = new TransferData();
 	transferData.type = target;
 	transferData.pValue = data;
 	transferData.length = length;
 	transferData.format = format;
-		
+
 	DNDEvent event = new DNDEvent();
 	event.widget = this;
-	event.time = time; 
-	event.dataType = transferData; 
+	event.time = time;
+	event.dataType = transferData;
 	notifyListeners(DND.DragSetData, event);
-		
+
 	if (!event.doit) return;
 	Transfer transfer = null;
 	for (int i = 0; i < transferAgents.length; i++) {
@@ -416,7 +416,7 @@ void dragGetData(long /*int*/ widget, long /*int*/ context, long /*int*/ selecti
 	if (transferData.result != 1) return;
 	OS.gtk_selection_data_set(selection_data, transferData.type, transferData.format, transferData.pValue, transferData.length);
 	OS.g_free(transferData.pValue);
-	return;	
+	return;
 }
 
 void dragDataDelete(long /*int*/ widget, long /*int*/ context){
@@ -424,7 +424,7 @@ void dragDataDelete(long /*int*/ widget, long /*int*/ context){
 }
 
 /**
- * Returns the Control which is registered for this DragSource.  This is the control that the 
+ * Returns the Control which is registered for this DragSource.  This is the control that the
  * user clicks in to initiate dragging.
  *
  * @return the Control which is registered for this DragSource
@@ -434,8 +434,8 @@ public Control getControl () {
 }
 
 /**
- * Returns an array of listeners who will be notified when a drag and drop 
- * operation is in progress, by sending it one of the messages defined in 
+ * Returns an array of listeners who will be notified when a drag and drop
+ * operation is in progress, by sending it one of the messages defined in
  * the <code>DragSourceListener</code> interface.
  *
  * @return the listeners who will be notified when a drag and drop
@@ -450,7 +450,7 @@ public Control getControl () {
  * @see #addDragListener
  * @see #removeDragListener
  * @see DragSourceEvent
- * 
+ *
  * @since 3.4
  */
 public DragSourceListener[] getDragListeners() {
@@ -476,7 +476,7 @@ public DragSourceListener[] getDragListeners() {
  * effect will be used during a drag and drop operation.
  *
  * @return the drag effect that is registered for this DragSource
- * 
+ *
  * @since 3.3
  */
 public DragSourceEffect getDragSourceEffect() {
@@ -510,29 +510,29 @@ void onDispose() {
 
 int opToOsOp(int operation){
 	int osOperation = 0;
-	
+
 	if ((operation & DND.DROP_COPY) == DND.DROP_COPY)
 		osOperation |= OS.GDK_ACTION_COPY;
 	if ((operation & DND.DROP_MOVE) == DND.DROP_MOVE)
 		osOperation |= OS.GDK_ACTION_MOVE;
 	if ((operation & DND.DROP_LINK) == DND.DROP_LINK)
 		osOperation |= OS.GDK_ACTION_LINK;
-	
+
 	return osOperation;
 }
 
 int osOpToOp(int osOperation){
 	int operation = DND.DROP_NONE;
-	
+
 	if ((osOperation & OS.GDK_ACTION_COPY) == OS.GDK_ACTION_COPY)
 		operation |= DND.DROP_COPY;
 	if ((osOperation & OS.GDK_ACTION_MOVE) == OS.GDK_ACTION_MOVE)
 		operation |= DND.DROP_MOVE;
 	if ((osOperation & OS.GDK_ACTION_LINK) == OS.GDK_ACTION_LINK)
 		operation |= DND.DROP_LINK;
-	
+
 	return operation;
-}		
+}
 
 /**
  * Removes the listener from the collection of listeners who will
@@ -560,11 +560,11 @@ public void removeDragListener(DragSourceListener listener) {
 }
 
 /**
- * Specifies the drag effect for this DragSource.  This drag effect will be 
+ * Specifies the drag effect for this DragSource.  This drag effect will be
  * used during a drag and drop operation.
  *
  * @param effect the drag effect that is registered for this DragSource
- * 
+ *
  * @since 3.3
  */
 public void setDragSourceEffect(DragSourceEffect effect) {
@@ -575,7 +575,7 @@ public void setDragSourceEffect(DragSourceEffect effect) {
  * Specifies the list of data types that can be transferred by this DragSource.
  * The application must be able to provide data to match each of these types when
  * a successful drop has occurred.
- * 
+ *
  * @param transferAgents a list of Transfer objects which define the types of data that can be
  * dragged from this source
  */
@@ -586,7 +586,7 @@ public void setTransfer(Transfer[] transferAgents){
 	}
 	this.transferAgents = transferAgents;
 	if (transferAgents == null || transferAgents.length == 0) return;
-	
+
 	GtkTargetEntry[] targets = new GtkTargetEntry[0];
 	for (int i = 0; i < transferAgents.length; i++) {
 		Transfer transfer = transferAgents[i];
@@ -597,22 +597,22 @@ public void setTransfer(Transfer[] transferAgents){
 				GtkTargetEntry entry = new GtkTargetEntry();
 				byte[] buffer = Converter.wcsToMbcs(null, typeNames[j], true);
 				entry.target = OS.g_malloc(buffer.length);
-				OS.memmove(entry.target, buffer, buffer.length);						
+				OS.memmove(entry.target, buffer, buffer.length);
 				entry.info = typeIds[j];
 				GtkTargetEntry[] newTargets = new GtkTargetEntry[targets.length + 1];
 				System.arraycopy(targets, 0, newTargets, 0, targets.length);
 				newTargets[targets.length] = entry;
 				targets = newTargets;
-			}	
+			}
 		}
 	}
-	
+
 	long /*int*/ pTargets = OS.g_malloc(targets.length * GtkTargetEntry.sizeof);
 	for (int i = 0; i < targets.length; i++) {
-		OS.memmove(pTargets + i*GtkTargetEntry.sizeof, targets[i], GtkTargetEntry.sizeof);		
-	}			
+		OS.memmove(pTargets + i*GtkTargetEntry.sizeof, targets[i], GtkTargetEntry.sizeof);
+	}
 	targetList = OS.gtk_target_list_new(pTargets, targets.length);
-	
+
 	for (int i = 0; i < targets.length; i++) {
 		OS.g_free(targets[i].target);
 	}

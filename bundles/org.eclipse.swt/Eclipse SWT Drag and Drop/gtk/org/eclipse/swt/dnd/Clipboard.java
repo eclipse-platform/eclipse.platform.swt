@@ -20,7 +20,7 @@ import org.eclipse.swt.widgets.Display;
 /**
  * The <code>Clipboard</code> provides a mechanism for transferring data from one
  * application to another or within an application.
- * 
+ *
  * <p>IMPORTANT: This class is <em>not</em> intended to be subclassed.</p>
  *
  * @see <a href="http://www.eclipse.org/swt/snippets/#clipboard">Clipboard snippets</a>
@@ -31,11 +31,11 @@ import org.eclipse.swt.widgets.Display;
 public class Clipboard {
 
 	private Display display;
-	
+
 	static long /*int*/ GTKCLIPBOARD;
 	static long /*int*/ GTKPRIMARYCLIPBOARD;
 	private static long /*int*/ TARGET;
-	
+
 	static {
 		GTKCLIPBOARD = OS.gtk_clipboard_get(OS.GDK_NONE);
 		byte[] buffer = Converter.wcsToMbcs(null, "PRIMARY", true);
@@ -60,7 +60,7 @@ public class Clipboard {
  * @see Clipboard#dispose
  * @see Clipboard#checkSubclass
  */
-public Clipboard(Display display) {	
+public Clipboard(Display display) {
 	checkSubclass ();
 	if (display == null) {
 		display = Display.getCurrent();
@@ -77,12 +77,12 @@ public Clipboard(Display display) {
 /**
  * Checks that this class can be subclassed.
  * <p>
- * The SWT class library is intended to be subclassed 
+ * The SWT class library is intended to be subclassed
  * only at specific, controlled points. This method enforces this
  * rule unless it is overridden.
  * </p><p>
  * <em>IMPORTANT:</em> By providing an implementation of this
- * method that allows a subclass of a class which does not 
+ * method that allows a subclass of a class which does not
  * normally allow subclassing to be created, the implementer
  * agrees to be fully responsible for the fact that any such
  * subclass will likely fail between SWT releases and will be
@@ -116,7 +116,7 @@ protected void checkSubclass () {
  * widget implementors to enforce the standard SWT invariants.
  * <p>
  * Currently, it is an error to invoke any method (other than
- * <code>isDisposed()</code>) on a widget that has had its 
+ * <code>isDisposed()</code>) on a widget that has had its
  * <code>dispose()</code> method called. It is also an error
  * to call widget methods from any thread that is different
  * from the thread that created the widget.
@@ -140,15 +140,15 @@ protected void checkWidget () {
 /**
  * If this clipboard is currently the owner of the data on the system clipboard,
  * clear the contents.  If this clipboard is not the owner, then nothing is done.
- * Note that there are clipboard assistant applications that take ownership of 
- * data or make copies of data when it is placed on the clipboard.  In these 
+ * Note that there are clipboard assistant applications that take ownership of
+ * data or make copies of data when it is placed on the clipboard.  In these
  * cases, it may not be possible to clear the clipboard.
- * 
+ *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 3.1
  */
 public void clearContents() {
@@ -156,29 +156,29 @@ public void clearContents() {
 }
 
 /**
- * If this clipboard is currently the owner of the data on the specified 
- * clipboard, clear the contents.  If this clipboard is not the owner, then 
+ * If this clipboard is currently the owner of the data on the specified
+ * clipboard, clear the contents.  If this clipboard is not the owner, then
  * nothing is done.
- * 
+ *
  * <p>Note that there are clipboard assistant applications that take ownership
- * of data or make copies of data when it is placed on the clipboard.  In these 
+ * of data or make copies of data when it is placed on the clipboard.  In these
  * cases, it may not be possible to clear the clipboard.</p>
- * 
+ *
  * <p>The clipboards value is either one of the clipboard constants defined in
- * class <code>DND</code>, or must be built by <em>bitwise OR</em>'ing together 
+ * class <code>DND</code>, or must be built by <em>bitwise OR</em>'ing together
  * (that is, using the <code>int</code> "|" operator) two or more
  * of those <code>DND</code> clipboard constants.</p>
- * 
+ *
  * @param clipboards to be cleared
- * 
+ *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @see DND#CLIPBOARD
  * @see DND#SELECTION_CLIPBOARD
- * 
+ *
  * @since 3.1
  */
 public void clearContents(int clipboards) {
@@ -188,13 +188,13 @@ public void clearContents(int clipboards) {
 }
 
 /**
- * Disposes of the operating system resources associated with the clipboard. 
- * The data will still be available on the system clipboard after the dispose 
- * method is called.  
- * 
+ * Disposes of the operating system resources associated with the clipboard.
+ * The data will still be available on the system clipboard after the dispose
+ * method is called.
+ *
  * <p>NOTE: On some platforms the data will not be available once the application
  * has exited or the display has been disposed.</p>
- * 
+ *
  * @exception SWTException <ul>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the parent</li>
  * </ul>
@@ -206,13 +206,13 @@ public void dispose () {
 }
 
 /**
- * Retrieve the data of the specified type currently available on the system 
- * clipboard.  Refer to the specific subclass of <code>Transfer</code> to 
+ * Retrieve the data of the specified type currently available on the system
+ * clipboard.  Refer to the specific subclass of <code>Transfer</code> to
  * determine the type of object returned.
- * 
- * <p>The following snippet shows text and RTF text being retrieved from the 
+ *
+ * <p>The following snippet shows text and RTF text being retrieved from the
  * clipboard:</p>
- * 
+ *
  *    <code><pre>
  *    Clipboard clipboard = new Clipboard(display);
  *    TextTransfer textTransfer = TextTransfer.getInstance();
@@ -223,10 +223,10 @@ public void dispose () {
  *    if (rtfData != null) System.out.println("RTF Text is "+rtfData);
  *    clipboard.dispose();
  *    </code></pre>
- * 
+ *
  * @param transfer the transfer agent for the type of data being requested
  * @return the data obtained from the clipboard or null if no data of this type is available
- * 
+ *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
@@ -234,7 +234,7 @@ public void dispose () {
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if transfer is null</li>
  * </ul>
- * 
+ *
  * @see Transfer
  */
 public Object getContents(Transfer transfer) {
@@ -242,13 +242,13 @@ public Object getContents(Transfer transfer) {
 }
 
 /**
- * Retrieve the data of the specified type currently available on the specified 
- * clipboard.  Refer to the specific subclass of <code>Transfer</code> to 
+ * Retrieve the data of the specified type currently available on the specified
+ * clipboard.  Refer to the specific subclass of <code>Transfer</code> to
  * determine the type of object returned.
- * 
- * <p>The following snippet shows text and RTF text being retrieved from the 
+ *
+ * <p>The following snippet shows text and RTF text being retrieved from the
  * clipboard:</p>
- * 
+ *
  *    <code><pre>
  *    Clipboard clipboard = new Clipboard(display);
  *    TextTransfer textTransfer = TextTransfer.getInstance();
@@ -259,17 +259,17 @@ public Object getContents(Transfer transfer) {
  *    if (rtfData != null) System.out.println("RTF Text is "+rtfData);
  *    clipboard.dispose();
  *    </code></pre>
- * 
+ *
  * <p>The clipboards value is either one of the clipboard constants defined in
- * class <code>DND</code>, or must be built by <em>bitwise OR</em>'ing together 
+ * class <code>DND</code>, or must be built by <em>bitwise OR</em>'ing together
  * (that is, using the <code>int</code> "|" operator) two or more
  * of those <code>DND</code> clipboard constants.</p>
- * 
+ *
  * @param transfer the transfer agent for the type of data being requested
  * @param clipboards on which to look for data
- *  
+ *
  * @return the data obtained from the clipboard or null if no data of this type is available
- * 
+ *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
@@ -277,11 +277,11 @@ public Object getContents(Transfer transfer) {
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if transfer is null</li>
  * </ul>
- * 
+ *
  * @see Transfer
  * @see DND#CLIPBOARD
  * @see DND#SELECTION_CLIPBOARD
- * 
+ *
  * @since 3.1
  */
 public Object getContents(Transfer transfer, int clipboards) {
@@ -296,7 +296,7 @@ public Object getContents(Transfer transfer, int clipboards) {
 			* This call to gdk_threads_leave() is a temporary work around
 			* to avoid deadlocks when gdk_threads_init() is called by native
 			* code outside of SWT (i.e AWT, etc). It ensures that the current
-			* thread leaves the GTK lock acquired by the function above. 
+			* thread leaves the GTK lock acquired by the function above.
 			*/
 			OS.gdk_threads_leave();
 		}
@@ -307,7 +307,7 @@ public Object getContents(Transfer transfer, int clipboards) {
 			* This call to gdk_threads_leave() is a temporary work around
 			* to avoid deadlocks when gdk_threads_init() is called by native
 			* code outside of SWT (i.e AWT, etc). It ensures that the current
-			* thread leaves the GTK lock acquired by the function above. 
+			* thread leaves the GTK lock acquired by the function above.
 			*/
 			OS.gdk_threads_leave();
 		}
@@ -342,7 +342,7 @@ public Object getContents(Transfer transfer, int clipboards) {
  * </p>
  *
  * @return <code>true</code> when the widget is disposed and <code>false</code> otherwise
- * 
+ *
  * @since 3.0
  */
 public boolean isDisposed () {
@@ -353,17 +353,17 @@ public boolean isDisposed () {
  * Place data of the specified type on the system clipboard.  More than one type
  * of data can be placed on the system clipboard at the same time.  Setting the
  * data clears any previous data from the system clipboard, regardless of type.
- * 
+ *
  * <p>NOTE: On some platforms, the data is immediately copied to the system
  * clipboard but on other platforms it is provided upon request.  As a result,
- * if the application modifies the data object it has set on the clipboard, that 
- * modification may or may not be available when the data is subsequently 
+ * if the application modifies the data object it has set on the clipboard, that
+ * modification may or may not be available when the data is subsequently
  * requested.</p>
  *
  * <p>The following snippet shows text and RTF text being set on the copy/paste
  * clipboard:
  * </p>
- * 
+ *
  * <code><pre>
  * 	Clipboard clipboard = new Clipboard(display);
  *	String textData = "Hello World";
@@ -377,12 +377,12 @@ public boolean isDisposed () {
  * </code></pre>
  *
  * @param data the data to be set in the clipboard
- * @param dataTypes the transfer agents that will convert the data to its 
- * platform specific format; each entry in the data array must have a 
+ * @param dataTypes the transfer agents that will convert the data to its
+ * platform specific format; each entry in the data array must have a
  * corresponding dataType
- * 
+ *
  * @exception IllegalArgumentException <ul>
- *    <li>ERROR_INVALID_ARGUMENT - if data is null or datatypes is null 
+ *    <li>ERROR_INVALID_ARGUMENT - if data is null or datatypes is null
  *          or the length of data is not the same as the length of dataTypes</li>
  * </ul>
  * @exception SWTException <ul>
@@ -392,7 +392,7 @@ public boolean isDisposed () {
  *  @exception SWTError <ul>
  *    <li>ERROR_CANNOT_SET_CLIPBOARD - if the clipboard is locked or otherwise unavailable</li>
  * </ul>
- * 
+ *
  * <p>NOTE: ERROR_CANNOT_SET_CLIPBOARD should be an SWTException, since it is a
  * recoverable error, but can not be changed due to backward compatibility.</p>
  */
@@ -401,26 +401,26 @@ public void setContents(Object[] data, Transfer[] dataTypes) {
 }
 
 /**
- * Place data of the specified type on the specified clipboard.  More than one 
+ * Place data of the specified type on the specified clipboard.  More than one
  * type of data can be placed on the specified clipboard at the same time.
  * Setting the data clears any previous data from the specified
  * clipboard, regardless of type.
- * 
+ *
  * <p>NOTE: On some platforms, the data is immediately copied to the specified
- * clipboard but on other platforms it is provided upon request.  As a result, 
- * if the application modifies the data object it has set on the clipboard, that 
- * modification may or may not be available when the data is subsequently 
+ * clipboard but on other platforms it is provided upon request.  As a result,
+ * if the application modifies the data object it has set on the clipboard, that
+ * modification may or may not be available when the data is subsequently
  * requested.</p>
  *
  * <p>The clipboards value is either one of the clipboard constants defined in
- * class <code>DND</code>, or must be built by <em>bitwise OR</em>'ing together 
+ * class <code>DND</code>, or must be built by <em>bitwise OR</em>'ing together
  * (that is, using the <code>int</code> "|" operator) two or more
  * of those <code>DND</code> clipboard constants.</p>
- * 
+ *
  * <p>The following snippet shows text and RTF text being set on the copy/paste
  * clipboard:
  * </p>
- * 
+ *
  * <code><pre>
  * 	Clipboard clipboard = new Clipboard(display);
  *	String textData = "Hello World";
@@ -434,13 +434,13 @@ public void setContents(Object[] data, Transfer[] dataTypes) {
  * </code></pre>
  *
  * @param data the data to be set in the clipboard
- * @param dataTypes the transfer agents that will convert the data to its 
- * platform specific format; each entry in the data array must have a 
+ * @param dataTypes the transfer agents that will convert the data to its
+ * platform specific format; each entry in the data array must have a
  * corresponding dataType
  * @param clipboards on which to set the data
- * 
+ *
  * @exception IllegalArgumentException <ul>
- *    <li>ERROR_INVALID_ARGUMENT - if data is null or datatypes is null 
+ *    <li>ERROR_INVALID_ARGUMENT - if data is null or datatypes is null
  *          or the length of data is not the same as the length of dataTypes</li>
  * </ul>
  * @exception SWTException <ul>
@@ -450,13 +450,13 @@ public void setContents(Object[] data, Transfer[] dataTypes) {
  *  @exception SWTError <ul>
  *    <li>ERROR_CANNOT_SET_CLIPBOARD - if the clipboard is locked or otherwise unavailable</li>
  * </ul>
- * 
+ *
  * <p>NOTE: ERROR_CANNOT_SET_CLIPBOARD should be an SWTException, since it is a
  * recoverable error, but can not be changed due to backward compatibility.</p>
- * 
+ *
  * @see DND#CLIPBOARD
  * @see DND#SELECTION_CLIPBOARD
- * 
+ *
  * @since 3.1
  */
 public void setContents(Object[] data, Transfer[] dataTypes, int clipboards) {
@@ -476,18 +476,18 @@ public void setContents(Object[] data, Transfer[] dataTypes, int clipboards) {
 }
 
 /**
- * Returns an array of the data types currently available on the system 
+ * Returns an array of the data types currently available on the system
  * clipboard. Use with Transfer.isSupportedType.
  *
  * @return array of data types currently available on the system clipboard
- * 
+ *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  *
  * @see Transfer#isSupportedType
- * 
+ *
  * @since 3.0
  */
 public TransferData[] getAvailableTypes() {
@@ -495,17 +495,17 @@ public TransferData[] getAvailableTypes() {
 }
 
 /**
- * Returns an array of the data types currently available on the specified 
+ * Returns an array of the data types currently available on the specified
  * clipboard. Use with Transfer.isSupportedType.
- * 
+ *
  * <p>The clipboards value is either one of the clipboard constants defined in
- * class <code>DND</code>, or must be built by <em>bitwise OR</em>'ing together 
+ * class <code>DND</code>, or must be built by <em>bitwise OR</em>'ing together
  * (that is, using the <code>int</code> "|" operator) two or more
  * of those <code>DND</code> clipboard constants.</p>
- * 
+ *
  * @param clipboards from which to get the data types
  * @return array of data types currently available on the specified clipboard
- * 
+ *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
@@ -514,7 +514,7 @@ public TransferData[] getAvailableTypes() {
  * @see Transfer#isSupportedType
  * @see DND#CLIPBOARD
  * @see DND#SELECTION_CLIPBOARD
- * 
+ *
  * @since 3.1
  */
 public TransferData[] getAvailableTypes(int clipboards) {
@@ -548,16 +548,16 @@ public TransferData[] getAvailableTypes(int clipboards) {
 }
 
 /**
- * Returns a platform specific list of the data types currently available on the 
+ * Returns a platform specific list of the data types currently available on the
  * system clipboard.
- * 
- * <p>Note: <code>getAvailableTypeNames</code> is a utility for writing a Transfer 
- * sub-class.  It should NOT be used within an application because it provides 
+ *
+ * <p>Note: <code>getAvailableTypeNames</code> is a utility for writing a Transfer
+ * sub-class.  It should NOT be used within an application because it provides
  * platform specific information.</p>
- * 
- * @return a platform specific list of the data types currently available on the 
+ *
+ * @return a platform specific list of the data types currently available on the
  * system clipboard
- * 
+ *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
@@ -604,7 +604,7 @@ private  int[] getAvailablePrimaryTypes() {
 	* This call to gdk_threads_leave() is a temporary work around
 	* to avoid deadlocks when gdk_threads_init() is called by native
 	* code outside of SWT (i.e AWT, etc). It ensures that the current
-	* thread leaves the GTK lock acquired by the function above. 
+	* thread leaves the GTK lock acquired by the function above.
 	*/
 	OS.gdk_threads_leave();
 	if (selection_data != 0) {
@@ -640,7 +640,7 @@ private int[] getAvailableClipboardTypes () {
 	* This call to gdk_threads_leave() is a temporary work around
 	* to avoid deadlocks when gdk_threads_init() is called by native
 	* code outside of SWT (i.e AWT, etc). It ensures that the current
-	* thread leaves the GTK lock acquired by the function above. 
+	* thread leaves the GTK lock acquired by the function above.
 	*/
 	OS.gdk_threads_leave();
 	if (selection_data != 0) {

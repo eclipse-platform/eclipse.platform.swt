@@ -28,10 +28,10 @@ import org.eclipse.swt.graphics.*;
  * </p><p>
  * IMPORTANT: This class is <em>not</em> intended to be subclassed.
  * </p>
- * 
+ *
  * @see ExpandBar
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
- * 
+ *
  * @since 3.2
  * @noextend This class is not intended to be subclassed by clients.
  */
@@ -53,7 +53,7 @@ public class ExpandItem extends Item {
  * <p>
  * The style value is either one of the style constants defined in
  * class <code>SWT</code> which is applicable to instances of this
- * class, or must be built by <em>bitwise OR</em>'ing together 
+ * class, or must be built by <em>bitwise OR</em>'ing together
  * (that is, using the <code>int</code> "|" operator) two or more
  * of those <code>SWT</code> style constants. The class description
  * lists the style constants that are applicable to the class.
@@ -87,7 +87,7 @@ public ExpandItem (ExpandBar parent, int style) {
  * <p>
  * The style value is either one of the style constants defined in
  * class <code>SWT</code> which is applicable to instances of this
- * class, or must be built by <em>bitwise OR</em>'ing together 
+ * class, or must be built by <em>bitwise OR</em>'ing together
  * (that is, using the <code>int</code> "|" operator) two or more
  * of those <code>SWT</code> style constants. The class description
  * lists the style constants that are applicable to the class.
@@ -128,7 +128,7 @@ void createHandle (int index) {
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 	clientHandle = OS.g_object_new (display.gtk_fixed_get_type (), 0);
 	if (clientHandle == 0) error (SWT.ERROR_NO_HANDLES);
-	OS.gtk_container_add (handle, clientHandle);	
+	OS.gtk_container_add (handle, clientHandle);
 	boxHandle = gtk_box_new (OS.GTK_ORIENTATION_HORIZONTAL, false, 4);
 	if (boxHandle == 0) error (SWT.ERROR_NO_HANDLES);
 	labelHandle = OS.gtk_label_new (null);
@@ -259,9 +259,9 @@ public boolean getExpanded () {
 }
 
 /**
- * Returns the height of the receiver's header 
+ * Returns the height of the receiver's header
  *
- * @return the height of the header 
+ * @return the height of the header
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -403,17 +403,17 @@ void resizeControl (int yScroll) {
 			int y = allocation.y;
 			if (x != -1 && y != -1) {
 				int width = allocation.width;
-				int height = allocation.height;	
+				int height = allocation.height;
 				int [] property = new int [1];
-				OS.gtk_widget_style_get (handle, OS.focus_line_width, property, 0);				
+				OS.gtk_widget_style_get (handle, OS.focus_line_width, property, 0);
 				y += property [0] * 2;
 				height -= property [0] * 2;
-				
+
 				/*
 				* Feature in GTK. When the ExpandBar is resize too small the control
-				* shows up on top of the vertical scrollbar. This happen because the 
+				* shows up on top of the vertical scrollbar. This happen because the
 				* GtkExpander does not set the size of child smaller than the request
-				* size of its parent and because the control is not parented in the 
+				* size of its parent and because the control is not parented in the
 				* hierarchy of the GtkScrolledWindow.
 				* The fix is calculate the width ourselves when the scrollbar is visible.
 				*/
@@ -421,7 +421,7 @@ void resizeControl (int yScroll) {
 				if (vBar != null) {
 					if (gtk_widget_get_visible (vBar.handle)) {
 						gtk_widget_get_allocation (parent.scrolledHandle, allocation);
-						width = allocation.width - parent.vScrollBarWidth () - 2 * parent.spacing;	
+						width = allocation.width - parent.vScrollBarWidth () - 2 * parent.spacing;
 					}
 				}
 				control.setBounds (x, y - yScroll, width, Math.max (0, height), true, true);
@@ -459,7 +459,7 @@ void setBounds (int x, int y, int width, int height, boolean move, boolean size)
  * @param control the new control (or null)
  *
  * @exception IllegalArgumentException <ul>
- *    <li>ERROR_INVALID_ARGUMENT - if the control has been disposed</li> 
+ *    <li>ERROR_INVALID_ARGUMENT - if the control has been disposed</li>
  *    <li>ERROR_INVALID_PARENT - if the control is not in the same widget tree</li>
  * </ul>
  * @exception SWTException <ul>
@@ -522,7 +522,7 @@ void setForegroundColor (GdkColor color) {
 }
 
 /**
- * Sets the height of the receiver. This is height of the item when it is expanded, 
+ * Sets the height of the receiver. This is height of the item when it is expanded,
  * excluding the height of the header.
  *
  * @param height the new height
@@ -569,7 +569,7 @@ void setOrientation (boolean create) {
 		OS.gtk_container_forall (handle, display.setDirectionProc, dir);
 	}
 }
-	
+
 @Override
 public void setText (String string) {
 	super.setText (string);

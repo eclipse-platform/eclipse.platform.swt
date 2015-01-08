@@ -17,20 +17,20 @@ import org.eclipse.swt.internal.*;
 import org.eclipse.swt.*;
 
 /**
- * Class <code>GC</code> is where all of the drawing capabilities that are 
- * supported by SWT are located. Instances are used to draw on either an 
+ * Class <code>GC</code> is where all of the drawing capabilities that are
+ * supported by SWT are located. Instances are used to draw on either an
  * <code>Image</code>, a <code>Control</code>, or directly on a <code>Display</code>.
  * <dl>
  * <dt><b>Styles:</b></dt>
  * <dd>LEFT_TO_RIGHT, RIGHT_TO_LEFT</dd>
  * </dl>
- * 
+ *
  * <p>
  * The SWT drawing coordinate system is the two-dimensional space with the origin
  * (0,0) at the top left corner of the drawing area and with (x,y) values increasing
  * to the right and downward respectively.
  * </p>
- * 
+ *
  * <p>
  * The result of drawing on an image that was created with an indexed
  * palette using a color that is not in the palette is platform specific.
@@ -38,15 +38,15 @@ import org.eclipse.swt.*;
  * the color itself. This happens because the allocated image might use
  * a direct palette on platforms that do not support indexed palette.
  * </p>
- * 
+ *
  * <p>
- * Application code must explicitly invoke the <code>GC.dispose()</code> 
+ * Application code must explicitly invoke the <code>GC.dispose()</code>
  * method to release the operating system resources managed by each instance
  * when those instances are no longer required. This is <em>particularly</em>
  * important on Windows95 and Windows98 where the operating system has a limited
  * number of device contexts available.
  * </p>
- * 
+ *
  * <p>
  * Note: Only one of LEFT_TO_RIGHT and RIGHT_TO_LEFT may be specified.
  * </p>
@@ -66,11 +66,11 @@ public final class GC extends Resource {
 	 * within the packages provided by SWT. It is not available on all
 	 * platforms and should never be accessed from application code.
 	 * </p>
-	 * 
+	 *
 	 * @noreference This field is not intended to be referenced by clients.
 	 */
 	public long /*int*/ handle;
-	
+
 	Drawable drawable;
 	GCData data;
 
@@ -83,7 +83,7 @@ public final class GC extends Resource {
 	final static int LINE_WIDTH = 1 << 6;
 	final static int LINE_MITERLIMIT = 1 << 7;
 	final static int BACKGROUND_BG = 1 << 8;
-	final static int DRAW_OFFSET = 1 << 9;	
+	final static int DRAW_OFFSET = 1 << 9;
 	final static int DRAW = FOREGROUND | LINE_WIDTH | LINE_STYLE  | LINE_CAP  | LINE_JOIN | LINE_MITERLIMIT | DRAW_OFFSET;
 	final static int FILL = BACKGROUND;
 
@@ -99,13 +99,13 @@ public final class GC extends Resource {
 GC() {
 }
 
-/**	 
+/**
  * Constructs a new instance of this class which has been
  * configured to draw on the specified drawable. Sets the
  * foreground color, background color and font in the GC
  * to match those in the drawable.
  * <p>
- * You must dispose the graphics context when it is no longer required. 
+ * You must dispose the graphics context when it is no longer required.
  * </p>
  * @param drawable the drawable to draw on
  * @exception IllegalArgumentException <ul>
@@ -125,18 +125,18 @@ public GC(Drawable drawable) {
 	this(drawable, 0);
 }
 
-/**	 
+/**
  * Constructs a new instance of this class which has been
  * configured to draw on the specified drawable. Sets the
  * foreground color, background color and font in the GC
  * to match those in the drawable.
  * <p>
- * You must dispose the graphics context when it is no longer required. 
+ * You must dispose the graphics context when it is no longer required.
  * </p>
- * 
+ *
  * @param drawable the drawable to draw on
  * @param style the style of GC to construct
- * 
+ *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the drawable is null</li>
  *    <li>ERROR_NULL_ARGUMENT - if there is no current device</li>
@@ -149,7 +149,7 @@ public GC(Drawable drawable) {
  *    <li>ERROR_NO_HANDLES if a handle could not be obtained for GC creation</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS if not called from the thread that created the drawable</li>
  * </ul>
- *  
+ *
  * @since 2.1.2
  */
 public GC(Drawable drawable, int style) {
@@ -185,7 +185,7 @@ static int checkStyle (int style) {
 	return style & (SWT.LEFT_TO_RIGHT | SWT.RIGHT_TO_LEFT);
 }
 
-/**	 
+/**
  * Invokes platform specific functionality to wrap a graphics context.
  * <p>
  * <b>IMPORTANT:</b> This method is <em>not</em> part of the public
@@ -199,7 +199,7 @@ static int checkStyle (int style) {
  * @param data the data for the receiver.
  *
  * @return a new <code>GC</code>
- * 
+ *
  * @noreference This method is not intended to be referenced by clients.
  */
 public static GC gtk_new(long /*int*/ handle, GCData data) {
@@ -209,7 +209,7 @@ public static GC gtk_new(long /*int*/ handle, GCData data) {
 	return gc;
 }
 
-/**	 
+/**
  * Invokes platform specific functionality to allocate a new graphics context.
  * <p>
  * <b>IMPORTANT:</b> This method is <em>not</em> part of the public
@@ -223,7 +223,7 @@ public static GC gtk_new(long /*int*/ handle, GCData data) {
  * @param data the data for the receiver.
  *
  * @return a new <code>GC</code>
- * 
+ *
  * @noreference This method is not intended to be referenced by clients.
  */
 public static GC gtk_new(Drawable drawable, GCData data) {
@@ -237,7 +237,7 @@ public static GC gtk_new(Drawable drawable, GCData data) {
 void checkGC (int mask) {
 	int state = data.state;
 	if ((state & mask) == mask) return;
-	state = (state ^ mask) & mask;	
+	state = (state ^ mask) & mask;
 	data.state |= mask;
 	long /*int*/ cairo = data.cairo;
 	if (cairo != 0) {
@@ -464,7 +464,7 @@ long /*int*/ convertRgn(long /*int*/ rgn, double[] matrix) {
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the image is null</li>
- *    <li>ERROR_INVALID_ARGUMENT - if the image is not a bitmap or has been disposed</li> 
+ *    <li>ERROR_INVALID_ARGUMENT - if the image is not a bitmap or has been disposed</li>
  * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
@@ -546,8 +546,8 @@ public void copyArea(int srcX, int srcY, int width, int height, int destX, int d
  * @exception SWTException <ul>
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
- * 
- * @since 3.1 
+ *
+ * @since 3.1
  */
 public void copyArea(int srcX, int srcY, int width, int height, int destX, int destY, boolean paint) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
@@ -589,7 +589,7 @@ public void copyArea(int srcX, int srcY, int width, int height, int destX, int d
 				srcRect.height = height;
 				long /*int*/ copyRegion = OS.gdk_region_rectangle (srcRect);
 				OS.gdk_region_intersect(copyRegion, visibleRegion);
-				long /*int*/ invalidateRegion = OS.gdk_region_rectangle (srcRect);	
+				long /*int*/ invalidateRegion = OS.gdk_region_rectangle (srcRect);
 				OS.gdk_region_subtract (invalidateRegion, visibleRegion);
 				OS.gdk_region_offset (invalidateRegion, deltaX, deltaY);
 				OS.gdk_window_invalidate_region(drawable, invalidateRegion, false);
@@ -673,7 +673,7 @@ void destroy() {
 		image.memGC = null;
 		if (image.transparentPixel != -1) image.createMask();
 	}
-	
+
 	disposeLayout();
 
 	/* Dispose the GC */
@@ -689,18 +689,18 @@ void destroy() {
 }
 
 /**
- * Draws the outline of a circular or elliptical arc 
+ * Draws the outline of a circular or elliptical arc
  * within the specified rectangular area.
  * <p>
- * The resulting arc begins at <code>startAngle</code> and extends  
+ * The resulting arc begins at <code>startAngle</code> and extends
  * for <code>arcAngle</code> degrees, using the current color.
  * Angles are interpreted such that 0 degrees is at the 3 o'clock
  * position. A positive value indicates a counter-clockwise rotation
  * while a negative value indicates a clockwise rotation.
  * </p><p>
- * The center of the arc is the center of the rectangle whose origin 
- * is (<code>x</code>, <code>y</code>) and whose size is specified by the 
- * <code>width</code> and <code>height</code> arguments. 
+ * The center of the arc is the center of the rectangle whose origin
+ * is (<code>x</code>, <code>y</code>) and whose size is specified by the
+ * <code>width</code> and <code>height</code> arguments.
  * </p><p>
  * The resulting arc covers an area <code>width + 1</code> pixels wide
  * by <code>height + 1</code> pixels tall.
@@ -735,7 +735,7 @@ public void drawArc(int x, int y, int width, int height, int startAngle, int arc
 		if (width == height) {
             if (arcAngle >= 0) {
                 Cairo.cairo_arc_negative(cairo, x + xOffset + width / 2f, y + yOffset + height / 2f, width / 2f, -startAngle * (float)Compatibility.PI / 180, -(startAngle + arcAngle) * (float)Compatibility.PI / 180);
-            } else { 
+            } else {
                 Cairo.cairo_arc(cairo, x + xOffset + width / 2f, y + yOffset + height / 2f, width / 2f, -startAngle * (float)Compatibility.PI / 180, -(startAngle + arcAngle) * (float)Compatibility.PI / 180);
             }
 		} else {
@@ -755,7 +755,7 @@ public void drawArc(int x, int y, int width, int height, int startAngle, int arc
 	OS.gdk_draw_arc(data.drawable, handle, 0, x, y, width, height, startAngle * 64, arcAngle * 64);
 }
 
-/** 
+/**
  * Draws a rectangle, based on the specified arguments, which has
  * the appearance of the platform's <em>focus rectangle</em> if the
  * platform supports such a notion, and otherwise draws a simple
@@ -783,7 +783,7 @@ public void drawFocus(int x, int y, int width, int height) {
 		} else {
 			int[] lineWidth = new int[1];
 			OS.gtk_widget_style_get(data.device.shellHandle, OS.focus_line_width, lineWidth, 0);
-			Cairo.cairo_save(cairo);		
+			Cairo.cairo_save(cairo);
 			Cairo.cairo_set_line_width(cairo, lineWidth[0]);
 			double[] dashes = new double[]{1, 1};
 			double dash_offset = -lineWidth[0] / 2f;
@@ -796,7 +796,7 @@ public void drawFocus(int x, int y, int width, int height) {
 		return;
 	}
 	/*
-	* Feature in GTK.  The function gtk_widget_get_default_style() 
+	* Feature in GTK.  The function gtk_widget_get_default_style()
 	* can't be used here because gtk_paint_focus() uses GCs, which
 	* are not valid in the default style. The fix is to use a style
 	* from a widget.
@@ -941,10 +941,10 @@ void drawImage(Image srcImage, int srcX, int srcY, int srcWidth, int srcHeight, 
 				* by creating an image that is 3 times bigger than the original, drawing
 				* the original image in every quadrant (with an appropriate transform) and
 				* use this image as the pattern.
-				* 
+				*
 				* NOTE: For some reason, it is necessary to use CAIRO_EXTEND_PAD with
 				* the image that was created or the edges are still faded.
-				* 
+				*
 				* NOTE: Cairo.CAIRO_EXTEND_PAD works on Cairo 1.8.x and greater.
 				*/
 				int version = Cairo.cairo_version ();
@@ -979,7 +979,7 @@ void drawImage(Image srcImage, int srcX, int srcY, int srcWidth, int srcHeight, 
 					Cairo.cairo_pattern_destroy(pattern);
 					pattern = newPattern;
 					Cairo.cairo_pattern_set_extend(pattern, Cairo.CAIRO_EXTEND_PAD);
-					double[] matrix = new double[6]; 
+					double[] matrix = new double[6];
 					Cairo.cairo_matrix_init_translate(matrix, imgWidth, imgHeight);
 					Cairo.cairo_pattern_set_matrix(pattern, matrix);
 				} else if (version >= Cairo.CAIRO_VERSION_ENCODE(1, 8, 0)) {
@@ -1111,7 +1111,7 @@ void drawImageMask(Image srcImage, int srcX, int srcY, int srcWidth, int srcHeig
 			srcWidth = destWidth;
 			srcHeight = destHeight;
 		}
-	
+
 		/* Merge clipping with mask if necessary */
 		if (data.clipRgn != 0)	 {
 			int newWidth =  srcX + srcWidth;
@@ -1135,7 +1135,7 @@ void drawImageMask(Image srcImage, int srcX, int srcY, int srcWidth, int srcHeig
 				maskPixmap = mask;
 			}
 		}
-	
+
 		/* Blit cliping the mask */
 		GdkGCValues values = new GdkGCValues();
 		OS.gdk_gc_get_values(handle, values);
@@ -1232,8 +1232,8 @@ long /*int*/ scale(long /*int*/ src, int srcX, int srcY, int srcWidth, int srcHe
 	return scaledPixbuf;
 }
 
-/** 
- * Draws a line, using the foreground color, between the points 
+/**
+ * Draws a line, using the foreground color, between the points
  * (<code>x1</code>, <code>y1</code>) and (<code>x2</code>, <code>y2</code>).
  *
  * @param x1 the first point's x coordinate
@@ -1259,15 +1259,15 @@ public void drawLine(int x1, int y1, int x2, int y2) {
 	OS.gdk_draw_line (data.drawable, handle, x1, y1, x2, y2);
 }
 
-/** 
+/**
  * Draws the outline of an oval, using the foreground color,
  * within the specified rectangular area.
  * <p>
- * The result is a circle or ellipse that fits within the 
- * rectangle specified by the <code>x</code>, <code>y</code>, 
- * <code>width</code>, and <code>height</code> arguments. 
- * </p><p> 
- * The oval covers an area that is <code>width + 1</code> 
+ * The result is a circle or ellipse that fits within the
+ * rectangle specified by the <code>x</code>, <code>y</code>,
+ * <code>width</code>, and <code>height</code> arguments.
+ * </p><p>
+ * The oval covers an area that is <code>width + 1</code>
  * pixels wide and <code>height + 1</code> pixels tall.
  * </p>
  *
@@ -1309,14 +1309,14 @@ public void drawOval(int x, int y, int width, int height) {
 	OS.gdk_draw_arc(data.drawable, handle, 0, x, y, width, height, 0, 23040);
 }
 
-/** 
+/**
  * Draws the path described by the parameter.
  * <p>
  * This operation requires the operating system's advanced
  * graphics subsystem which may not be available on some
  * platforms.
  * </p>
- * 
+ *
  * @param path the path to draw
  *
  * @exception IllegalArgumentException <ul>
@@ -1327,9 +1327,9 @@ public void drawOval(int x, int y, int width, int height) {
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_NO_GRAPHICS_LIBRARY - if advanced graphics are not available</li>
  * </ul>
- * 
+ *
  * @see Path
- * 
+ *
  * @since 3.1
  */
 public void drawPath(Path path) {
@@ -1350,7 +1350,7 @@ public void drawPath(Path path) {
 	Cairo.cairo_restore(cairo);
 }
 
-/** 
+/**
  * Draws a pixel, using the foreground color, at the specified
  * point (<code>x</code>, <code>y</code>).
  * <p>
@@ -1364,7 +1364,7 @@ public void drawPath(Path path) {
  * @exception SWTException <ul>
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
- *  
+ *
  * @since 3.0
  */
 public void drawPoint (int x, int y) {
@@ -1379,9 +1379,9 @@ public void drawPoint (int x, int y) {
 	OS.gdk_draw_point(data.drawable, handle, x, y);
 }
 
-/** 
+/**
  * Draws the closed polygon which is defined by the specified array
- * of integer coordinates, using the receiver's foreground color. The array 
+ * of integer coordinates, using the receiver's foreground color. The array
  * contains alternating x and y values which are considered to represent
  * points which are the vertices of the polygon. Lines are drawn between
  * each consecutive pair, and between the first pair and last pair in the
@@ -1391,7 +1391,7 @@ public void drawPoint (int x, int y) {
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT if pointArray is null</li>
- * </ul>	
+ * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
@@ -1409,9 +1409,9 @@ public void drawPolygon(int[] pointArray) {
 	OS.gdk_draw_polygon(data.drawable, handle, 0, pointArray, pointArray.length / 2);
 }
 
-/** 
+/**
  * Draws the polyline which is defined by the specified array
- * of integer coordinates, using the receiver's foreground color. The array 
+ * of integer coordinates, using the receiver's foreground color. The array
  * contains alternating x and y values which are considered to represent
  * points which are the corners of the polyline. Lines are drawn between
  * each consecutive pair, but not between the first pair and last pair in
@@ -1421,7 +1421,7 @@ public void drawPolygon(int[] pointArray) {
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the point array is null</li>
- * </ul>	
+ * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
@@ -1450,11 +1450,11 @@ void drawPolyline(long /*int*/ cairo, int[] pointArray, boolean close) {
 	if (close) Cairo.cairo_close_path(cairo);
 }
 
-/** 
+/**
  * Draws the outline of the rectangle specified by the arguments,
  * using the receiver's foreground color. The left and right edges
- * of the rectangle are at <code>x</code> and <code>x + width</code>. 
- * The top and bottom edges are at <code>y</code> and <code>y + height</code>. 
+ * of the rectangle are at <code>x</code> and <code>x + width</code>.
+ * The top and bottom edges are at <code>y</code> and <code>y + height</code>.
  *
  * @param x the x coordinate of the rectangle to be drawn
  * @param y the y coordinate of the rectangle to be drawn
@@ -1486,18 +1486,18 @@ public void drawRectangle(int x, int y, int width, int height) {
 	OS.gdk_draw_rectangle(data.drawable, handle, 0, x, y, width, height);
 }
 
-/** 
+/**
  * Draws the outline of the specified rectangle, using the receiver's
  * foreground color. The left and right edges of the rectangle are at
- * <code>rect.x</code> and <code>rect.x + rect.width</code>. The top 
- * and bottom edges are at <code>rect.y</code> and 
- * <code>rect.y + rect.height</code>. 
+ * <code>rect.x</code> and <code>rect.x + rect.width</code>. The top
+ * and bottom edges are at <code>rect.y</code> and
+ * <code>rect.y + rect.height</code>.
  *
  * @param rect the rectangle to draw
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the rectangle is null</li>
- * </ul>	
+ * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
@@ -1506,12 +1506,12 @@ public void drawRectangle(Rectangle rect) {
 	if (rect == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	drawRectangle (rect.x, rect.y, rect.width, rect.height);
 }
-/** 
- * Draws the outline of the round-cornered rectangle specified by 
+/**
+ * Draws the outline of the round-cornered rectangle specified by
  * the arguments, using the receiver's foreground color. The left and
- * right edges of the rectangle are at <code>x</code> and <code>x + width</code>. 
+ * right edges of the rectangle are at <code>x</code> and <code>x + width</code>.
  * The top and bottom edges are at <code>y</code> and <code>y + height</code>.
- * The <em>roundness</em> of the corners is specified by the 
+ * The <em>roundness</em> of the corners is specified by the
  * <code>arcWidth</code> and <code>arcHeight</code> arguments, which
  * are respectively the width and height of the ellipse used to draw
  * the corners.
@@ -1601,7 +1601,7 @@ public void drawRoundRectangle(int x, int y, int width, int height, int arcWidth
 	}
 }
 
-/** 
+/**
  * Draws the given string, using the receiver's current font and
  * foreground color. No tab expansion or carriage return processing
  * will be performed. The background of the rectangular area where
@@ -1614,7 +1614,7 @@ public void drawRoundRectangle(int x, int y, int width, int height, int arcWidth
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the string is null</li>
- * </ul>	
+ * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
@@ -1622,7 +1622,7 @@ public void drawRoundRectangle(int x, int y, int width, int height, int arcWidth
 public void drawString (String string, int x, int y) {
 	drawString(string, x, y, false);
 }
-/** 
+/**
  * Draws the given string, using the receiver's current font and
  * foreground color. No tab expansion or carriage return processing
  * will be performed. If <code>isTransparent</code> is <code>true</code>,
@@ -1637,7 +1637,7 @@ public void drawString (String string, int x, int y) {
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the string is null</li>
- * </ul>	
+ * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
@@ -1646,7 +1646,7 @@ public void drawString(String string, int x, int y, boolean isTransparent) {
 	drawText(string, x, y, isTransparent ? SWT.DRAW_TRANSPARENT : 0);
 }
 
-/** 
+/**
  * Draws the given string, using the receiver's current font and
  * foreground color. Tab expansion and carriage return processing
  * are performed. The background of the rectangular area where
@@ -1659,7 +1659,7 @@ public void drawString(String string, int x, int y, boolean isTransparent) {
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the string is null</li>
- * </ul>	
+ * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
@@ -1668,7 +1668,7 @@ public void drawText(String string, int x, int y) {
 	drawText(string, x, y, SWT.DRAW_DELIMITER | SWT.DRAW_TAB);
 }
 
-/** 
+/**
  * Draws the given string, using the receiver's current font and
  * foreground color. Tab expansion and carriage return processing
  * are performed. If <code>isTransparent</code> is <code>true</code>,
@@ -1683,7 +1683,7 @@ public void drawText(String string, int x, int y) {
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the string is null</li>
- * </ul>	
+ * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
@@ -1694,7 +1694,7 @@ public void drawText(String string, int x, int y, boolean isTransparent) {
 	drawText(string, x, y, flags);
 }
 
-/** 
+/**
  * Draws the given string, using the receiver's current font and
  * foreground color. Tab expansion, line delimiter and mnemonic
  * processing are performed according to the specified flags. If
@@ -1723,7 +1723,7 @@ public void drawText(String string, int x, int y, boolean isTransparent) {
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the string is null</li>
- * </ul>	
+ * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
@@ -1808,15 +1808,15 @@ public boolean equals(Object object) {
  * the specified rectangular area, with the receiver's background
  * color.
  * <p>
- * The resulting arc begins at <code>startAngle</code> and extends  
+ * The resulting arc begins at <code>startAngle</code> and extends
  * for <code>arcAngle</code> degrees, using the current color.
  * Angles are interpreted such that 0 degrees is at the 3 o'clock
  * position. A positive value indicates a counter-clockwise rotation
  * while a negative value indicates a clockwise rotation.
  * </p><p>
- * The center of the arc is the center of the rectangle whose origin 
- * is (<code>x</code>, <code>y</code>) and whose size is specified by the 
- * <code>width</code> and <code>height</code> arguments. 
+ * The center of the arc is the center of the rectangle whose origin
+ * is (<code>x</code>, <code>y</code>) and whose size is specified by the
+ * <code>width</code> and <code>height</code> arguments.
  * </p><p>
  * The resulting arc covers an area <code>width + 1</code> pixels wide
  * by <code>height + 1</code> pixels tall.
@@ -1885,7 +1885,7 @@ public void fillArc(int x, int y, int width, int height, int startAngle, int arc
  *        (inverts direction of gradient if horizontal)
  * @param height the height of the rectangle to be filled, may be negative
  *        (inverts direction of gradient if vertical)
- * @param vertical if true sweeps from top to bottom, else 
+ * @param vertical if true sweeps from top to bottom, else
  *        sweeps from left to right
  *
  * @exception SWTException <ul>
@@ -1897,9 +1897,9 @@ public void fillArc(int x, int y, int width, int height, int startAngle, int arc
 public void fillGradientRectangle(int x, int y, int width, int height, boolean vertical) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if ((width == 0) || (height == 0)) return;
-	
+
 	/* Rewrite this to use GdkPixbuf */
-	
+
 	RGB backgroundRGB, foregroundRGB;
 	backgroundRGB = getBackground().getRGB();
 	foregroundRGB = getForeground().getRGB();
@@ -1949,7 +1949,7 @@ public void fillGradientRectangle(int x, int y, int width, int height, boolean v
 		8, 8, 8);
 }
 
-/** 
+/**
  * Fills the interior of an oval, within the specified
  * rectangular area, with the receiver's background
  * color.
@@ -1993,7 +1993,7 @@ public void fillOval(int x, int y, int width, int height) {
 	OS.gdk_draw_arc(data.drawable, handle, 1, x, y, width, height, 0, 23040);
 }
 
-/** 
+/**
  * Fills the path described by the parameter.
  * <p>
  * This operation requires the operating system's advanced
@@ -2011,9 +2011,9 @@ public void fillOval(int x, int y, int width, int height) {
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_NO_GRAPHICS_LIBRARY - if advanced graphics are not available</li>
  * </ul>
- * 
+ *
  * @see Path
- * 
+ *
  * @since 3.1
  */
 public void fillPath (Path path) {
@@ -2030,7 +2030,7 @@ public void fillPath (Path path) {
 	Cairo.cairo_fill(cairo);
 }
 
-/** 
+/**
  * Fills the interior of the closed polygon which is defined by the
  * specified array of integer coordinates, using the receiver's
  * background color. The array contains alternating x and y values
@@ -2047,7 +2047,7 @@ public void fillPath (Path path) {
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
  *
- * @see #drawPolygon	
+ * @see #drawPolygon
  */
 public void fillPolygon(int[] pointArray) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
@@ -2062,9 +2062,9 @@ public void fillPolygon(int[] pointArray) {
 	OS.gdk_draw_polygon(data.drawable, handle, 1, pointArray, pointArray.length / 2);
 }
 
-/** 
+/**
  * Fills the interior of the rectangle specified by the arguments,
- * using the receiver's background color. 
+ * using the receiver's background color.
  *
  * @param x the x coordinate of the rectangle to be filled
  * @param y the y coordinate of the rectangle to be filled
@@ -2088,7 +2088,7 @@ public void fillRectangle(int x, int y, int width, int height) {
 		y = y + height;
 		height = -height;
 	}
-	long /*int*/ cairo = data.cairo; 
+	long /*int*/ cairo = data.cairo;
 	if (cairo != 0) {
 		Cairo.cairo_rectangle(cairo, x, y, width, height);
 		Cairo.cairo_fill(cairo);
@@ -2097,9 +2097,9 @@ public void fillRectangle(int x, int y, int width, int height) {
 	OS.gdk_draw_rectangle(data.drawable, handle, 1, x, y, width, height);
 }
 
-/** 
+/**
  * Fills the interior of the specified rectangle, using the receiver's
- * background color. 
+ * background color.
  *
  * @param rect the rectangle to be filled
  *
@@ -2118,9 +2118,9 @@ public void fillRectangle(Rectangle rect) {
 	fillRectangle(rect.x, rect.y, rect.width, rect.height);
 }
 
-/** 
- * Fills the interior of the round-cornered rectangle specified by 
- * the arguments, using the receiver's background color. 
+/**
+ * Fills the interior of the round-cornered rectangle specified by
+ * the arguments, using the receiver's background color.
  *
  * @param x the x coordinate of the rectangle to be filled
  * @param y the y coordinate of the rectangle to be filled
@@ -2170,7 +2170,7 @@ public void fillRoundRectangle(int x, int y, int width, int height, int arcWidth
 		    Cairo.cairo_arc(cairo, fw - 1, 1, 1, Compatibility.PI + Compatibility.PI/2.0, Compatibility.PI*2.0);
 		    Cairo.cairo_arc(cairo, fw - 1, fh - 1, 1, 0, Compatibility.PI/2.0);
 		    Cairo.cairo_arc(cairo, 1, fh - 1, 1, Compatibility.PI/2, Compatibility.PI);
-		    Cairo.cairo_arc(cairo, 1, 1, 1, Compatibility.PI, 270.0*Compatibility.PI/180.0);		
+		    Cairo.cairo_arc(cairo, 1, 1, 1, Compatibility.PI, 270.0*Compatibility.PI/180.0);
 			Cairo.cairo_close_path(cairo);
 			Cairo.cairo_restore(cairo);
 		}
@@ -2235,7 +2235,7 @@ int fixMnemonic (char [] buffer) {
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
  */
-public int getAdvanceWidth(char ch) {	
+public int getAdvanceWidth(char ch) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	//BOGUS
 	return stringExtent(new String(new char[]{ch})).x;
@@ -2261,9 +2261,9 @@ public int getAdvanceWidth(char ch) {
  * @exception SWTException <ul>
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
- * 
+ *
  * @see #setAdvanced
- * 
+ *
  * @since 3.1
  */
 public boolean getAdvanced() {
@@ -2280,7 +2280,7 @@ public boolean getAdvanced() {
  * @exception SWTException <ul>
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
- * 
+ *
  * @since 3.1
  */
 public int getAlpha() {
@@ -2299,9 +2299,9 @@ public int getAlpha() {
  * @exception SWTException <ul>
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
- * 
+ *
  * @see #getTextAntialias
- * 
+ *
  * @since 3.1
  */
 public int getAntialias() {
@@ -2317,7 +2317,7 @@ public int getAntialias() {
 	return SWT.DEFAULT;
 }
 
-/** 
+/**
  * Returns the background color.
  *
  * @return the receiver's background color
@@ -2331,7 +2331,7 @@ public Color getBackground() {
 	return Color.gtk_new(data.device, data.background);
 }
 
-/** 
+/**
  * Returns the background pattern. The default value is
  * <code>null</code>.
  *
@@ -2340,9 +2340,9 @@ public Color getBackground() {
  * @exception SWTException <ul>
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
- * 
+ *
  * @see Pattern
- * 
+ *
  * @since 3.1
  */
 public Pattern getBackgroundPattern() {
@@ -2352,7 +2352,7 @@ public Pattern getBackgroundPattern() {
 
 /**
  * Returns the width of the specified character in the font
- * selected into the receiver. 
+ * selected into the receiver.
  * <p>
  * The width is defined as the space taken up by the actual
  * character, not including the leading and tailing whitespace
@@ -2372,7 +2372,7 @@ public int getCharWidth(char ch) {
 	return stringExtent(new String(new char[]{ch})).x;
 }
 
-/** 
+/**
  * Returns the bounding rectangle of the receiver's clipping
  * region. If no clipping region is set, the return value
  * will be a rectangle which covers the entire bounds of the
@@ -2435,7 +2435,7 @@ public Rectangle getClipping() {
 	return new Rectangle(x, y, width, height);
 }
 
-/** 
+/**
  * Sets the region managed by the argument to the current
  * clipping region of the receiver.
  *
@@ -2444,12 +2444,12 @@ public Rectangle getClipping() {
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the region is null</li>
  *    <li>ERROR_INVALID_ARGUMENT - if the region is disposed</li>
- * </ul>	
+ * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
  */
-public void getClipping(Region region) {	
+public void getClipping(Region region) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (region == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (region.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
@@ -2489,7 +2489,7 @@ public void getClipping(Region region) {
 	}
 }
 
-/** 
+/**
  * Returns the receiver's fill rule, which will be one of
  * <code>SWT.FILL_EVEN_ODD</code> or <code>SWT.FILL_WINDING</code>.
  *
@@ -2498,7 +2498,7 @@ public void getClipping(Region region) {
  * @exception SWTException <ul>
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
- * 
+ *
  * @since 3.1
  */
 public int getFillRule() {
@@ -2508,7 +2508,7 @@ public int getFillRule() {
 	return Cairo.cairo_get_fill_rule(cairo) == Cairo.CAIRO_FILL_RULE_WINDING ? SWT.FILL_WINDING : SWT.FILL_EVEN_ODD;
 }
 
-/** 
+/**
  * Returns the font currently being used by the receiver
  * to draw and measure text.
  *
@@ -2551,7 +2551,7 @@ public FontMetrics getFontMetrics() {
 	return fm;
 }
 
-/** 
+/**
  * Returns the receiver's foreground color.
  *
  * @return the color used for drawing foreground things
@@ -2560,12 +2560,12 @@ public FontMetrics getFontMetrics() {
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
  */
-public Color getForeground() {	
+public Color getForeground() {
 	if (handle == 0) SWT.error(SWT.ERROR_WIDGET_DISPOSED);
 	return Color.gtk_new(data.device, data.foreground);
 }
 
-/** 
+/**
  * Returns the foreground pattern. The default value is
  * <code>null</code>.
  *
@@ -2574,9 +2574,9 @@ public Color getForeground() {
  * @exception SWTException <ul>
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
- * 
+ *
  * @see Pattern
- * 
+ *
  * @since 3.1
  */
 public Pattern getForegroundPattern() {
@@ -2584,7 +2584,7 @@ public Pattern getForegroundPattern() {
 	return data.foregroundPattern;
 }
 
-/** 
+/**
  * Returns the GCData.
  * <p>
  * <b>IMPORTANT:</b> This method is <em>not</em> part of the public
@@ -2599,11 +2599,11 @@ public Pattern getForegroundPattern() {
  * @exception SWTException <ul>
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
- * 
+ *
  * @see GCData
- * 
+ *
  * @noreference This method is not intended to be referenced by clients.
- * 
+ *
  * @since 3.2
  */
 public GCData getGCData() {
@@ -2611,9 +2611,9 @@ public GCData getGCData() {
 	return data;
 }
 
-/** 
+/**
  * Returns the receiver's interpolation setting, which will be one of
- * <code>SWT.DEFAULT</code>, <code>SWT.NONE</code>, 
+ * <code>SWT.DEFAULT</code>, <code>SWT.NONE</code>,
  * <code>SWT.LOW</code> or <code>SWT.HIGH</code>.
  *
  * @return the receiver's interpolation setting
@@ -2621,7 +2621,7 @@ public GCData getGCData() {
  * @exception SWTException <ul>
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
- * 
+ *
  * @since 3.1
  */
 public int getInterpolation() {
@@ -2629,7 +2629,7 @@ public int getInterpolation() {
 	return data.interpolation;
 }
 
-/** 
+/**
  * Returns the receiver's line attributes.
  *
  * @return the line attributes used for drawing lines
@@ -2637,8 +2637,8 @@ public int getInterpolation() {
  * @exception SWTException <ul>
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
- * 
- * @since 3.3 
+ *
+ * @since 3.3
  */
 public LineAttributes getLineAttributes() {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
@@ -2650,7 +2650,7 @@ public LineAttributes getLineAttributes() {
 	return new LineAttributes(data.lineWidth, data.lineCap, data.lineJoin, data.lineStyle, dashes, data.lineDashesOffset, data.lineMiterLimit);
 }
 
-/** 
+/**
  * Returns the receiver's line cap style, which will be one
  * of the constants <code>SWT.CAP_FLAT</code>, <code>SWT.CAP_ROUND</code>,
  * or <code>SWT.CAP_SQUARE</code>.
@@ -2660,15 +2660,15 @@ public LineAttributes getLineAttributes() {
  * @exception SWTException <ul>
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
- * 
- * @since 3.1 
+ *
+ * @since 3.1
  */
 public int getLineCap() {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	return data.lineCap;
 }
 
-/** 
+/**
  * Returns the receiver's line dash style. The default value is
  * <code>null</code>.
  *
@@ -2677,8 +2677,8 @@ public int getLineCap() {
  * @exception SWTException <ul>
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
- * 
- * @since 3.1 
+ *
+ * @since 3.1
  */
 public int[] getLineDash() {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
@@ -2690,7 +2690,7 @@ public int[] getLineDash() {
 	return lineDashes;
 }
 
-/** 
+/**
  * Returns the receiver's line join style, which will be one
  * of the constants <code>SWT.JOIN_MITER</code>, <code>SWT.JOIN_ROUND</code>,
  * or <code>SWT.JOIN_BEVEL</code>.
@@ -2700,15 +2700,15 @@ public int[] getLineDash() {
  * @exception SWTException <ul>
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
- * 
- * @since 3.1 
+ *
+ * @since 3.1
  */
 public int getLineJoin() {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	return data.lineJoin;
 }
 
-/** 
+/**
  * Returns the receiver's line style, which will be one
  * of the constants <code>SWT.LINE_SOLID</code>, <code>SWT.LINE_DASH</code>,
  * <code>SWT.LINE_DOT</code>, <code>SWT.LINE_DASHDOT</code> or
@@ -2725,13 +2725,13 @@ public int getLineStyle() {
 	return data.lineStyle;
 }
 
-/** 
+/**
  * Returns the width that will be used when drawing lines
  * for all of the figure drawing operations (that is,
- * <code>drawLine</code>, <code>drawRectangle</code>, 
+ * <code>drawLine</code>, <code>drawRectangle</code>,
  * <code>drawPolyline</code>, and so forth.
  *
- * @return the receiver's line width 
+ * @return the receiver's line width
  *
  * @exception SWTException <ul>
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
@@ -2749,15 +2749,15 @@ public int getLineWidth() {
  * not match</em> the value which was provided to the constructor
  * when the receiver was created. This can occur when the underlying
  * operating system does not support a particular combination of
- * requested styles. 
+ * requested styles.
  * </p>
  *
  * @return the style bits
- *  
+ *
  * @exception SWTException <ul>
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
- *   
+ *
  * @since 2.1.2
  */
 public int getStyle () {
@@ -2787,7 +2787,7 @@ void getSize(int[] width, int[] height) {
 				width[0] = Cairo.cairo_image_surface_get_width(surface);
 				height[0] = Cairo.cairo_image_surface_get_height(surface);
 				break;
-			case Cairo.CAIRO_SURFACE_TYPE_XLIB: 
+			case Cairo.CAIRO_SURFACE_TYPE_XLIB:
 				width[0] = Cairo.cairo_xlib_surface_get_width(surface);
 				height[0] = Cairo.cairo_xlib_surface_get_height(surface);
 				break;
@@ -2806,9 +2806,9 @@ void getSize(int[] width, int[] height) {
  * @exception SWTException <ul>
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
- * 
+ *
  * @see #getAntialias
- * 
+ *
  * @since 3.1
  */
 public int getTextAntialias() {
@@ -2828,12 +2828,12 @@ public int getTextAntialias() {
 	return SWT.DEFAULT;
 }
 
-/** 
+/**
  * Sets the parameter to the transform that is currently being
  * used by the receiver.
  *
  * @param transform the destination to copy the transform into
- * 
+ *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the parameter is null</li>
  *    <li>ERROR_INVALID_ARGUMENT - if the parameter has been disposed</li>
@@ -2841,9 +2841,9 @@ public int getTextAntialias() {
  * @exception SWTException <ul>
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
- * 
+ *
  * @see Transform
- * 
+ *
  * @since 3.1
  */
 public void getTransform(Transform transform) {
@@ -2861,7 +2861,7 @@ public void getTransform(Transform transform) {
 	}
 }
 
-/** 
+/**
  * Returns <code>true</code> if this GC is drawing in the mode
  * where the resulting color in the destination is the
  * <em>exclusive or</em> of the color values in the source
@@ -2881,8 +2881,8 @@ public boolean getXORMode() {
 }
 
 /**
- * Returns an integer hash code for the receiver. Any two 
- * objects that return <code>true</code> when passed to 
+ * Returns an integer hash code for the receiver. Any two
+ * objects that return <code>true</code> when passed to
  * <code>equals</code> must return the same value for this
  * method.
  *
@@ -3006,7 +3006,7 @@ void computeStringSize() {
  * Returns <code>true</code> if the receiver has a clipping
  * region set into it, and <code>false</code> otherwise.
  * If this method returns false, the receiver will draw on all
- * available space in the destination. If it returns true, 
+ * available space in the destination. If it returns true,
  * it will draw only in the area that is covered by the region
  * that can be accessed with <code>getClipping(region)</code>.
  *
@@ -3044,7 +3044,7 @@ boolean isIdentity(double[] matrix) {
 /**
  * Sets the receiver to always use the operating system's advanced graphics
  * subsystem for all graphics operations if the argument is <code>true</code>.
- * If the argument is <code>false</code>, the advanced graphics subsystem is 
+ * If the argument is <code>false</code>, the advanced graphics subsystem is
  * no longer used, advanced graphics state is cleared and the normal graphics
  * subsystem is used from now on.
  * <p>
@@ -3069,7 +3069,7 @@ boolean isIdentity(double[] matrix) {
  * @exception SWTException <ul>
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
- * 
+ *
  * @see #setAlpha
  * @see #setAntialias
  * @see #setBackgroundPattern
@@ -3080,7 +3080,7 @@ boolean isIdentity(double[] matrix) {
  * @see #setTextAntialias
  * @see #setTransform
  * @see #getAdvanced
- * 
+ *
  * @since 3.1
  */
 public void setAdvanced(boolean advanced) {
@@ -3130,10 +3130,10 @@ public void setAdvanced(boolean advanced) {
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_NO_GRAPHICS_LIBRARY - if advanced graphics are not available</li>
  * </ul>
- * 
+ *
  * @see #getAdvanced
  * @see #setAdvanced
- * 
+ *
  * @since 3.1
  */
 public void setAlpha(int alpha) {
@@ -3145,7 +3145,7 @@ public void setAlpha(int alpha) {
 }
 
 /**
- * Sets the receiver's anti-aliasing value to the parameter, 
+ * Sets the receiver's anti-aliasing value to the parameter,
  * which must be one of <code>SWT.DEFAULT</code>, <code>SWT.OFF</code>
  * or <code>SWT.ON</code>. Note that this controls anti-aliasing for all
  * <em>non-text drawing</em> operations.
@@ -3165,11 +3165,11 @@ public void setAlpha(int alpha) {
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_NO_GRAPHICS_LIBRARY - if advanced graphics are not available</li>
  * </ul>
- * 
+ *
  * @see #getAdvanced
  * @see #setAdvanced
  * @see #setTextAntialias
- * 
+ *
  * @since 3.1
  */
 public void setAntialias(int antialias) {
@@ -3213,14 +3213,14 @@ public void setBackground(Color color) {
 	data.state &= ~(BACKGROUND | BACKGROUND_BG);
 }
 
-/** 
+/**
  * Sets the background pattern. The default value is <code>null</code>.
  * <p>
  * This operation requires the operating system's advanced
  * graphics subsystem which may not be available on some
  * platforms.
  * </p>
- * 
+ *
  * @param pattern the new background pattern
  *
  * @exception IllegalArgumentException <ul>
@@ -3230,11 +3230,11 @@ public void setBackground(Color color) {
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_NO_GRAPHICS_LIBRARY - if advanced graphics are not available</li>
  * </ul>
- * 
+ *
  * @see Pattern
  * @see #getAdvanced
  * @see #setAdvanced
- * 
+ *
  * @since 3.1
  */
 public void setBackgroundPattern(Pattern pattern) {
@@ -3379,27 +3379,27 @@ public void setClipping(int x, int y, int width, int height) {
 /**
  * Sets the area of the receiver which can be changed
  * by drawing operations to the path specified
- * by the argument.  
+ * by the argument.
  * <p>
  * This operation requires the operating system's advanced
  * graphics subsystem which may not be available on some
  * platforms.
  * </p>
- * 
+ *
  * @param path the clipping path.
- * 
+ *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_INVALID_ARGUMENT - if the path has been disposed</li>
- * </ul> 
+ * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_NO_GRAPHICS_LIBRARY - if advanced graphics are not available</li>
  * </ul>
- * 
+ *
  * @see Path
  * @see #getAdvanced
  * @see #setAdvanced
- * 
+ *
  * @since 3.1
  */
 public void setClipping(Path path) {
@@ -3446,10 +3446,10 @@ public void setClipping(Rectangle rect) {
  * original value.
  *
  * @param region the clipping region or <code>null</code>
- * 
+ *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_INVALID_ARGUMENT - if the region has been disposed</li>
- * </ul> 
+ * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
@@ -3460,7 +3460,7 @@ public void setClipping(Region region) {
 	setClipping(region != null ? region.handle : 0);
 }
 
-/** 
+/**
  * Sets the font which will be used by the receiver
  * to draw and measure text to the argument. If the
  * argument is null, then a default font appropriate
@@ -3483,7 +3483,7 @@ public void setFont(Font font) {
 	data.stringWidth = data.stringHeight = -1;
 }
 
-/** 
+/**
  * Sets the receiver's fill rule to the parameter, which must be one of
  * <code>SWT.FILL_EVEN_ODD</code> or <code>SWT.FILL_WINDING</code>.
  *
@@ -3492,11 +3492,11 @@ public void setFont(Font font) {
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_INVALID_ARGUMENT - if the rule is not one of <code>SWT.FILL_EVEN_ODD</code>
  *                                 or <code>SWT.FILL_WINDING</code></li>
- * </ul> 
+ * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
- * 
+ *
  * @since 3.1
  */
 public void setFillRule(int rule) {
@@ -3532,7 +3532,7 @@ public void setFillRule(int rule) {
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
  */
-public void setForeground(Color color) {	
+public void setForeground(Color color) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (color == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (color.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
@@ -3541,7 +3541,7 @@ public void setForeground(Color color) {
 	data.state &= ~FOREGROUND;
 }
 
-/** 
+/**
  * Sets the foreground pattern. The default value is <code>null</code>.
  * <p>
  * This operation requires the operating system's advanced
@@ -3557,11 +3557,11 @@ public void setForeground(Color color) {
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_NO_GRAPHICS_LIBRARY - if advanced graphics are not available</li>
  * </ul>
- * 
+ *
  * @see Pattern
  * @see #getAdvanced
  * @see #setAdvanced
- * 
+ *
  * @since 3.1
  */
 public void setForegroundPattern(Pattern pattern) {
@@ -3574,30 +3574,30 @@ public void setForegroundPattern(Pattern pattern) {
 	data.state &= ~FOREGROUND;
 }
 
-/** 
+/**
  * Sets the receiver's interpolation setting to the parameter, which
- * must be one of <code>SWT.DEFAULT</code>, <code>SWT.NONE</code>, 
+ * must be one of <code>SWT.DEFAULT</code>, <code>SWT.NONE</code>,
  * <code>SWT.LOW</code> or <code>SWT.HIGH</code>.
  * <p>
  * This operation requires the operating system's advanced
  * graphics subsystem which may not be available on some
  * platforms.
  * </p>
- * 
+ *
  * @param interpolation the new interpolation setting
  *
  * @exception IllegalArgumentException <ul>
- *    <li>ERROR_INVALID_ARGUMENT - if the rule is not one of <code>SWT.DEFAULT</code>, 
+ *    <li>ERROR_INVALID_ARGUMENT - if the rule is not one of <code>SWT.DEFAULT</code>,
  *                                 <code>SWT.NONE</code>, <code>SWT.LOW</code> or <code>SWT.HIGH</code>
- * </ul> 
+ * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_NO_GRAPHICS_LIBRARY - if advanced graphics are not available</li>
  * </ul>
- * 
+ *
  * @see #getAdvanced
  * @see #setAdvanced
- * 
+ *
  * @since 3.1
  */
 public void setInterpolation(int interpolation) {
@@ -3633,11 +3633,11 @@ public void setInterpolation(int interpolation) {
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_NO_GRAPHICS_LIBRARY - if advanced graphics are not available</li>
  * </ul>
- * 
+ *
  * @see LineAttributes
  * @see #getAdvanced
  * @see #setAdvanced
- * 
+ *
  * @since 3.3
  */
 public void setLineAttributes(LineAttributes attributes) {
@@ -3715,11 +3715,11 @@ public void setLineAttributes(LineAttributes attributes) {
 	}
 	float dashOffset = attributes.dashOffset;
 	if (dashOffset != data.lineDashesOffset) {
-		mask |= LINE_STYLE;		
+		mask |= LINE_STYLE;
 	}
 	float miterLimit = attributes.miterLimit;
 	if (miterLimit != data.lineMiterLimit) {
-		mask |= LINE_MITERLIMIT;		
+		mask |= LINE_MITERLIMIT;
 	}
 	initCairo();
 	if (mask == 0) return;
@@ -3733,21 +3733,21 @@ public void setLineAttributes(LineAttributes attributes) {
 	data.state &= ~mask;
 }
 
-/** 
+/**
  * Sets the receiver's line cap style to the argument, which must be one
  * of the constants <code>SWT.CAP_FLAT</code>, <code>SWT.CAP_ROUND</code>,
  * or <code>SWT.CAP_SQUARE</code>.
  *
  * @param cap the cap style to be used for drawing lines
- * 
+ *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_INVALID_ARGUMENT - if the style is not valid</li>
- * </ul> 
+ * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
- * 
- * @since 3.1 
+ *
+ * @since 3.1
  */
 public void setLineCap(int cap) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
@@ -3764,22 +3764,22 @@ public void setLineCap(int cap) {
 	data.state &= ~LINE_CAP;
 }
 
-/** 
+/**
  * Sets the receiver's line dash style to the argument. The default
  * value is <code>null</code>. If the argument is not <code>null</code>,
  * the receiver's line style is set to <code>SWT.LINE_CUSTOM</code>, otherwise
  * it is set to <code>SWT.LINE_SOLID</code>.
  *
  * @param dashes the dash style to be used for drawing lines
- * 
+ *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_INVALID_ARGUMENT - if any of the values in the array is less than or equal 0</li>
- * </ul> 
+ * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
- * 
- * @since 3.1 
+ *
+ * @since 3.1
  */
 public void setLineDash(int[] dashes) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
@@ -3805,7 +3805,7 @@ public void setLineDash(int[] dashes) {
 	data.state &= ~LINE_STYLE;
 }
 
-/** 
+/**
  * Sets the receiver's line join style to the argument, which must be one
  * of the constants <code>SWT.JOIN_MITER</code>, <code>SWT.JOIN_ROUND</code>,
  * or <code>SWT.JOIN_BEVEL</code>.
@@ -3818,8 +3818,8 @@ public void setLineDash(int[] dashes) {
  * @exception SWTException <ul>
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
- * 
- * @since 3.1 
+ *
+ * @since 3.1
  */
 public void setLineJoin(int join) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
@@ -3836,7 +3836,7 @@ public void setLineJoin(int join) {
 	data.state &= ~LINE_JOIN;
 }
 
-/** 
+/**
  * Sets the receiver's line style to the argument, which must be one
  * of the constants <code>SWT.LINE_SOLID</code>, <code>SWT.LINE_DASH</code>,
  * <code>SWT.LINE_DOT</code>, <code>SWT.LINE_DASHDOT</code> or
@@ -3871,10 +3871,10 @@ public void setLineStyle(int lineStyle) {
 	data.state &= ~LINE_STYLE;
 }
 
-/** 
+/**
  * Sets the width that will be used when drawing lines
  * for all of the figure drawing operations (that is,
- * <code>drawLine</code>, <code>drawRectangle</code>, 
+ * <code>drawLine</code>, <code>drawRectangle</code>,
  * <code>drawPolyline</code>, and so forth.
  * <p>
  * Note that line width of zero is used as a hint to
@@ -3905,7 +3905,7 @@ void setString(String string, int flags) {
 	int mnemonic, length = string.length ();
 	long /*int*/ layout = data.layout;
 	char[] text = new char[length];
-	string.getChars(0, length, text, 0);	
+	string.getChars(0, length, text, 0);
 	if ((flags & SWT.DRAW_MNEMONIC) != 0 && (mnemonic = fixMnemonic(text)) != -1) {
 		char[] text1 = new char[mnemonic - 1];
 		System.arraycopy(text, 0, text1, 0, text1.length);
@@ -3939,7 +3939,7 @@ void setString(String string, int flags) {
 }
 
 /**
- * Sets the receiver's text anti-aliasing value to the parameter, 
+ * Sets the receiver's text anti-aliasing value to the parameter,
  * which must be one of <code>SWT.DEFAULT</code>, <code>SWT.OFF</code>
  * or <code>SWT.ON</code>. Note that this controls anti-aliasing only
  * for all <em>text drawing</em> operations.
@@ -3948,7 +3948,7 @@ void setString(String string, int flags) {
  * graphics subsystem which may not be available on some
  * platforms.
  * </p>
- * 
+ *
  * @param antialias the anti-aliasing setting
  *
  * @exception IllegalArgumentException <ul>
@@ -3959,11 +3959,11 @@ void setString(String string, int flags) {
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_NO_GRAPHICS_LIBRARY - if advanced graphics are not available</li>
  * </ul>
- * 
+ *
  * @see #getAdvanced
  * @see #setAdvanced
  * @see #setAntialias
- * 
+ *
  * @since 3.1
  */
 public void setTextAntialias(int antialias) {
@@ -3995,9 +3995,9 @@ public void setTextAntialias(int antialias) {
  * graphics subsystem which may not be available on some
  * platforms.
  * </p>
- * 
+ *
  * @param transform the transform to set
- * 
+ *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_INVALID_ARGUMENT - if the parameter has been disposed</li>
  * </ul>
@@ -4005,11 +4005,11 @@ public void setTextAntialias(int antialias) {
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_NO_GRAPHICS_LIBRARY - if advanced graphics are not available</li>
  * </ul>
- * 
+ *
  * @see Transform
  * @see #getAdvanced
  * @see #setAdvanced
- * 
+ *
  * @since 3.1
  */
 public void setTransform(Transform transform) {
@@ -4021,12 +4021,12 @@ public void setTransform(Transform transform) {
 	double[] identity = identity();
 	if (transform != null) {
 		Cairo.cairo_matrix_multiply(identity, transform.handle, identity);
-	} 
+	}
 	Cairo.cairo_set_matrix(cairo, identity);
 	data.state &= ~DRAW_OFFSET;
 }
 
-/** 
+/**
  * If the argument is <code>true</code>, puts the receiver
  * in a drawing mode where the resulting color in the destination
  * is the <em>exclusive or</em> of the color values in the source
@@ -4044,7 +4044,7 @@ public void setTransform(Transform transform) {
  * @exception SWTException <ul>
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
- * 
+ *
  * @deprecated this functionality is not supported on some platforms
  */
 @Deprecated
@@ -4081,7 +4081,7 @@ public void setXORMode(boolean xor) {
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
  */
-public Point stringExtent(String string) {	
+public Point stringExtent(String string) {
 	return textExtent(string, 0);
 }
 

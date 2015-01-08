@@ -19,10 +19,10 @@ import org.eclipse.swt.widgets.*;
 /**
  * This class provides default implementations to display a source image
  * when a drag is initiated from a <code>Table</code>.
- * 
+ *
  * <p>Classes that wish to provide their own source image for a <code>Table</code> can
- * extend the <code>TableDragSourceEffect</code> class, override the 
- * <code>TableDragSourceEffect.dragStart</code> method and set the field 
+ * extend the <code>TableDragSourceEffect</code> class, override the
+ * <code>TableDragSourceEffect.dragStart</code> method and set the field
  * <code>DragSourceEvent.image</code> with their own image.</p>
  *
  * Subclasses that override any methods of this class must call the corresponding
@@ -31,14 +31,14 @@ import org.eclipse.swt.widgets.*;
  * @see DragSourceEffect
  * @see DragSourceEvent
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
- * 
+ *
  * @since 3.3
  */
 public class TableDragSourceEffect extends DragSourceEffect {
 	Image dragSourceImage = null;
 
 	/**
-	 * Creates a new <code>TableDragSourceEffect</code> to handle drag effect 
+	 * Creates a new <code>TableDragSourceEffect</code> to handle drag effect
 	 * from the specified <code>Table</code>.
 	 *
 	 * @param table the <code>Table</code> that the user clicks on to initiate the drag
@@ -50,16 +50,16 @@ public class TableDragSourceEffect extends DragSourceEffect {
 	/**
 	 * This implementation of <code>dragFinished</code> disposes the image
 	 * that was created in <code>TableDragSourceEffect.dragStart</code>.
-	 * 
+	 *
 	 * Subclasses that override this method should call <code>super.dragFinished(event)</code>
 	 * to dispose the image in the default implementation.
-	 * 
+	 *
 	 * @param event the information associated with the drag finished event
 	 */
 	@Override
 	public void dragFinished(DragSourceEvent event) {
 		if (dragSourceImage != null) dragSourceImage.dispose();
-		dragSourceImage = null;		
+		dragSourceImage = null;
 	}
 
 	/**
@@ -67,17 +67,17 @@ public class TableDragSourceEffect extends DragSourceEffect {
 	 * image that will be used during the drag. The image should be disposed
 	 * when the drag is completed in the <code>TableDragSourceEffect.dragFinished</code>
 	 * method.
-	 * 
+	 *
 	 * Subclasses that override this method should call <code>super.dragStart(event)</code>
 	 * to use the image from the default implementation.
-	 * 
+	 *
 	 * @param event the information associated with the drag start event
 	 */
 	@Override
 	public void dragStart(DragSourceEvent event) {
 		event.image = getDragSourceImage(event);
 	}
-	
+
 	Image getDragSourceImage(DragSourceEvent event) {
 		if (dragSourceImage != null) dragSourceImage.dispose();
 		dragSourceImage = null;
@@ -85,7 +85,7 @@ public class TableDragSourceEffect extends DragSourceEffect {
 		Table table = (Table) control;
 		//TEMPORARY CODE
 		if (table.isListening(SWT.EraseItem) || table.isListening (SWT.PaintItem)) return null;
-		
+
 		/*
 		* Bug in GTK.  gtk_tree_selection_get_selected_rows() segmentation faults
 		* in versions smaller than 2.2.4 if the model is NULL.  The fix is

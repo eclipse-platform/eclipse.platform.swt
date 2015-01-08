@@ -49,7 +49,7 @@ public boolean equals (Object object) {
 
 /**
  * Returns the ascent of the font described by the receiver. A
- * font's <em>ascent</em> is the distance from the baseline to the 
+ * font's <em>ascent</em> is the distance from the baseline to the
  * top of actual characters, not including any of the leading area,
  * measured in pixels.
  *
@@ -82,7 +82,7 @@ public int getDescent() {
 }
 
 /**
- * Returns the height of the font described by the receiver, 
+ * Returns the height of the font described by the receiver,
  * measured in pixels. A font's <em>height</em> is the sum of
  * its ascent, descent and leading area.
  *
@@ -118,8 +118,8 @@ public static FontMetrics gtk_new(int ascent, int descent, int averageCharWidth,
 }
 
 /**
- * Returns an integer hash code for the receiver. Any two 
- * objects that return <code>true</code> when passed to 
+ * Returns an integer hash code for the receiver. Any two
+ * objects that return <code>true</code> when passed to
  * <code>equals</code> must return the same value for this
  * method.
  *

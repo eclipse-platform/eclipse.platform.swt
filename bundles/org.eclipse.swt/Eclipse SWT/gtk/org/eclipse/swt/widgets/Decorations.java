@@ -27,14 +27,14 @@ import org.eclipse.swt.graphics.*;
  * Instead, the class <code>Shell</code> should be used.
  * </p>
  * <p>
- * Instances are always displayed in one of the maximized, 
+ * Instances are always displayed in one of the maximized,
  * minimized or normal states:
  * <ul>
  * <li>
  * When an instance is marked as <em>maximized</em>, the
  * window manager will typically resize it to fill the
  * entire visible area of the display, and the instance
- * is usually put in a state where it can not be resized 
+ * is usually put in a state where it can not be resized
  * (even if it has style <code>RESIZE</code>) until it is
  * no longer maximized.
  * </li><li>
@@ -72,13 +72,13 @@ import org.eclipse.swt.graphics.*;
  * <dt><code>SHELL_TRIM</code></dt>
  * <dd>
  * the result of combining the constants which are required
- * to produce a typical application top level shell: (that 
+ * to produce a typical application top level shell: (that
  * is, <code>CLOSE | TITLE | MIN | MAX | RESIZE</code>)
  * </dd>
  * <dt><code>DIALOG_TRIM</code></dt>
  * <dd>
  * the result of combining the constants which are required
- * to produce a typical application dialog shell: (that 
+ * to produce a typical application dialog shell: (that
  * is, <code>TITLE | CLOSE | BORDER</code>)
  * </dd>
  * </dl>
@@ -104,7 +104,7 @@ public class Decorations extends Canvas {
 	Control savedFocus;
 	Button defaultButton, saveDefault;
 	long /*int*/ accelGroup, vboxHandle;
-	
+
 Decorations () {
 	/* Do nothing */
 }
@@ -115,7 +115,7 @@ Decorations () {
  * <p>
  * The style value is either one of the style constants defined in
  * class <code>SWT</code> which is applicable to instances of this
- * class, or must be built by <em>bitwise OR</em>'ing together 
+ * class, or must be built by <em>bitwise OR</em>'ing together
  * (that is, using the <code>int</code> "|" operator) two or more
  * of those <code>SWT</code> style constants. The class description
  * lists the style constants that are applicable to the class.
@@ -178,7 +178,7 @@ void _setImages (Image [] images) {
 		for (int i = 0; i < images.length; i++) {
 			Image image = images [i];
 			long /*int*/ pixbuf = ImageList.createPixbuf (image);
-			pixbufs = OS.g_list_append (pixbufs, pixbuf);			
+			pixbufs = OS.g_list_append (pixbufs, pixbuf);
 		}
 	}
 	OS.gtk_window_set_icon_list (topHandle (), pixbufs);
@@ -303,7 +303,7 @@ public Button getDefaultButton () {
 }
 
 /**
- * Returns the receiver's image if it had previously been 
+ * Returns the receiver's image if it had previously been
  * set using <code>setImage()</code>. The image is typically
  * displayed by the window manager when the instance is
  * marked as iconified, and may also be displayed somewhere
@@ -315,7 +315,7 @@ public Button getDefaultButton () {
  * access to a window manager provided, "default" image
  * even if one exists.
  * </p>
- * 
+ *
  * @return the image
  *
  * @exception SWTException <ul>
@@ -329,7 +329,7 @@ public Image getImage () {
 }
 
 /**
- * Returns the receiver's images if they had previously been 
+ * Returns the receiver's images if they had previously been
  * set using <code>setImages()</code>. Images are typically
  * displayed by the window manager when the instance is
  * marked as iconified, and may also be displayed somewhere
@@ -338,21 +338,21 @@ public Image getImage () {
  * chooses the icon with the "best" attributes.  It is expected
  * that the array will contain the same icon rendered at different
  * sizes, with different depth and transparency attributes.
- * 
+ *
  * <p>
  * Note: This method will return an empty array if called before
  * <code>setImages()</code> is called. It does not provide
  * access to a window manager provided, "default" image
  * even if one exists.
  * </p>
- * 
+ *
  * @return the images
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 3.0
  */
 public Image [] getImages () {
@@ -365,7 +365,7 @@ public Image [] getImages () {
 
 /**
  * Returns <code>true</code> if the receiver is currently
- * maximized, and false otherwise. 
+ * maximized, and false otherwise.
  * <p>
  *
  * @return the maximized state
@@ -400,7 +400,7 @@ public Menu getMenuBar () {
 
 /**
  * Returns <code>true</code> if the receiver is currently
- * minimized, and false otherwise. 
+ * minimized, and false otherwise.
  * <p>
  *
  * @return the minimized state
@@ -425,7 +425,7 @@ String getNameText () {
 /**
  * Returns the receiver's text, which is the string that the
  * window manager will typically display as the receiver's
- * <em>title</em>. If the text has not previously been set, 
+ * <em>title</em>. If the text has not previously been set,
  * returns an empty string.
  *
  * @return the text
@@ -537,7 +537,7 @@ boolean restoreFocus () {
  * If the argument is not null, sets the receiver's default
  * button to the argument, and if the argument is null, sets
  * the receiver's default button to the first button which
- * was set as the receiver's default button (called the 
+ * was set as the receiver's default button (called the
  * <em>saved default button</em>). If no default button had
  * previously been set, or the saved default button was
  * disposed, the receiver's default button will be set to
@@ -550,7 +550,7 @@ boolean restoreFocus () {
  * @param button the new default button
  *
  * @exception IllegalArgumentException <ul>
- *    <li>ERROR_INVALID_ARGUMENT - if the button has been disposed</li> 
+ *    <li>ERROR_INVALID_ARGUMENT - if the button has been disposed</li>
  *    <li>ERROR_INVALID_PARENT - if the control is not in the same widget tree</li>
  * </ul>
  * @exception SWTException <ul>
@@ -576,11 +576,11 @@ public void setDefaultButton (Button button) {
  * manager when the instance is marked as iconified, and
  * may also be displayed somewhere in the trim when the
  * instance is in normal or maximized states.
- * 
+ *
  * @param image the new image (or null)
  *
  * @exception IllegalArgumentException <ul>
- *    <li>ERROR_INVALID_ARGUMENT - if the image has been disposed</li> 
+ *    <li>ERROR_INVALID_ARGUMENT - if the image has been disposed</li>
  * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -603,7 +603,7 @@ public void setImage (Image image) {
  * the "best" attributes. It is expected that the array will
  * contain the same icon rendered at different sizes, with
  * different depth and transparency attributes.
- * 
+ *
  * @param images the new image array
  *
  * @exception IllegalArgumentException <ul>
@@ -614,7 +614,7 @@ public void setImage (Image image) {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 3.0
  */
 public void setImages (Image [] images) {
@@ -662,7 +662,7 @@ public void setMaximized (boolean maximized) {
  * @param menu the new menu bar
  *
  * @exception IllegalArgumentException <ul>
- *    <li>ERROR_INVALID_ARGUMENT - if the menu has been disposed</li> 
+ *    <li>ERROR_INVALID_ARGUMENT - if the menu has been disposed</li>
  *    <li>ERROR_INVALID_PARENT - if the menu is not in the same widget tree</li>
  * </ul>
  * @exception SWTException <ul>
@@ -724,7 +724,7 @@ void setSavedFocus (Control control) {
 /**
  * Sets the receiver's text, which is the string that the
  * window manager will typically display as the receiver's
- * <em>title</em>, to the argument, which must not be null. 
+ * <em>title</em>, to the argument, which must not be null.
  *
  * @param string the new text
  *
@@ -745,7 +745,7 @@ public void setText (String string) {
 void sort (Image [] images) {
 	/* Shell Sort from K&R, pg 108 */
 	int length = images.length;
-	if (length <= 1) return; 
+	if (length <= 1) return;
 	ImageData [] datas = new ImageData [length];
 	for (int i = 0; i < length; i++) {
 		datas [i] = images [i].getImageData ();

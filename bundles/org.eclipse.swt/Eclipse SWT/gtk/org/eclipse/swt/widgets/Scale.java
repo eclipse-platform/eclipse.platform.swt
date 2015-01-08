@@ -46,7 +46,7 @@ public class Scale extends Control {
  * <p>
  * The style value is either one of the style constants defined in
  * class <code>SWT</code> which is applicable to instances of this
- * class, or must be built by <em>bitwise OR</em>'ing together 
+ * class, or must be built by <em>bitwise OR</em>'ing together
  * (that is, using the <code>int</code> "|" operator) two or more
  * of those <code>SWT</code> style constants. The class description
  * lists the style constants that are applicable to the class.
@@ -129,7 +129,7 @@ void createHandle (int index) {
 	if (fixedHandle == 0) error (SWT.ERROR_NO_HANDLES);
 	gtk_widget_set_has_window (fixedHandle, true);
 	long /*int*/ hAdjustment = OS.gtk_adjustment_new (0, 0, 100, 1, 10, 0);
-	if (hAdjustment == 0) error (SWT.ERROR_NO_HANDLES);	
+	if (hAdjustment == 0) error (SWT.ERROR_NO_HANDLES);
 	if ((style & SWT.HORIZONTAL) != 0) {
 		handle = gtk_scale_new (OS.GTK_ORIENTATION_HORIZONTAL, hAdjustment);
 	} else {
@@ -137,7 +137,7 @@ void createHandle (int index) {
 	}
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 	OS.gtk_container_add (fixedHandle, handle);
-	OS.gtk_scale_set_digits (handle, 0); 
+	OS.gtk_scale_set_digits (handle, 0);
 	OS.gtk_scale_set_draw_value (handle, false);
 }
 
@@ -259,13 +259,13 @@ public void removeSelectionListener (SelectionListener listener) {
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (eventTable == null) return;
 	eventTable.unhook (SWT.Selection, listener);
-	eventTable.unhook (SWT.DefaultSelection,listener);	
+	eventTable.unhook (SWT.DefaultSelection,listener);
 }
 
 /**
  * Sets the amount that the receiver's value will be
  * modified by when the up/down (or right/left) arrows
- * are pressed to the argument, which must be at least 
+ * are pressed to the argument, which must be at least
  * one.
  *
  * @param increment the new increment (must be greater than zero)

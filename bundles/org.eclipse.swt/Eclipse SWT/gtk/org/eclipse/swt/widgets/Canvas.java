@@ -50,7 +50,7 @@ Canvas () {}
  * <p>
  * The style value is either one of the style constants defined in
  * class <code>SWT</code> which is applicable to instances of this
- * class, or must be built by <em>bitwise OR</em>'ing together 
+ * class, or must be built by <em>bitwise OR</em>'ing together
  * (that is, using the <code>int</code> "|" operator) two or more
  * of those <code>SWT</code> style constants. The class description
  * lists the style constants that are applicable to the class.
@@ -74,9 +74,9 @@ public Canvas (Composite parent, int style) {
 	super (parent, checkStyle (style));
 }
 
-/** 
+/**
  * Fills the interior of the rectangle specified by the arguments,
- * with the receiver's background. 
+ * with the receiver's background.
  *
  * @param gc the gc where the rectangle is to be filled
  * @param x the x coordinate of the rectangle to be filled
@@ -92,7 +92,7 @@ public Canvas (Composite parent, int style) {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 3.2
  */
 public void drawBackground (GC gc, int x, int y, int width, int height) {
@@ -137,7 +137,7 @@ Point getIMCaretPos () {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 3.4
  */
 public IME getIME () {
@@ -235,7 +235,7 @@ void reskinChildren (int flags) {
 }
 
 /**
- * Scrolls a rectangular area of the receiver by first copying 
+ * Scrolls a rectangular area of the receiver by first copying
  * the source area to the destination and then causing the area
  * of the source which is not covered by the destination to
  * be repainted. Children that intersect the rectangle are
@@ -283,7 +283,7 @@ public void scroll (int destX, int destY, int x, int y, int width, int height, b
 	srcRect.height = height;
 	long /*int*/ copyRegion = OS.gdk_region_rectangle (srcRect);
 	OS.gdk_region_intersect(copyRegion, visibleRegion);
-	long /*int*/ invalidateRegion = OS.gdk_region_rectangle (srcRect);	
+	long /*int*/ invalidateRegion = OS.gdk_region_rectangle (srcRect);
 	OS.gdk_region_subtract (invalidateRegion, visibleRegion);
 	OS.gdk_region_offset (invalidateRegion, deltaX, deltaY);
 	GdkRectangle copyRect = new GdkRectangle();
@@ -347,7 +347,7 @@ public void scroll (int destX, int destY, int x, int y, int width, int height, b
 				rect.height = Math.abs(deltaY);
 				OS.gdk_region_union_with_rect (invalidateRegion, rect);
 			}
-		}	
+		}
 		OS.gdk_window_invalidate_region(window, invalidateRegion, all);
 	}
 	OS.gdk_region_destroy (visibleRegion);
@@ -358,12 +358,12 @@ public void scroll (int destX, int destY, int x, int y, int width, int height, b
 		for (int i=0; i<children.length; i++) {
 			Control child = children [i];
 			Rectangle rect = child.getBounds ();
-			if (Math.min(x + width, rect.x + rect.width) >= Math.max (x, rect.x) && 
+			if (Math.min(x + width, rect.x + rect.width) >= Math.max (x, rect.x) &&
 				Math.min(y + height, rect.y + rect.height) >= Math.max (y, rect.y)) {
-					child.setLocation (rect.x + deltaX, rect.y + deltaY);					
+					child.setLocation (rect.x + deltaX, rect.y + deltaY);
 			}
 		}
-	}	
+	}
 	if (isFocus) caret.setFocus ();
 }
 
@@ -419,7 +419,7 @@ public void setFont (Font font) {
 
 /**
  * Sets the receiver's IME.
- * 
+ *
  * @param ime the new IME for the receiver, may be null
  *
  * @exception IllegalArgumentException <ul>
@@ -429,7 +429,7 @@ public void setFont (Font font) {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 3.4
  */
 public void setIME (IME ime) {
@@ -437,7 +437,7 @@ public void setIME (IME ime) {
 	if (ime != null && ime.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
 	this.ime = ime;
 }
-	
+
 void updateCaret () {
 	long /*int*/ imHandle = imHandle ();
 	if (imHandle == 0) return;

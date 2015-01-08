@@ -19,7 +19,7 @@ import org.eclipse.swt.internal.gtk.*;
 /**
  * Instances of this class represent a selectable user interface object
  * that represents a hierarchy of tree items in a tree widget.
- * 
+ *
  * <dl>
  * <dt><b>Styles:</b></dt>
  * <dd>(none)</dd>
@@ -49,7 +49,7 @@ public class TreeItem extends Item {
  * <p>
  * The style value is either one of the style constants defined in
  * class <code>SWT</code> which is applicable to instances of this
- * class, or must be built by <em>bitwise OR</em>'ing together 
+ * class, or must be built by <em>bitwise OR</em>'ing together
  * (that is, using the <code>int</code> "|" operator) two or more
  * of those <code>SWT</code> style constants. The class description
  * lists the style constants that are applicable to the class.
@@ -83,7 +83,7 @@ public TreeItem (Tree parent, int style) {
  * <p>
  * The style value is either one of the style constants defined in
  * class <code>SWT</code> which is applicable to instances of this
- * class, or must be built by <em>bitwise OR</em>'ing together 
+ * class, or must be built by <em>bitwise OR</em>'ing together
  * (that is, using the <code>int</code> "|" operator) two or more
  * of those <code>SWT</code> style constants. The class description
  * lists the style constants that are applicable to the class.
@@ -119,7 +119,7 @@ public TreeItem (Tree parent, int style, int index) {
  * <p>
  * The style value is either one of the style constants defined in
  * class <code>SWT</code> which is applicable to instances of this
- * class, or must be built by <em>bitwise OR</em>'ing together 
+ * class, or must be built by <em>bitwise OR</em>'ing together
  * (that is, using the <code>int</code> "|" operator) two or more
  * of those <code>SWT</code> style constants. The class description
  * lists the style constants that are applicable to the class.
@@ -153,7 +153,7 @@ public TreeItem (TreeItem parentItem, int style) {
  * <p>
  * The style value is either one of the style constants defined in
  * class <code>SWT</code> which is applicable to instances of this
- * class, or must be built by <em>bitwise OR</em>'ing together 
+ * class, or must be built by <em>bitwise OR</em>'ing together
  * (that is, using the <code>int</code> "|" operator) two or more
  * of those <code>SWT</code> style constants. The class description
  * lists the style constants that are applicable to the class.
@@ -326,10 +326,10 @@ void clear () {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @see SWT#VIRTUAL
  * @see SWT#SetData
- * 
+ *
  * @since 3.2
  */
 public void clear (int index, boolean all) {
@@ -342,7 +342,7 @@ public void clear (int index, boolean all) {
  * attributes of the items are set to their default values. If the
  * tree was created with the <code>SWT.VIRTUAL</code> style, these
  * attributes are requested again as needed.
- * 
+ *
  * @param all <code>true</code> if all child items should be cleared
  * recursively, and <code>false</code> otherwise
  *
@@ -350,10 +350,10 @@ public void clear (int index, boolean all) {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @see SWT#VIRTUAL
  * @see SWT#SetData
- * 
+ *
  * @since 3.2
  */
 public void clearAll (boolean all) {
@@ -372,14 +372,14 @@ void destroyWidget () {
  * Returns the receiver's background color.
  *
  * @return the background color
- * 
+ *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 2.0
- * 
+ *
  */
 public Color getBackground () {
 	checkWidget ();
@@ -397,7 +397,7 @@ public Color getBackground () {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 3.1
  */
 public Color getBackground (int index) {
@@ -417,7 +417,7 @@ public Color getBackground (int index) {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 3.1
  */
 public Rectangle getBounds (int index) {
@@ -437,9 +437,9 @@ public Rectangle getBounds (int index) {
 	GdkRectangle rect = new GdkRectangle ();
 	OS.gtk_tree_view_get_cell_area (parentHandle, path, column, rect);
 	if ((parent.getStyle () & SWT.MIRRORED) != 0) rect.x = parent.getClientWidth () - rect.width - rect.x;
-	
+
 	OS.gtk_tree_path_free (path);
-	
+
 	if (index == 0 && (parent.style & SWT.CHECK) != 0) {
 		int [] x = new int [1], w = new int [1];
 		OS.gtk_tree_view_column_cell_get_position (column, parent.checkRenderer, x, w);
@@ -475,11 +475,11 @@ public Rectangle getBounds () {
 
 	long /*int*/ path = OS.gtk_tree_model_get_path (parent.modelHandle, handle);
 	OS.gtk_widget_realize (parentHandle);
-	
+
 	boolean isExpander = OS.gtk_tree_model_iter_n_children (parent.modelHandle, handle) > 0;
 	boolean isExpanded = OS.gtk_tree_view_row_expanded (parentHandle, path);
 	OS.gtk_tree_view_column_cell_set_cell_data (column, parent.modelHandle, handle, isExpander, isExpanded);
-	
+
 	GdkRectangle rect = new GdkRectangle ();
 	OS.gtk_tree_view_get_cell_area (parentHandle, path, column, rect);
 	if ((parent.getStyle () & SWT.MIRRORED) != 0) rect.x = parent.getClientWidth () - rect.width - rect.x;
@@ -492,11 +492,11 @@ public Rectangle getBounds () {
 	rect.width = w [0];
 	int [] buffer = new int [1];
 	OS.gtk_tree_path_free (path);
-	
+
 	OS.gtk_widget_style_get (parentHandle, OS.horizontal_separator, buffer, 0);
 	int horizontalSeparator = buffer[0];
 	rect.x += horizontalSeparator;
-	
+
 	OS.gtk_tree_view_column_cell_get_position (column, textRenderer, x, null);
 	rect.x += x [0];
 	if (parent.columnCount > 0) {
@@ -599,9 +599,9 @@ public Font getFont (int index) {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 2.0
- * 
+ *
  */
 public Color getForeground () {
 	checkWidget ();
@@ -610,7 +610,7 @@ public Color getForeground () {
 }
 
 /**
- * 
+ *
  * Returns the foreground color at the given column index in the receiver.
  *
  * @param index the column index
@@ -620,7 +620,7 @@ public Color getForeground () {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 3.1
  */
 public Color getForeground (int index) {
@@ -667,7 +667,7 @@ public Image getImage () {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 3.1
  */
 public Image getImage (int index) {
@@ -688,7 +688,7 @@ public Image getImage (int index) {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 3.1
  */
 public Rectangle getImageBounds (int index) {
@@ -711,7 +711,7 @@ public Rectangle getImageBounds (int index) {
 	OS.gtk_tree_view_get_cell_area (parentHandle, path, column, rect);
 	if ((parent.getStyle () & SWT.MIRRORED) != 0) rect.x = parent.getClientWidth () - rect.width - rect.x;
 	OS.gtk_tree_path_free (path);
-	
+
 	int [] x = new int [1], w = new int[1];
 	OS.gtk_tree_view_column_cell_get_position (column, pixbufRenderer, x, w);
 	rect.x += x [0];
@@ -751,7 +751,7 @@ public int getItemCount () {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 3.1
  */
 public TreeItem getItem (int index) {
@@ -769,7 +769,7 @@ public TreeItem getItem (int index) {
  * <p>
  * Note: This is not the actual structure used by the receiver
  * to maintain its list of items, so modifying the array will
- * not affect the receiver. 
+ * not affect the receiver.
  * </p>
  *
  * @return the receiver's items
@@ -824,7 +824,7 @@ public TreeItem getParentItem () {
 	checkWidget();
 	long /*int*/ path = OS.gtk_tree_model_get_path (parent.modelHandle, handle);
 	TreeItem item = null;
-	int depth = OS.gtk_tree_path_get_depth (path); 
+	int depth = OS.gtk_tree_path_get_depth (path);
 	if (depth > 1) {
 		OS.gtk_tree_path_up (path);
 		long /*int*/ iter = OS.g_malloc (OS.GtkTreeIter_sizeof ());
@@ -855,7 +855,7 @@ public String getText () {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 3.1
  */
 public String getText (int index) {
@@ -876,7 +876,7 @@ public String getText (int index) {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 3.3
  */
 public Rectangle getTextBounds (int index) {
@@ -900,11 +900,11 @@ public Rectangle getTextBounds (int index) {
 
 	long /*int*/ path = OS.gtk_tree_model_get_path (parent.modelHandle, handle);
 	OS.gtk_widget_realize (parentHandle);
-	
+
 	boolean isExpander = OS.gtk_tree_model_iter_n_children (parent.modelHandle, handle) > 0;
 	boolean isExpanded = OS.gtk_tree_view_row_expanded (parentHandle, path);
 	OS.gtk_tree_view_column_cell_set_cell_data (column, parent.modelHandle, handle, isExpander, isExpanded);
-	
+
 	GdkRectangle rect = new GdkRectangle ();
 	OS.gtk_tree_view_get_cell_area (parentHandle, path, column, rect);
 	if ((parent.getStyle () & SWT.MIRRORED) != 0) rect.x = parent.getClientWidth () - rect.width - rect.x;
@@ -916,7 +916,7 @@ public Rectangle getTextBounds (int index) {
 	parent.ignoreSize = false;
 	int [] buffer = new int [1];
 	OS.gtk_tree_path_free (path);
-	
+
 	OS.gtk_widget_style_get (parentHandle, OS.horizontal_separator, buffer, 0);
 	int horizontalSeparator = buffer[0];
 	rect.x += horizontalSeparator;
@@ -933,7 +933,7 @@ public Rectangle getTextBounds (int index) {
 
 /**
  * Searches the receiver's list starting at the first item
- * (index 0) until an item is found that is equal to the 
+ * (index 0) until an item is found that is equal to the
  * argument, and returns the index of that item. If no item
  * is found, returns -1.
  *
@@ -948,7 +948,7 @@ public Rectangle getTextBounds (int index) {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 3.1
  */
 public int indexOf (TreeItem item) {
@@ -969,7 +969,7 @@ public int indexOf (TreeItem item) {
 	long /*int*/ path = OS.gtk_tree_model_get_path (parent.modelHandle, item.handle);
 	if (depth > 1) {
 		long /*int*/ indices = OS.gtk_tree_path_get_indices (path);
-		if (indices != 0) {	
+		if (indices != 0) {
 			int[] temp = new int[depth];
 			OS.memmove (temp, indices, 4 * temp.length);
 			index = temp[temp.length - 1];
@@ -1048,17 +1048,17 @@ public void removeAll () {
  * if the argument is null.
  *
  * @param color the new color (or null)
- * 
+ *
  * @exception IllegalArgumentException <ul>
- *    <li>ERROR_INVALID_ARGUMENT - if the argument has been disposed</li> 
+ *    <li>ERROR_INVALID_ARGUMENT - if the argument has been disposed</li>
  * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 2.0
- * 
+ *
  */
 public void setBackground (Color color) {
 	checkWidget ();
@@ -1072,7 +1072,7 @@ public void setBackground (Color color) {
 }
 
 /**
- * Sets the background color at the given column index in the receiver 
+ * Sets the background color at the given column index in the receiver
  * to the color specified by the argument, or to the default system color for the item
  * if the argument is null.
  *
@@ -1080,15 +1080,15 @@ public void setBackground (Color color) {
  * @param color the new color (or null)
  *
  * @exception IllegalArgumentException <ul>
- *    <li>ERROR_INVALID_ARGUMENT - if the argument has been disposed</li> 
+ *    <li>ERROR_INVALID_ARGUMENT - if the argument has been disposed</li>
  * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 3.1
- * 
+ *
  */
 public void setBackground (int index, Color color) {
 	checkWidget ();
@@ -1102,7 +1102,7 @@ public void setBackground (int index, Color color) {
 	GdkColor gdkColor = color != null ? color.handle : null;
 	OS.gtk_tree_store_set (parent.modelHandle, handle, modelIndex + Tree.CELL_BACKGROUND, gdkColor, -1);
 	cached = true;
-	
+
 	if (color != null) {
 		boolean customDraw = (parent.columnCount == 0)  ? parent.firstCustomDraw : parent.columns [index].customDraw;
 		if (!customDraw) {
@@ -1148,7 +1148,7 @@ public void setChecked (boolean checked) {
 	/*
 	* GTK+'s "inconsistent" state does not match SWT's concept of grayed.  To
 	* show checked+grayed differently from unchecked+grayed, we must toggle the
-	* grayed state on check and uncheck. 
+	* grayed state on check and uncheck.
 	*/
 	OS.gtk_tree_store_set (parent.modelHandle, handle, Tree.GRAYED_COLUMN, !checked ? false : grayed, -1);
 	cached = true;
@@ -1193,13 +1193,13 @@ public void setExpanded (boolean expanded) {
  * @param font the new font (or null)
  *
  * @exception IllegalArgumentException <ul>
- *    <li>ERROR_INVALID_ARGUMENT - if the argument has been disposed</li> 
+ *    <li>ERROR_INVALID_ARGUMENT - if the argument has been disposed</li>
  * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 3.0
  */
 public void setFont (Font font){
@@ -1218,21 +1218,21 @@ public void setFont (Font font){
 
 /**
  * Sets the font that the receiver will use to paint textual information
- * for the specified cell in this item to the font specified by the 
- * argument, or to the default font for that kind of control if the 
+ * for the specified cell in this item to the font specified by the
+ * argument, or to the default font for that kind of control if the
  * argument is null.
  *
  * @param index the column index
  * @param font the new font (or null)
  *
  * @exception IllegalArgumentException <ul>
- *    <li>ERROR_INVALID_ARGUMENT - if the argument has been disposed</li> 
+ *    <li>ERROR_INVALID_ARGUMENT - if the argument has been disposed</li>
  * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 3.1
  */
 public void setFont (int index, Font font) {
@@ -1250,12 +1250,12 @@ public void setFont (int index, Font font) {
 	if (oldFont == font) return;
 	cellFont [index] = font;
 	if (oldFont != null && oldFont.equals (font)) return;
-	
+
 	int modelIndex = parent.columnCount == 0 ? Tree.FIRST_COLUMN : parent.columns [index].modelIndex;
 	long /*int*/ fontHandle  = font != null ? font.handle : 0;
 	OS.gtk_tree_store_set (parent.modelHandle, handle, modelIndex + Tree.CELL_FONT, fontHandle, -1);
 	cached = true;
-	
+
 	if (font != null) {
 		boolean customDraw = (parent.columnCount == 0)  ? parent.firstCustomDraw : parent.columns [index].customDraw;
 		if (!customDraw) {
@@ -1290,15 +1290,15 @@ public void setFont (int index, Font font) {
  * @param color the new color (or null)
  *
  * @exception IllegalArgumentException <ul>
- *    <li>ERROR_INVALID_ARGUMENT - if the argument has been disposed</li> 
+ *    <li>ERROR_INVALID_ARGUMENT - if the argument has been disposed</li>
  * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 2.0
- * 
+ *
  */
 public void setForeground (Color color){
 	checkWidget ();
@@ -1312,7 +1312,7 @@ public void setForeground (Color color){
 }
 
 /**
- * Sets the foreground color at the given column index in the receiver 
+ * Sets the foreground color at the given column index in the receiver
  * to the color specified by the argument, or to the default system color for the item
  * if the argument is null.
  *
@@ -1320,15 +1320,15 @@ public void setForeground (Color color){
  * @param color the new color (or null)
  *
  * @exception IllegalArgumentException <ul>
- *    <li>ERROR_INVALID_ARGUMENT - if the argument has been disposed</li> 
+ *    <li>ERROR_INVALID_ARGUMENT - if the argument has been disposed</li>
  * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 3.1
- * 
+ *
  */
 public void setForeground (int index, Color color){
 	checkWidget ();
@@ -1342,7 +1342,7 @@ public void setForeground (int index, Color color){
 	GdkColor gdkColor = color != null ? color.handle : null;
 	OS.gtk_tree_store_set (parent.modelHandle, handle, modelIndex + Tree.CELL_FOREGROUND, gdkColor, -1);
 	cached = true;
-	
+
 	if (color != null) {
 		boolean customDraw = (parent.columnCount == 0)  ? parent.firstCustomDraw : parent.columns [index].customDraw;
 		if (!customDraw) {
@@ -1370,7 +1370,7 @@ public void setForeground (int index, Color color){
 }
 
 /**
- * Sets the grayed state of the checkbox for this item.  This state change 
+ * Sets the grayed state of the checkbox for this item.  This state change
  * only applies if the Tree was created with the SWT.CHECK style.
  *
  * @param grayed the new grayed state of the checkbox
@@ -1408,7 +1408,7 @@ public void setGrayed (boolean grayed) {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 3.1
  */
 public void setImage (int index, Image image) {
@@ -1454,7 +1454,7 @@ public void setImage (int index, Image image) {
 					parent.modifyStyle (parentHandle, style);
 				}
 			}
-		} 
+		}
 	}
 	cached = true;
 }
@@ -1466,8 +1466,8 @@ public void setImage (Image image) {
 }
 
 /**
- * Sets the image for multiple columns in the tree. 
- * 
+ * Sets the image for multiple columns in the tree.
+ *
  * @param images the array of new images
  *
  * @exception IllegalArgumentException <ul>
@@ -1478,7 +1478,7 @@ public void setImage (Image image) {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 3.1
  */
 public void setImage (Image [] images) {
@@ -1520,7 +1520,7 @@ public void setItemCount (int count) {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 3.1
  */
 public void setText (int index, String string) {
@@ -1542,8 +1542,8 @@ public void setText (String string) {
 }
 
 /**
- * Sets the text for multiple columns in the tree. 
- * 
+ * Sets the text for multiple columns in the tree.
+ *
  * @param strings the array of new strings
  *
  * @exception IllegalArgumentException <ul>
@@ -1553,7 +1553,7 @@ public void setText (String string) {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 3.1
  */
 public void setText (String [] strings) {

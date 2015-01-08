@@ -29,7 +29,7 @@ import org.eclipse.swt.internal.gtk.*;
  * </p><p>
  * IMPORTANT: This class is <em>not</em> intended to be subclassed.
  * </p>
- * 
+ *
  * @see <a href="http://www.eclipse.org/swt/snippets/#filedialog">FileDialog snippets</a>
  * @see <a href="http://www.eclipse.org/swt/examples.php">SWT Example: ControlExample, Dialog tab</a>
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
@@ -50,7 +50,7 @@ public class FileDialog extends Dialog {
 	static final char EXTENSION_SEPARATOR = ';';
 	static final char FILE_EXTENSION_SEPARATOR = '.';
 	private static final int PATH_MAX = 1024;
-	
+
 /**
  * Constructs a new instance of this class given only its parent.
  *
@@ -73,7 +73,7 @@ public FileDialog (Shell parent) {
  * <p>
  * The style value is either one of the style constants defined in
  * class <code>SWT</code> which is applicable to instances of this
- * class, or must be built by <em>bitwise OR</em>'ing together 
+ * class, or must be built by <em>bitwise OR</em>'ing together
  * (that is, using the <code>int</code> "|" operator) two or more
  * of those <code>SWT</code> style constants. The class description
  * lists the style constants that are applicable to the class.
@@ -90,7 +90,7 @@ public FileDialog (Shell parent) {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the parent</li>
  *    <li>ERROR_INVALID_SUBCLASS - if this class is not an allowed subclass</li>
  * </ul>
- * 
+ *
  * @see SWT#SAVE
  * @see SWT#OPEN
  * @see SWT#MULTI
@@ -208,7 +208,7 @@ String computeResultChooserDialog () {
  * Returns the path of the first file that was
  * selected in the dialog relative to the filter path, or an
  * empty string if no such file has been selected.
- * 
+ *
  * @return the relative path of the file
  */
 public String getFileName () {
@@ -217,7 +217,7 @@ public String getFileName () {
 /**
  * Returns a (possibly empty) array with the paths of all files
  * that were selected in the dialog relative to the filter path.
- * 
+ *
  * @return the relative paths of the files
  */
 public String [] getFileNames () {
@@ -242,10 +242,10 @@ public String [] getFilterExtensions () {
  * </p>
  *
  * @return index the file extension filter index
- * 
+ *
  * @see #getFilterExtensions
  * @see #getFilterNames
- * 
+ *
  * @since 3.4
  */
 public int getFilterIndex () {
@@ -266,7 +266,7 @@ public String [] getFilterNames () {
  * in the dialog, filtered according to the filter extensions.
  *
  * @return the directory path string
- * 
+ *
  * @see #setFilterExtensions
  */
 public String getFilterPath () {
@@ -278,7 +278,7 @@ public String getFilterPath () {
  * overwrite if the selected file already exists.
  *
  * @return true if the dialog will prompt for file overwrite, false otherwise
- * 
+ *
  * @since 3.4
  */
 public boolean getOverwrite () {
@@ -336,14 +336,14 @@ String openChooserDialog () {
 	if ((style & SWT.RIGHT_TO_LEFT) != 0) {
 		signalId = OS.g_signal_lookup (OS.map, OS.GTK_TYPE_WIDGET());
 		hookId = OS.g_signal_add_emission_hook (signalId, 0, display.emissionProc, handle, 0);
-	}	
+	}
 	display.sendPreExternalEventDispatchEvent ();
 	int response = OS.gtk_dialog_run (handle);
 	/*
 	* This call to gdk_threads_leave() is a temporary work around
 	* to avoid deadlocks when gdk_threads_init() is called by native
 	* code outside of SWT (i.e AWT, etc). It ensures that the current
-	* thread leaves the GTK lock acquired by the function above. 
+	* thread leaves the GTK lock acquired by the function above.
 	*/
 	OS.gdk_threads_leave();
 	display.sendPostExternalEventDispatchEvent ();
@@ -361,7 +361,7 @@ String openChooserDialog () {
 	return answer;
 }
 void presetChooserDialog () {
-	/* MULTI is only valid if the native dialog's action is Open */   
+	/* MULTI is only valid if the native dialog's action is Open */
 	if ((style & (SWT.SAVE | SWT.MULTI)) == SWT.MULTI) {
 		OS.gtk_file_chooser_set_select_multiple (handle, true);
 	}
@@ -380,7 +380,7 @@ void presetChooserDialog () {
 				byte [] buffer = Converter.wcsToMbcs (null, SEPARATOR + filterPath, true);
 				/*
 				 * in GTK version 2.10, gtk_file_chooser_set_current_folder requires path
-				 * to be true canonical path. So using realpath to convert the path to 
+				 * to be true canonical path. So using realpath to convert the path to
 				 * true canonical path.
 				 */
 				if (OS.IsAIX) {
@@ -449,7 +449,7 @@ void presetChooserDialog () {
 		} else {
 			/*
 			 * in GTK version 2.10, gtk_file_chooser_set_current_folder requires path
-			 * to be true canonical path. So using realpath to convert the path to 
+			 * to be true canonical path. So using realpath to convert the path to
 			 * true canonical path.
 			 */
 			if (OS.IsAIX) {
@@ -478,7 +478,7 @@ void presetChooserDialog () {
 			}
 		}
 	}
-	
+
 	/* Set overwrite mode */
 	if ((style & SWT.SAVE) != 0) {
 		OS.gtk_file_chooser_set_do_overwrite_confirmation (handle, overwrite);
@@ -528,9 +528,9 @@ void presetChooserDialog () {
  * *.jp* corresponds to all the files with extension starting with jp like jpg,jpeg etc
  * *.jp? corresponds to 3 letter extension starting with jp with any 3rd letter
  * *.[pq]ng this corresponds to *.png and *.qng
- * 
+ *
  * @param extension file extension as a string
- * 
+ *
  * @returns true if the extension contains any of the glob pattern wildcards
  */
 private boolean isGlobPattern (String extension) {
@@ -546,7 +546,7 @@ private boolean isGlobPattern (String extension) {
  * select by default when opened to the argument,
  * which may be null.  The name will be prefixed with
  * the filter path when one is supplied.
- * 
+ *
  * @param string the file name
  */
 public void setFileName (String string) {
@@ -565,7 +565,7 @@ public void setFileName (String string) {
  * </p>
  *
  * @param extensions the file extension filter
- * 
+ *
  * @see #setFilterNames to specify the user-friendly
  * names corresponding to the extensions
  */
@@ -582,10 +582,10 @@ public void setFilterExtensions (String [] extensions) {
  * </p>
  *
  * @param index the file extension filter index
- * 
+ *
  * @see #setFilterExtensions
  * @see #setFilterNames
- * 
+ *
  * @since 3.4
  */
 public void setFilterIndex (int index) {
@@ -602,7 +602,7 @@ public void setFilterIndex (int index) {
  * </p>
  *
  * @param names the list of filter names, or null for no filter names
- * 
+ *
  * @see #setFilterExtensions
  */
 public void setFilterNames (String [] names) {
@@ -622,7 +622,7 @@ public void setFilterNames (String [] names) {
  * </p>
  *
  * @param string the directory path
- * 
+ *
  * @see #setFilterExtensions
  */
 public void setFilterPath (String string) {
@@ -635,18 +635,18 @@ public void setFilterPath (String string) {
  * overwrite if the selected file already exists.
  *
  * @param overwrite true if the dialog will prompt for file overwrite, false otherwise
- * 
+ *
  * @since 3.4
  */
 public void setOverwrite (boolean overwrite) {
 	this.overwrite = overwrite;
 }
 /* Sets URI Mode.
- * 
+ *
  * When the FileDialog is in URI mode it returns
  * a URI (instead of a file name) for the following
  * methods: open() and getFilterPath().
- * The input argment for setFilterPath() should also 
+ * The input argment for setFilterPath() should also
  * be a URI.
  */
 /*public*/ void setURIMode (boolean uriMode) {

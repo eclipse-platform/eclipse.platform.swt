@@ -22,20 +22,20 @@ import org.eclipse.swt.internal.gtk.*;
  * Instances of this class represent the "windows"
  * which the desktop or "window manager" is managing.
  * Instances that do not have a parent (that is, they
- * are built using the constructor, which takes a 
+ * are built using the constructor, which takes a
  * <code>Display</code> as the argument) are described
  * as <em>top level</em> shells. Instances that do have
  * a parent are described as <em>secondary</em> or
  * <em>dialog</em> shells.
  * <p>
- * Instances are always displayed in one of the maximized, 
+ * Instances are always displayed in one of the maximized,
  * minimized or normal states:
  * <ul>
  * <li>
  * When an instance is marked as <em>maximized</em>, the
  * window manager will typically resize it to fill the
  * entire visible area of the display, and the instance
- * is usually put in a state where it can not be resized 
+ * is usually put in a state where it can not be resized
  * (even if it has style <code>RESIZE</code>) until it is
  * no longer maximized.
  * </li><li>
@@ -93,19 +93,19 @@ import org.eclipse.swt.internal.gtk.*;
  * <dt><code>SHELL_TRIM</code></dt>
  * <dd>
  * the result of combining the constants which are required
- * to produce a typical application top level shell: (that 
+ * to produce a typical application top level shell: (that
  * is, <code>CLOSE | TITLE | MIN | MAX | RESIZE</code>)
  * </dd>
  * <dt><code>DIALOG_TRIM</code></dt>
  * <dd>
  * the result of combining the constants which are required
- * to produce a typical application dialog shell: (that 
+ * to produce a typical application dialog shell: (that
  * is, <code>TITLE | CLOSE | BORDER</code>)
  * </dd>
  * </dl>
  * </p>
  * <p>
- * Note: Only one of the styles APPLICATION_MODAL, MODELESS, 
+ * Note: Only one of the styles APPLICATION_MODAL, MODELESS,
  * PRIMARY_MODAL and SYSTEM_MODAL may be specified.
  * </p><p>
  * IMPORTANT: This class is <em>not</em> intended to be subclassed.
@@ -150,7 +150,7 @@ public Shell () {
  * <p>
  * The style value is either one of the style constants defined in
  * class <code>SWT</code> which is applicable to instances of this
- * class, or must be built by <em>bitwise OR</em>'ing together 
+ * class, or must be built by <em>bitwise OR</em>'ing together
  * (that is, using the <code>int</code> "|" operator) two or more
  * of those <code>SWT</code> style constants. The class description
  * lists the style constants that are applicable to the class.
@@ -163,7 +163,7 @@ public Shell () {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the parent</li>
  *    <li>ERROR_INVALID_SUBCLASS - if this class is not an allowed subclass</li>
  * </ul>
- * 
+ *
  * @see SWT#BORDER
  * @see SWT#CLOSE
  * @see SWT#MIN
@@ -191,7 +191,7 @@ public Shell (int style) {
  * <p>
  * Note: Currently, null can be passed in for the display argument.
  * This has the effect of creating the shell on the currently active
- * display if there is one. If there is no current display, the 
+ * display if there is one. If there is no current display, the
  * shell is created on a "default" display. <b>Passing in null as
  * the display argument is not considered to be good coding style,
  * and may not be supported in a future release of SWT.</b>
@@ -214,7 +214,7 @@ public Shell (Display display) {
  * <p>
  * The style value is either one of the style constants defined in
  * class <code>SWT</code> which is applicable to instances of this
- * class, or must be built by <em>bitwise OR</em>'ing together 
+ * class, or must be built by <em>bitwise OR</em>'ing together
  * (that is, using the <code>int</code> "|" operator) two or more
  * of those <code>SWT</code> style constants. The class description
  * lists the style constants that are applicable to the class.
@@ -222,7 +222,7 @@ public Shell (Display display) {
  * </p><p>
  * Note: Currently, null can be passed in for the display argument.
  * This has the effect of creating the shell on the currently active
- * display if there is one. If there is no current display, the 
+ * display if there is one. If there is no current display, the
  * shell is created on a "default" display. <b>Passing in null as
  * the display argument is not considered to be good coding style,
  * and may not be supported in a future release of SWT.</b>
@@ -235,7 +235,7 @@ public Shell (Display display) {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the parent</li>
  *    <li>ERROR_INVALID_SUBCLASS - if this class is not an allowed subclass</li>
  * </ul>
- * 
+ *
  * @see SWT#BORDER
  * @see SWT#CLOSE
  * @see SWT#MIN
@@ -266,7 +266,7 @@ Shell (Display display, Shell parent, int style, long /*int*/ handle, boolean em
 		error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	}
 	if (parent != null && parent.isDisposed ()) {
-		error (SWT.ERROR_INVALID_ARGUMENT);	
+		error (SWT.ERROR_INVALID_ARGUMENT);
 	}
 	this.center = parent != null && (style & SWT.SHEET) != 0;
 	this.style = checkStyle (parent, style);
@@ -290,7 +290,7 @@ Shell (Display display, Shell parent, int style, long /*int*/ handle, boolean em
  * <p>
  * Note: Currently, null can be passed in for the parent.
  * This has the effect of creating the shell on the currently active
- * display if there is one. If there is no current display, the 
+ * display if there is one. If there is no current display, the
  * shell is created on a "default" display. <b>Passing in null as
  * the parent is not considered to be good coding style,
  * and may not be supported in a future release of SWT.</b>
@@ -299,7 +299,7 @@ Shell (Display display, Shell parent, int style, long /*int*/ handle, boolean em
  * @param parent a shell which will be the parent of the new instance
  *
  * @exception IllegalArgumentException <ul>
- *    <li>ERROR_INVALID_ARGUMENT - if the parent is disposed</li> 
+ *    <li>ERROR_INVALID_ARGUMENT - if the parent is disposed</li>
  * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the parent</li>
@@ -316,7 +316,7 @@ public Shell (Shell parent) {
  * <p>
  * The style value is either one of the style constants defined in
  * class <code>SWT</code> which is applicable to instances of this
- * class, or must be built by <em>bitwise OR</em>'ing together 
+ * class, or must be built by <em>bitwise OR</em>'ing together
  * (that is, using the <code>int</code> "|" operator) two or more
  * of those <code>SWT</code> style constants. The class description
  * lists the style constants that are applicable to the class.
@@ -324,7 +324,7 @@ public Shell (Shell parent) {
  * </p><p>
  * Note: Currently, null can be passed in for the parent.
  * This has the effect of creating the shell on the currently active
- * display if there is one. If there is no current display, the 
+ * display if there is one. If there is no current display, the
  * shell is created on a "default" display. <b>Passing in null as
  * the parent is not considered to be good coding style,
  * and may not be supported in a future release of SWT.</b>
@@ -334,13 +334,13 @@ public Shell (Shell parent) {
  * @param style the style of control to construct
  *
  * @exception IllegalArgumentException <ul>
- *    <li>ERROR_INVALID_ARGUMENT - if the parent is disposed</li> 
+ *    <li>ERROR_INVALID_ARGUMENT - if the parent is disposed</li>
  * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the parent</li>
  *    <li>ERROR_INVALID_SUBCLASS - if this class is not an allowed subclass</li>
  * </ul>
- * 
+ *
  * @see SWT#BORDER
  * @see SWT#CLOSE
  * @see SWT#MIN
@@ -362,7 +362,7 @@ public Shell (Shell parent, int style) {
 	this (parent != null ? parent.display : null, parent, style, 0, false);
 }
 
-/**	 
+/**
  * Invokes platform specific functionality to allocate a new shell
  * that is embedded.
  * <p>
@@ -376,14 +376,14 @@ public Shell (Shell parent, int style) {
  * @param display the display for the shell
  * @param handle the handle for the shell
  * @return a new shell object containing the specified display and handle
- * 
+ *
  * @noreference This method is not intended to be referenced by clients.
  */
 public static Shell gtk_new (Display display, long /*int*/ handle) {
 	return new Shell (display, null, SWT.NO_TRIM, handle, true);
 }
 
-/**	 
+/**
  * Invokes platform specific functionality to allocate a new shell
  * that is not embedded.
  * <p>
@@ -397,9 +397,9 @@ public static Shell gtk_new (Display display, long /*int*/ handle) {
  * @param display the display for the shell
  * @param handle the handle for the shell
  * @return a new shell object containing the specified display and handle
- * 
+ *
  * @noreference This method is not intended to be referenced by clients.
- * 
+ *
  * @since 3.3
  */
 public static Shell internal_new (Display display, long /*int*/ handle) {
@@ -541,7 +541,7 @@ void bringToTop (boolean force) {
 	* the shell is hidden or disposed. The fix is to use XSetInputFocus()
 	* to assign focus when ever the active shell has not managed by
 	* the window manager.
-	* 
+	*
 	* NOTE: This bug is fixed in GTK+ 2.6.8 and above.
 	*/
 	boolean xFocus = false;
@@ -578,7 +578,7 @@ void bringToTop (boolean force) {
 		* Bug in metacity.  Calling gdk_window_focus() with a timestamp more
 		* recent than the last user interaction time can cause windows not
 		* to come forward in versions > 2.10.0.  The fix is to use the last
-		* user event time. 
+		* user event time.
 		*/
 		if (display.windowManager.toLowerCase ().equals ("metacity")) {
 			OS.gdk_window_focus (window, display.lastUserEventTime);
@@ -722,7 +722,7 @@ void createHandle (int index) {
 		}
 		if (isCustomResize ()) {
 			OS.gtk_container_set_border_width (shellHandle, BORDER);
-		} 
+		}
 	}
 	vboxHandle = gtk_box_new (OS.GTK_ORIENTATION_VERTICAL, false, 0);
 	if (vboxHandle == 0) error (SWT.ERROR_NO_HANDLES);
@@ -747,7 +747,7 @@ long /*int*/ filterProc (long /*int*/ xEvent, long /*int*/ gdkEvent, long /*int*
 	XFocusChangeEvent xFocusEvent = new XFocusChangeEvent();
 	OS.memmove (xFocusEvent, xEvent, XFocusChangeEvent.sizeof);
 	switch (eventType) {
-		case OS.FocusIn: 
+		case OS.FocusIn:
 			if (xFocusEvent.mode == OS.NotifyNormal || xFocusEvent.mode == OS.NotifyWhileGrabbed) {
 				switch (xFocusEvent.detail) {
 					case OS.NotifyNonlinear:
@@ -765,7 +765,7 @@ long /*int*/ filterProc (long /*int*/ xEvent, long /*int*/ gdkEvent, long /*int*
 						}
 						break;
 				}
-			} 
+			}
 			break;
 		case OS.FocusOut:
 			if (xFocusEvent.mode == OS.NotifyNormal || xFocusEvent.mode == OS.NotifyWhileGrabbed) {
@@ -784,7 +784,7 @@ long /*int*/ filterProc (long /*int*/ xEvent, long /*int*/ gdkEvent, long /*int*
 							display.activePending = false;
 						}
 						if (isDisposed ()) return 0;
-						if (isCustomResize ()) {				
+						if (isCustomResize ()) {
 							OS.gdk_window_invalidate_rect (gtk_widget_get_window (shellHandle), null, false);
 						}
 						break;
@@ -808,17 +808,17 @@ Composite findDeferredControl () {
 /**
  * Returns a ToolBar object representing the tool bar that can be shown in the receiver's
  * trim. This will return <code>null</code> if the platform does not support tool bars that
- * are not part of the content area of the shell, or if the Shell's style does not support 
- * having a tool bar. 
+ * are not part of the content area of the shell, or if the Shell's style does not support
+ * having a tool bar.
  * <p>
- * 
+ *
  * @return a ToolBar object representing the Shell's tool bar, or <ocde>null</code>.
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 3.7
  */
 public ToolBar getToolBar() {
@@ -973,7 +973,7 @@ void forceResize (int width, int height) {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 3.4
  */
 public int getAlpha () {
@@ -983,7 +983,7 @@ public int getAlpha () {
 			return (int) (OS.gtk_window_get_opacity (shellHandle) * 255);
 		}
 	}
-	return 255;  
+	return 255;
 }
 
 int getResizeMode (double x, double y) {
@@ -1015,7 +1015,7 @@ int getResizeMode (double x, double y) {
 
 /**
  * Returns <code>true</code> if the receiver is currently
- * in fullscreen state, and false otherwise. 
+ * in fullscreen state, and false otherwise.
  * <p>
  *
  * @return the fullscreen state
@@ -1058,7 +1058,7 @@ public boolean getMaximized () {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 3.1
  */
 public Point getMinimumSize () {
@@ -1100,12 +1100,12 @@ Shell getModalShell () {
  * Gets the receiver's modified state.
  *
  * @return <code>true</code> if the receiver is marked as modified, or <code>false</code> otherwise
- * 
+ *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 3.5
  */
 public boolean getModified () {
@@ -1130,15 +1130,15 @@ public Point getSize () {
 @Override
 public boolean getVisible () {
 	checkWidget();
-	return gtk_widget_get_visible (shellHandle); 
+	return gtk_widget_get_visible (shellHandle);
 }
 
-/** 
+/**
  * Returns the region that defines the shape of the shell,
  * or <code>null</code> if the shell has the default shape.
  *
  * @return the region that defines the shape of the shell, or <code>null</code>
- *	
+ *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
@@ -1160,7 +1160,7 @@ public Region getRegion () {
  * will be the result of bitwise OR'ing together one or
  * more of the following constants defined in class
  * <code>SWT</code>:
- * <code>NONE</code>, <code>ROMAN</code>, <code>DBCS</code>, 
+ * <code>NONE</code>, <code>ROMAN</code>, <code>DBCS</code>,
  * <code>PHONETIC</code>, <code>NATIVE</code>, <code>ALPHA</code>.
  *
  * @return the IME mode
@@ -1182,7 +1182,7 @@ Shell _getShell () {
 	return this;
 }
 /**
- * Returns an array containing all shells which are 
+ * Returns an array containing all shells which are
  * descendants of the receiver.
  * <p>
  * @return the dialog shells
@@ -1478,7 +1478,7 @@ long /*int*/ gtk_key_press_event (long /*int*/ widget, long /*int*/ event) {
 	if (widget == shellHandle) {
 		/* Stop menu mnemonics when the shell is disabled */
 		if ((state & DISABLED) != 0) return 1;
-		
+
 		if (menuBar != null && !menuBar.isDisposed ()) {
 			Control focusControl = display.getFocusControl ();
 			if (focusControl != null && (focusControl.hooks (SWT.KeyDown) || focusControl.filters (SWT.KeyDown))) {
@@ -1659,11 +1659,11 @@ void reskinChildren (int flags) {
 }
 
 /**
- * If the receiver is visible, moves it to the top of the 
- * drawing order for the display on which it was created 
- * (so that all other shells on that display, which are not 
- * the receiver's children will be drawn behind it) and asks 
- * the window manager to make the shell active 
+ * If the receiver is visible, moves it to the top of the
+ * drawing order for the display on which it was created
+ * (so that all other shells on that display, which are not
+ * the receiver's children will be drawn behind it) and asks
+ * the window manager to make the shell active
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -1692,7 +1692,7 @@ void setActiveControl (Control control, int type) {
 	if (control != null && control.isDisposed ()) control = null;
 	if (lastActive != null && lastActive.isDisposed ()) lastActive = null;
 	if (lastActive == control) return;
-	
+
 	/*
 	* Compute the list of controls to be activated and
 	* deactivated by finding the first common parent
@@ -1706,7 +1706,7 @@ void setActiveControl (Control control, int type) {
 		if (activate [index] != deactivate [index]) break;
 		index++;
 	}
-	
+
 	/*
 	* It is possible (but unlikely), that application
 	* code could have destroyed some of the widgets. If
@@ -1741,7 +1741,7 @@ void setActiveControl (Control control, int type) {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 3.4
  */
 public void setAlpha (int alpha) {
@@ -1909,12 +1909,12 @@ public void setEnabled (boolean enabled) {
  * into full screen state, causes the receiver to switch back
  * to either the maximized or normal states.
  * <p>
- * Note: The result of intermixing calls to <code>setFullScreen(true)</code>, 
- * <code>setMaximized(true)</code> and <code>setMinimized(true)</code> will 
- * vary by platform. Typically, the behavior will match the platform user's 
+ * Note: The result of intermixing calls to <code>setFullScreen(true)</code>,
+ * <code>setMaximized(true)</code> and <code>setMinimized(true)</code> will
+ * vary by platform. Typically, the behavior will match the platform user's
  * expectations, but not always. This should be avoided if possible.
  * </p>
- * 
+ *
  * @param fullScreen the new fullscreen state
  *
  * @exception SWTException <ul>
@@ -1938,10 +1938,10 @@ public void setFullScreen (boolean fullScreen) {
 }
 
 /**
- * Sets the input method editor mode to the argument which 
+ * Sets the input method editor mode to the argument which
  * should be the result of bitwise OR'ing together one or more
  * of the following constants defined in class <code>SWT</code>:
- * <code>NONE</code>, <code>ROMAN</code>, <code>DBCS</code>, 
+ * <code>NONE</code>, <code>ROMAN</code>, <code>DBCS</code>,
  * <code>PHONETIC</code>, <code>NATIVE</code>, <code>ALPHA</code>.
  *
  * @param mode the new IME mode
@@ -2049,7 +2049,7 @@ public void setMinimized (boolean minimized) {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 3.1
  */
 public void setMinimumSize (int width, int height) {
@@ -2074,7 +2074,7 @@ public void setMinimumSize (int width, int height) {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 3.1
  */
 public void setMinimumSize (Point size) {
@@ -2093,7 +2093,7 @@ public void setMinimumSize (Point size) {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 3.5
  */
 public void setModified (boolean modified) {
@@ -2112,7 +2112,7 @@ public void setModified (boolean modified) {
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_INVALID_ARGUMENT - if the region has been disposed</li>
- * </ul>  
+ * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
@@ -2125,7 +2125,7 @@ public void setModified (boolean modified) {
 public void setRegion (Region region) {
 	checkWidget ();
 	if ((style & SWT.NO_TRIM) == 0) return;
-	
+
 	if (region != null) {
 		Rectangle bounds = region.getBounds ();
 		setSize (bounds.x + bounds.width, bounds.y + bounds.height);
@@ -2158,7 +2158,7 @@ static void gdk_region_get_rectangles(long /*int*/ region, long /*int*/[] rectan
 
 static Region mirrorRegion (Region region) {
 	if (region == null) return null;
-	
+
 	Region mirrored = new Region (region.getDevice ());
 
 	long /*int*/ rgn = region.handle;
@@ -2187,7 +2187,7 @@ void setRelations() {
 public void setText (String string) {
 	super.setText (string);
 
-	/* 
+	/*
 	* GTK bug 82013.  For some reason, if the title string
 	* is less than 7 bytes long and is not terminated by
 	* a space, some window managers occasionally draw
@@ -2232,7 +2232,7 @@ public void setVisible (boolean visible) {
 		* and fully painted, dispatch events such as
 		* GDK_MAP and GDK_CONFIGURE, until the GDK_MAP
 		* event for the shell is received.
-		* 
+		*
 		* Note that if the parent is minimized or withdrawn
 		* from the desktop, this should not be done since
 		* the shell not will be mapped until the parent is
@@ -2251,7 +2251,7 @@ public void setVisible (boolean visible) {
 				OS.GDK_UNMAP,
 				OS.GDK_NO_EXPOSE,
 				OS.GDK_VISIBILITY_NOTIFY,
-				OS.GDK_WINDOW_STATE 
+				OS.GDK_WINDOW_STATE
 			};
 			Display display = this.display;
 			display.putGdkEvents();
@@ -2262,7 +2262,7 @@ public void setVisible (boolean visible) {
 				* This call to gdk_threads_leave() is a temporary work around
 				* to avoid deadlocks when gdk_threads_init() is called by native
 				* code outside of SWT (i.e AWT, etc). It ensures that the current
-				* thread leaves the GTK lock before calling the function below. 
+				* thread leaves the GTK lock before calling the function below.
 				*/
 				OS.gdk_threads_leave();
 				OS.g_main_context_iteration (0, false);
@@ -2334,7 +2334,7 @@ long /*int*/ shellMapProc (long /*int*/ handle, long /*int*/ arg0, long /*int*/ 
 void showWidget () {
 	if ((state & FOREIGN_HANDLE) != 0) {
 		/*
-		* In case of foreign handles, activeShell might not be initialised as 
+		* In case of foreign handles, activeShell might not be initialised as
 		* no focusIn events are generated on the window until the window loses
 		* and gain focus.
 		*/
@@ -2376,7 +2376,7 @@ long /*int*/ sizeAllocateProc (long /*int*/ handle, long /*int*/ arg0, long /*in
 		if (y[0] + height > dest.y + dest.height) {
 			y[0] = (dest.y + dest.height) - height;
 		}
-	} 
+	}
 	OS.gtk_window_move (handle, x [0], y [0]);
 	return 0;
 }
@@ -2442,7 +2442,7 @@ void updateModal () {
 				/*
 				* Feature in GTK. If a modal shell is reassigned to
 				* a different group, then it's modal state is not.
-				* persisted against the new group. 
+				* persisted against the new group.
 				* The fix is to reset the modality before it is changed
 				* into a different group and then, set back after it
 				* assigned into new group.
@@ -2463,16 +2463,16 @@ void updateModal () {
 			shell = shell.parent;
 		}
 		/*
-		* If a modal shell doesn't have any parent (or modal shell as it's parent), 
-		* then we incorrectly add the modal shell to the default group, due to which 
-		* children of that modal shell are not interactive. The fix is to ensure 
+		* If a modal shell doesn't have any parent (or modal shell as it's parent),
+		* then we incorrectly add the modal shell to the default group, due to which
+		* children of that modal shell are not interactive. The fix is to ensure
 		* that whenever there is a modal shell in the hierarchy, then we always
 		* add the modal shell's group to that modal shell and it's modelless children
 		* in a different group.
 		*/
 		if (group == 0 && topModalShell != null) group = topModalShell.getShell ().group;
 	}
-	if (group == 0) { 
+	if (group == 0) {
 		/*
 		* Feature in GTK. Starting with GTK version 2.10, GTK
 		* doesn't assign windows to a default group. The fix is to
@@ -2536,10 +2536,10 @@ public void dispose () {
 }
 
 /**
- * If the receiver is visible, moves it to the top of the 
- * drawing order for the display on which it was created 
- * (so that all other shells on that display, which are not 
- * the receiver's children will be drawn behind it) and forces 
+ * If the receiver is visible, moves it to the top of the
+ * drawing order for the display on which it was created
+ * (so that all other shells on that display, which are not
+ * the receiver's children will be drawn behind it) and forces
  * the window manager to make the shell active.
  *
  * @exception SWTException <ul>
@@ -2646,16 +2646,16 @@ void setToolTipText (long /*int*/ rootWidget, long /*int*/ tipWidget, String str
 		}
 		if (oldTooltip != 0) OS.g_free(oldTooltip);
 		if (same) return;
-		
+
 		long /*int*/ eventPtr = 0;
 		if (OS.GTK_VERSION < OS.VERSION (2, 18, 0)) {
 			OS.gtk_widget_set_tooltip_text (rootWidget, null);
 			/*
 			 * Bug in GTK. In GTK 2.12, due to a miscalculation of window
 			 * coordinates, using gtk_tooltip_trigger_tooltip_query ()
-			 * to update an existing a toboltip will result in the tooltip 
-			 * being displayed at a wrong position. The fix is to send out 
-			 * 2 fake GDK_MOTION_NOTIFY events (to mimic the GTK call) which 
+			 * to update an existing a toboltip will result in the tooltip
+			 * being displayed at a wrong position. The fix is to send out
+			 * 2 fake GDK_MOTION_NOTIFY events (to mimic the GTK call) which
 			 * contain the proper x and y coordinates.
 			 */
 			long /*int*/ tipWindow = gtk_widget_get_window (rootWidget);
@@ -2707,7 +2707,7 @@ void setToolTipText (long /*int*/ rootWidget, long /*int*/ tipWidget, String str
 			OS.g_object_ref (tooltipsHandle);
 			OS.g_object_ref_sink (tooltipsHandle);
 		}
-	
+
 		/*
 		* Feature in GTK.  There is no API to position a tooltip.
 		* The fix is to connect to the size_allocate signal for
@@ -2725,7 +2725,7 @@ void setToolTipText (long /*int*/ rootWidget, long /*int*/ tipWidget, String str
 			OS.g_signal_connect (tipWindow, OS.size_allocate, display.sizeAllocateProc, shellHandle);
 			tooltipWindow = tipWindow;
 		}
-		
+
 		/*
 		* Bug in GTK.  If the cursor is inside the window when a new
 		* tooltip is set and the old tooltip is hidden, the new tooltip
@@ -2741,12 +2741,12 @@ void setToolTipText (long /*int*/ rootWidget, long /*int*/ tipWidget, String str
 					long /*int*/ [] user_data = new long /*int*/ [1];
 					OS.gdk_window_get_user_data (window, user_data);
 					if (tipWidget == user_data [0]) {
-						/* 
+						/*
 						* Feature in GTK.  Calling gtk_tooltips_set_tip() positions and
 						* shows the tooltip.  If the tooltip is already visible, moving
 						* it to a new location in the size_allocate signal causes flashing.
 						* The fix is to hide the tip window in the size_request signal
-						* and before the new tooltip is forced to be active. 
+						* and before the new tooltip is forced to be active.
 						*/
 						set = false;
 						int handler_id = OS.g_signal_connect (tipWindow, OS.size_request, display.sizeRequestProc, shellHandle);
@@ -2762,7 +2762,7 @@ void setToolTipText (long /*int*/ rootWidget, long /*int*/ tipWidget, String str
 		}
 		if (set) OS.gtk_tooltips_set_tip (tooltipsHandle, tipWidget, buffer, null);
 	}
-		
+
 }
 @Override
 Point getWindowOrigin () {
@@ -2770,7 +2770,7 @@ Point getWindowOrigin () {
 		/*
 		 * Special case: The handle attributes are not initialized until the
 		 * shell is made visible, so gdk_window_get_origin () always returns {0, 0}.
-		 * 
+		 *
 		 * Once the shell is realized, gtk_window_get_position () includes
 		 * window trims etc. from the window manager. That's why getLocation ()
 		 * is not safe to use for coordinate mappings after the shell has been made visible.

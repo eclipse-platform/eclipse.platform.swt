@@ -18,7 +18,7 @@ import org.eclipse.swt.accessibility.*;
 
 /**
  * Instances of this class represent a selectable
- * user interface object that displays a text with 
+ * user interface object that displays a text with
  * links.
  * <p>
  * <dl>
@@ -34,7 +34,7 @@ import org.eclipse.swt.accessibility.*;
  * @see <a href="http://www.eclipse.org/swt/snippets/#link">Link snippets</a>
  * @see <a href="http://www.eclipse.org/swt/examples.php">SWT Example: ControlExample</a>
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
- * 
+ *
  * @since 3.1
  * @noextend This class is not intended to be subclassed by clients.
  */
@@ -47,16 +47,16 @@ public class Link extends Control {
 	String [] ids;
 	int [] mnemonics;
 	int focusIndex;
-	
+
 	static final RGB LINK_DISABLED_FOREGROUND = new RGB (172, 168, 153);
-	
+
 /**
  * Constructs a new instance of this class given its parent
  * and a style value describing its behavior and appearance.
  * <p>
  * The style value is either one of the style constants defined in
  * class <code>SWT</code> which is applicable to instances of this
- * class, or must be built by <em>bitwise OR</em>'ing together 
+ * class, or must be built by <em>bitwise OR</em>'ing together
  * (that is, using the <code>int</code> "|" operator) two or more
  * of those <code>SWT</code> style constants. The class description
  * lists the style constants that are applicable to the class.
@@ -182,7 +182,7 @@ void drawWidget(GC gc) {
 		Rectangle [] rects = getRectangles (focusIndex);
 		for (int i = 0; i < rects.length; i++) {
 			Rectangle rect = rects [i];
-			gc.drawFocus (rect.x, rect.y, rect.width, rect.height);					
+			gc.drawFocus (rect.x, rect.y, rect.width, rect.height);
 		}
 	}
 }
@@ -213,13 +213,13 @@ void initAccessible () {
 			e.result = parse (text);
 		}
 	});
-		
+
 	accessible.addAccessibleControlListener (new AccessibleControlAdapter () {
 		@Override
 		public void getChildAtPoint (AccessibleControlEvent e) {
 			e.childID = ACC.CHILDID_SELF;
 		}
-		
+
 		@Override
 		public void getLocation (AccessibleControlEvent e) {
 			Rectangle rect = display.map (getParent (), null, getBounds ());
@@ -228,33 +228,33 @@ void initAccessible () {
 			e.width = rect.width;
 			e.height = rect.height;
 		}
-		
+
 		@Override
 		public void getChildCount (AccessibleControlEvent e) {
 			e.detail = 0;
 		}
-		
+
 		@Override
 		public void getRole (AccessibleControlEvent e) {
 			e.detail = ACC.ROLE_LINK;
 		}
-		
+
 		@Override
 		public void getState (AccessibleControlEvent e) {
 			e.detail = ACC.STATE_FOCUSABLE;
 			if (hasFocus ()) e.detail |= ACC.STATE_FOCUSED;
 		}
-		
+
 		@Override
 		public void getDefaultAction (AccessibleControlEvent e) {
 			e.result = SWT.getMessage ("SWT_Press"); //$NON-NLS-1$
 		}
-		
+
 		@Override
 		public void getSelection (AccessibleControlEvent e) {
 			if (hasFocus ()) e.childID = ACC.CHILDID_SELF;
 		}
-		
+
 		@Override
 		public void getFocus (AccessibleControlEvent e) {
 			if (hasFocus ()) e.childID = ACC.CHILDID_SELF;
@@ -278,7 +278,7 @@ Rectangle [] getRectangles (int linkIndex) {
 	while (point.y > lineOffsets [lineEnd]) lineEnd++;
 	int index = 0;
 	if (lineStart == lineEnd) {
-		rects [index++] = layout.getBounds (point.x, point.y);		
+		rects [index++] = layout.getBounds (point.x, point.y);
 	} else {
 		rects [index++] = layout.getBounds (point.x, lineOffsets [lineStart]-1);
 		rects [index++] = layout.getBounds (lineOffsets [lineEnd-1], point.y);
@@ -292,7 +292,7 @@ Rectangle [] getRectangles (int linkIndex) {
 		Rectangle [] tmp = new Rectangle [index];
 		System.arraycopy (rects, 0, tmp, 0, index);
 		rects = tmp;
-	}	
+	}
 	return rects;
 }
 
@@ -314,7 +314,7 @@ public String getText () {
 
 @Override
 long /*int*/ gtk_button_press_event (long /*int*/ widget, long /*int*/ event) {
-	long /*int*/ result = super.gtk_button_press_event (widget, event);	
+	long /*int*/ result = super.gtk_button_press_event (widget, event);
 	if (result != 0) return result;
 	GdkEventButton gdkEvent = new GdkEventButton ();
 	OS.memmove (gdkEvent, event, GdkEventButton.sizeof);
@@ -342,7 +342,7 @@ long /*int*/ gtk_button_press_event (long /*int*/ widget, long /*int*/ event) {
 			for (int i = 0; i < rects.length; i++) {
 				Rectangle rect = rects [i];
 				if (rect.contains (x, y)) {
-					focusIndex = j;						
+					focusIndex = j;
 					redraw ();
 					return result;
 				}
@@ -428,7 +428,7 @@ long /*int*/ gtk_motion_notify_event (long /*int*/ widget, long /*int*/ event) {
 	GdkEventMotion gdkEvent = new GdkEventMotion ();
 	OS.memmove (gdkEvent, event, GdkEventMotion.sizeof);
 	int x = (int) gdkEvent.x;
-	int y = (int) gdkEvent.y;	
+	int y = (int) gdkEvent.y;
 	if ((style & SWT.MIRRORED) != 0) x = getClientWidth () - x;
 	if ((gdkEvent.state & OS.GDK_BUTTON1_MASK) != 0) {
 		int oldSelection = selection.y;
@@ -489,7 +489,7 @@ boolean mnemonicMatch (char key) {
 	for (int i = 0; i < mnemonics.length - 1; i++) {
 		if (mnemonics[i] != -1) {
 			char mnemonic = parsedText.charAt(mnemonics[i]);
-			if (uckey == Character.toUpperCase (mnemonic)) { 
+			if (uckey == Character.toUpperCase (mnemonic)) {
 				return true;
 			}
 		}
@@ -534,7 +534,7 @@ public void removeSelectionListener (SelectionListener listener) {
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (eventTable == null) return;
 	eventTable.unhook (SWT.Selection, listener);
-	eventTable.unhook (SWT.DefaultSelection, listener);	
+	eventTable.unhook (SWT.DefaultSelection, listener);
 }
 
 String parse (String string) {
@@ -550,7 +550,7 @@ String parse (String string) {
 	while (index < length) {
 		char c = Character.toLowerCase (buffer [index]);
 		switch (state) {
-			case 0: 
+			case 0:
 				if (c == '<') {
 					tagStart = index;
 					state++;
@@ -663,7 +663,7 @@ String parse (String string) {
 		ids = newIDs;
 		int [] newMnemonics = new int [linkIndex + 1];
 		System.arraycopy (mnemonics, 0, newMnemonics, 0, linkIndex + 1);
-		mnemonics = newMnemonics;		
+		mnemonics = newMnemonics;
 	}
 	return result.toString ();
 }
@@ -689,7 +689,7 @@ int parseMnemonics (char[] buffer, int start, int end, StringBuffer result) {
 @Override
 int setBounds(int x, int y, int width, int height, boolean move, boolean resize) {
 	int result = super.setBounds (x, y, width,height, move, resize);
-	if ((result & RESIZED) != 0) {		
+	if ((result & RESIZED) != 0) {
 		layout.setWidth (width > 0 ? width : -1);
 		redraw ();
 	}
@@ -724,7 +724,7 @@ void setOrientation (boolean create) {
  * </p>
  * <p>
  * Mnemonics are indicated by an '&amp;' that causes the next
- * character to be the mnemonic. The receiver can have a    
+ * character to be the mnemonic. The receiver can have a
  * mnemonic in the text preceding each link. When the user presses a
  * key sequence that matches the mnemonic, focus is assigned
  * to the link that follows the text. Mnemonics in links and in
@@ -733,8 +733,8 @@ void setOrientation (boolean create) {
  * platform specific manner.  The mnemonic indicator character
  * '&amp;' can be escaped by doubling it in the string, causing
  * a single '&amp;' to be displayed.
- * </p> 
- * 
+ * </p>
+ *
  * @param string the new text
  *
  * @exception IllegalArgumentException <ul>

@@ -38,7 +38,7 @@ import org.eclipse.swt.internal.cairo.Cairo;
  * @see <a href="http://www.eclipse.org/swt/snippets/#tooltips">Tool Tips snippets</a>
  * @see <a href="http://www.eclipse.org/swt/examples.php">SWT Example: ControlExample</a>
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
- * 
+ *
  * @since 3.2
  * @noextend This class is not intended to be subclassed by clients.
  */
@@ -50,7 +50,7 @@ public class ToolTip extends Widget {
 	long /*int*/ layoutText = 0, layoutMessage = 0;
 	int [] borderPolygon;
 	boolean spikeAbove, autohide;
-	
+
 	static final int BORDER = 5;
 	static final int PADDING = 5;
 	static final int INSET = 4;
@@ -64,7 +64,7 @@ public class ToolTip extends Widget {
  * <p>
  * The style value is either one of the style constants defined in
  * class <code>SWT</code> which is applicable to instances of this
- * class, or must be built by <em>bitwise OR</em>'ing together 
+ * class, or must be built by <em>bitwise OR</em>'ing together
  * (that is, using the <code>int</code> "|" operator) two or more
  * of those <code>SWT</code> style constants. The class description
  * lists the style constants that are applicable to the class.
@@ -153,42 +153,42 @@ void configure () {
 		if (dest.height >= y + h + TIP_HEIGHT) {
 			int t = TIP_HEIGHT;
 			polyline = new int[] {
-				0, 5+t, 1, 5+t, 1, 3+t, 3, 1+t,  5, 1+t, 5, t, 
+				0, 5+t, 1, 5+t, 1, 3+t, 3, 1+t,  5, 1+t, 5, t,
 				16, t, 16, 0, 35, t,
 				w-5, t, w-5, 1+t, w-3, 1+t, w-1, 3+t, w-1, 5+t, w, 5+t,
 				w, h-5+t, w-1, h-5+t, w-1, h-3+t, w-2, h-3+t, w-2, h-2+t, w-3, h-2+t, w-3, h-1+t, w-5, h-1+t, w-5, h+t,
-				5, h+t, 5, h-1+t, 3, h-1+t, 3, h-2+t, 2, h-2+t, 2, h-3+t, 1, h-3+t, 1, h-5+t, 0, h-5+t, 
+				5, h+t, 5, h-1+t, 3, h-1+t, 3, h-2+t, 2, h-2+t, 2, h-3+t, 1, h-3+t, 1, h-5+t, 0, h-5+t,
 				0, 5+t};
 			borderPolygon = new int[] {
-				0, 5+t, 1, 4+t, 1, 3+t, 3, 1+t,  4, 1+t, 5, t, 
+				0, 5+t, 1, 4+t, 1, 3+t, 3, 1+t,  4, 1+t, 5, t,
 				16, t, 16, 1, 35, t,
 				w-6, 0+t, w-5, 1+t, w-4, 1+t, w-2, 3+t, w-2, 4+t, w-1, 5+t,
 				w-1, h-6+t, w-2, h-5+t, w-2, h-4+t, w-4, h-2+t, w-5, h-2+t, w-6, h-1+t,
-				5, h-1+t, 4, h-2+t, 3, h-2+t, 1, h-4+t, 1, h-5+t, 0, h-6+t, 
+				5, h-1+t, 4, h-2+t, 3, h-2+t, 1, h-4+t, 1, h-5+t, 0, h-6+t,
 				0, 5+t};
 			if ((parent.style & SWT.MIRRORED) != 0) {
 				x -= w - 36;
-				polyline[12] = w-36; 
-				polyline[14] = w-16; 
-				polyline[16] = w-15; 
+				polyline[12] = w-36;
+				polyline[14] = w-16;
+				polyline[16] = w-15;
 				borderPolygon[12] = w-35;
 				borderPolygon[14] = borderPolygon[16]  = w-16;
 			}
 			OS.gtk_window_move (handle, Math.max(0, x - 17), y);
 		} else {
 			polyline = new int[] {
-				0, 5, 1, 5, 1, 3, 3, 1,  5, 1, 5, 0, 
+				0, 5, 1, 5, 1, 3, 3, 1,  5, 1, 5, 0,
 				w-5, 0, w-5, 1, w-3, 1, w-1, 3, w-1, 5, w, 5,
 				w, h-5, w-1, h-5, w-1, h-3, w-2, h-3, w-2, h-2, w-3, h-2, w-3, h-1, w-5, h-1, w-5, h,
 				35, h, 16, h+TIP_HEIGHT, 16, h,
-				5, h, 5, h-1, 3, h-1, 3, h-2, 2, h-2, 2, h-3, 1, h-3, 1, h-5, 0, h-5, 
+				5, h, 5, h-1, 3, h-1, 3, h-2, 2, h-2, 2, h-3, 1, h-3, 1, h-5, 0, h-5,
 				0, 5};
 			borderPolygon = new int[] {
-				0, 5, 1, 4, 1, 3, 3, 1,  4, 1, 5, 0, 
+				0, 5, 1, 4, 1, 3, 3, 1,  4, 1, 5, 0,
 				w-6, 0, w-5, 1, w-4, 1, w-2, 3, w-2, 4, w-1, 5,
 				w-1, h-6, w-2, h-5, w-2, h-4, w-4, h-2, w-5, h-2, w-6, h-1,
 				35, h-1, 17, h+TIP_HEIGHT-2, 17, h-1,
-				5, h-1, 4, h-2, 3, h-2, 1, h-4, 1, h-5, 0, h-6, 
+				5, h-1, 4, h-2, 3, h-2, 1, h-4, 1, h-5, 0, h-6,
 				0, 5};
 			if ((parent.style & SWT.MIRRORED) != 0) {
 				x -= w - 36;
@@ -203,18 +203,18 @@ void configure () {
 		if (dest.height >= y + h + TIP_HEIGHT) {
 			int t = TIP_HEIGHT;
 			polyline = new int[] {
-				0, 5+t, 1, 5+t, 1, 3+t, 3, 1+t,  5, 1+t, 5, t, 
+				0, 5+t, 1, 5+t, 1, 3+t, 3, 1+t,  5, 1+t, 5, t,
 				w-35, t, w-16, 0, w-16, t,
 				w-5, t, w-5, 1+t, w-3, 1+t, w-1, 3+t, w-1, 5+t, w, 5+t,
 				w, h-5+t, w-1, h-5+t, w-1, h-3+t, w-2, h-3+t, w-2, h-2+t, w-3, h-2+t, w-3, h-1+t, w-5, h-1+t, w-5, h+t,
-				5, h+t, 5, h-1+t, 3, h-1+t, 3, h-2+t, 2, h-2+t, 2, h-3+t, 1, h-3+t, 1, h-5+t, 0, h-5+t, 
+				5, h+t, 5, h-1+t, 3, h-1+t, 3, h-2+t, 2, h-2+t, 2, h-3+t, 1, h-3+t, 1, h-5+t, 0, h-5+t,
 				0, 5+t};
 			borderPolygon = new int[] {
-				0, 5+t, 1, 4+t, 1, 3+t, 3, 1+t,  4, 1+t, 5, t, 
+				0, 5+t, 1, 4+t, 1, 3+t, 3, 1+t,  4, 1+t, 5, t,
 				w-35, t, w-17, 2, w-17, t,
 				w-6, t, w-5, 1+t, w-4, 1+t, w-2, 3+t, w-2, 4+t, w-1, 5+t,
 				w-1, h-6+t, w-2, h-5+t, w-2, h-4+t, w-4, h-2+t, w-5, h-2+t, w-6, h-1+t,
-				5, h-1+t, 4, h-2+t, 3, h-2+t, 1, h-4+t, 1, h-5+t, 0, h-6+t, 
+				5, h-1+t, 4, h-2+t, 3, h-2+t, 1, h-4+t, 1, h-5+t, 0, h-6+t,
 				0, 5+t};
 			if ((parent.style & SWT.MIRRORED) != 0) {
 				x += w - 35;
@@ -226,18 +226,18 @@ void configure () {
 			OS.gtk_window_move (handle, Math.min(dest.width - w, x - w + 17), y);
 		} else {
 			polyline = new int[] {
-				0, 5, 1, 5, 1, 3, 3, 1,  5, 1, 5, 0, 
+				0, 5, 1, 5, 1, 3, 3, 1,  5, 1, 5, 0,
 				w-5, 0, w-5, 1, w-3, 1, w-1, 3, w-1, 5, w, 5,
 				w, h-5, w-1, h-5, w-1, h-3, w-2, h-3, w-2, h-2, w-3, h-2, w-3, h-1, w-5, h-1, w-5, h,
 				w-16, h, w-16, h+TIP_HEIGHT, w-35, h,
-				5, h, 5, h-1, 3, h-1, 3, h-2, 2, h-2, 2, h-3, 1, h-3, 1, h-5, 0, h-5, 
+				5, h, 5, h-1, 3, h-1, 3, h-2, 2, h-2, 2, h-3, 1, h-3, 1, h-5, 0, h-5,
 				0, 5};
 			borderPolygon = new int[] {
-				0, 5, 1, 4, 1, 3, 3, 1,  4, 1, 5, 0, 
+				0, 5, 1, 4, 1, 3, 3, 1,  4, 1, 5, 0,
 				w-6, 0, w-5, 1, w-4, 1, w-2, 3, w-2, 4, w-1, 5,
 				w-1, h-6, w-2, h-5, w-2, h-4, w-4, h-2, w-5, h-2, w-6, h-1,
 				w-17, h-1, w-17, h+TIP_HEIGHT-2, w-36, h-1,
-				5, h-1, 4, h-2, 3, h-2, 1, h-4, 1, h-5, 0, h-6, 
+				5, h-1, 4, h-2, 3, h-2, 1, h-4, 1, h-5, 0, h-6,
 				0, 5};
 			if ((parent.style & SWT.MIRRORED) != 0) {
 				x += w - 35;
@@ -336,7 +336,7 @@ void destroyWidget () {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  */
 public boolean getAutoHide () {
 	checkWidget ();
@@ -347,7 +347,7 @@ Point getLocation () {
 	int x = this.x;
 	int y = this.y;
 	if (item != null) {
-		long /*int*/ itemHandle = item.handle; 
+		long /*int*/ itemHandle = item.handle;
 		GdkRectangle area = new GdkRectangle ();
 		OS.gtk_status_icon_get_geometry (itemHandle, 0, area, 0);
 		x = area.x + area.width / 2;
@@ -413,7 +413,7 @@ Point getSize (int maxWidth) {
 	}
 	int messageTrim = 2 * INSET + 2 * BORDER + 2 * PADDING;
 	boolean hasImage = layoutText != 0 && (style & (SWT.ICON_ERROR | SWT.ICON_INFORMATION | SWT.ICON_WARNING)) != 0;
-	int textTrim = messageTrim + (hasImage ? IMAGE_SIZE : 0);  
+	int textTrim = messageTrim + (hasImage ? IMAGE_SIZE : 0);
 	int width = Math.min (maxWidth, Math.max (textWidth + textTrim, messageWidth + messageTrim));
 	int textHeight = 0, messageHeight = 0;
 	if (layoutText != 0) {
@@ -503,7 +503,7 @@ void drawTooltip (long /*int*/ cr) {
 			byte[] buffer = null;
 			int id = style & (SWT.ICON_ERROR | SWT.ICON_INFORMATION | SWT.ICON_WARNING);
 			switch (id) {
-				case SWT.ICON_ERROR: buffer = Converter.wcsToMbcs (null, "gtk-dialog-error", true); break; 
+				case SWT.ICON_ERROR: buffer = Converter.wcsToMbcs (null, "gtk-dialog-error", true); break;
 				case SWT.ICON_INFORMATION: buffer = Converter.wcsToMbcs (null, "gtk-dialog-info", true); break;
 				case SWT.ICON_WARNING: buffer = Converter.wcsToMbcs (null, "gtk-dialog-warning", true); break;
 			}
@@ -546,19 +546,19 @@ void drawTooltip (long /*int*/ cr) {
 		byte[] buffer = null;
 		int id = style & (SWT.ICON_ERROR | SWT.ICON_INFORMATION | SWT.ICON_WARNING);
 		switch (id) {
-			case SWT.ICON_ERROR: buffer = Converter.wcsToMbcs (null, "gtk-dialog-error", true); break; 
+			case SWT.ICON_ERROR: buffer = Converter.wcsToMbcs (null, "gtk-dialog-error", true); break;
 			case SWT.ICON_INFORMATION: buffer = Converter.wcsToMbcs (null, "gtk-dialog-info", true); break;
 			case SWT.ICON_WARNING: buffer = Converter.wcsToMbcs (null, "gtk-dialog-warning", true); break;
 		}
 		if (buffer != null) {
 			long /*int*/ style = OS.gtk_widget_get_default_style ();
 			long /*int*/ pixbuf = OS.gtk_icon_set_render_icon (
-				OS.gtk_icon_factory_lookup_default (buffer), 
+				OS.gtk_icon_factory_lookup_default (buffer),
 				style,
-				OS.GTK_TEXT_DIR_NONE, 
-				OS.GTK_STATE_NORMAL, 
+				OS.GTK_TEXT_DIR_NONE,
+				OS.GTK_STATE_NORMAL,
 				OS.GTK_ICON_SIZE_MENU,
-				0, 
+				0,
 				0);
 			OS.gdk_draw_pixbuf (window, gdkGC, pixbuf, 0, 0, x, y, IMAGE_SIZE, IMAGE_SIZE, OS.GDK_RGB_DITHER_NORMAL, 0, 0);
 			OS.g_object_unref (pixbuf);
@@ -597,7 +597,7 @@ long /*int*/ gtk_expose_event (long /*int*/ widget, long /*int*/ eventPtr) {
 
 @Override
 long /*int*/ gtk_size_allocate (long /*int*/ widget, long /*int*/ allocation) {
-	Point point = getLocation (); 
+	Point point = getLocation ();
 	int x = point.x;
 	int y = point.y;
 	long /*int*/ screen = OS.gdk_screen_get_default ();
@@ -713,7 +713,7 @@ public void removeSelectionListener (SelectionListener listener) {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @see #getVisible
  * @see #setVisible
  */
@@ -854,7 +854,7 @@ public void setText (String string) {
 
 /**
  * Marks the receiver as visible if the argument is <code>true</code>,
- * and marks it invisible otherwise. 
+ * and marks it invisible otherwise.
  * <p>
  * If one of the receiver's ancestors is not visible or some
  * other condition makes the receiver not visible, marking
@@ -890,7 +890,7 @@ public void setVisible (boolean visible) {
 				OS.GTK_TOOLTIPS_SET_ACTIVE (handle, data);
 				OS.gtk_tooltips_set_tip (handle, vboxHandle, buffer, null);
 			}
-		}		
+		}
 		if (autohide) timerId = OS.g_timeout_add (DELAY, display.windowTimerProc, handle);
 	} else {
 		if ((style & SWT.BALLOON) != 0) {

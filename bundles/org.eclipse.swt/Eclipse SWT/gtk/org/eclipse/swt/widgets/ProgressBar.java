@@ -45,7 +45,7 @@ public class ProgressBar extends Control {
  * <p>
  * The style value is either one of the style constants defined in
  * class <code>SWT</code> which is applicable to instances of this
- * class, or must be built by <em>bitwise OR</em>'ing together 
+ * class, or must be built by <em>bitwise OR</em>'ing together
  * (that is, using the <code>int</code> "|" operator) two or more
  * of those <code>SWT</code> style constants. The class description
  * lists the style constants that are applicable to the class.
@@ -153,13 +153,13 @@ public int getSelection () {
  * 	<li>{@link SWT#PAUSED}</li>
  * </ul>
  *
- * @return the state 
+ * @return the state
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 3.4
  */
 public int getState () {
@@ -194,7 +194,7 @@ void setParentBackground () {
 	* Bug in GTK.  For some reason, some theme managers will crash
 	* when the progress bar is inheriting the background from a parent.
 	* The fix is to stop inheriting the background. This is acceptable
-	* since progress bars do not use the inherited background. 
+	* since progress bars do not use the inherited background.
 	*/
 }
 
@@ -269,14 +269,14 @@ public void setSelection (int value) {
  * Note: This operation is a hint and is not supported on
  * platforms that do not have this concept.
  * </p>
- * 
+ *
  * @param state the new state
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 3.4
  */
 public void setState (int state) {

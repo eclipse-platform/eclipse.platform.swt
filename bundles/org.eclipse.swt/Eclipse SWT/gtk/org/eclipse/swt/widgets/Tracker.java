@@ -22,7 +22,7 @@ import org.eclipse.swt.events.*;
  *  These rectangles can be specified to respond to mouse and key events
  *  by either moving or resizing themselves accordingly.  Trackers are
  *  typically used to represent window geometries in a lightweight manner.
- *  
+ *
  * <dl>
  * <dt><b>Styles:</b></dt>
  * <dd>LEFT, RIGHT, UP, DOWN, RESIZE</dd>
@@ -58,7 +58,7 @@ public class Tracker extends Widget {
  * <p>
  * The style value is either one of the style constants defined in
  * class <code>SWT</code> which is applicable to instances of this
- * class, or must be built by <em>bitwise OR</em>'ing together 
+ * class, or must be built by <em>bitwise OR</em>'ing together
  * (that is, using the <code>int</code> "|" operator) two or more
  * of those <code>SWT</code> style constants. The class description
  * lists the style constants that are applicable to the class.
@@ -96,7 +96,7 @@ public Tracker (Composite parent, int style) {
  * <p>
  * The style value is either one of the style constants defined in
  * class <code>SWT</code> which is applicable to instances of this
- * class, or must be built by <em>bitwise OR</em>'ing together 
+ * class, or must be built by <em>bitwise OR</em>'ing together
  * (that is, using the <code>int</code> "|" operator) two or more
  * of those <code>SWT</code> style constants. The class description
  * lists the style constants that are applicable to the class.
@@ -104,7 +104,7 @@ public Tracker (Composite parent, int style) {
  * </p><p>
  * Note: Currently, null can be passed in for the display argument.
  * This has the effect of creating the tracker on the currently active
- * display if there is one. If there is no current display, the 
+ * display if there is one. If there is no current display, the
  * tracker is created on a "default" display. <b>Passing in null as
  * the display argument is not considered to be good coding style,
  * and may not be supported in a future release of SWT.</b>
@@ -117,7 +117,7 @@ public Tracker (Composite parent, int style) {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the parent</li>
  *    <li>ERROR_INVALID_SUBCLASS - if this class is not an allowed subclass</li>
  * </ul>
- * 
+ *
  * @see SWT#LEFT
  * @see SWT#RIGHT
  * @see SWT#UP
@@ -189,14 +189,14 @@ public void addKeyListener(KeyListener listener) {
 	addListener(SWT.KeyDown,typedListener);
 }
 
-Point adjustMoveCursor () {	
+Point adjustMoveCursor () {
 	if (bounds == null) return null;
 	int newX = bounds.x + bounds.width / 2;
 	int newY = bounds.y;
-	
+
 	Point point = display.map (parent, null, newX, newY);
 	display.setCursorLocation (point);
-	
+
 	/*
 	 * The call to XWarpPointer does not always place the pointer on the
 	 * exact location that is specified, so do a query (below) to get the
@@ -218,7 +218,7 @@ Point adjustResizeCursor () {
 	} else {
 		newX = bounds.x + bounds.width / 2;
 	}
-	
+
 	if ((cursorOrientation & SWT.UP) != 0) {
 		newY = bounds.y;
 	} else if ((cursorOrientation & SWT.DOWN) != 0) {
@@ -229,7 +229,7 @@ Point adjustResizeCursor () {
 
 	Point point = display.map (parent, null, newX, newY);
 	display.setCursorLocation (point);
-	
+
 	/*
 	 * The call to XWarpPointer does not always place the pointer on the
 	 * exact location that is specified, so do a query (below) to get the
@@ -268,16 +268,16 @@ Rectangle computeBounds () {
 	int yMin = rectangles [0].y;
 	int xMax = rectangles [0].x + rectangles [0].width;
 	int yMax = rectangles [0].y + rectangles [0].height;
-	
+
 	for (int i = 1; i < rectangles.length; i++) {
 		if (rectangles [i].x < xMin) xMin = rectangles [i].x;
 		if (rectangles [i].y < yMin) yMin = rectangles [i].y;
 		int rectRight = rectangles [i].x + rectangles [i].width;
-		if (rectRight > xMax) xMax = rectRight;		
+		if (rectRight > xMax) xMax = rectRight;
 		int rectBottom = rectangles [i].y + rectangles [i].height;
 		if (rectBottom > yMax) yMax = rectBottom;
 	}
-	
+
 	return new Rectangle (xMin, yMin, xMax - xMin, yMax - yMin);
 }
 
@@ -299,7 +299,7 @@ Rectangle [] computeProportions (Rectangle [] rects) {
 			} else {
 				height = 100;
 			}
-			result [i] = new Rectangle (x, y, width, height);			
+			result [i] = new Rectangle (x, y, width, height);
 		}
 	}
 	return result;
@@ -309,7 +309,7 @@ void drawRectangles (Rectangle [] rects) {
 	long /*int*/ window = OS.gdk_get_default_root_window();
 	if (parent != null) {
 		window = gtk_widget_get_window (parent.paintHandle());
-	} 
+	}
 	if (window == 0) return;
 	if (OS.GTK3) {
 		if (overlay == 0) return;
@@ -364,7 +364,7 @@ void drawRectangles (Rectangle [] rects) {
  * coordinates.
  *
  * @return the bounds of the Rectangles being drawn
- * 
+ *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
@@ -413,9 +413,9 @@ long /*int*/ gtk_key_press_event (long /*int*/ widget, long /*int*/ eventPtr) {
 	GdkEventKey keyEvent = new GdkEventKey ();
 	OS.memmove (keyEvent, eventPtr, GdkEventKey.sizeof);
 	int stepSize = ((keyEvent.state & OS.GDK_CONTROL_MASK) != 0) ? STEPSIZE_SMALL : STEPSIZE_LARGE;
-	int xChange = 0, yChange = 0;	
+	int xChange = 0, yChange = 0;
 	switch (keyEvent.keyval) {
-		case OS.GDK_Escape: 
+		case OS.GDK_Escape:
 			cancelled = true;
 			// fallthrough
 		case OS.GDK_Return:
@@ -690,9 +690,9 @@ void moveRectangles (int xChange, int yChange) {
  * Displays the Tracker rectangles for manipulation by the user.  Returns when
  * the user has either finished manipulating the rectangles or has cancelled the
  * Tracker.
- * 
+ *
  * @return <code>true</code> if the user did not cancel the Tracker, <code>false</code> otherwise
- * 
+ *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
@@ -703,7 +703,7 @@ public boolean open () {
 	window = OS.gdk_get_default_root_window();
 	if (parent != null) {
 		window = gtk_widget_get_window (parent.paintHandle());
-	} 
+	}
 	if (window == 0) return false;
 	cancelled = false;
 	tracking = true;
@@ -727,7 +727,7 @@ public boolean open () {
 		cursorOrientation |= hStyle;
 	}
 
-	int mask = OS.GDK_BUTTON1_MASK | OS.GDK_BUTTON2_MASK | OS.GDK_BUTTON3_MASK; 
+	int mask = OS.GDK_BUTTON1_MASK | OS.GDK_BUTTON2_MASK | OS.GDK_BUTTON3_MASK;
 	boolean mouseDown = (state [0] & mask) != 0;
 	if (!mouseDown) {
 		Point cursorPos = null;
@@ -743,10 +743,10 @@ public boolean open () {
 	}
 	this.oldX = oldX [0];
 	this.oldY = oldY [0];
-	
+
 	grabbed = grab ();
 	lastCursor = this.cursor != null ? this.cursor.handle : 0;
-	
+
 	if (OS.GTK3) {
 		overlay = OS.gtk_window_new (OS.GTK_WINDOW_POPUP);
 		OS.gtk_window_set_skip_taskbar_hint (overlay, true);
@@ -779,7 +779,7 @@ public boolean open () {
 			* This call to gdk_threads_leave() is a temporary work around
 			* to avoid deadlocks when gdk_threads_init() is called by native
 			* code outside of SWT (i.e AWT, etc). It ensures that the current
-			* thread leaves the GTK lock before calling the function below. 
+			* thread leaves the GTK lock before calling the function below.
 			*/
 			OS.gdk_threads_leave();
 			OS.g_main_context_iteration (0, true);
@@ -909,12 +909,12 @@ void resizeRectangles (int xChange, int yChange) {
 	if (yChange > 0 && ((style & SWT.DOWN) != 0) && ((cursorOrientation & SWT.UP) == 0)) {
 		cursorOrientation |= SWT.DOWN;
 	}
-	
+
 	/*
 	 * If the bounds will flip about the x or y axis then apply the adjustment
 	 * up to the axis (ie.- where bounds width/height becomes 0), change the
 	 * cursor's orientation accordingly, and flip each Rectangle's origin (only
-	 * necessary for > 1 Rectangles) 
+	 * necessary for > 1 Rectangles)
 	 */
 	if ((cursorOrientation & SWT.LEFT) != 0) {
 		if (xChange > bounds.width) {
@@ -976,7 +976,7 @@ void resizeRectangles (int xChange, int yChange) {
 			}
 		}
 	}
-	
+
 	// apply the bounds adjustment
 	if ((cursorOrientation & SWT.LEFT) != 0) {
 		bounds.x += xChange;
@@ -990,7 +990,7 @@ void resizeRectangles (int xChange, int yChange) {
 	} else if ((cursorOrientation & SWT.DOWN) != 0) {
 		bounds.height += yChange;
 	}
-	
+
 	Rectangle [] newRects = new Rectangle [rectangles.length];
 	for (int i = 0; i < rectangles.length; i++) {
 		Rectangle proportion = proportions[i];
@@ -1000,7 +1000,7 @@ void resizeRectangles (int xChange, int yChange) {
 			proportion.width * bounds.width / 100,
 			proportion.height * bounds.height / 100);
 	}
-	rectangles = newRects;	
+	rectangles = newRects;
 }
 
 /**
@@ -1008,7 +1008,7 @@ void resizeRectangles (int xChange, int yChange) {
  * then the cursor reverts to the default.
  *
  * @param newCursor the new <code>Cursor</code> to display
- * 
+ *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>

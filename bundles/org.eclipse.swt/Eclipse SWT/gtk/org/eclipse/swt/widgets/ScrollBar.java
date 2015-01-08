@@ -26,9 +26,9 @@ import org.eclipse.swt.internal.gtk.OS;
 
 /**
  * Instances of this class are selectable user interface
- * objects that represent a range of positive, numeric values. 
+ * objects that represent a range of positive, numeric values.
  * <p>
- * At any given moment, a given scroll bar will have a 
+ * At any given moment, a given scroll bar will have a
  * single 'selection' that is considered to be its
  * value, which is constrained to be within the range of
  * values the scroll bar represents (that is, between its
@@ -68,7 +68,7 @@ import org.eclipse.swt.internal.gtk.OS;
  * have no operating system resources and are not children of the control.
  * For this reason, scroll bars are treated specially.  To create a control
  * that looks like a scroll bar but has operating system resources, use
- * <code>Slider</code>. 
+ * <code>Slider</code>.
  * </p>
  * <dl>
  * <dt><b>Styles:</b></dt>
@@ -95,7 +95,7 @@ public class ScrollBar extends Widget {
 	long /*int*/ adjustmentHandle;
 	int detail;
 	boolean dragSent;
-	
+
 ScrollBar () {
 }
 
@@ -181,7 +181,7 @@ void destroyWidget () {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @see #isEnabled
  */
 public boolean getEnabled () {
@@ -325,14 +325,14 @@ public int getThumb () {
 /**
  * Returns a rectangle describing the size and location of the
  * receiver's thumb relative to its parent.
- * 
+ *
  * @return the thumb bounds, relative to the {@link #getParent() parent}
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 3.6
  */
 public Rectangle getThumbBounds () {
@@ -370,14 +370,14 @@ public Rectangle getThumbBounds () {
  * Returns a rectangle describing the size and location of the
  * receiver's thumb track relative to its parent. This rectangle
  * comprises the areas 2, 3, and 4 as described in {@link ScrollBar}.
- * 
+ *
  * @return the thumb track bounds, relative to the {@link #getParent() parent}
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 3.6
  */
 public Rectangle getThumbTrackBounds () {
@@ -400,7 +400,7 @@ public Rectangle getThumbTrackBounds () {
 		if (hasB) y += stepperSize;
 		if (hasF2) y += stepperSize;
 		width = allocation.width;
-		height = allocation.height - y;	
+		height = allocation.height - y;
 		if (hasB2) height -= stepperSize;
 		if (hasF) height -= stepperSize;
 		if (height < 0) {
@@ -472,7 +472,7 @@ long /*int*/ gtk_button_press_event (long /*int*/ widget, long /*int*/ eventPtr)
 	long /*int*/ result = super.gtk_button_press_event (widget, eventPtr);
 	if (result != 0) return result;
 	detail = OS.GTK_SCROLL_NONE;
-	dragSent = false;	
+	dragSent = false;
 	return result;
 }
 
@@ -549,7 +549,7 @@ void hookEvents () {
 	OS.g_signal_connect_closure (handle, OS.change_value, display.getClosure (CHANGE_VALUE), false);
 	OS.g_signal_connect_closure (adjustmentHandle, OS.value_changed, display.getClosure (VALUE_CHANGED), false);
 	OS.g_signal_connect_closure_by_id (handle, display.signalIds [EVENT_AFTER], 0, display.getClosure (EVENT_AFTER), false);
-	OS.g_signal_connect_closure_by_id (handle, display.signalIds [BUTTON_PRESS_EVENT], 0, display.getClosure (BUTTON_PRESS_EVENT), false);	
+	OS.g_signal_connect_closure_by_id (handle, display.signalIds [BUTTON_PRESS_EVENT], 0, display.getClosure (BUTTON_PRESS_EVENT), false);
 }
 
 /**
@@ -564,7 +564,7 @@ void hookEvents () {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @see #getEnabled
  */
 public boolean isEnabled () {
@@ -632,7 +632,7 @@ public void removeSelectionListener (SelectionListener listener) {
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (eventTable == null) return;
 	eventTable.unhook (SWT.Selection, listener);
-	eventTable.unhook (SWT.DefaultSelection,listener);	
+	eventTable.unhook (SWT.DefaultSelection,listener);
 }
 
 /**
@@ -656,7 +656,7 @@ public void setEnabled (boolean enabled) {
 /**
  * Sets the amount that the receiver's value will be
  * modified by when the up/down (or right/left) arrows
- * are pressed to the argument, which must be at least 
+ * are pressed to the argument, which must be at least
  * one.
  *
  * @param value the new increment (must be greater than zero)
@@ -708,7 +708,7 @@ public void setMaximum (int value) {
 	gtk_adjustment_configure (adjustmentHandle, adjustment);
 	OS.g_signal_handlers_unblock_matched (adjustmentHandle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, VALUE_CHANGED);
 }
-	
+
 /**
  * Sets the minimum value. If this value is negative or greater
  * than or equal to the maximum, the value is ignored. If necessary,
@@ -799,11 +799,11 @@ public void setSelection (int selection) {
 }
 
 /**
- * Sets the thumb value. The thumb value should be used to represent 
+ * Sets the thumb value. The thumb value should be used to represent
  * the size of the visual portion of the current range. This value is
  * usually the same as the page increment value.
  * <p>
- * This new value will be ignored if it is less than one, and will be 
+ * This new value will be ignored if it is less than one, and will be
  * clamped if it exceeds the receiver's current range.
  * </p>
  *
@@ -820,7 +820,7 @@ public void setThumb (int value) {
 	if (value < 1) return;
 	GtkAdjustment adjustment = new GtkAdjustment ();
 	gtk_adjustment_get (adjustmentHandle, adjustment);
-	value = (int) Math.min (value, (int)(adjustment.upper - adjustment.lower)); 
+	value = (int) Math.min (value, (int)(adjustment.upper - adjustment.lower));
 	adjustment.page_size = (double) value;
 	adjustment.value = Math.min ((int)adjustment.value, (int)(adjustment.upper - value));
 	OS.g_signal_handlers_block_matched (adjustmentHandle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, VALUE_CHANGED);
@@ -833,7 +833,7 @@ public void setThumb (int value) {
  * value, thumb, increment and page increment all at once.
  * <p>
  * Note: This is similar to setting the values individually
- * using the appropriate methods, but may be implemented in a 
+ * using the appropriate methods, but may be implemented in a
  * more efficient fashion on some platforms.
  * </p>
  *
@@ -872,7 +872,7 @@ public void setValues (int selection, int minimum, int maximum, int thumb, int i
 
 /**
  * Marks the receiver as visible if the argument is <code>true</code>,
- * and marks it invisible otherwise. 
+ * and marks it invisible otherwise.
  * <p>
  * If one of the receiver's ancestors is not visible or some
  * other condition makes the receiver not visible, marking

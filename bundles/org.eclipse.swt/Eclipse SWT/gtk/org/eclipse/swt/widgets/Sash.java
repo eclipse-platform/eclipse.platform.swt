@@ -51,7 +51,7 @@ public class Sash extends Control {
  * <p>
  * The style value is either one of the style constants defined in
  * class <code>SWT</code> which is applicable to instances of this
- * class, or must be built by <em>bitwise OR</em>'ing together 
+ * class, or must be built by <em>bitwise OR</em>'ing together
  * (that is, using the <code>int</code> "|" operator) two or more
  * of those <code>SWT</code> style constants. The class description
  * lists the style constants that are applicable to the class.
@@ -157,12 +157,12 @@ void drawBand (int x, int y, int width, int height) {
 	long /*int*/ colormap = OS.gdk_colormap_get_system();
 	GdkColor color = new GdkColor ();
 	OS.gdk_color_white (colormap, color);
-	OS.gdk_gc_set_foreground (gc, color);	
+	OS.gdk_gc_set_foreground (gc, color);
 	OS.gdk_gc_set_stipple (gc, stipplePixmap);
 	OS.gdk_gc_set_subwindow (gc, OS.GDK_INCLUDE_INFERIORS);
 	OS.gdk_gc_set_fill (gc, OS.GDK_STIPPLED);
 	OS.gdk_gc_set_function (gc, OS.GDK_XOR);
-	OS.gdk_draw_rectangle (window, gc, 1, x, y, width, height);	
+	OS.gdk_draw_rectangle (window, gc, 1, x, y, width, height);
 	OS.g_object_unref (stipplePixmap);
 	OS.g_object_unref (gc);
 }
@@ -188,7 +188,7 @@ long /*int*/ gtk_button_press_event (long /*int*/ widget, long /*int*/ eventPtr)
 	int y = allocation.y;
 	int width = allocation.width;
 	int height = allocation.height;
-	lastX = x; 
+	lastX = x;
 	lastY = y;
 	Event event = new Event ();
 	event.time = gdkEvent.time;
@@ -214,7 +214,7 @@ long /*int*/ gtk_button_press_event (long /*int*/ widget, long /*int*/ eventPtr)
 			// widget could be disposed at this point
 		}
 	}
-	return result;	
+	return result;
 }
 
 @Override
@@ -259,7 +259,7 @@ long /*int*/ gtk_focus_in_event (long /*int*/ widget, long /*int*/ event) {
 		GtkAllocation allocation = new GtkAllocation ();
 		gtk_widget_get_allocation (handle, allocation);
 		lastX = allocation.x;
-		lastY = allocation.y;	
+		lastY = allocation.y;
 	}
 	return 0;
 }
@@ -301,7 +301,7 @@ long /*int*/ gtk_key_press_event (long /*int*/ widget, long /*int*/ eventPtr) {
 				newY = Math.min (Math.max (0, lastY + yChange - parentBorder - startY), parentHeight - height);
 			}
 			if (newX == lastX && newY == lastY) return result;
-			
+
 			/* Ensure that the pointer image does not change */
 			long /*int*/ window = gtk_widget_get_window (handle);
 			int grabMask = OS.GDK_POINTER_MOTION_MASK | OS.GDK_BUTTON_RELEASE_MASK;
@@ -319,7 +319,7 @@ long /*int*/ gtk_key_press_event (long /*int*/ widget, long /*int*/ eventPtr) {
 			sendSelectionEvent (SWT.Selection, event, true);
 			if (ptrGrabResult == OS.GDK_GRAB_SUCCESS) gdk_pointer_ungrab (window, OS.GDK_CURRENT_TIME);
 			if (isDisposed ()) break;
-			
+
 			if (event.doit) {
 				lastX = event.x;
 				lastY = event.y;
@@ -358,7 +358,7 @@ long /*int*/ gtk_motion_notify_event (long /*int*/ widget, long /*int*/ eventPtr
 		eventState = mask [0];
 	} else {
 		int [] origin_x = new int [1], origin_y = new int [1];
-		OS.gdk_window_get_origin (gdkEvent.window, origin_x, origin_y);	
+		OS.gdk_window_get_origin (gdkEvent.window, origin_x, origin_y);
 		eventX = (int) (gdkEvent.x_root - origin_x [0]);
 		eventY = (int) (gdkEvent.y_root - origin_y [0]);
 		eventState = gdkEvent.state;
@@ -382,7 +382,7 @@ long /*int*/ gtk_motion_notify_event (long /*int*/ widget, long /*int*/ eventPtr
 	}
 	if (newX == lastX && newY == lastY) return 0;
 	drawBand (lastX, lastY, width, height);
-	
+
 	Event event = new Event ();
 	event.time = gdkEvent.time;
 	event.x = newX;
@@ -450,7 +450,7 @@ public void removeSelectionListener(SelectionListener listener) {
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (eventTable == null) return;
 	eventTable.unhook (SWT.Selection, listener);
-	eventTable.unhook (SWT.DefaultSelection,listener);	
+	eventTable.unhook (SWT.DefaultSelection,listener);
 }
 
 @Override

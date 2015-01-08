@@ -36,7 +36,7 @@ public class PrintDialog extends Dialog {
 	long /*int*/ handle;
 	int index;
 	byte [] settingsData;
-	
+
 	static final String GET_MODAL_DIALOG = "org.eclipse.swt.internal.gtk.getModalDialog";
 	static final String SET_MODAL_DIALOG = "org.eclipse.swt.internal.gtk.setModalDialog";
 	static final String ADD_IDLE_PROC_KEY = "org.eclipse.swt.internal.gtk.addIdleProc";
@@ -69,7 +69,7 @@ public PrintDialog (Shell parent) {
  * <p>
  * The style value is either one of the style constants defined in
  * class <code>SWT</code> which is applicable to instances of this
- * class, or must be built by <em>bitwise OR</em>'ing together 
+ * class, or must be built by <em>bitwise OR</em>'ing together
  * (that is, using the <code>int</code> "|" operator) two or more
  * of those <code>SWT</code> style constants. The class description
  * lists the style constants that are applicable to the class.
@@ -103,9 +103,9 @@ public PrintDialog (Shell parent, int style) {
  * Setting the printer data to null is equivalent to
  * resetting all data fields to their default values.
  * </p>
- * 
+ *
  * @param data the data that will be used when the dialog is opened or null to use default data
- * 
+ *
  * @since 3.4
  */
 public void setPrinterData(PrinterData data) {
@@ -116,9 +116,9 @@ public void setPrinterData(PrinterData data) {
 /**
  * Returns the printer data that will be used when the dialog
  * is opened.
- * 
+ *
  * @return the data that will be used when the dialog is opened
- * 
+ *
  * @since 3.4
  */
 public PrinterData getPrinterData() {
@@ -221,7 +221,7 @@ public int getStartPage() {
  * This value can be from 1 to the maximum number of pages for the platform.
  * Note that it is only valid if the scope is <code>PrinterData.PAGE_RANGE</code>.
  * </p>
- * 
+ *
  * @param startPage the startPage setting when the dialog is opened
  */
 public void setStartPage(int startPage) {
@@ -249,7 +249,7 @@ public int getEndPage() {
  * This value can be from 1 to the maximum number of pages for the platform.
  * Note that it is only valid if the scope is <code>PrinterData.PAGE_RANGE</code>.
  * </p>
- * 
+ *
  * @param endPage the end page setting when the dialog is opened
  */
 public void setEndPage(int endPage) {
@@ -295,21 +295,21 @@ public PrinterData open() {
 		topHandle = OS.gtk_widget_get_parent(topHandle);
 	}
 	handle = OS.gtk_print_unix_dialog_new(titleBytes, topHandle);
-			
+
 	//TODO: Not currently implemented. May need new API. For now, disable 'Current' in the dialog. (see gtk bug 344519)
 	OS.gtk_print_unix_dialog_set_current_page(handle, -1);
-	
+
 	OS.gtk_print_unix_dialog_set_manual_capabilities(handle,
 		OS.GTK_PRINT_CAPABILITY_COLLATE | OS.GTK_PRINT_CAPABILITY_COPIES | OS.GTK_PRINT_CAPABILITY_PAGE_SET);
-	
+
 	/* Set state into print dialog settings. */
 	long /*int*/ settings = OS.gtk_print_settings_new();
 	long /*int*/ page_setup = OS.gtk_page_setup_new();
-	
+
 	if (printerData.otherData != null) {
 		Printer.restore(printerData.otherData, settings, page_setup);
 	}
-	
+
 	/* Set values of print_settings and page_setup from PrinterData. */
 	String printerName = printerData.name;
 	if (printerName == null && printerData.printToFile) {
@@ -325,7 +325,7 @@ public PrinterData open() {
 		byte [] nameBytes = Converter.wcsToMbcs (null, printerName, true);
 		OS.gtk_print_settings_set_printer(settings, nameBytes);
 	}
-	
+
 	switch (printerData.scope) {
 		case PrinterData.ALL_PAGES:
 			OS.gtk_print_settings_set_print_pages(settings, OS.GTK_PRINT_PAGES_ALL);
@@ -351,7 +351,7 @@ public PrinterData open() {
 	}
 	OS.gtk_print_settings_set_n_copies(settings, printerData.copyCount);
 	OS.gtk_print_settings_set_collate(settings, printerData.collate);
-	/* 
+	/*
 	 * Bug in GTK.  The unix dialog gives priority to the value of the non-API
 	 * field cups-Duplex in the print_settings (which we preserve in otherData).
 	 * The fix is to manually clear cups-Duplex before setting the duplex field.
@@ -367,7 +367,7 @@ public PrinterData open() {
 	int orientation = printerData.orientation == PrinterData.LANDSCAPE ? OS.GTK_PAGE_ORIENTATION_LANDSCAPE : OS.GTK_PAGE_ORIENTATION_PORTRAIT;
 	OS.gtk_print_settings_set_orientation(settings, orientation);
 	OS.gtk_page_setup_set_orientation(page_setup, orientation);
-	
+
 	OS.gtk_print_unix_dialog_set_settings(handle, settings);
 	OS.gtk_print_unix_dialog_set_page_setup(handle, page_setup);
 	if (OS.GTK_VERSION >= OS.VERSION (2, 18, 0)) {
@@ -381,13 +381,13 @@ public PrinterData open() {
 	PrinterData data = null;
 	//TODO: Handle 'Print Preview' (GTK_RESPONSE_APPLY).
 	Display display = getParent() != null ? getParent().getDisplay (): Display.getCurrent ();
-	
+
 	int signalId = 0;
 	long /*int*/ hookId = 0;
 	if ((getStyle () & SWT.RIGHT_TO_LEFT) != 0) {
 		signalId = OS.g_signal_lookup (OS.map, OS.GTK_TYPE_WIDGET());
 		hookId = OS.g_signal_add_emission_hook (signalId, 0, ((LONG) display.getData (GET_EMISSION_PROC_KEY)).value, handle, 0);
-	}	
+	}
 	display.setData (ADD_IDLE_PROC_KEY, null);
 	Object oldModal = null;
 	if (OS.gtk_window_get_modal (handle)) {
@@ -400,7 +400,7 @@ public PrinterData open() {
 	* This call to gdk_threads_leave() is a temporary work around
 	* to avoid deadlocks when gdk_threads_init() is called by native
 	* code outside of SWT (i.e AWT, etc). It ensures that the current
-	* thread leaves the GTK lock acquired by the function above. 
+	* thread leaves the GTK lock acquired by the function above.
 	*/
 	OS.gdk_threads_leave();
 	display.sendPostExternalEventDispatchEvent ();
@@ -444,7 +444,7 @@ public PrinterData open() {
 					data.startPage = data.endPage = OS.gtk_print_unix_dialog_get_current_page(handle);
 					break;
 			}
-			
+
 			data.printToFile = Printer.GTK_FILE_BACKEND.equals(data.driver); // TODO: GTK_FILE_BACKEND is not GTK API (see gtk bug 345590)
 			if (data.printToFile) {
 				long /*int*/ address = OS.gtk_print_settings_get(settings, OS.GTK_PRINT_SETTINGS_OUTPUT_URI);

@@ -20,7 +20,7 @@ public class ImageList {
 	long /*int*/ [] pixbufs;
 	int width = -1, height = -1;
 	Image [] images;
-	
+
 public ImageList() {
 	images = new Image [4];
 	pixbufs = new long /*int*/ [4];
@@ -228,7 +228,7 @@ public void put (int index, Image image) {
 	if (image != null) {
 		set (index, image);
 	} else {
-		images [index] = null;	
+		images [index] = null;
 		if (pixbufs [index] != 0) OS.g_object_unref (pixbufs [index]);
 		pixbufs [index] = 0;
 	}
@@ -269,7 +269,7 @@ void set (int index, Image image) {
 		}
 	}
 	pixbufs [index] = pixbuf;
-	images [index] = image;	
+	images [index] = image;
 }
 
 public int size () {

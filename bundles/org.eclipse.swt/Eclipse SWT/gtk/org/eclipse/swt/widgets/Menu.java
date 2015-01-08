@@ -81,7 +81,7 @@ public Menu (Control parent) {
  * <p>
  * The style value is either one of the style constants defined in
  * class <code>SWT</code> which is applicable to instances of this
- * class, or must be built by <em>bitwise OR</em>'ing together 
+ * class, or must be built by <em>bitwise OR</em>'ing together
  * (that is, using the <code>int</code> "|" operator) two or more
  * of those <code>SWT</code> style constants. The class description
  * lists the style constants that are applicable to the class.
@@ -198,7 +198,7 @@ void _setVisible (boolean visible) {
 		sendEvent (SWT.Show);
 		if (getItemCount () != 0) {
 			/*
-			* Feature in GTK. ON_TOP shells will send out 
+			* Feature in GTK. ON_TOP shells will send out
 			* SWT.Deactivate whenever a context menu is shown.
 			* The fix is to prevent the menu from taking focus
 			* when it is being shown in an ON_TOP shell.
@@ -210,11 +210,11 @@ void _setVisible (boolean visible) {
 			hasLocation = false;
 			long /*int*/ data = 0;
 			/*
-			* Popup-menu to the status icon should be aligned to  
-			* Tray rather than to cursor position. There is a 
-			* possibility (unlikely) that TrayItem might have  
-			* been disposed in the listener, for which case  
-			* the menu should be shown in the cursor position. 
+			* Popup-menu to the status icon should be aligned to
+			* Tray rather than to cursor position. There is a
+			* possibility (unlikely) that TrayItem might have
+			* been disposed in the listener, for which case
+			* the menu should be shown in the cursor position.
 			*/
 			TrayItem item = display.currentTrayItem;
 			if (item != null && !item.isDisposed()) {
@@ -334,7 +334,7 @@ void createIMMenu (long /*int*/ imHandle) {
 	}
 	if (this.imHandle == imHandle) return;
 	this.imHandle = imHandle;
-	
+
 	if (imSeparator == 0) {
 		imSeparator = OS.gtk_separator_menu_item_new ();
 		OS.gtk_widget_show (imSeparator);
@@ -414,7 +414,7 @@ public MenuItem getDefaultItem () {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @see #isEnabled
  */
 public boolean getEnabled () {
@@ -474,11 +474,11 @@ public int getItemCount () {
 
 /**
  * Returns a (possibly empty) array of <code>MenuItem</code>s which
- * are the items in the receiver. 
+ * are the items in the receiver.
  * <p>
  * Note: This is not the actual structure used by the receiver
  * to maintain its list of items, so modifying the array will
- * not affect the receiver. 
+ * not affect the receiver.
  * </p>
  *
  * @return the items in the receiver
@@ -532,12 +532,12 @@ String getNameText () {
  * constants <code>SWT.LEFT_TO_RIGHT</code> or <code>SWT.RIGHT_TO_LEFT</code>.
  *
  * @return the orientation style
- * 
+ *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 3.7
  */
 public int getOrientation () {
@@ -672,7 +672,7 @@ long /*int*/ gtk_show (long /*int*/ widget) {
 			display.activeShell.ignoreFocusOut = true;
 		}
 		return 0;
-	} 
+	}
 	sendEvent (SWT.Show);
 	if (OS.ubuntu_menu_proxy_get() != 0) {
 		MenuItem[] items = getItems();
@@ -704,7 +704,7 @@ void hookEvents () {
 
 /**
  * Searches the receiver's list starting at the first item
- * (index 0) until an item is found that is equal to the 
+ * (index 0) until an item is found that is equal to the
  * argument, and returns the index of that item. If no item
  * is found, returns -1.
  *
@@ -741,7 +741,7 @@ public int indexOf (MenuItem item) {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @see #getEnabled
  */
 public boolean isEnabled () {
@@ -780,7 +780,7 @@ long /*int*/ menuPositionProc (long /*int*/ menu, long /*int*/ x, long /*int*/ y
 	* add a scroll arrow at the bottom and position the first menu entry at
 	* the specified position.  The fix is to flip the menu location to be
 	* completely inside the screen.
-	* 
+	*
 	* NOTE: This code doesn't work for multiple monitors.
 	*/
     GtkRequisition requisition = new GtkRequisition ();
@@ -789,7 +789,7 @@ long /*int*/ menuPositionProc (long /*int*/ menu, long /*int*/ x, long /*int*/ y
 	int reqy = this.y;
 	if (reqy + requisition.height > screenHeight) {
     	reqy = Math.max (0, reqy - requisition.height);
-	} 
+	}
     int screenWidth = OS.gdk_screen_width ();
 	int reqx = this.x;
     if ((style & SWT.RIGHT_TO_LEFT) != 0) {
@@ -831,7 +831,7 @@ void releaseParent () {
 @Override
 void releaseWidget () {
 	super.releaseWidget ();
-	if (parent != null) parent.removeMenu (this); 
+	if (parent != null) parent.removeMenu (this);
 	parent = null;
 	cascade = null;
 	imItem = imSeparator = imHandle = 0;
@@ -923,11 +923,11 @@ boolean sendHelpEvent (long /*int*/ helpType) {
 /**
  * Sets the default menu item to the argument or removes
  * the default emphasis when the argument is <code>null</code>.
- * 
+ *
  * @param item the default menu item or null
  *
  * @exception IllegalArgumentException <ul>
- *    <li>ERROR_INVALID_ARGUMENT - if the menu item has been disposed</li> 
+ *    <li>ERROR_INVALID_ARGUMENT - if the menu item has been disposed</li>
  * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -981,7 +981,7 @@ public void setLocation (int x, int y) {
 	if ((style & (SWT.BAR | SWT.DROP_DOWN)) != 0) return;
 	this.x = x;
 	this.y = y;
-	hasLocation = true;	
+	hasLocation = true;
 }
 
 /**
@@ -1005,7 +1005,7 @@ public void setLocation (int x, int y) {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 2.1
  */
 public void setLocation (Point location) {
@@ -1020,16 +1020,16 @@ public void setLocation (Point location) {
  * <p>
  *
  * @param orientation new orientation style
- * 
+ *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
- * @since 3.7  
+ *
+ * @since 3.7
  */
 public void setOrientation (int orientation) {
-    checkWidget ();    
+    checkWidget ();
     if ((style & (SWT.BAR | SWT.DROP_DOWN)) != 0) return;
     _setOrientation (orientation);
 }
@@ -1056,7 +1056,7 @@ void setOrientation (boolean create) {
 
 /**
  * Marks the receiver as visible if the argument is <code>true</code>,
- * and marks it invisible otherwise. 
+ * and marks it invisible otherwise.
  * <p>
  * If one of the receiver's ancestors is not visible or some
  * other condition makes the receiver not visible, marking

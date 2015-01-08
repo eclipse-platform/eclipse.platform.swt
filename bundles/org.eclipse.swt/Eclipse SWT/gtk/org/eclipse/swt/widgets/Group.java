@@ -35,7 +35,7 @@ import org.eclipse.swt.graphics.*;
  * </p><p>
  * IMPORTANT: This class is <em>not</em> intended to be subclassed.
  * </p>
- * 
+ *
  * @see <a href="http://www.eclipse.org/swt/examples.php">SWT Example: ControlExample</a>
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  * @noextend This class is not intended to be subclassed by clients.
@@ -50,7 +50,7 @@ public class Group extends Composite {
  * <p>
  * The style value is either one of the style constants defined in
  * class <code>SWT</code> which is applicable to instances of this
- * class, or must be built by <em>bitwise OR</em>'ing together 
+ * class, or must be built by <em>bitwise OR</em>'ing together
  * (that is, using the <code>int</code> "|" operator) two or more
  * of those <code>SWT</code> style constants. The class description
  * lists the style constants that are applicable to the class.
@@ -129,15 +129,15 @@ public Rectangle getClientArea () {
 	Rectangle clientRectangle = super.getClientArea ();
 	/*
 	* Bug 453827 Child position fix.
-	* SWT's calls to gtk_widget_size_allocate and gtk_widget_set_allocation 
+	* SWT's calls to gtk_widget_size_allocate and gtk_widget_set_allocation
 	* causes GTK+ to move the clientHandle's SwtFixed down by the size of the label.
 	* These calls can come up from 'shell' and group has no control over these calls.
-	* 
+	*
 	* This is an undesired side-effect. Client handle's x & y positions should never
 	* be incremented as this is an internal sub-container.
-	* 
+	*
 	* Note: 0 by 0 was chosen as 1 by 1 shifts controls beyond their original pos.
-	* The long term fix would be to not use widget_*_allocation from higher containers 
+	* The long term fix would be to not use widget_*_allocation from higher containers
 	* like shell and to not use	gtkframe in non-group widgets (e.g used in label atm).
 	*/
 	clientRectangle.x = 0;
@@ -165,8 +165,8 @@ void createHandle(int index) {
 	clientHandle = OS.g_object_new (display.gtk_fixed_get_type (), 0);
 	if (clientHandle == 0) error (SWT.ERROR_NO_HANDLES);
 	/*
-	 * Bug 453827 - clientHandle now has it's own window so that 
-	 * it can listen to events (clicking/tooltip etc.) and so that 
+	 * Bug 453827 - clientHandle now has it's own window so that
+	 * it can listen to events (clicking/tooltip etc.) and so that
 	 * background can be drawn on it.
 	 */
 	gtk_widget_set_has_window (clientHandle, true);
@@ -350,7 +350,7 @@ public void setText (String string) {
 	if (string.length () != 0) {
 		if (OS.gtk_frame_get_label_widget (handle) == 0) {
 			OS.gtk_frame_set_label_widget (handle, labelHandle);
-		}	
+		}
 	} else {
 		OS.gtk_frame_set_label_widget (handle, 0);
 	}

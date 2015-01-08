@@ -90,7 +90,7 @@ public class Tree extends Composite {
 	int drawState, drawFlags;
 	GdkColor drawForeground;
 	boolean ownerDraw, ignoreSize, ignoreAccessibility;
-	
+
 	static final int ID_COLUMN = 0;
 	static final int CHECKED_COLUMN = 1;
 	static final int GRAYED_COLUMN = 2;
@@ -111,7 +111,7 @@ public class Tree extends Composite {
  * <p>
  * The style value is either one of the style constants defined in
  * class <code>SWT</code> which is applicable to instances of this
- * class, or must be built by <em>bitwise OR</em>'ing together 
+ * class, or must be built by <em>bitwise OR</em>'ing together
  * (that is, using the <code>int</code> "|" operator) two or more
  * of those <code>SWT</code> style constants. The class description
  * lists the style constants that are applicable to the class.
@@ -209,7 +209,7 @@ static int checkStyle (int style) {
 	* WS_VSCROLL is not specified, Windows creates
 	* trees and tables with scroll bars.  The fix
 	* is to set H_SCROLL and V_SCROLL.
-	* 
+	*
 	* NOTE: This code appears on all platforms so that
 	* applications have consistent scroll bar behavior.
 	*/
@@ -261,7 +261,7 @@ long /*int*/ cellDataProc (long /*int*/ tree_column, long /*int*/ cell, long /*i
 			if (ptr [0] != 0) OS.g_object_unref (ptr [0]);
 		} else {
 			ptr [0] = 0;
-			OS.gtk_tree_model_get (tree_model, iter, modelIndex + CELL_TEXT, ptr, -1); 
+			OS.gtk_tree_model_get (tree_model, iter, modelIndex + CELL_TEXT, ptr, -1);
 			if (ptr [0] != 0) {
 				OS.g_object_set (cell, OS.text, ptr[0], 0);
 				OS.g_free (ptr[0]);
@@ -400,7 +400,7 @@ int calculateWidth (long /*int*/ column, long /*int*/ iter, boolean recurse) {
 	//int [] width = new int [1];
 	//OS.gtk_tree_view_column_cell_get_size (column, null, null, null, width, null);
 	//return width [0];
-	
+
 	int width = 0;
 	int [] w = new int [1];
 	long /*int*/ path = 0;
@@ -475,10 +475,10 @@ int calculateWidth (long /*int*/ column, long /*int*/ iter, boolean recurse) {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @see SWT#VIRTUAL
  * @see SWT#SetData
- * 
+ *
  * @since 3.2
  */
 public void clear(int index, boolean all) {
@@ -504,7 +504,7 @@ void clear (long /*int*/ parentIter, int index, boolean all) {
  * attributes of the items are set to their default values. If the
  * tree was created with the <code>SWT.VIRTUAL</code> style, these
  * attributes are requested again as needed.
- * 
+ *
  * @param all <code>true</code> if all child items should be cleared
  * recursively, and <code>false</code> otherwise
  *
@@ -512,10 +512,10 @@ void clear (long /*int*/ parentIter, int index, boolean all) {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @see SWT#VIRTUAL
  * @see SWT#SetData
- * 
+ *
  * @since 3.2
  */
 public void clearAll (boolean all) {
@@ -579,7 +579,7 @@ void copyModel (long /*int*/ oldModel, int oldStart, long /*int*/ newModel, int 
 		int [] ptr1 = new int [1];
 		do {
 			long /*int*/ newItem = OS.g_malloc (OS.GtkTreeIter_sizeof ());
-			if (newItem == 0) error (SWT.ERROR_NO_HANDLES);	
+			if (newItem == 0) error (SWT.ERROR_NO_HANDLES);
 			OS.gtk_tree_store_append (newModel, newItem, newParent);
 			OS.gtk_tree_model_get (oldModel, iter, ID_COLUMN, ptr1, -1);
 			int index = ptr1[0];
@@ -631,7 +631,7 @@ void copyModel (long /*int*/ oldModel, int oldStart, long /*int*/ newModel, int 
 			}
 			// recurse through children
 			copyModel(oldModel, oldStart, newModel, newStart, types, iter, newItem, modelLength);
-			
+
 			if (item!= null) {
 				item.handle = newItem;
 			} else {
@@ -651,12 +651,12 @@ void copyModel (long /*int*/ oldModel, int oldStart, long /*int*/ newModel, int 
 
 void createColumn (TreeColumn column, int index) {
 /*
-* Bug in ATK. For some reason, ATK segments fault if 
+* Bug in ATK. For some reason, ATK segments fault if
 * the GtkTreeView has a column and does not have items.
-* The fix is to insert the column only when an item is 
+* The fix is to insert the column only when an item is
 * created.
 */
-	
+
 	int modelIndex = FIRST_COLUMN;
 	if (columnCount != 0) {
 		int modelLength = OS.gtk_tree_model_get_n_columns (modelHandle);
@@ -699,7 +699,7 @@ void createColumn (TreeColumn column, int index) {
 	OS.gtk_tree_view_insert_column (handle, columnHandle, index);
 	/*
 	* Bug in GTK3.  The column header has the wrong CSS styling if it is hidden
-	* when inserting to the tree widget.  The fix is to hide the column only 
+	* when inserting to the tree widget.  The fix is to hide the column only
 	* after it is inserted.
 	*/
 	if (columnCount != 0) OS.gtk_tree_view_column_set_visible (columnHandle, false);
@@ -708,7 +708,7 @@ void createColumn (TreeColumn column, int index) {
 		column.modelIndex = modelIndex;
 	}
 	if (!searchEnabled ()) {
-		OS.gtk_tree_view_set_search_column (handle, -1); 
+		OS.gtk_tree_view_set_search_column (handle, -1);
 	} else {
 		/* Set the search column whenever the model changes */
 		int firstColumn = columnCount == 0 ? FIRST_COLUMN : columns [0].modelIndex;
@@ -741,7 +741,7 @@ void createHandle (int index) {
 	int mode = (style & SWT.MULTI) != 0 ? OS.GTK_SELECTION_MULTIPLE : OS.GTK_SELECTION_BROWSE;
 	long /*int*/ selectionHandle = OS.gtk_tree_view_get_selection (handle);
 	OS.gtk_tree_selection_set_mode (selectionHandle, mode);
-	OS.gtk_tree_view_set_headers_visible (handle, false);	
+	OS.gtk_tree_view_set_headers_visible (handle, false);
 	int hsp = (style & SWT.H_SCROLL) != 0 ? OS.GTK_POLICY_AUTOMATIC : OS.GTK_POLICY_NEVER;
 	int vsp = (style & SWT.V_SCROLL) != 0 ? OS.GTK_POLICY_AUTOMATIC : OS.GTK_POLICY_NEVER;
 	OS.gtk_scrolled_window_set_policy (scrolledHandle, hsp, vsp);
@@ -750,7 +750,7 @@ void createHandle (int index) {
 		OS.g_object_set (handle, OS.fixed_height_mode, true, 0);
 	}
 	if (!searchEnabled ()) {
-		OS.gtk_tree_view_set_search_column (handle, -1); 
+		OS.gtk_tree_view_set_search_column (handle, -1);
 	}
 }
 
@@ -783,7 +783,7 @@ void createItem (TreeColumn column, int index) {
 	OS.gtk_widget_show (boxHandle);
 	OS.gtk_widget_show (labelHandle);
 	column.labelHandle = labelHandle;
-	column.imageHandle = imageHandle;	
+	column.imageHandle = imageHandle;
 	OS.gtk_tree_view_column_set_widget (column.handle, boxHandle);
 	if (OS.GTK3) {
 		column.buttonHandle = OS.gtk_tree_view_column_get_button(column.handle);
@@ -831,7 +831,7 @@ void createItem (TreeItem item, long /*int*/ parentIter, int index) {
 	if (item.handle == 0) error(SWT.ERROR_NO_HANDLES);
 	/*
 	* Feature in GTK.  It is much faster to append to a tree store
-	* than to insert at the end using gtk_tree_store_insert(). 
+	* than to insert at the end using gtk_tree_store_insert().
 	*/
 	if (index == count) {
 		OS.gtk_tree_store_append (modelHandle, item.handle, parentIter);
@@ -866,7 +866,7 @@ void createRenderers (long /*int*/ columnHandle, int modelIndex, boolean check, 
 	}
 	long /*int*/ textRenderer = ownerDraw ? OS.g_object_new (display.gtk_cell_renderer_text_get_type (), 0) : OS.gtk_cell_renderer_text_new ();
 	if (textRenderer == 0) error (SWT.ERROR_NO_HANDLES);
-	
+
 	if (ownerDraw) {
 		OS.g_object_set_qdata (pixbufRenderer, Display.SWT_OBJECT_INDEX1, columnHandle);
 		OS.g_object_set_qdata (textRenderer, Display.SWT_OBJECT_INDEX1, columnHandle);
@@ -908,7 +908,7 @@ void createRenderers (long /*int*/ columnHandle, int modelIndex, boolean check, 
 	OS.gtk_tree_view_column_add_attribute (columnHandle, textRenderer, OS.text, modelIndex + CELL_TEXT);
 	OS.gtk_tree_view_column_add_attribute (columnHandle, textRenderer, OS.foreground_gdk, FOREGROUND_COLUMN);
 	OS.gtk_tree_view_column_add_attribute (columnHandle, textRenderer, OS.font_desc, FONT_COLUMN);
-	
+
 	boolean customDraw = firstCustomDraw;
 	if (columnCount != 0) {
 		for (int i=0; i<columnCount; i++) {
@@ -1034,7 +1034,7 @@ void destroyItem (TreeColumn column) {
 				OS.gtk_tree_store_set (modelHandle, iter, modelIndex + CELL_FOREGROUND, (long /*int*/)0, -1);
 				OS.gtk_tree_store_set (modelHandle, iter, modelIndex + CELL_BACKGROUND, (long /*int*/)0, -1);
 				OS.gtk_tree_store_set (modelHandle, iter, modelIndex + CELL_FONT, (long /*int*/)0, -1);
-				
+
 				Font [] cellFont = item.cellFont;
 				if (cellFont != null) {
 					if (columnCount == 0) {
@@ -1057,7 +1057,7 @@ void destroyItem (TreeColumn column) {
 		}
 	}
 	if (!searchEnabled ()) {
-		OS.gtk_tree_view_set_search_column (handle, -1); 
+		OS.gtk_tree_view_set_search_column (handle, -1);
 	} else {
 		/* Set the search column whenever the model changes */
 		int firstColumn = columnCount == 0 ? FIRST_COLUMN : columns [0].modelIndex;
@@ -1107,9 +1107,9 @@ boolean fixAccessibility () {
 	* the rows that are not visible. The the fix is to block the accessible object
 	* from receiving row_added and row_removed signals and, at the end, send only
 	* a notify signal with the "model" detail.
-	*  
-	* Note: The test bellow has to be updated when the real problem is fixed in 
-	* the accessible object. 
+	*
+	* Note: The test bellow has to be updated when the real problem is fixed in
+	* the accessible object.
 	*/
 	return OS.GTK_VERSION >= OS.VERSION (2, 12, 0);
 }
@@ -1178,13 +1178,13 @@ int getClientWidth () {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @see Tree#getColumnOrder()
  * @see Tree#setColumnOrder(int[])
  * @see TreeColumn#getMoveable()
  * @see TreeColumn#setMoveable(boolean)
  * @see SWT#Move
- * 
+ *
  * @since 3.1
  */
 public TreeColumn getColumn (int index) {
@@ -1206,7 +1206,7 @@ public TreeColumn getColumn (int index) {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 3.1
  */
 public int getColumnCount () {
@@ -1225,7 +1225,7 @@ public int getColumnCount () {
  * </p><p>
  * Note: This is not the actual structure used by the receiver
  * to maintain its list of items, so modifying the array will
- * not affect the receiver. 
+ * not affect the receiver.
  * </p>
  *
  * @return the current visual order of the receiver's items
@@ -1234,12 +1234,12 @@ public int getColumnCount () {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @see Tree#setColumnOrder(int[])
  * @see TreeColumn#getMoveable()
  * @see TreeColumn#setMoveable(boolean)
  * @see SWT#Move
- * 
+ *
  * @since 3.2
  */
 public int [] getColumnOrder () {
@@ -1270,7 +1270,7 @@ long /*int*/[] getColumnTypes (int columnCount) {
 	long /*int*/[] types = new long /*int*/ [FIRST_COLUMN + (columnCount * CELL_TYPES)];
 	// per row data
 	types [ID_COLUMN] = OS.G_TYPE_INT ();
-	types [CHECKED_COLUMN] = OS.G_TYPE_BOOLEAN (); 
+	types [CHECKED_COLUMN] = OS.G_TYPE_BOOLEAN ();
 	types [GRAYED_COLUMN] = OS.G_TYPE_BOOLEAN ();
 	types [FOREGROUND_COLUMN] = OS.GDK_TYPE_COLOR ();
 	types [BACKGROUND_COLUMN] = OS.GDK_TYPE_COLOR ();
@@ -1297,7 +1297,7 @@ long /*int*/[] getColumnTypes (int columnCount) {
  * <p>
  * Note: This is not the actual structure used by the receiver
  * to maintain its list of items, so modifying the array will
- * not affect the receiver. 
+ * not affect the receiver.
  * </p>
  *
  * @return the items in the receiver
@@ -1306,13 +1306,13 @@ long /*int*/[] getColumnTypes (int columnCount) {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @see Tree#getColumnOrder()
  * @see Tree#setColumnOrder(int[])
  * @see TreeColumn#getMoveable()
  * @see TreeColumn#setMoveable(boolean)
  * @see SWT#Move
- * 
+ *
  * @since 3.1
  */
 public TreeColumn [] getColumns () {
@@ -1335,8 +1335,8 @@ TreeItem getFocusItem () {
 	}
 	OS.g_free (iter);
 	OS.gtk_tree_path_free (path [0]);
-	return item;	
-} 
+	return item;
+}
 
 @Override
 GdkColor getForegroundColor () {
@@ -1347,12 +1347,12 @@ GdkColor getForegroundColor () {
  * Returns the width in pixels of a grid line.
  *
  * @return the width of a grid line in pixels
- * 
+ *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 3.1
  */
 public int getGridLineWidth () {
@@ -1361,7 +1361,7 @@ public int getGridLineWidth () {
 }
 
 /**
- * Returns the height of the receiver's header 
+ * Returns the height of the receiver's header
  *
  * @return the height of the header or zero if the header is not visible
  *
@@ -1369,8 +1369,8 @@ public int getGridLineWidth () {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
- * @since 3.1 
+ *
+ * @since 3.1
  */
 public int getHeaderHeight () {
 	checkWidget ();
@@ -1413,7 +1413,7 @@ public int getHeaderHeight () {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 3.1
  */
 public boolean getHeaderVisible () {
@@ -1435,7 +1435,7 @@ public boolean getHeaderVisible () {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 3.1
  */
 public TreeItem getItem (int index) {
@@ -1452,8 +1452,8 @@ public TreeItem getItem (int index) {
  * coordinate system of the receiver.
  * <p>
  * The item that is returned represents an item that could be selected by the user.
- * For example, if selection only occurs in items in the first column, then null is 
- * returned if the point is outside of the item. 
+ * For example, if selection only occurs in items in the first column, then null is
+ * returned if the point is outside of the item.
  * Note that the SWT.FULL_SELECTION style hint, which specifies the selection policy,
  * determines the extent of the selection.
  * </p>
@@ -1571,7 +1571,7 @@ public int getItemHeight () {
  * <p>
  * Note: This is not the actual structure used by the receiver
  * to maintain its list of items, so modifying the array will
- * not affect the receiver. 
+ * not affect the receiver.
  * </p>
  *
  * @return the items
@@ -1611,7 +1611,7 @@ TreeItem [] getItems (long /*int*/ parent) {
 
 /**
  * Returns <code>true</code> if the receiver's lines are visible,
- * and <code>false</code> otherwise. Note that some platforms draw 
+ * and <code>false</code> otherwise. Note that some platforms draw
  * grid lines while others may draw alternating row colors.
  * <p>
  * If one of the receiver's ancestors is not visible or some
@@ -1626,7 +1626,7 @@ TreeItem [] getItems (long /*int*/ parent) {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 3.1
  */
 public boolean getLinesVisible() {
@@ -1676,11 +1676,11 @@ long /*int*/ getPixbufRenderer (long /*int*/ column) {
 /**
  * Returns an array of <code>TreeItem</code>s that are currently
  * selected in the receiver. The order of the items is unspecified.
- * An empty array indicates that no items are selected. 
+ * An empty array indicates that no items are selected.
  * <p>
  * Note: This is not the actual structure used by the receiver
  * to maintain its selection, so modifying the array will
- * not affect the receiver. 
+ * not affect the receiver.
  * </p>
  * @return an array representing the selection
  *
@@ -1719,7 +1719,7 @@ public TreeItem[] getSelection () {
 	}
 	return new TreeItem [0];
 }
-	
+
 /**
  * Returns the number of selected items contained in the receiver.
  *
@@ -1741,15 +1741,15 @@ public int getSelectionCount () {
  * the receiver. The value may be null if no column shows
  * the sort indicator.
  *
- * @return the sort indicator 
+ * @return the sort indicator
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @see #setSortColumn(TreeColumn)
- * 
+ *
  * @since 3.2
  */
 public TreeColumn getSortColumn () {
@@ -1758,8 +1758,8 @@ public TreeColumn getSortColumn () {
 }
 
 /**
- * Returns the direction of the sort indicator for the receiver. 
- * The value will be one of <code>UP</code>, <code>DOWN</code> 
+ * Returns the direction of the sort indicator for the receiver.
+ * The value will be one of <code>UP</code>, <code>DOWN</code>
  * or <code>NONE</code>.
  *
  * @return the sort direction
@@ -1768,9 +1768,9 @@ public TreeColumn getSortColumn () {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @see #setSortDirection(int)
- * 
+ *
  * @since 3.2
  */
 public int getSortDirection () {
@@ -1805,13 +1805,13 @@ long /*int*/ getTextRenderer (long /*int*/ column) {
  * This item can change when items are expanded, collapsed, scrolled
  * or new items are added or removed.
  *
- * @return the item at the top of the receiver 
- * 
+ * @return the item at the top of the receiver
+ *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 2.1
  */
 public TreeItem getTopItem () {
@@ -1839,7 +1839,7 @@ long /*int*/ gtk_button_press_event (long /*int*/ widget, long /*int*/ event) {
 	if (result != 0) return result;
 	/*
 	* Feature in GTK.  In a multi-select tree view, when multiple items are already
-	* selected, the selection state of the item is toggled and the previous selection 
+	* selected, the selection state of the item is toggled and the previous selection
 	* is cleared. This is not the desired behaviour when bringing up a popup menu.
 	* Also, when an item is reselected with the right button, the tree view issues
 	* an unwanted selection event. The workaround is to detect that case and not
@@ -1856,7 +1856,7 @@ long /*int*/ gtk_button_press_event (long /*int*/ widget, long /*int*/ event) {
 			}
 		}
 	}
-	
+
 	/*
 	* Feature in GTK.  When the user clicks in a single selection GtkTreeView
 	* and there are no selected items, the first item is selected automatically
@@ -1911,8 +1911,8 @@ long /*int*/ gtk_event_after (long /*int*/ widget, long /*int*/ gdkEvent) {
 	switch (OS.GDK_EVENT_TYPE (gdkEvent)) {
 		case OS.GDK_EXPOSE: {
 			/*
-			* Bug in GTK. SWT connects the expose-event 'after' the default 
-			* handler of the signal. If the tree has no children, then GTK 
+			* Bug in GTK. SWT connects the expose-event 'after' the default
+			* handler of the signal. If the tree has no children, then GTK
 			* sends expose signal only 'before' the default signal handler.
 			* The fix is to detect this case in 'event_after' and send the
 			* expose event.
@@ -1957,7 +1957,7 @@ void drawInheritedBackground (long /*int*/ eventPtr, long /*int*/ cairo) {
 				itemCount = OS.gtk_tree_model_iter_n_children (modelHandle, iter);
 				long /*int*/ path = OS.gtk_tree_model_get_path (modelHandle, iter);
 				OS.gtk_tree_view_get_cell_area (handle, path, 0, rect);
-				expanded = OS.gtk_tree_view_row_expanded (handle, path); 
+				expanded = OS.gtk_tree_view_row_expanded (handle, path);
 				OS.gtk_tree_path_free (path);
 				if (parent != 0) OS.g_free (parent);
 				parent = iter;
@@ -2051,7 +2051,7 @@ long /*int*/ gtk_row_inserted (long /*int*/ model, long /*int*/ path, long /*int
 @Override
 long /*int*/ gtk_start_interactive_search(long /*int*/ widget) {
 	if (!searchEnabled()) {
-		OS.g_signal_stop_emission_by_name(widget, OS.start_interactive_search); 
+		OS.g_signal_stop_emission_by_name(widget, OS.start_interactive_search);
 		return 1;
 	}
 	return 0;
@@ -2084,7 +2084,7 @@ long /*int*/ gtk_test_collapse_row (long /*int*/ tree, long /*int*/ iter, long /
 	* the model can cause expansion to fail when using the multiple
 	* expansion keys (such as *).  The fix is to stop the expansion
 	* if there are model changes.
-	* 
+	*
 	* Note: This callback must return 0 for the collapsing
 	* animation to occur.
 	*/
@@ -2124,11 +2124,11 @@ long /*int*/ gtk_test_expand_row (long /*int*/ tree, long /*int*/ iter, long /*i
 	* the model can cause expansion to fail when using the multiple
 	* expansion keys (such as *).  The fix is to stop the expansion
 	* if there are model changes.
-	* 
+	*
 	* Bug in GTK.  test-expand-row does not get called for each row
 	* in an expand all operation.  The fix is to block the initial
 	* expansion and only expand a single level.
-	* 
+	*
 	* Note: This callback must return 0 for the collapsing
 	* animation to occur.
 	*/
@@ -2168,7 +2168,7 @@ void gtk_widget_size_request (long /*int*/ widget, GtkRequisition requisition) {
 	 * Bug in GTK.  For some reason, gtk_widget_size_request() fails
 	 * to include the height of the tree view items when there are
 	 * no columns visible.  The fix is to temporarily make one column
-	 * visible. 
+	 * visible.
 	 */
 	if (columnCount == 0) {
 		super.gtk_widget_size_request (widget, requisition);
@@ -2198,9 +2198,9 @@ void gtk_widget_size_request (long /*int*/ widget, GtkRequisition requisition) {
 
 void hideFirstColumn () {
 	long /*int*/ firstColumn = OS.gtk_tree_view_get_column (handle, 0);
-	OS.gtk_tree_view_column_set_visible (firstColumn, false);	
+	OS.gtk_tree_view_column_set_visible (firstColumn, false);
 }
-	
+
 @Override
 void hookEvents () {
 	super.hookEvents ();
@@ -2223,7 +2223,7 @@ void hookEvents () {
 
 /**
  * Searches the receiver's list starting at the first column
- * (index 0) until a column is found that is equal to the 
+ * (index 0) until a column is found that is equal to the
  * argument, and returns the index of that column. If no column
  * is found, returns -1.
  *
@@ -2237,7 +2237,7 @@ void hookEvents () {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 3.1
  */
 public int indexOf (TreeColumn column) {
@@ -2251,7 +2251,7 @@ public int indexOf (TreeColumn column) {
 
 /**
  * Searches the receiver's list starting at the first item
- * (index 0) until an item is found that is equal to the 
+ * (index 0) until an item is found that is equal to the
  * argument, and returns the index of that item. If no item
  * is found, returns -1.
  *
@@ -2266,7 +2266,7 @@ public int indexOf (TreeColumn column) {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 3.1
  */
 public int indexOf (TreeItem item) {
@@ -2278,7 +2278,7 @@ public int indexOf (TreeItem item) {
 	int depth = OS.gtk_tree_path_get_depth (path);
 	if (depth == 1) {
 		long /*int*/ indices = OS.gtk_tree_path_get_indices (path);
-		if (indices != 0) {	
+		if (indices != 0) {
 			int[] temp = new int[1];
 			OS.memmove (temp, indices, 4);
 			index = temp[0];
@@ -2444,7 +2444,7 @@ void remove (long /*int*/ parentIter, int start, int end) {
 
 /**
  * Removes all of the items from the receiver.
- * 
+ *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
@@ -2475,9 +2475,9 @@ public void removeAll () {
 		OS.g_object_notify (handle, OS.model);
 	}
 	OS.g_signal_handlers_unblock_matched (selection, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
-	
+
 	if (!searchEnabled ()) {
-		OS.gtk_tree_view_set_search_column (handle, -1); 
+		OS.gtk_tree_view_set_search_column (handle, -1);
 	} else {
 		/* Set the search column whenever the model changes */
 		int firstColumn = columnCount == 0 ? FIRST_COLUMN : columns [0].modelIndex;
@@ -2506,7 +2506,7 @@ public void removeSelectionListener (SelectionListener listener) {
 	checkWidget ();
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	eventTable.unhook (SWT.Selection, listener);
-	eventTable.unhook (SWT.DefaultSelection, listener);	
+	eventTable.unhook (SWT.DefaultSelection, listener);
 }
 
 /**
@@ -2547,7 +2547,7 @@ void sendMeasureEvent (long /*int*/ cell, long /*int*/ width, long /*int*/ heigh
 					if (columns [i].handle == columnHandle) {
 						columnIndex = i;
 						break;
-					}				
+					}
 				}
 			}
 			int [] contentWidth = new int [1], contentHeight = new int  [1];
@@ -2583,7 +2583,7 @@ void sendMeasureEvent (long /*int*/ cell, long /*int*/ width, long /*int*/ heigh
 			if (contentHeight [0] < event.height) contentHeight [0] = event.height;
 			if (width != 0) OS.memmove (width, contentWidth, 4);
 			if (height != 0) OS.memmove (height, contentHeight, 4);
-			if (OS.GTK3) { 
+			if (OS.GTK3) {
 				OS.gtk_cell_renderer_set_fixed_size (cell, contentWidth [0], contentHeight [0]);
 			}
 		}
@@ -2633,7 +2633,7 @@ void rendererRender (long /*int*/ cell, long /*int*/ cr, long /*int*/ window, lo
 			if (columns [i].handle == columnHandle) {
 				columnIndex = i;
 				break;
-			}				
+			}
 		}
 	}
 	if (item != null) {
@@ -2654,12 +2654,12 @@ void rendererRender (long /*int*/ cell, long /*int*/ cr, long /*int*/ window, lo
 			if (!OS.GTK3 || (flags & OS.GTK_CELL_RENDERER_SELECTED) == 0) {
 				if ((flags & OS.GTK_CELL_RENDERER_FOCUSED) != 0) drawState |= SWT.FOCUSED;
 			}
-			
+
 			GdkRectangle rect = new GdkRectangle ();
 			long /*int*/ path = OS.gtk_tree_model_get_path (modelHandle, iter);
 			OS.gtk_tree_view_get_background_area (handle, path, columnHandle, rect);
 			OS.gtk_tree_path_free (path);
-			
+
 			if ((drawState & SWT.SELECTED) == 0) {
 				if ((state & PARENT_BACKGROUND) != 0 || backgroundImage != null) {
 					Control control = findBackgroundControl ();
@@ -2681,7 +2681,7 @@ void rendererRender (long /*int*/ cell, long /*int*/ cr, long /*int*/ window, lo
 			//send out measure before erase
 			long /*int*/ textRenderer =  getTextRenderer (columnHandle);
 			if (textRenderer != 0) gtk_cell_renderer_get_preferred_size (textRenderer, handle, null, null);
-			
+
 			if (hooks (SWT.EraseItem)) {
 				boolean wasSelected = (drawState & SWT.SELECTED) != 0;
 				if (wasSelected) {
@@ -2741,7 +2741,7 @@ void rendererRender (long /*int*/ cell, long /*int*/ cr, long /*int*/ window, lo
 				if ((drawState & SWT.FOCUSED) != 0) drawFlags |= OS.GTK_CELL_RENDERER_FOCUSED;
 				if ((drawState & SWT.SELECTED) != 0) {
 					if (!OS.GTK3) {
-						long /*int*/ style = OS.gtk_widget_get_style (widget);					
+						long /*int*/ style = OS.gtk_widget_get_style (widget);
 						//TODO - parity and sorted
 						byte[] detail = Converter.wcsToMbcs (null, "cell_odd", true);
 						OS.gtk_paint_flat_box (style, window, OS.GTK_STATE_SELECTED, OS.GTK_SHADOW_NONE, rect, widget, detail, rect.x, rect.y, rect.width, rect.height);
@@ -2901,11 +2901,11 @@ boolean searchEnabled () {
 }
 /**
  * Display a mark indicating the point at which an item will be inserted.
- * The drop insert item has a visual hint to show where a dragged item 
+ * The drop insert item has a visual hint to show where a dragged item
  * will be inserted when dropped on the tree.
- * 
+ *
  * @param item the insert item.  Null will clear the insertion mark.
- * @param before true places the insert mark above 'item'. false places 
+ * @param before true places the insert mark above 'item'. false places
  *	the insert mark below 'item'.
  *
  * @exception IllegalArgumentException <ul>
@@ -3074,7 +3074,7 @@ int setBounds (int x, int y, int width, int height, boolean move, boolean resize
 }
 
 /**
- * Sets the order that the items in the receiver should 
+ * Sets the order that the items in the receiver should
  * be displayed in to the given argument which is described
  * in terms of the zero-relative ordering of when the items
  * were added.
@@ -3089,12 +3089,12 @@ int setBounds (int x, int y, int width, int height, boolean move, boolean resize
  *    <li>ERROR_NULL_ARGUMENT - if the item order is null</li>
  *    <li>ERROR_INVALID_ARGUMENT - if the item order is not the same length as the number of items</li>
  * </ul>
- * 
+ *
  * @see Tree#getColumnOrder()
  * @see TreeColumn#getMoveable()
  * @see TreeColumn#setMoveable(boolean)
  * @see SWT#Move
- * 
+ *
  * @since 3.2
  */
 public void setColumnOrder (int [] order) {
@@ -3138,7 +3138,7 @@ void setForegroundColor (GdkColor color) {
 
 /**
  * Marks the receiver's header as visible if the argument is <code>true</code>,
- * and marks it invisible otherwise. 
+ * and marks it invisible otherwise.
  * <p>
  * If one of the receiver's ancestors is not visible or some
  * other condition makes the receiver not visible, marking
@@ -3151,7 +3151,7 @@ void setForegroundColor (GdkColor color) {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 3.1
  */
 public void setHeaderVisible (boolean show) {
@@ -3161,7 +3161,7 @@ public void setHeaderVisible (boolean show) {
 
 /**
  * Marks the receiver's lines as visible if the argument is <code>true</code>,
- * and marks it invisible otherwise. Note that some platforms draw 
+ * and marks it invisible otherwise. Note that some platforms draw
  * grid lines while others may draw alternating row colors.
  * <p>
  * If one of the receiver's ancestors is not visible or some
@@ -3175,7 +3175,7 @@ public void setHeaderVisible (boolean show) {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 3.1
  */
 public void setLinesVisible (boolean show) {
@@ -3251,7 +3251,7 @@ void setScrollWidth (long /*int*/ column, TreeItem item) {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 3.2
  */
 public void setSelection (TreeItem item) {
@@ -3313,19 +3313,19 @@ public void setSelection (TreeItem [] items) {
 
 /**
  * Sets the column used by the sort indicator for the receiver. A null
- * value will clear the sort indicator.  The current sort column is cleared 
+ * value will clear the sort indicator.  The current sort column is cleared
  * before the new column is set.
  *
  * @param column the column used by the sort indicator or <code>null</code>
- * 
+ *
  * @exception IllegalArgumentException <ul>
- *    <li>ERROR_INVALID_ARGUMENT - if the column is disposed</li> 
+ *    <li>ERROR_INVALID_ARGUMENT - if the column is disposed</li>
  * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 3.2
  */
 public void setSortColumn (TreeColumn column) {
@@ -3342,16 +3342,16 @@ public void setSortColumn (TreeColumn column) {
 }
 
 /**
- * Sets the direction of the sort indicator for the receiver. The value 
+ * Sets the direction of the sort indicator for the receiver. The value
  * can be one of <code>UP</code>, <code>DOWN</code> or <code>NONE</code>.
  *
- * @param direction the direction of the sort indicator 
+ * @param direction the direction of the sort indicator
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 3.2
  */
 public void setSortDirection  (int direction) {
@@ -3384,7 +3384,7 @@ public void setSortDirection  (int direction) {
  * </ul>
  *
  * @see Tree#getTopItem()
- * 
+ *
  * @since 2.1
  */
 public void setTopItem (TreeItem item) {
@@ -3442,10 +3442,10 @@ public void showColumn (TreeColumn column) {
 	}
 }
 
-boolean showFirstColumn () {	
+boolean showFirstColumn () {
 	/*
 	* Bug in GTK.  If no columns are visible, changing the selection
-	* will fail.  The fix is to temporarily make a column visible. 
+	* will fail.  The fix is to temporarily make a column visible.
 	*/
 	int columnCount = Math.max (1, this.columnCount);
 	for (int i=0; i<columnCount; i++) {
@@ -3486,7 +3486,7 @@ void showItem (long /*int*/ path, boolean scroll) {
 			OS.gtk_tree_path_append_index (tempPath, indices [i]);
 			OS.gtk_tree_view_expand_row (handle, tempPath, false);
 		}
-		OS.gtk_tree_path_free (tempPath);		
+		OS.gtk_tree_path_free (tempPath);
 	}
 	if (scroll) {
 		OS.gtk_widget_realize (handle);
@@ -3504,7 +3504,7 @@ void showItem (long /*int*/ path, boolean scroll) {
 		if (!isHidden) {
 			if (ty[0] < visibleRect.y || ty[0] + cellRect.height > visibleRect.y + visibleRect.height) {
 				isHidden = true;
-			} 
+			}
 		}
 		if (isHidden) {
 			/*
@@ -3514,7 +3514,7 @@ void showItem (long /*int*/ path, boolean scroll) {
 			* However, what actually happens is the cell is scrolled to the top.
 			* The fix is to determine the new location and use gtk_tree_view_scroll_to_point.
 			* If the widget is a pinhead, calling gtk_tree_view_scroll_to_point
-			* will have no effect. Therefore, it is still neccessary to 
+			* will have no effect. Therefore, it is still neccessary to
 			* call gtk_tree_view_scroll_to_cell.
 			*/
 			//	OS.gtk_tree_view_scroll_to_cell (handle, path, 0, depth != 1, 0.5f, 0.0f);

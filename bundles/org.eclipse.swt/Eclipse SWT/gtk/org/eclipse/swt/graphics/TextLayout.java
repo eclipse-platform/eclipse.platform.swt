@@ -23,19 +23,19 @@ import org.eclipse.swt.*;
  * navigation, hit testing, text wrapping, alignment, tab expansion
  * line breaking, etc.  These are aspects required for rendering internationalized text.
  * </p><p>
- * Application code must explicitly invoke the <code>TextLayout#dispose()</code> 
+ * Application code must explicitly invoke the <code>TextLayout#dispose()</code>
  * method to release the operating system resources managed by each instance
  * when those instances are no longer required.
  * </p>
- * 
+ *
  * @see <a href="http://www.eclipse.org/swt/snippets/#textlayout">TextLayout, TextStyle snippets</a>
  * @see <a href="http://www.eclipse.org/swt/examples.php">SWT Example: CustomControlExample, StyledText tab</a>
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
- * 
+ *
  * @since 3.0
  */
 public final class TextLayout extends Resource {
-	
+
 	static class StyleItem {
 		TextStyle style;
 		int start;
@@ -59,18 +59,18 @@ public final class TextLayout extends Resource {
 	int[] invalidOffsets;
 	static final char LTR_MARK = '\u200E', RTL_MARK = '\u200F', ZWS = '\u200B', ZWNBS = '\uFEFF';
 
-/**	 
+/**
  * Constructs a new instance of this class on the given device.
  * <p>
- * You must dispose the text layout when it is no longer required. 
+ * You must dispose the text layout when it is no longer required.
  * </p>
- * 
+ *
  * @param device the device on which to allocate the text layout
- * 
+ *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if device is null and there is no current device</li>
  * </ul>
- * 
+ *
  * @see #dispose()
  */
 public TextLayout (Device device) {
@@ -106,14 +106,14 @@ void computeRuns () {
 	OS.pango_layout_set_text (layout, buffer, buffer.length);
 	if (stylesCount == 2 && styles[0].style == null && ascent == -1 && descent == -1 && segments == null) return;
 	long /*int*/ ptr = OS.pango_layout_get_text(layout);
-	attrList = OS.pango_attr_list_new();	
+	attrList = OS.pango_attr_list_new();
 	selAttrList = OS.pango_attr_list_new();
 	PangoAttribute attribute = new PangoAttribute();
 	char[] chars = null;
 	int segementsLength = segmentsText.length();
 	int nSegments = segementsLength - text.length();
 	int offsetCount = nSegments;
-	int[] lineOffsets = null; 
+	int[] lineOffsets = null;
 	if ((ascent != -1  || descent != -1) && segementsLength > 0) {
 		PangoRectangle rect = new PangoRectangle();
 		if (ascent != -1) rect.y =  -(ascent  * OS.PANGO_SCALE);
@@ -141,13 +141,13 @@ void computeRuns () {
 			attribute.start_index = bytePos + offset + 3;
 			attribute.end_index = bytePos + offset + 6;
 			OS.memmove (attr, attribute, PangoAttribute.sizeof);
-			OS.pango_attr_list_insert(attrList, attr);			
+			OS.pango_attr_list_insert(attrList, attr);
 			OS.pango_attr_list_insert(selAttrList, OS.pango_attribute_copy(attr));
 			int pos = (int)/*64*/OS.g_utf16_pointer_to_offset(ptr, ptr + bytePos);
 			chars[pos + lineIndex * 2] = ZWS;
 			chars[pos + lineIndex * 2 + 1] = ZWNBS;
 			segmentsText.getChars(oldPos, pos, chars,  oldPos + lineIndex * 2);
-			lineOffsets[lineIndex] = pos + lineIndex * 2; 
+			lineOffsets[lineIndex] = pos + lineIndex * 2;
 			oldPos = pos;
 			lineIndex++;
 		}
@@ -181,7 +181,7 @@ void computeRuns () {
 	Font defaultFont = font != null ? font : device.systemFont;
 	for (int i = 0; i < stylesCount - 1; i++) {
 		StyleItem styleItem = styles[i];
-		TextStyle style = styleItem.style; 
+		TextStyle style = styleItem.style;
 		if (style == null) continue;
 		int start = translateOffset(styleItem.start);
 		int end = translateOffset(styles[i+1].start - 1);
@@ -203,10 +203,10 @@ void computeRuns () {
 			int underlineStyle = OS.PANGO_UNDERLINE_NONE;
 			switch (style.underlineStyle) {
 				case SWT.UNDERLINE_SINGLE:
-					underlineStyle = OS.PANGO_UNDERLINE_SINGLE; 
+					underlineStyle = OS.PANGO_UNDERLINE_SINGLE;
 					break;
 				case SWT.UNDERLINE_DOUBLE:
-					underlineStyle = OS.PANGO_UNDERLINE_DOUBLE; 
+					underlineStyle = OS.PANGO_UNDERLINE_DOUBLE;
 					break;
 				case SWT.UNDERLINE_SQUIGGLE:
 				case SWT.UNDERLINE_ERROR:
@@ -220,7 +220,7 @@ void computeRuns () {
 						attribute.end_index = byteEnd;
 						OS.memmove (attr, attribute, PangoAttribute.sizeof);
 						OS.pango_attr_list_insert(attrList, attr);
-					} 
+					}
 					underlineStyle = OS.PANGO_UNDERLINE_SINGLE;
 					break;
 				}
@@ -323,7 +323,7 @@ int[] computePolyline(int left, int top, int right, int bottom) {
 	}
 	int length = ((2 * peaks) + 1) * 2;
 	if (length < 0) return new int[0];
-	
+
 	int[] coordinates = new int[length];
 	for (int i = 0; i < peaks; i++) {
 		int index = 4 * i;
@@ -354,7 +354,7 @@ void destroy() {
 /**
  * Draws the receiver's text using the specified GC at the specified
  * point.
- * 
+ *
  * @param gc the GC to draw
  * @param x the x coordinate of the top left corner of the rectangular area where the text is to be drawn
  * @param y the y coordinate of the top left corner of the rectangular area where the text is to be drawn
@@ -373,7 +373,7 @@ public void draw(GC gc, int x, int y) {
 /**
  * Draws the receiver's text using the specified GC at the specified
  * point.
- * 
+ *
  * @param gc the GC to draw
  * @param x the x coordinate of the top left corner of the rectangular area where the text is to be drawn
  * @param y the y coordinate of the top left corner of the rectangular area where the text is to be drawn
@@ -417,10 +417,10 @@ public void draw(GC gc, int x, int y, int selectionStart, int selectionEnd, Colo
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the gc is null</li>
  * </ul>
- * 
+ *
  * @since 3.3
  */
-public void draw(GC gc, int x, int y, int selectionStart, int selectionEnd, Color selectionForeground, Color selectionBackground, int flags) {	
+public void draw(GC gc, int x, int y, int selectionStart, int selectionEnd, Color selectionForeground, Color selectionBackground, int flags) {
 	checkLayout ();
 	computeRuns();
 	if (gc == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
@@ -493,7 +493,7 @@ public void draw(GC gc, int x, int y, int selectionStart, int selectionEnd, Colo
 		OS.pango_layout_iter_free(iter);
 		if (attrs[0] != 0) OS.g_free(attrs[0]);
 		if (cairo != 0) {
-			Cairo.cairo_restore(cairo);	
+			Cairo.cairo_restore(cairo);
 		} else {
 			OS.gdk_gc_set_foreground(gc.handle, data.foreground);
 		}
@@ -620,7 +620,7 @@ void drawBorder(GC gc, int x, int y, GdkColor selectionColor) {
 	for (int i = 0; i < stylesCount - 1; i++) {
 		TextStyle style = styles[i].style;
 		if (style == null) continue;
-		
+
 		boolean drawBorder = style.borderStyle != SWT.NONE;
 		if (drawBorder && !style.isAdherentBorder(styles[i+1].style)) {
 			int start = styles[i].start;
@@ -719,7 +719,7 @@ void freeRuns() {
 	invalidOffsets = null;
 }
 
-/** 
+/**
  * Returns the receiver's horizontal text alignment, which will be one
  * of <code>SWT.LEFT</code>, <code>SWT.CENTER</code> or
  * <code>SWT.RIGHT</code>.
@@ -749,7 +749,7 @@ public int getAlignment() {
  * @exception SWTException <ul>
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
- * 
+ *
  * @see #getDescent()
  * @see #setDescent(int)
  * @see #setAscent(int)
@@ -764,13 +764,13 @@ public int getAscent () {
  * Returns the bounds of the receiver. The width returned is either the
  * width of the longest line or the width set using {@link TextLayout#setWidth(int)}.
  * To obtain the text bounds of a line use {@link TextLayout#getLineBounds(int)}.
- * 
+ *
  * @return the bounds of the receiver
- * 
+ *
  * @exception SWTException <ul>
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
- * 
+ *
  * @see #setWidth(int)
  * @see #getLineBounds(int)
  */
@@ -786,7 +786,7 @@ public Rectangle getBounds() {
 	if (ascent != -1 && descent != -1) {
 		height = Math.max (height, ascent + descent);
 	}
-	height += OS.PANGO_PIXELS(OS.pango_layout_get_spacing(layout));	
+	height += OS.PANGO_PIXELS(OS.pango_layout_get_spacing(layout));
 	return new Rectangle(0, 0, width, height);
 }
 
@@ -795,11 +795,11 @@ public Rectangle getBounds() {
  * bounds is the smallest rectangle that encompasses all characters
  * in the range. The start and end offsets are inclusive and will be
  * clamped if out of range.
- * 
+ *
  * @param start the start offset
  * @param end the end offset
  * @return the bounds of the character range
- * 
+ *
  * @exception SWTException <ul>
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
@@ -824,8 +824,8 @@ public Rectangle getBounds(int start, int end) {
 	long /*int*/ clipRegion = OS.gdk_pango_layout_get_clip_region(layout, 0, 0, ranges, 1);
 	if (clipRegion == 0) return new Rectangle(0, 0, 0, 0);
 	GdkRectangle rect = new GdkRectangle();
-	
-	/* 
+
+	/*
 	* Bug in Pango. The region returned by gdk_pango_layout_get_clip_region()
 	* includes areas from lines outside of the requested range.  The fix
 	* is to subtract these areas from the clip region.
@@ -853,7 +853,7 @@ public Rectangle getBounds(int start, int end) {
 	OS.gdk_region_intersect(clipRegion, linesRegion);
 	OS.gdk_region_destroy(linesRegion);
 	OS.pango_layout_iter_free(iter);
-	
+
 	OS.gdk_region_get_clipbox(clipRegion, rect);
 	OS.gdk_region_destroy(clipRegion);
 	if (OS.pango_context_get_base_dir(context) == OS.PANGO_DIRECTION_RTL) {
@@ -871,7 +871,7 @@ public Rectangle getBounds(int start, int end) {
  * @exception SWTException <ul>
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
- * 
+ *
  * @see #getAscent()
  * @see #setAscent(int)
  * @see #setDescent(int)
@@ -882,7 +882,7 @@ public int getDescent () {
 	return descent;
 }
 
-/** 
+/**
  * Returns the default font currently being used by the receiver
  * to draw and measure text.
  *
@@ -901,11 +901,11 @@ public Font getFont () {
 * Returns the receiver's indent.
 *
 * @return the receiver's indent
-* 
+*
 * @exception SWTException <ul>
 *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
 * </ul>
-* 
+*
 * @since 3.2
 */
 public int getIndent () {
@@ -917,11 +917,11 @@ public int getIndent () {
 * Returns the receiver's justification.
 *
 * @return the receiver's justification
-* 
+*
 * @exception SWTException <ul>
 *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
 * </ul>
-* 
+*
 * @since 3.2
 */
 public boolean getJustify () {
@@ -933,10 +933,10 @@ public boolean getJustify () {
  * Returns the embedding level for the specified character offset. The
  * embedding level is usually used to determine the directionality of a
  * character in bidirectional text.
- * 
+ *
  * @param offset the character offset
  * @return the embedding level
- * 
+ *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_INVALID_ARGUMENT - if the character offset is out of range</li>
  * </ul>
@@ -975,10 +975,10 @@ public int getLevel(int offset) {
 
 /**
  * Returns the bounds of the line for the specified line index.
- * 
+ *
  * @param lineIndex the line index
- * @return the line bounds 
- * 
+ * @return the line bounds
+ *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_INVALID_ARGUMENT - if the line index is out of range</li>
  * </ul>
@@ -1016,7 +1016,7 @@ public Rectangle getLineBounds(int lineIndex) {
  * by wrapping.
  *
  * @return the line count
- * 
+ *
  * @exception SWTException <ul>
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
@@ -1030,10 +1030,10 @@ public int getLineCount() {
 /**
  * Returns the index of the line that contains the specified
  * character offset.
- * 
+ *
  * @param offset the character offset
  * @return the line index
- * 
+ *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_INVALID_ARGUMENT - if the character offset is out of range</li>
  * </ul>
@@ -1064,10 +1064,10 @@ public int getLineIndex(int offset) {
 
 /**
  * Returns the font metrics for the specified line index.
- * 
+ *
  * @param lineIndex the line index
- * @return the font metrics 
- * 
+ * @return the font metrics
+ *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_INVALID_ARGUMENT - if the line index is out of range</li>
  * </ul>
@@ -1105,9 +1105,9 @@ public FontMetrics getLineMetrics (int lineIndex) {
  * Returns the line offsets.  Each value in the array is the
  * offset for the first character in a line except for the last
  * value, which contains the length of the text.
- * 
+ *
  * @return the line offsets
- *  
+ *
  * @exception SWTException <ul>
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
@@ -1133,15 +1133,15 @@ public int[] getLineOffsets() {
  * Returns the location for the specified character offset. The
  * <code>trailing</code> argument indicates whether the offset
  * corresponds to the leading or trailing edge of the cluster.
- * 
+ *
  * @param offset the character offset
  * @param trailing the trailing flag
  * @return the location of the character offset
- *  
+ *
  * @exception SWTException <ul>
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
- * 
+ *
  * @see #getOffset(Point, int[])
  * @see #getOffset(int, int, int[])
  */
@@ -1169,12 +1169,12 @@ public Point getLocation(int offset, boolean trailing) {
 
 /**
  * Returns the next offset for the specified offset and movement
- * type.  The movement is one of <code>SWT.MOVEMENT_CHAR</code>, 
+ * type.  The movement is one of <code>SWT.MOVEMENT_CHAR</code>,
  * <code>SWT.MOVEMENT_CLUSTER</code>, <code>SWT.MOVEMENT_WORD</code>,
  * <code>SWT.MOVEMENT_WORD_END</code> or <code>SWT.MOVEMENT_WORD_START</code>.
- * 
+ *
  * @param offset the start offset
- * @param movement the movement type 
+ * @param movement the movement type
  * @return the next offset
  *
  * @exception IllegalArgumentException <ul>
@@ -1183,7 +1183,7 @@ public Point getLocation(int offset, boolean trailing) {
  * @exception SWTException <ul>
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
- * 
+ *
  * @see #getPreviousOffset(int, int)
  */
 public int getNextOffset (int offset, int movement) {
@@ -1206,7 +1206,7 @@ int _getOffset (int offset, int movement, boolean forward) {
 	int[] nAttrs = new int[1];
 	OS.pango_layout_get_log_attrs(layout, attrs, nAttrs);
 	if (attrs[0] == 0) return offset + step;
-	
+
 	long /*int*/ ptr = OS.pango_layout_get_text(layout);
 	int utf8Offset = (int)/*64*/OS.g_utf16_offset_to_utf8_offset (ptr, translateOffset(offset));
 	int utf8Length = (int)/*64*/OS.g_utf8_strlen(ptr, -1);
@@ -1215,7 +1215,7 @@ int _getOffset (int offset, int movement, boolean forward) {
 	while (0 <= utf8Offset && utf8Offset <= utf8Length) {
 		OS.memmove(logAttr, attrs[0] + utf8Offset * PangoLogAttr.sizeof, PangoLogAttr.sizeof);
 		boolean found = false, limit = false;
-		if (((movement & SWT.MOVEMENT_CLUSTER) != 0) && logAttr.is_cursor_position) found = true; 
+		if (((movement & SWT.MOVEMENT_CLUSTER) != 0) && logAttr.is_cursor_position) found = true;
 		if ((movement & SWT.MOVEMENT_WORD) != 0) {
 			if (forward) {
 				if (logAttr.is_word_end) found = true;
@@ -1237,7 +1237,7 @@ int _getOffset (int offset, int movement, boolean forward) {
 			if (utf8Offset == 0) limit = true;
 		}
 		if (found || limit) {
-			int testOffset = (int)/*64*/OS.g_utf8_offset_to_utf16_offset (ptr, utf8Offset); 
+			int testOffset = (int)/*64*/OS.g_utf8_offset_to_utf16_offset (ptr, utf8Offset);
 			if (found && invalidOffsets != null) {
 				for (int i = 0; i < invalidOffsets.length; i++) {
 					if (testOffset == invalidOffsets[i]) {
@@ -1258,18 +1258,18 @@ int _getOffset (int offset, int movement, boolean forward) {
 }
 
 /**
- * Returns the character offset for the specified point.  
- * For a typical character, the trailing argument will be filled in to 
+ * Returns the character offset for the specified point.
+ * For a typical character, the trailing argument will be filled in to
  * indicate whether the point is closer to the leading edge (0) or
- * the trailing edge (1).  When the point is over a cluster composed 
- * of multiple characters, the trailing argument will be filled with the 
+ * the trailing edge (1).  When the point is over a cluster composed
+ * of multiple characters, the trailing argument will be filled with the
  * position of the character in the cluster that is closest to
  * the point.
- * 
+ *
  * @param point the point
  * @param trailing the trailing buffer
  * @return the character offset
- *  
+ *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_INVALID_ARGUMENT - if the trailing length is less than <code>1</code></li>
  *    <li>ERROR_NULL_ARGUMENT - if the point is null</li>
@@ -1277,7 +1277,7 @@ int _getOffset (int offset, int movement, boolean forward) {
  * @exception SWTException <ul>
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
- * 
+ *
  * @see #getLocation(int, boolean)
  */
 public int getOffset(Point point, int[] trailing) {
@@ -1287,26 +1287,26 @@ public int getOffset(Point point, int[] trailing) {
 }
 
 /**
- * Returns the character offset for the specified point.  
- * For a typical character, the trailing argument will be filled in to 
+ * Returns the character offset for the specified point.
+ * For a typical character, the trailing argument will be filled in to
  * indicate whether the point is closer to the leading edge (0) or
- * the trailing edge (1).  When the point is over a cluster composed 
- * of multiple characters, the trailing argument will be filled with the 
+ * the trailing edge (1).  When the point is over a cluster composed
+ * of multiple characters, the trailing argument will be filled with the
  * position of the character in the cluster that is closest to
  * the point.
- * 
+ *
  * @param x the x coordinate of the point
  * @param y the y coordinate of the point
  * @param trailing the trailing buffer
  * @return the character offset
- *  
+ *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_INVALID_ARGUMENT - if the trailing length is less than <code>1</code></li>
  * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
- * 
+ *
  * @see #getLocation(int, boolean)
  */
 public int getOffset(int x, int y, int[] trailing) {
@@ -1317,12 +1317,12 @@ public int getOffset(int x, int y, int[] trailing) {
 	if (OS.pango_context_get_base_dir(context) == OS.PANGO_DIRECTION_RTL) {
 		x = width() - x;
 	}
-	
+
 	/*
-	* Feature in GTK.  pango_layout_xy_to_index() returns the 
-	* logical end/start offset of a line when the coordinates are outside 
-	* the line bounds. In SWT the correct behavior is to return the closest 
-	* visual offset. The fix is to clamp the coordinates inside the  
+	* Feature in GTK.  pango_layout_xy_to_index() returns the
+	* logical end/start offset of a line when the coordinates are outside
+	* the line bounds. In SWT the correct behavior is to return the closest
+	* visual offset. The fix is to clamp the coordinates inside the
 	* line bounds.
 	*/
 	long /*int*/ iter = OS.pango_layout_get_iter(layout);
@@ -1341,7 +1341,7 @@ public int getOffset(int x, int y, int[] trailing) {
 		}
 	} while (OS.pango_layout_iter_next_line(iter));
 	OS.pango_layout_iter_free(iter);
-	
+
 	int[] index = new int[1];
 	int[] piTrailing = new int[1];
 	OS.pango_layout_xy_to_index(layout, x * OS.PANGO_SCALE, y * OS.PANGO_SCALE, index, piTrailing);
@@ -1360,7 +1360,7 @@ public int getOffset(int x, int y, int[] trailing) {
  * Returns the orientation of the receiver.
  *
  * @return the orientation style
- * 
+ *
  * @exception SWTException <ul>
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
@@ -1373,12 +1373,12 @@ public int getOrientation() {
 
 /**
  * Returns the previous offset for the specified offset and movement
- * type.  The movement is one of <code>SWT.MOVEMENT_CHAR</code>, 
+ * type.  The movement is one of <code>SWT.MOVEMENT_CHAR</code>,
  * <code>SWT.MOVEMENT_CLUSTER</code> or <code>SWT.MOVEMENT_WORD</code>,
  * <code>SWT.MOVEMENT_WORD_END</code> or <code>SWT.MOVEMENT_WORD_START</code>.
- * 
+ *
  * @param offset the start offset
- * @param movement the movement type 
+ * @param movement the movement type
  * @return the previous offset
  *
  * @exception IllegalArgumentException <ul>
@@ -1387,7 +1387,7 @@ public int getOrientation() {
  * @exception SWTException <ul>
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
- * 
+ *
  * @see #getNextOffset(int, int)
  */
 public int getPreviousOffset (int offset, int movement) {
@@ -1398,14 +1398,14 @@ public int getPreviousOffset (int offset, int movement) {
  * Gets the ranges of text that are associated with a <code>TextStyle</code>.
  *
  * @return the ranges, an array of offsets representing the start and end of each
- * text style. 
+ * text style.
  *
  * @exception SWTException <ul>
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
- * 
+ *
  * @see #getStyles()
- * 
+ *
  * @since 3.2
  */
 public int[] getRanges () {
@@ -1448,7 +1448,7 @@ public int[] getSegments() {
  * @exception SWTException <ul>
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
- * 
+ *
  * @since 3.6
  */
 public char[] getSegmentsChars () {
@@ -1499,7 +1499,7 @@ String getSegmentsText() {
  * </ul>
  */
 public int getSpacing () {
-	checkLayout();	
+	checkLayout();
 	return OS.PANGO_PIXELS(OS.pango_layout_get_spacing(layout));
 }
 
@@ -1537,9 +1537,9 @@ public TextStyle getStyle (int offset) {
  * @exception SWTException <ul>
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
- * 
+ *
  * @see #getRanges()
- * 
+ *
  * @since 3.2
  */
 public TextStyle[] getStyles () {
@@ -1592,7 +1592,7 @@ public String getText () {
  * Returns the text direction of the receiver.
  *
  * @return the text direction value
- * 
+ *
  * @exception SWTException <ul>
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
@@ -1620,11 +1620,11 @@ public int getWidth () {
 * Returns the receiver's wrap indent.
 *
 * @return the receiver's wrap indent
-* 
+*
 * @exception SWTException <ul>
 *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
 * </ul>
-* 
+*
 * @since 3.6
 */
 public int getWrapIndent () {
@@ -1658,12 +1658,12 @@ public boolean isDisposed () {
  * alignment.
  * </p>
  *
- * @param alignment the new alignment 
+ * @param alignment the new alignment
  *
  * @exception SWTException <ul>
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
- * 
+ *
  * @see #setWidth(int)
  */
 public void setAlignment (int alignment) {
@@ -1671,16 +1671,16 @@ public void setAlignment (int alignment) {
 	int mask = SWT.LEFT | SWT.CENTER | SWT.RIGHT;
 	alignment &= mask;
 	if (alignment == 0) return;
-	if ((alignment & SWT.LEFT) != 0) alignment = SWT.LEFT; 
+	if ((alignment & SWT.LEFT) != 0) alignment = SWT.LEFT;
 	if ((alignment & SWT.RIGHT) != 0) alignment = SWT.RIGHT;
 	boolean rtl = OS.pango_context_get_base_dir(context) == OS.PANGO_DIRECTION_RTL;
 	int align = OS.PANGO_ALIGN_CENTER;
 	switch (alignment) {
-		case SWT.LEFT: 
-			align = rtl ? OS.PANGO_ALIGN_RIGHT : OS.PANGO_ALIGN_LEFT; 
+		case SWT.LEFT:
+			align = rtl ? OS.PANGO_ALIGN_RIGHT : OS.PANGO_ALIGN_LEFT;
 			break;
-		case SWT.RIGHT: 
-			align = rtl ? OS.PANGO_ALIGN_LEFT : OS.PANGO_ALIGN_RIGHT; 
+		case SWT.RIGHT:
+			align = rtl ? OS.PANGO_ALIGN_LEFT : OS.PANGO_ALIGN_RIGHT;
 			break;
 	}
 	OS.pango_layout_set_alignment(layout, align);
@@ -1700,7 +1700,7 @@ public void setAlignment (int alignment) {
  * @exception SWTException <ul>
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
- * 
+ *
  * @see #setDescent(int)
  * @see #getLineMetrics(int)
  */
@@ -1726,7 +1726,7 @@ public void setAscent (int ascent) {
  * @exception SWTException <ul>
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
- * 
+ *
  * @see #setAscent(int)
  * @see #getLineMetrics(int)
  */
@@ -1738,7 +1738,7 @@ public void setDescent (int descent) {
 	this.descent = descent;
 }
 
-/** 
+/**
  * Sets the default font which will be used by the receiver
  * to draw and measure text. If the
  * argument is null, then a default font appropriate
@@ -1766,17 +1766,17 @@ public void setFont (Font font) {
 }
 
 /**
- * Sets the indent of the receiver. This indent is applied to the first line of 
- * each paragraph.  
+ * Sets the indent of the receiver. This indent is applied to the first line of
+ * each paragraph.
  *
  * @param indent new indent
- * 
+ *
  * @exception SWTException <ul>
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
- * 
+ *
  * @see #setWrapIndent(int)
- * 
+ *
  * @since 3.2
  */
 public void setIndent (int indent) {
@@ -1790,14 +1790,14 @@ public void setIndent (int indent) {
 
 /**
  * Sets the justification of the receiver. Note that the receiver's
- * width must be set in order to use justification. 
+ * width must be set in order to use justification.
  *
  * @param justify new justify
- * 
+ *
  * @exception SWTException <ul>
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
- * 
+ *
  * @since 3.2
  */
 public void setJustify (boolean justify) {
@@ -1810,7 +1810,7 @@ public void setJustify (boolean justify) {
  * of <code>SWT.LEFT_TO_RIGHT</code> or <code>SWT.RIGHT_TO_LEFT</code>.
  *
  * @param orientation new orientation style
- * 
+ *
  * @exception SWTException <ul>
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
@@ -1837,7 +1837,7 @@ public void setOrientation(int orientation) {
  * Sets the line spacing of the receiver.  The line spacing
  * is the space left between lines.
  *
- * @param spacing the new line spacing 
+ * @param spacing the new line spacing
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_INVALID_ARGUMENT - if the spacing is negative</li>
@@ -1855,25 +1855,25 @@ public void setSpacing (int spacing) {
 /**
  * Sets the offsets of the receiver's text segments. Text segments are used to
  * override the default behavior of the bidirectional algorithm.
- * Bidirectional reordering can happen within a text segment but not 
+ * Bidirectional reordering can happen within a text segment but not
  * between two adjacent segments.
  * <p>
- * Each text segment is determined by two consecutive offsets in the 
- * <code>segments</code> arrays. The first element of the array should 
+ * Each text segment is determined by two consecutive offsets in the
+ * <code>segments</code> arrays. The first element of the array should
  * always be zero and the last one should always be equals to length of
  * the text.
  * </p>
  * <p>
  * When segments characters are set, the segments are the offsets where
  * the characters are inserted in the text.
- * <p> 
- * 
+ * <p>
+ *
  * @param segments the text segments offset
- * 
+ *
  * @exception SWTException <ul>
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
- * 
+ *
  * @see #setSegmentsChars(char[])
  */
 public void setSegments(int[] segments) {
@@ -1893,20 +1893,20 @@ public void setSegments(int[] segments) {
 }
 
 /**
- * Sets the characters to be used in the segments boundaries. The segments 
+ * Sets the characters to be used in the segments boundaries. The segments
  * are set by calling <code>setSegments(int[])</code>. The application can
  * use this API to insert Unicode Control Characters in the text to control
- * the display of the text and bidi reordering. The characters are not 
+ * the display of the text and bidi reordering. The characters are not
  * accessible by any other API in <code>TextLayout</code>.
- * 
- * @param segmentsChars the segments characters 
+ *
+ * @param segmentsChars the segments characters
  *
  * @exception SWTException <ul>
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
- * 
+ *
  * @see #setSegments(int[])
- * 
+ *
  * @since 3.6
  */
 public void setSegmentsChars(char[] segmentsChars) {
@@ -1929,11 +1929,11 @@ public void setSegmentsChars(char[] segmentsChars) {
  * Sets the style of the receiver for the specified range.  Styles previously
  * set for that range will be overwritten.  The start and end offsets are
  * inclusive and will be clamped if out of range.
- * 
+ *
  * @param style the style
  * @param start the start offset
  * @param end the end offset
- * 
+ *
  * @exception SWTException <ul>
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
@@ -1945,13 +1945,13 @@ public void setStyle (TextStyle style, int start, int end) {
 	if (start > end) return;
 	start = Math.min(Math.max(0, start), length - 1);
 	end = Math.min(Math.max(0, end), length - 1);
-	
+
 	/*
 	* Bug in Pango. Pango 1.2.2 will cause a segmentation fault if a style
 	* is not applied for a whole ligature.  The fix is to applied the
 	* style for the whole ligature.
-	* 
-	* NOTE that fix only LamAlef ligatures. 
+	*
+	* NOTE that fix only LamAlef ligatures.
 	*/
 	if (start > 0 && isAlef(text.charAt(start)) && isLam(text.charAt(start - 1))) {
 		start--;
@@ -1988,14 +1988,14 @@ public void setStyle (TextStyle style, int start, int end) {
 		modifyEnd++;
 	}
 	if (modifyStart == modifyEnd) {
-		int styleStart = styles[modifyStart].start; 
+		int styleStart = styles[modifyStart].start;
 		int styleEnd = styles[modifyEnd + 1].start - 1;
 		if (styleStart == start && styleEnd == end) {
 			styles[modifyStart].style = style;
 			return;
 		}
 		if (styleStart != start && styleEnd != end) {
-			int newLength = stylesCount + 2; 
+			int newLength = stylesCount + 2;
 			if (newLength > styles.length) {
 				int newSize = Math.min(newLength + 1024, Math.max(64, newLength * 2));
 				StyleItem[] newStyles = new StyleItem[newSize];
@@ -2006,7 +2006,7 @@ public void setStyle (TextStyle style, int start, int end) {
 			StyleItem item = new StyleItem();
 			item.start = start;
 			item.style = style;
-			styles[modifyStart + 1] = item;	
+			styles[modifyStart + 1] = item;
 			item = new StyleItem();
 			item.start = end + 1;
 			item.style = styles[modifyStart].style;
@@ -2037,9 +2037,9 @@ public void setStyle (TextStyle style, int start, int end) {
  * Sets the receiver's tab list. Each value in the tab list specifies
  * the space in pixels from the origin of the text layout to the respective
  * tab stop.  The last tab stop width is repeated continuously.
- * 
+ *
  * @param tabs the new tab list
- * 
+ *
  * @exception SWTException <ul>
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
@@ -2067,11 +2067,11 @@ public void setTabs(int[] tabs) {
 			}
 			OS.pango_layout_set_tabs(layout, tabArray);
 			OS.pango_tab_array_free(tabArray);
-		}		
+		}
 	}
 	/*
 	* Bug in Pango. A change in the tab stop array is not automatically reflected in the
-	* pango layout object because the call pango_layout_set_tabs() does not free the 
+	* pango layout object because the call pango_layout_set_tabs() does not free the
 	* lines cache. The fix to use pango_layout_context_changed() to free the lines cache.
 	*/
 	OS.pango_layout_context_changed(layout);
@@ -2080,11 +2080,11 @@ public void setTabs(int[] tabs) {
 /**
  * Sets the receiver's text.
  *<p>
- * Note: Setting the text also clears all the styles. This method 
- * returns without doing anything if the new text is the same as 
+ * Note: Setting the text also clears all the styles. This method
+ * returns without doing anything if the new text is the same as
  * the current text.
  * </p>
- * 
+ *
  * @param text the new text
  *
  * @exception IllegalArgumentException <ul>
@@ -2117,7 +2117,7 @@ public void setText (String text) {
  * </p>
  *
  * @param textDirection the new text direction
- * 
+ *
  * @exception SWTException <ul>
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
@@ -2132,7 +2132,7 @@ public void setTextDirection (int textDirection) {
  * text should be wrapped and aligned. The default value is
  * <code>-1</code> which means wrapping is disabled.
  *
- * @param width the new width 
+ * @param width the new width
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_INVALID_ARGUMENT - if the width is <code>0</code> or less than <code>-1</code></li>
@@ -2140,7 +2140,7 @@ public void setTextDirection (int textDirection) {
  * @exception SWTException <ul>
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
- * 
+ *
  * @see #setAlignment(int)
  */
 public void setWidth (int width) {
@@ -2165,16 +2165,16 @@ void setWidth () {
 
 /**
  * Sets the wrap indent of the receiver. This indent is applied to all lines
- * in the paragraph except the first line.  
+ * in the paragraph except the first line.
  *
  * @param wrapIndent new wrap indent
- * 
+ *
  * @exception SWTException <ul>
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
- * 
+ *
  * @see #setIndent(int)
- * 
+ *
  * @since 3.6
  */
 public void setWrapIndent (int wrapIndent) {
@@ -2227,7 +2227,7 @@ int translateOffset(int offset) {
 	if (length == 0) return offset;
 	if (invalidOffsets == null) return offset;
 	for (int i = 0; i < invalidOffsets.length; i++) {
-		if (offset < invalidOffsets[i]) break; 
+		if (offset < invalidOffsets[i]) break;
 		offset++;
 	}
 	return offset;
@@ -2249,10 +2249,10 @@ int untranslateOffset(int offset) {
 
 int width () {
 	int wrapWidth = OS.pango_layout_get_width(layout);
-	if (wrapWidth != -1) return OS.PANGO_PIXELS(wrapWidth); 
+	if (wrapWidth != -1) return OS.PANGO_PIXELS(wrapWidth);
 	int[] w = new int[1], h = new int[1];
 	OS.pango_layout_get_pixel_size(layout, w, h);
 	return w[0];
 }
 
-} 
+}

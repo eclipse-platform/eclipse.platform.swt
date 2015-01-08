@@ -48,7 +48,7 @@ import org.eclipse.swt.graphics.*;
  */
 public class Composite extends Scrollable {
 	/**
-	 * the handle to the OS resource 
+	 * the handle to the OS resource
 	 * (Warning: This field is platform dependent)
 	 * <p>
 	 * <b>IMPORTANT:</b> This field is <em>not</em> part of the SWT
@@ -56,7 +56,7 @@ public class Composite extends Scrollable {
 	 * within the packages provided by SWT. It is not available on all
 	 * platforms and should never be accessed from application code.
 	 * </p>
-	 * 
+	 *
 	 * @noreference This field is not intended to be referenced by clients.
 	 */
 	public long /*int*/  embeddedHandle;
@@ -77,7 +77,7 @@ Composite () {
  * <p>
  * The style value is either one of the style constants defined in
  * class <code>SWT</code> which is applicable to instances of this
- * class, or must be built by <em>bitwise OR</em>'ing together 
+ * class, or must be built by <em>bitwise OR</em>'ing together
  * (that is, using the <code>int</code> "|" operator) two or more
  * of those <code>SWT</code> style constants. The class description
  * lists the style constants that are applicable to the class.
@@ -161,14 +161,14 @@ Control [] _getTabList () {
 }
 
 /**
- * Clears any data that has been cached by a Layout for all widgets that 
- * are in the parent hierarchy of the changed control up to and including the 
+ * Clears any data that has been cached by a Layout for all widgets that
+ * are in the parent hierarchy of the changed control up to and including the
  * receiver.  If an ancestor does not have a layout, it is skipped.
- * 
+ *
  * @param changed an array of controls that changed state and require a recalculation of size
- * 
+ *
  * @exception IllegalArgumentException <ul>
- *    <li>ERROR_INVALID_ARGUMENT - if the changed array is null any of its controls are null or have been disposed</li> 
+ *    <li>ERROR_INVALID_ARGUMENT - if the changed array is null any of its controls are null or have been disposed</li>
  *    <li>ERROR_INVALID_PARENT - if any control in changed is not in the widget tree of the receiver</li>
  * </ul>
  * @exception SWTException <ul>
@@ -316,7 +316,7 @@ void createHandle (int index, boolean fixed, boolean scrolled) {
 		display.setWarnings (false);
 		OS.gtk_container_add (scrolledHandle, handle);
 		display.setWarnings (warnings);
-		
+
 		int hsp = (style & SWT.H_SCROLL) != 0 ? OS.GTK_POLICY_ALWAYS : OS.GTK_POLICY_NEVER;
 		int vsp = (style & SWT.V_SCROLL) != 0 ? OS.GTK_POLICY_ALWAYS : OS.GTK_POLICY_NEVER;
 		OS.gtk_scrolled_window_set_policy (scrolledHandle, hsp, vsp);
@@ -352,20 +352,20 @@ void deregister () {
 	if (socketHandle != 0) display.removeWidget (socketHandle);
 }
 
-/** 
+/**
  * Fills the interior of the rectangle specified by the arguments,
- * with the receiver's background. 
+ * with the receiver's background.
  *
  * <p>The <code>offsetX</code> and <code>offsetY</code> are used to map from
  * the <code>gc</code> origin to the origin of the parent image background. This is useful
  * to ensure proper alignment of the image background.</p>
- * 
+ *
  * @param gc the gc where the rectangle is to be filled
  * @param x the x coordinate of the rectangle to be filled
  * @param y the y coordinate of the rectangle to be filled
  * @param width the width of the rectangle to be filled
  * @param height the height of the rectangle to be filled
- * @param offsetX the image background x offset 
+ * @param offsetX the image background x offset
  * @param offsetY the image background y offset
  *
  * @exception IllegalArgumentException <ul>
@@ -376,7 +376,7 @@ void deregister () {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 3.6
  */
 public void drawBackground (GC gc, int x, int y, int width, int height, int offsetX, int offsetY) {
@@ -402,7 +402,7 @@ public void drawBackground (GC gc, int x, int y, int width, int height, int offs
 					if (OS.GDK_WINDOWING_X11 () && !OS.GDK_WINDOWING_WAYLAND ()) {
 						long /*int*/ xDisplay = OS.gdk_x11_display_get_xdisplay(OS.gdk_display_get_default());
 						long /*int*/ xVisual = OS.gdk_x11_visual_get_xvisual (OS.gdk_visual_get_system());
-						long /*int*/ xDrawable = OS.GDK_PIXMAP_XID (drawable);				
+						long /*int*/ xDrawable = OS.GDK_PIXMAP_XID (drawable);
 						surface = Cairo.cairo_xlib_surface_create (xDisplay, xDrawable, xVisual, w [0], h [0]);
 					} else {
 						surface = Cairo.cairo_image_surface_create(Cairo.CAIRO_FORMAT_ARGB32, w [0], h [0]);
@@ -424,7 +424,7 @@ public void drawBackground (GC gc, int x, int y, int width, int height, int offs
 			} else {
 				GdkColor color = control.getBackgroundColor ();
 				Cairo.cairo_set_source_rgba (cairo, (color.red & 0xFFFF) / (float)0xFFFF, (color.green & 0xFFFF) / (float)0xFFFF, (color.blue & 0xFFFF) / (float)0xFFFF, data.alpha / (float)0xFF);
-			}			
+			}
 			Cairo.cairo_rectangle (cairo, x, y, width, height);
 			Cairo.cairo_fill (cairo);
 			Cairo.cairo_restore (cairo);
@@ -581,7 +581,7 @@ boolean forceFocus (long /*int*/ focusHandle) {
  * </ul>
  *
  * @see SWT
- * 
+ *
  * @since 3.2
  */
 public int getBackgroundMode () {
@@ -597,11 +597,11 @@ public int getBackgroundMode () {
  * <p>
  * Note: This is not the actual structure used by the receiver
  * to maintain its list of children, so modifying the array will
- * not affect the receiver. 
+ * not affect the receiver.
  * </p>
  *
  * @return an array of children
- * 
+ *
  * @see Control#moveAbove
  * @see Control#moveBelow
  *
@@ -671,7 +671,7 @@ public Layout getLayout () {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @see #setLayoutDeferred(boolean)
  * @see #isLayoutDeferred()
  *
@@ -691,7 +691,7 @@ public boolean getLayoutDeferred () {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @see #setTabList
  */
 public Control [] getTabList () {
@@ -763,7 +763,7 @@ long /*int*/ gtk_expose_event (long /*int*/ widget, long /*int*/ eventPtr) {
 		gc.dispose ();
 		OS.gdk_region_destroy (damageRgn);
 		event.gc = null;
-	}	
+	}
 	OS.g_free (rectangles [0]);
 	return 0;
 }
@@ -811,7 +811,7 @@ long /*int*/ gtk_focus_out_event (long /*int*/ widget, long /*int*/ event) {
 @Override
 long /*int*/ gtk_map (long /*int*/ widget) {
 	fixZOrder ();
-	return 0;	
+	return 0;
 }
 
 @Override
@@ -869,7 +869,7 @@ long /*int*/ imHandle () {
 }
 
 /**
- * Returns <code>true</code> if the receiver or any ancestor 
+ * Returns <code>true</code> if the receiver or any ancestor
  * up to and including the receiver's nearest ancestor shell
  * has deferred the performing of layouts.  Otherwise, <code>false</code>
  * is returned.
@@ -880,10 +880,10 @@ long /*int*/ imHandle () {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @see #setLayoutDeferred(boolean)
  * @see #getLayoutDeferred()
- * 
+ *
  * @since 3.1
  */
 public boolean isLayoutDeferred () {
@@ -899,7 +899,7 @@ boolean isTabGroup() {
 
 /**
  * If the receiver has a layout, asks the layout to <em>lay out</em>
- * (that is, set the size and location of) the receiver's children. 
+ * (that is, set the size and location of) the receiver's children.
  * If the receiver does not have a layout, do nothing.
  * <p>
  * This is equivalent to calling <code>layout(true)</code>.
@@ -910,7 +910,7 @@ boolean isTabGroup() {
  * exposed, then the parent will paint. If no child is
  * affected, the parent will not paint.
  * </p>
- * 
+ *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
@@ -923,19 +923,19 @@ public void layout () {
 
 /**
  * If the receiver has a layout, asks the layout to <em>lay out</em>
- * (that is, set the size and location of) the receiver's children. 
+ * (that is, set the size and location of) the receiver's children.
  * If the argument is <code>true</code> the layout must not rely
  * on any information it has cached about the immediate children. If it
  * is <code>false</code> the layout may (potentially) optimize the
- * work it is doing by assuming that none of the receiver's 
+ * work it is doing by assuming that none of the receiver's
  * children has changed state since the last layout.
  * If the receiver does not have a layout, do nothing.
  * <p>
- * If a child is resized as a result of a call to layout, the 
+ * If a child is resized as a result of a call to layout, the
  * resize event will invoke the layout of the child.  The layout
- * will cascade down through all child widgets in the receiver's widget 
- * tree until a child is encountered that does not resize.  Note that 
- * a layout due to a resize will not flush any cached information 
+ * will cascade down through all child widgets in the receiver's widget
+ * tree until a child is encountered that does not resize.  Note that
+ * a layout due to a resize will not flush any cached information
  * (same as <code>layout(false)</code>).
  * </p>
  * <p>
@@ -960,20 +960,20 @@ public void layout (boolean changed) {
 
 /**
  * If the receiver has a layout, asks the layout to <em>lay out</em>
- * (that is, set the size and location of) the receiver's children. 
+ * (that is, set the size and location of) the receiver's children.
  * If the changed argument is <code>true</code> the layout must not rely
  * on any information it has cached about its children. If it
  * is <code>false</code> the layout may (potentially) optimize the
- * work it is doing by assuming that none of the receiver's 
+ * work it is doing by assuming that none of the receiver's
  * children has changed state since the last layout.
  * If the all argument is <code>true</code> the layout will cascade down
  * through all child widgets in the receiver's widget tree, regardless of
- * whether the child has changed size.  The changed argument is applied to 
+ * whether the child has changed size.  The changed argument is applied to
  * all layouts.  If the all argument is <code>false</code>, the layout will
- * <em>not</em> cascade down through all child widgets in the receiver's widget 
- * tree.  However, if a child is resized as a result of a call to layout, the 
- * resize event will invoke the layout of the child.  Note that 
- * a layout due to a resize will not flush any cached information 
+ * <em>not</em> cascade down through all child widgets in the receiver's widget
+ * tree.  However, if a child is resized as a result of a call to layout, the
+ * resize event will invoke the layout of the child.  Note that
+ * a layout due to a resize will not flush any cached information
  * (same as <code>layout(false)</code>).
  * </p>
  * <p>
@@ -1001,11 +1001,11 @@ public void layout (boolean changed, boolean all) {
 }
 
 /**
- * Forces a lay out (that is, sets the size and location) of all widgets that 
- * are in the parent hierarchy of the changed control up to and including the 
- * receiver.  The layouts in the hierarchy must not rely on any information 
- * cached about the changed control or any of its ancestors.  The layout may 
- * (potentially) optimize the work it is doing by assuming that none of the 
+ * Forces a lay out (that is, sets the size and location) of all widgets that
+ * are in the parent hierarchy of the changed control up to and including the
+ * receiver.  The layouts in the hierarchy must not rely on any information
+ * cached about the changed control or any of its ancestors.  The layout may
+ * (potentially) optimize the work it is doing by assuming that none of the
  * peers of the changed control have changed state since the last layout.
  * If an ancestor does not have a layout, skip it.
  * <p>
@@ -1014,11 +1014,11 @@ public void layout (boolean changed, boolean all) {
  * exposed, then the parent will paint. If no child is
  * affected, the parent will not paint.
  * </p>
- * 
+ *
  * @param changed a control that has had a state change which requires a recalculation of its size
- * 
+ *
  * @exception IllegalArgumentException <ul>
- *    <li>ERROR_INVALID_ARGUMENT - if the changed array is null any of its controls are null or have been disposed</li> 
+ *    <li>ERROR_INVALID_ARGUMENT - if the changed array is null any of its controls are null or have been disposed</li>
  *    <li>ERROR_INVALID_PARENT - if any control in changed is not in the widget tree of the receiver</li>
  * </ul>
  * @exception SWTException <ul>
@@ -1035,9 +1035,9 @@ public void layout (Control [] changed) {
 }
 
 /**
- * Forces a lay out (that is, sets the size and location) of all widgets that 
- * are in the parent hierarchy of the changed control up to and including the 
- * receiver. 
+ * Forces a lay out (that is, sets the size and location) of all widgets that
+ * are in the parent hierarchy of the changed control up to and including the
+ * receiver.
  * <p>
  * The parameter <code>flags</code> may be a combination of:
  * <dl>
@@ -1051,7 +1051,7 @@ public void layout (Control [] changed) {
  * </p>
  * <p>
  * When the <code>changed</code> array is specified, the flags <code>SWT.ALL</code>
- * and <code>SWT.CHANGED</code> have no effect. In this case, the layouts in the 
+ * and <code>SWT.CHANGED</code> have no effect. In this case, the layouts in the
  * hierarchy must not rely on any information cached about the changed control or
  * any of its ancestors.  The layout may (potentially) optimize the
  * work it is doing by assuming that none of the peers of the changed
@@ -1062,7 +1062,7 @@ public void layout (Control [] changed) {
  * When the <code>changed</code> array is not specified, the flag <code>SWT.ALL</code>
  * indicates that the whole widget tree should be laid out. And the flag
  * <code>SWT.CHANGED</code> indicates that the layouts should flush any cached
- * information for all controls that are laid out. 
+ * information for all controls that are laid out.
  * </p>
  * <p>
  * The <code>SWT.DEFER</code> flag always causes the layout to be deferred by
@@ -1077,12 +1077,12 @@ public void layout (Control [] changed) {
  * exposed, then the parent will paint. If no child is
  * affected, the parent will not paint.
  * </p>
- * 
+ *
  * @param changed a control that has had a state change which requires a recalculation of its size
  * @param flags the flags specifying how the layout should happen
- * 
+ *
  * @exception IllegalArgumentException <ul>
- *    <li>ERROR_INVALID_ARGUMENT - if any of the controls in changed is null or has been disposed</li> 
+ *    <li>ERROR_INVALID_ARGUMENT - if any of the controls in changed is null or has been disposed</li>
  *    <li>ERROR_INVALID_PARENT - if any control in changed is not in the widget tree of the receiver</li>
  * </ul>
  * @exception SWTException <ul>
@@ -1258,7 +1258,7 @@ void moveChildren(int oldWidth) {
 		int x = allocation.x;
 		int y = allocation.y;
 		int controlWidth = (child.state & ZERO_WIDTH) != 0 ? 0 : allocation.width;
-		if (oldWidth > 0) x = oldWidth - controlWidth - x; 
+		if (oldWidth > 0) x = oldWidth - controlWidth - x;
 		int clientWidth = getClientWidth ();
 		x = clientWidth - controlWidth - x;
 		if (child.enableWindow != 0) {
@@ -1414,7 +1414,7 @@ void resizeHandle (int width, int height) {
  * </ul>
  *
  * @see SWT
- * 
+ *
  * @since 3.2
  */
 public void setBackgroundMode (int mode) {
@@ -1469,7 +1469,7 @@ public void setLayout (Layout layout) {
  * No layout of any kind can occur in the receiver or any of its
  * children until the flag is set to false.
  * Layout operations that occurred while the flag was
- * <code>true</code> are remembered and when the flag is set to 
+ * <code>true</code> are remembered and when the flag is set to
  * <code>false</code>, the layout operations are performed in an
  * optimized manner.  Nested calls to this method are stacked.
  *
@@ -1479,7 +1479,7 @@ public void setLayout (Layout layout) {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @see #layout(boolean)
  * @see #layout(Control[])
  *
@@ -1503,7 +1503,7 @@ void setOrientation (boolean create) {
 	super.setOrientation (create);
 	if (!create) {
 		int flags = SWT.RIGHT_TO_LEFT | SWT.LEFT_TO_RIGHT;
-		int orientation = style & flags;	
+		int orientation = style & flags;
 		Control [] children = _getChildren ();
 		for (int i=0; i<children.length; i++) {
 			children[i].setOrientation (orientation);
@@ -1558,7 +1558,7 @@ boolean setTabItemFocus (boolean next) {
  * @param tabList the ordered list of controls representing the tab order or null
  *
  * @exception IllegalArgumentException <ul>
- *    <li>ERROR_INVALID_ARGUMENT - if a widget in the tabList is null or has been disposed</li> 
+ *    <li>ERROR_INVALID_ARGUMENT - if a widget in the tabList is null or has been disposed</li>
  *    <li>ERROR_INVALID_PARENT - if widget in the tabList is not in the same widget tree</li>
  * </ul>
  * @exception SWTException <ul>
@@ -1578,7 +1578,7 @@ public void setTabList (Control [] tabList) {
 		Control [] newList = new Control [tabList.length];
 		System.arraycopy (tabList, 0, newList, 0, tabList.length);
 		tabList = newList;
-	} 
+	}
 	this.tabList = tabList;
 }
 

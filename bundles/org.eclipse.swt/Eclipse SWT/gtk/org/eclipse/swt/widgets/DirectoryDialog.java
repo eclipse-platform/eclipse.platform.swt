@@ -27,7 +27,7 @@ import org.eclipse.swt.internal.gtk.*;
  * <p>
  * IMPORTANT: This class is <em>not</em> intended to be subclassed.
  * </p>
- * 
+ *
  * @see <a href="http://www.eclipse.org/swt/snippets/#directorydialog">DirectoryDialog snippets</a>
  * @see <a href="http://www.eclipse.org/swt/examples.php">SWT Example: ControlExample, Dialog tab</a>
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
@@ -60,7 +60,7 @@ public DirectoryDialog (Shell parent) {
  * <p>
  * The style value is either one of the style constants defined in
  * class <code>SWT</code> which is applicable to instances of this
- * class, or must be built by <em>bitwise OR</em>'ing together 
+ * class, or must be built by <em>bitwise OR</em>'ing together
  * (that is, using the <code>int</code> "|" operator) two or more
  * of those <code>SWT</code> style constants. The class description
  * lists the style constants that are applicable to the class.
@@ -87,7 +87,7 @@ public DirectoryDialog (Shell parent, int style) {
  * the directories it shows.
  *
  * @return the filter path
- * 
+ *
  * @see #setFilterPath
  */
 public String getFilterPath () {
@@ -147,7 +147,7 @@ String openChooserDialog () {
 		byte [] buffer = Converter.wcsToMbcs (null, stringBuffer.toString (), true);
 		/*
 		 * in GTK version 2.10, gtk_file_chooser_set_current_folder requires path
-		 * to be true canonical path. So using realpath to convert the path to 
+		 * to be true canonical path. So using realpath to convert the path to
 		 * true canonical path.
 		 */
 		if (OS.IsAIX) {
@@ -197,14 +197,14 @@ String openChooserDialog () {
 	if ((style & SWT.RIGHT_TO_LEFT) != 0) {
 		signalId = OS.g_signal_lookup (OS.map, OS.GTK_TYPE_WIDGET());
 		hookId = OS.g_signal_add_emission_hook (signalId, 0, display.emissionProc, handle, 0);
-	}	
+	}
 	display.sendPreExternalEventDispatchEvent ();
 	int response = OS.gtk_dialog_run (handle);
 	/*
 	* This call to gdk_threads_leave() is a temporary work around
 	* to avoid deadlocks when gdk_threads_init() is called by native
 	* code outside of SWT (i.e AWT, etc). It ensures that the current
-	* thread leaves the GTK lock acquired by the function above. 
+	* thread leaves the GTK lock acquired by the function above.
 	*/
 	OS.gdk_threads_leave();
 	display.sendPostExternalEventDispatchEvent ();
@@ -261,7 +261,7 @@ public void setFilterPath (String string) {
  * visible on the dialog while it is open.
  *
  * @param string the message
- * 
+ *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the string is null</li>
  * </ul>

@@ -28,7 +28,7 @@ import org.eclipse.swt.graphics.*;
  * <p>
  * IMPORTANT: This class is <em>not</em> intended to be subclassed.
  * </p>
- * 
+ *
  * @see <a href="http://www.eclipse.org/swt/examples.php">SWT Example: ControlExample, Dialog tab</a>
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  * @noextend This class is not intended to be subclassed by clients.
@@ -62,7 +62,7 @@ public ColorDialog (Shell parent) {
  * <p>
  * The style value is either one of the style constants defined in
  * class <code>SWT</code> which is applicable to instances of this
- * class, or must be built by <em>bitwise OR</em>'ing together 
+ * class, or must be built by <em>bitwise OR</em>'ing together
  * (that is, using the <code>int</code> "|" operator) two or more
  * of those <code>SWT</code> style constants. The class description
  * lists the style constants that are applicable to the class.
@@ -105,7 +105,7 @@ public RGB getRGB () {
  * if no custom colors were selected.
  *
  * @return the array of RGBs, which may be null
- * 
+ *
  * @since 3.8
  */
 public RGB[] getRGBs() {
@@ -173,7 +173,7 @@ public RGB open () {
 		OS.gtk_color_chooser_set_use_alpha (handle, false);
 		OS.gtk_color_chooser_set_rgba (handle, rgba);
 	}
-	
+
 	if (rgbs != null) {
 		long /*int*/ colors = OS.g_malloc(GdkColor.sizeof * rgbs.length);
 		for (int i=0; i<rgbs.length; i++) {
@@ -216,7 +216,7 @@ public RGB open () {
 	* This call to gdk_threads_leave() is a temporary work around
 	* to avoid deadlocks when gdk_threads_init() is called by native
 	* code outside of SWT (i.e AWT, etc). It ensures that the current
-	* thread leaves the GTK lock acquired by the function above. 
+	* thread leaves the GTK lock acquired by the function above.
 	*/
 	OS.gdk_threads_leave();
 	display.sendPostExternalEventDispatchEvent ();
@@ -226,7 +226,7 @@ public RGB open () {
 	if (OS.gtk_window_get_modal (handle)) {
 		display.setModalDialog (oldModal);
 	}
-	boolean success = response == OS.GTK_RESPONSE_OK; 
+	boolean success = response == OS.GTK_RESPONSE_OK;
 	if (success) {
 		int red = 0;
 		int green = 0;
@@ -297,7 +297,7 @@ public void setRGB (RGB rgb) {
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_INVALID_ARGUMENT - if an RGB in the rgbs array is null</li>
  * </ul>
- * 
+ *
  * @since 3.8
  */
 public void setRGBs(RGB[] rgbs) {

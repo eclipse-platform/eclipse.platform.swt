@@ -15,21 +15,21 @@ import org.eclipse.swt.internal.gtk.*;
 import org.eclipse.swt.widgets.*;
 
 /**
- * This class provides a default drag under effect (eg. select, insert, scroll and expand) 
+ * This class provides a default drag under effect (eg. select, insert, scroll and expand)
  * when a drag occurs over a <code>Tree</code>.
- * 
+ *
  * <p>Classes that wish to provide their own drag under effect for a <code>Tree</code>
- * can extend the <code>TreeDropTargetEffect</code> class and override any applicable methods 
+ * can extend the <code>TreeDropTargetEffect</code> class and override any applicable methods
  * in <code>TreeDropTargetEffect</code> to display their own drag under effect.</p>
  *
  * Subclasses that override any methods of this class must call the corresponding
  * <code>super</code> method to get the default drag under effect implementation.
  *
- * <p>The feedback value is either one of the FEEDBACK constants defined in 
- * class <code>DND</code> which is applicable to instances of this class, 
- * or it must be built by <em>bitwise OR</em>'ing together 
+ * <p>The feedback value is either one of the FEEDBACK constants defined in
+ * class <code>DND</code> which is applicable to instances of this class,
+ * or it must be built by <em>bitwise OR</em>'ing together
  * (that is, using the <code>int</code> "|" operator) two or more
- * of those <code>DND</code> effect constants. 
+ * of those <code>DND</code> effect constants.
  * </p>
  * <p>
  * <dl>
@@ -40,11 +40,11 @@ import org.eclipse.swt.widgets.*;
  * Note: Only one of the styles FEEDBACK_SELECT, FEEDBACK_INSERT_BEFORE or
  * FEEDBACK_INSERT_AFTER may be specified.
  * </p>
- * 
+ *
  * @see DropTargetAdapter
  * @see DropTargetEvent
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
- * 
+ *
  * @since 3.3
  */
 public class TreeDropTargetEffect extends DropTargetEffect {
@@ -58,9 +58,9 @@ public class TreeDropTargetEffect extends DropTargetEffect {
 	long expandBeginTime;
 
 	/**
-	 * Creates a new <code>TreeDropTargetEffect</code> to handle the drag under effect on the specified 
+	 * Creates a new <code>TreeDropTargetEffect</code> to handle the drag under effect on the specified
 	 * <code>Tree</code>.
-	 * 
+	 *
 	 * @param tree the <code>Tree</code> over which the user positions the cursor to drop the data
 	 */
 	public TreeDropTargetEffect(Tree tree) {
@@ -77,36 +77,36 @@ public class TreeDropTargetEffect extends DropTargetEffect {
 	/**
 	 * This implementation of <code>dragEnter</code> provides a default drag under effect
 	 * for the feedback specified in <code>event.feedback</code>.
-	 * 
+	 *
 	 * For additional information see <code>DropTargetAdapter.dragEnter</code>.
-	 * 
+	 *
 	 * Subclasses that override this method should call <code>super.dragEnter(event)</code>
 	 * to get the default drag under effect implementation.
 	 *
 	 * @param event  the information associated with the drag enter event
-	 * 
+	 *
 	 * @see DropTargetAdapter
 	 * @see DropTargetEvent
 	 */
 	@Override
 	public void dragEnter(DropTargetEvent event) {
 		expandBeginTime = 0;
-		expandIndex = -1;	
+		expandIndex = -1;
 		scrollBeginTime = 0;
 		scrollIndex = -1;
 	}
-	
+
 	/**
 	 * This implementation of <code>dragLeave</code> provides a default drag under effect
 	 * for the feedback specified in <code>event.feedback</code>.
-	 * 
+	 *
 	 * For additional information see <code>DropTargetAdapter.dragLeave</code>.
-	 * 
+	 *
 	 * Subclasses that override this method should call <code>super.dragLeave(event)</code>
 	 * to get the default drag under effect implementation.
 	 *
 	 * @param event  the information associated with the drag leave event
-	 * 
+	 *
 	 * @see DropTargetAdapter
 	 * @see DropTargetEvent
 	 */
@@ -125,14 +125,14 @@ public class TreeDropTargetEffect extends DropTargetEffect {
 	/**
 	 * This implementation of <code>dragOver</code> provides a default drag under effect
 	 * for the feedback specified in <code>event.feedback</code>.
-	 * 
+	 *
 	 * For additional information see <code>DropTargetAdapter.dragOver</code>.
-	 * 
+	 *
 	 * Subclasses that override this method should call <code>super.dragOver(event)</code>
 	 * to get the default drag under effect implementation.
 	 *
 	 * @param event  the information associated with the drag over event
-	 * 
+	 *
 	 * @see DropTargetAdapter
 	 * @see DropTargetEvent
 	 * @see DND#FEEDBACK_SELECT
@@ -153,7 +153,7 @@ public class TreeDropTargetEffect extends DropTargetEffect {
 		int index = -1;
 		if (path[0] != 0) {
 			long /*int*/ indices = OS.gtk_tree_path_get_indices(path[0]);
-			if (indices != 0) {	
+			if (indices != 0) {
 				int depth = OS.gtk_tree_path_get_depth(path[0]);
 				int[] temp = new int[depth];
 				OS.memmove (temp, indices, temp.length * 4);
@@ -184,7 +184,7 @@ public class TreeDropTargetEffect extends DropTargetEffect {
 							OS.gtk_tree_path_free(path[0]);
 							path[0] = 0;
 						}
-						OS.gtk_tree_view_get_path_at_pos (handle, coordinates.x, coordinates.y, path, null, null, null);	
+						OS.gtk_tree_view_get_path_at_pos (handle, coordinates.x, coordinates.y, path, null, null, null);
 					}
 					scrollBeginTime = 0;
 					scrollIndex = -1;
@@ -213,7 +213,7 @@ public class TreeDropTargetEffect extends DropTargetEffect {
 			int position = -1;
 			if ((effect & DND.FEEDBACK_SELECT) != 0) position = OS.GTK_TREE_VIEW_DROP_INTO_OR_BEFORE;
 			if ((effect & DND.FEEDBACK_INSERT_BEFORE) != 0) position = OS.GTK_TREE_VIEW_DROP_BEFORE;
-			if ((effect & DND.FEEDBACK_INSERT_AFTER) != 0) position = OS.GTK_TREE_VIEW_DROP_AFTER;		
+			if ((effect & DND.FEEDBACK_INSERT_AFTER) != 0) position = OS.GTK_TREE_VIEW_DROP_AFTER;
 			if (position != -1) {
 				OS.gtk_tree_view_set_drag_dest_row(handle, path[0], position);
 			} else {
@@ -222,7 +222,7 @@ public class TreeDropTargetEffect extends DropTargetEffect {
 		} else {
 			OS.gtk_tree_view_set_drag_dest_row(handle, 0, OS.GTK_TREE_VIEW_DROP_BEFORE);
 		}
-		
+
 		if (path[0] != 0) OS.gtk_tree_path_free (path [0]);
 	}
 

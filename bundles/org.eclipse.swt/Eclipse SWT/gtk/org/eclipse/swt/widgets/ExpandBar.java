@@ -31,7 +31,7 @@ import org.eclipse.swt.graphics.*;
  * </p><p>
  * IMPORTANT: This class is <em>not</em> intended to be subclassed.
  * </p>
- * 
+ *
  * @see ExpandItem
  * @see ExpandEvent
  * @see ExpandListener
@@ -39,7 +39,7 @@ import org.eclipse.swt.graphics.*;
  * @see <a href="http://www.eclipse.org/swt/snippets/#expandbar">ExpandBar snippets</a>
  * @see <a href="http://www.eclipse.org/swt/examples.php">SWT Example: ControlExample</a>
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
- * 
+ *
  * @since 3.2
  * @noextend This class is not intended to be subclassed by clients.
  */
@@ -56,7 +56,7 @@ public class ExpandBar extends Composite {
  * <p>
  * The style value is either one of the style constants defined in
  * class <code>SWT</code> which is applicable to instances of this
- * class, or must be built by <em>bitwise OR</em>'ing together 
+ * class, or must be built by <em>bitwise OR</em>'ing together
  * (that is, using the <code>int</code> "|" operator) two or more
  * of those <code>SWT</code> style constants. The class description
  * lists the style constants that are applicable to the class.
@@ -175,7 +175,7 @@ void createItem (ExpandItem item, int style, int index) {
 @Override
 void createWidget (int index) {
 	super.createWidget (index);
-	items = new ExpandItem [4];	
+	items = new ExpandItem [4];
 }
 
 void destroyItem (ExpandItem item) {
@@ -269,11 +269,11 @@ public int getItemCount () {
 
 /**
  * Returns an array of <code>ExpandItem</code>s which are the items
- * in the receiver. 
+ * in the receiver.
  * <p>
  * Note: This is not the actual structure used by the receiver
  * to maintain its list of items, so modifying the array will
- * not affect the receiver. 
+ * not affect the receiver.
  * </p>
  *
  * @return the items in the receiver
@@ -321,7 +321,7 @@ long /*int*/ gtk_key_press_event (long /*int*/ widget, long /*int*/ event) {
 	switch (gdkEvent.keyval) {
 		case OS.GDK_Up:
 		case OS.GDK_Left: next = false; break;
-		case OS.GDK_Down: 
+		case OS.GDK_Down:
 		case OS.GDK_Right: next = true; break;
 		default: return result;
 	}
@@ -335,7 +335,7 @@ long /*int*/ gtk_key_press_event (long /*int*/ widget, long /*int*/ event) {
 
 /**
  * Searches the receiver's list starting at the first item
- * (index 0) until an item is found that is equal to the 
+ * (index 0) until an item is found that is equal to the
  * argument, and returns the index of that item. If no item
  * is found, returns -1.
  *
@@ -470,7 +470,7 @@ void setScrollbar () {
 		yCurrentScroll = Math.max (0, yCurrentScroll + maxHeight - height);
 		layoutItems (0, false);
 	}
-	maxHeight += yCurrentScroll;	
+	maxHeight += yCurrentScroll;
 	adjustment.value = Math.min (yCurrentScroll, maxHeight);
 	adjustment.upper = maxHeight;
 	adjustment.page_size = height;
@@ -495,9 +495,9 @@ void setScrollbar () {
 }
 
 /**
- * Sets the receiver's spacing. Spacing specifies the number of pixels allocated around 
+ * Sets the receiver's spacing. Spacing specifies the number of pixels allocated around
  * each item.
- * 
+ *
  * @param spacing the spacing around each item
  *
  * @exception SWTException <ul>

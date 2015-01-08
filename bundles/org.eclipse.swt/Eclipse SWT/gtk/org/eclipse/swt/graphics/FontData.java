@@ -48,7 +48,7 @@ public final class FontData {
 	 * within the packages provided by SWT. It is not available on all
 	 * platforms and should never be accessed from application code.
 	 * </p>
-	 * 
+	 *
 	 * @noreference This field is not intended to be referenced by clients.
 	 */
 	public String name;
@@ -62,7 +62,7 @@ public final class FontData {
 	 * within the packages provided by SWT. It is not available on all
 	 * platforms and should never be accessed from application code.
 	 * </p>
-	 * 
+	 *
 	 * @noreference This field is not intended to be referenced by clients.
 	 */
 	public float height;
@@ -76,13 +76,13 @@ public final class FontData {
 	 * within the packages provided by SWT. It is not available on all
 	 * platforms and should never be accessed from application code.
 	 * </p>
-	 * 
+	 *
 	 * @noreference This field is not intended to be referenced by clients.
 	 */
 	public int style;
-	
+
 	/**
-	 * the Pango string 
+	 * the Pango string
 	 * (Warning: This field is platform dependent)
 	 * <p>
 	 * <b>IMPORTANT:</b> This field is <em>not</em> part of the SWT
@@ -90,7 +90,7 @@ public final class FontData {
 	 * within the packages provided by SWT. It is not available on all
 	 * platforms and should never be accessed from application code.
 	 * </p>
-	 * 
+	 *
 	 * @noreference This field is not intended to be referenced by clients.
 	 */
 	public byte[] string;
@@ -99,8 +99,8 @@ public final class FontData {
 	 * The locales of the font
 	 */
 	String lang, country, variant;
-	
-/**	 
+
+/**
  * Constructs a new uninitialized font data.
  */
 public FontData () {
@@ -113,7 +113,7 @@ public FontData () {
  * method.
  * <p>
  * Note that the representation varies between platforms,
- * and a FontData can only be created from a string that was 
+ * and a FontData can only be created from a string that was
  * generated on the same platform.
  * </p>
  *
@@ -137,12 +137,12 @@ public FontData(String string) {
 	} catch (NumberFormatException e) {
 		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
-	
+
 	start = end + 1;
 	end = string.indexOf('|', start);
 	if (end == -1) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	String name = string.substring(start, end);
-	
+
 	start = end + 1;
 	end = string.indexOf('|', start);
 	if (end == -1) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
@@ -152,7 +152,7 @@ public FontData(String string) {
 	} catch (NumberFormatException e) {
 		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
-	
+
 	start = end + 1;
 	end = string.indexOf('|', start);
 	if (end == -1) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
@@ -181,9 +181,9 @@ public FontData(String string) {
 	}
 }
 
-/**	 
+/**
  * Constructs a new font data given a font name,
- * the height of the desired font in points, 
+ * the height of the desired font in points,
  * and a font style.
  *
  * @param name the name of the font (must not be null)
@@ -253,7 +253,7 @@ public int getHeight() {
  * given language/country locale, the variant portion of the
  * locale will determine the character set.
  * </p>
- * 
+ *
  * @return the <code>String</code> representing a Locale object
  * @since 3.0
  */
@@ -271,14 +271,14 @@ public String getLocale () {
 	if (variant != null) {
 		buffer.append (variant);
 	}
-	
+
 	String result = buffer.toString ();
 	int length = result.length ();
 	if (length > 0) {
 		if (result.charAt (length - 1) == sep) {
 			result = result.substring (0, length - 1);
 		}
-	} 
+	}
 	return result;
 }
 
@@ -296,12 +296,12 @@ public String getName() {
 }
 
 /**
- * Returns the style of the receiver which is a bitwise OR of 
+ * Returns the style of the receiver which is a bitwise OR of
  * one or more of the <code>SWT</code> constants NORMAL, BOLD
  * and ITALIC.
  *
  * @return the style of this <code>FontData</code>
- * 
+ *
  * @see #setStyle
  */
 public int getStyle() {
@@ -309,8 +309,8 @@ public int getStyle() {
 }
 
 /**
- * Returns an integer hash code for the receiver. Any two 
- * objects that return <code>true</code> when passed to 
+ * Returns an integer hash code for the receiver. Any two
+ * objects that return <code>true</code> when passed to
  * <code>equals</code> must return the same value for this
  * method.
  *
@@ -333,7 +333,7 @@ public int hashCode () {
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_INVALID_ARGUMENT - if the height is negative</li>
  * </ul>
- * 
+ *
  * @see #getHeight
  */
 public void setHeight(int height) {
@@ -361,7 +361,7 @@ public void setHeight(int height) {
  * given language/country locale, the variant portion of the
  * locale will determine the character set.
  * </p>
- * 
+ *
  * @param locale the <code>String</code> representing a Locale object
  * @see java.util.Locale#toString
  */
@@ -371,7 +371,7 @@ public void setLocale(String locale) {
 		char sep = '_';
 		int length = locale.length();
 		int firstSep, secondSep;
-		
+
 		firstSep = locale.indexOf(sep);
 		if (firstSep == -1) {
 			firstSep = secondSep = length;
@@ -382,7 +382,7 @@ public void setLocale(String locale) {
 		if (firstSep > 0) lang = locale.substring(0, firstSep);
 		if (secondSep > firstSep + 1) country = locale.substring(firstSep + 1, secondSep);
 		if (length > secondSep + 1) variant = locale.substring(secondSep + 1);
-	}	
+	}
 }
 
 /**
@@ -399,7 +399,7 @@ public void setLocale(String locale) {
  * </p>
  * <p>
  * On platforms that do not support font foundries, only the face name
- * (for example, "courier") is used in <code>setName()</code> and 
+ * (for example, "courier") is used in <code>setName()</code> and
  * <code>getName()</code>.
  * </p>
  *
@@ -418,7 +418,7 @@ public void setName(String name) {
 
 /**
  * Sets the style of the receiver to the argument which must
- * be a bitwise OR of one or more of the <code>SWT</code> 
+ * be a bitwise OR of one or more of the <code>SWT</code>
  * constants NORMAL, BOLD and ITALIC.  All other style bits are
  * ignored.
  *
@@ -433,7 +433,7 @@ public void setStyle(int style) {
 
 /**
  * Returns a string representation of the receiver which is suitable
- * for constructing an equivalent instance using the 
+ * for constructing an equivalent instance using the
  * <code>FontData(String)</code> constructor.
  *
  * @return a string representation of the FontData
@@ -450,7 +450,7 @@ public String toString() {
 	buffer.append("|");
 	buffer.append(getStyle());
 	buffer.append("|");
-	buffer.append("GTK|1|");	
+	buffer.append("GTK|1|");
 	return buffer.toString();
 }
 

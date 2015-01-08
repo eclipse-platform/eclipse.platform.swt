@@ -61,7 +61,7 @@ public class Label extends Control {
  * <p>
  * The style value is either one of the style constants defined in
  * class <code>SWT</code> which is applicable to instances of this
- * class, or must be built by <em>bitwise OR</em>'ing together 
+ * class, or must be built by <em>bitwise OR</em>'ing together
  * (that is, using the <code>int</code> "|" operator) two or more
  * of those <code>SWT</code> style constants. The class description
  * lists the style constants that are applicable to the class.
@@ -101,7 +101,7 @@ static int checkStyle (int style) {
 	if ((style & SWT.SEPARATOR) != 0) {
 		style = checkBits (style, SWT.VERTICAL, SWT.HORIZONTAL, 0, 0, 0, 0);
 		return checkBits (style, SWT.SHADOW_OUT, SWT.SHADOW_IN, SWT.SHADOW_NONE, 0, 0, 0);
-	} 
+	}
 	return checkBits (style, SWT.LEFT, SWT.CENTER, SWT.RIGHT, 0, 0, 0);
 }
 
@@ -125,10 +125,10 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 			if (hHint == SWT.DEFAULT) hHint = DEFAULT_HEIGHT;
 		}
 	}
-	Point size; 
-	/* 
-	* Feature in GTK. GTK has a predetermined maximum width for wrapping text. 
-	* The fix is to use pango layout directly instead of the label size request 
+	Point size;
+	/*
+	* Feature in GTK. GTK has a predetermined maximum width for wrapping text.
+	* The fix is to use pango layout directly instead of the label size request
 	* to calculate its preferred size.
 	*/
 	boolean fixWrap = labelHandle != 0 && (style & SWT.WRAP) != 0 && gtk_widget_get_visible (labelHandle);
@@ -152,7 +152,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 			OS.gtk_widget_set_size_request (labelHandle, labelWidth [0], labelHeight [0]);
 			size.x = size.x - 1;
 			size.y = size.y - 1;
-		} else { 
+		} else {
 			size = new Point (0,0);
 		}
 		size.x += wHint == SWT.DEFAULT ? w [0] : wHint;
@@ -173,7 +173,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	* the preferred height of the widget, GTK uses the text metrics.
 	* The fix is to ensure that the preferred height is at least as
 	* tall as the font height.
-	* 
+	*
 	* NOTE: This work around does not fix the case when there are
 	* muliple lines of text.
 	*/
@@ -238,7 +238,7 @@ void createHandle (int index) {
 		OS.gtk_label_set_line_wrap (labelHandle, true);
 		OS.gtk_label_set_line_wrap_mode (labelHandle, OS.PANGO_WRAP_WORD_CHAR);
 	}
-	// In GTK 3 font description is inherited from parent widget which is not how SWT has always worked, 
+	// In GTK 3 font description is inherited from parent widget which is not how SWT has always worked,
 	// reset to default font to get the usual behavior
 	if (OS.GTK3) {
 		setFontDescription(defaultFont ().handle);
@@ -269,10 +269,10 @@ long /*int*/ eventHandle () {
  * Returns a value which describes the position of the
  * text or image in the receiver. The value will be one of
  * <code>LEFT</code>, <code>RIGHT</code> or <code>CENTER</code>
- * unless the receiver is a <code>SEPARATOR</code> label, in 
+ * unless the receiver is a <code>SEPARATOR</code> label, in
  * which case, <code>NONE</code> is returned.
  *
- * @return the alignment 
+ * @return the alignment
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -419,7 +419,7 @@ void resizeHandle (int width, int height) {
  * or <code>CENTER</code>.  If the receiver is a <code>SEPARATOR</code>
  * label, the argument is ignored and the alignment is not changed.
  *
- * @param alignment the new alignment 
+ * @param alignment the new alignment
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -473,7 +473,7 @@ int setBounds (int x, int y, int width, int height, boolean move, boolean resize
 	* determine the size that will wrap the label
 	* and expilictly set that size to force the label
 	* to wrap.
-	* 
+	*
 	* This part of the fix causes the label to be
 	* resized to the preferred size but it still
 	* won't draw properly.
@@ -488,7 +488,7 @@ int setBounds (int x, int y, int width, int height, boolean move, boolean resize
 	* determine the size that will wrap the label
 	* and expilictly set that size to force the label
 	* to wrap.
-	* 
+	*
 	* This part of the fix forces the label to be
 	* resized so that it will draw wrapped.
 	*/
@@ -500,7 +500,7 @@ int setBounds (int x, int y, int width, int height, boolean move, boolean resize
 		OS.gtk_widget_set_size_request (labelHandle, labelWidth, labelHeight);
 		/*
 		* Bug in GTK.  Setting the size request should invalidate the label's
-		* layout, but it does not.  The fix is to resize the label directly. 
+		* layout, but it does not.  The fix is to resize the label directly.
 		*/
 		GtkRequisition requisition = new GtkRequisition ();
 		gtk_widget_get_preferred_size (labelHandle, requisition);
@@ -531,7 +531,7 @@ void setForegroundColor (GdkColor color) {
 void setOrientation (boolean create) {
 	super.setOrientation (create);
 	if ((style & SWT.RIGHT_TO_LEFT) != 0 || !create) {
-		int dir = (style & SWT.RIGHT_TO_LEFT) != 0 ? OS.GTK_TEXT_DIR_RTL : OS.GTK_TEXT_DIR_LTR;	
+		int dir = (style & SWT.RIGHT_TO_LEFT) != 0 ? OS.GTK_TEXT_DIR_RTL : OS.GTK_TEXT_DIR_LTR;
 		if (labelHandle != 0) OS.gtk_widget_set_direction (labelHandle, dir);
 		if (imageHandle != 0) OS.gtk_widget_set_direction (imageHandle, dir);
 	}
@@ -544,7 +544,7 @@ void setOrientation (boolean create) {
  * @param image the image to display on the receiver (may be null)
  *
  * @exception IllegalArgumentException <ul>
- *    <li>ERROR_INVALID_ARGUMENT - if the image has been disposed</li> 
+ *    <li>ERROR_INVALID_ARGUMENT - if the image has been disposed</li>
  * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -587,7 +587,7 @@ public void setImage (Image image) {
  * '&amp;' can be escaped by doubling it in the string, causing
  * a single '&amp;' to be displayed.
  * </p>
- * 
+ *
  * @param string the new text
  *
  * @exception IllegalArgumentException <ul>

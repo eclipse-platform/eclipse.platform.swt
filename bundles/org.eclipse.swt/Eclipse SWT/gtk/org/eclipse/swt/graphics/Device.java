@@ -34,7 +34,7 @@ public abstract class Device implements Drawable {
 	 * within the packages provided by SWT. It is not available on all
 	 * platforms and should never be accessed from application code.
 	 * </p>
-	 * 
+	 *
 	 * @noreference This field is not intended to be referenced by clients.
 	 */
 	protected long /*int*/ xDisplay;
@@ -47,14 +47,14 @@ public abstract class Device implements Drawable {
 	Error [] errors;
 	Object [] objects;
 	Object trackingLock;
-	
+
 	/* Colormap and reference count */
 	GdkColor [] gdkColors;
 	int [] colorRefCount;
-	
+
 	/* Disposed flag */
 	boolean disposed;
-	
+
 	/* Warning and Error Handlers */
 	long /*int*/ logProc;
 	Callback logCallback;
@@ -62,7 +62,7 @@ public abstract class Device implements Drawable {
 	String [] log_domains = {"", "GLib-GObject", "GLib", "GObject", "Pango", "ATK", "GdkPixbuf", "Gdk", "Gtk", "GnomeVFS", "GIO"};
 	int [] handler_ids = new int [log_domains.length];
 	int warningLevel;
-	
+
 	/* X Warning and Error Handlers */
 	static Callback XErrorCallback, XIOErrorCallback;
 	static long /*int*/ XErrorProc, XIOErrorProc, XNullErrorProc, XNullIOErrorProc;
@@ -79,10 +79,10 @@ public abstract class Device implements Drawable {
 
 	/* System Font */
 	Font systemFont;
-	
+
 	/* Device dpi */
 	Point dpi;
-	
+
 	long /*int*/ emptyTab;
 
 	boolean useXRender;
@@ -104,7 +104,7 @@ public abstract class Device implements Drawable {
 		try {
 			Class.forName ("org.eclipse.swt.widgets.Display");
 		} catch (ClassNotFoundException e) {}
-	}	
+	}
 
 /*
 * TEMPORARY CODE.
@@ -119,12 +119,12 @@ static synchronized Device getDevice () {
 /**
  * Constructs a new instance of this class.
  * <p>
- * You must dispose the device when it is no longer required. 
+ * You must dispose the device when it is no longer required.
  * </p>
  *
  * @see #create
  * @see #init
- * 
+ *
  * @since 3.1
  */
 public Device() {
@@ -134,7 +134,7 @@ public Device() {
 /**
  * Constructs a new instance of this class.
  * <p>
- * You must dispose the device when it is no longer required. 
+ * You must dispose the device when it is no longer required.
  * </p>
  *
  * @param data the DeviceData which describes the receiver
@@ -365,7 +365,7 @@ public DeviceData getDeviceData () {
 /**
  * Returns a rectangle which describes the area of the
  * receiver which is capable of displaying data.
- * 
+ *
  * @return the client area
  *
  * @exception SWTException <ul>
@@ -382,7 +382,7 @@ public Rectangle getClientArea () {
 /**
  * Returns the bit depth of the screen, which is the number of
  * bits it takes to represent the number of unique colors that
- * the screen is currently capable of displaying. This number 
+ * the screen is currently capable of displaying. This number
  * will typically be one of 1, 8, 15, 16, 24 or 32.
  *
  * @return the depth of the screen
@@ -574,12 +574,12 @@ public boolean getWarnings () {
  * If subclasses reimplement this method, they must
  * call the <code>super</code> implementation.
  * </p>
- * 
+ *
  * @see #create
  */
 protected void init () {
 	this.dpi = getDPI();
-	
+
 	if (xDisplay != 0 && !OS.USE_CAIRO) {
 		int[] event_basep = new int[1], error_basep = new int [1];
 		if (OS.XRenderQueryExtension (xDisplay, event_basep, error_basep)) {
@@ -591,7 +591,7 @@ protected void init () {
 
 	//TODO: Remove; temporary code only
 	boolean fixAIX = OS.IsAIX && OS.PTR_SIZEOF == 8;
-	
+
 	if (debug || fixAIX) {
 		if (xDisplay != 0) {
 			/* Create the warning and error callbacks */
@@ -616,13 +616,13 @@ protected void init () {
 			if (debug) OS.XSynchronize (xDisplay, true);
 		}
 	}
-	
+
 	/* Create GTK warnings and error callbacks */
 	if (xDisplay != 0) {
 		logCallback = new Callback (this, "logProc", 4);
 		logProc = logCallback.getAddress ();
 		if (logProc == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
-		
+
 		/* Set GTK warning and error handlers */
 		if (debug) {
 			int flags = OS.G_LOG_LEVEL_MASK | OS.G_LOG_FLAG_FATAL | OS.G_LOG_FLAG_RECURSION;
@@ -632,7 +632,7 @@ protected void init () {
 			}
 		}
 	}
-	
+
 	/* Create the standard colors */
 	COLOR_BLACK = new Color (this, 0,0,0);
 	COLOR_DARK_RED = new Color (this, 0x80,0,0);
@@ -662,12 +662,12 @@ protected void init () {
 	/* Initialize the system font slot */
 	long /*int*/ defaultFont;
 	if (OS.GTK3) {
-		long /*int*/ context = OS.gtk_widget_get_style_context (shellHandle);	
+		long /*int*/ context = OS.gtk_widget_get_style_context (shellHandle);
 		defaultFont = OS.gtk_style_context_get_font (context, OS.GTK_STATE_FLAG_NORMAL);
 	} else {
-		long /*int*/ style = OS.gtk_widget_get_style (shellHandle);	
+		long /*int*/ style = OS.gtk_widget_get_style (shellHandle);
 		defaultFont = OS.gtk_style_get_font_desc (style);
-	}	
+	}
 	defaultFont = OS.pango_font_description_copy (defaultFont);
 	Point dpi = getDPI(), screenDPI = getScreenDPI();
 	if (dpi.y != screenDPI.y) {
@@ -677,7 +677,7 @@ protected void init () {
 	systemFont = Font.gtk_new (this, defaultFont);
 }
 
-/**	 
+/**
  * Invokes platform specific functionality to allocate a new GC handle.
  * <p>
  * <b>IMPORTANT:</b> This method is <em>not</em> part of the public
@@ -687,14 +687,14 @@ protected void init () {
  * application code.
  * </p>
  *
- * @param data the platform specific GC data 
+ * @param data the platform specific GC data
  * @return the platform specific GC handle
- * 
+ *
  * @noreference This method is not intended to be referenced by clients.
  */
 public abstract long /*int*/ internal_new_GC (GCData data);
 
-/**	 
+/**
  * Invokes platform specific functionality to dispose a GC handle.
  * <p>
  * <b>IMPORTANT:</b> This method is <em>not</em> part of the public
@@ -705,8 +705,8 @@ public abstract long /*int*/ internal_new_GC (GCData data);
  * </p>
  *
  * @param hDC the platform specific GC handle
- * @param data the platform specific GC data 
- * 
+ * @param data the platform specific GC data
+ *
  * @noreference This method is not intended to be referenced by clients.
  */
 public abstract void internal_dispose_GC (long /*int*/ hDC, GCData data);
@@ -740,7 +740,7 @@ public boolean isDisposed () {
  * </ul>
  *
  * @see Font
- * 
+ *
  * @since 3.3
  */
 public boolean loadFont (String path) {
@@ -822,7 +822,7 @@ static synchronized void register (Device device) {
 protected void release () {
 	if (shellHandle != 0) OS.gtk_widget_destroy(shellHandle);
 	shellHandle = 0;
-	
+
 	/* Dispose the default font */
 	if (systemFont != null) systemFont.dispose ();
 	systemFont = null;
@@ -863,7 +863,7 @@ protected void release () {
 	COLOR_BLACK = COLOR_DARK_RED = COLOR_DARK_GREEN = COLOR_DARK_YELLOW = COLOR_DARK_BLUE =
 	COLOR_DARK_MAGENTA = COLOR_DARK_CYAN = COLOR_GRAY = COLOR_DARK_GRAY = COLOR_RED =
 	COLOR_GREEN = COLOR_YELLOW = COLOR_BLUE = COLOR_MAGENTA = COLOR_CYAN = COLOR_WHITE = null;
-		
+
 	if (emptyTab != 0) OS.pango_tab_array_free(emptyTab);
 	emptyTab = 0;
 

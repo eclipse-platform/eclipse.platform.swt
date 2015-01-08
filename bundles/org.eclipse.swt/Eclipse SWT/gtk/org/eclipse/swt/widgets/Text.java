@@ -66,14 +66,14 @@ public class Text extends Scrollable {
 	int fixStart = -1, fixEnd = -1;
 	boolean doubleClick;
 	String message = "";
-	
+
 	static final char LTR_MARK = '\u200e';
 	static final char RTL_MARK = '\u200f';
 	int[] segments;
 
 	static final int ITER_SIZEOF = OS.GtkTextIter_sizeof();
 	static final int SPACE_FOR_CURSOR = 1;
-	
+
 	/**
 	* The maximum number of characters that can be entered
 	* into a text widget.
@@ -105,7 +105,7 @@ public class Text extends Scrollable {
  * <p>
  * The style value is either one of the style constants defined in
  * class <code>SWT</code> which is applicable to instances of this
- * class, or must be built by <em>bitwise OR</em>'ing together 
+ * class, or must be built by <em>bitwise OR</em>'ing together
  * (that is, using the <code>int</code> "|" operator) two or more
  * of those <code>SWT</code> style constants. The class description
  * lists the style constants that are applicable to the class.
@@ -166,10 +166,10 @@ static int checkStyle (int style) {
 	if ((style & SWT.SEARCH) != 0) {
 		style |= SWT.SINGLE | SWT.BORDER;
 		style &= ~SWT.PASSWORD;
-		/* 
+		/*
 		* NOTE: ICON_CANCEL has the same value as H_SCROLL and
 		* ICON_SEARCH has the same value as V_SCROLL so they are
-		* cleared because SWT.SINGLE is set. 
+		* cleared because SWT.SINGLE is set.
 		*/
 	}
 	if ((style & SWT.SINGLE) != 0 && (style & SWT.MULTI) != 0) {
@@ -229,7 +229,7 @@ void createHandle (int index) {
 			OS.gtk_scrolled_window_set_shadow_type (scrolledHandle, OS.GTK_SHADOW_ETCHED_IN);
 		}
 		int just = OS.GTK_JUSTIFY_LEFT;
-		if ((style & SWT.CENTER) != 0) just = OS.GTK_JUSTIFY_CENTER; 
+		if ((style & SWT.CENTER) != 0) just = OS.GTK_JUSTIFY_CENTER;
 		if ((style & SWT.RIGHT) != 0) just = OS.GTK_JUSTIFY_RIGHT;
 		OS.gtk_text_view_set_justification (handle, just);
 	}
@@ -238,7 +238,7 @@ void createHandle (int index) {
 		if ((style & SWT.SINGLE) != 0) {
 			OS.gtk_entry_set_width_chars(handle, 6);
 		}
-		// In GTK 3 font description is inherited from parent widget which is not how SWT has always worked, 
+		// In GTK 3 font description is inherited from parent widget which is not how SWT has always worked,
 		// reset to default font to get the usual behavior
 		setFontDescription(defaultFont().handle);
 	}
@@ -280,11 +280,11 @@ public void addModifyListener (ModifyListener listener) {
  * Adds a segment listener.
  * <p>
  * A <code>SegmentEvent</code> is sent whenever text content is being modified or
- * a segment listener is added or removed. You can 
+ * a segment listener is added or removed. You can
  * customize the appearance of text by indicating certain characters to be inserted
  * at certain text offsets. This may be used for bidi purposes, e.g. when
  * adjacent segments of right-to-left text should not be reordered relative to
- * each other. 
+ * each other.
  * E.g., multiple Java string literals in a right-to-left language
  * should generally remain in logical order to each other, that is, the
  * way they are stored.
@@ -307,7 +307,7 @@ public void addModifyListener (ModifyListener listener) {
  * @see SegmentEvent
  * @see SegmentListener
  * @see #removeSegmentListener
- * 
+ *
  * @since 3.8
  */
 public void addSegmentListener (SegmentListener listener) {
@@ -328,7 +328,7 @@ public void addSegmentListener (SegmentListener listener) {
  * <code>widgetDefaultSelected</code> is typically called when ENTER is pressed in a single-line text,
  * or when ENTER is pressed in a search text. If the receiver has the <code>SWT.SEARCH | SWT.ICON_CANCEL</code> style
  * and the user cancels the search, the event object detail field contains the value <code>SWT.ICON_CANCEL</code>.
- * Likewise, if the receiver has the <code>SWT.ICON_SEARCH</code> style and the icon search is selected, the 
+ * Likewise, if the receiver has the <code>SWT.ICON_SEARCH</code> style and the icon search is selected, the
  * event object detail field contains the value <code>SWT.ICON_SEARCH</code>.
  * </p>
  *
@@ -619,7 +619,7 @@ public Rectangle computeTrim (int x, int y, int width, int height) {
 			trim.height += innerBorder.top + innerBorder.bottom;
 		}
 	} else {
-		int borderWidth = OS.gtk_container_get_border_width (handle);  
+		int borderWidth = OS.gtk_container_get_border_width (handle);
 		xborder += borderWidth;
 		yborder += borderWidth;
 	}
@@ -791,8 +791,8 @@ void fixIM () {
 	/*
 	*  The IM filter has to be called one time for each key press event.
 	*  When the IM is open the key events are duplicated. The first event
-	*  is filtered by SWT and the second event is filtered by GTK.  In some 
-	*  cases the GTK handler does not run (the widget is destroyed, the 
+	*  is filtered by SWT and the second event is filtered by GTK.  In some
+	*  cases the GTK handler does not run (the widget is destroyed, the
 	*  application code consumes the event, etc), for these cases the IM
 	*  filter has to be called by SWT.
 	*/
@@ -946,7 +946,7 @@ public int getCharCount () {
  * default action of the text widget when the user
  * double clicks.
  * </p>
- * 
+ *
  * @return whether or not double click is enabled
  *
  * @exception SWTException <ul>
@@ -966,14 +966,14 @@ public boolean getDoubleClickEnabled () {
  * displayed when the user enters text or the
  * text is changed by the programmer.
  * </p>
- * 
+ *
  * @return the echo character
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @see #setEchoChar
  */
 public char getEchoChar () {
@@ -990,7 +990,7 @@ public char getEchoChar () {
  * Returns the editable state.
  *
  * @return whether or not the receiver is editable
- * 
+ *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
@@ -1034,7 +1034,7 @@ public int getLineCount () {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @see #DELIMITER
  */
 public String getLineDelimiter () {
@@ -1063,14 +1063,14 @@ public int getLineHeight () {
  * <p>
  * Typically this is used in conjunction with <code>SWT.SEARCH</code>.
  * </p>
- * 
+ *
  * @return the widget message
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 3.3
  */
 public String getMessage () {
@@ -1083,12 +1083,12 @@ public String getMessage () {
  * constants <code>SWT.LEFT_TO_RIGHT</code> or <code>SWT.RIGHT_TO_LEFT</code>.
  *
  * @return the orientation style
- * 
+ *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 2.1.2
  */
 @Override
@@ -1185,7 +1185,7 @@ public int getSelectionCount () {
  * Gets the selected text, or an empty string if there is no current selection.
  *
  * @return the selected text
- * 
+ *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
@@ -1292,7 +1292,7 @@ public String getText (int start, int end) {
  * However, the text can't be protected if an {@link SWT#Segments} or
  * {@link SWT#Verify} listener has been added to the widget.
  * </p>
- * 
+ *
  * @return a character array that contains the widget's text
  *
  * @exception SWTException <ul>
@@ -1325,24 +1325,24 @@ public char [] getTextChars () {
 	Arrays.fill (buffer, (byte) 0);
 	if (segments != null) {
 		result = deprocessText (result, 0, -1);
-	} 
+	}
 	return result;
 }
 
 /**
- * Returns the maximum number of characters that the receiver is capable of holding. 
+ * Returns the maximum number of characters that the receiver is capable of holding.
  * <p>
  * If this has not been changed by <code>setTextLimit()</code>,
  * it will be the constant <code>Text.LIMIT</code>.
  * </p>
- * 
+ *
  * @return the text limit
- * 
+ *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @see #LIMIT
  */
 public int getTextLimit () {
@@ -1500,7 +1500,7 @@ long /*int*/ gtk_commit (long /*int*/ imContext, long /*int*/ text) {
 	}
 	OS.g_signal_handlers_unblock_matched (imContext, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, COMMIT);
 	OS.g_signal_handlers_block_matched (imContext, mask, id, 0, 0, 0, handle);
-	if ((style & SWT.SINGLE) != 0) { 
+	if ((style & SWT.SINGLE) != 0) {
 		if (fixStart != -1 && fixEnd != -1) {
 			OS.gtk_editable_set_position (handle, fixStart);
 			OS.gtk_editable_select_region (handle, fixStart, fixEnd);
@@ -1669,7 +1669,7 @@ void drawMessage (long /*int*/ cr) {
 				x += thickness.x;
 				y += thickness.y;
 			} else {
-				long /*int*/ style = OS.gtk_widget_get_style (handle);	
+				long /*int*/ style = OS.gtk_widget_get_style (handle);
 				OS.gtk_style_get_text (style, OS.GTK_STATE_INSENSITIVE, textColor);
 				OS.gtk_style_get_base (style, OS.GTK_STATE_NORMAL, baseColor);
 			}
@@ -1901,10 +1901,10 @@ void hookEvents () {
 }
 
 long /*int*/ imContext () {
-	if (imContext != 0) return imContext; 
+	if (imContext != 0) return imContext;
 	if ((style & SWT.SINGLE) != 0) {
 		return OS.GTK_ENTRY_IM_CONTEXT (handle);
-	} 
+	}
 	return OS.GTK_TEXTVIEW_IM_CONTEXT (handle);
 }
 
@@ -1957,9 +1957,9 @@ long /*int*/ paintWindow () {
 		if (children != 0) {
 			/*
 			* When search or cancel icons are added to Text, those
-			* icon window(s) are added to the beginning of the list. 
+			* icon window(s) are added to the beginning of the list.
 			* In order to always return the correct window for Text,
-			* browse to the end of the list. 
+			* browse to the end of the list.
 			*/
 			do {
 				window = OS.g_list_data (children);
@@ -2007,7 +2007,7 @@ void register () {
 @Override
 void releaseWidget () {
 	super.releaseWidget ();
-	fixIM ();	
+	fixIM ();
 	message = null;
 }
 
@@ -2032,7 +2032,7 @@ public void removeModifyListener (ModifyListener listener) {
 	checkWidget ();
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (eventTable == null) return;
-	eventTable.unhook (SWT.Modify, listener);	
+	eventTable.unhook (SWT.Modify, listener);
 }
 
 /**
@@ -2052,7 +2052,7 @@ public void removeModifyListener (ModifyListener listener) {
  * @see SegmentEvent
  * @see SegmentListener
  * @see #addSegmentListener
- * 
+ *
  * @since 3.8
  */
 public void removeSegmentListener (SegmentListener listener) {
@@ -2085,7 +2085,7 @@ public void removeSelectionListener(SelectionListener listener) {
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (eventTable == null) return;
 	eventTable.unhook(SWT.Selection, listener);
-	eventTable.unhook(SWT.DefaultSelection,listener);	
+	eventTable.unhook(SWT.DefaultSelection,listener);
 }
 
 /**
@@ -2109,7 +2109,7 @@ public void removeVerifyListener (VerifyListener listener) {
 	checkWidget ();
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (eventTable == null) return;
-	eventTable.unhook (SWT.Verify, listener);	
+	eventTable.unhook (SWT.Verify, listener);
 }
 
 /**
@@ -2168,7 +2168,7 @@ void setCursor (long /*int*/ cursor) {
  * Note: This operation is a hint and is not supported on
  * platforms that do not have this concept.
  * </p>
- * 
+ *
  * @param doubleClick the new double click flag
  *
  * @exception SWTException <ul>
@@ -2248,7 +2248,7 @@ void setForegroundColor (GdkColor color) {
  * <p>
  * Typically this is used in conjunction with <code>SWT.SEARCH</code>.
  * </p>
- * 
+ *
  * @param message the new message
  *
  * @exception IllegalArgumentException <ul>
@@ -2258,7 +2258,7 @@ void setForegroundColor (GdkColor color) {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 3.3
  */
 public void setMessage (String message) {
@@ -2284,12 +2284,12 @@ public void setMessage (String message) {
  * </p>
  *
  * @param orientation new orientation style
- * 
+ *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 2.1.2
  */
 @Override
@@ -2446,7 +2446,7 @@ public void setTabs (int tabs) {
 	if (tabs < 0) return;
 	setTabStops (this.tabs = tabs);
 }
-	
+
 void setTabStops (int tabs) {
 	if ((style & SWT.SINGLE) != 0) return;
 	int tabWidth = getTabWidth (tabs);
@@ -2475,9 +2475,9 @@ public void setText (String string) {
 	checkWidget ();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 	/*
-	* Feature in gtk.  When text is set in gtk, separate events are fired for the deletion and 
+	* Feature in gtk.  When text is set in gtk, separate events are fired for the deletion and
 	* insertion of the text.  This is not wrong, but is inconsistent with other platforms.  The
-	* fix is to block the firing of these events and fire them ourselves in a consistent manner. 
+	* fix is to block the firing of these events and fire them ourselves in a consistent manner.
 	*/
 	if (hooks (SWT.Verify) || filters (SWT.Verify)) {
 		string = verifyText (string, 0, getCharCount ());
@@ -2518,9 +2518,9 @@ public void setTextChars (char [] text) {
 	checkWidget ();
 	if (text == null) error (SWT.ERROR_NULL_ARGUMENT);
 	/*
-	* Feature in gtk.  When text is set in gtk, separate events are fired for the deletion and 
+	* Feature in gtk.  When text is set in gtk, separate events are fired for the deletion and
 	* insertion of the text.  This is not wrong, but is inconsistent with other platforms.  The
-	* fix is to block the firing of these events and fire them ourselves in a consistent manner. 
+	* fix is to block the firing of these events and fire them ourselves in a consistent manner.
 	*/
 	if (hooks (SWT.Verify) || filters (SWT.Verify)) {
 		String string = verifyText (new String(text), 0, getCharCount ());
@@ -2589,7 +2589,7 @@ void setText (char [] text) {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @see #LIMIT
  */
 public void setTextLimit (int limit) {
@@ -2627,7 +2627,7 @@ public void setTopIndex (int index) {
  * in the receiver, this method simply returns.  Otherwise,
  * lines are scrolled until the selection is visible.
  * </p>
- * 
+ *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
@@ -2646,7 +2646,7 @@ int translateOffset (int offset) {
 	if (segments == null) return offset;
 	for (int i = 0, nSegments = segments.length; i < nSegments && offset - i >= segments[i]; i++) {
 		offset++;
-	}	
+	}
 	return offset;
 }
 

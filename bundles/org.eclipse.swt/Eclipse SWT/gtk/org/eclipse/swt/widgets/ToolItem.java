@@ -27,7 +27,7 @@ import org.eclipse.swt.events.*;
  * <dd>Selection</dd>
  * </dl>
  * <p>
- * Note: Only one of the styles CHECK, PUSH, RADIO, SEPARATOR and DROP_DOWN 
+ * Note: Only one of the styles CHECK, PUSH, RADIO, SEPARATOR and DROP_DOWN
  * may be specified.
  * </p><p>
  * IMPORTANT: This class is <em>not</em> intended to be subclassed.
@@ -54,7 +54,7 @@ public class ToolItem extends Item {
  * <p>
  * The style value is either one of the style constants defined in
  * class <code>SWT</code> which is applicable to instances of this
- * class, or must be built by <em>bitwise OR</em>'ing together 
+ * class, or must be built by <em>bitwise OR</em>'ing together
  * (that is, using the <code>int</code> "|" operator) two or more
  * of those <code>SWT</code> style constants. The class description
  * lists the style constants that are applicable to the class.
@@ -94,7 +94,7 @@ public ToolItem (ToolBar parent, int style) {
  * <p>
  * The style value is either one of the style constants defined in
  * class <code>SWT</code> which is applicable to instances of this
- * class, or must be built by <em>bitwise OR</em>'ing together 
+ * class, or must be built by <em>bitwise OR</em>'ing together
  * (that is, using the <code>int</code> "|" operator) two or more
  * of those <code>SWT</code> style constants. The class description
  * lists the style constants that are applicable to the class.
@@ -144,7 +144,7 @@ public ToolItem (ToolBar parent, int style, int index) {
  * </p>
  * <p>
  * When the <code>SWT.RADIO</code> style bit is set, the <code>widgetSelected</code> method is
- * also called when the receiver loses selection because another item in the same radio group 
+ * also called when the receiver loses selection because another item in the same radio group
  * was selected by the user. During <code>widgetSelected</code> the application can use
  * <code>getSelection()</code> to determine the current selected state of the receiver.
  * </p>
@@ -200,7 +200,7 @@ void createHandle (int index) {
 			handle = OS.gtk_menu_tool_button_new (0, null);
 			if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 			/*
-			 * Feature in GTK. The arrow button of DropDown tool-item is 
+			 * Feature in GTK. The arrow button of DropDown tool-item is
 			 * disabled when it does not contain menu. The fix is to
 			 * find the arrow button handle and enable it.
 			 */
@@ -229,7 +229,7 @@ void createHandle (int index) {
 			break;
 		case SWT.RADIO:
 			/*
-			* Because GTK enforces radio behavior in a button group 
+			* Because GTK enforces radio behavior in a button group
 			* a radio group is not created for each set of contiguous
 			* buttons, each radio button will not draw unpressed.
 			* The fix is to use toggle buttons instead.
@@ -257,8 +257,8 @@ void createHandle (int index) {
 		setFontDescription (parent.getFontDescription());
 	}
 	/*
-	 * Feature in GTK. GtkToolButton class uses this property to 
-	 * determine whether to show or hide its label when the toolbar 
+	 * Feature in GTK. GtkToolButton class uses this property to
+	 * determine whether to show or hide its label when the toolbar
 	 * style is GTK_TOOLBAR_BOTH_HORIZ (or SWT.RIGHT).
 	 */
 	if ((parent.style & SWT.RIGHT) != 0) OS.gtk_tool_item_set_is_important (handle, true);
@@ -373,7 +373,7 @@ public Image getDisabledImage () {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @see #isEnabled
  */
 public boolean getEnabled () {
@@ -518,7 +518,7 @@ long /*int*/ gtk_clicked (long /*int*/ widget) {
 			switch (gdkEvent.type) {
 				case OS.GDK_KEY_RELEASE: //Fall Through..
 				case OS.GDK_BUTTON_PRESS:
-				case OS.GDK_2BUTTON_PRESS: 
+				case OS.GDK_2BUTTON_PRESS:
 				case OS.GDK_BUTTON_RELEASE: {
 					boolean isArrow = false;
 					if (widget == arrowHandle) {
@@ -558,8 +558,8 @@ long /*int*/ gtk_clicked (long /*int*/ widget) {
 @Override
 long /*int*/ gtk_create_menu_proxy (long /*int*/ widget) {
 	/*
-	 * Feature in GTK. If the item is a radio/check button 
-	 * with only image, then that image does not appear in 
+	 * Feature in GTK. If the item is a radio/check button
+	 * with only image, then that image does not appear in
 	 * the overflow menu.
 	 * The fix is to create and use the proxy menu for the
 	 * items appearing in the overflow menu.
@@ -567,14 +567,14 @@ long /*int*/ gtk_create_menu_proxy (long /*int*/ widget) {
 	byte [] buffer = Converter.wcsToMbcs (null, "menu-id", true); //$NON-NLS-1$
 	if (proxyMenuItem != 0) {
 		/*
-		 * The menuItem to appear in the overflow menu is cached 
-		 * for the tool-item. If the text/image of the item changes, 
+		 * The menuItem to appear in the overflow menu is cached
+		 * for the tool-item. If the text/image of the item changes,
 		 * then the proxyMenu is reset.
 		 */
 		OS.gtk_tool_item_set_proxy_menu_item (widget, buffer, proxyMenuItem);
 		return 1;
 	}
-	
+
 	if (image != null) {
 		ImageList imageList = parent.imageList;
 		if (imageList != null) {
@@ -588,13 +588,13 @@ long /*int*/ gtk_create_menu_proxy (long /*int*/ widget) {
 					long /*int*/ property = OS.g_object_class_find_property(OS.G_OBJECT_GET_CLASS(settings), OS.gtk_menu_images);
 					if (property != 0) OS.g_object_get (settings, OS.gtk_menu_images, showImages, 0);
 				}
-				
-				/* 
-				 * GTK tool items with only image appear as blank items 
+
+				/*
+				 * GTK tool items with only image appear as blank items
 				 * in overflow menu when the system property "gtk-menu-images"
 				 * is set to false. To avoid that, display the tooltip text
-				 * if available, in the overflow menu. 
-				 * Feature in GTK. When the menuItem is initialised only 
+				 * if available, in the overflow menu.
+				 * Feature in GTK. When the menuItem is initialised only
 				 * with the image, the overflow menu appears very sloppy.
 				 * The fix is to initialise menu item with empty string.
 				 */
@@ -606,15 +606,15 @@ long /*int*/ gtk_create_menu_proxy (long /*int*/ widget) {
 				}
 				else {
 					label = Converter.wcsToMbcs(null, text, true);
-				}					
+				}
 				long /*int*/ menuItem = OS.gtk_image_menu_item_new_with_label (label);
 				long /*int*/ menuImage = OS.gtk_image_new_from_pixbuf (pixbuf);
 				OS.gtk_image_menu_item_set_image (menuItem, menuImage);
 				OS.gtk_tool_item_set_proxy_menu_item (widget, buffer, menuItem);
 				/*
 				 * Since the arrow button does not appear in the drop_down
-				 * item, we request the menu-item and then, hook the 
-				 * activate signal to send the Arrow selection signal. 
+				 * item, we request the menu-item and then, hook the
+				 * activate signal to send the Arrow selection signal.
 				 */
 				proxyMenuItem = OS.gtk_tool_item_get_proxy_menu_item (widget, buffer);
 				OS.g_signal_connect(menuItem, OS.activate, ToolBar.menuItemSelectedFunc.getAddress(), handle);
@@ -655,7 +655,7 @@ long /*int*/ gtk_event_after (long /*int*/ widget, long /*int*/ gdkEvent) {
 			}
 			break;
 		}
-	}	
+	}
 	return 0;
 }
 
@@ -686,7 +686,7 @@ long /*int*/ gtk_leave_notify_event (long /*int*/ widget, long /*int*/ event) {
 					gtk_image_set_from_pixbuf(imageHandle, pixbuf);
 				}
 			}
-		}	
+		}
 	}
 	return 0;
 }
@@ -708,8 +708,8 @@ void hookEvents () {
 	if ((style & SWT.SEPARATOR) != 0) return;
 	OS.g_signal_connect_closure (handle, OS.clicked, display.getClosure (CLICKED), false);
 	/*
-	 * Feature in GTK. GtkToolItem does not respond to basic listeners 
-	 * such as button-press, enter-notify to it. The fix is to assign 
+	 * Feature in GTK. GtkToolItem does not respond to basic listeners
+	 * such as button-press, enter-notify to it. The fix is to assign
 	 * the listener to child (GtkButton) of the tool-item.
 	 */
 	eventHandle = OS.gtk_bin_get_child(handle);
@@ -719,7 +719,7 @@ void hookEvents () {
 		if (arrowHandle != 0) OS.g_signal_connect_closure (arrowHandle, OS.clicked, display.getClosure (CLICKED), false);
 	}
 	OS.g_signal_connect_closure (handle, OS.create_menu_proxy, display.getClosure (CREATE_MENU_PROXY), false);
-	
+
 	OS.g_signal_connect_closure_by_id (eventHandle, display.signalIds [ENTER_NOTIFY_EVENT], 0, display.getClosure (ENTER_NOTIFY_EVENT), false);
 	OS.g_signal_connect_closure_by_id (eventHandle, display.signalIds [LEAVE_NOTIFY_EVENT], 0, display.getClosure (LEAVE_NOTIFY_EVENT), false);
 	OS.g_signal_connect_closure_by_id (eventHandle, display.signalIds [FOCUS_IN_EVENT], 0, display.getClosure (FOCUS_IN_EVENT), false);
@@ -734,8 +734,8 @@ void hookEvents () {
 	*/
 	int mask =
 		OS.GDK_EXPOSURE_MASK | OS.GDK_POINTER_MOTION_MASK |
-		OS.GDK_BUTTON_PRESS_MASK | OS.GDK_BUTTON_RELEASE_MASK | 
-		OS.GDK_ENTER_NOTIFY_MASK | OS.GDK_LEAVE_NOTIFY_MASK | 
+		OS.GDK_BUTTON_PRESS_MASK | OS.GDK_BUTTON_RELEASE_MASK |
+		OS.GDK_ENTER_NOTIFY_MASK | OS.GDK_LEAVE_NOTIFY_MASK |
 		OS.GDK_KEY_PRESS_MASK | OS.GDK_KEY_RELEASE_MASK |
 		OS.GDK_FOCUS_CHANGE_MASK;
 	OS.gtk_widget_add_events (eventHandle, mask);
@@ -759,7 +759,7 @@ void hookEvents () {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @see #getEnabled
  */
 public boolean isEnabled () {
@@ -826,7 +826,7 @@ public void removeSelectionListener(SelectionListener listener) {
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (eventTable == null) return;
 	eventTable.unhook (SWT.Selection, listener);
-	eventTable.unhook (SWT.DefaultSelection,listener);	
+	eventTable.unhook (SWT.DefaultSelection,listener);
 }
 
 void resizeControl () {
@@ -883,7 +883,7 @@ void selectRadio () {
  * @param control the new control
  *
  * @exception IllegalArgumentException <ul>
- *    <li>ERROR_INVALID_ARGUMENT - if the control has been disposed</li> 
+ *    <li>ERROR_INVALID_ARGUMENT - if the control has been disposed</li>
  *    <li>ERROR_INVALID_PARENT - if the control is not in the same widget tree</li>
  * </ul>
  * @exception SWTException <ul>
@@ -913,7 +913,7 @@ public void setControl (Control control) {
  * @param image the disabled image to display on the receiver (may be null)
  *
  * @exception IllegalArgumentException <ul>
- *    <li>ERROR_INVALID_ARGUMENT - if the image has been disposed</li> 
+ *    <li>ERROR_INVALID_ARGUMENT - if the image has been disposed</li>
  * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -999,7 +999,7 @@ void setForegroundColor (GdkColor color) {
  * @param image the hot image to display on the receiver (may be null)
  *
  * @exception IllegalArgumentException <ul>
- *    <li>ERROR_INVALID_ARGUMENT - if the image has been disposed</li> 
+ *    <li>ERROR_INVALID_ARGUMENT - if the image has been disposed</li>
  * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -1042,8 +1042,8 @@ public void setImage (Image image) {
 		gtk_image_set_from_pixbuf(imageHandle, 0);
 	}
 	/*
-	* If Text/Image of a tool-item changes, then it is 
-	* required to reset the proxy menu. Otherwise, the 
+	* If Text/Image of a tool-item changes, then it is
+	* required to reset the proxy menu. Otherwise, the
 	* old menuItem appears in the overflow menu.
 	*/
 	if ((style & SWT.DROP_DOWN) != 0) {
@@ -1113,7 +1113,7 @@ boolean setTabItemFocus (boolean next) {
  * escaped by doubling it in the string, causing a single
  * '&amp;' to be displayed.
  * </p>
- * 
+ *
  * @param string the new text
  *
  * @exception IllegalArgumentException <ul>
@@ -1136,8 +1136,8 @@ public void setText (String string) {
 	byte [] buffer = Converter.wcsToMbcs (null, chars, true);
 	OS.gtk_label_set_text_with_mnemonic (labelHandle, buffer);
 	/*
-	* If Text/Image of a tool-item changes, then it is 
-	* required to reset the proxy menu. Otherwise, the 
+	* If Text/Image of a tool-item changes, then it is
+	* required to reset the proxy menu. Otherwise, the
 	* old menuItem appears in the overflow menu.
 	*/
 	if ((style & SWT.DROP_DOWN) != 0) {
@@ -1150,17 +1150,17 @@ public void setText (String string) {
 
 /**
  * Sets the receiver's tool tip text to the argument, which
- * may be null indicating that the default tool tip for the 
+ * may be null indicating that the default tool tip for the
  * control will be shown. For a control that has a default
  * tool tip, such as the Tree control on Windows, setting
  * the tool tip text to an empty string replaces the default,
  * causing no tool tip text to be shown.
  * <p>
  * The mnemonic indicator (character '&amp;') is not displayed in a tool tip.
- * To display a single '&amp;' in the tool tip, the character '&amp;' can be 
+ * To display a single '&amp;' in the tool tip, the character '&amp;' can be
  * escaped by doubling it in the string.
  * </p>
- * 
+ *
  * @param string the new tool tip text (or null)
  *
  * @exception SWTException <ul>
@@ -1177,10 +1177,10 @@ public void setToolTipText (String string) {
 	}
 	toolTipText = string;
 	/*
-	* Since tooltip text of a tool-item is used in overflow 
-	* menu when images are not shown, it is required to 
+	* Since tooltip text of a tool-item is used in overflow
+	* menu when images are not shown, it is required to
 	* reset the proxy menu when the tooltip text changes.
-	* Otherwise, the old menuItem appears in the overflow 
+	* Otherwise, the old menuItem appears in the overflow
 	* menu as a blank item.
 	*/
 	if ((style & SWT.DROP_DOWN) != 0) {
@@ -1206,11 +1206,11 @@ void setToolTipText (Shell shell, String newString) {
  * @param width the new width. If the new value is <code>SWT.DEFAULT</code>,
  * the width is a fixed-width area whose amount is determined by the platform.
  * If the new value is 0 a vertical or horizontal line will be drawn, depending
- * on the setting of the corresponding style bit (<code>SWT.VERTICAL</code> or 
+ * on the setting of the corresponding style bit (<code>SWT.VERTICAL</code> or
  * <code>SWT.HORIZONTAL</code>). If the new value is <code>SWT.SEPARATOR_FILL</code>
  * a variable-width space is inserted that acts as a spring between the two adjoining
  * items which will push them out to the extent of the containing ToolBar.
- * 
+ *
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>

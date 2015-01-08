@@ -32,7 +32,7 @@ import org.eclipse.swt.printing.PrinterData;
  * Alternatively, calling <code>new Printer()</code> will construct a
  * printer object for the user's default printer.
  * </p><p>
- * Application code must explicitly invoke the <code>Printer.dispose()</code> 
+ * Application code must explicitly invoke the <code>Printer.dispose()</code>
  * method to release the operating system resources managed by each instance
  * when those instances are no longer required.
  * </p>
@@ -46,7 +46,7 @@ public final class Printer extends Device {
 	static PrinterData [] printerList;
 	static long /*int*/ findPrinter;
 	static PrinterData findData;
-	
+
 	PrinterData data;
 	long /*int*/ printer;
 	long /*int*/ printJob;
@@ -54,7 +54,7 @@ public final class Printer extends Device {
 	long /*int*/ pageSetup;
 	long /*int*/ surface;
 	long /*int*/ cairo;
-	
+
 	/**
 	 * whether or not a GC was created for this printer
 	 */
@@ -67,7 +67,7 @@ public final class Printer extends Device {
 	static final String GTK_FILE_BACKEND = "GtkPrintBackendFile"; //$NON-NLS-1$
 
 	static boolean disablePrinting = System.getProperty("org.eclipse.swt.internal.gtk.disablePrinting") != null; //$NON-NLS-1$
-	
+
 static void gtk_init() {
 	if (OS.GLIB_VERSION < OS.VERSION(2, 32, 0)) {
 		if (!OS.g_thread_supported()) {
@@ -103,7 +103,7 @@ public static PrinterData[] getPrinterList() {
 	* This call to gdk_threads_leave() is a temporary work around
 	* to avoid deadlocks when gdk_threads_init() is called by native
 	* code outside of SWT (i.e AWT, etc). It ensures that the current
-	* thread leaves the GTK lock acquired by the function above. 
+	* thread leaves the GTK lock acquired by the function above.
 	*/
 	OS.gdk_threads_leave();
 	printerCallback.dispose ();
@@ -117,9 +117,9 @@ static long /*int*/ GtkPrinterFunc_List (long /*int*/ printer, long /*int*/ user
 	printerList = newList;
 	printerList [length] = printerDataFromGtkPrinter(printer);
 	/*
-	* Bug in GTK. While performing a gtk_enumerate_printers(), GTK finds all of the 
-	* available printers from each backend and can hang. If a backend requires more 
-	* time to gather printer info, GTK will start an event loop waiting for a done 
+	* Bug in GTK. While performing a gtk_enumerate_printers(), GTK finds all of the
+	* available printers from each backend and can hang. If a backend requires more
+	* time to gather printer info, GTK will start an event loop waiting for a done
     * signal before continuing. For the Lpr backend, GTK does not send a done signal
     * which means the event loop never ends. The fix is to check to see if the driver
     * is of type Lpr, and stop the enumeration, which exits the event loop.
@@ -130,11 +130,11 @@ static long /*int*/ GtkPrinterFunc_List (long /*int*/ printer, long /*int*/ user
 
 /**
  * Returns a <code>PrinterData</code> object representing
- * the default printer or <code>null</code> if there is no 
+ * the default printer or <code>null</code> if there is no
  * default printer.
  *
  * @return the default printer data or null
- * 
+ *
  * @since 2.1
  */
 public static PrinterData getDefaultPrinterData() {
@@ -151,7 +151,7 @@ public static PrinterData getDefaultPrinterData() {
 	* This call to gdk_threads_leave() is a temporary work around
 	* to avoid deadlocks when gdk_threads_init() is called by native
 	* code outside of SWT (i.e AWT, etc). It ensures that the current
-	* thread leaves the GTK lock acquired by the function above. 
+	* thread leaves the GTK lock acquired by the function above.
 	*/
 	OS.gdk_threads_leave();
 	printerCallback.dispose ();
@@ -162,7 +162,7 @@ static long /*int*/ GtkPrinterFunc_Default (long /*int*/ printer, long /*int*/ u
 	if (OS.gtk_printer_is_default(printer)) {
 		findData = printerDataFromGtkPrinter(printer);
 		return 1;
-	} else if (OS.GTK_VERSION < OS.VERSION(2, 10, 12) && printerDataFromGtkPrinter(printer).driver.equals (GTK_LPR_BACKEND)) { 
+	} else if (OS.GTK_VERSION < OS.VERSION(2, 10, 12) && printerDataFromGtkPrinter(printer).driver.equals (GTK_LPR_BACKEND)) {
 		return 1;
 	}
 	return 0;
@@ -180,7 +180,7 @@ static long /*int*/ gtkPrinterFromPrinterData(PrinterData data) {
 	* This call to gdk_threads_leave() is a temporary work around
 	* to avoid deadlocks when gdk_threads_init() is called by native
 	* code outside of SWT (i.e AWT, etc). It ensures that the current
-	* thread leaves the GTK lock acquired by the function above. 
+	* thread leaves the GTK lock acquired by the function above.
 	*/
 	OS.gdk_threads_leave();
 	printerCallback.dispose ();
@@ -208,7 +208,7 @@ static PrinterData printerDataFromGtkPrinter(long /*int*/ printer) {
 	byte [] buffer = new byte [length];
 	OS.memmove (buffer, address, length);
 	String backendType = new String (Converter.mbcsToWcs (null, buffer));
-	
+
 	address = OS.gtk_printer_get_name (printer);
 	length = OS.strlen (address);
 	buffer = new byte [length];
@@ -218,7 +218,7 @@ static PrinterData printerDataFromGtkPrinter(long /*int*/ printer) {
 	return new PrinterData (backendType, name);
 }
 
-/* 
+/*
 * Restore printer settings and page_setup data from data.
 */
 static void restore(byte [] data, long /*int*/ settings, long /*int*/ page_setup) {
@@ -239,7 +239,7 @@ static void restore(byte [] data, long /*int*/ settings, long /*int*/ page_setup
 		if (DEBUG) System.out.println(new String (Converter.mbcsToWcs (null, keyBuffer))+": "+new String (Converter.mbcsToWcs (null, valueBuffer)));
 	}
 	end++; // skip extra null terminator
-	
+
 	/* Retrieve stored page_setup data.
 	 * Note that page_setup properties must be stored (in PrintDialog) and restored (here) in the same order.
 	 */
@@ -273,7 +273,7 @@ static byte [] uriFromFilename(String filename) {
 	int length = filename.length();
 	if (length == 0) return null;
 	char[] chars = new char[length];
-	filename.getChars(0, length, chars, 0);		
+	filename.getChars(0, length, chars, 0);
 	long /*int*/[] error = new long /*int*/[1];
 	long /*int*/ utf8Ptr = OS.g_utf16_to_utf8(chars, chars.length, null, null, error);
 	if (error[0] != 0 || utf8Ptr == 0) return null;
@@ -306,7 +306,7 @@ static DeviceData checkNull (PrinterData data) {
 			if (defaultData == null) SWT.error(SWT.ERROR_NO_HANDLES);
 		}
 		data.driver = defaultData.driver;
-		data.name = defaultData.name;		
+		data.name = defaultData.name;
 	}
 	return data;
 }
@@ -314,7 +314,7 @@ static DeviceData checkNull (PrinterData data) {
 /**
  * Constructs a new printer representing the default printer.
  * <p>
- * Note: You must dispose the printer when it is no longer required. 
+ * Note: You must dispose the printer when it is no longer required.
  * </p>
  *
  * @exception SWTError <ul>
@@ -332,7 +332,7 @@ public Printer() {
  * object representing the desired printer. If the argument
  * is null, then the default printer will be used.
  * <p>
- * Note: You must dispose the printer when it is no longer required. 
+ * Note: You must dispose the printer when it is no longer required.
  * </p>
  *
  * @param data the printer data for the specified printer, or null to use the default printer
@@ -372,7 +372,7 @@ static byte [] restoreBytes(String key, boolean nullTerminate) {
 	end++;
 	byte [] keyBuffer = new byte [end - start];
 	System.arraycopy (settingsData, start, keyBuffer, 0, keyBuffer.length);
-	
+
 	//get value
 	start = end;
 	while (end < settingsData.length && settingsData[end] != 0) end++;
@@ -381,13 +381,13 @@ static byte [] restoreBytes(String key, boolean nullTerminate) {
 	if (nullTerminate) length++;
 	byte [] valueBuffer = new byte [length];
 	System.arraycopy (settingsData, start, valueBuffer, 0, length);
-	
+
 	if (DEBUG) System.out.println(new String (Converter.mbcsToWcs (null, keyBuffer))+": "+new String (Converter.mbcsToWcs (null, valueBuffer)));
 
 	return valueBuffer;
 }
 
-/**	 
+/**
  * Invokes platform specific functionality to allocate a new GC handle.
  * <p>
  * <b>IMPORTANT:</b> This method is <em>not</em> part of the public
@@ -397,9 +397,9 @@ static byte [] restoreBytes(String key, boolean nullTerminate) {
  * application code.
  * </p>
  *
- * @param data the platform specific GC data 
+ * @param data the platform specific GC data
  * @return the platform specific GC handle
- * 
+ *
  * @noreference This method is not intended to be referenced by clients.
  */
 @Override
@@ -443,7 +443,7 @@ public long /*int*/ internal_new_GC(GCData data) {
 	return gc;
 }
 
-/**	 
+/**
  * Invokes platform specific functionality to dispose a GC handle.
  * <p>
  * <b>IMPORTANT:</b> This method is <em>not</em> part of the public
@@ -454,8 +454,8 @@ public long /*int*/ internal_new_GC(GCData data) {
  * </p>
  *
  * @param hDC the platform specific GC handle
- * @param data the platform specific GC data 
- * 
+ * @param data the platform specific GC data
+ *
  * @noreference This method is not intended to be referenced by clients.
  */
 @Override
@@ -479,7 +479,7 @@ public void internal_dispose_GC(long /*int*/ hDC, GCData data) {
  * endJob. Calling startPage, endPage, or endJob before startJob
  * will result in undefined behavior.
  * </p>
- * 
+ *
  * @param jobName the name of the print job to start
  * @return true if the job started successfully and false otherwise.
  *
@@ -511,7 +511,7 @@ public boolean startJob(String jobName) {
 	return true;
 }
 
-/**	 
+/**
  * Destroys the printer handle.
  * This method is called internally by the dispose
  * mechanism of the <code>Device</code> class.
@@ -547,7 +547,7 @@ public void endJob() {
 }
 
 /**
- * Cancels a print job in progress. 
+ * Cancels a print job in progress.
  *
  * @exception SWTException <ul>
  *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
@@ -556,7 +556,7 @@ public void endJob() {
 public void cancelJob() {
 	checkDevice();
 	if (printJob == 0) return;
-	//TODO: Need to implement (waiting on gtk bug 339323) 
+	//TODO: Need to implement (waiting on gtk bug 339323)
 	Cairo.cairo_surface_finish(surface);
 	OS.g_object_unref(printJob);
 	printJob = 0;
@@ -569,7 +569,7 @@ public void cancelJob() {
  * After calling startJob, this method may be called any number of times
  * along with a matching endPage.
  * </p>
- * 
+ *
  * @return true if the page started successfully and false otherwise.
  *
  * @exception SWTException <ul>
@@ -665,7 +665,7 @@ public Rectangle getBounds() {
  * For a printer, this is the size of the printable area
  * of the page, in pixels.
  * </p>
- * 
+ *
  * @return the client area
  *
  * @exception SWTException <ul>
@@ -708,7 +708,7 @@ Point getIndependentDPI () {
  * 		<li>The bottom trim height is (y + height) pixels</li>
  * </ul>
  * </p>
- * 
+ *
  * @param x the x coordinate of the client area
  * @param y the y coordinate of the client area
  * @param width the width of the client area
@@ -737,7 +737,7 @@ public Rectangle computeTrim(int x, int y, int width, int height) {
 	return new Rectangle(x + (int)printX, y + (int)printY, width + (int)hTrim, height + (int)vTrim);
 }
 
-/**	 
+/**
  * Creates the printer handle.
  * This method is called internally by the instance creation
  * mechanism of the <code>Device</code> class.
@@ -760,7 +760,7 @@ protected void create(DeviceData deviceData) {
  * If subclasses reimplement this method, they must
  * call the <code>super</code> implementation.
  * </p>
- * 
+ *
  * @see #create
  */
 @Override
@@ -770,7 +770,7 @@ protected void init() {
 	if (data.otherData != null) {
 		restore(data.otherData, settings, pageSetup);
 	}
-	
+
 	/* Set values of print_settings and page_setup from PrinterData. */
 	if (data.printToFile && data.fileName != null) {
 		byte [] uri = uriFromFilename(data.fileName);
@@ -785,7 +785,7 @@ protected void init() {
 			: data.duplex == PrinterData.DUPLEX_SHORT_EDGE ? OS.GTK_PRINT_DUPLEX_VERTICAL
 			: OS.GTK_PRINT_DUPLEX_SIMPLEX;
 		OS.gtk_print_settings_set_duplex (settings, duplex);
-		/* 
+		/*
 		 * Bug in GTK.  The cups backend only looks at the value
 		 * of the non-API field cups-Duplex in the print_settings.
 		 * The fix is to manually set cups-Duplex to Tumble or NoTumble.
@@ -808,7 +808,7 @@ protected void init() {
 /**
  * Returns a <code>PrinterData</code> object representing the
  * target printer for this print job.
- * 
+ *
  * @return a PrinterData object describing the receiver
  */
 public PrinterData getPrinterData() {

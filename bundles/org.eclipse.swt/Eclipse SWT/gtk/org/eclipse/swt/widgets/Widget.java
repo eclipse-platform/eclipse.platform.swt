@@ -17,7 +17,7 @@ import org.eclipse.swt.internal.gtk.*;
 import org.eclipse.swt.events.*;
 
 /**
- * This class is the abstract superclass of all user interface objects.  
+ * This class is the abstract superclass of all user interface objects.
  * Widgets are created, disposed and issue notification to listeners
  * when events occur which affect them.
  * <dl>
@@ -45,7 +45,7 @@ import org.eclipse.swt.events.*;
  */
 public abstract class Widget {
 	/**
-	 * the handle to the OS resource 
+	 * the handle to the OS resource
 	 * (Warning: This field is platform dependent)
 	 * <p>
 	 * <b>IMPORTANT:</b> This field is <em>not</em> part of the SWT
@@ -53,7 +53,7 @@ public abstract class Widget {
 	 * within the packages provided by SWT. It is not available on all
 	 * platforms and should never be accessed from application code.
 	 * </p>
-	 * 
+	 *
 	 * @noreference This field is not intended to be referenced by clients.
 	 */
 	public long /*int*/ handle;
@@ -61,7 +61,7 @@ public abstract class Widget {
 	Display display;
 	EventTable eventTable;
 	Object data;
-	
+
 	/* Global state flags */
 	static final int DISPOSED = 1<<0;
 	static final int CANVAS = 1<<1;
@@ -80,13 +80,13 @@ public abstract class Widget {
 	static final int FONT = 1<<14;
 	static final int PARENT_BACKGROUND = 1<<15;
 	static final int THEME_BACKGROUND = 1<<16;
-	
+
 	/* A layout was requested on this widget */
 	static final int LAYOUT_NEEDED	= 1<<17;
-	
+
 	/* The preferred size of a child has changed */
 	static final int LAYOUT_CHANGED = 1<<18;
-	
+
 	/* A layout was requested in this widget hierachy */
 	static final int LAYOUT_CHILD = 1<<19;
 
@@ -95,7 +95,7 @@ public abstract class Widget {
 	static final int DISPOSE_SENT = 1<<21;
 	static final int FOREIGN_HANDLE = 1<<22;
 	static final int DRAG_DETECT = 1<<23;
-	
+
 	/* Notify of the opportunity to skin this widget */
 	static final int SKIN_NEEDED = 1<<24;
 
@@ -105,7 +105,7 @@ public abstract class Widget {
 	/* Default size for widgets */
 	static final int DEFAULT_WIDTH	= 64;
 	static final int DEFAULT_HEIGHT	= 64;
-	
+
 	/* GTK signals data */
 	static final int ACTIVATE = 1;
 	static final int BUTTON_PRESS_EVENT = 2;
@@ -193,7 +193,7 @@ public abstract class Widget {
 	static final int CREATE_MENU_PROXY = 83;
 	static final int ROW_HAS_CHILD_TOGGLED = 84;
 	static final int LAST_SIGNAL = 85;
-	
+
 	static final String IS_ACTIVE = "org.eclipse.swt.internal.control.isactive"; //$NON-NLS-1$
 	static final String KEY_CHECK_SUBWINDOW = "org.eclipse.swt.internal.control.checksubwindow"; //$NON-NLS-1$
 
@@ -208,7 +208,7 @@ Widget () {}
  * <p>
  * The style value is either one of the style constants defined in
  * class <code>SWT</code> which is applicable to instances of this
- * class, or must be built by <em>bitwise OR</em>'ing together 
+ * class, or must be built by <em>bitwise OR</em>'ing together
  * (that is, using the <code>int</code> "|" operator) two or more
  * of those <code>SWT</code> style constants. The class description
  * lists the style constants that are applicable to the class.
@@ -357,14 +357,14 @@ void checkParent (Widget parent) {
 /**
  * Checks that this class can be subclassed.
  * <p>
- * The SWT class library is intended to be subclassed 
- * only at specific, controlled points (most notably, 
+ * The SWT class library is intended to be subclassed
+ * only at specific, controlled points (most notably,
  * <code>Composite</code> and <code>Canvas</code> when
  * implementing new widgets). This method enforces this
  * rule unless it is overridden.
  * </p><p>
  * <em>IMPORTANT:</em> By providing an implementation of this
- * method that allows a subclass of a class which does not 
+ * method that allows a subclass of a class which does not
  * normally allow subclassing to be created, the implementer
  * agrees to be fully responsible for the fact that any such
  * subclass will likely fail between SWT releases and will be
@@ -395,7 +395,7 @@ protected void checkSubclass () {
  * widget implementors to enforce the standard SWT invariants.
  * <p>
  * Currently, it is an error to invoke any method (other than
- * <code>isDisposed()</code>) on a widget that has had its 
+ * <code>isDisposed()</code>) on a widget that has had its
  * <code>dispose()</code> method called. It is also an error
  * to call widget methods from any thread that is different
  * from the thread that created the widget.
@@ -481,7 +481,7 @@ void error (int code) {
  * Returns the application defined widget data associated
  * with the receiver, or null if it has not been set. The
  * <em>widget data</em> is a single, unnamed field that is
- * stored with every widget. 
+ * stored with every widget.
  * <p>
  * Applications may put arbitrary objects in this field. If
  * the object stored in the widget data needs to be notified
@@ -565,8 +565,8 @@ public Display getDisplay () {
 }
 
 /**
- * Returns an array of listeners who will be notified when an event 
- * of the given type occurs. The event type is one of the event constants 
+ * Returns an array of listeners who will be notified when an event
+ * of the given type occurs. The event type is one of the event constants
  * defined in class <code>SWT</code>.
  *
  * @param eventType the type of event to listen for
@@ -582,7 +582,7 @@ public Display getDisplay () {
  * @see #addListener(int, Listener)
  * @see #removeListener(int, Listener)
  * @see #notifyListeners
- * 
+ *
  * @since 3.4
  */
 public Listener[] getListeners (int eventType) {
@@ -594,7 +594,7 @@ public Listener[] getListeners (int eventType) {
 String getName () {
 //	String string = getClass ().getName ();
 //	int index = string.lastIndexOf ('.');
-//	if (index == -1) return string;	
+//	if (index == -1) return string;
 	String string = getClass ().getName ();
 	int index = string.length ();
 	while ((--index > 0) && (string.charAt (index) != '.')) {}
@@ -909,7 +909,7 @@ long /*int*/ gtk_select (long /*int*/ item) {
 
 long /*int*/ gtk_selection_done (long /*int*/ menushell) {
 	return 0;
-} 
+}
 
 long /*int*/ gtk_show (long /*int*/ widget) {
 	return 0;
@@ -1153,7 +1153,7 @@ boolean mnemonicHit (long /*int*/ mnemonicHandle, char key) {
 
 boolean mnemonicMatch (long /*int*/ mnemonicHandle, char key) {
 	int keyval1 = OS.gdk_keyval_to_lower (OS.gdk_unicode_to_keyval (key));
-	int keyval2 = OS.gdk_keyval_to_lower (OS.gtk_label_get_mnemonic_keyval (mnemonicHandle)); 
+	int keyval2 = OS.gdk_keyval_to_lower (OS.gtk_label_get_mnemonic_keyval (mnemonicHandle));
 	return keyval1 == keyval2;
 }
 
@@ -1175,7 +1175,7 @@ void modifyStyle (long /*int*/ handle, long /*int*/ style) {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @see SWT
  * @see #addListener
  * @see #getListeners(int)
@@ -1292,7 +1292,7 @@ public void removeListener (int eventType, Listener listener) {
  *
  * @see Listener
  * @see #addListener
- * 
+ *
  * @noreference This method is not intended to be referenced by clients.
  * @nooverride This method is not intended to be re-implemented or extended by clients.
  */
@@ -1320,14 +1320,14 @@ long /*int*/ rendererRenderProc (long /*int*/ cell, long /*int*/ window, long /*
 }
 
 /**
- * Marks the widget to be skinned. 
+ * Marks the widget to be skinned.
  * <p>
  * The skin event is sent to the receiver's display when appropriate (usually before the next event
  * is handled). Widgets are automatically marked for skinning upon creation as well as when its skin
- * id or class changes. The skin id and/or class can be changed by calling <code>Display.setData(String, Object)</code> 
- * with the keys SWT.SKIN_ID and/or SWT.SKIN_CLASS. Once the skin event is sent to a widget, it 
- * will not be sent again unless <code>reskin(int)</code> is called on the widget or on an ancestor 
- * while specifying the <code>SWT.ALL</code> flag.  
+ * id or class changes. The skin id and/or class can be changed by calling <code>Display.setData(String, Object)</code>
+ * with the keys SWT.SKIN_ID and/or SWT.SKIN_CLASS. Once the skin event is sent to a widget, it
+ * will not be sent again unless <code>reskin(int)</code> is called on the widget or on an ancestor
+ * while specifying the <code>SWT.ALL</code> flag.
  * </p>
  * <p>
  * The parameter <code>flags</code> may be either:
@@ -1339,8 +1339,8 @@ long /*int*/ rendererRenderProc (long /*int*/ cell, long /*int*/ window, long /*
  * </dl>
  * </p>
  * @param flags the flags specifying how to reskin
- * 
- * @exception SWTException 
+ *
+ * @exception SWTException
  * <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
@@ -1353,7 +1353,7 @@ public void reskin (int flags) {
 	if ((flags & SWT.ALL) != 0) reskinChildren (flags);
 }
 
-void reskinChildren (int flags) {	
+void reskinChildren (int flags) {
 }
 
 void reskinWidget() {
@@ -1428,7 +1428,7 @@ boolean sendKeyEvent (int type, GdkEventKey keyEvent) {
 		if (!setKeyState (event, keyEvent)) return true;
 		sendEvent (type, event);
 		// widget could be disposed at this point
-	
+
 		/*
 		* It is possible (but unlikely), that application
 		* code could have disposed the widget in the key
@@ -1477,7 +1477,7 @@ char [] sendIMKeyEvent (int type, GdkEventKey keyEvent, char [] chars) {
 		}
 		event.character = chars [index];
 		sendEvent (type, event);
-	
+
 		/*
 		* It is possible (but unlikely), that application
 		* code could have disposed the widget in the key
@@ -1516,9 +1516,9 @@ void sendSelectionEvent (int eventType, Event event, boolean send) {
 		OS.memmove (gdkEvent, ptr, GdkEvent.sizeof);
 		switch (gdkEvent.type) {
 			case OS.GDK_KEY_PRESS:
-			case OS.GDK_KEY_RELEASE: 
+			case OS.GDK_KEY_RELEASE:
 			case OS.GDK_BUTTON_PRESS:
-			case OS.GDK_2BUTTON_PRESS: 
+			case OS.GDK_2BUTTON_PRESS:
 			case OS.GDK_BUTTON_RELEASE: {
 				int [] state = new int [1];
 				OS.gdk_event_get_state (ptr, state);
@@ -1535,7 +1535,7 @@ void sendSelectionEvent (int eventType, Event event, boolean send) {
  * Sets the application defined widget data associated
  * with the receiver to be the argument. The <em>widget
  * data</em> is a single, unnamed field that is stored
- * with every widget. 
+ * with every widget.
  * <p>
  * Applications may put arbitrary objects in this field. If
  * the object stored in the widget data needs to be notified
@@ -1550,7 +1550,7 @@ void sendSelectionEvent (int eventType, Event event, boolean send) {
  *    <li>ERROR_WIDGET_DISPOSED - when the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - when called from the wrong thread</li>
  * </ul>
- * 
+ *
  * @see #getData()
  */
 public void setData (Object data) {
@@ -1673,7 +1673,7 @@ void setForegroundColor (long /*int*/ handle, GdkColor color, boolean setStateAc
 		OS.gtk_style_context_invalidate (context);
 		return;
 	}
-	
+
 	/*
 	 * Feature in GTK. When the widget doesn't have focus, then
 	 * gtk_default_draw_flat_box () changes the background color state_type
@@ -1703,15 +1703,15 @@ void setForegroundColor (long /*int*/ handle, GdkColor color, boolean setStateAc
 	flags = OS.gtk_rc_style_get_color_flags (style, OS.GTK_STATE_NORMAL);
 	flags = (color == null) ? flags & ~OS.GTK_RC_TEXT: flags | OS.GTK_RC_TEXT;
 	OS.gtk_rc_style_set_color_flags (style, OS.GTK_STATE_NORMAL, flags);
-	flags = OS.gtk_rc_style_get_color_flags (style, OS.GTK_STATE_PRELIGHT);	
+	flags = OS.gtk_rc_style_get_color_flags (style, OS.GTK_STATE_PRELIGHT);
 	flags = (color == null) ? flags & ~OS.GTK_RC_TEXT: flags | OS.GTK_RC_TEXT;
-	OS.gtk_rc_style_set_color_flags (style, OS.GTK_STATE_PRELIGHT, flags);	
+	OS.gtk_rc_style_set_color_flags (style, OS.GTK_STATE_PRELIGHT, flags);
 	if (setStateActive) {
 		flags = OS.gtk_rc_style_get_color_flags (style, OS.GTK_STATE_ACTIVE);
 		flags = (color == null) ? flags & ~OS.GTK_RC_TEXT: flags | OS.GTK_RC_TEXT;
 		OS.gtk_rc_style_set_color_flags (style, OS.GTK_STATE_ACTIVE, flags);
 	}
-	modifyStyle (handle, style);	
+	modifyStyle (handle, style);
 }
 
 boolean setInputState (Event event, int state) {
@@ -1932,7 +1932,7 @@ void gtk_widget_set_visible (long /*int*/ widget, boolean visible) {
 
 void gtk_widget_set_receives_default (long /*int*/ widget, boolean receives_default) {
 	if (OS.GTK_VERSION >= OS.VERSION (2, 18, 0)) {
-		OS.gtk_widget_set_receives_default (widget, receives_default);	
+		OS.gtk_widget_set_receives_default (widget, receives_default);
 	} else {
 		if (receives_default) {
 			OS.GTK_WIDGET_SET_FLAGS (widget, OS.GTK_RECEIVES_DEFAULT);
@@ -2063,7 +2063,7 @@ long /*int*/ windowProc (long /*int*/ handle, long /*int*/ arg0, long /*int*/ us
 			if (OS.GTK3) {
 				if (OS.GTK_VERSION >= OS.VERSION (3, 9, 0) && OS.GTK_IS_CONTAINER (handle)) {
 					return gtk_draw (handle, arg0);
-				} 
+				}
 			} else {
 				GdkEventExpose gdkEvent = new GdkEventExpose ();
 				OS.memmove (gdkEvent, arg0, GdkEventExpose.sizeof);

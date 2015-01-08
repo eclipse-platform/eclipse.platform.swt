@@ -10,7 +10,7 @@
  *******************************************************************************/
 package org.eclipse.swt.dnd;
 
- 
+
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.widgets.*;
@@ -24,10 +24,10 @@ import org.eclipse.swt.internal.gtk.*;
  * <p>IMPORTANT: This class is <em>not</em> intended to be subclassed.</p>
  *
  * <p>This class identifies the <code>Control</code> over which the user must position the cursor
- * in order to drop the data being transferred.  It also specifies what data types can be dropped on 
- * this control and what operations can be performed.  You may have several DropTragets in an 
+ * in order to drop the data being transferred.  It also specifies what data types can be dropped on
+ * this control and what operations can be performed.  You may have several DropTragets in an
  * application but there can only be a one to one mapping between a <code>Control</code> and a <code>DropTarget</code>.
- * The DropTarget can receive data from within the same application or from other applications 
+ * The DropTarget can receive data from within the same application or from other applications
  * (such as text dragged from a text editor like Word).</p>
  *
  * <code><pre>
@@ -37,11 +37,11 @@ import org.eclipse.swt.internal.gtk.*;
  *	target.setTransfer(types);
  * </code></pre>
  *
- * <p>The application is notified of data being dragged over this control and of when a drop occurs by 
- * implementing the interface <code>DropTargetListener</code> which uses the class 
- * <code>DropTargetEvent</code>.  The application can modify the type of drag being performed 
- * on this Control at any stage of the drag by modifying the <code>event.detail</code> field or the 
- * <code>event.currentDataType</code> field.  When the data is dropped, it is the responsibility of 
+ * <p>The application is notified of data being dragged over this control and of when a drop occurs by
+ * implementing the interface <code>DropTargetListener</code> which uses the class
+ * <code>DropTargetEvent</code>.  The application can modify the type of drag being performed
+ * on this Control at any stage of the drag by modifying the <code>event.detail</code> field or the
+ * <code>event.currentDataType</code> field.  When the data is dropped, it is the responsibility of
  * the application to copy this data for its own purposes.
  *
  * <code><pre>
@@ -64,7 +64,7 @@ import org.eclipse.swt.internal.gtk.*;
  *
  * <dl>
  *	<dt><b>Styles</b></dt> <dd>DND.DROP_NONE, DND.DROP_COPY, DND.DROP_MOVE, DND.DROP_LINK</dd>
- *	<dt><b>Events</b></dt> <dd>DND.DragEnter, DND.DragLeave, DND.DragOver, DND.DragOperationChanged, 
+ *	<dt><b>Events</b></dt> <dd>DND.DragEnter, DND.DragLeave, DND.DragOver, DND.DragOperationChanged,
  *                             DND.DropAccept, DND.Drop </dd>
  * </dl>
  *
@@ -83,30 +83,30 @@ public class DropTarget extends Widget {
 	// Track application selections
 	TransferData selectedDataType;
 	int selectedOperation;
-	
+
 	// workaround - There is no event for "operation changed" so track operation based on key state
 	int keyOperation = -1;
-	
+
 	// workaround - Simulate events when the mouse is not moving
 	long dragOverStart;
 	Runnable dragOverHeartbeat;
 	DNDEvent dragOverEvent;
-	
+
 	int drag_motion_handler;
 	int drag_leave_handler;
 	int drag_data_received_handler;
 	int drag_drop_handler;
-	
+
 	static final String DEFAULT_DROP_TARGET_EFFECT = "DEFAULT_DROP_TARGET_EFFECT"; //$NON-NLS-1$
 	static final String IS_ACTIVE = "org.eclipse.swt.internal.control.isactive"; //$NON-NLS-1$
 	static final int DRAGOVER_HYSTERESIS = 50;
-	
+
 	static Callback Drag_Motion;
 	static Callback Drag_Leave;
 	static Callback Drag_Data_Received;
 	static Callback Drag_Drop;
-	
-	 static {	
+
+	 static {
 		Drag_Motion = new Callback(DropTarget.class, "Drag_Motion", 5); //$NON-NLS-1$
 		if (Drag_Motion.getAddress() == 0) SWT.error(SWT.ERROR_NO_MORE_CALLBACKS);
 		Drag_Leave = new Callback(DropTarget.class, "Drag_Leave", 3); //$NON-NLS-1$
@@ -118,14 +118,14 @@ public class DropTarget extends Widget {
 	}
 
 /**
- * Creates a new <code>DropTarget</code> to allow data to be dropped on the specified 
+ * Creates a new <code>DropTarget</code> to allow data to be dropped on the specified
  * <code>Control</code>.
- * Creating an instance of a DropTarget may cause system resources to be allocated 
- * depending on the platform.  It is therefore mandatory that the DropTarget instance 
+ * Creating an instance of a DropTarget may cause system resources to be allocated
+ * depending on the platform.  It is therefore mandatory that the DropTarget instance
  * be disposed when no longer required.
- * 
+ *
  * @param control the <code>Control</code> over which the user positions the cursor to drop the data
- * @param style the bitwise OR'ing of allowed operations; this may be a combination of any of 
+ * @param style the bitwise OR'ing of allowed operations; this may be a combination of any of
  *		   DND.DROP_NONE, DND.DROP_COPY, DND.DROP_MOVE, DND.DROP_LINK
  *
  * @exception SWTException <ul>
@@ -140,7 +140,7 @@ public class DropTarget extends Widget {
  *
  * <p>NOTE: ERROR_CANNOT_INIT_DROP should be an SWTException, since it is a
  * recoverable error, but can not be changed due to backward compatibility.</p>
- * 
+ *
  * @see Widget#dispose
  * @see DropTarget#checkSubclass
  * @see DND#DROP_NONE
@@ -158,13 +158,13 @@ public DropTarget(Control control, int style) {
 		DND.error(DND.ERROR_CANNOT_INIT_DROP);
 	}
 	control.setData(DND.DROP_TARGET_KEY, this);
-	
+
 	drag_motion_handler = OS.g_signal_connect(control.handle, OS.drag_motion, Drag_Motion.getAddress(), 0);
 	drag_leave_handler = OS.g_signal_connect(control.handle, OS.drag_leave, Drag_Leave.getAddress(), 0);
 	drag_data_received_handler = OS.g_signal_connect(control.handle, OS.drag_data_received, Drag_Data_Received.getAddress(), 0);
 	drag_drop_handler = OS.g_signal_connect(control.handle, OS.drag_drop, Drag_Drop.getAddress(), 0);
 
-	// Dispose listeners	
+	// Dispose listeners
 	controlListener = new Listener(){
 		public void handleEvent(Event event){
 			if (!DropTarget.this.isDisposed()){
@@ -173,13 +173,13 @@ public DropTarget(Control control, int style) {
 		}
 	};
 	control.addListener(SWT.Dispose, controlListener);
-		
+
 	this.addListener(SWT.Dispose, new Listener(){
 		public void handleEvent(Event event){
 			onDispose();
-		}	
+		}
 	});
-	
+
 	Object effect = control.getData(DEFAULT_DROP_TARGET_EFFECT);
 	if (effect instanceof DropTargetEffect) {
 		dropEffect = (DropTargetEffect) effect;
@@ -204,7 +204,7 @@ public DropTarget(Control control, int style) {
 				//pass a copy of data types in to listeners in case application modifies it
 				TransferData[] dataTypes = new TransferData[allowedTypes.length];
 				System.arraycopy(allowedTypes, 0, dataTypes, 0, dataTypes.length);
-	
+
 				DNDEvent event = new DNDEvent();
 				event.widget = dragOverEvent.widget;
 				event.x = dragOverEvent.x;
@@ -241,7 +241,7 @@ public DropTarget(Control control, int style) {
 }
 
 static int checkStyle (int style) {
-	if (style == SWT.NONE) return DND.DROP_MOVE;	
+	if (style == SWT.NONE) return DND.DROP_MOVE;
 	return style;
 }
 
@@ -270,7 +270,7 @@ static long /*int*/ Drag_Motion ( long /*int*/ widget, long /*int*/ context, lon
 	if (target == null) return 0;
 	return target.drag_motion (widget, context, (int)/*64*/x, (int)/*64*/y, (int)/*64*/time) ? 1 : 0;
 }
-	
+
 static DropTarget FindDropTarget(long /*int*/ handle) {
 	Display display = Display.findDisplay(Thread.currentThread());
 	if (display == null || display.isDisposed()) return null;
@@ -284,15 +284,15 @@ static DropTarget FindDropTarget(long /*int*/ handle) {
  * be notified when a drag and drop operation is in progress, by sending
  * it one of the messages defined in the <code>DropTargetListener</code>
  * interface.
- * 
+ *
  * <p><ul>
  * <li><code>dragEnter</code> is called when the cursor has entered the drop target boundaries
  * <li><code>dragLeave</code> is called when the cursor has left the drop target boundaries and just before
  * the drop occurs or is cancelled.
- * <li><code>dragOperationChanged</code> is called when the operation being performed has changed 
+ * <li><code>dragOperationChanged</code> is called when the operation being performed has changed
  * (usually due to the user changing the selected modifier key(s) while dragging)
  * <li><code>dragOver</code> is called when the cursor is moving over the drop target
- * <li><code>dropAccept</code> is called just before the drop is performed.  The drop target is given 
+ * <li><code>dropAccept</code> is called just before the drop is performed.  The drop target is given
  * the chance to change the nature of the drop or veto the drop by setting the <code>event.detail</code> field
  * <li><code>drop</code> is called when the data is being dropped
  * </ul></p>
@@ -312,7 +312,7 @@ static DropTarget FindDropTarget(long /*int*/ handle) {
  * @see #removeDropListener
  * @see DropTargetEvent
  */
-public void addDropListener(DropTargetListener listener) {	
+public void addDropListener(DropTargetListener listener) {
 	if (listener == null) DND.error (SWT.ERROR_NULL_ARGUMENT);
 	DNDListener typedListener = new DNDListener (listener);
 	typedListener.dndWidget = this;
@@ -321,8 +321,8 @@ public void addDropListener(DropTargetListener listener) {
 	addListener (DND.DragOver, typedListener);
 	addListener (DND.DragOperationChanged, typedListener);
 	addListener (DND.Drop, typedListener);
-	addListener (DND.DropAccept, typedListener);	
-}	
+	addListener (DND.DropAccept, typedListener);
+}
 
 @Override
 protected void checkSubclass () {
@@ -340,10 +340,10 @@ void drag_data_received ( long /*int*/ widget, long /*int*/ context, int x, int 
 		return;
 	}
 	keyOperation = -1;
-	
+
 	int allowedOperations = event.operations;
-	
-	// Get data in a Java format	
+
+	// Get data in a Java format
 	Object object = null;
 	TransferData transferData = new TransferData();
 	int length;
@@ -379,7 +379,7 @@ void drag_data_received ( long /*int*/ widget, long /*int*/ context, int x, int 
 	if (object == null) {
 		selectedOperation = DND.DROP_NONE;
 	}
-	
+
 	event.detail = selectedOperation;
 	event.dataType = transferData;
 	event.data = object;
@@ -390,10 +390,10 @@ void drag_data_received ( long /*int*/ widget, long /*int*/ context, int x, int 
 	}
 	//stop native handler
 	OS.g_signal_stop_emission_by_name(widget, OS.drag_data_received);
-	
+
 	//notify source of action taken
-	OS.gtk_drag_finish(context, selectedOperation != DND.DROP_NONE, selectedOperation== DND.DROP_MOVE, time); 			
-	return;	
+	OS.gtk_drag_finish(context, selectedOperation != DND.DROP_NONE, selectedOperation== DND.DROP_MOVE, time);
+	return;
 }
 
 boolean drag_drop(long /*int*/ widget, long /*int*/ context, int x, int y, int time) {
@@ -403,11 +403,11 @@ boolean drag_drop(long /*int*/ widget, long /*int*/ context, int x, int y, int t
 		return false;
 	}
 	keyOperation = -1;
-	
+
 	int allowedOperations = event.operations;
 	TransferData[] allowedDataTypes = new TransferData[event.dataTypes.length];
 	System.arraycopy(event.dataTypes, 0, allowedDataTypes, 0, allowedDataTypes.length);
-	
+
 	event.dataType = selectedDataType;
 	event.detail = selectedOperation;
 	selectedDataType = null;
@@ -435,10 +435,10 @@ boolean drag_drop(long /*int*/ widget, long /*int*/ context, int x, int y, int t
 
 void drag_leave ( long /*int*/ widget, long /*int*/ context, int time){
 	updateDragOverHover(0, null);
-	
+
 	if (keyOperation == -1) return;
 	keyOperation = -1;
-	
+
 	DNDEvent event = new DNDEvent();
 	event.widget = this;
 	event.time = time;
@@ -448,24 +448,24 @@ void drag_leave ( long /*int*/ widget, long /*int*/ context, int time){
 
 boolean drag_motion ( long /*int*/ widget, long /*int*/ context, int x, int y, int time){
 	int oldKeyOperation = keyOperation;
-	
+
 	/*
-	* Bug in GTK. GTK allows drag & drop on a shell even if a modal 
-	* dialog/window is opened on that shell. The fix is to check for 
-	* any active modal dialogs/shells before allowing the drop. 
+	* Bug in GTK. GTK allows drag & drop on a shell even if a modal
+	* dialog/window is opened on that shell. The fix is to check for
+	* any active modal dialogs/shells before allowing the drop.
 	*/
-	if ((oldKeyOperation == -1) || !((Boolean) control.getData(IS_ACTIVE)).booleanValue()) { //drag enter  
+	if ((oldKeyOperation == -1) || !((Boolean) control.getData(IS_ACTIVE)).booleanValue()) { //drag enter
 		selectedDataType = null;
 		selectedOperation = DND.DROP_NONE;
 	}
-	
+
 	DNDEvent event = new DNDEvent();
 	if (!setEventData(context, x, y, time, event)) {
 		keyOperation = -1;
 		OS.gdk_drag_status(context, 0, time);
 		return false;
 	}
-	
+
 	int allowedOperations = event.operations;
 	TransferData[] allowedDataTypes = new TransferData[event.dataTypes.length];
 	System.arraycopy(event.dataTypes, 0, allowedDataTypes, 0, allowedDataTypes.length);
@@ -485,7 +485,7 @@ boolean drag_motion ( long /*int*/ widget, long /*int*/ context, int x, int y, i
 	updateDragOverHover(DRAGOVER_HYSTERESIS, event);
 	selectedDataType = null;
 	selectedOperation = DND.DROP_NONE;
-	notifyListeners(event.type, event);	
+	notifyListeners(event.type, event);
 	if (event.detail == DND.DROP_DEFAULT) {
 		event.detail = (allowedOperations & DND.DROP_MOVE) != 0 ? DND.DROP_MOVE : DND.DROP_NONE;
 	}
@@ -504,7 +504,7 @@ boolean drag_motion ( long /*int*/ widget, long /*int*/ context, int x, int y, i
 	switch (selectedOperation) {
 		case DND.DROP_NONE:
 			OS.gdk_drag_status(context, 0, time);
-			break;		
+			break;
 		case DND.DROP_COPY:
 			OS.gdk_drag_status(context, OS.GDK_ACTION_COPY, time);
 			break;
@@ -515,7 +515,7 @@ boolean drag_motion ( long /*int*/ widget, long /*int*/ context, int x, int y, i
 			OS.gdk_drag_status(context, OS.GDK_ACTION_LINK, time);
 			break;
 	}
-	
+
 	if (oldKeyOperation == -1) {
 		dragOverHeartbeat.run();
 	}
@@ -523,7 +523,7 @@ boolean drag_motion ( long /*int*/ widget, long /*int*/ context, int x, int y, i
 }
 
 /**
- * Returns the Control which is registered for this DropTarget.  This is the control over which the 
+ * Returns the Control which is registered for this DropTarget.  This is the control over which the
  * user positions the cursor to drop the data.
  *
  * @return the Control which is registered for this DropTarget
@@ -533,11 +533,11 @@ public Control getControl () {
 }
 
 /**
- * Returns an array of listeners who will be notified when a drag and drop 
- * operation is in progress, by sending it one of the messages defined in 
+ * Returns an array of listeners who will be notified when a drag and drop
+ * operation is in progress, by sending it one of the messages defined in
  * the <code>DropTargetListener</code> interface.
  *
- * @return the listeners who will be notified when a drag and drop 
+ * @return the listeners who will be notified when a drag and drop
  * operation is in progress
  *
  * @exception SWTException <ul>
@@ -549,7 +549,7 @@ public Control getControl () {
  * @see #addDropListener
  * @see #removeDropListener
  * @see DropTargetEvent
- * 
+ *
  * @since 3.4
  */
 public DropTargetListener[] getDropListeners() {
@@ -571,12 +571,12 @@ public DropTargetListener[] getDropListeners() {
 }
 
 /**
- * Returns the drop effect for this DropTarget.  This drop effect will be 
- * used during a drag and drop to display the drag under effect on the 
+ * Returns the drop effect for this DropTarget.  This drop effect will be
+ * used during a drag and drop to display the drag under effect on the
  * target widget.
  *
  * @return the drop effect that is registered for this DropTarget
- * 
+ *
  * @since 3.3
  */
 public DropTargetEffect getDropTargetEffect() {
@@ -606,8 +606,8 @@ int getOperationFromKeyState() {
  *
  * @return a list of the data types that can be transferred to this DropTarget
  */
-public Transfer[] getTransfer() { 
-	return transferAgents; 
+public Transfer[] getTransfer() {
+	return transferAgents;
 }
 
 void onDispose(){
@@ -677,26 +677,26 @@ public void removeDropListener(DropTargetListener listener) {
 }
 
 /**
- * Specifies the data types that can be transferred to this DropTarget.  If data is 
- * being dragged that does not match one of these types, the drop target will be notified of 
- * the drag and drop operation but the currentDataType will be null and the operation 
+ * Specifies the data types that can be transferred to this DropTarget.  If data is
+ * being dragged that does not match one of these types, the drop target will be notified of
+ * the drag and drop operation but the currentDataType will be null and the operation
  * will be DND.NONE.
  *
  * @param transferAgents a list of Transfer objects which define the types of data that can be
  *						 dropped on this target
- * 
+ *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if transferAgents is null</li>
  * </ul>
  */
 public void setTransfer(Transfer[] transferAgents){
 	if (transferAgents == null) DND.error(SWT.ERROR_NULL_ARGUMENT);
-	
+
 	if (this.transferAgents.length != 0) {
 		OS.gtk_drag_dest_unset(control.handle);
 	}
 	this.transferAgents = transferAgents;
-	
+
 	GtkTargetEntry[] targets = new GtkTargetEntry[0];
 	for (int i = 0; i < transferAgents.length; i++) {
 		Transfer transfer = transferAgents[i];
@@ -707,7 +707,7 @@ public void setTransfer(Transfer[] transferAgents){
 				GtkTargetEntry entry = new GtkTargetEntry();
 				byte[] buffer = Converter.wcsToMbcs(null, typeNames[j], true);
 				entry.target = OS.g_malloc(buffer.length);
-				OS.memmove(entry.target, buffer, buffer.length);						
+				OS.memmove(entry.target, buffer, buffer.length);
 				entry.info = typeIds[j];
 				GtkTargetEntry[] newTargets = new GtkTargetEntry[targets.length + 1];
 				System.arraycopy(targets, 0, newTargets, 0, targets.length);
@@ -716,12 +716,12 @@ public void setTransfer(Transfer[] transferAgents){
 			}
 		}
 	}
-	
+
 	long /*int*/ pTargets = OS.g_malloc(targets.length * GtkTargetEntry.sizeof);
 	for (int i = 0; i < targets.length; i++) {
-		OS.memmove(pTargets + i*GtkTargetEntry.sizeof, targets[i], GtkTargetEntry.sizeof);		
-	}			
-	
+		OS.memmove(pTargets + i*GtkTargetEntry.sizeof, targets[i], GtkTargetEntry.sizeof);
+	}
+
 	int actions = opToOsOp(getStyle());
 	if (control instanceof Combo) {
 		if ((control.getStyle() & SWT.READ_ONLY) == 0) {
@@ -730,21 +730,21 @@ public void setTransfer(Transfer[] transferAgents){
 				OS.gtk_drag_dest_unset(entryHandle);
 			}
 		}
-	} 
+	}
 	OS.gtk_drag_dest_set(control.handle, 0, pTargets, targets.length, actions);
-	
+
 	for (int i = 0; i < targets.length; i++) {
 		OS.g_free(targets[i].target);
 	}
 }
 
 /**
- * Specifies the drop effect for this DropTarget.  This drop effect will be 
- * used during a drag and drop to display the drag under effect on the 
+ * Specifies the drop effect for this DropTarget.  This drop effect will be
+ * used during a drag and drop to display the drag under effect on the
  * target widget.
  *
  * @param effect the drop effect that is registered for this DropTarget
- * 
+ *
  * @since 3.3
  */
 public void setDropTargetEffect(DropTargetEffect effect) {
@@ -765,12 +765,12 @@ boolean setEventData(long /*int*/ context, int x, int y, int time, DNDEvent even
 		actions = dragContext.actions;
 	}
 	if (targets == 0) return false;
-	
+
 	// get allowed operations
 	int style = getStyle();
 	int operations = osOpToOp(actions) & style;
 	if (operations == DND.DROP_NONE) return false;
-	
+
 	// get current operation
 	int operation = getOperationFromKeyState();
 	keyOperation = operation;
@@ -794,7 +794,7 @@ boolean setEventData(long /*int*/ context, int x, int y, int time, DNDEvent even
 				TransferData[] newDataTypes = new TransferData[dataTypes.length + 1];
 				System.arraycopy(dataTypes, 0, newDataTypes, 0, dataTypes.length);
 				newDataTypes[dataTypes.length] = data;
-				dataTypes = newDataTypes;	
+				dataTypes = newDataTypes;
 				break;
 			}
 		}
@@ -810,7 +810,7 @@ boolean setEventData(long /*int*/ context, int x, int y, int time, DNDEvent even
 	int [] origin_x = new int[1], origin_y = new int[1];
 	OS.gdk_window_get_origin(window, origin_x, origin_y);
 	Point coordinates = new Point(origin_x[0] + x, origin_y[0] + y);
-	
+
 	event.widget = this;
 	event.x = coordinates.x;
 	event.y = coordinates.y;

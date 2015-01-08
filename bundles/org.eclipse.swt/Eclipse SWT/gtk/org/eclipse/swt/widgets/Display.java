@@ -48,12 +48,12 @@ import org.eclipse.swt.graphics.*;
  * <code>Widget</code> and its subclasses), may only be called
  * from the thread. (To support multi-threaded user-interface
  * applications, class <code>Display</code> provides inter-thread
- * communication methods which allow threads other than the 
+ * communication methods which allow threads other than the
  * user-interface thread to request that it perform operations
  * on their behalf.)
  * </li>
  * <li>
- * The thread is not allowed to construct other 
+ * The thread is not allowed to construct other
  * <code>Display</code>s until that display has been disposed.
  * (Note that, this is in addition to the restriction mentioned
  * above concerning platform support for multiple displays. Thus,
@@ -62,8 +62,8 @@ import org.eclipse.swt.graphics.*;
  * </li>
  * </ul>
  * Enforcing these attributes allows SWT to be implemented directly
- * on the underlying operating system's event model. This has 
- * numerous benefits including smaller footprint, better use of 
+ * on the underlying operating system's event model. This has
+ * numerous benefits including smaller footprint, better use of
  * resources, safer memory management, clearer program logic,
  * better performance, and fewer overall operating system threads
  * required. The down side however, is that care must be taken
@@ -152,7 +152,7 @@ public class Display extends Device {
 	Shell activeShell;
 	boolean activePending;
 	boolean ignoreActivate, ignoreFocus;
-	
+
 	Tracker tracker;
 
 	/* Input method resources */
@@ -165,7 +165,7 @@ public class Display extends Device {
 
 	/* Display Shutdown */
 	Runnable [] disposeList;
-	
+
 	/* Deferred Layout list */
 	Composite[] layoutDeferred;
 	int layoutDeferredCount;
@@ -173,7 +173,7 @@ public class Display extends Device {
 	/* System Tray */
 	Tray tray;
 	TrayItem currentTrayItem;
-	
+
 	/* Timers */
 	int [] timerIds;
 	Runnable [] timerList;
@@ -181,13 +181,13 @@ public class Display extends Device {
 	long /*int*/ timerProc;
 	Callback windowTimerCallback;
 	long /*int*/ windowTimerProc;
-	
+
 	/* Caret */
 	Caret currentCaret;
 	Callback caretCallback;
 	int caretId;
 	long /*int*/ caretProc;
-	
+
 	/* Mnemonics */
 	Control mnemonicControl;
 
@@ -195,7 +195,7 @@ public class Display extends Device {
 	int mouseHoverId;
 	long /*int*/ mouseHoverHandle, mouseHoverProc;
 	Callback mouseHoverCallback;
-	
+
 	/* Menu position callback */
 	long /*int*/ menuPositionProc;
 	Callback menuPositionCallback;
@@ -209,7 +209,7 @@ public class Display extends Device {
 	/* Shell map callback */
 	long /*int*/ shellMapProc;
 	Callback shellMapCallback;
-	
+
 	/* Idle proc callback */
 	long /*int*/ idleProc;
 	int idleHandle;
@@ -218,21 +218,21 @@ public class Display extends Device {
 	static final String REMOVE_IDLE_PROC_KEY = "org.eclipse.swt.internal.gtk.removeIdleProc"; //$NON-NLS-1$
 	Object idleLock = new Object();
 	boolean idleNeeded;
-	
+
 	/* GtkTreeView callbacks */
 	long /*int*/ cellDataProc;
 	Callback cellDataCallback;
-	
+
 	/* Set direction callback */
 	long /*int*/ setDirectionProc;
 	Callback setDirectionCallback;
 	static final String GET_DIRECTION_PROC_KEY = "org.eclipse.swt.internal.gtk.getDirectionProc"; //$NON-NLS-1$
-	
+
 	/* Set emissionProc callback */
 	long /*int*/ emissionProc;
 	Callback emissionProcCallback;
 	static final String GET_EMISSION_PROC_KEY = "org.eclipse.swt.internal.gtk.getEmissionProc"; //$NON-NLS-1$
-	
+
 	/* Get all children callback */
 	long /*int*/ allChildrenProc, allChildren;
 	Callback allChildrenCallback;
@@ -244,13 +244,13 @@ public class Display extends Device {
 	boolean settingsChanged, runSettings;
 	static final int STYLE_SET = 1;
 	static final int PROPERTY_NOTIFY = 2;
-	
+
 	/* Entry focus behaviour */
 	boolean entrySelectOnFocus;
-	
+
 	/* Enter/Exit events */
 	Control currentControl;
-	
+
 	/* Flush exposes */
 	long /*int*/ checkIfEventProc;
 	Callback checkIfEventCallback;
@@ -278,32 +278,32 @@ public class Display extends Device {
 
 	/* Popup Menus */
 	Menu [] popups;
-	
+
 	/* Click count*/
 	int clickCount = 1;
-	
+
 	/* Entry inner border */
 	static final int INNER_BORDER = 2;
-	
+
 	/* Timestamp of the Last Received Events */
 	int lastEventTime, lastUserEventTime;
-	
+
 	/* Pango layout constructor */
 	long /*int*/ pangoLayoutNewProc;
 	long /*int*/ pangoFontFamilyNewProc;
 	long /*int*/ pangoFontFaceNewProc;
-	
+
 	/* IM Context constructor */
 	long /*int*/ imContextNewProc;
-	
+
 	/* GtkPrinterOptionWidget constructor */
 	long /*int*/ printerOptionWidgetNewProc;
-	
+
 	/* Custom Resize */
 	double resizeLocationX, resizeLocationY;
 	int resizeBoundsX, resizeBoundsY, resizeBoundsWidth, resizeBoundsHeight;
 	int resizeMode;
-	
+
 	/* Fixed Subclass */
 	static long /*int*/ fixed_type;
 	static long /*int*/ fixed_info_ptr;
@@ -320,7 +320,7 @@ public class Display extends Device {
 
 	/* Key Mappings */
 	static final int [] [] KeyTable = {
-		
+
 		/* Keyboard and Mouse Masks */
 		{OS.GDK_Alt_L,		SWT.ALT},
 		{OS.GDK_Alt_R,		SWT.ALT},
@@ -332,7 +332,7 @@ public class Display extends Device {
 		{OS.GDK_Control_R,	SWT.CONTROL},
 //		{OS.GDK_????,		SWT.COMMAND},
 //		{OS.GDK_????,		SWT.COMMAND},
-		
+
 		/* Non-Numeric Keypad Keys */
 		{OS.GDK_Up,						SWT.ARROW_UP},
 		{OS.GDK_KP_Up,					SWT.ARROW_UP},
@@ -352,7 +352,7 @@ public class Display extends Device {
 		{OS.GDK_KP_End,				SWT.END},
 		{OS.GDK_Insert,					SWT.INSERT},
 		{OS.GDK_KP_Insert,			SWT.INSERT},
-		
+
 		/* Virtual and Ascii Keys */
 		{OS.GDK_BackSpace,		SWT.BS},
 		{OS.GDK_Return,				SWT.CR},
@@ -362,7 +362,7 @@ public class Display extends Device {
 		{OS.GDK_Linefeed,			SWT.LF},
 		{OS.GDK_Tab,					SWT.TAB},
 		{OS.GDK_ISO_Left_Tab, 	SWT.TAB},
-	
+
 		/* Functions Keys */
 		{OS.GDK_F1,		SWT.F1},
 		{OS.GDK_F2,		SWT.F2},
@@ -384,7 +384,7 @@ public class Display extends Device {
 		{OS.GDK_F18,		SWT.F18},
 		{OS.GDK_F19,		SWT.F19},
 		{OS.GDK_F20,		SWT.F20},
-		
+
 		/* Numeric Keypad Keys */
 		{OS.GDK_KP_Multiply,		SWT.KEYPAD_MULTIPLY},
 		{OS.GDK_KP_Add,			SWT.KEYPAD_ADD},
@@ -412,7 +412,7 @@ public class Display extends Device {
 		{OS.GDK_Break,				SWT.BREAK},
 		{OS.GDK_Print,					SWT.PRINT_SCREEN},
 		{OS.GDK_Help,					SWT.HELP},
-		
+
 	};
 
 	/* Multiple Displays. */
@@ -422,7 +422,7 @@ public class Display extends Device {
 	/* Skinning support */
 	Widget [] skinList = new Widget [GROW_SIZE];
 	int skinCount;
-	
+
 	/* Package name */
 	static final String PACKAGE_PREFIX = "org.eclipse.swt.widgets."; //$NON-NLS-1$
 	/* This code is intentionally commented.
@@ -446,7 +446,7 @@ public class Display extends Device {
 	Object data;
 	String [] keys;
 	Object [] values;
-	
+
 	/* Initial Guesses for Shell Trimmings. */
 	int borderTrimWidth = 4, borderTrimHeight = 4;
 	int resizeTrimWidth = 6, resizeTrimHeight = 6;
@@ -486,7 +486,7 @@ static void setDevice (Device device) {
  * Constructs a new instance of this class.
  * <p>
  * Note: The resulting display is marked as the <em>current</em>
- * display. If this is the first display which has been 
+ * display. If this is the first display which has been
  * constructed since the application started, it is also
  * marked as the <em>default</em> display.
  * </p>
@@ -507,7 +507,7 @@ public Display () {
 
 /**
  * Constructs a new instance of this class using the parameter.
- * 
+ *
  * @param data the device data
  */
 public Display (DeviceData data) {
@@ -531,7 +531,7 @@ public Display (DeviceData data) {
  * powerful and dangerous. They should generally be avoided for
  * performance, debugging and code maintenance reasons.
  * </p>
- * 
+ *
  * @param eventType the type of event to listen for
  * @param listener the listener which should be notified when the event occurs
  *
@@ -547,8 +547,8 @@ public Display (DeviceData data) {
  * @see SWT
  * @see #removeFilter
  * @see #removeListener
- * 
- * @since 3.0 
+ *
+ * @since 3.0
  */
 public void addFilter (int eventType, Listener listener) {
 	checkDevice ();
@@ -625,8 +625,8 @@ void addIdleProc() {
  * @see Listener
  * @see SWT
  * @see #removeListener
- * 
- * @since 2.0 
+ *
+ * @since 2.0
  */
 public void addListener (int eventType, Listener listener) {
 	checkDevice ();
@@ -702,13 +702,13 @@ void addWidget (long /*int*/ handle, Widget widget) {
 
 /**
  * Causes the <code>run()</code> method of the runnable to
- * be invoked by the user-interface thread at the next 
- * reasonable opportunity. The caller of this method continues 
+ * be invoked by the user-interface thread at the next
+ * reasonable opportunity. The caller of this method continues
  * to run in parallel, and is not notified when the
  * runnable has completed.  Specifying <code>null</code> as the
  * runnable simply wakes the user-interface thread when run.
  * <p>
- * Note that at the time the runnable is invoked, widgets 
+ * Note that at the time the runnable is invoked, widgets
  * that have the receiver as their display may have been
  * disposed. Therefore, it is necessary to check for this
  * case inside the runnable before accessing the widget.
@@ -719,7 +719,7 @@ void addWidget (long /*int*/ handle, Widget widget) {
  * @exception SWTException <ul>
  *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
  * </ul>
- * 
+ *
  * @see #syncExec
  */
 public void asyncExec (Runnable runnable) {
@@ -738,7 +738,7 @@ public void asyncExec (Runnable runnable) {
 /**
  * Causes the system hardware to emit a short sound
  * (if it supports this capability).
- * 
+ *
  * @exception SWTException <ul>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
@@ -784,7 +784,7 @@ long /*int*/ checkIfEventProc (long /*int*/ display, long /*int*/ xEvent, long /
 	switch (type) {
 		case OS.VisibilityNotify:
 			/*
-			* As of GTK 2.17.11, obscured controls no longer send expose 
+			* As of GTK 2.17.11, obscured controls no longer send expose
 			* events. It is no longer necessary to track visiblity notify
 			* events.
 			*/
@@ -889,7 +889,7 @@ void clearModal (Shell shell) {
  * </ul>
  *
  * @see Device#dispose
- * 
+ *
  * @since 2.0
  */
 public void close () {
@@ -1019,7 +1019,7 @@ void createDisplay (DeviceData data) {
 		OS.memmove (pixbuf_renderer_info_ptr, renderer_info, GTypeInfo.sizeof);
 		byte [] type_name = Converter.wcsToMbcs (null, "SwtPixbufRenderer", true); //$NON-NLS-1$
 		pixbuf_renderer_type = OS.g_type_register_static (OS.GTK_TYPE_CELL_RENDERER_PIXBUF (), type_name, pixbuf_renderer_info_ptr, 0);
-	}	
+	}
 	if (toggle_renderer_type == 0) {
 		GTypeInfo renderer_info = new GTypeInfo ();
 		renderer_info.class_size = (short) OS.GtkCellRendererToggleClass_sizeof ();
@@ -1030,7 +1030,7 @@ void createDisplay (DeviceData data) {
 		byte [] type_name = Converter.wcsToMbcs (null, "SwtToggleRenderer", true); //$NON-NLS-1$
 		toggle_renderer_type = OS.g_type_register_static (OS.GTK_TYPE_CELL_RENDERER_TOGGLE (), type_name, toggle_renderer_info_ptr, 0);
 	}
-	
+
 	OS.gtk_widget_set_default_direction (OS.GTK_TEXT_DIR_LTR);
 	byte [] buffer = Converter.wcsToMbcs (null, APP_NAME, true);
 	OS.g_set_prgname (buffer);
@@ -1157,7 +1157,7 @@ long /*int*/ emissionProc (long /*int*/ ihint, long /*int*/ n_param_values, long
  * user-interface thread for, or null if the given thread
  * is not a user-interface thread for any display.  Specifying
  * <code>null</code> as the thread will return <code>null</code>
- * for the display. 
+ * for the display.
  *
  * @param thread the user-interface thread
  * @return the display for the given thread
@@ -1181,7 +1181,7 @@ public static Display findDisplay (Thread thread) {
  * is ignored.
  *
  * @param runnable code to run at dispose time.
- * 
+ *
  * @exception SWTException <ul>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
@@ -1272,7 +1272,7 @@ long /*int*/ eventProc (long /*int*/ event, long /*int*/ data) {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
  * </ul>
- * 
+ *
  * @noreference This method is not intended to be referenced by clients.
  */
 public Widget findWidget (long /*int*/ handle) {
@@ -1299,9 +1299,9 @@ public Widget findWidget (long /*int*/ handle) {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
  * </ul>
- * 
+ *
  * @noreference This method is not intended to be referenced by clients.
- * 
+ *
  * @since 3.1
  */
 public Widget findWidget (long /*int*/ handle, long /*int*/ id) {
@@ -1323,9 +1323,9 @@ public Widget findWidget (long /*int*/ handle, long /*int*/ id) {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
  * </ul>
- * 
+ *
  * @noreference This method is not intended to be referenced by clients.
- * 
+ *
  * @since 3.3
  */
 public Widget findWidget (Widget widget, long /*int*/ id) {
@@ -1508,7 +1508,7 @@ public Control getCursorControl () {
 		handle = user_data [0];
 	} else {
 		/*
-		* Feature in GTK. gdk_window_at_pointer() will not return a window 
+		* Feature in GTK. gdk_window_at_pointer() will not return a window
 		* if the pointer is over a foreign embedded window. The fix is to use
 		* XQueryPointer to find the containing GDK window.
 		*/
@@ -1532,7 +1532,7 @@ public Control getCursorControl () {
 				}
 				if (gdkWindow != 0)	{
 					OS.gdk_window_get_user_data (gdkWindow, user_data);
-					if (user_data[0] != 0) handle = user_data[0];	
+					if (user_data[0] != 0) handle = user_data[0];
 				}
 			}
 		} while (xWindow != 0);
@@ -1613,12 +1613,12 @@ public Point getCursorLocation () {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
  * </ul>
- * 
+ *
  * @since 3.0
  */
 public Point [] getCursorSizes () {
 	checkDevice ();
-	return new Point [] {new Point (16, 16), new Point (32, 32)}; 
+	return new Point [] {new Point (16, 16), new Point (32, 32)};
 }
 
 /**
@@ -1672,7 +1672,7 @@ public Object getData (String key) {
  * Returns the application defined, display specific data
  * associated with the receiver, or null if it has not been
  * set. The <em>display specific data</em> is a single,
- * unnamed field that is stored with every display. 
+ * unnamed field that is stored with every display.
  * <p>
  * Applications may put arbitrary objects in this field. If
  * the object stored in the display specific data needs to
@@ -1737,7 +1737,7 @@ static boolean isValidClass (Class clazz) {
  * <code>null</code> if there is no application menu bar for the platform.
  *
  * @return the application menu bar, or <code>null</code>
- * 
+ *
  * @exception SWTException <ul>
  *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
  * </ul>
@@ -1763,7 +1763,7 @@ public Menu getMenuBar () {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
  * </ul>
- * 
+ *
  * @since 2.1
  */
 public int getDismissalAlignment () {
@@ -1840,7 +1840,7 @@ public Control getFocusControl () {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
  * </ul>
- * 
+ *
  * @since 3.0
  */
 public boolean getHighContrast () {
@@ -1870,7 +1870,7 @@ public int getDepth () {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
  * </ul>
- * 
+ *
  * @see Device#getDepth
  */
 public int getIconDepth () {
@@ -1887,14 +1887,14 @@ public int getIconDepth () {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
  * </ul>
- * 
+ *
  * @see Decorations#setImages(Image[])
- * 
+ *
  * @since 3.0
  */
 public Point [] getIconSizes () {
 	checkDevice ();
-	return new Point [] {new Point (16, 16), new Point (32, 32)}; 
+	return new Point [] {new Point (16, 16), new Point (32, 32)};
 }
 
 int getLastEventTime () {
@@ -1934,7 +1934,7 @@ Rectangle getWorkArea() {
 		} else if (actualLength [0] == 32) {
 			long values [] = new long [4];
 			OS.memmove (values, data[0], 32);
-			result = new Rectangle ((int)values [0],(int)values [1],(int)values [2],(int)values [3]);			
+			result = new Rectangle ((int)values [0],(int)values [1],(int)values [2],(int)values [3]);
 		}
 		OS.g_free (data [0]);
 	}
@@ -1943,9 +1943,9 @@ Rectangle getWorkArea() {
 
 /**
  * Returns an array of monitors attached to the device.
- * 
+ *
  * @return the array of monitors
- * 
+ *
  * @since 3.0
  */
 public Monitor [] getMonitors () {
@@ -2000,16 +2000,16 @@ public Monitor [] getMonitors () {
 			monitor.clientWidth = monitor.width;
 			monitor.clientHeight = monitor.height;
 		}
-		monitors = new Monitor [] { monitor };			
+		monitors = new Monitor [] { monitor };
 	}
 	return monitors;
 }
 
 /**
  * Returns the primary monitor for that device.
- * 
+ *
  * @return the primary monitor
- * 
+ *
  * @since 3.0
  */
 public Monitor getPrimaryMonitor () {
@@ -2061,7 +2061,7 @@ public Shell [] getShells () {
 					System.arraycopy (result, 0, newResult, 0, index);
 					result = newResult;
 				}
-				result [index++] = (Shell) widget;	
+				result [index++] = (Shell) widget;
 			}
 		}
 	}
@@ -2075,12 +2075,12 @@ public Shell [] getShells () {
  * Gets the synchronizer used by the display.
  *
  * @return the receiver's synchronizer
- * 
+ *
  * @exception SWTException <ul>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
  * </ul>
- * 
+ *
  * @since 3.4
  */
 public Synchronizer getSynchronizer () {
@@ -2098,7 +2098,7 @@ public Synchronizer getSynchronizer () {
  * </p>
  *
  * @return the receiver's sync-interface thread
- * 
+ *
  * @exception SWTException <ul>
  *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
  * </ul>
@@ -2155,7 +2155,7 @@ public Color getSystemColor (int id) {
 		case SWT.COLOR_LIST_SELECTION: 						gdkColor = COLOR_LIST_SELECTION; break;
 		case SWT.COLOR_LIST_SELECTION_TEXT: 				gdkColor = COLOR_LIST_SELECTION_TEXT; break;
 		default:
-			return super.getSystemColor (id);	
+			return super.getSystemColor (id);
 	}
 	if (gdkColor == null) return super.getSystemColor (SWT.COLOR_BLACK);
 	return Color.gtk_new (this, gdkColor);
@@ -2168,7 +2168,7 @@ public Color getSystemColor (int id) {
  * not be free'd because it was allocated by the system,
  * not the application.  A value of <code>null</code> will
  * be returned if the supplied constant is not an SWT cursor
- * constant. 
+ * constant.
  *
  * @param id the SWT cursor constant
  * @return the corresponding cursor or <code>null</code>
@@ -2200,7 +2200,7 @@ public Color getSystemColor (int id) {
  * @see SWT#CURSOR_IBEAM
  * @see SWT#CURSOR_NO
  * @see SWT#CURSOR_HAND
- * 
+ *
  * @since 3.0
  */
 public Cursor getSystemCursor (int id) {
@@ -2220,7 +2220,7 @@ public Cursor getSystemCursor (int id) {
  * not the application.  A value of <code>null</code> will
  * be returned either if the supplied constant is not an
  * SWT icon constant or if the platform does not define an
- * image that corresponds to the constant. 
+ * image that corresponds to the constant.
  *
  * @param id the SWT icon constant
  * @return the corresponding image or <code>null</code>
@@ -2235,7 +2235,7 @@ public Cursor getSystemCursor (int id) {
  * @see SWT#ICON_QUESTION
  * @see SWT#ICON_WARNING
  * @see SWT#ICON_WORKING
- * 
+ *
  * @since 3.0
  */
 public Image getSystemImage (int id) {
@@ -2271,7 +2271,7 @@ public Image getSystemImage (int id) {
  * <code>null</code> on platforms where no menu is provided for the application.
  *
  * @return the system menu, or <code>null</code>
- * 
+ *
  * @exception SWTException <ul>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
@@ -2318,7 +2318,7 @@ GdkColor toGdkColor (GdkRGBA rgba, double m) {
 void getBackgroundColor (long /*int*/ context, int state, GdkRGBA rgba) {
 	/*
 	* Draw the context background to an offset screen surface and get the color
-	* in the middle of the surface. 
+	* in the middle of the surface.
 	*/
 	OS.gtk_style_context_save (context);
 	OS.gtk_style_context_set_state (context, state);
@@ -2344,7 +2344,7 @@ void initializeSystemColors () {
 	byte[] gtk_tooltip = Converter.wcsToMbcs (null, OS.GTK3 ? "gtk-tooltip" : "gtk-tooltips", true); //$NON-NLS-1$
 	OS.gtk_widget_set_name (tooltipShellHandle, gtk_tooltip);
 	OS.gtk_widget_realize (tooltipShellHandle);
-	
+
 	/* Initialize link foreground */
 	long /*int*/ linkWidget = OS.gtk_label_new (new byte[1]);
 	if (linkWidget == 0) error (SWT.ERROR_NO_HANDLES);
@@ -2373,21 +2373,21 @@ void initializeSystemColors () {
 		COLOR_INFO_FOREGROUND = toGdkColor (rgba);
 		getBackgroundColor (context, OS.GTK_STATE_FLAG_NORMAL, rgba);
 		COLOR_INFO_BACKGROUND = toGdkColor (rgba);
-		OS.gtk_widget_destroy (tooltipShellHandle);	
+		OS.gtk_widget_destroy (tooltipShellHandle);
 
 		context = OS.gtk_widget_get_style_context (shellHandle);
-		
+
 		COLOR_WIDGET_DARK_SHADOW = toGdkColor (new GdkRGBA());
 		OS.gtk_style_context_get_background_color (context, OS.GTK_STATE_FLAG_NORMAL, rgba);
 		COLOR_WIDGET_LIGHT_SHADOW = toGdkColor (rgba);
 		COLOR_WIDGET_NORMAL_SHADOW = toGdkColor (rgba, 0.7);
 		COLOR_WIDGET_HIGHLIGHT_SHADOW = toGdkColor (rgba, 1.3);
-		
+
 		OS.gtk_style_context_get_color (context, OS.GTK_STATE_FLAG_NORMAL, rgba);
 		COLOR_WIDGET_FOREGROUND = toGdkColor (rgba);
 		OS.gtk_style_context_get_background_color (context, OS.GTK_STATE_FLAG_NORMAL, rgba);
 		COLOR_WIDGET_BACKGROUND = toGdkColor (rgba);
-		
+
 		OS.gtk_style_context_save (context);
 		OS.gtk_style_context_add_class(context, OS.GTK_STYLE_CLASS_VIEW);
 		OS.gtk_style_context_add_class(context, OS.GTK_STYLE_CLASS_CELL);
@@ -2405,12 +2405,12 @@ void initializeSystemColors () {
 		COLOR_LIST_SELECTION_TEXT_INACTIVE = toGdkColor (rgba);
 		OS.gtk_style_context_get_background_color (context, OS.GTK_STATE_FLAG_ACTIVE, rgba);
 		COLOR_LIST_SELECTION_INACTIVE = toGdkColor (rgba);
-		
+
 		COLOR_TITLE_FOREGROUND = COLOR_LIST_SELECTION_TEXT;
 		COLOR_TITLE_BACKGROUND = COLOR_LIST_SELECTION;
 		OS.gtk_style_context_get_background_color (context, OS.GTK_STATE_FLAG_SELECTED, rgba);
 		COLOR_TITLE_BACKGROUND_GRADIENT = toGdkColor (rgba, 1.3);
-		
+
 		OS.gtk_style_context_get_color (context, OS.GTK_STATE_FLAG_INSENSITIVE, rgba);
 		COLOR_TITLE_INACTIVE_FOREGROUND = toGdkColor (rgba);
 		OS.gtk_style_context_get_background_color (context, OS.GTK_STATE_FLAG_INSENSITIVE, rgba);
@@ -2427,10 +2427,10 @@ void initializeSystemColors () {
 	gdkColor = new GdkColor();
 	OS.gtk_style_get_bg (tooltipStyle, OS.GTK_STATE_NORMAL, gdkColor);
 	COLOR_INFO_BACKGROUND = gdkColor;
-	OS.gtk_widget_destroy (tooltipShellHandle);	
+	OS.gtk_widget_destroy (tooltipShellHandle);
 
 	/* Get Shell resources */
-	long /*int*/ style = OS.gtk_widget_get_style (shellHandle);	
+	long /*int*/ style = OS.gtk_widget_get_style (shellHandle);
 	gdkColor = new GdkColor();
 	OS.gtk_style_get_black (style, gdkColor);
 	COLOR_WIDGET_DARK_SHADOW = gdkColor;
@@ -2498,7 +2498,7 @@ void initializeSystemColors () {
  * when there is no system taskBar available for the platform.
  *
  * @return the system taskBar or <code>null</code>
- * 
+ *
  * @exception SWTException <ul>
  *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
  * </ul>
@@ -2515,7 +2515,7 @@ public TaskBar getSystemTaskBar () {
  * when there is no system tray available for the platform.
  *
  * @return the system tray or <code>null</code>
- * 
+ *
  * @exception SWTException <ul>
  *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
  * </ul>
@@ -2532,7 +2532,7 @@ public Tray getSystemTray () {
  * Returns the user-interface thread for the receiver.
  *
  * @return the receiver's user-interface thread
- * 
+ *
  * @exception SWTException <ul>
  *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
  * </ul>
@@ -2544,7 +2544,7 @@ public Thread getThread () {
 	}
 }
 
-/**	 
+/**
  * Returns a boolean indicating whether a touch-aware input device is
  * attached to the system and is ready for use.
  *
@@ -2554,7 +2554,7 @@ public Thread getThread () {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
  * </ul>
- * 
+ *
  * @since 3.7
  */
 public boolean getTouchEnabled() {
@@ -2570,7 +2570,7 @@ Widget getWidget (long /*int*/ handle) {
 		lastHandle = handle;
 		return lastWidget = widgetTable [(int)/*64*/index];
 	}
-	return null;	
+	return null;
 }
 
 long /*int*/ idleProc (long /*int*/ data) {
@@ -2589,7 +2589,7 @@ long /*int*/ idleProc (long /*int*/ data) {
  * <p>
  * This method is called after <code>create</code>.
  * </p>
- * 
+ *
  * @see #create
  */
 @Override
@@ -2680,7 +2680,7 @@ void initializeCallbacks () {
 
 	windowCallback3 = new Callback (this, "windowProc", 3); //$NON-NLS-1$
 	windowProc3 = windowCallback3.getAddress ();
-	if (windowProc3 == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);	
+	if (windowProc3 == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
 
 	closuresProc [Widget.BUTTON_PRESS_EVENT] = windowProc3;
 	closuresProc [Widget.BUTTON_PRESS_EVENT_INVERSE] = windowProc3;
@@ -2711,7 +2711,7 @@ void initializeCallbacks () {
 	closuresProc [Widget.SHOW_HELP] = windowProc3;
 	closuresProc [Widget.SIZE_ALLOCATE] = windowProc3;
 	closuresProc [Widget.STYLE_SET] = windowProc3;
-	closuresProc [Widget.TOGGLED] = windowProc3;	
+	closuresProc [Widget.TOGGLED] = windowProc3;
 	closuresProc [Widget.UNMAP_EVENT] = windowProc3;
 	closuresProc [Widget.VISIBILITY_NOTIFY_EVENT] = windowProc3;
 	closuresProc [Widget.WINDOW_STATE_EVENT] = windowProc3;
@@ -2720,7 +2720,7 @@ void initializeCallbacks () {
 
 	windowCallback4 = new Callback (this, "windowProc", 4); //$NON-NLS-1$
 	windowProc4 = windowCallback4.getAddress ();
-	if (windowProc4 == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);	
+	if (windowProc4 == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
 
 	closuresProc [Widget.DELETE_RANGE] = windowProc4;
 	closuresProc [Widget.DELETE_TEXT] = windowProc4;
@@ -2764,7 +2764,7 @@ void initializeCallbacks () {
 	windowTimerCallback = new Callback (this, "windowTimerProc", 1); //$NON-NLS-1$
 	windowTimerProc = windowTimerCallback.getAddress ();
 	if (windowTimerProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
-	
+
 	mouseHoverCallback = new Callback (this, "mouseHoverProc", 1); //$NON-NLS-1$
 	mouseHoverProc = mouseHoverCallback.getAddress ();
 	if (mouseHoverProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
@@ -2776,22 +2776,22 @@ void initializeCallbacks () {
 	menuPositionCallback = new Callback(this, "menuPositionProc", 5); //$NON-NLS-1$
 	menuPositionProc = menuPositionCallback.getAddress();
 	if (menuPositionProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
-	
+
 	sizeAllocateCallback = new Callback(this, "sizeAllocateProc", 3); //$NON-NLS-1$
 	sizeAllocateProc = sizeAllocateCallback.getAddress();
 	if (sizeAllocateProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
-	
+
 	sizeRequestCallback = new Callback(this, "sizeRequestProc", 3); //$NON-NLS-1$
 	sizeRequestProc = sizeRequestCallback.getAddress();
 	if (sizeRequestProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
-	
+
 	shellMapCallback = new Callback(this, "shellMapProc", 3); //$NON-NLS-1$
 	shellMapProc = shellMapCallback.getAddress();
 	if (shellMapProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
 
 	shellMapProcClosure = OS.g_cclosure_new (shellMapProc, 0, 0);
 	OS.g_closure_ref (shellMapProcClosure);
-	
+
 	cellDataCallback = new Callback (this, "cellDataProc", 5); //$NON-NLS-1$
 	cellDataProc = cellDataCallback.getAddress ();
 	if (cellDataProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
@@ -2799,7 +2799,7 @@ void initializeCallbacks () {
 	setDirectionCallback = new Callback (this, "setDirectionProc", 2); //$NON-NLS-1$
 	setDirectionProc = setDirectionCallback.getAddress ();
 	if (setDirectionProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
-	
+
 	emissionProcCallback = new Callback (this, "emissionProc", 4); //$NON-NLS-1$
 	emissionProc = emissionProcCallback.getAddress ();
 	if (emissionProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
@@ -2830,19 +2830,19 @@ void initializeSubclasses () {
 		imContextNewProc = OS.G_OBJECT_CLASS_CONSTRUCTOR (imContextClass);
 		OS.G_OBJECT_CLASS_SET_CONSTRUCTOR (imContextClass, OS.imContextNewProc_CALLBACK(imContextNewProc));
 		OS.g_type_class_unref (imContextClass);
-		
+
 		long /*int*/ pangoFontFamilyType = OS.PANGO_TYPE_FONT_FAMILY ();
 		long /*int*/ pangoFontFamilyClass = OS.g_type_class_ref (pangoFontFamilyType);
 		pangoFontFamilyNewProc = OS.G_OBJECT_CLASS_CONSTRUCTOR (pangoFontFamilyClass);
 		OS.G_OBJECT_CLASS_SET_CONSTRUCTOR (pangoFontFamilyClass, OS.pangoFontFamilyNewProc_CALLBACK(pangoFontFamilyNewProc));
 		OS.g_type_class_unref (pangoFontFamilyClass);
-		
+
 		long /*int*/ pangoFontFaceType = OS.PANGO_TYPE_FONT_FACE ();
 		long /*int*/ pangoFontFaceClass = OS.g_type_class_ref (pangoFontFaceType);
 		pangoFontFaceNewProc = OS.G_OBJECT_CLASS_CONSTRUCTOR (pangoFontFaceClass);
 		OS.G_OBJECT_CLASS_SET_CONSTRUCTOR (pangoFontFaceClass, OS.pangoFontFaceNewProc_CALLBACK(pangoFontFaceNewProc));
 		OS.g_type_class_unref (pangoFontFaceClass);
-		
+
 		long /*int*/ printerOptionWidgetType = OS.gtk_printer_option_widget_get_type();
 		long /*int*/ printerOptionWidgetClass = OS.g_type_class_ref (printerOptionWidgetType);
 		printerOptionWidgetNewProc = OS.G_OBJECT_CLASS_CONSTRUCTOR (printerOptionWidgetClass);
@@ -2853,7 +2853,7 @@ void initializeSubclasses () {
 
 void initializeSystemSettings () {
 	OS.g_signal_connect (shellHandle, OS.style_set, signalProc, STYLE_SET);
-	
+
 	/*
 	* Feature in GTK.  Despite the fact that the
 	* gtk-entry-select-on-focus property is a global
@@ -2897,7 +2897,7 @@ void initializeWindowManager () {
 	}
 }
 
-/**	 
+/**
  * Invokes platform specific functionality to dispose a GC handle.
  * <p>
  * <b>IMPORTANT:</b> This method is <em>not</em> part of the public
@@ -2908,8 +2908,8 @@ void initializeWindowManager () {
  * </p>
  *
  * @param hDC the platform specific GC handle
- * @param data the platform specific GC data 
- * 
+ * @param data the platform specific GC data
+ *
  * @noreference This method is not intended to be referenced by clients.
  */
 @Override
@@ -2922,7 +2922,7 @@ public void internal_dispose_GC (long /*int*/ hDC, GCData data) {
 	}
 }
 
-/**	 
+/**
  * Invokes platform specific functionality to allocate a new GC handle.
  * <p>
  * <b>IMPORTANT:</b> This method is <em>not</em> part of the public
@@ -2932,16 +2932,16 @@ public void internal_dispose_GC (long /*int*/ hDC, GCData data) {
  * application code.
  * </p>
  *
- * @param data the platform specific GC data 
+ * @param data the platform specific GC data
  * @return the platform specific GC handle
- * 
+ *
  * @exception SWTException <ul>
  *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
  * </ul>
  * @exception SWTError <ul>
  *    <li>ERROR_NO_HANDLES if a handle could not be obtained for gc creation</li>
  * </ul>
- * 
+ *
  * @noreference This method is not intended to be referenced by clients.
  */
 @Override
@@ -2985,7 +2985,7 @@ boolean isValidThread () {
  * systems are mirrored, special care needs to be taken
  * when mapping coordinates from one control to another
  * to ensure the result is correctly mirrored.
- * 
+ *
  * Mapping a point that is the origin of a rectangle and
  * then adding the width and height is not equivalent to
  * mapping the rectangle.  When one control is mirrored
@@ -2995,26 +2995,26 @@ boolean isValidThread () {
  * instead of just one point causes both the origin and
  * the corner of the rectangle to be mapped.
  * </p>
- * 
+ *
  * @param from the source <code>Control</code> or <code>null</code>
  * @param to the destination <code>Control</code> or <code>null</code>
- * @param point to be mapped 
- * @return point with mapped coordinates 
- * 
+ * @param point to be mapped
+ * @return point with mapped coordinates
+ *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the point is null</li>
- *    <li>ERROR_INVALID_ARGUMENT - if the Control from or the Control to have been disposed</li> 
+ *    <li>ERROR_INVALID_ARGUMENT - if the Control from or the Control to have been disposed</li>
  * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
  * </ul>
- * 
+ *
  * @since 2.1.2
  */
 public Point map (Control from, Control to, Point point) {
 	checkDevice ();
-	if (point == null) error (SWT.ERROR_NULL_ARGUMENT);	
+	if (point == null) error (SWT.ERROR_NULL_ARGUMENT);
 	return map (from, to, point.x, point.y);
 }
 
@@ -3027,7 +3027,7 @@ public Point map (Control from, Control to, Point point) {
  * systems are mirrored, special care needs to be taken
  * when mapping coordinates from one control to another
  * to ensure the result is correctly mirrored.
- * 
+ *
  * Mapping a point that is the origin of a rectangle and
  * then adding the width and height is not equivalent to
  * mapping the rectangle.  When one control is mirrored
@@ -3037,21 +3037,21 @@ public Point map (Control from, Control to, Point point) {
  * instead of just one point causes both the origin and
  * the corner of the rectangle to be mapped.
  * </p>
- * 
+ *
  * @param from the source <code>Control</code> or <code>null</code>
  * @param to the destination <code>Control</code> or <code>null</code>
  * @param x coordinates to be mapped
  * @param y coordinates to be mapped
  * @return point with mapped coordinates
- * 
+ *
  * @exception IllegalArgumentException <ul>
- *    <li>ERROR_INVALID_ARGUMENT - if the Control from or the Control to have been disposed</li> 
+ *    <li>ERROR_INVALID_ARGUMENT - if the Control from or the Control to have been disposed</li>
  * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
  * </ul>
- * 
+ *
  * @since 2.1.2
  */
 public Point map (Control from, Control to, int x, int y) {
@@ -3084,7 +3084,7 @@ public Point map (Control from, Control to, int x, int y) {
  * systems are mirrored, special care needs to be taken
  * when mapping coordinates from one control to another
  * to ensure the result is correctly mirrored.
- * 
+ *
  * Mapping a point that is the origin of a rectangle and
  * then adding the width and height is not equivalent to
  * mapping the rectangle.  When one control is mirrored
@@ -3094,21 +3094,21 @@ public Point map (Control from, Control to, int x, int y) {
  * instead of just one point causes both the origin and
  * the corner of the rectangle to be mapped.
  * </p>
- * 
+ *
  * @param from the source <code>Control</code> or <code>null</code>
  * @param to the destination <code>Control</code> or <code>null</code>
  * @param rectangle to be mapped
  * @return rectangle with mapped coordinates
- * 
+ *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the rectangle is null</li>
- *    <li>ERROR_INVALID_ARGUMENT - if the Control from or the Control to have been disposed</li> 
+ *    <li>ERROR_INVALID_ARGUMENT - if the Control from or the Control to have been disposed</li>
  * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
  * </ul>
- * 
+ *
  * @since 2.1.2
  */
 public Rectangle map (Control from, Control to, Rectangle rectangle) {
@@ -3137,7 +3137,7 @@ static char mbcsToWcs (char ch) {
 long /*int*/ menuPositionProc (long /*int*/ menu, long /*int*/ x, long /*int*/ y, long /*int*/ push_in, long /*int*/ user_data) {
 	Widget widget = getWidget (menu);
 	if (widget == null) return 0;
-	return widget.menuPositionProc (menu, x, y, push_in, user_data);	
+	return widget.menuPositionProc (menu, x, y, push_in, user_data);
 }
 
 /**
@@ -3149,7 +3149,7 @@ long /*int*/ menuPositionProc (long /*int*/ menu, long /*int*/ x, long /*int*/ y
  * systems are mirrored, special care needs to be taken
  * when mapping coordinates from one control to another
  * to ensure the result is correctly mirrored.
- * 
+ *
  * Mapping a point that is the origin of a rectangle and
  * then adding the width and height is not equivalent to
  * mapping the rectangle.  When one control is mirrored
@@ -3159,7 +3159,7 @@ long /*int*/ menuPositionProc (long /*int*/ menu, long /*int*/ x, long /*int*/ y
  * instead of just one point causes both the origin and
  * the corner of the rectangle to be mapped.
  * </p>
- * 
+ *
  * @param from the source <code>Control</code> or <code>null</code>
  * @param to the destination <code>Control</code> or <code>null</code>
  * @param x coordinates to be mapped
@@ -3167,15 +3167,15 @@ long /*int*/ menuPositionProc (long /*int*/ menu, long /*int*/ x, long /*int*/ y
  * @param width coordinates to be mapped
  * @param height coordinates to be mapped
  * @return rectangle with mapped coordinates
- * 
+ *
  * @exception IllegalArgumentException <ul>
- *    <li>ERROR_INVALID_ARGUMENT - if the Control from or the Control to have been disposed</li> 
+ *    <li>ERROR_INVALID_ARGUMENT - if the Control from or the Control to have been disposed</li>
  * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
  * </ul>
- * 
+ *
  * @since 2.1.2
  */
 public Rectangle map (Control from, Control to, int x, int y, int width, int height) {
@@ -3197,7 +3197,7 @@ public Rectangle map (Control from, Control to, int x, int y, int width, int hei
 		rect.y -= origin.y;
 		if (toRTL = (to.style & SWT.MIRRORED) != 0) rect.x = to.getClientWidth () - rect.x;
 	}
-	
+
 	if (fromRTL != toRTL) rect.x -= rect.width;
 	return rect;
 }
@@ -3210,7 +3210,7 @@ long /*int*/ mouseHoverProc (long /*int*/ handle) {
 
 /**
  * Generate a low level system event.
- * 
+ *
  * <code>post</code> is used to generate low level keyboard
  * and mouse events. The intent is to enable automated UI
  * testing by simulating the input from the user.  Most
@@ -3253,11 +3253,11 @@ long /*int*/ mouseHoverProc (long /*int*/ handle) {
  * <li>(in) count the number of lines or pages to scroll
  * </ul>
  * </dl>
- * 
+ *
  * @param event the event to be generated
- * 
+ *
  * @return true if the event was generated or false otherwise
- * 
+ *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the event is null</li>
  * </ul>
@@ -3266,7 +3266,7 @@ long /*int*/ mouseHoverProc (long /*int*/ handle) {
  * </ul>
  *
  * @since 3.0
- * 
+ *
  */
 public boolean post (Event event) {
 	/*
@@ -3311,7 +3311,7 @@ public boolean post (Event event) {
 					return true;
 				}
 				case SWT.MouseDown:
-				case SWT.MouseMove: 
+				case SWT.MouseMove:
 				case SWT.MouseUp: {
 					if (type == SWT.MouseMove) {
 						OS.XTestFakeMotionEvent (xDisplay, -1, event.x, event.y, 0);
@@ -3337,7 +3337,7 @@ public boolean post (Event event) {
 //				case SWT.MouseWheel: {
 //					if (event.count == 0) return false;
 //					int button = event.count < 0 ? 5 : 4;
-//					OS.XTestFakeButtonEvent (xDisplay, button, type == SWT.MouseWheel, 0);			
+//					OS.XTestFakeButtonEvent (xDisplay, button, type == SWT.MouseWheel, 0);
 //				}
 			}
 			return false;
@@ -3420,7 +3420,7 @@ public boolean readAndDispatch () {
 	* This call to gdk_threads_leave() is a temporary work around
 	* to avoid deadlocks when gdk_threads_init() is called by native
 	* code outside of SWT (i.e AWT, etc). It ensures that the current
-	* thread leaves the GTK lock before calling the function below. 
+	* thread leaves the GTK lock before calling the function below.
 	*/
 	OS.gdk_threads_leave();
 	events |= OS.g_main_context_iteration (0, false);
@@ -3450,7 +3450,7 @@ static void register (Display display) {
  * Releases any internal resources back to the operating
  * system and clears all fields except the device handle.
  * <p>
- * Disposes all shells which are currently open on the display. 
+ * Disposes all shells which are currently open on the display.
  * After this method has been invoked, all related related shells
  * will answer <code>true</code> when sent the message
  * <code>isDisposed()</code>.
@@ -3466,7 +3466,7 @@ static void register (Display display) {
  * The handle is needed by <code>destroy</code>.
  * </p>
  * This method is called before <code>destroy</code>.
- * 
+ *
  * @see Device#dispose
  * @see #destroy
  */
@@ -3499,7 +3499,7 @@ void releaseDisplay () {
 	windowCallback4.dispose ();  windowCallback4 = null;
 	windowCallback5.dispose ();  windowCallback5 = null;
 	windowProc2 = windowProc3 = windowProc4 = windowProc5 = 0;
-	
+
 	/* Dispose xfilter callback */
 	if (filterProc != 0) {
 		OS.gdk_window_remove_filter(0, filterProc, 0);
@@ -3510,7 +3510,7 @@ void releaseDisplay () {
 	/* Dispose checkIfEvent callback */
 	checkIfEventCallback.dispose(); checkIfEventCallback = null;
 	checkIfEventProc = 0;
-	
+
 	/* Dispose preedit window */
 	if (preeditWindow != 0) OS.gtk_widget_destroy (preeditWindow);
 	imControl = null;
@@ -3524,25 +3524,25 @@ void releaseDisplay () {
 	sizeAllocateProc = 0;
 	sizeRequestCallback.dispose (); sizeRequestCallback = null;
 	sizeRequestProc = 0;
-	
+
 	/* Dispose the shell map callback */
 	shellMapCallback.dispose (); shellMapCallback = null;
 	shellMapProc = 0;
-	
+
 	/* Dispose the run async messages callback */
 	idleCallback.dispose (); idleCallback = null;
 	idleProc = 0;
 	if (idleHandle != 0) OS.g_source_remove (idleHandle);
 	idleHandle = 0;
-	
+
 	/* Dispose GtkTreeView callbacks */
 	cellDataCallback.dispose (); cellDataCallback = null;
 	cellDataProc = 0;
-	
+
 	/* Dispose the set direction callback */
 	setDirectionCallback.dispose (); setDirectionCallback = null;
 	setDirectionProc = 0;
-	
+
 	/* Dispose the emission proc callback */
 	emissionProcCallback.dispose (); emissionProcCallback = null;
 	emissionProc = 0;
@@ -3557,7 +3557,7 @@ void releaseDisplay () {
 	caretProc = 0;
 	caretCallback.dispose ();
 	caretCallback = null;
-	
+
 	/* Release closures */
 	for (int i = 0; i < Widget.LAST_SIGNAL; i++) {
 		if (closures [i] != 0) OS.g_closure_unref (closures [i]);
@@ -3578,21 +3578,21 @@ void releaseDisplay () {
 	windowTimerProc = 0;
 	windowTimerCallback.dispose ();
 	windowTimerCallback = null;
-	
+
 	/* Dispose mouse hover callback */
 	if (mouseHoverId != 0) OS.g_source_remove (mouseHoverId);
 	mouseHoverId = 0;
 	mouseHoverHandle = mouseHoverProc = 0;
 	mouseHoverCallback.dispose ();
 	mouseHoverCallback = null;
-	
+
 	/* Dispose the System Images */
 	if (errorImage != null) errorImage.dispose();
 	if (infoImage != null) infoImage.dispose();
 	if (questionImage != null) questionImage.dispose();
 	if (warningImage != null) warningImage.dispose();
 	errorImage = infoImage = questionImage = warningImage = null;
-	
+
 	/* Release the System Cursors */
 	for (int i = 0; i < cursors.length; i++) {
 		if (cursors [i] != null) cursors [i].dispose ();
@@ -3619,11 +3619,11 @@ void releaseDisplay () {
 	/* Dispose the event callback */
 	OS.gdk_event_handler_set (0, 0, 0);
 	eventCallback.dispose ();  eventCallback = null;
-	
+
 	/* Dispose the hidden shell */
 	if (shellHandle != 0) OS.gtk_widget_destroy (shellHandle);
 	shellHandle = 0;
-	
+
 	/* Dispose the settings callback */
 	signalCallback.dispose(); signalCallback = null;
 	signalProc = 0;
@@ -3651,7 +3651,7 @@ void releaseDisplay () {
 		OS.g_type_class_unref (pangoFontFaceClass);
 		pangoFontFaceNewProc = 0;
 	}
-	
+
 	/* Release the sleep resources */
 	max_priority = timeout = null;
 	if (fds != 0) OS.g_free (fds);
@@ -3695,7 +3695,7 @@ void releaseDisplay () {
  * @see SWT
  * @see #addFilter
  * @see #addListener
- * 
+ *
  * @since 3.0
  */
 public void removeFilter (int eventType, Listener listener) {
@@ -3747,8 +3747,8 @@ void removeIdleProc () {
  * @see Listener
  * @see SWT
  * @see #addListener
- * 
- * @since 2.0 
+ *
+ * @since 2.0
  */
 public void removeListener (int eventType, Listener listener) {
 	checkDevice ();
@@ -3786,7 +3786,7 @@ Widget removeWidget (long /*int*/ handle) {
 		freeSlot = index;
 		OS.g_object_set_qdata (handle, SWT_OBJECT_INDEX, 0);
 	}
-	return widget;	
+	return widget;
 }
 
 boolean runAsyncMessages (boolean all) {
@@ -3801,7 +3801,7 @@ boolean runDeferredEvents () {
 	* be re-enterant but need not be synchronized.
 	*/
 	while (eventQueue != null) {
-		
+
 		/* Take an event off the queue */
 		Event event = eventQueue [0];
 		if (event == null) break;
@@ -3843,7 +3843,7 @@ boolean runDeferredLayouts () {
 		}
 		update ();
 		return true;
-	}	
+	}
 	return false;
 }
 
@@ -3884,8 +3884,8 @@ boolean runSettings () {
 
 boolean runSkin () {
 	if (skinCount > 0) {
-		Widget [] oldSkinWidgets = skinList;	
-		int count = skinCount;	
+		Widget [] oldSkinWidgets = skinList;
+		int count = skinCount;
 		skinList = new Widget[GROW_SIZE];
 		skinCount = 0;
 		if (eventTable != null && eventTable.hooks(SWT.Skin)) {
@@ -3901,7 +3901,7 @@ boolean runSkin () {
 			}
 		}
 		return true;
-	}	
+	}
 	return false;
 }
 
@@ -3909,22 +3909,22 @@ boolean runSkin () {
  * Returns the application name.
  *
  * @return the application name
- * 
+ *
  * @see #setAppName(String)
- * 
+ *
  * @since 3.6
  */
 public static String getAppName () {
 	return APP_NAME;
 }
-	
+
 /**
  * Returns the application version.
  *
  * @return the application version
- * 
+ *
  * @see #setAppVersion(String)
- * 
+ *
  * @since 3.6
  */
 public static String getAppVersion () {
@@ -3937,9 +3937,9 @@ public static String getAppVersion () {
  * The application name can be used in several ways,
  * depending on the platform and tools being used.
  * Accessibility tools could ask for the application
- * name. On Windows, if the application name is set 
+ * name. On Windows, if the application name is set
  * to any value other than "SWT" (case insensitive),
- * it is used to set the application user model ID 
+ * it is used to set the application user model ID
  * which is used by the OS for taskbar grouping.
  * @see <a href="http://msdn.microsoft.com/en-us/library/windows/desktop/dd378459%28v=vs.85%29.aspx#HOW">AppUserModelID (Windows)</a>
  * </p><p>
@@ -3956,7 +3956,7 @@ public static void setAppName (String name) {
  * Sets the application version to the argument.
  *
  * @param version the new app version
- * 
+ *
  * @since 3.6
  */
 public static void setAppVersion (String version) {
@@ -3970,12 +3970,12 @@ public static void setAppVersion (String version) {
  *
  * @param x the new x coordinate for the cursor
  * @param y the new y coordinate for the cursor
- * 
+ *
  * @exception SWTException <ul>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
  * </ul>
- * 
+ *
  * @since 2.1
  */
 public void setCursorLocation (int x, int y) {
@@ -3989,7 +3989,7 @@ public void setCursorLocation (int x, int y) {
 		long /*int*/ gdkDeviceManager = OS.gdk_display_get_device_manager(gdkDisplay);
 		long /*int*/ gdkScreen = OS.gdk_screen_get_default();
 		long /*int*/ gdkPointer = OS.gdk_device_manager_get_client_pointer(gdkDeviceManager);
-		OS.gdk_device_warp(gdkPointer,gdkScreen,x,y); 
+		OS.gdk_device_warp(gdkPointer,gdkScreen,x,y);
 	}
 }
 
@@ -3999,13 +3999,13 @@ public void setCursorLocation (int x, int y) {
  * program to move the on-screen pointer location.</b>
  *
  * @param point new position
- * 
+ *
  * @exception SWTException <ul>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  *    <li>ERROR_NULL_ARGUMENT - if the point is null
  *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
  * </ul>
- * 
+ *
  * @since 2.0
  */
 public void setCursorLocation (Point point) {
@@ -4064,7 +4064,7 @@ public void setData (String key, Object value) {
 			removeWidget (handle);
 		}
 	}
-	if (key.equals (ADD_IDLE_PROC_KEY)) {	
+	if (key.equals (ADD_IDLE_PROC_KEY)) {
 		addIdleProc ();
 		return;
 	}
@@ -4094,7 +4094,7 @@ public void setData (String key, Object value) {
 		}
 		return;
 	}
-	
+
 	/* Add the key/value pair */
 	if (keys == null) {
 		keys = new String [] {key};
@@ -4121,7 +4121,7 @@ public void setData (String key, Object value) {
  * Sets the application defined, display specific data
  * associated with the receiver, to the argument.
  * The <em>display specific data</em> is a single,
- * unnamed field that is stored with every display. 
+ * unnamed field that is stored with every display.
  * <p>
  * Applications may put arbitrary objects in this field. If
  * the object stored in the display specific data needs to
@@ -4215,7 +4215,7 @@ public void setSynchronizer (Synchronizer synchronizer) {
 
 void showIMWindow (Control control) {
 	imControl = control;
-	if (preeditWindow == 0) { 
+	if (preeditWindow == 0) {
 		preeditWindow = OS.gtk_window_new (OS.GTK_WINDOW_POPUP);
 		if (preeditWindow == 0) error (SWT.ERROR_NO_HANDLES);
 		preeditLabel = OS.gtk_label_new (null);
@@ -4241,7 +4241,7 @@ void showIMWindow (Control control) {
 		if (pangoAttrs [0] != 0) OS.gtk_label_set_attributes (preeditLabel, pangoAttrs[0]);
 		OS.gtk_label_set_text (preeditLabel, preeditString [0]);
 		Point point = control.toDisplay (control.getIMCaretPos ());
-		OS.gtk_window_move (preeditWindow, point.x, point.y);		
+		OS.gtk_window_move (preeditWindow, point.x, point.y);
 		GtkRequisition requisition = new GtkRequisition ();
 		if (OS.GTK3) {
 			OS.gtk_widget_get_preferred_size (preeditLabel, requisition, null);
@@ -4252,9 +4252,9 @@ void showIMWindow (Control control) {
 		OS.gtk_widget_show (preeditWindow);
 	} else {
 		OS.gtk_widget_hide (preeditWindow);
-	}		
+	}
 	if (preeditString [0] != 0) OS.g_free (preeditString [0]);
-	if (pangoAttrs [0] != 0) OS.pango_attr_list_unref (pangoAttrs [0]);	
+	if (pangoAttrs [0] != 0) OS.pango_attr_list_unref (pangoAttrs [0]);
 }
 
 /**
@@ -4304,12 +4304,12 @@ public boolean sleep () {
 			if (poll != 0) {
 				if (nfds > 0 || timeout [0] != 0) {
 					/*
-					* Bug in GTK. For some reason, g_main_context_wakeup() may 
+					* Bug in GTK. For some reason, g_main_context_wakeup() may
 					* fail to wake up the UI thread from the polling function.
 					* The fix is to sleep for a maximum of 50 milliseconds.
 					*/
 					if (timeout [0] < 0) timeout [0] = 50;
-					
+
 					/* Exit the OS lock to allow other threads to enter GTK */
 					Lock lock = OS.lock;
 					int count = lock.lock ();
@@ -4338,7 +4338,7 @@ public boolean sleep () {
  * number of milliseconds have elapsed. If milliseconds is less
  * than zero, the runnable is not executed.
  * <p>
- * Note that at the time the runnable is invoked, widgets 
+ * Note that at the time the runnable is invoked, widgets
  * that have the receiver as their display may have been
  * disposed. Therefore, it is necessary to check for this
  * case inside the runnable before accessing the widget.
@@ -4361,7 +4361,7 @@ public void timerExec (int milliseconds, Runnable runnable) {
 	checkDevice ();
 	if (runnable == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (timerList == null) timerList = new Runnable [4];
-	if (timerIds == null) timerIds = new int [4];	
+	if (timerIds == null) timerIds = new int [4];
 	int index = 0;
 	while (index < timerList.length) {
 		if (timerList [index] == runnable) break;
@@ -4535,7 +4535,7 @@ void setCurrentCaret (Caret caret) {
 	currentCaret = caret;
 	if (caret == null) return;
 	int blinkRate = currentCaret.blinkRate;
-	caretId = OS.g_timeout_add (blinkRate, caretProc, 0); 
+	caretId = OS.g_timeout_add (blinkRate, caretProc, 0);
 }
 
 long /*int*/ shellMapProc (long /*int*/ handle, long /*int*/ arg0, long /*int*/ user_data) {
@@ -4556,7 +4556,7 @@ long /*int*/ signalProc (long /*int*/ gobject, long /*int*/ arg1, long /*int*/ u
 				byte[] name = Converter.wcsToMbcs (null, "org.eclipse.swt.filePath.message", true); //$NON-NLS-1$
 				long /*int*/ atom = OS.gdk_x11_atom_to_xatom (OS.gdk_atom_intern (name, true));
 				if (atom == OS.gdk_x11_atom_to_xatom (gdkEvent.atom)) {
-					long /*int*/ xWindow; 
+					long /*int*/ xWindow;
 					if (OS.GTK3) {
 						xWindow = OS.gdk_x11_window_get_xid (OS.gtk_widget_get_window (shellHandle));
 					} else if (OS.GTK_VERSION >= OS.VERSION(2, 14, 0)){
@@ -4571,14 +4571,14 @@ long /*int*/ signalProc (long /*int*/ gobject, long /*int*/ arg1, long /*int*/ u
 					long /*int*/ [] data = new long /*int*/ [1];
 					OS.XGetWindowProperty (OS.gdk_x11_display_get_xdisplay(OS.gdk_display_get_default()), xWindow, atom, 0, -1, true, OS.AnyPropertyType,
 							type, format, nitems, bytes_after, data);
-					
+
 					if (nitems [0] > 0) {
 						byte [] buffer = new byte [nitems [0]];
 						OS.memmove(buffer, data [0], buffer.length);
 						OS.XFree (data [0]);
 						char[] chars = Converter.mbcsToWcs(null, buffer);
 						String string = new String (chars);
-						
+
 						int lastIndex = 0;
 						int index = string.indexOf (':');
 						while (index != -1) {
@@ -4599,17 +4599,17 @@ long /*int*/ signalProc (long /*int*/ gobject, long /*int*/ arg1, long /*int*/ u
 
 /**
  * Causes the <code>run()</code> method of the runnable to
- * be invoked by the user-interface thread at the next 
+ * be invoked by the user-interface thread at the next
  * reasonable opportunity. The thread which calls this method
  * is suspended until the runnable completes.  Specifying <code>null</code>
  * as the runnable simply wakes the user-interface thread.
  * <p>
- * Note that at the time the runnable is invoked, widgets 
+ * Note that at the time the runnable is invoked, widgets
  * that have the receiver as their display may have been
  * disposed. Therefore, it is necessary to check for this
  * case inside the runnable before accessing the widget.
  * </p>
- * 
+ *
  * @param runnable code to run on the user-interface thread or <code>null</code>
  *
  * @exception SWTException <ul>
@@ -4656,7 +4656,7 @@ static int untranslateKey (int key) {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
  * </ul>
- * 
+ *
  * @see Control#update()
  */
 public void update () {
@@ -4666,14 +4666,14 @@ public void update () {
 }
 
 /**
- * If the receiver's user-interface thread was <code>sleep</code>ing, 
+ * If the receiver's user-interface thread was <code>sleep</code>ing,
  * causes it to be awakened and start running again. Note that this
  * method may be called from any thread.
- * 
+ *
  * @exception SWTException <ul>
  *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
  * </ul>
- * 
+ *
  * @see #sleep
  */
 public void wake () {

@@ -54,14 +54,14 @@ public class ToolBar extends Composite {
 		menuItemSelectedFunc = new Callback(ToolBar.class, "MenuItemSelectedProc", 2);
 		if (menuItemSelectedFunc.getAddress() == 0) SWT.error(SWT.ERROR_NO_MORE_CALLBACKS);
 	}
-	
+
 /**
  * Constructs a new instance of this class given its parent
  * and a style value describing its behavior and appearance.
  * <p>
  * The style value is either one of the style constants defined in
  * class <code>SWT</code> which is applicable to instances of this
- * class, or must be built by <em>bitwise OR</em>'ing together 
+ * class, or must be built by <em>bitwise OR</em>'ing together
  * (that is, using the <code>int</code> "|" operator) two or more
  * of those <code>SWT</code> style constants. The class description
  * lists the style constants that are applicable to the class.
@@ -145,20 +145,20 @@ void createHandle (int index) {
 	* Bug in GTK. For some reason, the toolbar style context does not read
 	* the CSS style sheet until the window containing the toolbar is shown.
 	* The fix is to call gtk_style_context_invalidate() which it seems to
-	* force the style sheet to be read. 
+	* force the style sheet to be read.
 	*/
-	if (OS.GTK3) { 
+	if (OS.GTK3) {
 		long /*int*/ context = OS.gtk_widget_get_style_context (handle);
 		OS.gtk_style_context_invalidate (context);
 	}
-	
+
 	/*
 	* Bug in GTK.  GTK will segment fault if gtk_widget_reparent() is called
 	* on a tool bar or on a widget hierarchy containing a tool bar when the icon
 	* size is not GTK_ICON_SIZE_LARGE_TOOLBAR.  The fix is to set the icon
 	* size to GTK_ICON_SIZE_LARGE_TOOLBAR.
-	* 
-	* Note that the segmentation fault does not happen on GTK 3, but the 
+	*
+	* Note that the segmentation fault does not happen on GTK 3, but the
 	* tool bar preferred size is too big with GTK_ICON_SIZE_LARGE_TOOLBAR
 	* when the tool bar item has no image or text.
 	*/
@@ -194,7 +194,7 @@ Widget computeTabGroup () {
 	if (tabItemList == null) {
 		int i = 0;
 		while (i < items.length && items [i].control == null) i++;
-		if (i == items.length) return super.computeTabGroup (); 
+		if (i == items.length) return super.computeTabGroup ();
 	}
 	int index = indexOf(currentFocusItem);
 	if (index == -1) index = items.length - 1;
@@ -212,7 +212,7 @@ Widget [] computeTabList () {
 	if (tabItemList == null) {
 		int i = 0;
 		while (i < items.length && items [i].control == null) i++;
-		if (i == items.length) return super.computeTabList (); 
+		if (i == items.length) return super.computeTabList ();
 	}
 	Widget result [] = {};
 	if (!isTabGroup () || !isEnabled () || !isVisible ()) return result;
@@ -227,7 +227,7 @@ Widget [] computeTabList () {
 			result = newResult;
 		}
 	}
-	if (result.length == 0) result = new Widget [] {this}; 
+	if (result.length == 0) result = new Widget [] {this};
 	return result;
 }
 
@@ -338,11 +338,11 @@ public int getItemCount () {
 
 /**
  * Returns an array of <code>ToolItem</code>s which are the items
- * in the receiver. 
+ * in the receiver.
  * <p>
  * Note: This is not the actual structure used by the receiver
  * to maintain its list of items, so modifying the array will
- * not affect the receiver. 
+ * not affect the receiver.
  * </p>
  *
  * @return the items in the receiver
@@ -436,7 +436,7 @@ boolean hasFocus () {
 
 /**
  * Searches the receiver's list starting at the first item
- * (index 0) until an item is found that is equal to the 
+ * (index 0) until an item is found that is equal to the
  * argument, and returns the index of that item. If no item
  * is found, returns -1.
  *
@@ -476,11 +476,11 @@ long /*int*/ menuItemSelected (long /*int*/ widget, ToolItem item) {
 	switch (item.style) {
 		case SWT.DROP_DOWN :
 			/*
-			 * Feature in GTK. The DROP_DOWN item does not 
+			 * Feature in GTK. The DROP_DOWN item does not
 			 * contain arrow button in the overflow menu. So, it
 			 * is impossible to select the menu of that item.
-			 * The fix is to consider the item selection  
-			 * as Arrow click, in order to popup the drop-down. 
+			 * The fix is to consider the item selection
+			 * as Arrow click, in order to popup the drop-down.
 			 */
 			event.detail = SWT.ARROW;
 			GtkAllocation allocation = new GtkAllocation ();
@@ -533,7 +533,7 @@ void relayout () {
 	}
 	int type = OS.GTK_TOOLBAR_ICONS;
 	if (hasText && hasImage) {
-		if ((style & SWT.RIGHT) != 0) { 
+		if ((style & SWT.RIGHT) != 0) {
 			type = OS.GTK_TOOLBAR_BOTH_HORIZ;
 		} else {
 			type = OS.GTK_TOOLBAR_BOTH;
@@ -636,7 +636,7 @@ void setOrientation (boolean create) {
 		ToolItem [] newList = new ToolItem [tabList.length];
 		System.arraycopy (tabList, 0, newList, 0, tabList.length);
 		tabList = newList;
-	} 
+	}
 	this.tabItemList = tabList;
 }
 

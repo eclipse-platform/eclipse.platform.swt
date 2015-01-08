@@ -17,25 +17,25 @@ import org.eclipse.swt.internal.gtk.*;
 import org.eclipse.swt.widgets.*;
 
 /**
- * The class <code>ImageTransfer</code> provides a platform specific mechanism 
- * for converting an Image represented as a java <code>ImageData</code> to a 
- * platform specific representation of the data and vice versa.  
- * 
+ * The class <code>ImageTransfer</code> provides a platform specific mechanism
+ * for converting an Image represented as a java <code>ImageData</code> to a
+ * platform specific representation of the data and vice versa.
+ *
  * <p>An example of a java <code>ImageData</code> is shown below:</p>
- * 
+ *
  * <code><pre>
  *     Image image = new Image(display, "C:\temp\img1.gif");
  *	   ImageData imgData = image.getImageData();
  * </code></pre>
  *
  * @see Transfer
- * 
+ *
  * @since 3.4
  */
 public class ImageTransfer extends ByteArrayTransfer {
-	
+
 	private static ImageTransfer _instance = new ImageTransfer();
-	
+
 	private static final String JPEG = "image/jpeg"; //$NON-NLS-1$
 	private static final int JPEG_ID = registerType(JPEG);
 	private static final String PNG = "image/png"; //$NON-NLS-1$
@@ -57,8 +57,8 @@ public class ImageTransfer extends ByteArrayTransfer {
 	private static final String XPM = "image/xpm"; //$NON-NLS-1$
 	private static final int XPM_ID = registerType(XPM);
 	private static final String XV = "image/xv"; //$NON-NLS-1$
-	private static final int XV_ID = registerType(XV);	
-	
+	private static final int XV_ID = registerType(XV);
+
 private ImageTransfer() {}
 
 /**
@@ -73,11 +73,11 @@ public static ImageTransfer getInstance () {
 /**
  * This implementation of <code>javaToNative</code> converts an ImageData object represented
  * by java <code>ImageData</code> to a platform specific representation.
- * 
+ *
  * @param object a java <code>ImageData</code> containing the ImageData to be converted
  * @param transferData an empty <code>TransferData</code> object that will
  *  	be filled in on return with the platform specific format of the data
- * 
+ *
  * @see Transfer#nativeToJava
  */
 @Override
@@ -87,7 +87,7 @@ public void javaToNative(Object object, TransferData transferData) {
 	}
 	ImageData imgData = (ImageData)object;
 	if (imgData == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	Image image = new Image(Display.getCurrent(), imgData);	
+	Image image = new Image(Display.getCurrent(), imgData);
  	long /*int*/ pixbuf = ImageList.createPixbuf(image);
 	if (pixbuf != 0) {
 		String typeStr = "";
@@ -117,13 +117,13 @@ public void javaToNative(Object object, TransferData transferData) {
 }
 
 /**
- * This implementation of <code>nativeToJava</code> converts a platform specific 
- * representation of an image to java <code>ImageData</code>.  
- * 
+ * This implementation of <code>nativeToJava</code> converts a platform specific
+ * representation of an image to java <code>ImageData</code>.
+ *
  * @param transferData the platform specific representation of the data to be converted
  * @return a java <code>ImageData</code> of the image if the conversion was successful;
  * 		otherwise null
- * 
+ *
  * @see Transfer#javaToNative
  */
 @Override
@@ -139,7 +139,7 @@ public Object nativeToJava(TransferData transferData) {
 				Image img = Image.gtk_new_from_pixbuf(Display.getCurrent(), SWT.BITMAP, pixbuf);
 				imgData = img.getImageData();
 				img.dispose();
-			}		
+			}
 		} finally {
 			OS.g_object_unref(loader);
 		}
@@ -149,7 +149,7 @@ public Object nativeToJava(TransferData transferData) {
 
 @Override
 protected int[] getTypeIds(){
-	return new int[]{PNG_ID, BMP_ID, EPS_ID, JPEG_ID, PCX_ID, PPM_ID, RGB_ID, TGA_ID, XBM_ID, XPM_ID, XV_ID};	
+	return new int[]{PNG_ID, BMP_ID, EPS_ID, JPEG_ID, PCX_ID, PPM_ID, RGB_ID, TGA_ID, XBM_ID, XPM_ID, XV_ID};
 }
 
 @Override

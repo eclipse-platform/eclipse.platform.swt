@@ -38,7 +38,7 @@ import org.eclipse.swt.events.*;
  * @see <a href="http://www.eclipse.org/swt/snippets/#spinner">Spinner snippets</a>
  * @see <a href="http://www.eclipse.org/swt/examples.php">SWT Example: ControlExample</a>
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
- * 
+ *
  * @since 3.1
  * @noextend This class is not intended to be subclassed by clients.
  */
@@ -49,11 +49,11 @@ public class Spinner extends Composite {
 	long /*int*/ gdkEventKey = 0;
 	int fixStart = -1, fixEnd = -1;
 	double climbRate = 1;
-	
+
 	/**
 	 * the operating system limit for the number of characters
 	 * that the text field in an instance of this class can hold
-	 * 
+	 *
 	 * @since 3.4
 	 */
 	public final static int LIMIT;
@@ -65,14 +65,14 @@ public class Spinner extends Composite {
 	static {
 		LIMIT = 0x7FFFFFFF;
 	}
-	
+
 /**
  * Constructs a new instance of this class given its parent
  * and a style value describing its behavior and appearance.
  * <p>
  * The style value is either one of the style constants defined in
  * class <code>SWT</code> which is applicable to instances of this
- * class, or must be built by <em>bitwise OR</em>'ing together 
+ * class, or must be built by <em>bitwise OR</em>'ing together
  * (that is, using the <code>int</code> "|" operator) two or more
  * of those <code>SWT</code> style constants. The class description
  * lists the style constants that are applicable to the class.
@@ -210,7 +210,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	long /*int*/ hAdjustment = OS.gtk_spin_button_get_adjustment (handle);
 	double upper = gtk_adjustment_get_upper (hAdjustment);
 	int digits = OS.gtk_spin_button_get_digits (handle);
-	for (int i = 0; i < digits; i++) upper *= 10; 
+	for (int i = 0; i < digits; i++) upper *= 10;
 	String string = String.valueOf ((int) upper);
 	if (digits > 0) {
 		StringBuffer buffer = new StringBuffer ();
@@ -227,7 +227,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	long /*int*/ ptr = OS.pango_layout_get_text (layout);
 	int length = OS.strlen (ptr);
 	byte [] buffer2 = new byte [length];
-	OS.memmove (buffer2, ptr, length);	
+	OS.memmove (buffer2, ptr, length);
 	OS.pango_layout_set_text (layout, buffer1, buffer1.length);
 	OS.pango_layout_set_text (layout, buffer2, buffer2.length);
 	int width, height = 0 ;
@@ -237,7 +237,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 		GtkRequisition requisition = new GtkRequisition ();
 		OS.gtk_widget_get_preferred_size (handle, requisition, null);
 		width = wHint == SWT.DEFAULT ? requisition.width : wHint;
-		height = hHint == SWT.DEFAULT ? requisition.height : hHint;	
+		height = hHint == SWT.DEFAULT ? requisition.height : hHint;
 	} else {
 		OS.pango_layout_get_pixel_size (layout, w, h);
 		width = wHint == SWT.DEFAULT ? w [0] : wHint;
@@ -272,7 +272,7 @@ public Rectangle computeTrim (int x, int y, int width, int height) {
 		long /*int*/ fontDesc = getFontDescription ();
 		int fontSize = OS.pango_font_description_get_size (fontDesc);
 		int arrowSize = Math.max (OS.PANGO_PIXELS (fontSize), MIN_ARROW_WIDTH);
-		arrowSize = arrowSize - arrowSize % 2;		
+		arrowSize = arrowSize - arrowSize % 2;
 		trim.width += arrowSize + (2 * thickness.x);
 	}
 	int [] property = new int [1];
@@ -386,11 +386,11 @@ void fixIM () {
 	/*
 	*  The IM filter has to be called one time for each key press event.
 	*  When the IM is open the key events are duplicated. The first event
-	*  is filtered by SWT and the second event is filtered by GTK.  In some 
-	*  cases the GTK handler does not run (the widget is destroyed, the 
+	*  is filtered by SWT and the second event is filtered by GTK.  In some
+	*  cases the GTK handler does not run (the widget is destroyed, the
 	*  application code consumes the event, etc), for these cases the IM
 	*  filter has to be called by SWT.
-	*/	
+	*/
 	if (gdkEventKey != 0 && gdkEventKey != -1) {
 		long /*int*/ imContext = imContext ();
 		if (imContext != 0) {
@@ -502,7 +502,7 @@ public int getPageIncrement () {
 /**
  * Returns the <em>selection</em>, which is the receiver's position.
  *
- * @return the selection 
+ * @return the selection
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -510,7 +510,7 @@ public int getPageIncrement () {
  * </ul>
  */
 public int getSelection () {
-	checkWidget ();	
+	checkWidget ();
 	long /*int*/ hAdjustment = OS.gtk_spin_button_get_adjustment (handle);
 	int digits = OS.gtk_spin_button_get_digits (handle);
 	double value = gtk_adjustment_get_value(hAdjustment);
@@ -529,7 +529,7 @@ public int getSelection () {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 3.4
  */
 public String getText () {
@@ -547,16 +547,16 @@ public String getText () {
  * text field is capable of holding. If this has not been changed
  * by <code>setTextLimit()</code>, it will be the constant
  * <code>Spinner.LIMIT</code>.
- * 
+ *
  * @return the text limit
- * 
+ *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  *
  * @see #LIMIT
- * 
+ *
  * @since 3.4
  */
 public int getTextLimit () {
@@ -584,7 +584,7 @@ String getDecimalSeparator () {
 	long /*int*/ ptr = OS.localeconv_decimal_point ();
 	int length = OS.strlen (ptr);
 	byte [] buffer = new byte [length];
-	OS.memmove (buffer, ptr, length);	
+	OS.memmove (buffer, ptr, length);
 	return new String (Converter.mbcsToWcs (null, buffer));
 }
 
@@ -610,7 +610,7 @@ long /*int*/ gtk_changed (long /*int*/ widget) {
 			}
 		}
 	}
-	
+
 	/*
 	* Feature in GTK.  When the user types, GTK positions
 	* the caret after sending the changed signal.  This
@@ -799,7 +799,7 @@ void hookEvents () {
 }
 
 long /*int*/ imContext () {
-	if (imContext != 0) return imContext; 
+	if (imContext != 0) return imContext;
 	return OS.GTK_ENTRY_IM_CONTEXT (handle);
 }
 
@@ -863,7 +863,7 @@ public void removeModifyListener (ModifyListener listener) {
 	checkWidget ();
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (eventTable == null) return;
-	eventTable.unhook (SWT.Modify, listener);	
+	eventTable.unhook (SWT.Modify, listener);
 }
 
 /**
@@ -888,7 +888,7 @@ public void removeSelectionListener(SelectionListener listener) {
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (eventTable == null) return;
 	eventTable.unhook(SWT.Selection, listener);
-	eventTable.unhook(SWT.DefaultSelection,listener);	
+	eventTable.unhook(SWT.DefaultSelection,listener);
 }
 
 /**
@@ -912,7 +912,7 @@ void removeVerifyListener (VerifyListener listener) {
 	checkWidget ();
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (eventTable == null) return;
-	eventTable.unhook (SWT.Verify, listener);	
+	eventTable.unhook (SWT.Verify, listener);
 }
 
 @Override
@@ -1083,9 +1083,9 @@ public void setSelection (int value) {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @see #LIMIT
- * 
+ *
  * @since 3.4
  */
 public void setTextLimit (int limit) {
@@ -1098,17 +1098,17 @@ public void setTextLimit (int limit) {
  * Sets the number of decimal places used by the receiver.
  * <p>
  * The digit setting is used to allow for floating point values in the receiver.
- * For example, to set the selection to a floating point value of 1.37 call setDigits() with 
+ * For example, to set the selection to a floating point value of 1.37 call setDigits() with
  * a value of 2 and setSelection() with a value of 137. Similarly, if getDigits() has a value
  * of 2 and getSelection() returns 137 this should be interpreted as 1.37. This applies to all
- * numeric APIs. 
+ * numeric APIs.
  * </p>
- * 
+ *
  * @param value the new digits (must be greater than or equal to zero)
- * 
+ *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_INVALID_ARGUMENT - if the value is less than zero</li>
- * </ul> 
+ * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
@@ -1151,7 +1151,7 @@ public void setDigits (int value) {
  * value, digits, increment and page increment all at once.
  * <p>
  * Note: This is similar to setting the values individually
- * using the appropriate methods, but may be implemented in a 
+ * using the appropriate methods, but may be implemented in a
  * more efficient fashion on some platforms.
  * </p>
  *
@@ -1166,7 +1166,7 @@ public void setDigits (int value) {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 3.2
  */
 public void setValues (int selection, int minimum, int maximum, int digits, int increment, int pageIncrement) {
@@ -1177,15 +1177,15 @@ public void setValues (int selection, int minimum, int maximum, int digits, int 
 	if (pageIncrement < 1) return;
 	selection = Math.min (Math.max (minimum, selection), maximum);
 	double factor = 1;
-	for (int i = 0; i < digits; i++) factor *= 10;	
+	for (int i = 0; i < digits; i++) factor *= 10;
 	OS.g_signal_handlers_block_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, VALUE_CHANGED);
 	OS.gtk_spin_button_set_range (handle, minimum / factor, maximum / factor);
 	OS.gtk_spin_button_set_increments (handle, increment / factor, pageIncrement / factor);
 	OS.gtk_spin_button_set_value (handle, selection / factor);
 	/*
-	* The value of climb-rate indicates the acceleration rate 
-	* to spin the value when the button is pressed and hold 
-	* on the arrow button. This value should be varied 
+	* The value of climb-rate indicates the acceleration rate
+	* to spin the value when the button is pressed and hold
+	* on the arrow button. This value should be varied
 	* depending upon the value of digits.
 	*/
 	climbRate = 1.0 / factor;

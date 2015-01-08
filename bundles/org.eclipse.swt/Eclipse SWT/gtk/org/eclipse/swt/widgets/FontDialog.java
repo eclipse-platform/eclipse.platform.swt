@@ -28,7 +28,7 @@ import org.eclipse.swt.graphics.*;
  * <p>
  * IMPORTANT: This class is <em>not</em> intended to be subclassed.
  * </p>
- * 
+ *
  * @see <a href="http://www.eclipse.org/swt/examples.php">SWT Example: ControlExample, Dialog tab</a>
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  * @noextend This class is not intended to be subclassed by clients.
@@ -58,7 +58,7 @@ public FontDialog (Shell parent) {
  * <p>
  * The style value is either one of the style constants defined in
  * class <code>SWT</code> which is applicable to instances of this
- * class, or must be built by <em>bitwise OR</em>'ing together 
+ * class, or must be built by <em>bitwise OR</em>'ing together
  * (that is, using the <code>int</code> "|" operator) two or more
  * of those <code>SWT</code> style constants. The class description
  * lists the style constants that are applicable to the class.
@@ -87,11 +87,11 @@ public FontDialog (Shell parent, int style) {
  * <p>
  * If the platform's font dialog does not have any effects selection controls,
  * then this method always returns false.
- * </p> 
+ * </p>
  *
  * @return <code>true</code> if the dialog's effects selection controls
  * are visible and <code>false</code> otherwise
- * 
+ *
  * @since 3.8
  */
 public boolean getEffectsVisible () {
@@ -102,7 +102,7 @@ public boolean getEffectsVisible () {
 /**
  * Returns a FontData object describing the font that was
  * selected in the dialog, or null if none is available.
- * 
+ *
  * @return the FontData for the selected font, or null
  * @deprecated use #getFontList ()
  */
@@ -114,7 +114,7 @@ public FontData getFontData () {
 /**
  * Returns a FontData set describing the font that was
  * selected in the dialog, or null if none is available.
- * 
+ *
  * @return the FontData for the selected font, or null
  * @since 2.1.1
  */
@@ -132,7 +132,7 @@ public FontData [] getFontList () {
  * @return the RGB value for the selected color, or null
  *
  * @see PaletteData#getRGBs
- * 
+ *
  * @since 2.1
  */
 public RGB getRGB () {
@@ -190,14 +190,14 @@ public FontData open () {
 	if ((style & SWT.RIGHT_TO_LEFT) != 0) {
 		signalId = OS.g_signal_lookup (OS.map, OS.GTK_TYPE_WIDGET());
 		hookId = OS.g_signal_add_emission_hook (signalId, 0, display.emissionProc, handle, 0);
-	}	
+	}
 	display.sendPreExternalEventDispatchEvent ();
 	int response = OS.gtk_dialog_run (handle);
 	/*
 	* This call to gdk_threads_leave() is a temporary work around
 	* to avoid deadlocks when gdk_threads_init() is called by native
 	* code outside of SWT (i.e AWT, etc). It ensures that the current
-	* thread leaves the GTK lock acquired by the function above. 
+	* thread leaves the GTK lock acquired by the function above.
 	*/
 	OS.gdk_threads_leave();
 	display.sendPostExternalEventDispatchEvent ();
@@ -207,7 +207,7 @@ public FontData open () {
 	if (OS.gtk_window_get_modal (handle)) {
 		display.setModalDialog (oldModal);
 	}
-	boolean success = response == OS.GTK_RESPONSE_OK; 
+	boolean success = response == OS.GTK_RESPONSE_OK;
 	if (success) {
 		long /*int*/ fontName = gtk_font_chooser_get_font (handle);
 		int length = OS.strlen (fontName);
@@ -217,7 +217,7 @@ public FontData open () {
 		long /*int*/ fontDesc = OS.pango_font_description_from_string (buffer);
 		Font font = Font.gtk_new (display, fontDesc);
 		fontData = font.getFontData () [0];
-		OS.pango_font_description_free (fontDesc);		
+		OS.pango_font_description_free (fontDesc);
 	}
 	display.removeIdleProc ();
 	OS.gtk_widget_destroy(handle);
@@ -233,7 +233,7 @@ public FontData open () {
  * </p>
  *
  * @param visible whether or not the dialog will show the effects selection controls
- * 
+ *
  * @since 3.8
  */
 public void setEffectsVisible(boolean visible) {
@@ -244,7 +244,7 @@ public void setEffectsVisible(boolean visible) {
  * Sets a FontData object describing the font to be
  * selected by default in the dialog, or null to let
  * the platform choose one.
- * 
+ *
  * @param fontData the FontData to use initially, or null
  * @deprecated use #setFontList (FontData [])
  */
@@ -257,12 +257,12 @@ public void setFontData (FontData fontData) {
  * Sets the set of FontData objects describing the font to
  * be selected by default in the dialog, or null to let
  * the platform choose one.
- * 
+ *
  * @param fontData the set of FontData objects to use initially, or null
  *        to let the platform select a default when open() is called
  *
  * @see Font#getFontData
- * 
+ *
  * @since 2.1.1
  */
 public void setFontList (FontData [] fontData) {
@@ -280,7 +280,7 @@ public void setFontList (FontData [] fontData) {
  *        the platform select a default when open() is called
  *
  * @see PaletteData#getRGBs
- * 
+ *
  * @since 2.1
  */
 public void setRGB (RGB rgb) {

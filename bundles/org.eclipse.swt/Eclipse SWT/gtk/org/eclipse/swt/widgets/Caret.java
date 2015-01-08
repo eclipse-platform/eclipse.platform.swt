@@ -28,7 +28,7 @@ import org.eclipse.swt.graphics.*;
  * <p>
  * IMPORTANT: This class is <em>not</em> intended to be subclassed.
  * </p>
- * 
+ *
  * @see <a href="http://www.eclipse.org/swt/snippets/#caret">Caret snippets</a>
  * @see <a href="http://www.eclipse.org/swt/examples.php">SWT Example: ControlExample, Canvas tab</a>
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
@@ -41,7 +41,7 @@ public class Caret extends Widget {
 	int blinkRate;
 	Image image;
 	Font font;
-	
+
 	static final int DEFAULT_WIDTH = 1;
 
 /**
@@ -50,7 +50,7 @@ public class Caret extends Widget {
  * <p>
  * The style value is either one of the style constants defined in
  * class <code>SWT</code> which is applicable to instances of this
- * class, or must be built by <em>bitwise OR</em>'ing together 
+ * class, or must be built by <em>bitwise OR</em>'ing together
  * (that is, using the <code>int</code> "|" operator) two or more
  * of those <code>SWT</code> style constants. The class description
  * lists the style constants that are applicable to the class.
@@ -111,13 +111,13 @@ boolean drawCaret () {
 				case Cairo.CAIRO_SURFACE_TYPE_IMAGE:
 					nWidth = Cairo.cairo_image_surface_get_width(surface);
 					break;
-				case Cairo.CAIRO_SURFACE_TYPE_XLIB: 
+				case Cairo.CAIRO_SURFACE_TYPE_XLIB:
 					nWidth = Cairo.cairo_xlib_surface_get_width(surface);
 					break;
 			}
 			int nX = x;
 			if ((parent.style & SWT.MIRRORED) != 0) nX = parent.getClientWidth () - nWidth - nX;
-			Cairo.cairo_translate(cairo, nX, y); 
+			Cairo.cairo_translate(cairo, nX, y);
 			Cairo.cairo_set_source_surface(cairo, image.surface, 0, 0);
 			Cairo.cairo_paint(cairo);
 		} else {
@@ -343,7 +343,7 @@ void releaseWidget () {
 
 /**
  * Sets the receiver's size and location to the rectangular
- * area specified by the arguments. The <code>x</code> and 
+ * area specified by the arguments. The <code>x</code> and
  * <code>y</code> arguments are relative to the receiver's
  * parent (or its display if its parent is null).
  *
@@ -370,7 +370,7 @@ public void setBounds (int x, int y, int width, int height) {
 
 /**
  * Sets the receiver's size and location to the rectangular
- * area specified by the argument. The <code>x</code> and 
+ * area specified by the argument. The <code>x</code> and
  * <code>y</code> fields of the rectangle are relative to
  * the receiver's parent (or its display if its parent is null).
  *
@@ -402,7 +402,7 @@ void setFocus () {
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_INVALID_ARGUMENT - if the font has been disposed</li>
- * </ul> 
+ * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
@@ -425,7 +425,7 @@ public void setFont (Font font) {
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_INVALID_ARGUMENT - if the image has been disposed</li>
- * </ul> 
+ * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
@@ -515,7 +515,7 @@ public void setSize (Point size) {
 
 /**
  * Marks the receiver as visible if the argument is <code>true</code>,
- * and marks it invisible otherwise. 
+ * and marks it invisible otherwise.
  * <p>
  * If one of the receiver's ancestors is not visible or some
  * other condition makes the receiver not visible, marking

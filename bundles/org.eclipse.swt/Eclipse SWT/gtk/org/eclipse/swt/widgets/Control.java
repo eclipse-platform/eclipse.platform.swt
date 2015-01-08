@@ -37,7 +37,7 @@ import org.eclipse.swt.internal.gtk.*;
  * IMPORTANT: This class is intended to be subclassed <em>only</em>
  * within the SWT implementation.
  * </p>
- * 
+ *
  * @see <a href="http://www.eclipse.org/swt/snippets/#control">Control snippets</a>
  * @see <a href="http://www.eclipse.org/swt/examples.php">SWT Example: ControlExample</a>
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
@@ -67,7 +67,7 @@ Control () {
  * <p>
  * The style value is either one of the style constants defined in
  * class <code>SWT</code> which is applicable to instances of this
- * class, or must be built by <em>bitwise OR</em>'ing together 
+ * class, or must be built by <em>bitwise OR</em>'ing together
  * (that is, using the <code>int</code> "|" operator) two or more
  * of those <code>SWT</code> style constants. The class description
  * lists the style constants that are applicable to the class.
@@ -227,7 +227,7 @@ void fixStyle (long /*int*/ handle) {
 	* have their own GtkFixed.  The fix is to look up the correct style
 	* for a child of a GtkNotebook and apply its background to any GtkFixed
 	* widgets that are direct children of an SWT TabFolder.
-	* 
+	*
 	* Note that this has to be when the theme settings changes and that it
 	* should not override the application background.
 	*/
@@ -256,12 +256,12 @@ long /*int*/ fontHandle () {
  * constants <code>SWT.LEFT_TO_RIGHT</code> or <code>SWT.RIGHT_TO_LEFT</code>.
  *
  * @return the orientation style
- * 
+ *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 3.7
  */
 public int getOrientation () {
@@ -274,12 +274,12 @@ public int getOrientation () {
  * constants <code>SWT.LEFT_TO_RIGHT</code> or <code>SWT.RIGHT_TO_LEFT</code>.
  *
  * @return the text direction style
- * 
+ *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 3.102
  */
 public int getTextDirection() {
@@ -314,7 +314,7 @@ void hookEvents () {
 	OS.g_signal_connect_closure_by_id (eventHandle, display.signalIds [BUTTON_RELEASE_EVENT], 0, display.getClosure (BUTTON_RELEASE_EVENT), false);
 	OS.g_signal_connect_closure_by_id (eventHandle, display.signalIds [MOTION_NOTIFY_EVENT], 0, display.getClosure (MOTION_NOTIFY_EVENT), false);
 	OS.g_signal_connect_closure_by_id (eventHandle, display.signalIds [SCROLL_EVENT], 0, display.getClosure (SCROLL_EVENT), false);
-	
+
 	/* Connect enter/exit signals */
 	long /*int*/ enterExitHandle = enterExitHandle ();
 	int enterExitMask = OS.GDK_ENTER_NOTIFY_MASK | OS.GDK_LEAVE_NOTIFY_MASK;
@@ -328,7 +328,7 @@ void hookEvents () {
 	* correct GTK behavior but not correct for SWT.  The fix is to
 	* hook a signal after and stop the propagation using a negative
 	* event number to distinguish this case.
-	* 
+	*
 	* The signal is hooked to the fixedHandle to catch events sent to
 	* lightweight widgets.
 	*/
@@ -342,7 +342,7 @@ void hookEvents () {
 	if (focusHandle != eventHandle) {
 		OS.g_signal_connect_closure_by_id (focusHandle, display.signalIds [EVENT_AFTER], 0, display.getClosure (EVENT_AFTER), false);
 	}
-	
+
 	/* Connect the paint signal */
 	long /*int*/ paintHandle = paintHandle ();
 	int paintMask = OS.GDK_EXPOSURE_MASK | OS.GDK_VISIBILITY_NOTIFY_MASK;
@@ -351,7 +351,7 @@ void hookEvents () {
 	OS.g_signal_connect_closure_by_id (paintHandle, display.signalIds [EXPOSE_EVENT], 0, display.getClosure (EXPOSE_EVENT_INVERSE), false);
 
 	/*
-	* As of GTK 2.17.11, obscured controls no longer send expose 
+	* As of GTK 2.17.11, obscured controls no longer send expose
 	* events. It is no longer necessary to track visiblity notify
 	* events.
 	*/
@@ -368,9 +368,9 @@ void hookEvents () {
 		OS.g_signal_connect_closure (imHandle, OS.commit, display.getClosure (COMMIT), false);
 		OS.g_signal_connect_closure (imHandle, OS.preedit_changed, display.getClosure (PREEDIT_CHANGED), false);
 	}
-	
+
 	OS.g_signal_connect_closure_by_id (paintHandle, display.signalIds [STYLE_SET], 0, display.getClosure (STYLE_SET), false);
-   
+
 	long /*int*/ topHandle = topHandle ();
 	OS.g_signal_connect_closure_by_id (topHandle, display.signalIds [MAP], 0, display.getClosure (MAP), true);
 }
@@ -413,7 +413,7 @@ long /*int*/ paintWindow () {
 
 /**
  * Prints the receiver and all children.
- * 
+ *
  * @param gc the gc where the drawing occurs
  * @return <code>true</code> if the operation was successful and <code>false</code> otherwise
  *
@@ -425,7 +425,7 @@ long /*int*/ paintWindow () {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 3.4
  */
 public boolean print (GC gc) {
@@ -466,7 +466,7 @@ void printWindow (boolean first, Control control, GC gc, long /*int*/ drawable, 
 	OS.gdk_window_begin_paint_rect (window, rect);
 	long /*int*/ [] real_drawable = new long /*int*/ [1];
 	int [] x_offset = new int [1], y_offset = new int [1];
-	OS.gdk_window_get_internal_paint_info (window, real_drawable, x_offset, y_offset);	
+	OS.gdk_window_get_internal_paint_info (window, real_drawable, x_offset, y_offset);
 	long /*int*/ [] userData = new long /*int*/ [1];
 	OS.gdk_window_get_user_data (window, userData);
 	if (userData [0] != 0) {
@@ -554,8 +554,8 @@ void printWindow (boolean first, Control control, GC gc, long /*int*/ drawable, 
  * best be displayed at. The width hint and height hint arguments
  * allow the caller to ask a control questions such as "Given a particular
  * width, how high does the control need to be to show all of the contents?"
- * To indicate that the caller does not wish to constrain a particular 
- * dimension, the constant <code>SWT.DEFAULT</code> is passed for the hint. 
+ * To indicate that the caller does not wish to constrain a particular
+ * dimension, the constant <code>SWT.DEFAULT</code> is passed for the hint.
  * </p>
  *
  * @param wHint the width hint (can be <code>SWT.DEFAULT</code>)
@@ -631,7 +631,7 @@ void checkBackground () {
 			state |= PARENT_BACKGROUND;
 			return;
 		}
-		if (composite == shell) break;		
+		if (composite == shell) break;
 		composite = composite.parent;
 	} while (true);
 }
@@ -683,14 +683,14 @@ void createWidget (int index) {
  * best be displayed at. The width hint and height hint arguments
  * allow the caller to ask a control questions such as "Given a particular
  * width, how high does the control need to be to show all of the contents?"
- * To indicate that the caller does not wish to constrain a particular 
- * dimension, the constant <code>SWT.DEFAULT</code> is passed for the hint. 
+ * To indicate that the caller does not wish to constrain a particular
+ * dimension, the constant <code>SWT.DEFAULT</code> is passed for the hint.
  * </p><p>
  * If the changed flag is <code>true</code>, it indicates that the receiver's
  * <em>contents</em> have changed, therefore any caches that a layout manager
  * containing the control may have been keeping need to be flushed. When the
  * control is resized, the changed flag will be <code>false</code>, so layout
- * manager caches can be retained. 
+ * manager caches can be retained.
  * </p>
  *
  * @param wHint the width hint (can be <code>SWT.DEFAULT</code>)
@@ -714,7 +714,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget();
 	if (wHint != SWT.DEFAULT && wHint < 0) wHint = 0;
 	if (hHint != SWT.DEFAULT && hHint < 0) hHint = 0;
-	return computeNativeSize (handle, wHint, hHint, changed);	
+	return computeNativeSize (handle, wHint, hHint, changed);
 }
 
 Point computeNativeSize (long /*int*/ h, int wHint, int hHint, boolean changed) {
@@ -783,10 +783,10 @@ void forceResize () {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @see Accessible#addAccessibleListener
  * @see Accessible#addAccessibleControlListener
- * 
+ *
  * @since 2.0
  */
 public Accessible getAccessible () {
@@ -829,7 +829,7 @@ public Rectangle getBounds () {
 
 /**
  * Sets the receiver's size and location to the rectangular
- * area specified by the argument. The <code>x</code> and 
+ * area specified by the argument. The <code>x</code> and
  * <code>y</code> fields of the rectangle are relative to
  * the receiver's parent (or its display if its parent is null).
  * <p>
@@ -853,9 +853,9 @@ public void setBounds (Rectangle rect) {
 
 /**
  * Sets the receiver's size and location to the rectangular
- * area specified by the arguments. The <code>x</code> and 
+ * area specified by the arguments. The <code>x</code> and
  * <code>y</code> arguments are relative to the receiver's
- * parent (or its display if its parent is null), unless 
+ * parent (or its display if its parent is null), unless
  * the receiver is a shell. In this case, the <code>x</code>
  * and <code>y</code> arguments are relative to the display.
  * <p>
@@ -887,8 +887,8 @@ void markLayout (boolean changed, boolean all) {
 void modifyStyle (long /*int*/ handle, long /*int*/ style) {
 	super.modifyStyle(handle, style);
 	/*
-	* Bug in GTK.  When changing the style of a control that  
-	* has had a region set on it, the region is lost.  The 
+	* Bug in GTK.  When changing the style of a control that
+	* has had a region set on it, the region is lost.  The
 	* fix is to set the region again.
 	*/
 	if (region != null) OS.gdk_window_shape_combine_region (gtk_widget_get_window (topHandle ()), region.handle, 0, 0);
@@ -904,10 +904,10 @@ void moveHandle (int x, int y) {
 		* Feature in GTK.  Calling gtk_fixed_move() to move a child causes
 		* the whole parent to redraw.  This is a performance problem. The
 		* fix is temporarily mark the parent not visible during the move.
-		* 
+		*
 		* NOTE: Because every widget in SWT has an X window, the new and
 		* old bounds of the child are correctly redrawn.
-		* 
+		*
 		* NOTE: There is no API in GTK 3 to only set the GTK_VISIBLE bit.
 		*/
 		boolean reset = gtk_widget_get_visible (parentHandle);
@@ -1048,8 +1048,8 @@ int setBounds (int x, int y, int width, int height, boolean move, boolean resize
 /**
  * Returns a point describing the receiver's location relative
  * to its parent (or its display if its parent is null), unless
- * the receiver is a shell. In this case, the point is 
- * relative to the display. 
+ * the receiver is a shell. In this case, the point is
+ * relative to the display.
  *
  * @return the receiver's location
  *
@@ -1075,9 +1075,9 @@ public Point getLocation () {
 /**
  * Sets the receiver's location to the point specified by
  * the arguments which are relative to the receiver's
- * parent (or its display if its parent is null), unless 
- * the receiver is a shell. In this case, the point is 
- * relative to the display. 
+ * parent (or its display if its parent is null), unless
+ * the receiver is a shell. In this case, the point is
+ * relative to the display.
  *
  * @param location the new location for the receiver
  *
@@ -1095,9 +1095,9 @@ public void setLocation (Point location) {
 /**
  * Sets the receiver's location to the point specified by
  * the arguments which are relative to the receiver's
- * parent (or its display if its parent is null), unless 
- * the receiver is a shell. In this case, the point is 
- * relative to the display. 
+ * parent (or its display if its parent is null), unless
+ * the receiver is a shell. In this case, the point is
+ * relative to the display.
  *
  * @param x the new x coordinate for the receiver
  * @param y the new y coordinate for the receiver
@@ -1168,7 +1168,7 @@ public void setSize (Point size) {
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_INVALID_ARGUMENT - if the region has been disposed</li>
- * </ul>  
+ * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
@@ -1245,7 +1245,7 @@ boolean isDescribedByLabel () {
 }
 
 boolean isFocusHandle (long /*int*/ widget) {
-	return widget == focusHandle (); 
+	return widget == focusHandle ();
 }
 
 /**
@@ -1258,13 +1258,13 @@ boolean isFocusHandle (long /*int*/ widget) {
  * @param control the sibling control (or null)
  *
  * @exception IllegalArgumentException <ul>
- *    <li>ERROR_INVALID_ARGUMENT - if the control has been disposed</li> 
+ *    <li>ERROR_INVALID_ARGUMENT - if the control has been disposed</li>
  * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @see Control#moveBelow
  * @see Composite#getChildren
  */
@@ -1288,13 +1288,13 @@ public void moveAbove (Control control) {
  * @param control the sibling control (or null)
  *
  * @exception IllegalArgumentException <ul>
- *    <li>ERROR_INVALID_ARGUMENT - if the control has been disposed</li> 
+ *    <li>ERROR_INVALID_ARGUMENT - if the control has been disposed</li>
  * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @see Control#moveAbove
  * @see Composite#getChildren
  */
@@ -1336,11 +1336,11 @@ public void pack () {
  * <em>contents</em> have changed, therefore any caches that a layout manager
  * containing the control may have been keeping need to be flushed. When the
  * control is resized, the changed flag will be <code>false</code>, so layout
- * manager caches can be retained. 
+ * manager caches can be retained.
  * </p>
  *
  * @param changed whether or not the receiver's contents have changed
- * 
+ *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
@@ -1354,9 +1354,9 @@ public void pack (boolean changed) {
 
 /**
  * Sets the layout data associated with the receiver to the argument.
- * 
+ *
  * @param layoutData the new layout data for the receiver.
- * 
+ *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
@@ -1380,7 +1380,7 @@ public void setLayoutData (Object layoutData) {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 2.1
  */
 public Point toControl (int x, int y) {
@@ -1429,7 +1429,7 @@ public Point toControl (Point point) {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 2.1
  */
 public Point toDisplay (int x, int y) {
@@ -1464,7 +1464,7 @@ public Point toDisplay (Point point) {
 	if (point == null) error (SWT.ERROR_NULL_ARGUMENT);
 	return toDisplay (point.x, point.y);
 }
- 
+
 /**
  * Adds the listener to the collection of listeners who will
  * be notified when the control is moved or resized, by sending
@@ -1510,7 +1510,7 @@ public void addControlListener(ControlListener listener) {
  *
  * @see DragDetectListener
  * @see #removeDragDetectListener
- * 
+ *
  * @since 3.3
  */
 public void addDragDetectListener (DragDetectListener listener) {
@@ -1558,7 +1558,7 @@ public void addFocusListener(FocusListener listener) {
  * must be invoked on it to specify that gesture events should be
  * sent instead of touch events.
  * </p>
- * 
+ *
  * @param listener the listener which should be notified
  *
  * @exception IllegalArgumentException <ul>
@@ -1572,7 +1572,7 @@ public void addFocusListener(FocusListener listener) {
  * @see GestureListener
  * @see #removeGestureListener
  * @see #setTouchEnabled
- * 
+ *
  * @since 3.7
  */
 public void addGestureListener (GestureListener listener) {
@@ -1819,11 +1819,11 @@ void addRelation (Control control) {
  * one of the messages defined in the <code>TouchListener</code>
  * interface.
  * <p>
- * NOTE: You must also call <code>setTouchEnabled(true)</code> to 
+ * NOTE: You must also call <code>setTouchEnabled(true)</code> to
  * specify that touch events should be sent, which will cause gesture
  * events to not be sent.
  * </p>
- * 
+ *
  * @param listener the listener which should be notified
  *
  * @exception IllegalArgumentException <ul>
@@ -1837,7 +1837,7 @@ void addRelation (Control control) {
  * @see TouchListener
  * @see #removeTouchListener
  * @see #setTouchEnabled
- * 
+ *
  * @since 3.7
  */
 public void addTouchListener (TouchListener listener) {
@@ -1914,7 +1914,7 @@ public void removeControlListener (ControlListener listener) {
  *
  * @see DragDetectListener
  * @see #addDragDetectListener
- * 
+ *
  * @since 3.3
  */
 public void removeDragDetectListener(DragDetectListener listener) {
@@ -1964,7 +1964,7 @@ public void removeFocusListener(FocusListener listener) {
  *
  * @see GestureListener
  * @see #addGestureListener
- * 
+ *
  * @since 3.7
  */
 public void removeGestureListener (GestureListener listener) {
@@ -2198,7 +2198,7 @@ void removeRelation () {
  *
  * @see TouchListener
  * @see #addTouchListener
- * 
+ *
  * @since 3.7
  */
 public void removeTouchListener(TouchListener listener) {
@@ -2236,7 +2236,7 @@ public void removeTraverseListener(TraverseListener listener) {
  * Detects a drag and drop gesture.  This method is used
  * to detect a drag gesture when called from within a mouse
  * down listener.
- * 
+ *
  * <p>By default, a drag is detected when the gesture
  * occurs anywhere within the client area of a control.
  * Some controls, such as tables and trees, override this
@@ -2249,7 +2249,7 @@ public void removeTraverseListener(TraverseListener listener) {
  * </p>
  *
  * @param event the mouse down event
- * 
+ *
  * @return <code>true</code> if the gesture occurred, and <code>false</code> otherwise.
  *
  * @exception IllegalArgumentException <ul>
@@ -2259,13 +2259,13 @@ public void removeTraverseListener(TraverseListener listener) {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- *  
+ *
  * @see DragDetectListener
  * @see #addDragDetectListener
- * 
+ *
  * @see #getDragDetect
  * @see #setDragDetect
- * 
+ *
  * @since 3.3
  */
 public boolean dragDetect (Event event) {
@@ -2278,7 +2278,7 @@ public boolean dragDetect (Event event) {
  * Detects a drag and drop gesture.  This method is used
  * to detect a drag gesture when called from within a mouse
  * down listener.
- * 
+ *
  * <p>By default, a drag is detected when the gesture
  * occurs anywhere within the client area of a control.
  * Some controls, such as tables and trees, override this
@@ -2291,7 +2291,7 @@ public boolean dragDetect (Event event) {
  * </p>
  *
  * @param event the mouse down event
- * 
+ *
  * @return <code>true</code> if the gesture occurred, and <code>false</code> otherwise.
  *
  * @exception IllegalArgumentException <ul>
@@ -2301,13 +2301,13 @@ public boolean dragDetect (Event event) {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @see DragDetectListener
  * @see #addDragDetectListener
- * 
+ *
  * @see #getDragDetect
  * @see #setDragDetect
- * 
+ *
  * @since 3.3
  */
 public boolean dragDetect (MouseEvent event) {
@@ -2341,7 +2341,7 @@ boolean dragDetect (int x, int y, boolean filter, boolean dragOnTimeout, boolean
 		/*
 		* There should be an event on the queue already, but
 		* in cases where there isn't one, stop trying after
-		* half a second. 
+		* half a second.
 		*/
 		long timeout = System.currentTimeMillis() + 500;
 		display.sendPreExternalEventDispatchEvent();
@@ -2356,7 +2356,7 @@ boolean dragDetect (int x, int y, boolean filter, boolean dragOnTimeout, boolean
 								startPos.x, startPos.y, currPos.x, currPos.y);
 					if (dragging) break;
 				} else {
-				try {Thread.sleep(50);} 
+				try {Thread.sleep(50);}
 				catch (Exception ex) {}
 				}
 			}
@@ -2447,7 +2447,7 @@ long /*int*/ fixedMapProc (long /*int*/ widget) {
 	return 0;
 }
 
-void fixModal(long /*int*/ group, long /*int*/ modalGroup) {	
+void fixModal(long /*int*/ group, long /*int*/ modalGroup) {
 }
 
 /**
@@ -2532,7 +2532,7 @@ GdkColor getBackgroundColor () {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 3.2
  */
 public Image getBackgroundImage () {
@@ -2631,7 +2631,7 @@ int getClientWidth () {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 3.3
  */
 public Cursor getCursor () {
@@ -2641,15 +2641,15 @@ public Cursor getCursor () {
 
 /**
  * Returns <code>true</code> if the receiver is detecting
- * drag gestures, and  <code>false</code> otherwise. 
+ * drag gestures, and  <code>false</code> otherwise.
  *
  * @return the receiver's drag detect state
- * 
+ *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 3.3
  */
 public boolean getDragDetect () {
@@ -2669,7 +2669,7 @@ public boolean getDragDetect () {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @see #isEnabled
  */
 public boolean getEnabled () {
@@ -2691,11 +2691,11 @@ public Font getFont () {
 	checkWidget();
 	return font != null ? font : defaultFont ();
 }
-	
+
 long /*int*/ getFontDescription () {
 	long /*int*/ fontHandle = fontHandle ();
 	if (OS.GTK3) {
-		long /*int*/ context = OS.gtk_widget_get_style_context (fontHandle);	
+		long /*int*/ context = OS.gtk_widget_get_style_context (fontHandle);
 		return OS.gtk_style_context_get_font(context, OS.GTK_STATE_FLAG_NORMAL);
 	}
 	OS.gtk_widget_realize (fontHandle);
@@ -2788,14 +2788,14 @@ public Menu getMenu () {
 
 /**
  * Returns the receiver's monitor.
- * 
+ *
  * @return the receiver's monitor
- * 
+ *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 3.0
  */
 public Monitor getMonitor () {
@@ -2865,12 +2865,12 @@ Control [] getPath () {
 	return result;
 }
 
-/** 
+/**
  * Returns the region that defines the shape of the control,
  * or null if the control has the default shape.
  *
  * @return the region that defines the shape of the shell (or null)
- *	
+ *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
@@ -2937,7 +2937,7 @@ public String getToolTipText () {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @see #setTouchEnabled
  * @see Display#getTouchEnabled
  *
@@ -2999,7 +2999,7 @@ long /*int*/ gtk_button_press_event (long /*int*/ widget, long /*int*/ event, bo
 	GdkEventButton gdkEvent = new GdkEventButton ();
 	OS.memmove (gdkEvent, event, GdkEventButton.sizeof);
 	if (gdkEvent.type == OS.GDK_3BUTTON_PRESS) return 0;
-	
+
 	/*
 	* When a shell is created with SWT.ON_TOP and SWT.NO_FOCUS,
 	* do not activate the shell when the user clicks on the
@@ -3086,10 +3086,10 @@ long /*int*/ gtk_enter_notify_event (long /*int*/ widget, long /*int*/ event) {
 		 * Feature in GTK. Children of a shell will inherit and display the shell's
 		 * tooltip if they do not have a tooltip of their own. The fix is to use the
 		 * new tooltip API in GTK 2.12 to null the shell's tooltip when the control
-		 * being entered does not have any tooltip text set. 
+		 * being entered does not have any tooltip text set.
 		 */
 		byte [] buffer = null;
-		if (toolTipText != null && toolTipText.length() != 0) { 
+		if (toolTipText != null && toolTipText.length() != 0) {
 			char [] chars = fixMnemonic (toolTipText, false);
 			buffer = Converter.wcsToMbcs (null, chars, true);
 		}
@@ -3100,9 +3100,9 @@ long /*int*/ gtk_enter_notify_event (long /*int*/ widget, long /*int*/ event) {
 	GdkEventCrossing gdkEvent = new GdkEventCrossing ();
 	OS.memmove (gdkEvent, event, GdkEventCrossing.sizeof);
 	/*
-	 * It is possible to send out too many enter/exit events if entering a 
-	 * control through a subwindow. The fix is to return without sending any 
-	 * events if the GdkEventCrossing subwindow field is set and the control 
+	 * It is possible to send out too many enter/exit events if entering a
+	 * control through a subwindow. The fix is to return without sending any
+	 * events if the GdkEventCrossing subwindow field is set and the control
 	 * requests to check the field.
 	 */
 	if (gdkEvent.subwindow != 0 && checkSubwindow ()) return 0;
@@ -3155,12 +3155,12 @@ long /*int*/ gtk_event_after (long /*int*/ widget, long /*int*/ gdkEvent) {
 			 * box to lose focus when focus is received for the menu.  The
 			 * fix is to check the current grab handle and see if it is a GTK_MENU
 			 * and ignore the focus event when the menu is both shown and hidden.
-			 * 
+			 *
 			 * NOTE: This code runs for all menus.
 			 */
 			Display display = this.display;
 			if (gdkEventFocus.in != 0) {
-				if (display.ignoreFocus) { 
+				if (display.ignoreFocus) {
 					display.ignoreFocus = false;
 					break;
 				}
@@ -3289,14 +3289,14 @@ long /*int*/ gtk_key_press_event (long /*int*/ widget, long /*int*/ event) {
 	}
 	GdkEventKey gdkEvent = new GdkEventKey ();
 	OS.memmove (gdkEvent, event, GdkEventKey.sizeof);
-	
+
 	if (translateMnemonic (gdkEvent.keyval, gdkEvent)) return 1;
 	// widget could be disposed at this point
 	if (isDisposed ()) return 0;
-	
+
 	if (filterKey (gdkEvent.keyval, event)) return 1;
 	// widget could be disposed at this point
-	if (isDisposed ()) return 0;	
+	if (isDisposed ()) return 0;
 
 	if (translateTraversal (gdkEvent)) return 1;
 	// widget could be disposed at this point
@@ -3457,13 +3457,13 @@ long /*int*/ gtk_style_set (long /*int*/ widget, long /*int*/ previousStyle) {
 long /*int*/ gtk_unrealize (long /*int*/ widget) {
 	long /*int*/ imHandle = imHandle ();
 	if (imHandle != 0) OS.gtk_im_context_set_client_window (imHandle, 0);
-	return 0;	
+	return 0;
 }
 
 @Override
 long /*int*/ gtk_visibility_notify_event (long /*int*/ widget, long /*int*/ event) {
 	/*
-	* As of GTK 2.17.11, obscured controls no longer send expose 
+	* As of GTK 2.17.11, obscured controls no longer send expose
 	* events. It is no longer necessary to track visiblity notify
 	* events.
 	*/
@@ -3476,7 +3476,7 @@ long /*int*/ gtk_visibility_notify_event (long /*int*/ widget, long /*int*/ even
 		if (gdkEvent.state == OS.GDK_VISIBILITY_FULLY_OBSCURED) {
 			state |= OBSCURED;
 		} else {
-			if ((state & OBSCURED) != 0) {		
+			if ((state & OBSCURED) != 0) {
 				int [] width = new int [1], height = new int [1];
 				gdk_window_get_size (window, width, height);
 				GdkRectangle rect = new GdkRectangle ();
@@ -3502,7 +3502,7 @@ void gtk_widget_size_request (long /*int*/ widget, GtkRequisition requisition) {
 	gtk_widget_get_preferred_size (widget, requisition);
 }
 
-/**	 
+/**
  * Invokes platform specific functionality to allocate a new GC handle.
  * <p>
  * <b>IMPORTANT:</b> This method is <em>not</em> part of the public
@@ -3512,9 +3512,9 @@ void gtk_widget_size_request (long /*int*/ widget, GtkRequisition requisition) {
  * application code.
  * </p>
  *
- * @param data the platform specific GC data 
+ * @param data the platform specific GC data
  * @return the platform specific GC handle
- * 
+ *
  * @noreference This method is not intended to be referenced by clients.
  */
 public long /*int*/ internal_new_GC (GCData data) {
@@ -3531,7 +3531,7 @@ public long /*int*/ internal_new_GC (GCData data) {
 			gc = OS.gdk_gc_new (window);
 		}
 	}
-	if (gc == 0) error (SWT.ERROR_NO_HANDLES);	
+	if (gc == 0) error (SWT.ERROR_NO_HANDLES);
 	if (data != null) {
 		int mask = SWT.LEFT_TO_RIGHT | SWT.RIGHT_TO_LEFT;
 		if ((data.style & mask) == 0) {
@@ -3547,8 +3547,8 @@ public long /*int*/ internal_new_GC (GCData data) {
 		Control control = findBackgroundControl ();
 		if (control == null) control = this;
 		data.background = control.getBackgroundColor ();
-		data.font = font != null ? font : defaultFont (); 
-	}	
+		data.font = font != null ? font : defaultFont ();
+	}
 	return gc;
 }
 
@@ -3556,7 +3556,7 @@ long /*int*/ imHandle () {
 	return 0;
 }
 
-/**	 
+/**
  * Invokes platform specific functionality to dispose a GC handle.
  * <p>
  * <b>IMPORTANT:</b> This method is <em>not</em> part of the public
@@ -3567,8 +3567,8 @@ long /*int*/ imHandle () {
  * </p>
  *
  * @param hDC the platform specific GC handle
- * @param data the platform specific GC data 
- * 
+ * @param data the platform specific GC data
+ *
  * @noreference This method is not intended to be referenced by clients.
  */
 public void internal_dispose_GC (long /*int*/ hDC, GCData data) {
@@ -3647,7 +3647,7 @@ boolean isTabItem () {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @see #getEnabled
  */
 public boolean isEnabled () {
@@ -3753,7 +3753,7 @@ void redraw (boolean all) {
 
 /**
  * Causes the rectangular area of the receiver specified by
- * the arguments to be marked as needing to be redrawn. 
+ * the arguments to be marked as needing to be redrawn.
  * The next time a paint request is processed, that area of
  * the receiver will be painted, including the background.
  * If the <code>all</code> flag is <code>true</code>, any
@@ -3892,7 +3892,7 @@ void restackWindow (long /*int*/ window, long /*int*/ sibling, boolean above) {
 			long /*int*/ xDisplay = OS.gdk_x11_drawable_get_xdisplay (window);
 			long /*int*/ xWindow = OS.gdk_x11_drawable_get_xid (window);
 			int xScreen = OS.XDefaultScreen (xDisplay);
-			int flags = OS.CWStackMode | OS.CWSibling;			
+			int flags = OS.CWStackMode | OS.CWSibling;
 			XWindowChanges changes = new XWindowChanges ();
 			changes.sibling = OS.gdk_x11_drawable_get_xid (sibling);
 			changes.stack_mode = above ? OS.Above : OS.Below;
@@ -3932,7 +3932,7 @@ void sendFocusEvent (int type) {
 	*/
 	if (!shell.isDisposed ()) {
 		switch (type) {
-			case SWT.FocusIn: 
+			case SWT.FocusIn:
 				shell.setActiveControl (this);
 				break;
 			case SWT.FocusOut:
@@ -4014,7 +4014,7 @@ void setBackground () {
  * @param color the new color (or null)
  *
  * @exception IllegalArgumentException <ul>
- *    <li>ERROR_INVALID_ARGUMENT - if the argument has been disposed</li> 
+ *    <li>ERROR_INVALID_ARGUMENT - if the argument has been disposed</li>
  * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -4104,7 +4104,7 @@ void setBackgroundColor (long /*int*/ handle, GdkColor color) {
 	long /*int*/ ptr = OS.gtk_rc_style_get_bg_pixmap_name (style, index);
 	if (ptr != 0) OS.g_free (ptr);
 	ptr = 0;
-	
+
 	String pixmapName = null;
 	int flags = OS.gtk_rc_style_get_color_flags (style, index);
 	if (color != null) {
@@ -4121,7 +4121,7 @@ void setBackgroundColor (long /*int*/ handle, GdkColor color) {
 		ptr = OS.g_malloc (buffer.length);
 		OS.memmove (ptr, buffer, buffer.length);
 	}
-	
+
 	OS.gtk_rc_style_set_bg_pixmap_name (style, index, ptr);
 	OS.gtk_rc_style_set_bg (style, index, color);
 	OS.gtk_rc_style_set_color_flags (style, index, flags);
@@ -4144,14 +4144,14 @@ void setBackgroundColor (GdkColor color) {
  * @param image the new image (or null)
  *
  * @exception IllegalArgumentException <ul>
- *    <li>ERROR_INVALID_ARGUMENT - if the argument has been disposed</li> 
- *    <li>ERROR_INVALID_ARGUMENT - if the argument is not a bitmap</li> 
+ *    <li>ERROR_INVALID_ARGUMENT - if the argument has been disposed</li>
+ *    <li>ERROR_INVALID_ARGUMENT - if the argument is not a bitmap</li>
  * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 3.2
  */
 public void setBackgroundImage (Image image) {
@@ -4185,7 +4185,7 @@ void setBackgroundPixmap (Image image) {
 			* TODO This code code is commented because it does not work since the pixmap
 			* created with gdk_pixmap_foreign_new() does not have colormap. Another option
 			* would be to create a pixmap on the fly from the surface.
-			* 
+			*
 			* For now draw background in windowProc().
 			*/
 //			long /*int*/ surface = image.surface;
@@ -4237,7 +4237,7 @@ public void setCapture (boolean capture) {
  * @param cursor the new cursor (or null)
  *
  * @exception IllegalArgumentException <ul>
- *    <li>ERROR_INVALID_ARGUMENT - if the argument has been disposed</li> 
+ *    <li>ERROR_INVALID_ARGUMENT - if the argument has been disposed</li>
  * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -4275,7 +4275,7 @@ void setCursor (long /*int*/ cursor) {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 3.3
  */
 public void setDragDetect (boolean dragDetect) {
@@ -4354,7 +4354,7 @@ public void setEnabled (boolean enabled) {
 }
 
 /**
- * Causes the receiver to have the <em>keyboard focus</em>, 
+ * Causes the receiver to have the <em>keyboard focus</em>,
  * such that all keyboard events will be delivered to it.  Focus
  * reassignment will respect applicable platform constraints.
  *
@@ -4381,7 +4381,7 @@ public boolean setFocus () {
  * @param font the new font (or null)
  *
  * @exception IllegalArgumentException <ul>
- *    <li>ERROR_INVALID_ARGUMENT - if the argument has been disposed</li> 
+ *    <li>ERROR_INVALID_ARGUMENT - if the argument has been disposed</li>
  * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -4406,7 +4406,7 @@ public void setFont (Font font) {
 	}
 	setFontDescription (fontDesc);
 }
-	
+
 void setFontDescription (long /*int*/ font) {
 	setFontDescription (handle, font);
 }
@@ -4421,7 +4421,7 @@ void setFontDescription (long /*int*/ font) {
  * @param color the new color (or null)
  *
  * @exception IllegalArgumentException <ul>
- *    <li>ERROR_INVALID_ARGUMENT - if the argument has been disposed</li> 
+ *    <li>ERROR_INVALID_ARGUMENT - if the argument has been disposed</li>
  * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -4518,7 +4518,7 @@ void setInitialBounds () {
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_MENU_NOT_POP_UP - the menu is not a pop up menu</li>
  *    <li>ERROR_INVALID_PARENT - if the menu is not in the same widget tree</li>
- *    <li>ERROR_INVALID_ARGUMENT - if the menu has been disposed</li> 
+ *    <li>ERROR_INVALID_ARGUMENT - if the menu has been disposed</li>
  * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -4553,12 +4553,12 @@ void setOrientation (boolean create) {
  * <p>
  *
  * @param orientation new orientation style
- * 
+ *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 3.7
  */
 public void setOrientation (int orientation) {
@@ -4582,7 +4582,7 @@ public void setOrientation (int orientation) {
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_INVALID_ARGUMENT - if the argument has been disposed</li>
- *    <li>ERROR_NULL_ARGUMENT - if the parent is <code>null</code></li> 
+ *    <li>ERROR_NULL_ARGUMENT - if the parent is <code>null</code></li>
  * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -4678,7 +4678,7 @@ boolean setRadioSelection (boolean value) {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @see #redraw(int, int, int, int, boolean)
  * @see #update()
  */
@@ -4710,7 +4710,7 @@ public void setRedraw (boolean redraw) {
 					int mouseMask = OS.GDK_BUTTON_PRESS_MASK | OS.GDK_BUTTON_RELEASE_MASK |
 						OS.GDK_ENTER_NOTIFY_MASK | OS.GDK_LEAVE_NOTIFY_MASK |
 						OS.GDK_POINTER_MOTION_MASK | OS.GDK_POINTER_MOTION_HINT_MASK |
-						OS.GDK_BUTTON_MOTION_MASK | OS.GDK_BUTTON1_MOTION_MASK | 
+						OS.GDK_BUTTON_MOTION_MASK | OS.GDK_BUTTON1_MOTION_MASK |
 						OS.GDK_BUTTON2_MOTION_MASK | OS.GDK_BUTTON3_MOTION_MASK;
 					OS.gdk_window_set_events (window, OS.gdk_window_get_events (window) & ~mouseMask);
 					OS.gdk_window_set_back_pixmap (redrawWindow, 0, false);
@@ -4741,14 +4741,14 @@ boolean setTabItemFocus (boolean next) {
  * </p>
  *
  * @param textDirection the base text direction style
- * 
+ *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @see SWT#FLIP_TEXT_DIRECTION
- * 
+ *
  * @since 3.102
  */
 public void setTextDirection(int textDirection) {
@@ -4757,17 +4757,17 @@ public void setTextDirection(int textDirection) {
 
 /**
  * Sets the receiver's tool tip text to the argument, which
- * may be null indicating that the default tool tip for the 
+ * may be null indicating that the default tool tip for the
  * control will be shown. For a control that has a default
  * tool tip, such as the Tree control on Windows, setting
  * the tool tip text to an empty string replaces the default,
  * causing no tool tip text to be shown.
  * <p>
  * The mnemonic indicator (character '&amp;') is not displayed in a tool tip.
- * To display a single '&amp;' in the tool tip, the character '&amp;' can be 
+ * To display a single '&amp;' in the tool tip, the character '&amp;' can be
  * escaped by doubling it in the string.
  * </p>
- * 
+ *
  * @param string the new tool tip text (or null)
  *
  * @exception SWTException <ul>
@@ -4789,9 +4789,9 @@ void setToolTipText (Shell shell, String newString) {
 		* a set on a shell only. In order to force the shell tooltip
 		* to update when a new tip string is set, the existing string
 		* in the tooltip is set to null, followed by running a query.
-		* The real tip text can then be set. 
-		* 
-		* Note that this will only run if the control for which the 
+		* The real tip text can then be set.
+		*
+		* Note that this will only run if the control for which the
 		* tooltip is being set is the current control (i.e. the control
 		* under the pointer).
 		*/
@@ -4808,9 +4808,9 @@ void setToolTipText (Shell shell, String newString) {
  * Setting this to <code>false</code> causes the receiver to send gesture events
  * instead.  No exception is thrown if a touch-based input device is not
  * detected (this can be determined with <code>Display#getTouchEnabled()</code>).
- * 
+ *
  * @param enabled the new touch-enabled state
- * 
+ *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
@@ -4825,7 +4825,7 @@ public void setTouchEnabled(boolean enabled) {
 
 /**
  * Marks the receiver as visible if the argument is <code>true</code>,
- * and marks it invisible otherwise. 
+ * and marks it invisible otherwise.
  * <p>
  * If one of the receiver's ancestors is not visible or some
  * other condition makes the receiver not visible, marking
@@ -4862,10 +4862,10 @@ public void setVisible (boolean visible) {
 		* focus causes a focus_out_event to be sent. If the client disposes
 		* the widget inside the event, GTK GP's.  The fix is to reassign focus
 		* before hiding the widget.
-		* 
+		*
 		* NOTE: In order to stop the same widget from taking focus,
 		* temporarily clear and set the GTK_VISIBLE flag.
-		*/		
+		*/
 		Control control = null;
 		boolean fixFocus = false;
 		if (display.focusEvent != SWT.FocusOut) {
@@ -5072,8 +5072,8 @@ void sort (int [] items) {
 /**
  * Based on the argument, perform one of the expected platform
  * traversal action. The argument should be one of the constants:
- * <code>SWT.TRAVERSE_ESCAPE</code>, <code>SWT.TRAVERSE_RETURN</code>, 
- * <code>SWT.TRAVERSE_TAB_NEXT</code>, <code>SWT.TRAVERSE_TAB_PREVIOUS</code>, 
+ * <code>SWT.TRAVERSE_ESCAPE</code>, <code>SWT.TRAVERSE_RETURN</code>,
+ * <code>SWT.TRAVERSE_TAB_NEXT</code>, <code>SWT.TRAVERSE_TAB_PREVIOUS</code>,
  * <code>SWT.TRAVERSE_ARROW_NEXT</code>, <code>SWT.TRAVERSE_ARROW_PREVIOUS</code>,
  * <code>SWT.TRAVERSE_PAGE_NEXT</code> and <code>SWT.TRAVERSE_PAGE_PREVIOUS</code>.
  *
@@ -5095,24 +5095,24 @@ public boolean traverse (int traversal) {
 
 /**
  * Performs a platform traversal action corresponding to a <code>KeyDown</code> event.
- * 
+ *
  * <p>Valid traversal values are
  * <code>SWT.TRAVERSE_NONE</code>, <code>SWT.TRAVERSE_MNEMONIC</code>,
  * <code>SWT.TRAVERSE_ESCAPE</code>, <code>SWT.TRAVERSE_RETURN</code>,
- * <code>SWT.TRAVERSE_TAB_NEXT</code>, <code>SWT.TRAVERSE_TAB_PREVIOUS</code>, 
+ * <code>SWT.TRAVERSE_TAB_NEXT</code>, <code>SWT.TRAVERSE_TAB_PREVIOUS</code>,
  * <code>SWT.TRAVERSE_ARROW_NEXT</code>, <code>SWT.TRAVERSE_ARROW_PREVIOUS</code>,
  * <code>SWT.TRAVERSE_PAGE_NEXT</code> and <code>SWT.TRAVERSE_PAGE_PREVIOUS</code>.
  * If <code>traversal</code> is <code>SWT.TRAVERSE_NONE</code> then the Traverse
  * event is created with standard values based on the KeyDown event.  If
  * <code>traversal</code> is one of the other traversal constants then the Traverse
  * event is created with this detail, and its <code>doit</code> is taken from the
- * KeyDown event. 
+ * KeyDown event.
  * </p>
  *
  * @param traversal the type of traversal, or <code>SWT.TRAVERSE_NONE</code> to compute
  * this from <code>event</code>
  * @param event the KeyDown event
- * 
+ *
  * @return <code>true</code> if the traversal succeeded
  *
  * @exception IllegalArgumentException <ul>
@@ -5133,24 +5133,24 @@ public boolean traverse (int traversal, Event event) {
 
 /**
  * Performs a platform traversal action corresponding to a <code>KeyDown</code> event.
- * 
+ *
  * <p>Valid traversal values are
  * <code>SWT.TRAVERSE_NONE</code>, <code>SWT.TRAVERSE_MNEMONIC</code>,
  * <code>SWT.TRAVERSE_ESCAPE</code>, <code>SWT.TRAVERSE_RETURN</code>,
- * <code>SWT.TRAVERSE_TAB_NEXT</code>, <code>SWT.TRAVERSE_TAB_PREVIOUS</code>, 
+ * <code>SWT.TRAVERSE_TAB_NEXT</code>, <code>SWT.TRAVERSE_TAB_PREVIOUS</code>,
  * <code>SWT.TRAVERSE_ARROW_NEXT</code>, <code>SWT.TRAVERSE_ARROW_PREVIOUS</code>,
  * <code>SWT.TRAVERSE_PAGE_NEXT</code> and <code>SWT.TRAVERSE_PAGE_PREVIOUS</code>.
  * If <code>traversal</code> is <code>SWT.TRAVERSE_NONE</code> then the Traverse
  * event is created with standard values based on the KeyDown event.  If
  * <code>traversal</code> is one of the other traversal constants then the Traverse
  * event is created with this detail, and its <code>doit</code> is taken from the
- * KeyDown event. 
+ * KeyDown event.
  * </p>
  *
  * @param traversal the type of traversal, or <code>SWT.TRAVERSE_NONE</code> to compute
  * this from <code>event</code>
  * @param event the KeyDown event
- * 
+ *
  * @return <code>true</code> if the traversal succeeded
  *
  * @exception IllegalArgumentException <ul>
@@ -5313,14 +5313,14 @@ boolean translateTraversal (GdkEventKey keyEvent) {
 			detail = SWT.TRAVERSE_RETURN;
 			break;
 		}
-		case OS.GDK_ISO_Left_Tab: 
+		case OS.GDK_ISO_Left_Tab:
 		case OS.GDK_Tab: {
 			boolean next = (keyEvent.state & OS.GDK_SHIFT_MASK) == 0;
 			detail = next ? SWT.TRAVERSE_TAB_NEXT : SWT.TRAVERSE_TAB_PREVIOUS;
 			break;
 		}
 		case OS.GDK_Up:
-		case OS.GDK_Left: 
+		case OS.GDK_Left:
 		case OS.GDK_Down:
 		case OS.GDK_Right: {
 			boolean next = key == OS.GDK_Down || key == OS.GDK_Right;
@@ -5369,7 +5369,7 @@ boolean traverse (Event event) {
 	* code could have disposed the widget in the traverse
 	* event.  If this happens, return true to stop further
 	* event processing.
-	*/	
+	*/
 	sendEvent (SWT.Traverse, event);
 	if (isDisposed ()) return true;
 	if (!event.doit) return false;
@@ -5381,7 +5381,7 @@ boolean traverse (Event event) {
 		case SWT.TRAVERSE_TAB_PREVIOUS:	return traverseGroup (false);
 		case SWT.TRAVERSE_ARROW_NEXT:		return traverseItem (true);
 		case SWT.TRAVERSE_ARROW_PREVIOUS:	return traverseItem (false);
-		case SWT.TRAVERSE_MNEMONIC:		return traverseMnemonic (event.character);	
+		case SWT.TRAVERSE_MNEMONIC:		return traverseMnemonic (event.character);
 		case SWT.TRAVERSE_PAGE_NEXT:		return traversePage (true);
 		case SWT.TRAVERSE_PAGE_PREVIOUS:	return traversePage (false);
 	}
@@ -5483,7 +5483,7 @@ public void update () {
 
 void update (boolean all, boolean flush) {
 //	checkWidget();
-	if (!gtk_widget_get_visible (topHandle ())) return; 
+	if (!gtk_widget_get_visible (topHandle ())) return;
 	if (!gtk_widget_get_realized (handle)) return;
 	long /*int*/ window = paintWindow ();
 	if (flush) display.flushExposes (window, all);
