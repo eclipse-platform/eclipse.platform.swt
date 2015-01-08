@@ -373,7 +373,7 @@ case $SWT_OS.$SWT_ARCH in
 			export JAVA_HOME="/home/swtbuild/java5/s390/ibm-java2-s390-50"
 		fi
 		if [ "${MOZILLA_SDK}" = "" ]; then
-			export MOZILLA_SDK="/home/swtbuild/mozilla-1.7.13/mozilla/dist/sdk"
+			export MOZILLA_SDK="/home/swtbuild/mozilla/s390/mozilla-1.7.13/mozilla/dist/sdk"
 		fi
 		if [ "${MOZILLA_INCLUDES}" = "" ]; then
 			export MOZILLA_INCLUDES="-include ${MOZILLA_SDK}/include/mozilla-config.h -I${MOZILLA_SDK}/../include/xpcom -I${MOZILLA_SDK}/../include/nspr -I${MOZILLA_SDK}/../include/embed_base -I${MOZILLA_SDK}/../include/embedstring -I${MOZILLA_SDK}/../include/string"
@@ -382,7 +382,7 @@ case $SWT_OS.$SWT_ARCH in
 			export MOZILLA_LIBS="-L${MOZILLA_SDK}/lib -L${MOZILLA_SDK}/bin -lxpcom -lnspr4 -lplds4 -lplc4"
 		fi
 		if [ "${XULRUNNER_SDK}" = "" ]; then
-			export XULRUNNER_SDK="/home/swtbuild/xulrunner-1.8.0.1/mozilla/dist/sdk"
+			export XULRUNNER_SDK="/home/swtbuild/mozilla/s390/xulrunner-1.8.0.1/mozilla/dist/sdk"
 		fi
 		if [ "${XULRUNNER_INCLUDES}" = "" ]; then
 			export XULRUNNER_INCLUDES="-include ${XULRUNNER_SDK}/include/mozilla-config.h -I${XULRUNNER_SDK}/include"
@@ -391,7 +391,7 @@ case $SWT_OS.$SWT_ARCH in
 			export XULRUNNER_LIBS="-L${XULRUNNER_SDK}/lib -lxpcomglue"
 		fi
 		if [ "${PKG_CONFIG_PATH}" = "" ]; then
-			export PKG_CONFIG_PATH="/usr/local/lib/pkgconfig"
+			export PKG_CONFIG_PATH="/usr/lib/pkgconfig"
 		fi
 		;;
 	"linux.s390x")
@@ -399,10 +399,10 @@ case $SWT_OS.$SWT_ARCH in
 			export CC=gcc
 		fi
 		if [ "${JAVA_HOME}" = "" ]; then
-			export JAVA_HOME="/home/swtbuild/java5/s390/ibm-java2-s390-50"
+			export JAVA_HOME="/home/swtbuild/java5/s390x/ibm-java2-s390-50"
 		fi
 		if [ "${MOZILLA_SDK}" = "" ]; then
-			export MOZILLA_SDK="/home/swtbuild/mozilla1.7.13/mozilla/dist/sdk"
+			export MOZILLA_SDK="/home/swtbuild/mozilla/s390x/mozilla1.7.13/mozilla/dist/sdk"
 		fi
 		if [ "${MOZILLA_INCLUDES}" = "" ]; then
 			export MOZILLA_INCLUDES="-include ${MOZILLA_SDK}/include/mozilla-config.h -I${MOZILLA_SDK}/../include/xpcom -I${MOZILLA_SDK}/../include/nspr -I${MOZILLA_SDK}/../include/embed_base -I${MOZILLA_SDK}/../include/embedstring -I${MOZILLA_SDK}/../include/string"
@@ -411,7 +411,7 @@ case $SWT_OS.$SWT_ARCH in
 			export MOZILLA_LIBS="-L${MOZILLA_SDK}/lib -L${MOZILLA_SDK}/bin -lxpcom -lnspr4 -lplds4 -lplc4"
 		fi
 		if [ "${XULRUNNER_SDK}" = "" ]; then
-			export XULRUNNER_SDK="/home/swtbuild/xulrunner-1.8.0.1/mozilla/dist/sdk"
+			export XULRUNNER_SDK="/home/swtbuild/mozilla/s390x/xulrunner-1.8.0.1/mozilla/dist/sdk"
 		fi
 		if [ "${XULRUNNER_INCLUDES}" = "" ]; then
 			export XULRUNNER_INCLUDES="-include ${XULRUNNER_SDK}/include/mozilla-config.h -I${XULRUNNER_SDK}/include"
@@ -420,7 +420,7 @@ case $SWT_OS.$SWT_ARCH in
 			export XULRUNNER_LIBS="-L${XULRUNNER_SDK}/lib -lxpcomglue"
 		fi
 		if [ "${PKG_CONFIG_PATH}" = "" ]; then
-			export PKG_CONFIG_PATH="/usr/local/cairo64/lib/pkgconfig"
+			export PKG_CONFIG_PATH="/usr/lib64/pkgconfig"
 		fi
 		;;
 	"aix.ppc")
