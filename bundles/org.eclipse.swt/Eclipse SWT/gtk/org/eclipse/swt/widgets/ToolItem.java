@@ -39,7 +39,7 @@ import org.eclipse.swt.events.*;
  */
 public class ToolItem extends Item {
 	long /*int*/ arrowHandle, labelHandle, imageHandle;
-	long /*int*/ eventHandle, proxyMenuItem;
+	long /*int*/ eventHandle, proxyMenuItem, provider;
 	ToolBar parent;
 	Control control;
 	Image hotImage, disabledImage;
@@ -208,7 +208,24 @@ void createHandle (int index) {
 			long /*int*/ list = OS.gtk_container_get_children (child);
 			arrowHandle = OS.g_list_nth_data (list, 1);
 			OS.gtk_widget_set_sensitive (arrowHandle, true);
-			OS.gtk_widget_set_size_request(OS.gtk_bin_get_child(arrowHandle), 8, 6);
+			if (!OS.GTK3) {
+				OS.gtk_widget_set_size_request(OS.gtk_bin_get_child(arrowHandle), 8, 6);
+			} else {
+				//Disable left and right padding to not have so wide toolbars	
+				String css ="GtkMenuButton.button {\n"+
+						"padding-left: 0px;\n"+
+						"padding-right: 0px;\n"+
+						"}\n";
+				if (provider == 0) {
+					//If provider is initialized the style has already been applied application wide so no need to repeat.
+					provider = OS.gtk_css_provider_new ();
+					long /*int*/ context = OS.gtk_widget_get_style_context(arrowHandle);
+					OS.gtk_style_context_add_provider (context, provider, OS.GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
+					OS.g_object_unref (provider);
+					OS.gtk_css_provider_load_from_data (provider, Converter.wcsToMbcs (null, css, true), -1, null);
+					OS.gtk_style_context_invalidate (context);
+				}
+			}
 			break;
 		case SWT.RADIO:
 			/*
