@@ -158,6 +158,19 @@ void deregister() {
 }
 
 @Override
+void release (boolean destroy) {
+	if (OS.GTK3) {
+		//454940 ExpandBar DND fix.
+		//Since controls are now nested under the Item,
+		//Item is responsible for it's release.
+		if (control != null && !control.isDisposed ()) {
+			control.release (destroy);
+		}
+	}
+	super.release (destroy);
+}
+
+@Override
 void destroyWidget () {
 	parent.destroyItem (this);
 	super.destroyWidget ();
@@ -399,8 +412,19 @@ void resizeControl (int yScroll) {
 		if (visible) {
 			GtkAllocation allocation = new GtkAllocation ();
 			gtk_widget_get_allocation (clientHandle, allocation);
-			int x = allocation.x;
-			int y = allocation.y;
+
+			//454940 change in hierarchy
+			/* SWT's calls to gtk_widget_size_allocate and gtk_widget_set_allocation
+			* causes GTK+ to move the clientHandle's SwtFixed down by the size of the label.
+			* These calls can come up from 'shell' and ExpandItem has no control over these calls.
+			* This is an undesired side-effect. Client handle's x & y positions should never
+			* be incremented as this is an internal sub-container.
+			* As of GTK3, the hierarchy is changed, this affected child-size allocation and a fix
+			* is now neccessary.
+			* See also other 454940 notes and similar fix in: 453827 */
+			int x = (OS.GTK3) ? 0 : allocation.x;
+			int y = (OS.GTK3) ? 0 : allocation.y;
+
 			if (x != -1 && y != -1) {
 				int width = allocation.width;
 				int height = allocation.height;
@@ -474,12 +498,28 @@ public void setControl (Control control) {
 		if (control.parent != parent) error (SWT.ERROR_INVALID_PARENT);
 	}
 	if (this.control == control) return;
+
+
 	this.control = control;
 	if (control != null) {
 		control.setVisible (expanded);
+		if (OS.GTK3) {
+			//454940 ExpandBar DND fix.
+			//Reparenting on the GTK side.
+			//Proper hierachy on gtk side is required for DND to function properly.
+			//As ExpandItem's child can be created before the ExpandItem, our only
+			//option is to reparent the child upon the setControl(..) call.
+			//This is simmilar to TabFolder.
+			gtk_widget_reparent (control, clientHandle ());
+		}
 	}
 	parent.layoutItems (0, true);
 }
+
+long /*int*/ clientHandle () {
+	return clientHandle;
+}
+
 
 /**
  * Sets the expanded state of the receiver.
