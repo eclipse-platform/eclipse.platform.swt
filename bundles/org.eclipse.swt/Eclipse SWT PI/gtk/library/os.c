@@ -8285,6 +8285,16 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gdk_1window_1set_1events)
 }
 #endif
 
+#ifndef NO__1gdk_1window_1set_1functions
+JNIEXPORT void JNICALL OS_NATIVE(_1gdk_1window_1set_1functions)
+	(JNIEnv *env, jclass that, jintLong arg0, jint arg1)
+{
+	OS_NATIVE_ENTER(env, that, _1gdk_1window_1set_1functions_FUNC);
+	gdk_window_set_functions((GdkWindow *)arg0, (GdkWMFunction)arg1);
+	OS_NATIVE_EXIT(env, that, _1gdk_1window_1set_1functions_FUNC);
+}
+#endif
+
 #ifndef NO__1gdk_1window_1set_1override_1redirect
 JNIEXPORT void JNICALL OS_NATIVE(_1gdk_1window_1set_1override_1redirect)
 	(JNIEnv *env, jclass that, jintLong arg0, jboolean arg1)

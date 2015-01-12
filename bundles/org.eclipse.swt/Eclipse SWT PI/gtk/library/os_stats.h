@@ -624,6 +624,7 @@ typedef enum {
 	_1gdk_1window_1set_1debug_1updates_FUNC,
 	_1gdk_1window_1set_1decorations_FUNC,
 	_1gdk_1window_1set_1events_FUNC,
+	_1gdk_1window_1set_1functions_FUNC,
 	_1gdk_1window_1set_1override_1redirect_FUNC,
 	_1gdk_1window_1set_1user_1data_FUNC,
 	_1gdk_1window_1shape_1combine_1region_FUNC,

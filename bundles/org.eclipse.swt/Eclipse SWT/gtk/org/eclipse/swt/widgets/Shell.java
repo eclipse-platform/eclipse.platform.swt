@@ -697,11 +697,18 @@ void createHandle (int index) {
 		if (parent != null) {
 			OS.gtk_window_set_transient_for (shellHandle, parent.topHandle ());
 			OS.gtk_window_set_destroy_with_parent (shellHandle, true);
-			if (!isUndecorated ()) {
-				OS.gtk_window_set_type_hint (shellHandle, OS.GDK_WINDOW_TYPE_HINT_DIALOG);
-			} else {
-				OS.gtk_window_set_skip_taskbar_hint (shellHandle, true);
-			}
+			OS.gtk_window_set_skip_taskbar_hint(shellHandle, true);
+			
+			/*
+			 * For systems running Metacity, by applying the dialog type hint
+			 * to a window only the close button can be placed on the title bar.
+			 * The style hints for the minimize and maximize buttons are ignored.
+			 * See bug 445456.
+			 *
+			 */
+//			if (!isUndecorated ()) {
+//				OS.gtk_window_set_type_hint (shellHandle, OS.GDK_WINDOW_TYPE_HINT_DIALOG);
+//			}
 		}
 		/*
 		* Feature in GTK.  The window size must be set when the window
@@ -1528,13 +1535,24 @@ long /*int*/ gtk_realize (long /*int*/ widget) {
 	long /*int*/ window = gtk_widget_get_window (shellHandle);
 	if ((style & SWT.SHELL_TRIM) != SWT.SHELL_TRIM) {
 		int decorations = 0;
+		int functions = 0;
 		if ((style & SWT.NO_TRIM) == 0) {
-			if ((style & SWT.MIN) != 0) decorations |= OS.GDK_DECOR_MINIMIZE;
-			if ((style & SWT.MAX) != 0) decorations |= OS.GDK_DECOR_MAXIMIZE;
-			if ((style & SWT.RESIZE) != 0) decorations |= OS.GDK_DECOR_RESIZEH;
+				if ((style & SWT.MIN) != 0) {
+					decorations |= OS.GDK_DECOR_MINIMIZE;
+					functions |= OS.GDK_FUNC_MINIMIZE;
+				}
+				if ((style & SWT.MAX) != 0) {
+					decorations |= OS.GDK_DECOR_MAXIMIZE;
+					functions |= OS.GDK_FUNC_MAXIMIZE;
+				}
+				if ((style & SWT.RESIZE) != 0) {
+					decorations |= OS.GDK_DECOR_RESIZEH;
+					functions |= OS.GDK_FUNC_RESIZE;
+				}
 			if ((style & SWT.BORDER) != 0) decorations |= OS.GDK_DECOR_BORDER;
 			if ((style & SWT.MENU) != 0) decorations |= OS.GDK_DECOR_MENU;
 			if ((style & SWT.TITLE) != 0) decorations |= OS.GDK_DECOR_TITLE;
+			if ((style & SWT.CLOSE) != 0) functions |= OS.GDK_FUNC_CLOSE;
 			/*
 			* Feature in GTK.  Under some Window Managers (Sawmill), in order
 			* to get any border at all from the window manager it is necessary to
@@ -1542,8 +1560,17 @@ long /*int*/ gtk_realize (long /*int*/ widget) {
 			* kind of border is requested.
 			*/
 			if ((style & SWT.RESIZE) != 0) decorations |= OS.GDK_DECOR_BORDER;
+			functions |=  OS.GDK_FUNC_MOVE;
 		}
 		OS.gdk_window_set_decorations (window, decorations);
+
+		/*
+		* For systems running Metacity, this call forces the style hints to
+		* be displayed in a window's titlebar. Otherwise, the decorations
+		* set by the function gdk_window_set_decorations (window,
+		* decorations) are ignored by the window manager.
+		*/
+		OS.gdk_window_set_functions(window, functions);
 	}
 	if ((style & SWT.ON_TOP) != 0) {
 		OS.gdk_window_set_override_redirect (window, true);

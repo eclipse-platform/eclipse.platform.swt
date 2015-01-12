@@ -161,6 +161,12 @@ public class OS extends C {
 	public static final int GDK_FOCUS_CHANGE = 0xc;
 	public static final int GDK_FOCUS_CHANGE_MASK = 0x4000;
 	public static final int GDK_GC_FOREGROUND = 0x1;
+	public static final int GDK_FUNC_ALL = 1;
+	public static final int GDK_FUNC_RESIZE = 2;
+	public static final int GDK_FUNC_MOVE = 4;
+	public static final int GDK_FUNC_MINIMIZE = 8;
+	public static final int GDK_FUNC_MAXIMIZE = 16;
+	public static final int GDK_FUNC_CLOSE = 32;
 	public static final int GDK_GC_CLIP_MASK = 0x80;
 	public static final int GDK_GC_CLIP_X_ORIGIN = 0x800;
 	public static final int GDK_GC_CLIP_Y_ORIGIN = 0x1000;
@@ -6066,6 +6072,19 @@ public static final void gdk_window_set_decorations(long /*int*/ window, int dec
 	lock.lock();
 	try {
 		_gdk_window_set_decorations(window, decorations);
+	} finally {
+		lock.unlock();
+	}
+}
+/**
+ * @param window cast=(GdkWindow *)
+ * @param functions cast=(GdkWMFunction)
+ */
+public static final native void _gdk_window_set_functions(long /*int*/ window, int functions);
+public static final void gdk_window_set_functions(long /*int*/ window, int functions) {
+	lock.lock();
+	try {
+		_gdk_window_set_functions(window, functions);
 	} finally {
 		lock.unlock();
 	}

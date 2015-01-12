@@ -614,6 +614,7 @@ char * OS_nativeFunctionNames[] = {
 	"_1gdk_1window_1set_1debug_1updates",
 	"_1gdk_1window_1set_1decorations",
 	"_1gdk_1window_1set_1events",
+	"_1gdk_1window_1set_1functions",
 	"_1gdk_1window_1set_1override_1redirect",
 	"_1gdk_1window_1set_1user_1data",
 	"_1gdk_1window_1shape_1combine_1region",
