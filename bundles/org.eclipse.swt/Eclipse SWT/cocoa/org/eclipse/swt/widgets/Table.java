@@ -1779,7 +1779,7 @@ public int getTopIndex () {
 	 * Note: On OSX 10.10, in setBounds(), we reset the origin of NSTableView so that it is
 	 * positioned below the header view. Take this into account before calling rowAtPoint().
 	 */
-	if ((tableView != null) && (OS.VERSION_MMB >= OS.VERSION_MMB(10, 10, 0))) {
+	if ((tableView.headerView() != null) && (OS.VERSION_MMB >= OS.VERSION_MMB(10, 10, 0))) {
 		NSRect headerRect = headerView.frame();
 		point.y += headerRect.y + headerRect.height;
 	}
@@ -2976,6 +2976,14 @@ public void setTopIndex (int index) {
 	NSPoint pt = new NSPoint();
 	pt.x = scrollView.contentView().bounds().x;
 	pt.y = widget.frameOfCellAtColumn(0, row).y;
+	/*
+	 * Note: On OSX 10.10, in setBounds(), we reset the origin of NSTableView so that it is
+	 * positioned below the header view. Take this into account before calling scrollPoint().
+	 */
+	if ((widget.headerView() != null) && (OS.VERSION_MMB >= OS.VERSION_MMB(10, 10, 0))) {
+		NSRect headerRect = headerView.frame();
+		pt.y -= headerRect.y + headerRect.height;
+	}
 	view.scrollPoint(pt);
 }
 
