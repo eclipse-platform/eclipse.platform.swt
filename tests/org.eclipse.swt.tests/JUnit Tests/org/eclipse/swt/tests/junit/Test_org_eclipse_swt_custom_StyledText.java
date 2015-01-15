@@ -11,18 +11,46 @@
 package org.eclipse.swt.tests.junit;
 
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertArrayEquals;
 
-import java.util.*;
+import java.util.Enumeration;
+import java.util.Hashtable;
 
-import org.eclipse.swt.*;
-import org.eclipse.swt.custom.*;
-import org.eclipse.swt.dnd.*;
-import org.eclipse.swt.events.*;
-import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.internal.*;
-import org.eclipse.swt.printing.*;
-import org.eclipse.swt.widgets.*;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.BidiSegmentEvent;
+import org.eclipse.swt.custom.BidiSegmentListener;
+import org.eclipse.swt.custom.ExtendedModifyEvent;
+import org.eclipse.swt.custom.ExtendedModifyListener;
+import org.eclipse.swt.custom.LineBackgroundEvent;
+import org.eclipse.swt.custom.LineBackgroundListener;
+import org.eclipse.swt.custom.LineStyleEvent;
+import org.eclipse.swt.custom.LineStyleListener;
+import org.eclipse.swt.custom.ST;
+import org.eclipse.swt.custom.StyleRange;
+import org.eclipse.swt.custom.StyledText;
+import org.eclipse.swt.custom.StyledTextContent;
+import org.eclipse.swt.custom.TextChangeListener;
+import org.eclipse.swt.custom.VerifyKeyListener;
+import org.eclipse.swt.dnd.Clipboard;
+import org.eclipse.swt.dnd.RTFTransfer;
+import org.eclipse.swt.dnd.TextTransfer;
+import org.eclipse.swt.dnd.Transfer;
+import org.eclipse.swt.events.ModifyEvent;
+import org.eclipse.swt.events.ModifyListener;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.events.VerifyEvent;
+import org.eclipse.swt.events.VerifyListener;
+import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.Font;
+import org.eclipse.swt.graphics.FontData;
+import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.graphics.RGB;
+import org.eclipse.swt.internal.BidiUtil;
+import org.eclipse.swt.printing.Printer;
+import org.eclipse.swt.widgets.Caret;
+import org.eclipse.swt.widgets.Display;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.custom.StyledText
@@ -2848,6 +2876,7 @@ public void test_replaceTextRangeIILjava_lang_String(){
 	final int newTextLength = newText.length();
 	class TestSelectionListener extends SelectionAdapter {
 		public Point eventSelection = new Point(0, 0);
+		@Override
 		public void widgetSelected(SelectionEvent e) {
 			eventSelection.x = e.x;
 			eventSelection.y = e.y;

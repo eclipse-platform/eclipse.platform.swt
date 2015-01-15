@@ -1670,6 +1670,7 @@ public void setYear (int year) {
 	}
 }
 
+@Override
 public void setBounds (int x, int y, int width, int height) {
 
 	//Date with Drop down is in container. Needs extra handling.
