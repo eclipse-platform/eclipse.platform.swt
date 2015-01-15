@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2012 IBM Corporation and others.
+ * Copyright (c) 2000, 2015 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -34,6 +34,13 @@ import org.eclipse.swt.graphics.*;
  */
 public abstract class Scrollable extends Control {
 	ScrollBar horizontalBar, verticalBar;
+
+	/**
+	 * The regular expression used to determine the string which should be deleted
+	 * when Ctrl+Bs is hit.
+	 */
+    static final java.util.regex.Pattern CTRL_BS_PATTERN =
+			java.util.regex.Pattern.compile ("\\r?\\n\\z|[\\p{Punct}]+[\\t ]*\\z|[^\\p{Punct}\\s\\n\\r]*[\\t ]*\\z");
 
 /**
  * Prevents uninitialized instances from being created outside the package.

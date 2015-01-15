@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2014 IBM Corporation and others.
+ * Copyright (c) 2000, 2015 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -2634,6 +2634,26 @@ LRESULT WM_CHAR (long /*int*/ wParam, long /*int*/ lParam) {
 	switch ((int)/*64*/wParam) {
 		case SWT.DEL:
 			if (OS.GetKeyState (OS.VK_CONTROL) < 0) {
+				if ((style & SWT.READ_ONLY) != 0 || (style & SWT.PASSWORD) != 0) return LRESULT.ZERO;
+				Point selection = getSelection ();
+				int x = selection.x;
+				int y = selection.y;
+				if (x == y) {
+				    String actText = getText (0, x - 1);
+				    java.util.regex.Matcher m = CTRL_BS_PATTERN.matcher (actText);
+					if (m.find ()) {
+						x = m.start ();
+						y = m.end ();
+						OS.SendMessage (handle, OS.EM_SETSEL, x, y);
+					}
+				}
+				if (x < y) {
+					/*
+					* Instead of setting the new text directly we send the replace selection event to
+					* guarantee that the action is pushed to the undo buffer.
+					*/
+					OS.SendMessage (handle, OS.EM_REPLACESEL, 1, 0);
+				}
 				return LRESULT.ZERO;
 			}
 	}
