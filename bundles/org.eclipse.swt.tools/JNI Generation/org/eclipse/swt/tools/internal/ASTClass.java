@@ -77,7 +77,7 @@ public ASTClass(String sourcePath, MetaData metaData) {
 	this.metaData = metaData;
 	
 	String source = JNIGenerator.loadFile(sourcePath);
-	ASTParser parser = ASTParser.newParser(AST.JLS4);
+	ASTParser parser = ASTParser.newParser(AST.JLS8);
 	parser.setSource(source.toCharArray());
 	CompilationUnit unit = (CompilationUnit)parser.createAST(null);
 	TypeDeclaration type = (TypeDeclaration)unit.types().get(0);

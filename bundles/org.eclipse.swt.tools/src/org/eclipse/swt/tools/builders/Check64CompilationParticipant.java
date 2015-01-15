@@ -228,7 +228,7 @@ TypeDeclaration loadType(HashMap<String, TypeDeclaration> cache, String path) {
 	if (path == null) return null;
 	Object value = cache.get(path);
 	if (value != null) return (TypeDeclaration)value;
-	ASTParser parser = ASTParser.newParser(AST.JLS4);
+	ASTParser parser = ASTParser.newParser(AST.JLS8);
 	parser.setSource(loadFile(path).toCharArray());
 	CompilationUnit unit = (CompilationUnit)parser.createAST(null);
 	TypeDeclaration type = (TypeDeclaration)unit.types().get(0);

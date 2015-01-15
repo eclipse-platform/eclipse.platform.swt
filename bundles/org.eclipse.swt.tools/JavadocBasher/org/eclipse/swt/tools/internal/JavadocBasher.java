@@ -262,7 +262,7 @@ public class JavadocBasher {
 	void bashFile(final File source, final File target, File out) {
 		char[] contents = readFile(source);
 		if (contents == null) return;
-		ASTParser parser = ASTParser.newParser(AST.JLS4);
+		ASTParser parser = ASTParser.newParser(AST.JLS8);
 		final Document sourceDocument = new Document(new String(contents));
 		parser.setSource(contents);
 		CompilationUnit sourceUnit = (CompilationUnit)parser.createAST(null);
