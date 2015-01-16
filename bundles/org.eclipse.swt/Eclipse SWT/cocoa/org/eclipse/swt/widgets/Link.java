@@ -187,11 +187,14 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 
 void createHandle () {
 	state |= THEME_BACKGROUND;
-	NSScrollView scrollWidget = (NSScrollView)new SWTScrollView().alloc();
-	scrollWidget.init();
-	scrollWidget.setDrawsBackground(false);
-	scrollWidget.setAutoresizesSubviews (true);
-	scrollWidget.setBorderType(hasBorder() ? OS.NSBezelBorder : OS.NSNoBorder);
+	if (hasBorder()) {
+		NSScrollView scrollWidget = (NSScrollView)new SWTScrollView().alloc();
+		scrollWidget.init();
+		scrollWidget.setDrawsBackground(false);
+		scrollWidget.setAutoresizesSubviews (true);
+		scrollWidget.setBorderType(OS.NSBezelBorder);
+		scrollView = scrollWidget;
+	}
 
 	NSTextView widget = (NSTextView)new SWTTextView().alloc();
 	widget.init();
@@ -213,7 +216,6 @@ void createHandle () {
 	dict.setObject(NSCursor.arrowCursor(), OS.NSCursorAttributeName);
 	widget.setSelectedTextAttributes(dict);
 	
-	scrollView = scrollWidget;
 	view = widget;
 }
 
@@ -383,7 +385,7 @@ boolean shouldDrawInsertionPoint(long /*int*/ id, long /*int*/ sel) {
 
 void register () {
 	super.register ();
-	display.addWidget(scrollView, this);
+	if (scrollView != null) display.addWidget(scrollView, this);
 }
 
 void releaseHandle () {
@@ -717,7 +719,7 @@ void setZOrder () {
 }
 
 NSView topView () {
-	return scrollView;
+	return scrollView != null ? scrollView : super.topView();
 }
 
 int traversalCode (int key, NSEvent theEvent) {
