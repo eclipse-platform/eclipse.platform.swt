@@ -11,13 +11,9 @@
 package org.eclipse.swt.tools.internal;
 
 import java.lang.reflect.Modifier;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
-import org.eclipse.jdt.core.dom.Javadoc;
-import org.eclipse.jdt.core.dom.MethodDeclaration;
-import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
-import org.eclipse.jdt.core.dom.TagElement;
+import org.eclipse.jdt.core.dom.*;
 
 public class ASTMethod extends ASTItem implements JNIMethod {
 	String name, qualifiedName;
@@ -101,18 +97,22 @@ public ASTMethod(ASTClass declaringClass, String source, MethodDeclaration metho
 	}
 }
 
+@Override
 public JNIClass getDeclaringClass() {
 	return declaringClass;
 }
 
+@Override
 public int getModifiers() {
 	return modifiers;
 }
 
+@Override
 public String getName() {
 	return name;
 }
 
+@Override
 public boolean isNativeUnique() {
 	if (unique != null) return unique.booleanValue();
 	boolean result = true;
@@ -132,30 +132,37 @@ public boolean isNativeUnique() {
 	return result;
 }
 
+@Override
 public JNIType[] getParameterTypes() {
 	return paramTypes;
 }
 
+@Override
 public JNIType[] getParameterTypes64() {
 	return paramTypes64;
 }
 
+@Override
 public JNIParameter[] getParameters() {
 	return this.parameters;
 }
 
+@Override
 public JNIType getReturnType() {
 	return returnType;
 }
 
+@Override
 public JNIType getReturnType64() {
 	return returnType64;
 }
 
+@Override
 public String getAccessor() {
 	return (String)getParam("accessor");
 }
 
+@Override
 public String getExclude() {
 	return (String)getParam("exclude");
 }
@@ -186,10 +193,12 @@ public String getMetaData() {
 	return value;
 }
 
+@Override
 public void setAccessor(String str) { 
 	setParam("accessor", str);
 }
 
+@Override
 public void setExclude(String str) { 
 	setParam("exclude", str);
 }

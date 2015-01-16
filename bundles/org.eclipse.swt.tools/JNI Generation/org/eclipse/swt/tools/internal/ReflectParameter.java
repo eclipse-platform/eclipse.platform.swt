@@ -10,7 +10,7 @@
  *******************************************************************************/
 package org.eclipse.swt.tools.internal;
 
-import java.io.File;
+import java.io.*;
 
 public class ReflectParameter extends ReflectItem implements JNIParameter {
 	ReflectMethod method;
@@ -21,6 +21,7 @@ public ReflectParameter(ReflectMethod method, int parameter) {
 	this.parameter = parameter;
 }
 
+@Override
 public String getCast() {
 	String cast = ((String)getParam("cast")).trim();
 	if (cast.length() > 0) {
@@ -72,10 +73,12 @@ public String getMetaData() {
 	return value;
 }
 
+@Override
 public JNIMethod getMethod() {
 	return method;
 }
 
+@Override
 public JNIClass getTypeClass() {
 	ReflectType type = (ReflectType)getType();
 	ReflectClass declaringClass = method.declaringClass;
@@ -84,18 +87,22 @@ public JNIClass getTypeClass() {
 	return new ReflectClass(type.clazz, declaringClass.metaData, sourcePath);
 }
 
+@Override
 public JNIType getType() {
 	return method.getParameterTypes()[parameter];
 }
 
+@Override
 public JNIType getType64() {
 	return method.getParameterTypes64()[parameter];
 }
 
+@Override
 public int getParameter() {
 	return parameter;
 }
 
+@Override
 public void setCast(String str) {
 	setParam("cast", str);
 }

@@ -14,10 +14,10 @@ import java.io.*;
 import java.lang.reflect.*;
 
 import org.eclipse.swt.*;
-import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.custom.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.layout.*;
+import org.eclipse.swt.widgets.*;
 
 public class JNIGeneratorAppUI {
 
@@ -171,27 +171,33 @@ void generateAll() {
 			try {
 				app.generate(!finalShowProgress ? null : new ProgressMonitor() {
 					int total, step, maximum = 100;
+					@Override
 					public void setTotal(final int total) {
 						this.total = total;
 						display.syncExec(new Runnable() {
+							@Override
 							public void run() {
 								progressBar.setMaximum(maximum);
 							}
 						});
 					}
+					@Override
 					public void step() {
 						int oldValue = step * maximum / total;
 						step++;
 						final int newValue = step * maximum / total;
 						if (oldValue == newValue) return;
 						display.syncExec(new Runnable() {
+							@Override
 							public void run() {
 								progressBar.setSelection(newValue);
 							}
 						});					
 					}
+					@Override
 					public void setMessage(final String message) {
 						display.syncExec(new Runnable() {
+							@Override
 							public void run() {
 								progressLabel.setText(message);
 								progressLabel.update();
@@ -300,6 +306,7 @@ public void open () {
 	panel.setLayout(panelLayout);
 	
 	Listener updateMainClassListener =  new Listener() {
+		@Override
 		public void handleEvent(Event e) {
 			updateMainClass();
 			if (!updateOutputDir()) return;
@@ -372,6 +379,7 @@ void createClassesPanel(Composite panel) {
 	classesLt.setLayoutData(data);
 	classesLt.setHeaderVisible(true);
 	classesLt.addListener(SWT.Selection, new Listener() {
+		@Override
 		public void handleEvent(Event e) {
 			if (e.detail == SWT.CHECK) {
 				updateGenerate((TableItem)e.item);
@@ -396,6 +404,7 @@ void createClassesPanel(Composite panel) {
 	classEditorTx = new Text(classesLt, SWT.SINGLE);
 	classTextEditor.setEditor(classEditorTx);
 	Listener classTextListener = new Listener() {
+		@Override
 		public void handleEvent(Event e) {
 			if (e.type == SWT.Traverse) {
 				switch (e.detail) {
@@ -430,6 +439,7 @@ void createClassesPanel(Composite panel) {
 	classEditorLt.setItems(JNIClass.FLAGS);
 	floater.pack();
 	floater.addListener(SWT.Close, new Listener() {
+		@Override
 		public void handleEvent(Event e) {
 			classListEditor.setItem(null);
 			e.doit = false;
@@ -437,6 +447,7 @@ void createClassesPanel(Composite panel) {
 		}
 	});
 	Listener classesListListener = new Listener() {
+		@Override
 		public void handleEvent(Event e) {
 			if (e.type == SWT.Traverse) {
 				switch (e.detail) {
@@ -465,8 +476,10 @@ void createClassesPanel(Composite panel) {
 	classEditorLt.addListener(SWT.Traverse, classesListListener);
 
 	classesLt.addListener(SWT.MouseDown, new Listener() {
+		@Override
 		public void handleEvent(final Event e) {
 			e.display.asyncExec (new Runnable () {
+				@Override
 				public void run () {
 					if (classesLt.isDisposed ()) return;
 					if (e.button != 1) return;
@@ -529,6 +542,7 @@ void createMembersPanel(Composite panel) {
 			} catch (Exception ex) {}
 			return false;
 		}
+		@Override
 		public void handleEvent(Event e) {
 			String pattern = searchText.getText();
 			int selection = membersLt.getSelectionIndex();
@@ -548,6 +562,7 @@ void createMembersPanel(Composite panel) {
 	data.heightHint = membersLt.getItemHeight() * 6;
 	membersLt.setLayoutData(data);
 	membersLt.addListener(SWT.Selection, new Listener() {
+		@Override
 		public void handleEvent(Event e) {
 			if (e.detail == SWT.CHECK) {
 				updateGenerate((TableItem)e.item);
@@ -562,6 +577,7 @@ void createMembersPanel(Composite panel) {
 	memberEditorTx = new Text(membersLt, SWT.SINGLE);
 	memberTextEditor.setEditor(memberEditorTx);
 	Listener memberTextListener = new Listener() {
+		@Override
 		public void handleEvent(Event e) {
 			if (e.type == SWT.Traverse) {
 				switch (e.detail) {
@@ -625,6 +641,7 @@ void createMembersPanel(Composite panel) {
 	memberListEditor = new FlagsEditor(membersLt);
 	memberEditorLt = new List(floater, SWT.MULTI | SWT.BORDER);
 	floater.addListener(SWT.Close, new Listener() {
+		@Override
 		public void handleEvent(Event e) {
 			memberListEditor.setItem(null);
 			e.doit = false;
@@ -632,6 +649,7 @@ void createMembersPanel(Composite panel) {
 		}
 	});
 	Listener memberListListener = new Listener() {
+		@Override
 		public void handleEvent(Event e) {
 			if (e.type == SWT.Traverse) {
 				switch (e.detail) {
@@ -658,8 +676,10 @@ void createMembersPanel(Composite panel) {
 	memberEditorLt.addListener(SWT.Traverse, memberListListener);
 	
 	membersLt.addListener(SWT.MouseDown, new Listener() {
+		@Override
 		public void handleEvent(final Event e) {
 			e.display.asyncExec (new Runnable () {
+				@Override
 				public void run () {
 					if (membersLt.isDisposed ()) return;
 					if (e.button != 1) return;
@@ -758,6 +778,7 @@ void createParametersPanel(Composite panel) {
 	data.heightHint = itemHeight * 6;
 	paramsLt.setLayoutData(data);
 	paramsLt.addListener(SWT.Selection, new Listener() {
+		@Override
 		public void handleEvent(Event e) {
 			if (e.detail == SWT.CHECK) {
 				updateGenerate((TableItem)e.item);
@@ -779,6 +800,7 @@ void createParametersPanel(Composite panel) {
 	paramEditorTx = new Text(paramsLt, SWT.SINGLE);
 	paramTextEditor.setEditor(paramEditorTx);
 	Listener paramTextListener = new Listener() {
+		@Override
 		public void handleEvent(Event e) {
 			if (e.type == SWT.Traverse) {
 				switch (e.detail) {
@@ -813,6 +835,7 @@ void createParametersPanel(Composite panel) {
 	paramEditorLt.setItems(JNIParameter.FLAGS);
 	floater.pack();
 	floater.addListener(SWT.Close, new Listener() {
+		@Override
 		public void handleEvent(Event e) {
 			paramListEditor.setItem(null);
 			e.doit = false;
@@ -820,6 +843,7 @@ void createParametersPanel(Composite panel) {
 		}
 	});
 	Listener paramListListener = new Listener() {
+		@Override
 		public void handleEvent(Event e) {
 			if (e.type == SWT.Traverse) {
 				switch (e.detail) {
@@ -847,8 +871,10 @@ void createParametersPanel(Composite panel) {
 	paramEditorLt.addListener(SWT.Traverse, paramListListener);
 
 	paramsLt.addListener(SWT.MouseDown, new Listener() {
+		@Override
 		public void handleEvent(final Event e) {
 			e.display.asyncExec (new Runnable () {
+				@Override
 				public void run () {
 					if (paramsLt.isDisposed ()) return;
 					if (e.button != 1) return;
@@ -905,6 +931,7 @@ void createActionButtons(Composite parent) {
 	actionsPanel.setLayout(actionsLayout);
 	
 	createActionButton(actionsPanel, "Generate &All", new Listener() {
+		@Override
 		public void handleEvent(Event e) {
 			generateAll();
 		}
@@ -918,31 +945,37 @@ void createActionButtons(Composite parent) {
 	separator.setLayoutData(data);
 	
 	createActionButton(actionsPanel, "Generate Structs &Header", new Listener() {
+		@Override
 		public void handleEvent(Event e) {
 			generateStructsHeader();
 		}
 	});
 	createActionButton(actionsPanel, "Generate &Structs", new Listener() {
+		@Override
 		public void handleEvent(Event e) {
 			generateStructs();
 		}
 	});
 	createActionButton(actionsPanel, "Generate &Natives", new Listener() {
+		@Override
 		public void handleEvent(Event e) {
 			generateNatives();
 		}
 	});
 	createActionButton(actionsPanel, "Generate Meta &Data", new Listener() {
+		@Override
 		public void handleEvent(Event e) {
 			generateMetaData();
 		}
 	});
 	createActionButton(actionsPanel, "Generate Cons&tants", new Listener() {
+		@Override
 		public void handleEvent(Event e) {
 			generateConstants();
 		}
 	});	
 	createActionButton(actionsPanel, "Generate Si&zeof", new Listener() {
+		@Override
 		public void handleEvent(Event e) {
 			generateSizeof();
 		}

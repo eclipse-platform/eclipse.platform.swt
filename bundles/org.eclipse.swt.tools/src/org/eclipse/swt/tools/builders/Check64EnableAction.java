@@ -10,10 +10,9 @@
  *******************************************************************************/
 package org.eclipse.swt.tools.builders;
 
-import org.eclipse.jface.action.IAction;
-import org.eclipse.jface.viewers.ISelection;
-import org.eclipse.ui.IObjectActionDelegate;
-import org.eclipse.ui.IWorkbenchPart;
+import org.eclipse.jface.action.*;
+import org.eclipse.jface.viewers.*;
+import org.eclipse.ui.*;
 
 public class Check64EnableAction implements IObjectActionDelegate {
 
@@ -21,14 +20,17 @@ public class Check64EnableAction implements IObjectActionDelegate {
 		super();
 	}
 
+	@Override
 	public void setActivePart(IAction action, IWorkbenchPart targetPart) {
 		action.setChecked(Check64CompilationParticipant.getEnabled());
 	}
 
+	@Override
 	public void run(IAction action) {
 		Check64CompilationParticipant.setEnabled(action.isChecked());
 	}
 
+	@Override
 	public void selectionChanged(IAction action, ISelection selection) {
 	}
 

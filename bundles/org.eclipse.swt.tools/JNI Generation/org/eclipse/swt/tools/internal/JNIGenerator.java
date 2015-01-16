@@ -11,7 +11,7 @@
 package org.eclipse.swt.tools.internal;
 
 import java.io.*;
-import java.lang.reflect.Modifier;
+import java.lang.reflect.*;
 import java.util.*;
 
 public abstract class JNIGenerator implements Flags {
@@ -171,6 +171,7 @@ static String loadFile (String file) {
 
 static void sort(JNIMethod[] methods) {
 	Arrays.sort(methods, new Comparator<JNIMethod>() {
+		@Override
 		public int compare(JNIMethod mth1, JNIMethod mth2) {
 			int result = mth1.getName().compareTo(mth2.getName());
 			return result != 0 ? result : getFunctionName(mth1).compareTo(getFunctionName(mth2));
@@ -180,6 +181,7 @@ static void sort(JNIMethod[] methods) {
 
 static void sort(JNIField[] fields) {
 	Arrays.sort(fields, new Comparator<JNIField>() {
+		@Override
 		public int compare(JNIField a, JNIField b) {
 			return a.getName().compareTo(b.getName());
 		}
@@ -188,6 +190,7 @@ static void sort(JNIField[] fields) {
 
 static void sort(JNIClass[] classes) {
 	Arrays.sort(classes, new Comparator<JNIClass>() {
+		@Override
 		public int compare(JNIClass a, JNIClass b) {
 			return a.getName().compareTo(b.getName());
 		}

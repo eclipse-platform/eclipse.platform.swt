@@ -10,8 +10,7 @@
  *******************************************************************************/
 package org.eclipse.swt.tools.internal;
 
-import org.eclipse.jdt.core.dom.ArrayType;
-import org.eclipse.jdt.core.dom.Type;
+import org.eclipse.jdt.core.dom.*;
 
 public class ASTType implements JNIType {
 	
@@ -71,11 +70,13 @@ public boolean equals(Object obj) {
 	return ((ASTType)obj).name.equals(name);
 }
 
+@Override
 public JNIType getComponentType() {
 	if (!name.startsWith("[")) throw new RuntimeException();
 	return new ASTType(name.substring(1));
 }
 
+@Override
 public String getName() {
 	if (isPrimitive()) {
 		if (name.equals("V")) return "void";
@@ -92,6 +93,7 @@ public String getName() {
 	return name.substring(1, name.length() - 1).replace('/', '.');
 }
 
+@Override
 public String getSimpleName() {
 	String name = getName();
 	if (isArray() || isPrimitive()) return name;
@@ -99,6 +101,7 @@ public String getSimpleName() {
 	return name.substring(index, name.length());
 }
 
+@Override
 public String getTypeSignature(boolean define) {
 	if (isPrimitive()) {
 		if (define) {
@@ -116,6 +119,7 @@ public String getTypeSignature(boolean define) {
 	return name;
 }
 
+@Override
 public String getTypeSignature1(boolean define) {
 	if (isPrimitive()) {
 		if (name.equals("V")) return "Void";
@@ -132,6 +136,7 @@ public String getTypeSignature1(boolean define) {
 	return "Object";
 }
 
+@Override
 public String getTypeSignature2(boolean define) {
 	if (isPrimitive()) {
 		if (name.equals("V")) return "void";
@@ -152,6 +157,7 @@ public String getTypeSignature2(boolean define) {
 	return "jobject";
 }
 
+@Override
 public String getTypeSignature3(boolean define) {
 	if (isPrimitive()) {
 		if (name.equals("V")) return "void";
@@ -171,6 +177,7 @@ public String getTypeSignature3(boolean define) {
 	return getName();
 }
 
+@Override
 public String getTypeSignature4(boolean define, boolean struct) {
 	if (isPrimitive()) {
 		if (name.equals("V")) return "void";
@@ -197,14 +204,17 @@ public int hashCode() {
 	return name.hashCode();
 }
 
+@Override
 public boolean isArray() {
 	return name.startsWith("[");
 }
 
+@Override
 public boolean isPrimitive() {
 	return !name.startsWith("L") && !name.startsWith("[");
 }
 
+@Override
 public boolean isType(String type) {
 	return getName().equals(type);
 }

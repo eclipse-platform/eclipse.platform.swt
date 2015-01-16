@@ -24,20 +24,24 @@ public boolean equals(Object obj) {
 	return ((ReflectType)obj).clazz == clazz;
 }
 
+@Override
 public JNIType getComponentType() {
 	return new ReflectType(clazz.getComponentType());
 }
 
+@Override
 public String getName() {
 	return clazz.getName();
 }
 
+@Override
 public String getSimpleName() {
 	String name = clazz.getName();
 	int index = name.lastIndexOf('.') + 1;
 	return name.substring(index, name.length());
 }
 
+@Override
 public String getTypeSignature(boolean define) {
 	if (clazz == Void.TYPE) return "V";
 	if (clazz == Integer.TYPE) return define ? "I_J" : "I";
@@ -56,6 +60,7 @@ public String getTypeSignature(boolean define) {
 	return "L" + clazz.getName().replace('.', '/') + ";";
 }
 
+@Override
 public String getTypeSignature1(boolean define) {
 	if (clazz == Void.TYPE) return "Void";
 	if (clazz == Integer.TYPE) return define ? "IntLong" : "Int";
@@ -70,6 +75,7 @@ public String getTypeSignature1(boolean define) {
 	return "Object";
 }
 
+@Override
 public String getTypeSignature2(boolean define) {
 	if (clazz == Void.TYPE) return "void";
 	if (clazz == Integer.TYPE) return define ? "jintLong" : "jint";
@@ -88,6 +94,7 @@ public String getTypeSignature2(boolean define) {
 	return "jobject";
 }
 
+@Override
 public String getTypeSignature3(boolean define) {
 	if (clazz == Void.TYPE) return "void";
 	if (clazz == Integer.TYPE) return "int";
@@ -105,6 +112,7 @@ public String getTypeSignature3(boolean define) {
 	return clazz.getName();
 }
 
+@Override
 public String getTypeSignature4(boolean define, boolean struct) {
 	if (clazz == Void.TYPE) return "void";
 	if (clazz == Integer.TYPE) return define ? "jintLong" : "jint";
@@ -129,14 +137,17 @@ public int hashCode() {
 	return clazz.hashCode();
 }
 
+@Override
 public boolean isArray() {
 	return clazz.isArray();
 }
 
+@Override
 public boolean isPrimitive() {
 	return clazz.isPrimitive();
 }
 
+@Override
 public boolean isType(String type) {
 	return clazz.getName().equals(type);
 }

@@ -10,21 +10,10 @@
  *******************************************************************************/
 package org.eclipse.swt.tools.internal;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
+import java.io.*;
+import java.util.*;
 
-import org.eclipse.jdt.core.dom.AST;
-import org.eclipse.jdt.core.dom.ASTParser;
-import org.eclipse.jdt.core.dom.CompilationUnit;
-import org.eclipse.jdt.core.dom.FieldDeclaration;
-import org.eclipse.jdt.core.dom.ImportDeclaration;
-import org.eclipse.jdt.core.dom.Javadoc;
-import org.eclipse.jdt.core.dom.MethodDeclaration;
-import org.eclipse.jdt.core.dom.TagElement;
-import org.eclipse.jdt.core.dom.TypeDeclaration;
-import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
+import org.eclipse.jdt.core.dom.*;
 import org.eclipse.swt.tools.internal.ASTType.TypeResolver;
 
 public class ASTClass extends ASTItem implements JNIClass {
@@ -40,6 +29,7 @@ public class ASTClass extends ASTItem implements JNIClass {
 	int start;
 	
 	TypeResolver resolver = new TypeResolver() {
+		@Override
 		public String findPath(String simpleName) {
 			if (simpleName.equals(ASTClass.this.simpleName)) return sourcePath;
 			String basePath = sourcePath.substring(0, sourcePath.length() - name.length() - ".java".length());
@@ -55,6 +45,7 @@ public class ASTClass extends ASTItem implements JNIClass {
 			}
 			return "";
 		}
+		@Override
 		public String resolve(String simpleName) {
 			if (simpleName.equals(ASTClass.this.simpleName)) return packageName + "." + simpleName;
 			String basePath = sourcePath.substring(0, sourcePath.length() - name.length() - ".java".length());
@@ -140,22 +131,26 @@ public boolean equals(Object obj) {
 	return ((ASTClass)obj).getName().equals(getName());
 }
 
+@Override
 public JNIField[] getDeclaredFields() {
 	JNIField[] result = new JNIField[fields.length];
 	System.arraycopy(fields, 0, result, 0, result.length);
 	return result;
 }
 
+@Override
 public JNIMethod[] getDeclaredMethods() {
 	JNIMethod[] result = new JNIMethod[methods.length];
 	System.arraycopy(methods, 0, result, 0, result.length);
 	return result;
 }
 
+@Override
 public String getName() {
 	return name;
 }
 
+@Override
 public JNIClass getSuperclass() {
 	if (superclassName == null) return new ReflectClass(Object.class);
 	if (superclass != null) return superclass;
@@ -163,10 +158,12 @@ public JNIClass getSuperclass() {
 	return superclass = new ASTClass(sourcePath, metaData);
 }
 
+@Override
 public String getSimpleName() {
 	return simpleName;
 }
 
+@Override
 public String getExclude() {
 	return (String)getParam("exclude");
 }
@@ -178,6 +175,7 @@ public String getMetaData() {
 	return metaData.getMetaData(key, "");
 }
 
+@Override
 public void setExclude(String str) { 
 	setParam("exclude", str);
 }

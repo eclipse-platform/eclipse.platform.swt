@@ -10,20 +10,15 @@
  *******************************************************************************/
 package org.eclipse.swt.tools.internal;
 
-import java.util.ArrayList;
-import java.util.Collections;
-
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.NamedNodeMap;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
+import java.util.*;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.custom.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.layout.*;
 import org.eclipse.swt.widgets.*;
+import org.eclipse.swt.widgets.Text;
+import org.w3c.dom.*;
 
 public class MacGeneratorUI {
 	MacGenerator gen;
@@ -191,11 +186,13 @@ public class MacGeneratorUI {
 		search.setLayoutData(data);
 		search.setText(".*");
 		search.addListener(SWT.DefaultSelection, new Listener() {
+			@Override
 			public void handleEvent(Event arg0) {
 				searchFor(search.getText());
 			}
 		});
 		search.addListener(SWT.KeyDown, new Listener() {
+			@Override
 			public void handleEvent(Event event) {
 				if (event.keyCode == SWT.F6) {
 					searchFor(search.getText());					
@@ -209,6 +206,7 @@ public class MacGeneratorUI {
 		nodesTree.setLayoutData(data);
 		
 		nodesTree.addListener(SWT.Selection, new Listener() {
+			@Override
 			public void handleEvent(Event event) {
 				TreeItem item = (TreeItem)event.item;
 				if (item == null) return;
@@ -224,6 +222,7 @@ public class MacGeneratorUI {
 			}
 		});
 		nodesTree.addListener(SWT.Expand, new Listener() {
+			@Override
 			public void handleEvent(Event event) {
 				checkChildren((TreeItem)event.item);				
 			}
@@ -259,6 +258,7 @@ public class MacGeneratorUI {
 		editor.grabHorizontal = true;
 		editor.setEditor(editorTx);
 		Listener textListener = new Listener() {
+			@Override
 			public void handleEvent(Event e) {
 				if (e.type == SWT.KeyDown) {
 					if (e.keyCode != SWT.F6) return;
@@ -295,8 +295,10 @@ public class MacGeneratorUI {
 		editorTx.addListener(SWT.KeyDown, textListener);
 		editorTx.addListener(SWT.Traverse, textListener);
 		attribTable.addListener(SWT.MouseDown, new Listener() {
+			@Override
 			public void handleEvent(final Event e) {
 				e.display.asyncExec (new Runnable () {
+					@Override
 					public void run () {
 						if (attribTable.isDisposed ()) return;
 						if (e.button != 1) return;
@@ -335,6 +337,7 @@ public class MacGeneratorUI {
 		Button generate = new Button(panel, SWT.PUSH);
 		generate.setText("Generate");
 		generate.addListener(SWT.Selection, new Listener() {
+			@Override
 			public void handleEvent(Event event) {
 				generate(null);
 			}
@@ -394,6 +397,7 @@ public class MacGeneratorUI {
 		}
 		
 		sash.addListener(SWT.Selection, new Listener() {
+			@Override
 			public void handleEvent(Event event) {
 				Composite parent = sash.getParent();
 				Rectangle rect = parent.getClientArea();
@@ -589,7 +593,8 @@ public class MacGeneratorUI {
 		gen.setXmls(null);
 		flatNodes = null;
 		nodesTree.getDisplay().asyncExec(new Runnable() {
-			 public void run() {
+			 @Override
+			public void run() {
 				 if (nodesTree == null || nodesTree.isDisposed()) return;
 				 nodesTree.removeAll();
 				 attribTable.removeAll();

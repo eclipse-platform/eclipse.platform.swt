@@ -10,16 +10,12 @@
  *******************************************************************************/
 package org.eclipse.swt.tools.internal;
 
-import java.io.File;
-import java.lang.reflect.Method;
-import java.util.List;
+import java.io.*;
+import java.lang.reflect.*;
+import java.util.*;
 
-import org.eclipse.jdt.core.dom.ASTNode;
-import org.eclipse.jdt.core.dom.CompilationUnit;
-import org.eclipse.jdt.core.dom.MethodDeclaration;
+import org.eclipse.jdt.core.dom.*;
 import org.eclipse.jdt.core.dom.Modifier;
-import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
-import org.eclipse.jdt.core.dom.TypeDeclaration;
 
 public class ReflectMethod extends ReflectItem implements JNIMethod {
 	Method method;
@@ -111,18 +107,22 @@ public boolean equals(Object obj) {
 	return ((ReflectMethod)obj).method.equals(method);
 }
 
+@Override
 public JNIClass getDeclaringClass() {
 	return declaringClass;
 }
 
+@Override
 public int getModifiers() {
 	return method.getModifiers();
 }
 
+@Override
 public String getName() {
 	return method.getName();
 }
 
+@Override
 public boolean isNativeUnique() {
 	if (unique != null) return unique.booleanValue();
 	boolean result = true;
@@ -142,14 +142,17 @@ public boolean isNativeUnique() {
 	return result;
 }
 
+@Override
 public JNIType[] getParameterTypes() {
 	return paramTypes;
 }
 
+@Override
 public JNIType[] getParameterTypes64() {
 	return paramTypes64;
 }
 
+@Override
 public JNIParameter[] getParameters() {
 	Class<?>[] paramTypes = method.getParameterTypes();
 	ReflectParameter[] result = new ReflectParameter[paramTypes.length];
@@ -159,18 +162,22 @@ public JNIParameter[] getParameters() {
 	return result;
 }
 
+@Override
 public JNIType getReturnType() {
 	return returnType;
 }
 
+@Override
 public JNIType getReturnType64() {
 	return returnType64;
 }
 
+@Override
 public String getAccessor() {
 	return (String)getParam("accessor");
 }
 
+@Override
 public String getExclude() {
 	return (String)getParam("exclude");
 }
@@ -217,10 +224,12 @@ public String getMetaData() {
 	return value;
 }
 
+@Override
 public void setAccessor(String str) { 
 	setParam("accessor", str);
 }
 
+@Override
 public void setExclude(String str) { 
 	setParam("exclude", str);
 }

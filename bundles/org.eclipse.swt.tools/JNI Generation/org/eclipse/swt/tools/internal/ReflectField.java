@@ -10,14 +10,11 @@
  *******************************************************************************/
 package org.eclipse.swt.tools.internal;
 
-import java.io.File;
-import java.lang.reflect.Field;
-import java.util.Iterator;
+import java.io.*;
+import java.lang.reflect.*;
+import java.util.*;
 
-import org.eclipse.jdt.core.dom.CompilationUnit;
-import org.eclipse.jdt.core.dom.FieldDeclaration;
-import org.eclipse.jdt.core.dom.TypeDeclaration;
-import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
+import org.eclipse.jdt.core.dom.*;
 
 public class ReflectField extends ReflectItem implements JNIField {
 	Field field;
@@ -67,30 +64,37 @@ public boolean equals(Object obj) {
 	return ((ReflectField)obj).field.equals(field);
 }
 
+@Override
 public JNIClass getDeclaringClass() {
 	return declaringClass;
 }
 
+@Override
 public int getModifiers() {
 	return field.getModifiers();
 }
 
+@Override
 public String getName() {
 	return field.getName();
 }
 
+@Override
 public JNIType getType() {
 	return type;
 }
 
+@Override
 public JNIType getType64() {
 	return type64;
 }
 
+@Override
 public String getAccessor() {
 	return (String)getParam("accessor");
 }
 
+@Override
 public String getCast() {
 	String cast = ((String)getParam("cast")).trim();
 	if (cast.length() > 0) {
@@ -100,6 +104,7 @@ public String getCast() {
 	return cast;
 }
 
+@Override
 public String getExclude() {
 	return (String)getParam("exclude");
 }
@@ -111,14 +116,17 @@ public String getMetaData() {
 	return declaringClass.metaData.getMetaData(key, "");
 }
 
+@Override
 public void setAccessor(String str) { 
 	setParam("accessor", str);
 }
 
+@Override
 public void setCast(String str) {
 	setParam("cast", str);
 }
 
+@Override
 public void setExclude(String str) { 
 	setParam("exclude", str);
 }

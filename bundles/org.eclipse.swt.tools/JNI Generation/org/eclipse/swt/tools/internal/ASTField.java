@@ -10,13 +10,9 @@
  *******************************************************************************/
 package org.eclipse.swt.tools.internal;
 
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
-import org.eclipse.jdt.core.dom.FieldDeclaration;
-import org.eclipse.jdt.core.dom.Javadoc;
-import org.eclipse.jdt.core.dom.TagElement;
-import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
+import org.eclipse.jdt.core.dom.*;
 
 public class ASTField extends ASTItem implements JNIField {
 	ASTClass declaringClass;
@@ -72,30 +68,37 @@ public boolean equals(Object obj) {
 	return ((ASTField)obj).getName().equals(getName());
 }
 
+@Override
 public JNIClass getDeclaringClass() {
 	return declaringClass;
 }
 
+@Override
 public int getModifiers() {
 	return modifiers;
 }
 
+@Override
 public String getName() {
 	return name;
 }
 
+@Override
 public JNIType getType() {
 	return type;
 }
 
+@Override
 public JNIType getType64() {
 	return type64;
 }
 
+@Override
 public String getAccessor() {
 	return (String)getParam("accessor");
 }
 
+@Override
 public String getCast() {
 	String cast = ((String)getParam("cast")).trim();
 	if (cast.length() > 0) {
@@ -105,6 +108,7 @@ public String getCast() {
 	return cast;
 }
 
+@Override
 public String getExclude() {
 	return (String)getParam("exclude");
 }
@@ -117,14 +121,17 @@ public String getMetaData() {
 	return declaringClass.metaData.getMetaData(key, "");
 }
 
+@Override
 public void setAccessor(String str) { 
 	setParam("accessor", str);
 }
 
+@Override
 public void setCast(String str) {
 	setParam("cast", str);
 }
 
+@Override
 public void setExclude(String str) { 
 	setParam("exclude", str);
 }

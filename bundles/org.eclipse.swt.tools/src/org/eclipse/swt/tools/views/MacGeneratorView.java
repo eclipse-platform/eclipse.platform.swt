@@ -38,12 +38,15 @@ public class MacGeneratorView extends ViewPart {
 		protected IStatus run(final IProgressMonitor monitor) {
 			try {
 				ui.generate(new ProgressMonitor() {
+					@Override
 					public void setMessage(String message) {
 						monitor.subTask(message);
 					}
+					@Override
 					public void setTotal(int total) {
 						monitor.beginTask("Generating", total);
 					}
+					@Override
 					public void step() {
 						monitor.worked(1);
 					}
@@ -66,6 +69,7 @@ public class MacGeneratorView extends ViewPart {
 		IWorkspaceRoot workspaceRoot = ResourcesPlugin.getWorkspace().getRoot();
 		root = workspaceRoot.findMember(new Path("org.eclipse.swt/Eclipse SWT PI/cocoa"));		
 		listener = new IResourceChangeListener() {
+			@Override
 			public void resourceChanged(IResourceChangeEvent event) {
 				if (job != null) return;
 				if (event.getType() != IResourceChangeEvent.POST_CHANGE) return;
@@ -74,6 +78,7 @@ public class MacGeneratorView extends ViewPart {
 				if (piDelta == null) return;
 				final ArrayList<IResource> changed = new ArrayList<IResource>();
 				IResourceDeltaVisitor visitor = new IResourceDeltaVisitor() {
+					@Override
 					public boolean visit(IResourceDelta delta) {
 						if (delta.getKind() != IResourceDelta.CHANGED) return true;
 						if ((delta.getFlags() & IResourceDelta.CONTENT) == 0) return true;

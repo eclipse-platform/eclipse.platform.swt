@@ -13,10 +13,10 @@ package org.eclipse.swt.tools.internal;
 import java.io.*;
 import java.util.*;
 
-import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.*;
 
 import org.w3c.dom.*;
-import org.xml.sax.InputSource;
+import org.xml.sax.*;
 @SuppressWarnings("unchecked")
 public class MacGenerator {
 	String[] xmls;
@@ -147,6 +147,7 @@ void merge(Document document, Document extraDocument) {
 	 */
 	ArrayList<Node> sortedNodes = Collections.list(Collections.enumeration(extras.values()));
 	Collections.sort(sortedNodes, new Comparator<Object>() {
+		@Override
 		public int compare(Object arg0, Object arg1) {
 			int compare = getLevel((Node)arg0) - getLevel((Node)arg1);
 			if (compare == 0) {
@@ -637,6 +638,7 @@ void copyClassMethodsDown(final Map<String, Object[]> classes) {
 			}
 			return level;			
 		}
+		@Override
 		public int compare(Object arg0, Object arg1) {
 			return getHierarchyLevel((Node)((Object[])arg0)[0]) - getHierarchyLevel((Node)((Object[])arg1)[0]);  
 		}
@@ -867,6 +869,7 @@ public String[] getXmls() {
 			String packageName = getPackageName(mainClassName);
 			File folder = new File(extrasDir != null ? extrasDir : outputDir + packageName.replace('.', '/'));
 			File[] files = folder.listFiles(new FilenameFilter() {
+				@Override
 				public boolean accept(File dir, String name) {
 					return name.endsWith("Full.bridgesupport");
 				}
@@ -876,6 +879,7 @@ public String[] getXmls() {
 			}
 		}
 		Collections.sort(array, new Comparator<Object>() {
+			@Override
 			public int compare(Object o1, Object o2) {
 				return new File((String)o1).getName().compareTo(new File((String)o2).getName());
 			}

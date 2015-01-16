@@ -59,6 +59,7 @@ public class NativeStats {
 	public String getName() {
 		return name;
 	}
+	@Override
 	public int compareTo(Object func) {
 		return ((NativeFunction)func).callCount - callCount;
 	}

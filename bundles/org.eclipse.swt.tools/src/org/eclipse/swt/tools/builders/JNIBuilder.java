@@ -10,19 +10,11 @@
  *******************************************************************************/
 package org.eclipse.swt.tools.builders;
 
-import java.util.Map;
+import java.util.*;
 
-import org.eclipse.core.resources.IProject;
-import org.eclipse.core.resources.IResource;
-import org.eclipse.core.resources.IResourceDelta;
-import org.eclipse.core.resources.IResourceDeltaVisitor;
-import org.eclipse.core.resources.IWorkspaceRoot;
-import org.eclipse.core.resources.IncrementalProjectBuilder;
-import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IPath;
-import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.swt.tools.internal.JNIGeneratorApp;
-import org.eclipse.swt.tools.internal.MetaData;
+import org.eclipse.core.resources.*;
+import org.eclipse.core.runtime.*;
+import org.eclipse.swt.tools.internal.*;
 
 public class JNIBuilder extends IncrementalProjectBuilder {
 
@@ -62,6 +54,7 @@ public class JNIBuilder extends IncrementalProjectBuilder {
 		IResourceDelta delta = getDelta(getProject());
 		if (delta == null) return null;
 		delta.accept(new IResourceDeltaVisitor() {
+			@Override
 			public boolean visit(IResourceDelta delta) throws CoreException {
 				IPath ipath = delta.getFullPath();
 				if (!"java".equals(ipath.getFileExtension())) return true;

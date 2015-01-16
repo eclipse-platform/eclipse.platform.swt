@@ -10,10 +10,7 @@
  *******************************************************************************/
 package org.eclipse.swt.tools.internal;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 public abstract class AbstractItem implements JNIItem {
 
@@ -67,6 +64,7 @@ public String flatten() {
 	return buffer.toString();
 }
 
+@Override
 public String[] getFlags() {
 	Object flags = getParam("flags");
 	if (flags == null) return new String[0];
@@ -76,6 +74,7 @@ public String[] getFlags() {
 	return result;
 }
 
+@Override
 public boolean getFlag(String flag) {
 	String[] flags = getFlags();
 	for (int i = 0; i < flags.length; i++) {
@@ -86,16 +85,19 @@ public boolean getFlag(String flag) {
 
 public abstract String getMetaData();
 
+@Override
 public Object getParam(String key) {
 	checkParams();
 	Object value = params.get(key);
 	return value == null ? "" : value;
 }
 
+@Override
 public boolean getGenerate() {
 	return !getFlag(FLAG_NO_GEN);
 }
 
+@Override
 public void setFlags(String[] flags) { 
 	setParam("flags", flags);
 }
@@ -133,6 +135,7 @@ public void parse(String str) {
 	}
 }
 
+@Override
 public void setFlag(String flag, boolean value) {
 	String[] flags = getFlags();
 	HashSet<String> set = new HashSet<String>(Arrays.asList(flags));
@@ -144,12 +147,14 @@ public void setFlag(String flag, boolean value) {
 	setFlags(set.toArray(new String[set.size()]));
 }
 
+@Override
 public void setGenerate(boolean value) {
 	setFlag(FLAG_NO_GEN, !value);
 }
 
 public abstract void setMetaData(String value);
 
+@Override
 public void setParam(String key, Object value) {
 	checkParams();
 	params.put(key, value);

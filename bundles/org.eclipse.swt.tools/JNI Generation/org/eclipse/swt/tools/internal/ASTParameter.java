@@ -22,6 +22,7 @@ public ASTParameter(ASTMethod method, int parameter, String name) {
 	this.name = name;
 }
 
+@Override
 public String getCast() {
 	String cast = ((String)getParam("cast")).trim();
 	if (cast.length() > 0) {
@@ -57,6 +58,7 @@ public String getMetaData() {
 	return value;
 }
 
+@Override
 public JNIMethod getMethod() {
 	return method;
 }
@@ -65,6 +67,7 @@ public String getName() {
 	return name;
 }
 
+@Override
 public JNIClass getTypeClass() {
 	ASTType type = (ASTType)getType();
 	ASTClass declaringClass = method.declaringClass;
@@ -72,18 +75,22 @@ public JNIClass getTypeClass() {
 	return new ASTClass(sourcePath, declaringClass.metaData);
 }
 
+@Override
 public JNIType getType() {
 	return method.getParameterTypes()[parameter];
 }
 
+@Override
 public JNIType getType64() {
 	return method.getParameterTypes64()[parameter];
 }
 
+@Override
 public int getParameter() {
 	return parameter;
 }
 
+@Override
 public void setCast(String str) {
 	setParam("cast", str);
 }

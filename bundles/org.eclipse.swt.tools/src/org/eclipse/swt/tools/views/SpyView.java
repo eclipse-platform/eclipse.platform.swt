@@ -40,6 +40,7 @@ public class SpyView extends ViewPart {
 		output = new StyledText(parent, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL | SWT.READ_ONLY);
 		
 		keyFilter = new Listener() {
+			@Override
 			public void handleEvent(Event e) {
 				// If this accelerator changes, change the tooltip text
 				if (e.keyCode == '.' && e.stateMask == (SWT.ALT | SWT.SHIFT | SWT.CONTROL)) {
@@ -56,6 +57,7 @@ public class SpyView extends ViewPart {
 		parent.getDisplay().addFilter(SWT.KeyDown, keyFilter);
 		
 		timer = new Runnable() {
+			@Override
 			public void run() {
 				if (output == null || output.isDisposed() || !spyAction.isChecked()) return;
 				Display display = output.getDisplay();

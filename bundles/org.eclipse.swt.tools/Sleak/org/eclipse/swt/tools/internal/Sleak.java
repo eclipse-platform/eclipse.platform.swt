@@ -10,10 +10,11 @@
  *******************************************************************************/
 package org.eclipse.swt.tools.internal;
 
+import java.io.*;
+
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.widgets.*;
-import java.io.*;
 
 /**
  * Instructions on how to use the Sleak tool with a standlaone SWT example:
@@ -67,6 +68,7 @@ public static void main (String [] args) {
 public void create (Composite parent) {
 	list = new List (parent, SWT.BORDER | SWT.V_SCROLL);
 	list.addListener (SWT.Selection, new Listener () {
+		@Override
 		public void handleEvent (Event event) {
 			refreshObject ();
 		}
@@ -74,6 +76,7 @@ public void create (Composite parent) {
 	text = new Text (parent, SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL);
 	canvas = new Canvas (parent, SWT.BORDER);
 	canvas.addListener (SWT.Paint, new Listener () {
+		@Override
 		public void handleEvent (Event event) {
 			paintCanvas (event);
 		}
@@ -81,6 +84,7 @@ public void create (Composite parent) {
 	check = new Button (parent, SWT.CHECK);
 	check.setText ("Stack");
 	check.addListener (SWT.Selection, new Listener () {
+		@Override
 		public void handleEvent (Event e) {
 			toggleStackTrace ();
 		}
@@ -88,6 +92,7 @@ public void create (Composite parent) {
 	start = new Button (parent, SWT.PUSH);
 	start.setText ("Snap");
 	start.addListener (SWT.Selection, new Listener () {
+		@Override
 		public void handleEvent (Event event) {
 			refreshAll ();
 		}
@@ -95,6 +100,7 @@ public void create (Composite parent) {
 	stop = new Button (parent, SWT.PUSH);
 	stop.setText ("Diff");
 	stop.addListener (SWT.Selection, new Listener () {
+		@Override
 		public void handleEvent (Event event) {
 			refreshDifference ();
 		}
@@ -102,6 +108,7 @@ public void create (Composite parent) {
 	label = new Label (parent, SWT.BORDER);
 	label.setText ("0 object(s)");
 	parent.addListener (SWT.Resize, new Listener () {
+		@Override
 		public void handleEvent (Event e) {
 			layout ();
 		}

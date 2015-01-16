@@ -10,13 +10,10 @@
  *******************************************************************************/
 package org.eclipse.swt.tools.internal;
 
-import java.io.File;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
+import java.io.*;
+import java.lang.reflect.*;
 
-import org.eclipse.jdt.core.dom.AST;
-import org.eclipse.jdt.core.dom.ASTParser;
-import org.eclipse.jdt.core.dom.CompilationUnit;
+import org.eclipse.jdt.core.dom.*;
 
 public class ReflectClass extends ReflectItem implements JNIClass {
 	Class<?> clazz;
@@ -68,6 +65,7 @@ public boolean equals(Object obj) {
 	return ((ReflectClass)obj).clazz.equals(clazz);
 }
 
+@Override
 public JNIField[] getDeclaredFields() {
 	checkMembers();
 	JNIField[] result = new JNIField[fields.length];
@@ -75,6 +73,7 @@ public JNIField[] getDeclaredFields() {
 	return result;
 }
 
+@Override
 public JNIMethod[] getDeclaredMethods() {
 	checkMembers();
 	JNIMethod[] result = new JNIMethod[methods.length];
@@ -82,10 +81,12 @@ public JNIMethod[] getDeclaredMethods() {
 	return result;
 }
 
+@Override
 public String getName() {
 	return clazz.getName();
 }
 
+@Override
 public JNIClass getSuperclass() {
 	Class<?> superclazz = clazz.getSuperclass();
 	String path = new File(sourcePath).getParent() + "/" + getSimpleName(superclazz) + ".java";
@@ -98,10 +99,12 @@ String getSimpleName(Class<?> type) {
 	return name.substring(index, name.length());
 }
 
+@Override
 public String getSimpleName() {
 	return getSimpleName(clazz);
 }
 
+@Override
 public String getExclude() {
 	return (String)getParam("exclude");
 }
@@ -112,6 +115,7 @@ public String getMetaData() {
 	return metaData.getMetaData(key, "");
 }
 
+@Override
 public void setExclude(String str) { 
 	setParam("exclude", str);
 }
