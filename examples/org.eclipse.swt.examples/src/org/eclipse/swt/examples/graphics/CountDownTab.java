@@ -11,10 +11,20 @@
 
 package org.eclipse.swt.examples.graphics;
 
-import org.eclipse.swt.*;
-import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.layout.*;
-import org.eclipse.swt.widgets.*;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Device;
+import org.eclipse.swt.graphics.Font;
+import org.eclipse.swt.graphics.GC;
+import org.eclipse.swt.graphics.Path;
+import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.graphics.Transform;
+import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Combo;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Listener;
+import org.eclipse.swt.widgets.Spinner;
 
 /**
  * This tab presents a count down from 5 to 1, then displays SWT.
@@ -59,6 +69,7 @@ public class CountDownTab extends AnimatedGraphicsTab {
 		// add selection listener to reset nextNumber after
 		// the sequence has completed
 		playItem.addListener(SWT.Selection, new Listener() {
+			@Override
 			public void handleEvent(Event event) {
 				if (nextNumber < 1)
 					nextNumber = startNumber;
@@ -78,6 +89,7 @@ public class CountDownTab extends AnimatedGraphicsTab {
 		lineWidthSpinner.setMinimum(1);
 		lineWidthSpinner.setMaximum(100);
 		lineWidthSpinner.addListener(SWT.Selection, new Listener() {
+			@Override
 			public void handleEvent(Event event) {
 				if (!pauseItem.isEnabled()) {
 					example.redraw();
@@ -97,6 +109,7 @@ public class CountDownTab extends AnimatedGraphicsTab {
 		aliasCombo.select(0);
 		antialias = aliasValues[0];
 		aliasCombo.addListener(SWT.Selection, new Listener() {
+			@Override
 			public void handleEvent(Event event) {
 				antialias = aliasValues[aliasCombo.getSelectionIndex()];
 				if (!pauseItem.isEnabled()) {
@@ -117,6 +130,7 @@ public class CountDownTab extends AnimatedGraphicsTab {
 		lineCapCombo.select(0);
 		lineCap = capValues[0];
 		lineCapCombo.addListener(SWT.Selection, new Listener() {
+			@Override
 			public void handleEvent(Event event) {
 				lineCap = capValues[lineCapCombo.getSelectionIndex()];
 				if (!pauseItem.isEnabled()) {

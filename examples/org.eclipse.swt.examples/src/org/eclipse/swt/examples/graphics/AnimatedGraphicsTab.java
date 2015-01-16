@@ -11,9 +11,17 @@
 
 package org.eclipse.swt.examples.graphics;
 
-import org.eclipse.swt.*;
-import org.eclipse.swt.layout.*;
-import org.eclipse.swt.widgets.*;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.layout.RowLayout;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Listener;
+import org.eclipse.swt.widgets.Spinner;
+import org.eclipse.swt.widgets.ToolBar;
+import org.eclipse.swt.widgets.ToolItem;
 
 /**
  * This class extends the GraphicsTab class to create animated graphics.
@@ -57,6 +65,7 @@ public abstract class AnimatedGraphicsTab extends GraphicsTab {
 				
 		toolBar = new ToolBar(parent, SWT.FLAT);
 		Listener toolBarListener = new Listener() {
+			@Override
 			public void handleEvent(Event event) {
 				switch (event.type) {
 					case SWT.Selection: {

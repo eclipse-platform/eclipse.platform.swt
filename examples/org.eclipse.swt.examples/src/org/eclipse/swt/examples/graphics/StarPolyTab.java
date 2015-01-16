@@ -10,9 +10,13 @@
  *******************************************************************************/
 package org.eclipse.swt.examples.graphics;
 
-import org.eclipse.swt.*;
-import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.widgets.*;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.GC;
+import org.eclipse.swt.widgets.Combo;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Listener;
 
 public class StarPolyTab extends GraphicsTab {
 	int[] radial;
@@ -33,6 +37,7 @@ public void createControlPanel(Composite parent) {
 	fillRuleCb.add("FILL_WINDING");
 	fillRuleCb.select(0);
 	fillRuleCb.addListener(SWT.Selection, new Listener() {
+		@Override
 		public void handleEvent (Event event) {
 			example.redraw();
 		}

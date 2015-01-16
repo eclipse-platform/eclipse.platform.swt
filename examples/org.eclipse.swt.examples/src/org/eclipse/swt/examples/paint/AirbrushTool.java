@@ -12,7 +12,8 @@ package org.eclipse.swt.examples.paint;
 
 
 import java.util.Random;
-import org.eclipse.swt.graphics.*;
+
+import org.eclipse.swt.graphics.Point;
 
 /**
  * An airbrush tool.
@@ -41,6 +42,7 @@ public class AirbrushTool extends ContinuousPaintSession implements PaintTool {
 	 * 
 	 * @param toolSettings the new tool settings
 	 */
+	@Override
 	public void set(ToolSettings toolSettings) {
 		// compute things we need to know for drawing
 		settings = toolSettings;
@@ -55,6 +57,7 @@ public class AirbrushTool extends ContinuousPaintSession implements PaintTool {
 	 * 
 	 * @return the localized name of this tool
 	 */
+	@Override
 	public String getDisplayName() {
 		return PaintExample.getResourceString("tool.Airbrush.label");
 	}

@@ -11,10 +11,18 @@
 
 package org.eclipse.swt.examples.graphics;
 
-import org.eclipse.swt.*;
-import org.eclipse.swt.events.*;
-import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.widgets.*;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.MouseEvent;
+import org.eclipse.swt.events.MouseListener;
+import org.eclipse.swt.events.MouseMoveListener;
+import org.eclipse.swt.graphics.Cursor;
+import org.eclipse.swt.graphics.Device;
+import org.eclipse.swt.graphics.Font;
+import org.eclipse.swt.graphics.GC;
+import org.eclipse.swt.graphics.Path;
+import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.graphics.Transform;
+import org.eclipse.swt.widgets.Composite;
 
 /**
  * This tab presents cubic and quadratic curves that can be drawn.
@@ -118,6 +126,7 @@ public void createControlPanel(Composite parent) {
 
 	mouseMoveListener = new MouseMoveListener() {
 		
+		@Override
 		public void mouseMove(MouseEvent e) {
 			if (hovering && mouseDown) {
 				example.canvas.setCursor(cursor);
@@ -161,6 +170,7 @@ public void createControlPanel(Composite parent) {
 	
 	mouseListener = new MouseListener() {
 
+		@Override
 		public void mouseDoubleClick(MouseEvent e) {}
 
 		/**
@@ -168,6 +178,7 @@ public void createControlPanel(Composite parent) {
 		 *
 		 * @param e an event containing information about the mouse button press
 		 */
+		@Override
 		public void mouseDown(MouseEvent e) {  
 			Rectangle quad = new Rectangle(quadHndl.x + (int)quadXPos - 1, quadHndl.y + (int)quadYPos - 1, quadHndl.width+2, quadHndl.height+2);
 			Rectangle quadEnd = new Rectangle(quadEndHndl.x + (int)quadXPos - 1, quadEndHndl.y + (int)quadYPos - 1, quadEndHndl.width+2, quadEndHndl.height+2);
@@ -198,6 +209,7 @@ public void createControlPanel(Composite parent) {
 		 *
 		 * @param e an event containing information about the mouse button release
 		 */
+		@Override
 		public void mouseUp(MouseEvent e) {
 			mouseDown = false;
 			if (isHovering(e)) {

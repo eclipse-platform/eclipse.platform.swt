@@ -11,18 +11,67 @@
 package org.eclipse.swt.examples.imageanalyzer;
 
 
-import org.eclipse.swt.*;
-import org.eclipse.swt.widgets.*;
-import org.eclipse.swt.events.*;
-import org.eclipse.swt.layout.*;
-import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.printing.*;
-import org.eclipse.swt.custom.*;
-
-import java.util.*;
-import java.net.*;
-import java.io.*;
+import java.io.InputStream;
+import java.net.URL;
 import java.text.MessageFormat;
+import java.util.ResourceBundle;
+import java.util.Vector;
+
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.SWTError;
+import org.eclipse.swt.SWTException;
+import org.eclipse.swt.custom.StyleRange;
+import org.eclipse.swt.custom.StyledText;
+import org.eclipse.swt.events.ControlAdapter;
+import org.eclipse.swt.events.ControlEvent;
+import org.eclipse.swt.events.DisposeEvent;
+import org.eclipse.swt.events.DisposeListener;
+import org.eclipse.swt.events.KeyAdapter;
+import org.eclipse.swt.events.KeyEvent;
+import org.eclipse.swt.events.MouseAdapter;
+import org.eclipse.swt.events.MouseEvent;
+import org.eclipse.swt.events.MouseMoveListener;
+import org.eclipse.swt.events.PaintEvent;
+import org.eclipse.swt.events.PaintListener;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.events.ShellAdapter;
+import org.eclipse.swt.events.ShellEvent;
+import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.Cursor;
+import org.eclipse.swt.graphics.Font;
+import org.eclipse.swt.graphics.GC;
+import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.ImageData;
+import org.eclipse.swt.graphics.ImageLoader;
+import org.eclipse.swt.graphics.ImageLoaderEvent;
+import org.eclipse.swt.graphics.ImageLoaderListener;
+import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.graphics.RGB;
+import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.layout.RowLayout;
+import org.eclipse.swt.printing.PrintDialog;
+import org.eclipse.swt.printing.Printer;
+import org.eclipse.swt.printing.PrinterData;
+import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Canvas;
+import org.eclipse.swt.widgets.Combo;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Dialog;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.FileDialog;
+import org.eclipse.swt.widgets.Group;
+import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Menu;
+import org.eclipse.swt.widgets.MenuItem;
+import org.eclipse.swt.widgets.MessageBox;
+import org.eclipse.swt.widgets.Sash;
+import org.eclipse.swt.widgets.ScrollBar;
+import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.Text;
 
 public class ImageAnalyzer {
 	static ResourceBundle bundle = ResourceBundle.getBundle("examples_images");
@@ -188,6 +237,7 @@ public class ImageAnalyzer {
 			}
 		});
 		shell.addDisposeListener(new DisposeListener() {
+			@Override
 			public void widgetDisposed(DisposeEvent e) {
 				// Clean up.
 				if (image != null)
@@ -218,6 +268,7 @@ public class ImageAnalyzer {
 		// Create a GC for drawing, and hook the listener to dispose it.
 		imageCanvasGC = new GC(imageCanvas);
 		imageCanvas.addDisposeListener(new DisposeListener() {
+			@Override
 			public void widgetDisposed(DisposeEvent e) {
 				imageCanvasGC.dispose();
 			}
@@ -481,6 +532,7 @@ public class ImageAnalyzer {
 		gridData.grabExcessVerticalSpace = true;
 		imageCanvas.setLayoutData(gridData);
 		imageCanvas.addPaintListener(new PaintListener() {
+			@Override
 			public void paintControl(PaintEvent event) {
 				if (image == null) {
 					Rectangle bounds = imageCanvas.getBounds();
@@ -491,6 +543,7 @@ public class ImageAnalyzer {
 			}
 		});
 		imageCanvas.addMouseMoveListener(new MouseMoveListener() {
+			@Override
 			public void mouseMove(MouseEvent event) {
 				if (image != null) {
 					showColorAt(event.x, event.y);
@@ -597,6 +650,7 @@ public class ImageAnalyzer {
 		gridData.heightHint = 16 * 11; // show at least 16 colors
 		paletteCanvas.setLayoutData(gridData);
 		paletteCanvas.addPaintListener(new PaintListener() {
+			@Override
 			public void paintControl(PaintEvent event) {
 				if (image != null)
 					paintPalette(event);
@@ -961,6 +1015,7 @@ public class ImageAnalyzer {
 			if (incremental) {
 				// Prepare to handle incremental events.
 				loader.addImageLoaderListener(new ImageLoaderListener() {
+					@Override
 					public void imageDataLoaded(ImageLoaderEvent event) {
 						incrementalDataLoaded(event);
 					}
@@ -1022,6 +1077,7 @@ public class ImageAnalyzer {
 			if (incremental) {
 				// Prepare to handle incremental events.
 				loader.addImageLoaderListener(new ImageLoaderListener() {
+					@Override
 					public void imageDataLoaded(ImageLoaderEvent event) {
 						incrementalDataLoaded(event);
 					}
@@ -1577,6 +1633,7 @@ public class ImageAnalyzer {
 						animateLoop();
 					} catch (final SWTException e) {
 						display.syncExec(new Runnable() {
+							@Override
 							public void run() {
 								showErrorDialog(createMsg(bundle.getString("Creating_image"), 
 										    new Integer(imageDataIndex+1)),
@@ -1607,6 +1664,7 @@ public class ImageAnalyzer {
 		try {
 			// Use syncExec to get the background color of the imageCanvas.
 			display.syncExec(new Runnable() {
+				@Override
 				public void run() {
 					canvasBackground = imageCanvas.getBackground();
 				}
@@ -1709,6 +1767,7 @@ public class ImageAnalyzer {
 	 */
 	void preAnimation() {
 		display.syncExec(new Runnable() {
+			@Override
 			public void run() {
 				// Change the label of the Animate button to 'Stop'.
 				animateButton.setText(bundle.getString("Stop"));
@@ -1738,6 +1797,7 @@ public class ImageAnalyzer {
 	 */
 	void postAnimation() {
 		display.syncExec(new Runnable() {
+			@Override
 			public void run() {
 				// Enable anything we disabled before the animation.
 				previousButton.setEnabled(true);

@@ -16,11 +16,37 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 
-import org.eclipse.swt.*;
-import org.eclipse.swt.browser.*;
-import org.eclipse.swt.events.*;
-import org.eclipse.swt.layout.*;
-import org.eclipse.swt.widgets.*;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.SWTError;
+import org.eclipse.swt.browser.AuthenticationEvent;
+import org.eclipse.swt.browser.AuthenticationListener;
+import org.eclipse.swt.browser.Browser;
+import org.eclipse.swt.browser.CloseWindowListener;
+import org.eclipse.swt.browser.LocationEvent;
+import org.eclipse.swt.browser.LocationListener;
+import org.eclipse.swt.browser.OpenWindowListener;
+import org.eclipse.swt.browser.ProgressEvent;
+import org.eclipse.swt.browser.ProgressListener;
+import org.eclipse.swt.browser.StatusTextEvent;
+import org.eclipse.swt.browser.StatusTextListener;
+import org.eclipse.swt.browser.TitleEvent;
+import org.eclipse.swt.browser.TitleListener;
+import org.eclipse.swt.browser.VisibilityWindowListener;
+import org.eclipse.swt.browser.WindowEvent;
+import org.eclipse.swt.events.ControlAdapter;
+import org.eclipse.swt.events.ControlEvent;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Group;
+import org.eclipse.swt.widgets.Listener;
+import org.eclipse.swt.widgets.MessageBox;
+import org.eclipse.swt.widgets.TabFolder;
+import org.eclipse.swt.widgets.Widget;
 
 class BrowserTab extends Tab {
 
@@ -154,6 +180,7 @@ class BrowserTab extends Tab {
 		mozillaButton = new Button (styleGroup, SWT.CHECK);
 		mozillaButton.setText ("SWT.MOZILLA");
 		mozillaButton.addListener(SWT.Selection, new Listener() {
+			@Override
 			public void handleEvent(Event event) {
 				webKitButton.setSelection(false);
 			}
@@ -161,6 +188,7 @@ class BrowserTab extends Tab {
 		webKitButton = new Button (styleGroup, SWT.CHECK);
 		webKitButton.setText ("SWT.WEBKIT");
 		webKitButton.addListener(SWT.Selection, new Listener() {
+			@Override
 			public void handleEvent(Event event) {
 				mozillaButton.setSelection(false);
 			}
@@ -290,6 +318,7 @@ class BrowserTab extends Tab {
 		if (browser == null) return;
 		if (eventName == "AuthenticationListener") {
 			browser.addAuthenticationListener(new AuthenticationListener () {
+				@Override
 				public void authenticate(AuthenticationEvent event) {
 					log (eventName, event);
 				}
@@ -297,6 +326,7 @@ class BrowserTab extends Tab {
 		}
 		if (eventName == "CloseWindowListener") {
 			browser.addCloseWindowListener (new CloseWindowListener () {
+				@Override
 				public void close(WindowEvent event) {
 					log (eventName, event);
 				}
@@ -304,9 +334,11 @@ class BrowserTab extends Tab {
 		}
 		if (eventName == "LocationListener") {
 			browser.addLocationListener (new LocationListener () {
+				@Override
 				public void changed(LocationEvent event) {
 					log (eventName + ".changed", event);
 				}
+				@Override
 				public void changing(LocationEvent event) {
 					log (eventName + ".changing", event);
 				}
@@ -314,6 +346,7 @@ class BrowserTab extends Tab {
 		}
 		if (eventName == "OpenWindowListener") {
 			browser.addOpenWindowListener (new OpenWindowListener () {
+				@Override
 				public void open(WindowEvent event) {
 					log (eventName, event);
 				}
@@ -321,9 +354,11 @@ class BrowserTab extends Tab {
 		}
 		if (eventName == "ProgressListener") {
 			browser.addProgressListener (new ProgressListener () {
+				@Override
 				public void changed(ProgressEvent event) {
 					log (eventName + ".changed", event);
 				}
+				@Override
 				public void completed(ProgressEvent event) {
 					log (eventName + ".completed", event);
 				}
@@ -331,6 +366,7 @@ class BrowserTab extends Tab {
 		}
 		if (eventName == "StatusTextListener") {
 			browser.addStatusTextListener (new StatusTextListener () {
+				@Override
 				public void changed(StatusTextEvent event) {
 					log (eventName, event);
 				}
@@ -338,6 +374,7 @@ class BrowserTab extends Tab {
 		}
 		if (eventName == "TitleListener") {
 			browser.addTitleListener (new TitleListener () {
+				@Override
 				public void changed(TitleEvent event) {
 					log (eventName, event);
 				}
@@ -345,9 +382,11 @@ class BrowserTab extends Tab {
 		}
 		if (eventName == "VisibilityWindowListener") {
 			browser.addVisibilityWindowListener (new VisibilityWindowListener () {
+				@Override
 				public void hide(WindowEvent event) {
 					log (eventName + ".hide", event);
 				}
+				@Override
 				public void show(WindowEvent event) {
 					log (eventName + ".show", event);
 				}

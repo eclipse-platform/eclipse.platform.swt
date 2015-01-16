@@ -86,6 +86,7 @@ public void createControlPanel(final Composite parent) {
 
 	// menu for colorItem1
 	menu1 = colorMenu.createMenu(parent.getParent(), new ColorListener() {
+		@Override
 		public void setColor(GraphicsBackground gb) {
 			colorGB1 = gb;
 			colorItem1.setImage(gb.getThumbNail());
@@ -101,6 +102,7 @@ public void createControlPanel(final Composite parent) {
 	colorItem1.setText(GraphicsExample.getResourceString("GradientTabItem1"));
 	colorItem1.setImage(colorGB1.getThumbNail());
 	colorItem1.addListener(SWT.Selection, new Listener(){
+		@Override
 		public void handleEvent(Event event) {
 			final ToolItem toolItem = (ToolItem) event.widget;
 			final ToolBar  toolBar = toolItem.getParent();
@@ -113,6 +115,7 @@ public void createControlPanel(final Composite parent) {
 	
 	// menu for colorItem2
 	menu2 = colorMenu.createMenu(parent.getParent(), new ColorListener() {
+		@Override
 		public void setColor(GraphicsBackground gb) {
 			colorGB2 = gb;
 			colorItem2.setImage(gb.getThumbNail());
@@ -128,6 +131,7 @@ public void createControlPanel(final Composite parent) {
 	colorItem2.setText(GraphicsExample.getResourceString("GradientTabItem2"));
 	colorItem2.setImage(colorGB2.getThumbNail());
 	colorItem2.addListener(SWT.Selection, new Listener(){
+		@Override
 		public void handleEvent(Event event) {
 			final ToolItem toolItem = (ToolItem) event.widget;
 			final ToolBar  toolBar = toolItem.getParent();
@@ -143,6 +147,7 @@ public void createControlPanel(final Composite parent) {
 	swapItem.setText(GraphicsExample.getResourceString("SwapColors")); //$NON-NLS-1$
 	swapItem.setImage(example.loadImage(display, "swap.gif"));
 	swapItem.addListener(SWT.Selection, new Listener(){
+		@Override
 		public void handleEvent(Event event) {
 			GraphicsBackground tmp = colorGB1;
 			colorGB1 = colorGB2;

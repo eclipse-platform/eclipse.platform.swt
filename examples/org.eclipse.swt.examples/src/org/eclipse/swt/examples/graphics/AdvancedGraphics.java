@@ -16,12 +16,25 @@ package org.eclipse.swt.examples.graphics;
  * For a list of all SWT example snippets see
  * http://www.eclipse.org/swt/snippets/
  */
-import java.io.*;
-import java.util.*;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ResourceBundle;
 
-import org.eclipse.swt.*;
-import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.widgets.*;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.SWTException;
+import org.eclipse.swt.graphics.Device;
+import org.eclipse.swt.graphics.Font;
+import org.eclipse.swt.graphics.FontData;
+import org.eclipse.swt.graphics.GC;
+import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.Path;
+import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.graphics.Transform;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Listener;
+import org.eclipse.swt.widgets.MessageBox;
+import org.eclipse.swt.widgets.Shell;
 
 public class AdvancedGraphics {
 	
@@ -61,6 +74,7 @@ public class AdvancedGraphics {
 		final Image image = loadImage(display, AdvancedGraphics.class, "irmaos.jpg");
 		final Rectangle rect = image.getBounds();
 		shell.addListener(SWT.Paint, new Listener() {
+			@Override
 			public void handleEvent(Event event) {
 				GC gc = event.gc;				
 				Transform tr = new Transform(display);
@@ -84,6 +98,7 @@ public class AdvancedGraphics {
 		shell.setSize(shell.computeSize(rect.width, rect.height));
 		shell.open();
 		shell.addListener(SWT.Dispose, new Listener() {
+			@Override
 			public void handleEvent(Event event) {
 				if (image != null) image.dispose();
 				font.dispose();

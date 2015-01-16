@@ -11,15 +11,41 @@
 package org.eclipse.swt.examples.hoverhelp;
 
 
-import java.io.*;
-import java.text.*;
-import java.util.*;
+import java.io.IOException;
+import java.io.InputStream;
+import java.text.MessageFormat;
+import java.util.MissingResourceException;
+import java.util.ResourceBundle;
 
-import org.eclipse.swt.*;
-import org.eclipse.swt.events.*;
-import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.layout.*;
-import org.eclipse.swt.widgets.*;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.DisposeEvent;
+import org.eclipse.swt.events.DisposeListener;
+import org.eclipse.swt.events.HelpEvent;
+import org.eclipse.swt.events.HelpListener;
+import org.eclipse.swt.events.MouseAdapter;
+import org.eclipse.swt.events.MouseEvent;
+import org.eclipse.swt.events.MouseTrackAdapter;
+import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.ImageData;
+import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.layout.FillLayout;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Item;
+import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.Table;
+import org.eclipse.swt.widgets.TableItem;
+import org.eclipse.swt.widgets.ToolBar;
+import org.eclipse.swt.widgets.ToolItem;
+import org.eclipse.swt.widgets.Tree;
+import org.eclipse.swt.widgets.TreeItem;
+import org.eclipse.swt.widgets.Widget;
 /**
  * This example demonstrates how to implement hover help feedback
  * using the MouseTrackListener.
@@ -83,6 +109,7 @@ public class HoverHelp {
 		Shell shell = new Shell();
 		createPartControl(shell);
 		shell.addDisposeListener(new DisposeListener() {
+			@Override
 			public void widgetDisposed(DisposeEvent e) {
 				/* Free resources */
 				if (images != null) {
@@ -151,6 +178,7 @@ public class HoverHelp {
 			item.setData ("TIP_TEXT", getResourceString("ToolItem.tooltip",
 				new Object[] { item.getText(), helpKey }));
 			item.setData ("TIP_HELPTEXTHANDLER", new ToolTipHelpTextHandler() {
+				@Override
 				public String getHelpText(Widget widget) {
 					Item item = (Item) widget;
 					return getResourceString("ToolItem.help", new Object[] { item.getText() });
@@ -171,6 +199,7 @@ public class HoverHelp {
 			item.setData ("TIP_TEXT", getResourceString("TableItem.tooltip",
 				new Object[] { item.getText(), helpKey }));
 			item.setData ("TIP_HELPTEXTHANDLER", new ToolTipHelpTextHandler() {
+				@Override
 				public String getHelpText(Widget widget) {
 					Item item = (Item) widget;
 					return getResourceString("TableItem.help", new Object[] { item.getText() });
@@ -189,6 +218,7 @@ public class HoverHelp {
 			item.setData ("TIP_TEXT", getResourceString("TreeItem.tooltip",
 				new Object[] { item.getText(), helpKey}));
 			item.setData ("TIP_HELPTEXTHANDLER", new ToolTipHelpTextHandler() {
+				@Override
 				public String getHelpText(Widget widget) {
 					Item item = (Item) widget;
 					return getResourceString("TreeItem.help", new Object[] { item.getText() });
@@ -312,6 +342,7 @@ public class HoverHelp {
 			 * Trap F1 Help to pop up a custom help box
 			 */
 			control.addHelpListener(new HelpListener () {
+				@Override
 				public void helpRequested(HelpEvent event) {
 					if (tipWidget == null) return;
 					ToolTipHelpTextHandler handler = (ToolTipHelpTextHandler)

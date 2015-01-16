@@ -11,7 +11,7 @@
 package org.eclipse.swt.examples.paint;
 
 
-import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.graphics.Point;
 
 /**
  * A polyline drawing tool.
@@ -35,6 +35,7 @@ public class PolyLineTool extends SegmentedPaintSession implements PaintTool {
 	 * 
 	 * @param toolSettings the new tool settings
 	 */
+	@Override
 	public void set(ToolSettings toolSettings) {
 		settings = toolSettings;
 	}
@@ -44,6 +45,7 @@ public class PolyLineTool extends SegmentedPaintSession implements PaintTool {
 	 * 
 	 * @return the localized name of this tool
 	 */
+	@Override
 	public String getDisplayName() {
 		return PaintExample.getResourceString("tool.PolyLine.label");
 	}

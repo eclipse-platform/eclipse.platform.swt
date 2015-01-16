@@ -11,10 +11,20 @@
 
 package org.eclipse.swt.examples.graphics;
 
-import org.eclipse.swt.*;
-import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.layout.*;
-import org.eclipse.swt.widgets.*;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Device;
+import org.eclipse.swt.graphics.Font;
+import org.eclipse.swt.graphics.GC;
+import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.graphics.Transform;
+import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Combo;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Listener;
 
 /**
  * This tab shows the effects of applying various interpolation algorithms to
@@ -64,6 +74,7 @@ public void createControlPanel(Composite parent) {
 	imageCb.add(GraphicsExample.getResourceString("Ovals")); //$NON-NLS-1$
 	imageCb.select(0);
 	imageCb.addListener(SWT.Selection, new Listener() {
+		@Override
 		public void handleEvent(Event event) {
 				example.redraw();
 		}

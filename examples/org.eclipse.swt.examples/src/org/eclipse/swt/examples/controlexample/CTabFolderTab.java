@@ -11,12 +11,32 @@
 package org.eclipse.swt.examples.controlexample;
 
 
-import org.eclipse.swt.*;
-import org.eclipse.swt.custom.*;
-import org.eclipse.swt.events.*;
-import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.layout.*;
-import org.eclipse.swt.widgets.*;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.CTabFolder;
+import org.eclipse.swt.custom.CTabFolder2Listener;
+import org.eclipse.swt.custom.CTabFolderEvent;
+import org.eclipse.swt.custom.CTabItem;
+import org.eclipse.swt.events.DisposeEvent;
+import org.eclipse.swt.events.DisposeListener;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.Font;
+import org.eclipse.swt.graphics.FontData;
+import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.RGB;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Group;
+import org.eclipse.swt.widgets.Item;
+import org.eclipse.swt.widgets.Listener;
+import org.eclipse.swt.widgets.TableItem;
+import org.eclipse.swt.widgets.Text;
+import org.eclipse.swt.widgets.ToolBar;
+import org.eclipse.swt.widgets.ToolItem;
+import org.eclipse.swt.widgets.Widget;
 
 class CTabFolderTab extends Tab {
 	int lastSelectedTab = 0;
@@ -68,6 +88,7 @@ class CTabFolderTab extends Tab {
 		item.setText(ControlExample.getResourceString ("Item_Font"));
 
 		shell.addDisposeListener(new DisposeListener() {
+			@Override
 			public void widgetDisposed(DisposeEvent event) {
 				if (selectionBackgroundColor != null) selectionBackgroundColor.dispose();
 				if (selectionForegroundColor != null) selectionForegroundColor.dispose();
@@ -249,6 +270,7 @@ class CTabFolderTab extends Tab {
 			item.setControl(text);
 		}
 		tabFolder1.addListener(SWT.Selection, new Listener() {
+			@Override
 			public void handleEvent(Event event) {
 				lastSelectedTab = tabFolder1.getSelectionIndex();
 			}
@@ -335,18 +357,23 @@ class CTabFolderTab extends Tab {
 	void hookCustomListener (final String eventName) {
 		if (eventName == "CTabFolderEvent") {
 			tabFolder1.addCTabFolder2Listener (new CTabFolder2Listener () {
+				@Override
 				public void close (CTabFolderEvent event) {
 					log (eventName, event);
 				}
+				@Override
 				public void minimize(CTabFolderEvent event) {
 					log (eventName, event);
 				}
+				@Override
 				public void maximize(CTabFolderEvent event) {
 					log (eventName, event);
 				}
+				@Override
 				public void restore(CTabFolderEvent event) {
 					log (eventName, event);
 				}
+				@Override
 				public void showList(CTabFolderEvent event) {
 					log (eventName, event);
 				}

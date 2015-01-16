@@ -10,14 +10,46 @@
  *******************************************************************************/
 package org.eclipse.swt.examples.browserexample;
 
-import org.eclipse.swt.*;
-import org.eclipse.swt.browser.*;
-import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.layout.*;
-import org.eclipse.swt.widgets.*;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.MissingResourceException;
+import java.util.ResourceBundle;
 
-import java.io.*;
-import java.util.*;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.SWTError;
+import org.eclipse.swt.browser.Browser;
+import org.eclipse.swt.browser.CloseWindowListener;
+import org.eclipse.swt.browser.LocationEvent;
+import org.eclipse.swt.browser.LocationListener;
+import org.eclipse.swt.browser.OpenWindowListener;
+import org.eclipse.swt.browser.ProgressEvent;
+import org.eclipse.swt.browser.ProgressListener;
+import org.eclipse.swt.browser.StatusTextEvent;
+import org.eclipse.swt.browser.StatusTextListener;
+import org.eclipse.swt.browser.TitleEvent;
+import org.eclipse.swt.browser.TitleListener;
+import org.eclipse.swt.browser.VisibilityWindowListener;
+import org.eclipse.swt.browser.WindowEvent;
+import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.ImageData;
+import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.layout.FillLayout;
+import org.eclipse.swt.layout.FormAttachment;
+import org.eclipse.swt.layout.FormData;
+import org.eclipse.swt.layout.FormLayout;
+import org.eclipse.swt.widgets.Canvas;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Listener;
+import org.eclipse.swt.widgets.ProgressBar;
+import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.Text;
+import org.eclipse.swt.widgets.ToolBar;
+import org.eclipse.swt.widgets.ToolItem;
 
 public class BrowserExample {
 	static ResourceBundle resourceBundle = ResourceBundle.getBundle("examples_browser");
@@ -59,6 +91,7 @@ public class BrowserExample {
 		final Display display = parent.getDisplay();
 		browser.setData("org.eclipse.swt.examples.browserexample.BrowserApplication", this);
 		browser.addOpenWindowListener(new OpenWindowListener() {
+			@Override
 			public void open(WindowEvent event) {
 				Shell shell = new Shell(display);
 				if (icon != null) shell.setImage(icon);
@@ -73,8 +106,10 @@ public class BrowserExample {
 			show(false, null, null, true, true, true, true);
 		} else {
 			browser.addVisibilityWindowListener(new VisibilityWindowListener() {
+				@Override
 				public void hide(WindowEvent e) {
 				}
+				@Override
 				public void show(WindowEvent e) {
 					Browser browser = (Browser)e.widget;
 					BrowserExample app = (BrowserExample)browser.getData("org.eclipse.swt.examples.browserexample.BrowserApplication");
@@ -82,6 +117,7 @@ public class BrowserExample {
 				}
 			});
 			browser.addCloseWindowListener(new CloseWindowListener() {
+				@Override
 				public void close(WindowEvent event) {
 					Browser browser = (Browser)event.widget;
 					Shell shell = browser.getShell();
@@ -149,6 +185,7 @@ public class BrowserExample {
 			itemBack.setEnabled(browser.isBackEnabled());
 			itemForward.setEnabled(browser.isForwardEnabled());
 			Listener listener = new Listener() {
+				@Override
 				public void handleEvent(Event event) {
 					ToolItem item = (ToolItem)event.widget;
 					if (item == itemBack) browser.back(); 
@@ -174,12 +211,14 @@ public class BrowserExample {
 			
 			final Rectangle rect = images[0].getBounds();
 			canvas.addListener(SWT.Paint, new Listener() {
+				@Override
 				public void handleEvent(Event e) {
 					Point pt = ((Canvas)e.widget).getSize();
 					e.gc.drawImage(images[index], 0, 0, rect.width, rect.height, 0, 0, pt.x, pt.y);			
 				}
 			});
 			canvas.addListener(SWT.MouseDown, new Listener() {
+				@Override
 				public void handleEvent(Event e) {
 					browser.setUrl(getResourceString("Startup"));
 				}
@@ -187,6 +226,7 @@ public class BrowserExample {
 			
 			final Display display = parent.getDisplay();
 			display.asyncExec(new Runnable() {
+				@Override
 				public void run() {
 					if (canvas.isDisposed()) return;
 					if (busy) {
@@ -212,6 +252,7 @@ public class BrowserExample {
 			}
 			locationBar.setLayoutData(data);
 			locationBar.addListener(SWT.DefaultSelection, new Listener() {
+				@Override
 				public void handleEvent(Event e) {
 					browser.setUrl(locationBar.getText());
 				}
@@ -233,6 +274,7 @@ public class BrowserExample {
 			progressBar.setLayoutData(data);
 			
 			browser.addStatusTextListener(new StatusTextListener() {
+				@Override
 				public void changed(StatusTextEvent event) {
 					status.setText(event.text);	
 				}
@@ -250,6 +292,7 @@ public class BrowserExample {
 			
 		if (statusBar || toolBar) {
 			browser.addProgressListener(new ProgressListener() {
+				@Override
 				public void changed(ProgressEvent event) {
 					if (event.total == 0) return;                            
 					int ratio = event.current * 100 / event.total;
@@ -260,6 +303,7 @@ public class BrowserExample {
 						if (canvas != null) canvas.redraw();
 					}
 				}
+				@Override
 				public void completed(ProgressEvent event) {
 					if (progressBar != null) progressBar.setSelection(0);
 					busy = false;
@@ -274,16 +318,19 @@ public class BrowserExample {
 		}
 		if (addressBar || statusBar || toolBar) {
 			browser.addLocationListener(new LocationListener() {
+				@Override
 				public void changed(LocationEvent event) {
 					busy = true;
 					if (event.top && locationBar != null) locationBar.setText(event.location);
 				}
+				@Override
 				public void changing(LocationEvent event) {
 				}
 			});
 		}
 		if (title) {
 			browser.addTitleListener(new TitleListener() {
+				@Override
 				public void changed(TitleEvent event) {
 					shell.setText(event.title+" - "+getResourceString("window.title"));
 				}

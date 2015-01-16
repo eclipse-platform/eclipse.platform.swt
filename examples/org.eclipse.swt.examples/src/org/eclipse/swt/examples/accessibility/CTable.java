@@ -10,11 +10,40 @@
  *******************************************************************************/
 package org.eclipse.swt.examples.accessibility;
 
-import org.eclipse.swt.*;
-import org.eclipse.swt.accessibility.*;
-import org.eclipse.swt.events.*;
-import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.widgets.*;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.SWTException;
+import org.eclipse.swt.accessibility.ACC;
+import org.eclipse.swt.accessibility.Accessible;
+import org.eclipse.swt.accessibility.AccessibleAdapter;
+import org.eclipse.swt.accessibility.AccessibleControlAdapter;
+import org.eclipse.swt.accessibility.AccessibleControlEvent;
+import org.eclipse.swt.accessibility.AccessibleEvent;
+import org.eclipse.swt.accessibility.AccessibleTableAdapter;
+import org.eclipse.swt.accessibility.AccessibleTableEvent;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.Font;
+import org.eclipse.swt.graphics.GC;
+import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.ImageData;
+import org.eclipse.swt.graphics.PaletteData;
+import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.graphics.RGB;
+import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.widgets.Canvas;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Listener;
+import org.eclipse.swt.widgets.Menu;
+import org.eclipse.swt.widgets.ScrollBar;
+import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.Tracker;
+import org.eclipse.swt.widgets.TypedListener;
+import org.eclipse.swt.widgets.Widget;
 
 /** 
  * Instances of this class implement a selectable user interface
@@ -165,6 +194,7 @@ public CTable (Composite parent, int style) {
 	clientArea = getClientArea ();
 	
 	Listener listener = new Listener () {
+		@Override
 		public void handleEvent (Event event) {
 			handleEvents (event);
 		}
@@ -195,6 +225,7 @@ public CTable (Composite parent, int style) {
 	header.addListener (SWT.MenuDetect, listener);
 
 	toolTipListener = new Listener () {
+		@Override
 		public void handleEvent (Event event) {
 			switch (event.type) {
 				case SWT.MouseHover:
@@ -2099,6 +2130,7 @@ static void initImages (final Display display) {
 	}
 
 	display.disposeExec (new Runnable () {
+		@Override
 		public void run() {
 			Image unchecked = (Image) display.getData (ID_UNCHECKED);
 			if (unchecked != null) unchecked.dispose ();

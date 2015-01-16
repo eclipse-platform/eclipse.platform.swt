@@ -10,13 +10,43 @@
  *******************************************************************************/
 package org.eclipse.swt.examples.clipboard;
  
-import org.eclipse.swt.*;
-import org.eclipse.swt.custom.*;
-import org.eclipse.swt.dnd.*;
-import org.eclipse.swt.events.*;
-import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.layout.*;
-import org.eclipse.swt.widgets.*;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.ScrolledComposite;
+import org.eclipse.swt.custom.StyledText;
+import org.eclipse.swt.dnd.Clipboard;
+import org.eclipse.swt.dnd.FileTransfer;
+import org.eclipse.swt.dnd.HTMLTransfer;
+import org.eclipse.swt.dnd.ImageTransfer;
+import org.eclipse.swt.dnd.RTFTransfer;
+import org.eclipse.swt.dnd.TextTransfer;
+import org.eclipse.swt.dnd.Transfer;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.graphics.GC;
+import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.ImageData;
+import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.layout.FillLayout;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Canvas;
+import org.eclipse.swt.widgets.Combo;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.DirectoryDialog;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.FileDialog;
+import org.eclipse.swt.widgets.Group;
+import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.List;
+import org.eclipse.swt.widgets.Listener;
+import org.eclipse.swt.widgets.ScrollBar;
+import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.Table;
+import org.eclipse.swt.widgets.TableItem;
+import org.eclipse.swt.widgets.Text;
 
 public class ClipboardExample {
 
@@ -372,6 +402,7 @@ void createImageTransfer(Composite copyParent, Composite pasteParent){
 	final ScrollBar copyHBar = copyImageCanvas.getHorizontalBar();
 	copyHBar.setEnabled(false);	
 	copyHBar.addListener(SWT.Selection, new Listener() {
+		@Override
 		public void handleEvent(Event e) {
 			if (copyImage[0] != null) {
 				int hSelection = copyHBar.getSelection();
@@ -385,6 +416,7 @@ void createImageTransfer(Composite copyParent, Composite pasteParent){
 	final ScrollBar copyVBar = copyImageCanvas.getVerticalBar();
 	copyVBar.setEnabled(false);
 	copyVBar.addListener(SWT.Selection, new Listener() {
+		@Override
 		public void handleEvent (Event e) {
 			if (copyImage[0] != null) {
 				int vSelection = copyVBar.getSelection();
@@ -396,6 +428,7 @@ void createImageTransfer(Composite copyParent, Composite pasteParent){
 		}
 	});
 	copyImageCanvas.addListener(SWT.Paint, new Listener() {
+		@Override
 		public void handleEvent(Event e) {
 			if(copyImage[0] != null) {
 				GC gc = e.gc;
@@ -470,6 +503,7 @@ void createImageTransfer(Composite copyParent, Composite pasteParent){
 	final ScrollBar pasteHBar = pasteImageCanvas.getHorizontalBar();
 	pasteHBar.setEnabled(false);	
 	pasteHBar.addListener(SWT.Selection, new Listener() {
+		@Override
 		public void handleEvent(Event e) {
 			if (pasteImage[0] != null) {
 				int hSelection = pasteHBar.getSelection();
@@ -483,6 +517,7 @@ void createImageTransfer(Composite copyParent, Composite pasteParent){
 	final ScrollBar pasteVBar = pasteImageCanvas.getVerticalBar();
 	pasteVBar.setEnabled(false);
 	pasteVBar.addListener(SWT.Selection, new Listener() {
+		@Override
 		public void handleEvent(Event e) {
 			if (pasteImage[0] != null) {
 				int vSelection = pasteVBar.getSelection();
@@ -494,6 +529,7 @@ void createImageTransfer(Composite copyParent, Composite pasteParent){
 		}
 	});
 	pasteImageCanvas.addListener(SWT.Paint, new Listener() {
+		@Override
 		public void handleEvent(Event e) {
 			if(pasteImage[0] != null) {
 				GC gc = e.gc;

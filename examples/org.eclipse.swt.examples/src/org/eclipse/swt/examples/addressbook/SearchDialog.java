@@ -12,11 +12,26 @@ package org.eclipse.swt.examples.addressbook;
 
 
 /* Imports */
-import org.eclipse.swt.*;
-import org.eclipse.swt.widgets.*;
-import org.eclipse.swt.layout.*;
-import org.eclipse.swt.events.*;
 import java.util.ResourceBundle;
+
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.ModifyEvent;
+import org.eclipse.swt.events.ModifyListener;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.ShellAdapter;
+import org.eclipse.swt.events.ShellEvent;
+import org.eclipse.swt.layout.FillLayout;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Combo;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Group;
+import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.MessageBox;
+import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.Text;
 
 /**
  * SearchDialog is a simple class that uses <code>org.eclipse.swt</code> 
@@ -65,6 +80,7 @@ public SearchDialog(Shell parent) {
 	gridData.widthHint = 200;
 	searchText.setLayoutData(gridData);
 	searchText.addModifyListener(new ModifyListener() {
+		@Override
 		public void modifyText(ModifyEvent e) {
 			boolean enableFind = (searchText.getCharCount() != 0);
 			findButton.setEnabled(enableFind);

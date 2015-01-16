@@ -11,10 +11,10 @@
 package org.eclipse.swt.examples.paint;
 
 
-import org.eclipse.swt.events.*;
-import org.eclipse.swt.graphics.*;
+import java.util.Vector;
 
-import java.util.*;
+import org.eclipse.swt.events.MouseEvent;
+import org.eclipse.swt.graphics.Point;
 
 /**
  * The superclass for paint tools that contruct objects from individually
@@ -48,6 +48,7 @@ public abstract class SegmentedPaintSession extends BasicPaintSession {
 	/**
 	 * Activates the tool.
 	 */
+	@Override
 	public void beginSession() {
 		getPaintSurface().setStatusMessage(PaintExample.getResourceString(
 			"session.SegmentedInteractivePaint.message.anchorMode"));
@@ -59,6 +60,7 @@ public abstract class SegmentedPaintSession extends BasicPaintSession {
 	/**
 	 * Deactivates the tool.
      */
+	@Override
 	public void endSession() {
 		getPaintSurface().clearRubberbandSelection();
 		if (previousFigure != null) getPaintSurface().drawFigure(previousFigure);
@@ -68,6 +70,7 @@ public abstract class SegmentedPaintSession extends BasicPaintSession {
 	 * Resets the tool.
 	 * Aborts any operation in progress.
 	 */
+	@Override
 	public void resetSession() {
 		getPaintSurface().clearRubberbandSelection();
 		if (previousFigure != null) getPaintSurface().drawFigure(previousFigure);
@@ -84,6 +87,7 @@ public abstract class SegmentedPaintSession extends BasicPaintSession {
 	 * 
 	 * @param event the mouse event detail information
 	 */
+	@Override
 	public void mouseDown(MouseEvent event) {
 		if (event.button != 1) return;
 
@@ -103,6 +107,7 @@ public abstract class SegmentedPaintSession extends BasicPaintSession {
 	 * 
 	 * @param event the mouse event detail information
 	 */
+	@Override
 	public void mouseDoubleClick(MouseEvent event) {
 		if (event.button != 1) return;
 		if (controlPoints.size() >= 2) {
@@ -119,6 +124,7 @@ public abstract class SegmentedPaintSession extends BasicPaintSession {
 	 * 
 	 * @param event the mouse event detail information
 	 */
+	@Override
 	public void mouseUp(MouseEvent event) {
 		if (event.button != 1) {
 			resetSession(); // abort if right or middle mouse button pressed
@@ -131,6 +137,7 @@ public abstract class SegmentedPaintSession extends BasicPaintSession {
 	 * 
 	 * @param event the mouse event detail information
 	 */
+	@Override
 	public void mouseMove(MouseEvent event) {
 		final PaintSurface ps = getPaintSurface();
 		if (controlPoints.size() == 0) {

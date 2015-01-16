@@ -11,10 +11,20 @@
 
 package org.eclipse.swt.examples.graphics;
 
-import org.eclipse.swt.*;
-import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.layout.*;
-import org.eclipse.swt.widgets.*;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Device;
+import org.eclipse.swt.graphics.GC;
+import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.graphics.Transform;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Listener;
+import org.eclipse.swt.widgets.Spinner;
 
 /**
  * This tab demonstrates transformations, such as scaling, rotation, and
@@ -76,6 +86,7 @@ public void createControlPanel(Composite parent) {
 	rotateSpinner.setMaximum(720);
 	rotateSpinner.setIncrement(30);
 	rotateSpinner.addListener(SWT.Selection, new Listener() {
+		@Override
 		public void handleEvent(Event event) {	
 				example.redraw();
 		}
@@ -93,6 +104,7 @@ public void createControlPanel(Composite parent) {
 	translateSpinnerX.setSelection(0);
 	translateSpinnerX.setIncrement(10);
 	translateSpinnerX.addListener(SWT.Selection, new Listener() {
+		@Override
 		public void handleEvent(Event event) {	
 				example.redraw();
 		}
@@ -110,6 +122,7 @@ public void createControlPanel(Composite parent) {
 	translateSpinnerY.setSelection(0);
 	translateSpinnerY.setIncrement(10);
 	translateSpinnerY.addListener(SWT.Selection, new Listener() {
+		@Override
 		public void handleEvent(Event event) {	
 				example.redraw();
 		}
@@ -128,6 +141,7 @@ public void createControlPanel(Composite parent) {
 	scaleSpinnerX.setSelection(100);
 	scaleSpinnerX.setIncrement(10);
 	scaleSpinnerX.addListener(SWT.Selection, new Listener() {
+		@Override
 		public void handleEvent(Event event) {	
 				example.redraw();
 		}
@@ -146,6 +160,7 @@ public void createControlPanel(Composite parent) {
 	scaleSpinnerY.setSelection(100);
 	scaleSpinnerY.setIncrement(10);
 	scaleSpinnerY.addListener(SWT.Selection, new Listener() {
+		@Override
 		public void handleEvent(Event event) {	
 				example.redraw();
 		}
@@ -157,6 +172,7 @@ public void createControlPanel(Composite parent) {
 	invertButton = new Button(comp, SWT.TOGGLE);
 	invertButton.setText(GraphicsExample.getResourceString("Invert")); //$NON-NLS-1$
 	invertButton.addListener(SWT.Selection, new Listener() {
+		@Override
 		public void handleEvent(Event event) {	
 				example.redraw();
 		}

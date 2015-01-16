@@ -11,10 +11,20 @@
 
 package org.eclipse.swt.examples.graphics;
 
-import org.eclipse.swt.*;
-import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.layout.*;
-import org.eclipse.swt.widgets.*;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Device;
+import org.eclipse.swt.graphics.Font;
+import org.eclipse.swt.graphics.GC;
+import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Combo;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Listener;
+import org.eclipse.swt.widgets.Menu;
 
 /**
  * This tab demonstrates antialiasing for text. Antialiasing is used for
@@ -75,6 +85,7 @@ public void createControlPanel(Composite parent) {
 	aliasCombo.add("ON");
 	aliasCombo.select(0);
 	aliasCombo.addListener(SWT.Selection, new Listener() {
+		@Override
 		public void handleEvent(Event event) {
 				example.redraw();
 		}
@@ -83,6 +94,7 @@ public void createControlPanel(Composite parent) {
 	ColorMenu cm = new ColorMenu();
 	cm.setColorItems(true);
 	menu = cm.createMenu(parent.getParent(), new ColorListener() {
+		@Override
 		public void setColor(GraphicsBackground gb) {
 			textColor = gb;
 			colorButton.setImage(gb.getThumbNail());
@@ -102,6 +114,7 @@ public void createControlPanel(Composite parent) {
 	colorButton.setImage(textColor.getThumbNail());
 	
 	colorButton.addListener(SWT.Selection, new Listener() { 
+		@Override
 		public void handleEvent(Event event) {
 			final Button button = (Button) event.widget;
 			final Composite parent = button.getParent(); 

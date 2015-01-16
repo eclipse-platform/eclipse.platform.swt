@@ -12,14 +12,34 @@ package org.eclipse.swt.examples.addressbook;
 
 
 /* Imports */
-import java.io.*;
-import java.util.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.ResourceBundle;
 
-import org.eclipse.swt.*;
-import org.eclipse.swt.events.*;
-import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.layout.*;
-import org.eclipse.swt.widgets.*;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.MenuAdapter;
+import org.eclipse.swt.events.MenuEvent;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.ShellAdapter;
+import org.eclipse.swt.events.ShellEvent;
+import org.eclipse.swt.graphics.Cursor;
+import org.eclipse.swt.layout.FillLayout;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.FileDialog;
+import org.eclipse.swt.widgets.Menu;
+import org.eclipse.swt.widgets.MenuItem;
+import org.eclipse.swt.widgets.MessageBox;
+import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.Table;
+import org.eclipse.swt.widgets.TableColumn;
+import org.eclipse.swt.widgets.TableItem;
 
 /**
  * AddressBookExample is an example that uses <code>org.eclipse.swt</code> 
@@ -76,6 +96,7 @@ public Shell open(Display display) {
 	searchDialog.setSearchAreaNames(columnNames);
 	searchDialog.setSearchAreaLabel(resAddressBook.getString("Column"));
 	searchDialog.addFindListener(new FindListener () {
+		@Override
 		public boolean find() {
 			return findEntry();
 		}
@@ -895,6 +916,7 @@ private class RowComparator implements Comparator<String[]> {
 	 * @return negative if row1 less than row2, positive if
 	 * 			row1 greater than row2, and zero if equal.
 	 */
+	@Override
 	public int compare(String[] row1, String[] row2) {
 		return row1[column].compareTo(row2[column]);
 	}

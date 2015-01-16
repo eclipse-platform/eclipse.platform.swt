@@ -11,10 +11,18 @@
 package org.eclipse.swt.examples.paint;
 
 
-import org.eclipse.swt.*;
-import org.eclipse.swt.widgets.*;
-import org.eclipse.swt.events.*;
-import org.eclipse.swt.layout.*;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.MouseEvent;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.Text;
 
 /**
  * A text drawing tool.
@@ -39,6 +47,7 @@ public class TextTool extends BasicPaintSession implements PaintTool {
 	 * 
 	 * @param toolSettings the new tool settings
 	 */
+	@Override
 	public void set(ToolSettings toolSettings) {
 		settings = toolSettings;
 	}
@@ -48,6 +57,7 @@ public class TextTool extends BasicPaintSession implements PaintTool {
 	 * 
 	 * @return the localized name of this tool
 	 */
+	@Override
 	public String getDisplayName() {
 		return PaintExample.getResourceString("tool.Text.label");
 	}
@@ -55,6 +65,7 @@ public class TextTool extends BasicPaintSession implements PaintTool {
 	/**
 	 * Activates the tool.
 	 */
+	@Override
 	public void beginSession() {
 		getPaintSurface().setStatusMessage(PaintExample.getResourceString(
 			"session.Text.message"));
@@ -63,6 +74,7 @@ public class TextTool extends BasicPaintSession implements PaintTool {
 	/**
 	 * Deactivates the tool.
      */
+	@Override
 	public void endSession() {
 		getPaintSurface().clearRubberbandSelection();
 	}
@@ -70,6 +82,7 @@ public class TextTool extends BasicPaintSession implements PaintTool {
 	/**
 	 * Aborts the current operation.
 	 */
+	@Override
 	public void resetSession() {
 		getPaintSurface().clearRubberbandSelection();
 	}
@@ -79,6 +92,7 @@ public class TextTool extends BasicPaintSession implements PaintTool {
 	 * 
 	 * @param event the mouse event detail information
 	 */
+	@Override
 	public void mouseDown(MouseEvent event) {
 		if (event.button == 1) {
 			// draw with left mouse button
@@ -135,6 +149,7 @@ public class TextTool extends BasicPaintSession implements PaintTool {
 	 * 
 	 * @param event the mouse event detail information
 	 */
+	@Override
 	public void mouseDoubleClick(MouseEvent event) {
 	}
 
@@ -143,6 +158,7 @@ public class TextTool extends BasicPaintSession implements PaintTool {
 	 * 
 	 * @param event the mouse event detail information
 	 */
+	@Override
 	public void mouseUp(MouseEvent event) {
 	}
 	
@@ -151,6 +167,7 @@ public class TextTool extends BasicPaintSession implements PaintTool {
 	 * 
 	 * @param event the mouse event detail information
 	 */
+	@Override
 	public void mouseMove(MouseEvent event) {
 		final PaintSurface ps = getPaintSurface();
 		ps.setStatusCoord(ps.getCurrentPosition());

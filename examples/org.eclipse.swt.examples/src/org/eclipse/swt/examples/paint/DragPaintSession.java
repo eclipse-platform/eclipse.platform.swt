@@ -12,7 +12,7 @@ package org.eclipse.swt.examples.paint;
 
 
 import org.eclipse.swt.events.MouseEvent;
-import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.graphics.Point;
 
 /**
  * The superclass for paint tools that use click-drag-release motions to
@@ -46,6 +46,7 @@ public abstract class DragPaintSession extends BasicPaintSession {
 	/**
 	 * Activates the tool.
 	 */
+	@Override
 	public void beginSession() {
 		getPaintSurface().
 			setStatusMessage(PaintExample.getResourceString("session.DragInteractivePaint.message"));
@@ -56,6 +57,7 @@ public abstract class DragPaintSession extends BasicPaintSession {
 	/**
 	 * Deactivates the tool.
      */
+	@Override
 	public void endSession() {
 	}
 	
@@ -63,6 +65,7 @@ public abstract class DragPaintSession extends BasicPaintSession {
 	 * Resets the tool.
 	 * Aborts any operation in progress.
 	 */
+	@Override
 	public void resetSession() {
 		getPaintSurface().clearRubberbandSelection();
 		anchorPosition.x = -1;
@@ -74,6 +77,7 @@ public abstract class DragPaintSession extends BasicPaintSession {
 	 * 
 	 * @param event the mouse event detail information
 	 */
+	@Override
 	public void mouseDown(MouseEvent event) {
 		if (event.button != 1) return;
 		if (dragInProgress) return; // spurious event
@@ -88,6 +92,7 @@ public abstract class DragPaintSession extends BasicPaintSession {
 	 * 
 	 * @param event the mouse event detail information
 	 */
+	@Override
 	public void mouseDoubleClick(MouseEvent event) {
 	}
 
@@ -96,6 +101,7 @@ public abstract class DragPaintSession extends BasicPaintSession {
 	 * 
 	 * @param event the mouse event detail information
 	 */
+	@Override
 	public void mouseUp(MouseEvent event) {
 		if (event.button != 1) {
 			resetSession(); // abort if right or middle mouse button pressed
@@ -113,6 +119,7 @@ public abstract class DragPaintSession extends BasicPaintSession {
 	 * 
 	 * @param event the mouse event detail information
 	 */
+	@Override
 	public void mouseMove(MouseEvent event) {
 		final PaintSurface ps = getPaintSurface();
 		if (! dragInProgress) {

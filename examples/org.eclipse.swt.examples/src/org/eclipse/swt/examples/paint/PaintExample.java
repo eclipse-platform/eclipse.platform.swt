@@ -11,16 +11,39 @@
 package org.eclipse.swt.examples.paint;
 
 
-import org.eclipse.swt.*;
-import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.widgets.*;
-import org.eclipse.swt.events.*;
-import org.eclipse.swt.layout.*;
-import org.eclipse.swt.accessibility.*;
+import java.io.IOException;
+import java.io.InputStream;
+import java.text.MessageFormat;
+import java.util.MissingResourceException;
+import java.util.ResourceBundle;
 
-import java.io.*;
-import java.text.*;
-import java.util.*;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.SWTException;
+import org.eclipse.swt.accessibility.AccessibleAdapter;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.Font;
+import org.eclipse.swt.graphics.FontData;
+import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.ImageData;
+import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.layout.FillLayout;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Canvas;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.FontDialog;
+import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Listener;
+import org.eclipse.swt.widgets.Scale;
+import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.Text;
+import org.eclipse.swt.widgets.ToolBar;
+import org.eclipse.swt.widgets.ToolItem;
 
 public class PaintExample {
 	private static ResourceBundle resourceBundle =
@@ -251,6 +274,7 @@ public class PaintExample {
 		gridData.heightHint = 24;
 		paletteCanvas.setLayoutData(gridData);
 		paletteCanvas.addListener(SWT.MouseDown, new Listener() {
+			@Override
 			public void handleEvent(Event e) {
 				Rectangle bounds = paletteCanvas.getClientArea();
 				Color color = getColorAt(bounds, e.x, e.y);				
@@ -266,6 +290,7 @@ public class PaintExample {
 			}
 		});
 		Listener refreshListener = new Listener() {
+			@Override
 			public void handleEvent(Event e) {
 				if (e.gc == null) return;
 				Rectangle bounds = paletteCanvas.getClientArea();
@@ -428,24 +453,28 @@ public class PaintExample {
 			String group = tool.group;
 			if (group.equals("tool")) {
 				tool.action = new Runnable() {
+					@Override
 					public void run() {
 						setPaintTool(tool.id);
 					}
 				};
 			} else if (group.equals("fill")) {
 				tool.action = new Runnable() {
+					@Override
 					public void run() {
 						setFillType(tool.id);
 					}
 				};
 			} else if (group.equals("linestyle")) {
 				tool.action = new Runnable() {
+					@Override
 					public void run() {
 						setLineStyle(tool.id);
 					}
 				};
 			} else if (group.equals("options")) {
 				tool.action = new Runnable() {
+					@Override
 					public void run() {
 						FontDialog fontDialog = new FontDialog(paintSurface.getShell(), SWT.PRIMARY_MODAL);
 						FontData[] fontDatum = toolSettings.commonFont.getFontData();

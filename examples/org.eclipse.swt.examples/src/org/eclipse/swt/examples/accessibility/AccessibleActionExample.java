@@ -58,6 +58,7 @@ public class AccessibleActionExample {
 			}
 		};
 		customButton.addPaintListener(new PaintListener() {
+			@Override
 			public void paintControl(PaintEvent e) {
 				Rectangle clientArea = customButton.getClientArea();
 				Point stringExtent = e.gc.stringExtent(buttonText);

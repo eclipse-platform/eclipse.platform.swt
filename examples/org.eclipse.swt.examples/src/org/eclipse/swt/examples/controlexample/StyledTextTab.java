@@ -11,14 +11,49 @@
 package org.eclipse.swt.examples.controlexample;
 
 
-import java.io.*;
+import java.io.IOException;
+import java.io.InputStream;
 
-import org.eclipse.swt.*;
-import org.eclipse.swt.custom.*;
-import org.eclipse.swt.events.*;
-import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.layout.*;
-import org.eclipse.swt.widgets.*;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.BidiSegmentEvent;
+import org.eclipse.swt.custom.BidiSegmentListener;
+import org.eclipse.swt.custom.ExtendedModifyEvent;
+import org.eclipse.swt.custom.ExtendedModifyListener;
+import org.eclipse.swt.custom.LineBackgroundEvent;
+import org.eclipse.swt.custom.LineBackgroundListener;
+import org.eclipse.swt.custom.LineStyleEvent;
+import org.eclipse.swt.custom.LineStyleListener;
+import org.eclipse.swt.custom.MovementEvent;
+import org.eclipse.swt.custom.MovementListener;
+import org.eclipse.swt.custom.PaintObjectEvent;
+import org.eclipse.swt.custom.PaintObjectListener;
+import org.eclipse.swt.custom.StyleRange;
+import org.eclipse.swt.custom.StyledText;
+import org.eclipse.swt.custom.TextChangeListener;
+import org.eclipse.swt.custom.TextChangedEvent;
+import org.eclipse.swt.custom.TextChangingEvent;
+import org.eclipse.swt.custom.VerifyKeyListener;
+import org.eclipse.swt.events.ControlAdapter;
+import org.eclipse.swt.events.ControlEvent;
+import org.eclipse.swt.events.DisposeEvent;
+import org.eclipse.swt.events.DisposeListener;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.events.VerifyEvent;
+import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.ImageData;
+import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Group;
+import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.TabFolder;
+import org.eclipse.swt.widgets.Widget;
 
 class StyledTextTab extends ScrollableTab {
 	/* Example widgets and groups that contain them */
@@ -252,6 +287,7 @@ class StyledTextTab extends ScrollableTab {
 		redButton.addSelectionListener(colorListener);
 		yellowButton.addSelectionListener(colorListener);
 		yellowButton.addDisposeListener(new DisposeListener () {
+			@Override
 			public void widgetDisposed (DisposeEvent e) {
 				boldImage.dispose();
 				italicImage.dispose();
@@ -348,6 +384,7 @@ class StyledTextTab extends ScrollableTab {
 	void hookCustomListener (final String eventName) {
 		if (eventName == "ExtendedModifyListener") {
 			styledText.addExtendedModifyListener (new ExtendedModifyListener() {
+				@Override
 				public void modifyText(ExtendedModifyEvent event) {
 					log (eventName, event);
 				}
@@ -355,6 +392,7 @@ class StyledTextTab extends ScrollableTab {
 		}
 		if (eventName == "BidiSegmentListener") {
 			styledText.addBidiSegmentListener (new BidiSegmentListener() {
+				@Override
 				public void lineGetSegments(BidiSegmentEvent event) {
 					log (eventName, event);
 				}
@@ -362,6 +400,7 @@ class StyledTextTab extends ScrollableTab {
 		}
 		if (eventName == "LineBackgroundListener") {
 			styledText.addLineBackgroundListener (new LineBackgroundListener() {
+				@Override
 				public void lineGetBackground(LineBackgroundEvent event) {
 					log (eventName, event);
 				}
@@ -369,6 +408,7 @@ class StyledTextTab extends ScrollableTab {
 		}
 		if (eventName == "LineStyleListener") {
 			styledText.addLineStyleListener (new LineStyleListener() {
+				@Override
 				public void lineGetStyle(LineStyleEvent event) {
 					log (eventName, event);
 				}
@@ -376,6 +416,7 @@ class StyledTextTab extends ScrollableTab {
 		}
 		if (eventName == "PaintObjectListener") {
 			styledText.addPaintObjectListener (new PaintObjectListener() {
+				@Override
 				public void paintObject(PaintObjectEvent event) {
 					log (eventName, event);
 				}
@@ -383,12 +424,15 @@ class StyledTextTab extends ScrollableTab {
 		}
 		if (eventName == "TextChangeListener") {
 			styledText.getContent().addTextChangeListener (new TextChangeListener() {
+				@Override
 				public void textChanged(TextChangedEvent event) {
 					log (eventName + ".textChanged", event);
 				}
+				@Override
 				public void textChanging(TextChangingEvent event) {
 					log (eventName + ".textChanging", event);
 				}
+				@Override
 				public void textSet(TextChangedEvent event) {
 					log (eventName + ".textSet", event);
 				}
@@ -396,6 +440,7 @@ class StyledTextTab extends ScrollableTab {
 		}
 		if (eventName == "VerifyKeyListener") {
 			styledText.addVerifyKeyListener (new VerifyKeyListener() {
+				@Override
 				public void verifyKey(VerifyEvent event) {
 					log (eventName, event);
 				}
@@ -403,9 +448,11 @@ class StyledTextTab extends ScrollableTab {
 		}
 		if (eventName == "WordMovementListener") {
 			styledText.addWordMovementListener (new MovementListener() {
+				@Override
 				public void getNextOffset(MovementEvent event) {
 					log (eventName + ".getNextOffset", event);
 				}
+				@Override
 				public void getPreviousOffset(MovementEvent event) {
 					log (eventName + ".getPreviousOffset", event);
 				}

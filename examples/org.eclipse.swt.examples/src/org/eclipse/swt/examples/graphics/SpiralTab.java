@@ -11,10 +11,21 @@
 
 package org.eclipse.swt.examples.graphics;
 
-import org.eclipse.swt.*;
-import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.layout.*;
-import org.eclipse.swt.widgets.*;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Device;
+import org.eclipse.swt.graphics.GC;
+import org.eclipse.swt.graphics.Pattern;
+import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.graphics.Transform;
+import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Listener;
+import org.eclipse.swt.widgets.Menu;
+import org.eclipse.swt.widgets.Spinner;
 
 /**
  * This tab presents a spiral consisting of the number of petals specified.
@@ -61,6 +72,7 @@ public void createControlPanel(Composite parent) {
 	petalSpinner.setMinimum(3);
 	petalSpinner.setMaximum(20);
 	petalSpinner.addListener(SWT.Selection, new Listener() {
+		@Override
 		public void handleEvent (Event event) {
 			example.redraw();
 		}
@@ -73,6 +85,7 @@ public void createControlPanel(Composite parent) {
 	ColorMenu cm = new ColorMenu();
 	cm.setPatternItems(example.checkAdvancedGraphics());
 	menu = cm.createMenu(parent.getParent(), new ColorListener() {
+		@Override
 		public void setColor(GraphicsBackground gb) {
 			foreground = gb;		
 			colorButton.setImage(gb.getThumbNail());
@@ -89,6 +102,7 @@ public void createControlPanel(Composite parent) {
 			.getResourceString("Color")); //$NON-NLS-1$
 	colorButton.setImage(foreground.getThumbNail());
 	colorButton.addListener(SWT.Selection, new Listener() { 
+		@Override
 		public void handleEvent(Event event) {
 			final Button button = (Button) event.widget;
 			final Composite parent = button.getParent(); 

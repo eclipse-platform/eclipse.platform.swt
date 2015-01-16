@@ -10,15 +10,71 @@
  *******************************************************************************/
 package org.eclipse.swt.examples.texteditor;
 
-import java.io.*;
-import java.util.*;
-import org.eclipse.swt.*;
-import org.eclipse.swt.browser.*;
-import org.eclipse.swt.custom.*;
-import org.eclipse.swt.events.*;
-import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.layout.*;
-import org.eclipse.swt.widgets.*;
+import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.MissingResourceException;
+import java.util.ResourceBundle;
+import java.util.StringTokenizer;
+
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.browser.Browser;
+import org.eclipse.swt.custom.Bullet;
+import org.eclipse.swt.custom.CaretEvent;
+import org.eclipse.swt.custom.CaretListener;
+import org.eclipse.swt.custom.PaintObjectEvent;
+import org.eclipse.swt.custom.PaintObjectListener;
+import org.eclipse.swt.custom.ST;
+import org.eclipse.swt.custom.StyleRange;
+import org.eclipse.swt.custom.StyledText;
+import org.eclipse.swt.events.ControlAdapter;
+import org.eclipse.swt.events.ControlEvent;
+import org.eclipse.swt.events.MenuAdapter;
+import org.eclipse.swt.events.MenuEvent;
+import org.eclipse.swt.events.ModifyEvent;
+import org.eclipse.swt.events.ModifyListener;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.VerifyEvent;
+import org.eclipse.swt.events.VerifyListener;
+import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.Font;
+import org.eclipse.swt.graphics.FontData;
+import org.eclipse.swt.graphics.GC;
+import org.eclipse.swt.graphics.GlyphMetrics;
+import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.ImageData;
+import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.graphics.RGB;
+import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.graphics.Resource;
+import org.eclipse.swt.layout.FillLayout;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.ColorDialog;
+import org.eclipse.swt.widgets.Combo;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.CoolBar;
+import org.eclipse.swt.widgets.CoolItem;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.FileDialog;
+import org.eclipse.swt.widgets.FontDialog;
+import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Listener;
+import org.eclipse.swt.widgets.Menu;
+import org.eclipse.swt.widgets.MenuItem;
+import org.eclipse.swt.widgets.MessageBox;
+import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.Spinner;
+import org.eclipse.swt.widgets.Text;
+import org.eclipse.swt.widgets.ToolBar;
+import org.eclipse.swt.widgets.ToolItem;
 
 public class TextEditor {
 	Display display;
@@ -511,6 +567,7 @@ public class TextEditor {
 		cutItem.setText (getResourceString("Cut_menuitem")); //$NON-NLS-1$
 		cutItem.setImage(iCut);
 		cutItem.addListener (SWT.Selection, new Listener () {
+			@Override
 			public void handleEvent (Event event) {
 				styledText.cut();
 			}
@@ -519,6 +576,7 @@ public class TextEditor {
 		copyItem.setText (getResourceString("Copy_menuitem")); //$NON-NLS-1$
 		copyItem.setImage(iCopy);
 		copyItem.addListener (SWT.Selection, new Listener () {
+			@Override
 			public void handleEvent (Event event) {
 				styledText.copy();
 			}
@@ -527,6 +585,7 @@ public class TextEditor {
 		pasteItem.setText (getResourceString("Paste_menuitem")); //$NON-NLS-1$
 		pasteItem.setImage(iPaste);
 		pasteItem.addListener (SWT.Selection, new Listener () {
+			@Override
 			public void handleEvent (Event event) {
 				styledText.paste();
 			}
@@ -535,6 +594,7 @@ public class TextEditor {
 		final MenuItem selectAllItem = new MenuItem (menu, SWT.PUSH);
 		selectAllItem.setText (getResourceString("SelectAll_menuitem")); //$NON-NLS-1$
 		selectAllItem.addListener (SWT.Selection, new Listener () {
+			@Override
 			public void handleEvent (Event event) {
 				styledText.selectAll();
 			}
@@ -1259,37 +1319,44 @@ public class TextEditor {
 
 	void installListeners() {
 		styledText.addCaretListener(new CaretListener() {
+			@Override
 			public void caretMoved(CaretEvent event) {
 				updateStatusBar();
 				updateToolBar();
 			}
 		});
 		styledText.addListener(SWT.MouseUp, new Listener() {
+			@Override
 			public void handleEvent(Event event) {
 				handleMouseUp(event);
 			}
 		});
 		styledText.addListener(SWT.KeyDown, new Listener() {
+			@Override
 			public void handleEvent(Event event) {
 				handleKeyDown(event);
 			}
 		});
 		styledText.addVerifyListener(new VerifyListener() {
+			@Override
 			public void verifyText(VerifyEvent event) {
 				handleVerifyText(event);
 			}
 		});
 		styledText.addModifyListener(new ModifyListener(){
+			@Override
 			public void modifyText(ModifyEvent event) {
 				handleModify(event);
 			}
 		});
 		styledText.addPaintObjectListener(new PaintObjectListener() {
+			@Override
 			public void paintObject(PaintObjectEvent event) {
 				handlePaintObject(event);
 			}
 		});
 		styledText.addListener(SWT.Dispose, new Listener() {
+			@Override
 			public void handleEvent(Event event) {
 				StyleRange[] styles = styledText.getStyleRanges(0, styledText.getCharCount(), false);
 				for (int i = 0; i < styles.length; i++) {
@@ -1474,6 +1541,7 @@ public class TextEditor {
 		final Button cancelButton = new Button(dialog, SWT.PUSH);
 		cancelButton.setText(getResourceString("Cancel")); //$NON-NLS-1$
 		Listener listener = new Listener() {
+			@Override
 			public void handleEvent(Event event) {
 				if (event.widget == okButton) {
 					link = text.getText();

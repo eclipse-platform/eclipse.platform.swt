@@ -11,12 +11,28 @@
 
 package org.eclipse.swt.examples.graphics;
 
-import java.util.*;
+import java.util.ArrayList;
 
-import org.eclipse.swt.*;
-import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.layout.*;
-import org.eclipse.swt.widgets.*;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.graphics.RGB;
+import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.graphics.Resource;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.layout.RowLayout;
+import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Canvas;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Dialog;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Listener;
+import org.eclipse.swt.widgets.Menu;
+import org.eclipse.swt.widgets.Shell;
 
 /**
  * This dialog is used for prompting the user to select two colors for the
@@ -65,6 +81,7 @@ public class GradientDialog extends Dialog {
 	    createDialogControls(dialog);
 		
 		dialog.addListener(SWT.Close, new Listener() {
+			@Override
 			public void handleEvent(Event event) {
 				for (int i = 0; i < resources.size(); i++) {
 					Object obj = resources.get(i);
@@ -129,6 +146,7 @@ public class GradientDialog extends Dialog {
 		gridData.heightHint = 100;
 		canvas.setLayoutData(gridData);
 		canvas.addListener (SWT.Paint, new Listener () {
+			@Override
 			public void handleEvent (Event e) {
 				Image preview = null;
 				Point size = canvas.getSize();
@@ -168,6 +186,7 @@ public class GradientDialog extends Dialog {
 		colorButton1.setImage(img1);
 		resources.add(img1);
 		menu1 = colorMenu.createMenu(parent.getParent(), new ColorListener() {
+			@Override
 			public void setColor(GraphicsBackground gb) {
 				rgb1 = gb.getBgColor1().getRGB();
 				colorButton1.setImage(gb.getThumbNail());
@@ -175,6 +194,7 @@ public class GradientDialog extends Dialog {
 			}
 		});
 		colorButton1.addListener(SWT.Selection, new Listener() { 
+			@Override
 			public void handleEvent(Event event) {
 				final Button button = (Button) event.widget;
 				final Composite parent = button.getParent(); 
@@ -194,6 +214,7 @@ public class GradientDialog extends Dialog {
 		colorButton2.setImage(img2);
 		resources.add(img2);
 		menu2 = colorMenu.createMenu(parent.getParent(), new ColorListener() {
+			@Override
 			public void setColor(GraphicsBackground gb) {
 				rgb2 = gb.getBgColor1().getRGB();
 				colorButton2.setImage(gb.getThumbNail());
@@ -201,6 +222,7 @@ public class GradientDialog extends Dialog {
 			}
 		});
 		colorButton2.addListener(SWT.Selection, new Listener() { 
+			@Override
 			public void handleEvent(Event event) {
 				final Button button = (Button) event.widget;
 				final Composite parent = button.getParent(); 
@@ -229,6 +251,7 @@ public class GradientDialog extends Dialog {
 		okButton = new Button (okCancelComp, SWT.PUSH);
 		okButton.setText("&OK");
 		okButton.addListener(SWT.Selection, new Listener() {
+			@Override
 			public void handleEvent(Event event) {
 				returnVal = SWT.OK;
 				parent.close();
@@ -239,6 +262,7 @@ public class GradientDialog extends Dialog {
 		cancelButton = new Button (okCancelComp, SWT.PUSH);
 		cancelButton.setText("&Cancel");
 		cancelButton.addListener(SWT.Selection, new Listener() {
+			@Override
 			public void handleEvent(Event event) {
 				parent.close();
 			}

@@ -13,12 +13,49 @@ package org.eclipse.swt.examples.layoutexample;
  
 import java.util.Vector;
 
-import org.eclipse.swt.*;
-import org.eclipse.swt.custom.*;
-import org.eclipse.swt.events.*;
-import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.layout.*;
-import org.eclipse.swt.widgets.*;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.CCombo;
+import org.eclipse.swt.custom.SashForm;
+import org.eclipse.swt.custom.StyledText;
+import org.eclipse.swt.custom.TableEditor;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.events.TraverseEvent;
+import org.eclipse.swt.events.TraverseListener;
+import org.eclipse.swt.graphics.Font;
+import org.eclipse.swt.graphics.FontData;
+import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.layout.FillLayout;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Canvas;
+import org.eclipse.swt.widgets.Combo;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.CoolBar;
+import org.eclipse.swt.widgets.CoolItem;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Group;
+import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Link;
+import org.eclipse.swt.widgets.List;
+import org.eclipse.swt.widgets.Menu;
+import org.eclipse.swt.widgets.MenuItem;
+import org.eclipse.swt.widgets.ProgressBar;
+import org.eclipse.swt.widgets.Scale;
+import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.Slider;
+import org.eclipse.swt.widgets.TabFolder;
+import org.eclipse.swt.widgets.Table;
+import org.eclipse.swt.widgets.TableColumn;
+import org.eclipse.swt.widgets.TableItem;
+import org.eclipse.swt.widgets.Text;
+import org.eclipse.swt.widgets.ToolBar;
+import org.eclipse.swt.widgets.ToolItem;
+import org.eclipse.swt.widgets.Tree;
+import org.eclipse.swt.widgets.TreeItem;
 
 /**
  * <code>Tab</code> is the abstract superclass of every page
@@ -72,6 +109,7 @@ abstract class Tab {
 	};
 		
 	TraverseListener traverseListener = new TraverseListener () {
+		@Override
 		public void keyTraversed (TraverseEvent e) {
 			if (e.detail == SWT.TRAVERSE_RETURN) {
 				e.doit = false;
@@ -301,7 +339,8 @@ abstract class Tab {
 		
 		/* Add listener */
 		combo.addTraverseListener(new TraverseListener() {
-        	public void keyTraversed(TraverseEvent e) {
+        	@Override
+			public void keyTraversed(TraverseEvent e) {
             	if (e.detail == SWT.TRAVERSE_TAB_NEXT || e.detail == SWT.TRAVERSE_RETURN) {
             		comboReset = true;
                     resetEditors ();
@@ -431,7 +470,8 @@ abstract class Tab {
 		textEditor.setEditor (text, newItem, column);
 		
 		text.addTraverseListener(new TraverseListener() {
-        	public void keyTraversed(TraverseEvent e) {
+        	@Override
+			public void keyTraversed(TraverseEvent e) {
             	if (e.detail == SWT.TRAVERSE_TAB_NEXT) {
                     resetEditors (true);
                 }

@@ -10,11 +10,25 @@
  *******************************************************************************/
 package org.eclipse.swt.examples.browser.demos.views;
 
-import org.eclipse.swt.*;
-import org.eclipse.swt.layout.*;
-import org.eclipse.swt.widgets.*;
-import org.eclipse.swt.browser.*;
-import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.SWTError;
+import org.eclipse.swt.browser.Browser;
+import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.layout.FillLayout;
+import org.eclipse.swt.layout.FormAttachment;
+import org.eclipse.swt.layout.FormData;
+import org.eclipse.swt.layout.FormLayout;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Group;
+import org.eclipse.swt.widgets.Listener;
+import org.eclipse.swt.widgets.Sash;
+import org.eclipse.swt.widgets.TabItem;
+import org.eclipse.swt.widgets.Text;
+import org.eclipse.swt.widgets.Widget;
 
 public class EditorTab {
 	Browser browser;
@@ -73,6 +87,7 @@ public class EditorTab {
 		sashData.bottom = new FormAttachment(100, 0);
 		sash.setLayoutData(sashData);
 		sash.addListener(SWT.Selection, new Listener() {
+			@Override
 			public void handleEvent(Event e) {
 				Rectangle rect = sash.getBounds();
 				Rectangle parentRect = sash.getParent().getClientArea();
@@ -135,6 +150,7 @@ public class EditorTab {
 		parent.layout();
 		
 		Listener listener = new Listener() {
+			@Override
 			public void handleEvent(Event e) {
 				Widget w = e.widget;
 				if (w == htmlButton) browser.setText(htmlText.getText());

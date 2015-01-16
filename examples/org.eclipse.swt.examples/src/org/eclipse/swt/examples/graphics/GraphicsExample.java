@@ -10,13 +10,45 @@
  *******************************************************************************/
 package org.eclipse.swt.examples.graphics;
 
-import java.io.*;
-import java.util.*;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.HashSet;
+import java.util.MissingResourceException;
+import java.util.ResourceBundle;
 
-import org.eclipse.swt.*;
-import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.layout.*;
-import org.eclipse.swt.widgets.*;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.SWTException;
+import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.Device;
+import org.eclipse.swt.graphics.GC;
+import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.Path;
+import org.eclipse.swt.graphics.Pattern;
+import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.layout.FormAttachment;
+import org.eclipse.swt.layout.FormData;
+import org.eclipse.swt.layout.FormLayout;
+import org.eclipse.swt.layout.RowLayout;
+import org.eclipse.swt.widgets.Canvas;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Group;
+import org.eclipse.swt.widgets.Listener;
+import org.eclipse.swt.widgets.Menu;
+import org.eclipse.swt.widgets.MessageBox;
+import org.eclipse.swt.widgets.Sash;
+import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.Text;
+import org.eclipse.swt.widgets.ToolBar;
+import org.eclipse.swt.widgets.ToolItem;
+import org.eclipse.swt.widgets.Tree;
+import org.eclipse.swt.widgets.TreeItem;
 
 /**
  * This class is the main class of the graphics application. Various "tabs" are
@@ -145,6 +177,7 @@ void createControls(final Composite parent) {
 	tabControlPanel.setLayoutData(data);
 	
 	vSash.addListener(SWT.Selection, new Listener() {
+		@Override
 		public void handleEvent(Event event) {
 			Rectangle rect = hSash.getParent().getClientArea();
 			event.x = Math.min (Math.max (event.x, 60), rect.width - 60);
@@ -159,6 +192,7 @@ void createControls(final Composite parent) {
 		}
 	});
 	hSash.addListener (SWT.Selection, new Listener () {
+		@Override
 		public void handleEvent (Event event) {
 			Rectangle rect = vSash.getParent().getClientArea();
 			event.y = Math.min (Math.max (event.y, tabList.getLocation().y + 60), rect.height - 60);
@@ -176,6 +210,7 @@ void createCanvas(Composite parent) {
 	if (dbItem.getSelection()) style |= SWT.DOUBLE_BUFFERED;
 	canvas = new Canvas(parent, style);
 	canvas.addListener(SWT.Paint, new Listener() {
+		@Override
 		public void handleEvent(Event event) {
 			GC gc = event.gc;
 			Rectangle rect = canvas.getClientArea();			
@@ -233,6 +268,7 @@ void createToolBar(final Composite parent) {
 	back.setImage(loadImage(display, "back.gif")); //$NON-NLS-1$
 	
 	back.addListener(SWT.Selection, new Listener() {
+		@Override
 		public void handleEvent(Event event) {
 			int index = tabs_in_order.indexOf(tab) - 1;
 			if (index < 0)
@@ -245,6 +281,7 @@ void createToolBar(final Composite parent) {
 	next.setText(getResourceString("Next")); //$NON-NLS-1$
 	next.setImage(loadImage(display, "next.gif")); //$NON-NLS-1$
 	next.addListener(SWT.Selection, new Listener() {
+		@Override
 		public void handleEvent(Event event) {
 			int index = (tabs_in_order.indexOf(tab) + 1)%tabs_in_order.size();
 			setTab(tabs_in_order.get(index));
@@ -260,6 +297,7 @@ void createToolBar(final Composite parent) {
 	
 	// create the background menu
 	backMenu = colorMenu.createMenu(parent, new ColorListener() {
+		@Override
 		public void setColor(GraphicsBackground gb) {
 			background = gb;
 			backItem.setImage(gb.getThumbNail());
@@ -275,6 +313,7 @@ void createToolBar(final Composite parent) {
 	backItem.setText(getResourceString("Background")); //$NON-NLS-1$
 	backItem.setImage(background.getThumbNail());
 	backItem.addListener(SWT.Selection, new Listener() {
+		@Override
 		public void handleEvent(Event event) {
 			if (event.widget == backItem) {
 				final ToolItem toolItem = (ToolItem) event.widget;
@@ -292,6 +331,7 @@ void createToolBar(final Composite parent) {
 	dbItem.setText(getResourceString("DoubleBuffer")); //$NON-NLS-1$
 	dbItem.setImage(loadImage(display, "db.gif")); //$NON-NLS-1$
 	dbItem.addListener(SWT.Selection, new Listener() {
+		@Override
 		public void handleEvent(Event event) {
 			setDoubleBuffered(dbItem.getSelection());
 		}
@@ -370,6 +410,7 @@ static Image createImage(Device device, Color color) {
 void createTabList(Composite parent) {
 	tabList = new Tree(parent, SWT.SINGLE | SWT.H_SCROLL | SWT.V_SCROLL | SWT.BORDER);
 	Arrays.sort(tabs, new Comparator<GraphicsTab>() {
+		@Override
 		public int compare(GraphicsTab tab0, GraphicsTab tab1) {
 			return tab0.getText().compareTo(tab1.getText());
 		}
@@ -398,6 +439,7 @@ void createTabList(Composite parent) {
 		}
 	}
 	tabList.addListener(SWT.Selection, new Listener() {
+		@Override
 		public void handleEvent(Event event) {
 			TreeItem item = (TreeItem)event.item;
 			if (item != null) {
@@ -539,6 +581,7 @@ public Shell open(final Display display) {
 	shell.setText(getResourceString("GraphicsExample")); //$NON-NLS-1$
 	final GraphicsExample example = new GraphicsExample(shell);
 	shell.addListener(SWT.Close, new Listener() {
+		@Override
 		public void handleEvent(Event event) {
 			example.dispose();
 		}
@@ -610,6 +653,7 @@ public void setTab(GraphicsTab tab) {
 void startAnimationTimer() {
 	final Display display = parent.getDisplay();
 	display.timerExec(TIMER, new Runnable() {
+		@Override
 		public void run() {
 			if (canvas.isDisposed()) return;
 			int timeout = TIMER;

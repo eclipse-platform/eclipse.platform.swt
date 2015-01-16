@@ -11,10 +11,20 @@
 
 package org.eclipse.swt.examples.graphics;
 
-import org.eclipse.swt.*;
-import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.layout.*;
-import org.eclipse.swt.widgets.*;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Device;
+import org.eclipse.swt.graphics.GC;
+import org.eclipse.swt.graphics.Path;
+import org.eclipse.swt.graphics.Pattern;
+import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.graphics.Transform;
+import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Listener;
+import org.eclipse.swt.widgets.Menu;
 
 /**
  * This tab demonstrates the use of paths. It allows the user to see the
@@ -65,6 +75,7 @@ public void createControlPanel(Composite parent) {
 	drawButton = new Button(comp, SWT.TOGGLE);
 	drawButton.setText(GraphicsExample.getResourceString("DrawPath")); //$NON-NLS-1$
 	drawButton.addListener(SWT.Selection, new Listener() { 
+		@Override
 		public void handleEvent(Event event) {
 			example.redraw();
 		}
@@ -78,6 +89,7 @@ public void createControlPanel(Composite parent) {
 	fillButton = new Button(comp, SWT.TOGGLE);
 	fillButton.setText(GraphicsExample.getResourceString("FillPath")); //$NON-NLS-1$
 	fillButton.addListener(SWT.Selection, new Listener() { 
+		@Override
 		public void handleEvent(Event event) {
 			example.redraw();
 		}
@@ -90,6 +102,7 @@ public void createControlPanel(Composite parent) {
 	closeButton = new Button(comp, SWT.TOGGLE);
 	closeButton.setText(GraphicsExample.getResourceString("ClosePath")); //$NON-NLS-1$
 	closeButton.addListener(SWT.Selection, new Listener() { 
+		@Override
 		public void handleEvent(Event event) {
 			example.redraw();
 		}
@@ -102,6 +115,7 @@ public void createControlPanel(Composite parent) {
 	ColorMenu cm = new ColorMenu();
 	cm.setPatternItems(example.checkAdvancedGraphics());
 	menu = cm.createMenu(parent.getParent(), new ColorListener() {
+		@Override
 		public void setColor(GraphicsBackground gb) {
 			fillColor = gb;		
 			colorButton.setImage(gb.getThumbNail());
@@ -117,6 +131,7 @@ public void createControlPanel(Composite parent) {
 	colorButton.setText(GraphicsExample.getResourceString("FillColor")); //$NON-NLS-1$
 	colorButton.setImage(fillColor.getThumbNail());
 	colorButton.addListener(SWT.Selection, new Listener() { 
+		@Override
 		public void handleEvent(Event event) {
 			final Button button = (Button) event.widget;
 			final Composite parent = button.getParent(); 

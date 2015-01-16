@@ -11,9 +11,9 @@
 package org.eclipse.swt.examples.paint;
 
 
-import org.eclipse.swt.events.*;
-import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.widgets.*;
+import org.eclipse.swt.events.MouseEvent;
+import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.widgets.Display;
 
 /**
  * The superclass for paint tools that draw continuously along the path
@@ -64,6 +64,7 @@ public abstract class ContinuousPaintSession extends BasicPaintSession {
 	/**
 	 * Activates the tool.
 	 */
+	@Override
 	public void beginSession() {
 		getPaintSurface().
 			setStatusMessage(PaintExample.getResourceString("session.ContinuousPaint.message"));
@@ -73,6 +74,7 @@ public abstract class ContinuousPaintSession extends BasicPaintSession {
 	/**
 	 * Deactivates the tool.
      */
+	@Override
 	public void endSession() {
 		abortRetrigger();
 	}
@@ -80,6 +82,7 @@ public abstract class ContinuousPaintSession extends BasicPaintSession {
 	/**
 	 * Aborts the current operation.
 	 */
+	@Override
 	public void resetSession() {
 		abortRetrigger();
 	}
@@ -89,6 +92,7 @@ public abstract class ContinuousPaintSession extends BasicPaintSession {
 	 * 
 	 * @param event the mouse event detail information
 	 */
+	@Override
 	public final void mouseDown(MouseEvent event) {
 		if (event.button != 1) return;
 		if (dragInProgress) return; // spurious event
@@ -105,6 +109,7 @@ public abstract class ContinuousPaintSession extends BasicPaintSession {
 	 * 
 	 * @param event the mouse event detail information
 	 */
+	@Override
 	public final void mouseDoubleClick(MouseEvent event) {
 	}
 
@@ -113,6 +118,7 @@ public abstract class ContinuousPaintSession extends BasicPaintSession {
 	 * 
 	 * @param event the mouse event detail information
 	 */
+	@Override
 	public final void mouseUp(MouseEvent event) {
 		if (event.button != 1) return;
 		if (! dragInProgress) return; // spurious event
@@ -126,6 +132,7 @@ public abstract class ContinuousPaintSession extends BasicPaintSession {
 	 * 
 	 * @param event the mouse event detail information
 	 */
+	@Override
 	public final void mouseMove(MouseEvent event) {
 		final PaintSurface ps = getPaintSurface();
 		ps.setStatusCoord(ps.getCurrentPosition());
@@ -208,6 +215,7 @@ public abstract class ContinuousPaintSession extends BasicPaintSession {
 			 */
 			Display display = getPaintSurface().getDisplay();
 			retriggerHandler = new Runnable() {
+				@Override
 				public void run() {
 					if (retriggerHandler == this) {
 						render(points[0]);

@@ -11,11 +11,19 @@
 package org.eclipse.swt.examples.browser.demos.views;
 
 import org.eclipse.jface.action.Action;
-import org.eclipse.swt.*;
-import org.eclipse.swt.widgets.*;
-import org.eclipse.swt.browser.*;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.SWTError;
+import org.eclipse.swt.browser.Browser;
+import org.eclipse.swt.browser.LocationEvent;
+import org.eclipse.swt.browser.LocationListener;
 import org.eclipse.swt.examples.browser.demos.BrowserDemoPlugin;
 import org.eclipse.swt.examples.browser.demos.Pawns;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Listener;
+import org.eclipse.swt.widgets.Menu;
+import org.eclipse.swt.widgets.MenuItem;
+import org.eclipse.swt.widgets.TabItem;
 
 public class PawnTab {
 
@@ -70,6 +78,7 @@ public class PawnTab {
 		MenuItem item2 = new MenuItem(menu, SWT.PUSH);
 		item2.setText("End Game");
 		item2.addListener(SWT.Selection, new Listener() {
+			@Override
 			public void handleEvent(Event e) {
 				game = null;
 				isWhite = true;
@@ -130,8 +139,10 @@ public class PawnTab {
 	}
 
 	public class ReversiListener implements LocationListener {
+		@Override
 		public void changed(LocationEvent e) {
 		}
+		@Override
 		public void changing(LocationEvent e) {
 			try {
 			final Browser browser = (Browser)e.widget;
@@ -141,6 +152,7 @@ public class PawnTab {
 				if (computer) ttr = new Pawns();
 				for (int i = 0; i < 5; i++) game[(int)(Math.random()*game.length)][(int)(Math.random()*game[0].length)] = WALL;
 				e.display.asyncExec(new Runnable() {
+					@Override
 					public void run() {
 						browser.setText(getHtml(TYPE_BOARD));
 				}});
@@ -153,6 +165,7 @@ public class PawnTab {
 				URL_CSS = PLUGIN_PATH+CSS_FOLDER+"/style.css";
 				URL_WELCOME = PLUGIN_PATH+CSS_FOLDER+"/welcome.html";
 				e.display.asyncExec(new Runnable() {
+					@Override
 					public void run() {
 						browser.setUrl(URL_WELCOME);
 				}});
@@ -247,6 +260,7 @@ public class PawnTab {
 	public static void play(final Display display, final Browser browser, int delay) {
 		ttr.playRequest(game, BLACK);
 		display.timerExec(3000, new Runnable() {
+				@Override
 				public void run() {
 					ttr.getBestMove(move);
 					boolean hasMore = add(move[0], move[1], BLACK);

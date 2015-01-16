@@ -11,13 +11,19 @@
 package org.eclipse.swt.examples.javaviewer;
 
 
-import org.eclipse.swt.*;
-import org.eclipse.swt.custom.*;
-import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.widgets.*;
+import java.io.IOException;
+import java.io.StringReader;
+import java.util.Hashtable;
+import java.util.Vector;
 
-import java.util.*;
-import java.io.*;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.LineStyleEvent;
+import org.eclipse.swt.custom.LineStyleListener;
+import org.eclipse.swt.custom.StyleRange;
+import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.RGB;
+import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Display;
 
 class JavaLineStyler implements LineStyleListener {
 	JavaScanner scanner = new JavaScanner();
@@ -92,6 +98,7 @@ void disposeColors() {
  * LineStyleEvent.styles 	Enumeration of StyleRanges, need to be in order. (output)
  * LineStyleEvent.background 	line background color (output)
  */
+@Override
 public void lineGetStyle(LineStyleEvent event) {
 	Vector<StyleRange> styles = new Vector<StyleRange>();
 	int token;

@@ -11,10 +11,19 @@
 package org.eclipse.swt.examples.controlexample;
 
 
-import org.eclipse.swt.*;
-import org.eclipse.swt.events.*;
-import org.eclipse.swt.layout.*;
-import org.eclipse.swt.widgets.*;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Group;
+import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Listener;
+import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.Widget;
 
 class ShellTab extends Tab {	
 	/* Style widgets added to the "Style" groups, and "Other" group */
@@ -104,6 +113,7 @@ class ShellTab extends Tab {
 		close.setBounds(160, 20, 120, 30);
 		close.setText(ControlExample.getResourceString("Close"));
 		close.addListener(SWT.Selection, new Listener() {
+			@Override
 			public void handleEvent(Event event) {
 				currentShell.dispose();
 			}

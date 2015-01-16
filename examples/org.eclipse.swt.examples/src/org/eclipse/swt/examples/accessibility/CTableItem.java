@@ -10,10 +10,27 @@
  *******************************************************************************/
 package org.eclipse.swt.examples.accessibility;
 
-import org.eclipse.swt.*;
-import org.eclipse.swt.accessibility.*;
-import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.widgets.*;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.SWTException;
+import org.eclipse.swt.accessibility.ACC;
+import org.eclipse.swt.accessibility.Accessible;
+import org.eclipse.swt.accessibility.AccessibleAdapter;
+import org.eclipse.swt.accessibility.AccessibleControlAdapter;
+import org.eclipse.swt.accessibility.AccessibleControlEvent;
+import org.eclipse.swt.accessibility.AccessibleEvent;
+import org.eclipse.swt.accessibility.AccessibleTableCellEvent;
+import org.eclipse.swt.accessibility.AccessibleTableCellListener;
+import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.Font;
+import org.eclipse.swt.graphics.GC;
+import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.Pattern;
+import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Item;
+import org.eclipse.swt.widgets.Widget;
 
 /**
  * Instances of this class represent a selectable user interface object
@@ -466,6 +483,7 @@ Accessible getAccessible(final Accessible accessibleTable, final int columnIndex
 			}
 		});
 		accessible.addAccessibleTableCellListener(new AccessibleTableCellListener() {
+			@Override
 			public void getColumnHeaders(AccessibleTableCellEvent e) {
 				if (parent.columns.length == 0) {
 					/* The CTable is being used as a list, and there are no headers. */
@@ -476,26 +494,33 @@ Accessible getAccessible(final Accessible accessibleTable, final int columnIndex
 					e.accessibles = new Accessible[] {column.getAccessible (accessibleTable)};
 				}
 			}
+			@Override
 			public void getColumnIndex(AccessibleTableCellEvent e) {
 				e.index = columnIndex;
 			}
+			@Override
 			public void getColumnSpan(AccessibleTableCellEvent e) {
 				/* CTable cells only occupy one column. */
 				e.count = 1;
 			}
+			@Override
 			public void getRowHeaders(AccessibleTableCellEvent e) {
 				 /* CTable does not support row headers. */
 			}
+			@Override
 			public void getRowIndex(AccessibleTableCellEvent e) {
 				e.index = index;
 			}
+			@Override
 			public void getRowSpan(AccessibleTableCellEvent e) {
 				/* CTable cells only occupy one row. */
 				e.count = 1;
 			}
+			@Override
 			public void getTable(AccessibleTableCellEvent e) {
 				e.accessible = accessibleTable;
 			}
+			@Override
 			public void isSelected(AccessibleTableCellEvent e) {
 				e.isSelected = CTableItem.this.isSelected();
 			}

@@ -11,11 +11,21 @@
 
 package org.eclipse.swt.examples.graphics;
 
-import java.util.*;
+import java.util.ArrayList;
 
-import org.eclipse.swt.*;
-import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.widgets.*;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.RGB;
+import org.eclipse.swt.graphics.Resource;
+import org.eclipse.swt.widgets.ColorDialog;
+import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.FileDialog;
+import org.eclipse.swt.widgets.Listener;
+import org.eclipse.swt.widgets.Menu;
+import org.eclipse.swt.widgets.MenuItem;
 
 /**
  * This class utilizes the factory design pattern to create menus that may
@@ -279,6 +289,7 @@ public class ColorMenu {
 			return resources;
 		}
 
+		@Override
 		public void handleEvent(Event event) {
 			switch (event.type) {
 

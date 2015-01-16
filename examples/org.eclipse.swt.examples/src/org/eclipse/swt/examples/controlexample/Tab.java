@@ -11,13 +11,60 @@
 package org.eclipse.swt.examples.controlexample;
 
 
-import java.lang.reflect.*;
+import java.lang.reflect.Method;
 
-import org.eclipse.swt.*;
-import org.eclipse.swt.events.*;
-import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.layout.*;
-import org.eclipse.swt.widgets.*;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.ArmEvent;
+import org.eclipse.swt.events.ControlEvent;
+import org.eclipse.swt.events.DisposeEvent;
+import org.eclipse.swt.events.DisposeListener;
+import org.eclipse.swt.events.FocusEvent;
+import org.eclipse.swt.events.HelpEvent;
+import org.eclipse.swt.events.KeyAdapter;
+import org.eclipse.swt.events.KeyEvent;
+import org.eclipse.swt.events.MenuEvent;
+import org.eclipse.swt.events.ModifyEvent;
+import org.eclipse.swt.events.ModifyListener;
+import org.eclipse.swt.events.MouseEvent;
+import org.eclipse.swt.events.PaintEvent;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.events.ShellEvent;
+import org.eclipse.swt.events.TraverseEvent;
+import org.eclipse.swt.events.TreeEvent;
+import org.eclipse.swt.events.TypedEvent;
+import org.eclipse.swt.events.VerifyEvent;
+import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.Font;
+import org.eclipse.swt.graphics.FontData;
+import org.eclipse.swt.graphics.GC;
+import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.graphics.RGB;
+import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.ColorDialog;
+import org.eclipse.swt.widgets.Combo;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.FontDialog;
+import org.eclipse.swt.widgets.Group;
+import org.eclipse.swt.widgets.Item;
+import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Listener;
+import org.eclipse.swt.widgets.Menu;
+import org.eclipse.swt.widgets.MenuItem;
+import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.TabFolder;
+import org.eclipse.swt.widgets.Table;
+import org.eclipse.swt.widgets.TableItem;
+import org.eclipse.swt.widgets.Text;
+import org.eclipse.swt.widgets.Widget;
 
 /**
  * <code>Tab</code> is the abstract superclass of every page
@@ -384,6 +431,7 @@ abstract class Tab {
 			}
 		});
 		shell.addDisposeListener(new DisposeListener() {
+			@Override
 			public void widgetDisposed(DisposeEvent event) {
 				if (foregroundColor != null) foregroundColor.dispose();
 				if (backgroundColor != null) backgroundColor.dispose();
@@ -623,6 +671,7 @@ abstract class Tab {
 			if ((setFieldsMask & TEXT) != 0) textText.setText(setFieldsEvent.text);
 			textText.setLayoutData (new GridData (SWT.FILL, SWT.CENTER, true, false));
 			textText.addModifyListener(new ModifyListener () {
+				@Override
 				public void modifyText(ModifyEvent e) {
 					String newValue = textText.getText();
 					if (newValue.length() == 0) {
@@ -642,6 +691,7 @@ abstract class Tab {
 			if ((setFieldsMask & X) != 0) xText.setText(Integer.toString(setFieldsEvent.x));
 			xText.setLayoutData (new GridData (SWT.FILL, SWT.CENTER, true, false));
 			xText.addModifyListener(new ModifyListener () {
+				@Override
 				public void modifyText(ModifyEvent e) {
 					String newValue = xText.getText ();
 					try {
@@ -662,6 +712,7 @@ abstract class Tab {
 			if ((setFieldsMask & Y) != 0) yText.setText(Integer.toString(setFieldsEvent.y));
 			yText.setLayoutData (new GridData (SWT.FILL, SWT.CENTER, true, false));
 			yText.addModifyListener(new ModifyListener () {
+				@Override
 				public void modifyText(ModifyEvent e) {
 					String newValue = yText.getText ();
 					try {
@@ -682,6 +733,7 @@ abstract class Tab {
 			if ((setFieldsMask & WIDTH) != 0) widthText.setText(Integer.toString(setFieldsEvent.width));
 			widthText.setLayoutData (new GridData (SWT.FILL, SWT.CENTER, true, false));
 			widthText.addModifyListener(new ModifyListener () {
+				@Override
 				public void modifyText(ModifyEvent e) {
 					String newValue = widthText.getText ();
 					try {
@@ -702,6 +754,7 @@ abstract class Tab {
 			if ((setFieldsMask & HEIGHT) != 0) heightText.setText(Integer.toString(setFieldsEvent.height));
 			heightText.setLayoutData (new GridData (SWT.FILL, SWT.CENTER, true, false));
 			heightText.addModifyListener(new ModifyListener () {
+				@Override
 				public void modifyText(ModifyEvent e) {
 					String newValue = heightText.getText ();
 					try {
@@ -746,6 +799,7 @@ abstract class Tab {
 		MenuItem cut = new MenuItem (popup, SWT.PUSH);
 		cut.setText (ControlExample.getResourceString("MenuItem_Cut"));
 		cut.addListener (SWT.Selection, new Listener () {
+			@Override
 			public void handleEvent (Event event) {
 				eventConsole.cut ();
 			}
@@ -753,6 +807,7 @@ abstract class Tab {
 		MenuItem copy = new MenuItem (popup, SWT.PUSH);
 		copy.setText (ControlExample.getResourceString("MenuItem_Copy"));
 		copy.addListener (SWT.Selection, new Listener () {
+			@Override
 			public void handleEvent (Event event) {
 				eventConsole.copy ();
 			}
@@ -760,6 +815,7 @@ abstract class Tab {
 		MenuItem paste = new MenuItem (popup, SWT.PUSH);
 		paste.setText (ControlExample.getResourceString("MenuItem_Paste"));
 		paste.addListener (SWT.Selection, new Listener () {
+			@Override
 			public void handleEvent (Event event) {
 				eventConsole.paste ();
 			}
@@ -768,6 +824,7 @@ abstract class Tab {
 		MenuItem selectAll = new MenuItem (popup, SWT.PUSH);
 		selectAll.setText(ControlExample.getResourceString("MenuItem_SelectAll"));
 		selectAll.addListener (SWT.Selection, new Listener () {
+			@Override
 			public void handleEvent (Event event) {
 				eventConsole.selectAll ();
 			}
@@ -1059,6 +1116,7 @@ abstract class Tab {
 		dialog.setDefaultButton(setButton);
 		dialog.pack();
 		dialog.addDisposeListener(new DisposeListener() {
+			@Override
 			public void widgetDisposed(DisposeEvent e) {
 				setGetDialog = null;
 			}
@@ -1326,6 +1384,7 @@ abstract class Tab {
 		Control[] controls = getExampleControls();
 		for (final Control control : controls) {
 			control.addListener(SWT.MenuDetect, new Listener() {
+				@Override
 				public void handleEvent(Event event) {
 		        	Menu menu = control.getMenu();
 		        	if (menu != null && samplePopup) {
@@ -1535,6 +1594,7 @@ abstract class Tab {
 	void hookListeners (Widget widget) {
 		if (logging) {
 			Listener listener = new Listener() {
+				@Override
 				public void handleEvent (Event event) {
 					log (event);
 				}

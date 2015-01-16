@@ -10,13 +10,29 @@
  *******************************************************************************/
 package org.eclipse.swt.examples.launcher;
 
+import java.lang.reflect.Method;
+
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.*;
-import org.eclipse.swt.layout.*;
-import org.eclipse.swt.widgets.*;
-import org.eclipse.ui.*;
-import org.eclipse.ui.part.*;
-import java.lang.reflect.*;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.events.TreeEvent;
+import org.eclipse.swt.events.TreeListener;
+import org.eclipse.swt.layout.FillLayout;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Group;
+import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.Text;
+import org.eclipse.swt.widgets.Tree;
+import org.eclipse.swt.widgets.TreeItem;
+import org.eclipse.ui.IWorkbenchPage;
+import org.eclipse.ui.IWorkbenchPart;
+import org.eclipse.ui.IWorkbenchPartSite;
+import org.eclipse.ui.PartInitException;
+import org.eclipse.ui.part.ViewPart;
 
 /**
  * Launcher uses <code>org.eclipse.swt</code> 
@@ -60,10 +76,12 @@ public class LauncherView extends ViewPart {
 		gridData.horizontalSpan = 2;
 		launchTree.setLayoutData(gridData);
 		launchTree.addSelectionListener(new SelectionListener() {
+			@Override
 			public void widgetSelected(SelectionEvent event) {
 				final ItemDescriptor item = getSelectedItem();
 				setDescriptionByItem(item);
 			}
+			@Override
 			public void widgetDefaultSelected(SelectionEvent event) {
 				final ItemDescriptor item = getSelectedItem();
 				setDescriptionByItem(item);
@@ -79,11 +97,13 @@ public class LauncherView extends ViewPart {
 			}
 		});
 		launchTree.addTreeListener(new TreeListener() {
+			@Override
 			public void treeCollapsed(TreeEvent event) {
 				final TreeItem item = (TreeItem) event.item;
 				if (item == null) return;
 				item.setImage(LauncherPlugin.images[LauncherPlugin.liClosedFolder]);
 			}
+			@Override
 			public void treeExpanded(TreeEvent event) {
 				final TreeItem item = (TreeItem) event.item;
 				if (item == null) return;
@@ -94,9 +114,11 @@ public class LauncherView extends ViewPart {
 		runButton = new Button(launchGroup, SWT.PUSH);
 		runButton.setText(LauncherPlugin.getResourceString("view.launchButton.text"));
 		runButton.addSelectionListener(new SelectionListener() {
+			@Override
 			public void widgetSelected(SelectionEvent event) {
 				launchItem(getSelectedItem());
 			}
+			@Override
 			public void widgetDefaultSelected(SelectionEvent event) {
 			}
 		});
@@ -143,6 +165,7 @@ public class LauncherView extends ViewPart {
 	public void setItemDescriptors(final ItemTreeNode newRoot) {
 		if (workbenchShell == null) return;
 		workbenchShell.getDisplay().syncExec(new Runnable() {
+			@Override
 			public void run() {
 				if ((launchTree == null) || (launchTree.isDisposed())) return;
 				launchTree.removeAll();

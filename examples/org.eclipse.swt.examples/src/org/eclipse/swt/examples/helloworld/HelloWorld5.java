@@ -12,10 +12,17 @@ package org.eclipse.swt.examples.helloworld;
 
 
 
-import org.eclipse.swt.widgets.*;
-import org.eclipse.swt.events.*;
-import org.eclipse.swt.graphics.*;
 import java.util.ResourceBundle;
+
+import org.eclipse.swt.events.DisposeEvent;
+import org.eclipse.swt.events.DisposeListener;
+import org.eclipse.swt.events.PaintEvent;
+import org.eclipse.swt.events.PaintListener;
+import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.GC;
+import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Shell;
 
 /*
  * This example builds on HelloWorld1 and demonstrates how to draw directly
@@ -37,6 +44,7 @@ public Shell open (Display display) {
 	final Color red = new Color(display, 0xFF, 0, 0);
 	final Shell shell = new Shell (display);
 	shell.addPaintListener(new PaintListener () {
+		@Override
 		public void paintControl(PaintEvent event){
 			GC gc = event.gc;
 			gc.setForeground(red);
@@ -46,6 +54,7 @@ public Shell open (Display display) {
 		}
 	});
 	shell.addDisposeListener (new DisposeListener () {
+		@Override
 		public void widgetDisposed (DisposeEvent e) {
 			red.dispose();
 		}

@@ -31,6 +31,7 @@ public abstract class BasicPaintSession implements PaintSession {
 	 * 
 	 * @return the associated PaintSurface
 	 */
+	@Override
 	public PaintSurface getPaintSurface() {
 		return paintSurface;
 	}
