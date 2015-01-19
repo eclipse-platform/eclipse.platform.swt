@@ -13,6 +13,8 @@ package org.eclipse.swt.tests.junit;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Link;
 
@@ -142,4 +144,52 @@ public void test_setTextLjava_lang_String() {
 	} catch (IllegalArgumentException e) {
 	}
 }
+
+/* custom */
+@Override
+public void test_setBoundsIIII() {
+	link.setBounds(10, 20, 30, 40);
+	// only check x, y, and width - you can't set the height of a link e.g. on Cocoa
+	assertTrue(link.getBounds().x == 10);
+	assertTrue(link.getBounds().y == 20);
+	assertTrue(link.getBounds().width == 30);
+}
+
+@Override
+public void test_setBoundsLorg_eclipse_swt_graphics_Rectangle() {
+	link.setBounds(new Rectangle(10, 20, 30, 40));
+	// only check x, y, and width - you can't set the height of a link e.g. on Cocoa
+	assertTrue(link.getBounds().x == 10);
+	assertTrue(link.getBounds().y == 20);
+	assertTrue(link.getBounds().width == 30);
+}
+
+@Override
+public void test_setSizeII() {
+	link.setSize(30, 40);
+	// only check the width - you can't set the height of a link e.g. on Cocoa
+	assertTrue(link.getSize().x == 30);
+
+	link.setSize(32, 43);
+	// only check the width - you can't set the height of a link e.g. on Cocoa
+	assertTrue(link.getSize().x == 32);
+}
+
+@Override
+public void test_setSizeLorg_eclipse_swt_graphics_Point() {
+	link.setSize(new Point(30, 40));
+	// only check the width - you can't set the height of a link e.g. on Cocoa
+	assertTrue(link.getSize().x == 30);
+
+	link.setBounds(32, 43, 33, 44);
+	// only check the width - you can't set the height of a link e.g. on Cocoa
+	assertTrue(link.getSize().x == 33);
+
+	link.setBounds(32, 43, 30, 40);
+	link.setLocation(11, 22);
+	link.setSize(new Point(32, 43));
+	// only check the width - you can't set the height of a link e.g. on Cocoa
+	assertTrue(link.getSize().x == 32);
+}
+
 }
