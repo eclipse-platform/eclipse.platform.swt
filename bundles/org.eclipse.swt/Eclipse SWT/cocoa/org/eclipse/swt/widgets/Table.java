@@ -79,7 +79,7 @@ public class Table extends Composite {
 	Rectangle imageBounds;
 	
 	/* Used to control drop feedback when FEEDBACK_SCROLL is set/not set */
-	boolean shouldScroll = true;
+	boolean shouldScroll = true, fixOrigin;
 
 	static int NEXT_ID;
 
@@ -1169,6 +1169,10 @@ void drawWithExpansionFrame_inView (long /*int*/ id, long /*int*/ sel, NSRect ce
 
 void drawRect(long /*int*/ id, long /*int*/ sel, NSRect rect) {
 	fixScrollWidth = false;
+	if (fixOrigin) {
+		fixOrigin = false;
+		fixTableOrigin();
+	}
 	super.drawRect(id, sel, rect);
 	if (isDisposed ()) return;
 	if (fixScrollWidth) {
@@ -2440,20 +2444,23 @@ void setBackgroundColor(NSColor nsColor) {
 	((NSTableView) view).setBackgroundColor (nsColor);
 }
 
-void setBounds(int x, int y, int width, int height, boolean move, boolean resize) {
+void fixTableOrigin () {
 	/*
 	 * Bug on OSX 10.10: The scrollview's content view and the table's header view have the same origin. 
 	 * This causes the first row of the NSTableView to be hidden by header view.
 	 * Set the origin of NSTableView so that it is positioned below the header view.
 	 */
-	super.setBounds (x, y, width, height, move, resize);
 	NSTableView tableView = (NSTableView) view;
-	if ((tableView.headerView() != null) && (OS.VERSION_MMB >= OS.VERSION_MMB(10, 10, 0))) {
-		NSPoint pt = new NSPoint();
-		NSRect headerRect = headerView.frame();
-		pt.y = headerRect.y + headerRect.height;
-		view.setFrameOrigin(pt);
-		view.setNeedsDisplay(true);
+	if ((OS.VERSION_MMB >= OS.VERSION_MMB (10, 10, 0))) {
+		NSPoint pt = new NSPoint ();
+		NSRect headerRect = headerView.frame ();
+		if (tableView.headerView () != null) {
+			pt.y = headerRect.y + headerRect.height;
+		} else {
+			pt.y = 0;
+		}
+		view.setFrameOrigin (pt);
+		view.setNeedsDisplay (true);
 	}
 }
 
@@ -2555,6 +2562,7 @@ void setFont (NSFont font) {
  */
 public void setHeaderVisible (boolean show) {
 	checkWidget ();
+	fixOrigin = true;
 	((NSTableView)view).setHeaderView (show ? headerView : null);
 	scrollView.tile();
 }
