@@ -90,7 +90,7 @@ public class Tree extends Composite {
 	boolean insertBefore;
 	
 	/* Used to control drop feedback when DND.FEEDBACK_EXPAND and DND.FEEDBACK_SCROLL is set/not set */
-	boolean shouldExpand = true, shouldScroll = true;
+	boolean shouldExpand = true, shouldScroll = true, fixOrigin;
 
 	static int NEXT_ID;
 
@@ -1242,6 +1242,15 @@ void drawInteriorWithFrame_inView (long /*int*/ id, long /*int*/ sel, NSRect rec
 
 		context.restoreGraphicsState();
 	}
+}
+
+@Override
+void drawRect (long /*int*/ id, long /*int*/ sel, NSRect /*int*/ rect) {
+	if (fixOrigin) {
+		fixOrigin = false;
+		fixTreeOrigin ();
+	}
+	super.drawRect (id, sel, rect);
 }
 
 void drawWithExpansionFrame_inView (long /*int*/ id, long /*int*/ sel, NSRect cellFrame, long /*int*/ view) {
@@ -2705,20 +2714,23 @@ void setBackgroundColor(NSColor nsColor) {
 	((NSTableView) view).setBackgroundColor (nsColor);
 }
 
-void setBounds(int x, int y, int width, int height, boolean move, boolean resize) {
+void fixTreeOrigin () {
 	/*
 	 * Bug on OSX 10.10: The scrollview's content view and the tree's header view have the same origin. 
 	 * This causes the first row of the NSOutlineView to be hidden by header view.
 	 * Set the origin of NSOutlineView so that it is positioned below the header view.
 	 */
-	super.setBounds (x, y, width, height, move, resize);
 	NSOutlineView widget = (NSOutlineView) view;
-	if ((widget.headerView() != null) && (OS.VERSION_MMB >= OS.VERSION_MMB(10, 10, 0))) {
+	if (OS.VERSION_MMB >= OS.VERSION_MMB (10, 10, 0)) {
 		NSPoint pt = new NSPoint();
-		NSRect headerRect = headerView.frame();
-		pt.y = headerRect.y + headerRect.height;
-		view.setFrameOrigin(pt);
-		view.setNeedsDisplay(true);
+		NSRect headerRect = headerView.frame ();
+		if (widget.headerView() != null) {
+			pt.y = headerRect.y + headerRect.height;
+		} else {
+			pt.y = 0;
+		}
+		view.setFrameOrigin (pt);
+		view.setNeedsDisplay (true);
 	}
 }
 
@@ -2823,6 +2835,7 @@ void setFont (NSFont font) {
  */
 public void setHeaderVisible (boolean show) {
 	checkWidget ();
+	fixOrigin = true;
 	((NSOutlineView) view).setHeaderView (show ? headerView : null);
 	scrollView.tile();
 }
