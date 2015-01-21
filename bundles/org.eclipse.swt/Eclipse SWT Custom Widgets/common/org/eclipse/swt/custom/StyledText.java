@@ -6920,7 +6920,7 @@ public void dispose() {
 		acc.removeAccessibleListener(accAdapter);
 	}
 	super.dispose();
-};
+}
 
 /* 
  * Return the Label immediately preceding the receiver in the z-order, 
