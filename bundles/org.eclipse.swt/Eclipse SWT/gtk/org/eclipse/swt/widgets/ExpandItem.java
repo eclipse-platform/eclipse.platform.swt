@@ -618,12 +618,14 @@ public void setText (String string) {
 }
 
 void showWidget (int index) {
-	OS.gtk_widget_show (handle);
-	OS.gtk_widget_show (clientHandle);
-	OS.gtk_container_add (parent.handle, handle);
-	OS.gtk_box_set_child_packing (parent.handle, handle, false, false, 0, OS.GTK_PACK_START);
-	if (boxHandle != 0) OS.gtk_widget_show (boxHandle);
-	if (labelHandle != 0) OS.gtk_widget_show (labelHandle);
+		OS.gtk_widget_show (handle);
+		OS.gtk_widget_show (clientHandle);
+		if (labelHandle != 0)
+			OS.gtk_widget_show (labelHandle);
+		if (boxHandle != 0)
+			OS.gtk_widget_show (boxHandle);
+		OS.gtk_container_add (parent.handle, handle);
+		OS.gtk_box_set_child_packing (parent.handle, handle, false, false, 0, OS.GTK_PACK_START);
 }
 
 @Override
