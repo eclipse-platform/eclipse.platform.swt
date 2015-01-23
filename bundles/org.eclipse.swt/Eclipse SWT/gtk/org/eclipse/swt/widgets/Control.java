@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2014 IBM Corporation and others.
+ * Copyright (c) 2000, 2015 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -46,7 +46,7 @@ import org.eclipse.swt.internal.gtk.*;
 public abstract class Control extends Widget implements Drawable {
 	long /*int*/ fixedHandle;
 	long /*int*/ redrawWindow, enableWindow, provider;
-	int drawCount;
+	int drawCount, backgroundAlpha = 255;
 	Composite parent;
 	Cursor cursor;
 	Menu menu;
@@ -618,8 +618,8 @@ void checkBackground () {
 	Composite composite = parent;
 	do {
 		int mode = composite.backgroundMode;
-		if (mode != SWT.INHERIT_NONE) {
-			if (mode == SWT.INHERIT_DEFAULT) {
+		if (mode != SWT.INHERIT_NONE || backgroundAlpha == 0) {
+			if (mode == SWT.INHERIT_DEFAULT || backgroundAlpha == 0) {
 				Control control = this;
 				do {
 					if ((control.state & THEME_BACKGROUND) == 0) {
@@ -2412,7 +2412,7 @@ boolean filterKey (int keyval, long /*int*/ event) {
 }
 
 Control findBackgroundControl () {
-	if ((state & BACKGROUND) != 0 || backgroundImage != null) return this;
+	if (((state & BACKGROUND) != 0 || backgroundImage != null) && backgroundAlpha > 0) return this;
 	return (state & PARENT_BACKGROUND) != 0 ? parent.findBackgroundControl () : null;
 }
 
@@ -2514,9 +2514,15 @@ boolean forceFocus (long /*int*/ focusHandle) {
  */
 public Color getBackground () {
 	checkWidget();
-	Control control = findBackgroundControl ();
-	if (control == null) control = this;
-	return Color.gtk_new (display, control.getBackgroundColor ());
+	if (backgroundAlpha == 0) {
+		Color color = Color.gtk_new (display, this.getBackgroundColor (), 0);
+		return color;
+	}
+	else {
+		Control control = findBackgroundControl ();
+		if (control == null) control = this;
+		return Color.gtk_new (display, control.getBackgroundColor (), backgroundAlpha);
+	}
 }
 
 GdkColor getBackgroundColor () {
@@ -4022,12 +4028,20 @@ void setBackground () {
  * </ul>
  */
 public void setBackground (Color color) {
-	checkWidget();
+	checkWidget ();
+	_setBackground (color);
+	if (color != null) {
+		this.updateBackgroundMode ();
+	}
+}
+
+private void _setBackground (Color color) {
 	if (((state & BACKGROUND) == 0) && color == null) return;
 	GdkColor gdkColor = null;
 	if (color != null) {
 		if (color.isDisposed ()) error(SWT.ERROR_INVALID_ARGUMENT);
 		gdkColor = color.handle;
+		backgroundAlpha = color.getAlpha ();
 	}
 	boolean set = false;
 	if (OS.GTK3) {
@@ -4087,9 +4101,12 @@ void setBackgroundColor (long /*int*/ handle, GdkColor color) {
 				color = control.getBackgroundColor();
 			}
 		}
+		else {
+			alpha = backgroundAlpha;
+		}
 		if (color != null) {
 			rgba = new GdkRGBA ();
-			rgba.alpha = alpha;
+			rgba.alpha = alpha / (float)255;
 			rgba.red = (color.red & 0xFFFF) / (float)0xFFFF;
 			rgba.green = (color.green & 0xFFFF) / (float)0xFFFF;
 			rgba.blue = (color.blue & 0xFFFF) / (float)0xFFFF;
@@ -4157,7 +4174,8 @@ void setBackgroundColor (GdkColor color) {
 public void setBackgroundImage (Image image) {
 	checkWidget ();
 	if (image != null && image.isDisposed ()) error(SWT.ERROR_INVALID_ARGUMENT);
-	if (image == backgroundImage) return;
+	if (image == backgroundImage && backgroundAlpha > 0) return;
+	backgroundAlpha = 255;
 	this.backgroundImage = image;
 	if (backgroundImage != null) {
 		setBackgroundPixmap (backgroundImage);

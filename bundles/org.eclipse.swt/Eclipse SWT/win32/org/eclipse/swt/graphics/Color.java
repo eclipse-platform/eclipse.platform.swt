@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2012 IBM Corporation and others.
+ * Copyright (c) 2000, 2015 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -46,6 +46,7 @@ public final class Color extends Resource {
 	 * @noreference This field is not intended to be referenced by clients.
 	 */
 	public int handle;
+	int alpha = 255;
 
 /**
  * Prevents uninitialized instances from being created outside the package.
@@ -80,7 +81,39 @@ Color(Device device) {
  */
 public Color (Device device, int red, int green, int blue) {
 	super(device);
-	init(red, green, blue);
+	init(red, green, blue, 255);
+	init();
+}
+
+/**	 
+ * Constructs a new instance of this class given a device and the
+ * desired red, green, blue & alpha values expressed as ints in the range
+ * 0 to 255 (where 0 is black and 255 is full brightness). On limited
+ * color devices, the color instance created by this call may not have
+ * the same RGB values as the ones specified by the arguments. The
+ * RGB values on the returned instance will be the color values of 
+ * the operating system color.
+ * <p>
+ * You must dispose the color when it is no longer required. 
+ * </p>
+ *
+ * @param device the device on which to allocate the color
+ * @param red the amount of red in the color
+ * @param green the amount of green in the color
+ * @param blue the amount of blue in the color
+ * @param alpha the amount of alpha in the color(Currently SWT honors extreme values for alpha ie. 0 or 255)
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if device is null and there is no current device</li>
+ *    <li>ERROR_INVALID_ARGUMENT - if the red, green, blue or alpha argument is not between 0 and 255</li>
+ * </ul>
+ *
+ * @see #dispose
+ * @since 3.104
+ */
+public Color (Device device, int red, int green, int blue, int alpha) {
+	super(device);
+	init(red, green, blue, alpha);
 	init();
 }
 
@@ -109,7 +142,69 @@ public Color (Device device, int red, int green, int blue) {
 public Color (Device device, RGB rgb) {
 	super(device);
 	if (rgb == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	init(rgb.red, rgb.green, rgb.blue);
+	init(rgb.red, rgb.green, rgb.blue, 255);
+	init();
+}
+
+/**	 
+ * Constructs a new instance of this class given a device and an
+ * <code>RGBA</code> describing the desired red, green, blue & alpah values.
+ * On limited color devices, the color instance created by this call
+ * may not have the same RGBA values as the ones specified by the
+ * argument. The RGBA values on the returned instance will be the color
+ * values of the operating system color + alpha.
+ * <p>
+ * You must dispose the color when it is no longer required. 
+ * </p>
+ *
+ * @param device the device on which to allocate the color
+ * @param rgba the RGBA values of the desired color
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if device is null and there is no current device</li>
+ *    <li>ERROR_NULL_ARGUMENT - if the rgba argument is null</li>
+ *    <li>ERROR_INVALID_ARGUMENT - if the red, green, blue or alpha components of the argument are not between 0 and 255</li>
+ * </ul>
+ *
+ * @see #dispose
+ * @since 3.104
+ */
+public Color(Device device, RGBA rgba) {
+	super(device);
+	if (rgba == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	init(rgba.rgb.red, rgba.rgb.green, rgba.rgb.blue, rgba.alpha);
+	init();
+}
+
+/**	 
+ * Constructs a new instance of this class given a device, an
+ * <code>RGB</code> describing the desired red, green and blue values,
+ * alpha specifying the level of transparency. 
+ * On limited color devices, the color instance created by this call
+ * may not have the same RGB values as the ones specified by the
+ * argument. The RGB values on the returned instance will be the color
+ * values of the operating system color.
+ * <p>
+ * You must dispose the color when it is no longer required. 
+ * </p>
+ *
+ * @param device the device on which to allocate the color
+ * @param rgb the RGB values of the desired color
+ * @param alpha the alpha value of the desired color(Currently SWT honors extreme values for alpha ie. 0 or 255)
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if device is null and there is no current device</li>
+ *    <li>ERROR_NULL_ARGUMENT - if the rgb argument is null</li>
+ *    <li>ERROR_INVALID_ARGUMENT - if the red, green, blue or alpha components of the argument are not between 0 and 255</li>
+ * </ul>
+ *
+ * @see #dispose
+ * @since 3.104
+ */
+public Color(Device device, RGB rgb, int alpha) {
+	super(device);
+	if (rgb == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	init(rgb.red, rgb.green, rgb.blue, alpha);
 	init();
 }
 
@@ -145,7 +240,21 @@ public boolean equals (Object object) {
 	if (object == this) return true;
 	if (!(object instanceof Color)) return false;
 	Color color = (Color) object;
-	return device == color.device && (handle & 0xFFFFFF) == (color.handle & 0xFFFFFF);
+	return device == color.device && (handle & 0xFFFFFF) == (color.handle & 0xFFFFFF) && (alpha == color.alpha);
+}
+
+/**
+ * Returns the amount of alpha in the color, from 0 to 255.
+ *
+ * @return the alpha component of the color
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ * @since 3.104
+ */
+public int getAlpha () {
+	return this.alpha;
 }
 
 /**
@@ -205,6 +314,21 @@ public RGB getRGB () {
 }
 
 /**
+ * Returns an <code>RGBA</code> representing the receiver.
+ *
+ * @return the RGBA for the color
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ * @since 3.104
+ */
+public RGBA getRGBA () {
+	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	return new RGBA(handle & 0xFF, (handle & 0xFF00) >> 8, (handle & 0xFF0000) >> 16, alpha);
+}
+
+/**
  * Returns an integer hash code for the receiver. Any two 
  * objects that return <code>true</code> when passed to 
  * <code>equals</code> must return the same value for this
@@ -215,7 +339,7 @@ public RGB getRGB () {
  * @see #equals
  */
 public int hashCode () {
-	return handle;
+	return handle ^ alpha;
 }
 
 /**
@@ -226,18 +350,20 @@ public int hashCode () {
  * @param red the amount of red in the color
  * @param green the amount of green in the color
  * @param blue the amount of blue in the color
+ * @param alpha the amount of alpha in the color(Currently SWT honors extreme values for alpha ie. 0 or 255)
  *
  * @exception IllegalArgumentException <ul>
- *    <li>ERROR_INVALID_ARGUMENT - if the red, green or blue argument is not between 0 and 255</li>
+ *    <li>ERROR_INVALID_ARGUMENT - if the red, green, blue or alpha argument is not between 0 and 255</li>
  * </ul>
  *
  * @see #dispose
  */
-void init(int red, int green, int blue) {
-	if (red > 255 || red < 0 || green > 255 || green < 0 || blue > 255 || blue < 0) {
+void init(int red, int green, int blue, int alpha) {
+	if (red > 255 || red < 0 || green > 255 || green < 0 || blue > 255 || blue < 0 || alpha > 255 || alpha < 0) {
 		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
 	handle = (red & 0xFF) | ((green & 0xFF) << 8) | ((blue & 0xFF) << 16);
+	this.alpha = alpha;
 	
 	/* If this is not a palette-based device, return */
 	long /*int*/ hPal = device.hPalette;
@@ -300,7 +426,7 @@ public boolean isDisposed() {
  */
 public String toString () {
 	if (isDisposed()) return "Color {*DISPOSED*}"; //$NON-NLS-1$
-	return "Color {" + getRed() + ", " + getGreen() + ", " + getBlue() + "}"; //$NON-NLS-1$//$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+	return "Color {" + getRed() + ", " + getGreen() + ", " + getBlue() + ", " + getAlpha() + "}"; //$NON-NLS-1$//$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
 }
 
 /**	 
@@ -320,8 +446,30 @@ public String toString () {
  * @noreference This method is not intended to be referenced by clients.
  */
 public static Color win32_new(Device device, int handle) {
+	return win32_new(device, handle, 255);
+}
+
+/**	 
+ * Invokes platform specific functionality to allocate a new color.
+ * <p>
+ * <b>IMPORTANT:</b> This method is <em>not</em> part of the public
+ * API for <code>Color</code>. It is marked public only so that it
+ * can be shared within the packages provided by SWT. It is not
+ * available on all platforms, and should never be called from
+ * application code.
+ * </p>
+ *
+ * @param device the device on which to allocate the color
+ * @param handle the handle for the color
+ * @param alpha the int for the alpha content in the color
+ * @return a new color object containing the specified device and handle
+ * 
+ * @noreference This method is not intended to be referenced by clients.
+ */
+public static Color win32_new(Device device, int handle, int alpha) {
 	Color color = new Color(device);
 	color.handle = handle;
+	color.alpha = alpha;
 	return color;
 }
 

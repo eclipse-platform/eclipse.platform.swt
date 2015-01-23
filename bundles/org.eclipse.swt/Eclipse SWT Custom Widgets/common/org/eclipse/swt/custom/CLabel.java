@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2012 IBM Corporation and others.
+ * Copyright (c) 2000, 2015 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -503,7 +503,7 @@ void onPaint(PaintEvent event) {
 			}
 			gc.setBackground(oldBackground);
 		} else {
-			if (background != null || (getStyle() & SWT.DOUBLE_BUFFERED) == 0) {
+			if ((background != null || (getStyle() & SWT.DOUBLE_BUFFERED) == 0) && background.getAlpha() > 0) {
 				gc.setBackground(getBackground());
 				gc.fillRectangle(rect);
 			}

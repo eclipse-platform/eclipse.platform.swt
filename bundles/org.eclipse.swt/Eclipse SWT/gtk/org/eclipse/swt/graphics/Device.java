@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2013 IBM Corporation and others.
+ * Copyright (c) 2000, 2015 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -74,7 +74,7 @@ public abstract class Device implements Drawable {
 	* palette.
 	*/
 	Color COLOR_BLACK, COLOR_DARK_RED, COLOR_DARK_GREEN, COLOR_DARK_YELLOW, COLOR_DARK_BLUE;
-	Color COLOR_DARK_MAGENTA, COLOR_DARK_CYAN, COLOR_GRAY, COLOR_DARK_GRAY, COLOR_RED;
+	Color COLOR_DARK_MAGENTA, COLOR_DARK_CYAN, COLOR_GRAY, COLOR_DARK_GRAY, COLOR_RED, COLOR_TRANSPARENT;
 	Color COLOR_GREEN, COLOR_YELLOW, COLOR_BLUE, COLOR_MAGENTA, COLOR_CYAN, COLOR_WHITE;
 
 	/* System Font */
@@ -504,6 +504,7 @@ Point getScreenDPI () {
 public Color getSystemColor (int id) {
 	checkDevice ();
 	switch (id) {
+		case SWT.COLOR_TRANSPARENT:			return COLOR_TRANSPARENT;
 		case SWT.COLOR_BLACK: 				return COLOR_BLACK;
 		case SWT.COLOR_DARK_RED: 			return COLOR_DARK_RED;
 		case SWT.COLOR_DARK_GREEN:	 		return COLOR_DARK_GREEN;
@@ -634,6 +635,7 @@ protected void init () {
 	}
 
 	/* Create the standard colors */
+	COLOR_TRANSPARENT = new Color (this, 0xFF,0xFF,0xFF,0);
 	COLOR_BLACK = new Color (this, 0,0,0);
 	COLOR_DARK_RED = new Color (this, 0x80,0,0);
 	COLOR_DARK_GREEN = new Color (this, 0,0x80,0);

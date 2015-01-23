@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2012 IBM Corporation and others.
+ * Copyright (c) 2000, 2015 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -58,7 +58,7 @@ public abstract class Control extends Widget implements Drawable {
 	Composite parent;
 	String toolTipText;
 	Object layoutData;
-	int drawCount;
+	int drawCount, backgroundAlpha = 255;
 	Menu menu;
 	double /*float*/ [] foreground, background;
 	Image backgroundImage;
@@ -812,8 +812,8 @@ void checkBackground () {
 	Composite composite = parent;
 	do {
 		int mode = composite.backgroundMode;
-		if (mode != 0) {
-			if (mode == SWT.INHERIT_DEFAULT) {
+		if (mode != 0 || backgroundAlpha == 0) {
+			if (mode == SWT.INHERIT_DEFAULT || backgroundAlpha == 0) {
 				Control control = this;
 				do {
 					if ((control.state & THEME_BACKGROUND) == 0) {
@@ -1326,7 +1326,7 @@ Cursor findCursor () {
 }
 
 Control findBackgroundControl () {
-	if (backgroundImage != null || background != null) return this;
+	if ((backgroundImage != null || background != null) && backgroundAlpha > 0) return this;
 	return (!isTransparent() && (state & PARENT_BACKGROUND) != 0) ? parent.findBackgroundControl () : null;
 }
 
@@ -1546,13 +1546,19 @@ public Accessible getAccessible () {
  */
 public Color getBackground () {
 	checkWidget();
-	Control control = findBackgroundControl ();
-	if (control == null) control = this;
-	return control.getBackgroundColor ();
+	if (backgroundAlpha == 0) {
+		Color color = Color.cocoa_new (display, background, 0);
+		return color;		
+	}
+	else {
+		Control control = findBackgroundControl ();
+		if (control == null) control = this;
+		return control.getBackgroundColor ();
+	}
 }
 
 Color getBackgroundColor () {
-	return background != null ? Color.cocoa_new (display, background) : defaultBackground ();
+	return background != null ? Color.cocoa_new (display, background, backgroundAlpha) : defaultBackground ();
 }
 
 /**
@@ -3474,13 +3480,22 @@ void setBackground () {
  * </ul>
  */
 public void setBackground (Color color) {
-	checkWidget();
+	checkWidget ();
+	_setBackground (color);
+	if (color != null) {
+		this.updateBackgroundMode ();
+	}
+}
+
+private void _setBackground (Color color) {
 	if (color != null) {
 		if (color.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
 	}
 	double /*float*/ [] background = color != null ? color.handle : null;
-	if (equals (background, this.background)) return;
+	int alpha = color != null ? color.getAlpha() : 255;
+	if (equals (background, this.background) && alpha == this.backgroundAlpha) return;
 	this.background = background;
+	this.backgroundAlpha = alpha;
 	updateBackgroundColor ();
 	redrawWidget(view, true);
 }
@@ -3510,7 +3525,8 @@ public void setBackground (Color color) {
 public void setBackgroundImage (Image image) {
 	checkWidget();
 	if (image != null && image.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
-	if (image == backgroundImage) return;
+	if (image == backgroundImage && backgroundAlpha > 0) return;
+	backgroundAlpha = 255;
 	backgroundImage = image;
 	updateBackgroundImage();
 }

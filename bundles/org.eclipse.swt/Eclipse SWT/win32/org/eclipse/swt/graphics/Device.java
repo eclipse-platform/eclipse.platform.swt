@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2012 IBM Corporation and others.
+ * Copyright (c) 2000, 2015 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -605,7 +605,9 @@ String getLastErrorText () {
 public Color getSystemColor (int id) {
 	checkDevice ();
 	int pixel = 0x00000000;
+	int alpha = 255;
 	switch (id) {
+		case SWT.COLOR_TRANSPARENT:			alpha = 0;
 		case SWT.COLOR_WHITE:				pixel = 0x00FFFFFF;  break;
 		case SWT.COLOR_BLACK:				pixel = 0x00000000;  break;
 		case SWT.COLOR_RED:					pixel = 0x000000FF;  break;
@@ -623,7 +625,7 @@ public Color getSystemColor (int id) {
 		case SWT.COLOR_GRAY:				pixel = 0x00C0C0C0;  break;
 		case SWT.COLOR_DARK_GRAY:			pixel = 0x00808080;  break;
 	}
-	return Color.win32_new (this, pixel);
+	return Color.win32_new (this, pixel, alpha);
 }
 
 /**

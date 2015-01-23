@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2014 IBM Corporation and others.
+ * Copyright (c) 2000, 2015 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -3260,6 +3260,13 @@ public class SWT {
 	 * @since 3.102
 	 */
 	public static final int COLOR_LINK_FOREGROUND = 36;
+	
+	/**
+	 * Color used to paint with alpha 0 (value is 37).
+	 * 
+	 * @since 3.104
+	 */
+	public static final int COLOR_TRANSPARENT = 37;
 	
 	/**
 	 * Draw constant indicating whether the drawing operation

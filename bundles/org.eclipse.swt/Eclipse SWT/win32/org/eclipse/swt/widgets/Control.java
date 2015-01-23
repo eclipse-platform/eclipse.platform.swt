@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2014 IBM Corporation and others.
+ * Copyright (c) 2000, 2015 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -67,7 +67,7 @@ public abstract class Control extends Widget implements Drawable {
 	Image backgroundImage;
 	Region region;
 	Font font;
-	int drawCount, foreground, background;
+	int drawCount, foreground, background, backgroundAlpha = 255;
 
 /**
  * Prevents uninitialized instances from being created outside the package.
@@ -541,8 +541,8 @@ void checkBackground () {
 	Composite composite = parent;
 	do {
 		int mode = composite.backgroundMode;
-		if (mode != 0) {
-			if (mode == SWT.INHERIT_DEFAULT) {
+		if (mode != 0 || backgroundAlpha == 0) {
+			if (mode == SWT.INHERIT_DEFAULT || backgroundAlpha == 0) {
 				Control control = this;
 				do {
 					if ((control.state & THEME_BACKGROUND) == 0) {
@@ -997,7 +997,7 @@ void fillThemeBackground (long /*int*/ hDC, Control control, RECT rect) {
 }
 
 Control findBackgroundControl () {
-	if (background != -1 || backgroundImage != null) return this;
+	if ((background != -1 || backgroundImage != null) && backgroundAlpha > 0) return this;
 	return (state & PARENT_BACKGROUND) != 0 ? parent.findBackgroundControl () : null;
 }
 
@@ -1166,9 +1166,15 @@ public Accessible getAccessible () {
  */
 public Color getBackground () {
 	checkWidget ();
-	Control control = findBackgroundControl ();
-	if (control == null) control = this;
-	return Color.win32_new (display, control.getBackgroundPixel ());
+	if (backgroundAlpha == 0) {
+		Color color =  Color.win32_new (display, background, 0);
+		return color;
+	}
+	else {
+		Control control = findBackgroundControl ();
+		if (control == null) control = this;
+		return Color.win32_new (display, control.getBackgroundPixel (), backgroundAlpha);
+	}
 }
 
 /**
@@ -3008,15 +3014,26 @@ void setBackground () {
  */
 public void setBackground (Color color) {
 	checkWidget ();
-	int pixel = -1;
+	_setBackground (color);
 	if (color != null) {
-		if (color.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
-		pixel = color.handle;
+		this.updateBackgroundMode ();
 	}
-	if (pixel == background) return;
+}
+
+private void _setBackground (Color color) {
+	int pixel = -1;
+	int alpha = 255;
+	if (color != null) {
+		if (color.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
+		pixel = color.handle;
+		alpha = color.getAlpha();
+	}
+	if (pixel == background && alpha == backgroundAlpha) return;
 	background = pixel;
+	backgroundAlpha = alpha;
 	updateBackgroundColor ();
 }
+
 
 /**
  * Sets the receiver's background image to the image specified
@@ -3046,7 +3063,8 @@ public void setBackgroundImage (Image image) {
 		if (image.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
 		if (image.type != SWT.BITMAP) error (SWT.ERROR_INVALID_ARGUMENT);
 	}
-	if (backgroundImage == image) return;
+	if (backgroundImage == image && backgroundAlpha > 0) return;
+	backgroundAlpha = 255;
 	backgroundImage = image;
 	Shell shell = getShell ();
 	shell.releaseBrushes ();

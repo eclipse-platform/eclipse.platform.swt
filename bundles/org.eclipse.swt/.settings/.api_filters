@@ -1051,6 +1051,14 @@
             </message_arguments>
         </filter>
     </resource>
+    <resource path="Eclipse SWT/common/org/eclipse/swt/graphics/RGBA.java" type="org.eclipse.swt.graphics.RGBA">
+        <filter id="576725006">
+            <message_arguments>
+                <message_argument value="SerializableCompatibility"/>
+                <message_argument value="RGBA"/>
+            </message_arguments>
+        </filter>
+    </resource>
     <resource path="Eclipse SWT/common/org/eclipse/swt/graphics/Rectangle.java" type="org.eclipse.swt.graphics.Rectangle">
         <filter id="576725006">
             <message_arguments>

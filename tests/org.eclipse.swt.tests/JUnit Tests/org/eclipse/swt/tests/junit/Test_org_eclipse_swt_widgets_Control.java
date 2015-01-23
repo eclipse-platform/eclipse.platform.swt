@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2006 IBM Corporation and others.
+ * Copyright (c) 2000, 2015 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -375,6 +375,16 @@ public void test_setBackgroundLorg_eclipse_swt_graphics_Color() {
 	control.setBackground(null);
 	assertTrue("getBackground unchanged after setBackground(null)", !control.getBackground().equals(color));
 	color.dispose();
+	// Skipping test run for GTK, already failing on GTK3. May be related to bug 421836
+	if (!"gtk".equals(SWT.getPlatform ())) {
+		// With alpha zero
+		color = new Color(control.getDisplay(), 255, 0, 0, 0);
+		control.setBackground(color);
+		assertEquals("getBackground not equal color after setBackground(color) with 0 alpha", color, control.getBackground());
+		control.setBackground(null);
+		assertTrue("getBackground unchanged after setBackground(null)", !control.getBackground().equals(color));
+		color.dispose();
+	}
 }
 @Test
 public void test_setBoundsIIII() {
