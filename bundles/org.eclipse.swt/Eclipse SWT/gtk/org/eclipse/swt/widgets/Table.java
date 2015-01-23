@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2014 IBM Corporation and others.
+ * Copyright (c) 2000, 2015 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -97,7 +97,8 @@ public class Table extends Composite {
 	int drawState, drawFlags;
 	GdkColor drawForeground;
 	boolean ownerDraw, ignoreSize, ignoreAccessibility;
-	
+	TableItem pendingShowItem = null;
+
 	static final int CHECKED_COLUMN = 0;
 	static final int GRAYED_COLUMN = 1;
 	static final int FOREGROUND_COLUMN = 2;
@@ -3524,6 +3525,16 @@ public void setTopIndex (int index) {
 	OS.gtk_tree_path_free (path);
 }
 
+@Override
+public void setVisible (boolean visible) {
+	super.setVisible (visible);
+
+	if ((visible) && (pendingShowItem != null)) {
+		showItem (pendingShowItem);
+		pendingShowItem = null;
+	}
+}
+
 /**
  * Shows the column.  If the column is already showing in the receiver,
  * this method simply returns.  Otherwise, the columns are scrolled until
@@ -3607,6 +3618,10 @@ public void showItem (TableItem item) {
 	if (item == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (item.isDisposed()) error (SWT.ERROR_INVALID_ARGUMENT);
 	if (item.parent != this) return;
+
+	if (!this.isVisible ()) {
+		pendingShowItem = item;
+	}
 	showItem (item.handle);
 }
 
