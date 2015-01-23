@@ -12,7 +12,6 @@ package org.eclipse.swt.graphics;
 
 
 import org.eclipse.swt.*;
-import org.eclipse.swt.graphics.*;
 
 /**
  * Instances of this class manage the operating system resources that
@@ -370,7 +369,7 @@ public static Color cocoa_new(Device device, double /*float*/ [] handle, int alp
 	double /*float*/ [] rgbColor = handle;
 	Color color = new Color(device);
 	color.handle = rgbColor;
-	color.handle[3] = alpha;
+	color.handle[3] = alpha / 255f;
 	return color;
 }
 
