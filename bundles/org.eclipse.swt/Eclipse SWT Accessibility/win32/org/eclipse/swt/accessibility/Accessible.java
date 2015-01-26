@@ -42,7 +42,6 @@ import org.eclipse.swt.internal.ole.win32.*;
  * 
  * @since 2.0
  */
-@SuppressWarnings({"rawtypes", "unchecked"})
 public class Accessible {
 	static final int MAX_RELATION_TYPES = 15;
 	static final int TABLE_MODEL_CHANGE_SIZE = 5;
@@ -59,13 +58,21 @@ public class Accessible {
 		objIAccessibleHypertext, /*objIAccessibleImage,*/ objIAccessibleTable2, objIAccessibleTableCell,
 		objIAccessibleText, objIAccessibleValue; /* objIAccessibleRelation is defined in Relation class */
 	IAccessible iaccessible;
-	Vector accessibleListeners, accessibleControlListeners, accessibleTextListeners, accessibleActionListeners,
-		accessibleEditableTextListeners, accessibleHyperlinkListeners, accessibleTableListeners, accessibleTableCellListeners,
-		accessibleTextExtendedListeners, accessibleValueListeners, accessibleAttributeListeners;
+	Vector<AccessibleListener> accessibleListeners;
+	Vector<AccessibleControlListener> accessibleControlListeners;
+	Vector<AccessibleTextListener> accessibleTextListeners;
+	Vector<AccessibleActionListener> accessibleActionListeners;
+	Vector<AccessibleEditableTextListener> accessibleEditableTextListeners;
+	Vector<AccessibleHyperlinkListener> accessibleHyperlinkListeners;
+	Vector<AccessibleTableListener> accessibleTableListeners;
+	Vector<AccessibleTableCellListener> accessibleTableCellListeners;
+	Vector<AccessibleTextExtendedListener> accessibleTextExtendedListeners;
+	Vector<AccessibleValueListener> accessibleValueListeners;
+	Vector<AccessibleAttributeListener> accessibleAttributeListeners;
 	Relation relations[] = new Relation[MAX_RELATION_TYPES];
 	Object[] variants;
 	Accessible parent;
-	Vector children = new Vector();
+	Vector<Accessible> children = new Vector<Accessible>();
 	Control control;
 	int uniqueID = -1;
 	int [] tableChange; // type, rowStart, rowCount, columnStart, columnCount
@@ -97,7 +104,7 @@ public class Accessible {
 	public Accessible(Accessible parent) {
 		this.parent = checkNull(parent);
 		this.control = parent.control;
-		parent.children.addElement(this);
+		parent.children.add(this);
 		AddRef();
 	}
 
@@ -554,8 +561,8 @@ public class Accessible {
 	public void addAccessibleListener(AccessibleListener listener) {
 		checkWidget();
 		if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-		if (accessibleListeners == null) accessibleListeners = new Vector();
-		accessibleListeners.addElement(listener);
+		if (accessibleListeners == null) accessibleListeners = new Vector<AccessibleListener>();
+		accessibleListeners.add(listener);
 	}
 	
 	/**
@@ -582,8 +589,8 @@ public class Accessible {
 	public void addAccessibleControlListener(AccessibleControlListener listener) {
 		checkWidget();
 		if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-		if (accessibleControlListeners == null) accessibleControlListeners = new Vector();
-		accessibleControlListeners.addElement(listener);
+		if (accessibleControlListeners == null) accessibleControlListeners = new Vector<AccessibleControlListener>();
+		accessibleControlListeners.add(listener);
 	}
 
 	/**
@@ -614,11 +621,11 @@ public class Accessible {
 		checkWidget ();
 		if (listener == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
 		if (listener instanceof AccessibleTextExtendedListener) {
-			if (accessibleTextExtendedListeners == null) accessibleTextExtendedListeners = new Vector();
-			accessibleTextExtendedListeners.addElement (listener);		
+			if (accessibleTextExtendedListeners == null) accessibleTextExtendedListeners = new Vector<AccessibleTextExtendedListener>();
+			accessibleTextExtendedListeners.add ((AccessibleTextExtendedListener) listener);		
 		} else {
-			if (accessibleTextListeners == null) accessibleTextListeners = new Vector();
-			accessibleTextListeners.addElement (listener);
+			if (accessibleTextListeners == null) accessibleTextListeners = new Vector<AccessibleTextListener>();
+			accessibleTextListeners.add (listener);
 		}
 	}
 	
@@ -646,8 +653,8 @@ public class Accessible {
 	public void addAccessibleActionListener(AccessibleActionListener listener) {
 		checkWidget();
 		if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-		if (accessibleActionListeners == null) accessibleActionListeners = new Vector();
-		accessibleActionListeners.addElement(listener);
+		if (accessibleActionListeners == null) accessibleActionListeners = new Vector<AccessibleActionListener>();
+		accessibleActionListeners.add(listener);
 	}
 
 	/**
@@ -674,8 +681,8 @@ public class Accessible {
 	public void addAccessibleEditableTextListener(AccessibleEditableTextListener listener) {
 	    checkWidget();
 	    if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-		if (accessibleEditableTextListeners == null) accessibleEditableTextListeners = new Vector();
-	    accessibleEditableTextListeners.addElement(listener);
+		if (accessibleEditableTextListeners == null) accessibleEditableTextListeners = new Vector<AccessibleEditableTextListener>();
+	    accessibleEditableTextListeners.add(listener);
 	}
 
 	/**
@@ -702,8 +709,8 @@ public class Accessible {
 	public void addAccessibleHyperlinkListener(AccessibleHyperlinkListener listener) {
 		checkWidget();
 		if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-		if (accessibleHyperlinkListeners == null) accessibleHyperlinkListeners = new Vector();
-		accessibleHyperlinkListeners.addElement(listener);
+		if (accessibleHyperlinkListeners == null) accessibleHyperlinkListeners = new Vector<AccessibleHyperlinkListener>();
+		accessibleHyperlinkListeners.add(listener);
 	}
 
 	/**
@@ -730,8 +737,8 @@ public class Accessible {
 	public void addAccessibleTableListener(AccessibleTableListener listener) {
 		checkWidget();
 		if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-		if (accessibleTableListeners == null) accessibleTableListeners = new Vector();
-		accessibleTableListeners.addElement(listener);
+		if (accessibleTableListeners == null) accessibleTableListeners = new Vector<AccessibleTableListener>();
+		accessibleTableListeners.add(listener);
 	}
 
 	/**
@@ -758,8 +765,8 @@ public class Accessible {
 	public void addAccessibleTableCellListener(AccessibleTableCellListener listener) {
 		checkWidget();
 		if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-		if (accessibleTableCellListeners == null) accessibleTableCellListeners = new Vector();
-		accessibleTableCellListeners.addElement(listener);
+		if (accessibleTableCellListeners == null) accessibleTableCellListeners = new Vector<AccessibleTableCellListener>();
+		accessibleTableCellListeners.add(listener);
 	}
 
 	/**
@@ -786,8 +793,8 @@ public class Accessible {
 	public void addAccessibleValueListener(AccessibleValueListener listener) {
 		checkWidget();
 		if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-		if (accessibleValueListeners == null) accessibleValueListeners = new Vector();
-		accessibleValueListeners.addElement(listener);
+		if (accessibleValueListeners == null) accessibleValueListeners = new Vector<AccessibleValueListener>();
+		accessibleValueListeners.add(listener);
 	}
 
 	/**
@@ -814,8 +821,8 @@ public class Accessible {
 	public void addAccessibleAttributeListener(AccessibleAttributeListener listener) {
 		checkWidget();
 		if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-		if (accessibleAttributeListeners == null) accessibleAttributeListeners = new Vector();
-		accessibleAttributeListeners.addElement(listener);
+		if (accessibleAttributeListeners == null) accessibleAttributeListeners = new Vector<AccessibleAttributeListener>();
+		accessibleAttributeListeners.add(listener);
 	}
 
 	/**
@@ -854,7 +861,7 @@ public class Accessible {
 	public void dispose () {
 		if (parent == null) return;
 		Release();
-		parent.children.removeElement(this);
+		parent.children.remove(this);
 		parent = null;
 	}
 
@@ -893,7 +900,7 @@ public class Accessible {
 		iaccessible = null;
 		Release();
 		for (int i = 0; i < children.size(); i++) {
-			Accessible child = (Accessible) children.elementAt(i);
+			Accessible child = children.get(i);
 			child.dispose();
 		}
 	}
@@ -945,7 +952,7 @@ public class Accessible {
 		checkWidget();
 		if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 		if (accessibleListeners != null) {
-			accessibleListeners.removeElement(listener);
+			accessibleListeners.remove(listener);
 			if (accessibleListeners.isEmpty()) accessibleListeners = null;
 		}
 	}
@@ -973,7 +980,7 @@ public class Accessible {
 		checkWidget();
 		if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 		if (accessibleControlListeners != null) {
-			accessibleControlListeners.removeElement(listener);
+			accessibleControlListeners.remove(listener);
 			if (accessibleControlListeners.isEmpty()) accessibleControlListeners = null;
 		}
 	}
@@ -1005,12 +1012,12 @@ public class Accessible {
 		if (listener == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
 		if (listener instanceof AccessibleTextExtendedListener) {
 			if (accessibleTextExtendedListeners != null) {
-				accessibleTextExtendedListeners.removeElement (listener);
+				accessibleTextExtendedListeners.remove (listener);
 				if (accessibleTextExtendedListeners.isEmpty()) accessibleTextExtendedListeners = null;
 			}
 		} else {
 			if (accessibleTextListeners != null) {
-				accessibleTextListeners.removeElement (listener);
+				accessibleTextListeners.remove (listener);
 				if (accessibleTextListeners.isEmpty()) accessibleTextListeners = null;
 			}
 		}
@@ -1041,7 +1048,7 @@ public class Accessible {
 		checkWidget();
 		if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 		if (accessibleActionListeners != null) {
-			accessibleActionListeners.removeElement(listener);
+			accessibleActionListeners.remove(listener);
 			if (accessibleActionListeners.isEmpty()) accessibleActionListeners = null;
 		}
 	}
@@ -1071,7 +1078,7 @@ public class Accessible {
 	    checkWidget();
 	    if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	    if (accessibleEditableTextListeners != null) {
-	    	accessibleEditableTextListeners.removeElement(listener);
+	    	accessibleEditableTextListeners.remove(listener);
 	    	if (accessibleEditableTextListeners.isEmpty()) accessibleEditableTextListeners = null;
 	    }
 	}
@@ -1101,7 +1108,7 @@ public class Accessible {
 		checkWidget();
 		if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 		if (accessibleHyperlinkListeners != null) {
-			accessibleHyperlinkListeners.removeElement(listener);
+			accessibleHyperlinkListeners.remove(listener);
 			if (accessibleHyperlinkListeners.isEmpty()) accessibleHyperlinkListeners = null;
 		}
 	}
@@ -1131,7 +1138,7 @@ public class Accessible {
 		checkWidget();
 		if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 		if (accessibleTableListeners != null) {
-			accessibleTableListeners.removeElement(listener);
+			accessibleTableListeners.remove(listener);
 			if (accessibleTableListeners.isEmpty()) accessibleTableListeners = null;
 		}
 	}
@@ -1161,7 +1168,7 @@ public class Accessible {
 		checkWidget();
 		if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 		if (accessibleTableCellListeners != null) {
-			accessibleTableCellListeners.removeElement(listener);
+			accessibleTableCellListeners.remove(listener);
 			if (accessibleTableCellListeners.isEmpty()) accessibleTableCellListeners = null;
 		}
 	}
@@ -1191,7 +1198,7 @@ public class Accessible {
 		checkWidget();
 		if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 		if (accessibleValueListeners != null) {
-			accessibleValueListeners.removeElement(listener);
+			accessibleValueListeners.remove(listener);
 			if (accessibleValueListeners.isEmpty()) accessibleValueListeners = null;
 		}
 	}
@@ -1221,7 +1228,7 @@ public class Accessible {
 		checkWidget();
 		if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 		if (accessibleAttributeListeners != null) {
-			accessibleAttributeListeners.removeElement(listener);
+			accessibleAttributeListeners.remove(listener);
 			if (accessibleAttributeListeners.isEmpty()) accessibleAttributeListeners = null;
 		}
 	}
@@ -1237,7 +1244,7 @@ public class Accessible {
 	 */
 	public void removeRelation(int type, Accessible target) {
 		checkWidget();
-		Relation relation = (Relation)relations[type];
+		Relation relation = relations[type];
 		if (relation != null) {
 			relation.removeTarget(target);
 			if (!relation.hasTargets()) {
@@ -1539,7 +1546,7 @@ public class Accessible {
 		event.count = 0;
 		event.type = ACC.TEXT_BOUNDARY_ALL;
 		for (int i = 0; i < accessibleTextExtendedListenersSize(); i++) {
-			AccessibleTextExtendedListener listener = (AccessibleTextExtendedListener) accessibleTextExtendedListeners.elementAt(i);
+			AccessibleTextExtendedListener listener = accessibleTextExtendedListeners.get(i);
 			listener.getText(event);
 		}
 		if (event.result != null) {
@@ -1992,7 +1999,7 @@ public class Accessible {
 		event.x = xLeft;
 		event.y = yTop;
 		for (int i = 0; i < accessibleControlListenersSize(); i++) {
-			AccessibleControlListener listener = (AccessibleControlListener) accessibleControlListeners.elementAt(i);
+			AccessibleControlListener listener = accessibleControlListeners.get(i);
 			listener.getChildAtPoint(event);
 		}
 		Accessible accessible = event.accessible;
@@ -2047,7 +2054,7 @@ public class Accessible {
 		event.width = osWidth;
 		event.height = osHeight;
 		for (int i = 0; i < accessibleControlListenersSize(); i++) {
-			AccessibleControlListener listener = (AccessibleControlListener) accessibleControlListeners.elementAt(i);
+			AccessibleControlListener listener = accessibleControlListeners.get(i);
 			listener.getLocation(event);
 		}
 		if (DEBUG) print(this + ".IAccessible::accLocation(" + v.lVal + ") returning x=" + event.x + " y=" + event.y + "w=" + event.width + "h=" + event.height + hresult(COM.S_OK));
@@ -2113,7 +2120,7 @@ public class Accessible {
 					COM.MoveMemory(addr, ppdispChild, OS.PTR_SIZEOF);
 					boolean found = false;
 					for (int i = 0; i < children.size(); i++) {
-						Accessible accChild = (Accessible)children.elementAt(i);
+						Accessible accChild = children.get(i);
 						if (accChild.item == item) {
 							/* 
 							 * MSAA uses a new accessible for the child
@@ -2131,7 +2138,7 @@ public class Accessible {
 						item.addListener(SWT.Dispose, new Listener() {
 							public void handleEvent(Event e) {
 								for (int i = 0; i < children.size(); i++) {
-									Accessible accChild = (Accessible)children.elementAt(i);
+									Accessible accChild = children.get(i);
 									if (accChild.item == item) {
 										accChild.dispose();
 									}
@@ -2145,7 +2152,7 @@ public class Accessible {
 								AccessibleEvent event = new AccessibleEvent(Accessible.this);
 								event.childID = childID;
 								for (int i = 0; i < accessibleListenersSize(); i++) {
-									AccessibleListener listener = (AccessibleListener) accessibleListeners.elementAt(i);
+									AccessibleListener listener = accessibleListeners.get(i);
 									listener.getName(event);
 								}
 								e.result = event.result;
@@ -2159,7 +2166,7 @@ public class Accessible {
 		AccessibleControlEvent event = new AccessibleControlEvent(this);
 		event.childID = childID;
 		for (int i = 0; i < accessibleControlListenersSize(); i++) {
-			AccessibleControlListener listener = (AccessibleControlListener) accessibleControlListeners.elementAt(i);
+			AccessibleControlListener listener = accessibleControlListeners.get(i);
 			listener.getChild(event);
 		}
 		Accessible accessible = event.accessible;
@@ -2195,7 +2202,7 @@ public class Accessible {
 		event.childID = ACC.CHILDID_SELF;
 		event.detail = osChildCount;
 		for (int i = 0; i < accessibleControlListenersSize(); i++) {
-			AccessibleControlListener listener = (AccessibleControlListener) accessibleControlListeners.elementAt(i);
+			AccessibleControlListener listener = accessibleControlListeners.get(i);
 			listener.getChildCount(event);
 		}
 		if (DEBUG) print(this + ".IAccessible::get_accChildCount() returning " + event.detail + hresult(COM.S_OK));
@@ -2231,7 +2238,7 @@ public class Accessible {
 		event.childID = osToChildID(v.lVal);
 		event.result = osDefaultAction;
 		for (int i = 0; i < accessibleControlListenersSize(); i++) {
-			AccessibleControlListener listener = (AccessibleControlListener) accessibleControlListeners.elementAt(i);
+			AccessibleControlListener listener = accessibleControlListeners.get(i);
 			listener.getDefaultAction(event);
 		}
 		if ((event.result == null || event.result.length() == 0) && v.lVal == COM.CHILDID_SELF) {
@@ -2312,7 +2319,7 @@ public class Accessible {
 			}
 		}
 		for (int i = 0; i < accessibleListenersSize(); i++) {
-			AccessibleListener listener = (AccessibleListener) accessibleListeners.elementAt(i);
+			AccessibleListener listener = accessibleListeners.get(i);
 			listener.getDescription(event);
 		}
 		if (DEBUG) print(this + ".IAccessible::get_accDescription(" + v.lVal + ") returning " + event.result + hresult(event.result == null ? code : event.result.length() == 0 ? COM.S_FALSE : COM.S_OK));
@@ -2346,7 +2353,7 @@ public class Accessible {
 		AccessibleControlEvent event = new AccessibleControlEvent(this);
 		event.childID = osChild == ACC.CHILDID_NONE ? ACC.CHILDID_NONE : osToChildID(osChild);
 		for (int i = 0; i < accessibleControlListenersSize(); i++) {
-			AccessibleControlListener listener = (AccessibleControlListener) accessibleControlListeners.elementAt(i);
+			AccessibleControlListener listener = accessibleControlListeners.get(i);
 			listener.getFocus(event);
 		}
 		Accessible accessible = event.accessible;
@@ -2401,7 +2408,7 @@ public class Accessible {
 		event.childID = osToChildID(v.lVal);
 		event.result = osHelp;
 		for (int i = 0; i < accessibleListenersSize(); i++) {
-			AccessibleListener listener = (AccessibleListener) accessibleListeners.elementAt(i);
+			AccessibleListener listener = accessibleListeners.get(i);
 			listener.getHelp(event);
 		}
 		if (event.result == null) return code;
@@ -2457,7 +2464,7 @@ public class Accessible {
 			event.result = SWT.getMessage ("SWT_SwitchPage_Shortcut"); //$NON-NLS-1$
 		}
 		for (int i = 0; i < accessibleListenersSize(); i++) {
-			AccessibleListener listener = (AccessibleListener) accessibleListeners.elementAt(i);
+			AccessibleListener listener = accessibleListeners.get(i);
 			listener.getKeyboardShortcut(event);
 		}
 		if (event.result == null) return code;
@@ -2507,7 +2514,7 @@ public class Accessible {
 			event.result = ((Text) control).getMessage();
 		}
 		for (int i = 0; i < accessibleListenersSize(); i++) {
-			AccessibleListener listener = (AccessibleListener) accessibleListeners.elementAt(i);
+			AccessibleListener listener = accessibleListeners.get(i);
 			listener.getName(event);
 		}
 		if (DEBUG) print(this + ".IAccessible::get_accName(" + v.lVal + ") returning " + event.result + hresult(event.result == null ? code : event.result.length() == 0 ? COM.S_FALSE : COM.S_OK));
@@ -2562,7 +2569,7 @@ public class Accessible {
 			if (v.lVal != COM.CHILDID_SELF && (control.getStyle() & SWT.CHECK) != 0) event.detail = ACC.ROLE_CHECKBUTTON;
 		}
 		for (int i = 0; i < accessibleControlListenersSize(); i++) {
-			AccessibleControlListener listener = (AccessibleControlListener) accessibleControlListeners.elementAt(i);
+			AccessibleControlListener listener = accessibleControlListeners.get(i);
 			listener.getRole(event);
 		}
 		if (DEBUG) print(this + ".IAccessible::get_accRole(" + v.lVal + ") returning " + getRoleString(roleToOs(event.detail)) + hresult(COM.S_OK));
@@ -2598,7 +2605,7 @@ public class Accessible {
 		AccessibleControlEvent event = new AccessibleControlEvent(this);
 		event.childID = osChild;
 		for (int i = 0; i < accessibleControlListenersSize(); i++) {
-			AccessibleControlListener listener = (AccessibleControlListener) accessibleControlListeners.elementAt(i);
+			AccessibleControlListener listener = accessibleControlListeners.get(i);
 			listener.getSelection(event);
 		}
 		Accessible accessible = event.accessible;
@@ -2676,7 +2683,7 @@ public class Accessible {
 			}
 		}
 		for (int i = 0; i < accessibleControlListenersSize(); i++) {
-			AccessibleControlListener listener = (AccessibleControlListener) accessibleControlListeners.elementAt(i);
+			AccessibleControlListener listener = accessibleControlListeners.get(i);
 			listener.getState(event);
 		}
 		int state = stateToOs(event.detail);
@@ -2730,7 +2737,7 @@ public class Accessible {
 			event.result = ((Text) control).getMessage();
 		}
 		for (int i = 0; i < accessibleControlListenersSize(); i++) {
-			AccessibleControlListener listener = (AccessibleControlListener) accessibleControlListeners.elementAt(i);
+			AccessibleControlListener listener = accessibleControlListeners.get(i);
 			listener.getValue(event);
 		}
 		if (DEBUG) print(this + ".IAccessible::get_accValue(" + v.lVal + ") returning " + event.result + hresult(event.result == null ? code : COM.S_OK));
@@ -2766,7 +2773,7 @@ public class Accessible {
 				OS.MoveMemory (buffer, szValue, size);
 				event.string = new String (buffer);
 				for (int i = 0; i < accessibleEditableTextListenersSize(); i++) {
-					AccessibleEditableTextListener listener = (AccessibleEditableTextListener) accessibleEditableTextListeners.elementAt(i);
+					AccessibleEditableTextListener listener = accessibleEditableTextListeners.get(i);
 					listener.replaceText(event);
 				}
 				if (event.result != null && event.result.equals(ACC.OK)) code = COM.S_OK;
@@ -2817,7 +2824,7 @@ public class Accessible {
 			AccessibleControlEvent event = new AccessibleControlEvent(this);
 			event.childID = ACC.CHILDID_SELF;
 			for (int i = 0; i < accessibleControlListenersSize(); i++) {
-				AccessibleControlListener listener = (AccessibleControlListener) accessibleControlListeners.elementAt(i);
+				AccessibleControlListener listener = accessibleControlListeners.get(i);
 				listener.getChildren(event);
 			}
 			variants = event.children;
@@ -2945,7 +2952,7 @@ public class Accessible {
 	int get_relation(int relationIndex, long /*int*/ ppRelation) {
 		int i = -1;
 		for (int type = 0; type < MAX_RELATION_TYPES; type++) {
-			Relation relation = (Relation)relations[type];
+			Relation relation = relations[type];
 			if (relation != null) i++;
 			if (i == relationIndex) {
 				if (DEBUG) print(this + ".IAccessible2::get_relation(" + relationIndex + ") returning " + relation.getAddress() + hresult(COM.S_OK));
@@ -2963,7 +2970,7 @@ public class Accessible {
 		int count = 0;
 		for (int type = 0; type < MAX_RELATION_TYPES; type++) {
 			if (count == maxRelations) break;
-			Relation relation = (Relation)relations[type];
+			Relation relation = relations[type];
 			if (relation != null) {
 				relation.AddRef();
 				COM.MoveMemory(ppRelations + count * OS.PTR_SIZEOF, new long /*int*/[] { relation.getAddress() }, OS.PTR_SIZEOF);
@@ -3004,7 +3011,7 @@ public class Accessible {
 		AccessibleAttributeEvent event = new AccessibleAttributeEvent(this);
 		event.groupLevel = event.groupCount = event.groupIndex = -1;
 		for (int i = 0; i < accessibleAttributeListenersSize(); i++) {
-			AccessibleAttributeListener listener = (AccessibleAttributeListener) accessibleAttributeListeners.elementAt(i);
+			AccessibleAttributeListener listener = accessibleAttributeListeners.get(i);
 			listener.getAttributes(event);
 		}
 		int groupLevel = (event.groupLevel != -1) ? event.groupLevel : 0;
@@ -3038,7 +3045,7 @@ public class Accessible {
 		AccessibleControlEvent event = new AccessibleControlEvent(this);
 		event.childID = ACC.CHILDID_SELF;
 		for (int i = 0; i < accessibleControlListenersSize(); i++) {
-			AccessibleControlListener listener = (AccessibleControlListener) accessibleControlListeners.elementAt(i);
+			AccessibleControlListener listener = accessibleControlListeners.get(i);
 			listener.getState(event);
 		}
 		int states = event.detail;
@@ -3120,7 +3127,7 @@ public class Accessible {
 		event.childID = ACC.CHILDID_CHILD_INDEX;
 		event.detail = -1;
 		for (int i = 0; i < accessibleControlListenersSize(); i++) {
-			AccessibleControlListener listener = (AccessibleControlListener) accessibleControlListeners.elementAt(i);
+			AccessibleControlListener listener = accessibleControlListeners.get(i);
 			listener.getChild(event);
 		}
 		int indexInParent = event.detail;
@@ -3199,7 +3206,7 @@ public class Accessible {
 	int get_attributes(long /*int*/ pbstrAttributes) {
 		AccessibleAttributeEvent event = new AccessibleAttributeEvent(this);
 		for (int i = 0; i < accessibleAttributeListenersSize(); i++) {
-			AccessibleAttributeListener listener = (AccessibleAttributeListener) accessibleAttributeListeners.elementAt(i);
+			AccessibleAttributeListener listener = accessibleAttributeListeners.get(i);
 			listener.getAttributes(event);
 		}
 		String attributes = "";
@@ -3235,7 +3242,7 @@ public class Accessible {
 	int get_nActions(long /*int*/ pNActions) {
 		AccessibleActionEvent event = new AccessibleActionEvent(this);
 		for (int i = 0; i < accessibleActionListenersSize(); i++) {
-			AccessibleActionListener listener = (AccessibleActionListener) accessibleActionListeners.elementAt(i);
+			AccessibleActionListener listener = accessibleActionListeners.get(i);
 			listener.getActionCount(event);
 		}
 		if (DEBUG) print(this + ".IAccessibleAction::get_nActions() returning " + event.count + hresult(COM.S_OK));
@@ -3248,7 +3255,7 @@ public class Accessible {
 		AccessibleActionEvent event = new AccessibleActionEvent(this);
 		event.index = actionIndex;
 		for (int i = 0; i < accessibleActionListenersSize(); i++) {
-			AccessibleActionListener listener = (AccessibleActionListener) accessibleActionListeners.elementAt(i);
+			AccessibleActionListener listener = accessibleActionListeners.get(i);
 			listener.doAction(event);
 		}
 		if (DEBUG) print(this + ".IAccessibleAction::doAction(" + actionIndex + ") returning" + hresult(event.result == null || !event.result.equals(ACC.OK) ? COM.E_INVALIDARG : COM.S_OK));
@@ -3261,7 +3268,7 @@ public class Accessible {
 		AccessibleActionEvent event = new AccessibleActionEvent(this);
 		event.index = actionIndex;
 		for (int i = 0; i < accessibleActionListenersSize(); i++) {
-			AccessibleActionListener listener = (AccessibleActionListener) accessibleActionListeners.elementAt(i);
+			AccessibleActionListener listener = accessibleActionListeners.get(i);
 			listener.getDescription(event);
 		}
 		if (DEBUG) print(this + ".IAccessibleAction::get_description(" + actionIndex + ") returning " + event.result + hresult(event.result == null || event.result.length() == 0 ? COM.S_FALSE : COM.S_OK));
@@ -3275,7 +3282,7 @@ public class Accessible {
 		AccessibleActionEvent event = new AccessibleActionEvent(this);
 		event.index = actionIndex;
 		for (int i = 0; i < accessibleActionListenersSize(); i++) {
-			AccessibleActionListener listener = (AccessibleActionListener) accessibleActionListeners.elementAt(i);
+			AccessibleActionListener listener = accessibleActionListeners.get(i);
 			listener.getKeyBinding(event);
 		}
 		String keyBindings = event.result;
@@ -3308,7 +3315,7 @@ public class Accessible {
 		event.index = actionIndex;
 		event.localized = false;
 		for (int i = 0; i < accessibleActionListenersSize(); i++) {
-			AccessibleActionListener listener = (AccessibleActionListener) accessibleActionListeners.elementAt(i);
+			AccessibleActionListener listener = accessibleActionListeners.get(i);
 			listener.getName(event);
 		}
 		if (DEBUG) print(this + ".IAccessibleAction::get_name(" + actionIndex + ") returning " + event.result + hresult(event.result == null || event.result.length() == 0 ? COM.S_FALSE : COM.S_OK));
@@ -3326,7 +3333,7 @@ public class Accessible {
 		event.index = actionIndex;
 		event.localized = true;
 		for (int i = 0; i < accessibleActionListenersSize(); i++) {
-			AccessibleActionListener listener = (AccessibleActionListener) accessibleActionListeners.elementAt(i);
+			AccessibleActionListener listener = accessibleActionListeners.get(i);
 			listener.getName(event);
 		}
 		if (DEBUG) print(this + ".IAccessibleAction::get_localizedName(" + actionIndex + ") returning " + event.result + hresult(event.result == null || event.result.length() == 0 ? COM.S_FALSE : COM.S_OK));
@@ -3385,7 +3392,7 @@ public class Accessible {
 //		// TO DO: support transparently (hard for lightweight parents - screen vs. parent coords)
 //		AccessibleControlEvent event = new AccessibleControlEvent(this);
 //		for (int i = 0; i < accessibleControlListenersSize(); i++) {
-//			AccessibleControlListener listener = (AccessibleControlListener) accessibleControlListeners.elementAt(i);
+//			AccessibleControlListener listener = (AccessibleControlListener) accessibleControlListeners.get(i);
 //			listener.getLocation (event);
 //		}
 //		COM.MoveMemory(pX, new int [] { event.x }, 4);
@@ -3416,7 +3423,7 @@ public class Accessible {
 		event.start = startOffset == COM.IA2_TEXT_OFFSET_LENGTH ? getCharacterCount() : startOffset;
 		event.end = endOffset == COM.IA2_TEXT_OFFSET_LENGTH ? getCharacterCount() : endOffset;
 		for (int i = 0; i < accessibleEditableTextListenersSize(); i++) {
-			AccessibleEditableTextListener listener = (AccessibleEditableTextListener) accessibleEditableTextListeners.elementAt(i);
+			AccessibleEditableTextListener listener = accessibleEditableTextListeners.get(i);
 			listener.copyText(event);
 		}
 		if (event.result == null || !event.result.equals(ACC.OK)) return COM.E_INVALIDARG;
@@ -3431,7 +3438,7 @@ public class Accessible {
 		event.end = endOffset == COM.IA2_TEXT_OFFSET_LENGTH ? getCharacterCount() : endOffset;
 		event.string = "";
 		for (int i = 0; i < accessibleEditableTextListenersSize(); i++) {
-			AccessibleEditableTextListener listener = (AccessibleEditableTextListener) accessibleEditableTextListeners.elementAt(i);
+			AccessibleEditableTextListener listener = accessibleEditableTextListeners.get(i);
 			listener.replaceText(event);
 		}
 		if (event.result == null || !event.result.equals(ACC.OK)) return COM.E_INVALIDARG;
@@ -3446,7 +3453,7 @@ public class Accessible {
 		event.end = event.start;
 		event.string = getString(pbstrText);
 		for (int i = 0; i < accessibleEditableTextListenersSize(); i++) {
-			AccessibleEditableTextListener listener = (AccessibleEditableTextListener) accessibleEditableTextListeners.elementAt(i);
+			AccessibleEditableTextListener listener = accessibleEditableTextListeners.get(i);
 			listener.replaceText(event);
 		}
 		if (event.result == null || !event.result.equals(ACC.OK)) return COM.E_INVALIDARG;
@@ -3460,7 +3467,7 @@ public class Accessible {
 		event.start = startOffset == COM.IA2_TEXT_OFFSET_LENGTH ? getCharacterCount() : startOffset;
 		event.end = endOffset == COM.IA2_TEXT_OFFSET_LENGTH ? getCharacterCount() : endOffset;
 		for (int i = 0; i < accessibleEditableTextListenersSize(); i++) {
-			AccessibleEditableTextListener listener = (AccessibleEditableTextListener) accessibleEditableTextListeners.elementAt(i);
+			AccessibleEditableTextListener listener = accessibleEditableTextListeners.get(i);
 			listener.cutText(event);
 		}
 		if (event.result == null || !event.result.equals(ACC.OK)) return COM.E_INVALIDARG;
@@ -3474,7 +3481,7 @@ public class Accessible {
 		event.start = offset == COM.IA2_TEXT_OFFSET_LENGTH ? getCharacterCount() : offset;
 		event.end = event.start;
 		for (int i = 0; i < accessibleEditableTextListenersSize(); i++) {
-			AccessibleEditableTextListener listener = (AccessibleEditableTextListener) accessibleEditableTextListeners.elementAt(i);
+			AccessibleEditableTextListener listener = accessibleEditableTextListeners.get(i);
 			listener.pasteText(event);
 		}
 		if (event.result == null || !event.result.equals(ACC.OK)) return COM.E_INVALIDARG;
@@ -3489,7 +3496,7 @@ public class Accessible {
 		event.end = endOffset == COM.IA2_TEXT_OFFSET_LENGTH ? getCharacterCount() : endOffset;
 		event.string = getString(pbstrText);
 		for (int i = 0; i < accessibleEditableTextListenersSize(); i++) {
-			AccessibleEditableTextListener listener = (AccessibleEditableTextListener) accessibleEditableTextListeners.elementAt(i);
+			AccessibleEditableTextListener listener = accessibleEditableTextListeners.get(i);
 			listener.replaceText(event);
 		}
 		if (event.result == null || !event.result.equals(ACC.OK)) return COM.E_INVALIDARG;
@@ -3587,7 +3594,7 @@ public class Accessible {
 				if (!style.equals(new TextStyle())) event.textStyle = style;
 			}
 			for (int i = 0; i < accessibleEditableTextListenersSize(); i++) {
-				AccessibleEditableTextListener listener = (AccessibleEditableTextListener) accessibleEditableTextListeners.elementAt(i);
+				AccessibleEditableTextListener listener = accessibleEditableTextListeners.get(i);
 				listener.setTextAttributes(event);
 			}
 			if (style.font != null) {
@@ -3610,7 +3617,7 @@ public class Accessible {
 		AccessibleHyperlinkEvent event = new AccessibleHyperlinkEvent(this);
 		event.index = index;
 		for (int i = 0; i < accessibleHyperlinkListenersSize(); i++) {
-			AccessibleHyperlinkListener listener = (AccessibleHyperlinkListener) accessibleHyperlinkListeners.elementAt(i);
+			AccessibleHyperlinkListener listener = accessibleHyperlinkListeners.get(i);
 			listener.getAnchor(event);
 		}
 		Accessible accessible = event.accessible;
@@ -3630,7 +3637,7 @@ public class Accessible {
 		AccessibleHyperlinkEvent event = new AccessibleHyperlinkEvent(this);
 		event.index = index;
 		for (int i = 0; i < accessibleHyperlinkListenersSize(); i++) {
-			AccessibleHyperlinkListener listener = (AccessibleHyperlinkListener) accessibleHyperlinkListeners.elementAt(i);
+			AccessibleHyperlinkListener listener = accessibleHyperlinkListeners.get(i);
 			listener.getAnchorTarget(event);
 		}
 		Accessible accessible = event.accessible;
@@ -3649,7 +3656,7 @@ public class Accessible {
 		if (DEBUG) print(this + ".IAccessibleHyperlink::get_startIndex");
 		AccessibleHyperlinkEvent event = new AccessibleHyperlinkEvent(this);
 		for (int i = 0; i < accessibleHyperlinkListenersSize(); i++) {
-			AccessibleHyperlinkListener listener = (AccessibleHyperlinkListener) accessibleHyperlinkListeners.elementAt(i);
+			AccessibleHyperlinkListener listener = accessibleHyperlinkListeners.get(i);
 			listener.getStartIndex(event);
 		}
 		COM.MoveMemory(pIndex, new int [] { event.index }, 4);
@@ -3661,7 +3668,7 @@ public class Accessible {
 		if (DEBUG) print(this + ".IAccessibleHyperlink::get_endIndex");
 		AccessibleHyperlinkEvent event = new AccessibleHyperlinkEvent(this);
 		for (int i = 0; i < accessibleHyperlinkListenersSize(); i++) {
-			AccessibleHyperlinkListener listener = (AccessibleHyperlinkListener) accessibleHyperlinkListeners.elementAt(i);
+			AccessibleHyperlinkListener listener = accessibleHyperlinkListeners.get(i);
 			listener.getEndIndex(event);
 		}
 		COM.MoveMemory(pIndex, new int [] { event.index }, 4);
@@ -3679,7 +3686,7 @@ public class Accessible {
 		if (DEBUG) print(this + ".IAccessibleHypertext::get_nHyperlinks");
 		AccessibleTextEvent event = new AccessibleTextEvent(this);
 		for (int i = 0; i < accessibleTextExtendedListenersSize(); i++) {
-			AccessibleTextExtendedListener listener = (AccessibleTextExtendedListener) accessibleTextExtendedListeners.elementAt(i);
+			AccessibleTextExtendedListener listener = accessibleTextExtendedListeners.get(i);
 			listener.getHyperlinkCount(event);
 		}
 		COM.MoveMemory(pHyperlinkCount, new int [] { event.count }, 4);
@@ -3692,7 +3699,7 @@ public class Accessible {
 		AccessibleTextEvent event = new AccessibleTextEvent(this);
 		event.index = index;
 		for (int i = 0; i < accessibleTextExtendedListenersSize(); i++) {
-			AccessibleTextExtendedListener listener = (AccessibleTextExtendedListener) accessibleTextExtendedListeners.elementAt(i);
+			AccessibleTextExtendedListener listener = accessibleTextExtendedListeners.get(i);
 			listener.getHyperlink(event);
 		}
 		Accessible accessible = event.accessible;
@@ -3712,7 +3719,7 @@ public class Accessible {
 		event.offset = charIndex;
 		event.index = -1;
 		for (int i = 0; i < accessibleTextExtendedListenersSize(); i++) {
-			AccessibleTextExtendedListener listener = (AccessibleTextExtendedListener) accessibleTextExtendedListeners.elementAt(i);
+			AccessibleTextExtendedListener listener = accessibleTextExtendedListeners.get(i);
 			listener.getHyperlinkIndex(event);
 		}
 		COM.MoveMemory(pHyperlinkIndex, new int [] { event.index }, 4);
@@ -3728,7 +3735,7 @@ public class Accessible {
 //		AccessibleEvent event = new AccessibleEvent(this);
 //		event.childID = ACC.CHILDID_SELF;
 //		for (int i = 0; i < accessibleListenersSize(); i++) {
-//			AccessibleListener listener = (AccessibleListener) accessibleListeners.elementAt(i);
+//			AccessibleListener listener = (AccessibleListener) accessibleListeners.get(i);
 //			listener.getDescription(event);
 //		}
 //		setString(pbstrDescription, event.result);
@@ -3743,7 +3750,7 @@ public class Accessible {
 //		AccessibleControlEvent event = new AccessibleControlEvent(this);
 //		event.childID = ACC.CHILDID_SELF;
 //		for (int i = 0; i < accessibleControlListenersSize(); i++) {
-//			AccessibleControlListener listener = (AccessibleControlListener) accessibleControlListeners.elementAt(i);
+//			AccessibleControlListener listener = (AccessibleControlListener) accessibleControlListeners.get(i);
 //			listener.getLocation(event);
 //		}
 //		COM.MoveMemory(pX, new int [] { event.x }, 4);
@@ -3757,7 +3764,7 @@ public class Accessible {
 //		// TO DO: does it make sense to just reuse getLocation?
 //		AccessibleControlEvent event = new AccessibleControlEvent(this);
 //		for (int i = 0; i < accessibleControlListenersSize(); i++) {
-//			AccessibleControlListener listener = (AccessibleControlListener) accessibleControlListeners.elementAt(i);
+//			AccessibleControlListener listener = (AccessibleControlListener) accessibleControlListeners.get(i);
 //			listener.getLocation(event);
 //		}
 //		COM.MoveMemory(pHeight, new int [] { event.height }, 4);
@@ -3771,7 +3778,7 @@ public class Accessible {
 		event.row = row;
 		event.column = column;
 		for (int i = 0; i < accessibleTableListenersSize(); i++) {
-			AccessibleTableListener listener = (AccessibleTableListener) accessibleTableListeners.elementAt(i);
+			AccessibleTableListener listener = accessibleTableListeners.get(i);
 			listener.getCell(event);
 		}
 		Accessible accessible = event.accessible;
@@ -3786,7 +3793,7 @@ public class Accessible {
 	int get_caption(long /*int*/ ppAccessible) {
 		AccessibleTableEvent event = new AccessibleTableEvent(this);
 		for (int i = 0; i < accessibleTableListenersSize(); i++) {
-			AccessibleTableListener listener = (AccessibleTableListener) accessibleTableListeners.elementAt(i);
+			AccessibleTableListener listener = accessibleTableListeners.get(i);
 			listener.getCaption(event);
 		}
 		Accessible accessible = event.accessible;
@@ -3805,7 +3812,7 @@ public class Accessible {
 		AccessibleTableEvent event = new AccessibleTableEvent(this);
 		event.column = column;
 		for (int i = 0; i < accessibleTableListenersSize(); i++) {
-			AccessibleTableListener listener = (AccessibleTableListener) accessibleTableListeners.elementAt(i);
+			AccessibleTableListener listener = accessibleTableListeners.get(i);
 			listener.getColumnDescription(event);
 		}
 		if (DEBUG) print(this + ".IAccessibleTable2::get_columnDescription(column=" + column + ") returning " + event.result);
@@ -3818,7 +3825,7 @@ public class Accessible {
 	int get_nColumns(long /*int*/ pColumnCount) {
 		AccessibleTableEvent event = new AccessibleTableEvent(this);
 		for (int i = 0; i < accessibleTableListenersSize(); i++) {
-			AccessibleTableListener listener = (AccessibleTableListener) accessibleTableListeners.elementAt(i);
+			AccessibleTableListener listener = accessibleTableListeners.get(i);
 			listener.getColumnCount(event);
 		}
 		if (DEBUG) print(this + ".IAccessibleTable2::get_nColumns() returning " + event.count);
@@ -3830,7 +3837,7 @@ public class Accessible {
 	int get_nRows(long /*int*/ pRowCount) {
 		AccessibleTableEvent event = new AccessibleTableEvent(this);
 		for (int i = 0; i < accessibleTableListenersSize(); i++) {
-			AccessibleTableListener listener = (AccessibleTableListener) accessibleTableListeners.elementAt(i);
+			AccessibleTableListener listener = accessibleTableListeners.get(i);
 			listener.getRowCount(event);
 		}
 		if (DEBUG) print(this + ".IAccessibleTable2::get_nRows() returning " + event.count);
@@ -3842,7 +3849,7 @@ public class Accessible {
 	int get_nSelectedCells(long /*int*/ pCellCount) {
 		AccessibleTableEvent event = new AccessibleTableEvent(this);
 		for (int i = 0; i < accessibleTableListenersSize(); i++) {
-			AccessibleTableListener listener = (AccessibleTableListener) accessibleTableListeners.elementAt(i);
+			AccessibleTableListener listener = accessibleTableListeners.get(i);
 			listener.getSelectedCellCount(event);
 		}
 		if (DEBUG) print(this + ".IAccessibleTable2::get_nSelectedCells() returning " + event.count);
@@ -3854,7 +3861,7 @@ public class Accessible {
 	int get_nSelectedColumns(long /*int*/ pColumnCount) {
 		AccessibleTableEvent event = new AccessibleTableEvent(this);
 		for (int i = 0; i < accessibleTableListenersSize(); i++) {
-			AccessibleTableListener listener = (AccessibleTableListener) accessibleTableListeners.elementAt(i);
+			AccessibleTableListener listener = accessibleTableListeners.get(i);
 			listener.getSelectedColumnCount(event);
 		}
 		if (DEBUG) print(this + ".IAccessibleTable2::get_nSelectedColumns() returning " + event.count);
@@ -3866,7 +3873,7 @@ public class Accessible {
 	int get_nSelectedRows(long /*int*/ pRowCount) {
 		AccessibleTableEvent event = new AccessibleTableEvent(this);
 		for (int i = 0; i < accessibleTableListenersSize(); i++) {
-			AccessibleTableListener listener = (AccessibleTableListener) accessibleTableListeners.elementAt(i);
+			AccessibleTableListener listener = accessibleTableListeners.get(i);
 			listener.getSelectedRowCount(event);
 		}
 		if (DEBUG) print(this + ".IAccessibleTable2::get_nSelectedRows() returning " + event.count);
@@ -3879,7 +3886,7 @@ public class Accessible {
 		AccessibleTableEvent event = new AccessibleTableEvent(this);
 		event.row = row;
 		for (int i = 0; i < accessibleTableListenersSize(); i++) {
-			AccessibleTableListener listener = (AccessibleTableListener) accessibleTableListeners.elementAt(i);
+			AccessibleTableListener listener = accessibleTableListeners.get(i);
 			listener.getRowDescription(event);
 		}
 		if (DEBUG) print(this + ".IAccessibleTable2::get_rowDescription(row=" + row + ") returning " + event.result);
@@ -3892,7 +3899,7 @@ public class Accessible {
 	int get_selectedCells(long /*int*/ ppCells, long /*int*/ pNSelectedCells) {
 		AccessibleTableEvent event = new AccessibleTableEvent(this);
 		for (int i = 0; i < accessibleTableListenersSize(); i++) {
-			AccessibleTableListener listener = (AccessibleTableListener) accessibleTableListeners.elementAt(i);
+			AccessibleTableListener listener = accessibleTableListeners.get(i);
 			listener.getSelectedCells(event);
 		}
 		if (DEBUG) print(this + ".IAccessibleTable2::get_selectedCells() returning " + (event.accessibles == null ? "null" : "accessibles[" + event.accessibles.length + "]"));
@@ -3921,7 +3928,7 @@ public class Accessible {
 	int get_selectedColumns(long /*int*/ ppSelectedColumns, long /*int*/ pNColumns) {
 		AccessibleTableEvent event = new AccessibleTableEvent(this);
 		for (int i = 0; i < accessibleTableListenersSize(); i++) {
-			AccessibleTableListener listener = (AccessibleTableListener) accessibleTableListeners.elementAt(i);
+			AccessibleTableListener listener = accessibleTableListeners.get(i);
 			listener.getSelectedColumns(event);
 		}
 		int count = event.selected == null ? 0 : event.selected.length;
@@ -3942,7 +3949,7 @@ public class Accessible {
 	int get_selectedRows(long /*int*/ ppSelectedRows, long /*int*/ pNRows) {
 		AccessibleTableEvent event = new AccessibleTableEvent(this);
 		for (int i = 0; i < accessibleTableListenersSize(); i++) {
-			AccessibleTableListener listener = (AccessibleTableListener) accessibleTableListeners.elementAt(i);
+			AccessibleTableListener listener = accessibleTableListeners.get(i);
 			listener.getSelectedRows(event);
 		}
 		int count = event.selected == null ? 0 : event.selected.length;
@@ -3963,7 +3970,7 @@ public class Accessible {
 	int get_summary(long /*int*/ ppAccessible) {
 		AccessibleTableEvent event = new AccessibleTableEvent(this);
 		for (int i = 0; i < accessibleTableListenersSize(); i++) {
-			AccessibleTableListener listener = (AccessibleTableListener) accessibleTableListeners.elementAt(i);
+			AccessibleTableListener listener = accessibleTableListeners.get(i);
 			listener.getSummary(event);
 		}
 		Accessible accessible = event.accessible;
@@ -3982,7 +3989,7 @@ public class Accessible {
 		AccessibleTableEvent event = new AccessibleTableEvent(this);
 		event.column = column;
 		for (int i = 0; i < accessibleTableListenersSize(); i++) {
-			AccessibleTableListener listener = (AccessibleTableListener) accessibleTableListeners.elementAt(i);
+			AccessibleTableListener listener = accessibleTableListeners.get(i);
 			listener.isColumnSelected(event);
 		}
 		if (DEBUG) print(this + ".IAccessibleTable2::get_isColumnSelected() returning " + event.isSelected);
@@ -3995,7 +4002,7 @@ public class Accessible {
 		AccessibleTableEvent event = new AccessibleTableEvent(this);
 		event.row = row;
 		for (int i = 0; i < accessibleTableListenersSize(); i++) {
-			AccessibleTableListener listener = (AccessibleTableListener) accessibleTableListeners.elementAt(i);
+			AccessibleTableListener listener = accessibleTableListeners.get(i);
 			listener.isRowSelected(event);
 		}
 		if (DEBUG) print(this + ".IAccessibleTable2::get_isRowSelected() returning " + event.isSelected);
@@ -4008,7 +4015,7 @@ public class Accessible {
 		AccessibleTableEvent event = new AccessibleTableEvent(this);
 		event.row = row;
 		for (int i = 0; i < accessibleTableListenersSize(); i++) {
-			AccessibleTableListener listener = (AccessibleTableListener) accessibleTableListeners.elementAt(i);
+			AccessibleTableListener listener = accessibleTableListeners.get(i);
 			listener.setSelectedRow(event);
 		}
 		if (DEBUG) print(this + ".IAccessibleTable2::selectRow() returning " + (event.result == null ? "E_INVALIDARG" : event.result));
@@ -4021,7 +4028,7 @@ public class Accessible {
 		AccessibleTableEvent event = new AccessibleTableEvent(this);
 		event.column = column;
 		for (int i = 0; i < accessibleTableListenersSize(); i++) {
-			AccessibleTableListener listener = (AccessibleTableListener) accessibleTableListeners.elementAt(i);
+			AccessibleTableListener listener = accessibleTableListeners.get(i);
 			listener.setSelectedColumn(event);
 		}
 		if (DEBUG) print(this + ".IAccessibleTable2::selectColumn() returning " + (event.result == null ? "E_INVALIDARG" : event.result));
@@ -4034,7 +4041,7 @@ public class Accessible {
 		AccessibleTableEvent event = new AccessibleTableEvent(this);
 		event.row = row;
 		for (int i = 0; i < accessibleTableListenersSize(); i++) {
-			AccessibleTableListener listener = (AccessibleTableListener) accessibleTableListeners.elementAt(i);
+			AccessibleTableListener listener = accessibleTableListeners.get(i);
 			listener.deselectRow(event);
 		}
 		if (DEBUG) print(this + ".IAccessibleTable2::unselectRow() returning " + (event.result == null ? "E_INVALIDARG" : event.result));
@@ -4047,7 +4054,7 @@ public class Accessible {
 		AccessibleTableEvent event = new AccessibleTableEvent(this);
 		event.column = column;
 		for (int i = 0; i < accessibleTableListenersSize(); i++) {
-			AccessibleTableListener listener = (AccessibleTableListener) accessibleTableListeners.elementAt(i);
+			AccessibleTableListener listener = accessibleTableListeners.get(i);
 			listener.deselectColumn(event);
 		}
 		if (DEBUG) print(this + ".IAccessibleTable2::unselectColumn() returning " + (event.result == null ? "E_INVALIDARG" : event.result));
@@ -4070,7 +4077,7 @@ public class Accessible {
 	int get_columnExtent(long /*int*/ pNColumnsSpanned) {
 		AccessibleTableCellEvent event = new AccessibleTableCellEvent(this);
 		for (int i = 0; i < accessibleTableCellListenersSize(); i++) {
-			AccessibleTableCellListener listener = (AccessibleTableCellListener) accessibleTableCellListeners.elementAt(i);
+			AccessibleTableCellListener listener = accessibleTableCellListeners.get(i);
 			listener.getColumnSpan(event);
 		}
 		if (DEBUG) print(this + ".IAccessibleTableCell::get_columnExtent() returning " + event.count);
@@ -4082,7 +4089,7 @@ public class Accessible {
 	int get_columnHeaderCells(long /*int*/ ppCellAccessibles, long /*int*/ pNColumnHeaderCells) {
 		AccessibleTableCellEvent event = new AccessibleTableCellEvent(this);
 		for (int i = 0; i < accessibleTableCellListenersSize(); i++) {
-			AccessibleTableCellListener listener = (AccessibleTableCellListener) accessibleTableCellListeners.elementAt(i);
+			AccessibleTableCellListener listener = accessibleTableCellListeners.get(i);
 			listener.getColumnHeaders(event);
 		}
 		if (DEBUG) print(this + ".IAccessibleTableCell::get_columnHeaderCells() returning " + (event.accessibles == null ? "null" : "accessibles[" + event.accessibles.length + "]"));
@@ -4111,7 +4118,7 @@ public class Accessible {
 	int get_columnIndex(long /*int*/ pColumnIndex) {
 		AccessibleTableCellEvent event = new AccessibleTableCellEvent(this);
 		for (int i = 0; i < accessibleTableCellListenersSize(); i++) {
-			AccessibleTableCellListener listener = (AccessibleTableCellListener) accessibleTableCellListeners.elementAt(i);
+			AccessibleTableCellListener listener = accessibleTableCellListeners.get(i);
 			listener.getColumnIndex(event);
 		}
 		if (DEBUG) print(this + ".IAccessibleTableCell::get_columnIndex() returning " + event.index);
@@ -4123,7 +4130,7 @@ public class Accessible {
 	int get_rowExtent(long /*int*/ pNRowsSpanned) {
 		AccessibleTableCellEvent event = new AccessibleTableCellEvent(this);
 		for (int i = 0; i < accessibleTableCellListenersSize(); i++) {
-			AccessibleTableCellListener listener = (AccessibleTableCellListener) accessibleTableCellListeners.elementAt(i);
+			AccessibleTableCellListener listener = accessibleTableCellListeners.get(i);
 			listener.getRowSpan(event);
 		}
 		if (DEBUG) print(this + ".IAccessibleTableCell::get_rowExtent() returning " + event.count);
@@ -4135,7 +4142,7 @@ public class Accessible {
 	int get_rowHeaderCells(long /*int*/ ppCellAccessibles, long /*int*/ pNRowHeaderCells) {
 		AccessibleTableCellEvent event = new AccessibleTableCellEvent(this);
 		for (int i = 0; i < accessibleTableCellListenersSize(); i++) {
-			AccessibleTableCellListener listener = (AccessibleTableCellListener) accessibleTableCellListeners.elementAt(i);
+			AccessibleTableCellListener listener = accessibleTableCellListeners.get(i);
 			listener.getRowHeaders(event);
 		}
 		if (DEBUG) print(this + ".IAccessibleTableCell::get_rowHeaderCells() returning " + (event.accessibles == null ? "null" : "accessibles[" + event.accessibles.length + "]"));
@@ -4164,7 +4171,7 @@ public class Accessible {
 	int get_rowIndex(long /*int*/ pRowIndex) {
 		AccessibleTableCellEvent event = new AccessibleTableCellEvent(this);
 		for (int i = 0; i < accessibleTableCellListenersSize(); i++) {
-			AccessibleTableCellListener listener = (AccessibleTableCellListener) accessibleTableCellListeners.elementAt(i);
+			AccessibleTableCellListener listener = accessibleTableCellListeners.get(i);
 			listener.getRowIndex(event);
 		}
 		if (DEBUG) print(this + ".IAccessibleTableCell::get_rowIndex() returning " + event.index);
@@ -4176,7 +4183,7 @@ public class Accessible {
 	int get_isSelected(long /*int*/ pIsSelected) {
 		AccessibleTableCellEvent event = new AccessibleTableCellEvent(this);
 		for (int i = 0; i < accessibleTableCellListenersSize(); i++) {
-			AccessibleTableCellListener listener = (AccessibleTableCellListener) accessibleTableCellListeners.elementAt(i);
+			AccessibleTableCellListener listener = accessibleTableCellListeners.get(i);
 			listener.isSelected(event);
 		}
 		if (DEBUG) print(this + ".IAccessibleTableCell::get_isSelected() returning " + event.isSelected);
@@ -4191,7 +4198,7 @@ public class Accessible {
 		return COM.DISP_E_MEMBERNOTFOUND;
 //		AccessibleTableCellEvent event = new AccessibleTableCellEvent(this);
 //		for (int i = 0; i < accessibleTableCellListenersSize(); i++) {
-//			AccessibleTableCellListener listener = (AccessibleTableCellListener) accessibleTableCellListeners.elementAt(i);
+//			AccessibleTableCellListener listener = (AccessibleTableCellListener) accessibleTableCellListeners.get(i);
 //			listener.getRowColumnExtents(event);
 //		}
 //		COM.MoveMemory(pRow, new int [] { event.row }, 4);
@@ -4205,7 +4212,7 @@ public class Accessible {
 	int get_table(long /*int*/ ppTable) {
 		AccessibleTableCellEvent event = new AccessibleTableCellEvent(this);
 		for (int i = 0; i < accessibleTableCellListenersSize(); i++) {
-			AccessibleTableCellListener listener = (AccessibleTableCellListener) accessibleTableCellListeners.elementAt(i);
+			AccessibleTableCellListener listener = accessibleTableCellListeners.get(i);
 			listener.getTable(event);
 		}
 		Accessible accessible = event.accessible;
@@ -4227,7 +4234,7 @@ public class Accessible {
 		event.start = startOffset == COM.IA2_TEXT_OFFSET_LENGTH ? getCharacterCount() : startOffset;
 		event.end = endOffset == COM.IA2_TEXT_OFFSET_LENGTH ? getCharacterCount() : endOffset;
 		for (int i = 0; i < accessibleTextExtendedListenersSize(); i++) {
-			AccessibleTextExtendedListener listener = (AccessibleTextExtendedListener) accessibleTextExtendedListeners.elementAt(i);
+			AccessibleTextExtendedListener listener = accessibleTextExtendedListeners.get(i);
 			listener.addSelection(event);
 		}
 		if (event.result == null || !event.result.equals(ACC.OK)) return COM.E_INVALIDARG;
@@ -4239,7 +4246,7 @@ public class Accessible {
 		AccessibleTextAttributeEvent event = new AccessibleTextAttributeEvent(this);
 		event.offset = offset == COM.IA2_TEXT_OFFSET_LENGTH ? getCharacterCount() : offset;
 		for (int i = 0; i < accessibleAttributeListenersSize(); i++) {
-			AccessibleAttributeListener listener = (AccessibleAttributeListener) accessibleAttributeListeners.elementAt(i);
+			AccessibleAttributeListener listener = accessibleAttributeListeners.get(i);
 			listener.getTextAttributes(event);
 		}
 		String textAttributes = "";
@@ -4311,7 +4318,7 @@ public class Accessible {
 		event.start = offset == COM.IA2_TEXT_OFFSET_LENGTH ? length : offset < 0 ? 0 : offset;
 		event.end = offset == COM.IA2_TEXT_OFFSET_LENGTH || offset >= length ? length : offset + 1;
 		for (int i = 0; i < accessibleTextExtendedListenersSize(); i++) {
-			AccessibleTextExtendedListener listener = (AccessibleTextExtendedListener) accessibleTextExtendedListeners.elementAt(i);
+			AccessibleTextExtendedListener listener = accessibleTextExtendedListeners.get(i);
 			listener.getTextBounds(event);
 		}
 		/* Note: event.rectangles is not used here, because IAccessibleText::get_characterExtents is just for one character. */
@@ -4329,7 +4336,7 @@ public class Accessible {
 		AccessibleTextEvent event = new AccessibleTextEvent(this);
 		event.count = -1;
 		for (int i = 0; i < accessibleTextExtendedListenersSize(); i++) {
-			AccessibleTextExtendedListener listener = (AccessibleTextExtendedListener) accessibleTextExtendedListeners.elementAt(i);
+			AccessibleTextExtendedListener listener = accessibleTextExtendedListeners.get(i);
 			listener.getSelectionCount(event);
 		}
 		if (event.count == -1) {
@@ -4337,7 +4344,7 @@ public class Accessible {
 			event.offset = -1;
 			event.length = 0;
 			for (int i = 0; i < accessibleTextListenersSize(); i++) {
-				AccessibleTextListener listener = (AccessibleTextListener) accessibleTextListeners.elementAt(i);
+				AccessibleTextListener listener = accessibleTextListeners.get(i);
 				listener.getSelectionRange (event);
 			}
 			event.count = event.offset != -1 && event.length > 0 ? 1 : 0;
@@ -4354,7 +4361,7 @@ public class Accessible {
 		event.y = y;
 		event.offset = -1;
 		for (int i = 0; i < accessibleTextExtendedListenersSize(); i++) {
-			AccessibleTextExtendedListener listener = (AccessibleTextExtendedListener) accessibleTextExtendedListeners.elementAt(i);
+			AccessibleTextExtendedListener listener = accessibleTextExtendedListeners.get(i);
 			listener.getOffsetAtPoint(event);
 		}
 		if (DEBUG) print(this + ".IAccessibleText::get_offsetAtPoint(" + x + ", " + y + ") returning " + event.offset + hresult(event.offset == -1 ? COM.S_FALSE : COM.S_OK));
@@ -4374,7 +4381,7 @@ public class Accessible {
 		event.start = -1;
 		event.end = -1;
 		for (int i = 0; i < accessibleTextExtendedListenersSize(); i++) {
-			AccessibleTextExtendedListener listener = (AccessibleTextExtendedListener) accessibleTextExtendedListeners.elementAt(i);
+			AccessibleTextExtendedListener listener = accessibleTextExtendedListeners.get(i);
 			listener.getSelection(event);
 		}
 		if (event.start == -1 && selectionIndex == 0) {
@@ -4382,7 +4389,7 @@ public class Accessible {
 			event.offset = -1;
 			event.length = 0;
 			for (int i = 0; i < accessibleTextListenersSize(); i++) {
-				AccessibleTextListener listener = (AccessibleTextListener) accessibleTextListeners.elementAt(i);
+				AccessibleTextListener listener = accessibleTextListeners.get(i);
 				listener.getSelectionRange (event);
 			}
 			event.start = event.offset;
@@ -4413,14 +4420,14 @@ public class Accessible {
 		event.count = 0;
 		event.type = ACC.TEXT_BOUNDARY_ALL;
 		for (int i = 0; i < accessibleTextExtendedListenersSize(); i++) {
-			AccessibleTextExtendedListener listener = (AccessibleTextExtendedListener) accessibleTextExtendedListeners.elementAt(i);
+			AccessibleTextExtendedListener listener = accessibleTextExtendedListeners.get(i);
 			listener.getText(event);
 		}
 		if (event.result == null) {
 			AccessibleControlEvent e = new AccessibleControlEvent(this);
 			e.childID = ACC.CHILDID_SELF;
 			for (int i = 0; i < accessibleControlListenersSize(); i++) {
-				AccessibleControlListener listener = (AccessibleControlListener) accessibleControlListeners.elementAt(i);
+				AccessibleControlListener listener = accessibleControlListeners.get(i);
 				listener.getRole(e);
 				listener.getValue(e);
 			}
@@ -4453,7 +4460,7 @@ public class Accessible {
 		int eventStart = event.start;
 		int eventEnd = event.end;
 		for (int i = 0; i < accessibleTextExtendedListenersSize(); i++) {
-			AccessibleTextExtendedListener listener = (AccessibleTextExtendedListener) accessibleTextExtendedListeners.elementAt(i);
+			AccessibleTextExtendedListener listener = accessibleTextExtendedListeners.get(i);
 			listener.getText(event);
 		}
 		if (event.end < charCount) {
@@ -4467,7 +4474,7 @@ public class Accessible {
 					event.end = eventEnd;
 					event.count = 0;
 					for (int i = 0; i < accessibleTextExtendedListenersSize(); i++) {
-						AccessibleTextExtendedListener listener = (AccessibleTextExtendedListener) accessibleTextExtendedListeners.elementAt(i);
+						AccessibleTextExtendedListener listener = accessibleTextExtendedListeners.get(i);
 						listener.getText(event);
 					}
 					event.end = event.start;
@@ -4475,7 +4482,7 @@ public class Accessible {
 					event.type = ACC.TEXT_BOUNDARY_ALL;
 					event.count = 0;
 					for (int i = 0; i < accessibleTextExtendedListenersSize(); i++) {
-						AccessibleTextExtendedListener listener = (AccessibleTextExtendedListener) accessibleTextExtendedListeners.elementAt(i);
+						AccessibleTextExtendedListener listener = accessibleTextExtendedListeners.get(i);
 						listener.getText(event);
 					}
 			}
@@ -4506,7 +4513,7 @@ public class Accessible {
 		int eventStart = event.start;
 		int eventEnd = event.end;
 		for (int i = 0; i < accessibleTextExtendedListenersSize(); i++) {
-			AccessibleTextExtendedListener listener = (AccessibleTextExtendedListener) accessibleTextExtendedListeners.elementAt(i);
+			AccessibleTextExtendedListener listener = accessibleTextExtendedListeners.get(i);
 			listener.getText(event);
 		}
 		if (event.end < charCount) {
@@ -4520,7 +4527,7 @@ public class Accessible {
 					event.end = eventEnd;
 					event.count = 2;
 					for (int i = 0; i < accessibleTextExtendedListenersSize(); i++) {
-						AccessibleTextExtendedListener listener = (AccessibleTextExtendedListener) accessibleTextExtendedListeners.elementAt(i);
+						AccessibleTextExtendedListener listener = accessibleTextExtendedListeners.get(i);
 						listener.getText(event);
 					}
 					event.end = event.start;
@@ -4528,7 +4535,7 @@ public class Accessible {
 					event.type = ACC.TEXT_BOUNDARY_ALL;
 					event.count = 0;
 					for (int i = 0; i < accessibleTextExtendedListenersSize(); i++) {
-						AccessibleTextExtendedListener listener = (AccessibleTextExtendedListener) accessibleTextExtendedListeners.elementAt(i);
+						AccessibleTextExtendedListener listener = accessibleTextExtendedListeners.get(i);
 						listener.getText(event);
 					}
 			}
@@ -4566,7 +4573,7 @@ public class Accessible {
 		int eventStart = event.start;
 		int eventEnd = event.end;
 		for (int i = 0; i < accessibleTextExtendedListenersSize(); i++) {
-			AccessibleTextExtendedListener listener = (AccessibleTextExtendedListener) accessibleTextExtendedListeners.elementAt(i);
+			AccessibleTextExtendedListener listener = accessibleTextExtendedListeners.get(i);
 			listener.getText(event);
 		}
 		if (event.end < charCount) {
@@ -4580,7 +4587,7 @@ public class Accessible {
 					event.end = eventEnd;
 					event.count = 1;
 					for (int i = 0; i < accessibleTextExtendedListenersSize(); i++) {
-						AccessibleTextExtendedListener listener = (AccessibleTextExtendedListener) accessibleTextExtendedListeners.elementAt(i);
+						AccessibleTextExtendedListener listener = accessibleTextExtendedListeners.get(i);
 						listener.getText(event);
 					}
 					event.end = event.start;
@@ -4588,7 +4595,7 @@ public class Accessible {
 					event.type = ACC.TEXT_BOUNDARY_ALL;
 					event.count = 0;
 					for (int i = 0; i < accessibleTextExtendedListenersSize(); i++) {
-						AccessibleTextExtendedListener listener = (AccessibleTextExtendedListener) accessibleTextExtendedListeners.elementAt(i);
+						AccessibleTextExtendedListener listener = accessibleTextExtendedListeners.get(i);
 						listener.getText(event);
 					}
 			}
@@ -4606,7 +4613,7 @@ public class Accessible {
 		AccessibleTextEvent event = new AccessibleTextEvent(this);
 		event.index = selectionIndex;
 		for (int i = 0; i < accessibleTextExtendedListenersSize(); i++) {
-			AccessibleTextExtendedListener listener = (AccessibleTextExtendedListener) accessibleTextExtendedListeners.elementAt(i);
+			AccessibleTextExtendedListener listener = accessibleTextExtendedListeners.get(i);
 			listener.removeSelection(event);
 		}
 		if (DEBUG) print(this + ".IAccessibleText::removeSelection(" + selectionIndex + ") returning" + hresult(event.result == null || !event.result.equals(ACC.OK) ? COM.E_INVALIDARG : COM.S_OK));
@@ -4619,7 +4626,7 @@ public class Accessible {
 		AccessibleTextEvent event = new AccessibleTextEvent(this);
 		event.offset = offset == COM.IA2_TEXT_OFFSET_LENGTH ? getCharacterCount() : offset;
 		for (int i = 0; i < accessibleTextExtendedListenersSize(); i++) {
-			AccessibleTextExtendedListener listener = (AccessibleTextExtendedListener) accessibleTextExtendedListeners.elementAt(i);
+			AccessibleTextExtendedListener listener = accessibleTextExtendedListeners.get(i);
 			listener.setCaretOffset(event);
 		}
 		if (DEBUG) print(this + ".IAccessibleText::setCaretOffset(" + offset + ") returning" + hresult(event.result == null || !event.result.equals(ACC.OK) ? COM.E_INVALIDARG : COM.S_OK));
@@ -4634,7 +4641,7 @@ public class Accessible {
 		event.start = startOffset == COM.IA2_TEXT_OFFSET_LENGTH ? getCharacterCount() : startOffset;
 		event.end = endOffset == COM.IA2_TEXT_OFFSET_LENGTH ? getCharacterCount() : endOffset;
 		for (int i = 0; i < accessibleTextExtendedListenersSize(); i++) {
-			AccessibleTextExtendedListener listener = (AccessibleTextExtendedListener) accessibleTextExtendedListeners.elementAt(i);
+			AccessibleTextExtendedListener listener = accessibleTextExtendedListeners.get(i);
 			listener.setSelection(event);
 		}
 		if (DEBUG) print(this + ".IAccessibleText::setSelection(index=" + selectionIndex + ", start=" + event.start + ", end=" + event.end + ") returning " + (event.result.equals(ACC.OK) ? "OK" : "INVALIDARG"));
@@ -4666,7 +4673,7 @@ public class Accessible {
 			case COM.IA2_SCROLL_TYPE_ANYWHERE: event.type = ACC.SCROLL_TYPE_ANYWHERE; break;
 		}
 		for (int i = 0; i < accessibleTextExtendedListenersSize(); i++) {
-			AccessibleTextExtendedListener listener = (AccessibleTextExtendedListener) accessibleTextExtendedListeners.elementAt(i);
+			AccessibleTextExtendedListener listener = accessibleTextExtendedListeners.get(i);
 			listener.scrollText(event);
 		}
 		if (event.result == null || !event.result.equals(ACC.OK)) return COM.E_INVALIDARG;
@@ -4683,7 +4690,7 @@ public class Accessible {
 		event.x = x;
 		event.y = y;
 		for (int i = 0; i < accessibleTextExtendedListenersSize(); i++) {
-			AccessibleTextExtendedListener listener = (AccessibleTextExtendedListener) accessibleTextExtendedListeners.elementAt(i);
+			AccessibleTextExtendedListener listener = accessibleTextExtendedListeners.get(i);
 			listener.scrollText(event);
 		}
 		if (event.result == null || !event.result.equals(ACC.OK)) return COM.E_INVALIDARG; // TODO: @retval S_FALSE if the object is already at the specified location.
@@ -4730,7 +4737,7 @@ public class Accessible {
 	int get_currentValue(long /*int*/ pCurrentValue) {
 		AccessibleValueEvent event = new AccessibleValueEvent(this);
 		for (int i = 0; i < accessibleValueListenersSize(); i++) {
-			AccessibleValueListener listener = (AccessibleValueListener) accessibleValueListeners.elementAt(i);
+			AccessibleValueListener listener = accessibleValueListeners.get(i);
 			listener.getCurrentValue(event);
 		}
 		if (DEBUG) print(this + ".IAccessibleValue::get_currentValue returning " + event.value + hresult(event.value == null ? COM.S_FALSE : COM.S_OK));
@@ -4744,7 +4751,7 @@ public class Accessible {
 		AccessibleValueEvent event = new AccessibleValueEvent(this);
 		event.value = getNumberVARIANT(value);
 		for (int i = 0; i < accessibleValueListenersSize(); i++) {
-			AccessibleValueListener listener = (AccessibleValueListener) accessibleValueListeners.elementAt(i);
+			AccessibleValueListener listener = accessibleValueListeners.get(i);
 			listener.setCurrentValue(event);
 		}
 		//if (event.value == null) return COM.S_FALSE;
@@ -4755,7 +4762,7 @@ public class Accessible {
 	int get_maximumValue(long /*int*/ pMaximumValue) {
 		AccessibleValueEvent event = new AccessibleValueEvent(this);
 		for (int i = 0; i < accessibleValueListenersSize(); i++) {
-			AccessibleValueListener listener = (AccessibleValueListener) accessibleValueListeners.elementAt(i);
+			AccessibleValueListener listener = accessibleValueListeners.get(i);
 			listener.getMaximumValue(event);
 		}
 		if (DEBUG) print(this + ".IAccessibleValue::get_maximumValue returning " + event.value + hresult(event.value == null ? COM.S_FALSE : COM.S_OK));
@@ -4767,7 +4774,7 @@ public class Accessible {
 	int get_minimumValue(long /*int*/ pMinimumValue) {
 		AccessibleValueEvent event = new AccessibleValueEvent(this);
 		for (int i = 0; i < accessibleValueListenersSize(); i++) {
-			AccessibleValueListener listener = (AccessibleValueListener) accessibleValueListeners.elementAt(i);
+			AccessibleValueListener listener = accessibleValueListeners.get(i);
 			listener.getMinimumValue(event);
 		}
 		if (DEBUG) print(this + ".IAccessibleValue::get_minimumValue returning " + event.value + hresult(event.value == null ? COM.S_FALSE : COM.S_OK));
@@ -4787,7 +4794,7 @@ public class Accessible {
 		AccessibleControlEvent event = new AccessibleControlEvent(this);
 		event.childID = childID;
 		for (int l = 0; l < accessibleControlListenersSize(); l++) {
-			AccessibleControlListener listener = (AccessibleControlListener) accessibleControlListeners.elementAt(l);
+			AccessibleControlListener listener = accessibleControlListeners.get(l);
 			listener.getChild(event);
 		}
 		Accessible accessible = event.accessible;
@@ -5005,13 +5012,13 @@ public class Accessible {
 		AccessibleTextEvent event = new AccessibleTextEvent(this);
 		event.offset = -1;
 		for (int i = 0; i < accessibleTextExtendedListenersSize(); i++) {
-			AccessibleTextListener listener = (AccessibleTextListener) accessibleTextExtendedListeners.elementAt(i);
+			AccessibleTextListener listener = accessibleTextExtendedListeners.get(i);
 			listener.getCaretOffset (event);
 		}
 		if (event.offset == -1) {
 			for (int i = 0; i < accessibleTextListenersSize(); i++) {
 				event.childID = ACC.CHILDID_SELF;
-				AccessibleTextListener listener = (AccessibleTextListener) accessibleTextListeners.elementAt(i);
+				AccessibleTextListener listener = accessibleTextListeners.get(i);
 				listener.getCaretOffset (event);
 			}
 		}
@@ -5022,14 +5029,14 @@ public class Accessible {
 		AccessibleTextEvent event = new AccessibleTextEvent(this);
 		event.count = -1;
 		for (int i = 0; i < accessibleTextExtendedListenersSize(); i++) {
-			AccessibleTextExtendedListener listener = (AccessibleTextExtendedListener) accessibleTextExtendedListeners.elementAt(i);
+			AccessibleTextExtendedListener listener = accessibleTextExtendedListeners.get(i);
 			listener.getCharacterCount(event);
 		}
 		if (event.count == -1) {
 			AccessibleControlEvent e = new AccessibleControlEvent(this);
 			e.childID = ACC.CHILDID_SELF;
 			for (int i = 0; i < accessibleControlListenersSize(); i++) {
-				AccessibleControlListener listener = (AccessibleControlListener) accessibleControlListeners.elementAt(i);
+				AccessibleControlListener listener = accessibleControlListeners.get(i);
 				listener.getRole(e);
 				listener.getValue(e);
 			}
@@ -5051,7 +5058,7 @@ public class Accessible {
 		AccessibleControlEvent event = new AccessibleControlEvent(this);
 		event.childID = ACC.CHILDID_SELF;
 		for (int i = 0; i < accessibleControlListenersSize(); i++) {
-			AccessibleControlListener listener = (AccessibleControlListener) accessibleControlListeners.elementAt(i);
+			AccessibleControlListener listener = accessibleControlListeners.get(i);
 			listener.getRole(event);
 		}
 		return event.detail;

@@ -16,11 +16,10 @@ import org.eclipse.swt.widgets.*;
 
 import java.util.Vector;
 
-@SuppressWarnings({"rawtypes", "unchecked"})
 class DefaultContent implements StyledTextContent {
 	private final static String LineDelimiter = System.getProperty("line.separator");
 
-	Vector textListeners = new Vector(); // stores text listeners for event sending
+	Vector<StyledTextListener> textListeners = new Vector<StyledTextListener>(); // stores text listeners for event sending
 	char[] textStore = new char[0];	// stores the actual text
 	int gapStart = -1;	// the character position start of the gap
 	int gapEnd = -1;	// the character position after the end of the gap
@@ -101,8 +100,8 @@ int[][] addLineIndex(int start, int length, int[][] linesArray, int count) {
 public void addTextChangeListener(TextChangeListener listener) {
 	if (listener == null) error(SWT.ERROR_NULL_ARGUMENT);
 	StyledTextListener typedListener = new StyledTextListener(listener);
-	textListeners.addElement(typedListener);	
-}	
+	textListeners.add(typedListener);
+}
 /**
  * Adjusts the gap to accommodate a text change that is occurring.
  * <p>
@@ -731,9 +730,9 @@ public String getTextRange(int start, int length) {
 public void removeTextChangeListener(TextChangeListener listener){
 	if (listener == null) error(SWT.ERROR_NULL_ARGUMENT);
 	for (int i = 0; i < textListeners.size(); i++) {
-		TypedListener typedListener = (TypedListener) textListeners.elementAt(i);
+		TypedListener typedListener = textListeners.get(i);
 		if (typedListener.getEventListener () == listener) {
-			textListeners.removeElementAt(i);
+			textListeners.remove(i);
 			break;
 		}
 	}
@@ -794,9 +793,9 @@ public void replaceTextRange(int start, int replaceLength, String newText){
  */
 void sendTextEvent(StyledTextEvent event) {
 	for (int i = 0; i < textListeners.size(); i++) {
-		((StyledTextListener)textListeners.elementAt(i)).handleEvent(event);
+		textListeners.get(i).handleEvent(event);
 	}
-}		
+}
 /**
  * Sets the content to text and removes the gap since there are no sensible predictions 
  * about where the next change will occur.

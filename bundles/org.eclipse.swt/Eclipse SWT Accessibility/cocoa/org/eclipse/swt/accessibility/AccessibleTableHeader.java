@@ -40,7 +40,7 @@ class AccessibleTableHeader extends Accessible {
 					event.detail = ACC.CHILDID_CHILD_AT_INDEX;
 
 					for (int j = 0; j < parent.accessibleControlListeners.size(); j++) {
-						AccessibleControlListener listener = (AccessibleControlListener) parent.accessibleControlListeners.elementAt(j);
+						AccessibleControlListener listener = parent.accessibleControlListeners.get(j);
 						listener.getChild(event);
 					}
 
@@ -62,7 +62,7 @@ class AccessibleTableHeader extends Accessible {
 					event.detail = ACC.CHILDID_CHILD_AT_INDEX;
 
 					for (int j = 0; j < parent.accessibleControlListeners.size(); j++) {
-						AccessibleControlListener listener = (AccessibleControlListener) parent.accessibleControlListeners.elementAt(j);
+						AccessibleControlListener listener = parent.accessibleControlListeners.get(j);
 						listener.getChild(event);
 					}
 

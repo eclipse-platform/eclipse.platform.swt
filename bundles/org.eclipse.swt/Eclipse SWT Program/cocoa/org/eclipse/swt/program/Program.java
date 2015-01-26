@@ -18,7 +18,8 @@ import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 
 import java.io.IOException;
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Instances of this class represent programs and
@@ -182,7 +183,7 @@ static Program getProgram(NSBundle bundle) {
 public static Program [] getPrograms () {
 	NSAutoreleasePool pool = (NSAutoreleasePool) new NSAutoreleasePool().alloc().init();
 	try {
-		Vector vector = new Vector();
+		List<Program> vector = new ArrayList<Program>();
 		NSWorkspace workspace = NSWorkspace.sharedWorkspace();
 		NSArray array = new NSArray(OS.NSSearchPathForDirectoriesInDomains(OS.NSAllApplicationsDirectory, OS.NSAllDomainsMask, true));
 		int count = (int)/*64*/array.count();
@@ -199,15 +200,13 @@ public static Program [] getPrograms () {
 						NSBundle bundle = NSBundle.bundleWithPath(fullPath);
 						if (bundle != null) {
 							Program program = getProgram(bundle);
-							if (program != null) vector.addElement(program);
+							if (program != null) vector.add(program);
 						}
 					}
 				}
 			}
 		}
-		Program[] programs = new Program[vector.size()];
-		vector.copyInto(programs);
-		return programs;
+		return vector.toArray(new Program[vector.size()]);
 	} finally {
 		pool.release();
 	}

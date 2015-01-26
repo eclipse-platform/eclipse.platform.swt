@@ -39,7 +39,7 @@ class AccessibleTableRow extends Accessible {
 					event.column = i;
 					event.row = index;
 					for (int j = 0; j < parent.accessibleTableListeners.size(); j++) {
-						AccessibleTableListener listener = (AccessibleTableListener)parent.accessibleTableListeners.elementAt(j);
+						AccessibleTableListener listener = parent.accessibleTableListeners.get(j);
 						listener.getCell(event);
 					}
 					
@@ -61,7 +61,7 @@ class AccessibleTableRow extends Accessible {
 					event.row = index;
 
 					for (int j = 0; j < parent.accessibleTableListeners.size(); j++) {
-						AccessibleTableListener listener = (AccessibleTableListener)parent.accessibleTableListeners.elementAt(j);
+						AccessibleTableListener listener = parent.accessibleTableListeners.get(j);
 						listener.getCell(event);
 					}
 
@@ -105,7 +105,7 @@ class AccessibleTableRow extends Accessible {
 				event.column = 0;
 				event.row = index;
 				for (int j = 0; j < parent.accessibleTableListeners.size(); j++) {
-					AccessibleTableListener listener = (AccessibleTableListener)parent.accessibleTableListeners.elementAt(j);
+					AccessibleTableListener listener = parent.accessibleTableListeners.get(j);
 					listener.getCell(event);
 				}
 				if (event.accessible != null) {
@@ -126,7 +126,7 @@ class AccessibleTableRow extends Accessible {
 				AccessibleTableEvent event = new AccessibleTableEvent(this);
 				event.row = e.row;
 				for (int i = 0; i < parent.accessibleTableListeners.size(); i++) {
-					AccessibleTableListener listener = (AccessibleTableListener)parent.accessibleTableListeners.elementAt(i);
+					AccessibleTableListener listener = parent.accessibleTableListeners.get(i);
 					listener.isRowSelected(event);
 				}
 				e.isSelected = event.isSelected;
@@ -143,7 +143,7 @@ class AccessibleTableRow extends Accessible {
 			event.row = index;
 
 			for (int j = 0; j < parent.accessibleTableListeners.size(); j++) {
-				AccessibleTableListener listener = (AccessibleTableListener)parent.accessibleTableListeners.elementAt(j);
+				AccessibleTableListener listener = parent.accessibleTableListeners.get(j);
 				listener.getCell(event);
 			}
 

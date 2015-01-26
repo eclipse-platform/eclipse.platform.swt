@@ -42,7 +42,6 @@ import org.eclipse.swt.internal.image.*;
  * @see <a href="http://www.eclipse.org/swt/examples.php">SWT Example: ImageAnalyzer</a>
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  */
-@SuppressWarnings({"rawtypes", "unchecked"})
 public class ImageLoader {
 	
 	/**
@@ -101,7 +100,7 @@ public class ImageLoader {
 	/*
 	 * the set of ImageLoader event listeners, created on demand
 	 */
-	Vector imageLoaderListeners;
+	Vector<ImageLoaderListener> imageLoaderListeners;
 
 /**
  * Construct a new empty ImageLoader.
@@ -286,9 +285,9 @@ public void save(String filename, int format) {
 public void addImageLoaderListener(ImageLoaderListener listener) {
 	if (listener == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
 	if (imageLoaderListeners == null) {
-		imageLoaderListeners = new Vector();
+		imageLoaderListeners = new Vector<ImageLoaderListener>();
 	}
-	imageLoaderListeners.addElement(listener);
+	imageLoaderListeners.add(listener);
 }
 
 /**	 
@@ -306,7 +305,7 @@ public void addImageLoaderListener(ImageLoaderListener listener) {
 public void removeImageLoaderListener(ImageLoaderListener listener) {
 	if (listener == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
 	if (imageLoaderListeners == null) return;
-	imageLoaderListeners.removeElement(listener);
+	imageLoaderListeners.remove(listener);
 }
 
 /**	 
@@ -332,7 +331,7 @@ public void notifyListeners(ImageLoaderEvent event) {
 	if (!hasListeners()) return;
 	int size = imageLoaderListeners.size();
 	for (int i = 0; i < size; i++) {
-		ImageLoaderListener listener = (ImageLoaderListener) imageLoaderListeners.elementAt(i);
+		ImageLoaderListener listener = imageLoaderListeners.get(i);
 		listener.imageDataLoaded(event);
 	}
 }

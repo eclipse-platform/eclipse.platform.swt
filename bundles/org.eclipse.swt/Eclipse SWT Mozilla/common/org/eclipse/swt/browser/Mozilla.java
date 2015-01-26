@@ -13,6 +13,7 @@ package org.eclipse.swt.browser;
 import java.io.*;
 import java.lang.reflect.*;
 import java.util.*;
+import java.util.List;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.widgets.*;
@@ -55,7 +56,7 @@ class Mozilla extends WebBrowser {
 	boolean updateLastNavigateUrl;
 	Shell tip = null;
 	Listener listener;
-	Vector unhookedDOMWindows = new Vector ();
+	Vector<LONG> unhookedDOMWindows = new Vector<LONG> ();
 	String lastNavigateURL;
 	byte[] htmlBytes;
 
@@ -2840,14 +2841,12 @@ void onDispose (Display display) {
 	tip = null;
 	location = size = null;
 
-	Enumeration elements = unhookedDOMWindows.elements ();
-	while (elements.hasMoreElements ()) {
-		LONG ptrObject = (LONG)elements.nextElement ();
+	for (LONG ptrObject : unhookedDOMWindows) {
 		new nsISupports (ptrObject.value).Release ();
 	}
 	unhookedDOMWindows = null;
 
-	elements = functions.elements ();
+	Enumeration elements = functions.elements ();
 	while (elements.hasMoreElements ()) {
 		BrowserFunction function = ((BrowserFunction)elements.nextElement ());
 		AllFunctions.remove (new Integer (function.index));
@@ -2894,7 +2893,7 @@ void navigate (long /*int*/ requestHandle) {
 	/* get the request post data, if any */
 	long /*int*/[] result = new long /*int*/[1];
 	byte[] postData = null;
-	final Vector headers = new Vector ();
+	final List<String> headers = new ArrayList<String> ();
 	int rc = request.QueryInterface (IIDStore.GetIID (nsIUploadChannel.class), result);
 	if (rc == XPCOM.NS_OK && result[0] != 0) {
 		nsIUploadChannel uploadChannel = new nsIUploadChannel (result[0]);
@@ -3024,7 +3023,7 @@ void navigate (long /*int*/ requestHandle) {
 	int size = headers.size ();
 	if (size > 0) {
 		headersArray = new String[size];
-		headers.copyInto (headersArray);
+		headers.toArray(headersArray);
 	}
 
 	/* a request's name often (but not always) is its url */
@@ -3763,7 +3762,7 @@ int OnStateChange (long /*int*/ aWebProgress, long /*int*/ aRequest, int aStateF
 		int rc = progress.GetDOMWindow (result);
 		if (rc != XPCOM.NS_OK) error (rc);
 		if (result[0] == 0) error (XPCOM.NS_NOINTERFACE);
-		unhookedDOMWindows.addElement (new LONG (result[0]));
+		unhookedDOMWindows.add (new LONG (result[0]));
 	} else if ((aStateFlags & nsIWebProgressListener.STATE_REDIRECTING) != 0) {
 		if (request == aRequest) request = 0;
 		registerFunctionsOnState = nsIWebProgressListener.STATE_TRANSFERRING;

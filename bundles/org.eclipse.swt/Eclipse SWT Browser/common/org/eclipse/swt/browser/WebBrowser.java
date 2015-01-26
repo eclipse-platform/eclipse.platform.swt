@@ -34,8 +34,8 @@ abstract class WebBrowser {
 	static final String ERROR_ID = "org.eclipse.swt.browser.error"; // $NON-NLS-1$
 	static final String EXECUTE_ID = "SWTExecuteTemporaryFunction"; // $NON-NLS-1$
 
-	static Vector NativePendingCookies = new Vector ();
-	static Vector MozillaPendingCookies = new Vector ();
+	static Vector<String[]> NativePendingCookies = new Vector<String[]> ();
+	static Vector<String[]> MozillaPendingCookies = new Vector<String[]> ();
 	static String CookieName, CookieValue, CookieUrl;
 	static boolean CookieResult;
 	static Runnable MozillaClearSessions, NativeClearSessions;
@@ -294,10 +294,8 @@ public static boolean SetCookie (String value, String url, boolean addToPending)
 	return CookieResult;
 }
 
-static void SetPendingCookies (Vector pendingCookies) {
-	Enumeration elements = pendingCookies.elements ();
-	while (elements.hasMoreElements ()) {
-		String[] current = (String[])elements.nextElement ();
+static void SetPendingCookies (Vector<String[]> pendingCookies) {
+	for (String[] current : pendingCookies) {
 		SetCookie (current[0], current[1], false);
 	}
 }

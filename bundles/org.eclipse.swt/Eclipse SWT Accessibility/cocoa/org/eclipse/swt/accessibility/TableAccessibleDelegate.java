@@ -75,7 +75,7 @@ class TableAccessibleDelegate {
 				NSPoint testPoint = new NSPoint();
 				testPoint.x = e.x;
 				Monitor primaryMonitor = Display.getCurrent().getPrimaryMonitor();
-				testPoint.y = (int) (primaryMonitor.getBounds().height - e.y);
+				testPoint.y = primaryMonitor.getBounds().height - e.y;
 	
 				Iterator iter = childRowToIdMap.values().iterator();
 				
@@ -102,12 +102,12 @@ class TableAccessibleDelegate {
 	
 				AccessibleTableEvent event = new AccessibleTableEvent(this);
 				for (int i = 0; i < tableAccessible.accessibleTableListeners.size(); i++) {
-					AccessibleTableListener listener = (AccessibleTableListener)tableAccessible.accessibleTableListeners.elementAt(i);
+					AccessibleTableListener listener = tableAccessible.accessibleTableListeners.get(i);
 					listener.getSelectedRows(event);
 				}
 				
 				if (event.selected != null) {
-					int[] selected = (int[])event.selected;
+					int[] selected = event.selected;
 	
 					for (int i = 0; i < selected.length; i++) {
 						if (selected[i] == tableAccessible.index) {
@@ -131,7 +131,7 @@ class TableAccessibleDelegate {
 				AccessibleTableEvent event = new AccessibleTableEvent(this);
 				
 				for (int i = 0; i < tableAccessible.accessibleTableListeners.size(); i++) {
-					AccessibleTableListener listener = (AccessibleTableListener)tableAccessible.accessibleTableListeners.elementAt(i);
+					AccessibleTableListener listener = tableAccessible.accessibleTableListeners.get(i);
 					if (listener != this) listener.getColumnCount(event);
 				}
 	
@@ -173,7 +173,7 @@ class TableAccessibleDelegate {
 				AccessibleTableEvent event = new AccessibleTableEvent(this);
 				
 				for (int i = 0; i < tableAccessible.accessibleTableListeners.size(); i++) {
-					AccessibleTableListener listener = (AccessibleTableListener)tableAccessible.accessibleTableListeners.elementAt(i);
+					AccessibleTableListener listener = tableAccessible.accessibleTableListeners.get(i);
 					if (listener != this) listener.getRowCount(event);
 				}
 	

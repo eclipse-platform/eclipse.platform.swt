@@ -21,6 +21,7 @@ import org.eclipse.swt.widgets.*;
 
 import java.io.*;
 import java.util.*;
+import java.util.List;
 
 /**
  * Instances of this class represent programs and
@@ -230,8 +231,8 @@ static Hashtable cde_getDataTypeInfo() {
 			String extension = cde_getExtension(dataTypeName);
 			if (!CDE.DtDtsDataTypeIsAction(dataTypeBuf) &&
 				extension != null && cde_getAction(dataTypeName) != null) {
-				Vector exts = new Vector();
-				exts.addElement(extension);
+				List<String> exts = new ArrayList<String>();
+				exts.add(extension);
 				dataTypeInfo.put(dataTypeName, exts);
 			}
 			OS.memmove(dataType, dataTypeList + (index++ * 4), 4);
@@ -272,9 +273,9 @@ static String cde_getMimeType(String extension) {
 	Enumeration keys = mimeInfo.keys();
 	while (mimeType == null && keys.hasMoreElements()) {
 		String type = (String)keys.nextElement();
-		Vector mimeExts = (Vector)mimeInfo.get(type);
+		List<String> mimeExts = (ArrayList<String>)mimeInfo.get(type);
 		for (int index = 0; index < mimeExts.size(); index++){
-			if (extension.equals(mimeExts.elementAt(index))) {
+			if (extension.equals(mimeExts.get(index))) {
 				mimeType = type;
 				break;
 			}
@@ -327,7 +328,7 @@ static boolean cde_isExecutable(String fileName) {
 }
 
 static String[] parseCommand(String cmd) {
-	Vector args = new Vector();
+	List<String> args = new ArrayList<String>();
 	int sIndex = 0;
 	int eIndex;
 	while (sIndex < cmd.length()) {
@@ -347,10 +348,10 @@ static String[] parseCommand(String cmd) {
 					/* The terminating quote was not found
 					 * Add the argument as is with only one initial quote.
 					 */
-					args.addElement(cmd.substring(sIndex, eIndex));
+					args.add(cmd.substring(sIndex, eIndex));
 				} else {
 					/* Add the argument, trimming off the quotes. */
-					args.addElement(cmd.substring(sIndex + 1, eIndex));
+					args.add(cmd.substring(sIndex + 1, eIndex));
 				}
 				sIndex = eIndex + 1;
 			}
@@ -358,17 +359,13 @@ static String[] parseCommand(String cmd) {
 				/* Use white space for the delimiters. */
 				eIndex = sIndex;
 				while (eIndex < cmd.length() && !Compatibility.isWhitespace(cmd.charAt(eIndex))) eIndex++;
-				args.addElement(cmd.substring(sIndex, eIndex));
+				args.add(cmd.substring(sIndex, eIndex));
 				sIndex = eIndex + 1;
 			}
 		}
 	}
 
-	String[] strings = new String[args.size()];
-	for (int index =0; index < args.size(); index++) {
-		strings[index] = (String)args.elementAt(index);
-	}
-	return strings;
+	return args.toArray(new String[args.size()]);
 }
 
 /**
@@ -566,24 +563,20 @@ static String[] getExtensions(Display display) {
 	if (mimeInfo == null) return new String[0];
 
 	/* Create a unique set of the file extensions. */
-	Vector extensions = new Vector();
+	List<String> extensions = new ArrayList<String>();
 	Enumeration keys = mimeInfo.keys();
 	while (keys.hasMoreElements()) {
 		String mimeType = (String)keys.nextElement();
-		Vector mimeExts = (Vector)mimeInfo.get(mimeType);
+		List<String> mimeExts = (List<String>)mimeInfo.get(mimeType);
 		for (int index = 0; index < mimeExts.size(); index++){
-			if (!extensions.contains(mimeExts.elementAt(index))) {
-				extensions.addElement(mimeExts.elementAt(index));
+			if (!extensions.contains(mimeExts.get(index))) {
+				extensions.add(mimeExts.get(index));
 			}
 		}
 	}
 
 	/* Return the list of extensions. */
-	String[] extStrings = new String[extensions.size()];
-	for (int index = 0; index < extensions.size(); index++) {
-		extStrings[index] = (String)extensions.elementAt(index);
-	}
-	return extStrings;
+	return extensions.toArray(new String[extensions.size()]);
 }
 
 /**
@@ -610,7 +603,7 @@ static Program[] getPrograms(Display display) {
 		case DESKTOP_CDE: mimeInfo = cde_getDataTypeInfo(); break;
 	}
 	if (mimeInfo == null) return new Program[0];
-	Vector programs = new Vector();
+	List<Program> programs = new ArrayList<Program>();
 	Enumeration keys = mimeInfo.keys();
 	while (keys.hasMoreElements()) {
 		String mimeType = (String)keys.nextElement();
@@ -618,13 +611,10 @@ static Program[] getPrograms(Display display) {
 		switch (desktop) {
 			case DESKTOP_CDE: program = cde_getProgram(display, mimeType); break;
 		}
-		if (program != null) programs.addElement(program);
+		if (program != null) programs.add(program);
 	}
-	Program[] programList = new Program[programs.size()];
-	for (int index = 0; index < programList.length; index++) {
-		programList[index] = (Program)programs.elementAt(index);
-	}
-	return programList;
+
+	return programs.toArray(new Program[programs.size()]);
 }
 
 ImageData gio_getImageData() {
@@ -708,7 +698,7 @@ static Hashtable gio_getMimeInfo() {
 
 						int separatorIndex = line.indexOf (':');
 						if (separatorIndex > 0) {
-							Vector mimeTypes = new Vector ();
+							List<String> mimeTypes = new ArrayList<String> ();
 						    String mimeType = line.substring (0, separatorIndex);
 							String extensionFormat = line.substring (separatorIndex+1);
 							int extensionIndex = extensionFormat.indexOf (".");
@@ -719,7 +709,7 @@ static Hashtable gio_getMimeInfo() {
 									 * If mimeType already exists, it is required to update
 									 * the existing key (mime-type) with the new extension.
 									 */
-									Vector value = (Vector) mimeTable.get (extension);
+									List<String> value = (List<String>) mimeTable.get (extension);
 									mimeTypes.addAll (value);
 								}
 								mimeTypes.add (mimeType);
@@ -746,8 +736,8 @@ static String gio_getMimeType(String extension) {
 	String mimeType = null;
 	Hashtable h = gio_getMimeInfo();
 	if (h != null && h.containsKey(extension)) {
-		Vector mimeTypes = (Vector) h.get(extension);
-		mimeType = (String) mimeTypes.get(0);
+		List<String> mimeTypes = (ArrayList<String>) h.get(extension);
+		mimeType = mimeTypes.get(0);
 	}
 	return mimeType;
 }
@@ -807,14 +797,14 @@ static Program[] gio_getPrograms(Display display) {
 	long /*int*/ applicationList = OS.g_app_info_get_all ();
 	long /*int*/ list = applicationList;
 	Program program;
-	Vector programs = new Vector();
+	List<Program> programs = new ArrayList<Program>();
 	while (list != 0) {
 		long /*int*/ application = OS.g_list_data(list);
 		if (application != 0) {
 			//TODO: Should the list be filtered or not?
 //			if (OS.g_app_info_should_show(application)) {
 				program = gio_getProgram(display, application);
-				if (program != null) programs.addElement(program);
+				if (program != null) programs.add(program);
 //			}
 		}
 		list = OS.g_list_next(list);
@@ -822,7 +812,7 @@ static Program[] gio_getPrograms(Display display) {
 	if (applicationList != 0) OS.g_list_free(applicationList);
 	Program[] programList = new Program[programs.size()];
 	for (int index = 0; index < programList.length; index++) {
-		programList[index] = (Program)programs.elementAt(index);
+		programList[index] = programs.get(index);
 	}
 	return programList;
 }
@@ -906,18 +896,14 @@ static String[] gio_getExtensions() {
 	Hashtable mimeInfo = gio_getMimeInfo();
 	if (mimeInfo == null) return new String[0];
 	/* Create a unique set of the file extensions. */
-	Vector extensions = new Vector();
+	List<String> extensions = new ArrayList<String>();
 	Enumeration keys = mimeInfo.keys();
 	while (keys.hasMoreElements()) {
 		String extension = (String)keys.nextElement();
 		extensions.add(extension);
 	}
 	/* Return the list of extensions. */
-	String [] extStrings = new String[extensions.size()];
-	for (int index = 0; index < extensions.size(); index++) {
-		extStrings[index] = (String)extensions.elementAt(index);
-	}
-	return extStrings;
+	return extensions.toArray(new String[extensions.size()]);
 }
 
 static boolean isExecutable(Display display, String fileName) {

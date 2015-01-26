@@ -15,7 +15,9 @@ import org.eclipse.swt.internal.ole.win32.*;
 import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.internal.win32.*;
 import org.eclipse.swt.internal.*;
-import java.util.Vector;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  *
@@ -38,7 +40,6 @@ import java.util.Vector;
  * @see <a href="http://www.eclipse.org/swt/snippets/#ole">OLE and ActiveX snippets</a>
  * @see <a href="http://www.eclipse.org/swt/examples.php">SWT Examples: OLEExample, OleWebBrowser</a>
  */
-@SuppressWarnings({"rawtypes", "unchecked"})
 final public class OleFrame extends Composite
 {	
 	// Interfaces for this Ole Client Container
@@ -624,7 +625,7 @@ private int RemoveMenus(long /*int*/ hmenuShared) {
 
 	long /*int*/ hMenu = menubar.handle;
 	
-	Vector ids = new Vector();
+	List<LONG> ids = new ArrayList<LONG>();
 	if (this.fileMenuItems != null) {
 		for (int i = 0; i < this.fileMenuItems.length; i++) {
 			MenuItem item = this.fileMenuItems[i];
@@ -632,7 +633,7 @@ private int RemoveMenus(long /*int*/ hmenuShared) {
 				int index = item.getParent().indexOf(item);
 				// get Id from original menubar
 				long /*int*/ id = getMenuItemID(hMenu, index);
-				ids.addElement(new LONG(id));
+				ids.add(new LONG(id));
 			}
 		}
 	}
@@ -642,7 +643,7 @@ private int RemoveMenus(long /*int*/ hmenuShared) {
 			if (item != null && !item.isDisposed()) {
 				int index = item.getParent().indexOf(item);
 				long /*int*/ id = getMenuItemID(hMenu, index);
-				ids.addElement(new LONG(id));
+				ids.add(new LONG(id));
 			}
 		}
 	}
@@ -652,7 +653,7 @@ private int RemoveMenus(long /*int*/ hmenuShared) {
 			if (item != null && !item.isDisposed()) {
 				int index = item.getParent().indexOf(item);
 				long /*int*/ id = getMenuItemID(hMenu, index);
-				ids.addElement(new LONG(id));
+				ids.add(new LONG(id));
 			}
 		}
 	}

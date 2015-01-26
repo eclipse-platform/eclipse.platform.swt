@@ -38,7 +38,7 @@ class AccessibleTableColumn extends Accessible {
 				Accessible child = cells[0];
 				
 				for (int i = 0; i < child.accessibleControlListeners.size(); i++) {
-					AccessibleControlListener listener = (AccessibleControlListener) child.accessibleControlListeners.elementAt(i);
+					AccessibleControlListener listener = child.accessibleControlListeners.get(i);
 					listener.getLocation(event);
 				}
 
@@ -88,7 +88,7 @@ class AccessibleTableColumn extends Accessible {
 			event.row = i;
 	
 			for (int j = 0; j < parent.accessibleTableListeners.size(); j++) {
-				AccessibleTableListener listener = (AccessibleTableListener)parent.accessibleTableListeners.elementAt(j);
+				AccessibleTableListener listener = parent.accessibleTableListeners.get(j);
 				listener.getCell(event);
 			}
 	

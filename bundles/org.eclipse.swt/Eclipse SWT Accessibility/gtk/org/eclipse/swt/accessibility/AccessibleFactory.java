@@ -357,9 +357,9 @@ class AccessibleFactory {
 	static long /*int*/ getType (String widgetTypeName, Accessible accessible, long /*int*/ parentType, int childId) {
 		AccessibleControlEvent event = new AccessibleControlEvent (accessible);
 		event.childID = childId;
-		Vector listeners = accessible.accessibleControlListeners;
+		List<AccessibleControlListener> listeners = accessible.accessibleControlListeners;
 		for (int i = 0, length = listeners == null ? 0 : listeners.size(); i < length; i++) {
-			AccessibleControlListener listener = (AccessibleControlListener)listeners.elementAt (i);
+			AccessibleControlListener listener = listeners.get (i);
 			listener.getRole (event);
 		}
 		boolean action = false, editableText = false, hypertext = false, selection = false, table = false, text = false, value = false;

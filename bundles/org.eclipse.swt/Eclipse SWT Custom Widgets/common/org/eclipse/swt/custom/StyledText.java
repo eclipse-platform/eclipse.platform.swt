@@ -679,7 +679,8 @@ public class StyledText extends Canvas {
 	class RTFWriter extends TextWriter {
 		static final int DEFAULT_FOREGROUND = 0;
 		static final int DEFAULT_BACKGROUND = 1;
-		Vector colorTable, fontTable;
+		Vector<Color> colorTable;
+		Vector<Font> fontTable;
 		boolean WriteUnicode;
 		
 	/**
@@ -693,11 +694,11 @@ public class StyledText extends Canvas {
 	 */
 	public RTFWriter(int start, int length) {
 		super(start, length);
-		colorTable = new Vector();
-		fontTable = new Vector();
-		colorTable.addElement(getForeground());
-		colorTable.addElement(getBackground());
-		fontTable.addElement(getFont());
+		colorTable = new Vector<Color>();
+		fontTable = new Vector<Font>();
+		colorTable.add(getForeground());
+		colorTable.add(getBackground());
+		fontTable.add(getFont());
 		setUnicode();
 	}
 	/**
@@ -726,7 +727,7 @@ public class StyledText extends Canvas {
 		int index = colorTable.indexOf(color);
 		if (index == -1) {
 			index = colorTable.size();
-			colorTable.addElement(color);
+			colorTable.add(color);
 		}
 		return index;
 	}
@@ -742,7 +743,7 @@ public class StyledText extends Canvas {
 		int index = fontTable.indexOf(font);
 		if (index == -1) {
 			index = fontTable.size();
-			fontTable.addElement(font);
+			fontTable.add(font);
 		}
 		return index;
 	}
@@ -837,13 +838,13 @@ public class StyledText extends Canvas {
 			header.append("\\f");
 			header.append(i);
 			header.append(" ");
-			FontData fd = ((Font)fontTable.elementAt(i)).getFontData()[0];
+			FontData fd = fontTable.get(i).getFontData()[0];
 			header.append(fd.getName());
 			header.append(";");			
 		}
 		header.append("}}\n{\\colortbl");
 		for (int i = 0; i < colorTable.size(); i++) {
-			Color color = (Color) colorTable.elementAt(i);
+			Color color = colorTable.get(i);
 			header.append("\\red");
 			header.append(color.getRed());
 			header.append("\\green");

@@ -21,10 +21,9 @@ import org.eclipse.swt.internal.mozilla.*;
 import org.eclipse.swt.internal.win32.*;
 import org.eclipse.swt.widgets.*;
 
-@SuppressWarnings({"rawtypes", "unchecked"})
 class MozillaDelegate {
 	Browser browser;
-	Vector childWindows = new Vector (9);
+	Vector<Composite> childWindows = new Vector<Composite> (9);
 	static long /*int*/ MozillaProc;
 	static Callback SubclassProc;
 	
@@ -187,7 +186,7 @@ long /*int*/ getSiteWindow () {
 	}
 
 	Composite child = new Composite (browser, SWT.NONE);
-	childWindows.addElement (child);
+	childWindows.add (child);
 	return child.handle;
 }
 
@@ -250,9 +249,9 @@ void init () {
 		/* children created in getSiteHandle() should be destroyed whenever a page is left */
 		browser.addLocationListener (new LocationAdapter () {
 			public void changing (LocationEvent event) {
-				Enumeration enumeration = childWindows.elements ();
-				while (enumeration.hasMoreElements ()) {
-					((Composite)enumeration.nextElement ()).dispose ();
+				Iterator<Composite> it = childWindows.iterator ();
+				while (it.hasNext ()) {
+					it.next ().dispose ();
 				}
 				childWindows.clear ();
 			}

@@ -10,7 +10,8 @@
  *******************************************************************************/
 package org.eclipse.swt.browser;
 
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.mozilla.*;
@@ -175,7 +176,7 @@ int getFiles (long /*int*/ prop, long /*int*/ _retval) {
 				String value = new String (MozillaDelegate.mbcsToWcs (null, buffer));
 				if (value.length () > 0) {
 					String separator = System.getProperty ("path.separator"); // $NON-NLS-1$
-					Vector<String> segments = new Vector<String> ();
+					List<String> segments = new ArrayList<String> ();
 					int start, end = -1;
 					do {
 						start = end + 1;
@@ -186,12 +187,12 @@ int getFiles (long /*int*/ prop, long /*int*/ _retval) {
 						} else {
 							segment = value.substring (start, end);
 						}
-						if (segment.length () > 0) segments.addElement (segment);
+						if (segment.length () > 0) segments.add (segment);
 					} while (end != -1);
 					int segmentsSize = segments.size ();
 					pluginDirs = new String [segmentsSize + (IsSparc ? 1 : 2)];
 					for (index = 0; index < segmentsSize; index++) {
-						pluginDirs[index] = segments.elementAt (index);
+						pluginDirs[index] = segments.get (index);
 					}
 				}
 			}
