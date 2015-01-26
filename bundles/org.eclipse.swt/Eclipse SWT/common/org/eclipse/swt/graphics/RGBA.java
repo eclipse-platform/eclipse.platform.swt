@@ -37,6 +37,7 @@ import org.eclipse.swt.internal.*;
  * @see Color
  * @see <a href="http://www.eclipse.org/swt/snippets/#color">Color and RGB snippets</a>
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
+ * @since 3.104
  */
 public final class RGBA implements SerializableCompatibility {
 	/**
@@ -63,7 +64,6 @@ public final class RGBA implements SerializableCompatibility {
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_INVALID_ARGUMENT - if the red, green, blue or alpha argument is not between 0 and 255</li>
  * </ul>
- * @since 3.104
  */
 public RGBA(int red, int green, int blue, int alpha) {
 	if ((alpha > 255) || (alpha < 0)) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
@@ -86,7 +86,6 @@ public RGBA(int red, int green, int blue, int alpha) {
 *    is not between 0 and 255</li>
 * </ul>
 * 
-* @since 3.104
 */
 public RGBA(float hue, float saturation, float brightness, float alpha) {
 	if ((alpha > 255) || (alpha < 0)) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
@@ -103,9 +102,7 @@ public RGBA(float hue, float saturation, float brightness, float alpha) {
  *             <li>brightness (from 0 to 1)</li>
  *             <li>alpha (from 0 to 255)</li>
  *             </ul>
- * @see #RGBA(float, float, float, int)
- * 
- * @since 3.104
+ * @see #RGBA(float, float, float, float)
  */
 public float[] getHSBA() {	
 	float[] hsb = rgb.getHSB();
