@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2014 IBM Corporation and others. All rights reserved.
+ * Copyright (c) 2000, 2015 IBM Corporation and others. All rights reserved.
  * The contents of this file are made available under the terms
  * of the GNU Lesser General Public License (LGPL) Version 2.1 that
  * accompanies this distribution (lgpl-v21.txt).  The LGPL is also
@@ -785,7 +785,7 @@ typedef enum {
 	_1gtk_1entry_1new_FUNC,
 	_1gtk_1entry_1set_1alignment_FUNC,
 	_1gtk_1entry_1set_1has_1frame_FUNC,
-	_1gtk_1entry_1set_1icon_1from_1stock_FUNC,
+	_1gtk_1entry_1set_1icon_1from_1icon_1name_FUNC,
 	_1gtk_1entry_1set_1icon_1sensitive_FUNC,
 	_1gtk_1entry_1set_1invisible_1char_FUNC,
 	_1gtk_1entry_1set_1max_1length_FUNC,

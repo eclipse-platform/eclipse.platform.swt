@@ -139,25 +139,23 @@ public class Text extends Scrollable {
  */
 public Text (Composite parent, int style) {
 	super (parent, checkStyle (style));
-	if (OS.GTK_VERSION >= OS.VERSION (2, 16, 0)) {
-		if ((style & SWT.SEARCH) != 0) {
-			/*
-			 * Ensure that SWT.ICON_CANCEL and ICON_SEARCH are set.
-			 * NOTE: ICON_CANCEL has the same value as H_SCROLL and
-			 * ICON_SEARCH has the same value as V_SCROLL so it is
-			 * necessary to first clear these bits to avoid a scroll
-			 * bar and then reset the bit using the original style
-			 * supplied by the programmer.
-			 */
-			if ((style & SWT.ICON_CANCEL) != 0) {
-				this.style |= SWT.ICON_CANCEL;
-				OS.gtk_entry_set_icon_from_stock (handle, OS.GTK_ENTRY_ICON_SECONDARY, OS.GTK_STOCK_CLEAR);
-				OS.gtk_entry_set_icon_sensitive (handle, OS.GTK_ENTRY_ICON_SECONDARY, false);
-			}
-			if ((style & SWT.ICON_SEARCH) != 0) {
-				this.style |= SWT.ICON_SEARCH;
-				OS.gtk_entry_set_icon_from_stock (handle, OS.GTK_ENTRY_ICON_PRIMARY, OS.GTK_STOCK_FIND);
-			}
+	if ((style & SWT.SEARCH) != 0) {
+		/*
+		 * Ensure that SWT.ICON_CANCEL and ICON_SEARCH are set.
+		 * NOTE: ICON_CANCEL has the same value as H_SCROLL and
+		 * ICON_SEARCH has the same value as V_SCROLL so it is
+		 * necessary to first clear these bits to avoid a scroll
+		 * bar and then reset the bit using the original style
+		 * supplied by the programmer.
+		 */
+		if ((style & SWT.ICON_CANCEL) != 0) {
+			this.style |= SWT.ICON_CANCEL;
+			OS.gtk_entry_set_icon_from_icon_name (handle, OS.GTK_ENTRY_ICON_SECONDARY, OS.GTK_NAMED_ICON_CLEAR);
+			OS.gtk_entry_set_icon_sensitive (handle, OS.GTK_ENTRY_ICON_SECONDARY, false);
+		}
+		if ((style & SWT.ICON_SEARCH) != 0) {
+			this.style |= SWT.ICON_SEARCH;
+			OS.gtk_entry_set_icon_from_icon_name (handle, OS.GTK_ENTRY_ICON_PRIMARY, OS.GTK_NAMED_ICON_FIND);
 		}
 	}
 }
