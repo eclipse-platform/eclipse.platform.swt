@@ -14,8 +14,9 @@ package org.eclipse.swt.examples.imageanalyzer;
 import java.io.InputStream;
 import java.net.URL;
 import java.text.MessageFormat;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.ResourceBundle;
-import java.util.Vector;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.SWTError;
@@ -113,7 +114,7 @@ public class ImageAnalyzer {
 	int imageDataIndex; // the index of the current image data
 	ImageData imageData; // the currently-displayed image data
 	Image image; // the currently-displayed image
-	Vector<ImageLoaderEvent> incrementalEvents; // incremental image events
+	List<ImageLoaderEvent> incrementalEvents; // incremental image events
 	long loadTime = 0; // the time it took to load the current image
 	
 	static final int INDEX_DIGITS = 4;
@@ -1120,7 +1121,7 @@ public class ImageAnalyzer {
 	 * as they are loaded.
 	 */
 	void incrementalThreadStart() {
-		incrementalEvents = new Vector<ImageLoaderEvent>();
+		incrementalEvents = new ArrayList<ImageLoaderEvent>();
 		incrementalThread = new Thread("Incremental") {
 			@Override
 			public void run() {
@@ -1165,7 +1166,7 @@ public class ImageAnalyzer {
 		// Synchronize so that we do not try to add while
 		// the incremental drawing thread is removing.
 		synchronized (this) {
-			incrementalEvents.addElement(event);
+			incrementalEvents.add(event);
 		}
 	}
 	

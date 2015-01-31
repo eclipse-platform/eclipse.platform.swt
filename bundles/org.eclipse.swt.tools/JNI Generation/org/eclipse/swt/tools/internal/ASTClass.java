@@ -100,7 +100,7 @@ public ASTClass(String sourcePath, MetaData metaData) {
 	}
 
 	FieldDeclaration[] fields = type.getFields();
-	ArrayList<ASTField> fid = new ArrayList<ASTField>();
+	List<ASTField> fid = new ArrayList<ASTField>();
 	for (int i = 0; i < fields.length; i++) {
 		FieldDeclaration field = fields[i];
 		List<VariableDeclarationFragment> fragments = field.fragments();
@@ -111,7 +111,7 @@ public ASTClass(String sourcePath, MetaData metaData) {
 	}
 	this.fields = fid.toArray(new ASTField[fid.size()]);
 	MethodDeclaration[] methods = type.getMethods();
-	ArrayList<ASTMethod> mid = new ArrayList<ASTMethod>();
+	List<ASTMethod> mid = new ArrayList<ASTMethod>();
 	for (int i = 0; i < methods.length; i++) {
 		if (methods[i].getReturnType2() == null) continue;
 		mid.add(new ASTMethod(this, source, methods[i]));

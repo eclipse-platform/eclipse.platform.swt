@@ -18,10 +18,11 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.text.DateFormat;
 import java.text.MessageFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
-import java.util.Vector;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.SashForm;
@@ -927,7 +928,7 @@ public class FileViewer {
 		 * If not already expanded, recursively expands the parents of the specified
 		 * directory until it is visible.
 		 */
-		Vector <File> path = new Vector<File>();
+		List <File> path = new ArrayList<File>();
 		// Build a stack of paths from the root of the tree
 		while (dir != null) {
 			path.add(dir);
@@ -937,7 +938,7 @@ public class FileViewer {
 		TreeItem[] items = tree.getItems();
 		TreeItem lastItem = null;
 		for (int i = path.size() - 1; i >= 0; --i) {
-			final File pathElement = path.elementAt(i);
+			final File pathElement = path.get(i);
 
 			// Search for a particular File in the array of tree items
 			// No guarantee that the items are sorted in any recognizable fashion, so we'll
@@ -1173,7 +1174,7 @@ public class FileViewer {
 		progressDialog.open();
 
 		// Copy each file
-		Vector /* of File */<File> processedFiles = new Vector<File>();
+		List<File> processedFiles = new ArrayList<File>();
 		for (int i = 0; (i < sourceNames.length) && (! progressDialog.isCancelled()); i++){
 			final File source = new File(sourceNames[i]);
 			final File dest = new File(targetFile, source.getName());
@@ -1294,7 +1295,7 @@ public class FileViewer {
 		 * -- PORTABILITY ISSUES HERE --
 		 */
 		if (System.getProperty ("os.name").indexOf ("Windows") != -1) {
-			Vector /* of File */<File> list = new Vector<File>();
+			List<File> list = new ArrayList<File>();
 			list.add(new File(DRIVE_A));
 			list.add(new File(DRIVE_B));
 			for (char i = 'c'; i <= 'z'; ++i) {

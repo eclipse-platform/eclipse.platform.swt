@@ -11,7 +11,8 @@
 package org.eclipse.swt.examples.layoutexample;
 
  
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
@@ -40,7 +41,6 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Link;
-import org.eclipse.swt.widgets.List;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.ProgressBar;
@@ -96,7 +96,7 @@ abstract class Tab {
 			"Group", "Label", "Link", "List", "ProgressBar", "Scale", "Slider", "StyledText",
 			"Table", "Text", "ToolBar", "Tree"};
 	TableItem newItem, lastSelected;
-	Vector<String[]> data = new Vector<String[]> ();
+	List<String[]> data = new ArrayList<String[]> ();
 	/* Controlling instance */
 	final LayoutExample instance;
 
@@ -163,7 +163,7 @@ abstract class Tab {
 									if (insert != null) {
 										TableItem item = new TableItem (table, SWT.NONE);
 										item.setText (insert);
-										data.addElement (insert);
+										data.add (insert);
 									}
 									resetEditors ();
 								}
@@ -188,7 +188,7 @@ abstract class Tab {
 					if (insert != null) {
 						TableItem item = new TableItem (table, 0);
 						item.setText (insert);
-						data.addElement (insert);
+						data.add (insert);
 					}
 					resetEditors ();
 				}
@@ -721,7 +721,7 @@ abstract class Tab {
 				link.setText (controlName);
 				children [i] = link;
 			} else if (control.equals ("List")) {
-				List list = new List (layoutComposite, SWT.BORDER);
+				org.eclipse.swt.widgets.List list = new org.eclipse.swt.widgets.List (layoutComposite, SWT.BORDER);
 				list.setItems (itemValues);
 				children [i] = list;
 			} else if (control.equals ("ProgressBar")) {

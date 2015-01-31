@@ -12,6 +12,7 @@
 package org.eclipse.swt.examples.graphics;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Device;
@@ -44,7 +45,7 @@ public class CustomFontTab extends GraphicsTab {
 	Combo fontFaceCb, fontStyleCb;
 	Spinner fontPointSpinner;
 	Button colorButton;
-	ArrayList<String> fontNames;
+	List<String> fontNames;
 	int [] styleValues;
 	String [] fontStyles;
 	Menu menu;

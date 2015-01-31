@@ -13,8 +13,9 @@ package org.eclipse.swt.examples.javaviewer;
 
 import java.io.IOException;
 import java.io.StringReader;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Hashtable;
-import java.util.Vector;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.LineStyleEvent;
@@ -29,7 +30,7 @@ class JavaLineStyler implements LineStyleListener {
 	JavaScanner scanner = new JavaScanner();
 	int[] tokenColors;
 	Color[] colors;
-	Vector<int[]> blockComments = new Vector<int[]>();
+	List<int[]> blockComments = new ArrayList<int[]>();
 
 	public static final int EOF= -1;
 	public static final int EOL= 10;
@@ -58,7 +59,7 @@ Color getColor(int type) {
 
 boolean inBlockComment(int start, int end) {
 	for (int i=0; i<blockComments.size(); i++) {
-		int[] offsets = blockComments.elementAt(i);
+		int[] offsets = blockComments.get(i);
 		// start of comment in the line
 		if ((offsets[0] >= start) && (offsets[0] <= end)) return true;
 		// end of comment in the line
@@ -100,14 +101,13 @@ void disposeColors() {
  */
 @Override
 public void lineGetStyle(LineStyleEvent event) {
-	Vector<StyleRange> styles = new Vector<StyleRange>();
+	List<StyleRange> styles = new ArrayList<StyleRange>();
 	int token;
 	StyleRange lastStyle;
 	// If the line is part of a block comment, create one style for the entire line.
 	if (inBlockComment(event.lineOffset, event.lineOffset + event.lineText.length())) {
-		styles.addElement(new StyleRange(event.lineOffset, event.lineText.length(), getColor(COMMENT), null));
-		event.styles = new StyleRange[styles.size()];
-		styles.copyInto(event.styles);
+		styles.add(new StyleRange(event.lineOffset, event.lineText.length(), getColor(COMMENT), null));
+		event.styles = styles.toArray(new StyleRange[styles.size()]);
 		return;
 	}
 	Color defaultFgColor = ((Control)event.widget).getForeground();
@@ -127,20 +127,20 @@ public void lineGetStyle(LineStyleEvent event) {
 					style.fontStyle = SWT.BOLD;
 				}
 				if (styles.isEmpty()) {
-					styles.addElement(style);
+					styles.add(style);
 				} else {
 					// Merge similar styles.  Doing so will improve performance.
-					lastStyle = styles.lastElement();
+					lastStyle = styles.get(styles.size()-1);
 					if (lastStyle.similarTo(style) && (lastStyle.start + lastStyle.length == style.start)) {
 						lastStyle.length += style.length;
 					} else {
-						styles.addElement(style); 
+						styles.add(style); 
 					}
 				} 
 			} 
-		} else if ((!styles.isEmpty()) && ((lastStyle=styles.lastElement()).fontStyle == SWT.BOLD)) {
+		} else if ((!styles.isEmpty()) && ((lastStyle=styles.get(styles.size()-1)).fontStyle == SWT.BOLD)) {
 			int start = scanner.getStartOffset() + event.lineOffset;
-			lastStyle = styles.lastElement();
+			lastStyle = styles.get(styles.size() - 1);
 			// A font style of SWT.BOLD implies that the last style
 			// represents a java keyword.
 			if (lastStyle.start + lastStyle.length == start) {
@@ -152,11 +152,10 @@ public void lineGetStyle(LineStyleEvent event) {
 		} 
 		token= scanner.nextToken();
 	}
-	event.styles = new StyleRange[styles.size()];
-	styles.copyInto(event.styles);
+	event.styles = styles.toArray(new StyleRange[styles.size()]);
 }
 public void parseBlockComments(String text) {
-	blockComments = new Vector<int[]>();
+	blockComments = new ArrayList<int[]>();
 	StringReader buffer = new StringReader(text);
 	int ch;
 	boolean blkComment = false;
@@ -170,7 +169,7 @@ public void parseBlockComments(String text) {
 			case -1 : {
 				if (blkComment) {
 					offsets[1] = cnt;
-					blockComments.addElement(offsets);
+					blockComments.add(offsets);
 				}
 				done = true;
 				break;
@@ -195,7 +194,7 @@ public void parseBlockComments(String text) {
 					if (ch == '/') {
 						blkComment = false;	
 						offsets[1] = cnt;
-						blockComments.addElement(offsets);
+						blockComments.add(offsets);
 					}
 				}
 				cnt++;	

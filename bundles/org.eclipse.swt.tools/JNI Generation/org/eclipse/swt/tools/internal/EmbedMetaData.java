@@ -11,11 +11,12 @@
 package org.eclipse.swt.tools.internal;
 
 import java.lang.reflect.Modifier;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 import java.util.TreeMap;
-import java.util.ArrayList;
 
 public class EmbedMetaData extends JNIGenerator {
 	TreeMap<Integer, String> inserts;
@@ -36,7 +37,7 @@ public void generate(JNIClass clazz) {
 	String sourcePath = ((ASTClass)clazz).sourcePath;
 	String source = JNIGenerator.loadFile(sourcePath);
 	Set<Integer> set = inserts.keySet();
-	ArrayList<Integer> keys = new ArrayList<Integer>();
+	List<Integer> keys = new ArrayList<Integer>();
 	keys.addAll(set);
 	Collections.reverse(keys);
 	StringBuffer buffer = new StringBuffer(source);
@@ -83,7 +84,7 @@ public void generate(JNIMethod[] methods) {
 }
 
 public void generate(JNIMethod method) {
-	ArrayList<String> tags = new ArrayList<String>();
+	List<String> tags = new ArrayList<String>();
 	String data = ((AbstractItem)method).flatten();
 	if (data != null && data.length() != 0) {
 		tags.add("@method " + data);

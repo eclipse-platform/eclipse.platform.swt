@@ -11,7 +11,6 @@
 package org.eclipse.swt.tools.internal;
 
 import java.io.*;
-import java.util.Vector;
 
 /**
  * Customize the icon of a Windows exe
@@ -1112,11 +1111,6 @@ static class ImageLoader {
 	 * GIF application extension for "NETSCAPE 2.0 01")
 	 */
 	public int repeatCount;
-		
-	/*
-	 * the set of ImageLoader event listeners, created on demand
-	 */
-	Vector<?> imageLoaderListeners;
 
 /**
  * Construct a new empty ImageLoader.

@@ -199,7 +199,7 @@ static void sort(JNIClass[] classes) {
 
 static String[] split(String str, String separator) {
 	StringTokenizer tk = new StringTokenizer(str, separator);
-	ArrayList<String> result = new ArrayList<String>();
+	List<String> result = new ArrayList<String>();
 	while (tk.hasMoreTokens()) {
 		result.add(tk.nextToken());
 	}

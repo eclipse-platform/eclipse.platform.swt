@@ -78,15 +78,15 @@ class RowLayoutTab extends Tab {
 				createComboEditor (combo, comboEditor);
 				
 				nameText = new Text(table, SWT.SINGLE);
-				nameText.setText(data.elementAt(index)[NAME_COL]);
+				nameText.setText(data.get(index)[NAME_COL]);
 				createTextEditor(nameText, nameEditor, NAME_COL);
 				
 				widthText = new Text(table, SWT.SINGLE);
-				widthText.setText(data.elementAt(index)[WIDTH_COL]);
+				widthText.setText(data.get(index)[WIDTH_COL]);
 				createTextEditor(widthText, widthEditor, WIDTH_COL);
 				
 				heightText = new Text(table, SWT.SINGLE);
-				heightText.setText (data.elementAt (index) [HEIGHT_COL]);
+				heightText.setText (data.get (index) [HEIGHT_COL]);
 				createTextEditor (heightText, heightEditor, HEIGHT_COL);
                 
 				String [] boolValues = new String [] {"false", "true"};
@@ -372,9 +372,9 @@ class RowLayoutTab extends Tab {
 			}
 			String [] insert = new String [] {
 				nameText.getText(), combo.getText (), widthText.getText (), heightText.getText (), exclude.getText ()};
-			data.setElementAt (insert, row);
+			data.set (row, insert);
 			for (int i = 0 ; i < TOTAL_COLS; i++) {
-				oldItem.setText (i, data.elementAt (row) [i]);
+				oldItem.setText (i, data.get (row) [i]);
 			}
 			if (!tab) disposeEditors ();
 		}

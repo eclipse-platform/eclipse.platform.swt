@@ -66,7 +66,7 @@ class FillLayoutTab extends Tab {
 				createComboEditor (combo, comboEditor);
 				
 				nameText = new Text(table, SWT.SINGLE);
-				nameText.setText(data.elementAt(index)[NAME_COL]);
+				nameText.setText(data.get(index)[NAME_COL]);
 				createTextEditor(nameText, nameEditor, NAME_COL);
 			}
 		});
@@ -202,9 +202,9 @@ class FillLayoutTab extends Tab {
 				nameText.setText (oldItem.getText (NAME_COL));
 			}
 			String [] insert = new String [] {nameText.getText (), combo.getText ()};
-			data.setElementAt (insert, row);
+			data.set (row, insert);
 			for (int i = 0 ; i < TOTAL_COLS; i++) {
-				oldItem.setText (i, data.elementAt (row) [i]);
+				oldItem.setText (i, data.get (row) [i]);
 			}
 			if (!tab) disposeEditors ();
 		}

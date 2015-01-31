@@ -11,7 +11,8 @@
 package org.eclipse.swt.examples.paint;
 
 
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.graphics.Point;
@@ -24,7 +25,7 @@ public abstract class SegmentedPaintSession extends BasicPaintSession {
 	/**
 	 * The set of control points making up the segmented selection
 	 */
-	private Vector<Point> controlPoints = new Vector<Point>();
+	private List<Point> controlPoints = new ArrayList<Point>();
 
 	/**
 	 * The previous figure (so that we can abort with right-button)
@@ -96,7 +97,7 @@ public abstract class SegmentedPaintSession extends BasicPaintSession {
 		previousFigure = currentFigure;
 
 		if (controlPoints.size() > 0) {
-			final Point lastPoint = controlPoints.elementAt(controlPoints.size() - 1);
+			final Point lastPoint = controlPoints.get(controlPoints.size() - 1);
 			if (lastPoint.x == event.x || lastPoint.y == event.y) return; // spurious event
 		}
 		controlPoints.add(new Point(event.x, event.y));
@@ -144,7 +145,7 @@ public abstract class SegmentedPaintSession extends BasicPaintSession {
 			ps.setStatusCoord(ps.getCurrentPosition());
 			return; // spurious event
 		}
-		ps.setStatusCoordRange(controlPoints.elementAt(controlPoints.size() - 1),
+		ps.setStatusCoordRange(controlPoints.get(controlPoints.size() - 1),
 			ps.getCurrentPosition());
 		ps.clearRubberbandSelection();
 		Point[] points = controlPoints.toArray(new Point[controlPoints.size() + 1]);

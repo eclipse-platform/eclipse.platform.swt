@@ -12,6 +12,7 @@
 package org.eclipse.swt.examples.graphics;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
@@ -128,7 +129,7 @@ public class ColorMenu {
 	
 	/** Adds the colors items to the menu. */
 	private void addColorItems(Menu menu, MenuItemListener menuListener,
-			ArrayList<Resource> menuResources) {
+			List<Resource> menuResources) {
 		Display display = menu.getDisplay();
 		
 		if (menu.getItemCount() != 0) {
@@ -183,7 +184,7 @@ public class ColorMenu {
 	
 	/** Adds the pattern items to the menu. */
 	private void addPatternItems(Menu menu, MenuItemListener menuListener,
-			ArrayList<Resource> menuResources) {
+			List<Resource> menuResources) {
 		Display display = menu.getDisplay();
 		
 		if (menu.getItemCount() != 0) {
@@ -252,7 +253,7 @@ public class ColorMenu {
 	 * @param resources
 	 *            The list of resources of the menu
 	 */
-	private Image loadImage(Display display, String name, ArrayList<Resource> resources) {
+	private Image loadImage(Display display, String name, List<Resource> resources) {
 		Image image = GraphicsExample.loadImage(display, GraphicsExample.class, name);
 		if (image != null) resources.add(image);
 		return image;
@@ -268,7 +269,7 @@ public class ColorMenu {
 		Color customColor;
 		GraphicsBackground background;	// used to store information about the background
 		ColorListener colorListener;
-		ArrayList<Resource> resources;
+		List<Resource> resources;
 		
 		public MenuItemListener(Control parent){
 			this.parent = parent; 
@@ -285,7 +286,7 @@ public class ColorMenu {
 			this.colorListener = cl;
 		}
 		
-		public ArrayList<Resource> getMenuResources() {
+		public List<Resource> getMenuResources() {
 			return resources;
 		}
 

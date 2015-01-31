@@ -12,6 +12,7 @@
 package org.eclipse.swt.examples.graphics;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Device;
@@ -30,7 +31,7 @@ public class MazeTab extends AnimatedGraphicsTab {
 
 	int nextIndex, nextIndex2, nextIndex3;
 	int xcoord, ycoord, xcoord2, ycoord2, xcoord3, ycoord3;
-	ArrayList<Integer> nextCoord, nextCoord2, nextCoord3;
+	List<Integer> nextCoord, nextCoord2, nextCoord3;
 	boolean isDone, isDone2, isDone3;
 	Image image;
 
@@ -238,8 +239,8 @@ public void paint(GC gc, int width, int height) {
  * @param stepsize
  *            The number of pixels that separate each coordinate
  */
-private ArrayList<Integer> moveLeft(int x1, int y1, int x2, int y2, int stepsize) {
-	ArrayList<Integer> coords = new ArrayList<Integer>();
+private List<Integer> moveLeft(int x1, int y1, int x2, int y2, int stepsize) {
+	List<Integer> coords = new ArrayList<Integer>();
 	coords.add(new Integer(x1));
 	coords.add(new Integer(y1));
 	while(x1 - stepsize > x2) {
@@ -267,8 +268,8 @@ private ArrayList<Integer> moveLeft(int x1, int y1, int x2, int y2, int stepsize
  * @param stepsize
  *            The number of pixels that separate each coordinate
  */
-private ArrayList<Integer> moveRight(int x1, int y1, int x2, int y2, int stepsize) {
-	ArrayList<Integer> coords = new ArrayList<Integer>();
+private List<Integer> moveRight(int x1, int y1, int x2, int y2, int stepsize) {
+	List<Integer> coords = new ArrayList<Integer>();
 	coords.add(new Integer(x1));
 	coords.add(new Integer(y1));
 	while(x1 + stepsize < x2) {
@@ -296,8 +297,8 @@ private ArrayList<Integer> moveRight(int x1, int y1, int x2, int y2, int stepsiz
  * @param stepsize
  *            The number of pixels that separate each coordinate
  */
-private ArrayList<Integer> moveUp(int x1, int y1, int x2, int y2, int stepsize) {
-	ArrayList<Integer> coords = new ArrayList<Integer>();
+private List<Integer> moveUp(int x1, int y1, int x2, int y2, int stepsize) {
+	List<Integer> coords = new ArrayList<Integer>();
 	coords.add(new Integer(x1));
 	coords.add(new Integer(y1));
 	while(y1 - stepsize > y2) {
@@ -325,8 +326,8 @@ private ArrayList<Integer> moveUp(int x1, int y1, int x2, int y2, int stepsize) 
  * @param stepsize
  *            The number of pixels that separate each coordinate
  */
-private ArrayList<Integer> moveDown(int x1, int y1, int x2, int y2, int stepsize) {
-	ArrayList<Integer> coords = new ArrayList<Integer>();
+private List<Integer> moveDown(int x1, int y1, int x2, int y2, int stepsize) {
+	List<Integer> coords = new ArrayList<Integer>();
 	coords.add(new Integer(x1));
 	coords.add(new Integer(y1));
 	while(y1 + stepsize < y2) {

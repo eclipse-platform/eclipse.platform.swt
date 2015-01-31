@@ -11,7 +11,8 @@
 package org.eclipse.swt.opengl.examples;
 
 
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.eclipse.opengl.*;
 import org.eclipse.swt.*;
@@ -25,7 +26,7 @@ class ColorSelectionGroup implements Listener {
 	private Label label;
 	private Image image;
 	private Button button;
-	private Vector listeners = new Vector();
+	private List<IColorSelectionListener> listeners = new ArrayList<IColorSelectionListener>();
 
 	/**
 	 * Constructor.
@@ -73,7 +74,7 @@ class ColorSelectionGroup implements Listener {
 	 * @param listener
 	 */
 	void addColorSelectionListener(IColorSelectionListener listener) {
-		listeners.addElement(listener);
+		listeners.add(listener);
 	}
 	
 	/**
@@ -125,8 +126,7 @@ class ColorSelectionGroup implements Listener {
 	 */
 	void notifyListeners(RGB rgb) {
 		IColorSelectionListener[] listenersArr =
-			new IColorSelectionListener[listeners.size()];
-		listeners.copyInto(listenersArr);
+			listeners.toArray(new IColorSelectionListener[listeners.size()]);
 		for (int i = 0; i < listenersArr.length; i++) {
 			listenersArr [i].handleColorSelection(rgb);
 		}
@@ -140,7 +140,7 @@ class ColorSelectionGroup implements Listener {
 	 * @param listener
 	 */
 	void removeColorSelectionListener(IColorSelectionListener listener) {
-		listeners.removeElement(listener);
+		listeners.remove(listener);
 	}
 
 	/**

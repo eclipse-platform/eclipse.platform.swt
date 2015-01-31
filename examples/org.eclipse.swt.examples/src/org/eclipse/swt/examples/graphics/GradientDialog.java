@@ -12,6 +12,7 @@
 package org.eclipse.swt.examples.graphics;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
@@ -51,7 +52,7 @@ public class GradientDialog extends Dialog {
 	RGB rgb1, rgb2;			// first and second color used in gradient
 	int returnVal; 			// value to be returned by open(), set to SWT.OK 
 							// if the ok button has been pressed		
-	ArrayList<Image> resources;
+	List<Image> resources;
 			
 	public GradientDialog(Shell parent) {		
 		this (parent, SWT.PRIMARY_MODAL);

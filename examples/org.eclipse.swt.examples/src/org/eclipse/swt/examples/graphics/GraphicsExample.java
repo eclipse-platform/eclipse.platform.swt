@@ -15,6 +15,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.List;
 import java.util.HashSet;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
@@ -70,8 +71,8 @@ public class GraphicsExample {
 	ToolItem backItem, dbItem;		// background, double buffer items
 	Menu backMenu;					// background menu item
 	
-	ArrayList<Image> resources;			// stores resources that will be disposed
-	ArrayList<GraphicsTab> tabs_in_order;		// stores GraphicsTabs in the order that they appear in the tree
+	List<Image> resources;			// stores resources that will be disposed
+	List<GraphicsTab> tabs_in_order;		// stores GraphicsTabs in the order that they appear in the tree
 	boolean animate = true;			// whether animation should happen
 
 	static boolean advanceGraphics, advanceGraphicsInit;

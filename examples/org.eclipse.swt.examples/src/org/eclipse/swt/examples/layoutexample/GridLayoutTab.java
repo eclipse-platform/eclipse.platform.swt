@@ -132,18 +132,18 @@ class GridLayoutTab extends Tab {
 				table.showSelection ();
 				
 				nameText = new Text (table, SWT.SINGLE);
-				nameText.setText (data.elementAt (index) [NAME_COL]);
+				nameText.setText (data.get (index) [NAME_COL]);
 				createTextEditor (nameText, nameEditor, NAME_COL);
 				
 				combo = new CCombo (table, SWT.READ_ONLY);
 				createComboEditor (combo, comboEditor);
 				
 				widthText = new Text (table, SWT.SINGLE);
-				widthText.setText (data.elementAt (index) [WIDTH_COL]);
+				widthText.setText (data.get (index) [WIDTH_COL]);
 				createTextEditor (widthText, widthEditor, WIDTH_COL);
 				
 				heightText = new Text (table, SWT.SINGLE);
-				heightText.setText (data.elementAt (index) [HEIGHT_COL]);
+				heightText.setText (data.get (index) [HEIGHT_COL]);
 				createTextEditor (heightText, heightEditor, HEIGHT_COL);
 				
 				String [] alignValues = new String [] {"BEGINNING","CENTER","END","FILL"};
@@ -185,27 +185,27 @@ class GridLayoutTab extends Tab {
 				vGrab.addTraverseListener (traverseListener);
                 
 				hSpan = new Text (table, SWT.SINGLE);
-				hSpan.setText (data.elementAt (index) [HSPAN_COL]);
+				hSpan.setText (data.get (index) [HSPAN_COL]);
 				createTextEditor (hSpan, hSpanEditor, HSPAN_COL);
 				
 				vSpan = new Text (table, SWT.SINGLE);
-				vSpan.setText (data.elementAt (index) [VSPAN_COL]);
+				vSpan.setText (data.get (index) [VSPAN_COL]);
 				createTextEditor (vSpan, vSpanEditor, VSPAN_COL);
 				
 				hIndent = new Text (table, SWT.SINGLE);
-				hIndent.setText (data.elementAt (index) [HINDENT_COL]);
+				hIndent.setText (data.get (index) [HINDENT_COL]);
 				createTextEditor (hIndent, hIndentEditor, HINDENT_COL);
 				
 				vIndent = new Text (table, SWT.SINGLE);
-				vIndent.setText (data.elementAt (index) [VINDENT_COL]);
+				vIndent.setText (data.get (index) [VINDENT_COL]);
 				createTextEditor (vIndent, vIndentEditor, VINDENT_COL);
 				
 				minWidthText = new Text (table, SWT.SINGLE);
-				minWidthText.setText (data.elementAt (index) [MINWIDTH_COL]);
+				minWidthText.setText (data.get (index) [MINWIDTH_COL]);
 				createTextEditor (minWidthText, minWidthEditor, MINWIDTH_COL);
 				
 				minHeightText = new Text (table, SWT.SINGLE);
-				minHeightText.setText (data.elementAt (index) [MINHEIGHT_COL]);
+				minHeightText.setText (data.get (index) [MINHEIGHT_COL]);
 				createTextEditor (minHeightText, minHeightEditor, MINHEIGHT_COL);
 
 				exclude = new CCombo (table, SWT.NONE);
@@ -592,9 +592,9 @@ class GridLayoutTab extends Tab {
 				hSpan.getText (), vSpan.getText (), hIndent.getText (), vIndent.getText (), 
 				minWidthText.getText (), minHeightText.getText (), exclude.getText ()
 			};
-			data.setElementAt (insert, row);
+			data.set (row, insert);
 			for (int i = 0; i < TOTAL_COLS; i++) {
-				oldItem.setText (i, data.elementAt (row) [i]);
+				oldItem.setText (i, data.get (row) [i]);
 			}
 			if (!tab) disposeEditors ();
 		}
