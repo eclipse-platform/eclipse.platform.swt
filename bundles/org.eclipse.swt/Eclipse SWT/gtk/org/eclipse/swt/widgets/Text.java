@@ -11,6 +11,8 @@
 package org.eclipse.swt.widgets;
 
 
+import java.util.Arrays;
+
 import org.eclipse.swt.*;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.cairo.*;
@@ -544,6 +546,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	if ((style & SWT.SINGLE) != 0 && message.length () > 0) {
 		byte [] buffer = Converter.wcsToMbcs (null, message, true);
 		int /*long*/ layout = OS.gtk_widget_create_pango_layout (handle, buffer);
+		Arrays.fill (buffer, (byte) 0);
 		OS.pango_layout_get_size (layout, w, h);
 		OS.g_object_unref (layout);
 		width = Math.max (width, OS.PANGO_PIXELS (w [0]));
@@ -662,7 +665,6 @@ char [] deprocessText (char [] text, int start, int end) {
 	if (start != 0 || end != start + length) {
 		char [] newText = new char [length];
 		System.arraycopy(text, 0, newText, 0, length);
-		for (int i = 0; i < text.length; i++) text [i] = '\0';
 		return newText;
 	}
 	return text;
@@ -1235,9 +1237,11 @@ public String getText (int start, int end) {
  * a zero-length array if this has never been set.
  * </p>
  * <p>
- * Note: Use the API to protect the text, for example, when widget is used as
- * a password field. However, the text can't be protected if Segment listener
- * is added to the widget.
+ * Note: Use this API to prevent the text from being written into a String
+ * object whose lifecycle is outside of your control. This can help protect
+ * the text, for example, when the widget is used as a password field.
+ * However, the text can't be protected if an {@link SWT#Segments} or
+ * {@link SWT#Verify} listener has been added to the widget.
  * </p>
  *
  * @return a character array that contains the widget's text
@@ -1269,7 +1273,7 @@ public char [] getTextChars () {
 	if ((style & SWT.MULTI) != 0) OS.g_free (address);
 
 	char [] result = Converter.mbcsToWcs (null, buffer);
-	for (int i = 0; i < buffer.length; i++) buffer [i] = '\0';
+	Arrays.fill (buffer, (byte) 0);
 	if (segments != null) {
 		result = deprocessText (result, 0, -1);
 	}
@@ -1419,6 +1423,7 @@ int /*long*/ gtk_commit (int /*long*/ imContext, int /*long*/ text) {
 	byte [] buffer = new byte [length];
 	OS.memmove (buffer, text, length);
 	char [] chars = Converter.mbcsToWcs (null, buffer);
+	Arrays.fill (buffer, (byte) 0);
 	char [] newChars = sendIMKeyEvent (SWT.KeyDown, null, chars);
 	if (newChars == null) return 0;
 	/*
@@ -1438,6 +1443,7 @@ int /*long*/ gtk_commit (int /*long*/ imContext, int /*long*/ text) {
 	} else {
 		buffer = Converter.wcsToMbcs (null, newChars, true);
 		OS.g_signal_emit_by_name (imContext, OS.commit, buffer);
+		Arrays.fill (buffer, (byte) 0);
 	}
 	OS.g_signal_handlers_unblock_matched (imContext, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, COMMIT);
 	OS.g_signal_handlers_block_matched (imContext, mask, id, 0, 0, 0, handle);
@@ -1488,6 +1494,7 @@ int /*long*/ gtk_delete_range (int /*long*/ widget, int /*long*/ iter1, int /*lo
 			OS.gtk_text_buffer_insert (bufferHandle, startIter, buffer, buffer.length);
 			OS.g_signal_handlers_unblock_matched (bufferHandle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, TEXT_BUFFER_INSERT_TEXT);
 			OS.g_signal_stop_emission_by_name (bufferHandle, OS.delete_range);
+			Arrays.fill (buffer, (byte) 0);
 		}
 	}
 	return 0;
@@ -1520,6 +1527,7 @@ int /*long*/ gtk_delete_text (int /*long*/ widget, int /*long*/ start_pos, int /
 			OS.g_signal_handlers_unblock_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, INSERT_TEXT);
 			OS.g_signal_handlers_unblock_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
 			OS.gtk_editable_set_position (handle, pos [0]);
+			Arrays.fill (buffer, (byte) 0);
 		}
 	}
 	return 0;
@@ -2390,9 +2398,11 @@ public void setText (String string) {
  * has style <code>SWT.SINGLE</code> and the argument contains multiple lines of text
  * then the result of this operation is undefined and may vary between platforms.
  * <p>
- * Note: Use the API to protect the text, for example, when widget is used as
- * a password field. However, the text can't be protected if Verify or
- * Segment listener is added to the widget.
+ * Note: Use this API to prevent the text from being written into a String
+ * object whose lifecycle is outside of your control. This can help protect
+ * the text, for example, when the widget is used as a password field.
+ * However, the text can't be protected if an {@link SWT#Segments} or
+ * {@link SWT#Verify} listener has been added to the widget.
  * </p>
  * 
  * @param text a character array that contains the new text
@@ -2437,6 +2447,7 @@ void setText (char [] text) {
 		OS.g_signal_handlers_unblock_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
 		OS.g_signal_handlers_unblock_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, DELETE_TEXT);
 		OS.g_signal_handlers_unblock_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, INSERT_TEXT);
+		Arrays.fill (buffer, (byte) 0);
 	} else {
 		byte [] buffer = Converter.wcsToMbcs (null, text, false);
 		byte [] position =  new byte [ITER_SIZEOF];
@@ -2451,6 +2462,7 @@ void setText (char [] text) {
 		OS.gtk_text_buffer_place_cursor (bufferHandle, position);
 		int /*long*/ mark = OS.gtk_text_buffer_get_insert (bufferHandle);
 		OS.gtk_text_view_scroll_mark_onscreen (handle, mark);
+		Arrays.fill (buffer, (byte) 0);
 	}
 	sendEvent (SWT.Modify);
 	if ((style & SWT.SEARCH) != 0) {
