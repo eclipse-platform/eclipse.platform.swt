@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2015 IBM Corporation and others.
+ * Copyright (c) 2000, 2014 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -90,7 +90,6 @@ public class Tree extends Composite {
 	int drawState, drawFlags;
 	GdkColor drawForeground;
 	boolean ownerDraw, ignoreSize, ignoreAccessibility;
-	TreeItem pendingShowItem = null;
 
 	static final int ID_COLUMN = 0;
 	static final int CHECKED_COLUMN = 1;
@@ -3558,11 +3557,6 @@ public void showItem (TreeItem item) {
 	if (item == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (item.isDisposed ()) error(SWT.ERROR_INVALID_ARGUMENT);
 	if (item.parent != this) return;
-
-	if (!this.isVisible ()) {
-		pendingShowItem = item;
-	}
-
 	long /*int*/ path = OS.gtk_tree_model_get_path (modelHandle, item.handle);
 	showItem (path, true);
 	OS.gtk_tree_path_free (path);
@@ -3619,13 +3613,4 @@ long /*int*/ windowProc (long /*int*/ handle, long /*int*/ arg0, long /*int*/ us
 	return super.windowProc (handle, arg0, user_data);
 }
 
-@Override
-public void setVisible (boolean visible) {
-	super.setVisible (visible);
-
-	if ((visible) && (pendingShowItem != null)) {
-		showItem (pendingShowItem);
-		pendingShowItem = null;
-	}
-}
 }
