@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2014 IBM Corporation and others.
+ * Copyright (c) 2000, 2015 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -82,7 +82,7 @@ public class Table extends Composite {
 	long /*int*/ headerToolTipHandle;
 	boolean ignoreCustomDraw, ignoreDrawForeground, ignoreDrawBackground, ignoreDrawFocus, ignoreDrawSelection, ignoreDrawHot;
 	boolean customDraw, dragStarted, explorerTheme, firstColumnImage, fixScrollWidth, tipRequested, wasSelected, wasResized, painted;
-	boolean ignoreActivate, ignoreSelect, ignoreShrink, ignoreResize, ignoreColumnMove, ignoreColumnResize, fullRowSelect, redraw = true;
+	boolean ignoreActivate, ignoreSelect, ignoreShrink, ignoreResize, ignoreColumnMove, ignoreColumnResize, fullRowSelect, settingItemHeight;
 	int itemHeight, lastIndexOf, lastWidth, sortDirection, resizeCount, selectionForeground, hotIndex;
 	static /*final*/ long /*int*/ HeaderProc;
 	static final int INSET = 4;
@@ -3789,7 +3789,16 @@ Event sendMeasureItemEvent (TableItem item, int row, int column, long /*int*/ hD
 		long /*int*/ empty = OS.SendMessage (handle, OS.LVM_APPROXIMATEVIEWRECT, 0, 0);
 		long /*int*/ oneItem = OS.SendMessage (handle, OS.LVM_APPROXIMATEVIEWRECT, 1, 0);
 		int itemHeight = OS.HIWORD (oneItem) - OS.HIWORD (empty);
-		if (event.height > itemHeight) setItemHeight (event.height);
+		/*
+		 * Possible recursion: when setItemHeight() is called during
+		 * SWT.MeasureItem event processing with a non-zero table-row
+		 * selection. Refer bug 400174 and 458786
+		 */
+		if (!settingItemHeight && event.height > itemHeight) {
+			settingItemHeight = true;
+			setItemHeight (event.height);
+			settingItemHeight = false;
+		}
 	}
 	return event;
 }
@@ -4687,13 +4696,9 @@ void setItemHeight (boolean fixScroll) {
 	* save the top index, scroll to the top of the table
 	* and then restore the original top index.
 	*
-	* Note: Above fix causes recursion when setItemHeight is
-	* called during during SWT.MeasureItem event processing
-	* & with a non-zero table-row selection, bug 400174.
-	* Solution is skip the fix when redraw is false.
 	*/
 	int topIndex = getTopIndex ();
-	if (fixScroll && topIndex != 0 && redraw) {
+	if (fixScroll && topIndex != 0) {
 		setRedraw (false);
 		setTopIndex (0);
 	}
@@ -4782,7 +4787,6 @@ public void setLinesVisible (boolean show) {
 
 public void setRedraw (boolean redraw) {
 	checkWidget ();
-	this.redraw = redraw;
 	/*
 	 * Feature in Windows.  When WM_SETREDRAW is used to turn
 	 * off drawing in a widget, it clears the WS_VISIBLE bits
