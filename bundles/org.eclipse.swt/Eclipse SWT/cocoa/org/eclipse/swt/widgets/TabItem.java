@@ -322,7 +322,8 @@ public void setControl (Control control) {
 		if (newControl != null) {
 			newControl.setVisible (true);
 		}
-		if (oldControl != null) oldControl.setVisible (false);
+		if (oldControl != null && newControl != null && oldControl != newControl)
+			oldControl.setVisible (false);
 	}
 	NSView view;
 	if (newControl != null) {

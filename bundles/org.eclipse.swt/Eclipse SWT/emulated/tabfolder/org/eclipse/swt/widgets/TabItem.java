@@ -349,7 +349,8 @@ public void setControl (Control control) {
 		newControl.setBounds (parent.getClientArea ());
 		newControl.setVisible (true);
 	}
-	if (oldControl != null) oldControl.setVisible (false);
+	if (oldControl != null && newControl != null && oldControl != newControl)
+		oldControl.setVisible (false);
 }
 public void setImage (Image image) {
 	checkWidget();

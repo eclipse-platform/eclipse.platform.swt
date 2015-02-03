@@ -15,6 +15,7 @@ import static org.junit.Assert.assertArrayEquals;
 import java.util.Vector;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.TabItem;
 import org.eclipse.swt.widgets.Text;
@@ -119,13 +120,35 @@ public void test_getItems() {
 	assertArrayEquals(new TabItem[]{items[1], items[3]}, tabFolder.getItems());
 }
 
+/**
+ * Test the situation where you re-nest a child
+ * between tabs dynamically. As found in 458844
+ */
+public void test_setControl() {
+    int number = 5;
+    TabItem[] items = new TabItem[number];
+
+    final Button setControlButton = new Button (tabFolder, SWT.None);
+    setControlButton.setText ("test button");
+
+    for (int i = 0; i < number; i++) {
+        items[i] = new TabItem(tabFolder, 0);
+        items[i].setControl (setControlButton);
+        assertEquals (items[i].getControl (), setControlButton);
+        assertTrue(setControlButton.getVisible());
+    }
+    items[0].setControl (setControlButton);
+    assertEquals (items[0].getControl (), setControlButton);
+    assertTrue(setControlButton.getVisible());
+}
+
 public void test_getSelection() {
 	int number = 10;
 	TabItem[] tis = new TabItem[number];
 	for (int i = 0; i<number ; i++){
 	  	tis[i] = new TabItem(tabFolder, 0);
 	}
-	assertTrue(":a:", tabFolder.getSelection()[0] == tis[0]);	
+	assertTrue(":a:", tabFolder.getSelection()[0] == tis[0]);
 	for (int i = 0; i<number ; i++){
 		tabFolder.setSelection(i);
 		assertTrue(":b:" + i, tabFolder.getSelection()[0]==tis[i]);
