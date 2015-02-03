@@ -3623,6 +3623,8 @@ long /*int*/ windowProc (long /*int*/ handle, long /*int*/ arg0, long /*int*/ us
 public void setVisible (boolean visible) {
 	super.setVisible (visible);
 
+	if (isDisposed ()) return;
+
 	if ((visible) && (pendingShowItem != null)) {
 		showItem (pendingShowItem);
 		pendingShowItem = null;

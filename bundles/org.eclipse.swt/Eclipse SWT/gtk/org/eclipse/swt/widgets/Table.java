@@ -3529,6 +3529,8 @@ public void setTopIndex (int index) {
 public void setVisible (boolean visible) {
 	super.setVisible (visible);
 
+	if (isDisposed ()) return;
+
 	if ((visible) && (pendingShowItem != null)) {
 		showItem (pendingShowItem);
 		pendingShowItem = null;

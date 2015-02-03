@@ -2309,6 +2309,7 @@ public void setVisible (boolean visible) {
 		sendEvent (SWT.Hide);
 	}
 
+	if (isDisposed ()) return;
 	/*
 	 * Workaround for the Bug 424173 making the child elements visible so that
 	 * the child elements can perform pending actions
