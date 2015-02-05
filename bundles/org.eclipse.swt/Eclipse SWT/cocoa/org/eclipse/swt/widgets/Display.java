@@ -1833,7 +1833,10 @@ double /*float*/ [] getWidgetColorRGB (int id) {
 	NSColor color = null;
 	switch (id) {
 		case SWT.COLOR_INFO_FOREGROUND: color = NSColor.blackColor (); break;
-		case SWT.COLOR_INFO_BACKGROUND: return new double /*float*/ [] {.984f, .988f, 0.773f, 1};
+		case SWT.COLOR_INFO_BACKGROUND: return
+				OS.VERSION_MMB >= OS.VERSION_MMB (10, 10, 0)
+						? new double /*float*/ [] {236/255f, 235/255f, 236/255f, 1}
+						: new double /*float*/ [] {.984f, .988f, 0.773f, 1};
 		case SWT.COLOR_TITLE_FOREGROUND: color = NSColor.windowFrameTextColor(); break;
 		case SWT.COLOR_TITLE_BACKGROUND: color = NSColor.alternateSelectedControlColor(); break;
 		case SWT.COLOR_TITLE_BACKGROUND_GRADIENT: color = NSColor.selectedControlColor(); break;
