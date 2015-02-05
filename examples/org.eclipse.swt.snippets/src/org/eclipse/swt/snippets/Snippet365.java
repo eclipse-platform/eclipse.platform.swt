@@ -301,6 +301,7 @@ public class Snippet365 {
 		canvas = new Canvas (containerGroup, SWT.NONE);
 		canvas.setToolTipText("Canvas");
 		canvas.addPaintListener(new PaintListener () {
+			@Override
 			public void paintControl(PaintEvent e) {
 				GC gc = e.gc;
 				gc.setForeground(display.getSystemColor(SWT.COLOR_RED));
