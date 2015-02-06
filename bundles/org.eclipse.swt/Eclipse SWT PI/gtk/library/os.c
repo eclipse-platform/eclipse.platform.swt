@@ -9051,7 +9051,15 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(_1gtk_1arrow_1new)
 {
 	jintLong rc = 0;
 	OS_NATIVE_ENTER(env, that, _1gtk_1arrow_1new_FUNC);
+/*
 	rc = (jintLong)gtk_arrow_new((GtkArrowType)arg0, (GtkShadowType)arg1);
+*/
+	{
+		OS_LOAD_FUNCTION(fp, gtk_arrow_new)
+		if (fp) {
+			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(GtkArrowType, GtkShadowType))fp)((GtkArrowType)arg0, (GtkShadowType)arg1);
+		}
+	}
 	OS_NATIVE_EXIT(env, that, _1gtk_1arrow_1new_FUNC);
 	return rc;
 }
@@ -9062,7 +9070,15 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1arrow_1set)
 	(JNIEnv *env, jclass that, jintLong arg0, jint arg1, jint arg2)
 {
 	OS_NATIVE_ENTER(env, that, _1gtk_1arrow_1set_FUNC);
+/*
 	gtk_arrow_set((GtkArrow *)arg0, (GtkArrowType)arg1, (GtkShadowType)arg2);
+*/
+	{
+		OS_LOAD_FUNCTION(fp, gtk_arrow_set)
+		if (fp) {
+			((void (CALLING_CONVENTION*)(GtkArrow *, GtkArrowType, GtkShadowType))fp)((GtkArrow *)arg0, (GtkArrowType)arg1, (GtkShadowType)arg2);
+		}
+	}
 	OS_NATIVE_EXIT(env, that, _1gtk_1arrow_1set_FUNC);
 }
 #endif
@@ -12068,6 +12084,22 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(_1gtk_1image_1new)
 }
 #endif
 
+#ifndef NO__1gtk_1image_1new_1from_1icon_1name
+JNIEXPORT jintLong JNICALL OS_NATIVE(_1gtk_1image_1new_1from_1icon_1name)
+	(JNIEnv *env, jclass that, jbyteArray arg0, jint arg1)
+{
+	jbyte *lparg0=NULL;
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, _1gtk_1image_1new_1from_1icon_1name_FUNC);
+	if (arg0) if ((lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL)) == NULL) goto fail;
+	rc = (jintLong)gtk_image_new_from_icon_name((const gchar *)lparg0, (GtkIconSize)arg1);
+fail:
+	if (arg0 && lparg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
+	OS_NATIVE_EXIT(env, that, _1gtk_1image_1new_1from_1icon_1name_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO__1gtk_1image_1new_1from_1pixbuf
 JNIEXPORT jintLong JNICALL OS_NATIVE(_1gtk_1image_1new_1from_1pixbuf)
 	(JNIEnv *env, jclass that, jintLong arg0)
@@ -12095,6 +12127,20 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1image_1set_1from_1gicon)
 		}
 	}
 	OS_NATIVE_EXIT(env, that, _1gtk_1image_1set_1from_1gicon_FUNC);
+}
+#endif
+
+#ifndef NO__1gtk_1image_1set_1from_1icon_1name
+JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1image_1set_1from_1icon_1name)
+	(JNIEnv *env, jclass that, jintLong arg0, jbyteArray arg1, jint arg2)
+{
+	jbyte *lparg1=NULL;
+	OS_NATIVE_ENTER(env, that, _1gtk_1image_1set_1from_1icon_1name_FUNC);
+	if (arg1) if ((lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL)) == NULL) goto fail;
+	gtk_image_set_from_icon_name((GtkImage *)arg0, (const gchar *)lparg1, (GtkIconSize)arg2);
+fail:
+	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+	OS_NATIVE_EXIT(env, that, _1gtk_1image_1set_1from_1icon_1name_FUNC);
 }
 #endif
 

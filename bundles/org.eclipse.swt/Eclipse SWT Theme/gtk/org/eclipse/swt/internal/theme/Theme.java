@@ -17,18 +17,22 @@ import org.eclipse.swt.internal.gtk.*;
 
 public class Theme {
 	Device device;
-	
+
 	long /*int*/ shellHandle, fixedHandle, buttonHandle, arrowHandle,
-		frameHandle, entryHandle, checkButtonHandle, radioButtonHandle, 
+		frameHandle, entryHandle, checkButtonHandle, radioButtonHandle,
 		notebookHandle, treeHandle, progressHandle, toolbarHandle,
 		labelHandle, separatorHandle;
-	
+
 public Theme(Device device) {
 	this.device = device;
 	shellHandle = OS.gtk_window_new (OS.GTK_WINDOW_TOPLEVEL);
 	fixedHandle = OS.gtk_fixed_new();
 	buttonHandle = OS.gtk_button_new();
-	arrowHandle = OS.gtk_arrow_new(OS.GTK_ARROW_DOWN, OS.GTK_SHADOW_NONE);
+	if (OS.GTK3) {
+		arrowHandle = OS.gtk_image_new_from_icon_name (OS.GTK_NAMED_ICON_GO_DOWN, OS.GTK_ICON_SIZE_MENU);
+	} else { //GTK2
+		arrowHandle = OS.gtk_arrow_new(OS.GTK_ARROW_DOWN, OS.GTK_SHADOW_NONE);
+	}
 	checkButtonHandle = OS.gtk_check_button_new();
 	frameHandle = OS.gtk_check_button_new();
 	entryHandle = OS.gtk_entry_new();
@@ -86,11 +90,11 @@ public void dispose () {
 	if (shellHandle == 0) return;
 	OS.gtk_widget_destroy(shellHandle);
 	shellHandle = fixedHandle = buttonHandle = arrowHandle =
-	frameHandle = entryHandle = checkButtonHandle = radioButtonHandle = 
-	notebookHandle = treeHandle = progressHandle = toolbarHandle = 
+	frameHandle = entryHandle = checkButtonHandle = radioButtonHandle =
+	notebookHandle = treeHandle = progressHandle = toolbarHandle =
 	labelHandle = separatorHandle = 0;
 }
-	
+
 public void drawBackground(GC gc, Rectangle bounds, DrawData data) {
 	checkTheme();
 	if (gc == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);

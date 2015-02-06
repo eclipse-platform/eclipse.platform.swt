@@ -653,6 +653,10 @@ public class OS extends C {
 	public static final byte[] GTK_NAMED_ICON_CLEAR = ascii("edit-clear"); //Replacement of GTK_STOCK_CLEAR
 
 
+	public static final byte[] GTK_NAMED_ICON_GO_UP = ascii ("go-up-symbolic");
+	public static final byte[] GTK_NAMED_ICON_GO_DOWN = ascii ("go-down-symbolic");
+	public static final byte[] GTK_NAMED_ICON_GO_NEXT = ascii ("go-next-symbolic");
+	public static final byte[] GTK_NAMED_ICON_GO_PREVIOUS = ascii ("go-previous-symbolic");
 	/* GVariant Types */
 	public static final byte[] G_VARIANT_TYPE_BOOLEAN = ascii("b");
 	public static final byte[] G_VARIANT_TYPE_DOUBLE = ascii("d");
@@ -6415,7 +6419,9 @@ public static final void gtk_adjustment_value_changed(long /*int*/ adjustment) {
 		lock.unlock();
 	}
 }
+
 /**
+ * @method flags=dynamic
  * @param arrow_type cast=(GtkArrowType)
  * @param shadow_type cast=(GtkShadowType)
  */
@@ -6428,7 +6434,9 @@ public static final long /*int*/ gtk_arrow_new(int arrow_type, int shadow_type) 
 		lock.unlock();
 	}
 }
+
 /**
+ * @method flags=dynamic
  * @param arrow cast=(GtkArrow *)
  * @param arrow_type cast=(GtkArrowType)
  * @param shadow_type cast=(GtkShadowType)
@@ -8725,6 +8733,8 @@ public static final long /*int*/ gtk_image_menu_item_new_with_label(byte[] label
 		lock.unlock();
 	}
 }
+
+
 /**
  * @param menu_item cast=(GtkImageMenuItem *)
  * @param image cast=(GtkWidget *)
@@ -8784,6 +8794,36 @@ public static final void gtk_image_set_from_gicon(long /*int*/ image, long /*int
 		lock.unlock();
 	}
 }
+
+/**
+ * @param icon_name cast=(const gchar *)
+ * @param size cast=(GtkIconSize)
+ */
+public static final native long /*int*/ _gtk_image_new_from_icon_name (byte[] icon_name, int size);
+public static final long  /*int*/ gtk_image_new_from_icon_name (byte[] icon_name, int size) {
+	lock.lock();
+	try {
+		return _gtk_image_new_from_icon_name (icon_name, size);
+	} finally {
+		lock.unlock();
+	}
+}
+
+/**
+ * @param image cast=(GtkImage *)
+ * @param icon_name cast=(const gchar *)
+ * @param size cast=(GtkIconSize)
+ */
+public static final native void _gtk_image_set_from_icon_name (long /*int*/ image, byte[] icon_name, int size);
+public static final void gtk_image_set_from_icon_name (long /*int*/ image, byte[] icon_name, int size) {
+	lock.lock();
+	try {
+		_gtk_image_set_from_icon_name (image, icon_name, size);
+	} finally {
+		lock.unlock();
+	}
+}
+
 /**
  * @param argc cast=(int *)
  * @param argv cast=(char ***)
