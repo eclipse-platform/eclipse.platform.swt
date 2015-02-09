@@ -13678,7 +13678,10 @@ public static final boolean gtk_tree_view_get_path_at_pos(long /*int*/ tree_view
 		lock.unlock();
 	}
 }
-/** @param tree_view cast=(GtkTreeView *) */
+/**
+ * @method flags=dynamic
+ * @param tree_view cast=(GtkTreeView *)
+ */
 public static final native boolean _gtk_tree_view_get_rules_hint(long /*int*/ tree_view);
 public static final boolean gtk_tree_view_get_rules_hint(long /*int*/ tree_view) {
 	lock.lock();
@@ -13833,6 +13836,21 @@ public static final void gtk_tree_view_set_grid_lines(long /*int*/ tree_view, in
 		lock.unlock();
 	}
 }
+
+/**
+ * @param tree_view cast=(GtkTreeView*)
+ */
+public static final native int _gtk_tree_view_get_grid_lines(long /*int*/ tree_view);
+public static final int gtk_tree_view_get_grid_lines(long /*int*/ tree_view) {
+	lock.lock();
+	try {
+		return _gtk_tree_view_get_grid_lines(tree_view);
+	} finally {
+		lock.unlock();
+	}
+}
+
+
 /**
  * @param tree_view cast=(GtkTreeView *)
  * @param visible cast=(gboolean)
@@ -13859,7 +13877,10 @@ public static final void gtk_tree_view_set_model(long /*int*/ tree_view, long /*
 		lock.unlock();
 	}
 }
-/** @param tree_view cast=(GtkTreeView *) */
+/**
+ * @method flags=dynamic
+ * @param tree_view cast=(GtkTreeView *)
+ * */
 public static final native void _gtk_tree_view_set_rules_hint(long /*int*/ tree_view, boolean setting);
 public static final void gtk_tree_view_set_rules_hint(long /*int*/ tree_view, boolean setting) {
 	lock.lock();

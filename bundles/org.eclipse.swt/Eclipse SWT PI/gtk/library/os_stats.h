@@ -1329,6 +1329,7 @@ typedef enum {
 	_1gtk_1tree_1view_1get_1columns_FUNC,
 	_1gtk_1tree_1view_1get_1cursor_FUNC,
 	_1gtk_1tree_1view_1get_1expander_1column_FUNC,
+	_1gtk_1tree_1view_1get_1grid_1lines_FUNC,
 	_1gtk_1tree_1view_1get_1headers_1visible_FUNC,
 	_1gtk_1tree_1view_1get_1path_1at_1pos_FUNC,
 	_1gtk_1tree_1view_1get_1rules_1hint_FUNC,

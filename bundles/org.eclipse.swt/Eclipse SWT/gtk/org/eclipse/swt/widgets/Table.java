@@ -365,7 +365,7 @@ int calculateWidth (long /*int*/ column, long /*int*/ iter) {
 		temp = OS.g_list_next (temp);
 	}
 	OS.g_list_free (list);
-	if (OS.GTK_VERSION >= OS.VERSION (2, 12, 0) && OS.gtk_tree_view_get_rules_hint (handle)) {
+	if (OS.GTK_VERSION >= OS.VERSION (2, 12, 0) && (OS.gtk_tree_view_get_grid_lines(handle) > OS.GTK_TREE_VIEW_GRID_LINES_NONE)) {
 		OS.gtk_widget_style_get (handle, OS.grid_line_width, w, 0) ;
 		width += 2 * w [0];
 	}
@@ -1599,7 +1599,11 @@ public TableItem [] getItems () {
  */
 public boolean getLinesVisible() {
 	checkWidget();
-	return OS.gtk_tree_view_get_rules_hint (handle);
+	if (OS.GTK3) {
+		return OS.gtk_tree_view_get_grid_lines(handle) > OS.GTK_TREE_VIEW_GRID_LINES_NONE;
+	} else  {
+		return OS.gtk_tree_view_get_rules_hint (handle);
+	}
 }
 
 long /*int*/ getPixbufRenderer (long /*int*/ column) {
@@ -3208,8 +3212,11 @@ public void setItemCount (int count) {
  */
 public void setLinesVisible (boolean show) {
 	checkWidget();
-	OS.gtk_tree_view_set_rules_hint (handle, show);
+	if (!OS.GTK3) {
+		OS.gtk_tree_view_set_rules_hint (handle, show);
+	}
 	if (OS.GTK_VERSION >= OS.VERSION (2, 12, 0)) {
+		//Note: this is overriden by the active theme in GTK3.
 		OS.gtk_tree_view_set_grid_lines (handle, show ? OS.GTK_TREE_VIEW_GRID_LINES_VERTICAL : OS.GTK_TREE_VIEW_GRID_LINES_NONE);
 	}
 }
