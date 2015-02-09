@@ -7765,6 +7765,7 @@ public static final void gtk_entry_set_has_frame(long /*int*/ entry, boolean set
 }
 
 /**
+ * @method flags=dynamic
  * @param entry cast=(GtkEntry *)
  * @param iconPos cast=(gint)
  * @param stock cast=(const gchar *)

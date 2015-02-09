@@ -10708,7 +10708,15 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1entry_1set_1icon_1from_1icon_1name)
 	jbyte *lparg2=NULL;
 	OS_NATIVE_ENTER(env, that, _1gtk_1entry_1set_1icon_1from_1icon_1name_FUNC);
 	if (arg2) if ((lparg2 = (*env)->GetByteArrayElements(env, arg2, NULL)) == NULL) goto fail;
+/*
 	gtk_entry_set_icon_from_icon_name((GtkEntry *)arg0, (gint)arg1, (const gchar *)lparg2);
+*/
+	{
+		OS_LOAD_FUNCTION(fp, gtk_entry_set_icon_from_icon_name)
+		if (fp) {
+			((void (CALLING_CONVENTION*)(GtkEntry *, gint, const gchar *))fp)((GtkEntry *)arg0, (gint)arg1, (const gchar *)lparg2);
+		}
+	}
 fail:
 	if (arg2 && lparg2) (*env)->ReleaseByteArrayElements(env, arg2, lparg2, 0);
 	OS_NATIVE_EXIT(env, that, _1gtk_1entry_1set_1icon_1from_1icon_1name_FUNC);
