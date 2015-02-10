@@ -34,7 +34,7 @@ import org.eclipse.swt.internal.gtk.GtkCellRendererClass;
 import org.eclipse.swt.internal.gtk.GtkRequisition;
 import org.eclipse.swt.internal.gtk.OS;
 
-/** 
+/**
  * Instances of this class implement a selectable user interface
  * object that displays a list of images and strings and issues
  * notification when selected.
@@ -59,7 +59,7 @@ import org.eclipse.swt.internal.gtk.OS;
  *          item.setText ("Item " + index);
  *          System.out.println (item.getText ());
  *      }
- *  }); 
+ *  });
  * </pre></code>
  * </p><p>
  * Note that although this class is a subclass of <code>Composite</code>,
@@ -118,7 +118,7 @@ public class Table extends Composite {
  * <p>
  * The style value is either one of the style constants defined in
  * class <code>SWT</code> which is applicable to instances of this
- * class, or must be built by <em>bitwise OR</em>'ing together 
+ * class, or must be built by <em>bitwise OR</em>'ing together
  * (that is, using the <code>int</code> "|" operator) two or more
  * of those <code>SWT</code> style constants. The class description
  * lists the style constants that are applicable to the class.
@@ -177,7 +177,7 @@ static int checkStyle (int style) {
 	* WS_VSCROLL is not specified, Windows creates
 	* trees and tables with scroll bars.  The fix
 	* is to set H_SCROLL and V_SCROLL.
-	* 
+	*
 	* NOTE: This code appears on all platforms so that
 	* applications have consistent scroll bar behavior.
 	*/
@@ -232,7 +232,7 @@ long /*int*/ cellDataProc (long /*int*/ tree_column, long /*int*/ cell, long /*i
 			OS.g_object_set (cell, OS.GTK3 ? OS.gicon : OS.pixbuf, ptr [0], 0);
 			if (ptr [0] != 0) OS.g_object_unref (ptr [0]);
 		} else {
-			OS.gtk_tree_model_get (tree_model, iter, modelIndex + CELL_TEXT, ptr, -1); 
+			OS.gtk_tree_model_get (tree_model, iter, modelIndex + CELL_TEXT, ptr, -1);
 			if (ptr [0] != 0) {
 				OS.g_object_set (cell, OS.text, ptr [0], 0);
 				OS.g_free (ptr [0]);
@@ -343,7 +343,7 @@ int calculateWidth (long /*int*/ column, long /*int*/ iter) {
 	//int [] width = new int [1];
 	//OS.gtk_tree_view_column_cell_get_size (column, null, null, null, width, null);
 	//return width [0];
-	
+
 	int width = 0;
 	int [] w = new int [1];
 	OS.gtk_widget_style_get(handle, OS.focus_line_width, w, 0);
@@ -387,10 +387,10 @@ int calculateWidth (long /*int*/ column, long /*int*/ iter) {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @see SWT#VIRTUAL
  * @see SWT#SetData
- * 
+ *
  * @since 3.0
  */
 public void clear (int index) {
@@ -419,10 +419,10 @@ public void clear (int index) {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @see SWT#VIRTUAL
  * @see SWT#SetData
- * 
+ *
  * @since 3.0
  */
 public void clear (int start, int end) {
@@ -457,10 +457,10 @@ public void clear (int start, int end) {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @see SWT#VIRTUAL
  * @see SWT#SetData
- * 
+ *
  * @since 3.0
  */
 public void clear (int [] indices) {
@@ -488,10 +488,10 @@ public void clear (int [] indices) {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @see SWT#VIRTUAL
  * @see SWT#SetData
- * 
+ *
  * @since 3.0
  */
 public void clearAll () {
@@ -609,7 +609,7 @@ void createColumn (TableColumn column, int index) {
 	OS.gtk_tree_view_insert_column (handle, columnHandle, index);
 	/*
 	* Bug in GTK3.  The column header has the wrong CSS styling if it is hidden
-	* when inserting to the tree widget.  The fix is to hide the column only 
+	* when inserting to the tree widget.  The fix is to hide the column only
 	* after it is inserted.
 	*/
 	if (columnCount != 0) OS.gtk_tree_view_column_set_visible (columnHandle, false);
@@ -618,7 +618,7 @@ void createColumn (TableColumn column, int index) {
 		column.modelIndex = modelIndex;
 	}
 	if (!searchEnabled ()) {
-		OS.gtk_tree_view_set_search_column (handle, -1); 
+		OS.gtk_tree_view_set_search_column (handle, -1);
 	} else {
 		/* Set the search column whenever the model changes */
 		int firstColumn = columnCount == 0 ? FIRST_COLUMN : columns [0].modelIndex;
@@ -647,11 +647,11 @@ void createHandle (int index) {
 	createColumn (null, 0);
 	OS.gtk_container_add (fixedHandle, scrolledHandle);
 	OS.gtk_container_add (scrolledHandle, handle);
-	
+
 	int mode = (style & SWT.MULTI) != 0 ? OS.GTK_SELECTION_MULTIPLE : OS.GTK_SELECTION_BROWSE;
 	long /*int*/ selectionHandle = OS.gtk_tree_view_get_selection (handle);
 	OS.gtk_tree_selection_set_mode (selectionHandle, mode);
-	OS.gtk_tree_view_set_headers_visible (handle, false);	
+	OS.gtk_tree_view_set_headers_visible (handle, false);
 	int hsp = (style & SWT.H_SCROLL) != 0 ? OS.GTK_POLICY_AUTOMATIC : OS.GTK_POLICY_NEVER;
 	int vsp = (style & SWT.V_SCROLL) != 0 ? OS.GTK_POLICY_AUTOMATIC : OS.GTK_POLICY_NEVER;
 	OS.gtk_scrolled_window_set_policy (scrolledHandle, hsp, vsp);
@@ -660,7 +660,7 @@ void createHandle (int index) {
 		OS.g_object_set (handle, OS.fixed_height_mode, true, 0);
 	}
 	if (!searchEnabled ()) {
-		OS.gtk_tree_view_set_search_column (handle, -1); 
+		OS.gtk_tree_view_set_search_column (handle, -1);
 	}
 }
 
@@ -688,7 +688,7 @@ void createItem (TableColumn column, int index) {
 	OS.gtk_widget_show (boxHandle);
 	OS.gtk_widget_show (labelHandle);
 	column.labelHandle = labelHandle;
-	column.imageHandle = imageHandle;	
+	column.imageHandle = imageHandle;
 	OS.gtk_tree_view_column_set_widget (column.handle, boxHandle);
 	if (OS.GTK3) {
 		column.buttonHandle = OS.gtk_tree_view_column_get_button(column.handle);
@@ -727,7 +727,7 @@ void createItem (TableColumn column, int index) {
 		}
 	}
 	/*
-	 * Feature in GTK. The tree view does not resize immediately if a table 
+	 * Feature in GTK. The tree view does not resize immediately if a table
 	 * column is created when the table is not visible. If the width of the
  	 * new column is queried, GTK returns an incorrect value. The fix is to
  	 * ensure that the columns are resized before any queries.
@@ -741,7 +741,7 @@ void createItem (TableItem item, int index) {
 	if (!(0 <= index && index <= itemCount)) error (SWT.ERROR_INVALID_RANGE);
 	if (itemCount == items.length) {
 		int length = drawCount <= 0 ? items.length + 4 : Math.max (4, items.length * 3 / 2);
-		TableItem [] newItems = new TableItem [length];	
+		TableItem [] newItems = new TableItem [length];
 		System.arraycopy (items, 0, newItems, 0, items.length);
 		items = newItems;
 	}
@@ -749,7 +749,7 @@ void createItem (TableItem item, int index) {
 	if (item.handle == 0) error (SWT.ERROR_NO_HANDLES);
 	/*
 	* Feature in GTK.  It is much faster to append to a list store
-	* than to insert at the end using gtk_list_store_insert(). 
+	* than to insert at the end using gtk_list_store_insert().
 	*/
 	if (index == itemCount) {
 		OS.gtk_list_store_append (modelHandle, item.handle);
@@ -783,7 +783,7 @@ void createRenderers (long /*int*/ columnHandle, int modelIndex, boolean check, 
 	}
 	long /*int*/ textRenderer = ownerDraw ? OS.g_object_new (display.gtk_cell_renderer_text_get_type (), 0) : OS.gtk_cell_renderer_text_new ();
 	if (textRenderer == 0) error (SWT.ERROR_NO_HANDLES);
-	
+
 	if (ownerDraw) {
 		OS.g_object_set_qdata (pixbufRenderer, Display.SWT_OBJECT_INDEX1, columnHandle);
 		OS.g_object_set_qdata (textRenderer, Display.SWT_OBJECT_INDEX1, columnHandle);
@@ -825,7 +825,7 @@ void createRenderers (long /*int*/ columnHandle, int modelIndex, boolean check, 
 	OS.gtk_tree_view_column_add_attribute (columnHandle, textRenderer, OS.text, modelIndex + CELL_TEXT);
 	OS.gtk_tree_view_column_add_attribute (columnHandle, textRenderer, OS.foreground_gdk, FOREGROUND_COLUMN);
 	OS.gtk_tree_view_column_add_attribute (columnHandle, textRenderer, OS.font_desc, FONT_COLUMN);
-	
+
 	boolean customDraw = firstCustomDraw;
 	if (columnCount != 0) {
 		for (int i=0; i<columnCount; i++) {
@@ -895,7 +895,7 @@ public void deselect (int index) {
 
 /**
  * Deselects the items at the given zero-relative indices in the receiver.
- * If the item at the given zero-relative index in the receiver 
+ * If the item at the given zero-relative index in the receiver
  * is selected, it is deselected.  If the item at the index
  * was not selected, it remains deselected.  The range of the
  * indices is inclusive. Indices that are out of range are ignored.
@@ -923,7 +923,7 @@ public void deselect (int start, int end) {
 
 /**
  * Deselects the items at the given zero-relative indices in the receiver.
- * If the item at the given zero-relative index in the receiver 
+ * If the item at the given zero-relative index in the receiver
  * is selected, it is deselected.  If the item at the index
  * was not selected, it remains deselected. Indices that are out
  * of range and duplicate indices are ignored.
@@ -1009,7 +1009,7 @@ void destroyItem (TableColumn column) {
 					OS.gtk_list_store_set (newModel, newItem, j, ptr [0], -1);
 					if (ptr [0] != 0) {
 						if (j == FOREGROUND_COLUMN || j == BACKGROUND_COLUMN) {
-							OS.gdk_color_free (ptr [0]);	
+							OS.gdk_color_free (ptr [0]);
 						} else if (j == FONT_COLUMN) {
 							OS.pango_font_description_free (ptr [0]);
 						}
@@ -1051,7 +1051,7 @@ void destroyItem (TableColumn column) {
 				OS.gtk_list_store_set (modelHandle, iter, modelIndex + CELL_FOREGROUND, (long /*int*/)0, -1);
 				OS.gtk_list_store_set (modelHandle, iter, modelIndex + CELL_BACKGROUND, (long /*int*/)0, -1);
 				OS.gtk_list_store_set (modelHandle, iter, modelIndex + CELL_FONT, (long /*int*/)0, -1);
-				
+
 				Font [] cellFont = item.cellFont;
 				if (cellFont != null) {
 					if (columnCount == 0) {
@@ -1071,7 +1071,7 @@ void destroyItem (TableColumn column) {
 		}
 	}
 	if (!searchEnabled ()) {
-		OS.gtk_tree_view_set_search_column (handle, -1); 
+		OS.gtk_tree_view_set_search_column (handle, -1);
 	} else {
 		/* Set the search column whenever the model changes */
 		int firstColumn = columnCount == 0 ? FIRST_COLUMN : columns [0].modelIndex;
@@ -1128,9 +1128,9 @@ boolean fixAccessibility () {
 	* the rows that are not visible. The the fix is to block the accessible object
 	* from receiving row_added and row_removed signals and, at the end, send only
 	* a notify signal with the "model" detail.
-	*  
-	* Note: The test bellow has to be updated when the real problem is fixed in 
-	* the accessible object. 
+	*
+	* Note: The test bellow has to be updated when the real problem is fixed in
+	* the accessible object.
 	*/
 	return OS.GTK_VERSION >= OS.VERSION (2, 12, 0);
 }
@@ -1199,7 +1199,7 @@ int getClientWidth () {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @see Table#getColumnOrder()
  * @see Table#setColumnOrder(int[])
  * @see TableColumn#getMoveable()
@@ -1261,7 +1261,7 @@ long /*int*/[] getColumnTypes (int columnCount) {
  * </p><p>
  * Note: This is not the actual structure used by the receiver
  * to maintain its list of items, so modifying the array will
- * not affect the receiver. 
+ * not affect the receiver.
  * </p>
  *
  * @return the current visual order of the receiver's items
@@ -1270,12 +1270,12 @@ long /*int*/[] getColumnTypes (int columnCount) {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @see Table#setColumnOrder(int[])
  * @see TableColumn#getMoveable()
  * @see TableColumn#setMoveable(boolean)
  * @see SWT#Move
- * 
+ *
  * @since 3.1
  */
 public int [] getColumnOrder () {
@@ -1313,7 +1313,7 @@ public int [] getColumnOrder () {
  * <p>
  * Note: This is not the actual structure used by the receiver
  * to maintain its list of items, so modifying the array will
- * not affect the receiver. 
+ * not affect the receiver.
  * </p>
  *
  * @return the items in the receiver
@@ -1322,7 +1322,7 @@ public int [] getColumnOrder () {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @see Table#getColumnOrder()
  * @see Table#setColumnOrder(int[])
  * @see TableColumn#getMoveable()
@@ -1345,11 +1345,11 @@ TableItem getFocusItem () {
 	if (indices != 0) {
 		int [] index = new int []{-1};
 		OS.memmove (index, indices, 4);
-		item = _getItem (index [0]); 
+		item = _getItem (index [0]);
 	}
 	OS.gtk_tree_path_free (path [0]);
 	return item;
-} 
+}
 
 @Override
 GdkColor getForegroundColor () {
@@ -1360,7 +1360,7 @@ GdkColor getForegroundColor () {
  * Returns the width in pixels of a grid line.
  *
  * @return the width of a grid line in pixels
- * 
+ *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
@@ -1372,7 +1372,7 @@ public int getGridLineWidth () {
 }
 
 /**
- * Returns the height of the receiver's header 
+ * Returns the height of the receiver's header
  *
  * @return the height of the header or zero if the header is not visible
  *
@@ -1380,8 +1380,8 @@ public int getGridLineWidth () {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
- * @since 2.0 
+ *
+ * @since 2.0
  */
 public int getHeaderHeight () {
 	checkWidget ();
@@ -1457,8 +1457,8 @@ public TableItem getItem (int index) {
  * coordinate system of the receiver.
  * <p>
  * The item that is returned represents an item that could be selected by the user.
- * For example, if selection only occurs in items in the first column, then null is 
- * returned if the point is outside of the item. 
+ * For example, if selection only occurs in items in the first column, then null is
+ * returned if the point is outside of the item.
  * Note that the SWT.FULL_SELECTION style hint, which specifies the selection policy,
  * determines the extent of the selection.
  * </p>
@@ -1552,11 +1552,11 @@ public int getItemHeight () {
 
 /**
  * Returns a (possibly empty) array of <code>TableItem</code>s which
- * are the items in the receiver. 
+ * are the items in the receiver.
  * <p>
  * Note: This is not the actual structure used by the receiver
  * to maintain its list of items, so modifying the array will
- * not affect the receiver. 
+ * not affect the receiver.
  * </p>
  *
  * @return the items in the receiver
@@ -1581,7 +1581,7 @@ public TableItem [] getItems () {
 
 /**
  * Returns <code>true</code> if the receiver's lines are visible,
- * and <code>false</code> otherwise. Note that some platforms draw 
+ * and <code>false</code> otherwise. Note that some platforms draw
  * grid lines while others may draw alternating row colors.
  * <p>
  * If one of the receiver's ancestors is not visible or some
@@ -1609,7 +1609,7 @@ long /*int*/ getPixbufRenderer (long /*int*/ column) {
 	} else {
 		list = OS.gtk_tree_view_column_get_cell_renderers (column);
 	}
-	
+
 	if (list == 0) return 0;
 	long /*int*/ originalList = list;
 	long /*int*/ pixbufRenderer = 0;
@@ -1632,7 +1632,7 @@ long /*int*/ getPixbufRenderer (long /*int*/ column) {
  * <p>
  * Note: This is not the actual structure used by the receiver
  * to maintain its selection, so modifying the array will
- * not affect the receiver. 
+ * not affect the receiver.
  * </p>
  * @return an array representing the selection
  *
@@ -1730,7 +1730,7 @@ public int getSelectionIndex () {
  * <p>
  * Note: This is not the actual structure used by the receiver
  * to maintain its selection, so modifying the array will
- * not affect the receiver. 
+ * not affect the receiver.
  * </p>
  * @return the array of indices of the selected items
  *
@@ -1773,15 +1773,15 @@ public int [] getSelectionIndices () {
  * the receiver. The value may be null if no column shows
  * the sort indicator.
  *
- * @return the sort indicator 
+ * @return the sort indicator
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @see #setSortColumn(TableColumn)
- * 
+ *
  * @since 3.2
  */
 public TableColumn getSortColumn () {
@@ -1790,8 +1790,8 @@ public TableColumn getSortColumn () {
 }
 
 /**
- * Returns the direction of the sort indicator for the receiver. 
- * The value will be one of <code>UP</code>, <code>DOWN</code> 
+ * Returns the direction of the sort indicator for the receiver.
+ * The value will be one of <code>UP</code>, <code>DOWN</code>
  * or <code>NONE</code>.
  *
  * @return the sort direction
@@ -1800,9 +1800,9 @@ public TableColumn getSortColumn () {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @see #setSortDirection(int)
- * 
+ *
  * @since 3.2
  */
 public int getSortDirection () {
@@ -1866,7 +1866,7 @@ long /*int*/ gtk_button_press_event (long /*int*/ widget, long /*int*/ event) {
 	if (result != 0) return result;
 	/*
 	* Feature in GTK.  In a multi-select table view, when multiple items are already
-	* selected, the selection state of the item is toggled and the previous selection 
+	* selected, the selection state of the item is toggled and the previous selection
 	* is cleared. This is not the desired behaviour when bringing up a popup menu.
 	* Also, when an item is reselected with the right button, the tree view issues
 	* an unwanted selection event. The workaround is to detect that case and not
@@ -1883,7 +1883,7 @@ long /*int*/ gtk_button_press_event (long /*int*/ widget, long /*int*/ event) {
 			}
 		}
 	}
-	
+
 	/*
 	* Feature in GTK.  When the user clicks in a single selection GtkTreeView
 	* and there are no selected items, the first item is selected automatically
@@ -1927,7 +1927,7 @@ long /*int*/ gtk_changed (long /*int*/ widget) {
 	TableItem item = getFocusItem ();
 	if (item != null) {
 		Event event = new Event ();
-		event.item = item; 
+		event.item = item;
 		sendSelectionEvent (SWT.Selection, event, false);
 	}
 	return 0;
@@ -1938,8 +1938,8 @@ long /*int*/ gtk_event_after (long /*int*/ widget, long /*int*/ gdkEvent) {
 	switch (OS.GDK_EVENT_TYPE (gdkEvent)) {
 		case OS.GDK_EXPOSE: {
 			/*
-			* Bug in GTK. SWT connects the expose-event 'after' the default 
-			* handler of the signal. If the tree has no children, then GTK 
+			* Bug in GTK. SWT connects the expose-event 'after' the default
+			* handler of the signal. If the tree has no children, then GTK
 			* sends expose signal only 'before' the default signal handler.
 			* The fix is to detect this case in 'event_after' and send the
 			* expose event.
@@ -2013,7 +2013,7 @@ long /*int*/ gtk_row_activated (long /*int*/ tree, long /*int*/ path, long /*int
 	if (indices != 0) {
 		int [] index = new int []{-1};
 		OS.memmove (index, indices, 4);
-		item = _getItem (index [0]); 
+		item = _getItem (index [0]);
 	}
 	Event event = new Event ();
 	event.item = item;
@@ -2039,7 +2039,7 @@ long /*int*/ gtk_row_inserted (long /*int*/ model, long /*int*/ path, long /*int
 @Override
 long /*int*/ gtk_start_interactive_search(long /*int*/ widget) {
 	if (!searchEnabled()) {
-		OS.g_signal_stop_emission_by_name(widget, OS.start_interactive_search); 
+		OS.g_signal_stop_emission_by_name(widget, OS.start_interactive_search);
 		return 1;
 	}
 	return 0;
@@ -2069,7 +2069,7 @@ void gtk_widget_size_request (long /*int*/ widget, GtkRequisition requisition) {
 	 * Bug in GTK.  For some reason, gtk_widget_size_request() fails
 	 * to include the height of the tree view items when there are
 	 * no columns visible.  The fix is to temporarily make one column
-	 * visible. 
+	 * visible.
 	 */
 	if (columnCount == 0) {
 		super.gtk_widget_size_request (widget, requisition);
@@ -2099,7 +2099,7 @@ void gtk_widget_size_request (long /*int*/ widget, GtkRequisition requisition) {
 
 void hideFirstColumn () {
 	long /*int*/ firstColumn = OS.gtk_tree_view_get_column (handle, 0);
-	OS.gtk_tree_view_column_set_visible (firstColumn, false);	
+	OS.gtk_tree_view_column_set_visible (firstColumn, false);
 }
 
 @Override
@@ -2120,7 +2120,7 @@ void hookEvents () {
 
 /**
  * Searches the receiver's list starting at the first column
- * (index 0) until a column is found that is equal to the 
+ * (index 0) until a column is found that is equal to the
  * argument, and returns the index of that column. If no column
  * is found, returns -1.
  *
@@ -2146,7 +2146,7 @@ public int indexOf (TableColumn column) {
 
 /**
  * Searches the receiver's list starting at the first item
- * (index 0) until an item is found that is equal to the 
+ * (index 0) until an item is found that is equal to the
  * argument, and returns the index of that item. If no item
  * is found, returns -1.
  *
@@ -2342,7 +2342,7 @@ public void remove (int index) {
 
 /**
  * Removes the items from the receiver which are
- * between the given zero-relative start and end 
+ * between the given zero-relative start and end
  * indices (inclusive).
  *
  * @param start the start of the range
@@ -2455,7 +2455,7 @@ public void remove (int [] indices) {
 
 /**
  * Removes all of the items from the receiver.
- * 
+ *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
@@ -2485,7 +2485,7 @@ public void removeAll () {
 
 	resetCustomDraw ();
 	if (!searchEnabled ()) {
-		OS.gtk_tree_view_set_search_column (handle, -1); 
+		OS.gtk_tree_view_set_search_column (handle, -1);
 	} else {
 		/* Set the search column whenever the model changes */
 		int firstColumn = columnCount == 0 ? FIRST_COLUMN : columns [0].modelIndex;
@@ -2515,7 +2515,7 @@ public void removeSelectionListener(SelectionListener listener) {
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (eventTable == null) return;
 	eventTable.unhook (SWT.Selection, listener);
-	eventTable.unhook (SWT.DefaultSelection,listener);	
+	eventTable.unhook (SWT.DefaultSelection,listener);
 }
 
 void sendMeasureEvent (long /*int*/ cell, long /*int*/ width, long /*int*/ height) {
@@ -2541,7 +2541,7 @@ void sendMeasureEvent (long /*int*/ cell, long /*int*/ width, long /*int*/ heigh
 					if (columns [i].handle == columnHandle) {
 						columnIndex = i;
 						break;
-					}				
+					}
 				}
 			}
 			int [] contentWidth = new int [1], contentHeight = new int  [1];
@@ -2572,7 +2572,7 @@ void sendMeasureEvent (long /*int*/ cell, long /*int*/ width, long /*int*/ heigh
 			if (contentHeight [0] < event.height) contentHeight [0] = event.height;
 			if (width != 0) OS.memmove (width, contentWidth, 4);
 			if (height != 0) OS.memmove (height, contentHeight, 4);
-			if (OS.GTK3) { 
+			if (OS.GTK3) {
 				OS.gtk_cell_renderer_set_fixed_size (cell, contentWidth [0], contentHeight [0]);
 			}
 		}
@@ -2630,7 +2630,7 @@ void rendererRender (long /*int*/ cell, long /*int*/ cr, long /*int*/ window, lo
 			if (columns [i].handle == columnHandle) {
 				columnIndex = i;
 				break;
-			}				
+			}
 		}
 	}
 	if (item != null) {
@@ -2651,12 +2651,12 @@ void rendererRender (long /*int*/ cell, long /*int*/ cr, long /*int*/ window, lo
 			if (!OS.GTK3 || (flags & OS.GTK_CELL_RENDERER_SELECTED) == 0) {
 				if ((flags & OS.GTK_CELL_RENDERER_FOCUSED) != 0) drawState |= SWT.FOCUSED;
 			}
-			
+
 			GdkRectangle rect = new GdkRectangle ();
 			long /*int*/ path = OS.gtk_tree_model_get_path (modelHandle, iter);
 			OS.gtk_tree_view_get_background_area (handle, path, columnHandle, rect);
 			OS.gtk_tree_path_free (path);
-			
+
 			if ((drawState & SWT.SELECTED) == 0) {
 				if ((state & PARENT_BACKGROUND) != 0 || backgroundImage != null) {
 					Control control = findBackgroundControl ();
@@ -2676,7 +2676,7 @@ void rendererRender (long /*int*/ cell, long /*int*/ cr, long /*int*/ window, lo
 			//send out measure before erase
 			long /*int*/ textRenderer =  getTextRenderer (columnHandle);
 			if (textRenderer != 0) gtk_cell_renderer_get_preferred_size (textRenderer, handle, null, null);
-			
+
 
 			if (hooks (SWT.EraseItem)) {
 				boolean wasSelected = (drawState & SWT.SELECTED) != 0;
@@ -2735,7 +2735,7 @@ void rendererRender (long /*int*/ cell, long /*int*/ cr, long /*int*/ window, lo
 						OS.gtk_style_context_restore (context);
 						Cairo.cairo_restore (cr);
 					} else {
-						long /*int*/ style = OS.gtk_widget_get_style (widget);					
+						long /*int*/ style = OS.gtk_widget_get_style (widget);
 						//TODO - parity and sorted
 						byte[] detail = Converter.wcsToMbcs (null, "cell_odd", true);
 						OS.gtk_paint_flat_box (style, window, OS.GTK_STATE_SELECTED, OS.GTK_SHADOW_NONE, rect, widget, detail, rect.x, rect.y, rect.width, rect.height);
@@ -2776,7 +2776,7 @@ void rendererRender (long /*int*/ cell, long /*int*/ cr, long /*int*/ window, lo
 				OS.gtk_tree_view_get_background_area (handle, path, columnHandle, rect);
 				OS.gtk_tree_path_free (path);
 				ignoreSize = true;
-				int [] contentX = new int [1], contentWidth = new int [1];	
+				int [] contentX = new int [1], contentWidth = new int [1];
 				gtk_cell_renderer_get_preferred_size (cell, handle, contentWidth, null);
 				OS.gtk_tree_view_column_cell_get_position (columnHandle, cell, contentX, null);
 				ignoreSize = false;
@@ -2822,7 +2822,7 @@ void rendererRender (long /*int*/ cell, long /*int*/ cr, long /*int*/ window, lo
 				event.width = contentWidth [0];
 				event.height = rect.height;
 				event.detail = drawState;
-				sendEvent (SWT.PaintItem, event);	
+				sendEvent (SWT.PaintItem, event);
 				gc.dispose();
 			}
 		}
@@ -2868,7 +2868,7 @@ boolean searchEnabled () {
 }
 
 /**
- * Selects the item at the given zero-relative index in the receiver. 
+ * Selects the item at the given zero-relative index in the receiver.
  * If the item at the index was already selected, it remains
  * selected. Indices that are out of range are ignored.
  *
@@ -2911,7 +2911,7 @@ public void select (int index) {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @see Table#setSelection(int,int)
  */
 public void select (int start, int end) {
@@ -2951,7 +2951,7 @@ public void select (int start, int end) {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @see Table#setSelection(int[])
  */
 public void select (int [] indices) {
@@ -3012,7 +3012,7 @@ void selectFocusIndex (int index) {
 	* contains a GtkTreeView,  gtk_tree_view_set_cursor() does
 	* not set the cursor or select the item.  The fix is to select the
 	* item with gtk_tree_selection_select_iter() as well.
-	* 
+	*
 	* NOTE: This happens in GTK 2.2.1 and is fixed in GTK 2.2.4.
 	*/
 	OS.gtk_tree_selection_select_iter (selection, item.handle);
@@ -3061,7 +3061,7 @@ int setBounds (int x, int y, int width, int height, boolean move, boolean resize
 }
 
 /**
- * Sets the order that the items in the receiver should 
+ * Sets the order that the items in the receiver should
  * be displayed in to the given argument which is described
  * in terms of the zero-relative ordering of when the items
  * were added.
@@ -3076,12 +3076,12 @@ int setBounds (int x, int y, int width, int height, boolean move, boolean resize
  *    <li>ERROR_NULL_ARGUMENT - if the item order is null</li>
  *    <li>ERROR_INVALID_ARGUMENT - if the item order is not the same length as the number of items</li>
  * </ul>
- * 
+ *
  * @see Table#getColumnOrder()
  * @see TableColumn#getMoveable()
  * @see TableColumn#setMoveable(boolean)
  * @see SWT#Move
- * 
+ *
  * @since 3.1
  */
 public void setColumnOrder (int [] order) {
@@ -3124,7 +3124,7 @@ void setForegroundColor (GdkColor color) {
 
 /**
  * Marks the receiver's header as visible if the argument is <code>true</code>,
- * and marks it invisible otherwise. 
+ * and marks it invisible otherwise.
  * <p>
  * If one of the receiver's ancestors is not visible or some
  * other condition makes the receiver not visible, marking
@@ -3274,19 +3274,19 @@ void setScrollWidth (long /*int*/ column, TableItem item) {
 
 /**
  * Sets the column used by the sort indicator for the receiver. A null
- * value will clear the sort indicator.  The current sort column is cleared 
+ * value will clear the sort indicator.  The current sort column is cleared
  * before the new column is set.
  *
  * @param column the column used by the sort indicator or <code>null</code>
- * 
+ *
  * @exception IllegalArgumentException <ul>
- *    <li>ERROR_INVALID_ARGUMENT - if the column is disposed</li> 
+ *    <li>ERROR_INVALID_ARGUMENT - if the column is disposed</li>
  * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 3.2
  */
 public void setSortColumn (TableColumn column) {
@@ -3303,16 +3303,16 @@ public void setSortColumn (TableColumn column) {
 }
 
 /**
- * Sets the direction of the sort indicator for the receiver. The value 
+ * Sets the direction of the sort indicator for the receiver. The value
  * can be one of <code>UP</code>, <code>DOWN</code> or <code>NONE</code>.
  *
- * @param direction the direction of the sort indicator 
+ * @param direction the direction of the sort indicator
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 3.2
  */
 public void setSortDirection  (int direction) {
@@ -3329,7 +3329,7 @@ public void setSortDirection  (int direction) {
 }
 
 /**
- * Selects the item at the given zero-relative index in the receiver. 
+ * Selects the item at the given zero-relative index in the receiver.
  * The current selection is first cleared, then the new item is selected,
  * and if necessary the receiver is scrolled to make the new selection visible.
  *
@@ -3363,7 +3363,7 @@ public void setSelection (int index) {
  * If the receiver is single-select and there is more than one item in the
  * given range, then all indices are ignored.
  * </p>
- * 
+ *
  * @param start the start index of the items to select
  * @param end the end index of the items to select
  *
@@ -3447,7 +3447,7 @@ public void setSelection (int [] indices) {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 3.2
  */
 public void setSelection (TableItem item) {
@@ -3582,10 +3582,10 @@ public void showColumn (TableColumn column) {
 	}
 }
 
-boolean showFirstColumn () {	
+boolean showFirstColumn () {
 	/*
 	* Bug in GTK.  If no columns are visible, changing the selection
-	* will fail.  The fix is to temporarily make a column visible. 
+	* will fail.  The fix is to temporarily make a column visible.
 	*/
 	int columnCount = Math.max (1, this.columnCount);
 	for (int i=0; i<columnCount; i++) {
@@ -3636,7 +3636,7 @@ void showItem (long /*int*/ iter) {
 	* However, what actually happens is the cell is scrolled to the top.
 	* The fix is to determine the new location and use gtk_tree_view_scroll_to_point.
 	* If the widget is a pinhead, calling gtk_tree_view_scroll_to_point
-	* will have no effect. Therefore, it is still neccessary to 
+	* will have no effect. Therefore, it is still neccessary to
 	* call gtk_tree_view_scroll_to_cell.
 	*/
 //	OS.gtk_tree_view_scroll_to_cell (handle, path, 0, false, 0, 0);
