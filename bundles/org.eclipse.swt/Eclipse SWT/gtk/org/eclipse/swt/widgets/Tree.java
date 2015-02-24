@@ -90,7 +90,6 @@ public class Tree extends Composite {
 	int drawState, drawFlags;
 	GdkColor drawForeground;
 	boolean ownerDraw, ignoreSize, ignoreAccessibility;
-	TreeItem pendingShowItem = null;
 
 	static final int ID_COLUMN = 0;
 	static final int CHECKED_COLUMN = 1;
@@ -3401,7 +3400,7 @@ public void setTopItem (TreeItem item) {
 	if (item.parent != this) return;
 	long /*int*/ path = OS.gtk_tree_model_get_path (modelHandle, item.handle);
 	showItem (path, false);
-	OS.gtk_tree_view_scroll_to_cell (handle, path, 0, true, 0f, 0f);
+	OS.gtk_tree_view_scroll_to_cell (handle, path, 0, true, 0, 0);
 	OS.gtk_tree_path_free (path);
 }
 
@@ -3428,26 +3427,8 @@ public void showColumn (TreeColumn column) {
 	if (column == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (column.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
 	if (column.parent != this) return;
-	/*
-	* This code is intentionally commented. According to the
-	* documentation, gtk_tree_view_scroll_to_cell should scroll the
-	* minimum amount to show the column but instead it scrolls strangely.
-	*/
-	//OS.gtk_tree_view_scroll_to_cell (handle, 0, column.handle, false, 0, 0);
-	OS.gtk_widget_realize (handle);
-	GdkRectangle cellRect = new GdkRectangle ();
-	OS.gtk_tree_view_get_cell_area (handle, 0, column.handle, cellRect);
-	GdkRectangle visibleRect = new GdkRectangle ();
-	OS.gtk_tree_view_get_visible_rect (handle, visibleRect);
-	if (cellRect.x < visibleRect.x) {
-		OS.gtk_tree_view_scroll_to_point (handle, cellRect.x, -1);
-	} else {
-		int width = Math.min (visibleRect.width, cellRect.width);
-		if (cellRect.x + width > visibleRect.x + visibleRect.width) {
-			int tree_x = cellRect.x + width - visibleRect.width;
-			OS.gtk_tree_view_scroll_to_point (handle, tree_x, -1);
-		}
-	}
+
+	OS.gtk_tree_view_scroll_to_cell (handle, 0, column.handle, false, 0, 0);
 }
 
 boolean showFirstColumn () {
@@ -3497,8 +3478,8 @@ void showItem (long /*int*/ path, boolean scroll) {
 		OS.gtk_tree_path_free (tempPath);
 	}
 	if (scroll) {
-		OS.gtk_widget_realize (handle);
 		GdkRectangle cellRect = new GdkRectangle ();
+		OS.gtk_widget_realize (handle);
 		OS.gtk_tree_view_get_cell_area (handle, path, 0, cellRect);
 		boolean isHidden = cellRect.y == 0 && cellRect.height == 0;
 		int [] tx = new int [1], ty = new int [1];
@@ -3507,37 +3488,15 @@ void showItem (long /*int*/ path, boolean scroll) {
 		} else {
 			OS.gtk_tree_view_widget_to_tree_coords(handle, cellRect.x, cellRect.y, tx, ty);
 		}
-		GdkRectangle visibleRect = new GdkRectangle ();
-		OS.gtk_tree_view_get_visible_rect (handle, visibleRect);
 		if (!isHidden) {
-			if (ty[0] < visibleRect.y || ty[0] + cellRect.height > visibleRect.y + visibleRect.height) {
+			GdkRectangle visibleRect = new GdkRectangle ();
+			OS.gtk_tree_view_get_visible_rect (handle, visibleRect);
+			if (ty [0] < visibleRect.y || ty [0] + cellRect.height > visibleRect.y + visibleRect.height) {
 				isHidden = true;
 			}
 		}
 		if (isHidden) {
-			/*
-			* This code intentionally commented.
-			* Bug in GTK.  According to the documentation, gtk_tree_view_scroll_to_cell
-			* should scroll the minimum amount to show the cell if use_align is false.
-			* However, what actually happens is the cell is scrolled to the top.
-			* The fix is to determine the new location and use gtk_tree_view_scroll_to_point.
-			* If the widget is a pinhead, calling gtk_tree_view_scroll_to_point
-			* will have no effect. Therefore, it is still neccessary to
-			* call gtk_tree_view_scroll_to_cell.
-			*/
-			//	OS.gtk_tree_view_scroll_to_cell (handle, path, 0, depth != 1, 0.5f, 0.0f);
-			if (depth != 1) {
-				OS.gtk_tree_view_scroll_to_cell (handle, path, 0, true, 0.5f, 0.0f);
-			} else {
-				if (ty[0] < visibleRect.y ) {
-					OS.gtk_tree_view_scroll_to_point (handle, -1, ty[0]);
-				} else {
-					int height = Math.min (visibleRect.height, cellRect.height);
-					if (ty[0] + height > visibleRect.y + visibleRect.height) {
-						OS.gtk_tree_view_scroll_to_point (handle, -1, ty[0] + cellRect.height - visibleRect.height);
-					}
-				}
-			}
+			OS.gtk_tree_view_scroll_to_cell (handle, path, 0, depth != 1, 0.5f, 0.0f);
 		}
 	}
 }
@@ -3565,11 +3524,6 @@ public void showItem (TreeItem item) {
 	if (item == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (item.isDisposed ()) error(SWT.ERROR_INVALID_ARGUMENT);
 	if (item.parent != this) return;
-
-	if (!this.isVisible ()) {
-		pendingShowItem = item;
-	}
-
 	long /*int*/ path = OS.gtk_tree_model_get_path (modelHandle, item.handle);
 	showItem (path, true);
 	OS.gtk_tree_path_free (path);
@@ -3626,15 +3580,4 @@ long /*int*/ windowProc (long /*int*/ handle, long /*int*/ arg0, long /*int*/ us
 	return super.windowProc (handle, arg0, user_data);
 }
 
-@Override
-public void setVisible (boolean visible) {
-	super.setVisible (visible);
-
-	if (isDisposed ()) return;
-
-	if ((visible) && (pendingShowItem != null)) {
-		showItem (pendingShowItem);
-		pendingShowItem = null;
-	}
-}
 }

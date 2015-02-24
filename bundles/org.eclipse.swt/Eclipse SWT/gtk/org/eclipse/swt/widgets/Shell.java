@@ -2308,19 +2308,6 @@ public void setVisible (boolean visible) {
 		OS.gtk_widget_hide (shellHandle);
 		sendEvent (SWT.Hide);
 	}
-
-	if (isDisposed ()) return;
-	/*
-	 * Workaround for the Bug 424173 making the child elements visible so that
-	 * the child elements can perform pending actions
-	 */
-	Control [] list = getChildren ();
-
-	for (Control i: list) {
-		if (i instanceof Composite) {
-			i.setVisible (visible);
-		}
-	}
 }
 
 @Override

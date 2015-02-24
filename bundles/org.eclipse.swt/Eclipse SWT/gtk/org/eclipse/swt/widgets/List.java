@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2014 IBM Corporation and others.
+ * Copyright (c) 2000, 2015 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -1540,39 +1540,7 @@ public void showSelection () {
 	long /*int*/ iter = OS.g_malloc (OS.GtkTreeIter_sizeof ());
 	OS.gtk_tree_model_iter_nth_child (modelHandle, iter, 0, index);
 	long /*int*/ path = OS.gtk_tree_model_get_path (modelHandle, iter);
-	/*
-	* This code intentionally commented.
-	* Bug in GTK.  According to the documentation, gtk_tree_view_scroll_to_cell
-	* should scroll the minimum amount to show the cell if use_align is false.
-	* However, what actually happens is the cell is scrolled to the top.
-	* The fix is to determine the new location and use gtk_tree_view_scroll_to_point.
-	* If the widget is a pinhead, calling gtk_tree_view_scroll_to_point
-	* will have no effect. Therefore, it is still neccessary to
-	* call gtk_tree_view_scroll_to_cell.
-	*/
-//	OS.gtk_tree_view_scroll_to_cell (handle, path, 0, false, 0, 0);
-	OS.gtk_widget_realize (handle);
-	GdkRectangle visibleRect = new GdkRectangle ();
-	OS.gtk_tree_view_get_visible_rect (handle, visibleRect);
-	GdkRectangle cellRect = new GdkRectangle ();
-	OS.gtk_tree_view_get_cell_area (handle, path, 0, cellRect);
-	int[] tx = new int[1], ty = new int[1];
-	if (OS.GTK_VERSION >= OS.VERSION(2, 12, 0)) {
-		OS.gtk_tree_view_convert_bin_window_to_tree_coords(handle, cellRect.x, cellRect.y, tx, ty);
-	} else {
-		OS.gtk_tree_view_widget_to_tree_coords(handle, cellRect.x, cellRect.y, tx, ty);
-	}
-	if (ty[0] < visibleRect.y ) {
-		OS.gtk_tree_view_scroll_to_cell (handle, path, 0, true, 0f, 0f);
-		OS.gtk_tree_view_scroll_to_point (handle, -1, ty[0]);
-	} else {
-		int height = Math.min (visibleRect.height, cellRect.height);
-		if (ty[0] + height > visibleRect.y + visibleRect.height) {
-			OS.gtk_tree_view_scroll_to_cell (handle, path, 0, true, 1f, 0f);
-			ty[0] += cellRect.height - visibleRect.height;
-			OS.gtk_tree_view_scroll_to_point (handle, -1, ty[0]);
-		}
-	}
+	OS.gtk_tree_view_scroll_to_cell (handle, path, 0, false, 0, 0);
 	OS.gtk_tree_path_free (path);
 	OS.g_free (iter);
 }

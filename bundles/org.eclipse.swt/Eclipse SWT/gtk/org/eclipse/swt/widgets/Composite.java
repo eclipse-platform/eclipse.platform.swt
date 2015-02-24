@@ -1662,21 +1662,4 @@ void updateLayout (boolean all) {
 		}
 	}
 }
-
-@Override
-public void setVisible (boolean visible) {
-	super.setVisible (visible);
-
-	if (isDisposed ()) return;
-	/*
-	 * Workaround for the Bug 424173 making the child elements visible so that
-	 * the child elements can perform pending actions
-	 */
-	Control [] list = getChildren ();
-	for (Control i: list) {
-		if ((i instanceof Table) || (i instanceof Tree)) {
-			i.setVisible (visible);
-		}
-	}
-}
 }
