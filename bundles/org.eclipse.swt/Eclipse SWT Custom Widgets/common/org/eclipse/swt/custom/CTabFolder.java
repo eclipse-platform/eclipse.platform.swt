@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2013 IBM Corporation and others.
+ * Copyright (c) 2000, 2015 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -2599,11 +2599,12 @@ public void setInsertMark(CTabItem item, boolean after) {
  * 
  * A value of -1 will clear the mark.
  * 
- * @param index the index of the item with which the mark is associated or null
+ * @param index the index of the item with which the mark is associated or -1
  * 
  * @param after true if the mark should be displayed after the specified item
  * 
- * @exception IllegalArgumentException<ul>
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_ARGUMENT when the index is invalid</li>
  * </ul>
  * 
  * @exception SWTException <ul>
