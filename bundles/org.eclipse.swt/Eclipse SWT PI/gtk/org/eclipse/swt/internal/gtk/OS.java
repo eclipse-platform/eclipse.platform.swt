@@ -287,10 +287,15 @@ public class OS extends C {
 	public static final int GDK_WINDOW_STATE_MAXIMIZED  = 1 << 2;
 	public static final int GDK_WINDOW_STATE_FULLSCREEN  = 1 << 4;
 	public static final int GTK_ACCEL_VISIBLE = 0x1;
-	public static final int GTK_ARROW_DOWN = 0x1;
+	public static final int GTK_ARROW_DOWN = 0x1; //GtkArrowType Enum. In general, for gtk3 GtkAlign enum is favored.
 	public static final int GTK_ARROW_LEFT = 0x2;
 	public static final int GTK_ARROW_RIGHT = 0x3;
 	public static final int GTK_ARROW_UP = 0x0;
+	public static final int GTK_ALIGN_FILL = 0x0; //Gtk3 GtkAlign Enum
+	public static final int GTK_ALIGN_START = 0x1;
+	public static final int GTK_ALIGN_END = 0x2;
+	public static final int GTK_ALIGN_CENTER = 0x3;
+	public static final int GTK_ALIGN_BASELINE = 0x4;
 	public static final int GTK_CALENDAR_SHOW_HEADING = 1 << 0;
 	public static final int GTK_CALENDAR_SHOW_DAY_NAMES = 1 << 1;
 	public static final int GTK_CALENDAR_NO_MONTH_CHANGE = 1 << 2;
@@ -8127,6 +8132,33 @@ public static final void gtk_widget_set_has_window(long /*int*/ widget, boolean 
 		lock.unlock();
 	}
 }
+/**
+ * @method flags=dynamic
+ * @param widget cast=(GtkWidget *)
+ *
+ */ //Omited enum: @param gtk_align cast=(GtkAlign) as is causes build errors on gtk2 as GtkAlign doesn't exist there.
+public static final native void _gtk_widget_set_halign(long /*int*/ widget, int gtk_align);
+public static final void gtk_widget_set_halign(long /*int*/ widget, int gtk_align) {
+	lock.lock();
+	try {
+		_gtk_widget_set_halign(widget, gtk_align);
+	} finally {
+		lock.unlock();
+	}
+}
+/**
+ * @method flags=dynamic
+ * @param widget cast=(GtkWidget *)
+ */ //Omited enum: @param gtk_align cast=(GtkAlign) as is causes build errors on gtk2 as GtkAlign doesn't exist there.
+public static final native void _gtk_widget_set_valign(long /*int*/ widget, int gtk_align);
+public static final void gtk_widget_set_valign(long /*int*/ widget, int gtk_align ) {
+	lock.lock();
+	try {
+		_gtk_widget_set_valign(widget, gtk_align);
+	} finally {
+		lock.unlock();
+	}
+}
 /** @method flags=dynamic */
 public static final native long /*int*/ _gtk_font_selection_dialog_get_font_name(long /*int*/ fsd);
 public static final long /*int*/ gtk_font_selection_dialog_get_font_name(long /*int*/ fsd) {
@@ -9337,6 +9369,7 @@ public static final long /*int*/ gtk_message_dialog_new(long /*int*/ parent, int
 	}
 }
 /**
+ * @method flags=dynamic
  * @param misc cast=(GtkMisc *)
  * @param xalign cast=(gfloat)
  * @param yalign cast=(gfloat)

@@ -737,25 +737,45 @@ void _setAlignment (int alignment) {
 				OS.gtk_box_set_child_packing (boxHandle, imageHandle, true, true, 0, OS.GTK_PACK_START);
 			}
 		}
-		OS.gtk_misc_set_alignment (labelHandle, 0.0f, 0.5f);
+
+		if (OS.GTK3) {
+			gtk_widget_set_align(labelHandle,OS.GTK_ALIGN_START, OS.GTK_ALIGN_CENTER);
+			gtk_widget_set_align(imageHandle,OS.GTK_ALIGN_START, OS.GTK_ALIGN_CENTER);
+		} else {
+			OS.gtk_misc_set_alignment (labelHandle, 0.0f, 0.5f);
+			OS.gtk_misc_set_alignment (imageHandle, 0.0f, 0.5f);
+		}
+
 		OS.gtk_label_set_justify (labelHandle, OS.GTK_JUSTIFY_LEFT);
-		OS.gtk_misc_set_alignment (imageHandle, 0.0f, 0.5f);
 		return;
 	}
 	if ((alignment & SWT.CENTER) != 0) {
 		if (bothVisible) {
 			OS.gtk_box_set_child_packing (boxHandle, labelHandle, true, true, 0, OS.GTK_PACK_END);
 			OS.gtk_box_set_child_packing (boxHandle, imageHandle, true, true, 0, OS.GTK_PACK_START);
-			OS.gtk_misc_set_alignment (labelHandle, 0f, 0.5f);
-			OS.gtk_misc_set_alignment (imageHandle, 1f, 0.5f);
+
+			if (OS.GTK3) {
+				gtk_widget_set_align(labelHandle,OS.GTK_ALIGN_START, OS.GTK_ALIGN_CENTER);
+				gtk_widget_set_align(imageHandle,OS.GTK_ALIGN_END, OS.GTK_ALIGN_CENTER);
+			} else  {
+				OS.gtk_misc_set_alignment (labelHandle, 0f, 0.5f);
+				OS.gtk_misc_set_alignment (imageHandle, 1f, 0.5f);
+			}
+
 		} else {
 			if (OS.GTK3) {
 				OS.gtk_box_set_child_packing (boxHandle, labelHandle, true, true, 0, OS.GTK_PACK_END);
 				OS.gtk_box_set_child_packing (boxHandle, imageHandle, true, true, 0, OS.GTK_PACK_START);
 			}
-			OS.gtk_misc_set_alignment (labelHandle, 0.5f, 0.5f);
+
+			if (OS.GTK3) {
+				gtk_widget_set_align(labelHandle,OS.GTK_ALIGN_CENTER, OS.GTK_ALIGN_CENTER);
+				gtk_widget_set_align(imageHandle,OS.GTK_ALIGN_CENTER, OS.GTK_ALIGN_CENTER);
+			} else {
+				OS.gtk_misc_set_alignment (labelHandle, 0.5f, 0.5f);
+				OS.gtk_misc_set_alignment (imageHandle, 0.5f, 0.5f);
+			}
 			OS.gtk_label_set_justify (labelHandle, OS.GTK_JUSTIFY_CENTER);
-			OS.gtk_misc_set_alignment (imageHandle, 0.5f, 0.5f);
 		}
 		return;
 	}
@@ -769,9 +789,15 @@ void _setAlignment (int alignment) {
 				OS.gtk_box_set_child_packing (boxHandle, imageHandle, true, true, 0, OS.GTK_PACK_START);
 			}
 		}
-		OS.gtk_misc_set_alignment (labelHandle, 1.0f, 0.5f);
+
+		if (OS.GTK3) {
+			gtk_widget_set_align(labelHandle,OS.GTK_ALIGN_END, OS.GTK_ALIGN_CENTER);
+			gtk_widget_set_align(imageHandle,OS.GTK_ALIGN_END, OS.GTK_ALIGN_CENTER);
+		} else {
+			OS.gtk_misc_set_alignment (labelHandle, 1.0f, 0.5f);
+			OS.gtk_misc_set_alignment (imageHandle, 1.0f, 0.5f);
+		}
 		OS.gtk_label_set_justify (labelHandle, OS.GTK_JUSTIFY_RIGHT);
-		OS.gtk_misc_set_alignment (imageHandle, 1.0f, 0.5f);
 		return;
 	}
 }

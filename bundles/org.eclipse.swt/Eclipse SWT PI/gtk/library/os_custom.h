@@ -342,6 +342,9 @@
 #define gdk_window_get_visible_region_LIB LIB_GDK
 #define gdk_window_set_keep_above_LIB LIB_GDK
 #define gdk_window_set_accept_focus_LIB LIB_GDK
+#define gtk_misc_set_alignment_LIB LIB_GTK
+#define gtk_widget_set_halign_LIB LIB_GTK
+#define gtk_widget_set_valign_LIB LIB_GTK
 #define gtk_window_set_opacity_LIB LIB_GTK
 #define gtk_window_set_skip_taskbar_hint_LIB LIB_GTK
 #define gtk_widget_is_composited_LIB LIB_GTK

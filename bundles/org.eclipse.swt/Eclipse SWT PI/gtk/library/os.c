@@ -12633,7 +12633,15 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1misc_1set_1alignment)
 	(JNIEnv *env, jclass that, jintLong arg0, jfloat arg1, jfloat arg2)
 {
 	OS_NATIVE_ENTER(env, that, _1gtk_1misc_1set_1alignment_FUNC);
+/*
 	gtk_misc_set_alignment((GtkMisc *)arg0, (gfloat)arg1, (gfloat)arg2);
+*/
+	{
+		OS_LOAD_FUNCTION(fp, gtk_misc_set_alignment)
+		if (fp) {
+			((void (CALLING_CONVENTION*)(GtkMisc *, gfloat, gfloat))fp)((GtkMisc *)arg0, (gfloat)arg1, (gfloat)arg2);
+		}
+	}
 	OS_NATIVE_EXIT(env, that, _1gtk_1misc_1set_1alignment_FUNC);
 }
 #endif
@@ -18896,6 +18904,24 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1widget_1set_1double_1buffered)
 }
 #endif
 
+#ifndef NO__1gtk_1widget_1set_1halign
+JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1widget_1set_1halign)
+	(JNIEnv *env, jclass that, jintLong arg0, jint arg1)
+{
+	OS_NATIVE_ENTER(env, that, _1gtk_1widget_1set_1halign_FUNC);
+/*
+	gtk_widget_set_halign((GtkWidget *)arg0, arg1);
+*/
+	{
+		OS_LOAD_FUNCTION(fp, gtk_widget_set_halign)
+		if (fp) {
+			((void (CALLING_CONVENTION*)(GtkWidget *, jint))fp)((GtkWidget *)arg0, arg1);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, _1gtk_1widget_1set_1halign_FUNC);
+}
+#endif
+
 #ifndef NO__1gtk_1widget_1set_1has_1window
 JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1widget_1set_1has_1window)
 	(JNIEnv *env, jclass that, jintLong arg0, jboolean arg1)
@@ -19041,6 +19067,24 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1widget_1set_1tooltip_1text)
 fail:
 	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
 	OS_NATIVE_EXIT(env, that, _1gtk_1widget_1set_1tooltip_1text_FUNC);
+}
+#endif
+
+#ifndef NO__1gtk_1widget_1set_1valign
+JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1widget_1set_1valign)
+	(JNIEnv *env, jclass that, jintLong arg0, jint arg1)
+{
+	OS_NATIVE_ENTER(env, that, _1gtk_1widget_1set_1valign_FUNC);
+/*
+	gtk_widget_set_valign((GtkWidget *)arg0, arg1);
+*/
+	{
+		OS_LOAD_FUNCTION(fp, gtk_widget_set_valign)
+		if (fp) {
+			((void (CALLING_CONVENTION*)(GtkWidget *, jint))fp)((GtkWidget *)arg0, arg1);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, _1gtk_1widget_1set_1valign_FUNC);
 }
 #endif
 

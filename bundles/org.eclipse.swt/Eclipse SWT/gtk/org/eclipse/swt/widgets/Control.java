@@ -3977,6 +3977,17 @@ boolean sendMouseEvent (int type, int button, int count, int detail, boolean sen
 	return event.doit;
 }
 
+/**
+ * Not direct gtk api, but useful to have them combined as they are usually called together.
+ * @param widget the GTK reference.
+ * @param hAlign is of type GTKAlign enum. See OS.java
+ * @param vAlign is of type GTKAlign enum. See OS.java
+ */
+void gtk_widget_set_align(long /*int*/ widget, int hAlign, int vAlign) {
+	OS.gtk_widget_set_halign (widget, hAlign);
+	OS.gtk_widget_set_valign (widget, vAlign);
+}
+
 void setBackground () {
 	if ((state & BACKGROUND) == 0 && backgroundImage == null) {
 		if ((state & PARENT_BACKGROUND) != 0) {
