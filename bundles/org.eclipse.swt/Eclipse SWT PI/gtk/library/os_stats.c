@@ -1340,7 +1340,6 @@ char * OS_nativeFunctionNames[] = {
 	"_1gtk_1tree_1view_1set_1rules_1hint",
 	"_1gtk_1tree_1view_1set_1search_1column",
 	"_1gtk_1tree_1view_1unset_1rows_1drag_1dest",
-	"_1gtk_1tree_1view_1widget_1to_1tree_1coords",
 	"_1gtk_1vbox_1new",
 	"_1gtk_1viewport_1set_1shadow_1type",
 	"_1gtk_1vscale_1new",

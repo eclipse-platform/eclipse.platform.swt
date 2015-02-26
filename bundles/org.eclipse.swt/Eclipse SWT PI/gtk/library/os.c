@@ -17587,15 +17587,7 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1tree_1view_1convert_1bin_1window_1to_1tr
 	OS_NATIVE_ENTER(env, that, _1gtk_1tree_1view_1convert_1bin_1window_1to_1tree_1coords_FUNC);
 	if (arg3) if ((lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL)) == NULL) goto fail;
 	if (arg4) if ((lparg4 = (*env)->GetIntArrayElements(env, arg4, NULL)) == NULL) goto fail;
-/*
 	gtk_tree_view_convert_bin_window_to_tree_coords((GtkTreeView *)arg0, arg1, arg2, lparg3, lparg4);
-*/
-	{
-		OS_LOAD_FUNCTION(fp, gtk_tree_view_convert_bin_window_to_tree_coords)
-		if (fp) {
-			((void (CALLING_CONVENTION*)(GtkTreeView *, jint, jint, jint *, jint *))fp)((GtkTreeView *)arg0, arg1, arg2, lparg3, lparg4);
-		}
-	}
 fail:
 	if (arg4 && lparg4) (*env)->ReleaseIntArrayElements(env, arg4, lparg4, 0);
 	if (arg3 && lparg3) (*env)->ReleaseIntArrayElements(env, arg3, lparg3, 0);
@@ -17984,31 +17976,6 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1tree_1view_1unset_1rows_1drag_1dest)
 	OS_NATIVE_ENTER(env, that, _1gtk_1tree_1view_1unset_1rows_1drag_1dest_FUNC);
 	gtk_tree_view_unset_rows_drag_dest((GtkTreeView *)arg0);
 	OS_NATIVE_EXIT(env, that, _1gtk_1tree_1view_1unset_1rows_1drag_1dest_FUNC);
-}
-#endif
-
-#ifndef NO__1gtk_1tree_1view_1widget_1to_1tree_1coords
-JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1tree_1view_1widget_1to_1tree_1coords)
-	(JNIEnv *env, jclass that, jintLong arg0, jint arg1, jint arg2, jintArray arg3, jintArray arg4)
-{
-	jint *lparg3=NULL;
-	jint *lparg4=NULL;
-	OS_NATIVE_ENTER(env, that, _1gtk_1tree_1view_1widget_1to_1tree_1coords_FUNC);
-	if (arg3) if ((lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL)) == NULL) goto fail;
-	if (arg4) if ((lparg4 = (*env)->GetIntArrayElements(env, arg4, NULL)) == NULL) goto fail;
-/*
-	gtk_tree_view_widget_to_tree_coords((GtkTreeView *)arg0, arg1, arg2, lparg3, lparg4);
-*/
-	{
-		OS_LOAD_FUNCTION(fp, gtk_tree_view_widget_to_tree_coords)
-		if (fp) {
-			((void (CALLING_CONVENTION*)(GtkTreeView *, jint, jint, jint *, jint *))fp)((GtkTreeView *)arg0, arg1, arg2, lparg3, lparg4);
-		}
-	}
-fail:
-	if (arg4 && lparg4) (*env)->ReleaseIntArrayElements(env, arg4, lparg4, 0);
-	if (arg3 && lparg3) (*env)->ReleaseIntArrayElements(env, arg3, lparg3, 0);
-	OS_NATIVE_EXIT(env, that, _1gtk_1tree_1view_1widget_1to_1tree_1coords_FUNC);
 }
 #endif
 

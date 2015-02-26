@@ -13914,20 +13914,6 @@ public static final void gtk_tree_view_unset_rows_drag_dest(long /*int*/ tree_vi
 	}
 }
 /**
- * @method flags=dynamic
- * @param tree_view cast=(GtkTreeView *)
- */
-public static final native void _gtk_tree_view_widget_to_tree_coords(long /*int*/ tree_view, int wx, int wy, int[] tx, int[] ty);
-public static final void gtk_tree_view_widget_to_tree_coords(long /*int*/ tree_view, int wx, int wy, int[] tx, int[] ty) {
-	lock.lock();
-	try {
-		_gtk_tree_view_widget_to_tree_coords(tree_view, wx, wy, tx, ty);
-	} finally {
-		lock.unlock();
-	}
-}
-/**
- * @method flags=dynamic
  * @param tree_view cast=(GtkTreeView *)
  */
 public static final native void _gtk_tree_view_convert_bin_window_to_tree_coords(long /*int*/ tree_view, int bx, int by, int[] tx, int[] ty);
