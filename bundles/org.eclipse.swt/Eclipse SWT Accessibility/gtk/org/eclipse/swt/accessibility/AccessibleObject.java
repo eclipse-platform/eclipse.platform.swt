@@ -21,7 +21,6 @@ import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.accessibility.gtk.*;
 import org.eclipse.swt.internal.gtk.*;
 
-@SuppressWarnings({"rawtypes", "unchecked"})
 class AccessibleObject {
 	long /*int*/ handle;
 	int index = -1, id = ACC.CHILDID_SELF;
@@ -38,7 +37,7 @@ class AccessibleObject {
 	static long /*int*/ descriptionPtr = -1;
 	static long /*int*/ keybindingPtr = -1;
 	static long /*int*/ namePtr = -1;
-	static final Hashtable AccessibleObjects = new Hashtable (9);
+	static final Hashtable<LONG, AccessibleObject> AccessibleObjects = new Hashtable<LONG, AccessibleObject> (9);
 	static final boolean DEBUG = Device.DEBUG;
 	
 	static final int ROW_ROLE, COLUMN_ROLE;
@@ -3415,7 +3414,7 @@ class AccessibleObject {
 	}
 
 	static AccessibleObject getAccessibleObject (long /*int*/ atkObject) {
-		AccessibleObject object = (AccessibleObject)AccessibleObjects.get (new LONG (atkObject));
+		AccessibleObject object = AccessibleObjects.get (new LONG (atkObject));
 		if (object == null) return null;
 		if (object.accessible == null) return null;
 		Control control = object.accessible.control;
@@ -3475,7 +3474,7 @@ class AccessibleObject {
 		GObjectClass objectClassStruct = new GObjectClass ();
 		ATK.memmove (objectClassStruct, gObjectClass);
 		ATK.call (objectClassStruct.finalize, atkObject);
-		AccessibleObject object = (AccessibleObject)AccessibleObjects.get (new LONG (atkObject));
+		AccessibleObject object = AccessibleObjects.get (new LONG (atkObject));
 		if (object != null) {
 			AccessibleObjects.remove (new LONG (atkObject));
 		}

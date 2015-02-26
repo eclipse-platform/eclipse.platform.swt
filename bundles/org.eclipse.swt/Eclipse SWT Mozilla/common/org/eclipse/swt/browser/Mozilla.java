@@ -23,7 +23,6 @@ import org.eclipse.swt.internal.mozilla.*;
 import org.eclipse.swt.internal.mozilla.init.*;
 import org.eclipse.swt.layout.*;
 
-@SuppressWarnings({"rawtypes", "unchecked"})
 class Mozilla extends WebBrowser {
 	long /*int*/ embedHandle;
 	nsIWebBrowser webBrowser;
@@ -64,7 +63,7 @@ class Mozilla extends WebBrowser {
 	static AppFileLocProvider LocationProvider;
 	static WindowCreator2 WindowCreator;
 	static int BrowserCount, NextJSFunctionIndex = 1;
-	static Hashtable AllFunctions = new Hashtable ();
+	static Hashtable<Integer, BrowserFunction> AllFunctions = new Hashtable<Integer, BrowserFunction> ();
 	static Listener DisplayListener;
 	static boolean Initialized, IsXULRunner, PerformedVersionCheck, XPCOMWasGlued, XPCOMInitWasGlued;
 	static boolean IsGettingSiteWindow;
@@ -1795,7 +1794,7 @@ public Object getWebBrowser () {
 	if (webBrowserObject != null) return webBrowserObject;
 
 	try {
-		Class clazz = Class.forName ("org.mozilla.xpcom.Mozilla"); //$NON-NLS-1$
+		Class<?> clazz = Class.forName ("org.mozilla.xpcom.Mozilla"); //$NON-NLS-1$
 		Method method = clazz.getMethod ("getInstance", new Class[0]); //$NON-NLS-1$
 		Object mozilla = method.invoke (null, new Object[0]);
 		method = clazz.getMethod ("wrapXPCOMObject", new Class[] {Long.TYPE, String.class}); //$NON-NLS-1$
@@ -2018,7 +2017,7 @@ void initFactories (nsIServiceManager serviceManager, nsIComponentManager compon
 
 void initJavaXPCOM (String mozillaPath) {
 	try {
-		Class clazz = Class.forName ("org.mozilla.xpcom.Mozilla"); //$NON-NLS-1$
+		Class<?> clazz = Class.forName ("org.mozilla.xpcom.Mozilla"); //$NON-NLS-1$
 		Method method = clazz.getMethod ("getInstance", new Class[0]); //$NON-NLS-1$
 		Object mozilla = method.invoke (null, new Object[0]);
 		method = clazz.getMethod ("getComponentManager", new Class[0]); //$NON-NLS-1$
@@ -2026,9 +2025,9 @@ void initJavaXPCOM (String mozillaPath) {
 			method.invoke (mozilla, new Object[0]);
 		} catch (InvocationTargetException e) {
 			/* indicates that JavaXPCOM has not been initialized yet */
-			Class fileClass = Class.forName ("java.io.File"); //$NON-NLS-1$
+			Class<?> fileClass = Class.forName ("java.io.File"); //$NON-NLS-1$
 			method = clazz.getMethod ("initialize", new Class[] {fileClass}); //$NON-NLS-1$
-			Constructor constructor = fileClass.getDeclaredConstructor (new Class[] {String.class});
+			Constructor<?> constructor = fileClass.getDeclaredConstructor (new Class[] {String.class});
 			Object argument = constructor.newInstance (new Object[] {mozillaPath});
 			method.invoke (mozilla, new Object[] {argument});
 		}
@@ -2846,9 +2845,9 @@ void onDispose (Display display) {
 	}
 	unhookedDOMWindows = null;
 
-	Enumeration elements = functions.elements ();
+	Enumeration<BrowserFunction> elements = functions.elements ();
 	while (elements.hasMoreElements ()) {
-		BrowserFunction function = ((BrowserFunction)elements.nextElement ());
+		BrowserFunction function = elements.nextElement ();
 		AllFunctions.remove (new Integer (function.index));
 		function.dispose (false);
 	}
@@ -3681,9 +3680,9 @@ int GetWeakReference (long /*int*/ ppvObject) {
 int OnStateChange (long /*int*/ aWebProgress, long /*int*/ aRequest, int aStateFlags, int aStatus) {
 	if (registerFunctionsOnState != 0 && ((aStateFlags & registerFunctionsOnState) == registerFunctionsOnState)) {
 		registerFunctionsOnState = 0;
-		Enumeration elements = functions.elements ();
+		Enumeration<BrowserFunction> elements = functions.elements ();
 		while (elements.hasMoreElements ()) {
-			BrowserFunction function = (BrowserFunction)elements.nextElement ();
+			BrowserFunction function = elements.nextElement ();
 			if (!function.isEvaluate) {
 				execute (function.functionString);
 			}
@@ -3916,9 +3915,9 @@ int OnStateChange (long /*int*/ aWebProgress, long /*int*/ aRequest, int aStateF
 				* is the only place where registered functions can be re-installed such that
 				* they will be invokable at load time by JS contained in the text.
 				*/
-				Enumeration elements = functions.elements ();
+				Enumeration<BrowserFunction> elements = functions.elements ();
 				while (elements.hasMoreElements ()) {
-					BrowserFunction function = (BrowserFunction)elements.nextElement ();
+					BrowserFunction function = elements.nextElement ();
 					if (!function.isEvaluate) {
 						execute (function.functionString);
 					}

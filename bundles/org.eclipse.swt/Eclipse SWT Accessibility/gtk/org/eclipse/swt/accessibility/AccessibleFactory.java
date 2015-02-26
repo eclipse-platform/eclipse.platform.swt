@@ -17,10 +17,9 @@ import org.eclipse.swt.internal.accessibility.gtk.*;
 import org.eclipse.swt.internal.gtk.*;
 import org.eclipse.swt.*;
 
-@SuppressWarnings({"rawtypes", "unchecked"})
 class AccessibleFactory {
-	static final Hashtable Accessibles = new Hashtable (9);
-	static final Hashtable Factories = new Hashtable (9);	
+	static final Hashtable<LONG, Accessible> Accessibles = new Hashtable<LONG, Accessible> (9);
+	static final Hashtable<LONG, LONG> Factories = new Hashtable<LONG, LONG> (9);	
 	static final String SWT_TYPE_PREFIX = "SWTAccessible"; //$NON-NLS-1$
 	static final String CHILD_TYPENAME = "Child"; //$NON-NLS-1$
 	static final String FACTORY_TYPENAME = "SWTFactory"; //$NON-NLS-1$
@@ -312,7 +311,7 @@ class AccessibleFactory {
 	
 	static long /*int*/ getParentType (long /*int*/ widgetType) {
 		LONG type = null;
-		while (widgetType != 0 && (type = (LONG)Factories.get(new LONG(widgetType))) == null) {
+		while (widgetType != 0 && (type = Factories.get(new LONG(widgetType))) == null) {
 			widgetType = OS.g_type_parent (widgetType);
 		}
 		if (type == null) return 0;
@@ -320,7 +319,7 @@ class AccessibleFactory {
 	}
 
 	static long /*int*/ atkObjectFactory_create_accessible (long /*int*/ widget) {
-		Accessible accessible = (Accessible) Accessibles.get (new LONG (widget));
+		Accessible accessible = Accessibles.get (new LONG (widget));
 		if (accessible == null) {
 			/*
 			* we don't care about this control, so create it with the parent's

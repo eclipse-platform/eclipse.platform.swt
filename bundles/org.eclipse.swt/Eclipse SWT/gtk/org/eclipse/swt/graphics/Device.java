@@ -23,7 +23,6 @@ import org.eclipse.swt.internal.gtk.*;
  *
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  */
-@SuppressWarnings({"rawtypes"})
 public abstract class Device implements Drawable {
 	/**
 	 * the handle to the X Display
@@ -596,7 +595,7 @@ protected void init () {
 	if (debug || fixAIX) {
 		if (xDisplay != 0) {
 			/* Create the warning and error callbacks */
-			Class clazz = getClass ();
+			Class<?> clazz = getClass ();
 			synchronized (clazz) {
 				int index = 0;
 				while (index < Devices.length) {

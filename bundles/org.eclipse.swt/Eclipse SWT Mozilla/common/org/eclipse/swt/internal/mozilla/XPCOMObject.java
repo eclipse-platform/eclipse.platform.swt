@@ -15,7 +15,6 @@ import java.util.*;
 import org.eclipse.swt.*;
 import org.eclipse.swt.internal.*;
 
-@SuppressWarnings({"rawtypes", "unchecked"})
 public class XPCOMObject {
 	static boolean IsSolaris;
 	static {
@@ -29,7 +28,7 @@ public class XPCOMObject {
 	static private final int MAX_VTABLE_LENGTH = 80;
 	static final int OS_OFFSET = IsSolaris ? 2 : 0;
 	static private Callback[][] Callbacks = new Callback[MAX_VTABLE_LENGTH + OS_OFFSET][MAX_ARG_COUNT];
-	static private Hashtable ObjectMap = new Hashtable ();
+	static private Hashtable<LONG, XPCOMObject> ObjectMap = new Hashtable<LONG, XPCOMObject> ();
 	
 	
 public XPCOMObject (int[] argCounts) {

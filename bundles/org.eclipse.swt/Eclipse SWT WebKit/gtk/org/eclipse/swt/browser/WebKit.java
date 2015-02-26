@@ -46,7 +46,6 @@ import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.Monitor;
 import org.eclipse.swt.widgets.Shell;
 
-@SuppressWarnings({"rawtypes", "unchecked"})
 class WebKit extends WebBrowser {
 	long /*int*/ webView, webViewData, scrolledWindow;
 	int failureCount, lastKeyCode, lastCharCode;
@@ -59,7 +58,7 @@ class WebKit extends WebBrowser {
 	static int DisabledJSCount;
 	static long /*int*/ ExternalClass, PostString, WebViewType;
 	static boolean IsWebKit14orNewer, LibraryLoaded;
-	static Hashtable WindowMappings = new Hashtable ();
+	static Hashtable<LONG, LONG> WindowMappings = new Hashtable<LONG, LONG> ();
 
 	static final String ABOUT_BLANK = "about:blank"; //$NON-NLS-1$
 	static final String CHARSET_UTF8 = "UTF-8"; //$NON-NLS-1$
@@ -384,7 +383,7 @@ static long /*int*/ JSDOMEventProc (long /*int*/ arg0, long /*int*/ event, long 
 		return 0;
 	}
 
-	LONG webViewHandle = (LONG)WindowMappings.get (new LONG (arg0));
+	LONG webViewHandle = WindowMappings.get (new LONG (arg0));
 	if (webViewHandle == null) return 0;
 	Browser browser = FindBrowser (webViewHandle.value);
 	if (browser == null) return 0;
@@ -1553,9 +1552,9 @@ void onDispose (Event e) {
 		}
 	}
 
-	Enumeration elements = functions.elements ();
+	Enumeration<BrowserFunction> elements = functions.elements ();
 	while (elements.hasMoreElements ()) {
-		((BrowserFunction)elements.nextElement ()).dispose (false);
+		elements.nextElement ().dispose (false);
 	}
 	functions = null;
 
@@ -2321,9 +2320,9 @@ long /*int*/ webkit_window_object_cleared (long /*int*/ web_view, long /*int*/ f
 	long /*int*/ name = WebKitGTK.JSStringCreateWithUTF8CString (bytes);
 	WebKitGTK.JSObjectSetProperty (context, globalObject, name, externalObject, 0, null);
 	WebKitGTK.JSStringRelease (name);
-	Enumeration elements = functions.elements ();
+	Enumeration<BrowserFunction> elements = functions.elements ();
 	while (elements.hasMoreElements ()) {
-		BrowserFunction current = (BrowserFunction)elements.nextElement ();
+		BrowserFunction current = elements.nextElement ();
 		execute (current.functionString);
 	}
 	long /*int*/ mainFrame = WebKitGTK.webkit_web_view_get_main_frame (webView);
@@ -2346,7 +2345,7 @@ long /*int*/ callJava (long /*int*/ ctx, long /*int*/ func, long /*int*/ thisObj
 			type = WebKitGTK.JSValueGetType (ctx, result[0]);
 			if (type == WebKitGTK.kJSTypeString) {
 				String token = (String)convertToJava (ctx, result[0]);
-				BrowserFunction function = (BrowserFunction)functions.get (key);
+				BrowserFunction function = functions.get (key);
 				if (function != null && token.equals (function.token)) {
 					try {
 						C.memmove (result, arguments + 2 * C.PTR_SIZEOF, C.PTR_SIZEOF);

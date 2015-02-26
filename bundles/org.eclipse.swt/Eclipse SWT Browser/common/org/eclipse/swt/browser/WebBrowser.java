@@ -15,10 +15,9 @@ import java.util.*;
 import org.eclipse.swt.*;
 import org.eclipse.swt.widgets.*;
 
-@SuppressWarnings({"rawtypes", "unchecked"})
 abstract class WebBrowser {
 	Browser browser;
-	Hashtable functions = new Hashtable ();
+	Hashtable<Integer, BrowserFunction> functions = new Hashtable<Integer, BrowserFunction> ();
 	AuthenticationListener[] authenticationListeners = new AuthenticationListener[0];
 	CloseWindowListener[] closeWindowListeners = new CloseWindowListener[0];
 	LocationListener[] locationListeners = new LocationListener[0];
@@ -320,10 +319,10 @@ public void createFunction (BrowserFunction function) {
 	 * remove it so that it is not recreated on subsequent pages
 	 * (the new function overwrites the old one).
 	 */
-	Enumeration keys = functions.keys ();
+	Enumeration<Integer> keys = functions.keys ();
 	while (keys.hasMoreElements ()) {
-		Object key = keys.nextElement ();
-		BrowserFunction current = (BrowserFunction)functions.get (key);
+		Integer key = keys.nextElement ();
+		BrowserFunction current = functions.get (key);
 		if (current.name.equals (function.name)) {
 			deregisterFunction (current);
 			break;

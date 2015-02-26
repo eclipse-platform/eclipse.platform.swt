@@ -48,7 +48,6 @@ import java.awt.event.WindowEvent;
  * 
  * @since 3.0
  */
-@SuppressWarnings("rawtypes")
 public class SWT_AWT {
 
 	/**
@@ -98,7 +97,7 @@ static synchronized void initializeSwing() {
 	OS.gdk_error_trap_push();
 	try {
 		/* Initialize the default focus traversal policy */
-		Class[] emptyClass = new Class[0];
+		Class<?>[] emptyClass = new Class[0];
 		Object[] emptyObject = new Object[0];
 		Class<?> clazz = Class.forName("javax.swing.UIManager");
 		Method method = clazz.getMethod("getDefaults", emptyClass);

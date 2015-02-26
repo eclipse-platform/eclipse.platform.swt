@@ -79,7 +79,6 @@ import org.eclipse.swt.widgets.*;
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  * @noextend This class is not intended to be subclassed by clients.
  */
-@SuppressWarnings({"rawtypes", "unchecked"})
 public class StyledText extends Canvas {
 	static final char TAB = '\t';
 	static final String PlatformLineDelimiter = System.getProperty("line.separator");
@@ -125,7 +124,7 @@ public class StyledText extends Canvas {
 	boolean doubleClickEnabled = true;	// see getDoubleClickEnabled 
 	boolean overwrite = false;			// insert/overwrite edit mode
 	int textLimit = -1;					// limits the number of characters the user can type in the widget. Unlimited by default.
-	Hashtable keyActionMap = new Hashtable();
+	Hashtable<Integer, Integer> keyActionMap = new Hashtable<Integer, Integer>();
 	Color background = null;			// workaround for bug 4791
 	Color foreground = null;			//
 	Clipboard clipboard;
@@ -195,7 +194,7 @@ public class StyledText extends Canvas {
 		Rectangle clientArea;
 		FontData fontData;
 		Font printerFont;
-		Hashtable resources;
+		Hashtable<Resource, Resource> resources;
 		int tabLength;
 		GC gc;											// printer GC
 		int pageWidth;									// width of a printer page in pixels
@@ -284,7 +283,7 @@ public class StyledText extends Canvas {
 		}
 		Point screenDPI = styledText.getDisplay().getDPI();
 		Point printerDPI = printer.getDPI();
-		resources = new Hashtable ();
+		resources = new Hashtable<Resource, Resource> ();
 		for (int i = 0; i < lineCount; i++) {
 			Color color = printerRenderer.getLineBackground(i, null);
 			if (color != null) {
@@ -387,9 +386,9 @@ public class StyledText extends Canvas {
 			gc = null;
 		}
 		if (resources != null) {
-			Enumeration enumeration = resources.elements();			
+			Enumeration<Resource> enumeration = resources.elements();			
 			while (enumeration.hasMoreElements()) {
-				Resource resource = (Resource) enumeration.nextElement();
+				Resource resource = enumeration.nextElement();
 				resource.dispose();
 			}
 			resources = null;
@@ -3882,7 +3881,7 @@ public boolean getJustify() {
  */
 public int getKeyBinding(int key) {
 	checkWidget();
-	Integer action = (Integer) keyActionMap.get(new Integer(key));	
+	Integer action = keyActionMap.get(new Integer(key));	
 	return action == null ? SWT.NULL : action.intValue();
 }
 /**
