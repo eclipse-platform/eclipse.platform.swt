@@ -233,6 +233,7 @@
 #define gtk_tree_view_column_get_button_LIB LIB_GTK
 #define gtk_tree_view_column_get_cell_renderers_LIB LIB_GTK
 #define gtk_tree_view_column_cell_get_position_LIB LIB_GTK
+#define gtk_tree_view_convert_bin_window_to_tree_coords_LIB LIB_GTK
 #define gtk_tree_view_set_grid_lines_LIB LIB_GTK
 #define gtk_tree_view_set_rules_hint_LIB LIB_GTK
 #define gtk_tree_view_get_rules_hint_LIB LIB_GTK
