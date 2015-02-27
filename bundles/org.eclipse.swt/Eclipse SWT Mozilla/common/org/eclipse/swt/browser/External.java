@@ -390,7 +390,7 @@ static nsIVariant convertToJS (Object value, nsIComponentManager componentManage
 
 static long /*int*/ invokeFunction (int functionId, long /*int*/ tokenVariant, long /*int*/ args) {
 	Object key = new Integer (functionId);
-	BrowserFunction function = (BrowserFunction)Mozilla.AllFunctions.get (key);
+	BrowserFunction function = Mozilla.AllFunctions.get (key);
 	Object returnValue = null;
 
 	if (function != null) {
