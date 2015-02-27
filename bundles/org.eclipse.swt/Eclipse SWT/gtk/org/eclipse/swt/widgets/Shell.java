@@ -1248,6 +1248,11 @@ long /*int*/ gtk_button_press_event (long /*int*/ widget, long /*int*/ event) {
 long /*int*/ gtk_configure_event (long /*int*/ widget, long /*int*/ event) {
 	int [] x = new int [1], y = new int [1];
 	OS.gtk_window_get_position (shellHandle, x, y);
+
+	if (!isVisible ()) {
+		return 0; //We shouldn't handle move/resize events if shell is hidden.
+	}
+	
 	if (!moved || oldX != x [0] || oldY != y [0]) {
 		moved = true;
 		oldX = x [0];
@@ -2205,6 +2210,10 @@ public void setText (String string) {
 @Override
 public void setVisible (boolean visible) {
 	checkWidget();
+	
+	if (moved) { //fix shell location if it was moved.
+		setLocation(oldX, oldY);
+	}
 	int mask = SWT.PRIMARY_MODAL | SWT.APPLICATION_MODAL | SWT.SYSTEM_MODAL;
 	if ((style & mask) != 0) {
 		if (visible) {
