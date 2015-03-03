@@ -1540,7 +1540,30 @@ public void showSelection () {
 	long /*int*/ iter = OS.g_malloc (OS.GtkTreeIter_sizeof ());
 	OS.gtk_tree_model_iter_nth_child (modelHandle, iter, 0, index);
 	long /*int*/ path = OS.gtk_tree_model_get_path (modelHandle, iter);
+
+	OS.gtk_widget_realize (handle);
 	OS.gtk_tree_view_scroll_to_cell (handle, path, 0, false, 0, 0);
+
+	/*
+	 * Reverting the code for bug 459072. With gtk_tree_view_scroll_to_cell, there are some pending gtk events.
+	 * the scroll does not happen immediately. We still need to perform gtk_tree_view_scroll_to_point to complete
+	 * all the pending events and update top index.
+	 */
+	GdkRectangle visibleRect = new GdkRectangle ();
+	OS.gtk_tree_view_get_visible_rect (handle, visibleRect);
+	GdkRectangle cellRect = new GdkRectangle ();
+	OS.gtk_tree_view_get_cell_area (handle, path, 0, cellRect);
+	int[] tx = new int[1], ty = new int[1];
+	OS.gtk_tree_view_convert_bin_window_to_tree_coords(handle, cellRect.x, cellRect.y, tx, ty);
+	if (ty[0] < visibleRect.y ) {
+		OS.gtk_tree_view_scroll_to_point (handle, -1, ty[0]);
+	} else {
+		int height = Math.min (visibleRect.height, cellRect.height);
+		if (ty[0] + height > visibleRect.y + visibleRect.height) {
+			ty[0] += cellRect.height - visibleRect.height;
+			OS.gtk_tree_view_scroll_to_point (handle, -1, ty[0]);
+		}
+	}
 	OS.gtk_tree_path_free (path);
 	OS.g_free (iter);
 }
