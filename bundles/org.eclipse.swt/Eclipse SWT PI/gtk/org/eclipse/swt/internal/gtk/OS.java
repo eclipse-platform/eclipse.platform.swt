@@ -619,6 +619,7 @@ public class OS extends C {
 	public static final byte[] focus_padding = ascii("focus-padding");
 	public static final byte[] font_desc = ascii("font-desc");
 	public static final byte[] foreground_gdk = ascii("foreground-gdk");
+	public static final byte[] foreground_rgba = ascii("foreground-rgba");
 	public static final byte[] grid_line_width = ascii("grid-line-width");
 	public static final byte[] gtk_alternative_button_order = ascii("gtk-alternative-button-order");
 	public static final byte[] gtk_color_palette = ascii("gtk-color-palette");
@@ -671,6 +672,7 @@ public class OS extends C {
 
 	public static final int GTK_VERSION = VERSION(gtk_major_version(), gtk_minor_version(), gtk_micro_version());
 	public static final int GLIB_VERSION = VERSION(glib_major_version(), glib_minor_version(), glib_micro_version());
+
 	public static final boolean GTK3 = GTK_VERSION >= VERSION(3, 0, 0);
 	public static final boolean USE_CAIRO, INIT_CAIRO;
 	static {
@@ -2957,6 +2959,24 @@ public static final void g_object_set(long /*int*/ object, byte[] first_property
 		lock.unlock();
 	}
 }
+
+//Note, the function below is handled in a special way in os.h because of the GdkRGBA (gtk3 only) struct. See os.h
+//So although it is not marked as dynamic, it is only build on gtk3.
+/**
+ * @param object cast=(gpointer)
+ * @param first_property_name cast=(const gchar *)
+ * @param terminator cast=(const gchar *),flags=sentinel
+ */
+public static final native void _g_object_set(long /*int*/ object, byte[] first_property_name, GdkRGBA data, long /*int*/ terminator);
+public static final void g_object_set(long /*int*/ object, byte[] first_property_name, GdkRGBA data, long /*int*/ terminator) {
+	lock.lock();
+	try {
+		_g_object_set(object, first_property_name, data, terminator);
+	} finally {
+		lock.unlock();
+	}
+}
+
 /**
  * @param object cast=(gpointer)
  * @param first_property_name cast=(const gchar *),flags=no_out

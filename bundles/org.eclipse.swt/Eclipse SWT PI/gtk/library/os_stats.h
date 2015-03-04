@@ -335,6 +335,11 @@ typedef enum {
 	_1g_1object_1set__J_3BLorg_eclipse_swt_internal_gtk_GdkColor_2J_FUNC,
 #endif
 #ifndef JNI64
+	_1g_1object_1set__I_3BLorg_eclipse_swt_internal_gtk_GdkRGBA_2I_FUNC,
+#else
+	_1g_1object_1set__J_3BLorg_eclipse_swt_internal_gtk_GdkRGBA_2J_FUNC,
+#endif
+#ifndef JNI64
 	_1g_1object_1set__I_3BZI_FUNC,
 #else
 	_1g_1object_1set__J_3BZJ_FUNC,

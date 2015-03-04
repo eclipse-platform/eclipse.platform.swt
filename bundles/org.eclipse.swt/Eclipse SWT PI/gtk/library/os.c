@@ -3862,6 +3862,34 @@ fail:
 }
 #endif
 
+#if (!defined(NO__1g_1object_1set__I_3BLorg_eclipse_swt_internal_gtk_GdkRGBA_2I) && !defined(JNI64)) || (!defined(NO__1g_1object_1set__J_3BLorg_eclipse_swt_internal_gtk_GdkRGBA_2J) && defined(JNI64))
+#ifndef JNI64
+JNIEXPORT void JNICALL OS_NATIVE(_1g_1object_1set__I_3BLorg_eclipse_swt_internal_gtk_GdkRGBA_2I)(JNIEnv *env, jclass that, jintLong arg0, jbyteArray arg1, jobject arg2, jintLong arg3)
+#else
+JNIEXPORT void JNICALL OS_NATIVE(_1g_1object_1set__J_3BLorg_eclipse_swt_internal_gtk_GdkRGBA_2J)(JNIEnv *env, jclass that, jintLong arg0, jbyteArray arg1, jobject arg2, jintLong arg3)
+#endif
+{
+	jbyte *lparg1=NULL;
+	GdkRGBA _arg2, *lparg2=NULL;
+#ifndef JNI64
+	OS_NATIVE_ENTER(env, that, _1g_1object_1set__I_3BLorg_eclipse_swt_internal_gtk_GdkRGBA_2I_FUNC);
+#else
+	OS_NATIVE_ENTER(env, that, _1g_1object_1set__J_3BLorg_eclipse_swt_internal_gtk_GdkRGBA_2J_FUNC);
+#endif
+	if (arg1) if ((lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL)) == NULL) goto fail;
+	if (arg2) if ((lparg2 = getGdkRGBAFields(env, arg2, &_arg2)) == NULL) goto fail;
+	g_object_set((gpointer)arg0, (const gchar *)lparg1, lparg2, (const gchar *)NULL);
+fail:
+	if (arg2 && lparg2) setGdkRGBAFields(env, arg2, lparg2);
+	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+#ifndef JNI64
+	OS_NATIVE_EXIT(env, that, _1g_1object_1set__I_3BLorg_eclipse_swt_internal_gtk_GdkRGBA_2I_FUNC);
+#else
+	OS_NATIVE_EXIT(env, that, _1g_1object_1set__J_3BLorg_eclipse_swt_internal_gtk_GdkRGBA_2J_FUNC);
+#endif
+}
+#endif
+
 #if (!defined(NO__1g_1object_1set__I_3BZI) && !defined(JNI64)) || (!defined(NO__1g_1object_1set__J_3BZJ) && defined(JNI64))
 #ifndef JNI64
 JNIEXPORT void JNICALL OS_NATIVE(_1g_1object_1set__I_3BZI)(JNIEnv *env, jclass that, jintLong arg0, jbyteArray arg1, jboolean arg2, jintLong arg3)

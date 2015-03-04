@@ -1845,23 +1845,29 @@ public void select (int index) {
 	}
 }
 
+
 @Override
 void setBackgroundColor (long /*int*/ context, long /*int*/ handle, GdkRGBA rgba) {
 	if (entryHandle == 0 || (style & SWT.READ_ONLY) != 0) {
 		super.setBackgroundColor (context, handle, rgba);
-		return;
+	} else {
+		setBackgroundColorGradient (OS.gtk_widget_get_style_context (entryHandle), handle, rgba);
+		super.setBackgroundColor (OS.gtk_widget_get_style_context (entryHandle), entryHandle, rgba);
 	}
-	setBackgroundColorGradient (OS.gtk_widget_get_style_context (entryHandle), handle, rgba);
 }
 
 @Override
 void setBackgroundColor (GdkColor color) {
+	//Note: This function is reached by Gtk2 and Gtk3.
 	super.setBackgroundColor (color);
 	if (!OS.GTK3) {
 		if (entryHandle != 0) OS.gtk_widget_modify_base (entryHandle, 0, color);
 		if (cellHandle != 0) OS.g_object_set (cellHandle, OS.background_gdk, color, 0);
 		OS.g_object_set (textRenderer, OS.background_gdk, color, 0);
 	}
+
+	if (entryHandle != 0) setBackgroundColor(entryHandle, color);
+	setBackgroundColor (fixedHandle, color);
 }
 
 @Override
@@ -1921,8 +1927,29 @@ void setFontDescription (long /*int*/ font) {
 @Override
 void setForegroundColor (GdkColor color) {
 	super.setForegroundColor (handle, color, false);
-	if (entryHandle != 0) setForegroundColor (entryHandle, color, false);
-	OS.g_object_set (textRenderer, OS.foreground_gdk, color, 0);
+	if (entryHandle != 0) {
+		setForegroundColor (entryHandle, color, false);
+	}
+    if (OS.GTK3) {
+    	GdkRGBA rgba = gdk_color_to_rgba (color);
+    	OS.g_object_set (textRenderer, OS.foreground_rgba, rgba, 0);
+    } else  {
+    	OS.g_object_set (textRenderer, OS.foreground_gdk, color, 0);
+    }
+}
+
+GdkRGBA gdk_color_to_rgba (GdkColor color) {
+	GdkRGBA rgba = null;
+	if (color != null) {
+		rgba = new GdkRGBA();
+		rgba.alpha = 1;  //TODO, we are loosing Alpha in Control:setForeground(Color color),
+		                 //as alpha is only defined in Color and not GtkColor.
+		                 //This function should ideally be factored out to Control, and convert Color to GdkRGBA.
+		rgba.red = (color.red & 0xFFFF) / (float)0xFFFF;
+		rgba.green = (color.green & 0xFFFF) / (float)0xFFFF;
+		rgba.blue = (color.blue & 0xFFFF) / (float)0xFFFF;
+	}
+	return rgba;
 }
 
 /**

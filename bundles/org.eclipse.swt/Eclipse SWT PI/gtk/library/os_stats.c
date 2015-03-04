@@ -325,6 +325,11 @@ char * OS_nativeFunctionNames[] = {
 	"_1g_1object_1set__J_3BLorg_eclipse_swt_internal_gtk_GdkColor_2J",
 #endif
 #ifndef JNI64
+	"_1g_1object_1set__I_3BLorg_eclipse_swt_internal_gtk_GdkRGBA_2I",
+#else
+	"_1g_1object_1set__J_3BLorg_eclipse_swt_internal_gtk_GdkRGBA_2J",
+#endif
+#ifndef JNI64
 	"_1g_1object_1set__I_3BZI",
 #else
 	"_1g_1object_1set__J_3BZJ",
