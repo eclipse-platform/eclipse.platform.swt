@@ -47,6 +47,7 @@ public abstract class Control extends Widget implements Drawable {
 	long /*int*/ fixedHandle;
 	long /*int*/ redrawWindow, enableWindow, provider;
 	int drawCount, backgroundAlpha = 255;
+	long /*int*/ enterNotifyEventId;
 	Composite parent;
 	Cursor cursor;
 	Menu menu;
@@ -57,6 +58,23 @@ public abstract class Control extends Widget implements Drawable {
 	Object layoutData;
 	Accessible accessible;
 	Control labelRelation;
+
+	/* these class variables are for the workaround for bug #427776 */
+	static Callback enterNotifyEventFunc;
+	static final int enterNotifyEventSignalId;
+	static final int GTK_POINTER_WINDOW;
+	static final int SWT_GRAB_WIDGET;
+	static {
+		enterNotifyEventFunc = new Callback (Control.class, "enterNotifyEventProc", 4);
+		if (enterNotifyEventFunc.getAddress () == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
+
+		enterNotifyEventSignalId = OS.g_signal_lookup (OS.enter_notify_event, OS.GTK_TYPE_WIDGET ());
+
+		byte [] buffer = Converter.wcsToMbcs (null, "gtk-pointer-window", true);
+		GTK_POINTER_WINDOW = OS.g_quark_from_string (buffer);
+		buffer = Converter.wcsToMbcs (null, "swt-grab-widget", true);
+		SWT_GRAB_WIDGET = OS.g_quark_from_string (buffer);
+	}
 
 Control () {
 }
@@ -4295,6 +4313,29 @@ public void setDragDetect (boolean dragDetect) {
 	}
 }
 
+static long /*int*/ enterNotifyEventProc (long /*int*/ ihint, long /*int*/ n_param_values, long /*int*/ param_values, long /*int*/ data) {
+	/* 427776: this workaround listens to the enter-notify-event signal on all
+	 * GtkWidgets. If enableWindow (the data parameter) has been added to the
+	 * internal hash table of the widget, a record is kept as the lifetime of
+	 * enableWindow is controlled here, so we'll need to remove that reference
+	 * when we destroy enableWindow. this internal hash table was removed in
+	 * GTK 3.11.9 so once only newer GTK is targeted, this workaround can be
+	 * removed. */
+	long /*int*/ instance = OS.g_value_peek_pointer (param_values);
+	long /*int*/ hashTable = OS.g_object_get_qdata (instance, GTK_POINTER_WINDOW);
+
+	// there will only ever be one item in the hash table
+	if (hashTable != 0) {
+		long /*int*/ firstItem = OS.g_hash_table_get_values (hashTable);
+		long /*int*/ gdkWindow = OS.g_list_data (firstItem);
+		// data is actually enableWindow
+		if (gdkWindow == data)
+			OS.g_object_set_qdata(gdkWindow, SWT_GRAB_WIDGET, instance);
+	}
+
+	return 1; // keep the signal connected
+}
+
 /**
  * Enables the receiver if the argument is <code>true</code>,
  * and disables it otherwise. A disabled control is typically
@@ -4328,6 +4369,24 @@ public void setEnabled (boolean enabled) {
 	if (isDisposed ()) return;
 	if (enabled) {
 		if (enableWindow != 0) {
+			if (OS.GTK3 && OS.GTK_VERSION < OS.VERSION (3, 11, 9)) {
+				if (enterNotifyEventId > 0)
+					OS.g_signal_remove_emission_hook(enterNotifyEventSignalId, enterNotifyEventId);
+				enterNotifyEventId = 0;
+
+				/*
+				 * 427776: now we can remove any reference to the GdkWindow
+				 * in a widget's internal hash table. this internal hash
+				 * table was removed in GTK 3.11.9 so once only newer GTK is
+				 * targeted, this workaround can be removed.
+				 */
+				long /*int*/ grabWidget = OS.g_object_get_qdata(enableWindow, SWT_GRAB_WIDGET);
+				if (grabWidget != 0) {
+					OS.g_object_set_qdata(grabWidget, GTK_POINTER_WINDOW, 0);
+					OS.g_object_set_qdata(enableWindow, SWT_GRAB_WIDGET, 0);
+				}
+			}
+
 			OS.gdk_window_set_user_data (enableWindow, 0);
 			OS.gdk_window_destroy (enableWindow);
 			enableWindow = 0;
@@ -4349,6 +4408,13 @@ public void setEnabled (boolean enabled) {
 		attributes.window_type = OS.GDK_WINDOW_CHILD;
 		enableWindow = OS.gdk_window_new (window, attributes, OS.GDK_WA_X | OS.GDK_WA_Y);
 		if (enableWindow != 0) {
+			/* 427776: we need to listen to all enter-notify-event signals to
+			 * see if this new GdkWindow has been added to a widget's internal
+			 * hash table, so when the GdkWindow is destroyed we can also remove
+			 * that reference. */
+			if (OS.GTK3 && OS.GTK_VERSION < OS.VERSION (3, 11, 9))
+				enterNotifyEventId = OS.g_signal_add_emission_hook (enterNotifyEventSignalId, 0, enterNotifyEventFunc.getAddress (), enableWindow, 0);
+
 			OS.gdk_window_set_user_data (enableWindow, parentHandle);
 			if (!OS.GDK_WINDOWING_X11 ()) {
 				OS.gdk_window_raise (enableWindow);

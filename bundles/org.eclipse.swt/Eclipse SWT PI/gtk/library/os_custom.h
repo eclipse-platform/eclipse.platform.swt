@@ -92,6 +92,7 @@
 #define g_dbus_proxy_new_finish_LIB LIB_GIO
 #define g_dbus_proxy_new_sync_LIB LIB_GIO
 #define g_filename_display_name_LIB LIB_GLIB
+#define g_hash_table_get_values_LIB LIB_GLIB
 #define g_thread_init_LIB LIB_GTHREAD
 #define g_variant_get_boolean_LIB LIB_GIO
 #define g_variant_get_child_value_LIB LIB_GIO

@@ -248,6 +248,7 @@ char * OS_nativeFunctionNames[] = {
 	"_1g_1filename_1to_1uri",
 	"_1g_1filename_1to_1utf8",
 	"_1g_1free",
+	"_1g_1hash_1table_1get_1values",
 	"_1g_1icon_1new_1for_1string",
 	"_1g_1icon_1to_1string",
 	"_1g_1idle_1add",

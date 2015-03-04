@@ -3124,6 +3124,26 @@ JNIEXPORT void JNICALL OS_NATIVE(_1g_1free)
 }
 #endif
 
+#ifndef NO__1g_1hash_1table_1get_1values
+JNIEXPORT jintLong JNICALL OS_NATIVE(_1g_1hash_1table_1get_1values)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, _1g_1hash_1table_1get_1values_FUNC);
+/*
+	rc = (jintLong)g_hash_table_get_values((GHashTable *)arg0);
+*/
+	{
+		OS_LOAD_FUNCTION(fp, g_hash_table_get_values)
+		if (fp) {
+			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(GHashTable *))fp)((GHashTable *)arg0);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, _1g_1hash_1table_1get_1values_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO__1g_1icon_1new_1for_1string
 JNIEXPORT jintLong JNICALL OS_NATIVE(_1g_1icon_1new_1for_1string)
 	(JNIEnv *env, jclass that, jbyteArray arg0, jintLongArray arg1)

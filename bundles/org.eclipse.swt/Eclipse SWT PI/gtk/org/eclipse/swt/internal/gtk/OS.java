@@ -2551,6 +2551,19 @@ public static final void g_free(long /*int*/ mem) {
 	}
 }
 /**
+ * @method flags=dynamic
+ * @param table cast=(GHashTable *)
+ */
+public static final native long /*int*/ _g_hash_table_get_values(long /*int*/ table);
+public static final long /*int*/ g_hash_table_get_values(long /*int*/ table) {
+	lock.lock();
+	try {
+		return _g_hash_table_get_values(table);
+	} finally {
+		lock.unlock();
+	}
+}
+/**
  * @param function cast=(GSourceFunc)
  * @param data cast=(gpointer)
  */

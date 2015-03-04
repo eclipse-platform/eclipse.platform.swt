@@ -258,6 +258,7 @@ typedef enum {
 	_1g_1filename_1to_1uri_FUNC,
 	_1g_1filename_1to_1utf8_FUNC,
 	_1g_1free_FUNC,
+	_1g_1hash_1table_1get_1values_FUNC,
 	_1g_1icon_1new_1for_1string_FUNC,
 	_1g_1icon_1to_1string_FUNC,
 	_1g_1idle_1add_FUNC,
