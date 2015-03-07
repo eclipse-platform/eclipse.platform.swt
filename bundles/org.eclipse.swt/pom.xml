@@ -39,6 +39,9 @@
         <configuration>
           <dependency-resolution>
             <optionalDependencies>ignore</optionalDependencies>
+            <profileProperties>
+              <org.eclipse.swt.buildtime>true</org.eclipse.swt.buildtime>
+            </profileProperties>
           </dependency-resolution>
         </configuration>
       </plugin>
