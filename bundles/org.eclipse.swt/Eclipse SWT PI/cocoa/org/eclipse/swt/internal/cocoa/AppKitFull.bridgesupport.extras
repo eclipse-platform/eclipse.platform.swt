@@ -1596,6 +1596,10 @@
 		<method selector="hasAlpha" swt_gen="true">
 			<retval swt_gen="true"></retval>
 		</method>
+		<method class_method="true" selector="imageRepWithContentsOfFile:" swt_gen="true">
+			<arg swt_gen="true"></arg>
+			<retval swt_gen="true"></retval>
+		</method>
 		<method selector="pixelsHigh" swt_gen="true">
 			<retval swt_gen="true"></retval>
 		</method>
@@ -1603,6 +1607,10 @@
 			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="setAlpha:" swt_gen="true">
+			<arg swt_gen="true"></arg>
+			<retval swt_gen="true"></retval>
+		</method>
+		<method selector="setSize:" swt_gen="true">
 			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2012 IBM Corporation and others.
+ * Copyright (c) 2000, 2015 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -93,6 +93,11 @@ public long /*int*/ numberOfPlanes() {
 
 public long /*int*/ samplesPerPixel() {
 	return OS.objc_msgSend(this.id, OS.sel_samplesPerPixel);
+}
+
+public static id imageRepWithContentsOfFile(NSString filename) {
+	long /*int*/ result = OS.objc_msgSend(OS.class_NSBitmapImageRep, OS.sel_imageRepWithContentsOfFile_, filename != null ? filename.id : 0);
+	return result != 0 ? new id(result) : null;
 }
 
 }

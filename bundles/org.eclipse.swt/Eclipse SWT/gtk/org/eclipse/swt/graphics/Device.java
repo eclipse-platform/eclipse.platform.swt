@@ -955,4 +955,15 @@ static long /*int*/ XIOErrorProc (long /*int*/ xDisplay) {
 	return 0;
 }
 
+int getActualDPI () {
+	long /*int*/ screen = OS.gdk_screen_get_default();
+	Rectangle rect = getBounds();
+	int monitor = OS.gdk_screen_get_monitor_at_point(screen, rect.x, rect.y);
+
+	GdkRectangle dest = new GdkRectangle ();
+	OS.gdk_screen_get_monitor_geometry(screen, monitor, dest);
+	int widthMM = OS.gdk_screen_get_monitor_width_mm(screen, monitor);
+	return Compatibility.round (254 * dest.width, widthMM * 10);
+}
+
 }

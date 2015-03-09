@@ -1,5 +1,5 @@
 /*******************************************************************************
-* Copyright (c) 2000, 2013 IBM Corporation and others. All rights reserved.
+* Copyright (c) 2000, 2015 IBM Corporation and others. All rights reserved.
 * The contents of this file are made available under the terms
 * of the GNU Lesser General Public License (LGPL) Version 2.1 that
 * accompanies this distribution (lgpl-v21.txt).  The LGPL is also
@@ -305,6 +305,7 @@
 #define gdk_screen_get_monitor_at_window_LIB LIB_GDK
 #define gdk_screen_get_monitor_geometry_LIB LIB_GDK
 #define gdk_screen_get_n_monitors_LIB LIB_GDK
+#define gdk_screen_get_monitor_width_mm_LIB LIB_GDK
 #define gdk_screen_get_primary_monitor_LIB LIB_GDK
 #define gdk_pixbuf_render_to_drawable_LIB LIB_GDK
 #define gdk_visual_get_depth_LIB LIB_GDK

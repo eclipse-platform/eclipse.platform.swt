@@ -7483,6 +7483,26 @@ fail:
 }
 #endif
 
+#ifndef NO__1gdk_1screen_1get_1monitor_1width_1mm
+JNIEXPORT jint JNICALL OS_NATIVE(_1gdk_1screen_1get_1monitor_1width_1mm)
+	(JNIEnv *env, jclass that, jintLong arg0, jint arg1)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, _1gdk_1screen_1get_1monitor_1width_1mm_FUNC);
+/*
+	rc = (jint)gdk_screen_get_monitor_width_mm((GdkScreen *)arg0, arg1);
+*/
+	{
+		OS_LOAD_FUNCTION(fp, gdk_screen_get_monitor_width_mm)
+		if (fp) {
+			rc = (jint)((jint (CALLING_CONVENTION*)(GdkScreen *, jint))fp)((GdkScreen *)arg0, arg1);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, _1gdk_1screen_1get_1monitor_1width_1mm_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO__1gdk_1screen_1get_1n_1monitors
 JNIEXPORT jint JNICALL OS_NATIVE(_1gdk_1screen_1get_1n_1monitors)
 	(JNIEnv *env, jclass that, jintLong arg0)

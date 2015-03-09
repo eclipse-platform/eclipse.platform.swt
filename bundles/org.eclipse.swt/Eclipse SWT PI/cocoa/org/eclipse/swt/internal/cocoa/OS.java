@@ -1397,6 +1397,7 @@ public static final long /*int*/ sel_image = sel_registerName("image");
 public static final long /*int*/ sel_imageInterpolation = sel_registerName("imageInterpolation");
 public static final long /*int*/ sel_imageNamed_ = sel_registerName("imageNamed:");
 public static final long /*int*/ sel_imageRectForBounds_ = sel_registerName("imageRectForBounds:");
+public static final long /*int*/ sel_imageRepWithContentsOfFile_ = sel_registerName("imageRepWithContentsOfFile:");
 public static final long /*int*/ sel_imageRepWithData_ = sel_registerName("imageRepWithData:");
 public static final long /*int*/ sel_imageablePageBounds = sel_registerName("imageablePageBounds");
 public static final long /*int*/ sel_increment = sel_registerName("increment");

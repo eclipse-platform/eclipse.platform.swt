@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2012 IBM Corporation and others.
+ * Copyright (c) 2000, 2015 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -547,6 +547,105 @@ public Image(Device device, String filename) {
 	}
 }
 
+/**
+ * Constructs an instance of this class by loading its representation
+ * from the file retrieved from the ImageFileNameProvider. Throws an
+ * error if an error occurs while loading the image, or if the result
+ * is an image of an unsupported type.
+ * <p>
+ * This constructor is provided for convenience for loading image as
+ * per DPI level.
+ *
+ * @param device the device on which to create the image
+ * @param imageFileNameProvider the ImageFileNameProvider object that is
+ * to be used to get the file name
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if device is null and there is no current device</li>
+ *    <li>ERROR_NULL_ARGUMENT - if the ImageFileNameProvider is null</li>
+ *    <li>ERROR_INVALID_ARGUMENT - if the fileName provided by ImageFileNameProvider is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_IO - if an IO error occurs while reading from the file</li>
+ *    <li>ERROR_INVALID_IMAGE - if the image file contains invalid data </li>
+ *    <li>ERROR_UNSUPPORTED_DEPTH - if the image file describes an image with an unsupported depth</li>
+ *    <li>ERROR_UNSUPPORTED_FORMAT - if the image file contains an unrecognized format</li>
+ * </ul>
+ * @exception SWTError <ul>
+ *    <li>ERROR_NO_HANDLES if a handle could not be obtained for image creation</li>
+ * </ul>
+ * @since 3.104
+ */
+public Image(Device device, ImageFileNameProvider imageFileNameProvider) {
+	super(device);
+	if (imageFileNameProvider == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	String filename = imageFileNameProvider.getImagePath(100);
+	NSAutoreleasePool pool = null;
+	if (!NSThread.isMainThread()) pool = (NSAutoreleasePool) new NSAutoreleasePool().alloc().init();
+	try {
+		if (filename == null) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+		initNative(filename);
+		if (this.handle == null) init(new ImageData(filename));
+		init();
+		String filename2x = imageFileNameProvider.getImagePath(200);
+		if (filename2x == null) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+		id id = NSImageRep.imageRepWithContentsOfFile(NSString.stringWith(filename2x));
+		NSImageRep rep = new NSImageRep(id);
+		handle.addRepresentation(rep);
+	} finally {
+		if (pool != null) pool.release();
+	}
+}
+
+/**
+ * Constructs an instance of this class by loading its representation
+ * from the ImageData retrieved from the ImageDataProvider. Throws an
+ * error if an error occurs while loading the image, or if the result
+ * is an image of an unsupported type.
+ * <p>
+ * This constructor is provided for convenience for loading image as
+ * per DPI level.
+ *
+ * @param device the device on which to create the image
+ * @param imageDataProvider the ImageDataProvider object that is
+ * to be used to get the ImageData
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if device is null and there is no current device</li>
+ *    <li>ERROR_NULL_ARGUMENT - if the ImageDataProvider is null</li>
+ *    <li>ERROR_INVALID_ARGUMENT - if the ImageData provided by ImageDataProvider is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_IO - if an IO error occurs while reading from the file</li>
+ *    <li>ERROR_INVALID_IMAGE - if the image file contains invalid data </li>
+ *    <li>ERROR_UNSUPPORTED_DEPTH - if the image file describes an image with an unsupported depth</li>
+ *    <li>ERROR_UNSUPPORTED_FORMAT - if the image file contains an unrecognized format</li>
+ * </ul>
+ * @exception SWTError <ul>
+ *    <li>ERROR_NO_HANDLES if a handle could not be obtained for image creation</li>
+ * </ul>
+ * @since 3.104
+ */
+public Image(Device device, ImageDataProvider imageDataProvider) {
+	super(device);
+	if (imageDataProvider == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	ImageData data = imageDataProvider.getImageData (100);
+	if (data == null) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	NSAutoreleasePool pool = null;
+	if (!NSThread.isMainThread()) pool = (NSAutoreleasePool) new NSAutoreleasePool().alloc().init();
+	try {
+		init (data);
+		init ();
+		ImageData data2x = imageDataProvider.getImageData (200);
+		if (data2x == null) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+		NSBitmapImageRep rep = createRepresentaion (data2x);
+		handle.addRepresentation(rep);
+		rep.release();
+	} finally {
+		if (pool != null) pool.release();
+	}
+}
+
 void createAlpha () {
 	if (transparentPixel == -1 && alpha == -1 && alphaData == null) return;
 	NSAutoreleasePool pool = null;
@@ -852,24 +951,42 @@ void init(int width, int height) {
 
 void init(ImageData image) {
 	if (image == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+
+	if (handle != null) handle.release();
+
+	handle = (NSImage)new NSImage().alloc();
+	NSSize size = new NSSize();
+	size.width = width;
+	size.height = height;
+	handle = handle.initWithSize(size);
 	this.width = image.width;
 	this.height = image.height;
-	PaletteData palette = image.palette;
-	if (!(((image.depth == 1 || image.depth == 2 || image.depth == 4 || image.depth == 8) && !palette.isDirect) ||
-			((image.depth == 8) || (image.depth == 16 || image.depth == 24 || image.depth == 32) && palette.isDirect)))
+
+	NSBitmapImageRep rep = createRepresentaion(image);
+	handle.addRepresentation(rep);
+	rep.release();
+	handle.setCacheMode(OS.NSImageCacheNever);
+}
+
+private NSBitmapImageRep createRepresentaion(ImageData imageData) {
+	NSBitmapImageRep rep = (NSBitmapImageRep)new NSBitmapImageRep().alloc();
+
+	PaletteData palette = imageData.palette;
+	if (!(((imageData.depth == 1 || imageData.depth == 2 || imageData.depth == 4 || imageData.depth == 8) && !palette.isDirect) ||
+			((imageData.depth == 8) || (imageData.depth == 16 || imageData.depth == 24 || imageData.depth == 32) && palette.isDirect)))
 				SWT.error(SWT.ERROR_UNSUPPORTED_DEPTH);
-	
+
 	/* Create the image */
-	int dataSize = width * height * 4;
-	
+	int dataSize = imageData.width * imageData.height * 4;
+
 	/* Initialize data */
-	int bpr = width * 4;
+	int bpr = imageData.width * 4;
 	byte[] buffer = new byte[dataSize];
 	if (palette.isDirect) {
 		ImageData.blit(ImageData.BLIT_SRC,
-			image.data, image.depth, image.bytesPerLine, image.getByteOrder(), 0, 0, width, height, palette.redMask, palette.greenMask, palette.blueMask,
+			imageData.data, imageData.depth, imageData.bytesPerLine, imageData.getByteOrder(), 0, 0, imageData.width, imageData.height, palette.redMask, palette.greenMask, palette.blueMask,
 			ImageData.ALPHA_OPAQUE, null, 0, 0, 0, 
-			buffer, 32, bpr, ImageData.MSB_FIRST, 0, 0, width, height, 0xFF0000, 0xFF00, 0xFF,
+			buffer, 32, bpr, ImageData.MSB_FIRST, 0, 0, imageData.width, imageData.height, 0xFF0000, 0xFF00, 0xFF,
 			false, false);
 	} else {
 		RGB[] rgbs = palette.getRGBs();
@@ -885,28 +1002,28 @@ void init(ImageData image) {
 			srcBlues[i] = (byte)rgb.blue;
 		}
 		ImageData.blit(ImageData.BLIT_SRC,
-			image.data, image.depth, image.bytesPerLine, image.getByteOrder(), 0, 0, width, height, srcReds, srcGreens, srcBlues,
+			imageData.data, imageData.depth, imageData.bytesPerLine, imageData.getByteOrder(), 0, 0, imageData.width, imageData.height, srcReds, srcGreens, srcBlues,
 			ImageData.ALPHA_OPAQUE, null, 0, 0, 0,
-			buffer, 32, bpr, ImageData.MSB_FIRST, 0, 0, width, height, 0xFF0000, 0xFF00, 0xFF,
+			buffer, 32, bpr, ImageData.MSB_FIRST, 0, 0, imageData.width, imageData.height, 0xFF0000, 0xFF00, 0xFF,
 			false, false);
 	}
 	
 	/* Initialize transparency */
-	int transparency = image.getTransparencyType();
+	int transparency = imageData.getTransparencyType();
 	boolean hasAlpha = transparency != SWT.TRANSPARENCY_NONE;
-	if (transparency == SWT.TRANSPARENCY_MASK || image.transparentPixel != -1) {
-		this.type = image.transparentPixel != -1 ? SWT.BITMAP : SWT.ICON;
-		if (image.transparentPixel != -1) {
+	if (transparency == SWT.TRANSPARENCY_MASK || imageData.transparentPixel != -1) {
+		this.type = imageData.transparentPixel != -1 ? SWT.BITMAP : SWT.ICON;
+		if (imageData.transparentPixel != -1) {
 			int transRed = 0, transGreen = 0, transBlue = 0;
 			if (palette.isDirect) {
-				RGB rgb = palette.getRGB(image.transparentPixel);
+				RGB rgb = palette.getRGB(imageData.transparentPixel);
 				transRed = rgb.red;
 				transGreen = rgb.green;
 				transBlue = rgb.blue;
 			} else {
 				RGB[] rgbs = palette.getRGBs();
-				if (image.transparentPixel < rgbs.length) {
-					RGB rgb = rgbs[image.transparentPixel];
+				if (imageData.transparentPixel < rgbs.length) {
+					RGB rgb = rgbs[imageData.transparentPixel];
 					transRed = rgb.red;
 					transGreen = rgb.green;
 					transBlue = rgb.blue;				
@@ -914,12 +1031,12 @@ void init(ImageData image) {
 			}
 			transparentPixel = transRed << 16 | transGreen << 8 | transBlue;
 		}
-		ImageData maskImage = image.getTransparencyMask();
+		ImageData maskImage = imageData.getTransparencyMask();
 		byte[] maskData = maskImage.data;
 		int maskBpl = maskImage.bytesPerLine;
 		int offset = 0, maskOffset = 0;
-		for (int y = 0; y<height; y++) {
-			for (int x = 0; x<width; x++) {
+		for (int y = 0; y<imageData.height; y++) {
+			for (int x = 0; x<imageData.width; x++) {
 				buffer[offset] = ((maskData[maskOffset + (x >> 3)]) & (1 << (7 - (x & 0x7)))) != 0 ? (byte)0xff : 0;
 				offset += 4;
 			}
@@ -927,20 +1044,20 @@ void init(ImageData image) {
 		}
 	} else {
 		this.type = SWT.BITMAP;
-		if (image.alpha != -1) {
+		if (imageData.alpha != -1) {
 			hasAlpha = true;
-			this.alpha = image.alpha;
+			this.alpha = imageData.alpha;
 			byte a = (byte)this.alpha;
 			for (int dataIndex=0; dataIndex<buffer.length; dataIndex+=4) {
 				buffer[dataIndex] = a;				
 			}
-		} else if (image.alphaData != null) {
+		} else if (imageData.alphaData != null) {
 			hasAlpha = true;
-			this.alphaData = new byte[image.alphaData.length];
-			System.arraycopy(image.alphaData, 0, this.alphaData, 0, alphaData.length);
+			this.alphaData = new byte[imageData.alphaData.length];
+			System.arraycopy(imageData.alphaData, 0, this.alphaData, 0, alphaData.length);
 			int offset = 0, alphaOffset = 0;
-			for (int y = 0; y<height; y++) {
-				for (int x = 0; x<width; x++) {
+			for (int y = 0; y<imageData.height; y++) {
+				for (int x = 0; x<imageData.width; x++) {
 					buffer[offset] = alphaData[alphaOffset];
 					offset += 4;
 					alphaOffset += 1;
@@ -948,20 +1065,10 @@ void init(ImageData image) {
 			}
 		}
 	}
-	
-	if (handle != null) handle.release();
-	
-	handle = (NSImage)new NSImage().alloc();
-	NSSize size = new NSSize();
-	size.width = width;
-	size.height = height;
-	handle = handle.initWithSize(size);
-	NSBitmapImageRep rep = (NSBitmapImageRep)new NSBitmapImageRep().alloc();
-	rep = rep.initWithBitmapDataPlanes(0, width, height, 8, hasAlpha ? 4 : 3, hasAlpha, false, OS.NSDeviceRGBColorSpace, OS.NSAlphaFirstBitmapFormat | OS.NSAlphaNonpremultipliedBitmapFormat, bpr, 32);
-	OS.memmove(rep.bitmapData(), buffer, dataSize);	
-	handle.addRepresentation(rep);
-	rep.release();
-	handle.setCacheMode(OS.NSImageCacheNever);
+
+	rep = rep.initWithBitmapDataPlanes(0, imageData.width, imageData.height, 8, hasAlpha ? 4 : 3, hasAlpha, false, OS.NSDeviceRGBColorSpace, OS.NSAlphaFirstBitmapFormat | OS.NSAlphaNonpremultipliedBitmapFormat, bpr, 32);
+	OS.memmove(rep.bitmapData(), buffer, dataSize);
+	return rep;
 }
 
 void initNative(String filename) {
@@ -1296,3 +1403,4 @@ public String toString () {
 }
 
 }
+

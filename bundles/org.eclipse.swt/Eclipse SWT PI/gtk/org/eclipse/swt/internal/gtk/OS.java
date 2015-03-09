@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2014 IBM Corporation and others. All rights reserved.
+ * Copyright (c) 2000, 2015 IBM Corporation and others. All rights reserved.
  * The contents of this file are made available under the terms
  * of the GNU Lesser General Public License (LGPL) Version 2.1 that
  * accompanies this distribution (lgpl-v21.txt).  The LGPL is also
@@ -5551,6 +5551,21 @@ public static final int gdk_screen_width_mm() {
 		lock.unlock();
 	}
 }
+
+/**
+ * @method flags=dynamic
+ * @param screen cast=(GdkScreen *)
+ */
+public static final native int _gdk_screen_get_monitor_width_mm(long /*int*/ screen, int monitor_num);
+public static final int gdk_screen_get_monitor_width_mm(long /*int*/ screen, int monitor_num) {
+	lock.lock();
+	try {
+		return _gdk_screen_get_monitor_width_mm(screen, monitor_num);
+	} finally {
+		lock.unlock();
+	}
+}
+
 /** @param program_class cast=(const char *) */
 public static final native void _gdk_set_program_class(byte[] program_class);
 public static final void gdk_set_program_class(byte[] program_class) {
