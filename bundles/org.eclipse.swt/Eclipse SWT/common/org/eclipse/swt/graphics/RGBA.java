@@ -43,7 +43,7 @@ public final class RGBA implements SerializableCompatibility {
 	/**
 	 * the RGB component of the RGBA
 	 */
-	public RGB rgb;
+	public final RGB rgb;
 	
 	/**
 	 * the alpha component of the RGBA

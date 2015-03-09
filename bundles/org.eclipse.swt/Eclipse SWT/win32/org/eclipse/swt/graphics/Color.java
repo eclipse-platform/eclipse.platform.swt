@@ -11,14 +11,14 @@
 package org.eclipse.swt.graphics;
 
 
-import org.eclipse.swt.internal.win32.*;
 import org.eclipse.swt.*;
+import org.eclipse.swt.internal.win32.*;
 
 /**
  * Instances of this class manage the operating system resources that
  * implement SWT's RGB color model. To create a color you can either
  * specify the individual color components as integers in the range 
- * 0 to 255 or provide an instance of an <code>RGB</code>. 
+ * 0 to 255 or provide an instance of an <code>RGB</code> or <code>RGBA</code>. 
  * <p>
  * Application code must explicitly invoke the <code>Color.dispose()</code> 
  * method to release the operating system resources managed by each instance
@@ -26,6 +26,7 @@ import org.eclipse.swt.*;
  * </p>
  *
  * @see RGB
+ * @see RGBA
  * @see Device#getSystemColor
  * @see <a href="http://www.eclipse.org/swt/snippets/#color">Color and RGB snippets</a>
  * @see <a href="http://www.eclipse.org/swt/examples.php">SWT Example: PaintExample</a>
@@ -101,7 +102,7 @@ public Color (Device device, int red, int green, int blue) {
  * @param red the amount of red in the color
  * @param green the amount of green in the color
  * @param blue the amount of blue in the color
- * @param alpha the amount of alpha in the color(Currently SWT honors extreme values for alpha ie. 0 or 255)
+ * @param alpha the amount of alpha in the color. Currently, SWT only honors extreme values for alpha i.e. 0 (transparent) or 255 (opaque).
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if device is null and there is no current device</li>
@@ -148,7 +149,7 @@ public Color (Device device, RGB rgb) {
 
 /**	 
  * Constructs a new instance of this class given a device and an
- * <code>RGBA</code> describing the desired red, green, blue & alpah values.
+ * <code>RGBA</code> describing the desired red, green, blue & alpha values.
  * On limited color devices, the color instance created by this call
  * may not have the same RGBA values as the ones specified by the
  * argument. The RGBA values on the returned instance will be the color
@@ -158,7 +159,7 @@ public Color (Device device, RGB rgb) {
  * </p>
  *
  * @param device the device on which to allocate the color
- * @param rgba the RGBA values of the desired color
+ * @param rgba the RGBA values of the desired color. Currently, SWT only honors extreme values for alpha i.e. 0 (transparent) or 255 (opaque).
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if device is null and there is no current device</li>
@@ -190,7 +191,7 @@ public Color(Device device, RGBA rgba) {
  *
  * @param device the device on which to allocate the color
  * @param rgb the RGB values of the desired color
- * @param alpha the alpha value of the desired color(Currently SWT honors extreme values for alpha ie. 0 or 255)
+ * @param alpha the alpha value of the desired color. Currently, SWT only honors extreme values for alpha i.e. 0 (transparent) or 255 (opaque).
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if device is null and there is no current device</li>
@@ -244,7 +245,7 @@ public boolean equals (Object object) {
 }
 
 /**
- * Returns the amount of alpha in the color, from 0 to 255.
+ * Returns the amount of alpha in the color, from 0 (transparent) to 255 (opaque).
  *
  * @return the alpha component of the color
  *
@@ -350,7 +351,7 @@ public int hashCode () {
  * @param red the amount of red in the color
  * @param green the amount of green in the color
  * @param blue the amount of blue in the color
- * @param alpha the amount of alpha in the color(Currently SWT honors extreme values for alpha ie. 0 or 255)
+ * @param alpha the amount of alpha in the color. Currently, SWT only honors extreme values for alpha i.e. 0 (transparent) or 255 (opaque).
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_INVALID_ARGUMENT - if the red, green, blue or alpha argument is not between 0 and 255</li>
