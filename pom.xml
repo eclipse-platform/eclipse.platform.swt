@@ -66,6 +66,7 @@
 
   <modules>
     <module>bundles/org.eclipse.swt</module>
+    <module>local-build/org.eclipse.swt.fragments.localbuild</module>
     <module>bundles/org.eclipse.swt.tools</module>
     <module>examples/org.eclipse.swt.examples</module>
     <module>examples/org.eclipse.swt.examples.browser.demos</module>
