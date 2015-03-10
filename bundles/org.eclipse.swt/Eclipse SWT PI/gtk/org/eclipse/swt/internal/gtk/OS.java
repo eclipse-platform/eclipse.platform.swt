@@ -8800,7 +8800,7 @@ public static final void gtk_image_set_from_gicon(long /*int*/ image, long /*int
  * @param size cast=(GtkIconSize)
  */
 public static final native long /*int*/ _gtk_image_new_from_icon_name (byte[] icon_name, int size);
-public static final long  /*int*/ gtk_image_new_from_icon_name (byte[] icon_name, int size) {
+public static final long /*int*/ gtk_image_new_from_icon_name (byte[] icon_name, int size) {
 	lock.lock();
 	try {
 		return _gtk_image_new_from_icon_name (icon_name, size);
