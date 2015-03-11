@@ -280,15 +280,6 @@ void createHandle (int index) {
 		}
 		OS.gtk_widget_set_app_paintable (handle, true);
 		OS.gtk_window_set_type_hint (handle, OS.GDK_WINDOW_TYPE_HINT_TOOLTIP);
-	} else {
-		if (OS.GTK_VERSION < OS.VERSION (2, 12, 0)) {
-			state |= HANDLE;
-			handle = OS.gtk_tooltips_new ();
-			if (handle == 0) error (SWT.ERROR_NO_HANDLES);
-			OS.gtk_tooltips_force_window (handle);
-			OS.g_object_ref (handle);
-			OS.g_object_ref_sink (handle);
-		}
 	}
 }
 
@@ -299,17 +290,6 @@ void createWidget (int index) {
 	message = "";
 	x = y = -1;
 	autohide = true;
-}
-
-@Override
-void deregister () {
-	super.deregister ();
-	if ((style & SWT.BALLOON) == 0) {
-		if (OS.GTK_VERSION < OS.VERSION (2, 12, 0)) {
-			long /*int*/ tipWindow = OS.GTK_TOOLTIPS_TIP_WINDOW (handle);
-			if (tipWindow != 0) display.removeWidget (tipWindow);
-		}
-	}
 }
 
 @Override
@@ -467,10 +447,6 @@ public String getText () {
 public boolean getVisible () {
 	checkWidget ();
 	if ((style & SWT.BALLOON) != 0) return gtk_widget_get_visible (handle);
-	if (OS.GTK_VERSION < OS.VERSION (2, 12, 0)) {
-		long /*int*/ tipWindow = OS.GTK_TOOLTIPS_TIP_WINDOW (handle);
-		return OS.GTK_WIDGET_VISIBLE (tipWindow);
-	}
 	return false;
 }
 
@@ -621,15 +597,6 @@ void hookEvents () {
 		OS.g_signal_connect_closure_by_id (handle, display.signalIds [EXPOSE_EVENT], 0, display.getClosure (EXPOSE_EVENT), true);
 		OS.gtk_widget_add_events (handle, OS.GDK_BUTTON_PRESS_MASK);
 		OS.g_signal_connect_closure (handle, OS.button_press_event, display.getClosure (BUTTON_PRESS_EVENT), false);
-	} else {
-		if (OS.GTK_VERSION < OS.VERSION (2, 12, 0)) {
-			long /*int*/ tipWindow = OS.GTK_TOOLTIPS_TIP_WINDOW (handle);
-			if (tipWindow != 0) {
-				OS.g_signal_connect_closure (tipWindow, OS.size_allocate, display.getClosure (SIZE_ALLOCATE), false);
-				OS.gtk_widget_add_events (tipWindow, OS.GDK_BUTTON_PRESS_MASK);
-				OS.g_signal_connect_closure (tipWindow, OS.button_press_event, display.getClosure (BUTTON_PRESS_EVENT), false);
-			}
-		}
 	}
 }
 
@@ -650,17 +617,6 @@ void hookEvents () {
 public boolean isVisible () {
 	checkWidget ();
 	return getVisible ();
-}
-
-@Override
-void register () {
-	super.register ();
-	if ((style & SWT.BALLOON) == 0) {
-		if (OS.GTK_VERSION < OS.VERSION (2, 12, 0)) {
-			long /*int*/ tipWindow = OS.GTK_TOOLTIPS_TIP_WINDOW (handle);
-			if (tipWindow != 0) display.addWidget (tipWindow, this);
-		}
-	}
 }
 
 @Override
@@ -746,13 +702,6 @@ public void setLocation (int x, int y) {
 	this.y = y;
 	if ((style & SWT.BALLOON) != 0) {
 		if (gtk_widget_get_visible (handle)) configure ();
-	} else {
-		if (OS.GTK_VERSION < OS.VERSION (2, 12, 0)) {
-			long /*int*/ tipWindow = OS.GTK_TOOLTIPS_TIP_WINDOW (handle);
-			if (gtk_widget_get_visible (tipWindow)) {
-				OS.gtk_window_move (tipWindow, x, y);
-			}
-		}
 	}
 }
 
@@ -882,14 +831,7 @@ public void setVisible (boolean visible) {
 			if (text.length () > 0) string.append ("\n\n");
 			string.append (message);
 			byte [] buffer = Converter.wcsToMbcs (null, string.toString(), true);
-			if (OS.GTK_VERSION >= OS.VERSION(2, 12, 0)) {
-				OS.gtk_widget_set_tooltip_text(vboxHandle, buffer);
-			} else {
-				OS.gtk_tooltips_set_tip (handle, vboxHandle, buffer, null);
-				long /*int*/ data = OS.gtk_tooltips_data_get (vboxHandle);
-				OS.GTK_TOOLTIPS_SET_ACTIVE (handle, data);
-				OS.gtk_tooltips_set_tip (handle, vboxHandle, buffer, null);
-			}
+			OS.gtk_widget_set_tooltip_text(vboxHandle, buffer);
 		}
 		if (autohide) timerId = OS.g_timeout_add (DELAY, display.windowTimerProc, handle);
 	} else {
@@ -898,11 +840,7 @@ public void setVisible (boolean visible) {
 		} else {
 			long /*int*/ vboxHandle = parent.vboxHandle;
 			byte[] buffer = Converter.wcsToMbcs(null, "", true);
-			if (OS.GTK_VERSION >= OS.VERSION(2, 12, 0)) {
-				OS.gtk_widget_set_tooltip_text(vboxHandle, buffer);
-			} else {
-				OS.gtk_tooltips_set_tip(handle, vboxHandle, buffer, null);
-			}
+			OS.gtk_widget_set_tooltip_text(vboxHandle, buffer);
 		}
 	}
 }
@@ -911,11 +849,6 @@ public void setVisible (boolean visible) {
 long /*int*/ timerProc (long /*int*/ widget) {
 	if ((style & SWT.BALLOON) != 0) {
 		OS.gtk_widget_hide (handle);
-	} else {
-		if (OS.GTK_VERSION < OS.VERSION (2, 12, 0)) {
-			long /*int*/ tipWindow = OS.GTK_TOOLTIPS_TIP_WINDOW (handle);
-			OS.gtk_widget_hide (tipWindow);
-		}
 	}
 	return 0;
 }

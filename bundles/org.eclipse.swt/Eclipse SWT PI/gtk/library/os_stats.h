@@ -52,9 +52,6 @@ typedef enum {
 	GTK_1RANGE_1SLIDER_1START_FUNC,
 	GTK_1SCROLLED_1WINDOW_1SCROLLBAR_1SPACING_FUNC,
 	GTK_1TEXTVIEW_1IM_1CONTEXT_FUNC,
-	GTK_1TOOLTIPS_1GET_1TIP_1TEXT_FUNC,
-	GTK_1TOOLTIPS_1SET_1ACTIVE_FUNC,
-	GTK_1TOOLTIPS_1TIP_1WINDOW_FUNC,
 	GTK_1TYPE_1ACCESSIBLE_FUNC,
 	GTK_1WIDGET_1HEIGHT_FUNC,
 	GTK_1WIDGET_1REQUISITION_1HEIGHT_FUNC,
@@ -1215,12 +1212,6 @@ typedef enum {
 	_1gtk_1toolbar_1set_1orientation_FUNC,
 	_1gtk_1toolbar_1set_1show_1arrow_FUNC,
 	_1gtk_1toolbar_1set_1style_FUNC,
-	_1gtk_1tooltips_1data_1get_FUNC,
-	_1gtk_1tooltips_1disable_FUNC,
-	_1gtk_1tooltips_1enable_FUNC,
-	_1gtk_1tooltips_1force_1window_FUNC,
-	_1gtk_1tooltips_1new_FUNC,
-	_1gtk_1tooltips_1set_1tip_FUNC,
 #ifndef JNI64
 	_1gtk_1tree_1model_1get__III_3II_FUNC,
 #else

@@ -225,11 +225,6 @@
 #define gtk_vseparator_new_LIB LIB_GTK
 #define gtk_toolbar_set_orientation_LIB LIB_GTK
 #define gtk_tooltip_trigger_tooltip_query_LIB LIB_GTK
-#define gtk_tooltips_set_tip_LIB LIB_GTK
-#define gtk_tooltips_enable_LIB LIB_GTK
-#define gtk_tooltips_disable_LIB LIB_GTK
-#define gtk_tooltips_data_get_LIB LIB_GTK
-#define gtk_tooltips_force_window_LIB LIB_GTK
 #define gtk_tree_selection_count_selected_rows_LIB LIB_GTK
 #define gtk_tree_selection_get_selected_rows_LIB LIB_GTK
 #define gtk_tree_view_column_get_button_LIB LIB_GTK
@@ -242,7 +237,6 @@
 #define gtk_entry_set_alignment_LIB LIB_GTK
 #define gtk_entry_set_icon_from_icon_name_LIB LIB_GTK
 #define gtk_entry_set_icon_sensitive_LIB LIB_GTK
-#define gtk_tooltips_new_LIB LIB_GTK
 #define gdk_cursor_new_from_pixbuf_LIB LIB_GDK
 #define gdk_cursor_unref_LIB LIB_GDK
 #define gdk_device_warp_LIB LIB_GDK
@@ -612,15 +606,6 @@ struct _GtkAccelLabelPrivate
 #endif
 #define GTK_ENTRY_IM_CONTEXT(arg0) (arg0)->im_context
 #define GTK_TEXTVIEW_IM_CONTEXT(arg0) (arg0)->im_context
-#if GTK_CHECK_VERSION(2,12,0)
-#define GTK_TOOLTIPS_TIP_WINDOW(arg0) 0
-#define GTK_TOOLTIPS_SET_ACTIVE(arg0, arg1)
-#define GTK_TOOLTIPS_GET_TIP_TEXT(arg0) 0
-#else
-#define GTK_TOOLTIPS_TIP_WINDOW(arg0) (arg0)->tip_window
-#define GTK_TOOLTIPS_SET_ACTIVE(arg0, arg1) (arg0)->active_tips_data = arg1
-#define GTK_TOOLTIPS_GET_TIP_TEXT(arg0) (arg0)->tip_text
-#endif
 #if GTK_CHECK_VERSION(2,18,0)
 #define GTK_WIDGET_Y(arg0) 0
 #else

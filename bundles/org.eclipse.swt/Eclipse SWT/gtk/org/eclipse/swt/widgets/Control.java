@@ -3087,21 +3087,20 @@ long /*int*/ gtk_commit (long /*int*/ imcontext, long /*int*/ text) {
 
 @Override
 long /*int*/ gtk_enter_notify_event (long /*int*/ widget, long /*int*/ event) {
-	if (OS.GTK_VERSION >= OS.VERSION (2, 12, 0)) {
-		/*
-		 * Feature in GTK. Children of a shell will inherit and display the shell's
-		 * tooltip if they do not have a tooltip of their own. The fix is to use the
-		 * new tooltip API in GTK 2.12 to null the shell's tooltip when the control
-		 * being entered does not have any tooltip text set.
-		 */
-		byte [] buffer = null;
-		if (toolTipText != null && toolTipText.length() != 0) {
-			char [] chars = fixMnemonic (toolTipText, false);
-			buffer = Converter.wcsToMbcs (null, chars, true);
-		}
-		long /*int*/ toolHandle = getShell().handle;
-		OS.gtk_widget_set_tooltip_text (toolHandle, buffer);
+	/*
+	 * Feature in GTK. Children of a shell will inherit and display the shell's
+	 * tooltip if they do not have a tooltip of their own. The fix is to use the
+	 * new tooltip API in GTK 2.12 to null the shell's tooltip when the control
+	 * being entered does not have any tooltip text set.
+	 */
+	byte [] buffer = null;
+	if (toolTipText != null && toolTipText.length() != 0) {
+		char [] chars = fixMnemonic (toolTipText, false);
+		buffer = Converter.wcsToMbcs (null, chars, true);
 	}
+	long /*int*/ toolHandle = getShell().handle;
+	OS.gtk_widget_set_tooltip_text (toolHandle, buffer);
+		
 	if (display.currentControl == this) return 0;
 	GdkEventCrossing gdkEvent = new GdkEventCrossing ();
 	OS.memmove (gdkEvent, event, GdkEventCrossing.sizeof);

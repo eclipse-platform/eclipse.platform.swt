@@ -798,17 +798,6 @@ public static final native long /*int*/ GTK_ACCEL_LABEL_GET_ACCEL_STRING(long /*
 public static final native long /*int*/ GTK_ENTRY_IM_CONTEXT(long /*int*/ widget);
 /** @param widget cast=(GtkTextView *) */
 public static final native long /*int*/ GTK_TEXTVIEW_IM_CONTEXT(long /*int*/ widget);
-/** @param widget cast=(GtkTooltips *) */
-public static final native long /*int*/ GTK_TOOLTIPS_TIP_WINDOW(long /*int*/ widget);
-/**
- * @param widget cast=(GtkTooltips *)
- * @param data cast=(GtkTooltipsData *)
- */
-public static final native void GTK_TOOLTIPS_SET_ACTIVE(long /*int*/ widget, long /*int*/ data);
-/**
- * @param data cast=(GtkTooltipsData *)
- */
-public static final native long /*int*/ GTK_TOOLTIPS_GET_TIP_TEXT(long /*int*/ data);
 /** @param widget cast=(GtkWidget *) */
 public static final native void GTK_WIDGET_SET_X(long /*int*/ widget, int x);
 /** @param widget cast=(GtkWidget *) */
@@ -12668,68 +12657,6 @@ public static final void gtk_toolbar_set_icon_size(long /*int*/ toolbar, int siz
 	lock.lock();
 	try {
 		_gtk_toolbar_set_icon_size(toolbar, size);
-	} finally {
-		lock.unlock();
-	}
-}
-/** @method flags=dynamic */
-public static final native long /*int*/ _gtk_tooltips_data_get(long /*int*/ widget);
-public static final long /*int*/ gtk_tooltips_data_get(long /*int*/ widget) {
-	lock.lock();
-	try {
-		return _gtk_tooltips_data_get(widget);
-	} finally {
-		lock.unlock();
-	}
-}
-/** @method flags=dynamic */
-public static final native void _gtk_tooltips_disable(long /*int*/ tooltips);
-public static final void gtk_tooltips_disable(long /*int*/ tooltips) {
-	lock.lock();
-	try {
-		_gtk_tooltips_disable(tooltips);
-	} finally {
-		lock.unlock();
-	}
-}
-/** @method flags=dynamic */
-public static final native void _gtk_tooltips_enable(long /*int*/ tooltips);
-public static final void gtk_tooltips_enable(long /*int*/ tooltips) {
-	lock.lock();
-	try {
-		_gtk_tooltips_enable(tooltips);
-	} finally {
-		lock.unlock();
-	}
-}
-/** @method flags=dynamic */
-public static final native long /*int*/ _gtk_tooltips_new();
-public static final long /*int*/ gtk_tooltips_new() {
-	lock.lock();
-	try {
-		return _gtk_tooltips_new();
-	} finally {
-		lock.unlock();
-	}
-}
-/** @method flags=dynamic */
-public static final native void _gtk_tooltips_force_window(long /*int*/ tooltips);
-public static final void gtk_tooltips_force_window(long /*int*/ tooltips) {
-	lock.lock();
-	try {
-		_gtk_tooltips_force_window(tooltips);
-	} finally {
-		lock.unlock();
-	}
-}
-/**
- * @method flags=dynamic
- */
-public static final native void _gtk_tooltips_set_tip(long /*int*/ tooltips, long /*int*/ widget, byte[] tip_text, byte[] tip_private);
-public static final void gtk_tooltips_set_tip(long /*int*/ tooltips, long /*int*/ widget, byte[] tip_text, byte[] tip_private) {
-	lock.lock();
-	try {
-		_gtk_tooltips_set_tip(tooltips, widget, tip_text, tip_private);
 	} finally {
 		lock.unlock();
 	}

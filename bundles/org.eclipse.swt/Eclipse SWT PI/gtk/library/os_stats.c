@@ -42,9 +42,6 @@ char * OS_nativeFunctionNames[] = {
 	"GTK_1RANGE_1SLIDER_1START",
 	"GTK_1SCROLLED_1WINDOW_1SCROLLBAR_1SPACING",
 	"GTK_1TEXTVIEW_1IM_1CONTEXT",
-	"GTK_1TOOLTIPS_1GET_1TIP_1TEXT",
-	"GTK_1TOOLTIPS_1SET_1ACTIVE",
-	"GTK_1TOOLTIPS_1TIP_1WINDOW",
 	"GTK_1TYPE_1ACCESSIBLE",
 	"GTK_1WIDGET_1HEIGHT",
 	"GTK_1WIDGET_1REQUISITION_1HEIGHT",
@@ -1205,12 +1202,6 @@ char * OS_nativeFunctionNames[] = {
 	"_1gtk_1toolbar_1set_1orientation",
 	"_1gtk_1toolbar_1set_1show_1arrow",
 	"_1gtk_1toolbar_1set_1style",
-	"_1gtk_1tooltips_1data_1get",
-	"_1gtk_1tooltips_1disable",
-	"_1gtk_1tooltips_1enable",
-	"_1gtk_1tooltips_1force_1window",
-	"_1gtk_1tooltips_1new",
-	"_1gtk_1tooltips_1set_1tip",
 #ifndef JNI64
 	"_1gtk_1tree_1model_1get__III_3II",
 #else
