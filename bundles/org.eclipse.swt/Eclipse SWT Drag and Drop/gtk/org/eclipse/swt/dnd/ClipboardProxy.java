@@ -11,15 +11,10 @@
 package org.eclipse.swt.dnd;
 
 
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.internal.Callback;
-import org.eclipse.swt.internal.Converter;
-import org.eclipse.swt.internal.gtk.GtkSelectionData;
-import org.eclipse.swt.internal.gtk.GtkTargetEntry;
-import org.eclipse.swt.internal.gtk.OS;
-import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.widgets.Listener;
+import org.eclipse.swt.*;
+import org.eclipse.swt.internal.*;
+import org.eclipse.swt.internal.gtk.*;
+import org.eclipse.swt.widgets.*;
 
 class ClipboardProxy {
 	/* Data is not flushed to the clipboard immediately.
@@ -113,14 +108,7 @@ void dispose () {
  */
 long /*int*/ getFunc(long /*int*/ clipboard, long /*int*/ selection_data, long /*int*/ info, long /*int*/ user_data_or_owner){
 	if (selection_data == 0) return 0;
-	long /*int*/ target;
-	if (OS.GTK_VERSION >= OS.VERSION(2, 14, 0)) {
-		target = OS.gtk_selection_data_get_target(selection_data);
-	} else {
-		GtkSelectionData selectionData = new GtkSelectionData();
-		OS.memmove(selectionData, selection_data, GtkSelectionData.sizeof);
-		target = selectionData.target;
-	}
+	long /*int*/ target = OS.gtk_selection_data_get_target(selection_data);
 	TransferData tdata = new TransferData();
 	tdata.type = target;
 	Transfer[] types = (clipboard == Clipboard.GTKCLIPBOARD) ? clipboardDataTypes : primaryClipboardDataTypes;

@@ -12,10 +12,9 @@ package org.eclipse.swt.dnd;
 
 
 import org.eclipse.swt.*;
-import org.eclipse.swt.internal.Converter;
-import org.eclipse.swt.internal.gtk.GtkSelectionData;
-import org.eclipse.swt.internal.gtk.OS;
-import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.internal.*;
+import org.eclipse.swt.internal.gtk.*;
+import org.eclipse.swt.widgets.*;
 
 /**
  * The <code>Clipboard</code> provides a mechanism for transferring data from one
@@ -314,19 +313,10 @@ public Object getContents(Transfer transfer, int clipboards) {
 	}
 	if (selection_data == 0) return null;
 	TransferData tdata = new TransferData();
-	if (OS.GTK_VERSION >= OS.VERSION(2, 14, 0)) {
-		tdata.type = OS.gtk_selection_data_get_data_type(selection_data);
-		tdata.pValue = OS.gtk_selection_data_get_data(selection_data);
-		tdata.length = OS.gtk_selection_data_get_length(selection_data);
-		tdata.format = OS.gtk_selection_data_get_format(selection_data);
-	} else {
-		GtkSelectionData gtkSelectionData = new GtkSelectionData();
-		OS.memmove(gtkSelectionData, selection_data, GtkSelectionData.sizeof);
-		tdata.type = gtkSelectionData.type;
-		tdata.pValue = gtkSelectionData.data;
-		tdata.length = gtkSelectionData.length;
-		tdata.format = gtkSelectionData.format;
-	}
+	tdata.type = OS.gtk_selection_data_get_data_type(selection_data);
+	tdata.pValue = OS.gtk_selection_data_get_data(selection_data);
+	tdata.length = OS.gtk_selection_data_get_length(selection_data);
+	tdata.format = OS.gtk_selection_data_get_format(selection_data);
 	Object result = transfer.nativeToJava(tdata);
 	OS.gtk_selection_data_free(selection_data);
 	return result;
@@ -609,20 +599,9 @@ private  int[] getAvailablePrimaryTypes() {
 	OS.gdk_threads_leave();
 	if (selection_data != 0) {
 		try {
-			int length;
-			int format;
-			long /*int*/ data;
-			if (OS.GTK_VERSION >= OS.VERSION(2, 14, 0)) {
-				length = OS.gtk_selection_data_get_length(selection_data);
-				format = OS.gtk_selection_data_get_format(selection_data);
-				data = OS.gtk_selection_data_get_data(selection_data);
-			} else {
-				GtkSelectionData gtkSelectionData = new GtkSelectionData();
-				OS.memmove(gtkSelectionData, selection_data, GtkSelectionData.sizeof);
-				length = gtkSelectionData.length;
-				format = gtkSelectionData.format;
-				data = gtkSelectionData.data;
-			}
+			int length = OS.gtk_selection_data_get_length(selection_data);
+			int format = OS.gtk_selection_data_get_format(selection_data);
+			long /*int*/ data = OS.gtk_selection_data_get_data(selection_data);
 			if (length != 0) {
 				types = new int[length * 8 / format];
 				OS.memmove(types, data, length);
@@ -645,20 +624,9 @@ private int[] getAvailableClipboardTypes () {
 	OS.gdk_threads_leave();
 	if (selection_data != 0) {
 		try {
-			int length;
-			int format;
-			long /*int*/ data;
-			if (OS.GTK_VERSION >= OS.VERSION(2, 14, 0)) {
-				length = OS.gtk_selection_data_get_length(selection_data);
-				format = OS.gtk_selection_data_get_format(selection_data);
-				data = OS.gtk_selection_data_get_data(selection_data);
-			} else {
-				GtkSelectionData gtkSelectionData = new GtkSelectionData();
-				OS.memmove(gtkSelectionData, selection_data, GtkSelectionData.sizeof);
-				length = gtkSelectionData.length;
-				format = gtkSelectionData.format;
-				data = gtkSelectionData.data;
-			}
+			int length = OS.gtk_selection_data_get_length(selection_data); 
+			int format = OS.gtk_selection_data_get_format(selection_data);
+			long /*int*/ data = OS.gtk_selection_data_get_data(selection_data);
 			if (length != 0) {
 				types = new int[length * 8 / format];
 				OS.memmove(types, data, length);

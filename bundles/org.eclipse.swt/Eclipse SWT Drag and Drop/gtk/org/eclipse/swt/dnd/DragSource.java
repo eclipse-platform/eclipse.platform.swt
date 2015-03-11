@@ -371,23 +371,10 @@ void dragEnd(long /*int*/ widget, long /*int*/ context){
 
 void dragGetData(long /*int*/ widget, long /*int*/ context, long /*int*/ selection_data,  int info, int time){
 	if (selection_data == 0) return;
-	int length;
-	int format;
-	long /*int*/ data;
-	long /*int*/ target;
-	if (OS.GTK_VERSION >= OS.VERSION(2, 14, 0)) {
-		length = OS.gtk_selection_data_get_length(selection_data);
-		format = OS.gtk_selection_data_get_format(selection_data);
-		data = OS.gtk_selection_data_get_data(selection_data);
-		target = OS.gtk_selection_data_get_target(selection_data);
-	} else {
-		GtkSelectionData gtkSelectionData = new GtkSelectionData();
-		OS.memmove(gtkSelectionData, selection_data, GtkSelectionData.sizeof);
-		length = gtkSelectionData.length;
-		format = gtkSelectionData.format;
-		data = gtkSelectionData.data;
-		target = gtkSelectionData.target;
-	}
+	int length = OS.gtk_selection_data_get_length(selection_data);
+	int format = OS.gtk_selection_data_get_format(selection_data);
+	long /*int*/ data = OS.gtk_selection_data_get_data(selection_data);
+	long /*int*/ target = OS.gtk_selection_data_get_target(selection_data);
 	if (target == 0) return;
 
 	TransferData transferData = new TransferData();

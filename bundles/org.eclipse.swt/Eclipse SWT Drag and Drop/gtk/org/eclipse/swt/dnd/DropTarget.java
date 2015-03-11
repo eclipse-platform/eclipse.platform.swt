@@ -346,23 +346,10 @@ void drag_data_received ( long /*int*/ widget, long /*int*/ context, int x, int 
 	// Get data in a Java format
 	Object object = null;
 	TransferData transferData = new TransferData();
-	int length;
-	int format;
-	long /*int*/ data;
-	long /*int*/ type;
-	if (OS.GTK_VERSION >= OS.VERSION(2, 14, 0)) {
-		length = OS.gtk_selection_data_get_length(selection_data);
-		format = OS.gtk_selection_data_get_format(selection_data);
-		data = OS.gtk_selection_data_get_data(selection_data);
-		type = OS.gtk_selection_data_get_data_type(selection_data);
-	} else {
-		GtkSelectionData gtkSelectionData = new GtkSelectionData();
-		OS.memmove(gtkSelectionData, selection_data, GtkSelectionData.sizeof);
-		length = gtkSelectionData.length;
-		format = gtkSelectionData.format;
-		data = gtkSelectionData.data;
-		type = gtkSelectionData.type;
-	}
+	int length = OS.gtk_selection_data_get_length(selection_data);
+	int format = OS.gtk_selection_data_get_format(selection_data);
+	long /*int*/ data = OS.gtk_selection_data_get_data(selection_data);
+	long /*int*/ type = OS.gtk_selection_data_get_data_type(selection_data);
 	if (data != 0) {
 		transferData.type = type;
 		transferData.length = length;

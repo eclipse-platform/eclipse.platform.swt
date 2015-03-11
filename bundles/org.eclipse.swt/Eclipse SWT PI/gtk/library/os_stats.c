@@ -91,7 +91,6 @@ char * OS_nativeFunctionNames[] = {
 	"GtkCellRendererToggle_1sizeof",
 	"GtkColorSelectionDialog_1sizeof",
 	"GtkRequisition_1sizeof",
-	"GtkSelectionData_1sizeof",
 	"GtkTargetEntry_1sizeof",
 	"GtkTextIter_1sizeof",
 	"GtkTreeIter_1sizeof",
@@ -1788,11 +1787,6 @@ char * OS_nativeFunctionNames[] = {
 	"memmove__Lorg_eclipse_swt_internal_gtk_GtkFixed_2I",
 #else
 	"memmove__Lorg_eclipse_swt_internal_gtk_GtkFixed_2J",
-#endif
-#ifndef JNI64
-	"memmove__Lorg_eclipse_swt_internal_gtk_GtkSelectionData_2II",
-#else
-	"memmove__Lorg_eclipse_swt_internal_gtk_GtkSelectionData_2JJ",
 #endif
 #ifndef JNI64
 	"memmove__Lorg_eclipse_swt_internal_gtk_GtkWidgetClass_2I",

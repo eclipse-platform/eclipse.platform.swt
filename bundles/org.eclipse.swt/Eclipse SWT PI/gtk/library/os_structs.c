@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2013 IBM Corporation and others. All rights reserved.
+ * Copyright (c) 2000, 2015 IBM Corporation and others. All rights reserved.
  * The contents of this file are made available under the terms
  * of the GNU Lesser General Public License (LGPL) Version 2.1 that
  * accompanies this distribution (lgpl-v21.txt).  The LGPL is also
@@ -1623,52 +1623,6 @@ void setGtkRequisitionFields(JNIEnv *env, jobject lpObject, GtkRequisition *lpSt
 	if (!GtkRequisitionFc.cached) cacheGtkRequisitionFields(env, lpObject);
 	(*env)->SetIntField(env, lpObject, GtkRequisitionFc.width, (jint)lpStruct->width);
 	(*env)->SetIntField(env, lpObject, GtkRequisitionFc.height, (jint)lpStruct->height);
-}
-#endif
-
-#ifndef NO_GtkSelectionData
-typedef struct GtkSelectionData_FID_CACHE {
-	int cached;
-	jclass clazz;
-	jfieldID selection, target, type, format, data, length;
-} GtkSelectionData_FID_CACHE;
-
-GtkSelectionData_FID_CACHE GtkSelectionDataFc;
-
-void cacheGtkSelectionDataFields(JNIEnv *env, jobject lpObject)
-{
-	if (GtkSelectionDataFc.cached) return;
-	GtkSelectionDataFc.clazz = (*env)->GetObjectClass(env, lpObject);
-	GtkSelectionDataFc.selection = (*env)->GetFieldID(env, GtkSelectionDataFc.clazz, "selection", I_J);
-	GtkSelectionDataFc.target = (*env)->GetFieldID(env, GtkSelectionDataFc.clazz, "target", I_J);
-	GtkSelectionDataFc.type = (*env)->GetFieldID(env, GtkSelectionDataFc.clazz, "type", I_J);
-	GtkSelectionDataFc.format = (*env)->GetFieldID(env, GtkSelectionDataFc.clazz, "format", "I");
-	GtkSelectionDataFc.data = (*env)->GetFieldID(env, GtkSelectionDataFc.clazz, "data", I_J);
-	GtkSelectionDataFc.length = (*env)->GetFieldID(env, GtkSelectionDataFc.clazz, "length", "I");
-	GtkSelectionDataFc.cached = 1;
-}
-
-GtkSelectionData *getGtkSelectionDataFields(JNIEnv *env, jobject lpObject, GtkSelectionData *lpStruct)
-{
-	if (!GtkSelectionDataFc.cached) cacheGtkSelectionDataFields(env, lpObject);
-	lpStruct->selection = (GdkAtom)(*env)->GetIntLongField(env, lpObject, GtkSelectionDataFc.selection);
-	lpStruct->target = (GdkAtom)(*env)->GetIntLongField(env, lpObject, GtkSelectionDataFc.target);
-	lpStruct->type = (GdkAtom)(*env)->GetIntLongField(env, lpObject, GtkSelectionDataFc.type);
-	lpStruct->format = (gint)(*env)->GetIntField(env, lpObject, GtkSelectionDataFc.format);
-	lpStruct->data = (guchar *)(*env)->GetIntLongField(env, lpObject, GtkSelectionDataFc.data);
-	lpStruct->length = (gint)(*env)->GetIntField(env, lpObject, GtkSelectionDataFc.length);
-	return lpStruct;
-}
-
-void setGtkSelectionDataFields(JNIEnv *env, jobject lpObject, GtkSelectionData *lpStruct)
-{
-	if (!GtkSelectionDataFc.cached) cacheGtkSelectionDataFields(env, lpObject);
-	(*env)->SetIntLongField(env, lpObject, GtkSelectionDataFc.selection, (jintLong)lpStruct->selection);
-	(*env)->SetIntLongField(env, lpObject, GtkSelectionDataFc.target, (jintLong)lpStruct->target);
-	(*env)->SetIntLongField(env, lpObject, GtkSelectionDataFc.type, (jintLong)lpStruct->type);
-	(*env)->SetIntField(env, lpObject, GtkSelectionDataFc.format, (jint)lpStruct->format);
-	(*env)->SetIntLongField(env, lpObject, GtkSelectionDataFc.data, (jintLong)lpStruct->data);
-	(*env)->SetIntField(env, lpObject, GtkSelectionDataFc.length, (jint)lpStruct->length);
 }
 #endif
 

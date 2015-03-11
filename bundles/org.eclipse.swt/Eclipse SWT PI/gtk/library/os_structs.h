@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2013 IBM Corporation and others. All rights reserved.
+ * Copyright (c) 2000, 2015 IBM Corporation and others. All rights reserved.
  * The contents of this file are made available under the terms
  * of the GNU Lesser General Public License (LGPL) Version 2.1 that
  * accompanies this distribution (lgpl-v21.txt).  The LGPL is also
@@ -397,18 +397,6 @@ void setGtkRequisitionFields(JNIEnv *env, jobject lpObject, GtkRequisition *lpSt
 #define getGtkRequisitionFields(a,b,c) NULL
 #define setGtkRequisitionFields(a,b,c)
 #define GtkRequisition_sizeof() 0
-#endif
-
-#ifndef NO_GtkSelectionData
-void cacheGtkSelectionDataFields(JNIEnv *env, jobject lpObject);
-GtkSelectionData *getGtkSelectionDataFields(JNIEnv *env, jobject lpObject, GtkSelectionData *lpStruct);
-void setGtkSelectionDataFields(JNIEnv *env, jobject lpObject, GtkSelectionData *lpStruct);
-#define GtkSelectionData_sizeof() sizeof(GtkSelectionData)
-#else
-#define cacheGtkSelectionDataFields(a,b)
-#define getGtkSelectionDataFields(a,b,c) NULL
-#define setGtkSelectionDataFields(a,b,c)
-#define GtkSelectionData_sizeof() 0
 #endif
 
 #ifndef NO_GtkTargetEntry

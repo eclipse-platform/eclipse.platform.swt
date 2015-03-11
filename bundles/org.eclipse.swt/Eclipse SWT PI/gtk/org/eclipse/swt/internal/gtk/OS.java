@@ -728,7 +728,6 @@ public static final native int GtkAllocation_sizeof();
 public static final native int GtkBorder_sizeof();
 public static final native int GtkColorSelectionDialog_sizeof();
 public static final native int GtkRequisition_sizeof();
-public static final native int GtkSelectionData_sizeof();
 public static final native int GtkTargetEntry_sizeof();
 public static final native int GtkTextIter_sizeof();
 public static final native int GtkCellRendererText_sizeof();
@@ -15309,12 +15308,6 @@ public static final native void memmove(GdkEventProperty dest, long /*int*/ src)
  * @param size cast=(size_t)
  */
 public static final native void memmove(GdkDragContext dest, long /*int*/ src, long /*int*/ size);
-/**
- * @param dest cast=(void *),flags=no_in
- * @param src cast=(const void *)
- * @param size cast=(size_t)
- */
-public static final native void memmove(GtkSelectionData dest, long /*int*/ src, long /*int*/ size);
 /** @param dest flags=no_in */
 public static final native void memmove(GtkWidgetClass dest, long /*int*/ src);
 /**
