@@ -1019,18 +1019,6 @@ JNIEXPORT jint JNICALL OS_NATIVE(XVisibilityEvent_1sizeof)
 }
 #endif
 
-#ifndef NO_XWindowChanges_1sizeof
-JNIEXPORT jint JNICALL OS_NATIVE(XWindowChanges_1sizeof)
-	(JNIEnv *env, jclass that)
-{
-	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, XWindowChanges_1sizeof_FUNC);
-	rc = (jint)XWindowChanges_sizeof();
-	OS_NATIVE_EXIT(env, that, XWindowChanges_1sizeof_FUNC);
-	return rc;
-}
-#endif
-
 #ifndef NO_X_1EVENT_1TYPE
 JNIEXPORT jint JNICALL OS_NATIVE(X_1EVENT_1TYPE)
 	(JNIEnv *env, jclass that, jintLong arg0)
@@ -1821,21 +1809,6 @@ fail:
 	if (arg3 && lparg3) (*env)->ReleaseIntLongArrayElements(env, arg3, lparg3, 0);
 	if (arg2 && lparg2) (*env)->ReleaseIntLongArrayElements(env, arg2, lparg2, 0);
 	OS_NATIVE_EXIT(env, that, _1XQueryPointer_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO__1XReconfigureWMWindow
-JNIEXPORT jint JNICALL OS_NATIVE(_1XReconfigureWMWindow)
-	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jint arg2, jint arg3, jobject arg4)
-{
-	XWindowChanges _arg4, *lparg4=NULL;
-	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, _1XReconfigureWMWindow_FUNC);
-	if (arg4) if ((lparg4 = getXWindowChangesFields(env, arg4, &_arg4)) == NULL) goto fail;
-	rc = (jint)XReconfigureWMWindow((Display *)arg0, (Window)arg1, arg2, arg3, lparg4);
-fail:
-	OS_NATIVE_EXIT(env, that, _1XReconfigureWMWindow_FUNC);
 	return rc;
 }
 #endif

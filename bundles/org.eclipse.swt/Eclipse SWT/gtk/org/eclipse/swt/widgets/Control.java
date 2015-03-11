@@ -3882,28 +3882,8 @@ void releaseWidget () {
 }
 
 void restackWindow (long /*int*/ window, long /*int*/ sibling, boolean above) {
-	    if (OS.GTK_VERSION >= OS.VERSION (2, 17, 11)) {
-	    	OS.gdk_window_restack (window, sibling, above);
-	    } else {
-	    	/*
-			* Feature in X. If the receiver is a top level, XConfigureWindow ()
-			* will fail (with a BadMatch error) for top level shells because top
-			* level shells are reparented by the window manager and do not share
-			* the same X window parent.  This is the correct behavior but it is
-			* unexpected.  The fix is to use XReconfigureWMWindow () instead.
-			* When the receiver is not a top level shell, XReconfigureWMWindow ()
-			* behaves the same as XConfigureWindow ().
-			*/
-			long /*int*/ xDisplay = OS.gdk_x11_drawable_get_xdisplay (window);
-			long /*int*/ xWindow = OS.gdk_x11_drawable_get_xid (window);
-			int xScreen = OS.XDefaultScreen (xDisplay);
-			int flags = OS.CWStackMode | OS.CWSibling;
-			XWindowChanges changes = new XWindowChanges ();
-			changes.sibling = OS.gdk_x11_drawable_get_xid (sibling);
-			changes.stack_mode = above ? OS.Above : OS.Below;
-			OS.XReconfigureWMWindow (xDisplay, xWindow, xScreen, flags, changes);
-	    }
-	}
+   	OS.gdk_window_restack (window, sibling, above);
+}
 
 boolean sendDragEvent (int button, int stateMask, int x, int y, boolean isStateMask) {
 	Event event = new Event ();

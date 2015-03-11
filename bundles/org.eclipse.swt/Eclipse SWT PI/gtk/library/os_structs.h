@@ -591,15 +591,3 @@ void setXVisibilityEventFields(JNIEnv *env, jobject lpObject, XVisibilityEvent *
 #define XVisibilityEvent_sizeof() 0
 #endif
 
-#ifndef NO_XWindowChanges
-void cacheXWindowChangesFields(JNIEnv *env, jobject lpObject);
-XWindowChanges *getXWindowChangesFields(JNIEnv *env, jobject lpObject, XWindowChanges *lpStruct);
-void setXWindowChangesFields(JNIEnv *env, jobject lpObject, XWindowChanges *lpStruct);
-#define XWindowChanges_sizeof() sizeof(XWindowChanges)
-#else
-#define cacheXWindowChangesFields(a,b)
-#define getXWindowChangesFields(a,b,c) NULL
-#define setXWindowChangesFields(a,b,c)
-#define XWindowChanges_sizeof() 0
-#endif
-

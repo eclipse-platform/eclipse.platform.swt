@@ -57,7 +57,6 @@
 #define NO_XExposeEvent
 #define NO_XFocusChangeEvent
 #define NO_XVisibilityEvent
-#define NO_XWindowChanges
 
 /* X functions */
 #define NO__1XCheckMaskEvent

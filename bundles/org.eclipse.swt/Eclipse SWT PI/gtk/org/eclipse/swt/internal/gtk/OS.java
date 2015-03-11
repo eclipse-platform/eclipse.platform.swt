@@ -750,7 +750,6 @@ public static final native int XEvent_sizeof();
 public static final native int XExposeEvent_sizeof();
 public static final native int XFocusChangeEvent_sizeof();
 public static final native int XVisibilityEvent_sizeof();
-public static final native int XWindowChanges_sizeof();
 public static final native long /*int*/ localeconv_decimal_point();
 /**
  * @param path cast=(const char *)
@@ -1067,20 +1066,6 @@ public static final long /*int*/ XListProperties(long /*int*/ display, long /*in
 	lock.lock();
 	try {
 		return _XListProperties(display, window, num_prop_return);
-	} finally {
-		lock.unlock();
-	}
-}
-/**
- * @param display cast=(Display *)
- * @param window cast=(Window)
- * @param values flags=no_out
- */
-public static final native int _XReconfigureWMWindow(long /*int*/ display, long /*int*/ window, int screen, int valueMask, XWindowChanges values);
-public static final int XReconfigureWMWindow(long /*int*/ display, long /*int*/ window, int screen, int valueMask, XWindowChanges values) {
-	lock.lock();
-	try {
-		return _XReconfigureWMWindow(display, window, screen, valueMask, values);
 	} finally {
 		lock.unlock();
 	}
