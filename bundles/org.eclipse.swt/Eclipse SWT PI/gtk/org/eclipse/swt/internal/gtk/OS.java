@@ -6223,16 +6223,6 @@ public static final long /*int*/ gtk_accessible_get_widget(long /*int*/ accessib
 		lock.unlock();
 	}
 }
-/** @param adjustment cast=(GtkAdjustment *) */
-public static final native void _gtk_adjustment_changed(long /*int*/ adjustment);
-public static final void gtk_adjustment_changed(long /*int*/ adjustment) {
-	lock.lock();
-	try {
-		_gtk_adjustment_changed(adjustment);
-	} finally {
-		lock.unlock();
-	}
-}
 /**
  * @method flags=dynamic
  * @param adjustment cast=(GtkAdjustment *)

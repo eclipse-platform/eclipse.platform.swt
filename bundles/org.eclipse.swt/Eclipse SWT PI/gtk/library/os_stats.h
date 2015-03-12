@@ -654,7 +654,6 @@ typedef enum {
 	_1gtk_1accelerator_1get_1default_1mod_1mask_FUNC,
 	_1gtk_1accelerator_1parse_FUNC,
 	_1gtk_1accessible_1get_1widget_FUNC,
-	_1gtk_1adjustment_1changed_FUNC,
 	_1gtk_1adjustment_1configure_FUNC,
 	_1gtk_1adjustment_1get_1lower_FUNC,
 	_1gtk_1adjustment_1get_1page_1increment_FUNC,

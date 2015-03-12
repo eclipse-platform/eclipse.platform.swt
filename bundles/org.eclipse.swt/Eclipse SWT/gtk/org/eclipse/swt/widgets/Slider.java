@@ -293,7 +293,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 public int getIncrement () {
 	checkWidget ();
 	long /*int*/ hAdjustment = OS.gtk_range_get_adjustment (handle);
-	return (int) gtk_adjustment_get_step_increment (hAdjustment);
+	return (int) OS.gtk_adjustment_get_step_increment (hAdjustment);
 }
 
 /**
@@ -309,7 +309,7 @@ public int getIncrement () {
 public int getMaximum () {
 	checkWidget ();
 	long /*int*/ hAdjustment = OS.gtk_range_get_adjustment (handle);
-	return (int) gtk_adjustment_get_upper (hAdjustment);
+	return (int) OS.gtk_adjustment_get_upper (hAdjustment);
 }
 
 /**
@@ -325,7 +325,7 @@ public int getMaximum () {
 public int getMinimum () {
 	checkWidget ();
 	long /*int*/ hAdjustment = OS.gtk_range_get_adjustment (handle);
-	return (int) gtk_adjustment_get_lower (hAdjustment);
+	return (int) OS.gtk_adjustment_get_lower (hAdjustment);
 }
 
 /**
@@ -343,7 +343,7 @@ public int getMinimum () {
 public int getPageIncrement () {
 	checkWidget ();
 	long /*int*/ hAdjustment = OS.gtk_range_get_adjustment (handle);
-	return (int) gtk_adjustment_get_page_increment (hAdjustment);
+	return (int) OS.gtk_adjustment_get_page_increment (hAdjustment);
 }
 
 /**
@@ -359,7 +359,7 @@ public int getPageIncrement () {
 public int getSelection () {
 	checkWidget ();
 	long /*int*/ hAdjustment = OS.gtk_range_get_adjustment (handle);
-	return (int) gtk_adjustment_get_value (hAdjustment);
+	return (int) OS.gtk_adjustment_get_value (hAdjustment);
 }
 
 /**
@@ -375,7 +375,7 @@ public int getSelection () {
 public int getThumb () {
 	checkWidget ();
 	long /*int*/ hAdjustment = OS.gtk_range_get_adjustment (handle);
-	return (int) gtk_adjustment_get_page_size (hAdjustment);
+	return (int) OS.gtk_adjustment_get_page_size (hAdjustment);
 }
 
 /**
@@ -448,7 +448,8 @@ public void setMaximum (int value) {
 	adjustment.page_size = Math.min ((int)adjustment.page_size, value - minimum);
 	adjustment.value = Math.min ((int)adjustment.value, (int)(value - adjustment.page_size));
 	OS.g_signal_handlers_block_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, VALUE_CHANGED);
-	gtk_adjustment_configure (hAdjustment, adjustment);
+	OS.gtk_adjustment_configure(hAdjustment, adjustment.value, adjustment.lower, adjustment.upper,
+		adjustment.step_increment, adjustment.page_increment, adjustment.page_size);
 	OS.g_signal_handlers_unblock_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, VALUE_CHANGED);
 }
 
@@ -477,7 +478,8 @@ public void setMinimum (int value) {
 	adjustment.page_size = Math.min ((int)adjustment.page_size, maximum - value);
 	adjustment.value = Math.max ((int)adjustment.value, value);
 	OS.g_signal_handlers_block_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, VALUE_CHANGED);
-	gtk_adjustment_configure (hAdjustment, adjustment);
+	OS.gtk_adjustment_configure(hAdjustment, adjustment.value, adjustment.lower, adjustment.upper,
+		adjustment.step_increment, adjustment.page_increment, adjustment.page_size);
 	OS.g_signal_handlers_unblock_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, VALUE_CHANGED);
 }
 
@@ -558,7 +560,8 @@ public void setThumb (int value) {
 	adjustment.page_size = (double) value;
 	adjustment.value = Math.min ((int)adjustment.value, (int)(adjustment.upper - value));
 	OS.g_signal_handlers_block_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, VALUE_CHANGED);
-	gtk_adjustment_configure (hAdjustment, adjustment);
+	OS.gtk_adjustment_configure(hAdjustment, adjustment.value, adjustment.lower, adjustment.upper,
+		adjustment.step_increment, adjustment.page_increment, adjustment.page_size);
 	OS.g_signal_handlers_unblock_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, VALUE_CHANGED);
 }
 
@@ -600,7 +603,8 @@ public void setValues (int selection, int minimum, int maximum, int thumb, int i
 	adjustment.step_increment = (double) increment;
 	adjustment.page_increment = (double) pageIncrement;
 	OS.g_signal_handlers_block_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, VALUE_CHANGED);
-	gtk_adjustment_configure (hAdjustment, adjustment);
+	OS.gtk_adjustment_configure(hAdjustment, adjustment.value, adjustment.lower, adjustment.upper,
+		adjustment.step_increment, adjustment.page_increment, adjustment.page_size);
 	OS.gtk_adjustment_value_changed (hAdjustment);
 	OS.g_signal_handlers_unblock_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, VALUE_CHANGED);
 }

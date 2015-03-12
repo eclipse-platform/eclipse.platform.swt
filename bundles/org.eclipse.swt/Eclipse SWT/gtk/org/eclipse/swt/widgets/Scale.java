@@ -162,7 +162,7 @@ void hookEvents () {
 public int getIncrement () {
 	checkWidget ();
 	long /*int*/ hAdjustment = OS.gtk_range_get_adjustment (handle);
-	return (int) gtk_adjustment_get_step_increment (hAdjustment);
+	return (int) OS.gtk_adjustment_get_step_increment (hAdjustment);
 }
 
 /**
@@ -178,7 +178,7 @@ public int getIncrement () {
 public int getMaximum () {
 	checkWidget ();
 	long /*int*/ hAdjustment = OS.gtk_range_get_adjustment (handle);
-	return (int) gtk_adjustment_get_upper (hAdjustment);
+	return (int) OS.gtk_adjustment_get_upper (hAdjustment);
 }
 
 /**
@@ -194,7 +194,7 @@ public int getMaximum () {
 public int getMinimum () {
 	checkWidget ();
 	long /*int*/ hAdjustment = OS.gtk_range_get_adjustment (handle);
-	return (int) gtk_adjustment_get_lower (hAdjustment);
+	return (int) OS.gtk_adjustment_get_lower (hAdjustment);
 }
 
 /**
@@ -212,7 +212,7 @@ public int getMinimum () {
 public int getPageIncrement () {
 	checkWidget ();
 	long /*int*/ hAdjustment = OS.gtk_range_get_adjustment (handle);
-	return (int) gtk_adjustment_get_page_increment (hAdjustment);
+	return (int) OS.gtk_adjustment_get_page_increment (hAdjustment);
 }
 
 /**
@@ -228,7 +228,7 @@ public int getPageIncrement () {
 public int getSelection () {
 	checkWidget ();
 	long /*int*/ hAdjustment = OS.gtk_range_get_adjustment (handle);
-	return (int) gtk_adjustment_get_value (hAdjustment);
+	return (int) OS.gtk_adjustment_get_value (hAdjustment);
 }
 
 @Override

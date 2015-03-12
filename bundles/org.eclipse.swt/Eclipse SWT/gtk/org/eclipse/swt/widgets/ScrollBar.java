@@ -204,7 +204,7 @@ public boolean getEnabled () {
  */
 public int getIncrement () {
 	checkWidget ();
-	return (int) gtk_adjustment_get_step_increment (adjustmentHandle);
+	return (int) OS.gtk_adjustment_get_step_increment (adjustmentHandle);
 }
 
 /**
@@ -219,7 +219,7 @@ public int getIncrement () {
  */
 public int getMaximum () {
 	checkWidget ();
-	return (int) gtk_adjustment_get_upper (adjustmentHandle);
+	return (int) OS.gtk_adjustment_get_upper (adjustmentHandle);
 }
 
 /**
@@ -234,7 +234,7 @@ public int getMaximum () {
  */
 public int getMinimum () {
 	checkWidget ();
-	return (int) gtk_adjustment_get_lower (adjustmentHandle);
+	return (int) OS.gtk_adjustment_get_lower (adjustmentHandle);
 }
 
 /**
@@ -251,7 +251,7 @@ public int getMinimum () {
  */
 public int getPageIncrement () {
 	checkWidget ();
-	return (int) gtk_adjustment_get_page_increment (adjustmentHandle);
+	return (int) OS.gtk_adjustment_get_page_increment (adjustmentHandle);
 }
 
 /**
@@ -281,7 +281,7 @@ public Scrollable getParent () {
  */
 public int getSelection () {
 	checkWidget ();
-	return (int) gtk_adjustment_get_value (adjustmentHandle);
+	return (int) OS.gtk_adjustment_get_value (adjustmentHandle);
 }
 
 /**
@@ -319,7 +319,7 @@ public Point getSize () {
  */
 public int getThumb () {
 	checkWidget ();
-	return (int) gtk_adjustment_get_page_size (adjustmentHandle);
+	return (int) OS.gtk_adjustment_get_page_size (adjustmentHandle);
 }
 
 /**
@@ -670,15 +670,7 @@ public void setIncrement (int value) {
 	checkWidget ();
 	if (value < 1) return;
 	OS.g_signal_handlers_block_matched (adjustmentHandle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, VALUE_CHANGED);
-	if (OS.GTK_VERSION >= OS.VERSION (2, 14, 0)) {
-		OS.gtk_adjustment_set_step_increment (adjustmentHandle, value);
-	} else {
-		GtkAdjustment adjustment = new GtkAdjustment ();
-		OS.memmove (adjustment, adjustmentHandle);
-		adjustment.step_increment = (float) value;
-		OS.memmove (adjustmentHandle, adjustment);
-		OS.gtk_adjustment_changed (adjustmentHandle);
-	}
+	OS.gtk_adjustment_set_step_increment (adjustmentHandle, value);
 	OS.g_signal_handlers_unblock_matched (adjustmentHandle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, VALUE_CHANGED);
 }
 
@@ -705,7 +697,8 @@ public void setMaximum (int value) {
 	adjustment.page_size = Math.min ((int)adjustment.page_size, value - minimum);
 	adjustment.value = Math.min ((int)adjustment.value, (int)(value - adjustment.page_size));
 	OS.g_signal_handlers_block_matched (adjustmentHandle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, VALUE_CHANGED);
-	gtk_adjustment_configure (adjustmentHandle, adjustment);
+	OS.gtk_adjustment_configure(adjustmentHandle, adjustment.value, adjustment.lower, adjustment.upper,
+		adjustment.step_increment, adjustment.page_increment, adjustment.page_size);
 	OS.g_signal_handlers_unblock_matched (adjustmentHandle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, VALUE_CHANGED);
 }
 
@@ -733,7 +726,8 @@ public void setMinimum (int value) {
 	adjustment.page_size = Math.min ((int)adjustment.page_size, maximum - value);
 	adjustment.value = Math.max ((int)adjustment.value, value);
 	OS.g_signal_handlers_block_matched (adjustmentHandle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, VALUE_CHANGED);
-	gtk_adjustment_configure (adjustmentHandle, adjustment);
+	OS.gtk_adjustment_configure(adjustmentHandle, adjustment.value, adjustment.lower, adjustment.upper,
+		adjustment.step_increment, adjustment.page_increment, adjustment.page_size);
 	OS.g_signal_handlers_unblock_matched (adjustmentHandle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, VALUE_CHANGED);
 }
 
@@ -766,15 +760,7 @@ public void setPageIncrement (int value) {
 	checkWidget ();
 	if (value < 1) return;
 	OS.g_signal_handlers_block_matched (adjustmentHandle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, VALUE_CHANGED);
-	if (OS.GTK_VERSION >= OS.VERSION (2, 14, 0)) {
-		OS.gtk_adjustment_set_page_increment (adjustmentHandle, value);
-	} else {
-		GtkAdjustment adjustment = new GtkAdjustment ();
-		OS.memmove (adjustment, adjustmentHandle);
-		adjustment.page_increment = (float) value;
-		OS.memmove (adjustmentHandle, adjustment);
-		OS.gtk_adjustment_changed (adjustmentHandle);
-	}
+	OS.gtk_adjustment_set_page_increment (adjustmentHandle, value);
 	OS.g_signal_handlers_unblock_matched (adjustmentHandle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, VALUE_CHANGED);
 }
 
@@ -824,7 +810,8 @@ public void setThumb (int value) {
 	adjustment.page_size = (double) value;
 	adjustment.value = Math.min ((int)adjustment.value, (int)(adjustment.upper - value));
 	OS.g_signal_handlers_block_matched (adjustmentHandle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, VALUE_CHANGED);
-	gtk_adjustment_configure (adjustmentHandle, adjustment);
+	OS.gtk_adjustment_configure(adjustmentHandle, adjustment.value, adjustment.lower, adjustment.upper,
+		adjustment.step_increment, adjustment.page_increment, adjustment.page_size);
 	OS.g_signal_handlers_unblock_matched (adjustmentHandle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, VALUE_CHANGED);
 }
 
@@ -865,7 +852,8 @@ public void setValues (int selection, int minimum, int maximum, int thumb, int i
 	adjustment.page_size = thumb;
 	adjustment.value = Math.min (Math.max (selection, minimum), maximum - thumb);
 	OS.g_signal_handlers_block_matched (adjustmentHandle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, VALUE_CHANGED);
-	gtk_adjustment_configure (adjustmentHandle, adjustment);
+	OS.gtk_adjustment_configure(adjustmentHandle, adjustment.value, adjustment.lower, adjustment.upper,
+		adjustment.step_increment, adjustment.page_increment, adjustment.page_size);
 	OS.gtk_adjustment_value_changed (adjustmentHandle);
 	OS.g_signal_handlers_unblock_matched (adjustmentHandle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, VALUE_CHANGED);
 }

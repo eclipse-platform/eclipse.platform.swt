@@ -8744,16 +8744,6 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(_1gtk_1accessible_1get_1widget)
 }
 #endif
 
-#ifndef NO__1gtk_1adjustment_1changed
-JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1adjustment_1changed)
-	(JNIEnv *env, jclass that, jintLong arg0)
-{
-	OS_NATIVE_ENTER(env, that, _1gtk_1adjustment_1changed_FUNC);
-	gtk_adjustment_changed((GtkAdjustment *)arg0);
-	OS_NATIVE_EXIT(env, that, _1gtk_1adjustment_1changed_FUNC);
-}
-#endif
-
 #ifndef NO__1gtk_1adjustment_1configure
 JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1adjustment_1configure)
 	(JNIEnv *env, jclass that, jintLong arg0, jdouble arg1, jdouble arg2, jdouble arg3, jdouble arg4, jdouble arg5, jdouble arg6)

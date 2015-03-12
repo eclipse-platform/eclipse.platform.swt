@@ -644,7 +644,6 @@ char * OS_nativeFunctionNames[] = {
 	"_1gtk_1accelerator_1get_1default_1mod_1mask",
 	"_1gtk_1accelerator_1parse",
 	"_1gtk_1accessible_1get_1widget",
-	"_1gtk_1adjustment_1changed",
 	"_1gtk_1adjustment_1configure",
 	"_1gtk_1adjustment_1get_1lower",
 	"_1gtk_1adjustment_1get_1page_1increment",

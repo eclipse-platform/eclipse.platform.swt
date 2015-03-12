@@ -208,7 +208,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	OS.gtk_widget_realize (handle);
 	long /*int*/ layout = OS.gtk_entry_get_layout (handle);
 	long /*int*/ hAdjustment = OS.gtk_spin_button_get_adjustment (handle);
-	double upper = gtk_adjustment_get_upper (hAdjustment);
+	double upper = OS.gtk_adjustment_get_upper (hAdjustment);
 	int digits = OS.gtk_spin_button_get_digits (handle);
 	for (int i = 0; i < digits; i++) upper *= 10;
 	String string = String.valueOf ((int) upper);
@@ -436,7 +436,7 @@ public int getIncrement () {
 	checkWidget ();
 	long /*int*/ hAdjustment = OS.gtk_spin_button_get_adjustment (handle);
 	int digits = OS.gtk_spin_button_get_digits (handle);
-	double value = gtk_adjustment_get_step_increment (hAdjustment);
+	double value = OS.gtk_adjustment_get_step_increment (hAdjustment);
 	for (int i = 0; i < digits; i++) value *= 10;
 	return (int) (value > 0 ? value + 0.5 : value - 0.5);
 }
@@ -455,7 +455,7 @@ public int getMaximum () {
 	checkWidget ();
 	long /*int*/ hAdjustment = OS.gtk_spin_button_get_adjustment (handle);
 	int digits = OS.gtk_spin_button_get_digits (handle);
-	double value = gtk_adjustment_get_upper (hAdjustment);
+	double value = OS.gtk_adjustment_get_upper (hAdjustment);
 	for (int i = 0; i < digits; i++) value *= 10;
 	return (int) (value > 0 ? value + 0.5 : value - 0.5);
 }
@@ -474,7 +474,7 @@ public int getMinimum () {
 	checkWidget ();
 	long /*int*/ hAdjustment = OS.gtk_spin_button_get_adjustment (handle);
 	int digits = OS.gtk_spin_button_get_digits (handle);
-	double value = gtk_adjustment_get_lower (hAdjustment);
+	double value = OS.gtk_adjustment_get_lower (hAdjustment);
 	for (int i = 0; i < digits; i++) value *= 10;
 	return (int) (value > 0 ? value + 0.5 : value - 0.5);
 }
@@ -494,7 +494,7 @@ public int getPageIncrement () {
 	checkWidget ();
 	long /*int*/ hAdjustment = OS.gtk_spin_button_get_adjustment (handle);
 	int digits = OS.gtk_spin_button_get_digits (handle);
-	double value = gtk_adjustment_get_page_increment (hAdjustment);
+	double value = OS.gtk_adjustment_get_page_increment (hAdjustment);
 	for (int i = 0; i < digits; i++) value *= 10;
 	return (int) (value > 0 ? value + 0.5 : value - 0.5);
 }
@@ -513,7 +513,7 @@ public int getSelection () {
 	checkWidget ();
 	long /*int*/ hAdjustment = OS.gtk_spin_button_get_adjustment (handle);
 	int digits = OS.gtk_spin_button_get_digits (handle);
-	double value = gtk_adjustment_get_value(hAdjustment);
+	double value = OS.gtk_adjustment_get_value (hAdjustment);
 	for (int i = 0; i < digits; i++) value *= 10;
 	return (int) (value > 0 ? value + 0.5 : value - 0.5);
 }
@@ -957,7 +957,7 @@ public void setIncrement (int value) {
 	checkWidget ();
 	if (value < 1) return;
 	long /*int*/ hAdjustment = OS.gtk_spin_button_get_adjustment (handle);
-	double page_increment = gtk_adjustment_get_page_increment (hAdjustment);
+	double page_increment = OS.gtk_adjustment_get_page_increment (hAdjustment);
 	double newValue = value;
 	int digits = OS.gtk_spin_button_get_digits (handle);
 	for (int i = 0; i < digits; i++) newValue /= 10;
@@ -982,7 +982,7 @@ public void setIncrement (int value) {
 public void setMaximum (int value) {
 	checkWidget ();
 	long /*int*/ hAdjustment = OS.gtk_spin_button_get_adjustment (handle);
-	double lower = gtk_adjustment_get_lower (hAdjustment);
+	double lower = OS.gtk_adjustment_get_lower (hAdjustment);
 	double newValue = value;
 	int digits = OS.gtk_spin_button_get_digits (handle);
 	for (int i = 0; i < digits; i++) newValue /= 10;
@@ -1008,7 +1008,7 @@ public void setMaximum (int value) {
 public void setMinimum (int value) {
 	checkWidget ();
 	long /*int*/ hAdjustment = OS.gtk_spin_button_get_adjustment (handle);
-	double upper = gtk_adjustment_get_upper (hAdjustment);
+	double upper = OS.gtk_adjustment_get_upper (hAdjustment);
 	double newValue = value;
 	int digits = OS.gtk_spin_button_get_digits (handle);
 	for (int i = 0; i < digits; i++) newValue /= 10;
@@ -1034,7 +1034,7 @@ public void setPageIncrement (int value) {
 	checkWidget ();
 	if (value < 1) return;
 	long /*int*/ hAdjustment = OS.gtk_spin_button_get_adjustment (handle);
-	double step_increment = gtk_adjustment_get_step_increment(hAdjustment);
+	double step_increment = OS.gtk_adjustment_get_step_increment(hAdjustment);
 	double newValue = value;
 	int digits = OS.gtk_spin_button_get_digits (handle);
 	for (int i = 0; i < digits; i++) newValue /= 10;
@@ -1140,7 +1140,8 @@ public void setDigits (int value) {
 		adjustment.page_increment /= factor;
 		climbRate /= factor;
 	}
-	gtk_adjustment_configure (hAdjustment, adjustment);
+	OS.gtk_adjustment_configure(hAdjustment, adjustment.value, adjustment.lower, adjustment.upper,
+		adjustment.step_increment, adjustment.page_increment, adjustment.page_size);
 	OS.g_signal_handlers_block_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, VALUE_CHANGED);
 	OS.gtk_spin_button_configure (handle, hAdjustment, climbRate, value);
 	OS.g_signal_handlers_unblock_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, VALUE_CHANGED);
@@ -1248,7 +1249,7 @@ String verifyText (String string, int start, int end) {
 	}
 	if (string.length () > 0) {
 		long /*int*/ hAdjustment = OS.gtk_spin_button_get_adjustment (handle);
-		double lower = gtk_adjustment_get_lower (hAdjustment);
+		double lower = OS.gtk_adjustment_get_lower (hAdjustment);
 		if (lower < 0 && string.charAt (0) == '-') index++;
 	}
 	while (index < string.length ()) {

@@ -474,7 +474,8 @@ void setScrollbar () {
 	adjustment.value = Math.min (yCurrentScroll, maxHeight);
 	adjustment.upper = maxHeight;
 	adjustment.page_size = height;
-	gtk_adjustment_configure (adjustmentHandle, adjustment);
+	OS.gtk_adjustment_configure(adjustmentHandle, adjustment.value, adjustment.lower, adjustment.upper,
+		adjustment.step_increment, adjustment.page_increment, adjustment.page_size);
 	int policy = maxHeight > height ? OS.GTK_POLICY_ALWAYS : OS.GTK_POLICY_NEVER;
 	OS.gtk_scrolled_window_set_policy (scrolledHandle, OS.GTK_POLICY_NEVER, policy);
 	GtkAllocation allocation = new GtkAllocation ();
