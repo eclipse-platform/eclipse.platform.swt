@@ -2004,7 +2004,9 @@ public class SWT {
 	 * <p><b>Used By:</b><ul>
 	 * <li><code>Button</code></li>
 	 * <li><code>Label</code></li>
+	 * <li><code>Text</code></li>
 	 * <li><code>TableColumn</code></li>
+	 * <li><code>TreeColumn</code></li>
 	 * <li><code>Tracker</code></li>
 	 * <li><code>FormAttachment</code> in a <code>FormLayout</code></li>
 	 * </ul></p>
@@ -2030,7 +2032,9 @@ public class SWT {
 	 * <p><b>Used By:</b><ul>
 	 * <li><code>Button</code></li>
 	 * <li><code>Label</code></li>
+	 * <li><code>Text</code></li>
 	 * <li><code>TableColumn</code></li>
+	 * <li><code>TreeColumn</code></li>
 	 * <li><code>Tracker</code></li>
 	 * <li><code>FormAttachment</code> in a <code>FormLayout</code></li>
 	 * </ul></p>
