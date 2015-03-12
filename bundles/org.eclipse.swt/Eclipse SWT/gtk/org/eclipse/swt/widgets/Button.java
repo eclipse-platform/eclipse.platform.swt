@@ -279,7 +279,7 @@ void createHandle (int index) {
 	            arrowHandle = OS.gtk_arrow_new (arrowType, OS.GTK_SHADOW_OUT);
 			}
 			if (arrowHandle == 0) error (SWT.ERROR_NO_HANDLES);
-			
+
 			handle = OS.gtk_button_new ();
 			if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 			break;
@@ -796,6 +796,11 @@ void _setAlignment (int alignment) {
 }
 
 @Override
+void setBackgroundColor (long /*int*/ context, long /*int*/ handle, GdkRGBA rgba) { //Gtk3.
+	setBackgroundColorGradient (OS.gtk_widget_get_style_context (handle), handle, rgba);
+}
+
+@Override
 void setBackgroundColor (GdkColor color) {
 	super.setBackgroundColor (color);
 	setBackgroundColor(fixedHandle, color);
@@ -976,7 +981,7 @@ void setOrientation (boolean create) {
 					case SWT.LEFT: OS.gtk_arrow_set (arrowHandle, arrowDir, OS.GTK_SHADOW_OUT); break;
 					case SWT.RIGHT: OS.gtk_arrow_set (arrowHandle, arrowDir, OS.GTK_SHADOW_OUT); break;
 				}
-				
+
 			}
 		}
 	}
