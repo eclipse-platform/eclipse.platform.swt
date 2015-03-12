@@ -142,7 +142,6 @@
 #define NO__1GDK_1PIXMAP_1XID
 #define NO_GdkImage
 #define NO_GdkVisual
-#define NO_GtkColorSelectionDialog
 #define NO_GdkGCValues
 #define NO_GtkAccessible
 #define NO_GTK_1ENTRY_1IM_1CONTEXT

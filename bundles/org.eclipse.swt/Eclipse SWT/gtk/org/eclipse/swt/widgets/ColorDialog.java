@@ -150,13 +150,7 @@ public RGB open () {
 		OS.gtk_window_group_add_window (group, handle);
 		OS.gtk_window_set_modal (handle, true);
 
-		if (OS.GTK_VERSION >= OS.VERSION (2, 14, 0)) {
-			colorsel = OS.gtk_color_selection_dialog_get_color_selection (handle);
-		} else {
-			GtkColorSelectionDialog dialog = new GtkColorSelectionDialog ();
-			OS.memmove (dialog, handle);
-			colorsel = dialog.colorsel;
-		}
+		colorsel = OS.gtk_color_selection_dialog_get_color_selection (handle);
 		if (rgb != null) {
 			color.red = (short)((rgb.red & 0xFF) | ((rgb.red & 0xFF) << 8));
 			color.green = (short)((rgb.green & 0xFF) | ((rgb.green & 0xFF) << 8));

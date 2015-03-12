@@ -363,18 +363,6 @@ void setGtkCellRendererClassFields(JNIEnv *env, jobject lpObject, GtkCellRendere
 #define GtkCellRendererClass_sizeof() 0
 #endif
 
-#ifndef NO_GtkColorSelectionDialog
-void cacheGtkColorSelectionDialogFields(JNIEnv *env, jobject lpObject);
-GtkColorSelectionDialog *getGtkColorSelectionDialogFields(JNIEnv *env, jobject lpObject, GtkColorSelectionDialog *lpStruct);
-void setGtkColorSelectionDialogFields(JNIEnv *env, jobject lpObject, GtkColorSelectionDialog *lpStruct);
-#define GtkColorSelectionDialog_sizeof() sizeof(GtkColorSelectionDialog)
-#else
-#define cacheGtkColorSelectionDialogFields(a,b)
-#define getGtkColorSelectionDialogFields(a,b,c) NULL
-#define setGtkColorSelectionDialogFields(a,b,c)
-#define GtkColorSelectionDialog_sizeof() 0
-#endif
-
 #ifndef NO_GtkFixed
 void cacheGtkFixedFields(JNIEnv *env, jobject lpObject);
 GtkFixed *getGtkFixedFields(JNIEnv *env, jobject lpObject, GtkFixed *lpStruct);

@@ -1521,46 +1521,6 @@ void setGtkCellRendererClassFields(JNIEnv *env, jobject lpObject, GtkCellRendere
 }
 #endif
 
-#ifndef NO_GtkColorSelectionDialog
-typedef struct GtkColorSelectionDialog_FID_CACHE {
-	int cached;
-	jclass clazz;
-	jfieldID colorsel, ok_button, cancel_button, help_button;
-} GtkColorSelectionDialog_FID_CACHE;
-
-GtkColorSelectionDialog_FID_CACHE GtkColorSelectionDialogFc;
-
-void cacheGtkColorSelectionDialogFields(JNIEnv *env, jobject lpObject)
-{
-	if (GtkColorSelectionDialogFc.cached) return;
-	GtkColorSelectionDialogFc.clazz = (*env)->GetObjectClass(env, lpObject);
-	GtkColorSelectionDialogFc.colorsel = (*env)->GetFieldID(env, GtkColorSelectionDialogFc.clazz, "colorsel", I_J);
-	GtkColorSelectionDialogFc.ok_button = (*env)->GetFieldID(env, GtkColorSelectionDialogFc.clazz, "ok_button", I_J);
-	GtkColorSelectionDialogFc.cancel_button = (*env)->GetFieldID(env, GtkColorSelectionDialogFc.clazz, "cancel_button", I_J);
-	GtkColorSelectionDialogFc.help_button = (*env)->GetFieldID(env, GtkColorSelectionDialogFc.clazz, "help_button", I_J);
-	GtkColorSelectionDialogFc.cached = 1;
-}
-
-GtkColorSelectionDialog *getGtkColorSelectionDialogFields(JNIEnv *env, jobject lpObject, GtkColorSelectionDialog *lpStruct)
-{
-	if (!GtkColorSelectionDialogFc.cached) cacheGtkColorSelectionDialogFields(env, lpObject);
-	lpStruct->colorsel = (GtkWidget *)(*env)->GetIntLongField(env, lpObject, GtkColorSelectionDialogFc.colorsel);
-	lpStruct->ok_button = (GtkWidget *)(*env)->GetIntLongField(env, lpObject, GtkColorSelectionDialogFc.ok_button);
-	lpStruct->cancel_button = (GtkWidget *)(*env)->GetIntLongField(env, lpObject, GtkColorSelectionDialogFc.cancel_button);
-	lpStruct->help_button = (GtkWidget *)(*env)->GetIntLongField(env, lpObject, GtkColorSelectionDialogFc.help_button);
-	return lpStruct;
-}
-
-void setGtkColorSelectionDialogFields(JNIEnv *env, jobject lpObject, GtkColorSelectionDialog *lpStruct)
-{
-	if (!GtkColorSelectionDialogFc.cached) cacheGtkColorSelectionDialogFields(env, lpObject);
-	(*env)->SetIntLongField(env, lpObject, GtkColorSelectionDialogFc.colorsel, (jintLong)lpStruct->colorsel);
-	(*env)->SetIntLongField(env, lpObject, GtkColorSelectionDialogFc.ok_button, (jintLong)lpStruct->ok_button);
-	(*env)->SetIntLongField(env, lpObject, GtkColorSelectionDialogFc.cancel_button, (jintLong)lpStruct->cancel_button);
-	(*env)->SetIntLongField(env, lpObject, GtkColorSelectionDialogFc.help_button, (jintLong)lpStruct->help_button);
-}
-#endif
-
 #ifndef NO_GtkFixed
 typedef struct GtkFixed_FID_CACHE {
 	int cached;

@@ -755,18 +755,6 @@ JNIEXPORT jint JNICALL OS_NATIVE(GtkCellRendererToggle_1sizeof)
 }
 #endif
 
-#ifndef NO_GtkColorSelectionDialog_1sizeof
-JNIEXPORT jint JNICALL OS_NATIVE(GtkColorSelectionDialog_1sizeof)
-	(JNIEnv *env, jclass that)
-{
-	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, GtkColorSelectionDialog_1sizeof_FUNC);
-	rc = (jint)GtkColorSelectionDialog_sizeof();
-	OS_NATIVE_EXIT(env, that, GtkColorSelectionDialog_1sizeof_FUNC);
-	return rc;
-}
-#endif
-
 #ifndef NO_GtkRequisition_1sizeof
 JNIEXPORT jint JNICALL OS_NATIVE(GtkRequisition_1sizeof)
 	(JNIEnv *env, jclass that)
@@ -22229,27 +22217,6 @@ JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_gtk_GtkCellR
 	OS_NATIVE_EXIT(env, that, memmove__Lorg_eclipse_swt_internal_gtk_GtkCellRendererClass_2I_FUNC);
 #else
 	OS_NATIVE_EXIT(env, that, memmove__Lorg_eclipse_swt_internal_gtk_GtkCellRendererClass_2J_FUNC);
-#endif
-}
-#endif
-
-#if (!defined(NO_memmove__Lorg_eclipse_swt_internal_gtk_GtkColorSelectionDialog_2I) && !defined(JNI64)) || (!defined(NO_memmove__Lorg_eclipse_swt_internal_gtk_GtkColorSelectionDialog_2J) && defined(JNI64))
-#ifndef JNI64
-JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_gtk_GtkColorSelectionDialog_2I)(JNIEnv *env, jclass that, jobject arg0, jintLong arg1)
-#else
-JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_gtk_GtkColorSelectionDialog_2J)(JNIEnv *env, jclass that, jobject arg0, jintLong arg1)
-#endif
-{
-#ifndef JNI64
-	OS_NATIVE_ENTER(env, that, memmove__Lorg_eclipse_swt_internal_gtk_GtkColorSelectionDialog_2I_FUNC);
-#else
-	OS_NATIVE_ENTER(env, that, memmove__Lorg_eclipse_swt_internal_gtk_GtkColorSelectionDialog_2J_FUNC);
-#endif
-	if (arg0) setGtkColorSelectionDialogFields(env, arg0, (GtkColorSelectionDialog *)arg1);
-#ifndef JNI64
-	OS_NATIVE_EXIT(env, that, memmove__Lorg_eclipse_swt_internal_gtk_GtkColorSelectionDialog_2I_FUNC);
-#else
-	OS_NATIVE_EXIT(env, that, memmove__Lorg_eclipse_swt_internal_gtk_GtkColorSelectionDialog_2J_FUNC);
 #endif
 }
 #endif

@@ -726,7 +726,6 @@ public static final native int GdkWindowAttr_sizeof();
 public static final native int GtkAdjustment_sizeof();
 public static final native int GtkAllocation_sizeof();
 public static final native int GtkBorder_sizeof();
-public static final native int GtkColorSelectionDialog_sizeof();
 public static final native int GtkRequisition_sizeof();
 public static final native int GtkTargetEntry_sizeof();
 public static final native int GtkTextIter_sizeof();
@@ -15277,11 +15276,6 @@ public static final native void memmove(GObjectClass  dest, long /*int*/ src);
  * @param size cast=(size_t)
  */
 public static final native void memmove(GTypeQuery dest, long /*int*/ src, long /*int*/ size);
-/**
- * @param dest cast=(void *),flags=no_in
- * @param src cast=(const void *)
- */
-public static final native void memmove(GtkColorSelectionDialog dest, long /*int*/ src);
 /**
  * @param dest cast=(void *),flags=no_in
  * @param src cast=(const void *)

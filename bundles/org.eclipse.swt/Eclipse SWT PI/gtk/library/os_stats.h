@@ -99,7 +99,6 @@ typedef enum {
 	GtkCellRendererText_1sizeof_FUNC,
 	GtkCellRendererToggleClass_1sizeof_FUNC,
 	GtkCellRendererToggle_1sizeof_FUNC,
-	GtkColorSelectionDialog_1sizeof_FUNC,
 	GtkRequisition_1sizeof_FUNC,
 	GtkTargetEntry_1sizeof_FUNC,
 	GtkTextIter_1sizeof_FUNC,
@@ -1785,11 +1784,6 @@ typedef enum {
 	memmove__Lorg_eclipse_swt_internal_gtk_GtkCellRendererClass_2I_FUNC,
 #else
 	memmove__Lorg_eclipse_swt_internal_gtk_GtkCellRendererClass_2J_FUNC,
-#endif
-#ifndef JNI64
-	memmove__Lorg_eclipse_swt_internal_gtk_GtkColorSelectionDialog_2I_FUNC,
-#else
-	memmove__Lorg_eclipse_swt_internal_gtk_GtkColorSelectionDialog_2J_FUNC,
 #endif
 #ifndef JNI64
 	memmove__Lorg_eclipse_swt_internal_gtk_GtkFixed_2I_FUNC,
