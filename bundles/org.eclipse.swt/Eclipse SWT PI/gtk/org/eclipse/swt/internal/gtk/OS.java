@@ -13233,19 +13233,6 @@ public static final long /*int*/ gtk_tree_view_column_get_button(long /*int*/ co
 		lock.unlock();
 	}
 }
-/**
- * @method flags=dynamic
- * @param tree_column cast=(GtkTreeViewColumn *)
- */
-public static final native long /*int*/ _gtk_tree_view_column_get_cell_renderers(long /*int*/ tree_column);
-public static final long /*int*/ gtk_tree_view_column_get_cell_renderers(long /*int*/ tree_column) {
-	lock.lock();
-	try {
-		return _gtk_tree_view_column_get_cell_renderers(tree_column);
-	} finally {
-		lock.unlock();
-	}
-}
 /** @param column cast=(GtkTreeViewColumn *) */
 public static final native int _gtk_tree_view_column_get_fixed_width(long /*int*/ column);
 public static final int gtk_tree_view_column_get_fixed_width(long /*int*/ column) {

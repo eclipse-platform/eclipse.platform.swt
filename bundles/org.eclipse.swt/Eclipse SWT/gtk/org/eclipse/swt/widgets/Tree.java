@@ -418,12 +418,7 @@ int calculateWidth (long /*int*/ column, long /*int*/ iter, boolean recurse) {
 	}
 	OS.gtk_widget_style_get(handle, OS.focus_line_width, w, 0);
 	width += 2 * w [0];
-	long /*int*/ list = 0;
-	if (OS.GTK_VERSION >= OS.VERSION(2, 12, 0)) {
-		list = OS.gtk_cell_layout_get_cells(column);
-	} else {
-		list = OS.gtk_tree_view_column_get_cell_renderers (column);
-	}
+	long /*int*/ list = OS.gtk_cell_layout_get_cells(column);
 	if (list == 0) return 0;
 	long /*int*/ temp = list;
 	while (temp != 0) {
@@ -451,7 +446,7 @@ int calculateWidth (long /*int*/ column, long /*int*/ iter, boolean recurse) {
 	}
 
 	if (path != 0) OS.gtk_tree_path_free (path);
-	if (OS.GTK_VERSION >= OS.VERSION (2, 12, 0) && (OS.gtk_tree_view_get_grid_lines(handle) > OS.GTK_TREE_VIEW_GRID_LINES_NONE)) {
+	if (OS.gtk_tree_view_get_grid_lines(handle) > OS.GTK_TREE_VIEW_GRID_LINES_NONE) {
 		OS.gtk_widget_style_get (handle, OS.grid_line_width, w, 0) ;
 		width += 2 * w [0];
 	}
@@ -1111,7 +1106,7 @@ boolean fixAccessibility () {
 	* Note: The test bellow has to be updated when the real problem is fixed in
 	* the accessible object.
 	*/
-	return OS.GTK_VERSION >= OS.VERSION (2, 12, 0);
+	return true;
 }
 
 @Override
@@ -1656,12 +1651,7 @@ public TreeItem getParentItem () {
 }
 
 long /*int*/ getPixbufRenderer (long /*int*/ column) {
-	long /*int*/ list = 0;
-	if (OS.GTK_VERSION >= OS.VERSION(2, 12, 0)) {
-		list = OS.gtk_cell_layout_get_cells(column);
-	} else {
-		list = OS.gtk_tree_view_column_get_cell_renderers (column);
-	}
+	long /*int*/ list = OS.gtk_cell_layout_get_cells(column);
 	if (list == 0) return 0;
 	long /*int*/ originalList = list;
 	long /*int*/ pixbufRenderer = 0;
@@ -1783,12 +1773,7 @@ public int getSortDirection () {
 }
 
 long /*int*/ getTextRenderer (long /*int*/ column) {
-	long /*int*/ list = 0;
-	if (OS.GTK_VERSION >= OS.VERSION(2, 12, 0)) {
-		list = OS.gtk_cell_layout_get_cells(column);
-	} else {
-		list = OS.gtk_tree_view_column_get_cell_renderers (column);
-	}
+	long /*int*/ list = OS.gtk_cell_layout_get_cells(column);
 	if (list == 0) return 0;
 	long /*int*/ originalList = list;
 	long /*int*/ textRenderer = 0;
@@ -3187,10 +3172,8 @@ public void setLinesVisible (boolean show) {
 	if (!OS.GTK3) {
 		OS.gtk_tree_view_set_rules_hint (handle, show);
 	}
-	if (OS.GTK_VERSION >= OS.VERSION (2, 12, 0)) {
-		//Note: this is overriden by the active theme in GTK3.
-		OS.gtk_tree_view_set_grid_lines (handle, show ? OS.GTK_TREE_VIEW_GRID_LINES_VERTICAL : OS.GTK_TREE_VIEW_GRID_LINES_NONE);
-	}
+	//Note: this is overriden by the active theme in GTK3.
+	OS.gtk_tree_view_set_grid_lines (handle, show ? OS.GTK_TREE_VIEW_GRID_LINES_VERTICAL : OS.GTK_TREE_VIEW_GRID_LINES_NONE);
 }
 
 void setModel (long /*int*/ newModel) {

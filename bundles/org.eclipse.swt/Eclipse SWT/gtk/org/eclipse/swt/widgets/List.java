@@ -684,12 +684,7 @@ public int [] getSelectionIndices () {
 }
 
 long /*int*/ getTextRenderer (long /*int*/ column) {
-	long /*int*/ list = 0;
-	if (OS.GTK_VERSION >= OS.VERSION(2, 12, 0)) {
-		list = OS.gtk_cell_layout_get_cells(column);
-	} else {
-		list = OS.gtk_tree_view_column_get_cell_renderers (column);
-	}
+	long /*int*/ list = OS.gtk_cell_layout_get_cells(column);
 	if (list == 0) return 0;
 	long /*int*/ originalList = list;
 	long /*int*/ textRenderer = 0;
