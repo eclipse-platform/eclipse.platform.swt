@@ -557,15 +557,6 @@ struct _GtkAccelLabelPrivate
 #define GTK_RANGE_SLIDER_END(arg0) (arg0)->slider_end
 #endif
 #define GTK_SCROLLED_WINDOW_SCROLLBAR_SPACING(arg0) (GTK_SCROLLED_WINDOW_GET_CLASS (arg0)->scrollbar_spacing >= 0 ? GTK_SCROLLED_WINDOW_GET_CLASS (arg0)->scrollbar_spacing : 3)
-#ifndef GTK_WIDGET_HAS_DEFAULT
-#define GTK_WIDGET_HAS_DEFAULT(arg0) 0
-#endif
-#ifndef GTK_WIDGET_HAS_FOCUS
-#define GTK_WIDGET_HAS_FOCUS(arg0) 0
-#endif
-#ifndef GTK_WIDGET_SENSITIVE
-#define GTK_WIDGET_SENSITIVE(arg0) 0
-#endif
 #ifndef GTK_WIDGET_SET_FLAGS
 #define GTK_WIDGET_SET_FLAGS(arg0, arg1)
 #endif
@@ -574,9 +565,6 @@ struct _GtkAccelLabelPrivate
 #endif
 #ifndef GTK_OBJECT_FLAGS
 #define GTK_OBJECT_FLAGS(arg0) arg0
-#endif
-#ifndef GTK_WIDGET_VISIBLE
-#define GTK_WIDGET_VISIBLE(arg0) 0
 #endif
 #if GTK_CHECK_VERSION(2,18,0)
 #define GTK_WIDGET_HEIGHT(arg0) 0
@@ -590,11 +578,6 @@ struct _GtkAccelLabelPrivate
 #define GTK_WIDGET_WIDTH(arg0) 0
 #else
 #define GTK_WIDGET_WIDTH(arg0) (arg0)->allocation.width
-#endif
-#if GTK_CHECK_VERSION(2,14,0)
-#define GTK_WIDGET_WINDOW(arg0) 0
-#else
-#define GTK_WIDGET_WINDOW(arg0) (arg0)->window
 #endif
 #if GTK_CHECK_VERSION(2,18,0)
 #define GTK_WIDGET_X(arg0) 0

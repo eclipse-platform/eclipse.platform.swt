@@ -2474,7 +2474,7 @@ public boolean forceFocus () {
 }
 
 boolean forceFocus (long /*int*/ focusHandle) {
-	if (gtk_widget_has_focus (focusHandle)) return true;
+	if (OS.gtk_widget_has_focus (focusHandle)) return true;
 	/* When the control is zero sized it must be realized */
 	OS.gtk_widget_realize (focusHandle);
 	OS.gtk_widget_grab_focus (focusHandle);
@@ -4948,7 +4948,7 @@ void setZOrder (Control sibling, boolean above, boolean fixRelations, boolean fi
 			if (above && sibling.enableWindow != 0) {
 				siblingWindow = enableWindow;
 			} else {
-				siblingWindow = OS.GTK_WIDGET_WINDOW (siblingHandle);
+				siblingWindow = OS.gtk_widget_get_window (siblingHandle);
 			}
 		}
 		long /*int*/ redrawWindow = fixChildren ? parent.redrawWindow : 0;

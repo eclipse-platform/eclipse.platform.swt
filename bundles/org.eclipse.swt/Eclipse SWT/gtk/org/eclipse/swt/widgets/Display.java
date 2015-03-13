@@ -1058,10 +1058,8 @@ void createDisplay (DeviceData data) {
 		long /*int*/ xWindow;
 		if (OS.GTK3) {
 			xWindow = OS.gdk_x11_window_get_xid (OS.gtk_widget_get_window (shellHandle));
-		} else if (OS.GTK_VERSION >= OS.VERSION(2, 14, 0)){
-			xWindow = OS.gdk_x11_drawable_get_xid (OS.gtk_widget_get_window	(shellHandle));
 		} else {
-			xWindow = OS.gdk_x11_drawable_get_xid (OS.GTK_WIDGET_WINDOW (shellHandle));
+			xWindow = OS.gdk_x11_drawable_get_xid (OS.gtk_widget_get_window	(shellHandle));
 		}
 		byte[] atomName = Converter.wcsToMbcs (null, "SWT_Window_" + APP_NAME, true); //$NON-NLS-1$
 		long /*int*/ atom = OS.XInternAtom (xDisplay, atomName, false);
@@ -4558,10 +4556,8 @@ long /*int*/ signalProc (long /*int*/ gobject, long /*int*/ arg1, long /*int*/ u
 					long /*int*/ xWindow;
 					if (OS.GTK3) {
 						xWindow = OS.gdk_x11_window_get_xid (OS.gtk_widget_get_window (shellHandle));
-					} else if (OS.GTK_VERSION >= OS.VERSION(2, 14, 0)){
-						xWindow = OS.gdk_x11_drawable_get_xid (OS.gtk_widget_get_window( shellHandle));
 					} else {
-						xWindow = OS.gdk_x11_drawable_get_xid (OS.GTK_WIDGET_WINDOW( shellHandle));
+						xWindow = OS.gdk_x11_drawable_get_xid (OS.gtk_widget_get_window( shellHandle));
 					}
 					long /*int*/ [] type = new long /*int*/ [1];
 					int [] format = new int [1];

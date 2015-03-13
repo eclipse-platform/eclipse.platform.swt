@@ -780,8 +780,6 @@ public static final native int GTK_WIDGET_HEIGHT(long /*int*/ widget);
 /** @param widget cast=(GtkWidget *) */
 public static final native int GTK_WIDGET_WIDTH(long /*int*/ widget);
 /** @param widget cast=(GtkWidget *) */
-public static final native long /*int*/ GTK_WIDGET_WINDOW(long /*int*/ widget);
-/** @param widget cast=(GtkWidget *) */
 public static final native int GTK_WIDGET_X(long /*int*/ widget);
 /** @param widget cast=(GtkWidget *) */
 public static final native int GTK_WIDGET_Y(long /*int*/ widget);
@@ -1734,15 +1732,6 @@ public static final int GTK_WIDGET_FLAGS(long /*int*/ wid) {
 		lock.unlock();
 	}
 }
-public static final native boolean _GTK_WIDGET_HAS_DEFAULT(long /*int*/ wid);
-public static final boolean GTK_WIDGET_HAS_DEFAULT(long /*int*/ wid) {
-	lock.lock();
-	try {
-		return _GTK_WIDGET_HAS_DEFAULT(wid);
-	} finally {
-		lock.unlock();
-	}
-}
 /** @method flags=dynamic */
 public static final native boolean _gtk_widget_has_default(long /*int*/ widget);
 public static final boolean gtk_widget_has_default(long /*int*/ widget) {
@@ -1753,29 +1742,11 @@ public static final boolean gtk_widget_has_default(long /*int*/ widget) {
 		lock.unlock();
 	}
 }
-public static final native boolean _GTK_WIDGET_HAS_FOCUS(long /*int*/ wid);
-public static final boolean GTK_WIDGET_HAS_FOCUS(long /*int*/ wid) {
-	lock.lock();
-	try {
-		return _GTK_WIDGET_HAS_FOCUS(wid);
-	} finally {
-		lock.unlock();
-	}
-}
 public static final native boolean _GTK_WIDGET_MAPPED(long /*int*/ wid);
 public static final boolean GTK_WIDGET_MAPPED(long /*int*/ wid) {
 	lock.lock();
 	try {
 		return _GTK_WIDGET_MAPPED(wid);
-	} finally {
-		lock.unlock();
-	}
-}
-public static final native boolean _GTK_WIDGET_SENSITIVE(long /*int*/ wid);
-public static final boolean GTK_WIDGET_SENSITIVE(long /*int*/ wid) {
-	lock.lock();
-	try {
-		return _GTK_WIDGET_SENSITIVE(wid);
 	} finally {
 		lock.unlock();
 	}
@@ -1804,15 +1775,6 @@ public static final void GTK_WIDGET_UNSET_FLAGS(long /*int*/ wid, int flag) {
 	lock.lock();
 	try {
 		_GTK_WIDGET_UNSET_FLAGS(wid, flag);
-	} finally {
-		lock.unlock();
-	}
-}
-public static final native boolean _GTK_WIDGET_VISIBLE(long /*int*/ wid);
-public static final boolean GTK_WIDGET_VISIBLE(long /*int*/ wid) {
-	lock.lock();
-	try {
-		return _GTK_WIDGET_VISIBLE(wid);
 	} finally {
 		lock.unlock();
 	}

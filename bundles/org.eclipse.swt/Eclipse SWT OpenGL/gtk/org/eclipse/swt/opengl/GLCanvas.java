@@ -104,12 +104,7 @@ public GLCanvas (Composite parent, int style, GLData data) {
 	}
 	glxAttrib [pos++] = 0;
 	OS.gtk_widget_realize (handle);
-	long /*int*/ window;
-	if (OS.GTK_VERSION >= OS.VERSION(2, 14, 0)){
-		window = OS.gtk_widget_get_window (handle);
-	} else {
-		window = OS.GTK_WIDGET_WINDOW (handle);
-	}
+	long /*int*/ window = OS.gtk_widget_get_window (handle);
 	long /*int*/ xDisplay = OS.gdk_x11_drawable_get_xdisplay (window);
 	long /*int*/ infoPtr = GLX.glXChooseVisual (xDisplay, OS.XDefaultScreen (xDisplay), glxAttrib);
 	if (infoPtr == 0) {
@@ -165,12 +160,7 @@ public GLCanvas (Composite parent, int style, GLData data) {
 				OS.gdk_window_resize (glWindow, clientArea.width, clientArea.height);
 				break;
 			case SWT.Dispose:
-				long /*int*/ window;
-				if (OS.GTK_VERSION >= OS.VERSION(2, 14, 0)){
-					window = OS.gtk_widget_get_window (handle);
-				} else {
-					window = OS.GTK_WIDGET_WINDOW (handle);
-				}
+				long /*int*/ window = OS.gtk_widget_get_window (handle);
 				long /*int*/ xDisplay = gdk_x11_display_get_xdisplay (window);
 				if (context != 0) {
 					if (GLX.glXGetCurrentContext () == context) {
@@ -203,12 +193,7 @@ public GLCanvas (Composite parent, int style, GLData data) {
  */
 public GLData getGLData () {
 	checkWidget ();
-	long /*int*/ window;
-	if (OS.GTK_VERSION >= OS.VERSION(2, 14, 0)){
-		window = OS.gtk_widget_get_window (handle);
-	} else {
-		window = OS.GTK_WIDGET_WINDOW (handle);
-	}
+	long /*int*/ window = OS.gtk_widget_get_window (handle);
 	long /*int*/ xDisplay = gdk_x11_display_get_xdisplay (window);
 	GLData data = new GLData ();
 	int [] value = new int [1];
@@ -271,7 +256,7 @@ public boolean isCurrent () {
 public void setCurrent () {
 	checkWidget ();
 	if (GLX.glXGetCurrentContext () == context) return;
-	long /*int*/ window = OS.GTK_WIDGET_WINDOW (handle);
+	long /*int*/ window = OS.gtk_widget_get_window (handle);
 	long /*int*/ xDisplay = gdk_x11_display_get_xdisplay (window);
 	GLX.glXMakeCurrent (xDisplay, xWindow, context);
 }
@@ -286,7 +271,7 @@ public void setCurrent () {
  */
 public void swapBuffers () {
 	checkWidget ();
-	long /*int*/ window = OS.GTK_WIDGET_WINDOW (handle);
+	long /*int*/ window = OS.gtk_widget_get_window (handle);
 	long /*int*/ xDisplay = gdk_x11_display_get_xdisplay (window);
 	GLX.glXSwapBuffers (xDisplay, xWindow);
 }

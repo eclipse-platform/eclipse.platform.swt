@@ -685,7 +685,7 @@ long /*int*/ focusHandle () {
 @Override
 boolean hasFocus () {
 	if (super.hasFocus ()) return true;
-	if (entryHandle != 0 && gtk_widget_has_focus (entryHandle)) return true;
+	if (entryHandle != 0 && OS.gtk_widget_has_focus (entryHandle)) return true;
 	return false;
 }
 

@@ -364,7 +364,7 @@ long /*int*/ gtk_enter_notify_event (long /*int*/ widget, long /*int*/ event) {
 }
 
 boolean hasFocus () {
-	return gtk_widget_has_focus (handle);
+	return OS.gtk_widget_has_focus (handle);
 }
 
 @Override

@@ -3523,12 +3523,7 @@ class AccessibleObject {
 		}
 		if (widget == 0) return;
 		long /*int*/ topLevel = ATK.gtk_widget_get_toplevel (widget);
-		long /*int*/ window;
-		if (OS.GTK_VERSION >= OS.VERSION(2, 14, 0)){
-			window = OS.gtk_widget_get_window (topLevel);
-		} else {
-			window = OS.GTK_WIDGET_WINDOW (topLevel);	
-		}
+		long /*int*/ window = OS.gtk_widget_get_window (topLevel);
 		OS.gdk_window_get_origin (window, x, y);
 	}
 	

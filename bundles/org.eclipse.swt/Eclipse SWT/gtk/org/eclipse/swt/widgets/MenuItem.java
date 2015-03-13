@@ -278,7 +278,7 @@ void createHandle (int index) {
 		OS.gtk_accel_label_set_accel_widget (label, 0);
 	}
 	long /*int*/ parentHandle = parent.handle;
-	boolean enabled = gtk_widget_get_sensitive (parentHandle);
+	boolean enabled = OS.gtk_widget_get_sensitive (parentHandle);
 	if (!enabled) OS.gtk_widget_set_sensitive (parentHandle, true);
 	OS.gtk_menu_shell_insert (parentHandle, handle, index);
 	if (!enabled) OS.gtk_widget_set_sensitive (parentHandle, false);
@@ -351,7 +351,7 @@ long /*int*/ getAccelGroup () {
  */
 public boolean getEnabled () {
 	checkWidget();
-	return gtk_widget_get_sensitive (handle);
+	return OS.gtk_widget_get_sensitive (handle);
 }
 
 /**
@@ -685,7 +685,7 @@ public void setAccelerator (int accelerator) {
  */
 public void setEnabled (boolean enabled) {
 	checkWidget();
-	if (gtk_widget_get_sensitive (handle) == enabled) return;
+	if (OS.gtk_widget_get_sensitive (handle) == enabled) return;
 	long /*int*/ accelGroup = getAccelGroup ();
 	if (accelGroup != 0) removeAccelerator (accelGroup);
 	OS.gtk_widget_set_sensitive (handle, enabled);

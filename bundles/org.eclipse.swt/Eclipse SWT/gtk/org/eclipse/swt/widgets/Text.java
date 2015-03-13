@@ -1616,7 +1616,7 @@ void drawMessage (long /*int*/ cr) {
 	if (OS.GTK_VERSION >= OS.VERSION (3, 2, 0)) return;
 	if ((style & SWT.SINGLE) != 0 && message.length () > 0) {
 		long /*int*/ str = OS.gtk_entry_get_text (handle);
-		if (!gtk_widget_has_focus (handle) && OS.strlen (str) == 0) {
+		if (!OS.gtk_widget_has_focus (handle) && OS.strlen (str) == 0) {
 			long /*int*/ window = paintWindow ();
 			int [] w = new int [1], h = new int [1];
 			gdk_window_get_size (window, w, h);

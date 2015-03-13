@@ -277,18 +277,6 @@ JNIEXPORT jint JNICALL OS_NATIVE(GTK_1WIDGET_1WIDTH)
 }
 #endif
 
-#ifndef NO_GTK_1WIDGET_1WINDOW
-JNIEXPORT jintLong JNICALL OS_NATIVE(GTK_1WIDGET_1WINDOW)
-	(JNIEnv *env, jclass that, jintLong arg0)
-{
-	jintLong rc = 0;
-	OS_NATIVE_ENTER(env, that, GTK_1WIDGET_1WINDOW_FUNC);
-	rc = (jintLong)GTK_WIDGET_WINDOW((GtkWidget *)arg0);
-	OS_NATIVE_EXIT(env, that, GTK_1WIDGET_1WINDOW_FUNC);
-	return rc;
-}
-#endif
-
 #ifndef NO_GTK_1WIDGET_1X
 JNIEXPORT jint JNICALL OS_NATIVE(GTK_1WIDGET_1X)
 	(JNIEnv *env, jclass that, jintLong arg0)
@@ -1415,30 +1403,6 @@ JNIEXPORT jint JNICALL OS_NATIVE(_1GTK_1WIDGET_1FLAGS)
 }
 #endif
 
-#ifndef NO__1GTK_1WIDGET_1HAS_1DEFAULT
-JNIEXPORT jboolean JNICALL OS_NATIVE(_1GTK_1WIDGET_1HAS_1DEFAULT)
-	(JNIEnv *env, jclass that, jintLong arg0)
-{
-	jboolean rc = 0;
-	OS_NATIVE_ENTER(env, that, _1GTK_1WIDGET_1HAS_1DEFAULT_FUNC);
-	rc = (jboolean)GTK_WIDGET_HAS_DEFAULT(arg0);
-	OS_NATIVE_EXIT(env, that, _1GTK_1WIDGET_1HAS_1DEFAULT_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO__1GTK_1WIDGET_1HAS_1FOCUS
-JNIEXPORT jboolean JNICALL OS_NATIVE(_1GTK_1WIDGET_1HAS_1FOCUS)
-	(JNIEnv *env, jclass that, jintLong arg0)
-{
-	jboolean rc = 0;
-	OS_NATIVE_ENTER(env, that, _1GTK_1WIDGET_1HAS_1FOCUS_FUNC);
-	rc = (jboolean)GTK_WIDGET_HAS_FOCUS(arg0);
-	OS_NATIVE_EXIT(env, that, _1GTK_1WIDGET_1HAS_1FOCUS_FUNC);
-	return rc;
-}
-#endif
-
 #ifndef NO__1GTK_1WIDGET_1MAPPED
 JNIEXPORT jboolean JNICALL OS_NATIVE(_1GTK_1WIDGET_1MAPPED)
 	(JNIEnv *env, jclass that, jintLong arg0)
@@ -1447,18 +1411,6 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(_1GTK_1WIDGET_1MAPPED)
 	OS_NATIVE_ENTER(env, that, _1GTK_1WIDGET_1MAPPED_FUNC);
 	rc = (jboolean)GTK_WIDGET_MAPPED(arg0);
 	OS_NATIVE_EXIT(env, that, _1GTK_1WIDGET_1MAPPED_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO__1GTK_1WIDGET_1SENSITIVE
-JNIEXPORT jboolean JNICALL OS_NATIVE(_1GTK_1WIDGET_1SENSITIVE)
-	(JNIEnv *env, jclass that, jintLong arg0)
-{
-	jboolean rc = 0;
-	OS_NATIVE_ENTER(env, that, _1GTK_1WIDGET_1SENSITIVE_FUNC);
-	rc = (jboolean)GTK_WIDGET_SENSITIVE(arg0);
-	OS_NATIVE_EXIT(env, that, _1GTK_1WIDGET_1SENSITIVE_FUNC);
 	return rc;
 }
 #endif
@@ -1480,18 +1432,6 @@ JNIEXPORT void JNICALL OS_NATIVE(_1GTK_1WIDGET_1UNSET_1FLAGS)
 	OS_NATIVE_ENTER(env, that, _1GTK_1WIDGET_1UNSET_1FLAGS_FUNC);
 	GTK_WIDGET_UNSET_FLAGS(arg0, arg1);
 	OS_NATIVE_EXIT(env, that, _1GTK_1WIDGET_1UNSET_1FLAGS_FUNC);
-}
-#endif
-
-#ifndef NO__1GTK_1WIDGET_1VISIBLE
-JNIEXPORT jboolean JNICALL OS_NATIVE(_1GTK_1WIDGET_1VISIBLE)
-	(JNIEnv *env, jclass that, jintLong arg0)
-{
-	jboolean rc = 0;
-	OS_NATIVE_ENTER(env, that, _1GTK_1WIDGET_1VISIBLE_FUNC);
-	rc = (jboolean)GTK_WIDGET_VISIBLE(arg0);
-	OS_NATIVE_EXIT(env, that, _1GTK_1WIDGET_1VISIBLE_FUNC);
-	return rc;
 }
 #endif
 
