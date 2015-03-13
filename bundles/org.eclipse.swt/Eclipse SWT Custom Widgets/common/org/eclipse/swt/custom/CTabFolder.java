@@ -122,8 +122,51 @@ public class CTabFolder extends Composite {
 	/* item management */
 	CTabFolderRenderer renderer;
 	CTabItem items[] = new CTabItem[0];
-	int firstIndex = -1; // index of the left most visible tab.
+	/** index of the left most visible tab. */
+	int firstIndex = -1;
 	int selectedIndex = -1;
+
+	/**
+	 * Indices of the elements in the {@link #items} array, used to manage tab
+	 * visibility and candidates to be hidden/shown next.
+	 * <p>
+	 * If there is not enough place for all tabs, tabs starting from the end of
+	 * the {@link #priority} array will be hidden first (independently from the
+	 * {@link #mru} flag!) => the right most elements have the highest priority
+	 * to be hidden.
+	 * <p>
+	 * If there is more place to show previously hidden tabs, tabs starting from
+	 * the beginning of the {@link #priority} array will be made visible first
+	 * (independently from the {@link #mru} flag!) => the left most elements
+	 * have the highest priority to be shown.
+	 * <p>
+	 * The update strategy of the {@link #priority} array however depends on the
+	 * {@link #mru} flag.
+	 * <p>
+	 * If {@link #mru} flag is set, the first index is always the index of the
+	 * currently selected tab, next one is the tab selected before current
+	 * etc...
+	 * <p>
+	 * Example: [4,2,5,1,3,0], just representing the last selection order.
+	 * <p>
+	 * If {@link #mru} flag is not set, the first index is always the index of
+	 * the left most visible tab ({@link #firstIndex} field), next indices are
+	 * incremented by one up to <code>priority.length-1</code>, and the rest
+	 * filled with indices starting with <code>firstIndex-1</code> and
+	 * decremented by one until 0 index is reached.
+	 * <p>
+	 * The tabs between first index and the index of the currently selected tab
+	 * are always visible.
+	 * <p>
+	 * Example: 6 tabs, 2 and 3 are indices of currently shown tabs:
+	 * [2,3,4,5,1,0]. The array consists of two blocks: sorted ascending from
+	 * first visible (2) to last available (5), and the rest sorted descending
+	 * (1,0). 4 and 5 are the hidden tabs on the right side, 0 and 1 are the
+	 * hidden tabs on the left side from the visible tabs 2 and 3.
+	 *
+	 * @see #updateItems(int)
+	 * @see #setItemLocation(GC)
+	 */
 	int[] priority = new int[0];
 	boolean mru = false;
 	Listener listener;
@@ -686,7 +729,7 @@ void createItem (CTabItem item, int index) {
 	int[] newPriority = new int[priority.length + 1];
 	int next = 0,  priorityIndex = priority.length;
 	for (int i = 0; i < priority.length; i++) {
-		if (!mru && (priority[i] == index || (priority[i] == 0 && index+1 == items.length))) {
+		if (!mru && priority[i] == index) {
 			priorityIndex = next++;
 		}
 		newPriority[next++] = priority[i] >= index ? priority[i] + 1 : priority[i];
@@ -3691,10 +3734,14 @@ boolean updateItems (int showIndex) {
 		}
 		if (firstIndex != priority[0]) {
 			int index = 0;
+			// enumerate tabs from first visible to the last existing one (sorted ascending)
 			for (int i = firstIndex; i < items.length; i++) {
 				priority[index++] = i;
 			}
-			for (int i = 0; i < firstIndex; i++) {
+			// enumerate hidden tabs on the left hand from first visible one
+			// in the inverse order (sorted descending) so that the originally
+			// first opened tab is always at the end of the list
+			for (int i = firstIndex - 1; i >= 0; i--) {
 				priority[index++] = i;
 			}
 		}
