@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2006 IBM Corporation and others.
+ * Copyright (c) 2000, 2015 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -19,19 +19,21 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 
-import junit.framework.TestCase;
-
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.SWTException;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.ImageData;
+import org.eclipse.swt.graphics.ImageDataProvider;
+import org.eclipse.swt.graphics.ImageFileNameProvider;
 import org.eclipse.swt.graphics.PaletteData;
 import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.internal.Compatibility;
 import org.eclipse.swt.widgets.Display;
+
+import junit.framework.TestCase;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.graphics.Image
@@ -420,6 +422,88 @@ public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLjava_lang_String() 
 			}
 		}
 	}
+}
+
+public void test_ConstructorLorg_eclipse_swt_graphics_Device_ImageFileNameProvider() {
+	 // Null provider
+	ImageFileNameProvider provider = null;
+	try {
+		Image image = new Image(display, provider);
+		image.dispose();
+		fail("No exception thrown for file name == null");
+	} catch (IllegalArgumentException e) {
+		assertSWTProblem("Incorrect exception thrown for provider == null", SWT.ERROR_NULL_ARGUMENT, e);
+	}
+	// Invalid provider
+	provider = new ImageFileNameProvider() {
+		public String getImagePath(int zoom) {
+			return null;
+		}
+	};
+	try {
+		Image image = new Image(display, provider);
+		image.dispose();
+		fail("No exception thrown for non-existent file name");
+	} catch (IllegalArgumentException e) {
+		assertSWTProblem("Incorrect exception thrown for provider == null", SWT.ERROR_INVALID_ARGUMENT, e);
+	}
+	// Valid provider
+	provider = new ImageFileNameProvider() {
+		public String getImagePath(int zoom) {
+			switch (zoom) {
+			case 100: 
+				return "./data/collapseall.png";
+			case 150: 
+				return "./data/collapseall@1.5x.png";
+			case 200: 
+				return "./data/collapseall@2x.png";
+			}
+			return null;
+		}
+	};
+	Image image = new Image(display, provider);
+	image.dispose();
+}
+
+public void test_ConstructorLorg_eclipse_swt_graphics_Device_ImageDataProvider() {
+	 // Null provider
+	ImageDataProvider provider = null;
+	try {
+		Image image = new Image(display, provider);
+		image.dispose();
+		fail("No exception thrown for file name == null");
+	} catch (IllegalArgumentException e) {
+		assertSWTProblem("Incorrect exception thrown for provider == null", SWT.ERROR_NULL_ARGUMENT, e);
+	}
+	// Invalid provider
+	provider = new ImageDataProvider() {
+		public ImageData getImageData(int zoom) {
+			return null;
+		}
+	};
+	try {
+		Image image = new Image(display, provider);
+		image.dispose();
+		fail("No exception thrown for non-existent file name");
+	} catch (IllegalArgumentException e) {
+		assertSWTProblem("Incorrect exception thrown for provider == null", SWT.ERROR_INVALID_ARGUMENT, e);
+	}
+	// Valid provider
+	provider = new ImageDataProvider() {
+		public ImageData getImageData(int zoom) {
+			switch (zoom) {
+			case 100: 
+				return new ImageData ("./data/collapseall.png");
+			case 150: 
+				return new ImageData ("./data/collapseall@1.5x.png");
+			case 200: 
+				return new ImageData ("./data/collapseall@2x.png");
+			}
+			return null;
+		}
+	};
+	Image image = new Image(display, provider);
+	image.dispose();
 }
 
 public void test_equalsLjava_lang_Object() {
