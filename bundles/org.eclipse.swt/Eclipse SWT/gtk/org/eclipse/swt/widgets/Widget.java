@@ -927,17 +927,6 @@ void gtk_widget_reparent (long /*int*/ widget, long /*int*/ newParent) {
 	OS.g_object_unref (widget);
 }
 
-void gtk_widget_get_allocation (long /*int*/ widget, GtkAllocation allocation) {
-	if (OS.GTK_VERSION >= OS.VERSION (2, 18, 0)) {
-		OS.gtk_widget_get_allocation (widget, allocation);
-	} else {
-		allocation.x = OS.GTK_WIDGET_X (widget);
-		allocation.y = OS.GTK_WIDGET_Y (widget);
-		allocation.width = OS.GTK_WIDGET_WIDTH (widget);
-		allocation.height = OS.GTK_WIDGET_HEIGHT (widget);
-	}
-}
-
 boolean gtk_widget_get_mapped (long /*int*/ widget) {
 	if (OS.GTK_VERSION >= OS.VERSION (2, 20, 0)) {
 		return OS.gtk_widget_get_mapped (widget);

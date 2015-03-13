@@ -835,7 +835,7 @@ int setBounds (int x, int y, int width, int height, boolean move, boolean resize
 	*/
 	if (wrap) {
 		GtkAllocation allocation = new GtkAllocation();
-		gtk_widget_get_allocation (boxHandle, allocation);
+		OS.gtk_widget_get_allocation (boxHandle, allocation);
 		int boxWidth = allocation.width;
 		int boxHeight = allocation.height;
 		long /*int*/ labelLayout = OS.gtk_label_get_layout (labelHandle);

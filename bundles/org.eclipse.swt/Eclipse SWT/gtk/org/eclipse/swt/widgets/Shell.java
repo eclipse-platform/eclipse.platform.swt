@@ -472,7 +472,7 @@ void addToolTip (ToolTip toolTip) {
 void adjustTrim () {
 	if (display.ignoreTrim) return;
 	GtkAllocation allocation = new GtkAllocation ();
-	gtk_widget_get_allocation (shellHandle, allocation);
+	OS.gtk_widget_get_allocation (shellHandle, allocation);
 	int width = allocation.width;
 	int height = allocation.height;
 	long /*int*/ window = gtk_widget_get_window (shellHandle);
@@ -669,7 +669,7 @@ public Rectangle computeTrim (int x, int y, int width, int height) {
 	if (menuBar != null) {
 		forceResize ();
 		GtkAllocation allocation = new GtkAllocation ();
-		gtk_widget_get_allocation (menuBar.handle, allocation);
+		OS.gtk_widget_get_allocation (menuBar.handle, allocation);
 		int menuBarHeight = allocation.height;
 		trim.y -= menuBarHeight;
 		trim.height += menuBarHeight;
@@ -934,7 +934,7 @@ void fixStyle (long /*int*/ handle) {
 @Override
 void forceResize () {
 	GtkAllocation allocation = new GtkAllocation ();
-	gtk_widget_get_allocation (vboxHandle, allocation);
+	OS.gtk_widget_get_allocation (vboxHandle, allocation);
 	forceResize (allocation.width, allocation.height);
 }
 
@@ -982,7 +982,7 @@ public int getAlpha () {
 
 int getResizeMode (double x, double y) {
 	GtkAllocation allocation = new GtkAllocation ();
-	gtk_widget_get_allocation (shellHandle, allocation);
+	OS.gtk_widget_get_allocation (shellHandle, allocation);
 	int width = allocation.width;
 	int height = allocation.height;
 	int border = OS.gtk_container_get_border_width (shellHandle);
@@ -1111,7 +1111,7 @@ public boolean getModified () {
 public Point getSize () {
 	checkWidget ();
 	GtkAllocation allocation = new GtkAllocation ();
-	gtk_widget_get_allocation (vboxHandle, allocation);
+	OS.gtk_widget_get_allocation (vboxHandle, allocation);
 	int width = allocation.width;
 	int height = allocation.height;
 	int border = 0;
@@ -1228,7 +1228,7 @@ long /*int*/ gtk_button_press_event (long /*int*/ widget, long /*int*/ event) {
 				display.resizeBoundsX = x [0];
 				display.resizeBoundsY = y [0];
 				GtkAllocation allocation = new GtkAllocation ();
-				gtk_widget_get_allocation (shellHandle, allocation);
+				OS.gtk_widget_get_allocation (shellHandle, allocation);
 				display.resizeBoundsWidth = allocation.width;
 				display.resizeBoundsHeight = allocation.height;
 			}
@@ -1508,7 +1508,7 @@ long /*int*/ gtk_key_press_event (long /*int*/ widget, long /*int*/ event) {
 @Override
 long /*int*/ gtk_size_allocate (long /*int*/ widget, long /*int*/ allocation) {
 	GtkAllocation widgetAllocation = new GtkAllocation ();
-	gtk_widget_get_allocation (shellHandle, widgetAllocation);
+	OS.gtk_widget_get_allocation (shellHandle, widgetAllocation);
 	int width = widgetAllocation.width;
 	int height = widgetAllocation.height;
 	if (!resized || oldWidth != width || oldHeight != height) {
@@ -1961,7 +1961,7 @@ void setInitialBounds () {
 	int width, height;
 	if ((state & FOREIGN_HANDLE) != 0) {
 		GtkAllocation allocation = new GtkAllocation ();
-		gtk_widget_get_allocation (shellHandle, allocation);
+		OS.gtk_widget_get_allocation (shellHandle, allocation);
 		width = allocation.width;
 		height = allocation.height;
 	} else {
@@ -2017,7 +2017,7 @@ public void setMenuBar (Menu menu) {
 		menuBar.addAccelerators (accelGroup);
 	}
 	GtkAllocation allocation = new GtkAllocation ();
-	gtk_widget_get_allocation (vboxHandle, allocation);
+	OS.gtk_widget_get_allocation (vboxHandle, allocation);
 	int width = allocation.width;
 	int height = allocation.height;
 	resizeBounds (width, height, !both);
@@ -2370,7 +2370,7 @@ long /*int*/ sizeAllocateProc (long /*int*/ handle, long /*int*/ arg0, long /*in
 		GdkRectangle dest = new GdkRectangle ();
 		OS.gdk_screen_get_monitor_geometry (screen, monitorNumber, dest);
 		GtkAllocation allocation = new GtkAllocation ();
-		gtk_widget_get_allocation (handle, allocation);
+		OS.gtk_widget_get_allocation (handle, allocation);
 		int width = allocation.width;
 		int height = allocation.height;
 		if (x[0] + width > dest.x + dest.width) {
@@ -2570,7 +2570,7 @@ public Rectangle getBounds () {
 	int [] x = new int [1], y = new int [1];
 	OS.gtk_window_get_position (shellHandle, x, y);
 	GtkAllocation allocation = new GtkAllocation ();
-	gtk_widget_get_allocation (vboxHandle, allocation);
+	OS.gtk_widget_get_allocation (vboxHandle, allocation);
 	int width = allocation.width;
 	int height = allocation.height;
 	int border = 0;

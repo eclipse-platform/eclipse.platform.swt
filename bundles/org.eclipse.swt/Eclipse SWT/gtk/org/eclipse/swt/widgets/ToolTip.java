@@ -582,7 +582,7 @@ long /*int*/ gtk_size_allocate (long /*int*/ widget, long /*int*/ allocation) {
 	GdkRectangle dest = new GdkRectangle ();
 	OS.gdk_screen_get_monitor_geometry (screen, monitorNumber, dest);
 	GtkAllocation widgetAllocation = new GtkAllocation ();
-	gtk_widget_get_allocation (widget, widgetAllocation);
+	OS.gtk_widget_get_allocation (widget, widgetAllocation);
 	int w = widgetAllocation.width;
 	int h = widgetAllocation.height;
 	if (dest.height < y + h) y -= h;

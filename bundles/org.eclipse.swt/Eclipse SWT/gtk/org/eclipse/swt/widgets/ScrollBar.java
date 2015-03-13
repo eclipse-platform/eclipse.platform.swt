@@ -341,7 +341,7 @@ public Rectangle getThumbBounds () {
 	gtk_range_get_slider_range (handle, slider_start, slider_end);
 	int x, y, width, height;
 	GtkAllocation allocation = new GtkAllocation ();
-	gtk_widget_get_allocation (handle, allocation);
+	OS.gtk_widget_get_allocation (handle, allocation);
 	if ((style & SWT.VERTICAL) != 0) {
 		x = allocation.x;
 		y = slider_start [0];
@@ -393,7 +393,7 @@ public Rectangle getThumbTrackBounds () {
 	OS.gtk_widget_style_get (handle, OS.has_secondary_forward_stepper, has_stepper, 0);
 	boolean hasF2 = has_stepper[0] != 0;
 	GtkAllocation allocation = new GtkAllocation ();
-	gtk_widget_get_allocation (handle, allocation);
+	OS.gtk_widget_get_allocation (handle, allocation);
 	if ((style & SWT.VERTICAL) != 0) {
 		int stepperSize = allocation.width;
 		x = allocation.x;

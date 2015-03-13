@@ -326,7 +326,7 @@ long /*int*/ getAccelGroup () {
 		return new Rectangle (0, 0, 0, 0);
 	}
 	GtkAllocation allocation = new GtkAllocation ();
-	gtk_widget_get_allocation (handle, allocation);
+	OS.gtk_widget_get_allocation (handle, allocation);
 	int x = allocation.x;
 	int y = allocation.y;
 	int width = allocation.width;

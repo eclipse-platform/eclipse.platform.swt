@@ -775,14 +775,6 @@ public static final native long /*int*/ G_OBJECT_CLASS_CONSTRUCTOR(long /*int*/ 
  * @paramOFF constructor cast=(GObject* (*) (GType, guint, GObjectConstructParam *))
  */
 public static final native void G_OBJECT_CLASS_SET_CONSTRUCTOR(long /*int*/ object_class, long /*int*/ constructor);
-/** @param widget cast=(GtkWidget *) */
-public static final native int GTK_WIDGET_HEIGHT(long /*int*/ widget);
-/** @param widget cast=(GtkWidget *) */
-public static final native int GTK_WIDGET_WIDTH(long /*int*/ widget);
-/** @param widget cast=(GtkWidget *) */
-public static final native int GTK_WIDGET_X(long /*int*/ widget);
-/** @param widget cast=(GtkWidget *) */
-public static final native int GTK_WIDGET_Y(long /*int*/ widget);
 /** @param widget cast=(GtkRange *) */
 public static final native int GTK_RANGE_SLIDER_START(long /*int*/ widget);
 /** @param widget cast=(GtkRange *) */
@@ -800,10 +792,6 @@ public static final native long /*int*/ GTK_ACCEL_LABEL_GET_ACCEL_STRING(long /*
 public static final native long /*int*/ GTK_ENTRY_IM_CONTEXT(long /*int*/ widget);
 /** @param widget cast=(GtkTextView *) */
 public static final native long /*int*/ GTK_TEXTVIEW_IM_CONTEXT(long /*int*/ widget);
-/** @param widget cast=(GtkWidget *) */
-public static final native void GTK_WIDGET_SET_X(long /*int*/ widget, int x);
-/** @param widget cast=(GtkWidget *) */
-public static final native void GTK_WIDGET_SET_Y(long /*int*/ widget, int y);
 /** @param widget cast=(GtkWidget *) */
 public static final native int GTK_WIDGET_REQUISITION_WIDTH(long /*int*/ widget);
 /** @param widget cast=(GtkWidget *) */

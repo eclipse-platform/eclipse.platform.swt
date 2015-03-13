@@ -200,7 +200,7 @@ public Rectangle getClientArea () {
 	forceResize ();
 	long /*int*/ clientHandle = clientHandle ();
 	GtkAllocation allocation = new GtkAllocation ();
-	gtk_widget_get_allocation (clientHandle, allocation);
+	OS.gtk_widget_get_allocation (clientHandle, allocation);
 	int x = allocation.x;
 	int y = allocation.y;
 	int width = (state & ZERO_WIDTH) != 0 ? 0 : allocation.width;
@@ -393,7 +393,7 @@ void redrawWidget (int x, int y, int width, int height, boolean redrawAll, boole
 	GdkRectangle rect = new GdkRectangle ();
 	if (redrawAll) {
 		GtkAllocation allocation = new GtkAllocation ();
-		gtk_widget_get_allocation (topHandle, allocation);
+		OS.gtk_widget_get_allocation (topHandle, allocation);
 		rect.width = allocation.width;
 		rect.height = allocation.height;
 	} else {

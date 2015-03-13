@@ -209,18 +209,6 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(GTK_1TYPE_1ACCESSIBLE)
 }
 #endif
 
-#ifndef NO_GTK_1WIDGET_1HEIGHT
-JNIEXPORT jint JNICALL OS_NATIVE(GTK_1WIDGET_1HEIGHT)
-	(JNIEnv *env, jclass that, jintLong arg0)
-{
-	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, GTK_1WIDGET_1HEIGHT_FUNC);
-	rc = (jint)GTK_WIDGET_HEIGHT((GtkWidget *)arg0);
-	OS_NATIVE_EXIT(env, that, GTK_1WIDGET_1HEIGHT_FUNC);
-	return rc;
-}
-#endif
-
 #ifndef NO_GTK_1WIDGET_1REQUISITION_1HEIGHT
 JNIEXPORT jint JNICALL OS_NATIVE(GTK_1WIDGET_1REQUISITION_1HEIGHT)
 	(JNIEnv *env, jclass that, jintLong arg0)
@@ -241,62 +229,6 @@ JNIEXPORT jint JNICALL OS_NATIVE(GTK_1WIDGET_1REQUISITION_1WIDTH)
 	OS_NATIVE_ENTER(env, that, GTK_1WIDGET_1REQUISITION_1WIDTH_FUNC);
 	rc = (jint)GTK_WIDGET_REQUISITION_WIDTH((GtkWidget *)arg0);
 	OS_NATIVE_EXIT(env, that, GTK_1WIDGET_1REQUISITION_1WIDTH_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO_GTK_1WIDGET_1SET_1X
-JNIEXPORT void JNICALL OS_NATIVE(GTK_1WIDGET_1SET_1X)
-	(JNIEnv *env, jclass that, jintLong arg0, jint arg1)
-{
-	OS_NATIVE_ENTER(env, that, GTK_1WIDGET_1SET_1X_FUNC);
-	GTK_WIDGET_SET_X((GtkWidget *)arg0, arg1);
-	OS_NATIVE_EXIT(env, that, GTK_1WIDGET_1SET_1X_FUNC);
-}
-#endif
-
-#ifndef NO_GTK_1WIDGET_1SET_1Y
-JNIEXPORT void JNICALL OS_NATIVE(GTK_1WIDGET_1SET_1Y)
-	(JNIEnv *env, jclass that, jintLong arg0, jint arg1)
-{
-	OS_NATIVE_ENTER(env, that, GTK_1WIDGET_1SET_1Y_FUNC);
-	GTK_WIDGET_SET_Y((GtkWidget *)arg0, arg1);
-	OS_NATIVE_EXIT(env, that, GTK_1WIDGET_1SET_1Y_FUNC);
-}
-#endif
-
-#ifndef NO_GTK_1WIDGET_1WIDTH
-JNIEXPORT jint JNICALL OS_NATIVE(GTK_1WIDGET_1WIDTH)
-	(JNIEnv *env, jclass that, jintLong arg0)
-{
-	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, GTK_1WIDGET_1WIDTH_FUNC);
-	rc = (jint)GTK_WIDGET_WIDTH((GtkWidget *)arg0);
-	OS_NATIVE_EXIT(env, that, GTK_1WIDGET_1WIDTH_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO_GTK_1WIDGET_1X
-JNIEXPORT jint JNICALL OS_NATIVE(GTK_1WIDGET_1X)
-	(JNIEnv *env, jclass that, jintLong arg0)
-{
-	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, GTK_1WIDGET_1X_FUNC);
-	rc = (jint)GTK_WIDGET_X((GtkWidget *)arg0);
-	OS_NATIVE_EXIT(env, that, GTK_1WIDGET_1X_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO_GTK_1WIDGET_1Y
-JNIEXPORT jint JNICALL OS_NATIVE(GTK_1WIDGET_1Y)
-	(JNIEnv *env, jclass that, jintLong arg0)
-{
-	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, GTK_1WIDGET_1Y_FUNC);
-	rc = (jint)GTK_WIDGET_Y((GtkWidget *)arg0);
-	OS_NATIVE_EXIT(env, that, GTK_1WIDGET_1Y_FUNC);
 	return rc;
 }
 #endif

@@ -177,7 +177,7 @@ public Rectangle computeTrim (int x, int y, int width, int height) {
 	forceResize ();
 	long /*int*/ clientHandle = clientHandle ();
 	GtkAllocation allocation = new GtkAllocation ();
-	gtk_widget_get_allocation (clientHandle, allocation);
+	OS.gtk_widget_get_allocation (clientHandle, allocation);
 	int clientX = allocation.x;
 	int clientY = allocation.y;
 	x -= clientX;
@@ -185,7 +185,7 @@ public Rectangle computeTrim (int x, int y, int width, int height) {
 	width +=  clientX + clientX;
 	if ((style & SWT.BOTTOM) != 0) {
 		int clientHeight = allocation.height;
-		gtk_widget_get_allocation (handle, allocation);
+		OS.gtk_widget_get_allocation (handle, allocation);
 		int parentHeight = allocation.height;
 		height += parentHeight - clientHeight;
 	} else {

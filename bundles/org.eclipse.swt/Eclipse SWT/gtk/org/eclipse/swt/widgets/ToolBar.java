@@ -484,7 +484,7 @@ long /*int*/ menuItemSelected (long /*int*/ widget, ToolItem item) {
 			 */
 			event.detail = SWT.ARROW;
 			GtkAllocation allocation = new GtkAllocation ();
-			gtk_widget_get_allocation (widget, allocation);
+			OS.gtk_widget_get_allocation (widget, allocation);
 			event.x = allocation.x;
 			if ((style & SWT.MIRRORED) != 0) event.x = getClientWidth () - allocation.width - event.x;
 			event.y = allocation.y + allocation.height;

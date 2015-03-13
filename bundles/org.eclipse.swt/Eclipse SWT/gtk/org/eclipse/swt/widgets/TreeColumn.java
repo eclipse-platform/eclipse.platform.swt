@@ -389,7 +389,7 @@ long /*int*/ gtk_mnemonic_activate (long /*int*/ widget, long /*int*/ arg1) {
 long /*int*/ gtk_size_allocate (long /*int*/ widget, long /*int*/ allocation) {
 	useFixedWidth = false;
 	GtkAllocation widgetAllocation = new GtkAllocation();
-	gtk_widget_get_allocation (widget, widgetAllocation);
+	OS.gtk_widget_get_allocation (widget, widgetAllocation);
 	int x = widgetAllocation.x;
 	int width = widgetAllocation.width;
 	if (x != lastX) {

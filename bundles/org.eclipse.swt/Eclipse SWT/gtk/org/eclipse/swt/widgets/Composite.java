@@ -644,7 +644,7 @@ public Rectangle getClientArea () {
 		forceResize ();
 		long /*int*/ clientHandle = clientHandle ();
 		GtkAllocation allocation = new GtkAllocation();
-		gtk_widget_get_allocation (clientHandle, allocation);
+		OS.gtk_widget_get_allocation (clientHandle, allocation);
 		int width = (state & ZERO_WIDTH) != 0 ? 0 : allocation.width;
 		int height = (state & ZERO_HEIGHT) != 0 ? 0 : allocation.height;
 		return new Rectangle (0, 0, width, height);
@@ -1261,7 +1261,7 @@ void moveChildren(int oldWidth) {
 		Control child = children[i];
 		long /*int*/ topHandle = child.topHandle ();
 		GtkAllocation allocation = new GtkAllocation();
-		gtk_widget_get_allocation (topHandle, allocation);
+		OS.gtk_widget_get_allocation (topHandle, allocation);
 		int x = allocation.x;
 		int y = allocation.y;
 		int controlWidth = (child.state & ZERO_WIDTH) != 0 ? 0 : allocation.width;

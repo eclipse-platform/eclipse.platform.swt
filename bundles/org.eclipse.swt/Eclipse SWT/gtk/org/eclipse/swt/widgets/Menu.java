@@ -377,7 +377,7 @@ void fixMenus (Decorations newParent) {
 	int [] origin_x = new int [1], origin_y = new int [1];
 	OS.gdk_window_get_origin (window, origin_x, origin_y);
 	GtkAllocation allocation = new GtkAllocation ();
-	gtk_widget_get_allocation (handle, allocation);
+	OS.gtk_widget_get_allocation (handle, allocation);
 	int x = origin_x [0] + allocation.x;
 	int y = origin_y [0] + allocation.y;
 	int width = allocation.width;

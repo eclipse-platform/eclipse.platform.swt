@@ -510,7 +510,7 @@ int setBounds (int x, int y, int width, int height, boolean move, boolean resize
 	*/
 	if (fixWrap) {
 		GtkAllocation allocation = new GtkAllocation();
-		gtk_widget_get_allocation (handle, allocation);
+		OS.gtk_widget_get_allocation (handle, allocation);
 		int labelWidth = allocation.width;
 		int labelHeight = allocation.height;
 		OS.gtk_widget_set_size_request (labelHandle, labelWidth, labelHeight);
@@ -520,7 +520,7 @@ int setBounds (int x, int y, int width, int height, boolean move, boolean resize
 		*/
 		GtkRequisition requisition = new GtkRequisition ();
 		gtk_widget_get_preferred_size (labelHandle, requisition);
-		gtk_widget_get_allocation(labelHandle, allocation);
+		OS.gtk_widget_get_allocation(labelHandle, allocation);
 		allocation.width = labelWidth;
 		allocation.height = labelHeight;
 		OS.gtk_widget_size_allocate (labelHandle, allocation);

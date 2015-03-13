@@ -567,41 +567,11 @@ struct _GtkAccelLabelPrivate
 #ifndef GTK_OBJECT_FLAGS
 #define GTK_OBJECT_FLAGS(arg0) arg0
 #endif
-#if GTK_CHECK_VERSION(2,18,0)
-#define GTK_WIDGET_HEIGHT(arg0) 0
-#else
-#define GTK_WIDGET_HEIGHT(arg0) (arg0)->allocation.height
-#endif
 #ifndef GTK_WIDGET_MAPPED
 #define GTK_WIDGET_MAPPED(arg0) 0
 #endif
-#if GTK_CHECK_VERSION(2,18,0)
-#define GTK_WIDGET_WIDTH(arg0) 0
-#else
-#define GTK_WIDGET_WIDTH(arg0) (arg0)->allocation.width
-#endif
-#if GTK_CHECK_VERSION(2,18,0)
-#define GTK_WIDGET_X(arg0) 0
-#else
-#define GTK_WIDGET_X(arg0) (arg0)->allocation.x
-#endif
-#if GTK_CHECK_VERSION(2,18,0)
-#define GTK_WIDGET_SET_X(arg0, arg1)
-#else
-#define GTK_WIDGET_SET_X(arg0, arg1) (arg0)->allocation.x = arg1
-#endif
 #define GTK_ENTRY_IM_CONTEXT(arg0) (arg0)->im_context
 #define GTK_TEXTVIEW_IM_CONTEXT(arg0) (arg0)->im_context
-#if GTK_CHECK_VERSION(2,18,0)
-#define GTK_WIDGET_Y(arg0) 0
-#else
-#define GTK_WIDGET_Y(arg0) ((GtkWidget *)arg0)->allocation.y
-#endif
-#if GTK_CHECK_VERSION(2,18,0)
-#define GTK_WIDGET_SET_Y(arg0, arg1)
-#else
-#define GTK_WIDGET_SET_Y(arg0, arg1) (arg0)->allocation.y = arg1
-#endif
 #define GTK_WIDGET_REQUISITION_WIDTH(arg0) (arg0)->requisition.width
 #define GTK_WIDGET_REQUISITION_HEIGHT(arg0) (arg0)->requisition.height
 #define GDK_EVENT_TYPE(arg0) (arg0)->type

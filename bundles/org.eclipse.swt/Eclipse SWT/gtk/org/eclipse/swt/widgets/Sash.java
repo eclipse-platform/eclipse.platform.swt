@@ -183,7 +183,7 @@ long /*int*/ gtk_button_press_event (long /*int*/ widget, long /*int*/ eventPtr)
 	startX = (int) (gdkEvent.x_root - origin_x [0]);
 	startY = (int) (gdkEvent.y_root - origin_y [0]);
 	GtkAllocation allocation = new GtkAllocation ();
-	gtk_widget_get_allocation(handle, allocation);
+	OS.gtk_widget_get_allocation(handle, allocation);
 	int x = allocation.x;
 	int y = allocation.y;
 	int width = allocation.width;
@@ -228,7 +228,7 @@ long /*int*/ gtk_button_release_event (long /*int*/ widget, long /*int*/ eventPt
 	if (!dragging) return 0;
 	dragging = false;
 	GtkAllocation allocation = new GtkAllocation ();
-	gtk_widget_get_allocation (handle, allocation);
+	OS.gtk_widget_get_allocation (handle, allocation);
 	int width = allocation.width;
 	int height = allocation.height;
 	Event event = new Event ();
@@ -257,7 +257,7 @@ long /*int*/ gtk_focus_in_event (long /*int*/ widget, long /*int*/ event) {
 	// widget could be disposed at this point
 	if (handle != 0) {
 		GtkAllocation allocation = new GtkAllocation ();
-		gtk_widget_get_allocation (handle, allocation);
+		OS.gtk_widget_get_allocation (handle, allocation);
 		lastX = allocation.x;
 		lastY = allocation.y;
 	}
@@ -288,10 +288,10 @@ long /*int*/ gtk_key_press_event (long /*int*/ widget, long /*int*/ eventPtr) {
 			}
 			int parentBorder = 0;
 			GtkAllocation allocation = new GtkAllocation ();
-			gtk_widget_get_allocation (handle, allocation);
+			OS.gtk_widget_get_allocation (handle, allocation);
 			int width = allocation.width;
 			int height = allocation.height;
-			gtk_widget_get_allocation (parent.handle, allocation);
+			OS.gtk_widget_get_allocation (parent.handle, allocation);
 			int parentWidth = allocation.width;
 			int parentHeight = allocation.height;
 			int newX = lastX, newY = lastY;
@@ -365,13 +365,13 @@ long /*int*/ gtk_motion_notify_event (long /*int*/ widget, long /*int*/ eventPtr
 	}
 	if ((eventState & OS.GDK_BUTTON1_MASK) == 0) return 0;
 	GtkAllocation allocation = new GtkAllocation ();
-	gtk_widget_get_allocation (handle, allocation);
+	OS.gtk_widget_get_allocation (handle, allocation);
 	int x = allocation.x;
 	int y = allocation.y;
 	int width = allocation.width;
 	int height = allocation.height;
 	int parentBorder = 0;
-	gtk_widget_get_allocation (parent.handle, allocation);
+	OS.gtk_widget_get_allocation (parent.handle, allocation);
 	int parentWidth = allocation.width;
 	int parentHeight = allocation.height;
 	int newX = lastX, newY = lastY;

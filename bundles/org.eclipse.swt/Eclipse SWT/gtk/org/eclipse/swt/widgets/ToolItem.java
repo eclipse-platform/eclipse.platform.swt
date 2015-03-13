@@ -316,7 +316,7 @@ public Rectangle getBounds () {
 	parent.forceResize ();
 	long /*int*/ topHandle = topHandle ();
 	GtkAllocation allocation = new GtkAllocation ();
-	gtk_widget_get_allocation (topHandle, allocation);
+	OS.gtk_widget_get_allocation (topHandle, allocation);
 	int x = allocation.x;
 	int y = allocation.y;
 	int width = allocation.width;
@@ -470,7 +470,7 @@ public int getWidth () {
 	parent.forceResize ();
 	long /*int*/ topHandle = topHandle ();
 	GtkAllocation allocation = new GtkAllocation();
-	gtk_widget_get_allocation (topHandle, allocation);
+	OS.gtk_widget_get_allocation (topHandle, allocation);
 	return allocation.width;
 }
 
@@ -479,7 +479,7 @@ long /*int*/ gtk_button_press_event (long /*int*/ widget, long /*int*/ event) {
 	GdkEventButton gdkEvent = new GdkEventButton ();
 	OS.memmove (gdkEvent, event, GdkEventButton.sizeof);
 	GtkAllocation allocation = new GtkAllocation ();
-	gtk_widget_get_allocation (handle, allocation);
+	OS.gtk_widget_get_allocation (handle, allocation);
 	double x = gdkEvent.x + allocation.x;
 	double y = gdkEvent.y + allocation.y;
 	OS.memmove (event, gdkEvent, GdkEventButton.sizeof);
@@ -495,7 +495,7 @@ long /*int*/ gtk_button_release_event (long /*int*/ widget, long /*int*/ event) 
 	GdkEventButton gdkEvent = new GdkEventButton ();
 	OS.memmove (gdkEvent, event, GdkEventButton.sizeof);
 	GtkAllocation allocation = new GtkAllocation ();
-	gtk_widget_get_allocation (handle, allocation);
+	OS.gtk_widget_get_allocation (handle, allocation);
 	double x = gdkEvent.x + allocation.x;
 	double y = gdkEvent.y + allocation.y;
 	OS.memmove (event, gdkEvent, GdkEventButton.sizeof);
@@ -535,7 +535,7 @@ long /*int*/ gtk_clicked (long /*int*/ widget) {
 					if (isArrow) {
 						event.detail = SWT.ARROW;
 						GtkAllocation allocation = new GtkAllocation ();
-						gtk_widget_get_allocation (topHandle, allocation);
+						OS.gtk_widget_get_allocation (topHandle, allocation);
 						event.x = allocation.x;
 						if ((parent.style & SWT.MIRRORED) != 0) event.x = parent.getClientWidth () - allocation.width - event.x;
 						event.y = allocation.y + allocation.height;
@@ -859,7 +859,7 @@ void resizeHandle(int width, int height) {
 	GtkRequisition requisition = new GtkRequisition ();
 	parent.gtk_widget_size_request (handle, requisition);
 	GtkAllocation allocation = new GtkAllocation ();
-	gtk_widget_get_allocation (handle, allocation);
+	OS.gtk_widget_get_allocation (handle, allocation);
 	allocation.width = width;
 	allocation.height = height;
 	OS.gtk_widget_size_allocate (handle, allocation);

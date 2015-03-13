@@ -284,7 +284,7 @@ public boolean getExpanded () {
 public int getHeaderHeight () {
 	checkWidget ();
 	GtkAllocation allocation = new GtkAllocation ();
-	gtk_widget_get_allocation (handle, allocation);
+	OS.gtk_widget_get_allocation (handle, allocation);
 	return allocation.height - (expanded ? height : 0);
 }
 
@@ -411,7 +411,7 @@ void resizeControl (int yScroll) {
 		boolean visible = OS.gtk_expander_get_expanded (handle);
 		if (visible) {
 			GtkAllocation allocation = new GtkAllocation ();
-			gtk_widget_get_allocation (clientHandle, allocation);
+			OS.gtk_widget_get_allocation (clientHandle, allocation);
 
 			//454940 change in hierarchy
 			/* SWT's calls to gtk_widget_size_allocate and gtk_widget_set_allocation
@@ -444,7 +444,7 @@ void resizeControl (int yScroll) {
 				ScrollBar vBar = parent.verticalBar;
 				if (vBar != null) {
 					if (gtk_widget_get_visible (vBar.handle)) {
-						gtk_widget_get_allocation (parent.scrolledHandle, allocation);
+						OS.gtk_widget_get_allocation (parent.scrolledHandle, allocation);
 						width = allocation.width - parent.vScrollBarWidth () - 2 * parent.spacing;
 					}
 				}
