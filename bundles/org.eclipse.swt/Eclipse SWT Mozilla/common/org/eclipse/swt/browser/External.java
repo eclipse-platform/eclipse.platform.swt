@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2008, 2013 IBM Corporation and others.
+ * Copyright (c) 2008, 2015 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -7,6 +7,7 @@
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
+ *     Red Hat Inc. - generification
  *******************************************************************************/
 package org.eclipse.swt.browser;
 
@@ -389,7 +390,7 @@ static nsIVariant convertToJS (Object value, nsIComponentManager componentManage
 }
 
 static long /*int*/ invokeFunction (int functionId, long /*int*/ tokenVariant, long /*int*/ args) {
-	Object key = new Integer (functionId);
+	Integer key = new Integer (functionId);
 	BrowserFunction function = Mozilla.AllFunctions.get (key);
 	Object returnValue = null;
 

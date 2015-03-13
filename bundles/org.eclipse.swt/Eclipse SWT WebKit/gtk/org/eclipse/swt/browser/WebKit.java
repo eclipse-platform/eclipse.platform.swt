@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2010, 2013 IBM Corporation and others.
+ * Copyright (c) 2010, 2015 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -7,6 +7,7 @@
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
+ *     Red Hat Inc. - generification
  *******************************************************************************/
 package org.eclipse.swt.browser;
 
@@ -2340,7 +2341,7 @@ long /*int*/ callJava (long /*int*/ ctx, long /*int*/ func, long /*int*/ thisObj
 		if (type == WebKitGTK.kJSTypeNumber) {
 			int index = ((Double)convertToJava (ctx, result[0])).intValue ();
 			result[0] = 0;
-			Object key = new Integer (index);
+			Integer key = new Integer (index);
 			C.memmove (result, arguments + C.PTR_SIZEOF, C.PTR_SIZEOF);
 			type = WebKitGTK.JSValueGetType (ctx, result[0]);
 			if (type == WebKitGTK.kJSTypeString) {

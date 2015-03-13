@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2004, 2007 IBM Corporation and others.
+ * Copyright (c) 2004, 2015 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -7,11 +7,13 @@
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
+ *     Red Hat Inc. - generification
  *******************************************************************************/
 package org.eclipse.swt.tools.internal;
 
-import java.util.*;
+import java.io.*;
 import java.lang.reflect.*;
+import java.util.*;
 
 public class CleanupNatives extends CleanupClass {
 	
@@ -38,9 +40,9 @@ public void generate(JNIMethod[] methods) {
 
 public void generate(JNIMethod method) {
 	String name = method.getName();
-	Enumeration<?> keys = files.keys();
+	Enumeration<File> keys = files.keys();
 	while (keys.hasMoreElements()) {
-		Object key = keys.nextElement();
+		File key = keys.nextElement();
 		String str = files.get(key);
 		if (str.indexOf(name) != -1) {
 //			int modifiers = method.getModifiers();
