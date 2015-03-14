@@ -19,6 +19,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 
+import junit.framework.TestCase;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.SWTException;
 import org.eclipse.swt.graphics.Color;
@@ -32,8 +34,6 @@ import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.internal.Compatibility;
 import org.eclipse.swt.widgets.Display;
-
-import junit.framework.TestCase;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.graphics.Image
@@ -450,15 +450,21 @@ public void test_ConstructorLorg_eclipse_swt_graphics_Device_ImageFileNameProvid
 	// Valid provider
 	provider = new ImageFileNameProvider() {
 		public String getImagePath(int zoom) {
+			String fileName;
 			switch (zoom) {
-			case 100: 
-				return "./data/collapseall.png";
+			case 100:
+				fileName = "collapseall.png";
+				break;
 			case 150: 
-				return "./data/collapseall@1.5x.png";
+				fileName = "collapseall@1.5x.png";
+				break;
 			case 200: 
-				return "./data/collapseall@2x.png";
+				fileName = "collapseall@2x.png";
+				break;
+			default:
+				return null;
 			}
-			return null;
+			return getPath(fileName);
 		}
 	};
 	Image image = new Image(display, provider);
@@ -491,15 +497,21 @@ public void test_ConstructorLorg_eclipse_swt_graphics_Device_ImageDataProvider()
 	// Valid provider
 	provider = new ImageDataProvider() {
 		public ImageData getImageData(int zoom) {
+			String fileName;
 			switch (zoom) {
-			case 100: 
-				return new ImageData ("./data/collapseall.png");
+			case 100:
+				fileName = "collapseall.png";
+				break;
 			case 150: 
-				return new ImageData ("./data/collapseall@1.5x.png");
+				fileName = "collapseall@1.5x.png";
+				break;
 			case 200: 
-				return new ImageData ("./data/collapseall@2x.png");
+				fileName = "collapseall@2x.png";
+				break;
+			default:
+				return null;
 			}
-			return null;
+			return new ImageData(getPath(fileName));
 		}
 	};
 	Image image = new Image(display, provider);
