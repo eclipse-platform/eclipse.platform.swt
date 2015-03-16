@@ -22,7 +22,8 @@
  *
  * IBM
  * -  Binding to permit interfacing between Mozilla and SWT
- * -  Copyright (C) 2003, 2013 IBM Corp.  All Rights Reserved.
+ * -  Copyright (C) 2003, 2014 IBM Corp.  All Rights Reserved.
+ *    Neil Rashbrook <neil@parkwaycc.co.uk> - Bug 429739
  *
  * ***** END LICENSE BLOCK ***** */
 package org.eclipse.swt.internal.mozilla;
@@ -92,6 +93,7 @@ public class XPCOM extends C {
 	public static final nsID NS_IXPCSCRIPTABLE_IID = new nsID ("155d1863-2b0b-4f5e-b800-05184944156b"); //$NON-NLS-1$
 
 	/* contract ID constants */
+	public static final String EXECUTE_CONTRACTID = "@eclipse.org/execute;1"; //$NON-NLS-1$
 	public static final String EXTERNAL_CONTRACTID = "@eclipse.org/external;1"; //$NON-NLS-1$
 	public static final String NS_AUTHPROMPTER_CONTRACTID = "@mozilla.org/passwordmanager/authpromptfactory;1"; //$NON-NLS-1$
 	public static final String NS_CERTOVERRIDE_CONTRACTID = "@mozilla.org/security/certoverride;1"; //$NON-NLS-1$
@@ -175,15 +177,6 @@ public class XPCOM extends C {
 	public static final int SEC_ERROR_UNTRUSTED_CERT = 0x805A1FEB;
 	public static final int SEC_ERROR_UNTRUSTED_ISSUER = 0x805A1FEC;
 	public static final int SSL_ERROR_BAD_CERT_DOMAIN = 0x805A2FF4;
-	public static final int USE_JSSTUB_FOR_ADDPROPERTY = 1 << 17;
-	public static final int WANT_POSTCREATE = 4;
-
-	/* JSAPI constants */
-	public static final int JSPROP_ENUMERATE = 0x1;
-	public static final int JSPROP_PERMANENT = 0x4;
-	public static final int JSPROP_READONLY = 0x2;
-	public static final int JS_FALSE = 0x0;
-	public static final int JS_TRUE = 0x1;
 
 public static final native int nsDynamicFunctionLoad_sizeof ();
 
@@ -234,27 +227,7 @@ public static final native long /*int*/ CALLBACK_GetScriptableFlags24(long /*int
 public static final native long /*int*/ CALLBACK_JSNative(long /*int*/ func);
 
 /** @method flags=no_gen */
-public static final native long /*int*/ _JS_DefineFunction(byte[] mozillaPath, long /*int*/ cx, long /*int*/ obj, byte[] name, long /*int*/ call, int nargs, int flags);	
-public static final long /*int*/ JS_DefineFunction(byte[] mozillaPath, long /*int*/ cx, long /*int*/ obj, byte[] name, long /*int*/ call, int nargs, int flags) {
-	lock.lock();
-	try {
-		return _JS_DefineFunction(mozillaPath, cx, obj, name, call, nargs, flags);
-	} finally {
-		lock.unlock();
-	}
-}
-/** @method flags=no_gen */
-public static final native long /*int*/ _JS_DefineFunction24(long /*int*/ cx, long /*int*/ obj, byte[] name, long /*int*/ call, int nargs, int flags);	
-public static final long /*int*/ JS_DefineFunction24(long /*int*/ cx, long /*int*/ obj, byte[] name, long /*int*/ call, int nargs, int flags) {
-	lock.lock();
-	try {
-		return _JS_DefineFunction24(cx, obj, name, call, nargs, flags);
-	} finally {
-		lock.unlock();
-	}
-}
-/** @method flags=no_gen */
-public static final native int _JS_EvaluateUCScriptForPrincipals(byte[] mozillaPath, long /*int*/ cx, long /*int*/ obj, long /*int*/ principals, char[] chars, int length, byte[] filename, int lineno, long /*int*/[] retVal);	
+public static final native int _JS_EvaluateUCScriptForPrincipals(byte[] mozillaPath, long /*int*/ cx, long /*int*/ obj, long /*int*/ principals, char[] chars, int length, byte[] filename, int lineno, long /*int*/[] retVal);
 public static final int JS_EvaluateUCScriptForPrincipals(byte[] mozillaPath, long /*int*/ cx, long /*int*/ obj, long /*int*/ principals, char[] chars, int length, byte[] filename, int lineno, long /*int*/[] retVal) {
 	lock.lock();
 	try {
@@ -274,41 +247,11 @@ public static final int JS_EvaluateUCScriptForPrincipals191(byte[] mozillaPath, 
 	}
 }
 /** @method flags=no_gen */
-public static final native int _JS_EvaluateUCScriptForPrincipals24(byte[] mozillaPath, long /*int*/ cx, long /*int*/ obj, long /*int*/ principals, char[] chars, int length, byte[] filename, int lineno, long /*int*/ retVal);	
-public static final int JS_EvaluateUCScriptForPrincipals24(byte[] mozillaPath, long /*int*/ cx, long /*int*/ obj, long /*int*/ principals, char[] chars, int length, byte[] filename, int lineno, long /*int*/ retVal) {
-	lock.lock();
-	try {
-		return _JS_EvaluateUCScriptForPrincipals24(mozillaPath, cx, obj, principals, chars, length, filename, lineno, retVal);
-	} finally {
-		lock.unlock();
-	}
-}
-/** @method flags=no_gen */
-public static final native long /*int*/ _JS_GetGlobalForScopeChain24(long /*int*/ cx);	
-public static final long /*int*/ JS_GetGlobalForScopeChain24(long /*int*/ cx) {
-	lock.lock();
-	try {
-		return _JS_GetGlobalForScopeChain24(cx);
-	} finally {
-		lock.unlock();
-	}
-}
-/** @method flags=no_gen */
-public static final native long /*int*/ _JS_GetGlobalObject(byte[] mozillaPath, long /*int*/ cx);	
+public static final native long /*int*/ _JS_GetGlobalObject(byte[] mozillaPath, long /*int*/ cx);
 public static final long /*int*/ JS_GetGlobalObject(byte[] mozillaPath, long /*int*/ cx) {
 	lock.lock();
 	try {
 		return _JS_GetGlobalObject(mozillaPath, cx);
-	} finally {
-		lock.unlock();
-	}
-}
-/** @method flags=no_gen */
-public static final native long /*int*/ _JS_NewObject(byte[] mozillaPath, long /*int*/ cx, long /*int*/ clasp, long /*int*/ proto, long /*int*/ parent);	
-public static final long /*int*/ JS_NewObject(byte[] mozillaPath, long /*int*/ cx, long /*int*/ clasp, long /*int*/ proto, long /*int*/ parent) {
-	lock.lock();
-	try {
-		return _JS_NewObject(mozillaPath, cx, clasp, proto, parent);
 	} finally {
 		lock.unlock();
 	}
@@ -445,26 +388,6 @@ public static final int nsIScriptGlobalObject_EnsureScriptEnvironment(long /*int
 		lock.unlock();
 	}
 }
-/** @method flags=no_gen */
-public static final native int _nsIScriptGlobalObject24_EnsureScriptEnvironment(long /*int*/ ptr);
-public static final int nsIScriptGlobalObject24_EnsureScriptEnvironment(long /*int*/ ptr) {
-	lock.lock();
-	try {
-		return _nsIScriptGlobalObject24_EnsureScriptEnvironment(ptr);
-	} finally {
-		lock.unlock();
-	}
-}
-/** @method flags=no_gen */
-public static final native long /*int*/ _nsIScriptGlobalObject24_GetGlobalJSObject(long /*int*/ ptr);
-public static final long /*int*/ nsIScriptGlobalObject24_GetGlobalJSObject(long /*int*/ ptr) {
-	lock.lock();
-	try {
-		return _nsIScriptGlobalObject24_GetGlobalJSObject(ptr);
-	} finally {
-		lock.unlock();
-	}
-}
 /**
  * @method flags=cpp
  * @param ptr cast=(nsIScriptGlobalObject *)
@@ -478,16 +401,6 @@ public static final long /*int*/ nsIScriptGlobalObject_GetScriptContext(long /*i
 		lock.unlock();
 	}
 }
-/** @method flags=no_gen */
-public static final native long /*int*/ _nsIScriptGlobalObject24_GetScriptContext(long /*int*/ ptr);
-public static final long /*int*/ nsIScriptGlobalObject24_GetScriptContext(long /*int*/ ptr) {
-	lock.lock();
-	try {
-		return _nsIScriptGlobalObject24_GetScriptContext(ptr);
-	} finally {
-		lock.unlock();
-	}
-}
 /**
  * @method flags=cpp
  * @param ptr cast=(nsIScriptContext *)
@@ -497,16 +410,6 @@ public static final long /*int*/ nsIScriptContext_GetNativeContext(long /*int*/ 
 	lock.lock();
 	try {
 		return _nsIScriptContext_GetNativeContext(ptr);
-	} finally {
-		lock.unlock();
-	}
-}
-/** @method flags=no_gen */
-public static final native long /*int*/ _nsIScriptContext24_GetNativeContext(long /*int*/ ptr);
-public static final long /*int*/ nsIScriptContext24_GetNativeContext(long /*int*/ ptr) {
-	lock.lock();
-	try {
-		return _nsIScriptContext24_GetNativeContext(ptr);
 	} finally {
 		lock.unlock();
 	}

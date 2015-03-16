@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2003, 2013 IBM Corporation and others.
+ * Copyright (c) 2003, 2015 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -294,15 +294,27 @@ int getFile(long /*int*/ prop, long /*int*/ persistent, long /*int*/ _retval) {
 	} else if (propertyName.equals (XPCOM.NS_GRE_DIR)) {
 		propertyValue = mozillaPath;
 	} else if (propertyName.equals (XPCOM.NS_GRE_COMPONENT_DIR)) {
-		propertyValue = profilePath + COMPONENTS_DIR;
+		if (MozillaVersion.CheckVersion (MozillaVersion.VERSION_XR24, false)) {
+			propertyValue = mozillaPath + COMPONENTS_DIR;
+		} else {
+			propertyValue = profilePath + COMPONENTS_DIR;
+		}
 	} else if (propertyName.equals (XPCOM.NS_XPCOM_INIT_CURRENT_PROCESS_DIR)) {
 		propertyValue = mozillaPath;
 	} else if (propertyName.equals (XPCOM.NS_OS_CURRENT_PROCESS_DIR)) {
 		propertyValue = mozillaPath;
 	} else if (propertyName.equals (XPCOM.NS_XPCOM_COMPONENT_DIR)) {
-		propertyValue = mozillaPath + COMPONENTS_DIR;
+		if (MozillaVersion.CheckVersion (MozillaVersion.VERSION_XR24, false)) {
+			propertyValue = profilePath + COMPONENTS_DIR;
+		} else {
+			propertyValue = mozillaPath + COMPONENTS_DIR;
+		}
 	} else if (propertyName.equals (XPCOM.NS_XPCOM_CURRENT_PROCESS_DIR)) {
-		propertyValue = mozillaPath;
+		if (MozillaVersion.CheckVersion (MozillaVersion.VERSION_XR24, false)) {
+			propertyValue = profilePath;
+		} else {
+			propertyValue = mozillaPath;
+		}
 	} else if (propertyName.equals (XPCOM.NS_APP_PREF_DEFAULTS_50_DIR)) {
 		/*
 		* Answering a value for this property causes problems in Mozilla versions

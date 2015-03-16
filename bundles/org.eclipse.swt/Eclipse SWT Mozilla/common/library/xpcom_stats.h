@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2014 IBM Corporation and others.
+ * Copyright (c) 2000, 2015 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -47,14 +47,9 @@ typedef enum {
 #else
 	_1Call__JJJ_3BII_3I_FUNC,
 #endif
-	_1JS_1DefineFunction_FUNC,
-	_1JS_1DefineFunction24_FUNC,
 	_1JS_1EvaluateUCScriptForPrincipals_FUNC,
 	_1JS_1EvaluateUCScriptForPrincipals191_FUNC,
-	_1JS_1EvaluateUCScriptForPrincipals24_FUNC,
-	_1JS_1GetGlobalForScopeChain24_FUNC,
 	_1JS_1GetGlobalObject_FUNC,
-	_1JS_1NewObject_FUNC,
 	_1NS_1Free_FUNC,
 	_1NS_1GetComponentManager_FUNC,
 	_1NS_1GetServiceManager_FUNC,
@@ -1138,11 +1133,7 @@ typedef enum {
 	_1nsID_1new_FUNC,
 	_1nsIMemory_1Alloc_FUNC,
 	_1nsIMemory_1Realloc_FUNC,
-	_1nsIScriptContext24_1GetNativeContext_FUNC,
 	_1nsIScriptContext_1GetNativeContext_FUNC,
-	_1nsIScriptGlobalObject24_1EnsureScriptEnvironment_FUNC,
-	_1nsIScriptGlobalObject24_1GetGlobalJSObject_FUNC,
-	_1nsIScriptGlobalObject24_1GetScriptContext_FUNC,
 	_1nsIScriptGlobalObject_1EnsureScriptEnvironment_FUNC,
 	_1nsIScriptGlobalObject_1GetScriptContext_FUNC,
 #ifndef JNI64

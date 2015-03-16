@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2003, 2013 IBM Corporation and others.
+ * Copyright (c) 2003, 2015 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -7,6 +7,8 @@
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
+ *     Neil Rashbrook <neil@parkwaycc.co.uk> - Bug 429739
+ *     Matthew Painter <matthew.painter@import.io>
  *******************************************************************************/
 package org.eclipse.swt.browser;
 
@@ -702,7 +704,7 @@ public void create (Composite parent, int style) {
 			LocationProvider = new AppFileLocProvider (MozillaPath, profilePath, cacheParentPath, IsXULRunner);
 			LocationProvider.AddRef ();
 
-			/* write external.xpt to the file system if needed */
+			/* write swt.xpt to the file system if needed */
 			initExternal (LocationProvider.profilePath);
 
 			/* invoke appropriate Init function (based on mozilla version) */
@@ -1392,6 +1394,51 @@ void disposeCOMInterfaces () {
 }
 
 @Override
+public Object evaluate (String script) throws SWTException {
+	if (!MozillaVersion.CheckVersion (MozillaVersion.VERSION_XR24))
+		return super.evaluate (script);
+
+	delegate.removeWindowSubclass ();
+
+	long /*int*/[] result = new long /*int*/[1];
+	int rc = webBrowser.QueryInterface(IIDStore.GetIID (nsIInterfaceRequestor.class), result);
+	if (rc != XPCOM.NS_OK) error (rc);
+	if (result[0] == 0) error (XPCOM.NS_NOINTERFACE);
+	nsIInterfaceRequestor interfaceRequestor = new nsIInterfaceRequestor (result[0]);
+	result[0] = 0;
+	rc = XPCOM.NS_GetServiceManager (result);
+	if (rc != XPCOM.NS_OK) error (rc);
+	if (result[0] == 0) error (XPCOM.NS_NOINTERFACE);
+
+	nsIServiceManager serviceManager = new nsIServiceManager (result[0]);
+	result[0] = 0;
+	rc = interfaceRequestor.GetInterface (IIDStore.GetIID (nsIDOMWindow.class), result);
+	interfaceRequestor.Release ();
+	if (rc != XPCOM.NS_OK) error (rc);
+	if (result[0] == 0) error (XPCOM.NS_NOINTERFACE);
+
+	nsIDOMWindow window = new nsIDOMWindow (result[0]);
+	result[0] = 0;
+	byte[] aContractID = MozillaDelegate.wcsToMbcs (null, XPCOM.EXECUTE_CONTRACTID, true);
+	rc = serviceManager.GetServiceByContractID (aContractID, IIDStore.GetIID (Execute.class), result);
+	if (rc != XPCOM.NS_OK) error (rc);
+	if (result[0] == 0) error (XPCOM.NS_NOINTERFACE);
+
+	Execute execute = new Execute (result[0]);
+	result[0] = 0;
+	nsEmbedString data = new nsEmbedString ("(function(){" + script + "}())");
+	execute.EvalInWindow (window, data, result);
+	data.dispose ();
+	execute.Release ();
+	if (result[0] == 0)
+		return null;
+
+	nsIVariant variant = new nsIVariant (result[0]);
+	Object retval = External.convertToJava (variant);
+	variant.Release ();
+	return retval;
+}
+@Override
 public boolean execute (String script) {
 	/*
 	* This could be the first content that is set into the browser, so
@@ -1400,6 +1447,50 @@ public boolean execute (String script) {
 	*/
 	delegate.removeWindowSubclass ();
 
+	long /*int*/[] result = new long /*int*/[1];
+	/*
+	* As of mozilla 1.9 executing javascript via the javascript: protocol no
+	* longer happens synchronously.  As a result, the result of executing JS
+	* is not returned to the java side when expected by the client.  The
+	* workaround for version 24 is to use a javascript-implemented component
+	* which then executes synchronously.
+	*/
+	if (MozillaVersion.CheckVersion (MozillaVersion.VERSION_XR24)) {
+		result[0] = 0;
+		int rc = webBrowser.QueryInterface(IIDStore.GetIID (nsIInterfaceRequestor.class), result);
+		if (rc != XPCOM.NS_OK) error (rc);
+		if (result[0] == 0) error (XPCOM.NS_NOINTERFACE);
+		nsIInterfaceRequestor interfaceRequestor = new nsIInterfaceRequestor (result[0]);
+		result[0] = 0;
+		rc = XPCOM.NS_GetServiceManager (result);
+		if (rc != XPCOM.NS_OK) error (rc);
+		if (result[0] == 0) error (XPCOM.NS_NOINTERFACE);
+
+		nsIServiceManager serviceManager = new nsIServiceManager (result[0]);
+		result[0] = 0;
+		rc = interfaceRequestor.GetInterface (IIDStore.GetIID (nsIDOMWindow.class), result);
+		interfaceRequestor.Release ();
+		if (rc != XPCOM.NS_OK) error (rc);
+		if (result[0] == 0) error (XPCOM.NS_NOINTERFACE);
+
+		nsIDOMWindow window = new nsIDOMWindow (result[0]);
+		result[0] = 0;
+		byte[] aContractID = MozillaDelegate.wcsToMbcs (null, XPCOM.EXECUTE_CONTRACTID, true);
+		rc = serviceManager.GetServiceByContractID (aContractID, IIDStore.GetIID (Execute.class), result);
+		if (rc != XPCOM.NS_OK) error (rc);
+		if (result[0] == 0) error (XPCOM.NS_NOINTERFACE);
+
+		Execute execute = new Execute (result[0]);
+		result[0] = 0;
+		nsEmbedString data = new nsEmbedString (script);
+		rc = execute.EvalInWindow (window, data, result);
+		if (result[0] != 0)
+			new nsIVariant (result[0]).Release ();
+		data.dispose ();
+		execute.Release ();
+		return rc == XPCOM.NS_OK;
+	}
+
 	/*
 	* As of mozilla 1.9 executing javascript via the javascript: protocol no
 	* longer happens synchronously.  As a result, the result of executing JS
@@ -1407,7 +1498,6 @@ public boolean execute (String script) {
 	* workaround is to invoke the javascript handler directly via C++, which is
 	* exposed as of mozilla 1.9.
 	*/
-	long /*int*/[] result = new long /*int*/[1];
 	if (MozillaVersion.CheckVersion (MozillaVersion.VERSION_XR1_9)) {
 		int rc = XPCOM.NS_GetServiceManager (result);
 		if (rc != XPCOM.NS_OK) error (rc);
@@ -1439,20 +1529,11 @@ public boolean execute (String script) {
 				if (rc == XPCOM.NS_OK && result[0] != 0) {
 					long /*int*/ scriptGlobalObject = result[0];
 					result[0] = 0;
-					if (MozillaVersion.CheckVersion (MozillaVersion.VERSION_XR24)) { /* >= 24.x */
-						rc = (int/*64*/)XPCOM.nsIScriptGlobalObject24_EnsureScriptEnvironment (scriptGlobalObject);
-					} else {
-						rc = (int/*64*/)XPCOM.nsIScriptGlobalObject_EnsureScriptEnvironment (scriptGlobalObject, 2); /* nsIProgrammingLanguage.JAVASCRIPT */
-					}
+					rc = (int/*64*/)XPCOM.nsIScriptGlobalObject_EnsureScriptEnvironment (scriptGlobalObject, 2); /* nsIProgrammingLanguage.JAVASCRIPT */
 					if (rc != XPCOM.NS_OK) {
 						new nsISupports (scriptGlobalObject).Release ();
 					} else {
-						long /*int*/ scriptContext;
-						if (MozillaVersion.CheckVersion (MozillaVersion.VERSION_XR24)) { /* >= 24.x */
-							scriptContext = XPCOM.nsIScriptGlobalObject24_GetScriptContext (scriptGlobalObject);
-						} else {
-							scriptContext = XPCOM.nsIScriptGlobalObject_GetScriptContext (scriptGlobalObject, 2); /* nsIProgrammingLanguage.JAVASCRIPT */
-						}
+						long /*int*/ scriptContext = XPCOM.nsIScriptGlobalObject_GetScriptContext (scriptGlobalObject, 2); /* nsIProgrammingLanguage.JAVASCRIPT */
 
 						if (scriptContext != 0) {
 							/* ensure that the received nsIScriptContext implements the expected interface */
@@ -1462,12 +1543,7 @@ public boolean execute (String script) {
 								new nsISupports (result[0]).Release ();
 								result[0] = 0;
 
-								long /*int*/ jsContext;
-								if (MozillaVersion.CheckVersion (MozillaVersion.VERSION_XR24)) { /* >= 24.x */
-									jsContext = XPCOM.nsIScriptContext24_GetNativeContext (scriptContext);
-								} else {
-									jsContext = XPCOM.nsIScriptContext_GetNativeContext (scriptContext);
-								}
+								long /*int*/ jsContext = XPCOM.nsIScriptContext_GetNativeContext (scriptContext);
 								if (jsContext != 0) {
 									int length = script.length ();
 									char[] scriptChars = new char[length];
@@ -1480,22 +1556,8 @@ public boolean execute (String script) {
 										result[0] = 0;
 									}
 									byte[] jsLibPath = getJSLibPathBytes ();
-									long /*int*/ globalJSObject;
-									if (MozillaVersion.CheckVersion (MozillaVersion.VERSION_XR24)) { /* >= 24.x */
-										globalJSObject = XPCOM.nsIScriptGlobalObject24_GetGlobalJSObject (scriptGlobalObject);
-									} else {
-										globalJSObject = XPCOM.JS_GetGlobalObject (jsLibPath, jsContext);
-									}
+									long /*int*/ globalJSObject = XPCOM.JS_GetGlobalObject (jsLibPath, jsContext);
 									if (globalJSObject != 0) {
-										if (MozillaVersion.CheckVersion (MozillaVersion.VERSION_XR24)) { /* >= 24.x */
-											boolean success = XPCOM.JS_EvaluateUCScriptForPrincipals24 (jsLibPath, jsContext, globalJSObject, principals, scriptChars, length, urlbytes, 0, 0) != 0;
-											// should principals be Release()d too?
-											new nsISupports (scriptGlobalObject).Release ();
-											principal.Release ();
-											serviceManager.Release ();
-											return success;
-										}
-										/* 1.9.x - 10.x */
 										aContractID = MozillaDelegate.wcsToMbcs (null, XPCOM.NS_CONTEXTSTACK_CONTRACTID, true);
 										rc = serviceManager.GetServiceByContractID (aContractID, IIDStore.GetIID (nsIJSContextStack.class), result);
 										if (rc == XPCOM.NS_OK && result[0] != 0) {
@@ -1810,6 +1872,8 @@ public Object getWebBrowser () {
 		webBrowser.AddRef ();
 		return webBrowserObject;
 	} catch (ClassNotFoundException e) {
+		webBrowserObject = webBrowser;
+		return webBrowserObject;
 	} catch (NoSuchMethodException e) {
 	} catch (IllegalArgumentException e) {
 	} catch (IllegalAccessException e) {
@@ -1891,14 +1955,49 @@ static String InitDiscoverXULRunner () {
 
 void initExternal (String profilePath) {
 	File componentsDir = new File (profilePath, AppFileLocProvider.COMPONENTS_DIR);
-	java.io.InputStream is = Library.class.getResourceAsStream ("/external.xpt"); //$NON-NLS-1$
+	java.io.InputStream is = Library.class.getResourceAsStream ("/swt.xpt"); //$NON-NLS-1$
 	if (is != null) {
 		if (!componentsDir.exists ()) {
 			componentsDir.mkdirs ();
 		}
 		int read;
 		byte [] buffer = new byte [4096];
-		File file = new File (componentsDir, "external.xpt"); //$NON-NLS-1$
+		File file = new File (componentsDir, "swt.xpt"); //$NON-NLS-1$
+		try {
+			FileOutputStream os = new FileOutputStream (file);
+			while ((read = is.read (buffer)) != -1) {
+				os.write(buffer, 0, read);
+			}
+			os.close ();
+			is.close ();
+		} catch (FileNotFoundException e) {
+		} catch (IOException e) {
+		}
+	}
+	is = Library.class.getResourceAsStream ("/swt.js"); //$NON-NLS-1$
+	if (is != null) {
+		if (!componentsDir.exists ()) {
+			componentsDir.mkdirs ();
+		}
+		int read;
+		byte [] buffer = new byte [4096];
+		File file = new File (componentsDir, "swt.js"); //$NON-NLS-1$
+		try {
+			FileOutputStream os = new FileOutputStream (file);
+			while ((read = is.read (buffer)) != -1) {
+				os.write(buffer, 0, read);
+			}
+			os.close ();
+			is.close ();
+		} catch (FileNotFoundException e) {
+		} catch (IOException e) {
+		}
+	}
+	is = Library.class.getResourceAsStream ("/chrome.manifest"); //$NON-NLS-1$
+	if (is != null) {
+		int read;
+		byte [] buffer = new byte [4096];
+		File file = new File (profilePath, "chrome.manifest"); //$NON-NLS-1$
 		try {
 			FileOutputStream os = new FileOutputStream (file);
 			while ((read = is.read (buffer)) != -1) {
@@ -2177,9 +2276,6 @@ void initXPCOM (String mozillaPath, boolean isXULRunner) {
 			error (XPCOM.NS_ERROR_NULL_POINTER);
 		}
 
-		if (MozillaVersion.CheckVersion (MozillaVersion.VERSION_XR24, true)) {
-			Library.loadLibrary("swt-xulrunner24"); //$NON-NLS-1$
-		}
 		MozillaDelegate.loadAdditionalLibraries (mozillaPath, true);
 
 		if (MozillaVersion.CheckVersion (MozillaVersion.VERSION_XR10)) {

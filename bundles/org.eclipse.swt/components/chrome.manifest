@@ -1,0 +1,3 @@
+interfaces components/swt.xpt
+component {0aebcff1-f7b3-4522-a64b-1706d65dc232} components/swt.js
+contract @eclipse.org/execute;1 {0aebcff1-f7b3-4522-a64b-1706d65dc232}

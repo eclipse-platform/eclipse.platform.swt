@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2014 IBM Corporation and others.
+ * Copyright (c) 2000, 2015 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -37,14 +37,9 @@ char * XPCOM_nativeFunctionNames[] = {
 #else
 	"_1Call__JJJ_3BII_3I",
 #endif
-	"_1JS_1DefineFunction",
-	"_1JS_1DefineFunction24",
 	"_1JS_1EvaluateUCScriptForPrincipals",
 	"_1JS_1EvaluateUCScriptForPrincipals191",
-	"_1JS_1EvaluateUCScriptForPrincipals24",
-	"_1JS_1GetGlobalForScopeChain24",
 	"_1JS_1GetGlobalObject",
-	"_1JS_1NewObject",
 	"_1NS_1Free",
 	"_1NS_1GetComponentManager",
 	"_1NS_1GetServiceManager",
@@ -1128,11 +1123,7 @@ char * XPCOM_nativeFunctionNames[] = {
 	"_1nsID_1new",
 	"_1nsIMemory_1Alloc",
 	"_1nsIMemory_1Realloc",
-	"_1nsIScriptContext24_1GetNativeContext",
 	"_1nsIScriptContext_1GetNativeContext",
-	"_1nsIScriptGlobalObject24_1EnsureScriptEnvironment",
-	"_1nsIScriptGlobalObject24_1GetGlobalJSObject",
-	"_1nsIScriptGlobalObject24_1GetScriptContext",
 	"_1nsIScriptGlobalObject_1EnsureScriptEnvironment",
 	"_1nsIScriptGlobalObject_1GetScriptContext",
 #ifndef JNI64
