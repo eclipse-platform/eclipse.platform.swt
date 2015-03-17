@@ -344,6 +344,8 @@
 #define gdk_window_set_keep_above_LIB LIB_GDK
 #define gdk_window_set_accept_focus_LIB LIB_GDK
 #define gtk_misc_set_alignment_LIB LIB_GTK
+#define gtk_label_set_xalign_LIB LIB_GTK
+#define gtk_label_set_yalign_LIB LIB_GTK
 #define gtk_widget_set_halign_LIB LIB_GTK
 #define gtk_widget_set_valign_LIB LIB_GTK
 #define gtk_window_set_opacity_LIB LIB_GTK

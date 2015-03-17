@@ -12162,6 +12162,42 @@ fail:
 }
 #endif
 
+#ifndef NO__1gtk_1label_1set_1xalign
+JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1label_1set_1xalign)
+	(JNIEnv *env, jclass that, jintLong arg0, jfloat arg1)
+{
+	OS_NATIVE_ENTER(env, that, _1gtk_1label_1set_1xalign_FUNC);
+/*
+	gtk_label_set_xalign((GtkLabel *)arg0, (gfloat)arg1);
+*/
+	{
+		OS_LOAD_FUNCTION(fp, gtk_label_set_xalign)
+		if (fp) {
+			((void (CALLING_CONVENTION*)(GtkLabel *, gfloat))fp)((GtkLabel *)arg0, (gfloat)arg1);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, _1gtk_1label_1set_1xalign_FUNC);
+}
+#endif
+
+#ifndef NO__1gtk_1label_1set_1yalign
+JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1label_1set_1yalign)
+	(JNIEnv *env, jclass that, jintLong arg0, jfloat arg1)
+{
+	OS_NATIVE_ENTER(env, that, _1gtk_1label_1set_1yalign_FUNC);
+/*
+	gtk_label_set_yalign((GtkLabel *)arg0, (gfloat)arg1);
+*/
+	{
+		OS_LOAD_FUNCTION(fp, gtk_label_set_yalign)
+		if (fp) {
+			((void (CALLING_CONVENTION*)(GtkLabel *, gfloat))fp)((GtkLabel *)arg0, (gfloat)arg1);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, _1gtk_1label_1set_1yalign_FUNC);
+}
+#endif
+
 #ifndef NO__1gtk_1list_1store_1append
 JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1list_1store_1append)
 	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1)

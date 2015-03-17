@@ -868,6 +868,8 @@ char * OS_nativeFunctionNames[] = {
 	"_1gtk_1label_1set_1text__J_3B",
 #endif
 	"_1gtk_1label_1set_1text_1with_1mnemonic",
+	"_1gtk_1label_1set_1xalign",
+	"_1gtk_1label_1set_1yalign",
 	"_1gtk_1list_1store_1append",
 	"_1gtk_1list_1store_1clear",
 	"_1gtk_1list_1store_1insert",

@@ -8117,6 +8117,42 @@ public static final void gtk_widget_set_has_window(long /*int*/ widget, boolean 
 		lock.unlock();
 	}
 }
+
+//since Gtk 3.16. For pre-gtk3.16, use gtk_misc_set_alignment(..)
+/**
+ * @method flags=dynamic
+ * @param label cast=(GtkLabel *)
+ * @param xalign cast=(gfloat)
+ *
+ */
+public static final native void _gtk_label_set_xalign(long /*int*/ label, float xalign);
+public static final void gtk_label_set_xalign(long /*int*/ label, float xalign) {
+	lock.lock();
+	try {
+		_gtk_label_set_xalign(label, xalign);
+	} finally {
+		lock.unlock();
+	}
+}
+
+
+//since Gtk 3.16. For pre-gtk3.16, use gtk_misc_set_alignment(..)
+/**
+* @method flags=dynamic
+* @param label cast=(GtkLabel *)
+* @param yalign cast=(gfloat)
+*
+*/
+public static final native void _gtk_label_set_yalign(long /*int*/ label, float yalign);
+public static final void gtk_label_set_yalign(long /*int*/ label, float yalign) {
+	lock.lock();
+	try {
+		_gtk_label_set_yalign(label, yalign);
+	} finally {
+		lock.unlock();
+	}
+}
+
 /**
  * @method flags=dynamic
  * @param widget cast=(GtkWidget *)

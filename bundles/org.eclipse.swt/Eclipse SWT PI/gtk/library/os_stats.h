@@ -878,6 +878,8 @@ typedef enum {
 	_1gtk_1label_1set_1text__J_3B_FUNC,
 #endif
 	_1gtk_1label_1set_1text_1with_1mnemonic_FUNC,
+	_1gtk_1label_1set_1xalign_FUNC,
+	_1gtk_1label_1set_1yalign_FUNC,
 	_1gtk_1list_1store_1append_FUNC,
 	_1gtk_1list_1store_1clear_FUNC,
 	_1gtk_1list_1store_1insert_FUNC,

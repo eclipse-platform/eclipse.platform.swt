@@ -437,8 +437,9 @@ public void setAlignment (int alignment) {
 
 void setAlignment () {
 	if ((style & SWT.LEFT) != 0) {
-		if (OS.GTK3) {
-			gtk_widget_set_align(labelHandle,OS.GTK_ALIGN_START, OS.GTK_ALIGN_START);
+		if (OS.GTK_VERSION >= OS.VERSION(3, 16, 0)) {
+			gtk_widget_set_align(labelHandle,OS.GTK_ALIGN_START, OS.GTK_ALIGN_START); //Aligns widget
+			gtk_label_set_align (0.0f, 0.0f); //Aligns text inside the widget.
 			gtk_widget_set_align(imageHandle, OS.GTK_ALIGN_START, OS.GTK_ALIGN_CENTER);
 		} else {
 			OS.gtk_misc_set_alignment (labelHandle, 0.0f, 0.0f);
@@ -448,8 +449,9 @@ void setAlignment () {
 		return;
 	}
 	if ((style & SWT.CENTER) != 0) {
-		if (OS.GTK3) {
-			gtk_widget_set_align(labelHandle,OS.GTK_ALIGN_CENTER, OS.GTK_ALIGN_START);
+		if (OS.GTK_VERSION >= OS.VERSION(3, 16, 0)) {
+			gtk_widget_set_align(labelHandle,OS.GTK_ALIGN_CENTER, OS.GTK_ALIGN_START); //Aligns widget
+			gtk_label_set_align (0.5f, 0.0f); //Aligns text inside the widget.
 			gtk_widget_set_align(imageHandle, OS.GTK_ALIGN_CENTER, OS.GTK_ALIGN_CENTER);
 		} else {
 			OS.gtk_misc_set_alignment (labelHandle, 0.5f, 0.0f);
@@ -460,8 +462,9 @@ void setAlignment () {
 		return;
 	}
 	if ((style & SWT.RIGHT) != 0) {
-		if (OS.GTK3) {
-			gtk_widget_set_align(labelHandle,OS.GTK_ALIGN_END, OS.GTK_ALIGN_START);
+		if (OS.GTK_VERSION >= OS.VERSION(3, 16, 0)) {
+			gtk_widget_set_align(labelHandle,OS.GTK_ALIGN_END, OS.GTK_ALIGN_START); //Aligns widget.
+			gtk_label_set_align (1.0f, 0.0f); //Aligns text inside the widget.
 			gtk_widget_set_align(imageHandle, OS.GTK_ALIGN_END, OS.GTK_ALIGN_CENTER);
 		} else  {
 			OS.gtk_misc_set_alignment (labelHandle, 1.0f, 0.0f);
@@ -470,6 +473,12 @@ void setAlignment () {
 		OS.gtk_label_set_justify (labelHandle, OS.GTK_JUSTIFY_RIGHT);
 		return;
 	}
+}
+
+
+private void gtk_label_set_align (float xalign, float yalign) {
+	OS.gtk_label_set_xalign (labelHandle, xalign);
+	OS.gtk_label_set_yalign (labelHandle, yalign);
 }
 
 @Override
