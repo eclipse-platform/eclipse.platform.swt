@@ -1393,6 +1393,49 @@ void disposeCOMInterfaces () {
 	}
 }
 
+public Object evaluate (String script, boolean trusted) throws SWTException {
+	if (!MozillaVersion.CheckVersion (MozillaVersion.VERSION_XR24, false)) {
+		return super.evaluate(script);
+	}
+	
+	long /*int*/[] result = new long /*int*/[1];
+	int rc = webBrowser.QueryInterface(IIDStore.GetIID (nsIInterfaceRequestor.class), result);
+	if (rc != XPCOM.NS_OK) Mozilla.error (rc);
+	if (result[0] == 0) Mozilla.error (XPCOM.NS_NOINTERFACE);
+	nsIInterfaceRequestor interfaceRequestor = new nsIInterfaceRequestor (result[0]);
+	result[0] = 0;
+	rc = XPCOM.NS_GetServiceManager (result);
+	if (rc != XPCOM.NS_OK) Mozilla.error (rc);
+	if (result[0] == 0) Mozilla.error (XPCOM.NS_NOINTERFACE);
+
+	nsIServiceManager serviceManager = new nsIServiceManager (result[0]);
+	result[0] = 0;
+	rc = interfaceRequestor.GetInterface (IIDStore.GetIID (nsIDOMWindow.class), result);
+	interfaceRequestor.Release ();
+	if (rc != XPCOM.NS_OK) Mozilla.error (rc);
+	if (result[0] == 0) Mozilla.error (XPCOM.NS_NOINTERFACE);
+
+	nsIDOMWindow window = new nsIDOMWindow (result[0]);
+	result[0] = 0;
+	byte[] aContractID = MozillaDelegate.wcsToMbcs (null, XPCOM.EXECUTE_CONTRACTID, true);
+	rc = serviceManager.GetServiceByContractID (aContractID, IIDStore.GetIID (Execute.class), result);
+	if (rc != XPCOM.NS_OK) Mozilla.error (rc);
+	if (result[0] == 0) Mozilla.error (XPCOM.NS_NOINTERFACE);
+
+	Execute execute = new Execute (result[0]);
+	result[0] = 0;
+	nsEmbedString data = new nsEmbedString ("(function(){" + script + "}())");
+	execute.EvalAsChrome(window, data, result);
+	data.dispose ();
+	execute.Release ();
+	if (result[0] == 0) return null;
+
+	nsIVariant variant = new nsIVariant (result[0]);
+	Object retval = External.convertToJava( variant);
+	variant.Release ();
+	return retval;
+}
+
 @Override
 public Object evaluate (String script) throws SWTException {
 	if (!MozillaVersion.CheckVersion (MozillaVersion.VERSION_XR24))
