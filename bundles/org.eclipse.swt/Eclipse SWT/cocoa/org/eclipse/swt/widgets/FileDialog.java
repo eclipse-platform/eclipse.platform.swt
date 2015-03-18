@@ -219,6 +219,7 @@ public String open () {
 	} else {
 		NSOpenPanel openPanel = NSOpenPanel.openPanel();
 		openPanel.setAllowsMultipleSelection((style & SWT.MULTI) != 0);
+		openPanel.setTreatsFilePackagesAsDirectories(true);
 		panel = openPanel;
 	}
 	
