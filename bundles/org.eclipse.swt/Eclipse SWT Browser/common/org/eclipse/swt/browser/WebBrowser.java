@@ -390,9 +390,8 @@ public void destroyFunction (BrowserFunction function) {
 
 public abstract boolean execute (String script);
 
-public Object evaluate (String script, boolean trusted) {
-	if (!trusted) return evaluate(script);
-	return null;
+public Object evaluate (String script, boolean trusted) throws SWTException {
+	return evaluate(script);
 }
 
 public Object evaluate (String script) throws SWTException {

@@ -606,7 +606,7 @@ public boolean close () {
  */
 public Object evaluate (String script) throws SWTException {
 	checkWidget();
-	return evaluate (script, false);
+	return evaluate (script, true);
 }
 
 /**
@@ -629,15 +629,17 @@ public Object evaluate (String script) throws SWTException {
  * <li>javascript array whose elements are all of supported types -> <code>java.lang.Object[]</code></li>
  * </ul>
  * The <code>trusted</code> parameter affects the security context the script will be executed in.
- * Specifying <code>true</code> for trusted executes in chrome security context <code>false</code> for trusted
- * runs in normal security context.
+ * Specifying <code>true</code> for trusted executes the script in Chrome security context <code>false</code> for trusted
+ * executes script in normal security context.
+ * 
+ * Note: Chrome security context is applicable only to Browsers with style <code>SWT.Mozilla</code>
  * 
  * An <code>SWTException</code> is thrown if the return value has an
  * unsupported type, or if evaluating the script causes a javascript
  * error to be thrown.
  *
  * @param script the script with javascript commands
- * @param trusted <code>false</code> if the rendered page should be granted restricted
+ * @param trusted <code>true> or <code>false</code> depending on the security context to be used
  *  
  * @return the return value, if any, of executing the script
  *

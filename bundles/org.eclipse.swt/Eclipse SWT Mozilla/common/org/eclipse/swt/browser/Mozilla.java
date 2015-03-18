@@ -1397,7 +1397,17 @@ public Object evaluate (String script, boolean trusted) throws SWTException {
 	if (!MozillaVersion.CheckVersion (MozillaVersion.VERSION_XR24, false)) {
 		return super.evaluate(script);
 	}
-	
+	if (trusted) {
+		return evaluateAsChrome(script);
+	} else {
+		return evaluateInWindow(script);
+	}
+}
+
+/** 
+ * evaluate in Chrome security context 
+*/
+Object evaluateAsChrome (String script) {
 	long /*int*/[] result = new long /*int*/[1];
 	int rc = webBrowser.QueryInterface(IIDStore.GetIID (nsIInterfaceRequestor.class), result);
 	if (rc != XPCOM.NS_OK) Mozilla.error (rc);
@@ -1436,11 +1446,10 @@ public Object evaluate (String script, boolean trusted) throws SWTException {
 	return retval;
 }
 
-@Override
-public Object evaluate (String script) throws SWTException {
-	if (!MozillaVersion.CheckVersion (MozillaVersion.VERSION_XR24))
-		return super.evaluate (script);
-
+/** 
+ * evaluate in Normal security context
+*/
+Object evaluateInWindow (String script) throws SWTException {
 	delegate.removeWindowSubclass ();
 
 	long /*int*/[] result = new long /*int*/[1];
@@ -1473,14 +1482,14 @@ public Object evaluate (String script) throws SWTException {
 	execute.EvalInWindow (window, data, result);
 	data.dispose ();
 	execute.Release ();
-	if (result[0] == 0)
-		return null;
+	if (result[0] == 0) return null;
 
 	nsIVariant variant = new nsIVariant (result[0]);
 	Object retval = External.convertToJava (variant);
 	variant.Release ();
 	return retval;
 }
+
 @Override
 public boolean execute (String script) {
 	/*
