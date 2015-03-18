@@ -12,30 +12,29 @@ package org.eclipse.swt.graphics;
 
 /**
  * Interface to provide a callback mechanism to get information about images
- * when the application is moved from low dpi monitor to high dpi. This
- * information will be used to render the higher resolution images
+ * when the application is moved from a low DPI monitor to a high DPI monitor.
+ * This provides API which will be called by SWT during the image rendering.
  *
- * This interface needs to be implemented by client code and provide the image
- * information on demand. This interface provides a callback mechanism to the
- * client code to provide ImageData based on the OS as per the zoom
- * level. Client can have their own naming convention for various zoom levels
+ * This interface needs to be implemented by client code to provide the 
+ * image information on demand.
  *
  * @since 3.104
  */
 public interface ImageDataProvider {
 
 	/**
-	 * Method to retrieve ImageData for a particular zoom level this needs to
-	 * be implemented on the client side
+	 * Retrieves the image data for a particular zoom level. This method needs
+	 * to be implemented on the client side.
+	 * <p>
+	 * If the image is not available for a particular zoom level, please
+	 * fall back to image of 100% level and return its image data.
 	 *
-	 * This method should return an object of ImageData. If not available please
-	 * fallback to image of 100% level and send its ImageData
+	 * Note: SWT will throw an exception if this method returns null.
 	 *
-	 * Note: SWT will throw exception if this method returns null.
-	 *
-	 * @param zoom
-	 *            value will be 100(16x16 image), 150(24x24 image) & 200(32x32 image)
-	 * @return the ImageData of the image
+	 * @param zoom Currently accepted values (sent by SWT) are 100, 150, and 200
+	 * corresponding to 16x16, 24x24 and 32x32 images respectively.
+	 * 
+	 * @return an object of ImageData
 	 * @since 3.104
 	 */
 	public ImageData getImageData (int zoom);
