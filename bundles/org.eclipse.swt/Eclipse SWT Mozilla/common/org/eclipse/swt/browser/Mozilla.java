@@ -18,12 +18,12 @@ import java.util.*;
 import java.util.List;
 
 import org.eclipse.swt.*;
-import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.mozilla.*;
 import org.eclipse.swt.internal.mozilla.init.*;
 import org.eclipse.swt.layout.*;
+import org.eclipse.swt.widgets.*;
 
 class Mozilla extends WebBrowser {
 	long /*int*/ embedHandle;
@@ -1393,6 +1393,7 @@ void disposeCOMInterfaces () {
 	}
 }
 
+@Override
 public Object evaluate (String script, boolean trusted) throws SWTException {
 	if (!MozillaVersion.CheckVersion (MozillaVersion.VERSION_XR24, false)) {
 		return super.evaluate(script);
