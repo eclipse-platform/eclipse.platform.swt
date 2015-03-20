@@ -3438,6 +3438,9 @@ public void setClipping(Path path) {
  */
 public void setClipping(Rectangle rect) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	if (OS.GTK_VERSION >= OS.VERSION(3, 9, 0)) {
+		return;
+	}
 	if (rect == null) {
 		setClipping(0);
 	} else {

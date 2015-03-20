@@ -2687,14 +2687,7 @@ void rendererRender (long /*int*/ cell, long /*int*/ cr, long /*int*/ window, lo
 						}
 					}
 				}
-				GC gc;
-				if (OS.GTK3){
-					GCData gcData = new GCData();
-					gcData.cairo = cr;
-					gc = GC.gtk_new(this, gcData );
-				} else {
-					gc = new GC (this);
-				}
+				GC gc = getGC(cr);
 				if ((drawState & SWT.SELECTED) != 0) {
 					gc.setBackground (display.getSystemColor (SWT.COLOR_LIST_SELECTION));
 					gc.setForeground (display.getSystemColor (SWT.COLOR_LIST_SELECTION_TEXT));
@@ -2720,9 +2713,7 @@ void rendererRender (long /*int*/ cell, long /*int*/ cr, long /*int*/ window, lo
 				sendEvent (SWT.EraseItem, event);
 				drawForeground = null;
 				drawState = event.doit ? event.detail : 0;
-				// A temporary fix for https://bugs.eclipse.org/bugs/show_bug.cgi?id=427480
-				// Force native painting
-				if (OS.GTK3) {
+				if (OS.GTK_VERSION <= OS.VERSION(3, 14, 8)) {
 					drawState |= SWT.FOREGROUND;
 				}
 				drawFlags &= ~(OS.GTK_CELL_RENDERER_FOCUSED | OS.GTK_CELL_RENDERER_SELECTED);
@@ -2744,14 +2735,7 @@ void rendererRender (long /*int*/ cell, long /*int*/ cr, long /*int*/ window, lo
 	}
 	if ((drawState & SWT.BACKGROUND) != 0 && (drawState & SWT.SELECTED) == 0) {
 
-		GC gc;
-		if (OS.GTK3){
-			GCData gcData = new GCData();
-			gcData.cairo = cr;
-			gc = GC.gtk_new(this, gcData );
-		} else {
-			gc = new GC (this);
-		}
+		GC gc = getGC(cr);
 		gc.setBackground (item.getBackground (columnIndex));
 		GdkRectangle rect = new GdkRectangle ();
 		OS.memmove (rect, background_area, GdkRectangle.sizeof);
@@ -2793,14 +2777,7 @@ void rendererRender (long /*int*/ cell, long /*int*/ cr, long /*int*/ window, lo
 				}
 				contentX [0] -= imageWidth;
 				contentWidth [0] += imageWidth;
-				GC gc;
-				if (OS.GTK3){
-					GCData gcData = new GCData();
-					gcData.cairo = cr;
-					gc = GC.gtk_new(this, gcData );
-				} else {
-					gc = new GC(this);
-				}
+				GC gc = getGC(cr);
 				if ((drawState & SWT.SELECTED) != 0) {
 					Color background, foreground;
 					if (OS.gtk_widget_has_focus (handle) || OS.GTK3) {
@@ -2841,15 +2818,25 @@ void rendererRender (long /*int*/ cell, long /*int*/ cr, long /*int*/ window, lo
 				event.width = contentWidth [0];
 				event.height = rect.height;
 				event.detail = drawState;
-				// Temporary fix for https://bugs.eclipse.org/bugs/show_bug.cgi?id=427480
-				// Force native paint
-				if (!OS.GTK3) {
+				if (OS.GTK_VERSION > OS.VERSION(3, 14, 8)) {
 					sendEvent (SWT.PaintItem, event);
 				}
 				gc.dispose();
 			}
 		}
 	}
+}
+
+private GC getGC(long cr) {
+	GC gc;
+	if (OS.GTK3){
+		GCData gcData = new GCData();
+		gcData.cairo = cr;
+		gc = GC.gtk_new(this, gcData );
+	} else {
+		gc = new GC (this);
+	}
+	return gc;
 }
 
 void resetCustomDraw () {

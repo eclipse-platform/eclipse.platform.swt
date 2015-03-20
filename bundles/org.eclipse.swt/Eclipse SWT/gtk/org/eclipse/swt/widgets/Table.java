@@ -11,28 +11,12 @@
 package org.eclipse.swt.widgets;
 
 
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.SWTException;
-import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.events.SelectionListener;
-import org.eclipse.swt.graphics.Color;
-import org.eclipse.swt.graphics.Font;
-import org.eclipse.swt.graphics.GC;
-import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.graphics.Point;
-import org.eclipse.swt.graphics.Rectangle;
-import org.eclipse.swt.internal.Converter;
-import org.eclipse.swt.internal.ImageList;
-import org.eclipse.swt.internal.cairo.Cairo;
-import org.eclipse.swt.internal.gtk.GdkColor;
-import org.eclipse.swt.internal.gtk.GdkEventButton;
-import org.eclipse.swt.internal.gtk.GdkEventExpose;
-import org.eclipse.swt.internal.gtk.GdkRGBA;
-import org.eclipse.swt.internal.gtk.GdkRectangle;
-import org.eclipse.swt.internal.gtk.GtkAllocation;
-import org.eclipse.swt.internal.gtk.GtkCellRendererClass;
-import org.eclipse.swt.internal.gtk.GtkRequisition;
-import org.eclipse.swt.internal.gtk.OS;
+import org.eclipse.swt.*;
+import org.eclipse.swt.events.*;
+import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.internal.*;
+import org.eclipse.swt.internal.cairo.*;
+import org.eclipse.swt.internal.gtk.*;
 
 /**
  * Instances of this class implement a selectable user interface
@@ -2679,7 +2663,7 @@ void rendererRender (long /*int*/ cell, long /*int*/ cr, long /*int*/ window, lo
 						Cairo.cairo_restore (cr);
 					}
 				}
-				GC gc = new GC (this);
+				GC gc = getGC(cr);
 				if ((drawState & SWT.SELECTED) != 0) {
 					gc.setBackground (display.getSystemColor (SWT.COLOR_LIST_SELECTION));
 					gc.setForeground (display.getSystemColor (SWT.COLOR_LIST_SELECTION_TEXT));
@@ -2689,7 +2673,9 @@ void rendererRender (long /*int*/ cell, long /*int*/ cr, long /*int*/ window, lo
 				}
 				gc.setFont (item.getFont (columnIndex));
 				if ((style & SWT.MIRRORED) != 0) rect.x = getClientWidth () - rect.width - rect.x;
-				gc.setClipping (rect.x, rect.y, rect.width, rect.height);
+				if (!OS.GTK3) {
+					gc.setClipping (rect.x, rect.y, rect.width, rect.height);
+				}
 				Event event = new Event ();
 				event.item = item;
 				event.index = columnIndex;
@@ -2702,11 +2688,6 @@ void rendererRender (long /*int*/ cell, long /*int*/ cr, long /*int*/ window, lo
 				sendEvent (SWT.EraseItem, event);
 				drawForeground = null;
 				drawState = event.doit ? event.detail : 0;
-				// A temporary fix for https://bugs.eclipse.org/bugs/show_bug.cgi?id=427480
-				// Force native painting
-				if (OS.GTK_VERSION >= OS.VERSION(3, 9, 0)) {
-					drawState |= SWT.FOREGROUND;
-				}
 				drawFlags &= ~(OS.GTK_CELL_RENDERER_FOCUSED | OS.GTK_CELL_RENDERER_SELECTED);
 				if ((drawState & SWT.SELECTED) != 0) drawFlags |= OS.GTK_CELL_RENDERER_SELECTED;
 				if ((drawState & SWT.FOCUSED) != 0) drawFlags |= OS.GTK_CELL_RENDERER_FOCUSED;
@@ -2735,7 +2716,7 @@ void rendererRender (long /*int*/ cell, long /*int*/ cr, long /*int*/ window, lo
 		}
 	}
 	if ((drawState & SWT.BACKGROUND) != 0 && (drawState & SWT.SELECTED) == 0) {
-		GC gc = new GC (this);
+		GC gc = getGC(cr);
 		gc.setBackground (item.getBackground (columnIndex));
 		GdkRectangle rect = new GdkRectangle ();
 		OS.memmove (rect, background_area, GdkRectangle.sizeof);
@@ -2775,7 +2756,7 @@ void rendererRender (long /*int*/ cell, long /*int*/ cr, long /*int*/ window, lo
 				}
 				contentX [0] -= imageWidth;
 				contentWidth [0] += imageWidth;
-				GC gc = new GC (this);
+				GC gc = getGC(cr);
 				if ((drawState & SWT.SELECTED) != 0) {
 					Color background, foreground;
 					if (OS.gtk_widget_has_focus (handle) || OS.GTK3) {
@@ -2814,6 +2795,18 @@ void rendererRender (long /*int*/ cell, long /*int*/ cr, long /*int*/ window, lo
 			}
 		}
 	}
+}
+
+private GC getGC(long cr) {
+	GC gc;
+	if (OS.GTK3){
+		GCData gcData = new GCData();
+		gcData.cairo = cr;
+		gc = GC.gtk_new(this, gcData );
+	} else {
+		gc = new GC (this);
+	}
+	return gc;
 }
 
 void resetCustomDraw () {
