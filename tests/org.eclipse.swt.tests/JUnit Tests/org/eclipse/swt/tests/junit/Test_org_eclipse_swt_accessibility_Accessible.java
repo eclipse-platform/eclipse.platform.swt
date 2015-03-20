@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2004 IBM Corporation and others.
+ * Copyright (c) 2000, 2015 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -7,10 +7,12 @@
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
+ *     Red Hat Inc. - Adapt to JUnit 4.
  *******************************************************************************/
 package org.eclipse.swt.tests.junit;
 
-import junit.framework.TestCase;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import org.eclipse.swt.accessibility.Accessible;
 import org.eclipse.swt.accessibility.AccessibleControlEvent;
@@ -20,27 +22,31 @@ import org.eclipse.swt.accessibility.AccessibleListener;
 import org.eclipse.swt.accessibility.AccessibleTextEvent;
 import org.eclipse.swt.accessibility.AccessibleTextListener;
 import org.eclipse.swt.widgets.Shell;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.accessibility.Accessible
  *
  * @see org.eclipse.swt.accessibility.Accessible
  */
-public class Test_org_eclipse_swt_accessibility_Accessible extends TestCase {	
+public class Test_org_eclipse_swt_accessibility_Accessible {	
 
-@Override
-protected void setUp() {
+@Before
+public void setUp() {
 	shell = new Shell();
 	accessible = shell.getAccessible();
 }
 
-@Override
-protected void tearDown() {
+@After
+public void tearDown() {
 	assertEquals(false, shell.isDisposed());
 	shell.dispose();
 	assertTrue(shell.isDisposed());
 }
 
+@Test
 public void test_addAccessibleControlListenerLorg_eclipse_swt_accessibility_AccessibleControlListener() {
 	AccessibleControlListener listener = new AccessibleControlListener() {
 		public void getValue(AccessibleControlEvent e) {
@@ -70,6 +76,7 @@ public void test_addAccessibleControlListenerLorg_eclipse_swt_accessibility_Acce
 	accessible.removeAccessibleControlListener(listener);
 }
 
+@Test
 public void test_addAccessibleListenerLorg_eclipse_swt_accessibility_AccessibleListener() {
 	AccessibleListener listener = new AccessibleListener() {
 		public void getName(AccessibleEvent e) {
@@ -85,6 +92,7 @@ public void test_addAccessibleListenerLorg_eclipse_swt_accessibility_AccessibleL
 	accessible.removeAccessibleListener(listener);
 }
 
+@Test
 public void test_addAccessibleTextListenerLorg_eclipse_swt_accessibility_AccessibleTextListener() {
 	AccessibleTextListener listener = new AccessibleTextListener() {
 		public void getSelectionRange(AccessibleTextEvent e) {
@@ -96,6 +104,7 @@ public void test_addAccessibleTextListenerLorg_eclipse_swt_accessibility_Accessi
 	accessible.removeAccessibleTextListener(listener);
 }
 
+@Test
 public void test_getControl() {
 	assertEquals(shell, accessible.getControl());
 }

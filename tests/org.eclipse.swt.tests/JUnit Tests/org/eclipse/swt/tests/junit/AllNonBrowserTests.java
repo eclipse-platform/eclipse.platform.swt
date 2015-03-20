@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2014 IBM Corporation and others.
+ * Copyright (c) 2000, 2015 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -7,12 +7,15 @@
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
+ *     Red Hat Inc. - Adapt to JUnit 4.
  *******************************************************************************/
 package org.eclipse.swt.tests.junit;
 
 
-import junit.framework.*;
-import junit.textui.*;
+import junit.framework.JUnit4TestAdapter;
+import junit.framework.Test;
+import junit.framework.TestSuite;
+import junit.textui.TestRunner;
 
 /**
  * Suite for running most SWT test cases (all except for browser tests).
@@ -83,9 +86,10 @@ public AllNonBrowserTests() {
 
 	addTestSuite(Test_org_eclipse_swt_program_Program.class);
 
-	addTestSuite(Test_org_eclipse_swt_accessibility_Accessible.class);
-	addTestSuite(Test_org_eclipse_swt_accessibility_AccessibleControlEvent.class);
-	addTestSuite(Test_org_eclipse_swt_accessibility_AccessibleEvent.class);
+	addTest(new JUnit4TestAdapter(Test_org_eclipse_swt_accessibility_Accessible.class));
+	addTest(new JUnit4TestAdapter(Test_org_eclipse_swt_accessibility_AccessibleControlEvent.class));
+	addTest(new JUnit4TestAdapter(Test_org_eclipse_swt_accessibility_AccessibleEvent.class));
+	addTest(new JUnit4TestAdapter(Test_org_eclipse_swt_accessibility_AccessibleTextEvent.class));
 
 	// Don't run AllBrowserTests here; see AllTests.
 }
