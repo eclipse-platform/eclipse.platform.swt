@@ -3753,7 +3753,7 @@ void runUpdate() {
 	boolean updated = updateTabHeight(false);
 	updated |= updateItems(selectedIndex);
 	if (updated && getParent() != null) {
-		getParent().layout(true, true);
+		getParent().layout(true, false);
 	}
 	if ((flags & REDRAW) != 0) {
 		redraw();
