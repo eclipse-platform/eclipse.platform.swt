@@ -242,45 +242,6 @@
 		<antcall target="replace64"/>
 	</target>
 
-	<target name="copy.wpf.src">
-		<property name="copy.src.dir" value="${temp.folder}/@dot.src"/>
-		<delete dir="${copy.src.dir}" quiet="true"/>
-		<copy todir="${copy.src.dir}" failonerror="true" overwrite="true">
-			<fileset dir="${plugindir}/Eclipse SWT/common/"/>
-			<fileset dir="${plugindir}/Eclipse SWT/common_j2se/" excludes="**/*._properties"/>
-			<fileset dir="${plugindir}/Eclipse SWT/wpf/"/>
-			<fileset dir="${plugindir}/Eclipse SWT/emulated/datetime/"/>
-			<fileset dir="${plugindir}/Eclipse SWT/emulated/bidi/"/>
-			<fileset dir="${plugindir}/Eclipse SWT/emulated/tooltip/"/>
-			<fileset dir="${plugindir}/Eclipse SWT/emulated/ime/"/>
-			<fileset dir="${plugindir}/Eclipse SWT/emulated/taskbar/"/>
-			<fileset dir="${plugindir}/Eclipse SWT Accessibility/common/"/>
-			<fileset dir="${plugindir}/Eclipse SWT Accessibility/emulated/"/>
-			<fileset dir="${plugindir}/Eclipse SWT AWT/common/"/>
-			<fileset dir="${plugindir}/Eclipse SWT AWT/emulated/"/>
-			<fileset dir="${plugindir}/Eclipse SWT Browser/common/"/>
-			<fileset dir="${plugindir}/Eclipse SWT Browser/forms/"/>
-			<fileset dir="${plugindir}/Eclipse SWT Custom Widgets/common/"/>
-			<fileset dir="${plugindir}/Eclipse SWT Drag and Drop/common/"/>
-			<fileset dir="${plugindir}/Eclipse SWT Drag and Drop/wpf/"/>
-			<fileset dir="${plugindir}/Eclipse SWT OpenGL/emulated/"/>
-			<fileset dir="${plugindir}/Eclipse SWT OpenGL/common/"/>
-			<fileset dir="${plugindir}/Eclipse SWT PI/common_j2se/"/>
-			<fileset dir="${plugindir}/Eclipse SWT PI/common/"/>
-			<fileset dir="${plugindir}/Eclipse SWT PI/wpf/"/>
-			<fileset dir="${plugindir}/Eclipse SWT PI/wpf_win32/"/>
-			<fileset dir="${plugindir}/Eclipse SWT Printing/common/"/>
-			<fileset dir="${plugindir}/Eclipse SWT Printing/wpf/"/>
-			<fileset dir="${plugindir}/Eclipse SWT Program/common/"/>
-			<fileset dir="${plugindir}/Eclipse SWT Program/wpf/"/>
-			<fileset dir="${plugindir}/Eclipse SWT Theme/emulated/"/>
-			<fileset dir="${plugindir}/Eclipse SWT Effects/emulated/"/>
-			<fileset dir="${plugindir}/components/" excludes="**/*.idl" />
-		</copy>
-		<antcall target="copy.translationfiles"/>
-		<antcall target="replace64"/>
-	</target>
-
 	<target name="copy.translationfiles" if="includetranslationfiles">
 		<copy todir="${copy.src.dir}" failonerror="true" overwrite="true">
 			<fileset dir="${plugindir}/Eclipse SWT/common_j2se/" includes="**/*._properties"/>
