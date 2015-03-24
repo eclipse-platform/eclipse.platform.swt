@@ -16,7 +16,7 @@ package org.eclipse.swt.snippets;
  * For a list of all SWT example snippets see
  * http://www.eclipse.org/swt/snippets/
  */
-import org.eclipse.swt.SWT;
+import org.eclipse.swt.*;
 import org.eclipse.swt.widgets.*;
 
 public class Snippet33 {
@@ -27,7 +27,7 @@ public static void main (String [] args) {
 	shell.open ();
 	DirectoryDialog dialog = new DirectoryDialog (shell);
 	String platform = SWT.getPlatform();
-	dialog.setFilterPath (platform.equals("win32") || platform.equals("wpf") ? "c:\\" : "/");
+	dialog.setFilterPath (platform.equals("win32") ? "c:\\" : "/");
 	System.out.println ("RESULT=" + dialog.open ());
 	while (!shell.isDisposed()) {
 		if (!display.readAndDispatch ()) display.sleep ();

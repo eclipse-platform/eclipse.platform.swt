@@ -30,7 +30,7 @@ public static void main (String [] args) {
 	String [] filterExtensions = new String [] {"*.gif;*.png;*.xpm;*.jpg;*.jpeg;*.tiff", "*"};
 	String filterPath = "/";
 	String platform = SWT.getPlatform();
-	if (platform.equals("win32") || platform.equals("wpf")) {
+	if (platform.equals("win32")) {
 		filterNames = new String [] {"Image Files", "All Files (*.*)"};
 		filterExtensions = new String [] {"*.gif;*.png;*.bmp;*.jpg;*.jpeg;*.tiff", "*.*"};
 		filterPath = "c:\\";
