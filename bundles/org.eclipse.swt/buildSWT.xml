@@ -136,14 +136,12 @@
 			<filename regex="[0-9][0-9][0-9][0-9]."/>
 			<filename regex="${swt_version}."/>
 			<exclude name="**/.git/**"/>
-			<exclude name="**/org.eclipse.swt.gtk.linux.ia64/**"/>
 			<exclude name="**/org.eclipse.swt.wpf.win32.x86/**"/>
 		</fileset>
 		<fileset id="not_match" dir="${repo.bin}/bundles/${fragment}">
 			<filename regex="[0-9][0-9][0-9][0-9]."/>
 			<filename regex="${swt_version}." negate="true"/>
 			<exclude name="**/.git/**"/>
-			<exclude name="**/org.eclipse.swt.gtk.linux.ia64/**"/>
 			<exclude name="**/org.eclipse.swt.wpf.win32.x86/**"/>
 		</fileset>
 		<property name="not_match_text" refid="not_match"/>
@@ -781,7 +779,6 @@
 			<filename regex="[0-9][0-9][0-9][0-9]."/>
 			<filename regex="${swt_version}." negate="true"/>
 			<exclude name="**/.git/**"/>
-			<exclude name="**/org.eclipse.swt.gtk.linux.ia64/**"/>
 			<exclude name="**/org.eclipse.swt.wpf.win32.x86/**"/>
 		</fileset>
 
@@ -799,7 +796,6 @@
 			<include name="bundles/*/*xulrunner-fix*"/>
 			<exclude name="**/.git/**"/>
 			<exclude name="**/tmpdir/**"/>
-			<exclude name="**/org.eclipse.swt.gtk.linux.ia64/**"/>
 			<exclude name="**/org.eclipse.swt.wpf.win32.x86/**"/>
 		</fileset>
 		<property name="afiles" refid="addid"/>
