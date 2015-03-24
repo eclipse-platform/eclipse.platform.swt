@@ -27,21 +27,6 @@ if [ "x${MODEL}" = "xx86_64" ]; then
 	if [ "x${XULRUNNER24_SDK}" = "x" ]; then
 		export XULRUNNER24_SDK="/Users/Shared/xulrunner/24-64/xulrunner-sdk/"
 	fi
-else
-	export ARCHS="-arch i386 -arch ppc"
-	export XULRUNNER24_ARCHS="-arch i386"
-	if [ "x${OUTPUT_DIR}" = "x" ]; then
-		export OUTPUT_DIR=../../../org.eclipse.swt.cocoa.macosx
-	fi
-	if [ "x${XULRUNNER_SDK}" = "x" ]; then
-		export XULRUNNER_SDK="/Users/Shared/xulrunner/1.8.0.1/mozilla/dist/i386/dist/sdk"
-	fi
-	if [ "x${XULRUNNER_LIBS}" = "x" ]; then
-		export XULRUNNER_LIBS="${XULRUNNER_SDK}/lib/libxpcomglue.a ${XULRUNNER_SDK}/../../../ppc/dist/sdk/lib/libxpcomglue.a"
-	fi
-	if [ "x${XULRUNNER24_SDK}" = "x" ]; then
-		export XULRUNNER24_SDK="/Users/Shared/xulrunner/24/xulrunner-sdk"
-	fi
 fi
 
 if [ "x${XULRUNNER24_LIBS}" = "x" ]; then
