@@ -156,12 +156,12 @@ public class StyledText extends Canvas {
 	Caret defaultCaret = null;
 	boolean updateCaretDirection = true;
 
-	final static boolean IS_CARBON, IS_GTK;
+	final static boolean IS_GTK;
 	final static boolean DOUBLE_BUFFER;
 	static {
 		String platform = SWT.getPlatform();
 		IS_GTK = "gtk".equals(platform);
-		DOUBLE_BUFFER = !IS_CARBON;
+		DOUBLE_BUFFER = true;
 	}
 
 	/**
@@ -5053,23 +5053,14 @@ void handleKey(Event event) {
 	if (action == SWT.NULL) {
 		boolean ignore = false;
 		
-		if (IS_CARBON) {
-			// Ignore accelerator key combinations (we do not want to 
-			// insert a character in the text in this instance). Do not  
-			// ignore COMMAND+ALT combinations since that key sequence
-			// produces characters on the mac.
-			ignore = (event.stateMask ^ SWT.COMMAND) == 0 ||
-					(event.stateMask ^ (SWT.COMMAND | SWT.SHIFT)) == 0;
-		} else {
-			// Ignore accelerator key combinations (we do not want to 
-			// insert a character in the text in this instance). Don't  
-			// ignore CTRL+ALT combinations since that is the Alt Gr 
-			// key on some keyboards.  See bug 20953. 
-			ignore = (event.stateMask ^ SWT.ALT) == 0 || 
-					(event.stateMask ^ SWT.CTRL) == 0 ||
-					(event.stateMask ^ (SWT.ALT | SWT.SHIFT)) == 0 ||
-					(event.stateMask ^ (SWT.CTRL | SWT.SHIFT)) == 0;
-		}
+		// Ignore accelerator key combinations (we do not want to 
+		// insert a character in the text in this instance). Don't  
+		// ignore CTRL+ALT combinations since that is the Alt Gr 
+		// key on some keyboards.  See bug 20953. 
+		ignore = (event.stateMask ^ SWT.ALT) == 0 || 
+				(event.stateMask ^ SWT.CTRL) == 0 ||
+				(event.stateMask ^ (SWT.ALT | SWT.SHIFT)) == 0 ||
+				(event.stateMask ^ (SWT.CTRL | SWT.SHIFT)) == 0;
 		// -ignore anything below SPACE except for line delimiter keys and tab.
 		// -ignore DEL 
 		if (!ignore && event.character > 31 && event.character != SWT.DEL || 
@@ -5170,7 +5161,7 @@ void handleMouseDown(Event event) {
 			sendKeyEvent(e);
 		}
 	}
-	if ((event.button != 1) || (IS_CARBON && (event.stateMask & SWT.MOD4) != 0)) {
+	if (event.button != 1) {
 		return;	
 	}
 	boolean select = (event.stateMask & SWT.MOD2) != 0;	

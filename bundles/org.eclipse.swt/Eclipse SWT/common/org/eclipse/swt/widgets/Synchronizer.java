@@ -13,7 +13,7 @@ package org.eclipse.swt.widgets;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.internal.Compatibility;
+import org.eclipse.swt.internal.*;
 
 /**
  * Instances of this class provide synchronization support
@@ -43,7 +43,6 @@ public class Synchronizer {
 	static final int MESSAGE_LIMIT = 64;
 
 	//TEMPORARY CODE
-	static final boolean IS_CARBON = "carbon".equals (SWT.getPlatform ());
 	static final boolean IS_COCOA = "cocoa".equals (SWT.getPlatform ());
 	static final boolean IS_GTK = "gtk".equals (SWT.getPlatform ());
 
@@ -85,7 +84,7 @@ void addLast (RunnableLock lock) {
 protected void asyncExec (Runnable runnable) {
 	if (runnable == null) {
 		//TEMPORARY CODE
-		if (!(IS_CARBON || IS_GTK || IS_COCOA)) {
+		if (!(IS_GTK || IS_COCOA)) {
 			display.wake ();
 			return;
 		}
