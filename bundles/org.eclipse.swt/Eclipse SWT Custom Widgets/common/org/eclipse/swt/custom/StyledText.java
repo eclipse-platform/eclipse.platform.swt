@@ -169,12 +169,11 @@ public class StyledText extends Canvas {
 	int blockXLocation = -1, blockYLocation = -1;
 	
 
-	final static boolean IS_MAC, IS_GTK, IS_MOTIF;
+	final static boolean IS_MAC, IS_GTK;
 	static {
 		String platform = SWT.getPlatform();
 		IS_MAC = "cocoa".equals(platform);
 		IS_GTK = "gtk".equals(platform);
-		IS_MOTIF = "motif".equals(platform);
 	}
 
 	/**
@@ -1963,11 +1962,7 @@ String getModelDelimitedText(String text) {
 }
 boolean checkDragDetect(Event event) {
 	if (!isListening(SWT.DragDetect)) return false;
-	if (IS_MOTIF) {
-		if (event.button != 2) return false;
-	} else {
-		if (event.button != 1) return false;
-	}
+	if (event.button != 1) return false;
 	if (blockSelection && blockXLocation != -1) {
 		Rectangle rect = getBlockSelectionRectangle();
 		if (rect.contains(event.x, event.y)) {
@@ -5951,13 +5946,6 @@ void handleKey(Event event) {
 			// Ignore accelerator key combinations (we do not want to 
 			// insert a character in the text in this instance).
 			ignore = (event.stateMask & (SWT.COMMAND | SWT.CTRL)) != 0;
-		} else if (IS_MOTIF) {
-			// Ignore accelerator key combinations (we do not want to 
-			// insert a character in the text in this instance). Do not  
-			// ignore ALT combinations since this key sequence
-			// produces characters on motif.
-			ignore = (event.stateMask ^ SWT.CTRL) == 0 ||
-					(event.stateMask ^ (SWT.CTRL | SWT.SHIFT)) == 0;
 		} else {
 			// Ignore accelerator key combinations (we do not want to 
 			// insert a character in the text in this instance). Don't  
@@ -8668,7 +8656,7 @@ void setCaretOffset(int offset, int alignment) {
  * @see org.eclipse.swt.dnd.Clipboard#setContents
  */
 void setClipboardContent(int start, int length, int clipboardType) throws SWTError {
-	if (clipboardType == DND.SELECTION_CLIPBOARD && !(IS_MOTIF || IS_GTK)) return;
+	if (clipboardType == DND.SELECTION_CLIPBOARD && !IS_GTK) return;
 	TextTransfer plainTextTransfer = TextTransfer.getInstance();
 	TextWriter plainTextWriter = new TextWriter(start, length);
 	String plainText = getPlatformDelimitedText(plainTextWriter);
