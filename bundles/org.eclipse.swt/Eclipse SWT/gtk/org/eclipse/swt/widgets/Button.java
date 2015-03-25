@@ -11,11 +11,11 @@
 package org.eclipse.swt.widgets;
 
 
+import org.eclipse.swt.*;
+import org.eclipse.swt.events.*;
+import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.gtk.*;
-import org.eclipse.swt.*;
-import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.events.*;
 
 /**
  * Instances of this class represent a selectable user interface object that
@@ -796,8 +796,23 @@ void _setAlignment (int alignment) {
 }
 
 @Override
-void setBackgroundColor (long /*int*/ context, long /*int*/ handle, GdkRGBA rgba) { //Gtk3.
-	setBackgroundColorGradient (OS.gtk_widget_get_style_context (handle), handle, rgba);
+void setBackgroundColor (long /*int*/ context, long /*int*/ handle, GdkRGBA rgba) {
+	/* Note: this function is called on Gtk3 only */
+
+	//Pre Gtk 3.10 doesn't handle CSS background color very well for Gtk Check/Radio button.
+	// 3.10.3 as it was the latest to affect themeing in button.
+	if (OS.GTK_VERSION < OS.VERSION(3, 10, 3) && (style & (SWT.CHECK | SWT.RADIO)) != 0) {
+		super.setBackgroundColor (context, handle, rgba);
+		return;
+	}
+
+	String css ="* {\n";
+	if (rgba != null) {
+		String color = gtk_rgba_to_css_string (rgba);
+		css += "background: " + color + ";\n";
+	}
+	css += "}\n";
+	gtk_css_provider_load_from_css (context, css);
 }
 
 @Override

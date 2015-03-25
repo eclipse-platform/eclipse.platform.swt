@@ -4086,16 +4086,36 @@ void setBackgroundColor (long /*int*/ context, long /*int*/ handle, GdkRGBA rgba
 void setBackgroundColorGradient (long /*int*/ context, long /*int*/ handle, GdkRGBA rgba) {
 	String css ="* {\n";
 	if (rgba != null) {
-		String color = "rgba(" + (int)(rgba.red * 255) + "," + (int)(rgba.green * 255) + "," + (int)(rgba.blue * 255) + "," + (int)(rgba.alpha * 255) + ")";
+		String color = gtk_rgba_to_css_string (rgba);
+		//Note, use 'background-image' CSS class with caution. Not all themes/widgets support it. (e.g button doesn't).
+		//Use 'background' CSS class where possible instead unless 'background-image' is explicidly supported.
 		css += "background-image: -gtk-gradient (linear, 0 0, 0 1, color-stop(0, " + color + "), color-stop(1, " + color + "));\n";
 	}
 	css += "}\n";
+	gtk_css_provider_load_from_css (context, css);
+}
+
+void gtk_css_provider_load_from_css (long context, String css) {
+	/* Utility function. */
+	//@param css : a 'css java' string like "{\nbackground: red;\n}".
+
 	if (provider == 0) {
 		provider = OS.gtk_css_provider_new ();
 		OS.gtk_style_context_add_provider (context, provider, OS.GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
 		OS.g_object_unref (provider);
 	}
 	OS.gtk_css_provider_load_from_data (provider, Converter.wcsToMbcs (null, css, true), -1, null);
+}
+
+String gtk_rgba_to_css_string (GdkRGBA rgba) {
+	/*
+	 * In GdkRGBA, values are a double between 0-1.<br>
+     * In CSS, values are typically integers between 0-255.<br>
+     * I.e, note, there is a slight loss of precision.
+     * Thus setting/getting color *might* return slight differences.
+	 */
+	String color = "rgba(" + (int)(rgba.red * 255) + "," + (int)(rgba.green * 255) + "," + (int)(rgba.blue * 255) + "," + (int)(rgba.alpha * 255) + ")";
+	return color;
 }
 
 void setBackgroundColor (long /*int*/ handle, GdkColor color) {
