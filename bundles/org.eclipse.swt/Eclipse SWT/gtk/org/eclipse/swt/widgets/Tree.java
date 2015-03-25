@@ -2827,7 +2827,7 @@ void rendererRender (long /*int*/ cell, long /*int*/ cr, long /*int*/ window, lo
 	}
 }
 
-private GC getGC(long cr) {
+private GC getGC(long /*int*/ cr) {
 	GC gc;
 	if (OS.GTK3){
 		GCData gcData = new GCData();
