@@ -3267,12 +3267,19 @@ public class SWT {
 	public static final int COLOR_LINK_FOREGROUND = 36;
 	
 	/**
-	 * Color used to paint with alpha 0 (value is 37). Current usage supported:
-	 * This predefined color can be used to set transparent background on SWT
-	 * controls: <li>
-	 * Transparent color cannot be set of some control and they would just have
-	 * default background e.g. Text, Combo <li>Whereas Table/Tree on GTK3 can
-	 * have transparent background, but not on other platforms.
+	 * System color used to paint with alpha 0 (value is 37).
+	 * <p>
+	 * This pseudo-color can be used to set a transparent background on some SWT controls.
+	 * Current limitations include:
+	 * <ul><li>
+	 * {@link org.eclipse.swt.widgets.Text Text} and {@link org.eclipse.swt.widgets.Combo Combo}
+	 * don't support transparent background and fall back to the default background.
+	 * </li>
+	 * <li>
+	 * {@link org.eclipse.swt.widgets.Table Table} and {@link org.eclipse.swt.widgets.Tree Tree}
+	 * support a transparent background on GTK3, but not on other platforms.
+	 * </li>
+	 * </ul>
 	 * 
 	 * @since 3.104
 	 */
