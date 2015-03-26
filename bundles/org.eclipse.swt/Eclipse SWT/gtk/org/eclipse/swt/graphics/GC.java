@@ -11,10 +11,10 @@
 package org.eclipse.swt.graphics;
 
 
+import org.eclipse.swt.*;
+import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.cairo.*;
 import org.eclipse.swt.internal.gtk.*;
-import org.eclipse.swt.internal.*;
-import org.eclipse.swt.*;
 
 /**
  * Class <code>GC</code> is where all of the drawing capabilities that are
@@ -2957,43 +2957,7 @@ void initCairo() {
 	data.device.checkCairo();
 	long /*int*/ cairo = data.cairo;
 	if (cairo != 0) return;
-	if (OS.GTK_VERSION < OS.VERSION(2, 17, 0)) {
-		long /*int*/ xDisplay = OS.gdk_x11_display_get_xdisplay(OS.gdk_display_get_default());
-		long /*int*/ xVisual = OS.gdk_x11_visual_get_xvisual(OS.gdk_visual_get_system());
-		long /*int*/ xDrawable = 0;
-		int translateX = 0, translateY = 0;
-		long /*int*/ drawable = data.drawable;
-		if (data.image != null) {
-			xDrawable = OS.GDK_PIXMAP_XID(drawable);
-		} else {
-			if (!data.realDrawable) {
-				int[] x = new int[1], y = new int[1];
-				long /*int*/ [] real_drawable = new long /*int*/ [1];
-				OS.gdk_window_get_internal_paint_info(drawable, real_drawable, x, y);
-				xDrawable = OS.gdk_x11_drawable_get_xid(real_drawable[0]);
-				translateX = -x[0];
-				translateY = -y[0];
-			}
-		}
-		int width = 0;
-		int height = 0;
-		if (OS.GTK_VERSION >= OS.VERSION(2, 24, 0)) {
-			width = OS.gdk_window_get_width(data.drawable);
-			height = OS.gdk_window_get_height(data.drawable);
-		} else {
-			int[] w = new int[1], h = new int[1];
-			OS.gdk_drawable_get_size(drawable, w, h);
-			width = w[0];
-			height = h[0];
-		}
-		long /*int*/ surface = Cairo.cairo_xlib_surface_create(xDisplay, xDrawable, xVisual, width, height);
-		if (surface == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-		Cairo.cairo_surface_set_device_offset(surface, translateX, translateY);
-		data.cairo = cairo = Cairo.cairo_create(surface);
-		Cairo.cairo_surface_destroy(surface);
-	} else {
-		data.cairo = cairo = OS.gdk_cairo_create(data.drawable);
-	}
+	data.cairo = cairo = OS.gdk_cairo_create(data.drawable);
 	if (cairo == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	data.disposeCairo = true;
 	Cairo.cairo_set_fill_rule(cairo, Cairo.CAIRO_FILL_RULE_EVEN_ODD);
@@ -3291,7 +3255,7 @@ static void setCairoPatternColor(long /*int*/ pattern, int offset, Color c, int 
 
 void setCairoClip(long /*int*/ damageRgn, long /*int*/ clipRgn) {
 	long /*int*/ cairo = data.cairo;
-	if (OS.GTK_VERSION >= OS.VERSION(2,18,0) && data.drawable != 0 && !OS.GTK3) {
+	if (data.drawable != 0 && !OS.GTK3) {
 		OS.gdk_cairo_reset_clip(cairo, data.drawable);
 	} else {
 		Cairo.cairo_reset_clip(cairo);

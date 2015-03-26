@@ -15,7 +15,7 @@
  *
  * IBM
  * -  Binding to permit interfacing between Cairo and SWT
- * -  Copyright (C) 2005, 2014 IBM Corp.  All Rights Reserved.
+ * -  Copyright (C) 2005, 2015 IBM Corp.  All Rights Reserved.
  *
  * ***** END LICENSE BLOCK ***** */
 
@@ -129,7 +129,6 @@ char * Cairo_nativeFunctionNames[] = {
 	"_1cairo_1surface_1get_1user_1data",
 	"_1cairo_1surface_1mark_1dirty",
 	"_1cairo_1surface_1reference",
-	"_1cairo_1surface_1set_1device_1offset",
 	"_1cairo_1transform",
 	"_1cairo_1translate",
 	"_1cairo_1user_1to_1device_1distance",

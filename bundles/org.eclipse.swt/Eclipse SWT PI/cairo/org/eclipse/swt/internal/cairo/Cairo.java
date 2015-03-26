@@ -1166,16 +1166,6 @@ public static final void cairo_surface_reference(long /*int*/ surface) {
 		lock.unlock();
 	}
 }
-/** @param surface cast=(cairo_surface_t *) */
-public static final native void _cairo_surface_set_device_offset(long /*int*/ surface, double x_offset, double y_offset);
-public static final void cairo_surface_set_device_offset(long /*int*/ surface, double x_offset, double y_offset) {
-	lock.lock();
-	try {
-		_cairo_surface_set_device_offset(surface, x_offset, y_offset);
-	} finally {
-		lock.unlock();
-	}
-}
 /**
  * @param cr cast=(cairo_t *)
  * @param matrix cast=(cairo_matrix_t *)
