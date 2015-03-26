@@ -14,7 +14,6 @@ package org.eclipse.swt.printing;
 import org.eclipse.swt.*;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.gtk.*;
-import org.eclipse.swt.printing.PrinterData;
 import org.eclipse.swt.widgets.*;
 
 /**
@@ -370,9 +369,7 @@ public PrinterData open() {
 
 	OS.gtk_print_unix_dialog_set_settings(handle, settings);
 	OS.gtk_print_unix_dialog_set_page_setup(handle, page_setup);
-	if (OS.GTK_VERSION >= OS.VERSION (2, 18, 0)) {
-		OS.gtk_print_unix_dialog_set_embed_page_setup(handle, true);
-	}
+	OS.gtk_print_unix_dialog_set_embed_page_setup(handle, true);
 	OS.g_object_unref(settings);
 	OS.g_object_unref(page_setup);
 	long /*int*/ group = OS.gtk_window_get_group(0);

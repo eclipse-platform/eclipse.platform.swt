@@ -13,12 +13,9 @@ package org.eclipse.swt.printing;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.internal.Callback;
-import org.eclipse.swt.internal.Converter;
-import org.eclipse.swt.internal.gtk.GdkVisual;
-import org.eclipse.swt.internal.gtk.OS;
-import org.eclipse.swt.internal.cairo.Cairo;
-import org.eclipse.swt.printing.PrinterData;
+import org.eclipse.swt.internal.*;
+import org.eclipse.swt.internal.cairo.*;
+import org.eclipse.swt.internal.gtk.*;
 
 /**
  * Instances of this class are used to print to a printer.
@@ -162,8 +159,6 @@ static long /*int*/ GtkPrinterFunc_Default (long /*int*/ printer, long /*int*/ u
 	if (OS.gtk_printer_is_default(printer)) {
 		findData = printerDataFromGtkPrinter(printer);
 		return 1;
-	} else if (OS.GTK_VERSION < OS.VERSION(2, 10, 12) && printerDataFromGtkPrinter(printer).driver.equals (GTK_LPR_BACKEND)) {
-		return 1;
 	}
 	return 0;
 }
@@ -194,8 +189,6 @@ static long /*int*/ GtkPrinterFunc_FindNamedPrinter (long /*int*/ printer, long 
 			// TODO: GTK_FILE_BACKEND is not GTK API (see gtk bug 345590)
 		findPrinter = printer;
 		OS.g_object_ref(printer);
-		return 1;
-	} else if (OS.GTK_VERSION < OS.VERSION (2, 10, 12) && pd.driver.equals(GTK_LPR_BACKEND)) {
 		return 1;
 	}
 	return 0;
