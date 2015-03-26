@@ -61,20 +61,9 @@ public abstract class Control extends Widget implements Drawable {
 
 	/* these class variables are for the workaround for bug #427776 */
 	static Callback enterNotifyEventFunc;
-	static final int enterNotifyEventSignalId;
-	static final int GTK_POINTER_WINDOW;
-	static final int SWT_GRAB_WIDGET;
-	static {
-		enterNotifyEventFunc = new Callback (Control.class, "enterNotifyEventProc", 4);
-		if (enterNotifyEventFunc.getAddress () == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
-
-		enterNotifyEventSignalId = OS.g_signal_lookup (OS.enter_notify_event, OS.GTK_TYPE_WIDGET ());
-
-		byte [] buffer = Converter.wcsToMbcs (null, "gtk-pointer-window", true);
-		GTK_POINTER_WINDOW = OS.g_quark_from_string (buffer);
-		buffer = Converter.wcsToMbcs (null, "swt-grab-widget", true);
-		SWT_GRAB_WIDGET = OS.g_quark_from_string (buffer);
-	}
+	static int enterNotifyEventSignalId;
+	static int GTK_POINTER_WINDOW;
+	static int SWT_GRAB_WIDGET;
 
 Control () {
 }
@@ -679,6 +668,18 @@ long /*int*/ childStyle () {
 
 @Override
 void createWidget (int index) {
+	if (enterNotifyEventFunc == null) {
+		enterNotifyEventFunc = new Callback (Control.class, "enterNotifyEventProc", 4);
+		if (enterNotifyEventFunc.getAddress () == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
+
+		enterNotifyEventSignalId = OS.g_signal_lookup (OS.enter_notify_event, OS.GTK_TYPE_WIDGET ());
+
+		byte [] buffer = Converter.wcsToMbcs (null, "gtk-pointer-window", true);
+		GTK_POINTER_WINDOW = OS.g_quark_from_string (buffer);
+		buffer = Converter.wcsToMbcs (null, "swt-grab-widget", true);
+		SWT_GRAB_WIDGET = OS.g_quark_from_string (buffer);
+	}
+
 	state |= DRAG_DETECT;
 	checkOrientation (parent);
 	super.createWidget (index);
