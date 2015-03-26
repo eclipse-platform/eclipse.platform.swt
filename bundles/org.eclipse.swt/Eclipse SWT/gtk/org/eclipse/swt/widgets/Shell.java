@@ -12,10 +12,10 @@ package org.eclipse.swt.widgets;
 
 
 import org.eclipse.swt.*;
-import org.eclipse.swt.events.ShellListener;
+import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.internal.Converter;
-import org.eclipse.swt.internal.cairo.Cairo;
+import org.eclipse.swt.internal.*;
+import org.eclipse.swt.internal.cairo.*;
 import org.eclipse.swt.internal.gtk.*;
 
 /**
@@ -2253,7 +2253,6 @@ public void setVisible (boolean visible) {
 				OS.GDK_MAP,
 				OS.GDK_UNMAP,
 				OS.GDK_NO_EXPOSE,
-				OS.GDK_VISIBILITY_NOTIFY,
 				OS.GDK_WINDOW_STATE
 			};
 			Display display = this.display;

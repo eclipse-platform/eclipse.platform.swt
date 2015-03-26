@@ -483,18 +483,6 @@ JNIEXPORT jint JNICALL OS_NATIVE(GdkEventScroll_1sizeof)
 }
 #endif
 
-#ifndef NO_GdkEventVisibility_1sizeof
-JNIEXPORT jint JNICALL OS_NATIVE(GdkEventVisibility_1sizeof)
-	(JNIEnv *env, jclass that)
-{
-	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, GdkEventVisibility_1sizeof_FUNC);
-	rc = (jint)GdkEventVisibility_sizeof();
-	OS_NATIVE_EXIT(env, that, GdkEventVisibility_1sizeof_FUNC);
-	return rc;
-}
-#endif
-
 #ifndef NO_GdkEventWindowState_1sizeof
 JNIEXPORT jint JNICALL OS_NATIVE(GdkEventWindowState_1sizeof)
 	(JNIEnv *env, jclass that)
@@ -911,18 +899,6 @@ JNIEXPORT jint JNICALL OS_NATIVE(XRenderPictureAttributes_1sizeof)
 	OS_NATIVE_ENTER(env, that, XRenderPictureAttributes_1sizeof_FUNC);
 	rc = (jint)XRenderPictureAttributes_sizeof();
 	OS_NATIVE_EXIT(env, that, XRenderPictureAttributes_1sizeof_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO_XVisibilityEvent_1sizeof
-JNIEXPORT jint JNICALL OS_NATIVE(XVisibilityEvent_1sizeof)
-	(JNIEnv *env, jclass that)
-{
-	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, XVisibilityEvent_1sizeof_FUNC);
-	rc = (jint)XVisibilityEvent_sizeof();
-	OS_NATIVE_EXIT(env, that, XVisibilityEvent_1sizeof_FUNC);
 	return rc;
 }
 #endif
@@ -22002,31 +21978,6 @@ fail:
 }
 #endif
 
-#if (!defined(NO_memmove__Lorg_eclipse_swt_internal_gtk_GdkEventVisibility_2II) && !defined(JNI64)) || (!defined(NO_memmove__Lorg_eclipse_swt_internal_gtk_GdkEventVisibility_2JJ) && defined(JNI64))
-#ifndef JNI64
-JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_gtk_GdkEventVisibility_2II)(JNIEnv *env, jclass that, jobject arg0, jintLong arg1, jintLong arg2)
-#else
-JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_gtk_GdkEventVisibility_2JJ)(JNIEnv *env, jclass that, jobject arg0, jintLong arg1, jintLong arg2)
-#endif
-{
-	GdkEventVisibility _arg0, *lparg0=NULL;
-#ifndef JNI64
-	OS_NATIVE_ENTER(env, that, memmove__Lorg_eclipse_swt_internal_gtk_GdkEventVisibility_2II_FUNC);
-#else
-	OS_NATIVE_ENTER(env, that, memmove__Lorg_eclipse_swt_internal_gtk_GdkEventVisibility_2JJ_FUNC);
-#endif
-	if (arg0) if ((lparg0 = &_arg0) == NULL) goto fail;
-	memmove((void *)lparg0, (const void *)arg1, (size_t)arg2);
-fail:
-	if (arg0 && lparg0) setGdkEventVisibilityFields(env, arg0, lparg0);
-#ifndef JNI64
-	OS_NATIVE_EXIT(env, that, memmove__Lorg_eclipse_swt_internal_gtk_GdkEventVisibility_2II_FUNC);
-#else
-	OS_NATIVE_EXIT(env, that, memmove__Lorg_eclipse_swt_internal_gtk_GdkEventVisibility_2JJ_FUNC);
-#endif
-}
-#endif
-
 #if (!defined(NO_memmove__Lorg_eclipse_swt_internal_gtk_GdkEventWindowState_2II) && !defined(JNI64)) || (!defined(NO_memmove__Lorg_eclipse_swt_internal_gtk_GdkEventWindowState_2JJ) && defined(JNI64))
 #ifndef JNI64
 JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_gtk_GdkEventWindowState_2II)(JNIEnv *env, jclass that, jobject arg0, jintLong arg1, jintLong arg2)
@@ -22474,31 +22425,6 @@ fail:
 	OS_NATIVE_EXIT(env, that, memmove__Lorg_eclipse_swt_internal_gtk_XFocusChangeEvent_2II_FUNC);
 #else
 	OS_NATIVE_EXIT(env, that, memmove__Lorg_eclipse_swt_internal_gtk_XFocusChangeEvent_2JJ_FUNC);
-#endif
-}
-#endif
-
-#if (!defined(NO_memmove__Lorg_eclipse_swt_internal_gtk_XVisibilityEvent_2II) && !defined(JNI64)) || (!defined(NO_memmove__Lorg_eclipse_swt_internal_gtk_XVisibilityEvent_2JJ) && defined(JNI64))
-#ifndef JNI64
-JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_gtk_XVisibilityEvent_2II)(JNIEnv *env, jclass that, jobject arg0, jintLong arg1, jintLong arg2)
-#else
-JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_gtk_XVisibilityEvent_2JJ)(JNIEnv *env, jclass that, jobject arg0, jintLong arg1, jintLong arg2)
-#endif
-{
-	XVisibilityEvent _arg0, *lparg0=NULL;
-#ifndef JNI64
-	OS_NATIVE_ENTER(env, that, memmove__Lorg_eclipse_swt_internal_gtk_XVisibilityEvent_2II_FUNC);
-#else
-	OS_NATIVE_ENTER(env, that, memmove__Lorg_eclipse_swt_internal_gtk_XVisibilityEvent_2JJ_FUNC);
-#endif
-	if (arg0) if ((lparg0 = &_arg0) == NULL) goto fail;
-	memmove((void *)lparg0, (const void *)arg1, (size_t)arg2);
-fail:
-	if (arg0 && lparg0) setXVisibilityEventFields(env, arg0, lparg0);
-#ifndef JNI64
-	OS_NATIVE_EXIT(env, that, memmove__Lorg_eclipse_swt_internal_gtk_XVisibilityEvent_2II_FUNC);
-#else
-	OS_NATIVE_EXIT(env, that, memmove__Lorg_eclipse_swt_internal_gtk_XVisibilityEvent_2JJ_FUNC);
 #endif
 }
 #endif

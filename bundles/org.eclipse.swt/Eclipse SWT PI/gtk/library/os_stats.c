@@ -66,7 +66,6 @@ char * OS_nativeFunctionNames[] = {
 	"GdkEventMotion_1sizeof",
 	"GdkEventProperty_1sizeof",
 	"GdkEventScroll_1sizeof",
-	"GdkEventVisibility_1sizeof",
 	"GdkEventWindowState_1sizeof",
 	"GdkEvent_1sizeof",
 	"GdkGeometry_1sizeof",
@@ -102,7 +101,6 @@ char * OS_nativeFunctionNames[] = {
 	"XExposeEvent_1sizeof",
 	"XFocusChangeEvent_1sizeof",
 	"XRenderPictureAttributes_1sizeof",
-	"XVisibilityEvent_1sizeof",
 	"X_1EVENT_1TYPE",
 	"X_1EVENT_1WINDOW",
 	"_1Call",
@@ -1729,11 +1727,6 @@ char * OS_nativeFunctionNames[] = {
 	"memmove__Lorg_eclipse_swt_internal_gtk_GdkEventScroll_2JJ",
 #endif
 #ifndef JNI64
-	"memmove__Lorg_eclipse_swt_internal_gtk_GdkEventVisibility_2II",
-#else
-	"memmove__Lorg_eclipse_swt_internal_gtk_GdkEventVisibility_2JJ",
-#endif
-#ifndef JNI64
 	"memmove__Lorg_eclipse_swt_internal_gtk_GdkEventWindowState_2II",
 #else
 	"memmove__Lorg_eclipse_swt_internal_gtk_GdkEventWindowState_2JJ",
@@ -1827,11 +1820,6 @@ char * OS_nativeFunctionNames[] = {
 	"memmove__Lorg_eclipse_swt_internal_gtk_XFocusChangeEvent_2II",
 #else
 	"memmove__Lorg_eclipse_swt_internal_gtk_XFocusChangeEvent_2JJ",
-#endif
-#ifndef JNI64
-	"memmove__Lorg_eclipse_swt_internal_gtk_XVisibilityEvent_2II",
-#else
-	"memmove__Lorg_eclipse_swt_internal_gtk_XVisibilityEvent_2JJ",
 #endif
 	"pangoFontFaceNewProc_1CALLBACK",
 	"pangoFontFamilyNewProc_1CALLBACK",

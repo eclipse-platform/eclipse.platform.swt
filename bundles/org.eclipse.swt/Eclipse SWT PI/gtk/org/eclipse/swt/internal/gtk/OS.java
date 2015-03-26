@@ -15,9 +15,8 @@
 package org.eclipse.swt.internal.gtk;
 
 
-import org.eclipse.swt.internal.C;
-import org.eclipse.swt.internal.Library;
-import org.eclipse.swt.internal.cairo.Cairo;
+import org.eclipse.swt.internal.*;
+import org.eclipse.swt.internal.cairo.*;
 
 public class OS extends C {
 	static {
@@ -278,9 +277,6 @@ public class OS extends C {
 	public static final int GDK_XOR = 0x2;
 	public static final int GDK_XTERM = 0x98;
 	public static final int GDK_X_CURSOR = 0x0;
-	public static final int GDK_VISIBILITY_NOTIFY = 29;
-	public static final int GDK_VISIBILITY_FULLY_OBSCURED = 2;
-	public static final int GDK_VISIBILITY_NOTIFY_MASK = 1 << 17;
 	public static final int GDK_WINDOW_CHILD = 2;
 	public static final int GDK_WINDOW_STATE = 32;
 	public static final int GDK_WINDOW_STATE_ICONIFIED  = 1 << 1;
@@ -438,8 +434,6 @@ public class OS extends C {
 	public static final int GTK_UNIT_POINTS = 1;
 	public static final int GTK_UNIT_INCH = 2;
 	public static final int GTK_UNIT_MM = 3;
-	public static final int GTK_VISIBILITY_FULL = 0x2;
-	public static final int GTK_VISIBILITY_NONE = 0x0;
 	public static final int GTK_VISIBLE = 0x100;
 	public static final int GDK_WA_X = 1 << 2;
 	public static final int GDK_WA_Y = 1 << 3;
@@ -598,7 +592,6 @@ public class OS extends C {
 	public static final byte[] unmap_event = ascii("unmap-event");
 	public static final byte[] unrealize = ascii("unrealize");
 	public static final byte[] value_changed = ascii("value-changed");
-	public static final byte[] visibility_notify_event = ascii("visibility-notify-event");
 	public static final byte[] window_state_event = ascii("window-state-event");
 
 	public static final byte[] GTK_STYLE_CLASS_TOOLTIP = ascii("tooltip");
@@ -725,7 +718,6 @@ public static final native int GdkEventKey_sizeof();
 public static final native int GdkEventMotion_sizeof();
 public static final native int GdkEventProperty_sizeof();
 public static final native int GdkEventScroll_sizeof();
-public static final native int GdkEventVisibility_sizeof();
 public static final native int GdkEventWindowState_sizeof();
 public static final native int GdkGeometry_sizeof();
 public static final native int GdkRectangle_sizeof();
@@ -755,7 +747,6 @@ public static final native int XAnyEvent_sizeof();
 public static final native int XEvent_sizeof();
 public static final native int XExposeEvent_sizeof();
 public static final native int XFocusChangeEvent_sizeof();
-public static final native int XVisibilityEvent_sizeof();
 public static final native long /*int*/ localeconv_decimal_point();
 /**
  * @param path cast=(const char *)
@@ -832,9 +823,6 @@ public static final int NotifyNonlinear = 3;
 public static final int NotifyNonlinearVirtual = 4;
 public static final int NotifyPointer = 5;
 public static final int RevertToParent = 2;
-public static final int VisibilityChangeMask = 1 << 16;
-public static final int VisibilityFullyObscured = 2;
-public static final int VisibilityNotify = 15;
 public static final native int _Call(long /*int*/ proc, long /*int*/ arg1, long /*int*/ arg2);
 public static final int Call(long /*int*/ proc, long /*int*/ arg1, long /*int*/ arg2) {
 	lock.lock();
@@ -1344,12 +1332,6 @@ public static final native void memmove(XExposeEvent dest, long /*int*/ src, lon
  * @param size cast=(size_t)
  */
 public static final native void memmove(XFocusChangeEvent dest, long /*int*/ src, long /*int*/ size);
-/**
- * @param dest cast=(void *),flags=no_in
- * @param src cast=(const void *)
- * @param size cast=(size_t)
- */
-public static final native void memmove(XVisibilityEvent dest, long /*int*/ src, long /*int*/ size);
 
 /** @method flags=const */
 public static final native int RTLD_GLOBAL();
@@ -15404,12 +15386,6 @@ public static final native void memmove(GdkEventMotion dest, long /*int*/ src, l
  * @param size cast=(size_t)
  */
 public static final native void memmove(GdkEventScroll dest, long /*int*/ src, long /*int*/ size);
-/**
- * @param dest cast=(void *),flags=no_in
- * @param src cast=(const void *)
- * @param size cast=(size_t)
- */
-public static final native void memmove(GdkEventVisibility dest, long /*int*/ src, long /*int*/ size);
 /**
  * @param dest cast=(void *),flags=no_in
  * @param src cast=(const void *)

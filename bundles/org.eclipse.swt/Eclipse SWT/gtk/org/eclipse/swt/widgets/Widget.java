@@ -12,9 +12,9 @@ package org.eclipse.swt.widgets;
 
 
 import org.eclipse.swt.*;
+import org.eclipse.swt.events.*;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.gtk.*;
-import org.eclipse.swt.events.*;
 
 /**
  * This class is the abstract superclass of all user interface objects.
@@ -165,7 +165,6 @@ public abstract class Widget {
 	static final int UNMAP_EVENT = 55;
 	static final int UNREALIZE = 56;
 	static final int VALUE_CHANGED = 57;
-	static final int VISIBILITY_NOTIFY_EVENT = 58;
 	static final int WINDOW_STATE_EVENT = 59;
 	static final int ACTIVATE_INVERSE = 60;
 	static final int DAY_SELECTED = 61;
@@ -905,10 +904,6 @@ long /*int*/ gtk_unrealize (long /*int*/ widget) {
 }
 
 long /*int*/ gtk_value_changed (long /*int*/ adjustment) {
-	return 0;
-}
-
-long /*int*/ gtk_visibility_notify_event (long /*int*/ widget, long /*int*/ event) {
 	return 0;
 }
 
@@ -2032,7 +2027,6 @@ long /*int*/ windowProc (long /*int*/ handle, long /*int*/ arg0, long /*int*/ us
 		case STYLE_SET: return gtk_style_set (handle, arg0);
 		case TOGGLED: return gtk_toggled (handle, arg0);
 		case UNMAP_EVENT: return gtk_unmap_event (handle, arg0);
-		case VISIBILITY_NOTIFY_EVENT: return gtk_visibility_notify_event (handle, arg0);
 		case WINDOW_STATE_EVENT: return gtk_window_state_event (handle, arg0);
 		case ROW_DELETED: return gtk_row_deleted (handle, arg0);
 		default: return 0;

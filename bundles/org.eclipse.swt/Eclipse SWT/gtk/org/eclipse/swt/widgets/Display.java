@@ -257,7 +257,6 @@ public class Display extends Device {
 	boolean flushAll;
 	GdkRectangle flushRect = new GdkRectangle ();
 	XExposeEvent exposeEvent = new XExposeEvent ();
-	XVisibilityEvent visibilityEvent = new XVisibilityEvent ();
 	long /*int*/ [] flushData = new long /*int*/ [1];
 
 	/* System Resources */
@@ -781,13 +780,6 @@ static void checkDisplay (Thread thread, boolean multiple) {
 long /*int*/ checkIfEventProc (long /*int*/ display, long /*int*/ xEvent, long /*int*/ userData) {
 	int type = OS.X_EVENT_TYPE (xEvent);
 	switch (type) {
-		case OS.VisibilityNotify:
-			/*
-			* As of GTK 2.17.11, obscured controls no longer send expose
-			* events. It is no longer necessary to track visiblity notify
-			* events.
-			*/
-			if (OS.GTK_VERSION >= OS.VERSION (2, 17, 11)) return 0;
 		case OS.Expose:
 		case OS.GraphicsExpose:
 			break;
@@ -823,23 +815,6 @@ long /*int*/ checkIfEventProc (long /*int*/ display, long /*int*/ xEvent, long /
 			OS.gdk_window_invalidate_rect (window, flushRect, true);
 			exposeEvent.type = -1;
 			OS.memmove (xEvent, exposeEvent, XExposeEvent.sizeof);
-			break;
-		}
-		case OS.VisibilityNotify: {
-			OS.memmove (visibilityEvent, xEvent, XVisibilityEvent.sizeof);
-			OS.gdk_window_get_user_data (window, flushData);
-			long /*int*/ handle = flushData [0];
-			Widget widget = handle != 0 ? getWidget (handle) : null;
-			if (widget != null && widget instanceof Control) {
-				Control control = (Control) widget;
-				if (window == control.paintWindow ()) {
-					if (visibilityEvent.state == OS.VisibilityFullyObscured) {
-						control.state |= Widget.OBSCURED;
-					} else {
-						control.state &= ~Widget.OBSCURED;
-					}
-				}
-			}
 			break;
 		}
 	}
@@ -2637,7 +2612,6 @@ void initializeCallbacks () {
 	signalIds [Widget.UNMAP] = OS.g_signal_lookup (OS.unmap, OS.GTK_TYPE_WIDGET ());
 	signalIds [Widget.UNMAP_EVENT] = OS.g_signal_lookup (OS.unmap_event, OS.GTK_TYPE_WIDGET ());
 	signalIds [Widget.UNREALIZE] = OS.g_signal_lookup (OS.realize, OS.GTK_TYPE_WIDGET ());
-	signalIds [Widget.VISIBILITY_NOTIFY_EVENT] = OS.g_signal_lookup (OS.visibility_notify_event, OS.GTK_TYPE_WIDGET ());
 	signalIds [Widget.WINDOW_STATE_EVENT] = OS.g_signal_lookup (OS.window_state_event, OS.GTK_TYPE_WIDGET ());
 
 	windowCallback2 = new Callback (this, "windowProc", 2); //$NON-NLS-1$
@@ -2710,7 +2684,6 @@ void initializeCallbacks () {
 	closuresProc [Widget.STYLE_SET] = windowProc3;
 	closuresProc [Widget.TOGGLED] = windowProc3;
 	closuresProc [Widget.UNMAP_EVENT] = windowProc3;
-	closuresProc [Widget.VISIBILITY_NOTIFY_EVENT] = windowProc3;
 	closuresProc [Widget.WINDOW_STATE_EVENT] = windowProc3;
 	closuresProc [Widget.ROW_DELETED] = windowProc3;
 	closuresProc [Widget.DIRECTION_CHANGED] = windowProc3;
@@ -3668,7 +3641,6 @@ void releaseDisplay () {
 	modalDialog = null;
 	flushRect = null;
 	exposeEvent = null;
-	visibilityEvent = null;
 	idleLock = null;
 }
 

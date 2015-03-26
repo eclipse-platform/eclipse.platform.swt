@@ -76,7 +76,6 @@ typedef enum {
 	GdkEventMotion_1sizeof_FUNC,
 	GdkEventProperty_1sizeof_FUNC,
 	GdkEventScroll_1sizeof_FUNC,
-	GdkEventVisibility_1sizeof_FUNC,
 	GdkEventWindowState_1sizeof_FUNC,
 	GdkEvent_1sizeof_FUNC,
 	GdkGeometry_1sizeof_FUNC,
@@ -112,7 +111,6 @@ typedef enum {
 	XExposeEvent_1sizeof_FUNC,
 	XFocusChangeEvent_1sizeof_FUNC,
 	XRenderPictureAttributes_1sizeof_FUNC,
-	XVisibilityEvent_1sizeof_FUNC,
 	X_1EVENT_1TYPE_FUNC,
 	X_1EVENT_1WINDOW_FUNC,
 	_1Call_FUNC,
@@ -1739,11 +1737,6 @@ typedef enum {
 	memmove__Lorg_eclipse_swt_internal_gtk_GdkEventScroll_2JJ_FUNC,
 #endif
 #ifndef JNI64
-	memmove__Lorg_eclipse_swt_internal_gtk_GdkEventVisibility_2II_FUNC,
-#else
-	memmove__Lorg_eclipse_swt_internal_gtk_GdkEventVisibility_2JJ_FUNC,
-#endif
-#ifndef JNI64
 	memmove__Lorg_eclipse_swt_internal_gtk_GdkEventWindowState_2II_FUNC,
 #else
 	memmove__Lorg_eclipse_swt_internal_gtk_GdkEventWindowState_2JJ_FUNC,
@@ -1837,11 +1830,6 @@ typedef enum {
 	memmove__Lorg_eclipse_swt_internal_gtk_XFocusChangeEvent_2II_FUNC,
 #else
 	memmove__Lorg_eclipse_swt_internal_gtk_XFocusChangeEvent_2JJ_FUNC,
-#endif
-#ifndef JNI64
-	memmove__Lorg_eclipse_swt_internal_gtk_XVisibilityEvent_2II_FUNC,
-#else
-	memmove__Lorg_eclipse_swt_internal_gtk_XVisibilityEvent_2JJ_FUNC,
 #endif
 	pangoFontFaceNewProc_1CALLBACK_FUNC,
 	pangoFontFamilyNewProc_1CALLBACK_FUNC,

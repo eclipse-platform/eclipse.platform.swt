@@ -11,10 +11,10 @@
 package org.eclipse.swt.opengl;
 
 import org.eclipse.swt.*;
-import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.gtk.*;
 import org.eclipse.swt.internal.opengl.glx.*;
+import org.eclipse.swt.widgets.*;
 
 /**
  * GLCanvas is a widget capable of displaying OpenGL content.
@@ -132,8 +132,7 @@ public GLCanvas (Composite parent, int style, GLData data) {
 		OS.GDK_FOCUS_CHANGE_MASK | OS.GDK_POINTER_MOTION_MASK |
 		OS.GDK_BUTTON_PRESS_MASK | OS.GDK_BUTTON_RELEASE_MASK |
 		OS.GDK_ENTER_NOTIFY_MASK | OS.GDK_LEAVE_NOTIFY_MASK |
-		OS.GDK_EXPOSURE_MASK | OS.GDK_VISIBILITY_NOTIFY_MASK |
-		OS.GDK_POINTER_MOTION_HINT_MASK;
+		OS.GDK_EXPOSURE_MASK | OS.GDK_POINTER_MOTION_HINT_MASK;
 	attrs.window_type = OS.GDK_WINDOW_CHILD;
 	attrs.visual = gdkvisual;
 	glWindow = OS.gdk_window_new (window, attrs, OS.GDK_WA_VISUAL);

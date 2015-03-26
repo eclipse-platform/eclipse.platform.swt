@@ -352,19 +352,11 @@ void hookEvents () {
 
 	/* Connect the paint signal */
 	long /*int*/ paintHandle = paintHandle ();
-	int paintMask = OS.GDK_EXPOSURE_MASK | OS.GDK_VISIBILITY_NOTIFY_MASK;
+	int paintMask = OS.GDK_EXPOSURE_MASK;
 	OS.gtk_widget_add_events (paintHandle, paintMask);
 
 	OS.g_signal_connect_closure_by_id (paintHandle, display.signalIds [EXPOSE_EVENT], 0, display.getClosure (EXPOSE_EVENT_INVERSE), false);
 
-	/*
-	* As of GTK 2.17.11, obscured controls no longer send expose
-	* events. It is no longer necessary to track visiblity notify
-	* events.
-	*/
-	if (OS.GTK_VERSION < OS.VERSION (2, 17, 11)) {
-		OS.g_signal_connect_closure_by_id (paintHandle, display.signalIds [VISIBILITY_NOTIFY_EVENT], 0, display.getClosure (VISIBILITY_NOTIFY_EVENT), false);
-	}
 	OS.g_signal_connect_closure_by_id (paintHandle, display.signalIds [EXPOSE_EVENT], 0, display.getClosure (EXPOSE_EVENT), true);
 
 	/* Connect the Input Method signals */
@@ -3481,36 +3473,6 @@ long /*int*/ gtk_style_set (long /*int*/ widget, long /*int*/ previousStyle) {
 long /*int*/ gtk_unrealize (long /*int*/ widget) {
 	long /*int*/ imHandle = imHandle ();
 	if (imHandle != 0) OS.gtk_im_context_set_client_window (imHandle, 0);
-	return 0;
-}
-
-@Override
-long /*int*/ gtk_visibility_notify_event (long /*int*/ widget, long /*int*/ event) {
-	/*
-	* As of GTK 2.17.11, obscured controls no longer send expose
-	* events. It is no longer necessary to track visiblity notify
-	* events.
-	*/
-	if (OS.GTK_VERSION >= OS.VERSION (2, 17, 11)) return 0;
-	GdkEventVisibility gdkEvent = new GdkEventVisibility ();
-	OS.memmove (gdkEvent, event, GdkEventVisibility.sizeof);
-	long /*int*/ paintWindow = paintWindow();
-	long /*int*/ window = gdkEvent.window;
-	if (window == paintWindow) {
-		if (gdkEvent.state == OS.GDK_VISIBILITY_FULLY_OBSCURED) {
-			state |= OBSCURED;
-		} else {
-			if ((state & OBSCURED) != 0) {
-				int [] width = new int [1], height = new int [1];
-				gdk_window_get_size (window, width, height);
-				GdkRectangle rect = new GdkRectangle ();
-				rect.width = width [0];
-				rect.height = height [0];
-				OS.gdk_window_invalidate_rect (window, rect, false);
-			}
-			state &= ~OBSCURED;
-		}
-	}
 	return 0;
 }
 

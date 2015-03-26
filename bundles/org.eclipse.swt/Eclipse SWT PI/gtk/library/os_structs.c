@@ -818,46 +818,6 @@ void setGdkEventScrollFields(JNIEnv *env, jobject lpObject, GdkEventScroll *lpSt
 }
 #endif
 
-#ifndef NO_GdkEventVisibility
-typedef struct GdkEventVisibility_FID_CACHE {
-	int cached;
-	jclass clazz;
-	jfieldID window, send_event, state;
-} GdkEventVisibility_FID_CACHE;
-
-GdkEventVisibility_FID_CACHE GdkEventVisibilityFc;
-
-void cacheGdkEventVisibilityFields(JNIEnv *env, jobject lpObject)
-{
-	if (GdkEventVisibilityFc.cached) return;
-	cacheGdkEventFields(env, lpObject);
-	GdkEventVisibilityFc.clazz = (*env)->GetObjectClass(env, lpObject);
-	GdkEventVisibilityFc.window = (*env)->GetFieldID(env, GdkEventVisibilityFc.clazz, "window", I_J);
-	GdkEventVisibilityFc.send_event = (*env)->GetFieldID(env, GdkEventVisibilityFc.clazz, "send_event", "B");
-	GdkEventVisibilityFc.state = (*env)->GetFieldID(env, GdkEventVisibilityFc.clazz, "state", "I");
-	GdkEventVisibilityFc.cached = 1;
-}
-
-GdkEventVisibility *getGdkEventVisibilityFields(JNIEnv *env, jobject lpObject, GdkEventVisibility *lpStruct)
-{
-	if (!GdkEventVisibilityFc.cached) cacheGdkEventVisibilityFields(env, lpObject);
-	getGdkEventFields(env, lpObject, (GdkEvent *)lpStruct);
-	lpStruct->window = (GdkWindow *)(*env)->GetIntLongField(env, lpObject, GdkEventVisibilityFc.window);
-	lpStruct->send_event = (gint8)(*env)->GetByteField(env, lpObject, GdkEventVisibilityFc.send_event);
-	lpStruct->state = (GdkVisibilityState)(*env)->GetIntField(env, lpObject, GdkEventVisibilityFc.state);
-	return lpStruct;
-}
-
-void setGdkEventVisibilityFields(JNIEnv *env, jobject lpObject, GdkEventVisibility *lpStruct)
-{
-	if (!GdkEventVisibilityFc.cached) cacheGdkEventVisibilityFields(env, lpObject);
-	setGdkEventFields(env, lpObject, (GdkEvent *)lpStruct);
-	(*env)->SetIntLongField(env, lpObject, GdkEventVisibilityFc.window, (jintLong)lpStruct->window);
-	(*env)->SetByteField(env, lpObject, GdkEventVisibilityFc.send_event, (jbyte)lpStruct->send_event);
-	(*env)->SetIntField(env, lpObject, GdkEventVisibilityFc.state, (jint)lpStruct->state);
-}
-#endif
-
 #ifndef NO_GdkEventWindowState
 typedef struct GdkEventWindowState_FID_CACHE {
 	int cached;
@@ -2219,40 +2179,6 @@ void setXRenderPictureAttributesFields(JNIEnv *env, jobject lpObject, XRenderPic
 	(*env)->SetIntField(env, lpObject, XRenderPictureAttributesFc.poly_mode, (jint)lpStruct->poly_mode);
 	(*env)->SetIntLongField(env, lpObject, XRenderPictureAttributesFc.dither, (jintLong)lpStruct->dither);
 	(*env)->SetBooleanField(env, lpObject, XRenderPictureAttributesFc.component_alpha, (jboolean)lpStruct->component_alpha);
-}
-#endif
-
-#ifndef NO_XVisibilityEvent
-typedef struct XVisibilityEvent_FID_CACHE {
-	int cached;
-	jclass clazz;
-	jfieldID state;
-} XVisibilityEvent_FID_CACHE;
-
-XVisibilityEvent_FID_CACHE XVisibilityEventFc;
-
-void cacheXVisibilityEventFields(JNIEnv *env, jobject lpObject)
-{
-	if (XVisibilityEventFc.cached) return;
-	cacheXAnyEventFields(env, lpObject);
-	XVisibilityEventFc.clazz = (*env)->GetObjectClass(env, lpObject);
-	XVisibilityEventFc.state = (*env)->GetFieldID(env, XVisibilityEventFc.clazz, "state", "I");
-	XVisibilityEventFc.cached = 1;
-}
-
-XVisibilityEvent *getXVisibilityEventFields(JNIEnv *env, jobject lpObject, XVisibilityEvent *lpStruct)
-{
-	if (!XVisibilityEventFc.cached) cacheXVisibilityEventFields(env, lpObject);
-	getXAnyEventFields(env, lpObject, (XAnyEvent *)lpStruct);
-	lpStruct->state = (*env)->GetIntField(env, lpObject, XVisibilityEventFc.state);
-	return lpStruct;
-}
-
-void setXVisibilityEventFields(JNIEnv *env, jobject lpObject, XVisibilityEvent *lpStruct)
-{
-	if (!XVisibilityEventFc.cached) cacheXVisibilityEventFields(env, lpObject);
-	setXAnyEventFields(env, lpObject, (XAnyEvent *)lpStruct);
-	(*env)->SetIntField(env, lpObject, XVisibilityEventFc.state, (jint)lpStruct->state);
 }
 #endif
 

@@ -207,18 +207,6 @@ void setGdkEventScrollFields(JNIEnv *env, jobject lpObject, GdkEventScroll *lpSt
 #define GdkEventScroll_sizeof() 0
 #endif
 
-#ifndef NO_GdkEventVisibility
-void cacheGdkEventVisibilityFields(JNIEnv *env, jobject lpObject);
-GdkEventVisibility *getGdkEventVisibilityFields(JNIEnv *env, jobject lpObject, GdkEventVisibility *lpStruct);
-void setGdkEventVisibilityFields(JNIEnv *env, jobject lpObject, GdkEventVisibility *lpStruct);
-#define GdkEventVisibility_sizeof() sizeof(GdkEventVisibility)
-#else
-#define cacheGdkEventVisibilityFields(a,b)
-#define getGdkEventVisibilityFields(a,b,c) NULL
-#define setGdkEventVisibilityFields(a,b,c)
-#define GdkEventVisibility_sizeof() 0
-#endif
-
 #ifndef NO_GdkEventWindowState
 void cacheGdkEventWindowStateFields(JNIEnv *env, jobject lpObject);
 GdkEventWindowState *getGdkEventWindowStateFields(JNIEnv *env, jobject lpObject, GdkEventWindowState *lpStruct);
@@ -565,17 +553,5 @@ void setXRenderPictureAttributesFields(JNIEnv *env, jobject lpObject, XRenderPic
 #define getXRenderPictureAttributesFields(a,b,c) NULL
 #define setXRenderPictureAttributesFields(a,b,c)
 #define XRenderPictureAttributes_sizeof() 0
-#endif
-
-#ifndef NO_XVisibilityEvent
-void cacheXVisibilityEventFields(JNIEnv *env, jobject lpObject);
-XVisibilityEvent *getXVisibilityEventFields(JNIEnv *env, jobject lpObject, XVisibilityEvent *lpStruct);
-void setXVisibilityEventFields(JNIEnv *env, jobject lpObject, XVisibilityEvent *lpStruct);
-#define XVisibilityEvent_sizeof() sizeof(XVisibilityEvent)
-#else
-#define cacheXVisibilityEventFields(a,b)
-#define getXVisibilityEventFields(a,b,c) NULL
-#define setXVisibilityEventFields(a,b,c)
-#define XVisibilityEvent_sizeof() 0
 #endif
 
