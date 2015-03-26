@@ -97,33 +97,30 @@ public class JavadocBasher {
 				"Eclipse SWT Printing", "Eclipse SWT Program",
 				"Eclipse SWT Theme", "Eclipse SWT WebKit", };
 		String sourceSubdir = "win32";
-		String[] targetSubdirs = new String[] { "cairo", // used by gtk, motif
+		String[] targetSubdirs = new String[] { "cairo", // used by gtk
 				// "carbon", // we are no longer maintaining carbon
-				"cde", // used by gtk, motif
+				"cde", // used by gtk
 				"cocoa",
 				// "common",
 				// "common_j2me",
 				// "common_j2se",
 				"emulated", "emulated/bidi", // used by carbon, cocoa, dojo,
-												// flex, gtk, motif, photon
-				"emulated/coolbar", // used by carbon, cocoa, flex, gtk, motif,
+												// flex, gtk, photon
+				"emulated/coolbar", // used by carbon, cocoa, flex, gtk,
 									// photon
-				// "emulated/datetime", // only used by motif, photon
-				"emulated/expand", // used by carbon, cocoa, flex, motif, photon
+				// "emulated/datetime", // only used by photon
+				"emulated/expand", // used by carbon, cocoa, flex, photon
 				// "emulated/graphics", // only used by photon
-				"emulated/ime", // used by dojo, flex, motif, photon
-				// "emulated/tabfolder", // only used by motif
-				"emulated/taskbar", // used by carbon, gtk, motif, photon
+				"emulated/ime", // used by dojo, flex, photon
+				"emulated/taskbar", // used by carbon, gtk, photon
 				// "emulated/textlayout", // only used by photon
-				"emulated/tooltip", // used by cocoa (?!), motif, photon
-				// "emulated/tray", // only used by carbon_j2me, motif, photon
-				// "emulated/treetable", // only used by motif, photon
-				"gnome", // used by gtk, motif
-				"glx", // used by gtk, motif
+				"emulated/tooltip", // used by cocoa (?!), photon
+				// "emulated/tray", // only used by carbon_j2me, photon
+				// "emulated/treetable", // only used by photon
+				"gnome", // used by gtk
+				"glx", // used by gtk
 				"gtk",
-				// "motif", // we are no longer maintaining motif
-				// "motif_gtk", // only used by motif
-				"mozilla", // used by carbon, cocoa, gtk, motif, win32
+				"mozilla", // used by carbon, cocoa, gtk, win32
 		// "photon", // we are no longer maintaining photon
 		// "qt", // folder should be deleted
 		};

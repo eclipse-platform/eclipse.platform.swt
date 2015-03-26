@@ -46,7 +46,7 @@ public static void main(String[] args) {
 		pattern = new Pattern(display, image);
 	} catch (SWTException e) {
 		//Advanced Graphics not supported.  
-		//This new API requires the Cairo Vector engine on GTK and Motif and GDI+ on Windows.
+		//This new API requires the Cairo Vector engine on GTK and GDI+ on Windows.
 		System.out.println(e.getMessage());
 		display.dispose();
 		return;

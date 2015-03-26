@@ -11,9 +11,9 @@
 package org.eclipse.swt.widgets;
 
 import org.eclipse.swt.*;
+import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.gtk.*;
-import org.eclipse.swt.graphics.*;
 
 /**
  * Instances of this class provide the appearance and
@@ -523,7 +523,7 @@ boolean restoreFocus () {
 	/*
 	* This code is intentionally commented.  When no widget
 	* has been given focus, some platforms give focus to the
-	* default button.  Motif doesn't do this.
+	* default button.  
 	*/
 //	if (restored) return true;
 //	if (defaultButton != null && !defaultButton.isDisposed ()) {

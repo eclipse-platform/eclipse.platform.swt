@@ -1390,7 +1390,7 @@ public class SWT {
 
 	/**
 	 * Style constant for shadow etched in behavior (value is 1&lt;&lt;4).
-	 * <br>Note that this is a <em>HINT</em>. It is ignored on all platforms except Motif.
+	 * <br>Note that this is a <em>HINT</em>. It is currently ignored on all platforms.
 	 * <p><b>Used By:</b><ul>
 	 * <li><code>Group</code></li>
 	 * </ul></p>
@@ -1399,7 +1399,7 @@ public class SWT {
 
 	/**
 	 * Style constant for shadow etched out behavior (value is 1&lt;&lt;6).
-	 * <br>Note that this is a <em>HINT</em>. It is ignored on all platforms except Motif.
+	 * <br>Note that this is a <em>HINT</em>. It is currently ignored on all platforms.
 	 * <p><b>Used By:</b><ul>
 	 * <li><code>Group</code></li>
 	 * </ul></p>

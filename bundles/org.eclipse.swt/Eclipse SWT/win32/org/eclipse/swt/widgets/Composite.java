@@ -34,7 +34,7 @@ import org.eclipse.swt.internal.win32.*;
  * </p><p>
  * Note: The <code>CENTER</code> style, although undefined for composites, has the
  * same value as <code>EMBEDDED</code> which is used to embed widgets from other
- * widget toolkits into SWT.  On some operating systems (GTK, Motif), this may cause
+ * widget toolkits into SWT.  On some operating systems (GTK), this may cause
  * the children of this composite to be obscured.
  * </p><p>
  * This class may be subclassed by custom control implementors

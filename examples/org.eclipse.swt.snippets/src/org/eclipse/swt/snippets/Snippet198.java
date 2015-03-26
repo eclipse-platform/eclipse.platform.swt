@@ -35,7 +35,7 @@ public static void main(String[] args) {
 		path.addString("SWT", 0, 0, font);
 	} catch (SWTException e) {
 		//Advanced Graphics not supported.  
-		//This new API requires the Cairo Vector engine on GTK and Motif and GDI+ on Windows.
+		//This new API requires the Cairo Vector engine on GTK and GDI+ on Windows.
 		System.out.println(e.getMessage());
 		display.dispose();
 		return;

@@ -79,7 +79,6 @@ abstract protected String[] getTypeNames();
  * <p>On a successful conversion, the transferData.result field will be set as follows:
  * <ul>
  * <li>Windows: COM.S_OK
- * <li>Motif: 1
  * <li>GTK: 1
  * <li>Photon: 1
  * </ul></p>
@@ -88,7 +87,6 @@ abstract protected String[] getTypeNames();
  * field will be set to a failure value as follows:
  * <ul>
  * <li>Windows: COM.DV_E_TYMED or COM.E_FAIL
- * <li>Motif: 0
  * <li>GTK: 0
  * <li>Photon: 0
  * </ul></p>

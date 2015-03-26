@@ -318,7 +318,7 @@ void drawBorder(Event event) {
 		x, 
 		(y = yClient - CLIENT_MARGIN_WIDTH) + 1);
 	// Second, darker, line right of the previous line. 
-	// Necessary to workaround color constant differences on Windows/Motif
+	// Necessary to workaround color constant differences on Windows
 	gc.setForeground(LightShadow);
 	gc.drawLine(x + 1, yClient + hClient + CLIENT_MARGIN_WIDTH, x + 1, y + 1);
 	gc.setForeground(HighlightShadow);
