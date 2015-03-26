@@ -10,10 +10,7 @@
  *******************************************************************************/
 package org.eclipse.swt.tests.junit;
 
-import junit.framework.JUnit4TestAdapter;
-import junit.framework.Test;
-import junit.textui.TestRunner;
-
+import org.junit.runner.JUnitCore;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 
@@ -41,10 +38,6 @@ import org.junit.runners.Suite;
 		Test_org_eclipse_swt_graphics_ImageLoaderEvent.class })
 public class AllGraphicsTests {
 	public static void main(String[] args) {
-		TestRunner.run(suite());
-	}
-
-	public static Test suite() {
-		return new JUnit4TestAdapter(AllGraphicsTests.class);
+		JUnitCore.main(AllGraphicsTests.class.getName());
 	}
 }

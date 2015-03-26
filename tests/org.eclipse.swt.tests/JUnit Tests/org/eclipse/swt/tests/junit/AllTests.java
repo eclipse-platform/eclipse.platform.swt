@@ -11,25 +11,21 @@
 package org.eclipse.swt.tests.junit;
 
 
-import junit.framework.*;
-import junit.textui.*;
+import org.junit.runner.JUnitCore;
+import org.junit.runner.RunWith;
+import org.junit.runners.Suite;
 
 /**
  * Suite for running all SWT test cases.
  */
-public class AllTests extends TestSuite {
+@RunWith(Suite.class)
+@Suite.SuiteClasses({
+	AllNonBrowserTests.class,
+	AllBrowserTests.class
+})
+public class AllTests {
 
 public static void main(String[] args) {
-	TestRunner.run(suite());
-}
-public static Test suite() {
-	return new AllTests();
-}
-
-public AllTests() {
-	super(AllTests.class.getName());
-	
-	addTest(AllNonBrowserTests.suite());
-	addTest(AllBrowserTests.suite());
+	JUnitCore.main(AllTests.class.getName());
 }
 }

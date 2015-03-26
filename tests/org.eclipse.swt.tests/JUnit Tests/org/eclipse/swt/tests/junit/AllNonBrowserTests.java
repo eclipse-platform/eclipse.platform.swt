@@ -58,7 +58,7 @@ public AllNonBrowserTests() {
 	 */
 	addTestSuite(Test_org_eclipse_swt_widgets_Display.class);
 
-	addTest(AllGraphicsTests.suite());
+	addTest(new JUnit4TestAdapter(AllGraphicsTests.class));
 	addTest(AllWidgetTests.suite());
 	
 	addTestSuite(Test_org_eclipse_swt_layout_GridData.class);
