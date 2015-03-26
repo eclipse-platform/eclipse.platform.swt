@@ -10,22 +10,22 @@
  *******************************************************************************/
 package org.eclipse.swt.tests.junit;
 
-import junit.framework.TestCase;
-
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.browser.Browser;
 import org.eclipse.swt.browser.ProgressEvent;
 import org.eclipse.swt.browser.ProgressListener;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
+import org.junit.Test;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.browser.ProgressListener
  *
  * @see org.eclipse.swt.browser.ProgressListener
  */
-public class Test_org_eclipse_swt_browser_ProgressListener extends TestCase {
+public class Test_org_eclipse_swt_browser_ProgressListener {
 
+@Test
 public void test_changedLorg_eclipse_swt_browser_ProgressEvent() {
 	Display display = Display.getCurrent();
 	Shell shell = new Shell(display);

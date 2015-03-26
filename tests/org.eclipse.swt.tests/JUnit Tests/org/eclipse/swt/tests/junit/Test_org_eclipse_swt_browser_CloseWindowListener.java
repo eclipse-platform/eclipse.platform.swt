@@ -10,22 +10,22 @@
  *******************************************************************************/
 package org.eclipse.swt.tests.junit;
 
-import junit.framework.TestCase;
-
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.browser.Browser;
 import org.eclipse.swt.browser.CloseWindowListener;
 import org.eclipse.swt.browser.WindowEvent;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
+import org.junit.Test;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.browser.CloseWindowListener
  *
  * @see org.eclipse.swt.browser.CloseWindowListener
  */
-public class Test_org_eclipse_swt_browser_CloseWindowListener extends TestCase {
+public class Test_org_eclipse_swt_browser_CloseWindowListener {
 
+@Test
 public void test_closeLorg_eclipse_swt_browser_WindowEvent() {
 	Display display = Display.getCurrent();
 	Shell shell = new Shell(display);
