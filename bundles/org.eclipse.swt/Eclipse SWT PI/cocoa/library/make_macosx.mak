@@ -26,7 +26,6 @@ XULRUNNER24_LIB=lib$(SWTXULRUNNER24_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).jnilib
 
 AWT_PREFIX = swt-awt
 AWT_LIB    = lib$(AWT_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).jnilib
-AWT_LIBS   = /System/Library/Frameworks/JavaVM.framework/Versions/CurrentJDK/Libraries/libjawt.dylib"
 AWT_OBJECTS   = swt_awt.o
 
 # Uncomment for Native Stats tool
@@ -34,7 +33,7 @@ AWT_OBJECTS   = swt_awt.o
 
 #SWT_DEBUG = -g
 CFLAGS = -c -xobjective-c -Wall $(ARCHS) -DSWT_VERSION=$(SWT_VERSION) $(NATIVE_STATS) $(SWT_DEBUG) -DUSE_ASSEMBLER -DCOCOA -DATOMIC \
-	-I /System/Library/Frameworks/JavaVM.framework/Headers \
+	$(CFLAGS_JAVA_VM) \
 	-I /System/Library/Frameworks/Cocoa.framework/Headers \
 	-I /System/Library/Frameworks/JavaScriptCore.framework/Headers
 LFLAGS = -bundle $(ARCHS) -framework JavaVM -framework Cocoa -framework WebKit -framework CoreServices -framework JavaScriptCore -framework Security -framework SecurityInterface
@@ -43,9 +42,9 @@ SWTPI_OBJECTS = swt.o os.o os_structs.o os_stats.o os_custom.o
 XULRUNNER_OBJECTS = swt.o xpcom.o xpcom_custom.o xpcom_structs.o xpcom_stats.o xpcominit.o xpcominit_structs.o xpcominit_stats.o
 XULRUNNER24_OBJECTS = xpcom24_custom.o
 
-XULRUNNERCFLAGS = -c -Wall $(ARCHS) -DSWT_VERSION=$(SWT_VERSION) $(NATIVE_STATS) $(SWT_DEBUG) -DUSE_ASSEMBLER -DCOCOA -I /System/Library/Frameworks/JavaVM.framework/Headers \
+XULRUNNERCFLAGS = -c -Wall $(ARCHS) -DSWT_VERSION=$(SWT_VERSION) $(NATIVE_STATS) $(SWT_DEBUG) -DUSE_ASSEMBLER -DCOCOA $(CFLAGS_JAVA_VM) \
 	-Wno-non-virtual-dtor -include ${XULRUNNER_SDK}/include/mozilla-config.h -I${XULRUNNER_SDK}/include
-XULRUNNER24CFLAGS = -c -Wall $(XULRUNNER24_ARCHS) -DSWT_VERSION=$(SWT_VERSION) $(NATIVE_STATS) $(SWT_DEBUG) -DUSE_ASSEMBLER -DCOCOA -I /System/Library/Frameworks/JavaVM.framework/Headers -Wno-non-virtual-dtor
+XULRUNNER24CFLAGS = -c -Wall $(XULRUNNER24_ARCHS) -DSWT_VERSION=$(SWT_VERSION) $(NATIVE_STATS) $(SWT_DEBUG) -DUSE_ASSEMBLER -DCOCOA $(CFLAGS_JAVA_VM) -Wno-non-virtual-dtor
 XULRUNNERLFLAGS = $(LFLAGS)
 XULRUNNER24LFLAGS = -bundle $(XULRUNNER24_ARCHS) -framework JavaVM
 
