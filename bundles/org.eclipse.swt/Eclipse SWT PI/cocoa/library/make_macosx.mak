@@ -24,7 +24,6 @@ XULRUNNER_LIB=lib$(SWTXULRUNNER_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).jnilib
 
 AWT_PREFIX = swt-awt
 AWT_LIB    = lib$(AWT_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).jnilib
-AWT_LIBS   = /System/Library/Frameworks/JavaVM.framework/Versions/CurrentJDK/Libraries/libjawt.dylib"
 AWT_OBJECTS   = swt_awt.o
 
 # Uncomment for Native Stats tool
@@ -32,7 +31,7 @@ AWT_OBJECTS   = swt_awt.o
 
 #SWT_DEBUG = -g
 CFLAGS = -c -xobjective-c -Wall $(ARCHS) -DSWT_VERSION=$(SWT_VERSION) $(NATIVE_STATS) $(SWT_DEBUG) -DUSE_ASSEMBLER -DCOCOA -DATOMIC \
-	-I /System/Library/Frameworks/JavaVM.framework/Headers \
+	$(CFLAGS_JAVA_VM) \
 	-I /System/Library/Frameworks/Cocoa.framework/Headers \
 	-I /System/Library/Frameworks/JavaScriptCore.framework/Headers
 LFLAGS = -bundle $(ARCHS) -framework JavaVM -framework Cocoa -framework WebKit -framework CoreServices -framework JavaScriptCore -framework Security -framework SecurityInterface
@@ -40,7 +39,7 @@ SWT_OBJECTS = swt.o c.o c_stats.o callback.o
 SWTPI_OBJECTS = swt.o os.o os_structs.o os_stats.o os_custom.o
 XULRUNNER_OBJECTS = swt.o xpcom.o xpcom_custom.o xpcom_structs.o xpcom_stats.o xpcominit.o xpcominit_structs.o xpcominit_stats.o
 
-XULRUNNERCFLAGS = -c -Wall $(ARCHS) -DSWT_VERSION=$(SWT_VERSION) $(NATIVE_STATS) $(SWT_DEBUG) -DUSE_ASSEMBLER -DCOCOA -I /System/Library/Frameworks/JavaVM.framework/Headers \
+XULRUNNERCFLAGS = -c -Wall $(ARCHS) -DSWT_VERSION=$(SWT_VERSION) $(NATIVE_STATS) $(SWT_DEBUG) -DUSE_ASSEMBLER -DCOCOA $(CFLAGS_JAVA_VM) \
 	-Wno-non-virtual-dtor -include ${XULRUNNER_SDK}/include/mozilla-config.h -I${XULRUNNER_SDK}/include
 XULRUNNERLFLAGS = $(LFLAGS)
 

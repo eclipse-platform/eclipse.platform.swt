@@ -13,7 +13,23 @@
 #include "swt.h"
 #include "jawt_md.h"
 
+#ifdef __OBJC__
+#import <AppKit/NSView.h>
+#endif
+
 #define SWT_AWT_NATIVE(func) Java_org_eclipse_swt_awt_SWT_1AWT_##func
+
+/*
+ * JAWT version 1.7 does not define the type JAWT_MacOSXDrawingSurfaceInfo.
+ */
+#ifdef JAWT_VERSION_1_7
+// Legacy NSView-based rendering
+typedef struct JAWT_MacOSXDrawingSurfaceInfo {
+    NSView *cocoaViewRef; // the view is guaranteed to be valid only for the duration of Component.paint method
+}
+JAWT_MacOSXDrawingSurfaceInfo;
+#endif /* #ifdef JAWT_VERSION_1_7 */
+
 
 #ifndef NO_getAWTHandle
 JNIEXPORT jintLong JNICALL SWT_AWT_NATIVE(getAWTHandle)
@@ -26,7 +42,7 @@ JNIEXPORT jintLong JNICALL SWT_AWT_NATIVE(getAWTHandle)
 	JAWT_MacOSXDrawingSurfaceInfo* dsi_cocoa;
 	jint lock;
 
-	awt.version = JAWT_VERSION_1_4;
+	awt.version = JAWT_VERSION_1_4 | JAWT_MACOSX_USE_CALAYER;
 	if (JAWT_GetAWT(env, &awt) != 0) {
 		ds = awt.GetDrawingSurface(env, canvas);
 		if (ds != NULL) {

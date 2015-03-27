@@ -12,6 +12,12 @@
 
 cd `dirname $0`
 
+if [ -d /System/Library/Frameworks/JavaVM.framework/Headers ]; then
+	export CFLAGS_JAVA_VM="-I /System/Library/Frameworks/JavaVM.framework/Headers"
+else
+	export CFLAGS_JAVA_VM="-I $(/usr/libexec/java_home)/include -I $(/usr/libexec/java_home)/include/darwin"
+fi
+
 if [ "x${MODEL}" = "xx86_64" ]; then
 	export ARCHS="-arch x86_64"
 	if [ "x${OUTPUT_DIR}" = "x" ]; then
