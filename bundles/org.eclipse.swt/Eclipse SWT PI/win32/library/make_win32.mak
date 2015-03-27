@@ -1,5 +1,5 @@
 #*******************************************************************************
-# Copyright (c) 2000, 2013 IBM Corporation and others.
+# Copyright (c) 2000, 2015 IBM Corporation and others.
 # All rights reserved. This program and the accompanying materials
 # are made available under the terms of the Eclipse Public License v1.0
 # which accompanies this distribution, and is available at
@@ -181,7 +181,7 @@ make_xulrunner: $(XULRUNNER_OBJS) $(XPCOMINIT_OBJS) swt_xpcom.res
 	del templrf
 
 make_xulrunner24: $(XULRUNNER24_OBJS) swt_xpcom.res
-	echo $(ldebug) $(dlllflags) >templrf
+	echo /RELEASE $(dlllflags) >templrf
 	echo $(XULRUNNER24_LIBS) >>templrf
 	echo $(XULRUNNER24_OBJS) >>templrf
 	echo swt_xpcom.res >>templrf
@@ -190,7 +190,7 @@ make_xulrunner24: $(XULRUNNER24_OBJS) swt_xpcom.res
 	del templrf
 
 make_xulrunner_64: $(XULRUNNER_OBJS) swt_xpcom.res
-	echo $(ldebug) $(dlllflags) >templrf
+	echo /RELEASE $(dlllflags) >templrf
 	echo $(XULRUNNER_LIBS) >>templrf
 	echo $(XULRUNNER_OBJS) >>templrf
 	echo swt_xpcom.res >>templrf
