@@ -10,11 +10,14 @@
  *******************************************************************************/
 package org.eclipse.swt.tests.junit.browser;
 
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.browser.Browser;
+import org.eclipse.swt.browser.ProgressEvent;
+import org.eclipse.swt.browser.ProgressListener;
+import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.tests.junit.SwtTestUtil;
-import org.eclipse.swt.widgets.*;
-import org.eclipse.swt.layout.*;
-import org.eclipse.swt.browser.*;
-import org.eclipse.swt.*;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Shell;
 
 public class Browser8 {
 	public static boolean verbose = false;
@@ -92,7 +95,8 @@ public class Browser8 {
 		String[] urls = new String[] {url};
 		for (int i = 0; i < urls.length; i++) {
 			// TEST TEMPORARILY NOT RUN FOR MOZILLA
-			if (!isMozilla) {
+//			if (!isMozilla) {
+			if (true) {
 				boolean result = test(i); 
 				if (verbose) System.out.print(result ? "." : "E");
 				if (!result) fail++;

@@ -10,12 +10,17 @@
  *******************************************************************************/
 package org.eclipse.swt.tests.junit.browser;
 
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.browser.Browser;
+import org.eclipse.swt.browser.CloseWindowListener;
+import org.eclipse.swt.browser.OpenWindowListener;
+import org.eclipse.swt.browser.VisibilityWindowListener;
+import org.eclipse.swt.browser.WindowEvent;
+import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.tests.junit.SwtTestUtil;
-import org.eclipse.swt.widgets.*;
-import org.eclipse.swt.layout.*;
-import org.eclipse.swt.browser.*;
-import org.eclipse.swt.*;
-import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Shell;
 
 public class Browser5 {
 	public static boolean verbose = false;
@@ -161,7 +166,8 @@ public class Browser5 {
 		for (int i = 0; i < urls.length; i++) {
 			// TEST1 TEMPORARILY NOT RUN FOR MOZILLA
 			// TEST TEMPORARILY disabled for Cocoa due to failure on test machine.
-			if (!isMozilla && !SwtTestUtil.isCocoa) {
+//			if (!isMozilla && !SwtTestUtil.isCocoa) {
+			if (true) {
 				boolean result = test1(urls[i]); 
 				if (verbose) System.out.print(result ? "." : "E");
 				if (!result) fail++;

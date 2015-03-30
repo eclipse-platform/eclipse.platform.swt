@@ -10,11 +10,16 @@
  *******************************************************************************/
 package org.eclipse.swt.tests.junit.browser;
 
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.browser.Browser;
+import org.eclipse.swt.browser.LocationEvent;
+import org.eclipse.swt.browser.LocationListener;
+import org.eclipse.swt.browser.ProgressEvent;
+import org.eclipse.swt.browser.ProgressListener;
+import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.tests.junit.SwtTestUtil;
-import org.eclipse.swt.widgets.*;
-import org.eclipse.swt.layout.*;
-import org.eclipse.swt.browser.*;
-import org.eclipse.swt.*;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Shell;
 
 public class Browser2 {
 	public static boolean verbose = false;
@@ -203,7 +208,8 @@ public class Browser2 {
 		String[] html = {file1};
 		for (int i = 0; i < html.length; i++) {
 			// TEST1 TEMPORARILY NOT RUN FOR MOZILLA
-			if (!isMozilla) {
+//			if (!isMozilla) {
+			if (true) {
 				boolean result = test1(html[i]); 
 				if (verbose) System.out.print(result ? "." : "E");
 				if (!result) fail++;
@@ -211,7 +217,8 @@ public class Browser2 {
 		}
 		for (int i = 0; i < html.length; i++) {
 			// TEST2 TEMPORARILY NOT RUN FOR MOZILLA
-			if (!isMozilla) {
+//			if (!isMozilla) {
+			if (true) {
 				boolean result = test2(html[i]); 
 				if (verbose) System.out.print(result ? "." : "E");
 				if (!result) fail++;
