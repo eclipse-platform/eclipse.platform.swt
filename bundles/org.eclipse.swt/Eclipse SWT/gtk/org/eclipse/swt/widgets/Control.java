@@ -5570,7 +5570,13 @@ void update (boolean all, boolean flush) {
 	if (!gtk_widget_get_realized (handle)) return;
 	long /*int*/ window = paintWindow ();
 	if (flush) display.flushExposes (window, all);
-	OS.gdk_window_process_updates (window, all);
+	/*
+	 * Do not send expose events on GTK 3.16.0+ 
+	 * It's worth checking whether can be removed on all GTK 3 versions.
+	 */
+	if (OS.GTK_VERSION < OS.VERSION(3, 16, 0)) {
+		OS.gdk_window_process_updates (window, all);
+	}
 	OS.gdk_flush ();
 }
 
