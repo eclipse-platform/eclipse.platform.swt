@@ -10,9 +10,9 @@
  *******************************************************************************/
 package org.eclipse.swt.tests.junit.browser;
 
-import junit.framework.TestCase;
-
 import org.eclipse.swt.widgets.Display;
+
+import junit.framework.TestCase;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.browser.StatusTextListener
@@ -22,39 +22,48 @@ import org.eclipse.swt.widgets.Display;
 public class Test_BrowserSuite extends TestCase {
 
 public void testBrowser1() {
-	assertTrue(Browser1.test());
+	Browser1.verbose = true;
+assertTrue(Browser1.test());
 }
 
 public void testBrowser2() {
-	assertTrue(Browser2.test());
+	Browser2.verbose = true;
+assertTrue(Browser2.test());
 }
 
 public void testBrowser3() {
-	assertTrue(Browser3.test());
+	Browser3.verbose = true;
+assertTrue(Browser3.test());
 }
 
 public void testBrowser4() {
-	assertTrue(Browser4.test());
+	Browser4.verbose = true;
+assertTrue(Browser4.test());
 }
 
 public void testBrowser5() {
-	assertTrue(Browser5.test());
+	Browser5.verbose = true;
+assertTrue(Browser5.test());
 }
 
 public void testBrowser6() {
-	assertTrue(Browser6.test());
+	Browser6.verbose = true;
+assertTrue(Browser6.test());
 }
 
 public void testBrowser7() {
-	assertTrue(Browser7.test());
+	Browser7.verbose = true;
+assertTrue(Browser7.test());
 }
 
 public void testBrowser8() {
-	assertTrue(Browser8.test());
+	Browser8.verbose = true;
+assertTrue(Browser8.test());
 }
 
 public void testBrowser9() {
-	assertTrue(Browser9.test());
+	Browser9.verbose = true;
+assertTrue(Browser9.test());
 }
 
 @Override
