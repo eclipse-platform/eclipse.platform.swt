@@ -12,10 +12,10 @@ package org.eclipse.swt.widgets;
 
 
 import org.eclipse.swt.*;
+import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.cairo.*;
 import org.eclipse.swt.internal.gtk.*;
-import org.eclipse.swt.graphics.*;
 
 /**
  * Instances of this class are responsible for managing the
@@ -4657,7 +4657,13 @@ static int untranslateKey (int key) {
 public void update () {
 	checkDevice ();
 	flushExposes (0, true);
-	OS.gdk_window_process_all_updates ();
+	/*
+	 * Do not send expose events on GTK 3.16.0+ 
+	 * It's worth checking whether can be removed on all GTK 3 versions.
+	 */
+	if (OS.GTK_VERSION < OS.VERSION(3, 16, 0)) {
+		OS.gdk_window_process_all_updates ();
+	}
 }
 
 /**
