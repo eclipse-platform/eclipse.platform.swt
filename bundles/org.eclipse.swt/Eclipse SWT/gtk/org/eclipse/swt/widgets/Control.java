@@ -4095,7 +4095,7 @@ void setBackgroundColorGradient (long /*int*/ context, long /*int*/ handle, GdkR
 	gtk_css_provider_load_from_css (context, css);
 }
 
-void gtk_css_provider_load_from_css (long context, String css) {
+void gtk_css_provider_load_from_css (long /*int*/ context, String css) {
 	/* Utility function. */
 	//@param css : a 'css java' string like "{\nbackground: red;\n}".
 
