@@ -10,7 +10,7 @@
  *******************************************************************************/
 package org.eclipse.swt.graphics;
 
-import java.util.*;
+import org.eclipse.swt.*;
 
 /**
  * This class hold common constants and utility functions w.r.t. to SWT high DPI
@@ -42,28 +42,32 @@ class DPIUtil {
 	}
 	
 	/**
-	 * Gets Map of image file path at specified zoom level and boolean flag
-	 * as TRUE if expected image at zoom was found.
+	 * Gets Image file path at specified zoom level, if image is missing then
+	 * fall-back to 100% image. If provider or fall-back image is not available,
+	 * throw error.
 	 */
-	@SuppressWarnings("unchecked")
-	static Map<String, Boolean> getImagePathAtZoom (ImageFileNameProvider provider, int zoom) {
-		if (provider == null) return Collections.EMPTY_MAP;
+	static String validateAndGetImagePathAtZoom (ImageFileNameProvider provider, int zoom, boolean[] found) {
+		if (provider == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 		String filename = provider.getImagePath (zoom);
+		found [0] = (filename != null);
 		/* If image is null when (zoom != 100%), fall-back to image at 100% zoom */
-		if (zoom != 100 && filename == null) return Collections.singletonMap (provider.getImagePath (100), Boolean.FALSE);
-		return Collections.singletonMap (filename, Boolean.TRUE);
+		if (zoom != 100 && !found [0]) filename = provider.getImagePath (100);
+		if (filename == null) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+		return filename;
 	}
 	
 	/**
-	 * Gets Map of Image data at specified zoom level and boolean flag
-	 * as TRUE if expected image at zoom was found.
+	 * Gets Image data at specified zoom level, if image is missing then
+	 * fall-back to 100% image. If provider or fall-back image is not available,
+	 * throw error.
 	 */
-	@SuppressWarnings("unchecked")
-	static Map<ImageData, Boolean> getImageDataAtZoom (ImageDataProvider provider, int zoom) {
-		if (provider == null) return Collections.EMPTY_MAP;
+	static ImageData validateAndGetImageDataAtZoom (ImageDataProvider provider, int zoom, boolean[] found) {
+		if (provider == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 		ImageData data = provider.getImageData (zoom);
+		found [0] = (data != null);
 		/* If image is null when (zoom != 100%), fall-back to image at 100% zoom */
-		if (zoom != 100 && data == null) return Collections.singletonMap (provider.getImageData (100), Boolean.FALSE);
-		return Collections.singletonMap (data, Boolean.TRUE);
+		if (zoom != 100 && !found [0]) data = provider.getImageData (100);
+		if (data == null) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+		return data;
 	}
 }

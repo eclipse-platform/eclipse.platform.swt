@@ -12,7 +12,6 @@ package org.eclipse.swt.graphics;
 
 
 import java.io.*;
-import java.util.*;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.internal.gdip.*;
@@ -662,18 +661,9 @@ public Image (Device device, String filename) {
  */
 public Image(Device device, ImageFileNameProvider imageFileNameProvider) {
 	super(device);
-	if (imageFileNameProvider == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	this.imageFileNameProvider = imageFileNameProvider;
 	currentDeviceZoom = getDeviceZoom ();
-	String fileName = null;
-	Map <String, Boolean> result = DPIUtil.getImagePathAtZoom (imageFileNameProvider, currentDeviceZoom);
-	if (result != null && !result.isEmpty ()) {
-		for (String str : result.keySet()) {
-			fileName = str;
-			break;
-		}
-	}
-	if (fileName == null) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	String fileName = DPIUtil.validateAndGetImagePathAtZoom (imageFileNameProvider, currentDeviceZoom, new boolean[1]);
 	initNative (fileName);
 	if (this.handle == 0) init(new ImageData (fileName));
 	init();
@@ -710,18 +700,9 @@ public Image(Device device, ImageFileNameProvider imageFileNameProvider) {
  */
 public Image(Device device, ImageDataProvider imageDataProvider) {
 	super(device);
-	if (imageDataProvider == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	this.imageDataProvider = imageDataProvider;
 	currentDeviceZoom = getDeviceZoom ();
-	ImageData data = null;
-	Map <ImageData, Boolean> result = DPIUtil.getImageDataAtZoom (imageDataProvider, currentDeviceZoom);
-	if (result != null && !result.isEmpty ()) {
-		for (ImageData imageData : result.keySet()) {
-			data = imageData;
-			break;
-		}
-	}
-	if (data == null) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	ImageData data =  DPIUtil.validateAndGetImageDataAtZoom(imageDataProvider, currentDeviceZoom, new boolean[1]);
 	init(data);
 	init();
 }
@@ -740,16 +721,10 @@ boolean refreshImageForZoom () {
 	boolean refreshed = false;
 	if (deviceZoomLevel != currentDeviceZoom) {
 		if (imageFileNameProvider != null) {
-			String filename = null;
-			Map <String, Boolean> result = DPIUtil.getImagePathAtZoom (imageFileNameProvider, deviceZoomLevel);
-			if (result != null && !result.isEmpty ()) {
-				for (String str : result.keySet()) {
-					filename = str;
-					break;
-				}
-			}
-			if (filename == null) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-			if (result.get (filename) || currentDeviceZoom != 100) {
+			boolean[] found = new boolean[1];
+			String filename = DPIUtil.validateAndGetImagePathAtZoom (imageFileNameProvider, deviceZoomLevel, found);
+			/* Avoid re-creating the fall-back image, when current zoom is already 100% */
+			if (found[0] || currentDeviceZoom != 100) {
 				/* Release current native resources */
 				destroy ();
 				initNative(filename);
@@ -758,16 +733,10 @@ boolean refreshImageForZoom () {
 				refreshed = true;
 			}
 		} else if (imageDataProvider != null) {
-			ImageData data = null;
-			Map <ImageData, Boolean> result = DPIUtil.getImageDataAtZoom (imageDataProvider, deviceZoomLevel);
-			if (result != null && !result.isEmpty ()) {
-				for (ImageData imageData : result.keySet()) {
-					data = imageData;
-					break;
-				}
-			}
-			if (data == null) SWT.error(SWT.ERROR_INVALID_IMAGE);	
-			if (result.get (data) || currentDeviceZoom != 100) {
+			boolean[] found = new boolean[1];
+			ImageData data = DPIUtil.validateAndGetImageDataAtZoom (imageDataProvider, deviceZoomLevel, found);
+			/* Avoid re-creating the fall-back image, when current zoom is already 100% */
+			if (found[0] || currentDeviceZoom != 100) {
 				/* Release current native resources */
 				destroy ();
 				init(data);
