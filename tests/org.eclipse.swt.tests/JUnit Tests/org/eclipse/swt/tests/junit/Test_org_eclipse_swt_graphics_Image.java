@@ -469,6 +469,48 @@ public void test_ConstructorLorg_eclipse_swt_graphics_Device_ImageFileNameProvid
 	};
 	Image image = new Image(display, provider);
 	image.dispose();
+	// Corrupt Image provider
+	provider = new ImageFileNameProvider() {
+		public String getImagePath(int zoom) {
+			String fileName;
+			switch (zoom) {
+			case 100: 
+				fileName = "corrupt.png"; break;
+			case 150: 
+				fileName = "corrupt.png"; break;
+			case 200: 
+				fileName = "corrupt.png"; break;
+			default:
+				return null;
+			}
+			return getPath(fileName);
+		}
+	};
+	try {
+		image = new Image(display, provider);
+		image.dispose();
+		fail("No exception thrown for corrupt image file.");
+	} catch (SWTException e) {
+		assertSWTProblem("Incorrect exception thrown for provider with corrupt images", SWT.ERROR_INVALID_IMAGE, e);
+	}		
+	// Valid provider only 100% zoom
+	provider = new ImageFileNameProvider() {
+		public String getImagePath(int zoom) {
+			String fileName;
+			switch (zoom) {
+			case 100:
+				fileName = "collapseall.png";
+				break;
+			case 150: 
+			case 200: 
+			default:
+				return null;
+			}
+			return getPath(fileName);
+		}
+	};
+	image = new Image(display, provider);
+	image.dispose();
 }
 
 public void test_ConstructorLorg_eclipse_swt_graphics_Device_ImageDataProvider() {
@@ -515,6 +557,48 @@ public void test_ConstructorLorg_eclipse_swt_graphics_Device_ImageDataProvider()
 		}
 	};
 	Image image = new Image(display, provider);
+	image.dispose();
+	// Corrupt Image provider
+	provider = new ImageDataProvider() {
+		public ImageData getImageData(int zoom) {
+			String fileName;
+			switch (zoom) {
+			case 100: 
+				fileName = "corrupt.png"; break;
+			case 150: 
+				fileName = "corrupt.png"; break;
+			case 200: 
+				fileName = "corrupt.png"; break;
+			default:
+				return null;
+			}
+			return new ImageData(getPath(fileName));
+		}
+	};
+	try {
+		image = new Image(display, provider);
+		image.dispose();
+		fail("No exception thrown for corrupt image file.");
+	} catch (SWTException e) {
+		assertSWTProblem("Incorrect exception thrown for provider with corrupt images", SWT.ERROR_INVALID_IMAGE, e);
+	}
+	// Valid provider only 100% zoom
+	provider = new ImageDataProvider() {
+		public ImageData getImageData(int zoom) {
+			String fileName;
+			switch (zoom) {
+			case 100:
+				fileName = "collapseall.png";
+				break;
+			case 150: 
+			case 200: 
+			default:
+				return null;
+			}
+			return new ImageData(getPath(fileName));
+		}
+	};
+	image = new Image(display, provider);
 	image.dispose();
 }
 

@@ -23,21 +23,21 @@ package org.eclipse.swt.graphics;
 public interface ImageFileNameProvider {
 
 	/**
-	 * Retrieves the filename for a particular zoom level. This method needs
-	 * to be implemented on the client side.
+	 * Returns the image filePath for the given zoom level.
 	 * <p>
-	 * If the image is not available for a particular zoom level, please
-	 * fall back to image of 100% level and return its file name.
-	 *
-	 * Note: SWT will throw an exception if this method returns null.
-	 *
-	 * @param zoom Currently accepted values (sent by SWT) are 100, 150, and 200
-	 * corresponding to 16x16, 24x24 and 32x32 images respectively.
+	 * If no image is available for a particular zoom level, this method should
+	 * return <code>null</code>. For <code>zoom == 100</code>, returning
+	 * <code>null</code> in not allowed, and SWT will throw an exception.
 	 * 
-	 * @return an object of String
+	 * @param zoom
+	 *            The zoom level in % of the standard resolution (which is 1
+	 *            physical monitor pixel == 1 SWT logical pixel). Typically 100,
+	 *            150, or 200.
+	 * @return the image filePath, or <code>null</code> if
+	 *         <code>zoom != 100</code> and no image is available for the given
+	 *         zoom level.
 	 * @since 3.104
 	 */
-
 	public String getImagePath (int zoom);
 
 }

@@ -12,6 +12,7 @@ package org.eclipse.swt.graphics;
 
 
 import java.io.*;
+import java.util.*;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.internal.gdip.*;
@@ -134,9 +135,9 @@ public final class Image extends Resource implements Drawable {
 	ImageDataProvider imageDataProvider;
 
 	/**
-	 * Attribute to cache image zoom level
+	 * Attribute to cache current device zoom level
 	 */
-	int imageZoomLevel = 100;
+	int currentDeviceZoom = 100;
 
 	/**
 	 * width of the image
@@ -646,7 +647,7 @@ public Image (Device device, String filename) {
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if device is null and there is no current device</li>
  *    <li>ERROR_NULL_ARGUMENT - if the ImageFileNameProvider is null</li>
- *    <li>ERROR_INVALID_ARGUMENT - if the fileName provided by ImageFileNameProvider is null</li>
+ *    <li>ERROR_INVALID_ARGUMENT - if the fileName provided by ImageFileNameProvider is null at 100% zoom</li>
  * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_IO - if an IO error occurs while reading from the file</li>
@@ -663,8 +664,15 @@ public Image(Device device, ImageFileNameProvider imageFileNameProvider) {
 	super(device);
 	if (imageFileNameProvider == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	this.imageFileNameProvider = imageFileNameProvider;
-	imageZoomLevel = getDeviceZoom ();
-	String fileName = imageFileNameProvider.getImagePath (imageZoomLevel);
+	currentDeviceZoom = getDeviceZoom ();
+	String fileName = null;
+	Map <String, Boolean> result = DPIUtil.getImagePathAtZoom (imageFileNameProvider, currentDeviceZoom);
+	if (result != null && !result.isEmpty ()) {
+		for (String str : result.keySet()) {
+			fileName = str;
+			break;
+		}
+	}
 	if (fileName == null) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	initNative (fileName);
 	if (this.handle == 0) init(new ImageData (fileName));
@@ -687,7 +695,7 @@ public Image(Device device, ImageFileNameProvider imageFileNameProvider) {
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if device is null and there is no current device</li>
  *    <li>ERROR_NULL_ARGUMENT - if the ImageDataProvider is null</li>
- *    <li>ERROR_INVALID_ARGUMENT - if the ImageData provided by ImageDataProvider is null</li>
+ *    <li>ERROR_INVALID_ARGUMENT - if the ImageData provided by ImageDataProvider is null at 100% zoom</li>
  * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_IO - if an IO error occurs while reading from the file</li>
@@ -704,8 +712,15 @@ public Image(Device device, ImageDataProvider imageDataProvider) {
 	super(device);
 	if (imageDataProvider == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	this.imageDataProvider = imageDataProvider;
-	imageZoomLevel = getDeviceZoom ();
-	ImageData data = imageDataProvider.getImageData(imageZoomLevel);
+	currentDeviceZoom = getDeviceZoom ();
+	ImageData data = null;
+	Map <ImageData, Boolean> result = DPIUtil.getImageDataAtZoom (imageDataProvider, currentDeviceZoom);
+	if (result != null && !result.isEmpty ()) {
+		for (ImageData imageData : result.keySet()) {
+			data = imageData;
+			break;
+		}
+	}
 	if (data == null) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	init(data);
 	init();
@@ -722,23 +737,47 @@ int getDeviceZoom () {
  */
 boolean refreshImageForZoom () {
 	int deviceZoomLevel = getDeviceZoom();
-	if (deviceZoomLevel != imageZoomLevel) {
+	boolean refreshed = false;
+	if (deviceZoomLevel != currentDeviceZoom) {
 		if (imageFileNameProvider != null) {
-			String filename = imageFileNameProvider.getImagePath(deviceZoomLevel);
-			initNative(filename);
-			init(new ImageData (filename));
-			init();
+			String filename = null;
+			Map <String, Boolean> result = DPIUtil.getImagePathAtZoom (imageFileNameProvider, deviceZoomLevel);
+			if (result != null && !result.isEmpty ()) {
+				for (String str : result.keySet()) {
+					filename = str;
+					break;
+				}
+			}
+			if (filename == null) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+			if (result.get (filename) || currentDeviceZoom != 100) {
+				/* Release current native resources */
+				destroy ();
+				initNative(filename);
+				if (this.handle == 0) init(new ImageData (filename));
+				init();
+				refreshed = true;
+			}
 		} else if (imageDataProvider != null) {
-			ImageData data = imageDataProvider.getImageData(deviceZoomLevel);
-			init(data);
-			init();
-		} else {
-			return false;
+			ImageData data = null;
+			Map <ImageData, Boolean> result = DPIUtil.getImageDataAtZoom (imageDataProvider, deviceZoomLevel);
+			if (result != null && !result.isEmpty ()) {
+				for (ImageData imageData : result.keySet()) {
+					data = imageData;
+					break;
+				}
+			}
+			if (data == null) SWT.error(SWT.ERROR_INVALID_IMAGE);	
+			if (result.get (data) || currentDeviceZoom != 100) {
+				/* Release current native resources */
+				destroy ();
+				init(data);
+				init();
+				refreshed = true;
+			}
 		}
-		imageZoomLevel = deviceZoomLevel;
-		return true;
+		currentDeviceZoom = deviceZoomLevel;
 	}
-	return false;
+	return refreshed;
 }
 
 void initNative(String filename) {
@@ -1199,6 +1238,7 @@ long /*int*/ [] createGdipImage() {
 	return null;
 }
 
+@Override
 void destroy () {
 	if (memGC != null) memGC.dispose();
 	if (type == SWT.ICON) {
@@ -1221,6 +1261,7 @@ void destroy () {
  *
  * @see #hashCode
  */
+@Override
 public boolean equals (Object object) {
 	if (object == this) return true;
 	if (!(object instanceof Image)) return false;
@@ -1709,6 +1750,7 @@ public ImageData getImageData() {
  *
  * @see #equals
  */
+@Override
 public int hashCode () {
 	return (int)/*64*/handle;
 }
@@ -2180,6 +2222,7 @@ public void internal_dispose_GC (long /*int*/ hDC, GCData data) {
  *
  * @return <code>true</code> when the image is disposed and <code>false</code> otherwise
  */
+@Override
 public boolean isDisposed() {
 	return handle == 0;
 }
@@ -2259,6 +2302,7 @@ public void setBackground(Color color) {
  *
  * @return a string representation of the receiver
  */
+@Override
 public String toString () {
 	if (isDisposed()) return "Image {*DISPOSED*}";
 	return "Image {" + handle + "}";

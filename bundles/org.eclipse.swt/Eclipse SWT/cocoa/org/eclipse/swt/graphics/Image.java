@@ -563,7 +563,7 @@ public Image(Device device, String filename) {
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if device is null and there is no current device</li>
  *    <li>ERROR_NULL_ARGUMENT - if the ImageFileNameProvider is null</li>
- *    <li>ERROR_INVALID_ARGUMENT - if the fileName provided by ImageFileNameProvider is null</li>
+ *    <li>ERROR_INVALID_ARGUMENT - if the fileName provided by ImageFileNameProvider is null at 100% zoom</li>
  * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_IO - if an IO error occurs while reading from the file</li>
@@ -580,18 +580,19 @@ public Image(Device device, ImageFileNameProvider imageFileNameProvider) {
 	super(device);
 	if (imageFileNameProvider == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	String filename = imageFileNameProvider.getImagePath(100);
+	if (filename == null) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	NSAutoreleasePool pool = null;
 	if (!NSThread.isMainThread()) pool = (NSAutoreleasePool) new NSAutoreleasePool().alloc().init();
 	try {
-		if (filename == null) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 		initNative(filename);
 		if (this.handle == null) init(new ImageData(filename));
 		init();
 		String filename2x = imageFileNameProvider.getImagePath(200);
-		if (filename2x == null) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-		id id = NSImageRep.imageRepWithContentsOfFile(NSString.stringWith(filename2x));
-		NSImageRep rep = new NSImageRep(id);
-		handle.addRepresentation(rep);
+		if (filename2x != null) {
+			id id = NSImageRep.imageRepWithContentsOfFile(NSString.stringWith(filename2x));
+			NSImageRep rep = new NSImageRep(id);
+			handle.addRepresentation(rep);
+		}
 	} finally {
 		if (pool != null) pool.release();
 	}
@@ -613,7 +614,7 @@ public Image(Device device, ImageFileNameProvider imageFileNameProvider) {
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if device is null and there is no current device</li>
  *    <li>ERROR_NULL_ARGUMENT - if the ImageDataProvider is null</li>
- *    <li>ERROR_INVALID_ARGUMENT - if the ImageData provided by ImageDataProvider is null</li>
+ *    <li>ERROR_INVALID_ARGUMENT - if the ImageData provided by ImageDataProvider is null at 100% zoom</li>
  * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_IO - if an IO error occurs while reading from the file</li>
@@ -637,10 +638,11 @@ public Image(Device device, ImageDataProvider imageDataProvider) {
 		init (data);
 		init ();
 		ImageData data2x = imageDataProvider.getImageData (200);
-		if (data2x == null) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-		NSBitmapImageRep rep = createRepresentaion (data2x);
-		handle.addRepresentation(rep);
-		rep.release();
+		if (data2x != null) {
+			NSBitmapImageRep rep = createRepresentaion (data2x);
+			handle.addRepresentation(rep);
+			rep.release();
+		}
 	} finally {
 		if (pool != null) pool.release();
 	}
