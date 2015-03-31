@@ -11,12 +11,12 @@
 package org.eclipse.swt.graphics;
 
 
+import java.io.*;
+
+import org.eclipse.swt.*;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.cairo.*;
 import org.eclipse.swt.internal.gtk.*;
-import org.eclipse.swt.*;
-import java.io.*;
-import java.util.*;
 
 /**
  * Instances of this class are graphics which have been prepared
