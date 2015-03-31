@@ -372,6 +372,18 @@ void hookEvents () {
 
 	long /*int*/ topHandle = topHandle ();
 	OS.g_signal_connect_closure_by_id (topHandle, display.signalIds [MAP], 0, display.getClosure (MAP), true);
+
+	if (enterNotifyEventFunc == null) {
+		enterNotifyEventFunc = new Callback (Control.class, "enterNotifyEventProc", 4);
+		if (enterNotifyEventFunc.getAddress () == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
+
+		enterNotifyEventSignalId = OS.g_signal_lookup (OS.enter_notify_event, OS.GTK_TYPE_WIDGET ());
+
+		byte [] buffer = Converter.wcsToMbcs (null, "gtk-pointer-window", true);
+		GTK_POINTER_WINDOW = OS.g_quark_from_string (buffer);
+		buffer = Converter.wcsToMbcs (null, "swt-grab-widget", true);
+		SWT_GRAB_WIDGET = OS.g_quark_from_string (buffer);
+	}
 }
 
 boolean hooksPaint () {
@@ -660,18 +672,6 @@ long /*int*/ childStyle () {
 
 @Override
 void createWidget (int index) {
-	if (enterNotifyEventFunc == null) {
-		enterNotifyEventFunc = new Callback (Control.class, "enterNotifyEventProc", 4);
-		if (enterNotifyEventFunc.getAddress () == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
-
-		enterNotifyEventSignalId = OS.g_signal_lookup (OS.enter_notify_event, OS.GTK_TYPE_WIDGET ());
-
-		byte [] buffer = Converter.wcsToMbcs (null, "gtk-pointer-window", true);
-		GTK_POINTER_WINDOW = OS.g_quark_from_string (buffer);
-		buffer = Converter.wcsToMbcs (null, "swt-grab-widget", true);
-		SWT_GRAB_WIDGET = OS.g_quark_from_string (buffer);
-	}
-
 	state |= DRAG_DETECT;
 	checkOrientation (parent);
 	super.createWidget (index);
