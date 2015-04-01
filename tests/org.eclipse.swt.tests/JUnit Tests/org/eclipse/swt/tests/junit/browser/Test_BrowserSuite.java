@@ -21,49 +21,52 @@ import junit.framework.TestCase;
  */
 public class Test_BrowserSuite extends TestCase {
 
-public void testBrowser1() {
+public Test_BrowserSuite() {
 	Browser1.verbose = true;
-assertTrue(Browser1.test());
+	Browser2.verbose = true;
+	Browser3.verbose = true;
+	Browser4.verbose = true;
+	Browser5.verbose = true;
+	Browser6.verbose = true;
+	Browser7.verbose = true;
+	Browser8.verbose = true;
+	Browser9.verbose = true;
+}
+
+public void testBrowser1() {
+	assertTrue(Browser1.test());
 }
 
 public void testBrowser2() {
-	Browser2.verbose = true;
-assertTrue(Browser2.test());
+	assertTrue(Browser2.test());
 }
 
 public void testBrowser3() {
-	Browser3.verbose = true;
-assertTrue(Browser3.test());
+	assertTrue(Browser3.test());
 }
 
 public void testBrowser4() {
-	Browser4.verbose = true;
-assertTrue(Browser4.test());
+	assertTrue(Browser4.test());
 }
 
 public void testBrowser5() {
-	Browser5.verbose = true;
-assertTrue(Browser5.test());
+	assertTrue(Browser5.test());
 }
 
 public void testBrowser6() {
-	Browser6.verbose = true;
-assertTrue(Browser6.test());
+	assertTrue(Browser6.test());
 }
 
 public void testBrowser7() {
-	Browser7.verbose = true;
-assertTrue(Browser7.test());
+	assertTrue(Browser7.test());
 }
 
 public void testBrowser8() {
-	Browser8.verbose = true;
-assertTrue(Browser8.test());
+	assertTrue(Browser8.test());
 }
 
 public void testBrowser9() {
-	Browser9.verbose = true;
-assertTrue(Browser9.test());
+	assertTrue(Browser9.test());
 }
 
 @Override

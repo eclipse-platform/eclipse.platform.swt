@@ -16,6 +16,7 @@ import org.eclipse.swt.browser.LocationEvent;
 import org.eclipse.swt.browser.LocationListener;
 import org.eclipse.swt.browser.ProgressEvent;
 import org.eclipse.swt.browser.ProgressListener;
+import org.eclipse.swt.internal.mozilla.MozillaVersion;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.tests.junit.SwtTestUtil;
 import org.eclipse.swt.widgets.Display;
@@ -38,6 +39,13 @@ public class Browser1 {
 		final Shell shell = new Shell(display);
 		shell.setLayout(new FillLayout());
 		Browser browser = new Browser(shell, SWT.NONE);
+		if (verbose) {
+			String browserType = browser.getBrowserType();
+			System.out.println("browser type: " + browserType);
+			if ("mozilla".equals(browserType)) {
+				System.out.println("MozillaVersion.GetCurrentVersion(): " + MozillaVersion.GetCurrentVersion());
+			}
+		}
 		browser.addLocationListener(new LocationListener() {
 			public void changing(LocationEvent event) {
 				if (verbose) System.out.println("changing "+event.location);

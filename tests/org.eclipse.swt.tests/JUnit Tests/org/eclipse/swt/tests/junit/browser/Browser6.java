@@ -10,16 +10,18 @@
  *******************************************************************************/
 package org.eclipse.swt.tests.junit.browser;
 
-import org.eclipse.swt.tests.junit.SwtTestUtil;
-import org.eclipse.swt.widgets.*;
-import org.eclipse.swt.layout.*;
-import org.eclipse.swt.browser.*;
-import org.eclipse.swt.*;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.browser.Browser;
+import org.eclipse.swt.browser.TitleEvent;
+import org.eclipse.swt.browser.TitleListener;
+import org.eclipse.swt.layout.FillLayout;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Shell;
 
 public class Browser6 {
 	public static boolean verbose = false;
 	public static boolean passed = false;
-	public static boolean isMozilla = SwtTestUtil.isGTK;
+	public static boolean isMozilla = false; //SwtTestUtil.isGTK;
 	
 	public static boolean test1(String url) {
 		if (verbose) System.out.println("URL Loading, verify get title event - args: "+url+" Expected Event Sequence: Title.changed");
@@ -126,11 +128,9 @@ public class Browser6 {
 		
 		String[] urls = {"http://www.google.com"};
 		for (int i = 0; i < urls.length; i++) {
-			if (!isMozilla) {
-				boolean result = test1(urls[i]); 
-				if (verbose) System.out.print(result ? "." : "E");
-				if (!result) fail++;
-			}
+			boolean result = test1(urls[i]); 
+			if (verbose) System.out.print(result ? "." : "E");
+			if (!result) fail++;
 		}
 		
 		String pluginPath = System.getProperty("PLUGIN_PATH");
@@ -141,11 +141,9 @@ public class Browser6 {
 		urls = new String[] {url};
 		String[] titles = {"This is a test title that must be carefully checked when that page is loaded"};
 		for (int i = 0; i < urls.length; i++) {
-			if (!isMozilla) {
-				boolean result = test2(urls[i], titles[i]); 
-				if (verbose) System.out.print(result ? "." : "E");
-				if (!result) fail++;
-			}
+			boolean result = test2(urls[i], titles[i]); 
+			if (verbose) System.out.print(result ? "." : "E");
+			if (!result) fail++;
 		}
 		
 		
