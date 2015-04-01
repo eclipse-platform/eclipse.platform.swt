@@ -910,6 +910,44 @@ void setForegroundColor (GdkColor color) {
 	setForegroundColor (fixedHandle, color);
 	if (labelHandle != 0) setForegroundColor (labelHandle, color);
 	if (imageHandle != 0) setForegroundColor (imageHandle, color);
+
+	//Pre 3.10 CSS didn't work. In 3.16 everything will be CSS controlled
+	//and themes should control check/radio border color then.
+	if (OS.GTK_VERSION >= OS.VERSION(3, 10, 0) && OS.GTK_VERSION < OS.VERSION (3, 16, 0) &&
+			(style & (SWT.CHECK | SWT.RADIO)) != 0) {
+		gtk_swt_set_border_color (color);
+	}
+}
+
+//GtkCheckButton & it's descendant GtkRadioButton are often invisible or
+// very hard to see with certain themes that don't define an icon for Check/Radio buttons.
+// Giving them a border color that matches the text color ensures consistent visibility across most themes.
+private void gtk_swt_set_border_color (GdkColor color) {
+	//Convert GtkColor to GdkRGBA
+	//TODO : Reactor in future commit. This and widget:setForegroundColor have duplicate code.
+	GdkRGBA rgba = null;
+	if (color != null) {
+		rgba = new GdkRGBA ();
+		rgba.alpha = 1;
+		rgba.red = (color.red & 0xFFFF) / (float) 0xFFFF;
+		rgba.green = (color.green & 0xFFFF) / (float) 0xFFFF;
+		rgba.blue = (color.blue & 0xFFFF) / (float) 0xFFFF;
+	}
+
+	//Construct CSS String
+	//TODO : Reactor in future commit.
+	// This and Control:setBackgroundColorGradient(..). as there is similar code.
+	// ideally we should have a 'constructCssString(..) that accepts attribute-value pairs.
+	String css_string = "* {\n";
+	if (rgba != null) {
+		String css_color = gtk_rgba_to_css_string (rgba);
+		css_string += "border-color: " + css_color + ";\n";
+	}
+		css_string += "}\n";
+
+	//Apply CSS to widget.
+	long /*int*/context = OS.gtk_widget_get_style_context (handle);
+	gtk_css_provider_load_from_css (context, css_string);
 }
 
 /**
