@@ -12,10 +12,10 @@ package org.eclipse.swt.widgets;
 
 
 import org.eclipse.swt.*;
-import org.eclipse.swt.internal.*;
-import org.eclipse.swt.internal.gtk.*;
 import org.eclipse.swt.accessibility.*;
 import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.internal.*;
+import org.eclipse.swt.internal.gtk.*;
 
 /**
  * Instances of this class represent a non-selectable
@@ -204,7 +204,7 @@ void createHandle (int index) {
 	state |= HANDLE | THEME_BACKGROUND;
 	fixedHandle = OS.g_object_new (display.gtk_fixed_get_type (), 0);
 	if (fixedHandle == 0) error (SWT.ERROR_NO_HANDLES);
-	gtk_widget_set_has_window (fixedHandle, true);
+	OS.gtk_widget_set_has_window (fixedHandle, true);
 	if ((style & SWT.SEPARATOR) != 0) {
 		if ((style & SWT.HORIZONTAL)!= 0) {
 			handle = gtk_separator_new (OS.GTK_ORIENTATION_HORIZONTAL);

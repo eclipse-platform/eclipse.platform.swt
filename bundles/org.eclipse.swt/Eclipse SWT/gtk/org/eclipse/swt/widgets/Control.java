@@ -3476,14 +3476,6 @@ long /*int*/ gtk_unrealize (long /*int*/ widget) {
 	return 0;
 }
 
-void gtk_widget_set_has_window (long /*int*/ fixedHandle, boolean value) {
-	if (OS.GTK_VERSION >= OS.VERSION (2, 18, 0)) {
-		OS.gtk_widget_set_has_window (fixedHandle, value);
-	} else {
-		OS.gtk_fixed_set_has_window (fixedHandle, value);
-	}
-}
-
 void gtk_widget_size_request (long /*int*/ widget, GtkRequisition requisition) {
 	gtk_widget_get_preferred_size (widget, requisition);
 }

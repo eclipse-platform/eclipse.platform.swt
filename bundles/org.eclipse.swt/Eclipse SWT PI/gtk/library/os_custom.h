@@ -364,7 +364,6 @@
 #define gtk_widget_has_default_LIB LIB_GTK
 #define gtk_widget_set_tooltip_text_LIB LIB_GTK
 #define gtk_widget_set_has_window_LIB LIB_GTK
-#define gtk_fixed_set_has_window_LIB LIB_GTK
 #define gtk_widget_get_mapped_LIB LIB_GTK
 #define gtk_widget_get_sensitive_LIB LIB_GTK
 #define gtk_widget_get_has_window_LIB LIB_GTK

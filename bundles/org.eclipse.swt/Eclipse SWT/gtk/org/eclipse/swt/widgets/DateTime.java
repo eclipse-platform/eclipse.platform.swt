@@ -11,14 +11,14 @@
  *******************************************************************************/
 package org.eclipse.swt.widgets;
 
-import java.text.DateFormatSymbols;
-import java.util.Calendar;
+import java.text.*;
+import java.util.*;
 
 import org.eclipse.swt.*;
+import org.eclipse.swt.accessibility.*;
 import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.accessibility.*;
-import org.eclipse.swt.internal.Converter;
+import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.gtk.*;
 
 /*
@@ -361,7 +361,7 @@ void createHandle () {
 private void createHandleForFixed () {
 	fixedHandle = OS.g_object_new (display.gtk_fixed_get_type (), 0);
 	if (fixedHandle == 0) error (SWT.ERROR_NO_HANDLES);
-	gtk_widget_set_has_window (fixedHandle, true);
+	OS.gtk_widget_set_has_window (fixedHandle, true);
 }
 
 private void createHandleForCalendar () {

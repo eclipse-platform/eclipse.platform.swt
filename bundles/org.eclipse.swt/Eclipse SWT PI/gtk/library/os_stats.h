@@ -808,7 +808,6 @@ typedef enum {
 	_1gtk_1file_1filter_1set_1name_FUNC,
 	_1gtk_1fixed_1move_FUNC,
 	_1gtk_1fixed_1new_FUNC,
-	_1gtk_1fixed_1set_1has_1window_FUNC,
 	_1gtk_1font_1chooser_1dialog_1new_FUNC,
 	_1gtk_1font_1chooser_1get_1font_FUNC,
 	_1gtk_1font_1chooser_1set_1font_FUNC,

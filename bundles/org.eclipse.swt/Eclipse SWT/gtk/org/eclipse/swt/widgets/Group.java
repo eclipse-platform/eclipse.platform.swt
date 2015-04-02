@@ -12,9 +12,9 @@ package org.eclipse.swt.widgets;
 
 
 import org.eclipse.swt.*;
+import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.gtk.*;
-import org.eclipse.swt.graphics.*;
 
 /**
  * Instances of this class provide an etched border
@@ -152,7 +152,7 @@ void createHandle(int index) {
 
 	fixedHandle = OS.g_object_new (display.gtk_fixed_get_type (), 0);
 	if (fixedHandle == 0) error (SWT.ERROR_NO_HANDLES);
-	gtk_widget_set_has_window (fixedHandle, true);
+	OS.gtk_widget_set_has_window (fixedHandle, true);
 
 	handle = OS.gtk_frame_new (null);
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
@@ -169,7 +169,7 @@ void createHandle(int index) {
 	 * it can listen to events (clicking/tooltip etc.) and so that
 	 * background can be drawn on it.
 	 */
-	gtk_widget_set_has_window (clientHandle, true);
+	OS.gtk_widget_set_has_window (clientHandle, true);
 
 	OS.gtk_container_add (fixedHandle, handle);
 	OS.gtk_container_add (handle, clientHandle);

@@ -8091,18 +8091,6 @@ public static final long /*int*/ gtk_fixed_new() {
 /**
  * @method flags=dynamic
  */
-public static final native void _gtk_fixed_set_has_window(long /*int*/ fixed, boolean has_window);
-public static final void gtk_fixed_set_has_window(long /*int*/ fixed, boolean has_window) {
-	lock.lock();
-	try {
-		_gtk_fixed_set_has_window(fixed, has_window);
-	} finally {
-		lock.unlock();
-	}
-}
-/**
- * @method flags=dynamic
- */
 public static final native void _gtk_widget_set_has_window(long /*int*/ widget, boolean has_window);
 public static final void gtk_widget_set_has_window(long /*int*/ widget, boolean has_window) {
 	lock.lock();

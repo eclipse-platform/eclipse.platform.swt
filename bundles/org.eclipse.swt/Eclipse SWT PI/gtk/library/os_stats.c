@@ -798,7 +798,6 @@ char * OS_nativeFunctionNames[] = {
 	"_1gtk_1file_1filter_1set_1name",
 	"_1gtk_1fixed_1move",
 	"_1gtk_1fixed_1new",
-	"_1gtk_1fixed_1set_1has_1window",
 	"_1gtk_1font_1chooser_1dialog_1new",
 	"_1gtk_1font_1chooser_1get_1font",
 	"_1gtk_1font_1chooser_1set_1font",

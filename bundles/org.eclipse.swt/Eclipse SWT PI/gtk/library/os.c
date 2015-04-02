@@ -11180,24 +11180,6 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(_1gtk_1fixed_1new)
 }
 #endif
 
-#ifndef NO__1gtk_1fixed_1set_1has_1window
-JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1fixed_1set_1has_1window)
-	(JNIEnv *env, jclass that, jintLong arg0, jboolean arg1)
-{
-	OS_NATIVE_ENTER(env, that, _1gtk_1fixed_1set_1has_1window_FUNC);
-/*
-	gtk_fixed_set_has_window(arg0, arg1);
-*/
-	{
-		OS_LOAD_FUNCTION(fp, gtk_fixed_set_has_window)
-		if (fp) {
-			((void (CALLING_CONVENTION*)(jintLong, jboolean))fp)(arg0, arg1);
-		}
-	}
-	OS_NATIVE_EXIT(env, that, _1gtk_1fixed_1set_1has_1window_FUNC);
-}
-#endif
-
 #ifndef NO__1gtk_1font_1chooser_1dialog_1new
 JNIEXPORT jintLong JNICALL OS_NATIVE(_1gtk_1font_1chooser_1dialog_1new)
 	(JNIEnv *env, jclass that, jbyteArray arg0, jintLong arg1)
