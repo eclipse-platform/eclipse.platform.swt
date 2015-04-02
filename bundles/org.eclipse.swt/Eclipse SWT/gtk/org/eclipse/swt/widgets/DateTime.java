@@ -417,7 +417,7 @@ private void createHandleForDateTime () {
 
 void createDropDownButton () {
 	down = new Button (this, SWT.ARROW  | SWT.DOWN);
-	gtk_widget_set_can_focus (down.handle, false);
+	OS.gtk_widget_set_can_focus (down.handle, false);
 	down.addListener (SWT.Selection, new Listener () {
 		public void handleEvent (Event event) {
 			popupCalendar.calendarDisplayed = !isDropped ();

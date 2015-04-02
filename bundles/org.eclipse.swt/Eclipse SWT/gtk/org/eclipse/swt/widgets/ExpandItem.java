@@ -138,7 +138,7 @@ void createHandle (int index) {
 	OS.gtk_container_add (boxHandle, imageHandle);
 	OS.gtk_container_add (boxHandle, labelHandle);
 	OS.gtk_expander_set_label_widget (handle, boxHandle);
-	gtk_widget_set_can_focus (handle, true);
+	OS.gtk_widget_set_can_focus (handle, true);
 }
 
 @Override
@@ -346,7 +346,7 @@ long /*int*/ gtk_button_press_event (long /*int*/ widget, long /*int*/ event) {
 
 @Override
 long /*int*/ gtk_focus_out_event (long /*int*/ widget, long /*int*/ event) {
-	gtk_widget_set_can_focus (handle, false);
+	OS.gtk_widget_set_can_focus (handle, false);
 	parent.lastFocus = this;
 	return 0;
 }
@@ -540,12 +540,12 @@ public void setExpanded (boolean expanded) {
 
 boolean setFocus () {
 	if (!OS.gtk_widget_get_child_visible (handle)) return false;
-	gtk_widget_set_can_focus (handle, true);
+	OS.gtk_widget_set_can_focus (handle, true);
 	OS.gtk_widget_grab_focus (handle);
 	// widget could be disposed at this point
 	if (isDisposed ()) return false;
 	boolean result = OS.gtk_widget_is_focus (handle);
-	if (!result) gtk_widget_set_can_focus (handle, false);
+	if (!result) OS.gtk_widget_set_can_focus (handle, false);
 	return result;
 }
 

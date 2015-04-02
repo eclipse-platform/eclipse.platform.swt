@@ -171,7 +171,7 @@ void createHandle (int index) {
 	* (http://bugzilla.gnome.org/show_bug.cgi?id=475909)
 	*/
 	if ((style & SWT.VERTICAL) != 0) {
-		gtk_widget_set_can_focus (handle, true);
+		OS.gtk_widget_set_can_focus (handle, true);
 	}
 	OS.gtk_container_add (fixedHandle, handle);
 }

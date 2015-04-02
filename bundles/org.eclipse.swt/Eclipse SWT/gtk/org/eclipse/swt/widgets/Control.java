@@ -215,11 +215,11 @@ void fixFocus (Control focusControl) {
 	}
 	shell.setSavedFocus (focusControl);
 	long /*int*/ focusHandle = shell.vboxHandle;
-	gtk_widget_set_can_focus (focusHandle, true);
+	OS.gtk_widget_set_can_focus (focusHandle, true);
 	OS.gtk_widget_grab_focus (focusHandle);
 	// widget could be disposed at this point
 	if (isDisposed ()) return;
-	gtk_widget_set_can_focus (focusHandle, false);
+	OS.gtk_widget_set_can_focus (focusHandle, false);
 }
 
 void fixStyle () {
@@ -409,7 +409,7 @@ long /*int*/ paintHandle () {
 	long /*int*/ topHandle = topHandle ();
 	long /*int*/ paintHandle = handle;
 	while (paintHandle != topHandle) {
-		if (gtk_widget_get_has_window (paintHandle)) break;
+		if (OS.gtk_widget_get_has_window (paintHandle)) break;
 		paintHandle = OS.gtk_widget_get_parent (paintHandle);
 	}
 	return paintHandle;
@@ -2452,7 +2452,7 @@ long /*int*/ fixedMapProc (long /*int*/ widget) {
 		}
 		OS.g_list_free (widgetList);
 	}
-	if (gtk_widget_get_has_window (widget)) {
+	if (OS.gtk_widget_get_has_window (widget)) {
 		OS.gdk_window_show_unraised (gtk_widget_get_window (widget));
 	}
 	return 0;
@@ -4912,14 +4912,14 @@ public void setVisible (boolean visible) {
 		state |= HIDDEN;
 		if (fixFocus) {
 			if (OS.GTK3) {
-				gtk_widget_set_can_focus (topHandle, false);
+				OS.gtk_widget_set_can_focus (topHandle, false);
 			} else {
 				gtk_widget_set_visible (topHandle, false);
 			}
 			fixFocus (control);
 			if (isDisposed ()) return;
 			if (OS.GTK3) {
-				gtk_widget_set_can_focus (topHandle, true);
+				OS.gtk_widget_set_can_focus (topHandle, true);
 			} else {
 				gtk_widget_set_visible (topHandle, true);
 			}

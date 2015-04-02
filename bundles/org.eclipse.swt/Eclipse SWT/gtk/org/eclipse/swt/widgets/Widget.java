@@ -1763,31 +1763,11 @@ boolean gtk_widget_get_realized (long /*int*/ widget) {
 	 }
 }
 
-boolean gtk_widget_get_has_window (long /*int*/ widget) {
-	if (OS.GTK_VERSION >= OS.VERSION (2, 18, 0)) {
-		return OS.gtk_widget_get_has_window (widget);
-	} else {
-		return (OS.GTK_WIDGET_FLAGS (widget) & OS.GTK_NO_WINDOW) == 0;
-	}
-}
-
 long /*int*/ gtk_widget_get_window (long /*int*/ widget){
 	if (OS.GTK3) {
 		OS.gtk_widget_realize(widget);
 	}
 	return OS.gtk_widget_get_window (widget);
-}
-
-void gtk_widget_set_can_focus (long /*int*/ widget, boolean can_focus) {
-	if (OS.GTK_VERSION >= OS.VERSION (2, 18, 0)) {
-		OS.gtk_widget_set_can_focus (widget, can_focus);
-	} else {
-		if (can_focus) {
-			OS.GTK_WIDGET_SET_FLAGS (widget, OS.GTK_CAN_FOCUS);
-		} else {
-			OS.GTK_WIDGET_UNSET_FLAGS (widget, OS.GTK_CAN_FOCUS);
-		}
-	}
 }
 
 void gtk_widget_set_mapped (long /*int*/ widget, boolean mapped) {
