@@ -208,7 +208,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 			GtkBorder innerBorder = getBorder (OS.inner_border, handle, INNER_BORDER);
 			trimWidth += innerBorder.left + innerBorder.right;
 			trimHeight += innerBorder.top + innerBorder.bottom;
-			if (gtk_widget_get_can_default (handle)) {
+			if (OS.gtk_widget_get_can_default (handle)) {
 				GtkBorder defaultBorder = getBorder (OS.default_border, handle, DEFAULT_BORDER);
 				trimWidth += defaultBorder.left + defaultBorder.right;
 				trimHeight += defaultBorder.top + defaultBorder.bottom;
@@ -244,7 +244,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 		OS.gtk_widget_set_size_request (boxHandle, reqWidth [0], reqHeight [0]);
 	}
 	if (wHint != SWT.DEFAULT || hHint != SWT.DEFAULT) {
-		if (gtk_widget_get_can_default (handle)) {
+		if (OS.gtk_widget_get_can_default (handle)) {
 			GtkBorder border = getBorder (OS.default_border, handle, DEFAULT_BORDER);
 			if (wHint != SWT.DEFAULT) size.x += border.left + border.right;
 			if (hHint != SWT.DEFAULT) size.y += border.top + border.bottom;
@@ -314,7 +314,7 @@ void createHandle (int index) {
 		default:
 			handle = OS.gtk_button_new ();
 			if (handle == 0) error (SWT.ERROR_NO_HANDLES);
-			gtk_widget_set_can_default (handle, true);
+			OS.gtk_widget_set_can_default (handle, true);
 			break;
 	}
 	if ((style & SWT.ARROW) != 0) {
