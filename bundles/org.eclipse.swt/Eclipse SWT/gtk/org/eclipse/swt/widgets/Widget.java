@@ -1814,18 +1814,6 @@ void gtk_widget_set_visible (long /*int*/ widget, boolean visible) {
 	}
 }
 
-void gtk_widget_set_receives_default (long /*int*/ widget, boolean receives_default) {
-	if (OS.GTK_VERSION >= OS.VERSION (2, 18, 0)) {
-		OS.gtk_widget_set_receives_default (widget, receives_default);
-	} else {
-		if (receives_default) {
-			OS.GTK_WIDGET_SET_FLAGS (widget, OS.GTK_RECEIVES_DEFAULT);
-		} else {
-			OS.GTK_WIDGET_UNSET_FLAGS (widget, OS.GTK_RECEIVES_DEFAULT);
-		}
-	}
-}
-
 void gdk_pixmap_get_size (long /*int*/ pixmap, int[] width, int[] height) {
 	if (OS.GTK_VERSION >= OS.VERSION (2, 24, 0)) {
 		OS.gdk_pixmap_get_size (pixmap, width, height);

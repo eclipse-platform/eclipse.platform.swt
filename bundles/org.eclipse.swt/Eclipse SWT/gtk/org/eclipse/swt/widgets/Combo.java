@@ -509,7 +509,7 @@ void createHandle (int index) {
 	* clear the GTK_RECEIVES_DEFAULT flag.
 	*/
 	if ((style & SWT.READ_ONLY) != 0 && buttonHandle != 0) {
-		gtk_widget_set_receives_default (buttonHandle, false);
+		OS.gtk_widget_set_receives_default (buttonHandle, false);
 	}
 	// In GTK 3 font description is inherited from parent widget which is not how SWT has always worked,
 	// reset to default font to get the usual behavior
