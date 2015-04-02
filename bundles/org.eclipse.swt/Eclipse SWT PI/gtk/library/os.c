@@ -16390,24 +16390,6 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1toolbar_1set_1icon_1size)
 }
 #endif
 
-#ifndef NO__1gtk_1toolbar_1set_1orientation
-JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1toolbar_1set_1orientation)
-	(JNIEnv *env, jclass that, jintLong arg0, jint arg1)
-{
-	OS_NATIVE_ENTER(env, that, _1gtk_1toolbar_1set_1orientation_FUNC);
-/*
-	gtk_toolbar_set_orientation((GtkToolbar *)arg0, (GtkOrientation)arg1);
-*/
-	{
-		OS_LOAD_FUNCTION(fp, gtk_toolbar_set_orientation)
-		if (fp) {
-			((void (CALLING_CONVENTION*)(GtkToolbar *, GtkOrientation))fp)((GtkToolbar *)arg0, (GtkOrientation)arg1);
-		}
-	}
-	OS_NATIVE_EXIT(env, that, _1gtk_1toolbar_1set_1orientation_FUNC);
-}
-#endif
-
 #ifndef NO__1gtk_1toolbar_1set_1show_1arrow
 JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1toolbar_1set_1show_1arrow)
 	(JNIEnv *env, jclass that, jintLong arg0, jboolean arg1)

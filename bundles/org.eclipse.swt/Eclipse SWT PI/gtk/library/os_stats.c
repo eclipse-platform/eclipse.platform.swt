@@ -1189,7 +1189,6 @@ char * OS_nativeFunctionNames[] = {
 	"_1gtk_1toolbar_1insert",
 	"_1gtk_1toolbar_1new",
 	"_1gtk_1toolbar_1set_1icon_1size",
-	"_1gtk_1toolbar_1set_1orientation",
 	"_1gtk_1toolbar_1set_1show_1arrow",
 	"_1gtk_1toolbar_1set_1style",
 #ifndef JNI64

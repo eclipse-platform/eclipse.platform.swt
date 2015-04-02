@@ -104,11 +104,7 @@ public ToolBar (Composite parent, int style) {
 		this.style |= SWT.HORIZONTAL;
 	}
 	int orientation = (style & SWT.VERTICAL) != 0 ? OS.GTK_ORIENTATION_VERTICAL : OS.GTK_ORIENTATION_HORIZONTAL;
-	if (OS.GTK_VERSION < OS.VERSION (2, 16, 0)) {
-		OS.gtk_toolbar_set_orientation (handle, orientation);
-	} else {
-		OS.gtk_orientable_set_orientation(handle, orientation);
-	}
+	OS.gtk_orientable_set_orientation(handle, orientation);
 }
 
 static int checkStyle (int style) {

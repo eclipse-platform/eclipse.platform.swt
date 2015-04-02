@@ -224,7 +224,6 @@
 #define gtk_rc_parse_string_LIB LIB_GTK
 #define gtk_hseparator_new_LIB LIB_GTK
 #define gtk_vseparator_new_LIB LIB_GTK
-#define gtk_toolbar_set_orientation_LIB LIB_GTK
 #define gtk_tooltip_trigger_tooltip_query_LIB LIB_GTK
 #define gtk_tree_selection_count_selected_rows_LIB LIB_GTK
 #define gtk_tree_selection_get_selected_rows_LIB LIB_GTK

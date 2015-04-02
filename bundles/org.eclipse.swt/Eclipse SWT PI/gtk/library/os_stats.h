@@ -1199,7 +1199,6 @@ typedef enum {
 	_1gtk_1toolbar_1insert_FUNC,
 	_1gtk_1toolbar_1new_FUNC,
 	_1gtk_1toolbar_1set_1icon_1size_FUNC,
-	_1gtk_1toolbar_1set_1orientation_FUNC,
 	_1gtk_1toolbar_1set_1show_1arrow_FUNC,
 	_1gtk_1toolbar_1set_1style_FUNC,
 #ifndef JNI64

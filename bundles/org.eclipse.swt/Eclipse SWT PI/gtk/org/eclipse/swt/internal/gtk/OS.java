@@ -12622,20 +12622,6 @@ public static final long /*int*/ gtk_toolbar_new() {
 	}
 }
 /**
- * @method flags=dynamic
- * @param toolbar cast=(GtkToolbar *)
- * @param orientation cast=(GtkOrientation)
- */
-public static final native void _gtk_toolbar_set_orientation(long /*int*/ toolbar, int orientation);
-public static final void gtk_toolbar_set_orientation(long /*int*/ toolbar, int orientation) {
-	lock.lock();
-	try {
-		_gtk_toolbar_set_orientation(toolbar, orientation);
-	} finally {
-		lock.unlock();
-	}
-}
-/**
  * @param toolbar cast=(GtkToolbar *)
  * @param show_arrow cast=(gboolean)
  */
