@@ -523,7 +523,7 @@ void adjustTrim () {
 }
 
 void bringToTop (boolean force) {
-	if (!gtk_widget_get_visible (shellHandle)) return;
+	if (!OS.gtk_widget_get_visible (shellHandle)) return;
 	Display display = this.display;
 	Shell activeShell = display.activeShell;
 	if (activeShell == this) return;
@@ -1124,7 +1124,7 @@ public Point getSize () {
 @Override
 public boolean getVisible () {
 	checkWidget();
-	return gtk_widget_get_visible (shellHandle);
+	return OS.gtk_widget_get_visible (shellHandle);
 }
 
 /**

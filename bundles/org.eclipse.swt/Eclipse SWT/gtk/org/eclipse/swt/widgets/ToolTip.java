@@ -12,11 +12,11 @@ package org.eclipse.swt.widgets;
 
 
 import org.eclipse.swt.*;
-import org.eclipse.swt.internal.*;
-import org.eclipse.swt.internal.gtk.*;
-import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.events.*;
-import org.eclipse.swt.internal.cairo.Cairo;
+import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.internal.*;
+import org.eclipse.swt.internal.cairo.*;
+import org.eclipse.swt.internal.gtk.*;
 
 /**
  * Instances of this class represent popup windows that are used
@@ -446,7 +446,7 @@ public String getText () {
  */
 public boolean getVisible () {
 	checkWidget ();
-	if ((style & SWT.BALLOON) != 0) return gtk_widget_get_visible (handle);
+	if ((style & SWT.BALLOON) != 0) return OS.gtk_widget_get_visible (handle);
 	return false;
 }
 
@@ -701,7 +701,7 @@ public void setLocation (int x, int y) {
 	this.x = x;
 	this.y = y;
 	if ((style & SWT.BALLOON) != 0) {
-		if (gtk_widget_get_visible (handle)) configure ();
+		if (OS.gtk_widget_get_visible (handle)) configure ();
 	}
 }
 
@@ -759,7 +759,7 @@ public void setMessage (String string) {
 		OS.pango_layout_set_auto_dir (layoutMessage, false);
 		OS.pango_layout_set_wrap (layoutMessage, OS.PANGO_WRAP_WORD_CHAR);
 	}
-	if (gtk_widget_get_visible (handle)) configure ();
+	if (OS.gtk_widget_get_visible (handle)) configure ();
 }
 
 /**
@@ -798,7 +798,7 @@ public void setText (String string) {
 		OS.pango_attr_list_unref (attrList);
 		OS.pango_layout_set_wrap (layoutText, OS.PANGO_WRAP_WORD_CHAR);
 	}
-	if (gtk_widget_get_visible (handle)) configure ();
+	if (OS.gtk_widget_get_visible (handle)) configure ();
 }
 
 /**

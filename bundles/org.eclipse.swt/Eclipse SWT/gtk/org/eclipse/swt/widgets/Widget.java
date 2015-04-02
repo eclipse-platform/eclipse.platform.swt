@@ -1755,14 +1755,6 @@ long /*int*/ sizeRequestProc (long /*int*/ handle, long /*int*/ arg0, long /*int
 	return 0;
 }
 
-boolean gtk_widget_get_visible (long /*int*/ widget) {
-	if (OS.GTK_VERSION >= OS.VERSION (2, 18, 0)) {
-		return OS.gtk_widget_get_visible (widget);
-	} else {
-		return (OS.GTK_WIDGET_FLAGS (widget) & OS.GTK_VISIBLE) != 0;
-	}
-}
-
 boolean gtk_widget_get_realized (long /*int*/ widget) {
 	 if (OS.GTK_VERSION >= OS.VERSION (2, 20, 0)) {
 		 return OS.gtk_widget_get_realized (widget);

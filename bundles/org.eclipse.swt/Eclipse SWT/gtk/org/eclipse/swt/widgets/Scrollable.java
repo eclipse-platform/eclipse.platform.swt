@@ -12,8 +12,8 @@ package org.eclipse.swt.widgets;
 
 
 import org.eclipse.swt.*;
-import org.eclipse.swt.internal.gtk.*;
 import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.internal.gtk.*;
 
 /**
  * This class is the abstract superclass of all classes which
@@ -281,7 +281,7 @@ long /*int*/ gtk_scroll_event (long /*int*/ widget, long /*int*/ eventPtr) {
 			if (OS.gdk_event_get_scroll_deltas (eventPtr, delta_x, delta_y)) {
 				if (delta_x [0] != 0) {
 					scrollBar = horizontalBar;
-					if (scrollBar != null && !gtk_widget_get_visible (scrollBar.handle) && scrollBar.getEnabled()) {
+					if (scrollBar != null && !OS.gtk_widget_get_visible (scrollBar.handle) && scrollBar.getEnabled()) {
 						GtkAdjustment adjustment = new GtkAdjustment ();
 						gtk_adjustment_get (scrollBar.adjustmentHandle, adjustment);
 						double delta = Math.pow(adjustment.page_size, 2.0 / 3.0) * delta_x [0];
@@ -293,7 +293,7 @@ long /*int*/ gtk_scroll_event (long /*int*/ widget, long /*int*/ eventPtr) {
 				}
 				if (delta_y [0] != 0) {
 					scrollBar = verticalBar;
-					if (scrollBar != null && !gtk_widget_get_visible (scrollBar.handle) && scrollBar.getEnabled()) {
+					if (scrollBar != null && !OS.gtk_widget_get_visible (scrollBar.handle) && scrollBar.getEnabled()) {
 						GtkAdjustment adjustment = new GtkAdjustment ();
 						gtk_adjustment_get (scrollBar.adjustmentHandle, adjustment);
 						double delta = Math.pow(adjustment.page_size, 2.0 / 3.0) * delta_y [0];
@@ -310,7 +310,7 @@ long /*int*/ gtk_scroll_event (long /*int*/ widget, long /*int*/ eventPtr) {
 			} else {
 				scrollBar = horizontalBar;
 			}
-			if (scrollBar != null && !gtk_widget_get_visible (scrollBar.handle) && scrollBar.getEnabled()) {
+			if (scrollBar != null && !OS.gtk_widget_get_visible (scrollBar.handle) && scrollBar.getEnabled()) {
 				GtkAdjustment adjustment = new GtkAdjustment ();
 				gtk_adjustment_get (scrollBar.adjustmentHandle, adjustment);
 				/* Calculate wheel delta to match GTK+ 2.4 and higher */

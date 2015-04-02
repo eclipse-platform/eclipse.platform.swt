@@ -985,7 +985,7 @@ public String [] getItems () {
  */
 public boolean getListVisible () {
 	checkWidget ();
-	return popupHandle != 0 && gtk_widget_get_visible (popupHandle);
+	return popupHandle != 0 && OS.gtk_widget_get_visible (popupHandle);
 }
 
 @Override

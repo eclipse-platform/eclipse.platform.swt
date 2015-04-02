@@ -185,7 +185,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 		OS.gtk_widget_set_size_request (boxHandle, -1, -1);
 	}
 	Point size;
-	boolean wrap = labelHandle != 0 && (style & SWT.WRAP) != 0 && gtk_widget_get_visible (labelHandle);
+	boolean wrap = labelHandle != 0 && (style & SWT.WRAP) != 0 && OS.gtk_widget_get_visible (labelHandle);
 	if (wrap) {
 		int borderWidth = OS.gtk_container_get_border_width (handle);
 		int[] focusWidth = new int[1];
@@ -215,7 +215,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 			}
 		}
 		int imageWidth = 0, imageHeight = 0;
-		if (gtk_widget_get_visible (imageHandle)) {
+		if (OS.gtk_widget_get_visible (imageHandle)) {
 			GtkRequisition requisition = new GtkRequisition ();
 			gtk_widget_get_preferred_size (imageHandle, requisition);
 			imageWidth = requisition.width;
@@ -715,7 +715,7 @@ void _setAlignment (int alignment) {
 	style &= ~(SWT.LEFT | SWT.RIGHT | SWT.CENTER);
 	style |= alignment & (SWT.LEFT | SWT.RIGHT | SWT.CENTER);
 	/* Alignment not honoured when image and text are visible */
-	boolean bothVisible = gtk_widget_get_visible (labelHandle) && gtk_widget_get_visible (imageHandle);
+	boolean bothVisible = OS.gtk_widget_get_visible (labelHandle) && OS.gtk_widget_get_visible (imageHandle);
 	if (bothVisible) {
 		if ((style & (SWT.RADIO | SWT.CHECK)) != 0) alignment = SWT.LEFT;
 		if ((style & (SWT.PUSH | SWT.TOGGLE)) != 0) alignment = SWT.CENTER;
@@ -839,7 +839,7 @@ int setBounds (int x, int y, int width, int height, boolean move, boolean resize
 	* resized to the preferred size but it still
 	* won't draw properly.
 	*/
-	boolean wrap = labelHandle != 0 && (style & SWT.WRAP) != 0 && gtk_widget_get_visible (labelHandle);
+	boolean wrap = labelHandle != 0 && (style & SWT.WRAP) != 0 && OS.gtk_widget_get_visible (labelHandle);
 	if (wrap) OS.gtk_widget_set_size_request (boxHandle, -1, -1);
 	int result = super.setBounds (x, y, width, height, move, resize);
 	/*
@@ -865,7 +865,7 @@ int setBounds (int x, int y, int width, int height, boolean move, boolean resize
 		OS.pango_layout_get_pixel_size (labelLayout, w, h);
 		OS.pango_layout_set_width (labelLayout, pangoWidth);
 		int imageWidth = 0;
-		if (gtk_widget_get_visible (imageHandle)) {
+		if (OS.gtk_widget_get_visible (imageHandle)) {
 			GtkRequisition requisition = new GtkRequisition ();
 			gtk_widget_get_preferred_size (imageHandle, requisition);
 			imageWidth = requisition.width;

@@ -921,7 +921,7 @@ void moveHandle (int x, int y) {
 		*
 		* NOTE: There is no API in GTK 3 to only set the GTK_VISIBLE bit.
 		*/
-		boolean reset = gtk_widget_get_visible (parentHandle);
+		boolean reset = OS.gtk_widget_get_visible (parentHandle);
 		gtk_widget_set_visible (parentHandle, false);
 		OS.gtk_fixed_move (parentHandle, topHandle, x, y);
 		gtk_widget_set_visible (parentHandle, reset);
@@ -2445,7 +2445,7 @@ long /*int*/ fixedMapProc (long /*int*/ widget) {
 		long /*int*/ widgets = widgetList;
 		while (widgets != 0) {
 			long /*int*/ child = OS.g_list_data (widgets);
-			if (gtk_widget_get_visible (child) && OS.gtk_widget_get_child_visible (child) && !gtk_widget_get_mapped (child)) {
+			if (OS.gtk_widget_get_visible (child) && OS.gtk_widget_get_child_visible (child) && !gtk_widget_get_mapped (child)) {
 				OS.gtk_widget_map (child);
 			}
 			widgets = OS.g_list_next (widgets);
@@ -3725,7 +3725,7 @@ public void redraw () {
 
 void redraw (boolean all) {
 //	checkWidget();
-	if (!gtk_widget_get_visible (topHandle ())) return;
+	if (!OS.gtk_widget_get_visible (topHandle ())) return;
 	redrawWidget (0, 0, 0, 0, true, all, false);
 }
 
@@ -3761,7 +3761,7 @@ void redraw (boolean all) {
  */
 public void redraw (int x, int y, int width, int height, boolean all) {
 	checkWidget();
-	if (!gtk_widget_get_visible (topHandle ())) return;
+	if (!OS.gtk_widget_get_visible (topHandle ())) return;
 	if ((style & SWT.MIRRORED) != 0) x = getClientWidth () - width - x;
 	redrawWidget (x, y, width, height, false, all, false);
 }
@@ -4396,7 +4396,7 @@ public void setEnabled (boolean enabled) {
 			} else {
 				restackWindow (enableWindow, gtk_widget_get_window (topHandle), true);
 			}
-			if (gtk_widget_get_visible (topHandle)) OS.gdk_window_show_unraised (enableWindow);
+			if (OS.gtk_widget_get_visible (topHandle)) OS.gdk_window_show_unraised (enableWindow);
 		}
 	}
 	if (fixFocus) fixFocus (control);
@@ -5520,7 +5520,7 @@ public void update () {
 
 void update (boolean all, boolean flush) {
 //	checkWidget();
-	if (!gtk_widget_get_visible (topHandle ())) return;
+	if (!OS.gtk_widget_get_visible (topHandle ())) return;
 	if (!gtk_widget_get_realized (handle)) return;
 	long /*int*/ window = paintWindow ();
 	if (flush) display.flushExposes (window, all);

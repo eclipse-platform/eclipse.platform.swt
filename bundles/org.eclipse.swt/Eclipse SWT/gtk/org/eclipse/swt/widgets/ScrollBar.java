@@ -11,18 +11,10 @@
 package org.eclipse.swt.widgets;
 
 
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.SWTException;
-import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.events.SelectionListener;
-import org.eclipse.swt.graphics.Point;
-import org.eclipse.swt.graphics.Rectangle;
-import org.eclipse.swt.internal.gtk.GdkEvent;
-import org.eclipse.swt.internal.gtk.GdkEventButton;
-import org.eclipse.swt.internal.gtk.GtkAdjustment;
-import org.eclipse.swt.internal.gtk.GtkAllocation;
-import org.eclipse.swt.internal.gtk.GtkRequisition;
-import org.eclipse.swt.internal.gtk.OS;
+import org.eclipse.swt.*;
+import org.eclipse.swt.events.*;
+import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.internal.gtk.*;
 
 /**
  * Instances of this class are selectable user interface
@@ -461,9 +453,9 @@ public boolean getVisible () {
 	int [] hsp = new int [1], vsp = new int [1];
 	OS.gtk_scrolled_window_get_policy (scrolledHandle, hsp, vsp);
 	if ((style & SWT.HORIZONTAL) != 0) {
-		return hsp [0] != OS.GTK_POLICY_NEVER && gtk_widget_get_visible (handle);
+		return hsp [0] != OS.GTK_POLICY_NEVER && OS.gtk_widget_get_visible (handle);
 	} else {
-		return vsp [0] != OS.GTK_POLICY_NEVER && gtk_widget_get_visible (handle);
+		return vsp [0] != OS.GTK_POLICY_NEVER && OS.gtk_widget_get_visible (handle);
 	}
 }
 

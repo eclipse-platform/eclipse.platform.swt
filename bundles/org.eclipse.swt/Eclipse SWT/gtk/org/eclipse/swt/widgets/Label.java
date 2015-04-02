@@ -131,7 +131,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	* The fix is to use pango layout directly instead of the label size request
 	* to calculate its preferred size.
 	*/
-	boolean fixWrap = labelHandle != 0 && (style & SWT.WRAP) != 0 && gtk_widget_get_visible (labelHandle);
+	boolean fixWrap = labelHandle != 0 && (style & SWT.WRAP) != 0 && OS.gtk_widget_get_visible (labelHandle);
 	if (fixWrap || frameHandle != 0) forceResize ();
 	if (fixWrap) {
 		long /*int*/ labelLayout = OS.gtk_label_get_layout (labelHandle);

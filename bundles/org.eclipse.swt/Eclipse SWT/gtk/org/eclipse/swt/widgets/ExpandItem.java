@@ -11,9 +11,9 @@
 package org.eclipse.swt.widgets;
 
 import org.eclipse.swt.*;
+import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.gtk.*;
-import org.eclipse.swt.graphics.*;
 
 /**
  * Instances of this class represent a selectable user interface object
@@ -443,7 +443,7 @@ void resizeControl (int yScroll) {
 				*/
 				ScrollBar vBar = parent.verticalBar;
 				if (vBar != null) {
-					if (gtk_widget_get_visible (vBar.handle)) {
+					if (OS.gtk_widget_get_visible (vBar.handle)) {
 						OS.gtk_widget_get_allocation (parent.scrolledHandle, allocation);
 						width = allocation.width - parent.vScrollBarWidth () - 2 * parent.spacing;
 					}
