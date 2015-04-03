@@ -4819,24 +4819,20 @@ public void setToolTipText (String string) {
 }
 
 void setToolTipText (Shell shell, String newString) {
-	if (OS.GTK_VERSION >= OS.VERSION (2, 12, 0)) {
-		/*
-		* Feature in GTK.  In order to prevent children widgets
-		* from inheriting their parent's tooltip, the tooltip is
-		* a set on a shell only. In order to force the shell tooltip
-		* to update when a new tip string is set, the existing string
-		* in the tooltip is set to null, followed by running a query.
-		* The real tip text can then be set.
-		*
-		* Note that this will only run if the control for which the
-		* tooltip is being set is the current control (i.e. the control
-		* under the pointer).
-		*/
-		if (display.currentControl == this) {
-			shell.setToolTipText (shell.handle, eventHandle (), newString);
-		}
-	} else {
-		shell.setToolTipText (eventHandle (), newString);
+	/*
+	* Feature in GTK.  In order to prevent children widgets
+	* from inheriting their parent's tooltip, the tooltip is
+	* a set on a shell only. In order to force the shell tooltip
+	* to update when a new tip string is set, the existing string
+	* in the tooltip is set to null, followed by running a query.
+	* The real tip text can then be set.
+	*
+	* Note that this will only run if the control for which the
+	* tooltip is being set is the current control (i.e. the control
+	* under the pointer).
+	*/
+	if (display.currentControl == this) {
+		shell.setToolTipText (shell.handle, eventHandle (), newString);
 	}
 }
 
