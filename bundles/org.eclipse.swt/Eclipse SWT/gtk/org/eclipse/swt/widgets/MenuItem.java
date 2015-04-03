@@ -12,10 +12,10 @@ package org.eclipse.swt.widgets;
 
 
 import org.eclipse.swt.*;
+import org.eclipse.swt.events.*;
+import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.gtk.*;
-import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.events.*;
 
 /**
  * Instances of this class represent a selectable user interface object
@@ -805,11 +805,7 @@ public void setMenu (Menu menu) {
 		* to replace or GTK will destroy it.
 		*/
 		OS.g_object_ref (oldMenu.handle);
-		if (OS.GTK_VERSION >= OS.VERSION(2, 12, 0)) {
-			OS.gtk_menu_item_set_submenu (handle, 0);
-		} else {
-		    OS.gtk_menu_item_remove_submenu (handle);
-		}
+		OS.gtk_menu_item_set_submenu (handle, 0);
 	}
 	if ((this.menu = menu) != null) {
 		menu.cascade = this;

@@ -9235,19 +9235,6 @@ public static final long /*int*/ gtk_menu_bar_new() {
 		lock.unlock();
 	}
 }
-/**
- * @method flags=dynamic
- * @param menu_item cast=(GtkMenuItem *)
- */
-public static final native void _gtk_menu_item_remove_submenu(long /*int*/ menu_item);
-public static final void gtk_menu_item_remove_submenu(long /*int*/ menu_item) {
-	lock.lock();
-	try {
-		_gtk_menu_item_remove_submenu(menu_item);
-	} finally {
-		lock.unlock();
-	}
-}
 /** @param menu_item cast=(GtkMenuItem *) */
 public static final native long /*int*/ _gtk_menu_item_get_submenu(long /*int*/ menu_item);
 public static final long /*int*/ gtk_menu_item_get_submenu(long /*int*/ menu_item) {
