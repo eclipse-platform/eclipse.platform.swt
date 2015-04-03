@@ -972,10 +972,8 @@ void forceResize (int width, int height) {
  */
 public int getAlpha () {
 	checkWidget ();
-	if (OS.GTK_VERSION >= OS.VERSION (2, 12, 0)) {
-		if (OS.gtk_widget_is_composited (shellHandle)) {
-			return (int) (OS.gtk_window_get_opacity (shellHandle) * 255);
-		}
+	if (OS.gtk_widget_is_composited (shellHandle)) {
+		return (int) (OS.gtk_window_get_opacity (shellHandle) * 255);
 	}
 	return 255;
 }
@@ -1745,11 +1743,9 @@ void setActiveControl (Control control, int type) {
  */
 public void setAlpha (int alpha) {
 	checkWidget ();
-	if (OS.GTK_VERSION >= OS.VERSION (2, 12, 0)) {
-		if (OS.gtk_widget_is_composited (shellHandle)) {
-			alpha &= 0xFF;
-			OS.gtk_window_set_opacity (shellHandle, alpha / 255f);
-		}
+	if (OS.gtk_widget_is_composited (shellHandle)) {
+		alpha &= 0xFF;
+		OS.gtk_window_set_opacity (shellHandle, alpha / 255f);
 	}
 }
 
