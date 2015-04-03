@@ -91,6 +91,18 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(GDK_1EVENT_1WINDOW)
 }
 #endif
 
+#ifndef NO_GDK_1IS_1X11_1DISPLAY
+JNIEXPORT jboolean JNICALL OS_NATIVE(GDK_1IS_1X11_1DISPLAY)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	jboolean rc = 0;
+	OS_NATIVE_ENTER(env, that, GDK_1IS_1X11_1DISPLAY_FUNC);
+	rc = (jboolean)GDK_IS_X11_DISPLAY((GdkDisplay *)arg0);
+	OS_NATIVE_EXIT(env, that, GDK_1IS_1X11_1DISPLAY_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_GInterfaceInfo_1sizeof
 JNIEXPORT jint JNICALL OS_NATIVE(GInterfaceInfo_1sizeof)
 	(JNIEnv *env, jclass that)

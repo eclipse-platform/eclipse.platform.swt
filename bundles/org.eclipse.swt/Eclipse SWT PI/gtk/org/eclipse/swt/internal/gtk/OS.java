@@ -667,6 +667,7 @@ public class OS extends C {
 	public static final int GLIB_VERSION = VERSION(glib_major_version(), glib_minor_version(), glib_micro_version());
 
 	public static final boolean GTK3 = GTK_VERSION >= VERSION(3, 0, 0);
+	public static final boolean IS_X11 = GDK_WINDOWING_X11() && GDK_IS_X11_DISPLAY(gdk_display_get_default()); 
 	public static final boolean USE_CAIRO, INIT_CAIRO;
 	static {
 		boolean useCairo = false;
@@ -873,6 +874,8 @@ public static final void call_get_size (long /*int*/ function, long /*int*/ arg0
 public static final native boolean GDK_WINDOWING_X11();
 /** @method flags=no_gen */
 public static final native boolean GDK_WINDOWING_WAYLAND();
+/** @param display cast=(GdkDisplay *) */
+public static final native boolean GDK_IS_X11_DISPLAY(long /*int*/ display);
 /** @param pixmap cast=(GdkPixmap *) */
 public static final native long /*int*/ _GDK_PIXMAP_XID(long /*int*/ pixmap);
 public static final long /*int*/ GDK_PIXMAP_XID(long /*int*/ pixmap) {

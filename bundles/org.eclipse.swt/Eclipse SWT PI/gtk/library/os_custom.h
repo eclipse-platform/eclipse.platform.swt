@@ -570,6 +570,9 @@ struct _GtkAccelLabelPrivate
 #ifndef GTK_WIDGET_MAPPED
 #define GTK_WIDGET_MAPPED(arg0) 0
 #endif
+#if !GTK_CHECK_VERSION(3,0,0)
+#define GDK_IS_X11_DISPLAY(arg0) 1
+#endif
 #define GTK_ENTRY_IM_CONTEXT(arg0) (arg0)->im_context
 #define GTK_TEXTVIEW_IM_CONTEXT(arg0) (arg0)->im_context
 #define GTK_WIDGET_REQUISITION_WIDTH(arg0) (arg0)->requisition.width

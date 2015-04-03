@@ -31,6 +31,7 @@ char * OS_nativeFunctionNames[] = {
 #endif
 	"GDK_1EVENT_1TYPE",
 	"GDK_1EVENT_1WINDOW",
+	"GDK_1IS_1X11_1DISPLAY",
 	"GDK_1WINDOWING_1WAYLAND",
 	"GDK_1WINDOWING_1X11",
 	"GInterfaceInfo_1sizeof",

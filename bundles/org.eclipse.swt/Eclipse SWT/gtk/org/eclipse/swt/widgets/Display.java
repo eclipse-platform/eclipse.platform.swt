@@ -907,7 +907,7 @@ void createDisplay (DeviceData data) {
 	if (!OS.gtk_init_check (new long /*int*/ [] {0}, null)) {
 		SWT.error (SWT.ERROR_NO_HANDLES, null, " [gtk_init_check() failed]"); //$NON-NLS-1$
 	}
-	if (!OS.GDK_WINDOWING_WAYLAND () && OS.GDK_WINDOWING_X11()) xDisplay = OS.gdk_x11_get_default_xdisplay();
+	if (OS.IS_X11) xDisplay = OS.gdk_x11_get_default_xdisplay();
 	int major = OS.gtk_major_version ();
 	long /*int*/ ptr;
 	if (major == GTK3_MAJOR) {
@@ -1029,7 +1029,7 @@ void createDisplay (DeviceData data) {
 	if (filterProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
 	OS.gdk_window_add_filter  (0, filterProc, 0);
 
-	if (!OS.GDK_WINDOWING_WAYLAND () && OS.GDK_WINDOWING_X11 ()) {
+	if (OS.IS_X11) {
 		long /*int*/ xWindow;
 		if (OS.GTK3) {
 			xWindow = OS.gdk_x11_window_get_xid (OS.gtk_widget_get_window (shellHandle));
