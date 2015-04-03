@@ -12,10 +12,10 @@ package org.eclipse.swt.widgets;
 
 
 import org.eclipse.swt.*;
+import org.eclipse.swt.events.*;
+import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.gtk.*;
-import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.events.*;
 
 /**
  * Instances of this class represent a selectable user interface object
@@ -970,9 +970,7 @@ public void setEnabled (boolean enabled) {
 			* As a result, when it is re-enabled it automatically enters
 			* a PRELIGHT state. The fix is to set a NORMAL state.
 			*/
-			if (OS.GTK_VERSION >= OS.VERSION (2, 14, 0)) {
-				OS.gtk_widget_set_state (topHandle, OS.GTK_STATE_NORMAL);
-			}
+			OS.gtk_widget_set_state (topHandle, OS.GTK_STATE_NORMAL);
 		}
 	}
 }
