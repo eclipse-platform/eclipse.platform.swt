@@ -1860,9 +1860,7 @@ public void setEnabled (boolean enabled) {
 	if (isDisposed ()) return;
 	if (enabled) {
 		if (enableWindow != 0) {
-			OS.gdk_window_set_user_data (enableWindow, 0);
-			OS.gdk_window_destroy (enableWindow);
-			enableWindow = 0;
+			cleanupEnableWindow();
 		}
 	} else {
 		long /*int*/ parentHandle = shellHandle;
@@ -1886,6 +1884,13 @@ public void setEnabled (boolean enabled) {
 					OS.XFlush (xDisplay);
 				}
 			}
+			/* 427776: we need to listen to all enter-notify-event signals to
+			 * see if this new GdkWindow has been added to a widget's internal
+			 * hash table, so when the GdkWindow is destroyed we can also remove
+			 * that reference. */
+			if (enterNotifyEventFunc != null)
+				enterNotifyEventId = OS.g_signal_add_emission_hook (enterNotifyEventSignalId, 0, enterNotifyEventFunc.getAddress (), enableWindow, 0);
+
 			OS.gdk_window_set_user_data (enableWindow, parentHandle);
 			OS.gdk_window_show (enableWindow);
 		}

@@ -373,7 +373,7 @@ void hookEvents () {
 	long /*int*/ topHandle = topHandle ();
 	OS.g_signal_connect_closure_by_id (topHandle, display.signalIds [MAP], 0, display.getClosure (MAP), true);
 
-	if (enterNotifyEventFunc == null) {
+	if (enterNotifyEventFunc == null && OS.GTK3 && OS.GTK_VERSION < OS.VERSION (3, 11, 9)) {
 		enterNotifyEventFunc = new Callback (Control.class, "enterNotifyEventProc", 4);
 		if (enterNotifyEventFunc.getAddress () == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
 
@@ -4344,27 +4344,7 @@ public void setEnabled (boolean enabled) {
 	if (isDisposed ()) return;
 	if (enabled) {
 		if (enableWindow != 0) {
-			if (OS.GTK3 && OS.GTK_VERSION < OS.VERSION (3, 11, 9)) {
-				if (enterNotifyEventId > 0)
-					OS.g_signal_remove_emission_hook(enterNotifyEventSignalId, enterNotifyEventId);
-				enterNotifyEventId = 0;
-
-				/*
-				 * 427776: now we can remove any reference to the GdkWindow
-				 * in a widget's internal hash table. this internal hash
-				 * table was removed in GTK 3.11.9 so once only newer GTK is
-				 * targeted, this workaround can be removed.
-				 */
-				long /*int*/ grabWidget = OS.g_object_get_qdata(enableWindow, SWT_GRAB_WIDGET);
-				if (grabWidget != 0) {
-					OS.g_object_set_qdata(grabWidget, GTK_POINTER_WINDOW, 0);
-					OS.g_object_set_qdata(enableWindow, SWT_GRAB_WIDGET, 0);
-				}
-			}
-
-			OS.gdk_window_set_user_data (enableWindow, 0);
-			OS.gdk_window_destroy (enableWindow);
-			enableWindow = 0;
+			cleanupEnableWindow();
 		}
 	} else {
 		OS.gtk_widget_realize (handle);
@@ -4387,7 +4367,7 @@ public void setEnabled (boolean enabled) {
 			 * see if this new GdkWindow has been added to a widget's internal
 			 * hash table, so when the GdkWindow is destroyed we can also remove
 			 * that reference. */
-			if (OS.GTK3 && OS.GTK_VERSION < OS.VERSION (3, 11, 9))
+			if (enterNotifyEventFunc != null)
 				enterNotifyEventId = OS.g_signal_add_emission_hook (enterNotifyEventSignalId, 0, enterNotifyEventFunc.getAddress (), enableWindow, 0);
 
 			OS.gdk_window_set_user_data (enableWindow, parentHandle);
@@ -4400,6 +4380,30 @@ public void setEnabled (boolean enabled) {
 		}
 	}
 	if (fixFocus) fixFocus (control);
+}
+
+void cleanupEnableWindow() {
+	if (enterNotifyEventFunc != null) {
+		if (enterNotifyEventId > 0)
+			OS.g_signal_remove_emission_hook(enterNotifyEventSignalId, enterNotifyEventId);
+		enterNotifyEventId = 0;
+
+		/*
+		 * 427776: now we can remove any reference to the GdkWindow
+		 * in a widget's internal hash table. this internal hash
+		 * table was removed in GTK 3.11.9 so once only newer GTK is
+		 * targeted, this workaround can be removed.
+		 */
+		long /*int*/ grabWidget = OS.g_object_get_qdata(enableWindow, SWT_GRAB_WIDGET);
+		if (grabWidget != 0) {
+			OS.g_object_set_qdata(grabWidget, GTK_POINTER_WINDOW, 0);
+			OS.g_object_set_qdata(enableWindow, SWT_GRAB_WIDGET, 0);
+		}
+	}
+
+	OS.gdk_window_set_user_data (enableWindow, 0);
+	OS.gdk_window_destroy (enableWindow);
+	enableWindow = 0;
 }
 
 /**
