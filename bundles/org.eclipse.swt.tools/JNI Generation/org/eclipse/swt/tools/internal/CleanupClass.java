@@ -18,7 +18,7 @@ public abstract class CleanupClass extends JNIGenerator {
 String classSourcePath;
 String[] sourcePath;
 String classSource;
-Hashtable<File, String> files;
+Map<File, String> files;
 int usedCount, unusedCount;
 
 String[] getArgNames(JNIMethod method) {
@@ -62,7 +62,7 @@ void loadClassSource() {
 void loadFiles () {
 	// BAD - holds on to a lot of memory
 	if (sourcePath == null) return;
-	files = new Hashtable<> ();
+	files = new HashMap<> ();
 	for (int i = 0; i < sourcePath.length; i++) {
 		File file = new File(sourcePath[i]);
 		if (file.exists()) {

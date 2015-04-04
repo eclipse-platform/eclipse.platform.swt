@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2015 IBM Corporation and others.
+ * Copyright (c) 2000, 2006 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -16,7 +16,8 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
-import java.util.Hashtable;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.program.Program;
@@ -147,7 +148,7 @@ public void test_getPrograms() {
 	
 	assertNotNull(programs);
 	
-	Hashtable<Integer, Program> lookup = new Hashtable<Integer, Program>();
+	Map<Integer, Program> lookup = new HashMap<Integer, Program>();
 	for (int i=0; i<programs.length; i++) {
 		
 		// test non-null entry
@@ -156,7 +157,7 @@ public void test_getPrograms() {
 		// test unique hash code
 		int hashCode = programs[i].hashCode();
 		Integer key = new Integer(hashCode);
-		if (lookup.contains(key)) {
+		if (lookup.containsKey(key)) {
 			fail("Duplicate hash code for "+programs[i]+" (same as "+lookup.get(key)+")");
 		}
 		else {

@@ -40,9 +40,9 @@ public void generate(JNIMethod[] methods) {
 
 public void generate(JNIMethod method) {
 	String name = method.getName();
-	Enumeration<File> keys = files.keys();
-	while (keys.hasMoreElements()) {
-		File key = keys.nextElement();
+	Iterator<File> keys = files.keySet().iterator();
+	while (keys.hasNext()) {
+		File key = keys.next();
 		String str = files.get(key);
 		if (str.indexOf(name) != -1) {
 //			int modifiers = method.getModifiers();

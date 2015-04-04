@@ -23,7 +23,6 @@ import org.eclipse.swt.internal.webkit.*;
 import org.eclipse.swt.internal.win32.*;
 import org.eclipse.swt.widgets.*;
 
-@SuppressWarnings("rawtypes")
 class WebKit extends WebBrowser {
 	IWebView webView;
 	long /*int*/ webViewWindowHandle, webViewData;
@@ -1063,9 +1062,9 @@ void onDispose () {
 		}
 	}
 
-	Enumeration elements = functions.elements ();
-	while (elements.hasMoreElements ()) {
-		((BrowserFunction)elements.nextElement ()).dispose (false);
+	Iterator<BrowserFunction> elements = functions.values().iterator ();
+	while (elements.hasNext ()) {
+		elements.next ().dispose (false);
 	}
 	functions = null;
 

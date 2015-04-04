@@ -14,9 +14,10 @@ package org.eclipse.swt.tests.junit;
 
 import static org.junit.Assert.assertTrue;
 
-import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.swt.SWT;
@@ -37,7 +38,7 @@ public class Test_org_eclipse_swt_custom_StyleRange {
 	final static RGB RED = new RGB(255,0,0);
 	final static RGB BLUE = new RGB(0,0,255);
 	final static RGB GREEN = new RGB(0,255,0);
-	Hashtable<RGB, Color> colors = new Hashtable<RGB, Color>();
+	Map<RGB, Color> colors = new HashMap<RGB, Color>();
 private Color getColor(RGB rgb) {
 	return colors.get(rgb);
 }
@@ -55,9 +56,9 @@ public void setUp() {
 
 @After
 public void tearDown() {
-	Enumeration<RGB> elements = colors.keys();
-	while (elements.hasMoreElements()) {
-		Color color = colors.get(elements.nextElement());
+	Iterator<RGB> elements = colors.keySet().iterator();
+	while (elements.hasNext()) {
+		Color color = colors.get(elements.next());
 		color.dispose();
 	}
 }

@@ -34,7 +34,7 @@ import java.util.*;
  */
 public class NativeStats {
 	
-	Hashtable<String, NativeFunction[]> snapshot;
+	Map<String, NativeFunction[]> snapshot;
 	
 	final static String[] classes = new String[]{"OS", "ATK", "CDE", "GNOME", "GTK", "XPCOM", "COM", "AGL", "Gdip", "GLX", "Cairo", "WGL"};
 
@@ -69,12 +69,11 @@ public NativeStats() {
 	snapshot = snapshot();
 }
 	
-public Hashtable<String, NativeFunction[]> diff() {
-	Hashtable<String, NativeFunction[]> newSnapshot = snapshot();
-	Enumeration<String> keys = newSnapshot.keys();
-	while (keys.hasMoreElements()) {
-		String className = keys.nextElement();
-		NativeFunction[] newFuncs = newSnapshot.get(className);
+public Map<String, NativeFunction[]> diff() {
+	Map<String, NativeFunction[]> newSnapshot = snapshot();
+	for (Map.Entry<String, NativeFunction[]> entry : newSnapshot.entrySet()) {
+		String className = entry.getKey();
+		NativeFunction[] newFuncs = entry.getValue();
 		NativeFunction[] funcs = snapshot.get(className);
 		if (funcs != null) {
 			for (int i = 0; i < newFuncs.length; i++) {
@@ -94,16 +93,15 @@ public void dumpSnapshot(PrintStream ps) {
 }
 
 public void dumpSnapshot(String className, PrintStream ps) {
-	Hashtable<String, NativeFunction[]> snapshot = new Hashtable<>();
+	Map<String, NativeFunction[]> snapshot = new HashMap<>();
 	snapshot(className, snapshot);
 	dump(className, snapshot.get(className), ps);
 }
 
-public void dump(Hashtable<String, NativeFunction[]> snapshot, PrintStream ps) {
-	Enumeration<String> keys = snapshot.keys();
-	while (keys.hasMoreElements()) {
-		String className = keys.nextElement();
-		dump(className, snapshot.get(className), ps);
+public void dump(Map<String, NativeFunction[]> snapshot, PrintStream ps) {
+	for (Map.Entry<String, NativeFunction[]> entry : snapshot.entrySet()) {
+		String className = entry.getKey();
+		dump(className, entry.getValue(), ps);
 	}
 }
 	
@@ -135,8 +133,8 @@ public void reset() {
 	snapshot = snapshot(); 
 }
 
-public Hashtable<String, NativeFunction[]> snapshot() {
-	Hashtable<String, NativeFunction[]> snapshot = new Hashtable<>();
+public Map<String, NativeFunction[]> snapshot() {
+	Map<String, NativeFunction[]> snapshot = new HashMap<>();
 	for (int i = 0; i < classes.length; i++) {
 		String className = classes[i];
 		snapshot(className, snapshot);
@@ -144,7 +142,7 @@ public Hashtable<String, NativeFunction[]> snapshot() {
 	return snapshot;
 }
 
-public Hashtable<String, NativeFunction[]> snapshot(String className, Hashtable<String, NativeFunction[]> snapshot) {
+public Map<String, NativeFunction[]> snapshot(String className, Map<String, NativeFunction[]> snapshot) {
 	try {
 		Class<? extends NativeStats> clazz = getClass();
 		Method functionCount = clazz.getMethod(className + "_GetFunctionCount");

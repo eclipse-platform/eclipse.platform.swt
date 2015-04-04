@@ -12,8 +12,8 @@ package org.eclipse.swt.examples.fileviewer;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Enumeration;
-import java.util.Hashtable;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Cursor;
@@ -70,7 +70,7 @@ class IconCache {
 		cursorWait = 1;
 	public Cursor stockCursors[];
 	// Cached icons
-	private Hashtable<Program, Image> iconCache; /* map Program to Image */
+	private Map<Program, Image> iconCache; /* map Program to Image */
 	
 	public IconCache() {
 	}
@@ -99,7 +99,7 @@ class IconCache {
 				display.getSystemCursor(SWT.CURSOR_WAIT)
 			};
 		}
-		iconCache = new Hashtable<>();
+		iconCache = new HashMap<>();
 	}
 	/**
 	 * Frees the resources
@@ -112,10 +112,10 @@ class IconCache {
 			stockImages = null;
 		}
 		if (iconCache != null) {
-			for (Enumeration<Image> it = iconCache.elements(); it.hasMoreElements(); ) {
-				Image image = it.nextElement();
+			for (Image image : iconCache.values()) {
 				image.dispose();
 			}
+			iconCache = null;
 		}
 		stockCursors = null;
 	}

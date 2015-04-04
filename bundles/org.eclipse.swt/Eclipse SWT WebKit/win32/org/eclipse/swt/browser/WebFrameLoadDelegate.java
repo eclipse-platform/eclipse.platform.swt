@@ -13,7 +13,6 @@ package org.eclipse.swt.browser;
 
 import java.io.*;
 import java.net.*;
-import java.util.*;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.events.*;
@@ -25,7 +24,6 @@ import org.eclipse.swt.internal.win32.*;
 import org.eclipse.swt.layout.*;
 import org.eclipse.swt.widgets.*;
 
-@SuppressWarnings("rawtypes")
 class WebFrameLoadDelegate {
 	COMObject iWebFrameLoadDelegate;
 	int refCount = 0;
@@ -214,9 +212,7 @@ int didClearWindowObject (long /*int*/ webView, long /*int*/ context, long /*int
 	WebKit_win32.JSObjectSetProperty (context, globalObject, name, externalObject, 0, null);
 	WebKit_win32.JSStringRelease (name);
 
-	Enumeration elements = browser.webBrowser.functions.elements ();
-	while (elements.hasMoreElements ()) {
-		BrowserFunction current = (BrowserFunction)elements.nextElement ();
+	for (BrowserFunction current : browser.webBrowser.functions.values()) {
 		browser.execute (current.functionString);
 	}
 
@@ -288,9 +284,7 @@ int didCommitLoadForFrame (long /*int*/ webview, long /*int*/ frame) {
 		if (url2.startsWith (WebKit.ABOUT_BLANK) && html != null) return COM.S_OK;
 
 		/* re-install registered functions */
-		Enumeration elements = browser.webBrowser.functions.elements ();
-		while (elements.hasMoreElements ()) {
-			BrowserFunction function = (BrowserFunction)elements.nextElement ();
+		for (BrowserFunction function : browser.webBrowser.functions.values()) {
 			browser.webBrowser.execute (function.functionString);
 		}
 

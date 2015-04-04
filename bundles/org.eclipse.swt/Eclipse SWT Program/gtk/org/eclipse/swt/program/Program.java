@@ -11,17 +11,17 @@
 package org.eclipse.swt.program;
 
 
-import org.eclipse.swt.*;
-import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.internal.*;
-import org.eclipse.swt.internal.gnome.*;
-import org.eclipse.swt.internal.cde.*;
-import org.eclipse.swt.internal.gtk.*;
-import org.eclipse.swt.widgets.*;
-
 import java.io.*;
 import java.util.*;
 import java.util.List;
+
+import org.eclipse.swt.*;
+import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.internal.*;
+import org.eclipse.swt.internal.cde.*;
+import org.eclipse.swt.internal.gnome.*;
+import org.eclipse.swt.internal.gtk.*;
+import org.eclipse.swt.widgets.*;
 
 /**
  * Instances of this class represent programs and
@@ -44,7 +44,7 @@ public final class Program {
 	boolean gnomeExpectUri;
 
 	static long /*int*/ modTime;
-	static Hashtable<String, List<String>> mimeTable;
+	static Map<String, List<String>> mimeTable;
 
 	static long /*int*/ cdeShell;
 
@@ -210,8 +210,8 @@ static String cde_getAttribute(String dataType, String attrName) {
 	return new String(Converter.mbcsToWcs(null, attrValueBuf));
 }
 
-static Hashtable<String, List<String>> cde_getDataTypeInfo() {
-	Hashtable<String, List<String>> dataTypeInfo = new Hashtable<String, List<String>>();
+static Map<String, List<String>> cde_getDataTypeInfo() {
+	Map<String, List<String>> dataTypeInfo = new HashMap<String, List<String>>();
 	int index;
 	long /*int*/ dataTypeList = CDE.DtDtsDataTypeNames();
 	if (dataTypeList != 0) {
@@ -267,11 +267,11 @@ ImageData cde_getImageData() {
 
 static String cde_getMimeType(String extension) {
 	String mimeType = null;
-	Hashtable<String, List<String>> mimeInfo = cde_getDataTypeInfo();
+	Map<String, List<String>> mimeInfo = cde_getDataTypeInfo();
 	if (mimeInfo == null) return null;
-	Enumeration<String> keys = mimeInfo.keys();
-	while (mimeType == null && keys.hasMoreElements()) {
-		String type = keys.nextElement();
+	Iterator<String> keys = mimeInfo.keySet().iterator();
+	while (mimeType == null && keys.hasNext()) {
+		String type = keys.next();
 		List<String> mimeExts = mimeInfo.get(type);
 		for (int index = 0; index < mimeExts.size(); index++){
 			if (extension.equals(mimeExts.get(index))) {
@@ -553,7 +553,7 @@ public static String[] getExtensions() {
  */
 static String[] getExtensions(Display display) {
 	int desktop = getDesktop(display);
-	Hashtable<String, List<String>> mimeInfo = null;
+	Map<String, List<String>> mimeInfo = null;
 	switch (desktop) {
 		case DESKTOP_GIO: return gio_getExtensions();
 		case DESKTOP_GNOME: break;
@@ -563,9 +563,9 @@ static String[] getExtensions(Display display) {
 
 	/* Create a unique set of the file extensions. */
 	List<String> extensions = new ArrayList<String>();
-	Enumeration<String> keys = mimeInfo.keys();
-	while (keys.hasMoreElements()) {
-		String mimeType = keys.nextElement();
+	Iterator<String> keys = mimeInfo.keySet().iterator();
+	while (keys.hasNext()) {
+		String mimeType = keys.next();
 		List<String> mimeExts = mimeInfo.get(mimeType);
 		for (int index = 0; index < mimeExts.size(); index++){
 			if (!extensions.contains(mimeExts.get(index))) {
@@ -595,7 +595,7 @@ public static Program[] getPrograms() {
  */
 static Program[] getPrograms(Display display) {
 	int desktop = getDesktop(display);
-	Hashtable<String, List<String>> mimeInfo = null;
+	Map<String, List<String>> mimeInfo = null;
 	switch (desktop) {
 		case DESKTOP_GIO: return gio_getPrograms(display);
 		case DESKTOP_GNOME: break;
@@ -603,9 +603,9 @@ static Program[] getPrograms(Display display) {
 	}
 	if (mimeInfo == null) return new Program[0];
 	List<Program> programs = new ArrayList<Program>();
-	Enumeration<String> keys = mimeInfo.keys();
-	while (keys.hasMoreElements()) {
-		String mimeType = keys.nextElement();
+	Iterator<String> keys = mimeInfo.keySet().iterator();
+	while (keys.hasNext()) {
+		String mimeType = keys.next();
 		Program program = null;
 		switch (desktop) {
 			case DESKTOP_CDE: program = cde_getProgram(display, mimeType); break;
@@ -662,7 +662,7 @@ ImageData gio_getImageData() {
 	return data;
 }
 
-static Hashtable<String, List<String>> gio_getMimeInfo() {
+static Map<String, List<String>> gio_getMimeInfo() {
 	long /*int*/ mimeDatabase = 0, fileInfo = 0;
 	/*
 	* The file 'globs' contain the file extensions
@@ -683,7 +683,7 @@ static Hashtable<String, List<String>> gio_getMimeInfo() {
 			if (modTime != 0 && modTimestamp[0] == modTime) {
 				return mimeTable;
 			} else {
-				mimeTable = new Hashtable<String, List<String>>();
+				mimeTable = new HashMap<String, List<String>>();
 				modTime = modTimestamp[0];
 				long /*int*/ reader = OS.g_data_input_stream_new (fileInputStream);
 				long /*int*/ [] length = new long /*int*/ [1];
@@ -733,7 +733,7 @@ static Hashtable<String, List<String>> gio_getMimeInfo() {
 
 static String gio_getMimeType(String extension) {
 	String mimeType = null;
-	Hashtable<String, List<String>> h = gio_getMimeInfo();
+	Map<String, List<String>> h = gio_getMimeInfo();
 	if (h != null && h.containsKey(extension)) {
 		List<String> mimeTypes = h.get(extension);
 		mimeType = mimeTypes.get(0);
@@ -892,15 +892,10 @@ boolean gio_execute(String fileName) {
 }
 
 static String[] gio_getExtensions() {
-	Hashtable<String, List<String>> mimeInfo = gio_getMimeInfo();
+	Map<String, List<String>> mimeInfo = gio_getMimeInfo();
 	if (mimeInfo == null) return new String[0];
 	/* Create a unique set of the file extensions. */
-	List<String> extensions = new ArrayList<String>();
-	Enumeration<String> keys = mimeInfo.keys();
-	while (keys.hasMoreElements()) {
-		String extension = keys.nextElement();
-		extensions.add(extension);
-	}
+	List<String> extensions = new ArrayList<String>(mimeInfo.keySet());
 	/* Return the list of extensions. */
 	return extensions.toArray(new String[extensions.size()]);
 }

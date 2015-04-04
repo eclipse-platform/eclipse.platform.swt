@@ -65,7 +65,7 @@ class Mozilla extends WebBrowser {
 	static AppFileLocProvider LocationProvider;
 	static WindowCreator2 WindowCreator;
 	static int BrowserCount, NextJSFunctionIndex = 1;
-	static Hashtable<Integer, BrowserFunction> AllFunctions = new Hashtable<Integer, BrowserFunction> ();
+	static Map<Integer, BrowserFunction> AllFunctions = new HashMap<Integer, BrowserFunction> ();
 	static Listener DisplayListener;
 	static boolean Initialized, IsXULRunner, PerformedVersionCheck, XPCOMWasGlued, XPCOMInitWasGlued;
 	static boolean IsGettingSiteWindow;
@@ -1329,7 +1329,7 @@ void createCOMInterfaces () {
 @Override
 void deregisterFunction (BrowserFunction function) {
 	super.deregisterFunction (function);
-	AllFunctions.remove (new Integer (function.index));
+	AllFunctions.remove (function.index);
 }
 
 void disposeCOMInterfaces () {
@@ -3016,9 +3016,9 @@ void onDispose (Display display) {
 	}
 	unhookedDOMWindows = null;
 
-	Enumeration<BrowserFunction> elements = functions.elements ();
-	while (elements.hasMoreElements ()) {
-		BrowserFunction function = elements.nextElement ();
+	Iterator<BrowserFunction> elements = functions.values().iterator ();
+	while (elements.hasNext ()) {
+		BrowserFunction function = elements.next ();
 		AllFunctions.remove (new Integer (function.index));
 		function.dispose (false);
 	}
@@ -3271,7 +3271,7 @@ public void refresh () {
 @Override
 void registerFunction (BrowserFunction function) {
 	super.registerFunction (function);
-	AllFunctions.put (new Integer (function.index), function);
+	AllFunctions.put (function.index, function);
 }
 
 boolean sendChangingEvent (String url) {
@@ -3851,9 +3851,9 @@ int GetWeakReference (long /*int*/ ppvObject) {
 int OnStateChange (long /*int*/ aWebProgress, long /*int*/ aRequest, int aStateFlags, int aStatus) {
 	if (registerFunctionsOnState != 0 && ((aStateFlags & registerFunctionsOnState) == registerFunctionsOnState)) {
 		registerFunctionsOnState = 0;
-		Enumeration<BrowserFunction> elements = functions.elements ();
-		while (elements.hasMoreElements ()) {
-			BrowserFunction function = elements.nextElement ();
+		Iterator<BrowserFunction> elements = functions.values().iterator ();
+		while (elements.hasNext ()) {
+			BrowserFunction function = elements.next ();
 			if (!function.isEvaluate) {
 				execute (function.functionString);
 			}
@@ -4086,9 +4086,9 @@ int OnStateChange (long /*int*/ aWebProgress, long /*int*/ aRequest, int aStateF
 				* is the only place where registered functions can be re-installed such that
 				* they will be invokable at load time by JS contained in the text.
 				*/
-				Enumeration<BrowserFunction> elements = functions.elements ();
-				while (elements.hasMoreElements ()) {
-					BrowserFunction function = elements.nextElement ();
+				Iterator<BrowserFunction> elements = functions.values().iterator ();
+				while (elements.hasNext ()) {
+					BrowserFunction function = elements.next ();
 					if (!function.isEvaluate) {
 						execute (function.functionString);
 					}

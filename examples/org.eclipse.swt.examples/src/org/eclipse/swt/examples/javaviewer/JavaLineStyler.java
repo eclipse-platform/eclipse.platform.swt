@@ -14,8 +14,9 @@ package org.eclipse.swt.examples.javaviewer;
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.ArrayList;
-import java.util.Hashtable;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.LineStyleEvent;
@@ -216,7 +217,7 @@ public void parseBlockComments(String text) {
  */
 public class JavaScanner {
 
-	protected Hashtable<String, Integer> fgKeys= null;
+	protected Map<String, Integer> fgKeys= null;
 	protected StringBuffer fBuffer= new StringBuffer();
 	protected String fDoc;
 	protected int fPos;
@@ -257,7 +258,7 @@ public class JavaScanner {
 	 * Initialize the lookup table.
 	 */
 	void initialize() {
-		fgKeys= new Hashtable<>();
+		fgKeys= new HashMap<>();
 		Integer k= new Integer(KEY);
 		for (String word : fgKeywords)
 			fgKeys.put(word, k);

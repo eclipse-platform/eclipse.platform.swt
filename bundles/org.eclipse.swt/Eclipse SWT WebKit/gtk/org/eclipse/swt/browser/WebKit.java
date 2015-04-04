@@ -12,40 +12,17 @@
 package org.eclipse.swt.browser;
 
 
-import java.io.UnsupportedEncodingException;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.Enumeration;
-import java.util.Hashtable;
-import java.util.StringTokenizer;
+import java.io.*;
+import java.net.*;
+import java.util.*;
 
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.SWTException;
-import org.eclipse.swt.graphics.Device;
-import org.eclipse.swt.graphics.Point;
-import org.eclipse.swt.graphics.Rectangle;
-import org.eclipse.swt.internal.C;
-import org.eclipse.swt.internal.Callback;
-import org.eclipse.swt.internal.Compatibility;
-import org.eclipse.swt.internal.Converter;
-import org.eclipse.swt.internal.LONG;
-import org.eclipse.swt.internal.Library;
-import org.eclipse.swt.internal.gtk.GdkEventKey;
-import org.eclipse.swt.internal.gtk.OS;
-import org.eclipse.swt.internal.webkit.JSClassDefinition;
-import org.eclipse.swt.internal.webkit.WebKitGTK;
-import org.eclipse.swt.layout.GridData;
-import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.widgets.Button;
-import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.widgets.FileDialog;
-import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.Listener;
-import org.eclipse.swt.widgets.Menu;
-import org.eclipse.swt.widgets.Monitor;
-import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.*;
+import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.internal.*;
+import org.eclipse.swt.internal.gtk.*;
+import org.eclipse.swt.internal.webkit.*;
+import org.eclipse.swt.layout.*;
+import org.eclipse.swt.widgets.*;
 
 class WebKit extends WebBrowser {
 	long /*int*/ webView, webViewData, scrolledWindow;
@@ -59,7 +36,7 @@ class WebKit extends WebBrowser {
 	static int DisabledJSCount;
 	static long /*int*/ ExternalClass, PostString, WebViewType;
 	static boolean IsWebKit14orNewer, LibraryLoaded;
-	static Hashtable<LONG, LONG> WindowMappings = new Hashtable<LONG, LONG> ();
+	static Map<LONG, LONG> WindowMappings = new HashMap<LONG, LONG> ();
 
 	static final String ABOUT_BLANK = "about:blank"; //$NON-NLS-1$
 	static final String CHARSET_UTF8 = "UTF-8"; //$NON-NLS-1$
@@ -1553,9 +1530,9 @@ void onDispose (Event e) {
 		}
 	}
 
-	Enumeration<BrowserFunction> elements = functions.elements ();
-	while (elements.hasMoreElements ()) {
-		elements.nextElement ().dispose (false);
+	Iterator<BrowserFunction> elements = functions.values().iterator ();
+	while (elements.hasNext ()) {
+		elements.next ().dispose (false);
 	}
 	functions = null;
 
@@ -2321,9 +2298,9 @@ long /*int*/ webkit_window_object_cleared (long /*int*/ web_view, long /*int*/ f
 	long /*int*/ name = WebKitGTK.JSStringCreateWithUTF8CString (bytes);
 	WebKitGTK.JSObjectSetProperty (context, globalObject, name, externalObject, 0, null);
 	WebKitGTK.JSStringRelease (name);
-	Enumeration<BrowserFunction> elements = functions.elements ();
-	while (elements.hasMoreElements ()) {
-		BrowserFunction current = elements.nextElement ();
+	Iterator<BrowserFunction> elements = functions.values().iterator ();
+	while (elements.hasNext ()) {
+		BrowserFunction current = elements.next ();
 		execute (current.functionString);
 	}
 	long /*int*/ mainFrame = WebKitGTK.webkit_web_view_get_main_frame (webView);

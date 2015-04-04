@@ -10,16 +10,15 @@
  *******************************************************************************/
 package org.eclipse.swt.browser;
 
-import java.util.Hashtable;
+import java.util.*;
 
 import org.eclipse.swt.*;
-import org.eclipse.swt.internal.C;
+import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.ole.win32.*;
+import org.eclipse.swt.internal.win32.*;
 import org.eclipse.swt.ole.win32.*;
 import org.eclipse.swt.widgets.*;
-import org.eclipse.swt.internal.win32.*;
 
-@SuppressWarnings("rawtypes")
 class WebSite extends OleControlSite {
 	COMObject iDocHostUIHandler;
 	COMObject iDocHostShowUI;
@@ -772,7 +771,7 @@ int GetIDsOfNames (int riid, long /*int*/ rgszNames, int cNames, int lcid, long 
 
 int Invoke (int dispIdMember, long /*int*/ riid, int lcid, int dwFlags, long /*int*/ pDispParams, long /*int*/ pVarResult, long /*int*/ pExcepInfo, long /*int*/ pArgErr) {
 	IE ie = (IE)((Browser)getParent ().getParent ()).webBrowser;
-	Hashtable functions = ie.functions;
+	Map<Integer, BrowserFunction> functions = ie.functions;
 	if (functions == null) {
 		if (pVarResult != 0) {
 			COM.MoveMemory (pVarResult, new long /*int*/[] {0}, C.PTR_SIZEOF);
@@ -821,8 +820,7 @@ int Invoke (int dispIdMember, long /*int*/ riid, int lcid, int dwFlags, long /*i
 	variant.dispose ();
 
 	variant = Variant.win32_new (dispParams.rgvarg);
-	Object key = new Integer (index);
-	BrowserFunction function = (BrowserFunction)functions.get (key);
+	BrowserFunction function = functions.get (index);
 	Object returnValue = null;
 	if (function != null && token.equals (function.token)) {
 		try {

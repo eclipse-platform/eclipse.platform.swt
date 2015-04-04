@@ -51,9 +51,9 @@ public void generate(JNIField[] fields) {
 
 public void generate(JNIField field) {
 	String name = field.getName();
-	Enumeration<File> keys = files.keys();
-	while (keys.hasMoreElements()) {
-		File key = keys.nextElement();
+	Iterator<File> keys = files.keySet().iterator();
+	while (keys.hasNext()) {
+		File key = keys.next();
 		String str = files.get(key);
 		if (str.indexOf(name) != -1) {
 			int modifiers = field.getModifiers();

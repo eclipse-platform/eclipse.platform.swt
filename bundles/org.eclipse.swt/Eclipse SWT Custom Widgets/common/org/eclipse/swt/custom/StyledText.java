@@ -125,7 +125,7 @@ public class StyledText extends Canvas {
 	boolean doubleClickEnabled = true;	// see getDoubleClickEnabled 
 	boolean overwrite = false;			// insert/overwrite edit mode
 	int textLimit = -1;					// limits the number of characters the user can type in the widget. Unlimited by default.
-	Hashtable<Integer, Integer> keyActionMap = new Hashtable<Integer, Integer>();
+	Map<Integer, Integer> keyActionMap = new HashMap<Integer, Integer>();
 	Color background = null;			// workaround for bug 4791
 	Color foreground = null;			//
 	Clipboard clipboard;
@@ -194,7 +194,7 @@ public class StyledText extends Canvas {
 		Rectangle clientArea;
 		FontData fontData;
 		Font printerFont;
-		Hashtable<Resource, Resource> resources;
+		Map<Resource, Resource> resources;
 		int tabLength;
 		GC gc;											// printer GC
 		int pageWidth;									// width of a printer page in pixels
@@ -283,7 +283,7 @@ public class StyledText extends Canvas {
 		}
 		Point screenDPI = styledText.getDisplay().getDPI();
 		Point printerDPI = printer.getDPI();
-		resources = new Hashtable<Resource, Resource> ();
+		resources = new HashMap<Resource, Resource> ();
 		for (int i = 0; i < lineCount; i++) {
 			Color color = printerRenderer.getLineBackground(i, null);
 			if (color != null) {
@@ -386,9 +386,9 @@ public class StyledText extends Canvas {
 			gc = null;
 		}
 		if (resources != null) {
-			Enumeration<Resource> enumeration = resources.elements();			
-			while (enumeration.hasMoreElements()) {
-				Resource resource = enumeration.nextElement();
+			Iterator<Resource> enumeration = resources.values().iterator();
+			while (enumeration.hasNext()) {
+				Resource resource = enumeration.next();
 				resource.dispose();
 			}
 			resources = null;
@@ -3877,7 +3877,7 @@ public boolean getJustify() {
  */
 public int getKeyBinding(int key) {
 	checkWidget();
-	Integer action = keyActionMap.get(new Integer(key));	
+	Integer action = keyActionMap.get(key);
 	return action == null ? SWT.NULL : action.intValue();
 }
 /**
@@ -8960,22 +8960,22 @@ public void setKeyBinding(int key, int action) {
 		char ch = Character.toUpperCase(keyChar);
 		int newKey = ch | modifierValue;
 		if (action == SWT.NULL) {
-			keyActionMap.remove(new Integer(newKey));
+			keyActionMap.remove(newKey);
 		} else {
-		 	keyActionMap.put(new Integer(newKey), new Integer(action));
+		 	keyActionMap.put(newKey, action);
 		}
 		ch = Character.toLowerCase(keyChar);
 		newKey = ch | modifierValue;
 		if (action == SWT.NULL) {
-			keyActionMap.remove(new Integer(newKey));
+			keyActionMap.remove(newKey);
 		} else {
-		 	keyActionMap.put(new Integer(newKey), new Integer(action));
+		 	keyActionMap.put(newKey, action);
 		}
 	} else {
 		if (action == SWT.NULL) {
-			keyActionMap.remove(new Integer(key));
+			keyActionMap.remove(key);
 		} else {
-		 	keyActionMap.put(new Integer(key), new Integer(action));
+		 	keyActionMap.put(key, action);
 		}
 	}		
 }

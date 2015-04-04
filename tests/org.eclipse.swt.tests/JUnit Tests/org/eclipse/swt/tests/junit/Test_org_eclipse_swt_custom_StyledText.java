@@ -13,8 +13,8 @@ package org.eclipse.swt.tests.junit;
 
 import static org.junit.Assert.assertArrayEquals;
 
-import java.util.Enumeration;
-import java.util.Hashtable;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.BidiSegmentEvent;
@@ -67,7 +67,7 @@ final static RGB YELLOW = new RGB(255,255,0);
 final static RGB CYAN = new RGB(0,255,255);
 final static RGB PURPLE = new RGB(255,0,255);
 final static String PLATFORM_LINE_DELIMITER = System.getProperty("line.separator");
-Hashtable<RGB, Color> colors = new Hashtable<RGB, Color>();
+Map<RGB, Color> colors = new HashMap<RGB, Color>();
 private boolean listenerCalled;	
 private boolean listener2Called;
 
@@ -85,9 +85,7 @@ protected void setUp() {
 
 @Override
 protected void tearDown() {
-	Enumeration<RGB> elements = colors.keys();
-	while (elements.hasMoreElements()) {
-		Color color = colors.get(elements.nextElement());
+	for (Color color : colors.values()) {
 		color.dispose();
 	}
 	super.tearDown();

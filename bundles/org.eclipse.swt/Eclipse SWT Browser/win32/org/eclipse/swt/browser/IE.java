@@ -15,13 +15,12 @@ import java.util.*;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.internal.C;
+import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.ole.win32.*;
 import org.eclipse.swt.internal.win32.*;
 import org.eclipse.swt.ole.win32.*;
 import org.eclipse.swt.widgets.*;
 
-@SuppressWarnings("rawtypes")
 class IE extends WebBrowser {
 
 	OleFrame frame;
@@ -405,9 +404,9 @@ public void create(Composite parent, int style) {
 					}
 					documents = null;
 
-					Enumeration elements = functions.elements ();
-					while (elements.hasMoreElements ()) {
-						((BrowserFunction)elements.nextElement ()).dispose (false);
+					Iterator<BrowserFunction> elements = functions.values().iterator ();
+					while (elements.hasNext ()) {
+						elements.next ().dispose (false);
 					}
 					functions = null;
 
@@ -659,9 +658,9 @@ public void create(Composite parent, int style) {
 								IE ie = (IE)browser.webBrowser;
 								if (ie.installFunctionsOnDocumentComplete) {
 									ie.installFunctionsOnDocumentComplete = false;
-									Enumeration elements = functions.elements ();
-									while (elements.hasMoreElements ()) {
-										BrowserFunction function = (BrowserFunction)elements.nextElement ();
+									Iterator<BrowserFunction> elements = functions.values().iterator ();
+									while (elements.hasNext ()) {
+										BrowserFunction function = elements.next ();
 										execute (function.functionString);
 									}
 								}
@@ -684,9 +683,9 @@ public void create(Composite parent, int style) {
 						* do this work.   
 						*/
 
-						Enumeration elements = functions.elements ();
-						while (elements.hasMoreElements ()) {
-							BrowserFunction function = (BrowserFunction)elements.nextElement ();
+						Iterator<BrowserFunction> elements = functions.values().iterator ();
+						while (elements.hasNext ()) {
+							BrowserFunction function = elements.next ();
 							execute (function.functionString);
 						}
 
@@ -785,9 +784,9 @@ public void create(Composite parent, int style) {
 							documents = new OleAutomation[0];
 
 							/* re-install registered functions */
-							Enumeration elements = functions.elements ();
-							while (elements.hasMoreElements ()) {
-								BrowserFunction function = (BrowserFunction)elements.nextElement ();
+							Iterator<BrowserFunction> elements = functions.values().iterator ();
+							while (elements.hasNext ()) {
+								BrowserFunction function = elements.next ();
 								execute (function.functionString);
 							}
 						}

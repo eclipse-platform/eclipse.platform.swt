@@ -10,8 +10,8 @@
  *******************************************************************************/
 package org.eclipse.swt.browser;
 
-import java.io.UnsupportedEncodingException;
-import java.util.Enumeration;
+import java.io.*;
+import java.util.*;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
@@ -254,9 +254,9 @@ public void create (Composite parent, int style) {
 					html = null;
 					lastHoveredLinkURL = lastNavigateURL = null;
 
-					Enumeration elements = functions.elements ();
-					while (elements.hasMoreElements ()) {
-						((BrowserFunction)elements.nextElement ()).dispose (false);
+					Iterator<BrowserFunction> elements = functions.values().iterator ();
+					while (elements.hasNext ()) {
+						elements.next ().dispose (false);
 					}
 					functions = null;
 
@@ -940,9 +940,9 @@ void webView_didCommitLoadForFrame(long /*int*/ sender, long /*int*/ frameID) {
 		if (url2.startsWith(ABOUT_BLANK) && html != null) return;
 
 		/* re-install registered functions */
-		Enumeration elements = functions.elements ();
-		while (elements.hasMoreElements ()) {
-			BrowserFunction function = (BrowserFunction)elements.nextElement ();
+		Iterator<BrowserFunction> elements = functions.values().iterator ();
+		while (elements.hasNext ()) {
+			BrowserFunction function = elements.next ();
 			execute (function.functionString);
 		}
 

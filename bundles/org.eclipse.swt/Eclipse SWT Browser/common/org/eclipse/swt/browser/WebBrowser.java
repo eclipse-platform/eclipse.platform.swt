@@ -18,7 +18,7 @@ import org.eclipse.swt.widgets.*;
 
 abstract class WebBrowser {
 	Browser browser;
-	Hashtable<Integer, BrowserFunction> functions = new Hashtable<Integer, BrowserFunction> ();
+	Map<Integer, BrowserFunction> functions = new HashMap<Integer, BrowserFunction> ();
 	AuthenticationListener[] authenticationListeners = new AuthenticationListener[0];
 	CloseWindowListener[] closeWindowListeners = new CloseWindowListener[0];
 	LocationListener[] locationListeners = new LocationListener[0];
@@ -320,9 +320,9 @@ public void createFunction (BrowserFunction function) {
 	 * remove it so that it is not recreated on subsequent pages
 	 * (the new function overwrites the old one).
 	 */
-	Enumeration<Integer> keys = functions.keys ();
-	while (keys.hasMoreElements ()) {
-		Integer key = keys.nextElement ();
+	Iterator<Integer> keys = functions.keySet().iterator ();
+	while (keys.hasNext ()) {
+		Integer key = keys.next ();
 		BrowserFunction current = functions.get (key);
 		if (current.name.equals (function.name)) {
 			deregisterFunction (current);
@@ -376,7 +376,7 @@ public void createFunction (BrowserFunction function) {
 }
 
 void deregisterFunction (BrowserFunction function) {
-	functions.remove (new Integer (function.index));
+	functions.remove (function.index);
 }
 
 public void destroyFunction (BrowserFunction function) {
@@ -474,7 +474,7 @@ public abstract boolean isForwardEnabled ();
 public abstract void refresh ();
 
 void registerFunction (BrowserFunction function) {
-	functions.put (new Integer (function.index), function);
+	functions.put (function.index, function);
 }
 
 public void removeAuthenticationListener (AuthenticationListener listener) {

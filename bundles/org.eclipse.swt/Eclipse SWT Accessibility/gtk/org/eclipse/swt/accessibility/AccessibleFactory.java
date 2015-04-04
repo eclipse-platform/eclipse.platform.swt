@@ -18,8 +18,8 @@ import org.eclipse.swt.internal.gtk.*;
 import org.eclipse.swt.*;
 
 class AccessibleFactory {
-	static final Hashtable<LONG, Accessible> Accessibles = new Hashtable<LONG, Accessible> (9);
-	static final Hashtable<LONG, LONG> Factories = new Hashtable<LONG, LONG> (9);	
+	static final Map<LONG, Accessible> Accessibles = new HashMap<LONG, Accessible> (9);
+	static final Map<LONG, LONG> Factories = new HashMap<LONG, LONG> (9);
 	static final String SWT_TYPE_PREFIX = "SWTAccessible"; //$NON-NLS-1$
 	static final String CHILD_TYPENAME = "Child"; //$NON-NLS-1$
 	static final String FACTORY_TYPENAME = "SWTFactory"; //$NON-NLS-1$

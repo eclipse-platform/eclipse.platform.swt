@@ -11,7 +11,8 @@
 package org.eclipse.swt.internal;
 
 
-import java.util.Hashtable;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.GC;
@@ -20,7 +21,6 @@ import org.eclipse.swt.widgets.*;
 /*
  * Wraps Win32 API used to bidi enable the StyledText widget.
  */
-@SuppressWarnings({"rawtypes", "unchecked"})
 public class BidiUtil {
 
 	// Keyboard language ids
@@ -37,9 +37,8 @@ public class BidiUtil {
 
 	// variables used for providing a listener mechanism for keyboard language 
 	// switching 
-	static Hashtable languageMap = new Hashtable ();
-	static Hashtable keyMap = new Hashtable ();
-	static Hashtable oldProcMap = new Hashtable ();
+	static Map<LONG, Runnable> languageMap = new HashMap<LONG, Runnable> ();
+	static Map<LONG, LONG> oldProcMap = new HashMap<LONG, LONG> ();
 	/*
 	 * This code is intentionally commented.  In order
 	 * to support CLDC, .class cannot be used because
@@ -613,8 +612,8 @@ static void translateOrder(int[] orderArray, int glyphCount, boolean isRightOrie
  */
 static void unsubclass(long /*int*/ hwnd) {
 	LONG key = new LONG(hwnd);
-	if (languageMap.get(key) == null && keyMap.get(key) == null) {
-		LONG proc = (LONG) oldProcMap.remove(key);
+	if (languageMap.get(key) == null) {
+		LONG proc = oldProcMap.remove(key);
 		if (proc == null) return;
 		OS.SetWindowLongPtr(hwnd, OS.GWLP_WNDPROC, proc.value);
 	}	
@@ -632,11 +631,11 @@ static long /*int*/ windowProc (long /*int*/ hwnd, long /*int*/ msg, long /*int*
 	LONG key = new LONG (hwnd);
 	switch ((int)/*64*/msg) {
 		case OS.WM_INPUTLANGCHANGE:
-			Runnable runnable = (Runnable) languageMap.get (key);
+			Runnable runnable = languageMap.get (key);
 			if (runnable != null) runnable.run ();
 			break;
 		}
-	LONG oldProc = (LONG)oldProcMap.get(key);
+	LONG oldProc = oldProcMap.get(key);
 	return OS.CallWindowProc (oldProc.value, hwnd, (int)/*64*/msg, wParam, lParam);
 }
 
