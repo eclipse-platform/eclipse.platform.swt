@@ -12,7 +12,8 @@ package org.eclipse.swt.tests.junit;
 
 import static org.junit.Assert.assertArrayEquals;
 
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -434,7 +435,7 @@ public void test_consistency_Open() {
 	if (SwtTestUtil.fTestConsistency) {
 	    createShell();
 	    final Display display = shell.getDisplay();
-	    Vector<String> events = new Vector<String>();
+	    List<String> events = new ArrayList<String>();
 	    String[] temp = hookExpectedEvents(testShell, getTestName(), events);
 	    shell.pack();
 	    shell.open();
@@ -455,8 +456,7 @@ public void test_consistency_Open() {
 	        if(!display.readAndDispatch()) display.sleep();
 	    }
 	    setUp();        
-	    String[] results = new String[events.size()];
-	    events.copyInto(results);
+	    String[] results = events.toArray(new String[events.size()]);
 	    assertArrayEquals(getTestName() + " event ordering", temp, results);
 	}
 }
@@ -485,7 +485,7 @@ public void test_consistency_Dispose() {
             testShell.dispose();
         }
     });
-    Vector<String> events = new Vector<String>();
+    List<String> events = new ArrayList<String>();
     consistencyPrePackShell(testShell);
     Point pt = button.getLocation();
     consistencyEvent(pt.x, pt.y, 1, 0, ConsistencyUtility.MOUSE_CLICK, events);

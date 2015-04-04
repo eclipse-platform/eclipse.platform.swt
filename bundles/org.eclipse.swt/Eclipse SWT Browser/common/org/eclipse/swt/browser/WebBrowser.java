@@ -11,6 +11,7 @@
 package org.eclipse.swt.browser;
 
 import java.util.*;
+import java.util.List;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.widgets.*;
@@ -33,8 +34,8 @@ abstract class WebBrowser {
 	static final String ERROR_ID = "org.eclipse.swt.browser.error"; // $NON-NLS-1$
 	static final String EXECUTE_ID = "SWTExecuteTemporaryFunction"; // $NON-NLS-1$
 
-	static Vector<String[]> NativePendingCookies = new Vector<String[]> ();
-	static Vector<String[]> MozillaPendingCookies = new Vector<String[]> ();
+	static List<String[]> NativePendingCookies = new ArrayList<String[]> ();
+	static List<String[]> MozillaPendingCookies = new ArrayList<String[]> ();
 	static String CookieName, CookieValue, CookieUrl;
 	static boolean CookieResult;
 	static Runnable MozillaClearSessions, NativeClearSessions;
@@ -293,7 +294,7 @@ public static boolean SetCookie (String value, String url, boolean addToPending)
 	return CookieResult;
 }
 
-static void SetPendingCookies (Vector<String[]> pendingCookies) {
+static void SetPendingCookies (List<String[]> pendingCookies) {
 	for (String[] current : pendingCookies) {
 		SetCookie (current[0], current[1], false);
 	}

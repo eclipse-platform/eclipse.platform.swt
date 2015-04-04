@@ -10,16 +10,17 @@
  *******************************************************************************/
 package org.eclipse.swt.custom;
 
-import org.eclipse.swt.*;
-import org.eclipse.swt.internal.Compatibility;
-import org.eclipse.swt.widgets.*;
+import java.util.*;
+import java.util.List;
 
-import java.util.Vector;
+import org.eclipse.swt.*;
+import org.eclipse.swt.internal.*;
+import org.eclipse.swt.widgets.*;
 
 class DefaultContent implements StyledTextContent {
 	private final static String LineDelimiter = System.getProperty("line.separator");
 
-	Vector<StyledTextListener> textListeners = new Vector<StyledTextListener>(); // stores text listeners for event sending
+	List<StyledTextListener> textListeners = new ArrayList<StyledTextListener>(); // stores text listeners for event sending
 	char[] textStore = new char[0];	// stores the actual text
 	int gapStart = -1;	// the character position start of the gap
 	int gapEnd = -1;	// the character position after the end of the gap

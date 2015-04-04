@@ -12,7 +12,8 @@ package org.eclipse.swt.tests.junit;
 
 import static org.junit.Assert.assertArrayEquals;
 
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Tree;
@@ -646,7 +647,7 @@ private void makeCleanEnvironment(boolean single) {
 	setWidget(tree);
 }
 
-private void createTree(Vector<String> events) {
+private void createTree(List<String> events) {
     makeCleanEnvironment(true);
 	for (int i = 0; i < 3; i++) {
 		TreeItem item = new TreeItem(tree, SWT.NONE);
@@ -661,25 +662,25 @@ private void createTree(Vector<String> events) {
 }
 
 public void test_consistency_KeySelection() {
-    Vector<String> events = new Vector<String>();
+    List<String> events = new ArrayList<String>();
     createTree(events);
     consistencyEvent(0, SWT.ARROW_DOWN, 0, 0, ConsistencyUtility.KEY_PRESS, events);
 }
 
 public void test_consistency_MouseSelection() {
-    Vector<String> events = new Vector<String>();
+    List<String> events = new ArrayList<String>();
     createTree(events);
     consistencyEvent(30, 30, 1, 0, ConsistencyUtility.MOUSE_CLICK, events);
 }
 
 public void test_consistency_MouseExpand() {
-    Vector<String> events = new Vector<String>();
+    List<String> events = new ArrayList<String>();
     createTree(events);
     consistencyEvent(11, 10, 1, 0, ConsistencyUtility.MOUSE_CLICK, events);
 }
 
 public void test_consistency_KeyExpand() {
-    Vector<String> events = new Vector<String>();
+    List<String> events = new ArrayList<String>();
     createTree(events);
     int code=SWT.ARROW_RIGHT;
     if(SwtTestUtil.isGTK)
@@ -688,7 +689,7 @@ public void test_consistency_KeyExpand() {
 }
 
 public void test_consistency_DoubleClick () {
-    Vector<String> events = new Vector<String>();
+    List<String> events = new ArrayList<String>();
     createTree(events);
     consistencyPrePackShell();
     consistencyEvent(20, tree.getItemHeight()*2, 1, 0, 
@@ -696,25 +697,25 @@ public void test_consistency_DoubleClick () {
 }
 
 public void test_consistency_EnterSelection () {
-    Vector<String> events = new Vector<String>();
+    List<String> events = new ArrayList<String>();
     createTree(events);
     consistencyEvent(13, 10, 0, 0, ConsistencyUtility.KEY_PRESS, events);
 }
 
 public void test_consistency_SpaceSelection () {
-    Vector<String> events = new Vector<String>();
+    List<String> events = new ArrayList<String>();
     createTree(events);
     consistencyEvent(' ', 32, 0, 0, ConsistencyUtility.KEY_PRESS, events);
 }
 
 public void test_consistency_MenuDetect () {
-    Vector<String> events = new Vector<String>();
+    List<String> events = new ArrayList<String>();
     createTree(events);
     consistencyEvent(50, 25, 3, 0, ConsistencyUtility.MOUSE_CLICK, events);
 }
 
 public void test_consistency_DragDetect () {
-    Vector<String> events = new Vector<String>();
+    List<String> events = new ArrayList<String>();
     createTree(events);
     consistencyEvent(30, 20, 50, 30, ConsistencyUtility.MOUSE_DRAG, events);
 }

@@ -12,7 +12,8 @@ package org.eclipse.swt.tests.junit;
 
 import static org.junit.Assert.assertArrayEquals;
 
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.accessibility.Accessible;
@@ -719,11 +720,11 @@ protected void setWidget(Widget w) {
  */
 protected void consistencyEvent(final int paramA, final int paramB, 
         						final int paramC, final int paramD,
-        						final int method, Vector<String> events, boolean focus) {
+        						final int method, List<String> events, boolean focus) {
     if(SwtTestUtil.fTestConsistency) {
         final Display display = shell.getDisplay();
         if(events == null) 
-            events = new Vector<String>();
+            events = new ArrayList<String>();
         final String test = getTestName();
         
         shell.setLayout(new org.eclipse.swt.layout.FillLayout());
@@ -802,14 +803,14 @@ protected void consistencyEvent(final int paramA, final int paramB,
         }
         setUp();        
         String[] results = new String[events.size()];
-        events.copyInto(results);
+        results = events.toArray(results);
         assertArrayEquals(test + " event ordering", expectedEvents, results);
     }
 }
 
 protected void consistencyEvent(int paramA, int paramB, 
 								int paramC, int paramD,
-								int method, Vector<String> events) {
+								int method, List<String> events) {
     consistencyEvent(paramA, paramB, paramC, paramD, method, events, true);
 }
 

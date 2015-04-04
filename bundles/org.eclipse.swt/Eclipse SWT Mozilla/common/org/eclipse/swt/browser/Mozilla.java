@@ -57,7 +57,7 @@ class Mozilla extends WebBrowser {
 	boolean updateLastNavigateUrl;
 	Shell tip = null;
 	Listener listener;
-	Vector<LONG> unhookedDOMWindows = new Vector<LONG> ();
+	List<LONG> unhookedDOMWindows = new ArrayList<LONG> ();
 	String lastNavigateURL;
 	byte[] htmlBytes;
 

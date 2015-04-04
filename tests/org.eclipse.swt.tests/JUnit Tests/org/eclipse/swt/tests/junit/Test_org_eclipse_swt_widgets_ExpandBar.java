@@ -12,7 +12,8 @@ package org.eclipse.swt.tests.junit;
 
 import static org.junit.Assert.assertArrayEquals;
 
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ExpandEvent;
@@ -171,7 +172,7 @@ public void test_setSpacingI() {
 	assertEquals(expandBar.getSpacing(), 3);
 }
 
-private void createExpandBar(Vector<String> events) {
+private void createExpandBar(List<String> events) {
 	expandBar = new ExpandBar(shell, SWT.V_SCROLL);
 	for (int i = 0; i < 3; i++) {
 		ExpandItem item = new ExpandItem(expandBar, SWT.NONE);
@@ -182,31 +183,31 @@ private void createExpandBar(Vector<String> events) {
 }
 
 public void test_consistency_MouseSelection() {
-    Vector<String> events = new Vector<String>();
+    List<String> events = new ArrayList<String>();
     createExpandBar(events);
     consistencyEvent(30, 10, 1, 0, ConsistencyUtility.MOUSE_CLICK, events);
 }
 
 public void test_consistency_EnterSelection() {
-    Vector<String> events = new Vector<String>();
+    List<String> events = new ArrayList<String>();
     createExpandBar(events);
     consistencyEvent(13, 10, 0, 0, ConsistencyUtility.KEY_PRESS, events);
 }
 
 public void test_consistency_SpaceSelection () {
-    Vector<String> events = new Vector<String>();
+    List<String> events = new ArrayList<String>();
     createExpandBar(events);
     consistencyEvent(' ', 32, 0, 0, ConsistencyUtility.KEY_PRESS, events);
 }
 
 public void test_consistency_MenuDetect () {
-    Vector<String> events = new Vector<String>();
+    List<String> events = new ArrayList<String>();
     createExpandBar(events);
     consistencyEvent(50, 15, 3, 0, ConsistencyUtility.MOUSE_CLICK, events);
 }
 
 public void test_consistency_DragDetect () {
-    Vector<String> events = new Vector<String>();
+    List<String> events = new ArrayList<String>();
     createExpandBar(events);
     consistencyEvent(30, 20, 50, 20, ConsistencyUtility.MOUSE_DRAG, events);
 }

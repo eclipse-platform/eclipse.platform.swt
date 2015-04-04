@@ -12,7 +12,8 @@ package org.eclipse.swt.tests.junit;
 
 import static org.junit.Assert.assertArrayEquals;
 
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Button;
@@ -375,7 +376,7 @@ private void makeCleanEnvironment() {
 	setWidget(tabFolder);
 }
 
-private void createTabFolder(Vector<String> events) {
+private void createTabFolder(List<String> events) {
 	makeCleanEnvironment();
 	for (int i = 0; i < 3; i++) {
 		TabItem item = new TabItem(tabFolder, SWT.NONE);
@@ -391,40 +392,40 @@ private void createTabFolder(Vector<String> events) {
 }
 
 public void test_consistency_KeySelection() {
-    Vector<String> events = new Vector<String>();
+    List<String> events = new ArrayList<String>();
     createTabFolder(events);
     consistencyEvent(0, SWT.ARROW_RIGHT, 0, 0, ConsistencyUtility.KEY_PRESS, events, false);
 }
 
 public void test_consistency_MouseSelection() {
-    Vector<String> events = new Vector<String>();
+    List<String> events = new ArrayList<String>();
     createTabFolder(events);
     consistencyPrePackShell();
     consistencyEvent(tabFolder.getSize().x/2, 5, 1, 0, ConsistencyUtility.MOUSE_CLICK, events);
 }
 
 public void test_consistency_PgdwnSelection () {
-    Vector<String> events = new Vector<String>();
+    List<String> events = new ArrayList<String>();
     createTabFolder(events);
     consistencyEvent(0, SWT.CTRL, 0, SWT.PAGE_DOWN, ConsistencyUtility.DOUBLE_KEY_PRESS, events, false);
 }
 
 public void test_consistency_PgupSelection () {
-    Vector<String> events = new Vector<String>();
+    List<String> events = new ArrayList<String>();
     createTabFolder(events);
     tabFolder.setSelection(2);
     consistencyEvent(0, SWT.CTRL, 0, SWT.PAGE_UP, ConsistencyUtility.DOUBLE_KEY_PRESS, events, false);
 }
 
 public void test_consistency_MenuDetect () {
-    Vector<String> events = new Vector<String>();
+    List<String> events = new ArrayList<String>();
     createTabFolder(events);
     tabFolder.setSelection(1);
     consistencyEvent(50, 5, 3, 0, ConsistencyUtility.MOUSE_CLICK, events);
 }
 
 public void test_consistency_DragDetect () {
-    Vector<String> events = new Vector<String>();
+    List<String> events = new ArrayList<String>();
     createTabFolder(events);
     tabFolder.setSelection(1);
     consistencyEvent(50, 5, 70, 10, ConsistencyUtility.MOUSE_DRAG, events);

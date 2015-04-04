@@ -13,7 +13,8 @@ package org.eclipse.swt.tests.junit;
 
 import static org.junit.Assert.assertArrayEquals;
 
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.SWTException;
@@ -1627,7 +1628,7 @@ private void makeCleanEnvironment(boolean single) {
 	setWidget(table);	
 }
 
-private void createTable(Vector<String> events) {
+private void createTable(List<String> events) {
 	makeCleanEnvironment(false);
 	table.setHeaderVisible(true);
 	table.setLinesVisible(true);
@@ -1645,13 +1646,13 @@ private void createTable(Vector<String> events) {
 }
 
 public void test_consistency_KeySelection() {
-    Vector<String> events = new Vector<String>();
+    List<String> events = new ArrayList<String>();
     createTable(events);
     consistencyEvent(0, SWT.ARROW_DOWN, 0, 0, ConsistencyUtility.KEY_PRESS, events);
 }
 
 public void test_consistency_MouseSelection() {
-    Vector<String> events = new Vector<String>();
+    List<String> events = new ArrayList<String>();
     createTable(events);
     consistencyPrePackShell();
     consistencyEvent(20, table.getHeaderHeight() + table.getItemHeight()*2, 
@@ -1659,7 +1660,7 @@ public void test_consistency_MouseSelection() {
 }
 
 public void test_consistency_DoubleClick () {
-    Vector<String> events = new Vector<String>();
+    List<String> events = new ArrayList<String>();
     createTable(events);
     consistencyPrePackShell();
     consistencyEvent(20, table.getHeaderHeight()+ table.getItemHeight() + 5, 1, 0, 
@@ -1667,19 +1668,19 @@ public void test_consistency_DoubleClick () {
 }
 
 public void test_consistency_EnterSelection () {
-    Vector<String> events = new Vector<String>();
+    List<String> events = new ArrayList<String>();
     createTable(events);
     consistencyEvent(13, 10, 0, 0, ConsistencyUtility.KEY_PRESS, events);
 }
 
 public void test_consistency_MenuDetect () {
-    Vector<String> events = new Vector<String>();
+    List<String> events = new ArrayList<String>();
     createTable(events);
     consistencyEvent(20, 25, 3, 0, ConsistencyUtility.MOUSE_CLICK, events);
 }
 
 public void test_consistency_DragDetect () {
-    Vector<String> events = new Vector<String>();
+    List<String> events = new ArrayList<String>();
     createTable(events);
     consistencyEvent(30, 20, 50, 30, ConsistencyUtility.MOUSE_DRAG, events);
 }

@@ -159,17 +159,17 @@ protected void hookListeners(Widget w, int[] types, Listener listener) {
     }
 }
 
-protected String[] hookExpectedEvents(String type, final java.util.Vector<String> events) {
+protected String[] hookExpectedEvents(String type, final java.util.List<String> events) {
     return hookExpectedEvents(widget, type, events);
 }
 
-protected String[] hookExpectedEvents(Widget w, String type, final java.util.Vector<String> events) {
+protected String[] hookExpectedEvents(Widget w, String type, final java.util.List<String> events) {
     String[] expectedEvents = ConsistencyUtility.eventOrdering.get(type);
     hookExpectedEvents(w, expectedEvents, events);
     return expectedEvents;
 }
 
-protected void hookExpectedEvents(Widget w, String[] types, final java.util.Vector<String> events) {
+protected void hookExpectedEvents(Widget w, String[] types, final java.util.List<String> events) {
     hookListeners(w, ConsistencyUtility.convertEventNames(types), 
 	        new Listener() {
 	            public void handleEvent(Event e) {

@@ -12,9 +12,10 @@ package org.eclipse.swt.graphics;
 
 
 import java.io.*;
-import java.util.Vector;
+import java.util.*;
+
 import org.eclipse.swt.*;
-import org.eclipse.swt.internal.Compatibility;
+import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.image.*;
 
 /**
@@ -100,7 +101,7 @@ public class ImageLoader {
 	/*
 	 * the set of ImageLoader event listeners, created on demand
 	 */
-	Vector<ImageLoaderListener> imageLoaderListeners;
+	List<ImageLoaderListener> imageLoaderListeners;
 
 /**
  * Construct a new empty ImageLoader.
@@ -285,7 +286,7 @@ public void save(String filename, int format) {
 public void addImageLoaderListener(ImageLoaderListener listener) {
 	if (listener == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
 	if (imageLoaderListeners == null) {
-		imageLoaderListeners = new Vector<ImageLoaderListener>();
+		imageLoaderListeners = new ArrayList<ImageLoaderListener>();
 	}
 	imageLoaderListeners.add(listener);
 }

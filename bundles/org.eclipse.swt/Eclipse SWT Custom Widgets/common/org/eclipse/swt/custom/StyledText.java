@@ -12,6 +12,7 @@ package org.eclipse.swt.custom;
 
 
 import java.util.*;
+import java.util.List;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.accessibility.*;
@@ -677,8 +678,8 @@ public class StyledText extends Canvas {
 	class RTFWriter extends TextWriter {
 		static final int DEFAULT_FOREGROUND = 0;
 		static final int DEFAULT_BACKGROUND = 1;
-		Vector<Color> colorTable;
-		Vector<Font> fontTable;
+		List<Color> colorTable;
+		List<Font> fontTable;
 		boolean WriteUnicode;
 		
 	/**
@@ -692,8 +693,8 @@ public class StyledText extends Canvas {
 	 */
 	public RTFWriter(int start, int length) {
 		super(start, length);
-		colorTable = new Vector<Color>();
-		fontTable = new Vector<Font>();
+		colorTable = new ArrayList<Color>();
+		fontTable = new ArrayList<Font>();
 		colorTable.add(getForeground());
 		colorTable.add(getBackground());
 		fontTable.add(getFont());

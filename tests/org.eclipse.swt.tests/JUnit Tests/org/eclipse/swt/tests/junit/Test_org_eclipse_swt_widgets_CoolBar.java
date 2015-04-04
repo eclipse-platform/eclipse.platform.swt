@@ -10,7 +10,8 @@
  *******************************************************************************/
 package org.eclipse.swt.tests.junit;
 
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -55,7 +56,7 @@ public void test_computeSizeIIZ() {
 /* Custom */
 CoolBar coolBar;
 
-private void createCoolBar(Vector<String> events) {
+private void createCoolBar(List<String> events) {
     tearDown();
     super.setUp();
     String test = getTestName();
@@ -91,7 +92,7 @@ private void createCoolBar(Vector<String> events) {
 }
 
 public void test_consistency_ChevronMenuDetect () {
-    Vector<String> events = new Vector<String>();
+    List<String> events = new ArrayList<String>();
     createCoolBar(events);
     consistencyPrePackShell();
     Point[] points = coolBar.getItemSizes();
@@ -100,7 +101,7 @@ public void test_consistency_ChevronMenuDetect () {
 }
 
 public void test_consistency_MenuDetect () {
-    Vector<String> events = new Vector<String>();
+    List<String> events = new ArrayList<String>();
     createCoolBar(events);
     consistencyPrePackShell();
     Point[] points = coolBar.getItemSizes();
@@ -108,7 +109,7 @@ public void test_consistency_MenuDetect () {
 }
 
 public void test_consistency_ChevronDragDetect () {
-    Vector<String> events = new Vector<String>();
+    List<String> events = new ArrayList<String>();
     createCoolBar(events);
     consistencyPrePackShell();
     Point[] points = coolBar.getItemSizes();
@@ -116,7 +117,7 @@ public void test_consistency_ChevronDragDetect () {
 }
 
 public void test_consistency_DragDetect () {
-    Vector<String> events = new Vector<String>();
+    List<String> events = new ArrayList<String>();
     createCoolBar(events);
     consistencyPrePackShell();
     Point[] points = coolBar.getItemSizes();
@@ -124,7 +125,7 @@ public void test_consistency_DragDetect () {
 }
 
 public void test_consistency_ChevronMouseSelection() {
-    Vector<String> events = new Vector<String>();
+    List<String> events = new ArrayList<String>();
     createCoolBar(events);
     consistencyPrePackShell();
     Point[] points = coolBar.getItemSizes();

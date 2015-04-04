@@ -12,6 +12,7 @@ package org.eclipse.swt.accessibility;
 
 import java.net.*;
 import java.util.*;
+import java.util.List;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
@@ -66,17 +67,17 @@ public class Accessible {
 	NSMutableArray parameterizedAttributeNames = null;
 	NSMutableArray actionNames = null;
 
-	Vector<AccessibleListener> accessibleListeners;
-	Vector<AccessibleControlListener> accessibleControlListeners;
-	Vector<AccessibleTextListener> accessibleTextListeners;
-	Vector<AccessibleActionListener> accessibleActionListeners;
-	Vector<AccessibleEditableTextListener> accessibleEditableTextListeners;
-	Vector<AccessibleHyperlinkListener> accessibleHyperlinkListeners;
-	Vector<AccessibleTableListener> accessibleTableListeners;
-	Vector<AccessibleTableCellListener> accessibleTableCellListeners;
-	Vector<AccessibleTextExtendedListener> accessibleTextExtendedListeners;
-	Vector<AccessibleValueListener> accessibleValueListeners;
-	Vector<AccessibleAttributeListener> accessibleAttributeListeners;
+	List<AccessibleListener> accessibleListeners;
+	List<AccessibleControlListener> accessibleControlListeners;
+	List<AccessibleTextListener> accessibleTextListeners;
+	List<AccessibleActionListener> accessibleActionListeners;
+	List<AccessibleEditableTextListener> accessibleEditableTextListeners;
+	List<AccessibleHyperlinkListener> accessibleHyperlinkListeners;
+	List<AccessibleTableListener> accessibleTableListeners;
+	List<AccessibleTableCellListener> accessibleTableCellListeners;
+	List<AccessibleTextExtendedListener> accessibleTextExtendedListeners;
+	List<AccessibleValueListener> accessibleValueListeners;
+	List<AccessibleAttributeListener> accessibleAttributeListeners;
 
 	Relation relations[] = new Relation[MAX_RELATION_TYPES];
 	Accessible parent;
@@ -115,6 +116,7 @@ public class Accessible {
 	 * @since 3.5
 	 * @deprecated
 	 */
+	@Deprecated
 	protected Accessible() {
 	}
 
@@ -175,7 +177,7 @@ public class Accessible {
 	public void addAccessibleListener(AccessibleListener listener) {
 		checkWidget();
 		if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-		if (accessibleListeners == null) accessibleListeners = new Vector<AccessibleListener>();
+		if (accessibleListeners == null) accessibleListeners = new ArrayList<AccessibleListener>();
 		accessibleListeners.add(listener);
 	}
 	
@@ -203,7 +205,7 @@ public class Accessible {
 	public void addAccessibleControlListener(AccessibleControlListener listener) {
 		checkWidget();
 		if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-		if (accessibleControlListeners == null) accessibleControlListeners = new Vector<AccessibleControlListener>();
+		if (accessibleControlListeners == null) accessibleControlListeners = new ArrayList<AccessibleControlListener>();
 		accessibleControlListeners.add(listener);
 	}
 
@@ -235,10 +237,10 @@ public class Accessible {
 		checkWidget ();
 		if (listener == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
 		if (listener instanceof AccessibleTextExtendedListener) {
-			if (accessibleTextExtendedListeners == null) accessibleTextExtendedListeners = new Vector<AccessibleTextExtendedListener>();
+			if (accessibleTextExtendedListeners == null) accessibleTextExtendedListeners = new ArrayList<AccessibleTextExtendedListener>();
 			accessibleTextExtendedListeners.add ((AccessibleTextExtendedListener) listener);		
 		} else {
-			if (accessibleTextListeners == null) accessibleTextListeners = new Vector<AccessibleTextListener>();
+			if (accessibleTextListeners == null) accessibleTextListeners = new ArrayList<AccessibleTextListener>();
 			accessibleTextListeners.add (listener);
 		}
 	}
@@ -267,7 +269,7 @@ public class Accessible {
 	public void addAccessibleActionListener(AccessibleActionListener listener) {
 		checkWidget();
 		if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-		if (accessibleActionListeners == null) accessibleActionListeners = new Vector<AccessibleActionListener>();
+		if (accessibleActionListeners == null) accessibleActionListeners = new ArrayList<AccessibleActionListener>();
 		accessibleActionListeners.add(listener);
 	}
 
@@ -295,7 +297,7 @@ public class Accessible {
 	public void addAccessibleEditableTextListener(AccessibleEditableTextListener listener) {
 	    checkWidget();
 	    if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-		if (accessibleEditableTextListeners == null) accessibleEditableTextListeners = new Vector<AccessibleEditableTextListener>();
+		if (accessibleEditableTextListeners == null) accessibleEditableTextListeners = new ArrayList<AccessibleEditableTextListener>();
 	    accessibleEditableTextListeners.add(listener);
 	}
 
@@ -323,7 +325,7 @@ public class Accessible {
 	public void addAccessibleHyperlinkListener(AccessibleHyperlinkListener listener) {
 		checkWidget();
 		if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-		if (accessibleHyperlinkListeners == null) accessibleHyperlinkListeners = new Vector<AccessibleHyperlinkListener>();
+		if (accessibleHyperlinkListeners == null) accessibleHyperlinkListeners = new ArrayList<AccessibleHyperlinkListener>();
 		accessibleHyperlinkListeners.add(listener);
 	}
 
@@ -351,7 +353,7 @@ public class Accessible {
 	public void addAccessibleTableListener(AccessibleTableListener listener) {
 		checkWidget();
 		if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-		if (accessibleTableListeners == null) accessibleTableListeners = new Vector<AccessibleTableListener>();
+		if (accessibleTableListeners == null) accessibleTableListeners = new ArrayList<AccessibleTableListener>();
 		accessibleTableListeners.add(listener);
 	}
 
@@ -379,7 +381,7 @@ public class Accessible {
 	public void addAccessibleTableCellListener(AccessibleTableCellListener listener) {
 		checkWidget();
 		if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-		if (accessibleTableCellListeners == null) accessibleTableCellListeners = new Vector<AccessibleTableCellListener>();
+		if (accessibleTableCellListeners == null) accessibleTableCellListeners = new ArrayList<AccessibleTableCellListener>();
 		accessibleTableCellListeners.add(listener);
 	}
 
@@ -407,7 +409,7 @@ public class Accessible {
 	public void addAccessibleValueListener(AccessibleValueListener listener) {
 		checkWidget();
 		if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-		if (accessibleValueListeners == null) accessibleValueListeners = new Vector<AccessibleValueListener>();
+		if (accessibleValueListeners == null) accessibleValueListeners = new ArrayList<AccessibleValueListener>();
 		accessibleValueListeners.add(listener);
 	}
 
@@ -435,7 +437,7 @@ public class Accessible {
 	public void addAccessibleAttributeListener(AccessibleAttributeListener listener) {
 		checkWidget();
 		if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-		if (accessibleAttributeListeners == null) accessibleAttributeListeners = new Vector<AccessibleAttributeListener>();
+		if (accessibleAttributeListeners == null) accessibleAttributeListeners = new ArrayList<AccessibleAttributeListener>();
 		accessibleAttributeListeners.add(listener);
 	}
 

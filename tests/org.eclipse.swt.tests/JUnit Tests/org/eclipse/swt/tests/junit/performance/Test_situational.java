@@ -384,22 +384,22 @@ public void test_fastStringDrawing() {
 
 public static Test suite() {
 	TestSuite suite = new TestSuite();
-	java.util.Vector<String> methodNames = methodNames();
-	java.util.Enumeration<String> e = methodNames.elements();
-	while (e.hasMoreElements()) {
-		suite.addTest(new Test_situational(e.nextElement()));
+	java.util.List<String> methodNames = methodNames();
+	java.util.Iterator<String> e = methodNames.iterator();
+	while (e.hasNext()) {
+		suite.addTest(new Test_situational(e.next()));
 	}
 	return suite;
 }
-public static java.util.Vector<String> methodNames() {
-	java.util.Vector<String> methodNames = new java.util.Vector<String>();
-	methodNames.addElement("test_createComposites");
-	methodNames.addElement("test_createWidgets");
-	methodNames.addElement("test_imageDrawing");
-	methodNames.addElement("test_windowDrawing");
-	methodNames.addElement("test_stringDrawing");
-	methodNames.addElement("test_fastStringDrawing");
-	methodNames.addElement("test_layout");
+public static java.util.List<String> methodNames() {
+	java.util.List<String> methodNames = new java.util.ArrayList<String>();
+	methodNames.add("test_createComposites");
+	methodNames.add("test_createWidgets");
+	methodNames.add("test_imageDrawing");
+	methodNames.add("test_windowDrawing");
+	methodNames.add("test_stringDrawing");
+	methodNames.add("test_fastStringDrawing");
+	methodNames.add("test_layout");
 	return methodNames;
 }
 @Override

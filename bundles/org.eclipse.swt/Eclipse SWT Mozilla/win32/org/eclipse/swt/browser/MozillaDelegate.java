@@ -12,10 +12,10 @@ package org.eclipse.swt.browser;
 
 import java.io.File;
 import java.util.*;
+import java.util.List;
 
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.browser.Browser;
-import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.*;
+import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.mozilla.*;
 import org.eclipse.swt.internal.win32.*;
@@ -23,7 +23,7 @@ import org.eclipse.swt.widgets.*;
 
 class MozillaDelegate {
 	Browser browser;
-	Vector<Composite> childWindows = new Vector<Composite> (9);
+	List<Composite> childWindows = new ArrayList<Composite> (9);
 	static long /*int*/ MozillaProc;
 	static Callback SubclassProc;
 	
