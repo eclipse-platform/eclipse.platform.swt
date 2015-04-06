@@ -2071,6 +2071,7 @@ public static final long /*int*/ sel_setToolTip_forSegment_ = sel_registerName("
 public static final long /*int*/ sel_setToolbar_ = sel_registerName("setToolbar:");
 public static final long /*int*/ sel_setTrackingMode_ = sel_registerName("setTrackingMode:");
 public static final long /*int*/ sel_setTransformStruct_ = sel_registerName("setTransformStruct:");
+public static final long /*int*/ sel_setTreatsFilePackagesAsDirectories_ = sel_registerName("setTreatsFilePackagesAsDirectories:");
 public static final long /*int*/ sel_setUIDelegate_ = sel_registerName("setUIDelegate:");
 public static final long /*int*/ sel_setURL_ = sel_registerName("setURL:");
 public static final long /*int*/ sel_setUpPrintOperationDefaultValues = sel_registerName("setUpPrintOperationDefaultValues");

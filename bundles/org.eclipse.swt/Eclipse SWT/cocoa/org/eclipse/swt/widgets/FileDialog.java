@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2014 IBM Corporation and others.
+ * Copyright (c) 2000, 2015 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -11,7 +11,7 @@
 package org.eclipse.swt.widgets;
 
  
-import java.util.StringTokenizer;
+import java.util.*;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.internal.*;
@@ -256,6 +256,9 @@ public String open () {
 		
 		setAllowedFileType(filterExtensions[0]);
 		panel.setAllowsOtherFileTypes(true);
+		panel.setTreatsFilePackagesAsDirectories(shouldEnableAppAsDirectory(filterExtensions[0]));
+	} else {
+		panel.setTreatsFilePackagesAsDirectories(false);
 	}
 	panel.setTitle(NSString.stringWith(title != null ? title : ""));
 	NSApplication application = NSApplication.sharedApplication();
@@ -366,10 +369,12 @@ long /*int*/ panel_shouldShowFilename (long /*int*/ id, long /*int*/ sel, long /
 }
 
 void sendSelection (long /*int*/ id, long /*int*/ sel, long /*int*/ arg) {
-	panel.validateVisibleColumns();
 	if (filterExtensions != null && filterExtensions.length > 0) {
-		setAllowedFileType(filterExtensions[(int)/*64*/popup.indexOfSelectedItem()]);
+		String fileTypes = filterExtensions[(int)/*64*/popup.indexOfSelectedItem ()];
+		panel.setTreatsFilePackagesAsDirectories (shouldEnableAppAsDirectory (fileTypes));
+		setAllowedFileType (fileTypes);
 	}
+	panel.validateVisibleColumns ();
 }
 
 void setAllowedFileType (String fileTypes) {
@@ -420,6 +425,13 @@ public void setFileName (String string) {
  * For filters with multiple extensions, use semicolon as
  * a separator, e.g. "*.jpg;*.png".
  * </p>
+ * <p>
+ * Note: On Mac, setting the file extension filter affects how
+ * app bundles are treated by the dialog. When a filter extension 
+ * having the app extension (.app) is selected, bundles are treated 
+ * as files. For all other extension filters, bundles are treated 
+ * as directories. When no filter extension is set, bundles are 
+ * treated as files.</p>
  *
  * @param extensions the file extension filter
  * 
@@ -500,5 +512,20 @@ public void setFilterPath (String string) {
  */
 public void setOverwrite (boolean overwrite) {
 	this.overwrite = overwrite;
+}
+
+/**
+ * Determines if the treatAppAsBundle property has to be enabled for the NSOpenPanel 
+ * for the filterExtensions passed as a parameter.
+ */
+boolean shouldEnableAppAsDirectory (String extensions) {
+	if ((style & SWT.SAVE) != 0) return false;
+	StringTokenizer fileTypesToken = new StringTokenizer (extensions, String.valueOf(EXTENSION_SEPARATOR));
+	while (fileTypesToken.hasMoreTokens ()) {
+		String fileType = fileTypesToken.nextToken ();
+		if (fileType.equals ("*") || fileType.equals ("*.*")) return true;
+		if (fileType.equals ("*.app") || fileType.equals (".app")) return false;
+	}
+	return true;
 }
 }
