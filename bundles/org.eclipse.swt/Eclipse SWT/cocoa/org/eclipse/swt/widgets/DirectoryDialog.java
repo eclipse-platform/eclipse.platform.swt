@@ -132,6 +132,7 @@ public String open () {
 	panel.setMessage(NSString.stringWith(message != null ? message : ""));
 	panel.setCanChooseFiles(false);
 	panel.setCanChooseDirectories(true);
+	panel.setTreatsFilePackagesAsDirectories(true);
 	NSApplication application = NSApplication.sharedApplication();
 	if (parent != null && (style & SWT.SHEET) != 0) {
 		application.beginSheet(panel, parent.view.window (), null, 0, 0);
