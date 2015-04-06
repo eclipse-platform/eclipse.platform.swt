@@ -256,7 +256,7 @@ public String open () {
 		
 		setAllowedFileType(filterExtensions[0]);
 		panel.setAllowsOtherFileTypes(true);
-		panel.setTreatsFilePackagesAsDirectories(shouldEnableAppAsDirectory(filterExtensions[0]));
+		panel.setTreatsFilePackagesAsDirectories(shouldTreatAppAsDirectory(filterExtensions[0]));
 	} else {
 		panel.setTreatsFilePackagesAsDirectories(false);
 	}
@@ -371,7 +371,7 @@ long /*int*/ panel_shouldShowFilename (long /*int*/ id, long /*int*/ sel, long /
 void sendSelection (long /*int*/ id, long /*int*/ sel, long /*int*/ arg) {
 	if (filterExtensions != null && filterExtensions.length > 0) {
 		String fileTypes = filterExtensions[(int)/*64*/popup.indexOfSelectedItem ()];
-		panel.setTreatsFilePackagesAsDirectories (shouldEnableAppAsDirectory (fileTypes));
+		panel.setTreatsFilePackagesAsDirectories (shouldTreatAppAsDirectory (fileTypes));
 		setAllowedFileType (fileTypes);
 	}
 	panel.validateVisibleColumns ();
@@ -431,7 +431,8 @@ public void setFileName (String string) {
  * having the app extension (.app) is selected, bundles are treated 
  * as files. For all other extension filters, bundles are treated 
  * as directories. When no filter extension is set, bundles are 
- * treated as files.</p>
+ * treated as files.
+ * </p>
  *
  * @param extensions the file extension filter
  * 
@@ -518,7 +519,7 @@ public void setOverwrite (boolean overwrite) {
  * Determines if the treatAppAsBundle property has to be enabled for the NSOpenPanel 
  * for the filterExtensions passed as a parameter.
  */
-boolean shouldEnableAppAsDirectory (String extensions) {
+boolean shouldTreatAppAsDirectory (String extensions) {
 	if ((style & SWT.SAVE) != 0) return false;
 	StringTokenizer fileTypesToken = new StringTokenizer (extensions, String.valueOf(EXTENSION_SEPARATOR));
 	while (fileTypesToken.hasMoreTokens ()) {

@@ -537,6 +537,14 @@ public void setFileName (String string) {
  * For filters with multiple extensions, use semicolon as
  * a separator, e.g. "*.jpg;*.png".
  * </p>
+ * <p>
+ * Note: On Mac, setting the file extension filter affects how
+ * app bundles are treated by the dialog. When a filter extension 
+ * having the app extension (.app) is selected, bundles are treated 
+ * as files. For all other extension filters, bundles are treated 
+ * as directories. When no filter extension is set, bundles are 
+ * treated as files.
+ * </p>
  *
  * @param extensions the file extension filter
  * 
