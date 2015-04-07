@@ -1848,12 +1848,30 @@ public void select (int index) {
 
 @Override
 void setBackgroundColor (long /*int*/ context, long /*int*/ handle, GdkRGBA rgba) {
+	//Note, in Gtk3's CSS, we can't access all of the sub-widgets inside GtkComboBox.
+	//Some have to be themed by the global system theme.
+
 	if (entryHandle == 0 || (style & SWT.READ_ONLY) != 0) {
-		super.setBackgroundColor (context, handle, rgba);
+		long /*int*/ buttonHandle = findButtonHandle (); //get's the GtkEntry handle.
+		//TODO Refactor this and Button#setBackground, they have similar CSS construction code.
+		String css = "* {\n";
+		if (rgba != null) {
+			String color = gtk_rgba_to_css_string (rgba);
+			css += "background: " + color + ";\n";
+		}
+		css += "}\n";
+		gtk_css_provider_load_from_css (OS.gtk_widget_get_style_context(buttonHandle), css); //Apply to Entry
 	} else {
 		setBackgroundColorGradient (OS.gtk_widget_get_style_context (entryHandle), handle, rgba);
 		super.setBackgroundColor (OS.gtk_widget_get_style_context (entryHandle), entryHandle, rgba);
+		//Note, we can't get to the GtkToggleButton inside GtkComboBoxText, as it's in a private stuct.
+		//We thus rely on global theme to style it via: GtkToggleButton { background: red}
 	}
+
+	//Set the background color of the text of the drop down menu.
+	OS.g_object_set (textRenderer, OS.background_rgba, rgba, 0);
+	//NOTE: We can't get to the actual menu background, beacuse it is in a private struct in GtkComboBoxText.
+	//Thus we rely for the underlying theme to theme the menu via : GtkComboBoxText * { background: xzy }
 }
 
 @Override

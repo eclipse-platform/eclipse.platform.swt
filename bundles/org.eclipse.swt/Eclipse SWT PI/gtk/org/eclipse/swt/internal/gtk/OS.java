@@ -603,6 +603,7 @@ public class OS extends C {
 	/** Properties */
 	public static final byte[] active = ascii("active");
 	public static final byte[] background_gdk = ascii("background-gdk");
+	public static final byte[] background_rgba = ascii("background-rgba");
 	public static final byte[] button_relief = ascii("button-relief");
 	public static final byte[] cell_background_gdk = ascii("cell-background-gdk");
 	public static final byte[] default_border = ascii("default-border");
