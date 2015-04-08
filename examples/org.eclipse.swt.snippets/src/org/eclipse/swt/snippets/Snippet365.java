@@ -169,7 +169,7 @@ public class Snippet365 {
 					group.setBackground(display.getSystemColor(SWT.COLOR_WIDGET_BACKGROUND));
 					sash.setBackground(display.getSystemColor(SWT.COLOR_DARK_CYAN));
 					slider.setBackground(display.getSystemColor(SWT.COLOR_CYAN));
-					list.setBackground(null);
+					list.setBackground(display.getSystemColor(SWT.COLOR_CYAN));
 					text.setBackground(display.getSystemColor(SWT.COLOR_CYAN));
 					
 					// ContainerGroup
@@ -197,8 +197,8 @@ public class Snippet365 {
 					// Default
 					defaultBackgroundGroup.setBackground(display.getSystemColor(SWT.COLOR_WIDGET_BACKGROUND));
 					push.setBackground(display.getSystemColor(SWT.COLOR_WIDGET_BACKGROUND));
-					combo.setBackground(null);
-					ccombo.setBackground(null);
+					combo.setBackground(display.getSystemColor(SWT.COLOR_CYAN));
+					ccombo.setBackground(display.getSystemColor(SWT.COLOR_CYAN));
 					dateTime.setBackground(null);
 					progressBar.setBackground(null);
 					expandBar.setBackground(display.getSystemColor(SWT.COLOR_CYAN));
@@ -292,6 +292,7 @@ public class Snippet365 {
 
 		// List
 		list = new List(nativeGroup, SWT.BORDER);
+		list.setBackground(display.getSystemColor(SWT.COLOR_CYAN));
 		list.add("one");
 		list.add("two");
 		list.add("three");

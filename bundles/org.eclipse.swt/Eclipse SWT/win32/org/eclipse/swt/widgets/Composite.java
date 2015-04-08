@@ -305,7 +305,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 void createHandle () {
 	super.createHandle ();
 	state |= CANVAS;
-	if ((style & (SWT.H_SCROLL | SWT.V_SCROLL)) == 0 || findThemeControl () == parent) {
+	if (applyThemeBackground ()) {
 		state |= THEME_BACKGROUND;
 	}
 	if ((style & SWT.TRANSPARENT) != 0) {
@@ -313,6 +313,23 @@ void createHandle () {
 		bits |= OS.WS_EX_TRANSPARENT;
 		OS.SetWindowLong (handle, OS.GWL_EXSTYLE, bits);
 	}
+}
+
+@Override
+boolean applyThemeBackground () {
+	/*
+	 * Composite with scrollbars would not inherit the theme because it was
+	 * probably being used to implement a control similar to a Text, List,
+	 * Table, or Tree, and those controls do not inherit the background theme.
+	 * We assume that a Composite that did not have scrollbars was probably just
+	 * being used to group some other controls, therefore it should inherit.
+	 * 
+	 * But when Composite background is set to COLOR_TRANSPARENT (i.e.
+	 * backgroundAlpha as '0') which means parent theme should be inherited, so
+	 * enable the THEME_BACKGROUND in 'state' to support background transparent.
+	 * Refer bug 463127 & related bug 234649.
+	 */
+	return (super.applyThemeBackground() || (style & (SWT.H_SCROLL | SWT.V_SCROLL)) == 0 || findThemeControl () == parent);
 }
 
 /** 

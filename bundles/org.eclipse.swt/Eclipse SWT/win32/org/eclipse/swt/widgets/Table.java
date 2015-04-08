@@ -1628,6 +1628,15 @@ void createHandle () {
 	}
 }
 
+@Override
+boolean applyThemeBackground () {
+	/*
+	 * Just inheriting the THEME_BACKGROUND doesn't turn complete Table
+	 * background transparent, TableItem background remains as-is.
+	 */
+	return false;
+}
+
 void createHeaderToolTips () {
 	if (OS.IsWinCE) return;
 	if (headerToolTipHandle != 0) return;

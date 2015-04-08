@@ -142,6 +142,23 @@ void createWidget () {
 	if ((style & SWT.V_SCROLL) != 0) verticalBar = createScrollBar (SWT.V_SCROLL);
 }
 
+@Override
+void updateBackgroundColor () {
+	if (applyThemeBackground ()) {
+		state |= THEME_BACKGROUND;
+	} else {
+		state &= ~THEME_BACKGROUND;
+	}
+	super.updateBackgroundColor ();
+}
+
+/**
+* @return true if THEME_BACKGROUND needs to be applied.
+*/
+boolean applyThemeBackground () {
+	return backgroundAlpha == 0;
+}
+
 void destroyScrollBar (int type) {
 	long /*int*/ hwnd = scrolledHandle ();
 	int bits = OS.GetWindowLong (hwnd, OS.GWL_STYLE);
