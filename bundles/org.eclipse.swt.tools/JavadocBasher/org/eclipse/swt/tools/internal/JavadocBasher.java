@@ -112,8 +112,6 @@ public class JavadocBasher {
 				"emulated/ime", // used by dojo, flex, photon
 				"emulated/taskbar", // used by carbon, gtk, photon
 				"emulated/tooltip", // used by cocoa (?!), photon
-				// "emulated/tray", // only used by carbon_j2me, photon
-				// "emulated/treetable", // only used by photon
 				"gnome", // used by gtk
 				"glx", // used by gtk
 				"gtk",
