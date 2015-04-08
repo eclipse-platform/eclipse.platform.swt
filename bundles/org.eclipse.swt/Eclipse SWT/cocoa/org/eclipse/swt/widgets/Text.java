@@ -339,6 +339,7 @@ public void append (String string) {
 	if (string.length () != 0) sendEvent (SWT.Modify);
 }
 
+@Override
 boolean becomeFirstResponder (long /*int*/ id, long /*int*/ sel) {
 	receivingFocus = true;
 	boolean result = super.becomeFirstResponder (id, sel);
@@ -385,6 +386,7 @@ public void clearSelection () {
 	setSelection (selection.x);	
 }
 
+@Override
 public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget ();
 	int width = 0, height = 0;
@@ -449,6 +451,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	return new Point (width, height);
 }
 
+@Override
 public Rectangle computeTrim (int x, int y, int width, int height) {
 	Rectangle result = super.computeTrim (x, y, width, height);
 	if ((style & SWT.SINGLE) != 0) {
@@ -498,6 +501,7 @@ public void copy () {
 	}
 }
 
+@Override
 void createHandle () {
 	if ((style & SWT.READ_ONLY) != 0) {
 		if ((style & (SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL)) == 0) {
@@ -520,7 +524,13 @@ void createHandle () {
 			widget.setFocusRingType (OS.NSFocusRingTypeNone);
 			widget.setBordered (false);
 		}
-		int align = OS.NSLeftTextAlignment;
+		/* 
+		 * Bug in Cocoa: On OSX 10.10, setting the alignment on the search field
+		 * to NSLeftTextAlignment causes the text to disappear on Focus Out.
+		 * Fix is to use NSJustifiedTextAlignment instead, since for 
+		 * a single line of text, justified has the same effect as left aligned.
+		 */
+		int align = ((style & SWT.SEARCH) != 0) ? OS.NSJustifiedTextAlignment : OS.NSLeftTextAlignment;
 		if ((style & SWT.CENTER) != 0) align = OS.NSCenterTextAlignment;
 		if ((style & SWT.RIGHT) != 0) align = OS.NSRightTextAlignment;
 		widget.setAlignment (align);
@@ -573,6 +583,7 @@ void createHandle () {
 	}
 }
 
+@Override
 void createWidget () {
 	super.createWidget ();
 	if ((style & SWT.PASSWORD) != 0) {
@@ -636,10 +647,12 @@ public void cut () {
 	if (!cut || !oldSelection.equals (newSelection)) sendEvent (SWT.Modify);
 }
 
+@Override
 Color defaultBackground () {
 	return display.getWidgetColor (SWT.COLOR_LIST_BACKGROUND);
 }
 
+@Override
 NSFont defaultNSFont () {
 	if ((style & SWT.MULTI) != 0) return display.textViewFont;
 	if ((style & SWT.SEARCH) != 0) return display.searchFieldFont;
@@ -647,10 +660,12 @@ NSFont defaultNSFont () {
 	return display.textFieldFont;
 }
 
+@Override
 Color defaultForeground () {
 	return display.getWidgetColor (SWT.COLOR_LIST_FOREGROUND);
 }
 
+@Override
 void deregister() {
 	super.deregister();
 	
@@ -659,6 +674,7 @@ void deregister() {
 	}
 }
 
+@Override
 void drawBackground (long /*int*/ id, NSGraphicsContext context, NSRect rect) {
 	if ((style & SWT.SINGLE) != 0) {
 		if (backgroundImage == null) return;
@@ -671,6 +687,7 @@ void drawBackground (long /*int*/ id, NSGraphicsContext context, NSRect rect) {
 	fillBackground (view, context, rect, -1);
 }
 
+@Override
 void drawInteriorWithFrame_inView(long /*int*/ id, long /*int*/ sel, NSRect cellFrame, long /*int*/ viewid) {
 	Control control = findBackgroundControl();
 	if (control == null) control = this;
@@ -683,6 +700,7 @@ void drawInteriorWithFrame_inView(long /*int*/ id, long /*int*/ sel, NSRect cell
 }
 
 
+@Override
 boolean dragDetect (int x, int y, boolean filter, boolean [] consume) {
 	Point selection = getSelection ();
 	if (selection.x != selection.y) {
@@ -697,6 +715,7 @@ boolean dragDetect (int x, int y, boolean filter, boolean [] consume) {
 	return false;
 }
 
+@Override
 void enableWidget(boolean enabled) {
 	super.enableWidget(enabled);
 	
@@ -705,6 +724,7 @@ void enableWidget(boolean enabled) {
 	}
 }
 
+@Override
 Cursor findCursor () {
 	Cursor cursor = super.findCursor ();
 	return (cursor != null) ? cursor : display.getSystemCursor (SWT.CURSOR_IBEAM);
@@ -729,6 +749,7 @@ public int getCaretLineNumber () {
     return (getTopPixel () + getCaretLocation ().y) / getLineHeight ();
 }
 
+@Override
 boolean acceptsFirstResponder(long /*int*/ id, long /*int*/ sel) {
 	if ((style & SWT.READ_ONLY) != 0) return true;
 	return super.acceptsFirstResponder(id, sel);
@@ -1004,6 +1025,7 @@ public int getLineHeight () {
  * 
  * @since 2.1.2
  */
+@Override
 public int getOrientation () {
 	checkWidget ();
 	return style & (SWT.LEFT_TO_RIGHT | SWT.RIGHT_TO_LEFT);
@@ -1383,11 +1405,13 @@ void insertEditText (String string) {
 	}
 }
 
+@Override
 boolean isEventView (long /*int*/ id) {
 	if ((style & SWT.MULTI) != 0) return super.isEventView (id);
 	return true;
 }
 
+@Override
 boolean isNeeded(ScrollBar scrollbar) {
 	boolean result = false;
 	if ((style & SWT.MULTI) != 0) {
@@ -1464,6 +1488,7 @@ public void paste () {
 	sendEvent (SWT.Modify);
 }
 
+@Override
 void register() {
 	super.register();
 	
@@ -1472,6 +1497,7 @@ void register() {
 	}
 }
 
+@Override
 void releaseWidget () {
 	super.releaseWidget ();
 	if ((style & SWT.SINGLE) != 0) ((NSControl)view).abortEditing();
@@ -1596,6 +1622,7 @@ public void selectAll () {
 	}
 }
 
+@Override
 boolean sendKeyEvent (NSEvent nsEvent, int type) {
 	boolean result = super.sendKeyEvent (nsEvent, type);
 	if (!result) return result;
@@ -1630,6 +1657,7 @@ boolean sendKeyEvent (NSEvent nsEvent, int type) {
 	return result;
 }
 
+@Override
 boolean sendKeyEvent (int type, Event event) {
 	boolean result = super.sendKeyEvent (type, event);
 	if (!result) return result;
@@ -1662,6 +1690,7 @@ boolean sendKeyEvent (int type, Event event) {
 	return result;
 }
 
+@Override
 void sendSearchSelection () {
 	if (targetSearch != null) {
 		((NSSearchField)view).sendAction(actionSearch, targetSearch);
@@ -1671,6 +1700,7 @@ void sendSearchSelection () {
 	sendSelectionEvent (SWT.DefaultSelection, event, false);
 }
 
+@Override
 void sendCancelSelection () {
 	if (targetCancel != null) {
 		((NSSearchField)view).sendAction(actionCancel, targetCancel);
@@ -1680,6 +1710,7 @@ void sendCancelSelection () {
 	sendSelectionEvent (SWT.DefaultSelection, event, false);
 }
 
+@Override
 void setBackgroundColor(NSColor nsColor) {
 	if ((style & SWT.SINGLE) != 0) {
 		((NSTextField) view).setBackgroundColor (nsColor);
@@ -1688,6 +1719,7 @@ void setBackgroundColor(NSColor nsColor) {
 	}
 }
 
+@Override
 void setBackgroundImage(NSImage image) {
 	if ((style & SWT.SINGLE) != 0) {
 		NSTextField widget = (NSTextField) view;
@@ -1809,6 +1841,7 @@ void setEditText (char[] text) {
 	selectionRange = null;
 }
 
+@Override
 void setFrameSize(long /*int*/ id, long /*int*/ sel, NSSize size) {
 	super.setFrameSize (id, sel, size);
 	/*
@@ -1829,6 +1862,7 @@ void setFrameSize(long /*int*/ id, long /*int*/ sel, NSSize size) {
 	}
 }
 
+@Override
 void setFont(NSFont font) {
 	if ((style & SWT.MULTI) !=  0) {
 		((NSTextView) view).setFont (font);
@@ -1837,6 +1871,7 @@ void setFont(NSFont font) {
 	super.setFont (font);
 }
 
+@Override
 void setForeground (double /*float*/ [] color) {
 	NSColor nsColor;
 	if (color == null) {
@@ -1871,10 +1906,12 @@ void setForeground (double /*float*/ [] color) {
  * 
  * @since 2.1.2
  */
+@Override
 public void setOrientation (int orientation) {
 	checkWidget ();
 }
 
+@Override
 void setOrientation () {
 	int direction = (style & SWT.RIGHT_TO_LEFT) != 0 ? OS.NSWritingDirectionRightToLeft : OS.NSWritingDirectionLeftToRight;
 	if ((style & SWT.SINGLE) != 0) {
@@ -2214,6 +2251,7 @@ public void setTopIndex (int index) {
 	view.scrollPoint(pt);
 }
 
+@Override
 boolean shouldChangeTextInRange_replacementString(long /*int*/ id, long /*int*/ sel, long /*int*/ affectedCharRange, long /*int*/ replacementString) {
 	NSRange range = new NSRange();
 	OS.memmove(range, affectedCharRange, NSRange.sizeof);
@@ -2281,17 +2319,20 @@ public void showSelection () {
 	}
 }
 
+@Override
 void textViewDidChangeSelection(long /*int*/ id, long /*int*/ sel, long /*int*/ aNotification) {
 	NSNotification notification = new NSNotification (aNotification);
 	NSText editor = new NSText (notification.object ().id);
 	selectionRange = editor.selectedRange ();
 }
 
+@Override
 void textDidChange (long /*int*/ id, long /*int*/ sel, long /*int*/ aNotification) {
 	if ((style & SWT.SINGLE) != 0) super.textDidChange (id, sel, aNotification);
 	postEvent (SWT.Modify);
 }
 
+@Override
 NSRange textView_willChangeSelectionFromCharacterRange_toCharacterRange (long /*int*/ id, long /*int*/ sel, long /*int*/ aTextView, long /*int*/ oldSelectedCharRange, long /*int*/ newSelectedCharRange) {
 	/*
 	* If the selection is changing as a result of the receiver getting focus
@@ -2306,6 +2347,7 @@ NSRange textView_willChangeSelectionFromCharacterRange_toCharacterRange (long /*
 	return result;
 }
 
+@Override
 int traversalCode (int key, NSEvent theEvent) {
 	int bits = super.traversalCode (key, theEvent);
 	if ((style & SWT.READ_ONLY) != 0) return bits;
@@ -2322,6 +2364,7 @@ int traversalCode (int key, NSEvent theEvent) {
 	return bits;
 }
 
+@Override
 void updateCursorRects (boolean enabled) {
 	super.updateCursorRects (enabled);
 	if (scrollView == null) return;
