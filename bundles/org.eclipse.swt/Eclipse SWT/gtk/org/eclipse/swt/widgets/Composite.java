@@ -406,7 +406,7 @@ public void drawBackground (GC gc, int x, int y, int width, int height, int offs
 					long /*int*/ drawable = control.backgroundImage.pixmap;
 					int [] w = new int [1], h = new int [1];
 					gdk_pixmap_get_size (drawable, w, h);
-					if (OS.GDK_WINDOWING_X11 () && !OS.GDK_WINDOWING_WAYLAND ()) {
+					if (OS.IS_X11) {
 						long /*int*/ xDisplay = OS.gdk_x11_display_get_xdisplay(OS.gdk_display_get_default());
 						long /*int*/ xVisual = OS.gdk_x11_visual_get_xvisual (OS.gdk_visual_get_system());
 						long /*int*/ xDrawable = OS.GDK_PIXMAP_XID (drawable);

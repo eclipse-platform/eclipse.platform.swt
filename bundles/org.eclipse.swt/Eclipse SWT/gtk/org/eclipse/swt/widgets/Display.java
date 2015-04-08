@@ -745,7 +745,7 @@ public void asyncExec (Runnable runnable) {
 public void beep () {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	OS.gdk_beep();
-	if (OS.GDK_WINDOWING_WAYLAND () || !OS.GDK_WINDOWING_X11()) {
+	if (!OS.IS_X11) {
 		OS.gdk_flush ();
 	} else {
 		long /*int*/ xDisplay = OS.gdk_x11_display_get_xdisplay(OS.gdk_display_get_default());
@@ -1373,7 +1373,7 @@ static long /*int*/ rendererRenderProc (long /*int*/ cell, long /*int*/ window, 
 void flushExposes (long /*int*/ window, boolean all) {
 	OS.gdk_flush ();
 	OS.gdk_flush ();
-	if (!OS.GDK_WINDOWING_WAYLAND() && OS.GDK_WINDOWING_X11 ()) {
+	if (OS.IS_X11) {
 		this.flushWindow = window;
 		this.flushAll = all;
 		long /*int*/ xDisplay = OS.gdk_x11_display_get_xdisplay(OS.gdk_display_get_default());
@@ -1484,7 +1484,7 @@ public Control getCursorControl () {
 		* if the pointer is over a foreign embedded window. The fix is to use
 		* XQueryPointer to find the containing GDK window.
 		*/
-		if (!OS.GDK_WINDOWING_X11 () || OS.GDK_WINDOWING_WAYLAND()) return null;
+		if (!OS.IS_X11) return null;
 		OS.gdk_error_trap_push ();
 		int[] unusedInt = new int[1];
 		long /*int*/[] unusedPtr = new long /*int*/[1], buffer = new long /*int*/[1];
@@ -2851,7 +2851,7 @@ void initializeWidgetTable () {
 void initializeWindowManager () {
 	/* Get the window manager name */
 	windowManager = ""; //$NON-NLS-1$
-	if (!OS.GDK_WINDOWING_WAYLAND () && OS.GDK_WINDOWING_X11 ()) {
+	if (OS.IS_X11) {
 		long /*int*/ screen = OS.gdk_screen_get_default ();
 		if (screen != 0) {
 			long /*int*/ ptr2 = OS.gdk_x11_screen_get_window_manager_name (screen);
@@ -3251,7 +3251,7 @@ public boolean post (Event event) {
 		synchronized (Device.class) {
 			if (isDisposed ()) error (SWT.ERROR_DEVICE_DISPOSED);
 			if (event == null) error (SWT.ERROR_NULL_ARGUMENT);
-			if (!OS.GDK_WINDOWING_X11() || OS.GDK_WINDOWING_WAYLAND()) {
+			if (!OS.IS_X11) {
 				return false;
 			}
 			long /*int*/ xDisplay = OS.gdk_x11_display_get_xdisplay(OS.gdk_display_get_default());

@@ -556,23 +556,28 @@ void bringToTop (boolean force) {
 	* the focus.
 	*/
 	long /*int*/ window = gtk_widget_get_window (shellHandle);
-	if ((xFocus || (style & SWT.ON_TOP) != 0) && OS.GDK_WINDOWING_X11 () && !OS.GDK_WINDOWING_WAYLAND()) {
-		long /*int*/ xDisplay;
-		if (OS.GTK_VERSION >= OS.VERSION(2, 24, 0)) {
-			xDisplay = OS.gdk_x11_display_get_xdisplay(OS.gdk_window_get_display(window));
+	if ((xFocus || (style & SWT.ON_TOP) != 0)) {
+		if (OS.IS_X11) {
+			long /*int*/ xDisplay;
+			if (OS.GTK_VERSION >= OS.VERSION(2, 24, 0)) {
+				xDisplay = OS.gdk_x11_display_get_xdisplay(OS.gdk_window_get_display(window));
+			} else {
+				xDisplay = OS.gdk_x11_drawable_get_xdisplay (window);
+			}
+			long /*int*/ xWindow;
+			if (OS.GTK3) {
+				xWindow = OS.gdk_x11_window_get_xid (window);
+			} else {
+				xWindow = OS.gdk_x11_drawable_get_xid (window);
+			}
+			OS.gdk_error_trap_push ();
+			/* Use CurrentTime instead of the last event time to ensure that the shell becomes active */
+			OS.XSetInputFocus (xDisplay, xWindow, OS.RevertToParent, OS.CurrentTime);
+			OS.gdk_error_trap_pop ();
 		} else {
-			xDisplay = OS.gdk_x11_drawable_get_xdisplay (window);
+//	TODO find the proper fix as this doesn't seem to have effect
+//			OS.gtk_window_present(window);
 		}
-		long /*int*/ xWindow;
-		if (OS.GTK3) {
-			xWindow = OS.gdk_x11_window_get_xid (window);
-		} else {
-			xWindow = OS.gdk_x11_drawable_get_xid (window);
-		}
-		OS.gdk_error_trap_push ();
-		/* Use CurrentTime instead of the last event time to ensure that the shell becomes active */
-		OS.XSetInputFocus (xDisplay, xWindow, OS.RevertToParent, OS.CurrentTime);
-		OS.gdk_error_trap_pop ();
 	} else {
 		/*
 		* Bug in metacity.  Calling gdk_window_focus() with a timestamp more
@@ -1828,7 +1833,7 @@ int setBounds (int x, int y, int width, int height, boolean move, boolean resize
 void setCursor (long /*int*/ cursor) {
 	if (enableWindow != 0) {
 		OS.gdk_window_set_cursor (enableWindow, cursor);
-		if (!OS.GDK_WINDOWING_X11 () || OS.GDK_WINDOWING_WAYLAND()) {
+		if (!OS.IS_X11) {
 			OS.gdk_flush ();
 		} else {
 			long /*int*/ xDisplay = OS.gdk_x11_display_get_xdisplay(OS.gdk_display_get_default());
@@ -1877,7 +1882,7 @@ public void setEnabled (boolean enabled) {
 		if (enableWindow != 0) {
 			if (cursor != null) {
 				OS.gdk_window_set_cursor (enableWindow, cursor.handle);
-				if (!OS.GDK_WINDOWING_X11 () || OS.GDK_WINDOWING_WAYLAND ()) {
+				if (!OS.IS_X11) {
 					OS.gdk_flush ();
 				} else {
 					long /*int*/ xDisplay = OS.gdk_x11_display_get_xdisplay(OS.gdk_display_get_default());
