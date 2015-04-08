@@ -108,12 +108,10 @@ public class JavadocBasher {
 												// flex, gtk, photon
 				"emulated/coolbar", // used by carbon, cocoa, flex, gtk,
 									// photon
-				// "emulated/datetime", // only used by photon
 				"emulated/expand", // used by carbon, cocoa, flex, photon
 				// "emulated/graphics", // only used by photon
 				"emulated/ime", // used by dojo, flex, photon
 				"emulated/taskbar", // used by carbon, gtk, photon
-				// "emulated/textlayout", // only used by photon
 				"emulated/tooltip", // used by cocoa (?!), photon
 				// "emulated/tray", // only used by carbon_j2me, photon
 				// "emulated/treetable", // only used by photon
