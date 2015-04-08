@@ -16,9 +16,7 @@ import org.eclipse.swt.browser.LocationEvent;
 import org.eclipse.swt.browser.LocationListener;
 import org.eclipse.swt.browser.ProgressEvent;
 import org.eclipse.swt.browser.ProgressListener;
-import org.eclipse.swt.internal.mozilla.MozillaVersion;
 import org.eclipse.swt.layout.FillLayout;
-import org.eclipse.swt.tests.junit.SwtTestUtil;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 
@@ -28,7 +26,6 @@ public class Browser1 {
 	public static boolean locationChanging = false;
 	public static boolean locationChanged = false;
 	public static boolean progressCompleted = false;
-	public static boolean isMozilla = SwtTestUtil.isGTK;
 	
 	public static boolean test1(String url) {
 		if (verbose) System.out.println("URL Loading - args: "+url+" Expected Event Sequence: Location.changing > Location.changed (top true)> Progress.completed");
@@ -39,13 +36,6 @@ public class Browser1 {
 		final Shell shell = new Shell(display);
 		shell.setLayout(new FillLayout());
 		Browser browser = new Browser(shell, SWT.NONE);
-		if (verbose) {
-			String browserType = browser.getBrowserType();
-			System.out.println("browser type: " + browserType);
-			if ("mozilla".equals(browserType)) {
-				System.out.println("MozillaVersion.GetCurrentVersion(): " + MozillaVersion.GetCurrentVersion());
-			}
-		}
 		browser.addLocationListener(new LocationListener() {
 			public void changing(LocationEvent event) {
 				if (verbose) System.out.println("changing "+event.location);
@@ -210,19 +200,15 @@ public class Browser1 {
 	public static boolean test() {
 		int fail = 0;
 		String[] urls = {"http://www.google.com"};
-		// TEMPORARILY NOT RUN FOR MOZILLA
-//		if (!isMozilla) {
-		if (true) {
-			for (int i = 0; i < urls.length; i++) {
-				boolean result = test1(urls[i]); 
-				if (verbose) System.out.print(result ? "." : "E");
-				if (!result) fail++; 
-			}
-			for (int i = 0; i < urls.length; i++) {
-				boolean result = test2(urls[i]); 
-				if (verbose) System.out.print(result ? "." : "E");
-				if (!result) fail++; 
-			}
+		for (int i = 0; i < urls.length; i++) {
+			boolean result = test1(urls[i]); 
+			if (verbose) System.out.print(result ? "." : "E");
+			if (!result) fail++; 
+		}
+		for (int i = 0; i < urls.length; i++) {
+			boolean result = test2(urls[i]); 
+			if (verbose) System.out.print(result ? "." : "E");
+			if (!result) fail++; 
 		}
 		return fail == 0;
 	}

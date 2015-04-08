@@ -17,7 +17,6 @@ import org.eclipse.swt.browser.LocationListener;
 import org.eclipse.swt.browser.ProgressEvent;
 import org.eclipse.swt.browser.ProgressListener;
 import org.eclipse.swt.layout.FillLayout;
-import org.eclipse.swt.tests.junit.SwtTestUtil;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 
@@ -27,7 +26,6 @@ public class Browser2 {
 	public static boolean locationChanging = false;
 	public static boolean locationChanged = false;
 	public static boolean progressCompleted = false;
-	public static boolean isMozilla = SwtTestUtil.isGTK;
 	
 	public static boolean test1(String html) {
 		if (verbose) System.out.println("setText - args: "+html+" Expected Event Sequence: Location.changing > Location.changed > Progress.completed");
@@ -207,22 +205,14 @@ public class Browser2 {
 		int fail = 0;
 		String[] html = {file1};
 		for (int i = 0; i < html.length; i++) {
-			// TEST1 TEMPORARILY NOT RUN FOR MOZILLA
-//			if (!isMozilla) {
-			if (true) {
-				boolean result = test1(html[i]); 
-				if (verbose) System.out.print(result ? "." : "E");
-				if (!result) fail++;
-			}
+			boolean result = test1(html[i]); 
+			if (verbose) System.out.print(result ? "." : "E");
+			if (!result) fail++;
 		}
 		for (int i = 0; i < html.length; i++) {
-			// TEST2 TEMPORARILY NOT RUN FOR MOZILLA
-//			if (!isMozilla) {
-			if (true) {
-				boolean result = test2(html[i]); 
-				if (verbose) System.out.print(result ? "." : "E");
-				if (!result) fail++;
-			}
+			boolean result = test2(html[i]); 
+			if (verbose) System.out.print(result ? "." : "E");
+			if (!result) fail++;
 		}
 		return fail == 0;
 	}

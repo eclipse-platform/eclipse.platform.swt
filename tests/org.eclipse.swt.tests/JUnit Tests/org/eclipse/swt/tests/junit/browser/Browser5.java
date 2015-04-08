@@ -18,7 +18,6 @@ import org.eclipse.swt.browser.VisibilityWindowListener;
 import org.eclipse.swt.browser.WindowEvent;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.FillLayout;
-import org.eclipse.swt.tests.junit.SwtTestUtil;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 
@@ -33,7 +32,6 @@ public class Browser5 {
 	static int index = 0;
 	static int cntPassed = 0;
 	static int cntClosed = 0;
-	public static boolean isMozilla = SwtTestUtil.isGTK;
 	
 	public static boolean test1(String url) {
 		if (verbose) System.out.println("javascript window.open with location and size parameters - args: "+url+"\n  Expected Event Sequence: Visibility.show");
@@ -164,14 +162,9 @@ public class Browser5 {
 		else url = pluginPath + "/data/browser5.html";
 		String[] urls = {url};
 		for (int i = 0; i < urls.length; i++) {
-			// TEST1 TEMPORARILY NOT RUN FOR MOZILLA
-			// TEST TEMPORARILY disabled for Cocoa due to failure on test machine.
-//			if (!isMozilla && !SwtTestUtil.isCocoa) {
-			if (true) {
-				boolean result = test1(urls[i]); 
-				if (verbose) System.out.print(result ? "." : "E");
-				if (!result) fail++;
-			}
+			boolean result = test1(urls[i]); 
+			if (verbose) System.out.print(result ? "." : "E");
+			if (!result) fail++;
 		}
 		return fail == 0;
 	}

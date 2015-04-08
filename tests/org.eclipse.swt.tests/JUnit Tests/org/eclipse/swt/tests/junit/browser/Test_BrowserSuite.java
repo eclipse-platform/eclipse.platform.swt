@@ -10,7 +10,12 @@
  *******************************************************************************/
 package org.eclipse.swt.tests.junit.browser;
 
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.browser.Browser;
+import org.eclipse.swt.internal.mozilla.MozillaVersion;
+import org.eclipse.swt.tests.junit.SwtTestUtil;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Shell;
 
 import junit.framework.TestCase;
 
@@ -20,20 +25,30 @@ import junit.framework.TestCase;
  * @see org.eclipse.swt.browser.StatusTextListener
  */
 public class Test_BrowserSuite extends TestCase {
+	
+public static boolean isProblematicGtkXulRunner = isProblematicGtkXulRunner();
 
-public Test_BrowserSuite() {
-	Browser1.verbose = true;
-	Browser2.verbose = true;
-	Browser3.verbose = true;
-	Browser4.verbose = true;
-	Browser5.verbose = true;
-	Browser6.verbose = true;
-	Browser7.verbose = true;
-	Browser8.verbose = true;
-	Browser9.verbose = true;
+private static boolean isProblematicGtkXulRunner() {
+	if (!SwtTestUtil.isGTK) return false;
+	Display display = new Display();
+	try {
+		Shell shell = new Shell(display);
+		Browser browser = new Browser(shell, SWT.NONE);
+		String browserType = browser.getBrowserType();
+		if ("mozilla".equals(browserType)) {
+			int version = MozillaVersion.GetCurrentVersion();
+			return version == MozillaVersion.VERSION_XR1_9;
+		}
+		return false;
+	} finally {
+		display.dispose();
+	}
 }
 
 public void testBrowser1() {
+	if (isProblematicGtkXulRunner) {
+		System.out.println("Test_BrowserSuite.testBrowser1() skipped, see bug 423561");
+	}
 	assertTrue(Browser1.test());
 }
 
@@ -50,10 +65,16 @@ public void testBrowser4() {
 }
 
 public void testBrowser5() {
+	if (isProblematicGtkXulRunner) {
+		System.out.println("Test_BrowserSuite.testBrowser1() skipped, see bug 423561");
+	}
 	assertTrue(Browser5.test());
 }
 
 public void testBrowser6() {
+	if (isProblematicGtkXulRunner) {
+		System.out.println("Test_BrowserSuite.testBrowser1() skipped, see bug 423561");
+	}
 	assertTrue(Browser6.test());
 }
 
