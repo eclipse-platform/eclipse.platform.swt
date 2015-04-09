@@ -27,7 +27,6 @@ public final class FontMetrics {
 	
 	/**
 	 * On Windows, handle is a Win32 TEXTMETRIC struct
-	 * On Photon, handle is a Photon FontQueryInfo struct
 	 * (Warning: This field is platform dependent)
 	 * <p>
 	 * <b>IMPORTANT:</b> This field is <em>not</em> part of the SWT

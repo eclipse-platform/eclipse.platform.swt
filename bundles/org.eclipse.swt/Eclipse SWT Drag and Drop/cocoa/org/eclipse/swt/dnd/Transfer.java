@@ -80,7 +80,6 @@ abstract protected String[] getTypeNames();
  * <ul>
  * <li>Windows: COM.S_OK
  * <li>GTK: 1
- * <li>Photon: 1
  * </ul></p>
  * 
  * <p>If this transfer agent is unable to perform the conversion, the transferData.result 
@@ -88,7 +87,6 @@ abstract protected String[] getTypeNames();
  * <ul>
  * <li>Windows: COM.DV_E_TYMED or COM.E_FAIL
  * <li>GTK: 0
- * <li>Photon: 0
  * </ul></p>
  *
  * @param object a java representation of the data to be converted; the type of

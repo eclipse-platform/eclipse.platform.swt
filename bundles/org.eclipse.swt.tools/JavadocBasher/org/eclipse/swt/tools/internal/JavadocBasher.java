@@ -105,17 +105,14 @@ public class JavadocBasher {
 				// "common_j2me",
 				// "common_j2se",
 				"emulated", "emulated/bidi", // used by carbon, cocoa, dojo,
-												// flex, gtk, photon
-				"emulated/coolbar", // used by carbon, cocoa, flex, gtk,
-									// photon
-				"emulated/expand", // used by carbon, cocoa, flex, photon
-				"emulated/taskbar", // used by carbon, gtk, photon
-				"emulated/tooltip", // used by cocoa (?!), photon
+				"emulated/coolbar", // used by carbon, cocoa, flex, gtk
+				"emulated/expand", // used by carbon, cocoa, flex
+				"emulated/taskbar", // used by carbon, gtk
+				"emulated/tooltip", // used by cocoa (?!)
 				"gnome", // used by gtk
 				"glx", // used by gtk
 				"gtk",
 				"mozilla", // used by carbon, cocoa, gtk, win32
-		// "photon", // we are no longer maintaining photon
 		// "qt", // folder should be deleted
 		};
 
