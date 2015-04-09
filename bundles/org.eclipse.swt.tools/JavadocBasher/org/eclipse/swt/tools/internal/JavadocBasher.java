@@ -104,9 +104,9 @@ public class JavadocBasher {
 				// "common",
 				// "common_j2me",
 				// "common_j2se",
-				"emulated", "emulated/bidi", // used by carbon, cocoa, dojo,
-				"emulated/coolbar", // used by carbon, cocoa, flex, gtk
-				"emulated/expand", // used by carbon, cocoa, flex
+				"emulated", "emulated/bidi", // used by carbon, cocoa
+				"emulated/coolbar", // used by carbon, cocoa, gtk
+				"emulated/expand", // used by carbon, cocoa
 				"emulated/taskbar", // used by carbon, gtk
 				"emulated/tooltip", // used by cocoa (?!)
 				"gnome", // used by gtk
