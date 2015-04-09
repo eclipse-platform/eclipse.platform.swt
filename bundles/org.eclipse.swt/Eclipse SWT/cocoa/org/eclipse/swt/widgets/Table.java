@@ -79,7 +79,7 @@ public class Table extends Composite {
 	Rectangle imageBounds;
 	
 	/* Used to control drop feedback when FEEDBACK_SCROLL is set/not set */
-	boolean shouldScroll = true;
+	boolean shouldScroll = true, fixOrigin;
 
 	static int NEXT_ID;
 
@@ -1163,8 +1163,12 @@ void drawWithExpansionFrame_inView (int /*long*/ id, int /*long*/ sel, NSRect ce
 	drawExpansion = false;
 }
 
-void drawRect(int id, int sel, NSRect rect) {
+void drawRect(int /*long*/ id, int /*long*/ sel, NSRect rect) {
 	fixScrollWidth = false;
+	if (fixOrigin) {
+		fixOrigin = false;
+		fixTableOrigin();
+	}
 	super.drawRect(id, sel, rect);
 	if (isDisposed ()) return;
 	if (fixScrollWidth) {
@@ -1770,7 +1774,16 @@ public int getTopIndex () {
 	point.x = rect.x;
 	point.y = rect.y;
 	
-	int /*64*/ rowAtPoint = (int)/*64*/((NSTableView)view).rowAtPoint(point);
+	NSTableView tableView = (NSTableView)view;
+	/*
+	 * Note: On OSX 10.10, in setBounds(), we reset the origin of NSTableView so that it is
+	 * positioned below the header view. Take this into account before calling rowAtPoint().
+	 */
+	if ((tableView.headerView() != null) && (OS.VERSION_MMB >= OS.VERSION_MMB(10, 10, 0))) {
+		NSRect headerRect = headerView.frame();
+		point.y += headerRect.y + headerRect.height;
+	}
+	int /*64*/ rowAtPoint = (int)/*64*/(tableView).rowAtPoint(point);
 	if (rowAtPoint == -1) return 0; /* Empty table */ 
 	return rowAtPoint;	
 }
@@ -2433,6 +2446,26 @@ void setBackgroundColor(NSColor nsColor) {
 	((NSTableView) view).setBackgroundColor (nsColor);
 }
 
+void fixTableOrigin () {
+	/*
+	 * Bug on OSX 10.10: The scrollview's content view and the table's header view have the same origin. 
+	 * This causes the first row of the NSTableView to be hidden by header view.
+	 * Set the origin of NSTableView so that it is positioned below the header view.
+	 */
+	NSTableView tableView = (NSTableView) view;
+	if ((OS.VERSION_MMB >= OS.VERSION_MMB (10, 10, 0))) {
+		NSPoint pt = new NSPoint ();
+		NSRect headerRect = headerView.frame ();
+		if (tableView.headerView () != null) {
+			pt.y = headerRect.y + headerRect.height;
+		} else {
+			pt.y = 0;
+		}
+		view.setFrameOrigin (pt);
+		view.setNeedsDisplay (true);
+	}
+}
+
 /**
  * Sets the order that the items in the receiver should 
  * be displayed in to the given argument which is described
@@ -2947,6 +2980,14 @@ public void setTopIndex (int index) {
 	NSPoint pt = new NSPoint();
 	pt.x = scrollView.contentView().bounds().x;
 	pt.y = widget.frameOfCellAtColumn(0, row).y;
+	/*
+	 * Note: On OSX 10.10, in setBounds(), we reset the origin of NSTableView so that it is
+	 * positioned below the header view. Take this into account before calling scrollPoint().
+	 */
+	if ((widget.headerView() != null) && (OS.VERSION_MMB >= OS.VERSION_MMB(10, 10, 0))) {
+		NSRect headerRect = headerView.frame();
+		pt.y -= headerRect.y + headerRect.height;
+	}
 	view.scrollPoint(pt);
 }
 
