@@ -1629,12 +1629,12 @@ void createHandle () {
 }
 
 @Override
-boolean applyThemeBackground () {
+int applyThemeBackground () {
 	/*
 	 * Just inheriting the THEME_BACKGROUND doesn't turn complete Table
 	 * background transparent, TableItem background remains as-is.
 	 */
-	return false;
+	return -1; /* No Change */
 }
 
 void createHeaderToolTips () {

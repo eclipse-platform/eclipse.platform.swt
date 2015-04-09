@@ -3273,11 +3273,13 @@ public class SWT {
 	 * Current limitations include:
 	 * <ul><li>
 	 * {@link org.eclipse.swt.widgets.Text Text} and {@link org.eclipse.swt.widgets.Combo Combo}
-	 * don't support transparent background and fall back to the default background.
+	 * support transparent background on Windows only and on other platforms fall back to the default background.
 	 * </li>
 	 * <li>
-	 * {@link org.eclipse.swt.widgets.Table Table} and {@link org.eclipse.swt.widgets.Tree Tree}
-	 * support a transparent background on GTK3, but not on other platforms.
+	 * {@link org.eclipse.swt.widgets.Table Table} supports transparent background on GTK3 only.
+	 * </li>
+	 * <li> 
+	 * {@link org.eclipse.swt.widgets.Tree Tree} supports transparent background on GTK3/Windows, but not on other platforms.
 	 * </li>
 	 * </ul>
 	 * 

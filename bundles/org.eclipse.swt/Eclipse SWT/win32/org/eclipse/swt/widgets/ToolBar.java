@@ -402,6 +402,11 @@ void createWidget () {
 	lastFocusId = lastArrowId = lastHotId = -1;
 }
 
+@Override
+int applyThemeBackground () {
+	return -1; /* No Change */
+}
+
 int defaultBackground () {
 	if (OS.IsWinCE) return OS.GetSysColor (OS.COLOR_BTNFACE);
 	return super.defaultBackground ();

@@ -275,15 +275,15 @@ void createHandle () {
 	super.createHandle ();
 	OS.SendMessage (handle, OS.EM_LIMITTEXT, 0, 0);
 	if ((style & SWT.READ_ONLY) != 0) {
-		if (applyThemeBackground ()) {
+		if (applyThemeBackground () == 1) {
 			state |= THEME_BACKGROUND;
 		}
 	}
 }
 
 @Override
-boolean applyThemeBackground () {
-	return (super.applyThemeBackground() || (style & (SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL)) == 0);
+int applyThemeBackground () {
+	return (backgroundAlpha == 0 || (style & (SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL)) == 0) ? 1 : 0;
 }
 
 /**

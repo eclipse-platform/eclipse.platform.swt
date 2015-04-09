@@ -37,7 +37,8 @@ public class Snippet365 {
 	// Native
 	static Group nativeGroup;
 	static Button buttonCheckBox;
-	static ToolBar bar;
+	static ToolBar toolBar;
+	static CoolBar coolBar;
 	static Label label;
 	static Link link;
 	static Scale scale;
@@ -121,7 +122,8 @@ public class Snippet365 {
 					
 					// Native
 					nativeGroup.setBackground(display.getSystemColor(SWT.COLOR_TRANSPARENT));
-					bar.setBackground(display.getSystemColor(SWT.COLOR_TRANSPARENT));
+					toolBar.setBackground(display.getSystemColor(SWT.COLOR_TRANSPARENT));
+					coolBar.setBackground(display.getSystemColor(SWT.COLOR_TRANSPARENT));
 					label.setBackground(display.getSystemColor(SWT.COLOR_TRANSPARENT));
 					link.setBackground(display.getSystemColor(SWT.COLOR_TRANSPARENT));
 					scale.setBackground(display.getSystemColor(SWT.COLOR_TRANSPARENT));
@@ -159,7 +161,8 @@ public class Snippet365 {
 				} else {
 					// Native
 					nativeGroup.setBackground(display.getSystemColor(SWT.COLOR_WIDGET_BACKGROUND));
-					bar.setBackground(null);
+					toolBar.setBackground(null);
+					coolBar.setBackground(null);
 					label.setBackground(null);
 					link.setBackground(null);
 					scale.setBackground(null);
@@ -276,11 +279,21 @@ public class Snippet365 {
 		push.setText("Push Button");
 		
 		// Toolbar
-		bar = new ToolBar(nativeGroup, SWT.FLAT);
-		bar.pack();
-		ToolItem item = new ToolItem(bar, SWT.PUSH);
+		toolBar = new ToolBar(nativeGroup, SWT.FLAT);
+		toolBar.pack();
+		ToolItem item = new ToolItem(toolBar, SWT.PUSH);
 		item.setText("ToolBar_Item");
 
+		// Coolbar
+		coolBar = new CoolBar(nativeGroup, SWT.BORDER);
+		for (int i=0; i<2; i++) {
+			CoolItem item2 = new CoolItem (coolBar, SWT.NONE);
+			Button button = new Button (coolBar, SWT.PUSH);
+			button.setText ("Button " + i);
+			Point size = button.computeSize (SWT.DEFAULT, SWT.DEFAULT);
+			item2.setPreferredSize (item2.computeSize (size.x, size.y));
+			item2.setControl (button);
+		}
 		// Scale
 		scale = new Scale(nativeGroup, SWT.None);
 		scale.setMaximum(100);
@@ -293,10 +306,10 @@ public class Snippet365 {
 		// List
 		list = new List(nativeGroup, SWT.BORDER);
 		list.setBackground(display.getSystemColor(SWT.COLOR_CYAN));
-		list.add("one");
-		list.add("two");
-		list.add("three");
-		list.add("four");
+		list.add("List_one");
+		list.add("List_two");
+		list.add("List_three");
+		list.add("List_four");
 		
 		// Canvas
 		canvas = new Canvas (containerGroup, SWT.NONE);

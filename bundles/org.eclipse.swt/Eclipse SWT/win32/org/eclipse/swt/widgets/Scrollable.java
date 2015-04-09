@@ -144,19 +144,22 @@ void createWidget () {
 
 @Override
 void updateBackgroundColor () {
-	if (applyThemeBackground ()) {
-		state |= THEME_BACKGROUND;
-	} else {
-		state &= ~THEME_BACKGROUND;
+	switch (applyThemeBackground ()) {
+		case 0: state &= ~THEME_BACKGROUND; break;
+		case 1: state |= THEME_BACKGROUND; break;
+		default: /* No change */
 	}
 	super.updateBackgroundColor ();
 }
 
 /**
-* @return true if THEME_BACKGROUND needs to be applied.
-*/
-boolean applyThemeBackground () {
-	return backgroundAlpha == 0;
+ * @return
+ * 		<li>0 to remove THEME_BACKGROUND</li>
+ *      <li>1 to apply THEME_BACKGROUND</li>
+ *      <li>otherwise don't change THEME_BACKGROUND state</li>
+ */
+int applyThemeBackground () {
+	return (backgroundAlpha == 0) ? 1 : 0;
 }
 
 void destroyScrollBar (int type) {

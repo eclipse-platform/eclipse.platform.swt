@@ -305,7 +305,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 void createHandle () {
 	super.createHandle ();
 	state |= CANVAS;
-	if (applyThemeBackground ()) {
+	if ((style & (SWT.H_SCROLL | SWT.V_SCROLL)) == 0 || findThemeControl () == parent) {
 		state |= THEME_BACKGROUND;
 	}
 	if ((style & SWT.TRANSPARENT) != 0) {
@@ -316,7 +316,7 @@ void createHandle () {
 }
 
 @Override
-boolean applyThemeBackground () {
+int applyThemeBackground () {
 	/*
 	 * Composite with scrollbars would not inherit the theme because it was
 	 * probably being used to implement a control similar to a Text, List,
@@ -329,7 +329,7 @@ boolean applyThemeBackground () {
 	 * enable the THEME_BACKGROUND in 'state' to support background transparent.
 	 * Refer bug 463127 & related bug 234649.
 	 */
-	return (super.applyThemeBackground() || (style & (SWT.H_SCROLL | SWT.V_SCROLL)) == 0 || findThemeControl () == parent);
+	return (backgroundAlpha == 0 || (style & (SWT.H_SCROLL | SWT.V_SCROLL)) == 0 || findThemeControl () == parent) ? 1 : 0;
 }
 
 /** 
