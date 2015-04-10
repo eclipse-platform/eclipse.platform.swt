@@ -29,6 +29,7 @@ public class Test_BrowserSuite extends TestCase {
 public static boolean isProblematicGtkXulRunner = isProblematicGtkXulRunner();
 
 private static boolean isProblematicGtkXulRunner() {
+	// bug 423561
 	if (!SwtTestUtil.isGTK) return false;
 	Display display = new Display();
 	try {
@@ -48,6 +49,7 @@ private static boolean isProblematicGtkXulRunner() {
 public void testBrowser1() {
 	if (isProblematicGtkXulRunner) {
 		System.out.println("Test_BrowserSuite.testBrowser1() skipped, see bug 423561");
+		return;
 	}
 	assertTrue(Browser1.test());
 }
@@ -67,6 +69,7 @@ public void testBrowser4() {
 public void testBrowser5() {
 	if (isProblematicGtkXulRunner) {
 		System.out.println("Test_BrowserSuite.testBrowser1() skipped, see bug 423561");
+		return;
 	}
 	assertTrue(Browser5.test());
 }
@@ -74,6 +77,7 @@ public void testBrowser5() {
 public void testBrowser6() {
 	if (isProblematicGtkXulRunner) {
 		System.out.println("Test_BrowserSuite.testBrowser1() skipped, see bug 423561");
+		return;
 	}
 	assertTrue(Browser6.test());
 }
