@@ -130,6 +130,16 @@ public final class Image extends Resource implements Drawable {
 	 */
 	static final int DEFAULT_SCANLINE_PAD = 4;
 
+	/**
+	 * ImageFileNameProvider to provide file names at various Zoom levels
+	 */
+	ImageFileNameProvider imageFileNameProvider;
+
+	/**
+	 * ImageDataProvider to provide ImageData at various Zoom levels
+	 */
+	ImageDataProvider imageDataProvider;	
+
 Image(Device device) {
 	super(device);
 }
@@ -579,6 +589,7 @@ public Image(Device device, String filename) {
 public Image(Device device, ImageFileNameProvider imageFileNameProvider) {
 	super(device);
 	if (imageFileNameProvider == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	this.imageFileNameProvider = imageFileNameProvider;
 	String filename = imageFileNameProvider.getImagePath(100);
 	if (filename == null) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	NSAutoreleasePool pool = null;
@@ -630,6 +641,7 @@ public Image(Device device, ImageFileNameProvider imageFileNameProvider) {
 public Image(Device device, ImageDataProvider imageDataProvider) {
 	super(device);
 	if (imageDataProvider == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	this.imageDataProvider = imageDataProvider;
 	ImageData data = imageDataProvider.getImageData (100);
 	if (data == null) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	NSAutoreleasePool pool = null;
@@ -720,8 +732,14 @@ public boolean equals (Object object) {
 	if (object == this) return true;
 	if (!(object instanceof Image)) return false;
 	Image image = (Image)object;
-	return device == image.device && handle == image.handle &&
-		transparentPixel == image.transparentPixel;
+	if (device != image.device || transparentPixel != image.transparentPixel) return false;
+	if (imageDataProvider != null && image.imageDataProvider != null) {
+		return imageDataProvider.equals (image.imageDataProvider);
+	} else if (imageFileNameProvider != null && image.imageFileNameProvider != null) {
+		return imageFileNameProvider.equals (image.imageFileNameProvider);
+	} else {
+		return handle == image.handle;
+	}
 }
 
 /**
@@ -927,7 +945,13 @@ NSBitmapImageRep getRepresentation () {
  * @see #equals
  */
 public int hashCode () {
-	return handle != null ? (int)/*64*/handle.id : 0;
+	if (imageDataProvider != null) {
+		return imageDataProvider.hashCode();
+	} else if (imageFileNameProvider != null) {
+		return imageFileNameProvider.hashCode();
+	} else {
+		return handle != null ? (int)/*64*/handle.id : 0;
+	}
 }
 
 void init(int width, int height) {
