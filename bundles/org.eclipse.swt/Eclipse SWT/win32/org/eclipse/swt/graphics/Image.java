@@ -1235,7 +1235,14 @@ public boolean equals (Object object) {
 	if (object == this) return true;
 	if (!(object instanceof Image)) return false;
 	Image image = (Image) object;
-	return device == image.device && handle == image.handle;
+	if (device != image.device || transparentPixel != image.transparentPixel) return false;
+	if (imageDataProvider != null && image.imageDataProvider != null) {
+		return imageDataProvider.equals (image.imageDataProvider);
+	} else if (imageFileNameProvider != null && image.imageFileNameProvider != null) {
+		return imageFileNameProvider.equals (image.imageFileNameProvider);
+	} else {
+		return handle == image.handle;
+	}
 }
 
 /**
@@ -1721,7 +1728,13 @@ public ImageData getImageData() {
  */
 @Override
 public int hashCode () {
-	return (int)/*64*/handle;
+	if (imageDataProvider != null) {
+		return imageDataProvider.hashCode();
+	} else if (imageFileNameProvider != null) {
+		return imageFileNameProvider.hashCode();
+	} else {
+		return (int)/*64*/handle;
+	}
 }
 
 void init(int width, int height) {

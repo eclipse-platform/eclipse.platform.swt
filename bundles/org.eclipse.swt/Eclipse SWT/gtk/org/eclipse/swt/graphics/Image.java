@@ -1167,10 +1167,15 @@ public boolean equals (Object object) {
 	if (object == this) return true;
 	if (!(object instanceof Image)) return false;
 	Image image = (Image)object;
-	if (OS.USE_CAIRO) {
-		return device == image.device && surface == image.surface;
+	if (device != image.device || transparentPixel != image.transparentPixel) return false;
+	if (imageDataProvider != null && image.imageDataProvider != null) {
+		return imageDataProvider.equals (image.imageDataProvider);
+	} else if (imageFileNameProvider != null && image.imageFileNameProvider != null) {
+		return imageFileNameProvider.equals (image.imageFileNameProvider);
+	} else if (OS.USE_CAIRO) {
+		return surface == image.surface;
 	} else {
-		return device == image.device && pixmap == image.pixmap;
+		return pixmap == image.pixmap;
 	}
 }
 
@@ -1416,7 +1421,11 @@ public static Image gtk_new_from_pixbuf(Device device, int type, long /*int*/ pi
  */
 @Override
 public int hashCode () {
-	if (OS.USE_CAIRO) {
+	if (imageDataProvider != null) {
+		return imageDataProvider.hashCode();
+	} else if (imageFileNameProvider != null) {
+		 return imageFileNameProvider.hashCode();
+	} else if (OS.USE_CAIRO) {
 		return (int)/*64*/surface;
 	} else {
 		return (int)/*64*/pixmap;

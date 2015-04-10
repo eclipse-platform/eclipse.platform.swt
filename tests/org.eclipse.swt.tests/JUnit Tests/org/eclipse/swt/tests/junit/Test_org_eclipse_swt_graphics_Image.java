@@ -19,8 +19,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 
-import junit.framework.TestCase;
-
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.SWTException;
 import org.eclipse.swt.graphics.Color;
@@ -35,13 +33,52 @@ import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.internal.Compatibility;
 import org.eclipse.swt.widgets.Display;
 
+import junit.framework.TestCase;
+
 /**
  * Automated Test Suite for class org.eclipse.swt.graphics.Image
  *
  * @see org.eclipse.swt.graphics.Image
  */
 public class Test_org_eclipse_swt_graphics_Image extends TestCase {
-
+ImageFileNameProvider imageFileNameProvider = new ImageFileNameProvider() {
+	public String getImagePath(int zoom) {
+		String fileName;
+		switch (zoom) {
+		case 100:
+			fileName = "collapseall.png";
+			break;
+		case 150: 
+			fileName = "collapseall@1.5x.png";
+			break;
+		case 200: 
+			fileName = "collapseall@2x.png";
+			break;
+		default:
+			return null;
+		}
+		return getPath(fileName);
+	}
+};
+ImageDataProvider imageDataProvider = new ImageDataProvider() {
+	public ImageData getImageData(int zoom) {
+		String fileName;
+		switch (zoom) {
+		case 100:
+			fileName = "collapseall.png";
+			break;
+		case 150: 
+			fileName = "collapseall@1.5x.png";
+			break;
+		case 200: 
+			fileName = "collapseall@2x.png";
+			break;
+		default:
+			return null;
+		}
+		return new ImageData(getPath(fileName));
+	}
+};
 @Override
 protected void setUp() {
 	display = Display.getDefault();
@@ -448,26 +485,7 @@ public void test_ConstructorLorg_eclipse_swt_graphics_Device_ImageFileNameProvid
 		assertSWTProblem("Incorrect exception thrown for provider == null", SWT.ERROR_INVALID_ARGUMENT, e);
 	}
 	// Valid provider
-	provider = new ImageFileNameProvider() {
-		public String getImagePath(int zoom) {
-			String fileName;
-			switch (zoom) {
-			case 100:
-				fileName = "collapseall.png";
-				break;
-			case 150: 
-				fileName = "collapseall@1.5x.png";
-				break;
-			case 200: 
-				fileName = "collapseall@2x.png";
-				break;
-			default:
-				return null;
-			}
-			return getPath(fileName);
-		}
-	};
-	Image image = new Image(display, provider);
+	Image image = new Image(display, imageFileNameProvider);
 	image.dispose();
 	// Corrupt Image provider
 	provider = new ImageFileNameProvider() {
@@ -537,26 +555,7 @@ public void test_ConstructorLorg_eclipse_swt_graphics_Device_ImageDataProvider()
 		assertSWTProblem("Incorrect exception thrown for provider == null", SWT.ERROR_INVALID_ARGUMENT, e);
 	}
 	// Valid provider
-	provider = new ImageDataProvider() {
-		public ImageData getImageData(int zoom) {
-			String fileName;
-			switch (zoom) {
-			case 100:
-				fileName = "collapseall.png";
-				break;
-			case 150: 
-				fileName = "collapseall@1.5x.png";
-				break;
-			case 200: 
-				fileName = "collapseall@2x.png";
-				break;
-			default:
-				return null;
-			}
-			return new ImageData(getPath(fileName));
-		}
-	};
-	Image image = new Image(display, provider);
+	Image image = new Image(display, imageDataProvider);
 	image.dispose();
 	// Corrupt Image provider
 	provider = new ImageDataProvider() {
@@ -619,6 +618,52 @@ public void test_equalsLjava_lang_Object() {
 		image = new Image(display, imageData);
 		image1 = new Image(display, imageData);
 		assertFalse(":c:", image.equals(image1));
+	} finally {
+		image.dispose();
+		image1.dispose();
+	}
+	
+	// ImageFileNameProvider
+	try {
+		image = new Image(display, imageFileNameProvider);
+		image1 = image;
+		
+		assertFalse(":d:", image.equals(null));
+		
+		assertTrue(":e:", image.equals(image1));
+		
+		image1 = new Image(display, imageFileNameProvider);
+		assertTrue(":f:", image.equals(image1));
+	} finally {
+		image.dispose();
+		image1.dispose();
+	}
+	try {
+		image = new Image(display, imageFileNameProvider);
+		image1 = image;
+		
+		assertFalse(":d:", image.equals(null));
+		
+		assertTrue(":e:", image.equals(image1));
+		
+		image1 = new Image(display, imageFileNameProvider);
+		assertTrue(":f:", image.equals(image1));
+	} finally {
+		image.dispose();
+		image1.dispose();
+	}
+	
+	// ImageDataProvider
+	try {
+		image = new Image(display, imageDataProvider);
+		image1 = image;
+		
+		assertFalse(":g:", image.equals(null));
+		
+		assertTrue(":h:", image.equals(image1));
+		
+		image1 = new Image(display, imageDataProvider);
+		assertTrue(":i:", image.equals(image1));
 	} finally {
 		image.dispose();
 		image1.dispose();
@@ -689,6 +734,26 @@ public void test_hashCode() {
 		image1 = new Image(display, imageData);
 		boolean equals = (image1.hashCode() == image.hashCode());
 		assertFalse(":b:", equals);
+	} finally {
+		image.dispose();
+		image1.dispose();
+	}
+	
+	// ImageFileNameProvider
+	try {
+		image = new Image(display, imageFileNameProvider);
+		image1 = new Image(display, imageFileNameProvider);
+		assertEquals(":c:", image1.hashCode(), image.hashCode());
+	} finally {
+		image.dispose();
+		image1.dispose();
+	}
+	
+	// ImageDataProvider
+	try {
+		image = new Image(display, imageDataProvider);
+		image1 = new Image(display, imageDataProvider);
+		assertEquals(":d:", image1.hashCode(), image.hashCode());
 	} finally {
 		image.dispose();
 		image1.dispose();
