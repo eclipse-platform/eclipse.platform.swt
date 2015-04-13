@@ -5353,10 +5353,6 @@ LRESULT WM_SYSCOMMAND (long /*int*/ wParam, long /*int*/ lParam) {
 	/* Process the System Command */
 	int cmd = (int)/*64*/wParam & 0xFFF0;
 	switch (cmd) {
-		case OS.SC_CLOSE:
-			long /*int*/ hwndShell = menuShell ().handle;
-			int bits = OS.GetWindowLong (hwndShell, OS.GWL_STYLE);
-			break;
 		case OS.SC_KEYMENU:
 			/*
 			* When lParam is zero, one of F10, Shift+F10, Ctrl+F10 or
