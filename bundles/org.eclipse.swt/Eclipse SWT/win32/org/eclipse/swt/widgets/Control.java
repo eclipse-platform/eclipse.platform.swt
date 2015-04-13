@@ -772,6 +772,7 @@ void deregister () {
 	display.removeControl (handle);
 }
 
+@Override
 void destroyWidget () {
 	long /*int*/ hwnd = topHandle ();
 	releaseHandle ();
@@ -1433,6 +1434,7 @@ public Point getLocation () {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  */
+@Override
 public Menu getMenu () {
 	checkWidget ();
 	return menu;
@@ -1953,6 +1955,7 @@ public boolean isVisible () {
 	return getVisible () && parent.isVisible ();
 }
 
+@Override
 void mapEvent (long /*int*/ hwnd, Event event) {
 	if (hwnd != handle) {
 		POINT point = new POINT ();
@@ -2088,6 +2091,7 @@ Accessible new_Accessible (Control control) {
 	return Accessible.internal_new_Accessible (this);
 }
 
+@Override
 GC new_GC (GCData data) {
 	return GC.win32_new (this, data);
 }
@@ -2432,16 +2436,19 @@ void register () {
 	display.addControl (handle, this);
 }
 
+@Override
 void releaseHandle () {
 	super.releaseHandle ();
 	handle = 0;
 	parent = null;
 }
 
+@Override
 void releaseParent () {
 	parent.removeControl (this);
 }
 
+@Override
 void releaseWidget () {
 	super.releaseWidget ();
 	if (OS.IsDBLocale) {
@@ -2828,6 +2835,7 @@ void showWidget (boolean visible) {
 	if (handle != topHandle) OS.ShowWindow (handle, visible ? OS.SW_SHOW : OS.SW_HIDE);
 }
 
+@Override
 boolean sendFocusEvent (int type) {
 	Shell shell = getShell ();
 	
@@ -3683,6 +3691,7 @@ public void setSize (Point size) {
 	setSize (size.x, size.y);
 }
 
+@Override
 boolean setTabItemFocus () {
 	if (!isShowing ()) return false;
 	return forceFocus ();
@@ -5347,7 +5356,6 @@ LRESULT WM_SYSCOMMAND (long /*int*/ wParam, long /*int*/ lParam) {
 		case OS.SC_CLOSE:
 			long /*int*/ hwndShell = menuShell ().handle;
 			int bits = OS.GetWindowLong (hwndShell, OS.GWL_STYLE);
-			if ((bits & OS.WS_SYSMENU) == 0) return LRESULT.ZERO;
 			break;
 		case OS.SC_KEYMENU:
 			/*
