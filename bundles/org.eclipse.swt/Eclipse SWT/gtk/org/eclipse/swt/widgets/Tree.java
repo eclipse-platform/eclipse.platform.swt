@@ -2718,7 +2718,7 @@ void rendererRender (long /*int*/ cell, long /*int*/ cr, long /*int*/ window, lo
 				sendEvent (SWT.EraseItem, event);
 				drawForeground = null;
 				drawState = event.doit ? event.detail : 0;
-				if (OS.GTK_VERSION <= OS.VERSION(3, 14, 8)) {
+				if (OS.GTK3 && OS.GTK_VERSION <= OS.VERSION(3, 14, 8)) {
 					drawState |= SWT.FOREGROUND;
 				}
 				drawFlags &= ~(OS.GTK_CELL_RENDERER_FOCUSED | OS.GTK_CELL_RENDERER_SELECTED);
@@ -2823,7 +2823,7 @@ void rendererRender (long /*int*/ cell, long /*int*/ cr, long /*int*/ window, lo
 				event.width = contentWidth [0];
 				event.height = rect.height;
 				event.detail = drawState;
-				if (OS.GTK_VERSION > OS.VERSION(3, 14, 8)) {
+				if (!OS.GTK3 || OS.GTK_VERSION > OS.VERSION(3, 14, 8)) {
 					sendEvent (SWT.PaintItem, event);
 				}
 				gc.dispose();
