@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2014 IBM Corporation and others.
+ * Copyright (c) 2000, 2015 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -80,7 +80,7 @@ import org.eclipse.swt.internal.win32.*;
  * downgraded to <code>APPLICATION_MODAL</code>.
  * <dl>
  * <dt><b>Styles:</b></dt>
- * <dd>BORDER, CLOSE, MIN, MAX, NO_TRIM, RESIZE, TITLE, ON_TOP, TOOL, SHEET</dd>
+ * <dd>BORDER, CLOSE, MIN, MAX, NO_MOVE, NO_TRIM, RESIZE, TITLE, ON_TOP, TOOL, SHEET</dd>
  * <dd>APPLICATION_MODAL, MODELESS, PRIMARY_MODAL, SYSTEM_MODAL</dd>
  * <dt><b>Events:</b></dt>
  * <dd>Activate, Close, Deactivate, Deiconify, Iconify</dd>
@@ -472,6 +472,7 @@ long /*int*/ balloonTipHandle () {
 	return balloonTipHandle;
 }
 
+@Override
 long /*int*/ callWindowProc (long /*int*/ hwnd, int msg, long /*int*/ wParam, long /*int*/ lParam) {
 	if (handle == 0) return 0;
 	if (hwnd == toolTipHandle || hwnd == balloonTipHandle || hwnd == menuItemToolTipHandle) {
@@ -486,6 +487,9 @@ long /*int*/ callWindowProc (long /*int*/ hwnd, int msg, long /*int*/ wParam, lo
 	if ((style & SWT.TOOL) != 0) {
 		int trim = SWT.TITLE | SWT.CLOSE | SWT.MIN | SWT.MAX | SWT.BORDER | SWT.RESIZE;
 		if ((style & trim) == 0) return OS.DefWindowProc (hwnd, msg, wParam, lParam);
+	}
+	if ((style & SWT.NO_MOVE) != 0) {
+		setItemEnabled (OS.SC_MOVE, false);
 	}
 	if (parent != null) {
 		switch (msg) {
@@ -565,6 +569,7 @@ void createBalloonTipHandle () {
 	OS.SetWindowLongPtr (balloonTipHandle, OS.GWLP_WNDPROC, display.windowProc);
 }
 
+@Override
 void createHandle () {
 	boolean embedded = handle != 0 && (state & FOREIGN_HANDLE) == 0;
 	
@@ -682,6 +687,7 @@ long /*int*/ createToolTipHandle (long /*int*/ parent) {
 	return toolTipHandle;
 }
 
+@Override
 void deregister () {
 	super.deregister ();
 	if (toolTipHandle != 0) display.removeControl (toolTipHandle);
@@ -703,11 +709,13 @@ void destroyToolTip (ToolTip toolTip) {
 	toolTip.id = -1;
 }
 
+@Override
 void destroyWidget () {
 	fixActiveShell ();
 	super.destroyWidget ();
 }
 
+@Override
 public void dispose () {
 	/*
 	* This code is intentionally commented.  On some
@@ -727,6 +735,7 @@ public void dispose () {
 //	if (oldDisplay != null) oldDisplay.update ();
 }
 
+@Override
 void enableWidget (boolean enabled) {
 	if (enabled) {
 		state &= ~DISABLED;
@@ -740,6 +749,7 @@ void enableWidget (boolean enabled) {
 	}
 }
 
+@Override
 long /*int*/ findBrush (long /*int*/ value, int lbStyle) {
 	if (lbStyle == OS.BS_SOLID) {
 		for (int i=0; i<SYSTEM_COLORS.length; i++) {
@@ -782,14 +792,17 @@ long /*int*/ findBrush (long /*int*/ value, int lbStyle) {
 	return brushes [0] = hBrush;
 }
 
+@Override
 Control findBackgroundControl () {
 	return background != -1 || backgroundImage != null ? this : null;
 }
 
+@Override
 Cursor findCursor () {
 	return cursor;
 }
 
+@Override
 Control findThemeControl () {
 	return null;
 }
@@ -888,6 +901,7 @@ public void forceActive () {
 	OS.SetForegroundWindow (handle);
 }
 
+@Override
 void forceResize () {
 	/* Do nothing */
 }
@@ -916,6 +930,7 @@ public int getAlpha () {
 	return 0xFF;
 }
 
+@Override
 public Rectangle getBounds () {
 	checkWidget ();
 	if (!OS.IsWinCE) {
@@ -956,6 +971,7 @@ ToolTip getCurrentToolTip (long /*int*/ hwndToolTip) {
 	return null;
 }
 
+@Override
 public boolean getEnabled () {
 	checkWidget ();
 	return (state & DISABLED) == 0;
@@ -1014,6 +1030,7 @@ public int getImeInputMode () {
 	return result | SWT.ALPHA;
 }
 
+@Override
 public Point getLocation () {
 	checkWidget ();
 	if (!OS.IsWinCE) {
@@ -1026,6 +1043,7 @@ public Point getLocation () {
 	return new Point (rect.left, rect.top);
 }
 
+@Override
 public boolean getMaximized () {
 	checkWidget ();
 	return !fullScreen && super.getMaximized ();
@@ -1099,17 +1117,20 @@ public boolean getModified () {
  * @since 3.0
  *
  */
+@Override
 public Region getRegion () {
 	/* This method is needed for the @since 3.0 Javadoc */
 	checkWidget ();
 	return region;
 }
 
+@Override
 public Shell getShell () {
 	checkWidget ();
 	return this;
 }
 
+@Override
 public Point getSize () {
 	checkWidget ();
 	if (!OS.IsWinCE) {
@@ -1179,15 +1200,18 @@ public ToolBar getToolBar() {
 	return null;
 }
 
+@Override
 Composite findDeferredControl () {
 	return layoutCount > 0 ? this : null;
 }
 
+@Override
 public boolean isEnabled () {
 	checkWidget ();
 	return getEnabled ();
 }
 
+@Override
 public boolean isVisible () {
 	checkWidget ();
 	return getVisible ();
@@ -1275,6 +1299,7 @@ public void open () {
 	if (!restoreFocus () && !traverseGroup (true)) setFocus ();
 }
 
+@Override
 public boolean print (GC gc) {
 	checkWidget ();
 	if (gc == null) error (SWT.ERROR_NULL_ARGUMENT);
@@ -1282,6 +1307,7 @@ public boolean print (GC gc) {
 	return false;
 }
 
+@Override
 void register () {
 	super.register ();
 	if (toolTipHandle != 0) display.addControl (toolTipHandle, this);
@@ -1298,6 +1324,7 @@ void releaseBrushes () {
 	brushes = null;
 }
 
+@Override
 void releaseChildren (boolean destroy) {
 	Shell [] shells = getShells ();
 	for (int i=0; i<shells.length; i++) {
@@ -1318,15 +1345,18 @@ void releaseChildren (boolean destroy) {
 	super.releaseChildren (destroy);
 }
 
+@Override
 void releaseHandle () {
 	super.releaseHandle ();
 	hwndMDIClient = 0;
 }
 
+@Override
 void releaseParent () {
 	/* Do nothing */
 }
 
+@Override
 void releaseWidget () {
 	super.releaseWidget ();
 	releaseBrushes ();
@@ -1345,6 +1375,7 @@ void releaseWidget () {
 	toolTitle = balloonTitle = null;
 }
 
+@Override
 void removeMenu (Menu menu) {
 	super.removeMenu (menu);
 	if (menu == activeMenu) activeMenu = null;
@@ -1378,6 +1409,7 @@ public void removeShellListener (ShellListener listener) {
 	eventTable.unhook (SWT.Deactivate, listener);
 }
 
+@Override
 void reskinChildren (int flags) {
 	Shell [] shells = getShells ();
 	for (int i=0; i<shells.length; i++) {
@@ -1407,6 +1439,7 @@ LRESULT selectPalette (long /*int*/ hPalette) {
 	return (result > 0) ? LRESULT.ONE : LRESULT.ZERO;
 }
 
+@Override
 boolean sendKeyEvent (int type, int msg, long /*int*/ wParam, long /*int*/ lParam, Event event) {
 	if (!isEnabled () || !isActive ()) return false;
 	return super.sendKeyEvent (type, msg, wParam, lParam, event);
@@ -1516,6 +1549,7 @@ public void setAlpha (int alpha) {
 	}
 }
 
+@Override
 void setBounds (int x, int y, int width, int height, int flags, boolean defer) {
 	if (fullScreen) setFullScreen (false);
 	/*
@@ -1533,6 +1567,7 @@ void setBounds (int x, int y, int width, int height, int flags, boolean defer) {
 	super.setBounds (x, y, width, height, flags, false);
 }
 
+@Override
 public void setEnabled (boolean enabled) {
 	checkWidget ();
 	if (((state & DISABLED) == 0) == enabled) return;
@@ -1744,6 +1779,7 @@ void setItemEnabled (int cmd, boolean enabled) {
 	OS.EnableMenuItem (hMenu, cmd, OS.MF_BYCOMMAND | flags);
 }
 
+@Override
 void setParent () {
 	/* Do nothing.  Not necessary for Shells */
 }
@@ -1772,6 +1808,7 @@ void setParent () {
  *
  * @since 3.0
  */
+@Override
 public void setRegion (Region region) {
 	checkWidget ();
 	if ((style & SWT.NO_TRIM) == 0) return;
@@ -1883,6 +1920,7 @@ void setToolTipTitle (long /*int*/ hwndToolTip, String text, int icon) {
 	}
 }
 
+@Override
 public void setVisible (boolean visible) {
 	checkWidget ();
 	/*
@@ -1963,6 +2001,7 @@ public void setVisible (boolean visible) {
 	}
 }
 
+@Override
 void subclass () {
 	super.subclass ();
 	if (ToolTipProc != 0) {
@@ -1984,12 +2023,14 @@ long /*int*/ toolTipHandle () {
 	return toolTipHandle;
 }
 
+@Override
 boolean translateAccelerator (MSG msg) {
 	if (!isEnabled () || !isActive ()) return false;
 	if (menuBar != null && !menuBar.isEnabled ()) return false;
 	return translateMDIAccelerator (msg) || translateMenuAccelerator (msg);
 }
 
+@Override
 boolean traverseEscape () {
 	if (parent == null) return false;
 	if (!isVisible () || !isEnabled ()) return false;
@@ -1997,6 +2038,7 @@ boolean traverseEscape () {
 	return true;
 }
 
+@Override
 void unsubclass () {
 	super.unsubclass ();
 	if (ToolTipProc != 0) {
@@ -2020,15 +2062,18 @@ void updateModal () {
 	}
 }
 
+@Override
 CREATESTRUCT widgetCreateStruct () {
 	return null;
 }
 
+@Override
 long /*int*/ widgetParent () {
 	if (handle != 0) return handle;
 	return parent != null ? parent.handle : 0;
 }
 
+@Override
 int widgetExtStyle () {
 	int bits = super.widgetExtStyle () & ~OS.WS_EX_MDICHILD;
 	if ((style & SWT.TOOL) != 0) bits |= OS.WS_EX_TOOLWINDOW;
@@ -2072,6 +2117,7 @@ int widgetExtStyle () {
 	return bits;
 }
 
+@Override
 TCHAR windowClass () {
 	if (OS.IsSP) return DialogClass;
 	if ((style & SWT.TOOL) != 0) {
@@ -2081,6 +2127,7 @@ TCHAR windowClass () {
 	return parent != null ? DialogClass : super.windowClass ();
 }
 
+@Override
 long /*int*/ windowProc () {
 	if (windowProc != 0) return windowProc;
 	if (OS.IsSP) return DialogProc;
@@ -2091,8 +2138,10 @@ long /*int*/ windowProc () {
 	return parent != null ? DialogProc : super.windowProc ();
 }
 
+@Override
 long /*int*/ windowProc (long /*int*/ hwnd, int msg, long /*int*/ wParam, long /*int*/ lParam) {
 	if (handle == 0) return 0;
+	if((style & SWT.NO_MOVE) != 0 && msg == OS.WM_NCLBUTTONDOWN && wParam == OS.HTCAPTION) return 0;
 	if (hwnd == toolTipHandle || hwnd == balloonTipHandle || hwnd == menuItemToolTipHandle) {
 		switch (msg) {
 			case OS.WM_TIMER: {
@@ -2117,6 +2166,7 @@ long /*int*/ windowProc (long /*int*/ hwnd, int msg, long /*int*/ wParam, long /
 	return super.windowProc (hwnd, msg, wParam, lParam);
 }
 
+@Override
 int widgetStyle () {
 	int bits = super.widgetStyle ();
 	if (handle != 0) return bits | OS.WS_CHILD;
@@ -2156,6 +2206,7 @@ int widgetStyle () {
 	return bits | OS.WS_OVERLAPPED | OS.WS_CAPTION;
 }
 
+@Override
 LRESULT WM_ACTIVATE (long /*int*/ wParam, long /*int*/ lParam) {
 	if (OS.IsPPC) {
 		/*
@@ -2201,6 +2252,7 @@ LRESULT WM_ACTIVATE (long /*int*/ wParam, long /*int*/ lParam) {
 	return parent != null ? LRESULT.ZERO : result;
 }
 
+@Override
 LRESULT WM_COMMAND (long /*int*/ wParam, long /*int*/ lParam) {
 	if (OS.IsPPC) {
 		/*
@@ -2240,6 +2292,7 @@ LRESULT WM_COMMAND (long /*int*/ wParam, long /*int*/ lParam) {
 	return super.WM_COMMAND (wParam, lParam);
 }
 
+@Override
 LRESULT WM_DESTROY (long /*int*/ wParam, long /*int*/ lParam) {
 	LRESULT result = super.WM_DESTROY (wParam, lParam);
 	/*
@@ -2256,6 +2309,7 @@ LRESULT WM_DESTROY (long /*int*/ wParam, long /*int*/ lParam) {
 	return result;
 }
 
+@Override
 LRESULT WM_ERASEBKGND (long /*int*/ wParam, long /*int*/ lParam) {
 	LRESULT result = super.WM_ERASEBKGND (wParam, lParam);
 	if (result != null) return result;
@@ -2274,6 +2328,7 @@ LRESULT WM_ERASEBKGND (long /*int*/ wParam, long /*int*/ lParam) {
 	return result;
 }
 
+@Override
 LRESULT WM_ENTERIDLE (long /*int*/ wParam, long /*int*/ lParam) {
 	LRESULT result = super.WM_ENTERIDLE (wParam, lParam);
 	if (result != null) return result;
@@ -2284,6 +2339,7 @@ LRESULT WM_ENTERIDLE (long /*int*/ wParam, long /*int*/ lParam) {
 	return result;
 }
 
+@Override
 LRESULT WM_GETMINMAXINFO (long /*int*/ wParam, long /*int*/ lParam) {
 	LRESULT result = super.WM_GETMINMAXINFO (wParam, lParam);
 	if (result != null) return result;
@@ -2298,6 +2354,7 @@ LRESULT WM_GETMINMAXINFO (long /*int*/ wParam, long /*int*/ lParam) {
 	return result;
 }
 
+@Override
 LRESULT WM_MOUSEACTIVATE (long /*int*/ wParam, long /*int*/ lParam) {
 	LRESULT result = super.WM_MOUSEACTIVATE (wParam, lParam);
 	if (result != null) return result;
@@ -2378,6 +2435,7 @@ LRESULT WM_MOUSEACTIVATE (long /*int*/ wParam, long /*int*/ lParam) {
 	return new LRESULT (code);
 }
 
+@Override
 LRESULT WM_MOVE (long /*int*/ wParam, long /*int*/ lParam) {
 	LRESULT result = super.WM_MOVE (wParam, lParam);
 	if (result != null) return result;
@@ -2386,6 +2444,7 @@ LRESULT WM_MOVE (long /*int*/ wParam, long /*int*/ lParam) {
 	return result;
 }
 
+@Override
 LRESULT WM_NCHITTEST (long /*int*/ wParam, long /*int*/ lParam) {
 	if (!OS.IsWindowEnabled (handle)) return null;
 	if (!isEnabled () || !isActive ()) {
@@ -2402,6 +2461,7 @@ LRESULT WM_NCHITTEST (long /*int*/ wParam, long /*int*/ lParam) {
 	return null;
 }
 
+@Override
 LRESULT WM_NCLBUTTONDOWN (long /*int*/ wParam, long /*int*/ lParam) {
 	LRESULT result = super.WM_NCLBUTTONDOWN (wParam, lParam);
 	if (result != null) return result;
@@ -2430,6 +2490,7 @@ LRESULT WM_NCLBUTTONDOWN (long /*int*/ wParam, long /*int*/ lParam) {
 	return new LRESULT (code);
 }
 
+@Override
 LRESULT WM_PALETTECHANGED (long /*int*/ wParam, long /*int*/ lParam) {
 	if (wParam != handle) {
 		long /*int*/ hPalette = display.hPalette;
@@ -2438,12 +2499,14 @@ LRESULT WM_PALETTECHANGED (long /*int*/ wParam, long /*int*/ lParam) {
 	return super.WM_PALETTECHANGED (wParam, lParam);
 }
 
+@Override
 LRESULT WM_QUERYNEWPALETTE (long /*int*/ wParam, long /*int*/ lParam) {
 	long /*int*/ hPalette = display.hPalette;
 	if (hPalette != 0) return selectPalette (hPalette);
 	return super.WM_QUERYNEWPALETTE (wParam, lParam);
 }
 
+@Override
 LRESULT WM_SETCURSOR (long /*int*/ wParam, long /*int*/ lParam) {
 	/*
 	* Feature in Windows.  When the shell is disabled
@@ -2516,6 +2579,7 @@ LRESULT WM_SETCURSOR (long /*int*/ wParam, long /*int*/ lParam) {
 	return super.WM_SETCURSOR (wParam, lParam);
 }
 
+@Override
 LRESULT WM_SETTINGCHANGE (long /*int*/ wParam, long /*int*/ lParam) {
 	LRESULT result = super.WM_SETTINGCHANGE (wParam, lParam);
 	if (result != null) return result;
@@ -2541,6 +2605,7 @@ LRESULT WM_SETTINGCHANGE (long /*int*/ wParam, long /*int*/ lParam) {
 	return result;
 }
 
+@Override
 LRESULT WM_SHOWWINDOW (long /*int*/ wParam, long /*int*/ lParam) {
 	LRESULT result = super.WM_SHOWWINDOW (wParam, lParam);
 	if (result != null) return result;
@@ -2563,6 +2628,7 @@ LRESULT WM_SHOWWINDOW (long /*int*/ wParam, long /*int*/ lParam) {
 	return result;
 }
 
+@Override
 LRESULT WM_SYSCOMMAND (long /*int*/ wParam, long /*int*/ lParam) {
 	LRESULT result = super.WM_SYSCOMMAND (wParam, lParam);
 	if (result != null) return result;
@@ -2612,6 +2678,7 @@ LRESULT WM_SYSCOMMAND (long /*int*/ wParam, long /*int*/ lParam) {
 	return result;
 }
 
+@Override
 LRESULT WM_WINDOWPOSCHANGING (long /*int*/ wParam, long /*int*/ lParam) {
 	LRESULT result = super.WM_WINDOWPOSCHANGING (wParam,lParam);
 	if (result != null) return result;

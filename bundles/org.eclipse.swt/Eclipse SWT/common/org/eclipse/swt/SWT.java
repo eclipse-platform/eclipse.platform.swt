@@ -1496,6 +1496,17 @@ public class SWT {
 	 * </ul></p>
 	 */
 	public static final int MAX = 1 << 10;
+	
+	/**
+	 * Style constant for the no move behavior (value is 1&lt;&lt;23).
+	 * Creates the title trim when no other trim style is specified.
+	 * Doesn't create the title trim when NO_TRIM is specified.
+	 * <p>Note that this is a <em>HINT</em>.
+	 * <p><b>Used By:</b><ul>
+	 * <li><code>Shell</code></li>
+	 * </ul></p>
+	 */
+	public static final int NO_MOVE = 1 << 23;
 
 	/**
 	 * Style constant for horizontal scrollbar behavior (value is 1&lt;&lt;8).

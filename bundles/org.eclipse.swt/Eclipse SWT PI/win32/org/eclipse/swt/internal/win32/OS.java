@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2013 IBM Corporation and others.
+ * Copyright (c) 2000, 2015 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -1491,6 +1491,7 @@ public class OS extends C {
 	public static final int SCF_DEFAULT = 0x0;
 	public static final int SCF_SELECTION = 0x1;
 	public static final int SC_CLOSE = 0xf060;
+	public static final int SC_MOVE = 0xf010;
 	public static final int SC_HSCROLL = 0xf080;
 	public static final int SC_KEYMENU = 0xf100;
 	public static final int SC_MAXIMIZE = 0xf030;

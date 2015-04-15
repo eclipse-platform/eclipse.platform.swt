@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2012 IBM Corporation and others.
+ * Copyright (c) 2000, 2015 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -314,6 +314,10 @@ public void setLevel(long /*int*/ newLevel) {
 
 public void setMinSize(NSSize size) {
 	OS.objc_msgSend(this.id, OS.sel_setMinSize_, size);
+}
+
+public void setMovable(boolean flag) {
+	OS.objc_msgSend(this.id, OS.sel_setMovable_, flag);
 }
 
 public void setOpaque(boolean isOpaque) {

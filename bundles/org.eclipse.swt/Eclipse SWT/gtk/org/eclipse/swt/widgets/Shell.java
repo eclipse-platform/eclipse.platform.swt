@@ -82,7 +82,7 @@ import org.eclipse.swt.internal.gtk.*;
  * downgraded to <code>APPLICATION_MODAL</code>.
  * <dl>
  * <dt><b>Styles:</b></dt>
- * <dd>BORDER, CLOSE, MIN, MAX, NO_TRIM, RESIZE, TITLE, ON_TOP, TOOL, SHEET</dd>
+ * <dd>BORDER, CLOSE, MIN, MAX, NO_MOVE, NO_TRIM, RESIZE, TITLE, ON_TOP, TOOL, SHEET</dd>
  * <dd>APPLICATION_MODAL, MODELESS, PRIMARY_MODAL, SYSTEM_MODAL</dd>
  * <dt><b>Events:</b></dt>
  * <dd>Activate, Close, Deactivate, Deiconify, Iconify</dd>
@@ -172,6 +172,7 @@ public Shell () {
  * @see SWT#TITLE
  * @see SWT#TOOL
  * @see SWT#NO_TRIM
+ * @see SWT#NO_MOVE
  * @see SWT#SHELL_TRIM
  * @see SWT#DIALOG_TRIM
  * @see SWT#ON_TOP
@@ -244,6 +245,7 @@ public Shell (Display display) {
  * @see SWT#TITLE
  * @see SWT#TOOL
  * @see SWT#NO_TRIM
+ * @see SWT#NO_MOVE
  * @see SWT#SHELL_TRIM
  * @see SWT#DIALOG_TRIM
  * @see SWT#ON_TOP
@@ -348,6 +350,7 @@ public Shell (Shell parent) {
  * @see SWT#RESIZE
  * @see SWT#TITLE
  * @see SWT#NO_TRIM
+ * @see SWT#NO_MOVE
  * @see SWT#SHELL_TRIM
  * @see SWT#DIALOG_TRIM
  * @see SWT#ON_TOP
@@ -1564,7 +1567,7 @@ long /*int*/ gtk_realize (long /*int*/ widget) {
 			* kind of border is requested.
 			*/
 			if ((style & SWT.RESIZE) != 0) decorations |= OS.GDK_DECOR_BORDER;
-			functions |=  OS.GDK_FUNC_MOVE;
+			if ((style & SWT.NO_MOVE) == 0) functions |=  OS.GDK_FUNC_MOVE;
 		}
 		OS.gdk_window_set_decorations (window, decorations);
 
@@ -1575,6 +1578,10 @@ long /*int*/ gtk_realize (long /*int*/ widget) {
 		* decorations) are ignored by the window manager.
 		*/
 		OS.gdk_window_set_functions(window, functions);
+	} else if ((style & SWT.NO_MOVE) != 0) {
+		// if the GDK_FUNC_ALL bit is present, all the other style
+		// bits specified as a parameter will be removed from the window
+		OS.gdk_window_set_functions (window, OS.GDK_FUNC_ALL | OS.GDK_FUNC_MOVE);
 	}
 	if ((style & SWT.ON_TOP) != 0) {
 		OS.gdk_window_set_override_redirect (window, true);

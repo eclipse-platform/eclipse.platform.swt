@@ -11,9 +11,9 @@
 package org.eclipse.swt.widgets;
 
 
-import org.eclipse.swt.internal.win32.*;
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.internal.win32.*;
 
 /**
  * Instances of this class provide the appearance and
@@ -145,6 +145,7 @@ Decorations () {
  * @see SWT#RESIZE
  * @see SWT#TITLE
  * @see SWT#NO_TRIM
+ * @see SWT#NO_MOVE
  * @see SWT#SHELL_TRIM
  * @see SWT#DIALOG_TRIM
  * @see SWT#ON_TOP
@@ -235,6 +236,8 @@ void bringToTop () {
 static int checkStyle (int style) {
 	if ((style & SWT.NO_TRIM) != 0) {
 		style &= ~(SWT.CLOSE | SWT.TITLE | SWT.MIN | SWT.MAX | SWT.RESIZE | SWT.BORDER);
+	} else if ((style & SWT.NO_MOVE) != 0) {
+		style |= SWT.TITLE;
 	}
 	if (OS.IsWinCE) {
 		/*
@@ -282,6 +285,7 @@ static int checkStyle (int style) {
 	return style;
 }
 
+@Override
 void checkBorder () {
 	/* Do nothing */
 }
@@ -290,14 +294,17 @@ void checkComposited (Composite parent) {
 	/* Do nothing */
 }
 
+@Override
 void checkOpened () {
 	if (!opened) resized = false;
 }
 
+@Override
 protected void checkSubclass () {
 	if (!isValidSubclass ()) error (SWT.ERROR_INVALID_SUBCLASS);
 }
 
+@Override
 long /*int*/ callWindowProc (long /*int*/ hwnd, int msg, long /*int*/ wParam, long /*int*/ lParam) {
 	if (handle == 0) return 0;
 	return OS.DefMDIChildProc (hwnd, msg, wParam, lParam);
@@ -331,14 +338,17 @@ int compare (ImageData data1, ImageData data2, int width, int height, int depth)
 	return value1 < value2 ? -1 : 1;
 }
 
+@Override
 Widget computeTabGroup () {
 	return this;
 }
 
+@Override
 Control computeTabRoot () {
 	return this;
 }
 
+@Override
 public Rectangle computeTrim (int x, int y, int width, int height) {
 	checkWidget ();
 
@@ -415,6 +425,7 @@ void createAccelerators () {
 	if (nAccel != 0) hAccel = OS.CreateAcceleratorTable (buffer2, nAccel);
 }
 
+@Override
 void createHandle () {
 	super.createHandle ();
 	if (parent != null || ((style & SWT.TOOL) != 0)) {
@@ -423,6 +434,7 @@ void createHandle () {
 	}
 }
 
+@Override
 void createWidget () {
 	super.createWidget ();
 	swFlags = OS.IsWinCE ? OS.SW_SHOWMAXIMIZED : OS.SW_SHOWNOACTIVATE;
@@ -434,6 +446,7 @@ void destroyAccelerators () {
 	hAccel = -1;
 }
 
+@Override
 public void dispose () {
 	if (isDisposed()) return;
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
@@ -478,6 +491,7 @@ void fixDecorations (Decorations newDecorations, Control control, Menu [] menus)
 	}
 }
 
+@Override
 public Rectangle getBounds () {
 	checkWidget ();
 	if (!OS.IsWinCE) {
@@ -498,6 +512,7 @@ public Rectangle getBounds () {
 	return super.getBounds ();
 }
 
+@Override
 public Rectangle getClientArea () {
 	checkWidget ();
 	/* 
@@ -631,6 +646,7 @@ public Image [] getImages () {
 	return result;
 }
 
+@Override
 public Point getLocation () {
 	checkWidget ();
 	if (!OS.IsWinCE) {
@@ -705,10 +721,12 @@ public boolean getMinimized () {
 	return swFlags == OS.SW_SHOWMINNOACTIVE;
 }
 
+@Override
 String getNameText () {
 	return getText ();
 }
 
+@Override
 public Point getSize () {
 	checkWidget ();
 	if (!OS.IsWinCE) {
@@ -752,6 +770,7 @@ public String getText () {
 	return buffer.toString (0, length);
 }
 
+@Override
 public boolean isReparentable () {
 	checkWidget ();
 	/*
@@ -763,6 +782,7 @@ public boolean isReparentable () {
 	return false;
 }
 
+@Override
 boolean isTabGroup () {
 	/*
 	* Can't test WS_TAB bits because they are the same as WS_MAXIMIZEBOX.
@@ -770,6 +790,7 @@ boolean isTabGroup () {
 	return true;
 }
 
+@Override
 boolean isTabItem () {
 	/*
 	* Can't test WS_TAB bits because they are the same as WS_MAXIMIZEBOX.
@@ -777,10 +798,12 @@ boolean isTabItem () {
 	return false;
 }
 
+@Override
 Decorations menuShell () {
 	return this;
 }
 
+@Override
 void releaseChildren (boolean destroy) {
 	if (menuBar != null) {
 		menuBar.release (false);
@@ -798,6 +821,7 @@ void releaseChildren (boolean destroy) {
 	}
 }
 
+@Override
 void releaseWidget () {
 	super.releaseWidget ();
 	if (smallImage != null) smallImage.dispose ();
@@ -820,6 +844,7 @@ void removeMenu (Menu menu) {
 	}
 }
 
+@Override
 void reskinChildren (int flags) {
 	if (menuBar != null) menuBar.reskin (flags);
 	if (menus != null) {
@@ -853,6 +878,7 @@ void saveFocus () {
 	}
 }
 
+@Override
 void setBounds (int x, int y, int width, int height, int flags, boolean defer) {
 	swFlags = OS.SW_SHOWNOACTIVATE;
 	if (OS.IsWinCE) {
@@ -1205,6 +1231,7 @@ public void setMinimized (boolean minimized) {
 	_setMinimized (minimized);
 }
 
+@Override
 public void setOrientation (int orientation) {
     super.setOrientation (orientation);
     if (menus != null) {
@@ -1375,6 +1402,7 @@ public void setText (String string) {
 	}
 }
 
+@Override
 public void setVisible (boolean visible) {
 	checkWidget ();
 	if (!getDrawing()) {
@@ -1482,6 +1510,7 @@ void sort (Image [] images, ImageData [] datas, int width, int height, int depth
 	}
 }
 
+@Override
 boolean translateAccelerator (MSG msg) {
 	if (!isEnabled () || !isActive ()) return false;
 	if (menuBar != null && !menuBar.isEnabled ()) return false;
@@ -1549,10 +1578,12 @@ boolean traverseDecorations (boolean next) {
 	return false;
 }
 
+@Override
 boolean traverseItem (boolean next) {
 	return false;
 }
 
+@Override
 boolean traverseReturn () {
 	if (defaultButton == null || defaultButton.isDisposed ()) return false;
 	if (!defaultButton.isVisible () || !defaultButton.isEnabled ()) return false;
@@ -1560,10 +1591,12 @@ boolean traverseReturn () {
 	return true;
 }
 
+@Override
 CREATESTRUCT widgetCreateStruct () {
 	return new CREATESTRUCT ();
 }
 
+@Override
 int widgetExtStyle () {
 	int bits = super.widgetExtStyle () | OS.WS_EX_MDICHILD;
 	bits &= ~OS.WS_EX_CLIENTEDGE;
@@ -1576,11 +1609,13 @@ int widgetExtStyle () {
 	return bits;
 }
 
+@Override
 long /*int*/ widgetParent () {
 	Shell shell = getShell ();
 	return shell.hwndMDIClient ();
 }
 
+@Override
 int widgetStyle () {
 	/* 
 	* Clear WS_VISIBLE and WS_TABSTOP.  NOTE: In Windows, WS_TABSTOP
@@ -1623,6 +1658,7 @@ int widgetStyle () {
 	return bits;
 }
 
+@Override
 long /*int*/ windowProc (long /*int*/ hwnd, int msg, long /*int*/ wParam, long /*int*/ lParam) {
 	switch (msg) {
 		case Display.SWT_GETACCEL:
@@ -1633,6 +1669,7 @@ long /*int*/ windowProc (long /*int*/ hwnd, int msg, long /*int*/ wParam, long /
 	return super.windowProc (hwnd, msg, wParam, lParam);
 }
 
+@Override
 LRESULT WM_ACTIVATE (long /*int*/ wParam, long /*int*/ lParam) {
 	LRESULT result = super.WM_ACTIVATE (wParam, lParam);
 	if (result != null) return result;
@@ -1697,6 +1734,7 @@ LRESULT WM_ACTIVATE (long /*int*/ wParam, long /*int*/ lParam) {
 	return result;
 }
 
+@Override
 LRESULT WM_CLOSE (long /*int*/ wParam, long /*int*/ lParam) {
 	LRESULT result = super.WM_CLOSE (wParam, lParam);
 	if (result != null) return result;
@@ -1704,6 +1742,7 @@ LRESULT WM_CLOSE (long /*int*/ wParam, long /*int*/ lParam) {
 	return LRESULT.ZERO;
 }
 
+@Override
 LRESULT WM_HOTKEY (long /*int*/ wParam, long /*int*/ lParam) {
 	LRESULT result = super.WM_HOTKEY (wParam, lParam);
 	if (result != null) return result;
@@ -1730,12 +1769,14 @@ LRESULT WM_HOTKEY (long /*int*/ wParam, long /*int*/ lParam) {
 	return result;
 }
 
+@Override
 LRESULT WM_KILLFOCUS (long /*int*/ wParam, long /*int*/ lParam) {
 	LRESULT result = super.WM_KILLFOCUS (wParam, lParam);
 	saveFocus ();
 	return result;
 }
 
+@Override
 LRESULT WM_MOVE (long /*int*/ wParam, long /*int*/ lParam) {
 	if (moved) {
 		Point location = getLocation ();
@@ -1748,6 +1789,7 @@ LRESULT WM_MOVE (long /*int*/ wParam, long /*int*/ lParam) {
 	return super.WM_MOVE (wParam, lParam);
 }
 
+@Override
 LRESULT WM_NCACTIVATE (long /*int*/ wParam, long /*int*/ lParam) {
 	LRESULT result = super.WM_NCACTIVATE (wParam, lParam);
 	if (result != null) return result;
@@ -1774,6 +1816,7 @@ LRESULT WM_NCACTIVATE (long /*int*/ wParam, long /*int*/ lParam) {
 	return result;
 }
 
+@Override
 LRESULT WM_QUERYOPEN (long /*int*/ wParam, long /*int*/ lParam) {
 	LRESULT result = super.WM_QUERYOPEN (wParam, lParam);
 	if (result != null) return result;
@@ -1782,6 +1825,7 @@ LRESULT WM_QUERYOPEN (long /*int*/ wParam, long /*int*/ lParam) {
 	return result;
 }
 
+@Override
 LRESULT WM_SETFOCUS (long /*int*/ wParam, long /*int*/ lParam) {
 	LRESULT result = super.WM_SETFOCUS (wParam, lParam);
 	if (isDisposed ()) return result;
@@ -1789,6 +1833,7 @@ LRESULT WM_SETFOCUS (long /*int*/ wParam, long /*int*/ lParam) {
 	return result;
 }
 
+@Override
 LRESULT WM_SIZE (long /*int*/ wParam, long /*int*/ lParam) {
 	LRESULT result = null;
 	boolean changed = true;
@@ -1824,6 +1869,7 @@ LRESULT WM_SIZE (long /*int*/ wParam, long /*int*/ lParam) {
 	return result;
 }
 
+@Override
 LRESULT WM_SYSCOMMAND (long /*int*/ wParam, long /*int*/ lParam) {
 	LRESULT result = super.WM_SYSCOMMAND (wParam, lParam);
 	if (result != null) return result;
@@ -1843,6 +1889,7 @@ LRESULT WM_SYSCOMMAND (long /*int*/ wParam, long /*int*/ lParam) {
 	return result;
 }
 
+@Override
 LRESULT WM_WINDOWPOSCHANGING (long /*int*/ wParam, long /*int*/ lParam) {
 	LRESULT result = super.WM_WINDOWPOSCHANGING (wParam, lParam);
 	if (result != null) return result;
