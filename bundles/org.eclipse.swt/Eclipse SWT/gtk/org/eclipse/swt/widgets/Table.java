@@ -832,6 +832,11 @@ void createWidget (int index) {
 	}
 }
 
+@Override
+int applyThemeBackground () {
+	return -1; /* No Change */
+}
+
 GdkColor defaultBackground () {
 	return display.COLOR_LIST_BACKGROUND;
 }

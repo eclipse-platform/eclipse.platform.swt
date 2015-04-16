@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2014 IBM Corporation and others.
+ * Copyright (c) 2000, 2015 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -153,6 +153,27 @@ void createWidget (int index) {
 	super.createWidget (index);
 	if ((style & SWT.H_SCROLL) != 0) horizontalBar = createScrollBar (SWT.H_SCROLL);
 	if ((style & SWT.V_SCROLL) != 0) verticalBar = createScrollBar (SWT.V_SCROLL);
+}
+
+@Override
+void updateBackgroundMode () {
+	super.updateBackgroundMode ();
+	switch (applyThemeBackground ()) {
+		case 0: state &= ~THEME_BACKGROUND; break;
+		case 1: state |= THEME_BACKGROUND; break;
+		default: /* No change */
+	}
+	super.updateBackgroundMode ();
+}
+
+/**
+ * @return
+ * 		<li>0 to remove THEME_BACKGROUND</li>
+ *      <li>1 to apply THEME_BACKGROUND</li>
+ *      <li>otherwise don't change THEME_BACKGROUND state</li>
+ */
+int applyThemeBackground () {
+	return (backgroundAlpha == 0) ? 1 : 0;
 }
 
 @Override

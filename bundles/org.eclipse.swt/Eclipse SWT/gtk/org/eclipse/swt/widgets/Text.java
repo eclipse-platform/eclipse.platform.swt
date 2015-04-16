@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2014 IBM Corporation and others.
+ * Copyright (c) 2000, 2015 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -189,7 +189,7 @@ static int checkStyle (int style) {
 void createHandle (int index) {
 	state |= HANDLE | MENU;
 	if ((style & SWT.READ_ONLY) != 0) {
-		if ((style & (SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL)) == 0) {
+		if (applyThemeBackground () == 1) {
 			state |= THEME_BACKGROUND;
 		}
 	}
@@ -240,6 +240,11 @@ void createHandle (int index) {
 		// reset to default font to get the usual behavior
 		setFontDescription(defaultFont().handle);
 	}
+}
+
+@Override
+int applyThemeBackground () {
+	return (backgroundAlpha == 0 || (style & (SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL)) == 0) ? 1 : 0;
 }
 
 @Override

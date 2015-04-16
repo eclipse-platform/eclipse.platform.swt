@@ -285,6 +285,11 @@ void createHandle (int index) {
 	createHandle (index, true, scrolled || (style & SWT.BORDER) != 0);
 }
 
+@Override
+int applyThemeBackground () {
+	return (backgroundAlpha == 0 || (style & (SWT.H_SCROLL | SWT.V_SCROLL)) == 0) ? 1 : 0;
+}
+
 void createHandle (int index, boolean fixed, boolean scrolled) {
 	if (scrolled) {
 		if (fixed) {

@@ -749,6 +749,11 @@ void createHandle (int index) {
 	}
 }
 
+@Override
+int applyThemeBackground () {
+	return -1; /* No Change */
+}
+
 void createItem (TreeColumn column, int index) {
 	if (!(0 <= index && index <= columnCount)) error (SWT.ERROR_INVALID_RANGE);
 	if (index == 0) {

@@ -28,14 +28,14 @@ public class Snippet365 {
 	static Image newImage;
 	
 	// Containers
-	static Group containerGroup;
+	static Composite containerGroup;
 	static Canvas canvas;
 	static Composite composite;
 	static Group group;
 	static Sash sash;
 	
 	// Native
-	static Group nativeGroup;
+	static Composite nativeGroup;
 	static Button buttonCheckBox;
 	static ToolBar toolBar;
 	static CoolBar coolBar;
@@ -47,7 +47,7 @@ public class Snippet365 {
 	static Button push;
 
 	// Custom
-	static Group customGroup;
+	static Composite customGroup;
 	static CLabel cLabel;
 	static StyledText styledText;
 	static SashForm sashForm;
@@ -55,14 +55,14 @@ public class Snippet365 {
 	static CTabFolder gradientCTab;
 
 	// Item
-	static Group itemGroup;
+	static Composite itemGroup;
 	static TabFolder tabFolder;
 	static Table table;
 	static Tree tree;
 	static ExpandBar expandBar;
 	
 	// As Designed
-	static Group defaultBackgroundGroup;
+	static Composite defaultBackgroundGroup;
 	static Text text;
 	static Combo combo;
 	static ProgressBar progressBar;
@@ -219,41 +219,41 @@ public class Snippet365 {
 		});
 
 		// ContainerGroup
-		containerGroup = new Group(shell, SWT.NONE);
+		containerGroup = new Composite(shell, SWT.NONE);
 		containerGroup.setBackground(display.getSystemColor(SWT.COLOR_WIDGET_BACKGROUND));
-		containerGroup.setText("CONTAINER");
+		containerGroup.setToolTipText("CONTAINER");
 		layout = new RowLayout();
 		layout.spacing = 20;
 		containerGroup.setLayout(layout);
 		
 		// Native
-		nativeGroup = new Group(shell, SWT.NONE);
+		nativeGroup = new Composite(shell, SWT.NONE);
 		nativeGroup.setBackground(display.getSystemColor(SWT.COLOR_WIDGET_BACKGROUND));
-		nativeGroup.setText("NATIVE");
+		nativeGroup.setToolTipText("NATIVE");
 		layout = new RowLayout();
 		layout.spacing = 20;
 		nativeGroup.setLayout(layout);
 		
 		// Custom
-		customGroup = new Group(shell, SWT.NONE);
+		customGroup = new Composite(shell, SWT.NONE);
 		customGroup.setBackground(display.getSystemColor(SWT.COLOR_WIDGET_BACKGROUND));
-		customGroup.setText("CUSTOM");
+		customGroup.setToolTipText("CUSTOM");
 		layout = new RowLayout();
 		layout.spacing = 20;
 		customGroup.setLayout(layout);
 
 		// AsDesigned
-		defaultBackgroundGroup = new Group(shell, SWT.NONE);
+		defaultBackgroundGroup = new Composite(shell, SWT.NONE);
 		defaultBackgroundGroup.setBackground(display.getSystemColor(SWT.COLOR_WIDGET_BACKGROUND));
-		defaultBackgroundGroup.setText("Default Background");
+		defaultBackgroundGroup.setToolTipText("Default Background");
 		layout = new RowLayout();
 		layout.spacing = 20;
 		defaultBackgroundGroup.setLayout(layout);
 
 		// ItemGroup
-		itemGroup = new Group(shell, SWT.NONE);
+		itemGroup = new Composite(shell, SWT.NONE);
 		itemGroup.setBackground(display.getSystemColor(SWT.COLOR_WIDGET_BACKGROUND));
-		itemGroup.setText("ITEM");
+		itemGroup.setToolTipText("ITEM");
 		layout = new RowLayout();
 		layout.spacing = 20;
 		itemGroup.setLayout(layout);
@@ -325,7 +325,7 @@ public class Snippet365 {
 		});
 		
 		// Composite
-		composite = new Composite(containerGroup, SWT.BORDER);
+		composite = new Composite(containerGroup, SWT.BORDER | SWT.V_SCROLL | SWT.H_SCROLL);
 		composite.setToolTipText("Composite");
 		
 		// TabFolder
