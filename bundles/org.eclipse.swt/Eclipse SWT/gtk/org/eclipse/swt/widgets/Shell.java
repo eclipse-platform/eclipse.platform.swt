@@ -1620,6 +1620,8 @@ long /*int*/ gtk_window_state_event (long /*int*/ widget, long /*int*/ event) {
 public void open () {
 	checkWidget ();
 	bringToTop (false);
+	if (Shell.class.isInstance(getParent()) && !getParent().isVisible())
+		Shell.class.cast(getParent()).open();
 	setVisible (true);
 	if (isDisposed ()) return;
 	if (!restoreFocus () && !traverseGroup (true)) setFocus ();
