@@ -135,6 +135,7 @@ public void addSelectionListener(SelectionListener listener) {
 	addListener(SWT.DefaultSelection,typedListener);
 }
 
+@Override
 NSSize cellSizeForBounds (long /*int*/ id, long /*int*/ sel, NSRect cellFrame) {
 	NSSize size = super.cellSizeForBounds(id, sel, cellFrame);
 	if (image != null && ((style & (SWT.CHECK|SWT.RADIO)) !=0)) {
@@ -191,6 +192,7 @@ void click () {
 	sendSelectionEvent (SWT.Selection);
 }
 
+@Override
 public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget();
 	if ((style & SWT.ARROW) != 0) {
@@ -222,6 +224,7 @@ NSAttributedString createString() {
 	return attribStr;
 }
 
+@Override
 void createHandle () {
 	if ((style & SWT.PUSH) == 0) state |= THEME_BACKGROUND;
 	NSButton widget = (NSButton)new SWTButton().alloc();
@@ -269,47 +272,58 @@ void createHandle () {
 	_setAlignment(style);
 }
 
+@Override
 void createWidget() {
 	text = "";
 	super.createWidget ();
 }
 
+@Override
 Font defaultFont () {
 	return Font.cocoa_new (display, defaultNSFont ());
 }
 
+@Override
 NSFont defaultNSFont() {
 	NSCell cell = ((NSControl)view).cell();
 	return NSFont.systemFontOfSize (NSFont.systemFontSizeForControlSize (cell.controlSize()));
 }
 
+@Override
 void deregister () {
 	super.deregister ();
 	display.removeWidget(((NSControl)view).cell());
 }
 
+@Override
 boolean dragDetect(int x, int y, boolean filter, boolean[] consume) {
 	boolean dragging = super.dragDetect(x, y, filter, consume);
 	consume[0] = dragging;
 	return dragging;
 }
 
+@Override
 void drawImageWithFrameInView (long /*int*/ id, long /*int*/ sel, long /*int*/ image, NSRect rect, long /*int*/ view) {
 	/*
 	* Feature in Cocoa.  Images touch the edge of rounded buttons
 	* when set to small size. The fix to subclass the button cell
     * and offset the image drawing.
+    * This workaround is not required for OSX 10.9 and later as 
+    * the problem doesn't happen there.
 	*/
-	NSCell cell = ((NSControl)this.view).cell();
-	if (cell != null && cell.controlSize() == OS.NSRegularControlSize) {
-		if ((style & (SWT.PUSH | SWT.TOGGLE)) != 0 && (style & (SWT.FLAT | SWT.WRAP)) == 0) {
-			rect.y += EXTRA_HEIGHT / 2;
-			rect.height += EXTRA_HEIGHT;
+	if (OS.VERSION_MMB < OS.VERSION_MMB(10, 9, 0)) {
+		NSCell cell = ((NSControl)this.view).cell();
+		if (cell != null && cell.controlSize() == OS.NSRegularControlSize) {
+			if ((style & (SWT.PUSH | SWT.TOGGLE)) != 0 && (style & (SWT.FLAT | SWT.WRAP)) == 0) {
+				rect.y += EXTRA_HEIGHT / 2;
+				rect.height += EXTRA_HEIGHT;
+			}
 		}
 	}
 	super.drawImageWithFrameInView(id, sel, image, rect, view);
 }
 
+@Override
 void drawInteriorWithFrame_inView (long /*int*/ id, long /*int*/ sel, NSRect cellRect, long /*int*/ viewid) {
 	if ((style & (SWT.CHECK|SWT.RADIO)) != 0 && backgroundImage != null) {
 		fillBackground (new NSView(viewid), NSGraphicsContext.currentContext(), cellRect, -1);
@@ -349,6 +363,7 @@ void drawInteriorWithFrame_inView (long /*int*/ id, long /*int*/ sel, NSRect cel
 
 }
 
+@Override
 NSRect drawTitleWithFrameInView (long /*int*/ id, long /*int*/ sel, long /*int*/ title, NSRect titleRect, long /*int*/ view) {
 	boolean wrap = (style & SWT.WRAP) != 0 && text.length() != 0;
 	if (wrap) {
@@ -376,10 +391,12 @@ NSRect drawTitleWithFrameInView (long /*int*/ id, long /*int*/ sel, long /*int*/
 	return super.drawTitleWithFrameInView(id, sel, title, titleRect, view);
 }
 
+@Override
 boolean drawsBackground() {
 	return background != null || backgroundImage != null;
 }
 
+@Override
 void drawWidget (long /*int*/ id, NSGraphicsContext context, NSRect rect) {
 	if ((style & SWT.ARROW) != 0) {	
 		NSRect frame = view.frame();
@@ -488,6 +505,7 @@ public Image getImage () {
 	return image;
 }
 
+@Override
 String getNameText () {
 	return getText ();
 }
@@ -532,6 +550,7 @@ public String getText () {
 	return text;
 }
 
+@Override
 boolean isDescribedByLabel () {
 	return false;
 }
@@ -541,6 +560,7 @@ boolean isDescribedByLabel () {
  * This will cause the on state to momentarily appear while clicking on the checkbox. To avoid this, we override [NSCell nextState]
  * to go directly to the desired state if we have a grayed checkbox.
  */
+@Override
 long /*int*/ nextState(long /*int*/ id, long /*int*/ sel) {
 	if ((style & SWT.CHECK) != 0 && grayed) {
 		return ((NSButton)view).state() == OS.NSMixedState ? OS.NSOffState : OS.NSMixedState;
@@ -549,11 +569,13 @@ long /*int*/ nextState(long /*int*/ id, long /*int*/ sel) {
 	return super.nextState(id, sel);	
 }
 
+@Override
 void register() {
 	super.register();
 	display.addWidget(((NSControl)view).cell(), this);
 }
 
+@Override
 void releaseWidget () {
 	super.releaseWidget ();
 	image = null;
@@ -610,6 +632,7 @@ void selectRadio () {
 	setSelection (true);
 }
 
+@Override
 void sendSelection () {
 	if ((style & SWT.RADIO) != 0) {
 		if ((parent.getStyle () & SWT.NO_RADIO_GROUP) == 0) {
@@ -666,6 +689,7 @@ void _setAlignment (int alignment) {
 	}
 }
 
+@Override
 void setBackgroundColor(NSColor nsColor) {
 	Control control = findBackgroundControl();
 	if (control == null || control.backgroundImage == null) {
@@ -674,6 +698,7 @@ void setBackgroundColor(NSColor nsColor) {
 	}
 }
 
+@Override
 void setBackgroundImage(NSImage image) {
 	if (image != null) {
 		NSButtonCell cell = new NSButtonCell(((NSButton)view).cell());
@@ -681,6 +706,7 @@ void setBackgroundImage(NSImage image) {
 	}
 }
 
+@Override
 void setBounds (int x, int y, int width, int height, boolean move, boolean resize) {
 	if ((style & (SWT.PUSH | SWT.TOGGLE)) != 0 && (style & (SWT.FLAT | SWT.WRAP)) == 0) {
 		int heightThreshold = REGULAR_BUTTON_HEIGHT;
@@ -700,12 +726,14 @@ void setBounds (int x, int y, int width, int height, boolean move, boolean resiz
 	super.setBounds(x, y, width, height, move, resize);
 }
 
+@Override
 void setFont (NSFont font) {
 	if (text != null) {
 		((NSButton)view).setAttributedTitle(createString());
 	}
 }
 
+@Override
 void setForeground (double /*float*/ [] color) {
 	((NSButton)view).setAttributedTitle(createString());
 }
@@ -797,6 +825,7 @@ public void setImage (Image image) {
 	updateAlignment ();
 }
 
+@Override
 boolean setRadioSelection (boolean value){
 	if ((style & SWT.RADIO) == 0) return false;
 	if (getSelection () != value) {
@@ -872,6 +901,7 @@ public void setText (String string) {
 	updateAlignment ();
 }
 
+@Override
 NSRect titleRectForBounds (long /*int*/ id, long /*int*/ sel, NSRect cellFrame) {
 	NSRect rect = super.titleRectForBounds(id, sel, cellFrame);
 	if (image != null && ((style & (SWT.CHECK|SWT.RADIO)) !=0)) {
@@ -883,6 +913,7 @@ NSRect titleRectForBounds (long /*int*/ id, long /*int*/ sel, NSRect cellFrame) 
 	return rect;
 }
 
+@Override
 int traversalCode (int key, NSEvent theEvent) {
 	int code = super.traversalCode (key, theEvent);
 	if ((style & SWT.ARROW) != 0) code &= ~(SWT.TRAVERSE_TAB_NEXT | SWT.TRAVERSE_TAB_PREVIOUS);
