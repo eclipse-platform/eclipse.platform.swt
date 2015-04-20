@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2012 IBM Corporation and others.
+ * Copyright (c) 2000, 2015 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -591,6 +591,11 @@ void sendVerticalSelection () {
 }
 
 void setBackgroundColor(NSColor nsColor) {
+	/*
+	 * Adding check to avoid DateTime background turning Black with
+	 * SWT.COLOR_TRANSPARENT, refer bug 458917
+	 */
+	if (nsColor != null && nsColor.alphaComponent () == 0) return;
 	((NSDatePicker)view).setBackgroundColor(nsColor);
 }
 
