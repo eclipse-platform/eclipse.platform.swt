@@ -317,37 +317,41 @@ public void addSelectionListener (SelectionListener listener) {
 
 int calculateWidth (long /*int*/ column, long /*int*/ iter) {
 	OS.gtk_tree_view_column_cell_set_cell_data (column, modelHandle, iter, false, false);
+
 	/*
 	* Bug in GTK.  The width calculated by gtk_tree_view_column_cell_get_size()
 	* always grows in size regardless of the text or images in the table.
 	* The fix is to determine the column width from the cell renderers.
 	*/
-	// Code intentionally commented
-	//int [] width = new int [1];
-	//OS.gtk_tree_view_column_cell_get_size (column, null, null, null, width, null);
-	//return width [0];
-
-	int width = 0;
-	int [] w = new int [1];
-	OS.gtk_widget_style_get(handle, OS.focus_line_width, w, 0);
-	width += 2 * w [0];
-	long /*int*/ list = OS.gtk_cell_layout_get_cells(column);
-	if (list == 0) return 0;
-	long /*int*/ temp = list;
-	while (temp != 0) {
-		long /*int*/ renderer = OS.g_list_data (temp);
-		if (renderer != 0) {
-			gtk_cell_renderer_get_preferred_size (renderer, handle, w, null);
-			width += w [0];
-		}
-		temp = OS.g_list_next (temp);
-	}
-	OS.g_list_free (list);
-	if (OS.gtk_tree_view_get_grid_lines(handle) > OS.GTK_TREE_VIEW_GRID_LINES_NONE) {
-		OS.gtk_widget_style_get (handle, OS.grid_line_width, w, 0) ;
+	
+	//This workaround is causing the problem Bug 459834 in GTK3. So reverting the workaround for GTK3
+	if (OS.GTK3) {
+		int [] width = new int [1];
+		OS.gtk_tree_view_column_cell_get_size (column, null, null, null, width, null);
+		return width [0];
+	} else {
+		int width = 0;
+		int [] w = new int [1];
+		OS.gtk_widget_style_get(handle, OS.focus_line_width, w, 0);
 		width += 2 * w [0];
+		long /*int*/ list = OS.gtk_cell_layout_get_cells(column);
+		if (list == 0) return 0;
+		long /*int*/ temp = list;
+		while (temp != 0) {
+			long /*int*/ renderer = OS.g_list_data (temp);
+			if (renderer != 0) {
+				gtk_cell_renderer_get_preferred_size (renderer, handle, w, null);
+				width += w [0];
+			}
+			temp = OS.g_list_next (temp);
+		}
+		OS.g_list_free (list);
+		if (OS.gtk_tree_view_get_grid_lines(handle) > OS.GTK_TREE_VIEW_GRID_LINES_NONE) {
+			OS.gtk_widget_style_get (handle, OS.grid_line_width, w, 0) ;
+			width += 2 * w [0];
+		}
+		return width;
 	}
-	return width;
 }
 
 /**
