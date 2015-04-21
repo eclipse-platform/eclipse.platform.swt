@@ -3269,18 +3269,18 @@ public class SWT {
 	/**
 	 * System color used to paint with alpha 0 (value is 37).
 	 * <p>
-	 * This pseudo-color can be used to set a transparent background on some SWT controls.
-	 * Current limitations include:
-	 * <ul><li>
-	 * {@link org.eclipse.swt.widgets.Text Text} and {@link org.eclipse.swt.widgets.Combo Combo}
-	 * support transparent background on Windows only and on other platforms fall back to the default background.
-	 * </li>
-	 * <li>
-	 * {@link org.eclipse.swt.widgets.Table Table} supports transparent background on GTK3 only.
-	 * </li>
-	 * <li> 
-	 * {@link org.eclipse.swt.widgets.Tree Tree} supports transparent background on GTK3/Windows, but not on other platforms.
-	 * </li>
+	 * This pseudo-color can be used to set a transparent background on SWT
+	 * controls. <br>
+	 * Note that this is a <em>HINT</em> and may be overridden by the platform.
+	 * For example:
+	 * <ul>
+	 * <li>{@link org.eclipse.swt.widgets.Combo Combo},
+	 * {@link org.eclipse.swt.widgets.List List} and
+	 * {@link org.eclipse.swt.widgets.Tree Tree} support transparent background
+	 * on GTK3 and Windows only.</li>
+	 * <li>{@link org.eclipse.swt.widgets.Text Text} supports transparent
+	 * background on Windows only whereas {@link org.eclipse.swt.widgets.Table
+	 * Table} supports transparent background on GTK3 only.</li>
 	 * </ul>
 	 * 
 	 * @since 3.104

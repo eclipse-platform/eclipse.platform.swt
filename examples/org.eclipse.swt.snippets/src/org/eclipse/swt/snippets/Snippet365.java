@@ -275,7 +275,7 @@ public class Snippet365 {
 		check.setBackgroundImage(getBackgroundImage(display));
 
 		// Push Button
-		push = new Button(defaultBackgroundGroup, SWT.PUSH | SWT.NO_BACKGROUND);
+		push = new Button(defaultBackgroundGroup, SWT.PUSH);
 		push.setText("Push Button");
 		
 		// Toolbar
@@ -329,7 +329,7 @@ public class Snippet365 {
 		composite.setToolTipText("Composite");
 		
 		// TabFolder
-		tabFolder = new TabFolder(itemGroup, SWT.BORDER);
+		tabFolder = new TabFolder(containerGroup, SWT.BORDER);
 		tabFolder.setBackground(display.getSystemColor(SWT.COLOR_CYAN));
 		for (int i=0; i < 2; i++) {
 			TabItem tabItem = new TabItem (tabFolder, SWT.NONE);
