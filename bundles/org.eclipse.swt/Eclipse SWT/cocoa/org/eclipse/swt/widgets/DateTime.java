@@ -108,6 +108,7 @@ static int checkStyle (int style) {
 	return checkBits (style, SWT.DATE, SWT.TIME, SWT.CALENDAR, 0, 0, 0);
 }
 
+@Override
 protected void checkSubclass () {
 	if (!isValidSubclass ()) error (SWT.ERROR_INVALID_SUBCLASS);
 }
@@ -144,6 +145,7 @@ public void addSelectionListener (SelectionListener listener) {
 	addListener (SWT.DefaultSelection, typedListener);
 }
 
+@Override
 public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget ();
 	int width = 0, height = 0;
@@ -165,6 +167,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	return new Point (width, height);
 }
 
+@Override
 void createHandle () {
 	NSDatePicker widget = (NSDatePicker)new SWTDatePicker().alloc();
 	widget.init();
@@ -260,10 +263,12 @@ void createPopupShell(int year, int month, int day) {
 	if (year != -1) popupCalendar.setDate(year, month, day);
 }
 
+@Override
 NSFont defaultNSFont() {
 	return display.datePickerFont;
 }
 
+@Override
 void deregister() {
 	super.deregister();
 	if (buttonView != null) {
@@ -279,6 +284,7 @@ void disposePopupShell() {
 	popupCalendar = null;
 }
 
+@Override
 void drawBackground (long /*int*/ id, NSGraphicsContext context, NSRect rect) {
 	if (id != view.id) return;
 	fillBackground (view, context, rect, -1);
@@ -335,6 +341,7 @@ NSCalendarDate getCalendarDate () {
 	return date.dateWithCalendarFormat(null, null);
 }
 
+@Override
 public Control [] getChildren () {
 	checkWidget();
 	return new Control [0];
@@ -412,6 +419,7 @@ public int getMonth () {
 	return (int)/*64*/getCalendarDate().monthOfYear() - 1;
 }
 
+@Override
 String getNameText() {
 	return (style & SWT.TIME) != 0 ? getHours() + ":" + getMinutes() + ":" + getSeconds()
 			: (getMonth() + 1) + "/" + getDay() + "/" + getYear();
@@ -457,15 +465,18 @@ boolean isDropped () {
 	return popupShell.getVisible ();
 }
 
+@Override
 boolean isEventView (long /*int*/ id) {
 	return true;
 }
 
+@Override
 boolean isFlipped (long /*int*/ id, long /*int*/ sel) {
 	if ((style & SWT.CALENDAR) != 0) return super.isFlipped (id, sel);
 	return true;
 }
 
+@Override
 void keyDown(long /*int*/ id, long /*int*/ sel, long /*int*/ theEvent) {
 	if ((style & SWT.DROP_DOWN) != 0) {
 		NSEvent nsEvent = new NSEvent (theEvent);
@@ -498,6 +509,7 @@ void keyDown(long /*int*/ id, long /*int*/ sel, long /*int*/ theEvent) {
 	}
 }
 
+@Override
 void register () {
 	super.register ();
 	if (buttonView != null) {
@@ -506,6 +518,7 @@ void register () {
 	}
 }
 
+@Override
 void releaseHandle () {
 	super.releaseHandle ();
 	if (buttonView != null) buttonView.release();
@@ -537,6 +550,7 @@ public void removeSelectionListener (SelectionListener listener) {
 	eventTable.unhook (SWT.DefaultSelection, listener);	
 }
 
+@Override
 void resized () {
 	super.resized ();
 	if (buttonView == null) return;
@@ -549,6 +563,7 @@ void resized () {
 	buttonView.setFrame(rect);
 }
 
+@Override
 boolean sendKeyEvent (NSEvent nsEvent, int type) {
 	boolean result = super.sendKeyEvent (nsEvent, type);
 	if (!result) return result;
@@ -567,6 +582,7 @@ boolean sendKeyEvent (NSEvent nsEvent, int type) {
 	return result;
 }
 
+@Override
 void sendSelection () {
 	NSEvent event = NSApplication.sharedApplication().currentEvent();
 	if (event != null && (style & SWT.CALENDAR) != 0) {
@@ -581,6 +597,7 @@ void sendSelection () {
 }
 
 /* Drop-down arrow button has been pressed. */
+@Override
 void sendVerticalSelection () {
 	setFocus();
 	if (isDropped ()) {
@@ -590,15 +607,18 @@ void sendVerticalSelection () {
 	}
 }
 
+@Override
 void setBackgroundColor(NSColor nsColor) {
 	/*
-	 * Adding check to avoid DateTime background turning Black with
-	 * SWT.COLOR_TRANSPARENT, refer bug 458917
+	 * Bug in Cocoa: NSDatePicker background turns black when a nsColor 
+	 * with full transparency (alpha = 0) is set as its background color. 
+	 * Hence, don't set the background color in that case.
 	 */
 	if (nsColor != null && nsColor.alphaComponent () == 0) return;
 	((NSDatePicker)view).setBackgroundColor(nsColor);
 }
 
+@Override
 void setBackgroundImage(NSImage image) {
 	((NSDatePicker)view).setDrawsBackground(image == null);
 }
@@ -658,6 +678,7 @@ public void setDay (int day) {
 	}
 }
 
+@Override
 void setForeground (double /*float*/ [] color) {
 	NSColor nsColor;
 	if (color == null) {
@@ -764,6 +785,7 @@ public void setSeconds (int seconds) {
 	((NSDatePicker)view).setDateValue(newDate);
 }
 
+@Override
 void setSmallSize () {
 	if (buttonView != null) buttonView.cell ().setControlSize (OS.NSMiniControlSize);
 }
