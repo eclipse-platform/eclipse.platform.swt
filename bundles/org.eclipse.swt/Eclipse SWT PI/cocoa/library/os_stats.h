@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2014 IBM Corporation and others.
+ * Copyright (c) 2000, 2015 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -49,6 +49,7 @@ typedef enum {
 	CALLBACK_1drawWithExpansionFrame_1inView_1_FUNC,
 	CALLBACK_1expansionFrameWithFrame_1inView_1_FUNC,
 	CALLBACK_1firstRectForCharacterRange_1_FUNC,
+	CALLBACK_1focusRingMaskBoundsForFrame_1inView_1_FUNC,
 	CALLBACK_1headerRectOfColumn_1_FUNC,
 	CALLBACK_1highlightSelectionInClipRect_1_FUNC,
 	CALLBACK_1hitTestForEvent_1inRect_1ofView_1_FUNC,

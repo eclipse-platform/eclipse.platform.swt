@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2012 IBM Corporation and others.
+ * Copyright (c) 2000, 2015 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -62,6 +62,12 @@ public NSRect drawingRectForBounds(NSRect theRect) {
 public NSRect expansionFrameWithFrame(NSRect cellFrame, NSView view) {
 	NSRect result = new NSRect();
 	OS.objc_msgSend_stret(result, this.id, OS.sel_expansionFrameWithFrame_inView_, cellFrame, view != null ? view.id : 0);
+	return result;
+}
+
+public NSRect focusRingMaskBoundsForFrame(NSRect cellFrame, NSView controlView) {
+	NSRect result = new NSRect();
+	OS.objc_msgSend_stret(result, this.id, OS.sel_focusRingMaskBoundsForFrame_inView_, cellFrame, controlView != null ? controlView.id : 0);
 	return result;
 }
 

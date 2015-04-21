@@ -700,6 +700,8 @@ public static final native long /*int*/ CALLBACK_drawWithExpansionFrame_inView_(
 public static final native long /*int*/ CALLBACK_expansionFrameWithFrame_inView_(long /*int*/ func);
 /** @method callback_types=NSRect;id;SEL;NSRange;,callback_flags=struct;none;none;struct; */
 public static final native long /*int*/ CALLBACK_firstRectForCharacterRange_(long /*int*/ func);
+/** @method callback_types=NSRect;id;SEL;NSRect;NSView*;,callback_flags=struct;none;none;struct;struct; */
+public static final native long /*int*/ CALLBACK_focusRingMaskBoundsForFrame_inView_(long /*int*/ func);
 /** @method callback_types=NSRect;id;SEL;NSInteger;,callback_flags=struct;none;none;none; */
 public static final native long /*int*/ CALLBACK_headerRectOfColumn_(long /*int*/ func);
 /** @method callback_types=void;id;SEL;NSRect;,callback_flags=none;none;none;struct; */
@@ -1330,6 +1332,7 @@ public static final long /*int*/ sel_floatValue = sel_registerName("floatValue")
 public static final long /*int*/ sel_flushBuffer = sel_registerName("flushBuffer");
 public static final long /*int*/ sel_flushGraphics = sel_registerName("flushGraphics");
 public static final long /*int*/ sel_flushWindowIfNeeded = sel_registerName("flushWindowIfNeeded");
+public static final long /*int*/ sel_focusRingMaskBoundsForFrame_inView_ = sel_registerName("focusRingMaskBoundsForFrame:inView:");
 public static final long /*int*/ sel_font = sel_registerName("font");
 public static final long /*int*/ sel_fontName = sel_registerName("fontName");
 public static final long /*int*/ sel_fontWithFamily_traits_weight_size_ = sel_registerName("fontWithFamily:traits:weight:size:");

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2014 IBM Corporation and others.
+ * Copyright (c) 2000, 2015 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -556,6 +556,34 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(CALLBACK_1firstRectForCharacterRange_1)
 	OS_NATIVE_ENTER(env, that, CALLBACK_1firstRectForCharacterRange_1_FUNC);
 	rc = (jintLong)CALLBACK_firstRectForCharacterRange_(arg0);
 	OS_NATIVE_EXIT(env, that, CALLBACK_1firstRectForCharacterRange_1_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_CALLBACK_1focusRingMaskBoundsForFrame_1inView_1
+static jintLong CALLBACK_1focusRingMaskBoundsForFrame_1inView_1;
+static NSRect proc_CALLBACK_1focusRingMaskBoundsForFrame_1inView_1(id arg0, SEL arg1, NSRect arg2, NSView* arg3) {
+	NSRect* lprc = ((NSRect* (*)(id, SEL, NSRect*, NSView**))CALLBACK_1focusRingMaskBoundsForFrame_1inView_1)(arg0, arg1, &arg2, &arg3);
+	NSRect rc;
+	if (lprc) {
+		rc = *lprc;
+		free(lprc);
+	} else {
+		memset(&rc, 0, sizeof(NSRect));
+	}
+	return rc;
+}
+static jintLong CALLBACK_focusRingMaskBoundsForFrame_inView_(jintLong func) {
+	CALLBACK_1focusRingMaskBoundsForFrame_1inView_1 = func;
+	return (jintLong)proc_CALLBACK_1focusRingMaskBoundsForFrame_1inView_1;
+}
+JNIEXPORT jintLong JNICALL OS_NATIVE(CALLBACK_1focusRingMaskBoundsForFrame_1inView_1)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, CALLBACK_1focusRingMaskBoundsForFrame_1inView_1_FUNC);
+	rc = (jintLong)CALLBACK_focusRingMaskBoundsForFrame_inView_(arg0);
+	OS_NATIVE_EXIT(env, that, CALLBACK_1focusRingMaskBoundsForFrame_1inView_1_FUNC);
 	return rc;
 }
 #endif

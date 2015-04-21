@@ -329,6 +329,15 @@ NSRect callSuperRect(long /*int*/ id, long /*int*/ sel, long /*int*/ arg0) {
 	return result;
 }
 
+NSRect callSuperRect(long /*int*/ id, long /*int*/ sel, NSRect rect, long /*int*/ arg0) {
+	objc_super super_struct = new objc_super();
+	super_struct.receiver = id;
+	super_struct.super_class = OS.objc_msgSend(id, OS.sel_superclass);
+	NSRect result = new NSRect();
+	OS.objc_msgSendSuper_stret(result, super_struct, sel, rect, arg0);
+	return result;
+}
+
 boolean canDragRowsWithIndexes_atPoint(long /*int*/ id, long /*int*/ sel, long /*int*/ rowIndexes, NSPoint mouseDownPoint) {
 	objc_super super_struct = new objc_super();
 	super_struct.receiver = id;
@@ -712,6 +721,7 @@ void drawInteriorWithFrame_inView (long /*int*/ id, long /*int*/ sel, NSRect cel
 	callSuper(id, sel, cellFrame, view);
 }
 
+
 void drawLabelInRect(long /*int*/ id, long /*int*/ sel, boolean shouldTruncateLabel, NSRect rect) {
 	objc_super super_struct = new objc_super();
 	super_struct.receiver = id;
@@ -817,6 +827,10 @@ int fixMnemonic (char [] buffer) {
 		}
 	}
 	return j;
+}
+
+NSRect focusRingMaskBoundsForFrame(long /*int*/ id, long /*int*/ sel, NSRect cellFrame,  long /*int*/ view) {
+	return callSuperRect(id, sel, cellFrame, view);
 }
 
 /**
@@ -2002,6 +2016,7 @@ String tooltipText () {
  *
  * @return a string representation of the receiver
  */
+@Override
 public String toString () {
 	String string = "*Disposed*";
 	if (!isDisposed ()) {

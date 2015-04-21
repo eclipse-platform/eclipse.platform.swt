@@ -625,6 +625,7 @@ void cascadeWindow (NSWindow window, NSScreen screen) {
 	screenCascade[index] = window.cascadeTopLeftFromPoint(cascade);
 }
 
+@Override
 protected void checkDevice () {
 	if (thread == null) error (SWT.ERROR_WIDGET_DISPOSED);
 	if (thread != Thread.currentThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
@@ -823,6 +824,7 @@ public void close () {
  *
  * @see #init
  */
+@Override
 protected void create (DeviceData data) {
 	checkSubclass ();
 	checkDisplay (thread = Thread.currentThread (), false);
@@ -1052,6 +1054,7 @@ static void deregister (Display display) {
  * @see Device#dispose
  * @see #release
  */
+@Override
 protected void destroy () {
 	if (this == Default) Default = null;
 	deregister (this);
@@ -1281,6 +1284,7 @@ public Shell getActiveShell () {
  *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
  * </ul>
  */
+@Override
 public Rectangle getBounds () {
 	checkDevice ();
 	NSArray screens = NSScreen.screens();
@@ -1339,6 +1343,7 @@ int getCaretBlinkTime () {
  *
  * @see #getBounds
  */
+@Override
 public Rectangle getClientArea () {
 	checkDevice ();
 	NSArray screens = NSScreen.screens();
@@ -1815,6 +1820,7 @@ public Thread getSyncThread () {
  *
  * @see SWT
  */
+@Override
 public Color getSystemColor (int id) {
 	checkDevice ();
 	Color color = getWidgetColor (id);
@@ -2169,6 +2175,7 @@ boolean hasDefaultButton () {
  * 
  * @see #create
  */
+@Override
 protected void init () {
 	super.init ();
 	initClasses ();
@@ -2208,6 +2215,7 @@ protected void init () {
 
 		/* only add the shutdown hook once */
 		Runtime.getRuntime().addShutdownHook(new Thread() {
+			@Override
 			public void run() {
 				NSApplication.sharedApplication().terminate(null);
 			}
@@ -2464,6 +2472,7 @@ void initClasses () {
 	long /*int*/ canDragRowsWithIndexes_atPoint_Proc = OS.CALLBACK_canDragRowsWithIndexes_atPoint_(proc4);
 	long /*int*/ setNeedsDisplayInRectProc = OS.CALLBACK_setNeedsDisplayInRect_(proc3);
 	long /*int*/ expansionFrameWithFrameProc = OS.CALLBACK_expansionFrameWithFrame_inView_ (proc4);
+	long /*int*/ focusRingMaskBoundsForFrameProc = OS.CALLBACK_focusRingMaskBoundsForFrame_inView_ (proc4);
 	long /*int*/ sizeOfLabelProc = OS.CALLBACK_sizeOfLabel_ (proc3);
 	long /*int*/ drawLabelInRectProc = OS.CALLBACK_drawLabel_inRect_ (proc4);
 	long /*int*/ drawViewBackgroundInRectProc = OS.CALLBACK_drawViewBackgroundInRect_(proc3);
@@ -2506,6 +2515,7 @@ void initClasses () {
 	OS.class_addMethod(cls, OS.sel_drawInteriorWithFrame_inView_, drawInteriorWithFrameInViewProc, "@:{NSRect}@");
 	OS.class_addMethod(cls, OS.sel_titleRectForBounds_, titleRectForBoundsProc, "@:{NSRect}");
 	OS.class_addMethod(cls, OS.sel_cellSizeForBounds_, cellSizeForBoundsProc, "@:{NSRect}");
+	OS.class_addMethod(cls, OS.sel_focusRingMaskBoundsForFrame_inView_, focusRingMaskBoundsForFrameProc, "@:{NSRect}@");
 	OS.objc_registerClassPair (cls);
 
 	className = "SWTCanvasView";
@@ -2675,8 +2685,10 @@ void initClasses () {
 	OS.objc_registerClassPair(cls);
 	OS.class_addMethod(OS.object_getClass(cls), OS.sel_cellClass, proc2, "@:"); //$NON-NLS-1$
 	
+	// NSPopUpButtonCell
 	cls = registerCellSubclass(NSPopUpButton.cellClass(), size, align, types);
-	addAccessibilityMethods(cls, proc2, proc3, proc4, accessibilityHitTestProc);	
+	addAccessibilityMethods(cls, proc2, proc3, proc4, accessibilityHitTestProc);
+	OS.class_addMethod(cls, OS.sel_focusRingMaskBoundsForFrame_inView_, focusRingMaskBoundsForFrameProc, "@:{NSRect}@");
 	
 	className = "SWTProgressIndicator";
 	cls = OS.objc_allocateClassPair(OS.class_NSProgressIndicator, className, 0);
@@ -3040,6 +3052,7 @@ void initFonts () {
  * 
  * @noreference This method is not intended to be referenced by clients.
  */
+@Override
 public long /*int*/ internal_new_GC (GCData data) {
 	if (isDisposed()) error(SWT.ERROR_DEVICE_DISPOSED);
 	if (screenWindow == null) {
@@ -3083,6 +3096,7 @@ public long /*int*/ internal_new_GC (GCData data) {
  * 
  * @noreference This method is not intended to be referenced by clients.
  */
+@Override
 public void internal_dispose_GC (long /*int*/ hDC, GCData data) {
 	if (isDisposed()) error(SWT.ERROR_DEVICE_DISPOSED);
 }
@@ -3720,6 +3734,7 @@ static void register (Display display) {
  * @see Device#dispose
  * @see #destroy
  */
+@Override
 protected void release () {
 	disposing = true;
 	sendEvent (SWT.Dispose, new Event ());
@@ -5932,6 +5947,14 @@ static long /*int*/ windowProc(long /*int*/ id, long /*int*/ sel, long /*int*/ a
 		NSRect rect = new NSRect();
 		OS.memmove(rect, arg0, NSRect.sizeof);
 		rect = widget.expansionFrameWithFrame_inView(id, sel, rect, arg1);
+		/* NOTE that this is freed in C */
+		long /*int*/ result = OS.malloc (NSRect.sizeof);
+		OS.memmove (result, rect, NSRect.sizeof);
+		return result;
+	} else if (sel == OS.sel_focusRingMaskBoundsForFrame_inView_) {
+		NSRect rect = new NSRect();
+		OS.memmove(rect, arg0, NSRect.sizeof);
+		rect = widget.focusRingMaskBoundsForFrame(id, sel, rect, arg1);
 		/* NOTE that this is freed in C */
 		long /*int*/ result = OS.malloc (NSRect.sizeof);
 		OS.memmove (result, rect, NSRect.sizeof);

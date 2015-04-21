@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2014 IBM Corporation and others.
+ * Copyright (c) 2000, 2015 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -39,6 +39,7 @@ char * OS_nativeFunctionNames[] = {
 	"CALLBACK_1drawWithExpansionFrame_1inView_1",
 	"CALLBACK_1expansionFrameWithFrame_1inView_1",
 	"CALLBACK_1firstRectForCharacterRange_1",
+	"CALLBACK_1focusRingMaskBoundsForFrame_1inView_1",
 	"CALLBACK_1headerRectOfColumn_1",
 	"CALLBACK_1highlightSelectionInClipRect_1",
 	"CALLBACK_1hitTestForEvent_1inRect_1ofView_1",

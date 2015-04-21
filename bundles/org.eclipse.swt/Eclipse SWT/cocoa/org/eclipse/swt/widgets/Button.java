@@ -438,6 +438,11 @@ void drawWidget (long /*int*/ id, NSGraphicsContext context, NSRect rect) {
 	super.drawWidget (id, context, rect);
 }
 
+@Override
+NSRect focusRingMaskBoundsForFrame (long /*int*/ id, long /*int*/ sel, NSRect cellFrame, long /*int*/ view) {
+	return cellFrame;
+}
+
 /**
  * Returns a value which describes the position of the
  * text or image in the receiver. The value will be one of

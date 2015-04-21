@@ -321,6 +321,7 @@ public void addVerifyListener (VerifyListener listener) {
 	addListener (SWT.Verify, typedListener);
 }
 
+@Override
 boolean becomeFirstResponder (long /*int*/ id, long /*int*/ sel) {
 	receivingFocus = true;
 	boolean result = super.becomeFirstResponder (id, sel);
@@ -356,6 +357,7 @@ static int checkStyle (int style) {
 	return style;
 }
 
+@Override
 protected void checkSubclass () {
 	if (!isValidSubclass ()) error (SWT.ERROR_INVALID_SUBCLASS);
 }
@@ -386,10 +388,12 @@ public void clearSelection () {
 	}
 }
 
+@Override
 void setObjectValue(long /*int*/ id, long /*int*/ sel, long /*int*/ arg0) {
 	super.setObjectValue(id, sel, ignoreSetObject ? arg0 : createString(text).id);
 }
 
+@Override
 void comboBoxSelectionDidChange(long /*int*/ id, long /*int*/ sel, long /*int*/ notification) {
 	NSComboBox widget = (NSComboBox)view;
 	long /*int*/ tableSelection = widget.indexOfSelectedItem();
@@ -400,6 +404,7 @@ void comboBoxSelectionDidChange(long /*int*/ id, long /*int*/ sel, long /*int*/ 
 	if (!ignoreSelection) sendSelectionEvent (SWT.Selection, null, display.trackingControl != this);
 }
 
+@Override
 public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget ();
 	int width = 0, height = 0;
@@ -490,6 +495,7 @@ public void copy () {
 	copyToClipboard (getText (selection.x, selection.y));
 }
 
+@Override
 void createHandle () {
 	if ((style & SWT.READ_ONLY) != 0) {
 		NSPopUpButton widget = (NSPopUpButton)new SWTPopUpButton().alloc();
@@ -517,6 +523,7 @@ NSAttributedString createString(String string) {
 	return attribStr;
 }
 
+@Override
 void createWidget() {
 	text = "";
 	super.createWidget();
@@ -529,11 +536,13 @@ void createWidget() {
 	}
 }
 
+@Override
 void comboBoxWillDismiss(long /*int*/ id, long /*int*/ sel, long /*int*/ notification) {
 	display.currentCombo = null;
 	listVisible = false;
 }
 
+@Override
 void comboBoxWillPopUp(long /*int*/ id, long /*int*/ sel, long /*int*/ notification) {
 	display.currentCombo = this;
 	listVisible = true;
@@ -577,19 +586,23 @@ public void cut () {
 	sendEvent (SWT.Modify);
 }
 
+@Override
 Color defaultBackground () {
     return display.getWidgetColor (SWT.COLOR_LIST_BACKGROUND);
 }
 
+@Override
 NSFont defaultNSFont() {
 	if ((style & SWT.READ_ONLY) != 0) return display.popUpButtonFont;		
 	return display.comboBoxFont;
 }
 
+@Override
 Color defaultForeground () {
     return display.getWidgetColor (SWT.COLOR_LIST_FOREGROUND);
 }
 
+@Override
 void deregister() {
 	super.deregister();
 	display.removeWidget(((NSControl)view).cell());
@@ -646,6 +659,7 @@ public void deselectAll () {
 	}
 }
 
+@Override
 boolean dragDetect(int x, int y, boolean filter, boolean[] consume) {
 	if ((style & SWT.READ_ONLY) == 0) {
 		NSText fieldEditor = ((NSControl)view).currentEditor();
@@ -671,9 +685,15 @@ boolean dragDetect(int x, int y, boolean filter, boolean[] consume) {
 	return super.dragDetect(x, y, filter, consume);
 }
 
+@Override
 Cursor findCursor () {
 	Cursor cursor = super.findCursor ();
 	return (cursor != null || (style & SWT.READ_ONLY) != 0) ? cursor : display.getSystemCursor (SWT.CURSOR_IBEAM);
+}
+
+@Override
+NSRect focusRingMaskBoundsForFrame (long /*int*/ id, long /*int*/ sel, NSRect cellFrame, long /*int*/ view) {
+	return cellFrame;
 }
 
 /**
@@ -856,10 +876,12 @@ public boolean getListVisible () {
 	return listVisible;
 }
 
+@Override
 String getNameText () {
     return getText ();
 }
 
+@Override
 int getMininumHeight () {
 	return getTextHeight ();
 }
@@ -876,6 +898,7 @@ int getMininumHeight () {
  * 
  * @since 2.1.2
  */
+@Override
 public int getOrientation () {
 	checkWidget();
 	return style & (SWT.LEFT_TO_RIGHT | SWT.RIGHT_TO_LEFT);
@@ -1091,18 +1114,22 @@ public int indexOf (String string, int start) {
 	return -1;
 }
 
+@Override
 boolean isEventView (long /*int*/ id) {
 	return true;
 }
 
+@Override
 void menuWillOpen(long /*int*/ id, long /*int*/ sel, long /*int*/ menu) {
 	listVisible = true;
 }
 
+@Override
 void menuDidClose(long /*int*/ id, long /*int*/ sel, long /*int*/ menu) {
 	listVisible = false;
 }
 
+@Override
 void mouseDown(long /*int*/ id, long /*int*/ sel, long /*int*/ theEvent) {
 	// If this is a combo box with an editor field and the control is disposed
 	// while the view's cell editor is open we crash while tearing down the
@@ -1158,11 +1185,13 @@ public void paste () {
 	sendEvent (SWT.Modify);
 }
 
+@Override
 void register() {
 	super.register();
 	display.addWidget(((NSControl)view).cell(), this);
 }
 
+@Override
 void releaseWidget () {
 	if (display.currentCombo == this) {
 		display.currentCombo = null;
@@ -1406,11 +1435,13 @@ public void select (int index) {
 	}
 }
 
+@Override
 void sendSelection () {
 	sendEvent(SWT.Modify);
 	if (!ignoreSelection) sendSelectionEvent(SWT.Selection);
 }
 
+@Override
 boolean sendKeyEvent (NSEvent nsEvent, int type) {
 	boolean result = super.sendKeyEvent (nsEvent, type);
 	if (!result) return result;
@@ -1468,6 +1499,7 @@ boolean sendTrackingKeyEvent (NSEvent nsEvent, int type) {
 	return false;
 }
 
+@Override
 void setBackgroundColor(NSColor nsColor) {
 	if ((style & SWT.READ_ONLY) != 0) {
 		//TODO
@@ -1476,10 +1508,12 @@ void setBackgroundColor(NSColor nsColor) {
 	}
 }
 
+@Override
 void setBackgroundImage(NSImage image) {
 	//TODO setDrawsBackground is ignored by NSComboBox?
 }
 
+@Override
 void setBounds (int x, int y, int width, int height, boolean move, boolean resize) {
 	/*
 	 * Feature in Cocoa.  Attempting to create an NSComboBox with a
@@ -1511,11 +1545,13 @@ void setBounds (int x, int y, int width, int height, boolean move, boolean resiz
 	super.setBounds (x, y, width, height, move, resize);
 }
 
+@Override
 void setFont (NSFont font) {
 	super.setFont(font);
 	updateItems();
 }
 
+@Override
 void setForeground (double /*float*/ [] color) {
 	super.setForeground(color);
 	updateItems();
@@ -1655,10 +1691,12 @@ public void setListVisible (boolean visible) {
  * 
  * @since 2.1.2
  */
+@Override
 public void setOrientation (int orientation) {
 	checkWidget();
 }
 
+@Override
 void setOrientation () {
 	int direction = (style & SWT.RIGHT_TO_LEFT) != 0 ? OS.NSWritingDirectionRightToLeft : OS.NSWritingDirectionLeftToRight;
 	((NSControl)view).setBaseWritingDirection(direction);
@@ -1803,6 +1841,7 @@ public void setVisibleItemCount (int count) {
 	}
 }
 
+@Override
 boolean shouldChangeTextInRange_replacementString(long /*int*/ id, long /*int*/ sel, long /*int*/ affectedCharRange, long /*int*/ replacementString) {
 	NSRange range = new NSRange();
 	OS.memmove(range, affectedCharRange, NSRange.sizeof);
@@ -1844,17 +1883,20 @@ boolean shouldChangeTextInRange_replacementString(long /*int*/ id, long /*int*/ 
 	return result;
 }
 
+@Override
 void textViewDidChangeSelection(long /*int*/ id, long /*int*/ sel, long /*int*/ aNotification) {
 	NSNotification notification = new NSNotification(aNotification);
 	NSText editor = new NSText(notification.object().id);
 	selectionRange = editor.selectedRange();
 }
 
+@Override
 void textDidChange (long /*int*/ id, long /*int*/ sel, long /*int*/ aNotification) {
 	super.textDidChange (id, sel, aNotification);
 	postEvent (SWT.Modify);
 }
 
+@Override
 NSRange textView_willChangeSelectionFromCharacterRange_toCharacterRange(long /*int*/ id, long /*int*/ sel, long /*int*/ aTextView, long /*int*/ oldSelectedCharRange, long /*int*/ newSelectedCharRange) {
 	/*
 	* If the selection is changing as a result of the receiver getting focus
