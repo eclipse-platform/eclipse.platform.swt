@@ -39,6 +39,6 @@ if [ "x${XULRUNNER24_LIBS}" = "x" ]; then
 	export XULRUNNER24_LIBS="${XULRUNNER24_SDK}/lib/XUL"
 fi
 	
-export MACOSX_DEPLOYMENT_TARGET=10.5
+export MACOSX_DEPLOYMENT_TARGET=10.7
 
 make -f make_macosx.mak $1 $2 $3 $4 $5 $6 $7 $8 $9
