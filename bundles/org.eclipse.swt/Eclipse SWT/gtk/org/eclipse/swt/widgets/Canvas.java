@@ -11,10 +11,10 @@
 package org.eclipse.swt.widgets;
 
 
-import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.internal.cairo.Cairo;
-import org.eclipse.swt.internal.gtk.*;
 import org.eclipse.swt.*;
+import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.internal.cairo.*;
+import org.eclipse.swt.internal.gtk.*;
 
 /**
  * Instances of this class provide a surface for drawing
@@ -365,6 +365,13 @@ public void scroll (int destX, int destY, int x, int y, int width, int height, b
 		}
 	}
 	if (isFocus) caret.setFocus ();
+	/*
+	 * Due to overlay drawing of scrollbars current method of scrolling leaves scrollbar and notifiers for them inside the canvas
+	 * after scroll. Fix is to redraw once done.
+	 */
+	if (OS.GTK_VERSION >= OS.VERSION(3, 16, 0)) {
+		redraw(false);
+	}
 }
 
 @Override
