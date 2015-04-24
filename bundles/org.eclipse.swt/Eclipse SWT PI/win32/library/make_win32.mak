@@ -172,15 +172,6 @@ make_xulrunner: $(XULRUNNER_OBJS) $(XPCOMINIT_OBJS) swt_xpcom.res
 	link @templrf
 	del templrf
 
-make_xulrunner24: $(XULRUNNER24_OBJS) swt_xpcom.res
-	echo /RELEASE $(dlllflags) >templrf
-	echo $(XULRUNNER24_LIBS) >>templrf
-	echo $(XULRUNNER24_OBJS) >>templrf
-	echo swt_xpcom.res >>templrf
-	echo -out:$(XULRUNNER24_LIB) >>templrf
-	link @templrf
-	del templrf
-
 make_xulrunner_64: $(XULRUNNER_OBJS) swt_xpcom.res
 	echo /RELEASE $(dlllflags) >templrf
 	echo $(XULRUNNER_LIBS) >>templrf

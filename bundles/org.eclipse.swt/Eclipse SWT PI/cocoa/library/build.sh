@@ -30,9 +30,6 @@ if [ "x${MODEL}" = "xx86_64" ]; then
 	if [ "x${XULRUNNER_LIBS}" = "x" ]; then
 		export XULRUNNER_LIBS="${XULRUNNER_SDK}/lib/libxpcomglue.a"
 	fi
-	if [ "x${XULRUNNER24_SDK}" = "x" ]; then
-		export XULRUNNER24_SDK="/Users/Shared/xulrunner/24-64/xulrunner-sdk/"
-	fi
 fi
 
 export MACOSX_DEPLOYMENT_TARGET=10.7
