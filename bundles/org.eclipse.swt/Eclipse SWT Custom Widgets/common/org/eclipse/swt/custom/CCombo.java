@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2012 IBM Corporation and others.
+ * Copyright (c) 2000, 2015 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -596,9 +596,16 @@ void dropDown (boolean drop) {
 		} else {
 			height = popDownwardsHeight;
 		}
-		list.setSize (listRect.width, height - 2);
+		listRect.height = height - 2;
 	}
-	popup.setBounds (x, y, width, height);
+	/*
+	 * Invisible HScrollBar lead to empty space at end of CCombo drop-down.
+	 * Fix is to reduce height of list and shell in that case, bug 388126.
+	 */
+	ScrollBar hBar = list.getHorizontalBar();
+	int emptyHBarSpace = hBar.isVisible () ? 0 : hBar.getSize ().y;
+	list.setSize (listRect.width, listRect.height - emptyHBarSpace);
+	popup.setBounds (x, y, width, height - emptyHBarSpace);
 	popup.setVisible (true);
 	if (isFocusControl()) list.setFocus ();
 	
