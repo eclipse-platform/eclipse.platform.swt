@@ -43,10 +43,10 @@ public class nsIX509CertValidity extends nsISupports {
 	}
 
 	public int GetNotBeforeGMT(long /*int*/ aNotBeforeGMT) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 4, getAddress(), aNotBeforeGMT);
+		return XPCOM.VtblCall(this.getGetterIndex("NotBeforeGMT"), getAddress(), aNotBeforeGMT);
 	}
 
 	public int GetNotAfterGMT(long /*int*/ aNotAfterGMT) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 8, getAddress(), aNotAfterGMT);
+		return XPCOM.VtblCall(this.getGetterIndex("NotAfterGMT"), getAddress(), aNotAfterGMT);
 	}
 }

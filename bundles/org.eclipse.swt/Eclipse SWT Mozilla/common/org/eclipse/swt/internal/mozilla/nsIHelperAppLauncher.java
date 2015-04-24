@@ -43,10 +43,10 @@ public class nsIHelperAppLauncher extends nsISupports {
 	}
 
 	public int SaveToDisk(long /*int*/ aNewFileLocation, int aRememberThisPreference) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 4, getAddress(), aNewFileLocation, aRememberThisPreference);
+		return XPCOM.VtblCall(this.getMethodIndex("saveToDisk"), getAddress(), aNewFileLocation, aRememberThisPreference);
 	}
 
 	public int Cancel() {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 6, getAddress());
+		return XPCOM.VtblCall(this.getMethodIndex("cancel"), getAddress());
 	}
 }

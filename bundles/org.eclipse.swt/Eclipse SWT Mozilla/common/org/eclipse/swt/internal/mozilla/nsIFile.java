@@ -36,14 +36,16 @@ public class nsIFile extends nsISupports {
 	 * is being used or not.  However this does not currently cause a problem because the
 	 * only reference to it is nsILocalFile.LAST_METHOD_ID, which is currently not used.  
 	 */
-	static final int LAST_METHOD_ID = nsISupports.LAST_METHOD_ID + (IsXULRunner24() ? 62 : 45);
+	static final int LAST_METHOD_ID = nsISupports.LAST_METHOD_ID + (IsXULRVersionOrLater(24) ? 62 : 45);
 
 	static final String NS_IFILE_IID_STR = "c8c0a080-0868-11d3-915f-d9d889d48e3c";
 	static final String NS_IFILE_24_IID_STR = "272a5020-64f5-485c-a8c4-44b2882ae0a2";
+	static final String NS_IFILE_31_IID_STR = "a99a6a06-f90d-4659-8fce-c2f87feb1167";
 
 	static {
 		IIDStore.RegisterIID(nsIFile.class, MozillaVersion.VERSION_BASE, new nsID(NS_IFILE_IID_STR));
 		IIDStore.RegisterIID(nsIFile.class, MozillaVersion.VERSION_XR24, new nsID(NS_IFILE_24_IID_STR));
+		IIDStore.RegisterIID(nsIFile.class, MozillaVersion.VERSION_XR31, new nsID(NS_IFILE_31_IID_STR));
 	}
 
 	public nsIFile(long /*int*/ address) {
@@ -54,14 +56,14 @@ public class nsIFile extends nsISupports {
 	public static final int DIRECTORY_TYPE = 1;
 
 	public int Create(int type, int permissions) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 4, getAddress(), type, permissions);
+		return XPCOM.VtblCall(this.getMethodIndex("create"), getAddress(), type, permissions);
 	}
 
 	public int GetLeafName(long /*int*/ aLeafName) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 5, getAddress(), aLeafName);
+		return XPCOM.VtblCall(this.getGetterIndex("leafName"), getAddress(), aLeafName);
 	}
 
 	public int GetPath(long /*int*/ aPath) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 29, getAddress(), aPath);
+		return XPCOM.VtblCall(this.getGetterIndex("path"), getAddress(), aPath);
 	}
 }

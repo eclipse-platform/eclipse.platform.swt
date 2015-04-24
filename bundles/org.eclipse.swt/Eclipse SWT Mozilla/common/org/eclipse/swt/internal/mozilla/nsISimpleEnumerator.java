@@ -43,10 +43,10 @@ public class nsISimpleEnumerator extends nsISupports {
 	}
 
 	public int HasMoreElements(int[] _retval) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 1, getAddress(), _retval);
+		return XPCOM.VtblCall(this.getMethodIndex("hasMoreElements"), getAddress(), _retval);
 	}
 
 	public int GetNext(long /*int*/[] _retval) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 2, getAddress(), _retval);
+		return XPCOM.VtblCall(this.getMethodIndex("getNext"), getAddress(), _retval);
 	}
 }

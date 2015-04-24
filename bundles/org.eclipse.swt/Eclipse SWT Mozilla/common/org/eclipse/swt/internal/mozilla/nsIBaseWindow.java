@@ -47,30 +47,30 @@ public class nsIBaseWindow extends nsISupports {
 	}
 
 	public int InitWindow(long /*int*/ parentNativeWindow, long /*int*/ parentWidget, int x, int y, int cx, int cy) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 1, getAddress(), parentNativeWindow, parentWidget, x, y, cx, cy);
+		return XPCOM.VtblCall(this.getMethodIndex("initWindow"), getAddress(), parentNativeWindow, parentWidget, x, y, cx, cy);
 	}
 
 	public int Create() {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 2, getAddress());
+		return XPCOM.VtblCall(this.getMethodIndex("create"), getAddress());
 	}
 
 	public int Destroy() {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 3, getAddress());
+		return XPCOM.VtblCall(this.getMethodIndex("destroy"), getAddress());
 	}
 
 	public int SetPositionAndSize(int x, int y, int cx, int cy, int fRepaint) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 8, getAddress(), x, y, cx, cy, fRepaint);
+		return XPCOM.VtblCall(this.getMethodIndex("setPositionAndSize"), getAddress(), x, y, cx, cy, fRepaint);
 	}
 
 	public int GetParentNativeWindow(long /*int*/[] aParentNativeWindow) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 13, getAddress(), aParentNativeWindow);
+		return XPCOM.VtblCall(this.getGetterIndex("parentNativeWindow"), getAddress(), aParentNativeWindow);
 	}
 
 	public int SetVisibility(int aVisibility) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + (IsXULRunner24() ? 17 : 16), getAddress(), aVisibility);
+		return XPCOM.VtblCall(this.getSetterIndex("visibility"), getAddress(), aVisibility);
 	}
 
 	public int SetFocus() {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + (IsXULRunner10() ? 20 : 22), getAddress());
+		return XPCOM.VtblCall(this.getMethodIndex("setFocus"), getAddress());
 	}
 }

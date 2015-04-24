@@ -43,6 +43,6 @@ public class nsICancelable extends nsISupports {
 	}
 
 	public int Cancel(int aReason) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 1, getAddress(), aReason);
+		return XPCOM.VtblCall(this.getMethodIndex("cancel") + 1, getAddress(), aReason);
 	}
 }

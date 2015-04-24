@@ -45,16 +45,16 @@ public class nsIInputStream extends nsISupports {
 	}
 
 	public int Available(int[] _retval) {
-		if (IsXULRunner24()) return XPCOM.NS_COMFALSE;
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 2, getAddress(), _retval);
+		if (IsXULRVersionOrLater(24)) return XPCOM.NS_COMFALSE;
+		return XPCOM.VtblCall(this.getMethodIndex("available"), getAddress(), _retval);
 	}
 	
 	public int Available(long[] _retval) {
-		if (!IsXULRunner24()) return XPCOM.NS_COMFALSE;
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 2, getAddress(), _retval);
+		if (!IsXULRVersionOrLater(24)) return XPCOM.NS_COMFALSE;
+		return XPCOM.VtblCall(this.getMethodIndex("available"), getAddress(), _retval);
 	}
 
 	public int Read(byte[] aBuf, int aCount, int[] _retval) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 3, getAddress(), aBuf, aCount, _retval);
+		return XPCOM.VtblCall(this.getMethodIndex("read"), getAddress(), aBuf, aCount, _retval);
 	}
 }

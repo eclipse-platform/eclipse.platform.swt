@@ -45,10 +45,10 @@ public class nsICookieService extends nsISupports {
 	}
 
 	public int GetCookieString(long /*int*/ aURI, long /*int*/ aChannel, long /*int*/[] _retval) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 1, getAddress(), aURI, aChannel, _retval);
+		return XPCOM.VtblCall(this.getMethodIndex("getCookieString"), getAddress(), aURI, aChannel, _retval);
 	}
 
 	public int SetCookieString(long /*int*/ aURI, long /*int*/ aPrompt, byte[] aCookie, long /*int*/ aChannel) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 3, getAddress(), aURI, aPrompt, aCookie, aChannel);
+		return XPCOM.VtblCall(this.getMethodIndex("setCookieString"), getAddress(), aURI, aPrompt, aCookie, aChannel);
 	}
 }

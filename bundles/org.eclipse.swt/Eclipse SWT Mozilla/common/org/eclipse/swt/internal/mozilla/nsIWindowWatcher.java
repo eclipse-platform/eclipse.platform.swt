@@ -30,12 +30,14 @@ package org.eclipse.swt.internal.mozilla;
 
 public class nsIWindowWatcher extends nsISupports {
 
-	static final int LAST_METHOD_ID = nsISupports.LAST_METHOD_ID + 11;
+	static final int LAST_METHOD_ID = nsISupports.LAST_METHOD_ID + (IsXULRunner31 () ? 12 : 11);
 
 	static final String NS_IWINDOWWATCHER_IID_STR = "002286a8-494b-43b3-8ddd-49e3fc50622b";
+	static final String NS_IWINDOWWATCHER_31_IID_STR = "67bc1691-fbaf-484a-a15b-c96212b45034";
 
 	static {
 		IIDStore.RegisterIID(nsIWindowWatcher.class, MozillaVersion.VERSION_BASE, new nsID(NS_IWINDOWWATCHER_IID_STR));
+		IIDStore.RegisterIID(nsIWindowWatcher.class, MozillaVersion.VERSION_XR31, new nsID(NS_IWINDOWWATCHER_31_IID_STR));
 	}
 
 	public nsIWindowWatcher(long /*int*/ address) {
@@ -43,10 +45,10 @@ public class nsIWindowWatcher extends nsISupports {
 	}
 
 	public int SetWindowCreator(long /*int*/ creator) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 7, getAddress(), creator);
+		return XPCOM.VtblCall(this.getMethodIndex("setWindowCreator"), getAddress(), creator);
 	}
 
 	public int GetChromeForWindow(long /*int*/ aWindow, long /*int*/[] _retval) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 8, getAddress(), aWindow, _retval);
+		return XPCOM.VtblCall(this.getMethodIndex("getChromeForWindow"), getAddress(), aWindow, _retval);
 	}
 }

@@ -797,7 +797,7 @@ public void create (Composite parent, int style) {
 	result[0] = 0;
 
 	/* create the nsIWebBrowser instance */
-	rc = componentManager.CreateInstance (XPCOM.NS_IWEBBROWSER_CID, 0, IIDStore.GetIID (nsIWebBrowser.class), result);
+	rc = componentManager.CreateInstance (MozillaVersion.CheckVersion(MozillaVersion.VERSION_XR31) ? XPCOM.NS_IWEBBROWSER_31_CID : XPCOM.NS_IWEBBROWSER_CID, 0, IIDStore.GetIID (nsIWebBrowser.class), result);
 	if (rc != XPCOM.NS_OK) {
 		browser.dispose ();
 		error (rc);
@@ -1142,7 +1142,9 @@ void createCOMInterfaces () {
 		@Override
 		public long /*int*/ method1 (long /*int*/[] args) {return AddRef ();}
 		@Override
-		public long /*int*/ method2 (long /*int*/[] args) {return Release ();}
+		public long /*int*/ method2 (long /*int*/[] args) {
+			return Release ();
+		}
 		@Override
 		public long /*int*/ method3 (long /*int*/[] args) {return SetStatus ((int)/*64*/args[0], args[1]);}
 		@Override
@@ -2286,17 +2288,22 @@ void initXPCOM (String mozillaPath, boolean isXULRunner) {
 		rc = XPCOM.XPCOMGlueLoadXULFunctions (ptr);
 		if (rc == XPCOM.NS_OK) { /* > 3.x */
 			result[0] = 0;
-			rc = localFile.QueryInterface (IIDStore.GetIID (nsIFile.class, MozillaVersion.VERSION_XR24, true), result);
-			if (rc == XPCOM.NS_OK) { /* 24.x */
-				MozillaVersion.SetCurrentVersion (MozillaVersion.VERSION_XR24);
-			} else { /* 10.x */
-				rc = localFile.QueryInterface (IIDStore.GetIID (nsILocalFile.class, MozillaVersion.VERSION_XR10), result);
-				if (rc != XPCOM.NS_OK) {
-					/* appears to be an unsupported version */
-					browser.dispose ();
-					error (rc);
+			rc = localFile.QueryInterface (IIDStore.GetIID (nsIFile.class, MozillaVersion.VERSION_XR31, true), result);
+			if (rc == XPCOM.NS_OK) { /* 31.x */
+				MozillaVersion.SetCurrentVersion (MozillaVersion.VERSION_XR31);
+			} else {
+				rc = localFile.QueryInterface (IIDStore.GetIID (nsIFile.class, MozillaVersion.VERSION_XR24, true), result);
+				if (rc == XPCOM.NS_OK) { /* 24.x */
+					MozillaVersion.SetCurrentVersion (MozillaVersion.VERSION_XR24);
+				} else { /* 10.x */
+					rc = localFile.QueryInterface (IIDStore.GetIID (nsILocalFile.class, MozillaVersion.VERSION_XR10), result);
+					if (rc != XPCOM.NS_OK) {
+						/* appears to be an unsupported version */
+						browser.dispose ();
+						error (rc);
+					}
+					MozillaVersion.SetCurrentVersion (MozillaVersion.VERSION_XR10);
 				}
-				MozillaVersion.SetCurrentVersion (MozillaVersion.VERSION_XR10);
 			}
 			if (result[0] != 0) new nsISupports (result[0]).Release();
 			result[0] = 0;
@@ -3115,7 +3122,7 @@ void navigate (long /*int*/ requestHandle) {
 			if (riid == 0 || ppvObject == 0) return XPCOM.NS_ERROR_NO_INTERFACE;
 			nsID guid = new nsID ();
 			XPCOM.memmove (guid, riid, nsID.sizeof);
-			if (guid.Equals (IIDStore.GetIID (nsISupports.class)) || guid.Equals (XPCOM.NS_IHTTPHEADERVISITOR_IID) || guid.Equals (XPCOM.NS_IHTTPHEADERVISITOR_10_IID)) {
+			if (guid.Equals (XPCOM.NS_ISUPPORTS_IID) || guid.Equals (XPCOM.NS_IHTTPHEADERVISITOR_IID) || guid.Equals (XPCOM.NS_IHTTPHEADERVISITOR_10_IID)) {
 				XPCOM.memmove (ppvObject, new long /*int*/[] {getAddress ()}, C.PTR_SIZEOF);
 				refCount++;
 				return XPCOM.NS_OK;
@@ -3710,7 +3717,7 @@ int QueryInterface (long /*int*/ riid, long /*int*/ ppvObject) {
 	nsID guid = new nsID ();
 	XPCOM.memmove (guid, riid, nsID.sizeof);
 
-	if (guid.Equals (IIDStore.GetIID (nsISupports.class))) {
+	if (guid.Equals (XPCOM.NS_ISUPPORTS_IID)) {
 		XPCOM.memmove (ppvObject, new long /*int*/[] {supports.getAddress ()}, C.PTR_SIZEOF);
 		AddRef ();
 		return XPCOM.NS_OK;

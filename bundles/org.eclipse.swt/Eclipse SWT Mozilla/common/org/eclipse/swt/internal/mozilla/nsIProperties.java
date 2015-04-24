@@ -43,6 +43,6 @@ public class nsIProperties extends nsISupports {
 	}
 
 	public int Get(byte[] prop, nsID iid, long /*int*/[] result) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 1, getAddress(), prop, iid, result);
+		return XPCOM.VtblCall(this.getMethodIndex("get"), getAddress(), prop, iid, result);
 	}
 }

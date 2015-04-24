@@ -48,13 +48,13 @@ public class nsIDOMSerializer extends nsISupports {
 		if (MozillaVersion.CheckVersion (MozillaVersion.VERSION_XR1_8)) { /* >= 1.8.x */
 			return XPCOM.NS_COMFALSE;
 		}
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 1, getAddress(), root, _retval);
+		return XPCOM.VtblCall(this.getMethodIndex("serializeToString"), getAddress(), root, _retval);
 	}
 	
 	public int SerializeToString(long /*int*/ root, long /*int*/ _retval) {
 		if (!MozillaVersion.CheckVersion (MozillaVersion.VERSION_XR1_8)) { /* 1.4.x */
 			return XPCOM.NS_COMFALSE;
 		}
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 1, getAddress(), root, _retval);
+		return XPCOM.VtblCall(this.getMethodIndex("serializeToString"), getAddress(), root, _retval);
 	}
 }

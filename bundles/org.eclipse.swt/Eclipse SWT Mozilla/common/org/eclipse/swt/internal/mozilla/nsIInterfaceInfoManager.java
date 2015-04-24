@@ -28,27 +28,24 @@
 package org.eclipse.swt.internal.mozilla;
 
 
-public class nsIMemory extends nsISupports {
+public class nsIInterfaceInfoManager extends nsISupports {
 
-	static final int LAST_METHOD_ID = nsISupports.LAST_METHOD_ID + (IsXULRVersionOrLater(24) ? 6 : 5);
-
-	static final String NS_IMEMORY_IID_STR = "59e7e77a-38e4-11d4-8cf5-0060b0fc14a3";
-	static final String NS_IMEMORY_24_IID_STR = "6aef11c4-8615-44a6-9711-98f43805693d";
+	static final int LAST_METHOD_ID = nsISupports.LAST_METHOD_ID + 6;
+	static final String NS_IINTERFACEINFOMANAGER_IID_STR = "1d53d8d9-1d92-428f-b5cc-198b55e897d7";
 
 	static {
-		IIDStore.RegisterIID(nsIMemory.class, MozillaVersion.VERSION_BASE, new nsID(NS_IMEMORY_IID_STR));
-		IIDStore.RegisterIID(nsIMemory.class, MozillaVersion.VERSION_XR24, new nsID(NS_IMEMORY_24_IID_STR));
+		IIDStore.RegisterIID(nsIInterfaceInfoManager.class, MozillaVersion.VERSION_BASE, new nsID(NS_IINTERFACEINFOMANAGER_IID_STR));
 	}
 
-	public nsIMemory(long /*int*/ address) {
+	public nsIInterfaceInfoManager(long /*int*/ address) {
 		super(address);
 	}
 
-	public long /*int*/ Alloc(int size) {
-		return XPCOM.nsIMemory_Alloc(getAddress(), size);
+	public int GetInfoForIID(nsID iid, long /*int*/[] result) {
+		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 1, getAddress(), iid, result);
 	}
 
-	public int Free(long /*int*/ ptr) {
-		return XPCOM.VtblCall(this.getMethodIndex("free"), getAddress(), ptr);
+	public int GetInfoForName(byte[] aName, long /*int*/[] result) {
+		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 2, getAddress(), aName, result);
 	}
 }

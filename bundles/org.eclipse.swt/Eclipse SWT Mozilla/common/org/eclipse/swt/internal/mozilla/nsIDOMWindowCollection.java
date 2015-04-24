@@ -43,10 +43,10 @@ public class nsIDOMWindowCollection extends nsISupports {
 	}
 
 	public int GetLength(int[] aLength) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 1, getAddress(), aLength);
+		return XPCOM.VtblCall(this.getGetterIndex("length"), getAddress(), aLength);
 	}
 
 	public int Item(int index, long /*int*/[] _retval) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 2, getAddress(), index, _retval);
+		return XPCOM.VtblCall(this.getMethodIndex("item"), getAddress(), index, _retval);
 	}
 }

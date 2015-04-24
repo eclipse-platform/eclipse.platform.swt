@@ -43,14 +43,14 @@ public class nsIMIMEInputStream extends nsIInputStream {
 	}
 
 	public int SetAddContentLength(int aAddContentLength) {
-		return XPCOM.VtblCall(nsIInputStream.LAST_METHOD_ID + 2, getAddress(), aAddContentLength);
+		return XPCOM.VtblCall(this.getSetterIndex("addContentLength"), getAddress(), aAddContentLength);
 	}
 
 	public int AddHeader(byte[] name, byte[] value) {
-		return XPCOM.VtblCall(nsIInputStream.LAST_METHOD_ID + 3, getAddress(), name, value);
+		return XPCOM.VtblCall(this.getMethodIndex("addHeader"), getAddress(), name, value);
 	}
 
 	public int SetData(long /*int*/ stream) {
-		return XPCOM.VtblCall(nsIInputStream.LAST_METHOD_ID + 4, getAddress(), stream);
+		return XPCOM.VtblCall(this.getMethodIndex("setData"), getAddress(), stream);
 	}
 }

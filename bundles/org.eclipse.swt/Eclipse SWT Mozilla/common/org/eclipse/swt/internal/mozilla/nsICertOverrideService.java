@@ -47,6 +47,6 @@ public class nsICertOverrideService extends nsISupports {
 	public static final int ERROR_TIME = 4;
 
 	public int RememberValidityOverride(long /*int*/ aHostName, int aPort, long /*int*/ aCert, int aOverrideBits, int aTemporary) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 1, getAddress(), aHostName, aPort, aCert, aOverrideBits, aTemporary);
+		return XPCOM.VtblCall(this.getMethodIndex("rememberValidityOverride"), getAddress(), aHostName, aPort, aCert, aOverrideBits, aTemporary);
 	}
 }

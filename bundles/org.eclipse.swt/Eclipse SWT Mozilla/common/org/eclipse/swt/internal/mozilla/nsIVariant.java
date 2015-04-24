@@ -30,7 +30,7 @@ package org.eclipse.swt.internal.mozilla;
 
 public class nsIVariant extends nsISupports {
 
-	static final int LAST_METHOD_ID = nsISupports.LAST_METHOD_ID + ((IsXULRunner10() || IsXULRunner24()) ? 27 : 26);
+	static final int LAST_METHOD_ID = nsISupports.LAST_METHOD_ID + ((IsXULRunner10() || IsXULRunner24() || IsXULRunner31()) ? 27 : 26);
 
 	static final String NS_IVARIANT_IID_STR = "6c9eb060-8c6a-11d5-90f3-0010a4e73d9a";
 	static final String NS_IVARIANT_10_IID_STR = "81e4c2de-acac-4ad6-901a-b5fb1b851a0d";
@@ -45,33 +45,33 @@ public class nsIVariant extends nsISupports {
 	}
 
 	public int GetDataType(short[] aDataType) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 1, getAddress(), aDataType);
+		return XPCOM.VtblCall(this.getGetterIndex("dataType"), getAddress(), aDataType);
 	}
 
 	public int GetAsInt32(int[] _retval) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 4, getAddress(), _retval);
+		return XPCOM.VtblCall(this.getMethodIndex("getAsInt32"), getAddress(), _retval);
 	}
 
 	public int GetAsDouble(long /*int*/ _retval) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 11, getAddress(), _retval);
+		return XPCOM.VtblCall(this.getMethodIndex("getAsDouble"), getAddress(), _retval);
 	}
 
 	public int GetAsBool(int[] _retval) {
 		/* mozilla's representation of boolean changed from 4 bytes to 1 byte as of XULRunner 4.x */
-		if (nsISupports.IsXULRunner10() || nsISupports.IsXULRunner24()) {
+		if (nsISupports.IsXULRVersionOrLater(10)) {
 			byte[] byteValue = new byte[1];
-			int rc = XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 12, getAddress(), byteValue);
+			int rc = XPCOM.VtblCall(this.getMethodIndex("getAsBool"), getAddress(), byteValue);
 			_retval[0] = (int)byteValue[0];
 			return rc;
 		}
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 12, getAddress(), _retval);
+		return XPCOM.VtblCall(this.getMethodIndex("getAsBool"), getAddress(), _retval);
 	}
 
 	public int GetAsArray(short[] type, long /*int*/ iid, int[] count, long /*int*/[] ptr) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + ((IsXULRunner10() || IsXULRunner24()) ? 25 : 24), getAddress(), type, iid, count, ptr);
+		return XPCOM.VtblCall(this.getMethodIndex("getAsArray"), getAddress(), type, iid, count, ptr);
 	}
 
 	public int GetAsWStringWithSize(int[] size, long /*int*/[] str) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + ((IsXULRunner10() || IsXULRunner24()) ? 27 : 26), getAddress(), size, str);
+		return XPCOM.VtblCall(this.getMethodIndex("getAsWStringWithSize"), getAddress(), size, str);
 	}
 }

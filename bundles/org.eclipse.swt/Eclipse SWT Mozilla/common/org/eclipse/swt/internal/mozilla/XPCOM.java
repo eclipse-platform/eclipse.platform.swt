@@ -61,6 +61,7 @@ public class XPCOM extends C {
 	public static final nsID NS_PROMPTER_CID = new nsID("f2112d6a-0e28-421f-b46a-25c0b308cbd0"); //$NON-NLS-1$
 	public static final nsID NS_PROMPTSERVICE_CID = new nsID("a2112d6a-0e28-421f-b46a-25c0b308cbd0"); //$NON-NLS-1$
 	public static final nsID NS_IWEBBROWSER_CID = new nsID ("F1EAC761-87E9-11d3-AF80-00A024FFC08C"); //$NON-NLS-1$
+	public static final nsID NS_IWEBBROWSER_31_CID = new nsID ("cda5863a-aa9c-411e-be49-ea0d525ab4b5"); //$NON-NLS-1$
 	public static final nsID NS_IXPCONNECT_CID = new nsID ("CB6593E0-F9B2-11d2-BDD6-000064657374"); //$NON-NLS-1$
 
 	/* IID constants */
@@ -79,10 +80,13 @@ public class XPCOM extends C {
 	public static final nsID NS_IHTTPHEADERVISITOR_10_IID = new nsID("35412859-b9d9-423c-8866-2d4559fdd2be"); //$NON-NLS-1$
 	public static final nsID NS_IPROGRESSDIALOG_IID = new nsID("88a478b3-af65-440a-94dc-ed9b154d2990"); //$NON-NLS-1$
 	public static final nsID NS_IPROGRESSDIALOG_1_8_IID = new nsID("20e790a2-76c6-462d-851a-22ab6cbbe48b"); //$NON-NLS-1$
+	public static final nsID NS_IPROMPT_IID = new nsID("a63f70c0-148b-11d3-9333-00104ba0fd40"); //$NON-NLS-1$
 	public static final nsID NS_IPROMPTFACTORY_IID = new nsID ("2532b748-75db-4732-9173-78d3bf34f694"); //$NON-NLS-1$
+	public static final nsID NS_IPROMPTSERVICE_IID = new nsID ("1630c61a-325e-49ca-8759-a31b16c47aa5"); //$NON-NLS-1$
 	public static final nsID NS_IPROMPTSERVICE2_IID = new nsID ("cf86d196-dbee-4482-9dfa-3477aa128319"); //$NON-NLS-1$
 	public static final nsID NS_ISCRIPTOBJECTOWNER_IID = new nsID ("8f6bca7e-ce42-11d1-b724-00600891d8c9"); //$NON-NLS-1$
 	public static final nsID NS_ISECURITYCHECKEDCOMPONENT_IID = new nsID ("0dad9e8c-a12d-4dcb-9a6f-7d09839356e1"); //$NON-NLS-1$
+	public static final nsID NS_ISUPPORTS_IID = new nsID ("00000000-0000-0000-c000-000000000046"); //$NON-NLS-1$
 	public static final nsID NS_ISUPPORTSWEAKREFERENCE_IID = new nsID ("9188bc86-f92e-11d2-81ef-0060083a0bcf"); //$NON-NLS-1$
 	public static final nsID NS_ITOOLTIPLISTENER_IID = new nsID ("44b78386-1dd2-11b2-9ad2-e4eee2ca1916"); //$NON-NLS-1$
 	public static final nsID NS_IURICONTENTLISTENER_IID = new nsID ("94928ab3-8b63-11d3-989d-001083010e9b"); //$NON-NLS-1$
@@ -107,6 +111,7 @@ public class XPCOM extends C {
 	public static final String NS_FILEPICKER_CONTRACTID = "@mozilla.org/filepicker;1"; //$NON-NLS-1$
 	public static final String NS_FOCUSMANAGER_CONTRACTID = "@mozilla.org/focus-manager;1"; //$NON-NLS-1$
 	public static final String NS_HELPERAPPLAUNCHERDIALOG_CONTRACTID = "@mozilla.org/helperapplauncherdialog;1"; //$NON-NLS-1$
+	public static final String NS_INTERFACEINFOMANAGER_CONTRACTID = "@mozilla.org/xpti/interfaceinfomanager-service;1";
 	public static final String NS_MEMORY_CONTRACTID = "@mozilla.org/xpcom/memory-service;1"; //$NON-NLS-1$
 	public static final String NS_MIMEINPUTSTREAM_CONTRACTID = "@mozilla.org/network/mime-input-stream;1"; //$NON-NLS-1$
 	public static final String NS_SCRIPTSECURITYMANAGER_CONTRACTID = "@mozilla.org/scriptsecuritymanager;1"; //$NON-NLS-1$
@@ -2560,5 +2565,4 @@ static final int VtblCall(int fnNumber, long /*int*/ ppVtbl, long arg0, int arg1
 		lock.unlock();
 	}
 }
-
 }

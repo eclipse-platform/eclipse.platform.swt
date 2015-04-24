@@ -43,6 +43,6 @@ public class nsIIOService extends nsISupports {
 	}
 
 	public int NewURI(long /*int*/ aSpec, byte[] aOriginCharset, long /*int*/ aBaseURI, long /*int*/[] _retval) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 3, getAddress(), aSpec, aOriginCharset, aBaseURI, _retval);
+		return XPCOM.VtblCall(this.getMethodIndex("newURI"), getAddress(), aSpec, aOriginCharset, aBaseURI, _retval);
 	}
 }

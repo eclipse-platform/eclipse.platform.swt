@@ -30,7 +30,7 @@ package org.eclipse.swt.internal.mozilla;
 
 public class nsIDOMEvent extends nsISupports {
 
-	static final int LAST_METHOD_ID = nsISupports.LAST_METHOD_ID + (IsXULRunner24() ? 25 : (IsXULRunner10() ? 12 : 10));
+	static final int LAST_METHOD_ID = nsISupports.LAST_METHOD_ID + (IsXULRVersionOrLater(24) ? 25 : (IsXULRunner10() ? 12 : 10));
 
 	static final String NS_IDOMEVENT_IID_STR = "a66b7b80-ff46-bd97-0080-5f8ae38add32";
 	static final String NS_IDOMEVENT_10_IID_STR = "e85cff74-951f-45c1-be0c-89442ea2f500";
@@ -51,14 +51,14 @@ public class nsIDOMEvent extends nsISupports {
 	public static final int BUBBLING_PHASE = 3;
 
 	public int GetType(long /*int*/ aType) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 1, getAddress(), aType);
+		return XPCOM.VtblCall(this.getGetterIndex("type"), getAddress(), aType);
 	}
 
 	public int GetCurrentTarget(long /*int*/[] aCurrentTarget) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 3, getAddress(), aCurrentTarget);
+		return XPCOM.VtblCall(this.getGetterIndex("currentTarget"), getAddress(), aCurrentTarget);
 	}
 
 	public int PreventDefault() {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 9, getAddress());
+		return XPCOM.VtblCall(this.getMethodIndex("preventDefault"), getAddress());
 	}
 }

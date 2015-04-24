@@ -52,6 +52,6 @@ public class nsIWebBrowserSetup extends nsISupports {
 	public static final int SETUP_IS_CHROME_WRAPPER = 7;
 
 	public int SetProperty(int aId, int aValue) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 1, getAddress(), aId, aValue);
+		return XPCOM.VtblCall(this.getMethodIndex("setProperty"), getAddress(), aId, aValue);
 	}
 }

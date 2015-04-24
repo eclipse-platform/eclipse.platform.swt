@@ -30,7 +30,7 @@ package org.eclipse.swt.internal.mozilla;
 
 public class nsIFocusManager extends nsISupports {
 
-	static final int LAST_METHOD_ID = nsISupports.LAST_METHOD_ID + ((IsXULRunner10() || IsXULRunner24()) ? 18 : 17);
+	static final int LAST_METHOD_ID = nsISupports.LAST_METHOD_ID + (IsXULRVersionOrLater(10) ? 18 : 17);
 
 	static final String NS_IFOCUSMANAGER_IID_STR = "cd6040a8-243f-412a-8a16-0bf2aa1083b9";
 	static final String NS_IFOCUSMANAGER_10_IID_STR = "51db277b-7ee7-4bce-9b84-fd2efcd2c8bd";
@@ -45,11 +45,11 @@ public class nsIFocusManager extends nsISupports {
 	}
 
 	public int GetFocusedElement(long /*int*/[] aFocusedElement) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 5, getAddress(), aFocusedElement);
+		return XPCOM.VtblCall(this.getGetterIndex("focusedElement"), getAddress(), aFocusedElement);
 	}
 
 	public int SetFocus(long /*int*/ aElement, int aFlags) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 7, getAddress(), aElement, aFlags);
+		return XPCOM.VtblCall(this.getMethodIndex("setFocus"), getAddress(), aElement, aFlags);
 	}
 
 	public static final int FLAG_RAISE = 1;

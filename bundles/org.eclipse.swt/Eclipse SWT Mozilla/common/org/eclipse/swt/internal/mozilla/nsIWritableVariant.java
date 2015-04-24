@@ -43,30 +43,30 @@ public class nsIWritableVariant extends nsIVariant {
 	}
 
 	public int SetAsDouble(double aValue) {
-		return XPCOM.VtblCall(nsIVariant.LAST_METHOD_ID + 12, getAddress(), aValue);
+		return XPCOM.VtblCall(this.getMethodIndex("setAsDouble"), getAddress(), aValue);
 	}
 
 	public int SetAsBool(int aValue) {
 		/* mozilla's representation of boolean changed from 4 bytes to 1 byte as of XULRunner 4.x */
-		if (IsXULRunner10() || IsXULRunner24()) {
-			return XPCOM.VtblCall(nsIVariant.LAST_METHOD_ID + 13, getAddress(), (byte)aValue);
+		if (IsXULRVersionOrLater(10)) {
+			return XPCOM.VtblCall(this.getMethodIndex("setAsBool"), getAddress(), (byte)aValue);
 		}
-		return XPCOM.VtblCall(nsIVariant.LAST_METHOD_ID + 13, getAddress(), aValue);
+		return XPCOM.VtblCall(this.getMethodIndex("setAsBool"), getAddress(), aValue);
 	}
 
 	public int SetAsArray(short type, long /*int*/ iid, int count, long /*int*/ ptr) {
-		return XPCOM.VtblCall(nsIVariant.LAST_METHOD_ID + 25, getAddress(), type, iid, count, ptr);
+		return XPCOM.VtblCall(this.getMethodIndex("setAsArray"), getAddress(), type, iid, count, ptr);
 	}
 
 	public int SetAsWStringWithSize(int size, char[] str) {
-		return XPCOM.VtblCall(nsIVariant.LAST_METHOD_ID + 27, getAddress(), size, str);
+		return XPCOM.VtblCall(this.getMethodIndex("setAsWStringWithSize"), getAddress(), size, str);
 	}
 
 	public int SetAsEmpty() {
-		return XPCOM.VtblCall(nsIVariant.LAST_METHOD_ID + 29, getAddress());
+		return XPCOM.VtblCall(this.getMethodIndex("setAsEmpty"), getAddress());
 	}
 
 	public int SetAsEmptyArray() {
-		return XPCOM.VtblCall(nsIVariant.LAST_METHOD_ID + 30, getAddress());
+		return XPCOM.VtblCall(this.getMethodIndex("setAsEmptyArray"), getAddress());
 	}
 }

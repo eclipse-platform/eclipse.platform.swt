@@ -43,14 +43,14 @@ public class nsIWebBrowserStream extends nsISupports {
 	}
 
 	public int OpenStream(long /*int*/ aBaseURI, long /*int*/ aContentType) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 1, getAddress(), aBaseURI, aContentType);
+		return XPCOM.VtblCall(this.getMethodIndex("openStream"), getAddress(), aBaseURI, aContentType);
 	}
 
 	public int AppendToStream(long /*int*/ aData, int aLen) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 2, getAddress(), aData, aLen);
+		return XPCOM.VtblCall(this.getMethodIndex("appendToStream"), getAddress(), aData, aLen);
 	}
 
 	public int CloseStream() {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 3, getAddress());
+		return XPCOM.VtblCall(this.getMethodIndex("closeStream"), getAddress());
 	}
 }

@@ -30,14 +30,16 @@ package org.eclipse.swt.internal.mozilla;
 
 public class nsIWebNavigation extends nsISupports {
 
-	static final int LAST_METHOD_ID = nsISupports.LAST_METHOD_ID + 13;
+	static final int LAST_METHOD_ID = nsISupports.LAST_METHOD_ID + (IsXULRunner31 () ? 14 : 13);
 
 	static final String NS_IWEBNAVIGATION_IID_STR = "f5d9e7b0-d930-11d3-b057-00a024ffc08c";
 	static final String NS_IWEBNAVIGATION_24_IID_STR = "28404f7e-0f17-4dc3-a21a-2074d8659b02";
+	static final String NS_IWEBNAVIGATION_31_IID_STR = "b7568a50-4c50-442c-a6be-3a340a48d89a";
 
 	static {
 		IIDStore.RegisterIID(nsIWebNavigation.class, MozillaVersion.VERSION_BASE, new nsID(NS_IWEBNAVIGATION_IID_STR));
 		IIDStore.RegisterIID(nsIWebNavigation.class, MozillaVersion.VERSION_XR24, new nsID(NS_IWEBNAVIGATION_24_IID_STR));
+		IIDStore.RegisterIID(nsIWebNavigation.class, MozillaVersion.VERSION_XR31, new nsID(NS_IWEBNAVIGATION_31_IID_STR));
 	}
 
 	public nsIWebNavigation(long /*int*/ address) {
@@ -45,19 +47,19 @@ public class nsIWebNavigation extends nsISupports {
 	}
 
 	public int GetCanGoBack(int[] aCanGoBack) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 1, getAddress(), aCanGoBack);
+		return XPCOM.VtblCall(this.getGetterIndex("canGoBack"), getAddress(), aCanGoBack);
 	}
 
 	public int GetCanGoForward(int[] aCanGoForward) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 2, getAddress(), aCanGoForward);
+		return XPCOM.VtblCall(this.getGetterIndex("canGoForward"), getAddress(), aCanGoForward);
 	}
 
 	public int GoBack() {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 3, getAddress());
+		return XPCOM.VtblCall(this.getMethodIndex("goBack"), getAddress());
 	}
 
 	public int GoForward() {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 4, getAddress());
+		return XPCOM.VtblCall(this.getMethodIndex("goForward"), getAddress());
 	}
 
 	public static final int LOAD_FLAGS_MASK = 65535;
@@ -71,11 +73,11 @@ public class nsIWebNavigation extends nsISupports {
 	public static final int LOAD_FLAGS_CHARSET_CHANGE = 1024;
 
 	public int LoadURI(char[] uri, int loadFlags, long /*int*/ referrer, long /*int*/ postData, long /*int*/ headers) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 6, getAddress(), uri, loadFlags, referrer, postData, headers);
+		return XPCOM.VtblCall(this.getMethodIndex("loadURI"), getAddress(), uri, loadFlags, referrer, postData, headers);
 	}
 
 	public int Reload(int reloadFlags) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 7, getAddress(), reloadFlags);
+		return XPCOM.VtblCall(this.getMethodIndex("reload"), getAddress(), reloadFlags);
 	}
 
 	public static final int STOP_NETWORK = 1;
@@ -83,10 +85,10 @@ public class nsIWebNavigation extends nsISupports {
 	public static final int STOP_ALL = 3;
 
 	public int Stop(int stopFlags) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 8, getAddress(), stopFlags);
+		return XPCOM.VtblCall(this.getMethodIndex("stop"), getAddress(), stopFlags);
 	}
 
 	public int GetCurrentURI(long /*int*/[] aCurrentURI) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 10, getAddress(), aCurrentURI);
+		return XPCOM.VtblCall(this.getGetterIndex("currentURI"), getAddress(), aCurrentURI);
 	}
 }

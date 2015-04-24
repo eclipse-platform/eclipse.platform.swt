@@ -30,7 +30,7 @@ package org.eclipse.swt.internal.mozilla;
 
 public class nsIPrefBranch extends nsISupports {
 
-	static final int LAST_METHOD_ID = nsISupports.LAST_METHOD_ID + (IsXULRunner24() ? 21 : 18);
+	static final int LAST_METHOD_ID = nsISupports.LAST_METHOD_ID + (IsXULRVersionOrLater(24) ? 21 : 18);
 
 	static final String NS_IPREFBRANCH_IID_STR = "56c35506-f14b-11d3-99d3-ddbfac2ccf65";
 	static final String NS_IPREFBRANCH_10_IID_STR = "e162bfa0-01bd-4e9f-9843-8fb2efcd6d1f";
@@ -52,26 +52,26 @@ public class nsIPrefBranch extends nsISupports {
 	public static final int PREF_BOOL = 128;
 
 	public int SetBoolPref(byte[] aPrefName, int aValue) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 4, getAddress(), aPrefName, aValue);
+		return XPCOM.VtblCall(this.getMethodIndex("setBoolPref"), getAddress(), aPrefName, aValue);
 	}
 
 	public int GetIntPref(byte[] aPrefName, int[] _retval) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + (IsXULRunner24() ? 8 : 7), getAddress(), aPrefName, _retval);
+		return XPCOM.VtblCall(this.getMethodIndex("getIntPref"), getAddress(), aPrefName, _retval);
 	}
 
 	public int SetIntPref(byte[] aPrefName, int aValue) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + (IsXULRunner24() ? 9 : 8), getAddress(), aPrefName, aValue);
+		return XPCOM.VtblCall(this.getMethodIndex("setIntPref"), getAddress(), aPrefName, aValue);
 	}
 
 	public int GetComplexValue(byte[] aPrefName, nsID aType, long /*int*/[] aValue) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + (IsXULRunner24() ? 10 : 9), getAddress(), aPrefName, aType, aValue);
+		return XPCOM.VtblCall(this.getMethodIndex("getComplexValue"), getAddress(), aPrefName, aType, aValue);
 	}
 
 	public int SetComplexValue(byte[] aPrefName, nsID aType, long /*int*/ aValue) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + (IsXULRunner24() ? 11 : 10), getAddress(), aPrefName, aType, aValue);
+		return XPCOM.VtblCall(this.getMethodIndex("setComplexValue"), getAddress(), aPrefName, aType, aValue);
 	}
 
 	public int ClearUserPref(byte[] aPrefName) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + (IsXULRunner24() ? 12 : 11), getAddress(), aPrefName);
+		return XPCOM.VtblCall(this.getMethodIndex("clearUserPref"), getAddress(), aPrefName);
 	}
 }

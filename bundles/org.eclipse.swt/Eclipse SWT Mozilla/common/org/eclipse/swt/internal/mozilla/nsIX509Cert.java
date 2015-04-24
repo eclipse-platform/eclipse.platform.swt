@@ -30,14 +30,16 @@ package org.eclipse.swt.internal.mozilla;
 
 public class nsIX509Cert extends nsISupports {
 
-	static final int LAST_METHOD_ID = nsISupports.LAST_METHOD_ID + (IsXULRunner24() ? 26 : 27);
+	static final int LAST_METHOD_ID = nsISupports.LAST_METHOD_ID + (IsXULRunner31 () ? 27 : (IsXULRunner24() ? 26 : 27));
 
 	static final String NS_IX509CERT_IID_STR = "f0980f60-ee3d-11d4-998b-00b0d02354a0";
 	static final String NS_IX509CERT_24_IID_STR = "45b24b0a-6189-4b05-af0b-8d4d66d57c59";
+	static final String NS_IX509CERT_31_IID_STR = "6286dd8c-c1a1-11e3-941d-180373d97f24";
 
 	static {
 		IIDStore.RegisterIID(nsIX509Cert.class, MozillaVersion.VERSION_BASE, new nsID(NS_IX509CERT_IID_STR));
 		IIDStore.RegisterIID(nsIX509Cert.class, MozillaVersion.VERSION_XR24, new nsID(NS_IX509CERT_24_IID_STR));
+		IIDStore.RegisterIID(nsIX509Cert.class, MozillaVersion.VERSION_XR31, new nsID(NS_IX509CERT_31_IID_STR));
 	}
 
 	public nsIX509Cert(long /*int*/ address) {
@@ -45,15 +47,15 @@ public class nsIX509Cert extends nsISupports {
 	}
 
 	public int GetCommonName(long /*int*/ aCommonName) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 6, getAddress(), aCommonName);
+		return XPCOM.VtblCall(this.getGetterIndex("commonName"), getAddress(), aCommonName);
 	}
 
 	public int GetIssuerCommonName(long /*int*/ aIssuerCommonName) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 14, getAddress(), aIssuerCommonName);
+		return XPCOM.VtblCall(this.getGetterIndex("issuerCommonName"), getAddress(), aIssuerCommonName);
 	}
 
 	public int GetValidity(long /*int*/[] aValidity) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 18, getAddress(), aValidity);
+		return XPCOM.VtblCall(this.getGetterIndex("validity"), getAddress(), aValidity);
 	}
 
 	public static final int UNKNOWN_CERT = 0;

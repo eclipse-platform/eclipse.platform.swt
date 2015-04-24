@@ -47,10 +47,10 @@ public class nsISeekableStream extends nsISupports {
 	public static final int NS_SEEK_END = 2;
 
 	public int Seek(int whence, long offset) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 1, getAddress(), whence, offset);
+		return XPCOM.VtblCall(this.getMethodIndex("seek"), getAddress(), whence, offset);
 	}
 
 	public int Tell(long[] _retval) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 2, getAddress(), _retval);
+		return XPCOM.VtblCall(this.getMethodIndex("tell"), getAddress(), _retval);
 	}
 }

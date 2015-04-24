@@ -43,10 +43,10 @@ public class nsICookieManager extends nsISupports {
 	}
 
 	public int GetEnumerator(long /*int*/[] aEnumerator) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 2, getAddress(), aEnumerator);
+		return XPCOM.VtblCall(this.getGetterIndex("enumerator"), getAddress(), aEnumerator);
 	}
 
 	public int Remove(long /*int*/ aDomain, long /*int*/ aName, long /*int*/ aPath, int aBlocked) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 3, getAddress(), aDomain, aName, aPath, aBlocked);
+		return XPCOM.VtblCall(this.getMethodIndex("remove"), getAddress(), aDomain, aName, aPath, aBlocked);
 	}
 }

@@ -43,10 +43,10 @@ public class nsIComponentRegistrar extends nsISupports {
 	}
 
 	public int AutoRegister(long /*int*/ aSpec) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 1, getAddress(), aSpec);
+		return XPCOM.VtblCall(this.getMethodIndex("autoRegister"), getAddress(), aSpec);
 	}
 
 	public int RegisterFactory(nsID aClass, byte[] aClassName, byte[] aContractID, long /*int*/ aFactory) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 3, getAddress(), aClass, aClassName, aContractID, aFactory);
+		return XPCOM.VtblCall(this.getMethodIndex("registerFactory"), getAddress(), aClass, aClassName, aContractID, aFactory);
 	}
 }

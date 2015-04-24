@@ -34,12 +34,14 @@ public class nsIFilePicker extends nsISupports {
 	static final String NS_IFILEPICKER_1_8_IID_STR = "80faf095-c807-4558-a2cc-185ed70754ea";
 	static final String NS_IFILEPICKER_10_IID_STR = "f2c0e216-5d07-4df4-bbcb-37683077ae7e";
 	static final String NS_IFILEPICKER_24_IID_STR = "a6a24df3-d20a-4b6a-96d4-4736b10a51b7";
+	static final String NS_IFILEPICKER_31_IID_STR = "0d79adad-b244-49a5-9997-2a8cad93fc44";
 
 	static {
 		IIDStore.RegisterIID(nsIFilePicker.class, MozillaVersion.VERSION_BASE, new nsID(NS_IFILEPICKER_IID_STR));
 		IIDStore.RegisterIID(nsIFilePicker.class, MozillaVersion.VERSION_XR1_8, new nsID(NS_IFILEPICKER_1_8_IID_STR));
 		IIDStore.RegisterIID(nsIFilePicker.class, MozillaVersion.VERSION_XR10, new nsID(NS_IFILEPICKER_10_IID_STR));
 		IIDStore.RegisterIID(nsIFilePicker.class, MozillaVersion.VERSION_XR24, new nsID(NS_IFILEPICKER_24_IID_STR));
+		IIDStore.RegisterIID(nsIFilePicker.class, MozillaVersion.VERSION_XR31, new nsID(NS_IFILEPICKER_31_IID_STR));
 	}
 
 	public nsIFilePicker(long /*int*/ address) {

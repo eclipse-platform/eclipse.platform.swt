@@ -30,14 +30,16 @@ package org.eclipse.swt.internal.mozilla;
 
 public class nsIComponentManager extends nsISupports {
 
-	static final int LAST_METHOD_ID = nsISupports.LAST_METHOD_ID + (IsXULRunner24() ? 6 : 4);
+	static final int LAST_METHOD_ID = nsISupports.LAST_METHOD_ID + (IsXULRunner31 () ? 7 : (IsXULRunner24() ? 6 : 4));
 
 	static final String NS_ICOMPONENTMANAGER_IID_STR = "a88e5a60-205a-4bb1-94e1-2628daf51eae";
 	static final String NS_ICOMPONENTMANAGER_24_IID_STR = "1d940426-5fe5-42c3-84ae-a300f2d9ebd5";
+	static final String NS_ICOMPONENTMANAGER_31_IID_STR = "d604ffc3-1ba3-4f6c-b65f-1ed4199364c3";
 
 	static {
 		IIDStore.RegisterIID(nsIComponentManager.class, MozillaVersion.VERSION_BASE, new nsID(NS_ICOMPONENTMANAGER_IID_STR));
 		IIDStore.RegisterIID(nsIComponentManager.class, MozillaVersion.VERSION_XR24, new nsID(NS_ICOMPONENTMANAGER_24_IID_STR));
+		IIDStore.RegisterIID(nsIComponentManager.class, MozillaVersion.VERSION_XR31, new nsID(NS_ICOMPONENTMANAGER_31_IID_STR));
 	}
 
 	public nsIComponentManager(long /*int*/ address) {
@@ -45,10 +47,10 @@ public class nsIComponentManager extends nsISupports {
 	}
 
 	public int CreateInstance(nsID aClass, long /*int*/ aDelegate, nsID aIID, long /*int*/[] result) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 3, getAddress(), aClass, aDelegate, aIID, result);
+		return XPCOM.VtblCall(this.getMethodIndex("createInstance"), getAddress(), aClass, aDelegate, aIID, result);
 	}
 
 	public int CreateInstanceByContractID(byte[] aContractID, long /*int*/ aDelegate, nsID aIID, long /*int*/[] result) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 4, getAddress(), aContractID, aDelegate, aIID, result);
+		return XPCOM.VtblCall(this.getMethodIndex("createInstanceByContractID"), getAddress(), aContractID, aDelegate, aIID, result);
 	}
 }

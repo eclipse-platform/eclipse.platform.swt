@@ -45,6 +45,6 @@ public class nsIHelperAppLauncher_1_8 extends nsICancelable {
 	}
 
 	public int SaveToDisk(long /*int*/ aNewFileLocation, int aRememberThisPreference) {
-		return XPCOM.VtblCall(nsICancelable.LAST_METHOD_ID + 4, getAddress(), aNewFileLocation, aRememberThisPreference);
+		return XPCOM.VtblCall(this.getMethodIndex("saveToDisk"), getAddress(), aNewFileLocation, aRememberThisPreference);
 	}
 }

@@ -43,10 +43,10 @@ public class nsIJSContextStack extends nsISupports {
 	}
 
 	public int Pop(long /*int*/[] _retval) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 3, getAddress(), _retval);
+		return XPCOM.VtblCall(this.getMethodIndex("pop"), getAddress(), _retval);
 	}
 
 	public int Push(long /*int*/ cx) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 4, getAddress(), cx);
+		return XPCOM.VtblCall(this.getMethodIndex("push"), getAddress(), cx);
 	}
 }

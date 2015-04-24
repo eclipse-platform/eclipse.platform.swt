@@ -34,12 +34,14 @@ public class nsIScriptGlobalObject extends nsISupports {
 	static final String NS_ISCRIPTGLOBALOBJECT_1_9_2_IID_STR = "e9f3f2c1-2d94-4722-bbd4-2bf6fdf42f48";
 	static final String NS_ISCRIPTGLOBALOBJECT_10_IID_STR = "08f73284-26e3-4fa6-bf89-8326f92a94b3";
 	static final String NS_ISCRIPTGLOBALOBJECT_24_IID_STR = "de24b30a-12c6-4e5f-a85e-90cdfb6c5451";
+	static final String NS_ISCRIPTGLOBALOBJECT_31_IID_STR = "876f83bd-6314-460a-a0-45-1c-8f-46-2f-b8-e1";
 
 	static {
 		IIDStore.RegisterIID(nsIScriptGlobalObject.class, MozillaVersion.VERSION_BASE, new nsID(NS_ISCRIPTGLOBALOBJECT_1_9_IID_STR));
 		IIDStore.RegisterIID(nsIScriptGlobalObject.class, MozillaVersion.VERSION_XR1_9_2, new nsID(NS_ISCRIPTGLOBALOBJECT_1_9_2_IID_STR));
 		IIDStore.RegisterIID(nsIScriptGlobalObject.class, MozillaVersion.VERSION_XR10, new nsID(NS_ISCRIPTGLOBALOBJECT_10_IID_STR));
 		IIDStore.RegisterIID(nsIScriptGlobalObject.class, MozillaVersion.VERSION_XR24, new nsID(NS_ISCRIPTGLOBALOBJECT_24_IID_STR));
+		IIDStore.RegisterIID(nsIScriptGlobalObject.class, MozillaVersion.VERSION_XR31, new nsID(NS_ISCRIPTGLOBALOBJECT_31_IID_STR));
 	}
 
 	public nsIScriptGlobalObject(long /*int*/ address) {

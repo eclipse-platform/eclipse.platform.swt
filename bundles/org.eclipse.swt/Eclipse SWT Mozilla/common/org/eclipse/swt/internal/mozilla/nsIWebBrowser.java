@@ -30,7 +30,7 @@ package org.eclipse.swt.internal.mozilla;
 
 public class nsIWebBrowser extends nsISupports {
 
-	static final int LAST_METHOD_ID = nsISupports.LAST_METHOD_ID + ((IsXULRunner10() || IsXULRunner24()) ? 9 : 7);
+	static final int LAST_METHOD_ID = nsISupports.LAST_METHOD_ID + ((IsXULRunner10() || IsXULRunner24() || IsXULRunner31()) ? 9 : 7);
 
 	static final String NS_IWEBBROWSER_IID_STR = "69e5df00-7b8b-11d3-af61-00a024ffc08c";
 	static final String NS_IWEBBROWSER_10_IID_STR = "33e9d001-caab-4ba9-8961-54902f197202";
@@ -45,22 +45,22 @@ public class nsIWebBrowser extends nsISupports {
 	}
 
 	public int AddWebBrowserListener(long /*int*/ aListener, nsID aIID) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 1, getAddress(), aListener, aIID);
+		return XPCOM.VtblCall(this.getMethodIndex("addWebBrowserListener"), getAddress(), aListener, aIID);
 	}
 
 	public int RemoveWebBrowserListener(long /*int*/ aListener, nsID aIID) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 2, getAddress(), aListener, aIID);
+		return XPCOM.VtblCall(this.getMethodIndex("removeWebBrowserListener"), getAddress(), aListener, aIID);
 	}
 
 	public int SetContainerWindow(long /*int*/ aContainerWindow) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 4, getAddress(), aContainerWindow);
+		return XPCOM.VtblCall(this.getSetterIndex("containerWindow"), getAddress(), aContainerWindow);
 	}
 
 	public int SetParentURIContentListener(long /*int*/ aParentURIContentListener) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 6, getAddress(), aParentURIContentListener);
+		return XPCOM.VtblCall(this.getSetterIndex("parentURIContentListener"), getAddress(), aParentURIContentListener);
 	}
 
 	public int GetContentDOMWindow(long /*int*/[] aContentDOMWindow) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 7, getAddress(), aContentDOMWindow);
+		return XPCOM.VtblCall(this.getGetterIndex("contentDOMWindow"), getAddress(), aContentDOMWindow);
 	}
 }

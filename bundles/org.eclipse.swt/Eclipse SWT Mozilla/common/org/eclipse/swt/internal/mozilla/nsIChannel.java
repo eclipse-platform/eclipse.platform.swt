@@ -30,7 +30,7 @@ package org.eclipse.swt.internal.mozilla;
 
 public class nsIChannel extends nsIRequest {
 
-	static final int LAST_METHOD_ID = nsIRequest.LAST_METHOD_ID + (IsXULRunner24() ? 21 : (IsXULRunner10() ? 19 : 16));
+	static final int LAST_METHOD_ID = nsIRequest.LAST_METHOD_ID + (IsXULRVersionOrLater(24)? 21 : (IsXULRunner10() ? 19 : 16));
 
 	static final String NS_ICHANNEL_IID_STR = "c63a055a-a676-4e71-bf3c-6cfa11082018";
 	static final String NS_ICHANNEL_10_IID_STR = "06f6ada3-7729-4e72-8d3f-bf8ba630ff9b";
@@ -47,11 +47,11 @@ public class nsIChannel extends nsIRequest {
 	}
 
 	public int GetURI(long /*int*/[] aURI) {
-		return XPCOM.VtblCall(nsIRequest.LAST_METHOD_ID + 3, getAddress(), aURI);
+		return XPCOM.VtblCall(this.getGetterIndex("URI"), getAddress(), aURI);
 	}
 
 	public int SetNotificationCallbacks(long /*int*/ aNotificationCallbacks) {
-		return XPCOM.VtblCall(nsIRequest.LAST_METHOD_ID + 7, getAddress(), aNotificationCallbacks);
+		return XPCOM.VtblCall(this.getSetterIndex("notificationCallbacks"), getAddress(), aNotificationCallbacks);
 	}
 
 	public static final int LOAD_DOCUMENT_URI = 65536;

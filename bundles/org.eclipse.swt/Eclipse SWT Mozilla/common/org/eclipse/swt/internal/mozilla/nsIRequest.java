@@ -43,7 +43,7 @@ public class nsIRequest extends nsISupports {
 	}
 
 	public int GetName(long /*int*/ aName) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 1, getAddress(), aName);
+		return XPCOM.VtblCall(this.getGetterIndex("name"), getAddress(), aName);
 	}
 
 	public static final int LOAD_NORMAL = 0;

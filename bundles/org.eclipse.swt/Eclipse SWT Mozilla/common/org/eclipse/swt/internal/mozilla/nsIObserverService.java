@@ -43,6 +43,6 @@ public class nsIObserverService extends nsISupports {
 	}
 
 	public int NotifyObservers(long /*int*/ aSubject, byte[] aTopic, char[] someData) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 3, getAddress(), aSubject, aTopic, someData);
+		return XPCOM.VtblCall(this.getMethodIndex("notifyObservers"), getAddress(), aSubject, aTopic, someData);
 	}
 }

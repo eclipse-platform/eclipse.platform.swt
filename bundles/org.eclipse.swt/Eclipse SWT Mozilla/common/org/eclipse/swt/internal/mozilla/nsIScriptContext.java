@@ -34,12 +34,14 @@ public class nsIScriptContext extends nsISupports {
 	static final String NS_ISCRIPTCONTEXT_1_9_2_IID_STR = "87482b5e-e019-4df5-9bc2-b2a51b1f2d28";
 	static final String NS_ISCRIPTCONTEXT_10_IID_STR = "2e583bf4-3c1f-432d-8283-8dee7eccc88b";
 	static final String NS_ISCRIPTCONTEXT_24_IID_STR = "ef0c91ce-14f6-41c9-a577-a6ebdc6d447b";
+	static final String NS_ISCRIPTCONTEXT_31_IID_STR = "274840b6-7349-4798-be-24-bd-75-a6-46-99-b7";
 
 	static {
 		IIDStore.RegisterIID(nsIScriptContext.class, MozillaVersion.VERSION_BASE, new nsID(NS_ISCRIPTCONTEXT_1_9_IID_STR));
 		IIDStore.RegisterIID(nsIScriptContext.class, MozillaVersion.VERSION_XR1_9_2, new nsID(NS_ISCRIPTCONTEXT_1_9_2_IID_STR));
 		IIDStore.RegisterIID(nsIScriptContext.class, MozillaVersion.VERSION_XR10, new nsID(NS_ISCRIPTCONTEXT_10_IID_STR));
 		IIDStore.RegisterIID(nsIScriptContext.class, MozillaVersion.VERSION_XR24, new nsID(NS_ISCRIPTCONTEXT_24_IID_STR));
+		IIDStore.RegisterIID(nsIScriptContext.class, MozillaVersion.VERSION_XR31, new nsID(NS_ISCRIPTCONTEXT_31_IID_STR));
 	}
 	
 	public nsIScriptContext(long /*int*/ address) {

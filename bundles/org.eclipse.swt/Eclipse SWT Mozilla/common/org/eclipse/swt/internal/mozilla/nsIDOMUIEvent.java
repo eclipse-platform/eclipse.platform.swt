@@ -30,7 +30,7 @@ package org.eclipse.swt.internal.mozilla;
 
 public class nsIDOMUIEvent extends nsIDOMEvent {
 
-	static final int LAST_METHOD_ID = nsIDOMEvent.LAST_METHOD_ID + ((IsXULRunner10() || IsXULRunner24()) ? 13 : 3);
+	static final int LAST_METHOD_ID = nsIDOMEvent.LAST_METHOD_ID + (IsXULRVersionOrLater(10) ? 13 : 3);
 
 	static final String NS_IDOMUIEVENT_IID_STR = "a6cf90c3-15b3-11d2-932e-00805f8add32";
 	static final String NS_IDOMUIEVENT_10_IID_STR = "af3f130e-0c22-4613-a150-780a46c22e3a";
@@ -47,7 +47,7 @@ public class nsIDOMUIEvent extends nsIDOMEvent {
 	}
 
 	public int GetDetail(int[] aDetail) {
-		return XPCOM.VtblCall(nsIDOMEvent.LAST_METHOD_ID + 2, getAddress(), aDetail);
+		return XPCOM.VtblCall(this.getGetterIndex("detail"), getAddress(), aDetail);
 	}
 
 	/* the following constants are defined in Mozilla 10 */

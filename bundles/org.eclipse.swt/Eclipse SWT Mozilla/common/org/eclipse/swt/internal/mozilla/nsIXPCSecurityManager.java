@@ -30,12 +30,14 @@ package org.eclipse.swt.internal.mozilla;
 
 public class nsIXPCSecurityManager extends nsISupports {
 
-	static final int LAST_METHOD_ID = nsISupports.LAST_METHOD_ID + 4;
+	static final int LAST_METHOD_ID = nsISupports.LAST_METHOD_ID + (IsXULRunner31 () ? 3 : 4);
 
 	static final String NS_IXPCSECURITYMANAGER_IID_STR = "31431440-f1ce-11d2-985a-006008962422";
+	static final String NS_IXPCSECURITYMANAGER_31_IID_STR = "d4d21714-116b-4851-a785-098c5dfea523";
 
 	static {
 		IIDStore.RegisterIID(nsIXPCSecurityManager.class, MozillaVersion.VERSION_BASE, new nsID(NS_IXPCSECURITYMANAGER_IID_STR));
+		IIDStore.RegisterIID(nsIXPCSecurityManager.class, MozillaVersion.VERSION_XR31, new nsID(NS_IXPCSECURITYMANAGER_31_IID_STR));
 	}
 
 	public nsIXPCSecurityManager(long /*int*/ address) {

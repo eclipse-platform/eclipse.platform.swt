@@ -43,10 +43,10 @@ public class nsIWebBrowserFocus extends nsISupports {
 	}
 
 	public int Activate() {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 1, getAddress());
+		return XPCOM.VtblCall(this.getMethodIndex("activate"), getAddress());
 	}
 
 	public int Deactivate() {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 2, getAddress());
+		return XPCOM.VtblCall(this.getMethodIndex("deactivate"), getAddress());
 	}
 }

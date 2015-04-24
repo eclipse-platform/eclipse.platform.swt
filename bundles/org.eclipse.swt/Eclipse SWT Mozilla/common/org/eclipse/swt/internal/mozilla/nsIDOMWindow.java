@@ -30,16 +30,18 @@ package org.eclipse.swt.internal.mozilla;
 
 public class nsIDOMWindow extends nsISupports {
 
-	static final int LAST_METHOD_ID = nsISupports.LAST_METHOD_ID + (IsXULRunner24() ? 140 : (IsXULRunner10() ? 129 : 17));
+	static final int LAST_METHOD_ID = nsISupports.LAST_METHOD_ID + (IsXULRunner31 () ? 144 : (IsXULRunner24() ? 140 : (IsXULRunner10() ? 129 : 17)));
 
 	static final String NS_IDOMWINDOW_IID_STR = "a6cf906b-15b3-11d2-932e-00805f8add32";
 	static final String NS_IDOMWINDOW_10_IID_STR = "8f577294-d572-4473-94b1-d2c5a74a2a74";
 	static final String NS_IDOMWINDOW_24_IID_STR = "be62660a-e3f6-409c-a4a9-378364a9526f";
+	static final String NS_IDOMWINDOW_31_IID_STR = "1b4a23a2-2ccf-4690-9da7-f3a7a8308381";
 
 	static {
 		IIDStore.RegisterIID(nsIDOMWindow.class, MozillaVersion.VERSION_BASE, new nsID(NS_IDOMWINDOW_IID_STR));
 		IIDStore.RegisterIID(nsIDOMWindow.class, MozillaVersion.VERSION_XR10, new nsID(NS_IDOMWINDOW_10_IID_STR));
 		IIDStore.RegisterIID(nsIDOMWindow.class, MozillaVersion.VERSION_XR24, new nsID(NS_IDOMWINDOW_24_IID_STR));
+		IIDStore.RegisterIID(nsIDOMWindow.class, MozillaVersion.VERSION_XR31, new nsID(NS_IDOMWINDOW_31_IID_STR));
 	}
 
 	public nsIDOMWindow(long /*int*/ address) {
@@ -47,20 +49,20 @@ public class nsIDOMWindow extends nsISupports {
 	}
 
 	public int GetDocument(long /*int*/[] aDocument) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + ((IsXULRunner10() || IsXULRunner24()) ? 3 : 1), getAddress(), aDocument);
+		return XPCOM.VtblCall(this.getGetterIndex("document"), getAddress(), aDocument);
 	}
 
 	public int GetTop(long /*int*/[] aTop) {
-		if (IsXULRunner24()) return GetRealTop(aTop);
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + (IsXULRunner10() ? 21 : 3), getAddress(), aTop);
+		if (IsXULRVersionOrLater(24)) return GetRealTop(aTop);
+		return XPCOM.VtblCall(this.getGetterIndex("top"), getAddress(), aTop);
 	}
 	
 	public int GetRealTop(long /*int*/[] aTop) {
-		if (!IsXULRunner24()) return XPCOM.NS_ERROR_NOT_IMPLEMENTED;
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 22, getAddress(), aTop);
+		if (!IsXULRVersionOrLater(24)) return XPCOM.NS_ERROR_NOT_IMPLEMENTED;
+		return XPCOM.VtblCall(this.getGetterIndex("realTop"), getAddress(), aTop);
 	}
 	
 	public int GetFrames(long /*int*/[] aFrames) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + (IsXULRunner24() ? 66 : (IsXULRunner10() ? 62 : 5)), getAddress(), aFrames);
+		return XPCOM.VtblCall(this.getGetterIndex("frames"), getAddress(), aFrames);
 	}
 }

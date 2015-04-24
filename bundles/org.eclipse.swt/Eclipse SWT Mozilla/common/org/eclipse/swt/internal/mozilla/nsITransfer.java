@@ -30,7 +30,7 @@ package org.eclipse.swt.internal.mozilla;
 
 public class nsITransfer extends nsIWebProgressListener2 {
 
-	static final int LAST_METHOD_ID = nsIWebProgressListener2.LAST_METHOD_ID + (IsXULRunner24() ? 2 : 1);
+	static final int LAST_METHOD_ID = nsIWebProgressListener2.LAST_METHOD_ID + (IsXULRVersionOrLater(24) ? 2 : 1);
 
 	static final String NS_ITRANSFER_IID_STR = "23c51569-e9a1-4a92-adeb-3723db82ef7c";
 	static final String NS_ITRANSFER_24_IID_STR = "b1c81100-9d66-11e2-9e96-0800200c9a66";

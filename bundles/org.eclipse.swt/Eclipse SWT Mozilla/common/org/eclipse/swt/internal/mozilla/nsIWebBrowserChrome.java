@@ -78,6 +78,6 @@ public class nsIWebBrowserChrome extends nsISupports {
 	public static final int CHROME_ALL = 4094;
 
 	public int SetChromeFlags(int aChromeFlags) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 5, getAddress(), aChromeFlags);
+		return XPCOM.VtblCall(this.getSetterIndex("chromeFlags"), getAddress(), aChromeFlags);
 	}
 }

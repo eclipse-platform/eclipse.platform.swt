@@ -30,16 +30,18 @@ package org.eclipse.swt.internal.mozilla;
 
 public class nsIDOMKeyEvent extends nsIDOMUIEvent {
 
-	static final int LAST_METHOD_ID = nsIDOMUIEvent.LAST_METHOD_ID + (IsXULRunner24() ? 10 : 7);
+	static final int LAST_METHOD_ID = nsIDOMUIEvent.LAST_METHOD_ID + (IsXULRVersionOrLater(24) ? 10 : 7);
 
 	static final String NS_IDOMKEYEVENT_IID_STR = "028e0e6e-8b01-11d3-aae7-0010838a3123";
 	static final String NS_IDOMKEYEVENT_10_IID_STR = "def974c3-b491-481b-bc67-29174af4b26a";
 	static final String NS_IDOMKEYEVENT_24_IID_STR = "91a3d7f2-223b-4e09-a566-634e7ee0a31d";
+	static final String NS_IDOMKEYEVENT_31_IID_STR = "d2b3e35f-8627-4732-a92d-cda54c8f8054";
 
 	static {
 		IIDStore.RegisterIID(nsIDOMKeyEvent.class, MozillaVersion.VERSION_BASE, new nsID(NS_IDOMKEYEVENT_IID_STR));
 		IIDStore.RegisterIID(nsIDOMKeyEvent.class, MozillaVersion.VERSION_XR10, new nsID(NS_IDOMKEYEVENT_10_IID_STR));
 		IIDStore.RegisterIID(nsIDOMKeyEvent.class, MozillaVersion.VERSION_XR24, new nsID(NS_IDOMKEYEVENT_24_IID_STR));
+		IIDStore.RegisterIID(nsIDOMKeyEvent.class, MozillaVersion.VERSION_XR31, new nsID(NS_IDOMKEYEVENT_31_IID_STR));
 	}
 
 	public nsIDOMKeyEvent(long /*int*/ address) {
@@ -179,26 +181,26 @@ public class nsIDOMKeyEvent extends nsIDOMUIEvent {
 	public static final int DOM_VK_SLEEP = 95;
 
 	public int GetCharCode(int[] aCharCode) {
-		return XPCOM.VtblCall(nsIDOMUIEvent.LAST_METHOD_ID + 1, getAddress(), aCharCode);
+		return XPCOM.VtblCall(this.getGetterIndex("charCode"), getAddress(), aCharCode);
 	}
 
 	public int GetKeyCode(int[] aKeyCode) {
-		return XPCOM.VtblCall(nsIDOMUIEvent.LAST_METHOD_ID + 2, getAddress(), aKeyCode);
+		return XPCOM.VtblCall(this.getGetterIndex("keyCode"), getAddress(), aKeyCode);
 	}
 
 	public int GetAltKey(int[] aAltKey) {
-		return XPCOM.VtblCall(nsIDOMUIEvent.LAST_METHOD_ID + 3, getAddress(), aAltKey);
+		return XPCOM.VtblCall(this.getGetterIndex("altKey"), getAddress(), aAltKey);
 	}
 
 	public int GetCtrlKey(int[] aCtrlKey) {
-		return XPCOM.VtblCall(nsIDOMUIEvent.LAST_METHOD_ID + 4, getAddress(), aCtrlKey);
+		return XPCOM.VtblCall(this.getGetterIndex("ctrlKey"), getAddress(), aCtrlKey);
 	}
 
 	public int GetShiftKey(int[] aShiftKey) {
-		return XPCOM.VtblCall(nsIDOMUIEvent.LAST_METHOD_ID + 5, getAddress(), aShiftKey);
+		return XPCOM.VtblCall(this.getGetterIndex("shiftKey"), getAddress(), aShiftKey);
 	}
 
 	public int GetMetaKey(int[] aMetaKey) {
-		return XPCOM.VtblCall(nsIDOMUIEvent.LAST_METHOD_ID + 6, getAddress(), aMetaKey);
+		return XPCOM.VtblCall(this.getGetterIndex("metaKey"), getAddress(), aMetaKey);
 	}
 }

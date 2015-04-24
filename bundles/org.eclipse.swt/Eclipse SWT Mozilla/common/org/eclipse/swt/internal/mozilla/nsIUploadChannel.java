@@ -45,6 +45,6 @@ public class nsIUploadChannel extends nsISupports {
 	}
 
 	public int GetUploadStream(long /*int*/[] aUploadStream) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 2, getAddress(), aUploadStream);
+		return XPCOM.VtblCall(this.getGetterIndex("uploadStream"), getAddress(), aUploadStream);
 	}
 }

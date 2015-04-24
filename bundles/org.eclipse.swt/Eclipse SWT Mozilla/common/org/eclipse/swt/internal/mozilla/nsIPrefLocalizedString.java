@@ -43,10 +43,10 @@ public class nsIPrefLocalizedString extends nsISupports {
 	}
 
 	public int ToString(long /*int*/[] _retval) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 3, getAddress(), _retval);
+		return XPCOM.VtblCall(this.getMethodIndex("toString"), getAddress(), _retval);
 	}
 
 	public int SetDataWithLength(int length, char[] data) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 4, getAddress(), length, data);
+		return XPCOM.VtblCall(this.getMethodIndex("setDataWithLength"), getAddress(), length, data);
 	}
 }

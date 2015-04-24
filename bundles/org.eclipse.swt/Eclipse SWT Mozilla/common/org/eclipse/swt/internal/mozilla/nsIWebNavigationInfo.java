@@ -48,6 +48,6 @@ public class nsIWebNavigationInfo extends nsISupports {
 	public static final int OTHER = 32768;
 
 	public int IsTypeSupported(long /*int*/ aType, long /*int*/ aWebNav, int[] _retval) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 1, getAddress(), aType, aWebNav, _retval);
+		return XPCOM.VtblCall(this.getMethodIndex("isTypeSupported"), getAddress(), aType, aWebNav, _retval);
 	}
 }

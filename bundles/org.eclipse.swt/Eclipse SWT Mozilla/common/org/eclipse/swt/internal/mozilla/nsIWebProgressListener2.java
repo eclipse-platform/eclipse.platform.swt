@@ -33,6 +33,7 @@ public class nsIWebProgressListener2 extends nsIWebProgressListener {
 	static final int LAST_METHOD_ID = nsIWebProgressListener.LAST_METHOD_ID + 1;
 
 	static final String NS_IWEBPROGRESSLISTENER2_IID_STR = "3f24610d-1e1f-4151-9d2e-239884742324";
+	static final String NS_IWEBPROGRESSLISTENER2_24_IID_STR = "dde39de0-e4e0-11da-8ad9-0800200c9a66";
 
 	static {
 		IIDStore.RegisterIID(nsIWebProgressListener2.class, MozillaVersion.VERSION_BASE, new nsID(NS_IWEBPROGRESSLISTENER2_IID_STR));

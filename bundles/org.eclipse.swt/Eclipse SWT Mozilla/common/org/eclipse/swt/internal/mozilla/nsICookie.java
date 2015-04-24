@@ -45,18 +45,18 @@ public class nsICookie extends nsISupports {
 	}
 
 	public int GetName(long /*int*/ aName) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 1, getAddress(), aName);
+		return XPCOM.VtblCall(this.getGetterIndex("name"), getAddress(), aName);
 	}
 
 	public int GetHost(long /*int*/ aHost) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 4, getAddress(), aHost);
+		return XPCOM.VtblCall(this.getGetterIndex("host"), getAddress(), aHost);
 	}
 
 	public int GetPath(long /*int*/ aPath) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 5, getAddress(), aPath);
+		return XPCOM.VtblCall(this.getGetterIndex("path"), getAddress(), aPath);
 	}
 
 	public int GetExpires(long[] aExpires) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 7, getAddress(), aExpires);
+		return XPCOM.VtblCall(this.getGetterIndex("expires"), getAddress(), aExpires);
 	}
 }

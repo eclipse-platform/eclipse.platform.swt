@@ -43,10 +43,10 @@ public class nsIPrefService extends nsISupports {
 	}
 
 	public int SavePrefFile(long /*int*/ aFile) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 4, getAddress(), aFile);
+		return XPCOM.VtblCall(this.getMethodIndex("savePrefFile"), getAddress(), aFile);
 	}
 
 	public int GetBranch(byte[] aPrefRoot, long /*int*/[] _retval) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 5, getAddress(), aPrefRoot, _retval);
+		return XPCOM.VtblCall(this.getMethodIndex("getBranch"), getAddress(), aPrefRoot, _retval);
 	}
 }
