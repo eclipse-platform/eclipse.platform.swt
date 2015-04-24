@@ -26,14 +26,12 @@ import org.eclipse.swt.browser.*;
 public class Snippet148 {
 
 	public static void main(String[] args) {
-		Display.DEBUG = true;
 		final Display display = new Display();
 		Shell shell = new Shell(display);
 		shell.setLayout(new FillLayout());
 		Browser browser = null;
 		try {
-			System.setProperty("org.eclipse.swt.browser.XULRunnerPath", "/Library/Frameworks/XUL/31/XUL.framework/Versions/Current");
-			browser = new Browser(shell, SWT.MOZILLA);
+			browser = new Browser(shell, SWT.NONE);
 		} catch (SWTError e) {
 			/* The Browser widget throws an SWTError if it fails to
 			 * instantiate properly. Application code should catch
@@ -42,11 +40,10 @@ public class Snippet148 {
 			 * Platform requirements for the SWT Browser widget are available
 			 * from the SWT FAQ website. 
 			 */
-			e.printStackTrace();
 		}
 		if (browser != null) {
 			/* The Browser widget can be used */
-			browser.setUrl("http://localhost");
+			browser.setUrl("http://www.eclipse.org");
 		}
 		shell.open();
 		while (!shell.isDisposed()) {

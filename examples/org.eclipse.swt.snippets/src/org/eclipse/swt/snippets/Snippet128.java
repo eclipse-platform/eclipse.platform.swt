@@ -25,7 +25,6 @@ import org.eclipse.swt.browser.*;
 
 public class Snippet128 {
 	public static void main(String [] args) {
-		Display.DEBUG = true;
 		Display display = new Display();
 		final Shell shell = new Shell(display);
 		GridLayout gridLayout = new GridLayout();
@@ -59,8 +58,7 @@ public class Snippet128 {
 
 		final Browser browser;
 		try {
-			System.setProperty("org.eclipse.swt.browser.XULRunnerPath", "/Library/Frameworks/XUL/31/XUL.framework/Versions/Current");
-			browser = new Browser(shell, SWT.MOZILLA);
+			browser = new Browser(shell, SWT.NONE);
 		} catch (SWTError e) {
 			System.out.println("Could not instantiate Browser: " + e.getMessage());
 			display.dispose();

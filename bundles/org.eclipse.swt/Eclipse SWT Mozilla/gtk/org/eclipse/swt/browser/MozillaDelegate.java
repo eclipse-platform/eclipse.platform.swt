@@ -12,9 +12,8 @@ package org.eclipse.swt.browser;
 
 import java.io.*;
 
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.browser.Browser;
-import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.*;
+import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.gtk.*;
 import org.eclipse.swt.internal.mozilla.*;
@@ -31,7 +30,7 @@ class MozillaDelegate {
 	static Boolean IsXULRunner24;
 	static final int STOP_PROPOGATE = 1;
 	static final String LIB_FIX_XULRUNNER10 = "libswt-xulrunner-fix10.so"; //$NON-NLS-1$
-	static final String LIB_FIX_XULRUNNER24 = "libswt-xulrunner-fix24.so"; //$NON-NLS-1$
+	static final String LIB_FIX_XULRUNNER31 = "libswt-xulrunner-fix31.so"; //$NON-NLS-1$
 	static final String LIB_XPCOM = "libxpcom.so"; //$NON-NLS-1$
 	static final String LIB_XUL = "libxul.so"; //$NON-NLS-1$
 
@@ -138,7 +137,7 @@ static String getSWTInitLibraryName () {
 static void loadAdditionalLibraries (String mozillaPath, boolean isGlued) {
 	/*
 	 * This function is invoked twice, once before gluing (the fix library for
-	 * XULRunner 24, if appropriate, must be loaded before attempting to glue),
+	 * XULRunner 24/XULRunner 31, if appropriate, must be loaded before attempting to glue),
 	 * and once after gluing (to load the XULRunner 10 fix library, if appropriate).
 	 */
 	String libName = null;
@@ -151,7 +150,11 @@ static void loadAdditionalLibraries (String mozillaPath, boolean isGlued) {
 			* Works around https://bugzilla.mozilla.org/show_bug.cgi?id=720682
 			* and https://bugzilla.mozilla.org/show_bug.cgi?id=763327.
 			*/
-			libName = LIB_FIX_XULRUNNER24;
+			/*
+			 * LIB_FIX_XULRUNNER31 is built against XULRunner 31 SDK and it is used as the fix library
+			 * for both XULRunner 24 and XULRunner 31.
+			 */
+			libName = LIB_FIX_XULRUNNER31;
 		}
 	} else {
 		/*
