@@ -30,7 +30,7 @@ package org.eclipse.swt.internal.mozilla;
 
 public class nsIScriptSecurityManager extends nsIXPCSecurityManager {
 
-	static final int LAST_METHOD_ID = nsIXPCSecurityManager.LAST_METHOD_ID + (IsXULRVersionOrLater(24) ? 21 : (IsXULRunner10() ? 27 : 26));
+	static final int LAST_METHOD_ID = nsIXPCSecurityManager.LAST_METHOD_ID + (IsXULRVersionOrLater(MozillaVersion.VERSION_XR24) ? 21 : (IsXULRunner10() ? 27 : 26));
 
 	static final String NS_ISCRIPTSECURITYMANAGER_IID_STR = "3fffd8e8-3fea-442e-a0ed-2ba81ae197d5";
 	static final String NS_ISCRIPTSECURITYMANAGER_191_IID_STR = "f8e350b9-9f31-451a-8c8f-d10fea26b780";
@@ -63,7 +63,7 @@ public class nsIScriptSecurityManager extends nsIXPCSecurityManager {
 		return XPCOM.VtblCall(this.getMethodIndex("getSubjectPrincipal"), getAddress(), _retval);
 	}
 	public int GetObjectPrincipal(long /*int*/ cx, long /*int*/ object, long /*int*/[] _retval) {
-		return XPCOM.VtblCall(nsIXPCSecurityManager.LAST_METHOD_ID + (IsXULRVersionOrLater(24) ? 14 : (IsXULRunner10() ? 10 : 11)), getAddress(), cx, object, _retval);
+		return XPCOM.VtblCall(nsIXPCSecurityManager.LAST_METHOD_ID + (IsXULRVersionOrLater(MozillaVersion.VERSION_XR24) ? 14 : (IsXULRunner10() ? 10 : 11)), getAddress(), cx, object, _retval);
 	}
 //	public int GetSystemPrincipal(long /*int*/[] _retval) {
 //		return XPCOM.VtblCall(nsIXPCSecurityManager.LAST_METHOD_ID + (IsXULRunner24 ? 8 : (IsXULRunner10 ? 10 : 11)), getAddress(), _retval);

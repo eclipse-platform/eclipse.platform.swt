@@ -30,7 +30,7 @@ package org.eclipse.swt.internal.mozilla;
 
 public class nsICertificateDialogs extends nsISupports {
 
-	static final int LAST_METHOD_ID = nsISupports.LAST_METHOD_ID + (IsXULRVersionOrLater(24) ? 5 : 6);
+	static final int LAST_METHOD_ID = nsISupports.LAST_METHOD_ID + (IsXULRVersionOrLater(MozillaVersion.VERSION_XR24) ? 5 : 6);
 
 	static final String NS_ICERTIFICATEDIALOGS_IID_STR = "a03ca940-09be-11d5-ac5d-000064657374";
 	static final String NS_ICERTIFICATEDIALOGS_24_IID_STR = "da871dab-f69e-4173-ab26-99fcd47b0e85";

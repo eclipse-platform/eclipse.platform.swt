@@ -36,7 +36,7 @@ public class nsIFile extends nsISupports {
 	 * is being used or not.  However this does not currently cause a problem because the
 	 * only reference to it is nsILocalFile.LAST_METHOD_ID, which is currently not used.  
 	 */
-	static final int LAST_METHOD_ID = nsISupports.LAST_METHOD_ID + (IsXULRVersionOrLater(24) ? 62 : 45);
+	static final int LAST_METHOD_ID = nsISupports.LAST_METHOD_ID + (IsXULRVersionOrLater(MozillaVersion.VERSION_XR24) ? 62 : 45);
 
 	static final String NS_IFILE_IID_STR = "c8c0a080-0868-11d3-915f-d9d889d48e3c";
 	static final String NS_IFILE_24_IID_STR = "272a5020-64f5-485c-a8c4-44b2882ae0a2";

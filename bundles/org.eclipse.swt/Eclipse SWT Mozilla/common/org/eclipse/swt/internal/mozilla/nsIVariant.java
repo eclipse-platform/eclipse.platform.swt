@@ -58,7 +58,7 @@ public class nsIVariant extends nsISupports {
 
 	public int GetAsBool(int[] _retval) {
 		/* mozilla's representation of boolean changed from 4 bytes to 1 byte as of XULRunner 4.x */
-		if (nsISupports.IsXULRVersionOrLater(10)) {
+		if (nsISupports.IsXULRVersionOrLater(MozillaVersion.VERSION_XR10)) {
 			byte[] byteValue = new byte[1];
 			int rc = XPCOM.VtblCall(this.getMethodIndex("getAsBool"), getAddress(), byteValue);
 			_retval[0] = (int)byteValue[0];

@@ -48,7 +48,7 @@ public class nsIWritableVariant extends nsIVariant {
 
 	public int SetAsBool(int aValue) {
 		/* mozilla's representation of boolean changed from 4 bytes to 1 byte as of XULRunner 4.x */
-		if (IsXULRVersionOrLater(10)) {
+		if (IsXULRVersionOrLater(MozillaVersion.VERSION_XR10)) {
 			return XPCOM.VtblCall(this.getMethodIndex("setAsBool"), getAddress(), (byte)aValue);
 		}
 		return XPCOM.VtblCall(this.getMethodIndex("setAsBool"), getAddress(), aValue);

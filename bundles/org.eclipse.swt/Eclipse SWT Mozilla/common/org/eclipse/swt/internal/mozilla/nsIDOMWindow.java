@@ -53,12 +53,12 @@ public class nsIDOMWindow extends nsISupports {
 	}
 
 	public int GetTop(long /*int*/[] aTop) {
-		if (IsXULRVersionOrLater(24)) return GetRealTop(aTop);
+		if (IsXULRVersionOrLater(MozillaVersion.VERSION_XR24)) return GetRealTop(aTop);
 		return XPCOM.VtblCall(this.getGetterIndex("top"), getAddress(), aTop);
 	}
 	
 	public int GetRealTop(long /*int*/[] aTop) {
-		if (!IsXULRVersionOrLater(24)) return XPCOM.NS_ERROR_NOT_IMPLEMENTED;
+		if (!IsXULRVersionOrLater(MozillaVersion.VERSION_XR24)) return XPCOM.NS_ERROR_NOT_IMPLEMENTED;
 		return XPCOM.VtblCall(this.getGetterIndex("realTop"), getAddress(), aTop);
 	}
 	

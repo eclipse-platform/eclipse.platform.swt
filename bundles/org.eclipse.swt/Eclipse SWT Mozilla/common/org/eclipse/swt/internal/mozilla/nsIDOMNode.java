@@ -30,7 +30,7 @@ package org.eclipse.swt.internal.mozilla;
 
 public class nsIDOMNode extends nsISupports {
 
-	static final int LAST_METHOD_ID = nsISupports.LAST_METHOD_ID + (IsXULRVersionOrLater(24) ? 34 : (IsXULRunner10() ? 36 : 25));
+	static final int LAST_METHOD_ID = nsISupports.LAST_METHOD_ID + (IsXULRVersionOrLater(MozillaVersion.VERSION_XR24) ? 34 : (IsXULRunner10() ? 36 : 25));
 
 	static final String NS_IDOMNODE_IID_STR = "a6cf907c-15b3-11d2-932e-00805f8add32";
 	static final String NS_IDOMNODE_10_IID_STR = "ce82fb71-60f2-4c38-be31-de5f2f90dada";

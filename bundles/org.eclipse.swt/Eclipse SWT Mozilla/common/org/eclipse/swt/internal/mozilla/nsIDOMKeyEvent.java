@@ -30,7 +30,7 @@ package org.eclipse.swt.internal.mozilla;
 
 public class nsIDOMKeyEvent extends nsIDOMUIEvent {
 
-	static final int LAST_METHOD_ID = nsIDOMUIEvent.LAST_METHOD_ID + (IsXULRVersionOrLater(24) ? 10 : 7);
+	static final int LAST_METHOD_ID = nsIDOMUIEvent.LAST_METHOD_ID + (IsXULRVersionOrLater(MozillaVersion.VERSION_XR24) ? 10 : 7);
 
 	static final String NS_IDOMKEYEVENT_IID_STR = "028e0e6e-8b01-11d3-aae7-0010838a3123";
 	static final String NS_IDOMKEYEVENT_10_IID_STR = "def974c3-b491-481b-bc67-29174af4b26a";

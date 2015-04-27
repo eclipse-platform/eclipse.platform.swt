@@ -31,10 +31,12 @@ package org.eclipse.swt.internal.mozilla;
 public class nsIInterfaceInfoManager extends nsISupports {
 
 	static final int LAST_METHOD_ID = nsISupports.LAST_METHOD_ID + 6;
-	static final String NS_IINTERFACEINFOMANAGER_IID_STR = "1d53d8d9-1d92-428f-b5cc-198b55e897d7";
+	static final String NS_IINTERFACEINFOMANAGER_IID_STR = "8B161900-BE2B-11d2-9831-006008962422";
+	static final String NS_IINTERFACEINFOMANAGER_24_IID_STR = "1d53d8d9-1d92-428f-b5cc-198b55e897d7";
 
 	static {
 		IIDStore.RegisterIID(nsIInterfaceInfoManager.class, MozillaVersion.VERSION_BASE, new nsID(NS_IINTERFACEINFOMANAGER_IID_STR));
+		IIDStore.RegisterIID(nsIInterfaceInfoManager.class, MozillaVersion.VERSION_XR24, new nsID(NS_IINTERFACEINFOMANAGER_24_IID_STR));
 	}
 
 	public nsIInterfaceInfoManager(long /*int*/ address) {

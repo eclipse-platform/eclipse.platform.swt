@@ -30,7 +30,7 @@ package org.eclipse.swt.internal.mozilla;
 
 public class nsILocalFile extends nsIFile {
 
-	static final int LAST_METHOD_ID = nsIFile.LAST_METHOD_ID + (IsXULRVersionOrLater(24) ? 0 : 17);
+	static final int LAST_METHOD_ID = nsIFile.LAST_METHOD_ID + (IsXULRVersionOrLater(MozillaVersion.VERSION_XR24) ? 0 : 17);
 
 	static final String NS_ILOCALFILE_IID_STR = "aa610f20-a889-11d3-8c81-000064657374";
 	static final String NS_ILOCALFILE_24_IID_STR = "ce4ef184-7660-445e-9e59-6731bdc65505";
