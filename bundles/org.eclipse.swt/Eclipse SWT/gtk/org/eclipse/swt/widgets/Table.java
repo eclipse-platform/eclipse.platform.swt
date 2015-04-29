@@ -2649,7 +2649,9 @@ void rendererRender (long /*int*/ cell, long /*int*/ cr, long /*int*/ window, lo
 					if (control != null) {
 						if (cr != 0) {
 							Cairo.cairo_save (cr);
-							Cairo.cairo_reset_clip (cr);
+							if (!OS.GTK3){
+								Cairo.cairo_reset_clip (cr);
+							}
 						}
 						drawBackground (control, window, cr, 0, rect.x, rect.y, rect.width, rect.height);
 						if (cr != 0) {
@@ -2669,13 +2671,15 @@ void rendererRender (long /*int*/ cell, long /*int*/ cr, long /*int*/ window, lo
 				if (wasSelected) {
 					Control control = findBackgroundControl ();
 					if (control == null) control = this;
-					if (cr != 0) {
-						Cairo.cairo_save (cr);
-						Cairo.cairo_reset_clip (cr);
-					}
-					drawBackground (control, window, cr, 0, rect.x, rect.y, rect.width, rect.height);
-					if (cr != 0) {
-						Cairo.cairo_restore (cr);
+					if (!OS.GTK3){
+						if (cr != 0) {
+							Cairo.cairo_save (cr);
+							Cairo.cairo_reset_clip (cr);
+						}
+						drawBackground (control, window, cr, 0, rect.x, rect.y, rect.width, rect.height);
+						if (cr != 0) {
+							Cairo.cairo_restore (cr);
+						}
 					}
 				}
 				GC gc = getGC(cr);
@@ -2688,7 +2692,11 @@ void rendererRender (long /*int*/ cell, long /*int*/ cr, long /*int*/ window, lo
 				}
 				gc.setFont (item.getFont (columnIndex));
 				if ((style & SWT.MIRRORED) != 0) rect.x = getClientWidth () - rect.width - rect.x;
-				if (!OS.GTK3) {
+				if (OS.GTK_VERSION >= OS.VERSION(3, 9, 0) && cr != 0) {
+					GdkRectangle r = new GdkRectangle();
+					OS.gdk_cairo_get_clip_rectangle(cr, r);
+					gc.setClipping(rect.x, r.y, r.width, r.height);
+				} else {
 					gc.setClipping (rect.x, rect.y, rect.width, rect.height);
 				}
 				Event event = new Event ();
