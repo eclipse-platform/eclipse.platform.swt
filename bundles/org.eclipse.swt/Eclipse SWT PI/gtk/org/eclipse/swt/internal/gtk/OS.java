@@ -650,6 +650,12 @@ public class OS extends C {
 	public static final byte[] xalign = ascii("xalign");
 	public static final byte[] ypad = ascii("ypad");
 	public static final byte[] GTK_PRINT_SETTINGS_OUTPUT_URI = ascii("output-uri");
+	
+	/*
+	 * Needed to tell GTK 3 to prefer a dark or light theme in the UI.
+	 * Improves the look of the Eclipse Dark theme in GTK 3 systems. 
+	 */
+	public static final byte[] gtk_application_prefer_dark_theme = ascii("gtk-application-prefer-dark-theme");
 
 	/* Named icons.
 	 * See https://docs.google.com/spreadsheet/pub?key=0AsPAM3pPwxagdGF4THNMMUpjUW5xMXZfdUNzMXhEa2c&output=html
@@ -16760,5 +16766,18 @@ public static final void swt_fixed_resize(long /*int*/ fixed, long /*int*/ widge
 	} finally {
 		lock.unlock();
 	}
+}
+
+/*
+ * Method used to hint GTK 3 to natively 
+ * prefer a dark or light theme.
+ */
+public static final void setDarkThemePreferred(boolean preferred){
+	if (!GTK3) return; //only applicable to GTK3
+	gdk_flush();
+	g_object_set(gtk_settings_get_default(), gtk_application_prefer_dark_theme,
+			preferred, 0);
+	g_object_notify(gtk_settings_get_default(),
+			gtk_application_prefer_dark_theme);
 }
 }
