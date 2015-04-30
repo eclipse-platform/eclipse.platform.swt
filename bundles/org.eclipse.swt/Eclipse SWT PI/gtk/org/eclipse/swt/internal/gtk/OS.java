@@ -680,7 +680,6 @@ public class OS extends C {
 	public static final int GLIB_VERSION = VERSION(glib_major_version(), glib_minor_version(), glib_micro_version());
 
 	public static final boolean GTK3 = GTK_VERSION >= VERSION(3, 0, 0);
-	public static final boolean IS_X11 = GDK_WINDOWING_X11() && GDK_IS_X11_DISPLAY(gdk_display_get_default()); 
 	public static final boolean USE_CAIRO, INIT_CAIRO;
 	static {
 		boolean useCairo = false;
@@ -712,6 +711,10 @@ protected static byte [] ascii (String name) {
 
 public static int VERSION(int major, int minor, int micro) {
 	return (major << 16) + (minor << 8) + micro;
+}
+
+public static boolean isX11 () {
+	return GDK_WINDOWING_X11() && GDK_IS_X11_DISPLAY(gdk_display_get_default()); 
 }
 
 /** 64 bit */

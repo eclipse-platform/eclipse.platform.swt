@@ -557,7 +557,7 @@ void bringToTop (boolean force) {
 	*/
 	long /*int*/ window = gtk_widget_get_window (shellHandle);
 	if ((xFocus || (style & SWT.ON_TOP) != 0)) {
-		if (OS.IS_X11) {
+		if (OS.isX11()) {
 			long /*int*/ xDisplay;
 			if (OS.GTK_VERSION >= OS.VERSION(2, 24, 0)) {
 				xDisplay = OS.gdk_x11_display_get_xdisplay(OS.gdk_window_get_display(window));
@@ -1862,7 +1862,7 @@ int setBounds (int x, int y, int width, int height, boolean move, boolean resize
 void setCursor (long /*int*/ cursor) {
 	if (enableWindow != 0) {
 		OS.gdk_window_set_cursor (enableWindow, cursor);
-		if (!OS.IS_X11) {
+		if (!OS.isX11()) {
 			OS.gdk_flush ();
 		} else {
 			long /*int*/ xDisplay = OS.gdk_x11_display_get_xdisplay(OS.gdk_display_get_default());
@@ -1911,7 +1911,7 @@ public void setEnabled (boolean enabled) {
 		if (enableWindow != 0) {
 			if (cursor != null) {
 				OS.gdk_window_set_cursor (enableWindow, cursor.handle);
-				if (!OS.IS_X11) {
+				if (!OS.isX11()) {
 					OS.gdk_flush ();
 				} else {
 					long /*int*/ xDisplay = OS.gdk_x11_display_get_xdisplay(OS.gdk_display_get_default());
