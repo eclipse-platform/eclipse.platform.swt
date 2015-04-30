@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2014 IBM Corporation and others.
+ * Copyright (c) 2000, 2015 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -1098,7 +1098,15 @@ void error (int code) {
 }
 
 boolean filterEvent (Event event) {
-	if (filterTable != null) filterTable.sendEvent (event);
+	if (filterTable != null) {
+		int type = event.type;
+		sendPreEvent (type);
+		try {
+			filterTable.sendEvent (event);
+		} finally {
+			sendPostEvent (type);
+		}
+	}
 	return false;
 }
 
