@@ -39,7 +39,7 @@ private static boolean isProblematicGtkXulRunner() {
 		if ("mozilla".equals(browserType)) {
 			int version = MozillaVersion.GetCurrentVersion();
 			System.out.println("Test_BrowserSuite: MozillaVersion.GetCurrentVersion(): " + version);
-			return version == MozillaVersion.VERSION_XR1_9;
+			return version <= MozillaVersion.VERSION_XR1_9_2;
 		}
 		return false;
 	} finally {
