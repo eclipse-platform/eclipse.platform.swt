@@ -16771,9 +16771,13 @@ public static final void swt_fixed_resize(long /*int*/ fixed, long /*int*/ widge
 	}
 }
 
-/*
- * Method used to hint GTK 3 to natively 
- * prefer a dark or light theme.
+/**
+ * Hint GTK 3 to natively prefer a dark or light theme.
+ * <p>
+ * Note: This method gets called from the org.eclipse.e4.ui.swt.gtk fragment.
+ * </p>
+ * 
+ * @since 3.104
  */
 public static final void setDarkThemePreferred(boolean preferred){
 	if (!GTK3) return; //only applicable to GTK3
