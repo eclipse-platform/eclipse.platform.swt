@@ -26,11 +26,9 @@ import junit.framework.TestCase;
  */
 public class Test_BrowserSuite extends TestCase {
 	
-public static boolean isProblematicGtkXulRunner = isProblematicGtkXulRunner();
+public static boolean isRunningOnEclipseOrgHudsonGTK = SwtTestUtil.isGTK && "hudsonbuild".equals(System.getProperty("user.name"));
 
-private static boolean isProblematicGtkXulRunner() {
-	// bug 423561
-	if (!SwtTestUtil.isGTK) return false;
+private static boolean logXulRunnerVersion() {
 	Display display = new Display();
 	try {
 		Shell shell = new Shell(display);
@@ -48,8 +46,9 @@ private static boolean isProblematicGtkXulRunner() {
 }
 
 public void testBrowser1() {
-	if (isProblematicGtkXulRunner) {
-		System.out.println("Test_BrowserSuite.testBrowser1() skipped, see bug 423561");
+	logXulRunnerVersion();
+	if (isRunningOnEclipseOrgHudsonGTK) {
+		System.out.println("Test_BrowserSuite.testBrowser1() skipped, see bug 465721");
 		return;
 	}
 	assertTrue(Browser1.test());
@@ -68,16 +67,16 @@ public void testBrowser4() {
 }
 
 public void testBrowser5() {
-	if (isProblematicGtkXulRunner) {
-		System.out.println("Test_BrowserSuite.testBrowser1() skipped, see bug 423561");
+	if (isRunningOnEclipseOrgHudsonGTK) {
+		System.out.println("Test_BrowserSuite.testBrowser1() skipped, see bug 465721");
 		return;
 	}
 	assertTrue(Browser5.test());
 }
 
 public void testBrowser6() {
-	if (isProblematicGtkXulRunner) {
-		System.out.println("Test_BrowserSuite.testBrowser1() skipped, see bug 423561");
+	if (isRunningOnEclipseOrgHudsonGTK) {
+		System.out.println("Test_BrowserSuite.testBrowser1() skipped, see bug 465721");
 		return;
 	}
 	assertTrue(Browser6.test());
@@ -88,10 +87,18 @@ public void testBrowser7() {
 }
 
 public void testBrowser8() {
+	if (isRunningOnEclipseOrgHudsonGTK) {
+		System.out.println("Test_BrowserSuite.testBrowser1() skipped, see bug 465721");
+		return;
+	}
 	assertTrue(Browser8.test());
 }
 
 public void testBrowser9() {
+	if (isRunningOnEclipseOrgHudsonGTK) {
+		System.out.println("Test_BrowserSuite.testBrowser1() skipped, see bug 465721");
+		return;
+	}
 	assertTrue(Browser9.test());
 }
 
