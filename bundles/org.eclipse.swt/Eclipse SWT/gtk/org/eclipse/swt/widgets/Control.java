@@ -2816,36 +2816,17 @@ public Menu getMenu () {
  * @since 3.0
  */
 public Monitor getMonitor () {
-	checkWidget();
-	Monitor monitor = null;
+	checkWidget ();
 	long /*int*/ screen = OS.gdk_screen_get_default ();
 	if (screen != 0) {
 		int monitorNumber = OS.gdk_screen_get_monitor_at_window (screen, paintWindow ());
-		GdkRectangle dest = new GdkRectangle ();
-		OS.gdk_screen_get_monitor_geometry (screen, monitorNumber, dest);
-		monitor = new Monitor ();
-		monitor.handle = monitorNumber;
-		monitor.x = dest.x;
-		monitor.y = dest.y;
-		monitor.width = dest.width;
-		monitor.height = dest.height;
-		Rectangle workArea = null;
-		if (monitorNumber == 0) workArea = display.getWorkArea ();
-		if (workArea != null) {
-			monitor.clientX = workArea.x;
-			monitor.clientY = workArea.y;
-			monitor.clientWidth = workArea.width;
-			monitor.clientHeight = workArea.height;
-		} else {
-			monitor.clientX = monitor.x;
-			monitor.clientY = monitor.y;
-			monitor.clientWidth = monitor.width;
-			monitor.clientHeight = monitor.height;
+		Monitor[] monitors = display.getMonitors (); 
+		
+		if (monitorNumber >= 0 && monitorNumber < monitors.length) {
+			return monitors [monitorNumber];
 		}
-	} else {
-		monitor = display.getPrimaryMonitor ();
 	}
-	return monitor;
+	return display.getPrimaryMonitor ();
 }
 
 /**
