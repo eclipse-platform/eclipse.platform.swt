@@ -7443,6 +7443,28 @@ JNIEXPORT jint JNICALL OS_NATIVE(_1gdk_1screen_1get_1monitor_1width_1mm)
 }
 #endif
 
+#ifndef NO__1gdk_1screen_1get_1monitor_1workarea
+JNIEXPORT void JNICALL OS_NATIVE(_1gdk_1screen_1get_1monitor_1workarea)
+	(JNIEnv *env, jclass that, jintLong arg0, jint arg1, jobject arg2)
+{
+	GdkRectangle _arg2, *lparg2=NULL;
+	OS_NATIVE_ENTER(env, that, _1gdk_1screen_1get_1monitor_1workarea_FUNC);
+	if (arg2) if ((lparg2 = &_arg2) == NULL) goto fail;
+/*
+	gdk_screen_get_monitor_workarea((GdkScreen *)arg0, arg1, lparg2);
+*/
+	{
+		OS_LOAD_FUNCTION(fp, gdk_screen_get_monitor_workarea)
+		if (fp) {
+			((void (CALLING_CONVENTION*)(GdkScreen *, jint, GdkRectangle *))fp)((GdkScreen *)arg0, arg1, lparg2);
+		}
+	}
+fail:
+	if (arg2 && lparg2) setGdkRectangleFields(env, arg2, lparg2);
+	OS_NATIVE_EXIT(env, that, _1gdk_1screen_1get_1monitor_1workarea_FUNC);
+}
+#endif
+
 #ifndef NO__1gdk_1screen_1get_1n_1monitors
 JNIEXPORT jint JNICALL OS_NATIVE(_1gdk_1screen_1get_1n_1monitors)
 	(JNIEnv *env, jclass that, jintLong arg0)

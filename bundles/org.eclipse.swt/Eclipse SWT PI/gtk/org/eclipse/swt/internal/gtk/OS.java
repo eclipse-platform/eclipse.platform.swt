@@ -5497,6 +5497,22 @@ public static final void gdk_screen_get_monitor_geometry (long /*int*/ screen, i
 		lock.unlock();
 	}
 }
+
+/**
+ * @method flags=dynamic
+ * @param screen cast=(GdkScreen *)
+ * @param dest flags=no_in
+ */
+public static final native void _gdk_screen_get_monitor_workarea (long /*int*/ screen, int monitor_num, GdkRectangle dest);
+public static final void gdk_screen_get_monitor_workarea (long /*int*/ screen, int monitor_num, GdkRectangle dest) {
+	lock.lock();
+	try {
+		_gdk_screen_get_monitor_workarea(screen, monitor_num, dest);
+	} finally {
+		lock.unlock();
+	}
+}
+
 /**
  * @method flags=dynamic
  * @param screen cast=(GdkScreen *)

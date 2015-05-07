@@ -508,6 +508,7 @@
 #define gtk_style_context_invalidate_LIB LIB_GTK
 #define gtk_hsv_to_rgb_LIB LIB_GTK
 #define gtk_rgb_to_hsv_LIB LIB_GTK
+#define gdk_screen_get_monitor_workarea_LIB LIB_GDK
 #define gdk_window_set_background_pattern_LIB LIB_GTK
 #define gtk_widget_input_shape_combine_region_LIB LIB_GTK
 #define gtk_entry_set_placeholder_text_LIB LIB_GTK

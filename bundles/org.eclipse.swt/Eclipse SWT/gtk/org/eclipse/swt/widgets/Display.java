@@ -1931,7 +1931,7 @@ Rectangle getWorkArea() {
 public Monitor [] getMonitors () {
 	checkDevice ();
 	Monitor [] monitors = null;
-	Rectangle workArea = getWorkArea();
+	Rectangle workArea = getWorkArea ();
 	long /*int*/ screen = OS.gdk_screen_get_default ();
 	if (screen != 0) {
 		int monitorCount = OS.gdk_screen_get_n_monitors (screen);
@@ -1946,16 +1946,40 @@ public Monitor [] getMonitors () {
 				monitor.y = dest.y;
 				monitor.width = dest.width;
 				monitor.height = dest.height;
-				if (i == 0 && workArea != null) {
-					monitor.clientX = workArea.x;
-					monitor.clientY = workArea.y;
-					monitor.clientWidth = workArea.width;
-					monitor.clientHeight = workArea.height;
+
+				if (OS.GTK_VERSION >= OS.VERSION (3, 4, 0)) {
+					// workarea was defined in GTK 3.4. If present, it will return the best results
+					// since it takes into account per-monitor trim
+					OS.gdk_screen_get_monitor_workarea (screen, i, dest);
+					monitor.clientX = dest.x;
+					monitor.clientY = dest.y;
+					monitor.clientWidth = dest.width;
+					monitor.clientHeight = dest.height;
 				} else {
-					monitor.clientX = monitor.x;
-					monitor.clientY = monitor.y;
-					monitor.clientWidth = monitor.width;
-					monitor.clientHeight = monitor.height;
+					// If we're on an older version of gtk without the workarea function, see if we can use
+					// the getWorkArea function. In the case of multi-monitors, this will return something that
+					// is approximately a bounding rectangle for the work areas of all the monitors, so intersecting
+					// that rectangle with the monitor boundaries will provide an approximation of the per-monitor
+					// work area.
+					if (workArea != null) {
+						monitor.clientX = Math.max (monitor.x, workArea.x);
+						monitor.clientY = Math.max (monitor.y, workArea.y);
+						monitor.clientHeight = Math
+								.max(Math.min (monitor.y + monitor.height, workArea.y + workArea.height)
+										- monitor.clientY, 0);
+						monitor.clientWidth = Math.max (
+								Math.min (monitor.x + monitor.width, workArea.x + workArea.width) - monitor.clientX,
+								0);
+					}
+
+					// If getWorkArea is not available or it did not return a rectangle that intersects the monitor
+					// bounds, then use the monitor bounds itself as the work area.
+					if (workArea == null || monitor.clientWidth == 0 || monitor.clientHeight == 0) {
+						monitor.clientX = monitor.x;
+						monitor.clientY = monitor.y;
+						monitor.clientHeight = monitor.height;
+						monitor.clientWidth = monitor.width;
+					}
 				}
 				monitors [i] = monitor;
 			}
