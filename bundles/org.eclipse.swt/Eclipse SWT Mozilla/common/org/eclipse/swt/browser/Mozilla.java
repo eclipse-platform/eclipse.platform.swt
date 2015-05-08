@@ -1949,7 +1949,14 @@ static String InitDiscoverXULRunner () {
 	* 3. A XULRunner with 1.8.0.1 <= version < 2.0.
 	*/
 
-	GREVersionRange range = new GREVersionRange ();
+	GREVersionRange range = null;
+	try {
+		range = new GREVersionRange ();
+	} catch (NoClassDefFoundError e) {
+		return "";
+	} catch (UnsatisfiedLinkError e) {
+		return "";
+	}
 	byte[] bytes = MozillaDelegate.wcsToMbcs (null, GRERANGE_LOWER, true);
 	long /*int*/ lower = C.malloc (bytes.length);
 	C.memmove (lower, bytes, bytes.length);
