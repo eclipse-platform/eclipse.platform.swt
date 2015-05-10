@@ -1147,7 +1147,11 @@ public Rectangle getClientArea () {
 	OS.gtk_widget_get_allocation (clientHandle, allocation);
 	int width = (state & ZERO_WIDTH) != 0 ? 0 : allocation.width;
 	int height = (state & ZERO_HEIGHT) != 0 ? 0 : allocation.height;
-	return new Rectangle (fixedX [0] - binX [0], fixedY [0] - binY [0], width, height);
+	Rectangle rect = new Rectangle (fixedX [0] - binX [0], fixedY [0] - binY [0], width, height);
+	if (getHeaderVisible() && OS.GTK_VERSION > OS.VERSION(3, 9, 0)) {
+		rect.y += getHeaderHeight();
+	}
+	return rect;
 }
 
 @Override
@@ -2303,6 +2307,10 @@ boolean mnemonicMatch (char key) {
 @Override
 long /*int*/ paintWindow () {
 	OS.gtk_widget_realize (handle);
+	if (fixedHandle != 0 && OS.GTK_VERSION > OS.VERSION(3, 9, 0)) {
+		OS.gtk_widget_realize (fixedHandle);
+		return OS.gtk_widget_get_window(fixedHandle);
+	}
 	return OS.gtk_tree_view_get_bin_window (handle);
 }
 
