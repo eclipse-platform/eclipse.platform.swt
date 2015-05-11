@@ -27,7 +27,7 @@
  * ***** END LICENSE BLOCK ***** */
 package org.eclipse.swt.internal.mozilla;
 
-import org.eclipse.swt.SWTError;
+import org.eclipse.swt.*;
 
 
 public class nsISupports {
@@ -78,23 +78,33 @@ public class nsISupports {
 		return getMethodIndex (attribute) + 1;
 	}
 	
+	protected String getClassName() {
+		return getClass ().getSimpleName ();
+	}
+	
 	protected int getMethodIndex (String methodString) {
 		long /*int*/[] result = new long /*int*/[1];
 		result[0] = 0;
 		int rc = XPCOM.NS_GetServiceManager (result);
-		if (rc != XPCOM.NS_OK) return -1;
+		if (rc != XPCOM.NS_OK) {
+			throw new SWTError(rc);
+		}
 
 		nsIServiceManager serviceManager = new nsIServiceManager (result[0]);
 		result[0] = 0;
 		rc = serviceManager.GetServiceByContractID (toByteArray (XPCOM.NS_INTERFACEINFOMANAGER_CONTRACTID), IIDStore.GetIID (nsIInterfaceInfoManager.class), result);
 		serviceManager.Release ();
-		if (rc != XPCOM.NS_OK) return -1;
+		if (rc != XPCOM.NS_OK) {
+			throw new SWTError(rc);
+		}
 
 		nsIInterfaceInfoManager iim = new nsIInterfaceInfoManager (result[0]);
 		result[0] = 0;
-		rc = iim.GetInfoForName (toByteArray (getClass ().getSimpleName ()), result);
+		rc = iim.GetInfoForName (toByteArray (getClassName()), result);
 		iim.Release ();
-		if (rc != XPCOM.NS_OK) return -1;
+		if (rc != XPCOM.NS_OK) {
+			throw new SWTError(rc);
+		}
 
 		nsIInterfaceInfo info = new nsIInterfaceInfo (result[0]);
 		int[] index = new int [1];

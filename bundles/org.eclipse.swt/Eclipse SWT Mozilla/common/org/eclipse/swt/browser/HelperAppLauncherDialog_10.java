@@ -57,7 +57,7 @@ int PromptForSaveToFile (long /*int*/ aLauncher, long /*int*/ aWindowContext, lo
 	String name = fileDialog.open ();
 	shell.close ();
 	if (name == null) {
-		nsIHelperAppLauncher_1_8 launcher = new nsIHelperAppLauncher_1_8 (aLauncher);
+		nsICancelable launcher = new nsICancelable (aLauncher);
 		int rc = launcher.Cancel (XPCOM.NS_BINDING_ABORTED);
 		if (rc != XPCOM.NS_OK) Mozilla.error (rc);
 		return XPCOM.NS_ERROR_FAILURE;
