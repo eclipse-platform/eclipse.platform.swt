@@ -1937,6 +1937,12 @@ public Object getWebBrowser () {
 	return null;
 }
 
+/**
+ * This method attempts to discover XULRunner and if found returns path of
+ * the mozilla library, else return empty string.
+ * 
+ * @return string Mozilla path.
+ */
 static String InitDiscoverXULRunner () {
 	/*
 	* Up to three XULRunner detection attempts will be made:
@@ -1953,8 +1959,10 @@ static String InitDiscoverXULRunner () {
 	try {
 		range = new GREVersionRange ();
 	} catch (NoClassDefFoundError e) {
+		/* Failed to discover XULRunner, return empty string. */
 		return "";
 	} catch (UnsatisfiedLinkError e) {
+		/* Failed to discover XULRunner, return empty string. */
 		return "";
 	}
 	byte[] bytes = MozillaDelegate.wcsToMbcs (null, GRERANGE_LOWER, true);
