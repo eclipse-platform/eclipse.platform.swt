@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2008, 2013 IBM Corporation and others.
+ * Copyright (c) 2008, 2015 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -117,6 +117,7 @@ static Object convertToJava (nsIVariant variant) {
 					rc = supports.QueryInterface (id, result);
 					if (rc != XPCOM.NS_OK) Mozilla.error (rc);
 					if (result[0] == 0) Mozilla.error (XPCOM.NS_NOINTERFACE);
+					supports.Release ();
 
 					nsIVariant currentVariant = new nsIVariant (result[0]);
 					result[0] = 0;
