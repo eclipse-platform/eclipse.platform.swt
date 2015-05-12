@@ -274,8 +274,11 @@ void _setVisible (boolean visible) {
 	
 		// Hold on to window in case it is disposed while the popup is open.
 		window.retain();
+		// NSMenu processes events on its own while the popup is open.
+		display.sendPreExternalEventDispatchEvent ();
 		NSEvent nsEvent = NSEvent.otherEventWithType(OS.NSApplicationDefined, location, 0, 0.0, window.windowNumber(), window.graphicsContext(), (short)0, 0, 0);
 		NSMenu.popUpContextMenu(nsMenu, nsEvent, shell.view);
+		display.sendPostExternalEventDispatchEvent ();
 		window.release();
 	} else {
 		nsMenu.cancelTracking ();
