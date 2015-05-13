@@ -2792,6 +2792,12 @@ void rendererRender (long /*int*/ cell, long /*int*/ cr, long /*int*/ window, lo
 					Rectangle bounds = image.getBounds ();
 					imageWidth = bounds.width;
 				}
+				// On gtk >3.9 and <3.14.8 the clip rectangle does not have image area into clip rectangle
+				// need to adjust clip rectangle with image width
+				if (cr != 0 && OS.GTK_VERSION > OS.VERSION(3, 9, 0) && OS.GTK_VERSION <= OS.VERSION(3, 14, 8)) {
+					rect.x -= imageWidth;
+					rect.width +=imageWidth;
+				}
 				contentX [0] -= imageWidth;
 				contentWidth [0] += imageWidth;
 				GC gc = getGC(cr);

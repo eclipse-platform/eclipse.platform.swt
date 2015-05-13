@@ -2661,7 +2661,13 @@ void rendererRender (long /*int*/ cell, long /*int*/ cr, long /*int*/ window, lo
 			long /*int*/ path = OS.gtk_tree_model_get_path (modelHandle, iter);
 			OS.gtk_tree_view_get_background_area (handle, path, columnHandle, rect);
 			OS.gtk_tree_path_free (path);
-
+			// A workaround for https://bugs.eclipse.org/bugs/show_bug.cgi?id=459117
+			if (cr != 0 && OS.GTK_VERSION > OS.VERSION(3, 9, 0) && OS.GTK_VERSION <= OS.VERSION(3, 14, 8)) {
+				GdkRectangle r2 = new GdkRectangle ();
+				OS.gdk_cairo_get_clip_rectangle (cr, r2);
+				rect.x = r2.x;
+				rect.width = r2.width;
+			}
 			if ((drawState & SWT.SELECTED) == 0) {
 				if ((state & PARENT_BACKGROUND) != 0 || backgroundImage != null) {
 					Control control = findBackgroundControl ();
@@ -2781,6 +2787,13 @@ void rendererRender (long /*int*/ cell, long /*int*/ cr, long /*int*/ window, lo
 				OS.gtk_tree_view_get_cell_area (handle, path, columnHandle, rect);
 				OS.gtk_tree_view_get_background_area (handle, path, columnHandle, clipRect);
 				OS.gtk_tree_path_free (path);
+				// A workaround for https://bugs.eclipse.org/bugs/show_bug.cgi?id=459117
+				if (cr != 0 && OS.GTK_VERSION > OS.VERSION(3, 9, 0) && OS.GTK_VERSION <= OS.VERSION(3, 14, 8)) {
+					GdkRectangle r2 = new GdkRectangle ();
+					OS.gdk_cairo_get_clip_rectangle (cr, r2);
+					rect.x = r2.x;
+					rect.width = r2.width;
+				}
 				ignoreSize = true;
 				int [] contentX = new int [1], contentWidth = new int [1];
 				gtk_cell_renderer_get_preferred_size (cell, handle, contentWidth, null);
@@ -2791,6 +2804,12 @@ void rendererRender (long /*int*/ cell, long /*int*/ cr, long /*int*/ window, lo
 				if (image != null) {
 					Rectangle bounds = image.getBounds ();
 					imageWidth = bounds.width;
+				}
+				// On gtk >3.9 and <3.14.8 the clip rectangle does not have image area into clip rectangle
+				// need to adjust clip rectangle with image width
+				if (cr != 0 && OS.GTK_VERSION > OS.VERSION(3, 9, 0) && OS.GTK_VERSION <= OS.VERSION(3, 14, 8)) {
+					rect.x -= imageWidth;
+					rect.width +=imageWidth;
 				}
 				contentX [0] -= imageWidth;
 				contentWidth [0] += imageWidth;
