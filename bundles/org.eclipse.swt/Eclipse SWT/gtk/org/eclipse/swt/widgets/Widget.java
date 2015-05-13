@@ -102,6 +102,12 @@ public abstract class Widget {
 	/* Should sub-windows be checked when EnterNotify received */
 	static final int CHECK_SUBWINDOW = 1<<25;
 
+	/* Bidi "auto" text direction */
+	static final int HAS_AUTO_DIRECTION = 0;
+	
+	/* Bidi flag and for auto text direction */
+	static final int AUTO_TEXT_DIRECTION = SWT.LEFT_TO_RIGHT | SWT.RIGHT_TO_LEFT;
+
 	/* Default size for widgets */
 	static final int DEFAULT_WIDTH	= 64;
 	static final int DEFAULT_HEIGHT	= 64;
@@ -1309,6 +1315,10 @@ public void removeDisposeListener (DisposeListener listener) {
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (eventTable == null) return;
 	eventTable.unhook (SWT.Dispose, listener);
+}
+
+static int resolveTextDirection(String text) {
+	return SWT.NONE;
 }
 
 void sendEvent (Event event) {
