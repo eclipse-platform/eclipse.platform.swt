@@ -600,23 +600,28 @@ public boolean close () {
  *    <li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
  * </ul>
  * 
+ * @see Browser#evaluate(String,boolean)
  * @see ProgressListener#completed(ProgressEvent)
  * 
  * @since 3.5
  */
 public Object evaluate (String script) throws SWTException {
 	checkWidget();
-	return evaluate (script, true);
+	return evaluate (script, false);
 }
 
 /**
  * Returns the result, if any, of executing the specified script.
  * <p>
- * Evaluates a script containing javascript commands in the context of
- * the current document.  If document-defined functions or properties
- * are accessed by the script then this method should not be invoked
- * until the document has finished loading (<code>ProgressListener.completed()</code>
- * gives notification of this).
+ * Evaluates a script containing javascript commands.
+ * When <code>trusted</code> is <code>true</code> script is executed in the context of Chrome 
+ * with Chrome security privileges.
+ * When <code>trusted</code> is <code>false</code> script is executed in the context of the 
+ * current document with normal privileges.
+ * </p><p>
+ * If document-defined functions or properties are accessed by the script then
+ * this method should not be invoked until the document has finished loading 
+ * (<code>ProgressListener.completed()</code> gives notification of this).
  * </p><p>
  * If the script returns a value with a supported type then a java
  * representation of the value is returned.  The supported
@@ -628,16 +633,12 @@ public Object evaluate (String script) throws SWTException {
  * <li>javascript boolean -> <code>java.lang.Boolean</code></li>
  * <li>javascript array whose elements are all of supported types -> <code>java.lang.Object[]</code></li>
  * </ul>
- * The <code>trusted</code> parameter affects the security context the script will be executed in.
- * Specifying <code>true</code> for trusted executes the script in Chrome security context <code>false</code> for trusted
- * executes script in normal security context.
- * 
- * Note: Chrome security context is applicable only to Browsers with style <code>SWT.Mozilla</code>
- * 
  * An <code>SWTException</code> is thrown if the return value has an
  * unsupported type, or if evaluating the script causes a javascript
  * error to be thrown.
- *
+ * </p><p>
+ * Note: Chrome security context is applicable only to Browsers with style <code>SWT.Mozilla</code>.
+ * </p>
  * @param script the script with javascript commands
  * @param trusted <code>true> or <code>false</code> depending on the security context to be used
  *  

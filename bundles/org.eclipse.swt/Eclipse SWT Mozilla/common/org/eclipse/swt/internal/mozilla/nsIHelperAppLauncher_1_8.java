@@ -41,7 +41,7 @@ public class nsIHelperAppLauncher_1_8 extends nsICancelable {
 		IIDStore.RegisterIID(nsIHelperAppLauncher_1_8.class, MozillaVersion.VERSION_BASE, new nsID(NS_IHELPERAPPLAUNCHER_IID_STR));
 		IIDStore.RegisterIID(nsIHelperAppLauncher_1_8.class, MozillaVersion.VERSION_XR1_9, new nsID(NS_IHELPERAPPLAUNCHER_1_9_IID_STR));
 		IIDStore.RegisterIID(nsIHelperAppLauncher_1_8.class, MozillaVersion.VERSION_XR10, new nsID(NS_IHELPERAPPLAUNCHER_10_IID_STR));
-		IIDStore.RegisterIID(nsIHelperAppLauncher_1_8.class, MozillaVersion.VERSION_XR31, new nsID(NS_IHELPERAPPLAUNCHER_24_IID_STR));
+		IIDStore.RegisterIID(nsIHelperAppLauncher_1_8.class, MozillaVersion.VERSION_XR24, new nsID(NS_IHELPERAPPLAUNCHER_24_IID_STR));
 	}
 	
 	/* 
