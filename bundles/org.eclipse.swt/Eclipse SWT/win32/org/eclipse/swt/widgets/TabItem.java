@@ -341,11 +341,19 @@ public void setText (String string) {
 	int index = parent.indexOf (this);
 	if (index == -1) return;
 	super.setText (string);
-	_setText (index, string);
+	/* 
+	 * Need to update direction since it is set via UCC which the new text
+	 * overrides
+	 */
+	int textDirection = (state & HAS_AUTO_DIRECTION) != 0 ? AUTO_TEXT_DIRECTION : style & SWT.FLIP_TEXT_DIRECTION;
+	if (!updateTextDirection (textDirection)) {
+		_setText (index, string);
+	}
 }
 
 boolean updateTextDirection(int textDirection) {
-	if (super.updateTextDirection(textDirection)) {
+	/* AUTO is handled by super */
+	if (super.updateTextDirection(textDirection) && OS.IsUnicode) {
 		int index = parent.indexOf (this);
 		if (index != -1) {
 			if ((textDirection & SWT.RIGHT_TO_LEFT) != 0) {

@@ -747,6 +747,9 @@ void setSelection (int index, boolean notify) {
 
 boolean updateTextDirection(int textDirection) {
 	if (super.updateTextDirection(textDirection)) {
+		if (textDirection != AUTO_TEXT_DIRECTION) {
+			textDirection = style & SWT.FLIP_TEXT_DIRECTION;
+		}
 		for (int i = 0, n = items.length; i < n && items[i] != null; i++) {
 			items[i].updateTextDirection (textDirection);
 		}

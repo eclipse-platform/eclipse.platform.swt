@@ -339,32 +339,21 @@ public void addVerifyListener (VerifyListener listener) {
 
 void applyEditSegments () {
 	if (--clearSegmentsCount != 0) return;
-	if (!hooks (SWT.Segments) && !filters (SWT.Segments)) return;
+	if (!hooks (SWT.Segments) && !filters (SWT.Segments) && (state & HAS_AUTO_DIRECTION) == 0) return;
 	long /*int*/ hwndText = OS.GetDlgItem (handle, CBID_EDIT);
 	int length = OS.GetWindowTextLength (hwndText);
 	int cp = getCodePage ();
 	TCHAR buffer = new TCHAR (cp, length + 1);
 	if (length > 0) OS.GetWindowText (hwndText, buffer, length + 1);
 	String string = buffer.toString (0, length);
-
-	/* Get segments text */
-	Event event = new Event ();
-	event.text = string;
-	event.segments = segments;
-	sendEvent (SWT.Segments, event);
+	/* Get segments */
+	segments = null;
+	Event event = getSegments (string);
+	if (event == null || event.segments == null) return;
 	segments = event.segments;
-	if (segments == null) return;
-	int nSegments = segments.length;
+	int nSegments = segments.length; 
 	if (nSegments == 0) return;
-	length = string == null ? 0 : string.length ();
-
-	for (int i = 1; i < nSegments; i++) {
-		if (event.segments [i] < event.segments [i - 1] || event.segments [i] > length) {
-			error (SWT.ERROR_INVALID_ARGUMENT);
-		}
-	}
 	char [] segmentsChars = event.segmentsChars;
-
 	int/*64*/ limit = (int/*64*/)OS.SendMessage (hwndText, OS.EM_GETLIMITTEXT, 0, 0) & 0x7fffffff;
 	OS.SendMessage (hwndText, OS.EM_SETLIMITTEXT, limit + Math.min (nSegments, LIMIT - limit), 0);
 	length += nSegments;
@@ -410,6 +399,19 @@ void applyEditSegments () {
 	if (!OS.IsUnicode && OS.IsDBLocale) {
 		start [0] = wcsToMbcsPos (start [0]);
 		end [0] = wcsToMbcsPos (end [0]);
+	}
+	if (segmentsChars != null && segmentsChars.length > 0) {
+		/* 
+		 * In addition to enforcing the required direction by prepending a UCC (LRE
+		 * or RLE), also set the direction through a Window style.
+		 * This is to ensure correct caret movement, and makes sense even when the
+		 * UCC was added by an authentic SegmentListener.
+		 */
+		if (segmentsChars[0] == RLE) {
+			super.updateTextDirection(SWT.RIGHT_TO_LEFT);
+		} else if (segmentsChars[0] == LRE) {
+			super.updateTextDirection(SWT.LEFT_TO_RIGHT);
+		}
 	}
 	OS.SendMessage (hwndText, OS.EM_SETSEL, start [0], end [0]);
 	ignoreCharacter = oldIgnoreCharacter;
@@ -1057,7 +1059,7 @@ public String getItem (int index) {
 	checkWidget ();
 	int length = (int)/*64*/OS.SendMessage (handle, OS.CB_GETLBTEXTLEN, index, 0);
 	if (length != OS.CB_ERR) {
-		if (hooks (SWT.Segments) || filters (SWT.Segments)) return items [index];
+		if (hooks (SWT.Segments) || filters (SWT.Segments) || (state & HAS_AUTO_DIRECTION) != 0) return items [index];
 		TCHAR buffer = new TCHAR (getCodePage (), length + 1);
 		int result = (int)/*64*/OS.SendMessage (handle, OS.CB_GETLBTEXT, index, buffer);
 		if (result != OS.CB_ERR) return buffer.toString (0, length);
@@ -1122,14 +1124,9 @@ public int getItemHeight () {
 public String [] getItems () {
 	checkWidget ();
 	String [] result;
-	if (hooks (SWT.Segments) || filters (SWT.Segments)) {
-		result = new String [items.length];
-		System.arraycopy (items, 0, result, 0, items.length);
-	} else {
-		int count = getItemCount ();
-		result = new String [count];
-		for (int i=0; i<count; i++) result [i] = getItem (i);
-	}
+	int count = getItemCount ();
+	result = new String [count];
+	for (int i=0; i<count; i++) result [i] = getItem (i);
 	return result;
 }
 
@@ -1204,16 +1201,48 @@ public int getOrientation () {
 }
 
 Event getSegments (String string) {
-	if (!hooks (SWT.Segments) && !filters (SWT.Segments)) return null;
-	Event event = new Event ();
-	event.text = string;
-	sendEvent (SWT.Segments, event);
-	if (event.segments != null) {
-		for (int i = 1, segmentCount = event.segments.length, lineLength = string == null ? 0 : string.length(); i < segmentCount; i++) {
-			if (event.segments[i] < event.segments[i - 1] || event.segments[i] > lineLength) {
-				SWT.error (SWT.ERROR_INVALID_ARGUMENT);
+	Event event = null;
+	if (hooks (SWT.Segments) || filters (SWT.Segments)) {
+		event = new Event ();
+		event.text = string;
+		sendEvent (SWT.Segments, event);
+		if (event != null && event.segments != null) {
+			for (int i = 1, segmentCount = event.segments.length, lineLength = string == null ? 0 : string.length(); i < segmentCount; i++) {
+				if (event.segments[i] < event.segments[i - 1] || event.segments[i] > lineLength) {
+					SWT.error (SWT.ERROR_INVALID_ARGUMENT);
+				}
 			}
 		}
+	}
+	if ((state & HAS_AUTO_DIRECTION) != 0) {
+		int direction = resolveTextDirection(string);
+		if (direction == SWT.NONE) {
+			/*
+			 * Force adding a UCC even when no strong characters are found.
+			 * Otherwise, the widget would keep the old direction, which might be
+			 * inappropriate for the new text.
+			 */
+			direction = (style & SWT.RIGHT_TO_LEFT) != 0 ? SWT.RIGHT_TO_LEFT : SWT.LEFT_TO_RIGHT;
+		}
+		int [] oldSegments = null;
+		char [] oldSegmentsChars = null;
+		if (event == null) {
+			event = new Event ();
+		} else {
+			oldSegments = event.segments;
+			oldSegmentsChars = event.segmentsChars;
+		}
+		int nSegments = oldSegments == null ? 0 : oldSegments.length;
+		event.segments = new int [nSegments + 1];
+		event.segmentsChars = new char [nSegments + 1];
+		if (oldSegments != null) {
+			System.arraycopy(oldSegments, 0, event.segments, 1, nSegments);
+		}
+		if (oldSegmentsChars != null) {
+			System.arraycopy(oldSegmentsChars, 0, event.segmentsChars, 1, nSegments);
+		}
+		event.segments [0] = 0;
+		event.segmentsChars [0] = direction == SWT.RIGHT_TO_LEFT ? RLE : LRE;
 	}
 	return event;
 }
@@ -2427,6 +2456,28 @@ void updateDropDownHeight () {
 	}
 }
 
+@Override
+boolean updateTextDirection(int textDirection) {
+	state &= ~HAS_AUTO_DIRECTION;
+	if (super.updateTextDirection(textDirection)) {
+		/*
+		 * state gets updated in Control#setTextDirection after updateTextDirection
+		 * completes, but we need here the state to be up-to-date already, before
+		 * clearing / applying segments. 
+		 */
+		if (textDirection == AUTO_TEXT_DIRECTION) {
+			/* To support auto direction we use UCC that are not available in ANSI CP */
+			if (!OS.IsUnicode) return false;
+			state |= HAS_AUTO_DIRECTION; 
+		}
+		clearSegments (true);
+		applyEditSegments ();
+		applyListSegments ();
+		return true;
+	}
+	return false;
+}
+
 void updateOrientation () {
 	int bits  = OS.GetWindowLong (handle, OS.GWL_EXSTYLE);
 	if ((style & SWT.RIGHT_TO_LEFT) != 0) {
@@ -2560,12 +2611,12 @@ long /*int*/ windowProc (long /*int*/ hwnd, int msg, long /*int*/ wParam, long /
 			switch (msg) {
 				/* Keyboard messages */
 				case OS.WM_CHAR:
-					processSegments = (hooks (SWT.Segments) || filters (SWT.Segments)) && !ignoreCharacter && OS.GetKeyState (OS.VK_CONTROL) >= 0 && OS.GetKeyState (OS.VK_MENU) >= 0;
+					processSegments = (hooks (SWT.Segments) || filters (SWT.Segments) || ((state & HAS_AUTO_DIRECTION) != 0)) && !ignoreCharacter && OS.GetKeyState (OS.VK_CONTROL) >= 0 && OS.GetKeyState (OS.VK_MENU) >= 0;
 					result = wmChar (hwnd, wParam, lParam);
 					break;
 				case OS.WM_IME_CHAR:	result = wmIMEChar (hwnd, wParam, lParam); break;
 				case OS.WM_KEYDOWN:
-					processSegments = wParam == OS.VK_DELETE && (hooks (SWT.Segments) || filters (SWT.Segments));
+					processSegments = wParam == OS.VK_DELETE && (hooks (SWT.Segments) || filters (SWT.Segments) || ((state & HAS_AUTO_DIRECTION) != 0));
 					result = wmKeyDown (hwnd, wParam, lParam);
 					break;
 				case OS.WM_KEYUP:		result = wmKeyUp (hwnd, wParam, lParam); break;
@@ -2600,16 +2651,16 @@ long /*int*/ windowProc (long /*int*/ hwnd, int msg, long /*int*/ wParam, long /
 
 				/* Clipboard messages */
 				case OS.EM_CANUNDO:
-					if (hooks (SWT.Segments) || filters (SWT.Segments)) return 0;
+					if (hooks (SWT.Segments) || filters (SWT.Segments) || ((state & HAS_AUTO_DIRECTION) != 0)) return 0;
 					break;
 				case OS.WM_UNDO:
 				case OS.EM_UNDO:
-					if (hooks (SWT.Segments) || filters (SWT.Segments)) return 0;
+					if (hooks (SWT.Segments) || filters (SWT.Segments) || ((state & HAS_AUTO_DIRECTION) != 0)) return 0;
 				case OS.WM_COPY:
 				case OS.WM_CLEAR:
 				case OS.WM_CUT:
 				case OS.WM_PASTE:
-					processSegments = hooks (SWT.Segments) || filters (SWT.Segments);
+					processSegments = hooks (SWT.Segments) || filters (SWT.Segments) || ((state & HAS_AUTO_DIRECTION) != 0);
 				case OS.WM_SETTEXT:
 					if (hwnd == hwndText) {
 						result = wmClipboard (hwnd, msg, wParam, lParam);
@@ -2663,20 +2714,27 @@ long /*int*/ windowProc (long /*int*/ hwnd, int msg, long /*int*/ wParam, long /
 					}
 				}
 			}
-			if (hooks (SWT.Segments) || filters (SWT.Segments)) {
+			if (hooks (SWT.Segments) || filters (SWT.Segments) || ((state & HAS_AUTO_DIRECTION) != 0)) {
 				code = super.windowProc (hwnd, msg, wParam, lParam);
 				if (!(code == OS.CB_ERR || code == OS.CB_ERRSPACE)) {
-					segments = null;
 					Event event = getSegments (items [index]);
-					if (event != null) segments = event.segments;
+					segments = event != null ? event.segments : null;
+					if (event.segmentsChars != null) {
+						if (event.segmentsChars[0] == RLE) {
+							super.updateTextDirection(SWT.RIGHT_TO_LEFT);
+						} else if (event.segmentsChars[0] == LRE) {
+							super.updateTextDirection(SWT.LEFT_TO_RIGHT);
+						}
+					}
 					return code;
 				}
 			}
+			break;
 		}
 		case OS.CB_ADDSTRING:
 		case OS.CB_INSERTSTRING:
 		case OS.CB_FINDSTRINGEXACT:
-			if (lParam != 0 && (hooks (SWT.Segments) || filters (SWT.Segments))) {
+			if (lParam != 0 && (hooks (SWT.Segments) || filters (SWT.Segments) || ((state & HAS_AUTO_DIRECTION) != 0))) {
 				long /*int*/ code = OS.CB_ERR;
 				int length = OS.IsUnicode ? OS.wcslen (lParam) : OS.strlen (lParam);
 				TCHAR buffer = new TCHAR (getCodePage (), length);
@@ -2704,14 +2762,18 @@ long /*int*/ windowProc (long /*int*/ hwnd, int msg, long /*int*/ wParam, long /
 			}
 			break;
 		case OS.CB_DELETESTRING: {
-			if (hooks (SWT.Segments) || filters (SWT.Segments)) {
+			if (hooks (SWT.Segments) || filters (SWT.Segments) || ((state & HAS_AUTO_DIRECTION) != 0)) {
 				long /*int*/ code = super.windowProc (hwnd, msg, wParam, lParam);
 				if (code != OS.CB_ERR && code != OS.CB_ERRSPACE) {
 					int index = (int)/*64*/ wParam;
-					String [] newItems = new String [items.length - 1];
-					System.arraycopy (items, 0, newItems, 0, index);
-					System.arraycopy (items, index + 1, newItems, index, items.length - index - 1);
-					items = newItems;
+					if (items.length == 1) {
+						items = new String[0];
+					} else if (items.length > 1) {
+						String [] newItems = new String [items.length - 1];
+						System.arraycopy (items, 0, newItems, 0, index);
+						System.arraycopy (items, index + 1, newItems, index, items.length - index - 1);
+						items = newItems;
+					}
 					if (!noSelection) {
 						index = (int)/*64*/OS.SendMessage (handle, OS.CB_GETCURSEL, 0, 0);
 						if (index == wParam) {
@@ -2725,7 +2787,7 @@ long /*int*/ windowProc (long /*int*/ hwnd, int msg, long /*int*/ wParam, long /
 			break;
 		}
 		case OS.CB_RESETCONTENT: {
-			if (hooks (SWT.Segments) || filters (SWT.Segments)) {
+			if (hooks (SWT.Segments) || filters (SWT.Segments) || ((state & HAS_AUTO_DIRECTION) != 0)) {
 				if (items.length > 0) items = new String [0];
 				clearSegments (false);
 				applyEditSegments ();
@@ -3139,9 +3201,15 @@ LRESULT wmCommandChild (long /*int*/ wParam, long /*int*/ lParam) {
 				}
 				OS.SetWindowLong (hwnd, OS.GWL_EXSTYLE, bits1);
 				OS.SetWindowLong (hwnd, OS.GWL_STYLE, bits2);
-			} else if (hooks (SWT.Segments) || filters (SWT.Segments)) {
-				clearSegments (true);
-				applyEditSegments ();
+			}
+			if (hooks (SWT.Segments) || filters (SWT.Segments) || ((state & HAS_AUTO_DIRECTION) != 0)) {
+				clearSegments(true);
+				/*
+				 * Explicit LTR or RTL direction was set, so auto direction
+				 * should be deactivated.
+				 */
+				state &= ~HAS_AUTO_DIRECTION;
+				applyEditSegments();
 			}
 			break;
 	}

@@ -460,6 +460,9 @@ public void append (String string) {
 	OS.SendMessage (handle, OS.EM_REPLACESEL, 0, buffer);
 	ignoreCharacter = false;
 	OS.SendMessage (handle, OS.EM_SCROLLCARET, 0, 0);
+	if ((state & HAS_AUTO_DIRECTION) != 0) {
+		updateTextDirection (AUTO_TEXT_DIRECTION);
+	}
 	applySegments ();
 }
 
@@ -1555,6 +1558,9 @@ public void insert (String string) {
 	ignoreCharacter = true;
 	OS.SendMessage (handle, OS.EM_REPLACESEL, 0, buffer);
 	ignoreCharacter = false;
+	if ((state & HAS_AUTO_DIRECTION) != 0) {
+		updateTextDirection (AUTO_TEXT_DIRECTION);
+	}
 	applySegments ();
 }
 
@@ -2263,6 +2269,9 @@ public void setText (String string) {
 	if (string.length () > limit) string = string.substring (0, limit);
 	TCHAR buffer = new TCHAR (getCodePage (), string, true);
 	OS.SetWindowText (handle, buffer);
+	if ((state & HAS_AUTO_DIRECTION) != 0) {
+		updateTextDirection(AUTO_TEXT_DIRECTION);
+	}
 	applySegments ();
 	/*
 	* Bug in Windows.  When the widget is multi line
@@ -2325,6 +2334,9 @@ public void setTextChars (char[] text) {
 	TCHAR buffer = new TCHAR (getCodePage (), text, true);
 	OS.SetWindowText (handle, buffer);
 	buffer.clear ();
+	if ((state & HAS_AUTO_DIRECTION) != 0) {
+		updateTextDirection (AUTO_TEXT_DIRECTION);
+	}
 	applySegments ();
 	/*
 	* Bug in Windows.  When the widget is multi line
@@ -2446,6 +2458,36 @@ void updateOrientation (){
 	fixAlignment ();
 }
 
+@Override
+boolean updateTextDirection(int textDirection) {
+	if (textDirection == AUTO_TEXT_DIRECTION) {
+		int length = OS.GetWindowTextLength (handle);
+		if (length > 0) {
+			TCHAR buffer = new TCHAR (getCodePage (), length + 1);
+			OS.GetWindowText (handle, buffer, length + 1);
+			if (segments != null) {
+				buffer = deprocessText (buffer, 0, -1, false);
+				textDirection = resolveTextDirection(buffer.toString ());
+			} else {
+				textDirection = resolveTextDirection(buffer.toString (0, length));
+			}
+			if (textDirection == SWT.NONE) {
+				/*
+				 * Force direction update also when no strong bidi chars are
+				 * found.
+				 */
+				textDirection = (style & SWT.RIGHT_TO_LEFT) != 0 ? SWT.RIGHT_TO_LEFT : SWT.LEFT_TO_RIGHT;
+			}
+		}
+	}
+	if (super.updateTextDirection(textDirection)) {
+		clearSegments (true);
+		applySegments ();
+		return true;
+	}
+	return false;
+}
+
 String verifyText (String string, int start, int end, Event keyEvent) {
 	if (ignoreVerify) return string;
 	Event event = new Event ();
@@ -2563,28 +2605,38 @@ long /*int*/ windowProc () {
 }
 
 long /*int*/ windowProc (long /*int*/ hwnd, int msg, long /*int*/ wParam, long /*int*/ lParam) {
-	boolean processSegments = false, redraw = false;
+	boolean processSegments = hooks (SWT.Segments) || filters (SWT.Segments), redraw = false, updateDirection = (state & HAS_AUTO_DIRECTION) != 0;
 	long /*int*/ code;
-	if (hooks (SWT.Segments) || filters (SWT.Segments)) {
+	if (processSegments || updateDirection) {
 		switch (msg) {
+			case OS.EM_CANUNDO:
+				if (processSegments) return 0;
+				updateDirection = false;
+				break;
 			case OS.EM_UNDO:
 			case OS.WM_UNDO:
-			case OS.EM_CANUNDO:
-				return 0;
-			case OS.WM_KEYDOWN: 
-				processSegments = wParam == OS.VK_DELETE;
+				if (processSegments) return 0;
+				break;
+			case OS.WM_KEYDOWN:
+				if (wParam != OS.VK_DELETE) {
+					processSegments = updateDirection = false;
+				}
 				break;
 			case OS.WM_COPY:
 				processSegments = segments != null;
+				updateDirection = false;
 				break;
 			case OS.WM_CHAR: 
-				processSegments = !ignoreCharacter && OS.GetKeyState (OS.VK_CONTROL) >= 0 && OS.GetKeyState (OS.VK_MENU) >= 0;
+				if (ignoreCharacter || OS.GetKeyState (OS.VK_CONTROL) < 0 || OS.GetKeyState (OS.VK_MENU) < 0) {
+					processSegments = updateDirection = false;
+				}
 				break;
 			case OS.WM_PASTE:
 			case OS.WM_CUT:
 			case OS.WM_CLEAR:
-				processSegments = true;
 				break;
+			default:
+				processSegments = updateDirection = false;
 		}
 	}
 	if (processSegments) {
@@ -2613,6 +2665,9 @@ long /*int*/ windowProc (long /*int*/ hwnd, int msg, long /*int*/ wParam, long /
 		return 1;
 	}
 	code = super.windowProc (hwnd, msg, wParam, lParam);
+	if (updateDirection) {
+		updateTextDirection (AUTO_TEXT_DIRECTION);
+	}
 	if (processSegments) {
 		applySegments ();
 		if (redraw) {
@@ -3014,6 +3069,11 @@ LRESULT wmCommandChild (long /*int*/ wParam, long /*int*/ lParam) {
 			break;
 		case OS.EN_ALIGN_LTR_EC:
 		case OS.EN_ALIGN_RTL_EC:
+			/*
+			 * Ctrl + Shift to set explicit LTR or RTL text direction was
+			 * pressed, so auto direction should no longer be effective.
+			 */
+			state &= ~HAS_AUTO_DIRECTION;
 			int bits = OS.GetWindowLong (handle, OS.GWL_EXSTYLE);
 			if ((bits & OS.WS_EX_RTLREADING) != 0) {
 				style &= ~SWT.LEFT_TO_RIGHT;

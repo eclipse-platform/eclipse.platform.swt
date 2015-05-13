@@ -436,6 +436,29 @@ public void test_setEnabledZ() {
 	assertTrue(!control.getEnabled());
 }
 @Test
+public void test_setTextDirection() {
+	if (!SwtTestUtil.isWindows) {
+		// TODO Fix GTK and Cocoa failure.
+		if (SwtTestUtil.verbose) {
+			System.out
+					.println("Excluded test_setTextDirection(org.eclipse.swt.tests.junit.Test_org_eclipse_swt_widgets_Control).");
+		}
+		return;
+	}
+	final int [] orientations = {SWT.LEFT_TO_RIGHT, SWT.RIGHT_TO_LEFT};
+	final int [] directions = {SWT.LEFT_TO_RIGHT, SWT.RIGHT_TO_LEFT, SWT.LEFT_TO_RIGHT | SWT.RIGHT_TO_LEFT};
+	int [] expectedDirections = {SWT.LEFT_TO_RIGHT, SWT.RIGHT_TO_LEFT, SWT.NONE};
+	for (int i = orientations.length; i-- > 0;) {
+		control.setOrientation (orientations [i]);
+		expectedDirections[2] = control.getOrientation ();
+		for (int j = directions.length; j-- > 0;) {
+			control.setTextDirection (directions [j]);
+			assertEquals("orientation: " + orientations [i] + ", text direction: " + directions [j],
+					control.getTextDirection(), expectedDirections [j]);
+		}
+	}
+}
+@Test
 public void test_setFocus() {
 	control.setFocus();
 }

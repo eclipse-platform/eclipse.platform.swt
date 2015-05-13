@@ -1366,6 +1366,9 @@ public void setText (String string) {
 	} else {
 		OS.SetWindowText (handle, buffer);
 	}
+	if ((state & HAS_AUTO_DIRECTION) != 0) {
+		updateTextDirection (AUTO_TEXT_DIRECTION);
+	}
 }
 
 public void setVisible (boolean visible) {

@@ -92,13 +92,19 @@ public abstract class Widget {
 	/* Notify of the opportunity to skin this widget */
 	static final int SKIN_NEEDED = 1<<21;
 	
+	/* Bidi "auto" text direction */
+	static final int HAS_AUTO_DIRECTION = 1<<22;
+	
 	/* Default size for widgets */
 	static final int DEFAULT_WIDTH	= 64;
 	static final int DEFAULT_HEIGHT	= 64;
 
-	/* Bidi UCC to enforce text orientation */
+	/* Bidi UCC to enforce text direction */
 	static final char LRE = '\u202a';
 	static final char RLE = '\u202b';
+
+	/* Bidi flag and for auto text direction */
+	static final int AUTO_TEXT_DIRECTION = SWT.LEFT_TO_RIGHT | SWT.RIGHT_TO_LEFT;
 
 	/* Check and initialize the Common Controls DLL */
 	static final int MAJOR = 5, MINOR = 80;
@@ -1031,6 +1037,52 @@ void reskinWidget() {
 		this.state |= SKIN_NEEDED;
 		display.addSkinnableWidget(this);
 	}
+}
+
+static int resolveTextDirection(String text) {
+	if (text == null) return SWT.NONE;
+	int length = text.length();
+	if (length == 0) return SWT.NONE;
+	char[] rtlProbe = {' ', ' ', '1'};
+	/*
+	 * "Wide" version of win32 API can also run even on non-Unicode Windows,
+	 * hence need for OS.IsUnicode check here. 
+	 */
+	char[] ltrProbe = {RLE, 'a', ' '};
+	char[] numberProbe = {'\u05d0', ' ', ' '};
+	GCP_RESULTS result = new GCP_RESULTS();
+	result.lStructSize = GCP_RESULTS.sizeof;
+	int nGlyphs = result.nGlyphs = ltrProbe.length;
+	long /*int*/ hHeap = OS.GetProcessHeap();
+	long /*int*/ lpOrder = result.lpOrder = OS.HeapAlloc(hHeap, OS.HEAP_ZERO_MEMORY, nGlyphs * 4);
+	long /*int*/ hdc = OS.GetDC(0);
+	int[] order = new int[1];
+	int textDirection = SWT.NONE;
+	for (int i = 0; i < length; i++) {
+		char ch = text.charAt(i);
+		rtlProbe[0] = ch;
+		OS.GetCharacterPlacementW(hdc, rtlProbe, rtlProbe.length, 0, result, OS.GCP_REORDER);
+		OS.MoveMemory(order, result.lpOrder, 4);
+		if (order[0] == 2) {
+			textDirection = SWT.RIGHT_TO_LEFT;
+			break;
+		}
+		ltrProbe[2] = ch;
+		OS.GetCharacterPlacementW(hdc, ltrProbe, ltrProbe.length, 0, result, OS.GCP_REORDER);
+		OS.MoveMemory(order, result.lpOrder + 4, 4);
+		if (order[0] == 1) {
+			numberProbe[2] = ch;
+			OS.GetCharacterPlacementW(hdc, numberProbe, numberProbe.length, 0, result, OS.GCP_REORDER);
+			OS.MoveMemory(order, result.lpOrder, 4);
+			if (order[0] == 0) {
+				textDirection = SWT.LEFT_TO_RIGHT;
+				break;
+			}
+		}
+	}
+	OS.ReleaseDC (0, hdc);
+	OS.HeapFree(hHeap, 0, lpOrder);
+	return textDirection;
 }
 
 boolean sendDragEvent (int button, int x, int y) {

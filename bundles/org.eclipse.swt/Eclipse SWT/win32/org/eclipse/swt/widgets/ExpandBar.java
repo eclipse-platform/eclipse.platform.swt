@@ -571,7 +571,7 @@ boolean updateTextDirection(int textDirection) {
 	if (super.updateTextDirection(textDirection)) {
 		for (int i = 0, n = items.length; i < n; i++) {
 			if (items[i] != null) {
-				items[i].updateTextDirection(style & SWT.FLIP_TEXT_DIRECTION);
+				items[i].updateTextDirection(textDirection == AUTO_TEXT_DIRECTION ? AUTO_TEXT_DIRECTION : style & SWT.FLIP_TEXT_DIRECTION);
 			}
 		}
 		return true;

@@ -297,6 +297,9 @@ void _setText (String text) {
 	}
 	TCHAR buffer = new TCHAR (getCodePage (), text, true);
 	OS.SetWindowText (handle, buffer);
+	if ((state & HAS_AUTO_DIRECTION) != 0) {
+		updateTextDirection (AUTO_TEXT_DIRECTION);
+	}
 }
 
 /**
@@ -1096,6 +1099,24 @@ public void setText (String string) {
 //		}
 //	}
 	_setText (string);
+}
+
+@Override
+boolean updateTextDirection(int textDirection) {
+	if (textDirection == AUTO_TEXT_DIRECTION) {
+		textDirection = (style & SWT.ARROW) != 0 ? SWT.NONE : resolveTextDirection(text);
+	}
+	if (super.updateTextDirection(textDirection)) {
+// TODO: Keep for now, to follow up
+//		int flags = SWT.RIGHT_TO_LEFT | SWT.LEFT_TO_RIGHT;
+//		style &= ~SWT.MIRRORED;
+//		style &= ~flags;
+//		style |= textDirection & flags;
+//		updateOrientation ();
+//		checkMirrored ();
+		return true;
+	}
+	return false;
 }
 
 void updateImageList () {

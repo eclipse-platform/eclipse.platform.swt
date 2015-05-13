@@ -788,7 +788,7 @@ void _setText (String string) {
 	if (string.length () != 0) {
 		info.fsStyle |= OS.BTNS_SHOWTEXT;
 		TCHAR buffer;
-		if ((style & SWT.FLIP_TEXT_DIRECTION) != 0) {
+		if (OS.IsUnicode && (style & SWT.FLIP_TEXT_DIRECTION) != 0) {
 			int bits  = OS.GetWindowLong (hwnd, OS.GWL_EXSTYLE);
 			if ((bits & OS.WS_EX_LAYOUTRTL) != 0) {
 				buffer = new TCHAR (parent.getCodePage (), LRE + string, true);
@@ -838,8 +838,9 @@ public void setText (String string) {
 	if ((style & SWT.SEPARATOR) != 0) return;
 	if (string.equals (text)) return;
 	super.setText (string);
-	_setText (string);
-	
+	if ((state & HAS_AUTO_DIRECTION) == 0 || !updateTextDirection (AUTO_TEXT_DIRECTION)) {
+		_setText (string);
+	}
 	/*
 	* Bug in Windows.  For some reason, when the font is set
 	* before any tool item has text, the tool items resize to
@@ -857,6 +858,7 @@ public void setText (String string) {
 }
 
 boolean updateTextDirection(int textDirection) {
+	/* AUTO is handled by super */
 	if (super.updateTextDirection(textDirection) && text.length() != 0) {
 		_setText (text);
 		return true;

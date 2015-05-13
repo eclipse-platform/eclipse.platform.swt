@@ -184,15 +184,23 @@ public void setText (String string) {
 	checkWidget ();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 	text = string;
+	if ((state & HAS_AUTO_DIRECTION) != 0) {
+		updateTextDirection (AUTO_TEXT_DIRECTION);
+	}
 }
 
 boolean updateTextDirection(int textDirection) {
-	if (((style  & SWT.FLIP_TEXT_DIRECTION) ^ textDirection) != 0) {
+	if (textDirection == AUTO_TEXT_DIRECTION) {
+		state |= HAS_AUTO_DIRECTION;
+		textDirection = (style ^ resolveTextDirection (text)) == 0 ? 0 : SWT.FLIP_TEXT_DIRECTION;
+	} else {
+		state &= ~HAS_AUTO_DIRECTION;
+	}
+	if (((style & SWT.FLIP_TEXT_DIRECTION) ^ textDirection) != 0) {
 		style ^= SWT.FLIP_TEXT_DIRECTION;
 		return true;
 	}
-	return false;
+	return textDirection == AUTO_TEXT_DIRECTION;
 }
-
 
 }

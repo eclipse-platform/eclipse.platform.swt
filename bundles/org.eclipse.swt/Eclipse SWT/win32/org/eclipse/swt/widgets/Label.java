@@ -411,6 +411,9 @@ public void setText (String string) {
 	string = Display.withCrLf (string);
 	TCHAR buffer = new TCHAR (getCodePage (), string, true);
 	OS.SetWindowText (handle, buffer);
+	if ((state & HAS_AUTO_DIRECTION) != 0) {
+		updateTextDirection (AUTO_TEXT_DIRECTION);
+	}
 	/*
 	* Bug in Windows.  For some reason, the HBRUSH that
 	* is returned from WM_CTRLCOLOR is misaligned when
@@ -422,6 +425,14 @@ public void setText (String string) {
 	if (OS.COMCTL32_MAJOR < 6) {
 		if (findImageControl () != null) OS.InvalidateRect (handle, null, true);
 	}
+}
+
+@Override
+boolean updateTextDirection(int textDirection) {
+	if (textDirection == AUTO_TEXT_DIRECTION) {
+		textDirection = (style & SWT.SEPARATOR) != 0 ? SWT.NONE : resolveTextDirection(text);
+	}
+	return super.updateTextDirection(textDirection);
 }
 
 int widgetExtStyle () {

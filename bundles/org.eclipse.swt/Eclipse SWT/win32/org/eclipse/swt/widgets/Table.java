@@ -5775,6 +5775,21 @@ void updateOrientation () {
 	}
 }
 
+boolean updateTextDirection(int textDirection) {
+	if (super.updateTextDirection(textDirection)) {
+		if (textDirection == AUTO_TEXT_DIRECTION || (state & HAS_AUTO_DIRECTION) != 0) {
+			for (int i = 0, n = items.length; i < n; i++) {
+				if (items[i] != null) {
+					items[i].updateTextDirection(textDirection == AUTO_TEXT_DIRECTION ? AUTO_TEXT_DIRECTION : style & SWT.FLIP_TEXT_DIRECTION);
+				}
+			}
+		}
+		OS.InvalidateRect (handle, null, true);
+		return true;
+	}
+	return false;
+}
+
 int widgetStyle () {
 	int bits = super.widgetStyle () | OS.LVS_SHAREIMAGELISTS;
 	if ((style & SWT.HIDE_SELECTION) == 0) bits |= OS.LVS_SHOWSELALWAYS;
@@ -6850,6 +6865,18 @@ LRESULT wmNotifyChild (NMHDR hdr, long /*int*/ wParam, long /*int*/ lParam) {
 					if (!tipRequested && plvfi.iSubItem == 0 && length == 0) {
 						string = " "; //$NON-NLS-1$
 						length = 1;
+					}
+					if (length > 1 && (state & HAS_AUTO_DIRECTION) != 0) {
+						switch (resolveTextDirection(string)) {
+							case SWT.LEFT_TO_RIGHT:
+								string = LRE + string;
+								length++;
+								break;
+							case SWT.RIGHT_TO_LEFT:
+								string = RLE + string;
+								length++;
+								break;
+						}
 					}
 					char [] buffer = display.tableBuffer;
 					if (buffer == null || plvfi.cchTextMax > buffer.length) {

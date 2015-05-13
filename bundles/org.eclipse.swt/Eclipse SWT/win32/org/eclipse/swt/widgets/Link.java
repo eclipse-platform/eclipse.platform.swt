@@ -694,7 +694,11 @@ public void setText (String string) {
 	checkWidget ();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (string.equals (text)) return;
-	text = string;	
+	text = string;
+	if ((state & HAS_AUTO_DIRECTION) != 0) {
+		updateTextDirection (AUTO_TEXT_DIRECTION);
+	}
+
 	if (OS.COMCTL32_MAJOR >= 6) {
 		boolean enabled = OS.IsWindowEnabled (handle);
 		/*
@@ -739,6 +743,9 @@ public void setText (String string) {
 }
 
 boolean updateTextDirection(int textDirection) {
+	if (textDirection == AUTO_TEXT_DIRECTION) {
+		textDirection = resolveTextDirection(text);
+	}
 	if (super.updateTextDirection(textDirection)) {
 		int flags = SWT.RIGHT_TO_LEFT | SWT.LEFT_TO_RIGHT;
 		style &= ~SWT.MIRRORED;

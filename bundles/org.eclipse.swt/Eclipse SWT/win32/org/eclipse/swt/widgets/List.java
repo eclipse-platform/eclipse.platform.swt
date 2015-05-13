@@ -42,6 +42,7 @@ public class List extends Scrollable {
 	static final int INSET = 3;
 	static final long /*int*/ ListProc;
 	static final TCHAR ListClass = new TCHAR (0, "LISTBOX", true);
+	boolean addedUCC = false; // indicates whether Bidi UCC were added; 'state & HAS_AUTO_DIRECTION' isn't a sufficient indicator 
 	static {
 		WNDCLASS lpWndClass = new WNDCLASS ();
 		OS.GetClassInfo (0, ListClass, lpWndClass);
@@ -428,7 +429,7 @@ public String getItem (int index) {
 	if (length != OS.LB_ERR) {
 		TCHAR buffer = new TCHAR (getCodePage (), length + 1);
 		int result = (int)/*64*/OS.SendMessage (handle, OS.LB_GETTEXT, index, buffer);
-		if (result != OS.LB_ERR) return buffer.toString (0, length);
+		if (result != OS.LB_ERR) return ((state & HAS_AUTO_DIRECTION) != 0) ? buffer.toString (1, length - 1) : buffer.toString (0, length);
 	}
 	int count = (int)/*64*/OS.SendMessage (handle, OS.LB_GETCOUNT, 0, 0);
 	if (0 <= index && index < count) error (SWT.ERROR_CANNOT_GET_ITEM);
@@ -1548,6 +1549,50 @@ void updateMenuLocation (Event event) {
 	event.y = pt.y;
 }
 
+@Override
+boolean updateTextDirection (int textDirection) {
+	if (textDirection == AUTO_TEXT_DIRECTION) {
+		/*
+		 * To apply auto direction we use UCC that are not available in ANSI CP
+		 * and - most important - will not be supported by TCHAR - even though
+		 * they could be supported natively through "wide" (Unicode) versions of
+		 * win32 API. Also, if auto is already in effect, there's nothing to do.
+		 */
+		if (!OS.IsUnicode || (state & HAS_AUTO_DIRECTION) != 0) return false;
+		state |= HAS_AUTO_DIRECTION;
+	} else {
+		state &= ~HAS_AUTO_DIRECTION;
+		if (!addedUCC /*(state & HAS_AUTO_DIRECTION) == 0*/) {
+			return super.updateTextDirection (textDirection);
+		}
+	}
+	int count = (int)/*64*/OS.SendMessage (handle, OS.LB_GETCOUNT, 0, 0);
+	if (count == OS.LB_ERR) return false;
+	int selection = (int)/*64*/OS.SendMessage (handle, OS.LB_GETCURSEL, 0, 0);
+	int cp = getCodePage ();
+	addedUCC = false;
+	while (count-- > 0) {
+		int length = (int)/*64*/OS.SendMessage (handle, OS.LB_GETTEXTLEN, count, 0);
+		if (length == OS.LB_ERR) break;
+		if (length == 0) continue;
+		TCHAR buffer = new TCHAR (cp, length + 1);
+		if (OS.SendMessage (handle, OS.LB_GETTEXT, count, buffer) == OS.LB_ERR) break;
+		if (OS.SendMessage (handle, OS.LB_DELETESTRING, count, 0) == OS.LB_ERR) break;
+		if ((state & HAS_AUTO_DIRECTION) == 0) {
+			/* Should remove UCC */
+			char [] chars = new char [length - 1];
+			System.arraycopy (buffer.chars, 1, chars, 0, length - 1); // buffer.chars as we are always Unicode here
+			buffer = new TCHAR (cp, chars, true);
+		}
+		/* Adding UCC is handled in OS.LB_INSERTSTRING */
+		if (OS.SendMessage (handle, OS.LB_INSERTSTRING, count, buffer) == OS.LB_ERR) break;
+	}
+	if (selection != OS.LB_ERR) {
+		OS.SendMessage (handle, OS.LB_SETCURSEL, selection, 0);
+	}
+	return textDirection == AUTO_TEXT_DIRECTION || super.updateTextDirection (textDirection);
+}
+
 int widgetStyle () {
 	int bits = super.widgetStyle () | OS.LBS_NOTIFY | OS.LBS_NOINTEGRALHEIGHT;
 	if ((style & SWT.SINGLE) != 0) return bits;
@@ -1564,6 +1609,42 @@ TCHAR windowClass () {
 
 long /*int*/ windowProc () {
 	return ListProc;
+}
+
+long /*int*/ windowProc (long /*int*/ hwnd, int msg, long /*int*/ wParam, long /*int*/ lParam) {
+	if (!OS.IsUnicode || handle == 0 || lParam == 0 || (state & HAS_AUTO_DIRECTION) == 0) {
+		return callWindowProc (hwnd, msg, wParam, lParam);
+	}
+	switch (msg) {
+		case OS.LB_ADDSTRING:
+		case OS.LB_INSERTSTRING:
+		case OS.LB_FINDSTRINGEXACT:
+			int length = OS.wcslen (lParam); // we are always Unicode here
+			int cp = getCodePage ();
+			TCHAR buffer = new TCHAR (cp, length);
+			OS.MoveMemory (buffer, lParam, buffer.length () * TCHAR.sizeof);
+			String string = buffer.toString (0, length);
+			int direction = resolveTextDirection (string);
+			if (direction == SWT.NONE) {
+				/*
+				 * Force adding a UCC even when no strong characters are found.
+				 * Otherwise, the List items would retain the old direction,
+				 * which might be inappropriate for the new text.
+				 */
+				direction = (style & SWT.RIGHT_TO_LEFT) != 0 ? SWT.RIGHT_TO_LEFT : SWT.LEFT_TO_RIGHT;
+			}
+			string = (direction == SWT.RIGHT_TO_LEFT ? RLE : LRE) + string;
+			buffer = new TCHAR (cp, string, true);
+			long /*int*/ hHeap = OS.GetProcessHeap ();
+			length = buffer.length() * TCHAR.sizeof;
+			long /*int*/ pszText = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, length);
+			OS.MoveMemory (pszText, buffer, length); 
+			long /*int*/ code = super.windowProc (hwnd, msg, wParam, pszText);
+			OS.HeapFree (hHeap, 0, pszText);
+			addedUCC = true;
+			return code;
+	}
+	return callWindowProc (hwnd, msg, wParam, lParam);
 }
 
 LRESULT WM_CHAR (long /*int*/ wParam, long /*int*/ lParam) {

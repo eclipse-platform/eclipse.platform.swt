@@ -1176,20 +1176,24 @@ boolean setTabGroupFocus () {
 }
 
 boolean updateTextDirection(int textDirection) {
-	if (super.updateTextDirection(textDirection)) {
-		/* 
-		 * OS.WS_EX_RTLREADING doesn't propagate to children
-		 */
-		Control[] children = _getChildren ();
-		int i = children.length;
-		while (i-- > 0) {
-			if (children[i] != null && !children[i].isDisposed ()) {
-				children[i].updateTextDirection(textDirection);
-			}
+	super.updateTextDirection (textDirection);
+	/* 
+	 * Always continue, communicating the direction to the children since
+	 * OS.WS_EX_RTLREADING doesn't propagate to them natively, and since
+	 * the direction might need to be handled by each child individually.
+	 */
+	Control[] children = _getChildren ();
+	int i = children.length;
+	while (i-- > 0) {
+		if (children[i] != null && !children[i].isDisposed ()) {
+			children[i].updateTextDirection(textDirection);
 		}
-		return true;
 	}
-	return false;
+	/* 
+	 * Return value indicates whether or not to update derivatives, so in case
+	 * of AUTO always return true regardless of the actual update.
+	 */
+	return true;
 }
 
 String toolTipText (NMTTDISPINFO hdr) {

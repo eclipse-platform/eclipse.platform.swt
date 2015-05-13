@@ -198,7 +198,7 @@ void drawItem (GC gc, long /*int*/ hTheme, RECT clipRect, boolean drawFocus) {
 	if (text.length () > 0) {
 		rect.left += ExpandItem.TEXT_INSET;
 		TCHAR buffer;
-		if ((style & SWT.FLIP_TEXT_DIRECTION) != 0) {
+		if (OS.IsUnicode && (style & SWT.FLIP_TEXT_DIRECTION) != 0) {
 			int bits  = OS.GetWindowLong (parent.handle, OS.GWL_EXSTYLE);
 			if ((bits & OS.WS_EX_LAYOUTRTL) != 0) {
 				buffer = new TCHAR (parent.getCodePage (), LRE + text, false);
@@ -494,6 +494,9 @@ public void setImage (Image image) {
 
 public void setText (String string) {
 	super.setText (string);
+	if ((state & HAS_AUTO_DIRECTION) != 0) {
+		updateTextDirection (AUTO_TEXT_DIRECTION);
+	}
 	redraw (true);
 }
 }

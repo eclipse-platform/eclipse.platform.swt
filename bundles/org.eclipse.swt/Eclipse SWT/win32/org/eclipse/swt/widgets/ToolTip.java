@@ -436,6 +436,7 @@ public void setText (String string) {
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 	text = string;
 	//TODO - update when visible
+	//TODO - support text direction (?)
 }
 
 /**

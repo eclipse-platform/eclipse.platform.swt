@@ -237,8 +237,8 @@ String fixText (boolean enabled) {
 		if (!enabled && (OS.COMCTL32_MAJOR < 6 || !OS.IsAppThemed ())) {
 			string = " " + text + " ";
 		}
-		return (style & SWT.FLIP_TEXT_DIRECTION) == 0 ? string : string != null ? LRE + string : LRE + text;
-	} else if ((style & SWT.FLIP_TEXT_DIRECTION) != 0) {
+		return !OS.IsUnicode || (style & SWT.FLIP_TEXT_DIRECTION) == 0 ? string : string != null ? LRE + string : LRE + text;
+	} else if (OS.IsUnicode && (style & SWT.FLIP_TEXT_DIRECTION) != 0) {
 		return RLE + text;
 	}
 	return null;
@@ -399,18 +399,22 @@ public void setText (String string) {
 	checkWidget ();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 	text = string;
-	string = fixText (OS.IsWindowEnabled (handle));
-	TCHAR buffer = new TCHAR (getCodePage (), string == null ? text : string, true);
-	OS.SetWindowText (handle, buffer);
+	if ((state & HAS_AUTO_DIRECTION) == 0 || !updateTextDirection (AUTO_TEXT_DIRECTION)) {
+		string = fixText (OS.IsWindowEnabled (handle));
+		TCHAR buffer = new TCHAR (getCodePage (), string == null ? text : string, true);
+		OS.SetWindowText (handle, buffer);
+	}
 }
 
 boolean updateTextDirection(int textDirection) {
+	if (textDirection == AUTO_TEXT_DIRECTION) {
+		/* resolveTextDirection is called before fixText intentionally */
+		textDirection = resolveTextDirection (text);
+	}
 	if (super.updateTextDirection(textDirection)) {
 		String string = fixText (OS.IsWindowEnabled (handle));
-		if (string != null) {
-			TCHAR buffer = new TCHAR (getCodePage (), string, true);
-			OS.SetWindowText (handle, buffer);
-		}
+		TCHAR buffer = new TCHAR (getCodePage (), string == null ? text : string, true);
+		OS.SetWindowText (handle, buffer);
 		return true;
 	}
 	return false;
