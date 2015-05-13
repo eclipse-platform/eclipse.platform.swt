@@ -47,10 +47,10 @@ public class nsIXPConnect extends nsISupports {
 	}
 
 	public int JSValToVariant(long /*int*/ cx, long /*int*/ aJSVal, long /*int*/[] _retval) {
-		return XPCOM.VtblCall(this.getMethodIndex("JSValToVariant"), getAddress(), cx, aJSVal, _retval);
+		return XPCOM.VtblCall(this.getMethodIndex("jSValToVariant"), getAddress(), cx, aJSVal, _retval);
 	}
 
 	public int VariantToJS(long /*int*/ ctx, long /*int*/ scope, long /*int*/ value, long /*int*/ _retval) {
-		return XPCOM.VtblCall(this.getMethodIndex("VariantToJS"), getAddress(), ctx, scope, value, _retval);
+		return XPCOM.VtblCall(this.getMethodIndex("variantToJS"), getAddress(), ctx, scope, value, _retval);
 	}
 }
