@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2014 IBM Corporation and others.
+ * Copyright (c) 2000, 2015 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -1075,6 +1075,9 @@ public void setSelection (boolean selected) {
  * on Windows (starting with XP), GTK+ and OSX.  On other platforms,
  * a Button that has an image and text set into it will display the
  * image or text that was set most recently.
+ * </p><p>
+ * Also note, if escape characters like '\n', '\t' etc. are used
+ * in the string, then the behavior is platform dependent.
  * </p>
  * @param string the new text
  *

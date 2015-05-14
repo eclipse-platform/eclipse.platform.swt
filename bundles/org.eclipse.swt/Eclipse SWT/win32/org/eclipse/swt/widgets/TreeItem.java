@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2012 IBM Corporation and others.
+ * Copyright (c) 2000, 2015 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -1735,7 +1735,10 @@ public void setItemCount (int count) {
 
 /**
  * Sets the text for multiple columns in the tree. 
- * 
+ * <p>
+ * Note: If escape characters like '\n', '\t' etc. are used
+ * in the string, then the behavior is platform dependent.
+ * </p>
  * @param strings the array of new strings
  *
  * @exception IllegalArgumentException <ul>
@@ -1759,7 +1762,10 @@ public void setText (String [] strings) {
 
 /**
  * Sets the receiver's text at a column
- *
+ * <p>
+ * Note: If escape characters like '\n', '\t' etc. are used
+ * in the string, then the behavior is platform dependent.
+ * </p>
  * @param index the column index
  * @param string the new text
  *

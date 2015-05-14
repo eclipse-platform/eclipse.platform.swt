@@ -140,7 +140,10 @@ public Combo (Composite parent, int style) {
 
 /**
  * Adds the argument to the end of the receiver's list.
- *
+ * <p>
+ * Note: If escape characters like '\n', '\t' etc. are used
+ * in the string, then the behavior is platform dependent.
+ * </p>
  * @param string the new item
  *
  * @exception IllegalArgumentException <ul>
@@ -170,6 +173,9 @@ public void add (String string) {
  * Note: To add an item at the end of the list, use the
  * result of calling <code>getItemCount()</code> as the
  * index or use <code>add(String)</code>.
+ * </p><p>
+ * Also note, if escape characters like '\n', '\t' etc. are used
+ * in the string, then the behavior is platform dependent.
  * </p>
  *
  * @param string the new item
@@ -2259,6 +2265,9 @@ public void setSelection (Point selection) {
  * setting the text to a string containing line breaks or
  * other special characters will probably cause it to 
  * display incorrectly.
+ * </p><p>
+ * Also note, if escape characters like '\n', '\t' etc. are used
+ * in the string, then the behavior is platform dependent.
  * </p>
  *
  * @param string the new text
