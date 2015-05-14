@@ -1480,6 +1480,9 @@ public TreeItem getItem (Point point) {
 	OS.gtk_widget_realize (handle);
 	int x = point.x;
 	int y = point.y;
+	if (getHeaderVisible() && OS.GTK_VERSION > OS.VERSION(3, 9, 0)) {
+		y -= getHeaderHeight();
+	}
 	if ((style & SWT.MIRRORED) != 0) x = getClientWidth () - x;
 	long /*int*/ [] columnHandle = new long /*int*/ [1];
 	if (!OS.gtk_tree_view_get_path_at_pos (handle, x, y, path, columnHandle, null, null)) return null;

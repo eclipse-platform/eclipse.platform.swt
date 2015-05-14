@@ -1470,7 +1470,11 @@ public TableItem getItem (Point point) {
 	if (point == null) error (SWT.ERROR_NULL_ARGUMENT);
 	long /*int*/ [] path = new long /*int*/ [1];
 	OS.gtk_widget_realize (handle);
-	if (!OS.gtk_tree_view_get_path_at_pos (handle, point.x, point.y, path, null, null, null)) return null;
+	int y = point.y;
+	if (getHeaderVisible() && OS.GTK_VERSION > OS.VERSION(3, 9, 0)) {
+		y -= getHeaderHeight();
+	}
+	if (!OS.gtk_tree_view_get_path_at_pos (handle, point.x, y, path, null, null, null)) return null;
 	if (path [0] == 0) return null;
 	long /*int*/ indices = OS.gtk_tree_path_get_indices (path [0]);
 	TableItem item = null;
