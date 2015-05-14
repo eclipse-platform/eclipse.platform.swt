@@ -1624,6 +1624,9 @@ public void setSelection (Point selection) {
  * setting the text to a string containing line breaks or
  * other special characters will probably cause it to 
  * display incorrectly.
+ * </p><p>
+ * Also note, if escape characters like '\n', '\t' etc. are used
+ * in the string, then the behavior is platform dependent.
  * </p>
  *
  * @param string the new text
