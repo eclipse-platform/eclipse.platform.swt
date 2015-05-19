@@ -1736,7 +1736,7 @@ public void setItemCount (int count) {
 /**
  * Sets the text for multiple columns in the tree. 
  * <p>
- * Note: If escape characters like '\n', '\t' etc. are used
+ * Note: If escape sequences like '\n', '\t' etc. are used
  * in the string, then the behavior is platform dependent.
  * </p>
  * @param strings the array of new strings
@@ -1763,7 +1763,7 @@ public void setText (String [] strings) {
 /**
  * Sets the receiver's text at a column
  * <p>
- * Note: If escape characters like '\n', '\t' etc. are used
+ * Note: If escape sequences like '\n', '\t' etc. are used
  * in the string, then the behavior is platform dependent.
  * </p>
  * @param index the column index

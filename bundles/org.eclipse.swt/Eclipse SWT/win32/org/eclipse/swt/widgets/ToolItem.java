@@ -821,7 +821,7 @@ void _setText (String string) {
  * escaped by doubling it in the string, causing a single
  * '&amp;' to be displayed.
  * </p><p>
- * Note: If escape characters like '\n', '\t' etc. are used
+ * Note: If escape sequences like '\n', '\t' etc. are used
  * in the string, then the behavior is platform dependent.
  * </p>
  * 

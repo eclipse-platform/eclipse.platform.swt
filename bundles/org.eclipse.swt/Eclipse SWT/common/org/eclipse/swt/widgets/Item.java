@@ -170,7 +170,7 @@ public void setImage (Image image) {
 /**
  * Sets the receiver's text.
  * <p>
- * Note: If escape characters like '\n', '\t' etc. are used
+ * Note: If escape sequences like '\n', '\t' etc. are used
  * in the string, then the behavior is platform dependent.
  * </p>
  * @param string the new text

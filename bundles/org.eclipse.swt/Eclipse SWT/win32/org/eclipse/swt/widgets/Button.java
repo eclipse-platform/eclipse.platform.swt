@@ -1076,7 +1076,7 @@ public void setSelection (boolean selected) {
  * a Button that has an image and text set into it will display the
  * image or text that was set most recently.
  * </p><p>
- * Also note, if escape characters like '\n', '\t' etc. are used
+ * Also note, if escape sequences like '\n', '\t' etc. are used
  * in the string, then the behavior is platform dependent.
  * </p>
  * @param string the new text
