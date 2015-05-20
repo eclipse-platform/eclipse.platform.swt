@@ -1340,7 +1340,7 @@ void setSystemMenu () {
  * window manager will typically display as the receiver's
  * <em>title</em>, to the argument, which must not be null. 
  * <p>
- * Note: If escape sequences like '\n', '\t' etc. are used
+ * Note: If control characters like '\n', '\t' etc. are used
  * in the string, then the behavior is platform dependent.
  * </p>
  *

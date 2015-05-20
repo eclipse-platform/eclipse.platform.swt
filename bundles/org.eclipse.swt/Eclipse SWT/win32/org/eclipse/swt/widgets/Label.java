@@ -372,7 +372,7 @@ public void setImage (Image image) {
  * a single '&amp;' to be displayed.
  * </p>
  * <p>
- * Note: If escape sequences like '\n', '\t' etc. are used
+ * Note: If control characters like '\n', '\t' etc. are used
  * in the string, then the behavior is platform dependent.
  * </p>
  * 
