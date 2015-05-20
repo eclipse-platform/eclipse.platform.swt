@@ -1618,39 +1618,39 @@ long /*int*/ windowProc () {
 }
 
 long /*int*/ windowProc (long /*int*/ hwnd, int msg, long /*int*/ wParam, long /*int*/ lParam) {
-	if (!OS.IsUnicode || handle == 0 || lParam == 0 || (state & HAS_AUTO_DIRECTION) == 0) {
-		return callWindowProc (hwnd, msg, wParam, lParam);
+	/* Below code is to support auto text direction. */
+	if (OS.IsUnicode && handle != 0 && lParam != 0 && (state & HAS_AUTO_DIRECTION) != 0) {
+		switch (msg) {
+			case OS.LB_ADDSTRING:
+			case OS.LB_INSERTSTRING:
+			case OS.LB_FINDSTRINGEXACT:
+				int length = OS.wcslen (lParam); // we are always Unicode here
+				int cp = getCodePage ();
+				TCHAR buffer = new TCHAR (cp, length);
+				OS.MoveMemory (buffer, lParam, buffer.length () * TCHAR.sizeof);
+				String string = buffer.toString (0, length);
+				int direction = resolveTextDirection (string);
+				if (direction == SWT.NONE) {
+					/*
+					 * Force adding a UCC even when no strong characters are found.
+					 * Otherwise, the List items would retain the old direction,
+					 * which might be inappropriate for the new text.
+					 */
+					direction = (style & SWT.RIGHT_TO_LEFT) != 0 ? SWT.RIGHT_TO_LEFT : SWT.LEFT_TO_RIGHT;
+				}
+				string = (direction == SWT.RIGHT_TO_LEFT ? RLE : LRE) + string;
+				buffer = new TCHAR (cp, string, true);
+				long /*int*/ hHeap = OS.GetProcessHeap ();
+				length = buffer.length() * TCHAR.sizeof;
+				long /*int*/ pszText = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, length);
+				OS.MoveMemory (pszText, buffer, length); 
+				long /*int*/ code = super.windowProc (hwnd, msg, wParam, pszText);
+				OS.HeapFree (hHeap, 0, pszText);
+				addedUCC = true;
+				return code;
+		}
 	}
-	switch (msg) {
-		case OS.LB_ADDSTRING:
-		case OS.LB_INSERTSTRING:
-		case OS.LB_FINDSTRINGEXACT:
-			int length = OS.wcslen (lParam); // we are always Unicode here
-			int cp = getCodePage ();
-			TCHAR buffer = new TCHAR (cp, length);
-			OS.MoveMemory (buffer, lParam, buffer.length () * TCHAR.sizeof);
-			String string = buffer.toString (0, length);
-			int direction = resolveTextDirection (string);
-			if (direction == SWT.NONE) {
-				/*
-				 * Force adding a UCC even when no strong characters are found.
-				 * Otherwise, the List items would retain the old direction,
-				 * which might be inappropriate for the new text.
-				 */
-				direction = (style & SWT.RIGHT_TO_LEFT) != 0 ? SWT.RIGHT_TO_LEFT : SWT.LEFT_TO_RIGHT;
-			}
-			string = (direction == SWT.RIGHT_TO_LEFT ? RLE : LRE) + string;
-			buffer = new TCHAR (cp, string, true);
-			long /*int*/ hHeap = OS.GetProcessHeap ();
-			length = buffer.length() * TCHAR.sizeof;
-			long /*int*/ pszText = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, length);
-			OS.MoveMemory (pszText, buffer, length); 
-			long /*int*/ code = super.windowProc (hwnd, msg, wParam, pszText);
-			OS.HeapFree (hHeap, 0, pszText);
-			addedUCC = true;
-			return code;
-	}
-	return callWindowProc (hwnd, msg, wParam, lParam);
+	return super.windowProc (hwnd, msg, wParam, lParam);
 }
 
 LRESULT WM_CHAR (long /*int*/ wParam, long /*int*/ lParam) {
