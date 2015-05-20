@@ -7235,6 +7235,10 @@ public static final void gtk_container_add(long /*int*/ container, long /*int*/ 
 		lock.unlock();
 	}
 }
+
+//Do not confuse this function with gtk_container_foreach(..).
+//Make sure you know what you are doing when using this. Please be attentive to swt_fixed_forall(..)
+// found in os_custom.c, which overrides this function for swtFixed container with custom behaviour.
 /**
  * @param container cast=(GtkContainer *)
  * @param callback cast=(GtkCallback)
