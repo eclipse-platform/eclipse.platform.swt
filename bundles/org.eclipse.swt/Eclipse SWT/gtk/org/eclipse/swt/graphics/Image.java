@@ -762,7 +762,7 @@ public Image(Device device, ImageDataProvider imageDataProvider) {
 }
 
 int getDeviceZoom () {
-	return DPIUtil.mapDPIToZoom (device.getActualDPI ());
+	return DPIUtil.mapDPIToZoom (device._getDPIx ());
 }
 
 /**
@@ -771,10 +771,10 @@ int getDeviceZoom () {
  * @return true if image is refreshed
  */
 boolean refreshImageForZoom () {
-	int deviceZoomLevel = getDeviceZoom();
 	boolean refreshed = false;
-	if (deviceZoomLevel != currentDeviceZoom) {
-		if (imageFileNameProvider != null) {
+	if (imageFileNameProvider != null) {
+		int deviceZoomLevel = getDeviceZoom();
+		if (deviceZoomLevel != currentDeviceZoom) {
 			boolean[] found = new boolean[1];
 			String filename = DPIUtil.validateAndGetImagePathAtZoom (imageFileNameProvider, deviceZoomLevel, found);
 			/* Avoid re-creating the fall-back image, when current zoom is already 100% */
@@ -786,7 +786,11 @@ boolean refreshImageForZoom () {
 				init ();
 				refreshed = true;
 			}
-		} else if (imageDataProvider != null) {
+			currentDeviceZoom = deviceZoomLevel;
+		}
+	} else if (imageDataProvider != null) {
+		int deviceZoomLevel = getDeviceZoom();
+		if (deviceZoomLevel != currentDeviceZoom) {
 			boolean[] found = new boolean[1];
 			ImageData data = DPIUtil.validateAndGetImageDataAtZoom (imageDataProvider, deviceZoomLevel, found);
 			/* Avoid re-creating the fall-back image, when current zoom is already 100% */
@@ -797,8 +801,8 @@ boolean refreshImageForZoom () {
 				init();
 				refreshed = true;
 			}
+			currentDeviceZoom = deviceZoomLevel;
 		}
-		currentDeviceZoom = deviceZoomLevel;
 	}
 	return refreshed;
 }

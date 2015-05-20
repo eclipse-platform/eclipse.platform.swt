@@ -11,10 +11,10 @@
 package org.eclipse.swt.graphics;
 
  
+import org.eclipse.swt.*;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.gdip.*;
 import org.eclipse.swt.internal.win32.*;
-import org.eclipse.swt.*;
 
 /**
  * This class is the abstract superclass of all device objects,
@@ -471,6 +471,18 @@ public Point getDPI () {
 	return new Point (dpiX, dpiY);
 }
 
+/**
+ * Returns DPI in x direction. In the modern monitors DPI for
+ * X and Y directions is same.
+ *
+ * @return the horizontal DPI
+ */
+int _getDPIx () {
+	long /*int*/ hDC = internal_new_GC (null);
+	int dpi = OS.GetDeviceCaps (hDC, OS.LOGPIXELSX);
+	internal_dispose_GC (hDC, null);
+	return dpi;
+}
 /**
  * Returns <code>FontData</code> objects which describe
  * the fonts that match the given arguments. If the

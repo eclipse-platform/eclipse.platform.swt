@@ -955,10 +955,15 @@ static long /*int*/ XIOErrorProc (long /*int*/ xDisplay) {
 	return 0;
 }
 
-int getActualDPI () {
+/**
+ * Returns DPI in x direction. In the modern monitors DPI for
+ * X and Y directions is same.
+ *
+ * @return the horizontal DPI
+ */
+int _getDPIx () {
 	long /*int*/ screen = OS.gdk_screen_get_default();
-	Rectangle rect = getBounds();
-	int monitor = OS.gdk_screen_get_monitor_at_point(screen, rect.x, rect.y);
+	int monitor = OS.gdk_screen_get_monitor_at_point(screen, 0, 0);
 
 	GdkRectangle dest = new GdkRectangle ();
 	OS.gdk_screen_get_monitor_geometry(screen, monitor, dest);
