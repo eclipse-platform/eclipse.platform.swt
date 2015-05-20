@@ -563,6 +563,13 @@ static void swt_fixed_map (GtkWidget *widget) {
 		}
 	}
 	if (gtk_widget_get_has_window (widget)) {
+		//NOTE: contrary to most of GTK, swt_fixed_* container does not raise windows upon showing them.
+		//This has the effect that widgets are drawn *beneath* the previous one.
+		//E.g if this line is changed to gdk_window_show (..) then widgets are drawn on top of the previous one.
+		//This affects mostly only the absolute layout with overlapping widgets, e.g minimizied panels that
+		//pop-out in Eclipse (aka fast-view).
+		//As such, be attentive to swt_fixed_forall(..); traversing children may need to be done in reverse in some
+		//cases.
 		gdk_window_show_unraised (gtk_widget_get_window (widget));
 	}
 }
@@ -696,10 +703,30 @@ static void swt_fixed_forall (GtkContainer *container, gboolean include_internal
 	GList *list;
 	
 	list = priv->children;
+
+	// NOTE: The direction of the list traversal is conditional.
+	//
+	// 1) When we do a *_foreach() traversal (i.e, include_internals==FALSE), we traverse the list as normal
+	// from front to back.
+	// This is used to layout higher level widgets inside containers (e.g row/grid etc..) in the expected way.
+	// If for a non-internal traversal we were to go in reverse, then widgets would get laid out in inverse order.
+	// 2) When we do a *_forall() traversal (i.e, include_internals==TRUE), we traverse the list in *reverse* order.
+	// This is an internal traversal of the internals of a widget. Reverse traversal is necessary for things like
+	// DnD Drop and DnD Motion events to find the correct widget in the case of overlapping  widgets on an absolute layout.
+	// Reversal is required because in swt_fixed_map(..) we do not raise the widget when we show it, as a result
+	// the stack is in reverse.
+	if (include_internals)
+			list = g_list_last(list);
+
 	while (list) {
 		SwtFixedChild *child_data = list->data;
 		GtkWidget *child = child_data->widget;
-		list = list->next;
+
+		if (include_internals)
+			list = list->prev;
+		else
+			list = list->next;
+
 		(* callback) (child, callback_data);
 	}
 }
