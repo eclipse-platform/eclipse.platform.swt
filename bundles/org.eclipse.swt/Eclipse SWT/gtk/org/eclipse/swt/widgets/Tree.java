@@ -2675,7 +2675,8 @@ void rendererRender (long /*int*/ cell, long /*int*/ cr, long /*int*/ window, lo
 		}
 	}
 	if (item != null) {
-		if (OS.GTK_IS_CELL_RENDERER_TOGGLE (cell) || (OS.GTK_IS_CELL_RENDERER_PIXBUF (cell) && (columnIndex != 0 || (style & SWT.CHECK) == 0))) {
+		if (OS.GTK_IS_CELL_RENDERER_TOGGLE (cell) ||
+				( (OS.GTK_IS_CELL_RENDERER_PIXBUF (cell) || OS.GTK_VERSION > OS.VERSION(3, 13, 0)) && (columnIndex != 0 || (style & SWT.CHECK) == 0))) {
 			drawFlags = (int)/*64*/flags;
 			drawState = SWT.FOREGROUND;
 			long /*int*/ [] ptr = new long /*int*/ [1];
@@ -2772,9 +2773,6 @@ void rendererRender (long /*int*/ cell, long /*int*/ cr, long /*int*/ window, lo
 				sendEvent (SWT.EraseItem, event);
 				drawForeground = null;
 				drawState = event.doit ? event.detail : 0;
-				if (OS.GTK3 && OS.GTK_VERSION <= OS.VERSION(3, 14, 8)) {
-					drawState |= SWT.FOREGROUND;
-				}
 				drawFlags &= ~(OS.GTK_CELL_RENDERER_FOCUSED | OS.GTK_CELL_RENDERER_SELECTED);
 				if ((drawState & SWT.SELECTED) != 0) drawFlags |= OS.GTK_CELL_RENDERER_SELECTED;
 				if ((drawState & SWT.FOCUSED) != 0) drawFlags |= OS.GTK_CELL_RENDERER_FOCUSED;
@@ -2818,10 +2816,8 @@ void rendererRender (long /*int*/ cell, long /*int*/ cr, long /*int*/ window, lo
 		if (OS.GTK_IS_CELL_RENDERER_TEXT (cell)) {
 			if (hooks (SWT.PaintItem)) {
 				GdkRectangle rect = new GdkRectangle ();
-				GdkRectangle clipRect = new GdkRectangle ();
 				long /*int*/ path = OS.gtk_tree_model_get_path (modelHandle, iter);
 				OS.gtk_tree_view_get_cell_area (handle, path, columnHandle, rect);
-				OS.gtk_tree_view_get_background_area (handle, path, columnHandle, clipRect);
 				OS.gtk_tree_path_free (path);
 				// A workaround for https://bugs.eclipse.org/bugs/show_bug.cgi?id=459117
 				if (cr != 0 && OS.GTK_VERSION > OS.VERSION(3, 9, 0) && OS.GTK_VERSION <= OS.VERSION(3, 14, 8)) {
@@ -2874,12 +2870,9 @@ void rendererRender (long /*int*/ cell, long /*int*/ cr, long /*int*/ window, lo
 				gc.setFont (item.getFont (columnIndex));
 				if ((style & SWT.MIRRORED) != 0) {
 					rect.x = getClientWidth () - rect.width - rect.x;
-					clipRect.x = getClientWidth () - clipRect.width - clipRect.x;
 				}
 
-				if (!OS.GTK3){
-					gc.setClipping (clipRect.x, clipRect.y, clipRect.width, clipRect.height);
-				}
+				gc.setClipping (rect.x, rect.y, rect.width, rect.height);
 
 				Event event = new Event ();
 				event.item = item;
@@ -2890,9 +2883,7 @@ void rendererRender (long /*int*/ cell, long /*int*/ cr, long /*int*/ window, lo
 				event.width = contentWidth [0];
 				event.height = rect.height;
 				event.detail = drawState;
-				if (!OS.GTK3 || OS.GTK_VERSION > OS.VERSION(3, 14, 8)) {
-					sendEvent (SWT.PaintItem, event);
-				}
+				sendEvent(SWT.PaintItem, event);
 				gc.dispose();
 			}
 		}
