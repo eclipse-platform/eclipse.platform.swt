@@ -2662,7 +2662,8 @@ void rendererRender (long /*int*/ cell, long /*int*/ cr, long /*int*/ window, lo
 		}
 	}
 	if (item != null) {
-		if (OS.GTK_IS_CELL_RENDERER_TOGGLE (cell) || (OS.GTK_IS_CELL_RENDERER_PIXBUF (cell) && (columnIndex != 0 || (style & SWT.CHECK) == 0))) {
+		if (OS.GTK_IS_CELL_RENDERER_TOGGLE (cell) ||
+				( (OS.GTK_IS_CELL_RENDERER_PIXBUF (cell) || OS.GTK_VERSION > OS.VERSION(3, 13, 0)) && (columnIndex != 0 || (style & SWT.CHECK) == 0))) {
 			drawFlags = (int)/*64*/flags;
 			drawState = SWT.FOREGROUND;
 			long /*int*/ [] ptr = new long /*int*/ [1];
