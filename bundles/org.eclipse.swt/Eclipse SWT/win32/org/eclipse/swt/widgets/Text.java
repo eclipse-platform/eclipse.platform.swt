@@ -2482,6 +2482,9 @@ boolean updateTextDirection(int textDirection) {
 				textDirection = (style & SWT.RIGHT_TO_LEFT) != 0 ? SWT.RIGHT_TO_LEFT : SWT.LEFT_TO_RIGHT;
 			}
 		}
+		state |= HAS_AUTO_DIRECTION;
+	} else {
+		state &= ~HAS_AUTO_DIRECTION;
 	}
 	if (super.updateTextDirection(textDirection)) {
 		clearSegments (true);
