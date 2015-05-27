@@ -2757,6 +2757,9 @@ void rendererRender (long /*int*/ cell, long /*int*/ cr, long /*int*/ window, lo
 					GdkRectangle r = new GdkRectangle();
 					OS.gdk_cairo_get_clip_rectangle(cr, r);
 					gc.setClipping(rect.x, r.y, r.width, r.height);
+					if (OS.GTK_VERSION <= OS.VERSION(3, 14, 8)) {
+						rect.width = r.width;
+					}
 				} else {
 					gc.setClipping (rect.x, rect.y, rect.width, rect.height);
 				}
