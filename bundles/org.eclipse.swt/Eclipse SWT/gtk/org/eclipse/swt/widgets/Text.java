@@ -2463,6 +2463,10 @@ void setTabStops (int tabs) {
  * Sets the contents of the receiver to the given string. If the receiver has style
  * SINGLE and the argument contains multiple lines of text, the result of this
  * operation is undefined and may vary from platform to platform.
+ * <p>
+ * Note: If control characters like '\n', '\t' etc. are used
+ * in the string, then the behavior is platform dependent.
+ * </p>
  *
  * @param string the new text
  *

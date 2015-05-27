@@ -2141,6 +2141,11 @@ public void setModified (boolean modified) {
  * default shape of the shell is restored.  The shell
  * must be created with the style SWT.NO_TRIM in order
  * to specify a region.
+ * <p>
+ * NOTE: This method also sets the size of the shell. Clients should
+ * not call {@link #setSize} or {@link #setBounds} on this shell.
+ * Furthermore, the passed region should not be modified any more.
+ * </p>
  *
  * @param region the region that defines the shape of the shell (or null)
  *

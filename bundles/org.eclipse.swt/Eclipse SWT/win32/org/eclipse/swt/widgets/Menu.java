@@ -610,6 +610,7 @@ void destroyItem (MenuItem item) {
 	redraw ();
 }
 
+@Override
 void destroyWidget () {
 	MenuItem cascade = this.cascade;
 	long /*int*/ hMenu = handle, hCB = hwndCB;
@@ -913,6 +914,7 @@ int GetMenuItemCount (long /*int*/ handle) {
 	return OS.GetMenuItemCount (handle);
 }
 
+@Override
 String getNameText () {
 	String result = "";
 	MenuItem [] items = getItems ();
@@ -998,9 +1000,10 @@ public Menu getParentMenu () {
  * Returns the receiver's shell. For all controls other than
  * shells, this simply returns the control's nearest ancestor
  * shell. Shells return themselves, even if they are children
- * of other shells.
+ * of other shells. Returns null if receiver or its ancestor 
+ * is the application menubar.
  *
- * @return the receiver's shell
+ * @return the receiver's shell or null
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -1171,12 +1174,14 @@ void redraw () {
 	}
 }
 
+@Override
 void releaseHandle () {
 	super.releaseHandle ();
 	handle = hwndCB = 0;
 	cascade = null;
 }
 
+@Override
 void releaseChildren (boolean destroy) {
 	MenuItem [] items = getItems ();
 	for (int i=0; i<items.length; i++) {
@@ -1192,6 +1197,7 @@ void releaseChildren (boolean destroy) {
 	super.releaseChildren (destroy);
 }
 
+@Override
 void releaseParent () {
 	super.releaseParent ();
 	if ((style & SWT.BAR) != 0) {
@@ -1206,6 +1212,7 @@ void releaseParent () {
 	}
 }
 
+@Override
 void releaseWidget () {
 	super.releaseWidget ();
 	backgroundImage = null;
@@ -1271,6 +1278,7 @@ public void removeMenuListener (MenuListener listener) {
 	eventTable.unhook (SWT.Show, listener);
 }
 
+@Override
 void reskinChildren (int flags) {
 	MenuItem [] items = getItems ();
 	for (int i=0; i<items.length; i++) {

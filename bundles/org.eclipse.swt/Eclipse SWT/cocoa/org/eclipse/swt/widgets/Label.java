@@ -503,6 +503,10 @@ public void setImage (Image image) {
  * '&amp;' can be escaped by doubling it in the string, causing
  * a single '&amp;' to be displayed.
  * </p>
+ * <p>
+ * Note: If control characters like '\n', '\t' etc. are used
+ * in the string, then the behavior is platform dependent.
+ * </p>
  * 
  * @param string the new text
  *

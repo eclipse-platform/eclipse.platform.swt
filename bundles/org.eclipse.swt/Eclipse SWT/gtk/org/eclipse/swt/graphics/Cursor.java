@@ -130,6 +130,7 @@ Cursor (Device device) {
  * @see SWT#CURSOR_IBEAM
  * @see SWT#CURSOR_NO
  * @see SWT#CURSOR_HAND
+ * @see #dispose()
  */
 public Cursor(Device device, int style) {
 	super(device);
@@ -203,6 +204,8 @@ public Cursor(Device device, int style) {
  * @exception SWTError <ul>
  *    <li>ERROR_NO_HANDLES - if a handle could not be obtained for cursor creation</li>
  * </ul>
+ *
+ * @see #dispose()
  */
 public Cursor(Device device, ImageData source, ImageData mask, int hotspotX, int hotspotY) {
 	super(device);
@@ -284,6 +287,8 @@ public Cursor(Device device, ImageData source, ImageData mask, int hotspotX, int
  * @exception SWTError <ul>
  *    <li>ERROR_NO_HANDLES - if a handle could not be obtained for cursor creation</li>
  * </ul>
+ *
+ * @see #dispose()
  *
  * @since 3.0
  */

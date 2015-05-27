@@ -1092,6 +1092,9 @@ public void setSelection (boolean selected) {
  * on Windows (starting with XP), GTK+ and OSX.  On other platforms,
  * a Button that has an image and text set into it will display the
  * image or text that was set most recently.
+ * </p><p>
+ * Also note, if control characters like '\n', '\t' etc. are used
+ * in the string, then the behavior is platform dependent.
  * </p>
  * @param string the new text
  *

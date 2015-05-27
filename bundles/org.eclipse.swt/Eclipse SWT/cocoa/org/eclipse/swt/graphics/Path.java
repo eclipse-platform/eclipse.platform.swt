@@ -59,6 +59,9 @@ public class Path extends Resource {
  * graphics subsystem which may not be available on some
  * platforms.
  * </p>
+ * <p>
+ * You must dispose the path when it is no longer required. 
+ * </p>
  * 
  * @param device the device on which to allocate the path
  * 
@@ -99,6 +102,9 @@ public Path (Device device) {
  * This operation requires the operating system's advanced
  * graphics subsystem which may not be available on some
  * platforms.
+ * </p>
+ * <p>
+ * You must dispose the path when it is no longer required. 
  * </p>
  * 
  * @param device the device on which to allocate the path
@@ -145,11 +151,14 @@ public Path (Device device, Path path, float flatness) {
 }
 
 /**
- * Constructs a new Path with the specifed PathData.
+ * Constructs a new Path with the specified PathData.
  * <p>
  * This operation requires the operating system's advanced
  * graphics subsystem which may not be available on some
  * platforms.
+ * </p>
+ * <p>
+ * You must dispose the path when it is no longer required. 
  * </p>
  * 
  * @param device the device on which to allocate the path

@@ -1383,6 +1383,10 @@ public void setLayoutData (Object layoutData) {
  * argument, which is specified in display relative coordinates,
  * to coordinates relative to the receiver.
  * <p>
+ * NOTE: To properly map a rectangle or a corner of a rectangle on a right-to-left platform, use
+ * {@link Display#map(Control, Control, Rectangle)}.
+ * </p>
+ *
  * @param x the x coordinate to be translated
  * @param y the y coordinate to be translated
  * @return the translated coordinates
@@ -1410,6 +1414,10 @@ public Point toControl (int x, int y) {
  * argument, which is specified in display relative coordinates,
  * to coordinates relative to the receiver.
  * <p>
+ * NOTE: To properly map a rectangle or a corner of a rectangle on a right-to-left platform, use
+ * {@link Display#map(Control, Control, Rectangle)}.
+ * </p>
+ *
  * @param point the point to be translated (must not be null)
  * @return the translated coordinates
  *
@@ -1432,6 +1440,10 @@ public Point toControl (Point point) {
  * argument, which is specified in coordinates relative to
  * the receiver, to display relative coordinates.
  * <p>
+ * NOTE: To properly map a rectangle or a corner of a rectangle on a right-to-left platform, use
+ * {@link Display#map(Control, Control, Rectangle)}.
+ * </p>
+ *
  * @param x the x coordinate to be translated
  * @param y the y coordinate to be translated
  * @return the translated coordinates
@@ -1459,6 +1471,10 @@ public Point toDisplay (int x, int y) {
  * argument, which is specified in coordinates relative to
  * the receiver, to display relative coordinates.
  * <p>
+ * NOTE: To properly map a rectangle or a corner of a rectangle on a right-to-left platform, use
+ * {@link Display#map(Control, Control, Rectangle)}.
+ * </p>
+ *
  * @param point the point to be translated (must not be null)
  * @return the translated coordinates
  *
@@ -4751,8 +4767,11 @@ boolean setTabItemFocus (boolean next) {
 
 /**
  * Sets the base text direction (a.k.a. "paragraph direction") of the receiver,
- * which must be one of the constants <code>SWT.LEFT_TO_RIGHT</code> or
- * <code>SWT.RIGHT_TO_LEFT</code>.
+ * which must be one of the constants <code>SWT.LEFT_TO_RIGHT</code>,
+ * <code>SWT.RIGHT_TO_LEFT</code>, or a bitwise disjunction 
+ * <code>SWT.LEFT_TO_RIGHT | SWT.RIGHT_TO_LEFT</code>. The latter stands for an
+ * "auto" direction, which implies that a control containing text derives the
+ * direction from the directionality of the first strong bidi character.
  * <p>
  * <code>setOrientation</code> would override this value with the text direction
  * that is consistent with the new orientation.
@@ -4769,6 +4788,8 @@ boolean setTabItemFocus (boolean next) {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  *
+ * @see SWT#LEFT_TO_RIGHT
+ * @see SWT#RIGHT_TO_LEFT
  * @see SWT#FLIP_TEXT_DIRECTION
  *
  * @since 3.102

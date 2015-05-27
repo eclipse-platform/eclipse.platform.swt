@@ -1145,7 +1145,10 @@ public void setImageIndent (int indent) {
 
 /**
  * Sets the receiver's text at a column
- *
+ * <p>
+ * Note: If control characters like '\n', '\t' etc. are used
+ * in the string, then the behavior is platform dependent.
+ * </p>
  * @param index the column index
  * @param string the new text
  *
@@ -1177,7 +1180,10 @@ public void setText (String string) {
 
 /**
  * Sets the text for multiple columns in the table.
- *
+ * <p>
+ * Note: If control characters like '\n', '\t' etc. are used
+ * in the string, then the behavior is platform dependent.
+ * </p>
  * @param strings the array of new strings
  *
  * @exception IllegalArgumentException <ul>

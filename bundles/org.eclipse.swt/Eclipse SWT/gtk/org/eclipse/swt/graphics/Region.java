@@ -45,10 +45,15 @@ public final class Region extends Resource {
 
 /**
  * Constructs a new empty region.
- *
+ * <p>
+ * You must dispose the region when it is no longer required.
+ * </p>
+ * 
  * @exception SWTError <ul>
  *    <li>ERROR_NO_HANDLES if a handle could not be obtained for region creation</li>
  * </ul>
+ *
+ * @see #dispose()
  */
 public Region() {
 	this(null);
@@ -69,7 +74,7 @@ public Region() {
  *    <li>ERROR_NO_HANDLES if a handle could not be obtained for region creation</li>
  * </ul>
  *
- * @see #dispose
+ * @see #dispose()
  *
  * @since 3.0
  */

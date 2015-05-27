@@ -725,6 +725,10 @@ void setSavedFocus (Control control) {
  * Sets the receiver's text, which is the string that the
  * window manager will typically display as the receiver's
  * <em>title</em>, to the argument, which must not be null.
+ * <p>
+ * Note: If control characters like '\n', '\t' etc. are used
+ * in the string, then the behavior is platform dependent.
+ * </p>
  *
  * @param string the new text
  *

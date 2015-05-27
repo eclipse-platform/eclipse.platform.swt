@@ -79,6 +79,10 @@ public List (Composite parent, int style) {
 
 /**
  * Adds the argument to the end of the receiver's list.
+ * <p>
+ * Note: If control characters like '\n', '\t' etc. are used
+ * in the string, then the behavior is platform dependent.
+ * </p>
  *
  * @param string the new item
  *
@@ -110,6 +114,9 @@ public void add (String string) {
  * Note: To add an item at the end of the list, use the
  * result of calling <code>getItemCount()</code> as the
  * index or use <code>add(String)</code>.
+ * </p><p>
+ * Also note, if control characters like '\n', '\t' etc. are used
+ * in the string, then the behavior is platform dependent.
  * </p>
  *
  * @param string the new item

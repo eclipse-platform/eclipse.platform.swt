@@ -120,6 +120,7 @@ GC() {
  *    <li>ERROR_NO_HANDLES if a handle could not be obtained for GC creation</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS if not called from the thread that created the drawable</li>
  * </ul>
+ * @see #dispose()
  */
 public GC(Drawable drawable) {
 	this(drawable, 0);
@@ -149,6 +150,8 @@ public GC(Drawable drawable) {
  *    <li>ERROR_NO_HANDLES if a handle could not be obtained for GC creation</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS if not called from the thread that created the drawable</li>
  * </ul>
+ *
+ * @see #dispose()
  *
  * @since 2.1.2
  */

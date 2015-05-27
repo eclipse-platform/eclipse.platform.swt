@@ -54,6 +54,9 @@ public class Transform extends Resource {
  * graphics subsystem which may not be available on some
  * platforms.
  * </p>
+ * <p>
+ * You must dispose the transform when it is no longer required. 
+ * </p>
  * 
  * @param device the device on which to allocate the Transform
  * 
@@ -80,6 +83,9 @@ public Transform (Device device) {
  * This operation requires the operating system's advanced
  * graphics subsystem which may not be available on some
  * platforms.
+ * </p>
+ * <p>
+ * You must dispose the transform when it is no longer required. 
  * </p>
  * 
  * @param device the device on which to allocate the Transform
@@ -109,6 +115,9 @@ public Transform(Device device, float[] elements) {
  * This operation requires the operating system's advanced
  * graphics subsystem which may not be available on some
  * platforms.
+ * </p>
+ * <p>
+ * You must dispose the transform when it is no longer required. 
  * </p>
  * 
  * @param device the device on which to allocate the Transform

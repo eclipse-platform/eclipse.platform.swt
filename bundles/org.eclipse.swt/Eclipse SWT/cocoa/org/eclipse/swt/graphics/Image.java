@@ -161,6 +161,9 @@ Image(Device device) {
  * and depth). For example, Windows 95, 98, and ME do not allow
  * images larger than 16M.
  * </p>
+ * <p>
+ * You must dispose the image when it is no longer required. 
+ * </p>
  *
  * @param device the device on which to create the image
  * @param width the width of the new image
@@ -173,6 +176,8 @@ Image(Device device) {
  * @exception SWTError <ul>
  *    <li>ERROR_NO_HANDLES if a handle could not be obtained for image creation</li>
  * </ul>
+ * 
+ * @see #dispose()
  */
 public Image(Device device, int width, int height) {
 	super(device);
@@ -198,6 +203,9 @@ public Image(Device device, int width, int height) {
  * <dt><b>{@link SWT#IMAGE_GRAY}</b></dt>
  * <dd>the result is a copy of srcImage which has a <em>gray scale</em> look</dd>
  * </dl>
+ * <p>
+ * You must dispose the image when it is no longer required. 
+ * </p>
  *
  * @param device the device on which to create the image
  * @param srcImage the image to use as the source
@@ -216,6 +224,8 @@ public Image(Device device, int width, int height) {
  * @exception SWTError <ul>
  *    <li>ERROR_NO_HANDLES if a handle could not be obtained for image creation</li>
  * </ul>
+ * 
+ * @see #dispose()
  */
 public Image(Device device, Image srcImage, int flag) {
 	super(device);
@@ -355,6 +365,9 @@ public Image(Device device, Image srcImage, int flag) {
  * and depth). For example, Windows 95, 98, and ME do not allow
  * images larger than 16M.
  * </p>
+ * <p>
+ * You must dispose the image when it is no longer required. 
+ * </p>
  *
  * @param device the device on which to create the image
  * @param bounds a rectangle specifying the image's width and height (must not be null)
@@ -367,6 +380,8 @@ public Image(Device device, Image srcImage, int flag) {
  * @exception SWTError <ul>
  *    <li>ERROR_NO_HANDLES if a handle could not be obtained for image creation</li>
  * </ul>
+ * 
+ * @see #dispose()
  */
 public Image(Device device, Rectangle bounds) {
 	super(device);
@@ -384,6 +399,9 @@ public Image(Device device, Rectangle bounds) {
 /**
  * Constructs an instance of this class from the given
  * <code>ImageData</code>.
+ * <p>
+ * You must dispose the image when it is no longer required. 
+ * </p>
  *
  * @param device the device on which to create the image
  * @param data the image data to create the image from (must not be null)
@@ -398,6 +416,8 @@ public Image(Device device, Rectangle bounds) {
  * @exception SWTError <ul>
  *    <li>ERROR_NO_HANDLES if a handle could not be obtained for image creation</li>
  * </ul>
+ * 
+ * @see #dispose()
  */
 public Image(Device device, ImageData data) {
 	super(device);
@@ -422,6 +442,9 @@ public Image(Device device, ImageData data) {
  * the source image should contain black wherever the icon is to be
  * transparent.
  * </p>
+ * <p>
+ * You must dispose the image when it is no longer required. 
+ * </p>
  *
  * @param device the device on which to create the icon
  * @param source the color data for the icon
@@ -435,6 +458,8 @@ public Image(Device device, ImageData data) {
  * @exception SWTError <ul>
  *    <li>ERROR_NO_HANDLES if a handle could not be obtained for image creation</li>
  * </ul>
+ * 
+ * @see #dispose()
  */
 public Image(Device device, ImageData source, ImageData mask) {
 	super(device);
@@ -486,6 +511,9 @@ public Image(Device device, ImageData source, ImageData mask) {
  *          return image;
  *     }
  * </pre>
+ * <p>
+ * You must dispose the image when it is no longer required. 
+ * </p>
  *
  * @param device the device on which to create the image
  * @param stream the input stream to load the image from
@@ -503,6 +531,8 @@ public Image(Device device, ImageData source, ImageData mask) {
  * @exception SWTError <ul>
  *    <li>ERROR_NO_HANDLES if a handle could not be obtained for image creation</li>
  * </ul>
+ * 
+ * @see #dispose()
  */
 public Image(Device device, InputStream stream) {
 	super(device);
@@ -525,6 +555,9 @@ public Image(Device device, InputStream stream) {
  * This constructor is provided for convenience when loading
  * a single image only. If the specified file contains
  * multiple images, only the first one will be used.
+ * <p>
+ * You must dispose the image when it is no longer required. 
+ * </p>
  *
  * @param device the device on which to create the image
  * @param filename the name of the file to load the image from
@@ -542,6 +575,8 @@ public Image(Device device, InputStream stream) {
  * @exception SWTError <ul>
  *    <li>ERROR_NO_HANDLES if a handle could not be obtained for image creation</li>
  * </ul>
+ * 
+ * @see #dispose()
  */
 public Image(Device device, String filename) {
 	super(device);
