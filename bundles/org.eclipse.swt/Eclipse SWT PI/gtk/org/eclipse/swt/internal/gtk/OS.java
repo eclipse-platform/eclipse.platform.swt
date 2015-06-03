@@ -692,6 +692,8 @@ public class OS extends C {
 	public static final byte[] GTK_NAMED_ICON_GO_DOWN = ascii ("go-down-symbolic");
 	public static final byte[] GTK_NAMED_ICON_GO_NEXT = ascii ("go-next-symbolic");
 	public static final byte[] GTK_NAMED_ICON_GO_PREVIOUS = ascii ("go-previous-symbolic");
+	public static final byte[] GTK_NAMED_LABEL_OK = ascii("_OK");
+	public static final byte[] GTK_NAMED_LABEL_CANCEL = ascii("_Cancel");
 	/* GVariant Types */
 	public static final byte[] G_VARIANT_TYPE_BOOLEAN = ascii("b");
 	public static final byte[] G_VARIANT_TYPE_DOUBLE = ascii("d");
@@ -7958,7 +7960,27 @@ public static final void gtk_file_chooser_add_filter(long /*int*/ chooser, long 
 		lock.unlock();
 	}
 }
-/** @method flags=no_gen */
+/**
+ * @param title cast=(const gchar *),flags=no_out
+ * @param parent cast=(GtkWindow *)
+ * @param first_button_text cast=(const gchar *),flags=no_out
+ * @param terminator cast=(const gchar *),flags=sentinel
+ */
+public static final native long /*int*/ _gtk_file_chooser_dialog_new(byte[] title, long /*int*/ parent, int action, byte[] first_button_text, int first_button_id, byte[] second_button_text, int second_button_id, long /*int*/ terminator);
+public static final long /*int*/ gtk_file_chooser_dialog_new(byte[] title, long /*int*/ parent, int action, byte[] first_button_text, int first_button_id, byte[] second_button_text, int second_button_id, long /*int*/ terminator) {
+	lock.lock();
+	try {
+		return _gtk_file_chooser_dialog_new(title, parent, action, first_button_text, first_button_id, second_button_text, second_button_id, terminator);
+	} finally {
+		lock.unlock();
+	}
+}
+/**
+ * @param title cast=(const gchar *),flags=no_out
+ * @param parent cast=(GtkWindow *)
+ * @param first_button_text cast=(const gchar *),flags=no_out
+ * @param terminator cast=(const gchar *),flags=sentinel
+ */
 public static final native long /*int*/ _gtk_file_chooser_dialog_new(byte[] title, long /*int*/ parent, int action, long /*int*/ first_button_text, int first_button_id, long /*int*/ second_button_text, int second_button_id, long /*int*/ terminator);
 public static final long /*int*/ gtk_file_chooser_dialog_new(byte[] title, long /*int*/ parent, int action, long /*int*/ first_button_text, int first_button_id, long /*int*/ second_button_text, int second_button_id, long /*int*/ terminator) {
 	lock.lock();

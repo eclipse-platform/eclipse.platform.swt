@@ -134,6 +134,7 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(pangoLayoutNewProc_1CALLBACK)
 	return rc;
 }
 #endif
+
 #ifndef NO_pangoFontFamilyNewProc_1CALLBACK
 static jintLong superPangoFontFamilyNewProc;
 static PangoFontFamily * pangoFontFamilyNewProc (GType type, guint n_construct_properties, GObjectConstructParam * construct_properties) {
@@ -151,6 +152,7 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(pangoFontFamilyNewProc_1CALLBACK)
 	return rc;
 }
 #endif
+
 #ifndef NO_pangoFontFaceNewProc_1CALLBACK
 static jintLong superPangoFontFaceNewProc;
 static PangoFontFace * pangoFontFaceNewProc (GType type, guint n_construct_properties, GObjectConstructParam * construct_properties) {
@@ -182,40 +184,6 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(printerOptionWidgetNewProc_1CALLBACK)
 	superPrinterOptionWidgetNewProc = arg0;
 	rc = (jintLong)printerOptionWidgetNewProc;
 	OS_NATIVE_EXIT(env, that, printerOptionWidgetNewProc_1CALLBACK_FUNC);
-	return rc;
-}
-#endif
-
-
-#ifndef NO__1gtk_1file_1chooser_1dialog_1new
-JNIEXPORT jintLong JNICALL OS_NATIVE(_1gtk_1file_1chooser_1dialog_1new)
-	(JNIEnv *env, jclass that, jbyteArray arg0, jintLong arg1, jint arg2, jintLong arg3, jint arg4, jintLong arg5, jint arg6, jintLong arg7)
-{
-	jbyte *lparg0=NULL;
-	jintLong rc = 0;
-	OS_NATIVE_ENTER(env, that, _1gtk_1file_1chooser_1dialog_1new_FUNC);
-	if (arg0) if ((lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL)) == NULL) goto fail;
-/*
-	rc = (jintLong)gtk_file_chooser_dialog_new(lparg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7);
-*/
-	{
-		/*
-		* On AMD64, it is critical that functions which have a variable number of
-		* arguments, indicated by '...', include the '...' in their prototype.  This
-		* changes the calling convention, and leaving it out will cause crashes.
-		*
-		* For some reason, we must also explicitly declare all of the arguments we
-		* are passing in, otherwise it crashes.
-		*/
-		typedef jintLong (CALLING_CONVENTION* FPTR)(jbyte *, jintLong, jint, jintLong, jint, jintLong, jint, jintLong, ...);
-		OS_LOAD_FUNCTION(fp, gtk_file_chooser_dialog_new)
-		if (fp) {
-			rc = (jintLong)((FPTR) fp)(lparg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7);
-		}
-	}
-fail:
-	if (arg0 && lparg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
-	OS_NATIVE_EXIT(env, that, _1gtk_1file_1chooser_1dialog_1new_FUNC);
 	return rc;
 }
 #endif

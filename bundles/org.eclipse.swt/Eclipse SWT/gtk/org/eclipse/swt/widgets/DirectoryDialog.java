@@ -124,9 +124,17 @@ String openChooserDialog () {
 	Display display = parent != null ? parent.getDisplay (): Display.getCurrent ();
 	long /*int*/ handle = 0;
 	if (display.getDismissalAlignment() == SWT.RIGHT) {
-		handle = OS.gtk_file_chooser_dialog_new (titleBytes, shellHandle, OS.GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER, OS.GTK_STOCK_CANCEL (), OS.GTK_RESPONSE_CANCEL, OS.GTK_STOCK_OK (), OS.GTK_RESPONSE_OK, 0);
+		if (OS.GTK3) {
+			handle = OS.gtk_file_chooser_dialog_new (titleBytes, shellHandle, OS.GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER, OS.GTK_NAMED_LABEL_CANCEL, OS.GTK_RESPONSE_CANCEL, OS.GTK_NAMED_LABEL_OK, OS.GTK_RESPONSE_OK, 0);
+		} else {
+			handle = OS.gtk_file_chooser_dialog_new (titleBytes, shellHandle, OS.GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER, OS.GTK_STOCK_CANCEL (), OS.GTK_RESPONSE_CANCEL, OS.GTK_STOCK_OK (), OS.GTK_RESPONSE_OK, 0);
+		}
 	} else {
-		handle = OS.gtk_file_chooser_dialog_new (titleBytes, shellHandle, OS.GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER, OS.GTK_STOCK_OK (), OS.GTK_RESPONSE_OK, OS.GTK_STOCK_CANCEL (), OS.GTK_RESPONSE_CANCEL, 0);
+		if (OS.GTK3) {
+			handle = OS.gtk_file_chooser_dialog_new (titleBytes, shellHandle, OS.GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER, OS.GTK_NAMED_LABEL_OK, OS.GTK_RESPONSE_OK, OS.GTK_NAMED_LABEL_CANCEL, OS.GTK_RESPONSE_CANCEL, 0);
+		} else {
+			handle = OS.gtk_file_chooser_dialog_new (titleBytes, shellHandle, OS.GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER, OS.GTK_STOCK_OK (), OS.GTK_RESPONSE_OK, OS.GTK_STOCK_CANCEL (), OS.GTK_RESPONSE_CANCEL, 0);
+		}
 	}
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 	long /*int*/ group = OS.gtk_window_get_group(0);

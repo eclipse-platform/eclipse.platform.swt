@@ -8,7 +8,7 @@
  * the LGPL accompanying this distribution and there is any conflict
  * between the two license versions, the terms of the LGPL accompanying
  * this distribution shall govern.
- *
+ * 
  * Contributors:
  *     IBM Corporation - initial API and implementation
  *******************************************************************************/
@@ -10853,6 +10853,66 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1file_1chooser_1add_1filter)
 		}
 	}
 	OS_NATIVE_EXIT(env, that, _1gtk_1file_1chooser_1add_1filter_FUNC);
+}
+#endif
+
+#if (!defined(NO__1gtk_1file_1chooser_1dialog_1new___3BIIIIIII) && !defined(JNI64)) || (!defined(NO__1gtk_1file_1chooser_1dialog_1new___3BJIJIJIJ) && defined(JNI64))
+#ifndef JNI64
+JNIEXPORT jintLong JNICALL OS_NATIVE(_1gtk_1file_1chooser_1dialog_1new___3BIIIIIII)(JNIEnv *env, jclass that, jbyteArray arg0, jintLong arg1, jint arg2, jintLong arg3, jint arg4, jintLong arg5, jint arg6, jintLong arg7)
+#else
+JNIEXPORT jintLong JNICALL OS_NATIVE(_1gtk_1file_1chooser_1dialog_1new___3BJIJIJIJ)(JNIEnv *env, jclass that, jbyteArray arg0, jintLong arg1, jint arg2, jintLong arg3, jint arg4, jintLong arg5, jint arg6, jintLong arg7)
+#endif
+{
+	jbyte *lparg0=NULL;
+	jintLong rc = 0;
+#ifndef JNI64
+	OS_NATIVE_ENTER(env, that, _1gtk_1file_1chooser_1dialog_1new___3BIIIIIII_FUNC);
+#else
+	OS_NATIVE_ENTER(env, that, _1gtk_1file_1chooser_1dialog_1new___3BJIJIJIJ_FUNC);
+#endif
+	if (arg0) if ((lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL)) == NULL) goto fail;
+	rc = (jintLong)gtk_file_chooser_dialog_new((const gchar *)lparg0, (GtkWindow *)arg1, arg2, (const gchar *)arg3, arg4, arg5, arg6, (const gchar *)NULL);
+fail:
+	if (arg0 && lparg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, JNI_ABORT);
+#ifndef JNI64
+	OS_NATIVE_EXIT(env, that, _1gtk_1file_1chooser_1dialog_1new___3BIIIIIII_FUNC);
+#else
+	OS_NATIVE_EXIT(env, that, _1gtk_1file_1chooser_1dialog_1new___3BJIJIJIJ_FUNC);
+#endif
+	return rc;
+}
+#endif
+
+#if (!defined(NO__1gtk_1file_1chooser_1dialog_1new___3BII_3BI_3BII) && !defined(JNI64)) || (!defined(NO__1gtk_1file_1chooser_1dialog_1new___3BJI_3BI_3BIJ) && defined(JNI64))
+#ifndef JNI64
+JNIEXPORT jintLong JNICALL OS_NATIVE(_1gtk_1file_1chooser_1dialog_1new___3BII_3BI_3BII)(JNIEnv *env, jclass that, jbyteArray arg0, jintLong arg1, jint arg2, jbyteArray arg3, jint arg4, jbyteArray arg5, jint arg6, jintLong arg7)
+#else
+JNIEXPORT jintLong JNICALL OS_NATIVE(_1gtk_1file_1chooser_1dialog_1new___3BJI_3BI_3BIJ)(JNIEnv *env, jclass that, jbyteArray arg0, jintLong arg1, jint arg2, jbyteArray arg3, jint arg4, jbyteArray arg5, jint arg6, jintLong arg7)
+#endif
+{
+	jbyte *lparg0=NULL;
+	jbyte *lparg3=NULL;
+	jbyte *lparg5=NULL;
+	jintLong rc = 0;
+#ifndef JNI64
+	OS_NATIVE_ENTER(env, that, _1gtk_1file_1chooser_1dialog_1new___3BII_3BI_3BII_FUNC);
+#else
+	OS_NATIVE_ENTER(env, that, _1gtk_1file_1chooser_1dialog_1new___3BJI_3BI_3BIJ_FUNC);
+#endif
+	if (arg0) if ((lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL)) == NULL) goto fail;
+	if (arg3) if ((lparg3 = (*env)->GetByteArrayElements(env, arg3, NULL)) == NULL) goto fail;
+	if (arg5) if ((lparg5 = (*env)->GetByteArrayElements(env, arg5, NULL)) == NULL) goto fail;
+	rc = (jintLong)gtk_file_chooser_dialog_new((const gchar *)lparg0, (GtkWindow *)arg1, arg2, (const gchar *)lparg3, arg4, lparg5, arg6, (const gchar *)NULL);
+fail:
+	if (arg5 && lparg5) (*env)->ReleaseByteArrayElements(env, arg5, lparg5, 0);
+	if (arg3 && lparg3) (*env)->ReleaseByteArrayElements(env, arg3, lparg3, JNI_ABORT);
+	if (arg0 && lparg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, JNI_ABORT);
+#ifndef JNI64
+	OS_NATIVE_EXIT(env, that, _1gtk_1file_1chooser_1dialog_1new___3BII_3BI_3BII_FUNC);
+#else
+	OS_NATIVE_EXIT(env, that, _1gtk_1file_1chooser_1dialog_1new___3BJI_3BI_3BIJ_FUNC);
+#endif
+	return rc;
 }
 #endif
 

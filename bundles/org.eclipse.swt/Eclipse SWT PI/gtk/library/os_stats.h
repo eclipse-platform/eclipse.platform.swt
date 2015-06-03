@@ -790,7 +790,16 @@ typedef enum {
 	_1gtk_1expander_1set_1expanded_FUNC,
 	_1gtk_1expander_1set_1label_1widget_FUNC,
 	_1gtk_1file_1chooser_1add_1filter_FUNC,
-	_1gtk_1file_1chooser_1dialog_1new_FUNC,
+#ifndef JNI64
+	_1gtk_1file_1chooser_1dialog_1new___3BIIIIIII_FUNC,
+#else
+	_1gtk_1file_1chooser_1dialog_1new___3BJIJIJIJ_FUNC,
+#endif
+#ifndef JNI64
+	_1gtk_1file_1chooser_1dialog_1new___3BII_3BI_3BII_FUNC,
+#else
+	_1gtk_1file_1chooser_1dialog_1new___3BJI_3BI_3BIJ_FUNC,
+#endif
 	_1gtk_1file_1chooser_1get_1filename_FUNC,
 	_1gtk_1file_1chooser_1get_1filenames_FUNC,
 	_1gtk_1file_1chooser_1get_1filter_FUNC,

@@ -8,7 +8,7 @@
 * the LGPL accompanying this distribution and there is any conflict
 * between the two license versions, the terms of the LGPL accompanying
 * this distribution shall govern.
-* 
+*
 * Contributors:
 *     IBM Corporation - initial API and implementation
 *******************************************************************************/
@@ -579,6 +579,10 @@ struct _GtkAccelLabelPrivate
 #endif
 #if !GTK_CHECK_VERSION(3,0,0)
 #define GDK_IS_X11_DISPLAY(arg0) 1
+#endif
+#if GTK_CHECK_VERSION(3,0,0)
+#define NO__1GTK_1STOCK_1CANCEL
+#define NO__1GTK_1STOCK_1OK
 #endif
 #define GTK_ENTRY_IM_CONTEXT(arg0) (arg0)->im_context
 #define GTK_TEXTVIEW_IM_CONTEXT(arg0) (arg0)->im_context

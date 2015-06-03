@@ -780,7 +780,16 @@ char * OS_nativeFunctionNames[] = {
 	"_1gtk_1expander_1set_1expanded",
 	"_1gtk_1expander_1set_1label_1widget",
 	"_1gtk_1file_1chooser_1add_1filter",
-	"_1gtk_1file_1chooser_1dialog_1new",
+#ifndef JNI64
+	"_1gtk_1file_1chooser_1dialog_1new___3BIIIIIII",
+#else
+	"_1gtk_1file_1chooser_1dialog_1new___3BJIJIJIJ",
+#endif
+#ifndef JNI64
+	"_1gtk_1file_1chooser_1dialog_1new___3BII_3BI_3BII",
+#else
+	"_1gtk_1file_1chooser_1dialog_1new___3BJI_3BI_3BIJ",
+#endif
 	"_1gtk_1file_1chooser_1get_1filename",
 	"_1gtk_1file_1chooser_1get_1filenames",
 	"_1gtk_1file_1chooser_1get_1filter",
