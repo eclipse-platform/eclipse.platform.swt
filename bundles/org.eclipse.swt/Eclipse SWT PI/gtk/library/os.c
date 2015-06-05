@@ -8,7 +8,7 @@
  * the LGPL accompanying this distribution and there is any conflict
  * between the two license versions, the terms of the LGPL accompanying
  * this distribution shall govern.
- * 
+ *
  * Contributors:
  *     IBM Corporation - initial API and implementation
  *******************************************************************************/
@@ -10051,16 +10051,6 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1container_1remove)
 	OS_NATIVE_ENTER(env, that, _1gtk_1container_1remove_FUNC);
 	gtk_container_remove((GtkContainer *)arg0, (GtkWidget *)arg1);
 	OS_NATIVE_EXIT(env, that, _1gtk_1container_1remove_FUNC);
-}
-#endif
-
-#ifndef NO__1gtk_1container_1resize_1children
-JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1container_1resize_1children)
-	(JNIEnv *env, jclass that, jintLong arg0)
-{
-	OS_NATIVE_ENTER(env, that, _1gtk_1container_1resize_1children_FUNC);
-	gtk_container_resize_children((GtkContainer *)arg0);
-	OS_NATIVE_EXIT(env, that, _1gtk_1container_1resize_1children_FUNC);
 }
 #endif
 

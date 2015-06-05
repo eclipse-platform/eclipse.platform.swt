@@ -323,7 +323,7 @@ int calculateWidth (long /*int*/ column, long /*int*/ iter) {
 	* always grows in size regardless of the text or images in the table.
 	* The fix is to determine the column width from the cell renderers.
 	*/
-	
+
 	//This workaround is causing the problem Bug 459834 in GTK3. So reverting the workaround for GTK3
 	if (OS.GTK3) {
 		int [] width = new int [1];
@@ -715,7 +715,7 @@ void createItem (TableColumn column, int index) {
  	 * ensure that the columns are resized before any queries.
 	 */
 	if(!isVisible ()) {
-		OS.gtk_container_resize_children (handle);
+		forceResize();
 	}
 }
 

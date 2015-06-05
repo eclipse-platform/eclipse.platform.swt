@@ -655,6 +655,7 @@ public class OS extends C {
 	public static final byte[] margin_bottom = ascii("margin-bottom");
 	public static final byte[] margin_top = ascii("margin-top");
 	public static final byte[] GTK_PRINT_SETTINGS_OUTPUT_URI = ascii("output-uri");
+
 	/*
 	 * Needed to tell GTK 3 to prefer a dark or light theme in the UI.
 	 * Improves the look of the Eclipse Dark theme in GTK 3 systems.
@@ -718,7 +719,7 @@ public static int VERSION(int major, int minor, int micro) {
 }
 
 public static boolean isX11 () {
-	return GDK_WINDOWING_X11() && GDK_IS_X11_DISPLAY(gdk_display_get_default()); 
+	return GDK_WINDOWING_X11() && GDK_IS_X11_DISPLAY(gdk_display_get_default());
 }
 
 /** 64 bit */
@@ -7285,16 +7286,6 @@ public static final void gtk_container_remove(long /*int*/ container, long /*int
 	lock.lock();
 	try {
 		_gtk_container_remove(container, widget);
-	} finally {
-		lock.unlock();
-	}
-}
-/** @param container cast=(GtkContainer *) */
-public static final native void _gtk_container_resize_children(long /*int*/ container);
-public static final void gtk_container_resize_children(long /*int*/ container) {
-	lock.lock();
-	try {
-		_gtk_container_resize_children(container);
 	} finally {
 		lock.unlock();
 	}
@@ -16802,7 +16793,7 @@ public static final void swt_fixed_resize(long /*int*/ fixed, long /*int*/ widge
  * <p>
  * Note: This method gets called from the org.eclipse.e4.ui.swt.gtk fragment.
  * </p>
- * 
+ *
  * @since 3.104
  */
 public static final void setDarkThemePreferred(boolean preferred){
