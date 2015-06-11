@@ -1891,8 +1891,70 @@ long /*int*/ gtk_button_press_event (long /*int*/ widget, long /*int*/ event) {
 			}
 		}
 	}
+
+	//If Mouse double-click pressed, manually send a DefaultSelection.  See Bug 312568.
+	if (gdkEvent.type == OS.GDK_2BUTTON_PRESS) {
+		sendTreeDefaultSelection ();
+	}
+
 	return result;
 }
+
+@Override
+long /*int*/ gtk_key_press_event (long /*int*/ widget, long /*int*/ event) {
+	GdkEventKey keyEvent = new GdkEventKey ();
+	OS.memmove (keyEvent, event, GdkEventKey.sizeof);
+	int key = keyEvent.keyval;
+	keyPressDefaultSelectionHandler (event, key);
+	return super.gtk_key_press_event (widget, event);
+}
+
+/**
+ * Used to emulate DefaultSelection event. See Bug 312568.
+ * @param event the gtk key press event that was fired.
+ */
+void keyPressDefaultSelectionHandler (long /*int*/ event, int key) {
+
+	int keymask = gdk_event_get_state (event);
+	switch (key) {
+		case OS.GDK_Return:
+			//Send Default selection return only when no other modifier is pressed.
+			if (!valueContainsFlag (keymask, new int [] {OS.GDK_MOD1_MASK, OS.GDK_SHIFT_MASK, OS.GDK_CONTROL_MASK,
+														OS.GDK_SUPER_MASK, OS.GDK_META_MASK, OS.GDK_HYPER_MASK, }))
+			{
+				sendTreeDefaultSelection ();
+			}
+			break;
+		case OS.GDK_space:
+			//Shift + Space is a legal DefaultSelection event. (as per row-activation signal documentation).
+			//But do not send if another modifier is pressed.
+			if (!valueContainsFlag (keymask, new int [] {OS.GDK_MOD1_MASK, OS.GDK_CONTROL_MASK,
+														OS.GDK_SUPER_MASK, OS.GDK_META_MASK, OS.GDK_HYPER_MASK, }))
+			{
+				sendTreeDefaultSelection ();
+			}
+			break;
+	}
+}
+
+//Used to emulate DefaultSelection event. See Bug 312568.
+//Feature in GTK. 'row-activation' event comes before DoubleClick event.
+//This is causing the editor not to get focus after doubleclick.
+//The solution is to manually send the DefaultSelection event after a doubleclick,
+//and to emulate it for Space/Return.
+void sendTreeDefaultSelection() {
+
+	//Note, similar DefaultSelectionHandling in SWT List/Table/Tree
+	TableItem tableItem = getFocusItem ();
+	if (tableItem == null)
+		return;
+
+	Event event = new Event ();
+	event.item = tableItem;
+
+	sendSelectionEvent (SWT.DefaultSelection, event, false);
+}
+
 
 @Override
 long /*int*/ gtk_button_release_event (long /*int*/ widget, long /*int*/ event) {
@@ -1983,21 +2045,6 @@ long /*int*/ gtk_motion_notify_event (long /*int*/ widget, long /*int*/ event) {
 	long /*int*/ window = OS.GDK_EVENT_WINDOW (event);
 	if (window != OS.gtk_tree_view_get_bin_window (handle)) return 0;
 	return super.gtk_motion_notify_event (widget, event);
-}
-
-@Override
-long /*int*/ gtk_row_activated (long /*int*/ tree, long /*int*/ path, long /*int*/ column) {
-	TableItem item = null;
-	long /*int*/ indices = OS.gtk_tree_path_get_indices (path);
-	if (indices != 0) {
-		int [] index = new int []{-1};
-		OS.memmove (index, indices, 4);
-		item = _getItem (index [0]);
-	}
-	Event event = new Event ();
-	event.item = item;
-	sendSelectionEvent (SWT.DefaultSelection, event, false);
-	return 0;
 }
 
 @Override

@@ -819,6 +819,8 @@ long /*int*/ gtk_realize (long /*int*/ widget) {
 
 long /*int*/ gtk_row_activated (long /*int*/ tree, long /*int*/ path, long /*int*/ column) {
 	return 0;
+	//Note on SWT Tree/Table/List. This signal is no longer used. Instead SendDefaultSelection is
+	//Manually emitted.  See Bug 312568.
 }
 
 long /*int*/ gtk_row_deleted (long /*int*/ model, long /*int*/ path) {
@@ -1821,6 +1823,19 @@ void gdk_window_get_size (long /*int*/ drawable, int[] width, int[] height) {
 	}
 }
 
+/**
+ * Wrapper function for gdk_event_get_state()
+ * @param event   pointer to the GdkEvent.
+ * @return the keymask to be used with constants like
+ *        OS.GDK_SHIFT_MASK / OS.GDK_CONTROL_MASK / OS.GDK_MOD1_MASK etc..
+ */
+int gdk_event_get_state (long /*int*/ event) {
+	int [] state = new int [1];
+	OS.gdk_event_get_state (event, state);
+	return state[0];
+}
+
+
 long /*int*/ gtk_box_new (int orientation, boolean homogeneous, int spacing) {
 	long /*int*/ box = 0;
 	if (OS.GTK3) {
@@ -2060,6 +2075,21 @@ void gtk_image_set_from_pixbuf (long /*int*/ imageHandle, long /*int*/ pixbuf){
 	} else {
 		OS.gtk_image_set_from_pixbuf(imageHandle, pixbuf);
 	}
+}
+
+/**
+ * Convienience method to check if one of the provided bit-flags is inside a value.
+ * This is most useful for when you need to check against many flags.
+ * @param value that you want
+ * @param flags
+ * @return
+ */
+static boolean valueContainsFlag(long value, int flags[]) {
+	for (int i = 0; i < flags.length; i++) {
+		if ((value & flags[i]) != 0)
+			return true;
+	}
+	return false;
 }
 
 }
