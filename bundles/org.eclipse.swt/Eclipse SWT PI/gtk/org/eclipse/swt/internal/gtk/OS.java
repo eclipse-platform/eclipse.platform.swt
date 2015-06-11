@@ -230,7 +230,10 @@ public class OS extends C {
 	public static final int GDK_Meta_L = 0xFFE7;
 	public static final int GDK_Meta_R = 0xFFE8;
 	public static final int GDK_MAP = 14;
-	public static final int GDK_MOD1_MASK = 0x8;
+	public static final int GDK_MOD1_MASK = 0x8;        //usually 'alt' modifier.
+	public static final int GDK_SUPER_MASK = 0x4000000;
+	public static final int GDK_HYPER_MASK = 0x8000000;
+	public static final int GDK_META_MASK = 0x10000000;
 	public static final int GDK_MOTION_NOTIFY = 0x3;
 	public static final int GDK_NO_EXPOSE = 30;
 	public static final int GDK_NONE = 0;
