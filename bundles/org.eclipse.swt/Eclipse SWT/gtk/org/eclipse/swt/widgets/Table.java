@@ -1891,15 +1891,6 @@ long /*int*/ gtk_button_press_event (long /*int*/ widget, long /*int*/ event) {
 			}
 		}
 	}
-	/*
-	* Bug in GTK. GTK segments fault, if the GtkTreeView widget is
-	* not in focus and all items in the widget are disposed before
-	* it finishes processing a button press.  The fix is to give
-	* focus to the widget before it starts processing the event.
-	*/
-	if (!OS.gtk_widget_has_focus (handle)) {
-		OS.gtk_widget_grab_focus (handle);
-	}
 	return result;
 }
 
