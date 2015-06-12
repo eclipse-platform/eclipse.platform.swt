@@ -697,7 +697,11 @@ void createHandle (int index) {
 		if (parent != null) {
 			OS.gtk_window_set_transient_for (shellHandle, parent.topHandle ());
 			OS.gtk_window_set_destroy_with_parent (shellHandle, true);
-			OS.gtk_window_set_skip_taskbar_hint(shellHandle, true);
+			// if child shells are minimizable, we want them to have a
+			// taskbar icon, so they can be unminimized
+			if ((style & SWT.MIN) == 0) {
+				OS.gtk_window_set_skip_taskbar_hint(shellHandle, true);
+			}
 
 			/*
 			 * For systems running Metacity, by applying the dialog type hint
