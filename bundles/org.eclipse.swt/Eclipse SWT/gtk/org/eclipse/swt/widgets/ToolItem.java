@@ -190,6 +190,7 @@ void createHandle (int index) {
 		imageHandle = OS.gtk_image_new_from_pixbuf (0);
 		if (imageHandle == 0) error (SWT.ERROR_NO_HANDLES);
 	}
+		String buttonCss = "GtkButton {padding: 2px 4px 3px 4px}"; //top right bottom left;
 	switch (style & bits) {
 		case SWT.SEPARATOR:
 			handle = OS.gtk_separator_tool_item_new ();
@@ -207,23 +208,26 @@ void createHandle (int index) {
 			long /*int*/ child = OS.gtk_bin_get_child (handle);
 			long /*int*/ list = OS.gtk_container_get_children (child);
 			arrowHandle = OS.g_list_nth_data (list, 1);
-			OS.gtk_widget_set_sensitive (arrowHandle, true);
-			if (!OS.GTK3) {
-				OS.gtk_widget_set_size_request(OS.gtk_bin_get_child(arrowHandle), 8, 6);
-			} else {
-				//Disable left and right padding to not have so wide toolbars	
-				String css ="GtkMenuButton.button {\n"+
-						"padding-left: 0px;\n"+
-						"padding-right: 0px;\n"+
-						"}\n";
-				if (provider == 0) {
-					//If provider is initialized the style has already been applied application wide so no need to repeat.
-					provider = OS.gtk_css_provider_new ();
-					long /*int*/ context = OS.gtk_widget_get_style_context(arrowHandle);
-					OS.gtk_style_context_add_provider (context, provider, OS.GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
-					OS.g_object_unref (provider);
-					OS.gtk_css_provider_load_from_data (provider, Converter.wcsToMbcs (null, css, true), -1, null);
-					OS.gtk_style_context_invalidate (context);
+			if (arrowHandle != 0) {
+				OS.gtk_widget_set_sensitive (arrowHandle, true);
+				if (!OS.GTK3) {
+					OS.gtk_widget_set_size_request(OS.gtk_bin_get_child(arrowHandle), 8, 6);
+				} else {
+					long /*int*/ arrowContext = OS.gtk_widget_get_style_context(arrowHandle);
+					String arrowCss = "GtkMenuButton {padding: 1px 0px 1px 0px}"; //top right bottom left
+					gtk_css_provider_load_from_css(arrowContext, arrowCss);
+					provider = 0;
+					OS.gtk_style_context_invalidate (arrowContext);
+				}
+			}
+			long /*int*/ menuButtonHandle = OS.g_list_nth_data (list, 0);
+			if (menuButtonHandle != 0) {
+				if (OS.GTK3) {
+					long /*int*/ menuButtonContext = OS.gtk_widget_get_style_context(menuButtonHandle);
+					gtk_css_provider_load_from_css(menuButtonContext, buttonCss);
+					//Reset provider to 0 in order to ensure CSS is loaded properly
+					provider = 0;
+					OS.gtk_style_context_invalidate (menuButtonContext);
 				}
 			}
 			break;
@@ -263,6 +267,16 @@ void createHandle (int index) {
 	 */
 	if ((parent.style & SWT.RIGHT) != 0) OS.gtk_tool_item_set_is_important (handle, true);
 	if ((style & SWT.SEPARATOR) == 0) OS.gtk_tool_button_set_use_underline (handle, true);
+	if (OS.GTK3) {
+		long /*int*/ buttonHandle = OS.gtk_bin_get_child(handle);
+		if (buttonHandle != 0) {
+			long /*int*/ buttonContext = OS.gtk_widget_get_style_context(buttonHandle);
+			gtk_css_provider_load_from_css(buttonContext, buttonCss);
+			//Reset provider to 0 in order to ensure CSS is loaded properly
+			provider = 0;
+			OS.gtk_style_context_invalidate (buttonContext);
+		}
+	}
 }
 
 @Override
@@ -623,6 +637,17 @@ long /*int*/ gtk_create_menu_proxy (long /*int*/ widget) {
 		}
 	}
 	return 0;
+}
+
+void gtk_css_provider_load_from_css (long /*int*/ context, String css) {
+	/* Utility function. */
+	//@param css : a 'css java' string like "{\nbackground: red;\n}".
+	if (provider == 0) {
+		provider = OS.gtk_css_provider_new ();
+		OS.gtk_style_context_add_provider (context, provider, OS.GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
+		OS.g_object_unref (provider);
+	}
+	OS.gtk_css_provider_load_from_data (provider, Converter.wcsToMbcs (null, css, true), -1, null);
 }
 
 @Override

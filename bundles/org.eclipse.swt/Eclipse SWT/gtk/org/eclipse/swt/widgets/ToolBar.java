@@ -145,6 +145,8 @@ void createHandle (int index) {
 	*/
 	if (OS.GTK3) {
 		long /*int*/ context = OS.gtk_widget_get_style_context (handle);
+		String css = "GtkToolbar {padding-top: 4px; padding-bottom: 4px; }";
+		gtk_css_provider_load_from_css(context, css);
 		OS.gtk_style_context_invalidate (context);
 	}
 
