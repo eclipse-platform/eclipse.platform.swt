@@ -445,7 +445,7 @@ char * OS_nativeFunctionNames[] = {
 	"_1gdk_1colormap_1alloc_1color",
 	"_1gdk_1colormap_1free_1colors",
 	"_1gdk_1colormap_1get_1system",
-	"_1gdk_1cursor_1new",
+	"_1gdk_1cursor_1new_1for_1display",
 	"_1gdk_1cursor_1new_1from_1pixbuf",
 	"_1gdk_1cursor_1new_1from_1pixmap",
 	"_1gdk_1cursor_1unref",

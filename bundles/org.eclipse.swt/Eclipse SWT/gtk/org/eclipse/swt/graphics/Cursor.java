@@ -168,7 +168,7 @@ public Cursor(Device device, int style) {
 		System.arraycopy(APPSTARTING_MASK, 0, mask, 0, mask.length);
 		handle = createCursor(src, mask, 32, 32, 2, 2, true);
 	} else {
-		handle = OS.gdk_cursor_new(shape);
+		handle = OS.gdk_cursor_new_for_display (OS.gdk_display_get_default(), shape);
 	}
 	if (handle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	init();

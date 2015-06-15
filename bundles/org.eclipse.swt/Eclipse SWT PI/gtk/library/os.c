@@ -5404,14 +5404,14 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(_1gdk_1colormap_1get_1system)
 }
 #endif
 
-#ifndef NO__1gdk_1cursor_1new
-JNIEXPORT jintLong JNICALL OS_NATIVE(_1gdk_1cursor_1new)
-	(JNIEnv *env, jclass that, jintLong arg0)
+#ifndef NO__1gdk_1cursor_1new_1for_1display
+JNIEXPORT jintLong JNICALL OS_NATIVE(_1gdk_1cursor_1new_1for_1display)
+	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1)
 {
 	jintLong rc = 0;
-	OS_NATIVE_ENTER(env, that, _1gdk_1cursor_1new_FUNC);
-	rc = (jintLong)gdk_cursor_new((GdkCursorType)arg0);
-	OS_NATIVE_EXIT(env, that, _1gdk_1cursor_1new_FUNC);
+	OS_NATIVE_ENTER(env, that, _1gdk_1cursor_1new_1for_1display_FUNC);
+	rc = (jintLong)gdk_cursor_new_for_display((GdkDisplay *)arg0, (GdkCursorType)arg1);
+	OS_NATIVE_EXIT(env, that, _1gdk_1cursor_1new_1for_1display_FUNC);
 	return rc;
 }
 #endif

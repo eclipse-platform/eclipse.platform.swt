@@ -144,7 +144,7 @@ void createHandle (int index) {
 	OS.gtk_widget_set_has_window (handle, true);
 	OS.gtk_widget_set_can_focus (handle, true);
 	int type = (style & SWT.VERTICAL) != 0 ? OS.GDK_SB_H_DOUBLE_ARROW : OS.GDK_SB_V_DOUBLE_ARROW;
-	defaultCursor = OS.gdk_cursor_new (type);
+	defaultCursor = OS.gdk_cursor_new_for_display (OS.gdk_display_get_default(), type);
 }
 
 void drawBand (int x, int y, int width, int height) {
