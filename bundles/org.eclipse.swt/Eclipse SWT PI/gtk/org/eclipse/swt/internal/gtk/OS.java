@@ -45,6 +45,16 @@ public class OS extends C {
 		}
 	}
 
+	static {
+		String paddedProperty = "SWT_PADDED_MENU_ITEMS";
+		String paddedCheck = getEnvironmentalVariable(paddedProperty);
+		if (paddedCheck != null && paddedCheck.equals("0")) {
+			SWT_PADDED_MENU_ITEMS = false;
+		}
+		if (paddedCheck != null && paddedCheck.equals("1")) {
+			SWT_PADDED_MENU_ITEMS = true;
+		}
+	}
 	private static String getEnvironmentalVariable (String envVarName) {
 		String envVarValue = System.getProperty(envVarName);
 		if (envVarValue == null) {
@@ -62,8 +72,6 @@ public class OS extends C {
 		}
 		return envVarValue;
 	}
-
-
 	/** OS Constants */
 	public static final boolean IsAIX, IsSunOS, IsLinux, IsHPUX, BIG_ENDIAN;
 	static {
@@ -705,6 +713,19 @@ public class OS extends C {
 	public static final int GLIB_VERSION = VERSION(glib_major_version(), glib_minor_version(), glib_micro_version());
 
 	public static final boolean GTK3 = GTK_VERSION >= VERSION(3, 0, 0);
+
+	/* Feature in Gtk: with the switch to GtkMenuItems from GtkImageMenuItems
+	* in Gtk3 came a small Gtk shortfall: a small amount of padding on the left hand
+	* side of MenuItems was added. This padding is not accessible to the developer,
+	* causing vertical alignment issues in menus that have both image and text only
+	* MenuItems. As an option, the user can specify the SWT_PADDED_MENU_ITEMS environment
+	* variable, which (when enabled), double pads MenuItems so as to create consistent
+	* vertical alignment throughout that particular menu.
+	*
+	* For more information see:
+	* Bug 470298
+	*/
+	public static boolean SWT_PADDED_MENU_ITEMS;
 	public static final boolean USE_CAIRO, INIT_CAIRO;
 	static {
 		boolean useCairo = false;
@@ -1611,6 +1632,9 @@ public static final boolean GTK_IS_CONTAINER(long /*int*/ obj) {
 		lock.unlock();
 	}
 }
+/**
+ * @param obj cast=(GtkImageMenuItem *)
+ */
 public static final native boolean _GTK_IS_IMAGE_MENU_ITEM(long /*int*/ obj);
 public static final boolean GTK_IS_IMAGE_MENU_ITEM(long /*int*/ obj) {
 	lock.lock();
@@ -6270,6 +6294,16 @@ public static final void gtk_accel_label_set_accel(long /*int*/ accel_label, int
 		lock.unlock();
 	}
 }
+/** @param label cast=(const gchar *) */
+public static final native long /*int*/ _gtk_accel_label_new(byte[] label);
+public static final long /*int*/ gtk_accel_label_new(byte[] label) {
+	lock.lock();
+	try {
+		return _gtk_accel_label_new(label);
+	} finally {
+		lock.unlock();
+	}
+}
 /**
  * @method flags=dynamic
  * @param accessible cast=(GtkAccessible *)
@@ -6839,12 +6873,34 @@ public static final boolean gtk_check_menu_item_get_active(long /*int*/ check_me
 		lock.unlock();
 	}
 }
+/**
+ * @method flags=dynamic
+ * @param label cast=(const gchar *)
+ */
+public static final native long /*int*/ _gtk_image_menu_item_new_with_label(byte[] label);
+public static final long /*int*/ gtk_image_menu_item_new_with_label(byte[] label) {
+	lock.lock();
+	try {
+		return _gtk_image_menu_item_new_with_label(label);
+	} finally {
+		lock.unlock();
+	}
+}
 /** @param label cast=(const gchar *) */
 public static final native long /*int*/ _gtk_check_menu_item_new_with_label(byte[] label);
 public static final long /*int*/ gtk_check_menu_item_new_with_label(byte[] label) {
 	lock.lock();
 	try {
 		return _gtk_check_menu_item_new_with_label(label);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native long /*int*/ _gtk_check_menu_item_new();
+public static final long /*int*/ gtk_check_menu_item_new() {
+	lock.lock();
+	try {
+		return _gtk_check_menu_item_new();
 	} finally {
 		lock.unlock();
 	}
@@ -8497,6 +8553,38 @@ public static final long /*int*/ gtk_box_new(int orientation, int spacing) {
 	}
 }
 /**
+ * @param box cast=(GtkBox *)
+ * @param widget cast=(GtkWidget *)
+ * @param expand cast=(gboolean)
+ * @param fill cast=(gboolean)
+ * @param padding cast=(guint)
+ */
+public static final native void /*int*/ _gtk_box_pack_end(long /*int*/ box, long /*int*/ widget,
+		boolean expand, boolean fill, int padding);
+public static final void /*int*/ gtk_box_pack_end(long /*int*/ box, long /*int*/ widget,
+		boolean expand, boolean fill, int padding) {
+	lock.lock();
+	try {
+		_gtk_box_pack_end(box, widget, expand, fill, padding);
+	} finally {
+		lock.unlock();
+	}
+}
+/**
+ * @param box cast=(GtkBox *)
+ * @param child cast=(GtkWidget *)
+ * @param position cast=(gint)
+ */
+public static final native void /*int*/ _gtk_box_reorder_child(long /*int*/ box, long /*int*/ child, int position);
+public static final void /*int*/ gtk_box_reorder_child(long /*int*/ box, long /*int*/ child, int position) {
+	lock.lock();
+	try {
+		_gtk_box_reorder_child(box, child, position);
+	} finally {
+		lock.unlock();
+	}
+}
+/**
  * @method flags=dynamic
  * @param box cast=(GtkBox *)
  */
@@ -8837,18 +8925,6 @@ public static final long /*int*/ gtk_im_multicontext_new() {
 		lock.unlock();
 	}
 }
-/** @param label cast=(const gchar *) */
-public static final native long /*int*/ _gtk_image_menu_item_new_with_label(byte[] label);
-public static final long /*int*/ gtk_image_menu_item_new_with_label(byte[] label) {
-	lock.lock();
-	try {
-		return _gtk_image_menu_item_new_with_label(label);
-	} finally {
-		lock.unlock();
-	}
-}
-
-
 /**
  * @param menu_item cast=(GtkImageMenuItem *)
  * @param image cast=(GtkWidget *)
@@ -8867,6 +8943,19 @@ public static final long /*int*/ gtk_image_new() {
 	lock.lock();
 	try {
 		return _gtk_image_new();
+	} finally {
+		lock.unlock();
+	}
+}
+/**
+ * @param image cast=(GtkImage *)
+ * @param pixel_size cast=(gint)
+ */
+public static final native void /*int*/ _gtk_image_set_pixel_size(long /*int*/ image, int pixel_size);
+public static final void /*int*/ gtk_image_set_pixel_size(long /*int*/ image, int pixel_size) {
+	lock.lock();
+	try {
+		_gtk_image_set_pixel_size(image, pixel_size);
 	} finally {
 		lock.unlock();
 	}
@@ -9357,6 +9446,25 @@ public static final long /*int*/ gtk_menu_item_get_submenu(long /*int*/ menu_ite
 	lock.lock();
 	try {
 		return _gtk_menu_item_get_submenu(menu_item);
+	} finally {
+		lock.unlock();
+	}
+}
+/** @param label cast=(const gchar *) */
+public static final native long /*int*/ _gtk_menu_item_new_with_label(byte[] label);
+public static final long /*int*/ gtk_menu_item_new_with_label(byte[] label) {
+	lock.lock();
+	try {
+		return _gtk_menu_item_new_with_label(label);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native long /*int*/ _gtk_menu_item_new();
+public static final long /*int*/ gtk_menu_item_new() {
+	lock.lock();
+	try {
+		return _gtk_menu_item_new();
 	} finally {
 		lock.unlock();
 	}

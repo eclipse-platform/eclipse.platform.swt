@@ -220,6 +220,7 @@
 #define gtk_icon_theme_get_default_LIB LIB_GTK
 #define gtk_menu_shell_set_take_focus_LIB LIB_GTK
 #define gtk_menu_tool_button_new_LIB LIB_GTK
+#define gtk_image_menu_item_new_with_label_LIB LIB_GTK
 #define gtk_window_set_keep_below_LIB LIB_GTK
 #define gtk_set_locale_LIB LIB_GTK
 #define gtk_scrollbar_new_LIB LIB_GTK
@@ -583,6 +584,9 @@ struct _GtkAccelLabelPrivate
 #if GTK_CHECK_VERSION(3,0,0)
 #define NO__1GTK_1STOCK_1CANCEL
 #define NO__1GTK_1STOCK_1OK
+#endif
+#if GTK_CHECK_VERSION(3,0,0)
+#define NO__1GTK_1IS_1IMAGE_1MENU_1ITEM
 #endif
 #define GTK_ENTRY_IM_CONTEXT(arg0) (arg0)->im_context
 #define GTK_TEXTVIEW_IM_CONTEXT(arg0) (arg0)->im_context

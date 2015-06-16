@@ -62,7 +62,7 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(GDK_1WINDOWING_1X11)
 	rc = (jboolean)1;
 #else
 	rc = (jboolean)0;
-#endif	
+#endif
 	OS_NATIVE_EXIT(env, that, GDK_1WINDOWING_1X11_FUNC)
 	return rc;
 }
