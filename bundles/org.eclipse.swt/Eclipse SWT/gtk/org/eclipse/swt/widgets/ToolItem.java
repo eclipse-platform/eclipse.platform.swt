@@ -190,7 +190,7 @@ void createHandle (int index) {
 		imageHandle = OS.gtk_image_new_from_pixbuf (0);
 		if (imageHandle == 0) error (SWT.ERROR_NO_HANDLES);
 	}
-		String buttonCss = "GtkButton {padding: 2px 4px 3px 4px}"; //top right bottom left;
+	String buttonCss = "GtkButton {padding: 2px 4px 3px 4px}"; //top right bottom left;
 	switch (style & bits) {
 		case SWT.SEPARATOR:
 			handle = OS.gtk_separator_tool_item_new ();
@@ -599,8 +599,10 @@ long /*int*/ gtk_create_menu_proxy (long /*int*/ widget) {
 				int [] showImages = new int []{1};
 				long /*int*/ settings = OS.gtk_settings_get_default();
 				if (settings != 0) {
-					long /*int*/ property = OS.g_object_class_find_property(OS.G_OBJECT_GET_CLASS(settings), OS.gtk_menu_images);
-					if (property != 0) OS.g_object_get (settings, OS.gtk_menu_images, showImages, 0);
+					if (!OS.GTK3) {
+						long /*int*/ property = OS.g_object_class_find_property(OS.G_OBJECT_GET_CLASS(settings), OS.gtk_menu_images);
+						if (property != 0) OS.g_object_get (settings, OS.gtk_menu_images, showImages, 0);
+					}
 				}
 
 				/*
@@ -621,10 +623,40 @@ long /*int*/ gtk_create_menu_proxy (long /*int*/ widget) {
 				else {
 					label = Converter.wcsToMbcs(null, text, true);
 				}
-				long /*int*/ menuItem = OS.gtk_image_menu_item_new_with_label (label);
-				long /*int*/ menuImage = OS.gtk_image_new_from_pixbuf (pixbuf);
-				OS.gtk_image_menu_item_set_image (menuItem, menuImage);
+				long /*int*/ menuItem;
+				if (OS.GTK3) {
+
+					menuItem = OS.gtk_menu_item_new ();
+					if (menuItem == 0) error (SWT.ERROR_NO_HANDLES);
+
+					long /*int*/ boxHandle = gtk_box_new (OS.GTK_ORIENTATION_HORIZONTAL, false, 6);
+					if (boxHandle == 0) error (SWT.ERROR_NO_HANDLES);
+
+					long /*int*/ menuLabel = OS.gtk_accel_label_new (label);
+					if (menuLabel == 0) error (SWT.ERROR_NO_HANDLES);
+					if (OS.GTK_VERSION >= OS.VERSION (3, 16, 0)) {
+						OS.gtk_label_set_xalign (labelHandle, 0);
+						OS.gtk_widget_set_halign (labelHandle, OS.GTK_ALIGN_FILL);
+					} else {
+						OS.gtk_misc_set_alignment(labelHandle, 0, 0);
+					}
+
+					long /*int*/ menuImage = OS.gtk_image_new_from_pixbuf (pixbuf);
+					if (menuImage == 0) error (SWT.ERROR_NO_HANDLES);
+
+					OS.gtk_container_add (boxHandle, menuImage);
+					OS.gtk_box_pack_end (boxHandle, menuLabel, true, true, 0);
+					OS.gtk_container_add (menuItem, boxHandle);
+				} else {
+					menuItem = OS.gtk_image_menu_item_new_with_label (label);
+					if (menuItem == 0) error (SWT.ERROR_NO_HANDLES);
+
+					long /*int*/ menuImage = OS.gtk_image_new_from_pixbuf (pixbuf);
+					if (menuImage == 0) error (SWT.ERROR_NO_HANDLES);
+					OS.gtk_image_menu_item_set_image (menuItem, menuImage);
+				}
 				OS.gtk_tool_item_set_proxy_menu_item (widget, buffer, menuItem);
+
 				/*
 				 * Since the arrow button does not appear in the drop_down
 				 * item, we request the menu-item and then, hook the
