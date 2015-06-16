@@ -6960,6 +6960,21 @@ public static final long /*int*/ gtk_color_selection_dialog_new(byte[] title) {
 }
 /**
  * @method flags=dynamic
+ * @param chooser cast=(GtkColorChooser *)
+ * @param orientation cast=(GtkOrientation)
+ * @param colors cast=(GdkRGBA *)
+ */
+public static final native long /*int*/ _gtk_color_chooser_add_palette(long /*int*/ chooser, int orientation, int colors_per_line, int n_colors, long /*int*/ colors);
+public static final long /*int*/ gtk_color_chooser_add_palette(long /*int*/ chooser, int orientation, int colors_per_line, int n_colors, long /*int*/ colors) {
+	lock.lock();
+	try {
+		return _gtk_color_chooser_add_palette(chooser, orientation, colors_per_line, n_colors, colors);
+	} finally {
+		lock.unlock();
+	}
+}
+/**
+ * @method flags=dynamic
  * @param title cast=(const gchar *)
  * @param parent cast=(GtkWindow *)
  */
@@ -6980,6 +6995,18 @@ public static final void  gtk_color_chooser_set_use_alpha (long /*int*/ chooser,
 	lock.lock();
 	try {
 		 _gtk_color_chooser_set_use_alpha (chooser, use_alpha);
+	} finally {
+		lock.unlock();
+	}
+}
+/**
+ * @method flags=dynamic
+ */
+public static final native boolean _gtk_color_chooser_get_use_alpha (long /*int*/ chooser);
+public static final boolean  gtk_color_chooser_get_use_alpha (long /*int*/ chooser) {
+	lock.lock();
+	try {
+		 return _gtk_color_chooser_get_use_alpha (chooser);
 	} finally {
 		lock.unlock();
 	}
@@ -15293,6 +15320,12 @@ public static final native void memmove(long /*int*/ dest, GtkAdjustment src);
  * @param size cast=(size_t)
  */
 public static final native void memmove(long /*int*/ dest, GdkColor src, long /*int*/ size);
+/**
+ * @param dest cast=(void *)
+ * @param src cast=(const void *),flags=no_out
+ * @param size cast=(size_t)
+ */
+public static final native void memmove(long /*int*/ dest, GdkRGBA src, long /*int*/ size);
 /**
  * @param dest cast=(void *)
  * @param src cast=(const void *),flags=no_out

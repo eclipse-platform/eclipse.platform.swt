@@ -9534,6 +9534,26 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(_1gtk_1clipboard_1wait_1for_1contents)
 }
 #endif
 
+#ifndef NO__1gtk_1color_1chooser_1add_1palette
+JNIEXPORT jintLong JNICALL OS_NATIVE(_1gtk_1color_1chooser_1add_1palette)
+	(JNIEnv *env, jclass that, jintLong arg0, jint arg1, jint arg2, jint arg3, jintLong arg4)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, _1gtk_1color_1chooser_1add_1palette_FUNC);
+/*
+	rc = (jintLong)gtk_color_chooser_add_palette((GtkColorChooser *)arg0, (GtkOrientation)arg1, arg2, arg3, (GdkRGBA *)arg4);
+*/
+	{
+		OS_LOAD_FUNCTION(fp, gtk_color_chooser_add_palette)
+		if (fp) {
+			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(GtkColorChooser *, GtkOrientation, jint, jint, GdkRGBA *))fp)((GtkColorChooser *)arg0, (GtkOrientation)arg1, arg2, arg3, (GdkRGBA *)arg4);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, _1gtk_1color_1chooser_1add_1palette_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO__1gtk_1color_1chooser_1dialog_1new
 JNIEXPORT jintLong JNICALL OS_NATIVE(_1gtk_1color_1chooser_1dialog_1new)
 	(JNIEnv *env, jclass that, jbyteArray arg0, jintLong arg1)
@@ -9577,6 +9597,26 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1color_1chooser_1get_1rgba)
 fail:
 	if (arg1 && lparg1) setGdkRGBAFields(env, arg1, lparg1);
 	OS_NATIVE_EXIT(env, that, _1gtk_1color_1chooser_1get_1rgba_FUNC);
+}
+#endif
+
+#ifndef NO__1gtk_1color_1chooser_1get_1use_1alpha
+JNIEXPORT jboolean JNICALL OS_NATIVE(_1gtk_1color_1chooser_1get_1use_1alpha)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	jboolean rc = 0;
+	OS_NATIVE_ENTER(env, that, _1gtk_1color_1chooser_1get_1use_1alpha_FUNC);
+/*
+	rc = (jboolean)gtk_color_chooser_get_use_alpha(arg0);
+*/
+	{
+		OS_LOAD_FUNCTION(fp, gtk_color_chooser_get_use_alpha)
+		if (fp) {
+			rc = (jboolean)((jboolean (CALLING_CONVENTION*)(jintLong))fp)(arg0);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, _1gtk_1color_1chooser_1get_1use_1alpha_FUNC);
+	return rc;
 }
 #endif
 
@@ -21491,6 +21531,30 @@ fail:
 	OS_NATIVE_EXIT(env, that, memmove__ILorg_eclipse_swt_internal_gtk_GdkEventMotion_2I_FUNC);
 #else
 	OS_NATIVE_EXIT(env, that, memmove__JLorg_eclipse_swt_internal_gtk_GdkEventMotion_2J_FUNC);
+#endif
+}
+#endif
+
+#if (!defined(NO_memmove__ILorg_eclipse_swt_internal_gtk_GdkRGBA_2I) && !defined(JNI64)) || (!defined(NO_memmove__JLorg_eclipse_swt_internal_gtk_GdkRGBA_2J) && defined(JNI64))
+#ifndef JNI64
+JNIEXPORT void JNICALL OS_NATIVE(memmove__ILorg_eclipse_swt_internal_gtk_GdkRGBA_2I)(JNIEnv *env, jclass that, jintLong arg0, jobject arg1, jintLong arg2)
+#else
+JNIEXPORT void JNICALL OS_NATIVE(memmove__JLorg_eclipse_swt_internal_gtk_GdkRGBA_2J)(JNIEnv *env, jclass that, jintLong arg0, jobject arg1, jintLong arg2)
+#endif
+{
+	GdkRGBA _arg1, *lparg1=NULL;
+#ifndef JNI64
+	OS_NATIVE_ENTER(env, that, memmove__ILorg_eclipse_swt_internal_gtk_GdkRGBA_2I_FUNC);
+#else
+	OS_NATIVE_ENTER(env, that, memmove__JLorg_eclipse_swt_internal_gtk_GdkRGBA_2J_FUNC);
+#endif
+	if (arg1) if ((lparg1 = getGdkRGBAFields(env, arg1, &_arg1)) == NULL) goto fail;
+	memmove((void *)arg0, (const void *)lparg1, (size_t)arg2);
+fail:
+#ifndef JNI64
+	OS_NATIVE_EXIT(env, that, memmove__ILorg_eclipse_swt_internal_gtk_GdkRGBA_2I_FUNC);
+#else
+	OS_NATIVE_EXIT(env, that, memmove__JLorg_eclipse_swt_internal_gtk_GdkRGBA_2J_FUNC);
 #endif
 }
 #endif

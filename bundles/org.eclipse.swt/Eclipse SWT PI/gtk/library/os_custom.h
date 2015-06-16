@@ -151,10 +151,12 @@
 #define gtk_color_selection_get_current_color_LIB LIB_GTK
 #define gtk_color_selection_set_current_color_LIB LIB_GTK
 #define gtk_color_selection_palette_to_string_LIB LIB_GTK
+#define gtk_color_chooser_add_palette_LIB LIB_GTK
 #define gtk_color_chooser_get_rgba_LIB LIB_GTK
 #define gtk_color_chooser_dialog_new_LIB LIB_GTK
 #define gtk_color_chooser_set_rgba_LIB LIB_GTK
 #define gtk_color_chooser_set_use_alpha_LIB LIB_GTK
+#define gtk_color_chooser_get_use_alpha_LIB LIB_GTK
 #define gtk_combo_box_entry_new_text_LIB LIB_GTK
 #define gtk_combo_box_new_text_LIB LIB_GTK
 #define gtk_combo_box_text_insert_LIB LIB_GTK

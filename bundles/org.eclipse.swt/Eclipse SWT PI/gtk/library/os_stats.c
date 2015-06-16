@@ -694,8 +694,10 @@ char * OS_nativeFunctionNames[] = {
 	"_1gtk_1clipboard_1set_1with_1owner",
 	"_1gtk_1clipboard_1store",
 	"_1gtk_1clipboard_1wait_1for_1contents",
+	"_1gtk_1color_1chooser_1add_1palette",
 	"_1gtk_1color_1chooser_1dialog_1new",
 	"_1gtk_1color_1chooser_1get_1rgba",
+	"_1gtk_1color_1chooser_1get_1use_1alpha",
 	"_1gtk_1color_1chooser_1set_1rgba",
 	"_1gtk_1color_1chooser_1set_1use_1alpha",
 	"_1gtk_1color_1selection_1dialog_1get_1color_1selection",
@@ -1625,6 +1627,11 @@ char * OS_nativeFunctionNames[] = {
 	"memmove__ILorg_eclipse_swt_internal_gtk_GdkEventMotion_2I",
 #else
 	"memmove__JLorg_eclipse_swt_internal_gtk_GdkEventMotion_2J",
+#endif
+#ifndef JNI64
+	"memmove__ILorg_eclipse_swt_internal_gtk_GdkRGBA_2I",
+#else
+	"memmove__JLorg_eclipse_swt_internal_gtk_GdkRGBA_2J",
 #endif
 #ifndef JNI64
 	"memmove__ILorg_eclipse_swt_internal_gtk_GtkAdjustment_2",

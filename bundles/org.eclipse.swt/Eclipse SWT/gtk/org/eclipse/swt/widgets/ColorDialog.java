@@ -12,9 +12,9 @@ package org.eclipse.swt.widgets;
 
 
 import org.eclipse.swt.*;
+import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.gtk.*;
-import org.eclipse.swt.graphics.*;
 
 /**
  * Instances of this class allow the user to select a color
@@ -163,34 +163,59 @@ public RGB open () {
 			rgba.red = (double) rgb.red / 255;
 			rgba.green = (double) rgb.green / 255;
 			rgba.blue = (double) rgb.blue / 255;
+			rgba.alpha = 1;
 		}
-		OS.gtk_color_chooser_set_use_alpha (handle, false);
 		OS.gtk_color_chooser_set_rgba (handle, rgba);
 	}
-
 	if (rgbs != null) {
-		long /*int*/ colors = OS.g_malloc(GdkColor.sizeof * rgbs.length);
-		for (int i=0; i<rgbs.length; i++) {
-			RGB rgb = rgbs[i];
-			if (rgb != null) {
-				color.red = (short)((rgb.red & 0xFF) | ((rgb.red & 0xFF) << 8));
-				color.green = (short)((rgb.green & 0xFF) | ((rgb.green & 0xFF) << 8));
-				color.blue = (short)((rgb.blue & 0xFF) | ((rgb.blue & 0xFF) << 8));
-				OS.memmove (colors + i * GdkColor.sizeof, color, GdkColor.sizeof);
+		if (OS.GTK_VERSION >= OS.VERSION (3, 4, 0)) {
+			int colorsPerRow = 9;
+			long /*int*/ gdkRGBAS = OS.g_malloc(GdkRGBA.sizeof * rgbs.length);
+			for (int i=0; i<rgbs.length; i++) {
+				RGB rgbS = rgbs[i];
+				if (rgbS != null) {
+					rgba.red = (double) rgbS.red / 255;
+					rgba.green = (double) rgbS.green / 255;
+					rgba.blue = (double) rgbS.blue / 255;
+					OS.memmove (gdkRGBAS + i * GdkRGBA.sizeof, rgba, GdkRGBA.sizeof);
+				}
+			}
+			OS.gtk_color_chooser_add_palette(handle, OS.GTK_ORIENTATION_HORIZONTAL, colorsPerRow,
+					rgbs.length, gdkRGBAS);
+			OS.gtk_color_chooser_set_rgba (handle, rgba);
+
+
+			if (OS.gtk_color_chooser_get_use_alpha(handle)) {
+				OS.gtk_color_chooser_set_use_alpha (handle, false);
+			}
+			OS.g_free (gdkRGBAS);
+		} else {
+			long /*int*/ gdkColors = OS.g_malloc(GdkColor.sizeof * rgbs.length);
+			for (int i=0; i<rgbs.length; i++) {
+				RGB rgb = rgbs[i];
+				if (rgb != null) {
+					color.red = (short)((rgb.red & 0xFF) | ((rgb.red & 0xFF) << 8));
+					color.green = (short)((rgb.green & 0xFF) | ((rgb.green & 0xFF) << 8));
+					color.blue = (short)((rgb.blue & 0xFF) | ((rgb.blue & 0xFF) << 8));
+					OS.memmove (gdkColors + i * GdkColor.sizeof, color, GdkColor.sizeof);
+				}
+			}
+			long /*int*/ strPtr = OS.gtk_color_selection_palette_to_string(gdkColors, rgbs.length);
+			int length = OS.strlen (strPtr);
+
+			buffer = new byte [length];
+			OS.memmove (buffer, strPtr, length);
+			String paletteString = new String (Converter.mbcsToWcs (null, buffer));
+			buffer = Converter.wcsToMbcs (null, paletteString, true);
+			OS.g_free (gdkColors);
+			long /*int*/ settings = OS.gtk_settings_get_default ();
+			if (settings != 0) {
+				OS.gtk_settings_set_string_property(settings, OS.gtk_color_palette, buffer, Converter.wcsToMbcs (null, "gtk_color_selection_palette_to_string", true));
+
 			}
 		}
-		long /*int*/ strPtr = OS.gtk_color_selection_palette_to_string(colors, rgbs.length);
-		int length = OS.strlen (strPtr);
-		buffer = new byte [length];
-		OS.memmove (buffer, strPtr, length);
-		String paletteString = new String (Converter.mbcsToWcs (null, buffer));
-		buffer = Converter.wcsToMbcs (null, paletteString, true);
-		OS.g_free (colors);
-		long /*int*/ settings = OS.gtk_settings_get_default ();
-		if (settings != 0) {
-			OS.gtk_settings_set_string_property(settings, OS.gtk_color_palette, buffer, Converter.wcsToMbcs (null, "gtk_color_selection_palette_to_string", true));
-		}
 	}
+
 	display.addIdleProc ();
 	Dialog oldModal = null;
 	if (OS.gtk_window_get_modal (handle)) {
@@ -203,7 +228,6 @@ public RGB open () {
 		signalId = OS.g_signal_lookup (OS.map, OS.GTK_TYPE_WIDGET());
 		hookId = OS.g_signal_add_emission_hook (signalId, 0, display.emissionProc, handle, 0);
 	}
-
 	display.sendPreExternalEventDispatchEvent ();
 	int response = OS.gtk_dialog_run (handle);
 	/*
@@ -235,39 +259,43 @@ public RGB open () {
 			red = (color.red >> 8) & 0xFF;
 			green = (color.green >> 8) & 0xFF;
 			blue = (color.blue >> 8) & 0xFF;
+
+			long /*int*/ settings = OS.gtk_settings_get_default ();
+			if (settings != 0) {
+
+				long /*int*/ [] ptr = new long /*int*/ [1];
+				OS.g_object_get (settings, OS.gtk_color_palette, ptr, 0);
+				if (ptr [0] != 0) {
+					int length = OS.strlen (ptr [0]);
+					buffer = new byte [length];
+					OS.memmove (buffer, ptr [0], length);
+					OS.g_free (ptr [0]);
+					String [] gdkColorStrings = null;
+					if (length > 0) {
+						String gtk_color_palette = new String(Converter.mbcsToWcs (null, buffer));
+						gdkColorStrings = splitString(gtk_color_palette, ':');
+						length = gdkColorStrings.length;
+					}
+					rgbs = new RGB [length];
+					for (int i=0; i<length; i++) {
+						String colorString = gdkColorStrings[i];
+						buffer = Converter.wcsToMbcs (null, colorString, true);
+						OS.gdk_color_parse(buffer, color);
+						int redI = (color.red >> 8) & 0xFF;
+						int greenI = (color.green >> 8) & 0xFF;
+						int blueI = (color.blue >> 8) & 0xFF;
+						rgbs [i] = new RGB (redI, greenI, blueI);
+					}
+				}
+			}
 		}
 		rgb = new RGB (red, green, blue);
 	}
-	long /*int*/ settings = OS.gtk_settings_get_default ();
-	if (settings != 0) {
-		long /*int*/ [] ptr = new long /*int*/ [1];
-		OS.g_object_get (settings, OS.gtk_color_palette, ptr, 0);
-		if (ptr [0] != 0) {
-			int length = OS.strlen (ptr [0]);
-			buffer = new byte [length];
-			OS.memmove (buffer, ptr [0], length);
-			OS.g_free (ptr [0]);
-			String [] gdkColorStrings = null;
-			if (length > 0) {
-				String gtk_color_palette = new String(Converter.mbcsToWcs (null, buffer));
-				gdkColorStrings = splitString(gtk_color_palette, ':');
-				length = gdkColorStrings.length;
-			}
-			rgbs = new RGB [length];
-			for (int i=0; i<length; i++) {
-				String colorString = gdkColorStrings[i];
-				buffer = Converter.wcsToMbcs (null, colorString, true);
-				OS.gdk_color_parse(buffer, color);
-				int red = (color.red >> 8) & 0xFF;
-				int green = (color.green >> 8) & 0xFF;
-				int blue = (color.blue >> 8) & 0xFF;
-				rgbs [i] = new RGB (red, green, blue);
-			}
-		}
-	}
+
 	display.removeIdleProc ();
 	OS.gtk_widget_destroy (handle);
 	if (!success) return null;
+
 	return rgb;
 }
 /**
@@ -315,3 +343,4 @@ static String[] splitString(String text, char ch) {
     return substrings;
 }
 }
+

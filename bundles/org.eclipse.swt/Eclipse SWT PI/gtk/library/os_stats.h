@@ -704,8 +704,10 @@ typedef enum {
 	_1gtk_1clipboard_1set_1with_1owner_FUNC,
 	_1gtk_1clipboard_1store_FUNC,
 	_1gtk_1clipboard_1wait_1for_1contents_FUNC,
+	_1gtk_1color_1chooser_1add_1palette_FUNC,
 	_1gtk_1color_1chooser_1dialog_1new_FUNC,
 	_1gtk_1color_1chooser_1get_1rgba_FUNC,
+	_1gtk_1color_1chooser_1get_1use_1alpha_FUNC,
 	_1gtk_1color_1chooser_1set_1rgba_FUNC,
 	_1gtk_1color_1chooser_1set_1use_1alpha_FUNC,
 	_1gtk_1color_1selection_1dialog_1get_1color_1selection_FUNC,
@@ -1635,6 +1637,11 @@ typedef enum {
 	memmove__ILorg_eclipse_swt_internal_gtk_GdkEventMotion_2I_FUNC,
 #else
 	memmove__JLorg_eclipse_swt_internal_gtk_GdkEventMotion_2J_FUNC,
+#endif
+#ifndef JNI64
+	memmove__ILorg_eclipse_swt_internal_gtk_GdkRGBA_2I_FUNC,
+#else
+	memmove__JLorg_eclipse_swt_internal_gtk_GdkRGBA_2J_FUNC,
 #endif
 #ifndef JNI64
 	memmove__ILorg_eclipse_swt_internal_gtk_GtkAdjustment_2_FUNC,
