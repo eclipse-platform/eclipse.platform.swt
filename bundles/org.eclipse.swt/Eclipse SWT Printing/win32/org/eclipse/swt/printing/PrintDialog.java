@@ -447,7 +447,7 @@ public PrinterData open() {
 		}
 		String key = "org.eclipse.swt.internal.win32.runMessagesInIdle"; //$NON-NLS-1$
 		Object oldValue = display.getData(key);
-		display.setData(key, new Boolean(true));
+		display.setData(key, Boolean.TRUE);
 		display.sendPreExternalEventDispatchEvent ();
 		success = OS.PrintDlg(pd);
 		display.sendPostExternalEventDispatchEvent ();

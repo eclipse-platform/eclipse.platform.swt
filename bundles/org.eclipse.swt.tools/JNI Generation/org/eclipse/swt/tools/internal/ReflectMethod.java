@@ -138,7 +138,7 @@ public boolean isNativeUnique() {
 				break;
 			}
 	}
-	unique = new Boolean(result);
+	unique = Boolean.valueOf(result);
 	return result;
 }
 

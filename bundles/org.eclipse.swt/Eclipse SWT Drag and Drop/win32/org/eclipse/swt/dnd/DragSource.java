@@ -301,7 +301,7 @@ private void drag(Event dragEvent) {
 	Display display = control.getDisplay();
 	String key = "org.eclipse.swt.internal.win32.runMessagesInIdle"; //$NON-NLS-1$
 	Object oldValue = display.getData(key);
-	display.setData(key, new Boolean(true));
+	display.setData(key, Boolean.TRUE);
 	ImageList imagelist = null;
 	Image image = event.image;
 	hwndDrag = 0;

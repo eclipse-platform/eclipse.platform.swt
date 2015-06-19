@@ -1227,7 +1227,7 @@ abstract class Tab {
 				} else if (typeName.equals("char")) {
 					parameter = new Object[] {value.length() == 1 ? new Character(value.charAt(0)) : new Character('\0')};
 				} else if (typeName.equals("boolean")) {
-					parameter = new Object[] {new Boolean(value)};
+					parameter = new Object[] {Boolean.valueOf(value)};
 				} else if (typeName.equals("java.lang.String")) {
 					parameter = new Object[] {value};
 				} else if (typeName.equals("org.eclipse.swt.graphics.Point")) {

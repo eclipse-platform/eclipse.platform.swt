@@ -893,7 +893,7 @@ public Object getData () {
 public Object getData (String key) {
 	checkWidget();
 	if (key == null) error (SWT.ERROR_NULL_ARGUMENT);
-	if (key.equals(IS_ACTIVE)) return new Boolean(isActive());
+	if (key.equals(IS_ACTIVE)) return Boolean.valueOf(isActive());
 	if ((state & KEYED_DATA) != 0) {
 		Object [] table = (Object []) data;
 		for (int i=1; i<table.length; i+=2) {

@@ -282,7 +282,7 @@ public static Frame new_Frame(final Composite parent) {
 							try {
 								Class clazz = frame.getClass();
 								Method method = clazz.getMethod("synthesizeWindowActivation", new Class[]{boolean.class});
-								if (method != null) method.invoke(frame, new Object[]{new Boolean(true)});
+								if (method != null) method.invoke(frame, new Object[]{Boolean.TRUE});
 							} catch (Throwable e) {e.printStackTrace();}
 						}
 					});
@@ -295,7 +295,7 @@ public static Frame new_Frame(final Composite parent) {
 							try {
 								Class clazz = frame.getClass();
 								Method method = clazz.getMethod("synthesizeWindowActivation", new Class[]{boolean.class});
-								if (method != null) method.invoke(frame, new Object[]{new Boolean(false)});
+								if (method != null) method.invoke(frame, new Object[]{Boolean.FALSE});
 							} catch (Throwable e) {e.printStackTrace();}
 						}
 					});
