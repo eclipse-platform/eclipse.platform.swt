@@ -15,6 +15,10 @@
   
 #include "os.h"
 #include <atk/atk.h>
+
+//macro for loading functions dynamically
+#define ATK_LOAD_FUNCTION LOAD_FUNCTION
+
 #include "atk_custom.h"
 
 #define SWT_AtkObjectClass_get_attributes get_attributes

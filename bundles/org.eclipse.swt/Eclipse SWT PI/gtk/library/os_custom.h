@@ -13,6 +13,10 @@
 *     IBM Corporation - initial API and implementation
 *******************************************************************************/
 
+/* Include guards */
+#ifndef ORG_ECLIPSE_SWT_GTK_OS_CUSTOM_H
+#define ORG_ECLIPSE_SWT_GTK_OS_CUSTOM_H
+
 /* Special sizeof's */
 #define GPollFD_sizeof() sizeof(GPollFD)
 #define GtkFixedClass_sizeof() sizeof(GtkFixedClass)
@@ -660,3 +664,4 @@ void swt_fixed_resize(SwtFixed *fixed, GtkWidget *widget, gint width, gint heigh
 
 #endif
 
+#endif /* ORG_ECLIPSE_SWT_GTK_OS_CUSTOM_H (include guard, this should be the last line) */

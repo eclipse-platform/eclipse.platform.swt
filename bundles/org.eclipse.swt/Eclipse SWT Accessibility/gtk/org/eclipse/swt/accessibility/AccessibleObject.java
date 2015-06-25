@@ -40,10 +40,13 @@ class AccessibleObject {
 	static final Hashtable<LONG, AccessibleObject> AccessibleObjects = new Hashtable<LONG, AccessibleObject> (9);
 	static final boolean DEBUG = Device.DEBUG;
 	
-	static final int ROW_ROLE, COLUMN_ROLE;
+	static final int ROW_ROLE;
 	static {
-		ROW_ROLE = ATK.atk_role_register(Converter.wcsToMbcs(null, "row", true)); //$NON-NLS-1$
-		COLUMN_ROLE = ATK.atk_role_register(Converter.wcsToMbcs(null, "column", true)); //$NON-NLS-1$
+		//Gtk2.18 sets Atk 1.3 as minimum. ROLE_TABLE_ROW was introduced in ATK 2.1
+		if (ATK.ATK_VERSION >= ATK.VERSION (2, 1, 0))
+			ROW_ROLE = ATK.ATK_ROLE_TABLE_ROW;
+		else 
+			ROW_ROLE = ATK.atk_role_register(Converter.wcsToMbcs(null, "row", true)); //$NON-NLS-1$
 	}
 
 	AccessibleObject (long /*int*/ type, long /*int*/ widget, Accessible accessible, boolean isLightweight) {
@@ -1151,7 +1154,11 @@ class AccessibleObject {
 						case ACC.ROLE_SPLITBUTTON: return ATK.ATK_ROLE_PUSH_BUTTON;
 						case ACC.ROLE_WINDOW: return ATK.ATK_ROLE_WINDOW;
 						case ACC.ROLE_ROW: return ROW_ROLE;
-						case ACC.ROLE_COLUMN: return COLUMN_ROLE;
+
+						//COLUMN_ROLE is not used by gtk/atk/ orca screen reader. It's Win32 specific.
+						//gtk doesn't have a notion of selecting 'columns'. See bug 470629.
+						case ACC.ROLE_COLUMN: return ATK.ATK_ROLE_UNKNOWN; 
+
 						case ACC.ROLE_ALERT: return ATK.ATK_ROLE_ALERT;
 						case ACC.ROLE_ANIMATION: return ATK.ATK_ROLE_ANIMATION;
 						case ACC.ROLE_CANVAS: return ATK.ATK_ROLE_CANVAS;

@@ -83,6 +83,7 @@ public class ATK extends OS {
 	public static final int ATK_ROLE_FORM = 85;
 	public static final int ATK_ROLE_HEADING = 81;
 	public static final int ATK_ROLE_DOCUMENT_FRAME = 80;
+	public static final int ATK_ROLE_TABLE_ROW = 88; //since atk 2.1.0
 	public static final int ATK_ROLE_IMAGE = 26;
 	public static final int ATK_ROLE_PAGE = 82;
 	public static final int ATK_ROLE_SECTION = 83;
@@ -187,7 +188,13 @@ public class ATK extends OS {
 	public static final byte[] accessible_table_row_description = OS.ascii ("accessible-table-row-description");
 	public static final byte[] accessible_table_row_header = OS.ascii ("accessible-table-row-header");
 	public static final byte[] accessible_table_summary = OS.ascii ("accessible-table-summary");
+
+	public static final int ATK_VERSION = VERSION(atk_major_version(), atk_minor_version(), atk_micro_version());
 	
+	public static int VERSION(int major, int minor, int micro) {
+		return (major << 16) + (minor << 8) + micro;
+	}
+
 /** 64 bit */
 public static final native int AtkObjectFactory_sizeof ();
 public static final native int AtkObjectFactoryClass_sizeof ();
@@ -289,6 +296,36 @@ public static final long /*int*/ ATK_VALUE_GET_IFACE (long /*int*/ handle) {
 		lock.unlock();
 	}
 }
+/** @method flags=const */
+public static final native int _atk_major_version();
+public static final int atk_major_version() {
+	lock.lock();
+	try {
+		return _atk_major_version();
+	} finally {
+		lock.unlock();
+	}
+}
+/** @method flags=const */
+public static final native int _atk_minor_version();
+public static final int atk_minor_version() {
+	lock.lock();
+	try {
+		return _atk_minor_version();
+	} finally {
+		lock.unlock();
+	}
+}
+/** @method flags=const */
+public static final native int _atk_micro_version();
+public static final int atk_micro_version() {
+	lock.lock();
+	try {
+		return _atk_micro_version();
+	} finally {
+		lock.unlock();
+	}
+}
 public static final native long /*int*/ _atk_get_default_registry ();
 public static final long /*int*/ atk_get_default_registry () {
 	lock.lock();
@@ -332,9 +369,10 @@ public static final void atk_object_notify_state_change (long /*int*/ accessible
 	}
 }
 /**
+ * @method flags=dynamic
  * @param name cast=(const gchar *)
  */
-public static final native int _atk_role_register (byte[] name);
+public static final native int _atk_role_register (byte[] name); //Note, deprecated, do not use. See atk docu.
 public static final int atk_role_register (byte[] name) {
 	lock.lock();
 	try {
