@@ -20,20 +20,8 @@ import org.eclipse.swt.internal.cairo.*;
 
 public class OS extends C {
 	static {
-		String gtk3 = System.getProperty("SWT_GTK3");
-		if (gtk3 == null) {
-			long /*int*/ ptr = OS.getenv(ascii("SWT_GTK3"));
-			if (ptr != 0) {
-				int length = OS.strlen(ptr);
-				byte[] buffer = new byte[length];
-				OS.memmove(buffer, ptr, length);
-				char[] convertedChar = new char[buffer.length];
-				for (int i = 0; i < buffer.length; i++) {
-					convertedChar[i]=(char)buffer[i];
-				}
-				gtk3 = new String(convertedChar);
-			}
-		}
+		String propertyName = "SWT_GTK3";
+		String gtk3 = getEnvironmentalVariable (propertyName);
 		if (gtk3 != null && gtk3.equals("0")) {
 			Library.loadLibrary("swt-pi");
 		}
@@ -45,6 +33,36 @@ public class OS extends C {
 			}
 		}
 	}
+
+	//Add ability to debug gtk warnings for SWT snippets via SWT_FATAL_WARNINGS=1
+	// env variable. Please see Eclipse bug 471477
+	static {
+		String propertyName = "SWT_FATAL_WARNINGS";
+		String swt_fatal_warnings = getEnvironmentalVariable (propertyName);
+
+		if (swt_fatal_warnings != null && swt_fatal_warnings.equals("1")) {
+			OS.swt_debug_on_fatal_warnings ();
+		}
+	}
+
+	private static String getEnvironmentalVariable (String envVarName) {
+		String envVarValue = System.getProperty(envVarName);
+		if (envVarValue == null) {
+			long /*int*/ ptr = OS.getenv(ascii(envVarName));
+			if (ptr != 0) {
+				int length = OS.strlen(ptr);
+				byte[] buffer = new byte[length];
+				OS.memmove(buffer, ptr, length);
+				char[] convertedChar = new char[buffer.length];
+				for (int i = 0; i < buffer.length; i++) {
+					convertedChar[i]=(char)buffer[i];
+				}
+				envVarValue = new String(convertedChar);
+			}
+		}
+		return envVarValue;
+	}
+
 
 	/** OS Constants */
 	public static final boolean IsAIX, IsSunOS, IsLinux, IsHPUX, BIG_ENDIAN;
@@ -16737,6 +16755,20 @@ public static final int access (byte [] path, int amode) {
  * @param s2 cast=(const char*)
  */
 public static final native int strcmp (long /*int*/ s1, byte [] s2);
+
+
+//Add ability to debug gtk warnings for SWT snippets via SWT_FATAL_WARNINGS=1
+// env variable. Please see Eclipse bug 471477
+// NOTE: this is a custom function in os_custom.h/c.
+public static final native void _swt_debug_on_fatal_warnings();
+public static final void swt_debug_on_fatal_warnings() {
+	lock.lock();
+	try {
+		_swt_debug_on_fatal_warnings ();
+	} finally {
+		lock.unlock();
+	}
+}
 
 public static final native long /*int*/ _swt_fixed_get_type();
 public static final long /*int*/ swt_fixed_get_type() {

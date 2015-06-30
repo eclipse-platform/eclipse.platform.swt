@@ -658,5 +658,7 @@ void swt_fixed_restack(SwtFixed *fixed, GtkWidget *widget, GtkWidget *sibling, g
 void swt_fixed_move(SwtFixed *fixed, GtkWidget *widget, gint x, gint y);
 void swt_fixed_resize(SwtFixed *fixed, GtkWidget *widget, gint width, gint height);
 
+void swt_debug_on_fatal_warnings() ;
+
 #endif
 

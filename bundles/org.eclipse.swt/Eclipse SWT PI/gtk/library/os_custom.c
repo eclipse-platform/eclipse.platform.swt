@@ -731,4 +731,14 @@ static void swt_fixed_forall (GtkContainer *container, gboolean include_internal
 	}
 }
 
+//Add ability to debug gtk warnings for SWT snippets via SWT_FATAL_WARNINGS=1
+// env variable. Please see Eclipse bug 471477
+void swt_debug_on_fatal_warnings() {
+	  // NOTE: gtk_parse_args() must be called before gtk_init() to take effect.
+	  int argcount = 2;
+	  char *argument[] = {"", "--g-fatal-warnings"};
+	  char **arg2 = (char **) &argument;
+	  gtk_parse_args(&argcount, &arg2);
+}
+
 #endif

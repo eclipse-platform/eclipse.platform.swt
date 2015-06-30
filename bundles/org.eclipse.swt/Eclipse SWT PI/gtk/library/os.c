@@ -21098,6 +21098,16 @@ JNIEXPORT void JNICALL OS_NATIVE(_1pango_1tab_1array_1set_1tab)
 }
 #endif
 
+#ifndef NO__1swt_1debug_1on_1fatal_1warnings
+JNIEXPORT void JNICALL OS_NATIVE(_1swt_1debug_1on_1fatal_1warnings)
+	(JNIEnv *env, jclass that)
+{
+	OS_NATIVE_ENTER(env, that, _1swt_1debug_1on_1fatal_1warnings_FUNC);
+	swt_debug_on_fatal_warnings();
+	OS_NATIVE_EXIT(env, that, _1swt_1debug_1on_1fatal_1warnings_FUNC);
+}
+#endif
+
 #ifndef NO__1swt_1fixed_1get_1type
 JNIEXPORT jintLong JNICALL OS_NATIVE(_1swt_1fixed_1get_1type)
 	(JNIEnv *env, jclass that)
