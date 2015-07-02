@@ -90,7 +90,7 @@ public class Tree extends Composite {
 	boolean insertBefore;
 	
 	/* Used to control drop feedback when DND.FEEDBACK_EXPAND and DND.FEEDBACK_SCROLL is set/not set */
-	boolean shouldExpand = true, shouldScroll = true, fixOrigin;
+	boolean shouldExpand = true, shouldScroll = true;
 
 	static int NEXT_ID;
 
@@ -1244,15 +1244,6 @@ void drawInteriorWithFrame_inView (long /*int*/ id, long /*int*/ sel, NSRect rec
 	}
 }
 
-@Override
-void drawRect (long /*int*/ id, long /*int*/ sel, NSRect /*int*/ rect) {
-	if (fixOrigin) {
-		fixOrigin = false;
-		fixTreeOrigin ();
-	}
-	super.drawRect (id, sel, rect);
-}
-
 void drawWithExpansionFrame_inView (long /*int*/ id, long /*int*/ sel, NSRect cellFrame, long /*int*/ view) {
 	drawExpansion = true;
 	super.drawWithExpansionFrame_inView(id, sel, cellFrame, view);
@@ -1849,14 +1840,6 @@ public TreeItem getTopItem () {
 	point.x = rect.x;
 	point.y = rect.y;
 	NSOutlineView outlineView = (NSOutlineView)view;
-	/*
-	 * Note: On OSX 10.10, in setBounds(), we reset the origin of NSOutlineView so that it is
-	 * positioned below the header view. Take this into account before calling rowAtPoint().
-	 */
-	if ((outlineView.headerView() != null) && (OS.VERSION_MMB >= OS.VERSION_MMB(10, 10, 0))) {
-		NSRect headerRect = headerView.frame();
-		point.y += headerRect.y + headerRect.height;
-	}
 	long /*int*/ index = outlineView.rowAtPoint (point);
 	if (index == -1) return null; /* empty */
 	id item = outlineView.itemAtRow (index);
@@ -2714,26 +2697,6 @@ void setBackgroundColor(NSColor nsColor) {
 	((NSTableView) view).setBackgroundColor (nsColor);
 }
 
-void fixTreeOrigin () {
-	/*
-	 * Bug on OSX 10.10: The scrollview's content view and the tree's header view have the same origin. 
-	 * This causes the first row of the NSOutlineView to be hidden by header view.
-	 * Set the origin of NSOutlineView so that it is positioned below the header view.
-	 */
-	NSOutlineView widget = (NSOutlineView) view;
-	if (OS.VERSION_MMB >= OS.VERSION_MMB (10, 10, 0)) {
-		NSPoint pt = new NSPoint();
-		NSRect headerRect = headerView.frame ();
-		if (widget.headerView() != null) {
-			pt.y = headerRect.y + headerRect.height;
-		} else {
-			pt.y = 0;
-		}
-		view.setFrameOrigin (pt);
-		view.setNeedsDisplay (true);
-	}
-}
-
 /**
  * Sets the order that the items in the receiver should 
  * be displayed in to the given argument which is described
@@ -2835,7 +2798,6 @@ void setFont (NSFont font) {
  */
 public void setHeaderVisible (boolean show) {
 	checkWidget ();
-	fixOrigin = true;
 	((NSOutlineView) view).setHeaderView (show ? headerView : null);
 	scrollView.tile();
 }
@@ -3192,14 +3154,6 @@ public void setTopItem (TreeItem item) {
 	NSPoint pt = new NSPoint();
 	pt.x = scrollView.contentView().bounds().x;
 	pt.y = widget.frameOfCellAtColumn(0, row).y;
-	/*
-	 * Note: On OSX 10.10, in setBounds(), we reset the origin of NSOutlineView so that it is
-	 * positioned below the header view. Take this into account before calling scrollPoint().
-	 */
-	if ((widget.headerView() != null) && (OS.VERSION_MMB >= OS.VERSION_MMB(10, 10, 0))) {
-		NSRect headerRect = headerView.frame();
-		pt.y -= headerRect.y + headerRect.height;
-	}
 	view.scrollPoint(pt);
 }
 
