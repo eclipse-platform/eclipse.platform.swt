@@ -1635,7 +1635,26 @@ public void open () {
 		Shell.class.cast(getParent()).open();
 	setVisible (true);
 	if (isDisposed ()) return;
-	if (!restoreFocus () && !traverseGroup (true)) setFocus ();
+	/*
+	 * When no widget has been given focus, or another push button has focus,
+	 * give focus to the default button. This avoids overriding the default
+	 * button.
+	 */
+	boolean restored = restoreFocus ();
+	if (!restored) {
+		restored = traverseGroup (true);
+	}
+	if (restored) {
+		Control focusControl = display.getFocusControl ();
+		if (focusControl instanceof Button && (focusControl.style & SWT.PUSH) != 0) {
+			restored = false;
+		}
+	}
+	if (!restored && defaultButton != null && !defaultButton.isDisposed ()) {
+		defaultButton.setFocus ();
+		return;
+	}
+	setFocus ();
 }
 
 @Override
