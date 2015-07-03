@@ -652,11 +652,12 @@ public class OS extends C {
 	public static final byte[] text = ascii("text");
 	public static final byte[] xalign = ascii("xalign");
 	public static final byte[] ypad = ascii("ypad");
+	public static final byte[] margin_bottom = ascii("margin-bottom");
+	public static final byte[] margin_top = ascii("margin-top");
 	public static final byte[] GTK_PRINT_SETTINGS_OUTPUT_URI = ascii("output-uri");
-	
 	/*
 	 * Needed to tell GTK 3 to prefer a dark or light theme in the UI.
-	 * Improves the look of the Eclipse Dark theme in GTK 3 systems. 
+	 * Improves the look of the Eclipse Dark theme in GTK 3 systems.
 	 */
 	public static final byte[] gtk_application_prefer_dark_theme = ascii("gtk-application-prefer-dark-theme");
 

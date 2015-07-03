@@ -187,9 +187,17 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 		int descent = OS.PANGO_PIXELS (OS.pango_font_metrics_get_descent (metrics));
 		OS.pango_font_metrics_unref (metrics);
 		int fontHeight = ascent + descent;
-		int [] buffer = new int [1];
-		OS.g_object_get (labelHandle, OS.ypad, buffer, 0);
-		fontHeight += 2 * buffer [0];
+		if (OS.GTK3) {
+			int [] bufferBottom = new int [1];
+			int [] bufferTop = new int [1];
+			OS.g_object_get(labelHandle, OS.margin_bottom, bufferBottom, 0);
+			OS.g_object_get(labelHandle, OS.margin_top, bufferTop, 0);
+			fontHeight += bufferBottom [0] + bufferTop [0];
+		} else {
+			int [] bufferYpad = new int[1];
+			OS.g_object_get (labelHandle, OS.ypad, bufferYpad, 0);
+			fontHeight += 2 * bufferYpad [0];
+		}
 		if (frameHandle != 0) {
 			fontHeight += 2 * getThickness (frameHandle).y;
 			fontHeight += 2 * OS.gtk_container_get_border_width (frameHandle);
@@ -616,7 +624,7 @@ public void setImage (Image image) {
  * Note: If control characters like '\n', '\t' etc. are used
  * in the string, then the behavior is platform dependent.
  * </p>
- * 
+ *
  * @param string the new text
  *
  * @exception IllegalArgumentException <ul>
