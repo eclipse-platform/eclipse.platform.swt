@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2013 IBM Corporation and others.
+ * Copyright (c) 2000, 2015 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -225,7 +225,12 @@ void calculateClientArea () {
 	int lineCount = content.getLineCount();
 	int height = styledText.getClientArea().height;
 	int y = 0;
-	while (height > y && lineCount > index) {
+	/*
+	 * There exists a possibility of ArrayIndexOutOfBounds Exception in
+	 * below code, exact scenario not known. To avoid this exception added
+	 * check for 'index' value, refer Bug 471192.
+	 */
+	while (height > y && lineCount > index && lineHeight.length > index) {
 		calculate(index, 1);
 		y += lineHeight[index++];
 	}
