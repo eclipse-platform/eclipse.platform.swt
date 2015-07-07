@@ -2077,19 +2077,4 @@ void gtk_image_set_from_pixbuf (long /*int*/ imageHandle, long /*int*/ pixbuf){
 	}
 }
 
-/**
- * Convienience method to check if one of the provided bit-flags is inside a value.
- * This is most useful for when you need to check against many flags.
- * @param value that you want
- * @param flags
- * @return
- */
-static boolean valueContainsFlag(long value, int flags[]) {
-	for (int i = 0; i < flags.length; i++) {
-		if ((value & flags[i]) != 0)
-			return true;
-	}
-	return false;
-}
-
 }

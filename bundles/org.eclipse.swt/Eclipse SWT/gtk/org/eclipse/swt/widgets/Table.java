@@ -1919,18 +1919,16 @@ void keyPressDefaultSelectionHandler (long /*int*/ event, int key) {
 	switch (key) {
 		case OS.GDK_Return:
 			//Send Default selection return only when no other modifier is pressed.
-			if (!valueContainsFlag (keymask, new int [] {OS.GDK_MOD1_MASK, OS.GDK_SHIFT_MASK, OS.GDK_CONTROL_MASK,
-														OS.GDK_SUPER_MASK, OS.GDK_META_MASK, OS.GDK_HYPER_MASK, }))
-			{
+			if ((keymask & (OS.GDK_MOD1_MASK | OS.GDK_SHIFT_MASK | OS.GDK_CONTROL_MASK
+							| OS.GDK_SUPER_MASK | OS.GDK_META_MASK | OS.GDK_HYPER_MASK)) == 0) {
 				sendTreeDefaultSelection ();
 			}
 			break;
 		case OS.GDK_space:
 			//Shift + Space is a legal DefaultSelection event. (as per row-activation signal documentation).
 			//But do not send if another modifier is pressed.
-			if (!valueContainsFlag (keymask, new int [] {OS.GDK_MOD1_MASK, OS.GDK_CONTROL_MASK,
-														OS.GDK_SUPER_MASK, OS.GDK_META_MASK, OS.GDK_HYPER_MASK, }))
-			{
+			if ((keymask & (OS.GDK_MOD1_MASK | OS.GDK_CONTROL_MASK
+					| OS.GDK_SUPER_MASK | OS.GDK_META_MASK | OS.GDK_HYPER_MASK)) == 0) {
 				sendTreeDefaultSelection ();
 			}
 			break;
