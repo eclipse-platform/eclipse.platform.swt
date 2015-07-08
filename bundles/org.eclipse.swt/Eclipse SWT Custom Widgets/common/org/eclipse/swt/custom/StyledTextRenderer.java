@@ -221,7 +221,7 @@ void calculate(int startLine, int lineCount) {
 	}
 }
 void calculateClientArea () {
-	int index = styledText.getTopIndex();
+	int index = Math.max (0, styledText.getTopIndex());
 	int lineCount = content.getLineCount();
 	int height = styledText.getClientArea().height;
 	int y = 0;
