@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2015 IBM Corporation and others. All rights reserved.
+ * Copyright (c) 2000, 2013 IBM Corporation and others. All rights reserved.
  * The contents of this file are made available under the terms
  * of the GNU Lesser General Public License (LGPL) Version 2.1 that
  * accompanies this distribution (lgpl-v21.txt).  The LGPL is also
@@ -321,42 +321,6 @@ JNIEXPORT jintLong JNICALL ATK_NATIVE(_1atk_1get_1default_1registry)
 }
 #endif
 
-#ifndef NO__1atk_1major_1version
-JNIEXPORT jint JNICALL ATK_NATIVE(_1atk_1major_1version)
-	(JNIEnv *env, jclass that)
-{
-	jint rc = 0;
-	ATK_NATIVE_ENTER(env, that, _1atk_1major_1version_FUNC);
-	rc = (jint)atk_major_version;
-	ATK_NATIVE_EXIT(env, that, _1atk_1major_1version_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO__1atk_1micro_1version
-JNIEXPORT jint JNICALL ATK_NATIVE(_1atk_1micro_1version)
-	(JNIEnv *env, jclass that)
-{
-	jint rc = 0;
-	ATK_NATIVE_ENTER(env, that, _1atk_1micro_1version_FUNC);
-	rc = (jint)atk_micro_version;
-	ATK_NATIVE_EXIT(env, that, _1atk_1micro_1version_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO__1atk_1minor_1version
-JNIEXPORT jint JNICALL ATK_NATIVE(_1atk_1minor_1version)
-	(JNIEnv *env, jclass that)
-{
-	jint rc = 0;
-	ATK_NATIVE_ENTER(env, that, _1atk_1minor_1version_FUNC);
-	rc = (jint)atk_minor_version;
-	ATK_NATIVE_EXIT(env, that, _1atk_1minor_1version_FUNC);
-	return rc;
-}
-#endif
-
 #ifndef NO__1atk_1object_1factory_1get_1accessible_1type
 JNIEXPORT jintLong JNICALL ATK_NATIVE(_1atk_1object_1factory_1get_1accessible_1type)
 	(JNIEnv *env, jclass that, jintLong arg0)
@@ -419,15 +383,7 @@ JNIEXPORT jint JNICALL ATK_NATIVE(_1atk_1role_1register)
 	jint rc = 0;
 	ATK_NATIVE_ENTER(env, that, _1atk_1role_1register_FUNC);
 	if (arg0) if ((lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL)) == NULL) goto fail;
-/*
 	rc = (jint)atk_role_register((const gchar *)lparg0);
-*/
-	{
-		ATK_LOAD_FUNCTION(fp, atk_role_register)
-		if (fp) {
-			rc = (jint)((jint (CALLING_CONVENTION*)(const gchar *))fp)((const gchar *)lparg0);
-		}
-	}
 fail:
 	if (arg0 && lparg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
 	ATK_NATIVE_EXIT(env, that, _1atk_1role_1register_FUNC);

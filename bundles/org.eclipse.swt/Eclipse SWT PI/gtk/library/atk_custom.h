@@ -16,7 +16,3 @@
 /* Special sizeof's */
 #define AtkObjectFactory_sizeof() sizeof(AtkObjectFactory)
 
-
-#include "os_custom.h"  //Need LIB_ATK macro.
-
-#define atk_role_register_LIB LIB_ATK
