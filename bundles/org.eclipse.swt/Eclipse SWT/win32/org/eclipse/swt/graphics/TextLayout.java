@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2014 IBM Corporation and others.
+ * Copyright (c) 2000, 2015 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -2092,7 +2092,7 @@ public int getNextOffset (int offset, int movement) {
 int _getOffset(int offset, int movement, boolean forward) {
 	computeRuns(null);
 	int length = text.length();
-	if (!(0 <= offset && offset <= length)) SWT.error(SWT.ERROR_INVALID_RANGE);
+	if (!(0 <= offset && offset <= length)) SWT.error(SWT.ERROR_INVALID_RANGE, null, " [offset value: " + offset + "]");//$NON-NLS-1$ $NON-NLS-2$
 	if (forward && offset == length) return length;
 	if (!forward && offset == 0) return 0;
 	int step = forward ? 1 : -1;
