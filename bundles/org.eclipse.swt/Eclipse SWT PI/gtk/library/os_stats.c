@@ -1389,7 +1389,6 @@ char * OS_nativeFunctionNames[] = {
 	"_1gtk_1widget_1queue_1resize",
 	"_1gtk_1widget_1realize",
 	"_1gtk_1widget_1remove_1accelerator",
-	"_1gtk_1widget_1reparent",
 	"_1gtk_1widget_1send_1expose",
 	"_1gtk_1widget_1set_1allocation",
 	"_1gtk_1widget_1set_1app_1paintable",

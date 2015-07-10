@@ -18755,16 +18755,6 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1widget_1remove_1accelerator)
 }
 #endif
 
-#ifndef NO__1gtk_1widget_1reparent
-JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1widget_1reparent)
-	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1)
-{
-	OS_NATIVE_ENTER(env, that, _1gtk_1widget_1reparent_FUNC);
-	gtk_widget_reparent((GtkWidget *)arg0, (GtkWidget *)arg1);
-	OS_NATIVE_EXIT(env, that, _1gtk_1widget_1reparent_FUNC);
-}
-#endif
-
 #ifndef NO__1gtk_1widget_1send_1expose
 JNIEXPORT jint JNICALL OS_NATIVE(_1gtk_1widget_1send_1expose)
 	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1)

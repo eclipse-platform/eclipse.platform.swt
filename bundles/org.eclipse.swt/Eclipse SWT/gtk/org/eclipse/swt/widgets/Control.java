@@ -4657,7 +4657,7 @@ public boolean setParent (Composite parent) {
 		oldDecorations.fixAccelGroup ();
 	}
 	long /*int*/ newParent = parent.parentingHandle();
-	OS.gtk_widget_reparent(topHandle, newParent);
+	gtk_widget_reparent(topHandle, newParent);
 	if (OS.GTK3) {
 		OS.swt_fixed_move (newParent, topHandle, x, y);
 	} else {
