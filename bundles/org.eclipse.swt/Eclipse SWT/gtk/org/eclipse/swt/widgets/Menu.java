@@ -10,11 +10,11 @@
  *******************************************************************************/
 package org.eclipse.swt.widgets;
 
-import org.eclipse.swt.internal.*;
-import org.eclipse.swt.internal.gtk.*;
 import org.eclipse.swt.*;
 import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.internal.*;
+import org.eclipse.swt.internal.gtk.*;
 
 /**
  * Instances of this class are user interface objects that contain
@@ -315,7 +315,7 @@ void createHandle (int index) {
 void createIMMenu (long /*int*/ imHandle) {
 	boolean showInputMethod = false;
 	long /*int*/ settings = OS.gtk_settings_get_default ();
-	if (settings != 0) {
+	if (settings != 0 && OS.GTK_VERSION < OS.VERSION (3, 10, 0)) {
 		int [] buffer = new int [1];
 		OS.g_object_get (settings, OS.gtk_show_input_method_menu, buffer, 0);
 		showInputMethod = buffer[0] != 0;
@@ -599,7 +599,7 @@ public Menu getParentMenu () {
  * Returns the receiver's shell. For all controls other than
  * shells, this simply returns the control's nearest ancestor
  * shell. Shells return themselves, even if they are children
- * of other shells. Returns null if receiver or its ancestor 
+ * of other shells. Returns null if receiver or its ancestor
  * is the application menubar.
  *
  * @return the receiver's shell or null
