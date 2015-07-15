@@ -698,7 +698,7 @@ void createHandle (int index) {
 			OS.gtk_window_set_transient_for (shellHandle, parent.topHandle ());
 			OS.gtk_window_set_destroy_with_parent (shellHandle, true);
 			OS.gtk_window_set_skip_taskbar_hint(shellHandle, true);
-			
+
 			/*
 			 * For systems running Metacity, by applying the dialog type hint
 			 * to a window only the close button can be placed on the title bar.
@@ -1256,7 +1256,7 @@ long /*int*/ gtk_configure_event (long /*int*/ widget, long /*int*/ event) {
 	if (!isVisible ()) {
 		return 0; //We shouldn't handle move/resize events if shell is hidden.
 	}
-	
+
 	if (!moved || oldX != x [0] || oldY != y [0]) {
 		moved = true;
 		oldX = x [0];
@@ -1810,6 +1810,10 @@ void resizeBounds (int width, int height, boolean notify) {
 
 @Override
 int setBounds (int x, int y, int width, int height, boolean move, boolean resize) {
+	// bug in GTK2 crashes JVM, in GTK3 the new shell only. See bug 472743
+	width = Math.min(width, (2 << 14) - 1);
+	height = Math.min(height, (2 << 14) - 1);
+
 	if (fullScreen) setFullScreen (false);
 	/*
 	* Bug in GTK.  When either of the location or size of
@@ -2244,7 +2248,7 @@ public void setText (String string) {
 @Override
 public void setVisible (boolean visible) {
 	checkWidget();
-	
+
 	if (moved) { //fix shell location if it was moved.
 		setLocation(oldX, oldY);
 	}

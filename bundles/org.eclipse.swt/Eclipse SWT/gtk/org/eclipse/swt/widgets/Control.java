@@ -848,6 +848,11 @@ public Rectangle getBounds () {
  * receiver to a negative number will cause that
  * value to be set to zero instead.
  * </p>
+  *<p>
+ * Note: Attempting to set the width or height of the
+ * receiver to a number higher or equal 2^14 will cause them to be
+ * set to (2^14)-1 instead.
+ * </p>
  *
  * @param rect the new bounds for the receiver
  *
@@ -873,6 +878,11 @@ public void setBounds (Rectangle rect) {
  * Note: Attempting to set the width or height of the
  * receiver to a negative number will cause that
  * value to be set to zero instead.
+ * </p>
+  *<p>
+ * Note: Attempting to set the width or height of the
+ * receiver to a number higher or equal 2^14 will cause them to be
+ * set to (2^14)-1 instead.
  * </p>
  *
  * @param x the new x coordinate for the receiver
@@ -942,6 +952,10 @@ void resizeHandle (int width, int height) {
 }
 
 int setBounds (int x, int y, int width, int height, boolean move, boolean resize) {
+	// bug in GTK2 crashes JVM, in GTK3 the new shell only. See bug 472743
+	width = Math.min(width, (2 << 14) - 1);
+	height = Math.min(height, (2 << 14) - 1);
+
 	long /*int*/ topHandle = topHandle ();
 	boolean sendMove = move;
 	GtkAllocation allocation = new GtkAllocation ();
@@ -1153,6 +1167,11 @@ public Point getSize () {
  * receiver to a negative number will cause them to be
  * set to zero instead.
  * </p>
+  *<p>
+ * Note: Attempting to set the width or height of the
+ * receiver to a number higher or equal 2^14 will cause them to be
+ * set to (2^14)-1 instead.
+ * </p>
  *
  * @param size the new size for the receiver
  *
@@ -1226,6 +1245,11 @@ void setRelations () {
  * Note: Attempting to set the width or height of the
  * receiver to a negative number will cause that
  * value to be set to zero instead.
+ * </p>
+  *<p>
+ * Note: Attempting to set the width or height of the
+ * receiver to a number higher or equal 2^14 will cause them to be
+ * set to (2^14)-1 instead.
  * </p>
  *
  * @param width the new width for the receiver
@@ -2836,8 +2860,8 @@ public Monitor getMonitor () {
 	long /*int*/ screen = OS.gdk_screen_get_default ();
 	if (screen != 0) {
 		int monitorNumber = OS.gdk_screen_get_monitor_at_window (screen, paintWindow ());
-		Monitor[] monitors = display.getMonitors (); 
-		
+		Monitor[] monitors = display.getMonitors ();
+
 		if (monitorNumber >= 0 && monitorNumber < monitors.length) {
 			return monitors [monitorNumber];
 		}
@@ -3108,7 +3132,7 @@ long /*int*/ gtk_enter_notify_event (long /*int*/ widget, long /*int*/ event) {
 	}
 	long /*int*/ toolHandle = getShell().handle;
 	OS.gtk_widget_set_tooltip_text (toolHandle, buffer);
-		
+
 	if (display.currentControl == this) return 0;
 	GdkEventCrossing gdkEvent = new GdkEventCrossing ();
 	OS.memmove (gdkEvent, event, GdkEventCrossing.sizeof);
@@ -4768,7 +4792,7 @@ boolean setTabItemFocus (boolean next) {
 /**
  * Sets the base text direction (a.k.a. "paragraph direction") of the receiver,
  * which must be one of the constants <code>SWT.LEFT_TO_RIGHT</code>,
- * <code>SWT.RIGHT_TO_LEFT</code>, or a bitwise disjunction 
+ * <code>SWT.RIGHT_TO_LEFT</code>, or a bitwise disjunction
  * <code>SWT.LEFT_TO_RIGHT | SWT.RIGHT_TO_LEFT</code>. The latter stands for an
  * "auto" direction, which implies that a control containing text derives the
  * direction from the directionality of the first strong bidi character.
@@ -5527,7 +5551,7 @@ void update (boolean all, boolean flush) {
 	long /*int*/ window = paintWindow ();
 	if (flush) display.flushExposes (window, all);
 	/*
-	 * Do not send expose events on GTK 3.16.0+ 
+	 * Do not send expose events on GTK 3.16.0+
 	 * It's worth checking whether can be removed on all GTK 3 versions.
 	 */
 	if (OS.GTK_VERSION < OS.VERSION(3, 16, 0)) {
