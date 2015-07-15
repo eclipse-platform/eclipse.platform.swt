@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2004, 2007 IBM Corporation and others.
+ * Copyright (c) 2004, 2015 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -7,6 +7,7 @@
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
+ *     Red Hat Inc. - stop generating pre 1.2 JNI code
  *******************************************************************************/
 package org.eclipse.swt.tools.internal;
 
@@ -513,24 +514,12 @@ boolean generateGetters(JNIMethod method, JNIParameter[] params) {
 		}
 	}
 	if (criticalCount != 0) {
-		outputln("#ifdef JNI_VERSION_1_2");
-		outputln("\tif (IS_JNI_1_2) {");
 		for (int i = 0; i < params.length; i++) {
 			JNIParameter param = params[i];
 			if (isCritical(param)) {
 				genFailTag |= generateGetParameter(method, param, true, 2);
 			}
 		}
-		outputln("\t} else");
-		outputln("#endif");
-		outputln("\t{");
-		for (int i = 0; i < params.length; i++) {
-			JNIParameter param = params[i];
-			if (isCritical(param)) {
-				genFailTag |= generateGetParameter(method, param, false, 2);
-			}
-		}
-		outputln("\t}");
 	}
 	return genFailTag;
 }
@@ -544,8 +533,6 @@ void generateSetters(JNIMethod method, JNIParameter[] params) {
 		}
 	}
 	if (criticalCount != 0) {
-		outputln("#ifdef JNI_VERSION_1_2");
-		outputln("\tif (IS_JNI_1_2) {");
 		for (int i = params.length - 1; i >= 0; i--) {
 			JNIParameter param = params[i];
 			if (isCritical(param)) {
@@ -553,17 +540,6 @@ void generateSetters(JNIMethod method, JNIParameter[] params) {
 				generateSetParameter(param, true);
 			}
 		}
-		outputln("\t} else");
-		outputln("#endif");
-		outputln("\t{");
-		for (int i = params.length - 1; i >= 0; i--) {
-			JNIParameter param = params[i];
-			if (isCritical(param)) {
-				output("\t");
-				generateSetParameter(param, false);
-			}
-		}
-		outputln("\t}");
 	}
 	for (int i = params.length - 1; i >= 0; i--) {
 		JNIParameter param = params[i];
