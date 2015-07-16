@@ -5451,7 +5451,8 @@ void showItem (int index) {
 	* of visible items is zero and use LVM_ENSUREVISIBLE with the
 	* fPartialOK flag set to true to scroll the table.
 	*/
-	if (OS.SendMessage (handle, OS.LVM_GETCOUNTPERPAGE, 0, 0) <= 0) {
+	long /*int*/ counterPage = OS.SendMessage (handle, OS.LVM_GETCOUNTPERPAGE, 0, 0);
+	if (counterPage <= 0) {
 		/*
 		* Bug in Windows.  For some reason, LVM_ENSUREVISIBLE can
 		* scroll one item more or one item less when there is not
@@ -5465,6 +5466,16 @@ void showItem (int index) {
 		if (index != OS.SendMessage (handle, OS.LVM_GETTOPINDEX, 0, 0)) {
 			OS.SendMessage (handle, OS.LVM_ENSUREVISIBLE, index, 1);
 		}		
+	} else if (OS.WIN32_VERSION >= OS.VERSION (6, 0)) {
+		/*
+		 * Bug in Windows Vista and onwards: For some reason,
+		 * LVM_ENSUREVISIBLE command scrolls the table to the leftmost
+		 * column even if the item is already visible, refer Bug 334234
+		 */
+		long /*int*/  topIndex = OS.SendMessage (handle, OS.LVM_GETTOPINDEX, 0, 0);
+		if (topIndex > index || index >= topIndex + counterPage ) {
+			OS.SendMessage (handle, OS.LVM_ENSUREVISIBLE, index, 0);
+		}
 	} else {
 		OS.SendMessage (handle, OS.LVM_ENSUREVISIBLE, index, 0);
 	}
