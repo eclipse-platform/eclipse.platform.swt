@@ -83,6 +83,7 @@ public class ATK extends OS {
 	public static final int ATK_ROLE_FORM = 85;
 	public static final int ATK_ROLE_HEADING = 81;
 	public static final int ATK_ROLE_DOCUMENT_FRAME = 80;
+	public static final int ATK_ROLE_TABLE_ROW = 88; //since atk 2.1.0
 	public static final int ATK_ROLE_IMAGE = 26;
 	public static final int ATK_ROLE_PAGE = 82;
 	public static final int ATK_ROLE_SECTION = 83;
@@ -332,9 +333,10 @@ public static final void atk_object_notify_state_change (long /*int*/ accessible
 	}
 }
 /**
+ * @method flags=dynamic
  * @param name cast=(const gchar *)
  */
-public static final native int _atk_role_register (byte[] name);
+public static final native int _atk_role_register (byte[] name); //Note, deprecated, do not use. See atk docu.
 public static final int atk_role_register (byte[] name) {
 	lock.lock();
 	try {

@@ -10,16 +10,15 @@
  *******************************************************************************/
 package org.eclipse.swt.accessibility;
 
-import java.util.Collection;
-import java.util.Hashtable;
+import java.util.*;
 import java.util.List;
 
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.widgets.*;
+import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.accessibility.gtk.*;
 import org.eclipse.swt.internal.gtk.*;
+import org.eclipse.swt.widgets.*;
 
 class AccessibleObject {
 	long /*int*/ handle;
@@ -40,10 +39,16 @@ class AccessibleObject {
 	static final Hashtable<LONG, AccessibleObject> AccessibleObjects = new Hashtable<LONG, AccessibleObject> (9);
 	static final boolean DEBUG = Device.DEBUG;
 	
-	static final int ROW_ROLE, COLUMN_ROLE;
+	static final int ROW_ROLE;
 	static {
-		ROW_ROLE = ATK.atk_role_register(Converter.wcsToMbcs(null, "row", true)); //$NON-NLS-1$
-		COLUMN_ROLE = ATK.atk_role_register(Converter.wcsToMbcs(null, "column", true)); //$NON-NLS-1$
+
+		// Gtk3.2 has a minimum requirement of ATK 2.1.5
+		// ATK_ROLE_TABLE_ROW was introduced in ATK 2.1.0. See Bug 470629  for details.
+		if (OS.GTK_VERSION >= OS.VERSION(3, 2, 0)) {
+			ROW_ROLE = ATK.ATK_ROLE_TABLE_ROW;
+		} else {
+			ROW_ROLE = ATK.atk_role_register(Converter.wcsToMbcs(null, "row", true)); //$NON-NLS-1$
+		}
 	}
 
 	AccessibleObject (long /*int*/ type, long /*int*/ widget, Accessible accessible, boolean isLightweight) {
@@ -1151,7 +1156,7 @@ class AccessibleObject {
 						case ACC.ROLE_SPLITBUTTON: return ATK.ATK_ROLE_PUSH_BUTTON;
 						case ACC.ROLE_WINDOW: return ATK.ATK_ROLE_WINDOW;
 						case ACC.ROLE_ROW: return ROW_ROLE;
-						case ACC.ROLE_COLUMN: return COLUMN_ROLE;
+						case ACC.ROLE_COLUMN: return ATK.ATK_ROLE_UNKNOWN; //Column role doesn't exist on Gtk.
 						case ACC.ROLE_ALERT: return ATK.ATK_ROLE_ALERT;
 						case ACC.ROLE_ANIMATION: return ATK.ATK_ROLE_ANIMATION;
 						case ACC.ROLE_CANVAS: return ATK.ATK_ROLE_CANVAS;
