@@ -12,9 +12,9 @@ package org.eclipse.swt.widgets;
 
 
 import org.eclipse.swt.*;
-import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.gtk.*;
+import org.eclipse.swt.graphics.*;
 
 /**
  * Instances of this class represent a selectable user interface object
@@ -324,7 +324,7 @@ public void setControl (Control control) {
 		*     TabItem tabItem = new TabItem(tabFolder, 0);
 		*     tabitem.setControl(composite);
 		*/
-		gtk_widget_reparent (control.topHandle (), pageHandle);
+		OS.gtk_widget_reparent (control.topHandle (), pageHandle);
 	}
 
 	Control oldControl = this.control, newControl = control;

@@ -14571,6 +14571,19 @@ public static final void gtk_widget_remove_accelerator(long /*int*/ widget, long
 }
 /**
  * @param widget cast=(GtkWidget *)
+ * @param new_parent cast=(GtkWidget *)
+ */
+public static final native void _gtk_widget_reparent(long /*int*/ widget, long /*int*/ new_parent);
+public static final void gtk_widget_reparent(long /*int*/ widget, long /*int*/ new_parent) {
+	lock.lock();
+	try {
+		_gtk_widget_reparent(widget, new_parent);
+	} finally {
+		lock.unlock();
+	}
+}
+/**
+ * @param widget cast=(GtkWidget *)
  * @param event cast=(GdkEvent *)
  */
 public static final native int _gtk_widget_send_expose(long /*int*/ widget, long /*int*/ event);
