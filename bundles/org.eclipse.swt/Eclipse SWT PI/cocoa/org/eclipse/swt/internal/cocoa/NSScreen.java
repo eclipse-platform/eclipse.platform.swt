@@ -53,10 +53,6 @@ public static NSArray screens() {
 	return result != 0 ? new NSArray(result) : null;
 }
 
-public double /*float*/ userSpaceScaleFactor() {
-	return (double /*float*/)OS.objc_msgSend_fpret(this.id, OS.sel_userSpaceScaleFactor);
-}
-
 public NSRect visibleFrame() {
 	NSRect result = new NSRect();
 	OS.objc_msgSend_stret(result, this.id, OS.sel_visibleFrame);

@@ -2242,7 +2242,6 @@ public static final long /*int*/ sel_useCredential_forAuthenticationChallenge_ =
 public static final long /*int*/ sel_usedRectForTextContainer_ = sel_registerName("usedRectForTextContainer:");
 public static final long /*int*/ sel_user = sel_registerName("user");
 public static final long /*int*/ sel_userInfo = sel_registerName("userInfo");
-public static final long /*int*/ sel_userSpaceScaleFactor = sel_registerName("userSpaceScaleFactor");
 public static final long /*int*/ sel_usesAlternatingRowBackgroundColors = sel_registerName("usesAlternatingRowBackgroundColors");
 public static final long /*int*/ sel_validAttributesForMarkedText = sel_registerName("validAttributesForMarkedText");
 public static final long /*int*/ sel_validModesForFontPanel_ = sel_registerName("validModesForFontPanel:");

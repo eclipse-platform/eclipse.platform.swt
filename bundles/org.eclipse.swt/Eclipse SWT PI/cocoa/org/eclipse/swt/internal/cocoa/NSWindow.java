@@ -366,10 +366,6 @@ public NSToolbar toolbar() {
 	return result != 0 ? new NSToolbar(result) : null;
 }
 
-public double /*float*/ userSpaceScaleFactor() {
-	return (double /*float*/)OS.objc_msgSend_fpret(this.id, OS.sel_userSpaceScaleFactor);
-}
-
 public long /*int*/ windowNumber() {
 	return OS.objc_msgSend(this.id, OS.sel_windowNumber);
 }

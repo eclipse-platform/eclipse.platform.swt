@@ -732,15 +732,6 @@ static void checkDisplay (Thread thread, boolean multiple) {
 	}
 }
 
-static NSRect convertRect(NSScreen screen, NSRect frame) {
-	double /*float*/ scaleFactor = screen.userSpaceScaleFactor();
-	frame.x /= scaleFactor;
-	frame.y /= scaleFactor;
-	frame.width /= scaleFactor;
-	frame.height /= scaleFactor;
-	return frame;
-}
-
 static String convertToLf(String text) {
 	char Cr = '\r';
 	char Lf = '\n';
@@ -1301,13 +1292,13 @@ public Rectangle getBounds () {
 
 Rectangle getBounds (NSArray screens) {
 	NSScreen screen = new NSScreen(screens.objectAtIndex(0));
-	NSRect primaryFrame = convertRect(screen, screen.frame());
+	NSRect primaryFrame = screen.frame();
 	double /*float*/ minX = Float.MAX_VALUE, maxX = Float.MIN_VALUE;
 	double /*float*/ minY = Float.MAX_VALUE, maxY = Float.MIN_VALUE;
 	long /*int*/ count = screens.count();
 	for (int i = 0; i < count; i++) {
 		screen = new NSScreen(screens.objectAtIndex(i));
-		NSRect frame = convertRect(screen, screen.frame());
+		NSRect frame = screen.frame();
 		double /*float*/ x1 = frame.x, x2 = frame.x + frame.width;
 		double /*float*/ y1 = primaryFrame.height - frame.y, y2 = primaryFrame.height - (frame.y + frame.height);
 		if (x1 < minX) minX = x1;
@@ -1357,8 +1348,8 @@ public Rectangle getClientArea () {
 	NSArray screens = NSScreen.screens();
 	if (screens.count() != 1) return getBounds (screens);
 	NSScreen screen = new NSScreen(screens.objectAtIndex(0));
-	NSRect frame = convertRect(screen, screen.frame());;
-	NSRect visibleFrame = convertRect(screen, screen.visibleFrame());
+	NSRect frame = screen.frame();
+	NSRect visibleFrame = screen.visibleFrame();
 	double /*float*/ y = frame.height - (visibleFrame.y + visibleFrame.height);
 	return new Rectangle((int)visibleFrame.x, (int)y, (int)visibleFrame.width, (int)visibleFrame.height);
 }
@@ -1683,20 +1674,19 @@ NSPanel getModalPanel () {
 public Monitor [] getMonitors () {
 	checkDevice ();
 	NSArray screens = NSScreen.screens();
-	NSScreen screen = new NSScreen(screens.objectAtIndex(0));
-	NSRect primaryFrame = convertRect(screen, screen.frame());
+	NSRect primaryFrame = new NSScreen(screens.objectAtIndex(0)).frame();
 	int count = (int)/*64*/screens.count();
 	Monitor [] monitors = new Monitor [count];
 	for (int i=0; i<count; i++) {
 		Monitor monitor = new Monitor ();
-		screen = new NSScreen(screens.objectAtIndex(i));
-		NSRect frame = convertRect(screen, screen.frame());
+		NSScreen screen = new NSScreen(screens.objectAtIndex(i));
+		NSRect frame = screen.frame();
 		monitor.handle = screen.id;
 		monitor.x = (int)frame.x;
 		monitor.y = (int)(primaryFrame.height - (frame.y + frame.height));
 		monitor.width = (int)frame.width;
 		monitor.height = (int)frame.height;
-		NSRect visibleFrame = convertRect(screen, screen.visibleFrame());
+		NSRect visibleFrame = screen.visibleFrame();
 		monitor.clientX = (int)visibleFrame.x;
 		monitor.clientY = (int)(primaryFrame.height - (visibleFrame.y + visibleFrame.height));
 		monitor.clientWidth = (int)visibleFrame.width;
@@ -1723,13 +1713,13 @@ public Monitor getPrimaryMonitor () {
 	Monitor monitor = new Monitor ();
 	NSArray screens = NSScreen.screens();
 	NSScreen screen = new NSScreen(screens.objectAtIndex(0));
-	NSRect frame = convertRect(screen, screen.frame());
+	NSRect frame = screen.frame();
 	monitor.handle = screen.id;
 	monitor.x = (int)frame.x;
 	monitor.y = (int)(frame.height - (frame.y + frame.height));
 	monitor.width = (int)frame.width;
 	monitor.height = (int)frame.height;
-	NSRect visibleFrame = convertRect(screen, screen.visibleFrame());
+	NSRect visibleFrame = screen.visibleFrame();
 	monitor.clientX = (int)visibleFrame.x;
 	monitor.clientY = (int)(frame.height - (visibleFrame.y + visibleFrame.height));
 	monitor.clientWidth = (int)visibleFrame.width;
