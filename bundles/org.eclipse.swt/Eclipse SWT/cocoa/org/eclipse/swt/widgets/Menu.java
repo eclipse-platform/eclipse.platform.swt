@@ -11,11 +11,10 @@
 package org.eclipse.swt.widgets;
 
 
-import org.eclipse.swt.internal.cocoa.*;
- 
 import org.eclipse.swt.*;
 import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.internal.cocoa.*;
 
 /**
  * Instances of this class are user interface objects that contain
@@ -264,9 +263,8 @@ void _setVisible (boolean visible) {
 			NSView topView = window.contentView();
 			Point shellCoord = display.map(null, shell, new Point(x,y));
 			location = new NSPoint ();
-			double /*float*/ scaleFactor = window.userSpaceScaleFactor();
-			location.x = shellCoord.x * scaleFactor;
-			location.y = (topView.frame().height - shellCoord.y) * scaleFactor;
+			location.x = shellCoord.x;
+			location.y = topView.frame().height - shellCoord.y;
 		} else {
 			location = window.mouseLocationOutsideOfEventStream();
 		}

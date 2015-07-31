@@ -912,13 +912,7 @@ public Rectangle getBounds () {
 	if (window != null) {
 		NSRect frame = window.frame();
 		double /*float*/ y = display.getPrimaryFrame().height - (int)(frame.y + frame.height);
-		Rectangle rectangle = new Rectangle ((int)frame.x, (int)y, (int)frame.width, (int)frame.height);
-		double /*float*/ scaleFactor = view.window().userSpaceScaleFactor();
-		rectangle.x /= scaleFactor;
-		rectangle.y /= scaleFactor;
-		rectangle.width /= scaleFactor;
-		rectangle.height /= scaleFactor;
-		return rectangle;
+		return new Rectangle ((int)frame.x, (int)y, (int)frame.width, (int)frame.height);
 	} else {
 		NSRect frame = view.frame();
 		// Start from view's origin, (0, 0)
@@ -941,10 +935,7 @@ public Rectangle getClientArea () {
 		if (!fixResize ()) {
 			rect = window.contentView().frame();
 		} else {
-			double /*float*/ scaleFactor = window.userSpaceScaleFactor();
 			rect = window.frame();
-			rect.width /= scaleFactor;
-			rect.height /= scaleFactor;
 		}
 	} else {
 		rect = topView().frame();
@@ -1015,11 +1006,7 @@ public Point getLocation () {
 	if (window != null) {
 		NSRect frame = window.frame();
 		double /*float*/ y = display.getPrimaryFrame().height - (int)(frame.y + frame.height);
-		Point point = new Point ((int)frame.x, (int)y);
-		double /*float*/ scaleFactor = view.window().userSpaceScaleFactor();
-		point.x /= scaleFactor;
-		point.y /= scaleFactor;
-		return point;
+		return new Point ((int)frame.x, (int)y);
 	} else {
 		// Start from view's origin, (0, 0)
 		NSPoint pt = new NSPoint();
@@ -1030,9 +1017,6 @@ public Point getLocation () {
 		pt = view.convertPoint_toView_(pt, null);
 		pt = view.window().convertBaseToScreen(pt);
 		pt.y = primaryFrame.height - pt.y;
-		double /*float*/ scaleFactor = view.window().userSpaceScaleFactor();
-		pt.x /= scaleFactor;
-		pt.y /= scaleFactor;
 		return new Point((int)pt.x, (int)pt.y);
 	}
 }
@@ -1181,11 +1165,7 @@ public Shell [] getShells () {
 public Point getSize () {
 	checkWidget();
 	NSRect frame = (window != null ? window.frame() : view.frame());
-	Point point = new Point ((int) frame.width, (int) frame.height);
-	double /*float*/ scaleFactor = view.window().userSpaceScaleFactor();
-	point.x /= scaleFactor;
-	point.y /= scaleFactor;
-	return point;
+	return new Point ((int) frame.width, (int) frame.height);
 }
 
 float getThemeAlpha () {
@@ -1619,11 +1599,6 @@ void setBounds (int x, int y, int width, int height, boolean move, boolean resiz
 	boolean sheet = window.isSheet();
 	if (sheet && move && !resize) return;
 	int screenHeight = (int) display.getPrimaryFrame().height;
-	double /*float*/ scaleFactor = window.userSpaceScaleFactor();
-	x *= scaleFactor;
-	y *= scaleFactor;
-	width *= scaleFactor;
-	height *= scaleFactor;
 	NSRect frame = window.frame();
 	if (!move) {
 		x = (int)frame.x;
@@ -2035,9 +2010,6 @@ void setZOrder () {
 	if (fixResize ()) {
 		NSRect rect = window.frame();
 		rect.x = rect.y = 0;
-		double /*float*/ scaleFactor = window.userSpaceScaleFactor();
-		rect.width /= scaleFactor;
-		rect.height /= scaleFactor;
 		window.contentView().setFrame(rect);
 	}
 }
@@ -2202,9 +2174,6 @@ void windowDidResize(long /*int*/ id, long /*int*/ sel, long /*int*/ notificatio
 	if (fixResize ()) {
 		NSRect rect = window.frame ();
 		rect.x = rect.y = 0;
-		double /*float*/ scaleFactor = window.userSpaceScaleFactor();
-		rect.width /= scaleFactor;
-		rect.height /= scaleFactor;
 		window.contentView ().setFrame (rect);
 	}
 	resized = true;
