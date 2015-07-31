@@ -56,7 +56,12 @@ public class nsIFile extends nsISupports {
 	public static final int DIRECTORY_TYPE = 1;
 
 	public int Create(int type, int permissions) {
-		return XPCOM.VtblCall(this.getMethodIndex("create"), getAddress(), type, permissions);
+		/*
+		 * Since dynamic method lookup call needs mozilla profile directory to
+		 * be present. And getMethodIndex gets called in absence of profile
+		 * directory, hence using hard-coded method index directly.
+		 */
+		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 4, getAddress(), type, permissions);
 	}
 
 	public int GetLeafName(long /*int*/ aLeafName) {
