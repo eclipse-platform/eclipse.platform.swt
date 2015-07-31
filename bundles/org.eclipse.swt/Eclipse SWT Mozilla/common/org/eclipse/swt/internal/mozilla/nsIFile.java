@@ -57,9 +57,10 @@ public class nsIFile extends nsISupports {
 
 	public int Create(int type, int permissions) {
 		/*
-		 * Since dynamic method lookup call needs mozilla profile directory to
-		 * be present. And getMethodIndex gets called in absence of profile
-		 * directory, hence using hard-coded method index directly.
+		 * Finding the method index by name using getMethodIndex() fails if
+		 * mozilla profile directory is missing. Hence, use method index
+		 * directly to support nsIFile.Create operation in the absence of
+		 * profile directory.
 		 */
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 4, getAddress(), type, permissions);
 	}
