@@ -48,8 +48,8 @@ public class BallTab extends AnimatedGraphicsTab {
 			this.incY = incY;
 			this.ball_size = ball_size;
 			this.capacity = capacity;
-			prevx = new LinkedList<Float>();
-			prevy = new LinkedList<Float>();
+			prevx = new LinkedList<>();
+			prevy = new LinkedList<>();
 			this.colors = colors;
 		}
 	}

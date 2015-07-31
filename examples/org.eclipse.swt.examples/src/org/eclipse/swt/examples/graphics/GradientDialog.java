@@ -62,7 +62,7 @@ public class GradientDialog extends Dialog {
 		super(parent, style);
 		rgb1 = rgb2 = null;
 		returnVal = SWT.CANCEL;
-		resources = new ArrayList<Image>();
+		resources = new ArrayList<>();
 	}
 	
 	/**

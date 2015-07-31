@@ -25,7 +25,7 @@ public abstract class SegmentedPaintSession extends BasicPaintSession {
 	/**
 	 * The set of control points making up the segmented selection
 	 */
-	private List<Point> controlPoints = new ArrayList<Point>();
+	private List<Point> controlPoints = new ArrayList<>();
 
 	/**
 	 * The previous figure (so that we can abort with right-button)

@@ -928,7 +928,7 @@ public class FileViewer {
 		 * If not already expanded, recursively expands the parents of the specified
 		 * directory until it is visible.
 		 */
-		List <File> path = new ArrayList<File>();
+		List <File> path = new ArrayList<>();
 		// Build a stack of paths from the root of the tree
 		while (dir != null) {
 			path.add(dir);
@@ -1174,7 +1174,7 @@ public class FileViewer {
 		progressDialog.open();
 
 		// Copy each file
-		List<File> processedFiles = new ArrayList<File>();
+		List<File> processedFiles = new ArrayList<>();
 		for (int i = 0; (i < sourceNames.length) && (! progressDialog.isCancelled()); i++){
 			final File source = new File(sourceNames[i]);
 			final File dest = new File(targetFile, source.getName());
@@ -1295,7 +1295,7 @@ public class FileViewer {
 		 * -- PORTABILITY ISSUES HERE --
 		 */
 		if (System.getProperty ("os.name").indexOf ("Windows") != -1) {
-			List<File> list = new ArrayList<File>();
+			List<File> list = new ArrayList<>();
 			list.add(new File(DRIVE_A));
 			list.add(new File(DRIVE_B));
 			for (char i = 'c'; i <= 'z'; ++i) {

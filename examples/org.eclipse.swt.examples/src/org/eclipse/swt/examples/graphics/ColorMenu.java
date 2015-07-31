@@ -273,7 +273,7 @@ public class ColorMenu {
 		
 		public MenuItemListener(Control parent){
 			this.parent = parent; 
-			resources = new ArrayList<Resource>();
+			resources = new ArrayList<>();
 		}
 		/**
 		 * Method used to set the ColorListener
@@ -298,7 +298,7 @@ public class ColorMenu {
 				for (int i = 0; i < resources.size(); i++) {
 					resources.get(i).dispose();
 				}
-				resources = new ArrayList<Resource>();
+				resources = new ArrayList<>();
 				break;
 			case SWT.Selection:
 				Display display = event.display;

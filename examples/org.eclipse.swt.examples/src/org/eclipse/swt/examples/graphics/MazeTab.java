@@ -43,7 +43,7 @@ public MazeTab(GraphicsExample example) {
 	super(example);
 
 	// correct path
-	nextCoord = new ArrayList<Integer>();
+	nextCoord = new ArrayList<>();
 	nextCoord.addAll(moveDown(20, -50, 20, 110, 10));
 	nextCoord.addAll(moveRight(30, 110, 130, 110, 10));
 	nextCoord.addAll(moveUp(135, 100, 135, 15, 10));
@@ -67,7 +67,7 @@ public MazeTab(GraphicsExample example) {
 	ycoord = nextCoord.get(nextIndex+1).intValue();
 	
 	// wrong path 1
-	nextCoord2 = new ArrayList<Integer>();
+	nextCoord2 = new ArrayList<>();
 	nextCoord2.addAll(moveDown(20, -25, 20, 110, 10));
 	nextCoord2.addAll(moveRight(30, 110, 130, 110, 10));
 	nextCoord2.addAll(moveUp(135, 100, 135, 15, 10));
@@ -80,7 +80,7 @@ public MazeTab(GraphicsExample example) {
 	ycoord2 = nextCoord2.get(nextIndex2+1).intValue();
 	
 	// wrong path 2
-	nextCoord3 = new ArrayList<Integer>();
+	nextCoord3 = new ArrayList<>();
 	nextCoord3.addAll(moveDown(20, 0, 20, 110, 10));
 	nextCoord3.addAll(moveRight(30, 110, 130, 110, 10));
 	nextCoord3.addAll(moveUp(135, 100, 135, 15, 10));
@@ -240,7 +240,7 @@ public void paint(GC gc, int width, int height) {
  *            The number of pixels that separate each coordinate
  */
 private List<Integer> moveLeft(int x1, int y1, int x2, int y2, int stepsize) {
-	List<Integer> coords = new ArrayList<Integer>();
+	List<Integer> coords = new ArrayList<>();
 	coords.add(new Integer(x1));
 	coords.add(new Integer(y1));
 	while(x1 - stepsize > x2) {
@@ -269,7 +269,7 @@ private List<Integer> moveLeft(int x1, int y1, int x2, int y2, int stepsize) {
  *            The number of pixels that separate each coordinate
  */
 private List<Integer> moveRight(int x1, int y1, int x2, int y2, int stepsize) {
-	List<Integer> coords = new ArrayList<Integer>();
+	List<Integer> coords = new ArrayList<>();
 	coords.add(new Integer(x1));
 	coords.add(new Integer(y1));
 	while(x1 + stepsize < x2) {
@@ -298,7 +298,7 @@ private List<Integer> moveRight(int x1, int y1, int x2, int y2, int stepsize) {
  *            The number of pixels that separate each coordinate
  */
 private List<Integer> moveUp(int x1, int y1, int x2, int y2, int stepsize) {
-	List<Integer> coords = new ArrayList<Integer>();
+	List<Integer> coords = new ArrayList<>();
 	coords.add(new Integer(x1));
 	coords.add(new Integer(y1));
 	while(y1 - stepsize > y2) {
@@ -327,7 +327,7 @@ private List<Integer> moveUp(int x1, int y1, int x2, int y2, int stepsize) {
  *            The number of pixels that separate each coordinate
  */
 private List<Integer> moveDown(int x1, int y1, int x2, int y2, int stepsize) {
-	List<Integer> coords = new ArrayList<Integer>();
+	List<Integer> coords = new ArrayList<>();
 	coords.add(new Integer(x1));
 	coords.add(new Integer(y1));
 	while(y1 + stepsize < y2) {

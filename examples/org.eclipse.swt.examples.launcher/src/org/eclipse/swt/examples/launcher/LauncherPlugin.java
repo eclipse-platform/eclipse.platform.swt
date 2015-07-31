@@ -11,15 +11,26 @@
 package org.eclipse.swt.examples.launcher;
 
 
-import java.io.*;
-import java.net.*;
-import java.text.*;
-import java.util.*;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+import java.text.MessageFormat;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.MissingResourceException;
+import java.util.ResourceBundle;
+import java.util.Set;
 
-import org.eclipse.core.runtime.*;
-import org.eclipse.swt.graphics.*;
-import org.eclipse.ui.plugin.*;
-import org.osgi.framework.*;
+import org.eclipse.core.runtime.IConfigurationElement;
+import org.eclipse.core.runtime.IExtensionRegistry;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Platform;
+import org.eclipse.core.runtime.Status;
+import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.ImageData;
+import org.eclipse.ui.plugin.AbstractUIPlugin;
+import org.osgi.framework.Bundle;
+import org.osgi.framework.BundleContext;
 
 /**
  * The main plugin class to be used in the desktop.
@@ -179,7 +190,7 @@ public class LauncherPlugin extends AbstractUIPlugin {
 		}
 		
 		/* Collect all launch categories -- coalesce those with same ID */
-		HashMap<String, ItemTreeNode> idMap = new HashMap<String, ItemTreeNode>();
+		HashMap<String, ItemTreeNode> idMap = new HashMap<>();
 		for (IConfigurationElement ce: configurationElements) {
 			final String ceName = ce.getName();
 			final String attribId = getItemAttribute(ce, LAUNCH_ITEMS_XML_ATTRIB_ID, null);
@@ -194,7 +205,7 @@ public class LauncherPlugin extends AbstractUIPlugin {
 		}
 		
 		/* Generate launch category hierarchy */
-		Set<String> tempIdSet = new HashSet<String>(); // used to prevent duplicates from being entered into the tree
+		Set<String> tempIdSet = new HashSet<>(); // used to prevent duplicates from being entered into the tree
 		for (IConfigurationElement ce : configurationElements) {
 			final String ceName = ce.getName();
 			final String attribId = getItemAttribute(ce, LAUNCH_ITEMS_XML_ATTRIB_ID, null);

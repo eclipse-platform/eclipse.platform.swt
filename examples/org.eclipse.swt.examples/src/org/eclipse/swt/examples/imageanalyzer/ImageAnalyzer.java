@@ -1121,7 +1121,7 @@ public class ImageAnalyzer {
 	 * as they are loaded.
 	 */
 	void incrementalThreadStart() {
-		incrementalEvents = new ArrayList<ImageLoaderEvent>();
+		incrementalEvents = new ArrayList<>();
 		incrementalThread = new Thread("Incremental") {
 			@Override
 			public void run() {

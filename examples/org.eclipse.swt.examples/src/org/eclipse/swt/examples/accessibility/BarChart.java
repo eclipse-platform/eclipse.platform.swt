@@ -44,7 +44,7 @@ import org.eclipse.swt.widgets.Display;
  */
 public class BarChart extends Canvas {
 	static ResourceBundle bundle = ResourceBundle.getBundle("examples_accessibility");
-	List<Object[]> data = new ArrayList<Object[]>();
+	List<Object[]> data = new ArrayList<>();
 	String title;
 	int color = SWT.COLOR_RED;
 	int selectedItem = -1;

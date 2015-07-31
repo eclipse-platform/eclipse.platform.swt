@@ -15,8 +15,8 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
-import java.util.List;
 import java.util.HashSet;
+import java.util.List;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 
@@ -91,7 +91,7 @@ public GraphicsExample() {
 
 public GraphicsExample(final Composite parent) {
 	this.parent = parent;
-	resources = new ArrayList<Image>();
+	resources = new ArrayList<>();
 	createControls(parent);
 	setTab(tab);
 	startAnimationTimer();
@@ -416,7 +416,7 @@ void createTabList(Composite parent) {
 			return tab0.getText().compareTo(tab1.getText());
 		}
 	});
-	HashSet<String> set = new HashSet<String>();
+	HashSet<String> set = new HashSet<>();
 	for (GraphicsTab tab : tabs) {
 		set.add(tab.getCategory());
 	}
@@ -427,7 +427,7 @@ void createTabList(Composite parent) {
 		TreeItem item = new TreeItem(tabList, SWT.NONE);
 		item.setText(text);
 	}
-	tabs_in_order = new ArrayList<GraphicsTab>();
+	tabs_in_order = new ArrayList<>();
 	TreeItem[] items = tabList.getItems();
 	for (TreeItem item : items) {
 		for (GraphicsTab tab : tabs) {

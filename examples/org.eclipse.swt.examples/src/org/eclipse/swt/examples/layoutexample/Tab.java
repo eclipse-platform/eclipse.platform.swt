@@ -96,7 +96,7 @@ abstract class Tab {
 			"Group", "Label", "Link", "List", "ProgressBar", "Scale", "Slider", "StyledText",
 			"Table", "Text", "ToolBar", "Tree"};
 	TableItem newItem, lastSelected;
-	List<String[]> data = new ArrayList<String[]> ();
+	List<String[]> data = new ArrayList<> ();
 	/* Controlling instance */
 	final LayoutExample instance;
 

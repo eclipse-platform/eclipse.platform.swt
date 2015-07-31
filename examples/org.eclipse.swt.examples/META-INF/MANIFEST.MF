@@ -5,7 +5,7 @@ Bundle-SymbolicName: org.eclipse.swt.examples; singleton:=true
 Bundle-Version: 3.104.0.qualifier
 Bundle-Vendor: %providerName
 Bundle-Localization: plugin
-Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Export-Package: org.eclipse.swt.examples.accessibility,
  org.eclipse.swt.examples.addressbook,
  org.eclipse.swt.examples.browserexample,

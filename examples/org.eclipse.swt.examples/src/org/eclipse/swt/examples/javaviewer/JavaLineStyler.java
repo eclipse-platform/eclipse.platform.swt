@@ -14,8 +14,8 @@ package org.eclipse.swt.examples.javaviewer;
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Hashtable;
+import java.util.List;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.LineStyleEvent;
@@ -30,7 +30,7 @@ class JavaLineStyler implements LineStyleListener {
 	JavaScanner scanner = new JavaScanner();
 	int[] tokenColors;
 	Color[] colors;
-	List<int[]> blockComments = new ArrayList<int[]>();
+	List<int[]> blockComments = new ArrayList<>();
 
 	public static final int EOF= -1;
 	public static final int EOL= 10;
@@ -101,7 +101,7 @@ void disposeColors() {
  */
 @Override
 public void lineGetStyle(LineStyleEvent event) {
-	List<StyleRange> styles = new ArrayList<StyleRange>();
+	List<StyleRange> styles = new ArrayList<>();
 	int token;
 	StyleRange lastStyle;
 	// If the line is part of a block comment, create one style for the entire line.
@@ -155,7 +155,7 @@ public void lineGetStyle(LineStyleEvent event) {
 	event.styles = styles.toArray(new StyleRange[styles.size()]);
 }
 public void parseBlockComments(String text) {
-	blockComments = new ArrayList<int[]>();
+	blockComments = new ArrayList<>();
 	StringReader buffer = new StringReader(text);
 	int ch;
 	boolean blkComment = false;
@@ -257,7 +257,7 @@ public class JavaScanner {
 	 * Initialize the lookup table.
 	 */
 	void initialize() {
-		fgKeys= new Hashtable<String, Integer>();
+		fgKeys= new Hashtable<>();
 		Integer k= new Integer(KEY);
 		for (String word : fgKeywords)
 			fgKeys.put(word, k);
