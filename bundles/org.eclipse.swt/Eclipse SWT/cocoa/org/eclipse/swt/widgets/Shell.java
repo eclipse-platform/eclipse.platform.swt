@@ -446,6 +446,7 @@ static int checkStyle (Shell parent, int style) {
 	return bits;
 }
 
+@Override
 boolean accessibilityIsIgnored(long /*int*/ id, long /*int*/ sel) {
 	// The content view of a shell is always ignored.
 	if (id == view.id) return true;
@@ -514,6 +515,7 @@ void attachObserversToWindow(NSWindow newWindow) {
 	defaultCenter.addObserver(windowDelegate, OS.sel_windowWillClose_, OS.NSWindowWillCloseNotification, hostWindow);
 }
 
+@Override
 void becomeKeyWindow (long /*int*/ id, long /*int*/ sel) {
 	Shell modal = getModalShell();
 	if (modal != null && modal.window != null) {
@@ -527,6 +529,7 @@ void becomeKeyWindow (long /*int*/ id, long /*int*/ sel) {
 	display.keyWindow = null;
 }
 
+@Override
 void bringToTop (boolean force) {
 	if (getMinimized ()) return;
 	if (force) {
@@ -536,6 +539,7 @@ void bringToTop (boolean force) {
 	}
 }
 
+@Override
 boolean canBecomeKeyWindow (long /*int*/ id, long /*int*/ sel) {
 	if (isPopup) return false;
 	// Only answer if SWT created the window.
@@ -556,6 +560,7 @@ boolean canBecomeKeyWindow (long /*int*/ id, long /*int*/ sel) {
 	return super.canBecomeKeyWindow (id, sel);
 }
 
+@Override
 void checkOpen () {
 	if (!opened) resized = false;
 }
@@ -580,6 +585,7 @@ void center () {
 	setLocation (x, y);
 }
 
+@Override
 void clearDeferFlushing (long /*int*/ id, long /*int*/ sel) {
 	deferFlushing = false;
 	scrolling = false;
@@ -613,6 +619,7 @@ void closeWidget (boolean force) {
 	if ((force || event.doit) && !isDisposed ()) dispose ();
 }
 
+@Override
 public Point computeSize (int wHint, int hHint, boolean changed) {
 	Point size = super.computeSize (wHint, hHint, changed);
 	if (toolBar != null) {
@@ -624,6 +631,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	return size;
 }
 
+@Override
 public Rectangle computeTrim (int x, int y, int width, int height) {
 	checkWidget();
 	Rectangle trim = super.computeTrim(x, y, width, height);
@@ -642,6 +650,7 @@ public Rectangle computeTrim (int x, int y, int width, int height) {
 	return new Rectangle ((int)rect.x, (int)rect.y, (int)rect.width, (int)rect.height);
 }
 
+@Override
 void createHandle () {
 	state |= HIDDEN;
 	if (window == null && view == null) {
@@ -776,12 +785,14 @@ void deferFlushing () {
 	view.performSelector(OS.sel_clearDeferFlushing, null, 0.0, display.runLoopModes());
 }
 
+@Override
 void deregister () {
 	super.deregister ();
 	if (window != null) display.removeWidget (window);
 	if (windowDelegate != null) display.removeWidget (windowDelegate);
 }
 
+@Override
 void destroyWidget () {
 	NSWindow window = this.window;
 	if (window != null) window.retain();
@@ -812,6 +823,7 @@ void destroyWidget () {
 	}
 }
 
+@Override
 void drawBackground (long /*int*/ id, NSGraphicsContext context, NSRect rect) {
 	if (id != view.id) return;
 	if (regionPath != null && background == null) {
@@ -824,14 +836,17 @@ void drawBackground (long /*int*/ id, NSGraphicsContext context, NSRect rect) {
 	super.drawBackground (id, context, rect);
 }
 
+@Override
 Control findBackgroundControl () {
 	return background != null || backgroundImage != null ? this : null;
 }
 
+@Override
 Composite findDeferredControl () {
 	return layoutCount > 0 ? this : null;
 }
 
+@Override
 Cursor findCursor () {
 	return cursor;
 }
@@ -907,18 +922,13 @@ public int getAlpha () {
 	return (int)(window.alphaValue() * 255);
 }
 
+@Override
 public Rectangle getBounds () {
 	checkWidget();
 	if (window != null) {
 		NSRect frame = window.frame();
 		double /*float*/ y = display.getPrimaryFrame().height - (int)(frame.y + frame.height);
-		Rectangle rectangle = new Rectangle ((int)frame.x, (int)y, (int)frame.width, (int)frame.height);
-		double /*float*/ scaleFactor = view.window().userSpaceScaleFactor();
-		rectangle.x /= scaleFactor;
-		rectangle.y /= scaleFactor;
-		rectangle.width /= scaleFactor;
-		rectangle.height /= scaleFactor;
-		return rectangle;
+		return new Rectangle ((int)frame.x, (int)y, (int)frame.width, (int)frame.height);
 	} else {
 		NSRect frame = view.frame();
 		// Start from view's origin, (0, 0)
@@ -934,6 +944,7 @@ public Rectangle getBounds () {
 	}
 }
 
+@Override
 public Rectangle getClientArea () {
 	checkWidget();
 	NSRect rect;
@@ -941,10 +952,7 @@ public Rectangle getClientArea () {
 		if (!fixResize ()) {
 			rect = window.contentView().frame();
 		} else {
-			double /*float*/ scaleFactor = window.userSpaceScaleFactor();
 			rect = window.frame();
-			rect.width /= scaleFactor;
-			rect.height /= scaleFactor;
 		}
 	} else {
 		rect = topView().frame();
@@ -1009,17 +1017,14 @@ public int getImeInputMode () {
 	return SWT.NONE;
 }
 
+@Override
 public Point getLocation () {
 	checkWidget();
 	
 	if (window != null) {
 		NSRect frame = window.frame();
 		double /*float*/ y = display.getPrimaryFrame().height - (int)(frame.y + frame.height);
-		Point point = new Point ((int)frame.x, (int)y);
-		double /*float*/ scaleFactor = view.window().userSpaceScaleFactor();
-		point.x /= scaleFactor;
-		point.y /= scaleFactor;
-		return point;
+		return new Point ((int)frame.x, (int)y);
 	} else {
 		// Start from view's origin, (0, 0)
 		NSPoint pt = new NSPoint();
@@ -1030,13 +1035,11 @@ public Point getLocation () {
 		pt = view.convertPoint_toView_(pt, null);
 		pt = view.window().convertBaseToScreen(pt);
 		pt.y = primaryFrame.height - pt.y;
-		double /*float*/ scaleFactor = view.window().userSpaceScaleFactor();
-		pt.x /= scaleFactor;
-		pt.y /= scaleFactor;
 		return new Point((int)pt.x, (int)pt.y);
 	}
 }
 
+@Override
 public boolean getMaximized () {
 	checkWidget();
 	if (window == null) return false;
@@ -1088,6 +1091,7 @@ public boolean getModified () {
 	return window.isDocumentEdited ();
 }
 
+@Override
 public boolean getMinimized () {
 	checkWidget();
 	if (!getVisible ()) return super.getMinimized ();
@@ -1131,12 +1135,14 @@ public Point getMinimumSize () {
  * @since 3.0
  *
  */
+@Override
 public Region getRegion () {
 	/* This method is needed for the @since 3.0 Javadoc */
 	checkWidget ();
 	return region;
 }
 
+@Override
 public Shell getShell () {
 	checkWidget();
 	return this;
@@ -1178,16 +1184,14 @@ public Shell [] getShells () {
 	return result;
 }
 
+@Override
 public Point getSize () {
 	checkWidget();
 	NSRect frame = (window != null ? window.frame() : view.frame());
-	Point point = new Point ((int) frame.width, (int) frame.height);
-	double /*float*/ scaleFactor = view.window().userSpaceScaleFactor();
-	point.x /= scaleFactor;
-	point.y /= scaleFactor;
-	return point;
+	return new Point ((int) frame.width, (int) frame.height);
 }
 
+@Override
 float getThemeAlpha () {
 	return 1;
 }
@@ -1216,14 +1220,17 @@ public ToolBar getToolBar() {
 	return toolBar;
 }
 
+@Override
 boolean hasBorder () {
 	return false;
 }
 
+@Override
 boolean hasRegion () {
 	return region != null;
 }
 
+@Override
 void helpRequested(long /*int*/ id, long /*int*/ sel, long /*int*/ theEvent) {
 	Control control = display.getFocusControl();
 	while (control != null) {
@@ -1235,38 +1242,46 @@ void helpRequested(long /*int*/ id, long /*int*/ sel, long /*int*/ theEvent) {
 	}
 }
 
+@Override
 void invalidateVisibleRegion () {
 	resetVisibleRegion ();
 	if (toolBar != null) toolBar.resetVisibleRegion();
 	invalidateChildrenVisibleRegion ();
 }
 
+@Override
 boolean isDrawing () {
 	return getDrawing ();
 }
 
+@Override
 public boolean isEnabled () {
 	checkWidget();
 	return getEnabled ();
 }
 
+@Override
 boolean isEnabledCursor () {
 	return true;
 }
 
+@Override
 boolean isResizing () {
 	return (state & RESIZING) != 0;
 }
 
+@Override
 boolean isTransparent() {
 	return false;
 }
 
+@Override
 public boolean isVisible () {
 	checkWidget();
 	return getVisible ();
 }
 
+@Override
 boolean makeFirstResponder (long /*int*/ id, long /*int*/ sel, long /*int*/ responder) {
 	Display display = this.display;
 	boolean result = super.makeFirstResponder(id, sel, responder);
@@ -1291,6 +1306,7 @@ void makeKeyAndOrderFront() {
 	window.makeKeyAndOrderFront (null);
 }
 
+@Override
 void mouseMoved(long /*int*/ id, long /*int*/ sel, long /*int*/ theEvent) {
 	super.mouseMoved(id, sel, theEvent);
 
@@ -1306,6 +1322,7 @@ void mouseMoved(long /*int*/ id, long /*int*/ sel, long /*int*/ theEvent) {
 	}
 }
 
+@Override
 void noResponderFor(long /*int*/ id, long /*int*/ sel, long /*int*/ selector) {
 	/**
 	 * Feature in Cocoa.  If the selector is keyDown and nothing has handled the event
@@ -1362,6 +1379,7 @@ NSWindow parentWindow () {
 	return parent.view.window();
 }
 
+@Override
 public boolean print (GC gc) {
 	checkWidget ();
 	if (gc == null) error (SWT.ERROR_NULL_ARGUMENT);
@@ -1369,6 +1387,7 @@ public boolean print (GC gc) {
 	return false;
 }
 
+@Override
 void register () {
 	/*
 	 * Note that if there are multiple SWT_AWT shells only the last one created
@@ -1380,6 +1399,7 @@ void register () {
 	if (windowDelegate != null) display.addWidget (windowDelegate, this);
 }
 
+@Override
 void releaseChildren (boolean destroy) {
 	Shell [] shells = getShells ();
 	for (int i=0; i<shells.length; i++) {
@@ -1391,6 +1411,7 @@ void releaseChildren (boolean destroy) {
 	super.releaseChildren (destroy);
 }
 
+@Override
 void releaseHandle () {
 	if (window != null) window.setDelegate(null);
 	removeObserversFromWindow();
@@ -1401,10 +1422,12 @@ void releaseHandle () {
 	window = null;
 }
 
+@Override
 void releaseParent () {
 	/* Do nothing */
 }
 
+@Override
 void releaseWidget () {
 	super.releaseWidget ();
 	if (toolBar != null) {
@@ -1472,6 +1495,7 @@ public void removeShellListener(ShellListener listener) {
 	eventTable.unhook(SWT.Deiconify,listener);
 }
 
+@Override
 void reskinChildren (int flags) {
 	if (toolBar != null) toolBar.reskin(flags);
 	Shell [] shells = getShells ();
@@ -1603,6 +1627,7 @@ public void setAlpha (int alpha) {
 	window.setAlphaValue (alpha / 255f);
 }
 
+@Override
 void setBounds (int x, int y, int width, int height, boolean move, boolean resize) {
 	if (window == null) {
 		// Embedded shells aren't movable.
@@ -1619,11 +1644,6 @@ void setBounds (int x, int y, int width, int height, boolean move, boolean resiz
 	boolean sheet = window.isSheet();
 	if (sheet && move && !resize) return;
 	int screenHeight = (int) display.getPrimaryFrame().height;
-	double /*float*/ scaleFactor = window.userSpaceScaleFactor();
-	x *= scaleFactor;
-	y *= scaleFactor;
-	width *= scaleFactor;
-	height *= scaleFactor;
 	NSRect frame = window.frame();
 	if (!move) {
 		x = (int)frame.x;
@@ -1654,6 +1674,7 @@ void setBounds (int x, int y, int width, int height, boolean move, boolean resiz
 	}
 }
 
+@Override
 void setClipRegion (NSView view) {
 	if (regionPath != null) {
 		NSView rgnView = topView ();
@@ -1668,6 +1689,7 @@ void setClipRegion (NSView view) {
 	}
 }
 
+@Override
 public void setEnabled (boolean enabled) {
 	checkWidget();
 	if (((state & DISABLED) == 0) == enabled) return;
@@ -1744,6 +1766,7 @@ public void setFullScreen (boolean fullScreen) {
 	}
 }
 
+@Override
 public void setMenuBar (Menu menu) {
 	checkWidget();
 	super.setMenuBar (menu);
@@ -1772,6 +1795,7 @@ public void setImeInputMode (int mode) {
 	checkWidget();
 }
 
+@Override
 public void setMaximized (boolean maximized) {
 	checkWidget();
 	super.setMaximized (maximized);
@@ -1780,6 +1804,7 @@ public void setMaximized (boolean maximized) {
 	window.zoom (null);
 }
 
+@Override
 public void setMinimized (boolean minimized) {
 	checkWidget();
 	super.setMinimized (minimized);
@@ -1887,6 +1912,7 @@ public void setModified (boolean modified) {
  *
  * @since 3.0
  */
+@Override
 public void setRegion (Region region) {
 	checkWidget ();
 	if ((style & SWT.NO_TRIM) == 0) return;
@@ -1917,6 +1943,7 @@ void setScrolling () {
 	view.performSelector(OS.sel_clearDeferFlushing, null, 0.0, display.runLoopModes());
 }
 
+@Override
 public void setText (String string) {
 	checkWidget();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
@@ -1926,6 +1953,7 @@ public void setText (String string) {
 	window.setTitle(str);
 }
 
+@Override
 public void setVisible (boolean visible) {
 	checkWidget();
 	int mask = SWT.PRIMARY_MODAL | SWT.APPLICATION_MODAL | SWT.SYSTEM_MODAL;
@@ -2036,6 +2064,7 @@ void setWindowVisible (boolean visible, boolean key) {
 	display.checkEnterExit (trimControl, null, false);
 }
 
+@Override
 void setZOrder () {
 	if (scrollView != null) scrollView.setDocumentView (view);
 	if (window == null) return;
@@ -2043,13 +2072,11 @@ void setZOrder () {
 	if (fixResize ()) {
 		NSRect rect = window.frame();
 		rect.x = rect.y = 0;
-		double /*float*/ scaleFactor = window.userSpaceScaleFactor();
-		rect.width /= scaleFactor;
-		rect.height /= scaleFactor;
 		window.contentView().setFrame(rect);
 	}
 }
 
+@Override
 void setZOrder (Control control, boolean above) {
 	if (window == null) return;
 	if (!getVisible ()) return;
@@ -2065,6 +2092,7 @@ void setZOrder (Control control, boolean above) {
 	}
 }
 
+@Override
 boolean traverseEscape () {
 	if (parent == null) return false;
 	if (!isVisible () || !isEnabled ()) return false;
@@ -2072,6 +2100,7 @@ boolean traverseEscape () {
 	return true;
 }
 
+@Override
 void updateCursorRects(boolean enabled) {
 	super.updateCursorRects(enabled);
 	if (toolBar != null) toolBar.updateCursorRects(enabled);
@@ -2133,6 +2162,7 @@ void updateSystemUIMode () {
 	if (fullScreen)	window.setFrame(fullScreenFrame, true);
 }
 
+@Override
 long /*int*/ view_stringForToolTip_point_userData (long /*int*/ id, long /*int*/ sel, long /*int*/ view, long /*int*/ tag, long /*int*/ point, long /*int*/ userData) {
 	NSPoint pt = new NSPoint();
 	OS.memmove (pt, point, NSPoint.sizeof);
@@ -2147,6 +2177,7 @@ long /*int*/ view_stringForToolTip_point_userData (long /*int*/ id, long /*int*/
 	return NSString.stringWithCharacters (chars, length).id;
 }
 
+@Override
 void viewWillMoveToWindow(long /*int*/ id, long /*int*/ sel, long /*int*/ newWindow) {
 	if (window == null) {
 		long /*int*/ currentWindow = hostWindow != null ? hostWindow.id : 0;
@@ -2159,6 +2190,7 @@ void viewWillMoveToWindow(long /*int*/ id, long /*int*/ sel, long /*int*/ newWin
 	}
 }
 
+@Override
 void windowDidBecomeKey(long /*int*/ id, long /*int*/ sel, long /*int*/ notification) {
 	if (window != null) {
 		Display display = this.display;
@@ -2184,21 +2216,25 @@ void windowDidBecomeKey(long /*int*/ id, long /*int*/ sel, long /*int*/ notifica
 	}
 }
 
+@Override
 void windowDidDeminiturize(long /*int*/ id, long /*int*/ sel, long /*int*/ notification) {
 	minimized = false;
 	sendEvent(SWT.Deiconify);
 }
 
+@Override
 void windowDidMiniturize(long /*int*/ id, long /*int*/ sel, long /*int*/ notification) {
 	minimized = true;
 	sendEvent(SWT.Iconify);
 }
 
+@Override
 void windowDidMove(long /*int*/ id, long /*int*/ sel, long /*int*/ notification) {
 	moved = true;
 	sendEvent(SWT.Move);
 }
 
+@Override
 void windowDidResize(long /*int*/ id, long /*int*/ sel, long /*int*/ notification) {
 	if (((window.collectionBehavior() & OS.NSWindowCollectionBehaviorFullScreenPrimary) == 0) && fullScreen) {
 		window.setFrame(fullScreenFrame, true);
@@ -2210,9 +2246,6 @@ void windowDidResize(long /*int*/ id, long /*int*/ sel, long /*int*/ notificatio
 	if (fixResize ()) {
 		NSRect rect = window.frame ();
 		rect.x = rect.y = 0;
-		double /*float*/ scaleFactor = window.userSpaceScaleFactor();
-		rect.width /= scaleFactor;
-		rect.height /= scaleFactor;
 		window.contentView ().setFrame (rect);
 	}
 	resized = true;
@@ -2224,6 +2257,7 @@ void windowDidResize(long /*int*/ id, long /*int*/ sel, long /*int*/ notificatio
 	}
 }
 
+@Override
 void windowDidResignKey(long /*int*/ id, long /*int*/ sel, long /*int*/ notification) {
 	if (display.isDisposed()) return;
 	sendEvent (SWT.Deactivate);
@@ -2233,6 +2267,7 @@ void windowDidResignKey(long /*int*/ id, long /*int*/ sel, long /*int*/ notifica
 	saveFocus();
 }
 
+@Override
 void windowSendEvent (long /*int*/ id, long /*int*/ sel, long /*int*/ event) {
 	NSEvent nsEvent = new NSEvent (event);
 	int type = (int)/*64*/nsEvent.type ();
@@ -2363,11 +2398,13 @@ private boolean searchForEscMenuItem(Menu menu) {
 	return false;
 }
 
+@Override
 boolean windowShouldClose(long /*int*/ id, long /*int*/ sel, long /*int*/ window) {
 	if (isEnabled()) closeWidget (false);
 	return false;
 }
 
+@Override
 void windowWillClose(long /*int*/ id, long /*int*/ sel, long /*int*/ notification) {
 	closeWidget(true);
 }

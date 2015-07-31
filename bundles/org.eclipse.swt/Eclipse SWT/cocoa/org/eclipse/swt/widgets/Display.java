@@ -3455,15 +3455,10 @@ public Point map (Control from, Control to, int x, int y) {
 			pt = view.convertPoint_toView_(pt, null);
 			pt = fromWindow.convertBaseToScreen(pt);
 			pt.y = primaryFrame.height - pt.y;
-			double /*float*/ scaleFactor = fromWindow.userSpaceScaleFactor();
-			pt.x /= scaleFactor;
-			pt.y /= scaleFactor;
 		}
 		if (to != null) {
 			NSView view = to.eventView ();
-			double /*float*/ scaleFactor = toWindow.userSpaceScaleFactor();
-			pt.x *= scaleFactor;
-			pt.y = primaryFrame.height - (pt.y * scaleFactor);
+			pt.y = primaryFrame.height - pt.y;
 			pt = toWindow.convertScreenToBase(pt);
 			pt = view.convertPoint_fromView_(pt, null);
 			if (!view.isFlipped ()) {
@@ -3585,15 +3580,10 @@ public Rectangle map (Control from, Control to, int x, int y, int width, int hei
 			pt = view.convertPoint_toView_(pt, null);
 			pt = fromWindow.convertBaseToScreen(pt);
 			pt.y = primaryFrame.height - pt.y;
-			double /*float*/ scaleFactor = fromWindow.userSpaceScaleFactor();
-			pt.x /= scaleFactor;
-			pt.y /= scaleFactor;
 		}
 		if (to != null) {
 			NSView view = to.eventView ();
-			double /*float*/ scaleFactor = toWindow.userSpaceScaleFactor();
-			pt.x *= scaleFactor;
-			pt.y = primaryFrame.height - (pt.y * scaleFactor);
+			pt.y = primaryFrame.height - pt.y;
 			pt = toWindow.convertScreenToBase(pt);
 			pt = view.convertPoint_fromView_(pt, null);
 			if (!view.isFlipped ()) {

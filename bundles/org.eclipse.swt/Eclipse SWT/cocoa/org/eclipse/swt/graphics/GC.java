@@ -255,8 +255,6 @@ NSAutoreleasePool checkGC (int mask) {
 				NSRect rect = view.convertRect_toView_(view.bounds(), null);
 				if (data.paintRect == null) {
 					transform.translateXBy(rect.x, rect.y + rect.height);
-					double /*float*/ userSpaceScaleFactor = view.window().userSpaceScaleFactor();
-					transform.scaleXBy(userSpaceScaleFactor, userSpaceScaleFactor);
 				} else {
 					transform.translateXBy(0, rect.height);
 				}
@@ -912,6 +910,7 @@ NSBezierPath createNSBezierPath (long /*int*/  cgPath) {
 	return bezierPath;	
 }
 
+@Override
 void destroy() {
 	/* Free resources */
 	Image image = data.image;
@@ -1743,6 +1742,7 @@ public void drawText (String string, int x, int y, int flags) {
  *
  * @see #hashCode
  */
+@Override
 public boolean equals(Object object) {
 	if (object == this) return true;
 	if (!(object instanceof GC)) return false;
@@ -2913,6 +2913,7 @@ public boolean getXORMode() {
  *
  * @see #equals
  */
+@Override
 public int hashCode() {
 	return handle != null ? (int)/*64*/handle.id : 0;
 }
@@ -3020,6 +3021,7 @@ public boolean isClipped() {
  *
  * @return <code>true</code> when the GC is disposed and <code>false</code> otherwise
  */
+@Override
 public boolean isDisposed() {
 	return handle == null;
 }
@@ -3822,6 +3824,7 @@ void setPatternPhase(Pattern pattern) {
  * 
  * @deprecated this functionality is not supported on some platforms
  */
+@Deprecated
 public void setXORMode(boolean xor) {
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	data.xorMode = xor;
@@ -4013,6 +4016,7 @@ public Point textExtent(String string, int flags) {
  *
  * @return a string representation of the receiver
  */
+@Override
 public String toString () {
 	if (isDisposed()) return "GC {*DISPOSED*}";
 	return "GC {" + handle + "}";

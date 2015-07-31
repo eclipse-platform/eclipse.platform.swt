@@ -11,11 +11,10 @@
 package org.eclipse.swt.widgets;
 
 
-import org.eclipse.swt.internal.cocoa.*;
- 
 import org.eclipse.swt.*;
 import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.internal.cocoa.*;
 
 /**
  * Instances of this class are user interface objects that contain
@@ -235,6 +234,7 @@ static MenuItem checkNull (MenuItem item) {
 	return item;
 }
 
+@Override
 void checkParent (Widget parent) {
 	// A null parent is okay when the app menu bar is in use.
 	if (parent == null && Display.getDefault().appMenuBar == null) error (SWT.ERROR_NULL_ARGUMENT);
@@ -264,9 +264,8 @@ void _setVisible (boolean visible) {
 			NSView topView = window.contentView();
 			Point shellCoord = display.map(null, shell, new Point(x,y));
 			location = new NSPoint ();
-			double /*float*/ scaleFactor = window.userSpaceScaleFactor();
-			location.x = shellCoord.x * scaleFactor;
-			location.y = (topView.frame().height - shellCoord.y) * scaleFactor;
+			location.x = shellCoord.x;
+			location.y = topView.frame().height - shellCoord.y;
 		} else {
 			location = window.mouseLocationOutsideOfEventStream();
 		}
@@ -338,6 +337,7 @@ public void addMenuListener (MenuListener listener) {
 	addListener (SWT.Show,typedListener);
 }
 
+@Override
 void createHandle () {
 	display.addMenu (this);
 	if (nsMenu == null) {
@@ -439,12 +439,14 @@ void createItem (MenuItem item, int index) {
 	if (!getEnabled ()) nsItem.setEnabled (false);
 }
 
+@Override
 void createWidget () {
 	checkOrientation (parent);
 	super.createWidget ();
 	items = new MenuItem [4];
 }
 
+@Override
 void deregister () {
 	super.deregister ();
 	display.removeWidget (nsMenu);
@@ -584,6 +586,7 @@ public MenuItem [] getItems () {
 	return result;
 }
 
+@Override
 String getNameText () {
 	String result = "";
 	MenuItem [] items = getItems ();
@@ -793,6 +796,7 @@ public boolean isVisible () {
 	return getVisible ();
 }
 
+@Override
 void menu_willHighlightItem(long /*int*/ id, long /*int*/ sel, long /*int*/ menu, long /*int*/ itemID) {
 	Widget widget = display.getWidget(itemID);
 	if (widget instanceof MenuItem) {
@@ -801,11 +805,13 @@ void menu_willHighlightItem(long /*int*/ id, long /*int*/ sel, long /*int*/ menu
 	}
 }
 
+@Override
 void menuNeedsUpdate(long /*int*/ id, long /*int*/ sel, long /*int*/ menu) {
 	//This code is intentionally commented
 	//sendEvent (SWT.Show);
 }
 
+@Override
 void menuWillOpen(long /*int*/ id, long /*int*/ sel, long /*int*/ menu) {
 	visible = true;
 	sendEvent (SWT.Show);
@@ -873,6 +879,7 @@ void menuWillOpen(long /*int*/ id, long /*int*/ sel, long /*int*/ menu) {
 	}
 }
 
+@Override
 void menuDidClose(long /*int*/ id, long /*int*/ sel, long /*int*/ menu) {
 	sendEvent (SWT.Hide);
 	if (isDisposed()) return;
@@ -885,11 +892,13 @@ void menuDidClose(long /*int*/ id, long /*int*/ sel, long /*int*/ menu) {
 	}
 }
 
+@Override
 void register () {
 	super.register ();
 	display.addWidget (nsMenu, this);
 }
 
+@Override
 void releaseChildren (boolean destroy) {
 	if (items != null) {
 		for (int i=0; i<items.length; i++) {
@@ -903,12 +912,14 @@ void releaseChildren (boolean destroy) {
 	super.releaseChildren (destroy);
 }
 
+@Override
 void releaseHandle () {
 	super.releaseHandle ();
 	if (nsMenu != null) nsMenu.release();
 	nsMenu = null;
 }
 
+@Override
 void releaseParent () {
 	super.releaseParent ();
 	if (cascade != null) cascade.setMenu (null);
@@ -917,6 +928,7 @@ void releaseParent () {
 	}
 }
 
+@Override
 void releaseWidget () {
 	super.releaseWidget ();
 	display.removeMenu (this);
@@ -973,6 +985,7 @@ public void removeMenuListener (MenuListener listener) {
 	eventTable.unhook (SWT.Show, listener);
 }
 
+@Override
 void reskinChildren (int flags) {
 	MenuItem [] items = getItems ();
 	for (int i=0; i<items.length; i++) {
