@@ -56,7 +56,13 @@ public class nsIFile extends nsISupports {
 	public static final int DIRECTORY_TYPE = 1;
 
 	public int Create(int type, int permissions) {
-		return XPCOM.VtblCall(this.getMethodIndex("create"), getAddress(), type, permissions);
+		/*
+		 * Finding the method index by name using getMethodIndex() fails if
+		 * mozilla profile directory is missing. Hence, use method index
+		 * directly to support nsIFile.Create operation in the absence of
+		 * profile directory.
+		 */
+		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 4, getAddress(), type, permissions);
 	}
 
 	public int GetLeafName(long /*int*/ aLeafName) {
