@@ -1,8 +1,8 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2015 IBM Corporation and others.
+ * Copyright (c) 2000 2015 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
+ * which accompanies this distribution and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
@@ -11,75 +11,39 @@
  *******************************************************************************/
 package org.eclipse.swt.tests.junit;
 
-
-import junit.framework.JUnit4TestAdapter;
-import junit.framework.Test;
-import junit.framework.TestSuite;
-import junit.textui.TestRunner;
+import org.junit.runner.JUnitCore;
+import org.junit.runner.RunWith;
+import org.junit.runners.Suite;
 
 /**
  * Suite for testing all of the widget test cases.
  */
+@RunWith(Suite.class)
+@Suite.SuiteClasses({ Test_org_eclipse_swt_widgets_ExpandItem.class, Test_org_eclipse_swt_widgets_MenuItem.class,
+		Test_org_eclipse_swt_widgets_ToolItem.class, Test_org_eclipse_swt_widgets_TabItem.class,
+		Test_org_eclipse_swt_widgets_TableItem.class, Test_org_eclipse_swt_widgets_TableColumn.class,
+		Test_org_eclipse_swt_widgets_TreeItem.class, Test_org_eclipse_swt_widgets_Caret.class,
+		Test_org_eclipse_swt_widgets_Event.class, Test_org_eclipse_swt_widgets_Menu.class,
+		Test_org_eclipse_swt_widgets_Shell.class, Test_org_eclipse_swt_widgets_Label.class,
+		Test_org_eclipse_swt_widgets_Button.class, Test_org_eclipse_swt_widgets_ExpandBar.class,
+		Test_org_eclipse_swt_widgets_List.class, Test_org_eclipse_swt_widgets_Text.class,
+		Test_org_eclipse_swt_widgets_ScrollBar.class, Test_org_eclipse_swt_widgets_Sash.class,
+		Test_org_eclipse_swt_widgets_Tree.class, Test_org_eclipse_swt_widgets_TabFolder.class,
+		Test_org_eclipse_swt_widgets_Combo.class, Test_org_eclipse_swt_widgets_Group.class,
+		Test_org_eclipse_swt_widgets_ToolBar.class, Test_org_eclipse_swt_widgets_Table.class,
+		Test_org_eclipse_swt_widgets_Canvas.class, Test_org_eclipse_swt_widgets_Scale.class,
+		Test_org_eclipse_swt_widgets_Slider.class, Test_org_eclipse_swt_widgets_ProgressBar.class,
+		Test_org_eclipse_swt_widgets_Composite.class, Test_org_eclipse_swt_widgets_Link.class,
+		Test_org_eclipse_swt_widgets_DateTime.class, Test_org_eclipse_swt_widgets_ColorDialog.class,
+		Test_org_eclipse_swt_widgets_FileDialog.class, Test_org_eclipse_swt_widgets_DirectoryDialog.class,
+		Test_org_eclipse_swt_widgets_FontDialog.class, Test_org_eclipse_swt_widgets_MessageBox.class,
+		Test_org_eclipse_swt_widgets_Monitor.class, Test_org_eclipse_swt_custom_TableTree.class,
+		Test_org_eclipse_swt_custom_StyleRange.class, Test_org_eclipse_swt_custom_CCombo.class,
+		Test_org_eclipse_swt_custom_TableTreeItem.class, Test_org_eclipse_swt_custom_CLabel.class,
+		Test_org_eclipse_swt_custom_CTabItem.class, Test_org_eclipse_swt_custom_StyledText.class,
+		Test_org_eclipse_swt_custom_CTabFolder.class })
 public class AllWidgetTests {
-public static void main(String[] args) {
-	TestRunner.run (suite());
-}
-public static Test suite() {
-	TestSuite suite = new TestSuite(AllWidgetTests.class.getName());
-
-	suite.addTestSuite(Test_org_eclipse_swt_widgets_ExpandItem.class);
-	suite.addTestSuite(Test_org_eclipse_swt_widgets_MenuItem.class);
-	suite.addTestSuite(Test_org_eclipse_swt_widgets_ToolItem.class);
-	//suite.addTest(Test_org_eclipse_swt_widgets_CoolItem.suite());
-	suite.addTestSuite(Test_org_eclipse_swt_widgets_TabItem.class);
-	suite.addTestSuite(Test_org_eclipse_swt_widgets_TableItem.class);
-	suite.addTestSuite(Test_org_eclipse_swt_widgets_TableColumn.class);
-	suite.addTestSuite(Test_org_eclipse_swt_widgets_TreeItem.class);
-	suite.addTestSuite(Test_org_eclipse_swt_widgets_Caret.class);
-	suite.addTest(new JUnit4TestAdapter(Test_org_eclipse_swt_widgets_Event.class));
-	suite.addTestSuite(Test_org_eclipse_swt_widgets_Menu.class);
-	//suite.addTest(Test_org_eclipse_swt_widgets_Tracker.suite());
-	
-	suite.addTestSuite(Test_org_eclipse_swt_widgets_Shell.class);
-	//suite.addTest(Test_org_eclipse_swt_widgets_Decorations.suite());
-	suite.addTestSuite(Test_org_eclipse_swt_widgets_Label.class);
-	suite.addTestSuite(Test_org_eclipse_swt_widgets_Button.class);
-	suite.addTestSuite(Test_org_eclipse_swt_widgets_ExpandBar.class);
-	suite.addTestSuite(Test_org_eclipse_swt_widgets_List.class);
-	suite.addTestSuite(Test_org_eclipse_swt_widgets_Text.class);
-	suite.addTestSuite(Test_org_eclipse_swt_widgets_ScrollBar.class);
-	suite.addTestSuite(Test_org_eclipse_swt_widgets_Sash.class);
-	suite.addTestSuite(Test_org_eclipse_swt_widgets_Tree.class);
-	suite.addTestSuite(Test_org_eclipse_swt_widgets_TabFolder.class);
-	suite.addTestSuite(Test_org_eclipse_swt_widgets_Combo.class);
-	suite.addTestSuite(Test_org_eclipse_swt_widgets_Group.class);
-	suite.addTestSuite(Test_org_eclipse_swt_widgets_ToolBar.class);
-	suite.addTestSuite(Test_org_eclipse_swt_widgets_Table.class);
-	suite.addTestSuite(Test_org_eclipse_swt_widgets_Canvas.class);
-	suite.addTestSuite(Test_org_eclipse_swt_widgets_Scale.class);
-	suite.addTestSuite(Test_org_eclipse_swt_widgets_Slider.class);
-	suite.addTestSuite(Test_org_eclipse_swt_widgets_ProgressBar.class);
-	suite.addTestSuite(Test_org_eclipse_swt_widgets_Composite.class);
-	suite.addTestSuite(Test_org_eclipse_swt_widgets_Link.class);
-	suite.addTest(new JUnit4TestAdapter(Test_org_eclipse_swt_widgets_DateTime.class));
-	//suite.addTest(Test_org_eclipse_swt_widgets_CoolBar.suite());
-
-	suite.addTestSuite(Test_org_eclipse_swt_widgets_ColorDialog.class);
-	suite.addTestSuite(Test_org_eclipse_swt_widgets_FileDialog.class);
-	suite.addTestSuite(Test_org_eclipse_swt_widgets_DirectoryDialog.class);
-	suite.addTestSuite(Test_org_eclipse_swt_widgets_FontDialog.class);
-	suite.addTestSuite(Test_org_eclipse_swt_widgets_MessageBox.class);
-	suite.addTest(new JUnit4TestAdapter(Test_org_eclipse_swt_widgets_Monitor.class));
-
-	suite.addTestSuite(Test_org_eclipse_swt_custom_TableTree.class);
-	suite.addTest(new JUnit4TestAdapter(Test_org_eclipse_swt_custom_StyleRange.class));
-	suite.addTestSuite(Test_org_eclipse_swt_custom_CCombo.class);
-	suite.addTestSuite(Test_org_eclipse_swt_custom_TableTreeItem.class);
-	suite.addTestSuite(Test_org_eclipse_swt_custom_CLabel.class);
-	suite.addTestSuite(Test_org_eclipse_swt_custom_CTabItem.class);
-	suite.addTestSuite(Test_org_eclipse_swt_custom_StyledText.class);
-	suite.addTestSuite(Test_org_eclipse_swt_custom_CTabFolder.class);
-
-	return suite;
-}
+	public static void main(String[] args) {
+		JUnitCore.main(AllWidgetTests.class.getName());
+	}
 }

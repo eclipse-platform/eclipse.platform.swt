@@ -11,86 +11,49 @@
  *******************************************************************************/
 package org.eclipse.swt.tests.junit;
 
-
-import junit.framework.JUnit4TestAdapter;
-import junit.framework.Test;
-import junit.framework.TestSuite;
-import junit.textui.TestRunner;
+import org.junit.runner.JUnitCore;
+import org.junit.runner.RunWith;
+import org.junit.runners.Suite;
 
 /**
  * Suite for running most SWT test cases (all except for browser tests).
  */
-public class AllNonBrowserTests extends TestSuite {
+@RunWith(Suite.class)
+@Suite.SuiteClasses({ Test_org_eclipse_swt_SWT.class, Test_org_eclipse_swt_SWTException.class,
+		Test_org_eclipse_swt_SWTError.class, Test_org_eclipse_swt_widgets_Display.class, AllGraphicsTests.class,
+		AllWidgetTests.class, Test_org_eclipse_swt_layout_GridData.class,
+		Test_org_eclipse_swt_events_ControlEvent.class, Test_org_eclipse_swt_events_ModifyEvent.class,
+		Test_org_eclipse_swt_events_ArmEvent.class, Test_org_eclipse_swt_events_ShellEvent.class,
+		Test_org_eclipse_swt_events_TypedEvent.class, Test_org_eclipse_swt_events_PaintEvent.class,
+		Test_org_eclipse_swt_events_VerifyEvent.class, Test_org_eclipse_swt_events_KeyEvent.class,
+		Test_org_eclipse_swt_events_TraverseEvent.class, Test_org_eclipse_swt_events_DisposeEvent.class,
+		Test_org_eclipse_swt_events_SelectionEvent.class, Test_org_eclipse_swt_events_HelpEvent.class,
+		Test_org_eclipse_swt_events_FocusEvent.class, Test_org_eclipse_swt_events_MouseEvent.class,
+		Test_org_eclipse_swt_events_MenuEvent.class, Test_org_eclipse_swt_events_TreeEvent.class,
+		Test_org_eclipse_swt_printing_PrintDialog.class,
+		Test_org_eclipse_swt_printing_PrinterData.class, Test_org_eclipse_swt_printing_Printer.class,
+		Test_org_eclipse_swt_program_Program.class, Test_org_eclipse_swt_accessibility_Accessible.class,
+		Test_org_eclipse_swt_accessibility_AccessibleControlEvent.class,
+		Test_org_eclipse_swt_accessibility_AccessibleEvent.class,
+		Test_org_eclipse_swt_accessibility_AccessibleTextEvent.class })
+public class AllNonBrowserTests {
 
-public static void main(String[] args) {
-	TestRunner.run(suite());
-}
-public static Test suite() {
-	return new AllNonBrowserTests();
-}
+	public static void main(String[] args) {
+		JUnitCore.main(AllNonBrowserTests.class.getName());
+	}
 
-public AllNonBrowserTests() {
-	super(AllNonBrowserTests.class.getName());
-	/* The logical order to run the tests in is:
-	 * - SWT, SWTError, SWTException
-	 * - Display
-	 * - graphics classes
-	 * - items and Caret, etc
-	 * - widgets
-	 * - dialogs
-	 * - layout
-	 * - custom widgets
-	 * - printing and program
-	 * - events
-	 * - drag & drop
-	 * - accessibility
-	 * - OLE
-	 * - browser
+	/*
+	 * The logical order to run the tests in is: - SWT, SWTError, SWTException -
+	 * Display - graphics classes - items and Caret, etc - widgets - dialogs -
+	 * layout - custom widgets - printing and program - events - drag & drop -
+	 * accessibility - OLE - browser
 	 */
-	addTest(new JUnit4TestAdapter(Test_org_eclipse_swt_SWT.class));
-	addTest(new JUnit4TestAdapter(Test_org_eclipse_swt_SWTException.class));
-	addTest(new JUnit4TestAdapter(Test_org_eclipse_swt_SWTError.class));
 
-	/* NOTE: If the Display test suite is run, it must be run
-	 * before any other tests that need a display (i.e. graphics
-	 * or widget tests, etc). Otherwise, an InvalidThreadAccess
-	 * exception will be thrown for each Display test.
+	/*
+	 * NOTE: If the Display test suite is run, it must be run before any other
+	 * tests that need a display (i.e. graphics or widget tests, etc).
+	 * Otherwise, an InvalidThreadAccess exception will be thrown for each
+	 * Display test.
 	 */
-	addTest(new JUnit4TestAdapter(Test_org_eclipse_swt_widgets_Display.class));
 
-	addTest(new JUnit4TestAdapter(AllGraphicsTests.class));
-	addTest(AllWidgetTests.suite());
-	
-	addTest(new JUnit4TestAdapter(Test_org_eclipse_swt_layout_GridData.class));
-
-	addTestSuite(Test_org_eclipse_swt_events_ControlEvent.class);
-	addTestSuite(Test_org_eclipse_swt_events_ModifyEvent.class);
-	addTestSuite(Test_org_eclipse_swt_events_ArmEvent.class);
-	addTestSuite(Test_org_eclipse_swt_events_ShellEvent.class);
-	addTestSuite(Test_org_eclipse_swt_events_TypedEvent.class);
-	addTestSuite(Test_org_eclipse_swt_events_PaintEvent.class);
-	addTestSuite(Test_org_eclipse_swt_events_VerifyEvent.class);
-	addTestSuite(Test_org_eclipse_swt_events_KeyEvent.class);
-	addTestSuite(Test_org_eclipse_swt_events_TraverseEvent.class);
-	addTestSuite(Test_org_eclipse_swt_events_DisposeEvent.class);
-	addTestSuite(Test_org_eclipse_swt_events_SelectionEvent.class);
-	addTestSuite(Test_org_eclipse_swt_events_HelpEvent.class);
-	addTestSuite(Test_org_eclipse_swt_events_FocusEvent.class);
-	addTestSuite(Test_org_eclipse_swt_events_MouseEvent.class);
-	addTestSuite(Test_org_eclipse_swt_events_MenuEvent.class);
-	addTestSuite(Test_org_eclipse_swt_events_TreeEvent.class);
-	
-	addTestSuite(Test_org_eclipse_swt_printing_PrintDialog.class);
-	addTest(new JUnit4TestAdapter(Test_org_eclipse_swt_printing_PrinterData.class));
-	addTest(new JUnit4TestAdapter(Test_org_eclipse_swt_printing_Printer.class));
-
-	addTest(new JUnit4TestAdapter(Test_org_eclipse_swt_program_Program.class));
-
-	addTest(new JUnit4TestAdapter(Test_org_eclipse_swt_accessibility_Accessible.class));
-	addTest(new JUnit4TestAdapter(Test_org_eclipse_swt_accessibility_AccessibleControlEvent.class));
-	addTest(new JUnit4TestAdapter(Test_org_eclipse_swt_accessibility_AccessibleEvent.class));
-	addTest(new JUnit4TestAdapter(Test_org_eclipse_swt_accessibility_AccessibleTextEvent.class));
-
-	// Don't run AllBrowserTests here; see AllTests.
-}
 }
