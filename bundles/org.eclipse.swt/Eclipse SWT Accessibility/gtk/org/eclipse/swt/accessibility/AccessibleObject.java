@@ -43,7 +43,7 @@ class AccessibleObject {
 	static {
 
 		// Gtk3.2 has a minimum requirement of ATK 2.1.5
-		// ATK_ROLE_TABLE_ROW was introduced in ATK 2.1.0. See Bug 470629  for details.
+		// ATK_ROLE_TABLE_ROW was introduced in ATK 2.1.0. See Bug 470629  for details.
 		if (OS.GTK_VERSION >= OS.VERSION(3, 2, 0)) {
 			ROW_ROLE = ATK.ATK_ROLE_TABLE_ROW;
 		} else {
