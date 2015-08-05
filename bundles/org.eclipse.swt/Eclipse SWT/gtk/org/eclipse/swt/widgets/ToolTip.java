@@ -48,6 +48,7 @@ public class ToolTip extends Widget {
 	TrayItem item;
 	int x, y, timerId;
 	long /*int*/ layoutText = 0, layoutMessage = 0;
+	long /*int*/ provider;
 	int [] borderPolygon;
 	boolean spikeAbove, autohide;
 
@@ -268,19 +269,28 @@ void createHandle (int index) {
 		handle = OS.gtk_window_new (OS.GTK_WINDOW_POPUP);
 		Color background = display.getSystemColor (SWT.COLOR_INFO_BACKGROUND);
 		if (OS.GTK3) {
-			GdkColor color = background.handle;
-			GdkRGBA rgba = new GdkRGBA();
-			rgba.alpha = 1;
-			rgba.red = (color.red & 0xFFFF) / (float)0xFFFF;
-			rgba.green = (color.green & 0xFFFF) / (float)0xFFFF;
-			rgba.blue = (color.blue & 0xFFFF) / (float)0xFFFF;
-			OS.gtk_widget_override_background_color (handle, OS.GTK_STATE_FLAG_NORMAL, rgba);
+			long /*int*/ context = OS.gtk_widget_get_style_context (handle);
+			double alpha = (background.getAlpha() & 0xFFFF) / (float)0xFFFF;
+			String css = "GtkWindow {background-color: rgba(" + background.getRed() +", " +
+				background.getGreen() +", " + background.getBlue() +", " + alpha + ");}";
+			gtk_css_provider_load_from_css (context, css);
+			OS.gtk_style_context_invalidate (context);
 		} else {
 			OS.gtk_widget_modify_bg (handle, OS.GTK_STATE_NORMAL, background.handle);
 		}
-		OS.gtk_widget_set_app_paintable (handle, true);
 		OS.gtk_window_set_type_hint (handle, OS.GDK_WINDOW_TYPE_HINT_TOOLTIP);
 	}
+}
+
+void gtk_css_provider_load_from_css (long /*int*/ context, String css) {
+	/* Utility function. */
+	//@param css : a 'css java' string like "{\nbackground: red;\n}".
+	if (provider == 0) {
+		provider = OS.gtk_css_provider_new ();
+		OS.gtk_style_context_add_provider (context, provider, OS.GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
+		OS.g_object_unref (provider);
+	}
+	OS.gtk_css_provider_load_from_data (provider, Converter.wcsToMbcs (null, css, true), -1, null);
 }
 
 @Override
@@ -594,7 +604,10 @@ long /*int*/ gtk_size_allocate (long /*int*/ widget, long /*int*/ allocation) {
 @Override
 void hookEvents () {
 	if ((style & SWT.BALLOON) != 0) {
-		OS.g_signal_connect_closure_by_id (handle, display.signalIds [EXPOSE_EVENT], 0, display.getClosure (EXPOSE_EVENT), true);
+		OS.g_signal_connect_closure_by_id (handle, display.signalIds [EXPOSE_EVENT], 0, display.getClosure (EXPOSE_EVENT), true);	
+		if (OS.GTK_VERSION >= OS.VERSION (3, 9, 0)) {
+			OS.g_signal_connect_closure_by_id (handle, display.signalIds [EXPOSE_EVENT_INVERSE], 0, display.getClosure (EXPOSE_EVENT_INVERSE), true);
+		}
 		OS.gtk_widget_add_events (handle, OS.GDK_BUTTON_PRESS_MASK);
 		OS.g_signal_connect_closure (handle, OS.button_press_event, display.getClosure (BUTTON_PRESS_EVENT), false);
 	}
