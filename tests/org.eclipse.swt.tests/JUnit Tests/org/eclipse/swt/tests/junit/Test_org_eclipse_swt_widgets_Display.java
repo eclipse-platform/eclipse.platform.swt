@@ -11,7 +11,6 @@
 package org.eclipse.swt.tests.junit;
 
 import static org.eclipse.swt.tests.junit.SwtTestUtil.assertSWTProblem;
-import junit.framework.TestCase;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.DeviceData;
@@ -26,6 +25,8 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Monitor;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Synchronizer;
+
+import junit.framework.TestCase;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.widgets.Display
@@ -200,8 +201,9 @@ public void test_getActiveShell() {
 	Display display = new Display();
 	try {
 		Shell shell = new Shell(display);
+		shell.setText("test_getActiveShell");
 		shell.open();
-		assertTrue(display.getActiveShell() == shell);
+		assertSame(shell, display.getActiveShell());
 		shell.dispose();
 	} finally {
 		display.dispose();
@@ -1128,7 +1130,7 @@ public void test_setAppNameLjava_lang_String() {
 public void test_setCursorLocationII() {
 	Display display = new Display();
 	try {
-		display.setCursorLocation(0,0);
+		display.setCursorLocation(100, 100); // don't put cursor into a corner, since that could trigger special platform events
 	} finally {
 		display.dispose();
 	}
@@ -1137,7 +1139,7 @@ public void test_setCursorLocationII() {
 public void test_setCursorLocationLorg_eclipse_swt_graphics_Point() {
 	Display display = new Display();
 	try {
-		display.setCursorLocation(new Point(0,0));
+		display.setCursorLocation(new Point(100, 50)); // don't put cursor into a corner, since that could trigger special platform events
 		try {
 			display.setCursorLocation(null);
 			fail("No exception thrown for null argument");
