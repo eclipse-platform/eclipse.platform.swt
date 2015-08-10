@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2006 IBM Corporation and others.
+ * Copyright (c) 2000, 2015 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -7,17 +7,21 @@
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
+ *     Red Hat Inc. - Bug 462631
  *******************************************************************************/
 package org.eclipse.swt.tests.junit;
 
 
 import static org.eclipse.swt.tests.junit.SwtTestUtil.assertSWTProblem;
 import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.fail;
 
 import java.io.IOException;
 import java.io.InputStream;
-
-import junit.framework.TestCase;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.SWTException;
@@ -26,19 +30,22 @@ import org.eclipse.swt.graphics.ImageData;
 import org.eclipse.swt.graphics.PaletteData;
 import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.widgets.Display;
+import org.junit.Before;
+import org.junit.Test;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.graphics.ImageData
  *
  * @see org.eclipse.swt.graphics.ImageData
  */
-public class Test_org_eclipse_swt_graphics_ImageData extends TestCase {
+public class Test_org_eclipse_swt_graphics_ImageData {
 	
-@Override
-protected void setUp() {
+@Before
+public void setUp() {
 	imageData = new ImageData(IMAGE_DIMENSION, IMAGE_DIMENSION, 32, new PaletteData(0xFF0000, 0xFF00, 0xFF));
 }
 
+@Test
 public void test_ConstructorIIILorg_eclipse_swt_graphics_PaletteData() {
 	try {
 		new ImageData(-1, 1, 1, new PaletteData(new RGB[] {new RGB(0, 0, 0)}));
@@ -70,6 +77,7 @@ public void test_ConstructorIIILorg_eclipse_swt_graphics_PaletteData() {
 	}
 }
 
+@Test
 public void test_ConstructorIIILorg_eclipse_swt_graphics_PaletteDataI$B() {
 	byte[] validData = new byte[] {0, 0x4f, 0x4f, 0};
 	
@@ -141,6 +149,7 @@ public void test_ConstructorIIILorg_eclipse_swt_graphics_PaletteDataI$B() {
 	}
 }
 
+@Test
 public void test_ConstructorLjava_io_InputStream() {
 	InputStream stream = null;
 	try {
@@ -172,6 +181,7 @@ public void test_ConstructorLjava_io_InputStream() {
 	}
 }
 
+@Test
 public void test_ConstructorLjava_lang_String() {
 	String filename = null;
 	try {
@@ -182,6 +192,7 @@ public void test_ConstructorLjava_lang_String() {
 	// j2se and j2me(cdc) can load from a filename but, j2me(cldc) throws an exception
 }
 
+@Test
 public void test_clone() {
 	InputStream stream = null;
 	try {
@@ -214,6 +225,7 @@ public void test_clone() {
 	}
 }
 
+@Test
 public void test_getAlphaII() {
 	int value;
 	
@@ -249,6 +261,7 @@ public void test_getAlphaII() {
 	}
 }
 
+@Test
 public void test_getAlphasIII$BI() {
 	byte value;
 	final int SIZE = 20; 
@@ -323,6 +336,7 @@ public void test_getAlphasIII$BI() {
 	}	
 }
 
+@Test
 public void test_getPixelII() {
 	int value;
 	
@@ -370,6 +384,7 @@ public void test_getPixelII() {
 	}
 }
 
+@Test
 public void test_getPixelsIII$BI() {
 	final int SIZE = 20; 
 	final int GET_WIDTH = 10;
@@ -507,6 +522,7 @@ public void test_getPixelsIII$BI() {
 	}
 }
 
+@Test
 public void test_getPixelsIII$II() {
 	final int SIZE = 20; 
 	final int GET_WIDTH = 10;
@@ -697,6 +713,7 @@ public void test_getPixelsIII$II() {
 	}
 }
 
+@Test
 public void test_getRGBs() {
 	assertNull(":a:", imageData.getRGBs());
 	RGB[] rgbs = new RGB[]{new RGB(0, 0, 0), new RGB(255, 255, 255)};
@@ -704,6 +721,7 @@ public void test_getRGBs() {
 	assertArrayEquals(":b:", rgbs, imageData.getRGBs());
 }
 
+@Test
 public void test_getTransparencyMask() {
 //	Bug 71472 - transparency mask should be null	
 //	assertNull(":a:", imageData.getTransparencyMask());
@@ -726,6 +744,7 @@ public void test_getTransparencyMask() {
 */	
 }
 
+@Test
 public void test_getTransparencyType() {
 	assertEquals(":a:", SWT.TRANSPARENCY_NONE, imageData.getTransparencyType());
 
@@ -748,6 +767,7 @@ public void test_getTransparencyType() {
 	image.dispose();
 }
 
+@Test
 public void test_scaledToII() {
 	final int imageDimension = 8;
 	RGB[] rgbs = new RGB[]{new RGB(0, 0, 0), new RGB(255, 255, 255)};
@@ -775,6 +795,7 @@ public void test_scaledToII() {
 	assertArrayEquals(":d:", expectedPixelData, scaledPixelData);
 }
 
+@Test
 public void test_setAlphaIII() {
 	int value;
 	
@@ -809,6 +830,7 @@ public void test_setAlphaIII() {
 	}
 }
 
+@Test
 public void test_setAlphasIII$BI() {
 	byte value;
 	final int SIZE = 20; 
@@ -871,6 +893,7 @@ public void test_setAlphasIII$BI() {
 	}	
 }
 
+@Test
 public void test_setPixelIII() {
 	int value;
 	
@@ -905,6 +928,7 @@ public void test_setPixelIII() {
 	}
 }
 
+@Test
 public void test_setPixelsIII$BI() {
 	final int SIZE = 20; 
 	final int OFFSET = 1;
@@ -1013,6 +1037,7 @@ public void test_setPixelsIII$BI() {
 	}
 }
 
+@Test
 public void test_setPixelsIII$II() {
 	final int SIZE = 20; 
 	final int OFFSET = 1;

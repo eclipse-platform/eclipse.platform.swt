@@ -1,7 +1,20 @@
+/*******************************************************************************
+ * Copyright (c) 2015 IBM Corporation and others.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *     IBM Corporation - initial API and implementation
+ *     Red Hat Inc. - Bug 462631
+ *******************************************************************************/
 package org.eclipse.swt.tests.junit;
 
 import static org.junit.Assert.assertArrayEquals;
-import junit.framework.TestCase;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Point;
@@ -9,17 +22,20 @@ import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.graphics.TextLayout;
 import org.eclipse.swt.graphics.TextStyle;
 import org.eclipse.swt.widgets.Display;
+import org.junit.Before;
+import org.junit.Test;
 
 
-public class Test_org_eclipse_swt_graphics_TextLayout extends TestCase {
+public class Test_org_eclipse_swt_graphics_TextLayout {
 	Display display;
 	
-@Override
-protected void setUp() {
+@Before
+public void setUp() {
 	display = Display.getDefault();
 }
 
 /*Test suite start*/
+@Test
 public void test_getLevel() {
 	TextLayout layout = new TextLayout(display);
 	String text = "abc55\u05e9\u05e066";
@@ -41,6 +57,8 @@ public void test_getLevel() {
 	} catch (Exception e) {} 
 	layout.dispose();
 }
+
+@Test
 public void test_getSegments() {
 	TextLayout layout = new TextLayout(display);
 	layout.setText("AB");
@@ -171,6 +189,7 @@ public void test_getSegments() {
 	layout.dispose();
 }
 
+@Test
 public void test_getSegmentsChars() {
 	if (SwtTestUtil.isCocoa) {
 		// TODO Fix Cocoa failure.
@@ -229,6 +248,7 @@ public void test_getSegmentsChars() {
 	layout.dispose();
 }
 
+@Test
 public void test_getLineOffsets() {
 	TextLayout layout = new TextLayout(display);
 	String text = "0123456\n890123\n";
@@ -267,6 +287,8 @@ public void test_getLineOffsets() {
     
 	layout.dispose();
 }
+
+@Test
 public void test_getLineIndex() {
 	if (SwtTestUtil.isCocoa) {
 		// TODO Fix Cocoa failure.
@@ -296,6 +318,8 @@ public void test_getLineIndex() {
 	} catch (Exception e) {} 
 	layout.dispose();
 }
+
+@Test
 public void test_getLineBounds() {
 	if (SwtTestUtil.isCocoa) {
 		// TODO Fix Cocoa failure.
@@ -340,6 +364,8 @@ public void test_getLineBounds() {
 	} catch (Exception e) {} 
 	layout.dispose();
 }
+
+@Test
 public void test_setStyle() {
 	TextLayout layout;
 	TextStyle s1, s2, s3, s4;
@@ -511,6 +537,8 @@ public void test_setStyle() {
 	assertEquals(null, layout.getStyle(5));	
 	layout.dispose();		
 }
+
+@Test
 public void test_getAlignment() {
 	TextLayout layout = new TextLayout(display);
 	layout.setAlignment(SWT.LEFT);
@@ -531,6 +559,8 @@ public void test_getAlignment() {
 
 	layout.dispose();
 }
+
+@Test
 public void test_getOrientation() {
 	TextLayout layout = new TextLayout(display);
 	layout.setOrientation(SWT.LEFT_TO_RIGHT);
@@ -549,6 +579,8 @@ public void test_getOrientation() {
 
 	layout.dispose();
 }
+
+@Test
 public void test_getText() {
 	TextLayout layout = new TextLayout(display);
 	String text = "Test";
@@ -556,6 +588,8 @@ public void test_getText() {
 	assertEquals(text, layout.getText());
 	layout.dispose();
 }
+
+@Test
 public void test_getLocation() {
 	if (SwtTestUtil.isCocoa) {
 		// TODO Fix Cocoa failure.
@@ -578,6 +612,8 @@ public void test_getLocation() {
 	assertEquals(layout.getLocation(4, true).x, layout.getLineBounds(0).width);
 	layout.dispose();
 }
+
+@Test
 public void test_getNextOffset() {
 	if (SwtTestUtil.isCocoa) {
 		// TODO Fix Cocoa failure.
@@ -690,6 +726,7 @@ public void test_getNextOffset() {
 	layout.dispose();
 }
 
+@Test
 public void test_getNextOffset2() {
 	if (SwtTestUtil.isGTK||SwtTestUtil.isCocoa) {
 		//TODO Fix GTK and Cocoa failure.
@@ -723,6 +760,8 @@ public void test_getNextOffset2() {
     }
     layout.dispose();
 }
+
+@Test
 public void test_getLineSpacing() {
 	TextLayout layout = new TextLayout(display);
 	layout.setSpacing(10);
@@ -740,6 +779,8 @@ public void test_getLineSpacing() {
 	assertEquals(0, layout.getSpacing());
 	layout.dispose();
 }
+
+@Test
 public void test_getOffset() {
 	if (SwtTestUtil.isCocoa) {
 		// TODO Fix Cocoa failure.
@@ -830,6 +871,8 @@ public void test_getOffset() {
 	
 	layout.dispose();
 }
+
+@Test
 public void test_getTabs() {
 	TextLayout layout = new TextLayout(display);
 	assertEquals(null, layout.getTabs());
@@ -844,6 +887,8 @@ public void test_getTabs() {
 	assertEquals(null, layout.getTabs());
 	layout.dispose();
 }
+
+@Test
 public void test_getTextDirection() {
 	if (!SwtTestUtil.isWindows) {
 		// TODO Fix GTK and Cocoa failure.

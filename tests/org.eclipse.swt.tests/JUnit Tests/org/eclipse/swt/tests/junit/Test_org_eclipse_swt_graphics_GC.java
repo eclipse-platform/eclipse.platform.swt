@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2015 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -7,11 +7,16 @@
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
+ *     Red Hat Inc. - Bug 462631
  *******************************************************************************/
 package org.eclipse.swt.tests.junit;
 
 import static org.eclipse.swt.tests.junit.SwtTestUtil.assertSWTProblem;
-import junit.framework.TestCase;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
@@ -27,16 +32,19 @@ import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.graphics.GC
  *
  * @see org.eclipse.swt.graphics.GC
  */
-public class Test_org_eclipse_swt_graphics_GC extends TestCase {
+public class Test_org_eclipse_swt_graphics_GC {
 
-@Override
-protected void setUp() {
+@Before
+public void setUp() {
 	display = Display.getDefault();
 	shell = new Shell(display);
 	shell.setBounds(0,30,240,290);
@@ -44,12 +52,14 @@ protected void setUp() {
 	gc = new GC(image);
 }
 
-@Override
-protected void tearDown() {
+@After
+public void tearDown() {
 	gc.dispose();
 	image.dispose();
 	shell.dispose();
 }
+
+@Test
 public void test_ConstructorLorg_eclipse_swt_graphics_Drawable() {
 	try {
 		GC gc = new GC(null);
@@ -75,6 +85,7 @@ public void test_ConstructorLorg_eclipse_swt_graphics_Drawable() {
 	}
 }
 
+@Test
 public void test_ConstructorLorg_eclipse_swt_graphics_DrawableI() {
 	try {
 		GC gc = new GC(null, SWT.LEFT_TO_RIGHT);
@@ -107,6 +118,7 @@ public void test_ConstructorLorg_eclipse_swt_graphics_DrawableI() {
 	canvas.dispose();
 }
 
+@Test
 public void test_copyAreaIIIIII() {
 	Color white = display.getSystemColor(SWT.COLOR_WHITE);
 	Color blue = display.getSystemColor(SWT.COLOR_BLUE);
@@ -135,6 +147,7 @@ public void test_copyAreaIIIIII() {
 	assertEquals(":d:", whiteRGB, palette.getRGB(pixel));
 }
 
+@Test
 public void test_copyAreaLorg_eclipse_swt_graphics_ImageII() {
 	Color white = display.getSystemColor(SWT.COLOR_WHITE);
 	Color blue = display.getSystemColor(SWT.COLOR_BLUE);
@@ -160,18 +173,22 @@ public void test_copyAreaLorg_eclipse_swt_graphics_ImageII() {
 	image.dispose();
 }
 
+@Test
 public void test_dispose() {
 	gc.dispose();
 }
 
+@Test
 public void test_drawArcIIIIII() {
 	gc.drawArc(10, 20, 50, 25, 90, 90);				
 }
 
+@Test
 public void test_drawFocusIIII() {
 	gc.drawFocus(1, 1, 50, 25);				
 }
 
+@Test
 public void test_drawImageLorg_eclipse_swt_graphics_ImageII() {
 	Color c1 = new Color(display, 255, 0, 0);
 	Color c2 = new Color(display, 0, 0, 0);
@@ -215,6 +232,7 @@ public void test_drawImageLorg_eclipse_swt_graphics_ImageII() {
 	c3.dispose();
 }
 
+@Test
 public void test_drawImageLorg_eclipse_swt_graphics_ImageIIIIIIII() {
 	Color c1 = new Color(display, 255, 0, 0);
 	Color c2 = new Color(display, 0, 0, 0);
@@ -258,57 +276,69 @@ public void test_drawImageLorg_eclipse_swt_graphics_ImageIIIIIIII() {
 	c3.dispose();
 }
 
+@Test
 public void test_drawLineIIII() {
 	gc.drawLine(0,0,0,20);
 }
 
+@Test
 public void test_drawOvalIIII() {
 	gc.drawOval(10, 0, 20, 30);				
 }
 
+@Test
 public void test_drawPointII() {
 	gc.drawPoint(10, 10);
 }
 
+@Test
 public void test_drawPolygon$I() {
 	gc.drawPolygon(new int[] {0,0, 5,10, 0,20});				
 	gc.drawPolygon(new int[] {0,0});				
 }
 
+@Test
 public void test_drawPolyline$I() {
 	gc.drawPolyline(new int[] {0,0, 5,10, 0,20});				
 	gc.drawPolyline(new int[] {0,0});				
 }
 
+@Test
 public void test_drawRectangleIIII() {
 	gc.drawRectangle(10, 0, 20, 30);				
 	gc.drawRectangle(0, 0, 0, 0);				
 }
 
+@Test
 public void test_drawRectangleLorg_eclipse_swt_graphics_Rectangle() {
 	gc.drawRectangle(new Rectangle(10, 0, 20, 30));				
 	gc.drawRectangle(new Rectangle(0, 0, 0, 0));				
 }
 
+@Test
 public void test_drawRoundRectangleIIIIII() {
 	gc.drawRoundRectangle(10, 0, 20, 30, 3, 3);				
 	gc.drawRoundRectangle(0, 0, 0, 0, 0, 0);				
 }
 
+@Test
 public void test_drawStringLjava_lang_StringII() {
 	gc.drawString("test", 5, 5);				
 }
 
+@Test
 public void test_drawStringLjava_lang_StringIIZ() {
 	gc.drawString("test", 5, 5, true);				
 	gc.drawString("test", 5, 5, false);				
 }
 
+@Test
 public void test_drawTextLjava_lang_StringII() {
 	gc.drawText("test", 5, 5);				
 	gc.drawText("", 0, 0);				
 }
 
+@Test
 public void test_drawTextLjava_lang_StringIII() {			
 	gc.drawText("abc", 5, 5, 0);
 	gc.drawText("abc", 5, 5, SWT.DRAW_TRANSPARENT);
@@ -331,6 +361,7 @@ public void test_drawTextLjava_lang_StringIII() {
 	gc.drawText("\t", 5, 5, SWT.DRAW_TAB);
 }
 
+@Test
 public void test_drawTextLjava_lang_StringIIZ() {
 	gc.drawText("abc", 5, 5, true);				
 	gc.drawText("abc", 5, 5, false);				
@@ -338,6 +369,7 @@ public void test_drawTextLjava_lang_StringIIZ() {
 	gc.drawText("", 0, 0, false);				
 }
 
+@Test
 public void test_equalsLjava_lang_Object() {
 	assertTrue(gc.equals(gc));
 	Canvas canvas = new Canvas(shell, SWT.NULL);
@@ -346,11 +378,13 @@ public void test_equalsLjava_lang_Object() {
 	testGC.dispose();
 }
 
+@Test
 public void test_fillArcIIIIII() {
 	gc.fillArc(10, 20, 50, 25, 90, 90);				
 	gc.fillArc(10, 20, 50, 25, -10, -10);				
 }
 
+@Test
 public void test_fillGradientRectangleIIIIZ() {
 	gc.fillGradientRectangle(10, 0, 20, 30, true);				
 	gc.fillGradientRectangle(0, 0, 0, 0, true);				
@@ -358,49 +392,58 @@ public void test_fillGradientRectangleIIIIZ() {
 	gc.fillGradientRectangle(0, 0, 0, 0, false);				
 }
 
+@Test
 public void test_fillOvalIIII() {
 	gc.fillOval(10, 0, 20, 30);				
 	gc.fillOval(-1, -1, -1, -1);				
 }
 
+@Test
 public void test_fillPolygon$I() {
 	gc.fillPolygon(new int[] {0,0, 5,10, 0,20});				
 	gc.fillPolygon(new int[] {0,0});				
 	gc.fillPolygon(new int[] {-1, -1});				
 }
 
+@Test
 public void test_fillRectangleIIII() {
 	gc.fillRectangle(new Rectangle(10, 0, 20, 30));				
 	gc.fillRectangle(new Rectangle(0, 0, 0, 0));				
 	gc.fillRectangle(new Rectangle(-1, -1, -1, -1));				
 }
 
+@Test
 public void test_fillRectangleLorg_eclipse_swt_graphics_Rectangle() {
 	gc.fillRectangle(10, 0, 20, 30);				
 	gc.fillRectangle(0, 0, 0, 0);				
 }
 
+@Test
 public void test_fillRoundRectangleIIIIII() {
 	gc.fillRoundRectangle(10, 0, 20, 30, 3, 3);				
 	gc.fillRoundRectangle(0, 0, 0, 0, 0, 0);				
 	gc.fillRoundRectangle(10, 0, 20, 30, -10, -10);				
 }
 
+@Test
 public void test_getAdvanceWidthC() {
 	int w = gc.getAdvanceWidth('a');
 	assertTrue(w > 0);
 }
 
+@Test
 public void test_getCharWidthC() {
 	int w = gc.getCharWidth('a');
 	assertTrue(w > 0);
 }
 
+@Test
 public void test_getFontMetrics() {
 	FontMetrics fm = gc.getFontMetrics();
 	assertTrue(fm.getHeight() > 0);
 }
 
+@Test
 public void test_getStyle() {
 	Canvas canvas = new Canvas(shell, SWT.NULL);
 	GC testGC = new GC(canvas, SWT.LEFT_TO_RIGHT);
@@ -417,6 +460,7 @@ public void test_getStyle() {
 	testGC.dispose();
 }
 
+@Test
 public void test_hashCode() {
 	assertTrue(gc.hashCode() == gc.hashCode());
 	GC gc2 = new GC(shell);
@@ -424,18 +468,21 @@ public void test_hashCode() {
 	gc2.dispose();
 }
 
+@Test
 public void test_isClipped() {
 	assertFalse(gc.isClipped());
 	gc.setClipping(5,10,15,20);
 	assertTrue(gc.isClipped());
 }
 
+@Test
 public void test_isDisposed() {
 	assertFalse(gc.isDisposed());
 	gc.dispose();
 	assertTrue(gc.isDisposed());
 }
 
+@Test
 public void test_setBackgroundLorg_eclipse_swt_graphics_Color() {
 	Color color = new Color(shell.getDisplay(), 255, 0, 0);
 	gc.setBackground(color);
@@ -454,6 +501,7 @@ public void test_setBackgroundLorg_eclipse_swt_graphics_Color() {
 	}
 }
 
+@Test
 public void test_setClippingIIII() {
 	// intermittently fails on XP for reasons unknown, comment out the test case
 	// until the problem is figured out
@@ -472,6 +520,7 @@ public void test_setClippingIIII() {
 //	canvas.dispose();
 }
 
+@Test
 public void test_setClippingLorg_eclipse_swt_graphics_Rectangle() {
 	// intermittently fails on XP for reasons unknown, comment out the test case
 	// until the problem is figured out
@@ -490,12 +539,14 @@ public void test_setClippingLorg_eclipse_swt_graphics_Rectangle() {
 //	canvas.dispose();
 }
 
+@Test
 public void test_setFontLorg_eclipse_swt_graphics_Font() {
 	gc.setFont(shell.getDisplay().getSystemFont());
 	Font font = gc.getFont();
 	assertTrue(font.equals(shell.getDisplay().getSystemFont()));
 }
 
+@Test
 public void test_setForegroundLorg_eclipse_swt_graphics_Color() {
 	Color color = new Color(shell.getDisplay(), 255, 0, 0);
 	gc.setForeground(color);
@@ -514,6 +565,7 @@ public void test_setForegroundLorg_eclipse_swt_graphics_Color() {
 	}
 }
 
+@Test
 public void test_setLineStyleI() {
 	gc.setLineStyle(SWT.LINE_SOLID);
 	assertTrue(gc.getLineStyle() == SWT.LINE_SOLID);
@@ -527,6 +579,7 @@ public void test_setLineStyleI() {
 	assertTrue(gc.getLineStyle() == SWT.LINE_DASHDOTDOT);
 }
 
+@Test
 public void test_setLineWidthI() {
 	gc.setLineWidth(10);
 	assertTrue(gc.getLineWidth() == 10);
@@ -535,6 +588,7 @@ public void test_setLineWidthI() {
 }
 
 @SuppressWarnings("deprecation")
+@Test
 public void test_setXORModeZ() {
 	gc.setXORMode(true);
 	assertTrue(gc.getXORMode());
@@ -542,24 +596,28 @@ public void test_setXORModeZ() {
 	assertFalse(gc.getXORMode());
 }
 
+@Test
 public void test_stringExtentLjava_lang_String() {
 	Point pt = gc.stringExtent("abc");
 	assertTrue(pt.x > 0);
 	assertTrue(pt.y > 0);
 }
 
+@Test
 public void test_textExtentLjava_lang_String() {
 	Point pt = gc.textExtent("abc");
 	assertTrue(pt.x > 0);
 	assertTrue(pt.y > 0);
 }
 
+@Test
 public void test_textExtentLjava_lang_StringI() {
 	Point pt = gc.textExtent("abc", 0);
 	assertTrue(pt.x > 0);
 	assertTrue(pt.y > 0);
 }
 
+@Test
 public void test_toString() {
 	String s = gc.toString();
 	assertNotNull(s);

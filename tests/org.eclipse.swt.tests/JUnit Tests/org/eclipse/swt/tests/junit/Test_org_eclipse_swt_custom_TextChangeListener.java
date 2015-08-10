@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2003 IBM Corporation and others.
+ * Copyright (c) 2000, 2015 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -7,11 +7,12 @@
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
+ *     Red Hat Inc. - Bug 462631
  *******************************************************************************/
 package org.eclipse.swt.tests.junit;
 
 
-import junit.framework.TestCase;
+import static org.junit.Assert.assertTrue;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StyledText;
@@ -20,23 +21,26 @@ import org.eclipse.swt.custom.TextChangeListener;
 import org.eclipse.swt.custom.TextChangedEvent;
 import org.eclipse.swt.custom.TextChangingEvent;
 import org.eclipse.swt.widgets.Shell;
+import org.junit.Before;
+import org.junit.Test;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.custom.TextChangeListener
  *
  * @see org.eclipse.swt.custom.TextChangeListener
  */
-public class Test_org_eclipse_swt_custom_TextChangeListener extends TestCase {
+public class Test_org_eclipse_swt_custom_TextChangeListener {
 	Shell shell;
 	StyledText styledText;
 	int verify = -1;
 
-@Override
-protected void setUp() {
+@Before
+public void setUp() {
 	shell = new Shell();
 	styledText = new StyledText(shell, SWT.NULL);
 }
 
+@Test
 public void test_textChangedLorg_eclipse_swt_custom_TextChangedEvent() {
 	StyledTextContent content = styledText.getContent();
 	TextChangeListener listener = new TextChangeListener() {
@@ -269,6 +273,7 @@ public void test_textChangedLorg_eclipse_swt_custom_TextChangedEvent() {
 	content.removeTextChangeListener(listener);
 }
 
+@Test
 public void test_textChangingLorg_eclipse_swt_custom_TextChangingEvent() {
 	StyledTextContent content = styledText.getContent();
 	TextChangeListener listener = new TextChangeListener() {
@@ -493,6 +498,7 @@ public void test_textChangingLorg_eclipse_swt_custom_TextChangingEvent() {
 	content.removeTextChangeListener(listener);
 }
 
+@Test
 public void test_textSetLorg_eclipse_swt_custom_TextChangedEvent() {
 	StyledTextContent content = styledText.getContent();
 	TextChangeListener listener = new TextChangeListener() {

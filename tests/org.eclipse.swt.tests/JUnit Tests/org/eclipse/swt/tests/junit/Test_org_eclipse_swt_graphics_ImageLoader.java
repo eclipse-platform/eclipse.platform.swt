@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2006 IBM Corporation and others.
+ * Copyright (c) 2000, 2015 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -7,32 +7,38 @@
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
+ *     Red Hat Inc. - Bug 462631
  *******************************************************************************/
 package org.eclipse.swt.tests.junit;
 
+
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-import junit.framework.TestCase;
-
 import org.eclipse.swt.SWTException;
 import org.eclipse.swt.graphics.ImageLoader;
 import org.eclipse.swt.graphics.ImageLoaderEvent;
 import org.eclipse.swt.graphics.ImageLoaderListener;
+import org.junit.Test;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.graphics.ImageLoader
  *
  * @see org.eclipse.swt.graphics.ImageLoader
  */
-public class Test_org_eclipse_swt_graphics_ImageLoader extends TestCase {
+public class Test_org_eclipse_swt_graphics_ImageLoader {
 
+@Test
 public void test_Constructor() {
 	new ImageLoader();
 }
 
+@Test
 public void test_addImageLoaderListenerLorg_eclipse_swt_graphics_ImageLoaderListener() {
 	ImageLoader loader = new ImageLoader();
 	ImageLoaderListener loaderListener = new ImageLoaderListener() {
@@ -75,6 +81,7 @@ public void test_addImageLoaderListenerLorg_eclipse_swt_graphics_ImageLoaderList
 	assertFalse(":f:", loader.hasListeners());
 }
 
+@Test
 public void test_loadLjava_io_InputStream() {
 	ImageLoader loader = new ImageLoader();
 	InputStream stream = null;
@@ -113,6 +120,7 @@ public void test_loadLjava_io_InputStream() {
 	}
 }
 
+@Test
 public void test_loadLjava_lang_String() {
 	ImageLoader loader = new ImageLoader();
 	String filename = null;
@@ -124,6 +132,7 @@ public void test_loadLjava_lang_String() {
 	// j2se and j2me(cdc) can load from a filename but, j2me(cldc) throws an exception
 }
 
+@Test
 public void test_saveLjava_io_OutputStreamI() {
 	ImageLoader loader = new ImageLoader();
 	ByteArrayOutputStream outStream = null;
@@ -173,6 +182,7 @@ public void test_saveLjava_io_OutputStreamI() {
 	}
 }
 
+@Test
 public void test_saveLjava_lang_StringI() {
 	ImageLoader loader = new ImageLoader();
 	String filename = null;

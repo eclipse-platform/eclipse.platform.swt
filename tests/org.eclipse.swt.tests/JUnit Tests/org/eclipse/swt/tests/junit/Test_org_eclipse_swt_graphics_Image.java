@@ -7,11 +7,18 @@
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
+ *     Red Hat Inc. - Bug 462631
  *******************************************************************************/
 package org.eclipse.swt.tests.junit;
 
 
 import static org.eclipse.swt.tests.junit.SwtTestUtil.assertSWTProblem;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -32,15 +39,15 @@ import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.internal.Compatibility;
 import org.eclipse.swt.widgets.Display;
-
-import junit.framework.TestCase;
+import org.junit.Before;
+import org.junit.Test;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.graphics.Image
  *
  * @see org.eclipse.swt.graphics.Image
  */
-public class Test_org_eclipse_swt_graphics_Image extends TestCase {
+public class Test_org_eclipse_swt_graphics_Image {
 ImageFileNameProvider imageFileNameProvider = new ImageFileNameProvider() {
 	public String getImagePath(int zoom) {
 		String fileName;
@@ -79,11 +86,12 @@ ImageDataProvider imageDataProvider = new ImageDataProvider() {
 		return new ImageData(getPath(fileName));
 	}
 };
-@Override
-protected void setUp() {
+@Before
+public void setUp() {
 	display = Display.getDefault();
 }
 
+@Test
 public void test_ConstructorLorg_eclipse_swt_graphics_DeviceII() {
 	Image image;
 	try {
@@ -126,6 +134,7 @@ public void test_ConstructorLorg_eclipse_swt_graphics_DeviceII() {
 		
 }
 
+@Test
 public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_graphics_Rectangle() {
 	Image image;
 	Rectangle bounds = null;
@@ -187,6 +196,7 @@ public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_gra
 	image.dispose();
 }
 
+@Test
 public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_graphics_ImageData() {
 	ImageData data = null;
 	Image image = null;
@@ -231,6 +241,7 @@ public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_gra
 	image.dispose();
 }
 
+@Test
 public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_graphics_ImageDataLorg_eclipse_swt_graphics_ImageData() {
 	ImageData data = null;
 	ImageData data1 = new ImageData(10, 10, 1, new PaletteData(new RGB[] {new RGB(0, 0, 0)}));
@@ -301,6 +312,7 @@ public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_gra
 	image.dispose();
 }
 
+@Test
 public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLjava_io_InputStream() {
 	InputStream stream = null;
 	Image image = null;
@@ -386,6 +398,7 @@ public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLjava_io_InputStream
 	}
 }
 
+@Test
 public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLjava_lang_String() {
 	String fileName = null;
 	try {
@@ -461,6 +474,7 @@ public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLjava_lang_String() 
 	}
 }
 
+@Test
 public void test_ConstructorLorg_eclipse_swt_graphics_Device_ImageFileNameProvider() {
 	 // Null provider
 	ImageFileNameProvider provider = null;
@@ -531,6 +545,7 @@ public void test_ConstructorLorg_eclipse_swt_graphics_Device_ImageFileNameProvid
 	image.dispose();
 }
 
+@Test
 public void test_ConstructorLorg_eclipse_swt_graphics_Device_ImageDataProvider() {
 	 // Null provider
 	ImageDataProvider provider = null;
@@ -601,6 +616,7 @@ public void test_ConstructorLorg_eclipse_swt_graphics_Device_ImageDataProvider()
 	image.dispose();
 }
 
+@Test
 public void test_equalsLjava_lang_Object() {
 	Image image = null;
 	Image image1 = null;
@@ -670,6 +686,7 @@ public void test_equalsLjava_lang_Object() {
 	}
 }
 
+@Test
 public void test_getBackground() {
 	Image image = new Image(display, 10, 10);
 	image.dispose();
@@ -682,6 +699,7 @@ public void test_getBackground() {
 	// remainder tested in setBackground method
 }
 
+@Test
 public void test_getBounds() {
 	Rectangle bounds = new Rectangle(0, 0, 10, 20);
 	Image image = new Image(display, bounds.width, bounds.height);
@@ -712,12 +730,14 @@ public void test_getBounds() {
 	assertEquals(":c:", bounds, bounds1);
 }
 
+@Test
 public void test_getImageData() {	
 	getImageData1();
 	getImageData2(24, new PaletteData(0xff0000, 0xff00, 0xff));		
 	getImageData2(32, new PaletteData(0xff0000, 0xff00, 0xff));
 }
 
+@Test
 public void test_hashCode() {
 	Image image = null;
 	Image image1 = null;
@@ -760,6 +780,7 @@ public void test_hashCode() {
 	}
 }
 
+@Test
 public void test_isDisposed() {
 	Image image = new Image(display, 10, 10);
 	assertFalse(":a:", image.isDisposed());
@@ -767,6 +788,7 @@ public void test_isDisposed() {
 	assertTrue(":b:", image.isDisposed());
 }
 
+@Test
 public void test_setBackgroundLorg_eclipse_swt_graphics_Color() {
 	if (SwtTestUtil.isGTK) {
 		//TODO Fix GTK failure.
@@ -828,6 +850,7 @@ public void test_setBackgroundLorg_eclipse_swt_graphics_Color() {
 	image.dispose();
 }
 
+@Test
 public void test_toString() {
 	Image image = new Image(display, 10, 10);
 	try {

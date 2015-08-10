@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2006 IBM Corporation and others.
+ * Copyright (c) 2000, 2015 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -7,34 +7,36 @@
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
+ *     Red Hat Inc. - Bug 462631
  *******************************************************************************/
 package org.eclipse.swt.tests.junit;
 
 import static org.eclipse.swt.tests.junit.SwtTestUtil.assertSWTProblem;
-import java.util.Hashtable;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
-import junit.framework.TestCase;
+import java.util.Hashtable;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.program.Program;
 import org.eclipse.swt.widgets.Display;
+import org.junit.Before;
+import org.junit.Test;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.program.Program
  *
  * @see org.eclipse.swt.program.Program
  */
-public class Test_org_eclipse_swt_program_Program extends TestCase {
+public class Test_org_eclipse_swt_program_Program {
 	
-public Test_org_eclipse_swt_program_Program(String name) {
-	super(name);
-}
-
-@Override
-protected void setUp() {
+@Before
+public void setUp() {
 	Display.getDefault();
 }
 
+@Test
 public void test_equalsLjava_lang_Object() {
 	String[] extensions = Program.getExtensions();
 	// No assertion here because the doc does not guarantee a non-null result.
@@ -48,6 +50,7 @@ public void test_equalsLjava_lang_Object() {
 	}
 }
 
+@Test
 public void test_executeLjava_lang_String() {
 	
 	// This test is incomplete because a true test of execute would open
@@ -71,6 +74,7 @@ public void test_executeLjava_lang_String() {
 	}
 }
 
+@Test
 public void test_findProgramLjava_lang_String() {
 	String[] extensions = Program.getExtensions();
 	// No assertion here because the doc does not guarantee a non-null result.
@@ -93,6 +97,7 @@ public void test_findProgramLjava_lang_String() {
 	}
 }
 
+@Test
 public void test_getExtensions() {
 	String[] extensions = Program.getExtensions();
 	// No assertion here because the doc does not guarantee a non-null result.
@@ -103,6 +108,7 @@ public void test_getExtensions() {
 	}
 }
 
+@Test
 public void test_getImageData() {
 	String[] extensions = Program.getExtensions();
 	// No assertion here because the doc does not guarantee a non-null result.
@@ -117,6 +123,7 @@ public void test_getImageData() {
 	}
 }
 
+@Test
 public void test_getName() {
 	String[] extensions = Program.getExtensions();
 	// No assertion here because the doc does not guarantee a non-null result.
@@ -131,6 +138,7 @@ public void test_getName() {
 	}
 }
 
+@Test
 public void test_getPrograms() {
 	Program[] programs = Program.getPrograms();
 	
@@ -157,6 +165,7 @@ public void test_getPrograms() {
 	}
 }
 
+@Test
 public void test_launchLjava_lang_String() {
 
 	// This test is incomplete because a true test of launch would open
@@ -174,6 +183,7 @@ public void test_launchLjava_lang_String() {
 	}
 }
 
+@Test
 public void test_toString() {
 	String[] extensions = Program.getExtensions();
 	// No assertion here because the doc does not guarantee a non-null result.

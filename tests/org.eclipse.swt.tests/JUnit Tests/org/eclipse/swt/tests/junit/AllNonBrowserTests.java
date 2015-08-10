@@ -47,21 +47,21 @@ public AllNonBrowserTests() {
 	 * - OLE
 	 * - browser
 	 */
-	addTestSuite(Test_org_eclipse_swt_SWT.class);
-	addTestSuite(Test_org_eclipse_swt_SWTException.class);
-	addTestSuite(Test_org_eclipse_swt_SWTError.class);
+	addTest(new JUnit4TestAdapter(Test_org_eclipse_swt_SWT.class));
+	addTest(new JUnit4TestAdapter(Test_org_eclipse_swt_SWTException.class));
+	addTest(new JUnit4TestAdapter(Test_org_eclipse_swt_SWTError.class));
 
 	/* NOTE: If the Display test suite is run, it must be run
 	 * before any other tests that need a display (i.e. graphics
 	 * or widget tests, etc). Otherwise, an InvalidThreadAccess
 	 * exception will be thrown for each Display test.
 	 */
-	addTestSuite(Test_org_eclipse_swt_widgets_Display.class);
+	addTest(new JUnit4TestAdapter(Test_org_eclipse_swt_widgets_Display.class));
 
 	addTest(new JUnit4TestAdapter(AllGraphicsTests.class));
 	addTest(AllWidgetTests.suite());
 	
-	addTestSuite(Test_org_eclipse_swt_layout_GridData.class);
+	addTest(new JUnit4TestAdapter(Test_org_eclipse_swt_layout_GridData.class));
 
 	addTestSuite(Test_org_eclipse_swt_events_ControlEvent.class);
 	addTestSuite(Test_org_eclipse_swt_events_ModifyEvent.class);
@@ -81,10 +81,10 @@ public AllNonBrowserTests() {
 	addTestSuite(Test_org_eclipse_swt_events_TreeEvent.class);
 	
 	addTestSuite(Test_org_eclipse_swt_printing_PrintDialog.class);
-	addTestSuite(Test_org_eclipse_swt_printing_PrinterData.class);
-	addTestSuite(Test_org_eclipse_swt_printing_Printer.class);
+	addTest(new JUnit4TestAdapter(Test_org_eclipse_swt_printing_PrinterData.class));
+	addTest(new JUnit4TestAdapter(Test_org_eclipse_swt_printing_Printer.class));
 
-	addTestSuite(Test_org_eclipse_swt_program_Program.class);
+	addTest(new JUnit4TestAdapter(Test_org_eclipse_swt_program_Program.class));
 
 	addTest(new JUnit4TestAdapter(Test_org_eclipse_swt_accessibility_Accessible.class));
 	addTest(new JUnit4TestAdapter(Test_org_eclipse_swt_accessibility_AccessibleControlEvent.class));

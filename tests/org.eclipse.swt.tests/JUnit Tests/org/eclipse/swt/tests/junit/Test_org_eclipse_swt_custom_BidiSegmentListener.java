@@ -7,11 +7,13 @@
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
+ *     Red Hat Inc. - Bug 462631
  *******************************************************************************/
 package org.eclipse.swt.tests.junit;
 
 
-import junit.framework.TestCase;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.BidiSegmentEvent;
@@ -19,25 +21,28 @@ import org.eclipse.swt.custom.BidiSegmentListener;
 import org.eclipse.swt.custom.StyleRange;
 import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.widgets.Shell;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.custom.BidiSegmentListener
  *
  * @see org.eclipse.swt.custom.BidiSegmentListener
  */
-public class Test_org_eclipse_swt_custom_BidiSegmentListener extends TestCase {
+public class Test_org_eclipse_swt_custom_BidiSegmentListener {
 	Shell shell;
 	StyledText text;
 	boolean listenerCalled;	
 	String line = "Line1";
 			
-@Override
-protected void setUp() {
+@Before
+public void setUp() {
 	shell = new Shell();
 	text = new StyledText(shell, SWT.NULL);
 }
-@Override
-protected void tearDown() {
+@After
+public void tearDown() {
 	shell.dispose();
 }
 private void testListener(final String message, final int[] segments, boolean exceptionExpected) {
@@ -113,6 +118,7 @@ private void testStyleRangeSegmenting(final int[] segments, int[] boldRanges) {
 	}
 }
 
+@Test
 public void test_lineGetSegmentsLorg_eclipse_swt_custom_BidiSegmentEvent() {
 	int lineLength = line.length();
 

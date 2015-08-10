@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2006 IBM Corporation and others.
+ * Copyright (c) 2000, 2015 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -7,29 +7,33 @@
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
+ *     Red Hat Inc. - Bug 462631
  *******************************************************************************/
 package org.eclipse.swt.tests.junit;
 
-import junit.framework.TestCase;
+import static org.junit.Assert.fail;
 
 import org.eclipse.swt.SWTException;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.graphics.Region;
 import org.eclipse.swt.widgets.Display;
+import org.junit.Before;
+import org.junit.Test;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.graphics.Region
  *
  * @see org.eclipse.swt.graphics.Region
  */
-public class Test_org_eclipse_swt_graphics_Region extends TestCase {
+public class Test_org_eclipse_swt_graphics_Region {
 
-@Override
-protected void setUp() {
+@Before
+public void setUp() {
 	display = Display.getDefault();
 }
 
+@Test
 public void test_Constructor() {
 	// test Region()
 	Region reg = new Region();
@@ -39,6 +43,7 @@ public void test_Constructor() {
 	reg.dispose();
 }
 
+@Test
 public void test_ConstructorLorg_eclipse_swt_graphics_Device() {
 	Region reg = new Region(display);
 	if (reg.isDisposed()) {
@@ -47,6 +52,7 @@ public void test_ConstructorLorg_eclipse_swt_graphics_Device() {
 	reg.dispose();
 }
 
+@Test
 public void test_add$I() {
 	Region reg = new Region(display);
 	try {
@@ -95,6 +101,7 @@ public void test_add$I() {
 //	}
 }
 
+@Test
 public void test_addLorg_eclipse_swt_graphics_Rectangle() {
 	Region reg = new Region(display);
 	// add a rectangle
@@ -119,6 +126,7 @@ public void test_addLorg_eclipse_swt_graphics_Rectangle() {
 	}
 }
 
+@Test
 public void test_addLorg_eclipse_swt_graphics_Region() {
 	Region reg1 = new Region(display);
 	// make a second region and add it to the first one
@@ -158,6 +166,7 @@ public void test_addLorg_eclipse_swt_graphics_Region() {
 	}
 }
 
+@Test
 public void test_containsII() {
 	Rectangle rect1 = new Rectangle(10,10,200,100);
 	Point pointInRect1 = new Point(10,10);
@@ -197,6 +206,7 @@ public void test_containsII() {
 	reg.dispose();
 }
 
+@Test
 public void test_containsLorg_eclipse_swt_graphics_Point() {
 	Rectangle rect1 = new Rectangle(10,10,200,100);
 	Point pointInRect1 = new Point(10,10);
@@ -236,6 +246,7 @@ public void test_containsLorg_eclipse_swt_graphics_Point() {
 	reg.dispose();
 }
 
+@Test
 public void test_dispose() {
 	Region reg = new Region(display);
 	reg.add(new Rectangle(1,1,50,100));
@@ -252,6 +263,7 @@ public void test_dispose() {
 	}
 }
 
+@Test
 public void test_equalsLjava_lang_Object() {
 	Rectangle rect1 = new Rectangle(25, 100, 200, 780);
 	Rectangle rect2 = new Rectangle(30, 105, 205, 785);
@@ -298,6 +310,7 @@ public void test_equalsLjava_lang_Object() {
 	reg2.dispose();
 }
 
+@Test
 public void test_getBounds() {
 	Region reg = new Region(display);
 	reg.dispose();
@@ -334,6 +347,7 @@ public void test_getBounds() {
 	reg.dispose();
 }
 
+@Test
 public void test_hashCode() {
 	Region reg1 = new Region(display);
 	Region reg2 = new Region(display);
@@ -366,6 +380,7 @@ public void test_hashCode() {
 	reg2.dispose();
 }
 
+@Test
 public void test_intersectLorg_eclipse_swt_graphics_Rectangle() {
 	Rectangle rect1 = new Rectangle(0,0,50,25);
 	Rectangle rect2 = new Rectangle(0,0,50,25);
@@ -427,6 +442,7 @@ public void test_intersectLorg_eclipse_swt_graphics_Rectangle() {
 	reg.dispose();
 }
 
+@Test
 public void test_intersectLorg_eclipse_swt_graphics_Region() {
 	Region reg = new Region(display);
 	Region reg1 = new Region(display);
@@ -518,6 +534,7 @@ public void test_intersectLorg_eclipse_swt_graphics_Region() {
 	reg5.dispose();
 }
 
+@Test
 public void test_intersectsIIII() {
 	Rectangle rect1 = new Rectangle(10,20,50,30);
 	Rectangle rectInter1 = new Rectangle(59,49,10,20);
@@ -572,6 +589,7 @@ public void test_intersectsIIII() {
 	reg.dispose();
 }
 
+@Test
 public void test_intersectsLorg_eclipse_swt_graphics_Rectangle() {
 	Rectangle rect1 = new Rectangle(10,20,50,30);
 	Rectangle rectInter1 = new Rectangle(59,49,10,20);
@@ -626,6 +644,7 @@ public void test_intersectsLorg_eclipse_swt_graphics_Rectangle() {
 	reg.dispose();
 }
 
+@Test
 public void test_isEmpty() {
 	Region reg = new Region(display);
 	Rectangle emptyRect1 = new Rectangle(10,20,0,200);
@@ -658,6 +677,7 @@ public void test_isEmpty() {
 	reg.dispose();	
 }
 
+@Test
 public void test_subtract$I() {
 	Region reg = new Region(display);
 	try {
@@ -700,6 +720,7 @@ public void test_subtract$I() {
 	}
 }
 
+@Test
 public void test_subtractLorg_eclipse_swt_graphics_Rectangle() {
 	Rectangle rect1 = new Rectangle(0,0,50,25);
 	Rectangle rect2 = new Rectangle(0,0,50,25);
@@ -762,6 +783,7 @@ public void test_subtractLorg_eclipse_swt_graphics_Rectangle() {
 	reg.dispose();
 }
 
+@Test
 public void test_subtractLorg_eclipse_swt_graphics_Region() {
 	Region reg1 = new Region(display);
 	reg1.add(new Rectangle(0,0,50,25));
@@ -856,6 +878,7 @@ public void test_subtractLorg_eclipse_swt_graphics_Region() {
 	reg5.dispose();
 }
 
+@Test
 public void test_toString() {
 	Region reg = new Region(display);
 	
@@ -880,6 +903,7 @@ public void test_toString() {
 	}				
 }
 
+@Test
 public void test_add_intArray() {
 	Region reg = new Region(display);
 	int[] points = new int[] {1};

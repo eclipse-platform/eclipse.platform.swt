@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2014 IBM Corporation and others.
+ * Copyright (c) 2000, 2015 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -7,10 +7,18 @@
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
+ *     Red Hat Inc. - Bug 462631
  *******************************************************************************/
 package org.eclipse.swt.tests.junit;
 
 import static org.eclipse.swt.tests.junit.SwtTestUtil.assertSWTProblem;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.DeviceData;
@@ -25,21 +33,22 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Monitor;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Synchronizer;
-
-import junit.framework.TestCase;
+import org.junit.Test;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.widgets.Display
  *
  * @see org.eclipse.swt.widgets.Display
  */
-public class Test_org_eclipse_swt_widgets_Display extends TestCase {
+public class Test_org_eclipse_swt_widgets_Display {
 
+@Test
 public void test_Constructor() {
 	Display disp = new Display();
 	disp.dispose();
 }
 
+@Test
 public void test_ConstructorLorg_eclipse_swt_graphics_DeviceData() {
 	Display disp;
 	disp = new Display(null);
@@ -49,6 +58,7 @@ public void test_ConstructorLorg_eclipse_swt_graphics_DeviceData() {
 	disp.dispose();
 }
 
+@Test
 public void test_addFilterILorg_eclipse_swt_widgets_Listener() {
 	final int CLOSE_CALLBACK = 0;
 	final int DISPOSE_CALLBACK = 1;
@@ -80,6 +90,7 @@ public void test_addFilterILorg_eclipse_swt_widgets_Listener() {
 	assertFalse(callbackReceived[DISPOSE_CALLBACK]);
 }
 
+@Test
 public void test_addListenerILorg_eclipse_swt_widgets_Listener() {
 	final int CLOSE_CALLBACK = 0;
 	final int DISPOSE_CALLBACK = 1;
@@ -119,6 +130,7 @@ public void test_addListenerILorg_eclipse_swt_widgets_Listener() {
 	assertTrue(":c:", callbackReceived[CLOSE_CALLBACK]);
 }
 
+@Test
 public void test_asyncExecLjava_lang_Runnable() {
 	final Display display = new Display();
 	try {
@@ -132,6 +144,7 @@ public void test_asyncExecLjava_lang_Runnable() {
 	}
 }
 
+@Test
 public void test_asyncExecLjava_lang_Runnable_dispose() {
 	final Display display = new Display();
 	try {
@@ -149,6 +162,7 @@ public void test_asyncExecLjava_lang_Runnable_dispose() {
 	}
 }
 
+@Test
 public void test_beep() {
 	Display display = new Display();
 	try {
@@ -158,12 +172,14 @@ public void test_beep() {
 	}
 }
 
+@Test
 public void test_close() {
 	Display display = new Display();
 	display.close();
 	assertTrue(display.isDisposed());
 }
 
+@Test
 public void test_disposeExecLjava_lang_Runnable() {
 	// Also tests dispose and isDisposed
 	Display testDisplay = new Display();
@@ -179,6 +195,7 @@ public void test_disposeExecLjava_lang_Runnable() {
 	assertTrue("DisposeExec Runnable did not run", disposeExecRan);
 }
 
+@Test
 public void test_findDisplayLjava_lang_Thread() {
 	assertNull(Display.findDisplay(new Thread()));
 	
@@ -190,6 +207,7 @@ public void test_findDisplayLjava_lang_Thread() {
 	}
 }
 
+@Test
 public void test_getActiveShell() {
 	if (SwtTestUtil.isGTK) {
 		//TODO Fix GTK failure.
@@ -210,6 +228,7 @@ public void test_getActiveShell() {
 	}
 }
 
+@Test
 public void test_getBounds() {
 	Display display = new Display();
 	try {
@@ -220,6 +239,7 @@ public void test_getBounds() {
 	}
 }
 
+@Test
 public void test_getClientArea() {
 	Display display = new Display();
 	try {
@@ -230,6 +250,7 @@ public void test_getClientArea() {
 	}
 }
 
+@Test
 public void test_getCurrent() {
 	Display display = new Display();
 	try {
@@ -239,6 +260,7 @@ public void test_getCurrent() {
 	}
 }
 
+@Test
 public void test_getCursorControl() {
 	Display display = new Display();
 	try {
@@ -248,6 +270,7 @@ public void test_getCursorControl() {
 	}
 }
 
+@Test
 public void test_getCursorLocation() {
 	Display display = new Display();
 	try {
@@ -260,6 +283,7 @@ public void test_getCursorLocation() {
 	}
 }
 
+@Test
 public void test_getDefault() {
 	Display display = new Display();
 	try {
@@ -269,6 +293,7 @@ public void test_getDefault() {
 	}
 }
 
+@Test
 public void test_getDismissalAlignment() {
 	Display display = new Display();
 	try {
@@ -280,6 +305,7 @@ public void test_getDismissalAlignment() {
 	}
 }
 
+@Test
 public void test_getDoubleClickTime() {
 	Display display = new Display();
 	try {
@@ -290,6 +316,7 @@ public void test_getDoubleClickTime() {
 	}
 }
 
+@Test
 public void test_getFocusControl() {
 	Display display = new Display();
 	try {
@@ -299,6 +326,7 @@ public void test_getFocusControl() {
 	}
 }
 
+@Test
 public void test_getIconDepth() {
 	Display display = new Display();
 	try {
@@ -309,6 +337,7 @@ public void test_getIconDepth() {
 	}
 }
 
+@Test
 public void test_getMonitors() {
 	Display display = new Display();
 	Monitor[] monitors = display.getMonitors();
@@ -332,6 +361,7 @@ public void test_getMonitors() {
  *   - Stack displays, primary on bottom
  * - Single display
  */
+@Test
 public void test_getPrimaryMonitor() {
 	Display display = new Display();
 	Monitor monitor = display.getPrimaryMonitor();
@@ -339,6 +369,7 @@ public void test_getPrimaryMonitor() {
 	display.dispose();
 }
 
+@Test
 public void test_getShells() {
 	Display display = new Display();
 	try {
@@ -352,6 +383,7 @@ public void test_getShells() {
 	}
 }
 
+@Test
 public void test_getSyncThread() {
 	final Display display = new Display();
 	try {
@@ -400,6 +432,7 @@ public void test_getSyncThread() {
 	}
 }
 
+@Test
 public void test_getSystemColorI() {
 	Display display = new Display();
 	try {
@@ -419,6 +452,7 @@ public void test_getSystemColorI() {
 	}
 }
 
+@Test
 public void test_getSystemFont() {
 	Display display = new Display();
 	try {
@@ -429,6 +463,7 @@ public void test_getSystemFont() {
 	}
 }
 
+@Test
 public void test_getThread() {
 	Display display = new Display();
 	try {
@@ -438,6 +473,7 @@ public void test_getThread() {
 	}
 }
 
+@Test
 public void test_mapLorg_eclipse_swt_widgets_ControlLorg_eclipse_swt_widgets_ControlII() {
 	Display display = new Display();
 	try {
@@ -566,6 +602,7 @@ public void test_mapLorg_eclipse_swt_widgets_ControlLorg_eclipse_swt_widgets_Con
 	}
 }
 
+@Test
 public void test_mapLorg_eclipse_swt_widgets_ControlLorg_eclipse_swt_widgets_ControlIIII() {
 	Display display = new Display();
 	try {
@@ -694,6 +731,7 @@ public void test_mapLorg_eclipse_swt_widgets_ControlLorg_eclipse_swt_widgets_Con
 	}
 }
 
+@Test
 public void test_mapLorg_eclipse_swt_widgets_ControlLorg_eclipse_swt_widgets_ControlLorg_eclipse_swt_graphics_Point() {
 	Display display = new Display();
 	try {
@@ -831,6 +869,7 @@ public void test_mapLorg_eclipse_swt_widgets_ControlLorg_eclipse_swt_widgets_Con
 	}
 }
 
+@Test
 public void test_mapLorg_eclipse_swt_widgets_ControlLorg_eclipse_swt_widgets_ControlLorg_eclipse_swt_graphics_Rectangle() {
 	Display display = new Display();
 	try {
@@ -967,6 +1006,7 @@ public void test_mapLorg_eclipse_swt_widgets_ControlLorg_eclipse_swt_widgets_Con
 	}
 }
 
+@Test
 public void test_postLorg_eclipse_swt_widgets_Event() {
 	if (SwtTestUtil.isGTK || SwtTestUtil.isCocoa) {
 		//TODO Fix GTK and Cocoa failure.
@@ -1052,6 +1092,7 @@ public void test_postLorg_eclipse_swt_widgets_Event() {
 	}
 }
 
+@Test
 public void test_readAndDispatch() {
 	// The following tests rely on readAndDispatch in order to succeed,
 	// thus no test is needed here.
@@ -1059,6 +1100,7 @@ public void test_readAndDispatch() {
 	//    test_postLorg_eclipse_swt_widgets_Event()
 }
 
+@Test
 public void test_removeFilterILorg_eclipse_swt_widgets_Listener() {
 	final int CLOSE_CALLBACK = 0;
 	final int DISPOSE_CALLBACK = 1;
@@ -1091,6 +1133,7 @@ public void test_removeFilterILorg_eclipse_swt_widgets_Listener() {
 	assertFalse(callbackReceived[DISPOSE_CALLBACK]);
 }
 
+@Test
 public void test_removeListenerILorg_eclipse_swt_widgets_Listener() {
 	final int CLOSE_CALLBACK = 0;
 	final int DISPOSE_CALLBACK = 1;
@@ -1123,10 +1166,12 @@ public void test_removeListenerILorg_eclipse_swt_widgets_Listener() {
 	assertFalse(callbackReceived[DISPOSE_CALLBACK]);
 }
 
+@Test
 public void test_setAppNameLjava_lang_String() {
 	Display.setAppName("My Application Name");
 }
 
+@Test
 public void test_setCursorLocationII() {
 	Display display = new Display();
 	try {
@@ -1136,6 +1181,7 @@ public void test_setCursorLocationII() {
 	}
 }
 
+@Test
 public void test_setCursorLocationLorg_eclipse_swt_graphics_Point() {
 	Display display = new Display();
 	try {
@@ -1152,6 +1198,7 @@ public void test_setCursorLocationLorg_eclipse_swt_graphics_Point() {
 	}
 }
 
+@Test
 public void test_setDataLjava_lang_Object() {
 	Display display = new Display();
 	try {
@@ -1164,6 +1211,7 @@ public void test_setDataLjava_lang_Object() {
 	}
 }
 
+@Test
 public void test_setDataLjava_lang_StringLjava_lang_Object() {
 	Display display = new Display();
 	try {
@@ -1180,6 +1228,7 @@ public void test_setDataLjava_lang_StringLjava_lang_Object() {
 	}
 }
 
+@Test
 public void test_setSynchronizerLorg_eclipse_swt_widgets_Synchronizer() {
 	final Display display = new Display();
 	final boolean[] asyncExecRan = new boolean[] {false};
@@ -1219,6 +1268,7 @@ public void test_setSynchronizerLorg_eclipse_swt_widgets_Synchronizer() {
 	}
 }
 
+@Test
 public void test_sleep() {
 	final Display display = new Display();
 	try {
@@ -1272,6 +1322,7 @@ public void test_sleep() {
 	}
 }
 
+@Test
 public void test_syncExecLjava_lang_Runnable() {
 	final Display display = new Display();
 	try {
@@ -1285,6 +1336,7 @@ public void test_syncExecLjava_lang_Runnable() {
 	}
 }
 
+@Test
 public void test_syncExecLjava_lang_Runnable_dispose() {
 	final Display display = new Display();
 	try {
@@ -1298,6 +1350,7 @@ public void test_syncExecLjava_lang_Runnable_dispose() {
 	}
 }
 
+@Test
 public void test_timerExecILjava_lang_Runnable() {
 	final Display display = new Display();
 	try {
@@ -1343,6 +1396,7 @@ public void test_timerExecILjava_lang_Runnable() {
 	}
 }
 
+@Test
 public void test_update() {
 	Display display = new Display();
 	try {
@@ -1352,6 +1406,7 @@ public void test_update() {
 	}
 }
 
+@Test
 public void test_wake() {
 	// tested in sleep() method
 }
@@ -1359,7 +1414,7 @@ public void test_wake() {
 /* custom */
 boolean disposeExecRan;
 
-/* Overloaded tests from Test_org_eclipse_swt_graphics_Device */
+@Test
 public void test_getDPI() {
 	Display display = new Display();
 	try {
@@ -1371,6 +1426,7 @@ public void test_getDPI() {
 	}
 }
 
+@Test
 public void test_getDepth() {
 	Display display = new Display();
 	try {
@@ -1380,7 +1436,7 @@ public void test_getDepth() {
 		display.dispose();
 	}
 }
-
+@Test
 public void test_getFontListLjava_lang_StringZ() {
 	Display display = new Display();
 	try {
@@ -1392,6 +1448,7 @@ public void test_getFontListLjava_lang_StringZ() {
 	}
 }
 
+@Test
 public void test_getWarnings() {
 	Display display = new Display();
 	try {
@@ -1403,6 +1460,7 @@ public void test_getWarnings() {
 	}
 }
 
+@Test
 public void test_isDisposed() {
 	Display disp = new Display();
 	assertFalse(disp.isDisposed());
@@ -1410,6 +1468,7 @@ public void test_isDisposed() {
 	assertTrue(disp.isDisposed());
 }
 
+@Test
 public void test_setWarningsZ() {
 	Display display = new Display();
 	try {

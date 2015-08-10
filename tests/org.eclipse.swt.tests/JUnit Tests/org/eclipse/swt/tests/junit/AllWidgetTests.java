@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2014 IBM Corporation and others.
+ * Copyright (c) 2000, 2015 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -7,12 +7,15 @@
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
+ *     Red Hat Inc. - Bug 462631
  *******************************************************************************/
 package org.eclipse.swt.tests.junit;
 
 
-import junit.framework.*;
-import junit.textui.*;
+import junit.framework.JUnit4TestAdapter;
+import junit.framework.Test;
+import junit.framework.TestSuite;
+import junit.textui.TestRunner;
 
 /**
  * Suite for testing all of the widget test cases.
@@ -33,7 +36,7 @@ public static Test suite() {
 	suite.addTestSuite(Test_org_eclipse_swt_widgets_TableColumn.class);
 	suite.addTestSuite(Test_org_eclipse_swt_widgets_TreeItem.class);
 	suite.addTestSuite(Test_org_eclipse_swt_widgets_Caret.class);
-	suite.addTestSuite(Test_org_eclipse_swt_widgets_Event.class);
+	suite.addTest(new JUnit4TestAdapter(Test_org_eclipse_swt_widgets_Event.class));
 	suite.addTestSuite(Test_org_eclipse_swt_widgets_Menu.class);
 	//suite.addTest(Test_org_eclipse_swt_widgets_Tracker.suite());
 	
@@ -66,10 +69,10 @@ public static Test suite() {
 	suite.addTestSuite(Test_org_eclipse_swt_widgets_DirectoryDialog.class);
 	suite.addTestSuite(Test_org_eclipse_swt_widgets_FontDialog.class);
 	suite.addTestSuite(Test_org_eclipse_swt_widgets_MessageBox.class);
-	suite.addTestSuite(Test_org_eclipse_swt_widgets_Monitor.class);
+	suite.addTest(new JUnit4TestAdapter(Test_org_eclipse_swt_widgets_Monitor.class));
 
 	suite.addTestSuite(Test_org_eclipse_swt_custom_TableTree.class);
-	suite.addTestSuite(Test_org_eclipse_swt_custom_StyleRange.class);
+	suite.addTest(new JUnit4TestAdapter(Test_org_eclipse_swt_custom_StyleRange.class));
 	suite.addTestSuite(Test_org_eclipse_swt_custom_CCombo.class);
 	suite.addTestSuite(Test_org_eclipse_swt_custom_TableTreeItem.class);
 	suite.addTestSuite(Test_org_eclipse_swt_custom_CLabel.class);

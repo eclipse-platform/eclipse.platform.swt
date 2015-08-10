@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2006 IBM Corporation and others.
+ * Copyright (c) 2000, 2015 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -7,28 +7,36 @@
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
+ *     Red Hat Inc. - Bug 462631
  *******************************************************************************/
 package org.eclipse.swt.tests.junit;
 
-import java.util.Locale;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
-import junit.framework.TestCase;
+import java.util.Locale;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.FontData;
+import org.junit.Test;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.graphics.FontData
  *
  * @see org.eclipse.swt.graphics.FontData
  */
-public class Test_org_eclipse_swt_graphics_FontData extends TestCase {
+public class Test_org_eclipse_swt_graphics_FontData {
 
+@Test
 public void test_Constructor() {
 	// Test new FontData()
 	new FontData();
 }
 
+@Test
 public void test_ConstructorLjava_lang_String() {
 	// Test new FontData(String string)
 	FontData fd = new FontData(SwtTestUtil.testFontName, 10, SWT.NORMAL);
@@ -36,6 +44,7 @@ public void test_ConstructorLjava_lang_String() {
 	assertEquals(fd, reconstructedFontData);
 }
 
+@Test
 public void test_ConstructorLjava_lang_StringII() {
 	// Test new FontData(String name, int height, int style)
 	// valid font data with no name (strange, but apparently valid)
@@ -77,6 +86,7 @@ public void test_ConstructorLjava_lang_StringII() {
 	}
 }
 
+@Test
 public void test_equalsLjava_lang_Object() {
 	FontData fd1 = new FontData(SwtTestUtil.testFontName, 10, SWT.NORMAL);
 	FontData fd2 = new FontData(SwtTestUtil.testFontName, 10, SWT.NORMAL);
@@ -84,6 +94,7 @@ public void test_equalsLjava_lang_Object() {
 	assertEquals(fd1,fd2);
 }
 
+@Test
 public void test_hashCode() {
 	FontData fd1 = new FontData(SwtTestUtil.testFontName, 10, SWT.NORMAL);
 	FontData fd2 = new FontData(SwtTestUtil.testFontName, 10, SWT.NORMAL);
@@ -93,6 +104,7 @@ public void test_hashCode() {
 	assertFalse(fd1.hashCode() == fd3.hashCode());
 }
 
+@Test
 public void test_setHeightI() {
 	// Test Font.setHeight(int  height)
 	// valid normal font data for various heights
@@ -124,6 +136,7 @@ public void test_setHeightI() {
 	}
 }
 
+@Test
 public void test_setLocaleLjava_lang_String() {
 	FontData fd = new FontData(SwtTestUtil.testFontName, 10, SWT.NORMAL);
 	Locale locale = Locale.ENGLISH;
@@ -131,6 +144,7 @@ public void test_setLocaleLjava_lang_String() {
 	assertEquals(Locale.ENGLISH.toString(),fd.getLocale());
 }
 
+@Test
 public void test_setNameLjava_lang_String() {
 	// Test Font.setName(String name)
 	// valid name
@@ -159,6 +173,7 @@ public void test_setNameLjava_lang_String() {
 	}
 }
 
+@Test
 public void test_setStyleI() {
 	// Test Font.setStyle(int  style)
 	for (int height = 0; height < 1000; height++) {
@@ -184,6 +199,7 @@ public void test_setStyleI() {
 	}
 }
 
+@Test
 public void test_toString() {
 	FontData data = new FontData();
 	assertNotNull(data.toString());

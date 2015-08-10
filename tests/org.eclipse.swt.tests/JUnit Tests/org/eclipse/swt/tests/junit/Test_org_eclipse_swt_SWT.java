@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2003 IBM Corporation and others.
+ * Copyright (c) 2000, 2015 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -7,26 +7,31 @@
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
+ *     Red Hat Inc. - Bug 462631
  *******************************************************************************/
 package org.eclipse.swt.tests.junit;
 
-import junit.framework.TestCase;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.SWTError;
 import org.eclipse.swt.SWTException;
+import org.junit.Test;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.SWT
  *
  * @see org.eclipse.swt.SWT
  */
-public class Test_org_eclipse_swt_SWT extends TestCase {
+public class Test_org_eclipse_swt_SWT {
 
+@Test
 public void test_Constructor() {
 	// Do nothing. Class SWT is not intended to be subclassed.
 }
 
+@Test
 public void test_errorI() {
 	// Test that we throw the expected kinds of errors for the given error types.
 	boolean passed = false;
@@ -59,6 +64,7 @@ public void test_errorI() {
 	assertTrue ("did not correctly throw exception for error(-1)", passed);
 }
 
+@Test
 public void test_errorILjava_lang_Throwable() {
 	// Test that the causing throwable is filled in.
 	Throwable cause = new RuntimeException("Just for testing");
@@ -85,6 +91,7 @@ public void test_errorILjava_lang_Throwable() {
 	assertTrue ("did not correctly throw exception for error(-1)", passed);
 }
 
+@Test
 public void test_getMessageLjava_lang_String() {
 	boolean passed = false;
 	try {
@@ -105,12 +112,14 @@ public void test_getMessageLjava_lang_String() {
 		
 }
 
+@Test
 public void test_getPlatform() {
 	// Can't test the list of platforms, since this may change,
 	// so just test to see it returns something.
 	assertTrue ("returned null platform name", SWT.getPlatform() != null);
 }
 
+@Test
 public void test_getVersion() {
 	// Test that the version number which is returned is reasonable.
 	int ver = SWT.getVersion();

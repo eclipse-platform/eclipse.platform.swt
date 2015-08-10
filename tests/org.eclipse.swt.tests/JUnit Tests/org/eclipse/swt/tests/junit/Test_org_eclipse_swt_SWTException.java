@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2004 IBM Corporation and others.
+ * Copyright (c) 2000, 2015 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -7,37 +7,42 @@
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
+ *     Red Hat Inc. - Bug 462631
  *******************************************************************************/
 package org.eclipse.swt.tests.junit;
 
 
+import static org.junit.Assert.assertTrue;
+
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 
-import junit.framework.TestCase;
-
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.SWTException;
+import org.junit.Test;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.SWTException
  *
  * @see org.eclipse.swt.SWTException
  */
-public class Test_org_eclipse_swt_SWTException extends TestCase {
+public class Test_org_eclipse_swt_SWTException {
 
+@Test
 public void test_Constructor() {
 	assertTrue (
 		"did not fill in code properly",
 		new SWTException().code == SWT.ERROR_UNSPECIFIED);
 }
 
+@Test
 public void test_ConstructorI() {
 	assertTrue (
 		"did not fill in code properly",
 		new SWTException(SWT.ERROR_CANNOT_BE_ZERO).code == SWT.ERROR_CANNOT_BE_ZERO);
 }
 
+@Test
 public void test_ConstructorILjava_lang_String() {
 	assertTrue (
 		"did not fill in code properly",
@@ -45,12 +50,14 @@ public void test_ConstructorILjava_lang_String() {
 			== SWT.ERROR_CANNOT_BE_ZERO);
 }
 
+@Test
 public void test_ConstructorLjava_lang_String() {
 	assertTrue (
 		"did not fill in code properly",
 		new SWTException("An uninteresting message").code == SWT.ERROR_UNSPECIFIED);
 }
 
+@Test
 public void test_getMessage() {
 	assertTrue (
 		"did not include creation string in result",
@@ -58,6 +65,7 @@ public void test_getMessage() {
 			.indexOf("An interesting message") >= 0);
 }
 
+@Test
 public void test_printStackTrace() {
 	
 	// WARNING: this test is not CLDC safe, because it requires java.io.PrintStream

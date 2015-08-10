@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2004 IBM Corporation and others.
+ * Copyright (c) 2000, 2015 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -7,31 +7,39 @@
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
+ *     Red Hat Inc. - Bug 462631
  *******************************************************************************/
 package org.eclipse.swt.tests.junit;
 
 
-import junit.framework.TestCase;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.widgets.Display;
+import org.junit.Before;
+import org.junit.Test;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.graphics.Font
  *
  * @see org.eclipse.swt.graphics.Font
  */
-public class Test_org_eclipse_swt_graphics_Font extends TestCase {
+public class Test_org_eclipse_swt_graphics_Font {
 
 Display display;
 
-@Override
-protected void setUp() {
+@Before
+public void setUp() {
 	display = Display.getDefault();
 }
 
+@Test
 public void test_ConstructorLorg_eclipse_swt_graphics_Device$Lorg_eclipse_swt_graphics_FontData() {
 	
 	// null  device argument
@@ -99,6 +107,7 @@ public void test_ConstructorLorg_eclipse_swt_graphics_Device$Lorg_eclipse_swt_gr
 	assertTrue("null data element 1",exceptionThrown);	
 }
 
+@Test
 public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_graphics_FontData() {
 	// Test new Font(Device device, FontData fd)
 	// IllegalArgumentException if the fd argument is null
@@ -161,6 +170,7 @@ public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_gra
 	}
 }
 
+@Test
 public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLjava_lang_StringII() {
 	// Test new Font(Device device, String name, int height, int style)
 	// IllegalArgumentException if the name argument is null or the height is negative
@@ -219,6 +229,7 @@ public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLjava_lang_StringII(
 	}
 }
 
+@Test
 public void test_dispose() {
 	Font font = new Font(display, SwtTestUtil.testFontName, 10, SWT.NORMAL);
 	assertFalse(font.isDisposed());
@@ -226,6 +237,7 @@ public void test_dispose() {
 	assertTrue(font.isDisposed());
 }
 
+@Test
 public void test_equalsLjava_lang_Object() {
 	// Fonts are only equal if their handles are the same (?!)
 	Font font = new Font(display, SwtTestUtil.testFontName, 10, SWT.NORMAL);
@@ -244,6 +256,7 @@ public void test_equalsLjava_lang_Object() {
 	}
 }
 
+@Test
 public void test_getFontData() {
 	// Test Font.getFontData()
 	// valid normal 10-point font
@@ -308,6 +321,7 @@ public void test_getFontData() {
 	}
 }
 
+@Test
 public void test_hashCode() {
 	Font font = new Font(display, SwtTestUtil.testFontName, 10, SWT.NORMAL);
 	assertEquals(font,font);
@@ -318,6 +332,7 @@ public void test_hashCode() {
 	font.dispose();
 }
 
+@Test
 public void test_isDisposed() {
 	// Test Font.isDisposed() false
 	Font font = new Font(display, SwtTestUtil.testFontName, 10, SWT.NORMAL);
@@ -330,6 +345,7 @@ public void test_isDisposed() {
 	}
 }
 
+@Test
 public void test_toString() {
 	Font font = new Font(display, SwtTestUtil.testFontName, 10, SWT.NORMAL);
 	assertNotNull(font.toString());

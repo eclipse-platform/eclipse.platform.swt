@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2006 IBM Corporation and others.
+ * Copyright (c) 2000, 2015 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -7,20 +7,23 @@
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
+ *     Red Hat Inc. - Bug 462631
  *******************************************************************************/
 package org.eclipse.swt.tests.junit;
 
-import junit.framework.TestCase;
+import static org.junit.Assert.fail;
 
 import org.eclipse.swt.graphics.RGB;
+import org.junit.Test;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.graphics.RGB
  *
  * @see org.eclipse.swt.graphics.RGB
  */
-public class Test_org_eclipse_swt_graphics_RGB extends TestCase {
+public class Test_org_eclipse_swt_graphics_RGB {
 
+@Test
 public void test_ConstructorIII() {
 	// Test RGB(int red, int green, int blue)
 	new RGB(20,100,200);
@@ -73,6 +76,7 @@ public void test_ConstructorIII() {
 			
 }
 
+@Test
 public void test_ConstructorFFF() {
 
 	new RGB(0f,0f,0f);
@@ -214,6 +218,7 @@ public void test_ConstructorFFF() {
 	}
 }
 
+@Test
 public void test_equalsLjava_lang_Object() {
 	int r = 0, g = 127, b = 254;
 	RGB rgb1 = new RGB(r, g, b);
@@ -255,6 +260,8 @@ public void test_equalsLjava_lang_Object() {
 		fail("Comparing two RGB instances with different combination of H S B parameters found equal");    	
 	}
 }
+
+@Test
 public void test_getHSB() {
 	float[] hsb = new float[] {
 				0f,0f,0f,
@@ -362,6 +369,8 @@ public void test_getHSB() {
 		}
 	}
 }
+
+@Test
 public void test_hashCode() {
 	int r = 255, g = 100, b = 0;
 	RGB rgb1 = new RGB(r, g, b);
@@ -379,6 +388,8 @@ public void test_hashCode() {
 		fail("Two RGB instances with different R G B parameters returned the same hash code");
 	}
 }
+
+@Test
 public void test_toString() {
 	RGB rgb = new RGB(0, 100, 200);
 

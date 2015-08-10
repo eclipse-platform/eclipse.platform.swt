@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2003 IBM Corporation and others.
+ * Copyright (c) 2000, 2015 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -7,23 +7,30 @@
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
+ *     Red Hat Inc. - Bug 462631
  *******************************************************************************/
 package org.eclipse.swt.tests.junit;
 
 
 import static org.junit.Assert.assertArrayEquals;
-import junit.framework.TestCase;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import org.eclipse.swt.graphics.PaletteData;
 import org.eclipse.swt.graphics.RGB;
+import org.junit.Test;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.graphics.PaletteData
  *
  * @see org.eclipse.swt.graphics.PaletteData
  */
-public class Test_org_eclipse_swt_graphics_PaletteData extends TestCase {
+public class Test_org_eclipse_swt_graphics_PaletteData {
 
+@Test
 public void test_Constructor$Lorg_eclipse_swt_graphics_RGB() {
 	try {
 		new PaletteData(null);
@@ -42,6 +49,7 @@ public void test_Constructor$Lorg_eclipse_swt_graphics_RGB() {
 	assertFalse(":c:", data.isDirect);
 }
 
+@Test
 public void test_ConstructorIII() {
 	PaletteData data = new PaletteData(0, 0, 0);
 	assertTrue(":a:", data.isDirect);
@@ -53,6 +61,7 @@ public void test_ConstructorIII() {
 	assertTrue(":c:", data.isDirect);
 }
 
+@Test
 public void test_getPixelLorg_eclipse_swt_graphics_RGB() {
 	// indexed palette tests	
 	RGB[] rgbs = {new RGB(0, 0, 0), new RGB(255, 255, 255), new RGB(50, 100, 150)};
@@ -88,6 +97,7 @@ public void test_getPixelLorg_eclipse_swt_graphics_RGB() {
 	assertEquals(":b:", 0x326496, data.getPixel(rgb));
 }
 
+@Test
 public void test_getRGBI() {
 	// indexed palette tests	
 	RGB[] rgbs = {new RGB(0, 0, 0), new RGB(255, 255, 255), new RGB(50, 100, 150)};
@@ -109,6 +119,7 @@ public void test_getRGBI() {
 	assertEquals(":b:", rgb, data.getRGB(0x326496));
 }
 
+@Test
 public void test_getRGBs() {
 	// indexed palette tests	
 	RGB[] rgbs = {new RGB(0, 0, 0), new RGB(255, 255, 255)};

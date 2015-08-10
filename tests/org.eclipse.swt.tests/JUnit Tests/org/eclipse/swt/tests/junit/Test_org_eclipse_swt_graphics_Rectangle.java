@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2004 IBM Corporation and others.
+ * Copyright (c) 2000, 2015 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -7,23 +7,29 @@
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
+ *     Red Hat Inc. - Bug 462631
  *******************************************************************************/
 package org.eclipse.swt.tests.junit;
 
 import static org.eclipse.swt.tests.junit.SwtTestUtil.assertSWTProblem;
-import junit.framework.TestCase;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
+import org.junit.Test;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.graphics.Rectangle
  *
  * @see org.eclipse.swt.graphics.Rectangle
  */
-public class Test_org_eclipse_swt_graphics_Rectangle extends TestCase {
+public class Test_org_eclipse_swt_graphics_Rectangle {
 
+@Test
 public void test_ConstructorIIII() {
 	// Test new Rectangle (int x, int y, int width, int height)
 	Rectangle r = new Rectangle(3, 4, 5, 6);
@@ -54,6 +60,7 @@ public void test_ConstructorIIII() {
  *    <li>ERROR_NULL_ARGUMENT - if the argument is null</li>
  * </ul>
  */
+@Test
 public void test_addLorg_eclipse_swt_graphics_Rectangle() {
 	Rectangle r1 = new Rectangle(1, 2, 3, 4);
 	Rectangle r2 = new Rectangle(3, 3, 2, 2);
@@ -85,6 +92,7 @@ public void test_addLorg_eclipse_swt_graphics_Rectangle() {
  * Returns <code>true</code> if the point specified by the
  * arguments is inside the area specified by the receiver.
  */
+@Test
 public void test_containsII() {
 	Rectangle r = new Rectangle(1, 2, 3, 4);
 	assertTrue("Rectangle should contain point (1, 2)", r.contains(1, 2));
@@ -112,6 +120,7 @@ public void test_containsII() {
  *    <li>ERROR_NULL_ARGUMENT - if the argument is null</li>
  * </ul>
  */
+@Test
 public void test_containsLorg_eclipse_swt_graphics_Point() {
 	Rectangle r = new Rectangle(1, 2, 3, 4);
 	assertTrue("Rectangle should contain Point(1, 2)", r.contains(new Point(1, 2)));
@@ -138,6 +147,7 @@ public void test_containsLorg_eclipse_swt_graphics_Point() {
 	}
 }
 
+@Test
 public void test_equalsLjava_lang_Object() {
 	Rectangle r1 = new Rectangle(5, 4, 3, 2);
 	Rectangle r2 = new Rectangle(5, 4, 3, 2);
@@ -156,12 +166,14 @@ public void test_equalsLjava_lang_Object() {
 	assertTrue("Rectangles should not be equal", !r1.equals(r2));
 }
 
+@Test
 public void test_hashCode() {
 	Rectangle r1 = new Rectangle(5, 4, 3, 2);
 	Rectangle r2 = new Rectangle(5, 4, 3, 2);
 	assertTrue("Rectangles should have the same hashCode", r1.hashCode() == r2.hashCode());
 }
 
+@Test
 public void test_intersectLorg_eclipse_swt_graphics_Rectangle() {
 	Rectangle r1 = new Rectangle(1, 2, 3, 4);
 	Rectangle r2 = new Rectangle(3, 3, 2, 2);
@@ -187,6 +199,7 @@ public void test_intersectLorg_eclipse_swt_graphics_Rectangle() {
 	}
 }
 
+@Test
 public void test_intersectionLorg_eclipse_swt_graphics_Rectangle() {
 	Rectangle r1 = new Rectangle(1, 2, 3, 4);
 	Rectangle r2 = new Rectangle(3, 3, 2, 2);
@@ -206,6 +219,7 @@ public void test_intersectionLorg_eclipse_swt_graphics_Rectangle() {
 	}
 }
 
+@Test
 public void test_intersectsIIII() {
 	Rectangle r1 = new Rectangle(1, 2, 3, 4);
 	Rectangle r2 = new Rectangle(2, 3, 7, 8);
@@ -232,6 +246,7 @@ public void test_intersectsIIII() {
 	}
 }
 
+@Test
 public void test_intersectsLorg_eclipse_swt_graphics_Rectangle() {
 	Rectangle r1 = new Rectangle(1, 2, 3, 4);
 	Rectangle r2 = new Rectangle(2, 3, 7, 8);
@@ -258,6 +273,7 @@ public void test_intersectsLorg_eclipse_swt_graphics_Rectangle() {
 	}
 }
 
+@Test
 public void test_isEmpty() {
 	Rectangle r = new Rectangle(1, 2, 0, 0);
 	assertTrue("Rectangle is empty", r.isEmpty());
@@ -269,6 +285,7 @@ public void test_isEmpty() {
 	assertTrue("Rectangle is not empty", !r.isEmpty());
 }
 
+@Test
 public void test_toString() {
 	Rectangle r = new Rectangle(3, 4, 5, 6);
 	assertNotNull(r.toString());
@@ -276,6 +293,7 @@ public void test_toString() {
 	assertEquals("Rectangle {3, 4, 5, 6}", r.toString());
 }
 
+@Test
 public void test_unionLorg_eclipse_swt_graphics_Rectangle() {
 	Rectangle r1 = new Rectangle(1, 2, 3, 4);
 	Rectangle r2 = new Rectangle(3, 3, 2, 2);

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2003 IBM Corporation and others.
+ * Copyright (c) 2000, 2015 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -7,11 +7,12 @@
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
+ *     Red Hat Inc. - Bug 462631
  *******************************************************************************/
 package org.eclipse.swt.tests.junit;
 
 
-import junit.framework.TestCase;
+import static org.junit.Assert.assertTrue;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StyledText;
@@ -19,24 +20,27 @@ import org.eclipse.swt.custom.VerifyKeyListener;
 import org.eclipse.swt.events.VerifyEvent;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Shell;
+import org.junit.Before;
+import org.junit.Test;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.custom.VerifyKeyListener
  *
  * @see org.eclipse.swt.custom.VerifyKeyListener
  */
-public class Test_org_eclipse_swt_custom_VerifyKeyListener extends TestCase {
+public class Test_org_eclipse_swt_custom_VerifyKeyListener {
 	Shell shell;
 	StyledText styledText;
 	int verify = -1;
 
-@Override
-protected void setUp() {
+@Before
+public void setUp() {
 	shell = new Shell();
 	styledText = new StyledText(shell, SWT.NULL);
 	shell.open();
 }
 
+@Test
 public void test_verifyKeyLorg_eclipse_swt_events_VerifyEvent() {
 	VerifyKeyListener listener = new VerifyKeyListener() {
 		public void verifyKey(VerifyEvent event) {

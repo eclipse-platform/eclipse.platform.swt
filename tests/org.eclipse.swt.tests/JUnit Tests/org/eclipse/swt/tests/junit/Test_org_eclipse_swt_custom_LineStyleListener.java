@@ -7,43 +7,47 @@
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
+ *     Red Hat Inc. - Bug 462631
  *******************************************************************************/
 package org.eclipse.swt.tests.junit;
 
 
-import junit.framework.TestCase;
+import static org.junit.Assert.assertEquals;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.LineStyleEvent;
 import org.eclipse.swt.custom.LineStyleListener;
 import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.widgets.Shell;
+import org.junit.Before;
+import org.junit.Test;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.custom.LineStyleListener
  *
  * @see org.eclipse.swt.custom.LineStyleListener
  */
-public class Test_org_eclipse_swt_custom_LineStyleListener extends TestCase {
+public class Test_org_eclipse_swt_custom_LineStyleListener {
 	Shell shell;
 	StyledText styledText;
 
-@Override
-protected void setUp() {
+@Before
+public void setUp() {
 	shell = new Shell();
 	styledText = new StyledText(shell, SWT.NULL);
 	shell.open();
 }
 
+@Test
 public void test_lineGetStyleLorg_eclipse_swt_custom_LineStyleEvent() {
+	styledText.setText("0123456789");
 	LineStyleListener listener = new LineStyleListener() {
 		public void lineGetStyle(LineStyleEvent event) {
-			assertTrue(":1:", event.lineOffset==0);
-			assertTrue(":2:",event.lineText.equals("0123456789"));
+			assertEquals(0, event.lineOffset);
+			assertEquals("0123456789",event.lineText);
 		}
 	};
 	styledText.addLineStyleListener(listener);
-	styledText.setText("0123456789");
 	// force get line styles callback
 	styledText.getLocationAtOffset(5);
 	styledText.removeLineStyleListener(listener);

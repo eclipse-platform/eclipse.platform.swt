@@ -7,35 +7,39 @@
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
+ *     Red Hat Inc. - Bug 462631
  *******************************************************************************/
 package org.eclipse.swt.tests.junit;
 
 
-import junit.framework.TestCase;
+import static org.junit.Assert.assertTrue;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.ExtendedModifyEvent;
 import org.eclipse.swt.custom.ExtendedModifyListener;
 import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.widgets.Shell;
+import org.junit.Before;
+import org.junit.Test;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.custom.ExtendedModifyListener
  *
  * @see org.eclipse.swt.custom.ExtendedModifyListener
  */
-public class Test_org_eclipse_swt_custom_ExtendedModifyListener extends TestCase {
+public class Test_org_eclipse_swt_custom_ExtendedModifyListener {
 	Shell shell;
 	StyledText styledText;
 	int verify = -1;
 
-@Override
-protected void setUp() {
+@Before
+public void setUp() {
 	shell = new Shell();
 	styledText = new StyledText(shell, SWT.NULL);
 	shell.open();
 }
 
+@Test
 public void test_modifyTextLorg_eclipse_swt_custom_ExtendedModifyEvent() {
 	ExtendedModifyListener listener = new ExtendedModifyListener() {
 		public void modifyText(ExtendedModifyEvent event) {

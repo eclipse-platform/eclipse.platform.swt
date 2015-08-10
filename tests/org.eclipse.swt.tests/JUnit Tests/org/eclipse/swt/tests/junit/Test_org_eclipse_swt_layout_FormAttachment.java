@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2004 IBM Corporation and others.
+ * Copyright (c) 2000, 2015 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -7,62 +7,74 @@
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
+ *     Red Hat Inc. - Bug 462631
  *******************************************************************************/
 package org.eclipse.swt.tests.junit;
 
-import junit.framework.TestCase;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.widgets.Shell;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.layout.FormAttachment
  *
  * @see org.eclipse.swt.layout.FormAttachment
  */
-public class Test_org_eclipse_swt_layout_FormAttachment extends TestCase {
+public class Test_org_eclipse_swt_layout_FormAttachment {
 
-@Override
-protected void setUp() {
+@Before
+public void setUp() {
 	shell = new Shell();
 }
 
-@Override
-protected void tearDown() {
+@After
+public void tearDown() {
 	shell.dispose();
 }
 
+@Test
 public void test_ConstructorI() {
 	FormAttachment attachment = new FormAttachment(50);
 	assertNotNull(attachment);
 }
 
+@Test
 public void test_ConstructorII() {
 	FormAttachment attachment = new FormAttachment(50, 10);
 	assertNotNull(attachment);
 }
 
+@Test
 public void test_ConstructorIII() {
 	FormAttachment attachment = new FormAttachment(50, 100, 10);
 	assertNotNull(attachment);
 }
 
+@Test
 public void test_ConstructorLorg_eclipse_swt_widgets_Control() {
 	FormAttachment attachment = new FormAttachment(shell);
 	assertNotNull(attachment);
 }
 
+@Test
 public void test_ConstructorLorg_eclipse_swt_widgets_ControlI() {
 	FormAttachment attachment = new FormAttachment(shell, 10);
 	assertNotNull(attachment);
 }
 
+@Test
 public void test_ConstructorLorg_eclipse_swt_widgets_ControlII() {
 	FormAttachment attachment = new FormAttachment(shell, 10, SWT.LEFT);
 	assertNotNull(attachment);
 }
 
+@Test
 public void test_toString() {
 	FormAttachment attachment = new FormAttachment(50);
 	assertNotNull(attachment.toString());

@@ -7,28 +7,35 @@
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
+ *     Red Hat Inc. - Bug 462631
  *******************************************************************************/
 package org.eclipse.swt.tests.junit;
 
-import junit.framework.TestCase;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.graphics.RGBA;
 import org.eclipse.swt.widgets.Display;
+import org.junit.Before;
+import org.junit.Test;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.graphics.Color
  *
  * @see org.eclipse.swt.graphics.Color
  */
-public class Test_org_eclipse_swt_graphics_Color extends TestCase {
+public class Test_org_eclipse_swt_graphics_Color {
 
-@Override
-protected void setUp() {
+@Before
+public void setUp() {
 	display = Display.getDefault();
 }
 
+@Test
 public void test_ConstructorLorg_eclipse_swt_graphics_DeviceIII() {
 	// Test new Color(Device device, int red, int green, int blue)
 	// IllegalArgumentException if the red, green or blue argument is not between 0 and 255
@@ -122,6 +129,7 @@ public void test_ConstructorLorg_eclipse_swt_graphics_DeviceIII() {
 	}
 }
 
+@Test
 public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_graphics_RGB() {
 	// Test new Color(Device device, RGB rgb)
 	// IllegalArgumentException if the red, green or blue argument is not between 0 and 255; or rgb is null
@@ -224,6 +232,7 @@ public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_gra
 	}
 }
 
+@Test
 public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_graphics_RGBA() {
 	// Test new Color(Device device, RGBA rgba)
 	// IllegalArgumentException if the red, green, blue or alpha argument is not between 0 and 255; or rgba is null
@@ -310,6 +319,7 @@ public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_gra
 	}
 }
 
+@Test
 public void test_equalsLjava_lang_Object() {
 	Color color = new Color(display, 1, 2, 3);
 	Color sameColor = new Color(display, 1, 2, 3);
@@ -355,6 +365,7 @@ public void test_equalsLjava_lang_Object() {
 	}
 }
 
+@Test
 public void test_getBlue() {
 	// Test Color.getBlue()
 	Color color = new Color(display, 0, 0, 255);
@@ -366,6 +377,7 @@ public void test_getBlue() {
 	
 }
 
+@Test
 public void test_getGreen() {
 	// Test Color.getGreen()
 	Color color = new Color(display, 0, 255, 0);
@@ -376,6 +388,7 @@ public void test_getGreen() {
 	}
 }
 
+@Test
 public void test_getRGB() {
 	Color color = new Color(display, 255, 255, 255);
 	assertNotNull(color.getRGB());
@@ -383,6 +396,7 @@ public void test_getRGB() {
 	color.dispose();
 }
 
+@Test
 public void test_getRed() {
 	// Test Color.getRed()
 	Color color = new Color(display, 255, 0, 0);
@@ -393,6 +407,7 @@ public void test_getRed() {
 	}
 }
 
+@Test
 public void test_getAlpha() {
 	// Test Color.getRed()
 	Color color = new Color(display, 255, 0, 0, 0);
@@ -403,6 +418,7 @@ public void test_getAlpha() {
 	}
 }
 
+@Test
 public void test_hashCode() {
 	Color color = new Color(display, 12, 34, 56, 0);
 	Color otherColor = new Color(display, 12, 34, 56, 0);
@@ -413,6 +429,7 @@ public void test_hashCode() {
 	otherColor.dispose();
 }
 
+@Test
 public void test_isDisposed() {
 	// Test Color.isDisposed() false
 	Color color = new Color(display, 34, 67, 98, 0);
@@ -425,6 +442,7 @@ public void test_isDisposed() {
 	}
 }
 
+@Test
 public void test_toString() {
 	Color color = new Color(display, 0, 0, 255, 255);
 	try {

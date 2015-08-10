@@ -7,20 +7,23 @@
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
+ *     Red Hat Inc. - Bug 462631
  *******************************************************************************/
 package org.eclipse.swt.tests.junit;
 
-import org.eclipse.swt.graphics.RGBA;
+import static org.junit.Assert.fail;
 
-import junit.framework.TestCase;
+import org.eclipse.swt.graphics.RGBA;
+import org.junit.Test;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.graphics.RGBA
  *
  * @see org.eclipse.swt.graphics.RGBA
  */
-public class Test_org_eclipse_swt_graphics_RGBA extends TestCase {
+public class Test_org_eclipse_swt_graphics_RGBA {
 
+@Test
 public void test_ConstructorIIII() {
 	// Test RGBA(int red, int green, int blue, int alpha)
 	new RGBA(20,100,200,255);
@@ -86,6 +89,7 @@ public void test_ConstructorIIII() {
 	}
 }
 
+@Test
 public void test_ConstructorFFFF() {
 
 	new RGBA(0f,0f,0f,0f);
@@ -241,6 +245,7 @@ public void test_ConstructorFFFF() {
 	}
 }
 
+@Test
 public void test_equalsLjava_lang_Object() {
 	int r = 0, g = 127, b = 254, a = 254;
 	RGBA rgba1 = new RGBA(r, g, b, a);
@@ -284,6 +289,8 @@ public void test_equalsLjava_lang_Object() {
 		fail("Comparing two RGBA instances with different combination of H S B A parameters found equal");    	
 	}
 }
+
+@Test
 public void test_getHSBA() {
 	float[] hsba = new float[] {
 				0f,0f,0f,0f,
@@ -391,6 +398,8 @@ public void test_getHSBA() {
 		}
 	}
 }
+
+@Test
 public void test_hashCode() {
 	int r = 255, g = 100, b = 0, a = 0;
 	RGBA rgba1 = new RGBA(r, g, b, a);
@@ -408,6 +417,8 @@ public void test_hashCode() {
 		fail("Two RGB instances with different R G B A parameters returned the same hash code");
 	}
 }
+
+@Test
 public void test_toString() {
 	RGBA rgba = new RGBA(0, 100, 200, 255);
 

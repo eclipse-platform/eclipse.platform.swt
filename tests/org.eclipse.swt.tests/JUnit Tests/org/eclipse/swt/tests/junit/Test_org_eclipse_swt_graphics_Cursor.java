@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2004 IBM Corporation and others.
+ * Copyright (c) 2000, 2015 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -7,33 +7,39 @@
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
+ *     Red Hat Inc. - Bug 462631
  *******************************************************************************/
 package org.eclipse.swt.tests.junit;
 
 
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
 import java.io.IOException;
 import java.io.InputStream;
-
-import junit.framework.TestCase;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Cursor;
 import org.eclipse.swt.graphics.ImageData;
 import org.eclipse.swt.graphics.ImageLoader;
 import org.eclipse.swt.widgets.Display;
+import org.junit.Before;
+import org.junit.Test;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.graphics.Cursor
  *
  * @see org.eclipse.swt.graphics.Cursor
  */
-public class Test_org_eclipse_swt_graphics_Cursor extends TestCase {
+public class Test_org_eclipse_swt_graphics_Cursor {
 
-@Override
-protected void setUp() {
+@Before
+public void setUp() {
 	display = Display.getDefault();
 }
 
+@Test
 public void test_ConstructorLorg_eclipse_swt_graphics_DeviceI() {
 	// Test new Cursor(Device device, int style)
 	// IllegalArgumentException when an unknown style is specified
@@ -125,6 +131,7 @@ public void test_ConstructorLorg_eclipse_swt_graphics_DeviceI() {
 	}
 }
 
+@Test
 public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_graphics_ImageDataLorg_eclipse_swt_graphics_ImageDataII() {
 	// Test new Cursor(Device device, ImageData source, ImageData mask, int hotspotX, int hotspotY)
 	int numFormats = SwtTestUtil.imageFormats.length;
@@ -147,6 +154,7 @@ public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_gra
 	}
 }
 
+@Test
 public void test_equalsLjava_lang_Object() {
 	/* Note: Two cursors are only considered equal if their handles are equal.
 	 * So since Windows reuses cursor handles, and other platforms do not,
@@ -168,6 +176,7 @@ public void test_equalsLjava_lang_Object() {
 	}
 }
 
+@Test
 public void test_isDisposed() {
 	// Test Cursor.isDisposed() false
 	Cursor cursor = new Cursor(display, SWT.CURSOR_WAIT);
@@ -180,6 +189,7 @@ public void test_isDisposed() {
 	}
 }
 
+@Test
 public void test_toString() {
 	Cursor cursor = new Cursor(display, SWT.CURSOR_WAIT);
 	try {
