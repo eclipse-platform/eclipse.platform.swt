@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2014 IBM Corporation and others.
+ * Copyright (c) 2000, 2015 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -28,7 +28,7 @@ import org.eclipse.swt.widgets.Widget;
 class ShellTab extends Tab {	
 	/* Style widgets added to the "Style" groups, and "Other" group */
 	Button noParentButton, parentButton;
-	Button noTrimButton, closeButton, titleButton, minButton, maxButton, borderButton, resizeButton, onTopButton, toolButton, sheetButton, shellTrimButton, dialogTrimButton;
+	Button noTrimButton, closeButton, titleButton, minButton, maxButton, borderButton, resizeButton, onTopButton, toolButton, sheetButton, shellTrimButton, dialogTrimButton, noMoveButton;
 	Button createButton, closeAllButton;
 	Button modelessButton, primaryModalButton, applicationModalButton, systemModalButton;
 	Button imageButton;
@@ -78,6 +78,7 @@ class ShellTab extends Tab {
 		/* Compute the shell style */
 		int style = SWT.NONE;
 		if (noTrimButton.getSelection()) style |= SWT.NO_TRIM;
+		if (noMoveButton.getSelection()) style |= SWT.NO_MOVE;
 		if (closeButton.getSelection()) style |= SWT.CLOSE;
 		if (titleButton.getSelection()) style |= SWT.TITLE;
 		if (minButton.getSelection()) style |= SWT.MIN;
@@ -185,6 +186,8 @@ class ShellTab extends Tab {
 		/* Create the decoration style buttons */
 		noTrimButton = new Button (styleGroup, SWT.CHECK);
 		noTrimButton.setText ("SWT.NO_TRIM");
+		noMoveButton = new Button (styleGroup, SWT.CHECK);
+		noMoveButton.setText ("SWT.NO_MOVE");
 		closeButton = new Button (styleGroup, SWT.CHECK);
 		closeButton.setText ("SWT.CLOSE");
 		titleButton = new Button (styleGroup, SWT.CHECK);
@@ -258,6 +261,7 @@ class ShellTab extends Tab {
 			}
 		};
 		noTrimButton.addSelectionListener (decorationButtonListener);
+		noMoveButton.addSelectionListener(decorationButtonListener);
 		closeButton.addSelectionListener (decorationButtonListener);
 		titleButton.addSelectionListener (decorationButtonListener);
 		minButton.addSelectionListener (decorationButtonListener);
