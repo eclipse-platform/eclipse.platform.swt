@@ -461,7 +461,7 @@ public void append (String string) {
 	ignoreCharacter = false;
 	OS.SendMessage (handle, OS.EM_SCROLLCARET, 0, 0);
 	if ((state & HAS_AUTO_DIRECTION) != 0) {
-		updateTextDirection (AUTO_TEXT_DIRECTION);
+		super.updateTextDirection (AUTO_TEXT_DIRECTION);
 	}
 	applySegments ();
 }
@@ -1559,7 +1559,7 @@ public void insert (String string) {
 	OS.SendMessage (handle, OS.EM_REPLACESEL, 0, buffer);
 	ignoreCharacter = false;
 	if ((state & HAS_AUTO_DIRECTION) != 0) {
-		updateTextDirection (AUTO_TEXT_DIRECTION);
+		super.updateTextDirection (AUTO_TEXT_DIRECTION);
 	}
 	applySegments ();
 }
@@ -1726,6 +1726,28 @@ public void removeVerifyListener (VerifyListener listener) {
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (eventTable == null) return;
 	eventTable.unhook (SWT.Verify, listener);	
+}
+
+int resolveTextDirection() {
+	int textDirection = SWT.NONE;
+	int length = OS.GetWindowTextLength (handle);
+	if (length > 0) {
+		TCHAR buffer = new TCHAR (getCodePage (), length + 1);
+		OS.GetWindowText (handle, buffer, length + 1);
+		if (segments != null) {
+			buffer = deprocessText (buffer, 0, -1, false);
+			textDirection = resolveTextDirection(buffer.toString ());
+		} else {
+			textDirection = resolveTextDirection(buffer.toString (0, length));
+		}
+		if (textDirection == SWT.NONE) {
+			/*
+			 * Force direction update also when there are no strong bidi chars.
+			*/
+			textDirection = (style & SWT.RIGHT_TO_LEFT) != 0 ? SWT.RIGHT_TO_LEFT : SWT.LEFT_TO_RIGHT;
+		}
+	}
+	return textDirection;
 }
 
 /**
@@ -2273,7 +2295,7 @@ public void setText (String string) {
 	TCHAR buffer = new TCHAR (getCodePage (), string, true);
 	OS.SetWindowText (handle, buffer);
 	if ((state & HAS_AUTO_DIRECTION) != 0) {
-		updateTextDirection(AUTO_TEXT_DIRECTION);
+		super.updateTextDirection(AUTO_TEXT_DIRECTION);
 	}
 	applySegments ();
 	/*
@@ -2338,7 +2360,7 @@ public void setTextChars (char[] text) {
 	OS.SetWindowText (handle, buffer);
 	buffer.clear ();
 	if ((state & HAS_AUTO_DIRECTION) != 0) {
-		updateTextDirection (AUTO_TEXT_DIRECTION);
+		super.updateTextDirection (AUTO_TEXT_DIRECTION);
 	}
 	applySegments ();
 	/*
@@ -2461,31 +2483,7 @@ void updateOrientation (){
 	fixAlignment ();
 }
 
-@Override
 boolean updateTextDirection(int textDirection) {
-	if (textDirection == AUTO_TEXT_DIRECTION) {
-		int length = OS.GetWindowTextLength (handle);
-		if (length > 0) {
-			TCHAR buffer = new TCHAR (getCodePage (), length + 1);
-			OS.GetWindowText (handle, buffer, length + 1);
-			if (segments != null) {
-				buffer = deprocessText (buffer, 0, -1, false);
-				textDirection = resolveTextDirection(buffer.toString ());
-			} else {
-				textDirection = resolveTextDirection(buffer.toString (0, length));
-			}
-			if (textDirection == SWT.NONE) {
-				/*
-				 * Force direction update also when no strong bidi chars are
-				 * found.
-				 */
-				textDirection = (style & SWT.RIGHT_TO_LEFT) != 0 ? SWT.RIGHT_TO_LEFT : SWT.LEFT_TO_RIGHT;
-			}
-		}
-		state |= HAS_AUTO_DIRECTION;
-	} else {
-		state &= ~HAS_AUTO_DIRECTION;
-	}
 	if (super.updateTextDirection(textDirection)) {
 		clearSegments (true);
 		applySegments ();
@@ -2672,7 +2670,7 @@ long /*int*/ windowProc (long /*int*/ hwnd, int msg, long /*int*/ wParam, long /
 	}
 	code = super.windowProc (hwnd, msg, wParam, lParam);
 	if (updateDirection) {
-		updateTextDirection (AUTO_TEXT_DIRECTION);
+		super.updateTextDirection (AUTO_TEXT_DIRECTION);
 	}
 	if (processSegments) {
 		applySegments ();

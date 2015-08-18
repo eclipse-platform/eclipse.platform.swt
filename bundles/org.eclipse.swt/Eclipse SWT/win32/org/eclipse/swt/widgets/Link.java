@@ -742,10 +742,11 @@ public void setText (String string) {
 	}
 }
 
+int resolveTextDirection() {
+	return resolveTextDirection(text);
+}
+
 boolean updateTextDirection(int textDirection) {
-	if (textDirection == AUTO_TEXT_DIRECTION) {
-		textDirection = resolveTextDirection(text);
-	}
 	if (super.updateTextDirection(textDirection)) {
 		int flags = SWT.RIGHT_TO_LEFT | SWT.LEFT_TO_RIGHT;
 		style &= ~SWT.MIRRORED;

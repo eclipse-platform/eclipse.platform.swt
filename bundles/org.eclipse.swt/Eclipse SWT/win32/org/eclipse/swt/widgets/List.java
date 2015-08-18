@@ -1555,7 +1555,6 @@ void updateMenuLocation (Event event) {
 	event.y = pt.y;
 }
 
-@Override
 boolean updateTextDirection (int textDirection) {
 	if (textDirection == AUTO_TEXT_DIRECTION) {
 		/*

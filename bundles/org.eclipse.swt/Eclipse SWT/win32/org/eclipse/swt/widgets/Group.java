@@ -363,6 +363,10 @@ void releaseWidget () {
 	text = null;
 }
 
+int resolveTextDirection () {
+	return resolveTextDirection (text);
+}
+
 public void setFont (Font font) {
 	checkWidget ();
 	Rectangle oldRect = getClientArea ();
@@ -410,10 +414,6 @@ public void setText (String string) {
 }
 
 boolean updateTextDirection(int textDirection) {
-	if (textDirection == AUTO_TEXT_DIRECTION) {
-		/* resolveTextDirection is called before fixText intentionally */
-		textDirection = resolveTextDirection (text);
-	}
 	if (super.updateTextDirection(textDirection)) {
 		String string = fixText (OS.IsWindowEnabled (handle));
 		TCHAR buffer = new TCHAR (getCodePage (), string == null ? text : string, true);

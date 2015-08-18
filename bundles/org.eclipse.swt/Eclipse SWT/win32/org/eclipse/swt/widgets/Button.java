@@ -804,6 +804,10 @@ public void removeSelectionListener (SelectionListener listener) {
 	eventTable.unhook (SWT.DefaultSelection,listener);	
 }
 
+int resolveTextDirection() {
+	return (style & SWT.ARROW) != 0 ? SWT.NONE : resolveTextDirection(text);
+}
+
 void selectRadio () {
 	/*
 	* This code is intentionally commented.  When two groups
@@ -1104,11 +1108,7 @@ public void setText (String string) {
 	_setText (string);
 }
 
-@Override
 boolean updateTextDirection(int textDirection) {
-	if (textDirection == AUTO_TEXT_DIRECTION) {
-		textDirection = (style & SWT.ARROW) != 0 ? SWT.NONE : resolveTextDirection(text);
-	}
 	if (super.updateTextDirection(textDirection)) {
 // TODO: Keep for now, to follow up
 //		int flags = SWT.RIGHT_TO_LEFT | SWT.LEFT_TO_RIGHT;
