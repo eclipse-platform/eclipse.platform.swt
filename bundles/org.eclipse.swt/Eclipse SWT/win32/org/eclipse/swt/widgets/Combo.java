@@ -413,11 +413,13 @@ void applyEditSegments () {
 		 * This is to ensure correct caret movement, and makes sense even when the
 		 * UCC was added by an authentic SegmentListener.
 		 */
+		int auto = state & HAS_AUTO_DIRECTION;
 		if (segmentsChars[0] == RLE) {
 			super.updateTextDirection(SWT.RIGHT_TO_LEFT);
 		} else if (segmentsChars[0] == LRE) {
 			super.updateTextDirection(SWT.LEFT_TO_RIGHT);
 		}
+		state |= auto;
 	}
 	OS.SendMessage (hwndText, OS.EM_SETSEL, start [0], end [0]);
 	ignoreCharacter = oldIgnoreCharacter;
@@ -2465,19 +2467,14 @@ void updateDropDownHeight () {
 	}
 }
 
-@Override
 boolean updateTextDirection(int textDirection) {
-	state &= ~HAS_AUTO_DIRECTION;
 	if (super.updateTextDirection(textDirection)) {
-		/*
-		 * state gets updated in Control#setTextDirection after updateTextDirection
-		 * completes, but we need here the state to be up-to-date already, before
-		 * clearing / applying segments. 
-		 */
 		if (textDirection == AUTO_TEXT_DIRECTION) {
 			/* To support auto direction we use UCC that are not available in ANSI CP */
-			if (!OS.IsUnicode) return false;
-			state |= HAS_AUTO_DIRECTION; 
+			if (!OS.IsUnicode) {
+				state &= ~HAS_AUTO_DIRECTION; 
+				return false;
+			}
 		}
 		clearSegments (true);
 		applyEditSegments ();
@@ -2729,11 +2726,13 @@ long /*int*/ windowProc (long /*int*/ hwnd, int msg, long /*int*/ wParam, long /
 					Event event = getSegments (items [index]);
 					segments = event != null ? event.segments : null;
 					if (event.segmentsChars != null) {
+						int auto = state & HAS_AUTO_DIRECTION;
 						if (event.segmentsChars[0] == RLE) {
 							super.updateTextDirection(SWT.RIGHT_TO_LEFT);
 						} else if (event.segmentsChars[0] == LRE) {
 							super.updateTextDirection(SWT.LEFT_TO_RIGHT);
 						}
+						state |= auto;
 					}
 					return code;
 				}

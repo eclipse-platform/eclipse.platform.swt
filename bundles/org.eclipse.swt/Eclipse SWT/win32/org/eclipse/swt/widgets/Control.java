@@ -2829,6 +2829,14 @@ public void removeTraverseListener(TraverseListener listener) {
 	eventTable.unhook (SWT.Traverse, listener);
 }
 
+int resolveTextDirection() {
+	/*
+	 * For generic Controls do nothing here. Text-enabled Controls will resolve
+	 * AUTO text direction according to their text content.
+	 */
+	return SWT.NONE;
+}
+
 void showWidget (boolean visible) {
 	long /*int*/ topHandle = topHandle ();
 	OS.ShowWindow (topHandle, visible ? OS.SW_SHOW : OS.SW_HIDE);
@@ -4531,7 +4539,13 @@ void updateOrientation () {
 }
 
 boolean updateTextDirection (int textDirection) {
-	if (textDirection == 0 || textDirection == AUTO_TEXT_DIRECTION) return false;
+	if (textDirection == AUTO_TEXT_DIRECTION) {
+		textDirection = resolveTextDirection();
+		state |= HAS_AUTO_DIRECTION;
+	} else {
+		state &= ~HAS_AUTO_DIRECTION;
+	}
+	if (textDirection == 0) return false;
 	int bits = OS.GetWindowLong (handle, OS.GWL_EXSTYLE);
 	/*
 	* OS.WS_EX_RTLREADING means that the text direction is opposite to the

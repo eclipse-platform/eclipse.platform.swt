@@ -291,6 +291,10 @@ void releaseWidget () {
 	image = null;
 }
 
+int resolveTextDirection() {
+	return (style & SWT.SEPARATOR) != 0 ? SWT.NONE : resolveTextDirection(text);
+}
+
 /**
  * Controls how text and images will be displayed in the receiver.
  * The argument should be one of <code>LEFT</code>, <code>RIGHT</code>
@@ -429,14 +433,6 @@ public void setText (String string) {
 	if (OS.COMCTL32_MAJOR < 6) {
 		if (findImageControl () != null) OS.InvalidateRect (handle, null, true);
 	}
-}
-
-@Override
-boolean updateTextDirection(int textDirection) {
-	if (textDirection == AUTO_TEXT_DIRECTION) {
-		textDirection = (style & SWT.SEPARATOR) != 0 ? SWT.NONE : resolveTextDirection(text);
-	}
-	return super.updateTextDirection(textDirection);
 }
 
 int widgetExtStyle () {
