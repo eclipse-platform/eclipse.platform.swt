@@ -28,28 +28,6 @@
     <tycho.scmUrl>scm:git:git://git.eclipse.org/gitroot/platform/eclipse.platform.swt.git</tycho.scmUrl>
   </properties>
 
-  <profiles>
-    <profile>
-      <id>build-individual-bundles</id>
-      <build>
-      <plugins>
-        <plugin>
-          <groupId>org.eclipse.tycho</groupId>
-          <artifactId>target-platform-configuration</artifactId>
-          <version>${tycho.version}</version>
-          <configuration>
-            <dependency-resolution>
-              <profileProperties>
-                <org.eclipse.swt.buildtime>true</org.eclipse.swt.buildtime>
-              </profileProperties>
-            </dependency-resolution>
-          </configuration>
-        </plugin>
-      </plugins>
-      </build>
-    </profile>
-  </profiles>
-
   <!-- 
     To build individual bundles, we specify a repository where to find parent pom, 
     in case it is not in local maven cache already
@@ -70,6 +48,22 @@
           <url>https://repo.eclipse.org/content/repositories/eclipse/</url>
         </repository>
       </repositories>
+      <build>
+      <plugins>
+        <plugin>
+          <groupId>org.eclipse.tycho</groupId>
+          <artifactId>target-platform-configuration</artifactId>
+          <version>${tycho.version}</version>
+          <configuration>
+            <dependency-resolution>
+              <profileProperties>
+                <org.eclipse.swt.buildtime>true</org.eclipse.swt.buildtime>
+              </profileProperties>
+            </dependency-resolution>
+          </configuration>
+        </plugin>
+      </plugins>
+      </build>
     </profile>
   </profiles>
 
