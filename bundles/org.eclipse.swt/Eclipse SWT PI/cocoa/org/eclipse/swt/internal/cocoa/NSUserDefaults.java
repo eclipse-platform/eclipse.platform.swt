@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2012 IBM Corporation and others.
+ * Copyright (c) 2000, 2015 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -36,6 +36,11 @@ public void setInteger(long /*int*/ value, NSString defaultName) {
 public static NSUserDefaults standardUserDefaults() {
 	long /*int*/ result = OS.objc_msgSend(OS.class_NSUserDefaults, OS.sel_standardUserDefaults);
 	return result != 0 ? new NSUserDefaults(result) : null;
+}
+
+public NSString stringForKey(NSString defaultName) {
+	long /*int*/ result = OS.objc_msgSend(this.id, OS.sel_stringForKey_, defaultName != null ? defaultName.id : 0);
+	return result != 0 ? new NSString(result) : null;
 }
 
 }

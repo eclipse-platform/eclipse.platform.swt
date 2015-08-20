@@ -2136,6 +2136,7 @@ public static final long /*int*/ sel_stringByDeletingLastPathComponent = sel_reg
 public static final long /*int*/ sel_stringByDeletingPathExtension = sel_registerName("stringByDeletingPathExtension");
 public static final long /*int*/ sel_stringByReplacingOccurrencesOfString_withString_ = sel_registerName("stringByReplacingOccurrencesOfString:withString:");
 public static final long /*int*/ sel_stringByReplacingPercentEscapesUsingEncoding_ = sel_registerName("stringByReplacingPercentEscapesUsingEncoding:");
+public static final long /*int*/ sel_stringForKey_ = sel_registerName("stringForKey:");
 public static final long /*int*/ sel_stringForObjectValue_ = sel_registerName("stringForObjectValue:");
 public static final long /*int*/ sel_stringForType_ = sel_registerName("stringForType:");
 public static final long /*int*/ sel_stringValue = sel_registerName("stringValue");

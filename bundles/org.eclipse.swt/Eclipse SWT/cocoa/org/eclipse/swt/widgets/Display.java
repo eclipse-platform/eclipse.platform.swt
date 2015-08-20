@@ -2984,6 +2984,23 @@ NSFont getFont (long /*int*/ cls, long /*int*/ sel) {
 	return result;
 }
 
+void initColors (boolean ignoreColorChange) {
+	if (ignoreColorChange && colors != null) {
+		/*
+		 * Code to ignore changes to System textColor, textBackgroundColor and controlTextColor
+		 */
+		double /*float*/ [] color_list_foreground = colors[SWT.COLOR_LIST_FOREGROUND];
+		double /*float*/ [] color_list_background = colors[SWT.COLOR_LIST_BACKGROUND];
+		double /*float*/ [] color_widget_foreground = colors[SWT.COLOR_WIDGET_FOREGROUND];
+		initColors ();
+		colors[SWT.COLOR_LIST_FOREGROUND] = color_list_foreground;
+		colors[SWT.COLOR_LIST_BACKGROUND] = color_list_background;
+		colors[SWT.COLOR_WIDGET_FOREGROUND] = color_widget_foreground;
+	} else {
+		initColors ();
+	}
+}
+	
 void initColors () {
 	colors = new double /*float*/ [SWT.COLOR_LINK_FOREGROUND + 1][];
 	colors[SWT.COLOR_INFO_FOREGROUND] = getWidgetColorRGB(SWT.COLOR_INFO_FOREGROUND);
@@ -4136,7 +4153,25 @@ boolean runPopups () {
 boolean runSettings () {
 	if (!runSettings) return false;
 	runSettings = false;
-	initColors ();
+	
+	boolean ignoreColorChange = false;
+	/**
+	 * Feature in Cocoa: When dark mode is enabled on OSX version >= 10.10 and a SWT TrayItem (NSStatusItem) is present in the menubar,
+	 * changing the OSX appearance or changing the configuration of attached displays causes the textColor and textBackground color to change. 
+	 * This sets the text foreground of several widgets as white and hence text is invisible. The workaround is to detect this case and prevent 
+	 * the update of LIST_FOREGROUND, LIST_BACKGROUND and COLOR_WIDGET_FOREGROUND colors.
+	 */
+	if (OS.VERSION_MMB >= OS.VERSION_MMB (10, 10, 0) && tray != null && tray.itemCount > 0) {
+		/* 
+		 * osxMode will be "Dark" when in OSX dark mode. Otherwise, it'll be null.
+		 */
+		NSString osxMode = NSUserDefaults.standardUserDefaults ().stringForKey (NSString.stringWith ("AppleInterfaceStyle"));
+		if (osxMode != null && "Dark".equals (osxMode.getString ())) {
+			ignoreColorChange = true;
+		}
+	}
+	initColors (ignoreColorChange);
+	
 	sendEvent (SWT.Settings, null);
 	Shell [] shells = getShells ();
 	for (int i=0; i<shells.length; i++) {
