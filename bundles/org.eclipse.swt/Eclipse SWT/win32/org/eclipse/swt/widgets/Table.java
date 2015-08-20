@@ -611,14 +611,7 @@ long /*int*/ callWindowProc (long /*int*/ hwnd, int msg, long /*int*/ wParam, lo
 		/* Resize messages */
 		case OS.WM_WINDOWPOSCHANGED:
 			if (redraw) {
-				/*
-				* Windows10: Below work-around call leads to unintended black
-				* background in header where table is empty, hence making it
-				* conditional in win10, for more details refer bug 474096.
-				*/
-				if (OS.WIN32_VERSION < OS.VERSION (6, 3)) {
-					OS.SendMessage (handle, OS.LVM_SETBKCOLOR, 0, OS.CLR_NONE);
-				}
+				OS.SendMessage (handle, OS.LVM_SETBKCOLOR, 0, OS.CLR_NONE);
 				OS.DefWindowProc (handle, OS.WM_SETREDRAW, 1, 0);
 				OS.InvalidateRect (handle, null, true);
 				long /*int*/ hwndHeader = OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);	
@@ -4177,14 +4170,8 @@ void setBackgroundTransparent (boolean transparent) {
 			* Bug in Windows.  When the background color is changed,
 			* the table does not redraw until the next WM_PAINT.  The
 			* fix is to force a redraw.
-			* 
-			* Windows10: Below work-around call leads to unintended black
-			* background in header where table is empty, hence making it
-			* conditional in win10, for more details refer bug 474096.
 			*/
-			if (OS.WIN32_VERSION < OS.VERSION (6, 3)) {
-				OS.SendMessage (handle, OS.LVM_SETBKCOLOR, 0, OS.CLR_NONE);
-			}
+			OS.SendMessage (handle, OS.LVM_SETBKCOLOR, 0, OS.CLR_NONE);
 			OS.SendMessage (handle, OS.LVM_SETTEXTBKCOLOR, 0, OS.CLR_NONE);
 			OS.InvalidateRect (handle, null, true);
 			
@@ -4369,14 +4356,7 @@ void setDeferResize (boolean defer) {
 		if (--resizeCount == 0) {
 			if (hooks (SWT.MeasureItem) || hooks (SWT.EraseItem) || hooks (SWT.PaintItem)) {
 				if (--drawCount == 0 /*&& OS.IsWindowVisible (handle)*/) {
-					/*
-					* Windows10: Below work-around call leads to unintended black
-					* background in header where table is empty, hence making it
-					* conditional in win10, for more details refer bug 474096.
-					*/
-					if (OS.WIN32_VERSION < OS.VERSION (6, 3)) {
-						OS.SendMessage (handle, OS.LVM_SETBKCOLOR, 0, OS.CLR_NONE);
-					}
+					OS.SendMessage (handle, OS.LVM_SETBKCOLOR, 0, OS.CLR_NONE);
 					OS.DefWindowProc (handle, OS.WM_SETREDRAW, 1, 0);
 					if (OS.IsWinCE) {
 						long /*int*/ hwndHeader = OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);	
@@ -6455,14 +6435,7 @@ LRESULT WM_SETREDRAW (long /*int*/ wParam, long /*int*/ lParam) {
 	if (wParam == 1) {
 		if ((int)/*64*/OS.SendMessage (handle, OS.LVM_GETBKCOLOR, 0, 0) != OS.CLR_NONE) {
 			if (hooks (SWT.MeasureItem) || hooks (SWT.EraseItem) || hooks (SWT.PaintItem)) {
-				/*
-				* Windows10: Below work-around call leads to unintended black
-				* background in header where table is empty, hence making it
-				* conditional in win10, for more details refer bug 474096.
-				*/
-				if (OS.WIN32_VERSION < OS.VERSION (6, 3)) {
-					OS.SendMessage (handle, OS.LVM_SETBKCOLOR, 0, OS.CLR_NONE);
-				}
+				OS.SendMessage (handle, OS.LVM_SETBKCOLOR, 0, OS.CLR_NONE);
 			}
 		}
 	}
