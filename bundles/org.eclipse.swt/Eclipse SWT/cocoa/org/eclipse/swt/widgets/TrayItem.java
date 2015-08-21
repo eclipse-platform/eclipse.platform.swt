@@ -142,10 +142,12 @@ public void addSelectionListener(SelectionListener listener) {
 	addListener (SWT.DefaultSelection,typedListener);
 }
 
+@Override
 protected void checkSubclass () {
 	if (!isValidSubclass ()) error (SWT.ERROR_INVALID_SUBCLASS);
 }
 
+@Override
 void createHandle () {
 	NSStatusBar statusBar = NSStatusBar.systemStatusBar();
 	item = statusBar.statusItemWithLength(0);
@@ -158,12 +160,14 @@ void createHandle () {
 	item.setView(view);
 }
 
+@Override
 void deregister () {
 	super.deregister ();
 	display.removeWidget (view);
 	display.removeWidget(view.cell());
 }
 
+@Override
 void destroyWidget () {
 	parent.destroyItem (this);
 	releaseHandle ();
@@ -264,12 +268,14 @@ public boolean getVisible () {
 	return visible;
 }
 
+@Override
 void register () {
 	super.register ();
 	display.addWidget (view, this);
 	display.addWidget (((NSControl)view).cell(), this);
 }
 
+@Override
 void releaseHandle () {
 	super.releaseHandle ();
 	parent = null;
@@ -279,6 +285,7 @@ void releaseHandle () {
 	view = null;
 }
 
+@Override
 void releaseWidget () {
 	super.releaseWidget ();
 	NSStatusBar statusBar = NSStatusBar.systemStatusBar();
@@ -354,6 +361,7 @@ public void removeSelectionListener (SelectionListener listener) {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  */
+@Override
 public void setImage (Image image) {
 	checkWidget ();
 	if (image != null && image.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
@@ -513,6 +521,7 @@ boolean shouldShowMenu (NSEvent event) {
 	return false;
 }
 
+@Override
 void mouseDown(long /*int*/ id, long /*int*/ sel, long /*int*/ theEvent) {
 	NSEvent nsEvent = new NSEvent(theEvent);
 	highlight = true;
@@ -524,6 +533,7 @@ void mouseDown(long /*int*/ id, long /*int*/ sel, long /*int*/ theEvent) {
 	}
 }
 
+@Override
 void mouseDragged(long /*int*/ id, long /*int*/ sel, long /*int*/ theEvent) {
 	NSEvent nsEvent = new NSEvent(theEvent);
 	NSRect frame = view.frame();
@@ -539,6 +549,7 @@ void mouseDragged(long /*int*/ id, long /*int*/ sel, long /*int*/ theEvent) {
 	}
 }
 
+@Override
 void mouseUp(long /*int*/ id, long /*int*/ sel, long /*int*/ theEvent) {
 	if (highlight) {
 		NSEvent nsEvent = new NSEvent(theEvent);
@@ -551,18 +562,22 @@ void mouseUp(long /*int*/ id, long /*int*/ sel, long /*int*/ theEvent) {
 	view.setNeedsDisplay(true);
 }
 
+@Override
 void rightMouseDown(long /*int*/ id, long /*int*/ sel, long /*int*/ theEvent) {
 	mouseDown(id, sel, theEvent);
 }
 
+@Override
 void rightMouseUp(long /*int*/ id, long /*int*/ sel, long /*int*/ theEvent) {
 	mouseUp(id, sel, theEvent);
 }
 
+@Override
 void rightMouseDragged(long /*int*/ id, long /*int*/ sel, long /*int*/ theEvent) {
 	mouseDragged(id, sel, theEvent);
 }
 
+@Override
 void drawRect(long /*int*/ id, long /*int*/ sel, NSRect rect) {
 	item.drawStatusBarBackgroundInRect(rect, highlight);
 	super.drawRect(id, sel, rect);
@@ -577,18 +592,13 @@ void updateImage () {
 	} else {
 		/*
 		 * Feature in Cocoa.  If the NSImage object being set into the view is
-		 * the same NSImage object that is already there then the new image is
-		 * not taken.  This results in the view's image not changing even if the
-		 * NSImage object's content has changed since it was last set into the
-		 * view.  The workaround is to temporarily set the view's image to null
-		 * so that the new image will then be taken.
+		 * the same NSImage object that is already there then the view does not
+		 * redraw itself.  This results in the view's image not visually updating
+		 * if the NSImage object's content has changed since it was last set
+		 * into the view.  The workaround is to explicitly redraw the view.
 		 */
-		NSImage current = view.image ();
-		if (current != null && current.id == image.handle.id) {
-			view.setImage (null);
-			item.setLength (0);
-		}
 		view.setImage (image.handle);
+		view.setNeedsDisplay (true);
 		if (visible) {
 			width = OS.NSSquareStatusItemLength;
 		}
