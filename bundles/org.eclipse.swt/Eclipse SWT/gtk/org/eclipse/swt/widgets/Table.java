@@ -131,6 +131,15 @@ public class Table extends Composite {
  */
 public Table (Composite parent, int style) {
 	super (parent, checkStyle (style));
+	// A workaround for https://bugs.eclipse.org/bugs/show_bug.cgi?id=457196
+	if (OS.GTK3) {
+		addListener(SWT.MeasureItem, new Listener() {
+			public void handleEvent(Event event) {
+				layout();
+				removeListener(SWT.MeasureItem, this);
+			}
+		});
+	}
 }
 
 @Override
