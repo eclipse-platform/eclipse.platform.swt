@@ -736,6 +736,12 @@ public class CTabFolderRenderer {
 		} else {
 			// draw a solid background using default background in shape
 			if ((parent.getStyle() & SWT.NO_BACKGROUND) != 0 || !defaultBackground.equals(parent.getBackground())) {
+				if (!parent.active){
+					gc.setAlpha(0x8f);
+				}
+				else { 
+					gc.setAlpha(0xff);
+				}
 				gc.setBackground(defaultBackground);
 				gc.fillRectangle(x, y, width, height);
 			}

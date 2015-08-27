@@ -240,6 +240,7 @@ public class CTabFolder extends Composite {
 	// on Resize
 	Point oldSize;
 	Font oldFont;
+	boolean active;
 	
 	// internal constants
 	static final int DEFAULT_WIDTH = 64;
@@ -337,6 +338,8 @@ void init(int style) {
 				case SWT.Resize:           onResize(event);	break;
 				case SWT.Traverse:         onTraverse(event); break;
 				case SWT.Selection:        onSelection(event); break;
+				case SWT.Activate:		   onActivate(event); break;
+				case SWT.Deactivate:	   onDeactivate(event); break;
 			}
 		}
 	};
@@ -358,6 +361,8 @@ void init(int style) {
 		SWT.Paint,
 		SWT.Resize,  
 		SWT.Traverse,
+		SWT.Activate,
+		SWT.Deactivate
 	};
 	for (int i = 0; i < folderEvents.length; i++) {
 		addListener(folderEvents[i], listener);
@@ -365,6 +370,17 @@ void init(int style) {
 	
 	initAccessible();
 }
+void onDeactivate(Event event) {
+	active= false;
+	redraw();
+}
+
+void onActivate(Event event) {
+	active = true;
+	redraw();
+	
+}
+
 static int checkStyle (Composite parent, int style) {
 	int mask = SWT.CLOSE | SWT.TOP | SWT.BOTTOM | SWT.FLAT | SWT.LEFT_TO_RIGHT | SWT.RIGHT_TO_LEFT | SWT.SINGLE | SWT.MULTI;
 	style = style & mask;
