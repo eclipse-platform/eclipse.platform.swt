@@ -738,8 +738,7 @@ public class CTabFolderRenderer {
 			if ((parent.getStyle() & SWT.NO_BACKGROUND) != 0 || !defaultBackground.equals(parent.getBackground())) {
 				if (!parent.active){
 					gc.setAlpha(0x8f);
-				}
-				else { 
+				} else {
 					gc.setAlpha(0xff);
 				}
 				gc.setBackground(defaultBackground);
