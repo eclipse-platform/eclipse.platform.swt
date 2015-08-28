@@ -928,11 +928,11 @@ public Rectangle getTextBounds (int index) {
 	// Fix for Eclipse bug 469277, we need to re-adjust the bounds for the text
 	// when the separator value is less than the width of the image. Previously
 	// images larger than 16px in width would be cut off on the right side.
-	if (x[0] < getImage(index).getBounds().width && OS.GTK3) {
-		int difference = getImage(index).getBounds().width - x[0];
-		rect.x += x[0] + difference;
+	int imageWidth = _getImage (index).getBounds ().width;
+	if (OS.GTK3 && x [0] < imageWidth) {
+		rect.x += imageWidth;
 	} else {
-		rect.x += x[0];
+		rect.x += x [0];
 	}
 	if (parent.columnCount > 0) {
 		if (rect.x + rect.width > right) {
