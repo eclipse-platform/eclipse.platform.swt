@@ -4488,36 +4488,16 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(_1g_1utf16_1to_1utf8)
 	jintLong *lparg4=NULL;
 	jintLong rc = 0;
 	OS_NATIVE_ENTER(env, that, _1g_1utf16_1to_1utf8_FUNC);
-#ifdef JNI_VERSION_1_2
-	if (IS_JNI_1_2) {
 		if (arg0) if ((lparg0 = (*env)->GetPrimitiveArrayCritical(env, arg0, NULL)) == NULL) goto fail;
 		if (arg2) if ((lparg2 = (*env)->GetPrimitiveArrayCritical(env, arg2, NULL)) == NULL) goto fail;
 		if (arg3) if ((lparg3 = (*env)->GetPrimitiveArrayCritical(env, arg3, NULL)) == NULL) goto fail;
 		if (arg4) if ((lparg4 = (*env)->GetPrimitiveArrayCritical(env, arg4, NULL)) == NULL) goto fail;
-	} else
-#endif
-	{
-		if (arg0) if ((lparg0 = (*env)->GetCharArrayElements(env, arg0, NULL)) == NULL) goto fail;
-		if (arg2) if ((lparg2 = (*env)->GetIntLongArrayElements(env, arg2, NULL)) == NULL) goto fail;
-		if (arg3) if ((lparg3 = (*env)->GetIntLongArrayElements(env, arg3, NULL)) == NULL) goto fail;
-		if (arg4) if ((lparg4 = (*env)->GetIntLongArrayElements(env, arg4, NULL)) == NULL) goto fail;
-	}
 	rc = (jintLong)g_utf16_to_utf8((const gunichar2 *)lparg0, (glong)arg1, (glong *)lparg2, (glong *)lparg3, (GError **)lparg4);
 fail:
-#ifdef JNI_VERSION_1_2
-	if (IS_JNI_1_2) {
 		if (arg4 && lparg4) (*env)->ReleasePrimitiveArrayCritical(env, arg4, lparg4, 0);
 		if (arg3 && lparg3) (*env)->ReleasePrimitiveArrayCritical(env, arg3, lparg3, 0);
 		if (arg2 && lparg2) (*env)->ReleasePrimitiveArrayCritical(env, arg2, lparg2, 0);
 		if (arg0 && lparg0) (*env)->ReleasePrimitiveArrayCritical(env, arg0, lparg0, JNI_ABORT);
-	} else
-#endif
-	{
-		if (arg4 && lparg4) (*env)->ReleaseIntLongArrayElements(env, arg4, lparg4, 0);
-		if (arg3 && lparg3) (*env)->ReleaseIntLongArrayElements(env, arg3, lparg3, 0);
-		if (arg2 && lparg2) (*env)->ReleaseIntLongArrayElements(env, arg2, lparg2, 0);
-		if (arg0 && lparg0) (*env)->ReleaseCharArrayElements(env, arg0, lparg0, JNI_ABORT);
-	}
 	OS_NATIVE_EXIT(env, that, _1g_1utf16_1to_1utf8_FUNC);
 	return rc;
 }
@@ -4575,32 +4555,14 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(_1g_1utf8_1to_1utf16__JJ_3J_3J_3J)(JNIEnv *
 #else
 	OS_NATIVE_ENTER(env, that, _1g_1utf8_1to_1utf16__JJ_3J_3J_3J_FUNC);
 #endif
-#ifdef JNI_VERSION_1_2
-	if (IS_JNI_1_2) {
 		if (arg2) if ((lparg2 = (*env)->GetPrimitiveArrayCritical(env, arg2, NULL)) == NULL) goto fail;
 		if (arg3) if ((lparg3 = (*env)->GetPrimitiveArrayCritical(env, arg3, NULL)) == NULL) goto fail;
 		if (arg4) if ((lparg4 = (*env)->GetPrimitiveArrayCritical(env, arg4, NULL)) == NULL) goto fail;
-	} else
-#endif
-	{
-		if (arg2) if ((lparg2 = (*env)->GetIntLongArrayElements(env, arg2, NULL)) == NULL) goto fail;
-		if (arg3) if ((lparg3 = (*env)->GetIntLongArrayElements(env, arg3, NULL)) == NULL) goto fail;
-		if (arg4) if ((lparg4 = (*env)->GetIntLongArrayElements(env, arg4, NULL)) == NULL) goto fail;
-	}
 	rc = (jintLong)g_utf8_to_utf16((const gchar *)arg0, (glong)arg1, (glong *)lparg2, (glong *)lparg3, (GError **)lparg4);
 fail:
-#ifdef JNI_VERSION_1_2
-	if (IS_JNI_1_2) {
 		if (arg4 && lparg4) (*env)->ReleasePrimitiveArrayCritical(env, arg4, lparg4, 0);
 		if (arg3 && lparg3) (*env)->ReleasePrimitiveArrayCritical(env, arg3, lparg3, 0);
 		if (arg2 && lparg2) (*env)->ReleasePrimitiveArrayCritical(env, arg2, lparg2, 0);
-	} else
-#endif
-	{
-		if (arg4 && lparg4) (*env)->ReleaseIntLongArrayElements(env, arg4, lparg4, 0);
-		if (arg3 && lparg3) (*env)->ReleaseIntLongArrayElements(env, arg3, lparg3, 0);
-		if (arg2 && lparg2) (*env)->ReleaseIntLongArrayElements(env, arg2, lparg2, 0);
-	}
 #ifndef JNI64
 	OS_NATIVE_EXIT(env, that, _1g_1utf8_1to_1utf16__II_3I_3I_3I_FUNC);
 #else
@@ -4627,36 +4589,16 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(_1g_1utf8_1to_1utf16___3BJ_3J_3J_3J)(JNIEnv
 #else
 	OS_NATIVE_ENTER(env, that, _1g_1utf8_1to_1utf16___3BJ_3J_3J_3J_FUNC);
 #endif
-#ifdef JNI_VERSION_1_2
-	if (IS_JNI_1_2) {
 		if (arg0) if ((lparg0 = (*env)->GetPrimitiveArrayCritical(env, arg0, NULL)) == NULL) goto fail;
 		if (arg2) if ((lparg2 = (*env)->GetPrimitiveArrayCritical(env, arg2, NULL)) == NULL) goto fail;
 		if (arg3) if ((lparg3 = (*env)->GetPrimitiveArrayCritical(env, arg3, NULL)) == NULL) goto fail;
 		if (arg4) if ((lparg4 = (*env)->GetPrimitiveArrayCritical(env, arg4, NULL)) == NULL) goto fail;
-	} else
-#endif
-	{
-		if (arg0) if ((lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL)) == NULL) goto fail;
-		if (arg2) if ((lparg2 = (*env)->GetIntLongArrayElements(env, arg2, NULL)) == NULL) goto fail;
-		if (arg3) if ((lparg3 = (*env)->GetIntLongArrayElements(env, arg3, NULL)) == NULL) goto fail;
-		if (arg4) if ((lparg4 = (*env)->GetIntLongArrayElements(env, arg4, NULL)) == NULL) goto fail;
-	}
 	rc = (jintLong)g_utf8_to_utf16((const gchar *)lparg0, (glong)arg1, (glong *)lparg2, (glong *)lparg3, (GError **)lparg4);
 fail:
-#ifdef JNI_VERSION_1_2
-	if (IS_JNI_1_2) {
 		if (arg4 && lparg4) (*env)->ReleasePrimitiveArrayCritical(env, arg4, lparg4, 0);
 		if (arg3 && lparg3) (*env)->ReleasePrimitiveArrayCritical(env, arg3, lparg3, 0);
 		if (arg2 && lparg2) (*env)->ReleasePrimitiveArrayCritical(env, arg2, lparg2, 0);
 		if (arg0 && lparg0) (*env)->ReleasePrimitiveArrayCritical(env, arg0, lparg0, JNI_ABORT);
-	} else
-#endif
-	{
-		if (arg4 && lparg4) (*env)->ReleaseIntLongArrayElements(env, arg4, lparg4, 0);
-		if (arg3 && lparg3) (*env)->ReleaseIntLongArrayElements(env, arg3, lparg3, 0);
-		if (arg2 && lparg2) (*env)->ReleaseIntLongArrayElements(env, arg2, lparg2, 0);
-		if (arg0 && lparg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, JNI_ABORT);
-	}
 #ifndef JNI64
 	OS_NATIVE_EXIT(env, that, _1g_1utf8_1to_1utf16___3BI_3I_3I_3I_FUNC);
 #else
@@ -5045,24 +4987,10 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(_1gdk_1atom_1intern)
 	jbyte *lparg0=NULL;
 	jintLong rc = 0;
 	OS_NATIVE_ENTER(env, that, _1gdk_1atom_1intern_FUNC);
-#ifdef JNI_VERSION_1_2
-	if (IS_JNI_1_2) {
 		if (arg0) if ((lparg0 = (*env)->GetPrimitiveArrayCritical(env, arg0, NULL)) == NULL) goto fail;
-	} else
-#endif
-	{
-		if (arg0) if ((lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL)) == NULL) goto fail;
-	}
 	rc = (jintLong)gdk_atom_intern((const gchar *)lparg0, arg1);
 fail:
-#ifdef JNI_VERSION_1_2
-	if (IS_JNI_1_2) {
 		if (arg0 && lparg0) (*env)->ReleasePrimitiveArrayCritical(env, arg0, lparg0, JNI_ABORT);
-	} else
-#endif
-	{
-		if (arg0 && lparg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, JNI_ABORT);
-	}
 	OS_NATIVE_EXIT(env, that, _1gdk_1atom_1intern_FUNC);
 	return rc;
 }
@@ -5097,14 +5025,7 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(_1gdk_1bitmap_1create_1from_1data)
 	jbyte *lparg1=NULL;
 	jintLong rc = 0;
 	OS_NATIVE_ENTER(env, that, _1gdk_1bitmap_1create_1from_1data_FUNC);
-#ifdef JNI_VERSION_1_2
-	if (IS_JNI_1_2) {
 		if (arg1) if ((lparg1 = (*env)->GetPrimitiveArrayCritical(env, arg1, NULL)) == NULL) goto fail;
-	} else
-#endif
-	{
-		if (arg1) if ((lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL)) == NULL) goto fail;
-	}
 /*
 	rc = (jintLong)gdk_bitmap_create_from_data((GdkWindow *)arg0, (const gchar *)lparg1, (gint)arg2, (gint)arg3);
 */
@@ -5115,14 +5036,7 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(_1gdk_1bitmap_1create_1from_1data)
 		}
 	}
 fail:
-#ifdef JNI_VERSION_1_2
-	if (IS_JNI_1_2) {
 		if (arg1 && lparg1) (*env)->ReleasePrimitiveArrayCritical(env, arg1, lparg1, JNI_ABORT);
-	} else
-#endif
-	{
-		if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, JNI_ABORT);
-	}
 	OS_NATIVE_EXIT(env, that, _1gdk_1bitmap_1create_1from_1data_FUNC);
 	return rc;
 }
@@ -5871,14 +5785,7 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gdk_1draw_1lines)
 {
 	jint *lparg2=NULL;
 	OS_NATIVE_ENTER(env, that, _1gdk_1draw_1lines_FUNC);
-#ifdef JNI_VERSION_1_2
-	if (IS_JNI_1_2) {
 		if (arg2) if ((lparg2 = (*env)->GetPrimitiveArrayCritical(env, arg2, NULL)) == NULL) goto fail;
-	} else
-#endif
-	{
-		if (arg2) if ((lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL)) == NULL) goto fail;
-	}
 /*
 	gdk_draw_lines(arg0, arg1, (GdkPoint *)lparg2, (gint)arg3);
 */
@@ -5889,14 +5796,7 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gdk_1draw_1lines)
 		}
 	}
 fail:
-#ifdef JNI_VERSION_1_2
-	if (IS_JNI_1_2) {
 		if (arg2 && lparg2) (*env)->ReleasePrimitiveArrayCritical(env, arg2, lparg2, JNI_ABORT);
-	} else
-#endif
-	{
-		if (arg2 && lparg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, JNI_ABORT);
-	}
 	OS_NATIVE_EXIT(env, that, _1gdk_1draw_1lines_FUNC);
 }
 #endif
@@ -5943,14 +5843,7 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gdk_1draw_1polygon)
 {
 	jint *lparg3=NULL;
 	OS_NATIVE_ENTER(env, that, _1gdk_1draw_1polygon_FUNC);
-#ifdef JNI_VERSION_1_2
-	if (IS_JNI_1_2) {
 		if (arg3) if ((lparg3 = (*env)->GetPrimitiveArrayCritical(env, arg3, NULL)) == NULL) goto fail;
-	} else
-#endif
-	{
-		if (arg3) if ((lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL)) == NULL) goto fail;
-	}
 /*
 	gdk_draw_polygon(arg0, arg1, arg2, lparg3, arg4);
 */
@@ -5961,14 +5854,7 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gdk_1draw_1polygon)
 		}
 	}
 fail:
-#ifdef JNI_VERSION_1_2
-	if (IS_JNI_1_2) {
 		if (arg3 && lparg3) (*env)->ReleasePrimitiveArrayCritical(env, arg3, lparg3, JNI_ABORT);
-	} else
-#endif
-	{
-		if (arg3 && lparg3) (*env)->ReleaseIntArrayElements(env, arg3, lparg3, JNI_ABORT);
-	}
 	OS_NATIVE_EXIT(env, that, _1gdk_1draw_1polygon_FUNC);
 }
 #endif
@@ -6038,16 +5924,8 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gdk_1drawable_1get_1size)
 	jint *lparg1=NULL;
 	jint *lparg2=NULL;
 	OS_NATIVE_ENTER(env, that, _1gdk_1drawable_1get_1size_FUNC);
-#ifdef JNI_VERSION_1_2
-	if (IS_JNI_1_2) {
 		if (arg1) if ((lparg1 = (*env)->GetPrimitiveArrayCritical(env, arg1, NULL)) == NULL) goto fail;
 		if (arg2) if ((lparg2 = (*env)->GetPrimitiveArrayCritical(env, arg2, NULL)) == NULL) goto fail;
-	} else
-#endif
-	{
-		if (arg1) if ((lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL)) == NULL) goto fail;
-		if (arg2) if ((lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL)) == NULL) goto fail;
-	}
 /*
 	gdk_drawable_get_size(arg0, (gint *)lparg1, (gint *)lparg2);
 */
@@ -6058,16 +5936,8 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gdk_1drawable_1get_1size)
 		}
 	}
 fail:
-#ifdef JNI_VERSION_1_2
-	if (IS_JNI_1_2) {
 		if (arg2 && lparg2) (*env)->ReleasePrimitiveArrayCritical(env, arg2, lparg2, 0);
 		if (arg1 && lparg1) (*env)->ReleasePrimitiveArrayCritical(env, arg1, lparg1, 0);
-	} else
-#endif
-	{
-		if (arg2 && lparg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
-		if (arg1 && lparg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
-	}
 	OS_NATIVE_EXIT(env, that, _1gdk_1drawable_1get_1size_FUNC);
 }
 #endif
@@ -6399,14 +6269,7 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gdk_1gc_1set_1dashes)
 {
 	jbyte *lparg2=NULL;
 	OS_NATIVE_ENTER(env, that, _1gdk_1gc_1set_1dashes_FUNC);
-#ifdef JNI_VERSION_1_2
-	if (IS_JNI_1_2) {
 		if (arg2) if ((lparg2 = (*env)->GetPrimitiveArrayCritical(env, arg2, NULL)) == NULL) goto fail;
-	} else
-#endif
-	{
-		if (arg2) if ((lparg2 = (*env)->GetByteArrayElements(env, arg2, NULL)) == NULL) goto fail;
-	}
 /*
 	gdk_gc_set_dashes(arg0, (gint)arg1, (gint8 *)lparg2, (gint)arg3);
 */
@@ -6417,14 +6280,7 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gdk_1gc_1set_1dashes)
 		}
 	}
 fail:
-#ifdef JNI_VERSION_1_2
-	if (IS_JNI_1_2) {
 		if (arg2 && lparg2) (*env)->ReleasePrimitiveArrayCritical(env, arg2, lparg2, JNI_ABORT);
-	} else
-#endif
-	{
-		if (arg2 && lparg2) (*env)->ReleaseByteArrayElements(env, arg2, lparg2, JNI_ABORT);
-	}
 	OS_NATIVE_EXIT(env, that, _1gdk_1gc_1set_1dashes_FUNC);
 }
 #endif
@@ -7032,16 +6888,8 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gdk_1pixmap_1get_1size)
 	jint *lparg1=NULL;
 	jint *lparg2=NULL;
 	OS_NATIVE_ENTER(env, that, _1gdk_1pixmap_1get_1size_FUNC);
-#ifdef JNI_VERSION_1_2
-	if (IS_JNI_1_2) {
 		if (arg1) if ((lparg1 = (*env)->GetPrimitiveArrayCritical(env, arg1, NULL)) == NULL) goto fail;
 		if (arg2) if ((lparg2 = (*env)->GetPrimitiveArrayCritical(env, arg2, NULL)) == NULL) goto fail;
-	} else
-#endif
-	{
-		if (arg1) if ((lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL)) == NULL) goto fail;
-		if (arg2) if ((lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL)) == NULL) goto fail;
-	}
 /*
 	gdk_pixmap_get_size(arg0, (gint *)lparg1, (gint *)lparg2);
 */
@@ -7052,16 +6900,8 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gdk_1pixmap_1get_1size)
 		}
 	}
 fail:
-#ifdef JNI_VERSION_1_2
-	if (IS_JNI_1_2) {
 		if (arg2 && lparg2) (*env)->ReleasePrimitiveArrayCritical(env, arg2, lparg2, 0);
 		if (arg1 && lparg1) (*env)->ReleasePrimitiveArrayCritical(env, arg1, lparg1, 0);
-	} else
-#endif
-	{
-		if (arg2 && lparg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
-		if (arg1 && lparg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
-	}
 	OS_NATIVE_EXIT(env, that, _1gdk_1pixmap_1get_1size_FUNC);
 }
 #endif
@@ -20332,24 +20172,10 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(_1pango_1font_1description_1from_1string)
 	jbyte *lparg0=NULL;
 	jintLong rc = 0;
 	OS_NATIVE_ENTER(env, that, _1pango_1font_1description_1from_1string_FUNC);
-#ifdef JNI_VERSION_1_2
-	if (IS_JNI_1_2) {
 		if (arg0) if ((lparg0 = (*env)->GetPrimitiveArrayCritical(env, arg0, NULL)) == NULL) goto fail;
-	} else
-#endif
-	{
-		if (arg0) if ((lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL)) == NULL) goto fail;
-	}
 	rc = (jintLong)pango_font_description_from_string((const char *)lparg0);
 fail:
-#ifdef JNI_VERSION_1_2
-	if (IS_JNI_1_2) {
 		if (arg0 && lparg0) (*env)->ReleasePrimitiveArrayCritical(env, arg0, lparg0, JNI_ABORT);
-	} else
-#endif
-	{
-		if (arg0 && lparg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, JNI_ABORT);
-	}
 	OS_NATIVE_EXIT(env, that, _1pango_1font_1description_1from_1string_FUNC);
 	return rc;
 }
@@ -20445,24 +20271,10 @@ JNIEXPORT void JNICALL OS_NATIVE(_1pango_1font_1description_1set_1family)
 {
 	jbyte *lparg1=NULL;
 	OS_NATIVE_ENTER(env, that, _1pango_1font_1description_1set_1family_FUNC);
-#ifdef JNI_VERSION_1_2
-	if (IS_JNI_1_2) {
 		if (arg1) if ((lparg1 = (*env)->GetPrimitiveArrayCritical(env, arg1, NULL)) == NULL) goto fail;
-	} else
-#endif
-	{
-		if (arg1) if ((lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL)) == NULL) goto fail;
-	}
 	pango_font_description_set_family((PangoFontDescription *)arg0, (const char *)lparg1);
 fail:
-#ifdef JNI_VERSION_1_2
-	if (IS_JNI_1_2) {
 		if (arg1 && lparg1) (*env)->ReleasePrimitiveArrayCritical(env, arg1, lparg1, JNI_ABORT);
-	} else
-#endif
-	{
-		if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, JNI_ABORT);
-	}
 	OS_NATIVE_EXIT(env, that, _1pango_1font_1description_1set_1family_FUNC);
 }
 #endif
@@ -21170,24 +20982,10 @@ JNIEXPORT void JNICALL OS_NATIVE(_1pango_1layout_1set_1text)
 {
 	jbyte *lparg1=NULL;
 	OS_NATIVE_ENTER(env, that, _1pango_1layout_1set_1text_FUNC);
-#ifdef JNI_VERSION_1_2
-	if (IS_JNI_1_2) {
 		if (arg1) if ((lparg1 = (*env)->GetPrimitiveArrayCritical(env, arg1, NULL)) == NULL) goto fail;
-	} else
-#endif
-	{
-		if (arg1) if ((lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL)) == NULL) goto fail;
-	}
 	pango_layout_set_text((PangoLayout *)arg0, (const char *)lparg1, (int)arg2);
 fail:
-#ifdef JNI_VERSION_1_2
-	if (IS_JNI_1_2) {
 		if (arg1 && lparg1) (*env)->ReleasePrimitiveArrayCritical(env, arg1, lparg1, JNI_ABORT);
-	} else
-#endif
-	{
-		if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, JNI_ABORT);
-	}
 	OS_NATIVE_EXIT(env, that, _1pango_1layout_1set_1text_FUNC);
 }
 #endif
