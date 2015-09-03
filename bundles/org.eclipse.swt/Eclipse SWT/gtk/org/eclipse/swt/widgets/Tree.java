@@ -861,7 +861,9 @@ void createRenderers (long /*int*/ columnHandle, int modelIndex, boolean check, 
 	} else {
 		// set default size this size is used for calculating the icon and text positions in a tree
 		if ((!ownerDraw) && (OS.GTK3)) {
-			OS.gtk_cell_renderer_set_fixed_size(pixbufRenderer, 16, 16);
+//			Set render size to 0x0 until we actually add images, fix for
+//			Bug 469277 & 476419.
+			OS.gtk_cell_renderer_set_fixed_size(pixbufRenderer, 0, 0);
 		}
 	}
 	long /*int*/ textRenderer = ownerDraw ? OS.g_object_new (display.gtk_cell_renderer_text_get_type (), 0) : OS.gtk_cell_renderer_text_new ();
@@ -900,7 +902,9 @@ void createRenderers (long /*int*/ columnHandle, int modelIndex, boolean check, 
 	}
 
 	/* Add attributes */
-	OS.gtk_tree_view_column_add_attribute (columnHandle, pixbufRenderer, OS.GTK3 ? OS.gicon : OS.pixbuf, modelIndex + CELL_PIXBUF);
+//	Formerly OS.gicon was set , Gtk3, but this is being removed do to spacing issues in Trees with
+//	no images. Fix for Bug 469277 & 476419
+	OS.gtk_tree_view_column_add_attribute (columnHandle, pixbufRenderer, OS.pixbuf, modelIndex + CELL_PIXBUF);
 	if (!ownerDraw) {
 		OS.gtk_tree_view_column_add_attribute (columnHandle, pixbufRenderer, OS.cell_background_gdk, BACKGROUND_COLUMN);
 		OS.gtk_tree_view_column_add_attribute (columnHandle, textRenderer, OS.cell_background_gdk, BACKGROUND_COLUMN);

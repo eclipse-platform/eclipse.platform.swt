@@ -679,6 +679,7 @@ char * OS_nativeFunctionNames[] = {
 	"_1gtk_1cell_1layout_1get_1cells",
 	"_1gtk_1cell_1layout_1pack_1start",
 	"_1gtk_1cell_1layout_1set_1attributes",
+	"_1gtk_1cell_1renderer_1get_1fixed_1size",
 	"_1gtk_1cell_1renderer_1get_1preferred_1height_1for_1width",
 	"_1gtk_1cell_1renderer_1get_1preferred_1size",
 	"_1gtk_1cell_1renderer_1get_1size",
