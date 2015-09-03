@@ -10,9 +10,8 @@
  *******************************************************************************/
 package org.eclipse.swt.tools.internal;
 
-import java.lang.reflect.Modifier;
-import java.util.HashSet;
-import java.util.Iterator;
+import java.lang.reflect.*;
+import java.util.*;
 
 public class StructsGenerator extends JNIGenerator {
 
@@ -80,7 +79,7 @@ public String getSuffix() {
 }
 
 void generateExcludes(JNIClass[] classes) {
-	HashSet<String> excludes = new HashSet<String>();
+	HashSet<String> excludes = new HashSet<>();
 	for (int i = 0; i < classes.length; i++) {
 		JNIClass clazz = classes[i];
 		String exclude = clazz.getExclude();

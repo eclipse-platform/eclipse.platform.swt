@@ -134,11 +134,11 @@ void merge(Document document, Document extraDocument) {
 	if (extraDocument == null) return;
 	
 	/* Build a lookup table for extraDocument */
-	HashMap<String, Node> extras = new HashMap<String, Node>();
+	HashMap<String, Node> extras = new HashMap<>();
 	buildLookup(extraDocument, extras);
 
 	/* Merge attributes on existing elements building a lookup table for document */
-	HashMap<String, Node> lookup = new HashMap<String, Node>();
+	HashMap<String, Node> lookup = new HashMap<>();
 	merge(document, extras, lookup);
 	
 	/* 
@@ -565,7 +565,7 @@ void generateExtraMethods(String className) {
 }
 
 TreeMap<String, Object[]> getGeneratedClasses() {
-	TreeMap<String, Object[]> classes = new TreeMap<String, Object[]>();
+	TreeMap<String, Object[]> classes = new TreeMap<>();
 	for (int x = 0; x < xmls.length; x++) {
 		Document document = documents[x];
 		if (document == null) continue;
@@ -577,7 +577,7 @@ TreeMap<String, Object[]> getGeneratedClasses() {
 				String name = node.getAttributes().getNamedItem("name").getNodeValue();
 				Object[] clazz = classes.get(name);
 				if (clazz == null) {
-					methods = new ArrayList<Node>();
+					methods = new ArrayList<>();
 					classes.put(name, new Object[]{node, methods});
 				} else {
 					methods = (ArrayList<Node>)clazz[1];
@@ -596,7 +596,7 @@ TreeMap<String, Object[]> getGeneratedClasses() {
 }
 
 TreeMap<String, Object[]> getGeneratedStructs() {
-	TreeMap<String, Object[]> structs = new TreeMap<String, Object[]>();
+	TreeMap<String, Object[]> structs = new TreeMap<>();
 	for (int x = 0; x < xmls.length; x++) {
 		Document document = documents[x];
 		if (document == null) continue;
@@ -608,7 +608,7 @@ TreeMap<String, Object[]> getGeneratedStructs() {
 				String name = node.getAttributes().getNamedItem("name").getNodeValue();
 				Object[] clazz = structs.get(name);
 				if (clazz == null) {
-					fields = new ArrayList<Node>();
+					fields = new ArrayList<>();
 					structs.put(name, new Object[]{node, fields});
 				} else {
 					fields = (ArrayList<Node>)clazz[1];
@@ -860,7 +860,7 @@ public Document[] getDocuments() {
 
 public String[] getXmls() {
 	if (xmls == null || xmls.length == 0) {
-		ArrayList<String> array = new ArrayList<String>();
+		ArrayList<String> array = new ArrayList<>();
 		if (USE_SYSTEM_BRIDGE_FILES) {
 			list(new File("/System/Library/Frameworks"), array);
 			list(new File("/System/Library/Frameworks/CoreServices.framework/Frameworks"), array);
@@ -1280,7 +1280,7 @@ boolean isUnique(Node method, ArrayList<?> methods) {
 }
 
 void generateSelectorsConst() {
-	TreeSet<String> set = new TreeSet<String>();
+	TreeSet<String> set = new TreeSet<>();
 	for (int x = 0; x < xmls.length; x++) {
 		Document document = documents[x];
 		if (document == null) continue;
@@ -1320,7 +1320,7 @@ void generateSelectorsConst() {
 }
 
 void generateStructNatives() {
-	TreeSet<String> set = new TreeSet<String>();
+	TreeSet<String> set = new TreeSet<>();
 	for (int x = 0; x < xmls.length; x++) {
 		Document document = documents[x];
 		if (document == null) continue;
@@ -1494,7 +1494,7 @@ Node findNSObjectMethod(Node method) {
 }
 
 void generateCustomCallbacks() {
-	TreeMap<String, Node> set = new TreeMap<String, Node>();
+	TreeMap<String, Node> set = new TreeMap<>();
 	for (int x = 0; x < xmls.length; x++) {
 		Document document = documents[x];
 		if (document == null) continue;
@@ -1554,8 +1554,8 @@ void generateCustomCallbacks() {
 }
 
 void generateSends(boolean superCall) {
-	TreeMap<String, Node> set = new TreeMap<String, Node>();
-	TreeMap<String, Node> set64 = new TreeMap<String, Node>();
+	TreeMap<String, Node> set = new TreeMap<>();
+	TreeMap<String, Node> set64 = new TreeMap<>();
 	for (int x = 0; x < xmls.length; x++) {
 		Document document = documents[x];
 		if (document == null) continue;
@@ -1581,7 +1581,7 @@ void generateSends(boolean superCall) {
 		}
 	}
 	outln();
-	TreeMap<String, Node> tagsSet = new TreeMap<String, Node>();
+	TreeMap<String, Node> tagsSet = new TreeMap<>();
 	for (Iterator<String> iterator = set.keySet().iterator(); iterator.hasNext();) {
 		String key = iterator.next();
 		Node method = set.get(key);
@@ -1592,7 +1592,7 @@ void generateSends(boolean superCall) {
 			set64.remove(tagCode);
 		}
 	}
-	TreeMap<String, Node> all = new TreeMap<String, Node>();
+	TreeMap<String, Node> all = new TreeMap<>();
 	for (Iterator<String> iterator = tagsSet.keySet().iterator(); iterator.hasNext();) {
 		String key = iterator.next();
 		Node method = tagsSet.get(key);
@@ -1610,7 +1610,7 @@ void generateSends(boolean superCall) {
 		String key = iterator.next();
 		Node method = all.get(key);
 		NodeList params = method.getChildNodes();
-		ArrayList<String> tags = new ArrayList<String>();
+		ArrayList<String> tags = new ArrayList<>();
 		int count = 0;
 		for (int k = 0; k < params.getLength(); k++) {
 			Node param = params.item(k);
@@ -1645,7 +1645,7 @@ String getSelConst(String sel) {
 }
 
 void generateClassesConst() {
-	TreeSet<String> set = new TreeSet<String>();
+	TreeSet<String> set = new TreeSet<>();
 	for (int x = 0; x < xmls.length; x++) {
 		Document document = documents[x];
 		if (document == null) continue;
@@ -1675,7 +1675,7 @@ void generateClassesConst() {
 }
 
 void generateProtocolsConst() {
-	TreeSet<String> set = new TreeSet<String>();
+	TreeSet<String> set = new TreeSet<>();
 	for (int x = 0; x < xmls.length; x++) {
 		Document document = documents[x];
 		if (document == null) continue;
@@ -1872,7 +1872,7 @@ String getJavaType(String code, NamedNodeMap attributes, boolean is64) {
 
 static String[] split(String str, String separator) {
 	StringTokenizer tk = new StringTokenizer(str, separator);
-	ArrayList<String> result = new ArrayList<String>();
+	ArrayList<String> result = new ArrayList<>();
 	while (tk.hasMoreTokens()) {
 		result.add(tk.nextToken());
 	}

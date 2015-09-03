@@ -103,7 +103,7 @@ public class DOMWriter {
 				NodeList children = node.getChildNodes();
 				if (children != null) {
 					int len = children.getLength();
-					List<Node> nodes = new ArrayList<Node>();
+					List<Node> nodes = new ArrayList<>();
 					for (int i = 0; i < len; i++) {
 						Node child = children.item(i);
 						if (child.getNodeType() == Node.ELEMENT_NODE) nodes.add(child);

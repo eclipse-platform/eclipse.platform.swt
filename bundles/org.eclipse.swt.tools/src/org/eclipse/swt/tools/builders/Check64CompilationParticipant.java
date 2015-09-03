@@ -10,56 +10,20 @@
  *******************************************************************************/
 package org.eclipse.swt.tools.builders;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.BufferedReader;
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
+import java.io.*;
+import java.util.*;
 
-import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.*;
 
-import org.eclipse.core.resources.IContainer;
-import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.IFolder;
-import org.eclipse.core.resources.IMarker;
-import org.eclipse.core.resources.IProject;
-import org.eclipse.core.resources.IResource;
-import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Path;
-import org.eclipse.core.runtime.Status;
-import org.eclipse.jdt.core.IClasspathEntry;
-import org.eclipse.jdt.core.IJavaModelMarker;
-import org.eclipse.jdt.core.IJavaProject;
-import org.eclipse.jdt.core.JavaModelException;
-import org.eclipse.jdt.core.compiler.BuildContext;
-import org.eclipse.jdt.core.compiler.CharOperation;
-import org.eclipse.jdt.core.compiler.CompilationParticipant;
-import org.eclipse.jdt.core.compiler.batch.BatchCompiler;
-import org.eclipse.jdt.core.dom.AST;
-import org.eclipse.jdt.core.dom.ASTParser;
-import org.eclipse.jdt.core.dom.CompilationUnit;
-import org.eclipse.jdt.core.dom.MethodDeclaration;
-import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
-import org.eclipse.jdt.core.dom.Type;
-import org.eclipse.jdt.core.dom.TypeDeclaration;
-import org.eclipse.swt.tools.Activator;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
-import org.xml.sax.InputSource;
+import org.eclipse.core.resources.*;
+import org.eclipse.core.runtime.*;
+import org.eclipse.jdt.core.*;
+import org.eclipse.jdt.core.compiler.*;
+import org.eclipse.jdt.core.compiler.batch.*;
+import org.eclipse.jdt.core.dom.*;
+import org.eclipse.swt.tools.*;
+import org.w3c.dom.*;
+import org.xml.sax.*;
 
 public class Check64CompilationParticipant extends CompilationParticipant {
 	HashSet<String> sources;
@@ -118,7 +82,7 @@ void build(IJavaProject project, String root) throws CoreException {
 		String bin = root + "/bin";
 		if (cp.length() > 0) cp.append(File.pathSeparator);
 		cp.append(bin);
-		ArrayList<String> args = new ArrayList<String>();
+		ArrayList<String> args = new ArrayList<>();
 		args.addAll(Arrays.asList(new String[]{
 			"-nowarn",
 			"-1.5",
@@ -244,14 +208,14 @@ boolean is64Type(String type) {
 void createBadOverwrittenMethodProblems(IJavaProject project, String root) throws CoreException {
 	if (sources == null) return;
 	IProject proj = project.getProject();
-	HashMap<String, TypeDeclaration> cache = new HashMap<String, TypeDeclaration>();
+	HashMap<String, TypeDeclaration> cache = new HashMap<>();
 	for (Iterator<String> iterator = sources.iterator(); iterator.hasNext();) {
 		String path = iterator.next();
 		IResource resource = getResourceWithoutErrors(proj, path, false);
 		if (resource == null) continue;
 		TypeDeclaration type = loadType(cache, path);
 		MethodDeclaration[] methods = type.getMethods();
-		List<TypeDeclaration> superclasses = new ArrayList<TypeDeclaration>();
+		List<TypeDeclaration> superclasses = new ArrayList<>();
 		TypeDeclaration temp = type;
 		while (true) {
 			Type supertype = temp.getSuperclassType();
@@ -365,7 +329,7 @@ public void buildFinished(IJavaProject project) {
 	
 @Override
 public void buildStarting(BuildContext[] files, boolean isBatch) {
-	if (sources == null) sources = new HashSet<String>();
+	if (sources == null) sources = new HashSet<>();
 //	long time = System.currentTimeMillis();
 	for (int i = 0; i < files.length; i++) {
 		BuildContext context = files[i];

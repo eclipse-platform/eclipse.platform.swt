@@ -103,7 +103,7 @@ public void setFlags(String[] flags) {
 }
 
 public void parse(String str) {
-	this.params = new HashMap<String, Object>();
+	this.params = new HashMap<>();
 	int length = str.length();
 	if (length == 0) return;
 	int index = 0;
@@ -138,7 +138,7 @@ public void parse(String str) {
 @Override
 public void setFlag(String flag, boolean value) {
 	String[] flags = getFlags();
-	HashSet<String> set = new HashSet<String>(Arrays.asList(flags));
+	HashSet<String> set = new HashSet<>(Arrays.asList(flags));
 	if (value) {
 		set.add(flag);
 	} else {

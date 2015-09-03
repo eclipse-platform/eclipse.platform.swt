@@ -436,7 +436,7 @@ public class MacGeneratorUI {
 		    while (index < documents.length && (node = documents[index]) == null) index++;
 		}
 		if (flatNodes == null) {
-			flatNodes = new ArrayList<Node>();
+			flatNodes = new ArrayList<>();
 			for (int i = 0; i < documents.length; i++) {
 				if (documents[i] != null) addNodes(documents[i], flatNodes);
 			}
@@ -467,7 +467,7 @@ public class MacGeneratorUI {
 	}
 	
 	void selectNode(Node node) {
-		ArrayList<Node> path = new ArrayList<Node>();
+		ArrayList<Node> path = new ArrayList<>();
 		do {
 			path.add(node);
 			node = node.getParentNode();

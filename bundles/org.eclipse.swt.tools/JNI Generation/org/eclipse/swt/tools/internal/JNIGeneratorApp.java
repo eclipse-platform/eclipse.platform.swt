@@ -12,13 +12,10 @@ package org.eclipse.swt.tools.internal;
 
 import java.io.*;
 import java.lang.reflect.*;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Enumeration;
-import java.util.List;
+import java.util.*;
 import java.util.zip.*;
 
-import org.eclipse.swt.SWT;
+import org.eclipse.swt.*;
 
 public class JNIGeneratorApp {
 
@@ -274,7 +271,7 @@ String[] getClassNames(String mainClassName) {
 	if (classpath == null) classpath = System.getProperty("java.class.path");
 	String pkgPath = pkgName.replace('.', File.separatorChar);
 	String pkgZipPath = pkgName.replace('.', '/');
-	List<String> classes = new ArrayList<String>();	
+	List<String> classes = new ArrayList<>();	
 	int start = 0;
 	int index = 0;
 	while (index < classpath.length()) {
@@ -353,7 +350,7 @@ JNIClass[] getASTClasses() {
 	if (mainClassName == null) return new JNIClass[0];
 	String root = classesDir != null ? classesDir : new File(outputDir).getParent() + "/";
 	String mainPath = new File(root + mainClassName.replace('.', '/') + ".java").getAbsolutePath();
-	List<JNIClass> classes = new ArrayList<JNIClass>();
+	List<JNIClass> classes = new ArrayList<>();
 	String packageName = getPackageName(mainClassName);
 	File dir = new File(root + "/" + packageName.replace('.', '/'));
 	File[] files = dir.listFiles();
@@ -377,7 +374,7 @@ JNIClass[] getASTClasses() {
 
 public JNIClass[] getNativesClasses(JNIClass[] classes) {
 	if (mainClass == null) return new JNIClass[0];
-	List<JNIClass> result = new ArrayList<JNIClass>();
+	List<JNIClass> result = new ArrayList<>();
 	for (int i = 0; i < classes.length; i++) {
 		JNIClass clazz = classes[i];
 		JNIMethod[] methods = clazz.getDeclaredMethods();
@@ -395,7 +392,7 @@ public JNIClass[] getNativesClasses(JNIClass[] classes) {
 
 public JNIClass[] getStructureClasses(JNIClass[] classes) {
 	if (mainClass == null) return new JNIClass[0];
-	List<JNIClass> result = new ArrayList<JNIClass>();
+	List<JNIClass> result = new ArrayList<>();
 	outer:
 	for (int i = 0; i < classes.length; i++) {
 		JNIClass clazz = classes[i];

@@ -10,20 +10,15 @@
  *******************************************************************************/
 package org.eclipse.swt.tools.internal;
 
-import java.lang.reflect.Modifier;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
-import java.util.TreeMap;
+import java.lang.reflect.*;
+import java.util.*;
 
 public class EmbedMetaData extends JNIGenerator {
 	TreeMap<Integer, String> inserts;
 
 @Override
 public void generate(JNIClass clazz) {
-	inserts = new TreeMap<Integer, String>();
+	inserts = new TreeMap<>();
 	String data = ((AbstractItem)clazz).flatten();
 	if (data != null && data.length() != 0) {
 		String doc = "/** @jniclass " + data + " */" + delimiter;
@@ -37,7 +32,7 @@ public void generate(JNIClass clazz) {
 	String sourcePath = ((ASTClass)clazz).sourcePath;
 	String source = JNIGenerator.loadFile(sourcePath);
 	Set<Integer> set = inserts.keySet();
-	List<Integer> keys = new ArrayList<Integer>();
+	List<Integer> keys = new ArrayList<>();
 	keys.addAll(set);
 	Collections.reverse(keys);
 	StringBuffer buffer = new StringBuffer(source);
@@ -84,7 +79,7 @@ public void generate(JNIMethod[] methods) {
 }
 
 public void generate(JNIMethod method) {
-	List<String> tags = new ArrayList<String>();
+	List<String> tags = new ArrayList<>();
 	String data = ((AbstractItem)method).flatten();
 	if (data != null && data.length() != 0) {
 		tags.add("@method " + data);

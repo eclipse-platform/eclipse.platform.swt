@@ -139,7 +139,7 @@ public class MozillaGenerator {
 	}
 
 	public MozillaGenerator() {
-		vtbls = new Hashtable<Integer, List<String>>();
+		vtbls = new Hashtable<>();
 	}
 
 	/** Write callbacks */
@@ -265,7 +265,7 @@ public class MozillaGenerator {
 		Integer key = new Integer(argTypes.length);
 		List<String> list = vtbls.get(key);
 		if (list == null) {
-			list = new ArrayList<String>();
+			list = new ArrayList<>();
 			vtbls.put(key, list);
 		}
 		boolean duplicate = false;

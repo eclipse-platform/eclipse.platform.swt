@@ -94,7 +94,7 @@ public void dumpSnapshot(PrintStream ps) {
 }
 
 public void dumpSnapshot(String className, PrintStream ps) {
-	Hashtable<String, NativeFunction[]> snapshot = new Hashtable<String, NativeFunction[]>();
+	Hashtable<String, NativeFunction[]> snapshot = new Hashtable<>();
 	snapshot(className, snapshot);
 	dump(className, snapshot.get(className), ps);
 }
@@ -136,7 +136,7 @@ public void reset() {
 }
 
 public Hashtable<String, NativeFunction[]> snapshot() {
-	Hashtable<String, NativeFunction[]> snapshot = new Hashtable<String, NativeFunction[]>();
+	Hashtable<String, NativeFunction[]> snapshot = new Hashtable<>();
 	for (int i = 0; i < classes.length; i++) {
 		String className = classes[i];
 		snapshot(className, snapshot);

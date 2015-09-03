@@ -62,7 +62,7 @@ void loadClassSource() {
 void loadFiles () {
 	// BAD - holds on to a lot of memory
 	if (sourcePath == null) return;
-	files = new Hashtable<File, String> ();
+	files = new Hashtable<> ();
 	for (int i = 0; i < sourcePath.length; i++) {
 		File file = new File(sourcePath[i]);
 		if (file.exists()) {

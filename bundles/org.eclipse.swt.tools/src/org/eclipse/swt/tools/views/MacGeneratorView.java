@@ -76,7 +76,7 @@ public class MacGeneratorView extends ViewPart {
 				IResourceDelta rootDelta = event.getDelta();
 				IResourceDelta piDelta = rootDelta.findMember(root.getFullPath());
 				if (piDelta == null) return;
-				final ArrayList<IResource> changed = new ArrayList<IResource>();
+				final ArrayList<IResource> changed = new ArrayList<>();
 				IResourceDeltaVisitor visitor = new IResourceDeltaVisitor() {
 					@Override
 					public boolean visit(IResourceDelta delta) {

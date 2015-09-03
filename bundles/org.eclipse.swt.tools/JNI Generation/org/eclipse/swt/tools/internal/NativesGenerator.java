@@ -221,7 +221,7 @@ public void setEnterExitMacro(boolean enterExitMacro) {
 }
 
 void generateExcludes(JNIMethod[] methods) {
-	HashSet<String> excludes = new HashSet<String>();
+	HashSet<String> excludes = new HashSet<>();
 	for (int i = 0; i < methods.length; i++) {
 		JNIMethod method = methods[i];
 		if ((method.getModifiers() & Modifier.NATIVE) == 0) continue;

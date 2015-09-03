@@ -64,9 +64,9 @@ public class JavadocBasher {
 	List<String> fSkipped;
 
 	public JavadocBasher() {
-		fBashed = new ArrayList<String>();
-		fUnchanged = new ArrayList<String>();
-		fSkipped = new ArrayList<String>();
+		fBashed = new ArrayList<>();
+		fUnchanged = new ArrayList<>();
+		fSkipped = new ArrayList<>();
 	}
 	
 	public static class Edit {
@@ -259,7 +259,7 @@ public class JavadocBasher {
 		parser.setSource(contents);
 		CompilationUnit targetUnit = (CompilationUnit)parser.createAST(null);
 
-		final HashMap<String, String> comments = new HashMap<String, String>();
+		final HashMap<String, String> comments = new HashMap<>();
 		sourceUnit.accept(new ASTVisitor() {
 			String prefix = "";
 			@Override
@@ -317,7 +317,7 @@ public class JavadocBasher {
 		});
 
 
-		final List<Edit> edits = new ArrayList<Edit>();
+		final List<Edit> edits = new ArrayList<>();
 		targetUnit.accept(new ASTVisitor() {
 			String prefix = "";
 			@Override
