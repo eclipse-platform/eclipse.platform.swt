@@ -925,16 +925,20 @@ public Rectangle getTextBounds (int index) {
 	int horizontalSeparator = buffer[0];
 	rect.x += horizontalSeparator;
 	OS.gtk_tree_view_column_cell_get_position (column, textRenderer, x, null);
-	// Fix for Eclipse bug 469277, we need to re-adjust the bounds for the text
+	// Fix for Eclipse bug 476562, we need to re-adjust the bounds for the text
 	// when the separator value is less than the width of the image. Previously
 	// images larger than 16px in width would be cut off on the right side.
-	Image image = _getImage(index);
-	int imageWidth = 0;
-	if (image != null) {
-		imageWidth = _getImage (index).getBounds ().width;
-	}
-	if (OS.GTK3 && x [0] < imageWidth) {
-		rect.x += imageWidth;
+	if (OS.GTK3) {
+		Image image = _getImage(index);
+		int imageWidth = 0;
+		if (image != null) {
+			imageWidth = image.getBounds ().width;
+		}
+		if (x [0] < imageWidth) {
+			rect.x += imageWidth;
+		} else {
+			rect.x += x [0];
+		}
 	} else {
 		rect.x += x [0];
 	}
