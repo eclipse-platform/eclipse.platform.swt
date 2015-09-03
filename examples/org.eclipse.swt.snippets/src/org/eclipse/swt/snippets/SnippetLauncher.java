@@ -1,5 +1,6 @@
 package org.eclipse.swt.snippets;
 
+import java.io.*;
 /*
  * Simple "hackable" code that runs all of the SWT Snippets,
  * typically for testing. One example of a useful "hack" is
@@ -10,9 +11,8 @@ package org.eclipse.swt.snippets;
  * in order to run all of the Table and Tree Snippets.
  */
 import java.lang.reflect.*;
-import java.io.*;
 
-import org.eclipse.swt.SWT;
+import org.eclipse.swt.*;
 
 public class SnippetLauncher {
 
@@ -35,9 +35,7 @@ public class SnippetLauncher {
 				System.out.println("\n" + clazz.getName());
 				if (hasSource) {
 					File sourceFile = new File(sourceDir, className + ".java");
-					FileReader reader = null;
-					try {
-						reader = new FileReader(sourceFile);
+					try (FileReader reader = new FileReader(sourceFile);){
 						char [] buffer = new char [(int)sourceFile.length()];
 						reader.read(buffer);
 						String source = String.valueOf(buffer);
@@ -71,14 +69,6 @@ public class SnippetLauncher {
 							continue;
 						}
 					} catch (Exception e) {
-					} finally {
-						if (reader != null) {
-							try {
-								reader.close();
-							} catch (IOException e) {
-								// Ignore
-							}
-						}
 					}
 				}
 				Method method = null;

@@ -50,10 +50,9 @@ public void javaToNative (Object object, TransferData transferData) {
 		DND.error(DND.ERROR_INVALID_DATA);
 	}
 	MyType [] myTypes = (MyType []) object;
-	try {
+	try (ByteArrayOutputStream out = new ByteArrayOutputStream ();
+		DataOutputStream writeOut = new DataOutputStream (out)) {
 		// write data to a byte array and then ask super to convert to pMedium
-		ByteArrayOutputStream out = new ByteArrayOutputStream ();
-		DataOutputStream writeOut = new DataOutputStream (out);
 		for (int i = 0, length = myTypes.length; i < length; i++) {
 			byte [] buffer = myTypes [i].fileName.getBytes ();
 			writeOut.writeInt (buffer.length);
@@ -64,8 +63,7 @@ public void javaToNative (Object object, TransferData transferData) {
 		byte [] buffer = out.toByteArray ();
 		writeOut.close ();
 		super.javaToNative (buffer, transferData);
-	}
-	catch (IOException e) {}
+	} catch (IOException e) {}
 }
 
 @Override
@@ -75,9 +73,8 @@ public Object nativeToJava (TransferData transferData) {
 		if (buffer == null) return null;
 
 		MyType [] myData = new MyType [0];
-		try {
-			ByteArrayInputStream in = new ByteArrayInputStream (buffer);
-			DataInputStream readIn = new DataInputStream (in);
+		try (ByteArrayInputStream in = new ByteArrayInputStream (buffer);
+			DataInputStream readIn = new DataInputStream (in)) {
 			while (readIn.available () > 20) {
 				MyType datum = new MyType ();
 				int size = readIn.readInt ();

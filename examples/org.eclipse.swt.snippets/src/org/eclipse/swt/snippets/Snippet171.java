@@ -50,9 +50,8 @@ static class MyTransfer extends ByteArrayTransfer {
 
 	byte[] javaToByteArray(Object object) {
 		MyType data = (MyType) object;
-		try {
-			ByteArrayOutputStream out = new ByteArrayOutputStream();
-			DataOutputStream writeOut = new DataOutputStream(out);
+		try (ByteArrayOutputStream out = new ByteArrayOutputStream();
+			DataOutputStream writeOut = new DataOutputStream(out)){
 			byte[] buffer = data.fileName.getBytes();
 			writeOut.writeInt(buffer.length);
 			writeOut.write(buffer);
@@ -68,9 +67,8 @@ static class MyTransfer extends ByteArrayTransfer {
 
 	Object byteArrayToJava(byte[] bytes) {
 		MyType data = new MyType();
-		try {
-			ByteArrayInputStream in = new ByteArrayInputStream(bytes);
-			DataInputStream readIn = new DataInputStream(in);
+		try (ByteArrayInputStream in = new ByteArrayInputStream(bytes);
+			DataInputStream readIn = new DataInputStream(in)){
 			int size = readIn.readInt();
 			byte[] buffer = new byte[size];
 			readIn.read(buffer);
@@ -155,9 +153,8 @@ static class MyTransfer2 extends MyTransfer {
 	@Override
 	byte[] javaToByteArray(Object object) {
 		MyType2 data = (MyType2) object;
-		try {
-			ByteArrayOutputStream out = new ByteArrayOutputStream();
-			DataOutputStream writeOut = new DataOutputStream(out);
+		try (ByteArrayOutputStream out = new ByteArrayOutputStream();
+			DataOutputStream writeOut = new DataOutputStream(out)) {
 			byte[] buffer = data.fileName.getBytes();
 			writeOut.writeInt(buffer.length);
 			writeOut.write(buffer);
@@ -177,9 +174,8 @@ static class MyTransfer2 extends MyTransfer {
 	@Override
 	Object byteArrayToJava(byte[] bytes) {
 		MyType2 data = new MyType2();
-		try {
-			ByteArrayInputStream in = new ByteArrayInputStream(bytes);
-			DataInputStream readIn = new DataInputStream(in);
+		try (ByteArrayInputStream in = new ByteArrayInputStream(bytes);
+			DataInputStream readIn = new DataInputStream(in)) {
 			int size = readIn.readInt();
 			byte[] buffer = new byte[size];
 			readIn.read(buffer);

@@ -18,16 +18,16 @@ package org.eclipse.swt.snippets;
  * 
  * @since 3.0
  */
-import java.awt.BorderLayout;
-import java.awt.Frame;
-import java.awt.Panel;
+import java.awt.*;
+import java.util.*;
+
 import javax.swing.*;
-import java.util.Vector;
 
 import org.eclipse.swt.*;
-import org.eclipse.swt.widgets.*;
+import org.eclipse.swt.awt.*;
 import org.eclipse.swt.layout.*;
-import org.eclipse.swt.awt.SWT_AWT;
+import org.eclipse.swt.widgets.*;
+import org.eclipse.swt.widgets.Composite;
 
 public class Snippet154 {
 
@@ -64,15 +64,15 @@ public class Snippet154 {
 
 		/* Creating components */
 		int nrows = 1000, ncolumns = 10;
-		Vector<Vector<String>> rows = new Vector<Vector<String>>();
+		Vector<Vector<String>> rows = new Vector<>();
 		for (int i = 0; i < nrows; i++) {
-			Vector<String> row = new Vector<String>();
+			Vector<String> row = new Vector<>();
 			for (int j = 0; j < ncolumns; j++) {
 				row.addElement("Item " + i + "-" + j);
 			}
 			rows.addElement(row);
 		}
-		Vector<String> columns = new Vector<String>();
+		Vector<String> columns = new Vector<>();
 		for (int i = 0; i < ncolumns; i++) {
 			columns.addElement("Column " + i);
 		}

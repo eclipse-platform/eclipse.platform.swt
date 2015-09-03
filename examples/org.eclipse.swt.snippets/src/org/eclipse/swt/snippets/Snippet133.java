@@ -17,12 +17,13 @@ package org.eclipse.swt.snippets;
  * http://www.eclipse.org/swt/snippets/
  */
 import java.io.*;
+
 import org.eclipse.swt.*;
-import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.events.*;
+import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.layout.*;
 import org.eclipse.swt.printing.*;
+import org.eclipse.swt.widgets.*;
 
 public class Snippet133 {
 	Display display;
@@ -127,35 +128,34 @@ public class Snippet133 {
 	void menuOpen() {
 		final String textString;
 		FileDialog dialog = new FileDialog(shell, SWT.OPEN);
-		dialog.setFilterExtensions(new String[] {"*.java", "*.*"});
+		dialog.setFilterExtensions(new String[] { "*.java", "*.*" });
 		String name = dialog.open();
-		if ((name == null) || (name.length() == 0)) return;
-	
-		try {
-			File file = new File(name);
-			FileInputStream stream= new FileInputStream(file.getPath());
-			try {
-				Reader in = new BufferedReader(new InputStreamReader(stream));
-				char[] readBuffer= new char[2048];
-				StringBuffer buffer= new StringBuffer((int) file.length());
-				int n;
-				while ((n = in.read(readBuffer)) > 0) {
-					buffer.append(readBuffer, 0, n);
-				}
-				textString = buffer.toString();
-				stream.close();
-			} catch (IOException e) {
-				MessageBox box = new MessageBox(shell, SWT.ICON_ERROR);
-				box.setMessage("Error reading file:\n" + name);
-				box.open();
-				return;
+		if ((name == null) || (name.length() == 0))
+			return;
+
+		File file = new File(name);
+		try (FileInputStream stream = new FileInputStream(file.getPath())) {
+			Reader in = new BufferedReader(new InputStreamReader(stream));
+			char[] readBuffer = new char[2048];
+			StringBuffer buffer = new StringBuffer((int) file.length());
+			int n;
+			while ((n = in.read(readBuffer)) > 0) {
+				buffer.append(readBuffer, 0, n);
 			}
+			textString = buffer.toString();
+			stream.close();
 		} catch (FileNotFoundException e) {
 			MessageBox box = new MessageBox(shell, SWT.ICON_ERROR);
 			box.setMessage("File not found:\n" + name);
 			box.open();
 			return;
-		}	
+		} catch (IOException e) {
+			MessageBox box = new MessageBox(shell, SWT.ICON_ERROR);
+			box.setMessage("Error reading file:\n" + name);
+			box.open();
+			return;
+		}
+
 		text.setText(textString);
 	}
 

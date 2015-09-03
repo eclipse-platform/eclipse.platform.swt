@@ -40,7 +40,7 @@ public class Snippet352 {
 		Color color;
 	}
 	
-	static Map<Long, CircleInfo> touchLocations = new HashMap<Long, CircleInfo>();
+	static Map<Long, CircleInfo> touchLocations = new HashMap<>();
 	static int colorIndex = 0;
 	static final int PAINTABLE_COLORS = 15;
 	static final int CIRCLE_RADIUS = 40;
