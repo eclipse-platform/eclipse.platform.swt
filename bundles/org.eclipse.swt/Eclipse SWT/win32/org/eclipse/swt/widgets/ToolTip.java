@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2013 IBM Corporation and others.
+ * Copyright (c) 2000, 2015 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -11,10 +11,10 @@
 package org.eclipse.swt.widgets;
 
 
-import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.internal.win32.*;
 import org.eclipse.swt.*;
 import org.eclipse.swt.events.*;
+import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.internal.win32.*;
 
 /**
  * Instances of this class represent popup windows that are used
@@ -36,7 +36,7 @@ import org.eclipse.swt.events.*;
  * @see <a href="http://www.eclipse.org/swt/snippets/#tooltips">Tool Tips snippets</a>
  * @see <a href="http://www.eclipse.org/swt/examples.php">SWT Example: ControlExample</a>
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
- * 
+ *
  * @since 3.2
  * @noextend This class is not intended to be subclassed by clients.
  */
@@ -418,7 +418,7 @@ public void setMessage (String string) {
 	checkWidget ();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 	message = string;
-	//TODO - update when visible
+	updateMessage();
 }
 
 /**
@@ -440,6 +440,23 @@ public void setText (String string) {
 	text = string;
 	//TODO - update when visible
 	//TODO - support text direction (?)
+}
+
+void updateMessage () {
+	long /*int*/ hwnd = hwndToolTip();
+	if (OS.SendMessage (hwnd, OS.TTM_GETCURRENTTOOL, 0, 0) != 0) {
+		TOOLINFO lpti = new TOOLINFO ();
+		lpti.cbSize = TOOLINFO.sizeof;
+		if (OS.SendMessage (hwnd, OS.TTM_GETCURRENTTOOL, 0, lpti) != 0) {
+			long /*int*/ hHeap = OS.GetProcessHeap ();
+			TCHAR buffer = new TCHAR (0, message, true);
+			int byteCount = buffer.length () * TCHAR.sizeof;
+			lpti.lpszText = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, byteCount);
+			OS.MoveMemory (lpti.lpszText, buffer, byteCount);
+			OS.SendMessage (hwnd, OS.TTM_UPDATETIPTEXT, 0, lpti);
+			OS.HeapFree(hHeap, 0, lpti.lpszText);
+		}
+	}
 }
 
 /**
@@ -517,6 +534,7 @@ public void setVisible (boolean visible) {
 			
 			int time = (int)/*64*/OS.SendMessage (hwndToolTip, OS.TTM_GETDELAYTIME, OS.TTDT_AUTOPOP, 0);
 			OS.SetTimer (hwndToolTip, TIMER_ID, time, 0);
+			updateMessage();
 		} else {
 			OS.SendMessage (hwndToolTip, OS.TTM_TRACKACTIVATE, 0, lpti);
 			OS.SendMessage (hwndToolTip, OS.TTM_POP, 0, 0);

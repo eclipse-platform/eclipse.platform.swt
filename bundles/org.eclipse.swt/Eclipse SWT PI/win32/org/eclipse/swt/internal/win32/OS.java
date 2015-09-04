@@ -1842,8 +1842,9 @@ public class OS extends C {
 	public static final int TTM_GETDELAYTIME = 0x400 + 21;
 	public static final int TTM_DELTOOL = IsUnicode ? 0x433 : 0x405;
 	public static final int TTM_GETTOOLINFO = 0x400 + (IsUnicode ? 53 : 8);
+	public static final int TTM_GETTOOLCOUNT = 0x40D;
 	public static final int TTM_NEWTOOLRECT = 0x400 + (IsUnicode ? 52 : 6);
-	public static final int TTM_POP = 0x400 + 28; 
+	public static final int TTM_POP = 0x400 + 28;
 	public static final int TTM_SETDELAYTIME = 0x400 + 3;
 	public static final int TTM_SETMAXTIPWIDTH = 0x418;
 	public static final int TTM_SETTITLEA = 0x400 + 32;
@@ -1852,6 +1853,7 @@ public class OS extends C {
 	public static final int TTM_TRACKPOSITION = 1042;
 	public static final int TTM_TRACKACTIVATE = 1041;
 	public static final int TTM_UPDATE = 0x41D;
+	public static final int TTM_UPDATETIPTEXT = 0x400 + (IsUnicode ? 57 : 12);
 	public static final int TTN_FIRST = 0xfffffdf8;
 	public static final int TTN_GETDISPINFO = IsUnicode ? 0xfffffdee : 0xfffffdf8;
 	public static final int TTN_GETDISPINFOW = 0xfffffdee;
