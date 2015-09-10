@@ -3664,7 +3664,7 @@ Rectangle getBoundsAtOffset(int offset) {
 	String line = content.getLine(lineIndex);
 	Rectangle bounds;
 	if (line.length() != 0) {
-		int offsetInLine = offset - lineOffset;
+		int offsetInLine = Math.max (0, offset - lineOffset);
 		TextLayout layout = renderer.getTextLayout(lineIndex);
 		if (caretAlignment == PREVIOUS_OFFSET_TRAILING && offsetInLine != 0) {
 			offsetInLine = layout.getPreviousOffset(offsetInLine, SWT.MOVEMENT_CLUSTER); 
@@ -5455,7 +5455,7 @@ Point getPointAtOffset(int offset) {
 	int lineIndex = content.getLineAtOffset(offset);
 	String line = content.getLine(lineIndex);
 	int lineOffset = content.getOffsetAtLine(lineIndex);
-	int offsetInLine = offset - lineOffset;
+	int offsetInLine = Math.max (0, offset - lineOffset);
 	int lineLength = line.length();
 	if (lineIndex < content.getLineCount() - 1) {
 		int endLineOffset = content.getOffsetAtLine(lineIndex + 1) - 1;
