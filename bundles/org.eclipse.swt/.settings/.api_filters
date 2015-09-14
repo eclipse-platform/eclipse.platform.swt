@@ -1404,28 +1404,4 @@
             </message_arguments>
         </filter>
     </resource>
-    <resource path="META-INF/MANIFEST.MF" type="org.eclipse.swt.custom.TableTree">
-        <filter comment="Bug 475833: Delete TableTree and related items" id="305324134">
-            <message_arguments>
-                <message_argument value="org.eclipse.swt.custom.TableTree"/>
-                <message_argument value="org.eclipse.swt_3.104.0"/>
-            </message_arguments>
-        </filter>
-    </resource>
-    <resource path="META-INF/MANIFEST.MF" type="org.eclipse.swt.custom.TableTreeEditor">
-        <filter comment="Bug 475833: Delete TableTree and related items" id="305324134">
-            <message_arguments>
-                <message_argument value="org.eclipse.swt.custom.TableTreeEditor"/>
-                <message_argument value="org.eclipse.swt_3.104.0"/>
-            </message_arguments>
-        </filter>
-    </resource>
-    <resource path="META-INF/MANIFEST.MF" type="org.eclipse.swt.custom.TableTreeItem">
-        <filter comment="Bug 475833: Delete TableTree and related items" id="305324134">
-            <message_arguments>
-                <message_argument value="org.eclipse.swt.custom.TableTreeItem"/>
-                <message_argument value="org.eclipse.swt_3.104.0"/>
-            </message_arguments>
-        </filter>
-    </resource>
 </component>

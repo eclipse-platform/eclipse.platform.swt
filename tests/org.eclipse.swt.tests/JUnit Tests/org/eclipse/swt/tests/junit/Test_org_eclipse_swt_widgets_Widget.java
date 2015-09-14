@@ -10,6 +10,8 @@
  *******************************************************************************/
 package org.eclipse.swt.tests.junit;
 
+import junit.framework.TestCase;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.DisposeEvent;
 import org.eclipse.swt.events.DisposeListener;
@@ -20,8 +22,6 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Widget;
 import org.junit.Test;
-
-import junit.framework.TestCase;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.widgets.Widget
@@ -190,8 +190,8 @@ protected String getTestName() {
     if(index != -1)
         test = test.substring(index+1, test.length());
     String clss = getClassName();
-    if((!test.equals("MenuDetect") || clss.equals("Table") || test.startsWith("Chevron")) &&
-       (!test.equals("DragDetect") || clss.equals("Tree") || test.startsWith("Chevron")) &&
+    if((!test.equals("MenuDetect") || clss.equals("Table") || clss.equals("TableTree") || test.startsWith("Chevron")) &&
+       (!test.equals("DragDetect") || clss.equals("Tree") || clss.equals("TableTree") || test.startsWith("Chevron")) &&
        (!test.equals("DoubleClick") || clss.equals("List")) &&
        (!test.equals("KeySelection") || clss.equals("Slider") || clss.equals("Combo") || clss.equals("CCombo") || clss.equals("CTabFolder")) &&
        (!test.equals("EnterSelection") || clss.equals("Button") || clss.equals("ToolBar") || clss.equals("CCombo") || clss.equals("ExpandBar")))
