@@ -8,7 +8,7 @@
  * the LGPL accompanying this distribution and there is any conflict
  * between the two license versions, the terms of the LGPL accompanying
  * this distribution shall govern.
- * 
+ *
  * Contributors:
  *     IBM Corporation - initial API and implementation
  *******************************************************************************/
@@ -636,7 +636,6 @@ char * OS_nativeFunctionNames[] = {
 	"_1glib_1micro_1version",
 	"_1glib_1minor_1version",
 	"_1gtk_1accel_1group_1new",
-	"_1gtk_1accel_1label_1new",
 	"_1gtk_1accel_1label_1set_1accel",
 	"_1gtk_1accel_1label_1set_1accel_1widget",
 	"_1gtk_1accelerator_1get_1default_1mod_1mask",
@@ -659,8 +658,6 @@ char * OS_nativeFunctionNames[] = {
 	"_1gtk_1bin_1get_1child",
 	"_1gtk_1border_1free",
 	"_1gtk_1box_1new",
-	"_1gtk_1box_1pack_1end",
-	"_1gtk_1box_1reorder_1child",
 	"_1gtk_1box_1set_1child_1packing",
 	"_1gtk_1box_1set_1homogeneous",
 	"_1gtk_1box_1set_1spacing",
@@ -688,7 +685,6 @@ char * OS_nativeFunctionNames[] = {
 	"_1gtk_1cell_1renderer_1toggle_1new",
 	"_1gtk_1check_1button_1new",
 	"_1gtk_1check_1menu_1item_1get_1active",
-	"_1gtk_1check_1menu_1item_1new",
 	"_1gtk_1check_1menu_1item_1new_1with_1label",
 	"_1gtk_1check_1menu_1item_1set_1active",
 	"_1gtk_1check_1version",
@@ -863,7 +859,6 @@ char * OS_nativeFunctionNames[] = {
 	"_1gtk_1image_1set_1from_1gicon",
 	"_1gtk_1image_1set_1from_1icon_1name",
 	"_1gtk_1image_1set_1from_1pixbuf",
-	"_1gtk_1image_1set_1pixel_1size",
 	"_1gtk_1init_1check",
 	"_1gtk_1label_1get_1layout",
 	"_1gtk_1label_1get_1mnemonic_1keyval",
@@ -921,8 +916,6 @@ char * OS_nativeFunctionNames[] = {
 	"_1gtk_1major_1version",
 	"_1gtk_1menu_1bar_1new",
 	"_1gtk_1menu_1item_1get_1submenu",
-	"_1gtk_1menu_1item_1new",
-	"_1gtk_1menu_1item_1new_1with_1label",
 	"_1gtk_1menu_1item_1set_1submenu",
 	"_1gtk_1menu_1new",
 	"_1gtk_1menu_1popdown",

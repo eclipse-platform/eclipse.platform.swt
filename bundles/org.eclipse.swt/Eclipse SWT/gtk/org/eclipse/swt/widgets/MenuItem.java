@@ -38,21 +38,7 @@ import org.eclipse.swt.internal.gtk.*;
  */
 public class MenuItem extends Item {
 	Menu parent, menu;
-	long /*int*/ groupHandle, labelHandle, imageHandle;
-
-	/** Feature in Gtk: as of Gtk version 3.10 GtkImageMenuItem is deprecated,
-	 * meaning that MenuItems in SWT with images can no longer be GtkImageMenuItems
-	 * after Gtk3.10. The solution to this is to create a GtkMenuItem, add a GtkBox
-	 * as its child, and pack that box with a GtkLabel and GtkImage. This reproduces
-	 * the functionality of a GtkImageMenuItem and allows SWT to retain image support
-	 * for MenuItems.
-	 *
-	 * For more information see:
-	 * https://developer.gnome.org/gtk3/stable/GtkImageMenuItem.html#GtkImageMenuItem.description
-	 * Bug 470298
-	 */
-	long /*int*/ boxHandle;
-
+	long /*int*/ groupHandle;
 	int accelerator, userId;
 	String toolTipText;
 
@@ -254,11 +240,10 @@ protected void checkSubclass () {
 void createHandle (int index) {
 	state |= HANDLE;
 	byte [] buffer = new byte [1];
-	int bits = SWT.CHECK | SWT.RADIO | SWT.PUSH | SWT.SEPARATOR | SWT.CASCADE;
+	int bits = SWT.CHECK | SWT.RADIO | SWT.PUSH | SWT.SEPARATOR;
 	switch (style & bits) {
 		case SWT.SEPARATOR:
 			handle = OS.gtk_separator_menu_item_new ();
-			if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 			break;
 		case SWT.RADIO:
 			/*
@@ -277,113 +262,20 @@ void createHandle (int index) {
 			OS.g_object_ref (groupHandle);
 			OS.g_object_ref_sink (groupHandle);
 			long /*int*/ group = OS.gtk_radio_menu_item_get_group (groupHandle);
-			if (OS.GTK3) {
-				handle = OS.gtk_radio_menu_item_new (group);
-				if (handle == 0) error (SWT.ERROR_NO_HANDLES);
-
-				labelHandle = OS.gtk_accel_label_new (buffer);
-				if (labelHandle == 0) error (SWT.ERROR_NO_HANDLES);
-
-				boxHandle = gtk_box_new (OS.GTK_ORIENTATION_HORIZONTAL, false, 6);
-				if (boxHandle == 0) error (SWT.ERROR_NO_HANDLES);
-
-				if (OS.SWT_PADDED_MENU_ITEMS) {
-					imageHandle = OS.gtk_image_new ();
-					if (imageHandle == 0) error (SWT.ERROR_NO_HANDLES);
-				}
-			} else { // Gtk2
-				handle = OS.gtk_radio_menu_item_new_with_label (group, buffer);
-			}
+			handle = OS.gtk_radio_menu_item_new_with_label (group, buffer);
 			break;
 		case SWT.CHECK:
-			if (OS.GTK3) {
-				handle = OS.gtk_check_menu_item_new ();
-				if (handle == 0) error (SWT.ERROR_NO_HANDLES);
-
-				labelHandle = OS.gtk_accel_label_new (buffer);
-				if (labelHandle == 0) error (SWT.ERROR_NO_HANDLES);
-
-				boxHandle = gtk_box_new (OS.GTK_ORIENTATION_HORIZONTAL, false, 6);
-				if (boxHandle == 0) error (SWT.ERROR_NO_HANDLES);
-
-				if (OS.SWT_PADDED_MENU_ITEMS) {
-					imageHandle = OS.gtk_image_new ();
-					if (imageHandle == 0) error (SWT.ERROR_NO_HANDLES);
-				}
-			} else { // Gtk2
-				handle = OS.gtk_check_menu_item_new_with_label (buffer);
-				if (handle == 0) error (SWT.ERROR_NO_HANDLES);
-			}
+			handle = OS.gtk_check_menu_item_new_with_label (buffer);
 			break;
-		// This case now needs to be handled due to double padding. When double padded
-		// menus are used, the "head" menu item (such as File, Edit, Help, etc.) should
-		// not be padded. We only care about this in Gtk3.
-		case SWT.CASCADE:
-			if (OS.GTK3) {
-				handle = OS.gtk_menu_item_new ();
-				if (handle == 0) error (SWT.ERROR_NO_HANDLES);
-
-				labelHandle = OS.gtk_accel_label_new (buffer);
-				if (labelHandle == 0) error (SWT.ERROR_NO_HANDLES);
-
-				boxHandle = gtk_box_new (OS.GTK_ORIENTATION_HORIZONTAL, false, 6);
-				if (boxHandle == 0) error (SWT.ERROR_NO_HANDLES);
-				if ((parent.style & bits) == SWT.BAR) {
-					break;
-				}
-				if (OS.SWT_PADDED_MENU_ITEMS) {
-					imageHandle = OS.gtk_image_new ();
-					if (imageHandle == 0) error (SWT.ERROR_NO_HANDLES);
-				}
-				break;
-			}
 		case SWT.PUSH:
 		default:
-			if (OS.GTK3) {
-				handle = OS.gtk_menu_item_new ();
-				if (handle == 0) error (SWT.ERROR_NO_HANDLES);
-
-				labelHandle = OS.gtk_accel_label_new (buffer);
-				if (labelHandle == 0) error (SWT.ERROR_NO_HANDLES);
-
-				boxHandle = gtk_box_new (OS.GTK_ORIENTATION_HORIZONTAL, false, 6);
-				if (boxHandle == 0) error (SWT.ERROR_NO_HANDLES);
-
-				if (OS.SWT_PADDED_MENU_ITEMS) {
-					imageHandle = OS.gtk_image_new ();
-					if (imageHandle == 0) error (SWT.ERROR_NO_HANDLES);
-				}
-			} else { // Gtk2
-				handle = OS.gtk_image_menu_item_new_with_label (buffer);
-			}
+			handle = OS.gtk_image_menu_item_new_with_label (buffer);
 			break;
 	}
-	if (imageHandle != 0) {
-		if (OS.SWT_PADDED_MENU_ITEMS) {
-			OS.gtk_image_set_pixel_size (imageHandle, 16);
-		}
-		OS.gtk_container_add (boxHandle, imageHandle);
-		OS.gtk_widget_show (imageHandle);
-	}
-	if (labelHandle != 0) {
-		if (OS.GTK_VERSION >= OS.VERSION (3, 16, 0)) {
-			OS.gtk_label_set_xalign (labelHandle, 0);
-			OS.gtk_widget_set_halign (labelHandle, OS.GTK_ALIGN_FILL);
-		} else {
-			OS.gtk_misc_set_alignment(labelHandle, 0, 0);
-		}
-		OS.gtk_box_pack_end (boxHandle, labelHandle, true, true, 0);
-		OS.gtk_widget_show (labelHandle);
-	}
-	if (boxHandle != 0) {
-		OS.gtk_container_add (handle, boxHandle);
-		OS.gtk_widget_show (boxHandle);
-	}
+	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 	if ((style & SWT.SEPARATOR) == 0) {
-		if (boxHandle == 0) {
-			labelHandle = OS.gtk_bin_get_child (handle);
-		}
-		OS.gtk_accel_label_set_accel_widget (labelHandle, 0);
+		long /*int*/ label = OS.gtk_bin_get_child (handle);
+		OS.gtk_accel_label_set_accel_widget (label, 0);
 	}
 	long /*int*/ parentHandle = parent.handle;
 	boolean enabled = OS.gtk_widget_get_sensitive (parentHandle);
@@ -841,6 +733,7 @@ public void setImage (Image image) {
 	checkWidget();
 	if ((style & SWT.SEPARATOR) != 0) return;
 	super.setImage (image);
+	if (!OS.GTK_IS_IMAGE_MENU_ITEM (handle)) return;
 	if (image != null) {
 		ImageList imageList = parent.imageList;
 		if (imageList == null) imageList = parent.imageList = new ImageList ();
@@ -851,25 +744,12 @@ public void setImage (Image image) {
 			imageList.put (imageIndex, image);
 		}
 		long /*int*/ pixbuf = imageList.getPixbuf (imageIndex);
-		if (OS.GTK3) {
-			if (!OS.GTK_IS_MENU_ITEM (handle)) return;
-			if (OS.SWT_PADDED_MENU_ITEMS && imageHandle != 0) {
-				OS.gtk_image_set_from_pixbuf(imageHandle, pixbuf);
-			} else {
-				imageHandle = OS.gtk_image_new_from_pixbuf (pixbuf);
-				if (imageHandle == 0) error (SWT.ERROR_NO_HANDLES);
-				if (boxHandle != 0) {
-					OS.gtk_container_add (boxHandle, imageHandle);
-					OS.gtk_box_reorder_child (boxHandle, imageHandle, 0);
-				}
-			}
-		} else {
-			if (!OS.GTK_IS_IMAGE_MENU_ITEM (handle)) return;
-			imageHandle = OS.gtk_image_new_from_pixbuf (pixbuf);
-			OS.gtk_image_menu_item_set_image (handle, imageHandle);
-			}
+		long /*int*/ imageHandle = OS.gtk_image_new_from_pixbuf (pixbuf);
+		OS.gtk_image_menu_item_set_image (handle, imageHandle);
+		OS.gtk_widget_show (imageHandle);
+	} else {
+		OS.gtk_image_menu_item_set_image (handle, 0);
 	}
-	OS.gtk_widget_show (imageHandle);
 }
 
 /**
@@ -1029,25 +909,23 @@ public void setText (String string) {
 	}
 	char [] chars = fixMnemonic (string);
 	byte [] buffer = Converter.wcsToMbcs (null, chars, true);
-	if (boxHandle == 0 && !OS.GTK3) {
-		labelHandle = OS.gtk_bin_get_child (handle);
-	}
-	if (labelHandle != 0 && OS.GTK_IS_LABEL (labelHandle)) {
-		OS.gtk_label_set_text_with_mnemonic (labelHandle, buffer);
-		if (OS.GTK_IS_ACCEL_LABEL (labelHandle)) {
+	long /*int*/ label = OS.gtk_bin_get_child (handle);
+	if (label != 0 && OS.GTK_IS_LABEL(label)) {
+		OS.gtk_label_set_text_with_mnemonic (label, buffer);
+		if (OS.GTK_IS_ACCEL_LABEL(label)) {
 			if (OS.GTK3) {
+				OS.gtk_accel_label_set_accel_widget(label, handle);
 				if (OS.GTK_VERSION >= OS.VERSION(3, 6, 0)) {
 					MaskKeysym maskKeysym = getMaskKeysym();
 					if (maskKeysym != null) {
-						OS.gtk_accel_label_set_accel_widget (labelHandle, handle);
-						OS.gtk_accel_label_set_accel (labelHandle,
-								maskKeysym.keysym, maskKeysym.mask);
+						OS.gtk_accel_label_set_accel(label,
+							maskKeysym.keysym, maskKeysym.mask);
 					}
 				} else {
-					setAccelLabel (labelHandle, accelString);
+					setAccelLabel(label, accelString);
 				}
 			} else {
-				setAccelLabel (labelHandle, accelString);
+				setAccelLabel(label, accelString);
 			}
 			// A workaround for Ubuntu Unity global menu
 			OS.g_signal_emit_by_name(handle, OS.accel_closures_changed);
