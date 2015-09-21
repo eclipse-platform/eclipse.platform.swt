@@ -125,7 +125,11 @@ public String open () {
 	NSOpenPanel panel = NSOpenPanel.openPanel();
 
 	Display display = parent != null ? parent.getDisplay() : Display.getCurrent();
-	OS.objc_msgSend(panel.id, OS.sel_setShowsHiddenFiles_, true);
+	/* 
+	 * This line is intentionally commented. Don't show hidden files forcefully, 
+	 * instead allow Directory dialog to use the system preference.
+	 */
+	//	OS.objc_msgSend(panel.id, OS.sel_setShowsHiddenFiles_, true);
 	panel.setCanCreateDirectories(true);
 	panel.setAllowsMultipleSelection((style & SWT.MULTI) != 0);
 	panel.setTitle(NSString.stringWith(title != null ? title : ""));

@@ -224,7 +224,11 @@ public String open () {
 	
 	Display display = parent != null ? parent.getDisplay() : Display.getCurrent();
 	panel.setCanCreateDirectories(true);
-	OS.objc_msgSend(panel.id, OS.sel_setShowsHiddenFiles_, true);
+	/* 
+	 * This line is intentionally commented. Don't show hidden files forcefully, 
+	 * instead allow File dialog to use the system preference.
+	 */
+	//	OS.objc_msgSend(panel.id, OS.sel_setShowsHiddenFiles_, true);
 	long /*int*/ jniRef = 0;
 	SWTPanelDelegate delegate = null;
 	if (filterExtensions != null && filterExtensions.length != 0) {
