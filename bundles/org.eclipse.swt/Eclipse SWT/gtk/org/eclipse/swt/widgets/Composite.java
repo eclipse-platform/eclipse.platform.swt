@@ -831,7 +831,13 @@ long /*int*/ gtk_realize (long /*int*/ widget) {
 	long /*int*/ result = super.gtk_realize (widget);
 	if ((style & SWT.NO_BACKGROUND) != 0) {
 		long /*int*/ window = gtk_widget_get_window (paintHandle ());
-		if (window != 0) OS.gdk_window_set_back_pixmap (window, 0, false);
+		if (window != 0) {
+			if (OS.GTK3) {
+				OS.gdk_window_set_background_pattern(window, 0);
+			} else {
+				OS.gdk_window_set_back_pixmap (window, 0, false);
+			}
+		}
 	}
 	if (socketHandle != 0) {
 		embeddedHandle = OS.gtk_socket_get_id (socketHandle);

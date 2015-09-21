@@ -4775,7 +4775,11 @@ public void setRedraw (boolean redraw) {
 						OS.GDK_BUTTON_MOTION_MASK | OS.GDK_BUTTON1_MOTION_MASK |
 						OS.GDK_BUTTON2_MOTION_MASK | OS.GDK_BUTTON3_MOTION_MASK;
 					OS.gdk_window_set_events (window, OS.gdk_window_get_events (window) & ~mouseMask);
-					OS.gdk_window_set_back_pixmap (redrawWindow, 0, false);
+					if (OS.GTK3) {
+						OS.gdk_window_set_background_pattern(redrawWindow, 0);
+					} else {
+						OS.gdk_window_set_back_pixmap (redrawWindow, 0, false);
+					}
 					OS.gdk_window_show (redrawWindow);
 				}
 			}
