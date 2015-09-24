@@ -3771,7 +3771,7 @@ boolean updateTabHeight(boolean force){
 	gc.dispose();
 	if (fixedTabHeight == SWT.DEFAULT && controls != null && controls.length > 0) {
 		for (int i = 0; i < controls.length; i++) {		
-			if ((controlAlignments[i] & SWT.WRAP) == 0 && !controls[i].isDisposed() && (controls[i].getVisible() || controls[i] == chevronTb)) {
+			if ((controlAlignments[i] & SWT.WRAP) == 0 && !controls[i].isDisposed() && controls[i].getVisible()) {
 				int topHeight = controls[i].computeSize(SWT.DEFAULT, SWT.DEFAULT).y;
 				topHeight +=  renderer.computeTrim(CTabFolderRenderer.PART_HEADER, SWT.NONE, 0,0,0,0).height + 1;
 				tabHeight = Math.max(topHeight, tabHeight);
