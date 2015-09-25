@@ -1449,23 +1449,6 @@ public void setImage (int index, Image image) {
 		if (imageIndex == -1) imageIndex = imageList.add (image);
 		pixbuf = imageList.getPixbuf (imageIndex);
 	}
-//	Reset size of pixbufRenderer if we have an image being set that is larger
-//	than the current size of the pixbufRenderer. Fix for Bug 469277 & 476419.
-	if (OS.GTK3) {
-		long /*int*/parentHandle = parent.handle;
-		long /*int*/ column = OS.gtk_tree_view_get_column (parentHandle, index);
-		long /*int*/ pixbufRenderer = parent.getPixbufRenderer(column);
-		if (image != null) {
-			int iWidth = image.getBounds().width;
-			int iHeight = image.getBounds().height;
-			int [] currentWidth = new int [1];
-			int [] currentHeight= new int [1];
-			OS.gtk_cell_renderer_get_fixed_size(pixbufRenderer, currentWidth, currentHeight);
-			if (iWidth > currentWidth[0] || iHeight > currentHeight[0]) {
-				OS.gtk_cell_renderer_set_fixed_size(pixbufRenderer, iWidth, iHeight);
-			}
-		}
-	}
 	int modelIndex = parent.columnCount == 0 ? Tree.FIRST_COLUMN : parent.columns [index].modelIndex;
 	OS.gtk_tree_store_set (parent.modelHandle, handle, modelIndex + Tree.CELL_PIXBUF, pixbuf, -1);
 	/*

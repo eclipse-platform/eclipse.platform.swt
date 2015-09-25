@@ -689,7 +689,6 @@ typedef enum {
 	_1gtk_1cell_1layout_1get_1cells_FUNC,
 	_1gtk_1cell_1layout_1pack_1start_FUNC,
 	_1gtk_1cell_1layout_1set_1attributes_FUNC,
-	_1gtk_1cell_1renderer_1get_1fixed_1size_FUNC,
 	_1gtk_1cell_1renderer_1get_1preferred_1height_1for_1width_FUNC,
 	_1gtk_1cell_1renderer_1get_1preferred_1size_FUNC,
 	_1gtk_1cell_1renderer_1get_1size_FUNC,

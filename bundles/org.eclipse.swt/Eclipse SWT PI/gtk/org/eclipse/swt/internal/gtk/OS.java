@@ -6786,19 +6786,6 @@ public static final void gtk_cell_renderer_set_fixed_size (long /*int*/ cell, in
 }
 /**
  * @method flags=dynamic
- * @param cell cast=(GtkCellRenderer *)
- */
-public static final native void _gtk_cell_renderer_get_fixed_size(long /*int*/ cell, int[] width, int[] height);
-public static final void gtk_cell_renderer_get_fixed_size (long /*int*/ cell, int[] width, int[] height) {
-	lock.lock();
-	try {
-		_gtk_cell_renderer_get_fixed_size(cell, width, height);
-	} finally {
-		lock.unlock();
-	}
-}
-/**
- * @method flags=dynamic
  * @param widget cast=(GtkWidget *)
  * @param minimum_size cast=(GtkRequisition *)
  * @param natural_size cast=(GtkRequisition *)
