@@ -1505,6 +1505,7 @@ public class SWT {
 	 * <p><b>Used By:</b><ul>
 	 * <li><code>Shell</code></li>
 	 * </ul></p>
+	 * @since 3.105
 	 */
 	public static final int NO_MOVE = 1 << 23;
 
