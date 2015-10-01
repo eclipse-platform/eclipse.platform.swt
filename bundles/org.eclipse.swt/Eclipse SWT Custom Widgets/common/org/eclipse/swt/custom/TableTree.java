@@ -38,6 +38,8 @@ import org.eclipse.swt.widgets.*;
  * </p>
  * 
  * @deprecated As of 3.1 use Tree, TreeItem and TreeColumn
+ * @noreference This API will be deleted in a future release. See bug 475833 for details.
+ * @noextend This API will be deleted in a future release. See bug 475833 for details.
  */
 @Deprecated
 public class TableTree extends Composite {

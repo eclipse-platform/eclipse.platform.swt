@@ -465,6 +465,450 @@
             </message_arguments>
         </filter>
     </resource>
+    <resource path="Eclipse SWT Custom Widgets/common/org/eclipse/swt/custom/TableTree.java" type="org.eclipse.swt.custom.TableTree">
+        <filter comment="Planned for removal in 2017." id="338944126">
+            <message_arguments>
+                <message_argument value="org.eclipse.swt.custom.TableTree"/>
+                <message_argument value="addSelectionListener(SelectionListener)"/>
+            </message_arguments>
+        </filter>
+        <filter comment="Planned for removal in 2017." id="338944126">
+            <message_arguments>
+                <message_argument value="org.eclipse.swt.custom.TableTree"/>
+                <message_argument value="addTreeListener(TreeListener)"/>
+            </message_arguments>
+        </filter>
+        <filter comment="Planned for removal in 2017." id="338944126">
+            <message_arguments>
+                <message_argument value="org.eclipse.swt.custom.TableTree"/>
+                <message_argument value="computeSize(int, int, boolean)"/>
+            </message_arguments>
+        </filter>
+        <filter comment="Planned for removal in 2017." id="338944126">
+            <message_arguments>
+                <message_argument value="org.eclipse.swt.custom.TableTree"/>
+                <message_argument value="computeTrim(int, int, int, int)"/>
+            </message_arguments>
+        </filter>
+        <filter comment="Planned for removal in 2017." id="338944126">
+            <message_arguments>
+                <message_argument value="org.eclipse.swt.custom.TableTree"/>
+                <message_argument value="deselectAll()"/>
+            </message_arguments>
+        </filter>
+        <filter comment="Planned for removal in 2017." id="338944126">
+            <message_arguments>
+                <message_argument value="org.eclipse.swt.custom.TableTree"/>
+                <message_argument value="getBackground()"/>
+            </message_arguments>
+        </filter>
+        <filter comment="Planned for removal in 2017." id="338944126">
+            <message_arguments>
+                <message_argument value="org.eclipse.swt.custom.TableTree"/>
+                <message_argument value="getClientArea()"/>
+            </message_arguments>
+        </filter>
+        <filter comment="Planned for removal in 2017." id="338944126">
+            <message_arguments>
+                <message_argument value="org.eclipse.swt.custom.TableTree"/>
+                <message_argument value="getFont()"/>
+            </message_arguments>
+        </filter>
+        <filter comment="Planned for removal in 2017." id="338944126">
+            <message_arguments>
+                <message_argument value="org.eclipse.swt.custom.TableTree"/>
+                <message_argument value="getForeground()"/>
+            </message_arguments>
+        </filter>
+        <filter comment="Planned for removal in 2017." id="338944126">
+            <message_arguments>
+                <message_argument value="org.eclipse.swt.custom.TableTree"/>
+                <message_argument value="getItem(Point)"/>
+            </message_arguments>
+        </filter>
+        <filter comment="Planned for removal in 2017." id="338944126">
+            <message_arguments>
+                <message_argument value="org.eclipse.swt.custom.TableTree"/>
+                <message_argument value="getItem(int)"/>
+            </message_arguments>
+        </filter>
+        <filter comment="Planned for removal in 2017." id="338944126">
+            <message_arguments>
+                <message_argument value="org.eclipse.swt.custom.TableTree"/>
+                <message_argument value="getItemCount()"/>
+            </message_arguments>
+        </filter>
+        <filter comment="Planned for removal in 2017." id="338944126">
+            <message_arguments>
+                <message_argument value="org.eclipse.swt.custom.TableTree"/>
+                <message_argument value="getItemHeight()"/>
+            </message_arguments>
+        </filter>
+        <filter comment="Planned for removal in 2017." id="338944126">
+            <message_arguments>
+                <message_argument value="org.eclipse.swt.custom.TableTree"/>
+                <message_argument value="getItems()"/>
+            </message_arguments>
+        </filter>
+        <filter comment="Planned for removal in 2017." id="338944126">
+            <message_arguments>
+                <message_argument value="org.eclipse.swt.custom.TableTree"/>
+                <message_argument value="getSelection()"/>
+            </message_arguments>
+        </filter>
+        <filter comment="Planned for removal in 2017." id="338944126">
+            <message_arguments>
+                <message_argument value="org.eclipse.swt.custom.TableTree"/>
+                <message_argument value="getSelectionCount()"/>
+            </message_arguments>
+        </filter>
+        <filter comment="Planned for removal in 2017." id="338944126">
+            <message_arguments>
+                <message_argument value="org.eclipse.swt.custom.TableTree"/>
+                <message_argument value="getStyle()"/>
+            </message_arguments>
+        </filter>
+        <filter comment="Planned for removal in 2017." id="338944126">
+            <message_arguments>
+                <message_argument value="org.eclipse.swt.custom.TableTree"/>
+                <message_argument value="getTable()"/>
+            </message_arguments>
+        </filter>
+        <filter comment="Planned for removal in 2017." id="338944126">
+            <message_arguments>
+                <message_argument value="org.eclipse.swt.custom.TableTree"/>
+                <message_argument value="indexOf(TableTreeItem)"/>
+            </message_arguments>
+        </filter>
+        <filter comment="Planned for removal in 2017." id="338944126">
+            <message_arguments>
+                <message_argument value="org.eclipse.swt.custom.TableTree"/>
+                <message_argument value="removeAll()"/>
+            </message_arguments>
+        </filter>
+        <filter comment="Planned for removal in 2017." id="338944126">
+            <message_arguments>
+                <message_argument value="org.eclipse.swt.custom.TableTree"/>
+                <message_argument value="removeSelectionListener(SelectionListener)"/>
+            </message_arguments>
+        </filter>
+        <filter comment="Planned for removal in 2017." id="338944126">
+            <message_arguments>
+                <message_argument value="org.eclipse.swt.custom.TableTree"/>
+                <message_argument value="removeTreeListener(TreeListener)"/>
+            </message_arguments>
+        </filter>
+        <filter comment="Planned for removal in 2017." id="338944126">
+            <message_arguments>
+                <message_argument value="org.eclipse.swt.custom.TableTree"/>
+                <message_argument value="selectAll()"/>
+            </message_arguments>
+        </filter>
+        <filter comment="Planned for removal in 2017." id="338944126">
+            <message_arguments>
+                <message_argument value="org.eclipse.swt.custom.TableTree"/>
+                <message_argument value="setBackground(Color)"/>
+            </message_arguments>
+        </filter>
+        <filter comment="Planned for removal in 2017." id="338944126">
+            <message_arguments>
+                <message_argument value="org.eclipse.swt.custom.TableTree"/>
+                <message_argument value="setEnabled(boolean)"/>
+            </message_arguments>
+        </filter>
+        <filter comment="Planned for removal in 2017." id="338944126">
+            <message_arguments>
+                <message_argument value="org.eclipse.swt.custom.TableTree"/>
+                <message_argument value="setFont(Font)"/>
+            </message_arguments>
+        </filter>
+        <filter comment="Planned for removal in 2017." id="338944126">
+            <message_arguments>
+                <message_argument value="org.eclipse.swt.custom.TableTree"/>
+                <message_argument value="setForeground(Color)"/>
+            </message_arguments>
+        </filter>
+        <filter comment="Planned for removal in 2017." id="338944126">
+            <message_arguments>
+                <message_argument value="org.eclipse.swt.custom.TableTree"/>
+                <message_argument value="setMenu(Menu)"/>
+            </message_arguments>
+        </filter>
+        <filter comment="Planned for removal in 2017." id="338944126">
+            <message_arguments>
+                <message_argument value="org.eclipse.swt.custom.TableTree"/>
+                <message_argument value="setSelection(TableTreeItem[])"/>
+            </message_arguments>
+        </filter>
+        <filter comment="Planned for removal in 2017." id="338944126">
+            <message_arguments>
+                <message_argument value="org.eclipse.swt.custom.TableTree"/>
+                <message_argument value="setToolTipText(String)"/>
+            </message_arguments>
+        </filter>
+        <filter comment="Planned for removal in 2017." id="338944126">
+            <message_arguments>
+                <message_argument value="org.eclipse.swt.custom.TableTree"/>
+                <message_argument value="showItem(TableTreeItem)"/>
+            </message_arguments>
+        </filter>
+        <filter comment="Planned for removal in 2017." id="338944126">
+            <message_arguments>
+                <message_argument value="org.eclipse.swt.custom.TableTree"/>
+                <message_argument value="showSelection()"/>
+            </message_arguments>
+        </filter>
+        <filter comment="Planned for removal in 2017." id="338948223">
+            <message_arguments>
+                <message_argument value="org.eclipse.swt.custom.TableTree"/>
+                <message_argument value="TableTree(Composite, int)"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="Eclipse SWT Custom Widgets/common/org/eclipse/swt/custom/TableTreeEditor.java" type="org.eclipse.swt.custom.TableTreeEditor">
+        <filter comment="Planned for removal in 2017." id="338944126">
+            <message_arguments>
+                <message_argument value="org.eclipse.swt.custom.TableTreeEditor"/>
+                <message_argument value="dispose()"/>
+            </message_arguments>
+        </filter>
+        <filter comment="Planned for removal in 2017." id="338944126">
+            <message_arguments>
+                <message_argument value="org.eclipse.swt.custom.TableTreeEditor"/>
+                <message_argument value="getColumn()"/>
+            </message_arguments>
+        </filter>
+        <filter comment="Planned for removal in 2017." id="338944126">
+            <message_arguments>
+                <message_argument value="org.eclipse.swt.custom.TableTreeEditor"/>
+                <message_argument value="getItem()"/>
+            </message_arguments>
+        </filter>
+        <filter comment="Planned for removal in 2017." id="338944126">
+            <message_arguments>
+                <message_argument value="org.eclipse.swt.custom.TableTreeEditor"/>
+                <message_argument value="layout()"/>
+            </message_arguments>
+        </filter>
+        <filter comment="Planned for removal in 2017." id="338944126">
+            <message_arguments>
+                <message_argument value="org.eclipse.swt.custom.TableTreeEditor"/>
+                <message_argument value="setColumn(int)"/>
+            </message_arguments>
+        </filter>
+        <filter comment="Planned for removal in 2017." id="338944126">
+            <message_arguments>
+                <message_argument value="org.eclipse.swt.custom.TableTreeEditor"/>
+                <message_argument value="setEditor(Control, TableTreeItem, int)"/>
+            </message_arguments>
+        </filter>
+        <filter comment="Planned for removal in 2017." id="338944126">
+            <message_arguments>
+                <message_argument value="org.eclipse.swt.custom.TableTreeEditor"/>
+                <message_argument value="setItem(TableTreeItem)"/>
+            </message_arguments>
+        </filter>
+        <filter comment="Planned for removal in 2017." id="338948223">
+            <message_arguments>
+                <message_argument value="org.eclipse.swt.custom.TableTreeEditor"/>
+                <message_argument value="TableTreeEditor(TableTree)"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="Eclipse SWT Custom Widgets/common/org/eclipse/swt/custom/TableTreeItem.java" type="org.eclipse.swt.custom.TableTreeItem">
+        <filter comment="Planned for removal in 2017." id="338944126">
+            <message_arguments>
+                <message_argument value="org.eclipse.swt.custom.TableTreeItem"/>
+                <message_argument value="dispose()"/>
+            </message_arguments>
+        </filter>
+        <filter comment="Planned for removal in 2017." id="338944126">
+            <message_arguments>
+                <message_argument value="org.eclipse.swt.custom.TableTreeItem"/>
+                <message_argument value="getBackground()"/>
+            </message_arguments>
+        </filter>
+        <filter comment="Planned for removal in 2017." id="338944126">
+            <message_arguments>
+                <message_argument value="org.eclipse.swt.custom.TableTreeItem"/>
+                <message_argument value="getBounds(int)"/>
+            </message_arguments>
+        </filter>
+        <filter comment="Planned for removal in 2017." id="338944126">
+            <message_arguments>
+                <message_argument value="org.eclipse.swt.custom.TableTreeItem"/>
+                <message_argument value="getChecked()"/>
+            </message_arguments>
+        </filter>
+        <filter comment="Planned for removal in 2017." id="338944126">
+            <message_arguments>
+                <message_argument value="org.eclipse.swt.custom.TableTreeItem"/>
+                <message_argument value="getExpanded()"/>
+            </message_arguments>
+        </filter>
+        <filter comment="Planned for removal in 2017." id="338944126">
+            <message_arguments>
+                <message_argument value="org.eclipse.swt.custom.TableTreeItem"/>
+                <message_argument value="getFont()"/>
+            </message_arguments>
+        </filter>
+        <filter comment="Planned for removal in 2017." id="338944126">
+            <message_arguments>
+                <message_argument value="org.eclipse.swt.custom.TableTreeItem"/>
+                <message_argument value="getForeground()"/>
+            </message_arguments>
+        </filter>
+        <filter comment="Planned for removal in 2017." id="338944126">
+            <message_arguments>
+                <message_argument value="org.eclipse.swt.custom.TableTreeItem"/>
+                <message_argument value="getGrayed()"/>
+            </message_arguments>
+        </filter>
+        <filter comment="Planned for removal in 2017." id="338944126">
+            <message_arguments>
+                <message_argument value="org.eclipse.swt.custom.TableTreeItem"/>
+                <message_argument value="getImage()"/>
+            </message_arguments>
+        </filter>
+        <filter comment="Planned for removal in 2017." id="338944126">
+            <message_arguments>
+                <message_argument value="org.eclipse.swt.custom.TableTreeItem"/>
+                <message_argument value="getImage(int)"/>
+            </message_arguments>
+        </filter>
+        <filter comment="Planned for removal in 2017." id="338944126">
+            <message_arguments>
+                <message_argument value="org.eclipse.swt.custom.TableTreeItem"/>
+                <message_argument value="getItem(int)"/>
+            </message_arguments>
+        </filter>
+        <filter comment="Planned for removal in 2017." id="338944126">
+            <message_arguments>
+                <message_argument value="org.eclipse.swt.custom.TableTreeItem"/>
+                <message_argument value="getItemCount()"/>
+            </message_arguments>
+        </filter>
+        <filter comment="Planned for removal in 2017." id="338944126">
+            <message_arguments>
+                <message_argument value="org.eclipse.swt.custom.TableTreeItem"/>
+                <message_argument value="getItems()"/>
+            </message_arguments>
+        </filter>
+        <filter comment="Planned for removal in 2017." id="338944126">
+            <message_arguments>
+                <message_argument value="org.eclipse.swt.custom.TableTreeItem"/>
+                <message_argument value="getParent()"/>
+            </message_arguments>
+        </filter>
+        <filter comment="Planned for removal in 2017." id="338944126">
+            <message_arguments>
+                <message_argument value="org.eclipse.swt.custom.TableTreeItem"/>
+                <message_argument value="getParentItem()"/>
+            </message_arguments>
+        </filter>
+        <filter comment="Planned for removal in 2017." id="338944126">
+            <message_arguments>
+                <message_argument value="org.eclipse.swt.custom.TableTreeItem"/>
+                <message_argument value="getText()"/>
+            </message_arguments>
+        </filter>
+        <filter comment="Planned for removal in 2017." id="338944126">
+            <message_arguments>
+                <message_argument value="org.eclipse.swt.custom.TableTreeItem"/>
+                <message_argument value="getText(int)"/>
+            </message_arguments>
+        </filter>
+        <filter comment="Planned for removal in 2017." id="338944126">
+            <message_arguments>
+                <message_argument value="org.eclipse.swt.custom.TableTreeItem"/>
+                <message_argument value="indexOf(TableTreeItem)"/>
+            </message_arguments>
+        </filter>
+        <filter comment="Planned for removal in 2017." id="338944126">
+            <message_arguments>
+                <message_argument value="org.eclipse.swt.custom.TableTreeItem"/>
+                <message_argument value="setBackground(Color)"/>
+            </message_arguments>
+        </filter>
+        <filter comment="Planned for removal in 2017." id="338944126">
+            <message_arguments>
+                <message_argument value="org.eclipse.swt.custom.TableTreeItem"/>
+                <message_argument value="setChecked(boolean)"/>
+            </message_arguments>
+        </filter>
+        <filter comment="Planned for removal in 2017." id="338944126">
+            <message_arguments>
+                <message_argument value="org.eclipse.swt.custom.TableTreeItem"/>
+                <message_argument value="setExpanded(boolean)"/>
+            </message_arguments>
+        </filter>
+        <filter comment="Planned for removal in 2017." id="338944126">
+            <message_arguments>
+                <message_argument value="org.eclipse.swt.custom.TableTreeItem"/>
+                <message_argument value="setFont(Font)"/>
+            </message_arguments>
+        </filter>
+        <filter comment="Planned for removal in 2017." id="338944126">
+            <message_arguments>
+                <message_argument value="org.eclipse.swt.custom.TableTreeItem"/>
+                <message_argument value="setForeground(Color)"/>
+            </message_arguments>
+        </filter>
+        <filter comment="Planned for removal in 2017." id="338944126">
+            <message_arguments>
+                <message_argument value="org.eclipse.swt.custom.TableTreeItem"/>
+                <message_argument value="setGrayed(boolean)"/>
+            </message_arguments>
+        </filter>
+        <filter comment="Planned for removal in 2017." id="338944126">
+            <message_arguments>
+                <message_argument value="org.eclipse.swt.custom.TableTreeItem"/>
+                <message_argument value="setImage(Image)"/>
+            </message_arguments>
+        </filter>
+        <filter comment="Planned for removal in 2017." id="338944126">
+            <message_arguments>
+                <message_argument value="org.eclipse.swt.custom.TableTreeItem"/>
+                <message_argument value="setImage(int, Image)"/>
+            </message_arguments>
+        </filter>
+        <filter comment="Planned for removal in 2017." id="338944126">
+            <message_arguments>
+                <message_argument value="org.eclipse.swt.custom.TableTreeItem"/>
+                <message_argument value="setText(String)"/>
+            </message_arguments>
+        </filter>
+        <filter comment="Planned for removal in 2017." id="338944126">
+            <message_arguments>
+                <message_argument value="org.eclipse.swt.custom.TableTreeItem"/>
+                <message_argument value="setText(int, String)"/>
+            </message_arguments>
+        </filter>
+        <filter comment="Planned for removal in 2017." id="338948223">
+            <message_arguments>
+                <message_argument value="org.eclipse.swt.custom.TableTreeItem"/>
+                <message_argument value="TableTreeItem(TableTree, int)"/>
+            </message_arguments>
+        </filter>
+        <filter comment="Planned for removal in 2017." id="338948223">
+            <message_arguments>
+                <message_argument value="org.eclipse.swt.custom.TableTreeItem"/>
+                <message_argument value="TableTreeItem(TableTree, int, int)"/>
+            </message_arguments>
+        </filter>
+        <filter comment="Planned for removal in 2017." id="338948223">
+            <message_arguments>
+                <message_argument value="org.eclipse.swt.custom.TableTreeItem"/>
+                <message_argument value="TableTreeItem(TableTreeItem, int)"/>
+            </message_arguments>
+        </filter>
+        <filter comment="Planned for removal in 2017." id="338948223">
+            <message_arguments>
+                <message_argument value="org.eclipse.swt.custom.TableTreeItem"/>
+                <message_argument value="TableTreeItem(TableTreeItem, int, int)"/>
+            </message_arguments>
+        </filter>
+    </resource>
     <resource path="Eclipse SWT Custom Widgets/common/org/eclipse/swt/custom/TextChangeListener.java" type="org.eclipse.swt.custom.TextChangeListener">
         <filter id="576720909">
             <message_arguments>
@@ -1401,6 +1845,14 @@
                 <message_argument value="3.8"/>
                 <message_argument value="3.100"/>
                 <message_argument value="setHighlightImage(Image)"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="META-INF/MANIFEST.MF">
+        <filter comment="Scheduled TableTree removal for 2017." id="923795461">
+            <message_arguments>
+                <message_argument value="3.105.0"/>
+                <message_argument value="3.105.0"/>
             </message_arguments>
         </filter>
     </resource>

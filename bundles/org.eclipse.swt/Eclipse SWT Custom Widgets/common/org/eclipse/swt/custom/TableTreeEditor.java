@@ -12,9 +12,9 @@ package org.eclipse.swt.custom;
 
 
 import org.eclipse.swt.*;
+import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.widgets.*;
-import org.eclipse.swt.events.*;
 /**
 *
 * A TableTreeEditor is a manager for a Control that appears above a cell in a TableTree
@@ -78,6 +78,8 @@ import org.eclipse.swt.events.*;
 * </pre></code>
 * 
 * @deprecated As of 3.1 use TreeEditor with Tree, TreeItem and TreeColumn
+* @noreference This API will be deleted in a future release. See bug 475833 for details.
+* @noextend This API will be deleted in a future release. See bug 475833 for details.
 */
 @Deprecated
 public class TableTreeEditor extends ControlEditor {
