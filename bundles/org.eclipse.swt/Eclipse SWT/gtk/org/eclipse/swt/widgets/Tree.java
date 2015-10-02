@@ -89,7 +89,7 @@ public class Tree extends Composite {
 	boolean expandAll;
 	int drawState, drawFlags;
 	GdkColor drawForeground;
-	boolean ownerDraw, ignoreSize, ignoreAccessibility;
+	boolean ownerDraw, ignoreSize, ignoreAccessibility, pixbufSizeSet;
 
 	static final int ID_COLUMN = 0;
 	static final int CHECKED_COLUMN = 1;

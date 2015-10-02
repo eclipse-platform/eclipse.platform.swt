@@ -715,10 +715,31 @@ public Rectangle getImageBounds (int index) {
 	OS.gtk_tree_view_get_cell_area (parentHandle, path, column, rect);
 	if ((parent.getStyle () & SWT.MIRRORED) != 0) rect.x = parent.getClientWidth () - rect.width - rect.x;
 	OS.gtk_tree_path_free (path);
-
-	int [] x = new int [1], w = new int[1];
+	
+//	Feature in GTK. When a pixbufRenderer has size of 0x0, gtk_tree_view_column_cell_get_position
+//	returns a position of 0 as well. This causes offset issues meaning that images/widgets/etc.
+//	can be placed over the text. We need to account for the base case of a pixbufRenderer that has
+//	yet to be sized, as per Bug 469277 & 476419.
+	int [] x = new int [1], w = new int [1];
 	OS.gtk_tree_view_column_cell_get_position (column, pixbufRenderer, x, w);
-	rect.x += x [0];
+	if (OS.GTK3) {
+		if (parent.pixbufSizeSet) {
+			if (x [0] > 0) {
+				rect.x += x [0];
+			}
+		} else {
+//			If the size of the pixbufRenderer hasn't been set, we need to take into account the
+//			position of the textRenderer, to ensure images/widgets/etc. aren't placed over the TreeItem's
+//			text.
+			long /*int*/ textRenderer = parent.getTextRenderer (column);
+			if (textRenderer == 0)  return new Rectangle (0, 0, 0, 0);
+			int [] xText = new int [1], wText = new int [1];
+			OS.gtk_tree_view_column_cell_get_position (column, textRenderer, xText, wText);
+			rect.x += xText [0];
+		}
+	} else {
+		rect.x += x [0];
+	}
 	rect.width = w [0];
 	int width = OS.gtk_tree_view_column_get_visible (column) ? rect.width : 0;
 	return new Rectangle (rect.x, rect.y, width, rect.height + 1);
@@ -1451,7 +1472,10 @@ public void setImage (int index, Image image) {
 	}
 //	Reset size of pixbufRenderer if we have an image being set that is larger
 //	than the current size of the pixbufRenderer. Fix for Bug 469277 & 476419.
-	if (OS.GTK3) {
+//	We only do this if the size of the pixbufRenderer has not yet been set.
+//	Otherwise, the pixbufRenderer retains the same size as the first image added.
+//	See comment #4, Bug 478560.
+	if (OS.GTK3 && !parent.pixbufSizeSet) {
 		long /*int*/parentHandle = parent.handle;
 		long /*int*/ column = OS.gtk_tree_view_get_column (parentHandle, index);
 		long /*int*/ pixbufRenderer = parent.getPixbufRenderer(column);
@@ -1463,6 +1487,7 @@ public void setImage (int index, Image image) {
 			OS.gtk_cell_renderer_get_fixed_size(pixbufRenderer, currentWidth, currentHeight);
 			if (iWidth > currentWidth[0] || iHeight > currentHeight[0]) {
 				OS.gtk_cell_renderer_set_fixed_size(pixbufRenderer, iWidth, iHeight);
+				parent.pixbufSizeSet = true;
 			}
 		}
 	}
