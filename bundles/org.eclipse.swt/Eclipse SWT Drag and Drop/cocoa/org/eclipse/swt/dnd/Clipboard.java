@@ -12,8 +12,8 @@ package org.eclipse.swt.dnd;
 
 
 import org.eclipse.swt.*;
-import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.internal.cocoa.*;
+import org.eclipse.swt.widgets.*;
 
 /**
  * The <code>Clipboard</code> provides a mechanism for transferring data from one
@@ -290,7 +290,9 @@ public Object getContents(Transfer transfer, int clipboards) {
 				type.isEqual(OS.NSHTMLPboardType)) {
 			tdata.data = pasteboard.stringForType(type);
 		} else if (type.isEqual(OS.NSFilenamesPboardType) || type.isEqual(OS.kUTTypeFileURL)) {
-			tdata.data = new NSArray(pasteboard.propertyListForType(OS.NSFilenamesPboardType).id);
+			id propertyList = pasteboard.propertyListForType(OS.NSFilenamesPboardType);
+			if (propertyList == null) return null;
+			tdata.data = new NSArray(propertyList.id);
 		} else if (type.isEqual(OS.NSURLPboardType) || type.isEqual(OS.kUTTypeURL)) {
 			tdata.data = NSURL.URLFromPasteboard(pasteboard);
 		} else {
