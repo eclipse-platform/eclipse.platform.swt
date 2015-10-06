@@ -3801,11 +3801,8 @@ void runUpdate() {
 	int flags = updateFlags;
 	updateFlags = 0;
 	Rectangle rectBefore = getClientArea();
-	boolean updated = updateTabHeight(false);
-	updated |= updateItems(selectedIndex);
-	if (IS_GTK && updated && getParent() != null) {
-		getParent().layout(true, false);
-	}
+	updateTabHeight(false);
+	updateItems(selectedIndex);
 	if ((flags & REDRAW) != 0) {
 		redraw();
 	} else if ((flags & REDRAW_TABS) != 0) {
