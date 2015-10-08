@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2003, 2014 IBM Corporation and others.
+ * Copyright (c) 2003, 2015 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -1189,6 +1189,11 @@ public boolean execute(String script) {
 	}
 	dispIdMember = rgdispid[0];
 	pVarResult = document.getProperty(dispIdMember);
+	if (pVarResult == null || pVarResult.getType() == COM.VT_EMPTY) {
+		if (pVarResult != null) pVarResult.dispose ();
+		document.dispose();
+		return false;
+	}
 	OleAutomation ihtmlWindow2 = pVarResult.getAutomation();
 	pVarResult.dispose();
 	document.dispose();
