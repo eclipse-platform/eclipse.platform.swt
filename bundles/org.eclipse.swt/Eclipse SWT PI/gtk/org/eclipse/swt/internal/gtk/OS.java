@@ -363,6 +363,7 @@ public class OS extends C {
 	public static final int GTK_POLICY_ALWAYS = 0x0;
 	public static final int GTK_POLICY_AUTOMATIC = 0x1;
 	public static final int GTK_POLICY_NEVER = 0x2;
+	public static final int GTK_POLICY_EXTERNAL = 0x3;
 	public static final int GTK_POS_TOP = 0x2;
 	public static final int GTK_POS_BOTTOM = 0x3;
 	public static final int GTK_PRINT_CAPABILITY_PAGE_SET     = 1 << 0;
