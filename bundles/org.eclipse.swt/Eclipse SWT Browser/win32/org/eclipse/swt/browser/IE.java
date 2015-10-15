@@ -1169,6 +1169,16 @@ static Variant createSafeArray(String string) {
 }
 
 public boolean execute(String script) {
+	/*
+	 * Issue with IE: If the browser has not shown any content yet then
+	 * first navigate to about:blank to work around bug 465822, then execute
+	 * the requested script.
+	 */
+	if (!performingInitialNavigate && _getUrl().length() == 0) {
+		performingInitialNavigate = true;
+		navigate (ABOUT_BLANK, null, null, true);
+	}
+
 	/* get IHTMLDocument2 */
 	int[] rgdispid = auto.getIDsOfNames(new String[] {PROPERTY_DOCUMENT});
 	int dispIdMember = rgdispid[0];
