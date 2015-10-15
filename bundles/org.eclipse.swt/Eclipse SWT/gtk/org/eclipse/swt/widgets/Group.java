@@ -370,4 +370,21 @@ void showWidget () {
 	if (clientHandle != 0) OS.gtk_widget_show (clientHandle);
 	if (labelHandle != 0) OS.gtk_widget_show (labelHandle);
 }
+
+@Override
+int setBounds(int x, int y, int width, int height, boolean move, boolean resize) {
+
+		if (OS.GTK3) {
+			// Work around for bug 470129.
+			// See also https://bugzilla.gnome.org/show_bug.cgi?id=754976 :
+			// GtkFrame: Attempt to allocate size of width 1 (or a small number) fails
+			//
+			// GtkFrame does not handle well allocating less than its minimum size
+			GtkRequisition requisition = new GtkRequisition();
+			OS.gtk_widget_get_preferred_size(handle, requisition, null);
+			width = Math.max(requisition.width, width);
+		}
+
+	return super.setBounds(x, y, width, height, move, resize);
+}
 }
