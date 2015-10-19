@@ -333,7 +333,7 @@ void computeRuns (GC gc) {
 				run = allRuns[--i];
 				start = run.length;
 			} else 	if (start <= 0 && i == lineStart) {
-				if (lineWidth > 0 && firstIndice > 0 && firstStart == 0) {
+				if (lineWidth == wrapWidth && firstIndice > 0) {
 					i = firstIndice - 1;
 					run = allRuns[i];
 					start = run.length;
