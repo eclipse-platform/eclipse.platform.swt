@@ -334,6 +334,7 @@ long /*int*/ dndCallSuperObject(long /*int*/ id, long /*int*/ sel, long /*int*/ 
 	return OS.objc_msgSendSuper(super_struct, sel, arg0, arg1, arg2, arg3);
 }
 
+@Override
 protected void checkSubclass () {
 	String name = getClass().getName ();
 	String validName = DragSource.class.getName();
@@ -748,13 +749,13 @@ void pasteboard_provideDataForType(long /*int*/ id, long /*int*/ sel, long /*int
 
 	NSObject tdata = transferData.data;
 
-	if (dataType.isEqual(OS.NSStringPboardType) ||
-			dataType.isEqual(OS.NSHTMLPboardType) || 
-			dataType.isEqual(OS.NSRTFPboardType)) {
+	if (dataType.isEqual(OS.NSPasteboardTypeString) ||
+			dataType.isEqual(OS.NSPasteboardTypeHTML) || 
+			dataType.isEqual(OS.NSPasteboardTypeRTF)) {
 		pasteboard.setString((NSString) tdata, dataType);
 	} else if (dataType.isEqual(OS.NSURLPboardType) || dataType.isEqual(OS.kUTTypeURL)) {
 		NSURL url = (NSURL) tdata;
-		url.writeToPasteboard(pasteboard);
+		pasteboard.writeObjects(NSArray.arrayWithObject(url));
 	} else if (dataType.isEqual(OS.NSFilenamesPboardType) || dataType.isEqual(OS.kUTTypeFileURL)) {
 		NSArray array = (NSArray) transferData.data;
 		int count = (int) /*64*/ array.count();

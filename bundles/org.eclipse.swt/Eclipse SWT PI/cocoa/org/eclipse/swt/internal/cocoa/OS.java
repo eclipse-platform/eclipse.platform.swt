@@ -2322,8 +2322,8 @@ public static final long /*int*/ sel_windowWithWindowNumber_ = sel_registerName(
 public static final long /*int*/ sel_windows = sel_registerName("windows");
 public static final long /*int*/ sel_worksWhenModal = sel_registerName("worksWhenModal");
 public static final long /*int*/ sel_wraps = sel_registerName("wraps");
+public static final long /*int*/ sel_writeObjects_ = sel_registerName("writeObjects:");
 public static final long /*int*/ sel_writeSelectionToPasteboard_types_ = sel_registerName("writeSelectionToPasteboard:types:");
-public static final long /*int*/ sel_writeToPasteboard_ = sel_registerName("writeToPasteboard:");
 public static final long /*int*/ sel_yearOfCommonEra = sel_registerName("yearOfCommonEra");
 public static final long /*int*/ sel_zoom_ = sel_registerName("zoom:");
 
@@ -3042,9 +3042,6 @@ public static final NSString NSFontAttributeName = new NSString(NSFontAttributeN
 public static final native long /*int*/ NSForegroundColorAttributeName();
 public static final NSString NSForegroundColorAttributeName = new NSString(NSForegroundColorAttributeName());
 /** @method flags=const */
-public static final native long /*int*/ NSHTMLPboardType();
-public static final NSString NSHTMLPboardType = new NSString(NSHTMLPboardType());
-/** @method flags=const */
 public static final native long /*int*/ NSLigatureAttributeName();
 public static final NSString NSLigatureAttributeName = new NSString(NSLigatureAttributeName());
 /** @method flags=const */
@@ -3062,6 +3059,15 @@ public static final NSString NSOutlineViewColumnDidMoveNotification = new NSStri
 /** @method flags=const */
 public static final native long /*int*/ NSParagraphStyleAttributeName();
 public static final NSString NSParagraphStyleAttributeName = new NSString(NSParagraphStyleAttributeName());
+/** @method flags=const */
+public static final native long /*int*/ NSPasteboardTypeHTML();
+public static final NSString NSPasteboardTypeHTML = new NSString(NSPasteboardTypeHTML());
+/** @method flags=const */
+public static final native long /*int*/ NSPasteboardTypeRTF();
+public static final NSString NSPasteboardTypeRTF = new NSString(NSPasteboardTypeRTF());
+/** @method flags=const */
+public static final native long /*int*/ NSPasteboardTypeString();
+public static final NSString NSPasteboardTypeString = new NSString(NSPasteboardTypeString());
 /** @method flags=const */
 public static final native long /*int*/ NSPrintAllPages();
 public static final NSString NSPrintAllPages = new NSString(NSPrintAllPages());
@@ -3099,9 +3105,6 @@ public static final NSString NSPrintScalingFactor = new NSString(NSPrintScalingF
 public static final native long /*int*/ NSPrintSpoolJob();
 public static final NSString NSPrintSpoolJob = new NSString(NSPrintSpoolJob());
 /** @method flags=const */
-public static final native long /*int*/ NSRTFPboardType();
-public static final NSString NSRTFPboardType = new NSString(NSRTFPboardType());
-/** @method flags=const */
 public static final native long /*int*/ NSSpellingStateAttributeName();
 public static final NSString NSSpellingStateAttributeName = new NSString(NSSpellingStateAttributeName());
 /** @method flags=const */
@@ -3110,9 +3113,6 @@ public static final NSString NSStrikethroughColorAttributeName = new NSString(NS
 /** @method flags=const */
 public static final native long /*int*/ NSStrikethroughStyleAttributeName();
 public static final NSString NSStrikethroughStyleAttributeName = new NSString(NSStrikethroughStyleAttributeName());
-/** @method flags=const */
-public static final native long /*int*/ NSStringPboardType();
-public static final NSString NSStringPboardType = new NSString(NSStringPboardType());
 /** @method flags=const */
 public static final native long /*int*/ NSStrokeWidthAttributeName();
 public static final NSString NSStrokeWidthAttributeName = new NSString(NSStrokeWidthAttributeName());

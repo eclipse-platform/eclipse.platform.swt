@@ -36,7 +36,7 @@ public class TextTransfer extends ByteArrayTransfer {
 
 	static TextTransfer _instance = new TextTransfer();
 	
-	static final String ID_NAME = OS.NSStringPboardType.getString();
+	static final String ID_NAME = OS.NSPasteboardTypeString.getString();
 	static final int ID = registerType(ID_NAME);
 
 TextTransfer() {}
@@ -60,6 +60,7 @@ public static TextTransfer getInstance () {
  *  
  * @see Transfer#nativeToJava
  */
+@Override
 public void javaToNative (Object object, TransferData transferData) {
 	if (!checkText(object) || !isSupportedType(transferData)) {
 		DND.error(DND.ERROR_INVALID_DATA);
@@ -76,16 +77,19 @@ public void javaToNative (Object object, TransferData transferData) {
  * 
  * @see Transfer#javaToNative
  */
+@Override
 public Object nativeToJava(TransferData transferData){
 	if (!isSupportedType(transferData) || transferData.data == null) return null;
 	NSString string = (NSString) transferData.data;
 	return string.getString();
 }
 
+@Override
 protected int[] getTypeIds() {
 	return new int[] {ID};
 }
 
+@Override
 protected String[] getTypeNames() {
 	return new String[] {ID_NAME};
 }
@@ -93,6 +97,7 @@ protected String[] getTypeNames() {
 boolean checkText(Object object) {
 	return (object != null && object instanceof String && ((String)object).length() > 0);
 }
+@Override
 protected boolean validate(Object object) {
 	return checkText(object);
 }

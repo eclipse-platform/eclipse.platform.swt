@@ -2325,6 +2325,10 @@
 		<method selector="types" swt_gen="true">
 			<retval swt_gen="true"></retval>
 		</method>
+		<method selector="writeObjects:" swt_gen="true">
+			<arg swt_gen="true"></arg>
+			<retval swt_gen="true"></retval>
+		</method>
 	</class>
 	<class name="NSPathCell" swt_superclass="NSActionCell">
 	</class>
@@ -3886,12 +3890,8 @@
 			<retval swt_gen="true"></retval>
 		</method>
 	</class>
-	<class name="NSURL" swt_gen="true">
+	<class name="NSURL" swt_gen="mixed">
 		<method class_method="true" selector="URLFromPasteboard:" swt_gen="true">
-			<arg swt_gen="true"></arg>
-			<retval swt_gen="true"></retval>
-		</method>
-		<method selector="writeToPasteboard:" swt_gen="true">
 			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
@@ -4704,13 +4704,15 @@
 	<constant name="NSFilenamesPboardType" swt_gen="true"></constant>
 	<constant name="NSFontAttributeName" swt_gen="true"></constant>
 	<constant name="NSForegroundColorAttributeName" swt_gen="true"></constant>
-	<constant name="NSHTMLPboardType" swt_gen="true"></constant>
 	<constant name="NSLigatureAttributeName" swt_gen="true"></constant>
 	<constant name="NSLinkAttributeName" swt_gen="true"></constant>
 	<constant name="NSModalPanelRunLoopMode" swt_gen="true"></constant>
 	<constant name="NSObliquenessAttributeName" swt_gen="true"></constant>
 	<constant name="NSOutlineViewColumnDidMoveNotification" swt_gen="true"></constant>
 	<constant name="NSParagraphStyleAttributeName" swt_gen="true"></constant>
+	<constant name="NSPasteboardTypeHTML" swt_gen="true"></constant>
+	<constant name="NSPasteboardTypeRTF" swt_gen="true"></constant>
+	<constant name="NSPasteboardTypeString" swt_gen="true"></constant>
 	<constant name="NSPrintAllPages" swt_gen="true"></constant>
 	<constant name="NSPrintCopies" swt_gen="true"></constant>
 	<constant name="NSPrintFirstPage" swt_gen="true"></constant>
@@ -4723,11 +4725,9 @@
 	<constant name="NSPrintSavePath" swt_gen="true"></constant>
 	<constant name="NSPrintScalingFactor" swt_gen="true"></constant>
 	<constant name="NSPrintSpoolJob" swt_gen="true"></constant>
-	<constant name="NSRTFPboardType" swt_gen="true"></constant>
 	<constant name="NSSpellingStateAttributeName" swt_gen="true"></constant>
 	<constant name="NSStrikethroughColorAttributeName" swt_gen="true"></constant>
 	<constant name="NSStrikethroughStyleAttributeName" swt_gen="true"></constant>
-	<constant name="NSStringPboardType" swt_gen="true"></constant>
 	<constant name="NSStrokeWidthAttributeName" swt_gen="true"></constant>
 	<constant name="NSSystemColorsDidChangeNotification" swt_gen="true"></constant>
 	<constant name="NSTIFFPboardType" swt_gen="true"></constant>
