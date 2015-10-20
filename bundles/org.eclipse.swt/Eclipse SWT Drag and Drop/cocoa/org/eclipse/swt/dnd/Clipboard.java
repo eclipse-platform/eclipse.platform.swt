@@ -285,9 +285,9 @@ public Object getContents(Transfer transfer, int clipboards) {
 	if (type != null) {
 		TransferData tdata = new TransferData();
 		tdata.type = Transfer.registerType(type.getString());
-		if (type.isEqualToString(OS.NSPasteboardTypeString) || 
-				type.isEqual(OS.NSPasteboardTypeRTF) ||
-				type.isEqual(OS.NSPasteboardTypeHTML)) {
+		if (type.isEqual(OS.NSStringPboardType) || 
+				type.isEqual(OS.NSRTFPboardType) ||
+				type.isEqual(OS.NSHTMLPboardType)) {
 			tdata.data = pasteboard.stringForType(type);
 		} else if (type.isEqual(OS.NSFilenamesPboardType) || type.isEqual(OS.kUTTypeFileURL)) {
 			id propertyList = pasteboard.propertyListForType(OS.NSFilenamesPboardType);
@@ -457,13 +457,13 @@ public void setContents(Object[] data, Transfer[] dataTypes, int clipboards) {
 			NSObject tdata = transferData.data;
 			NSString dataType = NSString.stringWith(typeNames[j]);
 			pasteboard.addTypes(NSArray.arrayWithObject(dataType), null);
-			if (dataType.isEqual(OS.NSPasteboardTypeString) || 
-					dataType.isEqual(OS.NSPasteboardTypeRTF) ||
-					dataType.isEqual(OS.NSPasteboardTypeHTML)) {
+			if (dataType.isEqual(OS.NSStringPboardType) || 
+					dataType.isEqual(OS.NSRTFPboardType) ||
+					dataType.isEqual(OS.NSHTMLPboardType)) {
 				pasteboard.setString((NSString) tdata, dataType);
 			} else if (dataType.isEqual(OS.NSURLPboardType) || dataType.isEqual(OS.kUTTypeURL)) {
 				NSURL url = (NSURL) tdata;
-				pasteboard.writeObjects(NSArray.arrayWithObject(url));
+				url.writeToPasteboard(pasteboard);
 			} else if (dataType.isEqual(OS.NSFilenamesPboardType) || dataType.isEqual(OS.kUTTypeFileURL)) {
 				pasteboard.setPropertyList((NSArray) tdata, OS.NSFilenamesPboardType);
 			} else {

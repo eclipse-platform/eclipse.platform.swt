@@ -215,7 +215,6 @@ static int checkStyle (int style) {
 	return style;
 }
 
-@Override
 protected void checkSubclass () {
 	String name = getClass().getName ();
 	String validName = DropTarget.class.getName();
@@ -691,9 +690,9 @@ boolean drop(NSObject sender) {
 
 	if (type != null) {
 		tdata.type = Transfer.registerType(type.getString());
-		if (type.isEqual(OS.NSPasteboardTypeString) ||
-				type.isEqual(OS.NSPasteboardTypeHTML) ||
-				type.isEqual(OS.NSPasteboardTypeRTF)) {
+		if (type.isEqual(OS.NSStringPboardType) ||
+				type.isEqual(OS.NSHTMLPboardType) ||
+				type.isEqual(OS.NSRTFPboardType)) {
 			tdata.data = pasteboard.stringForType(type);
 		} else if (type.isEqual(OS.NSURLPboardType) || type.isEqual(OS.kUTTypeURL)) {
 			tdata.data = NSURL.URLFromPasteboard(pasteboard);

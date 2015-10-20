@@ -202,7 +202,7 @@ void accessibilitySetValue_forAttribute(long /*int*/ id, long /*int*/ sel, long 
 String getClipboardText () {
 	NSPasteboard pasteboard = NSPasteboard.generalPasteboard ();
 	if (pasteboard == null) return "";
-	NSString string = pasteboard.stringForType (OS.NSPasteboardTypeString);
+	NSString string = pasteboard.stringForType (OS.NSStringPboardType);
 	return string != null ? string.getString () : null;
 }
 
@@ -608,8 +608,8 @@ void copyToClipboard (char [] buffer) {
 	if (buffer.length == 0) return;
 	NSPasteboard pasteboard = NSPasteboard.generalPasteboard ();
 	if (pasteboard == null) return;
-	pasteboard.declareTypes (NSArray.arrayWithObject (OS.NSPasteboardTypeString), null);
-	pasteboard.setString (NSString.stringWithCharacters (buffer, buffer.length), OS.NSPasteboardTypeString);
+	pasteboard.declareTypes (NSArray.arrayWithObject (OS.NSStringPboardType), null);
+	pasteboard.setString (NSString.stringWithCharacters (buffer, buffer.length), OS.NSStringPboardType);
 }
 
 void createHandle () {
