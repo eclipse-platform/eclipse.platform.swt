@@ -1231,7 +1231,8 @@ public void test_setDataLjava_lang_StringLjava_lang_Object() {
 @Test
 public void test_setSynchronizerLorg_eclipse_swt_widgets_Synchronizer() {
 	final Display display = new Display();
-	final boolean[] asyncExecRan = new boolean[] {false};
+	final boolean[] asyncExec0Ran = new boolean[] {false};
+	final boolean[] asyncExec1Ran = new boolean[] {false};
 	
 	try {
 		try {
@@ -1254,15 +1255,23 @@ public void test_setSynchronizerLorg_eclipse_swt_widgets_Synchronizer() {
 		}
 		
 		MySynchronizer mySynchronizer = new MySynchronizer(display);
+		display.asyncExec(new Runnable() {
+			public void run() {
+				asyncExec0Ran[0] = true;
+			}
+		});
 		display.setSynchronizer(mySynchronizer);
 		display.asyncExec(new Runnable() {
 			public void run() {
-				asyncExecRan[0] = true;
+				asyncExec1Ran[0] = true;
 			}
 		});
+		assertFalse(asyncExec0Ran[0]);
+		assertFalse(asyncExec1Ran[0]);
 		while (display.readAndDispatch()) {}
 		assertTrue(mySynchronizer.invoked);
-		assertTrue(asyncExecRan[0]);
+		assertTrue(asyncExec0Ran[0]);
+		assertTrue(asyncExec1Ran[0]);
 	} finally {
 		display.dispose();
 	}

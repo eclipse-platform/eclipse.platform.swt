@@ -4691,7 +4691,7 @@ public void setSynchronizer (Synchronizer synchronizer) {
 		this.synchronizer = synchronizer;
 	}
 	if (oldSynchronizer != null) {
-		oldSynchronizer.runAsyncMessages(true);
+		oldSynchronizer.moveAllEventsTo(synchronizer);
 	}
 }
 
