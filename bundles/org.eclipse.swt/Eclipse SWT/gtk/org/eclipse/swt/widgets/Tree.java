@@ -741,7 +741,10 @@ void createHandle (int index) {
 	int vsp = (style & SWT.V_SCROLL) != 0 ? OS.GTK_POLICY_AUTOMATIC : OS.GTK_POLICY_NEVER;
 	OS.gtk_scrolled_window_set_policy (scrolledHandle, hsp, vsp);
 	if ((style & SWT.BORDER) != 0) OS.gtk_scrolled_window_set_shadow_type (scrolledHandle, OS.GTK_SHADOW_ETCHED_IN);
-	if ((style & SWT.VIRTUAL) != 0) {
+//	Feature in GTK3: because of Bug 469277 & 476419, we now size Tree icons dynamically, giving them an
+//	initial size of 0x0 until an image is added. We need to disable fixed_height_mode in GTK3 to enable
+//	this dynamic sizing behavior.
+	if ((style & SWT.VIRTUAL) != 0 && !OS.GTK3) {
 		OS.g_object_set (handle, OS.fixed_height_mode, true, 0);
 	}
 	if (!searchEnabled ()) {
