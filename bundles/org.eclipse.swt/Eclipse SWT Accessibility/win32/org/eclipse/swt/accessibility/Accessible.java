@@ -1516,7 +1516,7 @@ public class Accessible {
 				}
 			};
 		}
-		Display.getDefault().timerExec(SCROLL_RATE, timer);
+		control.getDisplay ().timerExec(SCROLL_RATE, timer);
 	}
 	
 	/**
