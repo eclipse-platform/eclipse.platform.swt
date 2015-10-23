@@ -238,3 +238,35 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(NSAccessibilityRowIndexRangeAttribute)
 }
 #endif
 
+typedef void (*FunctionPointer)(jintLong result);
+typedef void (^ObjcBlock)(jintLong result);
+
+/*
+Method that takes a function pointer as input and returns a objective-c block
+which calls the function pointed to by the function pointer.
+*/
+ObjcBlock functionToBlock(FunctionPointer func) {
+    return [[^(jintLong result) {
+                 func(result);
+             } copy] autorelease];
+}
+
+/*
+Wrapper function which receives a function pointer from Java and calls NSSavePanel.beginSheetModalForWindow
+with objective-C block (with block syntax) as the last parameter.
+*/ 
+#ifndef NO_beginSheetModalForWindow
+JNIEXPORT jintLong JNICALL OS_NATIVE(beginSheetModalForWindow)
+	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jintLong arg2, FunctionPointer arg3)
+{
+	jintLong rc = 0;
+	
+	OS_NATIVE_ENTER(env, that, beginSheetModalForWindow_FUNC);
+	
+	rc = (jintLong)((jintLong (*)(jintLong, jintLong, jintLong, void (^)(jintLong)))objc_msgSend)(arg0, arg1, arg2, functionToBlock(arg3));
+	
+	OS_NATIVE_EXIT(env, that, beginSheetModalForWindow_FUNC);
+	return rc;
+}
+#endif
+

@@ -161,6 +161,10 @@ public void stop(id sender) {
 	OS.objc_msgSend(this.id, OS.sel_stop_, sender != null ? sender.id : 0);
 }
 
+public void stopModal() {
+	OS.objc_msgSend(this.id, OS.sel_stopModal);
+}
+
 public void terminate(id sender) {
 	OS.objc_msgSend(this.id, OS.sel_terminate_, sender != null ? sender.id : 0);
 }
