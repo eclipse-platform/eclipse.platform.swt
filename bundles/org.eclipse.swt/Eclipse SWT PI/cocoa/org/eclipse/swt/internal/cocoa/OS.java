@@ -127,6 +127,8 @@ public class OS extends C {
 	public static final long /*int*/ sel_setShouldExpandItem_ = sel_registerName("setShouldExpandItem:");
 	public static final long /*int*/ sel_setShouldScrollClipView_ = sel_registerName("setShouldScrollClipView:");
 
+	public static final long /*int*/ sel_beginSheetModalForWindow_completionHandler_ = sel_registerName("beginSheetModalForWindow:completionHandler:");
+	
 	/* These are not generated in order to avoid creating static methods on all classes */
 	public static final long /*int*/ sel_isSelectorExcludedFromWebScript_ = sel_registerName("isSelectorExcludedFromWebScript:");
 	public static final long /*int*/ sel_webScriptNameForSelector_ = sel_registerName("webScriptNameForSelector:");
@@ -180,6 +182,19 @@ public class OS extends C {
 	public static final long /*int*/ sel_awtAppDelegate = sel_registerName("awtAppDelegate");
 
 	public static final long /*int*/ class_NSToolbarView = objc_getClass("NSToolbarView");
+
+	/*
+	 * Wrapper function which will call NSSavePanel.beginSheetModalForWindow. This
+	 * implementation allows passing of objective-C block from Java to C code, and
+	 * receives a callback from the block to a Java function. Here, handler is a
+	 * the function pointer of the function that will be called by the objective-C
+	 * block.
+	 */
+	/** @method flags=no_gen*/
+	public static native void beginSheetModalForWindow(long id, long sel, long window, long handler);
+	public static void beginSheetModalForWindow(NSPanel id, NSWindow window, long handler) {
+		OS.beginSheetModalForWindow(id.id, OS.sel_beginSheetModalForWindow_completionHandler_, window != null ? window.id : 0, handler);
+	}
 
 /** JNI natives */
 
@@ -654,7 +669,6 @@ public static final native int objc_super_sizeof();
  * @param arg0 flags=struct
  */
 public static final native void objc_msgSend_stret(NSSize result, long /*int*/ id, long /*int*/ sel, NSSize arg0, long /*int*/ arg1, long /*int*/ arg2, long /*int*/ arg3, long /*int*/ arg4, long /*int*/ arg5);
-
 
 /** This section is auto generated */
 
@@ -1907,6 +1921,7 @@ public static final long /*int*/ sel_setDelegate_ = sel_registerName("setDelegat
 public static final long /*int*/ sel_setDestination_allowOverwrite_ = sel_registerName("setDestination:allowOverwrite:");
 public static final long /*int*/ sel_setDictionary_ = sel_registerName("setDictionary:");
 public static final long /*int*/ sel_setDirectory_ = sel_registerName("setDirectory:");
+public static final long /*int*/ sel_setDirectoryURL_ = sel_registerName("setDirectoryURL:");
 public static final long /*int*/ sel_setDisplayMode_ = sel_registerName("setDisplayMode:");
 public static final long /*int*/ sel_setDisplaysLinkToolTips_ = sel_registerName("setDisplaysLinkToolTips:");
 public static final long /*int*/ sel_setDocumentCursor_ = sel_registerName("setDocumentCursor:");
@@ -2009,6 +2024,7 @@ public static final long /*int*/ sel_setMinimumFractionDigits_ = sel_registerNam
 public static final long /*int*/ sel_setMinimumIntegerDigits_ = sel_registerName("setMinimumIntegerDigits:");
 public static final long /*int*/ sel_setMiterLimit_ = sel_registerName("setMiterLimit:");
 public static final long /*int*/ sel_setMovable_ = sel_registerName("setMovable:");
+public static final long /*int*/ sel_setNameFieldStringValue_ = sel_registerName("setNameFieldStringValue:");
 public static final long /*int*/ sel_setNeedsDisplay_ = sel_registerName("setNeedsDisplay:");
 public static final long /*int*/ sel_setNeedsDisplayInRect_ = sel_registerName("setNeedsDisplayInRect:");
 public static final long /*int*/ sel_setNumberOfVisibleItems_ = sel_registerName("setNumberOfVisibleItems:");
@@ -2131,6 +2147,7 @@ public static final long /*int*/ sel_statusItemWithLength_ = sel_registerName("s
 public static final long /*int*/ sel_stop_ = sel_registerName("stop:");
 public static final long /*int*/ sel_stopAnimation_ = sel_registerName("stopAnimation:");
 public static final long /*int*/ sel_stopLoading_ = sel_registerName("stopLoading:");
+public static final long /*int*/ sel_stopModal = sel_registerName("stopModal");
 public static final long /*int*/ sel_string = sel_registerName("string");
 public static final long /*int*/ sel_stringByAddingPercentEscapesUsingEncoding_ = sel_registerName("stringByAddingPercentEscapesUsingEncoding:");
 public static final long /*int*/ sel_stringByAppendingPathComponent_ = sel_registerName("stringByAppendingPathComponent:");
@@ -4400,4 +4417,5 @@ public static final native void memmove(long /*int*/ dest, NSSize src, long /*in
 public static final native void memmove(NSSize dest, long /*int*/ src, long /*int*/ size);
 
 /** This section is auto generated */
+
 }

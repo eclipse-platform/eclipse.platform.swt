@@ -12,6 +12,7 @@ package org.eclipse.swt.widgets;
 
 
 import org.eclipse.swt.*;
+import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.cocoa.*;
 
 
@@ -34,6 +35,9 @@ import org.eclipse.swt.internal.cocoa.*;
  * @noextend This class is not intended to be subclassed by clients.
  */
 public class DirectoryDialog extends Dialog {
+	Callback completion_handler_callback;
+	NSOpenPanel panel;
+	String directoryPath;
 	String message = "", filterPath = "";
 
 /**
@@ -85,6 +89,11 @@ public DirectoryDialog (Shell parent, int style) {
 	checkSubclass ();
 }
 
+long _completionHandler (long result) {
+	handleResponse(result);
+	return result;
+}
+
 /**
  * Returns the path which the dialog will use to filter
  * the directories it shows.
@@ -108,6 +117,19 @@ public String getMessage () {
 	return message;
 }
 
+void handleResponse (long response) {
+	if (parent != null && (style & SWT.SHEET) != 0) {
+		NSApplication.sharedApplication().stopModal();
+	}
+	Display display = parent != null ? parent.getDisplay() : Display.getCurrent();
+	display.setModalDialog(null);
+	if (response  == OS.NSFileHandlingPanelOKButton) {
+		NSString filename = panel.filename();
+		directoryPath = filterPath = filename.getString();
+	}
+	releaseHandles();
+}
+
 /**
  * Makes the dialog visible and brings it to the front
  * of the display.
@@ -121,10 +143,9 @@ public String getMessage () {
  * </ul>
  */
 public String open () {
-	String directoryPath = null;
-	NSOpenPanel panel = NSOpenPanel.openPanel();
+	directoryPath = null;
+	panel = NSOpenPanel.openPanel();
 
-	Display display = parent != null ? parent.getDisplay() : Display.getCurrent();
 	/*
 	 * This line is intentionally commented. Don't show hidden files forcefully,
 	 * instead allow Directory dialog to use the system preference.
@@ -137,25 +158,35 @@ public String open () {
 	panel.setCanChooseFiles(false);
 	panel.setCanChooseDirectories(true);
 	panel.setTreatsFilePackagesAsDirectories(true);
-	NSApplication application = NSApplication.sharedApplication();
-	if (parent != null && (style & SWT.SHEET) != 0) {
-		application.beginSheet(panel, parent.view.window (), null, 0, 0);
-	}
-	display.setModalDialog(this, panel);
+
 	NSString dir = (filterPath != null && filterPath.length() > 0) ? NSString.stringWith(filterPath) : null;
-	long /*int*/ response = panel.runModalForDirectory(dir, null);
+	panel.setDirectoryURL(NSURL.fileURLWithPath(dir));
+
+	Display display = parent != null ? parent.getDisplay() : Display.getCurrent();
+	display.setModalDialog(this, panel);
+
 	if (parent != null && (style & SWT.SHEET) != 0) {
-		application.endSheet(panel, 0);
+		completion_handler_callback = new Callback(this, "_completionHandler", 1);
+		long handler = completion_handler_callback.getAddress();
+		if (handler == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
+		OS.beginSheetModalForWindow(panel, parent.view.window(), handler);
+		NSApplication.sharedApplication().runModalForWindow(parent.view.window());
+	} else {
+		long response = panel.runModal();
+		handleResponse(response);
 	}
-	display.setModalDialog(null);
-	if (response == OS.NSFileHandlingPanelOKButton) {
-		NSString filename = panel.filename();
-		directoryPath = filterPath = filename.getString();
-	}
+
 //	options.optionFlags = OS.kNavSupportPackages | OS.kNavAllowOpenPackages | OS.kNavAllowInvisibleFiles;
 	return directoryPath;
 }
 
+void releaseHandles () {
+	if (completion_handler_callback != null) {
+		completion_handler_callback.dispose();
+		completion_handler_callback = null;
+	}
+	panel = null;
+}
 
 /**
  * Sets the dialog's message, which is a description of

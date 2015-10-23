@@ -448,6 +448,7 @@ char * OS_nativeFunctionNames[] = {
 	"UTTypeEqual",
 	"UnionRgn",
 	"_1_1BIG_1ENDIAN_1_1",
+	"beginSheetModalForWindow",
 	"call",
 	"class_1addIvar",
 	"class_1addMethod",

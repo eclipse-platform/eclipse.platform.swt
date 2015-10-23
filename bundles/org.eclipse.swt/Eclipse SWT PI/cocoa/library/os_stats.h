@@ -458,6 +458,7 @@ typedef enum {
 	UTTypeEqual_FUNC,
 	UnionRgn_FUNC,
 	_1_1BIG_1ENDIAN_1_1_FUNC,
+	beginSheetModalForWindow_FUNC,
 	call_FUNC,
 	class_1addIvar_FUNC,
 	class_1addMethod_FUNC,

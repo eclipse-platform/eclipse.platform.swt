@@ -62,8 +62,16 @@ public void setDirectory(NSString path) {
 	OS.objc_msgSend(this.id, OS.sel_setDirectory_, path != null ? path.id : 0);
 }
 
+public void setDirectoryURL(NSURL directoryURL) {
+	OS.objc_msgSend(this.id, OS.sel_setDirectoryURL_, directoryURL != null ? directoryURL.id : 0);
+}
+
 public void setMessage(NSString message) {
 	OS.objc_msgSend(this.id, OS.sel_setMessage_, message != null ? message.id : 0);
+}
+
+public void setNameFieldStringValue(NSString nameFieldStringValue) {
+	OS.objc_msgSend(this.id, OS.sel_setNameFieldStringValue_, nameFieldStringValue != null ? nameFieldStringValue.id : 0);
 }
 
 public void setTitle(NSString title) {

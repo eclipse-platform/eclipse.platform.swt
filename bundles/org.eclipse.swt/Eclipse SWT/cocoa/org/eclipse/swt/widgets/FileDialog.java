@@ -38,13 +38,20 @@ import org.eclipse.swt.internal.cocoa.*;
  * @noextend This class is not intended to be subclassed by clients.
  */
 public class FileDialog extends Dialog {
+	Callback callback_completion_handler;
+	Callback callback_overwrite_existing_file;
 	NSSavePanel panel;
 	NSPopUpButton popup;
 	String [] filterNames = new String [0];
 	String [] filterExtensions = new String [0];
 	String [] fileNames = new String[0];
 	String filterPath = "", fileName = "";
+	String fullPath;
+	SWTPanelDelegate delegate = null;
 	int filterIndex = -1;
+	long /*int*/ jniRef = 0;
+	long /*int*/ method = 0;
+	long /*int*/ methodImpl = 0;
 	boolean overwrite = false;
 	static final char EXTENSION_SEPARATOR = ';';
 
@@ -99,6 +106,15 @@ public FileDialog (Shell parent, int style) {
 		if (parent != null && (style & SWT.SHEET) != 0) this.style |= SWT.SHEET;
 	}
 	checkSubclass ();
+}
+
+long _completionHandler (long result) {
+	handleResponse(result);
+	return result;
+}
+
+long /*int*/ _overwriteExistingFileCheck (long /*int*/ id, long /*int*/ sel, long /*int*/ str) {
+	return 1;
 }
 
 /**
@@ -188,104 +204,19 @@ public boolean getOverwrite () {
 	return overwrite;
 }
 
-/**
- * Makes the dialog visible and brings it to the front
- * of the display.
- *
- * @return a string describing the absolute path of the first selected file,
- *         or null if the dialog was cancelled or an error occurred
- *
- * @exception SWTException <ul>
- *    <li>ERROR_WIDGET_DISPOSED - if the dialog has been disposed</li>
- *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the dialog</li>
- * </ul>
- */
-public String open () {
-	String fullPath = null;
-	fileNames = new String [0];
-	long /*int*/ method = 0;
-	long /*int*/ methodImpl = 0;
-	Callback callback = null;
-	if ((style & SWT.SAVE) != 0) {
-		NSSavePanel savePanel = NSSavePanel.savePanel();
-		panel = savePanel;
-		if (!overwrite) {
-			callback = new Callback(this, "_overwriteExistingFileCheck", 3);
-			long /*int*/ proc = callback.getAddress();
-			if (proc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
-			method = OS.class_getInstanceMethod(OS.class_NSSavePanel, OS.sel_overwriteExistingFileCheck);
-			if (method != 0) methodImpl = OS.method_setImplementation(method, proc);
-		}
-	} else {
-		NSOpenPanel openPanel = NSOpenPanel.openPanel();
-		openPanel.setAllowsMultipleSelection((style & SWT.MULTI) != 0);
-		panel = openPanel;
+void handleResponse (long response) {
+	if (parent != null && (style & SWT.SHEET) != 0) {
+		NSApplication.sharedApplication().stopModal();
 	}
-
 	Display display = parent != null ? parent.getDisplay() : Display.getCurrent();
-	panel.setCanCreateDirectories(true);
-	/*
-	 * This line is intentionally commented. Don't show hidden files forcefully,
-	 * instead allow File dialog to use the system preference.
-	 */
-	//	OS.objc_msgSend(panel.id, OS.sel_setShowsHiddenFiles_, true);
-	long /*int*/ jniRef = 0;
-	SWTPanelDelegate delegate = null;
-	if (filterExtensions != null && filterExtensions.length != 0) {
-		delegate = (SWTPanelDelegate)new SWTPanelDelegate().alloc().init();
-		jniRef = OS.NewGlobalRef(this);
-		if (jniRef == 0) error(SWT.ERROR_NO_HANDLES);
-		OS.object_setInstanceVariable(delegate.id, Display.SWT_OBJECT, jniRef);
-		panel.setDelegate(delegate);
-		NSPopUpButton widget = (NSPopUpButton)new NSPopUpButton().alloc();
-		widget.initWithFrame(new NSRect(), false);
-		widget.setTarget(delegate);
-		widget.setAction(OS.sel_sendSelection_);
-		NSMenu menu = widget.menu();
-		menu.setAutoenablesItems(false);
-		for (int i = 0; i < filterExtensions.length; i++) {
-			String str = filterExtensions [i];
-			if (filterNames != null && filterNames.length > i) {
-				str = filterNames [i];
-			}
-			NSMenuItem nsItem = (NSMenuItem)new NSMenuItem().alloc();
-			nsItem.initWithTitle(NSString.stringWith(str), 0, NSString.string());
-			menu.addItem(nsItem);
-			nsItem.release();
-		}
-		widget.selectItemAtIndex(0 <= filterIndex && filterIndex < filterExtensions.length ? filterIndex : 0);
-		widget.sizeToFit();
-		panel.setAccessoryView(widget);
-		popup = widget;
-
-		setAllowedFileType(filterExtensions[0]);
-		panel.setAllowsOtherFileTypes(true);
-		panel.setTreatsFilePackagesAsDirectories(shouldTreatAppAsDirectory(filterExtensions[0]));
-	} else {
-		panel.setTreatsFilePackagesAsDirectories(false);
-	}
-	panel.setTitle(NSString.stringWith(title != null ? title : ""));
-	NSApplication application = NSApplication.sharedApplication();
-	if (parent != null && (style & SWT.SHEET) != 0) {
-		application.beginSheet(panel, parent.view.window (), null, 0, 0);
-	}
-	display.setModalDialog(this, panel);
-	NSString dir = (filterPath != null && filterPath.length() > 0) ? NSString.stringWith(filterPath) : null;
-	NSString file = (fileName != null && fileName.length() > 0) ? NSString.stringWith(fileName) : null;
-	long /*int*/ response = panel.runModalForDirectory(dir, file);
-	if (parent != null && (style & SWT.SHEET) != 0) {
-		application.endSheet(panel, 0);
-	}
 	display.setModalDialog(null);
-	if (!overwrite) {
-		if (method != 0) OS.method_setImplementation(method, methodImpl);
-		if (callback != null) callback.dispose();
-	}
+
 	if (popup != null) {
 		filterIndex = (int)/*64*/popup.indexOfSelectedItem();
 	} else {
 		filterIndex = -1;
 	}
+
 	if (response == OS.NSFileHandlingPanelOKButton) {
 		NSString filename = panel.filename();
 		if ((style & SWT.SAVE) != 0) {
@@ -320,22 +251,102 @@ public String open () {
 			}
 		}
 	}
-	if (popup != null) {
-		panel.setAccessoryView(null);
-		popup.release();
-		popup = null;
-	}
-	if (delegate != null) {
-		panel.setDelegate(null);
-		delegate.release();
-	}
-	if (jniRef != 0) OS.DeleteGlobalRef(jniRef);
-	panel = null;
-	return fullPath;
+	releaseHandles();
 }
 
-long /*int*/ _overwriteExistingFileCheck (long /*int*/ id, long /*int*/ sel, long /*int*/ str) {
-	return 1;
+/**
+ * Makes the dialog visible and brings it to the front
+ * of the display.
+ *
+ * @return a string describing the absolute path of the first selected file,
+ *         or null if the dialog was cancelled or an error occurred
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the dialog has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the dialog</li>
+ * </ul>
+ */
+public String open () {
+	fullPath = null;
+	if ((style & SWT.SAVE) != 0) {
+		NSSavePanel savePanel = NSSavePanel.savePanel();
+		panel = savePanel;
+		if (!overwrite) {
+			callback_overwrite_existing_file = new Callback(this, "_overwriteExistingFileCheck", 3);
+			long /*int*/ proc = callback_overwrite_existing_file.getAddress();
+			if (proc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
+			method = OS.class_getInstanceMethod(OS.class_NSSavePanel, OS.sel_overwriteExistingFileCheck);
+			if (method != 0) methodImpl = OS.method_setImplementation(method, proc);
+		}
+	} else {
+		NSOpenPanel openPanel = NSOpenPanel.openPanel();
+		openPanel.setAllowsMultipleSelection((style & SWT.MULTI) != 0);
+		panel = openPanel;
+	}
+
+	panel.setCanCreateDirectories(true);
+	/*
+	 * This line is intentionally commented. Don't show hidden files forcefully,
+	 * instead allow File dialog to use the system preference.
+	 */
+	//	OS.objc_msgSend(panel.id, OS.sel_setShowsHiddenFiles_, true);
+	jniRef = 0;
+	delegate = null;
+	if (filterExtensions != null && filterExtensions.length != 0) {
+		delegate = (SWTPanelDelegate)new SWTPanelDelegate().alloc().init();
+		jniRef = OS.NewGlobalRef(this);
+		if (jniRef == 0) error(SWT.ERROR_NO_HANDLES);
+		OS.object_setInstanceVariable(delegate.id, Display.SWT_OBJECT, jniRef);
+		panel.setDelegate(delegate);
+		NSPopUpButton widget = (NSPopUpButton)new NSPopUpButton().alloc();
+		widget.initWithFrame(new NSRect(), false);
+		widget.setTarget(delegate);
+		widget.setAction(OS.sel_sendSelection_);
+		NSMenu menu = widget.menu();
+		menu.setAutoenablesItems(false);
+		for (int i = 0; i < filterExtensions.length; i++) {
+			String str = filterExtensions [i];
+			if (filterNames != null && filterNames.length > i) {
+				str = filterNames [i];
+			}
+			NSMenuItem nsItem = (NSMenuItem)new NSMenuItem().alloc();
+			nsItem.initWithTitle(NSString.stringWith(str), 0, NSString.string());
+			menu.addItem(nsItem);
+			nsItem.release();
+		}
+		widget.selectItemAtIndex(0 <= filterIndex && filterIndex < filterExtensions.length ? filterIndex : 0);
+		widget.sizeToFit();
+		panel.setAccessoryView(widget);
+		popup = widget;
+
+		setAllowedFileType(filterExtensions[0]);
+		panel.setAllowsOtherFileTypes(true);
+		panel.setTreatsFilePackagesAsDirectories(shouldTreatAppAsDirectory(filterExtensions[0]));
+	} else {
+		panel.setTreatsFilePackagesAsDirectories(false);
+	}
+	panel.setTitle(NSString.stringWith(title != null ? title : ""));
+	if (filterPath != null && filterPath.length() > 0) {
+		NSString dir = NSString.stringWith(filterPath);
+		panel.setDirectoryURL(NSURL.fileURLWithPath(dir));
+	}
+	if (fileName != null && fileName.length() > 0) {
+		panel.setNameFieldStringValue(NSString.stringWith(fileName));
+	}
+
+	Display display = parent != null ? parent.getDisplay() : Display.getCurrent();
+	display.setModalDialog(this, panel);
+	if (parent != null && (style & SWT.SHEET) != 0) {
+		callback_completion_handler = new Callback(this, "_completionHandler", 1);
+		long handler = callback_completion_handler.getAddress();
+		if (handler == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
+		OS.beginSheetModalForWindow(panel, parent.view.window(), handler);
+		NSApplication.sharedApplication().runModalForWindow(parent.view.window());
+	} else {
+		long response = panel.runModal();
+		handleResponse(response);
+	}
+	return fullPath;
 }
 
 long /*int*/ panel_shouldShowFilename (long /*int*/ id, long /*int*/ sel, long /*int*/ arg0, long /*int*/ arg1) {
@@ -370,6 +381,31 @@ long /*int*/ panel_shouldShowFilename (long /*int*/ id, long /*int*/ sel, long /
 		}
 	}
 	return 1;
+}
+
+void releaseHandles() {
+	if (!overwrite) {
+		if (method != 0) OS.method_setImplementation(method, methodImpl);
+		if (callback_overwrite_existing_file != null) callback_overwrite_existing_file.dispose();
+		callback_overwrite_existing_file = null;
+	}
+	if (callback_completion_handler != null) {
+		callback_completion_handler.dispose();
+		callback_completion_handler = null;
+	}
+	if (popup != null) {
+		panel.setAccessoryView(null);
+		popup.release();
+		popup = null;
+	}
+	if (delegate != null) {
+		panel.setDelegate(null);
+		delegate.release();
+		delegate = null;
+	}
+	if (jniRef != 0) OS.DeleteGlobalRef(jniRef);
+	jniRef = 0;
+	panel = null;
 }
 
 void sendSelection (long /*int*/ id, long /*int*/ sel, long /*int*/ arg) {
