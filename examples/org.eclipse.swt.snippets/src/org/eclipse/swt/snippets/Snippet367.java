@@ -17,8 +17,9 @@ import org.eclipse.swt.layout.*;
 import org.eclipse.swt.widgets.*;
 
 /**
- * Snippet to demonstrate the use of the DPI-aware Image constructors.
- *
+ * Snippet to test the use of the DPI-aware Image constructors.
+ * Work in progress in https://bugs.eclipse.org/399786
+ * <p>
  * For a list of all SWT example snippets see
  * http://www.eclipse.org/swt/snippets/
  */
@@ -62,29 +63,45 @@ public class Snippet367 {
 
 		final Display display = new Display ();
 		final Shell shell = new Shell (display);
-		shell.setLayout (new GridLayout (2, false));
+		shell.setText("Snippet367");
+		shell.setLayout (new GridLayout (3, false));
+		
+		Menu menuBar = new Menu(shell, SWT.BAR);
+		shell.setMenuBar(menuBar);
+		MenuItem fileItem = new MenuItem(menuBar, SWT.CASCADE);
+		fileItem.setText("&File");
+		Menu fileMenu = new Menu(menuBar);
+		fileItem.setMenu(fileMenu);
+		MenuItem exitItem = new MenuItem(fileMenu, SWT.PUSH);
+		exitItem.setText("&Exit");
+		exitItem.addListener(SWT.Selection, e -> shell.close());
 
 		new Label (shell, SWT.NONE).setText (IMAGE_200 + ":");
 		new Label (shell, SWT.NONE).setImage (new Image (display, IMAGE_PATH_200));
+		new Button(shell, SWT.PUSH).setImage (new Image (display, IMAGE_PATH_200));
 
 		new Label (shell, SWT.NONE).setText (IMAGE_150 + ":");
 		new Label (shell, SWT.NONE).setImage (new Image (display, IMAGE_PATH_150));
+		new Button(shell, SWT.NONE).setImage (new Image (display, IMAGE_PATH_150));
 
 		new Label (shell, SWT.NONE).setText (IMAGE_100 + ":");
 		new Label (shell, SWT.NONE).setImage (new Image (display, IMAGE_PATH_100));
+		new Button(shell, SWT.NONE).setImage (new Image (display, IMAGE_PATH_100));
 
-		new Label (shell, SWT.SEPARATOR | SWT.HORIZONTAL).setLayoutData (new GridData (SWT.FILL, SWT.FILL, true, false, 2, 1));
+		createSeparator(shell);
 
 		new Label (shell, SWT.NONE).setText ("ImageFileNameProvider:");
 		new Label (shell, SWT.NONE).setImage (new Image (display, filenameProvider));
+		new Button(shell, SWT.NONE).setImage (new Image (display, filenameProvider));
 
 		new Label (shell, SWT.NONE).setText ("ImageDataProvider:");
 		new Label (shell, SWT.NONE).setImage (new Image (display, imageDataProvider));
+		new Button(shell, SWT.NONE).setImage (new Image (display, imageDataProvider));
 
-		new Label (shell, SWT.SEPARATOR | SWT.HORIZONTAL).setLayoutData (new GridData (SWT.FILL, SWT.FILL, true, false, 2, 1));
+		createSeparator(shell);
 
-		new Label (shell, SWT.NONE).setText ("Canvas\n(PaintListener)");
-		final Point size = new Point (550, 35);
+		new Label (shell, SWT.NONE).setText ("1. Canvas\n(PaintListener)");
+		final Point size = new Point (550, 40);
 		final Canvas canvas = new Canvas (shell, SWT.NONE);
 		canvas.addPaintListener (new PaintListener () {
 			@Override
@@ -93,11 +110,13 @@ public class Snippet367 {
 				paintImage (e.gc, size);
 			}
 		});
-		canvas.setLayoutData (new GridData (size.x, size.y));
+		GridData gridData = new GridData (size.x, size.y);
+		gridData.horizontalSpan = 2;
+		canvas.setLayoutData (gridData);
 
-		new Label (shell, SWT.SEPARATOR | SWT.HORIZONTAL).setLayoutData (new GridData (SWT.FILL, SWT.FILL, true, false, 2, 1));
+		createSeparator(shell);
 
-		new Label (shell, SWT.NONE).setText ("Painted image\n (default resolution)");
+		new Label (shell, SWT.NONE).setText ("2. Painted image\n (default resolution)");
 		Image image = new Image (display, size.x, size.y);
 		GC gc = new GC (image);
 		try {
@@ -105,12 +124,15 @@ public class Snippet367 {
 		} finally {
 			gc.dispose ();
 		}
-		new Label (shell, SWT.NONE).setImage (image);
+		Label imageLabel = new Label (shell, SWT.NONE);
+		imageLabel.setImage (image);
+		imageLabel.setLayoutData (new GridData (SWT.BEGINNING, SWT.BEGINNING, false, false, 2, 1));
 
-		new Label (shell, SWT.SEPARATOR | SWT.HORIZONTAL).setLayoutData (new GridData (SWT.FILL, SWT.FILL, true, false, 2, 1));
+		createSeparator(shell);
 
-		new Label (shell, SWT.NONE).setText ("Painted image\n(multi-res, unzoomed paint)");
-		new Label (shell, SWT.NONE).setImage (new Image (display, new ImageDataProvider () {
+		new Label (shell, SWT.NONE).setText ("3. Painted image\n(multi-res, unzoomed paint)");
+		imageLabel = new Label (shell, SWT.NONE);
+		imageLabel.setImage (new Image (display, new ImageDataProvider () {
 			@Override
 			public ImageData getImageData (int zoom) {
 				Image temp = new Image (display, size.x * zoom / 100, size.y * zoom / 100);
@@ -124,11 +146,13 @@ public class Snippet367 {
 				}
 			}
 		}));
+		imageLabel.setLayoutData (new GridData (SWT.BEGINNING, SWT.BEGINNING, false, false, 2, 1));
 
-		new Label (shell, SWT.SEPARATOR | SWT.HORIZONTAL).setLayoutData (new GridData (SWT.FILL, SWT.FILL, true, false, 2, 1));
+		createSeparator(shell);
 
-		new Label (shell, SWT.NONE).setText ("Painted image\n(multi-res, zoomed paint)");
-		new Label (shell, SWT.NONE).setImage (new Image (display, new ImageDataProvider () {
+		new Label (shell, SWT.NONE).setText ("4. Painted image\n(multi-res, zoomed paint)");
+		imageLabel = new Label (shell, SWT.NONE);
+		imageLabel.setImage (new Image (display, new ImageDataProvider () {
 			@Override
 			public ImageData getImageData (int zoom) {
 				Image temp = new Image (display, size.x * zoom / 100, size.y * zoom / 100);
@@ -142,6 +166,14 @@ public class Snippet367 {
 				}
 			}
 		}));
+		imageLabel.setLayoutData (new GridData (SWT.BEGINNING, SWT.BEGINNING, false, false, 2, 1));
+
+		createSeparator(shell);
+		
+		new Label (shell, SWT.NONE).setText ("5. 50x50 box\n(Display#getDPI(): " + display.getDPI().x + ")");
+		Label box= new Label (shell, SWT.NONE);
+		box.setBackground(display.getSystemColor(SWT.COLOR_WIDGET_DARK_SHADOW));
+		box.setLayoutData (new GridData (50, 50));
 
 		shell.pack ();
 		shell.open ();
@@ -149,6 +181,10 @@ public class Snippet367 {
 			if (!display.readAndDispatch ()) display.sleep ();
 		}
 		display.dispose ();
+	}
+
+	private static void createSeparator(Composite shell) {
+		new Label (shell, SWT.SEPARATOR | SWT.HORIZONTAL).setLayoutData (new GridData (SWT.FILL, SWT.FILL, true, false, 3, 1));
 	}
 
 	private static void paintImage (GC gc, Point size) {
