@@ -104,8 +104,6 @@ public class OS extends C {
 	
 	public static final long /*int*/ sel_overwriteExistingFileCheck = sel_registerName("_overwriteExistingFileCheck:");
 	public static final long /*int*/ sel_setShowsHiddenFiles_ = sel_registerName("setShowsHiddenFiles:");
-	
-	public static final long /*int*/ sel_setMovable_ = OS.sel_registerName("setMovable:");
 
 	public static final long /*int*/ sel_contextID = OS.sel_registerName("contextID");
 
@@ -700,7 +698,7 @@ public static final native long /*int*/ CALLBACK_drawWithExpansionFrame_inView_(
 public static final native long /*int*/ CALLBACK_expansionFrameWithFrame_inView_(long /*int*/ func);
 /** @method callback_types=NSRect;id;SEL;NSRange;,callback_flags=struct;none;none;struct; */
 public static final native long /*int*/ CALLBACK_firstRectForCharacterRange_(long /*int*/ func);
-/** @method callback_types=NSRect;id;SEL;NSRect;NSView*;,callback_flags=struct;none;none;struct;struct; */
+/** @method callback_types=NSRect;id;SEL;NSRect;NSView*;,callback_flags=struct;none;none;struct;none; */
 public static final native long /*int*/ CALLBACK_focusRingMaskBoundsForFrame_inView_(long /*int*/ func);
 /** @method callback_types=NSRect;id;SEL;NSInteger;,callback_flags=struct;none;none;none; */
 public static final native long /*int*/ CALLBACK_headerRectOfColumn_(long /*int*/ func);
@@ -2005,6 +2003,7 @@ public static final long /*int*/ sel_setMinimum_ = sel_registerName("setMinimum:
 public static final long /*int*/ sel_setMinimumFractionDigits_ = sel_registerName("setMinimumFractionDigits:");
 public static final long /*int*/ sel_setMinimumIntegerDigits_ = sel_registerName("setMinimumIntegerDigits:");
 public static final long /*int*/ sel_setMiterLimit_ = sel_registerName("setMiterLimit:");
+public static final long /*int*/ sel_setMovable_ = sel_registerName("setMovable:");
 public static final long /*int*/ sel_setNeedsDisplay_ = sel_registerName("setNeedsDisplay:");
 public static final long /*int*/ sel_setNeedsDisplayInRect_ = sel_registerName("setNeedsDisplayInRect:");
 public static final long /*int*/ sel_setNumberOfVisibleItems_ = sel_registerName("setNumberOfVisibleItems:");

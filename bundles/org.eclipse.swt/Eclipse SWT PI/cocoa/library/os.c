@@ -563,7 +563,7 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(CALLBACK_1firstRectForCharacterRange_1)
 #ifndef NO_CALLBACK_1focusRingMaskBoundsForFrame_1inView_1
 static jintLong CALLBACK_1focusRingMaskBoundsForFrame_1inView_1;
 static NSRect proc_CALLBACK_1focusRingMaskBoundsForFrame_1inView_1(id arg0, SEL arg1, NSRect arg2, NSView* arg3) {
-	NSRect* lprc = ((NSRect* (*)(id, SEL, NSRect*, NSView**))CALLBACK_1focusRingMaskBoundsForFrame_1inView_1)(arg0, arg1, &arg2, &arg3);
+	NSRect* lprc = ((NSRect* (*)(id, SEL, NSRect*, NSView*))CALLBACK_1focusRingMaskBoundsForFrame_1inView_1)(arg0, arg1, &arg2, arg3);
 	NSRect rc;
 	if (lprc) {
 		rc = *lprc;
