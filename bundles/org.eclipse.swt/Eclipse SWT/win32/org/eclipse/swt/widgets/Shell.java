@@ -1296,7 +1296,28 @@ public void open () {
 	MSG msg = new MSG ();
 	int flags = OS.PM_NOREMOVE | OS.PM_NOYIELD | OS.PM_QS_SENDMESSAGE;
 	OS.PeekMessage (msg, 0, 0, 0, flags);
-	if (!restoreFocus () && !traverseGroup (true)) setFocus ();
+	/*
+	 * When no widget has been given focus, or another push button has focus,
+	 * give focus to the default button. This avoids overriding the default
+	 * button.
+	 */
+	boolean restored = restoreFocus ();
+	if (!restored) {
+		restored = traverseGroup (true);
+	}
+	if (restored) {
+		Control focusControl = display.getFocusControl ();
+		if (focusControl instanceof Button && (focusControl.style & SWT.PUSH) != 0) {
+			restored = false;
+		}
+	}
+	if (!restored) {
+		if (saveDefault != null && !saveDefault.isDisposed ()) {
+			saveDefault.setFocus ();
+		} else {
+			setFocus ();
+		}
+	}
 }
 
 @Override

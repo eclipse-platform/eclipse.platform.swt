@@ -860,14 +860,6 @@ boolean restoreFocus () {
 	if (display.ignoreRestoreFocus) return true;
 	if (savedFocus != null && savedFocus.isDisposed ()) savedFocus = null;
 	if (savedFocus != null && savedFocus.setSavedFocus ()) return true;
-	/*
-	* This code is intentionally commented.  When no widget
-	* has been given focus, some platforms give focus to the
-	* default button.  Windows doesn't do this.
-	*/
-//	if (defaultButton != null && !defaultButton.isDisposed ()) {
-//		if (defaultButton.setFocus ()) return true;
-//	}
 	return false;
 }
 
