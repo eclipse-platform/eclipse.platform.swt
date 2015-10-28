@@ -1528,10 +1528,15 @@ long /*int*/ gtk_size_allocate (long /*int*/ widget, long /*int*/ allocation) {
 	OS.gtk_widget_get_allocation (shellHandle, widgetAllocation);
 	int width = widgetAllocation.width;
 	int height = widgetAllocation.height;
-	if (!resized || oldWidth != width || oldHeight != height) {
+
+	//	Bug 474235: on Wayland gtk_size_allocate() is called more frequently, causing an
+	//  infinitely recursive resize call. This causes non-resizable Shells/Dialogs to
+	//  crash. Fix: only call resizeBounds() on resizable Shells.
+	if ((!resized || oldWidth != width || oldHeight != height)
+			&& (OS.GTK3 && !OS.isX11() ? ((style & SWT.RESIZE) != 0) : true)) {  //Wayland
 		oldWidth = width;
 		oldHeight = height;
-		resizeBounds (width, height, true);
+		resizeBounds (width, height, true); //this is called to resize child widgets when the shell is resized.
 	}
 	return 0;
 }
