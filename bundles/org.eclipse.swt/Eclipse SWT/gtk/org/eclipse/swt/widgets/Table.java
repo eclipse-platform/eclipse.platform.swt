@@ -2772,9 +2772,6 @@ void rendererRender (long /*int*/ cell, long /*int*/ cr, long /*int*/ window, lo
 				sendEvent (SWT.EraseItem, event);
 				drawForeground = null;
 				drawState = event.doit ? event.detail : 0;
-				if (OS.GTK3) {
-					drawState |= SWT.BACKGROUND;
-				}
 				drawFlags &= ~(OS.GTK_CELL_RENDERER_FOCUSED | OS.GTK_CELL_RENDERER_SELECTED);
 				if ((drawState & SWT.SELECTED) != 0) drawFlags |= OS.GTK_CELL_RENDERER_SELECTED;
 				if ((drawState & SWT.FOCUSED) != 0) drawFlags |= OS.GTK_CELL_RENDERER_FOCUSED;
