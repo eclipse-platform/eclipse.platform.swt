@@ -118,12 +118,14 @@ public Control (Composite parent, int style) {
 	createWidget ();
 }
 
+@Override
 boolean acceptsFirstMouse (long /*int*/ id, long /*int*/ sel, long /*int*/ theEvent) {
 	Shell shell = getShell ();
 	if ((shell.style & SWT.ON_TOP) != 0) return true;
 	return super.acceptsFirstMouse (id, sel, theEvent);
 }
 
+@Override
 long /*int*/ accessibleHandle() {
 	long /*int*/ returnValue = view.id;
 	
@@ -136,6 +138,7 @@ long /*int*/ accessibleHandle() {
 	return returnValue;
 }
 
+@Override
 long /*int*/ accessibilityActionDescription(long /*int*/ id, long /*int*/ sel, long /*int*/ arg0) {
 	if (id == accessibleHandle() && accessible != null) {
 		NSString actionName = new NSString(arg0);
@@ -145,6 +148,7 @@ long /*int*/ accessibilityActionDescription(long /*int*/ id, long /*int*/ sel, l
 	return super.accessibilityActionDescription(id, sel, arg0);
 }
 
+@Override
 long /*int*/ accessibilityActionNames(long /*int*/ id, long /*int*/ sel) {
 	long /*int*/ returnValue = super.accessibilityActionNames(id, sel);
 	if (handleIsAccessible(id)) {
@@ -163,6 +167,7 @@ long /*int*/ accessibilityActionNames(long /*int*/ id, long /*int*/ sel) {
 	return returnValue;
 }
 
+@Override
 long /*int*/ accessibilityAttributeNames(long /*int*/ id, long /*int*/ sel) {
 	
 	long /*int*/ returnValue = 0;
@@ -195,6 +200,7 @@ boolean handleIsAccessible(long /*int*/ id) {
 	return id == accessibleHandle();
 }
 
+@Override
 long /*int*/ accessibilityParameterizedAttributeNames(long /*int*/ id, long /*int*/ sel) {
 
 	if (handleIsAccessible(id) && accessible != null) {
@@ -205,6 +211,7 @@ long /*int*/ accessibilityParameterizedAttributeNames(long /*int*/ id, long /*in
 	return super.accessibilityParameterizedAttributeNames(id, sel);
 }
 
+@Override
 void accessibilityPerformAction(long /*int*/ id, long /*int*/ sel, long /*int*/ arg0) {
 	if (handleIsAccessible(id) && accessible != null) {
 		NSString action = new NSString(arg0);
@@ -213,6 +220,7 @@ void accessibilityPerformAction(long /*int*/ id, long /*int*/ sel, long /*int*/ 
 	super.accessibilityPerformAction(id, sel, arg0);
 }
 
+@Override
 long /*int*/ accessibilityFocusedUIElement(long /*int*/ id, long /*int*/ sel) {
 	id returnValue = null;
 
@@ -228,6 +236,7 @@ long /*int*/ accessibilityFocusedUIElement(long /*int*/ id, long /*int*/ sel) {
 		return returnValue.id;
 }
 
+@Override
 long /*int*/ accessibilityHitTest(long /*int*/ id, long /*int*/ sel, NSPoint point) {
 	id returnValue = null;
 
@@ -243,6 +252,7 @@ long /*int*/ accessibilityHitTest(long /*int*/ id, long /*int*/ sel, NSPoint poi
 		return returnValue.id;
 }
 
+@Override
 long /*int*/ accessibilityAttributeValue(long /*int*/ id, long /*int*/ sel, long /*int*/ arg0) {
 	NSString attribute = new NSString(arg0);
 	long /*int*/ returnValue = 0;
@@ -272,6 +282,7 @@ long /*int*/ accessibilityAttributeValue(long /*int*/ id, long /*int*/ sel, long
 	return returnValue;
 }
 
+@Override
 long /*int*/ accessibilityAttributeValue_forParameter(long /*int*/ id, long /*int*/ sel, long /*int*/ arg0, long /*int*/ arg1) {
 	NSString attribute = new NSString(arg0);
 	
@@ -290,6 +301,7 @@ long /*int*/ accessibilityAttributeValue_forParameter(long /*int*/ id, long /*in
 		return returnValue.id;
 }
 
+@Override
 boolean accessibilityIsAttributeSettable(long /*int*/ id, long /*int*/ sel, long /*int*/ arg0) {
 	boolean returnValue = false;
 	if (handleIsAccessible(id) && accessible != null) {
@@ -302,6 +314,7 @@ boolean accessibilityIsAttributeSettable(long /*int*/ id, long /*int*/ sel, long
 	return returnValue;
 }
 
+@Override
 void accessibilitySetValue_forAttribute(long /*int*/ id, long /*int*/ sel, long /*int*/ arg0, long /*int*/ arg1) {
 	if (handleIsAccessible(id) && accessible != null) {
 		id value = new id(arg0);
@@ -732,16 +745,19 @@ public void addTraverseListener (TraverseListener listener) {
 	addListener (SWT.Traverse,typedListener);
 }
 
+@Override
 boolean becomeFirstResponder (long /*int*/ id, long /*int*/ sel) {
 	if ((state & DISABLED) != 0) return false;
 	return super.becomeFirstResponder (id, sel);
 }
 
+@Override
 void beginGestureWithEvent (long /*int*/ id, long /*int*/ sel, long /*int*/ event) {
 	if (!gestureEvent(id, event, SWT.GESTURE_BEGIN)) return;
 	super.beginGestureWithEvent(id, sel, event);
 }
 
+@Override
 void endGestureWithEvent (long /*int*/ id, long /*int*/ sel, long /*int*/ event) {
 	if (!gestureEvent(id, event, SWT.GESTURE_END)) return;
 	super.endGestureWithEvent(id, sel, event);
@@ -792,6 +808,7 @@ void calculateVisibleRegion (NSView view, long /*int*/ visibleRgn, boolean clipC
 	OS.DisposeRgn (tempRgn);
 }
 
+@Override
 void cancelOperation(long /*int*/ id, long /*int*/ sel, long /*int*/ sender) {
 	// Cmd-. and escape arrive here. Forward the current event as a key event.
 	if (hasKeyboardFocus(id)) {
@@ -994,6 +1011,7 @@ NSAttributedString createString (String string, Font font, double /*float*/ [] f
 	return attribStr;
 }
 
+@Override
 void createWidget () {
 	state |= DRAG_DETECT;
 	checkOrientation (parent);
@@ -1026,17 +1044,20 @@ NSFont defaultNSFont () {
 	return display.getSystemFont().handle;
 }
 
+@Override
 void deregister () {
 	super.deregister ();
 	display.removeWidget (view);
 }
 
+@Override
 void destroyWidget () {
 	NSView view = topView ();
 	view.removeFromSuperview ();
 	releaseHandle ();
 }
 
+@Override
 void doCommandBySelector (long /*int*/ id, long /*int*/ sel, long /*int*/ selector) {
 	if (hasKeyboardFocus(id)) {
 		if (imeInComposition ()) return;
@@ -1227,6 +1248,7 @@ boolean drawsBackground() {
     return true;
 }
 
+@Override
 void drawWidget (long /*int*/ id, NSGraphicsContext context, NSRect rect) {
 	if (id != paintView().id) return;
 	if (!hooks (SWT.Paint) && !filters (SWT.Paint)) return;
@@ -1358,6 +1380,7 @@ void fixFocus (Control focusControl) {
 	}
 }
 
+@Override
 void flagsChanged (long /*int*/ id, long /*int*/ sel, long /*int*/ theEvent) {
 	if (hasKeyboardFocus(id)) {
 		if ((state & WEBKIT_EVENTS_FIX) == 0) {
@@ -1632,6 +1655,7 @@ public boolean getDragDetect () {
 	return (state & DRAG_DETECT) != 0;
 }
 
+@Override
 boolean getDrawing () {
 	return drawCount <= 0;
 }
@@ -2046,6 +2070,7 @@ boolean hasRegion () {
 	return region != null || parent.hasRegion ();
 }
 
+@Override
 long /*int*/ hitTest (long /*int*/ id, long /*int*/ sel, NSPoint point) {
 	if ((state & DISABLED) != 0) return 0;
 	if (!isActive ()) return 0;
@@ -2062,6 +2087,7 @@ boolean imeInComposition () {
 	return false;
 }
 
+@Override
 boolean insertText (long /*int*/ id, long /*int*/ sel, long /*int*/ string) {
 	// sendKeyEvent may do something to run the event loop.  That would cause
 	// 'string' to be released before any superclass could use it, so save it
@@ -2213,6 +2239,7 @@ void invalidateVisibleRegion () {
 	parent.resetVisibleRegion ();
 }
 
+@Override
 boolean isActive () {
 	if (getShell().getModalShell () != null) return false;
 	Dialog dialog = display.getModalDialog();
@@ -2231,6 +2258,7 @@ boolean isDescribedByLabel () {
 	return true;
 }
 
+@Override
 boolean isDrawing () {
 	return getDrawing() && parent.isDrawing();
 }
@@ -2388,6 +2416,7 @@ public boolean isVisible () {
 	return getVisible () && parent.isVisible ();
 }
 
+@Override
 void keyDown (long /*int*/ id, long /*int*/ sel, long /*int*/ theEvent) {
 	if (hasKeyboardFocus(id)) {
 		Shell s = this.getShell();
@@ -2426,6 +2455,7 @@ boolean hasKeyboardFocus(long /*int*/ inId) {
 	return view.window().firstResponder().id == inId;
 }
 
+@Override
 void keyUp (long /*int*/ id, long /*int*/ sel, long /*int*/ theEvent) {
 	if (hasKeyboardFocus(id)) {
 		NSEvent nsEvent = new NSEvent (theEvent);
@@ -2434,6 +2464,7 @@ void keyUp (long /*int*/ id, long /*int*/ sel, long /*int*/ theEvent) {
 	super.keyUp (id, sel, theEvent);
 }
 
+@Override
 void magnifyWithEvent(long /*int*/ id, long /*int*/ sel, long /*int*/ event) {
 	if (!gestureEvent(id, event, SWT.GESTURE_MAGNIFY)) return;
 	super.magnifyWithEvent(id, sel, event);
@@ -2443,6 +2474,7 @@ void markLayout (boolean changed, boolean all) {
 	/* Do nothing */
 }
 
+@Override
 long /*int*/ menuForEvent (long /*int*/ id, long /*int*/ sel, long /*int*/ theEvent) {
 	if (!isEnabled ()) return 0;
 
@@ -2474,6 +2506,7 @@ Decorations menuShell () {
 	return parent.menuShell ();
 }
 
+@Override
 void scrollWheel (long /*int*/ id, long /*int*/ sel, long /*int*/ theEvent) {
 	boolean handled = false;
 	if (id == view.id) {
@@ -2561,6 +2594,7 @@ boolean mouseEvent (long /*int*/ id, long /*int*/ sel, long /*int*/ theEvent, in
 	return true;
 }
 
+@Override
 void mouseDown(long /*int*/ id, long /*int*/ sel, long /*int*/ theEvent) {
 	if (!mouseEvent(id, sel, theEvent, SWT.MouseDown)) return;
 	boolean tracking = isEventView (id);
@@ -2570,41 +2604,49 @@ void mouseDown(long /*int*/ id, long /*int*/ sel, long /*int*/ theEvent) {
 	if (tracking) display.trackingControl = null;
 }
 
+@Override
 void mouseUp(long /*int*/ id, long /*int*/ sel, long /*int*/ theEvent) {
 	if (!mouseEvent(id, sel, theEvent, SWT.MouseUp)) return;
 	super.mouseUp(id, sel, theEvent);
 }
 
+@Override
 void mouseDragged(long /*int*/ id, long /*int*/ sel, long /*int*/ theEvent) {
 	if (!mouseEvent(id, sel, theEvent, SWT.MouseMove)) return;
 	super.mouseDragged(id, sel, theEvent);
 }
 
+@Override
 void rightMouseDown(long /*int*/ id, long /*int*/ sel, long /*int*/ theEvent) {
 	if (!mouseEvent(id, sel, theEvent, SWT.MouseDown)) return;
 	super.rightMouseDown(id, sel, theEvent);
 }
 
+@Override
 void rightMouseUp(long /*int*/ id, long /*int*/ sel, long /*int*/ theEvent) {
 	if (!mouseEvent(id, sel, theEvent, SWT.MouseUp)) return;
 	super.rightMouseUp(id, sel, theEvent);
 }
 
+@Override
 void rightMouseDragged(long /*int*/ id, long /*int*/ sel, long /*int*/ theEvent) {
 	if (!mouseEvent(id, sel, theEvent, SWT.MouseMove)) return;
 	super.rightMouseDragged(id, sel, theEvent);
 }
 
+@Override
 void otherMouseDown(long /*int*/ id, long /*int*/ sel, long /*int*/ theEvent) {
 	if (!mouseEvent(id, sel, theEvent, SWT.MouseDown)) return;
 	super.otherMouseDown(id, sel, theEvent);
 }
 
+@Override
 void otherMouseUp(long /*int*/ id, long /*int*/ sel, long /*int*/ theEvent) {
 	if (!mouseEvent(id, sel, theEvent, SWT.MouseUp)) return;
 	super.otherMouseUp(id, sel, theEvent);
 }
 
+@Override
 void otherMouseDragged(long /*int*/ id, long /*int*/ sel, long /*int*/ theEvent) {
 	if (!mouseEvent(id, sel, theEvent, SWT.MouseMove)) return;
 	super.otherMouseDragged(id, sel, theEvent);
@@ -2845,11 +2887,13 @@ long /*int*/ regionToRects(long /*int*/ message, long /*int*/ rgn, long /*int*/ 
 	return 0;
 }
 
+@Override
 void register () {
 	super.register ();
 	display.addWidget (view, this);
 }
 
+@Override
 void release (boolean destroy) {
 	Control next = null, previous = null;
 	if (destroy && parent != null) {
@@ -2870,6 +2914,7 @@ void release (boolean destroy) {
 	}
 }
 
+@Override
 void releaseHandle () {
 	super.releaseHandle ();
 	if (view != null) view.release();
@@ -2877,11 +2922,13 @@ void releaseHandle () {
 	parent = null;
 }
 
+@Override
 void releaseParent () {
 	invalidateVisibleRegion ();
 	parent.removeControl (this);
 }
 
+@Override
 void releaseWidget () {
 	super.releaseWidget ();
 	if (display.currentControl == this) {
@@ -3302,6 +3349,7 @@ void resized () {
 	sendEvent (SWT.Resize);
 }
 
+@Override
 void rotateWithEvent(long /*int*/ id, long /*int*/ sel, long /*int*/ event) {
 	if (!gestureEvent(id, event, SWT.GESTURE_ROTATE)) return;
 	super.rotateWithEvent(id, sel, event);
@@ -3637,6 +3685,7 @@ public void setCapture (boolean capture) {
 	checkWidget();
 }
 
+@Override
 void setClipRegion (NSView view) {
 	if (regionPath != null) {
 		NSView rgnView = topView ();
@@ -3825,6 +3874,7 @@ public void setForeground (Color color) {
 void setForeground (double /*float*/ [] color) {
 }
 
+@Override
 void setFrameOrigin (long /*int*/ id, long /*int*/ sel, NSPoint point) {
 	NSView topView = topView ();
 	if (topView.id != id) {
@@ -3839,6 +3889,7 @@ void setFrameOrigin (long /*int*/ id, long /*int*/ sel, NSPoint point) {
 	}
 }
 
+@Override
 void setFrameSize (long /*int*/ id, long /*int*/ sel, NSSize size) {
 	NSView topView = topView ();
 	if (topView.id != id) {
@@ -4144,6 +4195,7 @@ void setSmallSize () {
 	}
 }
 
+@Override
 boolean setTabItemFocus () {
 	if (!isShowing ()) return false;
 	return forceFocus ();
@@ -4301,6 +4353,7 @@ void setZOrder () {
 	parent.contentView().addSubview(topView, OS.NSWindowBelow, null);
 }
 
+@Override
 boolean shouldDelayWindowOrderingForEvent (long /*int*/ id, long /*int*/ sel, long /*int*/ theEvent) {
 	Shell shell = getShell ();
 	if ((shell.style & SWT.ON_TOP) != 0) return false;
@@ -4394,6 +4447,7 @@ void sort (int [] items) {
 	}
 }
 
+@Override
 void swipeWithEvent(long /*int*/ id, long /*int*/ sel, long /*int*/ event) {
 	if (!gestureEvent(id, event, SWT.GESTURE_SWIPE)) return;
 	super.swipeWithEvent(id, sel, event);
@@ -4406,6 +4460,7 @@ NSSize textExtent (String string) {
 	return size;
 }
 
+@Override
 String tooltipText () {
 	return toolTipText;
 }
@@ -4592,21 +4647,25 @@ boolean touchEvent(long /*int*/ id, long /*int*/ sel, long /*int*/ eventPtr) {
 	return true;
 }
 
+@Override
 void touchesBeganWithEvent (long /*int*/ id, long /*int*/ sel, long /*int*/ event) {
 	if (!touchEvent(id, sel, event)) return;
 	super.touchesBeganWithEvent(id, sel, event);
 }
 
+@Override
 void touchesCancelledWithEvent (long /*int*/ id, long /*int*/ sel, long /*int*/ event) {
 	if (!touchEvent(id, sel, event)) return;
 	super.touchesCancelledWithEvent(id, sel, event);
 }
 
+@Override
 void touchesEndedWithEvent (long /*int*/ id, long /*int*/ sel, long /*int*/ event) {
 	if (!touchEvent(id, sel, event)) return;
 	super.touchesEndedWithEvent(id, sel, event);
 }
 
+@Override
 void touchesMovedWithEvent (long /*int*/ id, long /*int*/ sel, long /*int*/ event) {
 	if (!touchEvent(id, sel, event)) return;
 	super.touchesMovedWithEvent(id, sel, event);
@@ -5035,10 +5094,12 @@ void updateBackgroundMode () {
 	}
 }
 
+@Override
 void resetCursorRects (long /*int*/ id, long /*int*/ sel) {
 	if (isEnabled ()) callSuper (id, sel);
 }
 
+@Override
 void updateTrackingAreas (long /*int*/ id, long /*int*/ sel) {
 	if (isEnabled ()) callSuper (id, sel);
 }

@@ -64,6 +64,7 @@ public static FileTransfer getInstance () {
  * 
  * @see Transfer#nativeToJava
  */
+@Override
 public void javaToNative(Object object, TransferData transferData) {
 	if (!checkFile(object) || !isSupportedType(transferData)) {
 		DND.error(DND.ERROR_INVALID_DATA);
@@ -89,6 +90,7 @@ public void javaToNative(Object object, TransferData transferData) {
  * 
  * @see Transfer#javaToNative
  */
+@Override
 public Object nativeToJava(TransferData transferData) {
 	if (!isSupportedType(transferData) || transferData.data == null) return null;
 	NSArray array = (NSArray) transferData.data;
@@ -102,6 +104,7 @@ public Object nativeToJava(TransferData transferData) {
 	return fileNames;
 }
 
+@Override
 protected int[] getTypeIds(){
 	if (OS.VERSION >= 0x1060) {
 		return new int[] {ID, ID1};
@@ -110,6 +113,7 @@ protected int[] getTypeIds(){
 	}
 }
 
+@Override
 protected String[] getTypeNames(){
 	if (OS.VERSION >= 0x1060) {
 		return new String[] {ID_NAME, ID1_NAME};
@@ -127,6 +131,7 @@ boolean checkFile(Object object) {
 	return true;
 }
 
+@Override
 protected boolean validate(Object object) {
 	return checkFile(object);
 }

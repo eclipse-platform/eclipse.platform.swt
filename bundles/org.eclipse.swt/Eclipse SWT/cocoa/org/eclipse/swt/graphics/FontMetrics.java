@@ -47,6 +47,7 @@ public static FontMetrics cocoa_new(int ascent, int descent, int averageCharWidt
  *
  * @see #hashCode
  */
+@Override
 public boolean equals (Object object) {
 	if (object == this) return true;
 	if (!(object instanceof FontMetrics)) return false;
@@ -126,6 +127,7 @@ public int getLeading() {
  *
  * @see #equals
  */
+@Override
 public int hashCode() {
 	return ascent ^ descent ^ averageCharWidth ^ leading ^ height;
 }
@@ -137,6 +139,7 @@ String getName () {
 	return string.substring (index + 1, string.length ());
 }
 
+@Override
 public String toString() {
 	return getName() + 
 		"{" 

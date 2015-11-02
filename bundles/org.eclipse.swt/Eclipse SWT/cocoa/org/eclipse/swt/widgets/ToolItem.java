@@ -137,12 +137,14 @@ public ToolItem (ToolBar parent, int style, int index) {
 	parent.createItem (this, index);
 }
 
+@Override
 long /*int*/ accessibleHandle() {
 	if (button != null && button.cell() != null) return button.cell().id;
 	if (view != null) return view.id;
 	return 0;
 }
 
+@Override
 long /*int*/ accessibilityActionNames(long /*int*/ id, long /*int*/ sel) {
 
 	long /*int*/ returnValue = super.accessibilityActionNames(id, sel);
@@ -161,6 +163,7 @@ long /*int*/ accessibilityActionNames(long /*int*/ id, long /*int*/ sel) {
 	return returnValue;
 }
 
+@Override
 long /*int*/ accessibilityAttributeNames(long /*int*/ id, long /*int*/ sel) {
 
 	long /*int*/ returnValue = super.accessibilityAttributeNames(id, sel);
@@ -185,6 +188,7 @@ long /*int*/ accessibilityAttributeNames(long /*int*/ id, long /*int*/ sel) {
 	return returnValue;
 }
 
+@Override
 long /*int*/ accessibilityAttributeValue(long /*int*/ id, long /*int*/ sel, long /*int*/ arg0) {
 	NSString nsAttributeName = new NSString(arg0);
 
@@ -234,6 +238,7 @@ long /*int*/ accessibilityAttributeValue(long /*int*/ id, long /*int*/ sel, long
 	return super.accessibilityAttributeValue(id, sel, arg0);
 }
 
+@Override
 boolean accessibilityIsIgnored(long /*int*/ id, long /*int*/ sel) {
 	// The interesting part of a ToolItem is its button, if it has one.
 	if (id == accessibleHandle()) return false;
@@ -283,6 +288,7 @@ static int checkStyle (int style) {
 	return checkBits (style, SWT.PUSH, SWT.CHECK, SWT.RADIO, SWT.SEPARATOR, SWT.DROP_DOWN, 0);
 }
 
+@Override
 protected void checkSubclass () {
 	if (!isValidSubclass ()) error (SWT.ERROR_INVALID_SUBCLASS);
 }
@@ -341,6 +347,7 @@ Point computeSize () {
 	return new Point (width, height);
 }
 
+@Override
 void createHandle () {
 	if (parent.nsToolbar != null) {
 		id = NSString.stringWith(String.valueOf(ToolBar.NEXT_ID++));
@@ -397,6 +404,7 @@ NSAttributedString createString() {
 	return attribStr;
 }
 
+@Override
 void deregister () {
 	super.deregister ();
 	display.removeWidget(view);
@@ -407,11 +415,13 @@ void deregister () {
 	}
 }
 
+@Override
 void destroyWidget() {
 	parent.destroyItem(this);
 	super.destroyWidget();
 }
 
+@Override
 void drawImageWithFrameInView (long /*int*/ id, long /*int*/ sel, long /*int*/ image, NSRect rect, long /*int*/ view) {
 	if (text.length () > 0) {
 		if ((parent.style & SWT.RIGHT) != 0) {
@@ -444,6 +454,7 @@ void drawImageWithFrameInView (long /*int*/ id, long /*int*/ sel, long /*int*/ i
 	}
 }
 
+@Override
 NSRect drawTitleWithFrameInView (long /*int*/ id, long /*int*/ sel, long /*int*/ title, NSRect titleRect, long /*int*/ view) {
     boolean hiliteShadow = new NSButtonCell(id).isHighlighted() && text.length() > 0 && image == null;
     
@@ -462,6 +473,7 @@ NSRect drawTitleWithFrameInView (long /*int*/ id, long /*int*/ sel, long /*int*/
 	return super.drawTitleWithFrameInView(id, sel, title, titleRect, view);
 }
 
+@Override
 void drawWidget (long /*int*/ id, NSGraphicsContext context, NSRect rect) {
 	if (id == view.id) {
 		boolean drawSelected = getSelection() && (parent.nsToolbar == null); 
@@ -538,6 +550,7 @@ public Rectangle getBounds () {
 	return new Rectangle((int)rect.x, (int)rect.y, (int)rect.width, (int)rect.height);
 }
 
+@Override
 void setClipRegion (NSView view) {
 	parent.setClipRegion(view);
 }
@@ -577,6 +590,7 @@ public Image getDisabledImage () {
 	return disabledImage;
 }
 
+@Override
 boolean getDrawing () {
 	return parent.getDrawing ();
 }
@@ -728,14 +742,17 @@ public boolean isEnabled () {
 	return getEnabled () && parent.isEnabled ();
 }
 
+@Override
 boolean isDrawing () {
 	return getDrawing() && parent.isDrawing ();
 }
 
+@Override
 long /*int*/ menuForEvent (long /*int*/ id, long /*int*/ sel, long /*int*/ theEvent) {
 	return parent.menuForEvent (id, sel, theEvent);
 }
 
+@Override
 void mouseDown(long /*int*/ id, long /*int*/ sel, long /*int*/ theEvent) {
 	if (!parent.mouseEvent(parent.view.id, sel, theEvent, SWT.MouseDown)) return;
 	Display display = this.display;
@@ -752,51 +769,61 @@ void mouseDown(long /*int*/ id, long /*int*/ sel, long /*int*/ theEvent) {
 	}
 }
 
+@Override
 boolean mouseDownCanMoveWindow(long /*int*/ id, long /*int*/ sel) {
 	if (id == view.id) return false;
 	return super.mouseDownCanMoveWindow(id, sel);
 }
 
+@Override
 void mouseUp(long /*int*/ id, long /*int*/ sel, long /*int*/ theEvent) {
 	if (!parent.mouseEvent(parent.view.id, sel, theEvent, SWT.MouseUp)) return;
 	super.mouseUp(id, sel, theEvent);
 }
 
+@Override
 void mouseDragged(long /*int*/ id, long /*int*/ sel, long /*int*/ theEvent) {
 	if (!parent.mouseEvent(parent.view.id, sel, theEvent, SWT.MouseMove)) return;
 	super.mouseDragged(id, sel, theEvent);
 }
 
+@Override
 void rightMouseDown(long /*int*/ id, long /*int*/ sel, long /*int*/ theEvent) {
 	if (!parent.mouseEvent(parent.view.id, sel, theEvent, SWT.MouseDown)) return;
 	super.rightMouseDown(id, sel, theEvent);
 }
 
+@Override
 void rightMouseUp(long /*int*/ id, long /*int*/ sel, long /*int*/ theEvent) {
 	if (!parent.mouseEvent(parent.view.id, sel, theEvent, SWT.MouseUp)) return;
 	super.rightMouseUp(id, sel, theEvent);
 }
 
+@Override
 void rightMouseDragged(long /*int*/ id, long /*int*/ sel, long /*int*/ theEvent) {
 	if (!parent.mouseEvent(parent.view.id, sel, theEvent, SWT.MouseMove)) return;
 	super.rightMouseDragged(id, sel, theEvent);
 }
 
+@Override
 void otherMouseDown(long /*int*/ id, long /*int*/ sel, long /*int*/ theEvent) {
 	if (!parent.mouseEvent(parent.view.id, sel, theEvent, SWT.MouseDown)) return;
 	super.otherMouseDown(id, sel, theEvent);
 }
 
+@Override
 void otherMouseUp(long /*int*/ id, long /*int*/ sel, long /*int*/ theEvent) {
 	if (!parent.mouseEvent(parent.view.id, sel, theEvent, SWT.MouseUp)) return;
 	super.otherMouseUp(id, sel, theEvent);
 }
 
+@Override
 void otherMouseDragged(long /*int*/ id, long /*int*/ sel, long /*int*/ theEvent) {
 	if (!parent.mouseEvent(parent.view.id, sel, theEvent, SWT.MouseMove)) return;
 	super.otherMouseDragged(id, sel, theEvent);
 }
 
+@Override
 void register () {
 	super.register ();
 	display.addWidget (view, this);
@@ -832,11 +859,13 @@ public void removeSelectionListener(SelectionListener listener) {
 	eventTable.unhook(SWT.DefaultSelection,listener);	
 }
 
+@Override
 void releaseParent () {
 	super.releaseParent ();
 	setVisible (false);
 }
 
+@Override
 void releaseHandle () {
 	super.releaseHandle ();
 	if (view != null) view.release ();
@@ -857,6 +886,7 @@ void releaseHandle () {
 	parent = null;
 }
 
+@Override
 void releaseWidget () {
 	super.releaseWidget ();
 	control = null;
@@ -875,6 +905,7 @@ void selectRadio () {
 	setSelection (true);
 }
 
+@Override
 void sendSelection () {
 	if ((style & SWT.RADIO) != 0) {
 		if ((parent.getStyle () & SWT.NO_RADIO_GROUP) == 0) {
@@ -1048,6 +1079,7 @@ public void setHotImage (Image image) {
 	updateImage (true);
 }
 
+@Override
 public void setImage (Image image) {
 	checkWidget();
 	if (image != null && image.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
@@ -1122,6 +1154,7 @@ public void setSelection (boolean selected) {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  */
+@Override
 public void setText (String string) {
 	checkWidget();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
@@ -1226,6 +1259,7 @@ public void setWidth (int width) {
 	parent.relayout();
 }
 
+@Override
 String tooltipText () {
 	return toolTipText;
 }
@@ -1266,6 +1300,7 @@ void updateImage (boolean layout) {
 	parent.relayout();
 }
 
+@Override
 boolean validateMenuItem(long /*int*/ id, long /*int*/ sel, long /*int*/ menuItem) {
 	return isEnabled();
 }

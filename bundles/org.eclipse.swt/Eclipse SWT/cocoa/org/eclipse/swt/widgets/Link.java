@@ -110,6 +110,7 @@ public void addSelectionListener (SelectionListener listener) {
 	addListener (SWT.DefaultSelection, typedListener);
 }
 
+@Override
 boolean textView_clickOnLink_atIndex(long /*int*/ id, long /*int*/ sel, long /*int*/ textView, long /*int*/ link, long /*int*/ charIndex) {
 	NSString str = new NSString (link);
 	Event event = new Event ();
@@ -128,6 +129,7 @@ boolean textView_clickOnLink_atIndex(long /*int*/ id, long /*int*/ sel, long /*i
 	return true;
 }
 
+@Override
 boolean sendMouseEvent (NSEvent nsEvent, int type, boolean send) {
 	if (type == SWT.MouseMove) {
 		if (view.window().firstResponder().id != view.id) {
@@ -137,6 +139,7 @@ boolean sendMouseEvent (NSEvent nsEvent, int type, boolean send) {
 	return super.sendMouseEvent(nsEvent, type, send);
 }
 
+@Override
 public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget ();
 	if (wHint != SWT.DEFAULT && wHint < 0) wHint = 0;
@@ -185,6 +188,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	return new Point (width, height);
 }
 
+@Override
 void createHandle () {
 	state |= THEME_BACKGROUND;
 	NSScrollView scrollWidget = (NSScrollView)new SWTScrollView().alloc();
@@ -218,6 +222,7 @@ void createHandle () {
 	view = widget;
 }
 
+@Override
 void createWidget () {
 	super.createWidget ();
 	text = "";
@@ -229,15 +234,18 @@ void createWidget () {
 	focusIndex = -1;
 }
 
+@Override
 NSFont defaultNSFont () {
 	return display.textFieldFont;
 }
 
+@Override
 void deregister () {
 	super.deregister ();
 	if (scrollView != null) display.removeWidget (scrollView);
 }
 
+@Override
 void drawBackground (long /*int*/ id, NSGraphicsContext context, NSRect rectangle) {
 	fillBackground (view, context, rectangle, -1);
 	if (!hasFocus() || focusIndex == -1) return;
@@ -260,6 +268,7 @@ void drawBackground (long /*int*/ id, NSGraphicsContext context, NSRect rectangl
 	}
 }
 
+@Override
 Cursor findCursor () {
 	Cursor cursor = super.findCursor();
 	if (cursor != null) return cursor;
@@ -272,6 +281,7 @@ Cursor findCursor () {
 	return null;
 }
 
+@Override
 void enableWidget (boolean enabled) {
 	super.enableWidget (enabled);
 	NSColor nsColor = null; 
@@ -344,6 +354,7 @@ NSRect[] getRectangles(int linkIndex) {
 	return result;
 }
 
+@Override
 String getNameText () {
 	return getText ();
 }
@@ -365,6 +376,7 @@ public String getText () {
 	return text;
 }
 
+@Override
 void mouseUp(long /*int*/ id, long /*int*/ sel, long /*int*/ theEvent) {
 	/*
 	 * Feature in Cocoa: Link click notices are sent on mouseDown, but for some reason, Cocoa
@@ -378,21 +390,25 @@ void mouseUp(long /*int*/ id, long /*int*/ sel, long /*int*/ theEvent) {
 	super.mouseUp(id, sel, theEvent);
 }
 
+@Override
 boolean shouldDrawInsertionPoint(long /*int*/ id, long /*int*/ sel) {
 	return false;
 }
 
+@Override
 void register () {
 	super.register ();
 	display.addWidget(scrollView, this);
 }
 
+@Override
 void releaseHandle () {
 	super.releaseHandle ();
 	if (scrollView != null) scrollView.release();
 	scrollView = null;
 }
 
+@Override
 void releaseWidget () {
 	super.releaseWidget ();
 	offsets = null;
@@ -582,11 +598,13 @@ void scrollWheel(long id, long sel, long theEvent) {
 	parent.scrollWheel(parent.view.id, sel, theEvent);
 }
 
+@Override
 void sendFocusEvent(int type) {
 	if (focusIndex != -1) redrawWidget(view, false);
 	super.sendFocusEvent(type);
 }
 
+@Override
 boolean sendKeyEvent(int type, Event event) {
 	boolean result = super.sendKeyEvent (type, event);
 	if (!result) return result;
@@ -623,10 +641,12 @@ boolean sendKeyEvent(int type, Event event) {
 	return result;
 }
 
+@Override
 void setBackgroundColor(NSColor nsColor) {
 	setBackground(nsColor);
 }
 
+@Override
 void setBackgroundImage(NSImage image) {
 	((NSTextView) view).setDrawsBackground(image == null);
 }
@@ -641,10 +661,12 @@ void setBackground(NSColor nsColor) {
 	}
 }
 
+@Override
 void setFont(NSFont font) {
 	((NSTextView) view).setFont(font);
 }
 
+@Override
 void setForeground (double /*float*/ [] color) {
 	if (!getEnabled ()) return;
 	NSColor nsColor;
@@ -656,6 +678,7 @@ void setForeground (double /*float*/ [] color) {
 	((NSTextView) view).setTextColor (nsColor);
 }
 
+@Override
 void setOrientation () {
 	NSTextView widget = (NSTextView)view;
 	int direction = (style & SWT.RIGHT_TO_LEFT) != 0 ? OS.NSWritingDirectionRightToLeft : OS.NSWritingDirectionLeftToRight;
@@ -718,15 +741,18 @@ public void setText (String string) {
 	}
 }
 
+@Override
 void setZOrder () {
 	super.setZOrder ();
 	if (scrollView != null) scrollView.setDocumentView (view);
 }
 
+@Override
 NSView topView () {
 	return scrollView;
 }
 
+@Override
 int traversalCode (int key, NSEvent theEvent) {
 	if (offsets.length == 0) return  0;
 	int bits = super.traversalCode (key, theEvent);
@@ -743,6 +769,7 @@ int traversalCode (int key, NSEvent theEvent) {
 	return bits;
 }
 
+@Override
 void updateCursorRects (boolean enabled) {
 	super.updateCursorRects (enabled);
 	if (scrollView == null) return;

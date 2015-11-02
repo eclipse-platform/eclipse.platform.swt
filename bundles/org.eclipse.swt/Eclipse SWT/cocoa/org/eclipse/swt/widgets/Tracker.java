@@ -914,6 +914,7 @@ public boolean open () {
 	return !cancelled;
 }
 
+@Override
 void releaseWidget () {
 	super.releaseWidget ();
 	parent = null;

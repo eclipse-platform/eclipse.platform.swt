@@ -55,6 +55,7 @@ public void setImagePosition(long /*int*/ aPosition) {
 	OS.objc_msgSend(this.id, OS.sel_setImagePosition_, aPosition);
 }
 
+@Override
 public NSString title() {
 	long /*int*/ result = OS.objc_msgSend(this.id, OS.sel_title);
 	return result != 0 ? new NSString(result) : null;

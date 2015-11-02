@@ -46,6 +46,7 @@ public void setObject(id anObject, id aKey) {
 	OS.objc_msgSend(this.id, OS.sel_setObject_forKey_, anObject != null ? anObject.id : 0, aKey != null ? aKey.id : 0);
 }
 
+@Override
 public void setValue(id value, NSString key) {
 	OS.objc_msgSend(this.id, OS.sel_setValue_forKey_, value != null ? value.id : 0, key != null ? key.id : 0);
 }

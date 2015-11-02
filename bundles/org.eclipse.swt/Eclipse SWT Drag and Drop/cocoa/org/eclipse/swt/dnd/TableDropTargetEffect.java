@@ -77,6 +77,7 @@ public class TableDropTargetEffect extends DropTargetEffect {
 	 * @see DropTargetAdapter
 	 * @see DropTargetEvent
 	 */
+	@Override
 	public void dragEnter(DropTargetEvent event) {
 	}
 
@@ -94,6 +95,7 @@ public class TableDropTargetEffect extends DropTargetEffect {
 	 * @see DropTargetAdapter
 	 * @see DropTargetEvent
 	 */
+	@Override
 	public void dragLeave(DropTargetEvent event) {
 		if (shouldEnableScrolling) {
 			shouldEnableScrolling = false;
@@ -119,6 +121,7 @@ public class TableDropTargetEffect extends DropTargetEffect {
 	 * @see DND#FEEDBACK_SELECT
 	 * @see DND#FEEDBACK_SCROLL
 	 */
+	@Override
 	public void dragOver(DropTargetEvent event) {
 		int effect = checkEffect(event.feedback);
 		((DropTarget)event.widget).feedback = effect;

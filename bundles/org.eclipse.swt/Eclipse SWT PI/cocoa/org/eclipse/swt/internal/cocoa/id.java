@@ -28,10 +28,12 @@ public id(id id) {
 	this.id = id != null ? id.id : 0;
 }
 
+@Override
 public int hashCode() {
 	return (int) this.id;
 }
 
+@Override
 public boolean equals(Object other) {
 	return (this.id == ((id)other).id);
 }
@@ -43,6 +45,7 @@ public long /*int*/ objc_getClass() {
 	return OS.objc_getClass(name);
 }
 
+@Override
 public String toString() {
 	return getClass().getName() + "{" + id +  "}";
 }

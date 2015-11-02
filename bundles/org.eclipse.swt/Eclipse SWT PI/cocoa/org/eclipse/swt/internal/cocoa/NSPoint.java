@@ -16,6 +16,7 @@ public class NSPoint {
 	public double /*float*/ y;
 	public static final int sizeof = OS.NSPoint_sizeof();
 
+	@Override
 	public String toString() {
 		return "NSPoint{" + x + "," + y + "}"; 
 	}

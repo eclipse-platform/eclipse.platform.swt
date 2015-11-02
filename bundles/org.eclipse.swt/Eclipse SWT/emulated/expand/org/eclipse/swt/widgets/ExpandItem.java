@@ -115,6 +115,7 @@ static ExpandBar checkNull (ExpandBar control) {
 	return control;	
 }
 
+@Override
 public void dispose () {
 	if (isDisposed ()) return;
 	//if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
@@ -349,6 +350,7 @@ public void setExpanded (boolean expanded) {
 	parent.showItem (this);
 }
 
+@Override
 public void setImage (Image image) {
 	super.setImage (image);
 	int oldImageHeight = imageHeight;
@@ -384,6 +386,7 @@ public void setHeight (int height) {
 	if (expanded) parent.layoutItems (parent.indexOf (this) + 1, true);
 }
 
+@Override
 public void setText (String string) {
 	super.setText (string);
 	redraw ();

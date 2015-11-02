@@ -66,6 +66,7 @@ public void setMessage(NSString message) {
 	OS.objc_msgSend(this.id, OS.sel_setMessage_, message != null ? message.id : 0);
 }
 
+@Override
 public void setTitle(NSString title) {
 	OS.objc_msgSend(this.id, OS.sel_setTitle_, title != null ? title.id : 0);
 }

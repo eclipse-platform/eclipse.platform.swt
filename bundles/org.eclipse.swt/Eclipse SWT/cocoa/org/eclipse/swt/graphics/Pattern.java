@@ -189,6 +189,7 @@ public Pattern(Device device, float x1, float y1, float x2, float y2, Color colo
 	}
 }
 
+@Override
 void destroy() {
 	if (color != null) color.release();
 	color = null;
@@ -208,6 +209,7 @@ void destroy() {
  *
  * @return <code>true</code> when the Pattern is disposed, and <code>false</code> otherwise
  */
+@Override
 public boolean isDisposed() {
 	return device == null;
 }
@@ -218,6 +220,7 @@ public boolean isDisposed() {
  *
  * @return a string representation of the receiver
  */
+@Override
 public String toString() {
 	if (isDisposed()) return "Pattern {*DISPOSED*}";
 	return "Pattern {" + (color != null ? color.id : gradient.id) + "}";

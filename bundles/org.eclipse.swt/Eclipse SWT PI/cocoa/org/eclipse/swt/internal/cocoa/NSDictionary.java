@@ -48,6 +48,7 @@ public id objectForKey(id aKey) {
 	return result != 0 ? new id(result) : null;
 }
 
+@Override
 public id valueForKey(NSString key) {
 	long /*int*/ result = OS.objc_msgSend(this.id, OS.sel_valueForKey_, key != null ? key.id : 0);
 	return result != 0 ? new id(result) : null;

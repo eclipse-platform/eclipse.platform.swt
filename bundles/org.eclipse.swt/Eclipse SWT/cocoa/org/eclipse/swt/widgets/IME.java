@@ -85,6 +85,7 @@ public IME (Canvas parent, int style) {
 	createWidget ();
 }
 
+@Override
 long /*int*/ attributedSubstringFromRange (long /*int*/ id, long /*int*/ sel, long /*int*/ rangePtr) {
 	Event event = new Event ();
 	event.detail = SWT.COMPOSITION_SELECTION;
@@ -104,6 +105,7 @@ long /*int*/ attributedSubstringFromRange (long /*int*/ id, long /*int*/ sel, lo
 	return 0;
 }
 
+@Override
 long /*int*/ characterIndexForPoint (long /*int*/ id, long /*int*/ sel, long /*int*/ point) {
 	if (!isInlineEnabled ()) return OS.NSNotFound;
 	NSPoint pt = new NSPoint ();
@@ -120,6 +122,7 @@ long /*int*/ characterIndexForPoint (long /*int*/ id, long /*int*/ sel, long /*i
 	return offset != -1 ? offset : OS.NSNotFound;
 }
 
+@Override
 void createWidget () {
 	text = "";
 	startOffset = -1;
@@ -128,6 +131,7 @@ void createWidget () {
 	}
 }
 
+@Override
 NSRect firstRectForCharacterRange(long /*int*/ id, long /*int*/ sel, long /*int*/ range) {
 	NSRect rect = new NSRect ();
 	Caret caret = parent.caret;
@@ -330,10 +334,12 @@ public boolean getWideCaret() {
 	return false; 
 }
 
+@Override
 boolean hasMarkedText (long /*int*/ id, long /*int*/ sel) {
 	return text.length () != 0;
 }
 
+@Override
 boolean insertText (long /*int*/ id, long /*int*/ sel, long /*int*/ string) {
 	if (startOffset == -1) return true;
 	NSString str = new NSString (string);
@@ -360,6 +366,7 @@ boolean isInlineEnabled () {
 	return hooks (SWT.ImeComposition);
 }
 
+@Override
 NSRange markedRange (long /*int*/ id, long /*int*/ sel) {
 	NSRange range = new NSRange ();
 	if (startOffset != -1) {
@@ -383,11 +390,13 @@ void resetStyles () {
 	ranges = null;
 }
 
+@Override
 void releaseParent () {
 	super.releaseParent ();
 	if (this == parent.getIME ()) parent.setIME (null);
 }
 
+@Override
 void releaseWidget () {
 	super.releaseWidget ();
 	parent = null;
@@ -395,6 +404,7 @@ void releaseWidget () {
 	resetStyles ();
 }
 
+@Override
 NSRange selectedRange (long /*int*/ id, long /*int*/ sel) {
 	Event event = new Event ();
 	event.detail = SWT.COMPOSITION_SELECTION;
@@ -429,6 +439,7 @@ public void setCompositionOffset (int offset) {
 	}
 }
 
+@Override
 boolean setMarkedText_selectedRange (long /*int*/ id, long /*int*/ sel, long /*int*/ string, long /*int*/ selRange) {
 	if (!isInlineEnabled ()) return true;
 	resetStyles ();
@@ -494,6 +505,7 @@ boolean setMarkedText_selectedRange (long /*int*/ id, long /*int*/ sel, long /*i
 	return true;
 }
 
+@Override
 long /*int*/ validAttributesForMarkedText (long /*int*/ id, long /*int*/ sel) {
 	NSMutableArray attribs = NSMutableArray.arrayWithCapacity (6);
 	attribs.addObject (new NSString (OS.NSForegroundColorAttributeName ()));

@@ -292,6 +292,7 @@ int calculateWidth (int index, GC gc) {
 	return width;
 }
 
+@Override
 protected void checkSubclass () {
 	if (!isValidSubclass ()) error (SWT.ERROR_INVALID_SUBCLASS);
 }
@@ -371,22 +372,26 @@ NSObject createString(int index) {
 	return NSString.stringWith(text != null ? text : "");
 }
 
+@Override
 void dealloc (long /*int*/ id, long /*int*/ sel) {
 	OS.object_setInstanceVariable(id, Display.SWT_OBJECT, 0);
 	super.destroyJNIRef();
 	super.dealloc(id, sel);
 }
 
+@Override
 void deregister () {
 	super.deregister ();
 	//This is done in #dealloc
 //	display.removeWidget (handle);
 }
 
+@Override
 void destroyJNIRef () {
 	//Do nothing - see #dealloc
 }
 
+@Override
 void destroyWidget () {
 	parent.destroyItem (this);
 	releaseHandle ();
@@ -661,6 +666,7 @@ public boolean getGrayed () {
 	return grayed;
 }
 
+@Override
 public Image getImage () {
 	checkWidget ();
 	if (!parent.checkData (this)) error (SWT.ERROR_WIDGET_DISPOSED);
@@ -798,6 +804,7 @@ public TreeItem [] getItems () {
 	return result;
 }
 
+@Override
 String getNameText () {
 	if ((parent.style & SWT.VIRTUAL) != 0) {
 		if (!cached) return "*virtual*"; //$NON-NLS-1$
@@ -837,6 +844,7 @@ public TreeItem getParentItem () {
 	return parentItem;
 }
 
+@Override
 public String getText () {
 	checkWidget ();
 	if (!parent.checkData (this)) error (SWT.ERROR_WIDGET_DISPOSED);
@@ -941,6 +949,7 @@ public int indexOf (TreeItem item) {
 	return -1;
 }
 
+@Override
 boolean isDrawing () {
 	return getDrawing() && parent.isDrawing ();
 }
@@ -968,11 +977,13 @@ void redraw (int columnIndex) {
 	outlineView.setNeedsDisplayInRect (rect);
 }
 
+@Override
 void register () {
 	super.register ();
 	display.addWidget (handle, this);
 }
 
+@Override
 void release(boolean destroy) {
 	TreeItem[] selectedItems = null;
 	Tree parent = this.parent;
@@ -983,6 +994,7 @@ void release(boolean destroy) {
 	if (selectedItems != null) parent.selectItems (selectedItems, true);
 }
 
+@Override
 void releaseChildren (boolean destroy) {
 	for (int i=0; i<items.length; i++) {
 		TreeItem item = items [i];
@@ -995,6 +1007,7 @@ void releaseChildren (boolean destroy) {
 	super.releaseChildren (destroy);
 }
 
+@Override
 void releaseHandle () {
 	super.releaseHandle ();
 	if (handle != null) handle.autorelease ();
@@ -1003,6 +1016,7 @@ void releaseHandle () {
 	parent = null;
 }
 
+@Override
 void releaseWidget () {
 	super.releaseWidget ();
 	strings = null;
@@ -1392,6 +1406,7 @@ public void setImage (int index, Image image) {
 	if (0 <= index && index < count) redraw (index);
 }
 
+@Override
 public void setImage (Image image) {
 	checkWidget ();
 	setImage (0, image);
@@ -1480,6 +1495,7 @@ public void setText (int index, String string) {
 	if (0 <= index && index < count) redraw (index);
 }
 
+@Override
 public void setText (String string) {
 	checkWidget ();
 	setText (0, string);

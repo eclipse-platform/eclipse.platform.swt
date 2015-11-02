@@ -30,6 +30,7 @@ class AccessibleTableHeader extends Accessible {
 		index = childID;
 
 		addAccessibleControlListener(new AccessibleControlAdapter() {
+			@Override
 			public void getChildren(AccessibleControlEvent e) {
 				int validColumnCount = Math.max (1, parent.getColumnCount());
 				Accessible[] children = new Accessible[validColumnCount];
@@ -49,9 +50,11 @@ class AccessibleTableHeader extends Accessible {
 				}
 				e.children = children; 
 			}
+			@Override
 			public void getChildCount(AccessibleControlEvent e) {
 				e.detail = Math.max (1, parent.getColumnCount());
 			}
+			@Override
 			public void getLocation(AccessibleControlEvent e) {
 				int validColumnCount = Math.max (1, parent.getColumnCount());
 				Accessible[] children = new Accessible[validColumnCount];
@@ -93,6 +96,7 @@ class AccessibleTableHeader extends Accessible {
 				e.height = height;
 			}
 
+			@Override
 			public void getRole(AccessibleControlEvent e) {
 				e.detail = ACC.ROLE_TABLECOLUMNHEADER;
 			}

@@ -81,16 +81,19 @@ TaskItem (TaskBar parent, int style) {
 	createWidget ();
 }
 
+@Override
 protected void checkSubclass () {
 	if (!isValidSubclass ()) error (SWT.ERROR_INVALID_SUBCLASS);
 }
 
+@Override
 void createWidget () {
 	NSApplication app = NSApplication.sharedApplication ();
 	NSImage image = app.applicationIconImage ();
 	defaultImage = new NSImage (image.copy ());
 }
 
+@Override
 void destroyWidget () {
 	parent.destroyItem (this);
 	releaseHandle ();
@@ -190,6 +193,7 @@ public int getProgressState () {
 	return progressState;
 }
 
+@Override
 void releaseHandle () {
 	super.releaseHandle ();
 	parent = null;
@@ -197,6 +201,7 @@ void releaseHandle () {
 	defaultImage = null;
 }
 
+@Override
 void releaseWidget () {
 	super.releaseWidget ();
 	overlayImage = null;

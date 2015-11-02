@@ -193,6 +193,7 @@ public Rectangle computeTrim(int x, int y, int width, int height) {
  * mechanism of the <code>Device</code> class.
  * @param deviceData the device data
  */
+@Override
 protected void create(DeviceData deviceData) {
 	NSAutoreleasePool pool = null;
 	if (!NSThread.isMainThread()) pool = (NSAutoreleasePool) new NSAutoreleasePool().alloc().init();
@@ -262,6 +263,7 @@ protected void create(DeviceData deviceData) {
  * This method is called internally by the dispose
  * mechanism of the <code>Device</code> class.
  */
+@Override
 protected void destroy() {
 	NSAutoreleasePool pool = null;
 	if (!NSThread.isMainThread()) pool = (NSAutoreleasePool) new NSAutoreleasePool().alloc().init();
@@ -296,6 +298,7 @@ protected void destroy() {
  * 
  * @noreference This method is not intended to be referenced by clients.
  */
+@Override
 public long /*int*/ internal_new_GC(GCData data) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	NSAutoreleasePool pool = null;
@@ -334,6 +337,7 @@ public long /*int*/ internal_new_GC(GCData data) {
  * 
  * @see #create
  */
+@Override
 protected void init () {
 	NSAutoreleasePool pool = null;
 	if (!NSThread.isMainThread()) pool = (NSAutoreleasePool) new NSAutoreleasePool().alloc().init();
@@ -359,6 +363,7 @@ protected void init () {
  * 
  * @noreference This method is not intended to be referenced by clients.
  */
+@Override
 public void internal_dispose_GC(long /*int*/ hDC, GCData data) {
 	if (data != null) isGCCreated = false;
 }
@@ -368,6 +373,7 @@ public void internal_dispose_GC(long /*int*/ hDC, GCData data) {
  * This method is called internally by the dispose
  * mechanism of the <code>Device</code> class.
  */
+@Override
 protected void release () {
 	super.release();
 }
@@ -561,6 +567,7 @@ public void endPage() {
  *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
  * </ul>
  */
+@Override
 public Point getDPI() {
 	checkDevice();
 	NSAutoreleasePool pool = null;
@@ -623,6 +630,7 @@ Point getIndependentDPI() {
  * @see #getClientArea
  * @see #computeTrim
  */
+@Override
 public Rectangle getBounds() {
 	checkDevice();
 	NSAutoreleasePool pool = null;
@@ -654,6 +662,7 @@ public Rectangle getBounds() {
  * @see #getBounds
  * @see #computeTrim
  */
+@Override
 public Rectangle getClientArea() {
 	checkDevice();
 	NSAutoreleasePool pool = null;

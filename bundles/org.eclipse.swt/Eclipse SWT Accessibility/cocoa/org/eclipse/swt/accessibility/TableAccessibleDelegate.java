@@ -40,6 +40,7 @@ class TableAccessibleDelegate {
 		tableAccessible = accessible;
 		
 		tableAccessible.addAccessibleControlListener(new AccessibleControlAdapter() {
+			@Override
 			public void getChildCount(AccessibleControlEvent e) {
 				/* Return the number of row and column children.
 				 * If the CTable2 is being used as a list (i.e. if columns.length == 0) then add 1 column child.
@@ -48,6 +49,7 @@ class TableAccessibleDelegate {
 				e.detail = childColumnToIdMap.size() + childRowToIdMap.size();
 				if (childColumnToIdMap.size() > 1) e.detail++;
 			}
+			@Override
 			public void getChildren(AccessibleControlEvent e) {
 				int childCount = childColumnToIdMap.size() + childRowToIdMap.size();
 				if (childColumnToIdMap.size() > 1) childCount++;
@@ -71,6 +73,7 @@ class TableAccessibleDelegate {
 				e.children = children;
 			}
 						
+			@Override
 			public void getChildAtPoint(AccessibleControlEvent e) {
 				NSPoint testPoint = new NSPoint();
 				testPoint.x = e.x;
@@ -97,6 +100,7 @@ class TableAccessibleDelegate {
 				}
 			}
 			
+			@Override
 			public void getState(AccessibleControlEvent e) {
 				int state = ACC.STATE_NORMAL | ACC.STATE_FOCUSABLE | ACC.STATE_SELECTABLE;
 	
@@ -127,6 +131,7 @@ class TableAccessibleDelegate {
 		});
 		
 		tableAccessible.addAccessibleTableListener(new AccessibleTableAdapter() {
+			@Override
 			public void getColumnCount(AccessibleTableEvent e) {
 				AccessibleTableEvent event = new AccessibleTableEvent(this);
 				
@@ -137,11 +142,13 @@ class TableAccessibleDelegate {
 	
 				e.count = event.count;
 			}
+			@Override
 			public void getColumn(AccessibleTableEvent e) {
 				AccessibleTableEvent event = new AccessibleTableEvent(this);
 				getColumns(event);
 				e.accessible = event.accessibles[e.column];
 			}
+			@Override
 			public void getColumns(AccessibleTableEvent e) {
 				AccessibleTableEvent event = new AccessibleTableEvent(this);
 				getColumnCount(event);
@@ -166,9 +173,11 @@ class TableAccessibleDelegate {
 				}
 				e.accessibles = accessibles;
 			}
+			@Override
 			public void getColumnHeader(AccessibleTableEvent e) {
 				e.accessible = (childColumnToIdMap.size() > 1 ? headerAccessible() : null);
 			}
+			@Override
 			public void getRowCount(AccessibleTableEvent e) {
 				AccessibleTableEvent event = new AccessibleTableEvent(this);
 				
@@ -179,11 +188,13 @@ class TableAccessibleDelegate {
 	
 				e.count = event.count;
 			}
+			@Override
 			public void getRow(AccessibleTableEvent e) {
 				AccessibleTableEvent event = new AccessibleTableEvent(this);
 				getRows(event);
 				e.accessible = event.accessibles[e.row];
 			}
+			@Override
 			public void getRows(AccessibleTableEvent e) {
 				AccessibleTableEvent event = new AccessibleTableEvent(this);
 				getRowCount(event);

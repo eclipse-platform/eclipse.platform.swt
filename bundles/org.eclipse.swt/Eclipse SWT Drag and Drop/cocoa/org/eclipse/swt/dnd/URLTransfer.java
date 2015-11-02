@@ -56,6 +56,7 @@ public static URLTransfer getInstance () {
  * 
  * @see Transfer#nativeToJava
  */
+@Override
 public void javaToNative (Object object, TransferData transferData){
 	if (!checkURL(object) || !isSupportedType(transferData)) {
 		DND.error(DND.ERROR_INVALID_DATA);
@@ -76,6 +77,7 @@ public void javaToNative (Object object, TransferData transferData){
  * 
  * @see Transfer#javaToNative
  */
+@Override
 public Object nativeToJava(TransferData transferData){
 	if (!isSupportedType(transferData) || transferData.data == null) return null;
 	NSURL nsUrl = (NSURL) transferData.data;
@@ -84,6 +86,7 @@ public Object nativeToJava(TransferData transferData){
 	return nsString.getString();
 }
 
+@Override
 protected int[] getTypeIds(){
 	if (OS.VERSION >= 0x1060) {
 		return new int[] {URL_ID, URL_ID1};
@@ -92,6 +95,7 @@ protected int[] getTypeIds(){
 	}
 }
 
+@Override
 protected String[] getTypeNames(){
 	if (OS.VERSION >= 0x1060) {
 		return new String[] {URL, URL1};
@@ -104,6 +108,7 @@ boolean checkURL(Object object) {
 	return object != null && (object instanceof String) && ((String)object).length() > 0;
 }
 
+@Override
 protected boolean validate(Object object) {
 	return checkURL(object);
 }

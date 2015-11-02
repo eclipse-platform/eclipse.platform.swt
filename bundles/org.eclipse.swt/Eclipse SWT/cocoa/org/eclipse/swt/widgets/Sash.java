@@ -81,6 +81,7 @@ public Sash (Composite parent, int style) {
 	sizeCursor = new Cursor (display, cursorStyle);
 }
 
+@Override
 long /*int*/ accessibilityAttributeNames(long /*int*/ id, long /*int*/ sel) {
 	if (accessibilityAttributes == null) {
 		NSMutableArray ourAttributes = NSMutableArray.arrayWithCapacity(10);
@@ -124,6 +125,7 @@ long /*int*/ accessibilityAttributeNames(long /*int*/ id, long /*int*/ sel) {
 	return accessibilityAttributes.id;
 }
 
+@Override
 long /*int*/ accessibilityAttributeValue(long /*int*/ id, long /*int*/ sel, long /*int*/ arg0) {
 	long /*int*/ returnValue = 0;
 	NSString attributeName = new NSString(arg0);
@@ -198,6 +200,7 @@ long /*int*/ accessibilityAttributeValue(long /*int*/ id, long /*int*/ sel, long
 	return super.accessibilityAttributeValue(id, sel, arg0);
 }
 
+@Override
 boolean accessibilityIsIgnored(long /*int*/ id, long /*int*/ sel) {
 	return false;	
 }
@@ -243,6 +246,7 @@ static int checkStyle (int style) {
 	return checkBits (style, SWT.HORIZONTAL, SWT.VERTICAL, 0, 0, 0, 0);
 }
 
+@Override
 boolean becomeFirstResponder (long /*int*/ id, long /*int*/ sel) {
 	boolean result = super.becomeFirstResponder(id, sel);
 	NSRect frame = view.frame();
@@ -251,6 +255,7 @@ boolean becomeFirstResponder (long /*int*/ id, long /*int*/ sel) {
 	return result;
 }
 
+@Override
 public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget();
 	int width = 0, height = 0;
@@ -264,6 +269,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	return new Point (width, height);
 }
 
+@Override
 void createHandle () {
 	state |= THEME_BACKGROUND;
 	NSView widget = (NSView)new SWTView().alloc();
@@ -271,11 +277,13 @@ void createHandle () {
 	view = widget;
 }
 
+@Override
 void drawBackground (long /*int*/ id, NSGraphicsContext context, NSRect rect) {
 	if (id != view.id) return;
 	fillBackground (view, context, rect, -1);
 }
 
+@Override
 Cursor findCursor () {
 	Cursor cursor = super.findCursor ();
 	if (cursor == null)	{
@@ -285,6 +293,7 @@ Cursor findCursor () {
 	return cursor;
 }
 
+@Override
 boolean sendKeyEvent(NSEvent nsEvent, int type) {
 	super.sendKeyEvent (nsEvent, type);
 	if (type == SWT.KeyDown) {
@@ -346,6 +355,7 @@ boolean sendKeyEvent(NSEvent nsEvent, int type) {
 	return true;
 }
 
+@Override
 void mouseDown(long /*int*/ id, long /*int*/ sel, long /*int*/ theEvent) {
 	//TODO use sendMouseEvent
 	super.mouseDown(id, sel, theEvent);
@@ -372,11 +382,13 @@ void mouseDown(long /*int*/ id, long /*int*/ sel, long /*int*/ theEvent) {
 	}
 }
 
+@Override
 boolean mouseEvent (long /*int*/ id, long /*int*/ sel, long /*int*/ theEvent, int type) {
 	super.mouseEvent (id, sel, theEvent, type);
 	return new NSEvent (theEvent).type () != OS.NSLeftMouseDown;
 }
 
+@Override
 void mouseDragged(long /*int*/ id, long /*int*/ sel, long /*int*/ theEvent) {
 	//TODO use sendMouseEvent
 	super.mouseDragged(id, sel, theEvent);
@@ -408,6 +420,7 @@ void mouseDragged(long /*int*/ id, long /*int*/ sel, long /*int*/ theEvent) {
 	}
 }
 
+@Override
 void mouseUp(long /*int*/ id, long /*int*/ sel, long /*int*/ theEvent) {
 	//TODO use sendMouseEvent
 	super.mouseUp(id, sel, theEvent);
@@ -427,12 +440,14 @@ void mouseUp(long /*int*/ id, long /*int*/ sel, long /*int*/ theEvent) {
 	}
 }
 
+@Override
 void releaseHandle () {
 	super.releaseHandle ();
 	if (accessibilityAttributes != null) accessibilityAttributes.release();
 	accessibilityAttributes = null;
 }
 
+@Override
 void releaseWidget () {
 	super.releaseWidget ();
 	if (sizeCursor != null) sizeCursor.dispose ();
@@ -464,12 +479,15 @@ public void removeSelectionListener(SelectionListener listener) {
 	eventTable.unhook(SWT.DefaultSelection,listener);
 }
 
+@Override
 void superKeyDown (long /*int*/ id, long /*int*/ sel, long /*int*/ theEvent) {
 }
 
+@Override
 void superKeyUp (long /*int*/ id, long /*int*/ sel, long /*int*/ theEvent) {
 }
 
+@Override
 int traversalCode (int key, NSEvent theEvent) {
 	return 0;
 }

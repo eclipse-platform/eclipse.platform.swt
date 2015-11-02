@@ -160,6 +160,7 @@ static float[] checkTransform(float[] elements) {
 	return elements;
 }
 
+@Override
 void destroy() {
 	handle.release();
 	handle = null;
@@ -256,6 +257,7 @@ public void invert() {
  *
  * @return <code>true</code> when the Transform is disposed, and <code>false</code> otherwise
  */
+@Override
 public boolean isDisposed() {
 	return handle == null;
 }
@@ -478,6 +480,7 @@ public void translate(float offsetX, float offsetY) {
  *
  * @return a string representation of the receiver
  */
+@Override
 public String toString() {
 	if (isDisposed()) return "Transform {*DISPOSED*}";
 	float[] elements = new float[6];

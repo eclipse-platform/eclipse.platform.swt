@@ -81,6 +81,7 @@ public List (Composite parent, int style) {
 	super (parent, checkStyle (style));
 }
 
+@Override
 long /*int*/ accessibilityAttributeValue (long /*int*/ id, long /*int*/ sel, long /*int*/ arg0) {
 //	if (attributeName.isEqualToString(OS.NSAccessibilityHeaderAttribute)) {
 //		/*
@@ -96,6 +97,7 @@ long /*int*/ accessibilityAttributeValue (long /*int*/ id, long /*int*/ sel, lon
 	return super.accessibilityAttributeValue(id, sel, arg0);
 }
 
+@Override
 boolean acceptsFirstResponder (long /*int*/ id, long /*int*/ sel) {
 	return true;
 }
@@ -209,6 +211,7 @@ static int checkStyle (int style) {
 	return checkBits (style, SWT.SINGLE, SWT.MULTI, 0, 0, 0, 0);
 }
 
+@Override
 public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget();
 	int width = 0;
@@ -240,6 +243,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	return new Point (rect.width, rect.height);
 }
 
+@Override
 void createHandle () {
 	NSScrollView scrollWidget = (NSScrollView)new SWTScrollView().alloc();
 	scrollWidget.init();
@@ -272,19 +276,23 @@ void createHandle () {
 	view = widget;
 }
 
+@Override
 void createWidget () {
 	super.createWidget ();
 	items = new String [4];
 }
 
+@Override
 Color defaultBackground () {
 	return display.getWidgetColor (SWT.COLOR_LIST_BACKGROUND);
 }
 
+@Override
 NSFont defaultNSFont () {
 	return display.tableViewFont;
 }
 
+@Override
 Color defaultForeground () {
 	return display.getWidgetColor (SWT.COLOR_LIST_FOREGROUND);
 }
@@ -388,6 +396,7 @@ public void deselectAll () {
 	ignoreSelect = false;
 }
 
+@Override
 boolean dragDetect(int x, int y, boolean filter, boolean[] consume) {
 	NSTableView widget = (NSTableView)view;
 	NSPoint pt = new NSPoint();
@@ -409,6 +418,7 @@ boolean dragDetect(int x, int y, boolean filter, boolean[] consume) {
 	return dragging;
 }
 
+@Override
 void drawBackgroundInClipRect(long /*int*/ id, long /*int*/ sel, NSRect rect) {
 	super.drawViewBackgroundInRect(id, sel, rect);
 	if (id != view.id) return;
@@ -735,6 +745,7 @@ public boolean isSelected (int index) {
  * right-clicks or control-clicks on an NSTableView or its subclasses. Fix is to select the 
  * clicked-on row ourselves.
  */
+@Override
 long /*int*/ menuForEvent(long /*int*/ id, long /*int*/ sel, long /*int*/ theEvent) {
 	NSEvent event = new NSEvent(theEvent);
 	NSTableView table = (NSTableView)view;
@@ -758,6 +769,7 @@ long /*int*/ menuForEvent(long /*int*/ id, long /*int*/ sel, long /*int*/ theEve
 	return super.menuForEvent(id, sel, theEvent);
 }
 
+@Override
 void mouseDownSuper(long /*int*/ id, long /*int*/ sel, long /*int*/ theEvent) {
 	ignoreSelect = false;
 	NSTableView widget = (NSTableView)view;
@@ -776,20 +788,24 @@ void mouseDownSuper(long /*int*/ id, long /*int*/ sel, long /*int*/ theEvent) {
 	didSelect = false;
 }
 
+@Override
 boolean needsPanelToBecomeKey (long /*int*/ id, long /*int*/ sel) {
 	return false;
 }
 
+@Override
 long /*int*/ numberOfRowsInTableView(long /*int*/ id, long /*int*/ sel, long /*int*/ aTableView) {
 	return itemCount;
 }
 
+@Override
 void releaseHandle () {
 	super.releaseHandle ();
 	if (column != null) column.release();
 	column = null;
 }
 
+@Override
 void releaseWidget () {	
 	super.releaseWidget ();
 	items = null;
@@ -1096,12 +1112,14 @@ public void selectAll () {
 	ignoreSelect = false;
 }
 
+@Override
 void sendDoubleSelection() {
 	if (((NSTableView)view).clickedRow () != -1) {
 		sendSelectionEvent (SWT.DefaultSelection);
 	}
 }
 
+@Override
 boolean sendKeyEvent (NSEvent nsEvent, int type) {
 	boolean result = super.sendKeyEvent (nsEvent, type);
 	if (!result) return result;
@@ -1117,6 +1135,7 @@ boolean sendKeyEvent (NSEvent nsEvent, int type) {
 	return result;
 }
 
+@Override
 boolean sendMouseEvent (NSEvent nsEvent, int type, boolean send) {
 	boolean handleMouseDown = true;
 	if (nsEvent != null) {
@@ -1138,15 +1157,18 @@ boolean sendMouseEvent (NSEvent nsEvent, int type, boolean send) {
 	return super.sendMouseEvent(nsEvent, type, send);
 }
 
+@Override
 void sendSelection () {
 	if (ignoreSelect) return;
 	sendSelectionEvent(SWT.Selection);
 }
 
+@Override
 void setBackgroundColor(NSColor nsColor) {
 	((NSTableView) view).setBackgroundColor (nsColor);
 }
 
+@Override
 void setFont (NSFont font) {
 	super.setFont (font);
 	double /*float*/ ascent = font.ascender ();
@@ -1457,16 +1479,19 @@ public void showSelection () {
 	if (index >= 0) showIndex (index);
 }
 
+@Override
 void tableViewSelectionDidChange (long /*int*/ id, long /*int*/ sel, long /*int*/ aNotification) {
 	if (didSelect) return;
 	sendSelection();
 }
 
+@Override
 void tableViewSelectionIsChanging (long /*int*/ id, long /*int*/ sel, long /*int*/ aNotification) {
 	didSelect = true;
 	sendSelection();
 }
 
+@Override
 long /*int*/ tableView_objectValueForTableColumn_row(long /*int*/ id, long /*int*/ sel, long /*int*/ aTableView, long /*int*/ aTableColumn, long /*int*/ rowIndex) {
 	double /*float*/ [] fg = ((NSTableView)view).isRowSelected(rowIndex) ? null : foreground;
 	NSAttributedString attribStr = createString(items[(int)/*64*/rowIndex], null, fg, SWT.LEFT, false, getEnabled(), false);

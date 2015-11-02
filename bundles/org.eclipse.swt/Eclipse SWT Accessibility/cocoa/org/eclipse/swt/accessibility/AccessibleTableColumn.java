@@ -28,6 +28,7 @@ class AccessibleTableColumn extends Accessible {
 		index = childID;
 		
 		addAccessibleControlListener(new AccessibleControlAdapter() {
+			@Override
 			public void getLocation(AccessibleControlEvent e) {
 				Accessible[] cells = AccessibleTableColumn.this.getColumnCells();
 
@@ -57,14 +58,17 @@ class AccessibleTableColumn extends Accessible {
 				e.width = width;
 				e.height = height;
 			}
+			@Override
 			public void getRole(AccessibleControlEvent e) {
 				e.detail = ACC.ROLE_COLUMN;
 			}
 		});
 		addAccessibleTableListener(new AccessibleTableAdapter() {
+			@Override
 			public void getRowCount(AccessibleTableEvent e) {
 				e.count = getColumnCells().length;
 			}
+			@Override
 			public void getRow(AccessibleTableEvent e) {
 				int index = e.row;
 				Accessible[] children = getColumnCells();
@@ -73,6 +77,7 @@ class AccessibleTableColumn extends Accessible {
 					e.accessible = children[index];
 				}
 			}
+			@Override
 			public void getRows(AccessibleTableEvent e) {
 				e.accessibles = getColumnCells();
 			}

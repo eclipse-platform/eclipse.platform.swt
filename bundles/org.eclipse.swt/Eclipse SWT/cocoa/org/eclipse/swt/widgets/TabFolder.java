@@ -130,10 +130,12 @@ static int checkStyle (int style) {
 	return style & ~(SWT.H_SCROLL | SWT.V_SCROLL);
 }
 
+@Override
 protected void checkSubclass () {
 	if (!isValidSubclass ()) error (SWT.ERROR_INVALID_SUBCLASS);
 }
 
+@Override
 public Point computeSize (int wHint, int hHint, boolean changed) {
 	Point size = super.computeSize (wHint, hHint, changed);
 	if (wHint == SWT.DEFAULT && items.length > 0) {
@@ -144,6 +146,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	return size;
 }
 
+@Override
 public Rectangle computeTrim (int x, int y, int width, int height) {
 	checkWidget ();
 	NSTabView widget = (NSTabView)view;
@@ -156,6 +159,7 @@ public Rectangle computeTrim (int x, int y, int width, int height) {
 	return super.computeTrim (x, y, width, height);
 }
 
+@Override
 void createHandle () {
 	NSTabView widget = (NSTabView)new SWTTabView().alloc();
 	widget.init ();
@@ -184,11 +188,13 @@ void createItem (TabItem item, int index) {
 	((NSTabView)view).insertTabViewItem(nsItem, index);
 }
 
+@Override
 void createWidget () {
 	super.createWidget ();
 	items = new TabItem [4];
 }
 
+@Override
 NSFont defaultNSFont () {
 	return display.tabViewFont;
 }
@@ -211,11 +217,13 @@ void destroyItem (TabItem item) {
 	((NSTabView)view).removeTabViewItem(item.nsItem);
 }
 
+@Override
 void drawBackground (long /*int*/ id, NSGraphicsContext context, NSRect rect) {
 	if (id != view.id) return;
 	fillBackground (view, context, rect, -1);
 }
 
+@Override
 Widget findTooltip (NSPoint pt) {
 	pt = view.convertPoint_fromView_ (pt, null);
 	NSTabViewItem nsItem = ((NSTabView)view).tabViewItemAtPoint (pt);
@@ -228,6 +236,7 @@ Widget findTooltip (NSPoint pt) {
 	return super.findTooltip (pt);
 }
 
+@Override
 public Rectangle getClientArea () {
 	checkWidget ();
 	NSRect rect = ((NSTabView)view).contentRect();
@@ -378,6 +387,7 @@ public int getSelectionIndex () {
 	return -1;
 }
 
+@Override
 float getThemeAlpha () {
 	return (background != null ? 1 : 0.25f) * parent.getThemeAlpha ();
 }
@@ -409,10 +419,12 @@ public int indexOf (TabItem item) {
 	return -1;
 }
 
+@Override
 boolean isTransparent() {
 	return true;
 }
 
+@Override
 Point minimumSize (int wHint, int hHint, boolean flushCache) {
 	Control [] children = _getChildren ();
 	int width = 0, height = 0;
@@ -437,6 +449,7 @@ Point minimumSize (int wHint, int hHint, boolean flushCache) {
 	return new Point (width, height);
 }
 
+@Override
 void releaseChildren (boolean destroy) {
 	if (items != null) {
 		for (int i=0; i<items.length; i++) {
@@ -450,6 +463,7 @@ void releaseChildren (boolean destroy) {
 	super.releaseChildren (destroy);
 }
 
+@Override
 void removeControl (Control control) {
 	super.removeControl (control);
 	int count = itemCount;
@@ -484,6 +498,7 @@ public void removeSelectionListener (SelectionListener listener) {
 	eventTable.unhook (SWT.DefaultSelection,listener);	
 }
 
+@Override
 void reskinChildren (int flags) {
 	if (items != null) {
 		for (int i=0; i<itemCount; i++) {
@@ -494,6 +509,7 @@ void reskinChildren (int flags) {
 	super.reskinChildren (flags);
 }
 
+@Override
 void setFont (NSFont font) {
 	((NSTabView)view).setFont(font);
 	int index = getSelectionIndex();
@@ -502,6 +518,7 @@ void setFont (NSFont font) {
 	}
 }
 
+@Override
 void setForeground (double /*float*/ [] color) {
 	super.setForeground(color);
 	int index = getSelectionIndex();
@@ -614,10 +631,12 @@ void setSelection (int index, boolean notify, boolean force) {
 	}
 }
 
+@Override
 void setSmallSize () {
 	((NSTabView)view).setControlSize (OS.NSSmallControlSize);
 }
 
+@Override
 boolean traversePage (boolean next) {
 	int count = getItemCount ();
 	if (count == 0) return false;
@@ -632,6 +651,7 @@ boolean traversePage (boolean next) {
 	return index == getSelectionIndex ();
 }
 
+@Override
 void tabView_willSelectTabViewItem(long /*int*/ id, long /*int*/ sel, long /*int*/ tabView, long /*int*/ tabViewItem) {
 	if (tabViewItem == 0) return;
 	for (int i = 0; i < itemCount; i++) {
@@ -658,6 +678,7 @@ void tabView_willSelectTabViewItem(long /*int*/ id, long /*int*/ sel, long /*int
 	}
 }
 
+@Override
 void tabView_didSelectTabViewItem(long /*int*/ id, long /*int*/ sel, long /*int*/ tabView, long /*int*/ tabViewItem) {
 	if (tabViewItem == 0) return;
 	for (int i = 0; i < itemCount; i++) {

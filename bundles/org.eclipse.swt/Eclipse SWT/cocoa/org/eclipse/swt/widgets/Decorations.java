@@ -166,6 +166,7 @@ void bringToTop (boolean force) {
 	moveAbove (null);
 }
 
+@Override
 protected void checkSubclass () {
 	if (!isValidSubclass ()) error (SWT.ERROR_INVALID_SUBCLASS);
 }
@@ -185,10 +186,12 @@ int compare (ImageData data1, ImageData data2) {
 	return data1.width > data2.width || data1.height > data2.height ? -1 : 1;
 }
 
+@Override
 Widget computeTabGroup () {
 	return this;
 }
 
+@Override
 Control computeTabRoot () {
 	return this;
 }
@@ -346,6 +349,7 @@ public boolean getMinimized () {
 	return minimized;
 }
 
+@Override
 String getNameText () {
 	return getText ();
 }
@@ -368,23 +372,28 @@ public String getText () {
 	return text;
 }
 
+@Override
 public boolean isReparentable () {
 	checkWidget();
 	return false;
 }
 
+@Override
 boolean isTabGroup () {
 	return true;
 }
 
+@Override
 boolean isTabItem () {
 	return false;
 }
 
+@Override
 Decorations menuShell () {
 	return this;
 }
 
+@Override
 void releaseChildren (boolean destroy) {
 	if (menuBar != null) {
 		menuBar.dispose ();
@@ -403,6 +412,7 @@ void releaseChildren (boolean destroy) {
 		menus = null;
 	}
 }
+@Override
 void releaseWidget () {
 	super.releaseWidget ();
 	image = null;
@@ -411,6 +421,7 @@ void releaseWidget () {
 	defaultButton = null;
 }
 
+@Override
 void reskinChildren (int flags) {
 	if (menuBar != null) menuBar.reskin (flags);
 	Menu [] menus = display.getMenus (this);
@@ -687,10 +698,12 @@ void sort (Image [] images) {
 	}
 }
 
+@Override
 boolean traverseItem (boolean next) {
 	return false;
 }
 
+@Override
 boolean traverseReturn () {
 	if (defaultButton == null || defaultButton.isDisposed ()) return false;
 	if (!defaultButton.isVisible () || !defaultButton.isEnabled ()) return false;

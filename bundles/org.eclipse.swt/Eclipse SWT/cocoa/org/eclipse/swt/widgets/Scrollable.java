@@ -165,12 +165,14 @@ ScrollBar createScrollBar (int style) {
 	return bar;
 }
 
+@Override
 void createWidget () {
 	super.createWidget ();
 	if ((style & SWT.H_SCROLL) != 0) horizontalBar = createScrollBar (SWT.H_SCROLL);
 	if ((style & SWT.V_SCROLL) != 0) verticalBar = createScrollBar (SWT.V_SCROLL);
 }
 
+@Override
 void deregister () {
 	super.deregister ();
 	if (scrollView != null) display.removeWidget (scrollView);
@@ -271,6 +273,7 @@ boolean hooksKeys () {
 	return hooks (SWT.KeyDown) || hooks (SWT.KeyUp) || hooks (SWT.Traverse);
 }
 
+@Override
 boolean isEventView (long /*int*/ id) {
 	return id == eventView ().id;
 }
@@ -279,6 +282,7 @@ boolean isNeeded(ScrollBar scrollbar) {
 	return true;
 }
 
+@Override
 boolean isTrim (NSView view) {
 	if (scrollView != null) {
 		if (scrollView.id == view.id) return true;
@@ -297,22 +301,26 @@ void redrawBackgroundImage () {
 	}
 }
 
+@Override
 void reflectScrolledClipView(long /*int*/ id, long /*int*/ sel, long /*int*/ aClipView) {
 	super.reflectScrolledClipView(id, sel, aClipView);
 	redrawBackgroundImage();
 }
 
+@Override
 void register () {
 	super.register ();
 	if (scrollView != null) display.addWidget (scrollView, this);
 }
 
+@Override
 void releaseHandle () {
 	super.releaseHandle ();
 	if (scrollView != null) scrollView.release();
 	scrollView = null;
 }
 
+@Override
 void releaseChildren (boolean destroy) {
 	if (horizontalBar != null) {
 		horizontalBar.release (false);
@@ -325,12 +333,14 @@ void releaseChildren (boolean destroy) {
 	super.releaseChildren (destroy);
 }
 
+@Override
 void reskinChildren (int flags) {
 	if (horizontalBar != null) horizontalBar.reskin (flags);
 	if (verticalBar != null) verticalBar.reskin (flags);
 	super.reskinChildren (flags);
 }
 
+@Override
 void scrollClipViewToPoint (long /*int*/ id, long /*int*/ sel, long /*int*/ clipView, NSPoint point) {
 	if ((state & CANVAS) == 0 && scrollView != null) {
 		NSClipView clip = new NSClipView (clipView);
@@ -342,16 +352,19 @@ void scrollClipViewToPoint (long /*int*/ id, long /*int*/ sel, long /*int*/ clip
 	super.scrollClipViewToPoint (id, sel, clipView, point);
 }
 
+@Override
 void sendHorizontalSelection () {
 	if (horizontalBar.view.isHiddenOrHasHiddenAncestor()) return;
 	horizontalBar.sendSelection ();
 }
 
+@Override
 void sendVerticalSelection () {
 	if (verticalBar.view.isHiddenOrHasHiddenAncestor()) return;
 	verticalBar.sendSelection ();
 }
 
+@Override
 void enableWidget (boolean enabled) {
 	super.enableWidget (enabled);
 	if (horizontalBar != null) horizontalBar.enableWidget (enabled && isNeeded(horizontalBar));
@@ -378,16 +391,19 @@ boolean setScrollBarVisible (ScrollBar bar, boolean visible) {
 	return true;
 }
 
+@Override
 void setZOrder () {
 	super.setZOrder ();
 	if (scrollView != null) scrollView.setDocumentView (view);
 }
 
+@Override
 NSView topView () {
 	if (scrollView != null) return scrollView;
 	return super.topView ();
 }
 
+@Override
 void updateCursorRects (boolean enabled) {
 	super.updateCursorRects (enabled);
 	if (scrollView == null) return;

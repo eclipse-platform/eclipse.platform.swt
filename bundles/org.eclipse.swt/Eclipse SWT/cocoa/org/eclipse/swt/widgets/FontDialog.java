@@ -113,6 +113,7 @@ public boolean getEffectsVisible () {
  * @return the FontData for the selected font, or null
  * @deprecated use #getFontList ()
  */
+@Deprecated
 public FontData getFontData () {
 	return fontData;
 }
@@ -225,6 +226,7 @@ public void setEffectsVisible(boolean visible) {
  * @param fontData the FontData to use initially, or null
  * @deprecated use #setFontList (FontData [])
  */
+@Deprecated
 public void setFontData (FontData fontData) {
 	this.fontData = fontData;
 }

@@ -553,6 +553,7 @@ public void cubicTo(float cx1, float cy1, float cx2, float cy2, float x, float y
 	}
 }
 
+@Override
 void destroy() {
 	handle.release();
 	handle = null;
@@ -726,6 +727,7 @@ void init(PathData data) {
  *
  * @return <code>true</code> when the Path is disposed, and <code>false</code> otherwise
  */
+@Override
 public boolean isDisposed() {
 	return handle == null;
 }
@@ -823,6 +825,7 @@ public void quadTo(float cx, float cy, float x, float y) {
  *
  * @return a string representation of the receiver
  */
+@Override
 public String toString () {
 	if (isDisposed()) return "Path {*DISPOSED*}";
 	return "Path {" + handle + "}";

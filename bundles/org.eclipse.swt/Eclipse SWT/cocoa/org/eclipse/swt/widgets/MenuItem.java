@@ -222,6 +222,7 @@ public void addSelectionListener (SelectionListener listener) {
 	addListener (SWT.DefaultSelection,typedListener);
 }
 
+@Override
 protected void checkSubclass () {
 	if (!isValidSubclass ()) error (SWT.ERROR_INVALID_SUBCLASS);
 }
@@ -237,11 +238,13 @@ NSMenu createEmptyMenu () {
 	return null;
 }
 
+@Override
 void deregister () {
 	super.deregister ();
 	display.removeWidget (nsItem);
 }
 
+@Override
 void destroyWidget () {
 	parent.destroyItem (this);
 	releaseHandle ();
@@ -323,6 +326,7 @@ public Menu getMenu () {
 	return menu;
 }
 
+@Override
 String getNameText () {
 	if ((style & SWT.SEPARATOR) != 0) return "|";
 	return super.getNameText ();
@@ -449,11 +453,13 @@ int keyChar (int key) {
 }
 
 
+@Override
 void register () {
 	super.register ();
 	display.addWidget (nsItem, this);
 }
 
+@Override
 void releaseHandle () {
 	super.releaseHandle ();
 	if (nsItem != null) nsItem.release();
@@ -461,6 +467,7 @@ void releaseHandle () {
 	parent = null;
 }
 
+@Override
 void releaseChildren (boolean destroy) {
 	if (menu != null) {
 		menu.release (false);
@@ -469,6 +476,7 @@ void releaseChildren (boolean destroy) {
 	super.releaseChildren (destroy);
 }
 
+@Override
 void releaseWidget () {
 	super.releaseWidget ();
 	accelerator = 0;
@@ -548,6 +556,7 @@ public void removeSelectionListener (SelectionListener listener) {
 	eventTable.unhook (SWT.DefaultSelection,listener);	
 }
 
+@Override
 void reskinChildren (int flags) {
 	if (menu != null) {
 		menu.reskin (flags);
@@ -566,6 +575,7 @@ void selectRadio () {
 	setSelection (true);
 }
 
+@Override
 void sendSelection () {
 	if ((style & SWT.CHECK) != 0) {
 		setSelection (!getSelection ());
@@ -688,6 +698,7 @@ public void setID (int id) {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  */
+@Override
 public void setImage (Image image) {
 	checkWidget ();
 	if ((style & SWT.SEPARATOR) != 0) return;
@@ -831,6 +842,7 @@ public void setSelection (boolean selected) {
  * 
  * @see #setAccelerator
  */
+@Override
 public void setText (String string) {
 	checkWidget ();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);

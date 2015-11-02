@@ -151,10 +151,12 @@ static int checkStyle (int style) {
 	return style & ~SWT.H_SCROLL;
 }
 
+@Override
 protected void checkSubclass () {
 	if (!isValidSubclass ()) error (SWT.ERROR_INVALID_SUBCLASS);
 }
 
+@Override
 public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget ();
 	int height = 0, width = 0;
@@ -226,6 +228,7 @@ int getBandHeight () {
 	return Math.max (ExpandItem.CHEVRON_SIZE, metrics.getHeight ());
 }
 
+@Override
 public Color getForeground () {
 	checkWidget ();
 	if (foreground == null) {
@@ -379,6 +382,7 @@ public void removeExpandListener (ExpandListener listener) {
 	eventTable.unhook (SWT.Collapse, listener);	
 }
 
+@Override
 void reskinChildren (int flags) {
 	if (items != null) {
 		for (int i=0; i<items.length; i++) {
@@ -389,12 +393,14 @@ void reskinChildren (int flags) {
 	super.reskinChildren (flags);
 }
 
+@Override
 public void setFont(Font font) {
 	super.setFont (font);
 	this.font = font;
 	layoutItems (0, true);
 }
 
+@Override
 public void setForeground (Color color) {
 	super.setForeground (color);
 	foreground = color;

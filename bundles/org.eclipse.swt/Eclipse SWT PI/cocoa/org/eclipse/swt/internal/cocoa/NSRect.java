@@ -22,6 +22,7 @@ public class NSRect {
 	public double /*float*/ height;
 	public static final int sizeof = OS.NSRect_sizeof();
 
+	@Override
 	public String toString() {
 		return "NSRect{" + x + "," + y + "," + width + "," + height + "}"; 
 	}

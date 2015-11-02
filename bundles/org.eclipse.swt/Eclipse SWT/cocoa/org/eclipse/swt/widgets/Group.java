@@ -93,10 +93,12 @@ static int checkStyle (int style) {
 	return style & ~(SWT.H_SCROLL | SWT.V_SCROLL);
 }
 
+@Override
 protected void checkSubclass () {
 	if (!isValidSubclass ()) error (SWT.ERROR_INVALID_SUBCLASS);
 }
 
+@Override
 public Rectangle computeTrim (int x, int y, int width, int height) {
 	checkWidget ();
 	NSBox widget = (NSBox)view;
@@ -118,10 +120,12 @@ public Rectangle computeTrim (int x, int y, int width, int height) {
 	return super.computeTrim(x, y, width, height);
 }
 
+@Override
 NSView contentView () {
 	return contentView;
 }
 
+@Override
 void createHandle () {
 	state |= THEME_BACKGROUND;
 	NSBox widget = (NSBox)new SWTBox().alloc();
@@ -140,10 +144,12 @@ void createHandle () {
 	view = widget;
 }
 
+@Override
 NSFont defaultNSFont () {
 	return display.boxFont;
 }
 
+@Override
 void deregister () {
 	super.deregister ();
 	display.removeWidget (contentView);
@@ -151,15 +157,18 @@ void deregister () {
 	display.removeWidget (box.titleCell());
 }
 
+@Override
 void drawBackground (long /*int*/ id, NSGraphicsContext context, NSRect rect) {
 	if (id != view.id) return;
 	fillBackground (view, context, rect, -1);
 }
 
+@Override
 NSView eventView () {
 	return contentView;
 }
 
+@Override
 public Rectangle getClientArea () {
 	checkWidget();
 	NSRect rect = contentView.bounds();
@@ -168,6 +177,7 @@ public Rectangle getClientArea () {
 	return new Rectangle((int)(rect.x) + hMargin, (int)(rect.y) + vMargin, width, height);
 }
 
+@Override
 String getNameText () {
 	return getText ();
 }
@@ -188,14 +198,17 @@ public String getText () {
 	checkWidget ();
 	return text;
 }
+@Override
 boolean isTransparent() {
 	return true;
 }
 
+@Override
 float getThemeAlpha () {
 	return (background != null ? 1 : 0.25f) * parent.getThemeAlpha ();
 }
 
+@Override
 void register () {
 	super.register ();
 	display.addWidget (contentView, this);
@@ -203,20 +216,24 @@ void register () {
 	display.addWidget (box.titleCell(), this);
 }
 
+@Override
 void releaseHandle () {
 	super.releaseHandle ();
 	if (contentView != null) contentView.release();
 	contentView = null;
 }
 
+@Override
 void resized() {
 	if (!ignoreResize) super.resized();
 }
 
+@Override
 void setFont(NSFont font) {
 	((NSBox) view).setTitleFont(font);
 }
 
+@Override
 void setForeground (double /*float*/ [] color) {
 	NSColor nsColor;
 	if (color == null) {
@@ -228,6 +245,7 @@ void setForeground (double /*float*/ [] color) {
 	cell.setTextColor (nsColor);
 }
 
+@Override
 void setOrientation () {
 	int direction = (style & SWT.RIGHT_TO_LEFT) != 0 ? OS.NSWritingDirectionRightToLeft : OS.NSWritingDirectionLeftToRight;
 	NSTextFieldCell cell = new NSTextFieldCell (((NSBox)view).titleCell ().id);

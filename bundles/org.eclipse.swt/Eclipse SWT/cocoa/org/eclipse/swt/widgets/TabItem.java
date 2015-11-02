@@ -114,6 +114,7 @@ public TabItem (TabFolder parent, int style, int index) {
 	parent.createItem (this, index);
 }
 
+@Override
 long /*int*/ accessibilityAttributeValue (long /*int*/ id, long /*int*/ sel, long /*int*/ arg0) {
 	
 	if (id == nsItem.id) {
@@ -133,20 +134,24 @@ long /*int*/ accessibilityAttributeValue (long /*int*/ id, long /*int*/ sel, lon
 	return super.accessibilityAttributeValue(id, sel, arg0);
 }
 
+@Override
 protected void checkSubclass () {
 	if (!isValidSubclass ()) error (SWT.ERROR_INVALID_SUBCLASS);
 }
 
+@Override
 void deregister () {
 	super.deregister ();
 	display.removeWidget (nsItem);
 }
 
+@Override
 void destroyWidget () {
 	parent.destroyItem (this);
 	releaseHandle ();
 }
 
+@Override
 void drawLabelInRect(long /*int*/ id, long /*int*/ sel, boolean shouldTruncateLabel, NSRect rect) {
 	if (image != null && !image.isDisposed()) {
 		NSSize imageSize = image.handle.size();
@@ -255,11 +260,13 @@ public String getToolTipText () {
 	return toolTipText;
 }
 
+@Override
 void register () {
 	super.register ();
 	display.addWidget (nsItem, this);
 }
 
+@Override
 void releaseHandle () {
 	super.releaseHandle ();
 	if (nsItem != null) nsItem.release();
@@ -269,6 +276,7 @@ void releaseHandle () {
 	parent = null;
 }
 
+@Override
 void releaseParent () {
 	super.releaseParent ();
 	int index = parent.indexOf (this);
@@ -277,6 +285,7 @@ void releaseParent () {
 	}
 }
 
+@Override
 void releaseWidget () {
 	super.releaseWidget ();
 	control = null;
@@ -347,6 +356,7 @@ public void setControl (Control control) {
 	}
 }
 
+@Override
 public void setImage (Image image) {
 	checkWidget ();
 	int index = parent.indexOf (this);
@@ -382,6 +392,7 @@ public void setImage (Image image) {
  * </ul>
  * 
  */
+@Override
 public void setText (String string) {
 	checkWidget ();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
@@ -417,6 +428,7 @@ public void setToolTipText (String string) {
 	parent.checkToolTip (this);
 }
 
+@Override
 NSSize sizeOfLabel(long /*int*/ id, long /*int*/ sel, boolean shouldTruncateLabel) {
 	NSSize size = super.sizeOfLabel(id, sel, shouldTruncateLabel);
 	if (image != null && !image.isDisposed()) {
@@ -430,6 +442,7 @@ NSSize sizeOfLabel(long /*int*/ id, long /*int*/ sel, boolean shouldTruncateLabe
 	return size;
 }
 
+@Override
 String tooltipText () {
 	return toolTipText;
 }

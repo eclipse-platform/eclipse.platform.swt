@@ -127,6 +127,7 @@ Control [] _getTabList () {
 	return tabList;
 }
 
+@Override
 boolean acceptsFirstMouse (long /*int*/ id, long /*int*/ sel, long /*int*/ theEvent) {
 	if ((state & CANVAS) != 0) {
 		return true;
@@ -134,6 +135,7 @@ boolean acceptsFirstMouse (long /*int*/ id, long /*int*/ sel, long /*int*/ theEv
 	return super.acceptsFirstMouse (id, sel, theEvent);
 }
 
+@Override
 boolean acceptsFirstResponder (long /*int*/ id, long /*int*/ sel) {
 	if ((state & CANVAS) != 0) {
 		if ((style & SWT.NO_FOCUS) == 0 && hooksKeys ()) {
@@ -144,6 +146,7 @@ boolean acceptsFirstResponder (long /*int*/ id, long /*int*/ sel) {
 	return super.acceptsFirstResponder (id, sel);
 }
 
+@Override
 long /*int*/ accessibilityAttributeValue (long /*int*/ id, long /*int*/ sel, long /*int*/ arg0) {
 	NSString nsAttributeName = new NSString(arg0);
 	long /*int*/ superValue = super.accessibilityAttributeValue(id, sel, arg0);
@@ -177,6 +180,7 @@ long /*int*/ accessibilityAttributeValue (long /*int*/ id, long /*int*/ sel, lon
 }
 
 
+@Override
 boolean accessibilityIsIgnored(long /*int*/ id, long /*int*/ sel) {	
 	if (id == accessibleHandle()) {
 		// If a Composite or subclass has an Accessible it should not be ignored.
@@ -233,6 +237,7 @@ public void changed (Control[] changed) {
 	}
 }
 
+@Override
 public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget();
 	display.runSkin ();
@@ -256,10 +261,12 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	return new Point (trim.width, trim.height);
 }
 
+@Override
 protected void checkSubclass () {
 	/* Do nothing - Subclassing is allowed */
 }
 
+@Override
 Widget [] computeTabList () {
 	Widget result [] = super.computeTabList ();
 	if (result.length == 0) return result;
@@ -277,6 +284,7 @@ Widget [] computeTabList () {
 	return result;
 }
 
+@Override
 void createHandle () {
 	state |= CANVAS;
 	boolean scrolled = (style & (SWT.V_SCROLL | SWT.H_SCROLL)) != 0;
@@ -357,6 +365,7 @@ public void drawBackground(GC gc, int x, int y, int width, int height, int offse
 	}
 }
 
+@Override
 void drawBackground (long /*int*/ id, NSGraphicsContext context, NSRect rect) {
 	if (id != view.id) return;
 	if ((state & CANVAS) != 0) {
@@ -370,6 +379,7 @@ Composite findDeferredControl () {
 	return layoutCount > 0 ? this : parent.findDeferredControl ();
 }
 
+@Override
 Menu [] findMenus (Control control) {
 	if (control == this) return new Menu [0];
 	Menu result [] = super.findMenus (control);
@@ -387,6 +397,7 @@ Menu [] findMenus (Control control) {
 	return result;
 }
 
+@Override
 void fixChildren (Shell newShell, Shell oldShell, Decorations newDecorations, Decorations oldDecorations, Menu [] menus) {
 	super.fixChildren (newShell, oldShell, newDecorations, oldDecorations, menus);
 	Control [] children = _getChildren ();
@@ -534,10 +545,12 @@ public Control [] getTabList () {
 	return tabList;
 }
 
+@Override
 boolean hooksKeys () {
 	return hooks (SWT.KeyDown) || hooks (SWT.KeyUp);
 }
 
+@Override
 void invalidateChildrenVisibleRegion () {
 	Control [] children = _getChildren ();
 	for (int i=0; i<children.length; i++) {
@@ -570,6 +583,7 @@ public boolean isLayoutDeferred () {
 	return findDeferredControl () != null;
 }
 
+@Override
 boolean isOpaque (long /*int*/ id, long /*int*/ sel) {
 	if ((state & CANVAS) != 0) {
 		if (id == view.id) {
@@ -579,11 +593,13 @@ boolean isOpaque (long /*int*/ id, long /*int*/ sel) {
 	return super.isOpaque (id, sel);
 }
 
+@Override
 boolean isTabGroup () {
 	if ((state & CANVAS) != 0) return true;
 	return super.isTabGroup ();
 }
 
+@Override
 void keyDown (long /*int*/ id, long /*int*/ sel, long /*int*/ theEvent) {
 	if (hasFocus()) {
 		if ((state & CANVAS) != 0) {
@@ -857,6 +873,7 @@ public void layout (Control [] changed, int flags) {
 	}
 }
 
+@Override
 void markLayout (boolean changed, boolean all) {
 	if (layout != null) {
 		state |= LAYOUT_NEEDED;
@@ -882,26 +899,31 @@ Point minimumSize (int wHint, int Hint, boolean changed) {
 	return new Point (width, height);
 }
 
+@Override
 boolean mouseEvent (long /*int*/ id, long /*int*/ sel, long /*int*/ theEvent, int type) {
 	boolean result = super.mouseEvent (id, sel, theEvent, type);
 	return (state & CANVAS) == 0 ? result : new NSEvent (theEvent).type () != OS.NSLeftMouseDown;
 }
 
+@Override
 void pageDown(long /*int*/ id, long /*int*/ sel, long /*int*/ sender) {
 	if ((state & CANVAS) != 0) return;
 	super.pageDown(id, sel, sender);
 }
 
+@Override
 void pageUp(long /*int*/ id, long /*int*/ sel, long /*int*/ sender) {
 	if ((state & CANVAS) != 0) return;
 	super.pageUp(id, sel, sender);
 }
 
+@Override
 void reflectScrolledClipView (long /*int*/ id, long /*int*/ sel, long /*int*/ aClipView) {
 	if ((state & CANVAS) != 0) return;
 	super.reflectScrolledClipView (id, sel, aClipView);
 }
 
+@Override
 void releaseChildren (boolean destroy) {
 	Control [] children = _getChildren ();
 	for (int i=0; i<children.length; i++) {
@@ -913,6 +935,7 @@ void releaseChildren (boolean destroy) {
 	super.releaseChildren (destroy);
 }
 
+@Override
 void releaseWidget () {
 	super.releaseWidget ();
 	layout = null;
@@ -924,6 +947,7 @@ void removeControl (Control control) {
 	fixTabList (control);
 }
 
+@Override
 void reskinChildren (int flags) {
 	super.reskinChildren (flags);
 	Control [] children = _getChildren ();
@@ -933,6 +957,7 @@ void reskinChildren (int flags) {
 	}
 }
 
+@Override
 void resized () {
 	super.resized ();
 	if (layout != null) {
@@ -941,6 +966,7 @@ void resized () {
 	}
 }
 
+@Override
 void scrollWheel (long /*int*/ id, long /*int*/ sel, long /*int*/ theEvent) {
 	if ((state & CANVAS) != 0) {
 		NSView view = scrollView != null ? scrollView : this.view;
@@ -1030,6 +1056,7 @@ public void setBackgroundMode (int mode) {
 	}
 }
 
+@Override
 public boolean setFocus () {
 	checkWidget ();
 	Control [] children = _getChildren ();
@@ -1090,6 +1117,7 @@ public void setLayoutDeferred (boolean defer) {
 	}
 }
 
+@Override
 boolean setScrollBarVisible (ScrollBar bar, boolean visible) {
 	boolean changed = super.setScrollBarVisible (bar, visible);
 	if (changed && layout != null) {
@@ -1099,6 +1127,7 @@ boolean setScrollBarVisible (ScrollBar bar, boolean visible) {
 	return changed;
 }
 
+@Override
 boolean setTabGroupFocus () {
 	if (isTabItem ()) return setTabItemFocus ();
 	boolean takeFocus = (style & SWT.NO_FOCUS) == 0;
@@ -1143,6 +1172,7 @@ public void setTabList (Control [] tabList) {
 	this.tabList = tabList;
 }
 
+@Override
 int traversalCode (int key, NSEvent theEvent) {
 	if ((state & CANVAS) != 0) {
 		if ((style & SWT.NO_FOCUS) != 0) return 0;
@@ -1151,6 +1181,7 @@ int traversalCode (int key, NSEvent theEvent) {
 	return super.traversalCode (key, theEvent);
 }
 
+@Override
 void updateBackgroundColor () {
 	super.updateBackgroundColor ();
 	Control [] children = _getChildren ();
@@ -1161,6 +1192,7 @@ void updateBackgroundColor () {
 	}
 }
 
+@Override
 void updateBackgroundImage () {
 	super.updateBackgroundImage ();
 	Control [] children = _getChildren ();
@@ -1171,6 +1203,7 @@ void updateBackgroundImage () {
 	}
 }
 
+@Override
 void updateBackgroundMode () {
 	super.updateBackgroundMode ();
 	Control [] children = _getChildren ();
@@ -1179,6 +1212,7 @@ void updateBackgroundMode () {
 	}
 }
 
+@Override
 void updateCursorRects (boolean enabled) {
 	super.updateCursorRects (enabled);
 	Control [] children = _getChildren ();
@@ -1188,6 +1222,7 @@ void updateCursorRects (boolean enabled) {
 	}
 }
 
+@Override
 void updateLayout (boolean all) {
 	Composite parent = findDeferredControl ();
 	if (parent != null) {

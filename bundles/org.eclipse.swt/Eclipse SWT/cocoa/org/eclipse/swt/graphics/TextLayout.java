@@ -69,6 +69,7 @@ public final class TextLayout extends Resource {
 		int start;
 		long /*int*/ jniRef;
 		NSCell cell;
+		@Override
 		public String toString () {
 			return "StyleItem {" + start + ", " + style + "}";
 		}
@@ -344,6 +345,7 @@ void computeRuns() {
 	this.lineBounds = bounds;
 }
 
+@Override
 void destroy() {
 	freeRuns();
 	if (textStorage != null) textStorage.release();
@@ -1598,6 +1600,7 @@ void initClasses () {
  *
  * @return <code>true</code> when the text layout is disposed and <code>false</code> otherwise
  */
+@Override
 public boolean isDisposed () {
 	return device == null;
 }
@@ -2189,6 +2192,7 @@ public void setWidth (int width) {
  *
  * @return a string representation of the receiver
  */
+@Override
 public String toString () {
 	if (isDisposed()) return "TextLayout {*DISPOSED*}";
 	return "TextLayout {" + text + "}";

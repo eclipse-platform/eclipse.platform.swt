@@ -152,6 +152,7 @@ static int checkStyle (int style) {
 	return checkBits (style, SWT.HORIZONTAL, SWT.VERTICAL, 0, 0, 0, 0);
 }
 
+@Override
 public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget();
 	int width = 0, height = 0;
@@ -167,6 +168,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	return new Point (width, height);
 }
 
+@Override
 void createHandle () {
 	NSScroller widget = (NSScroller)new SWTScroller().alloc();
 	NSRect rect = new NSRect();
@@ -183,16 +185,19 @@ void createHandle () {
 	updateBar(0, minimum, maximum, thumb);
 }
 
+@Override
 void createWidget () {
 	maximum = 100;
 	thumb = 10;
 	super.createWidget();
 }
 
+@Override
 NSFont defaultNSFont () {
 	return display.scrollerFont;
 }
 
+@Override
 void enableWidget(boolean enabled) {
 	super.enableWidget(enabled);
 	if (enabled) {
@@ -322,6 +327,7 @@ public void removeSelectionListener(SelectionListener listener) {
 	eventTable.unhook(SWT.DefaultSelection,listener);
 }
 
+@Override
 void sendSelection () {
 	Event event = new Event();
 	int hitPart = (int)/*64*/((NSScroller)view).hitPart();
@@ -458,6 +464,7 @@ public void setSelection (int value) {
 	updateBar(value, minimum, maximum, thumb);
 }
 
+@Override
 void setSmallSize () {
 	/* This code is intentionally comment */
 //	((NSScroller)view).setControlSize (OS.NSSmallControlSize);

@@ -107,6 +107,7 @@ ToolBar(Composite parent, int style, boolean internal) {
 	}
 }
 
+@Override
 long /*int*/ accessibilityAttributeValue (long /*int*/ id, long /*int*/ sel, long /*int*/ arg0) {
 	NSString nsAttributeName = new NSString(arg0);
 
@@ -141,6 +142,7 @@ long /*int*/ accessibilityAttributeValue (long /*int*/ id, long /*int*/ sel, lon
 	return super.accessibilityAttributeValue(id, sel, arg0);
 }
 
+@Override
 boolean accessibilityIsIgnored(long /*int*/ id, long /*int*/ sel) {
 	// Toolbars aren't ignored.
 	if (id == view.id) return false;
@@ -189,10 +191,12 @@ static int checkStyle (Composite parent, int style, boolean internal) {
 	return newStyle;
 }
 
+@Override
 protected void checkSubclass () {
 	if (!isValidSubclass ()) error (SWT.ERROR_INVALID_SUBCLASS);
 }
 
+@Override
 public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget();
 	int width = wHint, height = hHint;
@@ -206,6 +210,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	return new Point (trim.width, trim.height);
 }
 
+@Override
 public Rectangle computeTrim (int x, int y, int width, int height) {
 	checkWidget();
 	if (nsToolbar != null) {
@@ -226,6 +231,7 @@ public Rectangle computeTrim (int x, int y, int width, int height) {
 	return new Rectangle (x, y, width, height);
 }
 
+@Override
 void createHandle () {
 	if ((style & SWT.SMOOTH) != 0) {
 		nsToolbar = ((NSToolbar)new SWTToolbar().alloc()).initWithIdentifier(NSString.stringWith(String.valueOf(NEXT_ID++)));
@@ -280,16 +286,19 @@ void createItem (ToolItem item, int index) {
 	relayout ();
 }
 
+@Override
 void createWidget () {
 	super.createWidget ();
 	items = new ToolItem [4];
 	itemCount = 0;
 }
 
+@Override
 NSFont defaultNSFont() {
 	return NSFont.systemFontOfSize(11.0f);
 }
 
+@Override
 void deregister () {
 	super.deregister ();
 	if (nsToolbar != null) display.removeWidget (nsToolbar);
@@ -313,6 +322,7 @@ void destroyItem (ToolItem item) {
 	relayout ();
 }
 
+@Override
 void drawBackground (long /*int*/ id, NSGraphicsContext context, NSRect rect) {
 	if (id != view.id) return;
 	if (background != null) {
@@ -320,6 +330,7 @@ void drawBackground (long /*int*/ id, NSGraphicsContext context, NSRect rect) {
 	}
 }
 
+@Override
 void enableWidget(boolean enabled) {
 	super.enableWidget(enabled);
 	for (int i = 0; i < itemCount; i++) {
@@ -330,6 +341,7 @@ void enableWidget(boolean enabled) {
 	}
 }
 
+@Override
 Widget findTooltip (NSPoint pt) {
 	pt = view.convertPoint_fromView_ (pt, null);
 	for (int i = 0; i < itemCount; i++) {
@@ -339,11 +351,13 @@ Widget findTooltip (NSPoint pt) {
 	return super.findTooltip (pt);
 }
 
+@Override
 void setZOrder() {
 	if (nsToolbar != null) return;
 	super.setZOrder();
 }
 
+@Override
 public Rectangle getBounds () {
 	checkWidget();
 
@@ -358,6 +372,7 @@ public Rectangle getBounds () {
 	return super.getBounds();
 }
 
+@Override
 boolean forceFocus (NSView focusView) {
 	if (lastFocus != null && lastFocus.setFocus ()) return true;
 	ToolItem [] items = getItems ();
@@ -476,6 +491,7 @@ public int getRowCount () {
 	return layout (rect.width, rect.height, false) [0];
 }
 
+@Override
 boolean hasKeyboardFocus(long /*int*/ inId) {
 	return hasFocus();
 }
@@ -623,6 +639,7 @@ int [] layout (int nWidth, int nHeight, boolean resize) {
 	}
 }
 
+@Override
 void register() {
 	super.register();
 	if (nsToolbar != null) display.addWidget (nsToolbar, this);
@@ -634,6 +651,7 @@ void relayout () {
 	layout (rect.width, rect.height, true);
 }
 
+@Override
 void releaseChildren (boolean destroy) {
 	if (items != null) {
 		for (int i=0; i<itemCount; i++) {
@@ -648,6 +666,7 @@ void releaseChildren (boolean destroy) {
 	super.releaseChildren (destroy);
 }
 
+@Override
 void releaseHandle () {
     super.releaseHandle ();
 
@@ -660,6 +679,7 @@ void releaseHandle () {
 	accessibilityAttributes = null;
 }
 
+@Override
 void removeControl (Control control) {
 	super.removeControl (control);
 	for (int i=0; i<itemCount; i++) {
@@ -668,11 +688,13 @@ void removeControl (Control control) {
 	}
 }
 
+@Override
 void resized () {
 	super.resized ();
 	relayout ();
 }
 
+@Override
 void reskinChildren (int flags) {
 	if (items != null) {
 		for (int i=0; i<items.length; i++) {
@@ -683,6 +705,7 @@ void reskinChildren (int flags) {
 	super.reskinChildren (flags);
 }
 
+@Override
 boolean sendMouseEvent (NSEvent nsEvent, int type, boolean send) {
 	switch (type) {
 	case SWT.MouseEnter:
@@ -717,6 +740,7 @@ boolean sendMouseEvent (NSEvent nsEvent, int type, boolean send) {
 	return super.sendMouseEvent(nsEvent, type, send);
 }
 
+@Override
 void setBounds (int x, int y, int width, int height, boolean move, boolean resize) {
 	// In the unified toolbar case, the toolbar view size and position is completely controlled
 	// by the window, so don't change its bounds or location.
@@ -724,6 +748,7 @@ void setBounds (int x, int y, int width, int height, boolean move, boolean resiz
 	super.setBounds(x, y, width, height, move, resize);
 }
 	
+@Override
 void setFont(NSFont font) {
 	for (int i = 0; i < itemCount; i++) {
 		ToolItem item = items[i];
@@ -731,17 +756,20 @@ void setFont(NSFont font) {
 	}
 }
 
+@Override
 public void setRedraw (boolean redraw) {
 	checkWidget();
 	super.setRedraw (redraw);
 	if (redraw && drawCount == 0) relayout();
 }
 
+@Override
 public void setVisible(boolean visible) {
     if (nsToolbar != null) nsToolbar.setVisible(visible);
     super.setVisible(visible);
 }
 
+@Override
 long /*int*/ toolbar_itemForItemIdentifier_willBeInsertedIntoToolbar(long /*int*/ id, long /*int*/ sel, long /*int*/ toolbar, long /*int*/ itemIdentifier, boolean flag) {
 	NSString itemID = new NSString(itemIdentifier);
 	for (int j = 0; j < itemCount; j++) {
@@ -757,6 +785,7 @@ long /*int*/ toolbar_itemForItemIdentifier_willBeInsertedIntoToolbar(long /*int*
  * Returns an array of all toolbar item IDs allowed to be in the toolbar. Since the ToolBar created all of the ToolItems
  * return all of the item IDs.
  */
+@Override
 long /*int*/ toolbarAllowedItemIdentifiers(long /*int*/ id, long /*int*/ sel, long /*int*/ toolbar) {
 	NSMutableArray array = NSMutableArray.arrayWithCapacity(itemCount);
 	for (int i = 0; i < itemCount; i++) {
@@ -768,6 +797,7 @@ long /*int*/ toolbarAllowedItemIdentifiers(long /*int*/ id, long /*int*/ sel, lo
 /*
  * This delegate method isn't really needed because ToolBars aren't customizable, but it's required according to the documentation.
  */
+@Override
 long /*int*/ toolbarDefaultItemIdentifiers(long /*int*/ id, long /*int*/ sel, long /*int*/ toolbar) {
 	return toolbarAllowedItemIdentifiers(id, sel, toolbar);
 }
@@ -776,6 +806,7 @@ long /*int*/ toolbarDefaultItemIdentifiers(long /*int*/ id, long /*int*/ sel, lo
  * toolbarSelectableItemIdentifiers returns an array of all items that can be the selected item, as determined
  * by setSelectedItemIdentifier. 
  */
+@Override
 long /*int*/ toolbarSelectableItemIdentifiers(long /*int*/ id, long /*int*/ sel, long /*int*/ toolbar) {
 	NSMutableArray array = NSMutableArray.arrayWithCapacity(itemCount);
 	for (int i = 0; i < itemCount; i++) {
@@ -784,6 +815,7 @@ long /*int*/ toolbarSelectableItemIdentifiers(long /*int*/ id, long /*int*/ sel,
 	return array.id;
 }
 
+@Override
 boolean translateTraversal (int key, NSEvent theEvent, boolean[] consume) {
 	boolean result = super.translateTraversal (key, theEvent, consume);
 	if (result) return result;

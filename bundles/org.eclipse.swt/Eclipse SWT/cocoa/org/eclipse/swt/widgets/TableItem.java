@@ -183,6 +183,7 @@ int calculateWidth (int index, GC gc, boolean rowSelected) {
 	return width;
 }
 
+@Override
 protected void checkSubclass () {
 	if (!isValidSubclass ()) error (SWT.ERROR_INVALID_SUBCLASS);
 }
@@ -205,6 +206,7 @@ NSObject createString (int index) {
 	return NSString.stringWith(text != null ? text : "");
 }
 
+@Override
 void destroyWidget () {
 	parent.destroyItem (this);
 	releaseHandle ();
@@ -454,6 +456,7 @@ public boolean getGrayed () {
 	return grayed;
 }
 
+@Override
 public Image getImage () {
 	checkWidget ();
 	if (!parent.checkData (this)) error (SWT.ERROR_WIDGET_DISPOSED);
@@ -535,6 +538,7 @@ public int getImageIndent () {
 	return 0;
 }
 
+@Override
 String getNameText () {
 	if ((parent.style & SWT.VIRTUAL) != 0) {
 		if (!cached) return "*virtual*"; //$NON-NLS-1$
@@ -557,6 +561,7 @@ public Table getParent () {
 	return parent;
 }
 
+@Override
 public String getText () {
 	checkWidget ();
 	if (!parent.checkData (this)) error (SWT.ERROR_WIDGET_DISPOSED);
@@ -628,6 +633,7 @@ public Rectangle getTextBounds (int index) {
 	return new Rectangle((int) rect.x, (int) rect.y, (int) rect.width, (int) rect.height);
 }
 
+@Override
 boolean isDrawing () {
 	return getDrawing() && parent.isDrawing ();
 }
@@ -655,16 +661,19 @@ void redraw (int columnIndex) {
 	tableView.setNeedsDisplayInRect (rect);	
 }
 
+@Override
 void releaseHandle () {
 	super.releaseHandle ();
 	parent = null;
 }
 
+@Override
 void releaseParent () {
 	super.releaseParent ();
 //	parent.checkItems (true);
 }
 
+@Override
 void releaseWidget () {
 	super.releaseWidget ();
 	strings = null;
@@ -985,6 +994,7 @@ public void setImage (int index, Image image) {
 	redraw (index);
 }
 
+@Override
 public void setImage (Image image) {
 	checkWidget ();
 	setImage (0, image);
@@ -1003,6 +1013,7 @@ public void setImage (Image image) {
  * 
  * @deprecated this functionality is not supported on most platforms
  */
+@Deprecated
 public void setImageIndent (int indent) {
 	checkWidget ();
 	if (indent < 0) return;
@@ -1071,6 +1082,7 @@ public void setText (int index, String string) {
 	redraw (index);
 }
 
+@Override
 public void setText (String string) {
 	checkWidget ();
 	setText (0, string);

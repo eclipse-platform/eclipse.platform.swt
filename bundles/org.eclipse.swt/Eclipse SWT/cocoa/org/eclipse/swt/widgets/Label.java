@@ -95,15 +95,18 @@ public Label (Composite parent, int style) {
 	super (parent, checkStyle (style));
 }
 
+@Override
 long /*int*/ accessibleHandle() {
 	return eventView().id;	
 }
 
+@Override
 boolean accessibilityIsIgnored(long /*int*/ id, long /*int*/ sel) {
 	if (id == view.id) return true;
 	return super.accessibilityIsIgnored(id, sel);	
 }
 
+@Override
 void addRelation (Control control) {
 	if (!control.isDescribedByLabel ()) return;
 	
@@ -130,6 +133,7 @@ static int checkStyle (int style) {
 	return checkBits (style, SWT.LEFT, SWT.CENTER, SWT.RIGHT, 0, 0, 0);
 }
 
+@Override
 public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget();
 	int width = DEFAULT_WIDTH;
@@ -174,6 +178,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	return new Point (width, height);
 }
 
+@Override
 void createHandle () {
 	state |= THEME_BACKGROUND;
 	NSBox widget = (NSBox)new SWTBox().alloc();
@@ -253,6 +258,7 @@ void createHandle () {
 	view = widget;
 }
 
+@Override
 void createWidget() {
 	text = "";
 	super.createWidget ();
@@ -264,10 +270,12 @@ NSAttributedString createString() {
 	return attribStr;
 }
 
+@Override
 NSFont defaultNSFont () {
 	return display.textFieldFont;
 }
 
+@Override
 void deregister () {
 	super.deregister ();
 	if (textView != null) {
@@ -281,19 +289,23 @@ void deregister () {
 	if (separator != null) display.removeWidget(separator);
 }
 
+@Override
 void drawBackground (long /*int*/ id, NSGraphicsContext context, NSRect rect) {
 	if (id != view.id) return;
 	fillBackground(view, context, rect, -1);
 }
 
+@Override
 long /*int*/ imageView() {
 	return imageView.id;
 };
 
+@Override
 boolean drawsBackground() {
 	return background != null || backgroundImage != null;
 }
 
+@Override
 NSView eventView () {
 	return ((NSBox)view).contentView();
 }
@@ -336,6 +348,7 @@ public Image getImage () {
 	return image;
 }
 
+@Override
 String getNameText () {
 	return getText ();
 }
@@ -358,10 +371,12 @@ public String getText () {
 	return text;
 }
 
+@Override
 boolean isDescribedByLabel () {
 	return false;
 }
 
+@Override
 void register () {
 	super.register ();
 	if (textView != null) {
@@ -375,6 +390,7 @@ void register () {
 	if (separator != null) display.addWidget(separator, this);
 }
 
+@Override
 void releaseHandle () {
 	super.releaseHandle ();
 	if (textView != null) textView.release();
@@ -388,6 +404,7 @@ void releaseHandle () {
 /*
  * Remove "Labeled by" relations from the receiver.
  */
+@Override
 void removeRelation () {
 	if (textView != null) {
 		textView.cell().accessibilitySetOverrideValue(null, OS.NSAccessibilityServesAsTitleForUIElementsAttribute);
@@ -428,6 +445,7 @@ void _setAlignment() {
 	}
 }
 
+@Override
 void setFont(NSFont font) {
 	if (textView != null) {
 		NSCell cell = new NSCell(textView.cell());
@@ -436,12 +454,14 @@ void setFont(NSFont font) {
 	}
 }
 
+@Override
 void setForeground (double /*float*/ [] color) {
 	if ((style & SWT.SEPARATOR) != 0) return;
 	NSCell cell = new NSCell(textView.cell());
 	cell.setAttributedStringValue(createString());
 }
 
+@Override
 boolean setTabItemFocus () {
 	return false;
 }

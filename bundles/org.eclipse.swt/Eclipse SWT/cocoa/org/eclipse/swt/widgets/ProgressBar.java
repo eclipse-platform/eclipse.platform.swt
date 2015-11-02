@@ -81,6 +81,7 @@ static int checkStyle (int style) {
 	return checkBits (style, SWT.HORIZONTAL, SWT.VERTICAL, 0, 0, 0, 0);
 }
 
+@Override
 public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget();
 	int size = OS.NSProgressIndicatorPreferredThickness;
@@ -97,6 +98,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	return new Point (width, height);
 }
 
+@Override
 void createHandle () {
 	NSProgressIndicator widget = (NSProgressIndicator)new SWTProgressIndicator().alloc();
 	widget.init();
@@ -106,10 +108,12 @@ void createHandle () {
 	view = widget;
 }
 
+@Override
 NSFont defaultNSFont () {
 	return display.progressIndicatorFont;
 }
 
+@Override
 void _drawThemeProgressArea (long /*int*/ id, long /*int*/ sel, long /*int*/ arg0) {
 	/*
 	* Bug in Cocoa.  When the threaded animation is turned off by calling
@@ -307,18 +311,21 @@ public void setState (int state) {
 	//NOT IMPLEMENTED
 }
 
+@Override
 void releaseWidget () {
 	super.releaseWidget();
 	if (visiblePath != null) visiblePath.release();
 	visiblePath = null;
 }
 
+@Override
 void resetVisibleRegion () {
 	super.resetVisibleRegion ();
 	if (visiblePath != null) visiblePath.release();
 	visiblePath = null;
 }
 
+@Override
 void viewDidMoveToWindow(long /*int*/ id, long /*int*/ sel) {
 	/*
 	 * Bug in Cocoa. An indeterminate progress indicator doesn't start animating until it is in

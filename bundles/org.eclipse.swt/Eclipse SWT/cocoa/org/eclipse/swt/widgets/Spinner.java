@@ -99,11 +99,13 @@ public Spinner (Composite parent, int style) {
 	super (parent, checkStyle (style));
 }
 
+@Override
 boolean acceptsFirstResponder(long /*int*/ id, long /*int*/ sel) {
 	if (id == view.id) return false;
 	return super.acceptsFirstResponder (id, sel);
 }
 
+@Override
 boolean accessibilityIsIgnored(long /*int*/ id, long /*int*/ sel) {
 	if (id == view.id) return true;
 	return super.accessibilityIsIgnored(id, sel);	
@@ -204,10 +206,12 @@ static int checkStyle (int style) {
 	return style & ~(SWT.H_SCROLL | SWT.V_SCROLL);
 }
 
+@Override
 protected void checkSubclass () {
 	if (!isValidSubclass ()) error (SWT.ERROR_INVALID_SUBCLASS);
 }
 
+@Override
 public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget ();
 	double /*float*/ width = 0, height = 0;
@@ -227,6 +231,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	}
 	return new Point (trim.width, trim.height);
 }
+@Override
 public Rectangle computeTrim (int x, int y, int width, int height) {
 	checkWidget();
 	NSRect frameRect = textView.frame();
@@ -261,6 +266,7 @@ public void copy () {
 	}
 }
 
+@Override
 void createHandle () {
 	NSView widget = (NSView)new SWTView().alloc();
 	widget.init();
@@ -312,16 +318,19 @@ public void cut () {
 	}
 }
 
+@Override
 void enableWidget (boolean enabled) {
 	super.enableWidget(enabled);
 	buttonView.setEnabled(enabled);
 	textView.setEnabled(enabled);
 }
 
+@Override
 NSFont defaultNSFont () {
 	return display.textFieldFont;
 }
 
+@Override
 void deregister () {
 	super.deregister ();
 	if (textView != null) {
@@ -335,6 +344,7 @@ void deregister () {
 	}
 }
 
+@Override
 void drawBackground (long /*int*/ id, NSGraphicsContext context, NSRect rect) {
 	if (backgroundImage == null) return;
 	if (new NSView(id).isKindOfClass(OS.class_NSText)) {
@@ -344,6 +354,7 @@ void drawBackground (long /*int*/ id, NSGraphicsContext context, NSRect rect) {
 	fillBackground (view, context, rect, -1);
 }
 
+@Override
 void drawInteriorWithFrame_inView(long /*int*/ id, long /*int*/ sel, NSRect cellFrame, long /*int*/ viewid) {
 	Control control = findBackgroundControl();
 	if (control == null) control = this;
@@ -355,11 +366,13 @@ void drawInteriorWithFrame_inView(long /*int*/ id, long /*int*/ sel, NSRect cell
 	super.drawInteriorWithFrame_inView(id, sel, cellFrame, viewid);
 }
 
+@Override
 Cursor findCursor () {
 	Cursor cursor = super.findCursor ();
 	return (cursor != null || (style & SWT.READ_ONLY) != 0) ? cursor : display.getSystemCursor (SWT.CURSOR_IBEAM);
 }
 
+@Override
 NSView focusView () {
 	return textView;
 }
@@ -538,12 +551,14 @@ public int getTextLimit () {
     return textLimit;
 }
 
+@Override
 boolean handleIsAccessible(long /*int*/ id) {
 	// All subviews of a Spinner can have their accessible properties overridden.
 	// The top-level NSView is already ignored, so we don't need to test for that.
 	return true;
 }
 
+@Override
 boolean isEventView (long /*int*/ id) {
 	return true;
 }
@@ -571,6 +586,7 @@ public void paste () {
 	}
 }
 
+@Override
 void register () {
 	super.register ();
 	if (textView != null) {
@@ -584,6 +600,7 @@ void register () {
 	}
 }
 
+@Override
 void releaseHandle () {
 	super.releaseHandle();
 	if (textFormatter != null) textFormatter.release();
@@ -594,6 +611,7 @@ void releaseHandle () {
 	textView = null;
 }
 
+@Override
 void releaseWidget () {	
 	super.releaseWidget ();
 	if (textView != null) textView.abortEditing();
@@ -672,6 +690,7 @@ void removeVerifyListener (VerifyListener listener) {
 	eventTable.unhook (SWT.Verify, listener);	
 }
 
+@Override
 void resized () {
 	super.resized ();
 	buttonView.sizeToFit();
@@ -689,6 +708,7 @@ void resized () {
 	buttonView.setFrame(buttonFrame);
 }
 
+@Override
 boolean sendKeyEvent (NSEvent nsEvent, int type) {
 	boolean result = super.sendKeyEvent (nsEvent, type);
 	if (!result) return result;
@@ -737,14 +757,17 @@ boolean sendKeyEvent (NSEvent nsEvent, int type) {
     return result;
 }
 
+@Override
 void sendSelection () {	
 	setSelection (getSelection(), false, true, true);
 }
 
+@Override
 void setBackgroundColor(NSColor nsColor) {
 	((NSTextField) textView).setBackgroundColor (nsColor);
 }
 
+@Override
 void setBackgroundImage(NSImage image) {
 	NSTextField widget = (NSTextField) textView;
 	widget.setDrawsBackground(image == null);
@@ -780,10 +803,12 @@ public void setDigits (int value) {
 	setSelection (pos, false, true, false);
 }
 
+@Override
 void setFont(NSFont font) {
 	textView.setFont(font);
 }
 
+@Override
 void setForeground (double /*float*/ [] color) {
 	NSColor nsColor;
 	if (color == null) {
@@ -874,6 +899,7 @@ public void setPageIncrement (int value) {
 	pageIncrement = value;
 }
 
+@Override
 void setOrientation () {
 	int direction = (style & SWT.RIGHT_TO_LEFT) != 0 ? OS.NSWritingDirectionRightToLeft : OS.NSWritingDirectionLeftToRight;
 	textView.setBaseWritingDirection(direction);
@@ -939,6 +965,7 @@ void setSelection (int value, boolean setPos, boolean setText, boolean notify) {
 	if (notify) sendSelectionEvent (SWT.Selection);
 }
 
+@Override
 void setSmallSize () {
 	textView.cell ().setControlSize (OS.NSSmallControlSize);
 	buttonView.cell ().setControlSize (OS.NSSmallControlSize);
@@ -1010,6 +1037,7 @@ public void setValues (int selection, int minimum, int maximum, int digits, int 
 	setSelection (selection, true, true, false);
 }
 
+@Override
 boolean shouldChangeTextInRange_replacementString(long /*int*/ id, long /*int*/ sel, long /*int*/ affectedCharRange, long /*int*/ replacementString) {
 	NSRange range = new NSRange();
 	OS.memmove(range, affectedCharRange, NSRange.sizeof);
@@ -1044,6 +1072,7 @@ boolean shouldChangeTextInRange_replacementString(long /*int*/ id, long /*int*/ 
 	return result;
 }
 
+@Override
 void textDidChange (long /*int*/ id, long /*int*/ sel, long /*int*/ aNotification) {
 	super.textDidChange (id, sel, aNotification);
 	boolean [] parseFail = new boolean [1];
@@ -1057,6 +1086,7 @@ void textDidChange (long /*int*/ id, long /*int*/ sel, long /*int*/ aNotificatio
 	postEvent (SWT.Modify);
 }
 
+@Override
 NSRange textView_willChangeSelectionFromCharacterRange_toCharacterRange (long /*int*/ id, long /*int*/ sel, long /*int*/ aTextView, long /*int*/ oldSelectedCharRange, long /*int*/ newSelectedCharRange) {
 	/* allow the selection change to proceed */
 	NSRange result = new NSRange ();
@@ -1064,6 +1094,7 @@ NSRange textView_willChangeSelectionFromCharacterRange_toCharacterRange (long /*
 	return result;
 }
 
+@Override
 void textDidEndEditing(long /*int*/ id, long /*int*/ sel, long /*int*/ aNotification) {
 	boolean [] parseFail = new boolean [1];
 	int value = getSelectionText (parseFail);
@@ -1074,6 +1105,7 @@ void textDidEndEditing(long /*int*/ id, long /*int*/ sel, long /*int*/ aNotifica
 	super.textDidEndEditing(id, sel, aNotification);
 }
 
+@Override
 void updateCursorRects (boolean enabled) {
 	super.updateCursorRects (enabled);
 	updateCursorRects (enabled, textView);

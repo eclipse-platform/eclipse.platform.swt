@@ -209,6 +209,7 @@ void addTraits(NSMutableDictionary dict) {
 	}
 }
 
+@Override
 void destroy() {
 	handle.release();
 	handle = null;
@@ -225,6 +226,7 @@ void destroy() {
  *
  * @see #hashCode
  */
+@Override
 public boolean equals(Object object) {
 	if (object == this) return true;
 	if (!(object instanceof Font)) return false;
@@ -300,6 +302,7 @@ public static Font cocoa_new(Device device, NSFont handle) {
  *
  * @see #equals
  */
+@Override
 public int hashCode() {
 	return handle != null ? (int)/*64*/handle.id : 0;
 }
@@ -367,6 +370,7 @@ void init(String name, float height, int style, String nsName) {
  *
  * @return <code>true</code> when the font is disposed and <code>false</code> otherwise
  */
+@Override
 public boolean isDisposed() {
 	return handle == null;
 }
@@ -377,6 +381,7 @@ public boolean isDisposed() {
  *
  * @return a string representation of the receiver
  */
+@Override
 public String toString () {
 	if (isDisposed()) return "Font {*DISPOSED*}";
 	return "Font {" + handle + "}";

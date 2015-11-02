@@ -85,6 +85,7 @@ boolean blinkCaret () {
 	return hideCaret ();
 }
 
+@Override
 void createWidget () {
 	super.createWidget ();
 	blinkRate = display.getCaretBlinkTime ();
@@ -279,11 +280,13 @@ void killFocus () {
 	if (isVisible) hideCaret ();
 }
 
+@Override
 void releaseParent () {
 	super.releaseParent ();
 	if (this == parent.getCaret ()) parent.setCaret (null);
 }
 
+@Override
 void releaseWidget () {
 	super.releaseWidget ();
 	if (display.currentCaret == this) {

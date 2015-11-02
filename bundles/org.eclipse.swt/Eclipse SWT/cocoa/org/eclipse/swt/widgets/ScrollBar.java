@@ -139,11 +139,13 @@ static int checkStyle (int style) {
 	return checkBits (style, SWT.HORIZONTAL, SWT.VERTICAL, 0, 0, 0, 0);
 }
 
+@Override
 void deregister () {
 	super.deregister ();
 	display.removeWidget (view);
 }
 
+@Override
 boolean getDrawing () {
 	return parent.getDrawing ();
 }
@@ -383,6 +385,7 @@ public boolean isEnabled () {
 	return getEnabled () && parent.isEnabled ();
 }
 
+@Override
 boolean isDrawing () {
 	return getDrawing() && parent.isDrawing ();
 }
@@ -431,28 +434,33 @@ public void removeSelectionListener(SelectionListener listener) {
 	eventTable.unhook(SWT.DefaultSelection,listener);
 }
 
+@Override
 void register () {
 	super.register ();
 	display.addWidget (view, this);
 }
 
+@Override
 void releaseHandle () {
 	super.releaseHandle ();
 	if (view != null) view.release();
 	view = null;
 }
 
+@Override
 void releaseParent () {
 	super.releaseParent ();
 	if (parent.horizontalBar == this) parent.horizontalBar = null;
 	if (parent.verticalBar == this) parent.verticalBar = null;
 }
 
+@Override
 void releaseWidget () {
 	super.releaseWidget ();
 	parent = null;
 }
 
+@Override
 void sendSelection () {
 	NSWindow window = view.window ();
 	if (target == null) parent.getShell().deferFlushing();
@@ -520,6 +528,7 @@ public void setIncrement (int value) {
 	increment = value;
 }
 
+@Override
 void setClipRegion (NSView view) {
 	parent.setClipRegion(view);
 }

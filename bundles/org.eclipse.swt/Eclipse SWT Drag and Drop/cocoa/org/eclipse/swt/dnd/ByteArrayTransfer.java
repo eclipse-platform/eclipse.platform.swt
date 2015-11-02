@@ -120,6 +120,7 @@ import org.eclipse.swt.internal.cocoa.*;
  */
 public abstract class ByteArrayTransfer extends Transfer {
 
+@Override
 public TransferData[] getSupportedTypes() {
 	int[] types = getTypeIds();
 	TransferData[] data = new TransferData[types.length];
@@ -130,6 +131,7 @@ public TransferData[] getSupportedTypes() {
 	return data;
 }
 
+@Override
 public boolean isSupportedType(TransferData transferData){
 	if (transferData == null) return false;
 	int[] types = getTypeIds();
@@ -149,6 +151,7 @@ public boolean isSupportedType(TransferData transferData){
  * 
  * @see Transfer#nativeToJava
  */
+@Override
 protected void javaToNative (Object object, TransferData transferData) {
 	if (!checkByteArray(object) && !isSupportedType(transferData)) {
 		DND.error(DND.ERROR_INVALID_DATA);
@@ -168,6 +171,7 @@ protected void javaToNative (Object object, TransferData transferData) {
  * 
  * @see Transfer#javaToNative
  */
+@Override
 protected Object nativeToJava(TransferData transferData) {
 	if (!isSupportedType(transferData) || transferData.data == null) return null;
 	if (transferData.data == null) return null;

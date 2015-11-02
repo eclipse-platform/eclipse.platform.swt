@@ -374,6 +374,7 @@ public static Shell new_Shell(final Display display, final Canvas parent) {
 	
 	final Shell shell = Shell.cocoa_new (display, handle);
 	final ComponentListener listener = new ComponentAdapter () {
+		@Override
 		public void componentResized (ComponentEvent e) {
 			display.asyncExec (new Runnable () {
 				public void run () {

@@ -126,10 +126,12 @@ public Table (Composite parent, int style) {
 	super (parent, checkStyle (style));
 }
 
+@Override
 boolean acceptsFirstResponder (long /*int*/ id, long /*int*/ sel) {
 	return true;
 }
 
+@Override
 long /*int*/ accessibilityAttributeValue(long /*int*/ id, long /*int*/ sel, long /*int*/ arg0) {
 	long /*int*/ returnValue = 0;
 	NSString attributeName = new NSString(arg0);
@@ -156,6 +158,7 @@ long /*int*/ accessibilityAttributeValue(long /*int*/ id, long /*int*/ sel, long
 	}
 }
 
+@Override
 void _addListener (int eventType, Listener listener) {
 	super._addListener (eventType, listener);
 	clearCachedWidth(items);
@@ -213,6 +216,7 @@ int calculateWidth (TableItem[] items, int index, GC gc) {
 	return width;
 }
 
+@Override
 NSSize cellSize (long /*int*/ id, long /*int*/ sel) {
 	NSSize size = super.cellSize(id, sel);
 	NSCell cell = new NSCell(id);
@@ -237,6 +241,7 @@ NSSize cellSize (long /*int*/ id, long /*int*/ sel) {
 	return size;
 }
 
+@Override
 boolean canDragRowsWithIndexes_atPoint(long /*int*/ id, long /*int*/ sel, long /*int*/ rowIndexes, NSPoint mouseDownPoint) {
 	if (!super.canDragRowsWithIndexes_atPoint(id, sel, rowIndexes, mouseDownPoint)) return false;
 	
@@ -298,6 +303,7 @@ static int checkStyle (int style) {
 	return checkBits (style, SWT.SINGLE, SWT.MULTI, 0, 0, 0, 0);
 }
 
+@Override
 protected void checkSubclass () {
 	if (!isValidSubclass ()) error (SWT.ERROR_INVALID_SUBCLASS);
 }
@@ -442,6 +448,7 @@ void clearCachedWidth (TableItem[] items) {
 	}
 }
 
+@Override
 long /*int*/ columnAtPoint(long /*int*/ id, long /*int*/ sel, NSPoint point) {
 	if ((style & SWT.CHECK) != 0) {
 		if (point.x <= getCheckColumnWidth() && point.y < headerView.frame().height) return 1;
@@ -450,6 +457,7 @@ long /*int*/ columnAtPoint(long /*int*/ id, long /*int*/ sel, NSPoint point) {
 	return super.columnAtPoint(id, sel, point);
 }
 
+@Override
 public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget ();
 	int width = 0;
@@ -520,6 +528,7 @@ void createColumn (TableItem item, int index) {
 	}
 }
 
+@Override
 void createHandle () {
 	NSScrollView scrollWidget = (NSScrollView)new SWTScrollView().alloc();
 	scrollWidget.init();
@@ -650,24 +659,29 @@ void createItem (TableItem item, int index) {
 	if (index != itemCount) fixSelection (index, true);
 }
 
+@Override
 void createWidget () {
 	super.createWidget ();
 	items = new TableItem [4];
 	columns = new TableColumn [4];
 }
 
+@Override
 Color defaultBackground () {
 	return display.getWidgetColor (SWT.COLOR_LIST_BACKGROUND);
 }
 
+@Override
 NSFont defaultNSFont () {
 	return display.tableViewFont;
 }
 
+@Override
 Color defaultForeground () {
 	return display.getWidgetColor (SWT.COLOR_LIST_FOREGROUND);
 }
 
+@Override
 void deregister () {
 	super.deregister ();
 	display.removeWidget (headerView);
@@ -675,6 +689,7 @@ void deregister () {
 	if (buttonCell != null) display.removeWidget (buttonCell);
 }
 
+@Override
 void deselectAll(long /*int*/ id, long /*int*/ sel, long /*int*/ sender) {
 	if (preventSelect && !ignoreSelect) return;
 	if ((style & SWT.SINGLE) != 0 && !ignoreSelect) {
@@ -683,6 +698,7 @@ void deselectAll(long /*int*/ id, long /*int*/ sel, long /*int*/ sender) {
 	super.deselectAll (id, sel, sender);
 }
 
+@Override
 void deselectRow (long /*int*/ id, long /*int*/ sel, long /*int*/ index) {
 	if (preventSelect && !ignoreSelect) return;
 	if ((style & SWT.SINGLE) != 0 && !ignoreSelect) {
@@ -901,17 +917,20 @@ void destroyItem (TableItem item) {
 	if (itemCount == 0) setTableEmpty ();
 }
 
+@Override
 boolean dragDetect(int x, int y, boolean filter, boolean[] consume) {
 	// Let Cocoa determine if a drag is starting and fire the notification when we get the callback.
 	return false;
 }
 
+@Override
 void drawBackgroundInClipRect(long /*int*/ id, long /*int*/ sel, NSRect rect) {
 	super.drawViewBackgroundInRect(id, sel, rect);
 	if (id != view.id) return;
 	fillBackground (view, NSGraphicsContext.currentContext(), rect, -1);
 }
 
+@Override
 void drawInteriorWithFrame_inView (long /*int*/ id, long /*int*/ sel, NSRect rect, long /*int*/ view) {
 	boolean hooksErase = hooks (SWT.EraseItem);
 	boolean hooksPaint = hooks (SWT.PaintItem);
@@ -1161,12 +1180,14 @@ void drawInteriorWithFrame_inView (long /*int*/ id, long /*int*/ sel, NSRect rec
 	}
 }
 
+@Override
 void drawWithExpansionFrame_inView (long /*int*/ id, long /*int*/ sel, NSRect cellFrame, long /*int*/ view) {
 	drawExpansion = true;
 	super.drawWithExpansionFrame_inView(id, sel, cellFrame, view);
 	drawExpansion = false;
 }
 
+@Override
 void drawRect(long /*int*/ id, long /*int*/ sel, NSRect rect) {
 	fixScrollWidth = false;
 	super.drawRect(id, sel, rect);
@@ -1177,6 +1198,7 @@ void drawRect(long /*int*/ id, long /*int*/ sel, NSRect rect) {
 	}
 }
 
+@Override
 NSRect expansionFrameWithFrame_inView(long /*int*/ id, long /*int*/ sel, NSRect cellRect, long /*int*/ view) {
 	if (toolTipText == null) {
 		NSRect rect = super.expansionFrameWithFrame_inView(id, sel, cellRect, view);
@@ -1220,6 +1242,7 @@ NSRect expansionFrameWithFrame_inView(long /*int*/ id, long /*int*/ sel, NSRect 
 	return new NSRect();
 }
 
+@Override
 Widget findTooltip (NSPoint pt) {
 	NSTableView widget = (NSTableView)view;
 	NSTableHeaderView headerView = widget.headerView();
@@ -1264,6 +1287,7 @@ int getCheckColumnWidth () {
 	return (int)checkColumn.dataCell().cellSize().width;
 }
 
+@Override
 public Rectangle getClientArea () {
 	checkWidget ();
 	Rectangle rect = super.getClientArea ();
@@ -1779,6 +1803,7 @@ public int getTopIndex () {
 	return rowAtPoint;	
 }
 
+@Override
 NSRect headerRectOfColumn (long /*int*/ id, long /*int*/ sel, long /*int*/ column) {
 	if ((style & SWT.CHECK) == 0) return callSuperRect(id, sel, column);
 	
@@ -1797,6 +1822,7 @@ NSRect headerRectOfColumn (long /*int*/ id, long /*int*/ sel, long /*int*/ colum
 	return callSuperRect(id, sel, column);
 }
 
+@Override
 void highlightSelectionInClipRect(long /*int*/ id, long /*int*/ sel, long /*int*/ rect) {
 	if (hooks (SWT.EraseItem)) return;
 	if ((style & SWT.HIDE_SELECTION) != 0 && !hasFocus()) return;
@@ -1805,6 +1831,7 @@ void highlightSelectionInClipRect(long /*int*/ id, long /*int*/ sel, long /*int*
 	callSuper (id, sel, clipRect);
 }
 
+@Override
 long /*int*/ hitTestForEvent (long /*int*/ id, long /*int*/ sel, long /*int*/ event, NSRect rect, long /*int*/ controlView) {
 	/*
 	* For some reason, the cell class needs to implement hitTestForEvent:inRect:ofView:,
@@ -1813,12 +1840,14 @@ long /*int*/ hitTestForEvent (long /*int*/ id, long /*int*/ sel, long /*int*/ ev
 	return callSuper(id, sel, event, rect, controlView);
 }
 
+@Override
 long /*int*/ image (long /*int*/ id, long /*int*/ sel) {
 	long /*int*/ [] image = new long /*int*/ [1];
 	OS.object_getInstanceVariable(id, Display.SWT_IMAGE, image);
 	return image[0];
 }
 
+@Override
 NSRect imageRectForBounds (long /*int*/ id, long /*int*/ sel, NSRect cellFrame) {
 	NSImage image = new NSCell(id).image();
 	if (image != null) {
@@ -1915,20 +1944,24 @@ public boolean isSelected (int index) {
 	return ((NSTableView)view).isRowSelected(index);
 }
 
+@Override
 boolean isTransparent() {
 	return true;
 }
 
+@Override
 void keyDown(long /*int*/ id, long /*int*/ sel, long /*int*/ theEvent) {
 	ignoreSelect = preventSelect = false;
 	super.keyDown(id, sel, theEvent);
 }
 
+@Override
 boolean isTrim (NSView view) {
 	if (super.isTrim (view)) return true;
 	return view.id == headerView.id;
 }
 
+@Override
 long /*int*/ menuForEvent(long /*int*/ id, long /*int*/ sel, long /*int*/ theEvent) {
 	if (id != headerView.id) {
 		/*
@@ -1958,6 +1991,7 @@ long /*int*/ menuForEvent(long /*int*/ id, long /*int*/ sel, long /*int*/ theEve
 	return super.menuForEvent(id, sel, theEvent);
 }
 
+@Override
 void mouseDown (long /*int*/ id, long /*int*/ sel, long /*int*/ theEvent) {
 	if (id == view.id) {
 		// Bug/feature in Cocoa:  If the table has a context menu we just set it visible instead of returning
@@ -1970,6 +2004,7 @@ void mouseDown (long /*int*/ id, long /*int*/ sel, long /*int*/ theEvent) {
 	super.mouseDown(id, sel, theEvent);
 }
 
+@Override
 void mouseDownSuper(long /*int*/ id, long /*int*/ sel, long /*int*/ theEvent) {
 	ignoreSelect = preventSelect = false;
 	boolean check = false;
@@ -1999,6 +2034,7 @@ void mouseDownSuper(long /*int*/ id, long /*int*/ sel, long /*int*/ theEvent) {
 	didSelect = false;
 }
 
+@Override
 boolean needsPanelToBecomeKey (long /*int*/ id, long /*int*/ sel) {
 	return false;
 }
@@ -2009,6 +2045,7 @@ boolean needsPanelToBecomeKey (long /*int*/ id, long /*int*/ sel) {
  * to momentarily appear while clicking on the checkbox.  To avoid this, 
  * override [NSCell nextState] to go directly to the desired state.
  */
+@Override
 long /*int*/ nextState (long /*int*/ id, long /*int*/ sel) {
 	NSTableView tableView = (NSTableView)view;
 	int index = (int)/*64*/tableView.clickedRow();
@@ -2020,10 +2057,12 @@ long /*int*/ nextState (long /*int*/ id, long /*int*/ sel) {
 	return item.checked ? OS.NSOffState : OS.NSOnState;
 }
 
+@Override
 long /*int*/ numberOfRowsInTableView(long /*int*/ id, long /*int*/ sel, long /*int*/ aTableView) {
 	return itemCount;
 }
 
+@Override
 void register () {
 	super.register ();
 	display.addWidget (headerView, this);
@@ -2031,6 +2070,7 @@ void register () {
 	if (buttonCell != null) display.addWidget (buttonCell, this);
 }
 
+@Override
 void releaseChildren (boolean destroy) {
 	if (items != null) {
 		for (int i=0; i<itemCount; i++) {
@@ -2053,6 +2093,7 @@ void releaseChildren (boolean destroy) {
 	super.releaseChildren (destroy);
 }
 
+@Override
 void releaseHandle () {
 	super.releaseHandle ();
 	if (headerView != null) headerView.release();
@@ -2067,6 +2108,7 @@ void releaseHandle () {
 	buttonCell = null;
 }
 
+@Override
 void releaseWidget () {	
 	super.releaseWidget ();
 	currentItem = null;
@@ -2250,6 +2292,7 @@ public void removeSelectionListener(SelectionListener listener) {
 	eventTable.unhook (SWT.DefaultSelection,listener);	
 }
 
+@Override
 void reskinChildren (int flags) {
 	if (items != null) {
 		for (int i=0; i<itemCount; i++) {
@@ -2266,6 +2309,7 @@ void reskinChildren (int flags) {
 	super.reskinChildren (flags);
 }
 
+@Override
 void scrollClipViewToPoint(long /*int*/ id, long /*int*/ sel, long /*int*/ clipView, NSPoint point) {
 	if (shouldScroll) {
 		super.scrollClipViewToPoint(id, sel, clipView, point);
@@ -2427,6 +2471,7 @@ public void selectAll () {
 	ignoreSelect = false;
 }
 
+@Override
 void setBackgroundColor(NSColor nsColor) {
 	((NSTableView) view).setBackgroundColor (nsColor);
 }
@@ -2503,6 +2548,7 @@ public void setColumnOrder (int [] order) {
 	}
 }
 
+@Override
 void setFont (NSFont font) {
 	super.setFont (font);
 	setItemHeight (null, font, !hooks (SWT.MeasureItem));
@@ -2533,6 +2579,7 @@ public void setHeaderVisible (boolean show) {
 	scrollView.tile();
 }
 
+@Override
 void setImage (long /*int*/ id, long /*int*/ sel, long /*int*/ arg0) {
 	OS.object_setInstanceVariable(id, Display.SWT_IMAGE, arg0);
 }
@@ -2605,6 +2652,7 @@ void setItemHeight (Image image, NSFont font, boolean set) {
 	}
 }
 
+@Override
 public void setRedraw (boolean redraw) {
 	checkWidget ();
 	super.setRedraw (redraw);
@@ -2859,6 +2907,7 @@ public void setSelection (TableItem [] items) {
 	}
 }
 
+@Override
 void setShouldScrollClipView(long /*int*/ id, long /*int*/ sel, boolean shouldScroll) {
 	this.shouldScroll = shouldScroll;
 }
@@ -3035,6 +3084,7 @@ public void showSelection () {
 	}
 }
 
+@Override
 void selectRowIndexes_byExtendingSelection (long /*int*/ id, long /*int*/ sel, long /*int*/ indexes, boolean extend) {
 	if (preventSelect && !ignoreSelect) return;
 	if ((style & SWT.SINGLE) != 0 && !ignoreSelect) {
@@ -3044,6 +3094,7 @@ void selectRowIndexes_byExtendingSelection (long /*int*/ id, long /*int*/ sel, l
 	super.selectRowIndexes_byExtendingSelection (id, sel, indexes, extend);
 }
 
+@Override
 void sendDoubleSelection() {
 	NSTableView tableView = (NSTableView)view;
 	int rowIndex = (int)/*64*/tableView.clickedRow (); 
@@ -3063,6 +3114,7 @@ void sendDoubleSelection() {
 	}
 }
 
+@Override
 boolean sendKeyEvent (NSEvent nsEvent, int type) {
 	boolean result = super.sendKeyEvent (nsEvent, type);
 	if (!result) return result;
@@ -3113,6 +3165,7 @@ void sendMeasureItem (TableItem item, int columnIndex, NSSize size, boolean isSe
 	}
 }
 
+@Override
 void tableViewColumnDidMove (long /*int*/ id, long /*int*/ sel, long /*int*/ aNotification) {
 	NSNotification notification = new NSNotification (aNotification);
 	NSDictionary userInfo = notification.userInfo ();
@@ -3141,6 +3194,7 @@ void tableViewColumnDidMove (long /*int*/ id, long /*int*/ sel, long /*int*/ aNo
 	headerView.setNeedsDisplay(true);
 }
 
+@Override
 void tableViewColumnDidResize (long /*int*/ id, long /*int*/ sel, long /*int*/ aNotification) {
 	NSNotification notification = new NSNotification (aNotification);
 	NSDictionary userInfo = notification.userInfo ();
@@ -3170,6 +3224,7 @@ void tableViewColumnDidResize (long /*int*/ id, long /*int*/ sel, long /*int*/ a
 	}
 }
 
+@Override
 void sendSelection () {
 	if (ignoreSelect) return;
 	NSTableView widget = (NSTableView) view;
@@ -3185,22 +3240,26 @@ void sendSelection () {
 	}
 }
 
+@Override
 void tableViewSelectionDidChange (long /*int*/ id, long /*int*/ sel, long /*int*/ aNotification) {
 	if (didSelect) return;
 	sendSelection();
 }
 
+@Override
 void tableViewSelectionIsChanging (long /*int*/ id, long /*int*/ sel, long /*int*/ aNotification) {
 	didSelect = true;
 	sendSelection();
 }
 
+@Override
 void tableView_didClickTableColumn (long /*int*/ id, long /*int*/ sel, long /*int*/ tableView, long /*int*/ tableColumn) {
 	TableColumn column = getColumn (new id (tableColumn));
 	if (column == null) return; /* either CHECK column or firstColumn in 0-column Table */
 	column.sendSelectionEvent (SWT.Selection);
 }
 
+@Override
 long /*int*/ tableView_objectValueForTableColumn_row (long /*int*/ id, long /*int*/ sel, long /*int*/ aTableView, long /*int*/ aTableColumn, long /*int*/ rowIndex) {
 	int index = (int)/*64*/rowIndex;
 	TableItem item = _getItem (index);
@@ -3222,6 +3281,7 @@ long /*int*/ tableView_objectValueForTableColumn_row (long /*int*/ id, long /*in
 	return item.createString (0).id;
 }
 
+@Override
 boolean tableView_shouldReorderColumn_toColumn(long /*int*/ id, long /*int*/ sel, long /*int*/ aTableView, long /*int*/ currentColIndex, long /*int*/ newColIndex) {
 	// Check column should never move and no column can be dragged to the left of it, if present.
 	if ((style & SWT.CHECK) != 0) {
@@ -3240,6 +3300,7 @@ boolean tableView_shouldReorderColumn_toColumn(long /*int*/ id, long /*int*/ sel
 	return true;
 }
 
+@Override
 boolean tableView_shouldTrackCell_forTableColumn_row(long /*int*/ id, long /*int*/ sel, long /*int*/ table, long /*int*/ cell, /*long*/ long /*int*/ tableColumn, long /*int*/ rowIndex) {
 	if ((style & SWT.CHECK) != 0) {
 		if (new NSCell(cell).isKindOfClass(OS.class_NSButtonCell)) return true;
@@ -3248,6 +3309,7 @@ boolean tableView_shouldTrackCell_forTableColumn_row(long /*int*/ id, long /*int
 	return widget.isRowSelected(rowIndex);
 }
 
+@Override
 void tableView_setObjectValue_forTableColumn_row (long /*int*/ id, long /*int*/ sel, long /*int*/ aTableView, long /*int*/ anObject, long /*int*/ aTableColumn, long /*int*/ rowIndex) {
 	if (checkColumn != null && aTableColumn == checkColumn.id)  {
 		TableItem item = items [(int)/*64*/rowIndex];
@@ -3261,6 +3323,7 @@ void tableView_setObjectValue_forTableColumn_row (long /*int*/ id, long /*int*/ 
 	}
 }
 
+@Override
 void tableView_willDisplayCell_forTableColumn_row (long /*int*/ id, long /*int*/ sel, long /*int*/ aTableView, long /*int*/ cell, long /*int*/ tableColumn, long /*int*/ rowIndex) {
 	if (checkColumn != null && tableColumn == checkColumn.id) return;
 	TableItem item = items [(int)/*64*/rowIndex];
@@ -3326,10 +3389,12 @@ void tableView_willDisplayCell_forTableColumn_row (long /*int*/ id, long /*int*/
 	}
 }
 
+@Override
 boolean tableView_writeRowsWithIndexes_toPasteboard(long /*int*/ id, long /*int*/ sel, long /*int*/ arg0, long /*int*/ arg1, long /*int*/ arg2) {
 	return sendMouseEvent(NSApplication.sharedApplication().currentEvent(), SWT.DragDetect, true);
 }
 
+@Override
 boolean sendMouseEvent(NSEvent nsEvent, int type, boolean send) {
 	if (type == SWT.DragDetect) {
 		dragDetected = true;
@@ -3364,6 +3429,7 @@ boolean sendMouseEvent(NSEvent nsEvent, int type, boolean send) {
 	return super.sendMouseEvent (nsEvent, type, send);
 }
 
+@Override
 NSRect titleRectForBounds (long /*int*/ id, long /*int*/ sel, NSRect cellFrame) {
 	NSImage image = new NSCell(id).image();
 	if (image != null) {
@@ -3374,6 +3440,7 @@ NSRect titleRectForBounds (long /*int*/ id, long /*int*/ sel, NSRect cellFrame) 
 	return cellFrame;
 }
 
+@Override
 void updateCursorRects (boolean enabled) {
 	super.updateCursorRects (enabled);
 	if (headerView == null) return;

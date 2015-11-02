@@ -28,9 +28,11 @@ class AccessibleTableRow extends Accessible {
 		index = childID;
 		
 		addAccessibleControlListener(new AccessibleControlAdapter() {
+			@Override
 			public void getChildCount(AccessibleControlEvent e) {
 				e.detail = Math.max (1, parent.getColumnCount());
 			}
+			@Override
 			public void getChildren(AccessibleControlEvent e) {
 				int validColumnCount = Math.max (1, parent.getColumnCount());
 				Object[] children = new Object[validColumnCount];
@@ -52,6 +54,7 @@ class AccessibleTableRow extends Accessible {
 				
 				e.children = children;
 			}			
+			@Override
 			public void getLocation(AccessibleControlEvent e) {
 				int validColumnCount = Math.max (1, parent.getColumnCount());
 				Accessible[] children = new Accessible[validColumnCount];
@@ -91,6 +94,7 @@ class AccessibleTableRow extends Accessible {
 				e.height = height;
 			}
 
+			@Override
 			public void getRole(AccessibleControlEvent e) {
 				int childID = e.childID;
 				if (childID == ACC.CHILDID_SELF) {
@@ -100,6 +104,7 @@ class AccessibleTableRow extends Accessible {
 				}
 			}
 
+			@Override
 			public void getFocus(AccessibleControlEvent e) {
 				AccessibleTableEvent event = new AccessibleTableEvent(this);
 				event.column = 0;
@@ -118,9 +123,11 @@ class AccessibleTableRow extends Accessible {
 		});
 		
 		addAccessibleTableListener(new AccessibleTableAdapter() {
+			@Override
 			public void isColumnSelected(AccessibleTableEvent e) {
 				e.isSelected = false;
 			}
+			@Override
 			public void isRowSelected(AccessibleTableEvent e) {
 				// Delegate to the parent table.
 				AccessibleTableEvent event = new AccessibleTableEvent(this);

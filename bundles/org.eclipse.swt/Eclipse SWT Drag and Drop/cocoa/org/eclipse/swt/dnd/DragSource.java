@@ -334,6 +334,7 @@ long /*int*/ dndCallSuperObject(long /*int*/ id, long /*int*/ sel, long /*int*/ 
 	return OS.objc_msgSendSuper(super_struct, sel, arg0, arg1, arg2, arg3);
 }
 
+@Override
 protected void checkSubclass () {
 	String name = getClass().getName ();
 	String validName = DragSource.class.getName();

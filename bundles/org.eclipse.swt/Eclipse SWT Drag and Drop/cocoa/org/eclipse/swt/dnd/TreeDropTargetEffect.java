@@ -80,6 +80,7 @@ public class TreeDropTargetEffect extends DropTargetEffect {
 	 * @see DropTargetAdapter
 	 * @see DropTargetEvent
 	 */
+	@Override
 	public void dragEnter(DropTargetEvent event) {
 	}
 
@@ -97,6 +98,7 @@ public class TreeDropTargetEffect extends DropTargetEffect {
 	 * @see DropTargetAdapter
 	 * @see DropTargetEvent
 	 */
+	@Override
 	public void dragLeave(DropTargetEvent event) {
 		OS.objc_msgSend(control.view.id, OS.sel_setShouldExpandItem_, 1);
 		if (shouldEnableScrolling) {
@@ -124,6 +126,7 @@ public class TreeDropTargetEffect extends DropTargetEffect {
 	 * @see DND#FEEDBACK_INSERT_AFTER
 	 * @see DND#FEEDBACK_SCROLL
 	 */
+	@Override
 	public void dragOver(DropTargetEvent event) {
 		int effect = checkEffect(event.feedback);		
 		((DropTarget)event.widget).feedback = effect;

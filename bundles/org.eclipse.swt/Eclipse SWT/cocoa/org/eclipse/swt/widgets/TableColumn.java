@@ -187,20 +187,24 @@ static int checkStyle (int style) {
 	return checkBits (style, SWT.LEFT, SWT.CENTER, SWT.RIGHT, 0, 0, 0);
 }
 
+@Override
 protected void checkSubclass () {
 	if (!isValidSubclass ()) error (SWT.ERROR_INVALID_SUBCLASS);
 }
 
+@Override
 void deregister () {
 	super.deregister ();
 	display.removeWidget (nsColumn.headerCell());
 }
 
+@Override
 void destroyWidget () {
 	parent.destroyItem (this);
 	releaseHandle ();
 }
 
+@Override
 void drawInteriorWithFrame_inView (long /*int*/ id, long /*int*/ sel, NSRect cellRect, long /*int*/ view) {
 	/*
 	 * Feature in Cocoa.  When the last column in a table does not reach the
@@ -305,6 +309,7 @@ public int getAlignment () {
 	return SWT.LEFT;
 }
 
+@Override
 String getNameText () {
 	return getText ();
 }
@@ -439,6 +444,7 @@ public void pack () {
 	setWidth (width);
 }
 
+@Override
 void releaseHandle () {
 	super.releaseHandle ();
 	if (nsColumn != null) {
@@ -449,6 +455,7 @@ void releaseHandle () {
 	parent = null;
 }
 
+@Override
 void releaseWidget () {
 	super.releaseWidget ();
 	if (parent.sortColumn == this) {
@@ -538,6 +545,7 @@ public void setAlignment (int alignment) {
 	parent.view.setNeedsDisplayInRect (rect);
 }
 
+@Override
 public void setImage (Image image) {
 	checkWidget();
 	if (image != null && image.isDisposed ()) {
@@ -596,6 +604,7 @@ public void setResizable (boolean resizable) {
 	nsColumn.setResizingMask (resizable ? OS.NSTableColumnUserResizingMask : OS.NSTableColumnNoResizing);
 }
 
+@Override
 public void setText (String string) {
 	checkWidget ();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
@@ -659,6 +668,7 @@ public void setWidth (int width) {
 	nsColumn.setWidth (width);
 }
 
+@Override
 String tooltipText () {
 	return toolTipText;
 }

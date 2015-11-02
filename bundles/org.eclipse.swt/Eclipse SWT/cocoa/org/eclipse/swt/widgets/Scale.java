@@ -111,6 +111,7 @@ static int checkStyle (int style) {
 	return checkBits (style, SWT.HORIZONTAL, SWT.VERTICAL, 0, 0, 0, 0);
 }
 
+@Override
 public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget();
 	NSSlider widget = (NSSlider)view;
@@ -128,6 +129,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	return new Point (width, height);
 }
 
+@Override
 void createHandle () {
 	state |= THEME_BACKGROUND;
 	NSSlider widget = (NSSlider)new SWTSlider().alloc();
@@ -138,10 +140,12 @@ void createHandle () {
 	view = widget;
 }
 
+@Override
 NSFont defaultNSFont () {
 	return display.sliderFont;
 }
 
+@Override
 void deregister() {
 	super.deregister();
 	display.removeWidget(((NSControl)view).cell());
@@ -227,6 +231,7 @@ public int getSelection () {
     return (int)((NSSlider)view).doubleValue();
 }
 
+@Override
 void register() {
 	super.register();
 	display.addWidget(((NSControl)view).cell(), this);
@@ -257,6 +262,7 @@ public void removeSelectionListener(SelectionListener listener) {
 	eventTable.unhook(SWT.DefaultSelection,listener);
 }
 
+@Override
 void sendSelection () {
 	NSEvent currEvent = NSApplication.sharedApplication().currentEvent();
 	

@@ -412,6 +412,7 @@ long /*int*/ convertRgn(long /*int*/ message, long /*int*/ rgn, long /*int*/ r, 
 	return 0;
 }
 
+@Override
 void destroy() {
 	OS.DisposeRgn(handle);
 	handle = 0;
@@ -427,6 +428,7 @@ void destroy() {
  *
  * @see #hashCode
  */
+@Override
 public boolean equals(Object object) {
 	if (this == object) return true;
 	if (!(object instanceof Region)) return false;
@@ -503,6 +505,7 @@ long /*int*/ regionToRects(long /*int*/ message, long /*int*/ rgn, long /*int*/ 
  *
  * @see #equals
  */
+@Override
 public int hashCode() {
 	return (int)/*64*/handle;
 }
@@ -656,6 +659,7 @@ public boolean intersects(Rectangle rect) {
  *
  * @return <code>true</code> when the region is disposed, and <code>false</code> otherwise
  */
+@Override
 public boolean isDisposed() {
 	return handle == 0;
 }
@@ -856,6 +860,7 @@ public void translate (Point pt) {
  *
  * @return a string representation of the receiver
  */
+@Override
 public String toString () {
 	if (isDisposed()) return "Region {*DISPOSED*}";
 	return "Region {" + handle + "}";
