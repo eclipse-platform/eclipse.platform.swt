@@ -16,7 +16,7 @@ public class DeviceData {
 	 * This field is platform dependent.
 	 * <p>
 	 * <b>IMPORTANT:</b> This field is <em>not</em> part of the SWT
-	 * public API. It is marked protected only so that it can be shared
+	 * public API. It is marked public only so that it can be shared
 	 * within the packages provided by SWT. It is not available on all
 	 * platforms and should never be accessed from application code.
 	 * </p>
@@ -29,7 +29,7 @@ public class DeviceData {
 	 * This field is platform dependent.
 	 * <p>
 	 * <b>IMPORTANT:</b> This field is <em>not</em> part of the SWT
-	 * public API. It is marked protected only so that it can be shared
+	 * public API. It is marked public only so that it can be shared
 	 * within the packages provided by SWT. It is not available on all
 	 * platforms and should never be accessed from application code.
 	 * </p>
@@ -42,7 +42,7 @@ public class DeviceData {
 	 * This field is platform dependent.
 	 * <p>
 	 * <b>IMPORTANT:</b> This field is <em>not</em> part of the SWT
-	 * public API. It is marked protected only so that it can be shared
+	 * public API. It is marked public only so that it can be shared
 	 * within the packages provided by SWT. It is not available on all
 	 * platforms and should never be accessed from application code.
 	 * </p>
