@@ -39,17 +39,29 @@ int AddRef () {
 
 void createCOMInterfaces () {
 	iWebResourceLoadDelegate = new COMObject (new int[] {2, 0, 0, 4, 6, 4, 4, 4, 4, 3, 4, 3}) {
+		@Override
 		public long /*int*/ method0 (long /*int*/[] args) {return QueryInterface (args[0], args[1]);}
+		@Override
 		public long /*int*/ method1 (long /*int*/[] args) {return AddRef ();}
+		@Override
 		public long /*int*/ method2 (long /*int*/[] args) {return Release ();}
+		@Override
 		public long /*int*/ method3 (long /*int*/[] args) {return identifierForInitialRequest (args[0], args[1], args[2], args[3]);}
+		@Override
 		public long /*int*/ method4 (long /*int*/[] args) {return willSendRequest (args[0], args[1], args[2], args[3], args[4], args[5]);}
+		@Override
 		public long /*int*/ method5 (long /*int*/[] args) {return didReceiveAuthenticationChallenge (args[0], args[1], args[2], args[3]);}
+		@Override
 		public long /*int*/ method6 (long /*int*/[] args) {return COM.E_NOTIMPL;}
+		@Override
 		public long /*int*/ method7 (long /*int*/[] args) {return COM.S_OK;}
+		@Override
 		public long /*int*/ method8 (long /*int*/[] args) {return COM.S_OK;}
+		@Override
 		public long /*int*/ method9 (long /*int*/[] args) {return COM.S_OK;}
+		@Override
 		public long /*int*/ method10 (long /*int*/[] args) {return COM.S_OK;}
+		@Override
 		public long /*int*/ method11 (long /*int*/[] args) {return COM.E_NOTIMPL;}
 	};
 }

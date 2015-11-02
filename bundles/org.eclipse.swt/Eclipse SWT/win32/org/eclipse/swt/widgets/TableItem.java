@@ -123,6 +123,7 @@ static Table checkNull (Table control) {
 	return control;
 }
 
+@Override
 protected void checkSubclass () {
 	if (!isValidSubclass ()) error (SWT.ERROR_INVALID_SUBCLASS);
 }
@@ -141,6 +142,7 @@ void clear () {
 	if ((parent.style & SWT.VIRTUAL) != 0) cached = false;
 }
 
+@Override
 void destroyWidget () {
 	parent.destroyItem (this);
 	releaseHandle ();
@@ -527,6 +529,7 @@ public boolean getGrayed () {
 	return grayed;
 }
 
+@Override
 public Image getImage () {
 	checkWidget();
 	if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
@@ -595,6 +598,7 @@ public int getImageIndent () {
 	return imageIndent;
 }
 
+@Override
 String getNameText () {
 	if ((parent.style & SWT.VIRTUAL) != 0) {
 		if (!cached) return "*virtual*"; //$NON-NLS-1$
@@ -617,6 +621,7 @@ public Table getParent () {
 	return parent;
 }
 
+@Override
 public String getText () {
 	checkWidget();
 	if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
@@ -698,11 +703,13 @@ void redraw (int column, boolean drawText, boolean drawImage) {
 	OS.InvalidateRect (hwnd, rect, true);
 }
 
+@Override
 void releaseHandle () {
 	super.releaseHandle ();
 	parent = null;
 }
 
+@Override
 void releaseWidget () {
 	super.releaseWidget ();
 	strings = null;
@@ -1103,6 +1110,7 @@ public void setImage (int index, Image image) {
 	redraw (index, drawText, true);
 }
 
+@Override
 public void setImage (Image image) {
 	checkWidget ();
 	setImage (0, image);
@@ -1121,6 +1129,7 @@ public void setImage (Image image) {
  * 
  * @deprecated this functionality is not supported on most platforms
  */
+@Deprecated
 public void setImageIndent (int indent) {
 	checkWidget();
 	if (indent < 0) return;
@@ -1232,6 +1241,7 @@ public void setText (int index, String string) {
 	redraw (index, true, false);
 }
 
+@Override
 public void setText (String string) {
 	checkWidget();
 	setText (0, string);

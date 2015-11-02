@@ -459,6 +459,7 @@ void applyListSegments () {
 	}
 }
 
+@Override
 long /*int*/ callWindowProc (long /*int*/ hwnd, int msg, long /*int*/ wParam, long /*int*/ lParam) {
 	if (handle == 0) return 0;
 	if (hwnd == handle) {
@@ -511,10 +512,12 @@ long /*int*/ CBTProc (long /*int*/ nCode, long /*int*/ wParam, long /*int*/ lPar
 	return OS.CallNextHookEx (cbtHook, (int)/*64*/nCode, wParam, lParam);
 }
 
+@Override
 boolean checkHandle (long /*int*/ hwnd) {
 	return hwnd == handle || hwnd == OS.GetDlgItem (handle, CBID_EDIT) || hwnd == OS.GetDlgItem (handle, CBID_LIST);
 }
 
+@Override
 protected void checkSubclass () {
 	if (!isValidSubclass ()) error (SWT.ERROR_INVALID_SUBCLASS);
 }
@@ -618,6 +621,7 @@ public void clearSelection () {
 	OS.SendMessage (handle, OS.CB_SETEDITSEL, 0, -1);
 }
 
+@Override
 public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget ();
 	int width = 0, height = 0;
@@ -714,6 +718,7 @@ public void copy () {
 	OS.SendMessage (handle, OS.WM_COPY, 0, 0);
 }
 
+@Override
 void createHandle () {
 	/*
 	* Feature in Windows.  When the selection changes in a combo box,
@@ -763,6 +768,7 @@ void createHandle () {
 	}
 }
 
+@Override
 void createWidget() {
 	super.createWidget();
 	visibleCount = VISIBLE_COUNT;
@@ -806,6 +812,7 @@ public void cut () {
 	OS.SendMessage (handle, OS.WM_CUT, 0, 0);
 }
 
+@Override
 int defaultBackground () {
 	return OS.GetSysColor (OS.COLOR_WINDOW);
 }
@@ -847,6 +854,7 @@ TCHAR deprocessText (TCHAR text, int start, int end, boolean terminate) {
 	return text;
 }
 
+@Override
 void deregister () {
 	super.deregister ();
 	long /*int*/ hwndText = OS.GetDlgItem (handle, CBID_EDIT);
@@ -901,6 +909,7 @@ public void deselectAll () {
 	clearSegmentsCount--;
 }
 
+@Override
 boolean dragDetect (long /*int*/ hwnd, int x, int y, boolean filter, boolean [] detect, boolean [] consume) {
 	if (filter && (style & SWT.READ_ONLY) == 0) {
 		long /*int*/ hwndText = OS.GetDlgItem (handle, CBID_EDIT);
@@ -1165,6 +1174,7 @@ public boolean getListVisible () {
 	return true;
 }
 
+@Override
 String getNameText () {
 	return getText ();
 }
@@ -1204,6 +1214,7 @@ public void setListVisible (boolean visible) {
  * 
  * @since 2.1.2
  */
+@Override
 public int getOrientation () {
 	return super.getOrientation ();
 }
@@ -1428,6 +1439,7 @@ public int getVisibleItemCount () {
 	return visibleCount;
 }
 
+@Override
 boolean hasFocus () {
 	long /*int*/ hwndFocus = OS.GetFocus ();
 	if (hwndFocus == handle) return true;
@@ -1542,6 +1554,7 @@ public void paste () {
 	OS.SendMessage (handle, OS.WM_PASTE, 0, 0);
 }
 
+@Override
 void register () {
 	super.register ();
 	long /*int*/ hwndText = OS.GetDlgItem (handle, CBID_EDIT);
@@ -1831,6 +1844,7 @@ public void removeVerifyListener (VerifyListener listener) {
 	eventTable.unhook (SWT.Verify, listener);	
 }
 
+@Override
 boolean sendKeyEvent (int type, int msg, long /*int*/ wParam, long /*int*/ lParam, Event event) {
 	if (!super.sendKeyEvent (type, msg, wParam, lParam, event)) {
 		return false;
@@ -1944,6 +1958,7 @@ public void select (int index) {
 	}
 }
 
+@Override
 void setBackgroundImage (long /*int*/ hBitmap) {
 	super.setBackgroundImage (hBitmap);
 	long /*int*/ hwndText = OS.GetDlgItem (handle, CBID_EDIT);
@@ -1952,6 +1967,7 @@ void setBackgroundImage (long /*int*/ hBitmap) {
 	if (hwndList != 0) OS.InvalidateRect (hwndList, null, true);
 }
 
+@Override
 void setBackgroundPixel (int pixel) {
 	super.setBackgroundPixel (pixel);
 	long /*int*/ hwndText = OS.GetDlgItem (handle, CBID_EDIT);
@@ -1960,6 +1976,7 @@ void setBackgroundPixel (int pixel) {
 	if (hwndList != 0) OS.InvalidateRect (hwndList, null, true);
 }
 
+@Override
 void setBounds (int x, int y, int width, int height, int flags) {
 	/*
 	* Feature in Windows.  If the combo box has the CBS_DROPDOWN
@@ -2008,6 +2025,7 @@ void setBounds (int x, int y, int width, int height, int flags) {
 	}
 }
 
+@Override
 public void setFont (Font font) {
 	checkWidget ();
 
@@ -2027,6 +2045,7 @@ public void setFont (Font font) {
 	if ((style & SWT.H_SCROLL) != 0) setScrollWidth ();
 }
 
+@Override
 void setForegroundPixel (int pixel) {
 	super.setForegroundPixel (pixel);
 	long /*int*/ hwndText = OS.GetDlgItem (handle, CBID_EDIT);
@@ -2128,6 +2147,7 @@ public void setItems (String [] items) {
  * 
  * @since 2.1.2
  */
+@Override
 public void setOrientation (int orientation) {
 	super.setOrientation (orientation);
 }
@@ -2335,6 +2355,7 @@ public void setTextLimit (int limit) {
 	}
 }
 
+@Override
 void setToolTipText (Shell shell, String string) {
 	long /*int*/ hwndText = OS.GetDlgItem (handle, CBID_EDIT);
 	long /*int*/ hwndList = OS.GetDlgItem (handle, CBID_LIST);
@@ -2367,6 +2388,7 @@ public void setVisibleItemCount (int count) {
 	updateDropDownHeight ();
 }
 
+@Override
 void subclass () {
 	super.subclass ();
 	long /*int*/ newProc = display.windowProc;
@@ -2388,6 +2410,7 @@ int translateOffset (int offset) {
 	return offset;
 }
 
+@Override
 boolean translateTraversal (MSG msg) {
 	/*
 	* When the combo box is dropped down, allow return
@@ -2406,6 +2429,7 @@ boolean translateTraversal (MSG msg) {
 	return super.translateTraversal (msg);
 }
 
+@Override
 boolean traverseEscape () {
 	if ((style & SWT.DROP_DOWN) != 0) {
 		if (OS.SendMessage (handle, OS.CB_GETDROPPEDSTATE, 0, 0) != 0) {
@@ -2416,6 +2440,7 @@ boolean traverseEscape () {
 	return super.traverseEscape ();
 }
 
+@Override
 boolean traverseReturn () {
 	if ((style & SWT.DROP_DOWN) != 0) {
 		if (OS.SendMessage (handle, OS.CB_GETDROPPEDSTATE, 0, 0) != 0) {
@@ -2426,6 +2451,7 @@ boolean traverseReturn () {
 	return super.traverseReturn ();
 }
 
+@Override
 void unsubclass () {
 	super.unsubclass ();
 	long /*int*/ hwndText = OS.GetDlgItem (handle, CBID_EDIT);
@@ -2467,6 +2493,7 @@ void updateDropDownHeight () {
 	}
 }
 
+@Override
 boolean updateTextDirection(int textDirection) {
 	if (super.updateTextDirection(textDirection)) {
 		if (textDirection == AUTO_TEXT_DIRECTION) {
@@ -2484,6 +2511,7 @@ boolean updateTextDirection(int textDirection) {
 	return false;
 }
 
+@Override
 void updateOrientation () {
 	int bits  = OS.GetWindowLong (handle, OS.GWL_EXSTYLE);
 	if ((style & SWT.RIGHT_TO_LEFT) != 0) {
@@ -2587,10 +2615,12 @@ int wcsToMbcsPos (int wcsPos) {
 	return mbcsPos;
 }
 
+@Override
 int widgetExtStyle () {
 	return super.widgetExtStyle () & ~OS.WS_EX_NOINHERITLAYOUT;
 }
 
+@Override
 int widgetStyle () {
 	int bits = super.widgetStyle () | OS.CBS_AUTOHSCROLL | OS.CBS_NOINTEGRALHEIGHT | OS.WS_HSCROLL |OS.WS_VSCROLL;
 	if ((style & SWT.SIMPLE) != 0) return bits | OS.CBS_SIMPLE;
@@ -2598,14 +2628,17 @@ int widgetStyle () {
 	return bits | OS.CBS_DROPDOWN;
 }
 
+@Override
 TCHAR windowClass () {
 	return ComboClass;
 }
 
+@Override
 long /*int*/ windowProc () {
 	return ComboProc;
 }
 
+@Override
 long /*int*/ windowProc (long /*int*/ hwnd, int msg, long /*int*/ wParam, long /*int*/ lParam) {
 	if (handle == 0) return 0;
 	if (hwnd != handle) {
@@ -2806,15 +2839,18 @@ long /*int*/ windowProc (long /*int*/ hwnd, int msg, long /*int*/ wParam, long /
 	return super.windowProc (hwnd, msg, wParam, lParam);
 }
 
+@Override
 LRESULT WM_CTLCOLOR (long /*int*/ wParam, long /*int*/ lParam) {
 	return wmColorChild (wParam, lParam);
 }
 
+@Override
 LRESULT WM_GETDLGCODE (long /*int*/ wParam, long /*int*/ lParam) {
 	long /*int*/ code = callWindowProc (handle, OS.WM_GETDLGCODE, wParam, lParam);
 	return new LRESULT (code | OS.DLGC_WANTARROWS);
 }
 
+@Override
 LRESULT WM_KILLFOCUS (long /*int*/ wParam, long /*int*/ lParam) {
 	/*
 	* Bug in Windows.  When a combo box that is read only
@@ -2835,6 +2871,7 @@ LRESULT WM_KILLFOCUS (long /*int*/ wParam, long /*int*/ lParam) {
 	return null;
 }
 
+@Override
 LRESULT WM_LBUTTONDOWN (long /*int*/ wParam, long /*int*/ lParam) {
 	/*
 	* Feature in Windows.  When an editable combo box is dropped
@@ -2858,6 +2895,7 @@ LRESULT WM_LBUTTONDOWN (long /*int*/ wParam, long /*int*/ lParam) {
 	return result;
 }
 
+@Override
 LRESULT WM_SETFOCUS (long /*int*/ wParam, long /*int*/ lParam) {
 	/*
 	* Return NULL - Focus notification is
@@ -2866,6 +2904,7 @@ LRESULT WM_SETFOCUS (long /*int*/ wParam, long /*int*/ lParam) {
 	return null;
 }
 
+@Override
 LRESULT WM_SIZE (long /*int*/ wParam, long /*int*/ lParam) {
 	/*
 	* Feature in Windows.  When a combo box is resized,
@@ -2921,6 +2960,7 @@ LRESULT WM_SIZE (long /*int*/ wParam, long /*int*/ lParam) {
 	return result; 
 }
 
+@Override
 LRESULT WM_UPDATEUISTATE (long /*int*/ wParam, long /*int*/ lParam) {
 	LRESULT result = super.WM_UPDATEUISTATE (wParam, lParam);
 	if (result != null) return result;
@@ -2928,6 +2968,7 @@ LRESULT WM_UPDATEUISTATE (long /*int*/ wParam, long /*int*/ lParam) {
 	return result;
 }
 
+@Override
 LRESULT WM_WINDOWPOSCHANGING (long /*int*/ wParam, long /*int*/ lParam) {
 	LRESULT result = super.WM_WINDOWPOSCHANGING (wParam, lParam);
 	if (result != null) return result;
@@ -2980,6 +3021,7 @@ LRESULT WM_WINDOWPOSCHANGING (long /*int*/ wParam, long /*int*/ lParam) {
 	return result;
 }
 
+@Override
 LRESULT wmChar (long /*int*/ hwnd, long /*int*/ wParam, long /*int*/ lParam) {
 	if (ignoreCharacter) return null;
 	LRESULT result = super.wmChar (hwnd, wParam, lParam);
@@ -3126,6 +3168,7 @@ LRESULT wmClipboard (long /*int*/ hwndText, int msg, long /*int*/ wParam, long /
 	return null;
 }
 
+@Override
 LRESULT wmCommandChild (long /*int*/ wParam, long /*int*/ lParam) {
 	int code = OS.HIWORD (wParam);
 	switch (code) {
@@ -3224,6 +3267,7 @@ LRESULT wmCommandChild (long /*int*/ wParam, long /*int*/ lParam) {
 	return super.wmCommandChild (wParam, lParam);
 }
 
+@Override
 LRESULT wmIMEChar (long /*int*/ hwnd, long /*int*/ wParam, long /*int*/ lParam) {
 
 	/* Process a DBCS character */
@@ -3258,6 +3302,7 @@ LRESULT wmIMEChar (long /*int*/ hwnd, long /*int*/ wParam, long /*int*/ lParam) 
 	return new LRESULT (result);
 }
 
+@Override
 LRESULT wmKeyDown (long /*int*/ hwnd, long /*int*/ wParam, long /*int*/ lParam) {
 	if (ignoreCharacter) return null;
 	LRESULT result = super.wmKeyDown (hwnd, wParam, lParam);
@@ -3299,6 +3344,7 @@ LRESULT wmKeyDown (long /*int*/ hwnd, long /*int*/ wParam, long /*int*/ lParam) 
 	return result;
 }
 
+@Override
 LRESULT wmSysKeyDown (long /*int*/ hwnd, long /*int*/ wParam, long /*int*/ lParam) {
 	/*
 	* Feature in Windows.  When an editable combo box is dropped

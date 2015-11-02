@@ -117,6 +117,7 @@ public CoolBar (Composite parent, int style) {
 	}
 }
 
+@Override
 long /*int*/ callWindowProc (long /*int*/ hwnd, int msg, long /*int*/ wParam, long /*int*/ lParam) {
 	if (handle == 0) return 0;
 	return OS.CallWindowProc (ReBarProc, hwnd, msg, wParam, lParam);
@@ -134,10 +135,12 @@ static int checkStyle (int style) {
 	return style & ~(SWT.H_SCROLL | SWT.V_SCROLL);
 }
 
+@Override
 protected void checkSubclass () {
 	if (!isValidSubclass ()) error (SWT.ERROR_INVALID_SUBCLASS);
 }
 
+@Override
 public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget ();
 	int width = 0, height = 0;
@@ -207,6 +210,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	return new Point (width, height);
 }
 
+@Override
 void createHandle () {
 	super.createHandle ();
 	state &= ~(CANVAS | THEME_BACKGROUND);
@@ -295,6 +299,7 @@ void createItem (CoolItem item, int index) {
 	originalItems = newOriginals;
 }
 
+@Override
 void createWidget () {
 	super.createWidget ();
 	items = new CoolItem [4];
@@ -367,6 +372,7 @@ void destroyItem (CoolItem item) {
 	originalItems = newOriginals;
 }
 
+@Override
 void drawThemeBackground (long /*int*/ hDC, long /*int*/ hwnd, RECT rect) {
 	if (OS.COMCTL32_MAJOR >= 6 && OS.IsAppThemed ()) {
 		if (background == -1 && (style & SWT.FLAT) != 0) {
@@ -386,6 +392,7 @@ void drawThemeBackground (long /*int*/ hDC, long /*int*/ hwnd, RECT rect) {
 	OS.SetWindowOrgEx (hDC, lpPoint.x, lpPoint.y, null);
 }
 
+@Override
 Control findThemeControl () {
 	if ((style & SWT.FLAT) != 0) return this;
 	return background == -1 && backgroundImage == null ? this : super.findThemeControl ();
@@ -703,6 +710,7 @@ void resizeToMaximumWidth (int index) {
 	OS.SendMessage (handle, OS.RB_SETBANDINFO, index, rbBand);
 }	
 
+@Override
 void releaseChildren (boolean destroy) {
 	if (items != null) {
 		for (int i=0; i<items.length; i++) {
@@ -716,6 +724,7 @@ void releaseChildren (boolean destroy) {
 	super.releaseChildren (destroy);
 }
 
+@Override
 void removeControl (Control control) {
 	super.removeControl (control);
 	for (int i=0; i<items.length; i++) {
@@ -726,6 +735,7 @@ void removeControl (Control control) {
 	}
 }
 
+@Override
 void reskinChildren (int flags) {
 	if (items != null) {
 		for (int i=0; i<items.length; i++) {
@@ -736,6 +746,7 @@ void reskinChildren (int flags) {
 	super.reskinChildren (flags);
 }
 
+@Override
 void setBackgroundPixel (int pixel) {
 	if (pixel == -1) pixel = defaultBackground ();
 	OS.SendMessage (handle, OS.RB_SETBKCOLOR, 0, pixel);
@@ -755,6 +766,7 @@ void setBackgroundPixel (int pixel) {
 	}
 }
 
+@Override
 void setForegroundPixel (int pixel) {
 	if (pixel == -1) pixel = defaultForeground ();
 	OS.SendMessage (handle, OS.RB_SETTEXTCOLOR, 0, pixel);
@@ -980,6 +992,7 @@ public void setWrapIndices (int [] indices) {
 	setRedraw (true);
 }
 
+@Override
 int widgetStyle () {
 	int bits = super.widgetStyle () | OS.CCS_NODIVIDER | OS.CCS_NORESIZE;
 	bits |= OS.RBS_VARHEIGHT | OS.RBS_DBLCLKTOGGLE;
@@ -987,14 +1000,17 @@ int widgetStyle () {
 	return bits;
 }
 
+@Override
 TCHAR windowClass () {
 	return ReBarClass;
 }
 
+@Override
 long /*int*/ windowProc () {
 	return ReBarProc;
 }
 
+@Override
 LRESULT WM_COMMAND (long /*int*/ wParam, long /*int*/ lParam) {
 	/*
 	* Feature in Windows.  When the coolbar window
@@ -1019,6 +1035,7 @@ LRESULT WM_COMMAND (long /*int*/ wParam, long /*int*/ lParam) {
 	return LRESULT.ZERO;
 }
 
+@Override
 LRESULT WM_ERASEBKGND (long /*int*/ wParam, long /*int*/ lParam) {
 	LRESULT result = super.WM_ERASEBKGND (wParam, lParam);
 	/*
@@ -1041,6 +1058,7 @@ LRESULT WM_ERASEBKGND (long /*int*/ wParam, long /*int*/ lParam) {
 	return result;
 }
 
+@Override
 LRESULT WM_NOTIFY (long /*int*/ wParam, long /*int*/ lParam) {
 	/*
 	* Feature in Windows.  When the cool bar window
@@ -1065,6 +1083,7 @@ LRESULT WM_NOTIFY (long /*int*/ wParam, long /*int*/ lParam) {
 	return LRESULT.ZERO;
 }
 
+@Override
 LRESULT WM_SETREDRAW (long /*int*/ wParam, long /*int*/ lParam) {
 	LRESULT result = super.WM_SETREDRAW (wParam, lParam);
 	if (result != null) return result;
@@ -1097,6 +1116,7 @@ LRESULT WM_SETREDRAW (long /*int*/ wParam, long /*int*/ lParam) {
 	return new LRESULT (code);
 }
 
+@Override
 LRESULT WM_SIZE (long /*int*/ wParam, long /*int*/ lParam) {
 	if (ignoreResize) {
 		long /*int*/ code = callWindowProc (handle, OS.WM_SIZE, wParam, lParam);
@@ -1112,6 +1132,7 @@ LRESULT WM_SIZE (long /*int*/ wParam, long /*int*/ lParam) {
 	return super.WM_SIZE (wParam, lParam);
 }
 
+@Override
 LRESULT wmNotifyChild (NMHDR hdr, long /*int*/ wParam, long /*int*/ lParam) {
 	switch (hdr.code) {
 		case OS.RBN_BEGINDRAG: {

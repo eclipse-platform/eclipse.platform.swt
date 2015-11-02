@@ -470,6 +470,7 @@ public Variant getProperty(int dispIdMember, Variant[] rgvarg, int[] rgdispidNam
 	int result = invoke(dispIdMember, COM.DISPATCH_PROPERTYGET, rgvarg, rgdispidNamedArgs, pVarResult);
 	return (result == OLE.S_OK) ? pVarResult : null;
 }
+@Override
 public boolean equals(Object object) {
 	if (object == this) return true;
 	if (object instanceof OleAutomation) {

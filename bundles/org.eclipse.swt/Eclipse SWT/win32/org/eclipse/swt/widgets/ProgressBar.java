@@ -111,6 +111,7 @@ public ProgressBar (Composite parent, int style) {
 	super (parent, checkStyle (style));
 }
 
+@Override
 long /*int*/ callWindowProc (long /*int*/ hwnd, int msg, long /*int*/ wParam, long /*int*/ lParam) {
 	if (handle == 0) return 0;
 	return OS.CallWindowProc (ProgressBarProc, hwnd, msg, wParam, lParam);
@@ -121,6 +122,7 @@ static int checkStyle (int style) {
 	return checkBits (style, SWT.HORIZONTAL, SWT.VERTICAL, 0, 0, 0, 0);
 }
 
+@Override
 public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget ();
 	int border = getBorderWidth ();
@@ -137,11 +139,13 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	return new Point (width, height);
 }
 
+@Override
 void createHandle () {
 	super.createHandle ();
 	startTimer ();
 }
 
+@Override
 int defaultForeground () {
 	return OS.GetSysColor (OS.COLOR_HIGHLIGHT);
 }
@@ -221,6 +225,7 @@ public int getState () {
 	return SWT.NORMAL;
 }
 
+@Override
 void releaseWidget () {
 	super.releaseWidget ();
 	stopTimer ();
@@ -248,11 +253,13 @@ void stopTimer () {
 	}
 }
 
+@Override
 void setBackgroundPixel (int pixel) {
 	if (pixel == -1) pixel = OS.CLR_DEFAULT;
 	OS.SendMessage (handle, OS.PBM_SETBKCOLOR, 0, pixel);
 }
 
+@Override
 void setForegroundPixel (int pixel) {
 	if (pixel == -1) pixel = OS.CLR_DEFAULT;
 	OS.SendMessage (handle, OS.PBM_SETBARCOLOR, 0, pixel);
@@ -368,6 +375,7 @@ public void setState (int state) {
 	}
 }
 
+@Override
 int widgetStyle () {
 	int bits = super.widgetStyle ();
 	if ((style & SWT.SMOOTH) != 0) bits |= OS.PBS_SMOOTH;
@@ -376,14 +384,17 @@ int widgetStyle () {
 	return bits;
 }
 
+@Override
 TCHAR windowClass () {
 	return ProgressBarClass;
 }
 
+@Override
 long /*int*/ windowProc () {
 	return ProgressBarProc;
 }
 
+@Override
 LRESULT WM_GETDLGCODE (long /*int*/ wParam, long /*int*/ lParam) {
 	LRESULT result = super.WM_GETDLGCODE (wParam, lParam);
 	if (result != null) return result;
@@ -399,6 +410,7 @@ LRESULT WM_GETDLGCODE (long /*int*/ wParam, long /*int*/ lParam) {
 	return new LRESULT (OS.DLGC_STATIC);
 }
 
+@Override
 LRESULT WM_SIZE (long /*int*/ wParam, long /*int*/ lParam) {
 	LRESULT result = super.WM_SIZE (wParam, lParam);
 	if (result != null) return result;
@@ -435,6 +447,7 @@ LRESULT WM_SIZE (long /*int*/ wParam, long /*int*/ lParam) {
 	return result;
 }
 
+@Override
 LRESULT WM_TIMER (long /*int*/ wParam, long /*int*/ lParam) {
 	LRESULT result = super.WM_TIMER (wParam, lParam);
 	if (result != null) return result;

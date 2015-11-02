@@ -459,6 +459,7 @@ public TaskItem [] getItems () {
 	return result;
 }
 
+@Override
 void releaseChildren (boolean destroy) {
 	if (items != null) {
 		for (int i=0; i<items.length; i++) {
@@ -472,11 +473,13 @@ void releaseChildren (boolean destroy) {
 	super.releaseChildren (destroy);
 }
 
+@Override
 void releaseParent () {
 	super.releaseParent ();
 	if (display.taskBar == this) display.taskBar = null;
 }
 
+@Override
 void releaseWidget () {
 	super.releaseWidget ();
 	if (mTaskbarList3 != 0) {
@@ -486,6 +489,7 @@ void releaseWidget () {
 	}
 }
 
+@Override
 void reskinChildren (int flags) {	
 	if (items != null) {
 		for (int i=0; i<items.length; i++) {

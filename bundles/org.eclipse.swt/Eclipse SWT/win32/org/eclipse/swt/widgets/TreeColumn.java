@@ -188,10 +188,12 @@ static int checkStyle (int style) {
 	return checkBits (style, SWT.LEFT, SWT.CENTER, SWT.RIGHT, 0, 0, 0);
 }
 
+@Override
 protected void checkSubclass () {
 	if (!isValidSubclass ()) error (SWT.ERROR_INVALID_SUBCLASS);
 }
 
+@Override
 void destroyWidget () {
 	parent.destroyItem (this);
 	releaseHandle ();
@@ -242,6 +244,7 @@ public boolean getMoveable () {
 	return moveable;
 }
 
+@Override
 String getNameText () {
 	return getText ();
 }
@@ -399,11 +402,13 @@ public void pack () {
 	setWidth (Math.max (headerWidth, columnWidth + gridWidth));
 }
 
+@Override
 void releaseHandle () {
 	super.releaseHandle ();
 	parent = null;
 }
 
+@Override
 void releaseParent () {
 	super.releaseParent ();
 	if (parent.sortColumn == this) {
@@ -505,6 +510,7 @@ public void setAlignment (int alignment) {
 	}
 }
 
+@Override
 public void setImage (Image image) {
 	checkWidget();
 	if (image != null && image.isDisposed ()) {
@@ -644,6 +650,7 @@ void setSortDirection (int direction) {
 	}
 }
 
+@Override
 public void setText (String string) {
 	checkWidget ();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);

@@ -39,33 +39,57 @@ public WebSite(Composite parent, int style, String progId) {
 	super(parent, style, progId);		
 }
 
+@Override
 protected void createCOMInterfaces () {
 	super.createCOMInterfaces();
 	iDocHostUIHandler = new COMObject(new int[]{2, 0, 0, 4, 1, 5, 0, 0, 1, 1, 1, 3, 3, 2, 2, 1, 3, 2}){
+		@Override
 		public long /*int*/ method0(long /*int*/[] args) {return QueryInterface(args[0], args[1]);}
+		@Override
 		public long /*int*/ method1(long /*int*/[] args) {return AddRef();}
+		@Override
 		public long /*int*/ method2(long /*int*/[] args) {return Release();}
+		@Override
 		public long /*int*/ method3(long /*int*/[] args) {return ShowContextMenu((int)/*64*/args[0], args[1], args[2], args[3]);}
+		@Override
 		public long /*int*/ method4(long /*int*/[] args) {return GetHostInfo(args[0]);}
+		@Override
 		public long /*int*/ method5(long /*int*/[] args) {return ShowUI((int)/*64*/args[0], args[1], args[2], args[3], args[4]);}
+		@Override
 		public long /*int*/ method6(long /*int*/[] args) {return HideUI();}
+		@Override
 		public long /*int*/ method7(long /*int*/[] args) {return UpdateUI();}
+		@Override
 		public long /*int*/ method8(long /*int*/[] args) {return EnableModeless((int)/*64*/args[0]);}
+		@Override
 		public long /*int*/ method9(long /*int*/[] args) {return OnDocWindowActivate((int)/*64*/args[0]);}
+		@Override
 		public long /*int*/ method10(long /*int*/[] args) {return OnFrameWindowActivate((int)/*64*/args[0]);}
+		@Override
 		public long /*int*/ method11(long /*int*/[] args) {return ResizeBorder(args[0], args[1], (int)/*64*/args[2]);}
+		@Override
 		public long /*int*/ method12(long /*int*/[] args) {return TranslateAccelerator(args[0], args[1], (int)/*64*/args[2]);}
+		@Override
 		public long /*int*/ method13(long /*int*/[] args) {return GetOptionKeyPath(args[0], (int)/*64*/args[1]);}
+		@Override
 		public long /*int*/ method14(long /*int*/[] args) {return GetDropTarget(args[0], args[1]);}
+		@Override
 		public long /*int*/ method15(long /*int*/[] args) {return GetExternal(args[0]);}
+		@Override
 		public long /*int*/ method16(long /*int*/[] args) {return TranslateUrl((int)/*64*/args[0], args[1], args[2]);}		
+		@Override
 		public long /*int*/ method17(long /*int*/[] args) {return FilterDataObject(args[0], args[1]);}
 	};
 	iDocHostShowUI = new COMObject(new int[]{2, 0, 0, 7, C.PTR_SIZEOF == 4 ? 7 : 6}){
+		@Override
 		public long /*int*/ method0(long /*int*/[] args) {return QueryInterface(args[0], args[1]);}
+		@Override
 		public long /*int*/ method1(long /*int*/[] args) {return AddRef();}
+		@Override
 		public long /*int*/ method2(long /*int*/[] args) {return Release();}
+		@Override
 		public long /*int*/ method3(long /*int*/[] args) {return ShowMessage(args[0], args[1], args[2], (int)/*64*/args[3], args[4], (int)/*64*/args[5], args[6]);}
+		@Override
 		public long /*int*/ method4(long /*int*/[] args) {
 			if (args.length == 7) {
 				return ShowHelp(args[0], args[1], (int)/*64*/args[2], (int)/*64*/args[3], (int)/*64*/args[4], (int)/*64*/args[5], args[6]);
@@ -75,38 +99,63 @@ protected void createCOMInterfaces () {
 		}
 	};
 	iServiceProvider = new COMObject(new int[]{2, 0, 0, 3}){
+		@Override
 		public long /*int*/ method0(long /*int*/[] args) {return QueryInterface(args[0], args[1]);}
+		@Override
 		public long /*int*/ method1(long /*int*/[] args) {return AddRef();}
+		@Override
 		public long /*int*/ method2(long /*int*/[] args) {return Release();}
+		@Override
 		public long /*int*/ method3(long /*int*/[] args) {return QueryService(args[0], args[1], args[2]);}
 	};
 	iInternetSecurityManager = new COMObject(new int[]{2, 0, 0, 1, 1, 3, 4, 8, 7, 3, 3}){
+		@Override
 		public long /*int*/ method0(long /*int*/[] args) {return QueryInterface(args[0], args[1]);}
+		@Override
 		public long /*int*/ method1(long /*int*/[] args) {return AddRef();}
+		@Override
 		public long /*int*/ method2(long /*int*/[] args) {return Release();}
+		@Override
 		public long /*int*/ method3(long /*int*/[] args) {return SetSecuritySite(args[0]);}
+		@Override
 		public long /*int*/ method4(long /*int*/[] args) {return GetSecuritySite(args[0]);}
+		@Override
 		public long /*int*/ method5(long /*int*/[] args) {return MapUrlToZone(args[0], args[1], (int)/*64*/args[2]);}
+		@Override
 		public long /*int*/ method6(long /*int*/[] args) {return GetSecurityId(args[0], args[1], args[2], args[3]);}
+		@Override
 		public long /*int*/ method7(long /*int*/[] args) {return ProcessUrlAction(args[0], (int)/*64*/args[1], args[2], (int)/*64*/args[3], args[4], (int)/*64*/args[5], (int)/*64*/args[6], (int)/*64*/args[7]);}
+		@Override
 		public long /*int*/ method8(long /*int*/[] args) {return QueryCustomPolicy(args[0], args[1], args[2], args[3], args[4], (int)/*64*/args[5], (int)/*64*/args[6]);}
+		@Override
 		public long /*int*/ method9(long /*int*/[] args) {return SetZoneMapping((int)/*64*/args[0], args[1], (int)/*64*/args[2]);}
+		@Override
 		public long /*int*/ method10(long /*int*/[] args) {return GetZoneMappings((int)/*64*/args[0], args[1], (int)/*64*/args[2]);}
 	};
 	iOleCommandTarget = new COMObject(new int[]{2, 0, 0, 4, 5}) {
+		@Override
 		public long /*int*/ method0(long /*int*/[] args) {return QueryInterface(args[0], args[1]);}
+		@Override
 		public long /*int*/ method1(long /*int*/[] args) {return AddRef();}
+		@Override
 		public long /*int*/ method2(long /*int*/[] args) {return Release();}		
+		@Override
 		public long /*int*/ method3(long /*int*/[] args) {return QueryStatus(args[0], (int)/*64*/args[1], args[2], args[3]);}		
+		@Override
 		public long /*int*/ method4(long /*int*/[] args) {return Exec(args[0], (int)/*64*/args[1], (int)/*64*/args[2], args[3], args[4]);}
 	};
 	iAuthenticate = new COMObject(new int[]{2, 0, 0, 3}){
+		@Override
 		public long /*int*/ method0(long /*int*/[] args) {return QueryInterface(args[0], args[1]);}
+		@Override
 		public long /*int*/ method1(long /*int*/[] args) {return AddRef();}
+		@Override
 		public long /*int*/ method2(long /*int*/[] args) {return Release();}
+		@Override
 		public long /*int*/ method3(long /*int*/[] args) {return Authenticate(args[0], args[1], args[2]);}
 	};
 	iDispatch = new COMObject (new int[] {2, 0, 0, 1, 3, 5, 8}) {
+		@Override
 		public long /*int*/ method0 (long /*int*/[] args) {
 			/* 
 			 * IDispatch check must be done here instead of in the shared QueryInterface
@@ -122,15 +171,22 @@ protected void createCOMInterfaces () {
 			}
 			return QueryInterface (args[0], args[1]);
 		}
+		@Override
 		public long /*int*/ method1 (long /*int*/[] args) {return AddRef ();}
+		@Override
 		public long /*int*/ method2 (long /*int*/[] args) {return Release ();}
+		@Override
 		public long /*int*/ method3 (long /*int*/[] args) {return GetTypeInfoCount (args[0]);}
+		@Override
 		public long /*int*/ method4 (long /*int*/[] args) {return GetTypeInfo ((int)/*64*/args[0], (int)/*64*/args[1], args[2]);}
+		@Override
 		public long /*int*/ method5 (long /*int*/[] args) {return GetIDsOfNames ((int)/*64*/args[0], args[1], (int)/*64*/args[2], (int)/*64*/args[3], args[4]);}
+		@Override
 		public long /*int*/ method6 (long /*int*/[] args) {return Invoke ((int)/*64*/args[0], (int)/*64*/args[1], (int)/*64*/args[2], (int)/*64*/args[3], args[4], args[5], args[6], args[7]);}
 	};
 }
 
+@Override
 protected void disposeCOMInterfaces() {
 	super.disposeCOMInterfaces();
 	if (iDocHostUIHandler != null) {
@@ -163,11 +219,13 @@ protected void disposeCOMInterfaces() {
 	}
 }
 
+@Override
 protected int AddRef() {
 	/* Workaround for javac 1.1.8 bug */
 	return super.AddRef();
 }
 
+@Override
 protected int QueryInterface(long /*int*/ riid, long /*int*/ ppvObject) {
 	int result = super.QueryInterface(riid, ppvObject);
 	if (result == COM.S_OK) return result;
@@ -250,6 +308,7 @@ int OnFrameWindowActivate(int fActivate) {
 	return COM.E_NOTIMPL;
 }
 
+@Override
 protected int Release() {
 	/* Workaround for javac 1.1.8 bug */
 	return super.Release();

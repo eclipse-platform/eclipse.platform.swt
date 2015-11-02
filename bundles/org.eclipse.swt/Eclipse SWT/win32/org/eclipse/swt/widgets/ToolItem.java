@@ -171,6 +171,7 @@ static int checkStyle (int style) {
 	return checkBits (style, SWT.PUSH, SWT.CHECK, SWT.RADIO, SWT.SEPARATOR, SWT.DROP_DOWN, 0);
 }
 
+@Override
 protected void checkSubclass () {
 	if (!isValidSubclass ()) error (SWT.ERROR_INVALID_SUBCLASS);
 }
@@ -215,6 +216,7 @@ Widget [] computeTabList () {
 	return new Widget [0];
 }
 
+@Override
 void destroyWidget () {
 	parent.destroyItem (this);
 	releaseHandle ();
@@ -429,6 +431,7 @@ boolean isTabGroup () {
 	return (previous.getStyle () & SWT.SEPARATOR) != 0;
 }
 
+@Override
 void releaseWidget () {
 	super.releaseWidget ();
 	releaseImages ();
@@ -439,6 +442,7 @@ void releaseWidget () {
 	disabledImage2 = null;
 }
 
+@Override
 void releaseHandle () {
 	super.releaseHandle ();
 	parent = null;
@@ -700,6 +704,7 @@ public void setHotImage (Image image) {
 	updateImages (getEnabled () && parent.getEnabled ());
 }
 
+@Override
 public void setImage (Image image) {
 	checkWidget();
 	if ((style & SWT.SEPARATOR) != 0) return;
@@ -768,6 +773,7 @@ public void setSelection (boolean selected) {
 	}
 }
 
+@Override
 boolean setTabItemFocus () {
 	if (parent.setTabItemFocus ()) {
 		long /*int*/ hwnd = parent.handle;
@@ -835,6 +841,7 @@ void _setText (String string) {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  */
+@Override
 public void setText (String string) {
 	checkWidget();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
@@ -860,6 +867,7 @@ public void setText (String string) {
 	parent.layoutItems ();
 }
 
+@Override
 boolean updateTextDirection(int textDirection) {
 	/* AUTO is handled by super */
 	if (super.updateTextDirection(textDirection) && text.length() != 0) {

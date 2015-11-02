@@ -62,12 +62,16 @@ int AddRef() {
 }
 private void createCOMInterfaces() {
 	iDispatch = new COMObject(new int[]{2, 0, 0, 1, 3, 4, 8}){
+		@Override
 		public long /*int*/ method0(long /*int*/[] args) {return QueryInterface(args[0], args[1]);}
+		@Override
 		public long /*int*/ method1(long /*int*/[] args) {return AddRef();}
+		@Override
 		public long /*int*/ method2(long /*int*/[] args) {return Release();}
 		// method3 GetTypeInfoCount - not implemented
 		// method4 GetTypeInfo - not implemented
 		// method5 GetIDsOfNames - not implemented
+		@Override
 		public long /*int*/ method6(long /*int*/[] args) {return Invoke((int)/*64*/args[0], args[1], (int)/*64*/args[2], (int)/*64*/args[3], args[4], args[5], args[6], args[7]);}
 	};
 }

@@ -141,6 +141,7 @@ public void addMenuDetectListener (MenuDetectListener listener) {
 	addListener (SWT.MenuDetect, typedListener);
 }
 
+@Override
 protected void checkSubclass () {
 	if (!isValidSubclass ()) error (SWT.ERROR_INVALID_SUBCLASS);
 }
@@ -155,6 +156,7 @@ void createWidget () {
 	OS.Shell_NotifyIcon (OS.NIM_ADD, iconData);
 }
 
+@Override
 void destroyWidget () {
 	parent.destroyItem (this);
 	releaseHandle ();
@@ -327,11 +329,13 @@ void recreate () {
 	if (toolTipText != null) setToolTipText (toolTipText);
 }
 
+@Override
 void releaseHandle () {
 	super.releaseHandle ();
 	parent = null;
 }
 
+@Override
 void releaseWidget () {
 	super.releaseWidget ();
 	if (toolTip != null) toolTip.item = null;
@@ -433,6 +437,7 @@ public void setHighlightImage (Image image) {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  */
+@Override
 public void setImage (Image image) {
 	checkWidget ();
 	if (image != null && image.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);

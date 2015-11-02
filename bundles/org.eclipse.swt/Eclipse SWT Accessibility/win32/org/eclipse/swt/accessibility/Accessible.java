@@ -113,6 +113,7 @@ public class Accessible {
 	 * @since 3.5
 	 * @deprecated
 	 */
+	@Deprecated
 	protected Accessible() {
 	}
 
@@ -145,33 +146,57 @@ public class Accessible {
 
 	void createIAccessible() {
 		objIAccessible = new COMObject(new int[] {2,0,0,1,3,5,8,1,1,2,2,2,2,2,2,2,3,2,1,1,2,2,5,3,3,1,2,2}) {
+			@Override
 			public long /*int*/ method0(long /*int*/[] args) {return QueryInterface(args[0], args[1]);}
+			@Override
 			public long /*int*/ method1(long /*int*/[] args) {return AddRef();}
+			@Override
 			public long /*int*/ method2(long /*int*/[] args) {return Release();}
 			// method3 GetTypeInfoCount - not implemented
 			// method4 GetTypeInfo - not implemented
 			// method5 GetIDsOfNames - not implemented
 			// method6 Invoke - not implemented
+			@Override
 			public long /*int*/ method7(long /*int*/[] args) {return get_accParent(args[0]);}
+			@Override
 			public long /*int*/ method8(long /*int*/[] args) {return get_accChildCount(args[0]);}
+			@Override
 			public long /*int*/ method9(long /*int*/[] args) {return get_accChild(args[0], args[1]);}
+			@Override
 			public long /*int*/ method10(long /*int*/[] args) {return get_accName(args[0], args[1]);}
+			@Override
 			public long /*int*/ method11(long /*int*/[] args) {return get_accValue(args[0], args[1]);}
+			@Override
 			public long /*int*/ method12(long /*int*/[] args) {return get_accDescription(args[0], args[1]);}
+			@Override
 			public long /*int*/ method13(long /*int*/[] args) {return get_accRole(args[0], args[1]);}
+			@Override
 			public long /*int*/ method14(long /*int*/[] args) {return get_accState(args[0], args[1]);}
+			@Override
 			public long /*int*/ method15(long /*int*/[] args) {return get_accHelp(args[0], args[1]);}
+			@Override
 			public long /*int*/ method16(long /*int*/[] args) {return get_accHelpTopic(args[0], args[1], args[2]);}
+			@Override
 			public long /*int*/ method17(long /*int*/[] args) {return get_accKeyboardShortcut(args[0], args[1]);}
+			@Override
 			public long /*int*/ method18(long /*int*/[] args) {return get_accFocus(args[0]);}
+			@Override
 			public long /*int*/ method19(long /*int*/[] args) {return get_accSelection(args[0]);}
+			@Override
 			public long /*int*/ method20(long /*int*/[] args) {return get_accDefaultAction(args[0], args[1]);}
+			@Override
 			public long /*int*/ method21(long /*int*/[] args) {return accSelect((int)/*64*/args[0], args[1]);}
+			@Override
 			public long /*int*/ method22(long /*int*/[] args) {return accLocation(args[0], args[1], args[2], args[3], args[4]);}
+			@Override
 			public long /*int*/ method23(long /*int*/[] args) {return accNavigate((int)/*64*/args[0], args[1], args[2]);}
+			@Override
 			public long /*int*/ method24(long /*int*/[] args) {return accHitTest((int)/*64*/args[0], (int)/*64*/args[1], args[2]);}
+			@Override
 			public long /*int*/ method25(long /*int*/[] args) {return accDoDefaultAction(args[0]);}
+			@Override
 			public long /*int*/ method26(long /*int*/[] args) {return put_accName(args[0], args[1]);}
+			@Override
 			public long /*int*/ method27(long /*int*/[] args) {return put_accValue(args[0], args[1]);}
 		};
 	
@@ -205,8 +230,11 @@ public class Accessible {
 
 	void createIAccessible2() {
 		objIAccessible2 = new COMObject(new int[] {2,0,0,/*IA>>*/1,3,5,8,1,1,2,2,2,2,2,2,2,3,2,1,1,2,2,5,3,3,1,2,2,/*<<IA*/1,2,3,1,1,3,3,1,1,1,1,3,3,1,1,1,1,1}) {
+			@Override
 			public long /*int*/ method0(long /*int*/[] args) {return QueryInterface(args[0], args[1]);}
+			@Override
 			public long /*int*/ method1(long /*int*/[] args) {return AddRef();}
+			@Override
 			public long /*int*/ method2(long /*int*/[] args) {return Release();}
 			
 			/* 
@@ -217,46 +245,85 @@ public class Accessible {
 			// method4 GetTypeInfo - not implemented
 			// method5 GetIDsOfNames - not implemented
 			// method6 Invoke - not implemented
+			@Override
 			public long /*int*/ method7(long /*int*/[] args) {return get_accParent(args[0]);}
+			@Override
 			public long /*int*/ method8(long /*int*/[] args) {return get_accChildCount(args[0]);}
+			@Override
 			public long /*int*/ method9(long /*int*/[] args) {return get_accChild(args[0], args[1]);}
+			@Override
 			public long /*int*/ method10(long /*int*/[] args) {return get_accName(args[0], args[1]);}
+			@Override
 			public long /*int*/ method11(long /*int*/[] args) {return get_accValue(args[0], args[1]);}
+			@Override
 			public long /*int*/ method12(long /*int*/[] args) {return get_accDescription(args[0], args[1]);}
+			@Override
 			public long /*int*/ method13(long /*int*/[] args) {return get_accRole(args[0], args[1]);}
+			@Override
 			public long /*int*/ method14(long /*int*/[] args) {return get_accState(args[0], args[1]);}
+			@Override
 			public long /*int*/ method15(long /*int*/[] args) {return get_accHelp(args[0], args[1]);}
+			@Override
 			public long /*int*/ method16(long /*int*/[] args) {return get_accHelpTopic(args[0], args[1], args[2]);}
+			@Override
 			public long /*int*/ method17(long /*int*/[] args) {return get_accKeyboardShortcut(args[0], args[1]);}
+			@Override
 			public long /*int*/ method18(long /*int*/[] args) {return get_accFocus(args[0]);}
+			@Override
 			public long /*int*/ method19(long /*int*/[] args) {return get_accSelection(args[0]);}
+			@Override
 			public long /*int*/ method20(long /*int*/[] args) {return get_accDefaultAction(args[0], args[1]);}
+			@Override
 			public long /*int*/ method21(long /*int*/[] args) {return accSelect((int)/*64*/args[0], args[1]);}
+			@Override
 			public long /*int*/ method22(long /*int*/[] args) {return accLocation(args[0], args[1], args[2], args[3], args[4]);}
+			@Override
 			public long /*int*/ method23(long /*int*/[] args) {return accNavigate((int)/*64*/args[0], args[1], args[2]);}
+			@Override
 			public long /*int*/ method24(long /*int*/[] args) {return accHitTest((int)/*64*/args[0], (int)/*64*/args[1], args[2]);}
+			@Override
 			public long /*int*/ method25(long /*int*/[] args) {return accDoDefaultAction(args[0]);}
+			@Override
 			public long /*int*/ method26(long /*int*/[] args) {return put_accName(args[0], args[1]);}
+			@Override
 			public long /*int*/ method27(long /*int*/[] args) {return put_accValue(args[0], args[1]);}
 
 			// IAccessible2 methods
+			@Override
 			public long /*int*/ method28(long /*int*/[] args) {return get_nRelations(args[0]);}
+			@Override
 			public long /*int*/ method29(long /*int*/[] args) {return get_relation((int)/*64*/args[0], args[1]);}
+			@Override
 			public long /*int*/ method30(long /*int*/[] args) {return get_relations((int)/*64*/args[0], args[1], args[2]);}
+			@Override
 			public long /*int*/ method31(long /*int*/[] args) {return get_role(args[0]);}
+			@Override
 			public long /*int*/ method32(long /*int*/[] args) {return scrollTo((int)/*64*/args[0]);}
+			@Override
 			public long /*int*/ method33(long /*int*/[] args) {return scrollToPoint((int)/*64*/args[0], (int)/*64*/args[1], (int)/*64*/args[2]);}
+			@Override
 			public long /*int*/ method34(long /*int*/[] args) {return get_groupPosition(args[0], args[1], args[2]);}
+			@Override
 			public long /*int*/ method35(long /*int*/[] args) {return get_states(args[0]);}
+			@Override
 			public long /*int*/ method36(long /*int*/[] args) {return get_extendedRole(args[0]);}
+			@Override
 			public long /*int*/ method37(long /*int*/[] args) {return get_localizedExtendedRole(args[0]);}
+			@Override
 			public long /*int*/ method38(long /*int*/[] args) {return get_nExtendedStates(args[0]);}
+			@Override
 			public long /*int*/ method39(long /*int*/[] args) {return get_extendedStates((int)/*64*/args[0], args[1], args[2]);}
+			@Override
 			public long /*int*/ method40(long /*int*/[] args) {return get_localizedExtendedStates((int)/*64*/args[0], args[1], args[2]);}
+			@Override
 			public long /*int*/ method41(long /*int*/[] args) {return get_uniqueID(args[0]);}
+			@Override
 			public long /*int*/ method42(long /*int*/[] args) {return get_windowHandle(args[0]);}
+			@Override
 			public long /*int*/ method43(long /*int*/[] args) {return get_indexInParent(args[0]);}
+			@Override
 			public long /*int*/ method44(long /*int*/[] args) {return get_locale(args[0]);}
+			@Override
 			public long /*int*/ method45(long /*int*/[] args) {return get_attributes(args[0]);}
 		};
 
@@ -290,26 +357,42 @@ public class Accessible {
 
 	void createIAccessibleAction() {
 		objIAccessibleAction = new COMObject(new int[] {2,0,0,1,1,2,4,2,2}) {
+			@Override
 			public long /*int*/ method0(long /*int*/[] args) {return QueryInterface(args[0], args[1]);}
+			@Override
 			public long /*int*/ method1(long /*int*/[] args) {return AddRef();}
+			@Override
 			public long /*int*/ method2(long /*int*/[] args) {return Release();}
+			@Override
 			public long /*int*/ method3(long /*int*/[] args) {return get_nActions(args[0]);}
+			@Override
 			public long /*int*/ method4(long /*int*/[] args) {return doAction((int)/*64*/args[0]);}
+			@Override
 			public long /*int*/ method5(long /*int*/[] args) {return get_description((int)/*64*/args[0], args[1]);}
+			@Override
 			public long /*int*/ method6(long /*int*/[] args) {return get_keyBinding((int)/*64*/args[0], (int)/*64*/args[1], args[2], args[3]);}
+			@Override
 			public long /*int*/ method7(long /*int*/[] args) {return get_name((int)/*64*/args[0], args[1]);}
+			@Override
 			public long /*int*/ method8(long /*int*/[] args) {return get_localizedName((int)/*64*/args[0], args[1]);}
 		};
 	}
 
 	void createIAccessibleApplication() {
 		objIAccessibleApplication = new COMObject(new int[] {2,0,0,1,1,1,1}) {
+			@Override
 			public long /*int*/ method0(long /*int*/[] args) {return QueryInterface(args[0], args[1]);}
+			@Override
 			public long /*int*/ method1(long /*int*/[] args) {return AddRef();}
+			@Override
 			public long /*int*/ method2(long /*int*/[] args) {return Release();}
+			@Override
 			public long /*int*/ method3(long /*int*/[] args) {return get_appName(args[0]);}
+			@Override
 			public long /*int*/ method4(long /*int*/[] args) {return get_appVersion(args[0]);}
+			@Override
 			public long /*int*/ method5(long /*int*/[] args) {return get_toolkitName(args[0]);}
+			@Override
 			public long /*int*/ method6(long /*int*/[] args) {return get_toolkitVersion(args[0]);}
 		};
 	}
@@ -328,68 +411,117 @@ public class Accessible {
 
 	void createIAccessibleEditableText() {
 		objIAccessibleEditableText = new COMObject(new int[] {2,0,0,2,2,2,2,1,3,3}) {
+			@Override
 			public long /*int*/ method0(long /*int*/[] args) {return QueryInterface(args[0], args[1]);}
+			@Override
 			public long /*int*/ method1(long /*int*/[] args) {return AddRef();}
+			@Override
 			public long /*int*/ method2(long /*int*/[] args) {return Release();}
+			@Override
 			public long /*int*/ method3(long /*int*/[] args) {return copyText((int)/*64*/args[0], (int)/*64*/args[1]);}
+			@Override
 			public long /*int*/ method4(long /*int*/[] args) {return deleteText((int)/*64*/args[0], (int)/*64*/args[1]);}
+			@Override
 			public long /*int*/ method5(long /*int*/[] args) {return insertText((int)/*64*/args[0], args[1]);}
+			@Override
 			public long /*int*/ method6(long /*int*/[] args) {return cutText((int)/*64*/args[0], (int)/*64*/args[1]);}
+			@Override
 			public long /*int*/ method7(long /*int*/[] args) {return pasteText((int)/*64*/args[0]);}
+			@Override
 			public long /*int*/ method8(long /*int*/[] args) {return replaceText((int)/*64*/args[0], (int)/*64*/args[1], args[2]);}
+			@Override
 			public long /*int*/ method9(long /*int*/[] args) {return setAttributes((int)/*64*/args[0], (int)/*64*/args[1], args[2]);}
 		};
 	}
 
 	void createIAccessibleHyperlink() {
 		objIAccessibleHyperlink = new COMObject(new int[] {2,0,0,/*IAA>>*/1,1,2,4,2,2,/*<<IAA*/2,2,1,1,1}) {
+			@Override
 			public long /*int*/ method0(long /*int*/[] args) {return QueryInterface(args[0], args[1]);}
+			@Override
 			public long /*int*/ method1(long /*int*/[] args) {return AddRef();}
+			@Override
 			public long /*int*/ method2(long /*int*/[] args) {return Release();}
 			// IAccessibleAction
+			@Override
 			public long /*int*/ method3(long /*int*/[] args) {return get_nActions(args[0]);}
+			@Override
 			public long /*int*/ method4(long /*int*/[] args) {return doAction((int)/*64*/args[0]);}
+			@Override
 			public long /*int*/ method5(long /*int*/[] args) {return get_description((int)/*64*/args[0], args[1]);}
+			@Override
 			public long /*int*/ method6(long /*int*/[] args) {return get_keyBinding((int)/*64*/args[0], (int)/*64*/args[1], args[2], args[3]);}
+			@Override
 			public long /*int*/ method7(long /*int*/[] args) {return get_name((int)/*64*/args[0], args[1]);}
+			@Override
 			public long /*int*/ method8(long /*int*/[] args) {return get_localizedName((int)/*64*/args[0], args[1]);}
 			// IAccessibleHyperlink
+			@Override
 			public long /*int*/ method9(long /*int*/[] args) {return get_anchor((int)/*64*/args[0], args[1]);}
+			@Override
 			public long /*int*/ method10(long /*int*/[] args) {return get_anchorTarget((int)/*64*/args[0], args[1]);}
+			@Override
 			public long /*int*/ method11(long /*int*/[] args) {return get_startIndex(args[0]);}
+			@Override
 			public long /*int*/ method12(long /*int*/[] args) {return get_endIndex(args[0]);}
+			@Override
 			public long /*int*/ method13(long /*int*/[] args) {return get_valid(args[0]);}
 		};
 	}
 
 	void createIAccessibleHypertext() {
 		objIAccessibleHypertext = new COMObject(new int[] {2,0,0,/*IAT>>*/2,4,1,6,1,4,3,3,5,5,5,1,1,3,1,3,5,1,1,/*<<IAT*/1,2,2}) {
+			@Override
 			public long /*int*/ method0(long /*int*/[] args) {return QueryInterface(args[0], args[1]);}
+			@Override
 			public long /*int*/ method1(long /*int*/[] args) {return AddRef();}
+			@Override
 			public long /*int*/ method2(long /*int*/[] args) {return Release();}
 			// IAccessibleText
+			@Override
 			public long /*int*/ method3(long /*int*/[] args) {return addSelection((int)/*64*/args[0], (int)/*64*/args[1]);}
+			@Override
 			public long /*int*/ method4(long /*int*/[] args) {return get_attributes((int)/*64*/args[0], args[1], args[2], args[3]);}
+			@Override
 			public long /*int*/ method5(long /*int*/[] args) {return get_caretOffset(args[0]);}
+			@Override
 			public long /*int*/ method6(long /*int*/[] args) {return get_characterExtents((int)/*64*/args[0], (int)/*64*/args[1], args[2], args[3], args[4], args[5]);}
+			@Override
 			public long /*int*/ method7(long /*int*/[] args) {return get_nSelections(args[0]);}
+			@Override
 			public long /*int*/ method8(long /*int*/[] args) {return get_offsetAtPoint((int)/*64*/args[0], (int)/*64*/args[1], (int)/*64*/args[2], args[3]);}
+			@Override
 			public long /*int*/ method9(long /*int*/[] args) {return get_selection((int)/*64*/args[0], args[1], args[2]);}
+			@Override
 			public long /*int*/ method10(long /*int*/[] args) {return get_text((int)/*64*/args[0], (int)/*64*/args[1], args[2]);}
+			@Override
 			public long /*int*/ method11(long /*int*/[] args) {return get_textBeforeOffset((int)/*64*/args[0], (int)/*64*/args[1], args[2], args[3], args[4]);}
+			@Override
 			public long /*int*/ method12(long /*int*/[] args) {return get_textAfterOffset((int)/*64*/args[0], (int)/*64*/args[1], args[2], args[3], args[4]);}
+			@Override
 			public long /*int*/ method13(long /*int*/[] args) {return get_textAtOffset((int)/*64*/args[0], (int)/*64*/args[1], args[2], args[3], args[4]);}
+			@Override
 			public long /*int*/ method14(long /*int*/[] args) {return removeSelection((int)/*64*/args[0]);}
+			@Override
 			public long /*int*/ method15(long /*int*/[] args) {return setCaretOffset((int)/*64*/args[0]);}
+			@Override
 			public long /*int*/ method16(long /*int*/[] args) {return setSelection((int)/*64*/args[0], (int)/*64*/args[1], (int)/*64*/args[2]);}
+			@Override
 			public long /*int*/ method17(long /*int*/[] args) {return get_nCharacters(args[0]);}
+			@Override
 			public long /*int*/ method18(long /*int*/[] args) {return scrollSubstringTo((int)/*64*/args[0], (int)/*64*/args[1], (int)/*64*/args[2]);}
+			@Override
 			public long /*int*/ method19(long /*int*/[] args) {return scrollSubstringToPoint((int)/*64*/args[0], (int)/*64*/args[1], (int)/*64*/args[2], (int)/*64*/args[3], (int)/*64*/args[4]);}
+			@Override
 			public long /*int*/ method20(long /*int*/[] args) {return get_newText(args[0]);}
+			@Override
 			public long /*int*/ method21(long /*int*/[] args) {return get_oldText(args[0]);}
 			// IAccessibleHypertext
+			@Override
 			public long /*int*/ method22(long /*int*/[] args) {return get_nHyperlinks(args[0]);}
+			@Override
 			public long /*int*/ method23(long /*int*/[] args) {return get_hyperlink((int)/*64*/args[0], args[1]);}
+			@Override
 			public long /*int*/ method24(long /*int*/[] args) {return get_hyperlinkIndex((int)/*64*/args[0], args[1]);}
 		};
 	}
@@ -408,84 +540,148 @@ public class Accessible {
 
 	void createIAccessibleTable2() {
 		objIAccessibleTable2 = new COMObject(new int[] {2,0,0,3,1,2,1,1,1,1,1,2,2,2,2,1,2,2,1,1,1,1,1}) {
+			@Override
 			public long /*int*/ method0(long /*int*/[] args) {return QueryInterface(args[0], args[1]);}
+			@Override
 			public long /*int*/ method1(long /*int*/[] args) {return AddRef();}
+			@Override
 			public long /*int*/ method2(long /*int*/[] args) {return Release();}
+			@Override
 			public long /*int*/ method3(long /*int*/[] args) {return get_cellAt((int)/*64*/args[0], (int)/*64*/args[1], args[2]);}
+			@Override
 			public long /*int*/ method4(long /*int*/[] args) {return get_caption(args[0]);}
+			@Override
 			public long /*int*/ method5(long /*int*/[] args) {return get_columnDescription((int)/*64*/args[0], args[1]);}
+			@Override
 			public long /*int*/ method6(long /*int*/[] args) {return get_nColumns(args[0]);}
+			@Override
 			public long /*int*/ method7(long /*int*/[] args) {return get_nRows(args[0]);}
+			@Override
 			public long /*int*/ method8(long /*int*/[] args) {return get_nSelectedCells(args[0]);}
+			@Override
 			public long /*int*/ method9(long /*int*/[] args) {return get_nSelectedColumns(args[0]);}
+			@Override
 			public long /*int*/ method10(long /*int*/[] args) {return get_nSelectedRows(args[0]);}
+			@Override
 			public long /*int*/ method11(long /*int*/[] args) {return get_rowDescription((int)/*64*/args[0], args[1]);}
+			@Override
 			public long /*int*/ method12(long /*int*/[] args) {return get_selectedCells(args[0], args[1]);}
+			@Override
 			public long /*int*/ method13(long /*int*/[] args) {return get_selectedColumns(args[0], args[1]);}
+			@Override
 			public long /*int*/ method14(long /*int*/[] args) {return get_selectedRows(args[0], args[1]);}
+			@Override
 			public long /*int*/ method15(long /*int*/[] args) {return get_summary(args[0]);}
+			@Override
 			public long /*int*/ method16(long /*int*/[] args) {return get_isColumnSelected((int)/*64*/args[0], args[1]);}
+			@Override
 			public long /*int*/ method17(long /*int*/[] args) {return get_isRowSelected((int)/*64*/args[0], args[1]);}
+			@Override
 			public long /*int*/ method18(long /*int*/[] args) {return selectRow((int)/*64*/args[0]);}
+			@Override
 			public long /*int*/ method19(long /*int*/[] args) {return selectColumn((int)/*64*/args[0]);}
+			@Override
 			public long /*int*/ method20(long /*int*/[] args) {return unselectRow((int)/*64*/args[0]);}
+			@Override
 			public long /*int*/ method21(long /*int*/[] args) {return unselectColumn((int)/*64*/args[0]);}
+			@Override
 			public long /*int*/ method22(long /*int*/[] args) {return get_modelChange(args[0]);}
 		};
 	}
 
 	void createIAccessibleTableCell() {
 		objIAccessibleTableCell = new COMObject(new int[] {2,0,0,1,2,1,1,2,1,1,5,1}) {
+			@Override
 			public long /*int*/ method0(long /*int*/[] args) {return QueryInterface(args[0], args[1]);}
+			@Override
 			public long /*int*/ method1(long /*int*/[] args) {return AddRef();}
+			@Override
 			public long /*int*/ method2(long /*int*/[] args) {return Release();}
+			@Override
 			public long /*int*/ method3(long /*int*/[] args) {return get_columnExtent(args[0]);}
+			@Override
 			public long /*int*/ method4(long /*int*/[] args) {return get_columnHeaderCells(args[0], args[1]);}
+			@Override
 			public long /*int*/ method5(long /*int*/[] args) {return get_columnIndex(args[0]);}
+			@Override
 			public long /*int*/ method6(long /*int*/[] args) {return get_rowExtent(args[0]);}
+			@Override
 			public long /*int*/ method7(long /*int*/[] args) {return get_rowHeaderCells(args[0], args[1]);}
+			@Override
 			public long /*int*/ method8(long /*int*/[] args) {return get_rowIndex(args[0]);}
+			@Override
 			public long /*int*/ method9(long /*int*/[] args) {return get_isSelected(args[0]);}
+			@Override
 			public long /*int*/ method10(long /*int*/[] args) {return get_rowColumnExtents(args[0], args[1], args[2], args[3], args[4]);}
+			@Override
 			public long /*int*/ method11(long /*int*/[] args) {return get_table(args[0]);}
 		};
 	}
 
 	void createIAccessibleText() {
 		objIAccessibleText = new COMObject(new int[] {2,0,0,2,4,1,6,1,4,3,3,5,5,5,1,1,3,1,3,5,1,1}) {
+			@Override
 			public long /*int*/ method0(long /*int*/[] args) {return QueryInterface(args[0], args[1]);}
+			@Override
 			public long /*int*/ method1(long /*int*/[] args) {return AddRef();}
+			@Override
 			public long /*int*/ method2(long /*int*/[] args) {return Release();}
+			@Override
 			public long /*int*/ method3(long /*int*/[] args) {return addSelection((int)/*64*/args[0], (int)/*64*/args[1]);}
+			@Override
 			public long /*int*/ method4(long /*int*/[] args) {return get_attributes((int)/*64*/args[0], args[1], args[2], args[3]);}
+			@Override
 			public long /*int*/ method5(long /*int*/[] args) {return get_caretOffset(args[0]);}
+			@Override
 			public long /*int*/ method6(long /*int*/[] args) {return get_characterExtents((int)/*64*/args[0], (int)/*64*/args[1], args[2], args[3], args[4], args[5]);}
+			@Override
 			public long /*int*/ method7(long /*int*/[] args) {return get_nSelections(args[0]);}
+			@Override
 			public long /*int*/ method8(long /*int*/[] args) {return get_offsetAtPoint((int)/*64*/args[0], (int)/*64*/args[1], (int)/*64*/args[2], args[3]);}
+			@Override
 			public long /*int*/ method9(long /*int*/[] args) {return get_selection((int)/*64*/args[0], args[1], args[2]);}
+			@Override
 			public long /*int*/ method10(long /*int*/[] args) {return get_text((int)/*64*/args[0], (int)/*64*/args[1], args[2]);}
+			@Override
 			public long /*int*/ method11(long /*int*/[] args) {return get_textBeforeOffset((int)/*64*/args[0], (int)/*64*/args[1], args[2], args[3], args[4]);}
+			@Override
 			public long /*int*/ method12(long /*int*/[] args) {return get_textAfterOffset((int)/*64*/args[0], (int)/*64*/args[1], args[2], args[3], args[4]);}
+			@Override
 			public long /*int*/ method13(long /*int*/[] args) {return get_textAtOffset((int)/*64*/args[0], (int)/*64*/args[1], args[2], args[3], args[4]);}
+			@Override
 			public long /*int*/ method14(long /*int*/[] args) {return removeSelection((int)/*64*/args[0]);}
+			@Override
 			public long /*int*/ method15(long /*int*/[] args) {return setCaretOffset((int)/*64*/args[0]);}
+			@Override
 			public long /*int*/ method16(long /*int*/[] args) {return setSelection((int)/*64*/args[0], (int)/*64*/args[1], (int)/*64*/args[2]);}
+			@Override
 			public long /*int*/ method17(long /*int*/[] args) {return get_nCharacters(args[0]);}
+			@Override
 			public long /*int*/ method18(long /*int*/[] args) {return scrollSubstringTo((int)/*64*/args[0], (int)/*64*/args[1], (int)/*64*/args[2]);}
+			@Override
 			public long /*int*/ method19(long /*int*/[] args) {return scrollSubstringToPoint((int)/*64*/args[0], (int)/*64*/args[1], (int)/*64*/args[2], (int)/*64*/args[3], (int)/*64*/args[4]);}
+			@Override
 			public long /*int*/ method20(long /*int*/[] args) {return get_newText(args[0]);}
+			@Override
 			public long /*int*/ method21(long /*int*/[] args) {return get_oldText(args[0]);}
 		};
 	}
 
 	void createIAccessibleValue() {
 		objIAccessibleValue = new COMObject(new int[] {2,0,0,1,1,1,1}) {
+			@Override
 			public long /*int*/ method0(long /*int*/[] args) {return QueryInterface(args[0], args[1]);}
+			@Override
 			public long /*int*/ method1(long /*int*/[] args) {return AddRef();}
+			@Override
 			public long /*int*/ method2(long /*int*/[] args) {return Release();}
+			@Override
 			public long /*int*/ method3(long /*int*/[] args) {return get_currentValue(args[0]);}
+			@Override
 			public long /*int*/ method4(long /*int*/[] args) {return setCurrentValue(args[0]);}
+			@Override
 			public long /*int*/ method5(long /*int*/[] args) {return get_maximumValue(args[0]);}
+			@Override
 			public long /*int*/ method6(long /*int*/[] args) {return get_minimumValue(args[0]);}
 		};
 		/* Dereference VARIANT struct parameters. */
@@ -500,22 +696,33 @@ public class Accessible {
 
 	void createIEnumVARIANT() {
 		objIEnumVARIANT = new COMObject(new int[] {2,0,0,3,1,0,1}) {
+			@Override
 			public long /*int*/ method0(long /*int*/[] args) {return QueryInterface(args[0], args[1]);}
+			@Override
 			public long /*int*/ method1(long /*int*/[] args) {return AddRef();}
+			@Override
 			public long /*int*/ method2(long /*int*/[] args) {return Release();}
+			@Override
 			public long /*int*/ method3(long /*int*/[] args) {return Next((int)/*64*/args[0], args[1], args[2]);}
+			@Override
 			public long /*int*/ method4(long /*int*/[] args) {return Skip((int)/*64*/args[0]);}
+			@Override
 			public long /*int*/ method5(long /*int*/[] args) {return Reset();}
+			@Override
 			public long /*int*/ method6(long /*int*/[] args) {return Clone(args[0]);}
 		};
 	}
 
 	void createIServiceProvider() {
 		objIServiceProvider = new COMObject(new int[] {2,0,0,3}) {
-		    public long /*int*/ method0(long /*int*/[] args) {return QueryInterface(args[0], args[1]);}
-		    public long /*int*/ method1(long /*int*/[] args) {return AddRef();}
-		    public long /*int*/ method2(long /*int*/[] args) {return Release();}        
-		    public long /*int*/ method3(long /*int*/[] args) {return QueryService(args[0], args[1], args[2]);}
+		    @Override
+			public long /*int*/ method0(long /*int*/[] args) {return QueryInterface(args[0], args[1]);}
+		    @Override
+			public long /*int*/ method1(long /*int*/[] args) {return AddRef();}
+		    @Override
+			public long /*int*/ method2(long /*int*/[] args) {return Release();}        
+		    @Override
+			public long /*int*/ method3(long /*int*/[] args) {return QueryService(args[0], args[1], args[2]);}
 		};
 	}
 
@@ -2148,6 +2355,7 @@ public class Accessible {
 						});
 					}
 					osAccessible.addAccessibleListener(new AccessibleAdapter() {
+						@Override
 						public void getName(AccessibleEvent e) {
 							if (e.childID == ACC.CHILDID_SELF) {
 								AccessibleEvent event = new AccessibleEvent(Accessible.this);
@@ -5574,6 +5782,7 @@ public class Accessible {
 		}
 		return null;
 	}
+	@Override
 	public String toString () {
 		String toString = super.toString();
 		if (DEBUG) {

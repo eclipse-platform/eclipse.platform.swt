@@ -214,6 +214,7 @@ public Pattern(Device device, float x1, float y1, float x2, float y2, Color colo
 	init();
 }
 	
+@Override
 void destroy() {
 	int type = Gdip.Brush_GetType(handle);
 	switch (type) {
@@ -243,6 +244,7 @@ void destroy() {
  *
  * @return <code>true</code> when the Pattern is disposed, and <code>false</code> otherwise
  */
+@Override
 public boolean isDisposed() {
 	return handle == 0;
 }
@@ -253,6 +255,7 @@ public boolean isDisposed() {
  *
  * @return a string representation of the receiver
  */
+@Override
 public String toString() {
 	if (isDisposed()) return "Pattern {*DISPOSED*}";
 	return "Pattern {" + handle + "}";

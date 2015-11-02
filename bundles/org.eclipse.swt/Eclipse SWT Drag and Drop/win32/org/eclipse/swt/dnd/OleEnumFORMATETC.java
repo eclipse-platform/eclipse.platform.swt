@@ -35,16 +35,25 @@ int AddRef() {
 private void createCOMInterfaces() {
 	// register each of the interfaces that this object implements
 	iUnknown = new COMObject(new int[] {2, 0, 0}){
+		@Override
 		public long /*int*/ method0(long /*int*/[] args) {return QueryInterface(args[0], args[1]);}
+		@Override
 		public long /*int*/ method1(long /*int*/[] args) {return AddRef();}
+		@Override
 		public long /*int*/ method2(long /*int*/[] args) {return Release();}
 	};
 	iEnumFORMATETC = new COMObject(new int[] {2, 0, 0, 3, 1, 0, 1}){
+		@Override
 		public long /*int*/ method0(long /*int*/[] args) {return QueryInterface(args[0], args[1]);}
+		@Override
 		public long /*int*/ method1(long /*int*/[] args) {return AddRef();}
+		@Override
 		public long /*int*/ method2(long /*int*/[] args) {return Release();}
+		@Override
 		public long /*int*/ method3(long /*int*/[] args) {return Next((int)/*64*/args[0], args[1], args[2]);}
+		@Override
 		public long /*int*/ method4(long /*int*/[] args) {return Skip((int)/*64*/args[0]);}
+		@Override
 		public long /*int*/ method5(long /*int*/[] args) {return Reset();}
 		// method6 Clone - not implemented
 	};

@@ -79,10 +79,12 @@ TaskItem (TaskBar parent, int style) {
 	parent.createItem (this, -1);
 }
 
+@Override
 protected void checkSubclass () {
 	if (!isValidSubclass ()) error (SWT.ERROR_INVALID_SUBCLASS);
 }
 
+@Override
 void destroyWidget () {
 	parent.destroyItem (this);
 	releaseHandle ();
@@ -99,6 +101,7 @@ void destroyWidget () {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  */
+@Override
 public Menu getMenu () {
 	checkWidget ();
 	return menu;
@@ -192,11 +195,13 @@ void recreate () {
 	if (progressState != SWT.DEFAULT) updateProgressState ();
 }
 
+@Override
 void releaseHandle () {
 	super.releaseHandle ();
 	parent = null;
 }
 
+@Override
 void releaseWidget () {
 	super.releaseWidget ();
 	overlayImage = null;

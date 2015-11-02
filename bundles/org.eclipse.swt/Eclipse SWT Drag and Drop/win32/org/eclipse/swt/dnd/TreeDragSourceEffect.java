@@ -54,6 +54,7 @@ public class TreeDragSourceEffect extends DragSourceEffect {
 	 * 
 	 * @param event the information associated with the drag finished event
 	 */
+	@Override
 	public void dragFinished(DragSourceEvent event) {
 		if (dragSourceImage != null) dragSourceImage.dispose();
 		dragSourceImage = null;
@@ -70,6 +71,7 @@ public class TreeDragSourceEffect extends DragSourceEffect {
 	 * 
 	 * @param event the information associated with the drag start event
 	 */
+	@Override
 	public void dragStart(DragSourceEvent event) {
 		event.image = getDragSourceImage(event);
 	}

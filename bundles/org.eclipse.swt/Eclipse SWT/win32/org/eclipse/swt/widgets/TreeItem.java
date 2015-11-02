@@ -230,6 +230,7 @@ static long /*int*/ findPrevious (TreeItem parentItem, int index) {
 	return hItem;
 }
 
+@Override
 protected void checkSubclass () {
 	if (!isValidSubclass ()) error (SWT.ERROR_INVALID_SUBCLASS);
 }
@@ -323,6 +324,7 @@ public void clearAll (boolean all) {
 	parent.clearAll (hItem, tvItem, all);
 }
 
+@Override
 void destroyWidget () {
 	TVITEM tvItem = new TVITEM ();
 	tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_PARAM;
@@ -789,6 +791,7 @@ public TreeItem [] getItems () {
 	return parent.getItems (hItem);
 }
 
+@Override
 public Image getImage () {
 	checkWidget();
 	if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
@@ -876,6 +879,7 @@ public TreeItem getParentItem () {
 	return hItem != 0 ? parent._getItem (hItem) : null;
 }
 
+@Override
 public String getText () {
 	checkWidget();
 	if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
@@ -998,6 +1002,7 @@ void redraw (int column, boolean drawText, boolean drawImage) {
 	OS.InvalidateRect (hwnd, rect, true);
 }
 
+@Override
 void releaseChildren (boolean destroy) {
 	if (destroy) {
 		TVITEM tvItem = new TVITEM ();
@@ -1007,12 +1012,14 @@ void releaseChildren (boolean destroy) {
 	super.releaseChildren (destroy);
 }
 
+@Override
 void releaseHandle () {
 	super.releaseHandle ();
 	handle = 0;
 	parent = null;
 }
 
+@Override
 void releaseWidget () {
 	super.releaseWidget ();
 	strings = null;
@@ -1708,6 +1715,7 @@ public void setImage (int index, Image image) {
 	}
 }
 
+@Override
 public void setImage (Image image) {
 	checkWidget ();
 	setImage (0, image);
@@ -1812,6 +1820,7 @@ public void setText (int index, String string) {
 	}
 }
 
+@Override
 public void setText (String string) {
 	checkWidget();
 	setText (0, string);

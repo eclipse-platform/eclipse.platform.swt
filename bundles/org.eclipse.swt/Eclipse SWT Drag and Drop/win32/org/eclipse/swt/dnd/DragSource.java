@@ -245,22 +245,34 @@ private int AddRef() {
 private void createCOMInterfaces() {
 	// register each of the interfaces that this object implements
 	iDropSource = new COMObject(new int[]{2, 0, 0, 2, 1}){
+		@Override
 		public long /*int*/ method0(long /*int*/[] args) {return QueryInterface(args[0], args[1]);}
+		@Override
 		public long /*int*/ method1(long /*int*/[] args) {return AddRef();}
+		@Override
 		public long /*int*/ method2(long /*int*/[] args) {return Release();}
+		@Override
 		public long /*int*/ method3(long /*int*/[] args) {return QueryContinueDrag((int)/*64*/args[0], (int)/*64*/args[1]);}
+		@Override
 		public long /*int*/ method4(long /*int*/[] args) {return GiveFeedback((int)/*64*/args[0]);}
 	};
 	
 	iDataObject = new COMObject(new int[]{2, 0, 0, 2, 2, 1, 2, 3, 2, 4, 1, 1}){
+		@Override
 		public long /*int*/ method0(long /*int*/[] args) {return QueryInterface(args[0], args[1]);}
+		@Override
 		public long /*int*/ method1(long /*int*/[] args) {return AddRef();}
+		@Override
 		public long /*int*/ method2(long /*int*/[] args) {return Release();}
+		@Override
 		public long /*int*/ method3(long /*int*/[] args) {return GetData(args[0], args[1]);}
 		// method4 GetDataHere - not implemented
+		@Override
 		public long /*int*/ method5(long /*int*/[] args) {return QueryGetData(args[0]);}
 		// method6 GetCanonicalFormatEtc - not implemented
+		@Override
 		public long /*int*/ method7(long /*int*/[] args) {return SetData(args[0], args[1], (int)/*64*/args[2]);}
+		@Override
 		public long /*int*/ method8(long /*int*/[] args) {return EnumFormatEtc((int)/*64*/args[0], args[1]);}
 		// method9 DAdvise - not implemented
 		// method10 DUnadvise - not implemented
@@ -268,6 +280,7 @@ private void createCOMInterfaces() {
 	};
 }
 
+@Override
 protected void checkSubclass() {
 	String name = getClass().getName();
 	String validName = DragSource.class.getName();

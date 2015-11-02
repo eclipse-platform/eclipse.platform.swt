@@ -58,6 +58,7 @@ public static ImageTransfer getInstance () {
  * 
  * @see Transfer#nativeToJava
  */
+@Override
 public void javaToNative(Object object, TransferData transferData) {
 	if (!checkImage(object) || !isSupportedType(transferData)) {
 		DND.error(DND.ERROR_INVALID_DATA);
@@ -131,6 +132,7 @@ public void javaToNative(Object object, TransferData transferData) {
  * 
  * @see Transfer#javaToNative
  */
+@Override
 public Object nativeToJava(TransferData transferData) {
 	if (!isSupportedType(transferData) || transferData.pIDataObject == 0) return null;
 	IDataObject dataObject = new IDataObject(transferData.pIDataObject);
@@ -191,10 +193,12 @@ public Object nativeToJava(TransferData transferData) {
 	}
 }
 
+@Override
 protected int[] getTypeIds(){
 	return new int[] {CF_DIBID};
 }
 
+@Override
 protected String[] getTypeNames(){
 	return new String[] {CF_DIB};
 }
@@ -203,6 +207,7 @@ boolean checkImage(Object object) {
 	return true;
 }
 
+@Override
 protected boolean validate(Object object) {
 	return checkImage(object);
 }

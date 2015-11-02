@@ -23,6 +23,7 @@ public ScrollBarDrawData() {
 	state = new int[6];
 }
 
+@Override
 void draw(Theme theme, GC gc, Rectangle bounds) {
 	if (OS.COMCTL32_MAJOR >= 6 && OS.IsAppThemed ()) {
 		long /*int*/ hTheme = OS.OpenThemeData(0, getClassId());
@@ -89,10 +90,12 @@ void draw(Theme theme, GC gc, Rectangle bounds) {
 	}
 }
 
+@Override
 char[] getClassId() {
 	return SCROLLBAR;
 }
 
+@Override
 int[] getPartId(int part) {
 	int iPartId = 0, iStateId = 0;
 	int state = this.state[part];
@@ -157,6 +160,7 @@ int[] getPartId(int part) {
 	return new int[]{iPartId, iStateId};	
 }
 
+@Override
 Rectangle getBounds(int part, Rectangle bounds) {
 	if (OS.COMCTL32_MAJOR >= 6 && OS.IsAppThemed ()) {
 		long /*int*/ hTheme = OS.OpenThemeData(0, getClassId());
@@ -185,6 +189,7 @@ Rectangle getBounds(int part, Rectangle bounds) {
 	return super.getBounds(part, bounds);
 }
 
+@Override
 int getSelection(Point position, Rectangle bounds) {
 	if (OS.COMCTL32_MAJOR >= 6 && OS.IsAppThemed ()) {
 		long /*int*/ hTheme = OS.OpenThemeData(0, getClassId());
@@ -203,6 +208,7 @@ int getSelection(Point position, Rectangle bounds) {
 	return 0;
 }
 
+@Override
 int hit(Theme theme, Point position, Rectangle bounds) {
 	if (!(OS.COMCTL32_MAJOR >= 6 && OS.IsAppThemed ())) return -1;
 	long /*int*/ hTheme = OS.OpenThemeData(0, getClassId());

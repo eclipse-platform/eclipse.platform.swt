@@ -151,6 +151,7 @@ public void addSelectionListener(SelectionListener listener) {
 	addListener (SWT.DefaultSelection,typedListener);
 }
 
+@Override
 protected void checkSubclass () {
 	if (!isValidSubclass ()) error (SWT.ERROR_INVALID_SUBCLASS);
 }
@@ -197,6 +198,7 @@ public Point computeSize (int wHint, int hHint) {
 	return new Point (width, height);
 }
 
+@Override
 void destroyWidget () {
 	parent.destroyItem (this);
 	releaseHandle ();
@@ -295,6 +297,7 @@ public CoolBar getParent () {
 	return parent;
 }
 
+@Override
 void releaseHandle () {
 	super.releaseHandle ();
 	parent = null;

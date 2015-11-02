@@ -124,6 +124,7 @@ public void addSelectionListener (SelectionListener listener) {
 	addListener (SWT.DefaultSelection,typedListener);
 }
 
+@Override
 void destroyWidget () {
 	if (parent != null) parent.destroyToolTip (this);
 	releaseHandle ();
@@ -266,6 +267,7 @@ public boolean isVisible () {
 	return getVisible ();
 }
 
+@Override
 void releaseHandle () {
 	super.releaseHandle ();
 	parent = null;
@@ -273,6 +275,7 @@ void releaseHandle () {
 	id = -1;
 }
 
+@Override
 void releaseWidget () {
 	super.releaseWidget ();
 	if (item == null) {

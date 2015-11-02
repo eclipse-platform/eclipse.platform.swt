@@ -485,44 +485,71 @@ private int ContextSensitiveHelp(int fEnterMode) {
 protected void createCOMInterfaces() {
 	
 	iUnknown = new COMObject(new int[]{2, 0, 0}){
+		@Override
 		public long /*int*/ method0(long /*int*/[] args) {return QueryInterface(args[0], args[1]);}
+		@Override
 		public long /*int*/ method1(long /*int*/[] args) {return AddRef();}
+		@Override
 		public long /*int*/ method2(long /*int*/[] args) {return Release();}
 	};
 	
 	iOleClientSite = new COMObject(new int[]{2, 0, 0, 0, 3, 1, 0, 1, 0}){
+		@Override
 		public long /*int*/ method0(long /*int*/[] args) {return QueryInterface(args[0], args[1]);}
+		@Override
 		public long /*int*/ method1(long /*int*/[] args) {return AddRef();}
+		@Override
 		public long /*int*/ method2(long /*int*/[] args) {return Release();}
+		@Override
 		public long /*int*/ method3(long /*int*/[] args) {return SaveObject();}
 		// method4 GetMoniker - not implemented
+		@Override
 		public long /*int*/ method5(long /*int*/[] args) {return GetContainer(args[0]);}
+		@Override
 		public long /*int*/ method6(long /*int*/[] args) {return ShowObject();}
+		@Override
 		public long /*int*/ method7(long /*int*/[] args) {return OnShowWindow((int)/*64*/args[0]);}
 		// method8 RequestNewObjectLayout - not implemented
 	};
 	
 	iAdviseSink = new COMObject(new int[]{2, 0, 0, 2, 2, 1, 0, 0}){
+		@Override
 		public long /*int*/ method0(long /*int*/[] args) {return QueryInterface(args[0], args[1]);}
+		@Override
 		public long /*int*/ method1(long /*int*/[] args) {return AddRef();}
+		@Override
 		public long /*int*/ method2(long /*int*/[] args) {return Release();}
+		@Override
 		public long /*int*/ method3(long /*int*/[] args) {return OnDataChange(args[0], args[1]);}
+		@Override
 		public long /*int*/ method4(long /*int*/[] args) {return OnViewChange((int)/*64*/args[0], (int)/*64*/args[1]);}
 		//method5 OnRename - not implemented
+		@Override
 		public long /*int*/ method6(long /*int*/[] args) {OnSave();return 0;}
+		@Override
 		public long /*int*/ method7(long /*int*/[] args) {return OnClose();}	
 	};
 	
 	iOleInPlaceSite = new COMObject(new int[]{2, 0, 0, 1, 1, 0, 0, 0, 5, C.PTR_SIZEOF == 4 ? 2 : 1, 1, 0, 0, 0, 1}){
+		@Override
 		public long /*int*/ method0(long /*int*/[] args) {return QueryInterface(args[0], args[1]);}
+		@Override
 		public long /*int*/ method1(long /*int*/[] args) {return AddRef();}
+		@Override
 		public long /*int*/ method2(long /*int*/[] args) {return Release();}
+		@Override
 		public long /*int*/ method3(long /*int*/[] args) {return GetWindow(args[0]);}
+		@Override
 		public long /*int*/ method4(long /*int*/[] args) {return ContextSensitiveHelp((int)/*64*/args[0]);}
+		@Override
 		public long /*int*/ method5(long /*int*/[] args) {return CanInPlaceActivate();}
+		@Override
 		public long /*int*/ method6(long /*int*/[] args) {return OnInPlaceActivate();}
+		@Override
 		public long /*int*/ method7(long /*int*/[] args) {return OnUIActivate();}
+		@Override
 		public long /*int*/ method8(long /*int*/[] args) {return GetWindowContext(args[0], args[1], args[2], args[3], args[4]);}
+		@Override
 		public long /*int*/ method9(long /*int*/[] args) {
 			if (args.length == 2) {
 				return Scroll((int)/*64*/args[0], (int)/*64*/args[1]);
@@ -530,17 +557,24 @@ protected void createCOMInterfaces() {
 				return Scroll_64(args[0]);
 			}
 		}
+		@Override
 		public long /*int*/ method10(long /*int*/[] args) {return OnUIDeactivate((int)/*64*/args[0]);}
+		@Override
 		public long /*int*/ method11(long /*int*/[] args) {return OnInPlaceDeactivate();}
 		// method12 DiscardUndoState - not implemented
 		// method13 DeactivateAndUndoChange - not implemented
+		@Override
 		public long /*int*/ method14(long /*int*/[] args) {return OnPosRectChange(args[0]);}
 	};
 	
 	iOleDocumentSite = new COMObject(new int[]{2, 0, 0, 1}){
+		@Override
 		public long /*int*/ method0(long /*int*/[] args) {return QueryInterface(args[0], args[1]);}
+		@Override
 		public long /*int*/ method1(long /*int*/[] args) {return AddRef();}
+		@Override
 		public long /*int*/ method2(long /*int*/[] args) {return Release();}
+		@Override
 		public long /*int*/ method3(long /*int*/[] args) {return ActivateMe(args[0]);}
 	};	
 }
@@ -857,6 +891,7 @@ public boolean isDirty() {
 	if (result == COM.S_FALSE) return false;
 	return true;
 }
+@Override
 public boolean isFocusControl () {
 	checkWidget ();
 	long /*int*/ focusHwnd = OS.GetFocus();

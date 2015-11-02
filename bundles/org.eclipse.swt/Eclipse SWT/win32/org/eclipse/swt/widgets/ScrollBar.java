@@ -180,6 +180,7 @@ void createWidget () {
 	*/
 }
 
+@Override
 void destroyWidget () {
 	long /*int*/ hwnd = hwndScrollBar ();
 	int type = scrollBarType ();
@@ -572,11 +573,13 @@ public boolean isVisible () {
 	return getVisible () && parent.isVisible ();
 }
 
+@Override
 void releaseHandle () {
 	super.releaseHandle ();
 	parent = null;
 }
 
+@Override
 void releaseParent () {
 	super.releaseParent ();
 	if (parent.horizontalBar == this) parent.horizontalBar = null;

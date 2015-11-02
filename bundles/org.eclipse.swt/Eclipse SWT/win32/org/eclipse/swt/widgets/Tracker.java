@@ -644,6 +644,7 @@ public boolean open () {
 	return !cancelled;
 }
 
+@Override
 void releaseWidget () {
 	super.releaseWidget ();
 	parent = null;
@@ -961,6 +962,7 @@ void update () {
 	}
 }
 
+@Override
 LRESULT wmKeyDown (long /*int*/ hwnd, long /*int*/ wParam, long /*int*/ lParam) {
 	LRESULT result = super.wmKeyDown (hwnd, wParam, lParam);
 	if (result != null) return result;
@@ -1095,6 +1097,7 @@ LRESULT wmKeyDown (long /*int*/ hwnd, long /*int*/ wParam, long /*int*/ lParam) 
 	return result;
 }
 
+@Override
 LRESULT wmSysKeyDown (long /*int*/ hwnd, long /*int*/ wParam, long /*int*/ lParam) {
 	LRESULT result = super.wmSysKeyDown (hwnd, wParam, lParam);
 	if (result != null) return result;

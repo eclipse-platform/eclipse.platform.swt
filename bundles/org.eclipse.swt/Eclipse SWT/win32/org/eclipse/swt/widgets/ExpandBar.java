@@ -111,11 +111,13 @@ public void addExpandListener (ExpandListener listener) {
 	addListener (SWT.Collapse, typedListener);
 }
 
+@Override
 long /*int*/ callWindowProc (long /*int*/ hwnd, int msg, long /*int*/ wParam, long /*int*/ lParam) {
 	if (handle == 0) return 0;
 	return OS.DefWindowProc (hwnd, msg, wParam, lParam);
 }
 
+@Override
 protected void checkSubclass () {
 	if (!isValidSubclass ()) error (SWT.ERROR_INVALID_SUBCLASS);
 }
@@ -125,6 +127,7 @@ static int checkStyle (int style) {
 	return style | SWT.NO_BACKGROUND;
 }
 
+@Override
 public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget ();
 	int height = 0, width = 0;
@@ -176,6 +179,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	return new Point (trim.width, trim.height);	
 }
 
+@Override
 void createHandle () {
 	super.createHandle ();
 	state &= ~CANVAS;
@@ -200,6 +204,7 @@ void createItem (ExpandItem item, int style, int index) {
 	layoutItems (index, true);
 }
 
+@Override
 void createWidget () {
 	super.createWidget ();
 	items = new ExpandItem [4];
@@ -208,6 +213,7 @@ void createWidget () {
 	}
 }
 
+@Override
 int defaultBackground() {
 	if (!isAppThemed ()) {
 		return OS.GetSysColor (OS.COLOR_WINDOW);
@@ -237,6 +243,7 @@ void destroyItem (ExpandItem item) {
 	layoutItems (index, true);
 }
 
+@Override
 void drawThemeBackground (long /*int*/ hDC, long /*int*/ hwnd, RECT rect) {
 	RECT rect2 = new RECT ();
 	OS.GetClientRect (handle, rect2);
@@ -292,6 +299,7 @@ void drawWidget (GC gc, RECT clipRect) {
 	}
 }
 
+@Override
 Control findBackgroundControl () {
 	Control control = super.findBackgroundControl ();
 	if (!isAppThemed ()) {
@@ -300,6 +308,7 @@ Control findBackgroundControl () {
 	return control;
 }
 
+@Override
 Control findThemeControl () {	
 	return isAppThemed () ? this : super.findThemeControl ();	
 }
@@ -441,6 +450,7 @@ void layoutItems (int index, boolean setScrollbar) {
 	if (setScrollbar) setScrollbar ();
 }
 
+@Override
 void releaseChildren (boolean destroy) {
 	if (items != null) {
 		for (int i=0; i<items.length; i++) {
@@ -480,6 +490,7 @@ public void removeExpandListener (ExpandListener listener) {
 	eventTable.unhook (SWT.Collapse, listener);	
 }
 
+@Override
 void reskinChildren (int flags) {
 	if (items != null) {
 		for (int i=0; i<items.length; i++) {
@@ -490,6 +501,7 @@ void reskinChildren (int flags) {
 	super.reskinChildren (flags);
 }
 
+@Override
 void setBackgroundPixel (int pixel) {
 	super.setBackgroundPixel (pixel);
 	if (!OS.IsWinCE) {
@@ -498,12 +510,14 @@ void setBackgroundPixel (int pixel) {
 	}
 }
 
+@Override
 public void setFont (Font font) {
 	super.setFont (font);
 	hFont = font != null ? font.handle : 0;
 	layoutItems (0, true);
 }
 
+@Override
 void setForegroundPixel (int pixel) {
 	super.setForegroundPixel (pixel);
 	if (!OS.IsWinCE) {
@@ -567,6 +581,7 @@ public void setSpacing (int spacing) {
 	OS.InvalidateRect (handle, null, true);
 }
 
+@Override
 boolean updateTextDirection(int textDirection) {
 	if (super.updateTextDirection(textDirection)) {
 		for (int i = 0, n = items.length; i < n; i++) {
@@ -625,14 +640,17 @@ void showFocus (boolean up) {
 	}
 }
 
+@Override
 TCHAR windowClass () {
 	return display.windowClass;
 }
 
+@Override
 long /*int*/ windowProc () {
 	return display.windowProc;
 }
 
+@Override
 LRESULT WM_KEYDOWN (long /*int*/ wParam, long /*int*/ lParam) {
 	LRESULT result = super.WM_KEYDOWN (wParam, lParam);
 	if (result != null) return result;
@@ -672,12 +690,14 @@ LRESULT WM_KEYDOWN (long /*int*/ wParam, long /*int*/ lParam) {
 	return result;
 }
 
+@Override
 LRESULT WM_KILLFOCUS (long /*int*/ wParam, long /*int*/ lParam) {
 	LRESULT result = super.WM_KILLFOCUS (wParam, lParam);
 	if (focusItem != null) focusItem.redraw (true);
 	return result;
 }
 
+@Override
 LRESULT WM_LBUTTONDOWN (long /*int*/ wParam, long /*int*/ lParam) {
 	LRESULT result = super.WM_LBUTTONDOWN (wParam, lParam);
 	if (result == LRESULT.ZERO) return result;
@@ -697,6 +717,7 @@ LRESULT WM_LBUTTONDOWN (long /*int*/ wParam, long /*int*/ lParam) {
 	return result;
 }
 
+@Override
 LRESULT WM_LBUTTONUP (long /*int*/ wParam, long /*int*/ lParam) {
 	LRESULT result = super.WM_LBUTTONUP (wParam, lParam);
 	if (result == LRESULT.ZERO) return result;
@@ -714,6 +735,7 @@ LRESULT WM_LBUTTONUP (long /*int*/ wParam, long /*int*/ lParam) {
 	return result;
 }
 
+@Override
 LRESULT WM_MOUSELEAVE (long /*int*/ wParam, long /*int*/ lParam) {
 	LRESULT result = super.WM_MOUSELEAVE (wParam, lParam);
 	if (result != null) return result;
@@ -728,6 +750,7 @@ LRESULT WM_MOUSELEAVE (long /*int*/ wParam, long /*int*/ lParam) {
 	return result;
 }
 
+@Override
 LRESULT WM_MOUSEMOVE (long /*int*/ wParam, long /*int*/ lParam) {
 	LRESULT result = super.WM_MOUSEMOVE (wParam, lParam);
 	if (result == LRESULT.ZERO) return result;
@@ -744,10 +767,12 @@ LRESULT WM_MOUSEMOVE (long /*int*/ wParam, long /*int*/ lParam) {
 	return result;
 }
 
+@Override
 LRESULT WM_MOUSEWHEEL (long /*int*/ wParam, long /*int*/ lParam) {
 	return wmScrollWheel (true, wParam, lParam);
 }
 
+@Override
 LRESULT WM_PAINT (long /*int*/ wParam, long /*int*/ lParam) {
 	if ((state & DISPOSE_SENT) != 0) return LRESULT.ZERO;
 
@@ -779,6 +804,7 @@ LRESULT WM_PAINT (long /*int*/ wParam, long /*int*/ lParam) {
 	return LRESULT.ZERO;
 }
 
+@Override
 LRESULT WM_PRINTCLIENT (long /*int*/ wParam, long /*int*/ lParam) {
 	LRESULT result = super.WM_PRINTCLIENT (wParam, lParam);
 	RECT rect = new RECT ();
@@ -792,6 +818,7 @@ LRESULT WM_PRINTCLIENT (long /*int*/ wParam, long /*int*/ lParam) {
 	return result;
 }
 
+@Override
 LRESULT WM_SETCURSOR (long /*int*/ wParam, long /*int*/ lParam) {
 	LRESULT result = super.WM_SETCURSOR (wParam, lParam);
 	if (result != null) return result;
@@ -809,12 +836,14 @@ LRESULT WM_SETCURSOR (long /*int*/ wParam, long /*int*/ lParam) {
 	return result;
 }
 
+@Override
 LRESULT WM_SETFOCUS (long /*int*/ wParam, long /*int*/ lParam) {
 	LRESULT result = super.WM_SETFOCUS (wParam, lParam);
 	if (focusItem != null) focusItem.redraw (true);
 	return result;
 }
 
+@Override
 LRESULT WM_SIZE (long /*int*/ wParam, long /*int*/ lParam) {
 	LRESULT result = super.WM_SIZE (wParam, lParam);
 	RECT rect = new RECT ();
@@ -829,6 +858,7 @@ LRESULT WM_SIZE (long /*int*/ wParam, long /*int*/ lParam) {
 	return result;
 }
 
+@Override
 LRESULT wmScroll (ScrollBar bar, boolean update, long /*int*/ hwnd, int msg, long /*int*/ wParam, long /*int*/ lParam) {
 	LRESULT result = super.wmScroll (bar, true, hwnd, msg, wParam, lParam);
 	SCROLLINFO info = new SCROLLINFO ();

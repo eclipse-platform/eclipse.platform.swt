@@ -141,6 +141,7 @@ public void addSelectionListener(SelectionListener listener) {
 	addListener (SWT.DefaultSelection,typedListener);
 }
 
+@Override
 long /*int*/ callWindowProc (long /*int*/ hwnd, int msg, long /*int*/ wParam, long /*int*/ lParam) {
 	if (handle == 0) return 0;
 	return OS.CallWindowProc (TrackBarProc, hwnd, msg, wParam, lParam);
@@ -150,6 +151,7 @@ static int checkStyle (int style) {
 	return checkBits (style, SWT.HORIZONTAL, SWT.VERTICAL, 0, 0, 0, 0);
 }
 
+@Override
 public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget ();
 	int border = getBorderWidth ();
@@ -170,6 +172,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	return new Point (width, height);
 }
 
+@Override
 void createHandle () {
 	super.createHandle ();
 	state |= THEME_BACKGROUND | DRAW_BACKGROUND;
@@ -179,6 +182,7 @@ void createHandle () {
 	createdAsRTL = (style & SWT.RIGHT_TO_LEFT) != 0;
 }
 
+@Override
 int defaultForeground () {
 	return OS.GetSysColor (OS.COLOR_BTNFACE);
 }
@@ -287,6 +291,7 @@ public void removeSelectionListener(SelectionListener listener) {
 	eventTable.unhook (SWT.DefaultSelection,listener);	
 }
 
+@Override
 void setBackgroundImage (long /*int*/ hImage) {
 	super.setBackgroundImage (hImage);
 	/*
@@ -300,6 +305,7 @@ void setBackgroundImage (long /*int*/ hImage) {
 	ignoreResize = false;
 }
 
+@Override
 void setBackgroundPixel (int pixel) {
 	super.setBackgroundPixel (pixel);
 	/*
@@ -313,6 +319,7 @@ void setBackgroundPixel (int pixel) {
 	ignoreResize = false;
 }
 
+@Override
 void setBounds (int x, int y, int width, int height, int flags, boolean defer) {
 	/*
 	* Bug in Windows.  If SetWindowPos() is called on a
@@ -443,20 +450,24 @@ public void setSelection (int value) {
 	OS.SendMessage (handle, OS.TBM_SETPOS, 1, value);
 }
 
+@Override
 int widgetStyle () {
 	int bits = super.widgetStyle () | OS.WS_TABSTOP | OS.TBS_BOTH | OS.TBS_AUTOTICKS;
 	if ((style & SWT.HORIZONTAL) != 0) return bits | OS.TBS_HORZ | OS.TBS_DOWNISLEFT;
 	return bits | OS.TBS_VERT;
 }
 
+@Override
 TCHAR windowClass () {
 	return TrackBarClass;
 }
 
+@Override
 long /*int*/ windowProc () {
 	return TrackBarProc;
 }
 
+@Override
 LRESULT WM_KEYDOWN (long /*int*/ wParam, long /*int*/ lParam) {
 	LRESULT result = super.WM_KEYDOWN (wParam, lParam);
 	if (result != null) return result;
@@ -480,6 +491,7 @@ LRESULT WM_KEYDOWN (long /*int*/ wParam, long /*int*/ lParam) {
 	return result;
 }
 
+@Override
 LRESULT WM_MOUSEWHEEL (long /*int*/ wParam, long /*int*/ lParam) {
 	LRESULT result = super.WM_MOUSEWHEEL (wParam, lParam);
 	if (result != null) return result;	
@@ -508,6 +520,7 @@ LRESULT WM_MOUSEWHEEL (long /*int*/ wParam, long /*int*/ lParam) {
 	return new LRESULT (code);
 }
 
+@Override
 LRESULT WM_PAINT (long /*int*/ wParam, long /*int*/ lParam) {
 	if ((state & DISPOSE_SENT) != 0) return LRESULT.ZERO;
 
@@ -542,11 +555,13 @@ LRESULT WM_PAINT (long /*int*/ wParam, long /*int*/ lParam) {
 	return super.WM_PAINT (wParam, lParam);
 }
 
+@Override
 LRESULT WM_SIZE (long /*int*/ wParam, long /*int*/ lParam) {
 	if (ignoreResize) return null;
 	return super.WM_SIZE (wParam, lParam);
 }
 
+@Override
 LRESULT wmScrollChild (long /*int*/ wParam, long /*int*/ lParam) {
 	
 	/* Do nothing when scrolling is ending */

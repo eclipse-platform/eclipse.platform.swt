@@ -64,16 +64,24 @@ void connect(IUnknown objIUnknown) {
 private void createCOMInterfaces() {
 	// register each of the interfaces that this object implements
 	iUnknown = new COMObject(new int[]{2, 0, 0}){
+		@Override
 		public long /*int*/ method0(long /*int*/[] args) {return QueryInterface(args[0], args[1]);}
+		@Override
 		public long /*int*/ method1(long /*int*/[] args) {return AddRef();}
+		@Override
 		public long /*int*/ method2(long /*int*/[] args) {return Release();}
 	};
 	
 	iPropertyNotifySink = new COMObject(new int[]{2, 0, 0, 1, 1}){
+		@Override
 		public long /*int*/ method0(long /*int*/[] args) {return QueryInterface(args[0], args[1]);}
+		@Override
 		public long /*int*/ method1(long /*int*/[] args) {return AddRef();}
+		@Override
 		public long /*int*/ method2(long /*int*/[] args) {return Release();}
+		@Override
 		public long /*int*/ method3(long /*int*/[] args) {return OnChanged((int)/*64*/args[0]);}
+		@Override
 		public long /*int*/ method4(long /*int*/[] args) {return OnRequestEdit((int)/*64*/args[0]);}
 	};
 }

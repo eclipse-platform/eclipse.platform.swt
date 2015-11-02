@@ -1550,6 +1550,7 @@ boolean showMenu (int x, int y, int detail) {
  *
  * @return a string representation of the receiver
  */
+@Override
 public String toString () {
 	String string = "*Disposed*"; //$NON-NLS-1$
 	if (!isDisposed ()) {

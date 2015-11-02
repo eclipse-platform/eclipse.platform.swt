@@ -223,6 +223,7 @@ int AddRef() {
 	return refCount;
 }
 
+@Override
 protected void checkSubclass () {
 	String name = getClass().getName ();
 	String validName = DropTarget.class.getName();
@@ -235,9 +236,13 @@ void createCOMInterfaces() {
 	// register each of the interfaces that this object implements
 	boolean is32 = C.PTR_SIZEOF == 4;
 	iDropTarget = new COMObject(new int[]{2, 0, 0, is32 ? 5 : 4, is32 ? 4 : 3, 0, is32 ? 5 : 4}){
+		@Override
 		public long /*int*/ method0(long /*int*/[] args) {return QueryInterface(args[0], args[1]);}
+		@Override
 		public long /*int*/ method1(long /*int*/[] args) {return AddRef();}
+		@Override
 		public long /*int*/ method2(long /*int*/[] args) {return Release();}
+		@Override
 		public long /*int*/ method3(long /*int*/[] args) {
 			if (args.length == 5) {
 				return DragEnter(args[0], (int)/*64*/args[1], (int)/*64*/args[2], (int)/*64*/args[3], args[4]);
@@ -245,6 +250,7 @@ void createCOMInterfaces() {
 				return DragEnter_64(args[0], (int)/*64*/args[1], args[2], args[3]);
 			}
 		}
+		@Override
 		public long /*int*/ method4(long /*int*/[] args) {
 			if (args.length == 4) {
 				return DragOver((int)/*64*/args[0], (int)/*64*/args[1], (int)/*64*/args[2], args[3]);
@@ -252,7 +258,9 @@ void createCOMInterfaces() {
 				return DragOver_64((int)/*64*/args[0], args[1], args[2]);
 			}
 		}
+		@Override
 		public long /*int*/ method5(long /*int*/[] args) {return DragLeave();}
+		@Override
 		public long /*int*/ method6(long /*int*/[] args) {
 			if (args.length == 5) {
 				return Drop(args[0], (int)/*64*/args[1], (int)/*64*/args[2], (int)/*64*/args[3], args[4]);

@@ -152,6 +152,7 @@ public void addSelectionListener (SelectionListener listener) {
 	addListener (SWT.DefaultSelection, typedListener);
 }
 
+@Override
 long /*int*/ callWindowProc (long /*int*/ hwnd, int msg, long /*int*/ wParam, long /*int*/ lParam) {
 	if (handle == 0) return 0;
 	if (LinkProc != 0) {
@@ -174,6 +175,7 @@ long /*int*/ callWindowProc (long /*int*/ hwnd, int msg, long /*int*/ wParam, lo
 	return OS.DefWindowProc (hwnd, msg, wParam, lParam);
 }
 
+@Override
 public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget ();
 	if (wHint != SWT.DEFAULT && wHint < 0) wHint = 0;
@@ -226,6 +228,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	return new Point (width, height);
 }
 
+@Override
 void createHandle () {
 	super.createHandle ();
 	state |= THEME_BACKGROUND;
@@ -245,6 +248,7 @@ void createHandle () {
 	}
 }
 
+@Override
 void createWidget () {
 	super.createWidget ();
 	text = "";
@@ -287,6 +291,7 @@ void drawWidget (GC gc, RECT rect) {
 	}
 }
 
+@Override
 void enableWidget (boolean enabled) {
 	if (OS.COMCTL32_MAJOR >= 6) {
 		LITEM item = new LITEM ();
@@ -318,16 +323,19 @@ void enableWidget (boolean enabled) {
 void initAccessible () {
 	Accessible accessible = getAccessible ();
 	accessible.addAccessibleListener (new AccessibleAdapter () {
+		@Override
 		public void getName (AccessibleEvent e) {
 			e.result = parse (text);
 		}
 	});
 		
 	accessible.addAccessibleControlListener (new AccessibleControlAdapter () {
+		@Override
 		public void getChildAtPoint (AccessibleControlEvent e) {
 			e.childID = ACC.CHILDID_SELF;
 		}
 		
+		@Override
 		public void getLocation (AccessibleControlEvent e) {
 			Rectangle rect = display.map (getParent (), null, getBounds ());
 			e.x = rect.x;
@@ -336,33 +344,40 @@ void initAccessible () {
 			e.height = rect.height;
 		}
 		
+		@Override
 		public void getChildCount (AccessibleControlEvent e) {
 			e.detail = 0;
 		}
 		
+		@Override
 		public void getRole (AccessibleControlEvent e) {
 			e.detail = ACC.ROLE_LINK;
 		}
 		
+		@Override
 		public void getState (AccessibleControlEvent e) {
 			e.detail = ACC.STATE_FOCUSABLE;
 			if (hasFocus ()) e.detail |= ACC.STATE_FOCUSED;
 		}
 		
+		@Override
 		public void getDefaultAction (AccessibleControlEvent e) {
 			e.result = SWT.getMessage ("SWT_Press"); //$NON-NLS-1$
 		}
 		
+		@Override
 		public void getSelection (AccessibleControlEvent e) {
 			if (hasFocus ()) e.childID = ACC.CHILDID_SELF;
 		}
 		
+		@Override
 		public void getFocus (AccessibleControlEvent e) {
 			if (hasFocus ()) e.childID = ACC.CHILDID_SELF;
 		}
 	});
 }
 
+@Override
 String getNameText () {
 	return getText ();
 }
@@ -412,6 +427,7 @@ public String getText () {
 	return text;
 }
 
+@Override
 boolean mnemonicHit (char key) {
 	if (mnemonics != null) {
 		char uckey = Character.toUpperCase (key);
@@ -451,6 +467,7 @@ boolean mnemonicHit (char key) {
 	return false;
 }
 
+@Override
 boolean mnemonicMatch (char key) {
 	if (mnemonics != null) {
 		char uckey = Character.toUpperCase (key);
@@ -616,6 +633,7 @@ int parseMnemonics (char[] buffer, int start, int end, StringBuffer result) {
 	return mnemonic;
 }
 
+@Override
 void releaseWidget () {
 	super.releaseWidget ();
 	if (layout != null) layout.dispose ();
@@ -742,10 +760,12 @@ public void setText (String string) {
 	}
 }
 
+@Override
 int resolveTextDirection() {
 	return resolveTextDirection(text);
 }
 
+@Override
 boolean updateTextDirection(int textDirection) {
 	if (super.updateTextDirection(textDirection)) {
 		int flags = SWT.RIGHT_TO_LEFT | SWT.LEFT_TO_RIGHT;
@@ -759,19 +779,23 @@ boolean updateTextDirection(int textDirection) {
 	return false;
 }
 
+@Override
 int widgetStyle () {
 	int bits = super.widgetStyle ();
 	return bits | OS.WS_TABSTOP;
 }
 
+@Override
 TCHAR windowClass () {
 	return OS.COMCTL32_MAJOR >= 6 ? LinkClass : display.windowClass;
 }
 
+@Override
 long /*int*/ windowProc () {
 	return LinkProc != 0 ? LinkProc : display.windowProc;
 }
 
+@Override
 LRESULT WM_CHAR (long /*int*/ wParam, long /*int*/ lParam) {
 	LRESULT result = super.WM_CHAR (wParam, lParam);
 	if (result != null) return result;
@@ -818,6 +842,7 @@ LRESULT WM_CHAR (long /*int*/ wParam, long /*int*/ lParam) {
 	return result;
 }
 
+@Override
 LRESULT WM_GETDLGCODE (long /*int*/ wParam, long /*int*/ lParam) {
 	LRESULT result = super.WM_GETDLGCODE (wParam, lParam);
 	if (result != null) return result;
@@ -853,6 +878,7 @@ LRESULT WM_GETDLGCODE (long /*int*/ wParam, long /*int*/ lParam) {
 	return result;
 }
 
+@Override
 LRESULT WM_GETFONT (long /*int*/ wParam, long /*int*/ lParam) {
 	LRESULT result = super.WM_GETFONT (wParam, lParam);
 	if (result != null) return result;
@@ -862,6 +888,7 @@ LRESULT WM_GETFONT (long /*int*/ wParam, long /*int*/ lParam) {
 	return new LRESULT (font);
 }
 
+@Override
 LRESULT WM_KEYDOWN (long /*int*/ wParam, long /*int*/ lParam) {
 	LRESULT result = super.WM_KEYDOWN (wParam, lParam);
 	if (result != null) return result;
@@ -882,12 +909,14 @@ LRESULT WM_KEYDOWN (long /*int*/ wParam, long /*int*/ lParam) {
 	return result;
 }
 
+@Override
 LRESULT WM_KILLFOCUS (long /*int*/ wParam, long /*int*/ lParam) {
 	LRESULT result = super.WM_KILLFOCUS (wParam, lParam);
 	if (OS.COMCTL32_MAJOR < 6) redraw ();
 	return result;
 }
 
+@Override
 LRESULT WM_LBUTTONDOWN (long /*int*/ wParam, long /*int*/ lParam) {
 	LRESULT result = super.WM_LBUTTONDOWN (wParam, lParam);
 	if (result == LRESULT.ZERO) return result;
@@ -926,6 +955,7 @@ LRESULT WM_LBUTTONDOWN (long /*int*/ wParam, long /*int*/ lParam) {
 	return result;
 }
 
+@Override
 LRESULT WM_LBUTTONUP (long /*int*/ wParam, long /*int*/ lParam) {
 	LRESULT result = super.WM_LBUTTONUP (wParam, lParam);
 	if (result == LRESULT.ZERO) return result;
@@ -948,6 +978,7 @@ LRESULT WM_LBUTTONUP (long /*int*/ wParam, long /*int*/ lParam) {
 	return result;
 }
 
+@Override
 LRESULT WM_NCHITTEST (long /*int*/ wParam, long /*int*/ lParam) {
 	LRESULT result = super.WM_NCHITTEST (wParam, lParam);
 	if (result != null) return result;
@@ -962,6 +993,7 @@ LRESULT WM_NCHITTEST (long /*int*/ wParam, long /*int*/ lParam) {
 	return result;
 }
 
+@Override
 LRESULT WM_MOUSEMOVE (long /*int*/ wParam, long /*int*/ lParam) {
 	LRESULT result = super.WM_MOUSEMOVE (wParam, lParam);
 	if (OS.COMCTL32_MAJOR < 6) {
@@ -997,6 +1029,7 @@ LRESULT WM_MOUSEMOVE (long /*int*/ wParam, long /*int*/ lParam) {
 	return result;
 }
 
+@Override
 LRESULT WM_PAINT (long /*int*/ wParam, long /*int*/ lParam) {
 	if ((state & DISPOSE_SENT) != 0) return LRESULT.ZERO;
 	if (OS.COMCTL32_MAJOR >= 6) {
@@ -1021,6 +1054,7 @@ LRESULT WM_PAINT (long /*int*/ wParam, long /*int*/ lParam) {
 	return LRESULT.ZERO;
 }
 
+@Override
 LRESULT WM_PRINTCLIENT (long /*int*/ wParam, long /*int*/ lParam) {
 	LRESULT result = super.WM_PRINTCLIENT (wParam, lParam);
 	if (OS.COMCTL32_MAJOR < 6) {
@@ -1036,12 +1070,14 @@ LRESULT WM_PRINTCLIENT (long /*int*/ wParam, long /*int*/ lParam) {
 	return result;
 }
 
+@Override
 LRESULT WM_SETFOCUS (long /*int*/ wParam, long /*int*/ lParam) {
 	LRESULT result = super.WM_SETFOCUS (wParam, lParam);
 	if (OS.COMCTL32_MAJOR < 6) redraw ();
 	return result;
 }
 
+@Override
 LRESULT WM_SETFONT (long /*int*/ wParam, long /*int*/ lParam) {
 	if (OS.COMCTL32_MAJOR < 6) {
 		layout.setFont (Font.win32_new (display, wParam));
@@ -1050,6 +1086,7 @@ LRESULT WM_SETFONT (long /*int*/ wParam, long /*int*/ lParam) {
 	return super.WM_SETFONT (font = wParam, lParam);
 }
 
+@Override
 LRESULT WM_SIZE (long /*int*/ wParam, long /*int*/ lParam) {
 	LRESULT result = super.WM_SIZE (wParam, lParam);
 	if (OS.COMCTL32_MAJOR < 6) {
@@ -1061,6 +1098,7 @@ LRESULT WM_SIZE (long /*int*/ wParam, long /*int*/ lParam) {
 	return result;
 }
 
+@Override
 LRESULT wmColorChild (long /*int*/ wParam, long /*int*/ lParam) {
 	LRESULT result = super.wmColorChild (wParam, lParam);
 	/*
@@ -1082,6 +1120,7 @@ LRESULT wmColorChild (long /*int*/ wParam, long /*int*/ lParam) {
 	return result;
 }
 
+@Override
 LRESULT wmNotifyChild (NMHDR hdr, long /*int*/ wParam, long /*int*/ lParam) {
 	if (OS.COMCTL32_MAJOR >= 6) {
 		switch (hdr.code) {

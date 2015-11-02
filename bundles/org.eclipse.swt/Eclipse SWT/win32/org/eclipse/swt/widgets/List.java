@@ -184,6 +184,7 @@ public void addSelectionListener(SelectionListener listener) {
 	addListener (SWT.DefaultSelection,typedListener);
 }
 
+@Override
 long /*int*/ callWindowProc (long /*int*/ hwnd, int msg, long /*int*/ wParam, long /*int*/ lParam) {
 	if (handle == 0) return 0;
 	boolean redraw = false;
@@ -213,6 +214,7 @@ static int checkStyle (int style) {
 	return checkBits (style, SWT.SINGLE, SWT.MULTI, 0, 0, 0, 0);
 }
 
+@Override
 public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget ();
 	int width = 0, height = 0;
@@ -268,6 +270,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	return new Point (width, height);
 }
 
+@Override
 int defaultBackground () {
 	return OS.GetSysColor (OS.COLOR_WINDOW);
 }
@@ -1151,6 +1154,7 @@ void setFocusIndex (int index) {
 	OS.SendMessage (handle, OS.LB_SETCARETINDEX, index, 0);
 }
 
+@Override
 public void setFont (Font font) {
 	checkWidget ();
 	super.setFont (font);
@@ -1518,6 +1522,7 @@ public void showSelection () {
 	OS.SendMessage (handle, OS.LB_SETTOPINDEX, newTop, 0);
 }
 
+@Override
 void updateMenuLocation (Event event) {
 	Rectangle clientArea = getClientArea ();
 	int x = clientArea.x, y = clientArea.y;
@@ -1555,6 +1560,7 @@ void updateMenuLocation (Event event) {
 	event.y = pt.y;
 }
 
+@Override
 boolean updateTextDirection (int textDirection) {
 	if (textDirection == AUTO_TEXT_DIRECTION) {
 		/*
@@ -1598,6 +1604,7 @@ boolean updateTextDirection (int textDirection) {
 	return textDirection == AUTO_TEXT_DIRECTION || super.updateTextDirection (textDirection);
 }
 
+@Override
 int widgetStyle () {
 	int bits = super.widgetStyle () | OS.LBS_NOTIFY | OS.LBS_NOINTEGRALHEIGHT;
 	if ((style & SWT.SINGLE) != 0) return bits;
@@ -1608,14 +1615,17 @@ int widgetStyle () {
 	return bits;
 }
 
+@Override
 TCHAR windowClass () {
 	return ListClass;
 }
 
+@Override
 long /*int*/ windowProc () {
 	return ListProc;
 }
 
+@Override
 long /*int*/ windowProc (long /*int*/ hwnd, int msg, long /*int*/ wParam, long /*int*/ lParam) {
 	/* Below code is to support auto text direction. */
 	if (OS.IsUnicode && handle != 0 && lParam != 0 && (state & HAS_AUTO_DIRECTION) != 0) {
@@ -1652,6 +1662,7 @@ long /*int*/ windowProc (long /*int*/ hwnd, int msg, long /*int*/ wParam, long /
 	return super.windowProc (hwnd, msg, wParam, lParam);
 }
 
+@Override
 LRESULT WM_CHAR (long /*int*/ wParam, long /*int*/ lParam) {
 	LRESULT result = super.WM_CHAR (wParam, lParam);
 	if (result != null) return result;
@@ -1680,6 +1691,7 @@ LRESULT WM_CHAR (long /*int*/ wParam, long /*int*/ lParam) {
 	return result;
 }
 	
+@Override
 LRESULT WM_KEYDOWN (long /*int*/ wParam, long /*int*/ lParam) {
 	LRESULT result = super.WM_KEYDOWN (wParam, lParam);
 	if (result != null) return result;
@@ -1784,6 +1796,7 @@ LRESULT WM_KEYDOWN (long /*int*/ wParam, long /*int*/ lParam) {
 	return result;
 }
 
+@Override
 LRESULT WM_SETREDRAW (long /*int*/ wParam, long /*int*/ lParam) {
 	LRESULT result = super.WM_SETREDRAW (wParam, lParam);
 	if (result != null) return result;
@@ -1797,6 +1810,7 @@ LRESULT WM_SETREDRAW (long /*int*/ wParam, long /*int*/ lParam) {
 	return result;
 }
 
+@Override
 LRESULT WM_SIZE (long /*int*/ wParam, long /*int*/ lParam) {
 	/*
 	* Bug in Windows.  If the top index is changed while the
@@ -1825,6 +1839,7 @@ LRESULT WM_SIZE (long /*int*/ wParam, long /*int*/ lParam) {
 	return result;
 }
 
+@Override
 LRESULT wmCommandChild (long /*int*/ wParam, long /*int*/ lParam) {
 	int code = OS.HIWORD (wParam);
 	switch (code) {

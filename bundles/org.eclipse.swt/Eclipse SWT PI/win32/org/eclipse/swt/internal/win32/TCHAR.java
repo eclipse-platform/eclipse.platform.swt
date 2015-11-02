@@ -116,6 +116,7 @@ public int tcharAt (int index) {
 	}
 }
 
+@Override
 public String toString () {
 	return toString (0, length ());
 }

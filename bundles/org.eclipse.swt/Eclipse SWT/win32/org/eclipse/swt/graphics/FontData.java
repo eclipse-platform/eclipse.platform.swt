@@ -292,6 +292,7 @@ public FontData(String name, int height, int style) {
  *
  * @see #hashCode
  */
+@Override
 public boolean equals (Object object) {
 	if (object == this) return true;
 	if (!(object instanceof FontData)) return false;
@@ -459,6 +460,7 @@ public int getStyle() {
  *
  * @see #equals
  */
+@Override
 public int hashCode () {
 	return data.lfCharSet ^ getHeight() << 8 ^ data.lfWidth ^ data.lfEscapement ^
 		data.lfOrientation ^ data.lfWeight ^ data.lfItalic ^ data.lfUnderline ^
@@ -611,6 +613,7 @@ public void setStyle(int style) {
  *
  * @see FontData
  */
+@Override
 public String toString() {
 	StringBuffer buffer = new StringBuffer(128);
 	buffer.append("1|"); //$NON-NLS-1$

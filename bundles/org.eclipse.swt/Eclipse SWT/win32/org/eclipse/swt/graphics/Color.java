@@ -209,6 +209,7 @@ public Color(Device device, RGB rgb, int alpha) {
 	init();
 }
 
+@Override
 void destroy() {
 	/*
 	 * If this is a palette-based device,
@@ -237,6 +238,7 @@ void destroy() {
  *
  * @see #hashCode
  */
+@Override
 public boolean equals (Object object) {
 	if (object == this) return true;
 	if (!(object instanceof Color)) return false;
@@ -339,6 +341,7 @@ public RGBA getRGBA () {
  *
  * @see #equals
  */
+@Override
 public int hashCode () {
 	return handle ^ alpha;
 }
@@ -415,6 +418,7 @@ void init(int red, int green, int blue, int alpha) {
  *
  * @return <code>true</code> when the color is disposed and <code>false</code> otherwise
  */
+@Override
 public boolean isDisposed() {
 	return handle == -1;
 }
@@ -425,6 +429,7 @@ public boolean isDisposed() {
  *
  * @return a string representation of the receiver
  */
+@Override
 public String toString () {
 	if (isDisposed()) return "Color {*DISPOSED*}"; //$NON-NLS-1$
 	return "Color {" + getRed() + ", " + getGreen() + ", " + getBlue() + ", " + getAlpha() + "}"; //$NON-NLS-1$//$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$

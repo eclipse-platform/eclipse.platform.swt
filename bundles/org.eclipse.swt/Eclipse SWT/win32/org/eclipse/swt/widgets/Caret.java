@@ -306,11 +306,13 @@ void resizeIME () {
 	OS.ImmReleaseContext (hwnd, hIMC);
 }
 
+@Override
 void releaseParent () {
 	super.releaseParent ();
 	if (this == parent.getCaret ()) parent.setCaret (null);
 }
 
+@Override
 void releaseWidget () {
 	super.releaseWidget ();
 	parent = null;

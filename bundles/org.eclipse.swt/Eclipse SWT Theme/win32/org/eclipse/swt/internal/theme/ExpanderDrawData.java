@@ -20,6 +20,7 @@ public ExpanderDrawData() {
 	state = new int[1];
 }
 
+@Override
 void draw(Theme theme, GC gc, Rectangle bounds) {
 	if (OS.COMCTL32_MAJOR >= 6 && OS.IsAppThemed ()) {
 		long /*int*/ hTheme = OS.OpenThemeData(0, getClassId());
@@ -37,10 +38,12 @@ void draw(Theme theme, GC gc, Rectangle bounds) {
 	}
 }
 
+@Override
 char[] getClassId() {
 	return TREEVIEW;
 }
 
+@Override
 int[] getPartId(int part) {
 	int iPartId = OS.TVP_GLYPH;
 	int iStateId = OS.GLPS_CLOSED;
@@ -48,6 +51,7 @@ int[] getPartId(int part) {
 	return new int[]{iPartId, iStateId};	
 }
 
+@Override
 int hit(Theme theme, Point position, Rectangle bounds) {
 	if (!(OS.COMCTL32_MAJOR >= 6 && OS.IsAppThemed ())) return DrawData.WIDGET_NOWHERE;
 	if (!bounds.contains(position)) return DrawData.WIDGET_NOWHERE;

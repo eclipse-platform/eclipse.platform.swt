@@ -85,22 +85,39 @@ int AddRef () {
 
 void createCOMInterfaces () {
 	iWebFrameLoadDelegate = new COMObject (new int[] {2, 0, 0, 2, 2, 3, 2, 3, 3, 2, 3, 2, 5, 2, 2, 3, 4}) {
+		@Override
 		public long /*int*/ method0 (long /*int*/[] args) {return QueryInterface (args[0], args[1]);}
+		@Override
 		public long /*int*/ method1 (long /*int*/[] args) {return AddRef ();}
+		@Override
 		public long /*int*/ method2 (long /*int*/[] args) {return Release ();}
+		@Override
 		public long /*int*/ method3 (long /*int*/[] args) {return didStartProvisionalLoadForFrame (args[0], args[1]);}
+		@Override
 		public long /*int*/ method4 (long /*int*/[] args) {return COM.E_NOTIMPL;}
+		@Override
 		public long /*int*/ method5 (long /*int*/[] args) {return didFailProvisionalLoadWithError (args[0], args[1], args[2]);}
+		@Override
 		public long /*int*/ method6 (long /*int*/[] args) {return didCommitLoadForFrame (args[0], args[1]);}
+		@Override
 		public long /*int*/ method7 (long /*int*/[] args) {return didReceiveTitle (args[0], args[1], args[2]);}
+		@Override
 		public long /*int*/ method8 (long /*int*/[] args) {return COM.E_NOTIMPL;}
+		@Override
 		public long /*int*/ method9 (long /*int*/[] args) {return didFinishLoadForFrame (args[0], args[1]);}
+		@Override
 		public long /*int*/ method10 (long /*int*/[] args){return COM.E_NOTIMPL;}
+		@Override
 		public long /*int*/ method11 (long /*int*/[] args){return didChangeLocationWithinPageForFrame (args[0], args[1]);}
+		@Override
 		public long /*int*/ method12 (long /*int*/[] args){return COM.S_OK;}
+		@Override
 		public long /*int*/ method13 (long /*int*/[] args){return COM.E_NOTIMPL;}
+		@Override
 		public long /*int*/ method14 (long /*int*/[] args){return COM.S_OK;}
+		@Override
 		public long /*int*/ method15 (long /*int*/[] args){return COM.S_OK;}
+		@Override
 		public long /*int*/ method16 (long /*int*/[] args){return didClearWindowObject (args[0], args[1], args[2], args[3]);}
 	};
 
@@ -729,6 +746,7 @@ void showCertificate (Shell parent, long /*int*/ certificate) {
 	ok.setLayoutData (layoutData);
 	ok.setText (SWT.getMessage ("SWT_OK")); //$NON-NLS-1$
 	ok.addSelectionListener (new SelectionAdapter() {
+		@Override
 		public void widgetSelected (SelectionEvent e) {
 			dialog.dispose ();
 		}

@@ -107,6 +107,7 @@ public Spinner (Composite parent, int style) {
 	super (parent, checkStyle (style));
 }
 
+@Override
 long /*int*/ callWindowProc (long /*int*/ hwnd, int msg, long /*int*/ wParam, long /*int*/ lParam) {
 	if (handle == 0) return 0;
 	if (hwnd == hwndText) {
@@ -129,14 +130,17 @@ static int checkStyle (int style) {
 	return style & ~(SWT.H_SCROLL | SWT.V_SCROLL);
 }
 
+@Override
 boolean checkHandle (long /*int*/ hwnd) {
 	return hwnd == handle || hwnd == hwndText || hwnd == hwndUpDown;
 }
 
+@Override
 protected void checkSubclass () {
 	if (!isValidSubclass ()) error (SWT.ERROR_INVALID_SUBCLASS);
 }
 
+@Override
 void createHandle () {
 	super.createHandle ();
 	state &= ~(CANVAS | THEME_BACKGROUND);
@@ -280,10 +284,12 @@ void addVerifyListener (VerifyListener listener) {
 	addListener (SWT.Verify, typedListener);
 }
 
+@Override
 long /*int*/ borderHandle () {
 	return hwndText;
 }
 
+@Override
 public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget ();
 	int width = 0, height = 0;
@@ -332,6 +338,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	return new Point (trim.width, trim.height);
 }
 
+@Override
 public Rectangle computeTrim (int x, int y, int width, int height) {
 	checkWidget ();
 	
@@ -397,22 +404,26 @@ public void cut () {
 	OS.SendMessage (hwndText, OS.WM_CUT, 0, 0);
 }
 
+@Override
 int defaultBackground () {
 	return OS.GetSysColor (OS.COLOR_WINDOW);
 }
 
+@Override
 void enableWidget (boolean enabled) {
 	super.enableWidget (enabled);
 	OS.EnableWindow (hwndText, enabled);
 	OS.EnableWindow (hwndUpDown, enabled);
 }
 
+@Override
 void deregister () {
 	super.deregister ();
 	display.removeControl (hwndText);
 	display.removeControl (hwndUpDown);
 }
 
+@Override
 boolean hasFocus () {
 	long /*int*/ hwndFocus = OS.GetFocus ();
 	if (hwndFocus == handle) return true;
@@ -646,12 +657,14 @@ public void paste () {
 	OS.SendMessage (hwndText, OS.WM_PASTE, 0, 0);
 }
 
+@Override
 void register () {
 	super.register ();
 	display.addControl (hwndText, this);	
 	display.addControl (hwndUpDown, this);
 }
 
+@Override
 void releaseHandle () {
 	super.releaseHandle ();
 	hwndText = hwndUpDown = 0;
@@ -730,6 +743,7 @@ void removeVerifyListener (VerifyListener listener) {
 	eventTable.unhook (SWT.Verify, listener);	
 }
 
+@Override
 boolean sendKeyEvent (int type, int msg, long /*int*/ wParam, long /*int*/ lParam, Event event) {
 	if (!super.sendKeyEvent (type, msg, wParam, lParam, event)) {
 		return false;
@@ -813,11 +827,13 @@ boolean sendKeyEvent (int type, int msg, long /*int*/ wParam, long /*int*/ lPara
 	return false;
 }
 
+@Override
 void setBackgroundImage (long /*int*/ hBitmap) {
 	super.setBackgroundImage (hBitmap);
 	OS.InvalidateRect (hwndText, null, true);
 }
 
+@Override
 void setBackgroundPixel (int pixel) {
 	super.setBackgroundPixel (pixel);
 	OS.InvalidateRect (hwndText, null, true);
@@ -857,6 +873,7 @@ public void setDigits (int value) {
 	setSelection (pos, false, true, false);
 }
 
+@Override
 void setForegroundPixel (int pixel) {
 	super.setForegroundPixel (pixel);
 	OS.InvalidateRect (hwndText, null, true);
@@ -1058,6 +1075,7 @@ public void setTextLimit (int limit) {
 	OS.SendMessage (hwndText, OS.EM_SETLIMITTEXT, limit, 0);
 }
 
+@Override
 void setToolTipText (Shell shell, String string) {
 	shell.setToolTipText (hwndText, string);
 	shell.setToolTipText (hwndUpDown, string);
@@ -1100,6 +1118,7 @@ public void setValues (int selection, int minimum, int maximum, int digits, int 
 	setSelection (selection, true, true, false);
 }
 
+@Override
 void subclass () {
 	super.subclass ();
 	long /*int*/ newProc = display.windowProc;
@@ -1107,12 +1126,14 @@ void subclass () {
 	OS.SetWindowLongPtr (hwndUpDown, OS.GWLP_WNDPROC, newProc);
 }
 
+@Override
 void unsubclass () {
 	super.unsubclass ();
 	OS.SetWindowLongPtr (hwndText, OS.GWLP_WNDPROC, EditProc);
 	OS.SetWindowLongPtr (hwndUpDown, OS.GWLP_WNDPROC, UpDownProc);
 }
 
+@Override
 void updateOrientation () {
 	super.updateOrientation ();
 	int bits  = OS.GetWindowLong (hwndText, OS.GWL_EXSTYLE);
@@ -1172,10 +1193,12 @@ String verifyText (String string, int start, int end, Event keyEvent) {
 	return event.text;
 }
 
+@Override
 int widgetExtStyle () {
 	return super.widgetExtStyle () & ~OS.WS_EX_CLIENTEDGE;
 }
 
+@Override
 long /*int*/ windowProc (long /*int*/ hwnd, int msg, long /*int*/ wParam, long /*int*/ lParam) {
 	if (hwnd == hwndText || hwnd == hwndUpDown) {
 		LRESULT result = null;
@@ -1236,22 +1259,26 @@ long /*int*/ windowProc (long /*int*/ hwnd, int msg, long /*int*/ wParam, long /
 	return super.windowProc (hwnd, msg, wParam, lParam);
 }
 
+@Override
 LRESULT WM_ERASEBKGND (long /*int*/ wParam, long /*int*/ lParam) {
 	super.WM_ERASEBKGND (wParam, lParam);
 	drawBackground (wParam);
 	return LRESULT.ONE;
 }
 
+@Override
 LRESULT WM_KILLFOCUS (long /*int*/ wParam, long /*int*/ lParam) {
 	return null;
 }
 
+@Override
 LRESULT WM_SETFOCUS (long /*int*/ wParam, long /*int*/ lParam) {
 	OS.SetFocus (hwndText);
 	OS.SendMessage (hwndText, OS.EM_SETSEL, 0, -1);
 	return null;
 }
 
+@Override
 LRESULT WM_SETFONT (long /*int*/ wParam, long /*int*/ lParam) {
 	LRESULT result = super.WM_SETFONT (wParam, lParam);
 	if (result != null) return result;
@@ -1259,6 +1286,7 @@ LRESULT WM_SETFONT (long /*int*/ wParam, long /*int*/ lParam) {
 	return result;
 }
 
+@Override
 LRESULT WM_SIZE (long /*int*/ wParam, long /*int*/ lParam) {
 	LRESULT result = super.WM_SIZE (wParam, lParam);
 	if (isDisposed ()) return result;
@@ -1272,6 +1300,7 @@ LRESULT WM_SIZE (long /*int*/ wParam, long /*int*/ lParam) {
 	return result;
 }
 
+@Override
 LRESULT wmIMEChar(long /*int*/ hwnd, long /*int*/ wParam, long /*int*/ lParam) {
 	
 	/* Process a DBCS character */
@@ -1306,6 +1335,7 @@ LRESULT wmIMEChar(long /*int*/ hwnd, long /*int*/ wParam, long /*int*/ lParam) {
 	return new LRESULT (result);
 }
 
+@Override
 LRESULT wmChar (long /*int*/ hwnd, long /*int*/ wParam, long /*int*/ lParam) {
 	if (ignoreCharacter) return null;
 	LRESULT result = super.wmChar (hwnd, wParam, lParam);
@@ -1393,6 +1423,7 @@ LRESULT wmClipboard (long /*int*/ hwndText, int msg, long /*int*/ wParam, long /
 	return null;
 }
 
+@Override
 LRESULT wmCommandChild (long /*int*/ wParam, long /*int*/ lParam) {
 	int code = OS.HIWORD (wParam);
 	switch (code) {
@@ -1416,6 +1447,7 @@ LRESULT wmCommandChild (long /*int*/ wParam, long /*int*/ lParam) {
 	return super.wmCommandChild (wParam, lParam);
 }
 
+@Override
 LRESULT wmKeyDown (long /*int*/ hwnd, long /*int*/ wParam, long /*int*/ lParam) {
 	if (ignoreCharacter) return null;
 	LRESULT result = super.wmKeyDown (hwnd, wParam, lParam);
@@ -1461,6 +1493,7 @@ LRESULT wmKeyDown (long /*int*/ hwnd, long /*int*/ wParam, long /*int*/ lParam) 
 	return result;
 }
 
+@Override
 LRESULT wmKillFocus (long /*int*/ hwnd, long /*int*/ wParam, long /*int*/ lParam) {
 	boolean [] parseFail = new boolean [1];
 	int value = getSelectionText (parseFail);
@@ -1475,6 +1508,7 @@ LRESULT wmKillFocus (long /*int*/ hwnd, long /*int*/ wParam, long /*int*/ lParam
 	return super.wmKillFocus (hwnd, wParam, lParam);
 }
 
+@Override
 LRESULT wmNotifyChild (NMHDR hdr, long /*int*/ wParam, long /*int*/ lParam) {
 	switch (hdr.code) {
 		case OS.UDN_DELTAPOS:
@@ -1504,6 +1538,7 @@ LRESULT wmNotifyChild (NMHDR hdr, long /*int*/ wParam, long /*int*/ lParam) {
 	return super.wmNotifyChild (hdr, wParam, lParam);
 }
 
+@Override
 LRESULT wmScrollChild (long /*int*/ wParam, long /*int*/ lParam) {
 	int code = OS.LOWORD (wParam);
 	switch (code) {

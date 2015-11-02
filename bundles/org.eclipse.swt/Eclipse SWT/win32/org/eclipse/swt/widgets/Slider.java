@@ -152,6 +152,7 @@ public void addSelectionListener (SelectionListener listener) {
 	addListener (SWT.DefaultSelection,typedListener);
 }
 
+@Override
 long /*int*/ callWindowProc (long /*int*/ hwnd, int msg, long /*int*/ wParam, long /*int*/ lParam) {
 	if (handle == 0) return 0;
 	/*
@@ -174,6 +175,7 @@ static int checkStyle (int style) {
 	return checkBits (style, SWT.HORIZONTAL, SWT.VERTICAL, 0, 0, 0, 0);
 }
 
+@Override
 public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget ();
 	int border = getBorderWidth ();
@@ -190,6 +192,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	return new Point (width, height);
 }
 
+@Override
 void createWidget () {
 	super.createWidget ();
 	increment = 1;
@@ -208,14 +211,17 @@ void createWidget () {
 	OS.SetScrollInfo (handle, OS.SB_CTL, info, true);
 }
 
+@Override
 int defaultBackground () {
 	return OS.GetSysColor (OS.COLOR_SCROLLBAR);
 }
 
+@Override
 int defaultForeground () {
 	return OS.GetSysColor (OS.COLOR_BTNFACE);
 }
 
+@Override
 void enableWidget (boolean enabled) {
 	super.enableWidget (enabled);
 	if (!OS.IsWinCE) {
@@ -229,6 +235,7 @@ void enableWidget (boolean enabled) {
 	}
 }
 
+@Override
 public boolean getEnabled () {
 	checkWidget ();
 	return (state & DISABLED) == 0;
@@ -370,6 +377,7 @@ public void removeSelectionListener (SelectionListener listener) {
 	eventTable.unhook (SWT.DefaultSelection,listener);	
 }
 
+@Override
 void setBounds (int x, int y, int width, int height, int flags) {
 	super.setBounds (x, y, width, height, flags);
 	/*
@@ -597,6 +605,7 @@ public void setValues (int selection, int minimum, int maximum, int thumb, int i
 	SetScrollInfo (handle, OS.SB_CTL, info, true);
 }
 
+@Override
 int widgetExtStyle () {
 	/*
 	* Bug in Windows.  If a scroll bar control is given a border,
@@ -609,6 +618,7 @@ int widgetExtStyle () {
 	return bits;
 }
 
+@Override
 int widgetStyle () {
 	int bits = super.widgetStyle () | OS.WS_TABSTOP;
 	/*
@@ -621,14 +631,17 @@ int widgetStyle () {
 	return bits | OS.SBS_VERT;
 }
 
+@Override
 TCHAR windowClass () {
 	return ScrollBarClass;
 }
 
+@Override
 long /*int*/ windowProc () {
 	return ScrollBarProc;
 }
 
+@Override
 LRESULT WM_KEYDOWN (long /*int*/ wParam, long /*int*/ lParam) {
  	LRESULT result = super.WM_KEYDOWN (wParam, lParam);
  	if (result != null) return result;
@@ -655,6 +668,7 @@ LRESULT WM_KEYDOWN (long /*int*/ wParam, long /*int*/ lParam) {
  	return result;
 }
  
+@Override
 LRESULT WM_LBUTTONDBLCLK (long /*int*/ wParam, long /*int*/ lParam) {
 	/*
 	* Feature in Windows.  Windows uses the WS_TABSTOP
@@ -688,6 +702,7 @@ LRESULT WM_LBUTTONDBLCLK (long /*int*/ wParam, long /*int*/ lParam) {
 	return result;
 }
 
+@Override
 LRESULT WM_LBUTTONDOWN (long /*int*/ wParam, long /*int*/ lParam) {
 	/*
 	* Feature in Windows.  Windows uses the WS_TABSTOP
@@ -721,11 +736,13 @@ LRESULT WM_LBUTTONDOWN (long /*int*/ wParam, long /*int*/ lParam) {
 	return result;
 }
 
+@Override
 LRESULT WM_SETFOCUS (long /*int*/ wParam, long /*int*/ lParam) {
 	if (ignoreFocus) return null;
 	return super.WM_SETFOCUS (wParam, lParam);
 }
 
+@Override
 LRESULT wmScrollChild (long /*int*/ wParam, long /*int*/ lParam) {
 
 	/* Do nothing when scrolling is ending */

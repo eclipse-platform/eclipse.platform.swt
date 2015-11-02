@@ -19,6 +19,7 @@ public ComboDrawData() {
 	state = new int[2];
 }
 
+@Override
 void draw(Theme theme, GC gc, Rectangle bounds) {
 	if (OS.COMCTL32_MAJOR >= 6 && OS.IsAppThemed ()) {
 		long /*int*/ hTheme = OS.OpenThemeData(0, EDIT);
@@ -54,10 +55,12 @@ void draw(Theme theme, GC gc, Rectangle bounds) {
 	}
 }
 
+@Override
 char[] getClassId() {
 	return COMBOBOX;
 }
 
+@Override
 int[] getPartId(int part) {
 	int state = this.state[part];
 	int iPartId = 0, iStateId = 0;
@@ -78,6 +81,7 @@ int[] getPartId(int part) {
 	return new int[]{iPartId, iStateId};	
 }
 
+@Override
 int hit(Theme theme, Point position, Rectangle bounds) {
 	if (!(OS.COMCTL32_MAJOR >= 6 && OS.IsAppThemed ())) return DrawData.WIDGET_NOWHERE;
 	if (!bounds.contains(position)) return DrawData.WIDGET_NOWHERE;

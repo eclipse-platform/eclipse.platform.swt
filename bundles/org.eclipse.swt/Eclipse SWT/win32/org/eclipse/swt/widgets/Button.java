@@ -340,6 +340,7 @@ public void addSelectionListener (SelectionListener listener) {
 	addListener (SWT.DefaultSelection,typedListener);
 }
 
+@Override
 long /*int*/ callWindowProc (long /*int*/ hwnd, int msg, long /*int*/ wParam, long /*int*/ lParam) {
 	if (handle == 0) return 0;
 	return OS.CallWindowProc (ButtonProc, hwnd, msg, wParam, lParam);
@@ -396,6 +397,7 @@ int computeLeftMargin () {
 	return margin;
 }
 
+@Override
 public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget ();
 	int width = 0, height = 0, border = getBorderWidth ();
@@ -500,6 +502,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	return new Point (width, height);
 }
 
+@Override
 void createHandle () {
 	/*
 	* Feature in Windows.  When a button is created,
@@ -565,6 +568,7 @@ void createHandle () {
 	}
 }
 
+@Override
 int defaultBackground () {
 	if ((style & (SWT.PUSH | SWT.TOGGLE)) != 0) {
 		return OS.GetSysColor (OS.COLOR_BTNFACE);
@@ -572,10 +576,12 @@ int defaultBackground () {
 	return super.defaultBackground ();
 }
 
+@Override
 int defaultForeground () {
 	return OS.GetSysColor (OS.COLOR_BTNTEXT);
 }
 
+@Override
 void enableWidget (boolean enabled) {
 	super.enableWidget (enabled);
 	/*
@@ -699,6 +705,7 @@ public Image getImage () {
 	return message;
 }
 
+@Override
 String getNameText () {
 	return getText ();
 }
@@ -744,11 +751,13 @@ public String getText () {
 	return text;
 }
 
+@Override
 boolean isTabItem () {
 	if ((style & SWT.PUSH) != 0) return isTabGroup ();
 	return super.isTabItem ();
 }
 
+@Override
 boolean mnemonicHit (char ch) {
 	if (!setFocus ()) return false;
 	/*
@@ -761,12 +770,14 @@ boolean mnemonicHit (char ch) {
 	return true;
 }
 
+@Override
 boolean mnemonicMatch (char key) {
 	char mnemonic = findMnemonic (getText ());
 	if (mnemonic == '\0') return false;
 	return Character.toUpperCase (key) == Character.toUpperCase (mnemonic);
 }
 
+@Override
 void releaseWidget () {
 	super.releaseWidget ();
 	if (imageList != null) imageList.dispose ();
@@ -804,6 +815,7 @@ public void removeSelectionListener (SelectionListener listener) {
 	eventTable.unhook (SWT.DefaultSelection,listener);	
 }
 
+@Override
 int resolveTextDirection() {
 	return (style & SWT.ARROW) != 0 ? SWT.NONE : resolveTextDirection(text);
 }
@@ -904,6 +916,7 @@ void setDefault (boolean value) {
 	OS.SendMessage (handle, OS.BM_SETSTYLE, bits, 1);
 }
 
+@Override
 public boolean setFocus () {
 	checkWidget ();
 	/*
@@ -1006,11 +1019,13 @@ public void setGrayed (boolean grayed) {
 	}
 }
 
+@Override
 boolean setRadioFocus (boolean tabbing) {
 	if ((style & SWT.RADIO) == 0 || !getSelection ()) return false;
 	return tabbing ? setTabItemFocus () : setFocus ();
 }
 
+@Override
 boolean setRadioSelection (boolean value) {
 	if ((style & SWT.RADIO) == 0) return false;
 	if (getSelection () != value) {
@@ -1020,6 +1035,7 @@ boolean setRadioSelection (boolean value) {
 	return true;
 }
 
+@Override
 boolean setSavedFocus () {
 	/*
 	* Feature in Windows.  When a radio button gets focus, 
@@ -1108,6 +1124,7 @@ public void setText (String string) {
 	_setText (string);
 }
 
+@Override
 boolean updateTextDirection(int textDirection) {
 	if (super.updateTextDirection(textDirection)) {
 // TODO: Keep for now, to follow up
@@ -1148,6 +1165,7 @@ void updateImageList () {
 	}	
 }
 
+@Override
 void updateOrientation () {
 	super.updateOrientation ();
 	updateImageList ();
@@ -1182,6 +1200,7 @@ void updateSelection (int flags) {
 	}
 }
 
+@Override
 int widgetStyle () {
 	int bits = super.widgetStyle ();
 	if ((style & SWT.FLAT) != 0) bits |= OS.BS_FLAT;
@@ -1198,15 +1217,18 @@ int widgetStyle () {
 	return bits | OS.BS_PUSHBUTTON | OS.WS_TABSTOP;
 }
 
+@Override
 TCHAR windowClass () {
 	return ButtonClass;
 }
 
+@Override
 long /*int*/ windowProc () {
 	return ButtonProc;
 }
 
 
+@Override
 LRESULT WM_ERASEBKGND (long /*int*/ wParam, long /*int*/ lParam) {
 	LRESULT result = super.WM_ERASEBKGND (wParam, lParam);
 	if (result != null) return result;
@@ -1229,6 +1251,7 @@ LRESULT WM_ERASEBKGND (long /*int*/ wParam, long /*int*/ lParam) {
 	return result;
 }
 
+@Override
 LRESULT WM_GETDLGCODE (long /*int*/ wParam, long /*int*/ lParam) {
 	LRESULT result = super.WM_GETDLGCODE (wParam, lParam);
 	if (result != null) return result;
@@ -1238,6 +1261,7 @@ LRESULT WM_GETDLGCODE (long /*int*/ wParam, long /*int*/ lParam) {
 	return result;
 }
 
+@Override
 LRESULT WM_GETOBJECT (long /*int*/ wParam, long /*int*/ lParam) {
 	/*
 	* Ensure that there is an accessible object created for this
@@ -1250,6 +1274,7 @@ LRESULT WM_GETOBJECT (long /*int*/ wParam, long /*int*/ lParam) {
 	return super.WM_GETOBJECT (wParam, lParam);
 }
 
+@Override
 LRESULT WM_KILLFOCUS (long /*int*/ wParam, long /*int*/ lParam) {
 	LRESULT result = super.WM_KILLFOCUS (wParam, lParam);
 	if ((style & SWT.PUSH) != 0 && getDefault ()) {
@@ -1258,16 +1283,19 @@ LRESULT WM_KILLFOCUS (long /*int*/ wParam, long /*int*/ lParam) {
 	return result;
 }
 
+@Override
 LRESULT WM_LBUTTONDOWN (long /*int*/ wParam, long /*int*/ lParam) {
 	if (ignoreMouse) return null;
 	return super.WM_LBUTTONDOWN (wParam, lParam);
 }
 
+@Override
 LRESULT WM_LBUTTONUP (long /*int*/ wParam, long /*int*/ lParam) {
 	if (ignoreMouse) return null;
 	return super.WM_LBUTTONUP (wParam, lParam);
 }
 
+@Override
 LRESULT WM_SETFOCUS (long /*int*/ wParam, long /*int*/ lParam) {
 	/*
 	* Feature in Windows. When Windows sets focus to
@@ -1289,6 +1317,7 @@ LRESULT WM_SETFOCUS (long /*int*/ wParam, long /*int*/ lParam) {
 	return result;
 }
 
+@Override
 LRESULT WM_SIZE (long /*int*/ wParam, long /*int*/ lParam) {
 	LRESULT result = super.WM_SIZE (wParam, lParam);
 	if (result != null) return result;
@@ -1307,6 +1336,7 @@ LRESULT WM_SIZE (long /*int*/ wParam, long /*int*/ lParam) {
 	return result;
 }
 
+@Override
 LRESULT WM_SYSCOLORCHANGE (long /*int*/ wParam, long /*int*/ lParam) {
 	LRESULT result = super.WM_SYSCOLORCHANGE (wParam, lParam);
 	if (result != null) return result;
@@ -1314,6 +1344,7 @@ LRESULT WM_SYSCOLORCHANGE (long /*int*/ wParam, long /*int*/ lParam) {
 	return result;
 }
 
+@Override
 LRESULT WM_UPDATEUISTATE (long /*int*/ wParam, long /*int*/ lParam) {
 	LRESULT result = super.WM_UPDATEUISTATE (wParam, lParam);
 	if (result != null) return result;
@@ -1359,6 +1390,7 @@ LRESULT WM_UPDATEUISTATE (long /*int*/ wParam, long /*int*/ lParam) {
 	return result;
 }
 
+@Override
 LRESULT wmCommandChild (long /*int*/ wParam, long /*int*/ lParam) {
 	int code = OS.HIWORD (wParam);
 	switch (code) {
@@ -1380,6 +1412,7 @@ LRESULT wmCommandChild (long /*int*/ wParam, long /*int*/ lParam) {
 	return super.wmCommandChild (wParam, lParam);
 }
 
+@Override
 LRESULT wmColorChild (long /*int*/ wParam, long /*int*/ lParam) {
 	/*
 	* Bug in Windows.  For some reason, the HBRUSH that
@@ -1401,6 +1434,7 @@ LRESULT wmColorChild (long /*int*/ wParam, long /*int*/ lParam) {
 	return result;
 }
 
+@Override
 LRESULT wmDrawChild (long /*int*/ wParam, long /*int*/ lParam) {
 	if ((style & SWT.ARROW) == 0) return super.wmDrawChild (wParam, lParam);
 	DRAWITEMSTRUCT struct = new DRAWITEMSTRUCT ();

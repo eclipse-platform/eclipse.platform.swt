@@ -60,6 +60,7 @@ public static HTMLTransfer getInstance () {
  * 
  * @see Transfer#nativeToJava
  */
+@Override
 public void javaToNative (Object object, TransferData transferData){
 	if (!checkHTML(object) || !isSupportedType(transferData)) {
 		DND.error(DND.ERROR_INVALID_DATA);
@@ -127,6 +128,7 @@ public void javaToNative (Object object, TransferData transferData){
  * 
  * @see Transfer#javaToNative
  */
+@Override
 public Object nativeToJava(TransferData transferData){
 	if (!isSupportedType(transferData) || transferData.pIDataObject == 0) return null;
 	IDataObject data = new IDataObject(transferData.pIDataObject);
@@ -195,15 +197,18 @@ public Object nativeToJava(TransferData transferData){
 		OS.GlobalFree(hMem);
 	}
 }
+@Override
 protected int[] getTypeIds(){
 	return new int[] {HTML_FORMATID};
 }
+@Override
 protected String[] getTypeNames(){
 	return new String[] {HTML_FORMAT}; 
 }
 boolean checkHTML(Object object) {
 	return (object != null && object instanceof String && ((String)object).length() > 0);
 }
+@Override
 protected boolean validate(Object object) {
 	return checkHTML(object);
 }

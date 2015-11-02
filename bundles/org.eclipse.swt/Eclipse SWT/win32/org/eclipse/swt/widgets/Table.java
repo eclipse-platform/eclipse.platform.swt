@@ -143,6 +143,7 @@ public Table (Composite parent, int style) {
 	super (parent, checkStyle (style));
 }
 
+@Override
 void _addListener (int eventType, Listener listener) {
 	super._addListener (eventType, listener);
 	switch (eventType) {
@@ -440,6 +441,7 @@ public void addSelectionListener (SelectionListener listener) {
 	addListener (SWT.DefaultSelection,typedListener);
 }
 
+@Override
 long /*int*/ callWindowProc (long /*int*/ hwnd, int msg, long /*int*/ wParam, long /*int*/ lParam) {
 	return callWindowProc (hwnd, msg, wParam, lParam, false);
 }
@@ -1158,6 +1160,7 @@ LRESULT CDDS_SUBITEMPREPAINT (NMLVCUSTOMDRAW nmcd, long /*int*/ wParam, long /*i
 	return new LRESULT (code);
 }
 
+@Override
 void checkBuffered () {
 	super.checkBuffered ();
 	if (OS.COMCTL32_MAJOR >= 6) style |= SWT.DOUBLE_BUFFERED;
@@ -1190,11 +1193,13 @@ boolean checkData (TableItem item, int index, boolean redraw) {
 	return true;
 }
 
+@Override
 boolean checkHandle (long /*int*/ hwnd) {
 	if (hwnd == handle) return true;
 	return hwnd == OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
 }
 
+@Override
 protected void checkSubclass () {
 	if (!isValidSubclass ()) error (SWT.ERROR_INVALID_SUBCLASS);
 }
@@ -1458,6 +1463,7 @@ public void clearAll () {
 	}
 }
 
+@Override
 public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget ();
 	if (fixScrollWidth) setScrollWidth (null, true);
@@ -1519,6 +1525,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	return new Point (width, height);
 }
 
+@Override
 void createHandle () {
 	super.createHandle ();
 	state &= ~(CANVAS | THEME_BACKGROUND);
@@ -1862,6 +1869,7 @@ void createItem (TableItem item, int index) {
 	if (count == 0) setScrollWidth (item, false);
 }
 
+@Override
 void createWidget () {
 	super.createWidget ();
 	itemHeight = hotIndex = -1;
@@ -1869,10 +1877,12 @@ void createWidget () {
 	columns = new TableColumn [4];
 }
 
+@Override
 int defaultBackground () {
 	return OS.GetSysColor (OS.COLOR_WINDOW);
 }
 
+@Override
 void deregister () {
 	super.deregister ();
 	long /*int*/ hwndHeader = OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
@@ -3073,12 +3083,14 @@ public boolean isSelected (int index) {
 	return (result != 0) && ((lvItem.state & OS.LVIS_SELECTED) != 0);
 }
 
+@Override
 void register () {
 	super.register ();
 	long /*int*/ hwndHeader = OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
 	if (hwndHeader != 0) display.addControl (hwndHeader, this);
 }
 
+@Override
 void releaseChildren (boolean destroy) {
 	if (_hasItems ()) {
 		int itemCount = (int)/*64*/OS.SendMessage (handle, OS.LVM_GETITEMCOUNT, 0, 0);
@@ -3132,6 +3144,7 @@ void releaseChildren (boolean destroy) {
 	super.releaseChildren (destroy);
 }
 	
+@Override
 void releaseWidget () {
 	super.releaseWidget ();
 	customDraw = false;
@@ -3412,6 +3425,7 @@ public void select (int [] indices) {
 	}
 }
 
+@Override
 void reskinChildren (int flags) {
 	if (_hasItems ()) {
 		int itemCount = (int)/*64*/OS.SendMessage (handle, OS.LVM_GETITEMCOUNT, 0, 0);
@@ -4118,6 +4132,7 @@ Event sendPaintItemEvent (TableItem item, NMTTCUSTOMDRAW nmcd, int column, RECT 
 	return event;
 }
 
+@Override
 void setBackgroundImage (long /*int*/ hBitmap) {
 	super.setBackgroundImage (hBitmap);
 	if (hBitmap != 0) {
@@ -4129,6 +4144,7 @@ void setBackgroundImage (long /*int*/ hBitmap) {
 	}
 }
 
+@Override
 void setBackgroundPixel (int newPixel) {
 	int oldPixel = (int)/*64*/OS.SendMessage (handle, OS.LVM_GETBKCOLOR, 0, 0);
 	if (oldPixel != OS.CLR_NONE) {
@@ -4233,6 +4249,7 @@ void setBackgroundTransparent (boolean transparent) {
 	}
 }
 
+@Override
 void setBounds (int x, int y, int width, int height, int flags, boolean defer) {
 	/*
 	* Bug in Windows.  If the table column widths are adjusted
@@ -4526,6 +4543,7 @@ void setFocusIndex (int index) {
 	OS.SendMessage (handle, OS.LVM_SETSELECTIONMARK, 0, index);
 }
 
+@Override
 public void setFont (Font font) {
 	checkWidget ();
 	/*
@@ -4566,6 +4584,7 @@ public void setFont (Font font) {
 	OS.InvalidateRect (hwndHeader, null, true);
 }
 
+@Override
 void setForegroundPixel (int pixel) {
 	/*
 	* The Windows table control uses CLR_DEFAULT to indicate
@@ -4794,6 +4813,7 @@ public void setLinesVisible (boolean show) {
 	}
 }
 
+@Override
 public void setRedraw (boolean redraw) {
 	checkWidget ();
 	/*
@@ -5561,6 +5581,7 @@ public void showSelection () {
 //	redraw ();
 }
 
+@Override
 void subclass () {
 	super.subclass ();
 	if (HeaderProc != 0) {
@@ -5592,6 +5613,7 @@ RECT toolTipRect (RECT rect) {
 	return toolRect;
 }
 
+@Override
 String toolTipText (NMTTDISPINFO hdr) {
 	long /*int*/ hwndToolTip = OS.SendMessage (handle, OS.LVM_GETTOOLTIPS, 0, 0);
 	if (hwndToolTip == hdr.hwndFrom && toolTipText != null) return ""; //$NON-NLS-1$
@@ -5604,6 +5626,7 @@ String toolTipText (NMTTDISPINFO hdr) {
 	return super.toolTipText (hdr);
 }
 
+@Override
 void unsubclass () {
 	super.unsubclass ();
 	if (HeaderProc != 0) {
@@ -5612,6 +5635,7 @@ void unsubclass () {
 	}
 }
 
+@Override
 void update (boolean all) {
 //	checkWidget ();
 	/*
@@ -5661,6 +5685,7 @@ void updateHeaderToolTips () {
 	}
 }
 
+@Override
 void updateImages () {
 	if (sortColumn != null && !sortColumn.isDisposed ()) {
 		if (OS.COMCTL32_MAJOR < 6) {
@@ -5674,6 +5699,7 @@ void updateImages () {
 	}
 }
 
+@Override
 void updateMenuLocation (Event event) {
 	Rectangle clientArea = getClientArea ();
 	int x = clientArea.x, y = clientArea.y;
@@ -5704,6 +5730,7 @@ void updateMoveable () {
 	OS.SendMessage (handle, OS.LVM_SETEXTENDEDLISTVIEWSTYLE, OS.LVS_EX_HEADERDRAGDROP, newBits);
 }
 
+@Override
 void updateOrientation () {
 	super.updateOrientation ();
 	long /*int*/ hwndHeader = OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
@@ -5786,6 +5813,7 @@ void updateOrientation () {
 	}
 }
 
+@Override
 boolean updateTextDirection(int textDirection) {
 	if (super.updateTextDirection(textDirection)) {
 		if (textDirection == AUTO_TEXT_DIRECTION || (state & HAS_AUTO_DIRECTION) != 0) {
@@ -5801,6 +5829,7 @@ boolean updateTextDirection(int textDirection) {
 	return false;
 }
 
+@Override
 int widgetStyle () {
 	int bits = super.widgetStyle () | OS.LVS_SHAREIMAGELISTS;
 	if ((style & SWT.HIDE_SELECTION) == 0) bits |= OS.LVS_SHOWSELALWAYS;
@@ -5816,14 +5845,17 @@ int widgetStyle () {
 	return bits;
 }
 
+@Override
 TCHAR windowClass () {
 	return TableClass;
 }
 
+@Override
 long /*int*/ windowProc () {
 	return TableProc;
 }
 
+@Override
 long /*int*/ windowProc (long /*int*/ hwnd, int msg, long /*int*/ wParam, long /*int*/ lParam) {
 	if (handle == 0) return 0;
 	if (hwnd != handle) {
@@ -5994,6 +6026,7 @@ long /*int*/ windowProc (long /*int*/ hwnd, int msg, long /*int*/ wParam, long /
 	return super.windowProc (hwnd, msg, wParam, lParam);
 }
 
+@Override
 LRESULT WM_CHAR (long /*int*/ wParam, long /*int*/ lParam) {
 	LRESULT result = super.WM_CHAR (wParam, lParam);
 	if (result != null) return result;
@@ -6036,6 +6069,7 @@ LRESULT WM_CHAR (long /*int*/ wParam, long /*int*/ lParam) {
 	return result;
 }
 
+@Override
 LRESULT WM_CONTEXTMENU (long /*int*/ wParam, long /*int*/ lParam) {
 	/*
 	* Feature in Windows.  For some reason, when the right
@@ -6053,6 +6087,7 @@ LRESULT WM_CONTEXTMENU (long /*int*/ wParam, long /*int*/ lParam) {
 	return super.WM_CONTEXTMENU (wParam, lParam);
 }
 
+@Override
 LRESULT WM_ERASEBKGND (long /*int*/ wParam, long /*int*/ lParam) {
 	LRESULT result = super.WM_ERASEBKGND (wParam, lParam);
 	if (findImageControl () != null) return LRESULT.ONE;
@@ -6065,6 +6100,7 @@ LRESULT WM_ERASEBKGND (long /*int*/ wParam, long /*int*/ lParam) {
 	return result;
 }
 
+@Override
 LRESULT WM_GETOBJECT (long /*int*/ wParam, long /*int*/ lParam) {
 	/*
 	* Ensure that there is an accessible object created for this
@@ -6077,6 +6113,7 @@ LRESULT WM_GETOBJECT (long /*int*/ wParam, long /*int*/ lParam) {
 	return super.WM_GETOBJECT (wParam, lParam);
 }
 
+@Override
 LRESULT WM_KEYDOWN (long /*int*/ wParam, long /*int*/ lParam) {
 	LRESULT result = super.WM_KEYDOWN (wParam, lParam);
 	if (result != null) return result;
@@ -6145,6 +6182,7 @@ LRESULT WM_KEYDOWN (long /*int*/ wParam, long /*int*/ lParam) {
 	return result;
 }
 
+@Override
 LRESULT WM_KILLFOCUS (long /*int*/ wParam, long /*int*/ lParam) {
 	LRESULT result = super.WM_KILLFOCUS (wParam, lParam);
 	/*
@@ -6159,6 +6197,7 @@ LRESULT WM_KILLFOCUS (long /*int*/ wParam, long /*int*/ lParam) {
 	return result;
 }
 
+@Override
 LRESULT WM_LBUTTONDBLCLK (long /*int*/ wParam, long /*int*/ lParam) {
 
 	/*
@@ -6209,6 +6248,7 @@ LRESULT WM_LBUTTONDBLCLK (long /*int*/ wParam, long /*int*/ lParam) {
 	return LRESULT.ZERO;
 }
 
+@Override
 LRESULT WM_LBUTTONDOWN (long /*int*/ wParam, long /*int*/ lParam) {
 	/*
 	* Feature in Windows.  For some reason, capturing
@@ -6247,6 +6287,7 @@ LRESULT WM_LBUTTONDOWN (long /*int*/ wParam, long /*int*/ lParam) {
 	return result;
 }
 
+@Override
 LRESULT WM_MOUSEHOVER (long /*int*/ wParam, long /*int*/ lParam) {
 	/*
 	* Feature in Windows.  Despite the fact that hot
@@ -6262,6 +6303,7 @@ LRESULT WM_MOUSEHOVER (long /*int*/ wParam, long /*int*/ lParam) {
 	return LRESULT.ZERO;
 }
 
+@Override
 LRESULT WM_PAINT (long /*int*/ wParam, long /*int*/ lParam) {
 	if ((state & DISPOSE_SENT) != 0) return LRESULT.ZERO;
 
@@ -6329,6 +6371,7 @@ LRESULT WM_PAINT (long /*int*/ wParam, long /*int*/ lParam) {
 	return super.WM_PAINT (wParam, lParam);
 }
 
+@Override
 LRESULT WM_RBUTTONDBLCLK (long /*int*/ wParam, long /*int*/ lParam) {
 	/*
 	* Feature in Windows.  When the user selects outside of
@@ -6353,6 +6396,7 @@ LRESULT WM_RBUTTONDBLCLK (long /*int*/ wParam, long /*int*/ lParam) {
 	return LRESULT.ZERO;
 }
 
+@Override
 LRESULT WM_RBUTTONDOWN (long /*int*/ wParam, long /*int*/ lParam) {
 	/*
 	* Feature in Windows.  For some reason, capturing
@@ -6364,6 +6408,7 @@ LRESULT WM_RBUTTONDOWN (long /*int*/ wParam, long /*int*/ lParam) {
 	return sendMouseDownEvent (SWT.MouseDown, 3, OS.WM_RBUTTONDOWN, wParam, lParam);
 }
 
+@Override
 LRESULT WM_SETFOCUS (long /*int*/ wParam, long /*int*/ lParam) {
 	LRESULT result = super.WM_SETFOCUS (wParam, lParam);
 	/*
@@ -6399,6 +6444,7 @@ LRESULT WM_SETFOCUS (long /*int*/ wParam, long /*int*/ lParam) {
 	return result;
 }
 
+@Override
 LRESULT WM_SETFONT (long /*int*/ wParam, long /*int*/ lParam) {
 	LRESULT result = super.WM_SETFONT (wParam, lParam);
 	if (result != null) return result;
@@ -6423,6 +6469,7 @@ LRESULT WM_SETFONT (long /*int*/ wParam, long /*int*/ lParam) {
 	return result;
 }
 
+@Override
 LRESULT WM_SETREDRAW (long /*int*/ wParam, long /*int*/ lParam) {
 	LRESULT result = super.WM_SETREDRAW (wParam, lParam);
 	if (result != null) return result;
@@ -6455,6 +6502,7 @@ LRESULT WM_SETREDRAW (long /*int*/ wParam, long /*int*/ lParam) {
 	return code == 0 ? LRESULT.ZERO : new LRESULT (code);
 }
 
+@Override
 LRESULT WM_SIZE (long /*int*/ wParam, long /*int*/ lParam) {
 	if (ignoreResize) return null;
 	if (hooks (SWT.EraseItem) || hooks (SWT.PaintItem)) {
@@ -6467,6 +6515,7 @@ LRESULT WM_SIZE (long /*int*/ wParam, long /*int*/ lParam) {
 	return super.WM_SIZE (wParam, lParam);
 }
 
+@Override
 LRESULT WM_SYSCOLORCHANGE (long /*int*/ wParam, long /*int*/ lParam) {
 	LRESULT result = super.WM_SYSCOLORCHANGE (wParam, lParam);
 	if (result != null) return result;
@@ -6483,6 +6532,7 @@ LRESULT WM_SYSCOLORCHANGE (long /*int*/ wParam, long /*int*/ lParam) {
 	return result;
 }
 
+@Override
 LRESULT WM_HSCROLL (long /*int*/ wParam, long /*int*/ lParam) {
 	/*
 	* Bug in Windows.  When a table that is drawing grid lines
@@ -6602,6 +6652,7 @@ LRESULT WM_HSCROLL (long /*int*/ wParam, long /*int*/ lParam) {
 	return result;
 }
 
+@Override
 LRESULT WM_VSCROLL (long /*int*/ wParam, long /*int*/ lParam) {
 	/*
 	* When there are many columns in a table, scrolling performance
@@ -6724,6 +6775,7 @@ LRESULT WM_VSCROLL (long /*int*/ wParam, long /*int*/ lParam) {
 	return result;
 }
 
+@Override
 LRESULT wmMeasureChild (long /*int*/ wParam, long /*int*/ lParam) {
 	MEASUREITEMSTRUCT struct = new MEASUREITEMSTRUCT ();
 	OS.MoveMemory (struct, lParam, MEASUREITEMSTRUCT.sizeof);
@@ -6738,6 +6790,7 @@ LRESULT wmMeasureChild (long /*int*/ wParam, long /*int*/ lParam) {
 	return null;
 }
 
+@Override
 LRESULT wmNotify (NMHDR hdr, long /*int*/ wParam, long /*int*/ lParam) {
 	long /*int*/ hwndToolTip = OS.SendMessage (handle, OS.LVM_GETTOOLTIPS, 0, 0);
 	if (hdr.hwndFrom == hwndToolTip) {
@@ -6752,6 +6805,7 @@ LRESULT wmNotify (NMHDR hdr, long /*int*/ wParam, long /*int*/ lParam) {
 	return super.wmNotify (hdr, wParam, lParam);
 }
 
+@Override
 LRESULT wmNotifyChild (NMHDR hdr, long /*int*/ wParam, long /*int*/ lParam) {
 	switch (hdr.code) {
 		case OS.LVN_ODFINDITEMA:

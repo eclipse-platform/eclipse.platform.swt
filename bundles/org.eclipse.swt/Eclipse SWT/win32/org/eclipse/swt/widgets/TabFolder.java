@@ -162,6 +162,7 @@ public void addSelectionListener(SelectionListener listener) {
 	addListener(SWT.DefaultSelection,typedListener);
 }
 
+@Override
 long /*int*/ callWindowProc (long /*int*/ hwnd, int msg, long /*int*/ wParam, long /*int*/ lParam) {
 	if (handle == 0) return 0;
 	return OS.CallWindowProc (TabFolderProc, hwnd, msg, wParam, lParam);
@@ -187,10 +188,12 @@ static int checkStyle (int style) {
 	return style & ~(SWT.H_SCROLL | SWT.V_SCROLL);
 }
 
+@Override
 protected void checkSubclass () {
 	if (!isValidSubclass ()) error (SWT.ERROR_INVALID_SUBCLASS);
 }
 
+@Override
 public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget ();
 	Point size = super.computeSize (wHint, hHint, changed);
@@ -212,6 +215,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	return size;
 }
 
+@Override
 public Rectangle computeTrim (int x, int y, int width, int height) {
 	checkWidget ();
 	RECT rect = new RECT ();
@@ -253,6 +257,7 @@ void createItem (TabItem item, int index) {
 	}
 }
 
+@Override
 void createHandle () {
 	super.createHandle ();
 	state &= ~(CANVAS | THEME_BACKGROUND);
@@ -275,6 +280,7 @@ void createHandle () {
 	createdAsRTL = (style & SWT.RIGHT_TO_LEFT) != 0;
 }
 
+@Override
 void createWidget () {
 	super.createWidget ();
 	items = new TabItem [4];
@@ -307,6 +313,7 @@ void destroyItem (TabItem item) {
 	}
 }
 
+@Override
 void drawThemeBackground (long /*int*/ hDC, long /*int*/ hwnd, RECT rect) {
 	RECT rect2 = new RECT ();
 	OS.GetClientRect (handle, rect2);
@@ -316,11 +323,13 @@ void drawThemeBackground (long /*int*/ hDC, long /*int*/ hwnd, RECT rect) {
 	}
 }
 
+@Override
 Control findThemeControl () {
 	/* It is not possible to change the background of this control */
 	return this;	
 }
 
+@Override
 public Rectangle getClientArea () {
 	checkWidget ();
 	forceResize ();
@@ -507,6 +516,7 @@ public int indexOf (TabItem item) {
 	return -1;
 }
 
+@Override
 Point minimumSize (int wHint, int hHint, boolean flushCache) {
 	Control [] children = _getChildren ();
 	int width = 0, height = 0;
@@ -531,6 +541,7 @@ Point minimumSize (int wHint, int hHint, boolean flushCache) {
 	return new Point (width, height);
 }
 
+@Override
 boolean mnemonicHit (char key) {
 	for (int i=0; i<items.length; i++) {
 		TabItem item = items [i];
@@ -547,6 +558,7 @@ boolean mnemonicHit (char key) {
 	return false;
 }
 
+@Override
 boolean mnemonicMatch (char key) {
 	for (int i=0; i<items.length; i++) {
 		TabItem item = items [i];
@@ -560,6 +572,7 @@ boolean mnemonicMatch (char key) {
 	return false;
 }
 
+@Override
 void releaseChildren (boolean destroy) {
 	if (items != null) {
 		int count = (int)/*64*/OS.SendMessage (handle, OS.TCM_GETITEMCOUNT, 0, 0);
@@ -574,6 +587,7 @@ void releaseChildren (boolean destroy) {
 	super.releaseChildren (destroy);
 }
 
+@Override
 void releaseWidget () {
 	super.releaseWidget ();
 	if (imageList != null) {
@@ -583,6 +597,7 @@ void releaseWidget () {
 	imageList = null;
 }
 
+@Override
 void removeControl (Control control) {
 	super.removeControl (control);
 	int count = (int)/*64*/OS.SendMessage (handle, OS.TCM_GETITEMCOUNT, 0, 0);
@@ -618,6 +633,7 @@ public void removeSelectionListener (SelectionListener listener) {
 }
 
 
+@Override
 void reskinChildren (int flags) {
 	if (items != null) {
 		int count = (int)/*64*/OS.SendMessage (handle, OS.TCM_GETITEMCOUNT, 0, 0);
@@ -680,6 +696,7 @@ public void setSelection (TabItem [] items) {
 	}
 }
 
+@Override
 public void setFont (Font font) {
 	checkWidget ();
 	Rectangle oldRect = getClientArea ();
@@ -745,6 +762,7 @@ void setSelection (int index, boolean notify) {
 	}
 }
 
+@Override
 boolean updateTextDirection(int textDirection) {
 	if (super.updateTextDirection(textDirection)) {
 		if (textDirection != AUTO_TEXT_DIRECTION) {
@@ -758,6 +776,7 @@ boolean updateTextDirection(int textDirection) {
 	return false;
 }
 
+@Override
 String toolTipText (NMTTDISPINFO hdr) {
 	if ((hdr.uFlags & OS.TTF_IDISHWND) != 0) {
 		return null;
@@ -787,6 +806,7 @@ String toolTipText (NMTTDISPINFO hdr) {
 	return super.toolTipText (hdr);
 }
 
+@Override
 boolean traversePage (boolean next) {
 	int count = getItemCount ();
 	if (count <= 1) return false;
@@ -805,6 +825,7 @@ boolean traversePage (boolean next) {
 	return false;
 }
 
+@Override
 void updateOrientation () {
 	super.updateOrientation ();
 	long /*int*/ hwndChild = OS.GetWindow (handle, OS.GW_CHILD);
@@ -851,6 +872,7 @@ void updateOrientation () {
 	}
 }
 
+@Override
 int widgetStyle () {
 	/*
 	* Bug in Windows.  Under certain circumstances,
@@ -865,14 +887,17 @@ int widgetStyle () {
 	return bits | OS.TCS_TABS | OS.TCS_TOOLTIPS;
 }
 
+@Override
 TCHAR windowClass () {
 	return TabFolderClass;
 }
 
+@Override
 long /*int*/ windowProc () {
 	return TabFolderProc;
 }
 
+@Override
 LRESULT WM_GETDLGCODE (long /*int*/ wParam, long /*int*/ lParam) {
 	LRESULT result = super.WM_GETDLGCODE (wParam, lParam);
 	/*
@@ -884,6 +909,7 @@ LRESULT WM_GETDLGCODE (long /*int*/ wParam, long /*int*/ lParam) {
 	return new LRESULT (OS.DLGC_BUTTON | OS.DLGC_WANTARROWS);
 }
 
+@Override
 LRESULT WM_GETOBJECT (long /*int*/ wParam, long /*int*/ lParam) {
 	/*
 	* Ensure that there is an accessible object created for this
@@ -894,6 +920,7 @@ LRESULT WM_GETOBJECT (long /*int*/ wParam, long /*int*/ lParam) {
 	return super.WM_GETOBJECT (wParam, lParam);
 }
 
+@Override
 LRESULT WM_KEYDOWN (long /*int*/ wParam, long /*int*/ lParam) {
 	LRESULT result = super.WM_KEYDOWN (wParam, lParam);
 	if (result != null) return result;
@@ -917,6 +944,7 @@ LRESULT WM_KEYDOWN (long /*int*/ wParam, long /*int*/ lParam) {
 	return result;
 }
 
+@Override
 LRESULT WM_MOUSELEAVE (long /*int*/ wParam, long /*int*/ lParam) {
 	LRESULT result = super.WM_MOUSELEAVE (wParam, lParam);
 	if (result != null) return result;
@@ -945,6 +973,7 @@ LRESULT WM_MOUSELEAVE (long /*int*/ wParam, long /*int*/ lParam) {
 	return result;
 }
 
+@Override
 LRESULT WM_NCHITTEST (long /*int*/ wParam, long /*int*/ lParam) {
 	LRESULT result = super.WM_NCHITTEST (wParam, lParam);
 	if (result != null) return result;
@@ -964,6 +993,7 @@ LRESULT WM_NCHITTEST (long /*int*/ wParam, long /*int*/ lParam) {
 	return new LRESULT (hittest);
 }
 
+@Override
 LRESULT WM_NOTIFY (long /*int*/ wParam, long /*int*/ lParam) {
 	/*
 	* Feature in Windows.  When the tab folder window
@@ -988,6 +1018,7 @@ LRESULT WM_NOTIFY (long /*int*/ wParam, long /*int*/ lParam) {
 	return LRESULT.ZERO;
 }
 
+@Override
 LRESULT WM_PARENTNOTIFY (long /*int*/ wParam, long /*int*/ lParam) {
 	LRESULT result = super.WM_PARENTNOTIFY (wParam, lParam);
 	if (result != null) return result;
@@ -1019,6 +1050,7 @@ LRESULT WM_PARENTNOTIFY (long /*int*/ wParam, long /*int*/ lParam) {
 	return result;
 }
 
+@Override
 LRESULT WM_SIZE (long /*int*/ wParam, long /*int*/ lParam) {
 	LRESULT result = super.WM_SIZE (wParam, lParam);
 	/*
@@ -1040,6 +1072,7 @@ LRESULT WM_SIZE (long /*int*/ wParam, long /*int*/ lParam) {
 	return result;
 }
 
+@Override
 LRESULT WM_WINDOWPOSCHANGING (long /*int*/ wParam, long /*int*/ lParam) {
 	LRESULT result = super.WM_WINDOWPOSCHANGING (wParam, lParam);
 	if (result != null) return result;
@@ -1089,6 +1122,7 @@ LRESULT WM_WINDOWPOSCHANGING (long /*int*/ wParam, long /*int*/ lParam) {
 	return result;
 }
 
+@Override
 LRESULT wmNotifyChild (NMHDR hdr, long /*int*/ wParam, long /*int*/ lParam) {
 	int code = hdr.code;
 	switch (code) {

@@ -228,6 +228,7 @@ public boolean contains (Point pt) {
 	return contains(pt.x, pt.y);
 }
 
+@Override
 void destroy () {
 	OS.DeleteObject(handle);
 	handle = 0;
@@ -243,6 +244,7 @@ void destroy () {
  *
  * @see #hashCode
  */
+@Override
 public boolean equals (Object object) {
 	if (this == object) return true;
 	if (!(object instanceof Region)) return false;
@@ -280,6 +282,7 @@ public Rectangle getBounds() {
  *
  * @see #equals
  */
+@Override
 public int hashCode () {
 	return (int)/*64*/handle;
 }
@@ -413,6 +416,7 @@ public boolean intersects (Rectangle rect) {
  *
  * @return <code>true</code> when the region is disposed, and <code>false</code> otherwise
  */
+@Override
 public boolean isDisposed() {
 	return handle == 0;
 }
@@ -577,6 +581,7 @@ public void translate (Point pt) {
  *
  * @return a string representation of the receiver
  */
+@Override
 public String toString () {
 	if (isDisposed()) return "Region {*DISPOSED*}";
 	return "Region {" + handle + "}";

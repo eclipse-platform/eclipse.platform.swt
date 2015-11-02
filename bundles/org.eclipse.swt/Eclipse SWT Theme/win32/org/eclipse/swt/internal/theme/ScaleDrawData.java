@@ -24,6 +24,7 @@ public ScaleDrawData() {
 	state = new int[4];
 }
 
+@Override
 void draw(Theme theme, GC gc, Rectangle bounds) {
 	if (OS.COMCTL32_MAJOR >= 6 && OS.IsAppThemed ()) {
 		// TODO - drawScale not done
@@ -86,10 +87,12 @@ void draw(Theme theme, GC gc, Rectangle bounds) {
 	}
 }
 
+@Override
 char[] getClassId() {
 	return TRACKBAR;
 }
 
+@Override
 int hit(Theme theme, Point position, Rectangle bounds) {
 	return bounds.contains(position) ? DrawData.WIDGET_WHOLE : DrawData.WIDGET_NOWHERE;
 }

@@ -329,26 +329,42 @@ private int ContextSensitiveHelp(int fEnterMode) {
 private void createCOMInterfaces() {
 	// Create each of the interfaces that this object implements
 	iUnknown = new COMObject(new int[]{2, 0, 0}){
+		@Override
 		public long /*int*/ method0(long /*int*/[] args) {return QueryInterface(args[0], args[1]);}
+		@Override
 		public long /*int*/ method1(long /*int*/[] args) {return AddRef();}
+		@Override
 		public long /*int*/ method2(long /*int*/[] args) {return Release();}
 	};
 	
 	iOleInPlaceFrame = new COMObject(new int[]{2, 0, 0, 1, 1, 1, 1, 1, 2, 2, 3, 1, 1, 1, 2}){
+		@Override
 		public long /*int*/ method0(long /*int*/[] args) {return QueryInterface(args[0], args[1]);}
+		@Override
 		public long /*int*/ method1(long /*int*/[] args) {return AddRef();}
+		@Override
 		public long /*int*/ method2(long /*int*/[] args) {return Release();}
+		@Override
 		public long /*int*/ method3(long /*int*/[] args) {return GetWindow(args[0]);}
+		@Override
 		public long /*int*/ method4(long /*int*/[] args) {return ContextSensitiveHelp((int)/*64*/args[0]);}
+		@Override
 		public long /*int*/ method5(long /*int*/[] args) {return GetBorder(args[0]);}
+		@Override
 		public long /*int*/ method6(long /*int*/[] args) {return RequestBorderSpace(args[0]);}
+		@Override
 		public long /*int*/ method7(long /*int*/[] args) {return SetBorderSpace(args[0]);}
+		@Override
 		public long /*int*/ method8(long /*int*/[] args) {return SetActiveObject(args[0], args[1]);}
+		@Override
 		public long /*int*/ method9(long /*int*/[] args) {return InsertMenus(args[0], args[1]);}
+		@Override
 		public long /*int*/ method10(long /*int*/[] args) {return SetMenu(args[0], args[1], args[2]);}
+		@Override
 		public long /*int*/ method11(long /*int*/[] args) {return RemoveMenus(args[0]);}
 		// method12 SetStatusText - not implemented
 		// method13 EnableModeless - not implemented
+		@Override
 		public long /*int*/ method14(long /*int*/[] args) {return TranslateAccelerator(args[0], (int)/*64*/args[1]);}
 	};
 }

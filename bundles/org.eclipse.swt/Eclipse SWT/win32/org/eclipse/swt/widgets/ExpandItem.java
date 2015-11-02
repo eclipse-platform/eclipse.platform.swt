@@ -247,6 +247,7 @@ void drawItem (GC gc, long /*int*/ hTheme, RECT clipRect, boolean drawFocus) {
 	}
 }
 
+@Override
 void destroyWidget () {
 	parent.destroyItem (this);
 	releaseHandle ();
@@ -369,11 +370,13 @@ void redraw (boolean all) {
 	}
 }
 
+@Override
 void releaseHandle () {
 	super.releaseHandle ();
 	parent = null;
 }
 
+@Override
 void releaseWidget () {
 	super.releaseWidget ();
 	control = null;
@@ -475,6 +478,7 @@ public void setHeight (int height) {
 	if (expanded) parent.layoutItems (parent.indexOf (this) + 1, true);
 }
 
+@Override
 public void setImage (Image image) {
 	super.setImage (image);
 	int oldImageHeight = imageHeight;
@@ -492,6 +496,7 @@ public void setImage (Image image) {
 	}
 }
 
+@Override
 public void setText (String string) {
 	super.setText (string);
 	if ((state & HAS_AUTO_DIRECTION) != 0) {

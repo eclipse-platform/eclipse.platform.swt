@@ -179,6 +179,7 @@ static int checkStyle (int style) {
 	return checkBits (style, SWT.SINGLE, SWT.MULTI, 0, 0, 0, 0);
 }
 
+@Override
 void _addListener (int eventType, Listener listener) {
 	super._addListener (eventType, listener);
 	switch (eventType) {
@@ -255,6 +256,7 @@ TreeItem _getItem (long /*int*/ hItem, int id) {
 	return id != -1 ? items [id] : new TreeItem (this, SWT.NONE, -1, -1, hItem);
 }
 
+@Override
 void _removeListener (int eventType, Listener listener) {
 	super._removeListener (eventType, listener);
 	switch (eventType) {
@@ -374,6 +376,7 @@ public void addTreeListener(TreeListener listener) {
 	addListener (SWT.Collapse, typedListener);
 } 
 
+@Override
 long /*int*/ borderHandle () {
 	return hwndParent != 0 ? hwndParent : handle;
 }
@@ -1455,6 +1458,7 @@ LRESULT CDDS_PREPAINT (NMTVCUSTOMDRAW nmcd, long /*int*/ wParam, long /*int*/ lP
 	return new LRESULT (OS.CDRF_NOTIFYITEMDRAW | OS.CDRF_NOTIFYPOSTPAINT);
 }
 
+@Override
 long /*int*/ callWindowProc (long /*int*/ hwnd, int msg, long /*int*/ wParam, long /*int*/ lParam) {
 	if (handle == 0) return 0;
 	if (hwndParent != 0 && hwnd == hwndParent) {
@@ -1616,6 +1620,7 @@ long /*int*/ callWindowProc (long /*int*/ hwnd, int msg, long /*int*/ wParam, lo
 	return code;
 }
 
+@Override
 void checkBuffered () {
 	super.checkBuffered ();
 	if ((style & SWT.VIRTUAL) != 0) {
@@ -1667,6 +1672,7 @@ boolean checkData (TreeItem item, int index, boolean redraw) {
 	return true;
 }
 
+@Override
 boolean checkHandle (long /*int*/ hwnd) {
 	return hwnd == handle || (hwndParent != 0 && hwnd == hwndParent) || (hwndHeader != 0 && hwnd == hwndHeader);
 }
@@ -1692,6 +1698,7 @@ boolean checkScroll (long /*int*/ hItem) {
 	return hParent == 0;
 }
 
+@Override
 protected void checkSubclass () {
 	if (!isValidSubclass ()) error (SWT.ERROR_INVALID_SUBCLASS);
 }
@@ -1804,6 +1811,7 @@ long /*int*/ CompareFunc (long /*int*/ lParam1, long /*int*/ lParam2, long /*int
 	return sortDirection == SWT.UP ? text1.compareTo (text2) : text2.compareTo (text1);
 }
 
+@Override
 public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget ();
 	int width = 0, height = 0;
@@ -1852,6 +1860,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	return new Point (width, height);
 }
 
+@Override
 void createHandle () {
 	super.createHandle ();
 	state &= ~(CANVAS | THEME_BACKGROUND);
@@ -2331,6 +2340,7 @@ void createParent () {
 	subclass ();
 }
 
+@Override
 void createWidget () {
 	super.createWidget ();
 	items = new TreeItem [4];
@@ -2338,10 +2348,12 @@ void createWidget () {
 	itemCount = -1;
 }
 
+@Override
 int defaultBackground () {
 	return OS.GetSysColor (OS.COLOR_WINDOW);
 }
 
+@Override
 void deregister () {
 	super.deregister ();
 	if (hwndParent != 0) display.removeControl (hwndParent);
@@ -2657,6 +2669,7 @@ void destroyItem (TreeItem item, long /*int*/ hItem) {
 	updateScrollBar ();
 }
 
+@Override
 void destroyScrollBar (int type) {
 	super.destroyScrollBar (type);
 	int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
@@ -2672,6 +2685,7 @@ void destroyScrollBar (int type) {
 	OS.SetWindowLong (handle, OS.GWL_STYLE, bits);
 }
 
+@Override
 void enableDrag (boolean enabled) {
 	int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
 	if (enabled && hooks (SWT.DragDetect)) {
@@ -2682,6 +2696,7 @@ void enableDrag (boolean enabled) {
 	OS.SetWindowLong (handle, OS.GWL_STYLE, bits);
 }
 
+@Override
 void enableWidget (boolean enabled) {
 	super.enableWidget (enabled);
 	/*
@@ -2834,6 +2849,7 @@ int findIndex (long /*int*/ hFirstItem, long /*int*/ hItem) {
 	return -1;
 }
 
+@Override
 Widget findItem (long /*int*/ hItem) {
 	return _getItem (hItem);
 }
@@ -3888,6 +3904,7 @@ void redrawSelection () {
 	}
 }
 
+@Override
 void register () {
 	super.register ();
 	if (hwndParent != 0) display.addControl (hwndParent, this);
@@ -3919,11 +3936,13 @@ void releaseItems (long /*int*/ hItem, TVITEM tvItem) {
 	}
 }
 
+@Override
 void releaseHandle () {
 	super.releaseHandle ();
 	hwndParent = hwndHeader = 0;
 }
 
+@Override
 void releaseChildren (boolean destroy) {
 	if (items != null) {
 		for (int i=0; i<items.length; i++) {
@@ -3946,6 +3965,7 @@ void releaseChildren (boolean destroy) {
 	super.releaseChildren (destroy);
 }
 
+@Override
 void releaseWidget () {
 	super.releaseWidget ();
 	/*
@@ -4074,6 +4094,7 @@ public void removeTreeListener(TreeListener listener) {
 	eventTable.unhook (SWT.Collapse, listener);
 }
 
+@Override
 void reskinChildren (int flags) {
 	if (items != null) {
 		for (int i=0; i<items.length; i++) {
@@ -4250,6 +4271,7 @@ public void setLinesVisible (boolean show) {
 	OS.InvalidateRect (handle, null, true);
 }
 
+@Override
 long /*int*/ scrolledHandle () {
 	if (hwndHeader == 0) return handle;
 	return columnCount == 0 && scrollWidth == 0 ? handle : hwndParent;
@@ -4484,6 +4506,7 @@ Event sendPaintItemEvent (TreeItem item, NMTTCUSTOMDRAW nmcd, int column, RECT i
 	return event;
 }
 
+@Override
 void setBackgroundImage (long /*int*/ hBitmap) {
 	super.setBackgroundImage (hBitmap);
 	if (hBitmap != 0) {
@@ -4519,6 +4542,7 @@ void setBackgroundImage (long /*int*/ hBitmap) {
 	updateFullSelection ();
 }
 
+@Override
 void setBackgroundPixel (int pixel) {
 	Control control = findImageControl ();
 	if (control != null) {
@@ -4546,6 +4570,7 @@ void setBackgroundPixel (int pixel) {
 	updateFullSelection ();
 }
 
+@Override
 void setCursor () {
 	/*
 	* Bug in Windows.  Under certain circumstances, when WM_SETCURSOR
@@ -4723,12 +4748,14 @@ void setCheckboxImageList () {
 	if (hOldStateList != 0) OS.ImageList_Destroy (hOldStateList);
 }
 
+@Override
 public void setFont (Font font) {
 	checkWidget ();
 	super.setFont (font);
 	if ((style & SWT.CHECK) != 0) setCheckboxImageList ();
 }
 
+@Override
 void setForegroundPixel (int pixel) {
 	/*
 	* Bug in Windows.  When the tree is using the explorer
@@ -4784,6 +4811,7 @@ public void setHeaderVisible (boolean show) {
 	updateScrollBar ();
 }
 
+@Override
 public void setRedraw (boolean redraw) {
 	checkWidget ();
 	/*
@@ -5445,6 +5473,7 @@ void sort (long /*int*/ hParent, boolean all) {
 	}
 }
 
+@Override
 void subclass () {
 	super.subclass ();
 	if (hwndHeader != 0) {
@@ -5474,6 +5503,7 @@ RECT toolTipRect (RECT rect) {
 	return toolRect;
 }
 
+@Override
 String toolTipText (NMTTDISPINFO hdr) {
 	long /*int*/ hwndToolTip = OS.SendMessage (handle, OS.TVM_GETTOOLTIPS, 0, 0);
 	if (hwndToolTip == hdr.hwndFrom && toolTipText != null) return ""; //$NON-NLS-1$
@@ -5511,6 +5541,7 @@ String toolTipText (NMTTDISPINFO hdr) {
 	return super.toolTipText (hdr);
 }
 
+@Override
 long /*int*/ topHandle () {
 	return hwndParent != 0 ? hwndParent : handle;
 }
@@ -5587,6 +5618,7 @@ void updateImageList () {
 	}
 }
 
+@Override
 void updateImages () {
 	if (sortColumn != null && !sortColumn.isDisposed ()) {
 		if (OS.COMCTL32_MAJOR < 6) {
@@ -5600,6 +5632,7 @@ void updateImages () {
 	}
 }
 
+@Override
 void updateMenuLocation (Event event) {
 	Rectangle clientArea = getClientArea ();
 	int x = clientArea.x, y = clientArea.y;
@@ -5619,6 +5652,7 @@ void updateMenuLocation (Event event) {
 	event.y = pt.y;
 }
 
+@Override
 void updateOrientation () {
 	super.updateOrientation ();
 	RECT rect = new RECT ();
@@ -5729,6 +5763,7 @@ void updateScrollBar () {
 	}
 }
 
+@Override
 void unsubclass () {
 	super.unsubclass ();
 	if (hwndHeader != 0) {
@@ -5736,6 +5771,7 @@ void unsubclass () {
 	}
 }
 
+@Override
 int widgetStyle () {
 	int bits = super.widgetStyle () | OS.TVS_SHOWSELALWAYS | OS.TVS_LINESATROOT | OS.TVS_HASBUTTONS | OS.TVS_NONEVENHEIGHT;
 	if (EXPLORER_THEME && !OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (6, 0) && OS.IsAppThemed ()) {
@@ -5761,14 +5797,17 @@ int widgetStyle () {
 	return bits | OS.TVS_DISABLEDRAGDROP;
 }
 
+@Override
 TCHAR windowClass () {
 	return TreeClass;
 }
 
+@Override
 long /*int*/ windowProc () {
 	return TreeProc;
 }
 
+@Override
 long /*int*/ windowProc (long /*int*/ hwnd, int msg, long /*int*/ wParam, long /*int*/ lParam) {
 	if (hwndHeader != 0 && hwnd == hwndHeader) {
 		switch (msg) {
@@ -6024,6 +6063,7 @@ long /*int*/ windowProc (long /*int*/ hwnd, int msg, long /*int*/ wParam, long /
 	return super.windowProc (hwnd, msg, wParam, lParam);
 }
 
+@Override
 LRESULT WM_CHAR (long /*int*/ wParam, long /*int*/ lParam) {
 	LRESULT result = super.WM_CHAR (wParam, lParam);
 	if (result != null) return result;
@@ -6110,6 +6150,7 @@ LRESULT WM_CHAR (long /*int*/ wParam, long /*int*/ lParam) {
 	return result;
 }
 
+@Override
 LRESULT WM_ERASEBKGND (long /*int*/ wParam, long /*int*/ lParam) {
 	LRESULT result = super.WM_ERASEBKGND (wParam, lParam);
 	if ((style & SWT.DOUBLE_BUFFERED) != 0) return LRESULT.ONE;
@@ -6117,6 +6158,7 @@ LRESULT WM_ERASEBKGND (long /*int*/ wParam, long /*int*/ lParam) {
 	return result;
 }
 
+@Override
 LRESULT WM_GETOBJECT (long /*int*/ wParam, long /*int*/ lParam) {
 	/*
 	* Ensure that there is an accessible object created for this
@@ -6130,6 +6172,7 @@ LRESULT WM_GETOBJECT (long /*int*/ wParam, long /*int*/ lParam) {
 	return super.WM_GETOBJECT (wParam, lParam);
 }
 
+@Override
 LRESULT WM_HSCROLL (long /*int*/ wParam, long /*int*/ lParam) {
 	boolean fixScroll = false;
 	if ((style & SWT.DOUBLE_BUFFERED) != 0) {
@@ -6152,6 +6195,7 @@ LRESULT WM_HSCROLL (long /*int*/ wParam, long /*int*/ lParam) {
 	return result;
 }
 
+@Override
 LRESULT WM_KEYDOWN (long /*int*/ wParam, long /*int*/ lParam) {
 	LRESULT result = super.WM_KEYDOWN (wParam, lParam);
 	if (result != null) return result;
@@ -6342,6 +6386,7 @@ LRESULT WM_KEYDOWN (long /*int*/ wParam, long /*int*/ lParam) {
 	return result;
 }
 
+@Override
 LRESULT WM_KILLFOCUS (long /*int*/ wParam, long /*int*/ lParam) {
 	/*
 	* Bug in Windows.  When a tree item that has an image
@@ -6372,6 +6417,7 @@ LRESULT WM_KILLFOCUS (long /*int*/ wParam, long /*int*/ lParam) {
 	return super.WM_KILLFOCUS (wParam, lParam);
 }
 
+@Override
 LRESULT WM_LBUTTONDBLCLK (long /*int*/ wParam, long /*int*/ lParam) {
 	TVHITTESTINFO lpht = new TVHITTESTINFO ();
 	lpht.x = OS.GET_X_LPARAM (lParam);
@@ -6444,6 +6490,7 @@ LRESULT WM_LBUTTONDBLCLK (long /*int*/ wParam, long /*int*/ lParam) {
 	return result;
 }
 
+@Override
 LRESULT WM_LBUTTONDOWN (long /*int*/ wParam, long /*int*/ lParam) {
 	/*
 	* In a multi-select tree, if the user is collapsing a subtree that
@@ -6850,6 +6897,7 @@ LRESULT WM_LBUTTONDOWN (long /*int*/ wParam, long /*int*/ lParam) {
 	return new LRESULT (code);
 }
 
+@Override
 LRESULT WM_MOUSEMOVE (long /*int*/ wParam, long /*int*/ lParam) {
 	Display display = this.display;
 	LRESULT result = super.WM_MOUSEMOVE (wParam, lParam);
@@ -6899,18 +6947,21 @@ LRESULT WM_MOUSEMOVE (long /*int*/ wParam, long /*int*/ lParam) {
 	return result;
 }
 
+@Override
 LRESULT WM_MOUSEWHEEL (long /*int*/ wParam, long /*int*/ lParam) {
 	LRESULT result = super.WM_MOUSEWHEEL (wParam, lParam);
 	if (itemToolTipHandle != 0) OS.ShowWindow (itemToolTipHandle, OS.SW_HIDE);
 	return result;
 }
 
+@Override
 LRESULT WM_MOVE (long /*int*/ wParam, long /*int*/ lParam) {
 	if (itemToolTipHandle != 0) OS.ShowWindow (itemToolTipHandle, OS.SW_HIDE);
 	if (ignoreResize) return null;
 	return super.WM_MOVE (wParam, lParam);
 }
 
+@Override
 LRESULT WM_RBUTTONDOWN (long /*int*/ wParam, long /*int*/ lParam) {
 	/*
 	* Feature in Windows.  The receiver uses WM_RBUTTONDOWN
@@ -6980,6 +7031,7 @@ LRESULT WM_RBUTTONDOWN (long /*int*/ wParam, long /*int*/ lParam) {
 	return LRESULT.ZERO;
 }
 
+@Override
 LRESULT WM_PAINT (long /*int*/ wParam, long /*int*/ lParam) {
 	if ((state & DISPOSE_SENT) != 0) return LRESULT.ZERO;
 
@@ -7061,6 +7113,7 @@ LRESULT WM_PAINT (long /*int*/ wParam, long /*int*/ lParam) {
 	return super.WM_PAINT (wParam, lParam);
 }
 
+@Override
 LRESULT WM_PRINTCLIENT (long /*int*/ wParam, long /*int*/ lParam) {
 	LRESULT result = super.WM_PRINTCLIENT (wParam, lParam);
 	if (result != null) return result;
@@ -7080,6 +7133,7 @@ LRESULT WM_PRINTCLIENT (long /*int*/ wParam, long /*int*/ lParam) {
 	return new LRESULT (code);
 }
 
+@Override
 LRESULT WM_SETCURSOR (long /*int*/ wParam, long /*int*/ lParam) {
 	LRESULT result = super.WM_SETCURSOR (wParam, lParam);
 	if (result != null) return result;
@@ -7102,6 +7156,7 @@ LRESULT WM_SETCURSOR (long /*int*/ wParam, long /*int*/ lParam) {
 	return null;
 }
 
+@Override
 LRESULT WM_SETFOCUS (long /*int*/ wParam, long /*int*/ lParam) {
 	/*
 	* Bug in Windows.  When a tree item that has an image
@@ -7132,6 +7187,7 @@ LRESULT WM_SETFOCUS (long /*int*/ wParam, long /*int*/ lParam) {
 	return super.WM_SETFOCUS (wParam, lParam);
 }
 
+@Override
 LRESULT WM_SETFONT (long /*int*/ wParam, long /*int*/ lParam) {
 	LRESULT result = super.WM_SETFONT (wParam, lParam);
 	if (result != null) return result;
@@ -7157,6 +7213,7 @@ LRESULT WM_SETFONT (long /*int*/ wParam, long /*int*/ lParam) {
 	return result;
 }
 
+@Override
 LRESULT WM_SETREDRAW (long /*int*/ wParam, long /*int*/ lParam) {
 	LRESULT result = super.WM_SETREDRAW (wParam, lParam);
 	if (result != null) return result;
@@ -7179,6 +7236,7 @@ LRESULT WM_SETREDRAW (long /*int*/ wParam, long /*int*/ lParam) {
 	return result;
 }
 
+@Override
 LRESULT WM_SIZE (long /*int*/ wParam, long /*int*/ lParam) {
 	if (itemToolTipHandle != 0) OS.ShowWindow (itemToolTipHandle, OS.SW_HIDE);
 	/*
@@ -7205,6 +7263,7 @@ LRESULT WM_SIZE (long /*int*/ wParam, long /*int*/ lParam) {
 	return super.WM_SIZE (wParam, lParam);
 }
 
+@Override
 LRESULT WM_SYSCOLORCHANGE (long /*int*/ wParam, long /*int*/ lParam) {
 	LRESULT result = super.WM_SYSCOLORCHANGE (wParam, lParam);
 	if (result != null) return result;
@@ -7221,6 +7280,7 @@ LRESULT WM_SYSCOLORCHANGE (long /*int*/ wParam, long /*int*/ lParam) {
 	return result;
 }
 
+@Override
 LRESULT WM_VSCROLL (long /*int*/ wParam, long /*int*/ lParam) {
 	boolean fixScroll = false;
 	if ((style & SWT.DOUBLE_BUFFERED) != 0) {
@@ -7253,6 +7313,7 @@ LRESULT WM_VSCROLL (long /*int*/ wParam, long /*int*/ lParam) {
 	return result;
 }
 
+@Override
 LRESULT WM_TIMER (long /*int*/ wParam, long /*int*/ lParam) {
 	LRESULT result = super.WM_TIMER (wParam, lParam);
 	if (result != null) return result;
@@ -7289,6 +7350,7 @@ LRESULT WM_TIMER (long /*int*/ wParam, long /*int*/ lParam) {
 	return result;
 };
 
+@Override
 LRESULT wmColorChild (long /*int*/ wParam, long /*int*/ lParam) {
 	if (findImageControl () != null) {
 		if (OS.COMCTL32_MAJOR < 6) {
@@ -7306,6 +7368,7 @@ LRESULT wmColorChild (long /*int*/ wParam, long /*int*/ lParam) {
 	return null;
 }
 
+@Override
 LRESULT wmNotify (NMHDR hdr, long /*int*/ wParam, long /*int*/ lParam) {
 	if (hdr.hwndFrom == itemToolTipHandle) {
 		LRESULT result = wmNotifyToolTip (hdr, wParam, lParam);
@@ -7318,6 +7381,7 @@ LRESULT wmNotify (NMHDR hdr, long /*int*/ wParam, long /*int*/ lParam) {
 	return super.wmNotify (hdr, wParam, lParam);
 }
 
+@Override
 LRESULT wmNotifyChild (NMHDR hdr, long /*int*/ wParam, long /*int*/ lParam) {
 	switch (hdr.code) {
 		case OS.TVN_GETDISPINFOA:

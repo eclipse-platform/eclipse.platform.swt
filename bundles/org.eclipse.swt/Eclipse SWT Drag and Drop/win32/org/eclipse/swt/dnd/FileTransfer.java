@@ -63,6 +63,7 @@ public static FileTransfer getInstance () {
  * 
  * @see Transfer#nativeToJava
  */
+@Override
 public void javaToNative(Object object, TransferData transferData) {
 	if (!checkFile(object) || !isSupportedType(transferData)) {
 		DND.error(DND.ERROR_INVALID_DATA);
@@ -103,6 +104,7 @@ public void javaToNative(Object object, TransferData transferData) {
  * 
  * @see Transfer#javaToNative
  */
+@Override
 public Object nativeToJava(TransferData transferData) {
 	if (!isSupportedType(transferData) || transferData.pIDataObject == 0)  return null;
 	
@@ -135,10 +137,12 @@ public Object nativeToJava(TransferData transferData) {
 	return fileNames;
 }
 
+@Override
 protected int[] getTypeIds(){
 	return new int[] {CF_HDROPID};
 }
 
+@Override
 protected String[] getTypeNames(){
 	return new String[] {CF_HDROP};
 }
@@ -151,6 +155,7 @@ boolean checkFile(Object object) {
 	return true;
 }
 
+@Override
 protected boolean validate(Object object) {
 	return checkFile(object);
 }

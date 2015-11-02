@@ -70,13 +70,21 @@ class Relation {
 	
 	void createIAccessibleRelation() {
 		objIAccessibleRelation = new COMObject(new int[] {2,0,0,1,1,1,2,3}) {
+			@Override
 			public long /*int*/ method0(long /*int*/[] args) {return QueryInterface(args[0], args[1]);}
+			@Override
 			public long /*int*/ method1(long /*int*/[] args) {return AddRef();}
+			@Override
 			public long /*int*/ method2(long /*int*/[] args) {return Release();}
+			@Override
 			public long /*int*/ method3(long /*int*/[] args) {return get_relationType(args[0]);}
+			@Override
 			public long /*int*/ method4(long /*int*/[] args) {return get_localizedRelationType(args[0]);}
+			@Override
 			public long /*int*/ method5(long /*int*/[] args) {return get_nTargets(args[0]);}
+			@Override
 			public long /*int*/ method6(long /*int*/[] args) {return get_target((int)/*64*/args[0], args[1]);}
+			@Override
 			public long /*int*/ method7(long /*int*/[] args) {return get_targets((int)/*64*/args[0], args[1], args[2]);}
 		};
 	}

@@ -389,6 +389,7 @@ public void cubicTo(float cx1, float cy1, float cx2, float cy2, float x, float y
 	Gdip.GraphicsPath_GetLastPoint(handle, currentPoint);
 }
 
+@Override
 void destroy() {
 	Gdip.GraphicsPath_delete(handle);
 	handle = 0;
@@ -554,6 +555,7 @@ void init(PathData data) {
  *
  * @return <code>true</code> when the Path is disposed, and <code>false</code> otherwise
  */
+@Override
 public boolean isDisposed() {
 	return handle == 0;
 }
@@ -605,6 +607,7 @@ public void quadTo(float cx, float cy, float x, float y) {
  *
  * @return a string representation of the receiver
  */
+@Override
 public String toString() {
 	if (isDisposed()) return "Path {*DISPOSED*}";
 	return "Path {" + handle + "}";

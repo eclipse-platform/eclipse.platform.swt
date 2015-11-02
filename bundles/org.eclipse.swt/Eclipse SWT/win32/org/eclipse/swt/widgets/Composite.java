@@ -185,12 +185,14 @@ public void changed (Control[] changed) {
 	}
 }
 
+@Override
 void checkBuffered () {
 	if (OS.IsWinCE || (state & CANVAS) == 0) {
 		super.checkBuffered ();
 	}
 }
 
+@Override
 void checkComposited () {
 	if ((state & CANVAS) != 0) {
 		if ((style & SWT.TRANSPARENT) != 0) {
@@ -202,10 +204,12 @@ void checkComposited () {
 	}
 }
 
+@Override
 protected void checkSubclass () {
 	/* Do nothing - Subclassing is allowed */
 }
 
+@Override
 Widget [] computeTabList () {
 	Widget result [] = super.computeTabList ();
 	if (result.length == 0) return result;
@@ -223,6 +227,7 @@ Widget [] computeTabList () {
 	return result;
 }
 
+@Override
 public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget ();
 	display.runSkin ();
@@ -302,6 +307,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	OS.RestoreDC (hDC, nSavedDC);
 }
 
+@Override
 void createHandle () {
 	super.createHandle ();
 	state |= CANVAS;
@@ -374,6 +380,7 @@ Composite findDeferredControl () {
 	return layoutCount > 0 ? this : parent.findDeferredControl ();
 }
 
+@Override
 Menu [] findMenus (Control control) {
 	if (control == this) return new Menu [0];
 	Menu result [] = super.findMenus (control);
@@ -391,6 +398,7 @@ Menu [] findMenus (Control control) {
 	return result;
 }
 
+@Override
 void fixChildren (Shell newShell, Shell oldShell, Decorations newDecorations, Decorations oldDecorations, Menu [] menus) {
 	super.fixChildren (newShell, oldShell, newDecorations, oldDecorations, menus);
 	Control [] children = _getChildren ();
@@ -829,6 +837,7 @@ public void layout (Control [] changed, int flags) {
 	}
 }
 
+@Override
 void markLayout (boolean changed, boolean all) {
 	if (layout != null) {
 		state |= LAYOUT_NEEDED;
@@ -854,6 +863,7 @@ Point minimumSize (int wHint, int hHint, boolean changed) {
 	return new Point (width, height);
 }
 
+@Override
 boolean redrawChildren () {
 	if (!super.redrawChildren ()) return false;
 	Control [] children = _getChildren ();
@@ -863,6 +873,7 @@ boolean redrawChildren () {
 	return true;
 }
 
+@Override
 void releaseParent () {
 	super.releaseParent ();
 	if ((state & CANVAS) != 0) {
@@ -883,6 +894,7 @@ void releaseParent () {
 	}
 }
 
+@Override
 void releaseChildren (boolean destroy) {
 	Control [] children = _getChildren ();
 	for (int i=0; i<children.length; i++) {
@@ -894,6 +906,7 @@ void releaseChildren (boolean destroy) {
 	super.releaseChildren (destroy);
 }
 
+@Override
 void releaseWidget () {
 	super.releaseWidget ();
 	if ((state & CANVAS) != 0 && (style & SWT.EMBEDDED) != 0) {
@@ -916,6 +929,7 @@ void removeControl (Control control) {
 	resizeChildren ();
 }
 
+@Override
 void reskinChildren (int flags) {
 	super.reskinChildren (flags);
 	Control [] children = _getChildren ();
@@ -989,6 +1003,7 @@ void resizeEmbeddedHandle(long /*int*/ embeddedHandle, int width, int height) {
 	}
 }
 
+@Override
 void sendResize () {
 	setResizeChildren (false);
 	super.sendResize ();
@@ -1026,6 +1041,7 @@ public void setBackgroundMode (int mode) {
 	}
 }
 
+@Override
 void setBounds (int x, int y, int width, int height, int flags, boolean defer) {
 	if (display.resizeCount > Display.RESIZE_LIMIT) {
 		defer = false;
@@ -1044,6 +1060,7 @@ void setBounds (int x, int y, int width, int height, int flags, boolean defer) {
 	}
 }
 
+@Override
 public boolean setFocus () {
 	checkWidget ();
 	Control [] children = _getChildren ();
@@ -1153,6 +1170,7 @@ void setResizeChildren (boolean resize) {
 	}
 }
 
+@Override
 boolean setTabGroupFocus () {
 	if (isTabItem ()) return setTabItemFocus ();
 	boolean takeFocus = (style & SWT.NO_FOCUS) == 0;
@@ -1175,6 +1193,7 @@ boolean setTabGroupFocus () {
 	return false;
 }
 
+@Override
 boolean updateTextDirection(int textDirection) {
 	super.updateTextDirection (textDirection);
 	/* 
@@ -1222,6 +1241,7 @@ String toolTipText (NMTTDISPINFO hdr) {
 	return control != null ? control.toolTipText : null;
 }
 
+@Override
 boolean translateMnemonic (Event event, Control control) {
 	if (super.translateMnemonic (event, control)) return true;
 	if (control != null) {
@@ -1234,6 +1254,7 @@ boolean translateMnemonic (Event event, Control control) {
 	return false;
 }
 
+@Override
 boolean translateTraversal (MSG msg) {
 	if ((state & CANVAS) != 0 ) {
 		if ((style & SWT.EMBEDDED) != 0) return false;
@@ -1254,6 +1275,7 @@ boolean translateTraversal (MSG msg) {
 	return super.translateTraversal (msg);
 }
 
+@Override
 void updateBackgroundColor () {
 	super.updateBackgroundColor ();
 	Control [] children = _getChildren ();
@@ -1264,6 +1286,7 @@ void updateBackgroundColor () {
 	}
 }
 
+@Override
 void updateBackgroundImage () {
 	super.updateBackgroundImage ();
 	Control [] children = _getChildren ();
@@ -1274,6 +1297,7 @@ void updateBackgroundImage () {
 	}
 }
 
+@Override
 void updateBackgroundMode () {
 	super.updateBackgroundMode ();
 	Control [] children = _getChildren ();
@@ -1282,6 +1306,7 @@ void updateBackgroundMode () {
 	}
 }
 
+@Override
 void updateFont (Font oldFont, Font newFont) {
 	super.updateFont (oldFont, newFont);
 	Control [] children = _getChildren ();
@@ -1297,6 +1322,7 @@ void updateLayout (boolean all) {
 	updateLayout (true, all);
 }
 
+@Override
 void updateLayout (boolean resize, boolean all) {
 	Composite parent = findDeferredControl ();
 	if (parent != null) {
@@ -1320,6 +1346,7 @@ void updateLayout (boolean resize, boolean all) {
 	}
 }
 
+@Override
 void updateOrientation () {
 	Control [] controls = _getChildren ();
 	RECT [] rects = new RECT [controls.length]; 
@@ -1349,11 +1376,13 @@ void updateUIState () {
 	}
 }
 
+@Override
 int widgetStyle () {
 	/* Force clipping of children by setting WS_CLIPCHILDREN */
 	return super.widgetStyle () | OS.WS_CLIPCHILDREN;
 }
 
+@Override
 LRESULT WM_ERASEBKGND (long /*int*/ wParam, long /*int*/ lParam) {
 	LRESULT result = super.WM_ERASEBKGND (wParam, lParam);
 	if (result != null) return result;
@@ -1366,6 +1395,7 @@ LRESULT WM_ERASEBKGND (long /*int*/ wParam, long /*int*/ lParam) {
 	return result;
 }
 
+@Override
 LRESULT WM_GETDLGCODE (long /*int*/ wParam, long /*int*/ lParam) {
 	LRESULT result = super.WM_GETDLGCODE (wParam, lParam);
 	if (result != null) return result;
@@ -1381,6 +1411,7 @@ LRESULT WM_GETDLGCODE (long /*int*/ wParam, long /*int*/ lParam) {
 	return result;
 }
 
+@Override
 LRESULT WM_GETFONT (long /*int*/ wParam, long /*int*/ lParam) {
 	LRESULT result = super.WM_GETFONT (wParam, lParam);
 	if (result != null) return result;
@@ -1389,6 +1420,7 @@ LRESULT WM_GETFONT (long /*int*/ wParam, long /*int*/ lParam) {
 	return new LRESULT (font != null ? font.handle : defaultFont ());
 }
 
+@Override
 LRESULT WM_LBUTTONDOWN (long /*int*/ wParam, long /*int*/ lParam) {
 	LRESULT result = super.WM_LBUTTONDOWN (wParam, lParam);
 	if (result == LRESULT.ZERO) return result;
@@ -1402,6 +1434,7 @@ LRESULT WM_LBUTTONDOWN (long /*int*/ wParam, long /*int*/ lParam) {
 	return result;
 }
 
+@Override
 LRESULT WM_NCHITTEST (long /*int*/ wParam, long /*int*/ lParam) {
 	LRESULT result = super.WM_NCHITTEST (wParam, lParam);
 	if (result != null) return result;
@@ -1438,6 +1471,7 @@ LRESULT WM_NCHITTEST (long /*int*/ wParam, long /*int*/ lParam) {
 	return result;
 }
 
+@Override
 LRESULT WM_PARENTNOTIFY (long /*int*/ wParam, long /*int*/ lParam) {
 	if ((state & CANVAS) != 0 && (style & SWT.EMBEDDED) != 0) {
 		if (OS.LOWORD (wParam) == OS.WM_CREATE) {
@@ -1449,6 +1483,7 @@ LRESULT WM_PARENTNOTIFY (long /*int*/ wParam, long /*int*/ lParam) {
 	return super.WM_PARENTNOTIFY (wParam, lParam);
 }
 
+@Override
 LRESULT WM_PAINT (long /*int*/ wParam, long /*int*/ lParam) {
 	if ((state & DISPOSE_SENT) != 0) return LRESULT.ZERO;
 	if ((state & CANVAS) == 0 || (state & FOREIGN_HANDLE) != 0) {
@@ -1658,6 +1693,7 @@ LRESULT WM_PAINT (long /*int*/ wParam, long /*int*/ lParam) {
 	return LRESULT.ZERO;
 }
 
+@Override
 LRESULT WM_PRINTCLIENT (long /*int*/ wParam, long /*int*/ lParam) {
 	LRESULT result = super.WM_PRINTCLIENT (wParam, lParam);
 	if (result != null) return result;
@@ -1694,11 +1730,13 @@ LRESULT WM_PRINTCLIENT (long /*int*/ wParam, long /*int*/ lParam) {
 	return result;
 }
 
+@Override
 LRESULT WM_SETFONT (long /*int*/ wParam, long /*int*/ lParam) {
 	if (lParam != 0) OS.InvalidateRect (handle, null, true);
 	return super.WM_SETFONT (wParam, lParam);
 }
 
+@Override
 LRESULT WM_SIZE (long /*int*/ wParam, long /*int*/ lParam) {
 	LRESULT result = null;
 	if ((state & RESIZE_DEFERRED) != 0) {
@@ -1747,6 +1785,7 @@ LRESULT WM_SIZE (long /*int*/ wParam, long /*int*/ lParam) {
 	return result;
 }
 
+@Override
 LRESULT WM_SYSCOLORCHANGE (long /*int*/ wParam, long /*int*/ lParam) {
 	LRESULT result = super.WM_SYSCOLORCHANGE (wParam, lParam);
 	if (result != null) return result;
@@ -1758,6 +1797,7 @@ LRESULT WM_SYSCOLORCHANGE (long /*int*/ wParam, long /*int*/ lParam) {
 	return result;
 }
 
+@Override
 LRESULT WM_SYSCOMMAND (long /*int*/ wParam, long /*int*/ lParam) {
 	LRESULT result = super.WM_SYSCOMMAND (wParam, lParam);
 	if (result != null) return result;
@@ -1798,6 +1838,7 @@ LRESULT WM_SYSCOMMAND (long /*int*/ wParam, long /*int*/ lParam) {
 	return result;
 }
 
+@Override
 LRESULT WM_UPDATEUISTATE (long /*int*/ wParam, long /*int*/ lParam) {
 	LRESULT result = super.WM_UPDATEUISTATE (wParam, lParam);
 	if (result != null) return result;
@@ -1807,6 +1848,7 @@ LRESULT WM_UPDATEUISTATE (long /*int*/ wParam, long /*int*/ lParam) {
 	return result;
 }
 
+@Override
 LRESULT wmNCPaint (long /*int*/ hwnd, long /*int*/ wParam, long /*int*/ lParam) {
 	LRESULT result = super.wmNCPaint (hwnd, wParam, lParam);
 	if (result != null) return result;
@@ -1837,6 +1879,7 @@ LRESULT wmNCPaint (long /*int*/ hwnd, long /*int*/ wParam, long /*int*/ lParam) 
 	return result;
 }
 
+@Override
 LRESULT wmNotify (NMHDR hdr, long /*int*/ wParam, long /*int*/ lParam) {
 	if (!OS.IsWinCE) {
 		switch (hdr.code) {

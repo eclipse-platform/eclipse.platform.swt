@@ -71,71 +71,137 @@ int contextMenuItemsForElement (long /*int*/ sender, long /*int*/ element, long 
 
 void createCOMInterfaces () {
 	iWebUIDelegate = new COMObject (new int[] {2, 0, 0, 3, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 3, 4, 4, 2, 3, 4, 4, 3, 3, 3, 3, 5, 3, 1, 3, 2, 2, 2, 2, 3, 2, 3, 1, 1, 0, 0, 1, 1, 2, 2, 2, 2, 3, 5, 2, 2, 3, 1, 2, 2, 4, 10, 3}) {
+		@Override
 		public long /*int*/ method0 (long /*int*/[] args) {return QueryInterface (args[0], args[1]);}
+		@Override
 		public long /*int*/ method1 (long /*int*/[] args) {return AddRef ();}
+		@Override
 		public long /*int*/ method2 (long /*int*/[] args)  {return Release ();}
+		@Override
 		public long /*int*/ method3 (long /*int*/[] args)  {return createWebViewWithRequest (args[0], args[1], args[2]);}
+		@Override
 		public long /*int*/ method4 (long /*int*/[] args)  {return webViewShow (args[0]);}
+		@Override
 		public long /*int*/ method5 (long /*int*/[] args)  {return webViewClose (args[0]);}
+		@Override
 		public long /*int*/ method6 (long /*int*/[] args)  {return COM.E_NOTIMPL;}
+		@Override
 		public long /*int*/ method7 (long /*int*/[] args)  {return COM.E_NOTIMPL;}
+		@Override
 		public long /*int*/ method8 (long /*int*/[] args)  {return COM.E_NOTIMPL;}
+		@Override
 		public long /*int*/ method9 (long /*int*/[] args)  {return COM.E_NOTIMPL;}
+		@Override
 		public long /*int*/ method10 (long /*int*/[] args) {return setStatusText (args[0], args[1]);}
+		@Override
 		public long /*int*/ method11 (long /*int*/[] args) {return COM.E_NOTIMPL;}
+		@Override
 		public long /*int*/ method12 (long /*int*/[] args) {return COM.E_NOTIMPL;}
+		@Override
 		public long /*int*/ method13 (long /*int*/[] args) {return setToolbarsVisible (args[0], (int)/*64*/args[1]);}
+		@Override
 		public long /*int*/ method14 (long /*int*/[] args) {return COM.E_NOTIMPL;}
+		@Override
 		public long /*int*/ method15 (long /*int*/[] args) {return setStatusBarVisible (args[0], (int)/*64*/args[1]);}
+		@Override
 		public long /*int*/ method16 (long /*int*/[] args) {return COM.E_NOTIMPL;}
+		@Override
 		public long /*int*/ method17 (long /*int*/[] args) {return COM.E_NOTIMPL;}
+		@Override
 		public long /*int*/ method18 (long /*int*/[] args) {return setFrame (args[0], args[1]);}
+		@Override
 		public long /*int*/ method19 (long /*int*/[] args) {return COM.E_NOTIMPL;}
+		@Override
 		public long /*int*/ method20 (long /*int*/[] args) {return COM.E_NOTIMPL;}
+		@Override
 		public long /*int*/ method21 (long /*int*/[] args) {return COM.E_NOTIMPL;}
+		@Override
 		public long /*int*/ method22 (long /*int*/[] args) {return runJavaScriptAlertPanelWithMessage (args[0], args[1]);}
+		@Override
 		public long /*int*/ method23 (long /*int*/[] args) {return runJavaScriptConfirmPanelWithMessage (args[0], args[1], args[2]);}
+		@Override
 		public long /*int*/ method24 (long /*int*/[] args) {return runJavaScriptTextInputPanelWithPrompt (args[0], args[1], args[2], args[3]);}
+		@Override
 		public long /*int*/ method25 (long /*int*/[] args) {return runBeforeUnloadConfirmPanelWithMessage (args[0], args[1], args[2], args[3]);}
+		@Override
 		public long /*int*/ method26 (long /*int*/[] args) {return runOpenPanelForFileButtonWithResultListener (args[0], args[1]);}
+		@Override
 		public long /*int*/ method27 (long /*int*/[] args) {return mouseDidMoveOverElement (args[0], args[1], (int)/*64*/args[2]);}
+		@Override
 		public long /*int*/ method28 (long /*int*/[] args) {return contextMenuItemsForElement (args[0], args[1], args[2], args[3]);}
+		@Override
 		public long /*int*/ method29 (long /*int*/[] args) {return COM.E_NOTIMPL;}
+		@Override
 		public long /*int*/ method30 (long /*int*/[] args) {return COM.E_NOTIMPL;}
+		@Override
 		public long /*int*/ method31 (long /*int*/[] args) {return COM.E_NOTIMPL;}
+		@Override
 		public long /*int*/ method32 (long /*int*/[] args) {return COM.E_NOTIMPL;}
+		@Override
 		public long /*int*/ method33 (long /*int*/[] args) {return COM.E_NOTIMPL;}
+		@Override
 		public long /*int*/ method34 (long /*int*/[] args) {return COM.E_NOTIMPL;}
+		@Override
 		public long /*int*/ method35 (long /*int*/[] args) {return COM.E_NOTIMPL;}
+		@Override
 		public long /*int*/ method36 (long /*int*/[] args) {return COM.E_NOTIMPL;}
+		@Override
 		public long /*int*/ method37 (long /*int*/[] args) {return COM.E_NOTIMPL;}
+		@Override
 		public long /*int*/ method38 (long /*int*/[] args) {return COM.E_NOTIMPL;}
+		@Override
 		public long /*int*/ method39 (long /*int*/[] args) {return COM.E_NOTIMPL;}
+		@Override
 		public long /*int*/ method40 (long /*int*/[] args) {return COM.E_NOTIMPL;}
+		@Override
 		public long /*int*/ method41 (long /*int*/[] args) {return COM.E_NOTIMPL;}
+		@Override
 		public long /*int*/ method42 (long /*int*/[] args) {return canTakeFocus (args[0], (int)/*64*/args[1], args[2]);}
+		@Override
 		public long /*int*/ method43 (long /*int*/[] args) {return takeFocus (args[0], (int)/*64*/args[1]);}
+		@Override
 		public long /*int*/ method44 (long /*int*/[] args) {return COM.E_NOTIMPL;}
+		@Override
 		public long /*int*/ method45 (long /*int*/[] args) {return COM.S_OK;}
+		@Override
 		public long /*int*/ method46 (long /*int*/[] args) {return COM.E_NOTIMPL;}
+		@Override
 		public long /*int*/ method47 (long /*int*/[] args) {return COM.E_NOTIMPL;}
+		@Override
 		public long /*int*/ method48 (long /*int*/[] args) {return COM.E_NOTIMPL;}
+		@Override
 		public long /*int*/ method49 (long /*int*/[] args) {return COM.E_NOTIMPL;}
+		@Override
 		public long /*int*/ method50 (long /*int*/[] args) {return COM.E_NOTIMPL;}
+		@Override
 		public long /*int*/ method51 (long /*int*/[] args) {return printFrame (args[0], args[1]);}
+		@Override
 		public long /*int*/ method52 (long /*int*/[] args) {return COM.E_NOTIMPL;}
+		@Override
 		public long /*int*/ method53 (long /*int*/[] args) {return COM.E_NOTIMPL;}
+		@Override
 		public long /*int*/ method54 (long /*int*/[] args) {return COM.E_NOTIMPL;}
+		@Override
 		public long /*int*/ method55 (long /*int*/[] args) {return COM.E_NOTIMPL;}
+		@Override
 		public long /*int*/ method56 (long /*int*/[] args) {return COM.E_NOTIMPL;}
+		@Override
 		public long /*int*/ method57 (long /*int*/[] args) {return COM.E_NOTIMPL;}
+		@Override
 		public long /*int*/ method58 (long /*int*/[] args) {return COM.E_NOTIMPL;}
+		@Override
 		public long /*int*/ method59 (long /*int*/[] args) {return COM.E_NOTIMPL;}
+		@Override
 		public long /*int*/ method60 (long /*int*/[] args) {return COM.E_NOTIMPL;}
+		@Override
 		public long /*int*/ method61 (long /*int*/[] args) {return COM.E_NOTIMPL;}
+		@Override
 		public long /*int*/ method62 (long /*int*/[] args) {return setMenuBarVisible (args[0], (int)/*64*/args[1]);}
+		@Override
 		public long /*int*/ method63 (long /*int*/[] args) {return COM.E_NOTIMPL;}
+		@Override
 		public long /*int*/ method64 (long /*int*/[] args) {return COM.E_NOTIMPL;}
+		@Override
 		public long /*int*/ method65 (long /*int*/[] args) {return COM.E_NOTIMPL;}
 	};
 }
@@ -464,6 +530,7 @@ void showAlertMessage (String title, String message) {
 	ok.setLayoutData (layoutData);
 
 	ok.addSelectionListener (new SelectionAdapter () {
+		@Override
 		public void widgetSelected (SelectionEvent e) {
 			dialog.dispose ();
 		}
@@ -527,12 +594,14 @@ int showConfirmPanel (String title, String message) {
 
 	final int[] result = new int[1];
 	ok.addSelectionListener (new SelectionAdapter () {
+		@Override
 		public void widgetSelected (SelectionEvent e) {
 			result[0] = SWT.OK;
 			dialog.dispose ();
 		}
 	});
 	cancel.addSelectionListener (new SelectionAdapter () {
+		@Override
 		public void widgetSelected (SelectionEvent e) {
 			result[0] = SWT.CANCEL;
 			dialog.dispose ();
@@ -579,6 +648,7 @@ String showTextPrompter (String title, String message, String defaultText) {
 
 	final String[] result = new String[1];
 	ok.addSelectionListener (new SelectionAdapter () {
+		@Override
 		public void widgetSelected (SelectionEvent e) {
 			result[0] = textBox.getText ();
 			dialog.dispose ();
@@ -588,6 +658,7 @@ String showTextPrompter (String title, String message, String defaultText) {
 	cancel.setText (SWT.getMessage ("SWT_Cancel")); //$NON-NLS-1$
 	cancel.setLayoutData (new GridData (GridData.FILL_HORIZONTAL));
 	cancel.addSelectionListener (new SelectionAdapter () {
+		@Override
 		public void widgetSelected (SelectionEvent e) {
 			dialog.dispose ();
 		}

@@ -248,6 +248,7 @@ void init () {
 
 		/* children created in getSiteHandle() should be destroyed whenever a page is left */
 		browser.addLocationListener (new LocationAdapter () {
+			@Override
 			public void changing (LocationEvent event) {
 				Iterator<Composite> it = childWindows.iterator ();
 				while (it.hasNext ()) {

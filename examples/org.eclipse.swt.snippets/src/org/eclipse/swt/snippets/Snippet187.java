@@ -46,6 +46,7 @@ public static void main(String[] args) {
 	// and evalute expression using Script.
 	int DownloadComplete = 104;
 	controlSite.addEventListener(DownloadComplete, new OleListener() {
+		@Override
 		public void handleEvent(OleEvent event) {
 			int[] htmlDocumentID = webBrowser.getIDsOfNames(new String[]{"Document"}); 
 			if (htmlDocumentID == null) return;

@@ -221,6 +221,7 @@ public void addSelectionListener (SelectionListener listener) {
 	addListener (SWT.DefaultSelection, typedListener);
 }
 
+@Override
 long /*int*/ callWindowProc (long /*int*/ hwnd, int msg, long /*int*/ wParam, long /*int*/ lParam) {
 	if (handle == 0) return 0;
 	return OS.CallWindowProc (windowProc (), hwnd, msg, wParam, lParam);
@@ -241,10 +242,12 @@ static int checkStyle (int style) {
 	return style;
 }
 
+@Override
 protected void checkSubclass () {
 	if (!isValidSubclass ()) error (SWT.ERROR_INVALID_SUBCLASS);
 }
 
+@Override
 public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget ();
 	int width = 0, height = 0;
@@ -320,6 +323,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	return new Point (width, height);
 }
 
+@Override
 void createHandle () {
 	super.createHandle ();
 	state &= ~(CANVAS | THEME_BACKGROUND);
@@ -331,6 +335,7 @@ void createHandle () {
 	}
 }
 
+@Override
 int defaultBackground () {
 	return OS.GetSysColor (OS.COLOR_WINDOW);
 }
@@ -455,6 +460,7 @@ public int getMonth () {
 	return systime.wMonth - 1;
 }
 
+@Override
 String getNameText() {
 	return (style & SWT.TIME) != 0 ? getHours() + ":" + getMinutes() + ":" + getSeconds()
 			: (getMonth() + 1) + "/" + getDay() + "/" + getYear();
@@ -503,6 +509,7 @@ public int getYear () {
 	return systime.wYear;
 }
 
+@Override
 void releaseWidget () {
 	super.releaseWidget ();
 	lastSystemTime = null;
@@ -669,6 +676,7 @@ public void setMonth (int month) {
 	lastSystemTime = null;
 }
 
+@Override
 public void setOrientation (int orientation) {
 	/* Currently supported only for CALENDAR style. */
 	if ((style & SWT.CALENDAR) != 0) super.setOrientation (orientation);
@@ -761,6 +769,7 @@ public void setYear (int year) {
 	lastSystemTime = null;
 }
 
+@Override
 int widgetStyle () {
 	int bits = super.widgetStyle () | OS.WS_TABSTOP;
 	if ((style & SWT.CALENDAR) != 0) return bits | OS.MCS_NOTODAY;
@@ -778,14 +787,17 @@ int widgetStyle () {
 	return bits;
 }
 
+@Override
 TCHAR windowClass () {
 	return (style & SWT.CALENDAR) != 0 ? CalendarClass : DateTimeClass;
 }
 
+@Override
 long /*int*/ windowProc () {
 	return (style & SWT.CALENDAR) != 0 ? CalendarProc : DateTimeProc;
 }
 
+@Override
 LRESULT wmNotifyChild (NMHDR hdr, long /*int*/ wParam, long /*int*/ lParam) {
 	switch (hdr.code) {
 		case OS.DTN_CLOSEUP: {
@@ -821,6 +833,7 @@ LRESULT wmNotifyChild (NMHDR hdr, long /*int*/ wParam, long /*int*/ lParam) {
 	return super.wmNotifyChild (hdr, wParam, lParam);
 }
 
+@Override
 LRESULT WM_CHAR (long /*int*/ wParam, long /*int*/ lParam) {
 	LRESULT result = super.WM_CHAR (wParam, lParam);
 	if (result != null) return result;
@@ -840,6 +853,7 @@ LRESULT WM_CHAR (long /*int*/ wParam, long /*int*/ lParam) {
 	return result;
 }
 
+@Override
 LRESULT WM_LBUTTONDBLCLK (long /*int*/ wParam, long /*int*/ lParam) {	
 	LRESULT result = super.WM_LBUTTONDBLCLK (wParam, lParam);
 	if (isDisposed ()) return LRESULT.ZERO;
@@ -856,6 +870,7 @@ LRESULT WM_LBUTTONDBLCLK (long /*int*/ wParam, long /*int*/ lParam) {
 	return result;
 }
 
+@Override
 LRESULT WM_LBUTTONDOWN (long /*int*/ wParam, long /*int*/ lParam) {
 	LRESULT result = super.WM_LBUTTONDOWN (wParam, lParam);
 	if (result == LRESULT.ZERO) return result;
@@ -871,6 +886,7 @@ LRESULT WM_LBUTTONDOWN (long /*int*/ wParam, long /*int*/ lParam) {
 	return result;
 }
 
+@Override
 LRESULT WM_LBUTTONUP (long /*int*/ wParam, long /*int*/ lParam) {	
 	LRESULT result = super.WM_LBUTTONUP (wParam, lParam);
 	if (isDisposed ()) return LRESULT.ZERO;
@@ -879,6 +895,7 @@ LRESULT WM_LBUTTONUP (long /*int*/ wParam, long /*int*/ lParam) {
 	return result;
 }
 
+@Override
 LRESULT WM_TIMER (long /*int*/ wParam, long /*int*/ lParam) {
 	LRESULT result = super.WM_TIMER (wParam, lParam);
 	if (result != null) return result;

@@ -71,6 +71,7 @@ public class Snippet199 {
 	
 	int eventID = SheetSelectionChange;
 	OleListener listener = new OleListener() {
+		@Override
 		public void handleEvent (OleEvent e) {
 			System.out.println("selection has changed");
 			Variant[] args = e.arguments;

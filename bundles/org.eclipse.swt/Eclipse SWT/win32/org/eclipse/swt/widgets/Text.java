@@ -161,6 +161,7 @@ public Text (Composite parent, int style) {
 	super (parent, checkStyle (style));
 }
 
+@Override
 long /*int*/ callWindowProc (long /*int*/ hwnd, int msg, long /*int*/ wParam, long /*int*/ lParam) {
 	if (handle == 0) return 0;
 	boolean redraw = false;
@@ -271,6 +272,7 @@ long /*int*/ callWindowProc (long /*int*/ hwnd, int msg, long /*int*/ wParam, lo
 	return code;
 }
 
+@Override
 void createHandle () {
 	super.createHandle ();
 	OS.SendMessage (handle, OS.EM_LIMITTEXT, 0, 0);
@@ -661,6 +663,7 @@ public void clearSelection () {
 	}
 }
 
+@Override
 public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget ();
 	int height = 0, width = 0;
@@ -709,6 +712,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	return new Point (trim.width, trim.height);
 }
 
+@Override
 public Rectangle computeTrim (int x, int y, int width, int height) {
 	checkWidget ();
 	Rectangle rect = super.computeTrim (x, y, width, height);
@@ -747,6 +751,7 @@ public void copy () {
 	OS.SendMessage (handle, OS.WM_COPY, 0, 0);
 }
 
+@Override
 void createWidget () {
 	super.createWidget ();
 	message = "";
@@ -773,6 +778,7 @@ public void cut () {
 	OS.SendMessage (handle, OS.WM_CUT, 0, 0);
 }
 
+@Override
 int defaultBackground () {
 	int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
 	return OS.GetSysColor ((bits & OS.ES_READONLY) != 0 ? OS.COLOR_3DFACE : OS.COLOR_WINDOW);
@@ -815,6 +821,7 @@ TCHAR deprocessText (TCHAR text, int start, int end, boolean terminate) {
 	return text;
 }
 
+@Override
 boolean dragDetect (long /*int*/ hwnd, int x, int y, boolean filter, boolean [] detect, boolean [] consume) {
 	if (filter) {
 		int [] start = new int [1], end = new int [1];
@@ -887,6 +894,7 @@ void fixAlignment () {
 	OS.SetWindowLong (handle, OS.GWL_STYLE, bits2);
 }
 
+@Override
 public int getBorderWidth () {
 	checkWidget ();
 	/*
@@ -1184,6 +1192,7 @@ public int getLineHeight () {
  * 
  * @since 2.1.2
  */
+@Override
 public int getOrientation () {
 	return super.getOrientation ();
 }
@@ -1622,6 +1631,7 @@ public void paste () {
 	OS.SendMessage (handle, OS.WM_PASTE, 0, 0);
 }
 
+@Override
 void releaseWidget () {
 	super.releaseWidget ();
 	message = null;
@@ -1728,6 +1738,7 @@ public void removeVerifyListener (VerifyListener listener) {
 	eventTable.unhook (SWT.Verify, listener);	
 }
 
+@Override
 int resolveTextDirection() {
 	int textDirection = SWT.NONE;
 	int length = OS.GetWindowTextLength (handle);
@@ -1763,6 +1774,7 @@ public void selectAll () {
 	OS.SendMessage (handle, OS.EM_SETSEL, 0, -1);
 }
 
+@Override
 boolean sendKeyEvent (int type, int msg, long /*int*/ wParam, long /*int*/ lParam, Event event) {
 	if (!super.sendKeyEvent (type, msg, wParam, lParam, event)) {
 		return false;
@@ -1877,6 +1889,7 @@ boolean sendKeyEvent (int type, int msg, long /*int*/ wParam, long /*int*/ lPara
 	return false;
 }
 
+@Override
 void setBounds (int x, int y, int width, int height, int flags) {
 	/*
 	* Feature in Windows.  When the caret is moved,
@@ -1942,6 +1955,7 @@ void setBounds (int x, int y, int width, int height, int flags) {
 	}
 }
 
+@Override
 void setDefaultFont () {
 	super.setDefaultFont ();
 	setMargins ();
@@ -2025,6 +2039,7 @@ public void setEditable (boolean editable) {
 	OS.SendMessage (handle, OS.EM_SETREADONLY, editable ? 0 : 1, 0);
 }
 
+@Override
 public void setFont (Font font) {
 	checkWidget ();
 	super.setFont (font);
@@ -2101,6 +2116,7 @@ public void setMessage (String message) {
  * 
  * @since 2.1.2
  */
+@Override
 public void setOrientation (int orientation) {
 	super.setOrientation (orientation);
 }
@@ -2173,6 +2189,7 @@ public void setSelection (int start, int end) {
 	OS.SendMessage (handle, OS.EM_SCROLLCARET, 0, 0);
 }
 
+@Override
 public void setRedraw (boolean redraw) {
 	checkWidget ();
 	super.setRedraw (redraw);
@@ -2466,12 +2483,14 @@ int untranslateOffset (int offset) {
 	return offset;
 }
 
+@Override
 void updateMenuLocation (Event event) {
 	Point point = display.map (this, null, getCaretLocation ());
 	event.x = point.x;
 	event.y = point.y + getLineHeight ();
 }
 
+@Override
 void updateOrientation (){
 	int bits = OS.GetWindowLong (handle, OS.GWL_EXSTYLE);
 	if ((style & SWT.RIGHT_TO_LEFT) != 0) {
@@ -2483,6 +2502,7 @@ void updateOrientation (){
 	fixAlignment ();
 }
 
+@Override
 boolean updateTextDirection(int textDirection) {
 	if (super.updateTextDirection(textDirection)) {
 		clearSegments (true);
@@ -2568,6 +2588,7 @@ int wcsToMbcsPos (int wcsPos) {
 	return mbcsTotal;
 }
 
+@Override
 int widgetStyle () {
 	int bits = super.widgetStyle () | OS.ES_AUTOHSCROLL;
 	if ((style & SWT.PASSWORD) != 0) bits |= OS.ES_PASSWORD;
@@ -2600,14 +2621,17 @@ int widgetStyle () {
 	return bits;
 }
 
+@Override
 TCHAR windowClass () {
 	return EditClass;
 }
 
+@Override
 long /*int*/ windowProc () {
 	return EditProc;
 }
 
+@Override
 long /*int*/ windowProc (long /*int*/ hwnd, int msg, long /*int*/ wParam, long /*int*/ lParam) {
 	boolean processSegments = hooks (SWT.Segments) || filters (SWT.Segments), redraw = false, updateDirection = (state & HAS_AUTO_DIRECTION) != 0;
 	long /*int*/ code;
@@ -2683,6 +2707,7 @@ long /*int*/ windowProc (long /*int*/ hwnd, int msg, long /*int*/ wParam, long /
 	return code;
 }
 
+@Override
 LRESULT WM_CHAR (long /*int*/ wParam, long /*int*/ lParam) {
 	if (ignoreCharacter) return null;
 	LRESULT result = super.WM_CHAR (wParam, lParam);
@@ -2741,18 +2766,21 @@ LRESULT WM_CHAR (long /*int*/ wParam, long /*int*/ lParam) {
 	return result;
 }
 
+@Override
 LRESULT WM_CLEAR (long /*int*/ wParam, long /*int*/ lParam) {
 	LRESULT result = super.WM_CLEAR (wParam, lParam);
 	if (result != null) return result;
 	return wmClipboard (OS.WM_CLEAR, wParam, lParam);
 }
 
+@Override
 LRESULT WM_CUT (long /*int*/ wParam, long /*int*/ lParam) {
 	LRESULT result = super.WM_CUT (wParam, lParam);
 	if (result != null) return result;
 	return wmClipboard (OS.WM_CUT, wParam, lParam);
 }
 
+@Override
 LRESULT WM_ERASEBKGND (long /*int*/ wParam, long /*int*/ lParam) {
 	LRESULT result = super.WM_ERASEBKGND (wParam, lParam);
 	if ((style & SWT.READ_ONLY) != 0) {
@@ -2779,6 +2807,7 @@ LRESULT WM_ERASEBKGND (long /*int*/ wParam, long /*int*/ lParam) {
 	return result;
 }
 
+@Override
 LRESULT WM_GETDLGCODE (long /*int*/ wParam, long /*int*/ lParam) {
 	LRESULT result = super.WM_GETDLGCODE (wParam, lParam);
 	if (result != null) return result;
@@ -2812,6 +2841,7 @@ LRESULT WM_GETDLGCODE (long /*int*/ wParam, long /*int*/ lParam) {
 	return null;
 }
 
+@Override
 LRESULT WM_GETOBJECT (long /*int*/ wParam, long /*int*/ lParam) {
 	/*
 	* Ensure that there is an accessible object created for this
@@ -2824,6 +2854,7 @@ LRESULT WM_GETOBJECT (long /*int*/ wParam, long /*int*/ lParam) {
 	return super.WM_GETOBJECT (wParam, lParam);
 }
 
+@Override
 LRESULT WM_IME_CHAR (long /*int*/ wParam, long /*int*/ lParam) {
 
 	/* Process a DBCS character */
@@ -2858,6 +2889,7 @@ LRESULT WM_IME_CHAR (long /*int*/ wParam, long /*int*/ lParam) {
 	return new LRESULT (result);
 }
 
+@Override
 LRESULT WM_LBUTTONDBLCLK (long /*int*/ wParam, long /*int*/ lParam) {
 	/*
 	* Prevent Windows from processing WM_LBUTTONDBLCLK
@@ -2896,6 +2928,7 @@ LRESULT WM_LBUTTONDBLCLK (long /*int*/ wParam, long /*int*/ lParam) {
 	return result;
 }
 
+@Override
 LRESULT WM_LBUTTONDOWN (long /*int*/ wParam, long /*int*/ lParam) {
 	if (OS.IsPPC) {
 		LRESULT result = null;
@@ -2940,12 +2973,14 @@ LRESULT WM_LBUTTONDOWN (long /*int*/ wParam, long /*int*/ lParam) {
 	 return super.WM_LBUTTONDOWN (wParam, lParam);
 }
 
+@Override
 LRESULT WM_PASTE (long /*int*/ wParam, long /*int*/ lParam) {
 	LRESULT result = super.WM_PASTE (wParam, lParam);
 	if (result != null) return result;
 	return wmClipboard (OS.WM_PASTE, wParam, lParam);
 }
 
+@Override
 LRESULT WM_UNDO (long /*int*/ wParam, long /*int*/ lParam) {
 	LRESULT result = super.WM_UNDO (wParam, lParam);
 	if (result != null) return result;
@@ -3028,6 +3063,7 @@ LRESULT wmClipboard (int msg, long /*int*/ wParam, long /*int*/ lParam) {
 	return null;
 }
 
+@Override
 LRESULT wmColorChild (long /*int*/ wParam, long /*int*/ lParam) {
 	if ((style & SWT.READ_ONLY) != 0) {
 		if ((style & (SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL)) == 0) {
@@ -3053,6 +3089,7 @@ LRESULT wmColorChild (long /*int*/ wParam, long /*int*/ lParam) {
 	return super.wmColorChild (wParam, lParam);
 }
 
+@Override
 LRESULT wmCommandChild (long /*int*/ wParam, long /*int*/ lParam) {
 	int code = OS.HIWORD (wParam);
 	switch (code) {
@@ -3110,6 +3147,7 @@ LRESULT wmCommandChild (long /*int*/ wParam, long /*int*/ lParam) {
 	return super.wmCommandChild (wParam, lParam);
 }
 
+@Override
 LRESULT wmKeyDown (long /*int*/ hwnd, long /*int*/ wParam, long /*int*/ lParam) {
 	LRESULT result = super.wmKeyDown (hwnd, wParam, lParam);
 	if (result != null) return result;

@@ -26,6 +26,7 @@ public TabItemDrawData() {
 	state = new int[1];
 }
 
+@Override
 Rectangle computeTrim(Theme theme, GC gc) {
 	if (OS.COMCTL32_MAJOR >= 6 && OS.IsAppThemed ()) {
 		long /*int*/ hTheme = OS.OpenThemeData(0, getClassId());
@@ -53,6 +54,7 @@ Rectangle computeTrim(Theme theme, GC gc) {
 	return new Rectangle(0, 0, 0, 0);
 }
 
+@Override
 void draw(Theme theme, GC gc, Rectangle bounds) {
 	if (OS.COMCTL32_MAJOR >= 6 && OS.IsAppThemed ()) {
 		int state = this.state[DrawData.WIDGET_WHOLE];
@@ -91,10 +93,12 @@ void draw(Theme theme, GC gc, Rectangle bounds) {
 	}
 }
 
+@Override
 char[] getClassId() {
 	return TAB;
 }
 
+@Override
 int[] getPartId(int part) {
 	int state = this.state[part];
 	int iPartId = OS.TABP_TABITEM, iStateId = OS.TIS_NORMAL;
@@ -111,6 +115,7 @@ int[] getPartId(int part) {
 	return new int[]{iPartId, iStateId};	
 }
 
+@Override
 int hit(Theme theme, Point position, Rectangle bounds) {
 	if (!bounds.contains(position)) return DrawData.WIDGET_NOWHERE;
 	int style = this.style;

@@ -24,6 +24,7 @@ public GroupDrawData() {
 
 static final int GROUP_HEADER_X = 9;
 static final int GROUP_HEADER_PAD = 2;
+@Override
 void draw(Theme theme, GC gc, Rectangle bounds) {
 	if (OS.COMCTL32_MAJOR >= 6 && OS.IsAppThemed ()) {
 		long /*int*/ hTheme = OS.OpenThemeData(0, getClassId());
@@ -58,6 +59,7 @@ void draw(Theme theme, GC gc, Rectangle bounds) {
 	}
 }
 
+@Override
 int[] getPartId(int part) {
 	int state = this.state[part];
 	int iPartId = OS.BP_GROUPBOX, iStateId = OS.GBS_NORMAL;			
@@ -65,6 +67,7 @@ int[] getPartId(int part) {
 	return new int[]{iPartId, iStateId};	
 }
 
+@Override
 int hit(Theme theme, Point position, Rectangle bounds) {
    	return bounds.contains(position) ? DrawData.WIDGET_WHOLE : DrawData.WIDGET_NOWHERE;
 }

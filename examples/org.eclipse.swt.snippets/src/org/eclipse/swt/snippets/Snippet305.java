@@ -45,6 +45,7 @@ public class Snippet305 {
 			excelSheet.dispose();
 			
 			OleListener listener = new OleListener() {
+				@Override
 				public void handleEvent(OleEvent e) {
 					// SheetSelectionChange(ByVal Sh As Object, ByVal Target As Excel.Range)
 					Variant[] args = e.arguments;

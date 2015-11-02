@@ -320,11 +320,13 @@ boolean isInlineEnabled () {
 	return OS.IsDBLocale && hooks (SWT.ImeComposition);
 }
 
+@Override
 void releaseParent () {
 	super.releaseParent ();
 	if (this == parent.getIME ()) parent.setIME (null);
 }
 
+@Override
 void releaseWidget () {
 	super.releaseWidget ();
 	parent = null;

@@ -117,6 +117,7 @@ public Group (Composite parent, int style) {
 	super (parent, checkStyle (style));
 }
 
+@Override
 long /*int*/ callWindowProc (long /*int*/ hwnd, int msg, long /*int*/ wParam, long /*int*/ lParam) {
 	if (handle == 0) return 0;
 	/*
@@ -144,10 +145,12 @@ static int checkStyle (int style) {
 	return style & ~(SWT.H_SCROLL | SWT.V_SCROLL);
 }
 
+@Override
 protected void checkSubclass () {
 	if (!isValidSubclass ()) error (SWT.ERROR_INVALID_SUBCLASS);
 }
 
+@Override
 public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget ();
 	Point size = super.computeSize (wHint, hHint, changed);
@@ -175,6 +178,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	return size;
 }
 
+@Override
 public Rectangle computeTrim (int x, int y, int width, int height) {
 	checkWidget ();
 	Rectangle trim = super.computeTrim (x, y, width, height);
@@ -194,6 +198,7 @@ public Rectangle computeTrim (int x, int y, int width, int height) {
 	return trim;
 }
 
+@Override
 void createHandle () {
 	/*
 	* Feature in Windows.  When a button is created,
@@ -211,6 +216,7 @@ void createHandle () {
 	state &= ~CANVAS;
 }
 
+@Override
 void enableWidget (boolean enabled) {
 	super.enableWidget (enabled);
 	/*
@@ -244,6 +250,7 @@ String fixText (boolean enabled) {
 	return null;
 }
 
+@Override
 public Rectangle getClientArea () {
 	checkWidget ();
 	forceResize ();
@@ -264,6 +271,7 @@ public Rectangle getClientArea () {
 	return new Rectangle (x, y, width, height);
 }
 
+@Override
 String getNameText () {
 	return getText ();
 }
@@ -285,16 +293,19 @@ public String getText () {
 	return text;
 }
 
+@Override
 boolean mnemonicHit (char key) {
 	return setFocus ();
 }
 
+@Override
 boolean mnemonicMatch (char key) {
 	char mnemonic = findMnemonic (getText ());
 	if (mnemonic == '\0') return false;
 	return Character.toUpperCase (key) == Character.toUpperCase (mnemonic);
 }
 
+@Override
 void printWidget (long /*int*/ hwnd, long /*int*/ hdc, GC gc) {
 	/*
 	* Bug in Windows.  For some reason, PrintWindow()
@@ -358,15 +369,18 @@ void printWidget (long /*int*/ hwnd, long /*int*/ hdc, GC gc) {
 	}
 }
 
+@Override
 void releaseWidget () {
 	super.releaseWidget ();
 	text = null;
 }
 
+@Override
 int resolveTextDirection () {
 	return resolveTextDirection (text);
 }
 
+@Override
 public void setFont (Font font) {
 	checkWidget ();
 	Rectangle oldRect = getClientArea ();
@@ -413,6 +427,7 @@ public void setText (String string) {
 	}
 }
 
+@Override
 boolean updateTextDirection(int textDirection) {
 	if (super.updateTextDirection(textDirection)) {
 		String string = fixText (OS.IsWindowEnabled (handle));
@@ -423,6 +438,7 @@ boolean updateTextDirection(int textDirection) {
 	return false;
 }
 
+@Override
 int widgetStyle () {
 	/*
 	* Bug in Windows.  When GetDCEx() is called with DCX_INTERSECTUPDATE,
@@ -438,14 +454,17 @@ int widgetStyle () {
 	return super.widgetStyle () | OS.BS_GROUPBOX | OS.WS_CLIPCHILDREN | OS.WS_CLIPSIBLINGS;
 }
 
+@Override
 TCHAR windowClass () {
 	return GroupClass;
 }
 
+@Override
 long /*int*/ windowProc () {
 	return GroupProc;
 }
 
+@Override
 LRESULT WM_ERASEBKGND (long /*int*/ wParam, long /*int*/ lParam) {
 	LRESULT result = super.WM_ERASEBKGND (wParam, lParam);
 	if (result != null) return result;
@@ -458,6 +477,7 @@ LRESULT WM_ERASEBKGND (long /*int*/ wParam, long /*int*/ lParam) {
 	return LRESULT.ONE;
 }
 
+@Override
 LRESULT WM_NCHITTEST (long /*int*/ wParam, long /*int*/ lParam) {
 	LRESULT result = super.WM_NCHITTEST (wParam, lParam);
 	if (result != null) return result;
@@ -475,6 +495,7 @@ LRESULT WM_NCHITTEST (long /*int*/ wParam, long /*int*/ lParam) {
 	return new LRESULT (code);
 }
 
+@Override
 LRESULT WM_MOUSEMOVE (long /*int*/ wParam, long /*int*/ lParam) {
 	LRESULT result = super.WM_MOUSEMOVE (wParam, lParam);
 	if (result != null) return result;
@@ -487,6 +508,7 @@ LRESULT WM_MOUSEMOVE (long /*int*/ wParam, long /*int*/ lParam) {
 	return LRESULT.ZERO;
 }
 
+@Override
 LRESULT WM_PRINTCLIENT (long /*int*/ wParam, long /*int*/ lParam) {
 	LRESULT result = super.WM_PRINTCLIENT (wParam, lParam);
 	if (result != null) return result;
@@ -509,6 +531,7 @@ LRESULT WM_PRINTCLIENT (long /*int*/ wParam, long /*int*/ lParam) {
 	return result;
 }
 
+@Override
 LRESULT WM_UPDATEUISTATE (long /*int*/ wParam, long /*int*/ lParam) {
 	LRESULT result = super.WM_UPDATEUISTATE (wParam, lParam);
 	if (result != null) return result;
@@ -537,6 +560,7 @@ LRESULT WM_UPDATEUISTATE (long /*int*/ wParam, long /*int*/ lParam) {
 	return result;
 }
 
+@Override
 LRESULT WM_WINDOWPOSCHANGING (long /*int*/ wParam, long /*int*/ lParam) {
 	LRESULT result = super.WM_WINDOWPOSCHANGING (wParam, lParam);
 	if (result != null) return result;

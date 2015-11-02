@@ -18,13 +18,16 @@ public ToolBarDrawData() {
 	state = new int[1];
 }
 
+@Override
 void draw(Theme theme, GC gc, Rectangle bounds) {
 }
 
+@Override
 char[] getClassId() {
 	return TOOLBAR;
 }
 
+@Override
 int hit(Theme theme, Point position, Rectangle bounds) {
 	if (!bounds.contains(position)) return DrawData.WIDGET_NOWHERE;
 	return DrawData.WIDGET_WHOLE;

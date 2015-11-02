@@ -429,6 +429,7 @@ public String getName () {
  *
  * @see #hashCode()
  */
+@Override
 public boolean equals(Object other) {
 	if (this == other) return true;
 	if (other instanceof Program) {
@@ -449,6 +450,7 @@ public boolean equals(Object other) {
  *
  * @see #equals(Object)
  */
+@Override
 public int hashCode() {
 	return name.hashCode() ^ command.hashCode() ^ iconName.hashCode();
 }
@@ -459,6 +461,7 @@ public int hashCode() {
  *
  * @return a string representation of the program
  */
+@Override
 public String toString () {
 	return "Program {" + name + "}"; //$NON-NLS-1$ //$NON-NLS-2$
 }

@@ -20,6 +20,7 @@ public ButtonDrawData() {
 	state = new int[1];
 }
 
+@Override
 int[] getPartId(int part) {
 	int state = this.state[part];
 	int style = this.style;
@@ -54,6 +55,7 @@ int[] getPartId(int part) {
 	return new int[]{iPartId, iStateId};
 }
 
+@Override
 void draw(Theme theme, GC gc, Rectangle bounds) {
 	if (OS.COMCTL32_MAJOR >= 6 && OS.IsAppThemed ()) {
 		//TODO - arrow and toggle
@@ -87,6 +89,7 @@ void draw(Theme theme, GC gc, Rectangle bounds) {
 	}
 }
 
+@Override
 int hit(Theme theme, Point position, Rectangle bounds) {
 	if (!(OS.COMCTL32_MAJOR >= 6 && OS.IsAppThemed ())) return DrawData.WIDGET_NOWHERE;
 	if (!bounds.contains(position)) return DrawData.WIDGET_NOWHERE;

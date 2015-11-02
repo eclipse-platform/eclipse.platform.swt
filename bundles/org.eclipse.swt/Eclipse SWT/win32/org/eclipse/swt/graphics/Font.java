@@ -152,6 +152,7 @@ public Font(Device device, String name, int height, int style) {
 	init(new FontData (name, height, style));
 	init();	
 }
+@Override
 void destroy() {
 	OS.DeleteObject(handle);
 	handle = 0;
@@ -167,6 +168,7 @@ void destroy() {
  *
  * @see #hashCode
  */
+@Override
 public boolean equals(Object object) {
 	if (object == this) return true;
 	if (!(object instanceof Font)) return false;
@@ -203,6 +205,7 @@ public FontData[] getFontData() {
  *
  * @see #equals
  */
+@Override
 public int hashCode () {
 	return (int)/*64*/handle;
 }
@@ -227,6 +230,7 @@ void init (FontData fd) {
  *
  * @return <code>true</code> when the font is disposed and <code>false</code> otherwise
  */
+@Override
 public boolean isDisposed() {
 	return handle == 0;
 }
@@ -237,6 +241,7 @@ public boolean isDisposed() {
  *
  * @return a string representation of the receiver
  */
+@Override
 public String toString () {
 	if (isDisposed()) return "Font {*DISPOSED*}";
 	return "Font {" + handle + "}";

@@ -411,6 +411,7 @@ public Cursor(Device device, ImageData source, int hotspotX, int hotspotY) {
 	init();
 }
 
+@Override
 void destroy () {
 	/*
 	* It is an error in Windows to destroy the current
@@ -451,6 +452,7 @@ void destroy () {
  *
  * @see #hashCode
  */
+@Override
 public boolean equals (Object object) {
 	if (object == this) return true;
 	if (!(object instanceof Cursor)) return false;
@@ -468,6 +470,7 @@ public boolean equals (Object object) {
  *
  * @see #equals
  */
+@Override
 public int hashCode () {
 	return (int)/*64*/handle;
 }
@@ -482,6 +485,7 @@ public int hashCode () {
  *
  * @return <code>true</code> when the cursor is disposed and <code>false</code> otherwise
  */
+@Override
 public boolean isDisposed() {
 	return handle == 0;
 }
@@ -492,6 +496,7 @@ public boolean isDisposed() {
  *
  * @return a string representation of the receiver
  */
+@Override
 public String toString () {
 	if (isDisposed()) return "Cursor {*DISPOSED*}";
 	return "Cursor {" + handle + "}";

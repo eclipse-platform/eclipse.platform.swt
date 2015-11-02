@@ -741,6 +741,7 @@ protected void checkSubclass () {
 	if (!isValidClass (getClass ())) error (SWT.ERROR_INVALID_SUBCLASS);
 }
 
+@Override
 protected void checkDevice () {
 	if (thread == null) error (SWT.ERROR_WIDGET_DISPOSED);
 	if (thread != Thread.currentThread ()) {
@@ -832,6 +833,7 @@ public void close () {
  *
  * @see #init
  */
+@Override
 protected void create (DeviceData data) {
 	checkSubclass ();
 	checkDisplay (thread = Thread.currentThread (), true);
@@ -1177,6 +1179,7 @@ static void deregister (Display display) {
  * @see Device#dispose
  * @see #release
  */
+@Override
 protected void destroy () {
 	if (this == Default) Default = null;
 	deregister (this);
@@ -1507,6 +1510,7 @@ public Menu getMenuBar () {
  *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
  * </ul>
  */
+@Override
 public Rectangle getBounds () {
 	checkDevice ();
 	if (OS.GetSystemMetrics (OS.SM_CMONITORS) < 2) {
@@ -1574,6 +1578,7 @@ int getClickCount (int type, int button, long /*int*/ hwnd, long /*int*/ lParam)
  *
  * @see #getBounds
  */
+@Override
 public Rectangle getClientArea () {
 	checkDevice ();
 	if (OS.GetSystemMetrics (OS.SM_CMONITORS) < 2) {
@@ -2358,6 +2363,7 @@ public Thread getSyncThread () {
  *
  * @see SWT
  */
+@Override
 public Color getSystemColor (int id) {
 	checkDevice ();
 	int pixel = 0x00000000;
@@ -2466,6 +2472,7 @@ public Cursor getSystemCursor (int id) {
  *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
  * </ul>
  */
+@Override
 public Font getSystemFont () {
 	checkDevice ();
 	if (systemFont != null) return systemFont;
@@ -2678,6 +2685,7 @@ long /*int*/ hTabTheme () {
  * 
  * @noreference This method is not intended to be referenced by clients.
  */
+@Override
 public long /*int*/ internal_new_GC (GCData data) {
 	if (isDisposed()) error(SWT.ERROR_DEVICE_DISPOSED);
 	long /*int*/ hDC = OS.GetDC (0);
@@ -2704,6 +2712,7 @@ public long /*int*/ internal_new_GC (GCData data) {
  * 
  * @see #create
  */
+@Override
 protected void init () {
 	super.init ();
 	
@@ -2873,6 +2882,7 @@ protected void init () {
  * 
  * @noreference This method is not intended to be referenced by clients.
  */
+@Override
 public void internal_dispose_GC (long /*int*/ hDC, GCData data) {
 	OS.ReleaseDC (0, hDC);
 }
@@ -3811,6 +3821,7 @@ static void register (Display display) {
  * @see Device#dispose
  * @see #destroy
  */
+@Override
 protected void release () {
 	sendEvent (SWT.Dispose, new Event ());
 	Shell [] shells = getShells ();

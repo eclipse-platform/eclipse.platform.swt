@@ -29,6 +29,7 @@ public TabFolderDrawData() {
 	}
 }
 
+@Override
 void draw(Theme theme, GC gc, Rectangle bounds) {
 	if (OS.COMCTL32_MAJOR >= 6 && OS.IsAppThemed ()) {
 		long /*int*/ hTheme = OS.OpenThemeData(0, getClassId());
@@ -57,10 +58,12 @@ void draw(Theme theme, GC gc, Rectangle bounds) {
 	}
 }
 
+@Override
 char[] getClassId() {
 	return TAB;
 }
 
+@Override
 int[] getPartId(int part) {
 	int state = this.state[part];
 	int iPartId = OS.TABP_PANE, iStateId = OS.TIS_NORMAL;
@@ -73,6 +76,7 @@ int[] getPartId(int part) {
 	return new int[]{iPartId, iStateId};	
 }
 
+@Override
 int hit(Theme theme, Point position, Rectangle bounds) {
 	if (!bounds.contains(position)) return DrawData.WIDGET_NOWHERE;
 	return DrawData.WIDGET_WHOLE;

@@ -81,6 +81,7 @@ public Scrollable (Composite parent, int style) {
 	super (parent, style);
 }
 
+@Override
 long /*int*/ callWindowProc (long /*int*/ hwnd, int msg, long /*int*/ wParam, long /*int*/ lParam) {
 	if (handle == 0) return 0;
 	return OS.DefWindowProc (hwnd, msg, wParam, lParam);
@@ -136,6 +137,7 @@ ScrollBar createScrollBar (int type) {
 	return bar;
 }
 
+@Override
 void createWidget () {
 	super.createWidget ();
 	if ((style & SWT.H_SCROLL) != 0) horizontalBar = createScrollBar (SWT.H_SCROLL);
@@ -266,6 +268,7 @@ public ScrollBar getVerticalBar () {
 	return verticalBar;
 }
 
+@Override
 void releaseChildren (boolean destroy) {
 	if (horizontalBar != null) {
 		horizontalBar.release (false);
@@ -278,6 +281,7 @@ void releaseChildren (boolean destroy) {
 	super.releaseChildren (destroy);
 }
 
+@Override
 void reskinChildren (int flags) {
 	if (horizontalBar != null) horizontalBar.reskin (flags);
 	if (verticalBar != null) verticalBar.reskin (flags);
@@ -288,6 +292,7 @@ long /*int*/ scrolledHandle () {
 	return handle;
 }
 
+@Override
 int widgetExtStyle () {
 	return super.widgetExtStyle ();
 	/*
@@ -302,6 +307,7 @@ int widgetExtStyle () {
 //	return super.widgetExtStyle ();
 }
 
+@Override
 int widgetStyle () {
 	int bits = super.widgetStyle () | OS.WS_TABSTOP;
 	if ((style & SWT.H_SCROLL) != 0) bits |= OS.WS_HSCROLL;
@@ -309,14 +315,17 @@ int widgetStyle () {
 	return bits;
 }
 
+@Override
 TCHAR windowClass () {
 	return display.windowClass;
 }
 
+@Override
 long /*int*/ windowProc () {
 	return display.windowProc;
 }
 
+@Override
 LRESULT WM_HSCROLL (long /*int*/ wParam, long /*int*/ lParam) {
 	LRESULT result = super.WM_HSCROLL (wParam, lParam);
 	if (result != null) return result;
@@ -334,10 +343,12 @@ LRESULT WM_HSCROLL (long /*int*/ wParam, long /*int*/ lParam) {
 	return result;
 }
 
+@Override
 LRESULT WM_MOUSEWHEEL (long /*int*/ wParam, long /*int*/ lParam) {
 	return wmScrollWheel ((state & CANVAS) != 0, wParam, lParam);
 }
 
+@Override
 LRESULT WM_SIZE (long /*int*/ wParam, long /*int*/ lParam) {
 	long /*int*/ code = callWindowProc (handle, OS.WM_SIZE, wParam, lParam);
 	super.WM_SIZE (wParam, lParam);
@@ -346,6 +357,7 @@ LRESULT WM_SIZE (long /*int*/ wParam, long /*int*/ lParam) {
 	return new LRESULT (code);
 }
 
+@Override
 LRESULT WM_VSCROLL (long /*int*/ wParam, long /*int*/ lParam) {
 	LRESULT result = super.WM_VSCROLL (wParam, lParam);
 	if (result != null) return result;
@@ -362,6 +374,7 @@ LRESULT WM_VSCROLL (long /*int*/ wParam, long /*int*/ lParam) {
 	return result;
 }
 
+@Override
 LRESULT wmNCPaint (long /*int*/ hwnd, long /*int*/ wParam, long /*int*/ lParam) {
 	LRESULT result = super.wmNCPaint (hwnd, wParam, lParam);
 	if (result != null) return result;

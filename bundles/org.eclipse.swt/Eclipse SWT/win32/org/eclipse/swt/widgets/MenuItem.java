@@ -232,6 +232,7 @@ public void addSelectionListener (SelectionListener listener) {
 	addListener (SWT.DefaultSelection,typedListener);
 }
 
+@Override
 protected void checkSubclass () {
 	if (!isValidSubclass ()) error (SWT.ERROR_INVALID_SUBCLASS);
 }
@@ -240,6 +241,7 @@ static int checkStyle (int style) {
 	return checkBits (style, SWT.PUSH, SWT.CHECK, SWT.RADIO, SWT.SEPARATOR, SWT.CASCADE, 0);
 }
 
+@Override
 void destroyWidget () {
 	parent.destroyItem (this);
 	releaseHandle ();
@@ -453,11 +455,13 @@ public int getID () {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  */
+@Override
 public Menu getMenu () {
 	checkWidget ();
 	return menu;
 }
 
+@Override
 String getNameText () {
 	if ((style & SWT.SEPARATOR) != 0) return "|";
 	return super.getNameText ();
@@ -546,6 +550,7 @@ public boolean isEnabled () {
 	return getEnabled () && parent.isEnabled ();
 }
 
+@Override
 void releaseChildren (boolean destroy) {
 	if (menu != null) {
 		menu.release (false);
@@ -554,18 +559,21 @@ void releaseChildren (boolean destroy) {
 	super.releaseChildren (destroy);
 }
 
+@Override
 void releaseHandle () {
 	super.releaseHandle ();
 	parent = null;
 	id = -1;
 }
 
+@Override
 void releaseParent () {
 	super.releaseParent ();
 	if (menu != null) menu.dispose ();
 	menu = null;
 }
 
+@Override
 void releaseWidget () {
 	super.releaseWidget ();
 	if (hBitmap != 0) OS.DeleteObject (hBitmap);
@@ -649,6 +657,7 @@ public void removeSelectionListener (SelectionListener listener) {
 }
 
 
+@Override
 void reskinChildren (int flags) {
 	if (menu != null) {
 		menu.reskin (flags);
@@ -813,6 +822,7 @@ public void setID (int id) {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  */
+@Override
 public void setImage (Image image) {
 	checkWidget ();
 	if ((style & SWT.SEPARATOR) != 0) return;
@@ -1103,6 +1113,7 @@ public void setSelection (boolean selected) {
  * 
  * @see #setAccelerator
  */
+@Override
 public void setText (String string) {
 	checkWidget ();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);

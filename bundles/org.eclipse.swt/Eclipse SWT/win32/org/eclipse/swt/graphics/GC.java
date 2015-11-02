@@ -644,6 +644,7 @@ static void destroyGdipBrush(long /*int*/ brush) {
  *    <li>ERROR_THREAD_INVALID_ACCESS if not called from the thread that created the drawable</li>
  * </ul>
  */
+@Override
 void destroy() {
 	boolean gdip = data.gdipGraphics != 0;
 	disposeGdip();
@@ -2649,6 +2650,7 @@ void drawTextGDIP(long /*int*/ gdipGraphics, String string, int x, int y, int fl
  *
  * @see #hashCode
  */
+@Override
 public boolean equals (Object object) {
 	return (object == this) || ((object instanceof GC) && (handle == ((GC)object).handle));
 }
@@ -3981,6 +3983,7 @@ void init(Drawable drawable, GCData data, long /*int*/ hDC) {
  *
  * @see #equals
  */
+@Override
 public int hashCode () {
 	return (int)/*64*/handle;
 }
@@ -4025,6 +4028,7 @@ public boolean isClipped() {
  *
  * @return <code>true</code> when the GC is disposed and <code>false</code> otherwise
  */
+@Override
 public boolean isDisposed() {
 	return handle == 0;
 }
@@ -4812,6 +4816,7 @@ public void setLineWidth(int lineWidth) {
  * 
  * @deprecated this functionality is not supported on some platforms
  */
+@Deprecated
 public void setXORMode(boolean xor) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	OS.SetROP2(handle, xor ? OS.R2_XORPEN : OS.R2_COPYPEN);
@@ -5042,6 +5047,7 @@ public Point textExtent(String string, int flags) {
  *
  * @return a string representation of the receiver
  */
+@Override
 public String toString () {
 	if (isDisposed()) return "GC {*DISPOSED*}";
 	return "GC {" + handle + "}";

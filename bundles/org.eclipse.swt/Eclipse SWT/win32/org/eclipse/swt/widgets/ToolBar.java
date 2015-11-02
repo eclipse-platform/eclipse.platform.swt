@@ -139,6 +139,7 @@ public ToolBar (Composite parent, int style) {
 	}
 }
 
+@Override
 long /*int*/ callWindowProc (long /*int*/ hwnd, int msg, long /*int*/ wParam, long /*int*/ lParam) {
 	if (handle == 0) return 0;
 	/*
@@ -176,15 +177,18 @@ static int checkStyle (int style) {
 	return style & ~(SWT.H_SCROLL | SWT.V_SCROLL);
 }
 
+@Override
 void checkBuffered () {
 	super.checkBuffered ();
 	if (OS.COMCTL32_MAJOR >= 6) style |= SWT.DOUBLE_BUFFERED;
 }
 
+@Override
 protected void checkSubclass () {
 	if (!isValidSubclass ()) error (SWT.ERROR_INVALID_SUBCLASS);
 }
 
+@Override
 public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget ();
 	int width = 0, height = 0;
@@ -247,6 +251,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	return new Point (width, height);
 }
 
+@Override
 public Rectangle computeTrim (int x, int y, int width, int height) {
 	checkWidget ();
 	Rectangle trim = super.computeTrim (x, y, width, height);
@@ -255,6 +260,7 @@ public Rectangle computeTrim (int x, int y, int width, int height) {
 	return trim;
 }
 
+@Override
 Widget computeTabGroup () {
 	ToolItem [] items = _getItems ();
 	if (tabItemList == null) {
@@ -272,6 +278,7 @@ Widget computeTabGroup () {
 	return super.computeTabGroup ();
 }
 
+@Override
 Widget [] computeTabList () {
 	ToolItem [] items = _getItems ();
 	if (tabItemList == null) {
@@ -296,6 +303,7 @@ Widget [] computeTabList () {
 	return result;
 }
 
+@Override
 void createHandle () {
 	super.createHandle ();
 	state &= ~CANVAS;
@@ -396,6 +404,7 @@ void createItem (ToolItem item, int index) {
 	layoutItems ();
 }
 
+@Override
 void createWidget () {
 	super.createWidget ();
 	items = new ToolItem [4];
@@ -407,6 +416,7 @@ int applyThemeBackground () {
 	return -1; /* No Change */
 }
 
+@Override
 int defaultBackground () {
 	if (OS.IsWinCE) return OS.GetSysColor (OS.COLOR_BTNFACE);
 	return super.defaultBackground ();
@@ -459,6 +469,7 @@ void destroyItem (ToolItem item) {
 	layoutItems ();
 }
 
+@Override
 void enableWidget (boolean enabled) {
 	super.enableWidget (enabled);
 	/*
@@ -782,6 +793,7 @@ void layoutItems () {
 	}
 }
 
+@Override
 boolean mnemonicHit (char ch) {
 	int key = Display.wcsToMbcs (ch);
 	int [] id = new int [1];
@@ -796,6 +808,7 @@ boolean mnemonicHit (char ch) {
 	return true;
 }
 
+@Override
 boolean mnemonicMatch (char ch) {
 	int key = Display.wcsToMbcs (ch);
 	int [] id = new int [1];
@@ -813,6 +826,7 @@ boolean mnemonicMatch (char ch) {
 	return findMnemonic (items [id [0]].text) != '\0';
 }
 
+@Override
 void releaseChildren (boolean destroy) {
 	if (items != null) {
 		for (int i=0; i<items.length; i++) {
@@ -826,6 +840,7 @@ void releaseChildren (boolean destroy) {
 	super.releaseChildren (destroy);
 }
 
+@Override
 void releaseWidget () {
 	super.releaseWidget ();
 	if (imageList != null) {
@@ -843,6 +858,7 @@ void releaseWidget () {
 	imageList = hotImageList = disabledImageList = null;
 }
 
+@Override
 void removeControl (Control control) {
 	super.removeControl (control);
 	for (int i=0; i<items.length; i++) {
@@ -853,6 +869,7 @@ void removeControl (Control control) {
 	}
 }
 
+@Override
 void reskinChildren (int flags) {
 	if (items != null) {
 		for (int i=0; i<items.length; i++) {
@@ -863,11 +880,13 @@ void reskinChildren (int flags) {
 	super.reskinChildren (flags);
 }
 
+@Override
 void setBackgroundImage (long /*int*/ hBitmap) {
 	super.setBackgroundImage (hBitmap);
 	setBackgroundTransparent (hBitmap != 0);
 }
 
+@Override
 void setBackgroundPixel (int pixel) {
 	super.setBackgroundPixel (pixel);
 	setBackgroundTransparent (pixel != -1);
@@ -898,6 +917,7 @@ void setBackgroundTransparent (boolean transparent) {
 	}
 }
 
+@Override
 void setBounds (int x, int y, int width, int height, int flags) {
 	/*
 	* Feature in Windows.  For some reason, when a tool bar is
@@ -917,6 +937,7 @@ void setBounds (int x, int y, int width, int height, int flags) {
 	super.setBounds (x, y, width, height, flags);
 }
 
+@Override
 void setDefaultFont () {
 	super.setDefaultFont ();
 	OS.SendMessage (handle, OS.TB_SETBITMAPSIZE, 0, 0);
@@ -976,6 +997,7 @@ void setDisabledImageList (ImageList imageList) {
 	setDropDownItems (true);
 }
 
+@Override
 public void setFont (Font font) {
 	checkWidget ();
 	setDropDownItems (false);
@@ -1023,6 +1045,7 @@ void setImageList (ImageList imageList) {
 	setDropDownItems (true);
 }
 
+@Override
 public boolean setParent (Composite parent) {
 	checkWidget ();
 	if (!super.setParent (parent)) return false;
@@ -1041,6 +1064,7 @@ public boolean setParent (Composite parent) {
 	return true;
 }
 
+@Override
 public void setRedraw (boolean redraw) {
 	checkWidget ();
 	setDropDownItems (false);
@@ -1099,6 +1123,7 @@ void setRowCount (int count) {
 	this.tabItemList = tabList;
 }
 
+@Override
 boolean setTabItemFocus () {
 	int index = 0;
 	while (index < items.length) {
@@ -1112,6 +1137,7 @@ boolean setTabItemFocus () {
 	return super.setTabItemFocus ();
 }
 
+@Override
 boolean updateTextDirection(int textDirection) {
 	if (super.updateTextDirection(textDirection)) {
 		ToolItem [] items = _getItems ();
@@ -1124,6 +1150,7 @@ boolean updateTextDirection(int textDirection) {
 	return false;
 }
 
+@Override
 String toolTipText (NMTTDISPINFO hdr) {
 	if ((hdr.uFlags & OS.TTF_IDISHWND) != 0) {
 		return null;
@@ -1171,6 +1198,7 @@ String toolTipText (NMTTDISPINFO hdr) {
 	return super.toolTipText (hdr);
 }
 
+@Override
 void updateOrientation () {
 	super.updateOrientation ();
 	if (imageList != null) {
@@ -1213,6 +1241,7 @@ void updateOrientation () {
 	}
 }
 
+@Override
 int widgetStyle () {
 	int bits = super.widgetStyle () | OS.CCS_NORESIZE | OS.TBSTYLE_TOOLTIPS | OS.TBSTYLE_CUSTOMERASE;
 	if (OS.COMCTL32_MAJOR >= 6 && OS.IsAppThemed ()) bits |= OS.TBSTYLE_TRANSPARENT;
@@ -1238,14 +1267,17 @@ int widgetStyle () {
 	return bits;
 }
 
+@Override
 TCHAR windowClass () {
 	return ToolBarClass;
 }
 
+@Override
 long /*int*/ windowProc () {
 	return ToolBarProc;
 }
 
+@Override
 LRESULT WM_CAPTURECHANGED (long /*int*/ wParam, long /*int*/ lParam) {
 	LRESULT result = super.WM_CAPTURECHANGED (wParam, lParam);
 	if (result != null) return result;
@@ -1267,6 +1299,7 @@ LRESULT WM_CAPTURECHANGED (long /*int*/ wParam, long /*int*/ lParam) {
 	return result;
 }
 
+@Override
 LRESULT WM_CHAR (long /*int*/ wParam, long /*int*/ lParam) {
 	LRESULT result = super.WM_CHAR (wParam, lParam);
 	if (result != null) return result;
@@ -1285,6 +1318,7 @@ LRESULT WM_CHAR (long /*int*/ wParam, long /*int*/ lParam) {
 	return result;
 }
 
+@Override
 LRESULT WM_COMMAND (long /*int*/ wParam, long /*int*/ lParam) {
 	/*
 	* Feature in Windows.  When the toolbar window
@@ -1309,6 +1343,7 @@ LRESULT WM_COMMAND (long /*int*/ wParam, long /*int*/ lParam) {
 	return LRESULT.ZERO;
 }
 
+@Override
 LRESULT WM_ERASEBKGND (long /*int*/ wParam, long /*int*/ lParam) {
 	LRESULT result = super.WM_ERASEBKGND (wParam, lParam);
 	/*
@@ -1326,6 +1361,7 @@ LRESULT WM_ERASEBKGND (long /*int*/ wParam, long /*int*/ lParam) {
 	return result;
 }
 
+@Override
 LRESULT WM_GETDLGCODE (long /*int*/ wParam, long /*int*/ lParam) {
 	LRESULT result = super.WM_GETDLGCODE (wParam, lParam);
 	/*
@@ -1337,6 +1373,7 @@ LRESULT WM_GETDLGCODE (long /*int*/ wParam, long /*int*/ lParam) {
 	return new LRESULT (OS.DLGC_BUTTON | OS.DLGC_WANTARROWS);
 }
 
+@Override
 LRESULT WM_KEYDOWN (long /*int*/ wParam, long /*int*/ lParam) {
 	LRESULT result = super.WM_KEYDOWN (wParam, lParam);
 	if (result != null) return result;
@@ -1352,6 +1389,7 @@ LRESULT WM_KEYDOWN (long /*int*/ wParam, long /*int*/ lParam) {
 	return result;
 }
 
+@Override
 LRESULT WM_KILLFOCUS (long /*int*/ wParam, long /*int*/ lParam) {
 	int index = (int)/*64*/OS.SendMessage (handle, OS.TB_GETHOTITEM, 0, 0);
 	TBBUTTON lpButton = new TBBUTTON ();
@@ -1360,16 +1398,19 @@ LRESULT WM_KILLFOCUS (long /*int*/ wParam, long /*int*/ lParam) {
 	return super.WM_KILLFOCUS (wParam, lParam);
 }
 
+@Override
 LRESULT WM_LBUTTONDOWN (long /*int*/ wParam, long /*int*/ lParam) {
 	if (ignoreMouse) return null;
 	return super.WM_LBUTTONDOWN (wParam, lParam);
 }
 
+@Override
 LRESULT WM_LBUTTONUP (long /*int*/ wParam, long /*int*/ lParam) {
 	if (ignoreMouse) return null;
 	return super.WM_LBUTTONUP (wParam, lParam);
 }
 
+@Override
 LRESULT WM_MOUSELEAVE (long /*int*/ wParam, long /*int*/ lParam) {
 	LRESULT result = super.WM_MOUSELEAVE (wParam, lParam);
 	if (result != null) return result;
@@ -1398,11 +1439,13 @@ LRESULT WM_MOUSELEAVE (long /*int*/ wParam, long /*int*/ lParam) {
 	return result;
 }
 
+@Override
 LRESULT WM_MOUSEMOVE (long /*int*/ wParam, long /*int*/ lParam) {
 	if (OS.GetMessagePos () != display.lastMouse) lastArrowId = -1;
 	return super.WM_MOUSEMOVE (wParam, lParam);
 }
 
+@Override
 LRESULT WM_NOTIFY (long /*int*/ wParam, long /*int*/ lParam) {
 	/*
 	* Feature in Windows.  When the toolbar window
@@ -1427,6 +1470,7 @@ LRESULT WM_NOTIFY (long /*int*/ wParam, long /*int*/ lParam) {
 	return LRESULT.ZERO;
 }
 
+@Override
 LRESULT WM_SETFOCUS (long /*int*/ wParam, long /*int*/ lParam) {
 	LRESULT result = super.WM_SETFOCUS (wParam, lParam);
 	if (lastFocusId != -1 && handle == OS.GetFocus ()) {
@@ -1436,6 +1480,7 @@ LRESULT WM_SETFOCUS (long /*int*/ wParam, long /*int*/ lParam) {
 	return result;
 }
 
+@Override
 LRESULT WM_SIZE (long /*int*/ wParam, long /*int*/ lParam) {
 	if (ignoreResize) {
 		long /*int*/ code = callWindowProc (handle, OS.WM_SIZE, wParam, lParam);
@@ -1478,6 +1523,7 @@ LRESULT WM_SIZE (long /*int*/ wParam, long /*int*/ lParam) {
 	return result;
 }
 
+@Override
 LRESULT WM_WINDOWPOSCHANGING (long /*int*/ wParam, long /*int*/ lParam) {
 	LRESULT result = super.WM_WINDOWPOSCHANGING (wParam, lParam);
 	if (result != null) return result;
@@ -1520,12 +1566,14 @@ LRESULT WM_WINDOWPOSCHANGING (long /*int*/ wParam, long /*int*/ lParam) {
 	return result;
 }
 
+@Override
 LRESULT wmCommandChild (long /*int*/ wParam, long /*int*/ lParam) {
 	ToolItem child = items [OS.LOWORD (wParam)];
 	if (child == null) return null;
 	return child.wmCommandChild (wParam, lParam);
 }
 
+@Override
 LRESULT wmNotifyChild (NMHDR hdr, long /*int*/ wParam, long /*int*/ lParam) {
 	switch (hdr.code) {
 		case OS.TBN_DROPDOWN:

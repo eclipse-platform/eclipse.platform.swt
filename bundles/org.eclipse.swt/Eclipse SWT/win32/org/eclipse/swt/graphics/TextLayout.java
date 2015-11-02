@@ -152,6 +152,7 @@ public final class TextLayout extends Resource {
 		width = ascent = descent = x = 0;
 		lineBreak = softBreak = false;		
 	}
+	@Override
 	public String toString () {
 		return "StyleItem {" + start + ", " + style + "}";
 	}
@@ -464,6 +465,7 @@ void computeRuns (GC gc) {
 	if (gc == null) device.internal_dispose_GC(hDC, null);	
 }
 
+@Override
 void destroy () {
 	freeRuns();
 	font = null;	
@@ -2603,6 +2605,7 @@ public int getWrapIndent () {
  *
  * @return <code>true</code> when the text layout is disposed and <code>false</code> otherwise
  */
+@Override
 public boolean isDisposed () {
 	return device == null;
 }
@@ -3564,6 +3567,7 @@ int validadeOffset(int offset, int step) {
  *
  * @return a string representation of the receiver
  */
+@Override
 public String toString () {
 	if (isDisposed()) return "TextLayout {*DISPOSED*}";
 	return "TextLayout {}";

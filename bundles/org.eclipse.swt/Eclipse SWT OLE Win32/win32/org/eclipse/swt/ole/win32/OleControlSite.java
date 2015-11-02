@@ -398,6 +398,7 @@ void addEventListener(long /*int*/ iunknown, GUID guid, int eventID, OleListener
 		
 	}
 }
+@Override
 protected void addObjectReferences() {
 
 	super.addObjectReferences();
@@ -436,30 +437,40 @@ private void connectPropertyChangeSink() {
 	olePropertyChangeSink.AddRef();
 	olePropertyChangeSink.connect(objIUnknown);
 }
+@Override
 protected void createCOMInterfaces () {
 	super.createCOMInterfaces();
 	
 	// register each of the interfaces that this object implements
 	iOleControlSite = new COMObject(new int[]{2, 0, 0, 0, 1, 1, 3, 2, 1, 0}){
+		@Override
 		public long /*int*/ method0(long /*int*/[] args) {return QueryInterface(args[0], args[1]);}
+		@Override
 		public long /*int*/ method1(long /*int*/[] args) {return AddRef();}
+		@Override
 		public long /*int*/ method2(long /*int*/[] args) {return Release();}
+		@Override
 		public long /*int*/ method3(long /*int*/[] args) {return OnControlInfoChanged();}
 		// method4 LockInPlaceActive - not implemented
 		// method5 GetExtendedControl - not implemented
 		// method6 TransformCoords - not implemented
 		// method7 Translate Accelerator - not implemented
+		@Override
 		public long /*int*/ method8(long /*int*/[] args) {return OnFocus((int)/*64*/args[0]);}
 		// method9 ShowPropertyFrame - not implemented
 	};
 	
 	iDispatch = new COMObject(new int[]{2, 0, 0, 1, 3, 5, 8}){
+		@Override
 		public long /*int*/ method0(long /*int*/[] args) {return QueryInterface(args[0], args[1]);}
+		@Override
 		public long /*int*/ method1(long /*int*/[] args) {return AddRef();}
+		@Override
 		public long /*int*/ method2(long /*int*/[] args) {return Release();}
 		// method3 GetTypeInfoCount - not implemented
 		// method4 GetTypeInfo - not implemented
 		// method5 GetIDsOfNames - not implemented
+		@Override
 		public long /*int*/ method6(long /*int*/[] args) {return Invoke((int)/*64*/args[0], args[1], (int)/*64*/args[2], (int)/*64*/args[3], args[4], args[5], args[6], args[7]);}
 	};
 }
@@ -482,6 +493,7 @@ private void disconnectPropertyChangeSink() {
 	}
 	olePropertyChangeSink = null;
 }
+@Override
 protected void disposeCOMInterfaces() {
 	super.disposeCOMInterfaces();
 
@@ -493,6 +505,7 @@ protected void disposeCOMInterfaces() {
 		iDispatch.dispose();
 	iDispatch = null;
 }
+@Override
 public Color getBackground () {
 
 	if (objIUnknown != null) {
@@ -510,6 +523,7 @@ public Color getBackground () {
 		
 	return super.getBackground();
 }
+@Override
 public Font getFont () {
 	if (font != null && !font.isDisposed()) return font;
 	if (objIUnknown != null) {
@@ -539,6 +553,7 @@ public Font getFont () {
 		
 	return super.getFont();
 }
+@Override
 public Color getForeground () {
 
 	if (objIUnknown != null) {
@@ -599,6 +614,7 @@ public Variant getSiteProperty(int dispId){
 	}
 	return null;
 }
+@Override
 protected int GetWindow(long /*int*/ phwnd) {
 
 	if (phwnd == 0)
@@ -665,9 +681,11 @@ private int OnControlInfoChanged() {
 	}
 	return COM.S_OK;
 }
+@Override
 protected int OnUIDeactivate(int fUndoable) {
 	return super.OnUIDeactivate(fUndoable);
 }
+@Override
 void onFocusIn(Event e) {
 	String progID = getProgramID();
 	if (progID == null) return;
@@ -683,6 +701,7 @@ void onFocusIn(Event e) {
 	if (phwnd[0] == 0) return;
 	OS.SetFocus(phwnd[0]);
 }
+@Override
 void onFocusOut(Event e) {
 	if (objIOleInPlaceObject == null) return;
 	String progID = getProgramID();
@@ -739,6 +758,7 @@ void onFocusOut(Event e) {
 private int OnFocus(int fGotFocus) {
 	return COM.S_OK;
 }
+@Override
 protected int QueryInterface(long /*int*/ riid, long /*int*/ ppvObject) {
 	int result = super.QueryInterface(riid, ppvObject);
 	if (result == COM.S_OK)
@@ -760,6 +780,7 @@ protected int QueryInterface(long /*int*/ riid, long /*int*/ ppvObject) {
 	COM.MoveMemory(ppvObject, new long /*int*/[] {0}, OS.PTR_SIZEOF);
 	return COM.E_NOINTERFACE;
 }
+@Override
 protected int Release() {
 	int result = super.Release();
 	if (result == 0) {
@@ -771,6 +792,7 @@ protected int Release() {
 	}
 	return result;
 }
+@Override
 protected void releaseObjectInterfaces() {
 	
 	disconnectEventSinks();
@@ -817,6 +839,7 @@ public void removeEventListener(int eventID, OleListener listener) {
  *	    <li>ERROR_NULL_ARGUMENT when listener is null</li>
  * </ul>
  */
+@Deprecated
 public void removeEventListener(OleAutomation automation, GUID guid, int eventID, OleListener listener) {
 	checkWidget();
 	if (automation == null || listener == null || guid == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
@@ -896,6 +919,7 @@ public void removePropertyListener(int propertyID, OleListener listener) {
 	if (listener == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
 	olePropertyChangeSink.removeListener(propertyID, listener);
 }
+@Override
 public void setBackground (Color color) {
 
 	super.setBackground(color);
@@ -907,6 +931,7 @@ public void setBackground (Color color) {
 		oleObject.dispose();
 	}
 }
+@Override
 public void setFont (Font font) {
 
 	super.setFont(font);
@@ -932,6 +957,7 @@ public void setFont (Font font) {
 	this.font = font;	
 	return;
 }
+@Override
 public void setForeground (Color color) {
 
 	super.setForeground(color);

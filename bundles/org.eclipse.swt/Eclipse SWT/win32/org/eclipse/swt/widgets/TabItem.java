@@ -144,10 +144,12 @@ void _setText (int index, String string) {
 	OS.HeapFree (hHeap, 0, pszText);
 }
 
+@Override
 protected void checkSubclass () {
 	if (!isValidSubclass ()) error (SWT.ERROR_INVALID_SUBCLASS);
 }
 
+@Override
 void destroyWidget () {
 	parent.destroyItem (this);
 	releaseHandle ();
@@ -223,11 +225,13 @@ public String getToolTipText () {
 	return toolTipText;
 }
 
+@Override
 void releaseHandle () {
 	super.releaseHandle ();
 	parent = null;
 }
 
+@Override
 void releaseParent () {
 	super.releaseParent ();
 	int index = parent.indexOf (this);
@@ -236,6 +240,7 @@ void releaseParent () {
 	}
 }
 
+@Override
 void releaseWidget () {
 	super.releaseWidget ();
 	control = null;
@@ -286,6 +291,7 @@ public void setControl (Control control) {
 		oldControl.setVisible (false);
 }
 
+@Override
 public void setImage (Image image) {
 	checkWidget();
 	int index = parent.indexOf (this);
@@ -334,6 +340,7 @@ public void setImage (Image image) {
  * </ul>
  * 
  */
+@Override
 public void setText (String string) {
 	checkWidget();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
@@ -351,6 +358,7 @@ public void setText (String string) {
 	}
 }
 
+@Override
 boolean updateTextDirection(int textDirection) {
 	/* AUTO is handled by super */
 	if (super.updateTextDirection(textDirection) && OS.IsUnicode) {
