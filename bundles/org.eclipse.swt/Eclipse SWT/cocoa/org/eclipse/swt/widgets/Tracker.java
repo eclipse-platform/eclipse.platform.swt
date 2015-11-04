@@ -800,7 +800,7 @@ public boolean open () {
 	while (tracking && !cancelled) {
 		display.addPool();
 		try {
-			NSEvent event = application.nextEventMatchingMask(0, NSDate.distantFuture(), OS.NSDefaultRunLoopMode, true);
+			NSEvent event = application.nextEventMatchingMask(OS.NSAnyEventMask, NSDate.distantFuture(), OS.NSDefaultRunLoopMode, true);
 			if (event == null) continue;
 			int type = (int)/*64*/event.type();
 			switch (type) {
