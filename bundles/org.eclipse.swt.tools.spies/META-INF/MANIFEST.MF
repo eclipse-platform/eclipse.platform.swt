@@ -1,0 +1,15 @@
+Manifest-Version: 1.0
+Bundle-Name: %pluginName
+Bundle-Vendor: %providerName
+Bundle-SymbolicName: org.eclipse.swt.tools.spies;singleton:=true
+Bundle-Version: 3.106.0.qualifier
+Bundle-Activator: org.eclipse.swt.tools.spies.Activator
+Bundle-ManifestVersion: 2
+Export-Package: org.eclipse.swt.tools.spies,
+ org.eclipse.swt.tools.views
+Bundle-ActivationPolicy: lazy
+Bundle-Localization: plugin
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Require-Bundle: org.eclipse.core.runtime;bundle-version="3.4.0",
+ org.eclipse.ui;bundle-version="3.4.0",
+ org.eclipse.swt.tools.base;bundle-version="3.106.0"

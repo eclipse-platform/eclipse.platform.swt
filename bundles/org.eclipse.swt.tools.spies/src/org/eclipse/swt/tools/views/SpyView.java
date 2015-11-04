@@ -16,7 +16,7 @@ import java.lang.reflect.*;
 import org.eclipse.jface.action.*;
 import org.eclipse.swt.*;
 import org.eclipse.swt.custom.*;
-import org.eclipse.swt.tools.*;
+import org.eclipse.swt.tools.spies.*;
 import org.eclipse.swt.widgets.*;
 import org.eclipse.ui.*;
 import org.eclipse.ui.part.*;
