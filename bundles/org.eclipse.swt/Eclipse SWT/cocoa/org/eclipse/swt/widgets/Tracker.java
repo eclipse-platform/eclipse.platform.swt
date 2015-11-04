@@ -11,9 +11,9 @@
 package org.eclipse.swt.widgets;
 
  
-import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.*;
 import org.eclipse.swt.events.*;
+import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.cocoa.*;
 
 /**
@@ -844,7 +844,7 @@ public boolean open () {
 			if (parent != null && parent.isDisposed ()) break;
 			display.runSkin ();
 			display.runDeferredLayouts ();
-			NSEvent event = application.nextEventMatchingMask(0, NSDate.distantFuture(), OS.NSDefaultRunLoopMode, true);
+			NSEvent event = application.nextEventMatchingMask(OS.NSAnyEventMask, NSDate.distantFuture(), OS.NSDefaultRunLoopMode, true);
 			if (event == null) continue;
 			int type = (int)/*64*/event.type();
 			switch (type) {
