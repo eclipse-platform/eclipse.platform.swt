@@ -3686,7 +3686,7 @@ public boolean readAndDispatch () {
 		events |= runTimers ();
 		events |= runContexts ();
 		events |= runPopups ();
-		NSEvent event = application.nextEventMatchingMask(0, null, OS.NSDefaultRunLoopMode, true);
+		NSEvent event = application.nextEventMatchingMask(OS.NSAnyEventMask, null, OS.NSDefaultRunLoopMode, true);
 		if (event != null) {
 			events = true;
 			application.sendEvent(event);

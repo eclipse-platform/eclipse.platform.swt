@@ -2333,6 +2333,7 @@ public static final int NSAlertThirdButtonReturn = 1002;
 public static final int NSAlphaFirstBitmapFormat = 1;
 public static final int NSAlphaNonpremultipliedBitmapFormat = 2;
 public static final int NSAlternateKeyMask = 524288;
+public static final int NSAnyEventMask = -1;
 public static final int NSAppKitDefined = 13;
 public static final int NSApplicationActivateIgnoringOtherApps = 2;
 public static final int NSApplicationActivationPolicyRegular = 0;

@@ -4758,6 +4758,7 @@
 	<enum name="NSAlphaFirstBitmapFormat" swt_gen="true"></enum>
 	<enum name="NSAlphaNonpremultipliedBitmapFormat" swt_gen="true"></enum>
 	<enum name="NSAlternateKeyMask" swt_gen="true"></enum>
+	<enum name="NSAnyEventMask" swt_gen="true"></enum>
 	<enum name="NSAppKitDefined" swt_gen="true"></enum>
 	<enum name="NSApplicationActivateIgnoringOtherApps" swt_gen="true"></enum>
 	<enum name="NSApplicationActivationPolicyRegular" swt_gen="true"></enum>
