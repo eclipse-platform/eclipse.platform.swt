@@ -48,6 +48,43 @@ import org.eclipse.swt.internal.gtk.*;
  * @noextend This class is not intended to be subclassed by clients.
  */
 public class TabFolder extends Composite {
+	/*
+	 * Implementation note (see bug 454936, bug 480794):
+	 * 
+	 * Architecture Change on GTK3:
+	 * In TabItem#setControl(Control), we reparent the child to be a child of the 'tab'
+	 * rather than tabfolder's parent swtFixed container.
+	 * Note, this reparenting is only on the GTK side, not on the SWT side.
+	 *
+	 * GTK2 and GTK3 child nesting behaviour differs now.
+	 * GTK2:
+	 *   swtFixed
+	 *   |-- GtkNoteBook
+	 *   |   |-- tabLabel1
+	 *   |   |-- tabLabel2
+	 *   |-- swtFixed (child1)  //child is sibling of Notebook
+	 *   |-- swtFixed (child2)
+	 *
+	 * GTK3+:
+	 * 	swtFixed
+	 * 	|--	GtkNoteBook
+	 * 		|-- tabLabel1
+	 * 		|-- tabLabel2
+	 * 		|-- pageHandle (tabItem1)
+	 * 			|-- child1 //child now child of Notebook.pageHandle.
+	 * 		|-- pageHandle (tabItem2)
+	 * 			|-- child1
+	 *
+	 * This changes the hierarchy so that children are beneath gtkNotebook (as oppose to
+	 * being siblings) and thus fixes DND and background color issues.
+	 * In gtk2, reparenting doesn't function properly (tab content appear blank),
+	 * so this is a gtk3-specific behavior.
+	 *
+	 * Note about the reason for reparenting:
+	 * Reparenting (as opposed to adding widget to a tab in the first place) is necessary
+	 * because the SWT API allows situation where you create a child control before you create a TabItem.
+	 */
+
 	TabItem [] items;
 	ImageList imageList;
 
@@ -331,6 +368,49 @@ long /*int*/ eventHandle () {
 	return handle;
 }
 		
+@Override
+Control[] _getChildren() {
+	Control [] directChildren = super._getChildren ();
+	if (OS.GTK3) {
+		int directCount = directChildren.length;
+		int count = items == null ? 0 : items.length;
+		Control [] children = new Control [count + directCount];
+		int i = 0;
+		for (int j = 0; j < count; j++) {
+			TabItem tabItem = items[j];
+			if (tabItem != null) {
+				long /*int*/ parentHandle = tabItem.pageHandle;
+				long /*int*/ list = OS.gtk_container_get_children (parentHandle);
+				if (list != 0) {
+					long /*int*/ handle = OS.g_list_data (list);
+					if (handle != 0) {
+						Widget widget = display.getWidget (handle);
+						if (widget != null && widget != this) {
+							if (widget instanceof Control) {
+								children [i++] = (Control) widget;
+							}
+						}
+					}
+					OS.g_list_free (list);
+				}
+			}
+		}
+		if (i == count + directCount) return children;
+		Control [] newChildren;
+		if (i == count) {
+			newChildren = children;
+		} else {
+			newChildren = new Control [i + directCount];
+			System.arraycopy (children, 0, newChildren, 0, i);
+		}
+		System.arraycopy (directChildren, 0, newChildren, i, directCount);
+		return newChildren;
+		
+	} else {
+		return directChildren;
+	}
+}
+
 /**
  * Returns the item at the given, zero-relative index in the
  * receiver. Throws an exception if the index is out of range.
@@ -536,14 +616,7 @@ public int indexOf (TabItem item) {
 
 @Override
 Point minimumSize (int wHint, int hHint, boolean flushCache) {
-	Control [] children;
-	if (OS.GTK3) {
-		//We want the 'Tabcontents' rather than
-		//what's nested under the main swtFixed.
-		children = _getChildren (clientHandle ());
-	} else {
-		children = _getChildren ();
-	}
+	Control [] children = _getChildren ();
 	int width = 0, height = 0;
 	for (int i=0; i<children.length; i++) {
 		Control child = children [i];

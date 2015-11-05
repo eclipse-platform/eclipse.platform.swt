@@ -115,15 +115,8 @@ static int checkStyle (int style) {
 	return style;
 }
 
-//Containers such as Tabfolder have two sets of children,
-//e.g TabItems and actual widget children.
-//thus we need to pass in different parenting handles depending on which children we want.
 Control [] _getChildren () {
 	long /*int*/ parentHandle = parentingHandle ();
-	return _getChildren (parentHandle);
-}
-
-Control [] _getChildren (long /*int*/ parentHandle) {
 	long /*int*/ list = OS.gtk_container_get_children (parentHandle);
 	if (list == 0) return new Control [0];
 	int count = OS.g_list_length (list);
