@@ -12,9 +12,9 @@ package org.eclipse.swt.widgets;
 
 
 import org.eclipse.swt.*;
+import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.gtk.*;
-import org.eclipse.swt.graphics.*;
 
 /**
  * Instances of this class represent a selectable user interface object
@@ -288,42 +288,7 @@ public void setControl (Control control) {
 	}
 
 	if (control != null && OS.GTK3) {
-		/*
-		* Bug 454936 (see also other 454936 references in TabFolder)
-		* Architecture Fix:
-		*  We reparent the child to be a child of the 'tab' rather than tabfolder's parent swtFixed container.
-		*  Note, this reparenting is only on the GTK side, not on the SWT side.
-		*
-		*  Note, GTK2 and GTK3 child nesting behaviour is different now.
-		*  GTK2:
-		*    swtFixed
-		*    |-- GtkNoteBook
-		*    |   |-- tabLabel1
-		*    |   |-- tabLabel2
-		*    |-- swtFixed (child1)  //child is sibling of Notebook
-		*    |-- swtFixed (child2)
-		*
-		*  GTK3+:
-		*  	swtFixed
-		*  	|--	GtkNoteBook
-		*  		|-- tabLabel1
-		*  		|-- tabLabel2
-		*  		|-- swtFixed (child1) //child now child of Notebook.
-		*  		|-- swtFixed (child2)
-		*
-		*  This corrects the hierarchy so that children are beneath gtkNotebook (as oppose to
-		*  being siblings) and thus fixes DND and background color issues.
-		*  In gtk2, reparenting doesn't function properly (tab content appear blank),
-		*  so this is a gtk3-specific behavior.
-		*
-		*  Note about the reason for reparenting:
-		*   Reparenting (as oppose to adding widget to a tab in the first place) is neccessary
-		*   because you can have a situation where you create a widget before you create a tab. e.g
-		*     TabFolder tabFolder = new TabFolder(shell, 0);
-		*     Composite composite = new Composite(tabFolder, 0);
-		*     TabItem tabItem = new TabItem(tabFolder, 0);
-		*     tabitem.setControl(composite);
-		*/
+		// See implementation note about bug 454936 at the start of TabFolder.
 		OS.gtk_widget_reparent (control.topHandle (), pageHandle);
 	}
 

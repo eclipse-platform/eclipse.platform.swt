@@ -17,6 +17,8 @@ import java.util.List;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.TabItem;
 import org.eclipse.swt.widgets.Text;
@@ -54,6 +56,22 @@ public void test_computeSizeIIZ() {
 
 @Override
 public void test_computeTrimIIII() {
+}
+
+public void test_TabFolder_getChildren() {
+	ArrayList<Control> children = new ArrayList<Control>();
+	for (int i = 0; i < 6; i++) {
+		TabItem item = new TabItem(tabFolder, SWT.NONE);
+		item.setText("TabItem " + i);
+		Button button = new Button(tabFolder, SWT.PUSH);
+		button.setText("Page " + i);
+		item.setControl(button);
+		children.add(button);
+	}
+	Label label = new Label(tabFolder, SWT.NONE);
+	label.setText("Unused Child");
+	children.add(label);
+	assertArrayEquals(children.toArray(), tabFolder.getChildren());
 }
 
 @Override
