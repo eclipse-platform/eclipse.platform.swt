@@ -221,7 +221,7 @@ public class LauncherView extends ViewPart {
 			if (instance != null) {
 				Display display = workbenchShell.getDisplay();
 				Method openMethod = instance.getClass().getDeclaredMethod("open", new Class[] {Display.class});
-				openMethod.invoke(instance, new Object[] {display});
+				openMethod.invoke(instance, display);
 			}
 		} catch (NoSuchMethodException e) {
 			LauncherPlugin.logError(LauncherPlugin.getResourceString("run.error.DoesNotImplementMethod"), null);

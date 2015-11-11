@@ -147,10 +147,10 @@ public Hashtable<String, NativeFunction[]> snapshot() {
 public Hashtable<String, NativeFunction[]> snapshot(String className, Hashtable<String, NativeFunction[]> snapshot) {
 	try {
 		Class<? extends NativeStats> clazz = getClass();
-		Method functionCount = clazz.getMethod(className + "_GetFunctionCount", new Class[0]);
-		Method functionCallCount = clazz.getMethod(className + "_GetFunctionCallCount", new Class[]{int.class});
-		Method functionName = clazz.getMethod(className + "_GetFunctionName", new Class[]{int.class});
-		int count = ((Integer)functionCount.invoke(clazz, new Object[0])).intValue();
+		Method functionCount = clazz.getMethod(className + "_GetFunctionCount");
+		Method functionCallCount = clazz.getMethod(className + "_GetFunctionCallCount", int.class);
+		Method functionName = clazz.getMethod(className + "_GetFunctionName", int.class);
+		int count = ((Integer)functionCount.invoke(clazz)).intValue();
 		NativeFunction[] funcs = new NativeFunction[count];
 		Object[] index = new Object[1];
 		for (int i = 0; i < count; i++) {

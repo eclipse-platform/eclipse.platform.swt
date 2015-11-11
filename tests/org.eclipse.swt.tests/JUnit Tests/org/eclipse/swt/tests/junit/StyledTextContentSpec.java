@@ -11,6 +11,10 @@
 package org.eclipse.swt.tests.junit;
 
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+
+import org.eclipse.swt.SWT;
 /**
  * Use this test class to validate an implementation of the StyledTextContent
  * interface.  To perform the validation, copy this class to the package where 
@@ -25,11 +29,16 @@ package org.eclipse.swt.tests.junit;
  * 		/n
  * 		/r/n
  */
-import org.eclipse.swt.custom.*;
-import org.eclipse.swt.*;
-import org.eclipse.swt.widgets.*;
-import org.eclipse.swt.layout.*;
-import java.lang.reflect.*;
+import org.eclipse.swt.custom.StyledText;
+import org.eclipse.swt.custom.StyledTextContent;
+import org.eclipse.swt.custom.TextChangeListener;
+import org.eclipse.swt.custom.TextChangedEvent;
+import org.eclipse.swt.custom.TextChangingEvent;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.MessageBox;
+import org.eclipse.swt.widgets.Shell;
 public class StyledTextContentSpec implements TextChangeListener {
 	static String contentClassName;
 	static int failCount = 0;
@@ -137,7 +146,7 @@ public void run() {
 			if (currentMethod.getName().startsWith("test_")) {
 				System.out.println();
 				System.out.println(currentMethod.getName() + "...");
-				currentMethod.invoke(this, new Object[0]);
+				currentMethod.invoke(this);
 				if (!failed) {
 					System.out.println("PASSED.");
 				} else {

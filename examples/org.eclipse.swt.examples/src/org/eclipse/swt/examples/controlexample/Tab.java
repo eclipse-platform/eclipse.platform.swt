@@ -1215,7 +1215,7 @@ abstract class Tab {
 				if (widgets[i] == null) {
 					continue;
 				}
-				java.lang.reflect.Method method = widgets[i].getClass().getMethod(methodName, new Class[] {returnType});
+				java.lang.reflect.Method method = widgets[i].getClass().getMethod(methodName, returnType);
 				String typeName = returnType.getName();
 				Object[] parameter = null;
 				if (value.equals("null")) {
