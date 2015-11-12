@@ -25,6 +25,10 @@ import org.eclipse.swt.internal.*;
  * touch occurs or changes state, the <code>touch</code> method
  * will be invoked.
  * </p>
+ * <p>
+ * <b>Warning</b>: This API is currently only implemented on Windows and Cocoa.
+ * SWT doesn't send Gesture or Touch events on GTK.
+ * </p>
  *
  * @see TouchEvent
  * 

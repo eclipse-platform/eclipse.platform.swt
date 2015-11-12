@@ -1609,6 +1609,10 @@ public void addFocusListener(FocusListener listener) {
  * must be invoked on it to specify that gesture events should be
  * sent instead of touch events.
  * </p>
+ * <p>
+ * <b>Warning</b>: This API is currently only implemented on Windows and Cocoa.
+ * SWT doesn't send Gesture or Touch events on GTK.
+ * </p>
  *
  * @param listener the listener which should be notified
  *
@@ -1873,6 +1877,10 @@ void addRelation (Control control) {
  * NOTE: You must also call <code>setTouchEnabled(true)</code> to
  * specify that touch events should be sent, which will cause gesture
  * events to not be sent.
+ * </p>
+ * <p>
+ * <b>Warning</b>: This API is currently only implemented on Windows and Cocoa.
+ * SWT doesn't send Gesture or Touch events on GTK.
  * </p>
  *
  * @param listener the listener which should be notified
