@@ -185,7 +185,7 @@ void createControls(final Composite parent) {
 			if (event.detail != SWT.DRAG) {
 				FormData data = (FormData)vSash.getLayoutData();
 				data.left.offset = event.x;
-				parent.layout(true);
+				vSash.requestLayout();
 				animate = true;
 			} else {
 				animate = false;
@@ -200,7 +200,7 @@ void createControls(final Composite parent) {
 			if (event.detail != SWT.DRAG) {
 				FormData data = (FormData)hSash.getLayoutData();
 				data.top.offset = event.y;
-				parent.layout(true);
+				hSash.requestLayout();
 			}
 		}
 	});

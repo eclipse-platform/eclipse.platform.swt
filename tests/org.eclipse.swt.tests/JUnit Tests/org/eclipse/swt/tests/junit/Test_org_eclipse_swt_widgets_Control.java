@@ -369,6 +369,10 @@ public void test_redrawIIIIZ() {
 	control.redraw(10000, 10000, 10000, 10000, false);
 }
 @Test
+public void test_requestLayoutL() {
+	control.requestLayout();
+}
+@Test
 public void test_setBackgroundLorg_eclipse_swt_graphics_Color() {
 	Color color = new Color(control.getDisplay(), 255, 0, 0);
 	control.setBackground(color);

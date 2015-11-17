@@ -84,7 +84,7 @@ public class BrowserExample {
 			parent.setLayout(new FillLayout());
 			Label label = new Label(parent, SWT.CENTER | SWT.WRAP);
 			label.setText(getResourceString("BrowserNotCreated"));
-			parent.layout(true);
+			label.requestLayout();
 			return;
 		}
 		initResources();

@@ -10,12 +10,16 @@
  *******************************************************************************/
 package org.eclipse.swt.examples.browser.demos.views;
 
-import org.eclipse.ui.part.*;
-import org.eclipse.jface.action.*;
-import org.eclipse.swt.*;
-import org.eclipse.swt.widgets.*;
-import org.eclipse.swt.layout.*;
-import org.eclipse.swt.browser.*;
+import org.eclipse.jface.action.Action;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.SWTError;
+import org.eclipse.swt.browser.Browser;
+import org.eclipse.swt.layout.FillLayout;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.TabFolder;
+import org.eclipse.swt.widgets.TabItem;
+import org.eclipse.swt.widgets.Text;
+import org.eclipse.ui.part.ViewPart;
 
 public class BrowserDemoView extends ViewPart {
 	Action pawnAction;
@@ -34,7 +38,7 @@ public class BrowserDemoView extends ViewPart {
 		} catch (SWTError e) {
 			Text text = new Text(parent, SWT.MULTI | SWT.READ_ONLY);
 			text.setText("Browser widget cannot be instantiated. The exact error is:\r\n"+e);
-			parent.layout(true);
+			text.requestLayout();
 			return;
 		}
 		TabFolder folder = new TabFolder(parent, SWT.NONE);
