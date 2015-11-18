@@ -7,6 +7,7 @@
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
+ *     Stefan Xenos (Google) - bug 468854 - Add a requestLayout method to Control
  *******************************************************************************/
 package org.eclipse.swt.widgets;
 
@@ -3751,6 +3752,25 @@ void register () {
 	if (fixedHandle != 0) display.addWidget (fixedHandle, this);
 	long /*int*/ imHandle = imHandle ();
 	if (imHandle != 0) display.addWidget (imHandle, this);
+}
+
+/**
+ * Requests that this control and all of its ancestors be repositioned by
+ * their layouts at the earliest opportunity. This should be invoked after
+ * modifying the control in order to inform any dependent layouts of
+ * the change.
+ * <p>
+ * The control will not be repositioned synchronously. This method is
+ * fast-running and only marks the control for future participation in
+ * a deferred layout.
+ * <p>
+ * Invoking this method multiple times before the layout occurs is an
+ * inexpensive no-op.
+ *
+ * @since 3.105
+ */
+public void requestLayout () {
+	getShell ().layout (new Control[] {this}, SWT.DEFER);
 }
 
 /**
