@@ -333,8 +333,13 @@ void computeRuns (GC gc) {
 			if (wrapEntireRun) {
 				run = allRuns[--i];
 				start = run.length;
-			} else 	if (start <= 0 && i == lineStart) {
-				if (lineWidth == wrapWidth && firstIndice > 0) {
+			} else if (start <= 0 && i == lineStart) {
+				/*
+				 * No soft-break or line-feed found. Avoid breaking a run at
+				 * the first character (firstStart == 0) unless it's the
+				 * only run available (firstIndice == lineStart). See bug 408833.
+				 */
+				if (firstStart == 0 && firstIndice > lineStart) {
 					i = firstIndice - 1;
 					run = allRuns[i];
 					start = run.length;
