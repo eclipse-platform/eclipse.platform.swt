@@ -85,3 +85,13 @@ requires.17.namespace = org.eclipse.equinox.p2.iu
 requires.17.name = org.eclipse.swt.gtk.hpux.ia64
 requires.17.range = [$version$,$version$]
 requires.17.filter = (&(osgi.os=hpux)(osgi.ws=gtk)(osgi.arch=ia64)(!(org.eclipse.swt.buildtime=true)))
+
+requires.18.namespace = org.eclipse.equinox.p2.iu
+requires.18.name = org.eclipse.swt.gtk.linux.arm
+requires.18.range = [$version$,$version$]
+requires.18.filter = (&(osgi.os=linux)(osgi.ws=gtk)(osgi.arch=arm)(!(org.eclipse.swt.buildtime=true)))
+
+requires.19.namespace = org.eclipse.equinox.p2.iu
+requires.19.name = org.eclipse.swt.gtk.linux.aarch64
+requires.19.range = [$version$,$version$]
+requires.19.filter = (&(osgi.os=linux)(osgi.ws=gtk)(osgi.arch=aarch64)(!(org.eclipse.swt.buildtime=true)))
