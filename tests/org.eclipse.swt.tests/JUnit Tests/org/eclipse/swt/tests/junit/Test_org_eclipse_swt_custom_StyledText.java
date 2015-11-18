@@ -53,6 +53,7 @@ import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.internal.BidiUtil;
+import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.printing.Printer;
 import org.eclipse.swt.widgets.Caret;
 import org.eclipse.swt.widgets.Display;
@@ -592,6 +593,17 @@ public void test_appendLjava_lang_String() {
 @Test
 public void test_computeSizeIIZ() {
 	// inherited test is sufficient
+}
+public void test_computeSizeAlignment(){
+    shell.setLayout(new GridLayout());
+    StyledText singleText = new StyledText(shell, SWT.SINGLE);
+    shell.layout(true);
+    Point beforeAlignment = singleText.computeSize(100, SWT.DEFAULT);
+    //Should not change the computed size
+    singleText.setAlignment(SWT.RIGHT);
+    Point afterAlignment = singleText.computeSize(100, SWT.DEFAULT);
+    assertEquals(beforeAlignment, afterAlignment);
+    singleText.dispose();
 }
 
 @Test

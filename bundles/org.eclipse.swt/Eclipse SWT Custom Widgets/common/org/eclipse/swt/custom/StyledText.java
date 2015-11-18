@@ -1744,7 +1744,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	if (height == 0) height = DEFAULT_HEIGHT;
 	if (wHint != SWT.DEFAULT) width = wHint;
 	if (hHint != SWT.DEFAULT) height = hHint;
-	int wTrim = leftMargin + rightMargin + getCaretWidth();
+	int wTrim = getLeftMargin() + rightMargin + getCaretWidth();
 	int hTrim = topMargin + bottomMargin;
 	Rectangle rect = computeTrim(0, 0, width + wTrim, height + hTrim);
 	return new Point (rect.width, rect.height);
