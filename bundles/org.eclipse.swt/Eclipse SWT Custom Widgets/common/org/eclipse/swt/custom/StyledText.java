@@ -8582,7 +8582,7 @@ public void setBidiColoring(boolean mode) {
  */
 public void setBottomMargin (int bottomMargin) {
 	checkWidget();
-	setMargins(leftMargin, topMargin, rightMargin, bottomMargin);
+	setMargins(getLeftMargin(), topMargin, rightMargin, bottomMargin);
 }
 /**
  * Moves the Caret to the current caret offset.
@@ -9452,7 +9452,7 @@ public void setMarginColor(Color color) {
  */
 public void setMargins (int leftMargin, int topMargin, int rightMargin, int bottomMargin) {
 	checkWidget();
-	this.leftMargin = Math.max(0, leftMargin);
+	this.leftMargin = Math.max(0, leftMargin) + alignmentMargin;
 	this.topMargin = Math.max(0, topMargin);
 	this.rightMargin = Math.max(0, rightMargin);
 	this.bottomMargin = Math.max(0, bottomMargin);
@@ -9509,7 +9509,7 @@ public void setOrientation(int orientation) {
  */
 public void setRightMargin (int rightMargin) {
 	checkWidget();
-	setMargins(leftMargin, topMargin, rightMargin, bottomMargin);
+	setMargins(getLeftMargin(), topMargin, rightMargin, bottomMargin);
 }
 void setScrollBar(ScrollBar bar, int clientArea, int maximum, int margin) {
 	int inactive = 1;
@@ -10241,7 +10241,7 @@ public void setTopIndex(int topIndex) {
  */
 public void setTopMargin (int topMargin) {
 	checkWidget();
-	setMargins(leftMargin, topMargin, rightMargin, bottomMargin);
+	setMargins(getLeftMargin(), topMargin, rightMargin, bottomMargin);
 }
 /**
  * Sets the top pixel offset. Do nothing if there is no text set.

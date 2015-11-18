@@ -611,7 +611,19 @@ public void test_computeSizeAlignment(){
     assertEquals(beforeAlignment, afterAlignment);
     singleText.dispose();
 }
-
+@Test
+public void test_marginsCorrect(){
+    shell.setLayout(new GridLayout());
+    StyledText singleText = new StyledText(shell, SWT.SINGLE);
+    int leftMargin = 10;
+    singleText.setLeftMargin(leftMargin);
+    shell.layout(true);
+    singleText.setAlignment(SWT.RIGHT);
+    assertEquals(leftMargin, singleText.getLeftMargin());
+    singleText.setLeftMargin(leftMargin);
+    assertEquals(leftMargin, singleText.getLeftMargin());
+    singleText.dispose();        
+}
 @Test
 public void test_copy() {
 	if (SwtTestUtil.isCocoa) {
