@@ -1524,8 +1524,8 @@ boolean gestureEvent(long /*int*/ id, long /*int*/ eventPtr, int detail) {
 		// Panning increment is expressed in terms of the direction of movement,
 		// not in terms of scrolling increment.
 		if (display.gestureActive) {
-			event.xDirection = (int) -nsEvent.deltaX();
-			event.yDirection = (int) -nsEvent.deltaY();
+			event.xDirection = (int) nsEvent.deltaX();
+			event.yDirection = (int) nsEvent.deltaY();
 			if (event.xDirection == 0 && event.yDirection == 0) return true;
 		}
 		break;
