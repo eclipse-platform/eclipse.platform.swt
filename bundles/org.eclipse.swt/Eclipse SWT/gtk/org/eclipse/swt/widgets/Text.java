@@ -414,7 +414,7 @@ public void append (String string) {
 		OS.gtk_text_buffer_insert (bufferHandle, position, buffer, buffer.length);
 		OS.gtk_text_buffer_place_cursor (bufferHandle, position);
 		long /*int*/ mark = OS.gtk_text_buffer_get_insert (bufferHandle);
-		OS.gtk_text_view_scroll_mark_onscreen (handle, mark);
+		OS.gtk_text_view_scroll_to_mark (handle, mark, 0, true, 0, 0);
 	}
 	applySegments ();
 }
@@ -1947,7 +1947,7 @@ public void insert (String string) {
 		OS.gtk_text_buffer_insert (bufferHandle, start, buffer, buffer.length);
 		OS.gtk_text_buffer_place_cursor (bufferHandle, start);
 		long /*int*/ mark = OS.gtk_text_buffer_get_insert (bufferHandle);
-		OS.gtk_text_view_scroll_mark_onscreen (handle, mark);
+		OS.gtk_text_view_scroll_to_mark (handle, mark, 0, true, 0, 0);
 	}
 	applySegments ();
 }
@@ -2340,7 +2340,7 @@ public void setSelection (int start) {
 		OS.gtk_text_buffer_get_iter_at_offset (bufferHandle, startIter, start);
 		OS.gtk_text_buffer_place_cursor (bufferHandle, startIter);
 		long /*int*/ mark = OS.gtk_text_buffer_get_insert (bufferHandle);
-		OS.gtk_text_view_scroll_mark_onscreen (handle, mark);
+		OS.gtk_text_view_scroll_to_mark (handle, mark, 0, true, 0, 0);
 	}
 }
 
@@ -2563,7 +2563,7 @@ void setText (char [] text) {
 		OS.gtk_text_buffer_get_iter_at_offset (bufferHandle, position, 0);
 		OS.gtk_text_buffer_place_cursor (bufferHandle, position);
 		long /*int*/ mark = OS.gtk_text_buffer_get_insert (bufferHandle);
-		OS.gtk_text_view_scroll_mark_onscreen (handle, mark);
+		OS.gtk_text_view_scroll_to_mark (handle, mark, 0, true, 0, 0);
 		Arrays.fill (buffer, (byte) 0);
 	}
 	sendEvent (SWT.Modify);
@@ -2644,9 +2644,9 @@ public void showSelection () {
 	checkWidget ();
 	if ((style & SWT.SINGLE) != 0) return;
 	long /*int*/ mark = OS.gtk_text_buffer_get_selection_bound (bufferHandle);
-	OS.gtk_text_view_scroll_mark_onscreen (handle, mark);
+	OS.gtk_text_view_scroll_to_mark (handle, mark, 0, true, 0, 0);
 	mark = OS.gtk_text_buffer_get_insert (bufferHandle);
-	OS.gtk_text_view_scroll_mark_onscreen (handle, mark);
+	OS.gtk_text_view_scroll_to_mark (handle, mark, 0, true, 0, 0);
 }
 
 int translateOffset (int offset) {

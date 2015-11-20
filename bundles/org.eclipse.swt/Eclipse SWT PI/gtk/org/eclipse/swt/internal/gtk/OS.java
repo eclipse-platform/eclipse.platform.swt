@@ -12528,12 +12528,16 @@ public static final long /*int*/ gtk_text_view_new() {
 /**
  * @param text_view cast=(GtkTextView *)
  * @param mark cast=(GtkTextMark *)
+ * @param within_margin cast=(gdouble)
+ * @param use_align cast=(gboolean)
+ * @param xalign cast=(gdouble)
+ * @param yalign cast=(gdouble)
  */
-public static final native void _gtk_text_view_scroll_mark_onscreen(long /*int*/ text_view, long /*int*/ mark);
-public static final void gtk_text_view_scroll_mark_onscreen(long /*int*/ text_view, long /*int*/ mark) {
+public static final native void _gtk_text_view_scroll_to_mark(long /*int*/ text_view, long /*int*/ mark, double within_margin, boolean use_align, double xalign, double yalign);
+public static final void gtk_text_view_scroll_to_mark(long /*int*/ text_view, long /*int*/ mark, double within_margin, boolean use_align, double xalign, double yalign) {
 	lock.lock();
 	try {
-		_gtk_text_view_scroll_mark_onscreen(text_view, mark);
+		_gtk_text_view_scroll_to_mark(text_view, mark, within_margin, use_align, xalign, yalign);
 	} finally {
 		lock.unlock();
 	}

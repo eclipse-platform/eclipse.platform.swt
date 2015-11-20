@@ -16167,16 +16167,6 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(_1gtk_1text_1view_1new)
 }
 #endif
 
-#ifndef NO__1gtk_1text_1view_1scroll_1mark_1onscreen
-JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1text_1view_1scroll_1mark_1onscreen)
-	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1)
-{
-	OS_NATIVE_ENTER(env, that, _1gtk_1text_1view_1scroll_1mark_1onscreen_FUNC);
-	gtk_text_view_scroll_mark_onscreen((GtkTextView *)arg0, (GtkTextMark *)arg1);
-	OS_NATIVE_EXIT(env, that, _1gtk_1text_1view_1scroll_1mark_1onscreen_FUNC);
-}
-#endif
-
 #ifndef NO__1gtk_1text_1view_1scroll_1to_1iter
 JNIEXPORT jboolean JNICALL OS_NATIVE(_1gtk_1text_1view_1scroll_1to_1iter)
 	(JNIEnv *env, jclass that, jintLong arg0, jbyteArray arg1, jdouble arg2, jboolean arg3, jdouble arg4, jdouble arg5)
@@ -16190,6 +16180,16 @@ fail:
 	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
 	OS_NATIVE_EXIT(env, that, _1gtk_1text_1view_1scroll_1to_1iter_FUNC);
 	return rc;
+}
+#endif
+
+#ifndef NO__1gtk_1text_1view_1scroll_1to_1mark
+JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1text_1view_1scroll_1to_1mark)
+	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jdouble arg2, jboolean arg3, jdouble arg4, jdouble arg5)
+{
+	OS_NATIVE_ENTER(env, that, _1gtk_1text_1view_1scroll_1to_1mark_FUNC);
+	gtk_text_view_scroll_to_mark((GtkTextView *)arg0, (GtkTextMark *)arg1, (gdouble)arg2, (gboolean)arg3, (gdouble)arg4, (gdouble)arg5);
+	OS_NATIVE_EXIT(env, that, _1gtk_1text_1view_1scroll_1to_1mark_FUNC);
 }
 #endif
 
