@@ -2373,8 +2373,7 @@ void initializeSystemColors () {
 		OS.gtk_style_context_add_class (context, OS.GTK_STYLE_CLASS_TOOLTIP);
 		OS.gtk_style_context_invalidate(context);
 		GdkRGBA rgba = new GdkRGBA();
-		OS.gtk_style_context_get_color (context, OS.GTK_STATE_FLAG_NORMAL, rgba);
-		COLOR_INFO_FOREGROUND = toGdkColor (rgba);
+		COLOR_INFO_FOREGROUND = toGdkColor (styleContextGetColor (context, OS.GTK_STATE_FLAG_NORMAL, rgba));
 		getBackgroundColor (context, OS.GTK_STATE_FLAG_NORMAL, rgba);
 		COLOR_INFO_BACKGROUND = toGdkColor (rgba);
 		OS.gtk_widget_destroy (tooltipShellHandle);
@@ -2387,8 +2386,7 @@ void initializeSystemColors () {
 		COLOR_WIDGET_NORMAL_SHADOW = toGdkColor (rgba, 0.7);
 		COLOR_WIDGET_HIGHLIGHT_SHADOW = toGdkColor (rgba, 1.3);
 
-		OS.gtk_style_context_get_color (context, OS.GTK_STATE_FLAG_NORMAL, rgba);
-		COLOR_WIDGET_FOREGROUND = toGdkColor (rgba);
+		COLOR_WIDGET_FOREGROUND = toGdkColor (styleContextGetColor (context, OS.GTK_STATE_FLAG_NORMAL, rgba));
 		OS.gtk_style_context_get_background_color (context, OS.GTK_STATE_FLAG_NORMAL, rgba);
 		COLOR_WIDGET_BACKGROUND = toGdkColor (rgba);
 
@@ -2396,17 +2394,14 @@ void initializeSystemColors () {
 		OS.gtk_style_context_add_class(context, OS.GTK_STYLE_CLASS_VIEW);
 		OS.gtk_style_context_add_class(context, OS.GTK_STYLE_CLASS_CELL);
 		OS.gtk_style_context_invalidate(context);
-		OS.gtk_style_context_get_color (context, OS.GTK_STATE_FLAG_NORMAL, rgba);
-		COLOR_LIST_FOREGROUND = toGdkColor (rgba);
+		COLOR_LIST_FOREGROUND = toGdkColor (styleContextGetColor (context, OS.GTK_STATE_FLAG_NORMAL, rgba));
 		OS.gtk_style_context_get_background_color (context, OS.GTK_STATE_FLAG_NORMAL, rgba);
 		COLOR_LIST_BACKGROUND = toGdkColor (rgba);
 		OS.gtk_style_context_restore (context);
-		OS.gtk_style_context_get_color (context, OS.GTK_STATE_FLAG_SELECTED, rgba);
-		COLOR_LIST_SELECTION_TEXT = toGdkColor (rgba);
+		COLOR_LIST_SELECTION_TEXT = toGdkColor (styleContextGetColor (context, OS.GTK_STATE_FLAG_SELECTED, rgba));
 		OS.gtk_style_context_get_background_color (context, OS.GTK_STATE_FLAG_SELECTED, rgba);
 		COLOR_LIST_SELECTION = toGdkColor (rgba);
-		OS.gtk_style_context_get_color (context, OS.GTK_STATE_FLAG_ACTIVE, rgba);
-		COLOR_LIST_SELECTION_TEXT_INACTIVE = toGdkColor (rgba);
+		COLOR_LIST_SELECTION_TEXT_INACTIVE = toGdkColor (styleContextGetColor (context, OS.GTK_STATE_FLAG_ACTIVE, rgba));
 		OS.gtk_style_context_get_background_color (context, OS.GTK_STATE_FLAG_ACTIVE, rgba);
 		COLOR_LIST_SELECTION_INACTIVE = toGdkColor (rgba);
 
@@ -2415,8 +2410,7 @@ void initializeSystemColors () {
 		OS.gtk_style_context_get_background_color (context, OS.GTK_STATE_FLAG_SELECTED, rgba);
 		COLOR_TITLE_BACKGROUND_GRADIENT = toGdkColor (rgba, 1.3);
 
-		OS.gtk_style_context_get_color (context, OS.GTK_STATE_FLAG_INSENSITIVE, rgba);
-		COLOR_TITLE_INACTIVE_FOREGROUND = toGdkColor (rgba);
+		COLOR_TITLE_INACTIVE_FOREGROUND = toGdkColor (styleContextGetColor (context, OS.GTK_STATE_FLAG_INSENSITIVE, rgba));
 		OS.gtk_style_context_get_background_color (context, OS.GTK_STATE_FLAG_INSENSITIVE, rgba);
 		COLOR_TITLE_INACTIVE_BACKGROUND = toGdkColor (rgba);
 		COLOR_TITLE_INACTIVE_BACKGROUND_GRADIENT = toGdkColor (rgba, 1.3);
@@ -2495,6 +2489,24 @@ void initializeSystemColors () {
 	gdkColor = new GdkColor();
 	OS.gtk_style_get_light (style, OS.GTK_STATE_INSENSITIVE, gdkColor);
 	COLOR_TITLE_INACTIVE_BACKGROUND_GRADIENT = gdkColor;
+}
+
+GdkRGBA styleContextGetColor(long /*int*/ context, int flag, GdkRGBA rgba) {
+	/*
+	* Feature in GTK: we need to handle calls to gtk_style_context_get_color()
+	* differently due to changes in GTK3.18+. This solves failing test cases
+	* which started failing after GTK3.16. See Bug 481122 for more info.
+	* Reference: https://blogs.gnome.org/mclasen/2015/11/20/a-gtk-update/
+	*/
+	if (OS.GTK_VERSION >= OS.VERSION(3, 18, 0)) {
+		OS.gtk_style_context_save(context);
+		OS.gtk_style_context_set_state(context, flag);
+		OS.gtk_style_context_get_color (context, flag, rgba);
+		OS.gtk_style_context_restore(context);
+	} else {
+		OS.gtk_style_context_get_color (context, flag, rgba);
+	}
+	return rgba;
 }
 
 /**

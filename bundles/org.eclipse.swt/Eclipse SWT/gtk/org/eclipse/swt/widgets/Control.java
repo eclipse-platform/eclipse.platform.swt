@@ -2626,7 +2626,7 @@ GdkColor getContextColor () {
 	long /*int*/ fontHandle = fontHandle ();
 	long /*int*/ context = OS.gtk_widget_get_style_context (fontHandle);
 	GdkRGBA rgba = new GdkRGBA ();
-	OS.gtk_style_context_get_color (context, OS.GTK_STATE_FLAG_NORMAL, rgba);
+	rgba = display.styleContextGetColor (context, OS.GTK_STATE_FLAG_NORMAL, rgba);
 	GdkColor color = new GdkColor ();
 	color.red = (short)(rgba.red * 0xFFFF);
 	color.green = (short)(rgba.green * 0xFFFF);
