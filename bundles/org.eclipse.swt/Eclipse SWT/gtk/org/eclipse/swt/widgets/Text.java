@@ -1664,7 +1664,7 @@ void drawMessage (long /*int*/ cr) {
 			if (OS.GTK3) {
 				long /*int*/ styleContext = OS.gtk_widget_get_style_context (handle);
 				GdkRGBA rgba = new GdkRGBA ();
-				rgba = display.styleContextGetColor (context, OS.GTK_STATE_FLAG_INSENSITIVE, rgba);
+				rgba = display.styleContextGetColor (styleContext, OS.GTK_STATE_FLAG_INSENSITIVE, rgba);
 				textColor.red = (short)(rgba.red * 0xFFFF);
 				textColor.green = (short)(rgba.green * 0xFFFF);
 				textColor.blue = (short)(rgba.blue * 0xFFFF);
