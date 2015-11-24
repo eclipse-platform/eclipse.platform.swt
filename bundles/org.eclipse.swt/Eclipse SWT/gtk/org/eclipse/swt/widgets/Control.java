@@ -2610,8 +2610,9 @@ public Image getBackgroundImage () {
 GdkColor getContextBackground () {
 	long /*int*/ fontHandle = fontHandle ();
 	long /*int*/ context = OS.gtk_widget_get_style_context (fontHandle);
+	int styleState = OS.gtk_widget_get_state_flags(handle);
 	GdkRGBA rgba = new GdkRGBA ();
-	OS.gtk_style_context_get_background_color (context, OS.GTK_STATE_FLAG_NORMAL, rgba);
+	OS.gtk_style_context_get_background_color (context, styleState, rgba);
 	if (rgba.alpha == 0) {
 		return display.COLOR_WIDGET_BACKGROUND;
 	}
@@ -2625,8 +2626,9 @@ GdkColor getContextBackground () {
 GdkColor getContextColor () {
 	long /*int*/ fontHandle = fontHandle ();
 	long /*int*/ context = OS.gtk_widget_get_style_context (fontHandle);
+	int styleState = OS.gtk_widget_get_state_flags(handle);
 	GdkRGBA rgba = new GdkRGBA ();
-	rgba = display.styleContextGetColor (context, OS.GTK_STATE_FLAG_NORMAL, rgba);
+	rgba = display.styleContextGetColor (context, styleState, rgba);
 	GdkColor color = new GdkColor ();
 	color.red = (short)(rgba.red * 0xFFFF);
 	color.green = (short)(rgba.green * 0xFFFF);
@@ -2761,7 +2763,8 @@ long /*int*/ getFontDescription () {
 	long /*int*/ fontHandle = fontHandle ();
 	if (OS.GTK3) {
 		long /*int*/ context = OS.gtk_widget_get_style_context (fontHandle);
-		return OS.gtk_style_context_get_font(context, OS.GTK_STATE_FLAG_NORMAL);
+		int styleState = OS.gtk_widget_get_state_flags(fontHandle);
+		return OS.gtk_style_context_get_font(context, styleState);
 	}
 	OS.gtk_widget_realize (fontHandle);
 	return OS.gtk_style_get_font_desc (OS.gtk_widget_get_style (fontHandle));
@@ -3021,12 +3024,13 @@ Point getThickness (long /*int*/ widget) {
 		int xthickness = 0, ythickness = 0;
 		GtkBorder tmp = new GtkBorder();
 		long /*int*/ context = OS.gtk_widget_get_style_context (widget);
+		int styleState = OS.gtk_widget_get_state_flags(widget);
 		OS.gtk_style_context_save (context);
 		OS.gtk_style_context_add_class (context, OS.GTK_STYLE_CLASS_FRAME);
-		OS.gtk_style_context_get_padding (context, OS.GTK_STATE_FLAG_NORMAL, tmp);
+		OS.gtk_style_context_get_padding (context, styleState, tmp);
 		xthickness += tmp.left;
 		ythickness += tmp.top;
-		OS.gtk_style_context_get_border (context, OS.GTK_STATE_FLAG_NORMAL, tmp);
+		OS.gtk_style_context_get_border (context, styleState, tmp);
 		xthickness += tmp.left;
 		ythickness += tmp.top;
 		OS.gtk_style_context_restore (context);
@@ -5595,7 +5599,8 @@ long /*int*/ windowProc (long /*int*/ handle, long /*int*/ arg0, long /*int*/ us
 				if (OS.GTK3 && !draw && (state & CANVAS) != 0) {
 					GdkRGBA rgba = new GdkRGBA();
 					long /*int*/ context = OS.gtk_widget_get_style_context (handle);
-					OS.gtk_style_context_get_background_color (context, OS.GTK_STATE_FLAG_NORMAL, rgba);
+					int styleState = OS.gtk_widget_get_state_flags(handle);
+					OS.gtk_style_context_get_background_color (context, styleState, rgba);
 					draw = rgba.alpha == 0;
 				}
 				if (draw) {

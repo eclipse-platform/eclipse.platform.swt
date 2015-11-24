@@ -18341,18 +18341,18 @@ fail:
 #endif
 
 #ifndef NO__1gtk_1widget_1get_1state_1flags
-JNIEXPORT jintLong JNICALL OS_NATIVE(_1gtk_1widget_1get_1state_1flags)
+JNIEXPORT jint JNICALL OS_NATIVE(_1gtk_1widget_1get_1state_1flags)
 	(JNIEnv *env, jclass that, jintLong arg0)
 {
-	jintLong rc = 0;
+	jint rc = 0;
 	OS_NATIVE_ENTER(env, that, _1gtk_1widget_1get_1state_1flags_FUNC);
 /*
-	rc = (jintLong)gtk_widget_get_state_flags((GtkWidget *)arg0);
+	rc = (jint)gtk_widget_get_state_flags((GtkWidget *)arg0);
 */
 	{
 		OS_LOAD_FUNCTION(fp, gtk_widget_get_state_flags)
 		if (fp) {
-			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(GtkWidget *))fp)((GtkWidget *)arg0);
+			rc = (jint)((jintLong (CALLING_CONVENTION*)(GtkWidget *))fp)((GtkWidget *)arg0);
 		}
 	}
 	OS_NATIVE_EXIT(env, that, _1gtk_1widget_1get_1state_1flags_FUNC);

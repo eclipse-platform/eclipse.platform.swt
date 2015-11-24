@@ -11855,8 +11855,8 @@ public static final void gtk_style_context_restore(long /*int*/ context) {
 /** @method flags=dynamic
  *  @param self cast=(GtkWidget *)
  *  */
-public static final native long /*int*/ _gtk_widget_get_state_flags(long /*int*/ self);
-public static final long /*int*/ gtk_widget_get_state_flags(long /*int*/ self) {
+public static final native int _gtk_widget_get_state_flags(long /*int*/ self);
+public static final int gtk_widget_get_state_flags(long /*int*/ self) {
 	lock.lock();
 	try {
 		return _gtk_widget_get_state_flags(self);
