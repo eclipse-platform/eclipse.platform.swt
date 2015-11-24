@@ -157,7 +157,7 @@ public void test_getPrograms() {
 		// test unique hash code
 		int hashCode = programs[i].hashCode();
 		Integer key = new Integer(hashCode);
-		if (lookup.containsKey(key)) {
+		if (lookup.containsValue(key)) {
 			fail("Duplicate hash code for "+programs[i]+" (same as "+lookup.get(key)+")");
 		}
 		else {
