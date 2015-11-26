@@ -1743,7 +1743,9 @@ public boolean setUrl (String url, String postData, String[] headers) {
 	if (WEBKIT2 && headers != null){
 		long /*int*/ request = WebKitGTK.webkit_uri_request_new (uriBytes);
 		long /*int*/ requestHeaders = WebKitGTK.webkit_uri_request_get_http_headers (request);
-		addRequestHeaders(requestHeaders, headers);
+		if (requestHeaders != 0) {
+			addRequestHeaders(requestHeaders, headers);
+		}
 		WebKitGTK.webkit_web_view_load_request (webView, request);
 
 		return true;
