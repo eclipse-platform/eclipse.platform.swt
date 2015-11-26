@@ -5492,6 +5492,19 @@ public static final void gdk_region_union_with_rect(long /*int*/ region, GdkRect
 		lock.unlock();
 	}
 }
+/** 
+ * @method flags=dynamic
+ * @param rgba cast=(GdkRGBA *) 
+ */
+public static final native long /*int*/ _gdk_rgba_to_string(GdkRGBA rgba);
+public static final long /*int*/ gdk_rgba_to_string(GdkRGBA rgba) {
+	lock.lock();
+	try {
+		return _gdk_rgba_to_string(rgba);
+	} finally {
+		lock.unlock();
+	}
+}
 /** @method flags=dynamic */
 public static final native long /*int*/ _gdk_screen_get_default();
 public static final long /*int*/ gdk_screen_get_default() {

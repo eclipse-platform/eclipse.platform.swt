@@ -7181,6 +7181,30 @@ fail:
 }
 #endif
 
+#ifndef NO__1gdk_1rgba_1to_1string
+JNIEXPORT jintLong JNICALL OS_NATIVE(_1gdk_1rgba_1to_1string)
+	(JNIEnv *env, jclass that, jobject arg0)
+{
+	GdkRGBA _arg0, *lparg0=NULL;
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, _1gdk_1rgba_1to_1string_FUNC);
+	if (arg0) if ((lparg0 = getGdkRGBAFields(env, arg0, &_arg0)) == NULL) goto fail;
+/*
+	rc = (jintLong)gdk_rgba_to_string((GdkRGBA *)lparg0);
+*/
+	{
+		OS_LOAD_FUNCTION(fp, gdk_rgba_to_string)
+		if (fp) {
+			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(GdkRGBA *))fp)((GdkRGBA *)lparg0);
+		}
+	}
+fail:
+	if (arg0 && lparg0) setGdkRGBAFields(env, arg0, lparg0);
+	OS_NATIVE_EXIT(env, that, _1gdk_1rgba_1to_1string_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO__1gdk_1screen_1get_1default
 JNIEXPORT jintLong JNICALL OS_NATIVE(_1gdk_1screen_1get_1default)
 	(JNIEnv *env, jclass that)
@@ -18352,7 +18376,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(_1gtk_1widget_1get_1state_1flags)
 	{
 		OS_LOAD_FUNCTION(fp, gtk_widget_get_state_flags)
 		if (fp) {
-			rc = (jint)((jintLong (CALLING_CONVENTION*)(GtkWidget *))fp)((GtkWidget *)arg0);
+			rc = (jint)((jint (CALLING_CONVENTION*)(GtkWidget *))fp)((GtkWidget *)arg0);
 		}
 	}
 	OS_NATIVE_EXIT(env, that, _1gtk_1widget_1get_1state_1flags_FUNC);

@@ -600,6 +600,16 @@ int setBounds (int x, int y, int width, int height, boolean move, boolean resize
 }
 
 @Override
+void setBackgroundColor (long /*int*/ context, long /*int*/ handle, GdkRGBA rgba) {
+	if (OS.GTK_VERSION >= OS.VERSION(3, 16, 0)) {
+		String css = "GtkToolbar {background-color: " + gtk_rgba_to_css_string(rgba) + "}";
+		gtk_css_provider_load_from_css(context, css);
+	} else {
+		super.setBackgroundColor(context, handle, rgba);
+	}
+}
+
+@Override
 void setFontDescription (long /*int*/ font) {
 	super.setFontDescription (font);
 	ToolItem [] items = getItems ();
