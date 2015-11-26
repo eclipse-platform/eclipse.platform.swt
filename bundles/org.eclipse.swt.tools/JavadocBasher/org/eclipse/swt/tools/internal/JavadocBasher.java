@@ -160,8 +160,7 @@ public class JavadocBasher {
 	}
 
 	char[] readFile(File file) {
-		try {
-			Reader in = new FileReader(file);
+		try (Reader in = new FileReader(file)) {
 			CharArrayWriter storage = new CharArrayWriter();
 			char[] chars = new char[8192];
 			int read = in.read(chars);
@@ -170,7 +169,6 @@ public class JavadocBasher {
 				storage.flush();
 				read = in.read(chars);
 			}
-			in.close();
 			return storage.toCharArray();
 		} catch (IOException ioe) {
 			System.out.println("*** Could not read " + file);
@@ -179,11 +177,9 @@ public class JavadocBasher {
 	}
 
 	void writeFile(char[] contents, File file) {
-		try {
-			Writer out = new FileWriter(file);
+		try (Writer out = new FileWriter(file)) {
 			out.write(contents);
 			out.flush();
-			out.close();
 		} catch (IOException ioe) {
 			System.out.println("*** Could not write to " + file);
 			if (fVerbose) {

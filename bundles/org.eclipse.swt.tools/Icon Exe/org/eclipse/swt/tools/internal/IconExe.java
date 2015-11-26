@@ -459,12 +459,11 @@ static boolean readIconGroup(RandomAccessFile raf, int offset, int size) throws 
 static void copyFile(String src, String dst) throws FileNotFoundException, IOException {
 	File srcFile = new File(src);
 	File dstFile = new File(dst);
-	FileInputStream in = new FileInputStream(srcFile);
-	FileOutputStream out = new FileOutputStream(dstFile);
-	int c;
-	while ((c = in.read()) != -1) out.write(c); 
-	in.close();
-	out.close();
+	try (FileInputStream in = new FileInputStream(srcFile); FileOutputStream out = new FileOutputStream(dstFile)) {
+		int c;
+		while ((c = in.read()) != -1)
+			out.write(c);
+	}
 }
 
 /* IO utilities to parse Windows executable */
@@ -1176,18 +1175,10 @@ public ImageData[] load(InputStream stream) {
  */
 public ImageData[] load(String filename) {
 	if (filename == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	InputStream stream = null;
-	try {
-		stream = new FileInputStream(filename);
+	try (InputStream stream = new FileInputStream(filename)) {
 		return load(stream);
 	} catch (IOException e) {
 		SWT.error(SWT.ERROR_IO, e);
-	} finally {
-		try {
-			if (stream != null) stream.close();
-		} catch (IOException e) {
-			// Ignore error
-		}
 	}
 	return null;
 }

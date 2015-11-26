@@ -44,9 +44,8 @@ public class Check64CompilationParticipant extends CompilationParticipant {
 
 static String loadFile (String file) {
 	if (file == null) return null;
-	try {
-		FileReader fr = new FileReader(file);
-		BufferedReader br = new BufferedReader(fr);
+	try (FileReader fr = new FileReader(file);
+		BufferedReader br = new BufferedReader(fr)) {
 		StringBuffer str = new StringBuffer();
 		char[] buffer = new char[1024];
 		int read;
@@ -144,8 +143,7 @@ void createProblem(IResource resource, String message, int start, int end) throw
 }
 
 void createProblems(IJavaProject project, String root) throws CoreException {
-	try {
-		InputStream is = new BufferedInputStream(new FileInputStream(root + "/log.xml"));
+	try (InputStream is = new BufferedInputStream(new FileInputStream(root + "/log.xml"))) {
 		Document doc = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(new InputSource(is));
 		is.close();
 		IProject proj = project.getProject();	

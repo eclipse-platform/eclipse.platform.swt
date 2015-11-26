@@ -279,9 +279,7 @@ String[] getClassNames(String mainClassName) {
 		if (index == -1) index = classpath.length();
 		String path = classpath.substring(start, index);
 		if (path.toLowerCase().endsWith(".jar")) {
-			ZipFile zipFile = null;
-			try {
-				zipFile = new ZipFile(path);
+			try (ZipFile zipFile = new ZipFile(path)){
 				Enumeration<? extends ZipEntry> entries = zipFile.entries();
 				while (entries.hasMoreElements()) {
 					ZipEntry entry = entries.nextElement();
@@ -293,10 +291,6 @@ String[] getClassNames(String mainClassName) {
 					}
 				}
 			} catch (IOException e) {
-			} finally {
-				try {
-					if (zipFile != null) zipFile.close();
-				} catch (IOException ex) {}
 			}
 		} else {
 			File file = new File(path + File.separator + pkgPath);

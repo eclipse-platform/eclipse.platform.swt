@@ -78,9 +78,8 @@ void loadFiles () {
 }
 
 String loadFile (File file) {
-	try {
-		FileReader fr = new FileReader(file);
-		BufferedReader br = new BufferedReader(fr);
+	try (FileReader fr = new FileReader(file);
+		BufferedReader br = new BufferedReader(fr)){
 		StringBuffer str = new StringBuffer();
 		char[] buffer = new char[1024];
 		int read;

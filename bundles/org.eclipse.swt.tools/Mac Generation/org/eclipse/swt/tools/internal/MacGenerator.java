@@ -766,9 +766,8 @@ void generateMainClass() {
 
 	String header = "", footer = "";
 	String fileName = outputDir + mainClassName.replace('.', '/') + ".java";
-	FileInputStream is = null;
-	try {
-		InputStreamReader input = new InputStreamReader(new BufferedInputStream(is = new FileInputStream(fileName)));
+	try (FileInputStream is = new FileInputStream(fileName);
+		InputStreamReader input = new InputStreamReader(new BufferedInputStream(is))){
 		StringBuffer str = new StringBuffer();
 		char[] buffer = new char[4096];
 		int read;
@@ -783,10 +782,6 @@ void generateMainClass() {
 		generate64Code = str.indexOf("long /*int*/") != -1;
 		input.close();
 	} catch (IOException e) {
-	} finally {
-		try {
-			if (is != null) is.close();
-		} catch (IOException e) {}
 	}
 	
 	out(header);

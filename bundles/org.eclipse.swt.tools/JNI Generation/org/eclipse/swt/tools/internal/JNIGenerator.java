@@ -74,25 +74,18 @@ public static boolean compare(InputStream is1, InputStream is2) throws IOExcepti
 }
 
 public static void output(byte[] bytes, String fileName) throws IOException {
-	FileInputStream is = null;
-	try {
-		is = new FileInputStream(fileName);
+	try (FileInputStream is = new FileInputStream(fileName)){
 		if (compare(new ByteArrayInputStream(bytes), new BufferedInputStream(is))) return;
 	} catch (FileNotFoundException e) {
-	} finally {
-		try {
-			if (is != null) is.close();
-		} catch (IOException e) {}
 	}
-	FileOutputStream out = new FileOutputStream(fileName);
-	out.write(bytes);
-	out.close();
+	try (FileOutputStream out = new FileOutputStream(fileName)) {
+		out.write(bytes);
+	}
 }
 
 public static String getDelimiter(String fileName) {
-	InputStream is = null;
-	try {
-		is = new BufferedInputStream(new FileInputStream(fileName));
+	
+	try (InputStream is = new BufferedInputStream(new FileInputStream(fileName))){
 		int c;
 		while ((c = is.read()) != -1) {
 			if (c == '\n') return "\n";
@@ -106,10 +99,6 @@ public static String getDelimiter(String fileName) {
 			}
 		}
 	} catch (IOException e) {
-	} finally {
-		try {
-			if (is != null) is.close();
-		} catch (IOException e) {}
 	}
 	return System.getProperty("line.separator");
 }
@@ -153,9 +142,8 @@ static String getFunctionName(JNIMethod method, JNIType[] paramTypes) {
 }
 
 static String loadFile (String file) {
-	try {
-		FileReader fr = new FileReader(file);
-		BufferedReader br = new BufferedReader(fr);
+	try (FileReader fr = new FileReader(file);
+		BufferedReader br = new BufferedReader(fr)){
 		StringBuffer str = new StringBuffer();
 		char[] buffer = new char[1024];
 		int read;
