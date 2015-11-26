@@ -40,6 +40,7 @@ public class TreeItem extends Item {
 	Font[] cellFont;
 	boolean cached, grayed, isExpanded;
 	static final int EXPANDER_EXTRA_PADDING = 4;
+	int columnSetHeight, columnSetWidth;
 
 /**
  * Constructs a new instance of this class given its parent
@@ -1470,24 +1471,39 @@ public void setImage (int index, Image image) {
 		if (imageIndex == -1) imageIndex = imageList.add (image);
 		pixbuf = imageList.getPixbuf (imageIndex);
 	}
-//	Reset size of pixbufRenderer if we have an image being set that is larger
-//	than the current size of the pixbufRenderer. Fix for Bug 469277 & 476419.
-//	We only do this if the size of the pixbufRenderer has not yet been set.
-//	Otherwise, the pixbufRenderer retains the same size as the first image added.
-//	See comment #4, Bug 478560.
-	if (OS.GTK3 && !parent.pixbufSizeSet) {
+	/*
+	 * Reset size of pixbufRenderer if we have an image being set that is larger
+	 * than the current size of the pixbufRenderer. Fix for Bug 469277 & 476419.
+	 * We only do this if the size of the pixbufRenderer has not yet been set.
+	 * Otherwise, the pixbufRenderer retains the same size as the first image added.
+	 * See comment #4, Bug 478560. Note that all columns need to have their
+	 * pixbufRenderer set to this size after the initial image is set. 
+	 */
+	if (OS.GTK3) {
 		long /*int*/parentHandle = parent.handle;
 		long /*int*/ column = OS.gtk_tree_view_get_column (parentHandle, index);
-		long /*int*/ pixbufRenderer = parent.getPixbufRenderer(column);
-		if (image != null) {
-			int iWidth = image.getBounds().width;
-			int iHeight = image.getBounds().height;
-			int [] currentWidth = new int [1];
-			int [] currentHeight= new int [1];
-			OS.gtk_cell_renderer_get_fixed_size(pixbufRenderer, currentWidth, currentHeight);
-			if (iWidth > currentWidth[0] || iHeight > currentHeight[0]) {
-				OS.gtk_cell_renderer_set_fixed_size(pixbufRenderer, iWidth, iHeight);
-				parent.pixbufSizeSet = true;
+		long /*int*/ pixbufRenderer = parent.getPixbufRenderer (column);
+		int [] currentWidth = new int [1];
+		int [] currentHeight= new int [1];
+		OS.gtk_cell_renderer_get_fixed_size (pixbufRenderer, currentWidth, currentHeight);
+		if (!parent.pixbufSizeSet) {
+			if (image != null) {
+				int iWidth = image.getBounds ().width;
+				int iHeight = image.getBounds ().height;
+				if (iWidth > currentWidth [0] || iHeight > currentHeight [0]) {
+					OS.gtk_cell_renderer_set_fixed_size (pixbufRenderer, iWidth, iHeight);
+					parent.pixbufSizeSet = true;
+					columnSetHeight = iHeight;
+					columnSetWidth = iWidth;
+				}
+			}
+		} else {
+			/*
+			 * We check to see if the cached value is greater than the size of the pixbufRenderer.
+			 * If it is, then we change the size of the pixbufRenderer accordingly.
+			 */
+			if (columnSetWidth > currentWidth [0] || columnSetHeight > currentHeight [0]) {
+				OS.gtk_cell_renderer_set_fixed_size (pixbufRenderer, columnSetWidth, columnSetHeight);
 			}
 		}
 	}
