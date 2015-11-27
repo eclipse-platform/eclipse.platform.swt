@@ -319,11 +319,11 @@ public class MozillaGenerator {
 		cntLines = 0;
 		try {
 			r = new FileReader(src);
-			BufferedReader br = new BufferedReader(r);
-			while ((b[cntLines] = br.readLine()) != null) {
-				cntLines++;
+			try (BufferedReader br = new BufferedReader(r)) {
+				while ((b[cntLines] = br.readLine()) != null) {
+					cntLines++;
+				}
 			}
-			br.close();
 		} catch (IOException e) {
 			e.printStackTrace();
 			return;

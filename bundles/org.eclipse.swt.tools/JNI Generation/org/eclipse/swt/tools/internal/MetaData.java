@@ -10,10 +10,8 @@
  *******************************************************************************/
 package org.eclipse.swt.tools.internal;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Properties;
-import java.util.Calendar;
+import java.io.*;
+import java.util.*;
 
 public class MetaData {
 	
@@ -27,17 +25,11 @@ public MetaData(String mainClass) {
 	while (index < length) {
 		index = mainClass.indexOf('.', index);
 		if (index == -1) index = length;
-		InputStream is = clazz.getResourceAsStream(mainClass.substring(0, index) + ".properties");
-		if (is != null) {
-			try {
+		try (InputStream is = clazz.getResourceAsStream(mainClass.substring(0, index) + ".properties")) {
+			if (is != null) {
 				data.load(is);
-			} catch (IOException e) {
-			} finally {
-				try {
-					is.close();
-				} catch (IOException e) {}
 			}
-			
+		} catch (IOException e) {
 		}
 		index++;
 	}

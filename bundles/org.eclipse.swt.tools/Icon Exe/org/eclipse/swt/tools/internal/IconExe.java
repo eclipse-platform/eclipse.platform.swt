@@ -94,13 +94,13 @@ public class IconExe {
 	 * @param program the Windows executable e.g c:/eclipse/eclipse.exe
 	 */	
 	static ImageData[] loadIcons(String program) throws FileNotFoundException, IOException {
-		RandomAccessFile raf = new RandomAccessFile(program, "r");
-		IconExe iconExe = new IconExe();
-		IconResInfo[] iconInfo = iconExe.getIcons(raf);
-		ImageData[] data = new ImageData[iconInfo.length];
-		for (int i = 0; i < data.length; i++) data[i] = iconInfo[i].data;
-		raf.close();
-		return data;
+		try (RandomAccessFile raf = new RandomAccessFile(program, "r")) {
+			IconExe iconExe = new IconExe();
+			IconResInfo[] iconInfo = iconExe.getIcons(raf);
+			ImageData[] data = new ImageData[iconInfo.length];
+			for (int i = 0; i < data.length; i++) data[i] = iconInfo[i].data;
+			return data;
+		}
 	}
 	
 	/** 
@@ -134,22 +134,22 @@ public class IconExe {
 	 * @return the number of icons from the original program that were not successfully replaced (0 if success)
 	 */	
 	static int unloadIcons(String program, ImageData[] icons) throws FileNotFoundException, IOException {
-		RandomAccessFile raf = new RandomAccessFile(program, "rw");
-		IconExe iconExe = new IconExe();
-		IconResInfo[] iconInfo = iconExe.getIcons(raf);
-		int cnt = 0;
-		for (int i = 0; i < iconInfo.length; i++) {
-			for (int j = 0; j < icons.length; j++)
-			if (iconInfo[i].data.width == icons[j].width && 
-				iconInfo[i].data.height == icons[j].height && 
-				iconInfo[i].data.depth == icons[j].depth) {
-				raf.seek(iconInfo[i].offset);
-				unloadIcon(raf, icons[j]);
-				cnt++;
+		try (RandomAccessFile raf = new RandomAccessFile(program, "rw")) {
+			IconExe iconExe = new IconExe();
+			IconResInfo[] iconInfo = iconExe.getIcons(raf);
+			int cnt = 0;
+			for (int i = 0; i < iconInfo.length; i++) {
+				for (int j = 0; j < icons.length; j++)
+					if (iconInfo[i].data.width == icons[j].width && 
+					iconInfo[i].data.height == icons[j].height && 
+					iconInfo[i].data.depth == icons[j].depth) {
+						raf.seek(iconInfo[i].offset);
+						unloadIcon(raf, icons[j]);
+						cnt++;
+					}
 			}
+			return iconInfo.length - cnt;
 		}
-		raf.close();
-		return iconInfo.length - cnt;
 	}
 	
 	public static final String VERSION = "20050124";
