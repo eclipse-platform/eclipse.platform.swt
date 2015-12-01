@@ -237,7 +237,10 @@ protected void checkSubclass () {
 @Override
 public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget ();
-
+	boolean visible = getVisible();
+	if (OS.GTK3 && !visible) {
+		setVisible(true);
+	}
 	int width = 0, height = 0;
 	//For Date and Time, we cache the preffered size as there is no need to recompute it.
 	if (!changed && (isDate () || isTime ()) && OS.GTK3 && prefferedSize != null) {
@@ -275,7 +278,9 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	if (wHint != SWT.DEFAULT) width = wHint;
 	if (hHint != SWT.DEFAULT) height = hHint;
 	int borderWidth = getBorderWidth ();
-
+	if (OS.GTK3) {
+		setVisible(visible);
+	}
 	if (prefferedSize == null && (isDateWithDropDownButton () && OS.GTK3)) {
 		prefferedSize = new Point (width + 2*borderWidth, height+ 2*borderWidth);
 		return prefferedSize;

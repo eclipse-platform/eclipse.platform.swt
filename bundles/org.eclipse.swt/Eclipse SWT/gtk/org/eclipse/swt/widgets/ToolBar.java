@@ -177,6 +177,10 @@ int applyThemeBackground () {
 @Override
 public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget ();
+	boolean visible = getVisible();
+	if (OS.GTK3 && !visible) {
+		setVisible(true);
+	}
 	if (wHint != SWT.DEFAULT && wHint < 0) wHint = 0;
 	if (hHint != SWT.DEFAULT && hHint < 0) hHint = 0;
 	/*
@@ -188,6 +192,9 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	OS.gtk_toolbar_set_show_arrow (handle, false);
 	Point size = computeNativeSize (handle, wHint, hHint, changed);
 	if ((style & SWT.WRAP) != 0) OS.gtk_toolbar_set_show_arrow (handle, true);
+	if (OS.GTK3) {
+		setVisible(visible);
+	}
 	return size;
 }
 

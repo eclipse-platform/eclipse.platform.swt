@@ -471,6 +471,10 @@ int computeColumnIntersect (int x, int startColumn) {
 @Override
 public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget ();
+	boolean visible = getVisible();
+	if (SWT.getPlatform().equals("gtk") && !visible) {
+		setVisible(true);
+	}
 	int width = 0, height = 0;
 	if (wHint != SWT.DEFAULT) {
 		width = wHint;
@@ -492,6 +496,9 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 		height = getHeaderHeight () + itemsCount * itemHeight;
 	}
 	Rectangle result = computeTrim (0, 0, width, height);
+	if (SWT.getPlatform().equals("gtk")) {
+		setVisible(visible);
+	}
 	return new Point (result.width, result.height);
 }
 void createItem (CTableColumn column, int index) {

@@ -538,6 +538,10 @@ void clearAll (boolean all, long /*int*/ parentIter) {
 @Override
 public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget ();
+	boolean visible = getVisible();
+	if (OS.GTK3 && !visible) {
+		setVisible(true);
+	}
 	if (wHint != SWT.DEFAULT && wHint < 0) wHint = 0;
 	if (hHint != SWT.DEFAULT && hHint < 0) hHint = 0;
 	OS.gtk_widget_realize(handle);
@@ -562,6 +566,9 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	Rectangle trim = computeTrim (0, 0, size.x, size.y);
 	size.x = trim.width;
 	size.y = trim.height;
+	if (OS.GTK3) {
+		setVisible(visible);
+	}
 	return size;
 }
 

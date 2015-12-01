@@ -730,6 +730,10 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 
 Point computeNativeSize (long /*int*/ h, int wHint, int hHint, boolean changed) {
 	int width = wHint, height = hHint;
+	boolean visible = getVisible();
+	if (OS.GTK3 && !visible) {
+		setVisible(true);
+	}
 	if (OS.GTK3){
 		if (wHint == SWT.DEFAULT && hHint == SWT.DEFAULT) {
 			GtkRequisition requisition = new GtkRequisition ();
@@ -746,6 +750,7 @@ Point computeNativeSize (long /*int*/ h, int wHint, int hHint, boolean changed) 
 				height = natural_size [0];
 			}
 		}
+		setVisible(visible);
 		return new Point(width, height);
 	}
 	if (wHint == SWT.DEFAULT && hHint == SWT.DEFAULT) {
@@ -827,6 +832,11 @@ Accessible _getAccessible () {
  */
 public Rectangle getBounds () {
 	checkWidget();
+	boolean visible = getVisible();
+	if (OS.GTK3 && !visible) {
+		setVisible(true);
+		getParent().layout(true, false);
+	}
 	long /*int*/ topHandle = topHandle ();
 	GtkAllocation allocation = new GtkAllocation ();
 	OS.gtk_widget_get_allocation (topHandle, allocation);
@@ -835,6 +845,9 @@ public Rectangle getBounds () {
 	int width = (state & ZERO_WIDTH) != 0 ? 0 : allocation.width;
 	int height = (state & ZERO_HEIGHT) != 0 ? 0 :allocation.height;
 	if ((parent.style & SWT.MIRRORED) != 0) x = parent.getClientWidth () - width - x;
+	if (OS.GTK3) {
+		setVisible(visible);
+	}
 	return new Rectangle (x, y, width, height);
 }
 
@@ -1152,11 +1165,19 @@ public void setLocation(int x, int y) {
  */
 public Point getSize () {
 	checkWidget();
+	boolean visible = getVisible();
+	if (OS.GTK3 && !visible) {
+		setVisible(true);
+		getParent().layout(true, false);
+	}
 	long /*int*/ topHandle = topHandle ();
 	GtkAllocation allocation = new GtkAllocation ();
 	OS.gtk_widget_get_allocation (topHandle, allocation);
 	int width = (state & ZERO_WIDTH) != 0 ? 0 : allocation.width;
 	int height = (state & ZERO_HEIGHT) != 0 ? 0 : allocation.height;
+	if (OS.GTK3) {
+		setVisible(visible);
+	}
 	return new Point (width, height);
 }
 

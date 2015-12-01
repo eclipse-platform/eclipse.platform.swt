@@ -547,6 +547,10 @@ public void clearSelection () {
 @Override
 public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget ();
+	boolean visible = getVisible();
+	if (OS.GTK3 && !visible) {
+		setVisible(true);
+	}
 	if (wHint != SWT.DEFAULT && wHint < 0) wHint = 0;
 	if (hHint != SWT.DEFAULT && hHint < 0) hHint = 0;
 	int[] w = new int [1], h = new int [1];
@@ -579,6 +583,9 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	width = wHint == SWT.DEFAULT ? width : wHint;
 	height = hHint == SWT.DEFAULT ? height : hHint;
 	Rectangle trim = computeTrim (0, 0, width, height);
+	if (OS.GTK3) {
+		setVisible(visible);
+	}
 	return new Point (trim.width, trim.height);
 }
 

@@ -395,6 +395,10 @@ void clearText () {
 @Override
 public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget ();
+	boolean visible = getVisible();
+	if (OS.GTK3 && !visible) {
+		setVisible(true);
+	}
 	if ((style & SWT.READ_ONLY) != 0 || OS.GTK3) {
 		return computeNativeSize (handle, wHint, hHint, changed);
 	}
@@ -425,6 +429,9 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	width = Math.max (listRequesition.width, width) + arrowRequesition.width;
 	width = wHint == SWT.DEFAULT ? width : wHint;
 	height = hHint == SWT.DEFAULT ? height : hHint;
+	if (OS.GTK3) {
+		setVisible(visible);
+	}
 	return new Point (width, height);
 }
 
