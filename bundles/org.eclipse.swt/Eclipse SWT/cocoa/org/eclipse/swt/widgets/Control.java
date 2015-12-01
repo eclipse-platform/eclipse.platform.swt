@@ -2118,12 +2118,12 @@ boolean insertText (long /*int*/ id, long /*int*/ sel, long /*int*/ string) {
 public long /*int*/ internal_new_GC (GCData data) {
 	checkWidget();
 	NSView view = paintView();
-	long /*int*/ context = 0;
+	NSGraphicsContext graphicsContext = null;
 	if (data != null && data.paintRect != null) {
-		NSGraphicsContext graphicsContext = NSGraphicsContext.currentContext();
-		context = graphicsContext.id;
+		graphicsContext = NSGraphicsContext.currentContext();
 		if (!view.isFlipped()) data.state &= ~VISIBLE_REGION;
-	} else {
+	}
+	if (graphicsContext == null) {
 		NSWindow window = view.window();
 		/*
 		 * Force the device to be created before attempting
@@ -2136,10 +2136,9 @@ public long /*int*/ internal_new_GC (GCData data) {
 			window.orderOut(null);
 			window.setAlphaValue(alpha);
 		}
-		NSGraphicsContext graphicsContext = NSGraphicsContext.graphicsContextWithWindow (window);
+		graphicsContext = NSGraphicsContext.graphicsContextWithWindow (window);
 		NSGraphicsContext flippedContext = NSGraphicsContext.graphicsContextWithGraphicsPort(graphicsContext.graphicsPort(), true);
 		graphicsContext = flippedContext;
-		context = graphicsContext.id;
 		if (data != null) {
 			data.flippedContext = flippedContext;
 			data.state &= ~VISIBLE_REGION;
@@ -2163,7 +2162,10 @@ public long /*int*/ internal_new_GC (GCData data) {
 		data.background = control.getBackgroundColor ().handle;
 		data.font = font != null ? font : defaultFont ();		
 	}
-	return context;
+	if (graphicsContext != null) {
+		return graphicsContext.id;
+	}
+	return 0;
 }
 
 /**	 
