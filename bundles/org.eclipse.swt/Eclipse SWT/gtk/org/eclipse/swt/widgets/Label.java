@@ -567,9 +567,19 @@ void setFontDescription (long /*int*/ font) {
 @Override
 void setForegroundColor (GdkColor color) {
 	super.setForegroundColor (color);
-	setForegroundColor (fixedHandle, color);
-	if (labelHandle != 0) setForegroundColor (labelHandle, color);
-	if (imageHandle != 0) setForegroundColor (imageHandle, color);
+	if (OS.GTK_VERSION >= OS.VERSION (3, 16, 0)) {
+		GdkRGBA rgba = null;
+		if (color != null) {
+			rgba = display.toGdkRGBA (color);
+		}
+		setForegroundColor (fixedHandle, rgba);
+		if (labelHandle != 0) setForegroundColor (labelHandle, rgba);
+		if (imageHandle != 0) setForegroundColor (imageHandle, rgba);
+	} else {
+		setForegroundColor (fixedHandle, color);
+		if (labelHandle != 0) setForegroundColor (labelHandle, color);
+		if (imageHandle != 0) setForegroundColor (imageHandle, color);
+	}
 }
 
 @Override

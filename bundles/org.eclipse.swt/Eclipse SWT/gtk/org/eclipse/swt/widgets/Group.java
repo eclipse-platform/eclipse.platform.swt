@@ -43,6 +43,8 @@ import org.eclipse.swt.internal.gtk.*;
 public class Group extends Composite {
 	long /*int*/ clientHandle, labelHandle;
 	String text = "";
+	// We use this to keep track of the foreground color
+	GdkRGBA foreground;
 
 /**
  * Constructs a new instance of this class given its parent
@@ -145,6 +147,18 @@ Rectangle getClientAreaInPixels () {
 	return clientRectangle;
 }
 
+@Override
+GdkColor getContextColor () {
+	if (OS.GTK_VERSION >= OS.VERSION (3, 16, 0)) {
+		if (foreground != null) {
+			return display.toGdkColor (foreground);
+		} else {
+			return display.COLOR_WIDGET_FOREGROUND;
+		}
+	} else {
+		return super.getContextColor();
+	}
+}
 
 @Override
 void createHandle(int index) {
@@ -315,8 +329,27 @@ void setFontDescription (long /*int*/ font) {
 
 @Override
 void setForegroundColor (GdkColor color) {
-	super.setForegroundColor (color);
-	setForegroundColor (labelHandle, color);
+	if (OS.GTK_VERSION >= OS.VERSION(3, 16, 0)) {
+		GdkRGBA rgba = null;
+		if (color != null) {
+			rgba = display.toGdkRGBA (color);
+		}
+		/*
+		 * When using CSS, setting the foreground color on an empty label
+		 * widget prevents the background from being set. If a user wants
+		 * to specify a foreground color before the text is set, store the
+		 * color and wait until text is specified to apply it.
+		 */
+		if (text.isEmpty()) {
+			foreground = rgba;
+		} else {
+			setForegroundColor (labelHandle, rgba);
+			foreground = rgba;
+		}
+	} else {
+		super.setForegroundColor (color);
+		setForegroundColor(labelHandle, color);
+	}
 }
 
 @Override
@@ -368,6 +401,10 @@ public void setText (String string) {
 		}
 	} else {
 		OS.gtk_frame_set_label_widget (handle, 0);
+	}
+	// Set the foreground now that the text has been set
+	if (OS.GTK_VERSION >= OS.VERSION (3, 16, 0)) {
+		setForegroundColor (labelHandle, foreground);
 	}
 }
 

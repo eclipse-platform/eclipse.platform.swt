@@ -54,6 +54,7 @@ public class ToolBar extends Composite {
 		menuItemSelectedFunc = new Callback(ToolBar.class, "MenuItemSelectedProc", 2);
 		if (menuItemSelectedFunc.getAddress() == 0) SWT.error(SWT.ERROR_NO_MORE_CALLBACKS);
 	}
+	String cssBackground, cssForeground = " ";
 
 /**
  * Constructs a new instance of this class given its parent
@@ -594,8 +595,15 @@ int setBounds (int x, int y, int width, int height, boolean move, boolean resize
 @Override
 void setBackgroundColor (long /*int*/ context, long /*int*/ handle, GdkRGBA rgba) {
 	if (OS.GTK_VERSION >= OS.VERSION(3, 16, 0)) {
-		String css = "GtkToolbar {background-color: " + gtk_rgba_to_css_string(rgba) + "}";
-		gtk_css_provider_load_from_css(context, css);
+		// Form background string
+		String css = "GtkToolbar {background-color: " + display.gtk_rgba_to_css_string(rgba) + "}";
+
+		// Cache background color
+		this.cssBackground = css;
+
+		// Apply background color and any foreground color
+		String finalCss = display.gtk_css_create_css_color_string (cssBackground, cssForeground, SWT.BACKGROUND);
+		gtk_css_provider_load_from_css(context, finalCss);
 	} else {
 		super.setBackgroundColor(context, handle, rgba);
 	}
@@ -609,6 +617,17 @@ void setFontDescription (long /*int*/ font) {
 		items[i].setFontDescription (font);
 	}
 	relayout ();
+}
+
+void restoreBackground () {
+	/*
+	 * We need to restore the cached background color in order to prevent
+	 * setting the foreground color from overriding the background color
+	 * (or replacing it with black).
+	 */
+	long /*int*/ context = OS.gtk_widget_get_style_context(handle);
+	String finalCss = display.gtk_css_create_css_color_string (this.cssBackground, cssForeground, SWT.BACKGROUND);
+	gtk_css_provider_load_from_css (context, finalCss);
 }
 
 @Override

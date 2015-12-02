@@ -565,9 +565,19 @@ void setFontDescription (long /*int*/ font) {
 }
 
 void setForegroundColor (GdkColor color) {
-	setForegroundColor (handle, color);
-	if (labelHandle != 0) setForegroundColor (labelHandle, color);
-	if (imageHandle != 0) setForegroundColor (imageHandle, color);
+	if (OS.GTK_VERSION >= OS.VERSION(3, 16, 0)) {
+		GdkRGBA rgba = null;
+		if (color != null) {
+			rgba = display.toGdkRGBA (color);
+		}
+		parent.setForegroundColor (handle, rgba);
+		if (labelHandle != 0) parent.setForegroundColor (labelHandle, rgba);
+		if (imageHandle != 0) parent.setForegroundColor (imageHandle, rgba);
+	} else {
+		setForegroundColor (handle, color);
+		if (labelHandle != 0) setForegroundColor (labelHandle, color);
+		if (imageHandle != 0) setForegroundColor (imageHandle, color);
+	}
 }
 
 /**

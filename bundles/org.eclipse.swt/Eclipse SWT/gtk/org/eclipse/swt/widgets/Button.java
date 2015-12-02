@@ -815,14 +815,17 @@ void setBackgroundColor (long /*int*/ context, long /*int*/ handle, GdkRGBA rgba
 		super.setBackgroundColor (context, handle, rgba);
 		return;
 	}
+	// Form background CSS string
+	String css ="* {background : ";
+	String color = display.gtk_rgba_to_css_string (rgba);
+	css += color + ";}";
 
-	String css ="* {\n";
-	if (rgba != null) {
-		String color = gtk_rgba_to_css_string (rgba);
-		css += "background: " + color + ";\n";
-	}
-	css += "}\n";
-	gtk_css_provider_load_from_css (context, css);
+	// Cache background color
+	cssBackground = css;
+
+	// Apply background color and any cached foreground color
+	String finalCss = display.gtk_css_create_css_color_string (cssBackground, cssForeground, SWT.BACKGROUND);
+	gtk_css_provider_load_from_css (context, finalCss);
 }
 
 @Override
@@ -917,16 +920,48 @@ boolean setRadioSelection (boolean value) {
 @Override
 void setForegroundColor (GdkColor color) {
 	super.setForegroundColor (color);
-	setForegroundColor (fixedHandle, color);
-	if (labelHandle != 0) setForegroundColor (labelHandle, color);
-	if (imageHandle != 0) setForegroundColor (imageHandle, color);
-
-	//Pre 3.10 CSS didn't work. In 3.16 everything will be CSS controlled
-	//and themes should control check/radio border color then.
-	if (OS.GTK_VERSION >= OS.VERSION(3, 10, 0) && OS.GTK_VERSION < OS.VERSION (3, 16, 0) &&
-			(style & (SWT.CHECK | SWT.RADIO)) != 0) {
-		gtk_swt_set_border_color (color);
+	if (OS.GTK_VERSION >= OS.VERSION (3, 16, 0)) {
+		GdkRGBA rgba = null;
+		if (color != null) {
+			rgba = display.toGdkRGBA (color);
+		}
+		setForegroundColor (fixedHandle, rgba);
+		if (labelHandle != 0) setForegroundColor (labelHandle, rgba);
+		if (imageHandle != 0) setForegroundColor (imageHandle, rgba);
+		//Pre 3.10 CSS didn't work. In 3.16 everything will be CSS controlled
+		//and themes should control check/radio border color then.
+	} else {
+		setForegroundColor (fixedHandle, color);
+		if (labelHandle != 0) setForegroundColor (labelHandle, color);
+		if (imageHandle != 0) setForegroundColor (imageHandle, color);
+		if (OS.GTK_VERSION >= OS.VERSION(3, 10, 0) && OS.GTK_VERSION < OS.VERSION (3, 16, 0) &&
+				(style & (SWT.CHECK | SWT.RADIO)) != 0) {
+			gtk_swt_set_border_color (color);
+		}
 	}
+}
+
+@Override
+void setForegroundColor (long /*int*/ handle, GdkRGBA rgba) {
+	GdkRGBA toSet;
+	if (rgba != null) {
+		toSet = rgba;
+	} else {
+		GdkColor defaultForeground = display.COLOR_WIDGET_FOREGROUND;
+		toSet = display.toGdkRGBA (defaultForeground);
+	}
+	long /*int*/ context = OS.gtk_widget_get_style_context (handle);
+
+	// Form foreground string
+	String color = display.gtk_rgba_to_css_string(toSet);
+	String css = "GtkButton {color: " + color + ";}";
+
+	// Cache foreground color
+	cssForeground = css;
+
+	// Apply foreground color and any cached background color
+	String finalCss = display.gtk_css_create_css_color_string (cssBackground, cssForeground, SWT.FOREGROUND);
+	gtk_css_provider_load_from_css(context, finalCss);
 }
 
 //GtkCheckButton & it's descendant GtkRadioButton are often invisible or
@@ -946,7 +981,7 @@ private void gtk_swt_set_border_color (GdkColor color) {
 	// ideally we should have a 'constructCssString(..) that accepts attribute-value pairs.
 	String css_string = "* {\n";
 	if (rgba != null) {
-		String css_color = gtk_rgba_to_css_string (rgba);
+		String css_color = display.gtk_rgba_to_css_string (rgba);
 		css_string += "border-color: " + css_color + ";\n";
 	}
 		css_string += "}\n";

@@ -964,7 +964,15 @@ void setCursor (long /*int*/ cursor) {
 
 @Override
 void setForegroundColor (GdkColor color) {
-	setForegroundColor (handle, color, false);
+	if (OS.GTK_VERSION >= OS.VERSION (3, 16, 0)) {
+		GdkRGBA rgba = null;
+		if (color != null) {
+			rgba = display.toGdkRGBA (color);
+		}
+		setForegroundColor (handle, rgba);
+	} else {
+		setForegroundColor (handle, color, false);
+	}
 }
 
 /**

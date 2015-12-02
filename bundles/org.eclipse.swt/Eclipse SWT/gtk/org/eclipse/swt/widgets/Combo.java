@@ -1910,17 +1910,20 @@ void setBackgroundColor (long /*int*/ context, long /*int*/ handle, GdkRGBA rgba
 	background = rgba;
 	String css = "* {\n";
 	if (rgba != null) {
-		String color = gtk_rgba_to_css_string (rgba);
+		String color = display.gtk_rgba_to_css_string (rgba);
 		css += "background: " + color + ";\n";
 	}
 	css += "}\n";
+	// Cache background color
+	cssBackground = css;
+	String finalCss = display.gtk_css_create_css_color_string (cssBackground, cssForeground, SWT.BACKGROUND);
 	if (entryHandle == 0 || (style & SWT.READ_ONLY) != 0) {
 		// For read only Combos, we can just apply the background CSS to the GtkToggleButton.
-		gtk_css_provider_load_from_css (OS.gtk_widget_get_style_context(buttonHandle), css);
+		gtk_css_provider_load_from_css (OS.gtk_widget_get_style_context(buttonHandle), finalCss);
 	} else {
 		if (OS.GTK_VERSION >= OS.VERSION(3, 16, 0)) {
 			// For GTK3.16+, only the GtkEntry needs to be themed.
-			gtk_css_provider_load_from_css (OS.gtk_widget_get_style_context(entryHandle), css);
+			gtk_css_provider_load_from_css (OS.gtk_widget_get_style_context(entryHandle), finalCss);
 		} else {
 			// Maintain GTK3.14- functionality
 			setBackgroundColorGradient (OS.gtk_widget_get_style_context (entryHandle), handle, rgba);
@@ -2001,24 +2004,30 @@ void setFontDescription (long /*int*/ font) {
 
 @Override
 void setForegroundColor (GdkColor color) {
-	super.setForegroundColor (handle, color, false);
-	if (entryHandle != 0) {
-		setForegroundColor (entryHandle, color, false);
-	}
-    if (OS.GTK3) {
-    	GdkRGBA rgba = gdk_color_to_rgba (color);
+	if (OS.GTK_VERSION >= OS.VERSION(3, 16, 0)) {
+		GdkRGBA rgba = null;
+		if (color != null) {
+			rgba = display.toGdkRGBA (color);
+		}
+		if (entryHandle != 0) {
+			setForegroundColor (entryHandle, rgba);
+		}
     	OS.g_object_set (textRenderer, OS.foreground_rgba, rgba, 0);
-    } else  {
-    	OS.g_object_set (textRenderer, OS.foreground_gdk, color, 0);
-    }
-}
-
-GdkRGBA gdk_color_to_rgba (GdkColor color) {
-	GdkRGBA rgba = null;
-	if (color != null) {
-		rgba = display.toGdkRGBA (color);
+	} else {
+		super.setForegroundColor (handle, color, false);
+		if (entryHandle != 0) {
+			setForegroundColor (entryHandle, color, false);
+		}
+	    if (OS.GTK3) {
+	    	GdkRGBA rgba = null;
+	    	if (color != null) {
+	    		rgba = display.toGdkRGBA (color);
+	    	}
+	    	OS.g_object_set (textRenderer, OS.foreground_rgba, rgba, 0);
+	    } else  {
+	    	OS.g_object_set (textRenderer, OS.foreground_gdk, color, 0);
+	    }
 	}
-	return rgba;
 }
 
 /**

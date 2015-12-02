@@ -11,6 +11,9 @@
 package org.eclipse.swt.widgets;
 
 
+import java.util.regex.*;
+import java.util.regex.Pattern;
+
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.*;
@@ -1691,6 +1694,29 @@ long /*int*/ gtk_cell_renderer_toggle_get_type () {
 	return toggle_renderer_type;
 }
 
+String gtk_css_create_css_color_string (String background, String foreground, int property) {
+	switch (property) {
+		case SWT.FOREGROUND:
+			if (foreground != null && background != null) {
+				return foreground + "\n" + background;
+			} else if (foreground != null) {
+				return foreground;
+			} else {
+				return "";
+			}
+		case SWT.BACKGROUND:
+			if (foreground != null && background != null) {
+				return background + "\n" + foreground;
+			} else if (background != null) {
+				return background;
+			} else {
+				return "";
+			}
+		default:
+			return "";
+	}
+}
+
 String gtk_css_default_theme_values (int swt) {
 	/*
 	 * This method fetches GTK theme values/properties. This is accomplished
@@ -1771,6 +1797,78 @@ String gtk_css_default_theme_values (int swt) {
 	}
 }
 
+GdkColor gtk_css_parse_background (long /*int*/ provider) {
+	String shortOutput;
+	int startIndex;
+	GdkRGBA rgba = new GdkRGBA ();
+	// Fetch the CSS in char/string format from the GtkCssProvider.
+	long /*int*/ str = OS.gtk_css_provider_to_string (provider);
+	if (str == 0) return COLOR_WIDGET_BACKGROUND;
+	int length = OS.strlen (str);
+	byte [] buffer = new byte [length];
+	OS.memmove (buffer, str, length);
+	String cssOutput = new String (Converter.mbcsToWcs (null, buffer));
+
+	/* Although we only set the property "background-color", we can handle
+	 * the "background" property as well. We check for either of these cases
+	 * and extract a GdkRGBA object from the parsed CSS string.
+	 */
+	if (cssOutput.contains ("background-color:")) {
+		startIndex = cssOutput.indexOf ("background-color:");
+		shortOutput = cssOutput.substring (startIndex + 18);
+		// Double check to make sure with have a valid rgb/rgba property
+		if (shortOutput.contains ("rgba") || shortOutput.contains ("rgb")) {
+			rgba = gtk_css_property_to_rgba (shortOutput);
+		} else {
+			return COLOR_WIDGET_BACKGROUND;
+		}
+	} else if (cssOutput.contains ("background:")) {
+		startIndex = cssOutput.indexOf ("background:");
+		shortOutput = cssOutput.substring (startIndex + 13);
+		// Double check to make sure with have a valid rgb/rgba property
+		if (shortOutput.contains ("rgba") || shortOutput.contains ("rgb")) {
+			rgba = gtk_css_property_to_rgba (shortOutput);
+		} else {
+			return COLOR_WIDGET_BACKGROUND;
+		}
+	}
+	return toGdkColor (rgba);
+}
+
+GdkColor gtk_css_parse_foreground (long /*int*/ provider) {
+	String shortOutput;
+	int startIndex;
+	GdkRGBA rgba = new GdkRGBA ();
+	// Fetch the CSS in char/string format from the provider.
+	long /*int*/ str = OS.gtk_css_provider_to_string(provider);
+	if (str == 0) return COLOR_WIDGET_FOREGROUND;
+	int length = OS.strlen (str);
+	byte [] buffer = new byte [length];
+	OS.memmove (buffer, str, length);
+	String cssOutput = new String (Converter.mbcsToWcs (null, buffer));
+	/*
+	 * Because background-color and color have overlapping characters,
+	 * a simple String.contains() check will not suffice. This means
+	 * that a more encompassing regex is needed to capture "pure" color
+	 * properties and filter out things like background-color, border-color,
+	 * etc.
+	 */
+	String pattern = "[^-]color: rgb[a]?\\([0-9]+,[\\s]?[0-9]+,[\\s]?[0-9]+[,[\\s]*[0-9]+]?\\)";
+	Pattern r = Pattern.compile(pattern);
+	Matcher m = r.matcher(cssOutput);
+	if (m.find()) {
+		String match = m.group(0);
+		if (match.contains("color:")) {
+			startIndex = match.indexOf("color:");
+			shortOutput = match.substring(startIndex + 7);
+			rgba = gtk_css_property_to_rgba(shortOutput);
+		}
+	} else {
+		return COLOR_WIDGET_FOREGROUND;
+	}
+	return toGdkColor (rgba);
+}
+
 GdkRGBA gtk_css_property_to_rgba(String property) {
 	/* Here we convert rgb(...) or rgba(...) properties
 	 * into GdkRGBA objects using gdk_rgba_parse(). Note
@@ -1782,6 +1880,30 @@ GdkRGBA gtk_css_property_to_rgba(String property) {
 	propertyParsed = property.split (";");
 	OS.gdk_rgba_parse (rgba, Converter.wcsToMbcs (null, propertyParsed[0], true));
 	return rgba;
+}
+
+String gtk_rgba_to_css_string (GdkRGBA rgba) {
+	/*
+	 * In GdkRGBA, values are a double between 0-1.
+	 * In CSS, values are integers between 0-255 for r, g, and b.
+	 * Alpha is still a double between 0-1.
+	 * The final CSS format is: rgba(int, int, int, double)
+	 * Due to this, there is a slight loss of precision.
+	 * Setting/getting with CSS *might* yield slight differences.
+	 */
+	GdkRGBA toConvert;
+	if (rgba != null) {
+		toConvert = rgba;
+	} else {
+		// If we have a null RGBA, set it to the default COLOR_WIDGET_BACKGROUND.
+		GdkColor defaultGdkColor = getSystemColor(SWT.COLOR_WIDGET_BACKGROUND).handle;
+		toConvert = toGdkRGBA (defaultGdkColor);
+	}
+	long /*int*/ str = OS.gdk_rgba_to_string (toConvert);
+	int length = OS.strlen (str);
+	byte [] buffer = new byte [length];
+	OS.memmove (buffer, str, length);
+	return new String (Converter.mbcsToWcs (null, buffer));
 }
 
 /**

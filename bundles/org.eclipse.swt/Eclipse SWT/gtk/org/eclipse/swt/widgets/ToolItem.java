@@ -1024,7 +1024,37 @@ void setFontDescription (long /*int*/ font) {
 }
 
 void setForegroundColor (GdkColor color) {
-	if (labelHandle != 0) setForegroundColor (labelHandle, color);
+	if (OS.GTK_VERSION >= OS.VERSION(3, 16, 0) && labelHandle != 0) {
+		GdkRGBA rgba = null;
+		if (color != null) {
+			rgba = display.toGdkRGBA (color);
+		}
+		setForegroundColor (labelHandle, rgba);
+	} else {
+		if (labelHandle != 0) setForegroundColor (labelHandle, color);
+	}
+}
+
+void setForegroundColor (long /*int*/ handle, GdkRGBA rgba) {
+	GdkRGBA toSet = new GdkRGBA();
+	if (rgba != null) {
+		toSet = rgba;
+	} else {
+		GdkColor defaultForeground = display.COLOR_WIDGET_FOREGROUND;
+		toSet = display.toGdkRGBA (defaultForeground);
+	}
+	long /*int*/ context = OS.gtk_widget_get_style_context (handle);
+	// Form foreground string
+	String color = display.gtk_rgba_to_css_string(toSet);
+	String css = "* {color: " + color + ";}";
+
+	// Cache and apply foreground color
+	parent.cssForeground = css;
+	gtk_css_provider_load_from_css(context, css);
+
+	// We need to set the parent ToolBar's background
+	// otherwise setting the foreground will wipe it out.
+	parent.restoreBackground();
 }
 
 /**

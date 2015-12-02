@@ -1402,7 +1402,15 @@ public void setFont (Font font) {
 
 @Override
 void setForegroundColor (GdkColor color) {
-	setForegroundColor (containerHandle, color, false);
+	if (OS.GTK_VERSION >= OS.VERSION (3, 16, 0)) {
+		GdkRGBA rgba = null;
+		if (color != null) {
+			rgba = display.toGdkRGBA (color);
+		}
+		setForegroundColor (containerHandle, rgba);
+	} else {
+		setForegroundColor (containerHandle, color, false);
+	}
 }
 
 @Override

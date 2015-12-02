@@ -34,7 +34,7 @@ import org.eclipse.swt.internal.gtk.*;
  * @noextend This class is not intended to be subclassed by clients.
  */
 public class TabItem extends Item {
-	long /*int*/ labelHandle, imageHandle, pageHandle;
+	long /*int*/ labelHandle, imageHandle, pageHandle, provider;
 	Control control;
 	TabFolder parent;
 	String toolTipText;
@@ -326,8 +326,47 @@ void setFontDescription (long /*int*/ font) {
 
 void setForegroundColor (GdkColor color) {
 	/* Don't set the color in vbox handle (it doesn't draw) */
-	setForegroundColor (labelHandle, color, false);
-	setForegroundColor (imageHandle, color, false);
+	if (OS.GTK_VERSION >= OS.VERSION (3, 16, 0)) {
+		GdkRGBA rgba = null;
+		if (color != null) {
+			rgba = display.toGdkRGBA (color);
+		}
+		setForegroundColor (labelHandle, rgba);
+		setForegroundColor (imageHandle, rgba);
+	} else {
+		setForegroundColor (labelHandle, color, false);
+		setForegroundColor (imageHandle, color, false);
+	}
+
+}
+
+void setForegroundColor (long /*int*/ handle, GdkRGBA rgba) {
+	GdkRGBA toSet = new GdkRGBA();
+	if (rgba != null) {
+		toSet = rgba;
+	} else {
+		GdkColor defaultForeground = display.COLOR_WIDGET_FOREGROUND;
+		toSet = display.toGdkRGBA (defaultForeground);
+	}
+	long /*int*/ context = OS.gtk_widget_get_style_context (handle);
+	// Form foreground string
+	String color = display.gtk_rgba_to_css_string(toSet);
+	String css = "* {color: " + color + ";}";
+
+	// Cache and apply foreground color
+	parent.cssForeground = css;
+	gtk_css_provider_load_from_css(context, css);
+}
+
+void gtk_css_provider_load_from_css (long /*int*/ context, String css) {
+	/* Utility function. */
+	//@param css : a 'css java' string like "{\nbackground: red;\n}".
+	if (provider == 0) {
+		provider = OS.gtk_css_provider_new ();
+		OS.gtk_style_context_add_provider (context, provider, OS.GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
+		OS.g_object_unref (provider);
+	}
+	OS.gtk_css_provider_load_from_data (provider, Converter.wcsToMbcs (null, css, true), -1, null);
 }
 
 @Override

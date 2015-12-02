@@ -59,6 +59,7 @@ public abstract class Control extends Widget implements Drawable {
 	Object layoutData;
 	Accessible accessible;
 	Control labelRelation;
+	String cssBackground, cssForeground = " ";
 
 	/* these class variables are for the workaround for bug #427776 */
 	static Callback enterNotifyEventFunc;
@@ -658,8 +659,10 @@ void checkForeground () {
 	* Feature in GTK 3. The widget foreground is inherited from the immediate
 	* parent. This is not the expected behavior for SWT. The fix is to avoid
 	* the inheritance by explicitly setting the default foreground on the widget.
+	*
+	* This can be removed on GTK3.16+.
 	*/
-	if (OS.GTK3) {
+	if (OS.GTK_VERSION < OS.VERSION(3, 16, 0)) {
 		setForegroundColor (topHandle (), display.COLOR_WIDGET_FOREGROUND);
 	}
 }
@@ -2705,7 +2708,7 @@ GdkColor getContextBackground () {
 	long /*int*/ fontHandle = fontHandle ();
 	if (OS.GTK_VERSION >= OS.VERSION(3, 16, 0)) {
 		if (provider != 0) {
-			return gtk_css_parse_background (provider);
+			return display.gtk_css_parse_background (provider);
 		} else {
 			return display.COLOR_WIDGET_BACKGROUND;
 		}
@@ -2722,14 +2725,14 @@ GdkColor getContextBackground () {
 
 GdkColor getContextColor () {
 	long /*int*/ fontHandle = fontHandle ();
-	long /*int*/ context = OS.gtk_widget_get_style_context (fontHandle);
-	GdkRGBA rgba = new GdkRGBA ();
-	if (OS.GTK_VERSION < OS.VERSION(3, 18, 0)) {
-		rgba = display.styleContextGetColor (context, OS.GTK_STATE_FLAG_NORMAL, rgba);
+	if (OS.GTK_VERSION >= OS.VERSION(3, 16, 0) && provider != 0) {
+		return display.gtk_css_parse_foreground(provider);
 	} else {
-		rgba = display.styleContextGetColor (context, OS.gtk_widget_get_state_flags(handle), rgba);
+		long /*int*/ context = OS.gtk_widget_get_style_context (fontHandle);
+		GdkRGBA rgba = new GdkRGBA ();
+		rgba = display.styleContextGetColor (context, OS.GTK_STATE_FLAG_NORMAL, rgba);
+		return display.toGdkColor (rgba);
 	}
-	return display.toGdkColor (rgba);
 }
 
 GdkColor getBgColor () {
@@ -3618,6 +3621,20 @@ long /*int*/ gtk_unrealize (long /*int*/ widget) {
 	return 0;
 }
 
+String gtk_widget_get_name(long /*int*/ handle) {
+	long /*int*/ str = OS.gtk_widget_get_name (handle);
+	String name;
+	if (str == 0) {
+		name = "*";
+	} else {
+		int length = OS.strlen (str);
+		byte [] buffer = new byte [length];
+		OS.memmove (buffer, str, length);
+		name = new String (Converter.mbcsToWcs (null, buffer));
+	}
+	return name;
+}
+
 void gtk_widget_size_request (long /*int*/ widget, GtkRequisition requisition) {
 	gtk_widget_get_preferred_size (widget, requisition);
 }
@@ -4204,18 +4221,16 @@ private void _setBackground (Color color) {
 
 void setBackgroundColor (long /*int*/ context, long /*int*/ handle, GdkRGBA rgba) {
 	if (OS.GTK_VERSION >= OS.VERSION(3, 16, 0)) {
-		long /*int*/ str = OS.gtk_widget_get_name (handle);
-		String name;
-		if (str == 0) {
-			name = "*";
-		} else {
-			int length = OS.strlen (str);
-			byte [] buffer = new byte [length];
-			OS.memmove (buffer, str, length);
-			name = new String (Converter.mbcsToWcs (null, buffer));
-		}
-		String css = name + " {background-color: " + gtk_rgba_to_css_string (rgba) + ";}";
-		gtk_css_provider_load_from_css (context, css);
+		// Form background string
+		String name = gtk_widget_get_name(handle);
+		String css = name + " {background-color: " + display.gtk_rgba_to_css_string (rgba) + ";}";
+
+		// Cache background
+		cssBackground = css;
+
+		// Apply background color and any cached foreground color
+		String finalCss = display.gtk_css_create_css_color_string (cssBackground, cssForeground, SWT.BACKGROUND);
+		gtk_css_provider_load_from_css (context, finalCss);
 	} else {
 		OS.gtk_widget_override_background_color (handle, OS.GTK_STATE_FLAG_NORMAL, rgba);
 	}
@@ -4224,13 +4239,18 @@ void setBackgroundColor (long /*int*/ context, long /*int*/ handle, GdkRGBA rgba
 void setBackgroundColorGradient (long /*int*/ context, long /*int*/ handle, GdkRGBA rgba) {
 	String css ="* {\n";
 	if (rgba != null) {
-		String color = gtk_rgba_to_css_string (rgba);
+		String color = display.gtk_rgba_to_css_string (rgba);
 		//Note, use 'background-image' CSS class with caution. Not all themes/widgets support it. (e.g button doesn't).
 		//Use 'background' CSS class where possible instead unless 'background-image' is explicidly supported.
 		css += "background-image: -gtk-gradient (linear, 0 0, 0 1, color-stop(0, " + color + "), color-stop(1, " + color + "));\n";
 	}
 	css += "}\n";
-	gtk_css_provider_load_from_css (context, css);
+	//Cache background color
+	cssBackground = css;
+
+	// Apply background color and any cached foreground color
+	String finalCss = display.gtk_css_create_css_color_string (cssBackground, cssForeground, SWT.BACKGROUND);
+	gtk_css_provider_load_from_css (context, finalCss);
 }
 
 void gtk_css_provider_load_from_css (long /*int*/ context, String css) {
@@ -4243,68 +4263,6 @@ void gtk_css_provider_load_from_css (long /*int*/ context, String css) {
 		OS.g_object_unref (provider);
 	}
 	OS.gtk_css_provider_load_from_data (provider, Converter.wcsToMbcs (null, css, true), -1, null);
-}
-
-String gtk_rgba_to_css_string (GdkRGBA rgba) {
-	/*
-	 * In GdkRGBA, values are a double between 0-1.
-	 * In CSS, values are integers between 0-255 for r, g, and b.
-	 * Alpha is still a double between 0-1.
-	 * The final CSS format is: rgba(int, int, int, double)
-	 * Due to this, there is a slight loss of precision.
-	 * Setting/getting with CSS *might* yield slight differences.
-	 */
-	GdkRGBA toConvert;
-	if (rgba != null) {
-		toConvert = rgba;
-	} else {
-		// If we have a null RGBA, set it to the default COLOR_WIDGET_BACKGROUND.
-		GdkColor defaultGdkColor = display.getSystemColor(SWT.COLOR_WIDGET_BACKGROUND).handle;
-		toConvert = display.toGdkRGBA (defaultGdkColor);
-	}
-	long /*int*/ str = OS.gdk_rgba_to_string (toConvert);
-	int length = OS.strlen (str);
-	byte [] buffer = new byte [length];
-	OS.memmove (buffer, str, length);
-	return new String (Converter.mbcsToWcs (null, buffer));
-}
-
-GdkColor gtk_css_parse_background (long /*int*/ provider) {
-	String shortOutput;
-	int startIndex;
-	GdkRGBA rgba = new GdkRGBA ();
-	// Fetch the CSS in char/string format from the GtkCssProvider.
-	long /*int*/ str = OS.gtk_css_provider_to_string (provider);
-	if (str == 0) return display.COLOR_WIDGET_BACKGROUND;
-	int length = OS.strlen (str);
-	byte [] buffer = new byte [length];
-	OS.memmove (buffer, str, length);
-	String cssOutput = new String (Converter.mbcsToWcs (null, buffer));
-
-	/* Although we only set the property "background-color", we can handle
-	 * the "background" property as well. We check for either of these cases
-	 * and extract a GdkRGBA object from the parsed CSS string.
-	 */
-	if (cssOutput.contains ("background-color:")) {
-		startIndex = cssOutput.indexOf ("background-color:");
-		shortOutput = cssOutput.substring (startIndex + 18);
-		// Double check to make sure with have a valid rgb/rgba property
-		if (shortOutput.contains ("rgba") || shortOutput.contains ("rgb")) {
-			rgba = display.gtk_css_property_to_rgba (shortOutput);
-		} else {
-			return display.COLOR_WIDGET_BACKGROUND;
-		}
-	} else if (cssOutput.contains ("background:")) {
-		startIndex = cssOutput.indexOf ("background:");
-		shortOutput = cssOutput.substring (startIndex + 13);
-		// Double check to make sure with have a valid rgb/rgba property
-		if (shortOutput.contains ("rgba") || shortOutput.contains ("rgb")) {
-			rgba = display.gtk_css_property_to_rgba (shortOutput);
-		} else {
-			return display.COLOR_WIDGET_BACKGROUND;
-		}
-	}
-	return display.toGdkColor (rgba);
 }
 
 void setBackgroundColor (long /*int*/ handle, GdkColor color) {
@@ -4744,7 +4702,36 @@ public void setForeground (Color color) {
 }
 
 void setForegroundColor (GdkColor color) {
-	setForegroundColor (handle, color);
+	GdkRGBA rgba = null;
+	if (OS.GTK_VERSION >= OS.VERSION(3, 16, 0)) {
+		if (color != null) {
+			rgba = display.toGdkRGBA (color);
+		}
+		setForegroundColor(handle, rgba);
+	} else {
+		setForegroundColor (handle, color);
+	}
+}
+
+void setForegroundColor (long /*int*/ handle, GdkRGBA rgba) {
+	GdkRGBA toSet = new GdkRGBA();
+	if (rgba != null) {
+		toSet = rgba;
+	} else {
+		GdkColor defaultForeground = display.COLOR_WIDGET_FOREGROUND;
+		toSet = display.toGdkRGBA (defaultForeground);
+	}
+	long /*int*/ context = OS.gtk_widget_get_style_context (handle);
+	// Form foreground string
+	String color = display.gtk_rgba_to_css_string(toSet);
+	String css = "* {color: " + color + ";}";
+
+	// Cache foreground color
+	cssForeground = css;
+
+	// Apply foreground color and any cached background color
+	String finalCss = display.gtk_css_create_css_color_string (cssBackground, cssForeground, SWT.FOREGROUND);
+	gtk_css_provider_load_from_css(context, finalCss);
 }
 
 void setInitialBounds () {

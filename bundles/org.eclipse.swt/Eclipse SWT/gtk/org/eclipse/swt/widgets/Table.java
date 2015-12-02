@@ -3175,9 +3175,14 @@ void setBackgroundColor (long /*int*/ context, long /*int*/ handle, GdkRGBA rgba
 	GdkColor defaultColor = getDisplay().COLOR_LIST_SELECTION;
 	GdkRGBA selectedBackground = display.toGdkRGBA (defaultColor);
 	if (OS.GTK_VERSION >= OS.VERSION(3, 16, 0)) {
-		String css = "GtkTreeView {background-color: " + gtk_rgba_to_css_string(background) + ";}\n"
-				+ "GtkTreeView:selected {background-color: " + gtk_rgba_to_css_string(selectedBackground) + ";}";
-		gtk_css_provider_load_from_css(context, css);
+		String css = "GtkTreeView {background-color: " + display.gtk_rgba_to_css_string(background) + ";}\n"
+				+ "GtkTreeView:selected {background-color: " + display.gtk_rgba_to_css_string(selectedBackground) + ";}";
+		// Cache background color
+		cssBackground = css;
+
+		// Apply background color and any foreground color
+		String finalCss = display.gtk_css_create_css_color_string (cssBackground, cssForeground, SWT.BACKGROUND);
+		gtk_css_provider_load_from_css(context, finalCss);
 	} else {
 		super.setBackgroundColor(context, handle, rgba);
 		OS.gtk_widget_override_background_color(handle, OS.GTK_STATE_FLAG_SELECTED, selectedBackground);
@@ -3264,7 +3269,15 @@ void setFontDescription (long /*int*/ font) {
 
 @Override
 void setForegroundColor (GdkColor color) {
-	setForegroundColor (handle, color, false);
+	if (OS.GTK_VERSION >= OS.VERSION (3, 16, 0)) {
+		GdkRGBA rgba = null;
+		if (color != null) {
+			rgba = display.toGdkRGBA (color);
+		}
+		setForegroundColor (handle, rgba);
+	} else {
+		setForegroundColor (handle, color, false);
+	}
 }
 
 /**
