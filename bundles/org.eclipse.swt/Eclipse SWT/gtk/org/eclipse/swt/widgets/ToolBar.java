@@ -54,6 +54,12 @@ public class ToolBar extends Composite {
 		menuItemSelectedFunc = new Callback(ToolBar.class, "MenuItemSelectedProc", 2);
 		if (menuItemSelectedFunc.getAddress() == 0) SWT.error(SWT.ERROR_NO_MORE_CALLBACKS);
 	}
+	/*
+	 * We need to keep track of the background color ourselves, otherwise ToolBars will
+	 * sometimes have the background color of their parent Composite. Also, ToolBars on
+	 * GTK are called GtkToolbar-swt-toolbar-flat which can cause issues with CSS theming.
+	 */
+	GdkRGBA background;
 
 /**
  * Constructs a new instance of this class given its parent
@@ -258,6 +264,23 @@ boolean forceFocus (long /*int*/ focusHandle) {
 	 */
 	if (OS.gtk_widget_child_focus (childHandle, dir)) return true;
 	return super.forceFocus (focusHandle);
+}
+
+@Override
+GdkColor getContextBackground () {
+	if (OS.GTK_VERSION >= OS.VERSION(3, 16, 0)) {
+		if (background != null) {
+			GdkColor color = new GdkColor ();
+			color.red = (short)(background.red * 0xFFFF);
+			color.green = (short)(background.green * 0xFFFF);
+			color.blue = (short)(background.blue * 0xFFFF);
+			return color;
+		} else {
+			return display.COLOR_WIDGET_BACKGROUND;
+		}
+	} else {
+		return super.getContextBackground ();
+	}
 }
 
 /**
@@ -588,6 +611,7 @@ int setBounds (int x, int y, int width, int height, boolean move, boolean resize
 
 @Override
 void setBackgroundColor (long /*int*/ context, long /*int*/ handle, GdkRGBA rgba) {
+	background = rgba;
 	if (OS.GTK_VERSION >= OS.VERSION(3, 16, 0)) {
 		String css = "GtkToolbar {background-color: " + gtk_rgba_to_css_string(rgba) + "}";
 		gtk_css_provider_load_from_css(context, css);

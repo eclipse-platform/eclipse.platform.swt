@@ -65,6 +65,10 @@ public class Spinner extends Composite {
 	static {
 		LIMIT = 0x7FFFFFFF;
 	}
+	/* Spinner uses non-standard CSS to set its background color, so we need
+	 * a global variable to keep track of its background color.
+	 */
+	GdkRGBA background;
 
 /**
  * Constructs a new instance of this class given its parent
@@ -917,7 +921,25 @@ void removeVerifyListener (VerifyListener listener) {
 }
 
 @Override
+GdkColor getContextBackground () {
+	if (OS.GTK_VERSION >= OS.VERSION(3, 16, 0)) {
+		if (background != null) {
+			GdkColor color = new GdkColor ();
+			color.red = (short)(background.red * 0xFFFF);
+			color.green = (short)(background.green * 0xFFFF);
+			color.blue = (short)(background.blue * 0xFFFF);
+			return color;
+		} else {
+			return display.COLOR_WIDGET_BACKGROUND;
+		}
+	} else {
+		return super.getContextBackground ();
+	}
+}
+
+@Override
 void setBackgroundColor (long /*int*/ context, long /*int*/ handle, GdkRGBA rgba) {
+	background = rgba;
 	setBackgroundColorGradient (context, handle, rgba);
 }
 

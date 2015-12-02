@@ -98,6 +98,10 @@ public class Text extends Scrollable {
 		LIMIT = 0x7FFFFFFF;
 		DELIMITER = "\n";
 	}
+	/* Text uses non-standard CSS to set its background color, so we need
+	 * a global variable to keep track of its background color.
+	 */
+	GdkRGBA background;
 
 /**
  * Constructs a new instance of this class given its parent
@@ -598,7 +602,7 @@ public Rectangle computeTrim (int x, int y, int width, int height) {
 			trim.width += tmp.left + tmp.right;
 			trim.height += tmp.top + tmp.bottom;
 			if ((style & SWT.BORDER) != 0) {
-				OS.gtk_style_context_get_border (context, OS.GTK_STATE_FLAG_NORMAL, tmp);
+				OS.gtk_style_context_get_border (context, styleState, tmp);
 				trim.x -= tmp.left;
 				trim.y -= tmp.top;
 				trim.width += tmp.left + tmp.right;
@@ -2146,7 +2150,25 @@ void setBackgroundColor (GdkColor color) {
 }
 
 @Override
+GdkColor getContextBackground () {
+	if (OS.GTK_VERSION >= OS.VERSION(3, 16, 0)) {
+		if (background != null) {
+			GdkColor color = new GdkColor ();
+			color.red = (short)(background.red * 0xFFFF);
+			color.green = (short)(background.green * 0xFFFF);
+			color.blue = (short)(background.blue * 0xFFFF);
+			return color;
+		} else {
+			return display.COLOR_WIDGET_BACKGROUND;
+		}
+	} else {
+		return super.getContextBackground (); 
+	}
+}
+
+@Override
 void setBackgroundColor (long /*int*/ context, long /*int*/ handle, GdkRGBA rgba) {
+	background = rgba;
 	if ((style & SWT.MULTI) != 0) {
 		super.setBackgroundColor (context, handle, rgba);
 		return;

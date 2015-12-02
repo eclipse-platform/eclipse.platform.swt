@@ -89,6 +89,7 @@ public class Tree extends Composite {
 	boolean expandAll;
 	int drawState, drawFlags;
 	GdkColor drawForeground;
+	GdkRGBA background;
 	boolean ownerDraw, ignoreSize, ignoreAccessibility, pixbufSizeSet;
 
 	static final int ID_COLUMN = 0;
@@ -1331,6 +1332,23 @@ public TreeColumn [] getColumns () {
 	TreeColumn [] result = new TreeColumn [columnCount];
 	System.arraycopy (columns, 0, result, 0, columnCount);
 	return result;
+}
+
+@Override
+GdkColor getContextBackground () {
+	if (OS.GTK_VERSION >= OS.VERSION(3, 16, 0)) {
+		if (background != null) {
+			GdkColor color = new GdkColor ();
+			color.red = (short)(background.red * 0xFFFF);
+			color.green = (short)(background.green * 0xFFFF);
+			color.blue = (short)(background.blue * 0xFFFF);
+			return color;
+		} else {
+			return display.COLOR_WIDGET_BACKGROUND;
+		}
+	} else {
+		return super.getContextBackground ();
+	}
 }
 
 TreeItem getFocusItem () {
@@ -3087,17 +3105,30 @@ void setBackgroundColor (GdkColor color) {
 	super.setBackgroundColor (color);
 	if (!OS.GTK3) {
 		OS.gtk_widget_modify_base (handle, 0, color);
-	} else {
-		// Setting the background color overrides the selected background color
-		// so we have to reset it the default.
-		GdkColor defaultColor = getDisplay().COLOR_LIST_SELECTION;
-		GdkRGBA selectedBackground = new GdkRGBA ();
-		selectedBackground.alpha = 1;
-		selectedBackground.red = (defaultColor.red & 0xFFFF) / (float)0xFFFF;
-		selectedBackground.green = (defaultColor.green & 0xFFFF) / (float)0xFFFF;
-		selectedBackground.blue = (defaultColor.blue & 0xFFFF) / (float)0xFFFF;
+	}
+}
 
-		OS.gtk_widget_override_background_color (handle, OS.GTK_STATE_FLAG_SELECTED, selectedBackground);
+@Override
+void setBackgroundColor (long /*int*/ context, long /*int*/ handle, GdkRGBA rgba) {
+	/* Setting the background color overrides the selected background color.
+	 * To prevent this, we need to re-set the default. This can be done with CSS
+	 * on GTK3.16+, or by using GtkStateFlags as an argument to
+	 * gtk_widget_override_background_color() on versions of GTK3 less than 3.16.
+	 */
+	background = rgba;
+	GdkColor defaultColor = getDisplay().COLOR_LIST_SELECTION;
+	GdkRGBA selectedBackground = new GdkRGBA ();
+	selectedBackground.alpha = 1;
+	selectedBackground.red = (defaultColor.red & 0xFFFF) / (float)0xFFFF;
+	selectedBackground.green = (defaultColor.green & 0xFFFF) / (float)0xFFFF;
+	selectedBackground.blue = (defaultColor.blue & 0xFFFF) / (float)0xFFFF;
+	if (OS.GTK_VERSION >= OS.VERSION(3, 16, 0)) {
+		String css = "GtkTreeView {background-color: " + gtk_rgba_to_css_string(rgba) + ";}\n"
+				+ "GtkTreeView:selected {background-color: " + gtk_rgba_to_css_string(selectedBackground) + ";}";
+		gtk_css_provider_load_from_css(context, css);
+	} else {
+		super.setBackgroundColor(context, handle, rgba);
+		OS.gtk_widget_override_background_color(handle, OS.GTK_STATE_FLAG_SELECTED, selectedBackground);
 	}
 }
 

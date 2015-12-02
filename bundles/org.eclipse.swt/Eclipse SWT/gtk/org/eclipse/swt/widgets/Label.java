@@ -492,9 +492,11 @@ private void gtk_label_set_align (float xalign, float yalign) {
 @Override
 void setBackgroundColor (GdkColor color) {
 	super.setBackgroundColor (color);
-	setBackgroundColor(fixedHandle, color);
-	if (labelHandle != 0) setBackgroundColor(labelHandle, color);
-	if (imageHandle != 0) setBackgroundColor(imageHandle, color);
+	if (OS.GTK_VERSION < OS.VERSION(3, 16, 0)) {
+		setBackgroundColor(fixedHandle, color);
+		if (labelHandle != 0) setBackgroundColor(labelHandle, color);
+		if (imageHandle != 0) setBackgroundColor(imageHandle, color);
+	}
 }
 
 @Override

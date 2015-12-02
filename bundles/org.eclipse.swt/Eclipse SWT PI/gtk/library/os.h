@@ -188,6 +188,7 @@
 #define NO_memmove__ILorg_eclipse_swt_internal_gtk_GdkRGBA_2I
 #define NO_memmove__JLorg_eclipse_swt_internal_gtk_GdkRGBA_2J
 #define NO__1gdk_1rgba_1to_1string
+#define NO__1gdk_1rgba_1parse
 
 #define NO__1g_1object_1set__I_3BLorg_eclipse_swt_internal_gtk_GdkRGBA_2I
 #define NO__1g_1object_1set__J_3BLorg_eclipse_swt_internal_gtk_GdkRGBA_2J

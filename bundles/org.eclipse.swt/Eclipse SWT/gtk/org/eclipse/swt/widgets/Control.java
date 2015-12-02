@@ -2610,18 +2610,22 @@ public Image getBackgroundImage () {
 
 GdkColor getContextBackground () {
 	long /*int*/ fontHandle = fontHandle ();
-	long /*int*/ context = OS.gtk_widget_get_style_context (fontHandle);
-	int styleState = OS.gtk_widget_get_state_flags(handle);
-	GdkRGBA rgba = new GdkRGBA ();
-	OS.gtk_style_context_get_background_color (context, styleState, rgba);
-	if (rgba.alpha == 0) {
-		return display.COLOR_WIDGET_BACKGROUND;
+	if (OS.GTK_VERSION >= OS.VERSION(3, 16, 0) && provider != 0) {
+		return gtk_css_parse_background (provider);
+	} else {
+		long /*int*/ context = OS.gtk_widget_get_style_context (fontHandle);
+		int styleState = OS.gtk_widget_get_state_flags(handle);
+		GdkRGBA rgba = new GdkRGBA ();
+		OS.gtk_style_context_get_background_color (context, styleState, rgba);
+		if (rgba.alpha == 0) {
+			return display.COLOR_WIDGET_BACKGROUND;
+		}
+		GdkColor color = new GdkColor ();
+		color.red = (short)(rgba.red * 0xFFFF);
+		color.green = (short)(rgba.green * 0xFFFF);
+		color.blue = (short)(rgba.blue * 0xFFFF);
+		return color;
 	}
-	GdkColor color = new GdkColor ();
-	color.red = (short)(rgba.red * 0xFFFF);
-	color.green = (short)(rgba.green * 0xFFFF);
-	color.blue = (short)(rgba.blue * 0xFFFF);
-	return color;
 }
 
 GdkColor getContextColor () {
@@ -4087,7 +4091,22 @@ private void _setBackground (Color color) {
 }
 
 void setBackgroundColor (long /*int*/ context, long /*int*/ handle, GdkRGBA rgba) {
-	OS.gtk_widget_override_background_color (handle, OS.GTK_STATE_FLAG_NORMAL, rgba);
+	if (OS.GTK_VERSION >= OS.VERSION(3, 16, 0)) {
+		long /*int*/ str = OS.gtk_widget_get_name (handle);
+		String name;
+		if (str == 0) {
+			name = "*";
+		} else {
+			int length = OS.strlen (str);
+			byte [] buffer = new byte [length];
+			OS.memmove (buffer, str, length);
+			name = new String (Converter.mbcsToWcs (null, buffer));
+		}
+		String css = name + " {background-color: " + gtk_rgba_to_css_string (rgba) + ";}";
+		gtk_css_provider_load_from_css (context, css);
+	} else {
+		OS.gtk_widget_override_background_color (handle, OS.GTK_STATE_FLAG_NORMAL, rgba);
+	}
 }
 
 void setBackgroundColorGradient (long /*int*/ context, long /*int*/ handle, GdkRGBA rgba) {
@@ -4140,6 +4159,61 @@ String gtk_rgba_to_css_string (GdkRGBA rgba) {
 	byte [] buffer = new byte [length];
 	OS.memmove (buffer, str, length);
 	return new String (Converter.mbcsToWcs (null, buffer));
+}
+
+GdkColor gtk_css_parse_background (long /*int*/ provider) {
+	String shortOutput;
+	int startIndex;
+	GdkColor color = new GdkColor ();
+	GdkRGBA rgba = new GdkRGBA ();
+	// Fetch the CSS in char/string format from the GtkCssProvider.
+	long /*int*/ str = OS.gtk_css_provider_to_string (provider);
+	if (str == 0) return display.COLOR_WIDGET_BACKGROUND;
+	int length = OS.strlen (str);
+	byte [] buffer = new byte [length];
+	OS.memmove (buffer, str, length);
+	String cssOutput = new String (Converter.mbcsToWcs (null, buffer));
+
+	/* Although we only set the property "background-color", we can handle
+	 * the "background" property as well. We check for either of these cases
+	 * and extract a GdkRGBA object from the parsed CSS string.
+	 */
+	if (cssOutput.contains ("background-color:")) {
+		startIndex = cssOutput.indexOf ("background-color:");
+		shortOutput = cssOutput.substring (startIndex + 18);
+		// Double check to make sure with have a valid rgb/rgba property
+		if (shortOutput.contains ("rgba") || shortOutput.contains ("rgb")) {
+			rgba = gtk_css_property_to_rgba (shortOutput);
+		} else {
+			return display.COLOR_WIDGET_BACKGROUND;
+		}
+	} else if (cssOutput.contains ("background:")) {
+		startIndex = cssOutput.indexOf ("background:");
+		shortOutput = cssOutput.substring (startIndex + 13);
+		// Double check to make sure with have a valid rgb/rgba property
+		if (shortOutput.contains ("rgba") || shortOutput.contains ("rgb")) {
+			rgba = gtk_css_property_to_rgba (shortOutput);
+		} else {
+			return display.COLOR_WIDGET_BACKGROUND;
+		}
+	}
+	color.red = (short)(rgba.red * 0xFFFF);
+	color.green = (short)(rgba.green * 0xFFFF);
+	color.blue = (short)(rgba.blue * 0xFFFF);
+	return color;
+}
+
+GdkRGBA gtk_css_property_to_rgba(String property) {
+	/* Here we convert rgb(...) or rgba(...) properties
+	 * into GdkRGBA objects using gdk_rgba_parse(). Note
+	 * that we still need to remove the ";" character from the
+	 * input string.
+	 */
+	GdkRGBA rgba = new GdkRGBA ();
+	String [] propertyParsed = new String [1];
+	propertyParsed = property.split (";");
+	OS.gdk_rgba_parse (rgba, Converter.wcsToMbcs (null, propertyParsed[0], true));
+	return rgba;
 }
 
 void setBackgroundColor (long /*int*/ handle, GdkColor color) {

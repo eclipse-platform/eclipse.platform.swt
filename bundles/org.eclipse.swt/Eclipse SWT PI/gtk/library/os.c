@@ -7169,6 +7169,33 @@ fail:
 }
 #endif
 
+#ifndef NO__1gdk_1rgba_1parse
+JNIEXPORT jintLong JNICALL OS_NATIVE(_1gdk_1rgba_1parse)
+	(JNIEnv *env, jclass that, jobject arg0, jbyteArray arg1)
+{
+	GdkRGBA _arg0, *lparg0=NULL;
+	jbyte *lparg1=NULL;
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, _1gdk_1rgba_1parse_FUNC);
+	if (arg0) if ((lparg0 = getGdkRGBAFields(env, arg0, &_arg0)) == NULL) goto fail;
+	if (arg1) if ((lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL)) == NULL) goto fail;
+/*
+	rc = (jintLong)gdk_rgba_parse((GdkRGBA *)lparg0, (const gchar *)lparg1);
+*/
+	{
+		OS_LOAD_FUNCTION(fp, gdk_rgba_parse)
+		if (fp) {
+			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(GdkRGBA *, const gchar *))fp)((GdkRGBA *)lparg0, (const gchar *)lparg1);
+		}
+	}
+fail:
+	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+	if (arg0 && lparg0) setGdkRGBAFields(env, arg0, lparg0);
+	OS_NATIVE_EXIT(env, that, _1gdk_1rgba_1parse_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO__1gdk_1rgba_1to_1string
 JNIEXPORT jintLong JNICALL OS_NATIVE(_1gdk_1rgba_1to_1string)
 	(JNIEnv *env, jclass that, jobject arg0)
@@ -10072,6 +10099,26 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(_1gtk_1css_1provider_1new)
 		}
 	}
 	OS_NATIVE_EXIT(env, that, _1gtk_1css_1provider_1new_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1gtk_1css_1provider_1to_1string
+JNIEXPORT jintLong JNICALL OS_NATIVE(_1gtk_1css_1provider_1to_1string)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, _1gtk_1css_1provider_1to_1string_FUNC);
+/*
+	rc = (jintLong)gtk_css_provider_to_string(arg0);
+*/
+	{
+		OS_LOAD_FUNCTION(fp, gtk_css_provider_to_string)
+		if (fp) {
+			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(jintLong))fp)(arg0);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, _1gtk_1css_1provider_1to_1string_FUNC);
 	return rc;
 }
 #endif
@@ -18180,6 +18227,26 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(_1gtk_1widget_1get_1modifier_1style)
 		}
 	}
 	OS_NATIVE_EXIT(env, that, _1gtk_1widget_1get_1modifier_1style_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1gtk_1widget_1get_1name
+JNIEXPORT jlong JNICALL OS_NATIVE(_1gtk_1widget_1get_1name)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	jlong rc = 0;
+	OS_NATIVE_ENTER(env, that, _1gtk_1widget_1get_1name_FUNC);
+/*
+	rc = (jlong)gtk_widget_get_name(arg0);
+*/
+	{
+		OS_LOAD_FUNCTION(fp, gtk_widget_get_name)
+		if (fp) {
+			rc = (jlong)((jlong (CALLING_CONVENTION*)(jintLong))fp)(arg0);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, _1gtk_1widget_1get_1name_FUNC);
 	return rc;
 }
 #endif

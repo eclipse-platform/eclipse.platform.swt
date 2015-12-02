@@ -1795,6 +1795,16 @@ public static final boolean gtk_widget_get_sensitive(long /*int*/ widget) {
 		lock.unlock();
 	}
 }
+/** @method flags=dynamic */
+public static final native long _gtk_widget_get_name(long /*int*/ widget);
+public static final long gtk_widget_get_name(long /*int*/ widget) {
+	lock.lock();
+	try {
+		return _gtk_widget_get_name(widget);
+	} finally {
+		lock.unlock();
+	}
+}
 public static final native void _GTK_WIDGET_SET_FLAGS(long /*int*/ wid, int flag);
 public static final void GTK_WIDGET_SET_FLAGS(long /*int*/ wid, int flag) {
 	lock.lock();
@@ -5491,15 +5501,29 @@ public static final void gdk_region_union_with_rect(long /*int*/ region, GdkRect
 		lock.unlock();
 	}
 }
-/** 
+/**
  * @method flags=dynamic
- * @param rgba cast=(GdkRGBA *) 
+ * @param rgba cast=(GdkRGBA *)
  */
 public static final native long /*int*/ _gdk_rgba_to_string(GdkRGBA rgba);
 public static final long /*int*/ gdk_rgba_to_string(GdkRGBA rgba) {
 	lock.lock();
 	try {
 		return _gdk_rgba_to_string(rgba);
+	} finally {
+		lock.unlock();
+	}
+}
+/**
+ * @method flags=dynamic
+ * @param rgba cast=(GdkRGBA *)
+ * @param property cast=(const gchar *)
+ */
+public static final native long /*int*/ _gdk_rgba_parse(GdkRGBA rgba, byte[] property);
+public static final long /*int*/ gdk_rgba_parse(GdkRGBA rgba, byte[] property) {
+	lock.lock();
+	try {
+		return _gdk_rgba_parse(rgba, property);
 	} finally {
 		lock.unlock();
 	}
@@ -9261,6 +9285,16 @@ public static final long /*int*/gtk_css_provider_new() {
 	lock.lock();
 	try {
 		return _gtk_css_provider_new();
+	} finally {
+		lock.unlock();
+	}
+}
+/** @method flags=dynamic */
+public static final native long /*int*/ _gtk_css_provider_to_string(long /*int*/ provider);
+public static final long /*int*/gtk_css_provider_to_string(long /*int*/ provider) {
+	lock.lock();
+	try {
+		return _gtk_css_provider_to_string(provider);
 	} finally {
 		lock.unlock();
 	}
