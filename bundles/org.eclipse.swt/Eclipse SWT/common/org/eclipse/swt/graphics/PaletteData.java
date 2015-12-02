@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2011 IBM Corporation and others.
+ * Copyright (c) 2000, 2015 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -7,6 +7,7 @@
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
+ *     Lars Vogel <Lars.Vogel@vogella.com> - Bug 483460
  *******************************************************************************/
 package org.eclipse.swt.graphics;
 
@@ -106,7 +107,7 @@ public final class PaletteData {
  *    <li>ERROR_NULL_ARGUMENT - if the argument is null</li>
  * </ul>
  */
-public PaletteData(RGB[] colors) {
+public PaletteData(RGB... colors) {
 	if (colors == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	this.colors = colors;
 	this.isDirect = false;
