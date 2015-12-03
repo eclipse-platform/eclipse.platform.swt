@@ -672,6 +672,7 @@ public class OS extends C {
 	public static final byte[] margin_bottom = ascii("margin-bottom");
 	public static final byte[] margin_top = ascii("margin-top");
 	public static final byte[] GTK_PRINT_SETTINGS_OUTPUT_URI = ascii("output-uri");
+	public static final byte[] scrollbar_spacing = ascii("scrollbar-spacing");
 
 	/*
 	 * Needed to tell GTK 3 to prefer a dark or light theme in the UI.
@@ -833,8 +834,6 @@ public static final native void G_OBJECT_CLASS_SET_CONSTRUCTOR(long /*int*/ obje
 public static final native int GTK_RANGE_SLIDER_START(long /*int*/ widget);
 /** @param widget cast=(GtkRange *) */
 public static final native int GTK_RANGE_SLIDER_END(long /*int*/ widget);
-/** @param widget cast=(GtkScrolledWindow *) */
-public static final native int GTK_SCROLLED_WINDOW_SCROLLBAR_SPACING(long /*int*/ widget);
 /**
  * @param acce_label cast=(GtkAccelLabel *)
  * @param string cast=(gchar *)

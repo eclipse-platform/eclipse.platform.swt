@@ -355,7 +355,9 @@ int hScrollBarWidth() {
 	if (hBarHandle==0) return 0;
 	GtkRequisition requisition = new GtkRequisition();
 	gtk_widget_get_preferred_size (hBarHandle, requisition);
-	int spacing = OS.GTK_SCROLLED_WINDOW_SCROLLBAR_SPACING(scrolledHandle);
+	int [] padding = new int [1];
+	OS.gtk_widget_style_get(scrolledHandle, OS.scrollbar_spacing, padding, 0);
+	int spacing = padding[0];
 	return requisition.height + spacing;
 }
 
@@ -494,7 +496,9 @@ int vScrollBarWidth() {
 	if (vBarHandle == 0) return 0;
 	GtkRequisition requisition = new GtkRequisition();
 	gtk_widget_get_preferred_size (vBarHandle, requisition);
-	int spacing = OS.GTK_SCROLLED_WINDOW_SCROLLBAR_SPACING(scrolledHandle);
+	int [] padding = new int [1];
+	OS.gtk_widget_style_get(scrolledHandle, OS.scrollbar_spacing, padding, 0);
+	int spacing = padding[0];
 	return requisition.width + spacing;
 }
 }
