@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2012 IBM Corporation and others.
+ * Copyright (c) 2000, 2015 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -10,6 +10,7 @@
  *******************************************************************************/
 package org.eclipse.swt.internal;
 
+import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.widgets.Control;
 
@@ -96,6 +97,12 @@ public static int getKeyboardLanguage() {
 public static void removeLanguageListener(long /*int*/ hwnd) {
 }	
 public static void removeLanguageListener (Control control) {
+}
+/*
+ * Not implemented. Returns SWT.NONE.
+ */
+public static int resolveTextDirection (String text) {
+	return SWT.NONE;
 }
 /*
  * Not implemented.

@@ -6932,7 +6932,7 @@ LRESULT wmNotifyChild (NMHDR hdr, long /*int*/ wParam, long /*int*/ lParam) {
 						length = 1;
 					}
 					if (length > 1 && (state & HAS_AUTO_DIRECTION) != 0) {
-						switch (resolveTextDirection(string)) {
+						switch (BidiUtil.resolveTextDirection(string)) {
 							case SWT.LEFT_TO_RIGHT:
 								string = LRE + string;
 								length++;

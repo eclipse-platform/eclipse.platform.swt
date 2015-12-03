@@ -1235,7 +1235,7 @@ Event getSegments (String string) {
 		}
 	}
 	if ((state & HAS_AUTO_DIRECTION) != 0) {
-		int direction = resolveTextDirection(string);
+		int direction = BidiUtil.resolveTextDirection(string);
 		if (direction == SWT.NONE) {
 			/*
 			 * Force adding a UCC even when no strong characters are found.

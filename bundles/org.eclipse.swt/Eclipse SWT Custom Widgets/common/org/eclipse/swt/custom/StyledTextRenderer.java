@@ -789,7 +789,9 @@ TextLayout getTextLayout(int lineIndex, int orientation, int width, int lineSpac
 		indent = styledText.indent;
 		wrapIndent = styledText.wrapIndent;
 		alignment = styledText.alignment;
-		if ((styledText.getStyle() & SWT.FLIP_TEXT_DIRECTION) != 0) {
+		if (styledText.isAutoDirection()) {
+			textDirection = SWT.AUTO_TEXT_DIRECTION;
+		} else if ((styledText.getStyle() & SWT.FLIP_TEXT_DIRECTION) != 0) {
 			textDirection = orientation == SWT.RIGHT_TO_LEFT ? SWT.LEFT_TO_RIGHT : SWT.RIGHT_TO_LEFT;
 		}
 		justify = styledText.justify;

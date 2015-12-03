@@ -14,6 +14,7 @@ package org.eclipse.swt.widgets;
 import org.eclipse.swt.*;
 import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.internal.BidiUtil;
 import org.eclipse.swt.internal.win32.*;
 
 /**
@@ -1747,9 +1748,9 @@ int resolveTextDirection() {
 		OS.GetWindowText (handle, buffer, length + 1);
 		if (segments != null) {
 			buffer = deprocessText (buffer, 0, -1, false);
-			textDirection = resolveTextDirection(buffer.toString ());
+			textDirection = BidiUtil.resolveTextDirection(buffer.toString ());
 		} else {
-			textDirection = resolveTextDirection(buffer.toString (0, length));
+			textDirection = BidiUtil.resolveTextDirection(buffer.toString (0, length));
 		}
 		if (textDirection == SWT.NONE) {
 			/*

@@ -817,7 +817,7 @@ public void removeSelectionListener (SelectionListener listener) {
 
 @Override
 int resolveTextDirection() {
-	return (style & SWT.ARROW) != 0 ? SWT.NONE : resolveTextDirection(text);
+	return (style & SWT.ARROW) != 0 ? SWT.NONE : BidiUtil.resolveTextDirection(text);
 }
 
 void selectRadio () {

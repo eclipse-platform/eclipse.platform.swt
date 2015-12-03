@@ -10109,7 +10109,7 @@ public void setTextDirection(int textDirection) {
 	checkWidget();
 	int oldStyle = getStyle();
 	super.setTextDirection(textDirection);
-	if (oldStyle != getStyle()) {
+	if (isAutoDirection () || oldStyle != getStyle()) {
 		resetBidiData();
 	}
 }

@@ -11,9 +11,10 @@
 package org.eclipse.swt.widgets;
 
 
-import org.eclipse.swt.internal.win32.*;
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.internal.BidiUtil;
+import org.eclipse.swt.internal.win32.*;
 
 /**
  * Instances of this class represent a non-selectable
@@ -300,7 +301,7 @@ void releaseWidget () {
 
 @Override
 int resolveTextDirection() {
-	return (style & SWT.SEPARATOR) != 0 ? SWT.NONE : resolveTextDirection(text);
+	return (style & SWT.SEPARATOR) != 0 ? SWT.NONE : BidiUtil.resolveTextDirection (text);
 }
 
 /**

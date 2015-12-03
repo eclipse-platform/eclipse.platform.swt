@@ -1882,6 +1882,24 @@ public class SWT {
 	public static final int FLIP_TEXT_DIRECTION = 1 << 31;
 
 	/**
+	 * A bit masks to indicate Bidi "auto" text direction.
+	 * <p>
+	 * When the bit is set, text direction is derived from the direction of the
+	 * first strong Bidi character.
+	 * </p>
+	 * <p><b>Used By:</b><ul>
+	 * <li><code>Control</code></li>
+	 * <li><code>TextLayout</code></li>
+	 * </ul></p>
+	 * 
+	 * @see org.eclipse.swt.widgets.Control#setTextDirection(int)
+	 * @see org.eclipse.swt.graphics.TextLayout#setTextDirection(int)
+	 * 
+	 * @since 3.105
+	*/
+	public static final int AUTO_TEXT_DIRECTION = SWT.LEFT_TO_RIGHT | SWT.RIGHT_TO_LEFT;
+
+	/**
 	 * Style constant for align up behavior (value is 1&lt;&lt;7,
 	 * since align UP and align TOP are considered the same).
 	 * <p><b>Used By:</b><ul>

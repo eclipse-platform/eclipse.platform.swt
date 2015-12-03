@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2014 IBM Corporation and others.
+ * Copyright (c) 2000, 2015 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -1003,6 +1003,20 @@ boolean isActive () {
 }
 
 /**
+ * Returns <code>true</code> if the widget has auto text direction,
+ * and <code>false</code> otherwise.
+ *
+ * @return <code>true</code> when the widget has auto direction and <code>false</code> otherwise
+ * 
+ * @see #HAS_AUTO_DIRECTION
+ * 
+ * @since 3.105
+ */
+public boolean isAutoDirection () {
+	return false;
+}
+
+/**
  * Returns <code>true</code> if the widget has been disposed,
  * and <code>false</code> otherwise.
  * <p>
@@ -1317,10 +1331,6 @@ public void removeDisposeListener (DisposeListener listener) {
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (eventTable == null) return;
 	eventTable.unhook (SWT.Dispose, listener);
-}
-
-static int resolveTextDirection(String text) {
-	return SWT.NONE;
 }
 
 void sendEvent (Event event) {

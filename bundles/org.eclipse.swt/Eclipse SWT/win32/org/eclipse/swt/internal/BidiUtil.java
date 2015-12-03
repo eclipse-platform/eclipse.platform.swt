@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2012 IBM Corporation and others.
+ * Copyright (c) 2000, 2015 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -19,7 +19,9 @@ import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.internal.win32.*;
 import org.eclipse.swt.widgets.*;
 /*
- * Wraps Win32 API used to bidi enable the StyledText widget.
+ * Wraps Win32 API used to bidi enable widgets. Up to 3.104 was used by
+ * StyledText widget exclusively. 3.105 release introduced the method
+ * #resolveTextDirection, which is used by other widgets as well. 
  */
 public class BidiUtil {
 
@@ -499,6 +501,66 @@ public static void removeLanguageListener (long /*int*/ hwnd) {
 }
 public static void removeLanguageListener (Control control) {
 	removeLanguageListener(control.handle);
+}
+/**
+ * Determine the base direction for the given text. The direction is derived
+ * from that of the first strong bidirectional character. In case the text
+ * doesn't contain any strong characters, the base direction is to be
+ * derived from a higher-level protocol (e.g. the widget orientation).
+ * <p>
+ * 
+ * @param text
+ *            Text base direction should be resolved for.
+ * @return SWT#LEFT_RIGHT or SWT#RIGHT_TO_LEFT if the text contains strong
+ *         characters and thus the direction can be resolved, SWT#NONE
+ *         otherwise.
+ * @since 3.105
+ */
+public static int resolveTextDirection (String text) {
+	if (text == null) return SWT.NONE;
+	int length = text.length();
+	if (length == 0) return SWT.NONE;
+	char[] rtlProbe = {' ', ' ', '1'};
+	/*
+	 * "Wide" version of win32 API can also run even on non-Unicode Windows,
+	 * hence need for OS.IsUnicode check here. 
+	 */
+	char[] ltrProbe = {'\u202b', 'a', ' '};
+	char[] numberProbe = {'\u05d0', ' ', ' '};
+	GCP_RESULTS result = new GCP_RESULTS();
+	result.lStructSize = GCP_RESULTS.sizeof;
+	int nGlyphs = result.nGlyphs = ltrProbe.length;
+	long /*int*/ hHeap = OS.GetProcessHeap();
+	long /*int*/ lpOrder = result.lpOrder = OS.HeapAlloc(hHeap, OS.HEAP_ZERO_MEMORY, nGlyphs * 4);
+	long /*int*/ hdc = OS.GetDC(0);
+	int[] order = new int[1];
+	int textDirection = SWT.NONE;
+	for (int i = 0; i < length; i++) {
+		char ch = text.charAt(i);
+		rtlProbe[0] = ch;
+		OS.GetCharacterPlacementW(hdc, rtlProbe, rtlProbe.length, 0, result, OS.GCP_REORDER);
+		OS.MoveMemory(order, result.lpOrder, 4);
+		if (order[0] == 2) {
+			textDirection = SWT.RIGHT_TO_LEFT;
+			break;
+		}
+		ltrProbe[2] = ch;
+		OS.GetCharacterPlacementW(hdc, ltrProbe, ltrProbe.length, 0, result, OS.GCP_REORDER);
+		OS.MoveMemory(order, result.lpOrder + 4, 4);
+		if (order[0] == 1) {
+			numberProbe[2] = ch;
+			OS.GetCharacterPlacementW(hdc, numberProbe, numberProbe.length, 0, result, OS.GCP_REORDER);
+			OS.MoveMemory(order, result.lpOrder, 4);
+			if (order[0] == 0) {
+				textDirection = SWT.LEFT_TO_RIGHT;
+				break;
+			}
+		}
+	}
+	OS.ReleaseDC (0, hdc);
+	OS.HeapFree(hHeap, 0, lpOrder);
+	return textDirection;
+
 }
 /**
  * Switch the keyboard language to the specified language type.  We do

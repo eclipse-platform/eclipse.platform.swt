@@ -11,6 +11,7 @@
 package org.eclipse.swt.widgets;
 
 
+import org.eclipse.swt.internal.BidiUtil;
 import org.eclipse.swt.internal.win32.*;
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
@@ -377,7 +378,7 @@ void releaseWidget () {
 
 @Override
 int resolveTextDirection () {
-	return resolveTextDirection (text);
+	return BidiUtil.resolveTextDirection (text);
 }
 
 @Override

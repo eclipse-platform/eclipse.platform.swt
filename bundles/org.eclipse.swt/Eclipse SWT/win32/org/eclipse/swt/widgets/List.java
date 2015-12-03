@@ -11,10 +11,11 @@
 package org.eclipse.swt.widgets;
 
 
-import org.eclipse.swt.internal.win32.*;
 import org.eclipse.swt.*;
-import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.events.*;
+import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.internal.BidiUtil;
+import org.eclipse.swt.internal.win32.*;
 
 /** 
  * Instances of this class represent a selectable user interface
@@ -1638,7 +1639,7 @@ long /*int*/ windowProc (long /*int*/ hwnd, int msg, long /*int*/ wParam, long /
 				TCHAR buffer = new TCHAR (cp, length);
 				OS.MoveMemory (buffer, lParam, buffer.length () * TCHAR.sizeof);
 				String string = buffer.toString (0, length);
-				int direction = resolveTextDirection (string);
+				int direction = BidiUtil.resolveTextDirection (string);
 				if (direction == SWT.NONE) {
 					/*
 					 * Force adding a UCC even when no strong characters are found.
