@@ -10,6 +10,7 @@
  *******************************************************************************/
 package org.eclipse.swt.widgets;
 
+import java.util.*;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.events.*;
@@ -978,7 +979,7 @@ public void removeListener (int eventType, Listener listener) {
  * @noreference This method is not intended to be referenced by clients.
  * @nooverride This method is not intended to be re-implemented or extended by clients.
  */
-protected void removeListener (int eventType, SWTEventListener listener) {
+protected void removeListener (int eventType, EventListener listener) {
 	checkWidget();
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (eventTable == null) return;

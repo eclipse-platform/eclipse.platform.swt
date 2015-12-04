@@ -11,14 +11,14 @@
 package org.eclipse.swt.custom;
 
 
-import org.eclipse.swt.internal.*;
+import java.util.*;
 /**
  * This listener is invoked when an object needs to be drawn.
  *
  * @since 3.2
  */
 @FunctionalInterface
-public interface PaintObjectListener extends SWTEventListener {
+public interface PaintObjectListener extends EventListener {
 /**
  * This method is called when an object needs to be drawn.
  *

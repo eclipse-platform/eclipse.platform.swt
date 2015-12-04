@@ -11,7 +11,7 @@
 package org.eclipse.swt.events;
 
 
-import org.eclipse.swt.internal.SWTEventListener;
+import java.util.*;
 
 /**
  * Classes which implement this interface provide methods
@@ -30,7 +30,7 @@ import org.eclipse.swt.internal.SWTEventListener;
  * @see MouseTrackAdapter
  * @see MouseEvent
  */
-public interface MouseTrackListener extends SWTEventListener {
+public interface MouseTrackListener extends EventListener {
 
 /**
  * Sent when the mouse pointer passes into the area of

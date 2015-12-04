@@ -10,8 +10,9 @@
  *******************************************************************************/
 package org.eclipse.swt.custom;
 
+import java.util.*;
+
 import org.eclipse.swt.events.*;
-import org.eclipse.swt.internal.*;
 
 /**
  * Classes which implement this interface provide a method
@@ -22,7 +23,7 @@ import org.eclipse.swt.internal.*;
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  */
 @FunctionalInterface
-public interface VerifyKeyListener extends SWTEventListener {
+public interface VerifyKeyListener extends EventListener {
 /**
  * The following event fields are used:<ul>
  * <li>event.character is the character that was typed (input)</li>

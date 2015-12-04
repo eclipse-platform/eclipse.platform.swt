@@ -10,7 +10,7 @@
  *******************************************************************************/
 package org.eclipse.swt.browser;
 
-import org.eclipse.swt.internal.*;
+import java.util.*;
 
 /**
  * This listener interface may be implemented in order to receive
@@ -26,7 +26,7 @@ import org.eclipse.swt.internal.*;
  * @since 3.0
  */
 @FunctionalInterface
-public interface CloseWindowListener extends SWTEventListener {
+public interface CloseWindowListener extends EventListener {
 
 /**
  * This method is called when the window hosting a {@link Browser} should be closed.

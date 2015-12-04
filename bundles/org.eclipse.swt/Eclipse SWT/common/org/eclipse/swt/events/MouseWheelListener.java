@@ -11,7 +11,7 @@
 package org.eclipse.swt.events;
 
 
-import org.eclipse.swt.internal.SWTEventListener;
+import java.util.*;
 
 /**
  * Classes which implement this interface provide a method
@@ -30,7 +30,7 @@ import org.eclipse.swt.internal.SWTEventListener;
  *
  * @since 3.3
  */
-public interface MouseWheelListener extends SWTEventListener {
+public interface MouseWheelListener extends EventListener {
 
 /**
  * Sent when the mouse wheel is scrolled.

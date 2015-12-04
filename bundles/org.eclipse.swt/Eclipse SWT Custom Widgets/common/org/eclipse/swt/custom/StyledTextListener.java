@@ -10,14 +10,15 @@
  *******************************************************************************/
 package org.eclipse.swt.custom;
 
+import java.util.*;
+
 import org.eclipse.swt.events.*;
 import org.eclipse.swt.widgets.*;
-import org.eclipse.swt.internal.SWTEventListener;
 
 class StyledTextListener extends TypedListener {
 /**
  */
-StyledTextListener(SWTEventListener listener) {
+StyledTextListener(EventListener listener) {
 	super(listener);
 }
 /**

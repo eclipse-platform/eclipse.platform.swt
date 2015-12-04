@@ -11,7 +11,7 @@
 package org.eclipse.swt.events;
 
 
-import org.eclipse.swt.internal.SWTEventListener;
+import java.util.*;
 
 /**
  * Classes which implement this interface provide methods
@@ -29,7 +29,7 @@ import org.eclipse.swt.internal.SWTEventListener;
  * @see ControlAdapter
  * @see ControlEvent
  */
-public interface ControlListener extends SWTEventListener {
+public interface ControlListener extends EventListener {
 
 /**
  * Sent when the location (x, y) of a control changes relative

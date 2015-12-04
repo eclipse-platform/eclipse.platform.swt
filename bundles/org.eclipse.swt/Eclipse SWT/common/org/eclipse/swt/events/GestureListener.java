@@ -11,8 +11,7 @@
  *******************************************************************************/
 package org.eclipse.swt.events;
 
-
-import org.eclipse.swt.internal.*;
+import java.util.*;
 
 /**
  * Classes which implement this interface provide methods
@@ -36,7 +35,7 @@ import org.eclipse.swt.internal.*;
  * @since 3.7
  */
 @FunctionalInterface
-public interface GestureListener extends SWTEventListener {
+public interface GestureListener extends EventListener {
 
 /**
  * Sent when a recognized gesture has occurred.

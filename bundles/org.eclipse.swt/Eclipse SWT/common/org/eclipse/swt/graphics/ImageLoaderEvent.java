@@ -11,7 +11,7 @@
 package org.eclipse.swt.graphics;
 
 
-import org.eclipse.swt.internal.SWTEventObject;
+import java.util.*;
 
 /**
  * Instances of this class are sent as a result of the incremental
@@ -32,7 +32,7 @@ import org.eclipse.swt.internal.SWTEventObject;
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  */
 
-public class ImageLoaderEvent extends SWTEventObject {
+public class ImageLoaderEvent extends EventObject {
 
 	/**
 	 * if the <code>endOfImage</code> flag is false, then this is a

@@ -12,7 +12,7 @@
 package org.eclipse.swt.events;
 
 
-import org.eclipse.swt.internal.*;
+import java.util.*;
 
 /**
  * Classes which implement this interface provide methods
@@ -30,7 +30,7 @@ import org.eclipse.swt.internal.*;
  * @see PaintEvent
  */
 @FunctionalInterface
-public interface PaintListener extends SWTEventListener {
+public interface PaintListener extends EventListener {
 
 /**
  * Sent when a paint event occurs for the control.

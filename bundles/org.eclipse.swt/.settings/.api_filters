@@ -1546,6 +1546,12 @@
         </filter>
     </resource>
     <resource path="Eclipse SWT/common/org/eclipse/swt/widgets/TypedListener.java" type="org.eclipse.swt.widgets.TypedListener">
+        <filter comment="Bug 483642 - Retire internal SWTEventListener and SWTEventObject class" id="388161617">
+            <message_arguments>
+                <message_argument value="org.eclipse.swt.widgets.TypedListener"/>
+                <message_argument value="eventListener"/>
+            </message_arguments>
+        </filter>
         <filter id="627060751">
             <message_arguments>
                 <message_argument value="SWTEventListener"/>

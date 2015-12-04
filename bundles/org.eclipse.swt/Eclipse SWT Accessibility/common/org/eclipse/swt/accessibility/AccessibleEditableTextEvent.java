@@ -10,7 +10,7 @@
  *******************************************************************************/
 package org.eclipse.swt.accessibility;
 
-import org.eclipse.swt.internal.*;
+import java.util.*;
 
 /**
  * Instances of this class are sent as a result of accessibility clients
@@ -21,7 +21,7 @@ import org.eclipse.swt.internal.*;
  *
  * @since 3.7
  */
-public class AccessibleEditableTextEvent extends SWTEventObject {
+public class AccessibleEditableTextEvent extends EventObject {
 
 	/**
 	 * [in] 0-based start offset of the character range to perform

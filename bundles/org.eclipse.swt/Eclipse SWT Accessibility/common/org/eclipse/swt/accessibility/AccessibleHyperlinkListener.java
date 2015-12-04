@@ -10,7 +10,7 @@
  *******************************************************************************/
 package org.eclipse.swt.accessibility;
 
-import org.eclipse.swt.internal.SWTEventListener;
+import java.util.*;
 
 /**
  * Classes which implement this interface provide methods
@@ -27,7 +27,7 @@ import org.eclipse.swt.internal.SWTEventListener;
  *
  * @since 3.6
  */
-public interface AccessibleHyperlinkListener extends SWTEventListener {
+public interface AccessibleHyperlinkListener extends EventListener {
 	/**
 	 * Returns the anchor for the link at the specified index.
 	 *

@@ -10,7 +10,8 @@
  *******************************************************************************/
 package org.eclipse.swt.dnd;
 
-import org.eclipse.swt.internal.*;
+import java.util.*;
+
 import org.eclipse.swt.widgets.*;
 
 
@@ -18,9 +19,9 @@ class DNDListener extends TypedListener {
 	Widget dndWidget;
 /**
  * DNDListener constructor comment.
- * @param listener org.eclipse.swt.internal.SWTEventListener
+ * @param listener EventListener
  */
-DNDListener(SWTEventListener listener) {
+DNDListener(EventListener listener) {
 	super(listener);
 }
 @Override
