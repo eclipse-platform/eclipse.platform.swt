@@ -490,7 +490,7 @@ if [ ${MODEL} = 's390' ]; then
 	export SWT_LFLAGS SWT_PTR_CFLAGS
 fi
 if [ ${MODEL} = 'x86' -a ${SWT_OS} = 'linux' ]; then
-	SWT_PTR_CFLAGS="-m32 -mpreferred-stack-boundary=4 -mstackrealign"
+	SWT_PTR_CFLAGS="-m32"
 	SWT_LFLAGS=-m32
 	export SWT_LFLAGS SWT_PTR_CFLAGS
 fi
