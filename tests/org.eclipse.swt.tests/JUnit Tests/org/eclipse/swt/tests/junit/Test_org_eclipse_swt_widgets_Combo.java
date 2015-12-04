@@ -765,7 +765,7 @@ public void test_setItemILjava_lang_String() {
 
 public void test_setItems$Ljava_lang_String() {
 	try {
-		combo.setItems(null);
+		combo.setItems((String [])null);
 		fail("No exception thrown for items == null");
 	}
 	catch (IllegalArgumentException e) {

@@ -33,7 +33,7 @@ public class Test_org_eclipse_swt_graphics_PaletteData {
 @Test
 public void test_Constructor$Lorg_eclipse_swt_graphics_RGB() {
 	try {
-		new PaletteData(null);
+		new PaletteData((RGB [])null);
 		fail("No exception thrown for rgb == null");
 	}
 	catch (IllegalArgumentException e) {
