@@ -3856,7 +3856,7 @@ void updateBkImages() {
 						if (controlBkImages[i] != null) controlBkImages[i].dispose();
 						controlBkImages[i] = new Image(control.getDisplay(), bounds);
 						GC gc = new GC(controlBkImages[i]);
-						renderer.drawBackground(gc, bounds, 0);
+						renderer.draw(CTabFolderRenderer.PART_BACKGROUND, 0, bounds, gc);
 						gc.dispose();
 						control.setBackground(null);
 						control.setBackgroundImage(controlBkImages[i]);
