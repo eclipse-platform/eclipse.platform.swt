@@ -676,6 +676,17 @@ protected void init () {
 		OS.pango_font_description_set_size(defaultFont, size * dpi.y / screenDPI.y);
 	}
 	systemFont = Font.gtk_new (this, defaultFont);
+
+	/* Load CSS to remove dotted lines from GtkScrolledWindows. See Bug 464705. */
+	if (OS.GTK_VERSION >= OS.VERSION(3, 16, 0)) {
+		long /*int*/ screen = OS.gdk_screen_get_default();
+		long /*int*/ provider = OS.gtk_css_provider_new();
+		if (screen != 0 && provider != 0) {
+			String css = ".undershoot.top, .undershoot.right, .undershoot.bottom, .undershoot.left {background-image: none;}";
+			OS.gtk_style_context_add_provider_for_screen (screen, provider, OS.GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
+			OS.gtk_css_provider_load_from_data (provider, Converter.wcsToMbcs (null, css, true), -1, null);
+		}
+	}
 }
 
 /**
