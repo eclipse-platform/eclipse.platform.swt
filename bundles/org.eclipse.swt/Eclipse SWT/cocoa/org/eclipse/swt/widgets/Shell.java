@@ -1499,6 +1499,11 @@ public void removeShellListener(ShellListener listener) {
 }
 
 @Override
+public void requestLayout () {
+	layout (null, SWT.DEFER);
+}
+
+@Override
 void reskinChildren (int flags) {
 	if (toolBar != null) toolBar.reskin(flags);
 	Shell [] shells = getShells ();

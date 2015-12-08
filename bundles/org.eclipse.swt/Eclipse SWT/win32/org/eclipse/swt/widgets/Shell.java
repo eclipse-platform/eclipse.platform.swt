@@ -1431,6 +1431,11 @@ public void removeShellListener (ShellListener listener) {
 }
 
 @Override
+public void requestLayout () {
+	layout (null, SWT.DEFER);
+}
+
+@Override
 void reskinChildren (int flags) {
 	Shell [] shells = getShells ();
 	for (int i=0; i<shells.length; i++) {

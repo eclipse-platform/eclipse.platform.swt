@@ -906,6 +906,11 @@ void releaseParent () {
 }
 
 @Override
+public void requestLayout () {
+	layout (null, SWT.DEFER);
+}
+
+@Override
 long /*int*/ topHandle () {
 	return shellHandle;
 }
