@@ -116,10 +116,6 @@ protected void checkSubclass () {
 
 @Override
 public Point computeSize (int wHint, int hHint, boolean changed) {
-	boolean visible = getVisible();
-	if (OS.GTK3 && !visible) {
-		setVisible(true);
-	}
 	if (wHint != SWT.DEFAULT && wHint < 0) wHint = 0;
 	if (hHint != SWT.DEFAULT && hHint < 0) hHint = 0;
 	Point size = computeNativeSize (handle, wHint, hHint, changed);
@@ -128,9 +124,6 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	int border = OS.gtk_container_get_border_width (handle);
 	size.x += 2 * border;
 	size.y += 2 * border;
-	if (OS.GTK3) {
-		setVisible(visible);
-	}
 	return size;
 }
 

@@ -116,10 +116,6 @@ void addRelation (Control control) {
 @Override
 public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget ();
-	boolean visible = getVisible();
-	if (OS.GTK3 && !visible) {
-		setVisible(true);
-	}
 	if (wHint != SWT.DEFAULT && wHint < 0) wHint = 0;
 	if (hHint != SWT.DEFAULT && hHint < 0) hHint = 0;
 	if ((style & SWT.SEPARATOR) != 0) {
@@ -207,9 +203,6 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 			fontHeight += 2 * OS.gtk_container_get_border_width (frameHandle);
 		}
 		size.y = Math.max (size.y, fontHeight);
-	}
-	if (OS.GTK3) {
-		setVisible(visible);
 	}
 	return size;
 }

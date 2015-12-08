@@ -104,16 +104,9 @@ long /*int*/ clientHandle () {
 
 @Override
 public Point computeSize (int wHint, int hHint, boolean changed) {
-	boolean visible = getVisible();
-	if (OS.GTK3 && !visible) {
-		setVisible(true);
-	}
 	Point size = super.computeSize(wHint, hHint, changed);
 	int width = computeNativeSize (handle, SWT.DEFAULT, SWT.DEFAULT, false).x;
 	size.x = Math.max (size.x, width);
-	if (OS.GTK3) {
-		setVisible(visible);
-	}
 	return size;
 }
 @Override

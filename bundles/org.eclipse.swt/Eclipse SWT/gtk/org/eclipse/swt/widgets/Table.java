@@ -335,11 +335,8 @@ int calculateWidth (long /*int*/ column, long /*int*/ iter) {
 
 	//This workaround is causing the problem Bug 459834 in GTK3. So reverting the workaround for GTK3
 	if (OS.GTK3) {
-		boolean visible = getVisible();
-		setVisible(true);
 		int [] width = new int [1];
 		OS.gtk_tree_view_column_cell_get_size (column, null, null, null, width, null);
-		setVisible(visible);
 		return width [0];
 	} else {
 		int width = 0;
@@ -499,10 +496,6 @@ public void clearAll () {
 @Override
 public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget ();
-	boolean visible = getVisible();
-	if (OS.GTK3 && !visible) {
-		setVisible(true);
-	}
 	if (wHint != SWT.DEFAULT && wHint < 0) wHint = 0;
 	if (hHint != SWT.DEFAULT && hHint < 0) hHint = 0;
 	Point size = computeNativeSize (handle, wHint, hHint, changed);
@@ -526,9 +519,6 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	Rectangle trim = computeTrim (0, 0, size.x, size.y);
 	size.x = trim.width;
 	size.y = trim.height;
-	if (OS.GTK3) {
-		setVisible(visible);
-	}
 	return size;
 }
 

@@ -168,10 +168,6 @@ public void addSelectionListener (SelectionListener listener) {
 @Override
 public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget ();
-	boolean visible = getVisible();
-	if (OS.GTK3 && !visible) {
-		setVisible(true);
-	}
 	if (wHint != SWT.DEFAULT && wHint < 0) wHint = 0;
 	if (hHint != SWT.DEFAULT && hHint < 0) hHint = 0;
 	/*
@@ -253,9 +249,6 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 			if (wHint != SWT.DEFAULT) size.x += border.left + border.right;
 			if (hHint != SWT.DEFAULT) size.y += border.top + border.bottom;
 		}
-	}
-	if (OS.GTK3) {
-		setVisible(visible);
 	}
 	return size;
 }

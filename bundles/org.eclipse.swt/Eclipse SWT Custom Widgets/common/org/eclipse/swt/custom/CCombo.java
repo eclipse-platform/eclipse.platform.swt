@@ -12,10 +12,10 @@ package org.eclipse.swt.custom;
 
 
 import org.eclipse.swt.*;
-import org.eclipse.swt.accessibility.*;
-import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.events.*;
 import org.eclipse.swt.widgets.*;
+import org.eclipse.swt.accessibility.*;
 
 /**
  * The CCombo class represents a selectable user interface object
@@ -436,10 +436,6 @@ void comboEvent (Event event) {
 @Override
 public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget ();
-	boolean visible = getVisible();
-	if (SWT.getPlatform().equals("gtk") && !visible) {
-		setVisible(true);
-	}
 	int width = 0, height = 0;
 	String[] items = list.getItems ();
 	GC gc = new GC (text);
@@ -458,9 +454,6 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	width = Math.max (textWidth + 2*spacer + arrowSize.x + 2*borderWidth, listSize.x);
 	if (wHint != SWT.DEFAULT) width = wHint;
 	if (hHint != SWT.DEFAULT) height = hHint;
-	if (SWT.getPlatform().equals("gtk")) {
-		setVisible(visible);
-	}
 	return new Point (width + 2*borderWidth, height + 2*borderWidth);
 }
 /**

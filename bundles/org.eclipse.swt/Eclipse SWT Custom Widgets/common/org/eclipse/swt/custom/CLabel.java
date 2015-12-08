@@ -11,10 +11,10 @@
 package org.eclipse.swt.custom;
 
 import org.eclipse.swt.*;
-import org.eclipse.swt.accessibility.*;
-import org.eclipse.swt.events.*;
-import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.widgets.*;
+import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.events.*;
+import org.eclipse.swt.accessibility.*;
 
 /**
  * A Label which supports aligned text and/or an image and different border styles.
@@ -152,10 +152,6 @@ private static int checkStyle (int style) {
 @Override
 public Point computeSize(int wHint, int hHint, boolean changed) {
 	checkWidget();
-	boolean visible = getVisible();
-	if (SWT.getPlatform().equals("gtk") && !visible) {
-		setVisible(true);
-	}
 	Point e = getTotalSize(image, text);
 	if (wHint == SWT.DEFAULT){
 		e.x += leftMargin + rightMargin;
@@ -166,9 +162,6 @@ public Point computeSize(int wHint, int hHint, boolean changed) {
 		e.y += topMargin + bottomMargin;
 	} else {
 		e.y = hHint;
-	}
-	if (SWT.getPlatform().equals("gtk")) {
-		setVisible(visible);
 	}
 	return e;
 }

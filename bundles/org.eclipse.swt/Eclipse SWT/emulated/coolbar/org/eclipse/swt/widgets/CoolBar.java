@@ -139,10 +139,6 @@ protected void checkSubclass () {
 @Override
 public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget();
-	boolean visible = getVisible();
-	if (SWT.getPlatform().equals("gtk") && !visible) {
-		setVisible(true);
-	}
 	int width = 0, height = 0;
 	wrapItems((style & SWT.VERTICAL) != 0 ? hHint : wHint);
 	boolean flat = (style & SWT.FLAT) != 0;
@@ -164,9 +160,6 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	if (wHint != SWT.DEFAULT) size.x = wHint;
 	if (hHint != SWT.DEFAULT) size.y = hHint;
 	Rectangle trim = computeTrim(0, 0, size.x, size.y);
-	if (SWT.getPlatform().equals("gtk")) {
-		setVisible(visible);
-	}
 	return new Point(trim.width, trim.height);
 }
 CoolItem getGrabbedItem(int x, int y) {
