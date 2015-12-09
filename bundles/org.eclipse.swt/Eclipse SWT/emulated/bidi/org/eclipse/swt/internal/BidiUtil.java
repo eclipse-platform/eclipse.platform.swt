@@ -15,9 +15,9 @@ import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.widgets.Control;
 
 /*
- * This class is supplied so that the StyledText code that supports bidi text (supported
- * for win platforms) is not platform dependent.  Bidi text is not implemented on 
- * emulated platforms.
+ * Wraps Win32 API used to bidi enable widgets. Up to 3.104 was used by
+ * StyledText widget exclusively. 3.105 release introduced the method
+ * #resolveTextDirection, which is used by other widgets as well. 
  */
 public class BidiUtil {
 	// Keyboard language types

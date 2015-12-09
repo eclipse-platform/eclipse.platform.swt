@@ -1887,6 +1887,7 @@ public class SWT {
 	 * When the bit is set, text direction is derived from the direction of the
 	 * first strong Bidi character.
 	 * </p>
+	 * <br>Note that this is a <em>HINT</em> and it works on Windows only.
 	 * <p><b>Used By:</b><ul>
 	 * <li><code>Control</code></li>
 	 * <li><code>TextLayout</code></li>
