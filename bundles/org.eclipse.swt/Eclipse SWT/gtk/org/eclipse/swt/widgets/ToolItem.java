@@ -190,7 +190,6 @@ void createHandle (int index) {
 		imageHandle = OS.gtk_image_new_from_pixbuf (0);
 		if (imageHandle == 0) error (SWT.ERROR_NO_HANDLES);
 	}
-	String buttonCss = "GtkButton {padding: 2px 4px 3px 4px}"; //top right bottom left;
 	switch (style & bits) {
 		case SWT.SEPARATOR:
 			handle = OS.gtk_separator_tool_item_new ();
@@ -212,22 +211,6 @@ void createHandle (int index) {
 				OS.gtk_widget_set_sensitive (arrowHandle, true);
 				if (!OS.GTK3) {
 					OS.gtk_widget_set_size_request(OS.gtk_bin_get_child(arrowHandle), 8, 6);
-				} else {
-					long /*int*/ arrowContext = OS.gtk_widget_get_style_context(arrowHandle);
-					String arrowCss = "GtkMenuButton {padding: 1px 0px 1px 0px}"; //top right bottom left
-					gtk_css_provider_load_from_css(arrowContext, arrowCss);
-					provider = 0;
-					OS.gtk_style_context_invalidate (arrowContext);
-				}
-			}
-			long /*int*/ menuButtonHandle = OS.g_list_nth_data (list, 0);
-			if (menuButtonHandle != 0) {
-				if (OS.GTK3) {
-					long /*int*/ menuButtonContext = OS.gtk_widget_get_style_context(menuButtonHandle);
-					gtk_css_provider_load_from_css(menuButtonContext, buttonCss);
-					//Reset provider to 0 in order to ensure CSS is loaded properly
-					provider = 0;
-					OS.gtk_style_context_invalidate (menuButtonContext);
 				}
 			}
 			break;
@@ -267,16 +250,6 @@ void createHandle (int index) {
 	 */
 	if ((parent.style & SWT.RIGHT) != 0) OS.gtk_tool_item_set_is_important (handle, true);
 	if ((style & SWT.SEPARATOR) == 0) OS.gtk_tool_button_set_use_underline (handle, true);
-	if (OS.GTK3) {
-		long /*int*/ buttonHandle = OS.gtk_bin_get_child(handle);
-		if (buttonHandle != 0) {
-			long /*int*/ buttonContext = OS.gtk_widget_get_style_context(buttonHandle);
-			gtk_css_provider_load_from_css(buttonContext, buttonCss);
-			//Reset provider to 0 in order to ensure CSS is loaded properly
-			provider = 0;
-			OS.gtk_style_context_invalidate (buttonContext);
-		}
-	}
 }
 
 @Override
