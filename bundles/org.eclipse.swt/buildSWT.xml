@@ -31,6 +31,7 @@
 	<property name="gitroot" value="silenio@dev.eclipse.org:/gitroot/platform/"/>
 	<property name="TAG" value="master"/>
 	<property name="tmphome" value="../../../tmp"/>
+	<property name="tmp_sha1_file" value="${tmphome}/build.sha1"/>
 
 	<property name="repo.src" value="../../../eclipse.platform.swt"/>
 	<property name="repo.bin" value="../../../eclipse.platform.swt.binaries"/>
@@ -392,16 +393,15 @@
 	</target>
 
 	<target name="check_source_sha1_file" unless="source_changed">
-		<property name="sha1_file" value="${tmphome}/build.sha1"/>
 		<condition property="source_changed">
 			<not>
-				<available file="${sha1_file}" type="file"/>
+				<available file="${tmp_sha1_file}" type="file"/>
 			</not>
 		</condition>
 	</target>
 
 	<target name="check_source_changed" depends="check_source_sha1_file" unless="source_changed">
-		<loadproperties srcfile="${sha1_file}"/>
+		<loadproperties srcfile="${tmp_sha1_file}"/>
 
 		<!-- Check for changes -->
 		<exec dir="${repo.src}" executable="git" failonerror="true" outputproperty="diffs">
@@ -474,7 +474,7 @@
 		<exec dir="${repo.src}" executable="git" failonerror="true" outputproperty="HEAD_TAG">
 			<arg line="rev-list ${TAG} -1"/>
 		</exec>
-		<propertyfile file="${sha1_file}">
+		<propertyfile file="${tmp_sha1_file}">
 			<entry key="SHA1" value="${HEAD_TAG}"/>
 		</propertyfile>
 
@@ -742,7 +742,7 @@
 	Note that the build.sha1 file is updated even if the libraries are not built to ensure there is a change
 	in the GIT repo (see bug#407624).
 	-->
-	<target name="build_fragment" depends="check_source_changed" if="source_changed">
+	<target name="build_fragment" depends="init_fragment,check_source_changed" if="source_changed">
 		<!-- Build natives -->
 		<antcall target="build_fragment_libraries"/>
 
@@ -752,22 +752,25 @@
 		</exec>
 		<echo file="${fragment_dir}/build.sha1" append="false">SHA1=${HEAD_TAG}</echo>
 	</target>
-	<target name="build_fragment_libraries" depends="init_fragment,check_sha1_changed" if="natives_changed">
+	<target name="build_fragment_libraries" depends="check_sha1_changed" if="natives_changed">
 		<antcall target="build_libraries"/>
 	</target>
 
 	<target name="commit_poms_and_binaries">
-		<antcall target="commit_poms"/>
+		<antcall target="commit_source_pom"/>
 		<antcall target="update_sha1_file"/>
 		<antcall target="commit_binaries"/>
 	</target>
 	
-	<target name="commit_poms">
+	<target name="commit_source_pom">
 		<exec dir="${repo.src}" executable="git" failonerror="true">
 			<arg line="add '${file_src_pom}'"/>
 		</exec>
-		<exec dir="${repo.bin}" executable="git" failonerror="true">
-			<arg line="add '${file_bin_parent_pom}'"/>
+		<exec dir="${repo.src}" executable="git" failonerror="true">
+			<arg line="status"/>
+		</exec>
+		<exec dir="${repo.src}" executable="git" failonerror="true">
+			<arg line="commit -m 'v${swt_version}'"/>
 		</exec>
 	</target>
 	
@@ -776,7 +779,7 @@
 		<exec dir="${repo.src}" executable="git" failonerror="true" outputproperty="HEAD_TAG">
 			<arg line="rev-list ${TAG} -1"/>
 		</exec>
-		<echo file="${sha1_file}" append="false">SHA1=${HEAD_TAG}</echo>
+		<echo file="${tmp_sha1_file}" append="false">SHA1=${HEAD_TAG}</echo>
 	</target>
 	
 	<!-- Params: fragment, swt_version -->
@@ -797,6 +800,7 @@
 
 		<!-- Get list of files to commit -->
 		<fileset id="addid" dir="${repo.bin}">
+			<include name="${file_bin_parent_pom}"/>
 			<include name="bundles/*/*${swt_version}*"/>
 			<include name="bundles/*/build.sha1"/>
 			<include name="bundles/*/*xulrunner-fix*"/>
@@ -843,12 +847,6 @@
 			<arg line="status"/>
 		</exec>
 		<exec dir="${repo.bin}" executable="git" failonerror="true">
-			<arg line="commit -m 'v${swt_version}'"/>
-		</exec>
-		<exec dir="${repo.src}" executable="git" failonerror="true">
-			<arg line="status"/>
-		</exec>
-		<exec dir="${repo.src}" executable="git" failonerror="true">
 			<arg line="commit -m 'v${swt_version}'"/>
 		</exec>
 	</target>
