@@ -11,7 +11,6 @@
 package org.eclipse.swt.graphics;
 
 import org.eclipse.swt.*;
-import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.cairo.*;
 
 /**
@@ -282,7 +281,7 @@ public void multiply(Transform matrix) {
  */
 public void rotate(float angle) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	Cairo.cairo_matrix_rotate(handle, angle * (float)Compatibility.PI / 180);
+	Cairo.cairo_matrix_rotate(handle, angle * (float)Math.PI / 180);
 }
 
 /**

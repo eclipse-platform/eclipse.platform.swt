@@ -446,7 +446,7 @@ public FontData[] getFontList (String faceName, boolean scalable) {
 			byte[] buffer = new byte[length];
 			OS.memmove(buffer, familyName, length);
 			String name = new String(Converter.mbcsToWcs(null, buffer));
-			match = Compatibility.equalsIgnoreCase(faceName, name);
+			match = faceName.equalsIgnoreCase(name);
 		}
 		if (match) {
 		    OS.pango_font_family_list_faces(family[0], faces, n_faces);

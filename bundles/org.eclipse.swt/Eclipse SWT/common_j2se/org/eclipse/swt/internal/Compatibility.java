@@ -43,13 +43,6 @@ import org.eclipse.swt.*;
 public final class Compatibility {
 
 /**
- * Returns the PI constant as a double.
- */
-public static double PI = Math.PI;
-
-static double toRadians = PI / 180;
-
-/**
  * Answers the most negative (i.e. closest to negative infinity)
  * integer value which is greater than the number obtained by dividing
  * the first argument p by the second argument q.
@@ -158,26 +151,6 @@ public static InputStream newInflaterInputStream(InputStream stream) throws IOEx
 }
 
 /**
- * Answers whether the character is a letter.
- *
- * @param c the character
- * @return true when the character is a letter
- */
-public static boolean isLetter(char c) {
-	return Character.isLetter(c);
-}
-
-/**
- * Answers whether the character is a whitespace character.
- *
- * @param c the character to test
- * @return true if the character is whitespace
- */
-public static boolean isWhitespace(char c) {
-	return Character.isWhitespace(c);
-}
-
-/**
  * Execute prog[0] in a separate platform process if the
  * underlying platform supports this.
  * <p>
@@ -256,28 +229,6 @@ public static String getMessage(String key, Object[] args) {
 		} catch (MissingResourceException ex2) {}
 	}
 	return answer;
-}
-
-/**
- * Interrupt the current thread. 
- * <p>
- * Note that this is not available on CLDC.
- * </p>
- */
-public static void interrupt() {
-	Thread.currentThread().interrupt();
-}
-
-/**
- * Compares two instances of class String ignoring the case of the
- * characters and answers if they are equal.
- *
- * @param s1 string
- * @param s2 string
- * @return true if the two instances of class String are equal
- */
-public static boolean equalsIgnoreCase(String s1, String s2) {
-	return s1.equalsIgnoreCase(s2);
 }
 
 }

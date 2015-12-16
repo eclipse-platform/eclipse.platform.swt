@@ -11,7 +11,6 @@
 package org.eclipse.swt.graphics;
 
 import org.eclipse.swt.*;
-import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.cairo.*;
 
 /**
@@ -218,23 +217,23 @@ public void addArc(float x, float y, float width, float height, float startAngle
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	moved = true;
 	if (width == height) {
-		float angle = -startAngle * (float)Compatibility.PI / 180;
+		float angle = -startAngle * (float)Math.PI / 180;
 		if (closed) Cairo.cairo_move_to(handle, (x + width / 2f) + width / 2f * Math.cos(angle), (y + height / 2f) + height / 2f * Math.sin(angle));
 		if (arcAngle >= 0) {
-			Cairo.cairo_arc_negative(handle, x + width / 2f, y + height / 2f, width / 2f, angle, -(startAngle + arcAngle) * (float)Compatibility.PI / 180);
+			Cairo.cairo_arc_negative(handle, x + width / 2f, y + height / 2f, width / 2f, angle, -(startAngle + arcAngle) * (float)Math.PI / 180);
 		} else {
-			Cairo.cairo_arc(handle, x + width / 2f, y + height / 2f, width / 2f, angle, -(startAngle + arcAngle) * (float)Compatibility.PI / 180);
+			Cairo.cairo_arc(handle, x + width / 2f, y + height / 2f, width / 2f, angle, -(startAngle + arcAngle) * (float)Math.PI / 180);
 		}
 	} else {
 		Cairo.cairo_save(handle);
 		Cairo.cairo_translate(handle, x + width / 2f, y + height / 2f);
 		Cairo.cairo_scale(handle, width / 2f, height / 2f);
-		float angle = -startAngle * (float)Compatibility.PI / 180;
+		float angle = -startAngle * (float)Math.PI / 180;
 		if (closed) Cairo.cairo_move_to(handle, Math.cos(angle), Math.sin(angle));
 		if (arcAngle >= 0) {
-			Cairo.cairo_arc_negative(handle, 0, 0, 1, angle, -(startAngle + arcAngle) * (float)Compatibility.PI / 180);
+			Cairo.cairo_arc_negative(handle, 0, 0, 1, angle, -(startAngle + arcAngle) * (float)Math.PI / 180);
 		} else {
-			Cairo.cairo_arc(handle, 0, 0, 1, angle, -(startAngle + arcAngle) * (float)Compatibility.PI / 180);
+			Cairo.cairo_arc(handle, 0, 0, 1, angle, -(startAngle + arcAngle) * (float)Math.PI / 180);
 		}
 		Cairo.cairo_restore(handle);
 	}

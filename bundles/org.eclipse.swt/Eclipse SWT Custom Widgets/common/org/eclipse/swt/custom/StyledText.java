@@ -8954,7 +8954,7 @@ public void setKeyBinding(int key, int action) {
 	 * character range and filter out incorrect int to char typecasting. For
 	 * Example: SWT.KEYPAD_CR int gets wrongly type-cast to char letter 'p'
 	 */
-	if (Character.isDefined(keyInt) && Compatibility.isLetter(keyChar)) {
+	if (Character.isDefined(keyInt) && Character.isLetter(keyChar)) {
 		// make the keybinding case insensitive by adding it
 		// in its upper and lower case form
 		char ch = Character.toUpperCase(keyChar);

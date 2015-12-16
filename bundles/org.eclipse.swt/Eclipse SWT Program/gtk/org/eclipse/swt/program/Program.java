@@ -332,7 +332,7 @@ static String[] parseCommand(String cmd) {
 	int eIndex;
 	while (sIndex < cmd.length()) {
 		/* Trim initial white space of argument. */
-		while (sIndex < cmd.length() && Compatibility.isWhitespace(cmd.charAt(sIndex))) {
+		while (sIndex < cmd.length() && Character.isWhitespace(cmd.charAt(sIndex))) {
 			sIndex++;
 		}
 		if (sIndex < cmd.length()) {
@@ -357,7 +357,7 @@ static String[] parseCommand(String cmd) {
 			else {
 				/* Use white space for the delimiters. */
 				eIndex = sIndex;
-				while (eIndex < cmd.length() && !Compatibility.isWhitespace(cmd.charAt(eIndex))) eIndex++;
+				while (eIndex < cmd.length() && !Character.isWhitespace(cmd.charAt(eIndex))) eIndex++;
 				args.add(cmd.substring(sIndex, eIndex));
 				sIndex = eIndex + 1;
 			}
