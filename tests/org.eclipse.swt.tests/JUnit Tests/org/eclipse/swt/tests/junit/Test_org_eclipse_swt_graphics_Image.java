@@ -21,7 +21,6 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
@@ -37,7 +36,6 @@ import org.eclipse.swt.graphics.ImageFileNameProvider;
 import org.eclipse.swt.graphics.PaletteData;
 import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.graphics.Rectangle;
-import org.eclipse.swt.internal.Compatibility;
 import org.eclipse.swt.widgets.Display;
 import org.junit.Before;
 import org.junit.Test;
@@ -416,8 +414,6 @@ public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLjava_lang_String() 
 	} catch (SWTException e) {
 		assertSWTProblem("Incorrect exception thrown for non-existent file name", SWT.ERROR_IO, e);
 	}
-	// j2se and j2me(cdc) can load from a file name but, j2me(cldc) throws an exception
-	if (!isJ2ME()) {
 		try {
 			String pathName = getPath("empty.txt");
 			Image image = new Image(display, pathName);
@@ -471,7 +467,6 @@ public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLjava_lang_String() 
 				}
 			}
 		}
-	}
 }
 
 @Test
@@ -955,13 +950,4 @@ RGB getRealRGB(Color color) {
 	return palette.getRGB(pixel);
 }
 
-protected boolean isJ2ME() {
-	try {
-		Compatibility.newFileInputStream("");
-	} catch (FileNotFoundException e) {
-		return false;
-	} catch (IOException e) {
-	}
-	return true;
-}
 }

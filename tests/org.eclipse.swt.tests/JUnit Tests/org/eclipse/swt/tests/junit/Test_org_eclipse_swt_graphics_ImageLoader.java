@@ -129,7 +129,6 @@ public void test_loadLjava_lang_String() {
 		fail("No exception thrown for load filename == null");
 	} catch (IllegalArgumentException e) {
 	}
-	// j2se and j2me(cdc) can load from a filename but, j2me(cldc) throws an exception
 }
 
 @Test
@@ -191,7 +190,6 @@ public void test_saveLjava_lang_StringI() {
 		fail("No exception thrown for save filename == null");
 	} catch (IllegalArgumentException e) {
 	}
-	// j2se and j2me(cdc) can load from a filename but, j2me(cldc) throws an exception
 }
 
 /* custom */

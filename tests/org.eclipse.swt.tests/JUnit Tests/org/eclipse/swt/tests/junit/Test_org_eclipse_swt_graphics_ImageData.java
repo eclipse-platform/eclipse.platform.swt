@@ -189,7 +189,6 @@ public void test_ConstructorLjava_lang_String() {
 		fail("No exception thrown for filename == null");
 	} catch (IllegalArgumentException e) {
 	}
-	// j2se and j2me(cdc) can load from a filename but, j2me(cldc) throws an exception
 }
 
 @Test
