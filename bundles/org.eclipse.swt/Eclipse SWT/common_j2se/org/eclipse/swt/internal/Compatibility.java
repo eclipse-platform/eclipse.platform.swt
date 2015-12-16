@@ -12,14 +12,11 @@ package org.eclipse.swt.internal;
 
  
 import java.io.*;
-import java.text.MessageFormat;
-import java.util.MissingResourceException;
-import java.util.ResourceBundle;
-import java.util.zip.Deflater;
-import java.util.zip.InflaterInputStream;
-import java.util.zip.DeflaterOutputStream;
+import java.text.*;
+import java.util.*;
+import java.util.zip.*;
 
-import org.eclipse.swt.SWT;
+import org.eclipse.swt.*;
 
 /**
  * This class is a placeholder for utility methods commonly
@@ -53,40 +50,6 @@ public static double PI = Math.PI;
 static double toRadians = PI / 180;
 
 /**
- * Answers the length of the side adjacent to the given angle
- * of a right triangle. In other words, it returns the integer
- * conversion of length * cos (angle).
- * <p>
- * IMPORTANT: the j2me version has an additional restriction on
- * the argument. length must be between -32767 and 32767 (inclusive).
- * </p>
- * 
- * @param angle the angle in degrees
- * @param length the length of the triangle's hypotenuse
- * @return the integer conversion of length * cos (angle)
- */
-public static int cos(int angle, int length) {
-	return (int)(Math.cos(angle * toRadians) * length);
-}
-
-/**
- * Answers the length of the side opposite to the given angle
- * of a right triangle. In other words, it returns the integer
- * conversion of length * sin (angle).
- * <p>
- * IMPORTANT: the j2me version has an additional restriction on
- * the argument. length must be between -32767 and 32767 (inclusive).
- * </p>
- * 
- * @param angle the angle in degrees
- * @param length the length of the triangle's hypotenuse
- * @return the integer conversion of length * sin (angle)
- */
-public static int sin(int angle, int length) {
-	return (int)(Math.sin(angle * toRadians) * length);
-}
-
-/**
  * Answers the most negative (i.e. closest to negative infinity)
  * integer value which is greater than the number obtained by dividing
  * the first argument p by the second argument q.
@@ -108,19 +71,6 @@ public static int ceil(int p, int q) {
  */
 public static boolean fileExists(String parent, String child) {
 	return new File (parent, child).exists();
-}
-
-/**
- * Answers the most positive (i.e. closest to positive infinity)
- * integer value which is less than the number obtained by dividing
- * the first argument p by the second argument q.
- *
- * @param p numerator
- * @param q denominator (must be different from zero)
- * @return the floor of the rational number p / q.
- */
-public static int floor(int p, int q) {
-	return (int)Math.floor((double)p / q);
 }
 
 /**
@@ -218,26 +168,6 @@ public static boolean isLetter(char c) {
 }
 
 /**
- * Answers whether the character is a letter or a digit.
- *
- * @param c the character
- * @return true when the character is a letter or a digit
- */
-public static boolean isLetterOrDigit(char c) {
-	return Character.isLetterOrDigit(c);
-}
-
-/**
- * Answers whether the character is a Unicode space character.
- *
- * @param c	 the character
- * @return true when the character is a Unicode space character
- */
-public static boolean isSpaceChar(char c) {
-	return Character.isSpaceChar(c);
-}
-
-/**
  * Answers whether the character is a whitespace character.
  *
  * @param c the character to test
@@ -245,24 +175,6 @@ public static boolean isSpaceChar(char c) {
  */
 public static boolean isWhitespace(char c) {
 	return Character.isWhitespace(c);
-}
-
-/**
- * Execute progArray[0] in a separate platform process if the
- * underlying platform support this.
- * <p>
- * The new process inherits the environment of the caller.
- * <p>
- *
- * @param progArray array containing the program to execute and its arguments
- *
- * @exception IOException
- *  if the program cannot be executed
- * @exception	SecurityException
- *  if the current SecurityManager disallows program execution
- */
-public static void exec(String[] progArray) throws java.io.IOException{
-	Runtime.getRuntime().exec(progArray);
 }
 
 /**
