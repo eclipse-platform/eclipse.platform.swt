@@ -757,20 +757,17 @@
 	</target>
 
 	<target name="commit_poms_and_binaries">
-		<antcall target="commit_source_pom"/>
-		<antcall target="update_sha1_file"/>
+		<antcall target="commit_poms"/>
 		<antcall target="commit_binaries"/>
+		<antcall target="update_sha1_file"/>
 	</target>
 	
-	<target name="commit_source_pom">
+	<target name="commit_poms">
 		<exec dir="${repo.src}" executable="git" failonerror="true">
 			<arg line="add '${file_src_pom}'"/>
 		</exec>
-		<exec dir="${repo.src}" executable="git" failonerror="true">
-			<arg line="status"/>
-		</exec>
-		<exec dir="${repo.src}" executable="git" failonerror="true">
-			<arg line="commit -m 'v${swt_version}'"/>
+		<exec dir="${repo.bin}" executable="git" failonerror="true">
+			<arg line="add '${file_bin_parent_pom}'"/>
 		</exec>
 	</target>
 	
@@ -800,7 +797,6 @@
 
 		<!-- Get list of files to commit -->
 		<fileset id="addid" dir="${repo.bin}">
-			<include name="${file_bin_parent_pom}"/>
 			<include name="bundles/*/*${swt_version}*"/>
 			<include name="bundles/*/build.sha1"/>
 			<include name="bundles/*/*xulrunner-fix*"/>
@@ -843,6 +839,12 @@
 	</target>
 
 	<target name="git_commit" if="commit_changes">
+		<exec dir="${repo.src}" executable="git" failonerror="true">
+			<arg line="status"/>
+		</exec>
+		<exec dir="${repo.src}" executable="git" failonerror="true">
+			<arg line="commit -m 'v${swt_version}'"/>
+		</exec>
 		<exec dir="${repo.bin}" executable="git" failonerror="true">
 			<arg line="status"/>
 		</exec>
