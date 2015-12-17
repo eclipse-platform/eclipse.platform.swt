@@ -10,23 +10,30 @@
  *******************************************************************************/
 package org.eclipse.swt.tests.junit.browser;
 
+import static org.junit.Assert.assertTrue;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.browser.Browser;
 import org.eclipse.swt.internal.mozilla.MozillaVersion;
 import org.eclipse.swt.tests.junit.SwtTestUtil;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
-
-import junit.framework.TestCase;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.rules.TestName;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.browser.StatusTextListener
  *
  * @see org.eclipse.swt.browser.StatusTextListener
  */
-public class Test_BrowserSuite extends TestCase {
+public class Test_BrowserSuite {
 	
 public static boolean isRunningOnEclipseOrgHudsonGTK = SwtTestUtil.isGTK && "hudsonbuild".equals(System.getProperty("user.name"));
+
+@Rule public TestName name = new TestName();
 
 private static boolean logXulRunnerVersion() {
 	Display display = new Display();
@@ -45,6 +52,7 @@ private static boolean logXulRunnerVersion() {
 	}
 }
 
+@Test
 public void testBrowser1() {
 	logXulRunnerVersion();
 	if (isRunningOnEclipseOrgHudsonGTK) {
@@ -54,18 +62,22 @@ public void testBrowser1() {
 	assertTrue(Browser1.test());
 }
 
+@Test
 public void testBrowser2() {
 	assertTrue(Browser2.test());
 }
 
+@Test
 public void testBrowser3() {
 	assertTrue(Browser3.test());
 }
 
+@Test
 public void testBrowser4() {
 	assertTrue(Browser4.test());
 }
 
+@Test
 public void testBrowser5() {
 	if (isRunningOnEclipseOrgHudsonGTK) {
 		System.out.println("Test_BrowserSuite.testBrowser1() skipped, see bug 465721");
@@ -74,6 +86,7 @@ public void testBrowser5() {
 	assertTrue(Browser5.test());
 }
 
+@Test
 public void testBrowser6() {
 	if (isRunningOnEclipseOrgHudsonGTK) {
 		System.out.println("Test_BrowserSuite.testBrowser1() skipped, see bug 465721");
@@ -82,10 +95,12 @@ public void testBrowser6() {
 	assertTrue(Browser6.test());
 }
 
+@Test
 public void testBrowser7() {
 	assertTrue(Browser7.test());
 }
 
+@Test
 public void testBrowser8() {
 	if (isRunningOnEclipseOrgHudsonGTK) {
 		System.out.println("Test_BrowserSuite.testBrowser1() skipped, see bug 465721");
@@ -94,6 +109,7 @@ public void testBrowser8() {
 	assertTrue(Browser8.test());
 }
 
+@Test
 public void testBrowser9() {
 	if (isRunningOnEclipseOrgHudsonGTK) {
 		System.out.println("Test_BrowserSuite.testBrowser1() skipped, see bug 465721");
@@ -102,15 +118,15 @@ public void testBrowser9() {
 	assertTrue(Browser9.test());
 }
 
-@Override
-protected void setUp() throws Exception {
-	System.out.println("Browser#setUp(): " + getName());
+@Before
+public void setUp() throws Exception {
+	System.out.println("Browser#setUp(): " + name.getMethodName());
 	Display display = Display.getCurrent();
 	if (display != null) display.dispose();
 }
 
-@Override
-protected void tearDown() throws Exception {
+@After
+public void tearDown() throws Exception {
 	Display display = Display.getCurrent();
 	if (display != null) display.dispose();
 }
