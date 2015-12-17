@@ -11,29 +11,34 @@
 package org.eclipse.swt.tests.junit;
 
 
-import junit.framework.TestCase;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import org.eclipse.swt.events.TypedEvent;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Shell;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.events.TypedEvent
  *
  * @see org.eclipse.swt.events.TypedEvent
  */
-public class Test_org_eclipse_swt_events_TypedEvent extends TestCase {
+public class Test_org_eclipse_swt_events_TypedEvent {
 
-@Override
-protected void setUp() {
+@Before
+public void setUp() {
 	shell = new Shell();
 }
 
-@Override
-protected void tearDown() {
+@After
+public void tearDown() {
 	shell.dispose();
 }
 
+@Test
 public void test_ConstructorLorg_eclipse_swt_widgets_Event() {
 	Event event = new Event();
 	event.widget = shell;
@@ -41,6 +46,7 @@ public void test_ConstructorLorg_eclipse_swt_widgets_Event() {
 	assertNotNull(typedEvent);
 }
 
+@Test
 public void test_toString() {
 	Event event = new Event();
 	event.widget = shell;
