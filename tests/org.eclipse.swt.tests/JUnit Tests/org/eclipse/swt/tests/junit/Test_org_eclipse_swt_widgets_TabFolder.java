@@ -11,6 +11,9 @@
 package org.eclipse.swt.tests.junit;
 
 import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,6 +25,8 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.TabItem;
 import org.eclipse.swt.widgets.Text;
+import org.junit.Before;
+import org.junit.Test;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.widgets.TabFolder
@@ -30,17 +35,15 @@ import org.eclipse.swt.widgets.Text;
  */
 public class Test_org_eclipse_swt_widgets_TabFolder extends Test_org_eclipse_swt_widgets_Composite {
 
-public Test_org_eclipse_swt_widgets_TabFolder(String name) {
-	super(name);
-}
-
 @Override
-protected void setUp() {
+@Before
+public void setUp() {
 	super.setUp();
 	makeCleanEnvironment();
 }
 
 @Override
+@Test
 public void test_ConstructorLorg_eclipse_swt_widgets_CompositeI() {
 	try {
 		new TabFolder(null, 0);
@@ -51,13 +54,16 @@ public void test_ConstructorLorg_eclipse_swt_widgets_CompositeI() {
 }
 
 @Override
+@Test
 public void test_computeSizeIIZ() {
 }
 
 @Override
+@Test
 public void test_computeTrimIIII() {
 }
 
+@Test
 public void test_TabFolder_getChildren() {
 	ArrayList<Control> children = new ArrayList<Control>();
 	for (int i = 0; i < 6; i++) {
@@ -75,9 +81,11 @@ public void test_TabFolder_getChildren() {
 }
 
 @Override
+@Test
 public void test_getClientArea() {
 }
 
+@Test
 public void test_getItemCount() {
 	int number = 10;
 	for (int i = 0; i<number ; i++){
@@ -86,6 +94,7 @@ public void test_getItemCount() {
 	}
 }
 
+@Test
 public void test_getItemI() {
 	int number = 15;
 	TabItem[] items = new TabItem[number];
@@ -118,6 +127,7 @@ public void test_getItemI() {
 	}
 }
 
+@Test
 public void test_getItems() {
 	int number = 5;
 	TabItem[] items = new TabItem[number];
@@ -143,6 +153,7 @@ public void test_getItems() {
  * Test the situation where you re-nest a child
  * between tabs dynamically. As found in 458844
  */
+@Test
 public void test_setControl() {
     int number = 5;
     TabItem[] items = new TabItem[number];
@@ -161,6 +172,7 @@ public void test_setControl() {
     assertTrue(setControlButton.getVisible());
 }
 
+@Test
 public void test_getSelection() {
 	int number = 10;
 	TabItem[] tis = new TabItem[number];
@@ -174,6 +186,7 @@ public void test_getSelection() {
 	}
 }
 
+@Test
 public void test_getSelectionIndex() {
 	int number = 15;
 	TabItem[] items = new TabItem[number];
@@ -192,6 +205,7 @@ public void test_getSelectionIndex() {
 	assertTrue(":d:", tabFolder.getSelectionIndex()==2);
 }
 
+@Test
 public void test_indexOfLorg_eclipse_swt_widgets_TabItem() {
 	int number = 10;
 	TabItem[] tis = new TabItem[number];
@@ -246,6 +260,7 @@ public void test_indexOfLorg_eclipse_swt_widgets_TabItem() {
 	assertTrue(":a:", tabFolder.indexOf(tabItem) == -1);
 }
 
+@Test
 public void test_setSelectionEmpty() {
 	if (SwtTestUtil.isGTK) {
 		//TODO Fix GTK failure.
@@ -268,6 +283,7 @@ public void test_setSelectionEmpty() {
 	assertEquals(0, tabFolder.getSelection().length);	
 }
 
+@Test
 public void test_setSelectionI() {
 	int number = 10;
 	for (int i = 0; i<number ; i++){
@@ -409,12 +425,14 @@ private void createTabFolder(List<String> events) {
 //	tabFolder.setSelection(new TabItem[] {tabFolder.getItem(0)});
 }
 
+@Test
 public void test_consistency_KeySelection() {
     List<String> events = new ArrayList<String>();
     createTabFolder(events);
     consistencyEvent(0, SWT.ARROW_RIGHT, 0, 0, ConsistencyUtility.KEY_PRESS, events, false);
 }
 
+@Test
 public void test_consistency_MouseSelection() {
     List<String> events = new ArrayList<String>();
     createTabFolder(events);
@@ -422,12 +440,14 @@ public void test_consistency_MouseSelection() {
     consistencyEvent(tabFolder.getSize().x/2, 5, 1, 0, ConsistencyUtility.MOUSE_CLICK, events);
 }
 
+@Test
 public void test_consistency_PgdwnSelection () {
     List<String> events = new ArrayList<String>();
     createTabFolder(events);
     consistencyEvent(0, SWT.CTRL, 0, SWT.PAGE_DOWN, ConsistencyUtility.DOUBLE_KEY_PRESS, events, false);
 }
 
+@Test
 public void test_consistency_PgupSelection () {
     List<String> events = new ArrayList<String>();
     createTabFolder(events);
@@ -435,6 +455,7 @@ public void test_consistency_PgupSelection () {
     consistencyEvent(0, SWT.CTRL, 0, SWT.PAGE_UP, ConsistencyUtility.DOUBLE_KEY_PRESS, events, false);
 }
 
+@Test
 public void test_consistency_MenuDetect () {
     List<String> events = new ArrayList<String>();
     createTabFolder(events);
@@ -442,6 +463,7 @@ public void test_consistency_MenuDetect () {
     consistencyEvent(50, 5, 3, 0, ConsistencyUtility.MOUSE_CLICK, events);
 }
 
+@Test
 public void test_consistency_DragDetect () {
     List<String> events = new ArrayList<String>();
     createTabFolder(events);

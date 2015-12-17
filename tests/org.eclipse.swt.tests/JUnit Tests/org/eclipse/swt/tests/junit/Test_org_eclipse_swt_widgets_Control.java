@@ -11,6 +11,11 @@
 package org.eclipse.swt.tests.junit;
 
 import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -56,10 +61,6 @@ import org.junit.Test;
  * @see org.eclipse.swt.widgets.Control
  */
 public class Test_org_eclipse_swt_widgets_Control extends Test_org_eclipse_swt_widgets_Widget {
-
-public Test_org_eclipse_swt_widgets_Control(String name) {
-	super(name);
-}
 
 @Test
 public void test_ConstructorLorg_eclipse_swt_widgets_CompositeI() {

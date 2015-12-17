@@ -10,6 +10,12 @@
  *******************************************************************************/
 package org.eclipse.swt.tests.junit;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -20,6 +26,7 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Decorations;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.Widget;
+import org.junit.Test;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.widgets.Decorations
@@ -28,35 +35,36 @@ import org.eclipse.swt.widgets.Widget;
  */
 public class Test_org_eclipse_swt_widgets_Decorations extends Test_org_eclipse_swt_widgets_Canvas {
 
-public Test_org_eclipse_swt_widgets_Decorations(String name) {
-	super(name);
-}
-
 @Override
+@Test
 public void test_ConstructorLorg_eclipse_swt_widgets_CompositeI() {
 	// do nothing, even though this is not an abstract class, it was never meant to 
 	// be instantiated
 }
 
 @Override
+@Test
 public void test_computeTrimIIII() {
 	decorations.computeTrim(0,0,0,0);
 	decorations.computeTrim(0,0,10,20);
 }
 
 @Override
+@Test
 public void test_getClientArea() {
 	Rectangle rect = decorations.getClientArea();
 	assertTrue(":a:", rect.height >= 0);
 	assertTrue(":b:", rect.width >= 0);
 }
 
+@Test
 public void test_getDefaultButton() {
 	Button button = new Button(decorations, SWT.PUSH);
 	decorations.setDefaultButton(button);
 	assertTrue(":a:", decorations.getDefaultButton() == button);
 }
 
+@Test
 public void test_getImage() {
 	Image[] cases = {null, new Image(null, 100, 100)};
 	for(int i=0; i<cases.length; i++){
@@ -68,12 +76,14 @@ public void test_getImage() {
 }
 
 @Override
+@Test
 public void test_getLocation() {
 	decorations.setLocation(10,15);
 	assertTrue(":a:", decorations.getLocation().x == 10);
 	assertTrue(":b:", decorations.getLocation().y == 15);
 }
 
+@Test
 public void test_getMenuBar() {
 	assertTrue(":a:", decorations.getMenuBar() == null);
 	Menu bar = new Menu (decorations, SWT.BAR);
@@ -81,17 +91,20 @@ public void test_getMenuBar() {
 	assertTrue(":b:", decorations.getMenuBar() == bar);
 }
 
+@Test
 public void test_getText() {
 	decorations.setText("test");
 	assertTrue(":a:", decorations.getText().equals("test"));
 }
 
 @Override
+@Test
 public void test_isReparentable() {
 	/* Decorations are not reparentable, see win32 implementation of isReparentable() */
 	assertFalse(decorations.isReparentable());
 }
 
+@Test
 public void test_setDefaultButtonLorg_eclipse_swt_widgets_Button() {
 	assertNull(decorations.getDefaultButton());
 	Button button = new Button(decorations, SWT.NULL);
@@ -103,6 +116,7 @@ public void test_setDefaultButtonLorg_eclipse_swt_widgets_Button() {
 	}
 }
 
+@Test
 public void test_setImageLorg_eclipse_swt_graphics_Image() {
 	assertNull(":a:", decorations.getImage());
 	loadImages();
@@ -114,6 +128,7 @@ public void test_setImageLorg_eclipse_swt_graphics_Image() {
 	freeImages();
 }
 
+@Test
 public void test_setMaximizedZ() {
 	decorations.setMaximized(false);
 	assertTrue(":1:", decorations.getMaximized() == false);
@@ -122,6 +137,7 @@ public void test_setMaximizedZ() {
 	assertTrue(":3:", decorations.getMinimized() == false);
 }
 
+@Test
 public void test_setMenuBarLorg_eclipse_swt_widgets_Menu() {
 	assertNull(decorations.getMenu());
 	Menu testMenu = new Menu(decorations);
@@ -131,6 +147,7 @@ public void test_setMenuBarLorg_eclipse_swt_widgets_Menu() {
 	assertNull(decorations.getMenu());
 }
 
+@Test
 public void test_setMinimizedZ() {
 	decorations.setMinimized(false);
 	assertTrue(":1:", decorations.getMinimized() == false);
@@ -139,6 +156,7 @@ public void test_setMinimizedZ() {
 	assertTrue(":3:", decorations.getMaximized() == false);
 }
 
+@Test
 public void test_setTextLjava_lang_String() {
 	try {
 		decorations.setText(null);
@@ -161,6 +179,7 @@ public void test_setTextLjava_lang_String() {
 }
 
 @Override
+@Test
 public void test_setVisibleZ() {
 	// test in subclasses
 }

@@ -11,6 +11,11 @@
 package org.eclipse.swt.tests.junit;
 
 import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,6 +24,8 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeColumn;
 import org.eclipse.swt.widgets.TreeItem;
+import org.junit.Before;
+import org.junit.Test;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.widgets.Tree
@@ -27,18 +34,16 @@ import org.eclipse.swt.widgets.TreeItem;
  */
 public class Test_org_eclipse_swt_widgets_Tree extends Test_org_eclipse_swt_widgets_Composite {
 
-public Test_org_eclipse_swt_widgets_Tree(String name) {
-	super(name);
-}
-
 @Override
-protected void setUp() {
+@Before
+public void setUp() {
 	super.setUp();
 	tree = new Tree(shell, SWT.MULTI);
 	setWidget(tree);
 }
 
 @Override
+@Test
 public void test_ConstructorLorg_eclipse_swt_widgets_CompositeI() {
 	try {
 		tree = new Tree(null, 0);
@@ -62,9 +67,11 @@ public void test_ConstructorLorg_eclipse_swt_widgets_CompositeI() {
 }
 
 @Override
+@Test
 public void test_computeSizeIIZ() {
 }
 
+@Test
 public void test_deselectAll() {
 	int number = 15;
 	TreeItem[] items = new TreeItem[number];
@@ -86,6 +93,7 @@ public void test_deselectAll() {
 	assertEquals(0, tree.getSelectionCount());
 }
 
+@Test
 public void test_getColumnCount() {
 	assertEquals(0, tree.getColumnCount());
 	TreeColumn column0 = new TreeColumn(tree, SWT.NONE);
@@ -102,6 +110,7 @@ public void test_getColumnCount() {
 	assertEquals(0, tree.getColumnCount());
 }
 
+@Test
 public void test_getColumnI() {
 	try {
 		tree.getColumn(0);
@@ -135,6 +144,7 @@ public void test_getColumnI() {
 	}
 }
 
+@Test
 public void test_getColumns() {
 	assertEquals(0, tree.getColumns().length);
 	TreeColumn column0 = new TreeColumn(tree, SWT.LEFT);
@@ -157,10 +167,12 @@ public void test_getColumns() {
 	assertEquals(0, tree.getColumns().length);
 }
 
+@Test
 public void test_getGridLineWidth() {
 	tree.getGridLineWidth();
 }
 
+@Test
 public void test_getHeaderHeight() {
 	if (SwtTestUtil.isGTK) {
 		//TODO Fix GTK failure.
@@ -176,12 +188,14 @@ public void test_getHeaderHeight() {
 	assertEquals(0, tree.getHeaderHeight());
 }
 
+@Test
 public void test_getItemHeight() {
 	assertTrue(":a: Item height is 0", tree.getItemHeight() > 0);
 	new TreeItem(tree, 0);
 	assertTrue(":b: Item height is 0", tree.getItemHeight() > 0);	
 }
 
+@Test
 public void test_getItemI() {
 	int number = 15;
 	TreeItem[] items = new TreeItem[number];
@@ -212,6 +226,7 @@ public void test_getItemI() {
 	}
 }
 
+@Test
 public void test_getItems() {
 	int[] cases = {0, 10, 100};
 	TreeItem [][] items = new TreeItem [cases.length][];
@@ -244,10 +259,12 @@ public void test_getItems() {
 	}
 }
 
+@Test
 public void test_getParentItem() {
 	assertNull(tree.getParentItem());
 }
 
+@Test
 public void test_getSelectionCount() {
 	int number = 15;
 	TreeItem[] items = new TreeItem[number];
@@ -302,6 +319,7 @@ public void test_getSelectionCount() {
 	assertEquals(0, tree.getSelectionCount());
 }
 
+@Test
 public void test_removeAll() {
 	tree.removeAll();
 	assertEquals(0, tree.getItemCount());
@@ -317,6 +335,7 @@ public void test_removeAll() {
 	assertEquals(0, tree.getItemCount());
 }
 
+@Test
 public void test_selectAll() {
 	int number = 5;
 	TreeItem[] items = new TreeItem[number];
@@ -338,6 +357,7 @@ public void test_selectAll() {
 	assertEquals(0, tree.getSelectionCount());
 }
 
+@Test
 public void test_setHeaderVisibleZ() {
 	assertFalse(tree.getHeaderVisible());
 	tree.setHeaderVisible(true);
@@ -346,6 +366,7 @@ public void test_setHeaderVisibleZ() {
 	assertFalse(tree.getHeaderVisible());
 }
 
+@Test
 public void test_setItemCountI() {
 	tree.removeAll();
 	assertEquals(0, tree.getItemCount());
@@ -384,6 +405,7 @@ public void test_setItemCountI() {
 	tree.getItem(39);
 }
 
+@Test
 public void test_setLinesVisibleZ() {
 	assertFalse(tree.getLinesVisible());
 	tree.setLinesVisible(true);
@@ -393,9 +415,11 @@ public void test_setLinesVisibleZ() {
 }
 
 @Override
+@Test
 public void test_setRedrawZ() {
 }
 
+@Test
 public void test_setSelection$Lorg_eclipse_swt_widgets_TreeItem() {
 	int number = 20;
 	TreeItem[] items = new TreeItem[number];
@@ -556,6 +580,7 @@ public void test_setSelection$Lorg_eclipse_swt_widgets_TreeItem() {
 	assertArrayEquals(new TreeItem[] {}, tree.getSelection());
 }
 
+@Test
 public void test_setTopItemLorg_eclipse_swt_widgets_TreeItem() {
 	tree.removeAll();
 	for (int i = 0; i < 10; i++) {
@@ -584,6 +609,7 @@ public void test_setTopItemLorg_eclipse_swt_widgets_TreeItem() {
 	}
 }
 
+@Test
 public void test_showItemLorg_eclipse_swt_widgets_TreeItem() {
 	try {
 		tree.showItem(null);
@@ -622,6 +648,7 @@ public void test_showItemLorg_eclipse_swt_widgets_TreeItem() {
 	tree.removeAll();
 }
 
+@Test
 public void test_showSelection() {
 	TreeItem item;
 	
@@ -661,24 +688,28 @@ private void createTree(List<String> events) {
 	}
 }
 
+@Test
 public void test_consistency_KeySelection() {
     List<String> events = new ArrayList<String>();
     createTree(events);
     consistencyEvent(0, SWT.ARROW_DOWN, 0, 0, ConsistencyUtility.KEY_PRESS, events);
 }
 
+@Test
 public void test_consistency_MouseSelection() {
     List<String> events = new ArrayList<String>();
     createTree(events);
     consistencyEvent(30, 30, 1, 0, ConsistencyUtility.MOUSE_CLICK, events);
 }
 
+@Test
 public void test_consistency_MouseExpand() {
     List<String> events = new ArrayList<String>();
     createTree(events);
     consistencyEvent(11, 10, 1, 0, ConsistencyUtility.MOUSE_CLICK, events);
 }
 
+@Test
 public void test_consistency_KeyExpand() {
     List<String> events = new ArrayList<String>();
     createTree(events);
@@ -688,6 +719,7 @@ public void test_consistency_KeyExpand() {
     consistencyEvent(0, code, 0, 0, ConsistencyUtility.KEY_PRESS, events);
 }
 
+@Test
 public void test_consistency_DoubleClick () {
     List<String> events = new ArrayList<String>();
     createTree(events);
@@ -696,24 +728,28 @@ public void test_consistency_DoubleClick () {
             	     ConsistencyUtility.MOUSE_DOUBLECLICK, events);
 }
 
+@Test
 public void test_consistency_EnterSelection () {
     List<String> events = new ArrayList<String>();
     createTree(events);
     consistencyEvent(13, 10, 0, 0, ConsistencyUtility.KEY_PRESS, events);
 }
 
+@Test
 public void test_consistency_SpaceSelection () {
     List<String> events = new ArrayList<String>();
     createTree(events);
     consistencyEvent(' ', 32, 0, 0, ConsistencyUtility.KEY_PRESS, events);
 }
 
+@Test
 public void test_consistency_MenuDetect () {
     List<String> events = new ArrayList<String>();
     createTree(events);
     consistencyEvent(50, 25, 3, 0, ConsistencyUtility.MOUSE_CLICK, events);
 }
 
+@Test
 public void test_consistency_DragDetect () {
     List<String> events = new ArrayList<String>();
     createTree(events);

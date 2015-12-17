@@ -18,6 +18,8 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.CTabItem;
 import org.eclipse.swt.widgets.Text;
+import org.junit.Before;
+import org.junit.Test;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.custom.CTabFolder
@@ -26,37 +28,40 @@ import org.eclipse.swt.widgets.Text;
  */
 public class Test_org_eclipse_swt_custom_CTabFolder extends Test_org_eclipse_swt_widgets_Composite {
 
-public Test_org_eclipse_swt_custom_CTabFolder(String name) {
-	super(name);
-}
-
 @Override
-protected void setUp() {
+@Before
+public void setUp() {
 	super.setUp();
 	makeCleanEnvironment();
 }
 
 @Override
+@Test
 public void test_ConstructorLorg_eclipse_swt_widgets_CompositeI() {
 }
 
 @Override
+@Test
 public void test_computeSizeIIZ() {
 }
 
 @Override
+@Test
 public void test_computeTrimIIII() {
 }
 
 @Override
+@Test
 public void test_getClientArea() {
 }
 
 @Override
+@Test
 public void test_setBackgroundLorg_eclipse_swt_graphics_Color() {
 }
 
 @Override
+@Test
 public void test_setFontLorg_eclipse_swt_graphics_Font() {
 }
 
@@ -84,12 +89,14 @@ private void createTabFolder(List<String> events) {
 	ctabFolder.setSelection(ctabFolder.getItem(0));
 }
 
+@Test
 public void test_consistency_KeySelection() {
     List<String> events = new ArrayList<String>();
     createTabFolder(events);
     consistencyEvent(0, SWT.ARROW_RIGHT, 0, 0, ConsistencyUtility.KEY_PRESS, events, false);
 }
 
+@Test
 public void test_consistency_MouseSelection() {
     List<String> events = new ArrayList<String>();
     createTabFolder(events);
@@ -97,12 +104,14 @@ public void test_consistency_MouseSelection() {
     consistencyEvent(ctabFolder.getSize().x/2, 5, 1, 0, ConsistencyUtility.MOUSE_CLICK, events);
 }
 
+@Test
 public void test_consistency_PgdwnSelection () {
     List<String> events = new ArrayList<String>();
     createTabFolder(events);
     consistencyEvent(0, SWT.CTRL, 0, SWT.PAGE_DOWN, ConsistencyUtility.DOUBLE_KEY_PRESS, events, false);
 }
 
+@Test
 public void test_consistency_PgupSelection () {
     List<String> events = new ArrayList<String>();
     createTabFolder(events);
@@ -110,6 +119,7 @@ public void test_consistency_PgupSelection () {
     consistencyEvent(0, SWT.CTRL, 0, SWT.PAGE_UP, ConsistencyUtility.DOUBLE_KEY_PRESS, events, false);
 }
 
+@Test
 public void test_consistency_MenuDetect () {
     List<String> events = new ArrayList<String>();
     createTabFolder(events);
@@ -117,6 +127,7 @@ public void test_consistency_MenuDetect () {
     consistencyEvent(50, 5, 3, 0, ConsistencyUtility.MOUSE_CLICK, events);
 }
 
+@Test
 public void test_consistency_DragDetect () {
     List<String> events = new ArrayList<String>();
     createTabFolder(events);

@@ -11,6 +11,11 @@
 package org.eclipse.swt.tests.junit;
 
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
@@ -18,6 +23,8 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.CoolBar;
 import org.eclipse.swt.widgets.CoolItem;
+import org.junit.Before;
+import org.junit.Test;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.widgets.CoolItem
@@ -26,18 +33,16 @@ import org.eclipse.swt.widgets.CoolItem;
  */
 public class Test_org_eclipse_swt_widgets_CoolItem extends Test_org_eclipse_swt_widgets_Item {
 
-public Test_org_eclipse_swt_widgets_CoolItem(String name) {
-	super(name);
-}
-
 @Override
-protected void setUp() {
+@Before
+public void setUp() {
 	super.setUp();
 	CoolBar coolBar = new CoolBar(shell, 0);
 	CoolItem coolItem = new CoolItem(coolBar, 0);
 	setWidget(coolItem);
 }
 
+@Test
 public void test_ConstructorLorg_eclipse_swt_widgets_CoolBarI() {
 	CoolBar coolBar = new CoolBar(shell, 0);
 	new CoolItem(coolBar, 0);
@@ -50,6 +55,7 @@ public void test_ConstructorLorg_eclipse_swt_widgets_CoolBarI() {
 	}
 }
 
+@Test
 public void test_ConstructorLorg_eclipse_swt_widgets_CoolBarII() {
 	CoolBar coolBar = new CoolBar(shell, 0);
 	CoolItem coolItem = new CoolItem(coolBar, 0, 0);
@@ -73,6 +79,7 @@ public void test_ConstructorLorg_eclipse_swt_widgets_CoolBarII() {
 	assertEquals(coolItem, coolBar.getItem(0));	
 }
 
+@Test
 public void test_computeSizeII() {
 	CoolBar coolBar = new CoolBar(shell, 0);
 	CoolItem coolItem = new CoolItem(coolBar, 0);
@@ -94,6 +101,7 @@ public void test_computeSizeII() {
 	assertEquals(25, size2.x - size.x);
 }
 
+@Test
 public void test_getBounds() {
 	CoolBar coolBar = new CoolBar(shell, 0);
 	CoolItem coolItem = new CoolItem(coolBar, 0);
@@ -115,6 +123,7 @@ public void test_getBounds() {
 	assertEquals(rect.y, newRect.y);
 }
 
+@Test
 public void test_getControl() {
 	CoolBar coolBar = new CoolBar(shell, 0);
 	CoolItem coolItem = new CoolItem(coolBar, 0);
@@ -131,12 +140,14 @@ public void test_getControl() {
 	assertEquals(button, control);
 }
 
+@Test
 public void test_getParent() {
 	CoolBar coolBar = new CoolBar(shell, 0);
 	CoolItem coolItem = new CoolItem(coolBar, 0);
 	assertEquals(coolBar, coolItem.getParent());
 }
 
+@Test
 public void test_getPreferredSize() {
 	CoolBar coolBar = new CoolBar(shell, 0);
 	CoolItem coolItem = new CoolItem(coolBar, 0);
@@ -149,6 +160,7 @@ public void test_getPreferredSize() {
 	assertEquals(pref, coolItem.getPreferredSize());
 }
 
+@Test
 public void test_getSize() {
 	CoolBar coolBar = new CoolBar(shell, 0);
 	CoolItem coolItem = new CoolItem(coolBar, 0);
@@ -162,6 +174,7 @@ public void test_getSize() {
 	assertEquals(rect.height, size.y);
 }
 
+@Test
 public void test_setControlLorg_eclipse_swt_widgets_Control() {
 	CoolBar coolBar = new CoolBar(shell, 0);
 	CoolItem coolItem = new CoolItem(coolBar, 0);
@@ -199,6 +212,7 @@ public void test_setControlLorg_eclipse_swt_widgets_Control() {
 	}
 }
 
+@Test
 public void test_setPreferredSizeII() {
 	CoolBar coolBar = new CoolBar(shell, 0);
 	CoolItem coolItem = new CoolItem(coolBar, 0);
@@ -213,6 +227,7 @@ public void test_setPreferredSizeII() {
 	assertEquals(size, coolItem.getSize());
 }
 
+@Test
 public void test_setPreferredSizeLorg_eclipse_swt_graphics_Point() {
 	CoolBar coolBar = new CoolBar(shell, 0);
 	CoolItem coolItem = new CoolItem(coolBar, 0);
@@ -227,6 +242,7 @@ public void test_setPreferredSizeLorg_eclipse_swt_graphics_Point() {
 	assertEquals(size2, coolItem.getPreferredSize());
 }
 
+@Test
 public void test_setSizeII() {
 	CoolBar coolBar = new CoolBar(shell, 0);
 	CoolItem coolItem = new CoolItem(coolBar, 0);
@@ -248,6 +264,7 @@ public void test_setSizeII() {
 	assertEquals(size, coolItem.getSize());
 }
 
+@Test
 public void test_setSizeLorg_eclipse_swt_graphics_Point() {
 	CoolBar coolBar = new CoolBar(shell, 0);
 	CoolItem coolItem = new CoolItem(coolBar, 0);

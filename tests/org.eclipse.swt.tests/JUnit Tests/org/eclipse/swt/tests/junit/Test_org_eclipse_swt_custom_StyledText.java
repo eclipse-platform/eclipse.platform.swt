@@ -12,6 +12,11 @@ package org.eclipse.swt.tests.junit;
 
 
 import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -51,6 +56,9 @@ import org.eclipse.swt.internal.BidiUtil;
 import org.eclipse.swt.printing.Printer;
 import org.eclipse.swt.widgets.Caret;
 import org.eclipse.swt.widgets.Display;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.custom.StyledText
@@ -71,12 +79,9 @@ Map<RGB, Color> colors = new HashMap<RGB, Color>();
 private boolean listenerCalled;	
 private boolean listener2Called;
 
-public Test_org_eclipse_swt_custom_StyledText(String name) {
-	super(name);
-}
-
 @Override
-protected void setUp() {
+@Before
+public void setUp() {
 	super.setUp();
 	initializeColors();
 	text = new StyledText(shell, SWT.NULL);
@@ -84,7 +89,8 @@ protected void setUp() {
 }
 
 @Override
-protected void tearDown() {
+@After
+public void tearDown() {
 	for (Color color : colors.values()) {
 		color.dispose();
 	}
@@ -139,6 +145,7 @@ protected void initializeColors() {
 }
 
 @Override
+@Test
 public void test_ConstructorLorg_eclipse_swt_widgets_CompositeI(){
 	StyledText text = new StyledText(shell, SWT.READ_ONLY);
 	
@@ -151,6 +158,7 @@ public void test_ConstructorLorg_eclipse_swt_widgets_CompositeI(){
 	text.dispose();
 }
 
+@Test
 public void test_addExtendedModifyListenerLorg_eclipse_swt_custom_ExtendedModifyListener() {
 	final String line = "Line1";
 	boolean exceptionThrown = false;
@@ -217,6 +225,7 @@ public void test_addExtendedModifyListenerLorg_eclipse_swt_custom_ExtendedModify
 	assertTrue("Listener not removed", listenerCalled == false);
 }
 
+@Test
 public void test_setKeyBindingII(){
 	text.setKeyBinding(SWT.DEL, SWT.NULL);
 	assertTrue(":a:", text.getKeyBinding(SWT.DEL) == SWT.NULL);
@@ -234,6 +243,7 @@ public void test_setKeyBindingII(){
 	text.setKeyBinding(-1, -1);
 }
 
+@Test
 public void test_addBidiSegmentListenerLorg_eclipse_swt_custom_BidiSegmentListener() {
 	String line = "Line1";
 	boolean exceptionThrown = false;
@@ -269,6 +279,7 @@ public void test_addBidiSegmentListenerLorg_eclipse_swt_custom_BidiSegmentListen
 	assertTrue("Listener not removed", listenerCalled == false);
 }
 
+@Test
 public void test_addLineBackgroundListenerLorg_eclipse_swt_custom_LineBackgroundListener() {
 	String line = "Line1";
 	boolean exceptionThrown = false;
@@ -303,6 +314,7 @@ public void test_addLineBackgroundListenerLorg_eclipse_swt_custom_LineBackground
 	assertTrue("Listener not removed", listenerCalled == false);
 }
 
+@Test
 public void test_addLineStyleListenerLorg_eclipse_swt_custom_LineStyleListener() {
 	String line = "Line1";
 	boolean exceptionThrown = false;
@@ -337,6 +349,7 @@ public void test_addLineStyleListenerLorg_eclipse_swt_custom_LineStyleListener()
 	assertTrue("Listener not removed", listenerCalled == false);
 }
 
+@Test
 public void test_addModifyListenerLorg_eclipse_swt_events_ModifyListener() {
 	String line = "Line1";
 	boolean exceptionThrown = false;
@@ -380,6 +393,7 @@ public void test_addModifyListenerLorg_eclipse_swt_events_ModifyListener() {
 	assertTrue("Listener not removed", listenerCalled == false);
 }
 
+@Test
 public void test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener() {
 	String line = "Line1";
 	boolean exceptionThrown = false;
@@ -418,6 +432,7 @@ public void test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener()
 	assertTrue("Listener called unexpectedly", listener2Called == false);
 }
 
+@Test
 public void test_addVerifyKeyListenerLorg_eclipse_swt_custom_VerifyKeyListener() {
 	boolean exceptionThrown = false;
 	VerifyKeyListener listener = new VerifyKeyListener() {
@@ -439,6 +454,7 @@ public void test_addVerifyKeyListenerLorg_eclipse_swt_custom_VerifyKeyListener()
 	text.removeVerifyKeyListener(listener);
 }
 
+@Test
 public void test_addVerifyListenerLorg_eclipse_swt_events_VerifyListener() {
 	final String line = "Line1";
 	final String newLine = "NewLine1";
@@ -539,6 +555,7 @@ public void test_addVerifyListenerLorg_eclipse_swt_events_VerifyListener() {
 	assertTrue("Listener not removed", listenerCalled == false);
 }
 
+@Test
 public void test_appendLjava_lang_String() {
 	boolean exceptionThrown;	
 	String line = "Line1";
@@ -572,10 +589,12 @@ public void test_appendLjava_lang_String() {
 }
 
 @Override
+@Test
 public void test_computeSizeIIZ() {
 	// inherited test is sufficient
 }
 
+@Test
 public void test_copy() {
 	if (SwtTestUtil.isCocoa) {
 		// TODO Fix Cocoa failure.
@@ -643,6 +662,7 @@ public void test_copy() {
 	clipboard.dispose();
 }
 
+@Test
 public void test_cut() {
 	if (SwtTestUtil.isCocoa) {
 		// TODO Fix Cocoa failure.
@@ -709,6 +729,7 @@ public void test_cut() {
 	clipboard.dispose();
 }
 
+@Test
 public void test_getCaretOffset() {
 	assertTrue(":a:", text.getCaretOffset() == 0);
 	text.setText("Line0\r\n");
@@ -730,6 +751,7 @@ public void test_getCaretOffset() {
 	assertTrue(":h:", text.getCaretOffset() == newText.length() + 1);
 }
 
+@Test
 public void test_getContent() {
 	StyledTextContent content = text.getContent();
 	
@@ -769,6 +791,7 @@ public void test_getContent() {
 	assertEquals(content, text.getContent());
 }
 
+@Test
 public void test_getDoubleClickEnabled() {
 	assertTrue(":a:", text.getDoubleClickEnabled() == true);
 	text.setDoubleClickEnabled(true);
@@ -781,6 +804,7 @@ public void test_getDoubleClickEnabled() {
 	assertTrue(":e:", text.getDoubleClickEnabled() == true);
 }
 
+@Test
 public void test_getEditable() {
 	assertTrue(":a:", text.getEditable() == true);
 	text.setEditable(true);
@@ -793,6 +817,7 @@ public void test_getEditable() {
 	assertTrue(":e:", text.getEditable() == true);
 }
 
+@Test
 public void test_getHorizontalIndex() {
 	assertTrue(":a:", text.getHorizontalIndex() == 0);
 	text.setHorizontalIndex(-1);
@@ -820,6 +845,7 @@ public void test_getHorizontalIndex() {
 	assertTrue(":j:", text.getHorizontalIndex() == 1);		
 }
 
+@Test
 public void test_getHorizontalPixel() {	
 	assertTrue(":a:", text.getHorizontalPixel() == 0);
 	text.setHorizontalIndex(-1);
@@ -845,6 +871,7 @@ public void test_getHorizontalPixel() {
 	assertTrue(":i:", text.getHorizontalPixel() > 0);
 }
 
+@Test
 public void test_getKeyBindingI() {
 	assertTrue(":a:", text.getKeyBinding(SWT.DEL) == ST.DELETE_NEXT);
 	text.setKeyBinding(SWT.DEL, ST.LINE_UP);
@@ -857,6 +884,7 @@ public void test_getKeyBindingI() {
 	assertTrue(":f:", text.getKeyBinding(SWT.F2) == SWT.NULL);
 }
 
+@Test
 public void test_getCharCount() {
 	assertTrue(":a:", text.getCharCount() == 0);
 	text.setText("Line0");
@@ -867,6 +895,7 @@ public void test_getCharCount() {
 	assertTrue(":d:", text.getCharCount() == 6);
 }
 
+@Test
 public void test_getLineBackgroundI() {
 	String textString = "L1\nL2\nL3\nL4";
 	text.setText(textString);
@@ -877,6 +906,7 @@ public void test_getLineBackgroundI() {
 	assertTrue(":1:", text.getLineBackground(2) == getColor(BLUE));
 }
 
+@Test
 public void test_getLineCount() {
 	String delimiterString = "\r\n";
 	assertTrue(":a:", text.getLineCount()==1);
@@ -893,6 +923,7 @@ public void test_getLineCount() {
 	assertTrue(":b:", text.getLineCount()==2);
 }
 
+@Test
 public void test_getLineAtOffsetI() {
 	boolean exceptionThrown = false;
 	
@@ -930,6 +961,7 @@ public void test_getLineAtOffsetI() {
 	exceptionThrown = false;
 }
 
+@Test
 public void test_getLineDelimiter() {
 	final String lineDelimiter = "\n";
 	StyledTextContent content = text.getContent();
@@ -971,10 +1003,12 @@ public void test_getLineDelimiter() {
 	assertEquals(lineDelimiter, text.getLineDelimiter());
 }
 
+@Test
 public void test_getLineHeight() {
 	assertTrue(":a:", text.getLineHeight() > 0);
 }
 
+@Test
 public void test_getLineIndex () {
 	test_getLineIndex(text);
 	StyledText text2 = new StyledText(shell, SWT.WRAP);
@@ -1060,6 +1094,7 @@ void test_getLineIndex (StyledText text) {
 	assertEquals(0, text.getLineIndex(100));
 }
 
+@Test
 public void test_getLinePixel () {
 	test_getLinePixel(text);
 	StyledText text2 = new StyledText(shell, SWT.WRAP);
@@ -1113,6 +1148,7 @@ void test_getLinePixel(StyledText text) {
 	assertEquals(lineHeight, text.getLinePixel(10));
 }
 
+@Test
 public void test_getLocationAtOffsetI(){
 	// copy from StyledText, has to match value used by StyledText
 	final int XINSET = isBidiCaret() ? 2 : 0;
@@ -1153,6 +1189,7 @@ public void test_getLocationAtOffsetI(){
 	assertTrue(":j:", text.getLocationAtOffset(0).x < 0 && text.getLocationAtOffset(0).y < 0);
 	assertTrue(":k:", text.getLocationAtOffset(7).x < 0 && text.getLocationAtOffset(7).y == 0);
 }
+@Test
 public void test_getOffsetAtLineI() {
 	boolean exceptionThrown = false;
 	
@@ -1191,6 +1228,7 @@ public void test_getOffsetAtLineI() {
 	text.setText("");	
 	assertEquals(":g:", 0, text.getOffsetAtLine(0));
 }
+@Test
 public void test_getOffsetAtLocationLorg_eclipse_swt_graphics_Point() {
 	boolean exceptionThrown = false;
 	Point location;
@@ -1264,6 +1302,7 @@ void testStyles (String msg, int[] resultRanges, int[] expectedRanges, StyleRang
 	assertArrayEquals("expected and result styles are differnt on: " + msg, expectedStyles, resultStyles);
 }
 
+@Test
 public void test_getRanges(){
 	StyleRange style0 = new StyleRange();
 	style0.rise = 10;
@@ -1501,6 +1540,7 @@ public void test_getRanges(){
 	testStyles("Test 26 ", ranges, expectedRanges, text.getStyleRanges(6, 8, false), expectedStyles);
 }
 
+@Test
 public void test_getSelection(){
 	text.setText("01234567890");
 	text.setSelection(new Point(2, 2));
@@ -1517,16 +1557,19 @@ public void test_getSelection(){
 	text.setSelection(new Point(3, 2));	
 	assertTrue(":c:", text.getSelection().equals(new Point(2, 3)));	
 }
+@Test
 public void test_getSelectionBackground() {
 	assertTrue(":1:", text.getSelectionBackground() != null);
 	text.setSelectionBackground(getColor(YELLOW));
 	assertTrue(":1:", text.getSelectionBackground() ==  getColor(YELLOW));
 }
+@Test
 public void test_getSelectionForeground() {
 	assertTrue(":1:", text.getSelectionForeground() != null);
 	text.setSelectionForeground(getColor(RED));
 	assertTrue(":1:", text.getSelectionForeground() ==  getColor(RED));
 }
+@Test
 public void test_getSelectionRange() {
 	String testText = "Line1\r\nLine2";
 	int invalidRanges [][] = {{-1, 0}, {-1, -1}, {100, 1}, {100, -1}, {12, 1}, {11, 2}, {2, -3}, {50, -1}};
@@ -1575,6 +1618,7 @@ public void test_getSelectionRange() {
 	}
 }
 
+@Test
 public void test_getSelectionCount(){
 	text.setText("01234567890");
 	assertTrue(":a:", text.getSelectionCount()==0);
@@ -1589,7 +1633,7 @@ public void test_getSelectionCount(){
 	text.setSelection(2, 12);
 	assertTrue(":f:", text.getSelectionCount()==10);
 }
-
+@Test
 public void test_getSelectionText() {
 	String testText = "Line1\r\nLine2";
 	int selectionRanges [][] = {{0, 1}, {0, 0}, {2, 3}, {12, 0}};
@@ -1604,7 +1648,7 @@ public void test_getSelectionText() {
 		assertEquals(":c:" + i, testText.substring(start, start + length), text.getSelectionText());
 	}
 }
-
+@Test
 public void test_getStyleRangeAtOffsetI() {
 	String line = "Line1\r\nLine2";
 	int styleStart = 0;
@@ -1657,7 +1701,7 @@ public void test_getStyleRangeAtOffsetI() {
 	assertEquals(style, text.getStyleRangeAtOffset(6));	
 	assertEquals(null, text.getStyleRangeAtOffset(10));
 }
-
+@Test
 public void test_getStyleRanges() {
 	text.setText("package test;\n/* Line 1\n * Line 2\n */\npublic class SimpleClass {\n}");
 	text.setStyleRange(getStyle(0,7,BLUE,null));
@@ -1673,7 +1717,7 @@ public void test_getStyleRanges() {
 	assertTrue(":1:", styles[1].equals(getStyle(40,6,BLUE,null)));
 	assertTrue(":1:", styles[2].equals(getStyle(47,5,BLUE,null)));
 }
-
+@Test
 public void test_getStyleRangesII() {
 	text.setText("0123456789");
 //	0
@@ -1726,7 +1770,7 @@ public void test_getStyleRangesII() {
 	assertTrue(":4a:", styles[0].equals(getStyle(8,2,RED,null)));
 
 }
-
+@Test
 public void test_getTabs() {
 	text.setTabs(1);
 	assertTrue(":a:", text.getTabs() == 1);
@@ -1737,7 +1781,7 @@ public void test_getTabs() {
 	text.setTabs(7);
 	assertTrue(":d:", text.getTabs() == 7);
 }
-
+@Test
 public void test_getText() {
 	String testText = "Line1\r\nLine2";
 	
@@ -1754,7 +1798,7 @@ public void test_getText() {
 	text.setText("");
 	assertTrue(":c:", text.getText().length() == 0);
 }
-
+@Test
 public void test_getTextII() {
 	boolean exceptionThrown;
 	String testText = "Line1\r\nLine2";
@@ -1798,7 +1842,7 @@ public void test_getTextII() {
 	assertTrue(":d:", text.getText(0,1).equals("te"));
 	assertTrue(":d:", text.getText(1,5).equals("estin"));
 }
-
+@Test
 public void test_getTextRangeII() {
 	boolean exceptionThrown;
 	String testText = "Line1\r\nLine2";
@@ -1843,13 +1887,14 @@ public void test_getTextRangeII() {
 	assertTrue(":d:", text.getTextRange(0,2).equals("te"));
 	assertTrue(":d:", text.getTextRange(1,5).equals("estin"));
 }
-
+@Test
 public void test_getTextLimit() {
 	assertTrue(":a:", text.getTextLimit() < 0);
 	text.setTextLimit(10);
 	assertTrue(":b:", text.getTextLimit() == 10);
 }
 
+@Test
 public void test_getTopIndex() {
 	text.setText("Line0\r\nLine0a\r\n");
 
@@ -1872,6 +1917,7 @@ public void test_getTopIndex() {
 	assertTrue(":i:", text.getTopIndex() == 0);
 }
 
+@Test
 public void test_getTopPixel() {
 	text.setText("Line0\r\nLine0a\r\n");
 
@@ -1893,6 +1939,8 @@ public void test_getTopPixel() {
 	text.setText("");
 	assertTrue(":i:", text.getTopPixel() == 0);
 }
+
+@Test
 public void test_getWordWrap() {
 	assertTrue(":a:", text.getWordWrap() == false);
 	text.setWordWrap(true);
@@ -1904,6 +1952,8 @@ public void test_getWordWrap() {
 	text.setWordWrap(true);
 	assertTrue(":e:", text.getWordWrap());
 }
+
+@Test
 public void test_insertLjava_lang_String(){
 	String delimiterString = "\n";
 	try {
@@ -1927,6 +1977,7 @@ public void test_insertLjava_lang_String(){
 	assertTrue(":f:", text.getLineCount()==2);
 }
 
+@Test
 public void test_invokeActionI() {
 	if (SwtTestUtil.isCocoa) {
 		// TODO Fix Cocoa failure.
@@ -2086,6 +2137,7 @@ public void test_invokeActionI() {
 	text.invokeAction(ST.TOGGLE_OVERWRITE);
 }
 
+@Test
 public void test_paste(){
 	if (SwtTestUtil.isCocoa) {
 		// TODO Fix Cocoa failure.
@@ -2201,6 +2253,7 @@ public void test_paste(){
 	clipboard.dispose();
 }
 
+@Test
 public void test_print() {
 	// if there aren't any printers, don't do this test
 	if (Printer.getDefaultPrinterData() == null) return;
@@ -2213,6 +2266,7 @@ public void test_print() {
 //	text.print();
 }
 
+@Test
 public void test_printLorg_eclipse_swt_printing_Printer() {
 	// if there aren't any printers, don't do this test
 	if (Printer.getDefaultPrinterData() == null) return;
@@ -2233,15 +2287,18 @@ public void test_printLorg_eclipse_swt_printing_Printer() {
 }
 
 @Override
+@Test
 public void test_redraw() {
 	// inherited test is sufficient
 }
 
 @Override
+@Test
 public void test_redrawIIIIZ() {
 	// inherited test is sufficient
 }
 
+@Test
 public void test_redrawRangeIIZ() {
 	boolean exceptionThrown = false;
 
@@ -2324,37 +2381,47 @@ public void test_redrawRangeIIZ() {
 	assertTrue(exceptionThrown);
 }
 
+@Test
 public void test_removeBidiSegmentListenerLorg_eclipse_swt_custom_BidiSegmentListener() {
 	// tested in test_addBidiSegmentListenerLorg_eclipse_swt_custom_BidiSegmentListener
 }
 
+@Test
 public void test_removeExtendedModifyListenerLorg_eclipse_swt_custom_ExtendedModifyListener() {
 	// tested in test_addExtendedModifyListenerLorg_eclipse_swt_custom_ExtendedModifyListener
 }
 
+@Test
 public void test_removeLineBackgroundListenerLorg_eclipse_swt_custom_LineBackgroundListener() {
 	// tested in test_addLineBackgroundListenerLorg_eclipse_swt_custom_LineBackgroundListener
 }
 
+@Test
 public void test_removeLineStyleListenerLorg_eclipse_swt_custom_LineStyleListener() {
 	// tested in test_addLineStyleListenerLorg_eclipse_swt_custom_LineStyleListener
 }
 
+@Test
 public void test_removeModifyListenerLorg_eclipse_swt_events_ModifyListener() {
 	// tested in test_addModifyListenerLorg_eclipse_swt_events_ModifyListener
 }
 
+@Test
 public void test_removeSelectionListenerLorg_eclipse_swt_events_SelectionListener() {
 	// tested in test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener
 }
 
+@Test
 public void test_removeVerifyListenerLorg_eclipse_swt_events_VerifyListener() {
 	// tested in test_addVerifyListenerLorg_eclipse_swt_events_VerifyListener
 }
 
+@Test
 public void test_removeVerifyKeyListenerLorg_eclipse_swt_custom_VerifyKeyListener() {
 	// tested in test_addVerifyKeyListenerLorg_eclipse_swt_custom_VerifyKeyListener
 }
+
+@Test
 public void test_replaceStyleRangesII$Lorg_eclipse_swt_custom_StyleRange() {
 	StyleRange[] styles;
 	String textString = textString();
@@ -2862,6 +2929,7 @@ public void test_replaceStyleRangesII$Lorg_eclipse_swt_custom_StyleRange() {
 
 }
 
+@Test
 public void test_replaceTextRangeIILjava_lang_String(){
 	final String defaultText = "line0\n\rline1\n\rline2\n\r";
 	final int defaultTextLength = defaultText.length();
@@ -3017,6 +3085,7 @@ public void test_replaceTextRangeIILjava_lang_String(){
 	text.removeSelectionListener(selectionListener);
 }
 
+@Test
 public void test_selectAll() {
 	String line = "Line1\rLine2";
 	
@@ -3033,6 +3102,7 @@ public void test_selectAll() {
 }
 
 @Override
+@Test
 public void test_setCaretLorg_eclipse_swt_widgets_Caret() {
 	Caret caret = new Caret(text, SWT.NONE);
 	final int XINSET = isBidiCaret() ? 2 : 0;
@@ -3051,6 +3121,7 @@ public void test_setCaretLorg_eclipse_swt_widgets_Caret() {
 	assertEquals(text.getLineHeight(), text.getCaret().getLocation().y);
 }
 
+@Test
 public void test_setCaretOffsetI(){
 	text.setCaretOffset(-2);
 	assertTrue(":a:", text.getCaretOffset() == 0);
@@ -3083,6 +3154,7 @@ public void test_setCaretOffsetI(){
 	assertTrue(":l:", text.getCaretOffset() == 0);
 }
 
+@Test
 public void test_setContentLorg_eclipse_swt_custom_StyledTextContent() {
 	boolean exceptionThrown;
 	StyledTextContent content = new StyledTextContent() {
@@ -3129,6 +3201,7 @@ public void test_setContentLorg_eclipse_swt_custom_StyledTextContent() {
 	assertTrue(exceptionThrown);
 }
 
+@Test
 public void test_setDoubleClickEnabledZ(){
 	text.setDoubleClickEnabled(true);
 	assertTrue(":a:", text.getDoubleClickEnabled() == true);
@@ -3140,6 +3213,7 @@ public void test_setDoubleClickEnabledZ(){
 	assertTrue(":d:", text.getDoubleClickEnabled() == true);
 }
 
+@Test
 public void test_setEditableZ(){
 	text.setEditable(true);
 	assertTrue(":a:", text.getEditable() == true);
@@ -3152,6 +3226,7 @@ public void test_setEditableZ(){
 }
 
 @Override
+@Test
 public void test_setFontLorg_eclipse_swt_graphics_Font(){
 	FontData fontData = text.getFont().getFontData()[0];
 	int lineHeight;
@@ -3169,6 +3244,7 @@ public void test_setFontLorg_eclipse_swt_graphics_Font(){
 	font.dispose();
 }
 
+@Test
 public void test_setHorizontalIndexI(){
 	text.setHorizontalIndex(-1);
 	assertTrue(":a:", text.getHorizontalIndex() == 0);
@@ -3199,6 +3275,7 @@ public void test_setHorizontalIndexI(){
 	assertTrue(":i:", text.getHorizontalIndex() == 1);
 }
 
+@Test
 public void test_setHorizontalPixelI(){
 	text.setHorizontalPixel(-1);
 	assertTrue(":a:", text.getHorizontalPixel() == 0);
@@ -3229,6 +3306,7 @@ public void test_setHorizontalPixelI(){
 	assertTrue(":i:", text.getHorizontalPixel() == 5);
 }
 
+@Test
 public void test_setLineBackgroundIILorg_eclipse_swt_graphics_Color(){
 	String textString;
 
@@ -3389,6 +3467,7 @@ public void test_setLineBackgroundIILorg_eclipse_swt_graphics_Color(){
 	assertTrue(":7:", text.getLineBackground(1) == getColor(GREEN));
 }
 
+@Test
 public void test_setSelectionI() {
 	int[] invalid = {-1, 100, 12};
 
@@ -3416,6 +3495,7 @@ public void test_setSelectionI() {
 	}	
 }
 
+@Test
 public void test_setSelectionLorg_eclipse_swt_graphics_Point() {
 	Point[] invalidRanges = {new Point(-1, 0), new Point(-1, -1), new Point(100, 1), 
 		new Point(100, -1), new Point(11, 12), new Point(10, 12)};
@@ -3443,6 +3523,7 @@ public void test_setSelectionLorg_eclipse_swt_graphics_Point() {
 	}	
 }
 
+@Test
 public void test_setSelectionII(){
 	int[][] invalidRanges = {{-1, 0}, {-1, -1}, {100, 1}, {100, -1}, {11, 12}, {10, 12}, {2, -3}, {50, -1}};
 
@@ -3477,12 +3558,16 @@ public void test_setSelectionII(){
 		}
 	}	
 }
+
+@Test
 public void test_setSelectionBackgroundLorg_eclipse_swt_graphics_Color(){
 	text.setSelectionBackground(getColor(YELLOW));
 	assertTrue(":1a:", text.getSelectionBackground() ==  getColor(YELLOW));
 	text.setSelectionBackground(null);
 	assertTrue(":1b:", text.getSelectionBackground().equals(text.getDisplay().getSystemColor(SWT.COLOR_LIST_SELECTION)));
 }
+
+@Test
 public void test_setSelectionForegroundLorg_eclipse_swt_graphics_Color(){
 	text.setSelectionForeground(getColor(RED));
 	assertTrue(":1a:", text.getSelectionForeground() ==  getColor(RED));
@@ -3490,10 +3575,12 @@ public void test_setSelectionForegroundLorg_eclipse_swt_graphics_Color(){
 	assertTrue(":1b:", text.getSelectionForeground().equals(text.getDisplay().getSystemColor(SWT.COLOR_LIST_SELECTION_TEXT)));
 }
 
+@Test
 public void test_setSelectionRangeII(){
 	// setSelectionRange already tested in test_getSelectionRange
 }
 
+@Test
 public void test_setStyleRangeLorg_eclipse_swt_custom_StyleRange(){
 	StyleRange[] styles;
 	String textString = textString();
@@ -4342,6 +4429,7 @@ public void test_setStyleRangeLorg_eclipse_swt_custom_StyleRange(){
 
 }
 
+@Test
 public void test_setStyleRanges$Lorg_eclipse_swt_custom_StyleRange() {
 	boolean exceptionThrown = false;
 	StyleRange[] ranges = new StyleRange[] {
@@ -4367,6 +4455,7 @@ public void test_setStyleRanges$Lorg_eclipse_swt_custom_StyleRange() {
 	assertEquals(0, text.getStyleRanges().length);
 }
 
+@Test
 public void test_setTabsI(){
 	text.setTabs(1);
 	assertTrue(":a:", text.getTabs() == 1);
@@ -4378,6 +4467,7 @@ public void test_setTabsI(){
 	assertTrue(":c:", text.getTabs() == 7);
 }
 
+@Test
 public void test_setTextLjava_lang_String(){
 	boolean exceptionThrown = false;
 	
@@ -4399,6 +4489,7 @@ public void test_setTextLjava_lang_String(){
 	assertEquals("", text.getText());
 }
 
+@Test
 public void test_setTextLimitI(){
 	boolean exceptionThrown = false;
 	
@@ -4418,6 +4509,7 @@ public void test_setTextLimitI(){
 	exceptionThrown = false;
 }
 
+@Test
 public void test_setTopIndexI(){
 	text.setTopIndex(-1);
 	assertTrue(":a:", text.getTopIndex() == 0);
@@ -4443,6 +4535,8 @@ public void test_setTopIndexI(){
 	text.setTopIndex(2);
 	assertTrue(":i:", text.getTopIndex() == 0);
 }
+
+@Test
 public void test_setTopPixelI(){
 	int lineHeight = text.getLineHeight();
 	
@@ -4470,6 +4564,8 @@ public void test_setTopPixelI(){
 	text.setTopPixel(2 * lineHeight);
 	assertTrue(":i:", text.getTopPixel() == 0);
 }
+
+@Test
 public void test_setWordWrapZ(){
 	String testString = "Line1\nLine2";
 	
@@ -4487,6 +4583,7 @@ public void test_setWordWrapZ(){
 	assertEquals(":f:", 2, text.getLineCount());	
 }
 
+@Test
 public void test_showSelection() {
 	text.showSelection();
 	text.setSelectionRange(0, 0);
@@ -4497,6 +4594,7 @@ public void test_showSelection() {
 	text.showSelection();
 }
 
+@Test
 public void test_isTextSelected() {
 	// Empty selection
 	text.setText("Sample Text Selection");
@@ -4593,16 +4691,19 @@ protected void rtfCopy() {
 	text.removeLineStyleListener(listener);	
 }
 
+@Test
 public void test_consistency_Modify() {
     consistencyEvent('a', 0, 0, 0, ConsistencyUtility.KEY_PRESS);
 }
 
 @Override
+@Test
 public void test_consistency_MenuDetect () {
     consistencyEvent(10, 10, 3, ConsistencyUtility.ESCAPE_MENU, ConsistencyUtility.MOUSE_CLICK);
 }
 
 @Override
+@Test
 public void test_consistency_DragDetect () {
     consistencyEvent(30, 10, 50, 0, ConsistencyUtility.MOUSE_DRAG);
 }

@@ -10,6 +10,13 @@
  *******************************************************************************/
 package org.eclipse.swt.tests.junit;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ArmEvent;
 import org.eclipse.swt.events.ArmListener;
@@ -20,6 +27,8 @@ import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
+import org.junit.Before;
+import org.junit.Test;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.widgets.MenuItem
@@ -28,18 +37,16 @@ import org.eclipse.swt.widgets.MenuItem;
  */
 public class Test_org_eclipse_swt_widgets_MenuItem extends Test_org_eclipse_swt_widgets_Item {
 
-public Test_org_eclipse_swt_widgets_MenuItem(String name) {
-	super(name);
-}
-
 @Override
-protected void setUp() {
+@Before
+public void setUp() {
 	super.setUp();
 	menu = new Menu(shell);
 	menuItem = new MenuItem(menu, 0);
 	setWidget(menuItem);
 }
 
+@Test
 public void test_ConstructorLorg_eclipse_swt_widgets_MenuI() {
 	MenuItem mItem = new MenuItem(menu, SWT.NULL);
 	assertNotNull(mItem);
@@ -67,6 +74,7 @@ public void test_ConstructorLorg_eclipse_swt_widgets_MenuI() {
 	mItem.dispose();
 }
 
+@Test
 public void test_ConstructorLorg_eclipse_swt_widgets_MenuII() {
 	MenuItem mItem = new MenuItem(menu, SWT.NULL, 0); //create a menu item at index 0
 	assertNotNull(mItem);
@@ -76,6 +84,7 @@ public void test_ConstructorLorg_eclipse_swt_widgets_MenuII() {
 	assertTrue(menu.getItem(1).equals(mItem));
 }
 
+@Test
 public void test_addArmListenerLorg_eclipse_swt_events_ArmListener() {
 	listenerCalled = false;
 	ArmListener listener = new ArmListener() {
@@ -105,6 +114,7 @@ public void test_addArmListenerLorg_eclipse_swt_events_ArmListener() {
 	assertFalse(listenerCalled);
 }
 
+@Test
 public void test_addHelpListenerLorg_eclipse_swt_events_HelpListener() {
 	listenerCalled = false;
 	HelpListener listener = new HelpListener() {
@@ -134,6 +144,7 @@ public void test_addHelpListenerLorg_eclipse_swt_events_HelpListener() {
 	assertFalse(listenerCalled);
 }
 
+@Test
 public void test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener() {
 	listenerCalled = false;
 	SelectionListener listener = new SelectionListener() {
@@ -165,6 +176,7 @@ public void test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener()
 	assertFalse(listenerCalled);
 }
 
+@Test
 public void test_getAccelerator() {
 	menuItem.setAccelerator(SWT.MOD1 + 'X');
 	assertEquals(menuItem.getAccelerator(), SWT.MOD1 + 'X');
@@ -174,10 +186,12 @@ public void test_getAccelerator() {
 	assertEquals(menuItem.getAccelerator(), SWT.MOD3 + 'Z');
 }
 
+@Test
 public void test_getParent() {
 	assertEquals(menuItem.getParent(), menu);
 }
 
+@Test
 public void test_isEnabled() {
 	menuItem.setEnabled(true);
 	assertTrue(menuItem.isEnabled());
@@ -185,11 +199,13 @@ public void test_isEnabled() {
 	assertEquals(menuItem.isEnabled(), false);
 }
 
+@Test
 public void test_setAcceleratorI() {
 	menuItem.setAccelerator(SWT.CTRL + 'Z');
 	assertEquals(menuItem.getAccelerator(), SWT.CTRL + 'Z');
 }
 
+@Test
 public void test_setEnabledZ() {
 	menuItem.setEnabled(true);
 	assertTrue(menuItem.getEnabled());
@@ -198,6 +214,7 @@ public void test_setEnabledZ() {
 }
 
 @Override
+@Test
 public void test_setImageLorg_eclipse_swt_graphics_Image() {
 	assertNull(menuItem.getImage());
 	menuItem.setImage(images[0]);
@@ -207,6 +224,7 @@ public void test_setImageLorg_eclipse_swt_graphics_Image() {
 	assertNull(menuItem.getImage());
 }
 
+@Test
 public void test_setMenuLorg_eclipse_swt_widgets_Menu() {
 	assertNull(menuItem.getMenu());
 	MenuItem mItem = new MenuItem(menu, SWT.CASCADE);
@@ -215,6 +233,7 @@ public void test_setMenuLorg_eclipse_swt_widgets_Menu() {
 	assertEquals(mItem.getMenu(), newMenu);
 }
 
+@Test
 public void test_setSelectionZ() {
 
 	int[] itemStyles = {SWT.CHECK, SWT.RADIO};
@@ -230,6 +249,7 @@ public void test_setSelectionZ() {
 }
 
 @Override
+@Test
 public void test_setTextLjava_lang_String() {
 	menuItem.setText("ABCDEFG");
 	assertTrue(menuItem.getText().equals("ABCDEFG"));

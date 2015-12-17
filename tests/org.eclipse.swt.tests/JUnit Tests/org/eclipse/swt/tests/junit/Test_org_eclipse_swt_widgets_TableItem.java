@@ -10,6 +10,11 @@
  *******************************************************************************/
 package org.eclipse.swt.tests.junit;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
@@ -19,6 +24,8 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
+import org.junit.Before;
+import org.junit.Test;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.widgets.TableItem
@@ -27,16 +34,14 @@ import org.eclipse.swt.widgets.TableItem;
  */
 public class Test_org_eclipse_swt_widgets_TableItem extends Test_org_eclipse_swt_widgets_Item {
 
-public Test_org_eclipse_swt_widgets_TableItem(String name) {
-	super(name);
-}
-
 @Override
-protected void setUp() {
+@Before
+public void setUp() {
 	super.setUp();
 	makeCleanEnvironment();
 }
 
+@Test
 public void test_ConstructorLorg_eclipse_swt_widgets_TableI() {
 	try {
 		new TableItem(null, SWT.NULL);
@@ -53,6 +58,7 @@ public void test_ConstructorLorg_eclipse_swt_widgets_TableI() {
 	assertEquals(12, table.getItemCount());
 }
 
+@Test
 public void test_ConstructorLorg_eclipse_swt_widgets_TableII() {
 	try {
 		new TableItem(table, SWT.NONE, 5);
@@ -62,6 +68,7 @@ public void test_ConstructorLorg_eclipse_swt_widgets_TableII() {
 	}
 }
 
+@Test
 public void test_getBoundsI() {
 	if (SwtTestUtil.isGTK || SwtTestUtil.isCocoa) {
 		//TODO Fix GTK and Cocoa failure.
@@ -319,6 +326,7 @@ public void test_getBoundsI() {
 	assertTrue(":4s:", bounds.x > 0 && bounds.height > 0 && bounds.width  == 0);
 }
 
+@Test
 public void test_getImageBoundsI() {
 /**
  * Test without item image
@@ -391,10 +399,12 @@ public void test_getImageBoundsI() {
  	assertEquals(new Rectangle(0, 0, 0, 0), tableItem2.getImageBounds(1));
 }
 
+@Test
 public void test_getParent() {
 	assertEquals(table, tableItem.getParent());
 }
 
+@Test
 public void test_setBackgroundILorg_eclipse_swt_graphics_Color() {
 	Display display = tableItem.getDisplay();
 	Color red = display.getSystemColor(SWT.COLOR_RED);
@@ -442,6 +452,7 @@ public void test_setBackgroundILorg_eclipse_swt_graphics_Color() {
 	}
 }
 
+@Test
 public void test_setBackgroundLorg_eclipse_swt_graphics_Color() {
 	Color color = new Color(tableItem.getDisplay(), 255, 0, 0);
 	tableItem.setBackground(color);
@@ -456,6 +467,7 @@ public void test_setBackgroundLorg_eclipse_swt_graphics_Color() {
 	}
 }
 
+@Test
 public void test_setCheckedZ() {
 	assertEquals(false, tableItem.getChecked());
 	
@@ -471,6 +483,7 @@ public void test_setCheckedZ() {
 	t.dispose();
 }
 
+@Test
 public void test_setFontLorg_eclipse_swt_graphics_Font() {
 	Display display = tableItem.getDisplay();
 	Font font = tableItem.getFont();
@@ -493,6 +506,7 @@ public void test_setFontLorg_eclipse_swt_graphics_Font() {
 	}
 }
 
+@Test
 public void test_setFontILorg_eclipse_swt_graphics_Font() {
 	Display display = tableItem.getDisplay();
 	Font font = new Font(display, SwtTestUtil.testFontName, 10, SWT.NORMAL);
@@ -543,6 +557,7 @@ public void test_setFontILorg_eclipse_swt_graphics_Font() {
 	}
 }
 
+@Test
 public void test_setForegroundILorg_eclipse_swt_graphics_Color() {
 	Display display = tableItem.getDisplay();
 	Color red = display.getSystemColor(SWT.COLOR_RED);
@@ -590,6 +605,7 @@ public void test_setForegroundILorg_eclipse_swt_graphics_Color() {
 	}
 }
 
+@Test
 public void test_setForegroundLorg_eclipse_swt_graphics_Color() {
 	Color color = new Color(tableItem.getDisplay(), 255, 0, 0);
 	tableItem.setForeground(color);
@@ -604,6 +620,7 @@ public void test_setForegroundLorg_eclipse_swt_graphics_Color() {
 	}
 }
 
+@Test
 public void test_setGrayedZ() {
 	Table newTable = new Table(shell, SWT.CHECK);
 	TableItem tItem = new TableItem(newTable,0);
@@ -615,6 +632,7 @@ public void test_setGrayedZ() {
 	newTable.dispose();
 }
 
+@Test
 public void test_setImage$Lorg_eclipse_swt_graphics_Image() {
 	assertNull(tableItem.getImage(1));	
  	tableItem.setImage(-1, null);		
@@ -652,6 +670,7 @@ public void test_setImage$Lorg_eclipse_swt_graphics_Image() {
 	}
 }
 
+@Test
 public void test_setImageILorg_eclipse_swt_graphics_Image() {
 		// no columns
 	assertEquals(null, tableItem.getImage(0));
@@ -693,6 +712,7 @@ public void test_setImageILorg_eclipse_swt_graphics_Image() {
 }
 
 @SuppressWarnings("deprecation")
+@Test
 public void test_setImageIndentI() {
 	if (SwtTestUtil.isCocoa || SwtTestUtil.isGTK) {
 		//setImageIndent not implemented on Carbon
@@ -706,6 +726,7 @@ public void test_setImageIndentI() {
 	assertEquals(1, tableItem.getImageIndent());
 }
 
+@Test
 public void test_setText$Ljava_lang_String() {
 	final String TestString = "test";
 	final String TestStrings[] = new String[] {TestString, TestString + "1", TestString + "2"};
@@ -750,6 +771,7 @@ public void test_setText$Ljava_lang_String() {
 
 }
 
+@Test
 public void test_setTextILjava_lang_String(){
 	final String TestString = "test";
 	final String TestStrings[] = new String[] {TestString, TestString + "1", TestString + "2"};

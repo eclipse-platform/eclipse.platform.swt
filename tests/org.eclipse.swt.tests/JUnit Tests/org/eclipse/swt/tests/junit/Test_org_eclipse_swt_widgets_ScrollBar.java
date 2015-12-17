@@ -10,11 +10,16 @@
  *******************************************************************************/
 package org.eclipse.swt.tests.junit;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.ScrollBar;
+import org.junit.Before;
+import org.junit.Test;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.widgets.ScrollBar
@@ -23,12 +28,9 @@ import org.eclipse.swt.widgets.ScrollBar;
  */
 public class Test_org_eclipse_swt_widgets_ScrollBar extends Test_org_eclipse_swt_widgets_Widget {
 
-public Test_org_eclipse_swt_widgets_ScrollBar(String name) {
-	super(name);
-}
-
 @Override
-protected void setUp() {
+@Before
+public void setUp() {
 	super.setUp();
 	canvas = new Canvas(shell, SWT.H_SCROLL);
 	scrollBar = canvas.getHorizontalBar();
@@ -41,6 +43,7 @@ protected void setUp() {
 protected String valueString(int[] intArray) {
 	return " ("+intArray[1]+","+intArray[2]+","+intArray[3]+","+intArray[4]+")";
 }
+@Test
 public void test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener() {
 	listenerCalled = false;
 	boolean exceptionThrown = false;
@@ -72,15 +75,18 @@ public void test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener()
 	assertTrue("Expected exception not thrown", exceptionThrown);
 }
 
+@Test
 public void test_getParent() {
 	assertEquals(canvas, scrollBar.getParent());
 }
 
+@Test
 public void test_getSize() {
 	assertTrue(scrollBar.getSize().x > 0);
 	assertTrue(scrollBar.getSize().y > 0);
 }
 
+@Test
 public void test_isEnabled() {
 	scrollBar.setEnabled(true);
 	assertTrue(scrollBar.isEnabled());
@@ -89,6 +95,7 @@ public void test_isEnabled() {
 	assertTrue(!scrollBar.isEnabled());
 }
 
+@Test
 public void test_isVisible() {
 	scrollBar.setVisible(true);
 	assertTrue(scrollBar.isVisible()); 
@@ -96,6 +103,7 @@ public void test_isVisible() {
 	assertTrue(!scrollBar.isVisible());
 }
 
+@Test
 public void test_setEnabledZ() {
 	scrollBar.setEnabled(true);
 	assertTrue(scrollBar.getEnabled());
@@ -104,6 +112,7 @@ public void test_setEnabledZ() {
 	assertTrue(!scrollBar.getEnabled());
 }
 
+@Test
 public void test_setIncrementI() {
 	int[] cases = {1, 10, 10000};
 	for (int i=0; i < cases.length; i++)
@@ -117,6 +126,7 @@ public void test_setIncrementI() {
 	assertEquals(25, scrollBar.getIncrement());
 }
 
+@Test
 public void test_setMaximumI(){
 	int [][] testValues = getSetMaximumValues();
 
@@ -129,6 +139,7 @@ public void test_setMaximumI(){
 	}
 }
 
+@Test
 public void test_setMinimumI(){
 	int [][] testValues = getSetMinimumValues();
 
@@ -141,6 +152,7 @@ public void test_setMinimumI(){
 	}
 }
 
+@Test
 public void test_setPageIncrementI(){
 	int[] cases = {1, 10, 10000};
 	for (int i=0; i<cases.length; i++)
@@ -154,6 +166,7 @@ public void test_setPageIncrementI(){
 	assertEquals(25, scrollBar.getPageIncrement());
 }
 
+@Test
 public void test_setSelectionI(){
 	int [][] testValues = getSetSelectionValues();
 	for (int i = 0; i < testValues.length; i++) {
@@ -165,6 +178,7 @@ public void test_setSelectionI(){
 	}
 }
 
+@Test
 public void test_setThumbI(){
 	int [][] testValues = getSetThumbValues();
 	for (int i = 0; i < testValues.length; i++) {
@@ -176,6 +190,7 @@ public void test_setThumbI(){
 	}
 }
 
+@Test
 public void test_setValuesIIIIII() {
 	scrollBar.setValues(10, 10, 50, 2, 5, 10);
 	assertTrue(":a:", scrollBar.getSelection() == 10);
@@ -186,6 +201,7 @@ public void test_setValuesIIIIII() {
 	assertTrue(":f:", scrollBar.getPageIncrement() == 10);
 }
 
+@Test
 public void test_setVisibleZ() {
 	scrollBar.setVisible(true);
 	assertTrue(scrollBar.getVisible());

@@ -12,6 +12,8 @@ package org.eclipse.swt.tests.junit;
 
 import org.eclipse.swt.custom.TableTree;
 import org.eclipse.swt.custom.TableTreeItem;
+import org.junit.Before;
+import org.junit.Test;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.custom.TableTreeItem
@@ -24,12 +26,9 @@ public class Test_org_eclipse_swt_custom_TableTreeItem extends Test_org_eclipse_
 	TableTree tableTree;
 	TableTreeItem tableTreeItem;
 	
-public Test_org_eclipse_swt_custom_TableTreeItem(String name) {
-	super(name);
-}
-
 @Override
-protected void setUp() {
+@Before
+public void setUp() {
 	super.setUp();
 	tableTree = new TableTree(shell, 0);
 	tableTreeItem = new TableTreeItem(tableTree, 0);
@@ -37,10 +36,12 @@ protected void setUp() {
 }
 
 @Override
+@Test
 public void test_setImageLorg_eclipse_swt_graphics_Image() {
 }
 
 @Override
+@Test
 public void test_setTextLjava_lang_String() {
 }
 }

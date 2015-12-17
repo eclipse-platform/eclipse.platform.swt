@@ -10,12 +10,18 @@
  *******************************************************************************/
 package org.eclipse.swt.tests.junit;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeColumn;
+import org.junit.Before;
+import org.junit.Test;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.widgets.TreeColumn
@@ -24,18 +30,16 @@ import org.eclipse.swt.widgets.TreeColumn;
  */
 public class Test_org_eclipse_swt_widgets_TreeColumn extends Test_org_eclipse_swt_widgets_Item {
 
-public Test_org_eclipse_swt_widgets_TreeColumn(String name) {
-	super(name);
-}
-
 @Override
-protected void setUp() {
+@Before
+public void setUp() {
 	super.setUp();
 	tree = new Tree(shell, SWT.SINGLE);		
 	treeColumn = new TreeColumn(tree, SWT.NULL);	
 	setWidget(treeColumn);
 }
 
+@Test
 public void test_ConstructorLorg_eclipse_swt_widgets_TreeI() {
 	try {
 		new TreeColumn(null, SWT.NULL);
@@ -45,6 +49,7 @@ public void test_ConstructorLorg_eclipse_swt_widgets_TreeI() {
 	}
 }
 
+@Test
 public void test_ConstructorLorg_eclipse_swt_widgets_TreeII() {
 	try {
 		new TreeColumn(null, SWT.NULL, 0);
@@ -68,6 +73,7 @@ public void test_ConstructorLorg_eclipse_swt_widgets_TreeII() {
 	}
 }
 
+@Test
 public void test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener() {
 	try {
 		treeColumn.addSelectionListener(null);		
@@ -77,6 +83,7 @@ public void test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener()
 	}
 }
 
+@Test
 public void test_getWidth() {
 	int testWidth = 42;
 	
@@ -101,6 +108,7 @@ public void test_getWidth() {
 	assertTrue(":c: width=" + treeColumn.getWidth() + " should be=" + testWidth, treeColumn.getWidth() == testWidth);
 }
 
+@Test
 public void test_removeSelectionListenerLorg_eclipse_swt_events_SelectionListener() {
 	SelectionListener listener = new SelectionAdapter() {
 		@Override
@@ -117,6 +125,7 @@ public void test_removeSelectionListenerLorg_eclipse_swt_events_SelectionListene
 	}
 }
 
+@Test
 public void test_setAlignmentI() {
 	TreeColumn column2;
 	
@@ -142,9 +151,11 @@ public void test_setAlignmentI() {
 }
 
 @Override
+@Test
 public void test_setImageLorg_eclipse_swt_graphics_Image() {
 }
 
+@Test
 public void test_setResizableZ() {
 	assertTrue(":a:", treeColumn.getResizable() == true);
 
@@ -159,6 +170,7 @@ public void test_setResizableZ() {
 }
 
 @Override
+@Test
 public void test_setTextLjava_lang_String() {
 	assertEquals(":a:", treeColumn.getText(), "");
 

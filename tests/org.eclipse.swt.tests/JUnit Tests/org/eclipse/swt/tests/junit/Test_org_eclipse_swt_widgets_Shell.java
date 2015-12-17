@@ -11,6 +11,9 @@
 package org.eclipse.swt.tests.junit;
 
 import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,6 +30,8 @@ import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
+import org.junit.Before;
+import org.junit.Test;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.widgets.Shell
@@ -35,24 +40,23 @@ import org.eclipse.swt.widgets.Shell;
  */
 public class Test_org_eclipse_swt_widgets_Shell extends Test_org_eclipse_swt_widgets_Decorations {
 
-public Test_org_eclipse_swt_widgets_Shell(String name) {
-	super(name);
-}
-
 @Override
-protected void setUp() {
+@Before
+public void setUp() {
 	super.setUp();
 	testShell = new Shell(shell, SWT.NULL);
 	setWidget(shell);
 	assertTrue(testShell.getParent() == shell);
 }
 
+@Test
 public void test_Constructor() {
 	Shell newShell = new Shell();
 	assertNotNull("a: ", newShell.getDisplay());
 	newShell.dispose();
 }
 
+@Test
 public void test_ConstructorI() {
 	/* this should test various combinations of STYLE bits, for now just test individual bits */
 	int[] cases = {SWT.NO_TRIM, SWT.RESIZE, SWT.TITLE, SWT.CLOSE, SWT.MENU, SWT.MIN, SWT.BORDER, 
@@ -65,6 +69,7 @@ public void test_ConstructorI() {
 	}
 }
 
+@Test
 public void test_ConstructorLorg_eclipse_swt_widgets_Display() {
 	Display display = shell.getDisplay();
 	Shell newShell = new Shell(display);
@@ -72,6 +77,7 @@ public void test_ConstructorLorg_eclipse_swt_widgets_Display() {
 	newShell.dispose();
 }
 
+@Test
 public void test_ConstructorLorg_eclipse_swt_widgets_DisplayI() {
 	int[] cases = {SWT.NO_TRIM, SWT.RESIZE, SWT.TITLE, SWT.CLOSE, SWT.MENU, SWT.MIN, SWT.BORDER, 
 				   SWT.CLIP_CHILDREN, SWT.CLIP_SIBLINGS, SWT.ON_TOP, SWT.FLAT, SWT.SMOOTH};
@@ -84,12 +90,14 @@ public void test_ConstructorLorg_eclipse_swt_widgets_DisplayI() {
 	}
 }
 
+@Test
 public void test_ConstructorLorg_eclipse_swt_widgets_Shell() {
 	Shell newShell = new Shell(shell);
 	assertTrue("a: ", newShell.getParent() == shell);
 	newShell.dispose();
 }
 
+@Test
 public void test_ConstructorLorg_eclipse_swt_widgets_ShellI() {
 	/* this should test various combinations of STYLE bits, for now just test individual bits */
 	int[] cases = {SWT.NO_TRIM, SWT.RESIZE, SWT.TITLE, SWT.CLOSE, SWT.MENU, SWT.MIN, SWT.BORDER, 
@@ -102,6 +110,7 @@ public void test_ConstructorLorg_eclipse_swt_widgets_ShellI() {
 	}
 }
 
+@Test
 public void test_addShellListenerLorg_eclipse_swt_events_ShellListener() {
 	listenerCalled = false;
 	boolean exceptionThrown = false;
@@ -145,6 +154,7 @@ public void test_addShellListenerLorg_eclipse_swt_events_ShellListener() {
 	assertTrue("Expected exception not thrown", exceptionThrown);
 }
 
+@Test
 public void test_close() {
 
 	// bogus line that 'enabled' gpfs
@@ -156,17 +166,20 @@ public void test_close() {
 	shell.open();
 }
 
+@Test
 public void test_dispose() {
 	Shell newShell = new Shell();
 	newShell.dispose();
 }
 
+@Test
 public void test_forceActive() {
 	shell.forceActive();
 	/* can't assume listener is synchronously called when forceActive returned */
 	/* assertTrue(":a:", shell.getDisplay().getActiveShell() == shell); */
 }
 
+@Test
 public void test_getEnabled() {
 	assertTrue(":a0:", shell.getEnabled());
 	shell.setEnabled(false);
@@ -175,12 +188,14 @@ public void test_getEnabled() {
 	assertTrue(":b:", shell.getEnabled());
 }
 
+@Test
 public void test_getImeInputMode() {
 	int mode = shell.getImeInputMode();
 	assertTrue(":a:", mode >= 0);
 }
 
 @Override
+@Test
 public void test_getLocation() {
 	shell.setLocation(10,15);
 	assertTrue(":a:", shell.getLocation().x == 10);
@@ -188,6 +203,7 @@ public void test_getLocation() {
 }
 
 @Override
+@Test
 public void test_getShell() {
 	assertTrue(":a:", shell.getShell()==shell);
 	Shell shell_1 = new Shell(shell);
@@ -195,6 +211,7 @@ public void test_getShell() {
 	shell_1.dispose();
 }
 
+@Test
 public void test_getShells() {
 	int num = shell.getShells().length;
 	assertTrue(":a:", num == 1);
@@ -205,6 +222,7 @@ public void test_getShells() {
 }
 
 @Override
+@Test
 public void test_isEnabled() {
 	assertTrue(":a:", shell.isEnabled());
 	shell.setEnabled(false);
@@ -220,11 +238,12 @@ public void test_isEnabled() {
 	assertTrue(":c:", testShell.isEnabled());
 }
 
+@Test
 public void test_open() {
 	shell.open();
 }
 
-
+@Test
 public void test_setActive() {
 	if (SwtTestUtil.isGTK) {
 		//TODO Fix GTK failure.
@@ -264,16 +283,19 @@ public void test_setActive() {
 }
 
 @Override
+@Test
 public void test_setEnabledZ() {
 	// tested in getEnabled method
 }
 
+@Test
 public void test_setImeInputModeI() {
 	shell.setImeInputMode(SWT.NONE);
 	assertTrue(":a:", shell.getImeInputMode() == SWT.NONE);
 }
 
 @Override
+@Test
 public void test_setVisibleZ() {
 	shell.setVisible(false);
 	assertTrue(":a:", !shell.isVisible());
@@ -284,12 +306,14 @@ public void test_setVisibleZ() {
 
 /* custom */
 @Override
+@Test
 public void test_getParent () {
 	// overriding Control.test_getParent
 	assertTrue(shell.getParent()==null);
 	assertTrue(testShell.getParent() == shell);
 }
 
+@Test
 public void test_getStyle() {
 	// overriding Widget.test_getStyle
 	assertTrue("testShell not modeless", (testShell.getStyle () & SWT.MODELESS) == SWT.MODELESS);
@@ -302,6 +326,7 @@ public void test_getStyle() {
 }
 
 @Override
+@Test
 public void test_isVisible() {
 	// overriding Control.test_isVisible
 	testShell.setVisible(true);
@@ -319,11 +344,13 @@ public void test_isVisible() {
 }
 
 @Override
+@Test
 public void test_setBoundsIIII() {
 	// overridden from Control because Shells have a minimum size
 }
 
 @Override
+@Test
 public void test_setBoundsLorg_eclipse_swt_graphics_Rectangle() {
 	// overridden from Control because Shells have a minimum size
 //	/* windows */
@@ -372,6 +399,7 @@ public void a_test_setRegion() {
 	assertTrue(":g:", shell2.getRegion() == null);
 }
 @Override
+@Test
 public void test_setSizeII() {
 	/* windows */
 	/* note that there is a minimum size for a shell, this test will fail if p1.x < 112 or p1.y < 27 */
@@ -396,6 +424,7 @@ public void test_setSizeII() {
 }
 
 @Override
+@Test
 public void test_setSizeLorg_eclipse_swt_graphics_Point() {
 	/* windows */
 	/* note that there is a minimum size for a shell, this test will fail if p1.x < 112 or p1.y < 27 */
@@ -431,6 +460,7 @@ private void createShell() {
    
 }
 
+@Test
 public void test_consistency_Open() {
 	if (SwtTestUtil.fTestConsistency) {
 	    createShell();
@@ -461,11 +491,13 @@ public void test_consistency_Open() {
 	}
 }
 
+@Test
 public void test_consistency_Iconify() {
     createShell();
     consistencyEvent(1, 0, 0, 0, ConsistencyUtility.SHELL_ICONIFY, null, false);
 }
 
+@Test
 public void test_consistency_Close() {
     createShell();
     consistencyPrePackShell();
@@ -473,6 +505,7 @@ public void test_consistency_Close() {
     createShell();
 }
 
+@Test
 public void test_consistency_Dispose() {
     createShell();
 

@@ -10,12 +10,20 @@
  *******************************************************************************/
 package org.eclipse.swt.tests.junit;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
 import java.io.IOException;
 import java.io.InputStream;
 
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Item;
 import org.eclipse.swt.widgets.Widget;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.widgets.Item
@@ -24,22 +32,21 @@ import org.eclipse.swt.widgets.Widget;
  */
 public class Test_org_eclipse_swt_widgets_Item extends Test_org_eclipse_swt_widgets_Widget {
 
-public Test_org_eclipse_swt_widgets_Item(String name) {
-	super(name);
-}
-
 @Override
-protected void setUp() {
+@Before
+public void setUp() {
 	super.setUp();
 	loadImages();
 }
 
 @Override
-protected void tearDown() {
+@After
+public void tearDown() {
 	super.tearDown();
 	freeImages();
 }
 
+@Test
 public void test_setImageLorg_eclipse_swt_graphics_Image() {
 	assertNull(item.getImage());
 	item.setImage(images[0]);
@@ -49,6 +56,7 @@ public void test_setImageLorg_eclipse_swt_graphics_Image() {
 	assertNull(item.getImage());
 }
 
+@Test
 public void test_setTextLjava_lang_String() {
 	String testStr = "test string";
 	item.setText(testStr);

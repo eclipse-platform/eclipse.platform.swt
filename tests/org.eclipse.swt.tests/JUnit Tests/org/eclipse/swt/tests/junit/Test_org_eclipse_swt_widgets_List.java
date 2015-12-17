@@ -11,6 +11,9 @@
 package org.eclipse.swt.tests.junit;
 
 import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.SWTError;
@@ -20,6 +23,8 @@ import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.widgets.List;
+import org.junit.Before;
+import org.junit.Test;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.widgets.List
@@ -28,12 +33,9 @@ import org.eclipse.swt.widgets.List;
  */
 public class Test_org_eclipse_swt_widgets_List extends Test_org_eclipse_swt_widgets_Scrollable {
 
-public Test_org_eclipse_swt_widgets_List(String name) {
-	super(name);
-}
-
 @Override
-protected void setUp() {
+@Before
+public void setUp() {
 	super.setUp();
 	list = new List(shell, SWT.MULTI);
 
@@ -41,6 +43,7 @@ protected void setUp() {
 }
 
 @Override
+@Test
 public void test_ConstructorLorg_eclipse_swt_widgets_CompositeI() {
 	try {
 		list = new List(null, 0);
@@ -60,6 +63,7 @@ public void test_ConstructorLorg_eclipse_swt_widgets_CompositeI() {
 		list = new List(shell, cases[i]);
 }
 
+@Test
 public void test_addLjava_lang_String() {
 	try {
 		list.add(null);
@@ -91,6 +95,7 @@ public void test_addLjava_lang_String() {
 	assertArrayEquals(":c:", new String[] {"", "some \n text", "some text"}, list.getItems());
 }
 
+@Test
 public void test_addLjava_lang_StringI() {
 	try {
 		list.add("some text", 2);
@@ -150,6 +155,7 @@ public void test_addLjava_lang_StringI() {
 	}
 }
 
+@Test
 public void test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener() {
 	listenerCalled = false;
 	boolean exceptionThrown = false;
@@ -211,10 +217,12 @@ public void test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener()
 }
 
 @Override
+@Test
 public void test_computeSizeIIZ() {
 	// super class test is sufficient
 }
 
+@Test
 public void test_deselect$I() {
 	String[] items = { "item0", "item1", "item2", "item3" };
 	list.setItems(items);
@@ -264,6 +272,7 @@ public void test_deselect$I() {
 
 }
 
+@Test
 public void test_deselectAll() {
 	String[] items = { "item0", "item1", "item2", "item3" };
 	String[] empty = {
@@ -285,6 +294,7 @@ public void test_deselectAll() {
 
 }
 
+@Test
 public void test_deselectI() {
 	int number = 5;
 	String[] items = new String[number];
@@ -318,6 +328,7 @@ public void test_deselectI() {
 	assertEquals(false, list.isSelected(1));
 }
 
+@Test
 public void test_deselectII() {
 	int number = 5;
 	String[] items = new String[number];
@@ -410,6 +421,7 @@ public void test_deselectII() {
 	assertArrayEquals(list.getSelectionIndices(), new int[] {});
 }
 
+@Test
 public void test_getFocusIndex() {
 	String[] items = { "item0", "item1", "item2"};
 	list.setItems(items);
@@ -419,6 +431,7 @@ public void test_getFocusIndex() {
 	assertEquals(2, list.getFocusIndex());
 }
 
+@Test
 public void test_getItemCount() {
 	String[] items = { "item0", "item1", "item2", "item3" };
 
@@ -442,6 +455,7 @@ public void test_getItemCount() {
 
 }
 
+@Test
 public void test_getItemHeight() {
 	if (SwtTestUtil.isGTK) {
 		//TODO Fix GTK failure.
@@ -467,6 +481,7 @@ public void test_getItemHeight() {
 	font.dispose();
 }
 
+@Test
 public void test_getItemI() {
 	String[] items = { "item0", "item1", "item2", "item3" };
 	list.setItems(items);
@@ -504,6 +519,7 @@ public void test_getItemI() {
 
 }
 
+@Test
 public void test_getItems() {
 	String[][] cases = { {
 		}, {
@@ -517,6 +533,7 @@ public void test_getItems() {
 	}
 }
 
+@Test
 public void test_getSelection() {
 	String[][] cases = { {
 		}, {
@@ -595,6 +612,7 @@ public void test_getSelection() {
  *    <li>ERROR_CANNOT_GET_COUNT - if the operation fails because of an operating system failure</li>
  * </ul>
  */
+@Test
 public void test_getSelectionCount() {
 	String[] items = { "text1", "text2", "text3" };
 
@@ -620,6 +638,7 @@ public void test_getSelectionCount() {
 	assertEquals(1, list.getSelectionCount());
 }
 
+@Test
 public void test_getSelectionIndex() {
 	String[] items = { "text1", "text2", "text3" };
 
@@ -648,6 +667,7 @@ public void test_getSelectionIndex() {
 	assertEquals(-1, list.getSelectionIndex());
 }
 
+@Test
 public void test_getSelectionIndices() {
 	String[] items = { "text1", "text2", "text3" };
 
@@ -708,6 +728,7 @@ public void test_getSelectionIndices() {
 	assertArrayEquals(new int[] {}, list.getSelectionIndices());
 }
 
+@Test
 public void test_getTopIndex() {
 	String[] items = { "text1", "text2", "text3" };
 
@@ -722,6 +743,7 @@ public void test_getTopIndex() {
 
 }
 
+@Test
 public void test_indexOfLjava_lang_String() {
 	String[] items = { "text1", "text2", "text3" };
 
@@ -763,6 +785,7 @@ public void test_indexOfLjava_lang_String() {
 	assertEquals(1, list.indexOf("text2"));
 }
 
+@Test
 public void test_indexOfLjava_lang_StringI() {
 	String[] items = { "text1", "text2", "text3" };
 
@@ -798,6 +821,7 @@ public void test_indexOfLjava_lang_StringI() {
 	}
 }
 
+@Test
 public void test_isSelectedI() {
 	String[] items = { "text1", "text2", "text2" }; //two identical
 
@@ -822,6 +846,7 @@ public void test_isSelectedI() {
 
 }
 
+@Test
 public void test_remove$I() {
 	try {
 		list.remove((int[]) null);
@@ -949,6 +974,7 @@ public void test_remove$I() {
 
 }
 
+@Test
 public void test_removeAll() {
 	String[] items = { "text1", "text2", "text3", "test2" };
 
@@ -976,6 +1002,7 @@ public void test_removeAll() {
 
 }
 
+@Test
 public void test_removeI() {
 	String[] items = { "text1", "text2", "text3" };
 
@@ -1069,6 +1096,7 @@ public void test_removeI() {
 	
 }
 
+@Test
 public void test_removeII() {
 	String[] items = { "text1", "text2", "text3" };
 
@@ -1177,6 +1205,7 @@ public void test_removeII() {
 	assertEquals(3, list.getItemCount());
 }
 
+@Test
 public void test_removeLjava_lang_String() {
 	String[] items = { "text1", "text2", "text3", "test2" };
 
@@ -1236,6 +1265,7 @@ public void test_removeLjava_lang_String() {
 
 }
 
+@Test
 public void test_select$I() {
 	try {
 		list.select((int[]) null);
@@ -1336,6 +1366,7 @@ public void test_select$I() {
 	assertArrayEquals(list.getSelectionIndices(), new int[]{});
 }
 
+@Test
 public void test_selectAll() {
 	String[] items = { "text1", "text2", "text3", "test2" };
 
@@ -1354,6 +1385,7 @@ public void test_selectAll() {
 
 }
 
+@Test
 public void test_selectI() {
 	String[] items = { "item0", "item1", "item2", "item3" };
 	list.setItems(items);
@@ -1422,6 +1454,7 @@ public void test_selectI() {
 	assertArrayEquals("select(4):", list.getSelectionIndices(), new int[] {});
 }
 
+@Test
 public void test_selectII() {
 	list.select(0, 0);
 	assertArrayEquals("empty list", list.getSelectionIndices(), new int[] {});
@@ -1544,6 +1577,7 @@ public void test_selectII() {
 }
 
 @Override
+@Test
 public void test_setFontLorg_eclipse_swt_graphics_Font() {
 	if (SwtTestUtil.isGTK) {
 		//TODO Fix GTK failure.
@@ -1569,6 +1603,7 @@ public void test_setFontLorg_eclipse_swt_graphics_Font() {
 	font.dispose();
 }
 
+@Test
 public void test_setItemILjava_lang_String() {
 	String[] items = { "item0", "item1", "item2", "item3" };
 	
@@ -1647,6 +1682,7 @@ public void test_setItemILjava_lang_String() {
 	
 }
 
+@Test
 public void test_setItems$Ljava_lang_String() {
 	try {
 		list.setItems(null);
@@ -1700,6 +1736,7 @@ public void test_setItems$Ljava_lang_String() {
 	}
 }
 
+@Test
 public void test_setSelection$I() {
 	int number = 8;
 	for (int i = 0; i < number; i++)
@@ -1880,6 +1917,7 @@ public void test_setSelection$I() {
 	assertEquals("EMPTY SINGLE: setSelection(new int [] {0, -1}) getFocusIndex()", list.getFocusIndex(), -1);
 }
 
+@Test
 public void test_setSelection$Ljava_lang_String() {
 	int number = 8;
 	for (int i = 0; i < number; i++)
@@ -2019,6 +2057,7 @@ public void test_setSelection$Ljava_lang_String() {
 	assertEquals(list.getFocusIndex(), -1);
 }
 
+@Test
 public void test_setSelectionI() {
 	int number = 8;
 	for (int i = 0; i < number; i++) {
@@ -2101,6 +2140,7 @@ public void test_setSelectionI() {
 	assertEquals(list.getFocusIndex(), -1);
 }
 
+@Test
 public void test_setSelectionII() {
 	int number = 8;
 	String[] items = new String[number];
@@ -2224,6 +2264,7 @@ public void test_setSelectionII() {
 	assertArrayEquals(list.getSelectionIndices(), new int[] {});
 }
 
+@Test
 public void test_setTopIndexI() {
 	if (SwtTestUtil.isGTK) {
 		//TODO Fix GTK failure.
@@ -2254,6 +2295,7 @@ public void test_setTopIndexI() {
 
 }
 
+@Test
 public void test_showSelection() {
 	String[] items = { "item0", "item1", "item2", "item3" };
 	list.setItems(items);
@@ -2376,31 +2418,36 @@ private void add() {
     list.add("SWT");
 }
 
+@Test
 public void test_consistency_MouseSelection () {
     add();
     consistencyEvent(27, 10, 1, 0, ConsistencyUtility.MOUSE_CLICK);
 }
 
+@Test
 public void test_consistency_KeySelection () {
     add();
     consistencyEvent(0, SWT.ARROW_DOWN, 0, 0, ConsistencyUtility.KEY_PRESS);
 }
 
+@Test
 public void test_consistency_SpaceSelection () {
     add();
     consistencyEvent(' ', 32, 0, 0, ConsistencyUtility.KEY_PRESS);
 }
 
+@Test
 public void test_consistency_DoubleClick () {
     add();
     consistencyEvent(27, 10, 1, 0, ConsistencyUtility.MOUSE_DOUBLECLICK);
 }
 
+@Test
 public void test_consistency_MenuDetect () {
     add();
     consistencyEvent(27, 5, 3, 0, ConsistencyUtility.MOUSE_CLICK);
 }
-
+@Test
 public void test_consistency_DragDetect () {
     add();
     consistencyEvent(20, 5, 30, 10, ConsistencyUtility.MOUSE_DRAG);

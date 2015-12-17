@@ -10,6 +10,11 @@
  *******************************************************************************/
 package org.eclipse.swt.tests.junit;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.browser.Browser;
 import org.eclipse.swt.browser.CloseWindowListener;
@@ -26,6 +31,8 @@ import org.eclipse.swt.browser.VisibilityWindowListener;
 import org.eclipse.swt.browser.WindowEvent;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Display;
+import org.junit.Before;
+import org.junit.Test;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.browser.Browser
@@ -34,18 +41,16 @@ import org.eclipse.swt.widgets.Display;
  */
 public class Test_org_eclipse_swt_browser_Browser extends Test_org_eclipse_swt_widgets_Composite {
 
-public Test_org_eclipse_swt_browser_Browser(String name) {
-	super(name);
-}
-
 @Override
-protected void setUp() {
+@Before
+public void setUp() {
 	super.setUp();
 	shell.setLayout(new FillLayout());
 	browser = new Browser(shell, SWT.NONE);
 }
 
 @Override
+@Test
 public void test_ConstructorLorg_eclipse_swt_widgets_CompositeI() {
 	shell.setText("test_ConstructorLorg_eclipse_swt_widgets_CompositeI");
 	Browser browser = new Browser(shell, SWT.NONE);
@@ -59,6 +64,7 @@ public void test_ConstructorLorg_eclipse_swt_widgets_CompositeI() {
 	}
 }
 
+@Test
 public void test_addCloseWindowListenerLorg_eclipse_swt_browser_CloseWindowListener() {
 	shell.setText("test_addCloseWindowListenerLorg_eclipse_swt_browser_CloseWindowListener");
 	try {
@@ -76,6 +82,7 @@ public void test_addCloseWindowListenerLorg_eclipse_swt_browser_CloseWindowListe
 	for (int i = 0; i < 100; i++) browser.removeCloseWindowListener(listener);
 }
 
+@Test
 public void test_addLocationListenerLorg_eclipse_swt_browser_LocationListener() {
 	shell.setText("test_addLocationListenerLorg_eclipse_swt_browser_LocationListener");
 	try {
@@ -95,6 +102,7 @@ public void test_addLocationListenerLorg_eclipse_swt_browser_LocationListener() 
 	for (int i = 0; i < 100; i++) browser.removeLocationListener(listener);
 }
 
+@Test
 public void test_addOpenWindowListenerLorg_eclipse_swt_browser_OpenWindowListener() {
 	shell.setText("test_addOpenWindowListenerLorg_eclipse_swt_browser_OpenWindowListener");
 	try {
@@ -112,6 +120,7 @@ public void test_addOpenWindowListenerLorg_eclipse_swt_browser_OpenWindowListene
 	for (int i = 0; i < 100; i++) browser.removeOpenWindowListener(listener);
 }
 
+@Test
 public void test_addProgressListenerLorg_eclipse_swt_browser_ProgressListener() {
 	shell.setText("test_addProgressListenerLorg_eclipse_swt_browser_ProgressListener");
 	try {
@@ -131,6 +140,7 @@ public void test_addProgressListenerLorg_eclipse_swt_browser_ProgressListener() 
 	for (int i = 0; i < 100; i++) browser.removeProgressListener(listener);
 }
 
+@Test
 public void test_addStatusTextListenerLorg_eclipse_swt_browser_StatusTextListener() {
 	shell.setText("test_addStatusTextListenerLorg_eclipse_swt_browser_StatusTextListener");
 	try {
@@ -148,6 +158,7 @@ public void test_addStatusTextListenerLorg_eclipse_swt_browser_StatusTextListene
 	for (int i = 0; i < 100; i++) browser.removeStatusTextListener(listener);
 }
 
+@Test
 public void test_addTitleListenerLorg_eclipse_swt_browser_TitleListener() {
 	shell.setText("test_addTitleLorg_eclipse_swt_browser_TitleListener");
 	try {
@@ -165,6 +176,7 @@ public void test_addTitleListenerLorg_eclipse_swt_browser_TitleListener() {
 	for (int i = 0; i < 100; i++) browser.removeTitleListener(listener);
 }
 
+@Test
 public void test_addVisibilityWindowListenerLorg_eclipse_swt_browser_VisibilityWindowListener() {
 	shell.setText("test_addVisibilityWindowListenerLorg_eclipse_swt_browser_VisibilityWindowListener");
 	try {
@@ -184,6 +196,7 @@ public void test_addVisibilityWindowListenerLorg_eclipse_swt_browser_VisibilityW
 	for (int i = 0; i < 100; i++) browser.removeVisibilityWindowListener(listener);
 }
 
+@Test
 public void test_back() {
 	shell.setText("test_back");
 	for (int i = 0; i < 10; i++) {
@@ -195,6 +208,7 @@ public void test_back() {
 	assertFalse(result);
 }
 
+@Test
 public void test_executeLjava_lang_String() {
 	shell.setText("test_executeLjava_lang_String");
 	try {
@@ -209,6 +223,7 @@ public void test_executeLjava_lang_String() {
 	 */
 }
 
+@Test
 public void test_forward() {
 	shell.setText("test_forward");
 	for (int i = 0; i < 10; i++) {
@@ -220,12 +235,14 @@ public void test_forward() {
 	assertFalse(result);
 }
 
+@Test
 public void test_getUrl() {
 	shell.setText("test_getUrl");
 	String string = browser.getUrl();
 	assertTrue(string != null);
 }
 
+@Test
 public void test_isBackEnabled() {
 	shell.setText("test_isBackEnabled");
 	
@@ -241,6 +258,7 @@ public void test_isBackEnabled() {
 	assertFalse(result);
 }
 
+@Test
 public void test_isForwardEnabled() {
 	shell.setText("test_isForwardEnabled");
 	
@@ -256,6 +274,7 @@ public void test_isForwardEnabled() {
 	assertFalse(result);
 }
 
+@Test
 public void test_refresh() {
 	shell.setText("test_refresh");
 	for (int i = 0; i < 10; i++) {
@@ -264,6 +283,7 @@ public void test_refresh() {
 	}
 }
 
+@Test
 public void test_removeCloseWindowListenerLorg_eclipse_swt_browser_CloseWindowListener() {
 	try {
 		browser.removeCloseWindowListener(null);
@@ -274,6 +294,7 @@ public void test_removeCloseWindowListenerLorg_eclipse_swt_browser_CloseWindowLi
 	// tested in addCloseWindowListener
 }
 
+@Test
 public void test_removeLocationListenerLorg_eclipse_swt_browser_LocationListener() {
 	try {
 		browser.removeLocationListener(null);
@@ -284,6 +305,7 @@ public void test_removeLocationListenerLorg_eclipse_swt_browser_LocationListener
 	// tested in addLocationListener
 }
 
+@Test
 public void test_removeOpenWindowListenerLorg_eclipse_swt_browser_OpenWindowListener() {
 	try {
 		browser.removeOpenWindowListener(null);
@@ -294,6 +316,7 @@ public void test_removeOpenWindowListenerLorg_eclipse_swt_browser_OpenWindowList
 	// tested in addOpenWindowListener
 }
 
+@Test
 public void test_removeProgressListenerLorg_eclipse_swt_browser_ProgressListener() {
 	try {
 		browser.removeProgressListener(null);
@@ -304,6 +327,7 @@ public void test_removeProgressListenerLorg_eclipse_swt_browser_ProgressListener
 	// tested in addProgressListener
 }
 
+@Test
 public void test_removeStatusTextListenerLorg_eclipse_swt_browser_StatusTextListener() {
 	try {
 		browser.removeStatusTextListener(null);
@@ -314,6 +338,7 @@ public void test_removeStatusTextListenerLorg_eclipse_swt_browser_StatusTextList
 	// tested in addStatusTextListener
 }
 
+@Test
 public void test_removeTitleListenerLorg_eclipse_swt_browser_TitleListener() {
 	try {
 		browser.removeTitleListener(null);
@@ -324,6 +349,7 @@ public void test_removeTitleListenerLorg_eclipse_swt_browser_TitleListener() {
 	// tested in addTitleListener
 }
 
+@Test
 public void test_removeVisibilityWindowListenerLorg_eclipse_swt_browser_VisibilityWindowListener() {
 	try {
 		browser.removeVisibilityWindowListener(null);
@@ -334,6 +360,7 @@ public void test_removeVisibilityWindowListenerLorg_eclipse_swt_browser_Visibili
 	// tested in addVisibilityWindowListener
 }
 
+@Test
 public void test_setTextLjava_lang_String() {
 	shell.setText("test_setTextLjava_lang_String");
 	
@@ -354,6 +381,7 @@ public void test_setTextLjava_lang_String() {
 	}
 }
 
+@Test
 public void test_setUrlLjava_lang_String() {
 	shell.setText("test_setUrlLjava_lang_String");
 	try {
@@ -369,6 +397,7 @@ public void test_setUrlLjava_lang_String() {
 	runLoopTimer(10);
 }
 
+@Test
 public void test_stop() {
 	shell.setText("test_stop");
 	/* THIS TEST REQUIRES WEB ACCESS! How else can we really test the http:// part of a browser widget? */

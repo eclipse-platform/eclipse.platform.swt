@@ -10,9 +10,13 @@
  *******************************************************************************/
 package org.eclipse.swt.tests.junit;
 
+import static org.junit.Assert.fail;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Sash;
+import org.junit.Before;
+import org.junit.Test;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.widgets.Sash
@@ -21,18 +25,16 @@ import org.eclipse.swt.widgets.Sash;
  */
 public class Test_org_eclipse_swt_widgets_Sash extends Test_org_eclipse_swt_widgets_Control {
 
-public Test_org_eclipse_swt_widgets_Sash(String name) {
-	super(name);
-}
-
 @Override
-protected void setUp() {
+@Before
+public void setUp() {
 	super.setUp();
 	sash = new Sash(shell, 0);
 	setWidget(sash);
 }
 
 @Override
+@Test
 public void test_ConstructorLorg_eclipse_swt_widgets_CompositeI() {
 	try {
 		sash = new Sash(null, 0);
@@ -47,10 +49,12 @@ public void test_ConstructorLorg_eclipse_swt_widgets_CompositeI() {
 }
 
 @Override
+@Test
 public void test_computeSizeIIZ() {
 }
 
 @Override
+@Test
 public void test_setFontLorg_eclipse_swt_graphics_Font() {
 	// overridden from Control because it does not make sense
 	// to set the font of a Sash.
@@ -68,16 +72,19 @@ private void createSash() {
     setWidget(sash);
 }
 
+@Test
 public void test_consistency_MenuDetect () {
     createSash();
     consistencyEvent(0, 5, 3, 0, ConsistencyUtility.MOUSE_CLICK);
 }
 
+@Test
 public void test_consistency_DragDetect () {
     createSash();
     consistencyEvent(0, 5, 20, 10, ConsistencyUtility.MOUSE_DRAG);
 }
 
+@Test
 public void test_consistency_MouseSelection() {
     createSash();
     consistencyEvent(0, 5, 1, 0, ConsistencyUtility.MOUSE_CLICK);

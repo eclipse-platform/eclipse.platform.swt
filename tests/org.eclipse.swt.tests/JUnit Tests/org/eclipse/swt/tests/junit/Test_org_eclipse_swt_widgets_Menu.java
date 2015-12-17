@@ -11,6 +11,11 @@
 package org.eclipse.swt.tests.junit;
 
 import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.HelpEvent;
@@ -23,6 +28,8 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.Shell;
+import org.junit.Before;
+import org.junit.Test;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.widgets.Menu
@@ -31,23 +38,22 @@ import org.eclipse.swt.widgets.Shell;
  */
 public class Test_org_eclipse_swt_widgets_Menu extends Test_org_eclipse_swt_widgets_Widget {
 
-public Test_org_eclipse_swt_widgets_Menu(String name) {
-	super(name);
-}
-
 @Override
-protected void setUp() {
+@Before
+public void setUp() {
 	super.setUp();
 	menu = new Menu(shell);
 	setWidget(menu);
 }
 
+@Test
 public void test_ConstructorLorg_eclipse_swt_widgets_Control() {
 	Composite comp = new Composite(shell, SWT.NULL);
 	new Menu(comp);
 	comp.dispose();
 }
 
+@Test
 public void test_ConstructorLorg_eclipse_swt_widgets_DecorationsI() {
 	Menu newMenu;
 	Shell nullShell = null;
@@ -61,10 +67,12 @@ public void test_ConstructorLorg_eclipse_swt_widgets_DecorationsI() {
 	newMenu = new Menu(shell, SWT.NULL);
 }
 
+@Test
 public void test_ConstructorLorg_eclipse_swt_widgets_Menu() {
 	new Menu(menu);
 }
 
+@Test
 public void test_ConstructorLorg_eclipse_swt_widgets_MenuItem() {
 	Menu newMenu;
 	MenuItem mItem = null;
@@ -79,6 +87,7 @@ public void test_ConstructorLorg_eclipse_swt_widgets_MenuItem() {
 	newMenu = new Menu(mItem);
 }
 
+@Test
 public void test_addHelpListenerLorg_eclipse_swt_events_HelpListener() {
 	listenerCalled = false;
 	HelpListener listener = new HelpListener() {
@@ -109,6 +118,7 @@ public void test_addHelpListenerLorg_eclipse_swt_events_HelpListener() {
 	assertFalse(listenerCalled);
 }
 
+@Test
 public void test_addMenuListenerLorg_eclipse_swt_events_MenuListener() {
 	listenerCalled = false;
 	MenuListener menuListener = new MenuListener() {
@@ -146,6 +156,7 @@ public void test_addMenuListenerLorg_eclipse_swt_events_MenuListener() {
 	assertFalse(listenerCalled);
 }
 
+@Test
 public void test_getItemCount() {
 	int number = 10;
 	for (int i = 0; i<number ; i++){
@@ -154,6 +165,7 @@ public void test_getItemCount() {
 	}
 }
 
+@Test
 public void test_getItemI() {
 	MenuItem mItem0 = new MenuItem(menu, SWT.NULL);
 	MenuItem mItem1 = new MenuItem(menu, SWT.NULL);
@@ -161,6 +173,7 @@ public void test_getItemI() {
 	assertEquals(menu.getItem(1), mItem1);
 }
 
+@Test
 public void test_getItems() {
 	int number = 5;
 	MenuItem[] items = new MenuItem[number];
@@ -179,10 +192,12 @@ public void test_getItems() {
 	assertArrayEquals(":d:", new MenuItem[]{items[1], items[3]}, menu.getItems());
 }
 
+@Test
 public void test_getParent() {
 	assertEquals(menu.getParent(), shell);
 }
 
+@Test
 public void test_getParentItem() {
 	MenuItem mItem = new MenuItem(menu, SWT.CASCADE);
 	Menu newMenu = new Menu(shell, SWT.DROP_DOWN);
@@ -191,6 +206,7 @@ public void test_getParentItem() {
 	assertEquals(newMenu.getParentItem(), mItem);
 }
 
+@Test
 public void test_getParentMenu() {
 	MenuItem mItem = new MenuItem(menu, SWT.CASCADE);
 	Menu newMenu = new Menu(shell, SWT.DROP_DOWN);
@@ -199,10 +215,12 @@ public void test_getParentMenu() {
 	assertEquals(newMenu.getParentMenu(), menu);
 }
 
+@Test
 public void test_getShell() {
 	assertEquals(menu.getShell(), shell);
 }
 
+@Test
 public void test_indexOfLorg_eclipse_swt_widgets_MenuItem() {
 	int number = 10;
 	MenuItem[] mis = new MenuItem[number];
@@ -216,6 +234,7 @@ public void test_indexOfLorg_eclipse_swt_widgets_MenuItem() {
 	}
 }
 
+@Test
 public void test_setDefaultItemLorg_eclipse_swt_widgets_MenuItem() {
 	if (SwtTestUtil.isGTK) {
 		//TODO Fix GTK failure.
@@ -234,6 +253,7 @@ public void test_setDefaultItemLorg_eclipse_swt_widgets_MenuItem() {
 	assertTrue("After setDefaultItem(mItem1):", menu.getDefaultItem() != mItem0);
 }
 
+@Test
 public void test_setEnabledZ() {
 	menu.setEnabled(true);
 	assertTrue(menu.getEnabled());
@@ -241,10 +261,12 @@ public void test_setEnabledZ() {
 	assertFalse(menu.getEnabled());
 }
 
+@Test
 public void test_setLocationII() {
 	menu.setLocation(0,0);
 }
 
+@Test
 public void test_setLocationLorg_eclipse_swt_graphics_Point() {
 	menu.setLocation(new Point(0,0));
 	try {

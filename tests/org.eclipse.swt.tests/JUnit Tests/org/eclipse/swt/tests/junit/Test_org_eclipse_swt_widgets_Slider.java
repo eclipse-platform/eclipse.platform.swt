@@ -10,10 +10,16 @@
  *******************************************************************************/
 package org.eclipse.swt.tests.junit;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.widgets.Slider;
+import org.junit.Before;
+import org.junit.Test;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.widgets.Slider
@@ -22,12 +28,9 @@ import org.eclipse.swt.widgets.Slider;
  */
 public class Test_org_eclipse_swt_widgets_Slider extends Test_org_eclipse_swt_widgets_Control {
 
-public Test_org_eclipse_swt_widgets_Slider(String name) {
-	super(name);
-}
-
 @Override
-protected void setUp() {
+@Before
+public void setUp() {
 	super.setUp();
 	slider = new Slider(shell, 0);
 	setWidget(slider);
@@ -38,6 +41,7 @@ protected String valueString(int[] intArray) {
 }
 
 @Override
+@Test
 public void test_ConstructorLorg_eclipse_swt_widgets_CompositeI() {
 	try {
 		slider = new Slider(null, 0);
@@ -51,6 +55,7 @@ public void test_ConstructorLorg_eclipse_swt_widgets_CompositeI() {
 		slider = new Slider(shell, cases[i]);
 }
 
+@Test
 public void test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener() {
 	listenerCalled = false;
 	boolean exceptionThrown = false;
@@ -83,10 +88,12 @@ public void test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener()
 }
 
 @Override
+@Test
 public void test_computeSizeIIZ() {
 	// super class method sufficient test
 }
 
+@Test
 public void test_getIncrement() {
 	int[] cases = {1, 10, 10000};
 	for (int i=0; i<cases.length; i++)
@@ -96,6 +103,7 @@ public void test_getIncrement() {
 	} 
 }
 
+@Test
 public void test_getMaximum() {
 	slider.setMaximum(2000);
 	assertTrue(":a:", slider.getMaximum() == 2000);
@@ -109,6 +117,7 @@ public void test_getMaximum() {
 	assertTrue(":d:", slider.getMaximum() == 10);
 }
 
+@Test
 public void test_getMinimum() {
 	slider.setMinimum(5);
 	assertTrue(":a:", slider.getMinimum() == 5);
@@ -122,6 +131,7 @@ public void test_getMinimum() {
 	assertTrue(":d:", slider.getMinimum() == 10);
 }
 
+@Test
 public void test_getPageIncrement() {
 	int[] cases = {1, 10, 10000};
 	for (int i=0; i<cases.length; i++)
@@ -131,6 +141,7 @@ public void test_getPageIncrement() {
 	} 
 }
 
+@Test
 public void test_getSelection() {
 	slider.setSelection(10);
 	assertTrue(":a:", slider.getSelection()== 10);
@@ -138,6 +149,7 @@ public void test_getSelection() {
 }
 
 @Override
+@Test
 public void test_setEnabledZ() {
 	slider.setEnabled(true);
 	assertTrue(slider.getEnabled());
@@ -145,6 +157,7 @@ public void test_setEnabledZ() {
 	assertEquals(slider.getEnabled(), false);
 }
 
+@Test
 public void test_setMaximumI() {
 
 	int [][] testValues = getSetMaximumValues();
@@ -158,6 +171,7 @@ public void test_setMaximumI() {
 	}
 }
 
+@Test
 public void test_setMinimumI() {
 
 	int [][] testValues = getSetMinimumValues();
@@ -171,11 +185,13 @@ public void test_setMinimumI() {
 	}
 }
 
+@Test
 public void test_setPageIncrementI() {
 	 slider.setPageIncrement(3);
 	 assertTrue(":a:", slider.getPageIncrement()== 3);
 }
 
+@Test
 public void test_setSelectionI() {
 	int [][] testValues = getSetSelectionValues();
 	for (int i = 0; i < testValues.length; i++) {
@@ -187,6 +203,7 @@ public void test_setSelectionI() {
 	}
 }
 
+@Test
 public void test_setThumbI() {
 
 	int [][] testValues = getSetThumbValues();
@@ -200,6 +217,7 @@ public void test_setThumbI() {
 	}
 }
 
+@Test
 public void test_setValuesIIIIII() {
 	slider.setValues(10, 10, 50, 2, 5, 10);
 	assertTrue(":a:", slider.getSelection() == 10);
@@ -213,6 +231,7 @@ public void test_setValuesIIIIII() {
 
 /* custom */
 @Override
+@Test
 public void test_setFontLorg_eclipse_swt_graphics_Font() {
 	// overridden from Control because it does not make sense
 	// to set the font of a Slider.
@@ -835,27 +854,33 @@ return new int[][] {
 };
 }
 
+@Test
 public void test_consistency_ArrowSelection() {
     consistencyPrePackShell();
     consistencyEvent(slider.getSize().x-10, 5, 1, 0, ConsistencyUtility.MOUSE_CLICK);
 }
 
+@Test
 public void test_consistency_KeySelection () {
     consistencyEvent(0, SWT.ARROW_RIGHT, 0, 0, ConsistencyUtility.KEY_PRESS);
 }
 
+@Test
 public void test_consistency_ThumbSelection () {
     consistencyEvent(25, 10, 1, 0, ConsistencyUtility.MOUSE_CLICK);
 }
 
+@Test
 public void test_consistency_TroughSelection () {
     consistencyEvent(45, 10, 1, 0, ConsistencyUtility.MOUSE_CLICK);
 }
 
+@Test
 public void test_consistency_MenuDetect () {
     consistencyEvent(27, 5, 3, 0, ConsistencyUtility.MOUSE_CLICK);
 }
 
+@Test
 public void test_consistency_DragDetect () {
     consistencyEvent(9, 5, 30, 10, ConsistencyUtility.MOUSE_DRAG);
 }

@@ -11,6 +11,8 @@
 package org.eclipse.swt.tests.junit;
 
 import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,6 +20,8 @@ import java.util.List;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
+import org.junit.Before;
+import org.junit.Test;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.widgets.ToolBar
@@ -26,18 +30,16 @@ import org.eclipse.swt.widgets.ToolItem;
  */
 public class Test_org_eclipse_swt_widgets_ToolBar extends Test_org_eclipse_swt_widgets_Composite {
 
-public Test_org_eclipse_swt_widgets_ToolBar(String name) {
-	super(name);
-}
-
 @Override
-protected void setUp() {
+@Before
+public void setUp() {
 	super.setUp();
 	toolBar = new ToolBar(shell, 0);
 	setWidget(toolBar);
 }
 
 @Override
+@Test
 public void test_ConstructorLorg_eclipse_swt_widgets_CompositeI() {
 	try {
 		new ToolBar(null, 0);
@@ -48,13 +50,16 @@ public void test_ConstructorLorg_eclipse_swt_widgets_CompositeI() {
 }
 
 @Override
+@Test
 public void test_computeSizeIIZ() {
 }
 
 @Override
+@Test
 public void test_computeTrimIIII() {
 }
 
+@Test
 public void test_getItemCount() {
 	int number = 10;
 	for (int i = 0; i<number ; i++){
@@ -63,6 +68,7 @@ public void test_getItemCount() {
 	}
 }
 
+@Test
 public void test_getItemI() {
 	int number = 5;
 	ToolItem[] items = new ToolItem[number];
@@ -87,6 +93,7 @@ public void test_getItemI() {
 	}
 }
 
+@Test
 public void test_getItems() {
 	int number = 5;
 	ToolItem[] items = new ToolItem[number];
@@ -105,6 +112,7 @@ public void test_getItems() {
 	assertArrayEquals(new ToolItem[]{items[1], items[3]}, toolBar.getItems());
 }
 
+@Test
 public void test_getRowCount() {
 	if (SwtTestUtil.isGTK) {
 		//TODO Fix GTK failure.
@@ -130,6 +138,7 @@ public void test_getRowCount() {
 	assertTrue(":a:", toolBar.getRowCount()==1);
 }
 
+@Test
 public void test_indexOfLorg_eclipse_swt_widgets_ToolItem() {
 	int number = 10;
 	ToolItem[] tis = new ToolItem[number];
@@ -169,30 +178,34 @@ private void createToolBar(List<String> events) {
 	setWidget(toolBar);
 }
 
+@Test
 public void test_consistency_MouseSelection() {
     List<String> events = new ArrayList<String>();
     createToolBar(events);
     consistencyEvent(30, 10, 1, 0, ConsistencyUtility.MOUSE_CLICK, events);
 }
 
+@Test
 public void test_consistency_EnterSelection () {
     List<String> events = new ArrayList<String>();
     createToolBar(events);
     consistencyEvent(13, 10, 0, 0, ConsistencyUtility.KEY_PRESS, events);
 }
 
+@Test
 public void test_consistency_SpaceSelection () {
     List<String> events = new ArrayList<String>();
     createToolBar(events);
     consistencyEvent(' ', 32, 0, 0, ConsistencyUtility.KEY_PRESS, events);
 }
 
+@Test
 public void test_consistency_MenuDetect () {
     List<String> events = new ArrayList<String>();
     createToolBar(events);
     consistencyEvent(50, 15, 3, 0, ConsistencyUtility.MOUSE_CLICK, events);
 }
-
+@Test
 public void test_consistency_DragDetect () {
     List<String> events = new ArrayList<String>();
     createToolBar(events);

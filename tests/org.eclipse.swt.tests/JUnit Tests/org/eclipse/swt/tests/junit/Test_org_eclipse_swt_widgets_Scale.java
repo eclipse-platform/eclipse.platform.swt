@@ -11,8 +11,13 @@
 package org.eclipse.swt.tests.junit;
 
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Scale;
+import org.junit.Before;
+import org.junit.Test;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.widgets.Scale
@@ -21,18 +26,16 @@ import org.eclipse.swt.widgets.Scale;
  */
 public class Test_org_eclipse_swt_widgets_Scale extends Test_org_eclipse_swt_widgets_Control {
 
-public Test_org_eclipse_swt_widgets_Scale(String name) {
-	super(name);
-}
-
 @Override
-protected void setUp() {
+@Before
+public void setUp() {
 	super.setUp();
 	scale = new Scale(shell, 0);
 	setWidget(scale);
 }
 
 @Override
+@Test
 public void test_ConstructorLorg_eclipse_swt_widgets_CompositeI() {
 	try {
 		scale = new Scale(null, 0);
@@ -47,9 +50,11 @@ public void test_ConstructorLorg_eclipse_swt_widgets_CompositeI() {
 }
 
 @Override
+@Test
 public void test_computeSizeIIZ() {
 }
 
+@Test
 public void test_setMaximumI() {
 
 	int [][] testValues = getSetMaximumValues();
@@ -62,6 +67,7 @@ public void test_setMaximumI() {
 	}
 }
 
+@Test
 public void test_setMinimumI() {
 
 
@@ -75,6 +81,7 @@ public void test_setMinimumI() {
 	}
 }
 
+@Test
 public void test_setSelectionI() {
 	int [][] testValues = getSetSelectionValues();
 	for (int i = 0; i < testValues.length; i++) {
@@ -87,6 +94,7 @@ public void test_setSelectionI() {
 
 /* custom */
 @Override
+@Test
 public void test_setFontLorg_eclipse_swt_graphics_Font() {
 	// overridden from Control because it does not make sense
 	// to set the font of a Scale.
@@ -555,22 +563,27 @@ return new int[][] {
 };
 }
 
+@Test
 public void test_consistency_KeySelection () {
     consistencyEvent(0, SWT.ARROW_RIGHT, 0, 0, ConsistencyUtility.KEY_PRESS);
 }
 
+@Test
 public void test_consistency_ThumbSelection () {
     consistencyEvent(9, 10, 1, 0, ConsistencyUtility.MOUSE_CLICK);
 }
 
+@Test
 public void test_consistency_TroughSelection () {
     consistencyEvent(27, 10, 1, 0, ConsistencyUtility.MOUSE_CLICK);
 }
 
+@Test
 public void test_consistency_MenuDetect () {
     consistencyEvent(27, 5, 3, 0, ConsistencyUtility.MOUSE_CLICK);
 }
 
+@Test
 public void test_consistency_DragDetect () {
     consistencyEvent(9, 5, 30, 10, ConsistencyUtility.MOUSE_DRAG);
 }

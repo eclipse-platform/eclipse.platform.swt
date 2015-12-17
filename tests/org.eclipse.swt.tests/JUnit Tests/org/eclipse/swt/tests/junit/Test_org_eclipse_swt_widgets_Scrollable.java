@@ -12,6 +12,7 @@ package org.eclipse.swt.tests.junit;
 
 import org.eclipse.swt.widgets.Scrollable;
 import org.eclipse.swt.widgets.Widget;
+import org.junit.Test;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.widgets.Scrollable
@@ -20,27 +21,28 @@ import org.eclipse.swt.widgets.Widget;
  */
 public class Test_org_eclipse_swt_widgets_Scrollable extends Test_org_eclipse_swt_widgets_Control {
 	
-public Test_org_eclipse_swt_widgets_Scrollable(String name) {
-	super(name);
-}
-
 @Override
+@Test
 public void test_ConstructorLorg_eclipse_swt_widgets_CompositeI() {
 	// abstract class
 }
 
+@Test
 public void test_computeTrimIIII() {
 	scrollable.computeTrim(0, 0, 0, 0);
 }
 
+@Test
 public void test_getClientArea() {
 	scrollable.getClientArea();
 }
 
+@Test
 public void test_getHorizontalBar() {
 	scrollable.getHorizontalBar();
 }
 
+@Test
 public void test_getVerticalBar() {
 	scrollable.getVerticalBar();
 }

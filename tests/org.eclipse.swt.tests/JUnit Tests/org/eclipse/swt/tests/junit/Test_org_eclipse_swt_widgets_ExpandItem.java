@@ -9,11 +9,19 @@
  *******************************************************************************/
 package org.eclipse.swt.tests.junit;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.ExpandBar;
 import org.eclipse.swt.widgets.ExpandItem;
+import org.junit.Before;
+import org.junit.Test;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.widgets.ToolItem
@@ -22,18 +30,16 @@ import org.eclipse.swt.widgets.ExpandItem;
  */
 public class Test_org_eclipse_swt_widgets_ExpandItem extends Test_org_eclipse_swt_widgets_Item {
 
-public Test_org_eclipse_swt_widgets_ExpandItem(String name) {
-	super(name);
-}
-
 @Override
-protected void setUp() {
+@Before
+public void setUp() {
 	super.setUp();
 	expandBar = new ExpandBar(shell, 0);
 	expandItem = new ExpandItem(expandBar, 0); 
 	setWidget(expandItem);
 }
 
+@Test
 public void test_ConstructorLorg_eclipse_swt_widgets_ExpandItemI() {
 	try {
 		new ExpandItem(null, SWT.NULL);
@@ -43,6 +49,7 @@ public void test_ConstructorLorg_eclipse_swt_widgets_ExpandItemI() {
 	}
 }
 
+@Test
 public void test_ConstructorLorg_eclipse_swt_widgets_ExpandItemII() {
 	ExpandItem item = new ExpandItem(expandBar, SWT.NULL, 0); //create an expand item at index 0
 	assertNotNull(item);
@@ -52,6 +59,7 @@ public void test_ConstructorLorg_eclipse_swt_widgets_ExpandItemII() {
 	assertTrue(expandBar.getItem(1).equals(item));
 }
 
+@Test
 public void test_getControl() {
 	assertNull(expandItem.getControl());
 
@@ -66,10 +74,12 @@ public void test_getControl() {
 	assertEquals(button, control);
 }
 
+@Test
 public void test_getParent() {	
 	assertEquals(expandItem.getParent(), expandBar);
 }
 
+@Test
 public void test_setControlLorg_eclipse_swt_widgets_Control() {
 	expandItem.setControl(null);	
 	Button button = new Button(expandBar, SWT.PUSH);
@@ -93,6 +103,7 @@ public void test_setControlLorg_eclipse_swt_widgets_Control() {
 	}
 }
 
+@Test
 public void test_setExpandedZ() {
 	expandItem.setExpanded(true);
 	assertTrue(expandItem.getExpanded());
@@ -100,6 +111,7 @@ public void test_setExpandedZ() {
 	assertEquals(expandItem.getExpanded(), false);
 }
 
+@Test
 public void test_setHeightI() {
 	expandItem.setHeight(30);
 	assertEquals(expandItem.getHeight(), 30);
@@ -108,6 +120,7 @@ public void test_setHeightI() {
 }
 
 @Override
+@Test
 public void test_setImageLorg_eclipse_swt_graphics_Image() {
 	assertNull(expandItem.getImage());
 	expandItem.setImage(images[0]);
@@ -118,6 +131,7 @@ public void test_setImageLorg_eclipse_swt_graphics_Image() {
 }
 
 @Override
+@Test
 public void test_setTextLjava_lang_String() {
 	expandItem.setText("ABCDEFG");
 	assertTrue(expandItem.getText().equals("ABCDEFG"));

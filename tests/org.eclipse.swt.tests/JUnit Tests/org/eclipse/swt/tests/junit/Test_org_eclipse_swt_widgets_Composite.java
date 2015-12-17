@@ -12,6 +12,7 @@ package org.eclipse.swt.tests.junit;
 
 
 import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.fail;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Button;
@@ -19,6 +20,8 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.List;
 import org.eclipse.swt.widgets.Widget;
+import org.junit.Before;
+import org.junit.Test;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.widgets.Composite
@@ -29,18 +32,16 @@ public class Test_org_eclipse_swt_widgets_Composite extends Test_org_eclipse_swt
 
 Composite composite;
 
-public Test_org_eclipse_swt_widgets_Composite(String name) {
-	super(name);
-}
-
 @Override
-protected void setUp() {
+@Before
+public void setUp() {
 	super.setUp();
 	composite = new Composite(shell, 0);
 	super.setWidget(composite);
 }
 
 @Override
+@Test
 public void test_ConstructorLorg_eclipse_swt_widgets_CompositeI() {
 	try {
 		composite = new Composite(null, 0);
@@ -54,6 +55,7 @@ public void test_ConstructorLorg_eclipse_swt_widgets_CompositeI() {
 		composite = new Composite(shell, cases[i]);
 }
 
+@Test
 public void test_getChildren() {
 	assertArrayEquals(":a:", new Control[]{}, composite.getChildren());
 	Composite c1 = new Composite(composite, 0);
@@ -75,7 +77,7 @@ public void test_getChildren() {
 	assertArrayEquals(":f:", new Control[]{}, composite.getChildren());
 }
 
-
+@Test
 public void test_setTabList$Lorg_eclipse_swt_widgets_Control() {
 	Button button1 = new Button(composite, SWT.PUSH);
 	Button button2 = new Button(composite, SWT.PUSH);

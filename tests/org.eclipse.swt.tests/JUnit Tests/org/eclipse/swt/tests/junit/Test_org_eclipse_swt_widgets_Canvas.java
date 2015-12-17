@@ -11,12 +11,19 @@
 package org.eclipse.swt.tests.junit;
 
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Caret;
 import org.eclipse.swt.widgets.Widget;
+import org.junit.Before;
+import org.junit.Test;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.widgets.Canvas
@@ -27,12 +34,9 @@ public class Test_org_eclipse_swt_widgets_Canvas extends Test_org_eclipse_swt_wi
 
 Canvas canvas;
 
-public Test_org_eclipse_swt_widgets_Canvas(String name) {
-	super(name);
-}
-
 @Override
-protected void setUp() {
+@Before
+public void setUp() {
 	super.setUp();
 	canvas = new Canvas(shell, 0);
 	super.setWidget(canvas);
@@ -47,6 +51,7 @@ protected void setWidget(Widget w) {
 }
 
 @Override
+@Test
 public void test_ConstructorLorg_eclipse_swt_widgets_CompositeI() {
 	try {
 		new Canvas(null, SWT.NONE);
@@ -56,6 +61,7 @@ public void test_ConstructorLorg_eclipse_swt_widgets_CompositeI() {
 	}
 }
 
+@Test
 public void test_scrollIIIIIIZ() {
 	canvas.scroll(100, 100, 0, 0, 50, 50, false);
 	canvas.scroll(100, 100, 0, 0, 50, 50, true);
@@ -73,6 +79,7 @@ public void test_scrollIIIIIIZ() {
 	canvas.scroll(100, 100, 50, 50, -50, -50, true);
 }
 
+@Test
 public void test_setCaretLorg_eclipse_swt_widgets_Caret() {
 	int number = 5;
 	Caret[] carets = new Caret[number];
@@ -89,6 +96,7 @@ public void test_setCaretLorg_eclipse_swt_widgets_Caret() {
 }
 
 @Override
+@Test
 public void test_setFontLorg_eclipse_swt_graphics_Font() {
 	FontData fontData = canvas.getFont().getFontData()[0];
 	Font font = new Font(canvas.getDisplay(), fontData.getName(), 8, fontData.getStyle());
@@ -99,11 +107,12 @@ public void test_setFontLorg_eclipse_swt_graphics_Font() {
 }
 
 /* custom*/
-
+@Test
 public void test_consistency_MenuDetect() {
     consistencyEvent(10, 10, 3, 0, ConsistencyUtility.MOUSE_CLICK);
 }
 
+@Test
 public void test_consistency_DragDetect() {
     consistencyEvent(10, 10, 20, 20, ConsistencyUtility.MOUSE_DRAG);
 }

@@ -10,12 +10,20 @@
  *******************************************************************************/
 package org.eclipse.swt.tests.junit;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Event;
+import org.junit.Before;
+import org.junit.Test;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.widgets.Button
@@ -26,18 +34,16 @@ public class Test_org_eclipse_swt_widgets_Button extends Test_org_eclipse_swt_wi
 
 Button button;
 
-public Test_org_eclipse_swt_widgets_Button(String name) {
-	super(name);
-}
-
 @Override
-protected void setUp() {
+@Before
+public void setUp() {
 	super.setUp();
 	button = new Button(shell, SWT.PUSH);
 	setWidget(button);
 }
 
 @Override
+@Test
 public void test_ConstructorLorg_eclipse_swt_widgets_CompositeI() {
 	// Test Button(Composite parent, int style)
 	new Button(shell, SWT.NULL);
@@ -60,6 +66,7 @@ public void test_ConstructorLorg_eclipse_swt_widgets_CompositeI() {
 	}
 }
 
+@Test
 public void test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener() {
 	listenerCalled = false;
 	SelectionListener listener = new SelectionListener() {
@@ -92,6 +99,7 @@ public void test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener()
 }
 
 @Override
+@Test
 public void test_computeSizeIIZ() {
 	button.computeSize(0, 0);
 
@@ -110,6 +118,7 @@ public void test_computeSizeIIZ() {
 	button.computeSize(10000, 10000, false);
 }
 
+@Test
 public void test_setAlignmentI() {
 	button.setAlignment(SWT.LEFT);
 	assertEquals(SWT.LEFT, button.getAlignment());
@@ -146,11 +155,13 @@ public void test_setAlignmentI() {
 }
 
 @Override
+@Test
 public void test_setFocus() {
 	Button btn = new Button(shell, SWT.ARROW);
 	btn.setFocus();
 }
 
+@Test
 public void test_setImageLorg_eclipse_swt_graphics_Image() {
 	Image image = button.getImage();
 	button.setImage(image);
@@ -173,6 +184,7 @@ public void test_setImageLorg_eclipse_swt_graphics_Image() {
 	}
 }
 
+@Test
 public void test_setSelectionZ() {
 	// test setSelection for check box
 	button = new Button(shell, SWT.CHECK);
@@ -214,6 +226,7 @@ public void test_setSelectionZ() {
 	newButton.dispose();
 }
 
+@Test
 public void test_setTextLjava_lang_String() {
 	String[] cases = {"", "some text", "ldkashdoehufweovcnhslvhregojebckreavbkuhxbiufvcyhbifuyewvbiureyd.,cmnesljliewjfchvbwoifivbeworixuieurvbiuvbohflksjeahfcliureafgyciabelitvyrwtlicuyrtliureybcliuyreuceyvbliureybct", "\n \n \b \t ", "\0"};
 	int goodCases = 4;
@@ -240,6 +253,7 @@ protected void setUp(int style) {
     setWidget(button);
 }
 
+@Test
 public void test_consistency_MenuDetect () {
     consistencyEvent(10, 10, 3, 0, ConsistencyUtility.MOUSE_CLICK);
     tearDown();
@@ -257,6 +271,7 @@ public void test_consistency_MenuDetect () {
     
 }
 
+@Test
 public void test_consistency_MouseSelection () {
     consistencyEvent(10, 10, 1, 0, ConsistencyUtility.MOUSE_CLICK);
     tearDown();
@@ -274,6 +289,7 @@ public void test_consistency_MouseSelection () {
     consistencyEvent(5, 5, 1, 0, ConsistencyUtility.MOUSE_CLICK);
 }
 
+@Test
 public void test_consistency_EnterSelection () {
 //    differences between push and the rest of the buttons
 //	  different across platforms
@@ -292,6 +308,7 @@ public void test_consistency_EnterSelection () {
     consistencyEvent(10, 13, 0, 0, ConsistencyUtility.KEY_PRESS);
 }
 
+@Test
 public void test_consistency_SpaceSelection () {
     consistencyEvent(' ', 32, 0, 0, ConsistencyUtility.KEY_PRESS);
     tearDown();
@@ -310,6 +327,7 @@ public void test_consistency_SpaceSelection () {
     consistencyEvent(' ', 32, 0, 0, ConsistencyUtility.KEY_PRESS);
 }
 
+@Test
 public void test_consistency_DragDetect () {
     consistencyEvent(10, 10, 20, 20, ConsistencyUtility.MOUSE_DRAG);
     tearDown();

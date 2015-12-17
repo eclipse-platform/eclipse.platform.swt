@@ -11,9 +11,14 @@
 package org.eclipse.swt.tests.junit;
 
 
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
+import org.junit.Before;
+import org.junit.Test;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.widgets.ToolItem
@@ -22,18 +27,16 @@ import org.eclipse.swt.widgets.ToolItem;
  */
 public class Test_org_eclipse_swt_widgets_ToolItem extends Test_org_eclipse_swt_widgets_Item {
 
-public Test_org_eclipse_swt_widgets_ToolItem(String name) {
-	super(name);
-}
-
 @Override
-protected void setUp() {
+@Before
+public void setUp() {
 	super.setUp();
 	toolBar = new ToolBar(shell, 0);
 	toolItem = new ToolItem(toolBar, 0); 
 	setWidget(toolItem);
 }
 
+@Test
 public void test_ConstructorLorg_eclipse_swt_widgets_ToolBarI() {
 	try {
 		new ToolItem(null, SWT.NULL);
@@ -43,6 +46,7 @@ public void test_ConstructorLorg_eclipse_swt_widgets_ToolBarI() {
 	}
 }
 
+@Test
 public void test_getToolTipText() {
 	toolItem.setToolTipText("fred");
 	assertTrue(":a: ", toolItem.getToolTipText().equals("fred"));
@@ -51,10 +55,12 @@ public void test_getToolTipText() {
 }
 
 @Override
+@Test
 public void test_setImageLorg_eclipse_swt_graphics_Image() {
 }
 
 @Override
+@Test
 public void test_setTextLjava_lang_String() {
 }
 

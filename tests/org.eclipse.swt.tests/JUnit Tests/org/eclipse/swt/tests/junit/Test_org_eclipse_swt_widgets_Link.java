@@ -10,11 +10,18 @@
  *******************************************************************************/
 package org.eclipse.swt.tests.junit;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Link;
+import org.junit.Before;
+import org.junit.Test;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.widgets.Link
@@ -25,18 +32,16 @@ public class Test_org_eclipse_swt_widgets_Link extends Test_org_eclipse_swt_widg
 
 	Link link;
 
-public Test_org_eclipse_swt_widgets_Link(String name) {
-	super(name);
-}
-
 @Override
-protected void setUp() {
+@Before
+public void setUp() {
 	super.setUp();
 	link = new Link(shell, SWT.NONE);
 	setWidget(link);
 }
 
 @Override
+@Test
 public void test_ConstructorLorg_eclipse_swt_widgets_CompositeI() {
 	// Test Link(Composite parent, int style)
 	link = new Link(shell, SWT.NULL);
@@ -53,6 +58,7 @@ public void test_ConstructorLorg_eclipse_swt_widgets_CompositeI() {
 	}
 }
 
+@Test
 public void test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener() {
 	listenerCalled = false;
 	SelectionListener listener = new SelectionListener() {
@@ -85,6 +91,7 @@ public void test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener()
 }
 
 @Override
+@Test
 public void test_computeSizeIIZ() {
 	link.computeSize(0, 0);
 
@@ -103,6 +110,7 @@ public void test_computeSizeIIZ() {
 	link.computeSize(10000, 10000, false);
 }
 
+@Test
 public void test_setTextLjava_lang_String() {
 	String[] cases = {
 			"",

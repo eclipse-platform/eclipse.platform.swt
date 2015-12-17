@@ -12,6 +12,10 @@ package org.eclipse.swt.tests.junit;
 
 
 import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,6 +25,8 @@ import org.eclipse.swt.SWTException;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
+import org.junit.Before;
+import org.junit.Test;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.widgets.Table
@@ -29,17 +35,15 @@ import org.eclipse.swt.widgets.TableItem;
  */
 public class Test_org_eclipse_swt_widgets_Table extends Test_org_eclipse_swt_widgets_Composite {
 
-public Test_org_eclipse_swt_widgets_Table(String name) {
-	super(name);
-}
-
 @Override
-protected void setUp() {
+@Before
+public void setUp() {
 	super.setUp();
 	makeCleanEnvironment(false); // by default, use multi-select table.	
 }
 
 @Override
+@Test
 public void test_ConstructorLorg_eclipse_swt_widgets_CompositeI() {
 	try {
 		new Table(null, 0);
@@ -50,9 +54,11 @@ public void test_ConstructorLorg_eclipse_swt_widgets_CompositeI() {
 }
 
 @Override
+@Test
 public void test_computeSizeIIZ() {
 }
 
+@Test
 public void test_deselect$I() {
 	int number = 15;
 	TableItem[] items = new TableItem[number];
@@ -107,6 +113,7 @@ public void test_deselect$I() {
 	assertEquals(number-3, table.getSelectionCount());
 }
 
+@Test
 public void test_deselectAll() {
 	int number = 15;
 	TableItem[] items = new TableItem[number];
@@ -128,6 +135,7 @@ public void test_deselectAll() {
 	assertEquals(0, table.getSelectionCount());
 }
 
+@Test
 public void test_deselectI() {
 	int number = 15;
 	TableItem[] items = new TableItem[number];
@@ -158,6 +166,7 @@ public void test_deselectI() {
 	assertEquals(1, table.getSelectionCount());
 }
 
+@Test
 public void test_deselectII() {
 	int number = 15;
 	TableItem[] items = new TableItem[number];
@@ -223,6 +232,7 @@ public void test_deselectII() {
 	table.selectAll();
 }
 
+@Test
 public void test_getColumnCount() {
 	assertEquals(0, table.getColumnCount());
 	TableColumn column0 = new TableColumn(table, SWT.NONE);
@@ -239,6 +249,7 @@ public void test_getColumnCount() {
 	assertEquals(0, table.getColumnCount());
 }
 
+@Test
 public void test_getColumnI() {
 	try {
 		table.getColumn(0);
@@ -272,6 +283,7 @@ public void test_getColumnI() {
 	}
 }
 
+@Test
 public void test_getColumns() {
 	assertEquals(0, table.getColumns().length);
 	TableColumn column0 = new TableColumn(table, SWT.LEFT);
@@ -294,11 +306,13 @@ public void test_getColumns() {
 	assertEquals(0, table.getColumns().length);
 }
 
+@Test
 public void test_getGridLineWidth() {
 	// execute method but there is no way to check the value since it may be anything including 0
 	table.getGridLineWidth();
 }
 
+@Test
 public void test_getHeaderHeight() {
 	if (SwtTestUtil.isGTK) {
 		//TODO Fix GTK failure.
@@ -314,6 +328,7 @@ public void test_getHeaderHeight() {
 	assertEquals(0, table.getHeaderHeight());
 }
 
+@Test
 public void test_getItemCount() {
 	int[] cases = {0, 10, 100};
 	for (int j = 0; j < cases.length; j++) {
@@ -335,12 +350,14 @@ public void test_getItemCount() {
 	}
 }
 
+@Test
 public void test_getItemHeight() {
 	assertTrue(":a: Item height <= 0", table.getItemHeight() > 0);
 	new TableItem(table, 0);
 	assertTrue(":b: Item height <= 0", table.getItemHeight() > 0);
 }
 
+@Test
 public void test_getItemI() {
 	int number = 15;
 	TableItem[] items = new TableItem[number];
@@ -386,6 +403,7 @@ public void test_getItemI() {
 	}
 }
 
+@Test
 public void test_getItems() {
 	int[] cases = {0, 10, 100};
 	for (int j = 0; j < cases.length; j++) {
@@ -434,6 +452,7 @@ public void test_getItems() {
 	}
 }
 
+@Test
 public void test_getSelection() {
 	int number = 15;
 	TableItem[] items = new TableItem[number];
@@ -475,6 +494,7 @@ public void test_getSelection() {
 	assertArrayEquals(new TableItem[] {}, table.getSelection());
 }
 
+@Test
 public void test_getSelectionCount() {
 	int number = 15;
 	TableItem[] items = new TableItem[number];
@@ -516,6 +536,7 @@ public void test_getSelectionCount() {
 	assertEquals(0, table.getSelectionCount());
 }
 
+@Test
 public void test_getSelectionIndex() {
 	int number = 15;
 	TableItem[] items = new TableItem[number];
@@ -557,6 +578,7 @@ public void test_getSelectionIndex() {
 	assertEquals(-1, table.getSelectionIndex());
 }
 
+@Test
 public void test_getSelectionIndices() {
 	int number = 15;
 	TableItem[] items = new TableItem[number];
@@ -597,6 +619,7 @@ public void test_getSelectionIndices() {
 	assertArrayEquals(new int[]{}, table.getSelectionIndices());
 }
 
+@Test
 public void test_indexOfLorg_eclipse_swt_widgets_TableItem() {
 	int number = 20;
 	TableItem[] items = new TableItem[number];
@@ -682,6 +705,7 @@ public void test_indexOfLorg_eclipse_swt_widgets_TableItem() {
 	}
 }
 
+@Test
 public void test_isSelectedI() {
 	int number = 15;
 	TableItem[] items = new TableItem[number];
@@ -731,6 +755,7 @@ public void test_isSelectedI() {
 	}
 }
 
+@Test
 public void test_remove$I() {
 	int number = 15;
 	TableItem[] items = new TableItem[number];
@@ -785,6 +810,7 @@ public void test_remove$I() {
 	assertEquals(number-4, table.getItemCount());
 }
 
+@Test
 public void test_removeAll() {
 	int number = 15;
 	TableItem[] items = new TableItem[number];
@@ -802,6 +828,7 @@ public void test_removeAll() {
 	table.removeAll();
 }
 
+@Test
 public void test_removeII() {
 	int number = 5;
 	TableItem[] items = new TableItem[number];
@@ -981,6 +1008,7 @@ public void test_removeII() {
 	assertEquals(number-4, table.getItemCount());
 }
 
+@Test
 public void test_select$I() {
 	try {
 		table.select(null);
@@ -1075,6 +1103,7 @@ public void test_select$I() {
 	assertArrayEquals(new int[] {}, table.getSelectionIndices());
 }
 
+@Test
 public void test_selectAll() {
 	int number = 5;
 	TableItem[] items = new TableItem[number];
@@ -1095,6 +1124,7 @@ public void test_selectAll() {
 	assertArrayEquals(new int[]{}, table.getSelectionIndices());
 }
 
+@Test
 public void test_selectI() {
 	int number = 15;
 	TableItem[] items = new TableItem[number];
@@ -1137,6 +1167,7 @@ public void test_selectI() {
 
 }
 
+@Test
 public void test_selectII() {
 	int number = 15;
 	TableItem[] items = new TableItem[number];
@@ -1232,6 +1263,7 @@ public void test_selectII() {
 	assertArrayEquals(new int[] {}, table.getSelectionIndices());
 }
 
+@Test
 public void test_setColumnOrder$I() {
 	assertArrayEquals(table.getColumnOrder(), new int[0]);
 	table.setColumnOrder(new int[0]);
@@ -1302,9 +1334,11 @@ public void test_setColumnOrder$I() {
 }
 
 @Override
+@Test
 public void test_setFontLorg_eclipse_swt_graphics_Font() {
 }
 
+@Test
 public void test_setHeaderVisibleZ() {
 	assertFalse(table.getHeaderVisible());
 	table.setHeaderVisible(true);
@@ -1313,6 +1347,7 @@ public void test_setHeaderVisibleZ() {
 	assertFalse(table.getHeaderVisible());
 }
 
+@Test
 public void test_setLinesVisibleZ() {
 	assertFalse(table.getLinesVisible());
 	table.setLinesVisible(true);
@@ -1322,9 +1357,11 @@ public void test_setLinesVisibleZ() {
 }
 
 @Override
+@Test
 public void test_setRedrawZ() {
 }
 
+@Test
 public void test_setSelection$I() {
 	int number = 5;
 	TableItem[] items = new TableItem[number];
@@ -1408,6 +1445,7 @@ public void test_setSelection$I() {
 	assertArrayEquals(new int[] {}, table.getSelectionIndices());
 }
 
+@Test
 public void test_setSelection$Lorg_eclipse_swt_widgets_TableItem() {
 	int number = 5;
 	TableItem[] items = new TableItem[number];
@@ -1521,6 +1559,7 @@ public void test_setSelection$Lorg_eclipse_swt_widgets_TableItem() {
 	assertArrayEquals(new TableItem[]{}, table.getSelection());	
 }
 
+@Test
 public void test_setSelectionI() {
 	int number = 5;
 	TableItem[] items = new TableItem[number];
@@ -1563,6 +1602,7 @@ public void test_setSelectionI() {
 	
 }
 
+@Test
 public void test_setSelectionII() {
 	int number = 5;
 	TableItem[] items = new TableItem[number];
@@ -1614,6 +1654,7 @@ public void test_setSelectionII() {
 		assertArrayEquals(new int[] {4}, table.getSelectionIndices());
 }
 
+@Test
 public void test_showSelection() {
 	table.showSelection();
 }
@@ -1645,12 +1686,14 @@ private void createTable(List<String> events) {
 	}
 }
 
+@Test
 public void test_consistency_KeySelection() {
     List<String> events = new ArrayList<String>();
     createTable(events);
     consistencyEvent(0, SWT.ARROW_DOWN, 0, 0, ConsistencyUtility.KEY_PRESS, events);
 }
 
+@Test
 public void test_consistency_MouseSelection() {
     List<String> events = new ArrayList<String>();
     createTable(events);
@@ -1659,6 +1702,7 @@ public void test_consistency_MouseSelection() {
             		 1, 0, ConsistencyUtility.MOUSE_CLICK, events);
 }
 
+@Test
 public void test_consistency_DoubleClick () {
     List<String> events = new ArrayList<String>();
     createTable(events);
@@ -1667,18 +1711,21 @@ public void test_consistency_DoubleClick () {
             	     ConsistencyUtility.MOUSE_DOUBLECLICK, events);
 }
 
+@Test
 public void test_consistency_EnterSelection () {
     List<String> events = new ArrayList<String>();
     createTable(events);
     consistencyEvent(13, 10, 0, 0, ConsistencyUtility.KEY_PRESS, events);
 }
 
+@Test
 public void test_consistency_MenuDetect () {
     List<String> events = new ArrayList<String>();
     createTable(events);
     consistencyEvent(20, 25, 3, 0, ConsistencyUtility.MOUSE_CLICK, events);
 }
 
+@Test
 public void test_consistency_DragDetect () {
     List<String> events = new ArrayList<String>();
     createTable(events);

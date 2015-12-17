@@ -13,6 +13,8 @@ package org.eclipse.swt.tests.junit;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.CTabItem;
+import org.junit.Before;
+import org.junit.Test;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.custom.CTabItem
@@ -24,12 +26,9 @@ public class Test_org_eclipse_swt_custom_CTabItem extends Test_org_eclipse_swt_w
 	CTabFolder cTabFolder;
 	CTabItem cTabItem;
 
-public Test_org_eclipse_swt_custom_CTabItem(String name) {
-	super(name);
-}
-
 @Override
-protected void setUp() {
+@Before
+public void setUp() {
 	super.setUp();
 	cTabFolder = new CTabFolder(shell, SWT.NONE);
 	cTabItem = new CTabItem(cTabFolder, SWT.NONE);
@@ -37,10 +36,12 @@ protected void setUp() {
 }
 
 @Override
+@Test
 public void test_setImageLorg_eclipse_swt_graphics_Image() {
 }
 
 @Override
+@Test
 public void test_setTextLjava_lang_String() {
 }
 }

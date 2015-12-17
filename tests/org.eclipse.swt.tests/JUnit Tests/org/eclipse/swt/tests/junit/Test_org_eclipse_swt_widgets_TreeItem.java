@@ -11,6 +11,10 @@
 package org.eclipse.swt.tests.junit;
 
 import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
@@ -23,6 +27,8 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeColumn;
 import org.eclipse.swt.widgets.TreeItem;
+import org.junit.Before;
+import org.junit.Test;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.widgets.TreeItem
@@ -31,16 +37,14 @@ import org.eclipse.swt.widgets.TreeItem;
  */
 public class Test_org_eclipse_swt_widgets_TreeItem extends Test_org_eclipse_swt_widgets_Item {
 
-public Test_org_eclipse_swt_widgets_TreeItem(String name) {
-	super(name);
-}
-
 @Override
-protected void setUp() {
+@Before
+public void setUp() {
 	super.setUp();
 	makeCleanEnvironment();
 }
 
+@Test
 public void test_ConstructorLorg_eclipse_swt_widgets_TreeI() {
 	try {
 		new TreeItem((TreeItem)null, SWT.NULL);
@@ -57,6 +61,7 @@ public void test_ConstructorLorg_eclipse_swt_widgets_TreeI() {
 	assertEquals(12, tree.getItemCount());
 }
 
+@Test
 public void test_ConstructorLorg_eclipse_swt_widgets_TreeII() {
 	try {
 		new TreeItem(tree, SWT.NONE, 5);
@@ -66,6 +71,7 @@ public void test_ConstructorLorg_eclipse_swt_widgets_TreeII() {
 	}
 }
 
+@Test
 public void test_ConstructorLorg_eclipse_swt_widgets_TreeItemI() {
 	for (int i = 0; i < 10; i++) {
 		new TreeItem(treeItem, SWT.NONE);
@@ -75,6 +81,7 @@ public void test_ConstructorLorg_eclipse_swt_widgets_TreeItemI() {
 	assertEquals(1, tree.getItemCount());
 }
 
+@Test
 public void test_ConstructorLorg_eclipse_swt_widgets_TreeItemII() {
 	try {
 		new TreeItem(treeItem, SWT.NONE, 5);
@@ -84,6 +91,7 @@ public void test_ConstructorLorg_eclipse_swt_widgets_TreeItemII() {
 	assertEquals(1, tree.getItemCount());
 }
 
+@Test
 public void test_getBounds() {
 	if (SwtTestUtil.isGTK || SwtTestUtil.isCocoa) {
 		//TODO Fix GTK and Cocoa failure.
@@ -520,6 +528,8 @@ void getBoundsID() {
 	bounds = treeItem2.getBounds(0);
 	assertTrue(":4x:", bounds.x > 0 && bounds.height > stringExtent1.y && bounds.width  == 0);
 }
+
+@Test
 public void test_getBoundsI() {
 	if (SwtTestUtil.isGTK || SwtTestUtil.isCocoa) {
 		//TODO Fix Gtk and Cocoa failure.
@@ -534,6 +544,7 @@ public void test_getBoundsI() {
 	getBoundsID();
 }
 
+@Test
 public void test_getExpanded() {
 	assertEquals(false, treeItem.getExpanded());
 	// there must be at least one subitem before you can set the treeitem expanded
@@ -544,6 +555,7 @@ public void test_getExpanded() {
 	assertEquals(false, treeItem.getExpanded());
 }
 
+@Test
 public void test_getImageBoundsI() {
 /**
  * Test without item image
@@ -618,6 +630,7 @@ public void test_getImageBoundsI() {
  	assertEquals(new Rectangle(0, 0, 0, 0), treeItem2.getImageBounds(1));
 }
 
+@Test
 public void test_getItemI() {
 	int number = 15;
 	TreeItem[] items = new TreeItem[number];
@@ -648,6 +661,7 @@ public void test_getItemI() {
 	}
 }
 
+@Test
 public void test_getItemCount() {
 	for (int i = 0; i < 10; i++) {
 		assertEquals(i, treeItem.getItemCount());
@@ -656,6 +670,7 @@ public void test_getItemCount() {
 	assertTrue("b: ", treeItem.getItemCount() == 10);
 }
 
+@Test
 public void test_getItems() {
 	int[] cases = {0, 10, 100};
 	TreeItem [][] items = new TreeItem [cases.length][];
@@ -675,15 +690,18 @@ public void test_getItems() {
 	}
 }
 
+@Test
 public void test_getParent() {
 	assertEquals(tree, treeItem.getParent());
 }
 
+@Test
 public void test_getParentItem() {
 	TreeItem tItem = new TreeItem(treeItem, SWT.NULL);
 	assertEquals(treeItem, tItem.getParentItem());
 }
 
+@Test
 public void test_setBackgroundILorg_eclipse_swt_graphics_Color() {
 	Display display = treeItem.getDisplay();
 	Color red = display.getSystemColor(SWT.COLOR_RED);
@@ -731,6 +749,7 @@ public void test_setBackgroundILorg_eclipse_swt_graphics_Color() {
 	}
 }
 
+@Test
 public void test_setBackgroundLorg_eclipse_swt_graphics_Color() {
 	Color color = new Color(treeItem.getDisplay(), 255, 0, 0);
 	treeItem.setBackground(color);
@@ -745,7 +764,7 @@ public void test_setBackgroundLorg_eclipse_swt_graphics_Color() {
 	}
 }
 
-
+@Test
 public void test_setCheckedZ() {
 	assertEquals(false, treeItem.getChecked());
 	
@@ -762,6 +781,7 @@ public void test_setCheckedZ() {
 	t.dispose();
 }
 
+@Test
 public void test_setExpandedZ() {
 	assertEquals(false, treeItem.getExpanded());
 	
@@ -782,6 +802,7 @@ public void test_setExpandedZ() {
 	assertEquals(false, ti.getExpanded());
 }
 
+@Test
 public void test_setFontLorg_eclipse_swt_graphics_Font() {
 	Font font = treeItem.getFont();
 	treeItem.setFont(font);
@@ -803,6 +824,7 @@ public void test_setFontLorg_eclipse_swt_graphics_Font() {
 	}
 }
 
+@Test
 public void test_setFontILorg_eclipse_swt_graphics_Font() {
 	Display display = treeItem.getDisplay();
 	Font font = new Font(display, SwtTestUtil.testFontName, 10, SWT.NORMAL);
@@ -853,6 +875,7 @@ public void test_setFontILorg_eclipse_swt_graphics_Font() {
 	}
 }
 
+@Test
 public void test_setForegroundILorg_eclipse_swt_graphics_Color() {
 	Display display = treeItem.getDisplay();
 	Color red = display.getSystemColor(SWT.COLOR_RED);
@@ -900,6 +923,7 @@ public void test_setForegroundILorg_eclipse_swt_graphics_Color() {
 	}
 }
 
+@Test
 public void test_setForegroundLorg_eclipse_swt_graphics_Color() {
 	Color color = new Color(treeItem.getDisplay(), 255, 0, 0);
 	treeItem.setForeground(color);
@@ -914,6 +938,7 @@ public void test_setForegroundLorg_eclipse_swt_graphics_Color() {
 	}
 }
 
+@Test
 public void test_setGrayedZ() {
 	Tree newTree = new Tree(shell, SWT.CHECK);
 	TreeItem tItem = new TreeItem(newTree,0);
@@ -925,6 +950,7 @@ public void test_setGrayedZ() {
 	newTree.dispose();
 }
 
+@Test
 public void test_setImage$Lorg_eclipse_swt_graphics_Image() {
 	assertNull(treeItem.getImage(1));	
  	treeItem.setImage(-1, null);		
@@ -962,6 +988,7 @@ public void test_setImage$Lorg_eclipse_swt_graphics_Image() {
 	}
 }
 
+@Test
 public void test_setImageILorg_eclipse_swt_graphics_Image() {
 	// no columns
 	assertEquals(null, treeItem.getImage(0));
@@ -1002,6 +1029,7 @@ public void test_setImageILorg_eclipse_swt_graphics_Image() {
 	}
 }
 
+@Test
 public void test_setText$Ljava_lang_String() {
 	final String TestString = "test";
 	final String TestStrings[] = new String[] {TestString, TestString + "1", TestString + "2"};
@@ -1046,6 +1074,7 @@ public void test_setText$Ljava_lang_String() {
 
 }
 
+@Test
 public void test_setTextILjava_lang_String(){
 	final String TestString = "test";
 	final String TestStrings[] = new String[] {TestString, TestString + "1", TestString + "2"};

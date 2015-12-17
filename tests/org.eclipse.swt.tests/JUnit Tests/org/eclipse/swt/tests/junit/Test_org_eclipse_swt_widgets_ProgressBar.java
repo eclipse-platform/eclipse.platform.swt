@@ -10,8 +10,13 @@
  *******************************************************************************/
 package org.eclipse.swt.tests.junit;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.ProgressBar;
+import org.junit.Before;
+import org.junit.Test;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.widgets.ProgressBar
@@ -20,18 +25,16 @@ import org.eclipse.swt.widgets.ProgressBar;
  */
 public class Test_org_eclipse_swt_widgets_ProgressBar extends Test_org_eclipse_swt_widgets_Control {
 
-public Test_org_eclipse_swt_widgets_ProgressBar(String name) {
-	super(name);
-}
-
 @Override
-protected void setUp() {
+@Before
+public void setUp() {
 	super.setUp();
 	progressBar = new ProgressBar(shell, 0);
 	setWidget(progressBar);
 }
 
 @Override
+@Test
 public void test_ConstructorLorg_eclipse_swt_widgets_CompositeI() {
 	try {
 		progressBar = new ProgressBar(null, 0);
@@ -46,13 +49,16 @@ public void test_ConstructorLorg_eclipse_swt_widgets_CompositeI() {
 }
 
 @Override
+@Test
 public void test_computeSizeIIZ() {
 }
 
 @Override
+@Test
 public void test_setFocus() {
 }
 
+@Test
 public void test_setMaximumI() {
 
 	int [][] testValues = getSetMaximumValues();
@@ -65,6 +71,7 @@ public void test_setMaximumI() {
 	}
 }
 
+@Test
 public void test_setMinimumI() {
 
 	int [][] testValues = getSetMinimumValues();
@@ -77,6 +84,7 @@ public void test_setMinimumI() {
 	}
 }
 
+@Test
 public void test_setSelectionI() {
 	int [][] testValues = getSetSelectionValues();
 	for (int i = 0; i < testValues.length; i++) {
@@ -551,10 +559,12 @@ return new int[][] {
 };
 }
 
+@Test
 public void test_consistency_MenuDetect () {
     consistencyEvent(10, 5, 3, 0, ConsistencyUtility.MOUSE_CLICK);
 }
 
+@Test
 public void test_consistency_DragDetect () {
     consistencyEvent(10, 5, 20, 10, ConsistencyUtility.MOUSE_DRAG);
 }

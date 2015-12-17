@@ -25,6 +25,8 @@ import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
+import org.junit.Before;
+import org.junit.Test;
 
 
 /**
@@ -34,22 +36,21 @@ import org.eclipse.swt.widgets.ToolItem;
  */
 public class Test_org_eclipse_swt_widgets_CoolBar extends Test_org_eclipse_swt_widgets_Composite {
 
-public Test_org_eclipse_swt_widgets_CoolBar(String name) {
-	super(name);
-}
-
 @Override
-protected void setUp() {
+@Before
+public void setUp() {
 	super.setUp();
 	coolBar = new CoolBar(shell, 0);
 	setWidget(coolBar);
 }
 
 @Override
+@Test
 public void test_ConstructorLorg_eclipse_swt_widgets_CompositeI() {
 }
 
 @Override
+@Test
 public void test_computeSizeIIZ() {
 }
 
@@ -91,6 +92,7 @@ private void createCoolBar(List<String> events) {
 	setWidget(coolBar);
 }
 
+@Test
 public void test_consistency_ChevronMenuDetect () {
     List<String> events = new ArrayList<String>();
     createCoolBar(events);
@@ -100,6 +102,7 @@ public void test_consistency_ChevronMenuDetect () {
     consistencyEvent(points[0].x-12, 0, 3, ConsistencyUtility.ESCAPE_MENU, ConsistencyUtility.MOUSE_CLICK, events);
 }
 
+@Test
 public void test_consistency_MenuDetect () {
     List<String> events = new ArrayList<String>();
     createCoolBar(events);
@@ -108,6 +111,7 @@ public void test_consistency_MenuDetect () {
     consistencyEvent(points[0].x, 2, 3, 0, ConsistencyUtility.MOUSE_CLICK, events);
 }
 
+@Test
 public void test_consistency_ChevronDragDetect () {
     List<String> events = new ArrayList<String>();
     createCoolBar(events);
@@ -116,6 +120,7 @@ public void test_consistency_ChevronDragDetect () {
     consistencyEvent(points[0].x-12, 0, points[0].x-12, 5, ConsistencyUtility.MOUSE_DRAG, events);
 }
 
+@Test
 public void test_consistency_DragDetect () {
     List<String> events = new ArrayList<String>();
     createCoolBar(events);
@@ -124,6 +129,7 @@ public void test_consistency_DragDetect () {
     consistencyEvent(points[0].x, 0, points[0].x, 5, ConsistencyUtility.MOUSE_DRAG, events);
 }
 
+@Test
 public void test_consistency_ChevronMouseSelection() {
     List<String> events = new ArrayList<String>();
     createCoolBar(events);

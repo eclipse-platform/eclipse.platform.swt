@@ -11,6 +11,10 @@
 package org.eclipse.swt.tests.junit;
 
 import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,6 +25,8 @@ import org.eclipse.swt.events.ExpandListener;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.ExpandBar;
 import org.eclipse.swt.widgets.ExpandItem;
+import org.junit.Before;
+import org.junit.Test;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.widgets.ExpandBar
@@ -29,17 +35,15 @@ import org.eclipse.swt.widgets.ExpandItem;
  */
 public class Test_org_eclipse_swt_widgets_ExpandBar extends Test_org_eclipse_swt_widgets_Composite {
 
-public Test_org_eclipse_swt_widgets_ExpandBar(String name) {
-	super(name);
-}
-
 @Override
-protected void setUp() {
+@Before
+public void setUp() {
 	super.setUp();
 	expandBar = new ExpandBar(shell, 0);
 	setWidget(expandBar);
 }
 
+@Test
 public void test_addExpandListenerLorg_eclipse_swt_events_ExpandListener() {
 	final boolean[] listenerCalled = new boolean[] {false};
 	ExpandListener expandListener = new ExpandListener() {		
@@ -78,6 +82,7 @@ public void test_addExpandListenerLorg_eclipse_swt_events_ExpandListener() {
 }
 
 @Override
+@Test
 public void test_ConstructorLorg_eclipse_swt_widgets_CompositeI() {
 	try {
 		new ExpandBar(null, 0);
@@ -87,6 +92,7 @@ public void test_ConstructorLorg_eclipse_swt_widgets_CompositeI() {
 	}
 }
 
+@Test
 public void test_getItemCount() {
 	int number = 10;
 	for (int i = 0; i < number; i++) {
@@ -95,6 +101,7 @@ public void test_getItemCount() {
 	}
 }
 
+@Test
 public void test_getItemI() {
 	int number = 5;
 	ExpandItem[] items = new ExpandItem[number];
@@ -119,6 +126,7 @@ public void test_getItemI() {
 	}
 }
 
+@Test
 public void test_getItems() {
 	int number = 5;
 	ExpandItem[] items = new ExpandItem[number];
@@ -137,6 +145,7 @@ public void test_getItems() {
 	assertArrayEquals(new ExpandItem[] {items[1], items[3]}, expandBar.getItems());
 }
 
+@Test
 public void test_indexOfLorg_eclipse_swt_widgets_ExpandItem() {
 	int number = 10;
 	ExpandItem[] items = new ExpandItem[number];
@@ -161,6 +170,7 @@ public void test_indexOfLorg_eclipse_swt_widgets_ExpandItem() {
 	}
 }
 
+@Test
 public void test_setSpacingI() {
 	expandBar.setSpacing(0);
 	assertEquals(expandBar.getSpacing(), 0);
@@ -182,30 +192,35 @@ private void createExpandBar(List<String> events) {
 	setWidget(expandBar);
 }
 
+@Test
 public void test_consistency_MouseSelection() {
     List<String> events = new ArrayList<String>();
     createExpandBar(events);
     consistencyEvent(30, 10, 1, 0, ConsistencyUtility.MOUSE_CLICK, events);
 }
 
+@Test
 public void test_consistency_EnterSelection() {
     List<String> events = new ArrayList<String>();
     createExpandBar(events);
     consistencyEvent(13, 10, 0, 0, ConsistencyUtility.KEY_PRESS, events);
 }
 
+@Test
 public void test_consistency_SpaceSelection () {
     List<String> events = new ArrayList<String>();
     createExpandBar(events);
     consistencyEvent(' ', 32, 0, 0, ConsistencyUtility.KEY_PRESS, events);
 }
 
+@Test
 public void test_consistency_MenuDetect () {
     List<String> events = new ArrayList<String>();
     createExpandBar(events);
     consistencyEvent(50, 15, 3, 0, ConsistencyUtility.MOUSE_CLICK, events);
 }
 
+@Test
 public void test_consistency_DragDetect () {
     List<String> events = new ArrayList<String>();
     createExpandBar(events);

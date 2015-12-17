@@ -10,6 +10,11 @@
  *******************************************************************************/
 package org.eclipse.swt.tests.junit;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
 import java.util.Arrays;
 import java.util.Collection;
 
@@ -42,7 +47,6 @@ public class Test_org_eclipse_swt_widgets_DateTime extends Test_org_eclipse_swt_
 	 }
 
 public Test_org_eclipse_swt_widgets_DateTime(int style) {
-	super("");
 	this.style = style;
 }
 

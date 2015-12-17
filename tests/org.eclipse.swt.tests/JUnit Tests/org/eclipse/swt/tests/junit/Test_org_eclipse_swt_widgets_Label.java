@@ -10,9 +10,14 @@
  *******************************************************************************/
 package org.eclipse.swt.tests.junit;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Label;
+import org.junit.Before;
+import org.junit.Test;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.widgets.Label
@@ -21,18 +26,16 @@ import org.eclipse.swt.widgets.Label;
  */
 public class Test_org_eclipse_swt_widgets_Label extends Test_org_eclipse_swt_widgets_Control {
 
-public Test_org_eclipse_swt_widgets_Label(String name) {
-	super(name);
-}
-
 @Override
-protected void setUp() {
+@Before
+public void setUp() {
 	super.setUp();
 	label = new Label(shell, 0);
 	setWidget(label);
 }
 
 @Override
+@Test
 public void test_ConstructorLorg_eclipse_swt_widgets_CompositeI(){
 	try {
 		label = new Label(null, 0);
@@ -49,10 +52,12 @@ public void test_ConstructorLorg_eclipse_swt_widgets_CompositeI(){
 }
 
 @Override
+@Test
 public void test_computeSizeIIZ() {
 	// super class test is sufficient
 }
 
+@Test
 public void test_getAlignment(){
 	int[] cases = {SWT.LEFT, SWT.RIGHT, SWT.CENTER};
 	for (int i=0; i<cases.length; i++)
@@ -62,6 +67,7 @@ public void test_getAlignment(){
 	} 
 }
 
+@Test
 public void test_getImage(){
 	Image[] cases = {null, new Image(null, 100, 100)};
 	for(int i=0; i<cases.length; i++){
@@ -72,6 +78,7 @@ public void test_getImage(){
 	}
 }
 
+@Test
 public void test_getText(){
 	String[] cases = {"", "some name", "sdasdlkjshcdascecoewcwe"};
 	for(int i=0; i<cases.length; i++){
@@ -80,6 +87,7 @@ public void test_getText(){
 	}
 }
 
+@Test
 public void test_setAlignmentI(){
 	int[] cases = {SWT.LEFT, SWT.RIGHT, SWT.CENTER};
 	for (int i=0; i<cases.length; i++)
@@ -90,10 +98,12 @@ public void test_setAlignmentI(){
 }
 
 @Override
+@Test
 public void test_setFocus() {
 	// super class test is sufficient
 }
 
+@Test
 public void test_setTextLjava_lang_String(){
 	try {
 		label.setText(null);
@@ -106,10 +116,12 @@ public void test_setTextLjava_lang_String(){
 /* custom */
 Label label;
 
+@Test
 public void test_consistency_MenuDetect () {
     consistencyEvent(10, 5, 3, 0, ConsistencyUtility.MOUSE_CLICK);
 }
 
+@Test
 public void test_consistency_DragDetect () {
     consistencyEvent(10, 5, 20, 10, ConsistencyUtility.MOUSE_DRAG);
 }

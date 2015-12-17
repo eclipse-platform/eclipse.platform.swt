@@ -12,6 +12,8 @@ package org.eclipse.swt.tests.junit;
 
 
 import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,6 +22,8 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.TableTree;
 import org.eclipse.swt.custom.TableTreeItem;
 import org.eclipse.swt.widgets.TableColumn;
+import org.junit.Before;
+import org.junit.Test;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.custom.TableTree
@@ -29,21 +33,20 @@ import org.eclipse.swt.widgets.TableColumn;
 @SuppressWarnings("deprecation")
 public class Test_org_eclipse_swt_custom_TableTree extends Test_org_eclipse_swt_widgets_Composite {
 
-public Test_org_eclipse_swt_custom_TableTree(String name) {
-	super(name);
-}
-
 @Override
-protected void setUp() {
+@Before
+public void setUp() {
 	super.setUp();
 	tableTree = new TableTree(shell, style = SWT.MULTI);
 	setWidget(tableTree);
 }
 
 @Override
+@Test
 public void test_ConstructorLorg_eclipse_swt_widgets_CompositeI() {
 }
 
+@Test
 public void test_getSelection() {
 	int number = 8;
 	TableTreeItem[] items = new TableTreeItem[number];
@@ -55,6 +58,7 @@ public void test_getSelection() {
 	// getSelection() is further tested in test_selectAll and test_setSelection$Lorg_eclipse_swt_custom_TableTreeItem
 }
 
+@Test
 public void test_getSelectionCount() {
 	int number = 8;
 	TableTreeItem[] items = new TableTreeItem[number];
@@ -67,12 +71,14 @@ public void test_getSelectionCount() {
 }
 
 @Override
+@Test
 public void test_getChildren() {
 	/* Overriding test_getChildren from Test_org_eclipse_swt_widgets_Composite
 	 * to do nothing, because the child of a TableTree is always a Table.
 	 */
 }
 
+@Test
 public void test_selectAll() {
 	/* FUTURE: Should also add sub-nodes, and test both single and multi with those.
 	 * i.e. subitems[i] = new TableTreeItem(items[i], SWT.NONE); */
@@ -98,6 +104,7 @@ public void test_selectAll() {
 	selectAll_helper("selectAll()", new TableTreeItem[] {});
 }
 
+@Test
 public void test_setSelection$Lorg_eclipse_swt_custom_TableTreeItem() {
 	/* FUTURE: Should also add sub-nodes, and test both single and multi with those.
 	 * i.e. subitems[i] = new TableTreeItem(items[i], SWT.NONE); */
@@ -251,24 +258,28 @@ private void createTableTree(List<String> events, boolean traverse) {
 	setWidget(tableTree);
 }
 
+@Test
 public void test_consistency_KeySelection() {
     List<String> events = new ArrayList<String>();
     createTableTree(events, true);
     consistencyEvent(0, SWT.ARROW_DOWN, 0, 0, ConsistencyUtility.KEY_PRESS, events);
 }
 
+@Test
 public void test_consistency_MouseSelection() {
     List<String> events = new ArrayList<String>();
     createTableTree(events, true);
     consistencyEvent(30, 30, 1, 0, ConsistencyUtility.MOUSE_CLICK, events);
 }
 
+@Test
 public void test_consistency_MouseExpand() {
     List<String> events = new ArrayList<String>();
     createTableTree(events, true);
     consistencyEvent(11, 10, 1, 0, ConsistencyUtility.MOUSE_CLICK, events);
 }
 
+@Test
 public void test_consistency_KeyExpand() {
     List<String> events = new ArrayList<String>();
     createTableTree(events, true);
@@ -279,6 +290,7 @@ public void test_consistency_KeyExpand() {
     consistencyEvent(0, code, 0, 0, ConsistencyUtility.KEY_PRESS, events);
 }
 
+@Test
 public void test_consistency_DoubleClick () {
     List<String> events = new ArrayList<String>();
     createTableTree(events, true);
@@ -287,24 +299,28 @@ public void test_consistency_DoubleClick () {
             	     ConsistencyUtility.MOUSE_DOUBLECLICK, events);
 }
 
+@Test
 public void test_consistency_EnterSelection () {
     List<String> events = new ArrayList<String>();
     createTableTree(events, false);
     consistencyEvent(13, 10, 0, 0, ConsistencyUtility.KEY_PRESS, events);
 }
 
+@Test
 public void test_consistency_SpaceSelection () {
     List<String> events = new ArrayList<String>();
     createTableTree(events, true);
     consistencyEvent(' ', 32, 0, 0, ConsistencyUtility.KEY_PRESS, events);
 }
 
+@Test
 public void test_consistency_MenuDetect () {
     List<String> events = new ArrayList<String>();
     createTableTree(events, true);
     consistencyEvent(50, 25, 3, 0, ConsistencyUtility.MOUSE_CLICK, events);
 }
 
+@Test
 public void test_consistency_DragDetect () {
     List<String> events = new ArrayList<String>();
     createTableTree(events, true);

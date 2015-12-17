@@ -10,7 +10,11 @@
  *******************************************************************************/
 package org.eclipse.swt.tests.junit;
 
-import junit.framework.TestCase;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.DisposeEvent;
@@ -21,28 +25,29 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Widget;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TestName;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.widgets.Widget
  *
  * @see org.eclipse.swt.widgets.Widget
  */
-public class Test_org_eclipse_swt_widgets_Widget extends TestCase {
+public class Test_org_eclipse_swt_widgets_Widget{
 	// Use this variable to help validate callbacks
 	boolean listenerCalled;
-
-public Test_org_eclipse_swt_widgets_Widget(String name) {
-	super(name);
-}
-
-@Override
-protected void setUp() {
+	@Rule public TestName name = new TestName();
+	
+@Before
+public void setUp() {
 	shell = new Shell();
 }
 
-@Override
-protected void tearDown() {
+@After
+public void tearDown() {
 	if (widget != null) {
 		assertEquals(false, widget.isDisposed());
 	}
@@ -185,7 +190,7 @@ protected void hookExpectedEvents(Widget w, String[] types, final java.util.List
 }
 
 protected String getTestName() {
-    String test = getName();
+    String test = name.getMethodName();
     int index = test.lastIndexOf('_');
     if(index != -1)
         test = test.substring(index+1, test.length());
