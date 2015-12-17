@@ -10,43 +10,45 @@
  *******************************************************************************/
 package org.eclipse.swt.tests.junit;
 
-import junit.framework.TestCase;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import org.eclipse.swt.widgets.Dialog;
 import org.eclipse.swt.widgets.Shell;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.widgets.Dialog
  *
  * @see org.eclipse.swt.widgets.Dialog
  */
-public class Test_org_eclipse_swt_widgets_Dialog extends TestCase {
+public class Test_org_eclipse_swt_widgets_Dialog {
 
-public Test_org_eclipse_swt_widgets_Dialog(String name) {
-	super(name);
-}
-
-@Override
-protected void setUp() {
+@Before
+public void setUp() {
 	shell = new Shell();
 }
 
-@Override
-protected void tearDown() {
+@After
+public void tearDown() {
 	shell.dispose();
 }
 
+@Test
 public void test_getParent() {
 	assertTrue(":a:", dialog.getParent() == shell);
 }
 
+@Test
 public void test_getStyle() {
 	// we use this call in a Constructor test so that we can
 	// check if the style is the one that was created
 	dialog.getStyle();
 }
 
-
+@Test
 public void test_setTextLjava_lang_String() {
 	assertTrue(":1:", dialog.getText() == "");
 	String testStr = "test string";

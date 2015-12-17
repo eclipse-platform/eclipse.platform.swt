@@ -10,8 +10,12 @@
  *******************************************************************************/
 package org.eclipse.swt.tests.junit;
 
+import static org.junit.Assert.fail;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.printing.PrintDialog;
+import org.junit.Before;
+import org.junit.Test;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.printing.PrintDialog
@@ -20,17 +24,14 @@ import org.eclipse.swt.printing.PrintDialog;
  */
 public class Test_org_eclipse_swt_printing_PrintDialog extends Test_org_eclipse_swt_widgets_Dialog {
 	
-public Test_org_eclipse_swt_printing_PrintDialog(String name) {
-	super(name);
-}
-
 @Override
-protected void setUp() {
-	super.setUp();
+@Before
+public void setUp() {
 	printDialog = new PrintDialog(shell, SWT.NONE);
 	setDialog(printDialog);
 }
 
+@Test
 public void test_ConstructorLorg_eclipse_swt_widgets_Shell() {
 	new PrintDialog(shell);
 	
@@ -42,6 +43,7 @@ public void test_ConstructorLorg_eclipse_swt_widgets_Shell() {
 	}
 }
 
+@Test
 public void test_ConstructorLorg_eclipse_swt_widgets_ShellI() {
 	new PrintDialog(shell, SWT.NONE);
 	

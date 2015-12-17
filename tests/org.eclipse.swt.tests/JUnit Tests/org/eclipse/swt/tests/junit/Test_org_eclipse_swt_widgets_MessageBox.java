@@ -10,9 +10,14 @@
  *******************************************************************************/
 package org.eclipse.swt.tests.junit;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.SWTException;
 import org.eclipse.swt.widgets.MessageBox;
+import org.junit.Before;
+import org.junit.Test;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.widgets.MessageBox
@@ -21,12 +26,10 @@ import org.eclipse.swt.widgets.MessageBox;
  */
 public class Test_org_eclipse_swt_widgets_MessageBox extends Test_org_eclipse_swt_widgets_Dialog {
 
-public Test_org_eclipse_swt_widgets_MessageBox(String name) {
-	super(name);
-}
 
 @Override
-protected void setUp() {
+@Before
+public void setUp() {
 	super.setUp();
 	messageBox = new MessageBox(shell, SWT.NULL);
 	setDialog(messageBox);
@@ -43,6 +46,7 @@ protected void setUp() {
  *    <li>ERROR_INVALID_SUBCLASS - if this class is not an allowed subclass</li>
  * </ul>
  */
+@Test
 public void test_ConstructorLorg_eclipse_swt_widgets_Shell(){
 	new MessageBox(shell);
 	try {
@@ -60,6 +64,7 @@ public void test_ConstructorLorg_eclipse_swt_widgets_Shell(){
  * @return the ID of the button that was selected to dismiss the
  *         message box (e.g. SWT.OK, SWT.CANCEL, etc...)
  */
+@Test
 public void test_open(){
 	if (SwtTestUtil.fTestDialogOpen)
 		messageBox.open();
@@ -70,6 +75,7 @@ public void test_open(){
  * the purpose for which it was opened. This message will be
  * visible on the dialog while it is open.
  */
+@Test
 public void test_setMessageLjava_lang_String(){
 	assertEquals(messageBox.getMessage(), "");
 	String testStr = "test string";

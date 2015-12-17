@@ -10,8 +10,13 @@
  *******************************************************************************/
 package org.eclipse.swt.tests.junit;
 
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.DirectoryDialog;
+import org.junit.Before;
+import org.junit.Test;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.widgets.DirectoryDialog
@@ -20,17 +25,15 @@ import org.eclipse.swt.widgets.DirectoryDialog;
  */
 public class Test_org_eclipse_swt_widgets_DirectoryDialog extends Test_org_eclipse_swt_widgets_Dialog {
 
-public Test_org_eclipse_swt_widgets_DirectoryDialog(String name) {
-	super(name);
-}
-
 @Override
-protected void setUp() {
+@Before
+public void setUp() {
 	super.setUp();
 	dirDialog = new DirectoryDialog(shell, SWT.NULL);
 	setDialog(dirDialog);
 }
 
+@Test
 public void test_ConstructorLorg_eclipse_swt_widgets_Shell() {
 	new DirectoryDialog(shell);
 	try {
@@ -41,11 +44,13 @@ public void test_ConstructorLorg_eclipse_swt_widgets_Shell() {
 	}		
 }
 
+@Test
 public void test_open() {
 	if (SwtTestUtil.fTestDialogOpen)
 		dirDialog.open();
 }
 
+@Test
 public void test_setFilterPathLjava_lang_String() {
 	assertTrue(":1:", dirDialog.getFilterPath() == "");
 	String testStr = "./*";
@@ -57,6 +62,7 @@ public void test_setFilterPathLjava_lang_String() {
 	assertTrue(":4:", dirDialog.getFilterPath() == null);
 }
 
+@Test
 public void test_setMessageLjava_lang_String() {
 	assertTrue(":1:", dirDialog.getMessage() == "");
 	String testStr = "test string";

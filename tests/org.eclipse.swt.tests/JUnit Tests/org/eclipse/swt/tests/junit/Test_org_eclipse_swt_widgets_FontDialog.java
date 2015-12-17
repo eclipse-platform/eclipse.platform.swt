@@ -11,11 +11,16 @@
 package org.eclipse.swt.tests.junit;
 
 import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.fail;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.widgets.FontDialog;
+import org.junit.Before;
+import org.junit.Test;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.widgets.FontDialog
@@ -24,17 +29,15 @@ import org.eclipse.swt.widgets.FontDialog;
  */
 public class Test_org_eclipse_swt_widgets_FontDialog extends Test_org_eclipse_swt_widgets_Dialog {
 
-public Test_org_eclipse_swt_widgets_FontDialog(String name) {
-	super(name);
-}
-
 @Override
-protected void setUp() {
+@Before
+public void setUp() {
 	super.setUp();
 	fontDialog = new FontDialog(shell, SWT.NULL);
 	setDialog(fontDialog);
 }
 
+@Test
 public void test_ConstructorLorg_eclipse_swt_widgets_Shell() {
 	new FontDialog(shell);
 	try {
@@ -45,6 +48,7 @@ public void test_ConstructorLorg_eclipse_swt_widgets_Shell() {
 	}
 }
 
+@Test
 public void test_ConstructorLorg_eclipse_swt_widgets_ShellI() {
 	try {
 		new FontDialog(null, SWT.NULL);
@@ -54,6 +58,7 @@ public void test_ConstructorLorg_eclipse_swt_widgets_ShellI() {
 	}
 }
 
+@Test
 public void test_setFontDataLorg_eclipse_swt_graphics_FontData() {
 	FontData [] fontData = new FontData [1];
 	fontData [0] = new FontData ();
@@ -67,6 +72,7 @@ public void test_setFontDataLorg_eclipse_swt_graphics_FontData() {
 	assertNull(fontDialog.getFontList());	
 }
 
+@Test
 public void test_setRGBLorg_eclipse_swt_graphics_RGB() {
 	RGB rgb = new RGB(255, 0, 0);
 	fontDialog.setRGB(rgb);

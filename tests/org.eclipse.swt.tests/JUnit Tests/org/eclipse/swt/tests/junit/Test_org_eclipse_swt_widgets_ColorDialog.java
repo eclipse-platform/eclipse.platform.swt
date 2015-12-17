@@ -11,9 +11,14 @@
 package org.eclipse.swt.tests.junit;
 
 
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.widgets.ColorDialog;
+import org.junit.Before;
+import org.junit.Test;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.widgets.ColorDialog
@@ -24,17 +29,15 @@ public class Test_org_eclipse_swt_widgets_ColorDialog extends Test_org_eclipse_s
 
 ColorDialog colorDialog;
 
-public Test_org_eclipse_swt_widgets_ColorDialog(String name) {
-	super(name);
-}
-
 @Override
-protected void setUp() {
+@Before
+public void setUp() {
 	super.setUp();
 	colorDialog = new ColorDialog(shell, SWT.NULL);
 	setDialog(colorDialog);
 }
 
+@Test
 public void test_ConstructorLorg_eclipse_swt_widgets_Shell() {
 	new ColorDialog(shell);
 	
@@ -46,6 +49,7 @@ public void test_ConstructorLorg_eclipse_swt_widgets_Shell() {
 	}
 }
 
+@Test
 public void test_ConstructorLorg_eclipse_swt_widgets_ShellI() {
 	new ColorDialog(shell, SWT.NULL);
 	
@@ -57,6 +61,7 @@ public void test_ConstructorLorg_eclipse_swt_widgets_ShellI() {
 	}
 }
 
+@Test
 public void test_setRGBLorg_eclipse_swt_graphics_RGB() {
 	RGB rgb = new RGB(0, 0, 0);
 

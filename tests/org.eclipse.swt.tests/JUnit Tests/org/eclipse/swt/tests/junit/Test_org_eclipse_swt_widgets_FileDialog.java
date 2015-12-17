@@ -10,8 +10,13 @@
  *******************************************************************************/
 package org.eclipse.swt.tests.junit;
 
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.FileDialog;
+import org.junit.Before;
+import org.junit.Test;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.widgets.FileDialog
@@ -20,17 +25,15 @@ import org.eclipse.swt.widgets.FileDialog;
  */
 public class Test_org_eclipse_swt_widgets_FileDialog extends Test_org_eclipse_swt_widgets_Dialog {
 
-public Test_org_eclipse_swt_widgets_FileDialog(String name) {
-	super(name);
-}
-
 @Override
-protected void setUp() {
+@Before
+public void setUp() {
 	super.setUp();
 	fileDialog = new FileDialog(shell, SWT.NULL);
 	setDialog(fileDialog);
 }
 
+@Test
 public void test_ConstructorLorg_eclipse_swt_widgets_Shell() {
 	// Test FileDialog(Shell)
 	new FileDialog(shell);
@@ -42,6 +45,7 @@ public void test_ConstructorLorg_eclipse_swt_widgets_Shell() {
 	}
 }
 
+@Test
 public void test_ConstructorLorg_eclipse_swt_widgets_ShellI() {
 	// Test FileDialog(Shell, int)
 	FileDialog fd;
@@ -70,16 +74,19 @@ public void test_ConstructorLorg_eclipse_swt_widgets_ShellI() {
 	assertTrue(style==SWT.SYSTEM_MODAL);
 }
 
+@Test
 public void test_getFileNames() {
 	String[] names = fileDialog.getFileNames();
 	assertTrue(names.length==0);
 }
 
+@Test
 public void test_open() {
 	if (SwtTestUtil.fTestDialogOpen)
 		fileDialog.open();
 }
 
+@Test
 public void test_setFileNameLjava_lang_String() {
 	fileDialog.setFileName("");
 	String name = fileDialog.getFileName();
@@ -92,6 +99,7 @@ public void test_setFileNameLjava_lang_String() {
 	assertTrue(name.equals("somefile.test"));
 }
 
+@Test
 public void test_setFilterExtensions$Ljava_lang_String() {
 	fileDialog.setFilterExtensions(new String[] {"txt","java"});
 	String filters[] = fileDialog.getFilterExtensions();
@@ -106,6 +114,7 @@ public void test_setFilterExtensions$Ljava_lang_String() {
 	assertTrue(filters==null);
 }
 
+@Test
 public void test_setFilterNames$Ljava_lang_String() {
 	fileDialog.setFilterNames(new String[] {"a.txt","b.java"});
 	String filters[] = fileDialog.getFilterNames();
@@ -120,6 +129,7 @@ public void test_setFilterNames$Ljava_lang_String() {
 	assertTrue(filters==null);
 }
 
+@Test
 public void test_setFilterPathLjava_lang_String() {
 	assertTrue(":1:", fileDialog.getFilterPath() == "");
 	String testStr = "./*";
