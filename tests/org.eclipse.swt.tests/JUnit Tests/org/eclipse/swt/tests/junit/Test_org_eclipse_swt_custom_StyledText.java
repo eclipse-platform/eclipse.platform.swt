@@ -1932,7 +1932,7 @@ public void test_getTextRangeII() {
 		assertTrue(":a:", exceptionThrown);
 	}	
 	text.setText("testing");
-	assertTrue(":d:", text.getTextRange(0,0).equals(""));
+	assertTrue(":d:", text.getTextRange(0,0).isEmpty());
 	assertTrue(":d:", text.getTextRange(0,1).equals("t"));	
 	assertTrue(":d:", text.getTextRange(0,2).equals("te"));
 	assertTrue(":d:", text.getTextRange(1,5).equals("estin"));
@@ -2012,9 +2012,9 @@ public void test_insertLjava_lang_String(){
 	}
 	catch (IllegalArgumentException e) {
 	}
-	assertTrue(":a:", text.getText().equals(""));
+	assertTrue(":a:", text.getText().isEmpty());
 	text.insert("");
-	assertTrue(":b:", text.getText().equals(""));
+	assertTrue(":b:", text.getText().isEmpty());
 	text.insert("fred");
 	assertTrue(":c:", text.getText().equals("fred"));
 	text.setSelection(2);

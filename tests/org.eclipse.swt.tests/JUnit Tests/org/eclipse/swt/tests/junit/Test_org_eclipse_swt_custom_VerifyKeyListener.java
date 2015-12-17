@@ -60,7 +60,7 @@ public void test_verifyKeyLorg_eclipse_swt_events_VerifyEvent() {
 	e = new Event();
 	e.character = 'a';
 	styledText.notifyListeners(SWT.KeyDown, e);
-	assertTrue(":2:", styledText.getText().equals(""));
+	assertTrue(":2:", styledText.getText().isEmpty());
 	styledText.removeVerifyKeyListener(listener);
 }
 }

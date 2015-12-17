@@ -90,7 +90,7 @@ public void test_open() {
 public void test_setFileNameLjava_lang_String() {
 	fileDialog.setFileName("");
 	String name = fileDialog.getFileName();
-	assertTrue(name.equals(""));
+	assertTrue(name.isEmpty());
 	fileDialog.setFileName(null);
 	name = fileDialog.getFileName();
 	assertTrue(name==null);
@@ -136,7 +136,7 @@ public void test_setFilterPathLjava_lang_String() {
 	fileDialog.setFilterPath(testStr);
 	assertTrue(":2:", fileDialog.getFilterPath().equals(testStr));
 	fileDialog.setFilterPath("");
-	assertTrue(":3:", fileDialog.getFilterPath().equals(""));
+	assertTrue(":3:", fileDialog.getFilterPath().isEmpty());
 	fileDialog.setFilterPath(null);
 	assertTrue(":4:", fileDialog.getFilterPath() == null);
 }

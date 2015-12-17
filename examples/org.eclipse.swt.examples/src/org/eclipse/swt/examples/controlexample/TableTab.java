@@ -442,7 +442,7 @@ class TableTab extends ScrollableTab {
 
 	@Override
 	Object[] parameterForType(String typeName, String value, Widget widget) {
-		if (value.equals("")) return new Object[] {new TableItem[0]}; // bug in Table?
+		if (value.isEmpty()) return new Object[] {new TableItem[0]}; // bug in Table?
 		if (typeName.equals("org.eclipse.swt.widgets.TableItem")) {
 			TableItem item = findItem(value, ((Table) widget).getItems());
 			if (item != null) return new Object[] {item};

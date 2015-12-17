@@ -530,7 +530,7 @@ public void test_textSetLorg_eclipse_swt_custom_TextChangedEvent() {
 					break;
 				}
 				case 4 : {
-					assertTrue(":4:", styledText.getText().equals(""));
+					assertTrue(":4:", styledText.getText().isEmpty());
 					break;
 				}
 			}

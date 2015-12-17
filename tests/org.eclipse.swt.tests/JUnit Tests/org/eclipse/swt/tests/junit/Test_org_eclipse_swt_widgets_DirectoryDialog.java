@@ -57,7 +57,7 @@ public void test_setFilterPathLjava_lang_String() {
 	dirDialog.setFilterPath(testStr);
 	assertTrue(":2:", dirDialog.getFilterPath().equals(testStr));
 	dirDialog.setFilterPath("");
-	assertTrue(":3:", dirDialog.getFilterPath().equals(""));
+	assertTrue(":3:", dirDialog.getFilterPath().isEmpty());
 	dirDialog.setFilterPath(null);
 	assertTrue(":4:", dirDialog.getFilterPath() == null);
 }
@@ -69,7 +69,7 @@ public void test_setMessageLjava_lang_String() {
 	dirDialog.setMessage(testStr);
 	assertTrue(":2:", dirDialog.getMessage().equals(testStr));
 	dirDialog.setMessage("");
-	assertTrue(":3:", dirDialog.getMessage().equals(""));
+	assertTrue(":3:", dirDialog.getMessage().isEmpty());
 	try {
 		dirDialog.setMessage(null);
 		fail ("null argument did not throw IllegalArgumentException");

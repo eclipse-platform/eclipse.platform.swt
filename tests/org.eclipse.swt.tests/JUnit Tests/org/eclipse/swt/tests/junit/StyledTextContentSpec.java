@@ -106,7 +106,7 @@ public static void main(String[] args) {
 	System.out.println(errorCount + " UNEXPECTED ERRORS.");
 }
 public void run() {
-	if (contentClassName.equals("")) {
+	if (contentClassName.isEmpty()) {
 		MessageBox box = new MessageBox(Display.getDefault().getActiveShell(), SWT.ICON_ERROR);
 		box.setMessage("Content class must be specified as an execution argument."); //$NON-NLS-1$
 		box.open();
@@ -280,7 +280,7 @@ public void test_Insert() {
 	assertTrue(":1c:", content.getLine(0).equals("test"));
 	assertTrue(":1d:", content.getLine(1).equals(" This"));
 	assertTrue(":1e:", content.getLine(2).equals("is a test"));
-	assertTrue(":1f:", content.getLine(3).equals(""));
+	assertTrue(":1f:", content.getLine(3).isEmpty());
 
 	content.setText("This\nis a test\r");
 	content.replaceTextRange(5, 0, "*** ");
@@ -289,23 +289,23 @@ public void test_Insert() {
 	assertTrue(":2b:", content.getLineCount() == 3);
 	assertTrue(":2c:", content.getLine(0).equals("This"));
 	assertTrue(":2d:", content.getLine(1).equals("*** is a test"));
-	assertTrue(":2e:", content.getLine(2).equals(""));
+	assertTrue(":2e:", content.getLine(2).isEmpty());
 
 	content.setText("Line 1\r\nLine 2");
 	content.replaceTextRange(0, 0, "\r");
 	newText = content.getTextRange(0, content.getCharCount());
 	assertTrue(":3a:", newText.equals("\rLine 1\r\nLine 2"));
 	assertTrue(":3b:", content.getLineCount() == 3);
-	assertTrue(":3c:", content.getLine(0).equals(""));
+	assertTrue(":3c:", content.getLine(0).isEmpty());
 	assertTrue(":3d:", content.getLine(1).equals("Line 1"));
 	assertTrue(":3e:", content.getLine(2).equals("Line 2"));
 	content.replaceTextRange(9, 0, "\r");
 	newText = content.getTextRange(0, content.getCharCount());
 	assertTrue(":3f:", newText.equals("\rLine 1\r\n\rLine 2"));
 	assertTrue(":3g:", content.getLineCount() == 4);
-	assertTrue(":3h:", content.getLine(0).equals(""));
+	assertTrue(":3h:", content.getLine(0).isEmpty());
 	assertTrue(":3i:", content.getLine(1).equals("Line 1"));
-	assertTrue(":3j:", content.getLine(2).equals(""));
+	assertTrue(":3j:", content.getLine(2).isEmpty());
 	assertTrue(":3k:", content.getLine(3).equals("Line 2"));
 
 	content.setText("This\nis a test\r");
@@ -313,10 +313,10 @@ public void test_Insert() {
 	newText = content.getTextRange(0, content.getCharCount());
 	assertTrue(":4a:", newText.equals("\nThis\nis a test\r"));
 	assertTrue(":4b:", content.getLineCount() == 4);
-	assertTrue(":4c:", content.getLine(0).equals(""));
+	assertTrue(":4c:", content.getLine(0).isEmpty());
 	assertTrue(":4d:", content.getLine(1).equals("This"));
 	assertTrue(":4e:", content.getLine(2).equals("is a test"));
-	assertTrue(":4f:", content.getLine(3).equals(""));
+	assertTrue(":4f:", content.getLine(3).isEmpty());
 	
 	content.setText("This\nis a test\r");
 	content.replaceTextRange(7, 0, "\r\nnewLine");
@@ -326,7 +326,7 @@ public void test_Insert() {
 	assertTrue(":5c:", content.getLine(0).equals("This"));
 	assertTrue(":5d:", content.getLine(1).equals("is"));
 	assertTrue(":5e:", content.getLine(2).equals("newLine a test"));
-	assertTrue(":5f:", content.getLine(3).equals(""));
+	assertTrue(":5f:", content.getLine(3).isEmpty());
 
 	content.setText("");
 	content.replaceTextRange(0, 0, "This\nis\r\nnewLine a test\r");
@@ -336,7 +336,7 @@ public void test_Insert() {
 	assertTrue(":6c:", content.getLine(0).equals("This"));
 	assertTrue(":6d:", content.getLine(1).equals("is"));
 	assertTrue(":6e:", content.getLine(2).equals("newLine a test"));
-	assertTrue(":6f:", content.getLine(3).equals(""));
+	assertTrue(":6f:", content.getLine(3).isEmpty());
 
 	// insert at end
 	content.setText("This");
@@ -352,8 +352,8 @@ public void test_Insert() {
 	assertTrue(":7e:", newText.equals("This\n\n"));
 	assertTrue(":7f:", content.getLineCount() == 3);
 	assertTrue(":7g:", content.getLine(0).equals("This"));
-	assertTrue(":7h:", content.getLine(1).equals(""));
-	assertTrue(":7i:", content.getLine(2).equals(""));
+	assertTrue(":7h:", content.getLine(1).isEmpty());
+	assertTrue(":7i:", content.getLine(2).isEmpty());
 
 	// insert at beginning
 	content.setText("This");
@@ -361,7 +361,7 @@ public void test_Insert() {
 	newText = content.getTextRange(0, content.getCharCount());
 	assertTrue(":8a:", newText.equals("\nThis"));
 	assertTrue(":8b:", content.getLineCount() == 2);
-	assertTrue(":8c:", content.getLine(0).equals(""));
+	assertTrue(":8c:", content.getLine(0).isEmpty());
 	assertTrue(":8d:", content.getLine(1).equals("This"));
 
 	// insert text
@@ -372,7 +372,7 @@ public void test_Insert() {
 	assertTrue(":9b:", content.getLineCount() == 3);
 	assertTrue(":9c:", content.getLine(0).equals("This"));
 	assertTrue(":9d:", content.getLine(1).equals("*** is a test"));
-	assertTrue(":9e:", content.getLine(2).equals(""));
+	assertTrue(":9e:", content.getLine(2).isEmpty());
 	
 	content.setText("This\n");
 	content.replaceTextRange(5, 0, "line");
@@ -399,7 +399,7 @@ public void test_Insert() {
 	newText = content.getTextRange(0, content.getCharCount());
 	assertTrue(":12a:", newText.equals("\rLine 1\r\nLine 2\r\nLine 3"));
 	assertTrue(":12b:", content.getLineCount() == 4);
-	assertTrue(":12c:", content.getLine(0).equals(""));
+	assertTrue(":12c:", content.getLine(0).isEmpty());
 	assertTrue(":12d:", content.getLine(1).equals("Line 1"));
 	assertTrue(":12e:", content.getLine(2).equals("Line 2"));
 	assertTrue(":12f:", content.getLine(3).equals("Line 3"));
@@ -437,12 +437,12 @@ public void test_Insert() {
 public void test_Empty() {
 	StyledTextContent content = getContentInstance();
 	assertTrue(":1a:", content.getLineCount() == 1);
-	assertTrue(":1b:", content.getLine(0).equals(""));
+	assertTrue(":1b:", content.getLine(0).isEmpty());
 
 	content.setText("test");
 	content.replaceTextRange(0,4,"");
 	assertTrue(":2a:", content.getLineCount() == 1);
-	assertTrue(":2b:", content.getLine(0).equals(""));
+	assertTrue(":2b:", content.getLine(0).isEmpty());
 }
 public void test_Line_Conversion() {
 	StyledTextContent content = getContentInstance();
@@ -458,7 +458,7 @@ public void test_Line_Conversion() {
 	assertTrue(":1h:", content.getOffsetAtLine(2) == 15);	
 	assertTrue(":1i:", content.getLine(3).equals("end"));
 	assertTrue(":1j:", content.getOffsetAtLine(3) == 22);
-	assertTrue(":1k:", content.getLine(4).equals(""));
+	assertTrue(":1k:", content.getLine(4).isEmpty());
 	assertTrue(":1l:", content.getOffsetAtLine(4) == 26);
 	
 	content.setText("This\r\nis a test");
@@ -474,36 +474,36 @@ public void test_Line_Conversion() {
 	
 	content.setText("\r\n");
 	assertTrue(":4a:", content.getLineCount() == 2);
-	assertTrue(":4b:", content.getLine(0).equals(""));
-	assertTrue(":4c:", content.getLine(1).equals(""));
+	assertTrue(":4b:", content.getLine(0).isEmpty());
+	assertTrue(":4c:", content.getLine(1).isEmpty());
 	assertTrue(":4d:", content.getLineAtOffset(0) == 0);
 	assertTrue(":4e:", content.getLineAtOffset(1) == 0);
 	assertTrue(":4f:", content.getLineAtOffset(2) == 1);
 
 	content.setText("\r\n\n\r\r\n");
 	assertTrue(":5a:", content.getLineCount() == 5);
-	assertTrue(":5b:", content.getLine(0).equals(""));
+	assertTrue(":5b:", content.getLine(0).isEmpty());
 	assertTrue(":5c:", content.getOffsetAtLine(0) == 0);	
-	assertTrue(":5d:", content.getLine(1).equals(""));
+	assertTrue(":5d:", content.getLine(1).isEmpty());
 	assertTrue(":5e:", content.getOffsetAtLine(1) == 2);	
-	assertTrue(":5f:", content.getLine(2).equals(""));
+	assertTrue(":5f:", content.getLine(2).isEmpty());
 	assertTrue(":5g:", content.getOffsetAtLine(2) == 3);	
-	assertTrue(":5h:", content.getLine(3).equals(""));
+	assertTrue(":5h:", content.getLine(3).isEmpty());
 	assertTrue(":5i:", content.getOffsetAtLine(3) == 4);
-	assertTrue(":5j:", content.getLine(4).equals(""));
+	assertTrue(":5j:", content.getLine(4).isEmpty());
 	assertTrue(":5k:", content.getOffsetAtLine(4) == 6);
 	
 	content.setText("test\r\rtest2\r\r");
 	assertTrue(":6a:", content.getLineCount() == 5);
 	assertTrue(":6b:", content.getLine(0).equals("test"));
 	assertTrue(":6c:", content.getOffsetAtLine(0) == 0);
-	assertTrue(":6d:", content.getLine(1).equals(""));
+	assertTrue(":6d:", content.getLine(1).isEmpty());
 	assertTrue(":6e:", content.getOffsetAtLine(1) == 5);	
 	assertTrue(":6f:", content.getLine(2).equals("test2"));
 	assertTrue(":6g:", content.getOffsetAtLine(2) == 6);	
-	assertTrue(":6h:", content.getLine(3).equals(""));
+	assertTrue(":6h:", content.getLine(3).isEmpty());
 	assertTrue(":6i:", content.getOffsetAtLine(3) == 12);
-	assertTrue(":6j:", content.getLine(4).equals(""));
+	assertTrue(":6j:", content.getLine(4).isEmpty());
 	assertTrue(":6k:", content.getOffsetAtLine(4) == 13);
 }
 public void test_Offset_To_Line() {
@@ -603,8 +603,8 @@ public void test_Delete() {
 	assertTrue(":2a:", newText.equals("This\n\r"));
 	assertTrue(":2b:",content.getLineCount() == 3);
 	assertTrue(":2c:", content.getLine(0).equals("This"));
-	assertTrue(":2d:", content.getLine(1).equals(""));
-	assertTrue(":2e:", content.getLine(2).equals(""));
+	assertTrue(":2d:", content.getLine(1).isEmpty());
+	assertTrue(":2e:", content.getLine(2).isEmpty());
 	
 	content.setText("This\nis a test\nline 3\nline 4");
 	content.replaceTextRange(21, 7, "");
@@ -638,8 +638,8 @@ public void test_Delete() {
 	assertTrue(":4l:", content.getLine(0).equals("i"));
 	content.replaceTextRange(0, 1, "");
 	newText = content.getTextRange(0, content.getCharCount());
-	assertTrue(":4m:", newText.equals(""));
-	assertTrue(":4n:", content.getLine(0).equals(""));
+	assertTrue(":4m:", newText.isEmpty());
+	assertTrue(":4n:", content.getLine(0).isEmpty());
 
 	content.setText("This\nis a test\r");
 	content.replaceTextRange(5, 9, "");
@@ -647,8 +647,8 @@ public void test_Delete() {
 	assertTrue(":5a:", newText.equals("This\n\r"));
 	assertTrue(":5b:",content.getLineCount() == 3);
 	assertTrue(":5c:", content.getLine(0).equals("This"));
-	assertTrue(":5d:", content.getLine(1).equals(""));
-	assertTrue(":5e:", content.getLine(2).equals(""));
+	assertTrue(":5d:", content.getLine(1).isEmpty());
+	assertTrue(":5e:", content.getLine(2).isEmpty());
 
 	content.setText("L1\r\nL2\r\nL3\r\nL4\r\n");
 	content.replaceTextRange(4, 8, "");
@@ -657,7 +657,7 @@ public void test_Delete() {
 	assertTrue(":6b:",content.getLineCount() == 3);
 	assertTrue(":6c:", content.getLine(0).equals("L1"));
 	assertTrue(":6d:", content.getLine(1).equals("L4"));
-	assertTrue(":6e:", content.getLine(2).equals(""));
+	assertTrue(":6e:", content.getLine(2).isEmpty());
 
 	content.setText("\nL1\r\nL2");
 	content.replaceTextRange(0, 1, "");
@@ -672,7 +672,7 @@ public void test_Delete() {
 	newText = content.getTextRange(0, content.getCharCount());
 	assertTrue(":8a:", newText.equals("\nL1\r\nL2"));
 	assertTrue(":8b:",content.getLineCount() == 3);
-	assertTrue(":8c:", content.getLine(0).equals(""));
+	assertTrue(":8c:", content.getLine(0).isEmpty());
 	assertTrue(":8d:", content.getLine(1).equals("L1"));
 	assertTrue(":8e:", content.getLine(2).equals("L2"));
 
@@ -681,9 +681,9 @@ public void test_Delete() {
 	newText = content.getTextRange(0, content.getCharCount());
 	assertTrue(":9a:", newText.equals("\nLine 2\n"));
 	assertTrue(":9b:", content.getLineCount() == 3);
-	assertTrue(":9c:", content.getLine(0).equals(""));
+	assertTrue(":9c:", content.getLine(0).isEmpty());
 	assertTrue(":9d:", content.getLine(1).equals("Line 2"));
-	assertTrue(":9e:", content.getLine(2).equals(""));
+	assertTrue(":9e:", content.getLine(2).isEmpty());
 
 	content.setText("Line 1\nLine 2\n");
 	content.replaceTextRange(6, 8, "");
@@ -699,7 +699,7 @@ public void test_Delete() {
 	assertTrue(":11b:", content.getLineCount() == 3);
 	assertTrue(":11c:", content.getLine(0).equals("Line one is a longer line"));
 	assertTrue(":11d:", content.getLine(1).equals("Line 3"));
-	assertTrue(":11e:", content.getLine(2).equals(""));
+	assertTrue(":11e:", content.getLine(2).isEmpty());
 
 }
 public void test_Replace() {
@@ -713,7 +713,7 @@ public void test_Replace() {
 	assertTrue(":1b:",content.getLineCount() == 3);
 	assertTrue(":1c:", content.getLine(0).equals("This"));
 	assertTrue(":1d:", content.getLine(1).equals("a test"));
-	assertTrue(":1e:", content.getLine(2).equals(""));
+	assertTrue(":1e:", content.getLine(2).isEmpty());
 
 	content.setText("This\nis a test\r");
 	content.replaceTextRange(5, 2, "was");
@@ -722,7 +722,7 @@ public void test_Replace() {
 	assertTrue(":2b:",content.getLineCount() == 3);
 	assertTrue(":2c:", content.getLine(0).equals("This"));
 	assertTrue(":2d:", content.getLine(1).equals("was a test"));
-	assertTrue(":2e:", content.getLine(2).equals(""));
+	assertTrue(":2e:", content.getLine(2).isEmpty());
 
 	content.setText("This is a test\r");
 	content.replaceTextRange(5, 2, "was");
@@ -748,15 +748,15 @@ public void test_Replace() {
 	content.replaceTextRange(start, end - start, "");
 	newText = content.getTextRange(0, content.getCharCount());
 	assertTrue(":5a:", content.getLineCount() == 12);
-	assertTrue(":5a:", content.getLine(5).equals(""));
-	assertTrue(":5a:", content.getLine(6).equals(""));
+	assertTrue(":5a:", content.getLine(5).isEmpty());
+	assertTrue(":5a:", content.getLine(6).isEmpty());
 	start = content.getOffsetAtLine(7);
 	content.replaceTextRange(start, content.getCharCount() - start, "");
 	newText = content.getTextRange(0, content.getCharCount());
 	assertTrue(":5a:", content.getLineCount() == 8);
-	assertTrue(":5a:", content.getLine(5).equals(""));
-	assertTrue(":5a:", content.getLine(6).equals(""));
-	assertTrue(":5a:", content.getLine(7).equals(""));
+	assertTrue(":5a:", content.getLine(5).isEmpty());
+	assertTrue(":5a:", content.getLine(6).isEmpty());
+	assertTrue(":5a:", content.getLine(7).isEmpty());
 
 }
 public void test_Special_Cases() {
@@ -767,70 +767,70 @@ public void test_Special_Cases() {
 	
 	content.setText("This is the input/output text component.");
 	content.replaceTextRange(0, 0, "\n");
-	assertTrue(":1a:", content.getLine(0).equals(""));
+	assertTrue(":1a:", content.getLine(0).isEmpty());
 	content.replaceTextRange(1, 0, "\n");
-	assertTrue(":1b:",content.getLine(0).equals(""));
+	assertTrue(":1b:",content.getLine(0).isEmpty());
 	content.replaceTextRange(2, 0, "\n");
-	assertTrue(":1c:",content.getLine(0).equals(""));
+	assertTrue(":1c:",content.getLine(0).isEmpty());
 	content.replaceTextRange(3, 0, "\n");
-	assertTrue(":1d:",content.getLine(0).equals(""));
+	assertTrue(":1d:",content.getLine(0).isEmpty());
 	content.replaceTextRange(4, 0, "\n");
-	assertTrue(":1e:",content.getLine(0).equals(""));
+	assertTrue(":1e:",content.getLine(0).isEmpty());
 	content.replaceTextRange(5, 0, "\n");
-	assertTrue(":1f:",content.getLine(0).equals(""));
+	assertTrue(":1f:",content.getLine(0).isEmpty());
 	content.replaceTextRange(6, 0, "\n");
-	assertTrue(":1g:",content.getLine(0).equals(""));
+	assertTrue(":1g:",content.getLine(0).isEmpty());
 	content.replaceTextRange(7, 0, "\n");
-	assertTrue(":1h:",content.getLine(0).equals(""));
+	assertTrue(":1h:",content.getLine(0).isEmpty());
 
 	content.setText("This is the input/output text component.");
 	content.replaceTextRange(0, 0, "\n");
 	newText = content.getTextRange(0, content.getCharCount());
 	assertTrue(":2a:", newText.equals("\nThis is the input/output text component."));
-	assertTrue(":2b:", content.getLine(0).equals(""));
+	assertTrue(":2b:", content.getLine(0).isEmpty());
 	assertTrue(":2c:", content.getLine(1).equals("This is the input/output text component."));
 	content.replaceTextRange(1, 0, "\n");
 	newText = content.getTextRange(0, content.getCharCount());
 	assertTrue(":2d:", newText.equals("\n\nThis is the input/output text component."));
-	assertTrue(":2e:", content.getLine(0).equals(""));
-	assertTrue(":2f:", content.getLine(1).equals(""));
+	assertTrue(":2e:", content.getLine(0).isEmpty());
+	assertTrue(":2f:", content.getLine(1).isEmpty());
 	assertTrue(":2g:", content.getLine(2).equals("This is the input/output text component."));
 
 	content.replaceTextRange(2, 0, "\n");
 	newText = content.getTextRange(0, content.getCharCount());
 	assertTrue(":3a:", newText.equals("\n\n\nThis is the input/output text component."));
-	assertTrue(":3b:", content.getLine(0).equals(""));
-	assertTrue(":3c:", content.getLine(1).equals(""));
-	assertTrue(":3d:", content.getLine(2).equals(""));
+	assertTrue(":3b:", content.getLine(0).isEmpty());
+	assertTrue(":3c:", content.getLine(1).isEmpty());
+	assertTrue(":3d:", content.getLine(2).isEmpty());
 	assertTrue(":3e:", content.getLine(3).equals("This is the input/output text component."));
 	content.replaceTextRange(3, 0, "\n");
 	newText = content.getTextRange(0, content.getCharCount());
 	assertTrue(":3f:", newText.equals("\n\n\n\nThis is the input/output text component."));
-	assertTrue(":3g:", content.getLine(0).equals(""));
-	assertTrue(":3h:", content.getLine(1).equals(""));
-	assertTrue(":3i:", content.getLine(2).equals(""));
-	assertTrue(":3j:", content.getLine(3).equals(""));
+	assertTrue(":3g:", content.getLine(0).isEmpty());
+	assertTrue(":3h:", content.getLine(1).isEmpty());
+	assertTrue(":3i:", content.getLine(2).isEmpty());
+	assertTrue(":3j:", content.getLine(3).isEmpty());
 	assertTrue(":3k:", content.getLine(4).equals("This is the input/output text component."));
 
 	content.replaceTextRange(3, 1, "");
 	newText = content.getTextRange(0, content.getCharCount());
 	assertTrue(":4a:", newText.equals("\n\n\nThis is the input/output text component."));
-	assertTrue(":4b:", content.getLine(0).equals(""));
-	assertTrue(":4c:", content.getLine(1).equals(""));
-	assertTrue(":4d:", content.getLine(2).equals(""));
+	assertTrue(":4b:", content.getLine(0).isEmpty());
+	assertTrue(":4c:", content.getLine(1).isEmpty());
+	assertTrue(":4d:", content.getLine(2).isEmpty());
 	assertTrue(":4e:", content.getLine(3).equals("This is the input/output text component."));
 	content.replaceTextRange(2, 1, "");
 	newText = content.getTextRange(0, content.getCharCount());
 	assertTrue(":4f:", newText.equals("\n\nThis is the input/output text component."));
-	assertTrue(":4g:", content.getLine(0).equals(""));
-	assertTrue(":4h:", content.getLine(1).equals(""));
+	assertTrue(":4g:", content.getLine(0).isEmpty());
+	assertTrue(":4h:", content.getLine(1).isEmpty());
 	assertTrue(":4i:", content.getLine(2).equals("This is the input/output text component."));
 
 	content.replaceTextRange(2, 0, "a");
 	newText = content.getTextRange(0, content.getCharCount());
 	assertTrue(":5a:", newText.equals("\n\naThis is the input/output text component."));
-	assertTrue(":5b:", content.getLine(0).equals(""));
-	assertTrue(":5c:", content.getLine(1).equals(""));
+	assertTrue(":5b:", content.getLine(0).isEmpty());
+	assertTrue(":5c:", content.getLine(1).isEmpty());
 	assertTrue(":5d:", content.getLine(2).equals("aThis is the input/output text component."));
 
 	content.setText("abc\r\ndef");
@@ -872,7 +872,7 @@ public void test_Special_Cases() {
 	newText = content.getTextRange(0, content.getCharCount());
 	assertTrue(":7d:", newText.equals("\n1bc"));
 	assertTrue(":7e:", content.getLineCount() == 2);
-	assertTrue(":7f:", content.getLine(0).equals(""));
+	assertTrue(":7f:", content.getLine(0).isEmpty());
 	assertTrue(":7g:", content.getLine(1).equals("1bc"));
 	
 	content = getContentInstance();

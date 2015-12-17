@@ -55,7 +55,7 @@ public void test_setTextLjava_lang_String() {
 	dialog.setText(testStr);
 	assertTrue(":2:", dialog.getText().equals(testStr));
 	dialog.setText("");
-	assertTrue(":3:", dialog.getText().equals(""));
+	assertTrue(":3:", dialog.getText().isEmpty());
 	try {
 		dialog.setText(null);
 		fail("No exception thrown for string = null");

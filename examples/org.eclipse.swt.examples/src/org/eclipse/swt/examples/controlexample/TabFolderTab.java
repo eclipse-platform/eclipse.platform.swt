@@ -11,9 +11,16 @@
 package org.eclipse.swt.examples.controlexample;
 
 
-import org.eclipse.swt.*;
-import org.eclipse.swt.layout.*;
-import org.eclipse.swt.widgets.*;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Group;
+import org.eclipse.swt.widgets.Item;
+import org.eclipse.swt.widgets.TabFolder;
+import org.eclipse.swt.widgets.TabItem;
+import org.eclipse.swt.widgets.Text;
+import org.eclipse.swt.widgets.Widget;
 
 class TabFolderTab extends Tab {
 	/* Example widgets and groups that contain them */
@@ -124,7 +131,7 @@ class TabFolderTab extends Tab {
 
 	@Override
 	Object[] parameterForType(String typeName, String value, Widget widget) {
-		if (value.equals("")) return new Object[] {new TabItem[0]};
+		if (value.isEmpty()) return new Object[] {new TabItem[0]};
 		if (typeName.equals("org.eclipse.swt.widgets.TabItem")) {
 			TabItem item = findItem(value, ((TabFolder) widget).getItems());
 			if (item != null) return new Object[] {item};

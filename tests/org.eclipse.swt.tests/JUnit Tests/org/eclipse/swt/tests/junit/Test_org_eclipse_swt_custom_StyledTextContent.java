@@ -124,7 +124,7 @@ public void test_getOffsetAtLineI() {
 
 @Test
 public void test_getTextRangeII() {
-	assertTrue(":g:", styledText.getTextRange(0,0).equals(""));
+	assertTrue(":g:", styledText.getTextRange(0,0).isEmpty());
 }
 
 @Test

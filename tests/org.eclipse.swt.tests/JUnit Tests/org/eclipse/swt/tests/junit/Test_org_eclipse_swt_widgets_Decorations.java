@@ -169,7 +169,7 @@ public void test_setTextLjava_lang_String() {
 	decorations.setText(testStr);
 	assertTrue("a", decorations.getText().equals(testStr));
 	decorations.setText("");
-	assertTrue("b", decorations.getText().equals(""));
+	assertTrue("b", decorations.getText().isEmpty());
 	try {
 		decorations.setText(null);
 		fail("No exception thrown for string == null");

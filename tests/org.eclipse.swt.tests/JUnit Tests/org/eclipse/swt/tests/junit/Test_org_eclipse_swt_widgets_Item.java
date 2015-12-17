@@ -62,7 +62,7 @@ public void test_setTextLjava_lang_String() {
 	item.setText(testStr);
 	assertTrue("a", item.getText().equals(testStr));
 	item.setText("");
-	assertTrue("b", item.getText().equals(""));
+	assertTrue("b", item.getText().isEmpty());
 	try {
 		item.setText(null);
 		fail("No exception thrown for string == null");

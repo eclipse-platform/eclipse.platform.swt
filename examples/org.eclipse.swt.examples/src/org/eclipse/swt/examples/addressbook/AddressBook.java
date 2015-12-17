@@ -414,7 +414,7 @@ private boolean saveAs() {
 	saveDialog.open();
 	String name = saveDialog.getFileName();
 		
-	if(name.equals("")) return false;
+	if(name.isEmpty()) return false;
 
 	if(name.indexOf(".adr") != name.length() - 4) {
 		name += ".adr";
