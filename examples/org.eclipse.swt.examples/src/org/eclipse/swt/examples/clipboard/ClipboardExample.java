@@ -644,7 +644,7 @@ void createControlTransfer(Composite parent){
 		}
 	});
 	combo = new Combo(parent, SWT.NONE);
-	combo.setItems(new String[] {"Item 1", "Item 2", "Item 3", "A longer Item"});
+	combo.setItems("Item 1", "Item 2", "Item 3", "A longer Item");
 	combo.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 	
 	l = new Label(parent, SWT.NONE);

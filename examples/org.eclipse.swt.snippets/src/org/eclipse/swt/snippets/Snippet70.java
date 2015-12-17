@@ -35,11 +35,7 @@ public static void main (String [] args) {
 	gc.dispose ();
 	ImageData imageData = image.getImageData ();
 	
-	PaletteData palette = new PaletteData (
-		new RGB [] {
-			new RGB (0, 0, 0),
-			new RGB (0xFF, 0xFF, 0xFF),
-		});
+	PaletteData palette = new PaletteData (new RGB (0, 0, 0),new RGB (0xFF, 0xFF, 0xFF));
 	ImageData maskData = new ImageData (20, 20, 1, palette);
 	Image mask = new Image (display, maskData);
 	gc = new GC (mask);

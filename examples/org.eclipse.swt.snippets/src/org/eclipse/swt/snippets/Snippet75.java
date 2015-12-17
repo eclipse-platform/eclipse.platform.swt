@@ -19,8 +19,8 @@ package org.eclipse.swt.snippets;
  * http://www.eclipse.org/swt/snippets/
  */
 import org.eclipse.swt.*;
-import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.layout.*;
+import org.eclipse.swt.widgets.*;
 
 public class Snippet75 {
 
@@ -64,7 +64,7 @@ public static void main (String [] args) {
 	ToolItem i2 = new ToolItem (tb1, SWT.RADIO);
 	i2.setText ("I2");
 	Combo combo1 = new Combo (tb1, SWT.READ_ONLY | SWT.BORDER);
-	combo1.setItems (new String [] {"C1"});
+	combo1.setItems ("C1");
 	combo1.setText ("C1");
 	combo1.pack ();
 	ToolItem i3 = new ToolItem (tb1, SWT.SEPARATOR);

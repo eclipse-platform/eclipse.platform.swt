@@ -73,13 +73,12 @@ public static void main (String [] args) {
 	Color blue = display.getSystemColor (SWT.COLOR_BLUE);
 	
 	//Create a source ImageData of depth 4
-	PaletteData palette = new PaletteData (new RGB[] {
-		black.getRGB(), white.getRGB(), yellow.getRGB(), 
-		red.getRGB(), blue.getRGB(), green.getRGB()});
+	PaletteData palette = new PaletteData (black.getRGB(), white.getRGB(), yellow.getRGB(), 
+		red.getRGB(), blue.getRGB(), green.getRGB());
 	ImageData sourceData = new ImageData (16, 16, 4, palette, 1, srcData);
 	
 	//Create a mask ImageData of depth 1 (monochrome)
-	palette = new PaletteData (new RGB [] {black.getRGB(), white.getRGB(),});
+	palette = new PaletteData (black.getRGB(), white.getRGB());
 	ImageData maskData = new ImageData (16, 16, 1, palette, 1, mskData);
 
 	//Set mask

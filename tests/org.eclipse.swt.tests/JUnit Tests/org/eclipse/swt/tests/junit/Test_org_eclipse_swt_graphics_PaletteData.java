@@ -45,7 +45,7 @@ public void test_Constructor$Lorg_eclipse_swt_graphics_RGB() {
 	new PaletteData(new RGB[] {null, null});
 	assertFalse(":b:", data.isDirect);
 
-	new PaletteData(new RGB[] {new RGB(0, 0, 0), new RGB(255, 255, 255)});
+	new PaletteData(new RGB(0, 0, 0), new RGB(255, 255, 255));
 	assertFalse(":c:", data.isDirect);
 }
 

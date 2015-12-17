@@ -36,11 +36,10 @@ public class Snippet194 {
 		RGB redRGB = new RGB(0xff, 0, 0);
 		RGB greenRGB = new RGB(0, 0xff, 0);
 		RGB blueRGB = new RGB(0, 0, 0xff);
-		palette = new PaletteData(new RGB[] {
-				whiteRGB,	// 0
+		palette = new PaletteData(whiteRGB,	// 0
 				redRGB,		// 1
 				greenRGB,	// 2
-				blueRGB });	// 3
+				blueRGB);	// 3
 		white = new Color(display, whiteRGB);
 		red = new Color(display, redRGB);
 		green = new Color(display, greenRGB);

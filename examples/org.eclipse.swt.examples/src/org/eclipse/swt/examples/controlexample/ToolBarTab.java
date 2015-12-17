@@ -11,11 +11,21 @@
 package org.eclipse.swt.examples.controlexample;
 
 
-import org.eclipse.swt.*;
-import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.widgets.*;
-import org.eclipse.swt.layout.*;
-import org.eclipse.swt.events.*;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Combo;
+import org.eclipse.swt.widgets.Group;
+import org.eclipse.swt.widgets.Item;
+import org.eclipse.swt.widgets.Menu;
+import org.eclipse.swt.widgets.MenuItem;
+import org.eclipse.swt.widgets.ToolBar;
+import org.eclipse.swt.widgets.ToolItem;
+import org.eclipse.swt.widgets.Widget;
 
 class ToolBarTab extends Tab {
 	/* Example widgets and groups that contain them */
@@ -111,7 +121,7 @@ class ToolBarTab extends Tab {
 		item.setToolTipText("SWT.SEPARATOR");
 		if (comboChildButton.getSelection ()) {
 			Combo combo = new Combo (imageToolBar, SWT.NONE);
-			combo.setItems (new String [] {"250", "500", "750"});
+			combo.setItems ("250", "500", "750");
 			combo.setText (combo.getItem (0));
 			combo.pack ();
 			item.setWidth (combo.getSize ().x);
@@ -149,7 +159,7 @@ class ToolBarTab extends Tab {
 		item.setToolTipText("SWT.SEPARATOR");
 		if (comboChildButton.getSelection ()) {
 			Combo combo = new Combo (textToolBar, SWT.NONE);
-			combo.setItems (new String [] {"250", "500", "750"});
+			combo.setItems ("250", "500", "750");
 			combo.setText (combo.getItem (0));
 			combo.pack ();
 			item.setWidth (combo.getSize ().x);
@@ -194,7 +204,7 @@ class ToolBarTab extends Tab {
 		item.setToolTipText("SWT.SEPARATOR");
 		if (comboChildButton.getSelection ()) {
 			Combo combo = new Combo (imageTextToolBar, SWT.NONE);
-			combo.setItems (new String [] {"250", "500", "750"});
+			combo.setItems ("250", "500", "750");
 			combo.setText (combo.getItem (0));
 			combo.pack ();
 			item.setWidth (combo.getSize ().x);

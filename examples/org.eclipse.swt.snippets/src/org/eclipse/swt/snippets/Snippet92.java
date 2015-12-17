@@ -29,7 +29,7 @@ public static void main (String [] args) {
 	Color black = display.getSystemColor (SWT.COLOR_BLACK);
 	
 	//Create a source ImageData of depth 1 (monochrome)
-	PaletteData palette = new PaletteData (new RGB [] {white.getRGB(), black.getRGB(),});
+	PaletteData palette = new PaletteData (white.getRGB(), black.getRGB());
 	ImageData sourceData = new ImageData (20, 20, 1, palette);
 	for (int i = 0; i < 10; i ++) {
 		for (int j = 0; j < 20; j++) {
@@ -38,7 +38,7 @@ public static void main (String [] args) {
 	}
 	
 	//Create a mask ImageData of depth 1 (monochrome)
-	palette = new PaletteData (new RGB [] {white.getRGB(), black.getRGB(),});
+	palette = new PaletteData (white.getRGB(), black.getRGB());
 	ImageData maskData = new ImageData (20, 20, 1, palette);
 	for (int i = 0; i < 20; i ++) {
 		for (int j = 0; j < 10; j++) {

@@ -28,7 +28,7 @@ public static void main(String[] args) {
 	Shell shell = new Shell(display);
 	shell.setLayout(new FillLayout());
 	final Combo combo = new Combo(shell, SWT.NONE);
-	combo.setItems(new String [] {"1111", "2222", "3333", "4444"});
+	combo.setItems("1111", "2222", "3333", "4444");
 	combo.setText(combo.getItem(0));
 	combo.addVerifyListener(new VerifyListener() {
 		@Override

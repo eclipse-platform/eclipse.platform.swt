@@ -10,6 +10,8 @@
  *******************************************************************************/
 package org.eclipse.swt.snippets;
 
+import java.awt.*;
+import java.awt.Canvas;
 /*
  * example snippet: use Java2D to modify an image being displayed in an SWT GUI.
  * Take a screen snapshot to print the image to a printer.
@@ -20,25 +22,24 @@ package org.eclipse.swt.snippets;
  * @since 3.8
  */
 import java.awt.Color;
-import java.awt.Frame;
-import java.awt.Canvas;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
 import java.awt.Image;
-import java.awt.Toolkit;
-import java.awt.geom.AffineTransform;
+import java.awt.geom.*;
 
 import org.eclipse.swt.*;
-import org.eclipse.swt.widgets.*;
-import org.eclipse.swt.layout.*;
-import org.eclipse.swt.events.*;
-import org.eclipse.swt.printing.*;
 import org.eclipse.swt.accessibility.*;
-import org.eclipse.swt.awt.SWT_AWT;
-import org.eclipse.swt.graphics.GC;
-import org.eclipse.swt.graphics.ImageData;
+import org.eclipse.swt.awt.*;
+import org.eclipse.swt.events.*;
+import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.layout.*;
+import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.printing.*;
+import org.eclipse.swt.widgets.*;
+import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.FileDialog;
+import org.eclipse.swt.widgets.Label;
 
 public class Snippet361 {
 	static Composite composite; // SWT
@@ -68,7 +69,7 @@ public class Snippet361 {
 		
 		new Label(shell, SWT.NONE).setText("Translate &X by:");
 		final Combo translateXCombo = new Combo(shell, SWT.NONE);
-		translateXCombo.setItems(new String[] {"0", "image width", "image height", "100", "200"});
+		translateXCombo.setItems("0", "image width", "image height", "100", "200");
 		translateXCombo.select(0);
 		translateXCombo.addModifyListener(new ModifyListener() {
 			@Override
@@ -80,7 +81,7 @@ public class Snippet361 {
 		
 		new Label(shell, SWT.NONE).setText("Translate &Y by:");
 		final Combo translateYCombo = new Combo(shell, SWT.NONE);
-		translateYCombo.setItems(new String[] {"0", "image width", "image height", "100", "200"});
+		translateYCombo.setItems("0", "image width", "image height", "100", "200");
 		translateYCombo.select(0);
 		translateYCombo.addModifyListener(new ModifyListener() {
 			@Override
@@ -92,7 +93,7 @@ public class Snippet361 {
 		
 		new Label(shell, SWT.NONE).setText("&Rotate by:");
 		final Combo rotateCombo = new Combo(shell, SWT.NONE);
-		rotateCombo.setItems(new String[] {"0", "Pi", "Pi/2", "Pi/4", "Pi/8"});
+		rotateCombo.setItems("0", "Pi", "Pi/2", "Pi/4", "Pi/8");
 		rotateCombo.select(0);
 		rotateCombo.addModifyListener(new ModifyListener() {
 			@Override

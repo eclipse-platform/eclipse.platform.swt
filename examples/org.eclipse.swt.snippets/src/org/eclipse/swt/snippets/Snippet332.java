@@ -24,11 +24,11 @@ package org.eclipse.swt.snippets;
  * @since 3.6
  */
 import org.eclipse.swt.*;
-import org.eclipse.swt.layout.*;
-import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.custom.*;
 import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.layout.*;
+import org.eclipse.swt.widgets.*;
 
 public class Snippet332 {
 	
@@ -59,7 +59,7 @@ public class Snippet332 {
 		Combo combo = new Combo(shell, SWT.SIMPLE);
 		combo.setFont(font);
 		combo.setBackground(display.getSystemColor(SWT.COLOR_YELLOW));
-		combo.setItems(new String[] { "Option 1...", "Option 2...", "Option 3...", "Option 4..." });
+		combo.setItems("Option 1...", "Option 2...", "Option 3...", "Option 4...");
 		combo.select(1);
 		combo.addSegmentListener(new SegmentListener() {
 			@Override

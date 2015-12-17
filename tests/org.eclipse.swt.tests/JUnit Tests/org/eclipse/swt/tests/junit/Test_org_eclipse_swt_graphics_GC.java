@@ -194,7 +194,7 @@ public void test_drawImageLorg_eclipse_swt_graphics_ImageII() {
 	Color c2 = new Color(display, 0, 0, 0);
 	Color c3 = new Color(display, 255, 255, 0);
 	
-	PaletteData paletteData = new PaletteData(new RGB[] {c1.getRGB(), c2.getRGB(), c3.getRGB()});
+	PaletteData paletteData = new PaletteData(c1.getRGB(), c2.getRGB(), c3.getRGB());
 	ImageData data = new ImageData(30,30, 8, paletteData);
 	for (int y = 0; y < data.height; y++) {
 		for (int x = 0; x < data.width; x++) {
@@ -238,7 +238,7 @@ public void test_drawImageLorg_eclipse_swt_graphics_ImageIIIIIIII() {
 	Color c2 = new Color(display, 0, 0, 0);
 	Color c3 = new Color(display, 255, 255, 0);
 	
-	PaletteData paletteData = new PaletteData(new RGB[] {c1.getRGB(), c2.getRGB(), c3.getRGB()});
+	PaletteData paletteData = new PaletteData(c1.getRGB(), c2.getRGB(), c3.getRGB());
 	ImageData data = new ImageData(30,30, 8, paletteData);
 	for (int y = 0; y < data.height; y++) {
 		for (int x = 0; x < data.width; x++) {

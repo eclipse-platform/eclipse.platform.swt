@@ -567,7 +567,7 @@ abstract class Tab {
 	
 		/* Create the controls */
 		backgroundModeCombo = new Combo(backgroundModeGroup, SWT.READ_ONLY);
-		backgroundModeCombo.setItems(new String[] {"SWT.INHERIT_NONE", "SWT.INHERIT_DEFAULT", "SWT.INHERIT_FORCE"});
+		backgroundModeCombo.setItems("SWT.INHERIT_NONE", "SWT.INHERIT_DEFAULT", "SWT.INHERIT_FORCE");
 		backgroundModeImageButton = new Button(backgroundModeGroup, SWT.CHECK);
 		backgroundModeImageButton.setText(ControlExample.getResourceString("BackgroundImage"));
 		backgroundModeColorButton = new Button(backgroundModeGroup, SWT.CHECK);
@@ -618,7 +618,7 @@ abstract class Tab {
 		if ((fields & DOIT) != 0) {
 			new Label (group, SWT.NONE).setText ("doit");
 			final Combo doitCombo = new Combo (group, SWT.READ_ONLY);
-			doitCombo.setItems (new String [] {"", "true", "false"});
+			doitCombo.setItems ("", "true", "false");
 			if ((setFieldsMask & DOIT) != 0) doitCombo.setText(Boolean.toString(setFieldsEvent.doit));
 			doitCombo.setLayoutData (new GridData (SWT.FILL, SWT.CENTER, true, false));
 			doitCombo.addSelectionListener(new SelectionAdapter () {

@@ -216,11 +216,11 @@ public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_gra
 //	} catch (SWTException e) {
 //	}
 
-	data = new ImageData(10, 10, 1, new PaletteData(new RGB[] {new RGB(0, 0, 0)}));
+	data = new ImageData(10, 10, 1, new PaletteData(new RGB(0, 0, 0)));
 	image = new Image(null, data);
 	image.dispose();
 
-	data = new ImageData(10, 10, 1, new PaletteData(new RGB[] {new RGB(0, 0, 0)}));
+	data = new ImageData(10, 10, 1, new PaletteData(new RGB(0, 0, 0)));
 	image = new Image(display, data);
 	image.dispose();
 	
@@ -242,7 +242,7 @@ public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_gra
 @Test
 public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_graphics_ImageDataLorg_eclipse_swt_graphics_ImageData() {
 	ImageData data = null;
-	ImageData data1 = new ImageData(10, 10, 1, new PaletteData(new RGB[] {new RGB(0, 0, 0)}));
+	ImageData data1 = new ImageData(10, 10, 1, new PaletteData(new RGB(0, 0, 0)));
 	Image image = null;
 	
 	try {
@@ -253,7 +253,7 @@ public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_gra
 		assertSWTProblem("Incorrect exception thrown for ImageData source == null", SWT.ERROR_NULL_ARGUMENT, e);
 	}
 
-	data = new ImageData(10, 10, 1, new PaletteData(new RGB[] {new RGB(0, 0, 0)}));
+	data = new ImageData(10, 10, 1, new PaletteData(new RGB(0, 0, 0)));
 	data1 = null;
 	try {
 		image = new Image(display, data, data1);
@@ -263,8 +263,8 @@ public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_gra
 		assertSWTProblem("Incorrect exception thrown for ImageData mask == null", SWT.ERROR_NULL_ARGUMENT, e);
 	}
 
-	data = new ImageData(10, 10, 1, new PaletteData(new RGB[] {new RGB(0, 0, 0)}));
-	data1 = new ImageData(1, 10, 1, new PaletteData(new RGB[] {new RGB(0, 0, 0)}));
+	data = new ImageData(10, 10, 1, new PaletteData(new RGB(0, 0, 0)));
+	data1 = new ImageData(1, 10, 1, new PaletteData(new RGB(0, 0, 0)));
 	try {
 		image = new Image(display, data, data1);
 		image.dispose();
@@ -273,8 +273,8 @@ public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_gra
 		assertSWTProblem("Incorrect exception thrown for ImageData source width != ImageData mask width", SWT.ERROR_INVALID_ARGUMENT, e);
 	}
 
-	data = new ImageData(10, 1, 1, new PaletteData(new RGB[] {new RGB(0, 0, 0)}));
-	data1 = new ImageData(10, 10, 1, new PaletteData(new RGB[] {new RGB(0, 0, 0)}));
+	data = new ImageData(10, 1, 1, new PaletteData(new RGB(0, 0, 0)));
+	data1 = new ImageData(10, 10, 1, new PaletteData(new RGB(0, 0, 0)));
 	try {
 		image = new Image(display, data, data1);
 		image.dispose();
@@ -283,15 +283,15 @@ public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_gra
 		assertSWTProblem("Incorrect exception thrown for ImageData source height != ImageData mask height", SWT.ERROR_INVALID_ARGUMENT, e);
 	}
 
-	data = new ImageData(10, 10, 8, new PaletteData(new RGB[] {new RGB(0, 0, 0)}));
-	data1 = new ImageData(10, 10, 8, new PaletteData(new RGB[] {new RGB(0, 0, 0)}));
+	data = new ImageData(10, 10, 8, new PaletteData(new RGB(0, 0, 0)));
+	data1 = new ImageData(10, 10, 8, new PaletteData(new RGB(0, 0, 0)));
 	image = new Image(display, data, data1); // Image now accepts masks where depth != 1
 	image.dispose();
 
 	data = new ImageData(10, 10, 8, new PaletteData(0x30, 0x0C, 0x03));
 	// set opaque red pixel at x=9, y=9
 	data.setPixel(9, 9, 0x30);
-	data1 = new ImageData(10, 10, 1, new PaletteData(new RGB[] {new RGB(0, 0, 0), new RGB(255, 255, 255)}));
+	data1 = new ImageData(10, 10, 1, new PaletteData(new RGB(0, 0, 0), new RGB(255, 255, 255)));
 	data1.setPixel(9, 9, 1);
 	image = new Image(display, data, data1);
 	Image gcImage = new Image(display, 10, 10);
@@ -624,7 +624,7 @@ public void test_equalsLjava_lang_Object() {
 		
 		assertTrue(":b:", image.equals(image1));
 		
-		ImageData imageData = new ImageData(10, 10, 1, new PaletteData(new RGB[] {new RGB(0, 0, 0)}));
+		ImageData imageData = new ImageData(10, 10, 1, new PaletteData(new RGB(0, 0, 0)));
 		image.dispose();
 		image = new Image(display, imageData);
 		image1 = new Image(display, imageData);
@@ -718,7 +718,7 @@ public void test_getBounds() {
 	assertEquals(":b:", bounds, bounds1);
 
 	// create icon image
-	ImageData imageData = new ImageData(bounds.width, bounds.height, 1, new PaletteData(new RGB[] {new RGB(0, 0, 0)}));
+	ImageData imageData = new ImageData(bounds.width, bounds.height, 1, new PaletteData(new RGB(0, 0, 0)));
 	image = new Image(display, imageData);
 	bounds1 = image.getBounds();
 	image.dispose();
@@ -743,7 +743,7 @@ public void test_hashCode() {
 	
 		assertEquals(":a:", image1.hashCode(), image.hashCode());
 		
-		ImageData imageData = new ImageData(10, 10, 1, new PaletteData(new RGB[] {new RGB(0, 0, 0)}));
+		ImageData imageData = new ImageData(10, 10, 1, new PaletteData(new RGB(0, 0, 0)));
 		image.dispose();
 		image = new Image(display, imageData);
 		image1 = new Image(display, imageData);
@@ -836,7 +836,7 @@ public void test_setBackgroundLorg_eclipse_swt_graphics_Color() {
 	image.dispose();
 	
 	// create an image with transparency and then set the background color
-	ImageData imageData = new ImageData(10, 10, 2, new PaletteData(new RGB[] {new RGB(0, 0, 0), new RGB(255, 255, 255), new RGB(50, 100, 150)}));
+	ImageData imageData = new ImageData(10, 10, 2, new PaletteData(new RGB(0, 0, 0), new RGB(255, 255, 255), new RGB(50, 100, 150)));
 	imageData.transparentPixel = 0; // transparent pixel is currently black
 	image = new Image(display, imageData);
 	image.setBackground(display.getSystemColor(SWT.COLOR_GREEN));

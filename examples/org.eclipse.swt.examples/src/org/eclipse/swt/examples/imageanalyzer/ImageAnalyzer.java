@@ -303,13 +303,12 @@ public class ImageAnalyzer {
 		group.setLayout(new RowLayout());
 		group.setText(bundle.getString("Background"));
 		backgroundCombo = new Combo(group, SWT.DROP_DOWN | SWT.READ_ONLY);
-		backgroundCombo.setItems(new String[] {
-			bundle.getString("None"),
+		backgroundCombo.setItems(bundle.getString("None"),
 			bundle.getString("White"),
 			bundle.getString("Black"),
 			bundle.getString("Red"),
 			bundle.getString("Green"),
-			bundle.getString("Blue")});
+			bundle.getString("Blue"));
 		backgroundCombo.select(backgroundCombo.indexOf(bundle.getString("White")));
 		backgroundCombo.addSelectionListener(new SelectionAdapter() {
 			@Override

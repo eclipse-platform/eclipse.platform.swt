@@ -563,7 +563,7 @@ private void createDragTypes(Composite parent) {
 private void createDragWidget(Composite parent) {
 	parent.setLayout(new FormLayout());
 	Combo combo = new Combo(parent, SWT.READ_ONLY);
-	combo.setItems(new String[] {"Toggle Button", "Radio Button", "Checkbox", "Canvas", "Label", "List", "Table", "Tree", "Text", "StyledText", "Combo"});
+	combo.setItems("Toggle Button", "Radio Button", "Checkbox", "Canvas", "Label", "List", "Table", "Tree", "Text", "StyledText", "Combo");
 	combo.select(LABEL);
 	dragControlType = combo.getSelectionIndex();
 	dragControl = createWidget(dragControlType, parent, "Drag Source");
@@ -1102,7 +1102,7 @@ private void createDropTypes(Composite parent) {
 private void createDropWidget(Composite parent) {
 	parent.setLayout(new FormLayout());
 	Combo combo = new Combo(parent, SWT.READ_ONLY);
-	combo.setItems(new String[] {"Toggle Button", "Radio Button", "Checkbox", "Canvas", "Label", "List", "Table", "Tree", "Text", "StyledText", "Combo"});
+	combo.setItems("Toggle Button", "Radio Button", "Checkbox", "Canvas", "Label", "List", "Table", "Tree", "Text", "StyledText", "Combo");
 	combo.select(LABEL);
 	dropControlType = combo.getSelectionIndex();
 	dropControl = createWidget(dropControlType, parent, "Drop Target");
@@ -1281,7 +1281,7 @@ private Control createWidget(int type, Composite parent, String prefix){
 		}
 		case COMBO:{
 			Combo combo = new Combo(parent, SWT.BORDER);
-			combo.setItems(new String[] {"Item a", "Item b", "Item c", "Item d"});
+			combo.setItems("Item a", "Item b", "Item c", "Item d");
 			return combo;
 		}
 		default:

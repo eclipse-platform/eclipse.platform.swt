@@ -11,12 +11,30 @@
 package org.eclipse.swt.examples.layoutexample;
 
 
-import org.eclipse.swt.*;
-import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.widgets.*;
-import org.eclipse.swt.layout.*;
-import org.eclipse.swt.events.*;
-import org.eclipse.swt.custom.*;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.CCombo;
+import org.eclipse.swt.custom.TableEditor;
+import org.eclipse.swt.events.MouseAdapter;
+import org.eclipse.swt.events.MouseEvent;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.layout.FormAttachment;
+import org.eclipse.swt.layout.FormData;
+import org.eclipse.swt.layout.FormLayout;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Combo;
+import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Dialog;
+import org.eclipse.swt.widgets.Group;
+import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.Spinner;
+import org.eclipse.swt.widgets.TableItem;
+import org.eclipse.swt.widgets.Text;
 
 class FormLayoutTab extends Tab {
 	/* Controls for setting layout parameters */
@@ -664,7 +682,7 @@ class FormLayoutTab extends Tab {
 			posButton.setText (LayoutExample.getResourceString ("Position"));
 			posButton.setSelection (!isControl);			
 			final Combo position = new Combo (shell, SWT.NONE);
-			position.setItems (new String [] {"0","25","33","50","67","75","100"});
+			position.setItems ("0","25","33","50","67","75","100");
 			position.setVisibleItemCount (7);
 			position.setText (oldPos);
 			position.setEnabled (!isControl);			

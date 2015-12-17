@@ -17,7 +17,7 @@ package org.eclipse.swt.snippets;
  * http://www.eclipse.org/swt/snippets/
  */
 import org.eclipse.swt.*;
-import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.widgets.*;
 
 public class Snippet26 {
@@ -26,7 +26,7 @@ public static void main (String [] args) {
 	Display display = new Display ();
 	Shell shell = new Shell (display);
 	Combo combo = new Combo (shell, SWT.READ_ONLY);
-	combo.setItems (new String [] {"Alpha", "Bravo", "Charlie"});
+	combo.setItems ("Alpha", "Bravo", "Charlie");
 	Rectangle clientArea = shell.getClientArea ();
 	combo.setBounds (clientArea.x, clientArea.y, 200, 200);
 	shell.pack ();

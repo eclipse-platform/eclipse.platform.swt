@@ -2087,8 +2087,7 @@ void initAccessibility () {
 }
 
 static void initImages (final Display display) {
-	PaletteData arrowPalette = new PaletteData (new RGB[] {
-		new RGB (0, 0, 0), new RGB (255, 255, 255)});
+	PaletteData arrowPalette = new PaletteData (new RGB (0, 0, 0), new RGB (255, 255, 255));
 	if (display.getData (ID_ARROWDOWN) == null) {
 		ImageData arrowDown = new ImageData (
 			7, 4, 1,
@@ -2106,8 +2105,7 @@ static void initImages (final Display display) {
 		display.setData (ID_ARROWUP, new Image (display, arrowUp));
 	}
 
-	PaletteData checkMarkPalette = new PaletteData (	
-		new RGB[] {new RGB (0, 0, 0), new RGB (252, 3, 251)});
+	PaletteData checkMarkPalette = new PaletteData (new RGB (0, 0, 0), new RGB (252, 3, 251));
 	byte[] checkbox = new byte[] {0, 0, 127, -64, 127, -64, 127, -64, 127, -64, 127, -64, 127, -64, 127, -64, 127, -64, 127, -64, 0, 0};
 	ImageData checkmark = new ImageData (7, 7, 1, checkMarkPalette, 1, new byte[] {-4, -8, 112, 34, 6, -114, -34});
 	checkmark.transparentPixel = 1;
@@ -2116,15 +2114,13 @@ static void initImages (final Display display) {
 	}
 
 	if (display.getData (ID_UNCHECKED) == null) {
-		PaletteData uncheckedPalette = new PaletteData (	
-			new RGB[] {new RGB (128, 128, 128), new RGB (255, 255, 255)});
+		PaletteData uncheckedPalette = new PaletteData (new RGB (128, 128, 128), new RGB (255, 255, 255));
 		ImageData unchecked = new ImageData (11, 11, 1, uncheckedPalette, 2, checkbox);
 		display.setData (ID_UNCHECKED, new Image (display, unchecked));
 	}
 
 	if (display.getData (ID_GRAYUNCHECKED) == null) {
-		PaletteData grayUncheckedPalette = new PaletteData (	
-			new RGB[] {new RGB (128, 128, 128), new RGB (192, 192, 192)});
+		PaletteData grayUncheckedPalette = new PaletteData (new RGB (128, 128, 128), new RGB (192, 192, 192));
 		ImageData grayUnchecked = new ImageData (11, 11, 1, grayUncheckedPalette, 2, checkbox);
 		display.setData (ID_GRAYUNCHECKED, new Image (display, grayUnchecked));
 	}
