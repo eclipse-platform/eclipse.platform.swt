@@ -27,6 +27,7 @@ public class Test_org_eclipse_swt_printing_PrintDialog extends Test_org_eclipse_
 @Override
 @Before
 public void setUp() {
+	super.setUp();
 	printDialog = new PrintDialog(shell, SWT.NONE);
 	setDialog(printDialog);
 }
