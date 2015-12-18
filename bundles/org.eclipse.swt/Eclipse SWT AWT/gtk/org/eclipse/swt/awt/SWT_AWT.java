@@ -10,33 +10,21 @@
  *******************************************************************************/
 package org.eclipse.swt.awt;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Method;
+/* AWT Imports */
+import java.awt.*;
+import java.awt.Canvas;
+import java.awt.event.*;
+import java.lang.reflect.*;
 
 /* SWT Imports */
 import org.eclipse.swt.*;
+import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.gtk.*;
-import org.eclipse.swt.graphics.Device;
-import org.eclipse.swt.graphics.Rectangle;
-import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Event;
-
-/* AWT Imports */
-import java.awt.AWTEvent;
-import java.awt.Dimension;
-import java.awt.EventQueue;
-import java.awt.Canvas;
-import java.awt.Frame;
-import java.awt.Window;
-import java.awt.event.AWTEventListener;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
-import java.awt.event.ComponentListener;
-import java.awt.event.WindowEvent;
 
 
 /**
@@ -97,11 +85,9 @@ static synchronized void initializeSwing() {
 	OS.gdk_error_trap_push();
 	try {
 		/* Initialize the default focus traversal policy */
-		Class<?>[] emptyClass = new Class[0];
-		Object[] emptyObject = new Object[0];
 		Class<?> clazz = Class.forName("javax.swing.UIManager");
-		Method method = clazz.getMethod("getDefaults", emptyClass);
-		if (method != null) method.invoke(clazz, emptyObject);
+		Method method = clazz.getMethod("getDefaults");
+		if (method != null) method.invoke(clazz);
 	} catch (Throwable e) {}
 }
 
@@ -169,12 +155,12 @@ public static Frame new_Frame (final Composite parent) {
 	Object value = null;
 	Constructor<?> constructor = null;
 	try {
-		constructor = clazz.getConstructor (new Class [] {int.class, boolean.class});
-		value = constructor.newInstance (new Object [] {new Integer ((int)/*64*/handle), Boolean.TRUE});
+		constructor = clazz.getConstructor (int.class, boolean.class);
+		value = constructor.newInstance (new Integer ((int)/*64*/handle), Boolean.TRUE);
 	} catch (Throwable e1) {
 		try {
-			constructor = clazz.getConstructor (new Class [] {long.class, boolean.class});
-			value = constructor.newInstance (new Object [] {new Long (handle), Boolean.TRUE});
+			constructor = clazz.getConstructor (long.class, boolean.class);
+			value = constructor.newInstance (new Long (handle), Boolean.TRUE);
 		} catch (Throwable e2) {
 			SWT.error (SWT.ERROR_NOT_IMPLEMENTED, e2);
 		}
@@ -187,8 +173,8 @@ public static Frame new_Frame (final Composite parent) {
 	}
 	try {
 		/* Call registerListeners() to make XEmbed focus traversal work */
-		Method method = clazz.getMethod("registerListeners", (Class[])null);
-		if (method != null) method.invoke(value, (Object[])null);
+		Method method = clazz.getMethod("registerListeners");
+		if (method != null) method.invoke(value);
 	} catch (Throwable e) {}
 	final AWTEventListener awtListener = new AWTEventListener() {
 		public void eventDispatched(AWTEvent event) {
