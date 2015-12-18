@@ -10,10 +10,10 @@
  *******************************************************************************/
 package org.eclipse.swt.graphics;
 
+import org.eclipse.swt.*;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.gdip.*;
 import org.eclipse.swt.internal.win32.*;
-import org.eclipse.swt.*;
 
 /**
  * <code>TextLayout</code> is a graphic object that represents
@@ -2144,10 +2144,10 @@ int _getOffset(int offset, int movement, boolean forward) {
 							if (!logAttr.fInvalid && logAttr.fWordStop) return untranslateOffset(offset);
 						} else {
 							if (offset > 0) {
-								boolean letterOrDigit = Compatibility.isLetterOrDigit(segmentsText.charAt(offset));
-								boolean previousLetterOrDigit = Compatibility.isLetterOrDigit(segmentsText.charAt(offset - 1));
+								boolean letterOrDigit = Character.isLetterOrDigit(segmentsText.charAt(offset));
+								boolean previousLetterOrDigit = Character.isLetterOrDigit(segmentsText.charAt(offset - 1));
 								if (letterOrDigit != previousLetterOrDigit || !letterOrDigit) {
-									if (!Compatibility.isWhitespace(segmentsText.charAt(offset))) {
+									if (!Character.isWhitespace(segmentsText.charAt(offset))) {
 										return untranslateOffset(offset);
 									}
 								}
@@ -2157,8 +2157,8 @@ int _getOffset(int offset, int movement, boolean forward) {
 					}
 					case SWT.MOVEMENT_WORD_END: {
 						if (offset > 0) {
-							boolean isLetterOrDigit = Compatibility.isLetterOrDigit(segmentsText.charAt(offset));
-							boolean previousLetterOrDigit = Compatibility.isLetterOrDigit(segmentsText.charAt(offset - 1));
+							boolean isLetterOrDigit = Character.isLetterOrDigit(segmentsText.charAt(offset));
+							boolean previousLetterOrDigit = Character.isLetterOrDigit(segmentsText.charAt(offset - 1));
 							if (!isLetterOrDigit && previousLetterOrDigit) {
 								return untranslateOffset(offset);
 							}
@@ -2735,7 +2735,7 @@ StyleItem[] merge (long /*int*/ items, int itemCount) {
 			if (start < itemLimit && 0 < start && start < end) {
 				char pChar = segmentsText.charAt(start - 1);
 				char tChar = segmentsText.charAt(start);
-				if (Compatibility.isLetter(pChar) && Compatibility.isLetter(tChar)) {
+				if (Character.isLetter(pChar) && Character.isLetter(tChar)) {
 					item.analysis.fLinkAfter = true;
 					linkBefore = true;
 				}

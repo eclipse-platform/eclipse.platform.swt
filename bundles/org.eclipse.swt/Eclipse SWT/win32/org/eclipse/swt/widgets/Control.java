@@ -16,7 +16,6 @@ import org.eclipse.swt.*;
 import org.eclipse.swt.accessibility.*;
 import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.gdip.*;
 import org.eclipse.swt.internal.win32.*;
 
@@ -2978,7 +2977,7 @@ boolean sendGestureEvent (GESTUREINFO gi) {
 			* If the current rotation is the same as the last one received don't send the event.
 			*/
 			if (display.rotationAngle == rotationInRadians && event.detail == SWT.GESTURE_ROTATE) return true;
-			event.rotation = rotationInRadians * 180.0 / Compatibility.PI;
+			event.rotation = rotationInRadians * 180.0 / Math.PI;
 			display.rotationAngle = rotationInRadians;
 			break;
 		default:

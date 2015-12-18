@@ -12,7 +12,6 @@ package org.eclipse.swt.graphics;
 
 
 import org.eclipse.swt.*;
-import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.gdip.*;
 import org.eclipse.swt.internal.win32.*;
 
@@ -575,7 +574,7 @@ static long /*int*/ createGdipFont(long /*int*/ hDC, long /*int*/ hFont, long /*
 			index++;
 		}
 		String name = new String (chars, 0, index);
-		if (Compatibility.equalsIgnoreCase(name, "Courier")) { //$NON-NLS-1$
+		if (name.equalsIgnoreCase("Courier")) { //$NON-NLS-1$
 			name = "Courier New"; //$NON-NLS-1$
 		}
 		char[] buffer = new char[name.length() + 1];
@@ -779,8 +778,8 @@ public void drawArc (int x, int y, int width, int height, int startAngle, int ar
 		int cteY = 2 * y + height;
 		int index = 0;
 		for (int i = 0; i <= arcAngle; i++) {
-			points[index++] = (Compatibility.cos(startAngle + i, width) + cteX) >> 1;
-			points[index++] = (cteY - Compatibility.sin(startAngle + i, height)) >> 1;
+			points[index++] = (cos(startAngle + i, width) + cteX) >> 1;
+			points[index++] = (cteY - sin(startAngle + i, height)) >> 1;
 		} 
 		OS.Polyline(handle, points, points.length / 2);
 	} else {	
@@ -799,11 +798,11 @@ public void drawArc (int x, int y, int width, int height, int startAngle, int ar
 				startAngle = arcAngle;
 				arcAngle = tmp;
 			}
-			x1 = Compatibility.cos(startAngle, width) + x + width/2;
-			y1 = -1 * Compatibility.sin(startAngle, height) + y + height/2;
+			x1 = cos(startAngle, width) + x + width/2;
+			y1 = -1 * sin(startAngle, height) + y + height/2;
 			
-			x2 = Compatibility.cos(arcAngle, width) + x + width/2;
-			y2 = -1 * Compatibility.sin(arcAngle, height) + y + height/2; 		
+			x2 = cos(arcAngle, width) + x + width/2;
+			y2 = -1 * sin(arcAngle, height) + y + height/2; 		
 		}
 		OS.Arc(handle, x, y, x + width + 1, y + height + 1, x1, y1, x2, y2);
 	}
@@ -2734,8 +2733,8 @@ public void fillArc (int x, int y, int width, int height, int startAngle, int ar
 		int cteY = 2 * y + height;
 		int index = (drawSegments ? 2 : 0);
 		for (int i = 0; i <= arcAngle; i++) {
-			points[index++] = (Compatibility.cos(startAngle + i, width) + cteX) >> 1;
-			points[index++] = (cteY - Compatibility.sin(startAngle + i, height)) >> 1;
+			points[index++] = (cos(startAngle + i, width) + cteX) >> 1;
+			points[index++] = (cteY - sin(startAngle + i, height)) >> 1;
 		} 
 		if (drawSegments) {
 			points[0] = points[points.length - 2] = cteX >> 1;
@@ -2758,11 +2757,11 @@ public void fillArc (int x, int y, int width, int height, int startAngle, int ar
 				startAngle = arcAngle;
 				arcAngle = tmp;
 			}
-			x1 = Compatibility.cos(startAngle, width) + x + width/2;
-			y1 = -1 * Compatibility.sin(startAngle, height) + y + height/2;
+			x1 = cos(startAngle, width) + x + width/2;
+			y1 = -1 * sin(startAngle, height) + y + height/2;
 			
-			x2 = Compatibility.cos(arcAngle, width) + x + width/2;
-			y2 = -1 * Compatibility.sin(arcAngle, height) + y + height/2; 				
+			x2 = cos(arcAngle, width) + x + width/2;
+			y2 = -1 * sin(arcAngle, height) + y + height/2; 				
 		}
 		OS.Pie(handle, x, y, x + width + 1, y + height + 1, x1, y1, x2, y2);
 	}
@@ -5107,6 +5106,32 @@ public static GC win32_new(long /*int*/ hDC, GCData data) {
 	}
 	gc.init(null, data, hDC);
 	return gc;
+}
+
+/**
+ * Answers the length of the side adjacent to the given angle
+ * of a right triangle. In other words, it returns the integer
+ * conversion of length * cos (angle).
+ * 
+ * @param angle the angle in degrees
+ * @param length the length of the triangle's hypotenuse
+ * @return the integer conversion of length * cos (angle)
+ */
+private static int cos(int angle, int length) {
+	return (int)(Math.cos(angle * (Math.PI/180)) * length);
+}
+
+/**
+ * Answers the length of the side opposite to the given angle
+ * of a right triangle. In other words, it returns the integer
+ * conversion of length * sin (angle).
+ * 
+ * @param angle the angle in degrees
+ * @param length the length of the triangle's hypotenuse
+ * @return the integer conversion of length * sin (angle)
+ */
+public static int sin(int angle, int length) {
+	return (int)(Math.sin(angle * (Math.PI/180)) * length);
 }
 
 }

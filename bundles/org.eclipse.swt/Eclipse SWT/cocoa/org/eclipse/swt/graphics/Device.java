@@ -11,7 +11,6 @@
 package org.eclipse.swt.graphics;
 
 import org.eclipse.swt.*;
-import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.cocoa.*;
 
 /**
@@ -380,10 +379,10 @@ public FontData[] getFontList (String faceName, boolean scalable) {
 					int style = SWT.NORMAL;
 					if ((traits & OS.NSItalicFontMask) != 0) style |= SWT.ITALIC;
 					if (weight == 9) style |= SWT.BOLD;
-					if (faceName == null || Compatibility.equalsIgnoreCase(faceName, name)) {
+					if (faceName == null || faceName.equalsIgnoreCase(name)) {
 						FontData data = new FontData(name, 0, style);
 						data.nsName = nsName;
-						if (Compatibility.equalsIgnoreCase(systemFontName, name)) {
+						if (systemFontName.equalsIgnoreCase(name)) {
 							systemFontIncluded = true;
 						}
 						if (count == fds.length) {
@@ -397,7 +396,7 @@ public FontData[] getFontList (String faceName, boolean scalable) {
 			}
 		}
 	}
-	if (!systemFontIncluded && (faceName == null || Compatibility.equalsIgnoreCase(faceName, systemFontName))) {
+	if (!systemFontIncluded && (faceName == null || faceName.equalsIgnoreCase(systemFontName))) {
 		/*
 		 * Feature in Mac OS X 10.10: The default system font ".Helvetica Neue DeskInterface"
 		 * is not available from the NSFontManager. The fix is to include it manually if necessary.

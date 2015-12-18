@@ -10,32 +10,20 @@
  *******************************************************************************/
 package org.eclipse.swt.awt;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
+/* AWT Imports */
+import java.awt.*;
+import java.awt.Canvas;
+import java.awt.event.*;
+import java.lang.reflect.*;
 
 /* SWT Imports */
 import org.eclipse.swt.*;
+import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.win32.*;
-import org.eclipse.swt.graphics.Rectangle;
-import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Event;
-
-/* AWT Imports */
-import java.awt.Dimension;
-import java.awt.EventQueue;
-import java.awt.Canvas;
-import java.awt.Frame;
-import java.awt.Toolkit;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
-import java.awt.event.ComponentListener;
-import java.awt.event.WindowEvent;
-import java.awt.event.FocusEvent;
 
 /**
  * This class provides a bridge between SWT and AWT, so that it
@@ -218,7 +206,7 @@ public static Frame new_Frame (final Composite parent) {
 			}
 		}
 		if (interrupted) {
-			Compatibility.interrupt();
+			Thread.currentThread().interrupt();
 		}
 	}
 	if (exception[0] != null) {
