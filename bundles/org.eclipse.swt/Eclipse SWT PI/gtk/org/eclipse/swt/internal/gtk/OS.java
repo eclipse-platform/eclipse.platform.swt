@@ -1796,8 +1796,8 @@ public static final boolean gtk_widget_get_sensitive(long /*int*/ widget) {
 	}
 }
 /** @method flags=dynamic */
-public static final native long _gtk_widget_get_name(long /*int*/ widget);
-public static final long gtk_widget_get_name(long /*int*/ widget) {
+public static final native long /*int*/ _gtk_widget_get_name(long /*int*/ widget);
+public static final long /*int*/ gtk_widget_get_name(long /*int*/ widget) {
 	lock.lock();
 	try {
 		return _gtk_widget_get_name(widget);

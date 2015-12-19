@@ -18232,18 +18232,18 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(_1gtk_1widget_1get_1modifier_1style)
 #endif
 
 #ifndef NO__1gtk_1widget_1get_1name
-JNIEXPORT jlong JNICALL OS_NATIVE(_1gtk_1widget_1get_1name)
+JNIEXPORT jintLong JNICALL OS_NATIVE(_1gtk_1widget_1get_1name)
 	(JNIEnv *env, jclass that, jintLong arg0)
 {
-	jlong rc = 0;
+	jintLong rc = 0;
 	OS_NATIVE_ENTER(env, that, _1gtk_1widget_1get_1name_FUNC);
 /*
-	rc = (jlong)gtk_widget_get_name(arg0);
+	rc = (jintLong)gtk_widget_get_name(arg0);
 */
 	{
 		OS_LOAD_FUNCTION(fp, gtk_widget_get_name)
 		if (fp) {
-			rc = (jlong)((jlong (CALLING_CONVENTION*)(jintLong))fp)(arg0);
+			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(jintLong))fp)(arg0);
 		}
 	}
 	OS_NATIVE_EXIT(env, that, _1gtk_1widget_1get_1name_FUNC);
