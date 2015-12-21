@@ -5130,7 +5130,7 @@ private static int cos(int angle, int length) {
  * @param length the length of the triangle's hypotenuse
  * @return the integer conversion of length * sin (angle)
  */
-public static int sin(int angle, int length) {
+private static int sin(int angle, int length) {
 	return (int)(Math.sin(angle * (Math.PI/180)) * length);
 }
 
