@@ -30,8 +30,8 @@
 		</classpath>
 	</taskdef>
 	
-	<!-- When there are source changes, generates the time-stamp qualifiers and updates the pom files in source and binaries repo -->
-	<target name="generate_qualifier" depends="check_source_changed" if="source_changed">
+	<!-- When there are build changes, generates the time-stamp qualifiers and updates the pom files in source and binaries repo -->
+	<target name="generate_qualifier" depends="check_build_changed" if="build_changed">
 		<tstamp><format property="build.qualifier" pattern="yyyyMMdd-HHmm"/></tstamp>
 		<echo>${build.qualifier}</echo>
 	</target>

@@ -739,7 +739,7 @@
 	Note that the build.sha1 file is updated even if the libraries are not built to ensure there is a change
 	in the GIT repo (see bug#407624).
 	-->
-	<target name="build_fragment" depends="init_fragment,check_source_changed" if="source_changed">
+	<target name="build_fragment" depends="init_fragment,check_sha1_changed">
 		<!-- Build natives -->
 		<antcall target="build_fragment_libraries"/>
 
@@ -749,14 +749,13 @@
 		</exec>
 		<echo file="${fragment_dir}/build.sha1" append="false">SHA1=${HEAD_TAG}</echo>
 	</target>
-	<target name="build_fragment_libraries" depends="check_sha1_changed" if="natives_changed">
+	<target name="build_fragment_libraries" if="natives_changed">
 		<antcall target="build_libraries"/>
 	</target>
 
 	<target name="commit_poms_and_binaries">
 		<antcall target="commit_poms"/>
 		<antcall target="commit_binaries"/>
-		<antcall target="update_sha1_file"/>
 	</target>
 	
 	<target name="commit_poms">
@@ -766,14 +765,7 @@
 		<exec dir="${repo.bin}" executable="git" failonerror="true">
 			<arg line="add '${file_bin_parent_pom}'"/>
 		</exec>
-	</target>
-	
-	<target name="update_sha1_file">
-		<!-- Update build.sha1 file -->
-		<exec dir="${repo.src}" executable="git" failonerror="true" outputproperty="HEAD_TAG">
-			<arg line="rev-list ${TAG} -1"/>
-		</exec>
-		<echo file="${tmp_sha1_file}" append="false">SHA1=${HEAD_TAG}</echo>
+		<property name="commit_pom_changes" value="true"/>
 	</target>
 	
 	<!-- Params: fragment, swt_version -->
@@ -823,7 +815,7 @@
 		<exec dir="${repo.bin}" executable="git" failonerror="true" outputproperty="diffs">
 			<arg line="diff HEAD"/>
 		</exec>
-		<condition property="commit_changes">
+		<condition property="commit_bin_changes">
 			<length string="${diffs}" trim="true" when="greater" length="0"/>
 		</condition>
 		<antcall target="git_commit"/>
@@ -835,13 +827,21 @@
 		</exec>
 	</target>
 
-	<target name="git_commit" if="commit_changes">
+	<target name="git_commit">
+		<antcall target="git_commit_src"/>
+		<antcall target="git_commit_bin"/>
+	</target>
+		
+	<target name="git_commit_src" if="commit_pom_changes">
 		<exec dir="${repo.src}" executable="git" failonerror="true">
 			<arg line="status"/>
 		</exec>
 		<exec dir="${repo.src}" executable="git" failonerror="true">
 			<arg line="commit -m 'v${swt_version}'"/>
 		</exec>
+	</target>
+		
+	<target name="git_commit_bin" if="commit_bin_changes">
 		<exec dir="${repo.bin}" executable="git" failonerror="true">
 			<arg line="status"/>
 		</exec>
