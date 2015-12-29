@@ -755,6 +755,7 @@
 
 	<target name="commit_poms_and_binaries">
 		<antcall target="commit_poms"/>
+		<property name="commit_pom_changes" value="true"/>
 		<antcall target="commit_binaries"/>
 	</target>
 	
@@ -765,7 +766,6 @@
 		<exec dir="${repo.bin}" executable="git" failonerror="true">
 			<arg line="add '${file_bin_parent_pom}'"/>
 		</exec>
-		<property name="commit_pom_changes" value="true"/>
 	</target>
 	
 	<!-- Params: fragment, swt_version -->
