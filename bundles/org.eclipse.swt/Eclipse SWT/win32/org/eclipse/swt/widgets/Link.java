@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2015 IBM Corporation and others.
+ * Copyright (c) 2000, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -7,15 +7,16 @@
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
+ *     Conrad Groth - Bug 401015 - [CSS] Add support for styling hyperlinks in Links
  *******************************************************************************/
 package org.eclipse.swt.widgets;
 
-import org.eclipse.swt.internal.BidiUtil;
-import org.eclipse.swt.internal.win32.*;
 import org.eclipse.swt.*;
-import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.events.*;
 import org.eclipse.swt.accessibility.*;
+import org.eclipse.swt.events.*;
+import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.internal.*;
+import org.eclipse.swt.internal.win32.*;
 
 /**
  * Instances of this class represent a selectable
@@ -41,19 +42,20 @@ import org.eclipse.swt.accessibility.*;
  */
 public class Link extends Control {
 	String text;
-	TextLayout layout;
-	Color linkColor, disabledColor;
+	TextLayout layout; // always track the current layout, even if we don't need it.
+	Color disabledColor;
+	int linkForeground = -1;
 	Point [] offsets;
 	Point selection;
 	String [] ids;
 	int [] mnemonics;
 	int focusIndex, mouseDownIndex;
 	long /*int*/ font;
-	static final RGB LINK_FOREGROUND = new RGB (0, 51, 153);
+	static final RGB LAST_FALLBACK_LINK_FOREGROUND = new RGB (0, 51, 153);
 	static final long /*int*/ LinkProc;
 	static final TCHAR LinkClass = new TCHAR (0, OS.WC_LINK, true);
 	static {
-		if (OS.COMCTL32_MAJOR >= 6) {
+		if (isCommonControlAvailable()) {
 			WNDCLASS lpWndClass = new WNDCLASS ();
 			OS.GetClassInfo (0, LinkClass, lpWndClass);
 			LinkProc = lpWndClass.lpfnWndProc;
@@ -182,7 +184,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	if (wHint != SWT.DEFAULT && wHint < 0) wHint = 0;
 	if (hHint != SWT.DEFAULT && hHint < 0) hHint = 0;
 	int width, height;
-	if (OS.COMCTL32_MAJOR >= 6) {
+	if (useCommonControl()) {
 		long /*int*/ hDC = OS.GetDC (handle);
 		long /*int*/ newFont = OS.SendMessage (handle, OS.WM_GETFONT, 0, 0);
 		long /*int*/ oldFont = OS.SelectObject (hDC, newFont);
@@ -233,32 +235,23 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 void createHandle () {
 	super.createHandle ();
 	state |= THEME_BACKGROUND;
-	if (OS.COMCTL32_MAJOR < 6) {
-		layout = new TextLayout (display);
-		if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (4, 10)) {
-			linkColor = Color.win32_new (display, OS.GetSysColor (OS.COLOR_HOTLIGHT));
-		} else {
-			linkColor = new Color (display, LINK_FOREGROUND);
-		}
-		disabledColor = Color.win32_new (display, OS.GetSysColor (OS.COLOR_GRAYTEXT));
-		offsets = new Point [0];
-		ids = new String [0];
-		mnemonics = new int [0];
-		selection = new Point (-1, -1);
-		focusIndex = mouseDownIndex = -1;
-	}
+	layout = new TextLayout (display);
+	disabledColor = Color.win32_new (display, OS.GetSysColor (OS.COLOR_GRAYTEXT));
+	offsets = new Point [0];
+	ids = new String [0];
+	mnemonics = new int [0];
+	selection = new Point (-1, -1);
+	focusIndex = mouseDownIndex = -1;
 }
 
 @Override
 void createWidget () {
 	super.createWidget ();
 	text = "";
-	if (OS.COMCTL32_MAJOR < 6) {
-		if ((style & SWT.MIRRORED) != 0) {
-			layout.setOrientation (SWT.RIGHT_TO_LEFT);
-		}
-		initAccessible ();
+	if ((style & SWT.MIRRORED) != 0) {
+		layout.setOrientation (SWT.RIGHT_TO_LEFT);
 	}
+	initAccessible ();
 }
 
 void drawWidget (GC gc, RECT rect) {
@@ -294,7 +287,7 @@ void drawWidget (GC gc, RECT rect) {
 
 @Override
 void enableWidget (boolean enabled) {
-	if (OS.COMCTL32_MAJOR >= 6) {
+	if (useCommonControl(enabled)) {
 		LITEM item = new LITEM ();
 		item.mask = OS.LIF_ITEMINDEX | OS.LIF_STATE;
 		item.stateMask = OS.LIS_ENABLED;
@@ -302,14 +295,8 @@ void enableWidget (boolean enabled) {
 		while (OS.SendMessage (handle, OS.LM_SETITEM, 0, item) != 0) {
 			item.iLink++;
 		}
-	} else {
-		TextStyle linkStyle = new TextStyle (null, enabled ? linkColor : disabledColor, null);
-		linkStyle.underline = true;
-		for (int i = 0; i < offsets.length; i++) {
-			Point point = offsets [i];
-			layout.setStyle (linkStyle, point.x, point.y);
-		}
 	}
+	styleLinkParts(enabled);
 	redraw ();
 	/*
 	* Feature in Windows.  For some reason, setting
@@ -378,6 +365,32 @@ void initAccessible () {
 	});
 }
 
+/**
+ * Returns the link foreground color.
+ *
+ * @return the receiver's link foreground color.
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * @since 3.105
+ */
+public Color getLinkForeground () {
+	checkWidget ();
+	return internalGetLinkForeground();
+}
+
+Color internalGetLinkForeground() {
+	if (linkForeground != -1) {
+		return Color.win32_new (display, linkForeground);
+	}
+	if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (4, 10)) {
+		return Color.win32_new (display, OS.GetSysColor (OS.COLOR_HOTLIGHT));
+	}
+	return new Color (display, LAST_FALLBACK_LINK_FOREGROUND);
+}
+
 @Override
 String getNameText () {
 	return getText ();
@@ -438,7 +451,7 @@ boolean mnemonicHit (char key) {
 				char mnemonic = parsedText.charAt(mnemonics[i]);
 				if (uckey == Character.toUpperCase (mnemonic)) {
 					if (!setFocus ()) return false;
-					if (OS.COMCTL32_MAJOR >= 6) {
+					if (useCommonControl()) {
 						int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
 						LITEM item = new LITEM ();
 						item.mask = OS.LIF_ITEMINDEX | OS.LIF_STATE;
@@ -639,8 +652,6 @@ void releaseWidget () {
 	super.releaseWidget ();
 	if (layout != null) layout.dispose ();
 	layout = null;
-	if (linkColor != null) linkColor.dispose ();
-	linkColor = null;
 	disabledColor = null;
 	offsets = null;
 	ids = null;
@@ -671,6 +682,39 @@ public void removeSelectionListener (SelectionListener listener) {
 	if (eventTable == null) return;
 	eventTable.unhook (SWT.Selection, listener);
 	eventTable.unhook (SWT.DefaultSelection, listener);
+}
+
+/**
+ * Sets the link foreground color to the color specified
+ * by the argument, or to the default system color for the control
+ * if the argument is null.
+ * <p>
+ * Note: This operation is a hint and may be overridden by the platform.
+ * </p>
+ * @param color the new color (or null)
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_ARGUMENT - if the argument has been disposed</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * @since 3.105
+ */
+public void setLinkForeground (Color color) {
+	checkWidget ();
+	int pixel = -1;
+	if (color != null) {
+		if (color.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
+		pixel = color.handle;
+	}
+	if (pixel == linkForeground) return;
+	linkForeground = pixel;
+	if (OS.IsWindowEnabled (handle)) {
+		styleLinkParts(true);
+	}
+	OS.InvalidateRect (handle, null, true);
 }
 
 /**
@@ -718,8 +762,9 @@ public void setText (String string) {
 		updateTextDirection (AUTO_TEXT_DIRECTION);
 	}
 
-	if (OS.COMCTL32_MAJOR >= 6) {
-		boolean enabled = OS.IsWindowEnabled (handle);
+	boolean enabled = OS.IsWindowEnabled (handle);
+	String parsedText = parse (text);
+	if (isCommonControlAvailable()) {
 		/*
 		* Bug in Windows.  For some reason, when SetWindowText()
 		* is used to set the text of a link control to the empty
@@ -729,34 +774,31 @@ public void setText (String string) {
 		if (string.length () == 0) string = " ";  //$NON-NLS-1$
 		TCHAR buffer = new TCHAR (getCodePage (), string, true);
 		OS.SetWindowText (handle, buffer);
-		parse (text);
+	}
+
+	layout.setText (parsedText);
+	focusIndex = offsets.length > 0 ? 0 : -1;
+	selection.x = selection.y = -1;
+	int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
+	if (offsets.length > 0) {
+		bits |= OS.WS_TABSTOP;
+	} else {
+		bits &= ~OS.WS_TABSTOP;
+	}
+	OS.SetWindowLong (handle, OS.GWL_STYLE, bits);
+	styleLinkParts(enabled);
+	TextStyle mnemonicStyle = new TextStyle (null, null, null);
+	mnemonicStyle.underline = true;
+	for (int i = 0; i < mnemonics.length; i++) {
+		int mnemonic  = mnemonics [i];
+		if (mnemonic != -1) {
+			layout.setStyle (mnemonicStyle, mnemonic, mnemonic);
+		}
+	}
+
+	if (useCommonControl()) {
 		enableWidget (enabled);
 	} else {
-		layout.setText (parse (text));
-		focusIndex = offsets.length > 0 ? 0 : -1;
-		selection.x = selection.y = -1;
-		int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
-		if (offsets.length > 0) {
-			bits |= OS.WS_TABSTOP;
-		} else {
-			bits &= ~OS.WS_TABSTOP;
-		}
-		OS.SetWindowLong (handle, OS.GWL_STYLE, bits);
-		boolean enabled = OS.IsWindowEnabled (handle);
-		TextStyle linkStyle = new TextStyle (null, enabled ? linkColor : disabledColor, null);
-		linkStyle.underline = true;
-		for (int i = 0; i < offsets.length; i++) {
-			Point point = offsets [i];
-			layout.setStyle (linkStyle, point.x, point.y);
-		}
-		TextStyle mnemonicStyle = new TextStyle (null, null, null);
-		mnemonicStyle.underline = true;
-		for (int i = 0; i < mnemonics.length; i++) {
-			int mnemonic  = mnemonics [i];
-			if (mnemonic != -1) {
-				layout.setStyle (mnemonicStyle, mnemonic, mnemonic);
-			}
-		}
 		redraw ();
 	}
 }
@@ -764,6 +806,15 @@ public void setText (String string) {
 @Override
 int resolveTextDirection() {
 	return BidiUtil.resolveTextDirection(text);
+}
+
+void styleLinkParts(boolean enabled) {
+	TextStyle linkStyle = new TextStyle (null, enabled ? internalGetLinkForeground() : disabledColor, null);
+	linkStyle.underline = true;
+	for (int i = 0; i < offsets.length; i++) {
+		Point point = offsets [i];
+		layout.setStyle (linkStyle, point.x, point.y);
+	}
 }
 
 @Override
@@ -780,6 +831,18 @@ boolean updateTextDirection(int textDirection) {
 	return false;
 }
 
+boolean useCommonControl() {
+	return useCommonControl(OS.IsWindowEnabled(handle));
+}
+
+boolean useCommonControl(boolean enabled) {
+	return linkForeground == -1 && !enabled && isCommonControlAvailable();
+}
+
+static boolean isCommonControlAvailable() {
+	return OS.COMCTL32_MAJOR >= 6;
+}
+
 @Override
 int widgetStyle () {
 	int bits = super.widgetStyle ();
@@ -788,7 +851,7 @@ int widgetStyle () {
 
 @Override
 TCHAR windowClass () {
-	return OS.COMCTL32_MAJOR >= 6 ? LinkClass : display.windowClass;
+	return isCommonControlAvailable() ? LinkClass : display.windowClass;
 }
 
 @Override
@@ -800,7 +863,7 @@ long /*int*/ windowProc () {
 LRESULT WM_CHAR (long /*int*/ wParam, long /*int*/ lParam) {
 	LRESULT result = super.WM_CHAR (wParam, lParam);
 	if (result != null) return result;
-	if (OS.COMCTL32_MAJOR < 6) {
+	if (!useCommonControl()) {
 		if (focusIndex == -1) return result;
 		switch ((int)/*64*/wParam) {
 			case ' ':
@@ -849,7 +912,7 @@ LRESULT WM_GETDLGCODE (long /*int*/ wParam, long /*int*/ lParam) {
 	if (result != null) return result;
 	int index, count;
 	long /*int*/ code = 0;
-	if (OS.COMCTL32_MAJOR >= 6) {
+	if (useCommonControl()) {
 		LITEM item = new LITEM ();
 		item.mask = OS.LIF_ITEMINDEX | OS.LIF_STATE;
 		item.stateMask = OS.LIS_FOCUSED;
@@ -893,7 +956,7 @@ LRESULT WM_GETFONT (long /*int*/ wParam, long /*int*/ lParam) {
 LRESULT WM_KEYDOWN (long /*int*/ wParam, long /*int*/ lParam) {
 	LRESULT result = super.WM_KEYDOWN (wParam, lParam);
 	if (result != null) return result;
-	if (OS.COMCTL32_MAJOR >= 6) {
+	if (useCommonControl()) {
 		switch ((int)/*64*/wParam) {
 			case OS.VK_SPACE:
 			case OS.VK_RETURN:
@@ -913,7 +976,7 @@ LRESULT WM_KEYDOWN (long /*int*/ wParam, long /*int*/ lParam) {
 @Override
 LRESULT WM_KILLFOCUS (long /*int*/ wParam, long /*int*/ lParam) {
 	LRESULT result = super.WM_KILLFOCUS (wParam, lParam);
-	if (OS.COMCTL32_MAJOR < 6) redraw ();
+	if (!useCommonControl()) redraw ();
 	return result;
 }
 
@@ -921,7 +984,7 @@ LRESULT WM_KILLFOCUS (long /*int*/ wParam, long /*int*/ lParam) {
 LRESULT WM_LBUTTONDOWN (long /*int*/ wParam, long /*int*/ lParam) {
 	LRESULT result = super.WM_LBUTTONDOWN (wParam, lParam);
 	if (result == LRESULT.ZERO) return result;
-	if (OS.COMCTL32_MAJOR < 6) {
+	if (!useCommonControl()) {
 		if (focusIndex != -1) setFocus ();
 		int x = OS.GET_X_LPARAM (lParam);
 		int y = OS.GET_Y_LPARAM (lParam);
@@ -960,7 +1023,7 @@ LRESULT WM_LBUTTONDOWN (long /*int*/ wParam, long /*int*/ lParam) {
 LRESULT WM_LBUTTONUP (long /*int*/ wParam, long /*int*/ lParam) {
 	LRESULT result = super.WM_LBUTTONUP (wParam, lParam);
 	if (result == LRESULT.ZERO) return result;
-	if (OS.COMCTL32_MAJOR < 6) {
+	if (!useCommonControl()) {
 		if (mouseDownIndex == -1) return result;
 		int x = OS.GET_X_LPARAM (lParam);
 		int y = OS.GET_Y_LPARAM (lParam);
@@ -989,15 +1052,13 @@ LRESULT WM_NCHITTEST (long /*int*/ wParam, long /*int*/ lParam) {
 	* returns HTTRANSPARENT when mouse is over plain text. The fix is
 	* to always return HTCLIENT.
 	*/
-	if (OS.COMCTL32_MAJOR >= 6) return new LRESULT (OS.HTCLIENT);
-
-	return result;
+	return new LRESULT (OS.HTCLIENT);
 }
 
 @Override
 LRESULT WM_MOUSEMOVE (long /*int*/ wParam, long /*int*/ lParam) {
 	LRESULT result = super.WM_MOUSEMOVE (wParam, lParam);
-	if (OS.COMCTL32_MAJOR < 6) {
+	if (!useCommonControl()) {
 		int x = OS.GET_X_LPARAM (lParam);
 		int y = OS.GET_Y_LPARAM (lParam);
 		if (OS.GetKeyState (OS.VK_LBUTTON) < 0) {
@@ -1033,7 +1094,7 @@ LRESULT WM_MOUSEMOVE (long /*int*/ wParam, long /*int*/ lParam) {
 @Override
 LRESULT WM_PAINT (long /*int*/ wParam, long /*int*/ lParam) {
 	if ((state & DISPOSE_SENT) != 0) return LRESULT.ZERO;
-	if (OS.COMCTL32_MAJOR >= 6) {
+	if (useCommonControl()) {
 		return super.WM_PAINT (wParam, lParam);
 	}
 
@@ -1058,7 +1119,7 @@ LRESULT WM_PAINT (long /*int*/ wParam, long /*int*/ lParam) {
 @Override
 LRESULT WM_PRINTCLIENT (long /*int*/ wParam, long /*int*/ lParam) {
 	LRESULT result = super.WM_PRINTCLIENT (wParam, lParam);
-	if (OS.COMCTL32_MAJOR < 6) {
+	if (!useCommonControl()) {
 		RECT rect = new RECT ();
 		OS.GetClientRect (handle, rect);
 		GCData data = new GCData ();
@@ -1074,15 +1135,13 @@ LRESULT WM_PRINTCLIENT (long /*int*/ wParam, long /*int*/ lParam) {
 @Override
 LRESULT WM_SETFOCUS (long /*int*/ wParam, long /*int*/ lParam) {
 	LRESULT result = super.WM_SETFOCUS (wParam, lParam);
-	if (OS.COMCTL32_MAJOR < 6) redraw ();
+	if (!useCommonControl()) redraw ();
 	return result;
 }
 
 @Override
 LRESULT WM_SETFONT (long /*int*/ wParam, long /*int*/ lParam) {
-	if (OS.COMCTL32_MAJOR < 6) {
-		layout.setFont (Font.win32_new (display, wParam));
-	}
+	layout.setFont (Font.win32_new (display, wParam));
 	if (lParam != 0) OS.InvalidateRect (handle, null, true);
 	return super.WM_SETFONT (font = wParam, lParam);
 }
@@ -1090,10 +1149,10 @@ LRESULT WM_SETFONT (long /*int*/ wParam, long /*int*/ lParam) {
 @Override
 LRESULT WM_SIZE (long /*int*/ wParam, long /*int*/ lParam) {
 	LRESULT result = super.WM_SIZE (wParam, lParam);
-	if (OS.COMCTL32_MAJOR < 6) {
-		RECT rect = new RECT ();
-		OS.GetClientRect (handle, rect);
-		layout.setWidth (rect.right > 0 ? rect.right : -1);
+	RECT rect = new RECT ();
+	OS.GetClientRect (handle, rect);
+	layout.setWidth (rect.right > 0 ? rect.right : -1);
+	if (!useCommonControl()) {
 		redraw ();
 	}
 	return result;
@@ -1107,7 +1166,7 @@ LRESULT wmColorChild (long /*int*/ wParam, long /*int*/ lParam) {
 	* not gray out the non-link portion of the text.  The fix
 	* is to set the text color to the system gray color.
 	*/
-	if (OS.COMCTL32_MAJOR >= 6) {
+	if (useCommonControl()) {
 		if (!OS.IsWindowEnabled (handle)) {
 			OS.SetTextColor (wParam, OS.GetSysColor (OS.COLOR_GRAYTEXT));
 			if (result == null) {
@@ -1123,7 +1182,7 @@ LRESULT wmColorChild (long /*int*/ wParam, long /*int*/ lParam) {
 
 @Override
 LRESULT wmNotifyChild (NMHDR hdr, long /*int*/ wParam, long /*int*/ lParam) {
-	if (OS.COMCTL32_MAJOR >= 6) {
+	if (useCommonControl()) {
 		switch (hdr.code) {
 			case OS.NM_RETURN:
 			case OS.NM_CLICK:

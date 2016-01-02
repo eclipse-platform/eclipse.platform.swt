@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2012 IBM Corporation and others.
+ * Copyright (c) 2000, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -7,6 +7,7 @@
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
+ *     Conrad Groth - Bug 401015 - [CSS] Add support for styling hyperlinks in Links
  *******************************************************************************/
 package org.eclipse.swt.widgets;
 
@@ -43,7 +44,8 @@ public class Link extends Control {
 	Point [] offsets;
 	String [] ids;
 	int [] mnemonics;
-	NSColor linkColor;
+	double /*float*/ [] linkForeground;
+	NSColor defaultLinkColor;
 	int focusIndex;
 	boolean ignoreNextMouseUp;
 
@@ -108,35 +110,6 @@ public void addSelectionListener (SelectionListener listener) {
 	TypedListener typedListener = new TypedListener (listener);
 	addListener (SWT.Selection, typedListener);
 	addListener (SWT.DefaultSelection, typedListener);
-}
-
-@Override
-boolean textView_clickOnLink_atIndex(long /*int*/ id, long /*int*/ sel, long /*int*/ textView, long /*int*/ link, long /*int*/ charIndex) {
-	NSString str = new NSString (link);
-	Event event = new Event ();
-	event.text = str.getString();
-	sendSelectionEvent (SWT.Selection, event, true);
-	// Widget may be disposed at this point.
-	if (isDisposed()) return true;
-	for (int i = 0; i < offsets.length; i++) {
-		if ((charIndex >= offsets[i].x) && (charIndex <= offsets[i].y)) {
-			focusIndex = i;
-			break;
-		}
-	}
-	redrawWidget(view, false);
-	ignoreNextMouseUp = true;
-	return true;
-}
-
-@Override
-boolean sendMouseEvent (NSEvent nsEvent, int type, boolean send) {
-	if (type == SWT.MouseMove) {
-		if (view.window().firstResponder().id != view.id) {
-			mouseMoved(view.id, OS.sel_mouseMoved_, nsEvent.id);
-		}
-	}
-	return super.sendMouseEvent(nsEvent, type, send);
 }
 
 @Override
@@ -227,7 +200,7 @@ void createWidget () {
 	super.createWidget ();
 	text = "";
 	NSDictionary dict = ((NSTextView)view).linkTextAttributes();
-	linkColor = new NSColor(dict.valueForKey(OS.NSForegroundColorAttributeName));
+	defaultLinkColor = new NSColor(dict.valueForKey(OS.NSForegroundColorAttributeName));
 	offsets = new Point [0];
 	ids = new String [0];
 	mnemonics = new int [0];
@@ -269,6 +242,15 @@ void drawBackground (long /*int*/ id, NSGraphicsContext context, NSRect rectangl
 }
 
 @Override
+void enableWidget (boolean enabled) {
+	super.enableWidget (enabled);
+	NSTextView widget = (NSTextView) view;
+	widget.setTextColor (getTextColor (enabled));
+	setLinkColor (enabled);
+	redrawWidget (view, false);
+}
+
+@Override
 Cursor findCursor () {
 	Cursor cursor = super.findCursor();
 	if (cursor != null) return cursor;
@@ -281,28 +263,32 @@ Cursor findCursor () {
 	return null;
 }
 
-@Override
-void enableWidget (boolean enabled) {
-	super.enableWidget (enabled);
-	NSColor nsColor = null;
-	if (enabled) {
-		if (foreground == null) {
-			nsColor = NSColor.textColor ();
-		} else {
-			nsColor = NSColor.colorWithDeviceRed (foreground [0], foreground [1], foreground [2], foreground[3]);
-		}
-	} else {
-		nsColor = NSColor.disabledControlTextColor();
+/**
+ * Returns the link foreground color.
+ *
+ * @return the receiver's link foreground color.
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * @since 3.105
+ */
+public Color getLinkForeground () {
+	checkWidget ();
+	return Color.cocoa_new (display, display.getNSColorRGB (getLinkForegroundColor ()));
+}
+
+NSColor getLinkForegroundColor () {
+	if (linkForeground != null) {
+		return NSColor.colorWithDeviceRed (linkForeground[0], linkForeground[1], linkForeground[2], linkForeground[3]);
 	}
-	NSTextView widget = (NSTextView)view;
-	widget.setTextColor(nsColor);
-	NSDictionary linkTextAttributes = widget.linkTextAttributes();
-	int count = (int)/*64*/linkTextAttributes.count();
-	NSMutableDictionary dict = NSMutableDictionary.dictionaryWithCapacity(count);
-	dict.setDictionary(linkTextAttributes);
-	dict.setValue(enabled ? linkColor : nsColor, OS.NSForegroundColorAttributeName);
-	widget.setLinkTextAttributes(dict);
-	redrawWidget(view, false);
+	return defaultLinkColor;
+}
+
+@Override
+String getNameText () {
+	return getText ();
 }
 
 NSRect[] getRectangles(int linkIndex) {
@@ -354,12 +340,6 @@ NSRect[] getRectangles(int linkIndex) {
 	return result;
 }
 
-@Override
-String getNameText () {
-	return getText ();
-}
-
-
 /**
  * Returns the receiver's text, which will be an empty
  * string if it has never been set.
@@ -376,6 +356,17 @@ public String getText () {
 	return text;
 }
 
+NSColor getTextColor (boolean enabled) {
+	if (enabled) {
+		if (foreground == null) {
+			return NSColor.textColor ();
+		}
+		return NSColor.colorWithDeviceRed (foreground [0], foreground [1], foreground [2], foreground[3]);
+	} else {
+		return NSColor.disabledControlTextColor();
+	}
+}
+
 @Override
 void mouseUp(long /*int*/ id, long /*int*/ sel, long /*int*/ theEvent) {
 	/*
@@ -388,59 +379,6 @@ void mouseUp(long /*int*/ id, long /*int*/ sel, long /*int*/ theEvent) {
 		return;
 	}
 	super.mouseUp(id, sel, theEvent);
-}
-
-@Override
-boolean shouldDrawInsertionPoint(long /*int*/ id, long /*int*/ sel) {
-	return false;
-}
-
-@Override
-void register () {
-	super.register ();
-	display.addWidget(scrollView, this);
-}
-
-@Override
-void releaseHandle () {
-	super.releaseHandle ();
-	if (scrollView != null) scrollView.release();
-	scrollView = null;
-}
-
-@Override
-void releaseWidget () {
-	super.releaseWidget ();
-	offsets = null;
-	ids = null;
-	mnemonics = null;
-	text = null;
-	linkColor = null;
-}
-
-/**
- * Removes the listener from the collection of listeners who will
- * be notified when the control is selected by the user.
- *
- * @param listener the listener which should no longer be notified
- *
- * @exception IllegalArgumentException <ul>
- *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
- * </ul>
- * @exception SWTException <ul>
- *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
- *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
- * </ul>
- *
- * @see SelectionListener
- * @see #addSelectionListener
- */
-public void removeSelectionListener (SelectionListener listener) {
-	checkWidget ();
-	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
-	if (eventTable == null) return;
-	eventTable.unhook (SWT.Selection, listener);
-	eventTable.unhook (SWT.DefaultSelection, listener);
 }
 
 String parse (String string) {
@@ -593,6 +531,55 @@ int parseMnemonics (char[] buffer, int start, int end, StringBuffer result) {
 }
 
 @Override
+void register () {
+	super.register ();
+	display.addWidget(scrollView, this);
+}
+
+@Override
+void releaseHandle () {
+	super.releaseHandle ();
+	if (scrollView != null) scrollView.release();
+	scrollView = null;
+}
+
+@Override
+void releaseWidget () {
+	super.releaseWidget ();
+	offsets = null;
+	ids = null;
+	mnemonics = null;
+	text = null;
+	defaultLinkColor = null;
+	linkForeground = null;
+}
+
+/**
+ * Removes the listener from the collection of listeners who will
+ * be notified when the control is selected by the user.
+ *
+ * @param listener the listener which should no longer be notified
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see SelectionListener
+ * @see #addSelectionListener
+ */
+public void removeSelectionListener (SelectionListener listener) {
+	checkWidget ();
+	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
+	if (eventTable == null) return;
+	eventTable.unhook (SWT.Selection, listener);
+	eventTable.unhook (SWT.DefaultSelection, listener);
+}
+
+@Override
 void scrollWheel(long /*int*/ id, long /*int*/ sel, long /*int*/ theEvent) {
 	super.scrollWheel(id, sel, theEvent);
 	parent.scrollWheel(parent.view.id, sel, theEvent);
@@ -642,13 +629,13 @@ boolean sendKeyEvent(int type, Event event) {
 }
 
 @Override
-void setBackgroundColor(NSColor nsColor) {
-	setBackground(nsColor);
-}
-
-@Override
-void setBackgroundImage(NSImage image) {
-	((NSTextView) view).setDrawsBackground(image == null);
+boolean sendMouseEvent (NSEvent nsEvent, int type, boolean send) {
+	if (type == SWT.MouseMove) {
+		if (view.window().firstResponder().id != view.id) {
+			mouseMoved(view.id, OS.sel_mouseMoved_, nsEvent.id);
+		}
+	}
+	return super.sendMouseEvent(nsEvent, type, send);
 }
 
 void setBackground(NSColor nsColor) {
@@ -662,6 +649,16 @@ void setBackground(NSColor nsColor) {
 }
 
 @Override
+void setBackgroundColor(NSColor nsColor) {
+	setBackground(nsColor);
+}
+
+@Override
+void setBackgroundImage(NSImage image) {
+	((NSTextView) view).setDrawsBackground(image == null);
+}
+
+@Override
 void setFont(NSFont font) {
 	((NSTextView) view).setFont(font);
 }
@@ -669,13 +666,49 @@ void setFont(NSFont font) {
 @Override
 void setForeground (double /*float*/ [] color) {
 	if (!getEnabled ()) return;
-	NSColor nsColor;
-	if (color == null) {
-		nsColor = NSColor.textColor ();
-	} else {
-		nsColor = NSColor.colorWithDeviceRed (color [0], color [1], color [2], 1);
+	((NSTextView) view).setTextColor (getTextColor (true));
+}
+
+void setLinkColor (boolean enabled) {
+	NSTextView widget = (NSTextView) view;
+	NSDictionary linkTextAttributes = widget.linkTextAttributes ();
+	int count = (int)/*64*/linkTextAttributes.count ();
+	NSMutableDictionary dict = NSMutableDictionary.dictionaryWithCapacity (count);
+	dict.setDictionary (linkTextAttributes);
+	dict.setValue (enabled ? getLinkForegroundColor () : getTextColor (false), OS.NSForegroundColorAttributeName);
+	widget.setLinkTextAttributes (dict);
+}
+
+/**
+ * Sets the link foreground color to the color specified
+ * by the argument, or to the default system color for the link
+ * if the argument is null.
+ * <p>
+ * Note: This operation is a hint and may be overridden by the platform.
+ * </p>
+ * @param color the new color (or null)
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_ARGUMENT - if the argument has been disposed</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * @since 3.105
+ */
+public void setLinkForeground (Color color) {
+	checkWidget ();
+	if (color != null) {
+		if (color.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
 	}
-	((NSTextView) view).setTextColor (nsColor);
+	double /*float*/ [] linkForeground = color != null ? color.handle : null;
+	if (equals (linkForeground, this.linkForeground)) return;
+	this.linkForeground = linkForeground;
+	if (getEnabled ()) {
+		setLinkColor (true);
+	}
+	redrawWidget (view, false);
 }
 
 @Override
@@ -745,6 +778,30 @@ public void setText (String string) {
 void setZOrder () {
 	super.setZOrder ();
 	if (scrollView != null) scrollView.setDocumentView (view);
+}
+
+@Override
+boolean shouldDrawInsertionPoint(long /*int*/ id, long /*int*/ sel) {
+	return false;
+}
+
+@Override
+boolean textView_clickOnLink_atIndex(long /*int*/ id, long /*int*/ sel, long /*int*/ textView, long /*int*/ link, long /*int*/ charIndex) {
+	NSString str = new NSString (link);
+	Event event = new Event ();
+	event.text = str.getString();
+	sendSelectionEvent (SWT.Selection, event, true);
+	// Widget may be disposed at this point.
+	if (isDisposed()) return true;
+	for (int i = 0; i < offsets.length; i++) {
+		if ((charIndex >= offsets[i].x) && (charIndex <= offsets[i].y)) {
+			focusIndex = i;
+			break;
+		}
+	}
+	redrawWidget(view, false);
+	ignoreNextMouseUp = true;
+	return true;
 }
 
 @Override

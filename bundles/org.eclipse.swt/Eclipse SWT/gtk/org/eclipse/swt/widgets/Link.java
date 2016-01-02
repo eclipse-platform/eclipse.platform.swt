@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2013 IBM Corporation and others.
+ * Copyright (c) 2000, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -7,6 +7,7 @@
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
+ *     Conrad Groth - Bug 401015 - [CSS] Add support for styling hyperlinks in Links
  *******************************************************************************/
 package org.eclipse.swt.widgets;
 
@@ -149,7 +150,6 @@ void createHandle(int index) {
 	OS.gtk_widget_set_has_window (handle, true);
 	OS.gtk_widget_set_can_focus (handle, true);
 	layout = new TextLayout (display);
-	linkColor = display.getSystemColor(SWT.COLOR_LINK_FOREGROUND);
 	disabledColor = new Color (display, LINK_DISABLED_FOREGROUND);
 	offsets = new Point [0];
 	ids = new String [0];
@@ -191,12 +191,7 @@ void drawWidget(GC gc) {
 void enableWidget (boolean enabled) {
 	super.enableWidget (enabled);
 	if (isDisposed ()) return;
-	TextStyle linkStyle = new TextStyle (null, enabled ? linkColor : disabledColor, null);
-	linkStyle.underline = true;
-	for (int i = 0; i < offsets.length; i++) {
-		Point point = offsets [i];
-		layout.setStyle (linkStyle, point.x, point.y);
-	}
+	styleLinkParts();
 	redraw ();
 }
 
@@ -260,6 +255,22 @@ void initAccessible () {
 			if (hasFocus ()) e.childID = ACC.CHILDID_SELF;
 		}
 	});
+}
+
+/**
+ * Returns the link foreground color.
+ *
+ * @return the receiver's link foreground color.
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * @since 3.105
+ */
+public Color getLinkForeground () {
+	checkWidget ();
+	return linkColor != null ? linkColor : display.getSystemColor(SWT.COLOR_LINK_FOREGROUND);
 }
 
 @Override
@@ -717,6 +728,37 @@ void setFontDescription (long /*int*/ font) {
 	layout.setFont (Font.gtk_new (display, font));
 }
 
+/**
+ * Sets the link foreground color to the color specified
+ * by the argument, or to the default system color for the control
+ * if the argument is null.
+ * <p>
+ * Note: This operation is a hint and may be overridden by the platform.
+ * </p>
+ * @param color the new color (or null)
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_ARGUMENT - if the argument has been disposed</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * @since 3.105
+ */
+public void setLinkForeground (Color color) {
+	checkWidget();
+	if (color != null) {
+		if (color.isDisposed ()) error(SWT.ERROR_INVALID_ARGUMENT);
+		if (color.equals(linkColor)) return;
+	} else if (linkColor == null) return;
+	linkColor = color;
+	if (getEnabled()) {
+		styleLinkParts();
+		redraw();
+	}
+}
+
 @Override
 void setOrientation (boolean create) {
     super.setOrientation (create);
@@ -768,13 +810,10 @@ public void setText (String string) {
 	layout.setText (parse (string));
 	focusIndex = offsets.length > 0 ? 0 : -1;
 	selection.x = selection.y = -1;
-	boolean enabled = (state & DISABLED) == 0;
-	TextStyle linkStyle = new TextStyle (null, enabled ? linkColor : disabledColor, null);
-	linkStyle.underline = true;
+	styleLinkParts();
 	int [] bidiSegments = new int [offsets.length*2];
 	for (int i = 0; i < offsets.length; i++) {
 		Point point = offsets [i];
-		layout.setStyle (linkStyle, point.x, point.y);
 		bidiSegments[i*2] = point.x;
 		bidiSegments[i*2+1] = point.y+1;
 	}
@@ -794,6 +833,16 @@ public void setText (String string) {
 void showWidget () {
 	super.showWidget ();
 	fixStyle (handle);
+}
+
+void styleLinkParts() {
+	boolean enabled = (state & DISABLED) == 0;
+	TextStyle linkStyle = new TextStyle (null, enabled ? getLinkForeground() : disabledColor, null);
+	linkStyle.underline = true;
+	for (int i = 0; i < offsets.length; i++) {
+		Point point = offsets [i];
+		layout.setStyle (linkStyle, point.x, point.y);
+	}
 }
 
 @Override

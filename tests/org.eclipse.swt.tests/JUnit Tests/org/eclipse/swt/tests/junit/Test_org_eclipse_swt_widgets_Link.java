@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2006 IBM Corporation and others.
+ * Copyright (c) 2000, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -12,12 +12,14 @@ package org.eclipse.swt.tests.junit;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Link;
 import org.junit.Before;
@@ -151,5 +153,16 @@ public void test_setTextLjava_lang_String() {
 		fail("No exception thrown for text == null");
 	} catch (IllegalArgumentException e) {
 	}
+}
+
+@Test
+public void test_setLinkForegroundLorg_eclipse_swt_graphics_Color() {
+	assertNotNull(link.getLinkForeground());
+	Color color = new Color(control.getDisplay(), 12, 34, 56);
+	link.setLinkForeground(color);
+	assertEquals(color, link.getLinkForeground());
+	link.setLinkForeground(null);
+	assertFalse(link.getForeground().equals(color));
+	color.dispose();
 }
 }
