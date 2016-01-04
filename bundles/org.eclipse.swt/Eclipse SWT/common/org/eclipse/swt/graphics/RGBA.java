@@ -10,8 +10,9 @@
  *******************************************************************************/
 package org.eclipse.swt.graphics;
 
+import java.io.*;
+
 import org.eclipse.swt.*;
-import org.eclipse.swt.internal.*;
 
 /**
  * Instances of this class are descriptions of colors in
@@ -39,7 +40,7 @@ import org.eclipse.swt.internal.*;
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  * @since 3.104
  */
-public final class RGBA implements SerializableCompatibility {
+public final class RGBA implements Serializable {
 	/**
 	 * the RGB component of the RGBA
 	 */

@@ -11,7 +11,7 @@
 package org.eclipse.swt.graphics;
 
 
-import org.eclipse.swt.internal.SerializableCompatibility;
+import java.io.*;
 
 /**
  * Instances of this class represent places on the (x, y)
@@ -38,7 +38,7 @@ import org.eclipse.swt.internal.SerializableCompatibility;
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  */
 
-public final class Point implements SerializableCompatibility {
+public final class Point implements Serializable {
 	
 	/**
 	 * the x coordinate of the point
