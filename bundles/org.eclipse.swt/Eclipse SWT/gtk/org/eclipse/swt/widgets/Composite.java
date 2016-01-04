@@ -355,9 +355,14 @@ void createHandle (int index, boolean fixed, boolean scrolled) {
 @Override
 long /*int*/ gtk_draw (long /*int*/ widget, long /*int*/ cairo) {
 	if (OS.GTK_VERSION >= OS.VERSION(3, 16, 0)) {
-		Rectangle area = getClientArea();
 		long /*int*/ context = OS.gtk_widget_get_style_context(widget);
-		OS.gtk_render_background(context, cairo, area.x, area.y, area.width, area.height);
+		GtkAllocation allocation = new GtkAllocation();
+		OS.gtk_widget_get_allocation (widget, allocation);
+		int width = (state & ZERO_WIDTH) != 0 ? 0 : allocation.width;
+		int height = (state & ZERO_HEIGHT) != 0 ? 0 : allocation.height;
+		// We specify a 0 value for x & y as we want the whole widget to be
+		// colored, not some portion of it.
+		OS.gtk_render_background(context, cairo, 0, 0, width, height);
 	}
 	return super.gtk_draw(widget, cairo);
 }
