@@ -310,7 +310,6 @@ void readPixelData(PngIdatChunk chunk, PngChunkReader chunkReader) throws IOExce
 	boolean use3_2 = System.getProperty("org.eclipse.swt.internal.image.PNGFileFormat_3.2") != null;
 	InputStream inflaterStream = use3_2 ? null : new BufferedInputStream(new InflaterInputStream(stream));
 	if (inflaterStream != null) {
-		stream.close();
 		stream = inflaterStream;
 	} else {
 		stream = new PngDecodingDataStream(stream);
