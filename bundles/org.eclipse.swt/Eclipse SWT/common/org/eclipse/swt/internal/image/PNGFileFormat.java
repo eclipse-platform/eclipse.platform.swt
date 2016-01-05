@@ -304,6 +304,7 @@ void setImageDataValues(byte[] data, ImageData imageData) {
  * Read the image data from the data stream. This must handle
  * decoding the data, filtering, and interlacing.
  */
+@SuppressWarnings("resource")
 void readPixelData(PngIdatChunk chunk, PngChunkReader chunkReader) throws IOException {
 	InputStream stream = new PngInputStream(chunk, chunkReader);
 	//TEMPORARY CODE
