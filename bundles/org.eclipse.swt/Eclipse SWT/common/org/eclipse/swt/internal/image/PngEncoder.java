@@ -10,15 +10,11 @@
  *******************************************************************************/
 package org.eclipse.swt.internal.image;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
+import java.io.*;
+import java.util.zip.*;
 
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.graphics.ImageData;
-import org.eclipse.swt.graphics.ImageLoader;
-import org.eclipse.swt.graphics.RGB;
-import org.eclipse.swt.internal.Compatibility;
+import org.eclipse.swt.*;
+import org.eclipse.swt.graphics.*;
 
 final class PngEncoder extends Object {
 
@@ -240,19 +236,18 @@ void writeImageData() throws IOException {
 	OutputStream os = null;
 	switch (loader.compression) {
 	case 0:
-		os = Compatibility.newDeflaterOutputStream(baos, NO_COMPRESSION);
+		os = new DeflaterOutputStream(baos, new Deflater(NO_COMPRESSION));
 		break;
 	case 1:
-		os = Compatibility.newDeflaterOutputStream(baos, BEST_SPEED);
+		os = new DeflaterOutputStream(baos, new Deflater(BEST_SPEED));
 		break;
 	case 3:
-		os = Compatibility.newDeflaterOutputStream(baos, BEST_COMPRESSION);
+		os = new DeflaterOutputStream(baos, new Deflater(BEST_COMPRESSION));
 		break;
 	default:
-		os = Compatibility.newDeflaterOutputStream(baos, DEFAULT_COMPRESSION);
+		os = new DeflaterOutputStream(baos, new Deflater(DEFAULT_COMPRESSION));
 		break;
 	}
-	if (os == null) os = baos; // returns null for J2ME
 	
 	if (colorType == 3) {
 	

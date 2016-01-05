@@ -12,9 +12,10 @@ package org.eclipse.swt.internal.image;
 
 
 import java.io.*;
+import java.util.zip.*;
+
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.internal.*;
 
 public final class PNGFileFormat extends FileFormat {
 	static final int SIGNATURE_LENGTH = 8;
@@ -307,8 +308,9 @@ void readPixelData(PngIdatChunk chunk, PngChunkReader chunkReader) throws IOExce
 	InputStream stream = new PngInputStream(chunk, chunkReader);
 	//TEMPORARY CODE
 	boolean use3_2 = System.getProperty("org.eclipse.swt.internal.image.PNGFileFormat_3.2") != null;
-	InputStream inflaterStream = use3_2 ? null : Compatibility.newInflaterInputStream(stream);
+	InputStream inflaterStream = use3_2 ? null : new BufferedInputStream(new InflaterInputStream(stream));
 	if (inflaterStream != null) {
+		stream.close();
 		stream = inflaterStream;
 	} else {
 		stream = new PngDecodingDataStream(stream);

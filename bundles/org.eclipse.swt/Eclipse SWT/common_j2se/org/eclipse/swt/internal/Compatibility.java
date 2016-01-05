@@ -14,7 +14,6 @@ package org.eclipse.swt.internal;
 import java.io.*;
 import java.text.*;
 import java.util.*;
-import java.util.zip.*;
 
 import org.eclipse.swt.*;
 
@@ -100,54 +99,6 @@ public static int pow2(int n) {
 		SWT.error(SWT.ERROR_INVALID_RANGE);
 	}
 	return 1;
-}
-
-/**
- * Create a DeflaterOutputStream if such things are supported.
- * 
- * @param stream the output stream
- * @return a deflater stream or <code>null</code>
- * @exception IOException
- * 
- * @since 3.4
- */
-public static OutputStream newDeflaterOutputStream(OutputStream stream, int level) throws IOException {
-	return new DeflaterOutputStream(stream, new Deflater(level));
-}
-
-/**
- * Open a file if such things are supported.
- * 
- * @param filename the name of the file to open
- * @return a stream on the file if it could be opened.
- * @exception IOException
- */
-public static InputStream newFileInputStream(String filename) throws IOException {
-	return new FileInputStream(filename);
-}
-
-/**
- * Open a file if such things are supported.
- * 
- * @param filename the name of the file to open
- * @return a stream on the file if it could be opened.
- * @exception IOException
- */
-public static OutputStream newFileOutputStream(String filename) throws IOException {
-	return new FileOutputStream(filename);
-}
-
-/**
- * Create an InflaterInputStream if such things are supported.
- * 
- * @param stream the input stream
- * @return a inflater stream or <code>null</code>
- * @exception IOException
- * 
- * @since 3.3
- */
-public static InputStream newInflaterInputStream(InputStream stream) throws IOException {
-	return new BufferedInputStream(new InflaterInputStream(stream));
 }
 
 /**
