@@ -554,7 +554,6 @@ char * OS_nativeFunctionNames[] = {
 	"_1gdk_1region_1subtract",
 	"_1gdk_1region_1union",
 	"_1gdk_1region_1union_1with_1rect",
-	"_1gdk_1rgba_1to_1string",
 	"_1gdk_1screen_1get_1default",
 	"_1gdk_1screen_1get_1monitor_1at_1point",
 	"_1gdk_1screen_1get_1monitor_1at_1window",

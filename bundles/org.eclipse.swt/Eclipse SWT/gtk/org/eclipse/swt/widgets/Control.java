@@ -4060,30 +4060,13 @@ void gtk_css_provider_load_from_css (long /*int*/ context, String css) {
 
 String gtk_rgba_to_css_string (GdkRGBA rgba) {
 	/*
-	 * In GdkRGBA, values are a double between 0-1.
-	 * In CSS, values are integers between 0-255 for r, g, and b.
-	 * Alpha is still a double between 0-1.
-	 * The final CSS format is: rgba(int, int, int, double)
-	 * Due to this, there is a slight loss of precision.
-	 * Setting/getting with CSS *might* yield slight differences.
+	 * In GdkRGBA, values are a double between 0-1.<br>
+     * In CSS, values are typically integers between 0-255.<br>
+     * I.e, note, there is a slight loss of precision.
+     * Thus setting/getting color *might* return slight differences.
 	 */
-	GdkRGBA toConvert;
-	if (rgba != null) {
-		toConvert = rgba;
-	} else {
-		// If we have a null RGBA, set it to the default COLOR_WIDGET_BACKGROUND.
-		GdkColor defaultGdkColor = display.getSystemColor(SWT.COLOR_WIDGET_BACKGROUND).handle; 
-		toConvert = new GdkRGBA ();
-		toConvert.alpha = 1.0;
-		toConvert.red = (defaultGdkColor.red & 0xFFFF) / (float)0xFFFF;
-		toConvert.green = (defaultGdkColor.green & 0xFFFF) / (float)0xFFFF;
-		toConvert.blue = (defaultGdkColor.blue & 0xFFFF) / (float)0xFFFF;
-	}
-	long /*int*/ str = OS.gdk_rgba_to_string (toConvert);
-	int length = OS.strlen (str);
-	byte [] buffer = new byte [length];
-	OS.memmove (buffer, str, length);
-	return new String (Converter.mbcsToWcs (null, buffer));
+	String color = "rgba(" + (int)(rgba.red * 255) + "," + (int)(rgba.green * 255) + "," + (int)(rgba.blue * 255) + "," + (int)(rgba.alpha * 255) + ")";
+	return color;
 }
 
 void setBackgroundColor (long /*int*/ handle, GdkColor color) {

@@ -564,7 +564,6 @@ typedef enum {
 	_1gdk_1region_1subtract_FUNC,
 	_1gdk_1region_1union_FUNC,
 	_1gdk_1region_1union_1with_1rect_FUNC,
-	_1gdk_1rgba_1to_1string_FUNC,
 	_1gdk_1screen_1get_1default_FUNC,
 	_1gdk_1screen_1get_1monitor_1at_1point_FUNC,
 	_1gdk_1screen_1get_1monitor_1at_1window_FUNC,
