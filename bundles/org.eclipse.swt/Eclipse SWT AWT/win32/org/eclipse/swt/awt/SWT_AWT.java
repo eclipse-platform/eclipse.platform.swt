@@ -34,7 +34,6 @@ import org.eclipse.swt.widgets.Event;
  * 
  * @since 3.0
  */
-@SuppressWarnings("rawtypes")
 public class SWT_AWT {
 
 	/**
@@ -74,11 +73,9 @@ static synchronized void initializeSwing() {
 	swingInitialized = true;
 	try {
 		/* Initialize the default focus traversal policy */
-		Class[] emptyClass = new Class[0];
-		Object[] emptyObject = new Object[0];
-		Class clazz = Class.forName("javax.swing.UIManager");
-		Method method = clazz.getMethod("getDefaults", emptyClass);
-		if (method != null) method.invoke(clazz, emptyObject);
+		Class<?> clazz = Class.forName("javax.swing.UIManager");
+		Method method = clazz.getMethod("getDefaults");
+		if (method != null) method.invoke(clazz);
 	} catch (Throwable e) {}
 }
 
@@ -140,7 +137,7 @@ public static Frame new_Frame (final Composite parent) {
 				 * and other JREs take a long.  To handle this binary incompatibility, use
 				 * reflection to create the embedded frame.
 				 */
-				Class clazz = null;
+				Class<?> clazz = null;
 				try {
 					String className = embeddedFrameClass != null ? embeddedFrameClass : "sun.awt.windows.WEmbeddedFrame";
 					clazz = Class.forName(className);
@@ -150,14 +147,14 @@ public static Frame new_Frame (final Composite parent) {
 				}
 				initializeSwing ();
 				Object value = null;
-				Constructor constructor = null;
+				Constructor<?> constructor = null;
 				try {
-					constructor = clazz.getConstructor (new Class [] {int.class});
-					value = constructor.newInstance (new Object [] {new Integer ((int)/*64*/handle)});
+					constructor = clazz.getConstructor (int.class);
+					value = constructor.newInstance (new Integer ((int)/*64*/handle));
 				} catch (Throwable e1) {
 					try {
-						constructor = clazz.getConstructor (new Class [] {long.class});
-						value = constructor.newInstance (new Object [] {new Long (handle)});
+						constructor = clazz.getConstructor (long.class);
+						value = constructor.newInstance (new Long (handle));
 					} catch (Throwable e2) {
 						exception[0] = e2;
 						return;
@@ -275,9 +272,9 @@ public static Frame new_Frame (final Composite parent) {
 							} else {
 								if (frame.isActive()) return;
 								try {
-									Class clazz = frame.getClass();
-									Method method = clazz.getMethod("synthesizeWindowActivation", new Class[]{boolean.class});
-									if (method != null) method.invoke(frame, new Object[]{Boolean.TRUE});
+									Class<?> clazz = frame.getClass();
+									Method method = clazz.getMethod("synthesizeWindowActivation", boolean.class);
+									if (method != null) method.invoke(frame, Boolean.TRUE);
 								} catch (Throwable e) {}
 							}
 						}
@@ -295,9 +292,9 @@ public static Frame new_Frame (final Composite parent) {
 							} else {
 								if (!frame.isActive()) return;
 								try {
-									Class clazz = frame.getClass();
-									Method method = clazz.getMethod("synthesizeWindowActivation", new Class[]{boolean.class});
-									if (method != null) method.invoke(frame, new Object[]{Boolean.FALSE});
+									Class<?> clazz = frame.getClass();
+									Method method = clazz.getMethod("synthesizeWindowActivation", boolean.class);
+									if (method != null) method.invoke(frame, Boolean.FALSE);
 								} catch (Throwable e) {}
 							}
 						}
