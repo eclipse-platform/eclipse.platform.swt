@@ -593,7 +593,7 @@ int parseMnemonics (char[] buffer, int start, int end, StringBuffer result) {
 }
 
 @Override
-void scrollWheel(long id, long sel, long theEvent) {
+void scrollWheel(long /*int*/ id, long /*int*/ sel, long /*int*/ theEvent) {
 	super.scrollWheel(id, sel, theEvent);
 	parent.scrollWheel(parent.view.id, sel, theEvent);
 }
