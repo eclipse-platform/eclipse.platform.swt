@@ -12,6 +12,7 @@ package org.eclipse.swt.tests.junit;
 
 import static org.junit.Assert.assertArrayEquals;
 
+import java.util.ArrayList;
 import java.util.Vector;
 
 import org.eclipse.swt.SWT;
