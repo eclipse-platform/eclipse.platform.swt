@@ -83,7 +83,7 @@ void build(IJavaProject project, String root) throws CoreException {
 		ArrayList<String> args = new ArrayList<>();
 		args.addAll(Arrays.asList(new String[]{
 			"-nowarn",
-			"-1.5",
+			"-1.7",
 //			"-verbose",
 			"-d", bin,
 			"-cp", cp.toString(),
