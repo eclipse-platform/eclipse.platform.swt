@@ -10,7 +10,7 @@
  *******************************************************************************/
 package org.eclipse.swt.widgets;
 
- 
+
 import java.util.*;
 
 import org.eclipse.swt.*;
@@ -31,7 +31,7 @@ import org.eclipse.swt.internal.cocoa.*;
  * </p><p>
  * IMPORTANT: This class is <em>not</em> intended to be subclassed.
  * </p>
- * 
+ *
  * @see <a href="http://www.eclipse.org/swt/snippets/#filedialog">FileDialog snippets</a>
  * @see <a href="http://www.eclipse.org/swt/examples.php">SWT Example: ControlExample, Dialog tab</a>
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
@@ -42,7 +42,7 @@ public class FileDialog extends Dialog {
 	NSPopUpButton popup;
 	String [] filterNames = new String [0];
 	String [] filterExtensions = new String [0];
-	String [] fileNames = new String[0];	
+	String [] fileNames = new String[0];
 	String filterPath = "", fileName = "";
 	int filterIndex = -1;
 	boolean overwrite = false;
@@ -71,7 +71,7 @@ public FileDialog (Shell parent) {
  * <p>
  * The style value is either one of the style constants defined in
  * class <code>SWT</code> which is applicable to instances of this
- * class, or must be built by <em>bitwise OR</em>'ing together 
+ * class, or must be built by <em>bitwise OR</em>'ing together
  * (that is, using the <code>int</code> "|" operator) two or more
  * of those <code>SWT</code> style constants. The class description
  * lists the style constants that are applicable to the class.
@@ -88,7 +88,7 @@ public FileDialog (Shell parent) {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the parent</li>
  *    <li>ERROR_INVALID_SUBCLASS - if this class is not an allowed subclass</li>
  * </ul>
- * 
+ *
  * @see SWT#SAVE
  * @see SWT#OPEN
  * @see SWT#MULTI
@@ -105,7 +105,7 @@ public FileDialog (Shell parent, int style) {
  * Returns the path of the first file that was
  * selected in the dialog relative to the filter path, or an
  * empty string if no such file has been selected.
- * 
+ *
  * @return the relative path of the file
  */
 public String getFileName () {
@@ -115,7 +115,7 @@ public String getFileName () {
 /**
  * Returns a (possibly empty) array with the paths of all files
  * that were selected in the dialog relative to the filter path.
- * 
+ *
  * @return the relative paths of the files
  */
 public String [] getFileNames () {
@@ -142,10 +142,10 @@ public String [] getFilterExtensions () {
  * </p>
  *
  * @return index the file extension filter index
- * 
+ *
  * @see #getFilterExtensions
  * @see #getFilterNames
- * 
+ *
  * @since 3.4
  */
 public int getFilterIndex () {
@@ -168,7 +168,7 @@ public String [] getFilterNames () {
  * in the dialog, filtered according to the filter extensions.
  *
  * @return the directory path string
- * 
+ *
  * @see #setFilterExtensions
  */
 public String getFilterPath () {
@@ -181,7 +181,7 @@ public String getFilterPath () {
  * overwrite if the selected file already exists.
  *
  * @return true if the dialog will prompt for file overwrite, false otherwise
- * 
+ *
  * @since 3.4
  */
 public boolean getOverwrite () {
@@ -221,11 +221,11 @@ public String open () {
 		openPanel.setAllowsMultipleSelection((style & SWT.MULTI) != 0);
 		panel = openPanel;
 	}
-	
+
 	Display display = parent != null ? parent.getDisplay() : Display.getCurrent();
 	panel.setCanCreateDirectories(true);
-	/* 
-	 * This line is intentionally commented. Don't show hidden files forcefully, 
+	/*
+	 * This line is intentionally commented. Don't show hidden files forcefully,
 	 * instead allow File dialog to use the system preference.
 	 */
 	//	OS.objc_msgSend(panel.id, OS.sel_setShowsHiddenFiles_, true);
@@ -257,7 +257,7 @@ public String open () {
 		widget.sizeToFit();
 		panel.setAccessoryView(widget);
 		popup = widget;
-		
+
 		setAllowedFileType(filterExtensions[0]);
 		panel.setAllowsOtherFileTypes(true);
 		panel.setTreatsFilePackagesAsDirectories(shouldTreatAppAsDirectory(filterExtensions[0]));
@@ -298,19 +298,19 @@ public String open () {
 			NSArray filenames = ((NSOpenPanel)panel).filenames();
 			int count = (int)/*64*/filenames.count();
 			fileNames = new String[count];
-			
+
 			for (int i = 0; i < count; i++) {
 				filename = new NSString(filenames.objectAtIndex(i));
 				NSString filenameOnly = filename.lastPathComponent();
 				NSString pathOnly = filename.stringByDeletingLastPathComponent();
-				
+
 				if (i == 0) {
 					/* Filter path */
 					filterPath = pathOnly.getString();
 
 					/* File name */
 					fileName = fileNames [0] = filenameOnly.getString();
-				} else {									
+				} else {
 					if (pathOnly.getString().equals (filterPath)) {
 						fileNames [i] = filenameOnly.getString();
 					} else {
@@ -331,7 +331,7 @@ public String open () {
 	}
 	if (jniRef != 0) OS.DeleteGlobalRef(jniRef);
 	panel = null;
-	return fullPath;	
+	return fullPath;
 }
 
 long /*int*/ _overwriteExistingFileCheck (long /*int*/ id, long /*int*/ sel, long /*int*/ str) {
@@ -383,13 +383,13 @@ void sendSelection (long /*int*/ id, long /*int*/ sel, long /*int*/ arg) {
 
 void setAllowedFileType (String fileTypes) {
 	if (fileTypes == null) return;
-	
+
 	StringTokenizer fileTypesToken = new StringTokenizer(fileTypes, String.valueOf(EXTENSION_SEPARATOR));
 	NSMutableArray allowedFileTypes = NSMutableArray.arrayWithCapacity(1);
 
 	while(fileTypesToken.hasMoreTokens()) {
 		String fileType = fileTypesToken.nextToken();
-		
+
 		if (fileType.equals("*") || fileType.equals("*.*")) {
 			panel.setAllowedFileTypes(null);
 			return;
@@ -401,7 +401,7 @@ void setAllowedFileType (String fileTypes) {
 		}
 		allowedFileTypes.addObject(NSString.stringWith(fileType));
 	}
-	
+
 	panel.setAllowedFileTypes(allowedFileTypes);
 }
 
@@ -411,7 +411,7 @@ void setAllowedFileType (String fileTypes) {
  * select by default when opened to the argument,
  * which may be null.  The name will be prefixed with
  * the filter path when one is supplied.
- * 
+ *
  * @param string the file name
  */
 public void setFileName (String string) {
@@ -431,15 +431,15 @@ public void setFileName (String string) {
  * </p>
  * <p>
  * Note: On Mac, setting the file extension filter affects how
- * app bundles are treated by the dialog. When a filter extension 
- * having the app extension (.app) is selected, bundles are treated 
- * as files. For all other extension filters, bundles are treated 
- * as directories. When no filter extension is set, bundles are 
+ * app bundles are treated by the dialog. When a filter extension
+ * having the app extension (.app) is selected, bundles are treated
+ * as files. For all other extension filters, bundles are treated
+ * as directories. When no filter extension is set, bundles are
  * treated as files.
  * </p>
  *
  * @param extensions the file extension filter
- * 
+ *
  * @see #setFilterNames to specify the user-friendly
  * names corresponding to the extensions
  */
@@ -457,10 +457,10 @@ public void setFilterExtensions (String [] extensions) {
  * </p>
  *
  * @param index the file extension filter index
- * 
+ *
  * @see #setFilterExtensions
  * @see #setFilterNames
- * 
+ *
  * @since 3.4
  */
 public void setFilterIndex (int index) {
@@ -478,7 +478,7 @@ public void setFilterIndex (int index) {
  * </p>
  *
  * @param names the list of filter names, or null for no filter names
- * 
+ *
  * @see #setFilterExtensions
  */
 public void setFilterNames (String [] names) {
@@ -499,7 +499,7 @@ public void setFilterNames (String [] names) {
  * </p>
  *
  * @param string the directory path
- * 
+ *
  * @see #setFilterExtensions
  */
 public void setFilterPath (String string) {
@@ -512,7 +512,7 @@ public void setFilterPath (String string) {
  * overwrite if the selected file already exists.
  *
  * @param overwrite true if the dialog will prompt for file overwrite, false otherwise
- * 
+ *
  * @since 3.4
  */
 public void setOverwrite (boolean overwrite) {
@@ -520,7 +520,7 @@ public void setOverwrite (boolean overwrite) {
 }
 
 /**
- * Determines if the treatAppAsBundle property has to be enabled for the NSOpenPanel 
+ * Determines if the treatAppAsBundle property has to be enabled for the NSOpenPanel
  * for the filterExtensions passed as a parameter.
  */
 boolean shouldTreatAppAsDirectory (String extensions) {

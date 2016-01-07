@@ -10,7 +10,7 @@
  *******************************************************************************/
 package org.eclipse.swt.widgets;
 
- 
+
 import org.eclipse.swt.internal.cocoa.*;
 
 import org.eclipse.swt.*;
@@ -19,9 +19,9 @@ import org.eclipse.swt.graphics.*;
 
 /**
  * Instances of this class are selectable user interface
- * objects that represent a range of positive, numeric values. 
+ * objects that represent a range of positive, numeric values.
  * <p>
- * At any given moment, a given slider will have a 
+ * At any given moment, a given slider will have a
  * single 'selection' that is considered to be its
  * value, which is constrained to be within the range of
  * values the slider represents (that is, between its
@@ -81,7 +81,7 @@ public class Slider extends Control {
  * <p>
  * The style value is either one of the style constants defined in
  * class <code>SWT</code> which is applicable to instances of this
- * class, or must be built by <em>bitwise OR</em>'ing together 
+ * class, or must be built by <em>bitwise OR</em>'ing together
  * (that is, using the <code>int</code> "|" operator) two or more
  * of those <code>SWT</code> style constants. The class description
  * lists the style constants that are applicable to the class.
@@ -235,7 +235,7 @@ public int getIncrement () {
  */
 public int getMaximum () {
 	checkWidget();
-	return maximum; 
+	return maximum;
 }
 
 /**
@@ -362,7 +362,7 @@ void sendSelection () {
 /**
  * Sets the amount that the receiver's value will be
  * modified by when the up/down (or right/left) arrows
- * are pressed to the argument, which must be at least 
+ * are pressed to the argument, which must be at least
  * one.
  *
  * @param value the new increment (must be greater than zero)
@@ -478,15 +478,15 @@ void updateBar (int selection, int minimum, int maximum, int thumb) {
 	float knob = range <= 0 ? 1 : (float)thumb / (maximum - minimum);
 	widget.setDoubleValue(fraction);
 	widget.setKnobProportion(knob);
-	widget.setEnabled (range > 0); 
+	widget.setEnabled (range > 0);
 }
 
 /**
- * Sets the thumb value. The thumb value should be used to represent 
+ * Sets the thumb value. The thumb value should be used to represent
  * the size of the visual portion of the current range. This value is
  * usually the same as the page increment value.
  * <p>
- * This new value will be ignored if it is less than one, and will be 
+ * This new value will be ignored if it is less than one, and will be
  * clamped if it exceeds the receiver's current range.
  * </p>
  *
@@ -511,7 +511,7 @@ public void setThumb (int value) {
  * value, thumb, increment and page increment all at once.
  * <p>
  * Note: This is similar to setting the values individually
- * using the appropriate methods, but may be implemented in a 
+ * using the appropriate methods, but may be implemented in a
  * more efficient fashion on some platforms.
  * </p>
  *

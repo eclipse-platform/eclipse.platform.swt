@@ -10,7 +10,7 @@
  *******************************************************************************/
 package org.eclipse.swt.widgets;
 
- 
+
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.cocoa.*;
@@ -27,7 +27,7 @@ import org.eclipse.swt.internal.cocoa.*;
  * <p>
  * IMPORTANT: This class is <em>not</em> intended to be subclassed.
  * </p>
- * 
+ *
  * @see <a href="http://www.eclipse.org/swt/examples.php">SWT Example: ControlExample, Dialog tab</a>
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  * @noextend This class is not intended to be subclassed by clients.
@@ -62,7 +62,7 @@ public FontDialog (Shell parent) {
  * <p>
  * The style value is either one of the style constants defined in
  * class <code>SWT</code> which is applicable to instances of this
- * class, or must be built by <em>bitwise OR</em>'ing together 
+ * class, or must be built by <em>bitwise OR</em>'ing together
  * (that is, using the <code>int</code> "|" operator) two or more
  * of those <code>SWT</code> style constants. The class description
  * lists the style constants that are applicable to the class.
@@ -95,11 +95,11 @@ void changeFont(long /*int*/ id, long /*int*/ sel, long /*int*/ arg0) {
  * <p>
  * If the platform's font dialog does not have any effects selection controls,
  * then this method always returns false.
- * </p> 
+ * </p>
  *
  * @return <code>true</code> if the dialog's effects selection controls
  * are visible and <code>false</code> otherwise
- * 
+ *
  * @since 3.8
  */
 public boolean getEffectsVisible () {
@@ -109,7 +109,7 @@ public boolean getEffectsVisible () {
 /**
  * Returns a FontData object describing the font that was
  * selected in the dialog, or null if none is available.
- * 
+ *
  * @return the FontData for the selected font, or null
  * @deprecated use #getFontList ()
  */
@@ -121,7 +121,7 @@ public FontData getFontData () {
 /**
  * Returns a FontData set describing the font that was
  * selected in the dialog, or null if none is available.
- * 
+ *
  * @return the FontData for the selected font, or null
  * @since 2.1.1
  */
@@ -139,7 +139,7 @@ public FontData [] getFontList () {
  * @return the RGB value for the selected color, or null
  *
  * @see PaletteData#getRGBs
- * 
+ *
  * @since 2.1
  */
 public RGB getRGB () {
@@ -159,7 +159,7 @@ public RGB getRGB () {
  * </ul>
  */
 public FontData open () {
-	Display display = parent != null ? parent.display : Display.getCurrent ();	
+	Display display = parent != null ? parent.display : Display.getCurrent ();
 	NSFontPanel panel = NSFontPanel.sharedFontPanel();
 	panel.setTitle(NSString.stringWith(title != null ? title : ""));
 	boolean create = fontData != null;
@@ -211,7 +211,7 @@ void setColor_forAttribute(long /*int*/ id, long /*int*/ sel, long /*int*/ color
  * </p>
  *
  * @param visible whether or not the dialog will show the effects selection controls
- * 
+ *
  * @since 3.8
  */
 public void setEffectsVisible(boolean visible) {
@@ -222,7 +222,7 @@ public void setEffectsVisible(boolean visible) {
  * Sets a FontData object describing the font to be
  * selected by default in the dialog, or null to let
  * the platform choose one.
- * 
+ *
  * @param fontData the FontData to use initially, or null
  * @deprecated use #setFontList (FontData [])
  */
@@ -235,12 +235,12 @@ public void setFontData (FontData fontData) {
  * Sets the set of FontData objects describing the font to
  * be selected by default in the dialog, or null to let
  * the platform choose one.
- * 
+ *
  * @param fontData the set of FontData objects to use initially, or null
  *        to let the platform select a default when open() is called
  *
  * @see Font#getFontData
- * 
+ *
  * @since 2.1.1
  */
 public void setFontList (FontData [] fontData) {
@@ -259,7 +259,7 @@ public void setFontList (FontData [] fontData) {
  *        the platform select a default when open() is called
  *
  * @see PaletteData#getRGBs
- * 
+ *
  * @since 2.1
  */
 public void setRGB (RGB rgb) {

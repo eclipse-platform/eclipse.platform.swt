@@ -21,34 +21,34 @@ import org.eclipse.swt.widgets.*;
  * <code>DragSource</code> defines the source object for a drag and drop transfer.
  *
  * <p>IMPORTANT: This class is <em>not</em> intended to be subclassed.</p>
- *  
- * <p>A drag source is the object which originates a drag and drop operation. For the specified widget, 
- * it defines the type of data that is available for dragging and the set of operations that can 
- * be performed on that data.  The operations can be any bit-wise combination of DND.MOVE, DND.COPY or 
- * DND.LINK.  The type of data that can be transferred is specified by subclasses of Transfer such as 
- * TextTransfer or FileTransfer.  The type of data transferred can be a predefined system type or it 
+ *
+ * <p>A drag source is the object which originates a drag and drop operation. For the specified widget,
+ * it defines the type of data that is available for dragging and the set of operations that can
+ * be performed on that data.  The operations can be any bit-wise combination of DND.MOVE, DND.COPY or
+ * DND.LINK.  The type of data that can be transferred is specified by subclasses of Transfer such as
+ * TextTransfer or FileTransfer.  The type of data transferred can be a predefined system type or it
  * can be a type defined by the application.  For instructions on how to define your own transfer type,
  * refer to <code>ByteArrayTransfer</code>.</p>
  *
- * <p>You may have several DragSources in an application but you can only have one DragSource 
- * per Control.  Data dragged from this DragSource can be dropped on a site within this application 
+ * <p>You may have several DragSources in an application but you can only have one DragSource
+ * per Control.  Data dragged from this DragSource can be dropped on a site within this application
  * or it can be dropped on another application such as an external Text editor.</p>
- * 
+ *
  * <p>The application supplies the content of the data being transferred by implementing the
  * <code>DragSourceListener</code> and associating it with the DragSource via DragSource#addDragListener.</p>
- * 
- * <p>When a successful move operation occurs, the application is required to take the appropriate 
+ *
+ * <p>When a successful move operation occurs, the application is required to take the appropriate
  * action to remove the data from its display and remove any associated operating system resources or
- * internal references.  Typically in a move operation, the drop target makes a copy of the data 
- * and the drag source deletes the original.  However, sometimes copying the data can take a long 
- * time (such as copying a large file).  Therefore, on some platforms, the drop target may actually 
- * move the data in the operating system rather than make a copy.  This is usually only done in 
+ * internal references.  Typically in a move operation, the drop target makes a copy of the data
+ * and the drag source deletes the original.  However, sometimes copying the data can take a long
+ * time (such as copying a large file).  Therefore, on some platforms, the drop target may actually
+ * move the data in the operating system rather than make a copy.  This is usually only done in
  * file transfers.  In this case, the drag source is informed in the DragEnd event that a
- * DROP_TARGET_MOVE was performed.  It is the responsibility of the drag source at this point to clean 
+ * DROP_TARGET_MOVE was performed.  It is the responsibility of the drag source at this point to clean
  * up its displayed information.  No action needs to be taken on the operating system resources.</p>
  *
  * <p> The following example shows a Label widget that allows text to be dragged from it.</p>
- * 
+ *
  * <code><pre>
  *	// Enable a label as a Drag Source
  *	Label label = new Label(shell, SWT.NONE);
@@ -56,7 +56,7 @@ import org.eclipse.swt.widgets.*;
  *	Transfer[] types = new Transfer[] {TextTransfer.getInstance()};
  *	// This example will allow the text to be copied or moved to the drop target
  *	int operations = DND.DROP_MOVE | DND.DROP_COPY;
- *	
+ *
  *	DragSource source = new DragSource(label, operations);
  *	source.setTransfer(types);
  *	source.addDragListener(new DragSourceListener() {
@@ -68,10 +68,10 @@ import org.eclipse.swt.widgets.*;
  *			}
  *		};
  *		public void dragSetData(DragSourceEvent event) {
- *			// A drop has been performed, so provide the data of the 
+ *			// A drop has been performed, so provide the data of the
  *			// requested type.
- *			// (Checking the type of the requested data is only 
- *			// necessary if the drag source supports more than 
+ *			// (Checking the type of the requested data is only
+ *			// necessary if the drag source supports more than
  *			// one data type but is shown here as an example).
  *			if (TextTransfer.getInstance().isSupportedType(event.dataType)){
  *				event.data = label.getText();
@@ -107,10 +107,10 @@ public class DragSource extends Widget {
 	static Callback dragSource2Args, dragSource3Args, dragSource4Args, dragSource5Args, dragSource6Args;
 	static final byte[] SWT_OBJECT = {'S', 'W', 'T', '_', 'O', 'B', 'J', 'E', 'C', 'T', '\0'};
 	static long /*int*/ proc2 = 0, proc3 = 0, proc4 = 0, proc5 = 0, proc6 = 0;
-	
+
 	String paths[];
 	boolean exist[];
-	
+
 	static {
 		String className = "SWTDragSourceDelegate";
 
@@ -151,7 +151,7 @@ public class DragSource extends Widget {
 		OS.class_addMethod(cls, OS.sel_pasteboard_provideDataForType_, proc4, "@:@@");
 
 		OS.objc_registerClassPair(cls);
-	}	
+	}
 
 	// info for registering as a drag source
 	Control control;
@@ -161,21 +161,21 @@ public class DragSource extends Widget {
 	Image dragImageFromListener;
 	private int dragOperations;
 	SWTDragSourceDelegate dragSourceDelegate;
-	
+
 	static final String DEFAULT_DRAG_SOURCE_EFFECT = "DEFAULT_DRAG_SOURCE_EFFECT"; //$NON-NLS-1$
 
 	private long /*int*/ delegateJniRef;
 	private Point dragOffset;
-	
+
 /**
  * Creates a new <code>DragSource</code> to handle dragging from the specified <code>Control</code>.
- * Creating an instance of a DragSource may cause system resources to be allocated depending on the platform.  
+ * Creating an instance of a DragSource may cause system resources to be allocated depending on the platform.
  * It is therefore mandatory that the DragSource instance be disposed when no longer required.
  *
  * @param control the <code>Control</code> that the user clicks on to initiate the drag
- * @param style the bitwise OR'ing of allowed operations; this may be a combination of any of 
+ * @param style the bitwise OR'ing of allowed operations; this may be a combination of any of
  *					DND.DROP_NONE, DND.DROP_COPY, DND.DROP_MOVE, DND.DROP_LINK
- * 
+ *
  * @exception SWTException <ul>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the parent</li>
  *    <li>ERROR_INVALID_SUBCLASS - if this class is not an allowed subclass</li>
@@ -185,10 +185,10 @@ public class DragSource extends Widget {
  *        drag source is created for a control or if the operating system will not allow the creation
  *        of the drag source</li>
  * </ul>
- * 
+ *
  * <p>NOTE: ERROR_CANNOT_INIT_DRAG should be an SWTException, since it is a
  * recoverable error, but can not be changed due to backward compatibility.</p>
- * 
+ *
  * @see Widget#dispose
  * @see DragSource#checkSubclass
  * @see DND#DROP_NONE
@@ -203,7 +203,7 @@ public DragSource(Control control, int style) {
 		DND.error(DND.ERROR_CANNOT_INIT_DRAG);
 	}
 	control.setData(DND.DRAG_SOURCE_KEY, this);
-	
+
 	controlListener = new Listener () {
 		public void handleEvent (Event event) {
 			if (event.type == SWT.Dispose) {
@@ -224,13 +224,13 @@ public DragSource(Control control, int style) {
 	};
 	control.addListener (SWT.Dispose, controlListener);
 	control.addListener (SWT.DragDetect, controlListener);
-	
+
 	this.addListener(SWT.Dispose, new Listener() {
 		public void handleEvent(Event e) {
 			onDispose();
 		}
 	});
-	
+
 	Object effect = control.getData(DEFAULT_DRAG_SOURCE_EFFECT);
 	if (effect instanceof DragSourceEffect) {
 		dragEffect = (DragSourceEffect) effect;
@@ -244,7 +244,7 @@ public DragSource(Control control, int style) {
 	if (delegateJniRef == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 
 	// The dragSourceDelegate implements the pasteboard callback to provide the dragged data, so we always need
-	// to create it. NSDraggingSource methods are ignored in the table and tree case. 
+	// to create it. NSDraggingSource methods are ignored in the table and tree case.
 	dragSourceDelegate = (SWTDragSourceDelegate)new SWTDragSourceDelegate().alloc().init();
 	OS.object_setInstanceVariable(dragSourceDelegate.id, SWT_OBJECT, delegateJniRef);
 
@@ -267,10 +267,10 @@ public DragSource(Control control, int style) {
 		OS.class_addMethod(cls, OS.sel_draggedImage_beganAt_, proc4, "@:@{NSPoint=ff}");
 		OS.class_addMethod(cls, OS.sel_draggedImage_endedAt_operation_, draggedImage_endedAt_operationProc, "@:@{NSPoint=ff}I");
 		OS.class_addMethod(cls, OS.sel_ignoreModifierKeysWhileDragging, proc3, "@:");
-		
+
 		// Override to return the drag effect's image.
 		OS.class_addMethod(cls, OS.sel_dragImageForRowsWithIndexes_tableColumns_event_offset_, proc6, "@:@@@^NSPoint");
-	} 
+	}
 
 }
 
@@ -279,13 +279,13 @@ public DragSource(Control control, int style) {
  * be notified when a drag and drop operation is in progress, by sending
  * it one of the messages defined in the <code>DragSourceListener</code>
  * interface.
- * 
+ *
  * <p><ul>
- * <li><code>dragStart</code> is called when the user has begun the actions required to drag the widget. 
+ * <li><code>dragStart</code> is called when the user has begun the actions required to drag the widget.
  * This event gives the application the chance to decide if a drag should be started.
  * <li><code>dragSetData</code> is called when the data is required from the drag source.
- * <li><code>dragFinished</code> is called when the drop has successfully completed (mouse up 
- * over a valid target) or has been terminated (such as hitting the ESC key). Perform cleanup 
+ * <li><code>dragFinished</code> is called when the drop has successfully completed (mouse up
+ * over a valid target) or has been terminated (such as hitting the ESC key). Perform cleanup
  * such as removing data from the source side on a successful move operation.
  * </ul></p>
  *
@@ -349,21 +349,21 @@ static int checkStyle (int style) {
 }
 
 void drag(Event dragDetectEvent) {
-	
+
 	DNDEvent event = startDrag(dragDetectEvent);
 	if (event == null) return;
-	
+
 	// Start the drag here from the Control's view.
 	NSEvent currEvent = NSApplication.sharedApplication().currentEvent();
 	NSPoint pt = currEvent.locationInWindow();
 	NSPoint viewPt = control.view.convertPoint_fromView_(pt, null);
-	
+
 	// Get the image for the drag. The drag should happen from the middle of the image.
 	NSImage dragImage = null;
 	Image defaultDragImage = null;
-	try {	
+	try {
 		Image image = event.image;
-		
+
 		// If no image was provided, just create a trivial image. dragImage requires a non-null image.
 		if (image == null) {
 			int width = 20, height = 20;
@@ -395,10 +395,10 @@ void drag(Event dragDetectEvent) {
 
 		// The third argument to dragImage is ignored as of 10.4.
 		NSSize ignored = new NSSize();
-		
+
 		control.view.dragImage(dragImage, viewPt, ignored, NSApplication.sharedApplication().currentEvent(), NSPasteboard.pasteboardWithName(OS.NSDragPboard), dragSourceDelegate, true);
-		
-	} finally {	
+
+	} finally {
 		if (defaultDragImage != null) defaultDragImage.dispose();
 	}
 }
@@ -409,9 +409,9 @@ void dragOutlineViewStart(Event dragDetectEvent) {
 
 	// Save off the custom image, if any.
 	dragImageFromListener = event.image;
-	
+
 	// Save the computed offset for the image.  This needs to be passed back in dragImageForRowsWithIndexes
-	// so the proxy image originates from the selection and not centered under the mouse. 
+	// so the proxy image originates from the selection and not centered under the mouse.
 	dragOffset = new Point(event.offsetX, event.offsetY);
 }
 
@@ -440,16 +440,16 @@ void draggedImage_endedAt_operation(long /*int*/ id, long /*int*/ sel, long /*in
 	try {
 		Event event = new DNDEvent();
 		event.widget = this;
-		event.time = (int)System.currentTimeMillis();	
+		event.time = (int)System.currentTimeMillis();
 		event.doit = swtOperation != DND.DROP_NONE;
-		event.detail = swtOperation; 
+		event.detail = swtOperation;
 		notifyListeners(DND.DragEnd, event);
 		dragImageFromListener = null;
-	
+
 		if (new NSObject(id).isKindOfClass(OS.class_NSTableView)) {
 			dndCallSuper(id, sel, arg0, arg1, arg2);
 		}
-	} finally { 
+	} finally {
 		OS.objc_msgSend(id, OS.sel_release);
 	}
 }
@@ -466,7 +466,7 @@ long /*int*/ dragImageForRowsWithIndexes_tableColumns_event_offset(long /*int*/ 
 	}
 }
 
-/** 
+/**
  * Cocoa NSDraggingSource implementations
  */
 long /*int*/ draggingSourceOperationMaskForLocal(long /*int*/ id, long /*int*/ sel, long /*int*/ arg0) {
@@ -480,19 +480,19 @@ static long /*int*/ dragSourceProc(long /*int*/ id, long /*int*/ sel) {
 	Widget widget = display.findWidget(id);
 	if (widget == null) return 0;
 	DragSource ds = null;
-	
+
 	if (widget instanceof DragSource) {
 		ds = (DragSource)widget;
 	} else {
-		ds = (DragSource)widget.getData(DND.DRAG_SOURCE_KEY);		
+		ds = (DragSource)widget.getData(DND.DRAG_SOURCE_KEY);
 	}
 
 	if (ds == null) return 0;
-	
+
 	if (sel == OS.sel_ignoreModifierKeysWhileDragging) {
 		return (ds.ignoreModifierKeysWhileDragging(id, sel) ? 1 : 0);
 	}
-	
+
 	return 0;
 }
 
@@ -502,19 +502,19 @@ static long /*int*/ dragSourceProc(long /*int*/ id, long /*int*/ sel, long /*int
 	Widget widget = display.findWidget(id);
 	if (widget == null) return 0;
 	DragSource ds = null;
-	
+
 	if (widget instanceof DragSource) {
 		ds = (DragSource)widget;
 	} else {
-		ds = (DragSource)widget.getData(DND.DRAG_SOURCE_KEY);		
+		ds = (DragSource)widget.getData(DND.DRAG_SOURCE_KEY);
 	}
-	
+
 	if (ds == null) return 0;
-	
+
 	if (sel == OS.sel_draggingSourceOperationMaskForLocal_) {
 		return ds.draggingSourceOperationMaskForLocal(id, sel, arg0);
 	}
-	
+
 	return 0;
 }
 
@@ -524,21 +524,21 @@ static long /*int*/ dragSourceProc(long /*int*/ id, long /*int*/ sel, long /*int
 	Widget widget = display.findWidget(id);
 	if (widget == null) return 0;
 	DragSource ds = null;
-	
+
 	if (widget instanceof DragSource) {
 		ds = (DragSource)widget;
 	} else {
-		ds = (DragSource)widget.getData(DND.DRAG_SOURCE_KEY);		
+		ds = (DragSource)widget.getData(DND.DRAG_SOURCE_KEY);
 	}
 
 	if (ds == null) return 0;
-	
+
 	if (sel == OS.sel_draggedImage_beganAt_) {
 		ds.draggedImage_beganAt(id, sel, arg0, arg1);
 	} else if (sel == OS.sel_pasteboard_provideDataForType_) {
 		ds.pasteboard_provideDataForType(id, sel, arg0, arg1);
 	}
-	
+
 	return 0;
 }
 
@@ -548,21 +548,21 @@ static long /*int*/ dragSourceProc(long /*int*/ id, long /*int*/ sel, long /*int
 	Widget widget = display.findWidget(id);
 	if (widget == null) return 0;
 	DragSource ds = null;
-	
+
 	if (widget instanceof DragSource) {
 		ds = (DragSource)widget;
 	} else {
-		ds = (DragSource)widget.getData(DND.DRAG_SOURCE_KEY);		
+		ds = (DragSource)widget.getData(DND.DRAG_SOURCE_KEY);
 	}
 
 	if (ds == null) return 0;
-	
+
 	if (sel == OS.sel_draggedImage_endedAt_operation_) {
 		NSPoint point = new NSPoint();
 		OS.memmove(point, arg1, NSPoint.sizeof);
 		ds.draggedImage_endedAt_operation(id, sel, arg0, point, arg2);
 	}
-	
+
 	return 0;
 }
 
@@ -572,24 +572,24 @@ static long /*int*/ dragSourceProc(long /*int*/ id, long /*int*/ sel, long /*int
 	Widget widget = display.findWidget(id);
 	if (widget == null) return 0;
 	DragSource ds = null;
-	
+
 	if (widget instanceof DragSource) {
 		ds = (DragSource)widget;
 	} else {
-		ds = (DragSource)widget.getData(DND.DRAG_SOURCE_KEY);		
+		ds = (DragSource)widget.getData(DND.DRAG_SOURCE_KEY);
 	}
 
 	if (ds == null) return 0;
-	
+
 	if (sel == OS.sel_dragImageForRowsWithIndexes_tableColumns_event_offset_) {
 		return ds.dragImageForRowsWithIndexes_tableColumns_event_offset(id, sel, arg0, arg1, arg2, arg3);
 	}
-	
+
 	return 0;
 }
 
 /**
- * Returns the Control which is registered for this DragSource.  This is the control that the 
+ * Returns the Control which is registered for this DragSource.  This is the control that the
  * user clicks in to initiate dragging.
  *
  * @return the Control which is registered for this DragSource
@@ -599,8 +599,8 @@ public Control getControl () {
 }
 
 /**
- * Returns an array of listeners who will be notified when a drag and drop 
- * operation is in progress, by sending it one of the messages defined in 
+ * Returns an array of listeners who will be notified when a drag and drop
+ * operation is in progress, by sending it one of the messages defined in
  * the <code>DragSourceListener</code> interface.
  *
  * @return the listeners who will be notified when a drag and drop
@@ -615,7 +615,7 @@ public Control getControl () {
  * @see #addDragListener
  * @see #removeDragListener
  * @see DragSourceEvent
- * 
+ *
  * @since 3.4
  */
 public DragSourceListener[] getDragListeners() {
@@ -641,7 +641,7 @@ public DragSourceListener[] getDragListeners() {
  * effect will be used during a drag and drop operation.
  *
  * @return the drag effect that is registered for this DragSource
- * 
+ *
  * @since 3.3
  */
 public DragSourceEffect getDragSourceEffect() {
@@ -679,7 +679,7 @@ void onDispose() {
 
 	if (delegateJniRef != 0) OS.DeleteGlobalRef(delegateJniRef);
 	delegateJniRef = 0;
-	
+
 	if (dragSourceDelegate != null) {
 		OS.object_setInstanceVariable(dragSourceDelegate.id, SWT_OBJECT, 0);
 		dragSourceDelegate.release();
@@ -731,8 +731,8 @@ void pasteboard_provideDataForType(long /*int*/ id, long /*int*/ sel, long /*int
 	transferData.type = Transfer.registerType(dataType.getString());
 	DNDEvent event = new DNDEvent();
 	event.widget = this;
-	event.time = (int)System.currentTimeMillis(); 
-	event.dataType = transferData; 
+	event.time = (int)System.currentTimeMillis();
+	event.dataType = transferData;
 	notifyListeners(DND.DragSetData, event);
 	if (!event.doit) return;
 	Transfer transfer = null;
@@ -750,7 +750,7 @@ void pasteboard_provideDataForType(long /*int*/ id, long /*int*/ sel, long /*int
 	NSObject tdata = transferData.data;
 
 	if (dataType.isEqual(OS.NSStringPboardType) ||
-			dataType.isEqual(OS.NSHTMLPboardType) || 
+			dataType.isEqual(OS.NSHTMLPboardType) ||
 			dataType.isEqual(OS.NSRTFPboardType)) {
 		pasteboard.setString((NSString) tdata, dataType);
 	} else if (dataType.isEqual(OS.NSURLPboardType) || dataType.isEqual(OS.kUTTypeURL)) {
@@ -799,11 +799,11 @@ public void removeDragListener(DragSourceListener listener) {
 }
 
 /**
- * Specifies the drag effect for this DragSource.  This drag effect will be 
+ * Specifies the drag effect for this DragSource.  This drag effect will be
  * used during a drag and drop operation.
  *
  * @param effect the drag effect that is registered for this DragSource
- * 
+ *
  * @since 3.3
  */
 public void setDragSourceEffect(DragSourceEffect effect) {
@@ -813,7 +813,7 @@ public void setDragSourceEffect(DragSourceEffect effect) {
  * Specifies the list of data types that can be transferred by this DragSource.
  * The application must be able to provide data to match each of these types when
  * a successful drop has occurred.
- * 
+ *
  * @param transferAgents a list of Transfer objects which define the types of data that can be
  * dragged from this source
  */
@@ -830,10 +830,10 @@ DNDEvent startDrag(Event dragEvent) {
 	event.doit = true;
 	notifyListeners(DND.DragStart, event);
 	if (!event.doit || transferAgents == null || transferAgents.length == 0) return null;
-	
+
 	NSPasteboard dragBoard = NSPasteboard.pasteboardWithName(OS.NSDragPboard);
 	NSMutableArray nativeTypeArray = NSMutableArray.arrayWithCapacity(10);
-	
+
 	for (int i = 0; i < transferAgents.length; i++) {
 		Transfer transfer = transferAgents[i];
 		if (transfer != null) {
@@ -841,13 +841,13 @@ DNDEvent startDrag(Event dragEvent) {
 
 			for (int j = 0; j < typeNames.length; j++) {
 				nativeTypeArray.addObject(NSString.stringWith(typeNames[j]));
-			}	
-		}		
+			}
+		}
 	}
 	dragBoard.declareTypes(nativeTypeArray, dragSourceDelegate);
 
 	// Save off the drag operations -- AppKit will call back to us to request them during the drag.
-	dragOperations = opToOsOp(getStyle());	
+	dragOperations = opToOsOp(getStyle());
 
 	return event;
 }

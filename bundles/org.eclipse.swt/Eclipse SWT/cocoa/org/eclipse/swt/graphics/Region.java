@@ -20,11 +20,11 @@ import org.eclipse.swt.*;
  * system that are aggregates of the areas covered by a number
  * of polygons.
  * <p>
- * Application code must explicitly invoke the <code>Region.dispose()</code> 
+ * Application code must explicitly invoke the <code>Region.dispose()</code>
  * method to release the operating system resources managed by each instance
  * when those instances are no longer required.
  * </p>
- * 
+ *
  * @see <a href="http://www.eclipse.org/swt/examples.php">SWT Example: GraphicsExample</a>
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  */
@@ -38,7 +38,7 @@ public final class Region extends Resource {
 	 * within the packages provided by SWT. It is not available on all
 	 * platforms and should never be accessed from application code.
 	 * </p>
-	 * 
+	 *
 	 * @noreference This field is not intended to be referenced by clients.
 	 */
 	public long /*int*/ handle;
@@ -46,13 +46,13 @@ public final class Region extends Resource {
 /**
  * Constructs a new empty region.
  * <p>
- * You must dispose the region when it is no longer required. 
+ * You must dispose the region when it is no longer required.
  * </p>
- * 
+ *
  * @exception SWTError <ul>
  *    <li>ERROR_NO_HANDLES if a handle could not be obtained for region creation</li>
  * </ul>
- * 
+ *
  * @see #dispose()
  */
 public Region() {
@@ -62,7 +62,7 @@ public Region() {
 /**
  * Constructs a new empty region.
  * <p>
- * You must dispose the region when it is no longer required. 
+ * You must dispose the region when it is no longer required.
  * </p>
  *
  * @param device the device on which to allocate the region
@@ -75,7 +75,7 @@ public Region() {
  * </ul>
  *
  * @see #dispose()
- * 
+ *
  * @since 3.0
  */
 public Region(Device device) {
@@ -96,7 +96,7 @@ Region(Device device, long /*int*/ handle) {
 	this.handle = handle;
 }
 
-/**	 
+/**
  * Invokes platform specific functionality to allocate a new region.
  * <p>
  * <b>IMPORTANT:</b> This method is <em>not</em> part of the public
@@ -109,7 +109,7 @@ Region(Device device, long /*int*/ handle) {
  * @param device the device on which to allocate the region
  * @param handle the handle for the region
  * @return a new region object containing the specified device and handle
- * 
+ *
  * @noreference This method is not intended to be referenced by clients.
  */
 public static Region cocoa_new(Device device, long /*int*/ handle) {
@@ -136,7 +136,7 @@ static long /*int*/ polyToRgn(int[] poly, int length) {
 			x1 = x2;
 			y1 = y2;
 		}
-		int x2 = poly[0], y2 = poly[1];			
+		int x2 = poly[0], y2 = poly[1];
 		if (y1 != y2 && ((y1 <= y && y < y2) || (y2 <= y && y < y1))) {
 			inter[count++] = (int)((((y - y1) / (float)(y2 - y1)) * (x2 - x1)) + x1 + 0.5f);
 		}
@@ -211,7 +211,7 @@ public void add (int[] pointArray) {
 		if (pool != null) pool.release();
 	}
 }
-	
+
 void add(int[] pointArray, int count) {
 	count = count / 2 * 2;
 	if (count <= 2) return;
@@ -268,7 +268,7 @@ public void add(Rectangle rect) {
  * @exception SWTException <ul>
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
- * 
+ *
  * @since 3.1
  */
 public void add(int x, int y, int width, int height) {
@@ -496,8 +496,8 @@ long /*int*/ regionToRects(long /*int*/ message, long /*int*/ rgn, long /*int*/ 
 }
 
 /**
- * Returns an integer hash code for the receiver. Any two 
- * objects that return <code>true</code> when passed to 
+ * Returns an integer hash code for the receiver. Any two
+ * objects that return <code>true</code> when passed to
  * <code>equals</code> must return the same value for this
  * method.
  *
@@ -523,7 +523,7 @@ public int hashCode() {
  * @exception SWTException <ul>
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
- * 
+ *
  * @since 3.0
  */
 public void intersect(Rectangle rect) {
@@ -547,7 +547,7 @@ public void intersect(Rectangle rect) {
  * @exception SWTException <ul>
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
- * 
+ *
  * @since 3.1
  */
 public void intersect(int x, int y, int width, int height) {
@@ -581,7 +581,7 @@ public void intersect(int x, int y, int width, int height) {
  * @exception SWTException <ul>
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
- * 
+ *
  * @since 3.0
  */
 public void intersect(Region region) {
@@ -698,7 +698,7 @@ public boolean isEmpty() {
  * @exception SWTException <ul>
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
- * 
+ *
  * @since 3.0
  */
 public void subtract (int[] pointArray) {
@@ -729,7 +729,7 @@ public void subtract (int[] pointArray) {
  * @exception SWTException <ul>
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
- * 
+ *
  * @since 3.0
  */
 public void subtract(Rectangle rect) {
@@ -753,7 +753,7 @@ public void subtract(Rectangle rect) {
  * @exception SWTException <ul>
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
- * 
+ *
  * @since 3.1
  */
 public void subtract(int x, int y, int width, int height) {
@@ -787,7 +787,7 @@ public void subtract(int x, int y, int width, int height) {
  * @exception SWTException <ul>
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
- * 
+ *
  * @since 3.0
  */
 public void subtract(Region region) {
@@ -813,7 +813,7 @@ public void subtract(Region region) {
  * @exception SWTException <ul>
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
- * 
+ *
  * @since 3.1
  */
 public void translate (int x, int y) {
@@ -839,7 +839,7 @@ public void translate (int x, int y) {
  * @exception SWTException <ul>
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
- * 
+ *
  * @since 3.1
  */
 public void translate (Point pt) {

@@ -36,7 +36,7 @@ import org.eclipse.swt.internal.cocoa.*;
  * </p><p>
  * IMPORTANT: This class is <em>not</em> intended to be subclassed.
  * </p>
- * 
+ *
  * @see <a href="http://www.eclipse.org/swt/snippets/#datetime">DateTime snippets</a>
  * @see <a href="http://www.eclipse.org/swt/examples.php">SWT Example: ControlExample</a>
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
@@ -47,7 +47,7 @@ import org.eclipse.swt.internal.cocoa.*;
 public class DateTime extends Composite {
 	static final int MIN_YEAR = 1752; // Gregorian switchover in North America: September 19, 1752
 	static final int MAX_YEAR = 9999;
-	
+
 	/* Emulated DROP_DOWN calendar fields for DATE */
 	NSButton buttonView;
 	Shell popupShell;
@@ -55,14 +55,14 @@ public class DateTime extends Composite {
 	int savedYear, savedMonth, savedDay;
 
 	Listener clickListener;
-	
+
 /**
  * Constructs a new instance of this class given its parent
  * and a style value describing its behavior and appearance.
  * <p>
  * The style value is either one of the style constants defined in
  * class <code>SWT</code> which is applicable to instances of this
- * class, or must be built by <em>bitwise OR</em>'ing together 
+ * class, or must be built by <em>bitwise OR</em>'ing together
  * (that is, using the <code>int</code> "|" operator) two or more
  * of those <code>SWT</code> style constants. The class description
  * lists the style constants that are applicable to the class.
@@ -196,7 +196,7 @@ void createHandle () {
 	widget.setTarget(widget);
 	widget.setAction(OS.sel_sendSelection);
 	view = widget;
-	
+
 	if ((this.style & SWT.DROP_DOWN) != 0) {
 		NSButton buttonWidget = (NSButton)new SWTButton().alloc();
 		buttonWidget.init();
@@ -246,7 +246,7 @@ void createPopupShell(int year, int month, int day) {
 			hideCalendar();
 		}
 	});
-	
+
 	addListener (SWT.Dispose, new Listener() {
 		public void handleEvent(Event event) {
 			if (popupShell != null && !popupShell.isDisposed ()) {
@@ -257,7 +257,7 @@ void createPopupShell(int year, int month, int day) {
 	addListener(SWT.FocusOut, new Listener() {
 		public void handleEvent(Event event) {
 			hideCalendar();
-			display.removeFilter(SWT.MouseDown, clickListener); 
+			display.removeFilter(SWT.MouseDown, clickListener);
 		}
 	});
 	if (year != -1) popupCalendar.setDate(year, month, day);
@@ -280,7 +280,7 @@ void deregister() {
 
 void disposePopupShell() {
 	popupShell.dispose ();
-	popupShell = null;  
+	popupShell = null;
 	popupCalendar = null;
 }
 
@@ -314,7 +314,7 @@ void showCalendar() {
 	popupShell.setBounds (x, y, width, height);
 	popupShell.setVisible (true);
 	if (isFocusControl()) popupCalendar.setFocus ();
-	display.addFilter(SWT.MouseDown, clickListener); 
+	display.addFilter(SWT.MouseDown, clickListener);
 }
 
 void hideCalendar() {
@@ -323,7 +323,7 @@ void hideCalendar() {
 	if (!isDisposed () && isFocusControl()) {
 		setFocus();
 	}
-	display.removeFilter(SWT.MouseDown, clickListener); 
+	display.removeFilter(SWT.MouseDown, clickListener);
 }
 
 int getBezelInset() {
@@ -547,7 +547,7 @@ public void removeSelectionListener (SelectionListener listener) {
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (eventTable == null) return;
 	eventTable.unhook (SWT.Selection, listener);
-	eventTable.unhook (SWT.DefaultSelection, listener);	
+	eventTable.unhook (SWT.DefaultSelection, listener);
 }
 
 @Override
@@ -610,8 +610,8 @@ void sendVerticalSelection () {
 @Override
 void setBackgroundColor(NSColor nsColor) {
 	/*
-	 * Bug in Cocoa: NSDatePicker background turns black when a nsColor 
-	 * with full transparency (alpha = 0) is set as its background color. 
+	 * Bug in Cocoa: NSDatePicker background turns black when a nsColor
+	 * with full transparency (alpha = 0) is set as its background color.
 	 * Hence, don't set the background color in that case.
 	 */
 	if (nsColor != null && nsColor.alphaComponent () == 0) return;
@@ -656,7 +656,7 @@ public void setDate (int year, int month, int day) {
  * Sets the receiver's date, or day of the month, to the specified day.
  * <p>
  * The first day of the month is 1, and the last day depends on the month and year.
- * If the specified day is not valid for the receiver's month and year, then it is ignored. 
+ * If the specified day is not valid for the receiver's month and year, then it is ignored.
  * </p>
  *
  * @param day a positive integer beginning with 1
@@ -665,7 +665,7 @@ public void setDate (int year, int month, int day) {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @see #setDate
  */
 public void setDay (int day) {
@@ -741,7 +741,7 @@ public void setMinutes (int minutes) {
  * Sets the receiver's month.
  * <p>
  * The first month of the year is 0, and the last month is 11.
- * If the specified month is not valid for the receiver's day and year, then it is ignored. 
+ * If the specified month is not valid for the receiver's day and year, then it is ignored.
  * </p>
  *
  * @param month an integer between 0 and 11
@@ -750,7 +750,7 @@ public void setMinutes (int minutes) {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @see #setDate
  */
 public void setMonth (int month) {
@@ -817,7 +817,7 @@ public void setTime (int hours, int minutes, int seconds) {
  * Sets the receiver's year.
  * <p>
  * The first year is 1752 and the last year is 9999.
- * If the specified year is not valid for the receiver's day and month, then it is ignored. 
+ * If the specified year is not valid for the receiver's day and month, then it is ignored.
  * </p>
  *
  * @param year an integer between 1752 and 9999
@@ -826,7 +826,7 @@ public void setTime (int hours, int minutes, int seconds) {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @see #setDate
  */
 public void setYear (int year) {

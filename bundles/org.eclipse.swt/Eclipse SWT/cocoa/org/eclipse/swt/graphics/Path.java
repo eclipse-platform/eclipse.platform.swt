@@ -19,7 +19,7 @@ import org.eclipse.swt.internal.cocoa.*;
  * described using lines, rectangles, arcs, cubic or quadratic bezier curves,
  * glyphs, or other paths.
  * <p>
- * Application code must explicitly invoke the <code>Path.dispose()</code> 
+ * Application code must explicitly invoke the <code>Path.dispose()</code>
  * method to release the operating system resources managed by each instance
  * when those instances are no longer required.
  * </p>
@@ -31,11 +31,11 @@ import org.eclipse.swt.internal.cocoa.*;
  * @see <a href="http://www.eclipse.org/swt/snippets/#path">Path, Pattern snippets</a>
  * @see <a href="http://www.eclipse.org/swt/examples.php">SWT Example: GraphicsExample</a>
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
- * 
+ *
  * @since 3.1
  */
 public class Path extends Resource {
-	
+
 	/**
 	 * the OS resource for the Path
 	 * (Warning: This field is platform dependent)
@@ -45,7 +45,7 @@ public class Path extends Resource {
 	 * within the packages provided by SWT. It is not available on all
 	 * platforms and should never be accessed from application code.
 	 * </p>
-	 * 
+	 *
 	 * @noreference This field is not intended to be referenced by clients.
 	 */
 	public NSBezierPath handle;
@@ -60,11 +60,11 @@ public class Path extends Resource {
  * platforms.
  * </p>
  * <p>
- * You must dispose the path when it is no longer required. 
+ * You must dispose the path when it is no longer required.
  * </p>
- * 
+ *
  * @param device the device on which to allocate the path
- * 
+ *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the device is null and there is no current device</li>
  * </ul>
@@ -74,7 +74,7 @@ public class Path extends Resource {
  * @exception SWTError <ul>
  *    <li>ERROR_NO_HANDLES if a handle for the path could not be obtained</li>
  * </ul>
- * 
+ *
  * @see #dispose()
  */
 public Path (Device device) {
@@ -104,13 +104,13 @@ public Path (Device device) {
  * platforms.
  * </p>
  * <p>
- * You must dispose the path when it is no longer required. 
+ * You must dispose the path when it is no longer required.
  * </p>
- * 
+ *
  * @param device the device on which to allocate the path
  * @param path the path to make a copy
  * @param flatness the flatness value
- * 
+ *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the device is null and there is no current device</li>
  *    <li>ERROR_NULL_ARGUMENT - if the path is null</li>
@@ -122,7 +122,7 @@ public Path (Device device) {
  * @exception SWTError <ul>
  *    <li>ERROR_NO_HANDLES if a handle for the path could not be obtained</li>
  * </ul>
- * 
+ *
  * @see #dispose()
  * @since 3.4
  */
@@ -141,7 +141,7 @@ public Path (Device device, Path path, float flatness) {
 			NSBezierPath.setDefaultFlatness(flatness);
 			handle = path.handle.bezierPathByFlatteningPath();
 			handle.retain();
-			NSBezierPath.setDefaultFlatness(defaultFlatness);		
+			NSBezierPath.setDefaultFlatness(defaultFlatness);
 		}
 		if (handle == null) SWT.error(SWT.ERROR_NO_HANDLES);
 		init();
@@ -158,12 +158,12 @@ public Path (Device device, Path path, float flatness) {
  * platforms.
  * </p>
  * <p>
- * You must dispose the path when it is no longer required. 
+ * You must dispose the path when it is no longer required.
  * </p>
- * 
+ *
  * @param device the device on which to allocate the path
  * @param data the data for the path
- * 
+ *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the device is null and there is no current device</li>
  *    <li>ERROR_NULL_ARGUMENT - if the data is null</li>
@@ -174,7 +174,7 @@ public Path (Device device, Path path, float flatness) {
  * @exception SWTError <ul>
  *    <li>ERROR_NO_HANDLES if a handle for the path could not be obtained</li>
  * </ul>
- * 
+ *
  * @see #dispose()
  * @since 3.4
  */
@@ -194,15 +194,15 @@ public Path (Device device, PathData data) {
  * Adds to the receiver a circular or elliptical arc that lies within
  * the specified rectangular area.
  * <p>
- * The resulting arc begins at <code>startAngle</code> and extends  
+ * The resulting arc begins at <code>startAngle</code> and extends
  * for <code>arcAngle</code> degrees.
  * Angles are interpreted such that 0 degrees is at the 3 o'clock
  * position. A positive value indicates a counter-clockwise rotation
  * while a negative value indicates a clockwise rotation.
  * </p><p>
- * The center of the arc is the center of the rectangle whose origin 
- * is (<code>x</code>, <code>y</code>) and whose size is specified by the 
- * <code>width</code> and <code>height</code> arguments. 
+ * The center of the arc is the center of the rectangle whose origin
+ * is (<code>x</code>, <code>y</code>) and whose size is specified by the
+ * <code>width</code> and <code>height</code> arguments.
  * </p><p>
  * The resulting arc covers an area <code>width + 1</code> pixels wide
  * by <code>height + 1</code> pixels tall.
@@ -238,7 +238,7 @@ public void addArc(float x, float y, float width, float height, float startAngle
 		if (closed = (Math.abs(arcAngle) >= 360)) {
 			handle.closePath();
 		}
-	} finally { 
+	} finally {
 		if (pool != null) pool.release();
 	}
 }
@@ -258,7 +258,7 @@ void appendBezierPath (NSBezierPath path) {
 				if (closed) {
 					handle.moveToPoint(pt1);
 				} else {
-					handle.lineToPoint(pt1);	
+					handle.lineToPoint(pt1);
 				}
 				break;
 			case OS.NSLineToBezierPathElement:
@@ -378,7 +378,7 @@ public void addString(String string, float x, float y, Font font) {
 		range.length = str.length();
 		/*
 		* Feature in Cocoa. Adding attributes directly to a NSTextStorage causes
-		* output to the console and eventually a segmentation fault when printing 
+		* output to the console and eventually a segmentation fault when printing
 		* on a thread other than the main thread. The fix is to add attributes to
 		* a separate NSMutableAttributedString and add it to text storage when done.
 		*/
@@ -505,8 +505,8 @@ public boolean contains(float x, float y, GC gc, boolean outline) {
 			OS.CGContextStrokePath(context);
 			OS.CGContextRelease(context);
 			OS.memmove(buffer, pixel, 4);
-			OS.free(pixel);	
-			return buffer[0] != 0xFFFFFFFF;			
+			OS.free(pixel);
+			return buffer[0] != 0xFFFFFFFF;
 		} else {
 			NSPoint point = new NSPoint();
 			point.x = x;
@@ -565,7 +565,7 @@ void destroy() {
  * receiver (i.e. the bounding box).
  *
  * @param bounds the array to hold the result
- * 
+ *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the parameter is null</li>
  *    <li>ERROR_INVALID_ARGUMENT - if the parameter is too small to hold the bounding box</li>
@@ -596,7 +596,7 @@ public void getBounds(float[] bounds) {
  * describe the current point of the path.
  *
  * @param point the array to hold the result
- * 
+ *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the parameter is null</li>
  *    <li>ERROR_INVALID_ARGUMENT - if the parameter is too small to hold the end point</li>
@@ -622,13 +622,13 @@ public void getCurrentPoint(float[] point) {
 
 /**
  * Returns a device independent representation of the receiver.
- * 
+ *
  * @return the PathData for the receiver
- * 
+ *
  * @exception SWTException <ul>
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
- * 
+ *
  * @see PathData
  */
 public PathData getPathData() {
@@ -808,7 +808,7 @@ public void quadTo(float cx, float cy, float x, float y) {
 		ct1.y = current.y + 2 * (cy - current.y) / 3;
 		NSPoint ct2 = new NSPoint();
 		ct2.x = ct1.x + (x - current.x) / 3;
-		ct2.y = ct1.y + (y - current.y) / 3;		
+		ct2.y = ct1.y + (y - current.y) / 3;
 		NSPoint pt = new NSPoint();
 		pt.x = x;
 		pt.y = y;

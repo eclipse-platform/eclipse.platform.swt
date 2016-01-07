@@ -64,7 +64,7 @@ public MessageBox (Shell parent) {
  * <p>
  * The style value is either one of the style constants defined in
  * class <code>SWT</code> which is applicable to instances of this
- * class, or must be built by <em>bitwise OR</em>'ing together 
+ * class, or must be built by <em>bitwise OR</em>'ing together
  * (that is, using the <code>int</code> "|" operator) two or more
  * of those <code>SWT</code> style constants. The class description
  * lists the style constants that are applicable to the class.
@@ -80,7 +80,7 @@ public MessageBox (Shell parent) {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the parent</li>
  *    <li>ERROR_INVALID_SUBCLASS - if this class is not an allowed subclass</li>
  * </ul>
- * 
+ *
  * @see SWT#ICON_ERROR
  * @see SWT#ICON_INFORMATION
  * @see SWT#ICON_QUESTION
@@ -144,7 +144,7 @@ public int open () {
 	if ((style & SWT.ICON_WARNING) != 0) alertType = OS.NSWarningAlertStyle;
 	if ((style & SWT.ICON_WORKING) != 0) alertType = OS.NSInformationalAlertStyle;
 	alert.setAlertStyle(alertType);
-	
+
 	int mask = (SWT.YES | SWT.NO | SWT.OK | SWT.CANCEL | SWT.ABORT | SWT.RETRY | SWT.IGNORE);
 	int bits = style & mask;
 	NSString title;
@@ -178,7 +178,7 @@ public int open () {
 			alert.addButtonWithTitle(title);
 //			no.setKeyEquivalent(NSString.stringWith("\033"));
 			break;
-		case SWT.YES | SWT.NO | SWT.CANCEL:				
+		case SWT.YES | SWT.NO | SWT.CANCEL:
 			title = NSString.stringWith(SWT.getMessage("SWT_Yes"));
 			alert.addButtonWithTitle(title);
 			title = NSString.stringWith(SWT.getMessage("SWT_Cancel"));
@@ -276,7 +276,7 @@ public int open () {
 					return SWT.NO;
 			}
 			break;
-		case SWT.YES | SWT.NO | SWT.CANCEL:				
+		case SWT.YES | SWT.NO | SWT.CANCEL:
 			switch (response) {
 				case OS.NSAlertFirstButtonReturn:
 					return SWT.YES;
@@ -320,7 +320,7 @@ void panelDidEnd_returnCode_contextInfo(long /*int*/ id, long /*int*/ sel, long 
  * visible on the dialog while it is open.
  *
  * @param string the message
- * 
+ *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the string is null</li>
  * </ul>

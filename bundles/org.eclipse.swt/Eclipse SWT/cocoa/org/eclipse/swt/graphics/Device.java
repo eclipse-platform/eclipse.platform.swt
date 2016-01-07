@@ -22,7 +22,7 @@ import org.eclipse.swt.internal.cocoa.*;
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  */
 public abstract class Device implements Drawable {
-	
+
 	/* Debugging */
 	public static boolean DEBUG;
 	boolean debug = DEBUG;
@@ -30,10 +30,10 @@ public abstract class Device implements Drawable {
 	Error [] errors;
 	Object [] objects;
 	Object trackingLock;
-	
+
 	/* Disposed flag */
 	boolean disposed, warnings;
-	
+
 	Color COLOR_BLACK, COLOR_DARK_RED, COLOR_DARK_GREEN, COLOR_DARK_YELLOW, COLOR_DARK_BLUE;
 	Color COLOR_DARK_MAGENTA, COLOR_DARK_CYAN, COLOR_GRAY, COLOR_DARK_GRAY, COLOR_RED, COLOR_TRANSPARENT;
 	Color COLOR_GREEN, COLOR_YELLOW, COLOR_BLUE, COLOR_MAGENTA, COLOR_CYAN, COLOR_WHITE;
@@ -42,10 +42,10 @@ public abstract class Device implements Drawable {
 	Font systemFont;
 
 	NSMutableParagraphStyle paragraphStyle;
-	
+
 	/* Device DPI */
 	Point dpi;
-	
+
 	/*
 	* TEMPORARY CODE. When a graphics object is
 	* created and the device parameter is null,
@@ -62,7 +62,7 @@ public abstract class Device implements Drawable {
 		try {
 			Class.forName ("org.eclipse.swt.widgets.Display");
 		} catch (ClassNotFoundException e) {}
-	}	
+	}
 
 /*
 * TEMPORARY CODE.
@@ -77,12 +77,12 @@ static synchronized Device getDevice () {
 /**
  * Constructs a new instance of this class.
  * <p>
- * You must dispose the device when it is no longer required. 
+ * You must dispose the device when it is no longer required.
  * </p>
  *
  * @see #create
  * @see #init
- * 
+ *
  * @since 3.1
  */
 public Device() {
@@ -92,7 +92,7 @@ public Device() {
 /**
  * Constructs a new instance of this class.
  * <p>
- * You must dispose the device when it is no longer required. 
+ * You must dispose the device when it is no longer required.
  * </p>
  *
  * @param data the DeviceData which describes the receiver
@@ -289,7 +289,7 @@ public DeviceData getDeviceData () {
 /**
  * Returns a rectangle which describes the area of the
  * receiver which is capable of displaying data.
- * 
+ *
  * @return the client area
  *
  * @exception SWTException <ul>
@@ -306,7 +306,7 @@ public Rectangle getClientArea () {
 /**
  * Returns the bit depth of the screen, which is the number of
  * bits it takes to represent the number of unique colors that
- * the screen is currently capable of displaying. This number 
+ * the screen is currently capable of displaying. This number
  * will typically be one of 1, 8, 15, 16, 24 or 32.
  *
  * @return the depth of the screen
@@ -316,7 +316,7 @@ public Rectangle getClientArea () {
  * </ul>
  */
 public int getDepth () {
-	checkDevice ();	
+	checkDevice ();
 	return (int)/*64*/OS.NSBitsPerPixelFromDepth(getPrimaryScreen().depth());
 }
 
@@ -518,7 +518,7 @@ public boolean getWarnings () {
  * If subclasses reimplement this method, they must
  * call the <code>super</code> implementation.
  * </p>
- * 
+ *
  * @see #create
  */
 protected void init () {
@@ -540,24 +540,24 @@ protected void init () {
 	COLOR_MAGENTA = new Color (this, 0xFF,0,0xFF);
 	COLOR_CYAN = new Color (this, 0,0xFF,0xFF);
 	COLOR_WHITE = new Color (this, 0xFF,0xFF,0xFF);
-	
+
 	paragraphStyle = (NSMutableParagraphStyle)new NSMutableParagraphStyle().alloc().init();
 	paragraphStyle.setAlignment(OS.NSLeftTextAlignment);
 	paragraphStyle.setLineBreakMode(OS.NSLineBreakByClipping);
 	NSArray tabs = new NSArray(new NSArray().alloc().init());
 	paragraphStyle.setTabStops(tabs);
 	tabs.release();
-	
+
 	/* Initialize the system font slot */
 	boolean smallFonts = System.getProperty("org.eclipse.swt.internal.carbon.smallFonts") != null;
-	double /*float*/ systemFontSize = smallFonts ? NSFont.smallSystemFontSize() : NSFont.systemFontSize();		
+	double /*float*/ systemFontSize = smallFonts ? NSFont.smallSystemFontSize() : NSFont.systemFontSize();
 	Point dpi = this.dpi = getDPI(), screenDPI = getScreenDPI();
 	NSFont font = NSFont.systemFontOfSize(systemFontSize * dpi.y / screenDPI.y);
 	font.retain();
 	systemFont = Font.cocoa_new(this, font);
 }
 
-/**	 
+/**
  * Invokes platform specific functionality to allocate a new GC handle.
  * <p>
  * <b>IMPORTANT:</b> This method is <em>not</em> part of the public
@@ -567,14 +567,14 @@ protected void init () {
  * application code.
  * </p>
  *
- * @param data the platform specific GC data 
+ * @param data the platform specific GC data
  * @return the platform specific GC handle
- * 
+ *
  * @noreference This method is not intended to be referenced by clients.
  */
 public abstract long /*int*/ internal_new_GC (GCData data);
 
-/**	 
+/**
  * Invokes platform specific functionality to dispose a GC handle.
  * <p>
  * <b>IMPORTANT:</b> This method is <em>not</em> part of the public
@@ -585,8 +585,8 @@ public abstract long /*int*/ internal_new_GC (GCData data);
  * </p>
  *
  * @param hDC the platform specific GC handle
- * @param data the platform specific GC data 
- * 
+ * @param data the platform specific GC data
+ *
  * @noreference This method is not intended to be referenced by clients.
  */
 public abstract void internal_dispose_GC (long /*int*/ hDC, GCData data);
@@ -620,7 +620,7 @@ public boolean isDisposed () {
  * </ul>
  *
  * @see Font
- * 
+ *
  * @since 3.3
  */
 public boolean loadFont (String path) {
@@ -629,7 +629,7 @@ public boolean loadFont (String path) {
 	boolean result = false;
 	NSString nsPath = NSString.stringWith(path);
 	long /*int*/ fsRepresentation = nsPath.fileSystemRepresentation();
-	
+
 	if (fsRepresentation != 0) {
 		byte [] fsRef = new byte [80];
 		boolean [] isDirectory = new boolean[1];
@@ -735,7 +735,7 @@ void printErrors () {
 protected void release () {
 	if (paragraphStyle != null) paragraphStyle.release();
 	paragraphStyle = null;
-	
+
 	if (systemFont != null) systemFont.dispose();
 	systemFont = null;
 

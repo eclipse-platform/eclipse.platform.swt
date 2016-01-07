@@ -10,7 +10,7 @@
  *******************************************************************************/
 package org.eclipse.swt.widgets;
 
- 
+
 import org.eclipse.swt.*;
 import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
@@ -22,7 +22,7 @@ import org.eclipse.swt.internal.cocoa.*;
  *  These rectangles can be specified to respond to mouse and key events
  *  by either moving or resizing themselves accordingly.  Trackers are
  *  typically used to represent window geometries in a lightweight manner.
- *  
+ *
  * <dl>
  * <dt><b>Styles:</b></dt>
  * <dd>LEFT, RIGHT, UP, DOWN, RESIZE</dd>
@@ -49,7 +49,7 @@ public class Tracker extends Widget {
 	boolean inEvent = false;
 	NSWindow window;
 	int oldX, oldY;
-		
+
 	/*
 	* The following values mirror step sizes on Windows
 	*/
@@ -62,7 +62,7 @@ public class Tracker extends Widget {
  * <p>
  * The style value is either one of the style constants defined in
  * class <code>SWT</code> which is applicable to instances of this
- * class, or must be built by <em>bitwise OR</em>'ing together 
+ * class, or must be built by <em>bitwise OR</em>'ing together
  * (that is, using the <code>int</code> "|" operator) two or more
  * of those <code>SWT</code> style constants. The class description
  * lists the style constants that are applicable to the class.
@@ -100,7 +100,7 @@ public Tracker (Composite parent, int style) {
  * <p>
  * The style value is either one of the style constants defined in
  * class <code>SWT</code> which is applicable to instances of this
- * class, or must be built by <em>bitwise OR</em>'ing together 
+ * class, or must be built by <em>bitwise OR</em>'ing together
  * (that is, using the <code>int</code> "|" operator) two or more
  * of those <code>SWT</code> style constants. The class description
  * lists the style constants that are applicable to the class.
@@ -108,7 +108,7 @@ public Tracker (Composite parent, int style) {
  * </p><p>
  * Note: Currently, null can be passed in for the display argument.
  * This has the effect of creating the tracker on the currently active
- * display if there is one. If there is no current display, the 
+ * display if there is one. If there is no current display, the
  * tracker is created on a "default" display. <b>Passing in null as
  * the display argument is not considered to be good coding style,
  * and may not be supported in a future release of SWT.</b>
@@ -121,7 +121,7 @@ public Tracker (Composite parent, int style) {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the parent</li>
  *    <li>ERROR_INVALID_SUBCLASS - if this class is not an allowed subclass</li>
  * </ul>
- * 
+ *
  * @see SWT#LEFT
  * @see SWT#RIGHT
  * @see SWT#UP
@@ -235,7 +235,7 @@ Point adjustResizeCursor (boolean movePointer) {
 	if (parent != null) {
 		Point pt = parent.toDisplay (newX, newY);
 		newX = pt.x;
-		newY = pt.y; 
+		newY = pt.y;
 	}
 	if (movePointer) {
 		display.setCursorLocation(newX, newY);
@@ -284,7 +284,7 @@ Point adjustResizeCursor (boolean movePointer) {
 		}
 		resizeCursor = newCursor;
 	}
-		
+
 	return new Point (newX, newY);
 }
 
@@ -314,16 +314,16 @@ Rectangle computeBounds () {
 	int yMin = rectangles [0].y;
 	int xMax = rectangles [0].x + rectangles [0].width;
 	int yMax = rectangles [0].y + rectangles [0].height;
-	
+
 	for (int i = 1; i < rectangles.length; i++) {
 		if (rectangles [i].x < xMin) xMin = rectangles [i].x;
 		if (rectangles [i].y < yMin) yMin = rectangles [i].y;
 		int rectRight = rectangles [i].x + rectangles [i].width;
-		if (rectRight > xMax) xMax = rectRight;		
+		if (rectRight > xMax) xMax = rectRight;
 		int rectBottom = rectangles [i].y + rectangles [i].height;
 		if (rectBottom > yMax) yMax = rectBottom;
 	}
-	
+
 	return new Rectangle (xMin, yMin, xMax - xMin, yMax - yMin);
 }
 
@@ -345,7 +345,7 @@ Rectangle [] computeProportions (Rectangle [] rects) {
 			} else {
 				height = 100;
 			}
-			result [i] = new Rectangle (x, y, width, height);			
+			result [i] = new Rectangle (x, y, width, height);
 		}
 	}
 	return result;
@@ -360,7 +360,7 @@ void drawRectangles (NSWindow window, Rectangle [] rects, boolean erase) {
 	if (parent != null) {
 		parentOrigin = display.map (parent, null, 0, 0);
 	} else {
-		parentOrigin = new Point (0, 0);	
+		parentOrigin = new Point (0, 0);
 	}
 	context.setCompositingOperation(erase ? OS.NSCompositeClear : OS.NSCompositeSourceOver);
 	NSRect rectFrame = new NSRect();
@@ -377,7 +377,7 @@ void drawRectangles (NSWindow window, Rectangle [] rects, boolean erase) {
 		globalPoint = window.convertScreenToBase(globalPoint);
 		rectFrame.x = globalPoint.x;
 		rectFrame.y = globalPoint.y;
-		
+
 		if (erase) {
 			rectFrame.width++;
 			rectFrame.height++;
@@ -399,7 +399,7 @@ void drawRectangles (NSWindow window, Rectangle [] rects, boolean erase) {
  * coordinates.
  *
  * @return the bounds of the Rectangles being drawn
- * 
+ *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
@@ -740,9 +740,9 @@ void moveRectangles (int xChange, int yChange) {
  * Displays the Tracker rectangles for manipulation by the user.  Returns when
  * the user has either finished manipulating the rectangles or has cancelled the
  * Tracker.
- * 
+ *
  * @return <code>true</code> if the user did not cancel the Tracker, <code>false</code> otherwise
- * 
+ *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
@@ -756,7 +756,7 @@ public boolean open () {
 	window = (NSWindow)new NSWindow().alloc();
 	NSArray screens = NSScreen.screens();
 	double /*float*/ minX = Float.MAX_VALUE, maxX = Float.MIN_VALUE;
-	double /*float*/ minY = Float.MAX_VALUE, maxY = Float.MIN_VALUE;	
+	double /*float*/ minY = Float.MAX_VALUE, maxY = Float.MIN_VALUE;
 	int count = (int)/*64*/screens.count();
 	for (int i = 0; i < count; i++) {
 		NSScreen screen = new NSScreen(screens.objectAtIndex(i));
@@ -771,7 +771,7 @@ public boolean open () {
 		if (y2 < minY) minY = y2;
 		if (y1 > maxY) maxY = y1;
 		if (y2 > maxY) maxY = y2;
-	}	
+	}
 	NSRect frame = new NSRect();
 	frame.x = minX;
 	frame.y = minY;
@@ -792,7 +792,7 @@ public boolean open () {
 	window.orderFrontRegardless();
 
 	drawRectangles (window, rectangles, false);
-	
+
 	/*
 	* If exactly one of UP/DOWN is specified as a style then set the cursor
 	* orientation accordingly (the same is done for LEFT/RIGHT styles below).
@@ -805,7 +805,7 @@ public boolean open () {
 	if (hStyle == SWT.LEFT || hStyle == SWT.RIGHT) {
 		cursorOrientation |= hStyle;
 	}
-	
+
 	Point cursorPos;
 	boolean down = false;
 	NSApplication application = NSApplication.sharedApplication();
@@ -893,14 +893,14 @@ public boolean open () {
 			display.removePool();
 		}
 	}
-	
+
 	/*
 	* Cleanup: If this tracker was resizing then the last cursor that it created
 	* needs to be destroyed.
 	*/
 	if (resizeCursor != null) resizeCursor.dispose();
 	resizeCursor = null;
-	
+
 	if (oldTrackingControl != null && !oldTrackingControl.isDisposed()) {
 		display.trackingControl = oldTrackingControl;
 	}
@@ -994,25 +994,25 @@ boolean resizeRectangles (int xChange, int yChange) {
 			cursorOrientation |= SWT.RIGHT;
 			orientationInit = true;
 		}
-	} 
+	}
 	if (yChange < 0 && ((style & SWT.UP) != 0) && ((cursorOrientation & SWT.DOWN) == 0)) {
 		if ((cursorOrientation & SWT.UP) == 0) {
 			cursorOrientation |= SWT.UP;
 			orientationInit = true;
 		}
-	} 
+	}
 	if (yChange > 0 && ((style & SWT.DOWN) != 0) && ((cursorOrientation & SWT.UP) == 0)) {
 		if ((cursorOrientation & SWT.DOWN) == 0) {
 			cursorOrientation |= SWT.DOWN;
 			orientationInit = true;
 		}
 	}
-	
+
 	/*
 	 * If the bounds will flip about the x or y axis then apply the adjustment
 	 * up to the axis (ie.- where bounds width/height becomes 0), change the
 	 * cursor's orientation accordingly, and flip each Rectangle's origin (only
-	 * necessary for > 1 Rectangles) 
+	 * necessary for > 1 Rectangles)
 	 */
 	if ((cursorOrientation & SWT.LEFT) != 0) {
 		if (xChange > bounds.width) {
@@ -1074,7 +1074,7 @@ boolean resizeRectangles (int xChange, int yChange) {
 			}
 		}
 	}
-	
+
 	// apply the bounds adjustment
 	if ((cursorOrientation & SWT.LEFT) != 0) {
 		bounds.x += xChange;
@@ -1088,7 +1088,7 @@ boolean resizeRectangles (int xChange, int yChange) {
 	} else if ((cursorOrientation & SWT.DOWN) != 0) {
 		bounds.height += yChange;
 	}
-	
+
 	Rectangle [] newRects = new Rectangle [rectangles.length];
 	for (int i = 0; i < rectangles.length; i++) {
 		Rectangle proportion = proportions[i];
@@ -1107,7 +1107,7 @@ boolean resizeRectangles (int xChange, int yChange) {
  * then the cursor reverts to the default.
  *
  * @param newCursor the new <code>Cursor</code> to display
- * 
+ *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>

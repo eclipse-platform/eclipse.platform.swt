@@ -15,7 +15,7 @@ public class SWTScrollView extends NSScrollView {
 public SWTScrollView() {
 	super(0);
 }
-	
+
 public SWTScrollView(long /*int*/ id) {
 	super(id);
 }

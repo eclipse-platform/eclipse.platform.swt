@@ -18,7 +18,7 @@ import org.eclipse.swt.internal.cocoa.*;
 
 /**
  * Instances of this class represent a selectable user interface object that
- * issues notification when pressed and released. 
+ * issues notification when pressed and released.
  * <dl>
  * <dt><b>Styles:</b></dt>
  * <dd>ARROW, CHECK, PUSH, RADIO, TOGGLE, FLAT, WRAP</dd>
@@ -27,7 +27,7 @@ import org.eclipse.swt.internal.cocoa.*;
  * <dd>Selection</dd>
  * </dl>
  * <p>
- * Note: Only one of the styles ARROW, CHECK, PUSH, RADIO, and TOGGLE 
+ * Note: Only one of the styles ARROW, CHECK, PUSH, RADIO, and TOGGLE
  * may be specified.
  * </p><p>
  * Note: Only one of the styles LEFT, RIGHT, and CENTER may be specified.
@@ -37,7 +37,7 @@ import org.eclipse.swt.internal.cocoa.*;
  * </p><p>
  * IMPORTANT: This class is <em>not</em> intended to be subclassed.
  * </p>
- * 
+ *
  * @see <a href="http://www.eclipse.org/swt/snippets/#button">Button snippets</a>
  * @see <a href="http://www.eclipse.org/swt/examples.php">SWT Example: ControlExample</a>
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
@@ -47,21 +47,21 @@ public class Button extends Control {
 	String text;
 	Image image;
 	boolean grayed;
-	
+
 	static final int EXTRA_HEIGHT = 2;
 	static final int EXTRA_WIDTH = 6;
 	static final int IMAGE_GAP = 2;
 	static final int SMALL_BUTTON_HEIGHT = 28;
 	static final int REGULAR_BUTTON_HEIGHT = 32;
 	static final int MAX_SIZE = 40000;
-	
+
 /**
  * Constructs a new instance of this class given its parent
  * and a style value describing its behavior and appearance.
  * <p>
  * The style value is either one of the style constants defined in
  * class <code>SWT</code> which is applicable to instances of this
- * class, or must be built by <em>bitwise OR</em>'ing together 
+ * class, or must be built by <em>bitwise OR</em>'ing together
  * (that is, using the <code>int</code> "|" operator) two or more
  * of those <code>SWT</code> style constants. The class description
  * lists the style constants that are applicable to the class.
@@ -108,7 +108,7 @@ public Button (Composite parent, int style) {
  * </p>
  * <p>
  * When the <code>SWT.RADIO</code> style bit is set, the <code>widgetSelected</code> method is
- * also called when the receiver loses selection because another item in the same radio group 
+ * also called when the receiver loses selection because another item in the same radio group
  * was selected by the user. During <code>widgetSelected</code> the application can use
  * <code>getSelection()</code> to determine the current selected state of the receiver.
  * </p>
@@ -143,7 +143,7 @@ NSSize cellSizeForBounds (long /*int*/ id, long /*int*/ sel, NSRect cellFrame) {
 		size.width += imageSize.width + IMAGE_GAP;
 		size.height = Math.max(size.height, imageSize.height);
 	}
-	
+
 	if (((style & (SWT.PUSH|SWT.TOGGLE)) !=0) && (style & (SWT.FLAT|SWT.WRAP)) == 0) {
 		if (image != null) {
 			NSCell cell = new NSCell(id);
@@ -152,7 +152,7 @@ NSSize cellSizeForBounds (long /*int*/ id, long /*int*/ sel, NSRect cellFrame) {
 		// TODO: Why is this necessary?
 		size.width += EXTRA_WIDTH;
 	}
-	
+
 	if ((style & SWT.WRAP) != 0 && text.length() != 0 && cellFrame.width < MAX_SIZE) {
 		NSCell cell = new NSCell (id);
 		NSRect titleRect = cell.titleRectForBounds(cellFrame);
@@ -252,7 +252,7 @@ void createHandle () {
 	} else if ((style & SWT.CHECK) != 0) {
 		type = OS.NSSwitchButton;
 	} else if ((style & SWT.RADIO) != 0) {
-		type = OS.NSRadioButton;		
+		type = OS.NSRadioButton;
 	} else if ((style & SWT.TOGGLE) != 0) {
 		type = OS.NSPushOnPushOffButton;
 		if ((style & SWT.FLAT) != 0) {
@@ -308,7 +308,7 @@ void drawImageWithFrameInView (long /*int*/ id, long /*int*/ sel, long /*int*/ i
 	* Feature in Cocoa.  Images touch the edge of rounded buttons
 	* when set to small size. The fix to subclass the button cell
     * and offset the image drawing.
-    * This workaround is not required for OSX 10.9 and later as 
+    * This workaround is not required for OSX 10.9 and later as
     * the problem doesn't happen there.
 	*/
 	if (OS.VERSION_MMB < OS.VERSION_MMB(10, 9, 0)) {
@@ -398,7 +398,7 @@ boolean drawsBackground() {
 
 @Override
 void drawWidget (long /*int*/ id, NSGraphicsContext context, NSRect rect) {
-	if ((style & SWT.ARROW) != 0) {	
+	if ((style & SWT.ARROW) != 0) {
 		NSRect frame = view.frame();
 		int arrowSize = Math.min((int)frame.height, (int)frame.width) / 2;
 		context.saveGraphicsState();
@@ -410,13 +410,13 @@ void drawWidget (long /*int*/ id, NSGraphicsContext context, NSRect rect) {
 		p2.y = p1.y;
 		NSPoint p3 = new NSPoint();
 		p3.y = arrowSize / 2;
-	
+
 		NSBezierPath path = NSBezierPath.bezierPath();
 		path.moveToPoint(p1);
 		path.lineToPoint(p2);
 		path.lineToPoint(p3);
 		path.closePath();
-	
+
 		NSAffineTransform transform = NSAffineTransform.transform();
 		if ((style & SWT.LEFT) != 0) {
 			transform.rotateByDegrees(90);
@@ -429,7 +429,7 @@ void drawWidget (long /*int*/ id, NSGraphicsContext context, NSRect rect) {
 		transform = NSAffineTransform.transform();
 		transform.translateXBy(frame.width / 2, frame.height / 2);
 		path.transformUsingAffineTransform(transform);
-	
+
 		NSColor color = isEnabled() ? NSColor.blackColor() : NSColor.disabledControlTextColor();
 		color.set();
 		path.fill();
@@ -447,12 +447,12 @@ NSRect focusRingMaskBoundsForFrame (long /*int*/ id, long /*int*/ sel, NSRect ce
  * Returns a value which describes the position of the
  * text or image in the receiver. The value will be one of
  * <code>LEFT</code>, <code>RIGHT</code> or <code>CENTER</code>
- * unless the receiver is an <code>ARROW</code> button, in 
+ * unless the receiver is an <code>ARROW</code> button, in
  * which case, the alignment will indicate the direction of
- * the arrow (one of <code>LEFT</code>, <code>RIGHT</code>, 
+ * the arrow (one of <code>LEFT</code>, <code>RIGHT</code>,
  * <code>UP</code> or <code>DOWN</code>).
  *
- * @return the alignment 
+ * @return the alignment
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -485,7 +485,7 @@ public int getAlignment () {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 3.4
  */
 public boolean getGrayed() {
@@ -571,7 +571,7 @@ long /*int*/ nextState(long /*int*/ id, long /*int*/ sel) {
 		return ((NSButton)view).state() == OS.NSMixedState ? OS.NSOffState : OS.NSMixedState;
 	}
 
-	return super.nextState(id, sel);	
+	return super.nextState(id, sel);
 }
 
 @Override
@@ -660,12 +660,12 @@ void sendSelection () {
  * Controls how text, images and arrows will be displayed
  * in the receiver. The argument should be one of
  * <code>LEFT</code>, <code>RIGHT</code> or <code>CENTER</code>
- * unless the receiver is an <code>ARROW</code> button, in 
+ * unless the receiver is an <code>ARROW</code> button, in
  * which case, the argument indicates the direction of
- * the arrow (one of <code>LEFT</code>, <code>RIGHT</code>, 
+ * the arrow (one of <code>LEFT</code>, <code>RIGHT</code>,
  * <code>UP</code> or <code>DOWN</code>).
  *
- * @param alignment the new alignment 
+ * @param alignment the new alignment
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -680,7 +680,7 @@ public void setAlignment (int alignment) {
 
 void _setAlignment (int alignment) {
 	if ((style & SWT.ARROW) != 0) {
-		if ((style & (SWT.UP | SWT.DOWN | SWT.LEFT | SWT.RIGHT)) == 0) return; 
+		if ((style & (SWT.UP | SWT.DOWN | SWT.LEFT | SWT.RIGHT)) == 0) return;
 		style &= ~(SWT.UP | SWT.DOWN | SWT.LEFT | SWT.RIGHT);
 		style |= alignment & (SWT.UP | SWT.DOWN | SWT.LEFT | SWT.RIGHT);
 		return;
@@ -715,7 +715,7 @@ void setBackgroundImage(NSImage image) {
 void setBounds (int x, int y, int width, int height, boolean move, boolean resize) {
 	if ((style & (SWT.PUSH | SWT.TOGGLE)) != 0 && (style & (SWT.FLAT | SWT.WRAP)) == 0) {
 		int heightThreshold = REGULAR_BUTTON_HEIGHT;
-		
+
 		NSCell cell = ((NSControl)view).cell();
 		if (cell != null && cell.controlSize() == OS.NSSmallControlSize) {
 			heightThreshold = SMALL_BUTTON_HEIGHT;
@@ -744,7 +744,7 @@ void setForeground (double /*float*/ [] color) {
 }
 
 /**
- * Sets the grayed state of the receiver.  This state change 
+ * Sets the grayed state of the receiver.  This state change
  * only applies if the control was created with the SWT.CHECK
  * style.
  *
@@ -754,7 +754,7 @@ void setForeground (double /*float*/ [] color) {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 3.4
  */
 public void setGrayed(boolean grayed) {
@@ -786,7 +786,7 @@ public void setGrayed(boolean grayed) {
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_INVALID_ARGUMENT - if the image has been disposed</li>
- * </ul> 
+ * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
@@ -812,7 +812,7 @@ public void setImage (Image image) {
 	} else {
 		((NSButton)view).setAttributedTitle(createString());
 	}
-	
+
 	if (image != null) {
 		if ((style & (SWT.PUSH | SWT.TOGGLE)) != 0 && (style & (SWT.FLAT | SWT.WRAP)) == 0) {
 			NSCell cell = ((NSButton)view).cell();
@@ -841,7 +841,7 @@ boolean setRadioSelection (boolean value){
 }
 
 /**
- * Sets the selection state of the receiver, if it is of type <code>CHECK</code>, 
+ * Sets the selection state of the receiver, if it is of type <code>CHECK</code>,
  * <code>RADIO</code>, or <code>TOGGLE</code>.
  *
  * <p>
@@ -914,7 +914,7 @@ NSRect titleRectForBounds (long /*int*/ id, long /*int*/ sel, NSRect cellFrame) 
 	NSRect rect = super.titleRectForBounds(id, sel, cellFrame);
 	if (image != null && ((style & (SWT.CHECK|SWT.RADIO)) !=0)) {
 		NSSize imageSize = image.handle.size();
-		rect.x += imageSize.width + IMAGE_GAP; 
+		rect.x += imageSize.width + IMAGE_GAP;
 		rect.width -= (imageSize.width + IMAGE_GAP);
 		rect.width = Math.max(0f, rect.width);
 	}
@@ -934,8 +934,8 @@ void updateAlignment () {
 	if ((style & (SWT.PUSH | SWT.TOGGLE)) != 0) {
 		if (text.length() != 0 && image != null) {
 			widget.setImagePosition(OS.NSImageLeft);
-		} else {	
-			widget.setImagePosition(text.length() != 0 ? OS.NSNoImage : OS.NSImageOnly);		
+		} else {
+			widget.setImagePosition(text.length() != 0 ? OS.NSNoImage : OS.NSImageOnly);
 		}
 	}
 }

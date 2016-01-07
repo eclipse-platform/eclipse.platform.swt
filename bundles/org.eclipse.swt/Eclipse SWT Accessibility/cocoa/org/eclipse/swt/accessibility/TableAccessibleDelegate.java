@@ -35,10 +35,10 @@ class TableAccessibleDelegate {
 	Map /*<Integer, AccessibleTableRow>*/ childRowToIdMap = new HashMap();
 	Accessible tableAccessible;
 	AccessibleTableHeader headerAccessible;
-	
+
 	public TableAccessibleDelegate(Accessible accessible) {
 		tableAccessible = accessible;
-		
+
 		tableAccessible.addAccessibleControlListener(new AccessibleControlAdapter() {
 			@Override
 			public void getChildCount(AccessibleControlEvent e) {
@@ -55,41 +55,41 @@ class TableAccessibleDelegate {
 				if (childColumnToIdMap.size() > 1) childCount++;
 				Accessible[] children = new Accessible[childCount];
 				int childIndex = 0;
-				
+
 				Iterator iter = childRowToIdMap.values().iterator();
 				while (iter.hasNext()) {
-					AccessibleTableRow row = (AccessibleTableRow)iter.next(); 
+					AccessibleTableRow row = (AccessibleTableRow)iter.next();
 					children[childIndex++] = row;
 				}
-	
+
 				iter = childColumnToIdMap.values().iterator();
 				while (iter.hasNext()) {
 					AccessibleTableColumn col = (AccessibleTableColumn)iter.next();
 					children[childIndex++] = col;
 				}
-	
+
 				if (childColumnToIdMap.size() > 1) children[childIndex] = headerAccessible();
-				
+
 				e.children = children;
 			}
-						
+
 			@Override
 			public void getChildAtPoint(AccessibleControlEvent e) {
 				NSPoint testPoint = new NSPoint();
 				testPoint.x = e.x;
 				Monitor primaryMonitor = Display.getCurrent().getPrimaryMonitor();
 				testPoint.y = primaryMonitor.getBounds().height - e.y;
-	
+
 				Iterator iter = childRowToIdMap.values().iterator();
-				
+
 				while (iter.hasNext()) {
 					AccessibleTableRow row = (AccessibleTableRow) iter.next();
 					NSValue locationValue = new NSValue(row.getPositionAttribute(ACC.CHILDID_SELF).id);
 					NSPoint location = locationValue.pointValue();
-					
+
 					NSValue sizeValue = new NSValue(row.getSizeAttribute(ACC.CHILDID_SELF));
 					NSSize size = sizeValue.sizeValue();
-					
+
 					if (location.y < testPoint.y && testPoint.y < (location.y + size.height)) {
 						AccessibleControlEvent e2 = new AccessibleControlEvent(e.getSource());
 						e2.x = (int) testPoint.x;
@@ -99,20 +99,20 @@ class TableAccessibleDelegate {
 					}
 				}
 			}
-			
+
 			@Override
 			public void getState(AccessibleControlEvent e) {
 				int state = ACC.STATE_NORMAL | ACC.STATE_FOCUSABLE | ACC.STATE_SELECTABLE;
-	
+
 				AccessibleTableEvent event = new AccessibleTableEvent(this);
 				for (int i = 0; i < tableAccessible.accessibleTableListeners.size(); i++) {
 					AccessibleTableListener listener = tableAccessible.accessibleTableListeners.get(i);
 					listener.getSelectedRows(event);
 				}
-				
+
 				if (event.selected != null) {
 					int[] selected = event.selected;
-	
+
 					for (int i = 0; i < selected.length; i++) {
 						if (selected[i] == tableAccessible.index) {
 							state |= ACC.STATE_SELECTED;
@@ -120,26 +120,26 @@ class TableAccessibleDelegate {
 						}
 					}
 				}
-	
+
 				NSNumber focusedObject = (NSNumber)tableAccessible.getFocusedAttribute(ACC.CHILDID_SELF);
 				if (focusedObject.boolValue()) {
 					state |= ACC.STATE_FOCUSED;
 				}
-				
+
 				e.detail = state;
 			}
 		});
-		
+
 		tableAccessible.addAccessibleTableListener(new AccessibleTableAdapter() {
 			@Override
 			public void getColumnCount(AccessibleTableEvent e) {
 				AccessibleTableEvent event = new AccessibleTableEvent(this);
-				
+
 				for (int i = 0; i < tableAccessible.accessibleTableListeners.size(); i++) {
 					AccessibleTableListener listener = tableAccessible.accessibleTableListeners.get(i);
 					if (listener != this) listener.getColumnCount(event);
 				}
-	
+
 				e.count = event.count;
 			}
 			@Override
@@ -152,20 +152,20 @@ class TableAccessibleDelegate {
 			public void getColumns(AccessibleTableEvent e) {
 				AccessibleTableEvent event = new AccessibleTableEvent(this);
 				getColumnCount(event);
-				
+
 				// This happens if the table listeners just report back a column count but don't have
 				// distinct objects for each of the column.
 				// When that happens we need to make 'fake' accessibles that represent the rows.
 				if (event.count != childColumnToIdMap.size()) {
 					childColumnToIdMap.clear();
 				}
-				
+
 				Accessible[] columns = new Accessible[event.count];
-				
+
 				for (int i = 0; i < event.count; i++) {
 					columns[i] = childColumnToOs(i);
 				}
-	
+
 				int columnCount = childColumnToIdMap.size() > 0 ? childColumnToIdMap.size() : 1;
 				Accessible[] accessibles = new Accessible[columnCount];
 				for (int i = 0; i < columnCount; i++) {
@@ -180,12 +180,12 @@ class TableAccessibleDelegate {
 			@Override
 			public void getRowCount(AccessibleTableEvent e) {
 				AccessibleTableEvent event = new AccessibleTableEvent(this);
-				
+
 				for (int i = 0; i < tableAccessible.accessibleTableListeners.size(); i++) {
 					AccessibleTableListener listener = tableAccessible.accessibleTableListeners.get(i);
 					if (listener != this) listener.getRowCount(event);
 				}
-	
+
 				e.count = event.count;
 			}
 			@Override
@@ -198,20 +198,20 @@ class TableAccessibleDelegate {
 			public void getRows(AccessibleTableEvent e) {
 				AccessibleTableEvent event = new AccessibleTableEvent(this);
 				getRowCount(event);
-				
+
 				// This happens if the table listeners just report back a column count but don't have
 				// distinct objects for each of the column.
 				// When that happens we need to make 'fake' accessibles that represent the rows.
 				if (event.count != childRowToIdMap.size()) {
 					childRowToIdMap.clear();
 				}
-				
+
 				Accessible[] rows = new Accessible[event.count];
-				
+
 				for (int i = 0; i < event.count; i++) {
 					rows[i] = childRowToOs(i);
 				}
-	
+
 				int columnCount = childRowToIdMap.size() > 0 ? childRowToIdMap.size() : 1;
 				Accessible[] accessibles = new Accessible[columnCount];
 				for (int i = 0; i < columnCount; i++) {
@@ -220,22 +220,22 @@ class TableAccessibleDelegate {
 				e.accessibles = accessibles;
 			}
 		});
-	
+
 	}
 
 	Accessible childColumnToOs(int childID) {
 		if (childID == ACC.CHILDID_SELF) {
 			return tableAccessible;
 		}
-	
+
 		/* Check cache for childID, if found, return corresponding osChildID. */
 		AccessibleTableColumn childRef = (AccessibleTableColumn) childColumnToIdMap.get(new Integer(childID));
-		
+
 		if (childRef == null) {
 			childRef = new AccessibleTableColumn(tableAccessible, childID);
 			childColumnToIdMap.put(new Integer(childID), childRef);
 		}
-		
+
 		return childRef;
 	}
 
@@ -246,12 +246,12 @@ class TableAccessibleDelegate {
 
 		/* Check cache for childID, if found, return corresponding osChildID. */
 		AccessibleTableRow childRef = (AccessibleTableRow) childRowToIdMap.get(new Integer(childID));
-		
+
 		if (childRef == null) {
 			childRef = new AccessibleTableRow(tableAccessible, childID);
 			childRowToIdMap.put(new Integer(childID), childRef);
 		}
-		
+
 		return childRef;
 	}
 
@@ -291,7 +291,7 @@ class TableAccessibleDelegate {
 			childColumnToIdMap = null;
 		}
 	}
-	
+
 	void reset() {
 		release();
 		childColumnToIdMap = new HashMap();

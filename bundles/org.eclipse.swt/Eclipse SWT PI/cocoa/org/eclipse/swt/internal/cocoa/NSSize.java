@@ -16,9 +16,9 @@ public class NSSize {
 	public double /*float*/ width;
 	public double /*float*/ height;
 	public static final int sizeof = OS.NSSize_sizeof();
-	
+
 	@Override
 	public String toString() {
-		return "NSSize{" + width + "," + height + "}"; 
+		return "NSSize{" + width + "," + height + "}";
 	}
 }

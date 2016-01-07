@@ -83,7 +83,7 @@ public Menu (Control parent) {
  * <p>
  * The style value is either one of the style constants defined in
  * class <code>SWT</code> which is applicable to instances of this
- * class, or must be built by <em>bitwise OR</em>'ing together 
+ * class, or must be built by <em>bitwise OR</em>'ing together
  * (that is, using the <code>int</code> "|" operator) two or more
  * of those <code>SWT</code> style constants. The class description
  * lists the style constants that are applicable to the class.
@@ -258,7 +258,7 @@ void _setVisible (boolean visible) {
 			location = window.mouseLocationOutsideOfEventStream();
 		}
 		hasLocation = false;
-	
+
 		// Hold on to window in case it is disposed while the popup is open.
 		window.retain();
 		// NSMenu processes events on its own while the popup is open.
@@ -332,8 +332,8 @@ void createHandle () {
 		NSMenu widget = (NSMenu)new SWTMenu().alloc();
 		widget = widget.initWithTitle(NSString.string());
 		widget.setAutoenablesItems(false);
-		widget.setDelegate(widget);	
-		nsMenu = widget;	
+		widget.setDelegate(widget);
+		nsMenu = widget;
 	} else {
 		nsMenu.retain();
 		long /*int*/ cls = OS.object_getClass(nsMenu.id);
@@ -341,7 +341,7 @@ void createHandle () {
 		if (cls != dynNSMenu_class) {
 			OS.object_setClass(nsMenu.id, dynNSMenu_class);
 		}
-		nsMenu.setDelegate(nsMenu);	
+		nsMenu.setDelegate(nsMenu);
 	}
 }
 
@@ -378,10 +378,10 @@ void createItem (MenuItem item, int index) {
 		if (nsItem.isSeparatorItem()) type = SWT.SEPARATOR;
 		if (nsItem.submenu() != null) type = SWT.CASCADE;
 		item.style |= type;
-		
+
 		// Sync native item text to Item's text.
 		item.text = nsItem.title().getString();
-		
+
 		// Sync native key equivalent to MenuItem's accelerator.
 		// The system menu on OS X only uses command and option, so it's
 		// safe to just check for those two key masks.
@@ -494,7 +494,7 @@ public MenuItem getDefaultItem () {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @see #isEnabled
  */
 public boolean getEnabled () {
@@ -540,11 +540,11 @@ public int getItemCount () {
 
 /**
  * Returns a (possibly empty) array of <code>MenuItem</code>s which
- * are the items in the receiver. 
+ * are the items in the receiver.
  * <p>
  * Note: This is not the actual structure used by the receiver
  * to maintain its list of items, so modifying the array will
- * not affect the receiver. 
+ * not affect the receiver.
  * </p>
  *
  * @return the items in the receiver
@@ -593,12 +593,12 @@ String getNameText () {
  * constants <code>SWT.LEFT_TO_RIGHT</code> or <code>SWT.RIGHT_TO_LEFT</code>.
  *
  * @return the orientation style
- * 
+ *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 3.7
  */
 public int getOrientation () {
@@ -660,7 +660,7 @@ public Menu getParentMenu () {
  * Returns the receiver's shell. For all controls other than
  * shells, this simply returns the control's nearest ancestor
  * shell. Shells return themselves, even if they are children
- * of other shells. Returns null if receiver or its ancestor 
+ * of other shells. Returns null if receiver or its ancestor
  * is the application menubar.
  *
  * @return the receiver's shell or null
@@ -699,7 +699,7 @@ public Shell getShell () {
 public boolean getVisible () {
 	checkWidget ();
 	if ((style & SWT.BAR) != 0) {
-		if (this == display.appMenuBar) 
+		if (this == display.appMenuBar)
 			return display.application.isActive();
 		else
 			return this == parent.menuShell ().menuBar;
@@ -716,7 +716,7 @@ public boolean getVisible () {
 
 /**
  * Searches the receiver's list starting at the first item
- * (index 0) until an item is found that is equal to the 
+ * (index 0) until an item is found that is equal to the
  * argument, and returns the index of that item. If no item
  * is found, returns -1.
  *
@@ -752,7 +752,7 @@ public int indexOf (MenuItem item) {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @see #getEnabled
  */
 public boolean isEnabled () {
@@ -836,7 +836,7 @@ void menuWillOpen(long /*int*/ id, long /*int*/ sel, long /*int*/ menu) {
 					tab -= (nsImage.size().width + GAP);
 				}
 				NSMutableAttributedString str = new NSMutableAttributedString(strs[i].mutableCopy());
-				
+
 				/* Append accelerator text */
 				NSString label = (NSString) new NSString().alloc();
 				label = label.initWithString(accelText);
@@ -847,7 +847,7 @@ void menuWillOpen(long /*int*/ id, long /*int*/ sel, long /*int*/ menu) {
 				label.release();
 				str.appendAttributedString(attribStr);
 				attribStr.release();
-				
+
 				/* Align accelerator text */
 				NSRange range = new NSRange();
 				range.length = str.length();
@@ -859,7 +859,7 @@ void menuWillOpen(long /*int*/ id, long /*int*/ sel, long /*int*/ menu) {
 				stop.release();
 				str.addAttribute(OS.NSParagraphStyleAttributeName, paragraphStyle, range);
 				paragraphStyle.release ();
-				
+
 				nsItem.setAttributedTitle(str);
 				str.release();
 			}
@@ -986,11 +986,11 @@ void reskinChildren (int flags) {
 /**
  * Sets the default menu item to the argument or removes
  * the default emphasis when the argument is <code>null</code>.
- * 
+ *
  * @param item the default menu item or null
  *
  * @exception IllegalArgumentException <ul>
- *    <li>ERROR_INVALID_ARGUMENT - if the menu item has been disposed</li> 
+ *    <li>ERROR_INVALID_ARGUMENT - if the menu item has been disposed</li>
  * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -1031,7 +1031,7 @@ public void setEnabled (boolean enabled) {
 			* Feature in the Macintosh.  When a cascade menu
 			* item is disabled, rather than disabling the item,
 			* the submenu is disabled.
-			* 
+			*
 			* There is no fix for this at this time.
 			*/
 			item.nsItem.setEnabled (enabled && item.getEnabled ());
@@ -1087,7 +1087,7 @@ public void setLocation (int x, int y) {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 2.1
  */
 public void setLocation (Point location) {
@@ -1102,13 +1102,13 @@ public void setLocation (Point location) {
  * <p>
  *
  * @param orientation new orientation style
- * 
+ *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
- * @since 3.7  
+ *
+ * @since 3.7
  */
 public void setOrientation (int orientation) {
     checkWidget ();
@@ -1116,7 +1116,7 @@ public void setOrientation (int orientation) {
 
 /**
  * Marks the receiver as visible if the argument is <code>true</code>,
- * and marks it invisible otherwise. 
+ * and marks it invisible otherwise.
  * <p>
  * If one of the receiver's ancestors is not visible or some
  * other condition makes the receiver not visible, marking
@@ -1140,5 +1140,5 @@ public void setVisible (boolean visible) {
 		_setVisible(false);
 	}
 }
-	
+
 }

@@ -36,7 +36,7 @@ import org.eclipse.swt.internal.cocoa.*;
  * @see <a href="http://www.eclipse.org/swt/snippets/#spinner">Spinner snippets</a>
  * @see <a href="http://www.eclipse.org/swt/examples.php">SWT Example: ControlExample</a>
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
- * 
+ *
  * @since 3.1
  * @noextend This class is not intended to be subclassed by clients.
  */
@@ -48,15 +48,15 @@ public class Spinner extends Composite {
 	int digits = 0;
 	int textLimit = LIMIT;
 	static int GAP = 0;
-	
+
 	/**
 	 * the operating system limit for the number of characters
 	 * that the text field in an instance of this class can hold
-	 * 
+	 *
 	 * @since 3.4
 	 */
 	public static final int LIMIT;
-	
+
 	/*
 	* These values can be different on different platforms.
 	* Therefore they are not initialized in the declaration
@@ -72,7 +72,7 @@ public class Spinner extends Composite {
  * <p>
  * The style value is either one of the style constants defined in
  * class <code>SWT</code> which is applicable to instances of this
- * class, or must be built by <em>bitwise OR</em>'ing together 
+ * class, or must be built by <em>bitwise OR</em>'ing together
  * (that is, using the <code>int</code> "|" operator) two or more
  * of those <code>SWT</code> style constants. The class description
  * lists the style constants that are applicable to the class.
@@ -108,7 +108,7 @@ boolean acceptsFirstResponder(long /*int*/ id, long /*int*/ sel) {
 @Override
 boolean accessibilityIsIgnored(long /*int*/ id, long /*int*/ sel) {
 	if (id == view.id) return true;
-	return super.accessibilityIsIgnored(id, sel);	
+	return super.accessibilityIsIgnored(id, sel);
 }
 
 /**
@@ -337,7 +337,7 @@ void deregister () {
 		display.removeWidget (textView);
 		display.removeWidget (textView.cell());
 	}
-	
+
 	if (buttonView != null) {
 		display.removeWidget (buttonView);
 		display.removeWidget (buttonView.cell());
@@ -457,7 +457,7 @@ public int getPageIncrement () {
 /**
  * Returns the <em>selection</em>, which is the receiver's position.
  *
- * @return the selection 
+ * @return the selection
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -520,7 +520,7 @@ int getSelectionText (boolean[] parseFail) {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 3.4
  */
 public String getText () {
@@ -534,16 +534,16 @@ public String getText () {
  * text field is capable of holding. If this has not been changed
  * by <code>setTextLimit()</code>, it will be the constant
  * <code>Spinner.LIMIT</code>.
- * 
+ *
  * @return the text limit
- * 
+ *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  *
  * @see #LIMIT
- * 
+ *
  * @since 3.4
  */
 public int getTextLimit () {
@@ -593,7 +593,7 @@ void register () {
 		display.addWidget (textView, this);
 		display.addWidget (textView.cell(), this);
 	}
-	
+
 	if (buttonView != null) {
 		display.addWidget (buttonView, this);
 		display.addWidget (buttonView.cell(), this);
@@ -612,7 +612,7 @@ void releaseHandle () {
 }
 
 @Override
-void releaseWidget () {	
+void releaseWidget () {
 	super.releaseWidget ();
 	if (textView != null) textView.abortEditing();
 }
@@ -638,7 +638,7 @@ public void removeModifyListener (ModifyListener listener) {
 	checkWidget ();
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (eventTable == null) return;
-	eventTable.unhook (SWT.Modify, listener);	
+	eventTable.unhook (SWT.Modify, listener);
 }
 
 /**
@@ -663,7 +663,7 @@ public void removeSelectionListener(SelectionListener listener) {
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (eventTable == null) return;
 	eventTable.unhook (SWT.Selection, listener);
-	eventTable.unhook (SWT.DefaultSelection,listener);	
+	eventTable.unhook (SWT.DefaultSelection,listener);
 }
 
 /**
@@ -687,7 +687,7 @@ void removeVerifyListener (VerifyListener listener) {
 	checkWidget ();
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (eventTable == null) return;
-	eventTable.unhook (SWT.Verify, listener);	
+	eventTable.unhook (SWT.Verify, listener);
 }
 
 @Override
@@ -758,7 +758,7 @@ boolean sendKeyEvent (NSEvent nsEvent, int type) {
 }
 
 @Override
-void sendSelection () {	
+void sendSelection () {
 	setSelection (getSelection(), false, true, true);
 }
 
@@ -778,17 +778,17 @@ void setBackgroundImage(NSImage image) {
  * Sets the number of decimal places used by the receiver.
  * <p>
  * The digit setting is used to allow for floating point values in the receiver.
- * For example, to set the selection to a floating point value of 1.37 call setDigits() with 
+ * For example, to set the selection to a floating point value of 1.37 call setDigits() with
  * a value of 2 and setSelection() with a value of 137. Similarly, if getDigits() has a value
  * of 2 and getSelection() returns 137 this should be interpreted as 1.37. This applies to all
- * numeric APIs. 
+ * numeric APIs.
  * </p>
- * 
+ *
  * @param value the new digits (must be greater than or equal to zero)
- * 
+ *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_INVALID_ARGUMENT - if the value is less than zero</li>
- * </ul> 
+ * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
@@ -799,7 +799,7 @@ public void setDigits (int value) {
 	if (value < 0) error (SWT.ERROR_INVALID_ARGUMENT);
 	if (value == digits) return;
 	digits = value;
-	int pos = (int)buttonView.doubleValue();	
+	int pos = (int)buttonView.doubleValue();
 	setSelection (pos, false, true, false);
 }
 
@@ -856,7 +856,7 @@ public void setMaximum (int value) {
 	if (value < min) return;
 	int pos = getSelection();
 	buttonView.setMaxValue(value);
-	if (pos > value) setSelection (value, true, true, false);	
+	if (pos > value) setSelection (value, true, true, false);
 }
 
 /**
@@ -988,9 +988,9 @@ void setSmallSize () {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @see #LIMIT
- * 
+ *
  * @since 3.4
  */
 public void setTextLimit (int limit) {
@@ -1004,7 +1004,7 @@ public void setTextLimit (int limit) {
  * value, digits, increment and page increment all at once.
  * <p>
  * Note: This is similar to setting the values individually
- * using the appropriate methods, but may be implemented in a 
+ * using the appropriate methods, but may be implemented in a
  * more efficient fashion on some platforms.
  * </p>
  *
@@ -1019,7 +1019,7 @@ public void setTextLimit (int limit) {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 3.2
  */
 public void setValues (int selection, int minimum, int maximum, int digits, int increment, int pageIncrement) {
@@ -1131,7 +1131,7 @@ String verifyText (String string, int start, int end, NSEvent keyEvent) {
 		if (!Character.isDigit (string.charAt (index))) break;
 		index++;
 	}
-	event.doit = index == string.length ();	
+	event.doit = index == string.length ();
 	/*
 	 * It is possible (but unlikely), that application
 	 * code could have disposed the widget in the verify

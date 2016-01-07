@@ -19,9 +19,9 @@ import org.eclipse.swt.internal.cocoa.*;
 class SWTAccessibleDelegate extends NSObject {
 
 	/**
-	 * Accessible Key: The string constant for looking up the accessible 
+	 * Accessible Key: The string constant for looking up the accessible
 	 * for a control using <code>getData(String)</code>. When an accessible
-	 * is created for a control, it is stored as a property in the control 
+	 * is created for a control, it is stored as a property in the control
 	 * using <code>setData(String, Object)</code>.
 	 */
 	static final String ACCESSIBLE_KEY = "Accessible"; //$NON-NLS-1$
@@ -47,15 +47,15 @@ class SWTAccessibleDelegate extends NSObject {
 
 		accessible3Args = new Callback(clazz, "accessibleProc", 3);
 		proc3Args = accessible3Args.getAddress();
-		if (proc3Args == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);		
+		if (proc3Args == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
 
 		accessible4Args = new Callback(clazz, "accessibleProc", 4);
 		proc4Args = accessible3Args.getAddress();
-		if (proc4Args == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);		
+		if (proc4Args == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
 
-		// Accessible custom controls need to implement the NSAccessibility protocol. To do that, 
-		// we dynamically add the methods to the control's class that are required 
-		// by NSAccessibility. Then, when external assistive technology services are used, 
+		// Accessible custom controls need to implement the NSAccessibility protocol. To do that,
+		// we dynamically add the methods to the control's class that are required
+		// by NSAccessibility. Then, when external assistive technology services are used,
 		// those methods get called to provide the needed information.
 
 		String className = "SWTAccessibleDelegate";
@@ -98,20 +98,20 @@ class SWTAccessibleDelegate extends NSObject {
 	}
 
 	NSArray accessibilityActionNames() {
-		
+
 		if (actionNames != null)
 			return retainedAutoreleased(actionNames);
-		
+
 		actionNames = accessible.internal_accessibilityActionNames(childID);
 		actionNames.retain();
 		return retainedAutoreleased(actionNames);
 	}
 
 	NSArray accessibilityAttributeNames() {
-		
+
 		if (attributeNames != null)
 			return retainedAutoreleased(attributeNames);
-		
+
 		attributeNames = accessible.internal_accessibilityAttributeNames(childID);
 		attributeNames.retain();
 		return retainedAutoreleased(attributeNames);
@@ -120,18 +120,18 @@ class SWTAccessibleDelegate extends NSObject {
 	id accessibilityAttributeValue(NSString attribute) {
 		return accessible.internal_accessibilityAttributeValue(attribute, childID);
 	}
-	
+
 	// parameterized attribute methods
 	NSArray accessibilityParameterizedAttributeNames() {
-		
+
 		if (parameterizedAttributeNames != null)
 			return retainedAutoreleased(parameterizedAttributeNames);
-		
+
 		parameterizedAttributeNames = accessible.internal_accessibilityParameterizedAttributeNames(childID);
 		parameterizedAttributeNames.retain();
 		return retainedAutoreleased(parameterizedAttributeNames);
 	}
-	
+
 	id accessibilityAttributeValue_forParameter(NSString attribute, id parameter) {
 		return accessible.internal_accessibilityAttributeValue_forParameter(attribute, parameter, childID);
 	}
@@ -158,25 +158,25 @@ class SWTAccessibleDelegate extends NSObject {
 	void accessibilityPerformAction(NSString action) {
 		accessible.internal_accessibilityPerformAction(action, childID);
 	}
-	
+
 	id accessibilityActionDescription(NSString action) {
 		return accessible.internal_accessibilityActionDescription(action, childID);
 	}
-	
+
 	void accessibilitySetValue_forAttribute(id value, NSString attribute) {
 		accessible.internal_accessibilitySetValue_forAttribute(value, attribute, childID);
 	}
-	
+
 	static NSArray retainedAutoreleased(NSArray inObject) {
 		id temp = inObject.retain();
 		id temp2 = new NSObject(temp.id).autorelease();
 		return new NSArray(temp2.id);
 	}
-	
+
 	static long /*int*/ accessibleProc(long /*int*/ id, long /*int*/ sel) {
 		SWTAccessibleDelegate swtAcc = getAccessibleDelegate(id);
 		if (swtAcc == null) return 0;
-		
+
 		if (sel == OS.sel_accessibilityAttributeNames) {
 			NSArray retObject = swtAcc.accessibilityAttributeNames();
 			return (retObject == null ? 0 : retObject.id);
@@ -200,7 +200,7 @@ class SWTAccessibleDelegate extends NSObject {
 	static long /*int*/ accessibleProc(long /*int*/ id, long /*int*/ sel, long /*int*/ arg0) {
 		SWTAccessibleDelegate swtAcc = getAccessibleDelegate(id);
 		if (swtAcc == null) return 0;
-		
+
 		if (sel == OS.sel_accessibilityAttributeValue_) {
 			NSString attribute = new NSString(arg0);
 			id retObject = swtAcc.accessibilityAttributeValue(attribute);
@@ -228,7 +228,7 @@ class SWTAccessibleDelegate extends NSObject {
 	static long /*int*/ accessibleProc(long /*int*/ id, long /*int*/ sel, long /*int*/ arg0, long /*int*/ arg1) {
 		SWTAccessibleDelegate swtAcc = getAccessibleDelegate(id);
 		if (swtAcc == null) return 0;
-		
+
 		if (sel == OS.sel_accessibilityAttributeValue_forParameter_) {
 			NSString attribute = new NSString(arg0);
 			id parameter = new id(arg1);
@@ -257,8 +257,8 @@ class SWTAccessibleDelegate extends NSObject {
 		if (attributeNames != null) attributeNames.release();
 		attributeNames = null;
 		if (parameterizedAttributeNames != null) parameterizedAttributeNames.release();
-		parameterizedAttributeNames = null;	
-		
+		parameterizedAttributeNames = null;
+
 		if (delegateJniRef != 0) OS.DeleteGlobalRef(delegateJniRef);
 		delegateJniRef = 0;
 		OS.object_setInstanceVariable(this.id, SWT_OBJECT, 0);

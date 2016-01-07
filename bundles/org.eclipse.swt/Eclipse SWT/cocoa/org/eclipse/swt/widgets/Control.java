@@ -36,7 +36,7 @@ import org.eclipse.swt.internal.cocoa.*;
  * IMPORTANT: This class is intended to be subclassed <em>only</em>
  * within the SWT implementation.
  * </p>
- * 
+ *
  * @see <a href="http://www.eclipse.org/swt/snippets/#control">Control snippets</a>
  * @see <a href="http://www.eclipse.org/swt/examples.php">SWT Example: ControlExample</a>
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
@@ -44,7 +44,7 @@ import org.eclipse.swt.internal.cocoa.*;
  */
 public abstract class Control extends Widget implements Drawable {
 	/**
-	 * the handle to the OS resource 
+	 * the handle to the OS resource
 	 * (Warning: This field is platform dependent)
 	 * <p>
 	 * <b>IMPORTANT:</b> This field is <em>not</em> part of the SWT
@@ -52,7 +52,7 @@ public abstract class Control extends Widget implements Drawable {
 	 * within the packages provided by SWT. It is not available on all
 	 * platforms and should never be accessed from application code.
 	 * </p>
-	 * 
+	 *
 	 * @noreference This field is not intended to be referenced by clients.
 	 */
 	public NSView view;
@@ -70,15 +70,15 @@ public abstract class Control extends Widget implements Drawable {
 	long /*int*/ visibleRgn;
 	Accessible accessible;
 	boolean touchEnabled;
-	
+
 	final static int CLIPPING = 1 << 10;
 	final static int VISIBLE_REGION = 1 << 12;
-	
+
 	/**
 	 * Magic number comes from experience. There's no API for this value in Cocoa or Carbon.
 	 */
 	static final int DEFAULT_DRAG_HYSTERESIS = 5;
-	
+
 Control () {
 	/* Do nothing */
 }
@@ -89,7 +89,7 @@ Control () {
  * <p>
  * The style value is either one of the style constants defined in
  * class <code>SWT</code> which is applicable to instances of this
- * class, or must be built by <em>bitwise OR</em>'ing together 
+ * class, or must be built by <em>bitwise OR</em>'ing together
  * (that is, using the <code>int</code> "|" operator) two or more
  * of those <code>SWT</code> style constants. The class description
  * lists the style constants that are applicable to the class.
@@ -129,12 +129,12 @@ boolean acceptsFirstMouse (long /*int*/ id, long /*int*/ sel, long /*int*/ theEv
 @Override
 long /*int*/ accessibleHandle() {
 	long /*int*/ returnValue = view.id;
-	
+
 	if (view instanceof NSControl) {
 		if (((NSControl) view).cell() != null) {
 			returnValue = ((NSControl) view).cell().id;
 		}
-			
+
 	}
 	return returnValue;
 }
@@ -170,24 +170,24 @@ long /*int*/ accessibilityActionNames(long /*int*/ id, long /*int*/ sel) {
 
 @Override
 long /*int*/ accessibilityAttributeNames(long /*int*/ id, long /*int*/ sel) {
-	
+
 	long /*int*/ returnValue = 0;
-	
+
 	if (handleIsAccessible(id) && accessible != null) {
 		// See if the accessible is defining the attribute set for the control.
 		id value = accessible.internal_accessibilityAttributeNames(ACC.CHILDID_SELF);
 		returnValue = (value != null ? value.id : 0);
-		
+
 		// If not, ask Cocoa for the set for this control.
 		if (returnValue == 0) returnValue = super.accessibilityAttributeNames(id, sel);
-		
+
 		// Add relationship attributes.
 		returnValue = accessible.internal_addRelationAttributes(returnValue);
 	}
 
 	// If the SWT accessibility didn't give us anything get the default for the view/cell.
 	if (returnValue == 0) returnValue = super.accessibilityAttributeNames(id, sel);
-	
+
 	return returnValue;
 }
 
@@ -195,7 +195,7 @@ long /*int*/ accessibilityAttributeNames(long /*int*/ id, long /*int*/ sel) {
  * @param id NSView/NSCell that makes up this control. Could be the view itself.
  * @return true if id is something whose accessible properties can be augmented
  * or overridden by the SWT Accessible. false if the Cocoa defaults for the control should
- * be used. 
+ * be used.
  */
 boolean handleIsAccessible(long /*int*/ id) {
 	return id == accessibleHandle();
@@ -258,7 +258,7 @@ long /*int*/ accessibilityAttributeValue(long /*int*/ id, long /*int*/ sel, long
 	NSString attribute = new NSString(arg0);
 	long /*int*/ returnValue = 0;
 	id returnObject = null;
-	
+
 	if (handleIsAccessible(id) && accessible != null) {
 		returnObject = accessible.internal_accessibilityAttributeValue(attribute, ACC.CHILDID_SELF);
 	}
@@ -267,7 +267,7 @@ long /*int*/ accessibilityAttributeValue(long /*int*/ id, long /*int*/ sel, long
 	// superclass handle it.
 	if (returnObject == null) {
 		returnValue = super.accessibilityAttributeValue(id, sel, arg0);
-		
+
 		// Feature in Cocoa: SWT doesn't use setToolTip for tooltip support, so if the
 		// help attribute was requested return toolTipText.
 		if (returnObject == null) {
@@ -275,25 +275,25 @@ long /*int*/ accessibilityAttributeValue(long /*int*/ id, long /*int*/ sel, long
 				if (toolTipText != null) returnValue = NSString.stringWith(toolTipText).id;
 			}
 		}
-		
+
 	} else {
 		returnValue = returnObject.id;
 	}
-	
+
 	return returnValue;
 }
 
 @Override
 long /*int*/ accessibilityAttributeValue_forParameter(long /*int*/ id, long /*int*/ sel, long /*int*/ arg0, long /*int*/ arg1) {
 	NSString attribute = new NSString(arg0);
-	
+
 	id returnValue = null;
-	
+
 	if (handleIsAccessible(id) && accessible != null) {
 		id parameter = new id(arg1);
 		returnValue = accessible.internal_accessibilityAttributeValue_forParameter(attribute, parameter, ACC.CHILDID_SELF);
 	}
-	
+
 	// If we had an accessible and it didn't handle the attribute request, let the
 	// superclass handle it.
 	if (returnValue == null)
@@ -371,7 +371,7 @@ public void addControlListener(ControlListener listener) {
  *
  * @see DragDetectListener
  * @see #removeDragDetectListener
- * 
+ *
  * @since 3.3
  */
 public void addDragDetectListener (DragDetectListener listener) {
@@ -423,7 +423,7 @@ public void addFocusListener(FocusListener listener) {
  * <b>Warning</b>: This API is currently only implemented on Windows and Cocoa.
  * SWT doesn't send Gesture or Touch events on GTK.
  * </p>
- * 
+ *
  * @param listener the listener which should be notified
  *
  * @exception IllegalArgumentException <ul>
@@ -437,7 +437,7 @@ public void addFocusListener(FocusListener listener) {
  * @see GestureListener
  * @see #removeGestureListener
  * @see #setTouchEnabled
- * 
+ *
  * @since 3.7
  */
 public void addGestureListener (GestureListener listener) {
@@ -696,7 +696,7 @@ void addTraits(NSMutableDictionary dict, Font font) {
  * one of the messages defined in the <code>TouchListener</code>
  * interface.
  * <p>
- * NOTE: You must also call <code>setTouchEnabled(true)</code> to 
+ * NOTE: You must also call <code>setTouchEnabled(true)</code> to
  * specify that touch events should be sent, which will cause gesture
  * events to not be sent.
  * </p>
@@ -704,7 +704,7 @@ void addTraits(NSMutableDictionary dict, Font font) {
  * <b>Warning</b>: This API is currently only implemented on Windows and Cocoa.
  * SWT doesn't send Gesture or Touch events on GTK.
  * </p>
- * 
+ *
  * @param listener the listener which should be notified
  *
  * @exception IllegalArgumentException <ul>
@@ -718,7 +718,7 @@ void addTraits(NSMutableDictionary dict, Font font) {
  * @see TouchListener
  * @see #removeTouchListener
  * @see #setTouchEnabled
- * 
+ *
  * @since 3.7
  */
 public void addTouchListener (TouchListener listener) {
@@ -834,7 +834,7 @@ void cancelOperation(long /*int*/ id, long /*int*/ sel, long /*int*/ sender) {
 void checkBackground () {
 	Shell shell = getShell ();
 	if (this == shell) return;
-	state &= ~PARENT_BACKGROUND;	
+	state &= ~PARENT_BACKGROUND;
 	Composite composite = parent;
 	do {
 		int mode = composite.backgroundMode;
@@ -848,7 +848,7 @@ void checkBackground () {
 					control = control.parent;
 				} while (control != composite);
 			}
-			state |= PARENT_BACKGROUND;					
+			state |= PARENT_BACKGROUND;
 			return;
 		}
 		if (composite == shell) break;
@@ -875,8 +875,8 @@ void checkToolTip (Widget target) {
  * best be displayed at. The width hint and height hint arguments
  * allow the caller to ask a control questions such as "Given a particular
  * width, how high does the control need to be to show all of the contents?"
- * To indicate that the caller does not wish to constrain a particular 
- * dimension, the constant <code>SWT.DEFAULT</code> is passed for the hint. 
+ * To indicate that the caller does not wish to constrain a particular
+ * dimension, the constant <code>SWT.DEFAULT</code> is passed for the hint.
  * </p>
  *
  * @param wHint the width hint (can be <code>SWT.DEFAULT</code>)
@@ -906,14 +906,14 @@ public Point computeSize (int wHint, int hHint) {
  * best be displayed at. The width hint and height hint arguments
  * allow the caller to ask a control questions such as "Given a particular
  * width, how high does the control need to be to show all of the contents?"
- * To indicate that the caller does not wish to constrain a particular 
- * dimension, the constant <code>SWT.DEFAULT</code> is passed for the hint. 
+ * To indicate that the caller does not wish to constrain a particular
+ * dimension, the constant <code>SWT.DEFAULT</code> is passed for the hint.
  * </p><p>
  * If the changed flag is <code>true</code>, it indicates that the receiver's
  * <em>contents</em> have changed, therefore any caches that a layout manager
  * containing the control may have been keeping need to be flushed. When the
  * control is resized, the changed flag will be <code>false</code>, so layout
- * manager caches can be retained. 
+ * manager caches can be retained.
  * </p>
  *
  * @param wHint the width hint (can be <code>SWT.DEFAULT</code>)
@@ -1074,7 +1074,7 @@ void doCommandBySelector (long /*int*/ id, long /*int*/ sel, long /*int*/ select
 		NSEvent nsEvent = NSApplication.sharedApplication ().currentEvent ();
 		if (nsEvent != null && nsEvent.type () == OS.NSKeyDown) {
 			/*
-			 * Feature in Cocoa.  Pressing Alt+UpArrow invokes doCommandBySelector 
+			 * Feature in Cocoa.  Pressing Alt+UpArrow invokes doCommandBySelector
 			 * twice, with selectors moveBackward and moveToBeginningOfParagraph
 			 * (Alt+DownArrow behaves similarly).  In order to avoid sending
 			 * multiple events for these keys, do not send a KeyDown if we already sent one
@@ -1100,7 +1100,7 @@ void doCommandBySelector (long /*int*/ id, long /*int*/ sel, long /*int*/ select
  * Detects a drag and drop gesture.  This method is used
  * to detect a drag gesture when called from within a mouse
  * down listener.
- * 
+ *
  * <p>By default, a drag is detected when the gesture
  * occurs anywhere within the client area of a control.
  * Some controls, such as tables and trees, override this
@@ -1113,7 +1113,7 @@ void doCommandBySelector (long /*int*/ id, long /*int*/ sel, long /*int*/ select
  * </p>
  *
  * @param event the mouse down event
- * 
+ *
  * @return <code>true</code> if the gesture occurred, and <code>false</code> otherwise.
  *
  * @exception IllegalArgumentException <ul>
@@ -1123,13 +1123,13 @@ void doCommandBySelector (long /*int*/ id, long /*int*/ sel, long /*int*/ select
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- *  
+ *
  * @see DragDetectListener
  * @see #addDragDetectListener
- * 
+ *
  * @see #getDragDetect
  * @see #setDragDetect
- * 
+ *
  * @since 3.3
  */
 public boolean dragDetect (Event event) {
@@ -1142,7 +1142,7 @@ public boolean dragDetect (Event event) {
  * Detects a drag and drop gesture.  This method is used
  * to detect a drag gesture when called from within a mouse
  * down listener.
- * 
+ *
  * <p>By default, a drag is detected when the gesture
  * occurs anywhere within the client area of a control.
  * Some controls, such as tables and trees, override this
@@ -1155,7 +1155,7 @@ public boolean dragDetect (Event event) {
  * </p>
  *
  * @param event the mouse down event
- * 
+ *
  * @return <code>true</code> if the gesture occurred, and <code>false</code> otherwise.
  *
  * @exception IllegalArgumentException <ul>
@@ -1165,13 +1165,13 @@ public boolean dragDetect (Event event) {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @see DragDetectListener
  * @see #addDragDetectListener
- * 
+ *
  * @see #getDragDetect
  * @see #setDragDetect
- * 
+ *
  * @since 3.3
  */
 public boolean dragDetect (MouseEvent event) {
@@ -1190,15 +1190,15 @@ boolean dragDetect (int x, int y, boolean filter, boolean [] consume) {
 	/**
 	 * Feature in Cocoa. Mouse drag events do not account for hysteresis.
 	 * As soon as the mouse drags a mouse dragged event is fired.  Fix is to
-	 * check for another mouse drag event that is at least 5 pixels away 
-	 * from the start of the drag. 
+	 * check for another mouse drag event that is at least 5 pixels away
+	 * from the start of the drag.
 	 */
 	NSApplication application = NSApplication.sharedApplication();
 	boolean dragging = false;
 	long /*int*/ eventType = OS.NSLeftMouseDown;
 	double /*float*/ dragX = x;
 	double /*float*/ dragY = y;
-	
+
 	/**
 	 * To check for an actual drag we need to pull off mouse moved and mouse up events
 	 * to detect if the user dragged outside of a 10 x 10 box centered on the mouse down location.
@@ -1218,7 +1218,7 @@ boolean dragDetect (int x, int y, boolean filter, boolean [] consume) {
 			break;
 		}
 		eventType = event.type();
-		
+
 		if (eventType == OS.NSLeftMouseDragged) {
 			dragEvents.addObject(event);
 			NSPoint windowLoc = event.locationInWindow();
@@ -1235,7 +1235,7 @@ boolean dragDetect (int x, int y, boolean filter, boolean [] consume) {
 		}
 	}
 
-	// Push back any events we took out of the queue so the control can receive them. 
+	// Push back any events we took out of the queue so the control can receive them.
 	if (mouseUpEvent != null) application.postEvent(mouseUpEvent, true);
 
 	if (dragEvents.count() > 0) {
@@ -1287,10 +1287,10 @@ void enableWidget (boolean enabled) {
 boolean equals(double /*float*/ [] color1, double /*float*/ [] color2) {
 	if (color1 == color2) return true;
 	if (color1 == null) return color2 == null;
-	if (color2 == null) return color1 == null;	
+	if (color2 == null) return color1 == null;
 	for (int i = 0; i < color1.length; i++) {
 		if (color1 [i] != color2 [i]) return false;
-	}	
+	}
 	return true;
 }
 
@@ -1458,11 +1458,11 @@ public boolean forceFocus () {
 	if (isDisposed ()) return false;
 	shell.setSavedFocus (this);
 	/*
-	 * Feature in Cocoa. If the window is inactive when forceFocus is called bringToTop 
-	 * eventually calls makeKeyAndOrderFront. This activates the window immediately, but unlike other platforms, 
+	 * Feature in Cocoa. If the window is inactive when forceFocus is called bringToTop
+	 * eventually calls makeKeyAndOrderFront. This activates the window immediately, but unlike other platforms,
 	 * it also immediately fire notifications that the window was activated, as opposed to posting an event
 	 * to be handled on the next pass of readAndDispatch().
-	 * 
+	 *
 	 * Shell#windowDidBecomeKey will call Decorations#restoreFocus, so the saved focus must be set
 	 * before the window is activated or the wrong control will get focus.
 	 */
@@ -1506,13 +1506,13 @@ boolean gestureEvent(long /*int*/ id, long /*int*/ eventPtr, int detail) {
 	} else if (detail == SWT.GESTURE_END) {
 		display.gestureActive = false;
 	}
-	
-	switch (detail) {	
+
+	switch (detail) {
 	case SWT.GESTURE_SWIPE:
 		event.xDirection = (int) -nsEvent.deltaX();
 		event.yDirection = (int) -nsEvent.deltaY();
 		break;
-	case SWT.GESTURE_ROTATE: {	
+	case SWT.GESTURE_ROTATE: {
 		display.rotation += nsEvent.rotation();
 		event.rotation = display.rotation;
 		break;
@@ -1550,10 +1550,10 @@ boolean gestureEvent(long /*int*/ id, long /*int*/ eventPtr, int detail) {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @see Accessible#addAccessibleListener
  * @see Accessible#addAccessibleControlListener
- * 
+ *
  * @since 2.0
  */
 public Accessible getAccessible () {
@@ -1580,7 +1580,7 @@ public Color getBackground () {
 	checkWidget();
 	if (backgroundAlpha == 0) {
 		Color color = Color.cocoa_new (display, background, 0);
-		return color;		
+		return color;
 	}
 	else {
 		Control control = findBackgroundControl ();
@@ -1602,7 +1602,7 @@ Color getBackgroundColor () {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 3.2
  */
 public Image getBackgroundImage () {
@@ -1648,15 +1648,15 @@ public Rectangle getBounds () {
 
 /**
  * Returns <code>true</code> if the receiver is detecting
- * drag gestures, and  <code>false</code> otherwise. 
+ * drag gestures, and  <code>false</code> otherwise.
  *
  * @return the receiver's drag detect state
- * 
+ *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 3.3
  */
 public boolean getDragDetect () {
@@ -1682,7 +1682,7 @@ boolean getDrawing () {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 3.3
  */
 public Cursor getCursor () {
@@ -1702,7 +1702,7 @@ public Cursor getCursor () {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @see #isEnabled
  */
 public boolean getEnabled () {
@@ -1762,8 +1762,8 @@ public Object getLayoutData () {
 /**
  * Returns a point describing the receiver's location relative
  * to its parent (or its display if its parent is null), unless
- * the receiver is a shell. In this case, the point is 
- * relative to the display. 
+ * the receiver is a shell. In this case, the point is
+ * relative to the display.
  *
  * @return the receiver's location
  *
@@ -1804,14 +1804,14 @@ int getMininumHeight () {
 
 /**
  * Returns the receiver's monitor.
- * 
+ *
  * @return the receiver's monitor
- * 
+ *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 3.0
  */
 public Monitor getMonitor () {
@@ -1841,7 +1841,7 @@ public Monitor getMonitor () {
 		if (index == -1 || distance < value) {
 			index = i;
 			value = distance;
-		} 
+		}
 	}
 	return monitors [index];
 }
@@ -1851,12 +1851,12 @@ public Monitor getMonitor () {
  * constants <code>SWT.LEFT_TO_RIGHT</code> or <code>SWT.RIGHT_TO_LEFT</code>.
  *
  * @return the orientation style
- * 
+ *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 3.7
  */
 public int getOrientation () {
@@ -1914,12 +1914,12 @@ NSBezierPath getPath(long /*int*/ region) {
 	return path;
 }
 
-/** 
+/**
  * Returns the region that defines the shape of the control,
  * or null if the control has the default shape.
  *
  * @return the region that defines the shape of the shell (or null)
- *	
+ *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
@@ -1976,12 +1976,12 @@ public Point getSize () {
  * constants <code>SWT.LEFT_TO_RIGHT</code> or <code>SWT.RIGHT_TO_LEFT</code>.
  *
  * @return the text direction style
- * 
+ *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 3.102
  */
 public int getTextDirection() {
@@ -2024,7 +2024,7 @@ public String getToolTipText () {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @see #setTouchEnabled
  * @see Display#getTouchEnabled
  *
@@ -2135,7 +2135,7 @@ boolean insertText (long /*int*/ id, long /*int*/ sel, long /*int*/ string) {
 	}
 }
 
-/**	 
+/**
  * Invokes platform specific functionality to allocate a new GC handle.
  * <p>
  * <b>IMPORTANT:</b> This method is <em>not</em> part of the public
@@ -2145,9 +2145,9 @@ boolean insertText (long /*int*/ id, long /*int*/ sel, long /*int*/ string) {
  * application code.
  * </p>
  *
- * @param data the platform specific GC data 
+ * @param data the platform specific GC data
  * @return the platform specific GC handle
- * 
+ *
  * @noreference This method is not intended to be referenced by clients.
  */
 public long /*int*/ internal_new_GC (GCData data) {
@@ -2195,7 +2195,7 @@ public long /*int*/ internal_new_GC (GCData data) {
 		Control control = findBackgroundControl ();
 		if (control == null) control = this;
 		data.background = control.getBackgroundColor ().handle;
-		data.font = font != null ? font : defaultFont ();		
+		data.font = font != null ? font : defaultFont ();
 	}
 	if (graphicsContext != null) {
 		return graphicsContext.id;
@@ -2203,7 +2203,7 @@ public long /*int*/ internal_new_GC (GCData data) {
 	return 0;
 }
 
-/**	 
+/**
  * Invokes platform specific functionality to dispose a GC handle.
  * <p>
  * <b>IMPORTANT:</b> This method is <em>not</em> part of the public
@@ -2214,8 +2214,8 @@ public long /*int*/ internal_new_GC (GCData data) {
  * </p>
  *
  * @param hDC the platform specific GC handle
- * @param data the platform specific GC data 
- * 
+ * @param data the platform specific GC data
+ *
  * @noreference This method is not intended to be referenced by clients.
  */
 public void internal_dispose_GC (long /*int*/ hDC, GCData data) {
@@ -2287,7 +2287,7 @@ boolean isDrawing () {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @see #getEnabled
  */
 public boolean isEnabled () {
@@ -2455,7 +2455,7 @@ void keyDown (long /*int*/ id, long /*int*/ sel, long /*int*/ theEvent) {
 				if (!sendKeyEvent (nsEvent, SWT.KeyDown)) return;
 				if (consume [0]) return;
 			}
-			
+
 			return;
 		}
 	}
@@ -2525,7 +2525,7 @@ void scrollWheel (long /*int*/ id, long /*int*/ sel, long /*int*/ theEvent) {
 		if ((hooks(SWT.Gesture) || filters(SWT.Gesture))) {
 			if (nsEvent.deltaY() != 0 || nsEvent.deltaX() != 0) {
 				if (!gestureEvent(id, theEvent, SWT.GESTURE_PAN)) {
-					handled = true;						
+					handled = true;
 				}
 			}
 		}
@@ -2546,7 +2546,7 @@ void scrollWheel (long /*int*/ id, long /*int*/ sel, long /*int*/ theEvent) {
 			}
 		}
 	}
-	if (!handled) super.scrollWheel(id, sel, theEvent); 
+	if (!handled) super.scrollWheel(id, sel, theEvent);
 }
 
 boolean isEventView (long /*int*/ id) {
@@ -2570,7 +2570,7 @@ boolean mouseEvent (long /*int*/ id, long /*int*/ sel, long /*int*/ theEvent, in
 
 	boolean runEnterExit = false;
 	Control runEnterExitControl = null;
-	
+
 	switch (nsType) {
 		case OS.NSLeftMouseDown:
 			if (nsEvent.clickCount() == 1 && (nsEvent.modifierFlags() & OS.NSControlKeyMask) == 0 && (state & DRAG_DETECT) != 0 && hooks (SWT.DragDetect)) {
@@ -2677,13 +2677,13 @@ void moved () {
  * @param control the sibling control (or null)
  *
  * @exception IllegalArgumentException <ul>
- *    <li>ERROR_INVALID_ARGUMENT - if the control has been disposed</li> 
+ *    <li>ERROR_INVALID_ARGUMENT - if the control has been disposed</li>
  * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @see Control#moveBelow
  * @see Composite#getChildren
  */
@@ -2706,13 +2706,13 @@ public void moveAbove (Control control) {
  * @param control the sibling control (or null)
  *
  * @exception IllegalArgumentException <ul>
- *    <li>ERROR_INVALID_ARGUMENT - if the control has been disposed</li> 
+ *    <li>ERROR_INVALID_ARGUMENT - if the control has been disposed</li>
  * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @see Control#moveAbove
  * @see Composite#getChildren
  */
@@ -2755,11 +2755,11 @@ public void pack () {
  * <em>contents</em> have changed, therefore any caches that a layout manager
  * containing the control may have been keeping need to be flushed. When the
  * control is resized, the changed flag will be <code>false</code>, so layout
- * manager caches can be retained. 
+ * manager caches can be retained.
  * </p>
  *
  * @param changed whether or not the receiver's contents have changed
- * 
+ *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
@@ -2778,7 +2778,7 @@ NSView paintView () {
 
 /**
  * Prints the receiver and all children.
- * 
+ *
  * @param gc the gc where the drawing occurs
  * @return <code>true</code> if the operation was successful and <code>false</code> otherwise
  *
@@ -2790,14 +2790,14 @@ NSView paintView () {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 3.4
  */
 public boolean print (GC gc) {
 	checkWidget ();
 	if (gc == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (gc.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
-	
+
 	NSGraphicsContext.static_saveGraphicsState();
 	NSGraphicsContext.setCurrentContext(gc.handle);
 	NSAffineTransform transform = NSAffineTransform.transform ();
@@ -2859,7 +2859,7 @@ void redraw (boolean children) {
 
 /**
  * Causes the rectangular area of the receiver specified by
- * the arguments to be marked as needing to be redrawn. 
+ * the arguments to be marked as needing to be redrawn.
  * The next time a paint request is processed, that area of
  * the receiver will be painted, including the background.
  * If the <code>all</code> flag is <code>true</code>, any
@@ -3024,7 +3024,7 @@ public void removeControlListener (ControlListener listener) {
  *
  * @see DragDetectListener
  * @see #addDragDetectListener
- * 
+ *
  * @since 3.3
  */
 public void removeDragDetectListener(DragDetectListener listener) {
@@ -3075,7 +3075,7 @@ public void removeFocusListener(FocusListener listener) {
  *
  * @see GestureListener
  * @see #addGestureListener
- * 
+ *
  * @since 3.7
  */
 public void removeGestureListener (GestureListener listener) {
@@ -3293,12 +3293,12 @@ public void removePaintListener(PaintListener listener) {
 void removeRelation () {
 	if (!isDescribedByLabel()) return;
 	NSObject accessibleElement = focusView();
-	
+
 	if (accessibleElement instanceof NSControl) {
 		NSControl viewAsControl = (NSControl) accessibleElement;
 		if (viewAsControl.cell() != null) accessibleElement = viewAsControl.cell();
 	}
-	
+
 	accessibleElement.accessibilitySetOverrideValue(accessibleElement, OS.NSAccessibilityTitleUIElementAttribute);
 }
 
@@ -3319,7 +3319,7 @@ void removeRelation () {
  *
  * @see TouchListener
  * @see #addTouchListener
- * 
+ *
  * @since 3.7
  */
 public void removeTouchListener(TouchListener listener) {
@@ -3462,7 +3462,7 @@ boolean sendMouseEvent (NSEvent nsEvent, int type, boolean send) {
 	NSView view = eventView ();
 	if (nsEvent == null || nsEvent.type() == OS.NSMouseMoved) {
 		NSWindow window = view.window();
-		windowPoint = window.convertScreenToBase(NSEvent.mouseLocation()); 
+		windowPoint = window.convertScreenToBase(NSEvent.mouseLocation());
 	} else {
 		windowPoint = nsEvent.locationInWindow();
 	}
@@ -3484,11 +3484,11 @@ boolean sendMouseEvent (NSEvent nsEvent, int type, boolean send) {
 }
 
 Touch touchStateFromNSTouch(NSTouch touch) {
-	TouchSource source = display.findTouchSource(touch);	
+	TouchSource source = display.findTouchSource(touch);
 	long /*int*/ osPhase = touch.phase();
 	long identity = OS.objc_msgSend(touch.id, OS.sel_identity);
 	int state = 0;
-	
+
 	switch ((int)osPhase) {
 	case OS.NSTouchPhaseBegan:
 		state = SWT.TOUCHSTATE_DOWN;
@@ -3502,13 +3502,13 @@ Touch touchStateFromNSTouch(NSTouch touch) {
 		break;
 	}
 
-	display.touchCounter++;	
+	display.touchCounter++;
 	boolean primary = false;
 	NSPoint normalizedPos = touch.normalizedPosition();
     double normalizedX = normalizedPos.x;
     double normalizedY = 1 - normalizedPos.y;
     if (display.currentTouches().count() == 1) display.primaryIdentifier = identity;
-    if (display.primaryIdentifier == identity) primary = true;    
+    if (display.primaryIdentifier == identity) primary = true;
 	NSSize deviceSize = touch.deviceSize();
 	int deviceX = (int) (normalizedX * deviceSize.width);
 	int deviceY = (int) (normalizedY * deviceSize.height);
@@ -3550,7 +3550,7 @@ void setBackground () {
  * @param color the new color (or null)
  *
  * @exception IllegalArgumentException <ul>
- *    <li>ERROR_INVALID_ARGUMENT - if the argument has been disposed</li> 
+ *    <li>ERROR_INVALID_ARGUMENT - if the argument has been disposed</li>
  * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -3590,14 +3590,14 @@ private void _setBackground (Color color) {
  * @param image the new image (or null)
  *
  * @exception IllegalArgumentException <ul>
- *    <li>ERROR_INVALID_ARGUMENT - if the argument has been disposed</li> 
- *    <li>ERROR_INVALID_ARGUMENT - if the argument is not a bitmap</li> 
+ *    <li>ERROR_INVALID_ARGUMENT - if the argument has been disposed</li>
+ *    <li>ERROR_INVALID_ARGUMENT - if the argument is not a bitmap</li>
  * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 3.2
  */
 public void setBackgroundImage (Image image) {
@@ -3618,9 +3618,9 @@ void setBackgroundColor (NSColor nsColor) {
 
 /**
  * Sets the receiver's size and location to the rectangular
- * area specified by the arguments. The <code>x</code> and 
+ * area specified by the arguments. The <code>x</code> and
  * <code>y</code> arguments are relative to the receiver's
- * parent (or its display if its parent is null), unless 
+ * parent (or its display if its parent is null), unless
  * the receiver is a shell. In this case, the <code>x</code>
  * and <code>y</code> arguments are relative to the display.
  * <p>
@@ -3676,7 +3676,7 @@ void setBounds (int x, int y, int width, int height, boolean move, boolean resiz
 
 /**
  * Sets the receiver's size and location to the rectangular
- * area specified by the argument. The <code>x</code> and 
+ * area specified by the argument. The <code>x</code> and
  * <code>y</code> fields of the rectangle are relative to
  * the receiver's parent (or its display if its parent is null).
  * <p>
@@ -3743,7 +3743,7 @@ void setClipRegion (NSView view) {
  * @param cursor the new cursor (or null)
  *
  * @exception IllegalArgumentException <ul>
- *    <li>ERROR_INVALID_ARGUMENT - if the argument has been disposed</li> 
+ *    <li>ERROR_INVALID_ARGUMENT - if the argument has been disposed</li>
  * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -3777,13 +3777,13 @@ void setDefaultFont () {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 3.3
  */
 public void setDragDetect (boolean dragDetect) {
 	checkWidget ();
 	if (dragDetect) {
-		state |= DRAG_DETECT;	
+		state |= DRAG_DETECT;
 	} else {
 		state &= ~DRAG_DETECT;
 	}
@@ -3823,7 +3823,7 @@ public void setEnabled (boolean enabled) {
 }
 
 /**
- * Causes the receiver to have the <em>keyboard focus</em>, 
+ * Causes the receiver to have the <em>keyboard focus</em>,
  * such that all keyboard events will be delivered to it.  Focus
  * reassignment will respect applicable platform constraints.
  *
@@ -3850,7 +3850,7 @@ public boolean setFocus () {
  * @param font the new font (or null)
  *
  * @exception IllegalArgumentException <ul>
- *    <li>ERROR_INVALID_ARGUMENT - if the argument has been disposed</li> 
+ *    <li>ERROR_INVALID_ARGUMENT - if the argument has been disposed</li>
  * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -3859,7 +3859,7 @@ public boolean setFocus () {
  */
 public void setFont (Font font) {
 	checkWidget();
-	if (font != null) { 
+	if (font != null) {
 		if (font.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
 	}
 	this.font = font;
@@ -3882,7 +3882,7 @@ void setFont (NSFont font) {
  * @param color the new color (or null)
  *
  * @exception IllegalArgumentException <ul>
- *    <li>ERROR_INVALID_ARGUMENT - if the argument has been disposed</li> 
+ *    <li>ERROR_INVALID_ARGUMENT - if the argument has been disposed</li>
  * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -3933,15 +3933,15 @@ void setFrameSize (long /*int*/ id, long /*int*/ sel, NSSize size) {
 		boolean oldResizing = (state & RESIZING) != 0;
 		state |= RESIZING;
 		resized ();
-		if (!oldResizing) state &= ~RESIZING; 
+		if (!oldResizing) state &= ~RESIZING;
 	}
 }
 
 /**
  * Sets the layout data associated with the receiver to the argument.
- * 
+ *
  * @param layoutData the new layout data for the receiver.
- * 
+ *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
@@ -3955,9 +3955,9 @@ public void setLayoutData (Object layoutData) {
 /**
  * Sets the receiver's location to the point specified by
  * the arguments which are relative to the receiver's
- * parent (or its display if its parent is null), unless 
- * the receiver is a shell. In this case, the point is 
- * relative to the display. 
+ * parent (or its display if its parent is null), unless
+ * the receiver is a shell. In this case, the point is
+ * relative to the display.
  *
  * @param x the new x coordinate for the receiver
  * @param y the new y coordinate for the receiver
@@ -3975,9 +3975,9 @@ public void setLocation (int x, int y) {
 /**
  * Sets the receiver's location to the point specified by
  * the arguments which are relative to the receiver's
- * parent (or its display if its parent is null), unless 
- * the receiver is a shell. In this case, the point is 
- * relative to the display. 
+ * parent (or its display if its parent is null), unless
+ * the receiver is a shell. In this case, the point is
+ * relative to the display.
  *
  * @param location the new location for the receiver
  *
@@ -4010,7 +4010,7 @@ public void setLocation (Point location) {
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_MENU_NOT_POP_UP - the menu is not a pop up menu</li>
  *    <li>ERROR_INVALID_PARENT - if the menu is not in the same widget tree</li>
- *    <li>ERROR_INVALID_ARGUMENT - if the menu has been disposed</li> 
+ *    <li>ERROR_INVALID_ARGUMENT - if the menu has been disposed</li>
  * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -4037,12 +4037,12 @@ public void setMenu (Menu menu) {
  * <p>
  *
  * @param orientation new orientation style
- * 
+ *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 3.7
  */
 public void setOrientation (int orientation) {
@@ -4059,7 +4059,7 @@ public void setOrientation (int orientation) {
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_INVALID_ARGUMENT - if the argument has been disposed</li>
- *    <li>ERROR_NULL_ARGUMENT - if the parent is <code>null</code></li> 
+ *    <li>ERROR_NULL_ARGUMENT - if the parent is <code>null</code></li>
  * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -4108,7 +4108,7 @@ public boolean setParent (Composite parent) {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @see #redraw(int, int, int, int, boolean)
  * @see #update()
  */
@@ -4136,7 +4136,7 @@ public void setRedraw (boolean redraw) {
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_INVALID_ARGUMENT - if the region has been disposed</li>
- * </ul>  
+ * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
@@ -4245,17 +4245,17 @@ boolean setTabItemFocus () {
  * </p>
  *
  * @param textDirection the base text direction style
- * 
+ *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @see SWT#LEFT_TO_RIGHT
  * @see SWT#RIGHT_TO_LEFT
  * @see SWT#AUTO_TEXT_DIRECTION
  * @see SWT#FLIP_TEXT_DIRECTION
- * 
+ *
  * @since 3.102
  */
 public void setTextDirection(int textDirection) {
@@ -4264,17 +4264,17 @@ public void setTextDirection(int textDirection) {
 
 /**
  * Sets the receiver's tool tip text to the argument, which
- * may be null indicating that the default tool tip for the 
+ * may be null indicating that the default tool tip for the
  * control will be shown. For a control that has a default
  * tool tip, such as the Tree control on Windows, setting
  * the tool tip text to an empty string replaces the default,
  * causing no tool tip text to be shown.
  * <p>
  * The mnemonic indicator (character '&amp;') is not displayed in a tool tip.
- * To display a single '&amp;' in the tool tip, the character '&amp;' can be 
+ * To display a single '&amp;' in the tool tip, the character '&amp;' can be
  * escaped by doubling it in the string.
  * </p>
- * 
+ *
  * @param string the new tool tip text (or null)
  *
  * @exception SWTException <ul>
@@ -4293,9 +4293,9 @@ public void setToolTipText (String string) {
  * Setting this to <code>false</code> causes the receiver to send gesture events
  * instead.  No exception is thrown if a touch-based input device is not
  * detected (this can be determined with <code>Display#getTouchEnabled()</code>).
- * 
+ *
  * @param enabled the new touch-enabled state
- * 
+ *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
@@ -4312,7 +4312,7 @@ public void setTouchEnabled(boolean enabled) {
 
 /**
  * Marks the receiver as visible if the argument is <code>true</code>,
- * and marks it invisible otherwise. 
+ * and marks it invisible otherwise.
  * <p>
  * If one of the receiver's ancestors is not visible or some
  * other condition makes the receiver not visible, marking
@@ -4344,7 +4344,7 @@ public void setVisible (boolean visible) {
 		sendEvent (SWT.Show);
 		if (isDisposed ()) return;
 	}
-	
+
 	/*
 	* Feature in the Macintosh.  If the receiver has focus, hiding
 	* the receiver causes no control to have focus.  Also, the focus
@@ -4426,7 +4426,7 @@ void setZOrder (Control sibling, boolean above) {
 	parent.contentView().addSubview(topView, above ? OS.NSWindowAbove : OS.NSWindowBelow, otherView);
 	topView.release();
 	invalidateVisibleRegion();
-	
+
 	/* determine the receiver's new index in the parent */
 	if (sibling != null) {
 		if (above) {
@@ -4501,7 +4501,7 @@ String tooltipText () {
  * NOTE: To properly map a rectangle or a corner of a rectangle on a right-to-left platform, use
  * {@link Display#map(Control, Control, Rectangle)}.
  * </p>
- * 
+ *
  * @param x the x coordinate to be translated
  * @param y the y coordinate to be translated
  * @return the translated coordinates
@@ -4510,7 +4510,7 @@ String tooltipText () {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 2.1
  */
 public Point toControl (int x, int y) {
@@ -4526,7 +4526,7 @@ public Point toControl (int x, int y) {
  * NOTE: To properly map a rectangle or a corner of a rectangle on a right-to-left platform, use
  * {@link Display#map(Control, Control, Rectangle)}.
  * </p>
- * 
+ *
  * @param point the point to be translated (must not be null)
  * @return the translated coordinates
  *
@@ -4552,7 +4552,7 @@ public Point toControl (Point point) {
  * NOTE: To properly map a rectangle or a corner of a rectangle on a right-to-left platform, use
  * {@link Display#map(Control, Control, Rectangle)}.
  * </p>
- * 
+ *
  * @param x the x coordinate to be translated
  * @param y the y coordinate to be translated
  * @return the translated coordinates
@@ -4561,7 +4561,7 @@ public Point toControl (Point point) {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 2.1
  */
 public Point toDisplay (int x, int y) {
@@ -4577,7 +4577,7 @@ public Point toDisplay (int x, int y) {
  * NOTE: To properly map a rectangle or a corner of a rectangle on a right-to-left platform, use
  * {@link Display#map(Control, Control, Rectangle)}.
  * </p>
- * 
+ *
  * @param point the point to be translated (must not be null)
  * @return the translated coordinates
  *
@@ -4619,10 +4619,10 @@ boolean touchEvent(long /*int*/ id, long /*int*/ sel, long /*int*/ eventPtr) {
 	long /*int*/ touchCount = allTouchesSet.count();
 	Touch touches[] = new Touch[(int)/*64*/touchCount];
 	int currTouchIndex = 0;
-	
+
 	// Process removed/cancelled touches first.
 	NSArray endedTouches = nsEvent.touchesMatchingPhase(OS.NSTouchPhaseEnded | OS.NSTouchPhaseCancelled, null).allObjects();
-		
+
 	for (int i = 0; i < endedTouches.count(); i++) {
 		NSTouch touch = new NSTouch(endedTouches.objectAtIndex(i).id);
 		NSObject identity = new NSObject(OS.objc_msgSend(touch.id, OS.sel_identity));
@@ -4630,24 +4630,24 @@ boolean touchEvent(long /*int*/ id, long /*int*/ sel, long /*int*/ eventPtr) {
 		if (endedTouch != null) currentTouches.removeObject(endedTouch);
 		touches[currTouchIndex++] = touchStateFromNSTouch(touch);
 	}
-	
+
 	if (currentTouches.count() == 0) display.touchCounter = 0;
 
-	// Process touches in progress or starting. 
+	// Process touches in progress or starting.
 	NSArray activeTouches = nsEvent.touchesMatchingPhase(OS.NSTouchPhaseBegan | OS.NSTouchPhaseMoved | OS.NSTouchPhaseStationary, null).allObjects();
-	
+
 	for (int i = 0; i < activeTouches.count(); i++) {
 		NSTouch touch = new NSTouch(activeTouches.objectAtIndex(i).id);
 		NSObject identity = new NSObject(OS.objc_msgSend(touch.id, OS.sel_identity));
 		NSTouch activeTouch = findTouchWithId(currentTouches, identity);
 		if (activeTouch == null) currentTouches.addObject(touch);
 		touches[currTouchIndex++] = touchStateFromNSTouch(touch);
-	}	
+	}
 
 	if (activeTouches.count() != currentTouches.count()) {
 		/**
 		 * Bug in Cocoa. Under some situations we don't get the NSTouchPhaseEnded/Cancelled notification. Most commonly this happens
-		 * if a 4-finger gesture occurs and the application switcher appears. Workaround is to generate a TOUCHSTATE_UP for the 
+		 * if a 4-finger gesture occurs and the application switcher appears. Workaround is to generate a TOUCHSTATE_UP for the
 		 * orphaned touch.
 		 */
 		for (long /*int*/ j = currentTouches.count() - 1; j >= 0 ; j--) {
@@ -4669,7 +4669,7 @@ boolean touchEvent(long /*int*/ id, long /*int*/ sel, long /*int*/ eventPtr) {
 			}
 		}
 	}
-	
+
 	event.touches = touches;
 	postEvent (SWT.Touch, event);
 	return true;
@@ -4770,24 +4770,24 @@ boolean traverseMnemonic (char key) {
 
 /**
  * Performs a platform traversal action corresponding to a <code>KeyDown</code> event.
- * 
+ *
  * <p>Valid traversal values are
  * <code>SWT.TRAVERSE_NONE</code>, <code>SWT.TRAVERSE_MNEMONIC</code>,
  * <code>SWT.TRAVERSE_ESCAPE</code>, <code>SWT.TRAVERSE_RETURN</code>,
- * <code>SWT.TRAVERSE_TAB_NEXT</code>, <code>SWT.TRAVERSE_TAB_PREVIOUS</code>, 
+ * <code>SWT.TRAVERSE_TAB_NEXT</code>, <code>SWT.TRAVERSE_TAB_PREVIOUS</code>,
  * <code>SWT.TRAVERSE_ARROW_NEXT</code>, <code>SWT.TRAVERSE_ARROW_PREVIOUS</code>,
  * <code>SWT.TRAVERSE_PAGE_NEXT</code> and <code>SWT.TRAVERSE_PAGE_PREVIOUS</code>.
  * If <code>traversal</code> is <code>SWT.TRAVERSE_NONE</code> then the Traverse
  * event is created with standard values based on the KeyDown event.  If
  * <code>traversal</code> is one of the other traversal constants then the Traverse
  * event is created with this detail, and its <code>doit</code> is taken from the
- * KeyDown event. 
+ * KeyDown event.
  * </p>
  *
  * @param traversal the type of traversal, or <code>SWT.TRAVERSE_NONE</code> to compute
  * this from <code>event</code>
  * @param event the KeyDown event
- * 
+ *
  * @return <code>true</code> if the traversal succeeded
  *
  * @exception IllegalArgumentException <ul>
@@ -4808,24 +4808,24 @@ public boolean traverse (int traversal, Event event) {
 
 /**
  * Performs a platform traversal action corresponding to a <code>KeyDown</code> event.
- * 
+ *
  * <p>Valid traversal values are
  * <code>SWT.TRAVERSE_NONE</code>, <code>SWT.TRAVERSE_MNEMONIC</code>,
  * <code>SWT.TRAVERSE_ESCAPE</code>, <code>SWT.TRAVERSE_RETURN</code>,
- * <code>SWT.TRAVERSE_TAB_NEXT</code>, <code>SWT.TRAVERSE_TAB_PREVIOUS</code>, 
+ * <code>SWT.TRAVERSE_TAB_NEXT</code>, <code>SWT.TRAVERSE_TAB_PREVIOUS</code>,
  * <code>SWT.TRAVERSE_ARROW_NEXT</code>, <code>SWT.TRAVERSE_ARROW_PREVIOUS</code>,
  * <code>SWT.TRAVERSE_PAGE_NEXT</code> and <code>SWT.TRAVERSE_PAGE_PREVIOUS</code>.
  * If <code>traversal</code> is <code>SWT.TRAVERSE_NONE</code> then the Traverse
  * event is created with standard values based on the KeyDown event.  If
  * <code>traversal</code> is one of the other traversal constants then the Traverse
  * event is created with this detail, and its <code>doit</code> is taken from the
- * KeyDown event. 
+ * KeyDown event.
  * </p>
  *
  * @param traversal the type of traversal, or <code>SWT.TRAVERSE_NONE</code> to compute
  * this from <code>event</code>
  * @param event the KeyDown event
- * 
+ *
  * @return <code>true</code> if the traversal succeeded
  *
  * @exception IllegalArgumentException <ul>
@@ -4941,8 +4941,8 @@ boolean traverse (int traversal, char character, int keyCode, int keyLocation, i
 /**
  * Based on the argument, perform one of the expected platform
  * traversal action. The argument should be one of the constants:
- * <code>SWT.TRAVERSE_ESCAPE</code>, <code>SWT.TRAVERSE_RETURN</code>, 
- * <code>SWT.TRAVERSE_TAB_NEXT</code>, <code>SWT.TRAVERSE_TAB_PREVIOUS</code>, 
+ * <code>SWT.TRAVERSE_ESCAPE</code>, <code>SWT.TRAVERSE_RETURN</code>,
+ * <code>SWT.TRAVERSE_TAB_NEXT</code>, <code>SWT.TRAVERSE_TAB_PREVIOUS</code>,
  * <code>SWT.TRAVERSE_ARROW_NEXT</code>, <code>SWT.TRAVERSE_ARROW_PREVIOUS</code>,
  * <code>SWT.TRAVERSE_PAGE_NEXT</code> and <code>SWT.TRAVERSE_PAGE_PREVIOUS</code>.
  *
@@ -4974,7 +4974,7 @@ boolean traverse (Event event) {
 		case SWT.TRAVERSE_TAB_PREVIOUS:		return traverseGroup (false);
 		case SWT.TRAVERSE_ARROW_NEXT:		return traverseItem (true);
 		case SWT.TRAVERSE_ARROW_PREVIOUS:	return traverseItem (false);
-		case SWT.TRAVERSE_MNEMONIC:			return traverseMnemonic (event);	
+		case SWT.TRAVERSE_MNEMONIC:			return traverseMnemonic (event);
 		case SWT.TRAVERSE_PAGE_NEXT:		return traversePage (true);
 		case SWT.TRAVERSE_PAGE_PREVIOUS:	return traversePage (false);
 	}

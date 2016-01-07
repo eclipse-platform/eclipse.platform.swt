@@ -16,7 +16,7 @@ public class Platform {
 	public static final Lock lock = new Lock ();
 
 public static boolean isLoadable () {
-	return Library.isLoadable ();	
+	return Library.isLoadable ();
 }
 
 }

@@ -23,7 +23,7 @@ public WebPolicyDecisionListener(long /*int*/ id) {
 public WebPolicyDecisionListener(id id) {
 	super(id);
 }
-	
+
 public void download() {
 	OS.objc_msgSend(id, OS.sel_download);
 }

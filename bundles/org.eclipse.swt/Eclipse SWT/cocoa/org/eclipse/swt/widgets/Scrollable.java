@@ -35,7 +35,7 @@ import org.eclipse.swt.internal.cocoa.*;
 public abstract class Scrollable extends Control {
  	NSScrollView scrollView;
 	ScrollBar horizontalBar, verticalBar;
-	
+
 Scrollable () {
 	/* Do nothing */
 }
@@ -46,7 +46,7 @@ Scrollable () {
  * <p>
  * The style value is either one of the style constants defined in
  * class <code>SWT</code> which is applicable to instances of this
- * class, or must be built by <em>bitwise OR</em>'ing together 
+ * class, or must be built by <em>bitwise OR</em>'ing together
  * (that is, using the <code>int</code> "|" operator) two or more
  * of those <code>SWT</code> style constants. The class description
  * lists the style constants that are applicable to the class.
@@ -86,7 +86,7 @@ public Scrollable (Composite parent, int style) {
  * rectangle described by the arguments (relative to the
  * receiver's parent).
  * </p>
- * 
+ *
  * @param x the desired x coordinate of the client area
  * @param y the desired y coordinate of the client area
  * @param width the desired width of the client area
@@ -182,7 +182,7 @@ void deregister () {
  * Returns a rectangle which describes the area of the
  * receiver which is capable of displaying data (that is,
  * not covered by the "trimmings").
- * 
+ *
  * @return the client area
  *
  * @exception SWTException <ul>
@@ -228,18 +228,18 @@ public ScrollBar getHorizontalBar () {
  * <li><code>SWT.SCROLLBAR_OVERLAY</code> - if receiver
  * uses overlay scrollbars</li>
  * <li><code>SWT.NONE</code> - otherwise</li>
- * 
+ *
  * @return the mode of scrollbars
- * 
+ *
  * @exception SWTException <ul>
  * <li>ERROR_WIDGET_DISPOSED - if the receiver has been
  * disposed</li>
  * <li>ERROR_THREAD_INVALID_ACCESS - if not called from the
  * thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @see SWT#SCROLLBAR_OVERLAY
- * 
+ *
  * @since 3.8
  */
 public int getScrollbarsMode () {
@@ -407,7 +407,7 @@ NSView topView () {
 void updateCursorRects (boolean enabled) {
 	super.updateCursorRects (enabled);
 	if (scrollView == null) return;
-	updateCursorRects (enabled, scrollView);	
+	updateCursorRects (enabled, scrollView);
 	NSClipView contentView = scrollView.contentView ();
 	updateCursorRects (enabled, contentView);
 }

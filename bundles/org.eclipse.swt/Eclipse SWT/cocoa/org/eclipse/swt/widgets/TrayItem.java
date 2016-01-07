@@ -32,7 +32,7 @@ import org.eclipse.swt.internal.cocoa.*;
  *
  * @see <a href="http://www.eclipse.org/swt/snippets/#tray">Tray, TrayItem snippets</a>
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
- * 
+ *
  * @since 3.0
  * @noextend This class is not intended to be subclassed by clients.
  */
@@ -44,7 +44,7 @@ public class TrayItem extends Item {
 	NSStatusItem item;
 	NSImageView view;
 	Image highlightImage;
-	
+
 /**
  * Constructs a new instance of this class given its parent
  * (which must be a <code>Tray</code>) and a style value
@@ -53,7 +53,7 @@ public class TrayItem extends Item {
  * <p>
  * The style value is either one of the style constants defined in
  * class <code>SWT</code> which is applicable to instances of this
- * class, or must be built by <em>bitwise OR</em>'ing together 
+ * class, or must be built by <em>bitwise OR</em>'ing together
  * (that is, using the <code>int</code> "|" operator) two or more
  * of those <code>SWT</code> style constants. The class description
  * lists the style constants that are applicable to the class.
@@ -153,7 +153,7 @@ void createHandle () {
 	item = statusBar.statusItemWithLength(0);
 	if (item == null) error (SWT.ERROR_NO_HANDLES);
 	item.retain();
-	item.setHighlightMode(true);	
+	item.setHighlightMode(true);
 	view = (NSImageView)new SWTImageView().alloc();
 	if (view == null) error (SWT.ERROR_NO_HANDLES);
 	view.init ();
@@ -183,7 +183,7 @@ void destroyWidget () {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 3.8
  */
 public Image getHighlightImage () {
@@ -210,7 +210,7 @@ Point getLocation () {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 3.2
  */
 public Tray getParent () {
@@ -228,7 +228,7 @@ public Tray getParent () {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 3.2
  */
 public ToolTip getToolTip () {
@@ -253,7 +253,7 @@ public String getToolTipText () {
 }
 
 /**
- * Returns <code>true</code> if the receiver is visible and 
+ * Returns <code>true</code> if the receiver is visible and
  * <code>false</code> otherwise.
  *
  * @return the receiver's visibility
@@ -345,7 +345,7 @@ public void removeSelectionListener (SelectionListener listener) {
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (eventTable == null) return;
 	eventTable.unhook (SWT.Selection, listener);
-	eventTable.unhook (SWT.DefaultSelection,listener);	
+	eventTable.unhook (SWT.DefaultSelection,listener);
 }
 
 /**
@@ -381,7 +381,7 @@ public void setImage (Image image) {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 3.8
  */
 public void setHighlightImage (Image image) {
@@ -401,7 +401,7 @@ public void setHighlightImage (Image image) {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 3.2
  */
 public void setToolTip (ToolTip toolTip) {
@@ -414,17 +414,17 @@ public void setToolTip (ToolTip toolTip) {
 
 /**
  * Sets the receiver's tool tip text to the argument, which
- * may be null indicating that the default tool tip for the 
+ * may be null indicating that the default tool tip for the
  * control will be shown. For a control that has a default
  * tool tip, such as the Tree control on Windows, setting
  * the tool tip text to an empty string replaces the default,
  * causing no tool tip text to be shown.
  * <p>
  * The mnemonic indicator (character '&amp;') is not displayed in a tool tip.
- * To display a single '&amp;' in the tool tip, the character '&amp;' can be 
+ * To display a single '&amp;' in the tool tip, the character '&amp;' can be
  * escaped by doubling it in the string.
  * </p>
- * 
+ *
  * @param string the new tool tip text (or null)
  *
  * @exception SWTException <ul>
@@ -452,7 +452,7 @@ void _setToolTipText (String string) {
 
 /**
  * Makes the receiver visible if the argument is <code>true</code>,
- * and makes it invisible otherwise. 
+ * and makes it invisible otherwise.
  *
  * @param visible the new visibility state
  *

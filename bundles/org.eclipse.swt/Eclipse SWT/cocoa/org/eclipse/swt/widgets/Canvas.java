@@ -45,8 +45,8 @@ public class Canvas extends Composite {
 	NSBezierPath visiblePath;
 
 	static NSMutableArray supportedPboardTypes;
-	
-	static { 
+
+	static {
 		// This array is leaked.
 		supportedPboardTypes = NSMutableArray.arrayWithCapacity(1);
 		supportedPboardTypes.retain();
@@ -68,7 +68,7 @@ long /*int*/ attributedSubstringFromRange (long /*int*/ id, long /*int*/ sel, lo
 void sendFocusEvent(int type) {
 	if (caret != null) {
 		if (type == SWT.FocusIn) {
-			caret.setFocus();	
+			caret.setFocus();
 		} else {
 			caret.killFocus();
 		}
@@ -83,7 +83,7 @@ void sendFocusEvent(int type) {
  * <p>
  * The style value is either one of the style constants defined in
  * class <code>SWT</code> which is applicable to instances of this
- * class, or must be built by <em>bitwise OR</em>'ing together 
+ * class, or must be built by <em>bitwise OR</em>'ing together
  * (that is, using the <code>int</code> "|" operator) two or more
  * of those <code>SWT</code> style constants. The class description
  * lists the style constants that are applicable to the class.
@@ -113,9 +113,9 @@ long /*int*/ characterIndexForPoint (long /*int*/ id, long /*int*/ sel, long /*i
 	return super.characterIndexForPoint (id, sel, point);
 }
 
-/** 
+/**
  * Fills the interior of the rectangle specified by the arguments,
- * with the receiver's background. 
+ * with the receiver's background.
  *
  * @param gc the gc where the rectangle is to be filled
  * @param x the x coordinate of the rectangle to be filled
@@ -131,7 +131,7 @@ long /*int*/ characterIndexForPoint (long /*int*/ id, long /*int*/ sel, long /*i
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 3.2
  */
 public void drawBackground (GC gc, int x, int y, int width, int height) {
@@ -205,7 +205,7 @@ void drawWidget (long /*int*/ id, NSGraphicsContext context, NSRect rect) {
 		 	OS.CGContextTranslateCTM (ctx, 0, -(size.height + 2 * destRect.origin.y));
 			OS.CGContextSetBlendMode (ctx, OS.kCGBlendModeDifference);
 			OS.CGContextDrawImage (ctx, destRect, cgImage);
-		 	OS.CGImageRelease(cgImage);			
+		 	OS.CGImageRelease(cgImage);
 		} else {
 			CGRect drawRect = new CGRect();
 			drawRect.origin.x = caret.x;
@@ -260,7 +260,7 @@ public Caret getCaret () {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 3.4
  */
 public IME getIME () {
@@ -305,7 +305,7 @@ boolean readSelectionFromPasteboard(long /*int*/ id, long /*int*/ sel, long /*in
     NSPasteboard pboard = new NSPasteboard(pasteboard);
     NSArray availableTypes = pboard.types();
     NSString type;
-    
+
     for (long /*int*/ i = 0; i < supportedPboardTypes.count(); i++) {
     	if (result) break;
     	type = new NSString(supportedPboardTypes.objectAtIndex(i));
@@ -370,7 +370,7 @@ void resetVisibleRegion () {
 }
 
 /**
- * Scrolls a rectangular area of the receiver by first copying 
+ * Scrolls a rectangular area of the receiver by first copying
  * the source area to the destination and then causing the area
  * of the source which is not covered by the destination to
  * be repainted. Children that intersect the rectangle are
@@ -464,7 +464,7 @@ public void scroll (int destX, int destY, int x, int y, int width, int height, b
 				damage.width = visibleRect.x - srcRect.x;
 				damage.height = srcRect.height;
 				view.setNeedsDisplayInRect(damage);
-			} 
+			}
 			if (visibleRect.x + visibleRect.width != srcRect.x + srcRect.width) {
 				damage.x = srcRect.x + visibleRect.width + deltaX;
 				damage.y = srcRect.y + deltaY;
@@ -494,7 +494,7 @@ public void scroll (int destX, int destY, int x, int y, int width, int height, b
 		for (int i=0; i<children.length; i++) {
 			Control child = children [i];
 			Rectangle rect = child.getBounds ();
-			if (Math.min(x + width, rect.x + rect.width) >= Math.max (x, rect.x) && 
+			if (Math.min(x + width, rect.x + rect.width) >= Math.max (x, rect.x) &&
 				Math.min(y + height, rect.y + rect.height) >= Math.max (y, rect.y)) {
 					child.setLocation (rect.x + deltaX, rect.y + deltaY);
 			}
@@ -570,7 +570,7 @@ void setOpenGLContext(Object value) {
 
 /**
  * Sets the receiver's IME.
- * 
+ *
  * @param ime the new IME for the receiver, may be null
  *
  * @exception IllegalArgumentException <ul>
@@ -580,7 +580,7 @@ void setOpenGLContext(Object value) {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 3.4
  */
 public void setIME (IME ime) {
@@ -615,7 +615,7 @@ long /*int*/ validRequestorForSendType(long /*int*/ id, long /*int*/ sel, long /
 			if (attributes != null) {
 				boolean canReturn = attributes.containsObject(OS.NSAccessibilitySelectedTextAttribute);
 				boolean canSend = acc.internal_accessibilityIsAttributeSettable(OS.NSAccessibilitySelectedTextAttribute, ACC.CHILDID_SELF);
-				boolean canHandlePBoardType = supportedPboardTypes.containsObject(new id(sendType)) && supportedPboardTypes.containsObject(new id(returnType)); 
+				boolean canHandlePBoardType = supportedPboardTypes.containsObject(new id(sendType)) && supportedPboardTypes.containsObject(new id(returnType));
 				if (canReturn && canSend && canHandlePBoardType) {
 					id selection = acc.internal_accessibilityAttributeValue(OS.NSAccessibilitySelectedTextAttribute, ACC.CHILDID_SELF);
 					if (selection != null) {
@@ -626,7 +626,7 @@ long /*int*/ validRequestorForSendType(long /*int*/ id, long /*int*/ sel, long /
 			}
 		}
 	}
-	
+
 	return super.validRequestorForSendType(id, sel, sendType, returnType);
 }
 
@@ -636,7 +636,7 @@ void updateOpenGLContext(long /*int*/ id, long /*int*/ sel, long /*int*/ notific
 }
 
 @Override
-void viewWillMoveToWindow(long /*int*/ id, long /*int*/ sel, long /*int*/ arg0) {	
+void viewWillMoveToWindow(long /*int*/ id, long /*int*/ sel, long /*int*/ arg0) {
 	super.viewWillMoveToWindow(id, sel, arg0);
 	if (glcontext != null && id == view.id && arg0 != 0) {
 		Widget newShell = display.getWidget(new NSWindow(arg0).contentView());
@@ -657,7 +657,7 @@ boolean writeSelectionToPasteboard(long /*int*/ id, long /*int*/ sel, long /*int
     NSArray types = new NSArray(typesObj);
     NSMutableArray typesToDeclare = NSMutableArray.arrayWithCapacity(2);
     NSString type;
-    
+
     for (long /*int*/ i = 0; i < supportedPboardTypes.count(); i++) {
     	type = new NSString(supportedPboardTypes.objectAtIndex(i));
         if (types.containsObject(type)) typesToDeclare.addObject(type);
@@ -673,7 +673,7 @@ boolean writeSelectionToPasteboard(long /*int*/ id, long /*int*/ sel, long /*int
 
     return result;
 }
-    
+
 boolean writeSelectionToPasteboard(NSPasteboard pboard, NSString type) {
 	boolean result = false;
 

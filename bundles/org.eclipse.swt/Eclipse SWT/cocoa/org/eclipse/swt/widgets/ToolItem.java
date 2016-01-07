@@ -26,7 +26,7 @@ import org.eclipse.swt.internal.cocoa.*;
  * <dd>Selection</dd>
  * </dl>
  * <p>
- * Note: Only one of the styles CHECK, PUSH, RADIO, SEPARATOR and DROP_DOWN 
+ * Note: Only one of the styles CHECK, PUSH, RADIO, SEPARATOR and DROP_DOWN
  * may be specified.
  * </p><p>
  * IMPORTANT: This class is <em>not</em> intended to be subclassed.
@@ -63,7 +63,7 @@ public class ToolItem extends Item {
  * <p>
  * The style value is either one of the style constants defined in
  * class <code>SWT</code> which is applicable to instances of this
- * class, or must be built by <em>bitwise OR</em>'ing together 
+ * class, or must be built by <em>bitwise OR</em>'ing together
  * (that is, using the <code>int</code> "|" operator) two or more
  * of those <code>SWT</code> style constants. The class description
  * lists the style constants that are applicable to the class.
@@ -103,7 +103,7 @@ public ToolItem (ToolBar parent, int style) {
  * <p>
  * The style value is either one of the style constants defined in
  * class <code>SWT</code> which is applicable to instances of this
- * class, or must be built by <em>bitwise OR</em>'ing together 
+ * class, or must be built by <em>bitwise OR</em>'ing together
  * (that is, using the <code>int</code> "|" operator) two or more
  * of those <code>SWT</code> style constants. The class description
  * lists the style constants that are applicable to the class.
@@ -148,7 +148,7 @@ long /*int*/ accessibleHandle() {
 long /*int*/ accessibilityActionNames(long /*int*/ id, long /*int*/ sel) {
 
 	long /*int*/ returnValue = super.accessibilityActionNames(id, sel);
-	
+
 	if (id == accessibleHandle()) {
 		if ((style & SWT.DROP_DOWN) != 0) {
 			NSArray baseArray = new NSArray(returnValue);
@@ -167,7 +167,7 @@ long /*int*/ accessibilityActionNames(long /*int*/ id, long /*int*/ sel) {
 long /*int*/ accessibilityAttributeNames(long /*int*/ id, long /*int*/ sel) {
 
 	long /*int*/ returnValue = super.accessibilityAttributeNames(id, sel);
-	
+
 	if (id == accessibleHandle()) {
 		if ((style & (SWT.CHECK|SWT.RADIO)) !=0) {
 			NSArray baseArray = new NSArray(returnValue);
@@ -227,7 +227,7 @@ long /*int*/ accessibilityAttributeValue(long /*int*/ id, long /*int*/ sel, long
 		NSNumber value = NSNumber.numberWithBool(getEnabled());
 		return value.id;
 	} else if (nsAttributeName.isEqualToString(OS.NSAccessibilityChildrenAttribute)) {
-		// 
+		//
 		NSArray value = NSArray.array();
 		return value.id;
 	} else if (nsAttributeName.isEqualToString(OS.NSAccessibilityParentAttribute)) {
@@ -257,7 +257,7 @@ boolean accessibilityIsIgnored(long /*int*/ id, long /*int*/ sel) {
  * </p>
  * <p>
  * When the <code>SWT.RADIO</code> style bit is set, the <code>widgetSelected</code> method is
- * also called when the receiver loses selection because another item in the same radio group 
+ * also called when the receiver loses selection because another item in the same radio group
  * was selected by the user. During <code>widgetSelected</code> the application can use
  * <code>getSelection()</code> to determine the current selected state of the receiver.
  * </p>
@@ -336,7 +336,7 @@ Point computeSize () {
 		if ((style & SWT.DROP_DOWN) != 0) {
 			width += ARROW_WIDTH + INSET;
 		}
-		
+
 		if (parent.nsToolbar == null || image != null) {
 			width += INSET * 2;
 			height += INSET * 2;
@@ -356,7 +356,7 @@ void createHandle () {
 		nsItem.setAction(OS.sel_sendSelection);
 		nsMenuRep = ((NSMenuItem)new SWTMenuItem().alloc()).initWithTitle(NSString.string(), OS.sel_sendSelection, NSString.string());
 		nsItem.setMenuFormRepresentation(nsMenuRep);
-	} 
+	}
 
 	if ((style & SWT.SEPARATOR) != 0) {
 		if (parent.nsToolbar != null) {
@@ -377,7 +377,7 @@ void createHandle () {
 		/*
 		* Feature in Cocoa.  NSButtons without borders do not leave any margin
 		* between their edge and their image.  The workaround is to provide a
-		* custom cell that displays the image in a better position. 
+		* custom cell that displays the image in a better position.
 		*/
 		NSButtonCell cell = (NSButtonCell)new SWTButtonCell ().alloc ().init ();
 		button.setCell (cell);
@@ -408,7 +408,7 @@ NSAttributedString createString() {
 void deregister () {
 	super.deregister ();
 	display.removeWidget(view);
-	
+
 	if (button != null) {
 		display.removeWidget (button);
 		display.removeWidget (button.cell());
@@ -427,7 +427,7 @@ void drawImageWithFrameInView (long /*int*/ id, long /*int*/ sel, long /*int*/ i
 		if ((parent.style & SWT.RIGHT) != 0) {
 			rect.x += 3;
 		} else {
-			rect.y += 3;			
+			rect.y += 3;
 		}
 	}
 	long /*int*/ cgContext = NSGraphicsContext.currentContext().graphicsPort();
@@ -457,7 +457,7 @@ void drawImageWithFrameInView (long /*int*/ id, long /*int*/ sel, long /*int*/ i
 @Override
 NSRect drawTitleWithFrameInView (long /*int*/ id, long /*int*/ sel, long /*int*/ title, NSRect titleRect, long /*int*/ view) {
     boolean hiliteShadow = new NSButtonCell(id).isHighlighted() && text.length() > 0 && image == null;
-    
+
     // An unbordered cell doesn't draw any highlighting when pushed or selected, so we have to do it here.
     if (hiliteShadow) {
     	NSColor transWhiteColor = NSColor.colorWithDeviceRed(1.0f, 1.0f, 1.0f, .8f);
@@ -476,7 +476,7 @@ NSRect drawTitleWithFrameInView (long /*int*/ id, long /*int*/ sel, long /*int*/
 @Override
 void drawWidget (long /*int*/ id, NSGraphicsContext context, NSRect rect) {
 	if (id == view.id) {
-		boolean drawSelected = getSelection() && (parent.nsToolbar == null); 
+		boolean drawSelected = getSelection() && (parent.nsToolbar == null);
 		if (drawSelected) {
 			NSRect bounds = view.bounds();
 			context.saveGraphicsState();
@@ -516,7 +516,7 @@ void drawWidget (long /*int*/ id, NSGraphicsContext context, NSRect rect) {
 void enableWidget(boolean enabled) {
 	if (parent.nsToolbar != null) {
 		nsItem.setEnabled(enabled);
-	} 
+	}
 
 	if ((style & SWT.SEPARATOR) == 0) {
 		((NSButton)button).setEnabled(enabled);
@@ -544,7 +544,7 @@ public Rectangle getBounds () {
 		// parent, the toolbar, relative coordinates.
 		rect = parent.view.convertRect_fromView_(rect, view);
 		return new Rectangle((int)rect.x, (int)rect.y, (int)rect.width, (int)rect.height);
-	} 
+	}
 
 	NSRect rect = view.frame();
 	return new Rectangle((int)rect.x, (int)rect.y, (int)rect.width, (int)rect.height);
@@ -607,7 +607,7 @@ boolean getDrawing () {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @see #isEnabled
  */
 public boolean getEnabled () {
@@ -636,10 +636,10 @@ public Image getHotImage () {
 
 NSString getItemID() {
     NSString itemID = id;
-    
+
     // For separators, return a Cocoa constant for the tool item ID.
     if ((style & SWT.SEPARATOR) != 0) {
-    	// If we are using a non-default width or control use that instead.  
+    	// If we are using a non-default width or control use that instead.
     	if (control == null) {
     		if (width == DEFAULT_SEPARATOR_WIDTH || width == 0) {
     			if (OS.VERSION < 0x1070) itemID = OS.NSToolbarSeparatorItemIdentifier;
@@ -650,7 +650,7 @@ NSString getItemID() {
     		}
     	}
     }
-    
+
     return itemID;
 }
 
@@ -734,7 +734,7 @@ public int getWidth () {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @see #getEnabled
  */
 public boolean isEnabled () {
@@ -827,7 +827,7 @@ void otherMouseDragged(long /*int*/ id, long /*int*/ sel, long /*int*/ theEvent)
 void register () {
 	super.register ();
 	display.addWidget (view, this);
-	
+
 	if (button != null) {
 		display.addWidget (button, this);
 		display.addWidget (button.cell(), this);
@@ -856,7 +856,7 @@ public void removeSelectionListener(SelectionListener listener) {
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (eventTable == null) return;
 	eventTable.unhook(SWT.Selection, listener);
-	eventTable.unhook(SWT.DefaultSelection,listener);	
+	eventTable.unhook(SWT.DefaultSelection,listener);
 }
 
 @Override
@@ -891,7 +891,7 @@ void releaseWidget () {
 	super.releaseWidget ();
 	control = null;
 	toolTipText = null;
-	image = disabledImage = hotImage = null; 
+	image = disabledImage = hotImage = null;
 }
 
 void selectRadio () {
@@ -957,7 +957,7 @@ void setBounds (int x, int y, int width, int height) {
  * @param control the new control
  *
  * @exception IllegalArgumentException <ul>
- *    <li>ERROR_INVALID_ARGUMENT - if the control has been disposed</li> 
+ *    <li>ERROR_INVALID_ARGUMENT - if the control has been disposed</li>
  *    <li>ERROR_INVALID_PARENT - if the control is not in the same widget tree</li>
  * </ul>
  * @exception SWTException <ul>
@@ -1012,7 +1012,7 @@ public void setEnabled (boolean enabled) {
 	checkWidget();
 	if ((state & DISABLED) == 0 && enabled) return;
 	if (enabled) {
-		state &= ~DISABLED;		
+		state &= ~DISABLED;
 	} else {
 		state |= DISABLED;
 	}
@@ -1029,7 +1029,7 @@ public void setEnabled (boolean enabled) {
  * @param image the disabled image to display on the receiver (may be null)
  *
  * @exception IllegalArgumentException <ul>
- *    <li>ERROR_INVALID_ARGUMENT - if the image has been disposed</li> 
+ *    <li>ERROR_INVALID_ARGUMENT - if the image has been disposed</li>
  * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -1048,7 +1048,7 @@ boolean setFocus () {
 	if (button == null) return false;
 	if (!isEnabled ()) return false;
 	NSWindow window = view.window ();
-	if(window == null) { 
+	if(window == null) {
 		return false;
 	}
 	return window.makeFirstResponder (button);
@@ -1064,7 +1064,7 @@ boolean setFocus () {
  * @param image the hot image to display on the receiver (may be null)
  *
  * @exception IllegalArgumentException <ul>
- *    <li>ERROR_INVALID_ARGUMENT - if the image has been disposed</li> 
+ *    <li>ERROR_INVALID_ARGUMENT - if the image has been disposed</li>
  * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -1116,13 +1116,13 @@ public void setSelection (boolean selected) {
 	checkWidget();
 	if ((style & (SWT.CHECK | SWT.RADIO)) == 0) return;
 	this.selection = selected;
-	
+
 	if (parent.nsToolbar != null) {
 		if ((style & SWT.RADIO) != 0 && selection) {
 			parent.nsToolbar.setSelectedItemIdentifier(nsItem.itemIdentifier());
 		}
 	}
-	
+
 	view.setNeedsDisplay(true);
 }
 
@@ -1143,7 +1143,7 @@ public void setSelection (boolean selected) {
  * Note: If control characters like '\n', '\t' etc. are used
  * in the string, then the behavior is platform dependent.
  * </p>
- * 
+ *
  * @param string the new text
  *
  * @exception IllegalArgumentException <ul>
@@ -1174,7 +1174,7 @@ public void setText (String string) {
 		if ((parent.style & SWT.RIGHT) != 0) {
 			widget.setImagePosition(OS.NSImageLeft);
 		} else {
-			widget.setImagePosition(OS.NSImageAbove);		
+			widget.setImagePosition(OS.NSImageAbove);
 		}
 	} else {
 		widget.setImagePosition(text.length() != 0 ? OS.NSNoImage : OS.NSImageOnly);
@@ -1184,17 +1184,17 @@ public void setText (String string) {
 
 /**
  * Sets the receiver's tool tip text to the argument, which
- * may be null indicating that the default tool tip for the 
+ * may be null indicating that the default tool tip for the
  * control will be shown. For a control that has a default
  * tool tip, such as the Tree control on Windows, setting
  * the tool tip text to an empty string replaces the default,
  * causing no tool tip text to be shown.
  * <p>
  * The mnemonic indicator (character '&amp;') is not displayed in a tool tip.
- * To display a single '&amp;' in the tool tip, the character '&amp;' can be 
+ * To display a single '&amp;' in the tool tip, the character '&amp;' can be
  * escaped by doubling it in the string.
  * </p>
- * 
+ *
  * @param string the new tool tip text (or null)
  *
  * @exception SWTException <ul>
@@ -1234,11 +1234,11 @@ void setVisible (boolean visible) {
  * @param width the new width. If the new value is <code>SWT.DEFAULT</code>,
  * the width is a fixed-width area whose amount is determined by the platform.
  * If the new value is 0 a vertical or horizontal line will be drawn, depending
- * on the setting of the corresponding style bit (<code>SWT.VERTICAL</code> or 
+ * on the setting of the corresponding style bit (<code>SWT.VERTICAL</code> or
  * <code>SWT.HORIZONTAL</code>). If the new value is <code>SWT.SEPARATOR_FILL</code>
  * a variable-width space is inserted that acts as a spring between the two adjoining
  * items which will push them out to the extent of the containing ToolBar.
- * 
+ *
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -1292,10 +1292,10 @@ void updateImage (boolean layout) {
 		if ((parent.style & SWT.RIGHT) != 0) {
 			widget.setImagePosition(OS.NSImageLeft);
 		} else {
-			widget.setImagePosition(OS.NSImageAbove);		
+			widget.setImagePosition(OS.NSImageAbove);
 		}
-	} else {	
-		widget.setImagePosition(text.length() != 0 ? OS.NSNoImage : OS.NSImageOnly);		
+	} else {
+		widget.setImagePosition(text.length() != 0 ? OS.NSNoImage : OS.NSImageOnly);
 	}
 	parent.relayout();
 }

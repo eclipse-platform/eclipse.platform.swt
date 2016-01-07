@@ -88,7 +88,7 @@ public class Tree extends Composite {
 	Rectangle imageBounds;
 	TreeItem insertItem;
 	boolean insertBefore;
-	
+
 	/* Used to control drop feedback when DND.FEEDBACK_EXPAND and DND.FEEDBACK_SCROLL is set/not set */
 	boolean shouldExpand = true, shouldScroll = true;
 
@@ -105,7 +105,7 @@ public class Tree extends Composite {
  * <p>
  * The style value is either one of the style constants defined in
  * class <code>SWT</code> which is applicable to instances of this
- * class, or must be built by <em>bitwise OR</em>'ing together 
+ * class, or must be built by <em>bitwise OR</em>'ing together
  * (that is, using the <code>int</code> "|" operator) two or more
  * of those <code>SWT</code> style constants. The class description
  * lists the style constants that are applicable to the class.
@@ -153,7 +153,7 @@ TreeItem _getItem (TreeItem parentItem, int index, boolean create) {
 		items = this.items;
 	}
 	if (index < 0 || index >= count) return null;
-	TreeItem item = items [index]; 
+	TreeItem item = items [index];
 	if (item != null || (style & SWT.VIRTUAL) == 0 || !create) return item;
 	item = new TreeItem (this, parentItem, SWT.NONE, index, false);
 	items [index] = item;
@@ -169,7 +169,7 @@ boolean acceptsFirstResponder (long /*int*/ id, long /*int*/ sel) {
 long /*int*/ accessibilityAttributeValue(long /*int*/ id, long /*int*/ sel, long /*int*/ arg0) {
 	long /*int*/ returnValue = 0;
 	NSString attributeName = new NSString(arg0);
-	
+
 	// If the check column is visible, don't report it back as a column for accessibility purposes.
 	// The check column is meant to appear as a part of the first column.
 	if (attributeName.isEqualToString (OS.NSAccessibilityColumnsAttribute) || attributeName.isEqualToString(OS.NSAccessibilityVisibleColumnsAttribute)) {
@@ -184,7 +184,7 @@ long /*int*/ accessibilityAttributeValue(long /*int*/ id, long /*int*/ sel, long
 			}
 		}
 	}
-	
+
 	if (returnValue != 0) {
 		return returnValue;
 	} else {
@@ -297,12 +297,12 @@ NSSize cellSize (long /*int*/ id, long /*int*/ sel) {
 @Override
 boolean canDragRowsWithIndexes_atPoint(long /*int*/ id, long /*int*/ sel, long /*int*/ rowIndexes, NSPoint mouseDownPoint) {
 	if (!super.canDragRowsWithIndexes_atPoint(id, sel, rowIndexes, mouseDownPoint)) return false;
-	
+
 	// If the current row is not selected and the user is not attempting to modify the selection, select the row first.
 	NSTableView widget = (NSTableView)view;
 	long /*int*/ row = widget.rowAtPoint(mouseDownPoint);
 	long /*int*/ modifiers = NSApplication.sharedApplication().currentEvent().modifierFlags();
-	
+
 	boolean drag = (state & DRAG_DETECT) != 0 && hooks (SWT.DragDetect);
 	if (drag) {
 		if (!widget.isRowSelected(row) && (modifiers & (OS.NSCommandKeyMask | OS.NSShiftKeyMask | OS.NSAlternateKeyMask | OS.NSControlKeyMask)) == 0) {
@@ -312,7 +312,7 @@ boolean canDragRowsWithIndexes_atPoint(long /*int*/ id, long /*int*/ sel, long /
 			set.release();
 		}
 	}
-	
+
 	// The clicked row must be selected to initiate a drag.
 	return (widget.isRowSelected(row) && drag) || !hasFocus();
 }
@@ -341,7 +341,7 @@ static int checkStyle (int style) {
 	* WS_VSCROLL is not specified, Windows creates
 	* trees and tables with scroll bars.  The fix
 	* is to set H_SCROLL and V_SCROLL.
-	* 
+	*
 	* NOTE: This code appears on all platforms so that
 	* applications have consistent scroll bar behavior.
 	*/
@@ -385,7 +385,7 @@ void clear (TreeItem parentItem, int index, boolean all) {
 void clearAll (TreeItem parentItem, boolean all) {
 	int count = getItemCount (parentItem);
 	if (count == 0) return;
-	TreeItem [] children = parentItem == null ? items : parentItem.items; 
+	TreeItem [] children = parentItem == null ? items : parentItem.items;
 	for (int i=0; i<count; i++) {
 		TreeItem item = children [i];
 		if (item != null) {
@@ -413,10 +413,10 @@ void clearAll (TreeItem parentItem, boolean all) {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @see SWT#VIRTUAL
  * @see SWT#SetData
- * 
+ *
  * @since 3.2
  */
 public void clear (int index, boolean all) {
@@ -431,7 +431,7 @@ public void clear (int index, boolean all) {
  * attributes of the items are set to their default values. If the
  * tree was created with the <code>SWT.VIRTUAL</code> style, these
  * attributes are requested again as needed.
- * 
+ *
  * @param all <code>true</code> if all child items should be cleared
  * recursively, and <code>false</code> otherwise
  *
@@ -439,10 +439,10 @@ public void clear (int index, boolean all) {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @see SWT#VIRTUAL
  * @see SWT#SetData
- * 
+ *
  * @since 3.2
  */
 public void clearAll (boolean all) {
@@ -477,7 +477,7 @@ long /*int*/ columnAtPoint(long /*int*/ id, long /*int*/ sel, NSPoint point) {
 	if ((style & SWT.CHECK) != 0) {
 		if (point.x <= getCheckColumnWidth() && point.y < headerView.frame().height) return 1;
 	}
-	
+
 	return super.columnAtPoint(id, sel, point);
 }
 
@@ -564,12 +564,12 @@ void createHandle () {
 	scrollWidget.setHasVerticalScroller ((style & SWT.V_SCROLL) != 0);
 	scrollWidget.setAutohidesScrollers (true);
 	scrollWidget.setBorderType(hasBorder () ? OS.NSBezelBorder : OS.NSNoBorder);
-	
+
 	NSOutlineView widget = (NSOutlineView) new SWTOutlineView ().alloc ();
 	/*
 	* Bug in Cocoa.  Calling init, instead of initWithFrame on an NSOutlineView
-	* cause the NSOutlineView to leak some memory.  The work around is to call 
-	* initWithFrame and pass an empty NSRect instead of calling init. 
+	* cause the NSOutlineView to leak some memory.  The work around is to call
+	* initWithFrame and pass an empty NSRect instead of calling init.
 	*/
 	widget.initWithFrame(new NSRect());
 	widget.setAllowsMultipleSelection ((style & SWT.MULTI) != 0);
@@ -583,10 +583,10 @@ void createHandle () {
 	widget.setIntercellSpacing(spacing);
 	widget.setDoubleAction (OS.sel_sendDoubleSelection);
 	if (!hasBorder ()) widget.setFocusRingType (OS.NSFocusRingTypeNone);
-	
+
 	headerView = (NSTableHeaderView)new SWTTableHeaderView ().alloc ().init ();
 	widget.setHeaderView (null);
-	
+
 	NSString str = NSString.string();
 	if ((style & SWT.CHECK) != 0) {
 		checkColumn = (NSTableColumn) new NSTableColumn ().alloc ();
@@ -609,7 +609,7 @@ void createHandle () {
 		buttonCell.setAllowsMixedState (true);
 		checkColumn.setWidth (getCheckColumnWidth ());
 	}
-	
+
 	firstColumn = (NSTableColumn) new NSTableColumn ().alloc ();
 	NSString nsstring = (NSString) new NSString().alloc();
 	nsstring = nsstring.initWithString(String.valueOf(++NEXT_ID));
@@ -631,7 +631,7 @@ void createHandle () {
 	dataCell = (NSTextFieldCell)new SWTImageTextCell ().alloc ().init ();
 	dataCell.setLineBreakMode(OS.NSLineBreakByTruncatingTail);
 	firstColumn.setDataCell (dataCell);
-	
+
 	scrollView = scrollWidget;
 	view = widget;
 }
@@ -1030,14 +1030,14 @@ void drawInteriorWithFrame_inView (long /*int*/ id, long /*int*/ sel, NSRect rec
 		selectionForeground = Color.cocoa_new(display, hasFocus ? display.alternateSelectedControlTextColor : display.selectedControlTextColor);
 		selectionBackground = Color.cocoa_new(display, hasFocus ? display.alternateSelectedControlColor : display.secondarySelectedControlColor);
 	}
-	
+
 	NSSize contentSize = super.cellSize(id, OS.sel_cellSize);
 	NSImage image = cell.image();
 	if (image != null) contentSize.width += imageBounds.width + IMAGE_GAP;
 	int contentWidth = (int)Math.ceil (contentSize.width);
 	NSSize spacing = widget.intercellSpacing();
 	int itemHeight = (int)Math.ceil (widget.rowHeight() + spacing.height);
-	
+
 	NSRect cellRect = widget.rectOfColumn (nsColumnIndex);
 	cellRect.y = rect.y;
 	cellRect.height = rect.height + spacing.height;
@@ -1057,7 +1057,7 @@ void drawInteriorWithFrame_inView (long /*int*/ id, long /*int*/ sel, NSRect rec
 	}
 	int itemX = (int)(rect.x - offsetX), itemY = (int)(rect.y - offsetY);
 	NSGraphicsContext context = NSGraphicsContext.currentContext ();
-	
+
 	if (hooksMeasure) {
 		sendMeasureItem(item, cell.isHighlighted(), columnIndex, contentSize);
 	}
@@ -1098,17 +1098,17 @@ void drawInteriorWithFrame_inView (long /*int*/ id, long /*int*/ sel, NSRect rec
 		event.height = (int)cellRect.height;
 		sendEvent (SWT.EraseItem, event);
 		if (!event.doit) {
-			drawForeground = drawBackground = drawSelection = false; 
+			drawForeground = drawBackground = drawSelection = false;
 		} else {
 			drawBackground = drawBackground && (event.detail & SWT.BACKGROUND) != 0;
 			drawForeground = (event.detail & SWT.FOREGROUND) != 0;
-			drawSelection = drawSelection && (event.detail & SWT.SELECTED) != 0;			
+			drawSelection = drawSelection && (event.detail & SWT.SELECTED) != 0;
 		}
 		if (!drawSelection && isSelected) {
 			userForeground = Color.cocoa_new(display, gc.getForeground().handle);
 		}
 		gc.dispose ();
-		
+
 		context.restoreGraphicsState();
 
 		if (isDisposed ()) return;
@@ -1133,7 +1133,7 @@ void drawInteriorWithFrame_inView (long /*int*/ id, long /*int*/ sel, NSRect rec
 		NSBezierPath.fillRect (cellRect);
 		context.restoreGraphicsState ();
 	}
-	
+
 	if (item == insertItem && insertItem != null && !insertItem.isDisposed()) {
 		context.saveGraphicsState ();
 		NSRect contentRect = cell.titleRectForBounds (rect);
@@ -1211,7 +1211,7 @@ void drawInteriorWithFrame_inView (long /*int*/ id, long /*int*/ sel, NSRect rec
 				NSColor nsColor = NSColor.colorWithDeviceRed(color[0], color[1], color[2], color[3]);
 				cell.setTextColor(nsColor);
 				callSuper = true;
-			}			
+			}
 		} else {
 			callSuper = true;
 		}
@@ -1378,7 +1378,7 @@ public Rectangle getClientArea () {
 TreeColumn getColumn (id id) {
 	for (int i = 0; i < columnCount; i++) {
 		if (columns[i].nsColumn.id == id.id) {
-			return columns[i]; 
+			return columns[i];
 		}
 	}
 	return null;
@@ -1404,13 +1404,13 @@ TreeColumn getColumn (id id) {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @see Tree#getColumnOrder()
  * @see Tree#setColumnOrder(int[])
  * @see TreeColumn#getMoveable()
  * @see TreeColumn#setMoveable(boolean)
  * @see SWT#Move
- * 
+ *
  * @since 3.1
  */
 public TreeColumn getColumn (int index) {
@@ -1432,7 +1432,7 @@ public TreeColumn getColumn (int index) {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 3.1
  */
 public int getColumnCount () {
@@ -1451,7 +1451,7 @@ public int getColumnCount () {
  * </p><p>
  * Note: This is not the actual structure used by the receiver
  * to maintain its list of items, so modifying the array will
- * not affect the receiver. 
+ * not affect the receiver.
  * </p>
  *
  * @return the current visual order of the receiver's items
@@ -1460,12 +1460,12 @@ public int getColumnCount () {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @see Tree#setColumnOrder(int[])
  * @see TreeColumn#getMoveable()
  * @see TreeColumn#setMoveable(boolean)
  * @see SWT#Move
- * 
+ *
  * @since 3.2
  */
 public int [] getColumnOrder () {
@@ -1491,7 +1491,7 @@ public int [] getColumnOrder () {
  * <p>
  * Note: This is not the actual structure used by the receiver
  * to maintain its list of items, so modifying the array will
- * not affect the receiver. 
+ * not affect the receiver.
  * </p>
  *
  * @return the items in the receiver
@@ -1500,13 +1500,13 @@ public int [] getColumnOrder () {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @see Tree#getColumnOrder()
  * @see Tree#setColumnOrder(int[])
  * @see TreeColumn#getMoveable()
  * @see TreeColumn#setMoveable(boolean)
  * @see SWT#Move
- * 
+ *
  * @since 3.1
  */
 public TreeColumn [] getColumns () {
@@ -1520,12 +1520,12 @@ public TreeColumn [] getColumns () {
  * Returns the width in pixels of a grid line.
  *
  * @return the width of a grid line in pixels
- * 
+ *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 3.1
  */
 public int getGridLineWidth () {
@@ -1534,7 +1534,7 @@ public int getGridLineWidth () {
 }
 
 /**
- * Returns the height of the receiver's header 
+ * Returns the height of the receiver's header
  *
  * @return the height of the header or zero if the header is not visible
  *
@@ -1542,8 +1542,8 @@ public int getGridLineWidth () {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
- * @since 3.1 
+ *
+ * @since 3.1
  */
 public int getHeaderHeight () {
 	checkWidget ();
@@ -1568,7 +1568,7 @@ public int getHeaderHeight () {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 3.1
  */
 public boolean getHeaderVisible () {
@@ -1590,7 +1590,7 @@ public boolean getHeaderVisible () {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 3.1
  */
 public TreeItem getItem (int index) {
@@ -1606,8 +1606,8 @@ public TreeItem getItem (int index) {
  * coordinate system of the receiver.
  * <p>
  * The item that is returned represents an item that could be selected by the user.
- * For example, if selection only occurs in items in the first column, then null is 
- * returned if the point is outside of the item. 
+ * For example, if selection only occurs in items in the first column, then null is
+ * returned if the point is outside of the item.
  * Note that the SWT.FULL_SELECTION style hint, which specifies the selection policy,
  * determines the extent of the selection.
  * </p>
@@ -1688,7 +1688,7 @@ public int getItemHeight () {
  * <p>
  * Note: This is not the actual structure used by the receiver
  * to maintain its list of items, so modifying the array will
- * not affect the receiver. 
+ * not affect the receiver.
  * </p>
  *
  * @return the items
@@ -1709,7 +1709,7 @@ public TreeItem [] getItems () {
 
 /**
  * Returns <code>true</code> if the receiver's lines are visible,
- * and <code>false</code> otherwise. Note that some platforms draw 
+ * and <code>false</code> otherwise. Note that some platforms draw
  * grid lines while others may draw alternating row colors.
  * <p>
  * If one of the receiver's ancestors is not visible or some
@@ -1724,7 +1724,7 @@ public TreeItem [] getItems () {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 3.1
  */
 public boolean getLinesVisible () {
@@ -1752,11 +1752,11 @@ public TreeItem getParentItem () {
 /**
  * Returns an array of <code>TreeItem</code>s that are currently
  * selected in the receiver. The order of the items is unspecified.
- * An empty array indicates that no items are selected. 
+ * An empty array indicates that no items are selected.
  * <p>
  * Note: This is not the actual structure used by the receiver
  * to maintain its selection, so modifying the array will
- * not affect the receiver. 
+ * not affect the receiver.
  * </p>
  * @return an array representing the selection
  *
@@ -1806,15 +1806,15 @@ public int getSelectionCount () {
  * the receiver. The value may be null if no column shows
  * the sort indicator.
  *
- * @return the sort indicator 
+ * @return the sort indicator
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @see #setSortColumn(TreeColumn)
- * 
+ *
  * @since 3.2
  */
 public TreeColumn getSortColumn () {
@@ -1823,8 +1823,8 @@ public TreeColumn getSortColumn () {
 }
 
 /**
- * Returns the direction of the sort indicator for the receiver. 
- * The value will be one of <code>UP</code>, <code>DOWN</code> 
+ * Returns the direction of the sort indicator for the receiver.
+ * The value will be one of <code>UP</code>, <code>DOWN</code>
  * or <code>NONE</code>.
  *
  * @return the sort direction
@@ -1833,9 +1833,9 @@ public TreeColumn getSortColumn () {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @see #setSortDirection(int)
- * 
+ *
  * @since 3.2
  */
 public int getSortDirection () {
@@ -1848,13 +1848,13 @@ public int getSortDirection () {
  * This item can change when items are expanded, collapsed, scrolled
  * or new items are added or removed.
  *
- * @return the item at the top of the receiver 
- * 
+ * @return the item at the top of the receiver
+ *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 2.1
  */
 public TreeItem getTopItem () {
@@ -1874,7 +1874,7 @@ public TreeItem getTopItem () {
 @Override
 NSRect headerRectOfColumn (long /*int*/ id, long /*int*/ sel, long /*int*/ column) {
 	if ((style & SWT.CHECK) == 0) return callSuperRect(id, sel, column);
-	
+
 	if (column == 0) {
 		NSRect returnValue = callSuperRect(id, sel, column);
 		returnValue.width = 0;
@@ -1932,7 +1932,7 @@ int indexOf (NSTableColumn column) {
 
 /**
  * Searches the receiver's list starting at the first column
- * (index 0) until a column is found that is equal to the 
+ * (index 0) until a column is found that is equal to the
  * argument, and returns the index of that column. If no column
  * is found, returns -1.
  *
@@ -1946,7 +1946,7 @@ int indexOf (NSTableColumn column) {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 3.1
  */
 public int indexOf (TreeColumn column) {
@@ -1961,7 +1961,7 @@ public int indexOf (TreeColumn column) {
 
 /**
  * Searches the receiver's list starting at the first item
- * (index 0) until an item is found that is equal to the 
+ * (index 0) until an item is found that is equal to the
  * argument, and returns the index of that item. If no item
  * is found, returns -1.
  *
@@ -1976,7 +1976,7 @@ public int indexOf (TreeColumn column) {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 3.1
  */
 public int indexOf (TreeItem item) {
@@ -2012,19 +2012,19 @@ long /*int*/ menuForEvent(long /*int*/ id, long /*int*/ sel, long /*int*/ theEve
 	if (id != headerView.id) {
 		/*
 		 * Feature in Cocoa: Table views do not change the selection when the user
-		 * right-clicks or control-clicks on an NSTableView or its subclasses. Fix is to select the 
+		 * right-clicks or control-clicks on an NSTableView or its subclasses. Fix is to select the
 		 * clicked-on row ourselves.
 		 */
 		NSEvent event = new NSEvent(theEvent);
 		NSOutlineView tree = (NSOutlineView)view;
-		
-		// get the current selections for the outline view. 
+
+		// get the current selections for the outline view.
 		NSIndexSet selectedRowIndexes = tree.selectedRowIndexes();
-		
+
 		// select the row that was clicked before showing the menu for the event
 		NSPoint mousePoint = view.convertPoint_fromView_(event.locationInWindow(), null);
 		long /*int*/ row = tree.rowAtPoint(mousePoint);
-		
+
 		// figure out if the row that was just clicked on is currently selected
 		if (selectedRowIndexes.containsIndex(row) == false) {
 			NSIndexSet set = (NSIndexSet)new NSIndexSet().alloc();
@@ -2034,7 +2034,7 @@ long /*int*/ menuForEvent(long /*int*/ id, long /*int*/ sel, long /*int*/ theEve
 		}
 		// else that row is currently selected, so don't change anything.
 	}
-	
+
 	return super.menuForEvent(id, sel, theEvent);
 }
 
@@ -2093,7 +2093,7 @@ boolean needsPanelToBecomeKey (long /*int*/ id, long /*int*/ sel) {
 /*
  * Feature in Cocoa.  If a checkbox is in multi-state mode, nextState cycles
  * from off to mixed to on and back to off again.  This will cause the on state
- * to momentarily appear while clicking on the checkbox.  To avoid this, 
+ * to momentarily appear while clicking on the checkbox.  To avoid this,
  * override [NSCell nextState] to go directly to the desired state.
  */
 @Override
@@ -2167,7 +2167,7 @@ boolean outlineView_shouldReorderColumn_toColumn(long /*int*/ id, long /*int*/ s
 		if (currentColIndex == 0) return false;
 		if (newColIndex == 0) return false;
 	}
-	
+
 	NSOutlineView widget = new NSOutlineView(aTableView);
 	id nsColumn = widget.tableColumns().objectAtIndex(currentColIndex);
 	for (int i = 0; i < columnCount; i++) {
@@ -2175,7 +2175,7 @@ boolean outlineView_shouldReorderColumn_toColumn(long /*int*/ id, long /*int*/ s
 			return columns[i].movable;
 		}
 	}
-	
+
 	return true;
 }
 
@@ -2185,7 +2185,7 @@ boolean outlineView_shouldTrackCell_forTableColumn_item(long /*int*/ id, long /*
 		if (new NSCell(cell).isKindOfClass(OS.class_NSButtonCell)) return true;
 	}
 	NSOutlineView widget = (NSOutlineView)view;
-	long /*int*/ rowIndex = widget.rowForItem(new id(item)); 
+	long /*int*/ rowIndex = widget.rowForItem(new id(item));
 	return widget.isRowSelected(rowIndex);
 }
 
@@ -2261,7 +2261,7 @@ void outlineViewColumnDidMove (long /*int*/ id, long /*int*/ sel, long /*int*/ a
 	NSDictionary userInfo = notification.userInfo ();
 	NSString nsstring = (NSString) new NSString().alloc();
 	nsstring = nsstring.initWithString("NSOldColumn"); //$NON-NLS-1$
-	id nsOldIndex = userInfo.valueForKey (nsstring); 
+	id nsOldIndex = userInfo.valueForKey (nsstring);
 	nsstring.release();
 	nsstring = (NSString) new NSString().alloc();
 	nsstring = nsstring.initWithString("NSNewColumn"); //$NON-NLS-1$
@@ -2320,7 +2320,7 @@ void scrollClipViewToPoint (long /*int*/ id, long /*int*/ sel, long /*int*/ clip
 		super.scrollClipViewToPoint(id, sel, clipView, point);
 		if ((style & SWT.CHECK) != 0 && columnCount > 0 && ((NSOutlineView) view).headerView () != null) {
 			if (point.x <= getCheckColumnWidth()) {
-				/* 
+				/*
 				 * Header of first column is extended as header of the checkbox column.
 				 * So, redraw header of first column when check column is scrolled to be visible.
 				 */
@@ -2429,7 +2429,7 @@ void releaseWidget () {
 
 /**
  * Removes all of the items from the receiver.
- * 
+ *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
@@ -2472,7 +2472,7 @@ public void removeSelectionListener (SelectionListener listener) {
 	checkWidget ();
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	eventTable.unhook (SWT.Selection, listener);
-	eventTable.unhook (SWT.DefaultSelection, listener);	
+	eventTable.unhook (SWT.DefaultSelection, listener);
 }
 
 /**
@@ -2524,11 +2524,11 @@ void setImage (long /*int*/ id, long /*int*/ sel, long /*int*/ arg0) {
 
 /**
  * Display a mark indicating the point at which an item will be inserted.
- * The drop insert item has a visual hint to show where a dragged item 
+ * The drop insert item has a visual hint to show where a dragged item
  * will be inserted when dropped on the tree.
- * 
+ *
  * @param item the insert item.  Null will clear the insertion mark.
- * @param before true places the insert mark above 'item'. false places 
+ * @param before true places the insert mark above 'item'. false places
  *	the insert mark below 'item'.
  *
  * @exception IllegalArgumentException <ul>
@@ -2616,7 +2616,7 @@ void selectRowIndexes_byExtendingSelection (long /*int*/ id, long /*int*/ sel, l
 @Override
 void sendDoubleSelection() {
 	NSOutlineView outlineView = (NSOutlineView)view;
-	int rowIndex = (int)/*64*/outlineView.clickedRow (); 
+	int rowIndex = (int)/*64*/outlineView.clickedRow ();
 	if (rowIndex == -1) rowIndex = (int)/*64*/outlineView.selectedRow ();
 	if (rowIndex != -1) {
 		if ((style & SWT.CHECK) != 0) {
@@ -2691,7 +2691,7 @@ boolean sendMouseEvent(NSEvent nsEvent, int type, boolean send) {
 	if (type == SWT.DragDetect) {
 		dragDetected = true;
 	} else if (type == SWT.MouseUp) {
-		/* 
+		/*
 		 * This code path handles the case of an unmodified click on an already-selected row.
 		 * To keep the order of events correct, deselect the other selected items and send the
 		 * selection event before MouseUp is sent. Ignore the next selection event.
@@ -2708,7 +2708,7 @@ boolean sendMouseEvent(NSEvent nsEvent, int type, boolean send) {
 				widget.deselectRow (indexBuffer[i]);
 				ignoreSelect = false;
 			}
-			
+
 			Event event = new Event ();
 			id itemID = widget.itemAtRow (selectedRowIndex);
 			if (itemID != null) {
@@ -2723,7 +2723,7 @@ boolean sendMouseEvent(NSEvent nsEvent, int type, boolean send) {
 		}
 		dragDetected = false;
 	}
-	
+
 	return super.sendMouseEvent (nsEvent, type, send);
 }
 
@@ -2765,7 +2765,7 @@ void setBackgroundColor(NSColor nsColor) {
 }
 
 /**
- * Sets the order that the items in the receiver should 
+ * Sets the order that the items in the receiver should
  * be displayed in to the given argument which is described
  * in terms of the zero-relative ordering of when the items
  * were added.
@@ -2780,12 +2780,12 @@ void setBackgroundColor(NSColor nsColor) {
  *    <li>ERROR_NULL_ARGUMENT - if the item order is null</li>
  *    <li>ERROR_INVALID_ARGUMENT - if the item order is not the same length as the number of items</li>
  * </ul>
- * 
+ *
  * @see Tree#getColumnOrder()
  * @see TreeColumn#getMoveable()
  * @see TreeColumn#setMoveable(boolean)
  * @see SWT#Move
- * 
+ *
  * @since 3.2
  */
 public void setColumnOrder (int [] order) {
@@ -2848,7 +2848,7 @@ void setFont (NSFont font) {
 
 /**
  * Marks the receiver's header as visible if the argument is <code>true</code>,
- * and marks it invisible otherwise. 
+ * and marks it invisible otherwise.
  * <p>
  * If one of the receiver's ancestors is not visible or some
  * other condition makes the receiver not visible, marking
@@ -2861,7 +2861,7 @@ void setFont (NSFont font) {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 3.1
  */
 public void setHeaderVisible (boolean show) {
@@ -2982,7 +2982,7 @@ void setItemHeight (Image image, NSFont font, boolean set) {
 
 /**
  * Marks the receiver's lines as visible if the argument is <code>true</code>,
- * and marks it invisible otherwise. Note that some platforms draw 
+ * and marks it invisible otherwise. Note that some platforms draw
  * grid lines while others may draw alternating row colors.
  * <p>
  * If one of the receiver's ancestors is not visible or some
@@ -2996,7 +2996,7 @@ void setItemHeight (Image image, NSFont font, boolean set) {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 3.1
  */
 public void setLinesVisible (boolean show) {
@@ -3080,7 +3080,7 @@ void setShouldScrollClipView (long /*int*/ id, long /*int*/ sel, boolean shouldS
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 3.2
  */
 public void setSelection (TreeItem item) {
@@ -3124,7 +3124,7 @@ public void setSelection (TreeItem [] items) {
 		for (int i = 0; i < items.length; i++) {
 			TreeItem item = items[i];
 			if (item != null) {
-				showItem(item, true);			
+				showItem(item, true);
 				break;
 			}
 		}
@@ -3133,19 +3133,19 @@ public void setSelection (TreeItem [] items) {
 
 /**
  * Sets the column used by the sort indicator for the receiver. A null
- * value will clear the sort indicator.  The current sort column is cleared 
+ * value will clear the sort indicator.  The current sort column is cleared
  * before the new column is set.
  *
  * @param column the column used by the sort indicator or <code>null</code>
- * 
+ *
  * @exception IllegalArgumentException <ul>
- *    <li>ERROR_INVALID_ARGUMENT - if the column is disposed</li> 
+ *    <li>ERROR_INVALID_ARGUMENT - if the column is disposed</li>
  * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 3.2
  */
 public void setSortColumn (TreeColumn column) {
@@ -3156,16 +3156,16 @@ public void setSortColumn (TreeColumn column) {
 }
 
 /**
- * Sets the direction of the sort indicator for the receiver. The value 
+ * Sets the direction of the sort indicator for the receiver. The value
  * can be one of <code>UP</code>, <code>DOWN</code> or <code>NONE</code>.
  *
- * @param direction the direction of the sort indicator 
+ * @param direction the direction of the sort indicator
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 3.2
  */
 public void setSortDirection  (int direction) {
@@ -3210,7 +3210,7 @@ void setSort (TreeColumn column, int direction) {
  * </ul>
  *
  * @see Tree#getTopItem()
- * 
+ *
  * @since 2.1
  */
 public void setTopItem (TreeItem item) {

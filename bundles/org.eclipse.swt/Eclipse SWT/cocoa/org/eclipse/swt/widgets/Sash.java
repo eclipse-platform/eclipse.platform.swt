@@ -44,14 +44,14 @@ public class Sash extends Control {
 	private final static int INCREMENT = 1;
 	private final static int PAGE_INCREMENT = 9;
 	NSArray accessibilityAttributes = null;
-	
+
 /**
  * Constructs a new instance of this class given its parent
  * and a style value describing its behavior and appearance.
  * <p>
  * The style value is either one of the style constants defined in
  * class <code>SWT</code> which is applicable to instances of this
- * class, or must be built by <em>bitwise OR</em>'ing together 
+ * class, or must be built by <em>bitwise OR</em>'ing together
  * (that is, using the <code>int</code> "|" operator) two or more
  * of those <code>SWT</code> style constants. The class description
  * lists the style constants that are applicable to the class.
@@ -121,7 +121,7 @@ long /*int*/ accessibilityAttributeNames(long /*int*/ id, long /*int*/ sel) {
 		accessibilityAttributes = ourAttributes;
 		accessibilityAttributes.retain();
 	}
-	
+
 	return accessibilityAttributes.id;
 }
 
@@ -129,10 +129,10 @@ long /*int*/ accessibilityAttributeNames(long /*int*/ id, long /*int*/ sel) {
 long /*int*/ accessibilityAttributeValue(long /*int*/ id, long /*int*/ sel, long /*int*/ arg0) {
 	long /*int*/ returnValue = 0;
 	NSString attributeName = new NSString(arg0);
-	
+
 	if (accessible != null) {
 		id returnObject = accessible.internal_accessibilityAttributeValue(attributeName, ACC.CHILDID_SELF);
-		
+
 		if (returnObject != null) returnValue = returnObject.id;
 	}
 
@@ -174,8 +174,8 @@ long /*int*/ accessibilityAttributeValue(long /*int*/ id, long /*int*/ sel, long
 				}
 			}
 		}
-		
-		if (nextView != null) 
+
+		if (nextView != null)
 			return NSArray.arrayWithObject(nextView.view).id;
 		else
 			return NSArray.array().id;
@@ -190,8 +190,8 @@ long /*int*/ accessibilityAttributeValue(long /*int*/ id, long /*int*/ sel, long
 				}
 			}
 		}
-		
-		if (nextView != null) 
+
+		if (nextView != null)
 			return NSArray.arrayWithObject(nextView.view).id;
 		else
 			return NSArray.array().id;
@@ -202,7 +202,7 @@ long /*int*/ accessibilityAttributeValue(long /*int*/ id, long /*int*/ sel, long
 
 @Override
 boolean accessibilityIsIgnored(long /*int*/ id, long /*int*/ sel) {
-	return false;	
+	return false;
 }
 
 /**
@@ -314,7 +314,7 @@ boolean sendKeyEvent(NSEvent nsEvent, int type) {
 					if (keyCode == 123 || keyCode  == 124) break;
 					yChange = keyCode == 126 ? -stepSize : stepSize;
 				}
-				
+
 				Rectangle bounds = getBounds ();
 				int width = bounds.width, height = bounds.height;
 				Rectangle parentBounds = parent.getBounds ();

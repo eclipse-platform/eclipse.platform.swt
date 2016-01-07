@@ -151,7 +151,7 @@ int createBaseWindow (nsIBaseWindow baseWindow) {
 	/*
 	* Feature of Mozilla on OSX.  Mozilla replaces the OSX application menu whenever
 	* a browser's base window is created.  The workaround is to restore the previous
-	* menu after creating the base window. 
+	* menu after creating the base window.
 	*/
 	NSApplication application = NSApplication.sharedApplication ();
 	NSMenu mainMenu = application.mainMenu ();
@@ -198,7 +198,7 @@ void handleFocus () {
 			eventShell = null;
 			listener = null;
 		}
-	
+
 	};
 	eventShell = browser.getShell ();
 	eventShell.getDisplay ().addFilter (SWT.FocusIn, listener);

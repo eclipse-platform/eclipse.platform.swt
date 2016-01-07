@@ -18,7 +18,7 @@ import org.eclipse.swt.events.*;
 
 /**
  * Instances of this class represent a selectable user interface object
- * that issues notification when pressed and released. 
+ * that issues notification when pressed and released.
  * <dl>
  * <dt><b>Styles:</b></dt>
  * <dd>CHECK, CASCADE, PUSH, RADIO, SEPARATOR</dd>
@@ -51,7 +51,7 @@ public class MenuItem extends Item {
  * <p>
  * The style value is either one of the style constants defined in
  * class <code>SWT</code> which is applicable to instances of this
- * class, or must be built by <em>bitwise OR</em>'ing together 
+ * class, or must be built by <em>bitwise OR</em>'ing together
  * (that is, using the <code>int</code> "|" operator) two or more
  * of those <code>SWT</code> style constants. The class description
  * lists the style constants that are applicable to the class.
@@ -91,7 +91,7 @@ public MenuItem (Menu parent, int style) {
  * <p>
  * The style value is either one of the style constants defined in
  * class <code>SWT</code> which is applicable to instances of this
- * class, or must be built by <em>bitwise OR</em>'ing together 
+ * class, or must be built by <em>bitwise OR</em>'ing together
  * (that is, using the <code>int</code> "|" operator) two or more
  * of those <code>SWT</code> style constants. The class description
  * lists the style constants that are applicable to the class.
@@ -128,7 +128,7 @@ public MenuItem (Menu parent, int style, int index) {
 MenuItem (Menu parent, NSMenuItem nsMenuItem) {
 	super(parent, 0);
 	this.parent = parent;
-	this.nsItem = nsMenuItem;	
+	this.nsItem = nsMenuItem;
 	parent.createItem(this, parent.getItemCount ());
 }
 
@@ -195,11 +195,11 @@ public void addHelpListener (HelpListener listener) {
  * </p>
  * <p>
  * When the <code>SWT.RADIO</code> style bit is set, the <code>widgetSelected</code> method is
- * also called when the receiver loses selection because another item in the same radio group 
+ * also called when the receiver loses selection because another item in the same radio group
  * was selected by the user. During <code>widgetSelected</code> the application can use
  * <code>getSelection()</code> to determine the current selected state of the receiver.
  * </p>
- * 
+ *
  * @param listener the listener which should be notified when the menu item is selected by the user
  *
  * @exception IllegalArgumentException <ul>
@@ -282,7 +282,7 @@ public int getAccelerator () {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @see #isEnabled
  */
 public boolean getEnabled () {
@@ -299,7 +299,7 @@ public boolean getEnabled () {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 3.7
  */
 public int getID () {
@@ -310,7 +310,7 @@ public int getID () {
 /**
  * Returns the receiver's cascade menu if it has one or null
  * if it does not. Only <code>CASCADE</code> menu items can have
- * a pull down menu. The sequence of key strokes, button presses 
+ * a pull down menu. The sequence of key strokes, button presses
  * and/or button releases that are used to request a pull down
  * menu is platform specific.
  *
@@ -396,7 +396,7 @@ public String getToolTipText () {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @see #getEnabled
  */
 public boolean isEnabled () {
@@ -413,7 +413,7 @@ int keyChar (int key) {
 		case SWT.LF: return OS.NSNewlineCharacter;
 		case SWT.TAB: return OS.NSTabCharacter;
 //		case ' ': return OS.kMenuBlankGlyph;
-//		case ' ': return OS.kMenuSpaceGlyph;		
+//		case ' ': return OS.kMenuSpaceGlyph;
 		case SWT.ALT: return 0x2325;
 		case SWT.SHIFT: return 0x21E7;
 		case SWT.CONTROL: return 0xF2303;
@@ -553,7 +553,7 @@ public void removeSelectionListener (SelectionListener listener) {
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (eventTable == null) return;
 	eventTable.unhook (SWT.Selection, listener);
-	eventTable.unhook (SWT.DefaultSelection,listener);	
+	eventTable.unhook (SWT.DefaultSelection,listener);
 }
 
 @Override
@@ -672,7 +672,7 @@ public void setEnabled (boolean enabled) {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  *    <li>ERROR_INVALID_ARGUMENT - if called with an negative-valued argument.</li>
  * </ul>
- * 
+ *
  * @since 3.7
  */
 public void setID (int id) {
@@ -746,13 +746,13 @@ public void setMenu (Menu menu) {
 		if (parent.parent != null && menu.parent != parent.parent) {
 			error (SWT.ERROR_INVALID_PARENT);
 		}
-	} 
+	}
 	/* Assign the new menu */
 	Menu oldMenu = this.menu;
 	if (oldMenu == menu) return;
 	if (oldMenu != null) oldMenu.cascade = null;
 	this.menu = menu;
-	
+
 	/* Update the menu in the OS */
 	if (menu == null) {
 		NSMenu emptyMenu = createEmptyMenu ();
@@ -764,7 +764,7 @@ public void setMenu (Menu menu) {
 		menu.cascade = this;
 		nsItem.setSubmenu (menu.nsMenu);
 	}
-	
+
 	if (menu != null) {
 		nsItem.setTarget(null);
 		nsItem.setAction(0);
@@ -829,7 +829,7 @@ public void setSelection (boolean selected) {
  * accelerator key sequence. The accelerator key sequence
  * is installed using #setAccelerator.
  * </p>
- * 
+ *
  * @param string the new text
  *
  * @exception IllegalArgumentException <ul>
@@ -839,7 +839,7 @@ public void setSelection (boolean selected) {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @see #setAccelerator
  */
 @Override
@@ -861,7 +861,7 @@ public void setText (String string) {
  * causing no tool tip text to be shown.
  * <p>
  * The mnemonic indicator (character '&amp;') is not displayed in a tool tip.
- * To display a single '&amp;' in the tool tip, the character '&amp;' can be 
+ * To display a single '&amp;' in the tool tip, the character '&amp;' can be
  * escaped by doubling it in the string.
  * </p>
  * <p>
@@ -893,7 +893,7 @@ public void setToolTipText (String toolTip) {
     int length = fixMnemonic (chars);
     nsItem.setToolTip (NSString.stringWithCharacters (chars, length));
 }
-	
+
 void updateText () {
 	if (isDisposed() || parent.isDisposed()) return;
 	char [] buffer = new char [text.length ()];
@@ -929,7 +929,7 @@ void updateText () {
 		 * Feature in Cocoa.  Setting the attributed title on an NSMenuItem
 		 * also sets the title, but clearing the attributed title does not
 		 * clear the title.  The fix is to explicitly set the title to an
-		 * empty string in this case.  
+		 * empty string in this case.
 		 */
 		if (text.length() == 0) nsItem.setTitle(NSString.string());
 		attribStr.release();

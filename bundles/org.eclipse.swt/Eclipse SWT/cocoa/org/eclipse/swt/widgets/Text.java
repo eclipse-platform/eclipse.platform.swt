@@ -62,7 +62,7 @@ public class Text extends Scrollable {
 	NSRange selectionRange;
 	id targetSearch, targetCancel;
 	long /*int*/ actionSearch, actionCancel;
-	
+
 	/**
 	* The maximum number of characters that can be entered
 	* into a text widget.
@@ -72,7 +72,7 @@ public class Text extends Scrollable {
 	* </p>
 	*/
 	public static final int LIMIT;
-	
+
 	/**
 	* The delimiter used by multi-line text widgets.  When text
 	* is queried and from the widget, it will be delimited using
@@ -97,7 +97,7 @@ public class Text extends Scrollable {
  * <p>
  * The style value is either one of the style constants defined in
  * class <code>SWT</code> which is applicable to instances of this
- * class, or must be built by <em>bitwise OR</em>'ing together 
+ * class, or must be built by <em>bitwise OR</em>'ing together
  * (that is, using the <code>int</code> "|" operator) two or more
  * of those <code>SWT</code> style constants. The class description
  * lists the style constants that are applicable to the class.
@@ -194,11 +194,11 @@ public void addModifyListener (ModifyListener listener) {
  * Adds a segment listener.
  * <p>
  * A <code>SegmentEvent</code> is sent whenever text content is being modified or
- * a segment listener is added or removed. You can 
+ * a segment listener is added or removed. You can
  * customize the appearance of text by indicating certain characters to be inserted
  * at certain text offsets. This may be used for bidi purposes, e.g. when
  * adjacent segments of right-to-left text should not be reordered relative to
- * each other. 
+ * each other.
  * E.g., multiple Java string literals in a right-to-left language
  * should generally remain in logical order to each other, that is, the
  * way they are stored.
@@ -221,7 +221,7 @@ public void addModifyListener (ModifyListener listener) {
  * @see SegmentEvent
  * @see SegmentListener
  * @see #removeSegmentListener
- * 
+ *
  * @since 3.8
  */
 public void addSegmentListener (SegmentListener listener) {
@@ -240,7 +240,7 @@ public void addSegmentListener (SegmentListener listener) {
  * <code>widgetDefaultSelected</code> is typically called when ENTER is pressed in a single-line text,
  * or when ENTER is pressed in a search text. If the receiver has the <code>SWT.SEARCH | SWT.ICON_CANCEL</code> style
  * and the user cancels the search, the event object detail field contains the value <code>SWT.ICON_CANCEL</code>.
- * Likewise, if the receiver has the <code>SWT.ICON_SEARCH</code> style and the icon search is selected, the 
+ * Likewise, if the receiver has the <code>SWT.ICON_SEARCH</code> style and the icon search is selected, the
  * event object detail field contains the value <code>SWT.ICON_SEARCH</code>.
  * </p>
  *
@@ -351,10 +351,10 @@ static int checkStyle (int style) {
 	if ((style & SWT.SEARCH) != 0) {
 		style |= SWT.SINGLE | SWT.BORDER;
 		style &= ~SWT.PASSWORD;
-		/* 
+		/*
 		* NOTE: ICON_CANCEL has the same value as H_SCROLL and
 		* ICON_SEARCH has the same value as V_SCROLL so they are
-		* cleared because SWT.SINGLE is set. 
+		* cleared because SWT.SINGLE is set.
 		*/
 	}
 	if ((style & SWT.SINGLE) != 0 && (style & SWT.MULTI) != 0) {
@@ -383,7 +383,7 @@ static int checkStyle (int style) {
 public void clearSelection () {
 	checkWidget ();
 	Point selection = getSelection ();
-	setSelection (selection.x);	
+	setSelection (selection.x);
 }
 
 @Override
@@ -524,10 +524,10 @@ void createHandle () {
 			widget.setFocusRingType (OS.NSFocusRingTypeNone);
 			widget.setBordered (false);
 		}
-		/* 
+		/*
 		 * Bug in Cocoa: On OSX 10.10, setting the alignment on the search field
 		 * to NSLeftTextAlignment causes the text to disappear on Focus Out.
-		 * Fix is to use NSJustifiedTextAlignment instead, since for 
+		 * Fix is to use NSJustifiedTextAlignment instead, since for
 		 * a single line of text, justified has the same effect as left aligned.
 		 */
 		int align = ((style & SWT.SEARCH) != 0) ? OS.NSJustifiedTextAlignment : OS.NSLeftTextAlignment;
@@ -547,12 +547,12 @@ void createHandle () {
 		scrollWidget.setHasHorizontalScroller ((style & SWT.HORIZONTAL) != 0);
 		scrollWidget.setAutoresizesSubviews (true);
 		if ((style & SWT.BORDER) != 0) scrollWidget.setBorderType (OS.NSBezelBorder);
-		
+
 		NSTextView widget = (NSTextView) new SWTTextView ().alloc ();
 		widget.init ();
 		widget.setEditable ((style & SWT.READ_ONLY) == 0);
 		widget.setAllowsUndo(true);
-		
+
 		NSSize size = new NSSize ();
 		size.width = size.height = Float.MAX_VALUE;
 		widget.setMaxSize (size);
@@ -668,7 +668,7 @@ Color defaultForeground () {
 @Override
 void deregister() {
 	super.deregister();
-	
+
 	if ((style & SWT.SINGLE) != 0) {
 		display.removeWidget(((NSControl)view).cell());
 	}
@@ -718,7 +718,7 @@ boolean dragDetect (int x, int y, boolean filter, boolean [] consume) {
 @Override
 void enableWidget(boolean enabled) {
 	super.enableWidget(enabled);
-	
+
 	if ((style & SWT.MULTI) != 0) {
 		setForeground(this.foreground);
 	}
@@ -836,7 +836,7 @@ public int getCharCount () {
  * default action of the text widget when the user
  * double clicks.
  * </p>
- * 
+ *
  * @return whether or not double click is enabled
  *
  * @exception SWTException <ul>
@@ -856,14 +856,14 @@ public boolean getDoubleClickEnabled () {
  * displayed when the user enters text or the
  * text is changed by the programmer.
  * </p>
- * 
+ *
  * @return the echo character
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @see #setEchoChar
  */
 public char getEchoChar () {
@@ -875,7 +875,7 @@ public char getEchoChar () {
  * Returns the editable state.
  *
  * @return whether or not the receiver is editable
- * 
+ *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
@@ -978,7 +978,7 @@ public int getLineCount () {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @see #DELIMITER
  */
 public String getLineDelimiter () {
@@ -1017,12 +1017,12 @@ public int getLineHeight () {
  * constants <code>SWT.LEFT_TO_RIGHT</code> or <code>SWT.RIGHT_TO_LEFT</code>.
  *
  * @return the orientation style
- * 
+ *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 2.1.2
  */
 @Override
@@ -1037,14 +1037,14 @@ public int getOrientation () {
  * <p>
  * Typically this is used in conjunction with <code>SWT.SEARCH</code>.
  * </p>
- * 
+ *
  * @return the widget message
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 3.3
  */
 public String getMessage () {
@@ -1061,7 +1061,7 @@ long /*int*/ getPosition (long /*int*/ x, long /*int*/ y) {
 		viewLocation.y = y;
 		return widget.characterIndexForInsertionAtPoint(viewLocation);
 	} else {
-		//TODO 
+		//TODO
 		return 0;
 	}
 }
@@ -1124,7 +1124,7 @@ public int getSelectionCount () {
  * Gets the selected text, or an empty string if there is no current selection.
  *
  * @return the selected text
- * 
+ *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
@@ -1240,7 +1240,7 @@ public String getText (int start, int end) {
  * However, the text can't be protected if an {@link SWT#Segments} or
  * {@link SWT#Verify} listener has been added to the widget.
  * </p>
- * 
+ *
  * @return a character array that contains the widget's text
  *
  * @exception SWTException <ul>
@@ -1268,19 +1268,19 @@ public char[] getTextChars () {
 }
 
 /**
- * Returns the maximum number of characters that the receiver is capable of holding. 
+ * Returns the maximum number of characters that the receiver is capable of holding.
  * <p>
  * If this has not been changed by <code>setTextLimit()</code>,
  * it will be the constant <code>Text.LIMIT</code>.
  * </p>
- * 
+ *
  * @return the text limit
- * 
+ *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @see #LIMIT
  */
 public int getTextLimit () {
@@ -1491,7 +1491,7 @@ public void paste () {
 @Override
 void register() {
 	super.register();
-	
+
 	if ((style & SWT.SINGLE) != 0) {
 		display.addWidget(((NSControl)view).cell(), this);
 	}
@@ -1547,7 +1547,7 @@ public void removeModifyListener (ModifyListener listener) {
  * @see SegmentEvent
  * @see SegmentListener
  * @see #addSegmentListener
- * 
+ *
  * @since 3.8
  */
 public void removeSegmentListener (SegmentListener listener) {
@@ -1664,7 +1664,7 @@ boolean sendKeyEvent (int type, Event event) {
 	if (type != SWT.KeyDown) return result;
 	if ((event.stateMask & SWT.COMMAND) != 0) {
 		switch (event.keyCode) {
-			case 'z': 
+			case 'z':
 				NSUndoManager undoManager = view.undoManager();
 				if (undoManager == null && (style & SWT.SINGLE) != 0) {
 					NSText fieldEditor = ((NSTextField) view).currentEditor ();
@@ -1740,7 +1740,7 @@ void setBackgroundImage(NSImage image) {
  * Note: This operation is a hint and is not supported on
  * platforms that do not have this concept.
  * </p>
- * 
+ *
  * @param doubleClick the new double click flag
  *
  * @exception SWTException <ul>
@@ -1898,12 +1898,12 @@ void setForeground (double /*float*/ [] color) {
  * </p>
  *
  * @param orientation new orientation style
- * 
+ *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 2.1.2
  */
 @Override
@@ -1929,7 +1929,7 @@ void setOrientation () {
  * <p>
  * Typically this is used in conjunction with <code>SWT.SEARCH</code>.
  * </p>
- * 
+ *
  * @param message the new message
  *
  * @exception IllegalArgumentException <ul>
@@ -1939,7 +1939,7 @@ void setOrientation () {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 3.3
  */
 public void setMessage (String message) {
@@ -2222,7 +2222,7 @@ public void setTextChars (char[] text) {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @see #LIMIT
  */
 public void setTextLimit (int limit) {
@@ -2306,7 +2306,7 @@ boolean shouldChangeTextInRange_replacementString(long /*int*/ id, long /*int*/ 
  * in the receiver, this method simply returns.  Otherwise,
  * lines are scrolled until the selection is visible.
  * </p>
- * 
+ *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>

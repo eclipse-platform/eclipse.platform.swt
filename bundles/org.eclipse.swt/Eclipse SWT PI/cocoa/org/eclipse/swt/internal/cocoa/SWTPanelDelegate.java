@@ -15,7 +15,7 @@ public class SWTPanelDelegate extends NSObject {
 public SWTPanelDelegate() {
 	super(0);
 }
-	
+
 public SWTPanelDelegate(long /*int*/ id) {
 	super(id);
 }

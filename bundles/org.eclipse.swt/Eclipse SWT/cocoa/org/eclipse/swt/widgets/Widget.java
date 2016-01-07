@@ -16,7 +16,7 @@ import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.cocoa.*;
 
 /**
- * This class is the abstract superclass of all user interface objects.  
+ * This class is the abstract superclass of all user interface objects.
  * Widgets are created, disposed and issue notification to listeners
  * when events occur which affect them.
  * <dl>
@@ -63,19 +63,19 @@ public abstract class Widget {
 	static final int IGNORE_WHEEL     = 1 << 9;
 	static final int PARENT_BACKGROUND = 1 << 10;
 	static final int THEME_BACKGROUND = 1 << 11;
-	
+
 	/* A layout was requested on this widget */
 	static final int LAYOUT_NEEDED	= 1<<12;
-	
+
 	/* The preferred size of a child has changed */
 	static final int LAYOUT_CHANGED = 1<<13;
-	
+
 	/* A layout was requested in this widget hierachy */
 	static final int LAYOUT_CHILD = 1<<14;
 
 	/* More global state flags */
 	static final int RELEASED = 1<<15;
-	static final int DISPOSE_SENT = 1<<16;	
+	static final int DISPOSE_SENT = 1<<16;
 	static final int FOREIGN_HANDLE = 1<<17;
 	static final int DRAG_DETECT = 1<<18;
 	static final int RESIZING = 1<<19;
@@ -84,15 +84,15 @@ public abstract class Widget {
 	static final int WEBKIT_EVENTS_FIX = 1<<20;
 	static final String WEBKIT_EVENTS_FIX_KEY = "org.eclipse.swt.internal.webKitEventsFix"; //$NON-NLS-1$
 	static final String GLCONTEXT_KEY = "org.eclipse.swt.internal.cocoa.glcontext"; //$NON-NLS-1$
-	
+
 	static final String IS_ACTIVE = "org.eclipse.swt.internal.isActive"; //$NON-NLS-1$
 
 	/* Notify of the opportunity to skin this widget */
 	static final int SKIN_NEEDED = 1<<21;
-	
+
 	/* Bidi "auto" text direction */
 	static final int HAS_AUTO_DIRECTION = 0;
-	
+
 	/* Bidi flag and for auto text direction */
 	static final int AUTO_TEXT_DIRECTION = SWT.LEFT_TO_RIGHT | SWT.RIGHT_TO_LEFT;
 
@@ -110,7 +110,7 @@ Widget () {
  * <p>
  * The style value is either one of the style constants defined in
  * class <code>SWT</code> which is applicable to instances of this
- * class, or must be built by <em>bitwise OR</em>'ing together 
+ * class, or must be built by <em>bitwise OR</em>'ing together
  * (that is, using the <code>int</code> "|" operator) two or more
  * of those <code>SWT</code> style constants. The class description
  * lists the style constants that are applicable to the class.
@@ -382,14 +382,14 @@ void becomeKeyWindow (long /*int*/ id, long /*int*/ sel) {
 }
 
 /**
- * Marks the widget to be skinned. 
+ * Marks the widget to be skinned.
  * <p>
  * The skin event is sent to the receiver's display when appropriate (usually before the next event
  * is handled). Widgets are automatically marked for skinning upon creation as well as when its skin
- * id or class changes. The skin id and/or class can be changed by calling <code>Display.setData(String, Object)</code> 
- * with the keys SWT.SKIN_ID and/or SWT.SKIN_CLASS. Once the skin event is sent to a widget, it 
- * will not be sent again unless <code>reskin(int)</code> is called on the widget or on an ancestor 
- * while specifying the <code>SWT.ALL</code> flag.  
+ * id or class changes. The skin id and/or class can be changed by calling <code>Display.setData(String, Object)</code>
+ * with the keys SWT.SKIN_ID and/or SWT.SKIN_CLASS. Once the skin event is sent to a widget, it
+ * will not be sent again unless <code>reskin(int)</code> is called on the widget or on an ancestor
+ * while specifying the <code>SWT.ALL</code> flag.
  * </p>
  * <p>
  * The parameter <code>flags</code> may be either:
@@ -401,8 +401,8 @@ void becomeKeyWindow (long /*int*/ id, long /*int*/ sel) {
  * </dl>
  * </p>
  * @param flags the flags specifying how to reskin
- * 
- * @exception SWTException 
+ *
+ * @exception SWTException
  * <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
@@ -415,7 +415,7 @@ public void reskin (int flags) {
 	if ((flags & SWT.ALL) != 0) reskinChildren (flags);
 }
 
-void reskinChildren (int flags) {	
+void reskinChildren (int flags) {
 }
 
 void reskinWidget() {
@@ -531,14 +531,14 @@ void checkParent (Widget parent) {
 /**
  * Checks that this class can be subclassed.
  * <p>
- * The SWT class library is intended to be subclassed 
- * only at specific, controlled points (most notably, 
+ * The SWT class library is intended to be subclassed
+ * only at specific, controlled points (most notably,
  * <code>Composite</code> and <code>Canvas</code> when
  * implementing new widgets). This method enforces this
  * rule unless it is overridden.
  * </p><p>
  * <em>IMPORTANT:</em> By providing an implementation of this
- * method that allows a subclass of a class which does not 
+ * method that allows a subclass of a class which does not
  * normally allow subclassing to be created, the implementer
  * agrees to be fully responsible for the fact that any such
  * subclass will likely fail between SWT releases and will be
@@ -569,7 +569,7 @@ protected void checkSubclass () {
  * widget implementors to enforce the standard SWT invariants.
  * <p>
  * Currently, it is an error to invoke any method (other than
- * <code>isDisposed()</code>) on a widget that has had its 
+ * <code>isDisposed()</code>) on a widget that has had its
  * <code>dispose()</code> method called. It is also an error
  * to call widget methods from any thread that is different
  * from the thread that created the widget.
@@ -626,7 +626,7 @@ void createWidget () {
 	setOrientation();
 	register ();
 }
-	
+
 void comboBoxSelectionDidChange(long /*int*/ id, long /*int*/ sel, long /*int*/ notification) {
 }
 
@@ -757,7 +757,7 @@ void drawRect (long /*int*/ id, long /*int*/ sel, NSRect rect) {
 	super_struct.super_class = OS.objc_msgSend(id, OS.sel_superclass);
 	OS.objc_msgSendSuper(super_struct, sel, rect);
 	if (!isDisposed()) {
-		/* 
+		/*
 		* Feature in Cocoa. There are widgets that draw outside of the UI thread,
 		* such as the progress bar and default button.  The fix is to draw the
 		* widget but not send paint events.
@@ -843,7 +843,7 @@ NSRect focusRingMaskBoundsForFrame(long /*int*/ id, long /*int*/ sel, NSRect cel
  * Returns the application defined widget data associated
  * with the receiver, or null if it has not been set. The
  * <em>widget data</em> is a single, unnamed field that is
- * stored with every widget. 
+ * stored with every widget.
  * <p>
  * Applications may put arbitrary objects in this field. If
  * the object stored in the widget data needs to be notified
@@ -929,8 +929,8 @@ boolean getDrawing () {
 }
 
 /**
- * Returns an array of listeners who will be notified when an event 
- * of the given type occurs. The event type is one of the event constants 
+ * Returns an array of listeners who will be notified when an event
+ * of the given type occurs. The event type is one of the event constants
  * defined in class <code>SWT</code>.
  *
  * @param eventType the type of event to listen for
@@ -946,7 +946,7 @@ boolean getDrawing () {
  * @see #addListener(int, Listener)
  * @see #removeListener(int, Listener)
  * @see #notifyListeners
- * 
+ *
  * @since 3.4
  */
 public Listener[] getListeners (int eventType) {
@@ -1002,7 +1002,7 @@ NSRect headerRectOfColumn (long /*int*/ id, long /*int*/ sel, long /*int*/ colum
 void helpRequested(long /*int*/ id, long /*int*/ sel, long /*int*/ theEvent) {
 }
 
-void highlightSelectionInClipRect(long /*int*/ id, long /*int*/ sel, long /*int*/ rect) {	
+void highlightSelectionInClipRect(long /*int*/ id, long /*int*/ sel, long /*int*/ rect) {
 }
 
 long /*int*/ hitTest (long /*int*/ id, long /*int*/ sel, NSPoint point) {
@@ -1043,9 +1043,9 @@ boolean isActive () {
  * and <code>false</code> otherwise.
  *
  * @return <code>true</code> when the widget has auto direction and <code>false</code> otherwise
- * 
+ *
  * @see #HAS_AUTO_DIRECTION
- * 
+ *
  * @since 3.105
  */
 public boolean isAutoDirection () {
@@ -1301,7 +1301,7 @@ boolean outlineView_writeItems_toPasteboard(long /*int*/ id, long /*int*/ sel, l
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @see SWT
  * @see #addListener
  * @see #getListeners(int)
@@ -1429,7 +1429,7 @@ public void removeListener (int eventType, Listener listener) {
  *
  * @see Listener
  * @see #addListener
- * 
+ *
  * @noreference This method is not intended to be referenced by clients.
  * @nooverride This method is not intended to be re-implemented or extended by clients.
  */
@@ -1537,7 +1537,7 @@ boolean sendKeyEvent (NSEvent nsEvent, int type) {
 boolean sendKeyEvent (int type, Event event) {
 	sendEvent (type, event);
 	// widget could be disposed at this point
-	
+
 	/*
 	* It is possible (but unlikely), that application
 	* code could have disposed the widget in the key
@@ -1581,7 +1581,7 @@ void sendVerticalSelection () {
  * Sets the application defined widget data associated
  * with the receiver to be the argument. The <em>widget
  * data</em> is a single, unnamed field that is stored
- * with every widget. 
+ * with every widget.
  * <p>
  * Applications may put arbitrary objects in this field. If
  * the object stored in the widget data needs to be notified
@@ -1596,7 +1596,7 @@ void sendVerticalSelection () {
  *    <li>ERROR_WIDGET_DISPOSED - when the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - when called from the wrong thread</li>
  * </ul>
- * 
+ *
  * @see #getData()
  */
 public void setData (Object data) {
@@ -1719,7 +1719,7 @@ boolean setInputState (Event event, NSEvent nsEvent, int type) {
 	if ((modifierFlags & OS.NSShiftKeyMask) != 0) event.stateMask |= SWT.SHIFT;
 	if ((modifierFlags & OS.NSControlKeyMask) != 0) event.stateMask |= SWT.CONTROL;
 	if ((modifierFlags & OS.NSCommandKeyMask) != 0) event.stateMask |= SWT.COMMAND;
-	
+
 	int state = OS.GetCurrentEventButtonState ();
 	if ((state & 0x1) != 0) event.stateMask |= SWT.BUTTON1;
 	if ((state & 0x2) != 0) event.stateMask |= SWT.BUTTON3;
@@ -1756,7 +1756,7 @@ boolean setInputState (Event event, NSEvent nsEvent, int type) {
 			if (event.keyCode == SWT.CONTROL) event.stateMask |= SWT.CONTROL;
 			if (event.keyCode == SWT.COMMAND) event.stateMask |= SWT.COMMAND;
 			break;
-	}		
+	}
 	return true;
 }
 
@@ -1790,14 +1790,14 @@ boolean setKeyState (Event event, int type, NSEvent nsEvent) {
 				long /*int*/ uchrPtr = 0;
 				long /*int*/ currentKbd = OS.TISCopyCurrentKeyboardInputSource();
 				long /*int*/ uchrCFData = OS.TISGetInputSourceProperty(currentKbd, OS.kTISPropertyUnicodeKeyLayoutData());
-				
+
 				if (uchrCFData != 0) {
 					uchrPtr = OS.CFDataGetBytePtr(uchrCFData);
-					
+
 					if (uchrPtr != 0 && OS.CFDataGetLength(uchrCFData) > 0) {
 						long /*int*/ cgEvent = nsEvent.CGEvent();
 						long keyboardType = OS.CGEventGetIntegerValueField(cgEvent, OS.kCGKeyboardEventKeyboardType);
-						
+
 						int maxStringLength = 256;
 						char [] output = new char [maxStringLength];
 						int [] actualStringLength = new int [1];
@@ -1816,7 +1816,7 @@ boolean setKeyState (Event event, int type, NSEvent nsEvent) {
 					NSString unmodifiedChars = nsEvent.charactersIgnoringModifiers ().lowercaseString();
 					if (unmodifiedChars.length() > 0) event.keyCode = (char)unmodifiedChars.characterAtIndex(0);
 				}
-				
+
 				if (currentKbd != 0) OS.CFRelease(currentKbd);
 			}
 	}
@@ -1969,7 +1969,7 @@ boolean tableView_shouldSelectRow(long /*int*/ id, long /*int*/ sel, long /*int*
 	return true;
 }
 
-void tableView_setObjectValue_forTableColumn_row(long /*int*/ id, long /*int*/ sel, long /*int*/ aTableView, long /*int*/ anObject, long /*int*/ aTableColumn, long /*int*/ rowIndex) {	
+void tableView_setObjectValue_forTableColumn_row(long /*int*/ id, long /*int*/ sel, long /*int*/ aTableView, long /*int*/ anObject, long /*int*/ aTableColumn, long /*int*/ rowIndex) {
 }
 
 boolean tableView_shouldReorderColumn_toColumn(long /*int*/ id, long /*int*/ sel, long /*int*/ aTableView, long /*int*/ columnIndex, long /*int*/ newColumnIndex) {
@@ -2047,39 +2047,39 @@ public String toString () {
 }
 
 void touchesBeganWithEvent (long /*int*/ id, long /*int*/ sel, long /*int*/ event) {
-	callSuper(id, sel, event);	
+	callSuper(id, sel, event);
 }
 
 void touchesCancelledWithEvent (long /*int*/ id, long /*int*/ sel, long /*int*/ event) {
-	callSuper(id, sel, event);	
+	callSuper(id, sel, event);
 }
 
 void touchesEndedWithEvent (long /*int*/ id, long /*int*/ sel, long /*int*/ event) {
-	callSuper(id, sel, event);	
+	callSuper(id, sel, event);
 }
 
 void touchesMovedWithEvent (long /*int*/ id, long /*int*/ sel, long /*int*/ event) {
-	callSuper(id, sel, event);	
+	callSuper(id, sel, event);
 }
 
 void beginGestureWithEvent (long /*int*/ id, long /*int*/ sel, long /*int*/ event) {
-	callSuper(id, sel, event);	
+	callSuper(id, sel, event);
 }
 
 void endGestureWithEvent (long /*int*/ id, long /*int*/ sel, long /*int*/ event) {
-	callSuper(id, sel, event);	
+	callSuper(id, sel, event);
 }
 
 void magnifyWithEvent (long /*int*/ id, long /*int*/ sel, long /*int*/ event) {
-	callSuper(id, sel, event);	
+	callSuper(id, sel, event);
 }
 
 void rotateWithEvent(long /*int*/ id, long /*int*/ sel, long /*int*/ event) {
-	callSuper(id, sel, event);	
+	callSuper(id, sel, event);
 }
 
 void swipeWithEvent(long /*int*/ id, long /*int*/ sel, long /*int*/ event) {
-	callSuper(id, sel, event);	
+	callSuper(id, sel, event);
 }
 
 void resetCursorRects (long /*int*/ id, long /*int*/ sel) {
@@ -2112,10 +2112,10 @@ long /*int*/ view_stringForToolTip_point_userData (long /*int*/ id, long /*int*/
 	return 0;
 }
 
-void viewDidMoveToWindow(long /*int*/ id, long /*int*/ sel) {	
+void viewDidMoveToWindow(long /*int*/ id, long /*int*/ sel) {
 }
 
-void viewWillMoveToWindow(long /*int*/ id, long /*int*/ sel, long /*int*/ arg0) {	
+void viewWillMoveToWindow(long /*int*/ id, long /*int*/ sel, long /*int*/ arg0) {
 }
 
 void windowDidMove(long /*int*/ id, long /*int*/ sel, long /*int*/ notification) {

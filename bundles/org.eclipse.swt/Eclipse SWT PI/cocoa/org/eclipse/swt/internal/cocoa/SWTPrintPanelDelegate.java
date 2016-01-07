@@ -15,7 +15,7 @@ public class SWTPrintPanelDelegate extends NSObject {
 public SWTPrintPanelDelegate() {
 	super(0);
 }
-	
+
 public SWTPrintPanelDelegate(long /*int*/ id) {
 	super(id);
 }

@@ -53,7 +53,7 @@ class Relation {
 	id getTitleUIElement() {
 		id result = null;
 		for (int i = 0; i < targets.length; i++) {
-			Accessible target = targets[i];			
+			Accessible target = targets[i];
 			result = target.accessibleHandle(target);
 		}
 		return result;
@@ -62,7 +62,7 @@ class Relation {
 	id getServesAsTitleForUIElements() {
 		NSMutableArray result = NSMutableArray.arrayWithCapacity(targets.length);
 		for (int i = 0; i < targets.length; i++) {
-			Accessible target = targets[i];			
+			Accessible target = targets[i];
 			id accessibleElement = target.accessibleHandle(target);
 			result.addObject(accessibleElement);
 		}
@@ -72,7 +72,7 @@ class Relation {
 	id getLinkedUIElements() {
 		NSMutableArray result = NSMutableArray.arrayWithCapacity(targets.length);
 		for (int i = 0; i < targets.length; i++) {
-			Accessible target = targets[i];			
+			Accessible target = targets[i];
 			id accessibleElement = target.accessibleHandle(target);
 			result.addObject(accessibleElement);
 		}

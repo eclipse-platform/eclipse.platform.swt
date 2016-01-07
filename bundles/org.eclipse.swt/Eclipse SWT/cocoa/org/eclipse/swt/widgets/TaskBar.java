@@ -15,19 +15,19 @@ import org.eclipse.swt.*;
 
 /**
  * Instances of this class represent the system task bar.
- * 
+ *
  * <dl>
  * <dt><b>Styles:</b></dt>
  * <dd>(none)</dd>
  * <dt><b>Events:</b></dt>
  * <dd>(none)</dd>
  * </dl>
- * 
+ *
  * @see Display#getSystemTaskBar
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
- * 
+ *
  * @since 3.6
- * 
+ *
  * @noextend This class is not intended to be subclassed by clients.
  */
 public class TaskBar extends Widget {
@@ -110,10 +110,10 @@ public int getItemCount () {
 }
 
 /**
- * Returns the <code>TaskItem</code> for the given <code>Shell</code> or the <code>TaskItem</code> 
+ * Returns the <code>TaskItem</code> for the given <code>Shell</code> or the <code>TaskItem</code>
  * for the application if the <code>Shell</code> parameter is <code>null</code>.
  * If the requested item is not supported by the platform it returns <code>null</code>.
- * 
+ *
  * @param shell the shell for which the task item is requested, or null to request the application item
  * @return the task item for the given shell or the application
  *
@@ -142,11 +142,11 @@ public TaskItem getItem (Shell shell) {
 
 /**
  * Returns an array of <code>TaskItem</code>s which are the items
- * in the receiver. 
+ * in the receiver.
  * <p>
  * Note: This is not the actual structure used by the receiver
  * to maintain its list of items, so modifying the array will
- * not affect the receiver. 
+ * not affect the receiver.
  * </p>
  *
  * @return the items in the receiver
@@ -185,7 +185,7 @@ void releaseParent () {
 }
 
 @Override
-void reskinChildren (int flags) {	
+void reskinChildren (int flags) {
 	if (items != null) {
 		for (int i=0; i<items.length; i++) {
 			TaskItem item = items [i];

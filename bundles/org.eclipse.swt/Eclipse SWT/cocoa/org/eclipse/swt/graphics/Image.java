@@ -10,11 +10,11 @@
  *******************************************************************************/
 package org.eclipse.swt.graphics;
 
- 
+
 import org.eclipse.swt.internal.cocoa.*;
 import org.eclipse.swt.*;
 import java.io.*;
- 
+
 /**
  * Instances of this class are graphics which have been prepared
  * for display on a specific device. That is, they are ready
@@ -26,7 +26,7 @@ import java.io.*;
  * pixels are specified as being transparent when drawn. Examples
  * of file formats that support transparency are GIF and PNG.
  * </p><p>
- * There are two primary ways to use <code>Images</code>. 
+ * There are two primary ways to use <code>Images</code>.
  * The first is to load a graphic file from disk and create an
  * <code>Image</code> from it. This is done using an <code>Image</code>
  * constructor, for example:
@@ -39,8 +39,8 @@ import java.io.*;
  * SWT. It is possible to get more control over the mapping of
  * colors as the image is being created, using code of the form:
  * <pre>
- *    ImageData data = new ImageData("C:\\graphic.bmp"); 
- *    RGB[] rgbs = data.getRGBs(); 
+ *    ImageData data = new ImageData("C:\\graphic.bmp");
+ *    RGB[] rgbs = data.getRGBs();
  *    // At this point, rgbs contains specifications of all
  *    // the colors contained within this image. You may
  *    // allocate as many of these colors as you wish by
@@ -53,7 +53,7 @@ import java.io.*;
  * loading process should use the support provided in class
  * <code>ImageLoader</code>.
  * </p><p>
- * Application code must explicitly invoke the <code>Image.dispose()</code> 
+ * Application code must explicitly invoke the <code>Image.dispose()</code>
  * method to release the operating system resources managed by each instance
  * when those instances are no longer required.
  * </p>
@@ -76,11 +76,11 @@ public final class Image extends Resource implements Drawable {
 	 * within the packages provided by SWT. It is not available on all
 	 * platforms and should never be accessed from application code.
 	 * </p>
-	 * 
+	 *
 	 * @noreference This field is not intended to be referenced by clients.
 	 */
 	public int type;
-	
+
 	/**
 	 * the handle to the OS image resource
 	 * (Warning: This field is platform dependent)
@@ -90,16 +90,16 @@ public final class Image extends Resource implements Drawable {
 	 * within the packages provided by SWT. It is not available on all
 	 * platforms and should never be accessed from application code.
 	 * </p>
-	 * 
+	 *
 	 * @noreference This field is not intended to be referenced by clients.
 	 */
 	public NSImage handle;
-	
+
 	/**
 	 * specifies the transparent pixel
 	 */
 	int transparentPixel = -1;
-	
+
 	/**
 	 * The GC the image is currently selected in.
 	 */
@@ -109,22 +109,22 @@ public final class Image extends Resource implements Drawable {
 	 * The alpha data of the image.
 	 */
 	byte[] alphaData;
-	
+
 	/**
 	 * The global alpha value to be used for every pixel.
 	 */
 	int alpha = -1;
-	
+
 	/**
 	 * The width of the image.
 	 */
 	int width = -1;
-	
+
 	/**
 	 * The height of the image.
 	 */
 	int height = -1;
-	
+
 	/**
 	 * Specifies the default scanline padding.
 	 */
@@ -138,7 +138,7 @@ public final class Image extends Resource implements Drawable {
 	/**
 	 * ImageDataProvider to provide ImageData at various Zoom levels
 	 */
-	ImageDataProvider imageDataProvider;	
+	ImageDataProvider imageDataProvider;
 
 Image(Device device) {
 	super(device);
@@ -162,7 +162,7 @@ Image(Device device) {
  * images larger than 16M.
  * </p>
  * <p>
- * You must dispose the image when it is no longer required. 
+ * You must dispose the image when it is no longer required.
  * </p>
  *
  * @param device the device on which to create the image
@@ -176,7 +176,7 @@ Image(Device device) {
  * @exception SWTError <ul>
  *    <li>ERROR_NO_HANDLES if a handle could not be obtained for image creation</li>
  * </ul>
- * 
+ *
  * @see #dispose()
  */
 public Image(Device device, int width, int height) {
@@ -204,7 +204,7 @@ public Image(Device device, int width, int height) {
  * <dd>the result is a copy of srcImage which has a <em>gray scale</em> look</dd>
  * </dl>
  * <p>
- * You must dispose the image when it is no longer required. 
+ * You must dispose the image when it is no longer required.
  * </p>
  *
  * @param device the device on which to create the image
@@ -224,7 +224,7 @@ public Image(Device device, int width, int height) {
  * @exception SWTError <ul>
  *    <li>ERROR_NO_HANDLES if a handle could not be obtained for image creation</li>
  * </ul>
- * 
+ *
  * @see #dispose()
  */
 public Image(Device device, Image srcImage, int flag) {
@@ -259,7 +259,7 @@ public Image(Device device, Image srcImage, int flag) {
 			alphaData = new byte[srcImage.alphaData.length];
 			System.arraycopy(srcImage.alphaData, 0, alphaData, 0, alphaData.length);
 		}
-		
+
 		long /*int*/ srcData = srcRep.bitmapData();
 		long /*int*/ format = srcRep.bitmapFormat();
 		long /*int*/ bpp = srcRep.bitsPerPixel();
@@ -323,7 +323,7 @@ public Image(Device device, Image srcImage, int flag) {
 				}
 				break;
 			}
-			case SWT.IMAGE_GRAY: {			
+			case SWT.IMAGE_GRAY: {
 				byte[] line = new byte[(int)/*64*/bpr];
 				for (int y=0; y<height; y++) {
 					OS.memmove(line, data + (y * bpr), bpr);
@@ -366,7 +366,7 @@ public Image(Device device, Image srcImage, int flag) {
  * images larger than 16M.
  * </p>
  * <p>
- * You must dispose the image when it is no longer required. 
+ * You must dispose the image when it is no longer required.
  * </p>
  *
  * @param device the device on which to create the image
@@ -380,7 +380,7 @@ public Image(Device device, Image srcImage, int flag) {
  * @exception SWTError <ul>
  *    <li>ERROR_NO_HANDLES if a handle could not be obtained for image creation</li>
  * </ul>
- * 
+ *
  * @see #dispose()
  */
 public Image(Device device, Rectangle bounds) {
@@ -400,7 +400,7 @@ public Image(Device device, Rectangle bounds) {
  * Constructs an instance of this class from the given
  * <code>ImageData</code>.
  * <p>
- * You must dispose the image when it is no longer required. 
+ * You must dispose the image when it is no longer required.
  * </p>
  *
  * @param device the device on which to create the image
@@ -416,7 +416,7 @@ public Image(Device device, Rectangle bounds) {
  * @exception SWTError <ul>
  *    <li>ERROR_NO_HANDLES if a handle could not be obtained for image creation</li>
  * </ul>
- * 
+ *
  * @see #dispose()
  */
 public Image(Device device, ImageData data) {
@@ -432,7 +432,7 @@ public Image(Device device, ImageData data) {
 }
 
 /**
- * Constructs an instance of this class, whose type is 
+ * Constructs an instance of this class, whose type is
  * <code>SWT.ICON</code>, from the two given <code>ImageData</code>
  * objects. The two images must be the same size. Pixel transparency
  * in either image will be ignored.
@@ -443,7 +443,7 @@ public Image(Device device, ImageData data) {
  * transparent.
  * </p>
  * <p>
- * You must dispose the image when it is no longer required. 
+ * You must dispose the image when it is no longer required.
  * </p>
  *
  * @param device the device on which to create the icon
@@ -458,7 +458,7 @@ public Image(Device device, ImageData data) {
  * @exception SWTError <ul>
  *    <li>ERROR_NO_HANDLES if a handle could not be obtained for image creation</li>
  * </ul>
- * 
+ *
  * @see #dispose()
  */
 public Image(Device device, ImageData source, ImageData mask) {
@@ -490,7 +490,7 @@ public Image(Device device, ImageData source, ImageData mask) {
  * <p>
  * This constructor is provided for convenience when loading a single
  * image only. If the stream contains multiple images, only the first
- * one will be loaded. To load multiple images, use 
+ * one will be loaded. To load multiple images, use
  * <code>ImageLoader.load()</code>.
  * </p><p>
  * This constructor may be used to load a resource as follows:
@@ -512,7 +512,7 @@ public Image(Device device, ImageData source, ImageData mask) {
  *     }
  * </pre>
  * <p>
- * You must dispose the image when it is no longer required. 
+ * You must dispose the image when it is no longer required.
  * </p>
  *
  * @param device the device on which to create the image
@@ -531,7 +531,7 @@ public Image(Device device, ImageData source, ImageData mask) {
  * @exception SWTError <ul>
  *    <li>ERROR_NO_HANDLES if a handle could not be obtained for image creation</li>
  * </ul>
- * 
+ *
  * @see #dispose()
  */
 public Image(Device device, InputStream stream) {
@@ -556,7 +556,7 @@ public Image(Device device, InputStream stream) {
  * a single image only. If the specified file contains
  * multiple images, only the first one will be used.
  * <p>
- * You must dispose the image when it is no longer required. 
+ * You must dispose the image when it is no longer required.
  * </p>
  *
  * @param device the device on which to create the image
@@ -575,7 +575,7 @@ public Image(Device device, InputStream stream) {
  * @exception SWTError <ul>
  *    <li>ERROR_NO_HANDLES if a handle could not be obtained for image creation</li>
  * </ul>
- * 
+ *
  * @see #dispose()
  */
 public Image(Device device, String filename) {
@@ -712,18 +712,18 @@ void createAlpha () {
 			if ((format & OS.NSAlphaFirstBitmapFormat) != 0) {
 				for (int i=0; i<dataSize; i+=4) {
 					int pixel = ((srcData[i+1] & 0xFF) << 16) | ((srcData[i+2] & 0xFF) << 8) | (srcData[i+3] & 0xFF);
-					srcData[i] = (byte)(pixel == transparentPixel ? 0 : 0xFF); 
+					srcData[i] = (byte)(pixel == transparentPixel ? 0 : 0xFF);
 				}
 			} else {
 				for (int i=0; i<dataSize; i+=4) {
 					int pixel = ((srcData[i+0] & 0xFF) << 16) | ((srcData[i+1] & 0xFF) << 8) | (srcData[i+2] & 0xFF);
-					srcData[i] = (byte)(pixel == transparentPixel ? 0 : 0xFF); 
+					srcData[i] = (byte)(pixel == transparentPixel ? 0 : 0xFF);
 				}
 			}
 		} else if (alpha != -1) {
 			byte a = (byte)this.alpha;
 			for (int i=(format & OS.NSAlphaFirstBitmapFormat) != 0 ? 0 : 3; i<dataSize; i+=4) {
-				srcData[i] = a;				
+				srcData[i] = a;
 			}
 		} else {
 			long /*int*/ width = imageRep.pixelsWide();
@@ -862,7 +862,7 @@ public ImageData getImageData() {
 		long /*int*/ dataSize = height * bpr;
 		byte[] srcData = new byte[(int)/*64*/dataSize];
 		OS.memmove(srcData, bitmapData, dataSize);
-		
+
 		PaletteData palette;
 		if (bpp == 32 && (bitmapFormat & OS.NSAlphaFirstBitmapFormat) == 0) {
 			palette = new PaletteData(0xFF000000, 0xFF0000, 0xFF00);
@@ -918,7 +918,7 @@ public ImageData getImageData() {
 	}
 }
 
-/**	 
+/**
  * Invokes platform specific functionality to allocate a new image.
  * <p>
  * <b>IMPORTANT:</b> This method is <em>not</em> part of the public
@@ -972,8 +972,8 @@ NSBitmapImageRep getRepresentation () {
 }
 
 /**
- * Returns an integer hash code for the receiver. Any two 
- * objects that return <code>true</code> when passed to 
+ * Returns an integer hash code for the receiver. Any two
+ * objects that return <code>true</code> when passed to
  * <code>equals</code> must return the same value for this
  * method.
  *
@@ -1049,7 +1049,7 @@ private NSBitmapImageRep createRepresentaion(ImageData imageData) {
 	if (palette.isDirect) {
 		ImageData.blit(ImageData.BLIT_SRC,
 			imageData.data, imageData.depth, imageData.bytesPerLine, imageData.getByteOrder(), 0, 0, imageData.width, imageData.height, palette.redMask, palette.greenMask, palette.blueMask,
-			ImageData.ALPHA_OPAQUE, null, 0, 0, 0, 
+			ImageData.ALPHA_OPAQUE, null, 0, 0, 0,
 			buffer, 32, bpr, ImageData.MSB_FIRST, 0, 0, imageData.width, imageData.height, 0xFF0000, 0xFF00, 0xFF,
 			false, false);
 	} else {
@@ -1071,7 +1071,7 @@ private NSBitmapImageRep createRepresentaion(ImageData imageData) {
 			buffer, 32, bpr, ImageData.MSB_FIRST, 0, 0, imageData.width, imageData.height, 0xFF0000, 0xFF00, 0xFF,
 			false, false);
 	}
-	
+
 	/* Initialize transparency */
 	int transparency = imageData.getTransparencyType();
 	boolean hasAlpha = transparency != SWT.TRANSPARENCY_NONE;
@@ -1090,7 +1090,7 @@ private NSBitmapImageRep createRepresentaion(ImageData imageData) {
 					RGB rgb = rgbs[imageData.transparentPixel];
 					transRed = rgb.red;
 					transGreen = rgb.green;
-					transBlue = rgb.blue;				
+					transBlue = rgb.blue;
 				}
 			}
 			transparentPixel = transRed << 16 | transGreen << 8 | transBlue;
@@ -1113,7 +1113,7 @@ private NSBitmapImageRep createRepresentaion(ImageData imageData) {
 			this.alpha = imageData.alpha;
 			byte a = (byte)this.alpha;
 			for (int dataIndex=0; dataIndex<buffer.length; dataIndex+=4) {
-				buffer[dataIndex] = a;				
+				buffer[dataIndex] = a;
 			}
 		} else if (imageData.alphaData != null) {
 			hasAlpha = true;
@@ -1138,12 +1138,12 @@ private NSBitmapImageRep createRepresentaion(ImageData imageData) {
 void initNative(String filename) {
 	NSAutoreleasePool pool = null;
 	NSImage nativeImage = null;
-	
+
 	if (!NSThread.isMainThread()) pool = (NSAutoreleasePool) new NSAutoreleasePool().alloc().init();
 	try {
 		nativeImage = new NSImage();
 		nativeImage.alloc();
-		
+
 		// initByReferencingFile returns null if the file can't be found or is
 		// not an image.
 		nativeImage = nativeImage.initWithContentsOfFile(NSString.stringWith(filename));
@@ -1153,7 +1153,7 @@ void initNative(String filename) {
 			// that is not natively supported as well.
 			return;
 		}
-		
+
 		NSImageRep nativeRep = nativeImage.bestRepresentationForDevice(null);
 		if (!nativeRep.isKindOfClass(OS.class_NSBitmapImageRep)) {
 			return;
@@ -1161,7 +1161,7 @@ void initNative(String filename) {
 
 		width = (int)/*64*/nativeRep.pixelsWide();
 		height = (int)/*64*/nativeRep.pixelsHigh();
-		
+
 		boolean hasAlpha = nativeRep.hasAlpha();
 		int bpr = width * 4;
 		handle = (NSImage)new NSImage().alloc();
@@ -1187,7 +1187,7 @@ void initNative(String filename) {
 		nativeRep.drawInRect(rect);
 		NSGraphicsContext.static_restoreGraphicsState();
 		OS.CGContextRelease(ctx);
-		
+
 		if (hasAlpha) {
 			/* Compute the alpha values */
 			long /*int*/ bitmapBytesPerRow = width;
@@ -1202,7 +1202,7 @@ void initNative(String filename) {
 			OS.memmove(alphaData, alphaBitmapData, bitmapByteCount);
 			OS.free(alphaBitmapData);
 			OS.CGContextRelease(alphaBitmapCtx);
-			
+
 			/* Merge the alpha values with the pixels */
 			byte[] srcData = new byte[height * bpr];
 			OS.memmove(srcData, rep.bitmapData(), srcData.length);
@@ -1216,7 +1216,7 @@ void initNative(String filename) {
 				}
 			}
 			OS.memmove(rep.bitmapData(), srcData, srcData.length);
-			
+
 			// If the alpha has only 0 or 255 (-1) for alpha values, compute the transparent pixel color instead
 			// of a continuous alpha range.
 			int transparentOffset = -1, i = 0;
@@ -1232,10 +1232,10 @@ void initNative(String filename) {
 				int green = (int) (color.greenComponent() * 255);
 				int blue = (int) (color.blueComponent() * 255);
 				this.transparentPixel = (red << 16) | (green << 8) | blue;
-				
+
 				/*
 				* If the image has opaque pixels that have the same color as the transparent
-				* pixel, create an alpha image instead of using transparent pixel. 
+				* pixel, create an alpha image instead of using transparent pixel.
 				*/
 				for (int j = 0; j < srcData.length; j+=4) {
 					if (srcData [j] != 0) {
@@ -1246,10 +1246,10 @@ void initNative(String filename) {
 						}
 					}
 				}
-			} 
+			}
 			if (this.transparentPixel == -1) this.alphaData = alphaData;
 		}
-		
+
 		// For compatibility, images created from .ico files are treated as SWT.ICON format, even though
 		// they are no different than other bitmaps in Cocoa.
 		if (filename.toLowerCase().endsWith(".ico")) {
@@ -1264,7 +1264,7 @@ void initNative(String filename) {
 
 }
 
-/**	 
+/**
  * Invokes platform specific functionality to allocate a new GC handle.
  * <p>
  * <b>IMPORTANT:</b> This method is <em>not</em> part of the public
@@ -1274,9 +1274,9 @@ void initNative(String filename) {
  * application code.
  * </p>
  *
- * @param data the platform specific GC data 
+ * @param data the platform specific GC data
  * @return the platform specific GC handle
- * 
+ *
  * @noreference This method is not intended to be referenced by clients.
  */
 public long /*int*/ internal_new_GC (GCData data) {
@@ -1291,7 +1291,7 @@ public long /*int*/ internal_new_GC (GCData data) {
 
 		// Can't perform transforms on image reps with alpha.
 		imageRep.setAlpha(false);
-		
+
 		NSGraphicsContext context = NSGraphicsContext.graphicsContextWithBitmapImageRep(imageRep);
 		NSGraphicsContext flippedContext = NSGraphicsContext.graphicsContextWithGraphicsPort(context.graphicsPort(), true);
 		context = flippedContext;
@@ -1322,7 +1322,7 @@ public long /*int*/ internal_new_GC (GCData data) {
 	}
 }
 
-/**	 
+/**
  * Invokes platform specific functionality to dispose a GC handle.
  * <p>
  * <b>IMPORTANT:</b> This method is <em>not</em> part of the public
@@ -1334,7 +1334,7 @@ public long /*int*/ internal_new_GC (GCData data) {
  *
  * @param hDC the platform specific GC handle
  * @param data the platform specific GC data
- * 
+ *
  * @noreference This method is not intended to be referenced by clients.
  */
 public void internal_dispose_GC (long /*int*/ hDC, GCData data) {
@@ -1350,7 +1350,7 @@ public void internal_dispose_GC (long /*int*/ hDC, GCData data) {
 			*/
 			NSBitmapImageRep imageRep = getRepresentation();
 			imageRep.bitmapData();
-			
+
 			NSGraphicsContext contextObj = new NSGraphicsContext(context);
 			contextObj.release();
 		}

@@ -15,7 +15,7 @@ public class SWTWindowDelegate extends NSObject {
 public SWTWindowDelegate() {
 	super(0);
 }
-	
+
 public SWTWindowDelegate(long /*int*/ id) {
 	super(id);
 }

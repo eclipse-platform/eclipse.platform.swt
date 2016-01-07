@@ -24,6 +24,6 @@ public class NSRect {
 
 	@Override
 	public String toString() {
-		return "NSRect{" + x + "," + y + "," + width + "," + height + "}"; 
+		return "NSRect{" + x + "," + y + "," + width + "," + height + "}";
 	}
 }

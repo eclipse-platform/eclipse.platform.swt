@@ -21,20 +21,20 @@ import org.eclipse.swt.internal.cocoa.*;
  * Instances of this class represent the "windows"
  * which the desktop or "window manager" is managing.
  * Instances that do not have a parent (that is, they
- * are built using the constructor, which takes a 
+ * are built using the constructor, which takes a
  * <code>Display</code> as the argument) are described
  * as <em>top level</em> shells. Instances that do have
  * a parent are described as <em>secondary</em> or
  * <em>dialog</em> shells.
  * <p>
- * Instances are always displayed in one of the maximized, 
+ * Instances are always displayed in one of the maximized,
  * minimized or normal states:
  * <ul>
  * <li>
  * When an instance is marked as <em>maximized</em>, the
  * window manager will typically resize it to fill the
  * entire visible area of the display, and the instance
- * is usually put in a state where it can not be resized 
+ * is usually put in a state where it can not be resized
  * (even if it has style <code>RESIZE</code>) until it is
  * no longer maximized.
  * </li><li>
@@ -92,19 +92,19 @@ import org.eclipse.swt.internal.cocoa.*;
  * <dt><code>SHELL_TRIM</code></dt>
  * <dd>
  * the result of combining the constants which are required
- * to produce a typical application top level shell: (that 
+ * to produce a typical application top level shell: (that
  * is, <code>CLOSE | TITLE | MIN | MAX | RESIZE</code>)
  * </dd>
  * <dt><code>DIALOG_TRIM</code></dt>
  * <dd>
  * the result of combining the constants which are required
- * to produce a typical application dialog shell: (that 
+ * to produce a typical application dialog shell: (that
  * is, <code>TITLE | CLOSE | BORDER</code>)
  * </dd>
  * </dl>
  * </p>
  * <p>
- * Note: Only one of the styles APPLICATION_MODAL, MODELESS, 
+ * Note: Only one of the styles APPLICATION_MODAL, MODELESS,
  * PRIMARY_MODAL and SYSTEM_MODAL may be specified.
  * </p><p>
  * IMPORTANT: This class is <em>not</em> intended to be subclassed.
@@ -134,7 +134,7 @@ public class Shell extends Decorations {
 	ToolBar toolBar;
 	Map windowEmbedCounts;
 	MenuItem escMenuItem;
-	
+
 	static int DEFAULT_CLIENT_WIDTH = -1;
 	static int DEFAULT_CLIENT_HEIGHT = -1;
 
@@ -158,7 +158,7 @@ public Shell () {
  * <p>
  * The style value is either one of the style constants defined in
  * class <code>SWT</code> which is applicable to instances of this
- * class, or must be built by <em>bitwise OR</em>'ing together 
+ * class, or must be built by <em>bitwise OR</em>'ing together
  * (that is, using the <code>int</code> "|" operator) two or more
  * of those <code>SWT</code> style constants. The class description
  * lists the style constants that are applicable to the class.
@@ -171,7 +171,7 @@ public Shell () {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the parent</li>
  *    <li>ERROR_INVALID_SUBCLASS - if this class is not an allowed subclass</li>
  * </ul>
- * 
+ *
  * @see SWT#BORDER
  * @see SWT#CLOSE
  * @see SWT#MIN
@@ -199,7 +199,7 @@ public Shell (int style) {
  * <p>
  * Note: Currently, null can be passed in for the display argument.
  * This has the effect of creating the shell on the currently active
- * display if there is one. If there is no current display, the 
+ * display if there is one. If there is no current display, the
  * shell is created on a "default" display. <b>Passing in null as
  * the display argument is not considered to be good coding style,
  * and may not be supported in a future release of SWT.</b>
@@ -223,7 +223,7 @@ public Shell (Display display) {
  * <p>
  * The style value is either one of the style constants defined in
  * class <code>SWT</code> which is applicable to instances of this
- * class, or must be built by <em>bitwise OR</em>'ing together 
+ * class, or must be built by <em>bitwise OR</em>'ing together
  * (that is, using the <code>int</code> "|" operator) two or more
  * of those <code>SWT</code> style constants. The class description
  * lists the style constants that are applicable to the class.
@@ -231,7 +231,7 @@ public Shell (Display display) {
  * </p><p>
  * Note: Currently, null can be passed in for the display argument.
  * This has the effect of creating the shell on the currently active
- * display if there is one. If there is no current display, the 
+ * display if there is one. If there is no current display, the
  * shell is created on a "default" display. <b>Passing in null as
  * the display argument is not considered to be good coding style,
  * and may not be supported in a future release of SWT.</b>
@@ -244,7 +244,7 @@ public Shell (Display display) {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the parent</li>
  *    <li>ERROR_INVALID_SUBCLASS - if this class is not an allowed subclass</li>
  * </ul>
- * 
+ *
  * @see SWT#BORDER
  * @see SWT#CLOSE
  * @see SWT#MIN
@@ -275,7 +275,7 @@ Shell (Display display, Shell parent, int style, long /*int*/handle, boolean emb
 		error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	}
 	if (parent != null && parent.isDisposed ()) {
-		error (SWT.ERROR_INVALID_ARGUMENT);	
+		error (SWT.ERROR_INVALID_ARGUMENT);
 	}
 	if (!Display.getSheetEnabled ()) {
 		this.center = parent != null && (style & SWT.SHEET) != 0;
@@ -301,7 +301,7 @@ Shell (Display display, Shell parent, int style, long /*int*/handle, boolean emb
  * <p>
  * Note: Currently, null can be passed in for the parent.
  * This has the effect of creating the shell on the currently active
- * display if there is one. If there is no current display, the 
+ * display if there is one. If there is no current display, the
  * shell is created on a "default" display. <b>Passing in null as
  * the parent is not considered to be good coding style,
  * and may not be supported in a future release of SWT.</b>
@@ -310,7 +310,7 @@ Shell (Display display, Shell parent, int style, long /*int*/handle, boolean emb
  * @param parent a shell which will be the parent of the new instance
  *
  * @exception IllegalArgumentException <ul>
- *    <li>ERROR_INVALID_ARGUMENT - if the parent is disposed</li> 
+ *    <li>ERROR_INVALID_ARGUMENT - if the parent is disposed</li>
  * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the parent</li>
@@ -327,7 +327,7 @@ public Shell (Shell parent) {
  * <p>
  * The style value is either one of the style constants defined in
  * class <code>SWT</code> which is applicable to instances of this
- * class, or must be built by <em>bitwise OR</em>'ing together 
+ * class, or must be built by <em>bitwise OR</em>'ing together
  * (that is, using the <code>int</code> "|" operator) two or more
  * of those <code>SWT</code> style constants. The class description
  * lists the style constants that are applicable to the class.
@@ -335,7 +335,7 @@ public Shell (Shell parent) {
  * </p><p>
  * Note: Currently, null can be passed in for the parent.
  * This has the effect of creating the shell on the currently active
- * display if there is one. If there is no current display, the 
+ * display if there is one. If there is no current display, the
  * shell is created on a "default" display. <b>Passing in null as
  * the parent is not considered to be good coding style,
  * and may not be supported in a future release of SWT.</b>
@@ -345,13 +345,13 @@ public Shell (Shell parent) {
  * @param style the style of control to construct
  *
  * @exception IllegalArgumentException <ul>
- *    <li>ERROR_INVALID_ARGUMENT - if the parent is disposed</li> 
+ *    <li>ERROR_INVALID_ARGUMENT - if the parent is disposed</li>
  * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the parent</li>
  *    <li>ERROR_INVALID_SUBCLASS - if this class is not an allowed subclass</li>
  * </ul>
- * 
+ *
  * @see SWT#BORDER
  * @see SWT#CLOSE
  * @see SWT#MIN
@@ -373,7 +373,7 @@ public Shell (Shell parent, int style) {
 	this (parent != null ? parent.display : null, parent, style, 0, false);
 }
 
-/**	 
+/**
  * Invokes platform specific functionality to allocate a new shell
  * that is not embedded.
  * <p>
@@ -387,16 +387,16 @@ public Shell (Shell parent, int style) {
  * @param display the display for the shell
  * @param handle the handle for the shell
  * @return a new shell object containing the specified display and handle
- * 
+ *
  * @noreference This method is not intended to be referenced by clients.
- * 
+ *
  * @since 3.3
  */
 public static Shell internal_new (Display display, long /*int*/ handle) {
 	return new Shell (display, null, SWT.NO_TRIM, handle, false);
 }
 
-/**	 
+/**
  * Invokes platform specific functionality to allocate a new shell
  * that is 'embedded'.  In this case, the handle represents an NSView
  * that acts as an embedded SWT Shell in an AWT Canvas.
@@ -411,9 +411,9 @@ public static Shell internal_new (Display display, long /*int*/ handle) {
  * @param display the display for the shell
  * @param handle the handle for the shell
  * @return a new shell object containing the specified display and handle
- * 
+ *
  * @noreference This method is not intended to be referenced by clients.
- * 
+ *
  * @since 3.5
  */
 public static Shell cocoa_new (Display display, long /*int*/ handle) {
@@ -494,7 +494,7 @@ void attachObserversToWindow(NSWindow newWindow) {
 	OS.object_setClass(hostWindow.id, embeddedSubclass);
 	display.addWidget (hostWindow, this);
 	hostWindowClass = newHostWindowClass;
-	
+
 	if (windowEmbedCounts == null) windowEmbedCounts = new HashMap();
 	Integer embedCount = (Integer) windowEmbedCounts.get(hostWindow);
 	if (embedCount == null) {
@@ -502,7 +502,7 @@ void attachObserversToWindow(NSWindow newWindow) {
 	}
 	embedCount = new Integer(embedCount.intValue() + 1);
 	windowEmbedCounts.put(hostWindow, embedCount);
-	
+
 	// Register for notifications. An embedded shell has no control over the host window,
 	// so it isn't correct to install a delegate.
 	NSNotificationCenter defaultCenter = NSNotificationCenter.defaultCenter();
@@ -687,7 +687,7 @@ void createHandle () {
 			// Feature in Cocoa: NSPanels that use NSUtilityWindowMask are always promoted to the floating window layer.
 			// Fix is to call setFloatingPanel:NO, which turns off this behavior.
 			((NSPanel)window).setFloatingPanel(false);
-			// By default, panels hide on deactivation. 
+			// By default, panels hide on deactivation.
 			((NSPanel)window).setHidesOnDeactivate(false);
 			// Normally a panel doesn't become key unless something inside it needs to be first responder.
 			// TOOL shells always become key, so disable that behavior.
@@ -720,14 +720,14 @@ void createHandle () {
 		topView ().setHidden (true);
 	} else {
 		state &= ~HIDDEN;
-		
+
 		if (window != null) {
 			// In the FOREIGN_HANDLE case, 'window' is an NSWindow created on our behalf.
 			// It may already have a content view, so if it does, grab and retain, since we release()
 			// the view at disposal time.  Otherwise, create a new 'view' that will be used as the window's
 			// content view in setZOrder.
 			view = window.contentView();
-			
+
 			if (view == null) {
 				super.createHandle();
 			} else {
@@ -737,14 +737,14 @@ void createHandle () {
 			// In the embedded case, 'view' is already set to the NSView we should add the window's content view to as a subview.
 			// In that case we will hold on to the foreign view, create our own SWTCanvasView (which overwrites 'view') and then
 			// add it to the foreign view.
-			NSView parentView = view;			
+			NSView parentView = view;
 			super.createHandle();
 			parentView.addSubview(topView());
 		}
 
 		style |= SWT.NO_BACKGROUND;
 	}
-	
+
 	windowDelegate = (SWTWindowDelegate)new SWTWindowDelegate().alloc().init();
 
 	if (window == null) {
@@ -772,7 +772,7 @@ void createHandle () {
 		// FindWindow() (see Display.findControl())
 		if (window != null) window.windowRef();
 	}
-	
+
 	NSWindow fieldEditorWindow = window;
 	if (fieldEditorWindow == null) fieldEditorWindow = view.window();
 	id id = fieldEditorWindow.fieldEditor (true, null);
@@ -802,7 +802,7 @@ void destroyWidget () {
 	Display display = this.display;
 	NSView view = topView();
 	if (view != null) view.retain();
-	
+
 	boolean sheet = (style & (SWT.SHEET)) != 0;
 	releaseHandle ();
 	if (window != null) {
@@ -815,7 +815,7 @@ void destroyWidget () {
 		view.removeFromSuperview();
 	}
 	if (view != null) view.release();
-	
+
 	// If another shell is not going to become active, clear the menu bar.
 	// Don't modify the menu bar if we are an embedded Shell, though.
 	if (window != null) {
@@ -859,7 +859,7 @@ boolean fixResize () {
 	* Feature in Cocoa.  It is not possible to have a resizable window
 	* without the title bar.  The fix is to resize the content view on
 	* top of the title bar.
-	* 
+	*
 	* Never do this when the shell is embedded, because the window belongs to the AWT.
 	*/
 	if (window == null) return false;
@@ -877,10 +877,10 @@ void fixShell (Shell newShell, Control control) {
 }
 
 /**
- * If the receiver is visible, moves it to the top of the 
- * drawing order for the display on which it was created 
- * (so that all other shells on that display, which are not 
- * the receiver's children will be drawn behind it) and forces 
+ * If the receiver is visible, moves it to the top of the
+ * drawing order for the display on which it was created
+ * (so that all other shells on that display, which are not
+ * the receiver's children will be drawn behind it) and forces
  * the window manager to make the shell active.
  *
  * @exception SWTException <ul>
@@ -916,7 +916,7 @@ public void forceActive () {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 3.4
  */
 public int getAlpha () {
@@ -974,7 +974,7 @@ public Rectangle getClientArea () {
 
 /**
  * Returns <code>true</code> if the receiver is currently
- * in fullscreen state, and false otherwise. 
+ * in fullscreen state, and false otherwise.
  * <p>
  *
  * @return the fullscreen state
@@ -1003,7 +1003,7 @@ boolean _getFullScreen () {
  * will be the result of bitwise OR'ing together one or
  * more of the following constants defined in class
  * <code>SWT</code>:
- * <code>NONE</code>, <code>ROMAN</code>, <code>DBCS</code>, 
+ * <code>NONE</code>, <code>ROMAN</code>, <code>DBCS</code>,
  * <code>PHONETIC</code>, <code>NATIVE</code>, <code>ALPHA</code>.
  *
  * @return the IME mode
@@ -1023,7 +1023,7 @@ public int getImeInputMode () {
 @Override
 public Point getLocation () {
 	checkWidget();
-	
+
 	if (window != null) {
 		NSRect frame = window.frame();
 		double /*float*/ y = display.getPrimaryFrame().height - (int)(frame.y + frame.height);
@@ -1081,12 +1081,12 @@ Shell getModalShell () {
  * Gets the receiver's modified state.
  *
  * @return <code>true</code> if the receiver is marked as modified, or <code>false</code> otherwise
- * 
+ *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 3.5
  */
 public boolean getModified () {
@@ -1114,7 +1114,7 @@ public boolean getMinimized () {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 3.1
  */
 public Point getMinimumSize () {
@@ -1124,12 +1124,12 @@ public Point getMinimumSize () {
 	return new Point((int)size.width, (int)size.height);
 }
 
-/** 
+/**
  * Returns the region that defines the shape of the shell,
  * or <code>null</code> if the shell has the default shape.
  *
  * @return the region that defines the shape of the shell, or <code>null</code>
- *	
+ *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
@@ -1152,7 +1152,7 @@ public Shell getShell () {
 }
 
 /**
- * Returns an array containing all shells which are 
+ * Returns an array containing all shells which are
  * descendants of the receiver.
  * <p>
  * @return the dialog shells
@@ -1202,17 +1202,17 @@ float getThemeAlpha () {
 /**
  * Returns a ToolBar object representing the tool bar that can be shown in the receiver's
  * trim. This will return <code>null</code> if the platform does not support tool bars that
- * are not part of the content area of the shell, or if the Shell's style does not support 
- * having a tool bar. 
+ * are not part of the content area of the shell, or if the Shell's style does not support
+ * having a tool bar.
  * <p>
- * 
+ *
  * @return a ToolBar object representing the Shell's tool bar, or <ocde>null</code>.
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 3.7
  */
 public ToolBar getToolBar() {
@@ -1300,7 +1300,7 @@ void makeKeyAndOrderFront() {
 	* case the parent window does become active when its child is closed
 	* and the user is forced to restore the window from the dock.
 	* The fix is to be sure that the parent window is deminiaturized before
-	* making the child a key window. 
+	* making the child a key window.
 	*/
 	if (parent != null) {
 		NSWindow parentWindow = parentWindow ();
@@ -1317,11 +1317,11 @@ void mouseMoved(long /*int*/ id, long /*int*/ sel, long /*int*/ theEvent) {
 	 * Bug in AWT. WebViews need to have a mouseMove: handled by the window so it can generate
 	 * DOMMouseMove events and also provide proper feedback to the window. However, the top-level
 	 * view in an AWT window does not have the NSWindow as a next responder.
-	 * 
+	 *
 	 * Fix is to forward the message to the window if this is an embedded shell (that is, window == null)
 	 */
 	if (id == view.id && window == null) {
-		view.window().mouseMoved(new NSEvent(theEvent));		
+		view.window().mouseMoved(new NSEvent(theEvent));
 	}
 }
 
@@ -1331,7 +1331,7 @@ void noResponderFor(long /*int*/ id, long /*int*/ sel, long /*int*/ selector) {
 	 * Feature in Cocoa.  If the selector is keyDown and nothing has handled the event
 	 * a system beep is generated.  There's no need to beep, as many keystrokes in the SWT
 	 * are listened for and acted upon but not explicitly handled in a keyDown handler.  Fix is to
-	 * not call the default implementation when a keyDown: is being handled. 
+	 * not call the default implementation when a keyDown: is being handled.
 	 */
 	if (selector != OS.sel_keyDown_) super.noResponderFor(id, sel, selector);
 }
@@ -1394,8 +1394,8 @@ public boolean print (GC gc) {
 void register () {
 	/*
 	 * Note that if there are multiple SWT_AWT shells only the last one created
-	 * will be associated with the NSWindow. This is okay, and intentional because 
-	 * all of the NSWindow overrides operate on the entire window. 
+	 * will be associated with the NSWindow. This is okay, and intentional because
+	 * all of the NSWindow overrides operate on the entire window.
 	 */
 	super.register ();
 	if (window != null) display.addWidget (window, this);
@@ -1448,7 +1448,7 @@ void releaseWidget () {
 }
 
 void removeObserversFromWindow () {
-	NSNotificationCenter.defaultCenter().removeObserver(windowDelegate);		
+	NSNotificationCenter.defaultCenter().removeObserver(windowDelegate);
 
 	if (hostWindow != null) {
 		Integer embedCount = (Integer) windowEmbedCounts.get(hostWindow);
@@ -1541,11 +1541,11 @@ void sendToolTipEvent (boolean enter) {
 }
 
 /**
- * If the receiver is visible, moves it to the top of the 
- * drawing order for the display on which it was created 
- * (so that all other shells on that display, which are not 
- * the receiver's children will be drawn behind it) and asks 
- * the window manager to make the shell active 
+ * If the receiver is visible, moves it to the top of the
+ * drawing order for the display on which it was created
+ * (so that all other shells on that display, which are not
+ * the receiver's children will be drawn behind it) and asks
+ * the window manager to make the shell active
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -1562,7 +1562,7 @@ void sendToolTipEvent (boolean enter) {
  * @see Shell#setActive
  */
 public void setActive () {
-	if (window == null) return;	
+	if (window == null) return;
 	checkWidget ();
 	if (!isVisible()) return;
 	makeKeyAndOrderFront ();
@@ -1576,7 +1576,7 @@ void setActiveControl (Control control, int type) {
 	if (control != null && control.isDisposed ()) control = null;
 	if (lastActive != null && lastActive.isDisposed ()) lastActive = null;
 	if (lastActive == control) return;
-	
+
 	/*
 	* Compute the list of controls to be activated and
 	* deactivated by finding the first common parent
@@ -1590,7 +1590,7 @@ void setActiveControl (Control control, int type) {
 		if (activate [index] != deactivate [index]) break;
 		index++;
 	}
-	
+
 	/*
 	* It is possible (but unlikely), that application
 	* code could have destroyed some of the widgets. If
@@ -1625,11 +1625,11 @@ void setActiveControl (Control control, int type) {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 3.4
  */
 public void setAlpha (int alpha) {
-	if (window == null) return;	
+	if (window == null) return;
 	checkWidget ();
 	alpha &= 0xFF;
 	window.setAlphaValue (alpha / 255f);
@@ -1715,12 +1715,12 @@ public void setEnabled (boolean enabled) {
  * into full screen state, causes the receiver to switch back
  * to either the maximized or normal states.
  * <p>
- * Note: The result of intermixing calls to <code>setFullScreen(true)</code>, 
- * <code>setMaximized(true)</code> and <code>setMinimized(true)</code> will 
- * vary by platform. Typically, the behavior will match the platform user's 
+ * Note: The result of intermixing calls to <code>setFullScreen(true)</code>,
+ * <code>setMaximized(true)</code> and <code>setMinimized(true)</code> will
+ * vary by platform. Typically, the behavior will match the platform user's
  * expectations, but not always. This should be avoided if possible.
  * </p>
- * 
+ *
  * @param fullScreen the new fullscreen state
  *
  * @exception SWTException <ul>
@@ -1734,7 +1734,7 @@ public void setFullScreen (boolean fullScreen) {
 	checkWidget ();
 	if (window == null) return;
 	if (_getFullScreen () == fullScreen) return;
-	
+
 	if ((window.collectionBehavior() & OS.NSWindowCollectionBehaviorFullScreenPrimary) != 0) {
 		OS.objc_msgSend(window.id, OS.sel_toggleFullScreen_, 0);
 		return;
@@ -1747,14 +1747,14 @@ public void setFullScreen (boolean fullScreen) {
 		if (window.respondsToSelector(OS.sel_setMovable_)) {
 			OS.objc_msgSend(window.id, OS.sel_setMovable_, 0);
 		}
-		
+
 		fullScreenFrame = NSScreen.mainScreen().frame();
 		if (getMonitor().equals(display.getPrimaryMonitor ())) {
 			if (menuBar != null) {
 				double /*float*/ menuBarHt = NSStatusBar.systemStatusBar().thickness();
 				fullScreenFrame.height -= menuBarHt;
 				OS.SetSystemUIMode(OS.kUIModeContentHidden, 0);
-			} 
+			}
 			else {
 				OS.SetSystemUIMode(OS.kUIModeAllHidden, 0);
 			}
@@ -1784,10 +1784,10 @@ public void setMenuBar (Menu menu) {
 }
 
 /**
- * Sets the input method editor mode to the argument which 
+ * Sets the input method editor mode to the argument which
  * should be the result of bitwise OR'ing together one or more
  * of the following constants defined in class <code>SWT</code>:
- * <code>NONE</code>, <code>ROMAN</code>, <code>DBCS</code>, 
+ * <code>NONE</code>, <code>ROMAN</code>, <code>DBCS</code>,
  * <code>PHONETIC</code>, <code>NATIVE</code>, <code>ALPHA</code>.
  *
  * @param mode the new IME mode
@@ -1837,7 +1837,7 @@ public void setMinimized (boolean minimized) {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 3.1
  */
 public void setMinimumSize (int width, int height) {
@@ -1869,7 +1869,7 @@ public void setMinimumSize (int width, int height) {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 3.1
  */
 public void setMinimumSize (Point size) {
@@ -1888,7 +1888,7 @@ public void setMinimumSize (Point size) {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 3.5
  */
 public void setModified (boolean modified) {
@@ -1912,7 +1912,7 @@ public void setModified (boolean modified) {
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_INVALID_ARGUMENT - if the region has been disposed</li>
- * </ul>  
+ * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
@@ -1993,7 +1993,7 @@ void setWindowVisible (boolean visible, boolean key) {
 	if (visible) {
 		display.clearPool ();
 		if (center && !moved) {
-			if (isDisposed ()) return;			
+			if (isDisposed ()) return;
 			center ();
 		}
 		sendEvent (SWT.Show);
@@ -2051,7 +2051,7 @@ void setWindowVisible (boolean visible, boolean key) {
 			if ((style & (SWT.SHEET)) != 0) {
 				NSApplication application = NSApplication.sharedApplication();
 				application.endSheet(window, 0);
-			} 
+			}
 			window.orderOut (null);
 		}
 		if (isDisposed()) return;
@@ -2059,7 +2059,7 @@ void setWindowVisible (boolean visible, boolean key) {
 		invalidateVisibleRegion();
 		sendEvent (SWT.Hide);
 	}
-	
+
 	if (isDisposed()) return;
 	display.updateQuitMenu();
 
@@ -2129,7 +2129,7 @@ void updateParent (boolean visible) {
 			if (parent != null && parent.getVisible ()) {
 				NSWindow parentWindow = display.modalPanel != null ? display.modalPanel : parentWindow ();
 				parentWindow.addChildWindow (window, OS.NSWindowAbove);
-				
+
 				/**
 				 * Feature in Cocoa: When a window is added as a child window,
 				 * its window level resets to its parent's window level. So, we
@@ -2301,9 +2301,9 @@ void windowSendEvent (long /*int*/ id, long /*int*/ sel, long /*int*/ event) {
 				if (trimControl != null && (trimControl.state & WEBKIT_EVENTS_FIX) != 0) trimControl = null;
 				if (trimControl != null) trimControl.sendMouseEvent (nsEvent, type, false);
 			}
-			
+
 			// Tooltip updating: Find the widget under the cursor. If it changed, clear the tooltip from
-			// the last tracked item and send a tooltip event to make it visible on the new widget. 
+			// the last tracked item and send a tooltip event to make it visible on the new widget.
 			Widget target = null;
 			if (control != null) {
 				NSPoint eventPoint = nsEvent.locationInWindow();
@@ -2316,10 +2316,10 @@ void windowSendEvent (long /*int*/ id, long /*int*/ sel, long /*int*/ event) {
 						eventPoint = eventWindow.convertBaseToScreen(eventPoint);
 						eventPoint = hitView[0].window().convertScreenToBase(eventPoint);
 					}
-				}				
+				}
 				target = control.findTooltip (eventPoint);
 			}
-			
+
 			if (display.tooltipControl != control || display.tooltipTarget != target) {
 				Control oldControl = display.tooltipControl;
 				Shell oldShell = oldControl != null && !oldControl.isDisposed() ? oldControl.getShell() : null;
@@ -2330,11 +2330,11 @@ void windowSendEvent (long /*int*/ id, long /*int*/ sel, long /*int*/ event) {
 			display.tooltipControl = control;
 			display.tooltipTarget = target;
 			break;
-			
+
 		case OS.NSKeyDown:
 			/*
 			* Feature in Cocoa.  For some reason, Cocoa does not perform accelerators
-			* with ESC key code.  The fix is to perform the accelerators ourselves. 
+			* with ESC key code.  The fix is to perform the accelerators ourselves.
 			*/
 			if (display.escAsAcceleratorPresent && nsEvent.keyCode() == 53 /* ESC */) {
 				if (escMenuItem == null || escMenuItem.getAccelerator() != SWT.ESC) {
@@ -2357,7 +2357,7 @@ void windowSendEvent (long /*int*/ id, long /*int*/ sel, long /*int*/ event) {
 			 */
 			if ((nsEvent.modifierFlags() & OS.NSControlKeyMask) != 0) {
 				NSString chars = nsEvent.characters();
-				
+
 				if (chars != null && chars.length() == 1) {
 					int firstChar = (int)/*64*/chars.characterAtIndex(0);
 
@@ -2374,7 +2374,7 @@ void windowSendEvent (long /*int*/ id, long /*int*/ sel, long /*int*/ event) {
 			}
 			break;
 	}
-	
+
 	// Window may have been disposed at this point.
 	if (isDisposed()) return;
 	super.windowSendEvent (id, sel, event);

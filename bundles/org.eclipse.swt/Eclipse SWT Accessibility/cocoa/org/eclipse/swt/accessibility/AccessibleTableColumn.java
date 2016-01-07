@@ -14,11 +14,11 @@ import org.eclipse.swt.internal.cocoa.*;
 
 /**
  * This class is used to describe a table column for objects that have an accessible
- * role of ACC.ROLE_TABLE, but aren't implemented like NSTableViews. 
+ * role of ACC.ROLE_TABLE, but aren't implemented like NSTableViews.
  *
  * Instances of this class represent one column in a table. Cocoa accessibility expects
  * columns to report their location, number of rows, and elements in those rows.
- * 
+ *
  * @see TableAccessibleDelegate
  */
 class AccessibleTableColumn extends Accessible {
@@ -26,7 +26,7 @@ class AccessibleTableColumn extends Accessible {
 	public AccessibleTableColumn(Accessible accessible, int childID) {
 		super(accessible);
 		index = childID;
-		
+
 		addAccessibleControlListener(new AccessibleControlAdapter() {
 			@Override
 			public void getLocation(AccessibleControlEvent e) {
@@ -37,7 +37,7 @@ class AccessibleTableColumn extends Accessible {
 				event.childID = ACC.CHILDID_SELF;
 				event.width = -1;
 				Accessible child = cells[0];
-				
+
 				for (int i = 0; i < child.accessibleControlListeners.size(); i++) {
 					AccessibleControlListener listener = child.accessibleControlListeners.get(i);
 					listener.getLocation(event);
@@ -52,7 +52,7 @@ class AccessibleTableColumn extends Accessible {
 					if (size.width > width) width = (int) size.width;
 					height += size.height;
 				}
-				
+
 				e.x = event.x;
 				e.y = event.y;
 				e.width = width;
@@ -83,7 +83,7 @@ class AccessibleTableColumn extends Accessible {
 			}
 		});
 	}
-	
+
 	private Accessible[] getColumnCells() {
 		int validRowCount = Math.max (1, parent.getRowCount());
 		Accessible[] cells = new Accessible[validRowCount];
@@ -91,12 +91,12 @@ class AccessibleTableColumn extends Accessible {
 		for (int i = 0; i < validRowCount; i++) {
 			event.column = index;
 			event.row = i;
-	
+
 			for (int j = 0; j < parent.accessibleTableListeners.size(); j++) {
 				AccessibleTableListener listener = parent.accessibleTableListeners.get(j);
 				listener.getCell(event);
 			}
-	
+
 			cells[i] = event.accessible;
 		}
 		return cells;

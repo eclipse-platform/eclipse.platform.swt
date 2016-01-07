@@ -60,7 +60,7 @@ public class Label extends Control {
  * <p>
  * The style value is either one of the style constants defined in
  * class <code>SWT</code> which is applicable to instances of this
- * class, or must be built by <em>bitwise OR</em>'ing together 
+ * class, or must be built by <em>bitwise OR</em>'ing together
  * (that is, using the <code>int</code> "|" operator) two or more
  * of those <code>SWT</code> style constants. The class description
  * lists the style constants that are applicable to the class.
@@ -97,27 +97,27 @@ public Label (Composite parent, int style) {
 
 @Override
 long /*int*/ accessibleHandle() {
-	return eventView().id;	
+	return eventView().id;
 }
 
 @Override
 boolean accessibilityIsIgnored(long /*int*/ id, long /*int*/ sel) {
 	if (id == view.id) return true;
-	return super.accessibilityIsIgnored(id, sel);	
+	return super.accessibilityIsIgnored(id, sel);
 }
 
 @Override
 void addRelation (Control control) {
 	if (!control.isDescribedByLabel ()) return;
-	
+
 	if (textView != null) {
 		NSObject accessibleElement = control.focusView();
-		
+
 		if (accessibleElement instanceof NSControl) {
 			NSControl viewAsControl = (NSControl)accessibleElement;
 			if (viewAsControl.cell() != null) accessibleElement = viewAsControl.cell();
 		}
-		
+
 		accessibleElement.accessibilitySetOverrideValue(textView.cell(), OS.NSAccessibilityTitleUIElementAttribute);
 		NSArray controlArray = NSArray.arrayWithObject(accessibleElement);
 		textView.cell().accessibilitySetOverrideValue(controlArray, OS.NSAccessibilityServesAsTitleForUIElementsAttribute);
@@ -129,7 +129,7 @@ static int checkStyle (int style) {
 	if ((style & SWT.SEPARATOR) != 0) {
 		style = checkBits (style, SWT.VERTICAL, SWT.HORIZONTAL, 0, 0, 0, 0);
 		return checkBits (style, SWT.SHADOW_OUT, SWT.SHADOW_IN, SWT.SHADOW_NONE, 0, 0, 0);
-	} 
+	}
 	return checkBits (style, SWT.LEFT, SWT.CENTER, SWT.RIGHT, 0, 0, 0);
 }
 
@@ -186,7 +186,7 @@ void createHandle () {
 		/*
 		 * Feature in Cocoa: Separator control decides how to orient itself
 		 * based on the width and height. If height > width it orients
-		 * vertically, else it orients horizontally. 
+		 * vertically, else it orients horizontally.
 		 * Fix is to have two native controls to implement the separator label.
 		 * The top control (Custom NSBox) honors the bounds set by the
 		 * user and the inner one (Separator NSBox) creates the separator
@@ -195,7 +195,7 @@ void createHandle () {
 		NSRect rect = new NSRect();
 		rect.width = DEFAULT_WIDTH;
 		rect.height = DEFAULT_HEIGHT;
-		
+
 		widget.initWithFrame(rect);
 		widget.setTitle(NSString.string());
 		widget.setBorderType(OS.NSNoBorder);
@@ -210,7 +210,7 @@ void createHandle () {
 			rect.width = (int)Math.ceil (lineWidth * 2);
 			rect.x = (DEFAULT_WIDTH / 2) - (rect.width / 2);
 		}
-		
+
 		NSBox separator = (NSBox) new SWTBox().alloc();
 		separator.initWithFrame(rect);
 		separator.setBoxType(OS.NSBoxSeparator);
@@ -219,14 +219,14 @@ void createHandle () {
 		} else {
 			separator.setAutoresizingMask(OS.NSViewHeightSizable| OS.NSViewMinXMargin | OS.NSViewMaxXMargin);
 		}
-		
+
 		NSView child = (NSView) new NSView().alloc().init();
 		separator.setContentView(child);
 		child.release();
-		
+
 		widget.addSubview(separator);
 		this.separator = separator;
-	} else {	
+	} else {
 		widget.init();
 		widget.setTitle(NSString.string());
 		widget.setBorderType(OS.NSNoBorder);
@@ -238,7 +238,7 @@ void createHandle () {
 		NSImageView imageWidget = (NSImageView) new SWTImageView ().alloc ();
 		imageWidget.init();
 		imageWidget.setImageScaling (OS.NSScaleNone);
-		
+
 		NSTextField textWidget = (NSTextField)new SWTTextField().alloc();
 		textWidget.init();
 		textWidget.setBordered(false);
@@ -246,11 +246,11 @@ void createHandle () {
 		textWidget.setDrawsBackground(false);
 		NSTextFieldCell cell = new NSTextFieldCell(textWidget.cell());
 		cell.setWraps ((style & SWT.WRAP) != 0);
-		
+
 		widget.addSubview(imageWidget);
 		widget.addSubview(textWidget);
 		widget.setContentView(textWidget);
-		
+
 		imageView = imageWidget;
 		textView = textWidget;
 		_setAlignment();
@@ -314,10 +314,10 @@ NSView eventView () {
  * Returns a value which describes the position of the
  * text or image in the receiver. The value will be one of
  * <code>LEFT</code>, <code>RIGHT</code> or <code>CENTER</code>
- * unless the receiver is a <code>SEPARATOR</code> label, in 
+ * unless the receiver is a <code>SEPARATOR</code> label, in
  * which case, <code>NONE</code> is returned.
  *
- * @return the alignment 
+ * @return the alignment
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -417,7 +417,7 @@ void removeRelation () {
  * or <code>CENTER</code>.  If the receiver is a <code>SEPARATOR</code>
  * label, the argument is ignored and the alignment is not changed.
  *
- * @param alignment the new alignment 
+ * @param alignment the new alignment
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -473,7 +473,7 @@ boolean setTabItemFocus () {
  * @param image the image to display on the receiver (may be null)
  *
  * @exception IllegalArgumentException <ul>
- *    <li>ERROR_INVALID_ARGUMENT - if the image has been disposed</li> 
+ *    <li>ERROR_INVALID_ARGUMENT - if the image has been disposed</li>
  * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -527,7 +527,7 @@ public void setImage (Image image) {
  * Note: If control characters like '\n', '\t' etc. are used
  * in the string, then the behavior is platform dependent.
  * </p>
- * 
+ *
  * @param string the new text
  *
  * @exception IllegalArgumentException <ul>

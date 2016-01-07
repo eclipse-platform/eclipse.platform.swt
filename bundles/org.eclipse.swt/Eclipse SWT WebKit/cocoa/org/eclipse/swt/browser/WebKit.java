@@ -273,7 +273,7 @@ public void create (Composite parent, int style) {
 
 	webView.setFrameLoadDelegate(delegate);
 	webView.setResourceLoadDelegate(delegate);
-	webView.setUIDelegate(delegate);	
+	webView.setUIDelegate(delegate);
 	webView.setPolicyDelegate(delegate);
 	webView.setDownloadDelegate(delegate);
 	webView.setApplicationNameForUserAgent(NSString.stringWith(AGENT_STRING));
@@ -287,7 +287,7 @@ public void create (Composite parent, int style) {
 
 @Override
 public boolean back() {
-	html = null;	
+	html = null;
 	return webView.goBack();
 }
 
@@ -336,7 +336,7 @@ static long /*int*/ browserProc(long /*int*/ id, long /*int*/ sel, long /*int*/ 
 	} else if (sel == OS.sel_webView_setFrame_) {
 		webKit.webView_setFrame(arg0, arg1);
 	} else if (sel == OS.sel_webView_createWebViewWithRequest_) {
-		return webKit.webView_createWebViewWithRequest(arg0, arg1);		
+		return webKit.webView_createWebViewWithRequest(arg0, arg1);
 	} else if (sel == OS.sel_webView_setStatusBarVisible_) {
 		webKit.webView_setStatusBarVisible(arg0, arg1 != 0);
 	} else if (sel == OS.sel_webView_setResizable_) {
@@ -461,7 +461,7 @@ boolean close (boolean showPrompters) {
 		buffer.append ("if (str != null) { "); // $NON-NLS-1$
 		buffer.append ("var result = window.external.callRunBeforeUnloadConfirmPanelWithMessage(str);"); // $NON-NLS-1$
 		buffer.append ("if (!result) return false;}"); // $NON-NLS-1$
-	}	
+	}
 	buffer.append ("} catch (e) {}}"); // $NON-NLS-1$
 	buffer.append ("try {for (var i = 0; i < win.frames.length; i++) {var result = "); // $NON-NLS-1$
 	buffer.append (functionName);
@@ -606,7 +606,7 @@ public boolean setUrl(String url, String postData, String[] headers) {
 							*/
 							webView.setCustomUserAgent(NSString.stringWith(value));
 						} else {
-							request.setValue(NSString.stringWith(value), NSString.stringWith(key));						
+							request.setValue(NSString.stringWith(value), NSString.stringWith(key));
 						}
 					}
 				}
@@ -679,13 +679,13 @@ void webView_didChangeLocationWithinPageForFrame(long /*int*/ sender, long /*int
 void webView_didFailProvisionalLoadWithError_forFrame(long /*int*/ sender, long /*int*/ error, long /*int*/ frame) {
 	if (frame == webView.mainFrame().id) {
 		/*
-		* Feature on WebKit.  The identifier is used here as a marker for the events 
-		* related to the top frame and the URL changes related to that top frame as 
+		* Feature on WebKit.  The identifier is used here as a marker for the events
+		* related to the top frame and the URL changes related to that top frame as
 		* they should appear on the location bar of a browser.  It is expected to reset
-		* the identifier to 0 when the event didFinishLoadingFromDataSource related to 
+		* the identifier to 0 when the event didFinishLoadingFromDataSource related to
 		* the identifierForInitialRequest event is received.  However, WebKit fires
 		* the didFinishLoadingFromDataSource event before the entire content of the
-		* top frame is loaded.  It is possible to receive multiple willSendRequest 
+		* top frame is loaded.  It is possible to receive multiple willSendRequest
 		* events in this interval, causing the Browser widget to send unwanted
 		* Location.changing events.  For this reason, the identifier is reset to 0
 		* when the top frame has either finished loading (didFinishLoadForFrame
@@ -766,7 +766,7 @@ void webView_didFinishLoadForFrame(long /*int*/ sender, long /*int*/ frameID) {
 	if (frameID == webView.mainFrame().id) {
 		/*
 		 * If html is not null then there is html from a previous setText() call
-		 * waiting to be set into the about:blank page once it has completed loading. 
+		 * waiting to be set into the about:blank page once it has completed loading.
 		 */
 		if (html != null) {
 			if (getUrl().startsWith(ABOUT_BLANK)) {
@@ -828,13 +828,13 @@ void webView_didFinishLoadForFrame(long /*int*/ sender, long /*int*/ frameID) {
 		if (browser.isDisposed()) return;
 
 		/*
-		* Feature on WebKit.  The identifier is used here as a marker for the events 
-		* related to the top frame and the URL changes related to that top frame as 
+		* Feature on WebKit.  The identifier is used here as a marker for the events
+		* related to the top frame and the URL changes related to that top frame as
 		* they should appear on the location bar of a browser.  It is expected to reset
-		* the identifier to 0 when the event didFinishLoadingFromDataSource related to 
+		* the identifier to 0 when the event didFinishLoadingFromDataSource related to
 		* the identifierForInitialRequest event is received.  However, WebKit fires
 		* the didFinishLoadingFromDataSource event before the entire content of the
-		* top frame is loaded.  It is possible to receive multiple willSendRequest 
+		* top frame is loaded.  It is possible to receive multiple willSendRequest
 		* events in this interval, causing the Browser widget to send unwanted
 		* Location.changing events.  For this reason, the identifier is reset to 0
 		* when the top frame has either finished loading (didFinishLoadForFrame
@@ -889,7 +889,7 @@ void webView_didReceiveTitle_forFrame(long /*int*/ sender, long /*int*/ titleID,
 }
 
 void webView_didStartProvisionalLoadForFrame(long /*int*/ sender, long /*int*/ frameID) {
-	/* 
+	/*
 	* This code is intentionally commented.  WebFrameLoadDelegate:didStartProvisionalLoadForFrame is
 	* called before WebResourceLoadDelegate:willSendRequest and
 	* WebFrameLoadDelegate:didCommitLoadForFrame.  The resource count is reset when didCommitLoadForFrame
@@ -927,7 +927,7 @@ void webView_didCommitLoadForFrame(long /*int*/ sender, long /*int*/ frameID) {
 	boolean top = frameID == webView.mainFrame().id;
 	if (top) {
 		/* reset resource status variables */
-		resourceCount = 0;		
+		resourceCount = 0;
 		this.url = url2;
 
 		/*
@@ -935,7 +935,7 @@ void webView_didCommitLoadForFrame(long /*int*/ sender, long /*int*/ frameID) {
 		* twice, once for the initial navigate to about:blank, and once for the auto-navigate
 		* to about:blank that WebKit does when loadHTMLString is invoked.  If this is the
 		* first webView_didCommitLoadForFrame callback received for a setText() invocation
-		* then do not send any events or re-install registered BrowserFunctions. 
+		* then do not send any events or re-install registered BrowserFunctions.
 		*/
 		if (url2.startsWith(ABOUT_BLANK) && html != null) return;
 
@@ -990,13 +990,13 @@ void webView_windowScriptObjectAvailable (long /*int*/ webView, long /*int*/ win
 
 void webView_resource_didFinishLoadingFromDataSource(long /*int*/ sender, long /*int*/ identifier, long /*int*/ dataSource) {
 	/*
-	* Feature on WebKit.  The identifier is used here as a marker for the events 
-	* related to the top frame and the URL changes related to that top frame as 
+	* Feature on WebKit.  The identifier is used here as a marker for the events
+	* related to the top frame and the URL changes related to that top frame as
 	* they should appear on the location bar of a browser.  It is expected to reset
-	* the identifier to 0 when the event didFinishLoadingFromDataSource related to 
+	* the identifier to 0 when the event didFinishLoadingFromDataSource related to
 	* the identifierForInitialRequest event is received.  However, WebKit fires
 	* the didFinishLoadingFromDataSource event before the entire content of the
-	* top frame is loaded.  It is possible to receive multiple willSendRequest 
+	* top frame is loaded.  It is possible to receive multiple willSendRequest
 	* events in this interval, causing the Browser widget to send unwanted
 	* Location.changing events.  For this reason, the identifier is reset to 0
 	* when the top frame has either finished loading (didFinishLoadForFrame
@@ -1008,13 +1008,13 @@ void webView_resource_didFinishLoadingFromDataSource(long /*int*/ sender, long /
 
 void webView_resource_didFailLoadingWithError_fromDataSource(long /*int*/ sender, long /*int*/ identifier, long /*int*/ error, long /*int*/ dataSource) {
 	/*
-	* Feature on WebKit.  The identifier is used here as a marker for the events 
-	* related to the top frame and the URL changes related to that top frame as 
+	* Feature on WebKit.  The identifier is used here as a marker for the events
+	* related to the top frame and the URL changes related to that top frame as
 	* they should appear on the location bar of a browser.  It is expected to reset
-	* the identifier to 0 when the event didFinishLoadingFromDataSource related to 
+	* the identifier to 0 when the event didFinishLoadingFromDataSource related to
 	* the identifierForInitialRequest event is received.  However, WebKit fires
 	* the didFinishLoadingFromDataSource event before the entire content of the
-	* top frame is loaded.  It is possible to receive multiple willSendRequest 
+	* top frame is loaded.  It is possible to receive multiple willSendRequest
 	* events in this interval, causing the Browser widget to send unwanted
 	* Location.changing events.  For this reason, the identifier is reset to 0
 	* when the top frame has either finished loading (didFinishLoadForFrame
@@ -1136,7 +1136,7 @@ boolean showAuthenticationDialog (final String[] user, final String[] password, 
 			password[0] = passwordText.getText();
 			result[0] = event.widget == buttons[1];
 			shell.close();
-		}	
+		}
 	};
 
 	Composite composite = new Composite (shell, SWT.NONE);
@@ -1182,7 +1182,7 @@ long /*int*/ webView_identifierForInitialRequest_fromDataSource(long /*int*/ sen
 		if (frame.id == webView.mainFrame().id) this.identifier = identifier.id;
 	}
 	return identifier.id;
-		
+
 }
 
 long /*int*/ webView_resource_willSendRequest_redirectResponse_fromDataSource(long /*int*/ sender, long /*int*/ identifier, long /*int*/ request, long /*int*/ redirectResponse, long /*int*/ dataSource) {
@@ -1249,7 +1249,7 @@ void webViewShow(long /*int*/ sender) {
 	* the address bar.  The address bar is displayed
 	* if the tool bar is displayed. There is no separate
 	* notification for the address bar.
-	* 
+	*
 	* Feature of OSX.  The menu bar is always displayed.
 	* There is no notification to hide the menu bar.
 	*/
@@ -1466,7 +1466,7 @@ void webView_decidePolicyForNavigationAction_request_frame_decisionListener(long
 	WebPolicyDecisionListener listener = new WebPolicyDecisionListener(listenerID);
 
 	if (loadingText) {
-		/* 
+		/*
 		 * WebKit is auto-navigating to about:blank in response to a loadHTMLString()
 		 * invocation.  This navigate should always proceed without sending an event
 		 * since it is preceded by an explicit navigate to about:blank in setText().
@@ -1677,7 +1677,7 @@ void handleEvent(long /*int*/ evtId) {
 		/*
 		* Bug in WebKit.  Spurious and redundant mousemove events are received in
 		* various contexts, including following every MouseUp.  The workaround is
-		* to not fire MouseMove events whose x and y values match the last MouseMove  
+		* to not fire MouseMove events whose x and y values match the last MouseMove
 		*/
 		if (mouseEvent.x == lastMouseMoveX && mouseEvent.y == lastMouseMoveY) return;
 		mouseEvent.type = SWT.MouseMove;

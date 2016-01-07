@@ -27,7 +27,7 @@ import org.eclipse.swt.internal.cocoa.*;
  * <p>
  * IMPORTANT: This class is <em>not</em> intended to be subclassed.
  * </p>
- * 
+ *
  * @see <a href="http://www.eclipse.org/swt/examples.php">SWT Example: ControlExample, Dialog tab</a>
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  * @noextend This class is not intended to be subclassed by clients.
@@ -64,7 +64,7 @@ public ColorDialog(Shell parent) {
  * <p>
  * The style value is either one of the style constants defined in
  * class <code>SWT</code> which is applicable to instances of this
- * class, or must be built by <em>bitwise OR</em>'ing together 
+ * class, or must be built by <em>bitwise OR</em>'ing together
  * (that is, using the <code>int</code> "|" operator) two or more
  * of those <code>SWT</code> style constants. The class description
  * lists the style constants that are applicable to the class.
@@ -112,7 +112,7 @@ public RGB getRGB() {
  * if no custom colors were selected.
  *
  * @return the array of RGBs, which may be null
- * 
+ *
  * @since 3.8
  */
 public RGB[] getRGBs() {
@@ -132,7 +132,7 @@ public RGB[] getRGBs() {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  */
-public RGB open() {	
+public RGB open() {
 	NSColorPanel panel = NSColorPanel.sharedColorPanel();
 	Display display = parent != null ? parent.getDisplay() : Display.getCurrent();
 	if (rgb != null) {
@@ -221,7 +221,7 @@ public void setRGB(RGB rgb) {
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_INVALID_ARGUMENT - if an RGB in the rgbs array is null</li>
  * </ul>
- * 
+ *
  * @since 3.8
  */
 public void setRGBs(RGB[] rgbs) {

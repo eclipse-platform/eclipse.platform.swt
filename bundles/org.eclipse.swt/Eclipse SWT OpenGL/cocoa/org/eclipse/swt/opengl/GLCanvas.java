@@ -17,7 +17,7 @@ import org.eclipse.swt.opengl.GLData;
 
 /**
  * GLCanvas is a widget capable of displaying OpenGL content.
- * 
+ *
  * @see GLData
  * @see <a href="http://www.eclipse.org/swt/snippets/#opengl">OpenGL snippets</a>
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
@@ -28,7 +28,7 @@ import org.eclipse.swt.opengl.GLData;
 public class GLCanvas extends Canvas {
 	NSOpenGLContext context;
 	NSOpenGLPixelFormat pixelFormat;
-	
+
 	static final int MAX_ATTRIBUTES = 32;
 	static final String GLCONTEXT_KEY = "org.eclipse.swt.internal.cocoa.glcontext"; //$NON-NLS-1$
 
@@ -42,7 +42,7 @@ public class GLCanvas extends Canvas {
  *
  * @exception IllegalArgumentException
  * <ul><li>ERROR_NULL_ARGUMENT when the data is null
- *     <li>ERROR_UNSUPPORTED_DEPTH when the requested attributes cannot be provided</ul> 
+ *     <li>ERROR_UNSUPPORTED_DEPTH when the requested attributes cannot be provided</ul>
  * </ul>
  */
 public GLCanvas (Composite parent, int style, GLData data) {
@@ -52,67 +52,67 @@ public GLCanvas (Composite parent, int style, GLData data) {
 	int pos = 0;
 
 	if (data.doubleBuffer) attrib [pos++] = OS.NSOpenGLPFADoubleBuffer;
-	
+
 	if (data.stereo) attrib [pos++] = OS.NSOpenGLPFAStereo;
 
 	/*
 	 * Feature in Cocoa: NSOpenGL/CoreOpenGL only supports specifying the total number of bits
 	 * in the size of the color component. If specified, the color size is the sum of the red, green
-	 * and blue values in the GLData. 
+	 * and blue values in the GLData.
 	 */
 	if ((data.redSize + data.blueSize + data.greenSize) > 0) {
 		attrib [pos++] = OS.NSOpenGLPFAColorSize;
 		attrib [pos++] = data.redSize + data.greenSize + data.blueSize;
 	}
-	
+
 	if (data.alphaSize > 0) {
 		attrib [pos++] = OS.NSOpenGLPFAAlphaSize;
 		attrib [pos++] = data.alphaSize;
 	}
-	
+
 	if (data.depthSize > 0) {
 		attrib [pos++] = OS.NSOpenGLPFADepthSize;
 		attrib [pos++] = data.depthSize;
 	}
-	
+
 	if (data.stencilSize > 0) {
 		attrib [pos++] = OS.NSOpenGLPFAStencilSize;
 		attrib [pos++] = data.stencilSize;
 	}
-	
+
 	/*
 	 * Feature in Cocoa: NSOpenGL/CoreOpenGL only supports specifying the total number of bits
 	 * in the size of the color accumulator component. If specified, the color size is the sum of the red, green,
-	 * blue and alpha accum values in the GLData. 
+	 * blue and alpha accum values in the GLData.
 	 */
 	if ((data.accumRedSize + data.accumBlueSize + data.accumGreenSize) > 0) {
 		attrib [pos++] = OS.NSOpenGLPFAAccumSize;
 		attrib [pos++] = data.accumRedSize + data.accumGreenSize + data.accumBlueSize + data.accumAlphaSize;
 	}
-	
+
 	if (data.sampleBuffers > 0) {
 		attrib [pos++] = OS.NSOpenGLPFASampleBuffers;
 		attrib [pos++] = data.sampleBuffers;
 	}
-	
+
 	if (data.samples > 0) {
 		attrib [pos++] = OS.NSOpenGLPFASamples;
 		attrib [pos++] = data.samples;
 	}
-	
+
 	attrib [pos++] = 0;
-	
+
 	pixelFormat = (NSOpenGLPixelFormat)new NSOpenGLPixelFormat().alloc();
-	
-	if (pixelFormat == null) {		
+
+	if (pixelFormat == null) {
 		dispose ();
 		SWT.error (SWT.ERROR_UNSUPPORTED_DEPTH);
 	}
 	pixelFormat.initWithAttributes(attrib);
-	
+
 	NSOpenGLContext ctx = data.shareContext != null ? data.shareContext.context : null;
 	context = (NSOpenGLContext) new NSOpenGLContext().alloc();
-	if (context == null) {		
+	if (context == null) {
 		dispose ();
 		SWT.error (SWT.ERROR_UNSUPPORTED_DEPTH);
 	}
@@ -120,15 +120,15 @@ public GLCanvas (Composite parent, int style, GLData data) {
 	context.setValues(new int[]{-1}, OS.NSOpenGLCPSurfaceOrder);
 	setData(GLCONTEXT_KEY, context);
 	NSNotificationCenter.defaultCenter().addObserver(view,  OS.sel_updateOpenGLContext_, OS.NSViewGlobalFrameDidChangeNotification, view);
-	
+
 	Listener listener = new Listener () {
 		public void handleEvent (Event event) {
 			switch (event.type) {
-			
+
 				case SWT.Dispose:
 					setData(GLCONTEXT_KEY, null);
 					NSNotificationCenter.defaultCenter().removeObserver(view);
-					
+
 					if (context != null) {
 						context.clearDrawable();
 						context.release();
@@ -145,7 +145,7 @@ public GLCanvas (Composite parent, int style, GLData data) {
 
 /**
  * Returns a GLData object describing the created context.
- *  
+ *
  * @return GLData description of the OpenGL context attributes
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -176,12 +176,12 @@ public GLData getGLData () {
 	data.redSize = colorSize;
 	data.greenSize = colorSize;
 	data.blueSize = colorSize;
-	
+
 	pixelFormat.getValues(value, OS.NSOpenGLPFADepthSize, 0);
 	data.depthSize = (int/*64*/)value [0];
 	pixelFormat.getValues(value, OS.NSOpenGLPFAStencilSize, 0);
 	data.stencilSize = (int/*64*/)value [0];
-	
+
 	/*
 	 * Feature(?) in Cocoa: NSOpenGL/CoreOpenGL doesn't support setting an accumulation buffer alpha, but
 	 * has an alpha if the color values for the accumulation buffer were set. Allocate the values evenly
@@ -189,7 +189,7 @@ public GLData getGLData () {
 	 */
 	pixelFormat.getValues(value, OS.NSOpenGLPFAAccumSize, 0);
 
-	int accumColorSize = (int/*64*/)(value[0]) / 4;	
+	int accumColorSize = (int/*64*/)(value[0]) / 4;
 	data.accumRedSize = accumColorSize;
 	data.accumGreenSize = accumColorSize;
 	data.accumBlueSize = accumColorSize;
@@ -205,7 +205,7 @@ public GLData getGLData () {
 /**
  * Returns a boolean indicating whether the receiver's OpenGL context
  * is the current context.
- *  
+ *
  * @return true if the receiver holds the current OpenGL context,
  * false otherwise
  * @exception SWTException <ul>
@@ -222,7 +222,7 @@ public boolean isCurrent () {
 /**
  * Sets the OpenGL context associated with this GLCanvas to be the
  * current GL context.
- * 
+ *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
@@ -235,7 +235,7 @@ public void setCurrent () {
 
 /**
  * Swaps the front and back color buffers.
- * 
+ *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>

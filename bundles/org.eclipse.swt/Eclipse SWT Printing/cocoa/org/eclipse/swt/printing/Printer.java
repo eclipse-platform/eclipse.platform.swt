@@ -26,7 +26,7 @@ import org.eclipse.swt.internal.cocoa.*;
  * Alternatively, calling <code>new Printer()</code> will construct a
  * printer object for the user's default printer.
  * </p><p>
- * Application code must explicitly invoke the <code>Printer.dispose()</code> 
+ * Application code must explicitly invoke the <code>Printer.dispose()</code>
  * method to release the operating system resources managed by each instance
  * when those instances are no longer required.
  * </p>
@@ -44,7 +44,7 @@ public final class Printer extends Device {
 	NSView view;
 	NSWindow window;
 	boolean isGCCreated;
-	
+
 	static final String DRIVER = "Mac";
 
 /**
@@ -73,11 +73,11 @@ public static PrinterData[] getPrinterList() {
 
 /**
  * Returns a <code>PrinterData</code> object representing
- * the default printer or <code>null</code> if there is no 
+ * the default printer or <code>null</code> if there is no
  * default printer.
  *
  * @return the default printer data or null
- * 
+ *
  * @since 2.1
  */
 public static PrinterData getDefaultPrinterData() {
@@ -91,13 +91,13 @@ public static PrinterData getDefaultPrinterData() {
 	} finally {
 		if (pool != null) pool.release();
 	}
-	
+
 }
 
 /**
  * Constructs a new printer representing the default printer.
  * <p>
- * Note: You must dispose the printer when it is no longer required. 
+ * Note: You must dispose the printer when it is no longer required.
  * </p>
  *
  * @exception SWTError <ul>
@@ -115,7 +115,7 @@ public Printer() {
  * object representing the desired printer. If the argument
  * is null, then the default printer will be used.
  * <p>
- * Note: You must dispose the printer when it is no longer required. 
+ * Note: You must dispose the printer when it is no longer required.
  * </p>
  *
  * @param data the printer data for the specified printer, or null to use the default printer
@@ -153,7 +153,7 @@ public Printer(PrinterData data) {
  * 		<li>The bottom trim height is (y + height) pixels</li>
  * </ul>
  * </p>
- * 
+ *
  * @param x the x coordinate of the client area
  * @param y the y coordinate of the client area
  * @param width the width of the client area
@@ -187,7 +187,7 @@ public Rectangle computeTrim(int x, int y, int width, int height) {
 	}
 }
 
-/**	 
+/**
  * Creates the printer handle.
  * This method is called internally by the instance creation
  * mechanism of the <code>Device</code> class.
@@ -221,7 +221,7 @@ protected void create(DeviceData deviceData) {
 		}
 		/* Updating printInfo from PMPrintSettings overrides values in the printInfo dictionary. */
 		printInfo.updateFromPMPrintSettings();
-		NSMutableDictionary dict = printInfo.dictionary();	
+		NSMutableDictionary dict = printInfo.dictionary();
 		if (data.collate != false) dict.setValue(NSNumber.numberWithBool(data.collate), OS.NSPrintMustCollate);
 		if (data.copyCount != 1) dict.setValue(NSNumber.numberWithInt(data.copyCount), OS.NSPrintCopies);
 		dict.setValue(NSNumber.numberWithInt(data.orientation == PrinterData.LANDSCAPE ? OS.NSLandscapeOrientation : OS.NSPortraitOrientation), OS.NSPrintOrientation);
@@ -258,7 +258,7 @@ protected void create(DeviceData deviceData) {
 	}
 }
 
-/**	 
+/**
  * Destroys the printer handle.
  * This method is called internally by the dispose
  * mechanism of the <code>Device</code> class.
@@ -283,7 +283,7 @@ protected void destroy() {
 	}
 }
 
-/**	 
+/**
  * Invokes platform specific functionality to allocate a new GC handle.
  * <p>
  * <b>IMPORTANT:</b> This method is <em>not</em> part of the public
@@ -293,9 +293,9 @@ protected void destroy() {
  * application code.
  * </p>
  *
- * @param data the platform specific GC data 
+ * @param data the platform specific GC data
  * @return the platform specific GC handle
- * 
+ *
  * @noreference This method is not intended to be referenced by clients.
  */
 @Override
@@ -334,7 +334,7 @@ public long /*int*/ internal_new_GC(GCData data) {
  * If subclasses reimplement this method, they must
  * call the <code>super</code> implementation.
  * </p>
- * 
+ *
  * @see #create
  */
 @Override
@@ -348,7 +348,7 @@ protected void init () {
 	}
 }
 
-/**	 
+/**
  * Invokes platform specific functionality to dispose a GC handle.
  * <p>
  * <b>IMPORTANT:</b> This method is <em>not</em> part of the public
@@ -359,8 +359,8 @@ protected void init () {
  * </p>
  *
  * @param hDC the platform specific GC handle
- * @param data the platform specific GC data 
- * 
+ * @param data the platform specific GC data
+ *
  * @noreference This method is not intended to be referenced by clients.
  */
 @Override
@@ -368,7 +368,7 @@ public void internal_dispose_GC(long /*int*/ hDC, GCData data) {
 	if (data != null) isGCCreated = false;
 }
 
-/**	 
+/**
  * Releases any internal state prior to destroying this printer.
  * This method is called internally by the dispose
  * mechanism of the <code>Device</code> class.
@@ -392,7 +392,7 @@ float scalingFactor() {
  * endJob. Calling startPage, endPage, or endJob before startJob
  * will result in undefined behavior.
  * </p>
- * 
+ *
  * @param jobName the name of the print job to start
  * @return true if the job started successfully and false otherwise.
  *
@@ -455,7 +455,7 @@ public void endJob() {
 }
 
 /**
- * Cancels a print job in progress. 
+ * Cancels a print job in progress.
  *
  * @exception SWTException <ul>
  *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
@@ -479,7 +479,7 @@ static DeviceData checkNull (PrinterData data) {
 		PrinterData defaultPrinter = getDefaultPrinterData();
 		if (defaultPrinter == null) SWT.error(SWT.ERROR_NO_HANDLES);
 		data.driver = defaultPrinter.driver;
-		data.name = defaultPrinter.name;		
+		data.name = defaultPrinter.name;
 	}
 	return data;
 }
@@ -491,7 +491,7 @@ static DeviceData checkNull (PrinterData data) {
  * After calling startJob, this method may be called any number of times
  * along with a matching endPage.
  * </p>
- * 
+ *
  * @return true if the page started successfully and false otherwise.
  *
  * @exception SWTException <ul>
@@ -574,21 +574,21 @@ public Point getDPI() {
 	if (!NSThread.isMainThread()) pool = (NSAutoreleasePool) new NSAutoreleasePool().alloc().init();
 	try {
 		long /*int*/ pmPrintSession = printInfo.PMPrintSession();
-		long /*int*/ printer[] = new long /*int*/ [1]; 
+		long /*int*/ printer[] = new long /*int*/ [1];
 		long /*int*/ err = OS.PMSessionGetCurrentPrinter(pmPrintSession, printer);
-		
+
 		if (err == OS.noErr) {
 			long /*int*/ printSettings = printInfo.PMPrintSettings();
 			short[] destType = new short[1];
 			if (OS.PMSessionGetDestinationType(pmPrintSession, printSettings, destType) == OS.noErr) {
 				if (destType[0] == OS.kPMDestinationPrinter) {
 					PMResolution resolution =  new PMResolution();
-					
+
 					if (OS.PMPrinterGetOutputResolution(printer[0], printSettings, resolution) != OS.noErr) {
 						int numberOfResolutions[] = new int[1];
 						if (OS.PMPrinterGetPrinterResolutionCount(printer[0], numberOfResolutions) == OS.noErr) {
 							PMResolution tempResolution = new PMResolution();
-							tempResolution.hRes = tempResolution.vRes = 300.0;							
+							tempResolution.hRes = tempResolution.vRes = 300.0;
 							for (int i = 1; i <= numberOfResolutions[0]; i++) {
 								// PMPrinterGetIndexedPrinterResolution indexes are 1-based.
 								if (OS.PMPrinterGetIndexedPrinterResolution(printer[0], i, tempResolution) == OS.noErr) {
@@ -599,12 +599,12 @@ public Point getDPI() {
 							}
 						}
 					}
-					
+
 					return new Point((int)resolution.hRes, (int)resolution.vRes);
 				}
 			}
 		}
-		
+
 		return getIndependentDPI();
 	} finally {
 		if (pool != null) pool.release();
@@ -652,7 +652,7 @@ public Rectangle getBounds() {
  * For a printer, this is the size of the printable area
  * of the page, in pixels.
  * </p>
- * 
+ *
  * @return the client area
  *
  * @exception SWTException <ul>
@@ -680,7 +680,7 @@ public Rectangle getClientArea() {
 /**
  * Returns a <code>PrinterData</code> object representing the
  * target printer for this print job.
- * 
+ *
  * @return a PrinterData object describing the receiver
  */
 public PrinterData getPrinterData() {

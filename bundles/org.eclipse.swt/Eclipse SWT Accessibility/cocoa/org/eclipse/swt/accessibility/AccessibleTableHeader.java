@@ -19,7 +19,7 @@ import org.eclipse.swt.internal.cocoa.*;
  * rows with cells as children of those rows. The assumption is that the first 'row'
  * of cells (cell 0 to cell 'column-count - 1') are the column headers of the table.
  *
- * This class works with the parent control to act as the header section of the table, 
+ * This class works with the parent control to act as the header section of the table,
  * and reports the cells in the header so that screen readers (VoiceOver, mainly) can
  * identify the column of the cell that the VoiceOver cursor is reading.
  */
@@ -48,7 +48,7 @@ class AccessibleTableHeader extends Accessible {
 					event.accessible.parent = AccessibleTableHeader.this;
 					children[i] = event.accessible;
 				}
-				e.children = children; 
+				e.children = children;
 			}
 			@Override
 			public void getChildCount(AccessibleControlEvent e) {

@@ -19,7 +19,7 @@ import org.eclipse.swt.internal.cocoa.*;
  * These are typically in-line pre-edit text areas that allow
  * the user to compose characters from Far Eastern languages
  * such as Japanese, Chinese or Korean.
- * 
+ *
  * <dl>
  * <dt><b>Styles:</b></dt>
  * <dd>(none)</dd>
@@ -29,9 +29,9 @@ import org.eclipse.swt.internal.cocoa.*;
  * <p>
  * IMPORTANT: This class is <em>not</em> intended to be subclassed.
  * </p>
- * 
+ *
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
- * 
+ *
  * @since 3.4
  * @noextend This class is not intended to be subclassed by clients.
  */
@@ -43,9 +43,9 @@ public class IME extends Widget {
 	String text;
 	int [] ranges;
 	TextStyle [] styles;
-	
+
 	static final int UNDERLINE_THICK = 1 << 16;
-	
+
 /**
  * Prevents uninitialized instances from being created outside the package.
  */
@@ -58,7 +58,7 @@ IME () {
  * <p>
  * The style value is either one of the style constants defined in
  * class <code>SWT</code> which is applicable to instances of this
- * class, or must be built by <em>bitwise OR</em>'ing together 
+ * class, or must be built by <em>bitwise OR</em>'ing together
  * (that is, using the <code>int</code> "|" operator) two or more
  * of those <code>SWT</code> style constants. The class description
  * lists the style constants that are applicable to the class.
@@ -171,14 +171,14 @@ public int getCaretOffset () {
  * number of characters that have been composed.  When the
  * commit count is equal to the length of the composition
  * text, then the in-line edit operation is complete.
- * 
+ *
  * @return the commit count
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @see IME#getText
  */
 public int getCommitCount () {
@@ -219,7 +219,7 @@ public int getCompositionOffset () {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @see IME#getStyles
  */
 public int [] getRanges () {
@@ -227,7 +227,7 @@ public int [] getRanges () {
 	if (ranges == null) return new int [0];
 	int [] result = new int [ranges.length];
 	for (int i = 0; i < result.length; i++) {
-		result [i] = ranges [i] + startOffset; 
+		result [i] = ranges [i] + startOffset;
 	}
 	return result;
 }
@@ -240,14 +240,14 @@ public int [] getRanges () {
  * that starts at ranges[n] and ends at ranges[n+1] uses the style
  * at styles[n/2].
  * </p>
- * 
+ *
  * @return the ranges for the styles
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @see IME#getRanges
  */
 public TextStyle [] getStyles () {
@@ -291,7 +291,7 @@ TextStyle getStyle (NSDictionary attribs) {
 			NSFont font = new NSFont (attribs.objectForKey (key));
 			font.retain();
 			style.font = Font.cocoa_new (display, font);
-		} 
+		}
 	}
 	return style;
 }
@@ -322,7 +322,7 @@ public String getText () {
  * <code>false</code> otherwise.  In some languages, for example
  * Korean, the caret is typically widened to the width of the
  * current character in the in-line edit session.
- * 
+ *
  * @return the wide caret state
  *
  * @exception SWTException <ul>
@@ -331,7 +331,7 @@ public String getText () {
  * </ul>
  */
 public boolean getWideCaret() {
-	return false; 
+	return false;
 }
 
 @Override

@@ -14,11 +14,11 @@ import org.eclipse.swt.internal.cocoa.*;
 
 /**
  * This class is used to describe a table column for objects that have an accessible
- * role of ACC.ROLE_TABLE, but aren't implemented like NSTableViews. 
+ * role of ACC.ROLE_TABLE, but aren't implemented like NSTableViews.
  *
  * Instances of this class represent one row in a table. Cocoa accessibility expects
  * rows to report their location, and assumes the cells of the table are children of the rows.
- * 
+ *
  * @see TableAccessibleDelegate
  */
 class AccessibleTableRow extends Accessible {
@@ -26,7 +26,7 @@ class AccessibleTableRow extends Accessible {
 	public AccessibleTableRow(Accessible accessible, int childID) {
 		super(accessible);
 		index = childID;
-		
+
 		addAccessibleControlListener(new AccessibleControlAdapter() {
 			@Override
 			public void getChildCount(AccessibleControlEvent e) {
@@ -44,16 +44,16 @@ class AccessibleTableRow extends Accessible {
 						AccessibleTableListener listener = parent.accessibleTableListeners.get(j);
 						listener.getCell(event);
 					}
-					
+
 					if (event.accessible != null) {
 						event.accessible.parent = AccessibleTableRow.this;
 					}
-					
+
 					children[i] = event.accessible;
 				}
-				
+
 				e.children = children;
-			}			
+			}
 			@Override
 			public void getLocation(AccessibleControlEvent e) {
 				int validColumnCount = Math.max (1, parent.getColumnCount());
@@ -74,7 +74,7 @@ class AccessibleTableRow extends Accessible {
 				// Ask first child for position.
 				NSValue positionObj = (NSValue)children[0].getPositionAttribute(ACC.CHILDID_SELF);
 				NSPoint position = positionObj.pointValue();
-				
+
 				// Ask all children for size.
 				int height = 0;
 				int width = 0;
@@ -121,7 +121,7 @@ class AccessibleTableRow extends Accessible {
 				}
 			}
 		});
-		
+
 		addAccessibleTableListener(new AccessibleTableAdapter() {
 			@Override
 			public void isColumnSelected(AccessibleTableEvent e) {
@@ -137,10 +137,10 @@ class AccessibleTableRow extends Accessible {
 					listener.isRowSelected(event);
 				}
 				e.isSelected = event.isSelected;
-			}			
+			}
 		});
 	}
-	
+
 	void getChildAtPoint(AccessibleControlEvent e) {
 		int validColumnCount = Math.max (1, parent.getColumnCount());
 		Accessible[] children = new Accessible[validColumnCount];
@@ -156,11 +156,11 @@ class AccessibleTableRow extends Accessible {
 
 			children[i] = event.accessible;
 		}
-		
+
 		for (int j = 0; j < children.length; j++) {
 			NSValue positionObj = (NSValue)children[j].getPositionAttribute(index);
 			NSPoint position = positionObj.pointValue();
-			
+
 			NSValue sizeObj = (NSValue)children[j].getSizeAttribute(index);
 			NSSize size = sizeObj.sizeValue();
 

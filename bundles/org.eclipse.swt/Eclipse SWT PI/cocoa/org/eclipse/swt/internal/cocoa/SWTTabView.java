@@ -15,7 +15,7 @@ public class SWTTabView extends NSTabView {
 public SWTTabView() {
 	super(0);
 }
-	
+
 public SWTTabView(long /*int*/ id) {
 	super(id);
 }

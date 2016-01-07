@@ -17,7 +17,7 @@ import org.eclipse.swt.internal.cocoa.*;
 
 /**
  * Instances of this class represent a selectable
- * user interface object that displays a text with 
+ * user interface object that displays a text with
  * links.
  * <p>
  * <dl>
@@ -33,7 +33,7 @@ import org.eclipse.swt.internal.cocoa.*;
  * @see <a href="http://www.eclipse.org/swt/snippets/#link">Link snippets</a>
  * @see <a href="http://www.eclipse.org/swt/examples.php">SWT Example: ControlExample</a>
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
- * 
+ *
  * @since 3.1
  * @noextend This class is not intended to be subclassed by clients.
  */
@@ -46,14 +46,14 @@ public class Link extends Control {
 	NSColor linkColor;
 	int focusIndex;
 	boolean ignoreNextMouseUp;
-	
+
 /**
  * Constructs a new instance of this class given its parent
  * and a style value describing its behavior and appearance.
  * <p>
  * The style value is either one of the style constants defined in
  * class <code>SWT</code> which is applicable to instances of this
- * class, or must be built by <em>bitwise OR</em>'ing together 
+ * class, or must be built by <em>bitwise OR</em>'ing together
  * (that is, using the <code>int</code> "|" operator) two or more
  * of those <code>SWT</code> style constants. The class description
  * lists the style constants that are applicable to the class.
@@ -217,7 +217,7 @@ void createHandle () {
 	dict.removeObjectForKey(OS.NSBackgroundColorAttributeName);
 	dict.setObject(NSCursor.arrowCursor(), OS.NSCursorAttributeName);
 	widget.setSelectedTextAttributes(dict);
-	
+
 	scrollView = scrollWidget;
 	view = widget;
 }
@@ -230,7 +230,7 @@ void createWidget () {
 	linkColor = new NSColor(dict.valueForKey(OS.NSForegroundColorAttributeName));
 	offsets = new Point [0];
 	ids = new String [0];
-	mnemonics = new int [0]; 
+	mnemonics = new int [0];
 	focusIndex = -1;
 }
 
@@ -284,7 +284,7 @@ Cursor findCursor () {
 @Override
 void enableWidget (boolean enabled) {
 	super.enableWidget (enabled);
-	NSColor nsColor = null; 
+	NSColor nsColor = null;
 	if (enabled) {
 		if (foreground == null) {
 			nsColor = NSColor.textColor ();
@@ -311,7 +311,7 @@ NSRect[] getRectangles(int linkIndex) {
 	 * rectangles is > 1 when the link has multiple lines.
 	 */
 	if (linkIndex == -1) return null;
-	
+
 	NSTextView widget = ((NSTextView)view);
 	NSLayoutManager layoutManager = widget.layoutManager();
 	NSRange range = new NSRange();
@@ -321,7 +321,7 @@ NSRect[] getRectangles(int linkIndex) {
 
 	long /*int*/ rangePtr = OS.malloc(NSRange.sizeof);
 	NSRange lineRange = new NSRange();
-	
+
 	/* compute number of lines in the link */
 	int numberOfLines = 0;
 	long /*int*/ index = glyphRange.location;
@@ -332,7 +332,7 @@ NSRect[] getRectangles(int linkIndex) {
 		OS.memmove(lineRange, rangePtr, NSRange.sizeof);
 		index = lineRange.location + lineRange.length;
 	}
-	
+
 	/* compute the enclosing rectangle(s) for the link*/
 	NSRect [] result = new NSRect[numberOfLines];
 	index = glyphRange.location;
@@ -340,7 +340,7 @@ NSRect[] getRectangles(int linkIndex) {
 		NSRect usedRect = layoutManager.lineFragmentUsedRectForGlyphAtIndex(index, rangePtr, true);
 		OS.memmove(lineRange, rangePtr, NSRange.sizeof);
 		index = lineRange.location + lineRange.length;
-		
+
 		if (lineRange.location < glyphRange.location) {
 			lineRange.length = index - glyphRange.location;
 			lineRange.location = glyphRange.location;
@@ -440,7 +440,7 @@ public void removeSelectionListener (SelectionListener listener) {
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (eventTable == null) return;
 	eventTable.unhook (SWT.Selection, listener);
-	eventTable.unhook (SWT.DefaultSelection, listener);	
+	eventTable.unhook (SWT.DefaultSelection, listener);
 }
 
 String parse (String string) {
@@ -456,7 +456,7 @@ String parse (String string) {
 	while (index < length) {
 		char c = Character.toLowerCase (buffer [index]);
 		switch (state) {
-			case 0: 
+			case 0:
 				if (c == '<') {
 					tagStart = index;
 					state++;
@@ -569,7 +569,7 @@ String parse (String string) {
 		ids = newIDs;
 		int [] newMnemonics = new int [linkIndex + 1];
 		System.arraycopy (mnemonics, 0, newMnemonics, 0, linkIndex + 1);
-		mnemonics = newMnemonics;		
+		mnemonics = newMnemonics;
 	}
 	return result.toString ();
 }
@@ -610,7 +610,7 @@ boolean sendKeyEvent(int type, Event event) {
 	if (!result) return result;
 	if (focusIndex == -1) return result;
 	if (type != SWT.KeyDown)  return result;
-	
+
 	int keyCode = event.keyCode;
 	switch (keyCode) {
 	case SWT.CR:
@@ -634,7 +634,7 @@ boolean sendKeyEvent(int type, Event event) {
 				focusIndex--;
 				redraw ();
 				return false;
-			} 
+			}
 		}
 		break;
 	}
@@ -700,7 +700,7 @@ void setOrientation () {
  * </p>
  * <p>
  * Mnemonics are indicated by an '&amp;' that causes the next
- * character to be the mnemonic. The receiver can have a    
+ * character to be the mnemonic. The receiver can have a
  * mnemonic in the text preceding each link. When the user presses a
  * key sequence that matches the mnemonic, focus is assigned
  * to the link that follows the text. Mnemonics in links and in
@@ -709,8 +709,8 @@ void setOrientation () {
  * platform specific manner.  The mnemonic indicator character
  * '&amp;' can be escaped by doubling it in the string, causing
  * a single '&amp;' to be displayed.
- * </p> 
- * 
+ * </p>
+ *
  * @param string the new text
  *
  * @exception IllegalArgumentException <ul>
@@ -773,7 +773,7 @@ int traversalCode (int key, NSEvent theEvent) {
 void updateCursorRects (boolean enabled) {
 	super.updateCursorRects (enabled);
 	if (scrollView == null) return;
-	updateCursorRects (enabled, scrollView);	
+	updateCursorRects (enabled, scrollView);
 	NSClipView contentView = scrollView.contentView ();
 	updateCursorRects (enabled, contentView);
 	contentView.setDocumentCursor (enabled ? NSCursor.arrowCursor () : null);

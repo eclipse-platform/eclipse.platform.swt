@@ -16,7 +16,7 @@ public class SWTView extends NSView {
 public SWTView() {
 	super(0);
 }
-	
+
 public SWTView(long /*int*/ id) {
 	super(id);
 }

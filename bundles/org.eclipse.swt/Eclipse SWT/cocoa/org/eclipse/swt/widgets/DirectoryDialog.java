@@ -27,7 +27,7 @@ import org.eclipse.swt.internal.cocoa.*;
  * <p>
  * IMPORTANT: This class is <em>not</em> intended to be subclassed.
  * </p>
- * 
+ *
  * @see <a href="http://www.eclipse.org/swt/snippets/#directorydialog">DirectoryDialog snippets</a>
  * @see <a href="http://www.eclipse.org/swt/examples.php">SWT Example: ControlExample, Dialog tab</a>
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
@@ -59,7 +59,7 @@ public DirectoryDialog (Shell parent) {
  * <p>
  * The style value is either one of the style constants defined in
  * class <code>SWT</code> which is applicable to instances of this
- * class, or must be built by <em>bitwise OR</em>'ing together 
+ * class, or must be built by <em>bitwise OR</em>'ing together
  * (that is, using the <code>int</code> "|" operator) two or more
  * of those <code>SWT</code> style constants. The class description
  * lists the style constants that are applicable to the class.
@@ -90,7 +90,7 @@ public DirectoryDialog (Shell parent, int style) {
  * the directories it shows.
  *
  * @return the filter path
- * 
+ *
  * @see #setFilterPath
  */
 public String getFilterPath () {
@@ -125,8 +125,8 @@ public String open () {
 	NSOpenPanel panel = NSOpenPanel.openPanel();
 
 	Display display = parent != null ? parent.getDisplay() : Display.getCurrent();
-	/* 
-	 * This line is intentionally commented. Don't show hidden files forcefully, 
+	/*
+	 * This line is intentionally commented. Don't show hidden files forcefully,
 	 * instead allow Directory dialog to use the system preference.
 	 */
 	//	OS.objc_msgSend(panel.id, OS.sel_setShowsHiddenFiles_, true);
@@ -163,7 +163,7 @@ public String open () {
  * visible on the dialog while it is open.
  *
  * @param string the message
- * 
+ *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the string is null</li>
  * </ul>

@@ -18,5 +18,5 @@ public class objc_super {
 	public long /*int*/ receiver;
 	/** @field accessor=swt_super_class,cast=(Class) */
 	public long /*int*/ super_class;
-	public static final int sizeof = OS.objc_super_sizeof();	
+	public static final int sizeof = OS.objc_super_sizeof();
 }

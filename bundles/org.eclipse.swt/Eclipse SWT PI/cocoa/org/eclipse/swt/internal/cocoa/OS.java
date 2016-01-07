@@ -16,7 +16,7 @@ public class OS extends C {
 	static {
 		Library.loadLibrary("swt-pi"); //$NON-NLS-1$
 	}
-	
+
 	/**
 	 * NOTE: For new code, use {@link #VERSION_MMB} and {@link #VERSION_MMB(int, int, int)}
 	 */
@@ -34,24 +34,24 @@ public class OS extends C {
 		int bugFix = response [0];
 		VERSION_MMB = VERSION_MMB (major, minor, bugFix);
 	}
-	
+
 	public static int VERSION_MMB (int major, int minor, int bugFix) {
 		return (major << 16) + (minor << 8) + bugFix;
 	}
-	
+
 	/*
 	 *  Magic number explanation, from Cocoa's TextSizingExample:
-	 *  
+	 *
 	 *  "The first is called LargeNumberForText [1.0e7] and it was not arbitrarily chosen.
 	 *  The actual value was chosen to be around the largest floating point value possible that can preserve at least pixel precision. [...]
-	 *  It is not wise to use bigger dimensions for text system objects because, even if you ever fill all that space, 
-	 *  by the time you get to the far reaches, the letters won't have the precision necessary to look and act correctly. 
-	 *  [...] Because the Cocoa text system respects this limit in various ways, a second constant, NotQuiteAsLargeNumberForText, is used for the 
-	 *  field-like text views created by the FieldAspect class. This is simply half of LargeNumberForText; at sizes as large as LargeNumberForText, 
+	 *  It is not wise to use bigger dimensions for text system objects because, even if you ever fill all that space,
+	 *  by the time you get to the far reaches, the letters won't have the precision necessary to look and act correctly.
+	 *  [...] Because the Cocoa text system respects this limit in various ways, a second constant, NotQuiteAsLargeNumberForText, is used for the
+	 *  field-like text views created by the FieldAspect class. This is simply half of LargeNumberForText; at sizes as large as LargeNumberForText,
 	 *  the text system stops aligning text, for various reasons."
 	 */
 	public static final double /*float*/ MAX_TEXT_CONTAINER_SIZE = 0.5e7f;
-	
+
 	public static final int gestaltSystemVersion = ('s'<<24) + ('y'<<16) + ('s'<<8) + 'v';
 	public static final int gestaltSystemVersionMajor = ('s'<<24) + ('y'<<16) + ('s'<<8) + '1';
 	public static final int gestaltSystemVersionMinor = ('s'<<24) + ('y'<<16) + ('s'<<8) + '2';
@@ -77,8 +77,8 @@ public class OS extends C {
 	public static final int kLSUnknownCreator = 0;
 	public static final int kLSRolesAll = 0xFFFFFFFF;
 	public static final int kAXUnderlineStyleNone = 0x0;
-	public static final int kAXUnderlineStyleSingle = 0x1; 
-	public static final int kAXUnderlineStyleThick = 0x2; 
+	public static final int kAXUnderlineStyleSingle = 0x1;
+	public static final int kAXUnderlineStyleThick = 0x2;
 	public static final int kAXUnderlineStyleDouble = 0x9;
 	public static final int kPMDestinationPrinter = 1;
 	public static final int kPMDuplexNone = 0x0001;
@@ -101,14 +101,14 @@ public class OS extends C {
 	public static final long /*int*/ sel_systemSettingsChanged_ = sel_registerName("systemSettingsChanged:");
 	public static final long /*int*/ sel_panelDidEnd_returnCode_contextInfo_ = sel_registerName("panelDidEnd:returnCode:contextInfo:");
 	public static final long /*int*/ sel_updateOpenGLContext_ = sel_registerName("updateOpenGLContext:");
-	
+
 	public static final long /*int*/ sel_overwriteExistingFileCheck = sel_registerName("_overwriteExistingFileCheck:");
 	public static final long /*int*/ sel_setShowsHiddenFiles_ = sel_registerName("setShowsHiddenFiles:");
 
 	public static final long /*int*/ sel_contextID = OS.sel_registerName("contextID");
 
 	public static final long /*int*/ sel__drawThemeProgressArea_ = OS.sel_registerName("_drawThemeProgressArea:");
-	
+
 	public static final long /*int*/ sel__setDashboardBehavior = OS.sel_registerName("_setDashboardBehavior:to:");
 
 	public static final long /*int*/ sel__setNeedsToUseHeartBeatWindow_ = OS.sel_registerName("_setNeedsToUseHeartBeatWindow:");
@@ -117,21 +117,21 @@ public class OS extends C {
 	public static final long /*int*/ sel_sharedHandler = sel_registerName("sharedHandler");
 	public static final long /*int*/ sel_startAuthentication = sel_registerName("startAuthentication:window:");
 	public static final long /*int*/ sel_setAllowsAnyHTTPSCertificate = sel_registerName("setAllowsAnyHTTPSCertificate:forHost:");
-	
+
 	public static final long /*int*/ sel_accessibleHandle = sel_registerName("accessibleHandle");
 	public static final long /*int*/ sel_getImageView = sel_registerName("getImageView");
 
 	public static final long /*int*/ sel_clearDeferFlushing = sel_registerName("clearDeferFlushing");
-	
+
 	public static final long /*int*/ sel_setShouldExpandItem_ = sel_registerName("setShouldExpandItem:");
 	public static final long /*int*/ sel_setShouldScrollClipView_ = sel_registerName("setShouldScrollClipView:");
-	
+
 	/* These are not generated in order to avoid creating static methods on all classes */
 	public static final long /*int*/ sel_isSelectorExcludedFromWebScript_ = sel_registerName("isSelectorExcludedFromWebScript:");
 	public static final long /*int*/ sel_webScriptNameForSelector_ = sel_registerName("webScriptNameForSelector:");
-	
+
 	public static final long /*int*/ sel_setColor_forAttribute_ = sel_registerName("setColor:forAttribute:");
-	
+
 	public static final long /*int*/ sel_javaRunLoopMode = sel_registerName("javaRunLoopMode");
 
 	/* These are not generated in order to avoid attempting to create a java method called "null" */
@@ -145,7 +145,7 @@ public class OS extends C {
 	public static final native long /*int*/ CALLBACK_NSTextAttachmentCell_cellSize(long /*int*/ func);
 	public static final long /*int*/ protocol_NSTextAttachmentCell = objc_getProtocol("NSTextAttachmentCell");
 	public static final long /*int*/ sel_cellBaselineOffset = sel_registerName("cellBaselineOffset");
-	
+
 	/*10.6 Accessibility Strings*/
 	/** @method flags=const dynamic no_gen*/
 	public static final native long /*int*/ NSAccessibilityRowIndexRangeAttribute();
@@ -159,7 +159,7 @@ public class OS extends C {
 	/** @method flags=const dynamic no_gen*/
 	public static final native long /*int*/ NSAccessibilityCellRole();
 	public static final NSString NSAccessibilityCellRole = new NSString(NSAccessibilityCellRole());
-	
+
 	/** 10.7 selectors and constants */
 	public static final long /*int*/ sel_isCompatibleWithOverlayScrollers = sel_registerName("isCompatibleWithOverlayScrollers");
 	public static final long /*int*/ sel_flashScrollers = sel_registerName("flashScrollers");
@@ -177,7 +177,7 @@ public class OS extends C {
 	/* AWT application delegate. Remove these when JavaRuntimeSupport.framework has bridgesupport generated for it. */
 	public static final long /*int*/ class_JRSAppKitAWT = objc_getClass("JRSAppKitAWT");
 	public static final long /*int*/ sel_awtAppDelegate = sel_registerName("awtAppDelegate");
-	
+
 	public static final long /*int*/ class_NSToolbarView = objc_getClass("NSToolbarView");
 
 /** JNI natives */
@@ -189,7 +189,7 @@ public static final native long /*int*/ NewGlobalRef(Object object);
  * @param globalRef cast=(jobject)
  */
 public static final native void DeleteGlobalRef(long /*int*/ globalRef);
-/** @method flags=no_gen */ 
+/** @method flags=no_gen */
 public static final native Object JNIGetObject(long /*int*/ globalRef);
 
 /** Carbon calls */
@@ -209,20 +209,20 @@ public static final native int GetCurrentEventButtonState();
 /** @method flags=dynamic */
 public static final native int GetDblTime();
 /** @method flags=dynamic
-	@param inCreator cast=(OSType) 
-	@param inType cast=(OSType) 
-	@param inExtension cast=(CFStringRef) 
-	@param inMIMEType cast=(CFStringRef) 
-	@param inUsageFlags cast=(IconServicesUsageFlags) 
+	@param inCreator cast=(OSType)
+	@param inType cast=(OSType)
+	@param inExtension cast=(CFStringRef)
+	@param inMIMEType cast=(CFStringRef)
+	@param inUsageFlags cast=(IconServicesUsageFlags)
 	@param outIconRef cast=(IconRef *) */
 public static final native int GetIconRefFromTypeInfo(int inCreator, int inType, long /*int*/ inExtension, long /*int*/ inMIMEType, int inUsageFlags, long /*int*/ outIconRef[]);
-/** @method flags=dynamic 
+/** @method flags=dynamic
     @param context cast=(CGContextRef) */
 public static final native long /*int*/ CGContextCopyPath(long /*int*/ context);
 /** @method flags=dynamic */
 public static final native long /*int*/ TISCopyCurrentKeyboardInputSource();
-/** @method flags=dynamic 
-    @param inputSource cast=(TISInputSourceRef) 
+/** @method flags=dynamic
+    @param inputSource cast=(TISInputSourceRef)
     @param propertyKey cast=(CFStringRef) */
 public static final native long /*int*/ TISGetInputSourceProperty (long /*int*/ inputSource, long /*int*/ propertyKey);
 /** @method flags=no_gen */
@@ -277,7 +277,7 @@ public static final int kThemeCopyArrowCursor = 1;
 public static final int kThemeNotAllowedCursor = 18;
 public static final int kThemeAliasArrowCursor = 2;
 
-/** @method flags=dynamic 
+/** @method flags=dynamic
  * @param iFile cast=(const FSRef *)
  * @param iContext cast=(ATSFontContext)
  * @param iFormat cast=(ATSFontFormat)
@@ -291,7 +291,7 @@ public static final int kATSFontContextLocal = 2;
 public static final int kATSOptionFlagsDefault = 0;
 public static final int kATSFontFormatUnspecified = 0;
 
-/** @method flags=dynamic 
+/** @method flags=dynamic
  * @param path cast=(const UInt8 *)
  * @param ref cast=(FSRef *)
  * @param isDirectory cast=(Boolean *)
@@ -511,7 +511,7 @@ public static final native void JSStringRelease (long /*int*/ string);
  * @param certType cast=(CSSM_CERT_TYPE)
  * @param policyOID cast=(CSSM_OID *)
  * @param value cast=(CSSM_DATA *)
- * @param policySearch cast=(SecPolicySearchRef *) 
+ * @param policySearch cast=(SecPolicySearchRef *)
  */
 public static final native int SecPolicySearchCreate(long /*int*/ certType, long /*int*/ policyOID, long /*int*/ value, long /*int*/ [] policySearch);
 
@@ -521,10 +521,10 @@ public static final native int SecPolicySearchCreate(long /*int*/ certType, long
  */
 public static final native int SecPolicySearchCopyNext(long /*int*/ searchRef, long /*int*/ [] policyRef);
 
-/** 
+/**
  * @param certificates cast=(CFArrayRef)
  * @param policies cast=(CFTypeRef)
- * @param trustRef cast=(SecTrustRef *) 
+ * @param trustRef cast=(SecTrustRef *)
  */
 public static final native int SecTrustCreateWithCertificates(long /*int*/ certificates, long /*int*/ policies, long /*int*/ [] trustRef);
 
@@ -642,7 +642,7 @@ public static final native long /*int*/ object_getInstanceVariable(long /*int*/ 
 public static final native long /*int*/ object_setInstanceVariable(long /*int*/ obj, byte[] name, long /*int*/ value);
 /**
  * @param obj cast=(id)
- * @param clazz cast=(Class) 
+ * @param clazz cast=(Class)
  */
 public static final native long /*int*/ object_setClass(long /*int*/ obj, long /*int*/ clazz);
 public static final native long /*int*/ sel_registerName(String selectorName);

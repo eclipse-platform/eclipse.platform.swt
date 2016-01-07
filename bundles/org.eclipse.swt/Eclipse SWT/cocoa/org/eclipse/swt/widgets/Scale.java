@@ -49,7 +49,7 @@ public class Scale extends Control {
  * <p>
  * The style value is either one of the style constants defined in
  * class <code>SWT</code> which is applicable to instances of this
- * class, or must be built by <em>bitwise OR</em>'ing together 
+ * class, or must be built by <em>bitwise OR</em>'ing together
  * (that is, using the <code>int</code> "|" operator) two or more
  * of those <code>SWT</code> style constants. The class description
  * lists the style constants that are applicable to the class.
@@ -117,7 +117,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	NSSlider widget = (NSSlider)view;
 	double /*float*/ thickness = widget.knobThickness();
 	int width = DEFAULT_WIDTH, height = DEFAULT_HEIGHT;
-	if ((style & SWT.HORIZONTAL) != 0) {		
+	if ((style & SWT.HORIZONTAL) != 0) {
 		height = (int)Math.ceil(thickness);
 		width = height * 10;
 	} else {
@@ -265,7 +265,7 @@ public void removeSelectionListener(SelectionListener listener) {
 @Override
 void sendSelection () {
 	NSEvent currEvent = NSApplication.sharedApplication().currentEvent();
-	
+
 	if (currEvent.type() != OS.NSLeftMouseUp)
 		sendSelectionEvent (SWT.Selection);
 }
@@ -273,7 +273,7 @@ void sendSelection () {
 /**
  * Sets the amount that the receiver's value will be
  * modified by when the up/down (or right/left) arrows
- * are pressed to the argument, which must be at least 
+ * are pressed to the argument, which must be at least
  * one.
  *
  * @param increment the new increment (must be greater than zero)

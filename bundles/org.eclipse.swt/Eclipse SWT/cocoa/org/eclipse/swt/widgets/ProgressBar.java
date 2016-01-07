@@ -38,7 +38,7 @@ import org.eclipse.swt.*;
  * @noextend This class is not intended to be subclassed by clients.
  */
 public class ProgressBar extends Control {
-	
+
 	NSBezierPath visiblePath;
 
 /**
@@ -47,7 +47,7 @@ public class ProgressBar extends Control {
  * <p>
  * The style value is either one of the style constants defined in
  * class <code>SWT</code> which is applicable to instances of this
- * class, or must be built by <em>bitwise OR</em>'ing together 
+ * class, or must be built by <em>bitwise OR</em>'ing together
  * (that is, using the <code>int</code> "|" operator) two or more
  * of those <code>SWT</code> style constants. The class description
  * lists the style constants that are applicable to the class.
@@ -124,13 +124,13 @@ void _drawThemeProgressArea (long /*int*/ id, long /*int*/ sel, long /*int*/ arg
 	*/
 	NSRect frame = view.frame();
 	if (frame.width == 0 || frame.height == 0) return;
-	
+
 	/*
 	* Bug in Cocoa. When the progress bar is animating it calls
 	* _drawThemeProgressArea() directly without taking into account
 	* obscured areas. The fix is to clip the drawing to the visible
 	* region of the progress bar before calling super.
-	*/	
+	*/
 	if (visiblePath == null) {
 		long /*int*/ visibleRegion = getVisibleRegion();
 		visiblePath = getPath(visibleRegion);
@@ -140,7 +140,7 @@ void _drawThemeProgressArea (long /*int*/ id, long /*int*/ sel, long /*int*/ arg
 	context.saveGraphicsState();
 	visiblePath.setClip();
 	super._drawThemeProgressArea (id, sel, arg0);
-	context.restoreGraphicsState();	
+	context.restoreGraphicsState();
 }
 
 /**
@@ -196,13 +196,13 @@ public int getSelection () {
  * 	<li>{@link SWT#PAUSED}</li>
  * </ul>
  *
- * @return the state 
+ * @return the state
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 3.4
  */
 public int getState () {
@@ -296,14 +296,14 @@ public void setSelection (int value) {
  * Note: This operation is a hint and is not supported on
  * platforms that do not have this concept.
  * </p>
- * 
+ *
  * @param state the new state
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 3.4
  */
 public void setState (int state) {

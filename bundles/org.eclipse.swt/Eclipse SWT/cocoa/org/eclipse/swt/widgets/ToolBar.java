@@ -10,7 +10,7 @@
  *******************************************************************************/
 package org.eclipse.swt.widgets;
 
- 
+
 import org.eclipse.swt.*;
 import org.eclipse.swt.accessibility.*;
 import org.eclipse.swt.graphics.*;
@@ -58,7 +58,7 @@ public class ToolBar extends Composite {
  * <p>
  * The style value is either one of the style constants defined in
  * class <code>SWT</code> which is applicable to instances of this
- * class, or must be built by <em>bitwise OR</em>'ing together 
+ * class, or must be built by <em>bitwise OR</em>'ing together
  * (that is, using the <code>int</code> "|" operator) two or more
  * of those <code>SWT</code> style constants. The class description
  * lists the style constants that are applicable to the class.
@@ -91,7 +91,7 @@ public ToolBar (Composite parent, int style) {
 
 ToolBar(Composite parent, int style, boolean internal) {
 	super (parent, checkStyle (parent, style, internal));
-	
+
 	/*
 	* Ensure that either of HORIZONTAL or VERTICAL is set.
 	* NOTE: HORIZONTAL and VERTICAL have the same values
@@ -115,7 +115,7 @@ long /*int*/ accessibilityAttributeValue (long /*int*/ id, long /*int*/ sel, lon
 		id returnObject = accessible.internal_accessibilityAttributeValue(nsAttributeName, ACC.CHILDID_SELF);
 		if (returnObject != null) return returnObject.id;
 	}
-	
+
 	if (nsAttributeName.isEqualToString (OS.NSAccessibilityRoleAttribute) || nsAttributeName.isEqualToString (OS.NSAccessibilityRoleDescriptionAttribute)) {
 		NSString role = OS.NSAccessibilityToolbarRole;
 
@@ -127,7 +127,7 @@ long /*int*/ accessibilityAttributeValue (long /*int*/ id, long /*int*/ sel, lon
 		}
 	} else if (nsAttributeName.isEqualToString(OS.NSAccessibilityChildrenAttribute)) {
 		NSMutableArray returnValue = NSMutableArray.arrayWithCapacity(itemCount);
-		
+
 		for (int i = 0; i < itemCount; i++) {
 			returnValue.addObject(new id(getItem(i).accessibleHandle()));
 		}
@@ -138,7 +138,7 @@ long /*int*/ accessibilityAttributeValue (long /*int*/ id, long /*int*/ sel, lon
 		boolean focused = (view.id == view.window().firstResponder().id);
 		return NSNumber.numberWithBool(focused).id;
 	}
-	
+
 	return super.accessibilityAttributeValue(id, sel, arg0);
 }
 
@@ -146,7 +146,7 @@ long /*int*/ accessibilityAttributeValue (long /*int*/ id, long /*int*/ sel, lon
 boolean accessibilityIsIgnored(long /*int*/ id, long /*int*/ sel) {
 	// Toolbars aren't ignored.
 	if (id == view.id) return false;
-	return super.accessibilityIsIgnored(id, sel);	
+	return super.accessibilityIsIgnored(id, sel);
 }
 
 static int checkStyle (Composite parent, int style, boolean internal) {
@@ -158,14 +158,14 @@ static int checkStyle (Composite parent, int style, boolean internal) {
 	* the SWT style.
 	*/
 	int newStyle = style & ~(SWT.H_SCROLL | SWT.V_SCROLL);
-	
+
 	/*
 	 * Only internal clients can create an NSToolbar-based ToolBar.
 	 */
 	if (!internal && (newStyle & SWT.SMOOTH) != 0) {
 		newStyle &= ~SWT.SMOOTH;
 	}
-	
+
 	/*
 	 * A unified toolbar can only be parented to a Shell, and
 	 * there can only be one unified toolbar per shell. If neither of these
@@ -179,15 +179,15 @@ static int checkStyle (Composite parent, int style, boolean internal) {
 			newStyle &= ~SWT.SMOOTH;
 		}
 	}
-	
+
 	/*
 	 * Unified toolbar only supports a horizontal layout, and doesn't wrap.
 	 */
 	if ((newStyle & SWT.SMOOTH) != 0) {
-		newStyle &= ~(SWT.VERTICAL | SWT.WRAP); 
+		newStyle &= ~(SWT.VERTICAL | SWT.WRAP);
 		newStyle |= SWT.HORIZONTAL;
 	}
-	
+
 	return newStyle;
 }
 
@@ -279,7 +279,7 @@ void createItem (ToolItem item, int index) {
 	System.arraycopy (items, index, items, index + 1, itemCount++ - index);
 	items [index] = item;
 	if (nsToolbar != null) {
-        nsToolbar.insertItemWithItemIdentifier(item.getItemID(), index);	    
+        nsToolbar.insertItemWithItemIdentifier(item.getItemID(), index);
 	} else {
         view.addSubview(item.view);
 	}
@@ -368,7 +368,7 @@ public Rectangle getBounds () {
 		rect = view.convertRect_toView_(rect, null);
 		return new Rectangle((int)rect.x, (int)rect.y, (int)rect.width, (int)rect.height);
 	}
-	
+
 	return super.getBounds();
 }
 
@@ -451,11 +451,11 @@ public int getItemCount () {
 
 /**
  * Returns an array of <code>ToolItem</code>s which are the items
- * in the receiver. 
+ * in the receiver.
  * <p>
  * Note: This is not the actual structure used by the receiver
  * to maintain its list of items, so modifying the array will
- * not affect the receiver. 
+ * not affect the receiver.
  * </p>
  *
  * @return the items in the receiver
@@ -498,7 +498,7 @@ boolean hasKeyboardFocus(long /*int*/ inId) {
 
 /**
  * Searches the receiver's list starting at the first item
- * (index 0) until an item is found that is equal to the 
+ * (index 0) until an item is found that is equal to the
  * argument, and returns the index of that item. If no item
  * is found, returns -1.
  *
@@ -556,7 +556,7 @@ int [] layoutHorizontal (int width, int height, boolean resize) {
 		x += xSpacing + size.x;
 		maxX = Math.max (maxX, x);
 	}
-	
+
 	return new int [] {rows, maxX, y + itemHeight};
 }
 
@@ -587,7 +587,7 @@ int [] layoutUnified (int width, int height, boolean resize) {
 		x += containerRects[i].width;
 		maxX = Math.max (maxX, x);
 	}
-	
+
 	return new int [] {1, maxX, itemHeight};
 }
 
@@ -623,7 +623,7 @@ int [] layoutVertical (int width, int height, boolean resize) {
 		y += ySpacing + size.y;
 		maxY = Math.max (maxY, y);
 	}
-	
+
 	return new int [] {cols, x + itemWidth, maxY};
 }
 
@@ -717,13 +717,13 @@ boolean sendMouseEvent (NSEvent nsEvent, int type, boolean send) {
 		for (int i = 0; i < itemCount; i++) {
 			ToolItem item = items [i];
 			int currState = item.state;
-			NSPoint viewPoint = item.view.convertPoint_fromView_(windowPoint, null); 
+			NSPoint viewPoint = item.view.convertPoint_fromView_(windowPoint, null);
 			if (item.view.mouse(viewPoint, item.view.bounds())) {
 				item.state |= Widget.HOT;
 			} else {
-				item.state &= ~Widget.HOT;				
+				item.state &= ~Widget.HOT;
 			}
-			
+
 			if (currState != item.state) item.updateImage(true);
 		}
 		break;
@@ -731,12 +731,12 @@ boolean sendMouseEvent (NSEvent nsEvent, int type, boolean send) {
 		for (int i = 0; i < itemCount; i++) {
 			ToolItem item = items [i];
 			int currState = item.state;
-			item.state &= ~Widget.HOT;				
+			item.state &= ~Widget.HOT;
 			if (currState != item.state) item.updateImage(true);
 		}
 		break;
 	}
-	
+
 	return super.sendMouseEvent(nsEvent, type, send);
 }
 
@@ -747,7 +747,7 @@ void setBounds (int x, int y, int width, int height, boolean move, boolean resiz
 	if (nsToolbar != null) return;
 	super.setBounds(x, y, width, height, move, resize);
 }
-	
+
 @Override
 void setFont(NSFont font) {
 	for (int i = 0; i < itemCount; i++) {
@@ -804,7 +804,7 @@ long /*int*/ toolbarDefaultItemIdentifiers(long /*int*/ id, long /*int*/ sel, lo
 
 /*
  * toolbarSelectableItemIdentifiers returns an array of all items that can be the selected item, as determined
- * by setSelectedItemIdentifier. 
+ * by setSelectedItemIdentifier.
  */
 @Override
 long /*int*/ toolbarSelectableItemIdentifiers(long /*int*/ id, long /*int*/ sel, long /*int*/ toolbar) {
@@ -834,15 +834,15 @@ boolean translateTraversal (int key, NSEvent theEvent, boolean[] consume) {
 		next = true;
 		checkPopup = true;
 		break;
-		
+
 	default: return false;
 	}
 	consume [0] = true;
-	
+
 	if (checkPopup && lastFocus != null) {
 		if (lastFocus.handleKeyDown()) return false;
 	}
-	
+
 	ToolItem[] items = getItems();
 	ToolItem item = lastFocus;
 	int length = items.length;

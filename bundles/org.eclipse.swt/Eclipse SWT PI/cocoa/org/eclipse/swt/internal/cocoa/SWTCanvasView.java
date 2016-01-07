@@ -16,7 +16,7 @@ public class SWTCanvasView extends NSView {
 public SWTCanvasView() {
 	super(0);
 }
-	
+
 public SWTCanvasView(long /*int*/ id) {
 	super(id);
 }

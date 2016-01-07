@@ -15,7 +15,7 @@ public class SWTDragSourceDelegate extends NSObject {
 	public SWTDragSourceDelegate() {
 		super(0);
 	}
-		
+
 	public SWTDragSourceDelegate(long /*int*/ id) {
 		super(id);
 	}

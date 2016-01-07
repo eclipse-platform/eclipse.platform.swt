@@ -18,6 +18,6 @@ public class NSPoint {
 
 	@Override
 	public String toString() {
-		return "NSPoint{" + x + "," + y + "}"; 
+		return "NSPoint{" + x + "," + y + "}";
 	}
 }

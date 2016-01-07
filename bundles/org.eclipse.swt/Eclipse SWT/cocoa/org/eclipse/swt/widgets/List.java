@@ -16,7 +16,7 @@ import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.cocoa.*;
 
-/** 
+/**
  * Instances of this class represent a selectable user interface
  * object that displays a list of strings and issues notification
  * when a string is selected.  A list may be single or multi select.
@@ -54,7 +54,7 @@ public class List extends Scrollable {
  * <p>
  * The style value is either one of the style constants defined in
  * class <code>SWT</code> which is applicable to instances of this
- * class, or must be built by <em>bitwise OR</em>'ing together 
+ * class, or must be built by <em>bitwise OR</em>'ing together
  * (that is, using the <code>int</code> "|" operator) two or more
  * of those <code>SWT</code> style constants. The class description
  * lists the style constants that are applicable to the class.
@@ -93,7 +93,7 @@ long /*int*/ accessibilityAttributeValue (long /*int*/ id, long /*int*/ sel, lon
 //		*/
 //		return 0;
 //	}
-	
+
 	return super.accessibilityAttributeValue(id, sel, arg0);
 }
 
@@ -251,7 +251,7 @@ void createHandle () {
 	if ((style & SWT.V_SCROLL) != 0) scrollWidget.setHasVerticalScroller(true);
 	scrollWidget.setAutohidesScrollers(true);
 	scrollWidget.setBorderType((style & SWT.BORDER) != 0 ? OS.NSBezelBorder : OS.NSNoBorder);
-	
+
 	NSTableView widget = (NSTableView)new SWTTableView().alloc();
 	widget.init();
 	widget.setAllowsMultipleSelection((style & SWT.MULTI) != 0);
@@ -266,12 +266,12 @@ void createHandle () {
 	widget.setIntercellSpacing(spacing);
 	widget.setDoubleAction(OS.sel_sendDoubleSelection);
 	if (!hasBorder()) widget.setFocusRingType(OS.NSFocusRingTypeNone);
-	
+
 	column = (NSTableColumn)new NSTableColumn().alloc();
 	column = column.initWithIdentifier(NSString.stringWith(String.valueOf(++NEXT_ID)));
 	column.setWidth(0);
 	widget.addTableColumn (column);
-	
+
 	scrollView = scrollWidget;
 	view = widget;
 }
@@ -321,7 +321,7 @@ public void deselect (int index) {
 
 /**
  * Deselects the items at the given zero-relative indices in the receiver.
- * If the item at the given zero-relative index in the receiver 
+ * If the item at the given zero-relative index in the receiver
  * is selected, it is deselected.  If the item at the index
  * was not selected, it remains deselected.  The range of the
  * indices is inclusive. Indices that are out of range are ignored.
@@ -354,7 +354,7 @@ public void deselect (int start, int end) {
 
 /**
  * Deselects the items at the given zero-relative indices in the receiver.
- * If the item at the given zero-relative index in the receiver 
+ * If the item at the given zero-relative index in the receiver
  * is selected, it is deselected.  If the item at the index
  * was not selected, it remains deselected. Indices that are out
  * of range and duplicate indices are ignored.
@@ -515,11 +515,11 @@ public int getItemHeight () {
 
 /**
  * Returns a (possibly empty) array of <code>String</code>s which
- * are the items in the receiver. 
+ * are the items in the receiver.
  * <p>
  * Note: This is not the actual structure used by the receiver
  * to maintain its list of items, so modifying the array will
- * not affect the receiver. 
+ * not affect the receiver.
  * </p>
  *
  * @return the items in the receiver's list
@@ -543,7 +543,7 @@ public String [] getItems () {
  * <p>
  * Note: This is not the actual structure used by the receiver
  * to maintain its selection, so modifying the array will
- * not affect the receiver. 
+ * not affect the receiver.
  * </p>
  * @return an array representing the selection
  *
@@ -615,7 +615,7 @@ public int getSelectionIndex () {
  * <p>
  * Note: This is not the actual structure used by the receiver
  * to maintain its selection, so modifying the array will
- * not affect the receiver. 
+ * not affect the receiver.
  * </p>
  * @return the array of indices of the selected items
  *
@@ -694,7 +694,7 @@ public int indexOf (String string) {
 }
 
 /**
- * Searches the receiver's list starting at the given, 
+ * Searches the receiver's list starting at the given,
  * zero-relative index until an item is found that is equal
  * to the argument, and returns the index of that item. If
  * no item is found or the starting index is out of range,
@@ -742,21 +742,21 @@ public boolean isSelected (int index) {
 
 /*
  * Feature in Cocoa: Table views do not change the selection when the user
- * right-clicks or control-clicks on an NSTableView or its subclasses. Fix is to select the 
+ * right-clicks or control-clicks on an NSTableView or its subclasses. Fix is to select the
  * clicked-on row ourselves.
  */
 @Override
 long /*int*/ menuForEvent(long /*int*/ id, long /*int*/ sel, long /*int*/ theEvent) {
 	NSEvent event = new NSEvent(theEvent);
 	NSTableView table = (NSTableView)view;
-	
-	// get the current selections for the outline view. 
+
+	// get the current selections for the outline view.
 	NSIndexSet selectedRowIndexes = table.selectedRowIndexes();
-	
+
 	// select the row that was clicked before showing the menu for the event
 	NSPoint mousePoint = view.convertPoint_fromView_(event.locationInWindow(), null);
 	long /*int*/ row = table.rowAtPoint(mousePoint);
-	
+
 	// figure out if the row that was just clicked on is currently selected
 	if (selectedRowIndexes.containsIndex(row) == false) {
 		NSIndexSet set = (NSIndexSet)new NSIndexSet().alloc();
@@ -765,7 +765,7 @@ long /*int*/ menuForEvent(long /*int*/ id, long /*int*/ sel, long /*int*/ theEve
 		set.release();
 	}
 	// else that row is currently selected, so don't change anything.
-	
+
 	return super.menuForEvent(id, sel, theEvent);
 }
 
@@ -806,7 +806,7 @@ void releaseHandle () {
 }
 
 @Override
-void releaseWidget () {	
+void releaseWidget () {
 	super.releaseWidget ();
 	items = null;
 }
@@ -841,7 +841,7 @@ void remove (int index, boolean fixScroll) {
 
 /**
  * Removes the items from the receiver which are
- * between the given zero-relative start and end 
+ * between the given zero-relative start and end
  * indices (inclusive).
  *
  * @param start the start of the range
@@ -868,7 +868,7 @@ public void remove (int start, int end) {
 
 /**
  * Searches the receiver's list starting at the first item
- * until an item is found that is equal to the argument, 
+ * until an item is found that is equal to the argument,
  * and removes that item from the list.
  *
  * @param string the item to remove
@@ -970,7 +970,7 @@ public void removeSelectionListener(SelectionListener listener) {
 }
 
 /**
- * Selects the item at the given zero-relative index in the receiver's 
+ * Selects the item at the given zero-relative index in the receiver's
  * list.  If the item at the index was already selected, it remains
  * selected. Indices that are out of range are ignored.
  *
@@ -1013,7 +1013,7 @@ public void select (int index) {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @see List#setSelection(int,int)
  */
 public void select (int start, int end) {
@@ -1057,7 +1057,7 @@ public void select (int start, int end) {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @see List#setSelection(int[])
  */
 public void select (int [] indices) {
@@ -1147,7 +1147,7 @@ boolean sendMouseEvent (NSEvent nsEvent, int type, boolean send) {
 			mouseIsDown = true;
 		} else if (type == SWT.MouseUp || type == SWT.DragDetect) {
 			mouseIsDown = false;
-			
+
 			if (rowsChanged) {
 				rowsChanged = false;
 				((NSTableView)view).noteNumberOfRowsChanged();
@@ -1263,7 +1263,7 @@ boolean setScrollWidth () {
 }
 
 /**
- * Selects the item at the given zero-relative index in the receiver. 
+ * Selects the item at the given zero-relative index in the receiver.
  * If the item at the index was already selected, it remains selected.
  * The current selection is first cleared, then the new item is selected,
  * and if necessary the receiver is scrolled to make the new selection visible.
@@ -1502,13 +1502,13 @@ long /*int*/ tableView_objectValueForTableColumn_row(long /*int*/ id, long /*int
 long /*int*/ tableView_selectionIndexesForProposedSelection (long /*int*/ id, long /*int*/ sel, long /*int*/ aTableView, long /*int*/ indexSet) {
 	if ((style & SWT.SINGLE) != 0) {
 		/*
-		 * Feature in Cocoa.  Calling setAllowsEmptySelection will automatically select the first row of the list. 
+		 * Feature in Cocoa.  Calling setAllowsEmptySelection will automatically select the first row of the list.
 		 * And, single-selection NSTable/OutlineViews allow the user to de-select the selected item via command-click.
 		 * This is normal platform behavior, but for compatibility with other platforms, if the SINGLE style is in use,
-		 * force a selection by seeing if the proposed selection set is empty, and if so, put back the currently selected row.  
+		 * force a selection by seeing if the proposed selection set is empty, and if so, put back the currently selected row.
 		 */
 		NSIndexSet indexes = new NSIndexSet(indexSet);
-		NSTableView table = new NSTableView(aTableView);			
+		NSTableView table = new NSTableView(aTableView);
 		if (indexes.count() != 1 && table.selectedRow() != -1) {
 			NSIndexSet newSelection = (NSIndexSet)new NSIndexSet().alloc();
 			newSelection = newSelection.initWithIndex(table.selectedRow());
@@ -1516,13 +1516,13 @@ long /*int*/ tableView_selectionIndexesForProposedSelection (long /*int*/ id, lo
 			return newSelection.id;
 		}
 	}
-	
+
 	return indexSet;
 }
 
-void updateRowCount() {	
+void updateRowCount() {
 	/*
-	 * Feature in Cocoa. Changing the row count while the mouse is tracking will confuse the code that calculates the 
+	 * Feature in Cocoa. Changing the row count while the mouse is tracking will confuse the code that calculates the
 	 * current selection.  Fix is to not call noteNumberOfRowsChanged if the mouse is down.
 	 */
 	if (mouseIsDown) {
