@@ -10,8 +10,6 @@
  *******************************************************************************/
 package org.eclipse.swt;
 
-import org.eclipse.swt.internal.*;
-
 /**
  * This error is thrown whenever an unrecoverable error
  * occurs internally in SWT. The message text and error code 
@@ -140,10 +138,6 @@ public String getMessage () {
 @Override
 public void printStackTrace () {
 	super.printStackTrace ();
-	if (Library.JAVA_VERSION < Library.JAVA_VERSION(1, 4, 0) && throwable != null) {
-		System.err.println ("*** Stack trace of contained error ***"); //$NON-NLS-1$
-		throwable.printStackTrace ();
-	}
 }
 
 }

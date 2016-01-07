@@ -263,51 +263,31 @@ public static Frame new_Frame (final Composite parent) {
 				case SWT.Activate:
 					EventQueue.invokeLater(new Runnable () {
 						public void run () {
-							if (Library.JAVA_VERSION < Library.JAVA_VERSION(1, 4, 0)) {
-								frame.dispatchEvent (new WindowEvent (frame, WindowEvent.WINDOW_ACTIVATED));
-								frame.dispatchEvent (new FocusEvent (frame, FocusEvent.FOCUS_GAINED));
-							} else if (Library.JAVA_VERSION < Library.JAVA_VERSION(1, 5, 0)) {
-								frame.dispatchEvent (new WindowEvent (frame, WindowEvent.WINDOW_ACTIVATED));
-								frame.dispatchEvent (new WindowEvent (frame, 207 /*WindowEvent.WINDOW_GAINED_FOCUS*/));
-							} else {
-								if (frame.isActive()) return;
-								try {
-									Class<?> clazz = frame.getClass();
-									Method method = clazz.getMethod("synthesizeWindowActivation", boolean.class);
-									if (method != null) method.invoke(frame, Boolean.TRUE);
-								} catch (Throwable e) {}
-							}
+							if (frame.isActive()) return;
+							try {
+								Class<?> clazz = frame.getClass();
+								Method method = clazz.getMethod("synthesizeWindowActivation", boolean.class);
+								if (method != null) method.invoke(frame, Boolean.TRUE);
+							} catch (Throwable e) {}
 						}
 					});
 					break;
 				case SWT.Deactivate:
 					EventQueue.invokeLater(new Runnable () {
 						public void run () {
-							if (Library.JAVA_VERSION < Library.JAVA_VERSION(1, 4, 0)) {
-								frame.dispatchEvent (new WindowEvent (frame, WindowEvent.WINDOW_DEACTIVATED));
-								frame.dispatchEvent (new FocusEvent (frame, FocusEvent.FOCUS_LOST));
-							} else if (Library.JAVA_VERSION < Library.JAVA_VERSION(1, 5, 0)) {
-								frame.dispatchEvent (new WindowEvent (frame, 208 /*WindowEvent.WINDOW_LOST_FOCUS*/));
-								frame.dispatchEvent (new WindowEvent (frame, WindowEvent.WINDOW_DEACTIVATED));
-							} else {
-								if (!frame.isActive()) return;
-								try {
-									Class<?> clazz = frame.getClass();
-									Method method = clazz.getMethod("synthesizeWindowActivation", boolean.class);
-									if (method != null) method.invoke(frame, Boolean.FALSE);
-								} catch (Throwable e) {}
-							}
+							if (!frame.isActive()) return;
+							try {
+								Class<?> clazz = frame.getClass();
+								Method method = clazz.getMethod("synthesizeWindowActivation", boolean.class);
+								if (method != null) method.invoke(frame, Boolean.FALSE);
+							} catch (Throwable e) {}
 						}
 					});
 					break;
 			}
 		}
 	};
-	if (Library.JAVA_VERSION < Library.JAVA_VERSION(1, 5, 0)) {
-		parent.addListener (SWT.Activate, listener);
-	} else {
-		parent.addListener (SWT.FocusIn, listener);
-	}
+	parent.addListener (SWT.FocusIn, listener);
 	parent.addListener (SWT.Deactivate, listener);
 	parent.addListener (SWT.Dispose, listener);
 	
