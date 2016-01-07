@@ -16,22 +16,22 @@ import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.widgets.*;
 
 /**
- * This adapter class provides a default drag under effect (eg. select and scroll) 
+ * This adapter class provides a default drag under effect (eg. select and scroll)
  * when a drag occurs over a <code>StyledText</code>.
- * 
+ *
  * <p>Classes that wish to provide their own drag under effect for a <code>StyledText</code>
  * can extend this class, override the <code>StyledTextDropTargetEffect.dragOver</code>
- * method and override any other applicable methods in <code>StyledTextDropTargetEffect</code> to 
+ * method and override any other applicable methods in <code>StyledTextDropTargetEffect</code> to
  * display their own drag under effect.</p>
  *
  * Subclasses that override any methods of this class should call the corresponding
  * <code>super</code> method to get the default drag under effect implementation.
  *
- * <p>The feedback value is either one of the FEEDBACK constants defined in 
- * class <code>DND</code> which is applicable to instances of this class, 
- * or it must be built by <em>bitwise OR</em>'ing together 
+ * <p>The feedback value is either one of the FEEDBACK constants defined in
+ * class <code>DND</code> which is applicable to instances of this class,
+ * or it must be built by <em>bitwise OR</em>'ing together
  * (that is, using the <code>int</code> "|" operator) two or more
- * of those <code>DND</code> effect constants. 
+ * of those <code>DND</code> effect constants.
  * </p>
  * <p>
  * <dl>
@@ -39,27 +39,27 @@ import org.eclipse.swt.widgets.*;
  * <dd>FEEDBACK_SELECT, FEEDBACK_SCROLL</dd>
  * </dl>
  * </p>
- * 
+ *
  * @see DropTargetAdapter
  * @see DropTargetEvent
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
- * 
+ *
  * @since 3.3
  */
 public class StyledTextDropTargetEffect extends DropTargetEffect {
 	static final int CARET_WIDTH = 2;
 	static final int SCROLL_HYSTERESIS = 100; // milli seconds
 	static final int SCROLL_TOLERANCE = 20; // pixels
-	
+
 	int currentOffset = -1;
 	long scrollBeginTime;
 	int scrollX = -1, scrollY = -1;
 	Listener paintListener;
-	
+
 	/**
-	 * Creates a new <code>StyledTextDropTargetEffect</code> to handle the drag under effect on the specified 
+	 * Creates a new <code>StyledTextDropTargetEffect</code> to handle the drag under effect on the specified
 	 * <code>StyledText</code>.
-	 * 
+	 *
 	 * @param styledText the <code>StyledText</code> over which the user positions the cursor to drop the data
 	 */
 	public StyledTextDropTargetEffect(StyledText styledText) {
@@ -76,18 +76,18 @@ public class StyledTextDropTargetEffect extends DropTargetEffect {
 			}
 		};
 	}
-	
+
 	/**
 	 * This implementation of <code>dragEnter</code> provides a default drag under effect
 	 * for the feedback specified in <code>event.feedback</code>.
-	 * 
+	 *
 	 * For additional information see <code>DropTargetAdapter.dragEnter</code>.
-	 * 
+	 *
 	 * Subclasses that override this method should call <code>super.dragEnter(event)</code>
 	 * to get the default drag under effect implementation.
 	 *
 	 * @param event  the information associated with the drag start event
-	 * 
+	 *
 	 * @see DropTargetAdapter
 	 * @see DropTargetEvent
 	 */
@@ -100,18 +100,18 @@ public class StyledTextDropTargetEffect extends DropTargetEffect {
 		getControl().removeListener(SWT.Paint, paintListener);
 		getControl().addListener (SWT.Paint, paintListener);
 	}
-	
+
 	/**
 	 * This implementation of <code>dragLeave</code> provides a default drag under effect
 	 * for the feedback specified in <code>event.feedback</code>.
-	 * 
+	 *
 	 * For additional information see <code>DropTargetAdapter.dragLeave</code>.
-	 * 
+	 *
 	 * Subclasses that override this method should call <code>super.dragLeave(event)</code>
 	 * to get the default drag under effect implementation.
 	 *
 	 * @param event  the information associated with the drag leave event
-	 * 
+	 *
 	 * @see DropTargetAdapter
 	 * @see DropTargetEvent
 	 */
@@ -130,14 +130,14 @@ public class StyledTextDropTargetEffect extends DropTargetEffect {
 	/**
 	 * This implementation of <code>dragOver</code> provides a default drag under effect
 	 * for the feedback specified in <code>event.feedback</code>.
-	 * 
+	 *
 	 * For additional information see <code>DropTargetAdapter.dragOver</code>.
-	 * 
+	 *
 	 * Subclasses that override this method should call <code>super.dragOver(event)</code>
 	 * to get the default drag under effect implementation.
 	 *
 	 * @param event  the information associated with the drag over event
-	 * 
+	 *
 	 * @see DropTargetAdapter
 	 * @see DropTargetEvent
 	 * @see DND#FEEDBACK_SELECT
@@ -147,7 +147,7 @@ public class StyledTextDropTargetEffect extends DropTargetEffect {
 	public void dragOver(DropTargetEvent event) {
 		int effect = event.feedback;
 		StyledText text = (StyledText) getControl();
-		
+
 		Point pt = text.getDisplay().map(null, text, event.x, event.y);
 		if ((effect & DND.FEEDBACK_SCROLL) == 0) {
 			scrollBeginTime = 0;
@@ -194,7 +194,7 @@ public class StyledTextDropTargetEffect extends DropTargetEffect {
 				}
 			}
 		}
-			
+
 		if ((effect & DND.FEEDBACK_SELECT) != 0) {
 			int[] trailing = new int [1];
 			int newOffset = text.getOffsetAtPoint(pt.x, pt.y, trailing, false);
@@ -224,14 +224,14 @@ public class StyledTextDropTargetEffect extends DropTargetEffect {
 	/**
 	 * This implementation of <code>dropAccept</code> provides a default drag under effect
 	 * for the feedback specified in <code>event.feedback</code>.
-	 * 
+	 *
 	 * For additional information see <code>DropTargetAdapter.dropAccept</code>.
-	 * 
+	 *
 	 * Subclasses that override this method should call <code>super.dropAccept(event)</code>
 	 * to get the default drag under effect implementation.
 	 *
 	 * @param event  the information associated with the drop accept event
-	 * 
+	 *
 	 * @see DropTargetAdapter
 	 * @see DropTargetEvent
 	 */

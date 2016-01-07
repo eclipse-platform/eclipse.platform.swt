@@ -34,24 +34,24 @@ import org.eclipse.swt.widgets.*;
 *			subItem.setText("item " + i + " " + j);
 *		}
 *	}
-*	
+*
 *	final TreeEditor editor = new TreeEditor(tree);
 *	//The editor must have the same size as the cell and must
 *	//not be any smaller than 50 pixels.
 *	editor.horizontalAlignment = SWT.LEFT;
 *	editor.grabHorizontal = true;
 *	editor.minimumWidth = 50;
-*	
+*
 *	tree.addSelectionListener(new SelectionAdapter() {
 *		public void widgetSelected(SelectionEvent e) {
 *			// Clean up any previous editor control
 *			Control oldEditor = editor.getEditor();
 *			if (oldEditor != null) oldEditor.dispose();
-*	
+*
 *			// Identify the selected row
 *			TreeItem item = (TreeItem)e.item;
 *			if (item == null) return;
-*	
+*
 *			// The control that will be the editor must be a child of the Tree
 *			Text newEditor = new Text(tree, SWT.NONE);
 *			newEditor.setText(item.getText());
@@ -71,7 +71,7 @@ import org.eclipse.swt.widgets.*;
 * @see <a href="http://www.eclipse.org/swt/snippets/#treeeditor">TreeEditor snippets</a>
 * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
 */
-public class TreeEditor extends ControlEditor {	
+public class TreeEditor extends ControlEditor {
 	Tree tree;
 	TreeItem item;
 	int column = 0;
@@ -79,7 +79,7 @@ public class TreeEditor extends ControlEditor {
 	TreeListener treeListener;
 	Runnable timer;
 	static final int TIMEOUT = 1500;
-	
+
 /**
 * Creates a TreeEditor for the specified Tree.
 *
@@ -124,7 +124,7 @@ public TreeEditor (Tree tree) {
 		}
 	};
 	tree.addTreeListener(treeListener);
-	
+
 	// To be consistent with older versions of SWT, grabVertical defaults to true
 	grabVertical = true;
 }
@@ -146,17 +146,17 @@ Rectangle computeBounds () {
 
 	if (grabHorizontal) {
 		if (tree.getColumnCount() == 0) {
-			// Bounds of tree item only include the text area - stretch out to include 
+			// Bounds of tree item only include the text area - stretch out to include
 			// entire client area
 			cell.width = area.x + area.width - cell.x;
 		}
 		editorRect.width = Math.max(cell.width, minimumWidth);
 	}
-	
+
 	if (grabVertical) {
 		editorRect.height = Math.max(cell.height, minimumHeight);
 	}
-	
+
 	if (horizontalAlignment == SWT.RIGHT) {
 		editorRect.x += cell.width - editorRect.width;
 	} else if (horizontalAlignment == SWT.LEFT) {
@@ -166,7 +166,7 @@ Rectangle computeBounds () {
 	}
 	// don't let the editor overlap with the +/- of the tree
 	editorRect.x = Math.max(cell.x, editorRect.x);
-	
+
 	if (verticalAlignment == SWT.BOTTOM) {
 		editorRect.y += cell.height - editorRect.height;
 	} else if (verticalAlignment == SWT.TOP) {
@@ -236,7 +236,7 @@ void resize () {
 
 /**
 * Sets the zero based index of the column of the cell being tracked by this editor.
-* 
+*
 * @param column the zero based index of the column of the cell being tracked by this editor
 *
 * @since 3.1
@@ -256,8 +256,8 @@ public void setColumn(int column) {
 		this.column = -1;
 	}
 
-	if (column < 0  || column >= tree.getColumnCount()) return;	
-		
+	if (column < 0  || column >= tree.getColumnCount()) return;
+
 	this.column = column;
 	TreeColumn treeColumn = tree.getColumn(this.column);
 	treeColumn.addControlListener(columnListener);
@@ -279,7 +279,7 @@ public void setItem (TreeItem item) {
 *
 * <p>Note: The Control provided as the editor <b>must</b> be created with its parent being the Tree control
 * specified in the TreeEditor constructor.
-* 
+*
 * @param editor the Control that is displayed above the cell being edited
 * @param item the TreeItem for the row of the cell being tracked by this editor
 * @param column the zero based index of the column of the cell being tracked by this editor
@@ -302,7 +302,7 @@ public void setEditor (Control editor) {
 *
 * <p>Note: The Control provided as the editor <b>must</b> be created with its parent being the Tree control
 * specified in the TreeEditor constructor.
-* 
+*
 * @param editor the Control that is displayed above the cell being edited
 * @param item the TreeItem for the row of the cell being tracked by this editor
 */
@@ -314,7 +314,7 @@ public void setEditor (Control editor, TreeItem item) {
 @Override
 public void layout () {
 	if (tree == null || tree.isDisposed()) return;
-	if (item == null || item.isDisposed()) return;	
+	if (item == null || item.isDisposed()) return;
 	int columnCount = tree.getColumnCount();
 	if (columnCount == 0 && column != 0) return;
 	if (columnCount > 0 && (column < 0 || column >= columnCount)) return;

@@ -16,7 +16,7 @@ import org.eclipse.swt.widgets.*;
 
 /**
  * This class provides the layout for CTabFolder
- * 
+ *
  * @see CTabFolder
  */
 class CTabFolderLayout extends Layout {
@@ -39,7 +39,7 @@ protected Point computeSize(Composite composite, int wHint, int hHint, boolean f
 			tabW += renderer.computeSize(i, state, gc, SWT.DEFAULT, SWT.DEFAULT).x;
 		}
 	}
-	
+
 	int width = 0, wrapHeight = 0;
 	boolean leftControl = false, rightControl = false;
 	if (wHint == SWT.DEFAULT) {
@@ -79,7 +79,7 @@ protected Point computeSize(Composite composite, int wHint, int hHint, boolean f
 	tabW += width;
 
 	gc.dispose();
-	
+
 	int controlW = 0;
 	int controlH = 0;
 	// preferred size of controls in tab items
@@ -96,10 +96,10 @@ protected Point computeSize(Composite composite, int wHint, int hHint, boolean f
 	int minHeight = (folder.minimized) ? 0 : controlH + wrapHeight;
 	if (minWidth == 0) minWidth = CTabFolder.DEFAULT_WIDTH;
 	if (minHeight == 0) minHeight = CTabFolder.DEFAULT_HEIGHT;
-	
+
 	if (wHint != SWT.DEFAULT) minWidth  = wHint;
 	if (hHint != SWT.DEFAULT) minHeight = hHint;
-	
+
 	return new Point (minWidth, minHeight);
 }
 @Override

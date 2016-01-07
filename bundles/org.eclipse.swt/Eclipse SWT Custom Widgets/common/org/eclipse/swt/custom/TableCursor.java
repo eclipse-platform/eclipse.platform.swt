@@ -23,18 +23,18 @@ import org.eclipse.swt.events.*;
  * <p>
  * For a detailed example of using a TableCursor to navigate to a cell and then edit it see
  * http://git.eclipse.org/c/platform/eclipse.platform.swt.git/tree/examples/org.eclipse.swt.snippets/src/org/eclipse/swt/snippets/Snippet96.java .
- * 
+ *
  * <dl>
  * <dt><b>Styles:</b></dt>
  * <dd>BORDER</dd>
  * <dt><b>Events:</b></dt>
  * <dd>Selection, DefaultSelection</dd>
  * </dl>
- * 
+ *
  * @since 2.0
  *
  * @see <a href="http://www.eclipse.org/swt/snippets/#tablecursor">TableCursor snippets</a>
- * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a> 
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  */
 public class TableCursor extends Canvas {
 	Table table;
@@ -55,7 +55,7 @@ public class TableCursor extends Canvas {
  * <p>
  * The style value is either one of the style constants defined in
  * class <code>SWT</code> which is applicable to instances of this
- * class, or must be built by <em>bitwise OR</em>'ing together 
+ * class, or must be built by <em>bitwise OR</em>'ing together
  * (that is, using the <code>int</code> "|" operator) two or more
  * of those <code>SWT</code> style constants. The class description
  * lists the style constants that are applicable to the class.
@@ -82,7 +82,7 @@ public TableCursor(Table parent, int style) {
 	table = parent;
 	setBackground(null);
 	setForeground(null);
-	
+
 	listener = new Listener() {
 		public void handleEvent(Event event) {
 			switch (event.type) {
@@ -204,7 +204,7 @@ public TableCursor(Table parent, int style) {
  * @see SelectionListener
  * @see SelectionEvent
  * @see #removeSelectionListener(SelectionListener)
- * 
+ *
  */
 public void addSelectionListener(SelectionListener listener) {
 	checkWidget();
@@ -251,7 +251,7 @@ void keyDown(Event event) {
 			break;
         case SWT.ARROW_LEFT :
         case SWT.ARROW_RIGHT :
-        	{	
+        	{
         		int columnCount = table.getColumnCount();
         		if (columnCount == 0) break;
         		int[] order = table.getColumnOrder();
@@ -337,7 +337,7 @@ void paint(Event event) {
 		String platform = SWT.getPlatform();
 		if ("win32".equals(platform)) { //$NON-NLS-1$
 			if (table.getColumnCount() == 0 || columnIndex == 0) {
-				x += 2; 
+				x += 2;
 			} else {
 				int alignmnent = column.getAlignment();
 				switch (alignmnent) {
@@ -354,7 +354,7 @@ void paint(Event event) {
 			}
 		}  else {
 			if (table.getColumnCount() == 0) {
-				x += 5; 
+				x += 5;
 			} else {
 				int alignmnent = column.getAlignment();
 				switch (alignmnent) {
@@ -504,7 +504,7 @@ public void setVisible(boolean visible) {
  *
  * @see SelectionListener
  * @see #addSelectionListener(SelectionListener)
- * 
+ *
  * @since 3.0
  */
 public void removeSelectionListener(SelectionListener listener) {
@@ -513,7 +513,7 @@ public void removeSelectionListener(SelectionListener listener) {
 		SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	}
 	removeListener(SWT.Selection, listener);
-	removeListener(SWT.DefaultSelection, listener);	
+	removeListener(SWT.DefaultSelection, listener);
 }
 
 void _resize() {
@@ -589,7 +589,7 @@ public TableItem getRow() {
  * @param color the new color (or null)
  *
  * @exception IllegalArgumentException <ul>
- *    <li>ERROR_INVALID_ARGUMENT - if the argument has been disposed</li> 
+ *    <li>ERROR_INVALID_ARGUMENT - if the argument has been disposed</li>
  * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -612,7 +612,7 @@ public void setBackground (Color color) {
  * @param color the new color (or null)
  *
  * @exception IllegalArgumentException <ul>
- *    <li>ERROR_INVALID_ARGUMENT - if the argument has been disposed</li> 
+ *    <li>ERROR_INVALID_ARGUMENT - if the argument has been disposed</li>
  * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -626,7 +626,7 @@ public void setForeground (Color color) {
 	redraw();
 }
 /**
- * Positions the TableCursor over the cell at the given row and column in the parent table. 
+ * Positions the TableCursor over the cell at the given row and column in the parent table.
  *
  * @param row the index of the row for the cell to select
  * @param column the index of column for the cell to select
@@ -649,7 +649,7 @@ public void setSelection(int row, int column) {
 	setRowColumn(row, column, false);
 }
 /**
- * Positions the TableCursor over the cell at the given row and column in the parent table. 
+ * Positions the TableCursor over the cell at the given row and column in the parent table.
  *
  * @param row the TableItem of the row for the cell to select
  * @param column the index of column for the cell to select

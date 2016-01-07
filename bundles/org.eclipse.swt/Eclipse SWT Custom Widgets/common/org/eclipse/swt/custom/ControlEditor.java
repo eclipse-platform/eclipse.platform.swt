@@ -18,21 +18,21 @@ import org.eclipse.swt.widgets.*;
 /**
 *
 * A ControlEditor is a manager for a Control that appears above a composite and tracks with the
-* moving and resizing of that composite.  It can be used to display one control above 
-* another control.  This could be used when editing a control that does not have editing 
-* capabilities by using a text editor or for launching a dialog by placing a button 
+* moving and resizing of that composite.  It can be used to display one control above
+* another control.  This could be used when editing a control that does not have editing
+* capabilities by using a text editor or for launching a dialog by placing a button
 * above a control.
 *
 * <p> Here is an example of using a ControlEditor:
 *
 * <code><pre>
 * Canvas canvas = new Canvas(shell, SWT.BORDER);
-* canvas.setBounds(10, 10, 300, 300);	
+* canvas.setBounds(10, 10, 300, 300);
 * Color color = new Color(null, 255, 0, 0);
 * canvas.setBackground(color);
 * ControlEditor editor = new ControlEditor (canvas);
 * // The editor will be a button in the bottom right corner of the canvas.
-* // When selected, it will launch a Color dialog that will change the background 
+* // When selected, it will launch a Color dialog that will change the background
 * // of the canvas.
 * Button button = new Button(canvas, SWT.PUSH);
 * button.setText("Select Color...");
@@ -46,7 +46,7 @@ import org.eclipse.swt.widgets.*;
 * 			color = new Color(null, rgb);
 * 			canvas.setBackground(color);
 * 		}
-* 		
+*
 * 	}
 * });
 *
@@ -69,37 +69,37 @@ public class ControlEditor {
 	* are SWT.LEFT, SWT.RIGHT and SWT.CENTER.  The default value is SWT.CENTER.
 	*/
 	public int horizontalAlignment = SWT.CENTER;
-	
+
 	/**
 	* Specifies whether the editor should be sized to use the entire width of the control.
-	* True means resize the editor to the same width as the cell.  False means do not adjust 
+	* True means resize the editor to the same width as the cell.  False means do not adjust
 	* the width of the editor.	The default value is false.
 	*/
 	public boolean grabHorizontal = false;
-	
+
 	/**
 	* Specifies the minimum width the editor can have.  This is used in association with
-	* a true value of grabHorizontal.  If the cell becomes smaller than the minimumWidth, the 
+	* a true value of grabHorizontal.  If the cell becomes smaller than the minimumWidth, the
 	* editor will not made smaller than the minimum width value.  The default value is 0.
 	*/
 	public int minimumWidth = 0;
-	
+
 	/**
 	* Specifies how the editor should be aligned relative to the control.  Allowed values
 	* are SWT.TOP, SWT.BOTTOM and SWT.CENTER.  The default value is SWT.CENTER.
 	*/
 	public int verticalAlignment = SWT.CENTER;
-	
+
 	/**
 	* Specifies whether the editor should be sized to use the entire height of the control.
-	* True means resize the editor to the same height as the underlying control.  False means do not adjust 
+	* True means resize the editor to the same height as the underlying control.  False means do not adjust
 	* the height of the editor.	The default value is false.
 	*/
 	public boolean grabVertical = false;
-	
+
 	/**
 	* Specifies the minimum height the editor can have.  This is used in association with
-	* a true value of grabVertical.  If the control becomes smaller than the minimumHeight, the 
+	* a true value of grabVertical.  If the control becomes smaller than the minimumHeight, the
 	* editor will not made smaller than the minimum height value.  The default value is 0.
 	*/
 	public int minimumHeight = 0;
@@ -109,7 +109,7 @@ public class ControlEditor {
 	private boolean hadFocus;
 	private Listener controlListener;
 	private Listener scrollbarListener;
-	
+
 	private final static int [] EVENTS = {SWT.KeyDown, SWT.KeyUp, SWT.MouseDown, SWT.MouseUp, SWT.Resize};
 /**
 * Creates a ControlEditor for the specified Composite.
@@ -128,12 +128,12 @@ public ControlEditor (Composite parent) {
 	for (int i=0; i<EVENTS.length; i++) {
 		parent.addListener (EVENTS [i], controlListener);
 	}
-	
+
 	scrollbarListener = new Listener() {
 		public void handleEvent(Event e) {
 			scroll (e);
 		}
-	};			
+	};
 	ScrollBar hBar = parent.getHorizontalBar ();
 	if (hBar != null) hBar.addListener (SWT.Selection, scrollbarListener);
 	ScrollBar vBar = parent.getVerticalBar ();
@@ -142,10 +142,10 @@ public ControlEditor (Composite parent) {
 Rectangle computeBounds () {
 	Rectangle clientArea = parent.getClientArea();
 	Rectangle editorRect = new Rectangle(clientArea.x, clientArea.y, minimumWidth, minimumHeight);
-	
+
 	if (grabHorizontal)
 		editorRect.width = Math.max(clientArea.width, minimumWidth);
-	
+
 	if (grabVertical)
 		editorRect.height = Math.max(clientArea.height, minimumHeight);
 
@@ -160,7 +160,7 @@ Rectangle computeBounds () {
 			// default is CENTER
 			editorRect.x += (clientArea.width - editorRect.width)/2;
 	}
-	
+
 	switch (verticalAlignment) {
 		case SWT.BOTTOM:
 			editorRect.y += clientArea.height - editorRect.height;
@@ -173,7 +173,7 @@ Rectangle computeBounds () {
 			editorRect.y += (clientArea.height - editorRect.height)/2;
 	}
 
-	
+
 	return editorRect;
 
 }
@@ -191,7 +191,7 @@ public void dispose () {
 		ScrollBar vBar = parent.getVerticalBar ();
 		if (vBar != null) vBar.removeListener (SWT.Selection, scrollbarListener);
 	}
-	
+
 	parent = null;
 	editor = null;
 	hadFocus = false;
@@ -210,7 +210,7 @@ public Control getEditor () {
  * Lays out the control within the underlying composite.  This
  * method should be called after changing one or more fields to
  * force the Editor to resize.
- * 
+ *
  * @since 2.1
  */
 public void layout () {
@@ -233,20 +233,20 @@ void scroll (Event e) {
 /**
 * Specify the Control that is to be displayed.
 *
-* <p>Note: The Control provided as the editor <b>must</b> be created with its parent 
+* <p>Note: The Control provided as the editor <b>must</b> be created with its parent
 * being the Composite specified in the ControlEditor constructor.
-* 
+*
 * @param editor the Control that is displayed above the composite being edited
 */
 public void setEditor (Control editor) {
-	
+
 	if (editor == null) {
 		// this is the case where the caller is setting the editor to be blank
 		// set all the values accordingly
 		this.editor = null;
 		return;
 	}
-	
+
 	this.editor = editor;
 	layout();
 	if (this.editor == null || this.editor.isDisposed()) return;

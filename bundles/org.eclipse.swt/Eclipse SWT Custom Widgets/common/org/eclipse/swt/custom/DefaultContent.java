@@ -25,15 +25,15 @@ class DefaultContent implements StyledTextContent {
 	int gapStart = -1;	// the character position start of the gap
 	int gapEnd = -1;	// the character position after the end of the gap
 	int gapLine = -1;	// the line on which the gap exists, the gap will always be associated with one line
-	int highWatermark = 300;	
-	int lowWatermark = 50;		
-	
+	int highWatermark = 300;
+	int lowWatermark = 50;
+
 	int[][] lines = new int[50][2];	// array of character positions and lengths representing the lines of text
-	int lineCount = 0;	// the number of lines of text	
+	int lineCount = 0;	// the number of lines of text
 	int expandExp = 1; 	// the expansion exponent, used to increase the lines array exponentially
 	int replaceExpandExp = 1; 	// the expansion exponent, used to increase the lines array exponentially
 
-/** 
+/**
  * Creates a new DefaultContent and initializes it.  A <code>StyledTextContent</> will always have
  * at least one empty line.
  */
@@ -41,7 +41,7 @@ DefaultContent() {
 	super();
 	setText("");
 }
-/** 
+/**
  * Adds a line to the end of the line indexes array.  Increases the size of the array if necessary.
  * <code>lineCount</code> is updated to reflect the new entry.
  * <p>
@@ -62,8 +62,8 @@ void addLineIndex(int start, int length) {
 	lines[lineCount] = range;
 	lineCount++;
 }
-/** 
- * Adds a line index to the end of <code>linesArray</code>.  Increases the 
+/**
+ * Adds a line index to the end of <code>linesArray</code>.  Increases the
  * size of the array if necessary and returns a new array.
  * <p>
  *
@@ -86,10 +86,10 @@ int[][] addLineIndex(int start, int length, int[][] linesArray, int count) {
 	return newLines;
 }
 /**
- * Adds a <code>TextChangeListener</code> listening for 
- * <code>TextChangingEvent</code> and <code>TextChangedEvent</code>. A 
+ * Adds a <code>TextChangeListener</code> listening for
+ * <code>TextChangingEvent</code> and <code>TextChangedEvent</code>. A
  * <code>TextChangingEvent</code> is sent before changes to the text occur.
- * A <code>TextChangedEvent</code> is sent after changes to the text 
+ * A <code>TextChangedEvent</code> is sent after changes to the text
  * occurred.
  * <p>
  *
@@ -126,7 +126,7 @@ void adjustGap(int position, int sizeHint, int line) {
 	moveAndResizeGap(position, sizeHint, line);
 }
 /**
- * Calculates the indexes of each line in the text store.  Assumes no gap exists.  
+ * Calculates the indexes of each line in the text store.  Assumes no gap exists.
  * Optimized to do less checking.
  */
 void indexLines(){
@@ -135,7 +135,7 @@ void indexLines(){
 	int textLength = textStore.length;
 	int i;
 	for (i = start; i < textLength; i++) {
-		char ch = textStore[i];					
+		char ch = textStore[i];
 		if (ch == SWT.CR) {
 			// see if the next character is a LF
 			if (i + 1 < textLength) {
@@ -153,8 +153,8 @@ void indexLines(){
 	}
 	addLineIndex(start, i - start);
 }
-/** 
- * Returns whether or not the given character is a line delimiter.  Both CR and LF 
+/**
+ * Returns whether or not the given character is a line delimiter.  Both CR and LF
  * are valid line delimiters.
  * <p>
  *
@@ -165,7 +165,7 @@ boolean isDelimiter(char ch) {
 	if (ch == SWT.CR) return true;
 	if (ch == SWT.LF) return true;
 	return false;
-}	
+}
 /**
  * Determine whether or not the replace operation is valid.  DefaultContent will not allow
  * the /r/n line delimiter to be split or partially deleted.
@@ -204,7 +204,7 @@ protected boolean isValidReplace(int start, int replaceLength, String newText){
 				if (after == '\n') return false;
 			}
 		}
-	} 
+	}
 	return true;
 }
 /**
@@ -215,7 +215,7 @@ protected boolean isValidReplace(int start, int replaceLength, String newText){
  * @param length the length of the text to lineate, includes gap
  * @param numLines the number of lines to initially allocate for the line index array,
  *	passed in for efficiency (the exact number of lines may be known)
- * @return a line indexes array where each line is identified by a start offset and 
+ * @return a line indexes array where each line is identified by a start offset and
  * 	a length
  */
 int[][] indexLines(int offset, int length, int numLines){
@@ -225,18 +225,18 @@ int[][] indexLines(int offset, int length, int numLines){
 	int i;
 	replaceExpandExp = 1;
 	for (i = start; i < length; i++) {
-		int location = i + offset; 
+		int location = i + offset;
 		if ((location >= gapStart) && (location < gapEnd)) {
 			// ignore the gap
 		} else {
-			char ch = textStore[location];				
+			char ch = textStore[location];
 			if (ch == SWT.CR) {
 				// see if the next character is a LF
 				if (location+1 < textStore.length) {
 					ch = textStore[location+1];
 					if (ch == SWT.LF) {
 						i++;
-					} 
+					}
 				}
 				indexedLines = addLineIndex(start, i - start + 1, indexedLines, lineCount);
 				lineCount++;
@@ -252,7 +252,7 @@ int[][] indexLines(int offset, int length, int numLines){
 	System.arraycopy(indexedLines, 0, newLines, 0, lineCount);
 	int[] range = new int[] {start, i - start};
 	newLines[lineCount] = range;
-	return newLines; 
+	return newLines;
 }
 /**
  * Inserts text.
@@ -261,9 +261,9 @@ int[][] indexLines(int offset, int length, int numLines){
  * @param position the position at which to insert the text
  * @param text the text to insert
  */
-void insert(int position, String text) {	
+void insert(int position, String text) {
 	if (text.length() == 0) return;
-				
+
 	int startLine = getLineAtOffset(position);
 	int change = text.length();
 	boolean endInsert = position == getCharCount();
@@ -271,20 +271,20 @@ void insert(int position, String text) {
 
 	// during an insert the gap will be adjusted to start at
 	// position and it will be associated with startline, the
-	// inserted text will be placed in the gap		
+	// inserted text will be placed in the gap
 	int startLineOffset = getOffsetAtLine(startLine);
 	// at this point, startLineLength will include the start line
 	// and all of the newly inserted text
 	int	startLineLength = getPhysicalLine(startLine).length();
-	
+
 	if (change > 0) {
-		// shrink gap 
+		// shrink gap
 		gapStart += (change);
 		for (int i = 0; i < text.length(); i++) {
 			textStore[position + i]= text.charAt(i);
 		}
 	}
-		
+
 	// figure out the number of new lines that have been inserted
 	int [][] newLines = indexLines(startLineOffset, startLineLength, 10);
 	// only insert an empty line if it is the last line in the text
@@ -294,13 +294,13 @@ void insert(int position, String text) {
 		if (endInsert) {
 			// insert happening at end of the text, leave numNewLines as
 			// is since the last new line will not be concatenated with another
-			// line 
+			// line
 			numNewLines += 1;
 		} else {
 			numNewLines -= 1;
 		}
 	}
-	
+
 	// make room for the new lines
 	expandLinesBy(numNewLines);
 	// shift down the lines after the replace line
@@ -317,13 +317,13 @@ void insert(int position, String text) {
 		newLines[numNewLines][0] += startLineOffset;
 		lines[startLine + numNewLines] = newLines[numNewLines];
 	}
-	
+
 	lineCount += numNewLines;
 	gapLine = getLineAtPhysicalOffset(gapStart);
 }
 /**
- * Moves the gap and adjusts its size in anticipation of a text change.  
- * The gap is resized to actual size + the specified size and moved to the given 
+ * Moves the gap and adjusts its size in anticipation of a text change.
+ * The gap is resized to actual size + the specified size and moved to the given
  * position.
  * <p>
  *
@@ -349,7 +349,7 @@ void moveAndResizeGap(int position, int size, int newGapLine) {
 			lines[i][0] = lines[i][0] - oldSize;
 		}
 	}
-	
+
 	if (newSize < 0) {
 		if (oldSize > 0) {
 			// removing the gap
@@ -366,7 +366,7 @@ void moveAndResizeGap(int position, int size, int newGapLine) {
 	int newGapEnd = newGapStart + newSize;
 	if (oldSize == 0) {
 		System.arraycopy(textStore, 0, content, 0, newGapStart);
-		System.arraycopy(textStore, newGapStart, content, newGapEnd, content.length - newGapEnd);	
+		System.arraycopy(textStore, newGapStart, content, newGapEnd, content.length - newGapEnd);
 	} else if (newGapStart < gapStart) {
 		int delta = gapStart - newGapStart;
 		System.arraycopy(textStore, 0, content, 0, newGapStart);
@@ -381,7 +381,7 @@ void moveAndResizeGap(int position, int size, int newGapLine) {
 	textStore = content;
 	gapStart = newGapStart;
 	gapEnd = newGapEnd;
-	
+
 	// add the new gap to the lines information
 	if (gapExists()) {
 		gapLine = newGapLine;
@@ -394,7 +394,7 @@ void moveAndResizeGap(int position, int size, int newGapLine) {
 		}
 	}
 }
-/** 
+/**
  * Returns the number of lines that are in the specified text.
  * <p>
  *
@@ -416,7 +416,7 @@ int lineCount(int startOffset, int length){
 		if ((i >= gapStart) && (i < gapEnd)) {
 			// ignore the gap
 		} else {
-			char ch = textStore[i];			
+			char ch = textStore[i];
 			if (ch == SWT.CR) {
 				// see if the next character is a LF
 				if (i + 1 < textStore.length) {
@@ -424,8 +424,8 @@ int lineCount(int startOffset, int length){
 					if (ch == SWT.LF) {
 						i++;
 						count++;
-					} 
-				} 
+					}
+				}
 				lineCount++;
 			} else if (ch == SWT.LF) {
 				lineCount++;
@@ -436,7 +436,7 @@ int lineCount(int startOffset, int length){
 	}
 	return lineCount;
 }
-/** 
+/**
  * Returns the number of lines that are in the specified text.
  * <p>
  *
@@ -457,7 +457,7 @@ int lineCount(String text){
 			lineCount++;
 		}
 	}
-	return lineCount;	
+	return lineCount;
 }
 /**
  * @return the logical length of the text store
@@ -501,7 +501,7 @@ public String getLine(int index) {
 	}
 }
 /**
- * Returns the line delimiter that should be used by the StyledText 
+ * Returns the line delimiter that should be used by the StyledText
  * widget when inserting new lines.  This delimiter may be different than the
  * delimiter that is used by the <code>StyledTextContent</code> interface.
  * <p>
@@ -539,7 +539,7 @@ String getFullLine(int index) {
  * <p>
  *
  * @param index the line index
- * @return the physical line 
+ * @return the physical line
  */
 String getPhysicalLine(int index) {
 	int start = lines[index][0];
@@ -573,12 +573,12 @@ public int getLineAtOffset(int charPosition){
 		position = charPosition + (gapEnd - gapStart);
 	}
 
-	// if last line and the line is not empty you can ask for 
-	// a position that doesn't exist (the one to the right of the 
+	// if last line and the line is not empty you can ask for
+	// a position that doesn't exist (the one to the right of the
 	// last character) - for inserting
 	if (lineCount > 0) {
 		int lastLine = lineCount - 1;
-		if (position == lines[lastLine][0] + lines[lastLine][1]) 
+		if (position == lines[lastLine][0] + lines[lastLine][1])
 			return lastLine;
 	}
 
@@ -630,7 +630,7 @@ int getLineAtPhysicalOffset(int position){
  * Returns the logical offset of the given line.
  * <p>
  *
- * @param lineIndex index of line 
+ * @param lineIndex index of line
  * @return the logical starting offset of the line.  When there are not any lines,
  * 	getOffsetAtLine(0) is a valid call that should answer 0.
  * @exception IllegalArgumentException <ul>
@@ -646,7 +646,7 @@ public int getOffsetAtLine(int lineIndex) {
 	} else {
 		return start;
 	}
-}	
+}
 /**
  * Increases the line indexes array to accommodate more lines.
  * <p>
@@ -662,7 +662,7 @@ void expandLinesBy(int numLines) {
 	System.arraycopy(lines, 0, newLines, 0, size);
 	lines = newLines;
 }
-/**	 
+/**
  * Reports an SWT error.
  * <p>
  *
@@ -671,7 +671,7 @@ void expandLinesBy(int numLines) {
 void error (int code) {
 	SWT.error(code);
 }
-/** 
+/**
  * Returns whether or not a gap exists in the text store.
  * <p>
  *
@@ -723,7 +723,7 @@ public String getTextRange(int start, int length) {
  * <p>
  *
  * @param listener the listener which should no longer be notified
- * 
+ *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT when listener is null</li>
  * </ul>
@@ -739,13 +739,13 @@ public void removeTextChangeListener(TextChangeListener listener){
 	}
 }
 /**
- * Replaces the text with <code>newText</code> starting at position <code>start</code> 
+ * Replaces the text with <code>newText</code> starting at position <code>start</code>
  * for a length of <code>replaceLength</code>.  Notifies the appropriate listeners.
  * <p>
  *
- * When sending the TextChangingEvent, <code>newLineCount</code> is the number of 
- * lines that are going to be inserted and <code>replaceLineCount</code> is 
- * the number of lines that are going to be deleted, based on the change 
+ * When sending the TextChangingEvent, <code>newLineCount</code> is the number of
+ * lines that are going to be inserted and <code>replaceLineCount</code> is
+ * the number of lines that are going to be deleted, based on the change
  * that occurs visually.  For example:
  * <ul>
  * <li>(replaceText,newText) ==> (replaceLineCount,newLineCount)
@@ -757,17 +757,17 @@ public void removeTextChangeListener(TextChangeListener listener){
  * @param start	start offset of text to replace
  * @param replaceLength start offset of text to replace
  * @param newText start offset of text to replace
- * 
+ *
  * @exception SWTException <ul>
  *   <li>ERROR_INVALID_ARGUMENT when the text change results in a multi byte
- *      line delimiter being split or partially deleted.  Splitting a line 
- *      delimiter by inserting text between the CR and LF characters of the 
+ *      line delimiter being split or partially deleted.  Splitting a line
+ *      delimiter by inserting text between the CR and LF characters of the
  *      \r\n delimiter or deleting part of this line delimiter is not supported</li>
  * </ul>
  */
 public void replaceTextRange(int start, int replaceLength, String newText){
 	// check for invalid replace operations
-	if (!isValidReplace(start, replaceLength, newText)) SWT.error(SWT.ERROR_INVALID_ARGUMENT);		
+	if (!isValidReplace(start, replaceLength, newText)) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 
 	// inform listeners
 	StyledTextEvent event = new StyledTextEvent(this);
@@ -798,7 +798,7 @@ void sendTextEvent(StyledTextEvent event) {
 	}
 }
 /**
- * Sets the content to text and removes the gap since there are no sensible predictions 
+ * Sets the content to text and removes the gap since there are no sensible predictions
  * about where the next change will occur.
  * <p>
  *
@@ -824,7 +824,7 @@ public void setText (String text){
  */
 void delete(int position, int length, int numLines) {
 	if (length == 0) return;
-		
+
 	int startLine = getLineAtOffset(position);
 	int startLineOffset = getOffsetAtLine(startLine);
 	int endLine = getLineAtOffset(position + length);
@@ -840,14 +840,14 @@ void delete(int position, int length, int numLines) {
 
 	adjustGap(position + length, -length, startLine);
 	int [][] oldLines = indexLines(position, length + (gapEnd - gapStart), numLines);
-	
+
 	// enlarge the gap - the gap can be enlarged either to the
 	// right or left
 	if (position + length == gapStart) {
 		gapStart -= length;
 	} else {
 		gapEnd += length;
-	}		
+	}
 
 	// figure out the length of the new concatenated line, do so by
 	// finding the first line delimiter after position
@@ -863,7 +863,7 @@ void delete(int position, int length, int numLines) {
 					}
 				}
 				eol = true;
-			} 
+			}
 		}
 		j++;
 	}
@@ -878,6 +878,6 @@ void delete(int position, int length, int numLines) {
 		lines[i - numOldLines] = lines[i];
 	}
 	lineCount -= numOldLines;
-	gapLine = getLineAtPhysicalOffset(gapStart);		
+	gapLine = getLineAtPhysicalOffset(gapStart);
 }
 }

@@ -17,7 +17,7 @@ import org.eclipse.swt.widgets.*;
 /**
  * This event is sent when an event is generated in the CTabFolder.
  *
- * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a> 
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  */
 public class CTabFolderEvent extends TypedEvent {
 	/**
@@ -35,34 +35,34 @@ public class CTabFolderEvent extends TypedEvent {
 	/**
 	 * The widget-relative, x coordinate of the chevron button
 	 * at the time of the event.  Applies to the showList event.
-	 * 
+	 *
  	 * @since 3.0
 	 */
  	public int x;
  	/**
  	 * The widget-relative, y coordinate of the chevron button
 	 * at the time of the event.  Applies to the showList event.
-	 * 
+	 *
 	 * @since 3.0
 	 */
 	public int y;
 	/**
 	 * The width of the chevron button at the time of the event.
 	 * Applies to the showList event.
-	 * 
+	 *
 	 * @since 3.0
 	 */
 	public int width;
 	/**
 	 * The height of the chevron button at the time of the event.
 	 * Applies to the showList event.
-	 * 
+	 *
 	 * @since 3.0
 	 */
 	public int height;
 
 	static final long serialVersionUID = 3760566386225066807L;
-	
+
 /**
  * Constructs a new instance of this class.
  *

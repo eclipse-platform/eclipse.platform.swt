@@ -17,7 +17,7 @@ import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.widgets.*;
 
 /**
- * 
+ *
  * Instances of this class implement the notebook user interface
  * metaphor.  It allows the user to select a notebook page from
  * set of pages.
@@ -38,7 +38,7 @@ import org.eclipse.swt.widgets.*;
  * <dd>"CTabFolder2"</dd>
  * </dl>
  * <p>
- * Note: Only one of the styles TOP and BOTTOM 
+ * Note: Only one of the styles TOP and BOTTOM
  * may be specified.
  * </p><p>
  * IMPORTANT: This class is <em>not</em> intended to be subclassed.
@@ -49,9 +49,9 @@ import org.eclipse.swt.widgets.*;
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  * @noextend This class is not intended to be subclassed by clients.
  */
- 
+
 public class CTabFolder extends Composite {
-	
+
 	/**
 	 * marginWidth specifies the number of pixels of horizontal margin
 	 * that will be placed along the left and right edges of the form.
@@ -66,49 +66,49 @@ public class CTabFolder extends Composite {
 	 * The default value is 0.
 	 */
  	public int marginHeight = 0;
-	
+
  	/**
-	 * A multiple of the tab height that specifies the minimum width to which a tab 
+	 * A multiple of the tab height that specifies the minimum width to which a tab
 	 * will be compressed before scrolling arrows are used to navigate the tabs.
-	 * 
+	 *
 	 * NOTE This field is badly named and can not be fixed for backwards compatibility.
 	 * It should not be capitalized.
-	 * 
+	 *
 	 * @deprecated This field is no longer used.  See setMinimumCharacters(int)
 	 */
 	@Deprecated
 	public int MIN_TAB_WIDTH = 4;
-	
+
 	/**
 	 * Color of innermost line of drop shadow border.
-	 * 
+	 *
 	 * NOTE This field is badly named and can not be fixed for backwards compatibility.
 	 * It should be capitalized.
-	 * 
+	 *
 	 * @deprecated drop shadow border is no longer drawn in 3.0
 	 */
 	@Deprecated
 	public static RGB borderInsideRGB  = new RGB (132, 130, 132);
 	/**
 	 * Color of middle line of drop shadow border.
-	 * 
+	 *
 	 * NOTE This field is badly named and can not be fixed for backwards compatibility.
 	 * It should be capitalized.
-	 * 
+	 *
 	 * @deprecated drop shadow border is no longer drawn in 3.0
 	 */
 	@Deprecated
 	public static RGB borderMiddleRGB  = new RGB (143, 141, 138);
 	/**
 	 * Color of outermost line of drop shadow border.
-	 * 
+	 *
 	 * NOTE This field is badly named and can not be fixed for backwards compatibility.
 	 * It should be capitalized.
-	 * 
+	 *
 	 * @deprecated drop shadow border is no longer drawn in 3.0
 	 */
 	@Deprecated
-	public static RGB borderOutsideRGB = new RGB (171, 168, 165); 
+	public static RGB borderOutsideRGB = new RGB (171, 168, 165);
 
 	/* sizing, positioning */
 	boolean onBottom = false;
@@ -118,7 +118,7 @@ public class CTabFolder extends Composite {
 	int tabHeight;
 	int minChars = 20;
 	boolean borderVisible = false;
-	
+
 	/* item management */
 	CTabFolderRenderer renderer;
 	CTabItem items[] = new CTabItem[0];
@@ -172,12 +172,12 @@ public class CTabFolder extends Composite {
 	Listener listener;
 	boolean ignoreTraverse;
 	boolean useDefaultRenderer;
-	
+
 	/* External Listener management */
 	CTabFolder2Listener[] folderListeners = new CTabFolder2Listener[0];
 	// support for deprecated listener mechanism
 	CTabFolderListener[] tabListeners = new CTabFolderListener[0];
-	
+
 	/* Selected item appearance */
 	Image selectionBgImage;
 	Color[] selectionGradientColors;
@@ -185,17 +185,17 @@ public class CTabFolder extends Composite {
 	boolean selectionGradientVertical;
 	Color selectionForeground;
 	Color selectionBackground;
-	
+
 	/* Unselected item appearance */
-	Color[] gradientColors; 
+	Color[] gradientColors;
 	int[] gradientPercents;
 	boolean gradientVertical;
 	boolean showUnselectedImage = true;
-	
+
 	// close, min/max and chevron buttons
 	boolean showClose = false;
 	boolean showUnselectedClose = true;
-	
+
 	boolean showMin = false;
 	boolean minimized = false;
 	boolean showMax = false;
@@ -209,14 +209,14 @@ public class CTabFolder extends Composite {
 	Rectangle hoverRect = new Rectangle(0,0,0,0);
 	boolean hovering;
 	boolean hoverTimerRunning;
-	
+
 	boolean showChevron = false;
 	Menu showMenu;
 	ToolBar chevronTb;
 	ToolItem chevronItem;
 	int chevronCount;
 	boolean chevronVisible = true;
-	
+
 	Image chevronImage;
 	Control topRight;
 	int topRightAlignment = SWT.RIGHT;
@@ -225,14 +225,14 @@ public class CTabFolder extends Composite {
 	int[] controlAlignments;
 	Rectangle[] controlRects;
 	Image[] controlBkImages;
-	
+
 	int updateFlags;
 	final static int REDRAW = 1 << 1;
 	final static int REDRAW_TABS = 1 << 2;
 	final static int UPDATE_TAB_HEIGHT = 1 << 3;
 	Runnable updateRun;
-	
-	// when disposing CTabFolder, don't try to layout the items or 
+
+	// when disposing CTabFolder, don't try to layout the items or
 	// change the selection as each child is destroyed.
 	boolean inDispose = false;
 
@@ -240,17 +240,17 @@ public class CTabFolder extends Composite {
 	// on Resize
 	Point oldSize;
 	Font oldFont;
-	
+
 	// internal constants
 	static final int DEFAULT_WIDTH = 64;
 	static final int DEFAULT_HEIGHT = 64;
-	
+
 	static final int SELECTION_FOREGROUND = SWT.COLOR_LIST_FOREGROUND;
 	static final int SELECTION_BACKGROUND = SWT.COLOR_LIST_BACKGROUND;
-	
+
 	static final int FOREGROUND = SWT.COLOR_WIDGET_FOREGROUND;
 	static final int BACKGROUND = SWT.COLOR_WIDGET_BACKGROUND;
-	
+
 	//TODO: add setter for spacing?
 	static final int SPACING = 3;
 	static final boolean IS_GTK;
@@ -264,7 +264,7 @@ public class CTabFolder extends Composite {
  * <p>
  * The style value is either one of the style constants defined in
  * class <code>SWT</code> which is applicable to instances of this
- * class, or must be built by <em>bitwise OR</em>'ing together 
+ * class, or must be built by <em>bitwise OR</em>'ing together
  * (that is, using the <code>int</code> "|" operator) two or more
  * of those <code>SWT</code> style constants. The class description
  * lists the style constants that are applicable to the class.
@@ -315,7 +315,7 @@ void init(int style) {
 	controlRects = new Rectangle[0];
 	controlBkImages = new Image[0];
 	updateTabHeight(false);
-	
+
 	// Add all listeners
 	listener = new Listener() {
 		public void handleEvent(Event event) {
@@ -344,25 +344,25 @@ void init(int style) {
 	int[] folderEvents = new int[]{
 		SWT.Dispose,
 		SWT.DragDetect,
-		SWT.FocusIn, 
-		SWT.FocusOut, 
+		SWT.FocusIn,
+		SWT.FocusOut,
 		SWT.KeyDown,
 		SWT.MenuDetect,
-		SWT.MouseDoubleClick, 
+		SWT.MouseDoubleClick,
 		SWT.MouseDown,
-		SWT.MouseEnter, 
-		SWT.MouseExit, 
+		SWT.MouseEnter,
+		SWT.MouseExit,
 		SWT.MouseHover,
 		SWT.MouseMove,
 		SWT.MouseUp,
 		SWT.Paint,
-		SWT.Resize,  
+		SWT.Resize,
 		SWT.Traverse,
 	};
 	for (int i = 0; i < folderEvents.length; i++) {
 		addListener(folderEvents[i], listener);
 	}
-	
+
 	initAccessible();
 }
 static int checkStyle (Composite parent, int style) {
@@ -376,25 +376,25 @@ static int checkStyle (Composite parent, int style) {
 	if ((style & SWT.MULTI) != 0) style = style & ~SWT.SINGLE;
 	// reduce the flash by not redrawing the entire area on a Resize event
 	style |= SWT.NO_REDRAW_RESIZE;
-	
+
 	//TEMPORARY CODE
 	/*
-	 * In Right To Left orientation on Windows, all GC calls that use a brush are drawing 
+	 * In Right To Left orientation on Windows, all GC calls that use a brush are drawing
 	 * offset by one pixel.  This results in some parts of the CTabFolder not drawing correctly.
 	 * To alleviate some of the appearance problems, allow the OS to draw the background.
 	 * This does not draw correctly but the result is less obviously wrong.
 	 */
 	if ((style & SWT.RIGHT_TO_LEFT) != 0) return style;
 	if ((parent.getStyle() & SWT.MIRRORED) != 0 && (style & SWT.LEFT_TO_RIGHT) == 0) return style;
-	
+
 	return style | SWT.DOUBLE_BUFFERED;
 }
 
 /**
- * 
+ *
  * Adds the listener to the collection of listeners who will
  * be notified when a tab item is closed, minimized, maximized,
- * restored, or to show the list of items that are not 
+ * restored, or to show the list of items that are not
  * currently visible.
  *
  * @param listener the listener which should be notified
@@ -402,7 +402,7 @@ static int checkStyle (Composite parent, int style) {
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
  * </ul>
- * 
+ *
  * @exception SWTException <ul>
  *    <li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
  *    <li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
@@ -410,7 +410,7 @@ static int checkStyle (Composite parent, int style) {
  *
  * @see CTabFolder2Listener
  * @see #removeCTabFolder2Listener(CTabFolder2Listener)
- * 
+ *
  * @since 3.0
  */
 public void addCTabFolder2Listener(CTabFolder2Listener listener) {
@@ -438,7 +438,7 @@ public void addCTabFolder2Listener(CTabFolder2Listener listener) {
  *
  * @see CTabFolderListener
  * @see #removeCTabFolderListener(CTabFolderListener)
- * 
+ *
  * @deprecated use addCTabFolder2Listener(CTabFolder2Listener)
  */
 @Deprecated
@@ -456,7 +456,7 @@ public void addCTabFolderListener(CTabFolderListener listener) {
 		updateFolder(REDRAW);
 	}
 }
-/**	 
+/**
  * Adds the listener to the collection of listeners who will
  * be notified when the user changes the receiver's selection, by sending
  * it one of the messages defined in the <code>SelectionListener</code>
@@ -532,7 +532,7 @@ Rectangle[] computeControlBounds (Point size, boolean[][] position) {
 	for (int i = 0; i < items.length; i++) {
 		if (items[i].showing) itemWidth += items[i].width;
 	}
-	
+
 	int maxWidth = size.x - borderLeft - leftWidth - borderRight;
 	int availableWidth = Math.max(0, maxWidth - itemWidth - rightWidth);
 	if (rightWidth > 0) availableWidth -= SPACING * 2;
@@ -548,14 +548,14 @@ Rectangle[] computeControlBounds (Point size, boolean[][] position) {
 				rects[i].height = getControlHeight(ctrlSize);
 				rects[i].x = x;
 				rects[i].y = getControlY(size, rects, borderBottom, borderTop, i);
-				if ((alignment & (SWT.FILL | SWT.WRAP)) != 0) availableWidth -= ctrlSize.x; 
+				if ((alignment & (SWT.FILL | SWT.WRAP)) != 0) availableWidth -= ctrlSize.x;
 			}
 		}
 	} else {
 		for (int i = 0; i < controls.length; i++) {
 			int alignment = controlAlignments[i];
 			Point ctrlSize = tabControlSize[i];
-			if ((alignment & SWT.TRAIL) != 0) { 
+			if ((alignment & SWT.TRAIL) != 0) {
 				if ((alignment & (SWT.FILL | SWT.WRAP)) == 0) {
 					x -= ctrlSize.x;
 					rects[i].width = ctrlSize.x;
@@ -582,7 +582,7 @@ Rectangle[] computeControlBounds (Point size, boolean[][] position) {
 			}
 		}
 	}
-	
+
 	//Any space, distribute amongst FILL
 	if (availableWidth > 0) {
 		int fillCount = 0;
@@ -609,7 +609,7 @@ Rectangle[] computeControlBounds (Point size, boolean[][] position) {
 			}
 		}
 	}
-	
+
 	//Go through overflow laying out all wrapped controls
 	Rectangle bodyTrim = renderer.computeTrim(CTabFolderRenderer.PART_BODY, SWT.NONE, 0, 0, 0, 0);
 	int bodyRight = bodyTrim.width + bodyTrim.x;
@@ -635,7 +635,7 @@ Rectangle[] computeControlBounds (Point size, boolean[][] position) {
 				y += maxHeight;
 				maxHeight = 0;
 				availableWidth = bodyWidth;
-				if (availableWidth > ctrlSize.x) { 
+				if (availableWidth > ctrlSize.x) {
 					//Relayout this control in the next line
 					i--;
 				} else {
@@ -649,7 +649,7 @@ Rectangle[] computeControlBounds (Point size, boolean[][] position) {
 			}
 		}
 	}
-	
+
 	if (showChevron) {
 		int i = 0, lastIndex = -1;
 		while (i < priority.length && items[priority[i]].showing) {
@@ -663,7 +663,7 @@ Rectangle[] computeControlBounds (Point size, boolean[][] position) {
 			rects[controls.length - 1].x = w;
 		}
 	}
-	
+
 	if (position != null) position[0] = overflow;
 	return rects;
 }
@@ -729,7 +729,7 @@ void createItem (CTabItem item, int index) {
 	newItems[index] = item;
 	System.arraycopy(items, index, newItems, index + 1, items.length - index);
 	items = newItems;
-	if (selectedIndex >= index) selectedIndex ++;	
+	if (selectedIndex >= index) selectedIndex ++;
 	int[] newPriority = new int[priority.length + 1];
 	int next = 0,  priorityIndex = priority.length;
 	for (int i = 0; i < priority.length; i++) {
@@ -740,7 +740,7 @@ void createItem (CTabItem item, int index) {
 	}
 	newPriority[priorityIndex] = index;
 	priority = newPriority;
-	
+
 	if (items.length == 1) {
 		updateFolder(UPDATE_TAB_HEIGHT | REDRAW);
 	} else {
@@ -751,13 +751,13 @@ void destroyItem (CTabItem item) {
 	if (inDispose) return;
 	int index = indexOf(item);
 	if (index == -1) return;
-	
+
 	if (items.length == 1) {
 		items = new CTabItem[0];
 		priority = new int[0];
 		firstIndex = -1;
 		selectedIndex = -1;
-		
+
 		Control control = item.control;
 		if (control != null && !control.isDisposed()) {
 			control.setVisible(false);
@@ -768,21 +768,21 @@ void destroyItem (CTabItem item) {
 		gc.dispose();
 		redraw();
 		return;
-	} 
-		
+	}
+
 	CTabItem[] newItems = new CTabItem [items.length - 1];
 	System.arraycopy(items, 0, newItems, 0, index);
 	System.arraycopy(items, index + 1, newItems, index, items.length - index - 1);
 	items = newItems;
-	
+
 	int[] newPriority = new int[priority.length - 1];
 	int next = 0;
 	for (int i = 0; i < priority.length; i++) {
-		if (priority [i] == index) continue; 
+		if (priority [i] == index) continue;
 		newPriority[next++] = priority[i] > index ? priority[i] - 1 : priority [i];
 	}
 	priority = newPriority;
-	
+
 	// move the selection if this item is selected
 	if (selectedIndex == index) {
 		Control control = item.getControl();
@@ -795,7 +795,7 @@ void destroyItem (CTabItem item) {
 	} else if (selectedIndex > index) {
 		selectedIndex --;
 	}
-	
+
 	updateFolder(UPDATE_TAB_HEIGHT | REDRAW_TABS);
 }
 
@@ -808,7 +808,7 @@ void destroyItem (CTabItem item) {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 3.0
  */
 public boolean getBorderVisible() {
@@ -838,7 +838,7 @@ ToolBar getChevron() {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  */
 /*public*/ boolean getChevronVisible() {
 	checkWidget();
@@ -865,10 +865,10 @@ public Rectangle getClientArea() {
 
 /**
  * Return the tab that is located at the specified index.
- * 
+ *
  * @param index the index of the tab item
  * @return the item at the specified index
- * 
+ *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_INVALID_RANGE - if the index is out of range</li>
  * </ul>
@@ -879,7 +879,7 @@ public Rectangle getClientArea() {
  */
 public CTabItem getItem (int index) {
 	//checkWidget();
-	if (index  < 0 || index >= items.length) 
+	if (index  < 0 || index >= items.length)
 		SWT.error(SWT.ERROR_INVALID_RANGE);
 	return items [index];
 }
@@ -888,7 +888,7 @@ public CTabItem getItem (int index) {
  *
  * @param pt the point in coordinates relative to the CTabFolder
  * @return the item at a point or null
- * 
+ *
  * @exception SWTException <ul>
  *		<li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
  *		<li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
@@ -910,9 +910,9 @@ public CTabItem getItem (Point pt) {
 }
 /**
  * Return the number of tabs in the folder.
- * 
+ *
  * @return the number of tabs in the folder
- * 
+ *
  * @exception SWTException <ul>
  *		<li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
  *		<li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
@@ -924,9 +924,9 @@ public int getItemCount(){
 }
 /**
  * Return the tab items.
- * 
+ *
  * @return the tab items
- * 
+ *
  * @exception SWTException <ul>
  *		<li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
  *		<li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
@@ -940,11 +940,11 @@ public CTabItem [] getItems() {
 }
 int getLeftItemEdge (GC gc, int part){
 	Rectangle trim = renderer.computeTrim(part, SWT.NONE, 0, 0, 0, 0);
-	int x = -trim.x; 
+	int x = -trim.x;
 	int width = 0;
 	for (int i = 0; i < controls.length; i++) {
 		if ((controlAlignments[i] & SWT.LEAD) != 0 && !controls[i].isDisposed() && controls[i].getVisible()) {
-			width += controls[i].computeSize(SWT.DEFAULT, SWT.DEFAULT).x;	
+			width += controls[i].computeSize(SWT.DEFAULT, SWT.DEFAULT).x;
 		}
 	}
 	if (width != 0) width += SPACING * 2;
@@ -990,7 +990,7 @@ String stripMnemonic (String string) {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 3.0
  */
 public boolean getMinimized() {
@@ -1007,19 +1007,19 @@ public boolean getMinimized() {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 3.0
  */
 public boolean getMinimizeVisible() {
 	checkWidget();
 	return showMin;
 }
-/** 
+/**
  * Returns the number of characters that will
  * appear in a fully compressed tab.
- * 
+ *
  * @return number of characters that will appear in a fully compressed tab
- * 
+ *
  * @since 3.0
  */
 public int getMinimumCharacters() {
@@ -1037,7 +1037,7 @@ public int getMinimumCharacters() {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 3.0
  */
 public boolean getMaximized() {
@@ -1054,7 +1054,7 @@ public boolean getMaximized() {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 3.0
  */
 public boolean getMaximizeVisible() {
@@ -1066,17 +1066,17 @@ public boolean getMaximizeVisible() {
  * recently used tabs and <code>false</code> otherwise.
  * <p>
  * When there is not enough horizontal space to show all the tabs,
- * by default, tabs are shown sequentially from left to right in 
+ * by default, tabs are shown sequentially from left to right in
  * order of their index.  When the MRU visibility is turned on,
  * the tabs that are visible will be the tabs most recently selected.
- * Tabs will still maintain their left to right order based on index 
+ * Tabs will still maintain their left to right order based on index
  * but only the most recently selected tabs are visible.
  * <p>
  * For example, consider a CTabFolder that contains "Tab 1", "Tab 2",
  * "Tab 3" and "Tab 4" (in order by index).  The user selects
  * "Tab 1" and then "Tab 3".  If the CTabFolder is now
- * compressed so that only two tabs are visible, by default, 
- * "Tab 2" and "Tab 3" will be shown ("Tab 3" since it is currently 
+ * compressed so that only two tabs are visible, by default,
+ * "Tab 2" and "Tab 3" will be shown ("Tab 3" since it is currently
  * selected and "Tab 2" because it is the previous item in index order).
  * If MRU visibility is enabled, the two visible tabs will be "Tab 1"
  * and "Tab 3" (in that order from left to right).</p>
@@ -1087,7 +1087,7 @@ public boolean getMaximizeVisible() {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 3.1
  */
 public boolean getMRUVisible() {
@@ -1096,7 +1096,7 @@ public boolean getMRUVisible() {
 }
 /**
  * Returns the receiver's renderer.
- * 
+ *
  * @return the receiver's renderer
  *
  * @exception SWTException <ul>
@@ -1106,7 +1106,7 @@ public boolean getMRUVisible() {
  *
  * @see #setRenderer(CTabFolderRenderer)
  * @see CTabFolderRenderer
- * 
+ *
  * @since 3.6
  */
 public CTabFolderRenderer getRenderer() {
@@ -1130,9 +1130,9 @@ int getRightItemEdge (GC gc){
 }
 /**
  * Return the selected tab item, or null if there is no selection.
- * 
+ *
  * @return the selected tab item, or null if none has been selected
- * 
+ *
  * @exception SWTException <ul>
  *		<li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
  *		<li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
@@ -1152,7 +1152,7 @@ public CTabItem getSelection() {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 3.0
  */
 public Color getSelectionBackground() {
@@ -1168,7 +1168,7 @@ public Color getSelectionBackground() {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 3.0
  */
 public Color getSelectionForeground() {
@@ -1178,9 +1178,9 @@ public Color getSelectionForeground() {
 /**
  * Return the index of the selected tab item, or -1 if there
  * is no selection.
- * 
+ *
  * @return the index of the selected tab item or -1
- * 
+ *
  * @exception SWTException <ul>
  *		<li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
  *		<li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
@@ -1193,9 +1193,9 @@ public int getSelectionIndex() {
 /**
  * Returns <code>true</code> if the CTabFolder is rendered
  * with a simple, traditional shape.
- * 
+ *
  * @return <code>true</code> if the CTabFolder is rendered with a simple shape
- * 
+ *
  * @since 3.0
  */
 public boolean getSimple() {
@@ -1205,9 +1205,9 @@ public boolean getSimple() {
 /**
  * Returns <code>true</code> if the CTabFolder only displays the selected tab
  * and <code>false</code> if the CTabFolder displays multiple tabs.
- * 
+ *
  * @return <code>true</code> if the CTabFolder only displays the selected tab and <code>false</code> if the CTabFolder displays multiple tabs
- * 
+ *
  * @since 3.0
  */
 public boolean getSingle() {
@@ -1229,9 +1229,9 @@ public int getStyle() {
 }
 /**
  * Returns the height of the tab
- * 
+ *
  * @return the height of the tab
- * 
+ *
  * @exception SWTException <ul>
  *		<li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
  *		<li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
@@ -1244,9 +1244,9 @@ public int getTabHeight(){
 }
 /**
  * Returns the position of the tab.  Possible values are SWT.TOP or SWT.BOTTOM.
- * 
+ *
  * @return the position of the tab
- * 
+ *
  * @exception SWTException <ul>
  *		<li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
  *		<li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
@@ -1257,11 +1257,11 @@ public int getTabPosition(){
 	return onBottom ? SWT.BOTTOM : SWT.TOP;
 }
 /**
- * Returns the control in the top right corner of the tab folder. 
+ * Returns the control in the top right corner of the tab folder.
  * Typically this is a close button or a composite with a menu and close button.
  *
  * @return the control in the top right corner of the tab folder or null
- * 
+ *
  * @exception  SWTException <ul>
  *		<li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
  *		<li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
@@ -1274,11 +1274,11 @@ public Control getTopRight() {
 	return topRight;
 }
 /**
- * Returns the alignment of the top right control. 
+ * Returns the alignment of the top right control.
  *
  * @return the alignment of the top right control which is either
- * <code>SWT.RIGHT</code> or <code>SWT.FILL</code> 
- * 
+ * <code>SWT.RIGHT</code> or <code>SWT.FILL</code>
+ *
  * @exception  SWTException <ul>
  *		<li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
  *		<li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
@@ -1291,11 +1291,11 @@ public int getTopRightAlignment() {
 	return topRightAlignment;
 }
 /**
- * Returns <code>true</code> if the close button appears 
+ * Returns <code>true</code> if the close button appears
  * when the user hovers over an unselected tabs.
- * 
+ *
  * @return <code>true</code> if the close button appears on unselected tabs
- * 
+ *
  * @since 3.0
  */
 public boolean getUnselectedCloseVisible() {
@@ -1303,11 +1303,11 @@ public boolean getUnselectedCloseVisible() {
 	return showUnselectedClose;
 }
 /**
- * Returns <code>true</code> if an image appears 
+ * Returns <code>true</code> if an image appears
  * in unselected tabs.
- * 
+ *
  * @return <code>true</code> if an image appears in unselected tabs
- * 
+ *
  * @since 3.0
  */
 public boolean getUnselectedImageVisible() {
@@ -1315,17 +1315,17 @@ public boolean getUnselectedImageVisible() {
 	return showUnselectedImage;
 }
 /**
- * Return the index of the specified tab or -1 if the tab is not 
+ * Return the index of the specified tab or -1 if the tab is not
  * in the receiver.
- * 
+ *
  * @param item the tab item for which the index is required
- * 
+ *
  * @return the index of the specified tab item or -1
- * 
+ *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
  * </ul>
- * 
+ *
  * @exception SWTException <ul>
  *    <li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
  *    <li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
@@ -1369,7 +1369,7 @@ void initAccessible() {
 			}
 			e.result = help;
 		}
-		
+
 		@Override
 		public void getKeyboardShortcut(AccessibleEvent e) {
 			String shortcut = null;
@@ -1377,7 +1377,7 @@ void initAccessible() {
 			if (childID >= 0 && childID < items.length) {
 				String text = items[childID].getText();
 				if (text != null) {
-					char mnemonic = _findMnemonic(text);	
+					char mnemonic = _findMnemonic(text);
 					if (mnemonic != '\0') {
 						shortcut = SWT.getMessage ("SWT_Page_Mnemonic", new Object[] {new Character(mnemonic)}); //$NON-NLS-1$
 					}
@@ -1389,7 +1389,7 @@ void initAccessible() {
 			e.result = shortcut;
 		}
 	});
-	
+
 	accessible.addAccessibleControlListener(new AccessibleControlAdapter() {
 		@Override
 		public void getChildAtPoint(AccessibleControlEvent e) {
@@ -1435,12 +1435,12 @@ void initAccessible() {
 				e.height = location.height;
 			}
 		}
-		
+
 		@Override
 		public void getChildCount(AccessibleControlEvent e) {
 			e.detail = items.length;
 		}
-		
+
 		@Override
 		public void getDefaultAction(AccessibleControlEvent e) {
 			String action = null;
@@ -1472,15 +1472,15 @@ void initAccessible() {
 				role = ACC.ROLE_TABFOLDER;
 			} else if (childID >= 0 && childID < items.length) {
 				role = ACC.ROLE_TABITEM;
-			} 
+			}
 			e.detail = role;
 		}
-		
+
 		@Override
 		public void getSelection(AccessibleControlEvent e) {
 			e.childID = (selectedIndex == -1) ? ACC.CHILDID_NONE : selectedIndex;
 		}
-		
+
 		@Override
 		public void getState(AccessibleControlEvent e) {
 			int state = 0;
@@ -1501,7 +1501,7 @@ void initAccessible() {
 			}
 			e.detail = state;
 		}
-		
+
 		@Override
 		public void getChildren(AccessibleControlEvent e) {
 			int childIdCount = items.length;
@@ -1512,7 +1512,7 @@ void initAccessible() {
 			e.children = children;
 		}
 	});
-	
+
 	addListener(SWT.Selection, new Listener() {
 		public void handleEvent(Event event) {
 			if (isFocusControl()) {
@@ -1618,7 +1618,7 @@ void onDispose(Event event) {
 	notifyListeners(SWT.Dispose, event);
 	event.type = SWT.None;
 	/*
-	 * Usually when an item is disposed, destroyItem will change the size of the items array, 
+	 * Usually when an item is disposed, destroyItem will change the size of the items array,
 	 * reset the bounds of all the tabs and manage the widget associated with the tab.
 	 * Since the whole folder is being disposed, this is not necessary.  For speed
 	 * the inDispose flag is used to skip over this part of the item dispose.
@@ -1630,21 +1630,21 @@ void onDispose(Event event) {
 		showMenu = null;
 	}
 	int length = items.length;
-	for (int i = 0; i < length; i++) {				
+	for (int i = 0; i < length; i++) {
 		if (items[i] != null) {
 			items[i].dispose();
 		}
 	}
 
 	gradientColors = null;
-	
+
 	selectionGradientColors = null;
 	selectionGradientPercents = null;
 	selectionBgImage = null;
 
 	selectionBackground = null;
 	selectionForeground = null;
-	
+
 	if (controlBkImages != null) {
 		for (int i = 0; i < controlBkImages.length; i++) {
 			if (controlBkImages[i] != null) {
@@ -1657,26 +1657,26 @@ void onDispose(Event event) {
 	controls = null;
 	controlAlignments = null;
 	controlRects = null;
-	
+
 	if (maxImage != null) maxImage.dispose();
 	maxImage = null;
-	
+
 	if (minImage != null) minImage.dispose();
 	minImage = null;
-	
+
 	if (chevronImage != null) chevronImage.dispose();
 	chevronImage = null;
-	
+
 	if (renderer != null) renderer.dispose();
 	renderer = null;
 
 	minItem = null;
 	maxItem = null;
 	minMaxTb = null;
-	
+
 	chevronItem = null;
 	chevronTb = null;
-	
+
 	if (folderListeners.length != 0) folderListeners = new CTabFolder2Listener[0];
 	if (tabListeners.length != 0) tabListeners = new CTabFolderListener[0];
 }
@@ -1735,9 +1735,9 @@ void onMenuDetect(Event event) {
 		}
 	}
 }
-void onMouseDoubleClick(Event event) {	
-	if (event.button != 1 || 
-		(event.stateMask & SWT.BUTTON2) != 0 || 
+void onMouseDoubleClick(Event event) {
+	if (event.button != 1 ||
+		(event.stateMask & SWT.BUTTON2) != 0 ||
 		(event.stateMask & SWT.BUTTON3) != 0) return;
 	Event e = new Event();
 	e.item = getItem(new Point(event.x, event.y));
@@ -1941,7 +1941,7 @@ void onMouse(Event event) {
 									nextItem.closeImageState = SWT.NONE;
 									redraw(nextItem.closeRect.x, nextItem.closeRect.y, nextItem.closeRect.width, nextItem.closeRect.height, false);
 								}
-							} 
+							}
 						}
 					}
 					return;
@@ -1953,7 +1953,7 @@ void onMouse(Event event) {
 void onPageTraversal(Event event) {
 	int count = items.length;
 	if (count == 0) return;
-	int index = selectedIndex; 
+	int index = selectedIndex;
 	if (index  == -1) {
 		index = 0;
 	} else {
@@ -2013,28 +2013,28 @@ void onPaint(Event event) {
 	Font gcFont = gc.getFont();
 	Color gcBackground = gc.getBackground();
 	Color gcForeground = gc.getForeground();
-	
+
 // Useful for debugging paint problems
 //{
-//Point size = getSize();	
+//Point size = getSize();
 //gc.setBackground(getDisplay().getSystemColor(SWT.COLOR_GREEN));
 //gc.fillRectangle(-10, -10, size.x + 20, size.y+20);
 //}
 
 	Point size = getSize();
-	Rectangle bodyRect = new Rectangle(0, 0, size.x, size.y); 
-	renderer.draw(CTabFolderRenderer.PART_BODY, SWT.BACKGROUND | SWT.FOREGROUND, bodyRect, gc); 
+	Rectangle bodyRect = new Rectangle(0, 0, size.x, size.y);
+	renderer.draw(CTabFolderRenderer.PART_BODY, SWT.BACKGROUND | SWT.FOREGROUND, bodyRect, gc);
 
 	gc.setFont(gcFont);
 	gc.setForeground(gcForeground);
 	gc.setBackground(gcBackground);
-	
+
 	renderer.draw(CTabFolderRenderer.PART_HEADER, SWT.BACKGROUND | SWT.FOREGROUND, bodyRect, gc);
-	
+
 	gc.setFont(gcFont);
 	gc.setForeground(gcForeground);
-	gc.setBackground(gcBackground);	
-	
+	gc.setBackground(gcBackground);
+
 	if (!single) {
 		for (int i=0; i < items.length; i++) {
 			Rectangle itemBounds = items[i].getBounds();
@@ -2043,19 +2043,19 @@ void onPaint(Event event) {
 			}
 		}
 	}
-	
+
 	gc.setFont(gcFont);
 	gc.setForeground(gcForeground);
-	gc.setBackground(gcBackground);	
-	
-	if (selectedIndex != -1) { 
+	gc.setBackground(gcBackground);
+
+	if (selectedIndex != -1) {
 		renderer.draw(selectedIndex, items[selectedIndex].state | SWT.BACKGROUND | SWT.FOREGROUND, items[selectedIndex].getBounds(), gc);
 	}
-	
+
 	gc.setFont(gcFont);
 	gc.setForeground(gcForeground);
-	gc.setBackground(gcBackground);	
-	
+	gc.setBackground(gcBackground);
+
 	if (hoverTb) {
 		Rectangle trim = renderer.computeTrim(CTabFolderRenderer.PART_BORDER, SWT.NONE, 0, 0, 0, 0);
 		int x = getSize().x - (trim.width + trim.x);
@@ -2095,12 +2095,12 @@ void onResize(Event event) {
 			int y1 = Math.min(size.y, oldSize.y);
 			if (size.y != oldSize.y) y1 -= trim.height + trim.y - marginHeight;
 			int x2 = Math.max(size.x, oldSize.x);
-			int y2 = Math.max(size.y, oldSize.y);	
+			int y2 = Math.max(size.y, oldSize.y);
 			redraw(0, y1, x2, y2 - y1, false);
 			redraw(x1, 0, x2 - x1, y2, false);
 			if (hoverTb) {
 				redraw(hoverRect.x, hoverRect.y, hoverRect.width, hoverRect.height, false);
-			} 
+			}
 		}
 	}
 	oldSize = size;
@@ -2198,7 +2198,7 @@ void redrawTabs() {
 		redraw(0, 0, size.x, -trim.y - marginHeight + 1, false);
 	}
 }
-/**	 
+/**
  * Removes the listener.
  *
  * @param listener the listener which should no longer be notified
@@ -2206,14 +2206,14 @@ void redrawTabs() {
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
  * </ul>
- * 
+ *
  * @exception SWTException <ul>
  *    <li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
  *    <li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
  * </ul>
- * 
+ *
  * @see #addCTabFolder2Listener(CTabFolder2Listener)
- * 
+ *
  * @since 3.0
  */
 public void removeCTabFolder2Listener(CTabFolder2Listener listener) {
@@ -2237,7 +2237,7 @@ public void removeCTabFolder2Listener(CTabFolder2Listener listener) {
 	System.arraycopy(folderListeners, index + 1, newTabListeners, index, folderListeners.length - index - 1);
 	folderListeners = newTabListeners;
 }
-/**	 
+/**
  * Removes the listener.
  *
  * @param listener the listener which should no longer be notified
@@ -2245,12 +2245,12 @@ public void removeCTabFolder2Listener(CTabFolder2Listener listener) {
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
  * </ul>
- * 
+ *
  * @exception SWTException <ul>
  *    <li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
  *    <li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
  * </ul>
- * 
+ *
  * @deprecated see removeCTabFolderCloseListener(CTabFolderListener)
  */
 @Deprecated
@@ -2275,7 +2275,7 @@ public void removeCTabFolderListener(CTabFolderListener listener) {
 	System.arraycopy(tabListeners, index + 1, newTabListeners, index, tabListeners.length - index - 1);
 	tabListeners = newTabListeners;
 }
-/**	 
+/**
  * Removes the listener from the collection of listeners who will
  * be notified when the user changes the receiver's selection.
  *
@@ -2298,7 +2298,7 @@ public void removeSelectionListener(SelectionListener listener) {
 		SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	}
 	removeListener(SWT.Selection, listener);
-	removeListener(SWT.DefaultSelection, listener);	
+	removeListener(SWT.DefaultSelection, listener);
 }
 
 @Override
@@ -2321,21 +2321,21 @@ public void setBackground (Color color) {
  * For example to draw a gradient that varies from dark blue to blue and then to
  * white, use the following call to setBackground:
  * <pre>
- *	cfolder.setBackground(new Color[]{display.getSystemColor(SWT.COLOR_DARK_BLUE), 
+ *	cfolder.setBackground(new Color[]{display.getSystemColor(SWT.COLOR_DARK_BLUE),
  *		                           display.getSystemColor(SWT.COLOR_BLUE),
- *		                           display.getSystemColor(SWT.COLOR_WHITE), 
+ *		                           display.getSystemColor(SWT.COLOR_WHITE),
  *		                           display.getSystemColor(SWT.COLOR_WHITE)},
  *		               new int[] {25, 50, 100});
  * </pre>
  *
- * @param colors an array of Color that specifies the colors to appear in the gradient 
+ * @param colors an array of Color that specifies the colors to appear in the gradient
  *               in order of appearance left to right.  The value <code>null</code> clears the
- *               background gradient. The value <code>null</code> can be used inside the array of 
+ *               background gradient. The value <code>null</code> can be used inside the array of
  *               Color to specify the background color.
- * @param percents an array of integers between 0 and 100 specifying the percent of the width 
+ * @param percents an array of integers between 0 and 100 specifying the percent of the width
  *                 of the widget at which the color should change.  The size of the <code>percents</code>
  *                 array must be one less than the size of the <code>colors</code> array.
- * 
+ *
  * @exception SWTException <ul>
  *		<li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
  *		<li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
@@ -2351,23 +2351,23 @@ public void setBackground(Color[] colors, int[] percents) {
  * For example to draw a vertical gradient that varies from dark blue to blue and then to
  * white, use the following call to setBackground:
  * <pre>
- *	cfolder.setBackground(new Color[]{display.getSystemColor(SWT.COLOR_DARK_BLUE), 
+ *	cfolder.setBackground(new Color[]{display.getSystemColor(SWT.COLOR_DARK_BLUE),
  *		                           display.getSystemColor(SWT.COLOR_BLUE),
- *		                           display.getSystemColor(SWT.COLOR_WHITE), 
+ *		                           display.getSystemColor(SWT.COLOR_WHITE),
  *		                           display.getSystemColor(SWT.COLOR_WHITE)},
  *		                  new int[] {25, 50, 100}, true);
  * </pre>
  *
- * @param colors an array of Color that specifies the colors to appear in the gradient 
+ * @param colors an array of Color that specifies the colors to appear in the gradient
  *               in order of appearance left to right.  The value <code>null</code> clears the
- *               background gradient. The value <code>null</code> can be used inside the array of 
+ *               background gradient. The value <code>null</code> can be used inside the array of
  *               Color to specify the background color.
- * @param percents an array of integers between 0 and 100 specifying the percent of the width 
+ * @param percents an array of integers between 0 and 100 specifying the percent of the width
  *                 of the widget at which the color should change.  The size of the <code>percents</code>
  *                 array must be one less than the size of the <code>colors</code> array.
- * 
- * @param vertical indicate the direction of the gradient. <code>True</code> is vertical and <code>false</code> is horizontal. 
- * 
+ *
+ * @param vertical indicate the direction of the gradient. <code>True</code> is vertical and <code>false</code> is horizontal.
+ *
  * @exception SWTException <ul>
  *		<li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
  *		<li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
@@ -2395,9 +2395,9 @@ public void setBackground(Color[] colors, int[] percents, boolean vertical) {
 			percents = new int[] {};
 		}
 	}
-	
+
 	// Are these settings the same as before?
-	if ((gradientColors != null) && (colors != null) && 
+	if ((gradientColors != null) && (colors != null) &&
 		(gradientColors.length == colors.length)) {
 		boolean same = false;
 		for (int i = 0; i < gradientColors.length; i++) {
@@ -2446,9 +2446,9 @@ public void setBackgroundImage(Image image) {
 }
 /**
  * Toggle the visibility of the border
- * 
+ *
  * @param show true if the border should be displayed
- * 
+ *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
@@ -2531,7 +2531,7 @@ void setButtonBounds(GC gc) {
 			if (chevronImage != null) chevronImage.dispose();
 			chevronImage = createButtonImage(display, CTabFolderRenderer.PART_CHEVRON_BUTTON);
 			chevronItem.setImage(chevronImage);
-		} 
+		}
     }
 
 	boolean[][] overflow = new boolean[1][0];
@@ -2584,7 +2584,7 @@ void setButtonBounds(GC gc) {
 @Override
 public boolean setFocus () {
 	checkWidget ();
-	
+
 	/*
 	* Feature in SWT.  When a new tab item is selected
 	* and the previous tab item had focus, removing focus
@@ -2625,14 +2625,14 @@ public void setForeground (Color color) {
 	redraw();
 }
 /**
- * Display an insert marker before or after the specified tab item. 
- * 
+ * Display an insert marker before or after the specified tab item.
+ *
  * A value of null will clear the mark.
- * 
+ *
  * @param item the item with which the mark is associated or null
- * 
+ *
  * @param after true if the mark should be displayed after the specified item
- * 
+ *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
@@ -2643,17 +2643,17 @@ public void setInsertMark(CTabItem item, boolean after) {
 }
 /**
  * Display an insert marker before or after the specified tab item.
- * 
+ *
  * A value of -1 will clear the mark.
- * 
+ *
  * @param index the index of the item with which the mark is associated or -1
- * 
+ *
  * @param after true if the mark should be displayed after the specified item
- * 
+ *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_INVALID_ARGUMENT when the index is invalid</li>
  * </ul>
- * 
+ *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
@@ -2723,22 +2723,22 @@ boolean setItemLocation(GC gc) {
 				item.closeRect.x = item.x + item.width  - (edgeTrim.width + edgeTrim.x) - closeButtonSize.x;
 				item.closeRect.y = onBottom ? size.y - borderBottom - tabHeight + (tabHeight - closeButtonSize.y)/2: borderTop + (tabHeight - closeButtonSize.y)/2;
 				x = x + item.width;
-				if (!simple && i == selectedIndex) x -= renderer.curveIndent; //TODO: fix next item position 
+				if (!simple && i == selectedIndex) x -= renderer.curveIndent; //TODO: fix next item position
 			}
 		}
 	}
 	return changed;
 }
 /**
- * Reorder the items of the receiver. 
+ * Reorder the items of the receiver.
  * @param indices an array containing the new indices for all items
- * 
+ *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the indices array is null</li>
- *    <li>ERROR_INVALID_ARGUMENT - if the indices array is not the same length as the number of items, 
+ *    <li>ERROR_INVALID_ARGUMENT - if the indices array is not the same length as the number of items,
  *    if there are duplicate indices or an index is out of range.</li>
  * </ul>
- * 
+ *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
@@ -2796,13 +2796,13 @@ boolean setItemSize(GC gc) {
 		}
 		return changed;
 	}
-	
+
 	if (items.length == 0) return changed;
 	int[] widths;
 	int tabAreaWidth = Math.max(0, getRightItemEdge(gc) - getLeftItemEdge(gc, CTabFolderRenderer.PART_BORDER));
 	// First, try the minimum tab size at full compression.
 	int minWidth = 0;
-	int[] minWidths = new int[items.length];	
+	int[] minWidths = new int[items.length];
 	for (int i = 0; i < priority.length; i++) {
 		int index = priority[i];
 		int state = CTabFolderRenderer.MINIMUM_SIZE;
@@ -2885,7 +2885,7 @@ boolean setItemSize(GC gc) {
 }
 /**
  * Marks the receiver's maximize button as visible if the argument is <code>true</code>,
- * and marks it invisible otherwise. 
+ * and marks it invisible otherwise.
  *
  * @param visible the new visibility state
  *
@@ -2893,7 +2893,7 @@ boolean setItemSize(GC gc) {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 3.0
  */
 public void setMaximizeVisible(boolean visible) {
@@ -2949,7 +2949,7 @@ public void setMaximized(boolean maximize) {
 }
 /**
  * Marks the receiver's minimize button as visible if the argument is <code>true</code>,
- * and marks it invisible otherwise. 
+ * and marks it invisible otherwise.
  *
  * @param visible the new visibility state
  *
@@ -2957,7 +2957,7 @@ public void setMaximized(boolean maximize) {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 3.0
  */
 public void setMinimizeVisible(boolean visible) {
@@ -2993,9 +2993,9 @@ public void setMinimized(boolean minimize) {
 }
 
 /**
- * Sets the minimum number of characters that will 
+ * Sets the minimum number of characters that will
  * be displayed in a fully compressed tab.
- * 
+ *
  * @param count the minimum number of characters that will be displayed in a fully compressed tab
  *
  * @exception SWTException <ul>
@@ -3003,7 +3003,7 @@ public void setMinimized(boolean minimize) {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  *    <li>ERROR_INVALID_RANGE - if the count is less than zero</li>
  * </ul>
- * 
+ *
  * @since 3.0
  */
 public void setMinimumCharacters(int count) {
@@ -3016,17 +3016,17 @@ public void setMinimumCharacters(int count) {
 
 /**
  * When there is not enough horizontal space to show all the tabs,
- * by default, tabs are shown sequentially from left to right in 
+ * by default, tabs are shown sequentially from left to right in
  * order of their index.  When the MRU visibility is turned on,
  * the tabs that are visible will be the tabs most recently selected.
- * Tabs will still maintain their left to right order based on index 
+ * Tabs will still maintain their left to right order based on index
  * but only the most recently selected tabs are visible.
  * <p>
  * For example, consider a CTabFolder that contains "Tab 1", "Tab 2",
  * "Tab 3" and "Tab 4" (in order by index).  The user selects
  * "Tab 1" and then "Tab 3".  If the CTabFolder is now
- * compressed so that only two tabs are visible, by default, 
- * "Tab 2" and "Tab 3" will be shown ("Tab 3" since it is currently 
+ * compressed so that only two tabs are visible, by default,
+ * "Tab 2" and "Tab 3" will be shown ("Tab 3" since it is currently
  * selected and "Tab 2" because it is the previous item in index order).
  * If MRU visibility is enabled, the two visible tabs will be "Tab 1"
  * and "Tab 3" (in that order from left to right).</p>
@@ -3037,7 +3037,7 @@ public void setMinimumCharacters(int count) {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 3.1
  */
 public void setMRUVisible(boolean show) {
@@ -3063,14 +3063,14 @@ public void setMRUVisible(boolean show) {
  * renderer is used.
  *
  * @param renderer a new renderer
- * 
+ *
  * @exception SWTException <ul>
  *		<li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
  *		<li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
  *	</ul>
  *
  * @see CTabFolderRenderer
- * 
+ *
  * @since 3.6
  */
 public void setRenderer(CTabFolderRenderer renderer) {
@@ -3084,13 +3084,13 @@ public void setRenderer(CTabFolderRenderer renderer) {
 }
 /**
  * Set the selection to the tab at the specified item.
- * 
+ *
  * @param item the tab item to be selected
- * 
+ *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the item is null</li>
  * </ul>
- * 
+ *
  * @exception SWTException <ul>
  *    <li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
  *    <li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
@@ -3104,9 +3104,9 @@ public void setSelection(CTabItem item) {
 }
 /**
  * Set the selection to the tab at the specified index.
- * 
+ *
  * @param index the index of the tab item to be selected
- * 
+ *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
@@ -3120,7 +3120,7 @@ public void setSelection(int index) {
 		showItem(selection);
 		return;
 	}
-	
+
 	int oldIndex = selectedIndex;
 	selectedIndex = index;
 	if (oldIndex != -1) {
@@ -3136,7 +3136,7 @@ public void setSelection(int index) {
 	if (oldIndex != -1) {
 		oldControl = items[oldIndex].control;
 	}
-	
+
 	if (newControl != oldControl) {
 		if (newControl != null && !newControl.isDisposed()) {
 			newControl.setBounds(getClientArea());
@@ -3149,7 +3149,7 @@ public void setSelection(int index) {
 	showItem(selection);
 	redraw();
 }
-void setSelection(int index, boolean notify) {	
+void setSelection(int index, boolean notify) {
 	int oldSelectedIndex = selectedIndex;
 	setSelection(index);
 	if (notify && selectedIndex != oldSelectedIndex && selectedIndex != -1) {
@@ -3166,7 +3166,7 @@ void setSelection(int index, boolean notify) {
  * @param color the new color (or null)
  *
  * @exception IllegalArgumentException <ul>
- *    <li>ERROR_INVALID_ARGUMENT - if the argument has been disposed</li> 
+ *    <li>ERROR_INVALID_ARGUMENT - if the argument has been disposed</li>
  * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -3190,21 +3190,21 @@ public void setSelectionBackground (Color color) {
  * For example to draw a gradient that varies from dark blue to blue and then to
  * white, use the following call to setBackground:
  * <pre>
- *	cfolder.setBackground(new Color[]{display.getSystemColor(SWT.COLOR_DARK_BLUE), 
+ *	cfolder.setBackground(new Color[]{display.getSystemColor(SWT.COLOR_DARK_BLUE),
  *		                           display.getSystemColor(SWT.COLOR_BLUE),
- *		                           display.getSystemColor(SWT.COLOR_WHITE), 
+ *		                           display.getSystemColor(SWT.COLOR_WHITE),
  *		                           display.getSystemColor(SWT.COLOR_WHITE)},
  *		               new int[] {25, 50, 100});
  * </pre>
  *
- * @param colors an array of Color that specifies the colors to appear in the gradient 
+ * @param colors an array of Color that specifies the colors to appear in the gradient
  *               in order of appearance left to right.  The value <code>null</code> clears the
- *               background gradient. The value <code>null</code> can be used inside the array of 
+ *               background gradient. The value <code>null</code> can be used inside the array of
  *               Color to specify the background color.
- * @param percents an array of integers between 0 and 100 specifying the percent of the width 
- *                 of the widget at which the color should change.  The size of the percents array must be one 
+ * @param percents an array of integers between 0 and 100 specifying the percent of the width
+ *                 of the widget at which the color should change.  The size of the percents array must be one
  *                 less than the size of the colors array.
- * 
+ *
  * @exception SWTException <ul>
  *		<li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
  *		<li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
@@ -3218,23 +3218,23 @@ public void setSelectionBackground(Color[] colors, int[] percents) {
  * For example to draw a vertical gradient that varies from dark blue to blue and then to
  * white, use the following call to setBackground:
  * <pre>
- *	cfolder.setBackground(new Color[]{display.getSystemColor(SWT.COLOR_DARK_BLUE), 
+ *	cfolder.setBackground(new Color[]{display.getSystemColor(SWT.COLOR_DARK_BLUE),
  *		                           display.getSystemColor(SWT.COLOR_BLUE),
- *		                           display.getSystemColor(SWT.COLOR_WHITE), 
+ *		                           display.getSystemColor(SWT.COLOR_WHITE),
  *		                           display.getSystemColor(SWT.COLOR_WHITE)},
  *		                  new int[] {25, 50, 100}, true);
  * </pre>
  *
- * @param colors an array of Color that specifies the colors to appear in the gradient 
+ * @param colors an array of Color that specifies the colors to appear in the gradient
  *               in order of appearance left to right.  The value <code>null</code> clears the
- *               background gradient. The value <code>null</code> can be used inside the array of 
+ *               background gradient. The value <code>null</code> can be used inside the array of
  *               Color to specify the background color.
- * @param percents an array of integers between 0 and 100 specifying the percent of the width 
- *                 of the widget at which the color should change.  The size of the percents array must be one 
+ * @param percents an array of integers between 0 and 100 specifying the percent of the width
+ *                 of the widget at which the color should change.  The size of the percents array must be one
  *                 less than the size of the colors array.
- * 
- * @param vertical indicate the direction of the gradient.  True is vertical and false is horizontal. 
- * 
+ *
+ * @param vertical indicate the direction of the gradient.  True is vertical and false is horizontal.
+ *
  * @exception SWTException <ul>
  *		<li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
  *		<li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
@@ -3250,7 +3250,7 @@ public void setSelectionBackground(Color[] colors, int[] percents, boolean verti
 	if (colors != null) {
 		//The colors array can optionally have an extra entry which describes the highlight top color
 		//Thus its either one or two larger than the percents array
-		if (percents == null || 
+		if (percents == null ||
 				! ((percents.length == colors.length - 1) || (percents.length == colors.length - 2))){
 			SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 		}
@@ -3279,10 +3279,10 @@ public void setSelectionBackground(Color[] colors, int[] percents, boolean verti
 	} else {
 		colorsLength = 0;
 	}
-	
+
 	// Are these settings the same as before?
 	if (selectionBgImage == null) {
-		if ((selectionGradientColors != null) && (colors != null) && 
+		if ((selectionGradientColors != null) && (colors != null) &&
 			(selectionGradientColors.length == colorsLength)) {
 			boolean same = false;
 			for (int i = 0; i < selectionGradientColors.length; i++) {
@@ -3341,9 +3341,9 @@ void setSelectionHighlightGradientColor(Color start) {
 /**
  * Set the image to be drawn in the background of the selected tab.  Image
  * is stretched or compressed to cover entire selection tab area.
- * 
+ *
  * @param image the image to be drawn in the background
- * 
+ *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
@@ -3364,9 +3364,9 @@ public void setSelectionBackground(Image image) {
 }
 /**
  * Set the foreground color of the selected tab.
- * 
+ *
  * @param color the color of the text displayed in the selected tab
- * 
+ *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
@@ -3381,10 +3381,10 @@ public void setSelectionForeground (Color color) {
 }
 
 /**
- * Sets the shape that the CTabFolder will use to render itself.  
- * 
+ * Sets the shape that the CTabFolder will use to render itself.
+ *
  * @param simple <code>true</code> if the CTabFolder should render itself in a simple, traditional style
- * 
+ *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
@@ -3401,14 +3401,14 @@ public void setSimple(boolean simple) {
 }
 /**
  * Sets the number of tabs that the CTabFolder should display
- * 
+ *
  * @param single <code>true</code> if only the selected tab should be displayed otherwise, multiple tabs will be shown.
- * 
+ *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 3.0
  */
 public void setSingle(boolean single) {
@@ -3433,11 +3433,11 @@ int getControlY(Point size, Rectangle[] rects, int borderBottom, int borderTop, 
 
 /**
  * Specify a fixed height for the tab items.  If no height is specified,
- * the default height is the height of the text or the image, whichever 
+ * the default height is the height of the text or the image, whichever
  * is greater. Specifying a height of -1 will revert to the default height.
- * 
+ *
  * @param height the pixel value of the height or -1
- * 
+ *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
@@ -3453,17 +3453,17 @@ public void setTabHeight(int height) {
 	updateFolder(UPDATE_TAB_HEIGHT);
 }
 /**
- * Specify whether the tabs should appear along the top of the folder 
+ * Specify whether the tabs should appear along the top of the folder
  * or along the bottom of the folder.
- * 
+ *
  * @param position <code>SWT.TOP</code> for tabs along the top or <code>SWT.BOTTOM</code> for tabs along the bottom
- * 
+ *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  *    <li>ERROR_INVALID_ARGUMENT - if the position value is not either SWT.TOP or SWT.BOTTOM</li>
  * </ul>
- * 
+ *
  * @since 3.0
  */
 public void setTabPosition(int position) {
@@ -3478,10 +3478,10 @@ public void setTabPosition(int position) {
 }
 /**
  * Set the control that appears in the top right corner of the tab folder.
- * Typically this is a close button or a composite with a Menu and close button. 
- * The topRight control is optional.  Setting the top right control to null will 
+ * Typically this is a close button or a composite with a Menu and close button.
+ * The topRight control is optional.  Setting the top right control to null will
  * remove it from the tab folder.
- * 
+ *
  * @param control the control to be displayed in the top right corner or null
  *
  * @exception SWTException <ul>
@@ -3489,7 +3489,7 @@ public void setTabPosition(int position) {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  *    <li>ERROR_INVALID_ARGUMENT - if the control is disposed, or not a child of this CTabFolder</li>
  * </ul>
- * 
+ *
  * @since 2.1
  */
 public void setTopRight(Control control) {
@@ -3497,13 +3497,13 @@ public void setTopRight(Control control) {
 }
 /**
  * Set the control that appears in the top right corner of the tab folder.
- * Typically this is a close button or a composite with a Menu and close button. 
- * The topRight control is optional.  Setting the top right control to null 
+ * Typically this is a close button or a composite with a Menu and close button.
+ * The topRight control is optional.  Setting the top right control to null
  * will remove it from the tab folder.
  * <p>
  * The alignment parameter sets the layout of the control in the tab area.
- * <code>SWT.RIGHT</code> will cause the control to be positioned on the far 
- * right of the folder and it will have its default size.  <code>SWT.FILL</code> 
+ * <code>SWT.RIGHT</code> will cause the control to be positioned on the far
+ * right of the folder and it will have its default size.  <code>SWT.FILL</code>
  * will size the control to fill all the available space to the right of the
  * last tab.  If there is no available space, the control will not be visible.
  * <code>SWT.RIGHT | SWT.WRAP</code> will allow the control to wrap below the
@@ -3518,7 +3518,7 @@ public void setTopRight(Control control) {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  *    <li>ERROR_INVALID_ARGUMENT - if the control is disposed, or not a child of this CTabFolder</li>
  * </ul>
- * 
+ *
  * @since 3.0
  */
 public void setTopRight(Control control, int alignment) {
@@ -3540,16 +3540,16 @@ public void setTopRight(Control control, int alignment) {
 
 
 /**
- * Specify whether the close button appears 
+ * Specify whether the close button appears
  * when the user hovers over an unselected tabs.
- * 
+ *
  * @param visible <code>true</code> makes the close button appear
- * 
+ *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 3.0
  */
 public void setUnselectedCloseVisible(boolean visible) {
@@ -3561,14 +3561,14 @@ public void setUnselectedCloseVisible(boolean visible) {
 }
 /**
  * Specify whether the image appears on unselected tabs.
- * 
+ *
  * @param visible <code>true</code> makes the image appear
- * 
+ *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 3.0
  */
 public void setUnselectedImageVisible(boolean visible) {
@@ -3582,7 +3582,7 @@ public void setUnselectedImageVisible(boolean visible) {
  * Shows the item.  If the item is already showing in the receiver,
  * this method simply returns.  Otherwise, the items are scrolled until
  * the item is visible.
- * 
+ *
  * @param item the item to be shown
  *
  * @exception IllegalArgumentException <ul>
@@ -3666,11 +3666,11 @@ void showList (Rectangle rect) {
  * </ul>
  *
  * @see CTabFolder#showItem(CTabItem)
- * 
+ *
  * @since 2.0
  */
 public void showSelection () {
-	checkWidget (); 
+	checkWidget ();
 	if (selectedIndex != -1) {
 		showItem(getSelection());
 	}
@@ -3734,7 +3734,7 @@ boolean updateItems (int showIndex) {
 					}
 				}
 			}
-		
+
 		}
 		if (firstIndex != priority[0]) {
 			int index = 0;
@@ -3750,7 +3750,7 @@ boolean updateItems (int showIndex) {
 			}
 		}
 	}
-	
+
 	boolean oldShowChevron = showChevron;
 	boolean changed = setItemSize(gc);
 	changed |= setItemLocation(gc);
@@ -3770,7 +3770,7 @@ boolean updateTabHeight(boolean force){
 	tabHeight = renderer.computeSize(CTabFolderRenderer.PART_HEADER, SWT.NONE, gc, SWT.DEFAULT, SWT.DEFAULT).y;
 	gc.dispose();
 	if (fixedTabHeight == SWT.DEFAULT && controls != null && controls.length > 0) {
-		for (int i = 0; i < controls.length; i++) {		
+		for (int i = 0; i < controls.length; i++) {
 			if ((controlAlignments[i] & SWT.WRAP) == 0 && !controls[i].isDisposed() && controls[i].getVisible()) {
 				int topHeight = controls[i].computeSize(SWT.DEFAULT, SWT.DEFAULT).y;
 				topHeight +=  renderer.computeTrim(CTabFolderRenderer.PART_HEADER, SWT.NONE, 0,0,0,0).height + 1;
@@ -3797,7 +3797,7 @@ void updateFolder (int flags) {
 }
 
 void runUpdate() {
-	if (updateFlags == 0) return; 
+	if (updateFlags == 0) return;
 	int flags = updateFlags;
 	updateFlags = 0;
 	Rectangle rectBefore = getClientArea();
@@ -3829,7 +3829,7 @@ void updateBkImages() {
 					Rectangle bounds = control.getBounds();
 					int tabHeight = getTabHeight();
 					int height = this.getSize().y;
-					boolean wrapped = onBottom ? bounds.y + bounds.height < height - tabHeight : bounds.y > tabHeight; 
+					boolean wrapped = onBottom ? bounds.y + bounds.height < height - tabHeight : bounds.y > tabHeight;
 					if (wrapped || gradientColors == null) {
 						control.setBackgroundImage(null);
 						control.setBackground(getBackground());
@@ -3840,7 +3840,7 @@ void updateBkImages() {
 							bounds.height -= 2*bounds.y - 1;
 						} else {
 							bounds.height += height - (bounds.y + bounds.height);
-							bounds.y = -1; 
+							bounds.y = -1;
 						}
 						bounds.x = 0;
 						if (controlBkImages[i] != null) controlBkImages[i].dispose();
@@ -3854,7 +3854,7 @@ void updateBkImages() {
 				}
 			}
 		}
-		
+
 	}
 }
 String _getToolTip(int x, int y) {
@@ -3872,18 +3872,18 @@ String _getToolTip(int x, int y) {
 * control, see#removeTabControl(Control);
 * <p>
 * The flags parameter sets the layout of the control in the tab area.
-* <code>SWT.LEAD</code> will cause the control to be positioned on the left 
+* <code>SWT.LEAD</code> will cause the control to be positioned on the left
 * of the tabs. <code>SWT.TRAIL</code> will cause the control to be positioned on
-* the far right of the folder and it will have its default size. <code>SWT.TRAIL</code> 
-* can be combined with <code>SWT.FILL</code>to fill all the available space to the 
-* right of the last tab. <code>SWT.WRAP</code> can also be added to <code>SWT.TRAIL</code> 
+* the far right of the folder and it will have its default size. <code>SWT.TRAIL</code>
+* can be combined with <code>SWT.FILL</code>to fill all the available space to the
+* right of the last tab. <code>SWT.WRAP</code> can also be added to <code>SWT.TRAIL</code>
 * only to cause a control to wrap if there is not enough space to display it in its
 * entirety.
 * </p>
 * @param control the control to be displayed in the top right corner or null
 *
-* @param flags valid combinations are: 
-* <ul><li>SWT.LEAD 
+* @param flags valid combinations are:
+* <ul><li>SWT.LEAD
 * <li> SWT.TRAIL (| SWT.FILL | SWT.WRAP)
 * </ul>
 * @exception SWTException <ul>
@@ -3919,9 +3919,9 @@ void addTabControl(Control control, int flags, int index, boolean update) {
 		}
 	}
 	int length = controls.length;
-	
+
 	control.addListener(SWT.Resize, listener);
-	
+
 	//Grow all 4 arrays
 	Control[] newControls = new Control [length + 1];
 	System.arraycopy(controls, 0, newControls, 0, length);
@@ -3938,7 +3938,7 @@ void addTabControl(Control control, int flags, int index, boolean update) {
 	if (index == -1) {
 		index = length;
 		if (chevronTb != null && control != chevronTb) index--;
-	} 
+	}
 	System.arraycopy (controls, index, controls, index + 1, length - index);
 	System.arraycopy (controlAlignments, index, controlAlignments, index + 1, length - index);
 	System.arraycopy (controlRects, index, controlRects, index + 1, length - index);
@@ -3955,7 +3955,7 @@ void addTabControl(Control control, int flags, int index, boolean update) {
 * Removes the control from the list of tab controls.
 *
 * @param control the control to be removed
-* 
+*
 * @exception SWTException <ul>
 *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
 *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
@@ -3977,16 +3977,16 @@ void removeTabControl (Control control, boolean update) {
 			index = i;
 			break;
 		}
-	} 
+	}
 	if (index == -1) return;
-	
+
 	if (!control.isDisposed()) {
 		control.removeListener(SWT.Resize, listener);
 		control.setBackground (null);
 		control.setBackgroundImage (null);
 		if (control instanceof Composite) ((Composite) control).setBackgroundMode(SWT.INHERIT_NONE);
 	}
-	
+
 	if (controlBkImages[index] != null && !controlBkImages[index].isDisposed()) controlBkImages[index].dispose();
 	if (controls.length == 1) {
 		controls = new Control[0];
@@ -3998,17 +3998,17 @@ void removeTabControl (Control control, boolean update) {
 		System.arraycopy(controls, 0, newControls, 0, index);
 		System.arraycopy(controls, index + 1, newControls, index, controls.length - index - 1);
 		controls = newControls;
-		
+
 		int[] newAlignments = new int [controls.length];
 		System.arraycopy(controlAlignments, 0, newAlignments, 0, index);
 		System.arraycopy(controlAlignments, index + 1, newAlignments, index, controls.length - index);
 		controlAlignments = newAlignments;
-		
+
 		Rectangle[] newRects = new Rectangle [controls.length];
 		System.arraycopy(controlRects, 0, newRects, 0, index);
 		System.arraycopy(controlRects, index + 1, newRects, index, controls.length - index);
 		controlRects = newRects;
-		
+
 		Image[] newBkImages = new Image [controls.length];
 		System.arraycopy(controlBkImages, 0, newBkImages, 0, index);
 		System.arraycopy(controlBkImages, index + 1, newBkImages, index, controls.length - index);
@@ -4035,7 +4035,7 @@ int getWrappedHeight (Point size) {
 
 /**
  * Sets whether a chevron is shown when there are more items to be displayed.
- * 
+ *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_INVALID_RANGE - if the index is out of range</li>
  * </ul>
@@ -4043,7 +4043,7 @@ int getWrappedHeight (Point size) {
  *    <li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
  *    <li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
  * </ul>
- * 
+ *
  */
 /*public*/ void setChevronVisible(boolean visible) {
 	checkWidget();

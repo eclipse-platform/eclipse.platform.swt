@@ -34,7 +34,7 @@ import org.eclipse.swt.widgets.*;
 *	}
 *	column1.pack();
 *	column2.pack();
-*	
+*
 *	final TableEditor editor = new TableEditor(table);
 *	//The editor must have the same size as the cell and must
 *	//not be any smaller than 50 pixels.
@@ -43,17 +43,17 @@ import org.eclipse.swt.widgets.*;
 *	editor.minimumWidth = 50;
 *	// editing the second column
 *	final int EDITABLECOLUMN = 1;
-*	
+*
 *	table.addSelectionListener(new SelectionAdapter() {
 *		public void widgetSelected(SelectionEvent e) {
 *			// Clean up any previous editor control
 *			Control oldEditor = editor.getEditor();
 *			if (oldEditor != null) oldEditor.dispose();
-*	
+*
 *			// Identify the selected row
 *			TableItem item = (TableItem)e.item;
 *			if (item == null) return;
-*	
+*
 *			// The control that will be the editor must be a child of the Table
 *			Text newEditor = new Text(table, SWT.NONE);
 *			newEditor.setText(item.getText(EDITABLECOLUMN));
@@ -89,7 +89,7 @@ public class TableEditor extends ControlEditor {
 public TableEditor (Table table) {
 	super(table);
 	this.table = table;
-	
+
 	columnListener = new ControlListener() {
 		public void controlMoved(ControlEvent e){
 			layout ();
@@ -103,7 +103,7 @@ public TableEditor (Table table) {
 			layout ();
 		}
 	};
-	
+
 	// To be consistent with older versions of SWT, grabVertical defaults to true
 	grabVertical = true;
 }
@@ -128,11 +128,11 @@ Rectangle computeBounds () {
 	if (grabHorizontal) {
 		editorRect.width = Math.max(cell.width, minimumWidth);
 	}
-	
+
 	if (grabVertical) {
 		editorRect.height = Math.max(cell.height, minimumHeight);
 	}
-	
+
 	if (horizontalAlignment == SWT.RIGHT) {
 		editorRect.x += cell.width - editorRect.width;
 	} else if (horizontalAlignment == SWT.LEFT) {
@@ -140,7 +140,7 @@ Rectangle computeBounds () {
 	} else { // default is CENTER
 		editorRect.x += (cell.width - editorRect.width)/2;
 	}
-	
+
 	if (verticalAlignment == SWT.BOTTOM) {
 		editorRect.y += cell.height - editorRect.height;
 	} else if (verticalAlignment == SWT.TOP) {
@@ -201,8 +201,8 @@ void resize () {
 }
 /**
 * Sets the zero based index of the column of the cell being tracked by this editor.
-* 
-* @param column the zero based index of the column of the cell being tracked by this editor 
+*
+* @param column the zero based index of the column of the cell being tracked by this editor
 */
 public void setColumn(int column) {
 	int columnCount = table.getColumnCount();
@@ -219,8 +219,8 @@ public void setColumn(int column) {
 		this.column = -1;
 	}
 
-	if (column < 0  || column >= table.getColumnCount()) return;	
-		
+	if (column < 0  || column >= table.getColumnCount()) return;
+
 	this.column = column;
 	TableColumn tableColumn = table.getColumn(this.column);
 	tableColumn.addControlListener(columnListener);
@@ -231,7 +231,7 @@ public void setColumn(int column) {
 *
 * @param item the item to be edited
 */
-public void setItem (TableItem item) {	
+public void setItem (TableItem item) {
 	this.item = item;
 	resize();
 }
@@ -245,7 +245,7 @@ public void setEditor (Control editor) {
 *
 * <p>Note: The Control provided as the editor <b>must</b> be created with its parent being the Table control
 * specified in the TableEditor constructor.
-* 
+*
 * @param editor the Control that is displayed above the cell being edited
 * @param item the TableItem for the row of the cell being tracked by this editor
 * @param column the zero based index of the column of the cell being tracked by this editor

@@ -16,7 +16,7 @@ import org.eclipse.swt.widgets.*;
 
 /**
  * This class provides the layout for SashForm
- * 
+ *
  * @see SashForm
  */
 class SashFormLayout extends Layout {
@@ -26,7 +26,7 @@ protected Point computeSize(Composite composite, int wHint, int hHint, boolean f
 	Control[] cArray = sashForm.getControls(true);
 	int width = 0;
 	int height = 0;
-	if (cArray.length == 0) {		
+	if (cArray.length == 0) {
 		if (wHint != SWT.DEFAULT) width = wHint;
 		if (hHint != SWT.DEFAULT) height = hHint;
 		return new Point(width, height);
@@ -63,7 +63,7 @@ protected Point computeSize(Composite composite, int wHint, int hHint, boolean f
 			data = new SashFormData();
 			cArray[i].setLayoutData(data);
 			((SashFormData)data).weight = ratios[i] = ((200 << 16) + 999) / 1000;
-			
+
 		}
 		total += ratios[i];
 	}
@@ -92,13 +92,13 @@ protected void layout(Composite composite, boolean flushCache) {
 	SashForm sashForm = (SashForm)composite;
 	Rectangle area = sashForm.getClientArea();
 	if (area.width <= 1 || area.height <= 1) return;
-	
+
 	Control[] newControls = sashForm.getControls(true);
 	if (sashForm.controls.length == 0 && newControls.length == 0) return;
 	sashForm.controls = newControls;
-	
+
 	Control[] controls = sashForm.controls;
-	
+
 	if (sashForm.maxControl != null && !sashForm.maxControl.isDisposed()) {
 		for (int i= 0; i < controls.length; i++){
 			if (controls[i] != sashForm.maxControl) {
@@ -109,7 +109,7 @@ protected void layout(Composite composite, boolean flushCache) {
 		}
 		return;
 	}
-	
+
 	// keep just the right number of sashes
 	if (sashForm.sashes.length < controls.length - 1) {
 		Sash[] newSashes = new Sash[controls.length - 1];
@@ -147,11 +147,11 @@ protected void layout(Composite composite, boolean flushCache) {
 			data = new SashFormData();
 			controls[i].setLayoutData(data);
 			((SashFormData)data).weight = ratios[i] = ((200 << 16) + 999) / 1000;
-			
+
 		}
 		total += ratios[i];
 	}
-	
+
 	int sashwidth = sashes.length > 0 ? sashForm.SASH_WIDTH + sashes [0].getBorderWidth() * 2 : sashForm.SASH_WIDTH;
 	if (sashForm.getOrientation() == SWT.HORIZONTAL) {
 		int width = (int)(ratios[0] * (area.width - sashes.length * sashwidth) / total);

@@ -19,7 +19,7 @@ import org.eclipse.swt.widgets.*;
  * A TableTreeItem is a selectable user interface object
  * that represents an item in a hierarchy of items in a
  * TableTree.
- * 
+ *
  * @deprecated As of 3.1 use Tree, TreeItem and TreeColumn
  * @noreference This API will be deleted in a future release. See bug 475833 for details.
  * @noextend This API will be deleted in a future release. See bug 475833 for details.
@@ -47,7 +47,7 @@ public class TableTreeItem extends Item {
  * <p>
  * The style value is either one of the style constants defined in
  * class <code>SWT</code> which is applicable to instances of this
- * class, or must be built by <em>bitwise OR</em>'ing together 
+ * class, or must be built by <em>bitwise OR</em>'ing together
  * (that is, using the <code>int</code> "|" operator) two or more
  * of those <code>SWT</code> style constants. The class description
  * lists the style constants that are applicable to the class.
@@ -79,7 +79,7 @@ public TableTreeItem(TableTree parent, int style) {
  * <p>
  * The style value is either one of the style constants defined in
  * class <code>SWT</code> which is applicable to instances of this
- * class, or must be built by <em>bitwise OR</em>'ing together 
+ * class, or must be built by <em>bitwise OR</em>'ing together
  * (that is, using the <code>int</code> "|" operator) two or more
  * of those <code>SWT</code> style constants. The class description
  * lists the style constants that are applicable to the class.
@@ -112,7 +112,7 @@ public TableTreeItem(TableTree parent, int style, int index) {
  * <p>
  * The style value is either one of the style constants defined in
  * class <code>SWT</code> which is applicable to instances of this
- * class, or must be built by <em>bitwise OR</em>'ing together 
+ * class, or must be built by <em>bitwise OR</em>'ing together
  * (that is, using the <code>int</code> "|" operator) two or more
  * of those <code>SWT</code> style constants. The class description
  * lists the style constants that are applicable to the class.
@@ -144,7 +144,7 @@ public TableTreeItem(TableTreeItem parent, int style) {
  * <p>
  * The style value is either one of the style constants defined in
  * class <code>SWT</code> which is applicable to instances of this
- * class, or must be built by <em>bitwise OR</em>'ing together 
+ * class, or must be built by <em>bitwise OR</em>'ing together
  * (that is, using the <code>int</code> "|" operator) two or more
  * of those <code>SWT</code> style constants. The class description
  * lists the style constants that are applicable to the class.
@@ -174,7 +174,7 @@ TableTreeItem(TableTree parent, TableTreeItem parentItem, int style, int index) 
 	this.parent = parent;
 	this.parentItem = parentItem;
 	if (parentItem == null) {
-		
+
 		/* Root items are visible immediately */
 		int tableIndex = parent.addItem(this, index);
 		tableItem = new TableItem(parent.getTable(), style, tableIndex);
@@ -209,7 +209,7 @@ void addCheck() {
 void addItem(TableTreeItem item, int index) {
 	if (item == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (index < 0 || index > items.length) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-		
+
 	/* Now that item has a sub-node it must indicate that it can be expanded */
 	if (items.length == 0 && index == 0) {
 		if (tableItem != null) {
@@ -217,7 +217,7 @@ void addItem(TableTreeItem item, int index) {
 			tableItem.setImage(0, image);
 		}
 	}
-	
+
 	/* Put the item in the items list */
 	TableTreeItem[] newItems = new TableTreeItem[items.length + 1];
 	System.arraycopy(items, 0, newItems, 0, index);
@@ -231,14 +231,14 @@ void addItem(TableTreeItem item, int index) {
  * Returns the receiver's background color.
  *
  * @return the background color
- * 
+ *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 2.0
- * 
+ *
  */
 public Color getBackground () {
 	checkWidget ();
@@ -293,7 +293,7 @@ public boolean getChecked () {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 2.1
  */
 public boolean getGrayed () {
@@ -339,9 +339,9 @@ public Font getFont () {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 2.0
- * 
+ *
  */
 public Color getForeground () {
 	checkWidget ();
@@ -354,7 +354,7 @@ public Color getForeground () {
  * images of the tree, therefore getImage(0) will return null.
  *
  * @return the image at index 0
- * 
+ *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
@@ -402,7 +402,7 @@ int getIndent() {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 3.1
  */
 public TableTreeItem getItem (int index) {
@@ -429,7 +429,7 @@ public int getItemCount () {
  * <p>
  * Note: This is not the actual structure used by the receiver
  * to maintain its list of items, so modifying the array will
- * not affect the receiver. 
+ * not affect the receiver.
  * </p>
  *
  * @return the receiver's items
@@ -502,7 +502,7 @@ boolean getVisible () {
 
 /**
  * Gets the index of the specified item.
- * 
+ *
  * <p>The widget is searched starting at 0 until an
  * item is found that is equal to the search item.
  * If no item is found, -1 is returned.  Indexing
@@ -513,7 +513,7 @@ boolean getVisible () {
  *
  */
 public int indexOf (TableTreeItem item) {
-	//checkWidget();	
+	//checkWidget();
 	for (int i = 0; i < items.length; i++) {
 		if (items[i] == item) return i;
 	}
@@ -534,7 +534,7 @@ void expandAll(boolean notify) {
 		items[i].expandAll(notify);
 	}
 }
-int expandedIndexOf (TableTreeItem item) {	
+int expandedIndexOf (TableTreeItem item) {
 	int index = 0;
 	for (int i = 0; i < items.length; i++) {
 		if (items[i] == item) return index;
@@ -599,17 +599,17 @@ void removeItem(TableTreeItem item) {
  * if the argument is null.
  *
  * @param color the new color (or null)
- * 
+ *
  * @exception IllegalArgumentException <ul>
- *    <li>ERROR_INVALID_ARGUMENT - if the argument has been disposed</li> 
+ *    <li>ERROR_INVALID_ARGUMENT - if the argument has been disposed</li>
  * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 2.0
- * 
+ *
  */
 public void setBackground (Color color) {
 	checkWidget ();
@@ -623,7 +623,7 @@ public void setBackground (Color color) {
 }
 
 /**
- * Sets the checked state of the checkbox for this item.  This state change 
+ * Sets the checked state of the checkbox for this item.  This state change
  * only applies if the Table was created with the SWT.CHECK style.
  *
  * @param checked the new checked state of the checkbox
@@ -644,16 +644,16 @@ public void setChecked (boolean checked) {
 }
 
 /**
- * Sets the grayed state of the checkbox for this item.  This state change 
+ * Sets the grayed state of the checkbox for this item.  This state change
  * only applies if the Table was created with the SWT.CHECK style.
  *
- * @param grayed the new grayed state of the checkbox; 
+ * @param grayed the new grayed state of the checkbox;
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 2.1
  */
 public void setGrayed (boolean grayed) {
@@ -699,13 +699,13 @@ public void setExpanded (boolean expanded) {
  * @param font the new font (or null)
  *
  * @exception IllegalArgumentException <ul>
- *    <li>ERROR_INVALID_ARGUMENT - if the argument has been disposed</li> 
+ *    <li>ERROR_INVALID_ARGUMENT - if the argument has been disposed</li>
  * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 3.0
  */
 public void setFont (Font font){
@@ -726,17 +726,17 @@ public void setFont (Font font){
  * @param color the new color (or null)
  *
  * @since 2.0
- * 
+ *
  * @exception IllegalArgumentException <ul>
- *    <li>ERROR_INVALID_ARGUMENT - if the argument has been disposed</li> 
+ *    <li>ERROR_INVALID_ARGUMENT - if the argument has been disposed</li>
  * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 2.0
- * 
+ *
  */
 public void setForeground (Color color) {
 	checkWidget ();
@@ -784,7 +784,7 @@ public void setImage (int index, Image image) {
  * images of the tree, therefore do nothing.
  *
  * @param image the new image or null
- * 
+ *
  * @exception SWTException <ul>
  *		<li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
  *		<li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
@@ -870,7 +870,7 @@ void setVisible (boolean show) {
 				tableItem.setImage(0, parent.getPlusImage());
 			}
 		}
-		
+
 	} else {
 
 		for (int i = 0, length = items.length; i < length; i++) {

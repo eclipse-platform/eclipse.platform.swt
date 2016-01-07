@@ -16,7 +16,7 @@ import org.eclipse.swt.widgets.*;
 
 /**
  * This class provides the layout for CBanner
- * 
+ *
  * @see CBanner
  */
 class CBannerLayout extends Layout {
@@ -30,7 +30,7 @@ protected Point computeSize(Composite composite, int wHint, int hHint, boolean f
 	boolean showCurve = left != null && right != null;
 	int height = hHint;
 	int width = wHint;
-	
+
 	// Calculate component sizes
 	Point bottomSize = new Point(0, 0);
 	if (bottom != null) {
@@ -60,7 +60,7 @@ protected Point computeSize(Composite composite, int wHint, int hHint, boolean f
 		int w = wHint == SWT.DEFAULT ? SWT.DEFAULT : Math.max(0, width - trim);
 		leftSize = computeChildSize(left, w, SWT.DEFAULT, flushCache);
 	}
-	
+
 	// Add up sizes
 	width = leftSize.x + rightSize.x;
 	height = bottomSize.y;
@@ -80,10 +80,10 @@ protected Point computeSize(Composite composite, int wHint, int hHint, boolean f
 		width += banner.curve_width - 2*banner.curve_indent;
 		height +=  CBanner.BORDER_TOP + CBanner.BORDER_BOTTOM + 2*CBanner.BORDER_STRIPE;
 	}
-	
+
 	if (wHint != SWT.DEFAULT) width = wHint;
 	if (hHint != SWT.DEFAULT) height = hHint;
-	
+
 	return new Point(width, height);
 }
 Point computeChildSize(Control control, int wHint, int hHint, boolean flushCache) {
@@ -113,12 +113,12 @@ protected void layout(Composite composite, boolean flushCache) {
 	Control left = banner.left;
 	Control right = banner.right;
 	Control bottom = banner.bottom;
-	
+
 	Point size = banner.getSize();
 	boolean showCurve = left != null && right != null;
 	int width = size.x - 2*banner.getBorderWidth();
 	int height = size.y - 2*banner.getBorderWidth();
-	
+
 	Point bottomSize = new Point(0, 0);
 	if (bottom != null) {
 		int trim = computeTrim(bottom);
@@ -140,7 +140,7 @@ protected void layout(Composite composite, boolean flushCache) {
 			w = Math.max(0, w);
 		}
 		rightSize = computeChildSize(right, w, SWT.DEFAULT, flushCache);
-		width = width - (rightSize.x - banner.curve_indent + banner.curve_width - banner.curve_indent); 
+		width = width - (rightSize.x - banner.curve_indent + banner.curve_width - banner.curve_indent);
 	}
 	Point leftSize = new Point(0, 0);
 	if (left != null) {
@@ -179,7 +179,7 @@ protected void layout(Composite composite, boolean flushCache) {
 	/*
 	 * The paint events must be flushed in order to make the curve draw smoothly
 	 * while the user drags the divider.
-	 * On Windows, it is necessary to flush the paints before the children are 
+	 * On Windows, it is necessary to flush the paints before the children are
 	 * resized because otherwise the children (particularly toolbars) will flash.
 	 */
 	banner.update();

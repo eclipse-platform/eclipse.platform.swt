@@ -18,17 +18,17 @@ import org.eclipse.swt.*;
  * The hashCode() method in this class uses the values of the public
  * fields to compute the hash value. When storing instances of the
  * class in hashed collections, do not modify these fields after the
- * object has been inserted.  
+ * object has been inserted.
  * </p>
  * <p>
  * Application code does <em>not</em> need to explicitly release the
  * resources managed by each instance when those instances are no longer
  * required, and thus no <code>dispose()</code> method is provided.
  * </p>
- * 
+ *
  * @see StyledText#setLineBullet(int, int, Bullet)
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
- * 
+ *
  * @since 3.2
  */
 public class Bullet {
@@ -58,36 +58,36 @@ public class Bullet {
 	int[] linesIndices;
 	int count;
 
-/** 
- * Create a new bullet with the specified style, and type <code>ST.BULLET_DOT</code>. 
+/**
+ * Create a new bullet with the specified style, and type <code>ST.BULLET_DOT</code>.
  * The style must have a glyph metrics set.
  *
- * @param style the style 
- * 
+ * @param style the style
+ *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT when the style or the glyph metrics are null</li>
- * </ul> 
+ * </ul>
  */
 public Bullet(StyleRange style) {
 	this(ST.BULLET_DOT, style);
 }
-/** 
- * Create a new bullet the specified style and type. 
+/**
+ * Create a new bullet the specified style and type.
  * The style must have a glyph metrics set.
  *
  * @param type the bullet type
- * @param style the style 
- * 
+ * @param style the style
+ *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT when the style or the glyph metrics are null</li>
- * </ul> 
+ * </ul>
  */
 public Bullet(int type, StyleRange style) {
 	if (style == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (style.metrics == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	this.type = type;
 	this.style = style;
-}	
+}
 void addIndices (int startLine, int lineCount) {
 	if (linesIndices == null) {
 		linesIndices = new int[lineCount];

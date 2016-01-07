@@ -26,12 +26,12 @@ import org.eclipse.swt.graphics.*;
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  */
 public class StyleRange extends TextStyle implements Cloneable {
-	
+
 	/**
 	 * the start offset of the range, zero-based from the document start
 	 */
 	public int start;
-	
+
 	/**
 	 * the length of the range
 	 */
@@ -40,21 +40,21 @@ public class StyleRange extends TextStyle implements Cloneable {
 	/**
 	 * the font style of the range. It may be a combination of
 	 * SWT.NORMAL, SWT.ITALIC or SWT.BOLD
-	 * 
+	 *
 	 * Note: the font style is not used if the <code>font</code> attribute
 	 * is set
 	 */
 	public int fontStyle = SWT.NORMAL;
-	
+
 /**
  * Create a new style range with no styles
- * 
+ *
  * @since 3.2
  */
 public StyleRange() {
 }
 
-/** 
+/**
  * Create a new style range from an existing text style.
  *
  * @param style the text style to copy
@@ -65,12 +65,12 @@ public StyleRange(TextStyle style) {
 	super(style);
 }
 
-/** 
+/**
  * Create a new style range.
  *
  * @param start start offset of the style
- * @param length length of the style 
- * @param foreground foreground color of the style, null if none 
+ * @param length length of the style
+ * @param foreground foreground color of the style, null if none
  * @param background background color of the style, null if none
  */
 public StyleRange(int start, int length, Color foreground, Color background) {
@@ -79,12 +79,12 @@ public StyleRange(int start, int length, Color foreground, Color background) {
 	this.length = length;
 }
 
-/** 
+/**
  * Create a new style range.
  *
  * @param start start offset of the style
- * @param length length of the style 
- * @param foreground foreground color of the style, null if none 
+ * @param length length of the style
+ * @param foreground foreground color of the style, null if none
  * @param background background color of the style, null if none
  * @param fontStyle font style of the style, may be SWT.NORMAL, SWT.ITALIC or SWT.BOLD
  */
@@ -116,8 +116,8 @@ public boolean equals(Object object) {
 }
 
 /**
- * Returns an integer hash code for the receiver. Any two 
- * objects that return <code>true</code> when passed to 
+ * Returns an integer hash code for the receiver. Any two
+ * objects that return <code>true</code> when passed to
  * <code>equals</code> must return the same value for this
  * method.
  *
@@ -133,7 +133,7 @@ boolean isVariableHeight() {
 	return font != null || metrics != null || rise != 0;
 }
 /**
- * Returns whether or not the receiver is unstyled (i.e., does not have any 
+ * Returns whether or not the receiver is unstyled (i.e., does not have any
  * style attributes specified).
  *
  * @return true if the receiver is unstyled, false otherwise.
@@ -152,7 +152,7 @@ public boolean isUnstyled() {
 }
 
 /**
- * Compares the specified object to this StyleRange and answer if the two 
+ * Compares the specified object to this StyleRange and answer if the two
  * are similar. The object must be an instance of StyleRange and have the
  * same field values for except for start and length.
  *
@@ -169,7 +169,7 @@ public boolean similarTo(StyleRange style) {
  * Returns a new StyleRange with the same values as this StyleRange.
  *
  * @return a shallow copy of this StyleRange
- */	
+ */
 @Override
 public Object clone() {
 	try {

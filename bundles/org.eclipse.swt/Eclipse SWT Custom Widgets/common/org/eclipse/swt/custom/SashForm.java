@@ -58,7 +58,7 @@ public class SashForm extends Composite {
  * <p>
  * The style value is either one of the style constants defined in
  * class <code>SWT</code> which is applicable to instances of this
- * class, or must be built by <em>bitwise OR</em>'ing together 
+ * class, or must be built by <em>bitwise OR</em>'ing together
  * (that is, using the <code>int</code> "|" operator) two or more
  * of those <code>SWT</code> style constants. The class description
  * lists the style constants that are applicable to the class.
@@ -106,12 +106,12 @@ Sash createSash() {
 /**
  * Returns SWT.HORIZONTAL if the controls in the SashForm are laid out side by side
  * or SWT.VERTICAL   if the controls in the SashForm are laid out top to bottom.
- * 
+ *
  * <p>
  * To retrieve the bidi orientation of the SashForm use <code>{@link #getStyle()}</code>
  * and test if the SWT.RIGHT_TO_LEFT or SWT.LEFT_TO_RIGHT bits are set.
  * </p>
- * 
+ *
  * @return SWT.HORIZONTAL or SWT.VERTICAL
  */
 @Override
@@ -120,16 +120,16 @@ public int getOrientation() {
 	return (sashStyle & SWT.VERTICAL) != 0 ? SWT.HORIZONTAL : SWT.VERTICAL;
 }
 /**
- * Returns the width of the sashes when the controls in the SashForm are 
+ * Returns the width of the sashes when the controls in the SashForm are
  * laid out.
- * 
+ *
  * @return the width of the sashes
- * 
+ *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 3.4
  */
 public int getSashWidth() {
@@ -144,9 +144,9 @@ public int getStyle() {
 	return style;
 }
 /**
- * Answer the control that currently is maximized in the SashForm.  
+ * Answer the control that currently is maximized in the SashForm.
  * This value may be null.
- * 
+ *
  * @return the control that currently is maximized or null
  */
 public Control getMaximizedControl(){
@@ -155,13 +155,13 @@ public Control getMaximizedControl(){
 }
 /**
  * Answer the relative weight of each child in the SashForm.  The weight represents the
- * percent of the total width (if SashForm has Horizontal orientation) or 
+ * percent of the total width (if SashForm has Horizontal orientation) or
  * total height (if SashForm has Vertical orientation) each control occupies.
  * The weights are returned in order of the creation of the widgets (weight[0]
  * corresponds to the weight of the first child created).
- * 
+ *
  * @return the relative weight of each child
- * 
+ *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
@@ -211,13 +211,13 @@ void onDragSash(Event event) {
 	Control c2 = controls[sashIndex + 1];
 	Rectangle b1 = c1.getBounds();
 	Rectangle b2 = c2.getBounds();
-	
+
 	Rectangle sashBounds = sash.getBounds();
 	Rectangle area = getClientArea();
 	boolean correction = false;
 	if (getOrientation() == SWT.HORIZONTAL) {
 		correction = b1.width < DRAG_MINIMUM || b2.width < DRAG_MINIMUM;
-		int totalWidth = b2.x + b2.width - b1.x; 
+		int totalWidth = b2.x + b2.width - b1.x;
 		int shift = event.x - sashBounds.x;
 		b1.width += shift;
 		b2.x += shift;
@@ -289,19 +289,19 @@ void onDragSash(Event event) {
 	}
 }
 /**
- * If orientation is SWT.HORIZONTAL, lay the controls in the SashForm 
- * out side by side.  If orientation is SWT.VERTICAL, lay the 
+ * If orientation is SWT.HORIZONTAL, lay the controls in the SashForm
+ * out side by side.  If orientation is SWT.VERTICAL, lay the
  * controls in the SashForm out top to bottom.
- * 
+ *
  * <p>
- * Since 3.7, this method can also be called with SWT.RIGHT_TO_LEFT or SWT.LEFT_TO_RIGHT 
+ * Since 3.7, this method can also be called with SWT.RIGHT_TO_LEFT or SWT.LEFT_TO_RIGHT
  * to change the bidi orientation of the SashForm.
  * </p>
- * 
+ *
  * @param orientation SWT.HORIZONTAL or SWT.VERTICAL, SWT.RIGHT_TO_LEFT or SWT.LEFT_TO_RIGHT
- * 
+ *
  * @see Control#setOrientation(int)
- * 
+ *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
@@ -364,14 +364,14 @@ public void setLayout (Layout layout) {
 	return;
 }
 /**
- * Specify the control that should take up the entire client area of the SashForm.  
- * If one control has been maximized, and this method is called with a different control, 
+ * Specify the control that should take up the entire client area of the SashForm.
+ * If one control has been maximized, and this method is called with a different control,
  * the previous control will be minimized and the new control will be maximized.
  * If the value of control is null, the SashForm will minimize all controls and return to
  * the default layout where all controls are laid out separated by sashes.
- * 
+ *
  * @param control the control to be maximized or null
- * 
+ *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
@@ -389,7 +389,7 @@ public void setMaximizedControl(Control control){
 		}
 		return;
 	}
-	
+
 	for (int i= 0; i < sashes.length; i++){
 		sashes[i].setVisible(false);
 	}
@@ -398,16 +398,16 @@ public void setMaximizedControl(Control control){
 }
 
 /**
- * Specify the width of the sashes when the controls in the SashForm are 
+ * Specify the width of the sashes when the controls in the SashForm are
  * laid out.
- * 
+ *
  * @param width the width of the sashes
- * 
+ *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 3.4
  */
 public void setSashWidth(int width) {
@@ -425,13 +425,13 @@ public void setToolTipText(String string) {
 }
 /**
  * Specify the relative weight of each child in the SashForm.  This will determine
- * what percent of the total width (if SashForm has Horizontal orientation) or 
+ * what percent of the total width (if SashForm has Horizontal orientation) or
  * total height (if SashForm has Vertical orientation) each control will occupy.
  * The weights must be positive values and there must be an entry for each
  * non-sash child of the SashForm.
- * 
+ *
  * @param weights the relative weight of each child
- * 
+ *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
@@ -444,7 +444,7 @@ public void setWeights(int[] weights) {
 	if (weights == null || weights.length != cArray.length) {
 		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
-	
+
 	int total = 0;
 	for (int i = 0; i < weights.length; i++) {
 		if (weights[i] < 0) {

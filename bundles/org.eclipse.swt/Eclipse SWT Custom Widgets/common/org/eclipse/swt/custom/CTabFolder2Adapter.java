@@ -22,20 +22,20 @@ package org.eclipse.swt.custom;
  * @see CTabFolder2Listener
  * @see CTabFolderEvent
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
- * 
+ *
  * @since 3.0
  */
 public class CTabFolder2Adapter implements CTabFolder2Listener {
-	
+
 /**
  * Sent when the user clicks on the close button of an item in the CTabFolder.  The item being closed is specified
- * in the event.item field. Setting the event.doit field to false will stop  the CTabItem from closing. 
- * When the CTabItem is closed, it is disposed.  The contents of the CTabItem (see CTabItem#setControl) will be 
+ * in the event.item field. Setting the event.doit field to false will stop  the CTabItem from closing.
+ * When the CTabItem is closed, it is disposed.  The contents of the CTabItem (see CTabItem#setControl) will be
  * made not visible when the CTabItem is closed.
  * <p>
  * The default behaviour is to close the CTabItem.
  * </p>
- * 
+ *
  * @param event an event indicating the item being closed
  */
 public void close(CTabFolderEvent event){}
@@ -45,7 +45,7 @@ public void close(CTabFolderEvent event){}
  * <p>
  * The default behaviour is to do nothing.
  * </p>
- * 
+ *
  * @param event an event containing information about the minimize
  */
 public void minimize(CTabFolderEvent event){}
@@ -55,7 +55,7 @@ public void minimize(CTabFolderEvent event){}
  * <p>
  * The default behaviour is to do nothing.
  * </p>
- * 
+ *
  * @param event an event containing information about the maximize
  */
 public void maximize(CTabFolderEvent event){}
@@ -65,7 +65,7 @@ public void maximize(CTabFolderEvent event){}
  * <p>
  * The default behaviour is to do nothing.
  * </p>
- * 
+ *
  * @param event an event containing information about the restore
  */
 public void restore(CTabFolderEvent event){}
@@ -73,10 +73,10 @@ public void restore(CTabFolderEvent event){}
 /**
  * Sent when the user clicks on the chevron button of a CTabFolder.
  * <p>
- * The default behaviour is to show a list of items that are not currently 
+ * The default behaviour is to show a list of items that are not currently
  * visible and to change the selection based on the item selected from the list.
  * </p>
- * 
+ *
  * @param event an event containing information about the show list
  */
 public void showList(CTabFolderEvent event){}

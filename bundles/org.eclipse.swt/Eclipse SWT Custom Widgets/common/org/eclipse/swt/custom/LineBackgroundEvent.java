@@ -19,22 +19,22 @@ import org.eclipse.swt.graphics.*;
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  */
 public class LineBackgroundEvent extends TypedEvent {
-	
+
 	/**
 	 * line start offset
 	 */
 	public int lineOffset;
-	
+
 	/**
 	 * line text
 	 */
 	public String lineText;
-	
+
 	/**
 	 * line background color
 	 */
-	public Color lineBackground; 
-	
+	public Color lineBackground;
+
 	static final long serialVersionUID = 3978711687853324342L;
 
 /**

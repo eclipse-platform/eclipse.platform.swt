@@ -17,7 +17,7 @@ import org.eclipse.swt.*;
 
 /**
  * Instances of this class implement a Composite that positions and sizes
- * children and allows programmatic control of layout and border parameters. 
+ * children and allows programmatic control of layout and border parameters.
  * ViewForm is used in the workbench to lay out a view's label/menu/toolbar
  * local bar.
  * <p>
@@ -69,48 +69,48 @@ public class ViewForm extends Composite {
 	 * The default value is 1.
 	 */
  	public int verticalSpacing = 1;
-	
+
 	/**
 	 * Color of innermost line of drop shadow border.
-	 * 
+	 *
 	 * NOTE This field is badly named and can not be fixed for backwards compatibility.
 	 * It should be capitalized.
-	 * 
+	 *
 	 * @deprecated
 	 */
 	@Deprecated
 	public static RGB borderInsideRGB  = new RGB (132, 130, 132);
 	/**
 	 * Color of middle line of drop shadow border.
-	 * 
+	 *
 	 * NOTE This field is badly named and can not be fixed for backwards compatibility.
 	 * It should be capitalized.
-	 * 
+	 *
 	 * @deprecated
 	 */
 	@Deprecated
 	public static RGB borderMiddleRGB  = new RGB (143, 141, 138);
 	/**
 	 * Color of outermost line of drop shadow border.
-	 * 
+	 *
 	 * NOTE This field is badly named and can not be fixed for backwards compatibility.
 	 * It should be capitalized.
-	 * 
+	 *
 	 * @deprecated
 	 */
 	@Deprecated
 	public static RGB borderOutsideRGB = new RGB (171, 168, 165);
-	
+
 	// SWT widgets
 	Control topLeft;
 	Control topCenter;
 	Control topRight;
 	Control content;
-	
+
 	// Configuration and state info
 	boolean separateTopCenter = false;
 	boolean showBorder = false;
-	
+
 	int separator = -1;
 	int borderTop = 0;
 	int borderBottom = 0;
@@ -118,10 +118,10 @@ public class ViewForm extends Composite {
 	int borderRight = 0;
 	int highlight = 0;
 	Point oldSize;
-	
+
 	Color selectionBackground;
 	Listener listener;
-	
+
 	static final int OFFSCREEN = -200;
 	static final int BORDER1_COLOR = SWT.COLOR_WIDGET_NORMAL_SHADOW;
 	static final int SELECTION_BACKGROUND = SWT.COLOR_LIST_BACKGROUND;
@@ -131,7 +131,7 @@ public class ViewForm extends Composite {
  * <p>
  * The style value is either one of the style constants defined in
  * class <code>SWT</code> which is applicable to instances of this
- * class, or must be built by <em>bitwise OR</em>'ing together 
+ * class, or must be built by <em>bitwise OR</em>'ing together
  * (that is, using the <code>int</code> "|" operator) two or more
  * of those <code>SWT</code> style constants. The class description
  * lists the style constants that are applicable to the class.
@@ -151,13 +151,13 @@ public class ViewForm extends Composite {
  * @see SWT#BORDER
  * @see SWT#FLAT
  * @see #getStyle()
- */		
+ */
 public ViewForm(Composite parent, int style) {
 	super(parent, checkStyle(style));
 	super.setLayout(new ViewFormLayout());
-	
+
 	setBorderVisible((style & SWT.BORDER) != 0);
-	
+
 	listener = new Listener() {
 		public void handleEvent(Event e) {
 			switch (e.type) {
@@ -167,9 +167,9 @@ public ViewForm(Composite parent, int style) {
 			}
 		}
 	};
-	
+
 	int[] events = new int[] {SWT.Dispose, SWT.Paint, SWT.Resize};
-	
+
 	for (int i = 0; i < events.length; i++) {
 		addListener(events[i], listener);
 	}
@@ -209,7 +209,7 @@ public Rectangle getClientArea() {
 }
 /**
 * Returns the content area.
-* 
+*
 * @return the control in the content area of the pane or null
 */
 public Control getContent() {
@@ -219,7 +219,7 @@ public Control getContent() {
 /**
 * Returns Control that appears in the top center of the pane.
 * Typically this is a toolbar.
-* 
+*
 * @return the control in the top center of the pane or null
 */
 public Control getTopCenter() {
@@ -229,7 +229,7 @@ public Control getTopCenter() {
 /**
 * Returns the Control that appears in the top left corner of the pane.
 * Typically this is a label such as CLabel.
-* 
+*
 * @return the control in the top left corner of the pane or null
 */
 public Control getTopLeft() {
@@ -239,7 +239,7 @@ public Control getTopLeft() {
 /**
 * Returns the control in the top right corner of the pane.
 * Typically this is a Close button or a composite with a Menu and Close button.
-* 
+*
 * @return the control in the top right corner of the pane or null
 */
 public Control getTopRight() {
@@ -271,7 +271,7 @@ void onPaint(GC gc) {
 			int x2 = size.x - 1;
 			int y2 = size.y - 1;
 			int[] shape = new int[] {x1,y1, x2,y1, x2,y2, x1,y2, x1,y1+highlight,
-					           x1+highlight,y1+highlight, x1+highlight,y2-highlight, 
+					           x1+highlight,y1+highlight, x1+highlight,y2-highlight,
 							   x2-highlight,y2-highlight, x2-highlight,y1+highlight, x1,y1+highlight};
 			Color highlightColor = getDisplay().getSystemColor(SWT.COLOR_LIST_SELECTION);
 			gc.setBackground(highlightColor);
@@ -293,16 +293,16 @@ void onResize() {
 		if (oldSize.x < size.x) {
 			width = size.x - oldSize.x + borderRight + highlight;
 		} else if (oldSize.x > size.x) {
-			width = borderRight + highlight;			
+			width = borderRight + highlight;
 		}
 		redraw(size.x - width, 0, width, size.y, false);
-		
+
 		int height = 0;
 		if (oldSize.y < size.y) {
-			height = size.y - oldSize.y + borderBottom + highlight;		
+			height = size.y - oldSize.y + borderBottom + highlight;
 		}
 		if (oldSize.y > size.y) {
-			height = borderBottom + highlight;		
+			height = borderBottom + highlight;
 		}
 		redraw(0, size.y - height, size.x, height, false);
 	}
@@ -310,11 +310,11 @@ void onResize() {
 }
 /**
 * Sets the content.
-* Setting the content to null will remove it from 
+* Setting the content to null will remove it from
 * the pane - however, the creator of the content must dispose of the content.
-* 
+*
 * @param content the control to be displayed in the content area or null
-* 
+*
 * @exception SWTException <ul>
 *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
 *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
@@ -362,11 +362,11 @@ void setSelectionBackground (Color color) {
 /**
 * Set the control that appears in the top center of the pane.
 * Typically this is a toolbar.
-* The topCenter is optional.  Setting the topCenter to null will remove it from 
+* The topCenter is optional.  Setting the topCenter to null will remove it from
 * the pane - however, the creator of the topCenter must dispose of the topCenter.
-* 
+*
 * @param topCenter the control to be displayed in the top center or null
-* 
+*
 * @exception SWTException <ul>
 *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
 *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
@@ -388,11 +388,11 @@ public void setTopCenter(Control topCenter) {
 /**
 * Set the control that appears in the top left corner of the pane.
 * Typically this is a label such as CLabel.
-* The topLeft is optional.  Setting the top left control to null will remove it from 
+* The topLeft is optional.  Setting the top left control to null will remove it from
 * the pane - however, the creator of the control must dispose of the control.
-* 
+*
 * @param c the control to be displayed in the top left corner or null
-* 
+*
 * @exception SWTException <ul>
 *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
 *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
@@ -414,11 +414,11 @@ public void setTopLeft(Control c) {
 /**
 * Set the control that appears in the top right corner of the pane.
 * Typically this is a Close button or a composite with a Menu and Close button.
-* The topRight is optional.  Setting the top right control to null will remove it from 
+* The topRight is optional.  Setting the top right control to null will remove it from
 * the pane - however, the creator of the control must dispose of the control.
-* 
+*
 * @param c the control to be displayed in the top right corner or null
-* 
+*
 * @exception SWTException <ul>
 *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
 *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
@@ -439,9 +439,9 @@ public void setTopRight(Control c) {
 }
 /**
 * Specify whether the border should be displayed or not.
-* 
+*
 * @param show true if the border should be displayed
-* 
+*
 * @exception SWTException <ul>
 *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
 *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
@@ -450,7 +450,7 @@ public void setTopRight(Control c) {
 public void setBorderVisible(boolean show) {
 	checkWidget();
 	if (showBorder == show) return;
-	
+
 	showBorder = show;
 	if (showBorder) {
 		borderLeft = borderTop = borderRight = borderBottom = 1;
@@ -463,12 +463,12 @@ public void setBorderVisible(boolean show) {
 	redraw();
 }
 /**
-* If true, the topCenter will always appear on a separate line by itself, otherwise the 
+* If true, the topCenter will always appear on a separate line by itself, otherwise the
 * topCenter will appear in the top row if there is room and will be moved to the second row if
 * required.
-* 
+*
 * @param show true if the topCenter will always appear on a separate line by itself
-* 
+*
 * @exception SWTException <ul>
 *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
 *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>

@@ -19,12 +19,12 @@ import org.eclipse.swt.events.*;
  */
 public final class ExtendedModifyEvent extends TypedEvent {
 	/** start offset of the new text */
-	public int start;			
+	public int start;
 	/** length of the new text */
 	public int length;
 	/** replaced text or empty string if no text was replaced */
 	public String replacedText;
-	
+
 	static final long serialVersionUID = 3258696507027830832L;
 
 /**

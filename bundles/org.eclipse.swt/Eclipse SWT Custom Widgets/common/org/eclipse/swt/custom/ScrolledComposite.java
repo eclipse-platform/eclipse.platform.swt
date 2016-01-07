@@ -21,17 +21,17 @@ import org.eclipse.swt.widgets.*;
  *
  *
  * <p>There are two ways to use the ScrolledComposite:
- * 
+ *
  * <p>
- * 1) Set the size of the control that is being scrolled and the ScrolledComposite 
+ * 1) Set the size of the control that is being scrolled and the ScrolledComposite
  * will show scrollbars when the contained control can not be fully seen.
- * 
+ *
  * 2) The second way imitates the way a browser would work.  Set the minimum size of
- * the control and the ScrolledComposite will show scroll bars if the visible area is 
- * less than the minimum size of the control and it will expand the size of the control 
- * if the visible area is greater than the minimum size.  This requires invoking 
+ * the control and the ScrolledComposite will show scroll bars if the visible area is
+ * less than the minimum size of the control and it will expand the size of the control
+ * if the visible area is greater than the minimum size.  This requires invoking
  * both setMinWidth(), setMinHeight() and setExpandHorizontal(), setExpandVertical().
- * 
+ *
  * <code><pre>
  * public static void main (String [] args) {
  *      Display display = new Display ();
@@ -39,7 +39,7 @@ import org.eclipse.swt.widgets.*;
  *      Color blue = display.getSystemColor(SWT.COLOR_BLUE);
  *      Shell shell = new Shell (display);
  *      shell.setLayout(new FillLayout());
- * 	
+ *
  *      // set the size of the scrolled content - method 1
  *      final ScrolledComposite sc1 = new ScrolledComposite(shell, SWT.H_SCROLL | SWT.V_SCROLL | SWT.BORDER);
  *      final Composite c1 = new Composite(sc1, SWT.NONE);
@@ -51,7 +51,7 @@ import org.eclipse.swt.widgets.*;
  *      Button b1 = new Button (c1, SWT.PUSH);
  *      b1.setText("first button");
  *      c1.setSize(c1.computeSize(SWT.DEFAULT, SWT.DEFAULT));
- *      
+ *
  *      // set the minimum width and height of the scrolled content - method 2
  *      final ScrolledComposite sc2 = new ScrolledComposite(shell, SWT.H_SCROLL | SWT.V_SCROLL | SWT.BORDER);
  *      sc2.setExpandHorizontal(true);
@@ -65,7 +65,7 @@ import org.eclipse.swt.widgets.*;
  *      Button b2 = new Button (c2, SWT.PUSH);
  *      b2.setText("first button");
  *      sc2.setMinSize(c2.computeSize(SWT.DEFAULT, SWT.DEFAULT));
- *      
+ *
  *      Button add = new Button (shell, SWT.PUSH);
  *      add.setText("add children");
  *      final int[] index = new int[]{0};
@@ -77,7 +77,7 @@ import org.eclipse.swt.widgets.*;
  *              // reset size of content so children can be seen - method 1
  *              c1.setSize(c1.computeSize(SWT.DEFAULT, SWT.DEFAULT));
  *              c1.layout();
- *              
+ *
  *              button = new Button(c2, SWT.PUSH);
  *              button.setText("button "+index[0]);
  *              // reset the minimum width and height so children can be seen - method 2
@@ -85,7 +85,7 @@ import org.eclipse.swt.widgets.*;
  *              c2.layout();
  *          }
  *      });
- * 
+ *
  *      shell.open ();
  *      while (!shell.isDisposed ()) {
  *          if (!display.readAndDispatch ()) display.sleep ();
@@ -106,7 +106,7 @@ public class ScrolledComposite extends Composite {
 	Control content;
 	Listener contentListener;
 	Listener filter;
-	
+
 	int minHeight = 0;
 	int minWidth = 0;
 	boolean expandHorizontal = false;
@@ -121,7 +121,7 @@ public class ScrolledComposite extends Composite {
  * <p>
  * The style value is either one of the style constants defined in
  * class <code>SWT</code> which is applicable to instances of this
- * class, or must be built by <em>bitwise OR</em>'ing together 
+ * class, or must be built by <em>bitwise OR</em>'ing together
  * (that is, using the <code>int</code> "|" operator) two or more
  * of those <code>SWT</code> style constants. The class description
  * lists the style constants that are applicable to the class.
@@ -141,7 +141,7 @@ public class ScrolledComposite extends Composite {
  * @see SWT#H_SCROLL
  * @see SWT#V_SCROLL
  * @see #getStyle()
- */	
+ */
 public ScrolledComposite(Composite parent, int style) {
 	super(parent, checkStyle(style));
 	super.setLayout(new ScrolledCompositeLayout());
@@ -154,7 +154,7 @@ public ScrolledComposite(Composite parent, int style) {
 			}
 		});
 	}
-	
+
 	ScrollBar vBar = getVerticalBar ();
 	if (vBar != null) {
 		vBar.setVisible(false);
@@ -164,14 +164,14 @@ public ScrolledComposite(Composite parent, int style) {
 			}
 		});
 	}
-	
+
 	contentListener = new Listener() {
 		public void handleEvent(Event e) {
 			if (e.type != SWT.Resize) return;
 			layout(false);
 		}
 	};
-	
+
 	filter = new Listener() {
 		public void handleEvent(Event event) {
 			if (event.type == SWT.FocusIn) {
@@ -184,12 +184,12 @@ public ScrolledComposite(Composite parent, int style) {
 			} else {
 				Widget w = event.widget;
 				if (w instanceof Control) {
-					showNextFocusedControl = w.getDisplay().getActiveShell() == ((Control) w).getShell(); 
+					showNextFocusedControl = w.getDisplay().getActiveShell() == ((Control) w).getShell();
 				}
 			}
 		}
 	};
-	
+
 	addDisposeListener(new DisposeListener() {
 		public void widgetDisposed(DisposeEvent e) {
 			getDisplay().removeFilter(SWT.FocusIn, filter);
@@ -215,12 +215,12 @@ boolean contains(Control control) {
 }
 
 /**
- * Returns the Always Show Scrollbars flag.  True if the scrollbars are 
- * always shown even if they are not required.  False if the scrollbars are only 
+ * Returns the Always Show Scrollbars flag.  True if the scrollbars are
+ * always shown even if they are not required.  False if the scrollbars are only
  * visible when some part of the composite needs to be scrolled to be seen.
- * The H_SCROLL and V_SCROLL style bits are also required to enable scrollbars in the 
+ * The H_SCROLL and V_SCROLL style bits are also required to enable scrollbars in the
  * horizontal and vertical directions.
- * 
+ *
  * @return the Always Show Scrollbars flag value
  */
 public boolean getAlwaysShowScrollBars() {
@@ -229,7 +229,7 @@ public boolean getAlwaysShowScrollBars() {
 }
 
 /**
- * Returns <code>true</code> if the content control 
+ * Returns <code>true</code> if the content control
  * will be expanded to fill available horizontal space.
  *
  * @return the receiver's horizontal expansion state
@@ -238,7 +238,7 @@ public boolean getAlwaysShowScrollBars() {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 3.2
  */
 public boolean getExpandHorizontal() {
@@ -247,7 +247,7 @@ public boolean getExpandHorizontal() {
 }
 
 /**
- * Returns <code>true</code> if the content control 
+ * Returns <code>true</code> if the content control
  * will be expanded to fill available vertical space.
  *
  * @return the receiver's vertical expansion state
@@ -256,7 +256,7 @@ public boolean getExpandHorizontal() {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 3.2
  */
 public boolean getExpandVertical() {
@@ -273,7 +273,7 @@ public boolean getExpandVertical() {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 3.2
  */
 public int getMinWidth() {
@@ -290,7 +290,7 @@ public int getMinWidth() {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 3.2
  */
 public int getMinHeight() {
@@ -300,7 +300,7 @@ public int getMinHeight() {
 
 /**
  * Get the content that is being scrolled.
- * 
+ *
  * @return the control displayed in the content area
  */
 public Control getContent() {
@@ -309,16 +309,16 @@ public Control getContent() {
 }
 
 /**
- * Returns <code>true</code> if the receiver automatically scrolls to a focused child control 
+ * Returns <code>true</code> if the receiver automatically scrolls to a focused child control
  * to make it visible. Otherwise, returns <code>false</code>.
- * 
+ *
  * @return a boolean indicating whether focused child controls are automatically scrolled into the viewport
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 3.4
  */
 public boolean getShowFocusedControl() {
@@ -336,13 +336,13 @@ void hScroll() {
 boolean needHScroll(Rectangle contentRect, boolean vVisible) {
 	ScrollBar hBar = getHorizontalBar();
 	if (hBar == null) return false;
-	
+
 	Rectangle hostRect = getBounds();
 	int border = getBorderWidth();
 	hostRect.width -= 2*border;
 	ScrollBar vBar = getVerticalBar();
 	if (vVisible && vBar != null) hostRect.width -= vBar.getSize().x;
-	
+
 	if (!expandHorizontal && contentRect.width > hostRect.width) return true;
 	if (expandHorizontal && minWidth > hostRect.width) return true;
 	return false;
@@ -351,31 +351,31 @@ boolean needHScroll(Rectangle contentRect, boolean vVisible) {
 boolean needVScroll(Rectangle contentRect, boolean hVisible) {
 	ScrollBar vBar = getVerticalBar();
 	if (vBar == null) return false;
-	
+
 	Rectangle hostRect = getBounds();
 	int border = getBorderWidth();
 	hostRect.height -= 2*border;
 	ScrollBar hBar = getHorizontalBar();
 	if (hVisible && hBar != null) hostRect.height -= hBar.getSize().y;
-	
+
 	if (!expandVertical && contentRect.height > hostRect.height) return true;
 	if (expandVertical && minHeight > hostRect.height) return true;
 	return false;
 }
 
 /**
- * Return the point in the content that currently appears in the top left 
+ * Return the point in the content that currently appears in the top left
  * corner of the scrolled composite.
- * 
- * @return the point in the content that currently appears in the top left 
+ *
+ * @return the point in the content that currently appears in the top left
  * corner of the scrolled composite.  If no content has been set, this returns
  * (0, 0).
- * 
+ *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 2.0
  */
 public Point getOrigin() {
@@ -385,14 +385,14 @@ public Point getOrigin() {
 	return new Point(-location.x, -location.y);
 }
 /**
- * Scrolls the content so that the specified point in the content is in the top 
- * left corner.  If no content has been set, nothing will occur.  
- * 
- * Negative values will be ignored.  Values greater than the maximum scroll 
+ * Scrolls the content so that the specified point in the content is in the top
+ * left corner.  If no content has been set, nothing will occur.
+ *
+ * Negative values will be ignored.  Values greater than the maximum scroll
  * distance will result in scrolling to the end of the scrollbar.
  *
- * @param origin the point on the content to appear in the top left corner 
- * 
+ * @param origin the point on the content to appear in the top left corner
+ *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
@@ -404,21 +404,21 @@ public void setOrigin(Point origin) {
 	setOrigin(origin.x, origin.y);
 }
 /**
- * Scrolls the content so that the specified point in the content is in the top 
- * left corner.  If no content has been set, nothing will occur.  
- * 
- * Negative values will be ignored.  Values greater than the maximum scroll 
+ * Scrolls the content so that the specified point in the content is in the top
+ * left corner.  If no content has been set, nothing will occur.
+ *
+ * Negative values will be ignored.  Values greater than the maximum scroll
  * distance will result in scrolling to the end of the scrollbar.
  *
- * @param x the x coordinate of the content to appear in the top left corner 
- * 
- * @param y the y coordinate of the content to appear in the top left corner 
- * 
+ * @param x the x coordinate of the content to appear in the top left corner
+ *
+ * @param y the y coordinate of the content to appear in the top left corner
+ *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 2.0
  */
 public void setOrigin(int x, int y) {
@@ -441,14 +441,14 @@ public void setOrigin(int x, int y) {
 	content.setLocation(x, y);
 }
 /**
- * Set the Always Show Scrollbars flag.  True if the scrollbars are 
- * always shown even if they are not required.  False if the scrollbars are only 
+ * Set the Always Show Scrollbars flag.  True if the scrollbars are
+ * always shown even if they are not required.  False if the scrollbars are only
  * visible when some part of the composite needs to be scrolled to be seen.
- * The H_SCROLL and V_SCROLL style bits are also required to enable scrollbars in the 
+ * The H_SCROLL and V_SCROLL style bits are also required to enable scrollbars in the
  * horizontal and vertical directions.
- * 
+ *
  * @param show true to show the scrollbars even when not required, false to show scrollbars only when required
- * 
+ *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
@@ -467,9 +467,9 @@ public void setAlwaysShowScrollBars(boolean show) {
 
 /**
  * Set the content that will be scrolled.
- * 
+ *
  * @param content the control to be displayed in the content area
- * 
+ *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
@@ -479,9 +479,9 @@ public void setContent(Control content) {
 	checkWidget();
 	if (this.content != null && !this.content.isDisposed()) {
 		this.content.removeListener(SWT.Resize, contentListener);
-		this.content.setBounds(new Rectangle(-200, -200, 0, 0));	
+		this.content.setBounds(new Rectangle(-200, -200, 0, 0));
 	}
-	
+
 	this.content = content;
 	ScrollBar vBar = getVerticalBar ();
 	ScrollBar hBar = getHorizontalBar ();
@@ -505,15 +505,15 @@ public void setContent(Control content) {
 	}
 }
 /**
- * Configure the ScrolledComposite to resize the content object to be as wide as the 
+ * Configure the ScrolledComposite to resize the content object to be as wide as the
  * ScrolledComposite when the width of the ScrolledComposite is greater than the
  * minimum width specified in setMinWidth.  If the ScrolledComposite is less than the
  * minimum width, the content will not be resized and instead the horizontal scroll bar will be
  * used to view the entire width.
  * If expand is false, this behaviour is turned off.  By default, this behaviour is turned off.
- * 
+ *
  * @param expand true to expand the content control to fill available horizontal space
- * 
+ *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
@@ -526,15 +526,15 @@ public void setExpandHorizontal(boolean expand) {
 	layout(false);
 }
 /**
- * Configure the ScrolledComposite to resize the content object to be as tall as the 
+ * Configure the ScrolledComposite to resize the content object to be as tall as the
  * ScrolledComposite when the height of the ScrolledComposite is greater than the
  * minimum height specified in setMinHeight.  If the ScrolledComposite is less than the
  * minimum height, the content will not be resized and instead the vertical scroll bar will be
  * used to view the entire height.
  * If expand is false, this behaviour is turned off.  By default, this behaviour is turned off.
- * 
+ *
  * @param expand true to expand the content control to fill available vertical space
- * 
+ *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
@@ -568,11 +568,11 @@ public void setLayout (Layout layout) {
 }
 /**
  * Specify the minimum height at which the ScrolledComposite will begin scrolling the
- * content with the vertical scroll bar.  This value is only relevant if  
+ * content with the vertical scroll bar.  This value is only relevant if
  * setExpandVertical(true) has been set.
- * 
+ *
  * @param height the minimum height or 0 for default height
- * 
+ *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
@@ -583,11 +583,11 @@ public void setMinHeight(int height) {
 }
 /**
  * Specify the minimum width and height at which the ScrolledComposite will begin scrolling the
- * content with the horizontal scroll bar.  This value is only relevant if  
+ * content with the horizontal scroll bar.  This value is only relevant if
  * setExpandHorizontal(true) and setExpandVertical(true) have been set.
- * 
+ *
  * @param size the minimum size or null for the default size
- * 
+ *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
@@ -602,12 +602,12 @@ public void setMinSize(Point size) {
 }
 /**
  * Specify the minimum width and height at which the ScrolledComposite will begin scrolling the
- * content with the horizontal scroll bar.  This value is only relevant if  
+ * content with the horizontal scroll bar.  This value is only relevant if
  * setExpandHorizontal(true) and setExpandVertical(true) have been set.
- * 
+ *
  * @param width the minimum width or 0 for default width
  * @param height the minimum height or 0 for default height
- * 
+ *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
@@ -622,11 +622,11 @@ public void setMinSize(int width, int height) {
 }
 /**
  * Specify the minimum width at which the ScrolledComposite will begin scrolling the
- * content with the horizontal scroll bar.  This value is only relevant if  
+ * content with the horizontal scroll bar.  This value is only relevant if
  * setExpandHorizontal(true) has been set.
- * 
+ *
  * @param width the minimum width or 0 for default width
- * 
+ *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
@@ -639,17 +639,17 @@ public void setMinWidth(int width) {
 /**
  * Configure the receiver to automatically scroll to a focused child control
  * to make it visible.
- * 
- * If show is <code>false</code>, show a focused control is off.  
+ *
+ * If show is <code>false</code>, show a focused control is off.
  * By default, show a focused control is off.
- * 
+ *
  * @param show <code>true</code> to show a focused control.
- * 
+ *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 3.4
  */
 public void setShowFocusedControl(boolean show) {
@@ -687,7 +687,7 @@ public void showControl(Control control) {
 	if (control == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (control.isDisposed ()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	if (!contains(control)) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-	
+
 	Rectangle itemRect = getDisplay().map(control.getParent(), this, control.getBounds());
 	Rectangle area = getClientArea();
 	Point origin = getOrigin();

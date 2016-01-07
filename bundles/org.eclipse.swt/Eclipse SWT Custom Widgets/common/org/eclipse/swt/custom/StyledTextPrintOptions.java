@@ -20,11 +20,11 @@ package org.eclipse.swt.custom;
  * </p>
  * <pre>
  * StyledTextPrintOptions options = new StyledTextPrintOptions();
- * options.footer = "\t\t&lt;page&gt;"; 
+ * options.footer = "\t\t&lt;page&gt;";
  * options.jobName = "Example";
  * options.printLineBackground = true;
- * 
- * Runnable runnable = styledText.print(new Printer(), options); 
+ *
+ * Runnable runnable = styledText.print(new Printer(), options);
  * runnable.run();
  * </pre>
  *
@@ -49,7 +49,7 @@ public class StyledTextPrintOptions {
 	 * <p>left, center, right = &lt;page&gt; | #CDATA</p>
 	 * <p>Header and footer are defined as three separate regions for arbitrary
 	 * text or the page number placeholder &lt;page&gt;
-	 * (<code>StyledTextPrintOptions.PAGE_TAG</code>). The three regions are 
+	 * (<code>StyledTextPrintOptions.PAGE_TAG</code>). The three regions are
 	 * left aligned, centered and right aligned. They are separated by a tab
 	 * character (<code>StyledTextPrintOptions.SEPARATOR</code>).
 	 */
@@ -60,7 +60,7 @@ public class StyledTextPrintOptions {
 	 * <p>left, center, right = &lt;page&gt; | #CDATA</p>
 	 * <p>Header and footer are defined as three separate regions for arbitrary
 	 * text or the page number placeholder &lt;page&gt;
-	 * (<code>StyledTextPrintOptions.PAGE_TAG</code>). The three regions are 
+	 * (<code>StyledTextPrintOptions.PAGE_TAG</code>). The three regions are
 	 * left aligned, centered and right aligned. They are separated by a tab
 	 * character (<code>StyledTextPrintOptions.SEPARATOR</code>).
 	 */
@@ -69,7 +69,7 @@ public class StyledTextPrintOptions {
 	 * Name of the print job.
 	 */
 	public String jobName = null;
-	
+
 	/**
 	 * Print the text foreground color. Default value is <code>false</code>.
 	 */
@@ -86,19 +86,19 @@ public class StyledTextPrintOptions {
 	 * Print the line background color. Default value is <code>false</code>.
 	 */
 	public boolean printLineBackground = false;
-	
+
 	/**
 	 * Print line numbers. Default value is <code>false</code>.
-	 * 
+	 *
 	 * @since 3.3
 	 */
 	public boolean printLineNumbers = false;
-	
+
 	/**
 	 * Labels used for printing line numbers.
-	 * 
+	 *
 	 * @since 3.4
 	 */
 	public String[] lineLabels = null;
-	
+
 }

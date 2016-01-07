@@ -19,7 +19,7 @@ import org.eclipse.swt.accessibility.*;
 /**
  * A Label which supports aligned text and/or an image and different border styles.
  * <p>
- * If there is not enough space a CLabel uses the following strategy to fit the 
+ * If there is not enough space a CLabel uses the following strategy to fit the
  * information into the available space:
  * <pre>
  * 		ignores the indent in left align mode
@@ -34,7 +34,7 @@ import org.eclipse.swt.accessibility.*;
  * <dt><b>Events:</b>
  * <dd></dd>
  * </dl>
- * 
+ *
  * </p><p>
  * This class may be subclassed for the purpose of overriding the default string
  * shortening algorithm that is implemented in method <code>shortenText()</code>.
@@ -65,17 +65,17 @@ public class CLabel extends Canvas {
 	// The tooltip is used for two purposes - the application can set
 	// a tooltip or the tooltip can be used to display the full text when the
 	// the text has been truncated due to the label being too short.
-	// The appToolTip stores the tooltip set by the application.  Control.tooltiptext 
+	// The appToolTip stores the tooltip set by the application.  Control.tooltiptext
 	// contains whatever tooltip is currently being displayed.
 	private String appToolTipText;
 	private boolean ignoreDispose;
-	
+
 	private Image backgroundImage;
 	private Color[] gradientColors;
 	private int[] gradientPercents;
 	private boolean gradientVertical;
 	private Color background;
-	
+
 	private static int DRAW_FLAGS = SWT.DRAW_MNEMONIC | SWT.DRAW_TAB | SWT.DRAW_TRANSPARENT | SWT.DRAW_DELIMITER;
 
 /**
@@ -84,7 +84,7 @@ public class CLabel extends Canvas {
  * <p>
  * The style value is either one of the style constants defined in
  * class <code>SWT</code> which is applicable to instances of this
- * class, or must be built by <em>bitwise OR</em>'ing together 
+ * class, or must be built by <em>bitwise OR</em>'ing together
  * (that is, using the <code>int</code> "|" operator) two or more
  * of those <code>SWT</code> style constants. The class description
  * lists the style constants that are applicable to the class.
@@ -115,13 +115,13 @@ public CLabel(Composite parent, int style) {
 	if ((style & SWT.CENTER) != 0) align = SWT.CENTER;
 	if ((style & SWT.RIGHT) != 0)  align = SWT.RIGHT;
 	if ((style & SWT.LEFT) != 0)   align = SWT.LEFT;
-	
+
 	addPaintListener(new PaintListener() {
 		public void paintControl(PaintEvent event) {
 			onPaint(event);
 		}
 	});
-	
+
 	addTraverseListener(new TraverseListener() {
 		public void keyTraversed(TraverseEvent event) {
 			if (event.detail == SWT.TRAVERSE_MNEMONIC) {
@@ -129,13 +129,13 @@ public CLabel(Composite parent, int style) {
 			}
 		}
 	});
-	
+
 	addListener(SWT.Dispose, new Listener() {
 		public void handleEvent(Event event) {
 			onDispose(event);
 		}
 	});
-	
+
 	initAccessible();
 
 }
@@ -172,7 +172,7 @@ private void drawBevelRect(GC gc, int x, int y, int w, int h, Color topleft, Col
 	gc.setForeground(bottomright);
 	gc.drawLine(x+w, y,   x+w, y+h);
 	gc.drawLine(x,   y+h, x+w, y+h);
-	
+
 	gc.setForeground(topleft);
 	gc.drawLine(x, y, x+w-1, y);
 	gc.drawLine(x, y, x,     y+h-1);
@@ -197,7 +197,7 @@ char _findMnemonic (String string) {
 /**
  * Returns the horizontal alignment.
  * The alignment style (LEFT, CENTER or RIGHT) is returned.
- * 
+ *
  * @return SWT.LEFT, SWT.RIGHT or SWT.CENTER
  */
 public int getAlignment() {
@@ -206,9 +206,9 @@ public int getAlignment() {
 }
 /**
  * Return the CLabel's bottom margin.
- * 
+ *
  * @return the bottom margin of the label
- * 
+ *
  * @since 3.6
  */
 public int getBottomMargin() {
@@ -217,7 +217,7 @@ public int getBottomMargin() {
 }
 /**
  * Return the CLabel's image or <code>null</code>.
- * 
+ *
  * @return the image of the label or null
  */
 public Image getImage() {
@@ -226,9 +226,9 @@ public Image getImage() {
 }
 /**
  * Return the CLabel's left margin.
- * 
+ *
  * @return the left margin of the label
- * 
+ *
  * @since 3.6
  */
 public int getLeftMargin() {
@@ -237,9 +237,9 @@ public int getLeftMargin() {
 }
 /**
  * Return the CLabel's right margin.
- * 
+ *
  * @return the right margin of the label
- * 
+ *
  * @since 3.6
  */
 public int getRightMargin() {
@@ -257,7 +257,7 @@ private Point getTotalSize(Image image, String text) {
 		size.x += r.width;
 		size.y += r.height;
 	}
-		
+
 	GC gc = new GC(this);
 	if (text != null && text.length() > 0) {
 		Point e = gc.textExtent(text, DRAW_FLAGS);
@@ -268,7 +268,7 @@ private Point getTotalSize(Image image, String text) {
 		size.y = Math.max(size.y, gc.getFontMetrics().getHeight());
 	}
 	gc.dispose();
-	
+
 	return size;
 }
 @Override
@@ -284,7 +284,7 @@ public int getStyle () {
 
 /**
  * Return the Label's text.
- * 
+ *
  * @return the text of the label or null
  */
 public String getText() {
@@ -298,9 +298,9 @@ public String getToolTipText () {
 }
 /**
  * Return the CLabel's top margin.
- *  
+ *
  * @return the top margin of the label
- * 
+ *
  * @since 3.6
  */
 public int getTopMargin() {
@@ -314,27 +314,27 @@ private void initAccessible() {
 		public void getName(AccessibleEvent e) {
 			e.result = getText();
 		}
-		
+
 		@Override
 		public void getHelp(AccessibleEvent e) {
 			e.result = getToolTipText();
 		}
-		
+
 		@Override
 		public void getKeyboardShortcut(AccessibleEvent e) {
-			char mnemonic = _findMnemonic(CLabel.this.text);	
+			char mnemonic = _findMnemonic(CLabel.this.text);
 			if (mnemonic != '\0') {
 				e.result = "Alt+"+mnemonic; //$NON-NLS-1$
 			}
 		}
 	});
-		
+
 	accessible.addAccessibleControlListener(new AccessibleControlAdapter() {
 		@Override
 		public void getChildAtPoint(AccessibleControlEvent e) {
 			e.childID = ACC.CHILDID_SELF;
 		}
-		
+
 		@Override
 		public void getLocation(AccessibleControlEvent e) {
 			Rectangle rect = getDisplay().map(getParent(), null, getBounds());
@@ -343,17 +343,17 @@ private void initAccessible() {
 			e.width = rect.width;
 			e.height = rect.height;
 		}
-		
+
 		@Override
 		public void getChildCount(AccessibleControlEvent e) {
 			e.detail = 0;
 		}
-		
+
 		@Override
 		public void getRole(AccessibleControlEvent e) {
 			e.detail = ACC.ROLE_LABEL;
 		}
-		
+
 		@Override
 		public void getState(AccessibleControlEvent e) {
 			e.detail = ACC.STATE_READONLY;
@@ -403,7 +403,7 @@ void onMnemonic(TraverseEvent event) {
 void onPaint(PaintEvent event) {
 	Rectangle rect = getClientArea();
 	if (rect.width == 0 || rect.height == 0) return;
-	
+
 	boolean shortenText = false;
 	String t = text;
 	Image img = image;
@@ -416,10 +416,10 @@ void onPaint(PaintEvent event) {
 			shortenText = true;
 		}
 	}
-	
+
 	GC gc = event.gc;
-	String[] lines = text == null ? null : splitString(text); 
-	
+	String[] lines = text == null ? null : splitString(text);
+
 	// shorten the text
 	if (shortenText) {
 		extent.x = 0;
@@ -438,7 +438,7 @@ void onPaint(PaintEvent event) {
 	} else {
 		super.setToolTipText(appToolTipText);
 	}
-		
+
 	// determine horizontal position
 	int x = rect.x + leftMargin;
 	if (align == SWT.CENTER) {
@@ -447,7 +447,7 @@ void onPaint(PaintEvent event) {
 	if (align == SWT.RIGHT) {
 		x = rect.width - rightMargin - extent.x;
 	}
-	
+
 	// draw a background image behind the text
 	try {
 		if (backgroundImage != null) {
@@ -528,7 +528,7 @@ void onPaint(PaintEvent event) {
 	 */
 	Rectangle imageRect = null;
 	int lineHeight = 0, textHeight = 0, imageHeight = 0;
-	
+
 	if (img != null) {
 	    imageRect = img.getBounds();
 	    imageHeight = imageRect.height;
@@ -537,7 +537,7 @@ void onPaint(PaintEvent event) {
 	    lineHeight = gc.getFontMetrics().getHeight();
 	    textHeight = lines.length * lineHeight;
 	}
-	
+
 	int imageY = 0, midPoint = 0, lineY = 0;
 	if (imageHeight > textHeight ) {
 	    if (topMargin == DEFAULT_MARGIN && bottomMargin == DEFAULT_MARGIN) imageY = rect.y + (rect.height - imageHeight) / 2;
@@ -551,15 +551,15 @@ void onPaint(PaintEvent event) {
 	    midPoint = lineY + textHeight/2;
 	    imageY = midPoint - imageHeight / 2;
 	}
-	
+
 	// draw the image
 	if (img != null) {
-		gc.drawImage(img, 0, 0, imageRect.width, imageHeight, 
+		gc.drawImage(img, 0, 0, imageRect.width, imageHeight,
 		                x, imageY, imageRect.width, imageHeight);
 		x +=  imageRect.width + GAP;
 		extent.x -= imageRect.width + GAP;
 	}
-	
+
 	// draw the text
 	if (lines != null) {
 		gc.setForeground(getForeground());
@@ -588,17 +588,17 @@ private void paintBorder(GC gc, Rectangle r) {
 
 	Color c1 = null;
 	Color c2 = null;
-	
+
 	int style = getStyle();
 	if ((style & SWT.SHADOW_IN) != 0) {
 		c1 = disp.getSystemColor(SWT.COLOR_WIDGET_NORMAL_SHADOW);
 		c2 = disp.getSystemColor(SWT.COLOR_WIDGET_HIGHLIGHT_SHADOW);
 	}
-	if ((style & SWT.SHADOW_OUT) != 0) {		
+	if ((style & SWT.SHADOW_OUT) != 0) {
 		c1 = disp.getSystemColor(SWT.COLOR_WIDGET_LIGHT_SHADOW);
 		c2 = disp.getSystemColor(SWT.COLOR_WIDGET_NORMAL_SHADOW);
 	}
-		
+
 	if (c1 != null && c2 != null) {
 		gc.setLineWidth(1);
 		drawBevelRect(gc, r.x, r.y, r.width-1, r.height-1, c1, c2);
@@ -607,9 +607,9 @@ private void paintBorder(GC gc, Rectangle r) {
 /**
  * Set the horizontal alignment of the CLabel.
  * Use the values LEFT, CENTER and RIGHT to align image and text within the available space.
- * 
+ *
  * @param align the alignment style of LEFT, RIGHT or CENTER
- * 
+ *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
@@ -631,14 +631,14 @@ public void setAlignment(int align) {
 public void setBackground (Color color) {
 	super.setBackground (color);
 	// Are these settings the same as before?
-	if (backgroundImage == null && 
-		gradientColors == null && 
+	if (backgroundImage == null &&
+		gradientColors == null &&
 		gradientPercents == null) {
 		if (color == null) {
 			if (background == null) return;
 		} else {
 			if (color.equals(background)) return;
-		}		
+		}
 	}
 	background = color;
 	backgroundImage = null;
@@ -650,24 +650,24 @@ public void setBackground (Color color) {
 /**
  * Specify a gradient of colours to be drawn in the background of the CLabel.
  * <p>For example, to draw a gradient that varies from dark blue to blue and then to
- * white and stays white for the right half of the label, use the following call 
+ * white and stays white for the right half of the label, use the following call
  * to setBackground:</p>
  * <pre>
- *	clabel.setBackground(new Color[]{display.getSystemColor(SWT.COLOR_DARK_BLUE), 
+ *	clabel.setBackground(new Color[]{display.getSystemColor(SWT.COLOR_DARK_BLUE),
  *		                           display.getSystemColor(SWT.COLOR_BLUE),
- *		                           display.getSystemColor(SWT.COLOR_WHITE), 
+ *		                           display.getSystemColor(SWT.COLOR_WHITE),
  *		                           display.getSystemColor(SWT.COLOR_WHITE)},
  *		               new int[] {25, 50, 100});
  * </pre>
  *
- * @param colors an array of Color that specifies the colors to appear in the gradient 
- *               in order of appearance from left to right;  The value <code>null</code> 
- *               clears the background gradient; the value <code>null</code> can be used 
+ * @param colors an array of Color that specifies the colors to appear in the gradient
+ *               in order of appearance from left to right;  The value <code>null</code>
+ *               clears the background gradient; the value <code>null</code> can be used
  *               inside the array of Color to specify the background color.
- * @param percents an array of integers between 0 and 100 specifying the percent of the width 
- *                 of the widget at which the color should change; the size of the percents 
+ * @param percents an array of integers between 0 and 100 specifying the percent of the width
+ *                 of the widget at which the color should change; the size of the percents
  *                 array must be one less than the size of the colors array.
- * 
+ *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
@@ -680,32 +680,32 @@ public void setBackground(Color[] colors, int[] percents) {
 /**
  * Specify a gradient of colours to be drawn in the background of the CLabel.
  * <p>For example, to draw a gradient that varies from dark blue to white in the vertical,
- * direction use the following call 
+ * direction use the following call
  * to setBackground:</p>
  * <pre>
- *	clabel.setBackground(new Color[]{display.getSystemColor(SWT.COLOR_DARK_BLUE), 
+ *	clabel.setBackground(new Color[]{display.getSystemColor(SWT.COLOR_DARK_BLUE),
  *		                           display.getSystemColor(SWT.COLOR_WHITE)},
  *		                 new int[] {100}, true);
  * </pre>
  *
- * @param colors an array of Color that specifies the colors to appear in the gradient 
- *               in order of appearance from left/top to right/bottom;  The value <code>null</code> 
- *               clears the background gradient; the value <code>null</code> can be used 
+ * @param colors an array of Color that specifies the colors to appear in the gradient
+ *               in order of appearance from left/top to right/bottom;  The value <code>null</code>
+ *               clears the background gradient; the value <code>null</code> can be used
  *               inside the array of Color to specify the background color.
- * @param percents an array of integers between 0 and 100 specifying the percent of the width/height 
- *                 of the widget at which the color should change; the size of the percents 
+ * @param percents an array of integers between 0 and 100 specifying the percent of the width/height
+ *                 of the widget at which the color should change; the size of the percents
  *                 array must be one less than the size of the colors array.
  * @param vertical indicate the direction of the gradient.  True is vertical and false is horizontal.
- * 
+ *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  *    <li>ERROR_INVALID_ARGUMENT - if the values of colors and percents are not consistent</li>
  * </ul>
- * 
+ *
  * @since 3.0
  */
-public void setBackground(Color[] colors, int[] percents, boolean vertical) {	
+public void setBackground(Color[] colors, int[] percents, boolean vertical) {
 	checkWidget();
 	if (colors != null) {
 		if (percents == null || percents.length != colors.length - 1) {
@@ -725,11 +725,11 @@ public void setBackground(Color[] colors, int[] percents, boolean vertical) {
 			}
 		}
 	}
-	
+
 	// Are these settings the same as before?
 	final Color background = getBackground();
 	if (backgroundImage == null) {
-		if ((gradientColors != null) && (colors != null) && 
+		if ((gradientColors != null) && (colors != null) &&
 			(gradientColors.length == colors.length)) {
 			boolean same = false;
 			for (int i = 0; i < gradientColors.length; i++) {
@@ -768,9 +768,9 @@ public void setBackground(Color[] colors, int[] percents, boolean vertical) {
 }
 /**
  * Set the image to be drawn in the background of the label.
- * 
+ *
  * @param image the image to be drawn in the background
- * 
+ *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
@@ -785,18 +785,18 @@ public void setBackground(Image image) {
 	}
 	backgroundImage = image;
 	redraw();
-	
+
 }
 /**
  * Set the label's bottom margin, in pixels.
- * 
+ *
  * @param bottomMargin the bottom margin of the label, which must be equal to or greater than zero
- * 
+ *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 3.6
  */
 public void setBottomMargin(int bottomMargin) {
@@ -813,9 +813,9 @@ public void setFont(Font font) {
 /**
  * Set the label's Image.
  * The value <code>null</code> clears it.
- * 
+ *
  * @param image the image to be displayed in the label or null
- * 
+ *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
@@ -830,14 +830,14 @@ public void setImage(Image image) {
 }
 /**
  * Set the label's horizontal left margin, in pixels.
- * 
+ *
  * @param leftMargin the left margin of the label, which must be equal to or greater than zero
- * 
+ *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 3.6
  */
 public void setLeftMargin(int leftMargin) {
@@ -846,9 +846,9 @@ public void setLeftMargin(int leftMargin) {
     this.leftMargin = leftMargin;
     redraw();
 }
-/** 
+/**
  * Set the label's margins, in pixels.
- * 
+ *
  * @param leftMargin the left margin.
  * @param topMargin the top margin.
  * @param rightMargin the right margin.
@@ -857,7 +857,7 @@ public void setLeftMargin(int leftMargin) {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 3.6
  */
 public void setMargins (int leftMargin, int topMargin, int rightMargin, int bottomMargin) {
@@ -870,14 +870,14 @@ public void setMargins (int leftMargin, int topMargin, int rightMargin, int bott
 }
 /**
  * Set the label's right margin, in pixels.
- * 
+ *
  * @param rightMargin the right margin of the label, which must be equal to or greater than zero
- * 
+ *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 3.6
  */
 public void setRightMargin(int rightMargin) {
@@ -902,9 +902,9 @@ public void setRightMargin(int rightMargin) {
  * Note: If control characters like '\n', '\t' etc. are used
  * in the string, then the behavior is platform dependent.
  * </p>
- * 
+ *
  * @param text the text to be displayed in the label or null
- * 
+ *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
@@ -925,14 +925,14 @@ public void setToolTipText (String string) {
 }
 /**
  * Set the label's top margin, in pixels.
- * 
+ *
  * @param topMargin the top margin of the label, which must be equal to or greater than zero
- * 
+ *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 3.6
  */
 public void setTopMargin(int topMargin) {
@@ -946,7 +946,7 @@ public void setTopMargin(int topMargin) {
  * the given width. The default implementation replaces characters in the
  * center of the original string with an ellipsis ("...").
  * Override if you need a different strategy.
- * 
+ *
  * @param gc the gc to use for text measurement
  * @param t the text to shorten
  * @param width the width to shorten the text to, in pixels
@@ -970,7 +970,7 @@ protected String shortenText(GC gc, String t, int width) {
 		int l1 = gc.textExtent(s1, DRAW_FLAGS).x;
 		int l2 = gc.textExtent(s2, DRAW_FLAGS).x;
 		if (l1+w+l2 > width) {
-			max = mid;			
+			max = mid;
 			mid = validateOffset(layout, (max+min)/2);
 		} else if (l1+w+l2 < width) {
 			min = mid;

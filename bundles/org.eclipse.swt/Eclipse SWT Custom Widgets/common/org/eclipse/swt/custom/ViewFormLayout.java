@@ -16,7 +16,7 @@ import org.eclipse.swt.widgets.*;
 
 /**
  * This class provides the layout for ViewForm
- * 
+ *
  * @see ViewForm
  */
 class ViewFormLayout extends Layout {
@@ -28,7 +28,7 @@ protected Point computeSize(Composite composite, int wHint, int hHint, boolean f
 	Control center = form.topCenter;
 	Control right = form.topRight;
 	Control content = form.content;
-	
+
 	Point leftSize = new Point(0, 0);
 	if (left != null) {
 		leftSize = computeChildSize(left, SWT.DEFAULT, SWT.DEFAULT, flushCache);
@@ -52,7 +52,7 @@ protected Point computeSize(Composite composite, int wHint, int hHint, boolean f
 		if (center != null){
 			size.y += centerSize.y;
 			if (left != null ||right != null)size.y += form.verticalSpacing;
-		}	
+		}
 	} else {
 		size.x = leftSize.x + centerSize.x + rightSize.x;
 		int count = -1;
@@ -62,22 +62,22 @@ protected Point computeSize(Composite composite, int wHint, int hHint, boolean f
 		if (count > 0) size.x += count * form.horizontalSpacing;
 		size.y = Math.max(leftSize.y, Math.max(centerSize.y, rightSize.y));
 	}
-	
+
 	if (content != null) {
 		if (left != null || right != null || center != null) size.y += 1; // allow space for a vertical separator
 		Point contentSize = new Point(0, 0);
-		contentSize = computeChildSize(content, SWT.DEFAULT, SWT.DEFAULT, flushCache); 
+		contentSize = computeChildSize(content, SWT.DEFAULT, SWT.DEFAULT, flushCache);
 		size.x = Math.max (size.x, contentSize.x);
 		size.y += contentSize.y;
 		if (size.y > contentSize.y) size.y += form.verticalSpacing;
 	}
-	
+
 	size.x += 2*form.marginWidth;
 	size.y += 2*form.marginHeight;
-	
+
 	if (wHint != SWT.DEFAULT) size.x  = wHint;
 	if (hHint != SWT.DEFAULT) size.y = hHint;
-	
+
 	return size;
 }
 
@@ -112,9 +112,9 @@ protected void layout(Composite composite, boolean flushCache) {
 	Control center = form.topCenter;
 	Control right = form.topRight;
 	Control content = form.content;
-	
+
 	Rectangle rect = composite.getClientArea();
-	
+
 	Point leftSize = new Point(0, 0);
 	if (left != null && !left.isDisposed()) {
 		leftSize = computeChildSize(left, SWT.DEFAULT, SWT.DEFAULT, flushCache);
@@ -127,17 +127,17 @@ protected void layout(Composite composite, boolean flushCache) {
 	if (right != null && !right.isDisposed()) {
 		 rightSize = computeChildSize(right, SWT.DEFAULT, SWT.DEFAULT, flushCache);
 	}
-	
+
 	int minTopWidth = leftSize.x + centerSize.x + rightSize.x + 2*form.marginWidth + 2*form.highlight;
 	int count = -1;
 	if (leftSize.x > 0) count++;
 	if (centerSize.x > 0) count++;
 	if (rightSize.x > 0) count++;
 	if (count > 0) minTopWidth += count * form.horizontalSpacing;
-		
+
 	int x = rect.x + rect.width - form.marginWidth - form.highlight;
 	int y = rect.y + form.marginHeight + form.highlight;
-	
+
 	boolean top = false;
 	if (form.separateTopCenter || minTopWidth > rect.width) {
 		int topHeight = Math.max(rightSize.y, leftSize.y);
@@ -165,7 +165,7 @@ protected void layout(Composite composite, boolean flushCache) {
 			}
 			center.setBounds(rect.x + rect.width - form.marginWidth - form.highlight - centerSize.x, y, centerSize.x, centerSize.y);
 			y += centerSize.y + form.verticalSpacing;
-		}		
+		}
 	} else {
 		int topHeight = Math.max(rightSize.y, Math.max(centerSize.y, leftSize.y));
 		if (right != null && !right.isDisposed()) {

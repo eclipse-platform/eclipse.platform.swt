@@ -29,7 +29,7 @@ class StyledTextRenderer {
 	int tabWidth;
 	int ascent, descent;
 	int averageCharWidth;
-	
+
 	/* Line data */
 	int topIndex = -1;
 	TextLayout[] layouts;
@@ -40,28 +40,28 @@ class StyledTextRenderer {
 	int maxWidth;
 	int maxWidthLineIndex;
 	boolean idleRunning;
-	
+
 	/* Bullet */
 	Bullet[] bullets;
 	int[] bulletsIndices;
 	int[] redrawLines;
-	
+
 	/* Style data */
 	int[] ranges;
-	int styleCount;	
+	int styleCount;
 	StyleRange[] styles;
 	StyleRange[] stylesSet;
 	int stylesSetCount = 0;
 	boolean hasLinks, fixedPitch;
 	final static int BULLET_MARGIN = 8;
-	
+
 	final static boolean COMPACT_STYLES = true;
 	final static boolean MERGE_STYLES = true;
-	
+
 	final static int GROW = 32;
 	final static int IDLE_TIME = 50;
 	final static int CACHE_SIZE = 128;
-	
+
 	final static int BACKGROUND = 1 << 0;
 	final static int ALIGNMENT = 1 << 1;
 	final static int INDENT = 1 << 2;
@@ -70,7 +70,7 @@ class StyledTextRenderer {
 	final static int TABSTOPS = 1 << 6;
 	final static int WRAP_INDENT = 1 << 7;
 	final static int SEGMENT_CHARS = 1 << 8;
-	
+
 	static class LineInfo {
 		int flags;
 		Color background;
@@ -98,7 +98,7 @@ class StyledTextRenderer {
 			}
 		}
 	}
-	
+
 StyledTextRenderer(Device device, StyledText styledText) {
 	this.device = device;
 	this.styledText = styledText;
@@ -131,7 +131,7 @@ int addMerge(int[] mergeRanges, StyleRange[] mergeStyles, int mergeCount, int mo
 		}
 	}
 	if (MERGE_STYLES) {
-		int j = modifyStart;	
+		int j = modifyStart;
 		for (int i = 0; i < mergeCount; i += 2) {
 			if (j > 0 && ranges[j - 2] + ranges[j - 1] == mergeRanges[i] && mergeStyles[i >> 1].similarTo(styles[(j - 2) >> 1])) {
 				ranges[j - 1] += mergeRanges[i + 1];
@@ -249,7 +249,7 @@ void calculateIdle () {
 				}
 			}
 			if (i < lineCount) {
-				Display display = styledText.getDisplay();				
+				Display display = styledText.getDisplay();
 				display.asyncExec(this);
 			} else {
 				idleRunning = false;
@@ -257,10 +257,10 @@ void calculateIdle () {
 				ScrollBar bar = styledText.getVerticalBar();
 				if (bar != null) {
 					bar.setSelection(styledText.getVerticalScrollOffset());
-				}					
+				}
 			}
 		}
-	};		
+	};
 	Display display = styledText.getDisplay();
 	display.asyncExec(runnable);
 	idleRunning = true;
@@ -301,7 +301,7 @@ void copyInto(StyledTextRenderer renderer) {
 	if (lines != null) {
 		LineInfo[] newLines = renderer.lines = new LineInfo[lineCount];
 		for (int i = 0; i < newLines.length; i++) {
-			newLines[i] = new LineInfo(lines[i]);				
+			newLines[i] = new LineInfo(lines[i]);
 		}
 		renderer.lineCount = lineCount;
 	}
@@ -348,7 +348,7 @@ void drawBullet(Bullet bullet, GC gc, int paintX, int paintY, int index, int lin
 	style = (StyleRange)style.clone();
 	style.metrics = null;
 	if (style.font == null) style.font = getFont(style.fontStyle);
-	layout.setStyle(style, 0, string.length());	
+	layout.setStyle(style, 0, string.length());
 	int x = paintX + Math.max(0, metrics.width - layout.getBounds().width - BULLET_MARGIN);
 	layout.draw(gc, x, paintY);
 	layout.dispose();
@@ -364,7 +364,7 @@ int drawLine(int lineIndex, int paintX, int paintY, GC gc, Color widgetBackgroun
 	if (styledText.getBlockSelection()) {
 		selectionStart = selectionEnd = 0;
 	}
-	Rectangle client = styledText.getClientArea();  
+	Rectangle client = styledText.getClientArea();
 	Color lineBackground = getLineBackground(lineIndex, null);
 	StyledTextEvent event = styledText.getLineBackgroundData(lineOffset, line);
 	if (event != null && event.lineBackground != null) lineBackground = event.lineBackground;
@@ -395,7 +395,7 @@ int drawLine(int lineIndex, int paintX, int paintY, GC gc, Color widgetBackgroun
 		}
 		layout.draw(gc, paintX, paintY, start, end - 1, selectionFg, selectionBg, flags);
 	}
-	
+
 	// draw objects
 	Bullet bullet = null;
 	int bulletIndex = -1;
@@ -498,7 +498,7 @@ boolean hasLink(int offset) {
 	if (event != null) {
 		StyleRange[] styles = event.styles;
 		if (styles != null) {
-			int[] ranges = event.ranges; 
+			int[] ranges = event.ranges;
 			if (ranges != null) {
 				for (int i = 0; i < ranges.length; i+=2) {
 					if (ranges[i] <= offset && offset < ranges[i] + ranges[i+1] && styles[i >> 1].underline && styles[i >> 1].underlineStyle == SWT.UNDERLINE_LINK) {
@@ -507,7 +507,7 @@ boolean hasLink(int offset) {
 				}
 			} else {
 				for (int i = 0; i < styles.length; i++) {
-					StyleRange style = styles[i]; 
+					StyleRange style = styles[i];
 					if (style.start <= offset && offset < style.start + style.length && style.underline && style.underlineStyle == SWT.UNDERLINE_LINK) {
 						return true;
 					}
@@ -519,7 +519,7 @@ boolean hasLink(int offset) {
 			int rangeCount = styleCount << 1;
 			int index = getRangeIndex(offset, -1, rangeCount);
 			if (index >= rangeCount) return false;
-			int rangeStart = ranges[index]; 
+			int rangeStart = ranges[index];
 			int rangeLength = ranges[index + 1];
 			StyleRange rangeStyle = styles[index >> 1];
 			if (rangeStart <= offset && offset < rangeStart + rangeLength && rangeStyle.underline && rangeStyle.underlineStyle == SWT.UNDERLINE_LINK) {
@@ -715,7 +715,7 @@ TextLayout getTextLayout(int lineIndex) {
 TextLayout getTextLayout(int lineIndex, int orientation, int width, int lineSpacing) {
 	TextLayout layout = null;
 	if (styledText != null) {
-		int topIndex = styledText.topIndex > 0 ? styledText.topIndex - 1 : 0;	
+		int topIndex = styledText.topIndex > 0 ? styledText.topIndex - 1 : 0;
 		if (layouts == null || topIndex != this.topIndex) {
 			TextLayout[] newLayouts = new TextLayout[CACHE_SIZE];
 			if (layouts != null) {
@@ -882,7 +882,7 @@ TextLayout getTextLayout(int lineIndex, int orientation, int width, int lineSpac
 	layout.setAlignment(alignment);
 	layout.setJustify(justify);
 	layout.setTextDirection(textDirection);
-	
+
 	int lastOffset = 0;
 	int length = line.length();
 	if (styles != null) {
@@ -976,7 +976,7 @@ TextLayout getTextLayout(int lineIndex, int orientation, int width, int lineSpac
 			}
 		}
 	}
-	
+
 	if (styledText != null && styledText.isFixedLineHeight()) {
 		int index = -1;
 		int lineCount = layout.getLineCount();
@@ -1232,7 +1232,7 @@ void setStyleRanges (int[] newRanges, StyleRange[] newStyles) {
 		return;
 	}
 	if (newRanges == null && COMPACT_STYLES) {
-		newRanges = new int[newStyles.length << 1];		
+		newRanges = new int[newStyles.length << 1];
 		StyleRange[] tmpStyles = new StyleRange[newStyles.length];
 		if (stylesSet == null) stylesSet = new StyleRange[4];
 		for (int i = 0, j = 0; i < newStyles.length; i++) {
@@ -1256,7 +1256,7 @@ void setStyleRanges (int[] newRanges, StyleRange[] newStyles) {
 		}
 		newStyles = tmpStyles;
 	}
-	
+
 	if (styleCount == 0) {
 		if (newRanges != null) {
 			ranges = new int[newRanges.length];
@@ -1311,7 +1311,7 @@ void setStyleRanges (int[] newRanges, StyleRange[] newStyles) {
 			if (ranges[modifyStart] < newStart && newStart < ranges[modifyStart] + ranges[modifyStart + 1]) {
 				mergeStyles[mergeCount >> 1] = styles[modifyStart >> 1];
 				mergeRanges[mergeCount] = ranges[modifyStart];
-				mergeRanges[mergeCount + 1] = newStart - ranges[modifyStart];				
+				mergeRanges[mergeCount + 1] = newStart - ranges[modifyStart];
 				mergeCount += 2;
 			}
 			mergeStyles[mergeCount >> 1] = newStyles[i >> 1];
@@ -1345,7 +1345,7 @@ void setStyleRanges (int[] newRanges, StyleRange[] newStyles) {
 		modifyEnd = modifyStart;
 		StyleRange[] mergeStyles = new StyleRange[3];
 		for (int i = 0; i < newStyles.length; i++) {
-			StyleRange newStyle = newStyles[i], style; 
+			StyleRange newStyle = newStyles[i], style;
 			int newStart = newStyle.start;
 			int newEnd = newStart + newStyle.length;
 			if (newStart == newEnd) continue;
@@ -1379,9 +1379,9 @@ void textChanging(TextChangingEvent event) {
 	int start = event.start;
 	int newCharCount = event.newCharCount, replaceCharCount = event.replaceCharCount;
 	int newLineCount = event.newLineCount, replaceLineCount = event.replaceLineCount;
-	
-	updateRanges(start, replaceCharCount, newCharCount);	
-	
+
+	updateRanges(start, replaceCharCount, newCharCount);
+
 	int startLine = content.getLineAtOffset(start);
 	if (replaceCharCount == content.getCharCount()) lines = null;
 	if (replaceLineCount == lineCount) {
@@ -1394,7 +1394,7 @@ void textChanging(TextChangingEvent event) {
 		if (lineCount + delta > lineWidth.length) {
 			int[] newWidths = new int[lineCount + delta + GROW];
 			System.arraycopy(lineWidth, 0, newWidths, 0, lineCount);
-			lineWidth = newWidths;			
+			lineWidth = newWidths;
 			int[] newHeights = new int[lineCount + delta + GROW];
 			System.arraycopy(lineHeight, 0, newHeights, 0, lineCount);
 			lineHeight = newHeights;
@@ -1556,7 +1556,7 @@ void updateRanges(int start, int replaceCharCount, int newCharCount) {
 				ranges[modifyStart + 3] = ranges[modifyStart] + ranges[modifyStart + 1] - end;
 				ranges[modifyStart + 2] = start + newCharCount;
 				ranges[modifyStart + 1] = start - ranges[modifyStart];
-				styles[(modifyStart >> 1) + 1] = styles[modifyStart >> 1]; 
+				styles[(modifyStart >> 1) + 1] = styles[modifyStart >> 1];
 				rangeCount += 2;
 				styleCount++;
 				modifyEnd += 4;

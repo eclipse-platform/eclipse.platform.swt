@@ -35,27 +35,27 @@ import org.eclipse.swt.*;
  * <p>
  * IMPORTANT: This class is <em>not</em> intended to be subclassed.
  * </p>
- * 
+ *
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  *
  * @since 3.0
  * @noextend This class is not intended to be subclassed by clients.
  */
 
-public class CBanner extends Composite {	
+public class CBanner extends Composite {
 
 	Control left;
 	Control right;
 	Control bottom;
-	
+
 	boolean simple = true;
-	
+
 	int[] curve = new int[0];
 	int curveStart = 0;
 	Rectangle curveRect = new Rectangle(0, 0, 0, 0);
 	int curve_width = 5;
 	int curve_indent = -2;
-	
+
 	int rightWidth = SWT.DEFAULT;
 	int rightMinWidth = 0;
 	int rightMinHeight = 0;
@@ -63,7 +63,7 @@ public class CBanner extends Composite {
 	boolean dragging = false;
 	int rightDragDisplacement = 0;
 	Listener listener;
-	
+
 	static final int OFFSCREEN = -200;
 	static final int BORDER_BOTTOM = 2;
 	static final int BORDER_TOP = 3;
@@ -73,15 +73,15 @@ public class CBanner extends Composite {
 	static final int BEZIER_LEFT = 30;
 	static final int MIN_LEFT = 10;
 	static int BORDER1 = SWT.COLOR_WIDGET_HIGHLIGHT_SHADOW;
-	
-		
+
+
 /**
  * Constructs a new instance of this class given its parent
  * and a style value describing its behavior and appearance.
  * <p>
  * The style value is either one of the style constants defined in
  * class <code>SWT</code> which is applicable to instances of this
- * class, or must be built by <em>bitwise OR</em>'ing together 
+ * class, or must be built by <em>bitwise OR</em>'ing together
  * (that is, using the <code>int</code> "|" operator) two or more
  * of those <code>SWT</code> style constants. The class description
  * lists the style constants that are applicable to the class.
@@ -103,7 +103,7 @@ public CBanner(Composite parent, int style) {
 	super(parent, checkStyle(style));
 	super.setLayout(new CBannerLayout());
 	resizeCursor = getDisplay().getSystemCursor(SWT.CURSOR_SIZEWE);
-	
+
 	listener = new Listener() {
 		public void handleEvent(Event e) {
 			switch (e.type) {
@@ -166,14 +166,14 @@ static int checkStyle (int style) {
 //}
 /**
 * Returns the Control that appears on the bottom side of the banner.
-* 
+*
 * @return the control that appears on the bottom side of the banner or null
-* 
+*
 * @exception SWTException <ul>
 *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
 *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
 * </ul>
-* 
+*
 * @since 3.0
 */
 public Control getBottom() {
@@ -187,14 +187,14 @@ public Rectangle getClientArea() {
 
 /**
 * Returns the Control that appears on the left side of the banner.
-* 
+*
 * @return the control that appears on the left side of the banner or null
-* 
+*
 * @exception SWTException <ul>
 *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
 *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
 * </ul>
-* 
+*
 * @since 3.0
 */
 public Control getLeft() {
@@ -204,14 +204,14 @@ public Control getLeft() {
 
 /**
 * Returns the Control that appears on the right side of the banner.
-* 
+*
 * @return the control that appears on the right side of the banner or null
-* 
+*
 * @exception SWTException <ul>
 *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
 *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
 * </ul>
-* 
+*
 * @since 3.0
 */
 public Control getRight() {
@@ -220,9 +220,9 @@ public Control getRight() {
 }
 /**
  * Returns the minimum size of the control that appears on the right of the banner.
- * 
+ *
  * @return the minimum size of the control that appears on the right of the banner
- * 
+ *
  * @since 3.1
  */
 public Point getRightMinimumSize() {
@@ -231,9 +231,9 @@ public Point getRightMinimumSize() {
 }
 /**
  * Returns the width of the control that appears on the right of the banner.
- * 
+ *
  * @return the width of the control that appears on the right of the banner
- * 
+ *
  * @since 3.0
  */
 public int getRightWidth() {
@@ -248,9 +248,9 @@ public int getRightWidth() {
 /**
  * Returns <code>true</code> if the CBanner is rendered
  * with a simple, traditional shape.
- * 
+ *
  * @return <code>true</code> if the CBanner is rendered with a simple shape
- * 
+ *
  * @since 3.0
  */
 public boolean getSimple() {
@@ -291,7 +291,7 @@ void onMouseMove(int x, int y) {
 		return;
 	}
 	if (curveRect.contains(x, y)) {
-		setCursor(resizeCursor); 
+		setCursor(resizeCursor);
 	} else {
 		setCursor(null);
 	}
@@ -302,7 +302,7 @@ void onMouseUp () {
 void onPaint(GC gc) {
 //	 Useful for debugging paint problems
 //	{
-//	Point size = getSize();	
+//	Point size = getSize();
 //	gc.setBackground(getDisplay().getSystemColor(SWT.COLOR_GREEN));
 //	gc.fillRectangle(-10, -10, size.x+20, size.y+20);
 //	}
@@ -328,14 +328,14 @@ void onPaint(GC gc) {
 	line1[index++] = 0;
 	line1[index++] = size.x;
 	line1[index++] = 0;
-	
+
 	Color background = getBackground();
-		
+
 	if (getDisplay().getDepth() >= 15) {
 		// Anti- aliasing
 		int[] line2 = new int[line1.length];
 		index = 0;
-		for (int i = 0; i < line1.length/2; i++) { 
+		for (int i = 0; i < line1.length/2; i++) {
 			line2[index] = line1[index++]  - 1;
 			line2[index] = line1[index++];
 		}
@@ -355,7 +355,7 @@ void onPaint(GC gc) {
 		gc.drawPolyline(line2);
 		gc.drawPolyline(line3);
 		color.dispose();
-		
+
 		// draw tail fading to background
 		int x1 = Math.max(0, curveStart - CURVE_TAIL);
 		gc.setForeground(background);
@@ -367,7 +367,7 @@ void onPaint(GC gc) {
 		gc.setForeground(border1);
 		gc.drawLine(x1, size.y - BORDER_STRIPE, curveStart+1, size.y - BORDER_STRIPE);
 	}
-	
+
 	// draw border
 	gc.setForeground(border1);
 	gc.drawPolyline(line1);
@@ -378,17 +378,17 @@ void onResize() {
 }
 /**
 * Set the control that appears on the bottom side of the banner.
-* The bottom control is optional.  Setting the bottom control to null will remove it from 
+* The bottom control is optional.  Setting the bottom control to null will remove it from
 * the banner - however, the creator of the control must dispose of the control.
-* 
+*
 * @param control the control to be displayed on the bottom or null
-* 
+*
 * @exception SWTException <ul>
 *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
 *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
 *    <li>ERROR_INVALID_ARGUMENT - if the bottom control was not created as a child of the receiver</li>
 * </ul>
-* 
+*
 * @since 3.0
 */
 public void setBottom(Control control) {
@@ -426,17 +426,17 @@ public void setLayout (Layout layout) {
 
 /**
 * Set the control that appears on the left side of the banner.
-* The left control is optional.  Setting the left control to null will remove it from 
+* The left control is optional.  Setting the left control to null will remove it from
 * the banner - however, the creator of the control must dispose of the control.
-* 
+*
 * @param control the control to be displayed on the left or null
-* 
+*
 * @exception SWTException <ul>
 *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
 *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
 *    <li>ERROR_INVALID_ARGUMENT - if the left control was not created as a child of the receiver</li>
 * </ul>
-* 
+*
 * @since 3.0
 */
 public void setLeft(Control control) {
@@ -453,17 +453,17 @@ public void setLeft(Control control) {
 }
 /**
 * Set the control that appears on the right side of the banner.
-* The right control is optional.  Setting the right control to null will remove it from 
+* The right control is optional.  Setting the right control to null will remove it from
 * the banner - however, the creator of the control must dispose of the control.
-* 
+*
 * @param control the control to be displayed on the right or null
-* 
+*
 * @exception SWTException <ul>
 *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
 *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
 *    <li>ERROR_INVALID_ARGUMENT - if the right control was not created as a child of the receiver</li>
 * </ul>
-* 
+*
 * @since 3.0
 */
 public void setRight(Control control) {
@@ -480,15 +480,15 @@ public void setRight(Control control) {
 }
 /**
  * Set the minimum height of the control that appears on the right side of the banner.
- * 
+ *
  * @param size the minimum size of the control on the right
- * 
+ *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  *    <li>ERROR_INVALID_ARGUMENT - if the size is null or the values of size are less than SWT.DEFAULT</li>
  * </ul>
- * 
+ *
  * @since 3.1
  */
 public void setRightMinimumSize(Point size) {
@@ -500,15 +500,15 @@ public void setRightMinimumSize(Point size) {
 }
 /**
  * Set the width of the control that appears on the right side of the banner.
- * 
+ *
  * @param width the width of the control on the right
- * 
+ *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  *    <li>ERROR_INVALID_ARGUMENT - if width is less than SWT.DEFAULT</li>
  * </ul>
- * 
+ *
  * @since 3.0
  */
 public void setRightWidth(int width) {
@@ -518,10 +518,10 @@ public void setRightWidth(int width) {
 	layout(false);
 }
 /**
- * Sets the shape that the CBanner will use to render itself.  
- * 
+ * Sets the shape that the CBanner will use to render itself.
+ *
  * @param simple <code>true</code> if the CBanner should render itself in a simple, traditional style
- * 
+ *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>

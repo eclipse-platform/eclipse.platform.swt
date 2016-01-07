@@ -19,8 +19,8 @@ import org.eclipse.swt.widgets.*;
 *
 * A TableTreeEditor is a manager for a Control that appears above a cell in a TableTree
 * and tracks with the moving and resizing of that cell.  It can be used to display a
-* text widget above a cell in a TableTree so that the user can edit the contents of 
-* that cell.  It can also be used to display a button that can launch a dialog for 
+* text widget above a cell in a TableTree so that the user can edit the contents of
+* that cell.  It can also be used to display a button that can launch a dialog for
 * modifying the contents of the associated cell.
 *
 * <p> Here is an example of using a TableTreeEditor:
@@ -41,7 +41,7 @@ import org.eclipse.swt.widgets.*;
 *	}
 *	column1.setWidth(100);
 *	column2.pack();
-*	
+*
 *	final TableTreeEditor editor = new TableTreeEditor(tableTree);
 *	//The editor must have the same size as the cell and must
 *	//not be any smaller than 50 pixels.
@@ -50,17 +50,17 @@ import org.eclipse.swt.widgets.*;
 *	editor.minimumWidth = 50;
 *	// editing the second column
 *	final int EDITABLECOLUMN = 1;
-*	
+*
 *	tableTree.addSelectionListener(new SelectionAdapter() {
 *		public void widgetSelected(SelectionEvent e) {
 *			// Clean up any previous editor control
 *			Control oldEditor = editor.getEditor();
 *			if (oldEditor != null) oldEditor.dispose();
-*	
+*
 *			// Identify the selected row
 *			TableTreeItem item = (TableTreeItem)e.item;
 *			if (item == null) return;
-*	
+*
 *			// The control that will be the editor must be a child of the Table
 *			Text newEditor = new Text(table, SWT.NONE);
 *			newEditor.setText(item.getText(EDITABLECOLUMN));
@@ -76,7 +76,7 @@ import org.eclipse.swt.widgets.*;
 *		}
 *	});
 * </pre></code>
-* 
+*
 * @deprecated As of 3.1 use TreeEditor with Tree, TreeItem and TreeColumn
 * @noreference This API will be deleted in a future release. See bug 475833 for details.
 * @noextend This API will be deleted in a future release. See bug 475833 for details.
@@ -120,7 +120,7 @@ public TableTreeEditor (TableTree tableTree) {
 		}
 	};
 	tableTree.addTreeListener(treeListener);
-	
+
 	columnListener = new ControlListener() {
 		public void controlMoved(ControlEvent e){
 			layout ();
@@ -129,7 +129,7 @@ public TableTreeEditor (TableTree tableTree) {
 			layout ();
 		}
 	};
-	
+
 	// To be consistent with older versions of SWT, grabVertical defaults to true
 	grabVertical = true;
 }
@@ -148,11 +148,11 @@ Rectangle computeBounds () {
 	if (grabHorizontal) {
 		editorRect.width = Math.max(cell.width, minimumWidth);
 	}
-	
+
 	if (grabVertical) {
 		editorRect.height = Math.max(cell.height, minimumHeight);
 	}
-	
+
 	if (horizontalAlignment == SWT.RIGHT) {
 		editorRect.x += cell.width - editorRect.width;
 	} else if (horizontalAlignment == SWT.LEFT) {
@@ -160,7 +160,7 @@ Rectangle computeBounds () {
 	} else { // default is CENTER
 		editorRect.x += (cell.width - editorRect.width)/2;
 	}
-	
+
 	if (verticalAlignment == SWT.BOTTOM) {
 		editorRect.y += cell.height - editorRect.height;
 	} else if (verticalAlignment == SWT.TOP) {
@@ -225,14 +225,14 @@ public void setColumn(int column) {
 		this.column = -1;
 	}
 
-	if (column < 0  || column >= table.getColumnCount()) return;	
-		
+	if (column < 0  || column >= table.getColumnCount()) return;
+
 	this.column = column;
 	TableColumn tableColumn = table.getColumn(this.column);
 	tableColumn.addControlListener(columnListener);
 	layout();
 }
-public void setItem (TableTreeItem item) {	
+public void setItem (TableTreeItem item) {
 	this.item = item;
 	layout();
 }
@@ -242,7 +242,7 @@ public void setItem (TableTreeItem item) {
 *
 * <p>Note: The Control provided as the editor <b>must</b> be created with its parent being the Table control
 * specified in the TableEditor constructor.
-* 
+*
 * @param editor the Control that is displayed above the cell being edited
 * @param item the TableItem for the row of the cell being tracked by this editor
 * @param column the zero based index of the column of the cell being tracked by this editor

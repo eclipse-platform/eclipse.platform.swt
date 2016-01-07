@@ -16,15 +16,15 @@ import org.eclipse.swt.widgets.*;
 
 /**
  * This class provides the layout for ScrolledComposite
- * 
+ *
  * @see ScrolledComposite
  */
 class ScrolledCompositeLayout extends Layout {
-	
+
 	boolean inLayout = false;
 	static final int DEFAULT_WIDTH	= 64;
 	static final int DEFAULT_HEIGHT	= 64;
-	
+
 @Override
 protected Point computeSize(Composite composite, int wHint, int hHint, boolean flushCache) {
 	ScrolledComposite sc = (ScrolledComposite)composite;
@@ -75,7 +75,7 @@ protected void layout(Composite composite, boolean flushCache) {
 	}
 	Rectangle hostRect = sc.getClientArea();
 	if (sc.expandHorizontal) {
-		contentRect.width = Math.max(sc.minWidth, hostRect.width);	
+		contentRect.width = Math.max(sc.minWidth, hostRect.width);
 	}
 	if (sc.expandVertical) {
 		contentRect.height = Math.max(sc.minHeight, hostRect.height);
@@ -114,7 +114,7 @@ protected void layout(Composite composite, boolean flushCache) {
 		}
 	}
 	gc.dispose ();
-	
+
 	sc.content.setBounds (contentRect);
 	inLayout = false;
 }

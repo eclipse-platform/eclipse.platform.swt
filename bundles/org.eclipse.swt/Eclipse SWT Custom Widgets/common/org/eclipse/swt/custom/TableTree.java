@@ -16,7 +16,7 @@ import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.widgets.*;
 
-/** 
+/**
  * A TableTree is a selectable user interface object
  * that displays a hierarchy of items, and issues
  * notification when an item is selected.
@@ -36,7 +36,7 @@ import org.eclipse.swt.widgets.*;
  * <p>
  * Note: Only one of the styles SINGLE, and MULTI may be specified.
  * </p>
- * 
+ *
  * @deprecated As of 3.1 use Tree, TreeItem and TreeColumn
  * @noreference This API will be deleted in a future release. See bug 475833 for details.
  * @noextend This API will be deleted in a future release. See bug 475833 for details.
@@ -50,20 +50,20 @@ public class TableTree extends Composite {
 
 	/*
 	* TableTreeItems are not treated as children but rather as items.
-	* When the TableTree is disposed, all children are disposed because 
+	* When the TableTree is disposed, all children are disposed because
 	* TableTree inherits this behaviour from Composite.  The items
 	* must be disposed separately.  Because TableTree is not part of
-	* the org.eclipse.swt.widgets package, the method releaseWidget can 
+	* the org.eclipse.swt.widgets package, the method releaseWidget can
 	* not be overridden (this is how items are disposed of in Table and Tree).
 	* Instead, the items are disposed of in response to the dispose event on the
 	* TableTree.  The "inDispose" flag is used to distinguish between disposing
-	* one TableTreeItem (e.g. when removing an entry from the TableTree) and 
+	* one TableTreeItem (e.g. when removing an entry from the TableTree) and
 	* disposing the entire TableTree.
 	*/
 	boolean inDispose = false;
-	
-	static final TableTreeItem[] EMPTY_ITEMS = new TableTreeItem [0];	
-	static final String[] EMPTY_TEXTS = new String [0];	
+
+	static final TableTreeItem[] EMPTY_ITEMS = new TableTreeItem [0];
+	static final String[] EMPTY_TEXTS = new String [0];
 	static final Image[] EMPTY_IMAGES = new Image [0];
 	static final String ITEMID = "TableTreeItemID"; //$NON-NLS-1$
 
@@ -73,7 +73,7 @@ public class TableTree extends Composite {
  * <p>
  * The style value is either one of the style constants defined in
  * class <code>SWT</code> which is applicable to instances of this
- * class, or must be built by <em>bitwise OR</em>'ing together 
+ * class, or must be built by <em>bitwise OR</em>'ing together
  * (that is, using the <code>int</code> "|" operator) two or more
  * of those <code>SWT</code> style constants. The class description
  * lists the style constants that are applicable to the class.
@@ -109,14 +109,14 @@ public TableTree(Composite parent, int style) {
 			}
 		}
 	};
-	int[] tableEvents = new int[]{SWT.MouseDown, 
-		                           SWT.Selection, 
-		                           SWT.DefaultSelection, 
+	int[] tableEvents = new int[]{SWT.MouseDown,
+		                           SWT.Selection,
+		                           SWT.DefaultSelection,
 		                           SWT.KeyDown};
 	for (int i = 0; i < tableEvents.length; i++) {
 		table.addListener(tableEvents[i], tableListener);
 	}
-	
+
 	listener = new Listener() {
 		public void handleEvent(Event e) {
 			switch (e.type) {
@@ -126,12 +126,12 @@ public TableTree(Composite parent, int style) {
 			}
 		}
 	};
-	int[] events = new int[]{SWT.Dispose, 
-		                      SWT.Resize, 
+	int[] events = new int[]{SWT.Dispose,
+		                      SWT.Resize,
 		                      SWT.FocusIn};
 	for (int i = 0; i < events.length; i++) {
 		addListener(events[i], listener);
-	}	                      
+	}
 }
 
 int addItem(TableTreeItem item, int index) {
@@ -139,13 +139,13 @@ int addItem(TableTreeItem item, int index) {
 	TableTreeItem[] newItems = new TableTreeItem[items.length + 1];
 	System.arraycopy(items, 0, newItems, 0, index);
 	newItems[index] = item;
-	System.arraycopy(items, index, newItems, index + 1, items.length - index); 
+	System.arraycopy(items, index, newItems, index + 1, items.length - index);
 	items = newItems;
 
 	/* Return the index in the table where this table should be inserted */
-	if (index == items.length - 1 ) 
+	if (index == items.length - 1 )
 		return table.getItemCount();
-	else 
+	else
 		return table.indexOf(items[index+1].tableItem);
 }
 
@@ -211,10 +211,10 @@ public void addTreeListener(TreeListener listener) {
 	addListener (SWT.Collapse, typedListener);
 }
 private static int checkStyle (int style) {
-	int mask = SWT.LEFT_TO_RIGHT | SWT.RIGHT_TO_LEFT; 
+	int mask = SWT.LEFT_TO_RIGHT | SWT.RIGHT_TO_LEFT;
 	style = style & mask;
 	return style;
-} 
+}
 @Override
 public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget();
@@ -260,7 +260,7 @@ public Color getBackground () {
 	// item has no sub items, a grey (Widget background colour) square will appear in
 	// the first column of the first item.
 	// It is not possible in the constructor to set the background of the TableTree
-	// to be the same as the background of the Table because this interferes with 
+	// to be the same as the background of the Table because this interferes with
 	// the TableTree adapting to changes in the System color settings.
 	return table.getBackground();
 }
@@ -374,21 +374,21 @@ public Table getTable () {
 }
 
 void createImages () {
-	
+
 	int itemHeight = sizeImage.getBounds().height;
-	// Calculate border around image. 
+	// Calculate border around image.
 	// At least 9 pixels are needed to draw the image
 	// Leave at least a 6 pixel border.
 	int indent = Math.min(6, (itemHeight - 9) / 2);
 	indent = Math.max(0, indent);
-	int size = Math.max (10, itemHeight - 2 * indent); 
+	int size = Math.max (10, itemHeight - 2 * indent);
 	size = ((size + 1) / 2) * 2; // size must be an even number
 	int midpoint = indent + size / 2;
-	
+
 	Color foreground = getForeground();
 	Color plusMinus = getDisplay().getSystemColor(SWT.COLOR_WIDGET_NORMAL_SHADOW);
 	Color background = getBackground();
-	
+
 	/* Plus image */
 	PaletteData palette = new PaletteData(new RGB[]{foreground.getRGB(), background.getRGB(), plusMinus.getRGB()});
 	ImageData imageData = new ImageData(itemHeight, itemHeight, 4, palette);
@@ -403,7 +403,7 @@ void createImages () {
 	gc.drawLine(midpoint, indent + 2, midpoint, indent + size - 2);
 	gc.drawLine(indent + 2, midpoint, indent + size - 2, midpoint);
 	gc.dispose();
-	
+
 	/* Minus image */
 	palette = new PaletteData(new RGB[]{foreground.getRGB(), background.getRGB(), plusMinus.getRGB()});
 	imageData = new ImageData(itemHeight, itemHeight, 4, palette);
@@ -431,7 +431,7 @@ Image getMinusImage() {
 
 /**
  * Gets the index of an item.
- * 
+ *
  * <p>The widget is searched starting at 0 until an
  * item is found that is equal to the search item.
  * If no item is found, -1 is returned.  Indexing
@@ -500,7 +500,7 @@ void onSelection(Event e) {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 3.1
  */
 public TableTreeItem getItem (int index) {
@@ -531,7 +531,7 @@ public TableTreeItem getItem(Point point) {
 	TableItem item = table.getItem(point);
 	if (item == null) return null;
 	return getItem(item);
-	
+
 }
 TableTreeItem getItem(TableItem tableItem) {
 	if (tableItem == null) return null;
@@ -592,7 +592,7 @@ void onKeyDown (Event e) {
 			item.setExpanded(true);
 			type = SWT.Expand;
 		}
-	} 
+	}
 	if (type == 0) return;
 	Event event = new Event();
 	event.item = item;

@@ -21,7 +21,7 @@ import org.eclipse.swt.widgets.*;
 * list that appears when you open a Combo box).
 *
 * The list will be positioned so that it does not run off the screen and the largest number of items
-* are visible.  It may appear above the current cursor location or below it depending how close you 
+* are visible.  It may appear above the current cursor location or below it depending how close you
 * are to the edge of the screen.
 *
 * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
@@ -30,37 +30,37 @@ public class PopupList {
 	Shell  shell;
 	List   list;
 	int    minimumWidth;
-/** 
+/**
 * Creates a PopupList above the specified shell.
-* 
+*
 * @param parent a Shell control which will be the parent of the new instance (cannot be null)
 */
 public PopupList(Shell parent) {
 	this (parent, 0);
 }
-/** 
+/**
 * Creates a PopupList above the specified shell.
-* 
+*
 * @param parent a widget which will be the parent of the new instance (cannot be null)
 * @param style the style of widget to construct
-* 
-* @since 3.0 
+*
+* @since 3.0
 */
 public PopupList(Shell parent, int style) {
 	int listStyle = SWT.SINGLE | SWT.V_SCROLL;
 	if ((style & SWT.H_SCROLL) != 0) listStyle |= SWT.H_SCROLL;
-	
+
 	shell = new Shell(parent, checkStyle(style));
-	
-	list = new List(shell, listStyle);	
+
+	list = new List(shell, listStyle);
 
 	// close dialog if user selects outside of the shell
 	shell.addListener(SWT.Deactivate, new Listener() {
-		public void handleEvent(Event e){	
+		public void handleEvent(Event e){
 			shell.setVisible (false);
 		}
 	});
-	
+
 	// resize shell when list resizes
 	shell.addControlListener(new ControlListener() {
 		public void controlMoved(ControlEvent e){}
@@ -69,7 +69,7 @@ public PopupList(Shell parent, int style) {
 			list.setSize(shellSize.width, shellSize.height);
 		}
 	});
-	
+
 	// return list selection on Mouse Up or Carriage Return
 	list.addMouseListener(new MouseListener() {
 		public void mouseDoubleClick(MouseEvent e){}
@@ -86,7 +86,7 @@ public PopupList(Shell parent, int style) {
 			}
 		}
 	});
-	
+
 }
 private static int checkStyle (int style) {
 	int mask = SWT.LEFT_TO_RIGHT | SWT.RIGHT_TO_LEFT;
@@ -155,7 +155,7 @@ public String open (Rectangle rect) {
 			listSize.y += 2;
 		}
 		y = rect.y - listSize.y;
-		
+
 	} else {
 		// place popup list below table cell
 		if (listSize.y > spaceBelow){
@@ -165,18 +165,18 @@ public String open (Rectangle rect) {
 		}
 		y = rect.y + rect.height;
 	}
-	
+
 	// Make dialog as wide as the cell
 	listSize.x = rect.width;
 	// dialog width should not be less than minimumWidth
 	if (listSize.x < minimumWidth)
 		listSize.x = minimumWidth;
-	
+
 	// Align right side of dialog with right side of cell
 	int x = rect.x + rect.width - listSize.x;
-	
+
 	shell.setBounds(x, y, listSize.x, listSize.y);
-	
+
 	shell.open();
 	list.setFocus();
 
@@ -184,7 +184,7 @@ public String open (Rectangle rect) {
 	while (!shell.isDisposed () && shell.isVisible ()) {
 		if (!display.readAndDispatch()) display.sleep();
 	}
-	
+
 	String result = null;
 	if (!shell.isDisposed ()) {
 		String [] strings = list.getSelection ();
@@ -196,8 +196,8 @@ public String open (Rectangle rect) {
 /**
 * Selects an item with text that starts with specified String.
 * <p>
-* If the item is not currently selected, it is selected.  
-* If the item at an index is selected, it remains selected.  
+* If the item is not currently selected, it is selected.
+* If the item at an index is selected, it remains selected.
 * If the string is not matched, it is ignored.
 *
 * @param string the text of the item
@@ -229,7 +229,7 @@ public void select(String string) {
 * to the default system font for the widget.
 *
 * @param font the new font (or null)
-* 
+*
 * @exception SWTException <ul>
 *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
 *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
@@ -250,7 +250,7 @@ public void setFont (Font font) {
 *
 * This operation will fail when an item is null
 * or could not be added in the OS.
-* 
+*
 * @exception IllegalArgumentException <ul>
 *    <li>ERROR_NULL_ARGUMENT - if the items array is null</li>
 *    <li>ERROR_INVALID_ARGUMENT - if an item in the items array is null</li>
@@ -271,7 +271,7 @@ public void setItems (String[] strings) {
 public void setMinimumWidth (int width) {
 	if (width < 0)
 		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-		
+
 	minimumWidth = width;
 }
 }

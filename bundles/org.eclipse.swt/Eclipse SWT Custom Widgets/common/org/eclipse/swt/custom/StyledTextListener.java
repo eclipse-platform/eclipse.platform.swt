@@ -27,23 +27,23 @@ StyledTextListener(SWTEventListener listener) {
  */
 @Override
 public void handleEvent(Event e) {
-	
+
 	switch (e.type) {
 		case ST.ExtendedModify:
 			ExtendedModifyEvent extendedModifyEvent = new ExtendedModifyEvent((StyledTextEvent) e);
 			((ExtendedModifyListener) eventListener).modifyText(extendedModifyEvent);
-			break;		
+			break;
 		case ST.LineGetBackground:
 			LineBackgroundEvent lineBgEvent = new LineBackgroundEvent((StyledTextEvent) e);
 			((LineBackgroundListener) eventListener).lineGetBackground(lineBgEvent);
 			((StyledTextEvent) e).lineBackground = lineBgEvent.lineBackground;
-			break;		
+			break;
 		case ST.LineGetSegments:
 			BidiSegmentEvent segmentEvent = new BidiSegmentEvent((StyledTextEvent) e);
 			((BidiSegmentListener) eventListener).lineGetSegments(segmentEvent);
 			((StyledTextEvent) e).segments = segmentEvent.segments;
 			((StyledTextEvent) e).segmentsChars = segmentEvent.segmentsChars;
-			break;		
+			break;
 		case ST.LineGetStyle:
 			LineStyleEvent lineStyleEvent = new LineStyleEvent((StyledTextEvent) e);
 			((LineStyleListener) eventListener).lineGetStyle(lineStyleEvent);
@@ -60,7 +60,7 @@ public void handleEvent(Event e) {
 		case ST.PaintObject:
 			PaintObjectEvent paintObjectEvent = new PaintObjectEvent((StyledTextEvent) e);
 			((PaintObjectListener) eventListener).paintObject(paintObjectEvent);
-			break;			
+			break;
 		case ST.VerifyKey:
 			VerifyEvent verifyEvent = new VerifyEvent(e);
 			((VerifyKeyListener) eventListener).verifyKey(verifyEvent);

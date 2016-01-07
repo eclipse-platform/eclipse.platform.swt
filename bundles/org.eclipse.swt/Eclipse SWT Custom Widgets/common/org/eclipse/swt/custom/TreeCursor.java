@@ -23,14 +23,14 @@ import org.eclipse.swt.widgets.*;
  * <p>
  * For a detailed example of using a TreeCursor to navigate to a cell and then edit it see
  * http://git.eclipse.org/c/platform/eclipse.platform.swt.git/tree/examples/org.eclipse.swt.snippets/src/org/eclipse/swt/snippets/Snippet360.java .
- * 
+ *
  * <dl>
  * <dt><b>Styles:</b></dt>
  * <dd>BORDER</dd>
  * <dt><b>Events:</b></dt>
  * <dd>Selection, DefaultSelection</dd>
  * </dl>
- * 
+ *
  * @since 3.8
  */
 public class TreeCursor extends Canvas {
@@ -41,7 +41,7 @@ public class TreeCursor extends Canvas {
 
 	Color background = null;
 	Color foreground = null;
-	
+
 	/* By default, invert the list selection colors */
 	static final int BACKGROUND = SWT.COLOR_LIST_SELECTION_TEXT;
 	static final int FOREGROUND = SWT.COLOR_LIST_SELECTION;
@@ -56,10 +56,10 @@ public class TreeCursor extends Canvas {
  * <code>SWT</code> style constants. The class description lists the style constants that are
  * applicable to the class. Style bits are also inherited from superclasses.
  * </p>
- * 
+ *
  * @param parent a Tree control which will be the parent of the new instance (cannot be null)
  * @param style the style of control to construct
- * 
+ *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the parent is null</li>
  * </ul>
@@ -67,7 +67,7 @@ public class TreeCursor extends Canvas {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the parent</li>
  *    <li>ERROR_INVALID_SUBCLASS - if this class is not an allowed subclass</li>
  * </ul>
- * 
+ *
  * @see SWT#BORDER
  * @see Widget#checkSubclass()
  * @see Widget#getStyle()
@@ -156,7 +156,7 @@ public TreeCursor(Tree parent, int style) {
 	tree.addListener(SWT.Expand, treeListener);
 	tree.addListener(SWT.FocusIn, treeListener);
 	tree.addListener(SWT.MouseDown, treeListener);
-	
+
 	disposeItemListener = new Listener() {
 		public void handleEvent(Event event) {
 			TreeItem currentItem = row;
@@ -234,7 +234,7 @@ public TreeCursor(Tree parent, int style) {
 	if (vBar != null) {
 		vBar.addListener(SWT.Selection, resizeListener);
 	}
-	
+
 	getAccessible().addAccessibleControlListener(new AccessibleControlAdapter() {
 		@Override
 		public void getRole(AccessibleControlEvent e) {
@@ -261,9 +261,9 @@ public TreeCursor(Tree parent, int style) {
  * object detail field contains the value <code>SWT.CHECK</code>.
  * <code>widgetDefaultSelected</code> is typically called when an item is double-clicked.
  * </p>
- * 
+ *
  * @param listener the listener which should be notified
- * 
+ *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
  * </ul>
@@ -271,7 +271,7 @@ public TreeCursor(Tree parent, int style) {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @see SelectionListener
  * @see SelectionEvent
  * @see #removeSelectionListener(SelectionListener)
@@ -352,9 +352,9 @@ TreeItem findItem(TreeItem[] items, Point pt) {
 		} else {
 			bounds = items[end].getBounds();
 		}
-		return bounds.contains(pt) ? items[end] : null;		
+		return bounds.contains(pt) ? items[end] : null;
 	}
-	
+
 	Rectangle startBounds = items[start].getBounds();
 	if (startBounds.y + startBounds.height < pt.y) {
 		return findItem(items[start].getItems(), pt);
@@ -388,9 +388,9 @@ public Color getBackground() {
 
 /**
  * Returns the index of the column over which the TreeCursor is positioned.
- * 
+ *
  * @return the column index for the current position
- * 
+ *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
@@ -443,7 +443,7 @@ TreeItem getNextItem(TreeItem item) {
 	int index = tree.indexOf(item);
 	if (index == -1) return null;
 	if (index == tree.getItemCount() - 1) return null;
-	return tree.getItem(index + 1);	
+	return tree.getItem(index + 1);
 }
 
 TreeItem getPreviousItem(TreeItem item) {
@@ -470,9 +470,9 @@ TreeItem getPreviousItem(TreeItem item) {
 
 /**
  * Returns the row over which the TreeCursor is positioned.
- * 
+ *
  * @return the item for the current position, or <code>null</code> if none
- * 
+ *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
@@ -629,7 +629,7 @@ void paint(Event event) {
 	String platform = SWT.getPlatform();
 	if (image != null) {
 		if ("win32".equals(platform)) { //$NON-NLS-1$
-			if (orderedIndex > 0) { 
+			if (orderedIndex > 0) {
 				x += 2;
 			}
 		} else {
@@ -697,9 +697,9 @@ void paint(Event event) {
 /**
  * Removes the listener from the collection of listeners who will be notified when the
  * receiver's selection changes.
- * 
+ *
  * @param listener the listener which should no longer be notified
- * 
+ *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
  * </ul>
@@ -707,7 +707,7 @@ void paint(Event event) {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @see SelectionListener
  * @see #addSelectionListener(SelectionListener)
  */
@@ -738,7 +738,7 @@ void _resize() {
  * @param color the new color (or null)
  *
  * @exception IllegalArgumentException <ul>
- *    <li>ERROR_INVALID_ARGUMENT - if the argument has been disposed</li> 
+ *    <li>ERROR_INVALID_ARGUMENT - if the argument has been disposed</li>
  * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -761,7 +761,7 @@ public void setBackground (Color color) {
  * @param color the new color (or null)
  *
  * @exception IllegalArgumentException <ul>
- *    <li>ERROR_INVALID_ARGUMENT - if the argument has been disposed</li> 
+ *    <li>ERROR_INVALID_ARGUMENT - if the argument has been disposed</li>
  * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -822,10 +822,10 @@ void setRowColumn(TreeItem row, TreeColumn column, boolean notify) {
 
 /**
  * Positions the TreeCursor over the root-level cell at the given row and column in the parent tree.
- * 
+ *
  * @param row the index of the root-level row for the cell to select
  * @param column the index of column for the cell to select
- * 
+ *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
@@ -843,10 +843,10 @@ public void setSelection(int row, int column) {
 
 /**
  * Positions the TreeCursor over the cell at the given row and column in the parent tree.
- * 
+ *
  * @param row the TreeItem of the row for the cell to select
  * @param column the index of column for the cell to select
- * 
+ *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
@@ -883,7 +883,7 @@ void treeCollapse(Event event) {
 		}
 		parentItem = parentItem.getParentItem();
 	}
-	
+
 	getDisplay().asyncExec(new Runnable() {
 		public void run() {
 			if (isDisposed()) return;

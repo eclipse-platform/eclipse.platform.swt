@@ -12,14 +12,14 @@ package org.eclipse.swt.custom;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.widgets.*; 
+import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.events.*;
 
 /**
  * A control for showing progress feedback for a long running operation.
  *
  * @deprecated As of Eclipse 2.1, use ProgressBar with the style SWT.INDETERMINATE
- * 
+ *
  * <dl>
  * <dt><b>Styles:</b><dd>VERTICAL, HORIZONTAL, BORDER
  * </dl>
@@ -44,7 +44,7 @@ public class AnimatedProgress extends Canvas {
  * <p>
  * The style value is either one of the style constants defined in
  * class <code>SWT</code> which is applicable to instances of this
- * class, or must be built by <em>bitwise OR</em>'ing together 
+ * class, or must be built by <em>bitwise OR</em>'ing together
  * (that is, using the <code>int</code> "|" operator) two or more
  * of those <code>SWT</code> style constants. The class description
  * lists the style constants that are applicable to the class.
@@ -68,18 +68,18 @@ public class AnimatedProgress extends Canvas {
  */
 public AnimatedProgress(Composite parent, int style) {
 	super(parent, checkStyle(style));
-	
+
 	if ((style & SWT.VERTICAL) != 0) {
 		orientation = SWT.VERTICAL;
 	}
 	showBorder = (style & SWT.BORDER) != 0;
-	
+
 	addControlListener(new ControlAdapter() {
 		@Override
 		public void controlResized(ControlEvent e) {
 			redraw();
 		}
-	});	
+	});
 	addPaintListener(new PaintListener() {
 		public void paintControl(PaintEvent e) {
 			paint(e);
@@ -96,9 +96,9 @@ private static int checkStyle (int style) {
 	return style & mask;
 }
 /**
- * Stop the animation if it is not already stopped and 
+ * Stop the animation if it is not already stopped and
  * reset the presentation to a blank appearance.
- * 
+ *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
@@ -121,14 +121,14 @@ public Point computeSize(int wHint, int hHint, boolean changed) {
 	}
 	if (wHint != SWT.DEFAULT) size.x = wHint;
 	if (hHint != SWT.DEFAULT) size.y = hHint;
-	
+
 	return size;
 }
 private void drawBevelRect(GC gc, int x, int y, int w, int h, Color topleft, Color bottomright) {
 	gc.setForeground(topleft);
 	gc.drawLine(x, y, x+w-1, y);
 	gc.drawLine(x, y, x, y+h-1);
-		
+
 	gc.setForeground(bottomright);
 	gc.drawLine(x+w, y, x+w, y+h);
 	gc.drawLine(x, y+h, x+w, y+h);
@@ -136,7 +136,7 @@ private void drawBevelRect(GC gc, int x, int y, int w, int h, Color topleft, Col
 void paint(PaintEvent event) {
 	GC gc = event.gc;
 	Display disp= getDisplay();
-			
+
 	Rectangle rect= getClientArea();
 	gc.fillRectangle(rect);
 	if (showBorder) {
@@ -144,13 +144,13 @@ void paint(PaintEvent event) {
 			disp.getSystemColor(SWT.COLOR_WIDGET_NORMAL_SHADOW),
 			disp.getSystemColor(SWT.COLOR_WIDGET_HIGHLIGHT_SHADOW));
 	}
-	
+
 	paintStripes(gc);
-}	
+}
 void paintStripes(GC gc) {
-	
+
 	if (!showStripes) return;
-	
+
 	Rectangle rect= getClientArea();
 	// Subtracted border painted by paint.
 	rect = new Rectangle(rect.x+2, rect.y+2, rect.width-4, rect.height-4);
@@ -181,14 +181,14 @@ void paintStripes(GC gc) {
 			gc.drawLine(x, y, w, y);
 		}
 	}
-	
+
 	if (active) {
 		value = (value + 2) % step;
 	}
 }
 /**
 * Start the animation.
-* 
+*
 * @exception SWTException <ul>
 *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
 *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
@@ -200,13 +200,13 @@ public synchronized void start() {
 
 	active = true;
 	showStripes = true;
-	
+
 	final Display display = getDisplay();
 	final Runnable [] timer = new Runnable [1];
 	timer [0] = new Runnable () {
 		public void run () {
 			if (!active) return;
-			GC gc = new GC(AnimatedProgress.this);			
+			GC gc = new GC(AnimatedProgress.this);
 			paintStripes(gc);
 			gc.dispose();
 			display.timerExec (SLEEP, timer [0]);

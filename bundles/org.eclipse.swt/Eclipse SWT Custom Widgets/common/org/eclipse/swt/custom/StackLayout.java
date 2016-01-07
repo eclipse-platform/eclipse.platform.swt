@@ -19,18 +19,18 @@ import org.eclipse.swt.widgets.*;
  * This Layout stacks all the controls one on top of the other and resizes all controls
  * to have the same size and location.
  * The control specified in topControl is visible and all other controls are not visible.
- * Users must set the topControl value to flip between the visible items and then call 
+ * Users must set the topControl value to flip between the visible items and then call
  * layout() on the composite which has the StackLayout.
- * 
- * <p> Here is an example which places ten buttons in a stack layout and 
+ *
+ * <p> Here is an example which places ten buttons in a stack layout and
  * flips between them:
- * 
+ *
  * <pre><code>
  * 	public static void main(String[] args) {
  * 		Display display = new Display();
  * 		Shell shell = new Shell(display);
  * 		shell.setLayout(new GridLayout());
- * 	
+ *
  * 		final Composite parent = new Composite(shell, SWT.NONE);
  * 		parent.setLayoutData(new GridData(GridData.FILL_BOTH));
  * 		final StackLayout layout = new StackLayout();
@@ -41,7 +41,7 @@ import org.eclipse.swt.widgets.*;
  * 			bArray[i].setText("Button "+i);
  * 		}
  * 		layout.topControl = bArray[0];
- * 	
+ *
  * 		Button b = new Button(shell, SWT.PUSH);
  * 		b.setText("Show Next Button");
  * 		final int[] index = new int[1];
@@ -52,12 +52,12 @@ import org.eclipse.swt.widgets.*;
  * 				parent.layout();
  * 			}
  * 		});
- * 	
+ *
  * 		shell.open();
  * 		while (shell != null && !shell.isDisposed()) {
  * 			if (!display.readAndDispatch())
- * 				display.sleep(); 
- * 		} 	
+ * 				display.sleep();
+ * 		}
  * 	}
  * </code></pre>
  *
@@ -67,7 +67,7 @@ import org.eclipse.swt.widgets.*;
  */
 
 public class StackLayout extends Layout {
-	
+
  	/**
 	 * marginWidth specifies the number of pixels of horizontal margin
 	 * that will be placed along the left and right edges of the layout.

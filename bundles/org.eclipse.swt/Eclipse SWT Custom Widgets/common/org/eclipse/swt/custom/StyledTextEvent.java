@@ -15,7 +15,7 @@ import org.eclipse.swt.widgets.*;
 
 /**
  *
- */ 
+ */
 class StyledTextEvent extends Event {
 	// used by LineStyleEvent
 	int[] ranges;
@@ -30,8 +30,8 @@ class StyledTextEvent extends Event {
 	// used by LineBackgroundEvent
 	Color lineBackground;
 	// used by TextChangedEvent
-	int replaceCharCount; 	
-	int newCharCount; 
+	int replaceCharCount;
+	int newCharCount;
 	int replaceLineCount;
 	int newLineCount;
 	// used by PaintObjectEvent
@@ -43,7 +43,7 @@ class StyledTextEvent extends Event {
 
 StyledTextEvent (StyledTextContent content) {
 	super();
-	data = content;	
+	data = content;
 }
 }
 

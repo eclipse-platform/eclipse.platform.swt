@@ -18,27 +18,27 @@ import org.eclipse.swt.events.*;
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  */
 public class LineStyleEvent extends TypedEvent {
-	
+
 	/**
 	 * line start offset (input)
 	 */
 	public int lineOffset;
-	
+
 	/**
 	 * line text (input)
 	 */
 	public String lineText;
-	
+
 	/**
 	 * line ranges (output)
-	 * 
+	 *
 	 * @since 3.2
 	 */
 	public int[] ranges;
-	
+
 	/**
 	 * line styles (output)
-	 * 
+	 *
 	 * Note: Because a StyleRange includes the start and length, the
 	 * same instance cannot occur multiple times in the array of styles.
 	 * If the same style attributes, such as font and color, occur in
@@ -47,30 +47,30 @@ public class LineStyleEvent extends TypedEvent {
 	 */
 	public StyleRange[] styles;
 
-	/** 
+	/**
 	 * line alignment (input, output)
-	 * 
+	 *
 	 * @since 3.2
 	 */
 	public int alignment;
 
 	/**
 	 * line indent (input, output)
-	 * 
+	 *
 	 * @since 3.2
 	 */
 	public int indent;
 
 	/**
 	 * line wrap indent (input, output)
-	 * 
+	 *
 	 * @since 3.6
 	 */
 	public int wrapIndent;
 
-	/** 
+	/**
 	 * line justification (input, output)
-	 * 
+	 *
 	 * @since 3.2
 	 */
 	public boolean justify;
@@ -93,7 +93,7 @@ public class LineStyleEvent extends TypedEvent {
 	 */
 	public int[] tabStops;
 
-	
+
 	static final long serialVersionUID = 3906081274027192884L;
 
 /**

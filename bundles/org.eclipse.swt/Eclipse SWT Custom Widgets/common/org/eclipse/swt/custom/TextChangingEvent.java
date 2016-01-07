@@ -47,13 +47,13 @@ public class TextChangingEvent extends TypedEvent {
 	public int newLineCount;
 
 	static final long serialVersionUID = 3257290210114352439L;
-	
+
 /**
  * Create the TextChangedEvent to be used by the StyledTextContent implementor.
  * <p>
  *
- * @param source the object that will be sending the new TextChangingEvent, 
- * 	cannot be null	
+ * @param source the object that will be sending the new TextChangingEvent,
+ * 	cannot be null
  */
 public TextChangingEvent(StyledTextContent source) {
 	super(source);
