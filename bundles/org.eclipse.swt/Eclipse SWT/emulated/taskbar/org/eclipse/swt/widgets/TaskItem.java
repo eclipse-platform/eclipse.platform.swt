@@ -16,7 +16,7 @@ import org.eclipse.swt.graphics.*;
 
 /**
  * Instances of this class represent a task item.
- * 
+ *
  * <dl>
  * <dt><b>Styles:</b></dt>
  * <dd>(none)</dd>
@@ -25,9 +25,9 @@ import org.eclipse.swt.graphics.*;
  * </dl>
  *
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
- * 
+ *
  * @since 3.6
- * 
+ *
  * @noextend This class is not intended to be subclassed by clients.
  */
 public class TaskItem extends Item {
@@ -47,7 +47,7 @@ public class TaskItem extends Item {
  * <p>
  * The style value is either one of the style constants defined in
  * class <code>SWT</code> which is applicable to instances of this
- * class, or must be built by <em>bitwise OR</em>'ing together 
+ * class, or must be built by <em>bitwise OR</em>'ing together
  * (that is, using the <code>int</code> "|" operator) two or more
  * of those <code>SWT</code> style constants. The class description
  * lists the style constants that are applicable to the class.
@@ -100,7 +100,7 @@ void destroyWidget () {
 public Menu getMenu () {
 	checkWidget ();
 	return menu;
-} 
+}
 
 /**
  * Returns the receiver's overlay image if it has one, or null
@@ -143,7 +143,7 @@ public String getOverlayText () {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  */
 public TaskBar getParent () {
 	checkWidget ();
@@ -196,7 +196,7 @@ void releaseWidget () {
 /**
  * Sets the receiver's pop up menu to the argument. The way the menu is
  * shown is platform specific.
- * 
+ *
  * <p>
  * This feature might not be available for the receiver on all
  * platforms. The application code can check if it is supported
@@ -211,13 +211,13 @@ void releaseWidget () {
  * <p>
  * The menu should be fully created before this method is called.
  * Dynamic changes to the menu after the method is called will not be reflected
- * in the native menu.</p> 
+ * in the native menu.</p>
  *
  * @param menu the new pop up menu
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_MENU_NOT_POP_UP - the menu is not a pop up menu</li>
- *    <li>ERROR_INVALID_ARGUMENT - if the menu has been disposed</li> 
+ *    <li>ERROR_INVALID_ARGUMENT - if the menu has been disposed</li>
  * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -238,7 +238,7 @@ public void setMenu (Menu menu) {
 /**
  * Sets the receiver's overlay image, which may be null
  * indicating that no image should be displayed. The bounds
- * for the overlay image is determined by the platform and in 
+ * for the overlay image is determined by the platform and in
  * general it should be a small image.
  *
  * <p>
@@ -249,13 +249,13 @@ public void setMenu (Menu menu) {
  *
  * <p>
  * For better cross platform support, the application code should
- * first try to set this feature on the <code>TaskItem</code> for the 
+ * first try to set this feature on the <code>TaskItem</code> for the
  * main shell then on the <code>TaskItem</code> for the application.</p>
  *
  * @param overlayImage the new overlay image (may be null)
  *
  * @exception IllegalArgumentException <ul>
- *    <li>ERROR_INVALID_ARGUMENT - if the overlayImage has been disposed</li> 
+ *    <li>ERROR_INVALID_ARGUMENT - if the overlayImage has been disposed</li>
  * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -281,7 +281,7 @@ public void setOverlayImage (Image overlayImage) {
  *
  * <p>
  * For better cross platform support, the application code should
- * first try to set this feature on the <code>TaskItem</code> for the 
+ * first try to set this feature on the <code>TaskItem</code> for the
  * main shell then on the <code>TaskItem</code> for the application.</p>
  *
  * @param overlayText the new overlay text
@@ -310,8 +310,8 @@ public void setOverlayText (String overlayText) {
  * <li>{@link SWT#ERROR}</li>
  * <li>{@link SWT#INDETERMINATE}</li>
  * </ul></p>
- * 
- * The percentage of progress shown by the states <code>SWT#NORMAL</code>, <code>SWT#PAUSED</code>, 
+ *
+ * The percentage of progress shown by the states <code>SWT#NORMAL</code>, <code>SWT#PAUSED</code>,
  * <code>SWT#ERROR</code> is set with <code>setProgress()</code>. <br>
  * The state <code>SWT#DEFAULT</code> indicates that no progress should be shown.
  *
@@ -323,16 +323,16 @@ public void setOverlayText (String overlayText) {
  *
  * <p>
  * For better cross platform support, the application code should
- * first try to set this feature on the <code>TaskItem</code> for the 
+ * first try to set this feature on the <code>TaskItem</code> for the
  * main shell then on the <code>TaskItem</code> for the application.</p>
  *
- * @param progressState the new progress state 
+ * @param progressState the new progress state
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * #see {@link #setProgress(int)}
  */
 public void setProgressState (int progressState) {
@@ -354,7 +354,7 @@ public void setProgressState (int progressState) {
  *
  * <p>
  * For better cross platform support, the application code should
- * first try to set this feature on the <code>TaskItem</code> for the 
+ * first try to set this feature on the <code>TaskItem</code> for the
  * main shell then on the <code>TaskItem</code> for the application.</p>
  *
  * @param progress the new progress
@@ -363,7 +363,7 @@ public void setProgressState (int progressState) {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * #see {@link #setProgressState(int)}
  */
 public void setProgress (int progress) {

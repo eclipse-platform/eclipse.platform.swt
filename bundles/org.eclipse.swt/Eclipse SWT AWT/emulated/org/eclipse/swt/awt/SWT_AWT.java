@@ -24,34 +24,34 @@ import org.eclipse.swt.widgets.Shell;
  *
  * @see <a href="http://www.eclipse.org/swt/snippets/#awt">Swing/AWT snippets</a>
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
- * 
+ *
  * @since 3.0
  */
 public class SWT_AWT {
 
 	/**
 	 * The name of the embedded Frame class. The default class name
-	 * for the platform will be used if <code>null</code>. 
+	 * for the platform will be used if <code>null</code>.
 	 */
 	public static String embeddedFrameClass;
 
 	/**
 	 * Key for looking up the embedded frame for a Composite using
-	 * getData(). 
+	 * getData().
 	 */
 	static String EMBEDDED_FRAME_KEY = "org.eclipse.swt.awt.SWT_AWT.embeddedFrame";
 
 /**
  * Returns a <code>java.awt.Frame</code> which is the embedded frame
  * associated with the specified composite.
- * 
+ *
  * @param parent the parent <code>Composite</code> of the <code>java.awt.Frame</code>
  * @return a <code>java.awt.Frame</code> the embedded frame or <code>null</code>.
- * 
+ *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the parent is null</li>
  * </ul>
- * 
+ *
  * @since 3.2
  */
 public static Frame getFrame (Composite parent) {
@@ -72,15 +72,15 @@ public static Frame getFrame (Composite parent) {
  * strongly recommended that a heavyweight component such as <code>java.awt.Panel</code>
  * be added to the frame as the root of all components.
  * </p>
- * 
+ *
  * @param parent the parent <code>Composite</code> of the new <code>java.awt.Frame</code>
  * @return a <code>java.awt.Frame</code> to be the parent of the embedded AWT components
- * 
+ *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the parent is null</li>
- *    <li>ERROR_INVALID_ARGUMENT - if the parent Composite does not have the SWT.EMBEDDED style</li> 
+ *    <li>ERROR_INVALID_ARGUMENT - if the parent Composite does not have the SWT.EMBEDDED style</li>
  * </ul>
- * 
+ *
  * @since 3.0
  */
 public static Frame new_Frame (final Composite parent) {
@@ -94,18 +94,18 @@ public static Frame new_Frame (final Composite parent) {
 
 /**
  * Creates a new <code>Shell</code>. This Shell is the root for
- * the SWT widgets that will be embedded within the AWT canvas. 
- * 
+ * the SWT widgets that will be embedded within the AWT canvas.
+ *
  * @param display the display for the new Shell
  * @param parent the parent <code>java.awt.Canvas</code> of the new Shell
  * @return a <code>Shell</code> to be the parent of the embedded SWT widgets
- * 
+ *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the display is null</li>
  *    <li>ERROR_NULL_ARGUMENT - if the parent is null</li>
  *    <li>ERROR_INVALID_ARGUMENT - if the parent's peer is not created</li>
  * </ul>
- * 
+ *
  * @since 3.0
  */
 public static Shell new_Shell (final Display display, final Canvas parent) {

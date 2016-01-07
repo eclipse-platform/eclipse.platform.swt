@@ -83,7 +83,7 @@ public static Program [] getPrograms () {
  *
  * @param fileName the file or program name or URL (http:// or https://)
  * @return <code>true</code> if the file is launched, otherwise <code>false</code>
- * 
+ *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT when fileName is null</li>
  * </ul>
@@ -104,11 +104,11 @@ public static boolean launch (String fileName) {
  * @param fileName the file name or program name or URL (http:// or https://)
  * @param workingDir the name of the working directory or null
  * @return <code>true</code> if the file is launched, otherwise <code>false</code>
- * 
+ *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT when fileName is null</li>
  * </ul>
- * 
+ *
  * @since 3.6
  */
 public static boolean launch (String fileName, String workingDir) {
@@ -119,12 +119,12 @@ public static boolean launch (String fileName, String workingDir) {
 /**
  * Executes the program with the file as the single argument
  * in the operating system.  It is the responsibility of the
- * programmer to ensure that the file contains valid data for 
+ * programmer to ensure that the file contains valid data for
  * this program.
  *
  * @param fileName the file or program name
  * @return <code>true</code> if the file is launched, otherwise <code>false</code>
- * 
+ *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT when fileName is null</li>
  * </ul>
@@ -178,8 +178,8 @@ public boolean equals(Object other) {
 }
 
 /**
- * Returns an integer hash code for the receiver. Any two 
- * objects that return <code>true</code> when passed to 
+ * Returns an integer hash code for the receiver. Any two
+ * objects that return <code>true</code> when passed to
  * <code>equals</code> must return the same value for this
  * method.
  *

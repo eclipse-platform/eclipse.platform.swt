@@ -26,7 +26,7 @@ public class DrawData {
 	public static final int HOT = 1 << 6;
 	public static final int DEFAULTED = 1 << 7;
 	public static final int GRAYED = 1 << 8;
-	
+
 	/** Text and Image drawing flags */
 	public static final int DRAW_LEFT = 1 << 4;
 	public static final int DRAW_TOP = 1 << 5;
@@ -49,20 +49,20 @@ public class DrawData {
 	public static final int SCROLLBAR_LEFT_TRACK = SCROLLBAR_UP_TRACK;
 	public static final int SCROLLBAR_RIGHT_TRACK = SCROLLBAR_DOWN_TRACK;
 	public static final int SCROLLBAR_THUMB = 5;
-	
+
 	/** Scale parts */
 	public static final int SCALE_UP_TRACK = 1;
 	public static final int SCALE_LEFT_TRACK = SCALE_UP_TRACK;
 	public static final int SCALE_DOWN_TRACK = 2;
 	public static final int SCALE_RIGHT_TRACK = SCALE_DOWN_TRACK;
 	public static final int SCALE_THUMB = 3;
-	
+
 	/** ToolItem parts */
 	public static final int TOOLITEM_ARROW = 1;
-	
+
 	/** Combo parts */
 	public static final int COMBO_ARROW = 1;
-	
+
 
 public DrawData() {
 	state = new int[1];
@@ -72,7 +72,7 @@ Rectangle computeTrim(Theme theme, GC gc) {
 	return new Rectangle(clientArea.x, clientArea.y, clientArea.width, clientArea.height);
 }
 
-void draw(Theme theme, GC gc, Rectangle bounds) {	
+void draw(Theme theme, GC gc, Rectangle bounds) {
 }
 
 void drawImage(Theme theme, Image image, GC gc, Rectangle bounds) {

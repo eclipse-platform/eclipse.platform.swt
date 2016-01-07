@@ -15,12 +15,12 @@ package org.eclipse.swt.effects;
  */
 public class Effect {
 	public int handle;
-	
+
 	public Effect() {
 	}
 
 	public void dispose() {
-	}	
+	}
 
 	public boolean isDisposed() {
 		return handle == 0;

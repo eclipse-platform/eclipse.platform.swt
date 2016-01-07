@@ -17,7 +17,7 @@ import org.eclipse.swt.widgets.Control;
 /*
  * Wraps Win32 API used to bidi enable widgets. Up to 3.104 was used by
  * StyledText widget exclusively. 3.105 release introduced the method
- * #resolveTextDirection, which is used by other widgets as well. 
+ * #resolveTextDirection, which is used by other widgets as well.
  */
 public class BidiUtil {
 	// Keyboard language types
@@ -30,13 +30,13 @@ public class BidiUtil {
 	public static final int LINKBEFORE = 2;
 	public static final int LINKAFTER = 4;
 
-	// bidi rendering/ordering constants, not used on 
+	// bidi rendering/ordering constants, not used on
 	// emulated platforms
 	public static final int CLASS_HEBREW = 2;
 	public static final int CLASS_ARABIC = 2;
 	public static final int CLASS_LOCALNUMBER = 4;
-	public static final int CLASS_LATINNUMBER = 5;	
-	public static final int REORDER = 0;				
+	public static final int CLASS_LATINNUMBER = 5;
+	public static final int REORDER = 0;
 	public static final int LIGATE = 0;
 	public static final int GLYPHSHAPE = 0;
 
@@ -70,7 +70,7 @@ public static boolean isKeyboardBidi() {
  * Not implemented.
  */
 public static int getFontBidiAttributes(GC gc) {
-	return 0;	
+	return 0;
 }
 /*
  *  Not implemented.
@@ -95,7 +95,7 @@ public static int getKeyboardLanguage() {
  * Not implemented.
  */
 public static void removeLanguageListener(long /*int*/ hwnd) {
-}	
+}
 public static void removeLanguageListener (Control control) {
 }
 /*

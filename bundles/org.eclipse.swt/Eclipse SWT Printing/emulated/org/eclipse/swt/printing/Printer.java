@@ -26,7 +26,7 @@ import org.eclipse.swt.graphics.*;
  * Alternatively, calling <code>new Printer()</code> will construct a
  * printer object for the user's default printer.
  * </p><p>
- * Application code must explicitly invoke the <code>Printer.dispose()</code> 
+ * Application code must explicitly invoke the <code>Printer.dispose()</code>
  * method to release the operating system resources managed by each instance
  * when those instances are no longer required.
  * </p>
@@ -53,11 +53,11 @@ public static PrinterData[] getPrinterList() {
 
 /**
  * Returns a <code>PrinterData</code> object representing
- * the default printer or <code>null</code> if there is no 
+ * the default printer or <code>null</code> if there is no
  * default printer.
  *
  * @return the default printer data or null
- * 
+ *
  * @since 2.1
  */
 public static PrinterData getDefaultPrinterData() {
@@ -70,7 +70,7 @@ static DeviceData checkNull (PrinterData data) {
 		PrinterData defaultPrinter = getDefaultPrinterData();
 		if (defaultPrinter == null) SWT.error(SWT.ERROR_NO_HANDLES);
 		data.driver = defaultPrinter.driver;
-		data.name = defaultPrinter.name;		
+		data.name = defaultPrinter.name;
 	}
 	return data;
 }
@@ -78,7 +78,7 @@ static DeviceData checkNull (PrinterData data) {
 /**
  * Constructs a new printer representing the default printer.
  * <p>
- * Note: You must dispose the printer when it is no longer required. 
+ * Note: You must dispose the printer when it is no longer required.
  * </p>
  *
  * @exception SWTError <ul>
@@ -96,7 +96,7 @@ public Printer() {
  * object representing the desired printer. If the argument
  * is null, then the default printer will be used.
  * <p>
- * Note: You must dispose the printer when it is no longer required. 
+ * Note: You must dispose the printer when it is no longer required.
  * </p>
  *
  * @param data the printer data for the specified printer, or null to use the default printer
@@ -116,7 +116,7 @@ public Printer(PrinterData data) {
 }
 
 
-/**	 
+/**
  * Invokes platform specific functionality to allocate a new GC handle.
  * <p>
  * <b>IMPORTANT:</b> This method is <em>not</em> part of the public
@@ -126,16 +126,16 @@ public Printer(PrinterData data) {
  * application code.
  * </p>
  *
- * @param data the platform specific GC data 
+ * @param data the platform specific GC data
  * @return the platform specific GC handle
- * 
+ *
  * @noreference This method is not intended to be referenced by clients.
  */
 public int internal_new_GC(GCData data) {
 	return 0;
 }
 
-/**	 
+/**
  * Invokes platform specific functionality to dispose a GC handle.
  * <p>
  * <b>IMPORTANT:</b> This method is <em>not</em> part of the public
@@ -146,8 +146,8 @@ public int internal_new_GC(GCData data) {
  * </p>
  *
  * @param hDC the platform specific GC handle
- * @param data the platform specific GC data 
- * 
+ * @param data the platform specific GC data
+ *
  * @noreference This method is not intended to be referenced by clients.
  */
 public void internal_dispose_GC(int xGC, GCData data) {
@@ -162,7 +162,7 @@ public void internal_dispose_GC(int xGC, GCData data) {
  * endJob. Calling startPage, endPage, or endJob before startJob
  * will result in undefined behavior.
  * </p>
- * 
+ *
  * @param jobName the name of the print job to start
  * @return true if the job started successfully and false otherwise.
  *
@@ -195,7 +195,7 @@ public void endJob() {
 }
 
 /**
- * Cancels a print job in progress. 
+ * Cancels a print job in progress.
  *
  * @exception SWTException <ul>
  *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
@@ -212,7 +212,7 @@ public void cancelJob() {
  * After calling startJob, this method may be called any number of times
  * along with a matching endPage.
  * </p>
- * 
+ *
  * @return true if the page started successfully and false otherwise.
  *
  * @exception SWTException <ul>
@@ -286,7 +286,7 @@ public Rectangle getBounds() {
  * For a printer, this is the size of the printable area
  * of the page, in pixels.
  * </p>
- * 
+ *
  * @return the client area
  *
  * @exception SWTException <ul>
@@ -321,7 +321,7 @@ public Rectangle getClientArea() {
  * 		<li>The bottom trim height is (y + height) pixels</li>
  * </ul>
  * </p>
- * 
+ *
  * @param x the x coordinate of the client area
  * @param y the y coordinate of the client area
  * @param width the width of the client area
@@ -343,7 +343,7 @@ public Rectangle computeTrim(int x, int y, int width, int height) {
 /**
  * Returns a <code>PrinterData</code> object representing the
  * target printer for this print job.
- * 
+ *
  * @return a PrinterData object describing the receiver
  */
 public PrinterData getPrinterData() {

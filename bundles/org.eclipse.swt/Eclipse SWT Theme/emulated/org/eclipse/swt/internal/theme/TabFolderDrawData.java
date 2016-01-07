@@ -20,7 +20,7 @@ public class TabFolderDrawData extends DrawData {
 	public int selectedX;
 	public int selectedWidth;
 	public int spacing;
-	
+
 public TabFolderDrawData() {
 	state = new int[1];
 	if (SWT.getPlatform().equals("gtk")) {

@@ -14,7 +14,7 @@ package org.eclipse.swt.widgets;
 import org.eclipse.swt.*;
 import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
- 
+
 /**
  * Instances of this class are selectable user interface
  * objects that represent the dynamically positionable
@@ -28,7 +28,7 @@ import org.eclipse.swt.graphics.*;
  * <p>
  * IMPORTANT: This class is <em>not</em> intended to be subclassed.
  * </p>
- * 
+ *
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  * @noextend This class is not intended to be subclassed by clients.
  */
@@ -38,20 +38,20 @@ public class CoolItem extends Item {
 	boolean ideal;
 	int preferredWidth, preferredHeight, minimumWidth, minimumHeight, requestedWidth;
 	Rectangle itemBounds = new Rectangle(0, 0, 0, 0);
-	
+
 	static final int MARGIN_WIDTH = 4;
 	static final int GRABBER_WIDTH = 2;
 	static final int MINIMUM_WIDTH = (2 * MARGIN_WIDTH) + GRABBER_WIDTH;
-	
+
 	private int CHEVRON_HORIZONTAL_TRIM = -1;			//platform dependent values
-	private int CHEVRON_VERTICAL_TRIM = -1;	
+	private int CHEVRON_VERTICAL_TRIM = -1;
 	private static final int CHEVRON_LEFT_MARGIN = 2;
 	private static final int CHEVRON_IMAGE_WIDTH = 8;	//Width to draw the double arrow
-	
+
 	ToolBar chevron;
 	boolean wrap;
 	Image arrowImage = null;
-	
+
 /**
  * Constructs a new instance of this class given its parent
  * (which must be a <code>CoolBar</code>) and a style value
@@ -60,7 +60,7 @@ public class CoolItem extends Item {
  * <p>
  * The style value is either one of the style constants defined in
  * class <code>SWT</code> which is applicable to instances of this
- * class, or must be built by <em>bitwise OR</em>'ing together 
+ * class, or must be built by <em>bitwise OR</em>'ing together
  * (that is, using the <code>int</code> "|" operator) two or more
  * of those <code>SWT</code> style constants. The class description
  * lists the style constants that are applicable to the class.
@@ -96,7 +96,7 @@ public CoolItem (CoolBar parent, int style) {
  * <p>
  * The style value is either one of the style constants defined in
  * class <code>SWT</code> which is applicable to instances of this
- * class, or must be built by <em>bitwise OR</em>'ing together 
+ * class, or must be built by <em>bitwise OR</em>'ing together
  * (that is, using the <code>int</code> "|" operator) two or more
  * of those <code>SWT</code> style constants. The class description
  * lists the style constants that are applicable to the class.
@@ -153,7 +153,7 @@ public CoolItem (CoolBar parent, int style, int index) {
  * @see SelectionListener
  * @see #removeSelectionListener
  * @see SelectionEvent
- * 
+ *
  * @since 2.0
  */
 public void addSelectionListener(SelectionListener listener) {
@@ -167,7 +167,7 @@ public void addSelectionListener(SelectionListener listener) {
 protected void checkSubclass () {
 	if (!isValidSubclass ()) error (SWT.ERROR_INVALID_SUBCLASS);
 }
-/* 
+/*
  * Find the trim size of the Toolbar widget in the current platform.
  */
 void calculateChevronTrim () {
@@ -190,8 +190,8 @@ void calculateChevronTrim () {
  * it would best be displayed at. The width hint and height hint arguments
  * allow the caller to ask the instance questions such as "Given a particular
  * width, how high does it need to be to show all of the contents?"
- * To indicate that the caller does not wish to constrain a particular 
- * dimension, the constant <code>SWT.DEFAULT</code> is passed for the hint. 
+ * To indicate that the caller does not wish to constrain a particular
+ * dimension, the constant <code>SWT.DEFAULT</code> is passed for the hint.
  * </p>
  *
  * @param wHint the width hint (can be <code>SWT.DEFAULT</code>)
@@ -219,13 +219,13 @@ public Point computeSize (int wHint, int hHint) {
 		height += MINIMUM_WIDTH;
 	} else {
 		width += MINIMUM_WIDTH;
-	}	
+	}
 	return new Point (width, height);
 }
 @Override
 public void dispose () {
 	if (isDisposed()) return;
-	
+
 	/*
 	 * Must call parent.destroyItem() before super.dispose(), since it needs to
 	 * query the bounds to properly remove the item.
@@ -234,10 +234,10 @@ public void dispose () {
 	super.dispose ();
 	parent = null;
 	control = null;
-	
-	/* 
+
+	/*
 	 * Although the parent for the chevron is the CoolBar (CoolItem can not be the parent)
-	 * it has to be disposed with the item 
+	 * it has to be disposed with the item
 	 */
 	if (chevron != null && !chevron.isDisposed()) chevron.dispose();
 	chevron = null;
@@ -252,23 +252,23 @@ Image createArrowImage (int width, int height) {
 	Color foreground = parent.getForeground ();
 	Color black = display.getSystemColor (SWT.COLOR_BLACK);
 	Color background = parent.getBackground ();
-	
+
 	PaletteData palette = new PaletteData (new RGB[]{foreground.getRGB(), background.getRGB(), black.getRGB()});
 	ImageData imageData = new ImageData (width, height, 4, palette);
 	imageData.transparentPixel = 1;
 	Image image = new Image (display, imageData);
-		
+
 	GC gc = new GC (image, parent.getStyle() & SWT.RIGHT_TO_LEFT);
 	gc.setBackground (background);
 	gc.fillRectangle (0, 0, width, height);
 	gc.setForeground (black);
-	
+
 	int startX = 0 ;
 	if ((parent.style & SWT.VERTICAL) != 0) {
 		startX = width - CHEVRON_IMAGE_WIDTH;
 	}
-	int startY = height / 6; 
-	int step = 2;	
+	int startY = height / 6;
+	int step = 2;
 	gc.drawLine (startX, startY, startX + step, startY + step);
 	gc.drawLine (startX, startY + (2 * step), startX + step, startY + step);
 	startX++;
@@ -318,14 +318,14 @@ public Control getControl () {
 /**
  * Returns the minimum size that the cool item can
  * be resized to using the cool item's gripper.
- * 
+ *
  * @return a point containing the minimum width and height of the cool item, in pixels
- * 
+ *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 2.0
  */
 public Point getMinimumSize () {
@@ -419,7 +419,7 @@ void onSelection (Event ev) {
  *
  * @see SelectionListener
  * @see #addSelectionListener
- * 
+ *
  * @since 2.0
  */
 public void removeSelectionListener(SelectionListener listener) {
@@ -427,7 +427,7 @@ public void removeSelectionListener(SelectionListener listener) {
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (eventTable == null) return;
 	eventTable.unhook (SWT.Selection, listener);
-	eventTable.unhook (SWT.DefaultSelection,listener);	
+	eventTable.unhook (SWT.DefaultSelection,listener);
 }
 void setBounds (int x, int y, int width, int height) {
 	itemBounds.x = x;
@@ -454,7 +454,7 @@ void setBounds (int x, int y, int width, int height) {
  * @param control the new control that will be contained by the receiver
  *
  * @exception IllegalArgumentException <ul>
- *    <li>ERROR_INVALID_ARGUMENT - if the control has been disposed</li> 
+ *    <li>ERROR_INVALID_ARGUMENT - if the control has been disposed</li>
  *    <li>ERROR_INVALID_PARENT - if the control is not in the same widget tree</li>
  * </ul>
  * @exception SWTException <ul>
@@ -480,15 +480,15 @@ public void setControl (Control control) {
 /**
  * Sets the minimum size that the cool item can be resized to
  * using the cool item's gripper, to the point specified by the arguments.
- * 
+ *
  * @param width the minimum width of the cool item, in pixels
  * @param height the minimum height of the cool item, in pixels
- * 
+ *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 2.0
  */
 public void setMinimumSize (int width, int height) {
@@ -500,9 +500,9 @@ public void setMinimumSize (int width, int height) {
 /**
  * Sets the minimum size that the cool item can be resized to
  * using the cool item's gripper, to the point specified by the argument.
- * 
+ *
  * @param size a point representing the minimum width and height of the cool item, in pixels
- * 
+ *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the point is null</li>
  * </ul>
@@ -510,7 +510,7 @@ public void setMinimumSize (int width, int height) {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 2.0
  */
 public void setMinimumSize (Point size) {
@@ -634,9 +634,9 @@ void updateChevron() {
 			} else {
 				controlHeight = control.getSize ().y;
 				if (arrowImage != null) currentImageHeight = arrowImage.getBounds().height;
-			}			
+			}
 			int height = Math.min (controlHeight, itemBounds.height);
-			int imageHeight = Math.max(1, height - CHEVRON_VERTICAL_TRIM);			
+			int imageHeight = Math.max(1, height - CHEVRON_VERTICAL_TRIM);
 			if (currentImageHeight != imageHeight) {
 				Image image = createArrowImage (CHEVRON_IMAGE_WIDTH, imageHeight);
 				chevron.getItem (0).setImage (image);

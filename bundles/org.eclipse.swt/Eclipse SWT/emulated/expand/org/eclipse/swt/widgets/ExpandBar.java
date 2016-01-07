@@ -30,7 +30,7 @@ import org.eclipse.swt.events.*;
  * </p><p>
  * IMPORTANT: This class is <em>not</em> intended to be subclassed.
  * </p>
- * 
+ *
  * @see ExpandItem
  * @see ExpandEvent
  * @see ExpandListener
@@ -38,11 +38,11 @@ import org.eclipse.swt.events.*;
  * @see <a href="http://www.eclipse.org/swt/snippets/#expandbar">ExpandBar snippets</a>
  * @see <a href="http://www.eclipse.org/swt/examples.php">SWT Example: ControlExample</a>
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
- * 
+ *
  * @since 3.2
  * @noextend This class is not intended to be subclassed by clients.
  */
-public class ExpandBar extends Composite {	
+public class ExpandBar extends Composite {
 	ExpandItem [] items;
 	int itemCount;
 	ExpandItem focusItem;
@@ -52,14 +52,14 @@ public class ExpandBar extends Composite {
 	Color foreground;
 	Listener listener;
 	boolean inDispose;
-	
+
 /**
  * Constructs a new instance of this class given its parent
  * and a style value describing its behavior and appearance.
  * <p>
  * The style value is either one of the style constants defined in
  * class <code>SWT</code> which is applicable to instances of this
- * class, or must be built by <em>bitwise OR</em>'ing together 
+ * class, or must be built by <em>bitwise OR</em>'ing together
  * (that is, using the <code>int</code> "|" operator) two or more
  * of those <code>SWT</code> style constants. The class description
  * lists the style constants that are applicable to the class.
@@ -83,7 +83,7 @@ public class ExpandBar extends Composite {
  */
 public ExpandBar (Composite parent, int style) {
 	super (parent, checkStyle (style));
-	items = new ExpandItem [4];	
+	items = new ExpandItem [4];
 
 	listener = new Listener () {
 		public void handleEvent (Event event) {
@@ -109,7 +109,7 @@ public ExpandBar (Composite parent, int style) {
 	addListener (SWT.FocusIn, listener);
 	addListener (SWT.FocusOut, listener);
 	addListener (SWT.Traverse, listener);
-	
+
 	ScrollBar verticalBar = getVerticalBar ();
 	if (verticalBar != null) {
 		verticalBar.addListener (SWT.Selection, new Listener () {
@@ -169,7 +169,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 				height += item.getHeaderHeight ();
 				if (item.expanded) height += item.height;
 				height += spacing;
-				width = Math.max (width, item.getPreferredWidth (gc));			
+				width = Math.max (width, item.getPreferredWidth (gc));
 			}
 			gc.dispose ();
 		}
@@ -179,7 +179,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	if (wHint != SWT.DEFAULT) width = wHint;
 	if (hHint != SWT.DEFAULT) height = hHint;
 	Rectangle trim = computeTrim (0, 0, width, height);
-	return new Point (trim.width, trim.height);	
+	return new Point (trim.width, trim.height);
 }
 
 void createItem (ExpandItem item, int style, int index) {
@@ -255,7 +255,7 @@ public Color getForeground () {
  */
 public ExpandItem getItem (int index) {
 	checkWidget ();
-	if (!(0 <= index && index < itemCount)) error (SWT.ERROR_INVALID_RANGE);	
+	if (!(0 <= index && index < itemCount)) error (SWT.ERROR_INVALID_RANGE);
 	return items [index];
 }
 
@@ -276,11 +276,11 @@ public int getItemCount () {
 
 /**
  * Returns an array of <code>ExpandItem</code>s which are the items
- * in the receiver. 
+ * in the receiver.
  * <p>
  * Note: This is not the actual structure used by the receiver
  * to maintain its list of items, so modifying the array will
- * not affect the receiver. 
+ * not affect the receiver.
  * </p>
  *
  * @return the items in the receiver
@@ -314,7 +314,7 @@ public int getSpacing () {
 
 /**
  * Searches the receiver's list starting at the first item
- * (index 0) until an item is found that is equal to the 
+ * (index 0) until an item is found that is equal to the
  * argument, and returns the index of that item. If no item
  * is found, returns -1.
  *
@@ -379,7 +379,7 @@ public void removeExpandListener (ExpandListener listener) {
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (eventTable == null) return;
 	eventTable.unhook (SWT.Expand, listener);
-	eventTable.unhook (SWT.Collapse, listener);	
+	eventTable.unhook (SWT.Collapse, listener);
 }
 
 @Override
@@ -421,7 +421,7 @@ void setScrollbar () {
 		layoutItems (0, false);
 	}
 	maxHeight += yCurrentScroll;
-	
+
 	int selection = Math.min (yCurrentScroll, maxHeight);
 	int increment = verticalBar.getIncrement ();
 	int pageIncrement = verticalBar.getPageIncrement ();
@@ -430,9 +430,9 @@ void setScrollbar () {
 }
 
 /**
- * Sets the receiver's spacing. Spacing specifies the number of pixels allocated around 
+ * Sets the receiver's spacing. Spacing specifies the number of pixels allocated around
  * each item.
- * 
+ *
  * @param spacing the spacing around each item
  *
  * @exception SWTException <ul>
@@ -469,14 +469,14 @@ void onDispose (Event event) {
 	notifyListeners (SWT.Dispose, event);
 	event.type = SWT.None;
 	/*
-	 * Usually when an item is disposed, destroyItem will change the size of the items array, 
+	 * Usually when an item is disposed, destroyItem will change the size of the items array,
 	 * reset the bounds of all the tabs and manage the widget associated with the tab.
 	 * Since the whole folder is being disposed, this is not necessary.  For speed
 	 * the inDispose flag is used to skip over this part of the item dispose.
 	 */
 	inDispose = true;
-	
-	for (int i = 0; i < itemCount; i++) {				
+
+	for (int i = 0; i < itemCount; i++) {
 		items [i].dispose ();
 	}
 	items = null;
@@ -527,7 +527,7 @@ void onMouseDown (Event event) {
 	int y = event.y;
 	for (int i = 0; i < itemCount; i++) {
 		ExpandItem item = items[i];
-		boolean hover = item.x <= x && x < (item.x + item.width) && item.y <= y && y < (item.y + getBandHeight ()); 
+		boolean hover = item.x <= x && x < (item.x + item.width) && item.y <= y && y < (item.y + getBandHeight ());
 		if (hover && item != focusItem) {
 			focusItem.redraw ();
 			focusItem = item;
@@ -543,7 +543,7 @@ void onMouseUp (Event event) {
 	if (focusItem == null) return;
 	int x = event.x;
 	int y = event.y;
-	boolean hover = focusItem.x <= x && x < (focusItem.x + focusItem.width) && focusItem.y <= y && y < (focusItem.y + getBandHeight ()); 
+	boolean hover = focusItem.x <= x && x < (focusItem.x + focusItem.width) && focusItem.y <= y && y < (focusItem.y + getBandHeight ());
 	if (hover) {
 		Event ev = new Event ();
 		ev.item = focusItem;
@@ -562,7 +562,7 @@ void onPaint (Event event) {
 }
 
 void onResize () {
-	Rectangle rect = getClientArea ();	
+	Rectangle rect = getClientArea ();
 	int width = Math.max (0, rect.width - spacing * 2);
 	for (int i = 0; i < itemCount; i++) {
 		ExpandItem item = items[i];

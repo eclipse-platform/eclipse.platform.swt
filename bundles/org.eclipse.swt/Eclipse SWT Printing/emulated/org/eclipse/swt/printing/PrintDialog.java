@@ -61,7 +61,7 @@ public PrintDialog (Shell parent) {
  * <p>
  * The style value is either one of the style constants defined in
  * class <code>SWT</code> which is applicable to instances of this
- * class, or must be built by <em>bitwise OR</em>'ing together 
+ * class, or must be built by <em>bitwise OR</em>'ing together
  * (that is, using the <code>int</code> "|" operator) two or more
  * of those <code>SWT</code> style constants. The class description
  * lists the style constants that are applicable to the class.
@@ -106,9 +106,9 @@ static int checkStyle (Shell parent, int style) {
  * Setting the printer data to null is equivalent to
  * resetting all data fields to their default values.
  * </p>
- * 
+ *
  * @param data the data that will be used when the dialog is opened or null to use default data
- * 
+ *
  * @since 3.4
  */
 public void setPrinterData(PrinterData data) {
@@ -119,9 +119,9 @@ public void setPrinterData(PrinterData data) {
 /**
  * Returns the printer data that will be used when the dialog
  * is opened.
- * 
+ *
  * @return the data that will be used when the dialog is opened
- * 
+ *
  * @since 3.4
  */
 public PrinterData getPrinterData() {
@@ -187,7 +187,7 @@ public int getStartPage() {
  * This value can be from 1 to the maximum number of pages for the platform.
  * Note that it is only valid if the scope is <code>PrinterData.PAGE_RANGE</code>.
  * </p>
- * 
+ *
  * @param startPage the startPage setting when the dialog is opened
  */
 public void setStartPage(int startPage) {
@@ -215,7 +215,7 @@ public int getEndPage() {
  * This value can be from 1 to the maximum number of pages for the platform.
  * Note that it is only valid if the scope is <code>PrinterData.PAGE_RANGE</code>.
  * </p>
- * 
+ *
  * @param endPage the end page setting when the dialog is opened
  */
 public void setEndPage(int endPage) {
