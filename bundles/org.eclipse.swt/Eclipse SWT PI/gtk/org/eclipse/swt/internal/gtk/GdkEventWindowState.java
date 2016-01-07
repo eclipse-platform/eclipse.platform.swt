@@ -8,7 +8,7 @@
  * the LGPL accompanying this distribution and there is any conflict
  * between the two license versions, the terms of the LGPL accompanying
  * this distribution shall govern.
- * 
+ *
  * Contributors:
  *     IBM Corporation - initial API and implementation
  *******************************************************************************/
@@ -18,7 +18,7 @@ package org.eclipse.swt.internal.gtk;
 public class GdkEventWindowState extends GdkEvent {
 	/** @field cast=(GdkWindow *) */
 	public long /*int*/ window;
-	public byte send_event; 
+	public byte send_event;
 	public int changed_mask;
 	public int new_window_state;
 	public static final int sizeof = OS.GdkEventWindowState_sizeof();

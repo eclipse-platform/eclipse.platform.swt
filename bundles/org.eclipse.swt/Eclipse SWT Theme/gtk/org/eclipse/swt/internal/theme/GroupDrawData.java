@@ -19,10 +19,10 @@ public class GroupDrawData extends DrawData {
 	public int headerWidth;
 	public int headerHeight;
 	public Rectangle headerArea;
-	
+
 	static final int GROUP_X = 2;
 	static final int GROUP_PAD = 1;
-	
+
 public GroupDrawData() {
 	state = new int[1];
 }

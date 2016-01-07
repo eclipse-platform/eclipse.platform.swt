@@ -15,7 +15,7 @@ import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.gtk.*;
 
 public class ToolBarDrawData extends DrawData {
-	
+
 public ToolBarDrawData() {
 	state = new int[1];
 }

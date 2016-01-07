@@ -8,7 +8,7 @@
  * the LGPL accompanying this distribution and there is any conflict
  * between the two license versions, the terms of the LGPL accompanying
  * this distribution shall govern.
- * 
+ *
  * Contributors:
  *     IBM Corporation - initial API and implementation
  *******************************************************************************/
@@ -20,7 +20,7 @@ public class Platform {
 	public static final Lock lock = new Lock ();
 
 public static boolean isLoadable () {
-	return Library.isLoadable ();	
+	return Library.isLoadable ();
 }
 
 }

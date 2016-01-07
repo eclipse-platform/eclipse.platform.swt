@@ -10,7 +10,7 @@
  *******************************************************************************/
 package org.eclipse.swt.internal.gtk;
 
- 
+
 public class XExposeEvent extends XAnyEvent {
 	public int x;
 	public int y;

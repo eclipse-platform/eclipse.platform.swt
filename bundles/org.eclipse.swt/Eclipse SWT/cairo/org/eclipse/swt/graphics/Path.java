@@ -19,7 +19,7 @@ import org.eclipse.swt.internal.cairo.*;
  * described using lines, rectangles, arcs, cubic or quadratic bezier curves,
  * glyphs, or other paths.
  * <p>
- * Application code must explicitly invoke the <code>Path.dispose()</code> 
+ * Application code must explicitly invoke the <code>Path.dispose()</code>
  * method to release the operating system resources managed by each instance
  * when those instances are no longer required.
  * </p>
@@ -31,11 +31,11 @@ import org.eclipse.swt.internal.cairo.*;
  * @see <a href="http://www.eclipse.org/swt/snippets/#path">Path, Pattern snippets</a>
  * @see <a href="http://www.eclipse.org/swt/examples.php">SWT Example: GraphicsExample</a>
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
- * 
+ *
  * @since 3.1
  */
 public class Path extends Resource {
-	
+
 	/**
 	 * the OS resource for the Path
 	 * (Warning: This field is platform dependent)
@@ -45,11 +45,11 @@ public class Path extends Resource {
 	 * within the packages provided by SWT. It is not available on all
 	 * platforms and should never be accessed from application code.
 	 * </p>
-	 * 
+	 *
 	 * @noreference This field is not intended to be referenced by clients.
 	 */
 	public long /*int*/ handle;
-	
+
 	boolean moved, closed = true;
 
 /**
@@ -62,9 +62,9 @@ public class Path extends Resource {
  * <p>
  * You must dispose the path when it is no longer required.
  * </p>
- * 
+ *
  * @param device the device on which to allocate the path
- * 
+ *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the device is null and there is no current device</li>
  * </ul>
@@ -74,7 +74,7 @@ public class Path extends Resource {
  * @exception SWTError <ul>
  *    <li>ERROR_NO_HANDLES if a handle for the path could not be obtained</li>
  * </ul>
- * 
+ *
  * @see #dispose()
  */
 public Path (Device device) {
@@ -102,11 +102,11 @@ public Path (Device device) {
  * <p>
  * You must dispose the path when it is no longer required.
  * </p>
- * 
+ *
  * @param device the device on which to allocate the path
  * @param path the path to make a copy
  * @param flatness the flatness value
- * 
+ *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the device is null and there is no current device</li>
  *    <li>ERROR_NULL_ARGUMENT - if the path is null</li>
@@ -118,7 +118,7 @@ public Path (Device device) {
  * @exception SWTError <ul>
  *    <li>ERROR_NO_HANDLES if a handle for the path could not be obtained</li>
  * </ul>
- * 
+ *
  * @see #dispose()
  * @since 3.4
  */
@@ -134,7 +134,7 @@ public Path (Device device, Path path, float flatness) {
 	long /*int*/ copy;
 	flatness = Math.max(0, flatness);
 	if (flatness == 0) {
-		copy = Cairo.cairo_copy_path(path.handle);		
+		copy = Cairo.cairo_copy_path(path.handle);
 	} else {
 		double tolerance = Cairo.cairo_get_tolerance(path.handle);
 		Cairo.cairo_set_tolerance(path.handle, flatness);
@@ -160,10 +160,10 @@ public Path (Device device, Path path, float flatness) {
  * <p>
  * You must dispose the path when it is no longer required.
  * </p>
- * 
+ *
  * @param device the device on which to allocate the path
  * @param data the data for the path
- * 
+ *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the device is null and there is no current device</li>
  *    <li>ERROR_NULL_ARGUMENT - if the data is null</li>
@@ -174,7 +174,7 @@ public Path (Device device, Path path, float flatness) {
  * @exception SWTError <ul>
  *    <li>ERROR_NO_HANDLES if a handle for the path could not be obtained</li>
  * </ul>
- * 
+ *
  * @see #dispose()
  * @since 3.4
  */
@@ -188,15 +188,15 @@ public Path (Device device, PathData data) {
  * Adds to the receiver a circular or elliptical arc that lies within
  * the specified rectangular area.
  * <p>
- * The resulting arc begins at <code>startAngle</code> and extends  
+ * The resulting arc begins at <code>startAngle</code> and extends
  * for <code>arcAngle</code> degrees.
  * Angles are interpreted such that 0 degrees is at the 3 o'clock
  * position. A positive value indicates a counter-clockwise rotation
  * while a negative value indicates a clockwise rotation.
  * </p><p>
- * The center of the arc is the center of the rectangle whose origin 
- * is (<code>x</code>, <code>y</code>) and whose size is specified by the 
- * <code>width</code> and <code>height</code> arguments. 
+ * The center of the arc is the center of the rectangle whose origin
+ * is (<code>x</code>, <code>y</code>) and whose size is specified by the
+ * <code>width</code> and <code>height</code> arguments.
  * </p><p>
  * The resulting arc covers an area <code>width + 1</code> pixels wide
  * by <code>height + 1</code> pixels tall.
@@ -364,7 +364,7 @@ public boolean contains(float x, float y, GC gc, boolean outline) {
 	Cairo.cairo_append_path(cairo, copy);
 	Cairo.cairo_path_destroy(copy);
 	if (outline) {
-		result = Cairo.cairo_in_stroke(cairo, x, y) != 0;		
+		result = Cairo.cairo_in_stroke(cairo, x, y) != 0;
 	} else {
 		result = Cairo.cairo_in_fill(cairo, x, y) != 0;
 	}
@@ -404,7 +404,7 @@ public void cubicTo(float cx1, float cy1, float cx2, float cy2, float x, float y
  * receiver (i.e. the bounding box).
  *
  * @param bounds the array to hold the result
- * 
+ *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the parameter is null</li>
  *    <li>ERROR_INVALID_ARGUMENT - if the parameter is too small to hold the bounding box</li>
@@ -426,7 +426,7 @@ public void getBounds(float[] bounds) {
 		minX = minY = Double.POSITIVE_INFINITY;
 		maxX = maxY = Double.NEGATIVE_INFINITY;
 		int i = 0;
-		double[] points = new double[6]; 
+		double[] points = new double[6];
 		cairo_path_data_t data = new cairo_path_data_t();
 		while (i < path.num_data) {
 			long /*int*/ offset = path.data + i * cairo_path_data_t.sizeof;
@@ -478,7 +478,7 @@ public void getBounds(float[] bounds) {
  * describe the current point of the path.
  *
  * @param point the array to hold the result
- * 
+ *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the parameter is null</li>
  *    <li>ERROR_INVALID_ARGUMENT - if the parameter is too small to hold the end point</li>
@@ -499,13 +499,13 @@ public void getCurrentPoint(float[] point) {
 
 /**
  * Returns a device independent representation of the receiver.
- * 
+ *
  * @return the PathData for the receiver
- * 
+ *
  * @exception SWTException <ul>
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
- * 
+ *
  * @see PathData
  */
 public PathData getPathData() {
@@ -519,7 +519,7 @@ public PathData getPathData() {
 	int typeIndex = 0, ptsIndex = 0;
 	if (path.num_data > 0) {
 		int i = 0;
-		double[] points = new double[6]; 
+		double[] points = new double[6];
 		cairo_path_data_t data = new cairo_path_data_t();
 		while (i < path.num_data) {
 			long /*int*/ offset = path.data + i * cairo_path_data_t.sizeof;
@@ -613,7 +613,7 @@ public void moveTo(float x, float y) {
 	* begining of a subpath, the first cairo_line_to() or
 	* cairo_curve_to() segment do not output anything.  The fix
 	* is to detect that the app did not call cairo_move_to()
-	* before those calls and call it explicitly. 
+	* before those calls and call it explicitly.
 	*/
 	moved = true;
 	Cairo.cairo_move_to(handle, x, y);

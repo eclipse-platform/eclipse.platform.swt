@@ -17,7 +17,7 @@ import org.eclipse.swt.internal.cairo.Cairo;
 import org.eclipse.swt.internal.gtk.*;
 
 public class TabItemDrawData extends DrawData {
-	
+
 	public TabFolderDrawData parent;
 	public int position;
 

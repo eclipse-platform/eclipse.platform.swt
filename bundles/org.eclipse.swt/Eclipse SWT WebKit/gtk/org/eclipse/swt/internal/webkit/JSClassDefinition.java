@@ -48,6 +48,6 @@ public class JSClassDefinition {
     public long /*int*/ hasInstance;
     /** @field cast=(void*) */
     public long /*int*/ convertToType;
-    
+
     public static final int sizeof = WebKitGTK.JSClassDefinition_sizeof();
 }

@@ -17,7 +17,7 @@ import org.eclipse.swt.internal.cairo.*;
  * Instances of this class represent patterns to use while drawing. Patterns
  * can be specified either as bitmaps or gradients.
  * <p>
- * Application code must explicitly invoke the <code>Pattern.dispose()</code> 
+ * Application code must explicitly invoke the <code>Pattern.dispose()</code>
  * method to release the operating system resources managed by each instance
  * when those instances are no longer required.
  * </p>
@@ -25,7 +25,7 @@ import org.eclipse.swt.internal.cairo.*;
  * This class requires the operating system's advanced graphics subsystem
  * which may not be available on some platforms.
  * </p>
- * 
+ *
  * @see <a href="http://www.eclipse.org/swt/snippets/#path">Path, Pattern snippets</a>
  * @see <a href="http://www.eclipse.org/swt/examples.php">SWT Example: GraphicsExample</a>
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
@@ -43,11 +43,11 @@ public class Pattern extends Resource {
 	 * within the packages provided by SWT. It is not available on all
 	 * platforms and should never be accessed from application code.
 	 * </p>
-	 * 
+	 *
 	 * @noreference This field is not intended to be referenced by clients.
 	 */
 	public long /*int*/ handle;
-	
+
 	long /*int*/ surface;
 
 /**
@@ -61,10 +61,10 @@ public class Pattern extends Resource {
  * <p>
  * You must dispose the pattern when it is no longer required.
  * </p>
- * 
+ *
  * @param device the device on which to allocate the pattern
  * @param image the image that the pattern will draw
- * 
+ *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the device is null and there is no current device, or the image is null</li>
  *    <li>ERROR_INVALID_ARGUMENT - if the image has been disposed</li>
@@ -75,7 +75,7 @@ public class Pattern extends Resource {
  * @exception SWTError <ul>
  *    <li>ERROR_NO_HANDLES if a handle for the pattern could not be obtained</li>
  * </ul>
- * 
+ *
  * @see #dispose()
  */
 public Pattern(Device device, Image image) {
@@ -103,7 +103,7 @@ public Pattern(Device device, Image image) {
  * <p>
  * You must dispose the pattern when it is no longer required.
  * </p>
- * 
+ *
  * @param device the device on which to allocate the pattern
  * @param x1 the x coordinate of the starting corner of the gradient
  * @param y1 the y coordinate of the starting corner of the gradient
@@ -111,9 +111,9 @@ public Pattern(Device device, Image image) {
  * @param y2 the y coordinate of the ending corner of the gradient
  * @param color1 the starting color of the gradient
  * @param color2 the ending color of the gradient
- * 
+ *
  * @exception IllegalArgumentException <ul>
- *    <li>ERROR_NULL_ARGUMENT - if the device is null and there is no current device, 
+ *    <li>ERROR_NULL_ARGUMENT - if the device is null and there is no current device,
  *                              or if either color1 or color2 is null</li>
  *    <li>ERROR_INVALID_ARGUMENT - if either color1 or color2 has been disposed</li>
  * </ul>
@@ -123,7 +123,7 @@ public Pattern(Device device, Image image) {
  * @exception SWTError <ul>
  *    <li>ERROR_NO_HANDLES if a handle for the pattern could not be obtained</li>
  * </ul>
- * 
+ *
  * @see #dispose()
  */
 public Pattern(Device device, float x1, float y1, float x2, float y2, Color color1, Color color2) {
@@ -141,7 +141,7 @@ public Pattern(Device device, float x1, float y1, float x2, float y2, Color colo
  * <p>
  * You must dispose the pattern when it is no longer required.
  * </p>
- * 
+ *
  * @param device the device on which to allocate the pattern
  * @param x1 the x coordinate of the starting corner of the gradient
  * @param y1 the y coordinate of the starting corner of the gradient
@@ -151,9 +151,9 @@ public Pattern(Device device, float x1, float y1, float x2, float y2, Color colo
  * @param alpha1 the starting alpha value of the gradient
  * @param color2 the ending color of the gradient
  * @param alpha2 the ending alpha value of the gradient
- * 
+ *
  * @exception IllegalArgumentException <ul>
- *    <li>ERROR_NULL_ARGUMENT - if the device is null and there is no current device, 
+ *    <li>ERROR_NULL_ARGUMENT - if the device is null and there is no current device,
  *                              or if either color1 or color2 is null</li>
  *    <li>ERROR_INVALID_ARGUMENT - if either color1 or color2 has been disposed</li>
  * </ul>
@@ -163,9 +163,9 @@ public Pattern(Device device, float x1, float y1, float x2, float y2, Color colo
  * @exception SWTError <ul>
  *    <li>ERROR_NO_HANDLES if a handle for the pattern could not be obtained</li>
  * </ul>
- * 
+ *
  * @see #dispose()
- * 
+ *
  * @since 3.2
  */
 public Pattern(Device device, float x1, float y1, float x2, float y2, Color color1, int alpha1, Color color2, int alpha2) {
@@ -182,7 +182,7 @@ public Pattern(Device device, float x1, float y1, float x2, float y2, Color colo
 	Cairo.cairo_pattern_set_extend(handle, Cairo.CAIRO_EXTEND_REPEAT);
 	init();
 }
-	
+
 @Override
 void destroy() {
 	Cairo.cairo_pattern_destroy(handle);
@@ -215,5 +215,5 @@ public String toString() {
 	if (isDisposed()) return "Pattern {*DISPOSED*}";
 	return "Pattern {" + handle + "}";
 }
-	
+
 }

@@ -30,7 +30,7 @@ void draw(Theme theme, GC gc, Rectangle bounds) {
 	long /*int*/ gtkStyle = OS.gtk_widget_get_style(buttonHandle);
 	long /*int*/ drawable = gc.getGCData().drawable;
 	theme.transferClipping(gc, gtkStyle);
-	
+
 	int x = bounds.x;
 	int y = bounds.y ;
 	int width = bounds.width;
@@ -39,7 +39,7 @@ void draw(Theme theme, GC gc, Rectangle bounds) {
 	int shadow_type = OS.GTK_SHADOW_OUT;
 	if ((state[DrawData.COMBO_ARROW] & DrawData.PRESSED) != 0) shadow_type = OS.GTK_SHADOW_IN;
 	int state_type = getStateType(DrawData.COMBO_ARROW);
-	
+
 	int relief = OS.gtk_button_get_relief(buttonHandle);
 	int interior_focus = theme.getWidgetProperty(buttonHandle, "interior-focus");
 	int focus_line_width = theme.getWidgetProperty(buttonHandle, "focus-line-width");
@@ -54,18 +54,18 @@ void draw(Theme theme, GC gc, Rectangle bounds) {
 		x_border += focus_line_width;
 		//y_border += focus_line_width;
 	}
-	int arrow_button_width = arrow_width + x_border * 2;		
+	int arrow_button_width = arrow_width + x_border * 2;
 	int arrow_button_x = x + width - arrow_button_width;
 	int arrow_x = arrow_button_x + (arrow_button_width - arrow_width) / 2;
 	int arrow_y = y + (height - arrow_height) / 2 + 1;
 	if (relief != OS.GTK_RELIEF_NONE || ((state[DrawData.COMBO_ARROW] & (DrawData.PRESSED | DrawData.HOT)) != 0)) {
 		byte[] detail = Converter.wcsToMbcs(null, "button", true);
 		gtk_render_box (gtkStyle, drawable, state_type, shadow_type, null, buttonHandle, detail, arrow_button_x, y, arrow_button_width, height);
-	}		
+	}
 	byte[] arrow_detail = Converter.wcsToMbcs(null, "arrow", true);
 	long /*int*/ arrowHandle = theme.arrowHandle;
 	gtk_render_arrow (gtkStyle, drawable, state_type, OS.GTK_SHADOW_OUT, null, arrowHandle, arrow_detail, OS.GTK_ARROW_DOWN, true, arrow_x, arrow_y, arrow_width, arrow_height);
-	
+
 	long /*int*/ entryHandle = theme.entryHandle;
 	gtkStyle = OS.gtk_widget_get_style(entryHandle);
 	theme.transferClipping(gc, gtkStyle);
@@ -80,13 +80,13 @@ void draw(Theme theme, GC gc, Rectangle bounds) {
 	height -= 2 * ythickness;
 	detail = Converter.wcsToMbcs(null, "entry_bg", true);
 	gtk_render_frame (gtkStyle, drawable, state_type, OS.GTK_SHADOW_NONE, null, entryHandle, detail, x, y, width - arrow_button_width, height);
-		
+
 	if (clientArea != null) {
 		clientArea.x = x;
 		clientArea.y = y;
 		clientArea.width = width - arrow_button_width;
 		clientArea.height = height;
-	}	
+	}
 }
 
 @Override
@@ -118,7 +118,7 @@ int hit(Theme theme, Point position, Rectangle bounds) {
 		x_border += focus_line_width;
 		//y_border += focus_line_width;
 	}
-	int arrow_button_width = arrow_width + x_border * 2;		
+	int arrow_button_width = arrow_width + x_border * 2;
 	int arrow_button_x = bounds.x + bounds.width - arrow_button_width;
 
 	Rectangle arrowRect = new Rectangle(arrow_button_x, bounds.y, arrow_button_width, bounds.height);

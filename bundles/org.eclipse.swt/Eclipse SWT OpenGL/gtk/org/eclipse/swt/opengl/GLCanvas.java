@@ -18,7 +18,7 @@ import org.eclipse.swt.widgets.*;
 
 /**
  * GLCanvas is a widget capable of displaying OpenGL content.
- * 
+ *
  * @see GLData
  * @see <a href="http://www.eclipse.org/swt/snippets/#opengl">OpenGL snippets</a>
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
@@ -43,11 +43,11 @@ public class GLCanvas extends Canvas {
  *
  * @exception IllegalArgumentException
  * <ul><li>ERROR_NULL_ARGUMENT when the data is null
- *     <li>ERROR_UNSUPPORTED_DEPTH when the requested attributes cannot be provided</ul> 
+ *     <li>ERROR_UNSUPPORTED_DEPTH when the requested attributes cannot be provided</ul>
  * </ul>
  */
 public GLCanvas (Composite parent, int style, GLData data) {
-	super (parent, style);	
+	super (parent, style);
 	if (data == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
 	int glxAttrib [] = new int [MAX_ATTRIBUTES];
 	int pos = 0;
@@ -105,7 +105,7 @@ public GLCanvas (Composite parent, int style, GLData data) {
 	glxAttrib [pos++] = 0;
 	OS.gtk_widget_realize (handle);
 	long /*int*/ window = OS.gtk_widget_get_window (handle);
-	
+
 	long /*int*/ xDisplay;
 	if (OS.GTK_VERSION >= OS.VERSION(2, 24, 0)) {
 		xDisplay = OS.gdk_x11_display_get_xdisplay(OS.gdk_window_get_display(window));
@@ -189,7 +189,7 @@ public GLCanvas (Composite parent, int style, GLData data) {
 
 /**
  * Returns a GLData object describing the created context.
- *  
+ *
  * @return GLData description of the OpenGL context attributes
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -236,7 +236,7 @@ public GLData getGLData () {
 /**
  * Returns a boolean indicating whether the receiver's OpenGL context
  * is the current context.
- *  
+ *
  * @return true if the receiver holds the current OpenGL context,
  * false otherwise
  * @exception SWTException <ul>
@@ -252,7 +252,7 @@ public boolean isCurrent () {
 /**
  * Sets the OpenGL context associated with this GLCanvas to be the
  * current GL context.
- * 
+ *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
@@ -268,7 +268,7 @@ public void setCurrent () {
 
 /**
  * Swaps the front and back color buffers.
- * 
+ *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>

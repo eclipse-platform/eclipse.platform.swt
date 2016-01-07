@@ -15,14 +15,14 @@ import org.eclipse.swt.graphics.*;
 public class ScaleDrawData extends RangeDrawData {
 	public int increment;
 	public int pageIncrement;
-	
+
 public ScaleDrawData() {
 	state = new int[4];
 }
 
 @Override
 void draw(Theme theme, GC gc, Rectangle bounds) {
-	
+
 }
 
 @Override

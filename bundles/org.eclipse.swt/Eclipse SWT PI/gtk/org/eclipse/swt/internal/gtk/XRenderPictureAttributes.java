@@ -10,7 +10,7 @@
  *******************************************************************************/
 package org.eclipse.swt.internal.gtk;
 
- 
+
 public class XRenderPictureAttributes {
 	public boolean repeat;
 	public long /*int*/ alpha_map;

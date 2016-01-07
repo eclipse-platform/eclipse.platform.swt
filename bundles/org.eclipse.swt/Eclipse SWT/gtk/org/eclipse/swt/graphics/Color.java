@@ -18,7 +18,7 @@ import org.eclipse.swt.*;
  * Instances of this class manage the operating system resources that
  * implement SWT's RGB color model. To create a color you can either
  * specify the individual color components as integers in the range
- * 0 to 255 or provide an instance of an <code>RGB</code> or <code>RGBA</code>. 
+ * 0 to 255 or provide an instance of an <code>RGB</code> or <code>RGBA</code>.
  * <p>
  * Application code must explicitly invoke the <code>Color.dispose()</code>
  * method to release the operating system resources managed by each instance
@@ -82,16 +82,16 @@ public Color(Device device, int red, int green, int blue) {
 	init();
 }
 
-/**	 
+/**
  * Constructs a new instance of this class given a device and the
  * desired red, green, blue & alpha values expressed as ints in the range
  * 0 to 255 (where 0 is black and 255 is full brightness). On limited
  * color devices, the color instance created by this call may not have
  * the same RGB values as the ones specified by the arguments. The
- * RGB values on the returned instance will be the color values of 
+ * RGB values on the returned instance will be the color values of
  * the operating system color.
  * <p>
- * You must dispose the color when it is no longer required. 
+ * You must dispose the color when it is no longer required.
  * </p>
  *
  * @param device the device on which to allocate the color
@@ -143,7 +143,7 @@ public Color(Device device, RGB rgb) {
 	init();
 }
 
-/**	 
+/**
  * Constructs a new instance of this class given a device and an
  * <code>RGBA</code> describing the desired red, green, blue & alpha values.
  * On limited color devices, the color instance created by this call
@@ -151,7 +151,7 @@ public Color(Device device, RGB rgb) {
  * argument. The RGBA values on the returned instance will be the color
  * values of the operating system color + alpha.
  * <p>
- * You must dispose the color when it is no longer required. 
+ * You must dispose the color when it is no longer required.
  * </p>
  *
  * @param device the device on which to allocate the color
@@ -173,16 +173,16 @@ public Color(Device device, RGBA rgba) {
 	init();
 }
 
-/**	 
+/**
  * Constructs a new instance of this class given a device, an
  * <code>RGB</code> describing the desired red, green and blue values,
- * alpha specifying the level of transparency. 
+ * alpha specifying the level of transparency.
  * On limited color devices, the color instance created by this call
  * may not have the same RGB values as the ones specified by the
  * argument. The RGB values on the returned instance will be the color
  * values of the operating system color.
  * <p>
- * You must dispose the color when it is no longer required. 
+ * You must dispose the color when it is no longer required.
  * </p>
  *
  * @param device the device on which to allocate the color
@@ -364,7 +364,7 @@ public static Color gtk_new(Device device, GdkColor gdkColor) {
 	return gtk_new(device, gdkColor, 255);
 }
 
-/**	 
+/**
  * Invokes platform specific functionality to allocate a new color.
  * <p>
  * <b>IMPORTANT:</b> This method is <em>not</em> part of the public
@@ -377,7 +377,7 @@ public static Color gtk_new(Device device, GdkColor gdkColor) {
  * @param device the device on which to allocate the color
  * @param gdkColor the handle for the color
  * @param alpha the int for the alpha content in the color(Currently SWT honors extreme values for alpha ie. 0 or 255)
- * 
+ *
  * @noreference This method is not intended to be referenced by clients.
  */
 public static Color gtk_new(Device device, GdkColor gdkColor, int alpha) {
@@ -388,7 +388,7 @@ public static Color gtk_new(Device device, GdkColor gdkColor, int alpha) {
 }
 
 /**
- * Allocates the operating system resources associated 
+ * Allocates the operating system resources associated
  * with the receiver.
  *
  * @param device the device on which to allocate the color
@@ -415,7 +415,7 @@ void init(int red, int green, int blue, int alpha) {
 	gdkColor.green = (short)((green & 0xFF) | ((green & 0xFF) << 8));
 	gdkColor.blue = (short)((blue & 0xFF) | ((blue & 0xFF) << 8));
 	this.alpha = alpha;
-	
+
 	if (!OS.GTK3) {
 		long /*int*/ colormap = OS.gdk_colormap_get_system();
 		if (!OS.gdk_colormap_alloc_color(colormap, gdkColor, true, true)) {

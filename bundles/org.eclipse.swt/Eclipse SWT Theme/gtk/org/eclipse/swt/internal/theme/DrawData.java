@@ -29,7 +29,7 @@ public class DrawData {
 	public static final int HOT = 1 << 6;
 	public static final int DEFAULTED = 1 << 7;
 	public static final int GRAYED = 1 << 8;
-	
+
 	/** Text and Image drawing flags */
 	public static final int DRAW_LEFT = 1 << 4;
 	public static final int DRAW_TOP = 1 << 5;
@@ -52,20 +52,20 @@ public class DrawData {
 	public static final int SCROLLBAR_LEFT_TRACK = SCROLLBAR_UP_TRACK;
 	public static final int SCROLLBAR_RIGHT_TRACK = SCROLLBAR_DOWN_TRACK;
 	public static final int SCROLLBAR_THUMB = 5;
-	
+
 	/** Scale parts */
 	public static final int SCALE_UP_TRACK = 1;
 	public static final int SCALE_LEFT_TRACK = SCALE_UP_TRACK;
 	public static final int SCALE_DOWN_TRACK = 2;
 	public static final int SCALE_RIGHT_TRACK = SCALE_DOWN_TRACK;
 	public static final int SCALE_THUMB = 3;
-	
+
 	/** ToolItem parts */
 	public static final int TOOLITEM_ARROW = 1;
-	
+
 	/** Combo parts */
 	public static final int COMBO_ARROW = 1;
-	
+
 
 public DrawData() {
 	state = new int[1];
@@ -76,7 +76,7 @@ Rectangle computeTrim(Theme theme, GC gc) {
 }
 
 void draw(Theme theme, GC gc, Rectangle bounds) {
-	
+
 }
 
 void drawImage(Theme theme, Image image, GC gc, Rectangle bounds) {
@@ -159,7 +159,7 @@ int getStateType(int part) {
 	} else {
 		if ((state & DrawData.SELECTED) != 0) state_type = OS.GTK_STATE_ACTIVE;
 		if ((state & DrawData.HOT) != 0) {
-			if ((state & DrawData.PRESSED) != 0) { 
+			if ((state & DrawData.PRESSED) != 0) {
 				state_type = OS.GTK_STATE_ACTIVE;
 			} else {
 				state_type = OS.GTK_STATE_PRELIGHT;
@@ -243,7 +243,7 @@ void gtk_render_focus (long /*int*/ style, long /*int*/ window, int state_type, 
 		Cairo.cairo_restore (cairo);
 		OS.gtk_style_context_restore (context);
 		Cairo.cairo_destroy (cairo);
-		
+
 	} else {
 		OS.gtk_paint_focus (style, window, state_type, area, widget, detail, x, y, width, height);
 	}

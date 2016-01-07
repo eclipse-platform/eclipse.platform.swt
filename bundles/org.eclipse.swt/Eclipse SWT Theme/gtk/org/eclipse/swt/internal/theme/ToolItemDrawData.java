@@ -66,7 +66,7 @@ void draw(Theme theme, GC gc, Rectangle bounds) {
 				Cairo.cairo_destroy(cairo);
 			} else {
 				OS.gtk_paint_hline(gtkStyle, drawable, state_type, null, separatorHandle, detail, bounds.x, bounds.x + bounds.width, bounds.y + bounds.height / 2);
-			}	
+			}
 		} else {
 			if (OS.GTK3) {
 				long /*int*/ cairo = OS.gdk_cairo_create (drawable);
@@ -98,7 +98,7 @@ void draw(Theme theme, GC gc, Rectangle bounds) {
 	} else if ((style & (SWT.CHECK | SWT.RADIO)) != 0) {
 		detail = Converter.wcsToMbcs(null, "togglebutton", true);
 	}
-	
+
 	int[] relief = new int[1];
 	long /*int*/ toolbarHandle = theme.toolbarHandle;
 	OS.gtk_widget_style_get(toolbarHandle, OS.button_relief, relief, 0);
@@ -106,7 +106,7 @@ void draw(Theme theme, GC gc, Rectangle bounds) {
 	int shadow_type = OS.GTK_SHADOW_OUT;
 	if ((state & (DrawData.SELECTED | DrawData.PRESSED)) != 0) shadow_type = OS.GTK_SHADOW_IN;
 	int state_type = getStateType(DrawData.WIDGET_WHOLE);
-		
+
 	if (relief[0] != OS.GTK_RELIEF_NONE || ((state & (DrawData.PRESSED | DrawData.HOT | DrawData.SELECTED)) != 0)) {
 		gtk_render_box(gtkStyle, drawable, state_type, shadow_type, null, buttonHandle, detail, x, y, width, height);
 	}
@@ -137,7 +137,7 @@ void draw(Theme theme, GC gc, Rectangle bounds) {
     	int child_displacement_y = theme.getWidgetProperty(buttonHandle, "child-displacement-y");
     	int child_displacement_x = theme.getWidgetProperty(buttonHandle, "child-displacement-x");
     	int displace_focus = theme.getWidgetProperty(buttonHandle, "displace-focus");
-    	
+
     	if (interior_focus != 0) {
     		int ythickness = OS.gtk_style_get_ythickness(gtkStyle);
     		x += xthickness + focus_padding;
@@ -150,12 +150,12 @@ void draw(Theme theme, GC gc, Rectangle bounds) {
     		width += 2 * (focus_line_width + focus_padding);
     		height += 2 * (focus_line_width + focus_padding);
     	}
-    	
+
     	if ((state & (DrawData.PRESSED | DrawData.SELECTED)) != 0 && displace_focus != 0) {
               x += child_displacement_x;
               y += child_displacement_y;
     	}
-    	
+
     	gtk_render_focus (gtkStyle, drawable, state_type, null, buttonHandle, detail, x, y, width, height);
     }
 }
@@ -175,7 +175,7 @@ int hit(Theme theme, Point position, Rectangle bounds) {
 		if (interior_focus == 0) arrow_x -= focus_line_width;
 		if (arrow_x <= position.x) return DrawData.TOOLITEM_ARROW;
 	}
-	return DrawData.WIDGET_WHOLE; 
+	return DrawData.WIDGET_WHOLE;
 }
 
 }

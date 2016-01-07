@@ -77,7 +77,7 @@ static Browser findBrowser (long /*int*/ handle) {
 	*/
 	long /*int*/ parent = OS.gtk_widget_get_parent (handle);
 	Display display = Display.getCurrent ();
-	return (Browser)display.findWidget (parent); 
+	return (Browser)display.findWidget (parent);
 }
 
 static String getCacheParentPath () {
@@ -111,7 +111,7 @@ static String getLibraryName (String mozillaPath) {
 
 static String getProfilePath () {
 	String baseDir = System.getProperty ("user.home"); //$NON-NLS-1$
-	
+
 	/*
 	 * Bug in Sun JRE.  Under some circumstances the value of java property "user.home" is
 	 * "?", even when the HOME environment variable has a valid value.  If this happens
@@ -126,7 +126,7 @@ static String getProfilePath () {
 			baseDir = new String (mbcsToWcs (null, bytes));
 		}
 	}
-	
+
 	return baseDir + Mozilla.SEPARATOR_OS + ".mozilla" + Mozilla.SEPARATOR_OS + "eclipse"; //$NON-NLS-1$ //$NON-NLS-2$
 }
 
@@ -253,7 +253,7 @@ long /*int*/ gtk_event (long /*int*/ handle, long /*int*/ gdkEvent, long /*int*/
 		if (!hasFocus) browser.setFocus ();
 	}
 
-	/* 
+	/*
 	* Stop the propagation of events that are not consumed by Mozilla, before
 	* they reach the parent embedder.  These event have already been received.
 	*/
@@ -285,7 +285,7 @@ void handleFocus () {
 }
 
 void handleMouseDown () {
-	int shellStyle = browser.getShell ().getStyle (); 
+	int shellStyle = browser.getShell ().getStyle ();
 	if ((shellStyle & SWT.ON_TOP) != 0 && (((shellStyle & SWT.NO_FOCUS) == 0) || ((browser.getStyle () & SWT.NO_FOCUS) == 0))) {
 		browser.getDisplay ().asyncExec (new Runnable () {
 			public void run () {
@@ -322,15 +322,15 @@ void init () {
 	if (list != 0) {
 		mozillaHandle = OS.g_list_data (list);
 		OS.g_list_free (list);
-		
-		if (mozillaHandle != 0) {			
+
+		if (mozillaHandle != 0) {
 			/* Note. Callback to get events before Mozilla receives and consumes them. */
 			OS.g_signal_connect (mozillaHandle, OS.event, eventProc, 0);
-			
-			/* 
-			* Note.  Callback to get the events not consumed by Mozilla - and to block 
-			* them so that they don't get propagated to the parent handle twice.  
-			* This hook is set after Mozilla and is therefore called after Mozilla's 
+
+			/*
+			* Note.  Callback to get the events not consumed by Mozilla - and to block
+			* them so that they don't get propagated to the parent handle twice.
+			* This hook is set after Mozilla and is therefore called after Mozilla's
 			* handler because GTK dispatches events in their order of registration.
 			*/
 			OS.g_signal_connect (mozillaHandle, OS.key_press_event, eventProc, STOP_PROPOGATE);

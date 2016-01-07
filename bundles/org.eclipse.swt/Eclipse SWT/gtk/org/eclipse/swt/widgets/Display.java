@@ -4675,7 +4675,7 @@ public void update () {
 	checkDevice ();
 	flushExposes (0, true);
 	/*
-	 * Do not send expose events on GTK 3.16.0+ 
+	 * Do not send expose events on GTK 3.16.0+
 	 * It's worth checking whether can be removed on all GTK 3 versions.
 	 */
 	if (OS.GTK_VERSION < OS.VERSION(3, 16, 0)) {

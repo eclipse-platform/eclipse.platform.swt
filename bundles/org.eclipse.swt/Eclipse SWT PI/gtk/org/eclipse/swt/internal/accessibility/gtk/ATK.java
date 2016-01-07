@@ -8,7 +8,7 @@
  * the LGPL accompanying this distribution and there is any conflict
  * between the two license versions, the terms of the LGPL accompanying
  * this distribution shall govern.
- * 
+ *
  * Contributors:
  *     IBM Corporation - initial API and implementation
  *******************************************************************************/
@@ -36,7 +36,7 @@ public class ATK extends OS {
 	public static final int ATK_RELATION_SUBWINDOW_OF = 9;
 	public static final int ATK_RELATION_EMBEDS = 10;
 	public static final int ATK_RELATION_EMBEDDED_BY = 11;
-	public static final int ATK_RELATION_POPUP_FOR = 12; 
+	public static final int ATK_RELATION_POPUP_FOR = 12;
 	public static final int ATK_RELATION_PARENT_WINDOW_OF = 13;
 	public static final int ATK_RELATION_DESCRIBED_BY = 14;
 	public static final int ATK_RELATION_DESCRIPTION_FOR = 15;
@@ -150,7 +150,7 @@ public class ATK extends OS {
 	public static final int ATK_TEXT_ATTR_VARIANT = 26;
 	public static final int ATK_TEXT_ATTR_STYLE = 27;
 	public static final int ATK_XY_WINDOW = 1;
-	
+
 	/** Signals */
 	public static final byte[] selection_changed = OS.ascii ("selection_changed");
 	public static final byte[] active_descendant_changed = OS.ascii ("active_descendant_changed");
@@ -172,7 +172,7 @@ public class ATK extends OS {
 	public static final byte[] row_deleted = OS.ascii ("row-deleted");
 	public static final byte[] row_inserted = OS.ascii ("row-inserted");
 	public static final byte[] focus_event = OS.ascii ("focus-event");
-	
+
 	/** Properties */
 	public static final byte[] accessible_name = OS.ascii ("accessible-name");
 	public static final byte[] accessible_description = OS.ascii ("accessible-description");
@@ -188,14 +188,14 @@ public class ATK extends OS {
 	public static final byte[] accessible_table_row_description = OS.ascii ("accessible-table-row-description");
 	public static final byte[] accessible_table_row_header = OS.ascii ("accessible-table-row-header");
 	public static final byte[] accessible_table_summary = OS.ascii ("accessible-table-summary");
-	
+
 /** 64 bit */
 public static final native int AtkObjectFactory_sizeof ();
 public static final native int AtkObjectFactoryClass_sizeof ();
 public static final native int AtkAttribute_sizeof ();
 public static final native int AtkTextRange_sizeof ();
 public static final native int AtkTextRectangle_sizeof ();
-	
+
 /** Natives */
 
 /** @method flags=const */
@@ -447,7 +447,7 @@ public static final native void memmove (AtkEditableTextIface dest, long /*int*/
 public static final native void memmove (AtkHypertextIface dest, long /*int*/ src);
 public static final native void memmove (AtkObjectClass dest, long /*int*/ src);
 public static final native void memmove (AtkObjectFactoryClass  dest, long /*int*/ src);
-public static final native void memmove (AtkSelectionIface dest, long /*int*/ src);	
+public static final native void memmove (AtkSelectionIface dest, long /*int*/ src);
 public static final native void memmove (AtkTableIface dest, long /*int*/ src);
 public static final native void memmove (AtkTextIface dest, long /*int*/ src);
 public static final native void memmove (AtkValueIface dest, long /*int*/ src);

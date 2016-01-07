@@ -21,7 +21,7 @@ public class Lock {
  * Locks the monitor and returns the lock count. If
  * the lock is owned by another thread, wait until
  * the lock is released.
- * 
+ *
  * @return the lock count
  */
 public int lock() {

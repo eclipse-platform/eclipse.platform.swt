@@ -104,7 +104,7 @@ public abstract class Widget {
 
 	/* Bidi "auto" text direction */
 	static final int HAS_AUTO_DIRECTION = 0;
-	
+
 	/* Bidi flag and for auto text direction */
 	static final int AUTO_TEXT_DIRECTION = SWT.LEFT_TO_RIGHT | SWT.RIGHT_TO_LEFT;
 
@@ -1007,9 +1007,9 @@ boolean isActive () {
  * and <code>false</code> otherwise.
  *
  * @return <code>true</code> when the widget has auto direction and <code>false</code> otherwise
- * 
+ *
  * @see #HAS_AUTO_DIRECTION
- * 
+ *
  * @since 3.105
  */
 public boolean isAutoDirection () {

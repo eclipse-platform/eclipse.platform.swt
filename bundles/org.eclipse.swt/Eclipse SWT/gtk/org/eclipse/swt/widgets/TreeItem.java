@@ -716,7 +716,7 @@ public Rectangle getImageBounds (int index) {
 	OS.gtk_tree_view_get_cell_area (parentHandle, path, column, rect);
 	if ((parent.getStyle () & SWT.MIRRORED) != 0) rect.x = parent.getClientWidth () - rect.width - rect.x;
 	OS.gtk_tree_path_free (path);
-	
+
 //	Feature in GTK. When a pixbufRenderer has size of 0x0, gtk_tree_view_column_cell_get_position
 //	returns a position of 0 as well. This causes offset issues meaning that images/widgets/etc.
 //	can be placed over the text. We need to account for the base case of a pixbufRenderer that has
@@ -1477,7 +1477,7 @@ public void setImage (int index, Image image) {
 	 * We only do this if the size of the pixbufRenderer has not yet been set.
 	 * Otherwise, the pixbufRenderer retains the same size as the first image added.
 	 * See comment #4, Bug 478560. Note that all columns need to have their
-	 * pixbufRenderer set to this size after the initial image is set. 
+	 * pixbufRenderer set to this size after the initial image is set.
 	 */
 	if (OS.GTK3) {
 		long /*int*/parentHandle = parent.handle;

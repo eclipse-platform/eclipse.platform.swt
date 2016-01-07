@@ -10,7 +10,7 @@
  *******************************************************************************/
 package org.eclipse.swt.internal.gtk;
 
- 
+
 public class XEvent {
 	public int type;
 	public static final int sizeof = OS.XEvent_sizeof();

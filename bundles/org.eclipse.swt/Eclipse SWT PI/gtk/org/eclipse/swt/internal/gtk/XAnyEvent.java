@@ -10,7 +10,7 @@
  *******************************************************************************/
 package org.eclipse.swt.internal.gtk;
 
- 
+
 public abstract class XAnyEvent extends XEvent {
 	public long /*int*/ serial;
 	public int send_event;

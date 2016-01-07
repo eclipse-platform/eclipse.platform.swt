@@ -29,7 +29,7 @@ class AccessibleObject {
 	/*
 	* a lightweight object does not correspond to a concrete gtk widget, but
 	* to a logical child of a widget (eg.- a CTabItem, which is simply drawn)
-	*/ 
+	*/
 	boolean isLightweight = false;
 
 	static long /*int*/ actionNamePtr = -1;
@@ -38,7 +38,7 @@ class AccessibleObject {
 	static long /*int*/ namePtr = -1;
 	static final Map<LONG, AccessibleObject> AccessibleObjects = new HashMap<LONG, AccessibleObject> (9);
 	static final boolean DEBUG = Device.DEBUG;
-	
+
 	static final int ROW_ROLE;
 	static {
 
@@ -60,11 +60,11 @@ class AccessibleObject {
 		AccessibleObjects.put (new LONG (handle), this);
 		if (DEBUG) print("new AccessibleObject: " + handle + " control=" + accessible.control + " lw=" + isLightweight);
 	}
-	
+
 	static void print (String str) {
 		System.out.println (str);
 	}
-	
+
 	static int size(Collection<?> listeners) {
 		return listeners == null ? 0 : listeners.size();
 	}
@@ -77,7 +77,7 @@ class AccessibleObject {
 		}
 		return null;
 	}
-	
+
 	static long /*int*/ atkAction_do_action (long /*int*/ atkObject, long /*int*/ index) {
 		if (DEBUG) print ("-->atkAction_do_action");
 		AccessibleObject object = getAccessibleObject (atkObject);
@@ -100,7 +100,7 @@ class AccessibleObject {
 		if (iface != null && iface.do_action != 0) {
 			parentResult = ATK.call (iface.do_action, atkObject, index);
 		}
-		return parentResult; 	
+		return parentResult;
 	}
 
 	static long /*int*/ atkAction_get_n_actions (long /*int*/ atkObject) {
@@ -124,9 +124,9 @@ class AccessibleObject {
 		if (iface != null && iface.get_n_actions != 0) {
 			parentResult = ATK.call (iface.get_n_actions, atkObject);
 		}
-		return parentResult; 	
+		return parentResult;
 	}
-	
+
 	static long /*int*/ atkAction_get_description (long /*int*/ atkObject, long /*int*/ index) {
 		if (DEBUG) print ("-->atkAction_get_description");
 		AccessibleObject object = getAccessibleObject (atkObject);
@@ -151,9 +151,9 @@ class AccessibleObject {
 		if (iface != null && iface.get_description != 0) {
 			parentResult = ATK.call (iface.get_description, atkObject, index);
 		}
-		return parentResult; 	
+		return parentResult;
 	}
-	
+
 	static long /*int*/ atkAction_get_keybinding (long /*int*/ atkObject, long /*int*/ index) {
 		if (DEBUG) print ("-->atkAction_get_keybinding");
 		AccessibleObject object = getAccessibleObject (atkObject);
@@ -175,7 +175,7 @@ class AccessibleObject {
 				}
 				if (event.result != null) {
 					if (keybindingPtr != -1) OS.g_free (keybindingPtr);
-					return keybindingPtr = getStringPtr (event.result); 
+					return keybindingPtr = getStringPtr (event.result);
 				}
 			}
 			List<AccessibleListener> listeners2 = accessible.accessibleListeners;
@@ -186,11 +186,11 @@ class AccessibleObject {
 				if (parentResult != 0) event.result = getString (parentResult);
 				for (int i = 0; i < length; i++) {
 					AccessibleListener listener = listeners2.get(i);
-					listener.getKeyboardShortcut (event);				
-				} 
+					listener.getKeyboardShortcut (event);
+				}
 				if (event.result != null) {
 					if (keybindingPtr != -1) OS.g_free (keybindingPtr);
-					return keybindingPtr = getStringPtr (event.result); 
+					return keybindingPtr = getStringPtr (event.result);
 				}
 			}
 		}
@@ -230,8 +230,8 @@ class AccessibleObject {
 					if (parentResult != 0) event.result = getString (parentResult);
 					for (int i = 0; i < length; i++) {
 						AccessibleControlListener listener = listeners2.get(i);
-						listener.getDefaultAction (event);				
-					} 
+						listener.getDefaultAction (event);
+					}
 					if (event.result != null) {
 						if (actionNamePtr != -1) OS.g_free (actionNamePtr);
 						return actionNamePtr = getStringPtr (event.result);
@@ -241,7 +241,7 @@ class AccessibleObject {
 		}
 		return parentResult;
 	}
-	
+
 	static AtkComponentIface getComponentIface (long /*int*/ atkObject) {
 		if (ATK.g_type_is_a (OS.g_type_parent (OS.G_OBJECT_TYPE (atkObject)), ATK.ATK_TYPE_COMPONENT())) {
 			AtkComponentIface iface = new AtkComponentIface ();
@@ -281,7 +281,7 @@ class AccessibleObject {
 				if (coord_type == ATK.ATK_XY_WINDOW) {
 					windowPoint (object, topWindowX, topWindowY);
 					event.x += topWindowX [0];
-					event.y += topWindowY [0]; 
+					event.y += topWindowY [0];
 				}
 				for (int i = 0; i < length; i++) {
 					AccessibleControlListener listener = listeners.get (i);
@@ -325,7 +325,7 @@ class AccessibleObject {
 				if (coord_type == ATK.ATK_XY_WINDOW) {
 					windowPoint (object, topWindowX, topWindowY);
 					event.x += topWindowX [0];
-					event.y += topWindowY [0]; 
+					event.y += topWindowY [0];
 				}
 				for (int i = 0; i < length; i++) {
 					AccessibleControlListener listener = listeners.get (i);
@@ -388,17 +388,17 @@ class AccessibleObject {
 				if (coord_type == ATK.ATK_XY_WINDOW) {
 					windowPoint (object, topWindowX, topWindowY);
 					event.x += topWindowX [0];
-					event.y += topWindowY [0]; 
+					event.y += topWindowY [0];
 				}
 				for (int i = 0; i < length; i++) {
 					AccessibleControlListener listener = listeners.get (i);
-					listener.getChildAtPoint (event);				
+					listener.getChildAtPoint (event);
 				}
 				if (event.childID == object.id) event.childID = ACC.CHILDID_SELF;
 				Accessible result = event.accessible;
 				AccessibleObject accObj = result != null ? result.getAccessibleObject() : object.getChildByID (event.childID);
 				if (accObj != null) {
-					return OS.g_object_ref (accObj.handle);	
+					return OS.g_object_ref (accObj.handle);
 				}
 			}
 		}
@@ -408,9 +408,9 @@ class AccessibleObject {
 			parentResult = ATK.call (iface.ref_accessible_at_point, atkObject, x, y, coord_type);
 		}
 		return parentResult;
-	}	
+	}
 
-	
+
 	static AtkEditableTextIface getEditableTextIface (long /*int*/ atkObject) {
 		if (ATK.g_type_is_a (OS.g_type_parent (OS.G_OBJECT_TYPE (atkObject)), ATK.ATK_TYPE_EDITABLE_TEXT())) {
 			AtkEditableTextIface iface = new AtkEditableTextIface ();
@@ -419,7 +419,7 @@ class AccessibleObject {
 		}
 		return null;
 	}
-	
+
 //	gboolean atk_editable_text_set_run_attributes(AtkEditableText *text, AtkAttributeSet *attrib_set, gint start_offset, gint end_offset);
 	static long /*int*/ atkEditableText_set_run_attributes (long /*int*/ atkObject, long /*int*/ attrib_set, long /*int*/ start_offset, long /*int*/ end_offset) {
 		if (DEBUG) print ("-->atkEditableText_set_run_attributes");
@@ -502,7 +502,7 @@ class AccessibleObject {
 									createFont = true;
 								}
 							} else if (name.equals(getString(ATK.atk_text_attribute_get_name(ATK.ATK_TEXT_ATTR_STRETCH)))) {
-								//"ultra_condensed", "extra_condensed", "condensed", "semi_condensed", "normal", "semi_expanded", "expanded", "extra_expanded" or "ultra_expanded" 
+								//"ultra_condensed", "extra_condensed", "condensed", "semi_condensed", "normal", "semi_expanded", "expanded", "extra_expanded" or "ultra_expanded"
 								int stretch = -1;
 								if (value.equals("ultra_condensed")) stretch = OS.PANGO_STRETCH_ULTRA_CONDENSED;
 								else if (value.equals("extra_condensed")) stretch = OS.PANGO_STRETCH_EXTRA_CONDENSED;
@@ -696,7 +696,7 @@ class AccessibleObject {
 		}
 		return parentResult;
 	}
-	
+
 //	void atk_editable_text_delete_text (AtkEditableText *text, gint start_pos, gint end_pos);
 	static long /*int*/ atkEditableText_delete_text (long /*int*/ atkObject, long /*int*/ start_pos, long /*int*/ end_pos) {
 		if (DEBUG) print ("-->atkEditableText_delete_text");
@@ -750,7 +750,7 @@ class AccessibleObject {
 		}
 		return parentResult;
 	}
-	
+
 	static AtkHypertextIface getHypertextIface (long /*int*/ atkObject) {
 		if (ATK.g_type_is_a (OS.g_type_parent (OS.G_OBJECT_TYPE (atkObject)), ATK.ATK_TYPE_HYPERTEXT())) {
 			AtkHypertextIface iface = new AtkHypertextIface ();
@@ -759,7 +759,7 @@ class AccessibleObject {
 		}
 		return null;
 	}
-	
+
 	static long /*int*/ atkHypertext_get_link (long /*int*/ atkObject, long /*int*/ link_index) {
 		if (DEBUG) print ("-->atkHypertext_get_link");
 		AccessibleObject object = getAccessibleObject (atkObject);
@@ -835,7 +835,7 @@ class AccessibleObject {
 		}
 		return parentResult;
 	}
-	
+
 	static AtkObjectClass getObjectClass (long /*int*/ atkObject) {
 		AtkObjectClass objectClass = new AtkObjectClass ();
 		ATK.memmove (objectClass, ATK.g_type_class_peek (OS.g_type_parent (OS.G_OBJECT_TYPE (atkObject))));
@@ -947,7 +947,7 @@ class AccessibleObject {
 					parentResult = OS.g_slist_append(parentResult, attrPtr);
 				}
 				//TODO - tabStops
-				
+
 				/* Check for group attributes. */
 				int level = (event.groupLevel != -1) ? event.groupLevel : 0;
 				int setsize = (event.groupCount != -1) ? event.groupCount : 0;
@@ -989,7 +989,7 @@ class AccessibleObject {
 					ATK.memmove(attrPtr, attr, AtkAttribute.sizeof);
 					parentResult = OS.g_slist_append(parentResult, attrPtr);
 				}
-				
+
 				if (event.attributes != null) {
 					int end = event.attributes.length / 2 * 2;
 					for (int i = 0; i < end; i+= 2) {
@@ -1023,7 +1023,7 @@ class AccessibleObject {
 				if (parentResult != 0) event.result = getString (parentResult);
 				for (int i = 0; i < length; i++) {
 					AccessibleListener listener = listeners.get (i);
-					listener.getName (event);				
+					listener.getName (event);
 				}
 				if (DEBUG) print ("---> " + event.result);
 				if (event.result == null) return parentResult;
@@ -1032,14 +1032,14 @@ class AccessibleObject {
 			}
 		}
 		return parentResult;
-	}	
+	}
 
 	static long /*int*/ atkObject_get_n_children (long /*int*/ atkObject) {
 		if (DEBUG) print ("-->atkObject_get_n_children: " + atkObject);
 		AccessibleObject object = getAccessibleObject (atkObject);
 		long /*int*/ parentResult = 0;
 		AtkObjectClass objectClass = getObjectClass (atkObject);
-		if (objectClass.get_n_children != 0) { 
+		if (objectClass.get_n_children != 0) {
 			parentResult = ATK.call (objectClass.get_n_children, atkObject);
 		}
 		if (object != null && object.id == ACC.CHILDID_SELF) {
@@ -1119,7 +1119,7 @@ class AccessibleObject {
 				event.detail = -1;
 				for (int i = 0; i < length; i++) {
 					AccessibleControlListener listener = listeners.get (i);
-					listener.getRole (event);				
+					listener.getRole (event);
 				}
 				if (DEBUG) print ("---> " + event.detail);
 				if (event.detail != -1) {
@@ -1204,14 +1204,14 @@ class AccessibleObject {
 				if (event.accessible != null) {
 					AccessibleObject accObject = event.accessible.getAccessibleObject();
 					if (accObject != null) {
-						return OS.g_object_ref (accObject.handle);	
+						return OS.g_object_ref (accObject.handle);
 					}
 				}
 			}
 			object.updateChildren ();
-			AccessibleObject accObject = object.getChildByIndex ((int)/*64*/index);	
+			AccessibleObject accObject = object.getChildByIndex ((int)/*64*/index);
 			if (accObject != null) {
-				return OS.g_object_ref (accObject.handle);	
+				return OS.g_object_ref (accObject.handle);
 			}
 		}
 		AtkObjectClass objectClass = getObjectClass (atkObject);
@@ -1224,7 +1224,7 @@ class AccessibleObject {
 		AccessibleObject object = getAccessibleObject (atkObject);
 		long /*int*/ parentResult = 0;
 		AtkObjectClass objectClass = getObjectClass (atkObject);
-		if (objectClass.ref_state_set != 0) { 
+		if (objectClass.ref_state_set != 0) {
 			parentResult = ATK.call (objectClass.ref_state_set, atkObject);
 		}
 		if (object != null) {
@@ -1239,7 +1239,7 @@ class AccessibleObject {
 				for (int i = 0; i < length; i++) {
 					AccessibleControlListener listener = listeners.get (i);
 					listener.getState (event);
-				} 
+				}
 				if (event.detail != -1) {
 					/*	Convert from win32 state values to atk state values */
 					int state = event.detail;
@@ -1251,7 +1251,7 @@ class AccessibleObject {
 					if ((state & ACC.STATE_HOTTRACKED) != 0) ATK.atk_state_set_add_state (set, ATK.ATK_STATE_ARMED);
 					if ((state & ACC.STATE_INVISIBLE) == 0) ATK.atk_state_set_add_state (set, ATK.ATK_STATE_VISIBLE);
 					if ((state & ACC.STATE_MULTISELECTABLE) != 0) ATK.atk_state_set_add_state (set, ATK.ATK_STATE_MULTISELECTABLE);
-					if ((state & ACC.STATE_OFFSCREEN) == 0) ATK.atk_state_set_add_state (set, ATK.ATK_STATE_SHOWING);												
+					if ((state & ACC.STATE_OFFSCREEN) == 0) ATK.atk_state_set_add_state (set, ATK.ATK_STATE_SHOWING);
 					if ((state & ACC.STATE_PRESSED) != 0) ATK.atk_state_set_add_state (set, ATK.ATK_STATE_PRESSED);
 					if ((state & ACC.STATE_READONLY) == 0) ATK.atk_state_set_add_state (set, ATK.ATK_STATE_EDITABLE);
 					if ((state & ACC.STATE_SELECTABLE) != 0) ATK.atk_state_set_add_state (set, ATK.ATK_STATE_SELECTABLE);
@@ -1271,7 +1271,7 @@ class AccessibleObject {
 		}
 		return parentResult;
 	}
-	
+
 	static AtkSelectionIface getSelectionIface (long /*int*/ atkObject) {
 		if (ATK.g_type_is_a (OS.g_type_parent (OS.G_OBJECT_TYPE (atkObject)), ATK.ATK_TYPE_SELECTION())) {
 			AtkSelectionIface iface = new AtkSelectionIface ();
@@ -1280,7 +1280,7 @@ class AccessibleObject {
 		}
 		return null;
 	}
-	
+
 	static long /*int*/ atkSelection_is_child_selected (long /*int*/ atkObject, long /*int*/ index) {
 		if (DEBUG) print ("-->atkSelection_is_child_selected");
 		AccessibleObject object = getAccessibleObject (atkObject);
@@ -1293,7 +1293,7 @@ class AccessibleObject {
 			Accessible accessible = object.accessible;
 			List<AccessibleControlListener> listeners = accessible.accessibleControlListeners;
 			int length = size(listeners);
-			if (length > 0) {	
+			if (length > 0) {
 				AccessibleControlEvent event = new AccessibleControlEvent (accessible);
 				event.childID = object.id;
 				for (int i = 0; i < length; i++) {
@@ -1302,7 +1302,7 @@ class AccessibleObject {
 				}
 				Accessible result = event.accessible;
 				AccessibleObject accessibleObject = result != null ? result.getAccessibleObject() : object.getChildByID (event.childID);
-				if (accessibleObject != null) { 
+				if (accessibleObject != null) {
 					return accessibleObject.index == index ? 1 : 0;
 				}
 			}
@@ -1322,17 +1322,17 @@ class AccessibleObject {
 			Accessible accessible = object.accessible;
 			List<AccessibleControlListener> listeners = accessible.accessibleControlListeners;
 			int length = size(listeners);
-			if (length > 0) {	
+			if (length > 0) {
 				AccessibleControlEvent event = new AccessibleControlEvent (accessible);
 				event.childID = object.id;
 				for (int i = 0; i < length; i++) {
 					AccessibleControlListener listener = listeners.get (i);
 					listener.getSelection (event);
-				} 
+				}
 				AccessibleObject accObj = object.getChildByID (event.childID);
 				if (accObj != null) {
 					if (parentResult != 0) OS.g_object_unref (parentResult);
-					OS.g_object_ref (accObj.handle);	
+					OS.g_object_ref (accObj.handle);
 					return accObj.handle;
 				}
 			}
@@ -1348,7 +1348,7 @@ class AccessibleObject {
 		}
 		return null;
 	}
-	
+
 	static long /*int*/ atkTable_ref_at (long /*int*/ atkObject, long /*int*/ row, long /*int*/ column) {
 		if (DEBUG) print ("-->atkTable_ref_at");
 		AccessibleObject object = getAccessibleObject (atkObject);
@@ -1642,7 +1642,7 @@ class AccessibleObject {
 		}
 		return parentResult;
 	}
-	
+
 	static long /*int*/ atkTable_get_column_description (long /*int*/ atkObject, long /*int*/ column) {
 		if (DEBUG) print ("-->atkTable_get_column_description");
 		AccessibleObject object = getAccessibleObject (atkObject);
@@ -1670,7 +1670,7 @@ class AccessibleObject {
 		}
 		return parentResult;
 	}
-	
+
 	static long /*int*/ atkTable_get_column_header (long /*int*/ atkObject, long /*int*/ column) {
 		if (DEBUG) print ("-->atkTable_get_column_header");
 		AccessibleObject object = getAccessibleObject (atkObject);
@@ -1699,7 +1699,7 @@ class AccessibleObject {
 		}
 		return parentResult;
 	}
-	
+
 	static long /*int*/ atkTable_get_row_description (long /*int*/ atkObject, long /*int*/ row) {
 		if (DEBUG) print ("-->atkTable_get_row_description");
 		AccessibleObject object = getAccessibleObject (atkObject);
@@ -2012,7 +2012,7 @@ class AccessibleObject {
 		}
 		return null;
 	}
-	
+
 	static long /*int*/ atkText_get_character_extents (long /*int*/ atkObject, long /*int*/ offset, long /*int*/ x, long /*int*/ y, long /*int*/ width, long /*int*/ height, long /*int*/ coords) {
 		if (DEBUG) print ("-->atkText_get_character_extents");
 		AccessibleObject object = getAccessibleObject (atkObject);
@@ -2037,7 +2037,7 @@ class AccessibleObject {
 				OS.memmove (x, new int[]{event.x}, 4);
 				OS.memmove (y, new int[]{event.y}, 4);
 				OS.memmove (width, new int[]{event.width}, 4);
-				OS.memmove (height, new int[]{event.height}, 4);				
+				OS.memmove (height, new int[]{event.height}, 4);
 				return 0;
 			}
 		}
@@ -2047,21 +2047,21 @@ class AccessibleObject {
 		}
 		return 0;
 	}
-	
+
 	static String getString (long /*int*/ strPtr) {
 		int length = OS.strlen (strPtr);
 		byte [] buffer = new byte [length];
 		OS.memmove (buffer, strPtr, length);
 		return new String (Converter.mbcsToWcs (null, buffer));
 	}
-	
+
 	static long /*int*/ getStringPtr (String str) {
-		byte [] buffer = Converter.wcsToMbcs(null, str != null ? str : "", true); 
+		byte [] buffer = Converter.wcsToMbcs(null, str != null ? str : "", true);
 		long /*int*/ ptr = OS.g_malloc(buffer.length);
 		OS.memmove(ptr, buffer, buffer.length);
 		return ptr;
 	}
-	
+
 	static long /*int*/ atkText_get_range_extents (long /*int*/ atkObject, long /*int*/ start_offset, long /*int*/ end_offset, long /*int*/ coord_type, long /*int*/ rect) {
 		if (DEBUG) print ("-->atkText_get_range_extents");
 		AccessibleObject object = getAccessibleObject (atkObject);
@@ -2098,7 +2098,7 @@ class AccessibleObject {
 		}
 		return 0;
 	}
-	
+
 	static long /*int*/ atkText_get_run_attributes (long /*int*/ atkObject, long /*int*/ offset, long /*int*/ start_offset, long /*int*/ end_offset) {
 		if (DEBUG) print ("-->atkText_get_run_attributes");
 		AccessibleObject object = getAccessibleObject (atkObject);
@@ -2156,31 +2156,31 @@ class AccessibleObject {
 						attr.value = ATK.g_strdup (OS.pango_font_description_get_family (font.handle));
 						ATK.memmove(attrPtr, attr, AtkAttribute.sizeof);
 						result = OS.g_slist_append(result, attrPtr);
-						
+
 						attrPtr = OS.g_malloc(AtkAttribute.sizeof);
 						attr.name = ATK.g_strdup (ATK.atk_text_attribute_get_name(ATK.ATK_TEXT_ATTR_SIZE));
 						attr.value = getStringPtr (String.valueOf (OS.pango_font_description_get_size(font.handle) / OS.PANGO_SCALE));
 						ATK.memmove(attrPtr, attr, AtkAttribute.sizeof);
 						result = OS.g_slist_append(result, attrPtr);
-						
+
 						attrPtr = OS.g_malloc(AtkAttribute.sizeof);
 						attr.name = ATK.g_strdup (ATK.atk_text_attribute_get_name(ATK.ATK_TEXT_ATTR_STYLE));
 						attr.value = ATK.g_strdup (ATK.atk_text_attribute_get_value(ATK.ATK_TEXT_ATTR_STYLE, OS.pango_font_description_get_style(font.handle)));
 						ATK.memmove(attrPtr, attr, AtkAttribute.sizeof);
 						result = OS.g_slist_append(result, attrPtr);
-						
+
 						attrPtr = OS.g_malloc(AtkAttribute.sizeof);
 						attr.name = ATK.g_strdup (ATK.atk_text_attribute_get_name(ATK.ATK_TEXT_ATTR_VARIANT));
 						attr.value = ATK.g_strdup (ATK.atk_text_attribute_get_value(ATK.ATK_TEXT_ATTR_VARIANT, OS.pango_font_description_get_variant(font.handle)));
 						ATK.memmove(attrPtr, attr, AtkAttribute.sizeof);
 						result = OS.g_slist_append(result, attrPtr);
-						
+
 						attrPtr = OS.g_malloc(AtkAttribute.sizeof);
 						attr.name = ATK.g_strdup (ATK.atk_text_attribute_get_name(ATK.ATK_TEXT_ATTR_STRETCH));
 						attr.value = ATK.g_strdup (ATK.atk_text_attribute_get_value(ATK.ATK_TEXT_ATTR_STRETCH, OS.pango_font_description_get_stretch(font.handle)));
 						ATK.memmove(attrPtr, attr, AtkAttribute.sizeof);
 						result = OS.g_slist_append(result, attrPtr);
-						
+
 						attrPtr = OS.g_malloc(AtkAttribute.sizeof);
 						attr.name = ATK.g_strdup (ATK.atk_text_attribute_get_name(ATK.ATK_TEXT_ATTR_WEIGHT));
 						attr.value = getStringPtr (String.valueOf (OS.pango_font_description_get_weight(font.handle)));
@@ -2240,7 +2240,7 @@ class AccessibleObject {
 				if (coords == ATK.ATK_XY_WINDOW) {
 					windowPoint (object, topWindowX, topWindowY);
 					event.x += topWindowX [0];
-					event.y += topWindowY [0]; 
+					event.y += topWindowY [0];
 				}
 				for (int i = 0; i < length; i++) {
 					AccessibleTextExtendedListener listener = listeners.get(i);
@@ -2307,7 +2307,7 @@ class AccessibleObject {
 		}
 		return parentResult;
 	}
-	
+
 	static long /*int*/ atkText_set_caret_offset (long /*int*/ atkObject, long /*int*/ offset) {
 		if (DEBUG) print ("-->atkText_set_caret_offset");
 		AccessibleObject object = getAccessibleObject (atkObject);
@@ -2387,14 +2387,14 @@ class AccessibleObject {
 				event.offset = (int)/*64*/parentResult;
 				for (int i = 0; i < length; i++) {
 					AccessibleTextListener listener = listeners2.get(i);
-					listener.getCaretOffset (event);	
+					listener.getCaretOffset (event);
 				}
 				return event.offset;
 			}
 		}
-		return parentResult; 	
+		return parentResult;
 	}
-	
+
 	static long /*int*/ atkText_get_bounded_ranges (long /*int*/ atkObject, long /*int*/ rect, long /*int*/ coord_type, long /*int*/ x_clip_type, long /*int*/ y_clip_type) {
 		if (DEBUG) print ("-->atkText_get_bounded_ranges");
 		AccessibleObject object = getAccessibleObject (atkObject);
@@ -2455,7 +2455,7 @@ class AccessibleObject {
 		}
 		return parentResult;
 	}
-	
+
 	static long /*int*/ atkText_get_character_at_offset (long /*int*/ atkObject, long /*int*/ offset) {
 		if (DEBUG) print ("-->atkText_get_character_at_offset");
 		AccessibleObject object = getAccessibleObject (atkObject);
@@ -2637,7 +2637,7 @@ class AccessibleObject {
 				if (end_offset == -1) {
 					end_offset = text.length ();
 				} else {
-					end_offset = Math.min (end_offset, text.length ());	
+					end_offset = Math.min (end_offset, text.length ());
 				}
 				start_offset = Math.min (start_offset, end_offset);
 				text = text.substring ((int)/*64*/start_offset, (int)/*64*/end_offset);
@@ -2664,13 +2664,13 @@ class AccessibleObject {
 				event.start = event.end = (int)/*64*/offset_value;
 				event.count = 1;
 				switch ((int)/*64*/boundary_type) {
-					case ATK.ATK_TEXT_BOUNDARY_CHAR: event.type = ACC.TEXT_BOUNDARY_CHAR; break; 
-					case ATK.ATK_TEXT_BOUNDARY_WORD_START: event.type = ACC.TEXT_BOUNDARY_WORD; break; 
-					case ATK.ATK_TEXT_BOUNDARY_WORD_END: event.type = ACC.TEXT_BOUNDARY_WORD; break; 
-					case ATK.ATK_TEXT_BOUNDARY_SENTENCE_START: event.type = ACC.TEXT_BOUNDARY_SENTENCE; break; 
-					case ATK.ATK_TEXT_BOUNDARY_SENTENCE_END: event.type = ACC.TEXT_BOUNDARY_SENTENCE; break; 
-					case ATK.ATK_TEXT_BOUNDARY_LINE_START: event.type = ACC.TEXT_BOUNDARY_LINE; break; 
-					case ATK.ATK_TEXT_BOUNDARY_LINE_END: event.type = ACC.TEXT_BOUNDARY_LINE; break; 
+					case ATK.ATK_TEXT_BOUNDARY_CHAR: event.type = ACC.TEXT_BOUNDARY_CHAR; break;
+					case ATK.ATK_TEXT_BOUNDARY_WORD_START: event.type = ACC.TEXT_BOUNDARY_WORD; break;
+					case ATK.ATK_TEXT_BOUNDARY_WORD_END: event.type = ACC.TEXT_BOUNDARY_WORD; break;
+					case ATK.ATK_TEXT_BOUNDARY_SENTENCE_START: event.type = ACC.TEXT_BOUNDARY_SENTENCE; break;
+					case ATK.ATK_TEXT_BOUNDARY_SENTENCE_END: event.type = ACC.TEXT_BOUNDARY_SENTENCE; break;
+					case ATK.ATK_TEXT_BOUNDARY_LINE_START: event.type = ACC.TEXT_BOUNDARY_LINE; break;
+					case ATK.ATK_TEXT_BOUNDARY_LINE_END: event.type = ACC.TEXT_BOUNDARY_LINE; break;
 				}
 				int eventStart = event.start;
 				int eventEnd = event.end;
@@ -2679,8 +2679,8 @@ class AccessibleObject {
 					listener.getText(event);
 				}
 				switch ((int)/*64*/boundary_type) {
-					case ATK.ATK_TEXT_BOUNDARY_WORD_START: 
-					case ATK.ATK_TEXT_BOUNDARY_SENTENCE_START: 
+					case ATK.ATK_TEXT_BOUNDARY_WORD_START:
+					case ATK.ATK_TEXT_BOUNDARY_SENTENCE_START:
 					case ATK.ATK_TEXT_BOUNDARY_LINE_START:
 						if (event.end < charCount) {
 							int start = event.start;
@@ -2701,8 +2701,8 @@ class AccessibleObject {
 							}
 						}
 						break;
-					case ATK.ATK_TEXT_BOUNDARY_WORD_END: 
-					case ATK.ATK_TEXT_BOUNDARY_SENTENCE_END: 
+					case ATK.ATK_TEXT_BOUNDARY_WORD_END:
+					case ATK.ATK_TEXT_BOUNDARY_SENTENCE_END:
 					case ATK.ATK_TEXT_BOUNDARY_LINE_END:
 						if (0 < event.start) {
 							int end = event.end;
@@ -2761,7 +2761,7 @@ class AccessibleObject {
 						break;
 					}
 					case ATK.ATK_TEXT_BOUNDARY_WORD_END: {
-						int previousWordEnd = previousIndexOfNotChar (text, " \n", offset); 
+						int previousWordEnd = previousIndexOfNotChar (text, " \n", offset);
 						if (previousWordEnd == -1 || previousWordEnd != offset - 1) {
 							offset = nextIndexOfNotChar (text, " \n", offset);
 						}
@@ -2890,7 +2890,7 @@ class AccessibleObject {
 				OS.memmove (end_offset, new int[] {endBounds}, 4);
 				text = text.substring (startBounds, endBounds);
 				return getStringPtr (text);
-			} 
+			}
 		}
 		AtkTextIface iface = getTextIface (atkObject);
 		if (iface != null && iface.get_text_after_offset != 0) {
@@ -2912,13 +2912,13 @@ class AccessibleObject {
 				event.start = event.end = (int)/*64*/offset_value;
 				event.count = 0;
 				switch ((int)/*64*/boundary_type) {
-					case ATK.ATK_TEXT_BOUNDARY_CHAR: event.type = ACC.TEXT_BOUNDARY_CHAR; break; 
-					case ATK.ATK_TEXT_BOUNDARY_WORD_START: event.type = ACC.TEXT_BOUNDARY_WORD; break; 
-					case ATK.ATK_TEXT_BOUNDARY_WORD_END: event.type = ACC.TEXT_BOUNDARY_WORD; break; 
-					case ATK.ATK_TEXT_BOUNDARY_SENTENCE_START: event.type = ACC.TEXT_BOUNDARY_SENTENCE; break; 
-					case ATK.ATK_TEXT_BOUNDARY_SENTENCE_END: event.type = ACC.TEXT_BOUNDARY_SENTENCE; break; 
-					case ATK.ATK_TEXT_BOUNDARY_LINE_START: event.type = ACC.TEXT_BOUNDARY_LINE; break; 
-					case ATK.ATK_TEXT_BOUNDARY_LINE_END: event.type = ACC.TEXT_BOUNDARY_LINE; break; 
+					case ATK.ATK_TEXT_BOUNDARY_CHAR: event.type = ACC.TEXT_BOUNDARY_CHAR; break;
+					case ATK.ATK_TEXT_BOUNDARY_WORD_START: event.type = ACC.TEXT_BOUNDARY_WORD; break;
+					case ATK.ATK_TEXT_BOUNDARY_WORD_END: event.type = ACC.TEXT_BOUNDARY_WORD; break;
+					case ATK.ATK_TEXT_BOUNDARY_SENTENCE_START: event.type = ACC.TEXT_BOUNDARY_SENTENCE; break;
+					case ATK.ATK_TEXT_BOUNDARY_SENTENCE_END: event.type = ACC.TEXT_BOUNDARY_SENTENCE; break;
+					case ATK.ATK_TEXT_BOUNDARY_LINE_START: event.type = ACC.TEXT_BOUNDARY_LINE; break;
+					case ATK.ATK_TEXT_BOUNDARY_LINE_END: event.type = ACC.TEXT_BOUNDARY_LINE; break;
 				}
 				int eventStart = event.start;
 				int eventEnd = event.end;
@@ -2927,8 +2927,8 @@ class AccessibleObject {
 					listener.getText(event);
 				}
 				switch ((int)/*64*/boundary_type) {
-					case ATK.ATK_TEXT_BOUNDARY_WORD_START: 
-					case ATK.ATK_TEXT_BOUNDARY_SENTENCE_START: 
+					case ATK.ATK_TEXT_BOUNDARY_WORD_START:
+					case ATK.ATK_TEXT_BOUNDARY_SENTENCE_START:
 					case ATK.ATK_TEXT_BOUNDARY_LINE_START:
 						if (event.end < charCount) {
 							int start = event.start;
@@ -2949,8 +2949,8 @@ class AccessibleObject {
 							}
 						}
 						break;
-					case ATK.ATK_TEXT_BOUNDARY_WORD_END: 
-					case ATK.ATK_TEXT_BOUNDARY_SENTENCE_END: 
+					case ATK.ATK_TEXT_BOUNDARY_WORD_END:
+					case ATK.ATK_TEXT_BOUNDARY_SENTENCE_END:
 					case ATK.ATK_TEXT_BOUNDARY_LINE_END:
 						if (0 < event.start) {
 							int end = event.end;
@@ -3081,7 +3081,7 @@ class AccessibleObject {
 				OS.memmove (end_offset, new int[] {endBounds}, 4);
 				text = text.substring (startBounds, endBounds);
 				return getStringPtr (text);
-			} 
+			}
 		}
 		AtkTextIface iface = getTextIface (atkObject);
 		if (iface != null && iface.get_text_at_offset != 0) {
@@ -3103,13 +3103,13 @@ class AccessibleObject {
 				event.start = event.end = (int)/*64*/offset_value;
 				event.count = -1;
 				switch ((int)/*64*/boundary_type) {
-					case ATK.ATK_TEXT_BOUNDARY_CHAR: event.type = ACC.TEXT_BOUNDARY_CHAR; break; 
-					case ATK.ATK_TEXT_BOUNDARY_WORD_START: event.type = ACC.TEXT_BOUNDARY_WORD; break; 
-					case ATK.ATK_TEXT_BOUNDARY_WORD_END: event.type = ACC.TEXT_BOUNDARY_WORD; break; 
-					case ATK.ATK_TEXT_BOUNDARY_SENTENCE_START: event.type = ACC.TEXT_BOUNDARY_SENTENCE; break; 
-					case ATK.ATK_TEXT_BOUNDARY_SENTENCE_END: event.type = ACC.TEXT_BOUNDARY_SENTENCE; break; 
-					case ATK.ATK_TEXT_BOUNDARY_LINE_START: event.type = ACC.TEXT_BOUNDARY_LINE; break; 
-					case ATK.ATK_TEXT_BOUNDARY_LINE_END: event.type = ACC.TEXT_BOUNDARY_LINE; break; 
+					case ATK.ATK_TEXT_BOUNDARY_CHAR: event.type = ACC.TEXT_BOUNDARY_CHAR; break;
+					case ATK.ATK_TEXT_BOUNDARY_WORD_START: event.type = ACC.TEXT_BOUNDARY_WORD; break;
+					case ATK.ATK_TEXT_BOUNDARY_WORD_END: event.type = ACC.TEXT_BOUNDARY_WORD; break;
+					case ATK.ATK_TEXT_BOUNDARY_SENTENCE_START: event.type = ACC.TEXT_BOUNDARY_SENTENCE; break;
+					case ATK.ATK_TEXT_BOUNDARY_SENTENCE_END: event.type = ACC.TEXT_BOUNDARY_SENTENCE; break;
+					case ATK.ATK_TEXT_BOUNDARY_LINE_START: event.type = ACC.TEXT_BOUNDARY_LINE; break;
+					case ATK.ATK_TEXT_BOUNDARY_LINE_END: event.type = ACC.TEXT_BOUNDARY_LINE; break;
 				}
 				int eventStart = event.start;
 				int eventEnd = event.end;
@@ -3120,8 +3120,8 @@ class AccessibleObject {
 				OS.memmove (start_offset, new int[] {event.start}, 4);
 				OS.memmove (end_offset, new int[] {event.end}, 4);
 				switch ((int)/*64*/boundary_type) {
-					case ATK.ATK_TEXT_BOUNDARY_WORD_START: 
-					case ATK.ATK_TEXT_BOUNDARY_SENTENCE_START: 
+					case ATK.ATK_TEXT_BOUNDARY_WORD_START:
+					case ATK.ATK_TEXT_BOUNDARY_SENTENCE_START:
 					case ATK.ATK_TEXT_BOUNDARY_LINE_START:
 						if (event.end < charCount) {
 							int start = event.start;
@@ -3142,8 +3142,8 @@ class AccessibleObject {
 							}
 						}
 						break;
-					case ATK.ATK_TEXT_BOUNDARY_WORD_END: 
-					case ATK.ATK_TEXT_BOUNDARY_SENTENCE_END: 
+					case ATK.ATK_TEXT_BOUNDARY_WORD_END:
+					case ATK.ATK_TEXT_BOUNDARY_SENTENCE_END:
 					case ATK.ATK_TEXT_BOUNDARY_LINE_END:
 						if (0 < event.start) {
 							int end = event.end;
@@ -3285,7 +3285,7 @@ class AccessibleObject {
 		}
 		return 0;
 	}
-	
+
 	static void setGValue (long /*int*/ value, Number number) {
 		if (number == null) return;
 		if (OS.G_VALUE_TYPE(value) != 0) OS.g_value_unset(value);
@@ -3312,7 +3312,7 @@ class AccessibleObject {
 		if (type == OS.G_TYPE_INT64()) return new Long(OS.g_value_get_int64(value));
 		return new Integer(OS.g_value_get_int(value));
 	}
-	
+
 	static AtkValueIface getValueIface (long /*int*/ atkObject) {
 		if (ATK.g_type_is_a (OS.g_type_parent (OS.G_OBJECT_TYPE (atkObject)), ATK.ATK_TYPE_VALUE())) {
 			AtkValueIface iface = new AtkValueIface ();
@@ -3426,7 +3426,7 @@ class AccessibleObject {
 		if (control == null || control.isDisposed()) return null;
 		return object;
 	}
-	
+
 	AccessibleObject getChildByID (int childId) {
 		if (childId == ACC.CHILDID_SELF) return this;
 		if (childId == ACC.CHILDID_NONE || childId == ACC.CHILDID_MULTIPLE) return null;
@@ -3438,12 +3438,12 @@ class AccessibleObject {
 		}
 		return null;
 	}
-	
+
 	AccessibleObject getChildByIndex (int childIndex) {
 		if (children != null && childIndex < children.length) return children [childIndex];
 		return null;
 	}
-	
+
 	String getText () {
 		List<AccessibleControlListener> listeners = accessible.accessibleControlListeners;
 		int length = size(listeners);
@@ -3465,7 +3465,7 @@ class AccessibleObject {
 			event.result = parentText;
 			for (int i = 0; i < length; i++) {
 				AccessibleControlListener listener = listeners.get (i);
-				listener.getValue (event);				
+				listener.getValue (event);
 			}
 			return event.result;
 		}
@@ -3506,7 +3506,7 @@ class AccessibleObject {
 		}
 		return 0;
 	}
-	
+
 	static void windowPoint (AccessibleObject object, int [] x, int [] y) {
 		long /*int*/ widget;
 		if (OS.GTK_VERSION >= OS.VERSION(2, 22, 0)) {
@@ -3531,7 +3531,7 @@ class AccessibleObject {
 		long /*int*/ window = OS.gtk_widget_get_window (topLevel);
 		OS.gdk_window_get_origin (window, x, y);
 	}
-	
+
 	static int nextIndexOfChar (String string, String searchChars, int startIndex) {
 		int result = string.length ();
 		for (int i = 0; i < searchChars.length (); i++) {
@@ -3544,10 +3544,10 @@ class AccessibleObject {
 
 	static int nextIndexOfNotChar (String string, String searchChars, int startIndex) {
 		int length = string.length ();
-		int index = startIndex; 
+		int index = startIndex;
 		while (index < length) {
 			char current = string.charAt (index);
-			if (searchChars.indexOf (current) == -1) break; 
+			if (searchChars.indexOf (current) == -1) break;
 			index++;
 		}
 		return index;
@@ -3567,15 +3567,15 @@ class AccessibleObject {
 
 	static int previousIndexOfNotChar (String string, String searchChars, int startIndex) {
 		if (startIndex < 0) return -1;
-		int index = startIndex - 1; 
+		int index = startIndex - 1;
 		while (index >= 0) {
 			char current = string.charAt (index);
-			if (searchChars.indexOf (current) == -1) break; 
+			if (searchChars.indexOf (current) == -1) break;
 			index--;
 		}
 		return index;
 	}
-	
+
 	void addRelation (int type, Accessible target) {
 		OS.atk_object_add_relationship(handle, toATKRelation(type), target.getAccessibleObject().handle);
 	}
@@ -3595,15 +3595,15 @@ class AccessibleObject {
 			OS.g_object_unref(handle);
 		}
 	}
-	
+
 	void removeRelation (int type, Accessible target) {
 		OS.atk_object_remove_relationship (handle, toATKRelation(type), target.getAccessibleObject().handle);
 	}
-	
+
 	void selectionChanged () {
 		OS.g_signal_emit_by_name (handle, ATK.selection_changed);
 	}
-	
+
 	void sendEvent(int event, Object eventData) {
 		switch (event) {
 			case ACC.EVENT_SELECTION_CHANGED:
@@ -3775,7 +3775,7 @@ class AccessibleObject {
 						e.childID = id;
 						for (int i = 0; i < length; i++) {
 							AccessibleTextListener listener = listeners2.get(i);
-							listener.getCaretOffset (e);	
+							listener.getCaretOffset (e);
 						}
 					}
 				}
@@ -3801,7 +3801,7 @@ class AccessibleObject {
 			}
 		}
 	}
-	
+
 	void sendEvent(int event, Object eventData, int childID) {
 		updateChildren ();
 		AccessibleObject accObject = getChildByID (childID);
@@ -3809,7 +3809,7 @@ class AccessibleObject {
 			accObject.sendEvent(event, eventData);
 		}
 	}
-	
+
 	void setFocus (int childID) {
 		updateChildren ();
 		AccessibleObject accObject = getChildByID (childID);
@@ -3818,7 +3818,7 @@ class AccessibleObject {
 			ATK.atk_object_notify_state_change(accObject.handle, ATK.ATK_STATE_FOCUSED, true);
 		}
 	}
-	
+
 	void textCaretMoved(int index) {
 		OS.g_signal_emit_by_name (handle, ATK.text_caret_moved, index);
 	}
@@ -3834,7 +3834,7 @@ class AccessibleObject {
 	void textSelectionChanged() {
 		OS.g_signal_emit_by_name (handle, ATK.text_selection_changed);
 	}
-	
+
 	void updateChildren () {
 		List<AccessibleControlListener> listeners = accessible.accessibleControlListeners;
 		int length = size(listeners);

@@ -212,7 +212,7 @@ Image(Device device) {
  * @exception SWTError <ul>
  *    <li>ERROR_NO_HANDLES if a handle could not be obtained for image creation</li>
  * </ul>
- * 
+ *
  * @see #dispose()
  */
 public Image(Device device, int width, int height) {

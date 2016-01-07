@@ -624,7 +624,7 @@ private int[] getAvailableClipboardTypes () {
 	OS.gdk_threads_leave();
 	if (selection_data != 0) {
 		try {
-			int length = OS.gtk_selection_data_get_length(selection_data); 
+			int length = OS.gtk_selection_data_get_length(selection_data);
 			int format = OS.gtk_selection_data_get_format(selection_data);
 			long /*int*/ data = OS.gtk_selection_data_get_data(selection_data);
 			if (length != 0) {

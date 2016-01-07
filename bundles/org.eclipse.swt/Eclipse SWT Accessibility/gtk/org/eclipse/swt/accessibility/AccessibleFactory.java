@@ -51,17 +51,17 @@ class AccessibleFactory {
 
 	/* Action callbacks */
 	static final Callback AtkActionCB_do_action;
-	static final Callback AtkActionCB_get_n_actions;	
+	static final Callback AtkActionCB_get_n_actions;
 	static final Callback AtkActionCB_get_description;
 	static final Callback AtkActionCB_get_keybinding;
-	static final Callback AtkActionCB_get_name;	
-	
+	static final Callback AtkActionCB_get_name;
+
 	/* Component callbacks */
 	static final Callback AtkComponentCB_get_extents;
 	static final Callback AtkComponentCB_get_position;
 	static final Callback AtkComponentCB_get_size;
 	static final Callback AtkComponentCB_ref_accessible_at_point;
-	
+
 	/* EditableText callbacks */
 	static final Callback AtkEditableTextCB_set_run_attributes;
 	static final Callback AtkEditableTextCB_set_text_contents;
@@ -75,18 +75,18 @@ class AccessibleFactory {
 	static final Callback AtkHypertextCB_get_link;
 	static final Callback AtkHypertextCB_get_n_links;
 	static final Callback AtkHypertextCB_get_link_index;
-	
+
 	/* Object callbacks */
 	static final Callback AtkObjectCB_get_description;
 	static final Callback AtkObjectCB_get_index_in_parent;
 	static final Callback AtkObjectCB_get_n_children;
 	static final Callback AtkObjectCB_get_name;
-	static final Callback AtkObjectCB_get_parent;	
+	static final Callback AtkObjectCB_get_parent;
 	static final Callback AtkObjectCB_get_role;
 	static final Callback AtkObjectCB_ref_child;
 	static final Callback AtkObjectCB_ref_state_set;
 	static final Callback AtkObjectCB_get_attributes;
-	
+
 	/* Selection callbacks */
 	static final Callback AtkSelectionCB_is_child_selected;
 	static final Callback AtkSelectionCB_ref_selection;
@@ -115,7 +115,7 @@ class AccessibleFactory {
 	static final Callback AtkTableCB_add_row_selection;
 	static final Callback AtkTableCB_remove_column_selection;
 	static final Callback AtkTableCB_remove_row_selection;
-	
+
 	/* Text callbacks */
 	static final Callback AtkTextCB_get_character_extents;
 	static final Callback AtkTextCB_get_range_extents;
@@ -135,18 +135,18 @@ class AccessibleFactory {
 	static final Callback AtkTextCB_get_character_at_offset;
 	static final Callback AtkTextCB_get_character_count;
 	static final Callback AtkTextCB_get_bounded_ranges;
-	
+
 	/* Value callbacks */
 	static final Callback AtkValueCB_get_current_value;
 	static final Callback AtkValueCB_get_maximum_value;
 	static final Callback AtkValueCB_get_minimum_value;
 	static final Callback AtkValueCB_set_current_value;
-	
+
 	static final Callback GObjectClass_finalize;
 	static final Callback AtkObjectFactoryCB_create_accessible;
-	
+
 	/* interface initialization callbacks */
-	static final Callback InitActionIfaceCB;		
+	static final Callback InitActionIfaceCB;
 	static final Callback InitComponentIfaceCB;
 	static final Callback InitEditableTextIfaceCB;
 	static final Callback InitHypertextIfaceCB;
@@ -249,7 +249,7 @@ class AccessibleFactory {
 		InitActionIfaceCB = newCallback (AccessibleFactory.class, "initActionIfaceCB", 1); //$NON-NLS-1$
 		GInterfaceInfo interfaceInfo = new GInterfaceInfo ();
 		interfaceInfo.interface_init = InitActionIfaceCB.getAddress ();
-		ActionIfaceDefinition = OS.g_malloc (GInterfaceInfo.sizeof);  
+		ActionIfaceDefinition = OS.g_malloc (GInterfaceInfo.sizeof);
 		OS.memmove (ActionIfaceDefinition, interfaceInfo, GInterfaceInfo.sizeof);
 		/* Component interface */
 		InitComponentIfaceCB = newCallback (AccessibleFactory.class, "initComponentIfaceCB", 1); //$NON-NLS-1$
@@ -261,37 +261,37 @@ class AccessibleFactory {
 		InitEditableTextIfaceCB = newCallback (AccessibleFactory.class, "initEditableTextIfaceCB", 1); //$NON-NLS-1$
 		interfaceInfo = new GInterfaceInfo ();
 		interfaceInfo.interface_init = InitEditableTextIfaceCB.getAddress ();
-		EditableTextIfaceDefinition = OS.g_malloc (GInterfaceInfo.sizeof);  
+		EditableTextIfaceDefinition = OS.g_malloc (GInterfaceInfo.sizeof);
 		OS.memmove (EditableTextIfaceDefinition, interfaceInfo, GInterfaceInfo.sizeof);
 		/* Hypertext interface */
 		InitHypertextIfaceCB = newCallback (AccessibleFactory.class, "initHypertextIfaceCB", 1); //$NON-NLS-1$
 		interfaceInfo = new GInterfaceInfo ();
 		interfaceInfo.interface_init = InitHypertextIfaceCB.getAddress ();
-		HypertextIfaceDefinition = OS.g_malloc (GInterfaceInfo.sizeof);  
+		HypertextIfaceDefinition = OS.g_malloc (GInterfaceInfo.sizeof);
 		OS.memmove (HypertextIfaceDefinition, interfaceInfo, GInterfaceInfo.sizeof);
 		/* Selection interface */
 		InitSelectionIfaceCB = newCallback (AccessibleFactory.class, "initSelectionIfaceCB", 1); //$NON-NLS-1$
 		interfaceInfo = new GInterfaceInfo ();
 		interfaceInfo.interface_init = InitSelectionIfaceCB.getAddress ();
-		SelectionIfaceDefinition = OS.g_malloc (GInterfaceInfo.sizeof);  
+		SelectionIfaceDefinition = OS.g_malloc (GInterfaceInfo.sizeof);
 		OS.memmove (SelectionIfaceDefinition, interfaceInfo, GInterfaceInfo.sizeof);
 		/* Text interface */
 		InitTableIfaceCB = newCallback (AccessibleFactory.class, "initTableIfaceCB", 1); //$NON-NLS-1$
 		interfaceInfo = new GInterfaceInfo ();
 		interfaceInfo.interface_init = InitTableIfaceCB.getAddress ();
-		TableIfaceDefinition = OS.g_malloc (GInterfaceInfo.sizeof);  
+		TableIfaceDefinition = OS.g_malloc (GInterfaceInfo.sizeof);
 		OS.memmove (TableIfaceDefinition, interfaceInfo, GInterfaceInfo.sizeof);
 		/* Text interface */
 		InitTextIfaceCB = newCallback (AccessibleFactory.class, "initTextIfaceCB", 1); //$NON-NLS-1$
 		interfaceInfo = new GInterfaceInfo ();
 		interfaceInfo.interface_init = InitTextIfaceCB.getAddress ();
-		TextIfaceDefinition = OS.g_malloc (GInterfaceInfo.sizeof);  
+		TextIfaceDefinition = OS.g_malloc (GInterfaceInfo.sizeof);
 		OS.memmove (TextIfaceDefinition, interfaceInfo, GInterfaceInfo.sizeof);
 		/* Value interface */
 		InitValueIfaceCB = newCallback (AccessibleFactory.class, "initValueIfaceCB", 1); //$NON-NLS-1$
 		interfaceInfo = new GInterfaceInfo ();
 		interfaceInfo.interface_init = InitValueIfaceCB.getAddress ();
-		ValueIfaceDefinition = OS.g_malloc (GInterfaceInfo.sizeof);  
+		ValueIfaceDefinition = OS.g_malloc (GInterfaceInfo.sizeof);
 		OS.memmove (ValueIfaceDefinition, interfaceInfo, GInterfaceInfo.sizeof);
 	}
 
@@ -308,7 +308,7 @@ class AccessibleFactory {
 		OS.memmove (buffer, typeName, widgetTypeNameLength);
 		return new String(Converter.mbcsToWcs(null, buffer));
 	}
-	
+
 	static long /*int*/ getParentType (long /*int*/ widgetType) {
 		LONG type = null;
 		while (widgetType != 0 && (type = Factories.get(new LONG(widgetType))) == null) {
@@ -323,8 +323,8 @@ class AccessibleFactory {
 		if (accessible == null) {
 			/*
 			* we don't care about this control, so create it with the parent's
-			* type so that its accessibility callbacks will not pass though here 
-			*/  
+			* type so that its accessibility callbacks will not pass though here
+			*/
 			long /*int*/ result = OS.g_object_new (getParentType(OS.G_OBJECT_TYPE (widget)), 0);
 			ATK.atk_object_initialize (result, widget);
 			return result;
@@ -342,12 +342,12 @@ class AccessibleFactory {
 		accessible.addRelations ();
 		return object.handle;
 	}
-	
+
 	static AccessibleObject createChildAccessible (Accessible accessible, int childId) {
 		long /*int*/ childType = getType (CHILD_TYPENAME, accessible, ATK.GTK_TYPE_ACCESSIBLE(), childId);
 		return new AccessibleObject(childType, 0, accessible, true);
 	}
-	
+
 	static void createAccessible (Accessible accessible) {
 		long /*int*/ controlHandle = accessible.getControlHandle ();
 		OS.gtk_widget_get_accessible(controlHandle);
@@ -431,7 +431,7 @@ class AccessibleFactory {
 			typeInfo.base_init = GTypeInfo_base_init_type.getAddress ();
 			typeInfo.class_size = (short) query.class_size;
 			typeInfo.instance_size = (short) query.instance_size;
-			long /*int*/ definition = OS.g_malloc (GTypeInfo.sizeof); 
+			long /*int*/ definition = OS.g_malloc (GTypeInfo.sizeof);
 			OS.memmove (definition, typeInfo, GTypeInfo.sizeof);
 			type = OS.g_type_register_static (parentType, nameBytes, definition, 0);
 			OS.g_type_add_interface_static (type, ATK.ATK_TYPE_COMPONENT(), ComponentIfaceDefinition);
@@ -450,10 +450,10 @@ class AccessibleFactory {
 		AtkObjectFactoryClass objectClass = new AtkObjectFactoryClass ();
 		ATK.memmove (objectClass, klass);
 		objectClass.create_accessible = AtkObjectFactoryCB_create_accessible.getAddress ();
-		ATK.memmove (klass, objectClass); 
+		ATK.memmove (klass, objectClass);
 		return 0;
 	}
-	
+
 	static long /*int*/ gTypeInfo_base_init_type (long /*int*/ klass) {
 		AtkObjectClass objectClass = new AtkObjectClass ();
 		ATK.memmove (objectClass, klass);
@@ -470,23 +470,23 @@ class AccessibleFactory {
 		GObjectClass objectClassStruct = new GObjectClass ();
 		OS.memmove (objectClassStruct, gObjectClass);
 		objectClassStruct.finalize = GObjectClass_finalize.getAddress ();
-		OS.memmove (gObjectClass, objectClassStruct); 
+		OS.memmove (gObjectClass, objectClassStruct);
 		ATK.memmove (klass, objectClass);
 		return 0;
 	}
-	
+
 	static long /*int*/ initActionIfaceCB (long /*int*/ iface) {
 		AtkActionIface inter = new AtkActionIface ();
 		ATK.memmove (inter, iface);
-		inter.do_action = AtkActionCB_do_action.getAddress (); 
+		inter.do_action = AtkActionCB_do_action.getAddress ();
 		inter.get_n_actions = AtkActionCB_get_n_actions.getAddress ();
 		inter.get_description = AtkActionCB_get_description.getAddress ();
-		inter.get_keybinding = AtkActionCB_get_keybinding.getAddress (); 
+		inter.get_keybinding = AtkActionCB_get_keybinding.getAddress ();
 		inter.get_name = AtkActionCB_get_name.getAddress ();
 		ATK.memmove (iface, inter);
 		return 0;
 	}
-	
+
 	static long /*int*/ initComponentIfaceCB (long /*int*/ iface) {
 		AtkComponentIface inter = new AtkComponentIface ();
 		ATK.memmove (inter, iface);
@@ -515,7 +515,7 @@ class AccessibleFactory {
 	static long /*int*/ initHypertextIfaceCB (long /*int*/ iface) {
 		AtkHypertextIface inter = new AtkHypertextIface ();
 		ATK.memmove (inter, iface);
-		inter.get_link = AtkHypertextCB_get_link.getAddress (); 
+		inter.get_link = AtkHypertextCB_get_link.getAddress ();
 		inter.get_link_index = AtkHypertextCB_get_link_index.getAddress ();
 		inter.get_n_links = AtkHypertextCB_get_n_links.getAddress ();
 		ATK.memmove (iface, inter);
@@ -613,8 +613,8 @@ class AccessibleFactory {
 			typeInfo.base_init = GTypeInfo_base_init_factory.getAddress ();
 			typeInfo.class_size = (short)ATK.AtkObjectFactoryClass_sizeof ();
 			typeInfo.instance_size = (short)ATK.AtkObjectFactory_sizeof ();
-			long /*int*/ info = OS.g_malloc (GTypeInfo.sizeof); 
-			OS.memmove (info, typeInfo, GTypeInfo.sizeof); 
+			long /*int*/ info = OS.g_malloc (GTypeInfo.sizeof);
+			OS.memmove (info, typeInfo, GTypeInfo.sizeof);
 			long /*int*/ swtFactoryType = OS.g_type_register_static (ATK.ATK_TYPE_OBJECT_FACTORY(), factoryName, info, 0);
 			long /*int*/ parentType = ATK.atk_object_factory_get_accessible_type(factory);
 			ATK.atk_registry_set_factory_type (registry, widgetType, swtFactoryType);
@@ -623,7 +623,7 @@ class AccessibleFactory {
 		if (AccessibleObject.DEBUG) AccessibleObject.print("-->Register=" + accessible.control + " " + widget); //$NON-NLS-1$
 		Accessibles.put (new LONG (widget), accessible);
 	}
-	
+
 	static void unregisterAccessible (Accessible accessible) {
 		long /*int*/ widget = accessible.getControlHandle ();
 		Accessibles.remove (new LONG (widget));

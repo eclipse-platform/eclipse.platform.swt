@@ -8,7 +8,7 @@
  * the LGPL accompanying this distribution and there is any conflict
  * between the two license versions, the terms of the LGPL accompanying
  * this distribution shall govern.
- * 
+ *
  * Contributors:
  *     IBM Corporation - initial API and implementation
  *******************************************************************************/
@@ -36,5 +36,5 @@ public class GTypeInfo {
 	public long /*int*/ instance_init;
 	/** @field cast=(GTypeValueTable *) */
 	public long /*int*/ value_table;
-	public static final int sizeof = OS.GTypeInfo_sizeof();	
+	public static final int sizeof = OS.GTypeInfo_sizeof();
 }

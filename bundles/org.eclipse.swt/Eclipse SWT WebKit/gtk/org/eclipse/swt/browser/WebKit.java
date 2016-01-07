@@ -386,7 +386,7 @@ static long /*int*/ Proc (long /*int*/ handle, long /*int*/ arg0, long /*int*/ u
 		return 0;
 	}
 
-	Browser browser = FindBrowser (webView); 
+	Browser browser = FindBrowser (webView);
 	if (browser == null) return 0;
 	WebKit webkit = (WebKit)browser.webBrowser;
 	if (webView == handle) {
@@ -656,9 +656,9 @@ public void create (Composite parent, int style) {
 	OS.g_signal_connect (webView, OS.motion_notify_event, JSDOMEventProc.getAddress (), 0);
 
 	/*
-	* Callbacks to get the events not consumed by WebKit, and to block 
-	* them so that they don't get propagated to the parent handle twice.  
-	* This hook is set after WebKit and is therefore called after WebKit's 
+	* Callbacks to get the events not consumed by WebKit, and to block
+	* them so that they don't get propagated to the parent handle twice.
+	* This hook is set after WebKit and is therefore called after WebKit's
 	* handler because GTK dispatches events in their order of registration.
 	*/
 	if (!WEBKIT2){

@@ -10,7 +10,7 @@
  *******************************************************************************/
 package org.eclipse.swt.internal.gtk;
 
- 
+
 public class XFocusChangeEvent extends XAnyEvent {
 	public int mode;
 	public int detail;

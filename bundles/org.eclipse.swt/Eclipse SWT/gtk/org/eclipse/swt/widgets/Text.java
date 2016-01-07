@@ -2162,7 +2162,7 @@ GdkColor getContextBackground () {
 			return display.COLOR_WIDGET_BACKGROUND;
 		}
 	} else {
-		return super.getContextBackground (); 
+		return super.getContextBackground ();
 	}
 }
 

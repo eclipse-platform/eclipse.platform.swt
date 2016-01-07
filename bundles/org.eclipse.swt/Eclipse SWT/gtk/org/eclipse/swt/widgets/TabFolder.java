@@ -50,7 +50,7 @@ import org.eclipse.swt.internal.gtk.*;
 public class TabFolder extends Composite {
 	/*
 	 * Implementation note (see bug 454936, bug 480794):
-	 * 
+	 *
 	 * Architecture Change on GTK3:
 	 * In TabItem#setControl(Control), we reparent the child to be a child of the 'tab'
 	 * rather than tabfolder's parent swtFixed container.
@@ -94,7 +94,7 @@ public class TabFolder extends Composite {
  * <p>
  * The style value is either one of the style constants defined in
  * class <code>SWT</code> which is applicable to instances of this
- * class, or must be built by <em>bitwise OR</em>'ing together 
+ * class, or must be built by <em>bitwise OR</em>'ing together
  * (that is, using the <code>int</code> "|" operator) two or more
  * of those <code>SWT</code> style constants. The class description
  * lists the style constants that are applicable to the class.
@@ -357,7 +357,7 @@ void destroyItem (TabItem item) {
 			}
 			Event event = new Event ();
 			event.item = items [newIndex];
-			sendSelectionEvent (SWT.Selection, event, true);	
+			sendSelectionEvent (SWT.Selection, event, true);
 			// the widget could be destroyed at this point
 		}
 	}
@@ -367,7 +367,7 @@ void destroyItem (TabItem item) {
 long /*int*/ eventHandle () {
 	return handle;
 }
-		
+
 @Override
 Control[] _getChildren() {
 	Control [] directChildren = super._getChildren ();
@@ -405,7 +405,7 @@ Control[] _getChildren() {
 		}
 		System.arraycopy (directChildren, 0, newChildren, i, directCount);
 		return newChildren;
-		
+
 	} else {
 		return directChildren;
 	}
@@ -428,7 +428,7 @@ Control[] _getChildren() {
  */
 public TabItem getItem (int index) {
 	checkWidget();
-	if (!(0 <= index && index < getItemCount())) error (SWT.ERROR_INVALID_RANGE);	
+	if (!(0 <= index && index < getItemCount())) error (SWT.ERROR_INVALID_RANGE);
 	long /*int*/ list = OS.gtk_container_get_children (handle);
 	if (list == 0) error (SWT.ERROR_CANNOT_GET_ITEM);
 	int itemCount = OS.g_list_length (list);
@@ -452,7 +452,7 @@ public TabItem getItem (int index) {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 3.4
  */
 public TabItem getItem(Point point) {
@@ -491,11 +491,11 @@ public int getItemCount () {
 
 /**
  * Returns an array of <code>TabItem</code>s which are the items
- * in the receiver. 
+ * in the receiver.
  * <p>
  * Note: This is not the actual structure used by the receiver
  * to maintain its list of items, so modifying the array will
- * not affect the receiver. 
+ * not affect the receiver.
  * </p>
  *
  * @return the items in the receiver
@@ -520,7 +520,7 @@ public TabItem [] getItems () {
  * <p>
  * Note: This is not the actual structure used by the receiver
  * to maintain its selection, so modifying the array will
- * not affect the receiver. 
+ * not affect the receiver.
  * </p>
  * @return an array representing the selection
  *
@@ -586,7 +586,7 @@ void hookEvents () {
 
 /**
  * Searches the receiver's list starting at the first item
- * (index 0) until an item is found that is equal to the 
+ * (index 0) until an item is found that is equal to the
  * argument, and returns the index of that item. If no item
  * is found, returns -1.
  *
@@ -717,7 +717,7 @@ public void removeSelectionListener (SelectionListener listener) {
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (eventTable == null) return;
 	eventTable.unhook (SWT.Selection, listener);
-	eventTable.unhook (SWT.DefaultSelection,listener);	
+	eventTable.unhook (SWT.DefaultSelection,listener);
 }
 
 @Override
@@ -785,7 +785,7 @@ void setOrientation (boolean create) {
 }
 
 /**
- * Selects the item at the given zero-relative index in the receiver. 
+ * Selects the item at the given zero-relative index in the receiver.
  * If the item at the index was already selected, it remains selected.
  * The current selection is first cleared, then the new items are
  * selected. Indices that are out of range are ignored.
@@ -847,7 +847,7 @@ void setSelection (int index, boolean notify) {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 3.2
  */
 public void setSelection (TabItem item) {

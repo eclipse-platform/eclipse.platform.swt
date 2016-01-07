@@ -4147,7 +4147,7 @@ String gtk_rgba_to_css_string (GdkRGBA rgba) {
 		toConvert = rgba;
 	} else {
 		// If we have a null RGBA, set it to the default COLOR_WIDGET_BACKGROUND.
-		GdkColor defaultGdkColor = display.getSystemColor(SWT.COLOR_WIDGET_BACKGROUND).handle; 
+		GdkColor defaultGdkColor = display.getSystemColor(SWT.COLOR_WIDGET_BACKGROUND).handle;
 		toConvert = new GdkRGBA ();
 		toConvert.alpha = 1.0;
 		toConvert.red = (defaultGdkColor.red & 0xFFFF) / (float)0xFFFF;
@@ -4930,17 +4930,17 @@ boolean setTabItemFocus (boolean next) {
  * </p>
  *
  * @param textDirection the base text direction style
- * 
+ *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @see SWT#LEFT_TO_RIGHT
  * @see SWT#RIGHT_TO_LEFT
  * @see SWT#AUTO_TEXT_DIRECTION
  * @see SWT#FLIP_TEXT_DIRECTION
- * 
+ *
  * @since 3.102
  */
 public void setTextDirection(int textDirection) {

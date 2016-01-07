@@ -31,7 +31,7 @@ public class Cairo extends Platform {
 	public static final int CAIRO_ANTIALIAS_DEFAULT = 0;
 	public static final int CAIRO_ANTIALIAS_NONE = 1;
 	public static final int CAIRO_ANTIALIAS_GRAY = 2;
-	public static final int CAIRO_ANTIALIAS_SUBPIXEL = 3;   
+	public static final int CAIRO_ANTIALIAS_SUBPIXEL = 3;
 	public static final int CAIRO_CONTENT_COLOR = 0x1000;
 	public static final int CAIRO_CONTENT_ALPHA = 0x2000;
 	public static final int CAIRO_CONTENT_COLOR_ALPHA = 0x3000;
@@ -88,11 +88,11 @@ public class Cairo extends Platform {
 	public static final int CAIRO_PATH_LINE_TO = 1;
 	public static final int CAIRO_PATH_CURVE_TO = 2;
 	public static final int CAIRO_PATH_CLOSE_PATH = 3;
-	
+
 /** 64*/
 public static final native int cairo_path_data_t_sizeof ();
 public static final native int cairo_path_t_sizeof ();
-	
+
 /** Natives */
 public static final native int CAIRO_VERSION_ENCODE(int major, int minor, int micro);
 /**

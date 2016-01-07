@@ -17,7 +17,7 @@ import org.eclipse.swt.internal.cairo.Cairo;
 import org.eclipse.swt.internal.gtk.*;
 
 public class ButtonDrawData extends DrawData {
-	
+
 public ButtonDrawData() {
 	state = new int[1];
 }
@@ -38,14 +38,14 @@ void draw(Theme theme, GC gc, Rectangle bounds) {
 		int focus_line_width = theme.getWidgetProperty(radioButtonHandle, "focus-line-width");
 		int focus_padding = theme.getWidgetProperty(radioButtonHandle, "focus-padding");
 		int border_width = OS.gtk_container_get_border_width(radioButtonHandle);
-		
+
 		int x = bounds.x + indicator_spacing + border_width;
 		int y = bounds.y + (bounds.height - indicator_size) / 2;
-		
+
 		if (interior_focus == 0) {
 			x += focus_line_width + focus_padding;
 		}
-		
+
 		int shadow_type;
 		if ((state & DrawData.GRAYED) != 0) {
 			shadow_type = OS.GTK_SHADOW_ETCHED_IN;
@@ -54,7 +54,7 @@ void draw(Theme theme, GC gc, Rectangle bounds) {
 		} else {
 			shadow_type = OS.GTK_SHADOW_OUT;
 		}
-		
+
 		byte[] detail = Converter.wcsToMbcs(null, "radiobutton", true);
 		if ((state & DrawData.HOT) != 0) {
 			int prelight_x, prelight_y, prelight_width, prelight_height;
@@ -74,7 +74,7 @@ void draw(Theme theme, GC gc, Rectangle bounds) {
 		}
 		return;
 	}
-	
+
 	if ((style & SWT.CHECK) != 0) {
 		long /*int*/ checkButtonHandle = theme.checkButtonHandle;
 		long /*int*/ gtkStyle = OS.gtk_widget_get_style (checkButtonHandle);
@@ -85,14 +85,14 @@ void draw(Theme theme, GC gc, Rectangle bounds) {
 		int focus_line_width = theme.getWidgetProperty(checkButtonHandle, "focus-line-width");
 		int focus_padding = theme.getWidgetProperty(checkButtonHandle, "focus-padding");
 		int border_width = OS.gtk_container_get_border_width(checkButtonHandle);
-		
+
 		int x = bounds.x + indicator_spacing + border_width;
 		int y = bounds.y + (bounds.height - indicator_size) / 2;
-		
+
 		if (interior_focus == 0) {
 			x += focus_line_width + focus_padding;
 		}
-		
+
 		int shadow_type;
 		if ((state & DrawData.GRAYED) != 0) {
 			shadow_type = OS.GTK_SHADOW_ETCHED_IN;
@@ -101,7 +101,7 @@ void draw(Theme theme, GC gc, Rectangle bounds) {
 		} else {
 			shadow_type = OS.GTK_SHADOW_OUT;
 		}
-		
+
 		byte[] detail = Converter.wcsToMbcs(null, "checkbutton", true);
 		if ((state & DrawData.HOT) != 0) {
 			int prelight_x, prelight_y, prelight_width, prelight_height;
@@ -121,16 +121,16 @@ void draw(Theme theme, GC gc, Rectangle bounds) {
 		}
 		return;
 	}
-	
+
 
 	if ((style & SWT.PUSH) != 0) {
 		long /*int*/ buttonHandle = theme.buttonHandle;
 		long /*int*/ gtkStyle = OS.gtk_widget_get_style (buttonHandle);
-		theme.transferClipping (gc, gtkStyle);		
+		theme.transferClipping (gc, gtkStyle);
 		int focus_line_width = theme.getWidgetProperty(buttonHandle, "focus-line-width");
 		int focus_padding = theme.getWidgetProperty(buttonHandle, "focus-padding");
 		int border_width = OS.gtk_container_get_border_width(buttonHandle);
-		
+
 		GtkBorder default_border = new GtkBorder();
 		long /*int*/ default_border_ptr = theme.getBorderProperty(buttonHandle, "default-border");
 		if (default_border_ptr != 0) {
@@ -148,7 +148,7 @@ void draw(Theme theme, GC gc, Rectangle bounds) {
 		} else {
 			default_outside_border.left = default_outside_border.right = default_outside_border.top = default_outside_border.bottom = 0;
 		}
-		
+
 		int x = bounds.x + border_width;
 		int y = bounds.y + border_width;
 		int width = bounds.width - border_width * 2;
@@ -176,13 +176,13 @@ void draw(Theme theme, GC gc, Rectangle bounds) {
 		if (relief != OS.GTK_RELIEF_NONE || ((state & (DrawData.PRESSED | DrawData.HOT)) != 0)) {
 			gtk_render_box (gtkStyle, drawable, state_type, shadow_type, null, buttonHandle, detail, x, y, width, height);
 		}
-		
+
 	    if ((state & DrawData.FOCUSED) != 0) {
 	    	int child_displacement_y = theme.getWidgetProperty(buttonHandle, "child-displacement-y");
 	    	int child_displacement_x = theme.getWidgetProperty(buttonHandle, "child-displacement-x");
-	    	int displace_focus = theme.getWidgetProperty(buttonHandle, "displace-focus");		    	
+	    	int displace_focus = theme.getWidgetProperty(buttonHandle, "displace-focus");
 	    	int interior_focus = theme.getWidgetProperty(buttonHandle, "interior-focus");
-	    	
+
 	    	if (interior_focus != 0) {
 	    		int xthickness = OS.gtk_style_get_xthickness(gtkStyle);
 	    		int ythickness = OS.gtk_style_get_ythickness(gtkStyle);
@@ -196,12 +196,12 @@ void draw(Theme theme, GC gc, Rectangle bounds) {
 	    		width += 2 * (focus_line_width + focus_padding);
 	    		height += 2 * (focus_line_width + focus_padding);
 	    	}
-	    	
+
 	    	if ((state & DrawData.PRESSED) != 0 && displace_focus != 0) {
 	              x += child_displacement_x;
 	              y += child_displacement_y;
 	    	}
-	    	
+
 	    	gtk_render_focus (gtkStyle, drawable, state_type, null, buttonHandle, detail, x, y, width, height);
 	    }
 		if (clientArea != null) {

@@ -30,7 +30,7 @@ import org.eclipse.swt.widgets.*;
  * As a rule of thumb, an application would only want to use the
  * accessible control listener to implement accessibility for a
  * custom control.
- * 
+ *
  * @see Control#getAccessible
  * @see AccessibleListener
  * @see AccessibleEvent
@@ -38,7 +38,7 @@ import org.eclipse.swt.widgets.*;
  * @see AccessibleControlEvent
  * @see <a href="http://www.eclipse.org/swt/snippets/#accessibility">Accessibility snippets</a>
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
- * 
+ *
  * @since 2.0
  */
 public class Accessible {
@@ -58,11 +58,11 @@ public class Accessible {
 	Control control;
 	List<Relation> relations;
 	List<Accessible> children;
-	
+
 	static class Relation {
 		int type;
 		Accessible target;
-		
+
 		public Relation(int type, Accessible target) {
 			this.type = type;
 			this.target = target;
@@ -76,19 +76,19 @@ public class Accessible {
 			return (relation.type == this.type) && (relation.target == this.target);
 		}
 	}
-	
+
 	/**
 	 * Constructs a new instance of this class given its parent.
-	 * 
+	 *
 	 * @param parent the Accessible parent, which must not be null
-	 * 
+	 *
 	 * @exception IllegalArgumentException <ul>
 	 *    <li>ERROR_NULL_ARGUMENT - if the parent is null</li>
 	 * </ul>
-	 * 
+	 *
 	 * @see #dispose
 	 * @see Control#getAccessible
-	 * 
+	 *
 	 * @since 3.6
 	 */
 	public Accessible(Accessible parent) {
@@ -115,8 +115,8 @@ public class Accessible {
 		super ();
 		this.control = control;
 		AccessibleFactory.registerAccessible (this);
-	}	
-	
+	}
+
 	/**
 	 * Adds the listener to the collection of listeners who will
 	 * be notified when an accessible client asks for certain strings,
@@ -142,7 +142,7 @@ public class Accessible {
 		checkWidget ();
 		if (listener == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
 		if (accessibleListeners == null) accessibleListeners = new ArrayList<AccessibleListener>();
-		accessibleListeners.add (listener);	
+		accessibleListeners.add (listener);
 	}
 
 	/**
@@ -170,7 +170,7 @@ public class Accessible {
 		checkWidget ();
 		if (listener == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
 		if (accessibleControlListeners == null) accessibleControlListeners = new ArrayList<AccessibleControlListener>();
-		accessibleControlListeners.add (listener);		
+		accessibleControlListeners.add (listener);
 	}
 
 	/**
@@ -194,7 +194,7 @@ public class Accessible {
 	 * @see AccessibleTextListener
 	 * @see AccessibleTextExtendedListener
 	 * @see #removeAccessibleTextListener
-	 * 
+	 *
 	 * @since 3.0
 	 */
 	public void addAccessibleTextListener (AccessibleTextListener listener) {
@@ -202,13 +202,13 @@ public class Accessible {
 		if (listener == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
 		if (listener instanceof AccessibleTextExtendedListener) {
 			if (accessibleTextExtendedListeners == null) accessibleTextExtendedListeners = new ArrayList<AccessibleTextExtendedListener>();
-			accessibleTextExtendedListeners.add ((AccessibleTextExtendedListener)listener);		
+			accessibleTextExtendedListeners.add ((AccessibleTextExtendedListener)listener);
 		} else {
 			if (accessibleTextListeners == null) accessibleTextListeners = new ArrayList<AccessibleTextListener>();
 			accessibleTextListeners.add (listener);
 		}
 	}
-	
+
 	/**
 	 * Adds the listener to the collection of listeners that will be
 	 * notified when an accessible client asks for any of the properties
@@ -227,7 +227,7 @@ public class Accessible {
 	 *
 	 * @see AccessibleActionListener
 	 * @see #removeAccessibleActionListener
-	 * 
+	 *
 	 * @since 3.6
 	 */
 	public void addAccessibleActionListener(AccessibleActionListener listener) {
@@ -255,7 +255,7 @@ public class Accessible {
 	 *
 	 * @see AccessibleEditableTextListener
 	 * @see #removeAccessibleEditableTextListener
-	 * 
+	 *
 	 * @since 3.7
 	 */
 	public void addAccessibleEditableTextListener(AccessibleEditableTextListener listener) {
@@ -283,7 +283,7 @@ public class Accessible {
 	 *
 	 * @see AccessibleHyperlinkListener
 	 * @see #removeAccessibleHyperlinkListener
-	 * 
+	 *
 	 * @since 3.6
 	 */
 	public void addAccessibleHyperlinkListener(AccessibleHyperlinkListener listener) {
@@ -311,7 +311,7 @@ public class Accessible {
 	 *
 	 * @see AccessibleTableListener
 	 * @see #removeAccessibleTableListener
-	 * 
+	 *
 	 * @since 3.6
 	 */
 	public void addAccessibleTableListener(AccessibleTableListener listener) {
@@ -339,7 +339,7 @@ public class Accessible {
 	 *
 	 * @see AccessibleTableCellListener
 	 * @see #removeAccessibleTableCellListener
-	 * 
+	 *
 	 * @since 3.6
 	 */
 	public void addAccessibleTableCellListener(AccessibleTableCellListener listener) {
@@ -367,7 +367,7 @@ public class Accessible {
 	 *
 	 * @see AccessibleValueListener
 	 * @see #removeAccessibleValueListener
-	 * 
+	 *
 	 * @since 3.6
 	 */
 	public void addAccessibleValueListener(AccessibleValueListener listener) {
@@ -395,7 +395,7 @@ public class Accessible {
 	 *
 	 * @see AccessibleAttributeListener
 	 * @see #removeAccessibleAttributeListener
-	 * 
+	 *
 	 * @since 3.6
 	 */
 	public void addAccessibleAttributeListener(AccessibleAttributeListener listener) {
@@ -408,10 +408,10 @@ public class Accessible {
 	/**
 	 * Adds a relation with the specified type and target
 	 * to the receiver's set of relations.
-	 * 
+	 *
 	 * @param type an <code>ACC</code> constant beginning with RELATION_* indicating the type of relation
 	 * @param target the accessible that is the target for this relation
-	 * 
+	 *
 	 * @since 3.6
 	 */
 	public void addRelation(int type, Accessible target) {
@@ -422,7 +422,7 @@ public class Accessible {
 		relations.add(relation);
 		if (accessibleObject != null) accessibleObject.addRelation(type, target);
 	}
-	
+
 	void addRelations () {
 		if (relations == null) return;
 		if (accessibleObject == null) return;
@@ -431,7 +431,7 @@ public class Accessible {
 			accessibleObject.addRelation(relation.type, relation.target);
 		}
 	}
-	
+
 	/**
 	 * Disposes of the operating system resources associated with
 	 * the receiver, and removes the receiver from its parent's
@@ -445,7 +445,7 @@ public class Accessible {
 	 * It is also not necessary to call this for instances of <code>Accessible</code>
 	 * that were retrieved with <code>Control.getAccessible()</code>.
 	 * </p>
-	 * 
+	 *
 	 * @since 3.6
 	 */
 	public void dispose () {
@@ -456,7 +456,7 @@ public class Accessible {
 	}
 
 	/**
-	 * Returns the control for this Accessible object. 
+	 * Returns the control for this Accessible object.
 	 *
 	 * @return the receiver's control
 	 * @since 3.0
@@ -470,7 +470,7 @@ public class Accessible {
 		if (!isValidThread ()) SWT.error (SWT.ERROR_THREAD_INVALID_ACCESS);
 		if (control.isDisposed ()) SWT.error (SWT.ERROR_WIDGET_DISPOSED);
 	}
-	
+
 	AccessibleObject getAccessibleObject () {
 		if (accessibleObject == null) {
 			if (parent == null) {
@@ -512,14 +512,14 @@ public class Accessible {
 	 * available on all platforms, and should never be called from
 	 * application code.
 	 * </p>
-	 * 
+	 *
 	 * @noreference This method is not intended to be referenced by clients.
 	 */
 	public void internal_dispose_Accessible() {
 		AccessibleFactory.unregisterAccessible (Accessible.this);
 		release ();
 	}
-	
+
 	/**
 	 * Invokes platform specific functionality to allocate a new accessible object.
 	 * <p>
@@ -532,7 +532,7 @@ public class Accessible {
 	 *
 	 * @param control the control to get the accessible object for
 	 * @return the platform specific accessible object
-	 * 
+	 *
 	 * @noreference This method is not intended to be referenced by clients.
 	 */
 	public static Accessible internal_new_Accessible (Control control) {
@@ -543,7 +543,7 @@ public class Accessible {
 	boolean isValidThread () {
 		return control.getDisplay ().getThread () == Thread.currentThread ();
 	}
-	
+
 	void release () {
 		if (children != null) {
 			for (int i = 0; i < children.size(); i++) {
@@ -556,7 +556,7 @@ public class Accessible {
 			accessibleObject = null;
 		}
 	}
-	
+
 	/**
 	 * Removes the listener from the collection of listeners who will
 	 * be notified when an accessible client asks for custom control
@@ -632,7 +632,7 @@ public class Accessible {
 	 * @see AccessibleTextListener
 	 * @see AccessibleTextExtendedListener
 	 * @see #addAccessibleTextListener
-	 * 
+	 *
 	 * @since 3.0
 	 */
 	public void removeAccessibleTextListener (AccessibleTextListener listener) {
@@ -650,7 +650,7 @@ public class Accessible {
 			}
 		}
 	}
-	
+
 	/**
 	 * Removes the listener from the collection of listeners that will be
 	 * notified when an accessible client asks for any of the properties
@@ -669,7 +669,7 @@ public class Accessible {
 	 *
 	 * @see AccessibleActionListener
 	 * @see #addAccessibleActionListener
-	 * 
+	 *
 	 * @since 3.6
 	 */
 	public void removeAccessibleActionListener(AccessibleActionListener listener) {
@@ -699,7 +699,7 @@ public class Accessible {
 	 *
 	 * @see AccessibleEditableTextListener
 	 * @see #addAccessibleEditableTextListener
-	 * 
+	 *
 	 * @since 3.7
 	 */
 	public void removeAccessibleEditableTextListener(AccessibleEditableTextListener listener) {
@@ -710,7 +710,7 @@ public class Accessible {
 			if (accessibleEditableTextListeners.isEmpty()) accessibleEditableTextListeners = null;
 	    }
 	}
-	
+
 	/**
 	 * Removes the listener from the collection of listeners that will be
 	 * notified when an accessible client asks for any of the properties
@@ -729,7 +729,7 @@ public class Accessible {
 	 *
 	 * @see AccessibleHyperlinkListener
 	 * @see #addAccessibleHyperlinkListener
-	 * 
+	 *
 	 * @since 3.6
 	 */
 	public void removeAccessibleHyperlinkListener(AccessibleHyperlinkListener listener) {
@@ -759,7 +759,7 @@ public class Accessible {
 	 *
 	 * @see AccessibleTableListener
 	 * @see #addAccessibleTableListener
-	 * 
+	 *
 	 * @since 3.6
 	 */
 	public void removeAccessibleTableListener(AccessibleTableListener listener) {
@@ -789,7 +789,7 @@ public class Accessible {
 	 *
 	 * @see AccessibleTableCellListener
 	 * @see #addAccessibleTableCellListener
-	 * 
+	 *
 	 * @since 3.6
 	 */
 	public void removeAccessibleTableCellListener(AccessibleTableCellListener listener) {
@@ -819,7 +819,7 @@ public class Accessible {
 	 *
 	 * @see AccessibleValueListener
 	 * @see #addAccessibleValueListener
-	 * 
+	 *
 	 * @since 3.6
 	 */
 	public void removeAccessibleValueListener(AccessibleValueListener listener) {
@@ -849,7 +849,7 @@ public class Accessible {
 	 *
 	 * @see AccessibleAttributeListener
 	 * @see #addAccessibleAttributeListener
-	 * 
+	 *
 	 * @since 3.6
 	 */
 	public void removeAccessibleAttributeListener(AccessibleAttributeListener listener) {
@@ -864,10 +864,10 @@ public class Accessible {
 	/**
 	 * Removes the relation with the specified type and target
 	 * from the receiver's set of relations.
-	 * 
+	 *
 	 * @param type an <code>ACC</code> constant beginning with RELATION_* indicating the type of relation
 	 * @param target the accessible that is the target for this relation
-	 * 
+	 *
 	 * @since 3.6
 	 */
 	public void removeRelation(int type, Accessible target) {
@@ -887,12 +887,12 @@ public class Accessible {
 	 * @param event an <code>ACC</code> constant beginning with EVENT_* indicating the message to send
 	 * @param eventData an object containing event-specific data, or null if there is no event-specific data
 	 * (eventData is specified in the documentation for individual ACC.EVENT_* constants)
-	 * 
+	 *
 	 * @exception SWTException <ul>
 	 *    <li>ERROR_WIDGET_DISPOSED - if the receiver's control has been disposed</li>
 	 *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver's control</li>
 	 * </ul>
-	 * 
+	 *
 	 * @see ACC#EVENT_ACTION_CHANGED
 	 * @see ACC#EVENT_ATTRIBUTE_CHANGED
 	 * @see ACC#EVENT_DESCRIPTION_CHANGED
@@ -925,7 +925,7 @@ public class Accessible {
 	 * @see ACC#EVENT_TEXT_COLUMN_CHANGED
 	 * @see ACC#EVENT_TEXT_SELECTION_CHANGED
 	 * @see ACC#EVENT_VALUE_CHANGED
-	 * 
+	 *
 	 * @since 3.6
 	 */
 	public void sendEvent(int event, Object eventData) {
@@ -934,12 +934,12 @@ public class Accessible {
 			accessibleObject.sendEvent(event, eventData);
 		}
 	}
-	
+
 	/**
 	 * Sends a message with event-specific data and a childID
 	 * to accessible clients, indicating that something has changed
 	 * within a custom control.
-	 * 
+	 *
 	 * NOTE: This API is intended for applications that are still using childIDs.
 	 * Moving forward, applications should use accessible objects instead of childIDs.
 	 *
@@ -947,12 +947,12 @@ public class Accessible {
 	 * @param eventData an object containing event-specific data, or null if there is no event-specific data
 	 * (eventData is specified in the documentation for individual ACC.EVENT_* constants)
 	 * @param childID an identifier specifying a child of the control
-	 * 
+	 *
 	 * @exception SWTException <ul>
 	 *    <li>ERROR_WIDGET_DISPOSED - if the receiver's control has been disposed</li>
 	 *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver's control</li>
 	 * </ul>
-	 * 
+	 *
 	 * @see ACC#EVENT_DESCRIPTION_CHANGED
 	 * @see ACC#EVENT_LOCATION_CHANGED
 	 * @see ACC#EVENT_NAME_CHANGED
@@ -960,7 +960,7 @@ public class Accessible {
 	 * @see ACC#EVENT_STATE_CHANGED
 	 * @see ACC#EVENT_TEXT_SELECTION_CHANGED
 	 * @see ACC#EVENT_VALUE_CHANGED
-	 * 
+	 *
 	 * @since 3.8
 	 */
 	public void sendEvent(int event, Object eventData, int childID) {
@@ -978,7 +978,7 @@ public class Accessible {
 			}
 		}
 	}
-	
+
 	/**
 	 * Sends a message to accessible clients that the child selection
 	 * within a custom container control has changed.
@@ -987,7 +987,7 @@ public class Accessible {
 	 *    <li>ERROR_WIDGET_DISPOSED - if the receiver's control has been disposed</li>
 	 *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver's control</li>
 	 * </ul>
-	 * 
+	 *
 	 * @since 3.0
 	 */
 	public void selectionChanged () {
@@ -1002,7 +1002,7 @@ public class Accessible {
 	 * has changed within a custom control.
 	 *
 	 * @param childID an identifier specifying a child of the control
-	 * 
+	 *
 	 * @exception SWTException <ul>
 	 *    <li>ERROR_WIDGET_DISPOSED - if the receiver's control has been disposed</li>
 	 *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver's control</li>
@@ -1014,13 +1014,13 @@ public class Accessible {
 			accessibleObject.setFocus (childID);
 		}
 	}
-	
+
 	/**
 	 * Sends a message to accessible clients that the text
 	 * caret has moved within a custom control.
 	 *
 	 * @param index the new caret index within the control
-	 * 
+	 *
 	 * @exception SWTException <ul>
 	 *    <li>ERROR_WIDGET_DISPOSED - if the receiver's control has been disposed</li>
 	 *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver's control</li>
@@ -1048,10 +1048,10 @@ public class Accessible {
 	 *    <li>ERROR_WIDGET_DISPOSED - if the receiver's control has been disposed</li>
 	 *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver's control</li>
 	 * </ul>
-	 * 
+	 *
 	 * @see ACC#TEXT_INSERT
 	 * @see ACC#TEXT_DELETE
-	 * 
+	 *
 	 * @since 3.0
 	 */
 	public void textChanged (int type, int startIndex, int length) {

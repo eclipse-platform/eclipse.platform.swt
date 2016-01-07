@@ -67,7 +67,7 @@ Font(Device device) {
  * @exception SWTError <ul>
  *    <li>ERROR_NO_HANDLES - if a font could not be created from the given font data</li>
  * </ul>
- * 
+ *
  * @see #dispose()
  */
 public Font(Device device, FontData fd) {
@@ -97,9 +97,9 @@ public Font(Device device, FontData fd) {
  * @exception SWTError <ul>
  *    <li>ERROR_NO_HANDLES - if a font could not be created from the given font data</li>
  * </ul>
- * 
+ *
  * @see #dispose()
- * 
+ *
  * @since 2.1
  */
 public Font(Device device, FontData[] fds) {
@@ -135,7 +135,7 @@ public Font(Device device, FontData[] fds) {
  * @exception SWTError <ul>
  *    <li>ERROR_NO_HANDLES - if a font could not be created from the given arguments</li>
  * </ul>
- * 
+ *
  * @see #dispose()
  */
 public Font(Device device, String name, int height, int style) {

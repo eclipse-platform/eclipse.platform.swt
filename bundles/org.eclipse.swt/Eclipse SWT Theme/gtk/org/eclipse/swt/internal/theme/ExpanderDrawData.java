@@ -17,7 +17,7 @@ import org.eclipse.swt.internal.cairo.Cairo;
 import org.eclipse.swt.internal.gtk.*;
 
 public class ExpanderDrawData extends DrawData {
-	
+
 public ExpanderDrawData() {
 	state = new int[1];
 }
@@ -41,7 +41,7 @@ void draw(Theme theme, GC gc, Rectangle bounds) {
 		OS.gtk_render_expander (context, cairo, bounds.x, bounds.y, expander_size, expander_size);
 		Cairo.cairo_destroy (cairo);
 	} else {
-		OS.gtk_paint_expander(gtkStyle, drawable, state_type, null, treeHandle, detail, x, y, expander_style);	
+		OS.gtk_paint_expander(gtkStyle, drawable, state_type, null, treeHandle, detail, x, y, expander_style);
 	}
 }
 

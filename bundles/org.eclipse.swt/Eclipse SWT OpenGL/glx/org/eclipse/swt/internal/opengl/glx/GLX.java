@@ -56,7 +56,7 @@ public class GLX extends Platform {
 	public static final int GLX_MAX_PBUFFER_HEIGHT	= 0x8017;
 	public static final int GLX_MAX_PBUFFER_PIXELS	= 0x8018;
 	public static final int GLX_VISUAL_ID			= 0x800B;
-	
+
 	/*
 	** Error return values from glXGetConfig.  Success is indicated by
 	** a value of 0.
@@ -68,29 +68,29 @@ public class GLX extends Platform {
 	public static final int GLX_BAD_CONTEXT		= 5;	/* returned only by import_context EXT? */
 	public static final int GLX_BAD_VALUE		= 6;	/* returned only by glXSwapIntervalSGI? */
 	public static final int GLX_BAD_ENUM		= 7;	/* unused? */
-	
+
 	/* FBConfig attribute values */
-	
+
 	/*
 	** Generic "don't care" value for glX ChooseFBConfig attributes (except
 	** GLX_LEVEL)
 	*/
 	public static final int GLX_DONT_CARE			= 0xFFFFFFFF;
-	
+
 	/* GLX_RENDER_TYPE bits */
 	public static final int GLX_RGBA_BIT			= 0x00000001;
 	public static final int GLX_COLOR_INDEX_BIT		= 0x00000002;
-	
+
 	/* GLX_DRAWABLE_TYPE bits */
 	public static final int GLX_WINDOW_BIT			= 0x00000001;
 	public static final int GLX_PIXMAP_BIT			= 0x00000002;
 	public static final int GLX_PBUFFER_BIT			= 0x00000004;
-	
+
 	/* GLX_CONFIG_CAVEAT attribute values */
 	public static final int GLX_NONE				= 0x8000;
 	public static final int GLX_SLOW_CONFIG			= 0x8001;
 	public static final int GLX_NON_CONFORMANT_CONFIG	= 0x800D;
-	
+
 	/* GLX_X_VISUAL_TYPE attribute values */
 	public static final int GLX_TRUE_COLOR			= 0x8002;
 	public static final int GLX_DIRECT_COLOR		= 0x8003;
@@ -98,43 +98,43 @@ public class GLX extends Platform {
 	public static final int GLX_STATIC_COLOR		= 0x8005;
 	public static final int GLX_GRAY_SCALE			= 0x8006;
 	public static final int GLX_STATIC_GRAY			= 0x8007;
-	
+
 	/* GLX_TRANSPARENT_TYPE attribute values */
 	/* public static final int GLX_NONE			   0x8000 */
 	public static final int GLX_TRANSPARENT_RGB		= 0x8008;
 	public static final int GLX_TRANSPARENT_INDEX	= 0x8009;
-	
+
 	/* glXCreateGLXPbuffer attributes */
 	public static final int GLX_PRESERVED_CONTENTS	= 0x801B;
 	public static final int GLX_LARGEST_PBUFFER		= 0x801C;
 	public static final int GLX_PBUFFER_HEIGHT		= 0x8040;	/* New for GLX 1.3 */
 	public static final int GLX_PBUFFER_WIDTH		= 0x8041;	/* New for GLX 1.3 */
-	
+
 	/* glXQueryGLXPBuffer attributes */
 	public static final int GLX_WIDTH		= 0x801D;
 	public static final int GLX_HEIGHT		= 0x801E;
 	public static final int GLX_EVENT_MASK	= 0x801F;
-	
+
 	/* glXCreateNewContext render_type attribute values */
 	public static final int GLX_RGBA_TYPE			= 0x8014;
 	public static final int GLX_COLOR_INDEX_TYPE	= 0x8015;
-	
+
 	/* glXQueryContext attributes */
 	/* public static final int GLX_FBCONFIG_ID		  0x8013 */
 	/* public static final int GLX_RENDER_TYPE		  0x8011 */
 	public static final int GLX_SCREEN			= 0x800C;
-	
+
 	/* glXSelectEvent event mask bits */
 	public static final int GLX_PBUFFER_CLOBBER_MASK	= 0x08000000;
-	
+
 	/* GLXPbufferClobberEvent event_type values */
 	public static final int GLX_DAMAGED			= 0x8020;
 	public static final int GLX_SAVED			= 0x8021;
-	
+
 	/* GLXPbufferClobberEvent draw_type values */
 	public static final int GLX_WINDOW			= 0x8022;
 	public static final int GLX_PBUFFER			= 0x8023;
-	
+
 	/* GLXPbufferClobberEvent buffer_mask bits */
 	public static final int GLX_FRONT_LEFT_BUFFER_BIT	= 0x00000001;
 	public static final int GLX_FRONT_RIGHT_BUFFER_BIT	= 0x00000002;
@@ -144,12 +144,12 @@ public class GLX extends Platform {
 	public static final int GLX_DEPTH_BUFFER_BIT		= 0x00000020;
 	public static final int GLX_STENCIL_BUFFER_BIT		= 0x00000040;
 	public static final int GLX_ACCUM_BUFFER_BIT		= 0x00000080;
-	
+
 	/*
 	** Extension return values from glXGetConfig.  These are also
 	** accepted as parameter values for glXChooseVisual.
 	*/
-	
+
 	public static final int GLX_X_VISUAL_TYPE_EXT = 0x22;	/* visual_info extension type */
 	public static final int GLX_TRANSPARENT_TYPE_EXT = 0x23;	/* visual_info extension */
 	public static final int GLX_TRANSPARENT_INDEX_VALUE_EXT = 0x24;	/* visual_info extension */
@@ -157,7 +157,7 @@ public class GLX extends Platform {
 	public static final int GLX_TRANSPARENT_GREEN_VALUE_EXT = 0x26;	/* visual_info extension */
 	public static final int GLX_TRANSPARENT_BLUE_VALUE_EXT	= 0x27;	/* visual_info extension */
 	public static final int GLX_TRANSPARENT_ALPHA_VALUE_EXT = 0x28;	/* visual_info extension */
-	
+
 	/* Property values for visual_type */
 	public static final int GLX_TRUE_COLOR_EXT	= 0x8002;
 	public static final int GLX_DIRECT_COLOR_EXT	= 0x8003;
@@ -165,42 +165,42 @@ public class GLX extends Platform {
 	public static final int GLX_STATIC_COLOR_EXT	= 0x8005;
 	public static final int GLX_GRAY_SCALE_EXT	= 0x8006;
 	public static final int GLX_STATIC_GRAY_EXT	= 0x8007;
-	
+
 	/* Property values for transparent pixel */
 	public static final int GLX_NONE_EXT		= 0x8000;
 	public static final int GLX_TRANSPARENT_RGB_EXT		= 0x8008;
 	public static final int GLX_TRANSPARENT_INDEX_EXT	= 0x8009;
-	
+
 	/* Property values for visual_rating */
 	public static final int GLX_VISUAL_CAVEAT_EXT		= 0x20;  /* visual_rating extension type */
 	public static final int GLX_SLOW_VISUAL_EXT		= 0x8001;
 	public static final int GLX_NON_CONFORMANT_VISUAL_EXT	= 0x800D;
-	
+
 	/*
 	** Names for attributes to glXGetClientString.
 	*/
 	public static final int GLX_VENDOR		= 0x1;
 	public static final int GLX_VERSION		= 0x2;
 	public static final int GLX_EXTENSIONS	= 0x3;
-	
+
 	/*
 	** Names for attributes to glXQueryContextInfoEXT.
 	*/
 	public static final int GLX_SHARE_CONTEXT_EXT = 0x800A;	/* id of share context */
 	public static final int GLX_VISUAL_ID_EXT = 0x800B;	/* id of context's visual */
 	public static final int GLX_SCREEN_EXT = 0x800C;	/* screen number */
-	
+
 	/*
-	* GLX 1.4 
+	* GLX 1.4
 	*/
 	public static final int GLX_SAMPLE_BUFFERS = 100000;
 	public static final int GLX_SAMPLES = 100001;
 
 	/*
-	* GL bits 
+	* GL bits
 	*/
 	public static final int GL_VIEWPORT = 0x0BA2;
-	
+
 public static final native int XVisualInfo_sizeof();
 /**
  * @param pname cast=(GLenum)

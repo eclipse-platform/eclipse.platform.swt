@@ -8,7 +8,7 @@
  * the LGPL accompanying this distribution and there is any conflict
  * between the two license versions, the terms of the LGPL accompanying
  * this distribution shall govern.
- * 
+ *
  * Contributors:
  *     IBM Corporation - initial API and implementation
  *******************************************************************************/
@@ -150,7 +150,7 @@ public static final boolean gnome_vfs_is_executable_command_string(byte[] comman
  * @param uris cast=(GList *)
  */
 public static final native int _gnome_vfs_mime_application_launch(long /*int*/ application, long /*int*/ uris);
-public static final int gnome_vfs_mime_application_launch(long /*int*/ application, long /*int*/ uris) {	
+public static final int gnome_vfs_mime_application_launch(long /*int*/ application, long /*int*/ uris) {
 	lock.lock();
 	try {
 		return _gnome_vfs_mime_application_launch(application, uris);
@@ -180,9 +180,9 @@ public static final long /*int*/ gnome_vfs_mime_type_from_name(byte[] file) {
 		lock.unlock();
 	}
 }
-/** 
+/**
  * @param mime_type cast=(const char *)
- * @param base_mime_type cast=(const char *) 
+ * @param base_mime_type cast=(const char *)
  */
 public static final native long /*int*/ _gnome_vfs_mime_type_get_equivalence(long /*int*/ mime_type, byte [] base_mime_type);
 public static final long /*int*/ gnome_vfs_mime_type_get_equivalence(long /*int*/ mime_type, byte [] base_mime_type) {
