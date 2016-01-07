@@ -11,7 +11,7 @@
 package org.eclipse.swt.internal.win32;
 
 public class DOCINFO {
-	public int cbSize; 
+	public int cbSize;
 	/** @field cast=(LPCTSTR) */
 	public long /*int*/ lpszDocName; // LPCTSTR
 	/** @field cast=(LPCTSTR) */

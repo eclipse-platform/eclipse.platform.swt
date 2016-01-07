@@ -10,7 +10,7 @@
  *******************************************************************************/
 package org.eclipse.swt.widgets;
 
- 
+
 import org.eclipse.swt.internal.win32.*;
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
@@ -32,7 +32,7 @@ import org.eclipse.swt.events.*;
  *
  * @see <a href="http://www.eclipse.org/swt/snippets/#tree">Tree, TreeItem, TreeColumn snippets</a>
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
- * 
+ *
  * @since 3.1
  * @noextend This class is not intended to be subclassed by clients.
  */
@@ -50,7 +50,7 @@ public class TreeColumn extends Item {
  * <p>
  * The style value is either one of the style constants defined in
  * class <code>SWT</code> which is applicable to instances of this
- * class, or must be built by <em>bitwise OR</em>'ing together 
+ * class, or must be built by <em>bitwise OR</em>'ing together
  * (that is, using the <code>int</code> "|" operator) two or more
  * of those <code>SWT</code> style constants. The class description
  * lists the style constants that are applicable to the class.
@@ -89,7 +89,7 @@ public TreeColumn (Tree parent, int style) {
  * <p>
  * The style value is either one of the style constants defined in
  * class <code>SWT</code> which is applicable to instances of this
- * class, or must be built by <em>bitwise OR</em>'ing together 
+ * class, or must be built by <em>bitwise OR</em>'ing together
  * (that is, using the <code>int</code> "|" operator) two or more
  * of those <code>SWT</code> style constants. The class description
  * lists the style constants that are applicable to the class.
@@ -204,7 +204,7 @@ void destroyWidget () {
  * text or image in the receiver. The value will be one of
  * <code>LEFT</code>, <code>RIGHT</code> or <code>CENTER</code>.
  *
- * @return the alignment 
+ * @return the alignment
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -221,8 +221,8 @@ public int getAlignment () {
 
 /**
  * Gets the moveable attribute. A column that is
- * not moveable cannot be reordered by the user 
- * by dragging the header but may be reordered 
+ * not moveable cannot be reordered by the user
+ * by dragging the header but may be reordered
  * by the programmer.
  *
  * @return the moveable attribute
@@ -231,12 +231,12 @@ public int getAlignment () {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @see Tree#getColumnOrder()
  * @see Tree#setColumnOrder(int[])
  * @see TreeColumn#setMoveable(boolean)
  * @see SWT#Move
- * 
+ *
  * @since 3.2
  */
 public boolean getMoveable () {
@@ -291,7 +291,7 @@ public boolean getResizable () {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 3.2
  */
 public String getToolTipText () {
@@ -463,7 +463,7 @@ public void removeSelectionListener(SelectionListener listener) {
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (eventTable == null) return;
 	eventTable.unhook (SWT.Selection, listener);
-	eventTable.unhook (SWT.DefaultSelection,listener);	
+	eventTable.unhook (SWT.DefaultSelection,listener);
 }
 
 /**
@@ -474,7 +474,7 @@ public void removeSelectionListener(SelectionListener listener) {
  * Note that due to a restriction on some platforms, the first column
  * is always left aligned.
  * </p>
- * @param alignment the new alignment 
+ * @param alignment the new alignment
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -554,8 +554,8 @@ void setImage (Image image, boolean sort, boolean right) {
 /**
  * Sets the moveable attribute.  A column that is
  * moveable can be reordered by the user by dragging
- * the header. A column that is not moveable cannot be 
- * dragged by the user but may be reordered 
+ * the header. A column that is not moveable cannot be
+ * dragged by the user but may be reordered
  * by the programmer.
  *
  * @param moveable the moveable attribute
@@ -564,12 +564,12 @@ void setImage (Image image, boolean sort, boolean right) {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @see Tree#setColumnOrder(int[])
  * @see Tree#getColumnOrder()
  * @see TreeColumn#getMoveable()
  * @see SWT#Move
- * 
+ *
  * @since 3.2
  */
 public void setMoveable (boolean moveable) {
@@ -684,24 +684,24 @@ public void setText (String string) {
 
 /**
  * Sets the receiver's tool tip text to the argument, which
- * may be null indicating that the default tool tip for the 
+ * may be null indicating that the default tool tip for the
  * control will be shown. For a control that has a default
  * tool tip, such as the Tree control on Windows, setting
  * the tool tip text to an empty string replaces the default,
  * causing no tool tip text to be shown.
  * <p>
  * The mnemonic indicator (character '&amp;') is not displayed in a tool tip.
- * To display a single '&amp;' in the tool tip, the character '&amp;' can be 
+ * To display a single '&amp;' in the tool tip, the character '&amp;' can be
  * escaped by doubling it in the string.
  * </p>
- * 
+ *
  * @param string the new tool tip text (or null)
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 3.2
  */
 public void setToolTipText (String string) {

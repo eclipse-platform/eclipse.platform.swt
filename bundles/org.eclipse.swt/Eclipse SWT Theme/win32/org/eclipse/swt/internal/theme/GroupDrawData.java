@@ -17,7 +17,7 @@ public class GroupDrawData extends DrawData {
 	public int headerWidth;
 	public int headerHeight;
 	public Rectangle headerArea;
-	
+
 public GroupDrawData() {
 	state = new int[1];
 }
@@ -46,10 +46,10 @@ void draw(Theme theme, GC gc, Rectangle bounds) {
 			headerArea.width = this.headerWidth;
 			headerArea.height = this.headerHeight;
 		}
-		Rectangle clientArea = this.clientArea;			
+		Rectangle clientArea = this.clientArea;
 		if (clientArea != null) {
 			RECT contentRect = new RECT();
-			OS.GetThemeBackgroundContentRect(hTheme, gc.handle, part[0], part[1], rect, contentRect);				
+			OS.GetThemeBackgroundContentRect(hTheme, gc.handle, part[0], part[1], rect, contentRect);
 			clientArea.x = contentRect.left;
 			clientArea.y = contentRect.top;
 			clientArea.width = contentRect.right - contentRect.left;
@@ -62,9 +62,9 @@ void draw(Theme theme, GC gc, Rectangle bounds) {
 @Override
 int[] getPartId(int part) {
 	int state = this.state[part];
-	int iPartId = OS.BP_GROUPBOX, iStateId = OS.GBS_NORMAL;			
+	int iPartId = OS.BP_GROUPBOX, iStateId = OS.GBS_NORMAL;
 	if ((state & DrawData.DISABLED) != 0) iStateId = OS.GBS_DISABLED;
-	return new int[]{iPartId, iStateId};	
+	return new int[]{iPartId, iStateId};
 }
 
 @Override

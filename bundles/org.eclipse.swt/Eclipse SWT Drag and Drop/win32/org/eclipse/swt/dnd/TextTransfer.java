@@ -14,23 +14,23 @@ import org.eclipse.swt.internal.ole.win32.*;
 import org.eclipse.swt.internal.win32.*;
 
 /**
- * The class <code>TextTransfer</code> provides a platform specific mechanism 
- * for converting plain text represented as a java <code>String</code> 
+ * The class <code>TextTransfer</code> provides a platform specific mechanism
+ * for converting plain text represented as a java <code>String</code>
  * to a platform specific representation of the data and vice versa.
- * 
- * <p>An example of a java <code>String</code> containing plain text is shown 
+ *
+ * <p>An example of a java <code>String</code> containing plain text is shown
  * below:</p>
- * 
+ *
  * <code><pre>
  *     String textData = "Hello World";
  * </code></pre>
- * 
+ *
  * <p>Note the <code>TextTransfer</code> does not change the content of the text
  * data. For a better integration with the platform, the application should convert
  * the line delimiters used in the text data to the standard line delimiter used by the
  * platform.
  * </p>
- * 
+ *
  * @see Transfer
  */
 public class TextTransfer extends ByteArrayTransfer {
@@ -40,7 +40,7 @@ public class TextTransfer extends ByteArrayTransfer {
 	private static final String CF_TEXT = "CF_TEXT"; //$NON-NLS-1$
 	private static final int CF_UNICODETEXTID = COM.CF_UNICODETEXT;
 	private static final int CF_TEXTID = COM.CF_TEXT;
-	
+
 private TextTransfer() {}
 
 /**
@@ -55,11 +55,11 @@ public static TextTransfer getInstance () {
 /**
  * This implementation of <code>javaToNative</code> converts plain text
  * represented by a java <code>String</code> to a platform specific representation.
- * 
+ *
  * @param object a java <code>String</code> containing text
  * @param transferData an empty <code>TransferData</code> object that will
  *  	be filled in on return with the platform specific format of the data
- *  
+ *
  * @see Transfer#nativeToJava
  */
 @Override
@@ -109,23 +109,23 @@ public void javaToNative (Object object, TransferData transferData){
 }
 
 /**
- * This implementation of <code>nativeToJava</code> converts a platform specific 
+ * This implementation of <code>nativeToJava</code> converts a platform specific
  * representation of plain text to a java <code>String</code>.
- * 
+ *
  * @param transferData the platform specific representation of the data to be converted
  * @return a java <code>String</code> containing text if the conversion was successful; otherwise null
- * 
+ *
  * @see Transfer#javaToNative
  */
 @Override
 public Object nativeToJava(TransferData transferData){
 	if (!isSupportedType(transferData) || transferData.pIDataObject == 0) return null;
-	
+
 	IDataObject data = new IDataObject(transferData.pIDataObject);
 	data.AddRef();
 	FORMATETC formatetc = transferData.formatetc;
 	STGMEDIUM stgmedium = new STGMEDIUM();
-	stgmedium.tymed = COM.TYMED_HGLOBAL;	
+	stgmedium.tymed = COM.TYMED_HGLOBAL;
 	transferData.result = getData(data, formatetc, stgmedium);
 	data.Release();
 	if (transferData.result != COM.S_OK) return null;
@@ -150,7 +150,7 @@ public Object nativeToJava(TransferData transferData){
 					}
 					return new String (chars, 0, length);
 				} finally {
-					OS.GlobalUnlock(hMem);	
+					OS.GlobalUnlock(hMem);
 				}
 			}
 			case CF_TEXTID: {

@@ -11,22 +11,22 @@
 package org.eclipse.swt.internal.win32;
 
 public class WNDCLASS {
-	public int style; 
+	public int style;
 	/** @field cast=(WNDPROC) */
-	public long /*int*/ lpfnWndProc; 
-	public int cbClsExtra; 
-	public int cbWndExtra; 
+	public long /*int*/ lpfnWndProc;
+	public int cbClsExtra;
+	public int cbWndExtra;
 	/** @field cast=(HINSTANCE) */
-	public long /*int*/ hInstance; 
+	public long /*int*/ hInstance;
 	/** @field cast=(HICON) */
-	public long /*int*/ hIcon; 
+	public long /*int*/ hIcon;
 	/** @field cast=(HCURSOR) */
-	public long /*int*/ hCursor; 
+	public long /*int*/ hCursor;
 	/** @field cast=(HBRUSH) */
-	public long /*int*/ hbrBackground; 
+	public long /*int*/ hbrBackground;
 	/** @field cast=(LPCTSTR) */
-	public long /*int*/ lpszMenuName; 
+	public long /*int*/ lpszMenuName;
 	/** @field cast=(LPCTSTR) */
-	public long /*int*/ lpszClassName; 
+	public long /*int*/ lpszClassName;
 	public static final int sizeof = OS.WNDCLASS_sizeof ();
 }

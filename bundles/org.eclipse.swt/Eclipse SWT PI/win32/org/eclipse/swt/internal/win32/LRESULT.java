@@ -15,7 +15,7 @@ public class LRESULT {
 	public long /*int*/ value;
 	public static final LRESULT ONE = new LRESULT (1);
 	public static final LRESULT ZERO = new LRESULT (0);
-	
+
 public LRESULT (long /*int*/ value) {
 	this.value = value;
 }

@@ -14,7 +14,7 @@ import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 
 public class Theme {
-	
+
 	Device device;
 
 public Theme(Device device) {

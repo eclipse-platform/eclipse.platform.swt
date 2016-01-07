@@ -27,10 +27,10 @@ import org.eclipse.swt.*;
  * </p><p>
  * IMPORTANT: This class is <em>not</em> intended to be subclassed.
  * </p>
- * 
+ *
  * @see ExpandBar
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
- * 
+ *
  * @since 3.2
  * @noextend This class is not intended to be subclassed by clients.
  */
@@ -43,14 +43,14 @@ public class ExpandItem extends Item {
 	static final int TEXT_INSET = 6;
 	static final int BORDER = 1;
 	static final int CHEVRON_SIZE = 24;
-	
+
 /**
  * Constructs a new instance of this class given its parent
  * and a style value describing its behavior and appearance.
  * <p>
  * The style value is either one of the style constants defined in
  * class <code>SWT</code> which is applicable to instances of this
- * class, or must be built by <em>bitwise OR</em>'ing together 
+ * class, or must be built by <em>bitwise OR</em>'ing together
  * (that is, using the <code>int</code> "|" operator) two or more
  * of those <code>SWT</code> style constants. The class description
  * lists the style constants that are applicable to the class.
@@ -82,7 +82,7 @@ public ExpandItem (ExpandBar parent, int style) {
  * <p>
  * The style value is either one of the style constants defined in
  * class <code>SWT</code> which is applicable to instances of this
- * class, or must be built by <em>bitwise OR</em>'ing together 
+ * class, or must be built by <em>bitwise OR</em>'ing together
  * (that is, using the <code>int</code> "|" operator) two or more
  * of those <code>SWT</code> style constants. The class description
  * lists the style constants that are applicable to the class.
@@ -113,7 +113,7 @@ public ExpandItem (ExpandBar parent, int style, int index) {
 
 static ExpandBar checkNull (ExpandBar control) {
 	if (control == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
-	return control;	
+	return control;
 }
 
 private void drawChevron (long /*int*/ hDC, RECT rect) {
@@ -170,7 +170,7 @@ private void drawChevron (long /*int*/ hDC, RECT rect) {
 		OS.DeleteObject (darkGrayPen);
 	} else {
 		OS.SelectObject (hDC, oldPen);
-	}		
+	}
 	OS.DeleteObject (hPen);
 }
 
@@ -184,7 +184,7 @@ void drawItem (GC gc, long /*int*/ hTheme, RECT clipRect, boolean drawFocus) {
 	} else {
 		long /*int*/ oldBrush = OS.SelectObject (hDC, OS.GetSysColorBrush (OS.COLOR_BTNFACE));
 		OS.PatBlt (hDC, rect.left, rect.top, rect.right - rect.left, rect.bottom - rect.top, OS.PATCOPY);
-		OS.SelectObject (hDC, oldBrush);		
+		OS.SelectObject (hDC, oldBrush);
 	}
 	if (image != null) {
 		rect.left += ExpandItem.TEXT_INSET;
@@ -226,7 +226,7 @@ void drawItem (GC gc, long /*int*/ hTheme, RECT clipRect, boolean drawFocus) {
 		OS.DrawThemeBackground (hTheme, hDC, partID, stateID, rect, clipRect);
 	} else {
 		drawChevron (hDC, rect);
-	} 
+	}
 	if (drawFocus) {
 		OS.SetRect (rect, x + 1, y + 1, x + width - 2, y + headerHeight - 2);
 		OS.DrawFocusRect (hDC, rect);
@@ -236,9 +236,9 @@ void drawItem (GC gc, long /*int*/ hTheme, RECT clipRect, boolean drawFocus) {
 			long /*int*/ pen = OS.CreatePen (OS.PS_SOLID, 1, OS.GetSysColor (OS.COLOR_BTNFACE));
 			long /*int*/ oldPen = OS.SelectObject (hDC, pen);
 			int [] points = {
-					x, y + headerHeight, 
-					x, y + headerHeight + height, 
-					x + width - 1, y + headerHeight + height, 
+					x, y + headerHeight,
+					x, y + headerHeight + height,
+					x + width - 1, y + headerHeight + height,
 					x + width - 1, y + headerHeight - 1};
 			OS.Polyline (hDC, points, points.length / 2);
 			OS.SelectObject (hDC, oldPen);
@@ -286,9 +286,9 @@ public boolean getExpanded () {
 }
 
 /**
- * Returns the height of the receiver's header 
+ * Returns the height of the receiver's header
  *
- * @return the height of the header 
+ * @return the height of the header
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -337,9 +337,9 @@ int getPreferredWidth (long /*int*/ hTheme, long /*int*/ hDC) {
 	}
 	if (text.length() > 0) {
 		RECT rect = new RECT ();
-		TCHAR buffer = new TCHAR (parent.getCodePage (), text, false);			
+		TCHAR buffer = new TCHAR (parent.getCodePage (), text, false);
 		if (hTheme != 0) {
-			OS.GetThemeTextExtent (hTheme, hDC, OS.EBP_NORMALGROUPHEAD, 0, buffer.chars, buffer.length(), OS.DT_SINGLELINE, null, rect);			
+			OS.GetThemeTextExtent (hTheme, hDC, OS.EBP_NORMALGROUPHEAD, 0, buffer.chars, buffer.length(), OS.DT_SINGLELINE, null, rect);
 		} else {
 			OS.DrawText (hDC, buffer, buffer.length (), rect, OS.DT_CALCRECT);
 		}
@@ -382,7 +382,7 @@ void releaseWidget () {
 	control = null;
 }
 
-void setBounds (int x, int y, int width, int height, boolean move, boolean size) {	
+void setBounds (int x, int y, int width, int height, boolean move, boolean size) {
 	redraw (true);
 	int headerHeight = parent.getBandHeight ();
 	if (move) {
@@ -416,7 +416,7 @@ void setBounds (int x, int y, int width, int height, boolean move, boolean size)
  * @param control the new control (or null)
  *
  * @exception IllegalArgumentException <ul>
- *    <li>ERROR_INVALID_ARGUMENT - if the control has been disposed</li> 
+ *    <li>ERROR_INVALID_ARGUMENT - if the control has been disposed</li>
  *    <li>ERROR_INVALID_PARENT - if the control is not in the same widget tree</li>
  * </ul>
  * @exception SWTException <ul>
@@ -461,7 +461,7 @@ public void setExpanded (boolean expanded) {
 }
 
 /**
- * Sets the height of the receiver. This is height of the item when it is expanded, 
+ * Sets the height of the receiver. This is height of the item when it is expanded,
  * excluding the height of the header.
  *
  * @param height the new height

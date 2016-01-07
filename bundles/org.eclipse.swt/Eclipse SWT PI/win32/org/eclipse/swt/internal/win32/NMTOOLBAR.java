@@ -30,11 +30,11 @@ public class NMTOOLBAR extends NMHDR {
 	public long /*int*/ pszText;
 //	RECT rcButton;
 	/** @field accessor=rcButton.left,flags=no_wince */
-	public int left; 
+	public int left;
 	/** @field accessor=rcButton.top,flags=no_wince */
-	public int top; 
+	public int top;
 	/** @field accessor=rcButton.right,flags=no_wince */
-	public int right; 
+	public int right;
 	/** @field accessor=rcButton.bottom,flags=no_wince */
 	public int bottom;
 	/* Note in WinCE.  The field rcButton is not defined. */

@@ -12,7 +12,7 @@ package org.eclipse.swt.internal.win32;
 
 public class LOGPEN {
 	public int lopnStyle;
-//	POINT lopnWidth; 
+//	POINT lopnWidth;
 	/** @field accessor=lopnWidth.x */
 	public int x;
 	/** @field accessor=lopnWidth.y */

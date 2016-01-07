@@ -17,7 +17,7 @@ import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.BidiUtil;
 import org.eclipse.swt.internal.win32.*;
 
-/** 
+/**
  * Instances of this class represent a selectable user interface
  * object that displays a list of strings and issues notification
  * when a string is selected.  A list may be single or multi select.
@@ -43,7 +43,7 @@ public class List extends Scrollable {
 	static final int INSET = 3;
 	static final long /*int*/ ListProc;
 	static final TCHAR ListClass = new TCHAR (0, "LISTBOX", true);
-	boolean addedUCC = false; // indicates whether Bidi UCC were added; 'state & HAS_AUTO_DIRECTION' isn't a sufficient indicator 
+	boolean addedUCC = false; // indicates whether Bidi UCC were added; 'state & HAS_AUTO_DIRECTION' isn't a sufficient indicator
 	static {
 		WNDCLASS lpWndClass = new WNDCLASS ();
 		OS.GetClassInfo (0, ListClass, lpWndClass);
@@ -56,7 +56,7 @@ public class List extends Scrollable {
  * <p>
  * The style value is either one of the style constants defined in
  * class <code>SWT</code> which is applicable to instances of this
- * class, or must be built by <em>bitwise OR</em>'ing together 
+ * class, or must be built by <em>bitwise OR</em>'ing together
  * (that is, using the <code>int</code> "|" operator) two or more
  * of those <code>SWT</code> style constants. The class description
  * lists the style constants that are applicable to the class.
@@ -245,7 +245,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 						width = Math.max (width, rect.right - rect.left);
 					}
 				}
-			}	
+			}
 			if (newFont != 0) OS.SelectObject (hDC, oldFont);
 			OS.ReleaseDC (handle, hDC);
 		}
@@ -278,7 +278,7 @@ int defaultBackground () {
 
 /**
  * Deselects the items at the given zero-relative indices in the receiver.
- * If the item at the given zero-relative index in the receiver 
+ * If the item at the given zero-relative index in the receiver
  * is selected, it is deselected.  If the item at the index
  * was not selected, it remains deselected. Indices that are out
  * of range and duplicate indices are ignored.
@@ -336,13 +336,13 @@ public void deselect (int index) {
 		if (oldIndex == OS.LB_ERR) return;
 		if (oldIndex == index) OS.SendMessage (handle, OS.LB_SETCURSEL, -1, 0);
 		return;
-	} 
+	}
 	OS.SendMessage (handle, OS.LB_SETSEL, 0, index);
 }
 
 /**
  * Deselects the items at the given zero-relative indices in the receiver.
- * If the item at the given zero-relative index in the receiver 
+ * If the item at the given zero-relative index in the receiver
  * is selected, it is deselected.  If the item at the index
  * was not selected, it remains deselected.  The range of the
  * indices is inclusive. Indices that are out of range are ignored.
@@ -484,11 +484,11 @@ public int getItemHeight () {
 
 /**
  * Returns a (possibly empty) array of <code>String</code>s which
- * are the items in the receiver. 
+ * are the items in the receiver.
  * <p>
  * Note: This is not the actual structure used by the receiver
  * to maintain its list of items, so modifying the array will
- * not affect the receiver. 
+ * not affect the receiver.
  * </p>
  *
  * @return the items in the receiver's list
@@ -513,7 +513,7 @@ public String [] getItems () {
  * <p>
  * Note: This is not the actual structure used by the receiver
  * to maintain its selection, so modifying the array will
- * not affect the receiver. 
+ * not affect the receiver.
  * </p>
  * @return an array representing the selection
  *
@@ -590,7 +590,7 @@ public int getSelectionIndex () {
  * <p>
  * Note: This is not the actual structure used by the receiver
  * to maintain its selection, so modifying the array will
- * not affect the receiver. 
+ * not affect the receiver.
  * </p>
  * @return the array of indices of the selected items
  *
@@ -655,7 +655,7 @@ public int indexOf (String string) {
 }
 
 /**
- * Searches the receiver's list starting at the given, 
+ * Searches the receiver's list starting at the given,
  * zero-relative index until an item is found that is equal
  * to the argument, and returns the index of that item. If
  * no item is found or the starting index is out of range,
@@ -676,7 +676,7 @@ public int indexOf (String string) {
 public int indexOf (String string, int start) {
 	checkWidget ();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
-	
+
 	/*
 	* Bug in Windows.  For some reason, LB_FINDSTRINGEXACT
 	* will not find empty strings even though it is legal
@@ -844,7 +844,7 @@ public void remove (int index) {
 
 /**
  * Removes the items from the receiver which are
- * between the given zero-relative start and end 
+ * between the given zero-relative start and end
  * indices (inclusive).
  *
  * @param start the start of the range
@@ -868,7 +868,7 @@ public void remove (int start, int end) {
 	if (start == 0 && end == count - 1) {
 		removeAll ();
 		return;
-	} 
+	}
 	int topIndex = (int)/*64*/OS.SendMessage (handle, OS.LB_GETTOPINDEX, 0, 0);
 	RECT rect = null;
 	long /*int*/ hDC = 0, oldFont = 0, newFont = 0;
@@ -913,7 +913,7 @@ public void remove (int start, int end) {
 
 /**
  * Searches the receiver's list starting at the first item
- * until an item is found that is equal to the argument, 
+ * until an item is found that is equal to the argument,
  * and removes that item from the list.
  *
  * @param string the item to remove
@@ -973,7 +973,7 @@ public void removeSelectionListener(SelectionListener listener) {
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (eventTable == null) return;
 	eventTable.unhook (SWT.Selection, listener);
-	eventTable.unhook (SWT.DefaultSelection,listener);	
+	eventTable.unhook (SWT.DefaultSelection,listener);
 }
 
 /**
@@ -995,7 +995,7 @@ public void removeSelectionListener(SelectionListener listener) {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @see List#setSelection(int[])
  */
 public void select (int [] indices) {
@@ -1019,7 +1019,7 @@ void select (int [] indices, boolean scroll) {
 }
 
 /**
- * Selects the item at the given zero-relative index in the receiver's 
+ * Selects the item at the given zero-relative index in the receiver's
  * list.  If the item at the index was already selected, it remains
  * selected. Indices that are out of range are ignored.
  *
@@ -1043,8 +1043,8 @@ void select (int index, boolean scroll) {
 		if ((style & SWT.SINGLE) != 0) {
 			OS.SendMessage (handle, OS.LB_SETCURSEL, index, 0);
 		} else {
-			OS.SendMessage (handle, OS.LB_SETSEL, 1, index);	
-		}		
+			OS.SendMessage (handle, OS.LB_SETSEL, 1, index);
+		}
 		return;
 	}
 	int topIndex = (int)/*64*/OS.SendMessage (handle, OS.LB_GETTOPINDEX, 0, 0);
@@ -1102,7 +1102,7 @@ void select (int index, boolean scroll) {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @see List#setSelection(int,int)
  */
 public void select (int start, int end) {
@@ -1131,7 +1131,7 @@ void select (int start, int end, boolean scroll) {
 	OS.SendMessage (handle, OS.LB_SELITEMRANGEEX, start, end);
 	if (scroll) showSelection ();
 }
-	
+
 /**
  * Selects all of the items in the receiver.
  * <p>
@@ -1149,7 +1149,7 @@ public void selectAll () {
 }
 
 void setFocusIndex (int index) {
-//	checkWidget ();	
+//	checkWidget ();
 	int count = (int)/*64*/OS.SendMessage (handle, OS.LB_GETCOUNT, 0, 0);
 	if (!(0 <= index && index < count)) return;
 	OS.SendMessage (handle, OS.LB_SETCARETINDEX, index, 0);
@@ -1403,7 +1403,7 @@ public void setSelection (String [] items) {
 }
 
 /**
- * Selects the item at the given zero-relative index in the receiver. 
+ * Selects the item at the given zero-relative index in the receiver.
  * If the item at the index was already selected, it remains selected.
  * The current selection is first cleared, then the new item is selected,
  * and if necessary the receiver is scrolled to make the new selection visible.
@@ -1551,7 +1551,7 @@ void updateMenuLocation (Event event) {
 		OS.ReleaseDC (handle, hDC);
 		x = Math.max (x, rect.right / 2);
 		x = Math.min (x, clientArea.x + clientArea.width);
-		
+
 		OS.SendMessage (handle, OS.LB_GETITEMRECT, focusIndex, rect);
 		y = Math.max (y, rect.bottom);
 		y = Math.min (y, clientArea.y + clientArea.height);
@@ -1653,7 +1653,7 @@ long /*int*/ windowProc (long /*int*/ hwnd, int msg, long /*int*/ wParam, long /
 				long /*int*/ hHeap = OS.GetProcessHeap ();
 				length = buffer.length() * TCHAR.sizeof;
 				long /*int*/ pszText = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, length);
-				OS.MoveMemory (pszText, buffer, length); 
+				OS.MoveMemory (pszText, buffer, length);
 				long /*int*/ code = super.windowProc (hwnd, msg, wParam, pszText);
 				OS.HeapFree (hHeap, 0, pszText);
 				addedUCC = true;
@@ -1691,7 +1691,7 @@ LRESULT WM_CHAR (long /*int*/ wParam, long /*int*/ lParam) {
 	}
 	return result;
 }
-	
+
 @Override
 LRESULT WM_KEYDOWN (long /*int*/ wParam, long /*int*/ lParam) {
 	LRESULT result = super.WM_KEYDOWN (wParam, lParam);

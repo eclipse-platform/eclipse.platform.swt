@@ -17,7 +17,7 @@ public class Gdip extends Platform {
 	static {
 		Library.loadLibrary ("swt-gdip"); //$NON-NLS-1$
 	}
-	
+
 	/** GdiPlus constants */
 	public static final float FlatnessDefault = 0.25f;
 	public static final int BrushTypeSolidColor = 0;
@@ -44,7 +44,7 @@ public class Gdip extends Platform {
 	public static final int DashStyleDashDot = 3;
 	public static final int DashStyleDashDotDot = 4;
 	public static final int DashStyleCustom = 5;
-	public static final int DriverStringOptionsRealizedAdvance = 4; 
+	public static final int DriverStringOptionsRealizedAdvance = 4;
 	public static final int FontStyleRegular = 0;
 	public static final int FontStyleBold = 1;
 	public static final int FontStyleItalic = 2;

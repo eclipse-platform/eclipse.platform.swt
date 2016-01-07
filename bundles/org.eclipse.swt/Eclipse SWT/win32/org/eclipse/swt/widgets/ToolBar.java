@@ -57,13 +57,13 @@ public class ToolBar extends Composite {
 		OS.GetClassInfo (0, ToolBarClass, lpWndClass);
 		ToolBarProc = lpWndClass.lpfnWndProc;
 	}
-	
+
 	/*
 	* From the Windows SDK for TB_SETBUTTONSIZE:
 	*
 	*   "If an application does not explicitly
 	*	set the button size, the size defaults
-	*	to 24 by 22 pixels". 
+	*	to 24 by 22 pixels".
 	*/
 	static final int DEFAULT_WIDTH = 24;
 	static final int DEFAULT_HEIGHT = 22;
@@ -74,7 +74,7 @@ public class ToolBar extends Composite {
  * <p>
  * The style value is either one of the style constants defined in
  * class <code>SWT</code> which is applicable to instances of this
- * class, or must be built by <em>bitwise OR</em>'ing together 
+ * class, or must be built by <em>bitwise OR</em>'ing together
  * (that is, using the <code>int</code> "|" operator) two or more
  * of those <code>SWT</code> style constants. The class description
  * lists the style constants that are applicable to the class.
@@ -110,7 +110,7 @@ public ToolBar (Composite parent, int style) {
 	* clear these bits to avoid scroll bars and then reset
 	* the bits using the original style supplied by the
 	* programmer.
-	* 
+	*
 	* NOTE: The CCS_VERT style cannot be applied when the
 	* widget is created because of this conflict.
 	*/
@@ -124,7 +124,7 @@ public ToolBar (Composite parent, int style) {
 		* every button in the tool bar and makes the preferred
 		* height too big.  The fix is to set the TBSTYLE_LIST
 		* when the tool bar contains both text and images.
-		* 
+		*
 		* NOTE: Tool bars with CCS_VERT must have TBSTYLE_LIST
 		* set before any item is added or the tool bar does
 		* not lay out properly.  The work around does not run
@@ -160,13 +160,13 @@ static int checkStyle (int style) {
 	* On Windows, only flat tool bars can be traversed.
 	*/
 	if ((style & SWT.FLAT) == 0) style |= SWT.NO_FOCUS;
-	
+
 	/*
 	* A vertical tool bar cannot wrap because TB_SETROWS
 	* fails when the toolbar has TBSTYLE_WRAPABLE.
 	*/
 	if ((style & SWT.VERTICAL) != 0) style &= ~SWT.WRAP;
-		
+
 	/*
 	* Even though it is legal to create this widget
 	* with scroll bars, they serve no useful purpose
@@ -234,13 +234,13 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 		if (redraw) OS.ValidateRect (handle, null);
 		ignoreResize = false;
 	}
-	
+
 	/*
 	* From the Windows SDK for TB_SETBUTTONSIZE:
 	*
 	*   "If an application does not explicitly
 	*	set the button size, the size defaults
-	*	to 24 by 22 pixels". 
+	*	to 24 by 22 pixels".
 	*/
 	if (width == 0) width = DEFAULT_WIDTH;
 	if (height == 0) height = DEFAULT_HEIGHT;
@@ -266,7 +266,7 @@ Widget computeTabGroup () {
 	if (tabItemList == null) {
 		int i = 0;
 		while (i < items.length && items [i].control == null) i++;
-		if (i == items.length) return super.computeTabGroup (); 
+		if (i == items.length) return super.computeTabGroup ();
 	}
 	int index = (int)/*64*/OS.SendMessage (handle, OS.TB_GETHOTITEM, 0, 0);
 	if (index == -1) index = lastHotId;
@@ -284,7 +284,7 @@ Widget [] computeTabList () {
 	if (tabItemList == null) {
 		int i = 0;
 		while (i < items.length && items [i].control == null) i++;
-		if (i == items.length) return super.computeTabList (); 
+		if (i == items.length) return super.computeTabList ();
 	}
 	Widget result [] = {};
 	if (!isTabGroup () || !isEnabled () || !isVisible ()) return result;
@@ -299,7 +299,7 @@ Widget [] computeTabList () {
 			result = newResult;
 		}
 	}
-	if (result.length == 0) result = new Widget [] {this}; 
+	if (result.length == 0) result = new Widget [] {this};
 	return result;
 }
 
@@ -307,13 +307,13 @@ Widget [] computeTabList () {
 void createHandle () {
 	super.createHandle ();
 	state &= ~CANVAS;
-	
+
 	/*
 	* Feature in Windows.  When TBSTYLE_FLAT is used to create
 	* a flat toolbar, for some reason TBSTYLE_TRANSPARENT is
 	* also set.  This causes the toolbar to flicker when it is
 	* moved or resized.  The fix is to clear TBSTYLE_TRANSPARENT.
-	* 
+	*
 	* NOTE:  This work around is unnecessary on XP.  There is no
 	* flickering and clearing the TBSTYLE_TRANSPARENT interferes
 	* with the XP theme.
@@ -382,7 +382,7 @@ void createItem (ToolItem item, int index) {
 	lpButton.idCommand = id;
 	lpButton.fsStyle = (byte) bits;
 	lpButton.fsState = (byte) OS.TBSTATE_ENABLED;
-	
+
 	/*
 	* Bug in Windows.  Despite the fact that the image list
 	* index has never been set for the item, Windows always
@@ -432,7 +432,7 @@ void destroyItem (ToolItem item) {
 	* the style BTNS_SEP does not return I_IMAGENONE when queried
 	* for an image index, despite the fact that no attempt has been
 	* made to assign an image to the item.  As a result, operations
-	* on an image list that use the wrong index cause random results.	
+	* on an image list that use the wrong index cause random results.
 	* The fix is to ensure that the tool item is not a separator
 	* before using the image index.  Since separators cannot have
 	* an image and one is never assigned, this is not a problem.
@@ -478,7 +478,7 @@ void enableWidget (boolean enabled) {
 	* disabled, the item does not draw using the disabled
 	* image.  The fix is to use the disabled image in all
 	* image lists for the item.
-	* 
+	*
 	* Feature in Windows.  When a tool bar is disabled,
 	* the text draws disabled but the images do not.
 	* The fix is to use the disabled image in all image
@@ -524,7 +524,7 @@ ImageList getImageList () {
 public ToolItem getItem (int index) {
 	checkWidget ();
 	int count = (int)/*64*/OS.SendMessage (handle, OS.TB_BUTTONCOUNT, 0, 0);
-	if (!(0 <= index && index < count)) error (SWT.ERROR_INVALID_RANGE);	
+	if (!(0 <= index && index < count)) error (SWT.ERROR_INVALID_RANGE);
 	TBBUTTON lpButton = new TBBUTTON ();
 	long /*int*/ result = OS.SendMessage (handle, OS.TB_GETBUTTON, index, lpButton);
 	if (result == 0) error (SWT.ERROR_CANNOT_GET_ITEM);
@@ -575,11 +575,11 @@ public int getItemCount () {
 
 /**
  * Returns an array of <code>ToolItem</code>s which are the items
- * in the receiver. 
+ * in the receiver.
  * <p>
  * Note: This is not the actual structure used by the receiver
  * to maintain its list of items, so modifying the array will
- * not affect the receiver. 
+ * not affect the receiver.
  * </p>
  *
  * @return the items in the receiver
@@ -646,7 +646,7 @@ ToolItem [] _getTabItemList () {
 
 /**
  * Searches the receiver's list starting at the first item
- * (index 0) until an item is found that is equal to the 
+ * (index 0) until an item is found that is equal to the
  * argument, and returns the index of that item. If no item
  * is found, returns -1.
  *
@@ -669,7 +669,7 @@ public int indexOf (ToolItem item) {
 	return (int)/*64*/OS.SendMessage (handle, OS.TB_COMMANDTOINDEX, item.id, 0);
 }
 
-void layoutItems () {	
+void layoutItems () {
 	/*
 	* Feature in Windows.  When a tool bar has the style
 	* TBSTYLE_LIST and has a drop down item, Window leaves
@@ -677,7 +677,7 @@ void layoutItems () {
 	* every button in the tool bar and makes the preferred
 	* height too big.  The fix is to set the TBSTYLE_LIST
 	* when the tool bar contains both text and images.
-	* 
+	*
 	* NOTE: Tool bars with CCS_VERT must have TBSTYLE_LIST
 	* set before any item is added or the tool bar does
 	* not lay out properly.  The work around does not run
@@ -715,7 +715,7 @@ void layoutItems () {
 			}
 		}
 	}
-	
+
 	if ((style & SWT.WRAP) != 0) {
 		OS.SendMessage (handle, OS.TB_AUTOSIZE, 0, 0);
 	}
@@ -763,13 +763,13 @@ void layoutItems () {
 
 	/*
 	* Feature on Windows. When SWT.WRAP or SWT.VERTICAL are set
-	* the separator items with control are implemented using BTNS_BUTTON 
-	* instead of BTNS_SEP. When that is the case and TBSTYLE_LIST is 
-	* set, the layout of the ToolBar recalculates the width for all 
+	* the separator items with control are implemented using BTNS_BUTTON
+	* instead of BTNS_SEP. When that is the case and TBSTYLE_LIST is
+	* set, the layout of the ToolBar recalculates the width for all
 	* BTNS_BUTTON based on the text and bitmap of the item.
 	* This is not strictly wrong, but the user defined width for the
 	* separators has to be respected if set.
-	* The fix is to detect this case and reset the cx width for the item.  
+	* The fix is to detect this case and reset the cx width for the item.
 	*/
 	if ((style & (SWT.WRAP | SWT.VERTICAL)) != 0) {
 		int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
@@ -786,7 +786,7 @@ void layoutItems () {
 			}
 		}
 	}
-	
+
 	for (int i=0; i<items.length; i++) {
 		ToolItem item = items [i];
 		if (item != null) item.resizeControl ();
@@ -899,7 +899,7 @@ void setBackgroundTransparent (boolean transparent) {
 	* the image list that include transparency information
 	* do not draw correctly.  The fix is to clear and set
 	* TBSTYLE_TRANSPARENT depending on the background color.
-	* 
+	*
 	* NOTE:  This work around is unnecessary on XP.  The
 	* TBSTYLE_TRANSPARENT style is never cleared on that
 	* platform.
@@ -952,7 +952,7 @@ void setDropDownItems (boolean set) {
 	* makes the preferred height too big.  The fix is clear the
 	* BTNS_DROPDOWN before Windows lays out the tool bar and set
 	* the bit afterwards.
-	* 
+	*
 	* NOTE:  This work around only runs when the tool bar contains
 	* only images.
 	*/
@@ -1013,7 +1013,7 @@ public void setFont (Font font) {
 	int mask = SWT.PUSH | SWT.CHECK | SWT.RADIO | SWT.DROP_DOWN;
 	while (index < items.length) {
 		ToolItem item = items [index];
-		if (item != null && (item.style & mask) != 0) break;		
+		if (item != null && (item.style & mask) != 0) break;
 		index++;
 	}
 	if (index == items.length) {
@@ -1119,7 +1119,7 @@ void setRowCount (int count) {
 		ToolItem [] newList = new ToolItem [tabList.length];
 		System.arraycopy (tabList, 0, newList, 0, tabList.length);
 		tabList = newList;
-	} 
+	}
 	this.tabItemList = tabList;
 }
 
@@ -1182,7 +1182,7 @@ String toolTipText (NMTTDISPINFO hdr) {
 		if (toolTipText != null) return ""; //$NON-NLS-1$
 		if (0 <= index && index < items.length) {
 			ToolItem item = items [index];
-			if (item != null) {	
+			if (item != null) {
 				/*
 				* Bug in Windows.  When the  arrow keys are used to change
 				* the hot item, for some reason, Windows displays the tool
@@ -1205,7 +1205,7 @@ void updateOrientation () {
 		Point size = imageList.getImageSize ();
 		ImageList newImageList = display.getImageListToolBar (style & SWT.RIGHT_TO_LEFT, size.x, size.y);
 		ImageList newHotImageList = display.getImageListToolBarHot (style & SWT.RIGHT_TO_LEFT, size.x, size.y);
-		ImageList newDisabledImageList = display.getImageListToolBarDisabled (style & SWT.RIGHT_TO_LEFT, size.x, size.y);	
+		ImageList newDisabledImageList = display.getImageListToolBarDisabled (style & SWT.RIGHT_TO_LEFT, size.x, size.y);
 		TBBUTTONINFO info = new TBBUTTONINFO ();
 		info.cbSize = TBBUTTONINFO.sizeof;
 		info.dwMask = OS.TBIF_IMAGE;
@@ -1255,7 +1255,7 @@ int widgetStyle () {
 	* every button in the tool bar and makes the preferred
 	* height too big.  The fix is to set the TBSTYLE_LIST
 	* when the tool bar contains both text and images.
-	* 
+	*
 	* NOTE: Tool bars with CCS_VERT must have TBSTYLE_LIST
 	* set before any item is added or the tool bar does
 	* not lay out properly.  The work around does not run
@@ -1324,18 +1324,18 @@ LRESULT WM_COMMAND (long /*int*/ wParam, long /*int*/ lParam) {
 	* Feature in Windows.  When the toolbar window
 	* proc processes WM_COMMAND, it forwards this
 	* message to its parent.  This is done so that
-	* children of this control that send this message 
+	* children of this control that send this message
 	* type to their parent will notify not only
 	* this control but also the parent of this control,
 	* which is typically the application window and
 	* the window that is looking for the message.
-	* If the control did not forward the message, 
-	* applications would have to subclass the control 
+	* If the control did not forward the message,
+	* applications would have to subclass the control
 	* window to see the message. Because the control
 	* window is subclassed by SWT, the message
 	* is delivered twice, once by SWT and once when
 	* the message is forwarded by the window proc.
-	* The fix is to avoid calling the window proc 
+	* The fix is to avoid calling the window proc
 	* for this control.
 	*/
 	LRESULT result = super.WM_COMMAND (wParam, lParam);
@@ -1378,7 +1378,7 @@ LRESULT WM_KEYDOWN (long /*int*/ wParam, long /*int*/ lParam) {
 	LRESULT result = super.WM_KEYDOWN (wParam, lParam);
 	if (result != null) return result;
 	switch ((int)/*64*/wParam) {
-		case OS.VK_SPACE:	
+		case OS.VK_SPACE:
 			/*
 			* Ensure that the window proc does not process VK_SPACE
 			* so that it can be handled in WM_CHAR.  This allows the
@@ -1451,18 +1451,18 @@ LRESULT WM_NOTIFY (long /*int*/ wParam, long /*int*/ lParam) {
 	* Feature in Windows.  When the toolbar window
 	* proc processes WM_NOTIFY, it forwards this
 	* message to its parent.  This is done so that
-	* children of this control that send this message 
+	* children of this control that send this message
 	* type to their parent will notify not only
 	* this control but also the parent of this control,
 	* which is typically the application window and
 	* the window that is looking for the message.
-	* If the control did not forward the message, 
-	* applications would have to subclass the control 
+	* If the control did not forward the message,
+	* applications would have to subclass the control
 	* window to see the message. Because the control
 	* window is subclassed by SWT, the message
 	* is delivered twice, once by SWT and once when
 	* the message is forwarded by the window proc.
-	* The fix is to avoid calling the window proc 
+	* The fix is to avoid calling the window proc
 	* for this control.
 	*/
 	LRESULT result = super.WM_NOTIFY (wParam, lParam);
@@ -1474,7 +1474,7 @@ LRESULT WM_NOTIFY (long /*int*/ wParam, long /*int*/ lParam) {
 LRESULT WM_SETFOCUS (long /*int*/ wParam, long /*int*/ lParam) {
 	LRESULT result = super.WM_SETFOCUS (wParam, lParam);
 	if (lastFocusId != -1 && handle == OS.GetFocus ()) {
-		int index = (int)/*64*/OS.SendMessage (handle, OS.TB_COMMANDTOINDEX, lastFocusId, 0); 
+		int index = (int)/*64*/OS.SendMessage (handle, OS.TB_COMMANDTOINDEX, lastFocusId, 0);
 		OS.SendMessage (handle, OS.TB_SETHOTITEM, index, 0);
 	}
 	return result;
@@ -1502,7 +1502,7 @@ LRESULT WM_SIZE (long /*int*/ wParam, long /*int*/ lParam) {
 	if ((style & SWT.BORDER) != 0 && (style & SWT.WRAP) != 0) {
 		RECT windowRect = new RECT ();
 		OS.GetWindowRect (handle, windowRect);
-		int index = 0, border = getBorderWidth () * 2; 
+		int index = 0, border = getBorderWidth () * 2;
 		RECT rect = new RECT ();
 		int count = (int)/*64*/OS.SendMessage (handle, OS.TB_BUTTONCOUNT, 0, 0);
 		while (index < count) {

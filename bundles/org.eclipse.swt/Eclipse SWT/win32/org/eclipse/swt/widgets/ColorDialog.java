@@ -28,7 +28,7 @@ import org.eclipse.swt.graphics.*;
  * <p>
  * IMPORTANT: This class is <em>not</em> intended to be subclassed.
  * </p>
- * 
+ *
  * @see <a href="http://www.eclipse.org/swt/examples.php">SWT Example: ControlExample, Dialog tab</a>
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  * @noextend This class is not intended to be subclassed by clients.
@@ -40,7 +40,7 @@ public class ColorDialog extends Dialog {
 	RGB rgb;
 	RGB [] rgbs;
 	int [] colors = new int [CUSTOM_COLOR_COUNT];
-	
+
 /**
  * Constructs a new instance of this class given only its parent.
  *
@@ -68,7 +68,7 @@ public ColorDialog (Shell parent) {
  * <p>
  * The style value is either one of the style constants defined in
  * class <code>SWT</code> which is applicable to instances of this
- * class, or must be built by <em>bitwise OR</em>'ing together 
+ * class, or must be built by <em>bitwise OR</em>'ing together
  * (that is, using the <code>int</code> "|" operator) two or more
  * of those <code>SWT</code> style constants. The class description
  * lists the style constants that are applicable to the class.
@@ -144,7 +144,7 @@ public RGB getRGB () {
  * if no custom colors were selected.
  *
  * @return the array of RGBs, which may be null
- * 
+ *
  * @since 3.8
  */
 public RGB[] getRGBs() {
@@ -165,11 +165,11 @@ public RGB[] getRGBs() {
  * </ul>
  */
 public RGB open () {
-	
+
 	/* Get the owner HWND for the dialog */
 	long /*int*/ hwndOwner = parent.handle;
 	long /*int*/ hwndParent = parent.handle;
-	
+
 	/*
 	* Feature in Windows.  There is no API to set the orientation of a
 	* color dialog.  It is always inherited from the parent.  The fix is
@@ -202,7 +202,7 @@ public RGB open () {
 	Callback callback = new Callback (this, "CCHookProc", 4); //$NON-NLS-1$
 	long /*int*/ lpfnHook = callback.getAddress ();
 	if (lpfnHook == 0) error(SWT.ERROR_NO_MORE_CALLBACKS);
-	
+
 	/* Allocate the Custom Colors and initialize to white */
 	display = parent.display;
 	if (display.lpCustColors == 0) {
@@ -213,7 +213,7 @@ public RGB open () {
 		}
 		OS.MoveMemory (display.lpCustColors, colors, CUSTOM_COLOR_COUNT * 4);
 	}
-	
+
 	/* Set the Custom Colors (if any) into the dialog */
 	if (rgbs != null) {
 		int length = rgbs.length > CUSTOM_COLOR_COUNT ? CUSTOM_COLOR_COUNT : rgbs.length;
@@ -229,8 +229,8 @@ public RGB open () {
 		}
 		OS.MoveMemory (display.lpCustColors, colors, CUSTOM_COLOR_COUNT * 4);
 	}
-	
-	/* Open the dialog */	
+
+	/* Open the dialog */
 	CHOOSECOLOR lpcc = new CHOOSECOLOR ();
 	lpcc.lStructSize = CHOOSECOLOR.sizeof;
 	lpcc.Flags = OS.CC_ANYCOLOR | OS.CC_ENABLEHOOK;
@@ -245,7 +245,7 @@ public RGB open () {
 		int blue = (rgb.blue << 16) & 0xFF0000;
 		lpcc.rgbResult = red | green | blue;
 	}
-	
+
 	/* Make the parent shell be temporary modal */
 	Dialog oldModal = null;
 	if ((style & (SWT.APPLICATION_MODAL | SWT.SYSTEM_MODAL)) != 0) {
@@ -257,12 +257,12 @@ public RGB open () {
 	/* Open the dialog */
 	boolean success = OS.ChooseColor (lpcc);
 	display.sendPostExternalEventDispatchEvent ();
-	
+
 	/* Clear the temporary dialog modal parent */
 	if ((style & (SWT.APPLICATION_MODAL | SWT.SYSTEM_MODAL)) != 0) {
 		display.setModalDialog (oldModal);
 	}
-	
+
 	/* Get the Custom Colors (if the user defined any) from the dialog */
 	boolean customColor = false;
 	OS.MoveMemory (colors, display.lpCustColors, colors.length * 4);
@@ -289,10 +289,10 @@ public RGB open () {
 		int blue = (lpcc.rgbResult >> 16) & 0xFF;
 		rgb = new RGB (red, green, blue);
 	}
-	
+
 	/* Free the CCHookProc */
 	callback.dispose ();
-	
+
 	/* Free the Custom Colors */
 	/*
 	* This code is intentionally commented.  Currently,
@@ -308,7 +308,7 @@ public RGB open () {
 		OS.SetActiveWindow (hwndParent);
 		OS.DestroyWindow (hwndOwner);
 	}
-	
+
 	/*
 	* This code is intentionally commented.  On some
 	* platforms, the owner window is repainted right
@@ -316,7 +316,7 @@ public RGB open () {
 	* is currently unspecified.
 	*/
 //	if (hwndOwner != 0) OS.UpdateWindow (hwndOwner);
-	
+
 	display = null;
 	if (!success) return null;
 	return rgb;
@@ -344,7 +344,7 @@ public void setRGB (RGB rgb) {
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_INVALID_ARGUMENT - if an RGB in the rgbs array is null</li>
  * </ul>
- * 
+ *
  * @since 3.8
  */
 public void setRGBs(RGB[] rgbs) {

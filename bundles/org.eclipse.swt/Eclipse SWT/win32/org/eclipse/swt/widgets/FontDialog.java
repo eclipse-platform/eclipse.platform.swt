@@ -27,7 +27,7 @@ import org.eclipse.swt.internal.win32.*;
  * <p>
  * IMPORTANT: This class is <em>not</em> intended to be subclassed.
  * </p>
- * 
+ *
  * @see <a href="http://www.eclipse.org/swt/examples.php">SWT Example: ControlExample, Dialog tab</a>
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  * @noextend This class is not intended to be subclassed by clients.
@@ -36,7 +36,7 @@ public class FontDialog extends Dialog {
 	FontData fontData;
 	RGB rgb;
 	boolean effectsVisible = true;
-	
+
 /**
  * Constructs a new instance of this class given only its parent.
  *
@@ -60,7 +60,7 @@ public FontDialog (Shell parent) {
  * <p>
  * The style value is either one of the style constants defined in
  * class <code>SWT</code> which is applicable to instances of this
- * class, or must be built by <em>bitwise OR</em>'ing together 
+ * class, or must be built by <em>bitwise OR</em>'ing together
  * (that is, using the <code>int</code> "|" operator) two or more
  * of those <code>SWT</code> style constants. The class description
  * lists the style constants that are applicable to the class.
@@ -89,11 +89,11 @@ public FontDialog (Shell parent, int style) {
  * <p>
  * If the platform's font dialog does not have any effects selection controls,
  * then this method always returns false.
- * </p> 
+ * </p>
  *
  * @return <code>true</code> if the dialog's effects selection controls
  * are visible and <code>false</code> otherwise
- * 
+ *
  * @since 3.8
  */
 public boolean getEffectsVisible () {
@@ -103,7 +103,7 @@ public boolean getEffectsVisible () {
 /**
  * Returns a FontData object describing the font that was
  * selected in the dialog, or null if none is available.
- * 
+ *
  * @return the FontData for the selected font, or null
  * @deprecated use #getFontList ()
  */
@@ -115,7 +115,7 @@ public FontData getFontData () {
 /**
  * Returns a FontData set describing the font that was
  * selected in the dialog, or null if none is available.
- * 
+ *
  * @return the FontData for the selected font, or null
  * @since 2.1.1
  */
@@ -133,7 +133,7 @@ public FontData [] getFontList () {
  * @return the RGB value for the selected color, or null
  *
  * @see PaletteData#getRGBs
- * 
+ *
  * @since 2.1
  */
 public RGB getRGB () {
@@ -154,11 +154,11 @@ public RGB getRGB () {
  */
 public FontData open () {
 	if (OS.IsWinCE) error (SWT.ERROR_NOT_IMPLEMENTED);
-	
+
 	/* Get the owner HWND for the dialog */
 	long /*int*/ hwndOwner = parent.handle;
 	long /*int*/ hwndParent = parent.handle;
-	
+
 	/*
 	* Feature in Windows.  There is no API to set the orientation of a
 	* font dialog.  It is always inherited from the parent.  The fix is
@@ -186,7 +186,7 @@ public FontData open () {
 			if (enabled) OS.EnableWindow (hwndParent, false);
 		}
 	}
-		
+
 	/* Open the dialog */
 	long /*int*/ hHeap = OS.GetProcessHeap ();
 	CHOOSEFONT lpcf = new CHOOSEFONT ();
@@ -216,7 +216,7 @@ public FontData open () {
 		int blue = (rgb.blue << 16) & 0xFF0000;
 		lpcf.rgbColors = red | green | blue;
 	}
-	
+
 	/* Make the parent shell be temporary modal */
 	Dialog oldModal = null;
 	Display display = parent.getDisplay ();
@@ -224,17 +224,17 @@ public FontData open () {
 		oldModal = display.getModalDialog ();
 		display.setModalDialog (this);
 	}
-	
+
 	display.sendPreExternalEventDispatchEvent ();
 	/* Open the dialog */
 	boolean success = OS.ChooseFont (lpcf);
 	display.sendPostExternalEventDispatchEvent ();
-	
+
 	/* Clear the temporary dialog modal parent */
 	if ((style & (SWT.APPLICATION_MODAL | SWT.SYSTEM_MODAL)) != 0) {
 		display.setModalDialog (oldModal);
 	}
-	
+
 	/* Compute the result */
 	if (success) {
 		LOGFONT logFont = OS.IsUnicode ? (LOGFONT) new LOGFONTW () : new LOGFONTA ();
@@ -246,7 +246,7 @@ public FontData open () {
 		 */
 		long /*int*/ hDC = OS.GetDC(0);
 		int logPixelsY = OS.GetDeviceCaps(hDC, OS.LOGPIXELSY);
-		int pixels = 0; 
+		int pixels = 0;
 		if (logFont.lfHeight > 0) {
 			/*
 			 * Feature in Windows. If the lfHeight of the LOGFONT structure
@@ -277,7 +277,7 @@ public FontData open () {
 			rgb = new RGB (red, green, blue);
 		}
 	}
-		
+
 	/* Free the OS memory */
 	if (lpLogFont != 0) OS.HeapFree (hHeap, 0, lpLogFont);
 
@@ -295,7 +295,7 @@ public FontData open () {
 	* is currently unspecified.
 	*/
 //	if (hwndOwner != 0) OS.UpdateWindow (hwndOwner);
-	
+
 	if (!success) return null;
 	return fontData;
 }
@@ -309,7 +309,7 @@ public FontData open () {
  * </p>
  *
  * @param visible whether or not the dialog will show the effects selection controls
- * 
+ *
  * @since 3.8
  */
 public void setEffectsVisible(boolean visible) {
@@ -320,7 +320,7 @@ public void setEffectsVisible(boolean visible) {
  * Sets a FontData object describing the font to be
  * selected by default in the dialog, or null to let
  * the platform choose one.
- * 
+ *
  * @param fontData the FontData to use initially, or null
  * @deprecated use #setFontList (FontData [])
  */
@@ -333,12 +333,12 @@ public void setFontData (FontData fontData) {
  * Sets the set of FontData objects describing the font to
  * be selected by default in the dialog, or null to let
  * the platform choose one.
- * 
+ *
  * @param fontData the set of FontData objects to use initially, or null
  *        to let the platform select a default when open() is called
  *
  * @see Font#getFontData
- * 
+ *
  * @since 2.1.1
  */
 public void setFontList (FontData [] fontData) {
@@ -357,7 +357,7 @@ public void setFontList (FontData [] fontData) {
  *        the platform select a default when open() is called
  *
  * @see PaletteData#getRGBs
- * 
+ *
  * @since 2.1
  */
 public void setRGB (RGB rgb) {

@@ -65,7 +65,7 @@ static GUID IIDFromString (String lpsz) {
 	return null;
 }
 
-/** 
+/**
  * @param theArray cast=(CFArrayRef)
  */
 public static final native int CFArrayGetCount (long /*int*/ theArray);
@@ -225,7 +225,7 @@ public static final native long /*int*/ JSObjectGetProperty (long /*int*/ ctx, l
  * @param propertyIndex cast=(unsigned)
  * @param exception cast=(JSValueRef*)
  */
-public static final native long /*int*/ JSObjectGetPropertyAtIndex (long /*int*/ ctx, long /*int*/ object, int propertyIndex, long /*int*/[] exception); 
+public static final native long /*int*/ JSObjectGetPropertyAtIndex (long /*int*/ ctx, long /*int*/ object, int propertyIndex, long /*int*/[] exception);
 /**
  * @param ctx cast=(JSContextRef)
  * @param jsClass cast=(JSClassRef)
@@ -258,10 +258,10 @@ public static final native void JSObjectSetProperty (long /*int*/ ctx, long /*in
  * @param string cast=(const char*)
  */
 public static final native long /*int*/ JSStringCreateWithUTF8CString (byte[] string);
-/** 
- * @param string cast=(JSStringRef) 
+/**
+ * @param string cast=(JSStringRef)
  */
-public static final native int JSStringGetLength (long /*int*/ string);	
+public static final native int JSStringGetLength (long /*int*/ string);
 /**
  * @param string cast=(JSStringRef)
  */
@@ -277,8 +277,8 @@ public static final native int JSStringGetUTF8CString (long /*int*/ string, byte
  * @param b	cast=(const char *)
  */
 public static final native int JSStringIsEqualToUTF8CString (long /*int*/ a, byte[] b);
-/** 
- * @param string cast=(JSStringRef) 
+/**
+ * @param string cast=(JSStringRef)
  */
 public static final native void JSStringRelease (long /*int*/ string);
 /**
@@ -352,7 +352,7 @@ public static final int WebKitCreateInstance (GUID clsid, long /*int*/ pUnkOuter
 /** @method flags=no_gen */
 public static final native long /*int*/ JSObjectCallAsFunctionProc_CALLBACK (long /*int*/ func);
 /** @method flags=no_gen */
-public static final native long /*int*/ JSObjectGetPropertyProc_CALLBACK (long /*int*/ func); 
+public static final native long /*int*/ JSObjectGetPropertyProc_CALLBACK (long /*int*/ func);
 /** @method flags=no_gen */
 public static final native long /*int*/ JSObjectHasPropertyProc_CALLBACK (long /*int*/ func);
 /** @method flags=no_gen */

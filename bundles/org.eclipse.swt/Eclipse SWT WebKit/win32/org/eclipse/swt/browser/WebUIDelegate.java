@@ -252,7 +252,7 @@ protected void disposeCOMInterfaces () {
 	if (iWebUIDelegate != null) {
 		iWebUIDelegate.dispose ();
 		iWebUIDelegate = null;
-	}	
+	}
 }
 
 long /*int*/ getAddress () {
@@ -535,7 +535,7 @@ void showAlertMessage (String title, String message) {
 			dialog.dispose ();
 		}
 	});
-	
+
 	dialog.setDefaultButton (ok);
 	dialog.pack ();
 	Rectangle parentSize = parent.getBounds ();

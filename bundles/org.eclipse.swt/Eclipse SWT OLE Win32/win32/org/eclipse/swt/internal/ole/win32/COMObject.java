@@ -19,12 +19,12 @@ import org.eclipse.swt.internal.win32.*;
 public class COMObject {
 
 	public long /*int*/ ppVtable;
-	
+
 	static private final int MAX_ARG_COUNT = 12;
 	static private final int MAX_VTABLE_LENGTH = 80;
 	static private Callback[][] Callbacks = new Callback[MAX_VTABLE_LENGTH][MAX_ARG_COUNT];
 	static private Map<LONG, COMObject> ObjectMap = new HashMap<LONG, COMObject>();
-	
+
 public COMObject(int[] argCounts) {
 	long /*int*/[] callbackAddresses = new long /*int*/[argCounts.length];
 	synchronized (Callbacks) {

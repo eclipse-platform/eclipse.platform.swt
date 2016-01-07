@@ -24,16 +24,16 @@ public class GUITHREADINFO {
 	/** @field cast=(HWND) */
 	public long /*int*/ hwndMenuOwner;
 	/** @field cast=(HWND) */
-	public long /*int*/ hwndMoveSize; 
+	public long /*int*/ hwndMoveSize;
 	/** @field cast=(HWND) */
 	public long /*int*/ hwndCaret;
 //	RECT rcCaret;
 	/** @field accessor=rcCaret.left */
-	public int left; 
+	public int left;
 	/** @field accessor=rcCaret.top */
-	public int top; 
+	public int top;
 	/** @field accessor=rcCaret.right */
-	public int right; 
+	public int right;
 	/** @field accessor=rcCaret.bottom */
 	public int bottom;
 	public static int sizeof = OS.GUITHREADINFO_sizeof ();

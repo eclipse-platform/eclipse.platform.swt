@@ -25,4 +25,4 @@ public class OleFunctionDescription {
 	public String documentation;
 	public String helpFile;
 
-}	
+}

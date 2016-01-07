@@ -29,7 +29,7 @@ import org.eclipse.swt.*;
  * </p><p>
  * IMPORTANT: This class is <em>not</em> intended to be subclassed.
  * </p>
- * 
+ *
  * @see <a href="http://www.eclipse.org/swt/snippets/#filedialog">FileDialog snippets</a>
  * @see <a href="http://www.eclipse.org/swt/examples.php">SWT Example: ControlExample, Dialog tab</a>
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
@@ -82,7 +82,7 @@ public FileDialog (Shell parent) {
  * <p>
  * The style value is either one of the style constants defined in
  * class <code>SWT</code> which is applicable to instances of this
- * class, or must be built by <em>bitwise OR</em>'ing together 
+ * class, or must be built by <em>bitwise OR</em>'ing together
  * (that is, using the <code>int</code> "|" operator) two or more
  * of those <code>SWT</code> style constants. The class description
  * lists the style constants that are applicable to the class.
@@ -99,7 +99,7 @@ public FileDialog (Shell parent) {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the parent</li>
  *    <li>ERROR_INVALID_SUBCLASS - if this class is not an allowed subclass</li>
  * </ul>
- * 
+ *
  * @see SWT#SAVE
  * @see SWT#OPEN
  * @see SWT#MULTI
@@ -113,7 +113,7 @@ public FileDialog (Shell parent, int style) {
  * Returns the path of the first file that was
  * selected in the dialog relative to the filter path, or an
  * empty string if no such file has been selected.
- * 
+ *
  * @return the relative path of the file
  */
 public String getFileName () {
@@ -123,7 +123,7 @@ public String getFileName () {
 /**
  * Returns a (possibly empty) array with the paths of all files
  * that were selected in the dialog relative to the filter path.
- * 
+ *
  * @return the relative paths of the files
  */
 public String [] getFileNames () {
@@ -150,10 +150,10 @@ public String [] getFilterExtensions () {
  * </p>
  *
  * @return index the file extension filter index
- * 
+ *
  * @see #getFilterExtensions
  * @see #getFilterNames
- * 
+ *
  * @since 3.4
  */
 public int getFilterIndex () {
@@ -176,7 +176,7 @@ public String [] getFilterNames () {
  * in the dialog, filtered according to the filter extensions.
  *
  * @return the directory path string
- * 
+ *
  * @see #setFilterExtensions
  */
 public String getFilterPath () {
@@ -189,7 +189,7 @@ public String getFilterPath () {
  * overwrite if the selected file already exists.
  *
  * @return true if the dialog will prompt for file overwrite, false otherwise
- * 
+ *
  * @since 3.4
  */
 public boolean getOverwrite () {
@@ -238,11 +238,11 @@ long /*int*/ OFNHookProc (long /*int*/ hdlg, long /*int*/ uiMsg, long /*int*/ wP
  */
 public String open () {
 	long /*int*/ hHeap = OS.GetProcessHeap ();
-	
+
 	/* Get the owner HWND for the dialog */
 	long /*int*/ hwndOwner = parent.handle;
 	long /*int*/ hwndParent = parent.handle;
-	
+
 	/*
 	* Feature in Windows.  There is no API to set the orientation of a
 	* file dialog.  It is always inherited from the parent.  The fix is
@@ -270,14 +270,14 @@ public String open () {
 			if (enabled) OS.EnableWindow (hwndParent, false);
 		}
 	}
-		
+
 	/* Convert the title and copy it into lpstrTitle */
-	if (title == null) title = "";	
+	if (title == null) title = "";
 	/* Use the character encoding for the default locale */
 	TCHAR buffer3 = new TCHAR (0, title, true);
 	int byteCount3 = buffer3.length () * TCHAR.sizeof;
 	long /*int*/ lpstrTitle = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, byteCount3);
-	OS.MoveMemory (lpstrTitle, buffer3, byteCount3); 
+	OS.MoveMemory (lpstrTitle, buffer3, byteCount3);
 
 	/* Compute filters and copy into lpstrFilter */
 	String strFilter = "";
@@ -296,7 +296,7 @@ public String open () {
 	int byteCount4 = buffer4.length () * TCHAR.sizeof;
 	long /*int*/ lpstrFilter = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, byteCount4);
 	OS.MoveMemory (lpstrFilter, buffer4, byteCount4);
-	
+
 	/* Convert the fileName and filterName to C strings */
 	if (fileName == null) fileName = "";
 	/* Use the character encoding for the default locale */
@@ -361,7 +361,7 @@ public String open () {
 		lpstrDefExt = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, TCHAR.sizeof);
 		struct.lpstrDefExt = lpstrDefExt;
 	}
-	
+
 	/* Make the parent shell be temporary modal */
 	Dialog oldModal = null;
 	Display display = parent.getDisplay ();
@@ -369,13 +369,13 @@ public String open () {
 		oldModal = display.getModalDialog ();
 		display.setModalDialog (this);
 	}
-	
+
 	/*
 	* Feature in Windows.  For some reason, the WH_MSGFILTER filter
 	* does not run for GetSaveFileName() or GetOpenFileName().  The
 	* fix is to allow async messages to run in the WH_FOREGROUNDIDLE
 	* hook instead.
-	* 
+	*
 	* Bug in Windows 98.  For some reason, when certain operating
 	* system calls such as Shell_NotifyIcon(), GetOpenFileName()
 	* and GetSaveFileName() are made during the WH_FOREGROUNDIDLE
@@ -398,12 +398,12 @@ public String open () {
 			success = (save) ? OS.GetSaveFileName (struct) : OS.GetOpenFileName (struct);
 			display.sendPostExternalEventDispatchEvent ();
 			break;
-		case OS.FNERR_BUFFERTOOSMALL: 
+		case OS.FNERR_BUFFERTOOSMALL:
 			USE_HOOK = true;
 			break;
 	}
 	display.runMessagesInIdle = oldRunMessagesInIdle;
-	
+
 	/* Clear the temporary dialog modal parent */
 	if ((style & (SWT.APPLICATION_MODAL | SWT.SYSTEM_MODAL)) != 0) {
 		display.setModalDialog (oldModal);
@@ -417,24 +417,24 @@ public String open () {
 	fileNames = new String [0];
 	String fullPath = null;
 	if (success) {
-		
+
 		/* Use the character encoding for the default locale */
 		TCHAR buffer = new TCHAR (0, struct.nMaxFile);
 		int byteCount1 = buffer.length () * TCHAR.sizeof;
 		OS.MoveMemory (buffer, lpstrFile, byteCount1);
-		
+
 		/*
 		* Bug in WinCE.  For some reason, nFileOffset and nFileExtension
 		* are always zero on WinCE HPC. nFileOffset is always zero on
 		* WinCE PPC when using GetSaveFileName().  nFileOffset is correctly
 		* set on WinCE PPC when using OpenFileName().  The fix is to parse
 		* lpstrFile to calculate nFileOffset.
-		* 
+		*
 		* Note: WinCE does not support multi-select file dialogs.
 		*/
 		int nFileOffset = struct.nFileOffset;
 		if (OS.IsWinCE && nFileOffset == 0) {
-			int index = 0; 
+			int index = 0;
 			while (index < buffer.length ()) {
 				int ch = buffer.tcharAt (index);
 				if (ch == 0) break;
@@ -443,13 +443,13 @@ public String open () {
 			}
 		}
 		if (nFileOffset > 0) {
-		
+
 			/* Use the character encoding for the default locale */
 			TCHAR prefix = new TCHAR (0, nFileOffset - 1);
 			int byteCount2 = prefix.length () * TCHAR.sizeof;
 			OS.MoveMemory (prefix, lpstrFile, byteCount2);
 			filterPath = prefix.toString (0, prefix.length ());
-			
+
 			/*
 			* Get each file from the buffer.  Files are delimited
 			* by a NULL character with 2 NULL characters at the end.
@@ -471,7 +471,7 @@ public String open () {
 				if ((style & SWT.MULTI) == 0) break;
 				start++;
 			} while (start < buffer.length () && buffer.tcharAt (start) != 0);
-			
+
 			if (fileNames.length > 0) fileName = fileNames  [0];
 			String separator = "";
 			int length = filterPath.length ();
@@ -487,7 +487,7 @@ public String open () {
 		}
 		filterIndex = struct.nFilterIndex - 1;
 	}
-	
+
 	/* Free the memory that was allocated. */
 	OS.HeapFree (hHeap, 0, lpstrFile);
 	OS.HeapFree (hHeap, 0, lpstrFilter);
@@ -501,7 +501,7 @@ public String open () {
 		OS.SetActiveWindow (hwndParent);
 		OS.DestroyWindow (hwndOwner);
 	}
-	
+
 	/*
 	* This code is intentionally commented.  On some
 	* platforms, the owner window is repainted right
@@ -509,7 +509,7 @@ public String open () {
 	* is currently unspecified.
 	*/
 //	if (hwndOwner != 0) OS.UpdateWindow (hwndOwner);
-	
+
 	/* Answer the full path or null */
 	return fullPath;
 }
@@ -519,7 +519,7 @@ public String open () {
  * select by default when opened to the argument,
  * which may be null.  The name will be prefixed with
  * the filter path when one is supplied.
- * 
+ *
  * @param string the file name
  */
 public void setFileName (String string) {
@@ -539,15 +539,15 @@ public void setFileName (String string) {
  * </p>
  * <p>
  * Note: On Mac, setting the file extension filter affects how
- * app bundles are treated by the dialog. When a filter extension 
- * having the app extension (.app) is selected, bundles are treated 
- * as files. For all other extension filters, bundles are treated 
- * as directories. When no filter extension is set, bundles are 
+ * app bundles are treated by the dialog. When a filter extension
+ * having the app extension (.app) is selected, bundles are treated
+ * as files. For all other extension filters, bundles are treated
+ * as directories. When no filter extension is set, bundles are
  * treated as files.
  * </p>
  *
  * @param extensions the file extension filter
- * 
+ *
  * @see #setFilterNames to specify the user-friendly
  * names corresponding to the extensions
  */
@@ -565,10 +565,10 @@ public void setFilterExtensions (String [] extensions) {
  * </p>
  *
  * @param index the file extension filter index
- * 
+ *
  * @see #setFilterExtensions
  * @see #setFilterNames
- * 
+ *
  * @since 3.4
  */
 public void setFilterIndex (int index) {
@@ -586,7 +586,7 @@ public void setFilterIndex (int index) {
  * </p>
  *
  * @param names the list of filter names, or null for no filter names
- * 
+ *
  * @see #setFilterExtensions
  */
 public void setFilterNames (String [] names) {
@@ -607,7 +607,7 @@ public void setFilterNames (String [] names) {
  * </p>
  *
  * @param string the directory path
- * 
+ *
  * @see #setFilterExtensions
  */
 public void setFilterPath (String string) {
@@ -620,7 +620,7 @@ public void setFilterPath (String string) {
  * overwrite if the selected file already exists.
  *
  * @param overwrite true if the dialog will prompt for file overwrite, false otherwise
- * 
+ *
  * @since 3.4
  */
 public void setOverwrite (boolean overwrite) {

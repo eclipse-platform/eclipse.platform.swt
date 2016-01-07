@@ -32,7 +32,7 @@ import org.eclipse.swt.widgets.*;
  * As a rule of thumb, an application would only want to use the
  * accessible control listener to implement accessibility for a
  * custom control.
- * 
+ *
  * @see Control#getAccessible
  * @see AccessibleListener
  * @see AccessibleEvent
@@ -40,7 +40,7 @@ import org.eclipse.swt.widgets.*;
  * @see AccessibleControlEvent
  * @see <a href="http://www.eclipse.org/swt/snippets/#accessibility">Accessibility snippets</a>
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
- * 
+ *
  * @since 2.0
  */
 public class Accessible {
@@ -87,19 +87,19 @@ public class Accessible {
 			UseIA2 = false;
 		}
 	}
-	
+
 	/**
 	 * Constructs a new instance of this class given its parent.
-	 * 
+	 *
 	 * @param parent the Accessible parent, which must not be null
-	 * 
+	 *
 	 * @exception IllegalArgumentException <ul>
 	 *    <li>ERROR_NULL_ARGUMENT - if the parent is null</li>
 	 * </ul>
-	 * 
+	 *
 	 * @see #dispose
 	 * @see Control#getAccessible
-	 * 
+	 *
 	 * @since 3.6
 	 */
 	public Accessible(Accessible parent) {
@@ -199,7 +199,7 @@ public class Accessible {
 			@Override
 			public long /*int*/ method27(long /*int*/[] args) {return put_accValue(args[0], args[1]);}
 		};
-	
+
 		/* If the callback takes a struct parameter (for example, a VARIANT),
 		 * then create a custom callback that dereferences the struct and
 		 * passes a pointer to the original callback.
@@ -236,8 +236,8 @@ public class Accessible {
 			public long /*int*/ method1(long /*int*/[] args) {return AddRef();}
 			@Override
 			public long /*int*/ method2(long /*int*/[] args) {return Release();}
-			
-			/* 
+
+			/*
 			 * Even though the IA2 spec says "AT's should not rely on IA inheritance",
 			 * some AT's do rely on it, so we need to implement the IAccessible methods here.
 			 */
@@ -720,7 +720,7 @@ public class Accessible {
 		    @Override
 			public long /*int*/ method1(long /*int*/[] args) {return AddRef();}
 		    @Override
-			public long /*int*/ method2(long /*int*/[] args) {return Release();}        
+			public long /*int*/ method2(long /*int*/[] args) {return Release();}
 		    @Override
 			public long /*int*/ method3(long /*int*/[] args) {return QueryService(args[0], args[1], args[2]);}
 		};
@@ -738,7 +738,7 @@ public class Accessible {
 	 *
 	 * @param control the control to get the accessible object for
 	 * @return the platform specific accessible object
-	 * 
+	 *
 	 * @noreference This method is not intended to be referenced by clients.
 	 */
 	public static Accessible internal_new_Accessible(Control control) {
@@ -772,7 +772,7 @@ public class Accessible {
 		if (accessibleListeners == null) accessibleListeners = new ArrayList<AccessibleListener>();
 		accessibleListeners.add(listener);
 	}
-	
+
 	/**
 	 * Adds the listener to the collection of listeners who will
 	 * be notified when an accessible client asks for custom control
@@ -822,7 +822,7 @@ public class Accessible {
 	 * @see AccessibleTextListener
 	 * @see AccessibleTextExtendedListener
 	 * @see #removeAccessibleTextListener
-	 * 
+	 *
 	 * @since 3.0
 	 */
 	public void addAccessibleTextListener (AccessibleTextListener listener) {
@@ -830,13 +830,13 @@ public class Accessible {
 		if (listener == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
 		if (listener instanceof AccessibleTextExtendedListener) {
 			if (accessibleTextExtendedListeners == null) accessibleTextExtendedListeners = new ArrayList<AccessibleTextExtendedListener>();
-			accessibleTextExtendedListeners.add ((AccessibleTextExtendedListener) listener);		
+			accessibleTextExtendedListeners.add ((AccessibleTextExtendedListener) listener);
 		} else {
 			if (accessibleTextListeners == null) accessibleTextListeners = new ArrayList<AccessibleTextListener>();
 			accessibleTextListeners.add (listener);
 		}
 	}
-	
+
 	/**
 	 * Adds the listener to the collection of listeners that will be
 	 * notified when an accessible client asks for any of the properties
@@ -855,7 +855,7 @@ public class Accessible {
 	 *
 	 * @see AccessibleActionListener
 	 * @see #removeAccessibleActionListener
-	 * 
+	 *
 	 * @since 3.6
 	 */
 	public void addAccessibleActionListener(AccessibleActionListener listener) {
@@ -883,7 +883,7 @@ public class Accessible {
 	 *
 	 * @see AccessibleEditableTextListener
 	 * @see #removeAccessibleEditableTextListener
-	 * 
+	 *
 	 * @since 3.7
 	 */
 	public void addAccessibleEditableTextListener(AccessibleEditableTextListener listener) {
@@ -911,7 +911,7 @@ public class Accessible {
 	 *
 	 * @see AccessibleHyperlinkListener
 	 * @see #removeAccessibleHyperlinkListener
-	 * 
+	 *
 	 * @since 3.6
 	 */
 	public void addAccessibleHyperlinkListener(AccessibleHyperlinkListener listener) {
@@ -939,7 +939,7 @@ public class Accessible {
 	 *
 	 * @see AccessibleTableListener
 	 * @see #removeAccessibleTableListener
-	 * 
+	 *
 	 * @since 3.6
 	 */
 	public void addAccessibleTableListener(AccessibleTableListener listener) {
@@ -967,7 +967,7 @@ public class Accessible {
 	 *
 	 * @see AccessibleTableCellListener
 	 * @see #removeAccessibleTableCellListener
-	 * 
+	 *
 	 * @since 3.6
 	 */
 	public void addAccessibleTableCellListener(AccessibleTableCellListener listener) {
@@ -995,7 +995,7 @@ public class Accessible {
 	 *
 	 * @see AccessibleValueListener
 	 * @see #removeAccessibleValueListener
-	 * 
+	 *
 	 * @since 3.6
 	 */
 	public void addAccessibleValueListener(AccessibleValueListener listener) {
@@ -1023,7 +1023,7 @@ public class Accessible {
 	 *
 	 * @see AccessibleAttributeListener
 	 * @see #removeAccessibleAttributeListener
-	 * 
+	 *
 	 * @since 3.6
 	 */
 	public void addAccessibleAttributeListener(AccessibleAttributeListener listener) {
@@ -1036,10 +1036,10 @@ public class Accessible {
 	/**
 	 * Adds a relation with the specified type and target
 	 * to the receiver's set of relations.
-	 * 
+	 *
 	 * @param type an <code>ACC</code> constant beginning with RELATION_* indicating the type of relation
 	 * @param target the accessible that is the target for this relation
-	 * 
+	 *
 	 * @since 3.6
 	 */
 	public void addRelation(int type, Accessible target) {
@@ -1049,7 +1049,7 @@ public class Accessible {
 		}
 		relations[type].addTarget(target);
 	}
-	
+
 	/**
 	 * Disposes of the operating system resources associated with
 	 * the receiver, and removes the receiver from its parent's
@@ -1063,7 +1063,7 @@ public class Accessible {
 	 * It is also not necessary to call this for instances of <code>Accessible</code>
 	 * that were retrieved with <code>Control.getAccessible()</code>.
 	 * </p>
-	 * 
+	 *
 	 * @since 3.6
 	 */
 	public void dispose () {
@@ -1080,7 +1080,7 @@ public class Accessible {
 	}
 
 	/**
-	 * Returns the control for this Accessible object. 
+	 * Returns the control for this Accessible object.
 	 *
 	 * @return the receiver's control
 	 * @since 3.0
@@ -1088,7 +1088,7 @@ public class Accessible {
 	public Control getControl() {
 		return control;
 	}
-	
+
 	/**
 	 * Invokes platform specific functionality to dispose an accessible object.
 	 * <p>
@@ -1098,7 +1098,7 @@ public class Accessible {
 	 * available on all platforms, and should never be called from
 	 * application code.
 	 * </p>
-	 * 
+	 *
 	 * @noreference This method is not intended to be referenced by clients.
 	 */
 	public void internal_dispose_Accessible() {
@@ -1112,7 +1112,7 @@ public class Accessible {
 			child.dispose();
 		}
 	}
-	
+
 	/**
 	 * Invokes platform specific functionality to handle a window message.
 	 * <p>
@@ -1122,7 +1122,7 @@ public class Accessible {
 	 * available on all platforms, and should never be called from
 	 * application code.
 	 * </p>
-	 * 
+	 *
 	 * @noreference This method is not intended to be referenced by clients.
 	 */
 	public long /*int*/ internal_WM_GETOBJECT (long /*int*/ wParam, long /*int*/ lParam) {
@@ -1212,7 +1212,7 @@ public class Accessible {
 	 * @see AccessibleTextListener
 	 * @see AccessibleTextExtendedListener
 	 * @see #addAccessibleTextListener
-	 * 
+	 *
 	 * @since 3.0
 	 */
 	public void removeAccessibleTextListener (AccessibleTextListener listener) {
@@ -1249,7 +1249,7 @@ public class Accessible {
 	 *
 	 * @see AccessibleActionListener
 	 * @see #addAccessibleActionListener
-	 * 
+	 *
 	 * @since 3.6
 	 */
 	public void removeAccessibleActionListener(AccessibleActionListener listener) {
@@ -1279,7 +1279,7 @@ public class Accessible {
 	 *
 	 * @see AccessibleEditableTextListener
 	 * @see #addAccessibleEditableTextListener
-	 * 
+	 *
 	 * @since 3.7
 	 */
 	public void removeAccessibleEditableTextListener(AccessibleEditableTextListener listener) {
@@ -1290,7 +1290,7 @@ public class Accessible {
 	    	if (accessibleEditableTextListeners.isEmpty()) accessibleEditableTextListeners = null;
 	    }
 	}
-	
+
 	/**
 	 * Removes the listener from the collection of listeners that will be
 	 * notified when an accessible client asks for any of the properties
@@ -1309,7 +1309,7 @@ public class Accessible {
 	 *
 	 * @see AccessibleHyperlinkListener
 	 * @see #addAccessibleHyperlinkListener
-	 * 
+	 *
 	 * @since 3.6
 	 */
 	public void removeAccessibleHyperlinkListener(AccessibleHyperlinkListener listener) {
@@ -1339,7 +1339,7 @@ public class Accessible {
 	 *
 	 * @see AccessibleTableListener
 	 * @see #addAccessibleTableListener
-	 * 
+	 *
 	 * @since 3.6
 	 */
 	public void removeAccessibleTableListener(AccessibleTableListener listener) {
@@ -1369,7 +1369,7 @@ public class Accessible {
 	 *
 	 * @see AccessibleTableCellListener
 	 * @see #addAccessibleTableCellListener
-	 * 
+	 *
 	 * @since 3.6
 	 */
 	public void removeAccessibleTableCellListener(AccessibleTableCellListener listener) {
@@ -1399,7 +1399,7 @@ public class Accessible {
 	 *
 	 * @see AccessibleValueListener
 	 * @see #addAccessibleValueListener
-	 * 
+	 *
 	 * @since 3.6
 	 */
 	public void removeAccessibleValueListener(AccessibleValueListener listener) {
@@ -1429,7 +1429,7 @@ public class Accessible {
 	 *
 	 * @see AccessibleAttributeListener
 	 * @see #addAccessibleAttributeListener
-	 * 
+	 *
 	 * @since 3.6
 	 */
 	public void removeAccessibleAttributeListener(AccessibleAttributeListener listener) {
@@ -1444,10 +1444,10 @@ public class Accessible {
 	/**
 	 * Removes the relation with the specified type and target
 	 * from the receiver's set of relations.
-	 * 
+	 *
 	 * @param type an <code>ACC</code> constant beginning with RELATION_* indicating the type of relation
 	 * @param target the accessible that is the target for this relation
-	 * 
+	 *
 	 * @since 3.6
 	 */
 	public void removeRelation(int type, Accessible target) {
@@ -1461,7 +1461,7 @@ public class Accessible {
 			}
 		}
 	}
-	
+
 	/**
 	 * Sends a message with event-specific data to accessible clients
 	 * indicating that something has changed within a custom control.
@@ -1469,12 +1469,12 @@ public class Accessible {
 	 * @param event an <code>ACC</code> constant beginning with EVENT_* indicating the message to send
 	 * @param eventData an object containing event-specific data, or null if there is no event-specific data
 	 * (eventData is specified in the documentation for individual ACC.EVENT_* constants)
-	 * 
+	 *
 	 * @exception SWTException <ul>
 	 *    <li>ERROR_WIDGET_DISPOSED - if the receiver's control has been disposed</li>
 	 *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver's control</li>
 	 * </ul>
-	 * 
+	 *
 	 * @see ACC#EVENT_ACTION_CHANGED
 	 * @see ACC#EVENT_ATTRIBUTE_CHANGED
 	 * @see ACC#EVENT_DESCRIPTION_CHANGED
@@ -1507,7 +1507,7 @@ public class Accessible {
 	 * @see ACC#EVENT_TEXT_COLUMN_CHANGED
 	 * @see ACC#EVENT_TEXT_SELECTION_CHANGED
 	 * @see ACC#EVENT_VALUE_CHANGED
-	 * 
+	 *
 	 * @since 3.6
 	 */
 	public void sendEvent(int event, Object eventData) {
@@ -1610,7 +1610,7 @@ public class Accessible {
 	 * Sends a message with event-specific data and a childID
 	 * to accessible clients, indicating that something has changed
 	 * within a custom control.
-	 * 
+	 *
 	 * NOTE: This API is intended for applications that are still using childIDs.
 	 * Moving forward, applications should use accessible objects instead of childIDs.
 	 *
@@ -1618,12 +1618,12 @@ public class Accessible {
 	 * @param eventData an object containing event-specific data, or null if there is no event-specific data
 	 * (eventData is specified in the documentation for individual ACC.EVENT_* constants)
 	 * @param childID an identifier specifying a child of the control
-	 * 
+	 *
 	 * @exception SWTException <ul>
 	 *    <li>ERROR_WIDGET_DISPOSED - if the receiver's control has been disposed</li>
 	 *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver's control</li>
 	 * </ul>
-	 * 
+	 *
 	 * @see ACC#EVENT_DESCRIPTION_CHANGED
 	 * @see ACC#EVENT_LOCATION_CHANGED
 	 * @see ACC#EVENT_NAME_CHANGED
@@ -1631,7 +1631,7 @@ public class Accessible {
 	 * @see ACC#EVENT_STATE_CHANGED
 	 * @see ACC#EVENT_TEXT_SELECTION_CHANGED
 	 * @see ACC#EVENT_VALUE_CHANGED
-	 * 
+	 *
 	 * @since 3.8
 	 */
 	public void sendEvent(int event, Object eventData, int childID) {
@@ -1657,8 +1657,8 @@ public class Accessible {
 				COM.NotifyWinEvent (COM.EVENT_OBJECT_DESCRIPTIONCHANGE, control.handle, COM.OBJID_CLIENT, osChildID); break;
 		}
 	}
-	
-	
+
+
 	/**
 	 * Sends a message to accessible clients that the child selection
 	 * within a custom container control has changed.
@@ -1667,7 +1667,7 @@ public class Accessible {
 	 *    <li>ERROR_WIDGET_DISPOSED - if the receiver's control has been disposed</li>
 	 *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver's control</li>
 	 * </ul>
-	 * 
+	 *
 	 * @since 3.0
 	 */
 	public void selectionChanged () {
@@ -1682,7 +1682,7 @@ public class Accessible {
 	 * has changed within a custom control.
 	 *
 	 * @param childID an identifier specifying a child of the control
-	 * 
+	 *
 	 * @exception SWTException <ul>
 	 *    <li>ERROR_WIDGET_DISPOSED - if the receiver's control has been disposed</li>
 	 *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver's control</li>
@@ -1701,7 +1701,7 @@ public class Accessible {
 	 * caret has moved within a custom control.
 	 *
 	 * @param index the new caret index within the control
-	 * 
+	 *
 	 * @exception SWTException <ul>
 	 *    <li>ERROR_WIDGET_DISPOSED - if the receiver's control has been disposed</li>
 	 *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver's control</li>
@@ -1725,7 +1725,7 @@ public class Accessible {
 		}
 		control.getDisplay ().timerExec(SCROLL_RATE, timer);
 	}
-	
+
 	/**
 	 * Sends a message to accessible clients that the text
 	 * within a custom control has changed.
@@ -1739,10 +1739,10 @@ public class Accessible {
 	 *    <li>ERROR_WIDGET_DISPOSED - if the receiver's control has been disposed</li>
 	 *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver's control</li>
 	 * </ul>
-	 * 
+	 *
 	 * @see ACC#TEXT_INSERT
 	 * @see ACC#TEXT_DELETE
-	 * 
+	 *
 	 * @since 3.0
 	 */
 	public void textChanged (int type, int startIndex, int length) {
@@ -1769,7 +1769,7 @@ public class Accessible {
 		if (DEBUG) print(this + ".NotifyWinEvent EVENT_OBJECT_VALUECHANGE hwnd=" + control.handle + " childID=" + eventChildID());
 		COM.NotifyWinEvent (COM.EVENT_OBJECT_VALUECHANGE, control.handle, COM.OBJID_CLIENT, eventChildID());
 	}
-	
+
 	/**
 	 * Sends a message to accessible clients that the text
 	 * selection has changed within a custom control.
@@ -1787,9 +1787,9 @@ public class Accessible {
 		if (DEBUG) print(this + ".NotifyWinEvent EVENT_OBJECT_TEXTSELECTIONCHANGED hwnd=" + control.handle + " childID=" + eventChildID());
 		COM.NotifyWinEvent (COM.EVENT_OBJECT_TEXTSELECTIONCHANGED, control.handle, COM.OBJID_CLIENT, eventChildID());
 	}
-	
+
 	/* QueryInterface([in] iid, [out] ppvObject)
-	 * Ownership of ppvObject transfers from callee to caller so reference count on ppvObject 
+	 * Ownership of ppvObject transfers from callee to caller so reference count on ppvObject
 	 * must be incremented before returning.  Caller is responsible for releasing ppvObject.
 	 */
 	int QueryInterface(long /*int*/ iid, long /*int*/ ppvObject) {
@@ -1821,7 +1821,7 @@ public class Accessible {
 			if (DEBUG) print(this + ".QueryInterface guid=" + guidString(guid) + " returning " + objIEnumVARIANT.getAddress() + hresult(COM.S_OK));
 			return COM.S_OK;
 		}
-		
+
 		if (COM.IsEqualGUID(guid, COM.IIDIServiceProvider)) {
 			if (!UseIA2) return COM.E_NOINTERFACE;
 			if (accessibleActionListenersSize() > 0 || accessibleAttributeListenersSize() > 0 ||
@@ -1853,7 +1853,7 @@ public class Accessible {
 			if (DEBUG) if (interesting(guid)) print("QueryInterface guid=" + guidString(guid) + " returning super" + hresult(code));
 			return code;
 		}
-		
+
 		if (DEBUG) if (interesting(guid)) print("QueryInterface guid=" + guidString(guid) + " returning" + hresult(COM.E_NOINTERFACE));
 		return COM.E_NOINTERFACE;
 	}
@@ -1914,7 +1914,7 @@ public class Accessible {
 			if (objIAccessible != null)
 				objIAccessible.dispose();
 			objIAccessible = null;
-						
+
 			if (objIEnumVARIANT != null)
 				objIEnumVARIANT.dispose();
 			objIEnumVARIANT = null;
@@ -2025,7 +2025,7 @@ public class Accessible {
 				return code;
 			}
 		}
-		
+
 		if (DEBUG) if (interesting(service) && interesting(guid)) print("QueryService service=" + guidString(service) + " guid=" + guidString(guid) + " returning" + hresult(COM.E_NOINTERFACE));
 		return COM.E_NOINTERFACE;
 	}
@@ -2045,7 +2045,7 @@ public class Accessible {
 			}
 			return COM.E_NOINTERFACE;
 		}
-		
+
 		if (COM.IsEqualGUID(guid, COM.IIDIAccessibleAction)) {
 			if (accessibleActionListenersSize() > 0) {
 				if (objIAccessibleAction == null) createIAccessibleAction();
@@ -2055,14 +2055,14 @@ public class Accessible {
 			}
 			return COM.E_NOINTERFACE;
 		}
-		
+
 		if (COM.IsEqualGUID(guid, COM.IIDIAccessibleApplication)) {
 			if (objIAccessibleApplication == null) createIAccessibleApplication();
 			COM.MoveMemory(ppvObject, new long /*int*/[] { objIAccessibleApplication.getAddress() }, OS.PTR_SIZEOF);
 			AddRef();
 			return COM.S_OK;
 		}
-		
+
 		if (COM.IsEqualGUID(guid, COM.IIDIAccessibleComponent)) {
 			// The following lines are intentionally commented. We are not supporting IAccessibleComponent at this time.
 //			if (accessibleControlListenersSize() > 0) { // TO DO: can we reduce the scope of this somehow?
@@ -2073,7 +2073,7 @@ public class Accessible {
 //			}
 			return COM.E_NOINTERFACE;
 		}
-		
+
 		if (COM.IsEqualGUID(guid, COM.IIDIAccessibleEditableText)) {
 			if (accessibleEditableTextListenersSize() > 0) {
 				if (objIAccessibleEditableText == null) createIAccessibleEditableText();
@@ -2083,7 +2083,7 @@ public class Accessible {
 			}
 			return COM.E_NOINTERFACE;
 		}
-		
+
 		if (COM.IsEqualGUID(guid, COM.IIDIAccessibleHyperlink)) {
 			if (accessibleHyperlinkListenersSize() > 0) {
 				if (objIAccessibleHyperlink == null) createIAccessibleHyperlink();
@@ -2093,7 +2093,7 @@ public class Accessible {
 			}
 			return COM.E_NOINTERFACE;
 		}
-		
+
 		if (COM.IsEqualGUID(guid, COM.IIDIAccessibleHypertext)) {
 			if (accessibleTextExtendedListenersSize() > 0) {
 				if (objIAccessibleHypertext == null) createIAccessibleHypertext();
@@ -2103,7 +2103,7 @@ public class Accessible {
 			}
 			return COM.E_NOINTERFACE;
 		}
-		
+
 		if (COM.IsEqualGUID(guid, COM.IIDIAccessibleImage)) {
 			// The following lines are intentionally commented. We are not supporting IAccessibleImage at this time.
 //			if (getRole() == ACC.ROLE_GRAPHIC && (accessibleAccessibleListenersSize() > 0 || accessibleControlListenersSize() > 0)) {
@@ -2114,12 +2114,12 @@ public class Accessible {
 //			}
 			return COM.E_NOINTERFACE;
 		}
-		
+
 		if (COM.IsEqualGUID(guid, COM.IIDIAccessibleTable)) {
 			// We are not supporting IAccessibleTable at this time.
 			return COM.E_NOINTERFACE;
 		}
-		
+
 		if (COM.IsEqualGUID(guid, COM.IIDIAccessibleTable2)) {
 			if (accessibleTableListenersSize() > 0) {
 				if (objIAccessibleTable2 == null) createIAccessibleTable2();
@@ -2129,7 +2129,7 @@ public class Accessible {
 			}
 			return COM.E_NOINTERFACE;
 		}
-		
+
 		if (COM.IsEqualGUID(guid, COM.IIDIAccessibleTableCell)) {
 			if (accessibleTableCellListenersSize() > 0) {
 				if (objIAccessibleTableCell == null) createIAccessibleTableCell();
@@ -2139,7 +2139,7 @@ public class Accessible {
 			}
 			return COM.E_NOINTERFACE;
 		}
-		
+
 		if (COM.IsEqualGUID(guid, COM.IIDIAccessibleText)) {
 			if (accessibleTextExtendedListenersSize() > 0 || accessibleAttributeListenersSize() > 0) {
 				if (objIAccessibleText == null) createIAccessibleText();
@@ -2149,7 +2149,7 @@ public class Accessible {
 			}
 			return COM.E_NOINTERFACE;
 		}
-		
+
 		if (COM.IsEqualGUID(guid, COM.IIDIAccessibleValue)) {
 			if (accessibleValueListenersSize() > 0) {
 				if (objIAccessibleValue == null) createIAccessibleValue();
@@ -2162,7 +2162,7 @@ public class Accessible {
 
 		return COM.S_FALSE;
 	}
-	
+
 	/* IAccessible::accDoDefaultAction([in] varChild) */
 	int accDoDefaultAction(long /*int*/ varChild) {
 		if (DEBUG) print(this + ".IAccessible::accDoDefaultAction");
@@ -2231,7 +2231,7 @@ public class Accessible {
 		setIntVARIANT(pvarChild, COM.VT_I4, childIDToOs(childID));
 		return COM.S_OK;
 	}
-	
+
 	/* IAccessible::accLocation([out] pxLeft, [out] pyTop, [out] pcxWidth, [out] pcyHeight, [in] varChild) */
 	int accLocation(long /*int*/ pxLeft, long /*int*/ pyTop, long /*int*/ pcxWidth, long /*int*/ pcyHeight, long /*int*/ varChild) {
 		VARIANT v = getVARIANT(varChild);
@@ -2272,7 +2272,7 @@ public class Accessible {
 		OS.MoveMemory(pcyHeight, new int[] { event.height }, 4);
 		return COM.S_OK;
 	}
-	
+
 	/* IAccessible::accNavigate([in] navDir, [in] varStart, [out] pvarEndUpAt) */
 	int accNavigate(int navDir, long /*int*/ varStart, long /*int*/ pvarEndUpAt) {
 		if (DEBUG) print(this + ".IAccessible::accNavigate");
@@ -2286,7 +2286,7 @@ public class Accessible {
 		}
 		return code;
 	}
-	
+
 	// TODO: Consider supporting this in future.
 	/* IAccessible::accSelect([in] flagsSelect, [in] varChild) */
 	int accSelect(int flagsSelect, long /*int*/ varChild) {
@@ -2301,7 +2301,7 @@ public class Accessible {
 	}
 
 	/* IAccessible::get_accChild([in] varChild, [out] ppdispChild)
-	 * Ownership of ppdispChild transfers from callee to caller so reference count on ppdispChild 
+	 * Ownership of ppdispChild transfers from callee to caller so reference count on ppdispChild
 	 * must be incremented before returning.  The caller is responsible for releasing ppdispChild.
 	 */
 	int get_accChild(long /*int*/ varChild, long /*int*/ ppdispChild) {
@@ -2330,7 +2330,7 @@ public class Accessible {
 					for (int i = 0; i < children.size(); i++) {
 						Accessible accChild = children.get(i);
 						if (accChild.item == item) {
-							/* 
+							/*
 							 * MSAA uses a new accessible for the child
 							 * so we dispose the old and use the new.
 							 */
@@ -2389,7 +2389,7 @@ public class Accessible {
 		if (DEBUG) print(this + ".IAccessible::get_accChild(" + v.lVal + ") returning from super" + hresult(code));
 		return code;
 	}
-	
+
 	/* IAccessible::get_accChildCount([out] pcountChildren) */
 	int get_accChildCount(long /*int*/ pcountChildren) {
 		int osChildCount = 0;
@@ -2418,7 +2418,7 @@ public class Accessible {
 		COM.MoveMemory(pcountChildren, new int[] { event.detail }, 4);
 		return COM.S_OK;
 	}
-	
+
 	/* IAccessible::get_accDefaultAction([in] varChild, [out] pszDefaultAction) */
 	int get_accDefaultAction(long /*int*/ varChild, long /*int*/ pszDefaultAction) {
 		if (DEBUG) print(this + ".IAccessible::get_accDefaultAction");
@@ -2458,13 +2458,13 @@ public class Accessible {
 		setString(pszDefaultAction, event.result);
 		return COM.S_OK;
 	}
-	
+
 	/* IAccessible::get_accDescription([in] varChild, [out] pszDescription) */
 	int get_accDescription(long /*int*/ varChild, long /*int*/ pszDescription) {
-		/* 
+		/*
 		 * MSAA: "The accDescription property is not supported in the transition to
 		 * UI Automation. MSAA servers and applications should not use it."
-		 * 
+		 *
 		 * TODO: Description was exposed as SWT API. We will need to either deprecate this (?),
 		 * or find a suitable replacement. Also, check description property on other platforms.
 		 * If it is truly deprecated for MSAA, then perhaps it can be reused for IAccessibleImage.
@@ -2495,11 +2495,11 @@ public class Accessible {
 				}
 			}
 		}
-		
+
 		AccessibleEvent event = new AccessibleEvent(this);
 		event.childID = osToChildID(v.lVal);
 		event.result = osDescription;
-		
+
 		// TEMPORARY CODE
 		/* Currently our tree columns are emulated using custom draw,
 		 * so we need to create the description using the tree column
@@ -2537,9 +2537,9 @@ public class Accessible {
 		setString(pszDescription, event.result);
 		return COM.S_OK;
 	}
-	
+
 	/* IAccessible::get_accFocus([out] pvarChild)
-	 * Ownership of pvarChild transfers from callee to caller so reference count on pvarChild 
+	 * Ownership of pvarChild transfers from callee to caller so reference count on pvarChild
 	 * must be incremented before returning.  The caller is responsible for releasing pvarChild.
 	 */
 	int get_accFocus(long /*int*/ pvarChild) {
@@ -2551,7 +2551,7 @@ public class Accessible {
 				VARIANT v = getVARIANT(pvarChild);
 				if (v.vt == COM.VT_I4) osChild = v.lVal;
 				// TODO: need to check VT_DISPATCH (don't use struct)
-				if (DEBUG) if (v.vt == COM.VT_DISPATCH) print("IAccessible::get_accFocus() super returned VT_DISPATCH"); 
+				if (DEBUG) if (v.vt == COM.VT_DISPATCH) print("IAccessible::get_accFocus() super returned VT_DISPATCH");
 			}
 			if (accessibleControlListenersSize() == 0) {
 				if (DEBUG) print(this + ".IAccessible::get_accFocus() returning childID=" + osChild + " from super" + hresult(code));
@@ -2588,7 +2588,7 @@ public class Accessible {
 		setIntVARIANT(pvarChild, COM.VT_I4, childIDToOs(childID));
 		return COM.S_OK;
 	}
-	
+
 	/* IAccessible::get_accHelp([in] varChild, [out] pszHelp) */
 	int get_accHelp(long /*int*/ varChild, long /*int*/ pszHelp) {
 		if (DEBUG) print(this + ".IAccessible::get_accHelp");
@@ -2625,7 +2625,7 @@ public class Accessible {
 		setString(pszHelp, event.result);
 		return COM.S_OK;
 	}
-	
+
 	/* IAccessible::get_accHelpTopic([out] pszHelpFile, [in] varChild, [out] pidTopic) */
 	int get_accHelpTopic(long /*int*/ pszHelpFile, long /*int*/ varChild, long /*int*/ pidTopic) {
 		if (DEBUG) print(this + ".IAccessible::get_accHelpTopic");
@@ -2681,7 +2681,7 @@ public class Accessible {
 		setString(pszKeyboardShortcut, event.result);
 		return COM.S_OK;
 	}
-	
+
 	/* IAccessible::get_accName([in] varChild, [out] pszName) */
 	int get_accName(long /*int*/ varChild, long /*int*/ pszName) {
 		if (control != null && control.isDisposed()) return COM.CO_E_OBJNOTCONNECTED;
@@ -2732,9 +2732,9 @@ public class Accessible {
 		setString(pszName, event.result);
 		return COM.S_OK;
 	}
-	
+
 	/* IAccessible::get_accParent([out] ppdispParent)
-	 * Ownership of ppdispParent transfers from callee to caller so reference count on ppdispParent 
+	 * Ownership of ppdispParent transfers from callee to caller so reference count on ppdispParent
 	 * must be incremented before returning.  The caller is responsible for releasing ppdispParent.
 	 */
 	int get_accParent(long /*int*/ ppdispParent) {
@@ -2752,7 +2752,7 @@ public class Accessible {
 		if (DEBUG) print(this + ".IAccessible::get_accParent() returning" + (parent != null ? " " + parent.getAddress() : " from super") + hresult(code));
 		return code;
 	}
-	
+
 	/* IAccessible::get_accRole([in] varChild, [out] pvarRole) */
 	int get_accRole(long /*int*/ varChild, long /*int*/ pvarRole) {
 		if (control != null && control.isDisposed()) return COM.CO_E_OBJNOTCONNECTED;
@@ -2785,9 +2785,9 @@ public class Accessible {
 		setIntVARIANT(pvarRole, COM.VT_I4, roleToOs(event.detail));
 		return COM.S_OK;
 	}
-	
+
 	/* IAccessible::get_accSelection([out] pvarChildren)
-	 * Ownership of pvarChildren transfers from callee to caller so reference count on pvarChildren 
+	 * Ownership of pvarChildren transfers from callee to caller so reference count on pvarChildren
 	 * must be incremented before returning.  The caller is responsible for releasing pvarChildren.
 	 */
 	int get_accSelection(long /*int*/ pvarChildren) {
@@ -2843,7 +2843,7 @@ public class Accessible {
 		setIntVARIANT(pvarChildren, COM.VT_I4, childIDToOs(childID));
 		return COM.S_OK;
 	}
-	
+
 	/* IAccessible::get_accState([in] varChild, [out] pvarState) */
 	int get_accState(long /*int*/ varChild, long /*int*/ pvarState) {
 		if (control != null && control.isDisposed()) return COM.CO_E_OBJNOTCONNECTED;
@@ -2858,7 +2858,7 @@ public class Accessible {
 				if (v2.vt == COM.VT_I4) osState = v2.lVal;
 			}
 		}
-		
+
 		boolean grayed = false;
 		AccessibleControlEvent event = new AccessibleControlEvent(this);
 		event.childID = osToChildID(v.lVal);
@@ -2955,13 +2955,13 @@ public class Accessible {
 		setString(pszValue, event.result);
 		return COM.S_OK;
 	}
-	
+
 	/* put_accName([in] varChild, [in] szName) */
 	int put_accName(long /*int*/ varChild, long /*int*/ szName) {
 		/* MSAA: "The IAccessible::put_accName method is no longer supported. Servers should return E_NOTIMPL." */
 		return COM.E_NOTIMPL;
 	}
-	
+
 	/* put_accValue([in] varChild, [in] szValue) */
 	int put_accValue(long /*int*/ varChild, long /*int*/ szValue) {
 		/* MSAA: this method is supported for some UI elements (usually edit controls). */
@@ -2999,15 +2999,15 @@ public class Accessible {
 	}
 
 	/* IEnumVARIANT methods: Next, Skip, Reset, Clone */
-	/* Retrieve the next celt items in the enumeration sequence. 
+	/* Retrieve the next celt items in the enumeration sequence.
 	 * If there are fewer than the requested number of elements left
 	 * in the sequence, retrieve the remaining elements.
-	 * The number of elements actually retrieved is returned in pceltFetched 
+	 * The number of elements actually retrieved is returned in pceltFetched
 	 * (unless the caller passed in NULL for that parameter).
 	 */
-	 
+
 	/* IEnumVARIANT::Next([in] celt, [out] rgvar, [in, out] pceltFetched)
-	 * Ownership of rgvar transfers from callee to caller so reference count on rgvar 
+	 * Ownership of rgvar transfers from callee to caller so reference count on rgvar
 	 * must be incremented before returning.  The caller is responsible for releasing rgvar.
 	 */
 	int Next(int celt, long /*int*/ rgvar, long /*int*/ pceltFetched) {
@@ -3037,7 +3037,7 @@ public class Accessible {
 				listener.getChildren(event);
 			}
 			variants = event.children;
-		}	
+		}
 		Object[] nextItems = null;
 		if (variants != null && celt >= 1) {
 			int endIndex = enumIndex + celt - 1;
@@ -3101,7 +3101,7 @@ public class Accessible {
 		}
 		return COM.S_OK;
 	}
-	
+
 	/* IEnumVARIANT::Reset() the enumeration sequence to the beginning. */
 	int Reset() {
 		if (DEBUG) print(this + ".IEnumVARIANT::Reset");
@@ -3117,13 +3117,13 @@ public class Accessible {
 			ienumvariant.Release();
 			return code;
 		}
-		
+
 		enumIndex = 0;
 		return COM.S_OK;
 	}
 
 	/* IEnumVARIANT::Clone([out] ppEnum)
-	 * Ownership of ppEnum transfers from callee to caller so reference count on ppEnum 
+	 * Ownership of ppEnum transfers from callee to caller so reference count on ppEnum
 	 * must be incremented before returning.  The caller is responsible for releasing ppEnum.
 	 */
 	int Clone(long /*int*/ ppEnum) {
@@ -3148,7 +3148,7 @@ public class Accessible {
 		AddRef();
 		return COM.S_OK;
 	}
-	
+
 	/* IAccessible2::get_nRelations([out] pNRelations) */
 	int get_nRelations(long /*int*/ pNRelations) {
 		int count = getRelationCount();
@@ -3265,7 +3265,7 @@ public class Accessible {
 		if ((states & ACC.STATE_REQUIRED) != 0) ia2States |= COM.IA2_STATE_REQUIRED;
 		if ((states & ACC.STATE_INVALID_ENTRY) != 0) ia2States |= COM.IA2_STATE_INVALID_ENTRY;
 		if ((states & ACC.STATE_SUPPORTS_AUTOCOMPLETION) != 0) ia2States |= COM.IA2_STATE_SUPPORTS_AUTOCOMPLETION;
-		
+
 		/* If the role is text and there are TextExtendedListeners, then set IA2_STATE_EDITABLE.
 		 * Note that IA2_STATE_EDITABLE is not the opposite of STATE_READONLY.
 		 * Instead, it means: "has a caret, supports IAccessibleText, and is a text editing environment".
@@ -3349,7 +3349,7 @@ public class Accessible {
 //			 */
 //			// TODO: finish this. See also get_groupPosition
 			// this won't work because VARIANT.sizeof isn't big enough on 64-bit machines.
-			// just create an  long /*int*/ [] ppdispParent - it's not a variant anyhow... 
+			// just create an  long /*int*/ [] ppdispParent - it's not a variant anyhow...
 //			long /*int*/ ppdispParent = OS.GlobalAlloc (OS.GMEM_FIXED | OS.GMEM_ZEROINIT, VARIANT.sizeof);
 //			int code = get_accParent(ppdispParent);
 //			if (code == COM.S_OK) {
@@ -3394,7 +3394,7 @@ public class Accessible {
 	int get_locale(long /*int*/ pLocale) {
 		/* Return the default locale for the JVM. */
 		Locale locale = Locale.getDefault();
-		
+
 		char[] data = (locale.getLanguage()+"\0").toCharArray();
 		long /*int*/ ptr = COM.SysAllocString(data);
 		COM.MoveMemory(pLocale, new long /*int*/[] {ptr}, OS.PTR_SIZEOF);
@@ -3406,7 +3406,7 @@ public class Accessible {
 		data = (locale.getVariant()+"\0").toCharArray();
 		ptr = COM.SysAllocString(data);
 		COM.MoveMemory(pLocale + 2 * OS.PTR_SIZEOF, new long /*int*/[] {ptr}, OS.PTR_SIZEOF);
-		
+
 		if (DEBUG) print(this + ".IAccessible2::get_locale() returning" + hresult(COM.S_OK));
 		return COM.S_OK;
 	}
@@ -5011,7 +5011,7 @@ public class Accessible {
 			accessible.uniqueID = childID;
 		}
 	}
-	
+
 	int childIDToOs(int childID) {
 		if (childID == ACC.CHILDID_SELF) return COM.CHILDID_SELF;
 		/* ChildIDs are 1-based indices. */
@@ -5048,7 +5048,7 @@ public class Accessible {
 		if (OS.COMCTL32_MAJOR < 6) return osChildID;
 		return (int)/*64*/OS.SendMessage (control.handle, OS.TVM_MAPACCIDTOHTREEITEM, osChildID, 0);
 	}
-	
+
 	int stateToOs(int state) {
 		int osState = 0;
 		if ((state & ACC.STATE_SELECTED) != 0) osState |= COM.STATE_SYSTEM_SELECTED;
@@ -5070,7 +5070,7 @@ public class Accessible {
 		if ((state & ACC.STATE_DISABLED) != 0) osState |= COM.STATE_SYSTEM_UNAVAILABLE;
 		return osState;
 	}
-	
+
 	int osToState(int osState) {
 		int state = ACC.STATE_NORMAL;
 		if ((osState & COM.STATE_SYSTEM_SELECTED) != 0) state |= ACC.STATE_SELECTED;
@@ -5301,13 +5301,13 @@ public class Accessible {
 		OS.MoveMemory (buffer, ptr [0], size);
 		return new String (buffer);
 	}
-	
+
 	VARIANT getVARIANT(long /*int*/ variant) {
 		VARIANT v = new VARIANT();
 		COM.MoveMemory(v, variant, VARIANT.sizeof);
 		return v;
 	}
-	
+
 	Number getNumberVARIANT(long /*int*/ variant) {
 		VARIANT v = new VARIANT();
 		COM.MoveMemory(v, variant, VARIANT.sizeof);
@@ -5328,7 +5328,7 @@ public class Accessible {
 			COM.MoveMemory(variant + 8, new long /*int*/ [] { lVal }, OS.PTR_SIZEOF);
 		}
 	}
-	
+
 	void setNumberVARIANT(long /*int*/ variant, Number number) {
 		if (number == null) {
 			COM.MoveMemory(variant, new short[] { COM.VT_EMPTY }, 2);
@@ -5356,7 +5356,7 @@ public class Accessible {
 		}
 		COM.MoveMemory(psz, new long /*int*/ [] { ptr }, OS.PTR_SIZEOF);
 	}
-	
+
 	void setStringVARIANT(long /*int*/ variant, String string) {
 		long /*int*/ ptr = 0;
 		if (string != null) {
@@ -5366,7 +5366,7 @@ public class Accessible {
 		COM.MoveMemory(variant, new short[] { ptr == 0 ? COM.VT_EMPTY : COM.VT_BSTR }, 2);
 		COM.MoveMemory(variant + 8, new long /*int*/ [] { ptr }, OS.PTR_SIZEOF);
 	}
-	
+
 	/* checkWidget was copied from Widget, and rewritten to work in this package */
 	void checkWidget () {
 		if (!isValidThread ()) SWT.error (SWT.ERROR_THREAD_INVALID_ACCESS);
@@ -5374,20 +5374,20 @@ public class Accessible {
 	}
 
 	boolean isATRunning () {
-		/* 
+		/*
 		 * Currently there is no accurate way to check if AT is running from 'refCount'.
 		 * JAWS screen reader cannot be detected using 'refCount' approach,
-		 * because 'refCount' continues to be 1 even when JAWS is running. 
+		 * because 'refCount' continues to be 1 even when JAWS is running.
 		 */
 		// if (refCount <= 1) return false;
 		return true;
 	}
-	
+
 	/* isValidThread was copied from Widget, and rewritten to work in this package */
 	boolean isValidThread () {
 		return control.getDisplay ().getThread () == Thread.currentThread ();
 	}
-	
+
 	// START DEBUG CODE
 	static void print (String str) {
 		if (DEBUG) System.out.println (str);
@@ -5660,8 +5660,8 @@ public class Accessible {
 		if (COM.IsEqualGUID(guid, COM.IIDIDataObject)) return "IIDIDataObject";
 		if (COM.IsEqualGUID(guid, COM.IIDIDispatch)) return "IIDIDispatch";
 		if (COM.IsEqualGUID(guid, COM.IIDIDispatchEx)) return "IIDIDispatchEx";
-		if (COM.IsEqualGUID(guid, COM.IIDIDocHostUIHandler)) return "IIDIDocHostUIHandler";	
-		if (COM.IsEqualGUID(guid, COM.IIDIDocHostShowUI)) return "IIDIDocHostShowUI";	
+		if (COM.IsEqualGUID(guid, COM.IIDIDocHostUIHandler)) return "IIDIDocHostUIHandler";
+		if (COM.IsEqualGUID(guid, COM.IIDIDocHostShowUI)) return "IIDIDocHostShowUI";
 		if (COM.IsEqualGUID(guid, COM.IIDIDropSource)) return "IIDIDropSource";
 		if (COM.IsEqualGUID(guid, COM.IIDIDropTarget)) return "IIDIDropTarget";
 		if (COM.IsEqualGUID(guid, IIDIEnumConnectionPoints)) return "IIDIEnumConnectionPoints";

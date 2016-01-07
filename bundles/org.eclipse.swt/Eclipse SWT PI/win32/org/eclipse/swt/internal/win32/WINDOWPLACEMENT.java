@@ -12,7 +12,7 @@ package org.eclipse.swt.internal.win32;
 
 public class WINDOWPLACEMENT {
 	public int length;
-	public int flags; 
+	public int flags;
 	public int showCmd;
 //	POINT ptMinPosition;
 	/** @field accessor=ptMinPosition.x */
@@ -24,7 +24,7 @@ public class WINDOWPLACEMENT {
 	public int ptMaxPosition_x;
 	/** @field accessor=ptMaxPosition.y */
 	public int ptMaxPosition_y;
-//	RECT  rcNormalPosition; 
+//	RECT  rcNormalPosition;
 	/** @field accessor=rcNormalPosition.left */
 	public int left;
 	/** @field accessor=rcNormalPosition.top */

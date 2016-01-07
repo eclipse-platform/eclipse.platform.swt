@@ -14,13 +14,13 @@ import org.eclipse.swt.internal.ole.win32.*;
 import org.eclipse.swt.internal.win32.*;
 
 /**
- * The class <code>HTMLTransfer</code> provides a platform specific mechanism 
- * for converting text in HTML format represented as a java <code>String</code> 
+ * The class <code>HTMLTransfer</code> provides a platform specific mechanism
+ * for converting text in HTML format represented as a java <code>String</code>
  * to a platform specific representation of the data and vice versa.
- * 
- * <p>An example of a java <code>String</code> containing HTML text is shown 
+ *
+ * <p>An example of a java <code>String</code> containing HTML text is shown
  * below:</p>
- * 
+ *
  * <code><pre>
  *     String htmlData = "<p>This is a paragraph of text.</p>";
  * </code></pre>
@@ -38,7 +38,7 @@ public class HTMLTransfer extends ByteArrayTransfer {
 	static final String SUFFIX = "<!--EndFragment--></body></html>"; //$NON-NLS-1$
 	static final String StartFragment = "StartFragment:"; //$NON-NLS-1$
 	static final String EndFragment = "EndFragment:"; //$NON-NLS-1$
-	
+
 private HTMLTransfer() {}
 
 /**
@@ -53,11 +53,11 @@ public static HTMLTransfer getInstance () {
 /**
  * This implementation of <code>javaToNative</code> converts HTML-formatted text
  * represented by a java <code>String</code> to a platform specific representation.
- * 
+ *
  * @param object a java <code>String</code> containing HTML text
  * @param transferData an empty <code>TransferData</code> object that will
  *  	be filled in on return with the platform specific format of the data
- * 
+ *
  * @see Transfer#nativeToJava
  */
 @Override
@@ -80,7 +80,7 @@ public void javaToNative (Object object, TransferData transferData){
 	int startFragment = startHTML + PREFIX.length();
 	int endFragment = startFragment + cchMultiByte - 1;
 	int endHTML = endFragment + SUFFIX.length();
-	
+
 	StringBuffer buffer = new StringBuffer(HEADER);
 	int maxLength = NUMBER.length();
 	//startHTML
@@ -99,11 +99,11 @@ public void javaToNative (Object object, TransferData transferData){
 	start = buffer.toString().indexOf(NUMBER, start);
 	temp = Integer.toString(endFragment);
 	buffer.replace(start + maxLength-temp.length(), start + maxLength, temp);
-	
+
 	buffer.append(PREFIX);
 	buffer.append(string);
 	buffer.append(SUFFIX);
-	
+
 	count = buffer.length();
 	chars = new char[count + 1];
 	buffer.getChars(0, count, chars, 0);
@@ -119,13 +119,13 @@ public void javaToNative (Object object, TransferData transferData){
 }
 
 /**
- * This implementation of <code>nativeToJava</code> converts a platform specific 
+ * This implementation of <code>nativeToJava</code> converts a platform specific
  * representation of HTML text to a java <code>String</code>.
- * 
+ *
  * @param transferData the platform specific representation of the data to be converted
  * @return a java <code>String</code> containing HTML text if the conversion was successful;
  * 		otherwise null
- * 
+ *
  * @see Transfer#javaToNative
  */
 @Override
@@ -135,17 +135,17 @@ public Object nativeToJava(TransferData transferData){
 	data.AddRef();
 	STGMEDIUM stgmedium = new STGMEDIUM();
 	FORMATETC formatetc = transferData.formatetc;
-	stgmedium.tymed = COM.TYMED_HGLOBAL;	
+	stgmedium.tymed = COM.TYMED_HGLOBAL;
 	transferData.result = getData(data, formatetc, stgmedium);
-	data.Release();	
+	data.Release();
 	if (transferData.result != COM.S_OK) return null;
 	long /*int*/ hMem = stgmedium.unionField;
-	
+
 	try {
 		long /*int*/ lpMultiByteStr = OS.GlobalLock(hMem);
 		if (lpMultiByteStr == 0) return null;
 		try {
-			/* NOTE: CF_HTML uses UTF-8 encoding. 
+			/* NOTE: CF_HTML uses UTF-8 encoding.
 			 * The MSDN documentation for MultiByteToWideChar states that dwFlags must be set to 0 for UTF-8.
 			 * Otherwise, the function fails with ERROR_INVALID_FLAGS. */
 			int cchWideChar  = OS.MultiByteToWideChar (OS.CP_UTF8, 0, lpMultiByteStr, -1, null, 0);
@@ -156,7 +156,7 @@ public Object nativeToJava(TransferData transferData){
 			int fragmentStart = 0, fragmentEnd = 0;
 			int start = string.indexOf(StartFragment) + StartFragment.length();
 			int end = start + 1;
-			while (end < string.length()) { 
+			while (end < string.length()) {
 				String s = string.substring(start, end);
 				try {
 					fragmentStart = Integer.parseInt(s);
@@ -167,7 +167,7 @@ public Object nativeToJava(TransferData transferData){
 			}
 			start = string.indexOf(EndFragment) + EndFragment.length();
 			end = start + 1;
-			while (end < string.length()) { 
+			while (end < string.length()) {
 				String s = string.substring(start, end);
 				try {
 					fragmentEnd = Integer.parseInt(s);
@@ -203,7 +203,7 @@ protected int[] getTypeIds(){
 }
 @Override
 protected String[] getTypeNames(){
-	return new String[] {HTML_FORMAT}; 
+	return new String[] {HTML_FORMAT};
 }
 boolean checkHTML(Object object) {
 	return (object != null && object instanceof String && ((String)object).length() > 0);

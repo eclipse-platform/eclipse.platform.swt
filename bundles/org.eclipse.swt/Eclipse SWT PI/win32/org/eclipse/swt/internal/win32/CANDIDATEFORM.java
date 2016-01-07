@@ -14,6 +14,6 @@ public class CANDIDATEFORM {
 	public int dwIndex;
 	public int dwStyle;
 	public POINT ptCurrentPos = new POINT();
-	public RECT rcArea = new RECT();  
+	public RECT rcArea = new RECT();
 	public static final int sizeof = OS.CANDIDATEFORM_sizeof ();
 }

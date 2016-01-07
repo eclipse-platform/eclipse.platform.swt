@@ -31,7 +31,7 @@ import org.eclipse.swt.widgets.*;
 public class PrintDialog extends Dialog {
 	static final TCHAR DialogClass = new TCHAR (0, OS.IsWinCE ? "Dialog" : "#32770", true);
 	PrinterData printerData = new PrinterData();
-	
+
 /**
  * Constructs a new instance of this class given only its parent.
  *
@@ -59,7 +59,7 @@ public PrintDialog (Shell parent) {
  * <p>
  * The style value is either one of the style constants defined in
  * class <code>SWT</code> which is applicable to instances of this
- * class, or must be built by <em>bitwise OR</em>'ing together 
+ * class, or must be built by <em>bitwise OR</em>'ing together
  * (that is, using the <code>int</code> "|" operator) two or more
  * of those <code>SWT</code> style constants. The class description
  * lists the style constants that are applicable to the class.
@@ -126,9 +126,9 @@ static int checkStyle (Shell parent, int style) {
  * Setting the printer data to null is equivalent to
  * resetting all data fields to their default values.
  * </p>
- * 
+ *
  * @param data the data that will be used when the dialog is opened or null to use default data
- * 
+ *
  * @since 3.4
  */
 public void setPrinterData(PrinterData data) {
@@ -139,9 +139,9 @@ public void setPrinterData(PrinterData data) {
 /**
  * Returns the printer data that will be used when the dialog
  * is opened.
- * 
+ *
  * @return the data that will be used when the dialog is opened
- * 
+ *
  * @since 3.4
  */
 public PrinterData getPrinterData() {
@@ -207,7 +207,7 @@ public int getStartPage() {
  * This value can be from 1 to the maximum number of pages for the platform.
  * Note that it is only valid if the scope is <code>PrinterData.PAGE_RANGE</code>.
  * </p>
- * 
+ *
  * @param startPage the startPage setting when the dialog is opened
  */
 public void setStartPage(int startPage) {
@@ -235,7 +235,7 @@ public int getEndPage() {
  * This value can be from 1 to the maximum number of pages for the platform.
  * Note that it is only valid if the scope is <code>PrinterData.PAGE_RANGE</code>.
  * </p>
- * 
+ *
  * @param endPage the end page setting when the dialog is opened
  */
 public void setEndPage(int endPage) {
@@ -322,7 +322,7 @@ public PrinterData open() {
 	PRINTDLG pd = new PRINTDLG();
 	pd.lStructSize = PRINTDLG.sizeof;
 	pd.hwndOwner = hwndOwner;
-	
+
 	boolean success = false;
 	if (printerData.name != null) {
 		/* Ensure that the printer name is in the current list of printers. */
@@ -379,7 +379,7 @@ public PrinterData open() {
 			if (pd.hDevMode != 0) OS.GlobalFree(pd.hDevMode);
 			pd.hDevMode = hMem;
 		}
-		
+
 		/* Initialize the DEVMODE struct's fields from the printerData. */
 		long /*int*/ hMem = pd.hDevMode;
 		if (hMem == 0) {
@@ -423,7 +423,7 @@ public PrinterData open() {
 		}
 		OS.MoveMemory(ptr, devmode, OS.IsUnicode ? OS.DEVMODEW_sizeof() : OS.DEVMODEA_sizeof());
 		OS.GlobalUnlock(hMem);
-	
+
 		pd.Flags = OS.PD_USEDEVMODECOPIESANDCOLLATE;
 		if (printerData.printToFile) pd.Flags |= OS.PD_PRINTTOFILE;
 		switch (printerData.scope) {
@@ -435,7 +435,7 @@ public PrinterData open() {
 		pd.nMaxPage = -1;
 		pd.nFromPage = (short) Math.min (0xFFFF, Math.max (1, printerData.startPage));
 		pd.nToPage = (short) Math.min (0xFFFF, Math.max (1, printerData.endPage));
-	
+
 		Shell [] shells = display.getShells();
 		if ((getStyle() & (SWT.APPLICATION_MODAL | SWT.SYSTEM_MODAL)) != 0) {
 			for (int i=0; i<shells.length; i++) {
@@ -460,7 +460,7 @@ public PrinterData open() {
 				}
 			}
 		}
-		
+
 		if (success) {
 			/* Get driver and device from the DEVNAMES struct */
 			hMem = pd.hDevNames;
@@ -470,9 +470,9 @@ public PrinterData open() {
 			short[] offsets = new short[4];
 			OS.MoveMemory(offsets, ptr, 2 * offsets.length);
 			TCHAR buffer = new TCHAR(0, size);
-			OS.MoveMemory(buffer, ptr, size);	
+			OS.MoveMemory(buffer, ptr, size);
 			OS.GlobalUnlock(hMem);
-	
+
 			int driverOffset = offsets[0];
 			int i = 0;
 			while (driverOffset + i < size) {
@@ -480,14 +480,14 @@ public PrinterData open() {
 				i++;
 			}
 			String driver = buffer.toString(driverOffset, i);
-	
+
 			int deviceOffset = offsets[1];
 			i = 0;
 			while (deviceOffset + i < size) {
 				if (buffer.tcharAt(deviceOffset + i) == 0) break;
 				i++;
 			}
-			String device = buffer.toString(deviceOffset, i);	
+			String device = buffer.toString(deviceOffset, i);
 
 			/* Create PrinterData object and set fields from PRINTDLG */
 			data = new PrinterData(driver, device);
@@ -502,14 +502,14 @@ public PrinterData open() {
 			if (data.printToFile) data.fileName = printerData.fileName;
 			data.copyCount = pd.nCopies;
 			data.collate = (pd.Flags & OS.PD_COLLATE) != 0;
-	
+
 			/* Bulk-save the printer-specific settings in the DEVMODE struct */
 			hMem = pd.hDevMode;
 			size = OS.GlobalSize(hMem);
 			ptr = OS.GlobalLock(hMem);
 			data.otherData = new byte[size];
 			OS.MoveMemory(data.otherData, ptr, size);
-			
+
 			/* Set PrinterData fields from DEVMODE */
 			devmode = OS.IsUnicode ? (DEVMODE)new DEVMODEW () : new DEVMODEA ();
 			OS.MoveMemory(devmode, ptr, OS.IsUnicode ? OS.DEVMODEW_sizeof() : OS.DEVMODEA_sizeof());

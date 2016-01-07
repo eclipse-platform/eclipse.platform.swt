@@ -151,7 +151,7 @@ void disposeCOMInterfaces () {
 	if (iWebDownloadDelegate != null) {
 		iWebDownloadDelegate.dispose ();
 		iWebDownloadDelegate = null;
-	}	
+	}
 }
 
 long /*int*/ getAddress () {

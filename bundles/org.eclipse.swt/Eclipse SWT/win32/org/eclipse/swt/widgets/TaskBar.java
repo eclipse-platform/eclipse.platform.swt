@@ -18,26 +18,26 @@ import org.eclipse.swt.*;
 
 /**
  * Instances of this class represent the system task bar.
- * 
+ *
  * <dl>
  * <dt><b>Styles:</b></dt>
  * <dd>(none)</dd>
  * <dt><b>Events:</b></dt>
  * <dd>(none)</dd>
  * </dl>
- * 
+ *
  * @see Display#getSystemTaskBar
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
- * 
+ *
  * @since 3.6
- * 
+ *
  * @noextend This class is not intended to be subclassed by clients.
  */
 public class TaskBar extends Widget {
 	int itemCount;
 	TaskItem [] items = new TaskItem [4];
 	long /*int*/ mTaskbarList3;
-	
+
 	static final char [] EXE_PATH;
 	static final char [] ICO_DIR = {'i','c','o','_','d','i','r','\0'};
 	static final PROPERTYKEY PKEY_Title = new PROPERTYKEY ();
@@ -46,18 +46,18 @@ public class TaskBar extends Widget {
 	static final String EXE_ARGS_KEY = "org.eclipse.swt.win32.taskbar.arguments";  //$NON-NLS-1$
 	static final String ICON_KEY = "org.eclipse.swt.win32.taskbar.icon";  //$NON-NLS-1$
 	static final String ICON_INDEX_KEY = "org.eclipse.swt.win32.taskbar.icon.index";  //$NON-NLS-1$
-	static final byte [] CLSID_TaskbarList = new byte [16]; 
-	static final byte [] CLSID_DestinationList = new byte[16]; 
-	static final byte [] CLSID_EnumerableObjectCollection = new byte[16]; 
-	static final byte [] CLSID_ShellLink = new byte[16]; 
+	static final byte [] CLSID_TaskbarList = new byte [16];
+	static final byte [] CLSID_DestinationList = new byte[16];
+	static final byte [] CLSID_EnumerableObjectCollection = new byte[16];
+	static final byte [] CLSID_ShellLink = new byte[16];
 	static final byte [] CLSID_FileOperation = new byte [16];
 	static final byte [] IID_ITaskbarList3 = new byte [16];
-	static final byte [] IID_ICustomDestinationList = new byte[16]; 
-	static final byte [] IID_IObjectArray = new byte[16]; 
-	static final byte [] IID_IObjectCollection = new byte[16]; 
-	static final byte [] IID_IShellLinkW = new byte[16]; 
-	static final byte [] IID_IPropertyStore = new byte[16]; 
-	static final byte [] IID_IShellItem = new byte [16]; 
+	static final byte [] IID_ICustomDestinationList = new byte[16];
+	static final byte [] IID_IObjectArray = new byte[16];
+	static final byte [] IID_IObjectCollection = new byte[16];
+	static final byte [] IID_IShellLinkW = new byte[16];
+	static final byte [] IID_IPropertyStore = new byte[16];
+	static final byte [] IID_IShellItem = new byte [16];
 	static final byte [] IID_IFileOperation = new byte [16];
 	static final byte [] FOLDERID_LocalAppData = new byte [16];
 	static {
@@ -66,7 +66,7 @@ public class TaskBar extends Widget {
 		OS.IIDFromString ("{2d3468c1-36a7-43b6-ac24-d3f02fd9607a}\0".toCharArray (), CLSID_EnumerableObjectCollection); //$NON-NLS-1$
 		OS.IIDFromString ("{00021401-0000-0000-C000-000000000046}\0".toCharArray (), CLSID_ShellLink); //$NON-NLS-1$
 		OS.IIDFromString ("{3ad05575-8857-4850-9277-11b85bdb8e09}\0".toCharArray (), CLSID_FileOperation);
-		OS.IIDFromString ("{EA1AFB91-9E28-4B86-90E9-9E9F8A5EEFAF}\0".toCharArray (), IID_ITaskbarList3); //$NON-NLS-1$	
+		OS.IIDFromString ("{EA1AFB91-9E28-4B86-90E9-9E9F8A5EEFAF}\0".toCharArray (), IID_ITaskbarList3); //$NON-NLS-1$
 		OS.IIDFromString ("{6332debf-87b5-4670-90c0-5e57b408a49e}\0".toCharArray (), IID_ICustomDestinationList); //$NON-NLS-1$
 		OS.IIDFromString ("{92CA9DCD-5622-4bba-A805-5E9F541BD8C9}\0".toCharArray (), IID_IObjectArray); //$NON-NLS-1$
 		OS.IIDFromString ("{5632b1a4-e38a-400a-928a-d4cd63230295}\0".toCharArray (), IID_IObjectCollection); //$NON-NLS-1$
@@ -150,7 +150,7 @@ long /*int*/ createShellLink (MenuItem item, String directory) {
 		OS.MoveMemory (pv, new short [] {OS.VT_LPWSTR}, 2);
 		OS.MoveMemory (pv + 8, new long /*int*/ [] {titlePtr}, OS.PTR_SIZEOF);
 		key = PKEY_Title;
-		
+
 		/*IShellLink::SetPath*/
 		String exePath = (String)item.getData (EXE_PATH_KEY);
 		if (exePath != null) {
@@ -162,7 +162,7 @@ long /*int*/ createShellLink (MenuItem item, String directory) {
 		}
 		hr = OS.VtblCall (20, pLink, buffer);
 		if (hr != OS.S_OK) error (SWT.ERROR_INVALID_ARGUMENT);
-		
+
 		text =  (String)item.getData (EXE_ARGS_KEY);
 		if (text == null) text = Display.LAUNCHER_PREFIX + Display.TASKBAR_EVENT + item.id;
 		length = text.length ();
@@ -171,7 +171,7 @@ long /*int*/ createShellLink (MenuItem item, String directory) {
 		/*IShellLink::SetArguments*/
 		hr = OS.VtblCall (11, pLink, buffer);
 		if (hr != OS.S_OK) error (SWT.ERROR_INVALID_ARGUMENT);
-		
+
 		/* This code is intentionally commented */
 //		String tooltip = item.tooltip;
 //		if (tooltip != null) {
@@ -182,7 +182,7 @@ long /*int*/ createShellLink (MenuItem item, String directory) {
 //			hr = OS.VtblCall (7, pLink, buffer);
 //			if (hr != OS.S_OK) error (SWT.ERROR_INVALID_ARGUMENT);
 //		}
-		
+
 		String icon = (String)item.getData (ICON_KEY);
 		int index = 0;
 		if (icon != null) {
@@ -213,7 +213,7 @@ long /*int*/ createShellLink (MenuItem item, String directory) {
 			if (hr != OS.S_OK) error (SWT.ERROR_INVALID_ARGUMENT);
 		}
 	}
-	
+
 	/*IUnknown::QueryInterface*/
 	hr = OS.VtblCall (0, pLink, IID_IPropertyStore, ppv);
 	if (hr != OS.S_OK) error (SWT.ERROR_NO_HANDLES);
@@ -225,7 +225,7 @@ long /*int*/ createShellLink (MenuItem item, String directory) {
 	OS.VtblCall (7, pPropStore);
 	/*IUnknown::Release*/
 	OS.VtblCall (2, pPropStore);
-	
+
 	OS.HeapFree (hHeap, 0, pv);
 	if (titlePtr != 0) OS.HeapFree (hHeap, 0, titlePtr);
 	return pLink;
@@ -306,7 +306,7 @@ String getDirectory (char[] appName) {
 						/*IShellItem::GetDisplayName*/
 						hr = OS.VtblCall (5, psiIcoDir, OS.SIGDN_FILESYSPATH, ppv);
 						if (hr == OS.S_OK) {
-							long /*int*/ wstr = ppv [0]; 
+							long /*int*/ wstr = ppv [0];
 							int length = OS.wcslen (wstr);
 							char [] buffer = new char [length];
 							OS.MoveMemory (buffer, wstr, length * 2);
@@ -395,10 +395,10 @@ public TaskItem getItem (int index) {
 }
 
 /**
- * Returns the <code>TaskItem</code> for the given <code>Shell</code> or the <code>TaskItem</code> 
+ * Returns the <code>TaskItem</code> for the given <code>Shell</code> or the <code>TaskItem</code>
  * for the application if the <code>Shell</code> parameter is <code>null</code>.
  * If the requested item is not supported by the platform it returns <code>null</code>.
- * 
+ *
  * @param shell the shell for which the task item is requested, or null to request the application item
  * @return the task item for the given shell or the application
  *
@@ -437,11 +437,11 @@ public int getItemCount () {
 
 /**
  * Returns an array of <code>TaskItem</code>s which are the items
- * in the receiver. 
+ * in the receiver.
  * <p>
  * Note: This is not the actual structure used by the receiver
  * to maintain its list of items, so modifying the array will
- * not affect the receiver. 
+ * not affect the receiver.
  * </p>
  *
  * @return the items in the receiver
@@ -490,7 +490,7 @@ void releaseWidget () {
 }
 
 @Override
-void reskinChildren (int flags) {	
+void reskinChildren (int flags) {
 	if (items != null) {
 		for (int i=0; i<items.length; i++) {
 			TaskItem item = items [i];
@@ -512,8 +512,8 @@ void setMenu (Menu menu) {
 		buffer = new char [length + 1];
 		appName.getChars (0, length, buffer, 0);
 	}
-	
-	MenuItem [] items = null; 
+
+	MenuItem [] items = null;
 	if (menu != null && (items = menu.getItems ()).length != 0) {
 		String directory = null;
 		for (int i = 0; i < items.length; i++) {
@@ -525,17 +525,17 @@ void setMenu (Menu menu) {
 		}
 		long /*int*/ poa = createShellLinkArray (items, directory);
 		if (poa != 0) {
-			
+
 			/*ICustomDestinationList::SetAppID*/
 			hr = OS.VtblCall (3, pDestList, buffer);
 			if (hr != OS.S_OK) error (SWT.ERROR_INVALID_ARGUMENT);
-			
+
 			/*ICustomDestinationList::BeginList*/
 			int [] cMaxSlots = new int [1];
 			OS.VtblCall (4, pDestList, cMaxSlots, IID_IObjectArray, ppv);
 			if (hr != OS.S_OK) error (SWT.ERROR_INVALID_ARGUMENT);
 			long /*int*/ pRemovedItems = ppv [0];
-			
+
 			int [] count = new int [1];
 			/*IObjectArray::GetCount*/
 			OS.VtblCall (3, poa, count);
@@ -544,7 +544,7 @@ void setMenu (Menu menu) {
 				hr = OS.VtblCall (7, pDestList, poa);
 				if (hr != OS.S_OK) error (SWT.ERROR_INVALID_ARGUMENT);
 			}
-			
+
 			for (int i = 0; i < items.length; i++) {
 				MenuItem item = items [i];
 				if ((item.getStyle () & SWT.CASCADE) != 0) {
@@ -579,11 +579,11 @@ void setMenu (Menu menu) {
 					}
 				}
 			}
-			
+
 			/*ICustomDestinationList::CommitList*/
 			hr = OS.VtblCall (8, pDestList);
 			if (hr != OS.S_OK) error (SWT.ERROR_INVALID_ARGUMENT);
-			
+
 			/*IUnknown::Release*/
 			if (pRemovedItems != 0) OS.VtblCall (2, pRemovedItems);
 			/*IUnknown::Release*/

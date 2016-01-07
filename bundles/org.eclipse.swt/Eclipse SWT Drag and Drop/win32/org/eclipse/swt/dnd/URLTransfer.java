@@ -14,13 +14,13 @@ import org.eclipse.swt.internal.ole.win32.*;
 import org.eclipse.swt.internal.win32.*;
 
 /**
- * The class <code>URLTransfer</code> provides a platform specific mechanism 
- * for converting text in URL format represented as a java <code>String</code> 
+ * The class <code>URLTransfer</code> provides a platform specific mechanism
+ * for converting text in URL format represented as a java <code>String</code>
  * to a platform specific representation of the data and vice versa. The string
  * must contain a fully specified url.
- * 
+ *
  * <p>An example of a java <code>String</code> containing a URL is shown below:</p>
- * 
+ *
  * <code><pre>
  *     String url = "http://www.eclipse.org";
  * </code></pre>
@@ -50,11 +50,11 @@ public static URLTransfer getInstance () {
 /**
  * This implementation of <code>javaToNative</code> converts a URL
  * represented by a java <code>String</code> to a platform specific representation.
- * 
+ *
  * @param object a java <code>String</code> containing a URL
  * @param transferData an empty <code>TransferData</code> object that will
  *  	be filled in on return with the platform specific format of the data
- * 
+ *
  * @see Transfer#nativeToJava
  */
 @Override
@@ -99,13 +99,13 @@ public void javaToNative (Object object, TransferData transferData){
 }
 
 /**
- * This implementation of <code>nativeToJava</code> converts a platform 
+ * This implementation of <code>nativeToJava</code> converts a platform
  * specific representation of a URL to a java <code>String</code>.
- * 
+ *
  * @param transferData the platform specific representation of the data to be converted
  * @return a java <code>String</code> containing a URL if the conversion was successful;
  * 		otherwise null
- * 
+ *
  * @see Transfer#javaToNative
  */
 @Override
@@ -115,9 +115,9 @@ public Object nativeToJava(TransferData transferData){
 	data.AddRef();
 	STGMEDIUM stgmedium = new STGMEDIUM();
 	FORMATETC formatetc = transferData.formatetc;
-	stgmedium.tymed = COM.TYMED_HGLOBAL;	
+	stgmedium.tymed = COM.TYMED_HGLOBAL;
 	transferData.result = getData(data, formatetc, stgmedium);
-	data.Release();	
+	data.Release();
 	if (transferData.result != COM.S_OK) return null;
 	long /*int*/ hMem = stgmedium.unionField;
 	try {
@@ -139,7 +139,7 @@ public Object nativeToJava(TransferData transferData){
 				}
 				return new String (chars, 0, length);
 			} finally {
-				OS.GlobalUnlock(hMem);	
+				OS.GlobalUnlock(hMem);
 			}
 		} else if (transferData.type == CFSTR_INETURLID) {
 			long /*int*/ lpMultiByteStr = OS.GlobalLock(hMem);
@@ -168,7 +168,7 @@ protected int[] getTypeIds(){
 
 @Override
 protected String[] getTypeNames(){
-	return new String[] {CFSTR_INETURLW, CFSTR_INETURL}; 
+	return new String[] {CFSTR_INETURLW, CFSTR_INETURL};
 }
 
 boolean checkURL(Object object) {

@@ -35,7 +35,7 @@ class WebSite extends OleControlSite {
 	static final String CONSUME_KEY = "org.eclipse.swt.OleFrame.ConsumeKey"; //$NON-NLS-1$
 
 public WebSite(Composite parent, int style, String progId) {
-	super(parent, style, progId);		
+	super(parent, style, progId);
 }
 
 @Override
@@ -75,7 +75,7 @@ protected void createCOMInterfaces () {
 		@Override
 		public long /*int*/ method15(long /*int*/[] args) {return GetExternal(args[0]);}
 		@Override
-		public long /*int*/ method16(long /*int*/[] args) {return TranslateUrl((int)/*64*/args[0], args[1], args[2]);}		
+		public long /*int*/ method16(long /*int*/[] args) {return TranslateUrl((int)/*64*/args[0], args[1], args[2]);}
 		@Override
 		public long /*int*/ method17(long /*int*/[] args) {return FilterDataObject(args[0], args[1]);}
 	};
@@ -137,9 +137,9 @@ protected void createCOMInterfaces () {
 		@Override
 		public long /*int*/ method1(long /*int*/[] args) {return AddRef();}
 		@Override
-		public long /*int*/ method2(long /*int*/[] args) {return Release();}		
+		public long /*int*/ method2(long /*int*/[] args) {return Release();}
 		@Override
-		public long /*int*/ method3(long /*int*/[] args) {return QueryStatus(args[0], (int)/*64*/args[1], args[2], args[3]);}		
+		public long /*int*/ method3(long /*int*/[] args) {return QueryStatus(args[0], (int)/*64*/args[1], args[2], args[3]);}
 		@Override
 		public long /*int*/ method4(long /*int*/[] args) {return Exec(args[0], (int)/*64*/args[1], (int)/*64*/args[2], args[3], args[4]);}
 	};
@@ -156,7 +156,7 @@ protected void createCOMInterfaces () {
 	iDispatch = new COMObject (new int[] {2, 0, 0, 1, 3, 5, 8}) {
 		@Override
 		public long /*int*/ method0 (long /*int*/[] args) {
-			/* 
+			/*
 			 * IDispatch check must be done here instead of in the shared QueryInterface
 			 * implementation, to avoid answering the superclass's IDispatch implementation
 			 * instead of this one.
@@ -364,7 +364,7 @@ int TranslateAccelerator(long /*int*/ lpMsg, long /*int*/ pguidCmdGroup, int nCm
 	* By default the IE shortcuts are run.  However, the shortcuts below should not run
 	* in this context.  The workaround is to block IE from handling these shortcuts by
 	* answering COM.S_OK.
-	* 
+	*
 	* - F5 causes a refresh, which is not appropriate when rendering HTML from memory
 	* - CTRL+L and CTRL+O show an Open Location dialog in IE8, which is undesirable and
 	* can crash in some contexts
@@ -389,7 +389,7 @@ int TranslateAccelerator(long /*int*/ lpMsg, long /*int*/ pguidCmdGroup, int nCm
 				}
 				break;
 			case OS.VK_TAB:
-				/* 
+				/*
 				 * Do not interfere with tab traversal since it's not known
 				 * if it will be within IE or out to another Control.
 				 */
@@ -564,7 +564,7 @@ int MapUrlToZone(long /*int*/ pwszUrl, long /*int*/ pdwZone, int dwFlags) {
 	IE ie = (IE)((Browser)getParent().getParent()).webBrowser;
 	/*
 	* For some reason IE8 invokes this function after the Browser has
-	* been disposed.  To detect this case check for ie.auto != null. 
+	* been disposed.  To detect this case check for ie.auto != null.
 	*/
 	if (ie.auto != null && ie.isAboutBlank && !ie.untrustedText) {
 		COM.MoveMemory(pdwZone, new int[] {IE.URLZONE_INTRANET}, 4);
@@ -582,7 +582,7 @@ int ProcessUrlAction(long /*int*/ pwszUrl, int dwAction, long /*int*/ pPolicy, i
 
 	/*
 	* If the current page is about:blank and is trusted then
-	* override default zone elevation settings to allow the action.  
+	* override default zone elevation settings to allow the action.
 	*/
 	if (dwAction == IE.URLACTION_FEATURE_ZONE_ELEVATION) {
 	    IE ie = (IE)((Browser)getParent().getParent()).webBrowser;
@@ -630,14 +630,14 @@ boolean canExecuteApplets () {
 	* launches its jre in IE's process, because this new jre conflicts
 	* with the one running eclipse.  These cases need to be avoided by
 	* vetoing the running of applets.
-	* 
+	*
 	* However as of Sun jre 1.6u10, applets can be launched in a separate
 	* process, which avoids the conflict with the jre running eclipse.
-	* Therefore if this condition is detected, and if the required jar 
-	* libraries are available, then applets can be executed. 
+	* Therefore if this condition is detected, and if the required jar
+	* libraries are available, then applets can be executed.
 	*/
 
-	/* 
+	/*
 	* executing applets with IE6 embedded can crash, so do not
 	* attempt this if the version is less than IE7
 	*/
@@ -646,7 +646,7 @@ boolean canExecuteApplets () {
 	if (canExecuteApplets == null) {
 		WebBrowser webBrowser = ((Browser)getParent ().getParent ()).webBrowser;
 		String script = "try {var element = document.createElement('object');element.classid='clsid:CAFEEFAC-DEC7-0000-0000-ABCDEFFEDCBA';return element.object.isPlugin2();} catch (err) {};return false;"; //$NON-NLS-1$
-		canExecuteApplets = ((Boolean)webBrowser.evaluate (script)); 
+		canExecuteApplets = ((Boolean)webBrowser.evaluate (script));
 		if (canExecuteApplets.booleanValue ()) {
 			try {
 				Class.forName ("sun.plugin2.main.server.IExplorerPlugin"); /* plugin.jar */	//$NON-NLS-1$
@@ -691,7 +691,7 @@ int Exec(long /*int*/ pguidCmdGroup, int nCmdID, int nCmdExecOpt, long /*int*/ p
 		}
 
 		/*
-		* Bug in Internet Explorer.  OnToolBar TRUE is also fired when any of the 
+		* Bug in Internet Explorer.  OnToolBar TRUE is also fired when any of the
 		* address bar or menu bar are requested but not the tool bar.  A workaround
 		* has been posted by a Microsoft developer on the public webbrowser_ctl
 		* newsgroup. The workaround is to implement the IOleCommandTarget interface
@@ -753,7 +753,7 @@ int GetIDsOfNames (int riid, long /*int*/ rgszNames, int cNames, int lcid, long 
     char[] buffer = new char[length];
     OS.MoveMemory (buffer, ptr[0], length * 2);
     String functionName = String.valueOf (buffer);
-    int result = COM.S_OK; 
+    int result = COM.S_OK;
     int[] ids = new int[cNames];	/* DISPIDs */
     if (functionName.equals ("callJava")) { //$NON-NLS-1$
 	    for (int i = 0; i < cNames; i++) {
@@ -954,7 +954,7 @@ Variant convertToJS (Object value) {
 		if (pVarResult == null || pVarResult.getType () == COM.VT_EMPTY) {
 			if (pVarResult != null) pVarResult.dispose ();
 			document.dispose ();
-			return new Variant ();	
+			return new Variant ();
 		}
 		OleAutomation ihtmlWindow2 = pVarResult.getAutomation ();
 		pVarResult.dispose ();
@@ -981,7 +981,7 @@ Variant convertToJS (Object value) {
 		rc = arrayTypeDispatchEx.InvokeEx (COM.DISPID_VALUE, COM.LOCALE_USER_DEFAULT, COM.DISPATCH_CONSTRUCT, params, resultPtr, null, 0);
 		if (rc != COM.S_OK) {
 			OS.GlobalFree (resultPtr);
-			return new Variant ();	
+			return new Variant ();
 		}
 		Variant array = Variant.win32_new (resultPtr);
 		OS.GlobalFree (resultPtr);

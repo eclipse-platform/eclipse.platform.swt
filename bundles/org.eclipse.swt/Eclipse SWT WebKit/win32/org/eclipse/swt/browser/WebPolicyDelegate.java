@@ -78,7 +78,7 @@ int decidePolicyForNavigationAction (long /*int*/ webView, long /*int*/ actionIn
 	IWebPolicyDecisionListener pdListener = new IWebPolicyDecisionListener (listener);
 	WebKit webKit = (WebKit)browser.webBrowser;
 	if (webKit.loadingText) {
-		/* 
+		/*
 		 * WebKit is auto-navigating to about:blank in response to a loadHTMLString()
 		 * invocation.  This navigate should always proceed without sending an event
 		 * since it is preceded by an explicit navigate to about:blank in setText().
@@ -149,7 +149,7 @@ protected void disposeCOMInterfaces () {
 	if (iWebPolicyDelegate != null) {
 		iWebPolicyDelegate.dispose ();
 		iWebPolicyDelegate = null;
-	}	
+	}
 }
 
 long /*int*/ getAddress () {

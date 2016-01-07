@@ -11,22 +11,22 @@
 package org.eclipse.swt.internal.win32;
 
 public class TOOLINFO {
-	public int cbSize; 
+	public int cbSize;
 	public int uFlags;
 	/** @field cast=(HWND) */
-	public long /*int*/ hwnd; 
-	public long /*int*/ uId; 
+	public long /*int*/ hwnd;
+	public long /*int*/ uId;
 //	public RECT rect;
 	/** @field accessor=rect.left */
-	public int left; 
+	public int left;
 	/** @field accessor=rect.top */
-	public int top; 
+	public int top;
 	/** @field accessor=rect.right */
-	public int right; 
+	public int right;
 	/** @field accessor=rect.bottom */
 	public int bottom;
 	/** @field cast=(HINSTANCE) */
-	public long /*int*/ hinst; 
+	public long /*int*/ hinst;
 	/** @field cast=(LPTSTR) */
 	public long /*int*/ lpszText;
 	public long /*int*/ lParam;

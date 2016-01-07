@@ -13,7 +13,7 @@ package org.eclipse.swt.internal.theme;
 import org.eclipse.swt.graphics.*;
 
 public class ToolBarDrawData extends DrawData {
-	
+
 public ToolBarDrawData() {
 	state = new int[1];
 }

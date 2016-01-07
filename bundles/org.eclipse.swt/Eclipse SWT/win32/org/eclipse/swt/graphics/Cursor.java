@@ -21,7 +21,7 @@ import org.eclipse.swt.internal.win32.*;
  * describing one of the standard operating system provided cursors
  * or the image and mask data for the desired appearance.
  * <p>
- * Application code must explicitly invoke the <code>Cursor.dispose()</code> 
+ * Application code must explicitly invoke the <code>Cursor.dispose()</code>
  * method to release the operating system resources managed by each instance
  * when those instances are no longer required.
  * </p>
@@ -42,7 +42,7 @@ import org.eclipse.swt.internal.win32.*;
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  */
 public final class Cursor extends Resource {
-	
+
 	/**
 	 * the handle to the OS cursor resource
 	 * (Warning: This field is platform dependent)
@@ -52,13 +52,13 @@ public final class Cursor extends Resource {
 	 * within the packages provided by SWT. It is not available on all
 	 * platforms and should never be accessed from application code.
 	 * </p>
-	 * 
+	 *
 	 * @noreference This field is not intended to be referenced by clients.
 	 */
 	public long /*int*/ handle;
-	
+
 	boolean isIcon;
-	
+
 	/**
 	 * data used to create a HAND cursor.
 	 */
@@ -144,20 +144,20 @@ Cursor(Device device) {
 	super(device);
 }
 
-/**	 
+/**
  * Constructs a new cursor given a device and a style
  * constant describing the desired cursor appearance.
  * <p>
- * You must dispose the cursor when it is no longer required. 
+ * You must dispose the cursor when it is no longer required.
  * </p>
  * NOTE:
  * It is recommended to use {@link org.eclipse.swt.widgets.Display#getSystemCursor(int)}
- * instead of using this constructor. This way you can avoid the 
+ * instead of using this constructor. This way you can avoid the
  * overhead of disposing the Cursor resource.
  *
  * @param device the device on which to allocate the cursor
  * @param style the style of cursor to allocate
- * 
+ *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if device is null and there is no current device</li>
  *    <li>ERROR_INVALID_ARGUMENT - when an unknown style is specified</li>
@@ -238,7 +238,7 @@ public Cursor(Device device, int style) {
 	init();
 }
 
-/**	 
+/**
  * Constructs a new cursor given a device, image and mask
  * data describing the desired cursor appearance, and the x
  * and y coordinates of the <em>hotspot</em> (that is, the point
@@ -249,7 +249,7 @@ public Cursor(Device device, int style) {
  * must be an ImageData representing an icon that specifies both
  * color data and mask data.
  * <p>
- * You must dispose the cursor when it is no longer required. 
+ * You must dispose the cursor when it is no longer required.
  * </p>
  *
  * @param device the device on which to allocate the cursor
@@ -262,13 +262,13 @@ public Cursor(Device device, int style) {
  *    <li>ERROR_NULL_ARGUMENT - if device is null and there is no current device</li>
  *    <li>ERROR_NULL_ARGUMENT - if the source is null</li>
  *    <li>ERROR_NULL_ARGUMENT - if the mask is null and the source does not have a mask</li>
- *    <li>ERROR_INVALID_ARGUMENT - if the source and the mask are not the same 
+ *    <li>ERROR_INVALID_ARGUMENT - if the source and the mask are not the same
  *          size, or if the hotspot is outside the bounds of the image</li>
  * </ul>
  * @exception SWTError <ul>
  *    <li>ERROR_NO_HANDLES - if a handle could not be obtained for cursor creation</li>
  * </ul>
- * 
+ *
  * @see #dispose()
  */
 public Cursor(Device device, ImageData source, ImageData mask, int hotspotX, int hotspotY) {
@@ -296,7 +296,7 @@ public Cursor(Device device, ImageData source, ImageData mask, int hotspotX, int
 	/* Make sure source and mask scanline pad is 2 */
 	byte[] sourceData = ImageData.convertPad(source.data, source.width, source.height, source.depth, source.scanlinePad, 2);
 	byte[] maskData = ImageData.convertPad(mask.data, mask.width, mask.height, mask.depth, mask.scanlinePad, 2);
-	
+
 	/* Create the cursor */
 	long /*int*/ hInst = OS.GetModuleHandle(null);
 	if (OS.IsWinCE) SWT.error (SWT.ERROR_NOT_IMPLEMENTED);
@@ -305,14 +305,14 @@ public Cursor(Device device, ImageData source, ImageData mask, int hotspotX, int
 	init();
 }
 
-/**	 
+/**
  * Constructs a new cursor given a device, image data describing
  * the desired cursor appearance, and the x and y coordinates of
  * the <em>hotspot</em> (that is, the point within the area
  * covered by the cursor which is considered to be where the
  * on-screen pointer is "pointing").
  * <p>
- * You must dispose the cursor when it is no longer required. 
+ * You must dispose the cursor when it is no longer required.
  * </p>
  *
  * @param device the device on which to allocate the cursor
@@ -329,9 +329,9 @@ public Cursor(Device device, ImageData source, ImageData mask, int hotspotX, int
  * @exception SWTError <ul>
  *    <li>ERROR_NO_HANDLES - if a handle could not be obtained for cursor creation</li>
  * </ul>
- * 
+ *
  * @see #dispose()
- * 
+ *
  * @since 3.0
  */
 public Cursor(Device device, ImageData source, int hotspotX, int hotspotY) {
@@ -349,7 +349,7 @@ public Cursor(Device device, ImageData source, int hotspotX, int hotspotY) {
 		PaletteData newPalette = new PaletteData(0xFF00, 0xFF0000, 0xFF000000);
 		ImageData img = new ImageData(source.width, source.height, 32, newPalette);
 		if (palette.isDirect) {
-			ImageData.blit(ImageData.BLIT_SRC, 
+			ImageData.blit(ImageData.BLIT_SRC,
 				source.data, source.depth, source.bytesPerLine, source.getByteOrder(), 0, 0, source.width, source.height, palette.redMask, palette.greenMask, palette.blueMask,
 				ImageData.ALPHA_OPAQUE, null, 0, 0, 0,
 				img.data, img.depth, img.bytesPerLine, img.getByteOrder(), 0, 0, img.width, img.height, newPalette.redMask, newPalette.greenMask, newPalette.blueMask,
@@ -425,7 +425,7 @@ void destroy () {
 //	if (OS.GetCursor() == handle) {
 //		OS.SetCursor(OS.LoadCursor(0, OS.IDC_ARROW));
 //	}
-	
+
 	if (isIcon) {
 		OS.DestroyIcon(handle);
 	} else {
@@ -461,8 +461,8 @@ public boolean equals (Object object) {
 }
 
 /**
- * Returns an integer hash code for the receiver. Any two 
- * objects that return <code>true</code> when passed to 
+ * Returns an integer hash code for the receiver. Any two
+ * objects that return <code>true</code> when passed to
  * <code>equals</code> must return the same value for this
  * method.
  *
@@ -502,7 +502,7 @@ public String toString () {
 	return "Cursor {" + handle + "}";
 }
 
-/**	 
+/**
  * Invokes platform specific functionality to allocate a new cursor.
  * <p>
  * <b>IMPORTANT:</b> This method is <em>not</em> part of the public
@@ -515,7 +515,7 @@ public String toString () {
  * @param device the device on which to allocate the color
  * @param handle the handle for the cursor
  * @return a new cursor object containing the specified device and handle
- * 
+ *
  * @noreference This method is not intended to be referenced by clients.
  */
 public static Cursor win32_new(Device device, int handle) {

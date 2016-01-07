@@ -19,12 +19,12 @@ public class HDITEM {
 	public long /*int*/ hbm;
 	public int cchTextMax;
 	public int fmt;
-	public long /*int*/ lParam; 
+	public long /*int*/ lParam;
 	public int iImage;
 	public int iOrder;
 	/** @field flags=no_wince */
 	public int type;
 	/** @field cast=(void *),flags=no_wince */
-	public long /*int*/ pvFilter; 
+	public long /*int*/ pvFilter;
 	public static int sizeof = OS.HDITEM_sizeof ();
 }

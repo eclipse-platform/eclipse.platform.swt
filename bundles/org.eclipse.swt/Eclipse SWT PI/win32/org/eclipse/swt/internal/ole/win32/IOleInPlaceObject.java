@@ -13,7 +13,7 @@ package org.eclipse.swt.internal.ole.win32;
 import org.eclipse.swt.internal.win32.*;
 
 public class IOleInPlaceObject extends IOleWindow
-{	
+{
 public IOleInPlaceObject(long /*int*/ address) {
 	super(address);
 }

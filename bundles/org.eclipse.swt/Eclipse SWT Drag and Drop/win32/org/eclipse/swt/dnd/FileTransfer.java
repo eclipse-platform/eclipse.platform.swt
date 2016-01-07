@@ -14,15 +14,15 @@ import org.eclipse.swt.internal.ole.win32.*;
 import org.eclipse.swt.internal.win32.*;
 
 /**
- * The class <code>FileTransfer</code> provides a platform specific mechanism 
- * for converting a list of files represented as a java <code>String[]</code> to a 
- * platform specific representation of the data and vice versa.  
- * Each <code>String</code> in the array contains the absolute path for a single 
+ * The class <code>FileTransfer</code> provides a platform specific mechanism
+ * for converting a list of files represented as a java <code>String[]</code> to a
+ * platform specific representation of the data and vice versa.
+ * Each <code>String</code> in the array contains the absolute path for a single
  * file or directory.
- * 
- * <p>An example of a java <code>String[]</code> containing a list of files is shown 
+ *
+ * <p>An example of a java <code>String[]</code> containing a list of files is shown
  * below:</p>
- * 
+ *
  * <code><pre>
  *     File file1 = new File("C:\temp\file1");
  *     File file2 = new File("C:\temp\file2");
@@ -34,12 +34,12 @@ import org.eclipse.swt.internal.win32.*;
  * @see Transfer
  */
 public class FileTransfer extends ByteArrayTransfer {
-	
+
 	private static FileTransfer _instance = new FileTransfer();
 	private static final String CF_HDROP = "CF_HDROP "; //$NON-NLS-1$
 	private static final int CF_HDROPID = COM.CF_HDROP;
 	private static final String CF_HDROP_SEPARATOR = "\0"; //$NON-NLS-1$
-	
+
 private FileTransfer() {}
 
 /**
@@ -54,13 +54,13 @@ public static FileTransfer getInstance () {
 /**
  * This implementation of <code>javaToNative</code> converts a list of file names
  * represented by a java <code>String[]</code> to a platform specific representation.
- * Each <code>String</code> in the array contains the absolute path for a single 
+ * Each <code>String</code> in the array contains the absolute path for a single
  * file or directory.
- * 
+ *
  * @param object a java <code>String[]</code> containing the file names to be converted
  * @param transferData an empty <code>TransferData</code> object that will
  *  	be filled in on return with the platform specific format of the data
- * 
+ *
  * @see Transfer#nativeToJava
  */
 @Override
@@ -71,7 +71,7 @@ public void javaToNative(Object object, TransferData transferData) {
 	String[] fileNames = (String[]) object;
 	StringBuffer allFiles = new StringBuffer();
 	for (int i = 0; i < fileNames.length; i++) {
-		allFiles.append(fileNames[i]); 
+		allFiles.append(fileNames[i]);
 		allFiles.append(CF_HDROP_SEPARATOR); // each name is null terminated
 	}
 	TCHAR buffer = new TCHAR(0, allFiles.toString(), true); // there is an extra null terminator at the very end
@@ -94,20 +94,20 @@ public void javaToNative(Object object, TransferData transferData) {
 }
 
 /**
- * This implementation of <code>nativeToJava</code> converts a platform specific 
- * representation of a list of file names to a java <code>String[]</code>.  
- * Each String in the array contains the absolute path for a single file or directory. 
- * 
+ * This implementation of <code>nativeToJava</code> converts a platform specific
+ * representation of a list of file names to a java <code>String[]</code>.
+ * Each String in the array contains the absolute path for a single file or directory.
+ *
  * @param transferData the platform specific representation of the data to be converted
  * @return a java <code>String[]</code> containing a list of file names if the conversion
  * 		was successful; otherwise null
- * 
+ *
  * @see Transfer#javaToNative
  */
 @Override
 public Object nativeToJava(TransferData transferData) {
 	if (!isSupportedType(transferData) || transferData.pIDataObject == 0)  return null;
-	
+
 	// get file names from IDataObject
 	IDataObject dataObject = new IDataObject(transferData.pIDataObject);
 	dataObject.AddRef();
@@ -128,7 +128,7 @@ public Object nativeToJava(TransferData transferData) {
 	for (int i = 0; i < count; i++) {
 		// How long is the name ?
 		int size = OS.DragQueryFile(stgmedium.unionField, i, null, 0) + 1;
-		TCHAR lpszFile = new TCHAR(0, size);	
+		TCHAR lpszFile = new TCHAR(0, size);
 		// Get file name and append it to string
 		OS.DragQueryFile(stgmedium.unionField, i, lpszFile, size);
 		fileNames[i] = lpszFile.toString(0, lpszFile.strlen());

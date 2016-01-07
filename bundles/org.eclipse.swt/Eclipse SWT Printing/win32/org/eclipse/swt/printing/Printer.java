@@ -27,7 +27,7 @@ import org.eclipse.swt.internal.win32.*;
  * Alternatively, calling <code>new Printer()</code> will construct a
  * printer object for the user's default printer.
  * </p><p>
- * Application code must explicitly invoke the <code>Printer.dispose()</code> 
+ * Application code must explicitly invoke the <code>Printer.dispose()</code>
  * method to release the operating system resources managed by each instance
  * when those instances are no longer required.
  * </p>
@@ -47,7 +47,7 @@ public final class Printer extends Device {
 	 * within the packages provided by SWT. It is not available on all
 	 * platforms and should never be accessed from application code.
 	 * </p>
-	 * 
+	 *
 	 * @noreference This field is not intended to be referenced by clients.
 	 */
 	public long /*int*/ handle;
@@ -73,7 +73,7 @@ public final class Printer extends Device {
 		appName = new TCHAR(0, "windows", true); //$NON-NLS-1$
 		keyName = new TCHAR(0, "device", true); //$NON-NLS-1$
 	}
-	
+
 /**
  * Returns an array of <code>PrinterData</code> objects
  * representing all available printers.  If there are no
@@ -121,11 +121,11 @@ public static PrinterData[] getPrinterList() {
 
 /**
  * Returns a <code>PrinterData</code> object representing
- * the default printer or <code>null</code> if there is no 
+ * the default printer or <code>null</code> if there is no
  * default printer.
  *
  * @return the default printer data or null
- * 
+ *
  * @since 2.1
  */
 public static PrinterData getDefaultPrinterData() {
@@ -139,7 +139,7 @@ public static PrinterData getDefaultPrinterData() {
 	int commaIndex = 0;
 	while(buf.tcharAt(commaIndex) != ',' && commaIndex < length) commaIndex++;
 	if (commaIndex < length) {
-		deviceName = buf.toString(0, commaIndex);		
+		deviceName = buf.toString(0, commaIndex);
 	}
 	if (deviceName == null) return null;
 	String driver = ""; //$NON-NLS-1$
@@ -147,7 +147,7 @@ public static PrinterData getDefaultPrinterData() {
 		commaIndex = 0;
 		while (buf.tcharAt(commaIndex) != ',' && commaIndex < length) commaIndex++;
 		if (commaIndex < length) {
-			driver = buf.toString(0, commaIndex);	
+			driver = buf.toString(0, commaIndex);
 		}
 	}
 	return new PrinterData(driver, deviceName);
@@ -159,7 +159,7 @@ static DeviceData checkNull (PrinterData data) {
 		PrinterData defaultPrinter = getDefaultPrinterData();
 		if (defaultPrinter == null) SWT.error(SWT.ERROR_NO_HANDLES);
 		data.driver = defaultPrinter.driver;
-		data.name = defaultPrinter.name;		
+		data.name = defaultPrinter.name;
 	}
 	return data;
 }
@@ -167,7 +167,7 @@ static DeviceData checkNull (PrinterData data) {
 /**
  * Constructs a new printer representing the default printer.
  * <p>
- * Note: You must dispose the printer when it is no longer required. 
+ * Note: You must dispose the printer when it is no longer required.
  * </p>
  *
  * @exception SWTError <ul>
@@ -185,7 +185,7 @@ public Printer() {
  * object representing the desired printer. If the argument
  * is null, then the default printer will be used.
  * <p>
- * Note: You must dispose the printer when it is no longer required. 
+ * Note: You must dispose the printer when it is no longer required.
  * </p>
  *
  * @param data the printer data for the specified printer, or null to use the default printer
@@ -203,7 +203,7 @@ public Printer(PrinterData data) {
 	super(checkNull(data));
 }
 
-/**	 
+/**
  * Creates the printer handle.
  * This method is called internally by the instance creation
  * mechanism of the <code>Device</code> class.
@@ -240,7 +240,7 @@ protected void create(DeviceData deviceData) {
 			}
 		}
 	}
-	
+
 	/* Initialize DEVMODE struct fields from the printerData. */
 	if (lpInitData != 0) {
 		DEVMODE devmode = OS.IsUnicode ? (DEVMODE)new DEVMODEW () : new DEVMODEA ();
@@ -270,7 +270,7 @@ protected void create(DeviceData deviceData) {
 	if (handle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 }
 
-/**	 
+/**
  * Invokes platform specific functionality to allocate a new GC handle.
  * <p>
  * <b>IMPORTANT:</b> This method is <em>not</em> part of the public
@@ -280,9 +280,9 @@ protected void create(DeviceData deviceData) {
  * application code.
  * </p>
  *
- * @param data the platform specific GC data 
+ * @param data the platform specific GC data
  * @return the platform specific GC handle
- * 
+ *
  * @noreference This method is not intended to be referenced by clients.
  */
 @Override
@@ -303,7 +303,7 @@ public long /*int*/ internal_new_GC(GCData data) {
 	return handle;
 }
 
-/**	 
+/**
  * Invokes platform specific functionality to dispose a GC handle.
  * <p>
  * <b>IMPORTANT:</b> This method is <em>not</em> part of the public
@@ -314,8 +314,8 @@ public long /*int*/ internal_new_GC(GCData data) {
  * </p>
  *
  * @param hDC the platform specific GC handle
- * @param data the platform specific GC data 
- * 
+ * @param data the platform specific GC data
+ *
  * @noreference This method is not intended to be referenced by clients.
  */
 @Override
@@ -332,7 +332,7 @@ public void internal_dispose_GC(long /*int*/ hDC, GCData data) {
  * endJob. Calling startPage, endPage, or endJob before startJob
  * will result in undefined behavior.
  * </p>
- * 
+ *
  * @param jobName the name of the print job to start
  * @return true if the job started successfully and false otherwise.
  *
@@ -394,7 +394,7 @@ public void endJob() {
 }
 
 /**
- * Cancels a print job in progress. 
+ * Cancels a print job in progress.
  *
  * @exception SWTException <ul>
  *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
@@ -412,7 +412,7 @@ public void cancelJob() {
  * After calling startJob, this method may be called any number of times
  * along with a matching endPage.
  * </p>
- * 
+ *
  * @return true if the page started successfully and false otherwise.
  *
  * @exception SWTException <ul>
@@ -495,7 +495,7 @@ public Rectangle getBounds() {
  * For a printer, this is the size of the printable area
  * of the page, in pixels.
  * </p>
- * 
+ *
  * @return the client area
  *
  * @exception SWTException <ul>
@@ -533,7 +533,7 @@ public Rectangle getClientArea() {
  * 		<li>The bottom trim height is (y + height) pixels</li>
  * </ul>
  * </p>
- * 
+ *
  * @param x the x coordinate of the client area
  * @param y the y coordinate of the client area
  * @param width the width of the client area
@@ -564,7 +564,7 @@ public Rectangle computeTrim(int x, int y, int width, int height) {
 /**
  * Returns a <code>PrinterData</code> object representing the
  * target printer for this print job.
- * 
+ *
  * @return a PrinterData object describing the receiver
  */
 public PrinterData getPrinterData() {
@@ -583,7 +583,7 @@ protected void checkDevice() {
 	if (handle == 0) SWT.error(SWT.ERROR_DEVICE_DISPOSED);
 }
 
-/**	 
+/**
  * Releases any internal state prior to destroying this printer.
  * This method is called internally by the dispose
  * mechanism of the <code>Device</code> class.
@@ -594,7 +594,7 @@ protected void release() {
 	data = null;
 }
 
-/**	 
+/**
  * Destroys the printer handle.
  * This method is called internally by the dispose
  * mechanism of the <code>Device</code> class.

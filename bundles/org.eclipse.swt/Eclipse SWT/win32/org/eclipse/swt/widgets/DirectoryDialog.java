@@ -27,7 +27,7 @@ import org.eclipse.swt.*;
  * <p>
  * IMPORTANT: This class is <em>not</em> intended to be subclassed.
  * </p>
- * 
+ *
  * @see <a href="http://www.eclipse.org/swt/snippets/#directorydialog">DirectoryDialog snippets</a>
  * @see <a href="http://www.eclipse.org/swt/examples.php">SWT Example: ControlExample, Dialog tab</a>
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
@@ -36,7 +36,7 @@ import org.eclipse.swt.*;
 public class DirectoryDialog extends Dialog {
 	String message = "", filterPath = "";  //$NON-NLS-1$//$NON-NLS-2$
 	String directoryPath;
-	
+
 /**
  * Constructs a new instance of this class given only its parent.
  *
@@ -60,7 +60,7 @@ public DirectoryDialog (Shell parent) {
  * <p>
  * The style value is either one of the style constants defined in
  * class <code>SWT</code> which is applicable to instances of this
- * class, or must be built by <em>bitwise OR</em>'ing together 
+ * class, or must be built by <em>bitwise OR</em>'ing together
  * (that is, using the <code>int</code> "|" operator) two or more
  * of those <code>SWT</code> style constants. The class description
  * lists the style constants that are applicable to the class.
@@ -115,7 +115,7 @@ long /*int*/ BrowseCallbackProc (long /*int*/ hwnd, long /*int*/ uMsg, long /*in
  * the directories it shows.
  *
  * @return the filter path
- * 
+ *
  * @see #setFilterPath
  */
 public String getFilterPath () {
@@ -147,9 +147,9 @@ public String getMessage () {
  */
 public String open () {
 	if (OS.IsWinCE) error (SWT.ERROR_NOT_IMPLEMENTED);
-	
+
 	long /*int*/ hHeap = OS.GetProcessHeap ();
-	
+
 	/* Get the owner HWND for the dialog */
 	long /*int*/ hwndOwner = 0;
 	if (parent != null) hwndOwner = parent.handle;
@@ -180,7 +180,7 @@ public String open () {
 	Callback callback = new Callback (this, "BrowseCallbackProc", 4); //$NON-NLS-1$
 	long /*int*/ lpfn = callback.getAddress ();
 	if (lpfn == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
-	
+
 	/* Make the parent shell be temporary modal */
 	Dialog oldModal = null;
 	Display display = parent.getDisplay ();
@@ -188,7 +188,7 @@ public String open () {
 		oldModal = display.getModalDialog ();
 		display.setModalDialog (this);
 	}
-	
+
 	directoryPath = null;
 	BROWSEINFO lpbi = new BROWSEINFO ();
 	lpbi.hwndOwner = hwndOwner;
@@ -201,19 +201,19 @@ public String open () {
 	* Please insert a disk into \Device\Harddisk0\DR0".  This is possibly
 	* caused by SHBrowseForFolder() calling internally GetVolumeInformation().
 	* MSDN for GetVolumeInformation() says:
-	* 
+	*
 	* "If you are attempting to obtain information about a floppy drive
-	* that does not have a floppy disk or a CD-ROM drive that does not 
-	* have a compact disc, the system displays a message box asking the 
-	* user to insert a floppy disk or a compact disc, respectively. 
-	* To prevent the system from displaying this message box, call the 
+	* that does not have a floppy disk or a CD-ROM drive that does not
+	* have a compact disc, the system displays a message box asking the
+	* user to insert a floppy disk or a compact disc, respectively.
+	* To prevent the system from displaying this message box, call the
 	* SetErrorMode function with SEM_FAILCRITICALERRORS."
-	* 
+	*
 	* The fix is to save and restore the error mode using SetErrorMode()
 	* with the SEM_FAILCRITICALERRORS flag around SHBrowseForFolder().
 	*/
 	int oldErrorMode = OS.SetErrorMode (OS.SEM_FAILCRITICALERRORS);
-	
+
 	display.sendPreExternalEventDispatchEvent ();
 	/*
 	* Bug in Windows.  When a WH_MSGFILTER hook is used to run code
@@ -222,7 +222,7 @@ public String open () {
 	* for static controls seemed to make the problem happen.
 	* The fix is to disable async messages while the directory
 	* dialog is open.
-	* 
+	*
 	* NOTE:  This only happens in versions of the comctl32.dll
 	* earlier than 6.0.
 	*/
@@ -232,12 +232,12 @@ public String open () {
 	if (OS.COMCTL32_MAJOR < 6) display.runMessages = oldRunMessages;
 	display.sendPostExternalEventDispatchEvent ();
 	OS.SetErrorMode (oldErrorMode);
-	
+
 	/* Clear the temporary dialog modal parent */
 	if ((style & (SWT.APPLICATION_MODAL | SWT.SYSTEM_MODAL)) != 0) {
 		display.setModalDialog (oldModal);
 	}
-	
+
 	boolean success = lpItemIdList != 0;
 	if (success) {
 		/* Use the character encoding for the default locale */
@@ -250,7 +250,7 @@ public String open () {
 
 	/* Free the BrowseCallbackProc */
 	callback.dispose ();
-	
+
 	/* Free the OS memory */
 	if (lpszTitle != 0) OS.HeapFree (hHeap, 0, lpszTitle);
 
@@ -260,7 +260,7 @@ public String open () {
 		/* void Free (struct IMalloc *this, void *pv); */
 		OS.VtblCall (5, ppMalloc [0], lpItemIdList);
 	}
-	
+
 	/*
 	* This code is intentionally commented.  On some
 	* platforms, the owner window is repainted right
@@ -268,7 +268,7 @@ public String open () {
 	* is currently unspecified.
 	*/
 //	if (hwndOwner != 0) OS.UpdateWindow (hwndOwner);
-	
+
 	/* Return the directory path */
 	if (!success) return null;
 	return directoryPath;
@@ -297,7 +297,7 @@ public void setFilterPath (String string) {
  * visible on the dialog while it is open.
  *
  * @param string the message
- * 
+ *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the string is null</li>
  * </ul>

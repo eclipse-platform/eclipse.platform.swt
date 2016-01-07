@@ -18,9 +18,9 @@ import org.eclipse.swt.events.*;
 
 /**
  * Instances of this class are selectable user interface
- * objects that represent a range of positive, numeric values. 
+ * objects that represent a range of positive, numeric values.
  * <p>
- * At any given moment, a given slider will have a 
+ * At any given moment, a given slider will have a
  * single 'selection' that is considered to be its
  * value, which is constrained to be within the range of
  * values the slider represents (that is, between its
@@ -85,7 +85,7 @@ public class Slider extends Control {
  * <p>
  * The style value is either one of the style constants defined in
  * class <code>SWT</code> which is applicable to instances of this
- * class, or must be built by <em>bitwise OR</em>'ing together 
+ * class, or must be built by <em>bitwise OR</em>'ing together
  * (that is, using the <code>int</code> "|" operator) two or more
  * of those <code>SWT</code> style constants. The class description
  * lists the style constants that are applicable to the class.
@@ -165,7 +165,7 @@ long /*int*/ callWindowProc (long /*int*/ hwnd, int msg, long /*int*/ wParam, lo
 	*/
 	switch (msg) {
 		case OS.WM_LBUTTONDOWN:
-		case OS.WM_LBUTTONDBLCLK: 
+		case OS.WM_LBUTTONDBLCLK:
 			display.runDeferredEvents ();
 	}
 	return OS.CallWindowProc (ScrollBarProc, hwnd, msg, wParam, lParam);
@@ -374,7 +374,7 @@ public void removeSelectionListener (SelectionListener listener) {
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (eventTable == null) return;
 	eventTable.unhook (SWT.Selection, listener);
-	eventTable.unhook (SWT.DefaultSelection,listener);	
+	eventTable.unhook (SWT.DefaultSelection,listener);
 }
 
 @Override
@@ -396,7 +396,7 @@ void setBounds (int x, int y, int width, int height, int flags) {
 /**
  * Sets the amount that the receiver's value will be
  * modified by when the up/down (or right/left) arrows
- * are pressed to the argument, which must be at least 
+ * are pressed to the argument, which must be at least
  * one.
  *
  * @param value the new increment (must be greater than zero)
@@ -498,7 +498,7 @@ boolean SetScrollInfo (long /*int*/ hwnd, int flags, SCROLLINFO info, boolean fR
 			OS.EnableScrollBar (handle, OS.SB_CTL, OS.ESB_DISABLE_BOTH);
 		}
 	}
-	
+
 	/*
 	* Bug in Windows.  If the thumb is resized when it has focus,
 	* the flashing cursor that is used to show that the scroll bar
@@ -536,11 +536,11 @@ public void setSelection (int value) {
 }
 
 /**
- * Sets the thumb value. The thumb value should be used to represent 
+ * Sets the thumb value. The thumb value should be used to represent
  * the size of the visual portion of the current range. This value is
  * usually the same as the page increment value.
  * <p>
- * This new value will be ignored if it is less than one, and will be 
+ * This new value will be ignored if it is less than one, and will be
  * clamped if it exceeds the receiver's current range.
  * </p>
  *
@@ -569,7 +569,7 @@ public void setThumb (int value) {
  * value, thumb, increment and page increment all at once.
  * <p>
  * Note: This is similar to setting the values individually
- * using the appropriate methods, but may be implemented in a 
+ * using the appropriate methods, but may be implemented in a
  * more efficient fashion on some platforms.
  * </p>
  *
@@ -609,7 +609,7 @@ public void setValues (int selection, int minimum, int maximum, int thumb, int i
 int widgetExtStyle () {
 	/*
 	* Bug in Windows.  If a scroll bar control is given a border,
-	* dragging the scroll bar thumb eats away parts of the border 
+	* dragging the scroll bar thumb eats away parts of the border
 	* while the thumb is dragged.  The fix is to clear border for
 	* all scroll bars.
 	*/
@@ -623,7 +623,7 @@ int widgetStyle () {
 	int bits = super.widgetStyle () | OS.WS_TABSTOP;
 	/*
 	* Bug in Windows.  If a scroll bar control is given a border,
-	* dragging the scroll bar thumb eats away parts of the border 
+	* dragging the scroll bar thumb eats away parts of the border
 	* while the thumb is dragged.  The fix is to clear WS_BORDER.
 	*/
 	if ((style & SWT.BORDER) != 0) bits &= ~OS.WS_BORDER;
@@ -651,13 +651,13 @@ LRESULT WM_KEYDOWN (long /*int*/ wParam, long /*int*/ lParam) {
  	* the native control does not correctly swap the arrow keys.
  	* The fix is to swap them before calling the scroll bar window
  	* proc.
- 	* 
+ 	*
  	* NOTE: This fix is not ideal.  It breaks when the bug is fixed
  	* in the operating system.
  	*/
 	if ((style & SWT.MIRRORED) != 0) {
 	 	switch ((int)/*64*/wParam) {
-	 		case OS.VK_LEFT: 
+	 		case OS.VK_LEFT:
 			case OS.VK_RIGHT: {
 				int key = wParam == OS.VK_LEFT ? OS.VK_RIGHT : OS.VK_LEFT;
 				long /*int*/ code = callWindowProc (handle, OS.WM_KEYDOWN, key, lParam);
@@ -667,7 +667,7 @@ LRESULT WM_KEYDOWN (long /*int*/ wParam, long /*int*/ lParam) {
 	}
  	return result;
 }
- 
+
 @Override
 LRESULT WM_LBUTTONDBLCLK (long /*int*/ wParam, long /*int*/ lParam) {
 	/*
@@ -680,12 +680,12 @@ LRESULT WM_LBUTTONDBLCLK (long /*int*/ wParam, long /*int*/ lParam) {
 	*/
 	int oldBits = OS.GetWindowLong (handle, OS.GWL_STYLE);
 	int newBits = oldBits & ~OS.WS_TABSTOP;
-	OS.SetWindowLong (handle, OS.GWL_STYLE, newBits);	
+	OS.SetWindowLong (handle, OS.GWL_STYLE, newBits);
 	LRESULT result = super.WM_LBUTTONDBLCLK (wParam, lParam);
 	if (isDisposed ()) return LRESULT.ZERO;
 	OS.SetWindowLong (handle, OS.GWL_STYLE, oldBits);
 	if (result == LRESULT.ZERO) return result;
-	
+
 	/*
 	* Feature in Windows.  Windows runs a modal message loop
 	* when the user drags a scroll bar that terminates when
@@ -726,7 +726,7 @@ LRESULT WM_LBUTTONDOWN (long /*int*/ wParam, long /*int*/ lParam) {
 	* it sees an WM_LBUTTONUP.  Unfortunately the WM_LBUTTONUP
 	* is consumed.  The fix is to send a fake mouse up and
 	* release the automatic capture.
-	*/	
+	*/
 	if (!OS.IsWinCE) {
 		if (OS.GetCapture () == handle) OS.ReleaseCapture ();
 		if (!sendMouseEvent (SWT.MouseUp, 1, handle, OS.WM_LBUTTONUP, wParam, lParam)) {
@@ -791,7 +791,7 @@ LRESULT wmScrollChild (long /*int*/ wParam, long /*int*/ lParam) {
 			break;
 	}
 	OS.SetScrollInfo (handle, OS.SB_CTL, info, true);
-	
+
 	/*
 	* Feature in Windows.  Windows runs a modal message
 	* loop when the user drags a scroll bar.  This means

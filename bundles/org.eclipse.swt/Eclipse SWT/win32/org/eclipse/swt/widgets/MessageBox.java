@@ -39,7 +39,7 @@ import org.eclipse.swt.*;
  */
 public  class MessageBox extends Dialog {
 	String message = "";
-	
+
 /**
  * Constructs a new instance of this class given only its parent.
  *
@@ -63,7 +63,7 @@ public MessageBox (Shell parent) {
  * <p>
  * The style value is either one of the style constants defined in
  * class <code>SWT</code> which is applicable to instances of this
- * class, or must be built by <em>bitwise OR</em>'ing together 
+ * class, or must be built by <em>bitwise OR</em>'ing together
  * (that is, using the <code>int</code> "|" operator) two or more
  * of those <code>SWT</code> style constants. The class description
  * lists the style constants that are applicable to the class.
@@ -79,7 +79,7 @@ public MessageBox (Shell parent) {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the parent</li>
  *    <li>ERROR_INVALID_SUBCLASS - if this class is not an allowed subclass</li>
  * </ul>
- * 
+ *
  * @see SWT#ICON_ERROR
  * @see SWT#ICON_INFORMATION
  * @see SWT#ICON_QUESTION
@@ -169,7 +169,7 @@ public int open () {
 			bits |= OS.MB_RTLREADING | OS.MB_RIGHT;
 		}
 	}
-	
+
 	/*
 	* Feature in Windows.  System modal is not supported
 	* on Windows 95 and NT.  The fix is to convert system
@@ -188,7 +188,7 @@ public int open () {
 	* If the parent is not NULL, MB_TASKMODAL behaves the
 	* same as MB_APPLMODAL.  The fix to set the parent HWND
 	* anyway and not rely on MB_MODAL to work by making the
-	* parent be temporarily modal. 
+	* parent be temporarily modal.
 	*/
 	long /*int*/ hwndOwner = parent != null ? parent.handle : 0;
 	Display display = parent != null ? parent.getDisplay (): Display.getCurrent ();
@@ -205,12 +205,12 @@ public int open () {
 	TCHAR buffer2 = new TCHAR (0, title, true);
 	int code = OS.MessageBox (hwndOwner, buffer1, buffer2, bits);
 	display.sendPostExternalEventDispatchEvent ();
-	
+
 	/* Clear the temporarily dialog modal parent */
 	if ((bits & OS.MB_TASKMODAL) != 0) {
 		display.setModalDialog (oldModal);
 	}
-	
+
 	/*
 	* This code is intentionally commented.  On some
 	* platforms, the owner window is repainted right
@@ -218,7 +218,7 @@ public int open () {
 	* is currently unspecified.
 	*/
 //	if (hwndOwner != 0) OS.UpdateWindow (hwndOwner);
-	
+
 	/* Compute and return the result */
 	if (code != 0) {
 		int type = bits & 0x0F;
@@ -252,7 +252,7 @@ public int open () {
  * visible on the dialog while it is open.
  *
  * @param string the message
- * 
+ *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the string is null</li>
  * </ul>

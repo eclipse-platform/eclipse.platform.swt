@@ -18,15 +18,15 @@ public int EnumFormatEtc(int dwDirection, long /*int*/[] ppenumFormatetc) {
 	return COM.VtblCall(8, address, dwDirection, ppenumFormatetc);
 }
 public int GetData(FORMATETC pFormatetc, STGMEDIUM pmedium) {
-	//Called by a data consumer to obtain data from a source data object. 
-	//The GetData method renders the data described in the specified FORMATETC 
-	//structure and transfers it through the specified STGMEDIUM structure. 
+	//Called by a data consumer to obtain data from a source data object.
+	//The GetData method renders the data described in the specified FORMATETC
+	//structure and transfers it through the specified STGMEDIUM structure.
 	//The caller then assumes responsibility for releasing the STGMEDIUM structure.
 	return COM.VtblCall(3, address, pFormatetc, pmedium);
 }
 public int GetDataHere(FORMATETC pFormatetc, STGMEDIUM pmedium) {
-	//Called by a data consumer to obtain data from a source data object. 
-	//This method differs from the GetData method in that the caller must 
+	//Called by a data consumer to obtain data from a source data object.
+	//This method differs from the GetData method in that the caller must
 	//allocate and free the specified storage medium.
 	return COM.VtblCall(4, address, pFormatetc, pmedium);
 }

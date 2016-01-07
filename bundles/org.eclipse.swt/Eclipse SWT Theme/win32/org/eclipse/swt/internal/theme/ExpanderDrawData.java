@@ -15,7 +15,7 @@ import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.win32.*;
 
 public class ExpanderDrawData extends DrawData {
-	
+
 public ExpanderDrawData() {
 	state = new int[1];
 }
@@ -33,7 +33,7 @@ void draw(Theme theme, GC gc, Rectangle bounds) {
 		rect.right = rect.left + size.cx;
 		rect.top = bounds.y;
 		rect.bottom = rect.top + size.cy;
-		OS.DrawThemeBackground (hTheme, gc.handle, OS.TVP_GLYPH, iStateId, rect, null);		
+		OS.DrawThemeBackground (hTheme, gc.handle, OS.TVP_GLYPH, iStateId, rect, null);
 		OS.CloseThemeData (hTheme);
 	}
 }
@@ -48,7 +48,7 @@ int[] getPartId(int part) {
 	int iPartId = OS.TVP_GLYPH;
 	int iStateId = OS.GLPS_CLOSED;
 	if ((this.style & SWT.DOWN) != 0) iStateId = OS.GLPS_OPENED;
-	return new int[]{iPartId, iStateId};	
+	return new int[]{iPartId, iStateId};
 }
 
 @Override

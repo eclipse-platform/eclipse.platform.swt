@@ -11,7 +11,7 @@
 package org.eclipse.swt.internal.ole.win32;
 
 public final class TYPEATTR {
-//	GUID guid 
+//	GUID guid
 	/** @field accessor=guid.Data1 */
 	public int guid_Data1;
 	/** @field accessor=guid.Data2 */

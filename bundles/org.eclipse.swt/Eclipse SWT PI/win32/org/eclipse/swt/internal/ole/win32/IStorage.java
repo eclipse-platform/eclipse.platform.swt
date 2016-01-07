@@ -32,28 +32,28 @@ public int CopyTo(
 }
 public int CreateStorage(
 	String pwcsName, //Pointer to the name of the new storage object
-	int grfMode,     //Access mode for the new storage object  
+	int grfMode,     //Access mode for the new storage object
 	int reserved1,   //Reserved; must be zero
 	int reserved2,   //Reserved; must be zero
 	long /*int*/[] ppStg      //Pointer to new storage object
 ){
-	
+
 	// create a null terminated array of char
 	char[] buffer = null;
 	if (pwcsName != null) {
 		buffer = (pwcsName+"\0").toCharArray();
 	}
-	
+
 	return COM.VtblCall(5, address, buffer, grfMode, reserved1, reserved2, ppStg);
 }
 public int CreateStream(
 	String pwcsName, //Pointer to the name of the new stream
-	int grfMode,     //Access mode for the new stream  
-	int reserved1,   //Reserved; must be zero  
-	int reserved2,   //Reserved; must be zero  
+	int grfMode,     //Access mode for the new stream
+	int reserved1,   //Reserved; must be zero
+	int reserved2,   //Reserved; must be zero
 	long /*int*/[] ppStm      //Pointer to new stream object
 ){
-  
+
 	// create a null terminated array of char
 	char[] buffer = null;
 	if (pwcsName != null) {
@@ -71,17 +71,17 @@ public int DestroyElement(String pwcsName) {
 	}
 	return COM.VtblCall(12, address, buffer);
 }
-public int EnumElements( 
+public int EnumElements(
 	int reserved1, //Reserved; must be zero
 	long /*int*/ reserved2, //Reserved; must be NULL
 	int reserved3, //Reserved; must be zero
 	long /*int*/[] ppenum   //Pointer to output variable that
-				   // receives the IEnumSTATSTG interface 
+				   // receives the IEnumSTATSTG interface
 ){
 	return COM.VtblCall(11, address, reserved1, reserved2, reserved3, ppenum);
 }
 public int OpenStorage(
-	String pwcsName,     //Pointer to the name of the                           
+	String pwcsName,     //Pointer to the name of the
 	                     // storage object to open
 	long /*int*/ pstgPriority,    //Must be NULL.
 	int grfMode,         //Access mode for the new storage object
@@ -104,13 +104,13 @@ public int OpenStorage(
 }
 public int OpenStream(
 	String pwcsName, //Pointer to name of stream to open
-	long /*int*/ reserved1,   //Reserved; must be NULL  
-	int grfMode,     //Access mode for the new stream  
+	long /*int*/ reserved1,   //Reserved; must be NULL
+	int grfMode,     //Access mode for the new stream
 	int reserved2,   //Reserved; must be zero
 	long /*int*/[] ppStm      //Pointer to output variable
 	                 // that receives the IStream interface pointer
 ) {
-  
+
 	// create a null terminated array of char
 	char[] buffer = null;
 	if (pwcsName != null) {

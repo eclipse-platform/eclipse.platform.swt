@@ -21,7 +21,7 @@ public class TabFolderDrawData extends DrawData {
 	public int selectedX;
 	public int selectedWidth;
 	public int spacing;
-	
+
 public TabFolderDrawData() {
 	state = new int[1];
 	if (SWT.getPlatform().equals("gtk")) {
@@ -73,7 +73,7 @@ int[] getPartId(int part) {
 		if ((state & DrawData.HOT) != 0) iStateId = OS.TIS_HOT;
 		if ((state & DrawData.SELECTED) != 0) iStateId = OS.TIS_SELECTED;
 	}
-	return new int[]{iPartId, iStateId};	
+	return new int[]{iPartId, iStateId};
 }
 
 @Override

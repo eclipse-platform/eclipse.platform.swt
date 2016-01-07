@@ -14,10 +14,10 @@ import org.eclipse.swt.*;
 import org.eclipse.swt.internal.gdip.*;
 
 /**
- * Instances of this class represent transformation matrices for 
+ * Instances of this class represent transformation matrices for
  * points expressed as (x, y) pairs of floating point numbers.
  * <p>
- * Application code must explicitly invoke the <code>Transform.dispose()</code> 
+ * Application code must explicitly invoke the <code>Transform.dispose()</code>
  * method to release the operating system resources managed by each instance
  * when those instances are no longer required.
  * </p>
@@ -25,10 +25,10 @@ import org.eclipse.swt.internal.gdip.*;
  * This class requires the operating system's advanced graphics subsystem
  * which may not be available on some platforms.
  * </p>
- * 
+ *
  * @see <a href="http://www.eclipse.org/swt/examples.php">SWT Example: GraphicsExample</a>
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
- * 
+ *
  * @since 3.1
  */
 public class Transform extends Resource {
@@ -42,11 +42,11 @@ public class Transform extends Resource {
 	 * within the packages provided by SWT. It is not available on all
 	 * platforms and should never be accessed from application code.
 	 * </p>
-	 * 
+	 *
 	 * @noreference This field is not intended to be referenced by clients.
 	 */
 	public long /*int*/ handle;
-	
+
 /**
  * Constructs a new identity Transform.
  * <p>
@@ -55,11 +55,11 @@ public class Transform extends Resource {
  * platforms.
  * </p>
  * <p>
- * You must dispose the transform when it is no longer required. 
+ * You must dispose the transform when it is no longer required.
  * </p>
- * 
+ *
  * @param device the device on which to allocate the Transform
- * 
+ *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if device is null and there is no current device</li>
  * </ul>
@@ -69,7 +69,7 @@ public class Transform extends Resource {
  * @exception SWTError <ul>
  *    <li>ERROR_NO_HANDLES if a handle for the Transform could not be obtained</li>
  * </ul>
- * 
+ *
  * @see #dispose()
  */
 public Transform (Device device) {
@@ -77,7 +77,7 @@ public Transform (Device device) {
 }
 
 /**
- * Constructs a new Transform given an array of elements that represent the 
+ * Constructs a new Transform given an array of elements that represent the
  * matrix that describes the transformation.
  * <p>
  * This operation requires the operating system's advanced
@@ -85,12 +85,12 @@ public Transform (Device device) {
  * platforms.
  * </p>
  * <p>
- * You must dispose the transform when it is no longer required. 
+ * You must dispose the transform when it is no longer required.
  * </p>
- * 
+ *
  * @param device the device on which to allocate the Transform
  * @param elements an array of floats that describe the transformation matrix
- * 
+ *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if device is null and there is no current device, or the elements array is null</li>
  *    <li>ERROR_INVALID_ARGUMENT - if the elements array is too small to hold the matrix values</li>
@@ -101,7 +101,7 @@ public Transform (Device device) {
  * @exception SWTError <ul>
  *    <li>ERROR_NO_HANDLES if a handle for the Transform could not be obtained</li>
  * </ul>
- * 
+ *
  * @see #dispose()
  */
 public Transform(Device device, float[] elements) {
@@ -109,7 +109,7 @@ public Transform(Device device, float[] elements) {
 }
 
 /**
- * Constructs a new Transform given all of the elements that represent the 
+ * Constructs a new Transform given all of the elements that represent the
  * matrix that describes the transformation.
  * <p>
  * This operation requires the operating system's advanced
@@ -117,9 +117,9 @@ public Transform(Device device, float[] elements) {
  * platforms.
  * </p>
  * <p>
- * You must dispose the transform when it is no longer required. 
+ * You must dispose the transform when it is no longer required.
  * </p>
- * 
+ *
  * @param device the device on which to allocate the Transform
  * @param m11 the first element of the first row of the matrix
  * @param m12 the second element of the first row of the matrix
@@ -127,7 +127,7 @@ public Transform(Device device, float[] elements) {
  * @param m22 the second element of the second row of the matrix
  * @param dx the third element of the first row of the matrix
  * @param dy the third element of the second row of the matrix
- * 
+ *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if device is null and there is no current device</li>
  * </ul>
@@ -137,7 +137,7 @@ public Transform(Device device, float[] elements) {
  * @exception SWTError <ul>
  *    <li>ERROR_NO_HANDLES if a handle for the Transform could not be obtained</li>
  * </ul>
- * 
+ *
  * @see #dispose()
  */
 public Transform (Device device, float m11, float m12, float m21, float m22, float dx, float dy) {
@@ -183,12 +183,12 @@ public void getElements(float[] elements) {
 
 /**
  * Modifies the receiver such that the matrix it represents becomes the
- * identity matrix. 
+ * identity matrix.
  *
  * @exception SWTException <ul>
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
- * 
+ *
  * @since 3.4
  */
 public void identity() {
@@ -198,7 +198,7 @@ public void identity() {
 
 /**
  * Modifies the receiver such that the matrix it represents becomes
- * the mathematical inverse of the matrix it previously represented. 
+ * the mathematical inverse of the matrix it previously represented.
  *
  * @exception SWTException <ul>
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
@@ -239,10 +239,10 @@ public boolean isIdentity() {
 /**
  * Modifies the receiver such that the matrix it represents becomes the
  * the result of multiplying the matrix it previously represented by the
- * argument. 
+ * argument.
  *
  * @param matrix the matrix to multiply the receiver by
- * 
+ *
  * @exception SWTException <ul>
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
@@ -266,7 +266,7 @@ public void multiply(Transform matrix) {
  * while a negative value indicates a counter-clockwise rotation.
  *
  * @param angle the angle to rotate the transformation by
- * 
+ *
  * @exception SWTException <ul>
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
@@ -279,10 +279,10 @@ public void rotate(float angle) {
 /**
  * Modifies the receiver so that it represents a transformation that is
  * equivalent to its previous transformation scaled by (scaleX, scaleY).
- * 
+ *
  * @param scaleX the amount to scale in the X direction
  * @param scaleY the amount to scale in the Y direction
- * 
+ *
  * @exception SWTException <ul>
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
@@ -295,14 +295,14 @@ public void scale(float scaleX, float scaleY) {
 /**
  * Modifies the receiver to represent a new transformation given all of
  * the elements that represent the matrix that describes that transformation.
- * 
+ *
  * @param m11 the first element of the first row of the matrix
  * @param m12 the second element of the first row of the matrix
  * @param m21 the first element of the second row of the matrix
  * @param m22 the second element of the second row of the matrix
  * @param dx the third element of the first row of the matrix
  * @param dy the third element of the second row of the matrix
- * 
+ *
  * @exception SWTException <ul>
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
@@ -315,14 +315,14 @@ public void setElements(float m11, float m12, float m21, float m22, float dx, fl
 /**
  * Modifies the receiver so that it represents a transformation that is
  * equivalent to its previous transformation sheared by (shearX, shearY).
- * 
+ *
  * @param shearX the shear factor in the X direction
  * @param shearY the shear factor in the Y direction
- * 
+ *
  * @exception SWTException <ul>
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
- * 
+ *
  * @since 3.4
  */
 public void shear(float shearX, float shearY) {
@@ -330,7 +330,7 @@ public void shear(float shearX, float shearY) {
 	Gdip.Matrix_Shear(handle, shearX, shearY, Gdip.MatrixOrderPrepend);
 }
 
-/** 
+/**
  * Given an array containing points described by alternating x and y values,
  * modify that array such that each point has been replaced with the result of
  * applying the transformation represented by the receiver to that point.
@@ -339,7 +339,7 @@ public void shear(float shearX, float shearY) {
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the point array is null</li>
- * </ul>	
+ * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
@@ -353,10 +353,10 @@ public void transform(float[] pointArray) {
 /**
  * Modifies the receiver so that it represents a transformation that is
  * equivalent to its previous transformation translated by (offsetX, offsetY).
- * 
+ *
  * @param offsetX the distance to translate in the X direction
  * @param offsetY the distance to translate in the Y direction
- * 
+ *
  * @exception SWTException <ul>
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>

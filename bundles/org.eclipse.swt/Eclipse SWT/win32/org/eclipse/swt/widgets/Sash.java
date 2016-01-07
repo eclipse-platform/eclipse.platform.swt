@@ -10,7 +10,7 @@
  *******************************************************************************/
 package org.eclipse.swt.widgets;
 
- 
+
 import org.eclipse.swt.internal.win32.*;
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
@@ -49,7 +49,7 @@ public class Sash extends Control {
  * <p>
  * The style value is either one of the style constants defined in
  * class <code>SWT</code> which is applicable to instances of this
- * class, or must be built by <em>bitwise OR</em>'ing together 
+ * class, or must be built by <em>bitwise OR</em>'ing together
  * (that is, using the <code>int</code> "|" operator) two or more
  * of those <code>SWT</code> style constants. The class description
  * lists the style constants that are applicable to the class.
@@ -178,7 +178,7 @@ public void removeSelectionListener(SelectionListener listener) {
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (eventTable == null) return;
 	eventTable.unhook (SWT.Selection, listener);
-	eventTable.unhook (SWT.DefaultSelection,listener);	
+	eventTable.unhook (SWT.DefaultSelection,listener);
 }
 
 @Override
@@ -207,7 +207,7 @@ LRESULT WM_KEYDOWN (long /*int*/ wParam, long /*int*/ lParam) {
 		case OS.VK_RIGHT:
 		case OS.VK_UP:
 		case OS.VK_DOWN:
-			
+
 			/* Calculate the new x or y position */
 			if (OS.GetKeyState (OS.VK_LBUTTON) < 0) return result;
 			int step = OS.GetKeyState (OS.VK_CONTROL) < 0 ? INCREMENT : PAGE_INCREMENT;
@@ -233,7 +233,7 @@ LRESULT WM_KEYDOWN (long /*int*/ wParam, long /*int*/ lParam) {
 			int newX = rect.left, newY = rect.top;
 			if ((style & SWT.VERTICAL) != 0) {
 				cursorPt.x = newX = Math.min (Math.max (clientRect.left, newX + step), clientWidth - width);
-				cursorPt.y = rect.top + height / 2; 
+				cursorPt.y = rect.top + height / 2;
 			} else {
 				cursorPt.x = rect.left + width / 2;
 				cursorPt.y = newY = Math.min (Math.max (clientRect.top, newY + step), clientHeight - height);
@@ -297,7 +297,7 @@ LRESULT WM_LBUTTONDOWN (long /*int*/ wParam, long /*int*/ lParam) {
 	}
 	sendSelectionEvent (SWT.Selection, event, true);
 	if (isDisposed ()) return LRESULT.ZERO;
-	
+
 	/* Draw the banding rectangle */
 	if (event.doit) {
 		dragging = true;
@@ -332,7 +332,7 @@ LRESULT WM_LBUTTONUP (long /*int*/ wParam, long /*int*/ lParam) {
 	OS.GetWindowRect (handle, rect);
 	int width = rect.right - rect.left;
 	int height = rect.bottom - rect.top;
-	
+
 	/* The event must be sent because doit flag is used */
 	Event event = new Event ();
 	event.x = lastX;

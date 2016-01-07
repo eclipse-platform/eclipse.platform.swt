@@ -26,10 +26,10 @@ public int GetIDsOfNames(GUID riid, String[] rgszNames, int cNames, int lcid, in
 	long /*int*/ hHeap = OS.GetProcessHeap();
 	long /*int*/ ppNames = OS.HeapAlloc(hHeap, OS.HEAP_ZERO_MEMORY, size * OS.PTR_SIZEOF);
 	long /*int*/[] memTracker = new long /*int*/[size];
-	
-	try {	
+
+	try {
 		// add the address of each string to the array
-		
+
 		for (int i=0; i<size; i++){
 			// create a null terminated array of char for each String
 			int nameSize = rgszNames[i].length();
@@ -43,9 +43,9 @@ public int GetIDsOfNames(GUID riid, String[] rgszNames, int cNames, int lcid, in
 			// keep track of the Global Memory so we can free it
 			memTracker[i] = pName;
 		}
-	
+
 		return COM.VtblCall(5, address, new GUID(), ppNames, cNames, lcid, rgDispId);
-		
+
 	} finally {
 		// free the memory
 		for (int i=0; i<memTracker.length; i++){

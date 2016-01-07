@@ -31,7 +31,7 @@ import org.eclipse.swt.events.*;
  * </p><p>
  * IMPORTANT: This class is <em>not</em> intended to be subclassed.
  * </p>
- * 
+ *
  * @see ExpandItem
  * @see ExpandEvent
  * @see ExpandListener
@@ -39,7 +39,7 @@ import org.eclipse.swt.events.*;
  * @see <a href="http://www.eclipse.org/swt/snippets/#expandbar">ExpandBar snippets</a>
  * @see <a href="http://www.eclipse.org/swt/examples.php">SWT Example: ControlExample</a>
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
- * 
+ *
  * @since 3.2
  * @noextend This class is not intended to be subclassed by clients.
  */
@@ -50,15 +50,15 @@ public class ExpandBar extends Composite {
 	int spacing = 4;
 	int yCurrentScroll;
 	long /*int*/ hFont;
-	
-	
+
+
 /**
  * Constructs a new instance of this class given its parent
  * and a style value describing its behavior and appearance.
  * <p>
  * The style value is either one of the style constants defined in
  * class <code>SWT</code> which is applicable to instances of this
- * class, or must be built by <em>bitwise OR</em>'ing together 
+ * class, or must be built by <em>bitwise OR</em>'ing together
  * (that is, using the <code>int</code> "|" operator) two or more
  * of those <code>SWT</code> style constants. The class description
  * lists the style constants that are applicable to the class.
@@ -176,7 +176,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	if (wHint != SWT.DEFAULT) width = wHint;
 	if (hHint != SWT.DEFAULT) height = hHint;
 	Rectangle trim = computeTrim (0, 0, width, height);
-	return new Point (trim.width, trim.height);	
+	return new Point (trim.width, trim.height);
 }
 
 @Override
@@ -194,10 +194,10 @@ void createItem (ExpandItem item, int style, int index) {
 		items = newItems;
 	}
 	System.arraycopy (items, index, items, index + 1, itemCount - index);
-	items [index] = item;	
+	items [index] = item;
 	itemCount++;
 	if (focusItem == null) focusItem = item;
-	
+
 	RECT rect = new RECT ();
 	OS.GetWindowRect (handle, rect);
 	item.width = Math.max (0, rect.right - rect.left - spacing * 2);
@@ -268,7 +268,7 @@ void drawWidget (GC gc, RECT clipRect) {
 		int uiState = (int)/*64*/OS.SendMessage (handle, OS.WM_QUERYUISTATE, 0, 0);
 		drawFocus = (uiState & OS.UISF_HIDEFOCUS) == 0;
 	}
-	long /*int*/ hCurrentFont = 0, oldFont = 0;	
+	long /*int*/ hCurrentFont = 0, oldFont = 0;
 	if (hTheme == 0) {
 		if (hFont != 0) {
 			hCurrentFont = hFont;
@@ -309,8 +309,8 @@ Control findBackgroundControl () {
 }
 
 @Override
-Control findThemeControl () {	
-	return isAppThemed () ? this : super.findThemeControl ();	
+Control findThemeControl () {
+	return isAppThemed () ? this : super.findThemeControl ();
 }
 
 int getBandHeight () {
@@ -341,7 +341,7 @@ int getBandHeight () {
  */
 public ExpandItem getItem (int index) {
 	checkWidget ();
-	if (!(0 <= index && index < itemCount)) error (SWT.ERROR_INVALID_RANGE);	
+	if (!(0 <= index && index < itemCount)) error (SWT.ERROR_INVALID_RANGE);
 	return items [index];
 }
 
@@ -362,11 +362,11 @@ public int getItemCount () {
 
 /**
  * Returns an array of <code>ExpandItem</code>s which are the items
- * in the receiver. 
+ * in the receiver.
  * <p>
  * Note: This is not the actual structure used by the receiver
  * to maintain its list of items, so modifying the array will
- * not affect the receiver. 
+ * not affect the receiver.
  * </p>
  *
  * @return the items in the receiver
@@ -400,7 +400,7 @@ public int getSpacing () {
 
 /**
  * Searches the receiver's list starting at the first item
- * (index 0) until an item is found that is equal to the 
+ * (index 0) until an item is found that is equal to the
  * argument, and returns the index of that item. If no item
  * is found, returns -1.
  *
@@ -487,7 +487,7 @@ public void removeExpandListener (ExpandListener listener) {
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (eventTable == null) return;
 	eventTable.unhook (SWT.Expand, listener);
-	eventTable.unhook (SWT.Collapse, listener);	
+	eventTable.unhook (SWT.Collapse, listener);
 }
 
 @Override
@@ -542,7 +542,7 @@ void setScrollbar () {
 		layoutItems (0, false);
 	}
 	maxHeight += yCurrentScroll;
-	
+
 	SCROLLINFO info = new SCROLLINFO ();
 	info.cbSize = SCROLLINFO.sizeof;
 	info.fMask = OS.SIF_RANGE | OS.SIF_PAGE | OS.SIF_POS;
@@ -555,9 +555,9 @@ void setScrollbar () {
 }
 
 /**
- * Sets the receiver's spacing. Spacing specifies the number of pixels allocated around 
+ * Sets the receiver's spacing. Spacing specifies the number of pixels allocated around
  * each item.
- * 
+ *
  * @param spacing the spacing around each item
  *
  * @exception SWTException <ul>
@@ -571,7 +571,7 @@ public void setSpacing (int spacing) {
 	if (spacing == this.spacing) return;
 	this.spacing = spacing;
 	RECT rect = new RECT ();
-	OS.GetClientRect (handle, rect);		
+	OS.GetClientRect (handle, rect);
 	int width = Math.max (0, (rect.right - rect.left) - spacing * 2);
 	for (int i = 0; i < itemCount; i++) {
 		ExpandItem item = items[i];
@@ -713,7 +713,7 @@ LRESULT WM_LBUTTONDOWN (long /*int*/ wParam, long /*int*/ lParam) {
 			forceFocus ();
 			break;
 		}
-	} 
+	}
 	return result;
 }
 
@@ -867,7 +867,7 @@ LRESULT wmScroll (ScrollBar bar, boolean update, long /*int*/ hwnd, int msg, lon
 	OS.GetScrollInfo (handle, OS.SB_VERT, info);
 	int updateY = yCurrentScroll - info.nPos;
 	OS.ScrollWindowEx (handle, 0, updateY, null, null, 0, null, OS.SW_SCROLLCHILDREN | OS.SW_INVALIDATE);
-	yCurrentScroll = info.nPos;	
+	yCurrentScroll = info.nPos;
 	if (updateY != 0) {
 		for (int i = 0; i < itemCount; i++) {
 			items [i].y += updateY;

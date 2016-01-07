@@ -43,8 +43,8 @@ public class COM extends OS {
 	public static final GUID IIDIDataObject = IIDFromString("{0000010E-0000-0000-C000-000000000046}"); //$NON-NLS-1$
 	public static final GUID IIDIDispatch = IIDFromString("{00020400-0000-0000-C000-000000000046}"); //$NON-NLS-1$
 	public static final GUID IIDIDispatchEx = IIDFromString("{A6EF9860-C720-11D0-9337-00A0C90DCAA9}"); //$NON-NLS-1$
-	public static final GUID IIDIDocHostUIHandler = IIDFromString("{BD3F23C0-D43E-11CF-893B-00AA00BDCE1A}"); //$NON-NLS-1$	
-	public static final GUID IIDIDocHostShowUI = IIDFromString("{C4D244B0-D43E-11CF-893B-00AA00BDCE1A}"); //$NON-NLS-1$	
+	public static final GUID IIDIDocHostUIHandler = IIDFromString("{BD3F23C0-D43E-11CF-893B-00AA00BDCE1A}"); //$NON-NLS-1$
+	public static final GUID IIDIDocHostShowUI = IIDFromString("{C4D244B0-D43E-11CF-893B-00AA00BDCE1A}"); //$NON-NLS-1$
 	public static final GUID IIDIDropSource = IIDFromString("{00000121-0000-0000-C000-000000000046}"); //$NON-NLS-1$
 	public static final GUID IIDIDropTarget = IIDFromString("{00000122-0000-0000-C000-000000000046}"); //$NON-NLS-1$
 	//public static final GUID IIDIEnumConnectionPoints = IIDFromString("{B196B285-BAB4-101A-B69C-00AA00341D07}"); //$NON-NLS-1$
@@ -218,8 +218,8 @@ public class COM extends OS {
 	public static final int DISPID_BACKCOLOR = -501;
 	public static final int DISPID_FONT = -512;
 	public static final int DISPID_FONT_BOLD = 3;
-	public static final int DISPID_FONT_CHARSET = 8; 
-	public static final int DISPID_FONT_ITALIC = 4; 
+	public static final int DISPID_FONT_CHARSET = 8;
+	public static final int DISPID_FONT_ITALIC = 4;
 	public static final int DISPID_FONT_NAME = 0;
 	public static final int DISPID_FONT_SIZE = 2;
 	public static final int DISPID_FONT_STRIKE = 6;
@@ -244,11 +244,11 @@ public class COM extends OS {
 	public static final int DRAGDROP_S_DROP = 0x00040100;
 	public static final int DRAGDROP_S_CANCEL = 0x00040101;
 	public static final int DRAGDROP_S_USEDEFAULTCURSORS = 0x00040102;
-	public static final int DROPEFFECT_NONE = 0; 
-	public static final int DROPEFFECT_COPY = 1; 
-	public static final int DROPEFFECT_MOVE = 2; 
-	public static final int DROPEFFECT_LINK = 4; 
-	public static final int DROPEFFECT_SCROLL = 0x80000000; 
+	public static final int DROPEFFECT_NONE = 0;
+	public static final int DROPEFFECT_COPY = 1;
+	public static final int DROPEFFECT_MOVE = 2;
+	public static final int DROPEFFECT_LINK = 4;
+	public static final int DROPEFFECT_SCROLL = 0x80000000;
 	public static final int DSH_ALLOWDROPDESCRIPTIONTEXT = 0x1;
 	public static final int DV_E_FORMATETC = -2147221404;
 	public static final int DV_E_STGMEDIUM = -2147221402;
@@ -278,42 +278,42 @@ public class COM extends OS {
 	public static final int LOCALE_SYSTEM_DEFAULT = 1024;
 	public static final int LOCALE_USER_DEFAULT = 2048;
 	//public static final int MEMCTX_TASK = 1;
-	//public static final int OLEACTIVATEAUTO = 3; 
-	//public static final int OLEACTIVATEDOUBLECLICK = 2; 
-	//public static final int OLEACTIVATEGETFOCUS = 1; 
-	//public static final int OLEACTIVATEMANUAL = 0; 
-	//public static final int OLEAUTOMATIC = 0; 
-	//public static final int OLECHANGED = 0; 
+	//public static final int OLEACTIVATEAUTO = 3;
+	//public static final int OLEACTIVATEDOUBLECLICK = 2;
+	//public static final int OLEACTIVATEGETFOCUS = 1;
+	//public static final int OLEACTIVATEMANUAL = 0;
+	//public static final int OLEAUTOMATIC = 0;
+	//public static final int OLECHANGED = 0;
 	public static final int OLECLOSE_NOSAVE = 1;
 	//public static final int OLECLOSE_PROMPTSAVE = 2;
-	public static final int OLECLOSE_SAVEIFDIRTY = 0;	
-	//public static final int OLECLOSED = 2; 
+	public static final int OLECLOSE_SAVEIFDIRTY = 0;
+	//public static final int OLECLOSED = 2;
 	//public static final int OLECONTF_EMBEDDINGS = 1;
 	//public static final int OLECONTF_LINKS = 2;
 	//public static final int OLECONTF_ONLYIFRUNNING = 16;
 	//public static final int OLECONTF_ONLYUSER = 8;
 	//public static final int OLECONTF_OTHERS = 4;
 	//public static final int OLEDEACTIVATEMANUAL = 1;
-	//public static final int OLEDEACTIVATEONLOSEFOCUS = 0; 
+	//public static final int OLEDEACTIVATEONLOSEFOCUS = 0;
 	//public static final int OLEDECBORDER = 1;
 	//public static final int OLEDECBORDERANDNIBS = 3;
 	//public static final int OLEDECNIBS = 2;
 	//public static final int OLEDECNONE = 0;
-	//public static final int OLEDISPLAYCONTENT = 0; 
-	//public static final int OLEDISPLAYICON = 1; 
-	//public static final int OLEEITHER = 2; 
-	public static final int OLEEMBEDDED = 1; 
-	//public static final int OLEFROZEN = 1; 
+	//public static final int OLEDISPLAYCONTENT = 0;
+	//public static final int OLEDISPLAYICON = 1;
+	//public static final int OLEEITHER = 2;
+	public static final int OLEEMBEDDED = 1;
+	//public static final int OLEFROZEN = 1;
 	public static final int OLEIVERB_DISCARDUNDOSTATE = -6;
 	//public static final int OLEIVERB_HIDE = -3;
-	public static final int OLEIVERB_INPLACEACTIVATE = -5;	
+	public static final int OLEIVERB_INPLACEACTIVATE = -5;
 	//public static final int OLEIVERB_OPEN = -2;
 	public static final int OLEIVERB_PRIMARY = 0;
 	//public static final int OLEIVERB_PROPERTIES = -7;
 	//public static final int OLEIVERB_SHOW = -1;
-	//public static final int OLEIVERB_UIACTIVATE = -4; 
-	public static final int OLELINKED = 0; 
-	//public static final int OLEMANUAL = 2; 
+	//public static final int OLEIVERB_UIACTIVATE = -4;
+	public static final int OLELINKED = 0;
+	//public static final int OLEMANUAL = 2;
 	//public static final int OLEMISC_ACTIVATEWHENVISIBLE = 256;
 	//public static final int OLEMISC_ACTSLIKEBUTTON = 4096;
 	//public static final int OLEMISC_ACTSLIKELABEL = 8192;
@@ -336,17 +336,17 @@ public class COM extends OS {
 	//public static final int OLEMISC_STATIC = 8;
 	//public static final int OLEMISC_SUPPORTSMULTILEVELUNDO = 2097152;
 	//public static final int OLEMISC_WANTSTOMENUMERGE = 1048576;
-	//public static final int OLENONE = 3; 
-	//public static final int OLERENAMED = 3; 
+	//public static final int OLENONE = 3;
+	//public static final int OLERENAMED = 3;
 	//public static final int OLERENDER_ASIS = 3;
 	public static final int OLERENDER_DRAW = 1;
 	//public static final int OLERENDER_FORMAT = 2;
 	//public static final int OLERENDER_NONE = 0;
-	//public static final int OLESAVED = 1; 
-	//public static final int OLESIZEAUTOSIZE = 2; 
-	//public static final int OLESIZECLIP = 0; 
-	//public static final int OLESIZESTRETCH = 1; 
-	//public static final int OLESIZEZOOM = 3; 
+	//public static final int OLESAVED = 1;
+	//public static final int OLESIZEAUTOSIZE = 2;
+	//public static final int OLESIZECLIP = 0;
+	//public static final int OLESIZESTRETCH = 1;
+	//public static final int OLESIZEZOOM = 3;
 	//public static final int OLEWHICHMK_CONTAINER = 1;
 	//public static final int OLEWHICHMK_OBJFULL = 3;
 	//public static final int OLEWHICHMK_OBJREL = 2;
@@ -442,7 +442,7 @@ public static final native int CLSIDFromString(char[] lpsz, GUID pclsid);
  * @param pUnkOuter cast=(LPUNKNOWN)
  * @param ppv cast=(LPVOID *)
  */
-public static final native int CoCreateInstance(GUID rclsid, long /*int*/ pUnkOuter, int dwClsContext, GUID riid, long /*int*/[] ppv); 
+public static final native int CoCreateInstance(GUID rclsid, long /*int*/ pUnkOuter, int dwClsContext, GUID riid, long /*int*/[] ppv);
 public static final native void CoFreeUnusedLibraries();
 /**
  * @param pServerInfo cast=(COSERVERINFO *)
@@ -553,7 +553,7 @@ public static final native int OleCreate(GUID rclsid, GUID riid, int renderopt, 
  * @param pStg cast=(LPSTORAGE)
  * @param ppvObj cast=(LPVOID *)
  */
-public static final native int OleCreateFromFile(GUID rclsid, char[] lpszFileName, GUID riid, int renderopt, FORMATETC pFormatEtc, long /*int*/ pClientSite, long /*int*/ pStg, long /*int*/[] ppvObj); 
+public static final native int OleCreateFromFile(GUID rclsid, char[] lpszFileName, GUID riid, int renderopt, FORMATETC pFormatEtc, long /*int*/ pClientSite, long /*int*/ pStg, long /*int*/[] ppvObj);
 /**
  * @param hwndOwner cast=(HWND)
  * @param lpszCaption cast=(LPCOLESTR)
@@ -617,7 +617,7 @@ public static final native int ProgIDFromCLSID(GUID clsid, long /*int*/[] lplpsz
  */
 public static final native int RegisterDragDrop(long /*int*/ hwnd, long /*int*/ pDropTarget);
 /** @param pmedium cast=(STGMEDIUM *) */
-public static final native void ReleaseStgMedium(long /*int*/ pmedium); 
+public static final native void ReleaseStgMedium(long /*int*/ pmedium);
 /** @param hwnd cast=(HWND) */
 public static final native int RevokeDragDrop(long /*int*/ hwnd);
 /**
@@ -639,7 +639,7 @@ public static final native int StgIsStorageFile(char[] pwcsName);
  */
 public static final native int StgOpenStorage(char[] pwcsName, long /*int*/ pstgPriority, int grfMode, long /*int*/ snbExclude, int reserved, long /*int*/[] ppstgOpen);
 /** @param ppsz cast=(LPOLESTR *) */
-public static final native int StringFromCLSID(GUID rclsid, long /*int*/[] ppsz); 
+public static final native int StringFromCLSID(GUID rclsid, long /*int*/[] ppsz);
 /** @param sz cast=(OLECHAR *) */
 public static final native long /*int*/ SysAllocString(char [] sz);
 /** @param bstr cast=(BSTR) */

@@ -33,7 +33,7 @@ void draw(Theme theme, GC gc, Rectangle bounds) {
 		OS.GetThemeInt(hTheme, 0, 0, OS.PROGRESSCHUNKSIZE, buffer);
 		int chunkSize = buffer[0];
 		OS.GetThemeInt(hTheme, 0, 0, OS.PROGRESSSPACESIZE, buffer);
-		int spaceSize = buffer[0];		
+		int spaceSize = buffer[0];
 		RECT content = new RECT();
 		int[] part = getPartId(DrawData.WIDGET_WHOLE);
 		if ((style & SWT.VERTICAL) != 0) {
@@ -60,7 +60,7 @@ void draw(Theme theme, GC gc, Rectangle bounds) {
 				content.right = content.left + chunkSize;
 			}
 			if (selection != 0) {
-				OS.DrawThemeBackground(hTheme, gc.handle, OS.PP_CHUNK, 0, content, null);				
+				OS.DrawThemeBackground(hTheme, gc.handle, OS.PP_CHUNK, 0, content, null);
 			}
 		}
 		OS.CloseThemeData (hTheme);
@@ -74,13 +74,13 @@ char[] getClassId() {
 
 @Override
 int[] getPartId(int part) {
-	int iPartId = 0, iStateId = 0;	
+	int iPartId = 0, iStateId = 0;
 	if ((style & SWT.VERTICAL) != 0) {
 		iPartId = OS.PP_BARVERT;
 	} else {
 		iPartId = OS.PP_BAR;
 	}
-	return new int[]{iPartId, iStateId};	
+	return new int[]{iPartId, iStateId};
 }
 
 @Override

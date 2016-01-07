@@ -18,7 +18,7 @@ import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.win32.*;
 
 /**
- * This class is the abstract superclass of all user interface objects.  
+ * This class is the abstract superclass of all user interface objects.
  * Widgets are created, disposed and issue notification to listeners
  * when events occur which affect them.
  * <dl>
@@ -49,20 +49,20 @@ public abstract class Widget {
 	Display display;
 	EventTable eventTable;
 	Object data;
-	
+
 	/* Global state flags */
 	static final int DISPOSED		= 1<<0;
 	static final int CANVAS			= 1<<1;
 	static final int KEYED_DATA		= 1<<2;
 	static final int DISABLED		= 1<<3;
 	static final int HIDDEN			= 1<<4;
-	
+
 	/* A layout was requested on this widget */
 	static final int LAYOUT_NEEDED	= 1<<5;
-	
+
 	/* The preferred size of a child has changed */
 	static final int LAYOUT_CHANGED = 1<<6;
-	
+
 	/* A layout was requested in this widget hierarchy */
 	static final int LAYOUT_CHILD = 1<<7;
 
@@ -70,11 +70,11 @@ public abstract class Widget {
 	static final int THEME_BACKGROUND = 1<<8;
 	static final int DRAW_BACKGROUND = 1<<9;
 	static final int PARENT_BACKGROUND = 1<<10;
-	
+
 	/* Dispose and release flags */
 	static final int RELEASED		= 1<<11;
 	static final int DISPOSE_SENT	= 1<<12;
-	
+
 	/* More global widget state flags */
 	static final int TRACK_MOUSE	= 1<<13;
 	static final int FOREIGN_HANDLE	= 1<<14;
@@ -85,16 +85,16 @@ public abstract class Widget {
 	static final int MOVE_DEFERRED		= 1<<17;
 	static final int RESIZE_OCCURRED	= 1<<18;
 	static final int RESIZE_DEFERRED	= 1<<19;
-	
+
 	/* Ignore WM_CHANGEUISTATE */
 	static final int IGNORE_WM_CHANGEUISTATE = 1<<20;
-	
+
 	/* Notify of the opportunity to skin this widget */
 	static final int SKIN_NEEDED = 1<<21;
-	
+
 	/* Bidi "auto" text direction */
 	static final int HAS_AUTO_DIRECTION = 1<<22;
-	
+
 	/* Default size for widgets */
 	static final int DEFAULT_WIDTH	= 64;
 	static final int DEFAULT_HEIGHT	= 64;
@@ -117,7 +117,7 @@ public abstract class Widget {
 		}
 		OS.InitCommonControls ();
 	}
-	
+
 /**
  * Prevents uninitialized instances from being created outside the package.
  */
@@ -130,7 +130,7 @@ Widget () {
  * <p>
  * The style value is either one of the style constants defined in
  * class <code>SWT</code> which is applicable to instances of this
- * class, or must be built by <em>bitwise OR</em>'ing together 
+ * class, or must be built by <em>bitwise OR</em>'ing together
  * (that is, using the <code>int</code> "|" operator) two or more
  * of those <code>SWT</code> style constants. The class description
  * lists the style constants that are applicable to the class.
@@ -297,14 +297,14 @@ void checkParent (Widget parent) {
 /**
  * Checks that this class can be subclassed.
  * <p>
- * The SWT class library is intended to be subclassed 
- * only at specific, controlled points (most notably, 
+ * The SWT class library is intended to be subclassed
+ * only at specific, controlled points (most notably,
  * <code>Composite</code> and <code>Canvas</code> when
  * implementing new widgets). This method enforces this
  * rule unless it is overridden.
  * </p><p>
  * <em>IMPORTANT:</em> By providing an implementation of this
- * method that allows a subclass of a class which does not 
+ * method that allows a subclass of a class which does not
  * normally allow subclassing to be created, the implementer
  * agrees to be fully responsible for the fact that any such
  * subclass will likely fail between SWT releases and will be
@@ -335,7 +335,7 @@ protected void checkSubclass () {
  * widget implementors to enforce the standard SWT invariants.
  * <p>
  * Currently, it is an error to invoke any method (other than
- * <code>isDisposed()</code>) on a widget that has had its 
+ * <code>isDisposed()</code>) on a widget that has had its
  * <code>dispose()</code> method called. It is also an error
  * to call widget methods from any thread that is different
  * from the thread that created the widget.
@@ -364,10 +364,10 @@ protected void checkWidget () {
 		* error happens seems to fix the problem.  The
 		* fix is to use operating system calls to verify
 		* that the current thread is not the Display thread.
-		* 
+		*
 		* NOTE: Despite the fact that Thread.currentThread()
 		* is used in other places, the failure has not been
-		* observed in all places where it is called. 
+		* observed in all places where it is called.
 		*/
 		if (display.threadId != OS.GetCurrentThreadId ()) {
 			error (SWT.ERROR_THREAD_INVALID_ACCESS);
@@ -392,7 +392,7 @@ protected void checkWidget () {
  * See also <code>releaseChild()</code>, <code>releaseWidget()</code>
  * and <code>releaseHandle()</code>.
  * </p>
- * 
+ *
  * @see #dispose
  */
 void destroyWidget () {
@@ -517,7 +517,7 @@ char [] fixMnemonic (String string, boolean spaces) {
  * Returns the application defined widget data associated
  * with the receiver, or null if it has not been set. The
  * <em>widget data</em> is a single, unnamed field that is
- * stored with every widget. 
+ * stored with every widget.
  * <p>
  * Applications may put arbitrary objects in this field. If
  * the object stored in the widget data needs to be notified
@@ -598,8 +598,8 @@ public Display getDisplay () {
 }
 
 /**
- * Returns an array of listeners who will be notified when an event 
- * of the given type occurs. The event type is one of the event constants 
+ * Returns an array of listeners who will be notified when an event
+ * of the given type occurs. The event type is one of the event constants
  * defined in class <code>SWT</code>.
  *
  * @param eventType the type of event to listen for
@@ -615,7 +615,7 @@ public Display getDisplay () {
  * @see #addListener(int, Listener)
  * @see #removeListener(int, Listener)
  * @see #notifyListeners
- * 
+ *
  * @since 3.4
  */
 public Listener[] getListeners (int eventType) {
@@ -703,9 +703,9 @@ boolean hooks (int eventType) {
  * and <code>false</code> otherwise.
  *
  * @return <code>true</code> when the widget has auto direction and <code>false</code> otherwise
- * 
+ *
  * @see #HAS_AUTO_DIRECTION
- * 
+ *
  * @since 3.105
  */
 public boolean isAutoDirection () {
@@ -790,7 +790,7 @@ GC new_GC (GCData data) {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @see SWT
  * @see #addListener
  * @see #getListeners(int)
@@ -822,9 +822,9 @@ void postEvent (int eventType, Event event) {
  * this scenario, the children are actually destroyed later,
  * when the operating system destroys the widget tree.
  * </p>
- * 
+ *
  * @param destroy indicates that the receiver should be destroyed
- * 
+ *
  * @see #dispose
  * @see #releaseHandle
  * @see #releaseParent
@@ -889,7 +889,7 @@ void releaseHandle () {
  * bar requires that the menu bar first be released from the
  * shell when the menu bar is active.
  * </p>
- * 
+ *
  * @see #dispose
  * @see #releaseChildren
  * @see #releaseWidget
@@ -912,7 +912,7 @@ void releaseParent () {
  * a reference to a disposed widget, all fields except the
  * handle are zero'd.  The handle is needed by <code>destroyWidget</code>.
  * </p>
- * 
+ *
  * @see #dispose
  * @see #releaseChildren
  * @see #releaseHandle
@@ -974,7 +974,7 @@ public void removeListener (int eventType, Listener listener) {
  *
  * @see Listener
  * @see #addListener
- * 
+ *
  * @noreference This method is not intended to be referenced by clients.
  * @nooverride This method is not intended to be re-implemented or extended by clients.
  */
@@ -1010,14 +1010,14 @@ public void removeDisposeListener (DisposeListener listener) {
 }
 
 /**
- * Marks the widget to be skinned. 
+ * Marks the widget to be skinned.
  * <p>
  * The skin event is sent to the receiver's display when appropriate (usually before the next event
  * is handled). Widgets are automatically marked for skinning upon creation as well as when its skin
- * id or class changes. The skin id and/or class can be changed by calling <code>Display.setData(String, Object)</code> 
- * with the keys SWT.SKIN_ID and/or SWT.SKIN_CLASS. Once the skin event is sent to a widget, it 
- * will not be sent again unless <code>reskin(int)</code> is called on the widget or on an ancestor 
- * while specifying the <code>SWT.ALL</code> flag.  
+ * id or class changes. The skin id and/or class can be changed by calling <code>Display.setData(String, Object)</code>
+ * with the keys SWT.SKIN_ID and/or SWT.SKIN_CLASS. Once the skin event is sent to a widget, it
+ * will not be sent again unless <code>reskin(int)</code> is called on the widget or on an ancestor
+ * while specifying the <code>SWT.ALL</code> flag.
  * </p>
  * <p>
  * The parameter <code>flags</code> may be either:
@@ -1029,8 +1029,8 @@ public void removeDisposeListener (DisposeListener listener) {
  * </dl>
  * </p>
  * @param flags the flags specifying how to reskin
- * 
- * @exception SWTException 
+ *
+ * @exception SWTException
  * <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
@@ -1043,7 +1043,7 @@ public void reskin (int flags) {
 	if ((flags & SWT.ALL) != 0) reskinChildren (flags);
 }
 
-void reskinChildren (int flags) {	
+void reskinChildren (int flags) {
 }
 
 void reskinWidget() {
@@ -1176,7 +1176,7 @@ boolean sendMouseWheelEvent (int type, long /*int*/ hwnd, long /*int*/ wParam, l
 		/* Check if the delta and the remainder have the same direction (sign) */
 		if ((delta ^ display.scrollHRemainder) >= 0) delta += display.scrollHRemainder;
 		display.scrollHRemainder = delta % OS.WHEEL_DELTA;
-		
+
 		delta = -delta;
 	}
 
@@ -1193,7 +1193,7 @@ boolean sendMouseWheelEvent (int type, long /*int*/ hwnd, long /*int*/ wParam, l
  * Sets the application defined widget data associated
  * with the receiver to be the argument. The <em>widget
  * data</em> is a single, unnamed field that is stored
- * with every widget. 
+ * with every widget.
  * <p>
  * Applications may put arbitrary objects in this field. If
  * the object stored in the widget data needs to be notified
@@ -1208,7 +1208,7 @@ boolean sendMouseWheelEvent (int type, long /*int*/ hwnd, long /*int*/ wParam, l
  *    <li>ERROR_WIDGET_DISPOSED - when the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - when called from the wrong thread</li>
  * </ul>
- * 
+ *
  * @see #getData()
  */
 public void setData (Object data) {
@@ -1340,12 +1340,12 @@ boolean setInputState (Event event, int type) {
 			if (event.keyCode == SWT.SHIFT) event.stateMask |= SWT.SHIFT;
 			if (event.keyCode == SWT.CONTROL) event.stateMask |= SWT.CONTROL;
 			break;
-	}		
+	}
 	return true;
 }
 
 boolean setKeyState (Event event, int type, long /*int*/ wParam, long /*int*/ lParam) {
-	
+
 	/*
 	* Feature in Windows.  When the user presses Ctrl+Backspace
 	* or Ctrl+Enter, Windows sends a WM_CHAR with Delete (0x7F)
@@ -1361,20 +1361,20 @@ boolean setKeyState (Event event, int type, long /*int*/ wParam, long /*int*/ lP
 			if (display.lastKey == SWT.CR) display.lastAscii = SWT.CR;
 			break;
 	}
-	
+
 	/*
 	* Feature in Windows.  When the user presses either the Enter
 	* key or the numeric keypad Enter key, Windows sends a WM_KEYDOWN
 	* with wParam=VK_RETURN in both cases.  In order to distinguish
 	* between the keys, the extended key bit is tested. If the bit
-	* is set, assume that the numeric keypad Enter was pressed. 
+	* is set, assume that the numeric keypad Enter was pressed.
 	*/
 	if (display.lastKey == SWT.CR && display.lastAscii == SWT.CR) {
 		if ((lParam & 0x1000000) != 0) display.lastKey = SWT.KEYPAD_CR;
 	}
 
 	setLocationMask(event, type, wParam, lParam);
-	
+
 	if (display.lastVirtual) {
 		/*
 		* Feature in Windows.  The virtual key VK_DELETE is not
@@ -1384,17 +1384,17 @@ boolean setKeyState (Event event, int type, long /*int*/ wParam, long /*int*/ lP
 		* the ASCII value explicitly (Delete is 0x7F).
 		*/
 		if (display.lastKey == OS.VK_DELETE) display.lastAscii = 0x7F;
-		
+
 		/*
 		* Feature in Windows.  When the user presses Ctrl+Pause, the
 		* VK_CANCEL key is generated and a WM_CHAR is sent with 0x03,
 		* possibly to allow an application to look for Ctrl+C and the
 		* the Break key at the same time.  This is unexpected and
 		* unwanted.  The fix is to detect the case and set the character
-		* to zero. 
+		* to zero.
 		*/
 		if (display.lastKey == OS.VK_CANCEL) display.lastAscii = 0x0;
-		
+
 		event.keyCode = Display.translateKey (display.lastKey);
 	} else {
 		event.keyCode = display.lastKey;
@@ -1419,8 +1419,8 @@ int setLocationMask (Event event, int type, long /*int*/ wParam, long /*int*/ lP
 			case OS.VK_NUMLOCK:
 				location = SWT.KEYPAD;
 				break;
-			case OS.VK_CONTROL:	
-			case OS.VK_MENU:	
+			case OS.VK_CONTROL:
+			case OS.VK_MENU:
 				location = (lParam & 0x1000000) == 0 ? SWT.LEFT : SWT.RIGHT;
 				break;
 			case OS.VK_INSERT:
@@ -1556,7 +1556,7 @@ LRESULT wmChar (long /*int*/ hwnd, long /*int*/ wParam, long /*int*/ lParam) {
 
 LRESULT wmContextMenu (long /*int*/ hwnd, long /*int*/ wParam, long /*int*/ lParam) {
 	if (wParam != hwnd) return null;
-	
+
 	/*
 	* Feature in Windows.  SHRecognizeGesture() sends an undocumented
 	* WM_CONTEXTMENU notification when the flag SHRG_NOTIFY_PARENT is
@@ -1564,12 +1564,12 @@ LRESULT wmContextMenu (long /*int*/ hwnd, long /*int*/ wParam, long /*int*/ lPar
 	* once by the caller of SHRecognizeGesture() and once from this
 	* method.  The fix is to ignore WM_CONTEXTMENU notifications on
 	* all WinCE platforms.
-	* 
+	*
 	* NOTE: This only happens on WM2003.  Previous WinCE versions did
 	* not support WM_CONTEXTMENU.
 	*/
 	if (OS.IsWinCE) return null;
-	
+
 	/*
 	* Feature in Windows.  When the user presses  WM_NCRBUTTONUP,
 	* a WM_CONTEXTMENU message is generated.  This happens when
@@ -1618,7 +1618,7 @@ LRESULT wmIMEChar (long /*int*/ hwnd, long /*int*/ wParam, long /*int*/ lParam) 
 }
 
 LRESULT wmKeyDown (long /*int*/ hwnd, long /*int*/ wParam, long /*int*/ lParam) {
-	
+
 	/* Ignore repeating modifier keys by testing key down state */
 	switch ((int)/*64*/wParam) {
 		case OS.VK_SHIFT:
@@ -1629,11 +1629,11 @@ LRESULT wmKeyDown (long /*int*/ hwnd, long /*int*/ wParam, long /*int*/ lParam) 
 		case OS.VK_SCROLL:
 			if ((lParam & 0x40000000) != 0) return null;
 	}
-	
+
 	/* Clear last key and last ascii because a new key has been typed */
 	display.lastAscii = display.lastKey = 0;
 	display.lastVirtual = display.lastNull = display.lastDead = false;
-	
+
 	/*
 	* Do not report a lead byte as a key pressed.
 	*/
@@ -1641,7 +1641,7 @@ LRESULT wmKeyDown (long /*int*/ hwnd, long /*int*/ wParam, long /*int*/ lParam) 
 		byte lead = (byte) (wParam & 0xFF);
 		if (OS.IsDBCSLeadByte (lead)) return null;
 	}
-	
+
 	/* Map the virtual key */
 	/*
 	* Bug in WinCE.  MapVirtualKey() returns incorrect values.
@@ -1665,13 +1665,13 @@ LRESULT wmKeyDown (long /*int*/ hwnd, long /*int*/ wParam, long /*int*/ lParam) 
 		mapKey = OS.MapVirtualKey ((int)/*64*/wParam, 2);
 		/*
 		* Feature in Windows.  For Devanagari and Bengali numbers,
-		* MapVirtualKey() returns the localized number instead of 
+		* MapVirtualKey() returns the localized number instead of
 		* the ASCII equivalent.  For example, MapVirtualKey()
 		* maps VK_1 on the numbers keyboard to \u0967, which is
 		* the Devanagari digit '1', but not ASCII.
-		* The fix is to test for Devanagari and Bengali digits and 
+		* The fix is to test for Devanagari and Bengali digits and
 		* map these explicitly.
-		* 
+		*
 		* NOTE: VK_0 to VK_9 are the same as ASCII.
 		*/
 		if (('\u09e6' <= mapKey && mapKey <= '\u09ef') || ('\u0966' <= mapKey && mapKey <= '\u096f')) {
@@ -1694,7 +1694,7 @@ LRESULT wmKeyDown (long /*int*/ hwnd, long /*int*/ wParam, long /*int*/ lParam) 
 	* a dead key.  This happens when an accent key, such as '^' is the
 	* result of a modifier such as Shift key and MapVirtualKey() always
 	* returns the unshifted key.  The fix is to peek for a WM_DEADCHAR
-	* and avoid issuing the event. 
+	* and avoid issuing the event.
 	*/
 	if (OS.IsWinNT) {
 		if ((mapKey & 0x80000000) != 0) return null;
@@ -1709,7 +1709,7 @@ LRESULT wmKeyDown (long /*int*/ hwnd, long /*int*/ wParam, long /*int*/ lParam) 
 		display.lastKey = display.lastVirtual ? (int)/*64*/wParam : mapKey;
 		return null;
 	}
-	
+
 	/*
 	*  Bug in Windows.  Somehow, the widget is becoming disposed after
 	*  calling PeekMessage().  In rare circumstances, it seems that
@@ -1722,7 +1722,7 @@ LRESULT wmKeyDown (long /*int*/ hwnd, long /*int*/ wParam, long /*int*/ lParam) 
 	*  return without calling the window proc.
 	*/
 	if (isDisposed ()) return LRESULT.ONE;
-	
+
 	/*
 	* If we are going to get a WM_CHAR, ensure that last key has
 	* the correct character value for the key down and key up
@@ -1730,14 +1730,14 @@ LRESULT wmKeyDown (long /*int*/ hwnd, long /*int*/ wParam, long /*int*/ lParam) 
 	* (when we know we are going to get a WM_CHAR) and compute
 	* the key in WM_CHAR because there is not enough information
 	* by the time we get the WM_CHAR.  For example, when the user
-	* types Ctrl+Shift+6 on a US keyboard, we get a WM_CHAR with 
-	* wParam=30.  When the user types Ctrl+Shift+6 on a German 
+	* types Ctrl+Shift+6 on a US keyboard, we get a WM_CHAR with
+	* wParam=30.  When the user types Ctrl+Shift+6 on a German
 	* keyboard, we also get a WM_CHAR with wParam=30.  On the US
 	* keyboard Shift+6 is ^, on the German keyboard Shift+6 is &.
 	* There is no way to map wParam=30 in WM_CHAR to the correct
 	* value.  Also, on international keyboards, the control key
 	* may be down when the user has not entered a control character.
-	* 
+	*
 	* NOTE: On Windows 98, keypad keys are virtual despite the
 	* fact that a WM_CHAR is issued.  On Windows 2000 and XP,
 	* they are not virtual.  Therefore it is necessary to force
@@ -1757,7 +1757,7 @@ LRESULT wmKeyDown (long /*int*/ hwnd, long /*int*/ wParam, long /*int*/ lParam) 
 
 		/*
 		* It is possible to get a WM_CHAR for a virtual key when
-		* Num Lock is on.  If the user types Home while Num Lock 
+		* Num Lock is on.  If the user types Home while Num Lock
 		* is down, a WM_CHAR is issued with WPARM=55 (for the
 		* character 7).  If we are going to get a WM_CHAR we need
 		* to ensure that the last key has the correct value.  Note
@@ -1770,7 +1770,7 @@ LRESULT wmKeyDown (long /*int*/ hwnd, long /*int*/ wParam, long /*int*/ lParam) 
 			* the accented state such that the next WM_CHAR loses the accent.
 			* This makes is critical that the accent key is detected.  Also,
 			* these functions clear the character that is entered using the
-			* special Windows keypad sequence when NumLock is down (ie. typing 
+			* special Windows keypad sequence when NumLock is down (ie. typing
 			* ALT+0231 should gives 'c' with a cedilla when NumLock is down).
 			*/
 			if (display.asciiKey (display.lastKey) != 0) return null;
@@ -1780,7 +1780,7 @@ LRESULT wmKeyDown (long /*int*/ hwnd, long /*int*/ wParam, long /*int*/ lParam) 
 		/*
 		* Convert LastKey to lower case because Windows non-virtual
 		* keys that are also ASCII keys, such as like VK_A, are have
-		* upper case values in WM_KEYDOWN despite the fact that the 
+		* upper case values in WM_KEYDOWN despite the fact that the
 		* Shift was not pressed.
 		*/
 	 	display.lastKey = (int)/*64*/OS.CharLower ((short) mapKey);
@@ -1793,7 +1793,7 @@ LRESULT wmKeyDown (long /*int*/ hwnd, long /*int*/ wParam, long /*int*/ lParam) 
 		* Ctrl+C, mark the key as virtual.
 		*/
 		if (wParam == OS.VK_CANCEL) display.lastVirtual = true;
-		
+
 		/*
 		* Some key combinations map to Windows ASCII keys depending
 		* on the keyboard.  For example, Ctrl+Alt+Q maps to @ on a
@@ -1822,7 +1822,7 @@ LRESULT wmKeyDown (long /*int*/ hwnd, long /*int*/ wParam, long /*int*/ lParam) 
 			*/
 			if (wParam == OS.VK_CANCEL) return null;
 		}
-		
+
 		/*
 		* If the control key is not down at this point, then
 		* the key that was pressed was an accent key or a regular
@@ -1830,10 +1830,10 @@ LRESULT wmKeyDown (long /*int*/ hwnd, long /*int*/ wParam, long /*int*/ lParam) 
 		* key event from WM_CHAR.
 		*/
 		if (OS.GetKeyState (OS.VK_CONTROL) >= 0) return null;
-		
+
 		/*
 		* Get the shifted state or convert to lower case if necessary.
-		* If the user types Ctrl+A, LastAscii should be 'a', not 'A'. 
+		* If the user types Ctrl+A, LastAscii should be 'a', not 'A'.
 		* If the user types Ctrl+Shift+A, LastAscii should be 'A'.
 		* If the user types Ctrl+Shift+6, the value of LastAscii will
 		* depend on the international keyboard.
@@ -1844,7 +1844,7 @@ LRESULT wmKeyDown (long /*int*/ hwnd, long /*int*/ wParam, long /*int*/ lParam) 
 	 	} else {
 	 		display.lastAscii = (int)/*64*/OS.CharLower ((short) mapKey);
 	 	}
-	 			
+
 		/* Note that Ctrl+'@' is ASCII NUL and is delivered in WM_CHAR */
 		if (display.lastAscii == '@') return null;
 		display.lastAscii = display.controlKey (display.lastAscii);
@@ -1858,7 +1858,7 @@ LRESULT wmKeyDown (long /*int*/ hwnd, long /*int*/ wParam, long /*int*/ lParam) 
 
 LRESULT wmKeyUp (long /*int*/ hwnd, long /*int*/ wParam, long /*int*/ lParam) {
 	Display display = this.display;
-	
+
 	/* Check for hardware keys */
 	if (OS.IsWinCE) {
 		if (OS.VK_APP1 <= wParam && wParam <= OS.VK_APP6) {
@@ -1873,7 +1873,7 @@ LRESULT wmKeyUp (long /*int*/ hwnd, long /*int*/ wParam, long /*int*/ lParam) {
 			return null;
 		}
 	}
-	
+
 	/*
 	* If the key up is not hooked, reset last key
 	* and last ascii in case the key down is hooked.
@@ -1883,7 +1883,7 @@ LRESULT wmKeyUp (long /*int*/ hwnd, long /*int*/ wParam, long /*int*/ lParam) {
 		display.lastVirtual = display.lastNull = display.lastDead = false;
 		return null;
 	}
-	
+
 	/* Map the virtual key. */
 	/*
 	* Bug in WinCE.  MapVirtualKey() returns incorrect values.
@@ -1963,7 +1963,7 @@ LRESULT wmKillFocus (long /*int*/ hwnd, long /*int*/ wParam, long /*int*/ lParam
 	long /*int*/ code = callWindowProc (hwnd, OS.WM_KILLFOCUS, wParam, lParam);
 	sendFocusEvent (SWT.FocusOut);
 	// widget could be disposed at this point
-	
+
 	/*
 	* It is possible (but unlikely), that application
 	* code could have disposed the widget in the focus
@@ -2033,7 +2033,7 @@ LRESULT wmLButtonDown (long /*int*/ hwnd, long /*int*/ wParam, long /*int*/ lPar
 	display.captureChanged = false;
 	boolean dispatch = sendMouseEvent (SWT.MouseDown, 1, count, 0, false, hwnd, OS.WM_LBUTTONDOWN, wParam, lParam);
 	if (dispatch && (consume == null || !consume [0])) {
-		result = new LRESULT (callWindowProc (hwnd, OS.WM_LBUTTONDOWN, wParam, lParam));	
+		result = new LRESULT (callWindowProc (hwnd, OS.WM_LBUTTONDOWN, wParam, lParam));
 	} else {
 		result = LRESULT.ZERO;
 	}
@@ -2050,7 +2050,7 @@ LRESULT wmLButtonDown (long /*int*/ hwnd, long /*int*/ wParam, long /*int*/ lPar
 			shrg.cbSize = SHRGINFO.sizeof;
 			shrg.hwndClient = hwnd;
 			shrg.ptDown_x = x;
-			shrg.ptDown_y = y; 
+			shrg.ptDown_y = y;
 			shrg.dwFlags = OS.SHRG_RETURNCMD;
 			int type = OS.SHRecognizeGesture (shrg);
 			if (type == OS.GN_CONTEXTMENU) showMenu (x, y);
@@ -2078,7 +2078,7 @@ LRESULT wmLButtonDown (long /*int*/ hwnd, long /*int*/ wParam, long /*int*/ lPar
 			* mouse down/up pairs or looks for the ESC key will not
 			* function properly.  The fix is to send the missing
 			* events when the drag has not started.
-			* 
+			*
 			* NOTE: For now, don't send a fake WM_KEYDOWN/WM_KEYUP
 			* events for the ESC key.  This would require computing
 			* wParam (the key) and lParam (the repeat count, scan code,
@@ -2248,7 +2248,7 @@ LRESULT wmMouseMove (long /*int*/ hwnd, long /*int*/ wParam, long /*int*/ lParam
 				result = LRESULT.ZERO;
 			}
 		}
-	} 
+	}
 	display.captureChanged = false;
 	return result;
 }
@@ -2271,7 +2271,7 @@ LRESULT wmPaint (long /*int*/ hwnd, long /*int*/ wParam, long /*int*/ lParam) {
 	if (!hooks (SWT.Paint) && !filters (SWT.Paint)) {
 		return null;
 	}
-	
+
 	/* Issue a paint event */
 	long /*int*/ result = 0;
 	if (OS.IsWinCE) {
@@ -2467,7 +2467,7 @@ LRESULT wmSysChar (long /*int*/ hwnd, long /*int*/ wParam, long /*int*/ lParam) 
 	if (!hooks (SWT.KeyDown) && !display.filters (SWT.KeyDown)) {
 		return null;
 	}
-	
+
 	/* Call the window proc to determine whether it is a system key or mnemonic */
 	boolean oldKeyHit = display.mnemonicKeyHit;
 	display.mnemonicKeyHit = true;
@@ -2495,7 +2495,7 @@ LRESULT wmSysKeyDown (long /*int*/ hwnd, long /*int*/ wParam, long /*int*/ lPara
 		/* Make sure WM_SYSKEYDOWN was sent by ALT-<aKey>. */
 		if ((lParam & 0x20000000) == 0) return null;
 	}
-	
+
 	/* Ignore well known system keys */
 	switch ((int)/*64*/wParam) {
 		case OS.VK_F4: {
@@ -2508,7 +2508,7 @@ LRESULT wmSysKeyDown (long /*int*/ hwnd, long /*int*/ wParam, long /*int*/ lPara
 			if ((bits & OS.WS_SYSMENU) != 0) return null;
 		}
 	}
-	
+
 	/* Ignore repeating modifier keys by testing key down state */
 	switch ((int)/*64*/wParam) {
 		case OS.VK_SHIFT:
@@ -2519,7 +2519,7 @@ LRESULT wmSysKeyDown (long /*int*/ hwnd, long /*int*/ wParam, long /*int*/ lPara
 		case OS.VK_SCROLL:
 			if ((lParam & 0x40000000) != 0) return null;
 	}
-	
+
 	/* Clear last key and last ascii because a new key has been typed */
 	display.lastAscii = display.lastKey = 0;
 	display.lastVirtual = display.lastNull = display.lastDead = false;
@@ -2582,7 +2582,7 @@ LRESULT wmSysKeyDown (long /*int*/ hwnd, long /*int*/ wParam, long /*int*/ lPara
 		/*
 		* Convert LastKey to lower case because Windows non-virtual
 		* keys that are also ASCII keys, such as like VK_A, are have
-		* upper case values in WM_SYSKEYDOWN despite the fact that the 
+		* upper case values in WM_SYSKEYDOWN despite the fact that the
 		* Shift was not pressed.
 		*/
 	 	display.lastKey = (int)/*64*/OS.CharLower ((short) mapKey);

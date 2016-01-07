@@ -54,7 +54,7 @@ public class ToolTip extends Widget {
  * <p>
  * The style value is either one of the style constants defined in
  * class <code>SWT</code> which is applicable to instances of this
- * class, or must be built by <em>bitwise OR</em>'ing together 
+ * class, or must be built by <em>bitwise OR</em>'ing together
  * (that is, using the <code>int</code> "|" operator) two or more
  * of those <code>SWT</code> style constants. The class description
  * lists the style constants that are applicable to the class.
@@ -140,7 +140,7 @@ void destroyWidget () {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  */
 public boolean getAutoHide () {
 	checkWidget();
@@ -325,7 +325,7 @@ public void removeSelectionListener (SelectionListener listener) {
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (eventTable == null) return;
 	eventTable.unhook (SWT.Selection, listener);
-	eventTable.unhook (SWT.DefaultSelection,listener);	
+	eventTable.unhook (SWT.DefaultSelection,listener);
 }
 
 /**
@@ -338,7 +338,7 @@ public void removeSelectionListener (SelectionListener listener) {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @see #getVisible
  * @see #setVisible
  */
@@ -461,7 +461,7 @@ void updateMessage () {
 
 /**
  * Marks the receiver as visible if the argument is <code>true</code>,
- * and marks it invisible otherwise. 
+ * and marks it invisible otherwise.
  * <p>
  * If one of the receiver's ancestors is not visible or some
  * other condition makes the receiver not visible, marking
@@ -508,7 +508,7 @@ public void setVisible (boolean visible) {
 			}
 			long /*int*/ lParam = OS.MAKELPARAM (nX, nY);
 			OS.SendMessage (hwndToolTip, OS.TTM_TRACKPOSITION, 0, lParam);
-			
+
 			/*
 			* Feature in Windows.  Windows will not show a tool tip
 			* if the cursor is outside the parent window (even on XP,
@@ -531,7 +531,7 @@ public void setVisible (boolean visible) {
 			} else {
 				OS.SendMessage (hwndToolTip, OS.TTM_TRACKACTIVATE, 1, lpti);
 			}
-			
+
 			int time = (int)/*64*/OS.SendMessage (hwndToolTip, OS.TTM_GETDELAYTIME, OS.TTDT_AUTOPOP, 0);
 			OS.SetTimer (hwndToolTip, TIMER_ID, time, 0);
 			updateMessage();

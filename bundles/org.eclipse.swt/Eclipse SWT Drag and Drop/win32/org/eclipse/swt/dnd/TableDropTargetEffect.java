@@ -15,21 +15,21 @@ import org.eclipse.swt.internal.win32.*;
 import org.eclipse.swt.widgets.*;
 
 /**
- * This class provides a default drag under effect (eg. select, insert and scroll) 
+ * This class provides a default drag under effect (eg. select, insert and scroll)
  * when a drag occurs over a <code>Table</code>.
- * 
+ *
  * <p>Classes that wish to provide their own drag under effect for a <code>Table</code>
- * can extend the <code>TableDropTargetEffect</code> and override any applicable methods 
+ * can extend the <code>TableDropTargetEffect</code> and override any applicable methods
  * in <code>TableDropTargetEffect</code> to display their own drag under effect.</p>
- * 
+ *
  * Subclasses that override any methods of this class must call the corresponding
  * <code>super</code> method to get the default drag under effect implementation.
  *
- * <p>The feedback value is either one of the FEEDBACK constants defined in 
- * class <code>DND</code> which is applicable to instances of this class, 
- * or it must be built by <em>bitwise OR</em>'ing together 
+ * <p>The feedback value is either one of the FEEDBACK constants defined in
+ * class <code>DND</code> which is applicable to instances of this class,
+ * or it must be built by <em>bitwise OR</em>'ing together
  * (that is, using the <code>int</code> "|" operator) two or more
- * of those <code>DND</code> effect constants. 
+ * of those <code>DND</code> effect constants.
  * </p>
  * <p>
  * <dl>
@@ -37,25 +37,25 @@ import org.eclipse.swt.widgets.*;
  * <dd>FEEDBACK_SELECT, FEEDBACK_SCROLL</dd>
  * </dl>
  * </p>
- * 
+ *
  * @see DropTargetAdapter
  * @see DropTargetEvent
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
- * 
+ *
  * @since 3.3
  */
 public class TableDropTargetEffect extends DropTargetEffect {
 	static final int SCROLL_HYSTERESIS = 200; // milli seconds
-	
+
 	int scrollIndex = -1;
 	long scrollBeginTime;
 	TableItem dropHighlight;
 	int iItemInsert = -1;
 
 	/**
-	 * Creates a new <code>TableDropTargetEffect</code> to handle the drag under effect on the specified 
+	 * Creates a new <code>TableDropTargetEffect</code> to handle the drag under effect on the specified
 	 * <code>Table</code>.
-	 * 
+	 *
 	 * @param table the <code>Table</code> over which the user positions the cursor to drop the data
 	 */
 	public TableDropTargetEffect(Table table) {
@@ -72,14 +72,14 @@ public class TableDropTargetEffect extends DropTargetEffect {
 	/**
 	 * This implementation of <code>dragEnter</code> provides a default drag under effect
 	 * for the feedback specified in <code>event.feedback</code>.
-	 * 
+	 *
 	 * For additional information see <code>DropTargetAdapter.dragEnter</code>.
-	 * 
+	 *
 	 * Subclasses that override this method should call <code>super.dragEnter(event)</code>
 	 * to get the default drag under effect implementation.
 	 *
 	 * @param event  the information associated with the drag enter event
-	 * 
+	 *
 	 * @see DropTargetAdapter
 	 * @see DropTargetEvent
 	 */
@@ -90,18 +90,18 @@ public class TableDropTargetEffect extends DropTargetEffect {
 		dropHighlight = null;
 		iItemInsert = -1;
 	}
-	
+
 	/**
 	 * This implementation of <code>dragLeave</code> provides a default drag under effect
-	 * for the feedback specified in <code>event.feedback</code>. 
-	 * 
+	 * for the feedback specified in <code>event.feedback</code>.
+	 *
 	 * For additional information see <code>DropTargetAdapter.dragLeave</code>.
-	 * 
+	 *
 	 * Subclasses that override this method should call <code>super.dragLeave(event)</code>
 	 * to get the default drag under effect implementation.
 	 *
 	 * @param event  the information associated with the drag leave event
-	 * 
+	 *
 	 * @see DropTargetAdapter
 	 * @see DropTargetEvent
 	 */
@@ -112,7 +112,7 @@ public class TableDropTargetEffect extends DropTargetEffect {
 		if (dropHighlight != null) {
 			LVITEM lvItem = new LVITEM ();
 			lvItem.stateMask = OS.LVIS_DROPHILITED;
-			OS.SendMessage(handle, OS.LVM_SETITEMSTATE, -1, lvItem);		
+			OS.SendMessage(handle, OS.LVM_SETITEMSTATE, -1, lvItem);
 			dropHighlight = null;
 		}
 		if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION(5, 1)) {
@@ -130,16 +130,16 @@ public class TableDropTargetEffect extends DropTargetEffect {
 
 	/**
 	 * This implementation of <code>dragOver</code> provides a default drag under effect
-	 * for the feedback specified in <code>event.feedback</code>. The class description 
+	 * for the feedback specified in <code>event.feedback</code>. The class description
 	 * lists the FEEDBACK constants that are applicable to the class.
-	 * 
+	 *
 	 * For additional information see <code>DropTargetAdapter.dragOver</code>.
-	 * 
+	 *
 	 * Subclasses that override this method should call <code>super.dragOver(event)</code>
 	 * to get the default drag under effect implementation.
 	 *
 	 * @param event  the information associated with the drag over event
-	 * 
+	 *
 	 * @see DropTargetAdapter
 	 * @see DropTargetEvent
 	 * @see DND#FEEDBACK_SELECT
@@ -155,7 +155,7 @@ public class TableDropTargetEffect extends DropTargetEffect {
 		LVHITTESTINFO pinfo = new LVHITTESTINFO();
 		pinfo.x = coordinates.x;
 		pinfo.y = coordinates.y;
-		OS.SendMessage(handle, OS.LVM_HITTEST, 0, pinfo);	
+		OS.SendMessage(handle, OS.LVM_HITTEST, 0, pinfo);
 		if ((effect & DND.FEEDBACK_SCROLL) == 0) {
 			scrollBeginTime = 0;
 			scrollIndex = -1;
@@ -195,13 +195,13 @@ public class TableDropTargetEffect extends DropTargetEffect {
 				scrollIndex = pinfo.iItem;
 			}
 		}
-		
+
 		if (pinfo.iItem != -1 && (effect & DND.FEEDBACK_SELECT) != 0) {
 			TableItem item = table.getItem(pinfo.iItem);
 			if (dropHighlight != item) {
 				LVITEM lvItem = new LVITEM();
 				lvItem.stateMask = OS.LVIS_DROPHILITED;
-				OS.SendMessage(handle, OS.LVM_SETITEMSTATE, -1, lvItem);		
+				OS.SendMessage(handle, OS.LVM_SETITEMSTATE, -1, lvItem);
 				lvItem.state = OS.LVIS_DROPHILITED;
 				OS.SendMessage(handle, OS.LVM_SETITEMSTATE, pinfo.iItem, lvItem);
 				dropHighlight = item;
@@ -210,7 +210,7 @@ public class TableDropTargetEffect extends DropTargetEffect {
 			if (dropHighlight != null) {
 				LVITEM lvItem = new LVITEM ();
 				lvItem.stateMask = OS.LVIS_DROPHILITED;
-				OS.SendMessage(handle, OS.LVM_SETITEMSTATE, -1, lvItem);		
+				OS.SendMessage(handle, OS.LVM_SETITEMSTATE, -1, lvItem);
 				dropHighlight = null;
 			}
 		}

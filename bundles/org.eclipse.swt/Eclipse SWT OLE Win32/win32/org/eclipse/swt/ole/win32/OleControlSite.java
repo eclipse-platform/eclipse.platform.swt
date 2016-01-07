@@ -21,9 +21,9 @@ import org.eclipse.swt.internal.win32.*;
 /**
  * OleControlSite provides a site to manage an embedded ActiveX Control within a container.
  *
- * <p>In addition to the behaviour provided by OleClientSite, this object provides the following: 
+ * <p>In addition to the behaviour provided by OleClientSite, this object provides the following:
  * <ul>
- *	<li>events from the ActiveX control 
+ *	<li>events from the ActiveX control
  * 	<li>notification of property changes from the ActiveX control
  *	<li>simplified access to well known properties of the ActiveX Control (e.g. font, background color)
  *	<li>expose ambient properties of the container to the ActiveX Control
@@ -36,7 +36,7 @@ import org.eclipse.swt.internal.win32.*;
  * or set a layout on it.
  * </p><p>
  * <dl>
- *	<dt><b>Styles</b> <dd>BORDER 
+ *	<dt><b>Styles</b> <dd>BORDER
  *	<dt><b>Events</b> <dd>Dispose, Move, Resize
  * </dl>
  *
@@ -48,20 +48,20 @@ public class OleControlSite extends OleClientSite
 	// interfaces for this container
 	private COMObject iOleControlSite;
 	private COMObject iDispatch;
-	
+
 	// supporting Property Change attributes
 	private OlePropertyChangeSink olePropertyChangeSink;
-	
+
 	// supporting Event Sink attributes
 	private OleEventSink[] oleEventSink = new OleEventSink[0];
 	private GUID[] oleEventSinkGUID = new GUID[0];
 	private long /*int*/[] oleEventSinkIUnknown = new long /*int*/[0];
-		
+
 	// supporting information for the Control COM object
 	private CONTROLINFO currentControlInfo;
 	private int[] sitePropertyIds = new int[0];
 	private Variant[] sitePropertyValues = new Variant[0];
-	
+
 	private Font font;
 
 	// work around for IE destroying the caret
@@ -71,8 +71,8 @@ public class OleControlSite extends OleClientSite
 
 /**
  * Create an OleControlSite child widget using the OLE Document type associated with the
- * specified file.  The OLE Document type is determined either through header information in the file 
- * or through a Registry entry for the file extension. Use style bits to select a particular look 
+ * specified file.  The OLE Document type is determined either through header information in the file
+ * or through a Registry entry for the file extension. Use style bits to select a particular look
  * or set of properties.
  *
  * @param parent a composite widget; must be an OleFrame
@@ -81,7 +81,7 @@ public class OleControlSite extends OleClientSite
  *
  * @exception IllegalArgumentException
  * <ul><li>ERROR_NULL_ARGUMENT when the parent is null
- *     <li>ERROR_INVALID_ARGUMENT when the parent is not an OleFrame</ul> 
+ *     <li>ERROR_INVALID_ARGUMENT when the parent is not an OleFrame</ul>
  * @exception SWTException
  * <ul><li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread
  *     <li>ERROR_CANNOT_CREATE_OBJECT when failed to create OLE Object
@@ -89,12 +89,12 @@ public class OleControlSite extends OleClientSite
  *     <li>ERROR_INTERFACE_NOT_FOUND when unable to create callbacks for OLE Interfaces
  *     <li>ERROR_INVALID_CLASSID
  * </ul>
- * 
+ *
  * @since 3.5
  */
 public OleControlSite(Composite parent, int style, File file) {
 	super(parent, style, file);
-	
+
 	// Init site properties
 	setSiteProperty(COM.DISPID_AMBIENT_USERMODE, new Variant(true));
 	setSiteProperty(COM.DISPID_AMBIENT_UIDEAD, new Variant(false));
@@ -105,9 +105,9 @@ public OleControlSite(Composite parent, int style, File file) {
  *
  * @param parent a composite widget; must be an OleFrame
  * @param style the bitwise OR'ing of widget styles
- * @param progId the unique program identifier which has been registered for this ActiveX Control; 
+ * @param progId the unique program identifier which has been registered for this ActiveX Control;
  *               the value of the ProgID key or the value of the VersionIndependentProgID key specified
- *               in the registry for this Control (for example, the VersionIndependentProgID for 
+ *               in the registry for this Control (for example, the VersionIndependentProgID for
  *               Internet Explorer is Shell.Explorer)
  *
  * @exception IllegalArgumentException <ul>
@@ -124,32 +124,32 @@ public OleControlSite(Composite parent, int style, File file) {
 public OleControlSite(Composite parent, int style, String progId) {
 	super(parent, style);
 	try {
-	
+
 		// check for licensing
 		appClsid = getClassID(progId);
 		if (appClsid == null) OLE.error(OLE.ERROR_INVALID_CLASSID);
-	
+
 		long /*int*/ licinfo = getLicenseInfo(appClsid);
 		if (licinfo == 0) {
-			
+
 			// Open a storage object
 			tempStorage = createTempStorage();
-	
+
 			// Create ole object with storage object
 			long /*int*/[] address = new long /*int*/[1];
 			/*
 			* Bug in ICA Client 2.7. The creation of the IOleObject fails if the client
 			* site is provided to OleCreate().  The fix is to detect that the program
 			* id is an ICA Client and do not pass a client site to OleCreate().
-			* IOleObject.SetClientSite() is called later on.  
+			* IOleObject.SetClientSite() is called later on.
 			*/
 			long /*int*/ clientSite = isICAClient() ? 0 : iOleClientSite.getAddress();
 			int result = COM.OleCreate(appClsid, COM.IIDIUnknown, COM.OLERENDER_DRAW, null, clientSite, tempStorage.getAddress(), address);
 			if (result != COM.S_OK)
 				OLE.error(OLE.ERROR_CANNOT_CREATE_OBJECT, result);
-	
+
 			objIUnknown = new IUnknown(address[0]);
-			
+
 		} else {
 			// Prepare the ClassFactory
 			long /*int*/[] ppvObject = new long /*int*/[1];
@@ -168,9 +168,9 @@ public OleControlSite(Composite parent, int style, String progId) {
 			} finally {
 				COM.SysFreeString(licinfo);
 			}
-			
+
 			objIUnknown = new IUnknown(ppvObject[0]);
-	
+
 			// Prepare a storage medium
 			ppvObject = new long /*int*/[1];
 			if (objIUnknown.QueryInterface(COM.IIDIPersistStorage, ppvObject) == COM.S_OK) {
@@ -180,25 +180,25 @@ public OleControlSite(Composite parent, int style, String progId) {
 				persist.Release();
 			}
 		}
-	
+
 		// Init sinks
 		addObjectReferences();
-		
+
 		// Init site properties
 		setSiteProperty(COM.DISPID_AMBIENT_USERMODE, new Variant(true));
 		setSiteProperty(COM.DISPID_AMBIENT_UIDEAD, new Variant(false));
-			
+
 		if (COM.OleRun(objIUnknown.getAddress()) == OLE.S_OK) state= STATE_RUNNING;
 
 	} catch (SWTError e) {
 		dispose();
 		disposeCOMInterfaces();
 		throw e;
-	}			
+	}
 }
 /**
  * Create an OleClientSite child widget to edit the specified file using the specified OLE Document
- * application.  Use style bits to select a particular look or set of properties. 
+ * application.  Use style bits to select a particular look or set of properties.
  * <p>
  * <b>IMPORTANT:</b> This method is <em>not</em> part of the public
  * API for <code>OleClientSite</code>. It is marked public only so that it
@@ -208,7 +208,7 @@ public OleControlSite(Composite parent, int style, String progId) {
  * </p>
  * @param parent a composite widget; must be an OleFrame
  * @param style the bitwise OR'ing of widget styles
- * @param progId the unique program identifier of am OLE Document application; 
+ * @param progId the unique program identifier of am OLE Document application;
  *               the value of the ProgID key or the value of the VersionIndependentProgID key specified
  *               in the registry for the desired OLE Document (for example, the VersionIndependentProgID
  *               for Word is Word.Document)
@@ -223,26 +223,26 @@ public OleControlSite(Composite parent, int style, String progId) {
  *     <li>ERROR_CANNOT_CREATE_OBJECT when failed to create OLE Object
  *     <li>ERROR_CANNOT_OPEN_FILE when failed to open file
  * </ul>
- * 
+ *
  * @noreference This method is not intended to be referenced by clients.
- * 
+ *
  * @since 3.5
  */
 public OleControlSite(Composite parent, int style, String progId, File file) {
 	super(parent, style, progId, file);
-	
+
 	// Init site properties
 	setSiteProperty(COM.DISPID_AMBIENT_USERMODE, new Variant(true));
 	setSiteProperty(COM.DISPID_AMBIENT_UIDEAD, new Variant(false));
 }
-/**	 
+/**
  * Adds the listener to receive events.
  *
  * @param eventID the id of the event
- * 
+ *
  * @param listener the listener
  *
- * @exception IllegalArgumentException <ul> 
+ * @exception IllegalArgumentException <ul>
  *	    <li>ERROR_NULL_ARGUMENT when listener is null</li>
  * </ul>
  */
@@ -252,7 +252,7 @@ public void addEventListener(int eventID, OleListener listener) {
 	if (riid != null) {
 		addEventListener(objIUnknown.getAddress(), riid, eventID, listener);
 	}
-	
+
 }
 static GUID getDefaultEventSinkGUID(IUnknown unknown) {
 	// get Event Sink I/F from IProvideClassInfo2
@@ -272,8 +272,8 @@ static GUID getDefaultEventSinkGUID(IUnknown unknown) {
 		long /*int*/[] ppEI = new long /*int*/[1];
 		int result = pci.GetClassInfo(ppTI);
 		pci.Release();
-		
-		if (result == COM.S_OK && ppTI[0] != 0) {		
+
+		if (result == COM.S_OK && ppTI[0] != 0) {
 			ITypeInfo classInfo = new ITypeInfo(ppTI[0]);
 			long /*int*/[] ppTypeAttr = new long /*int*/[1];
 			result = classInfo.GetTypeAttr(ppTypeAttr);
@@ -283,7 +283,7 @@ static GUID getDefaultEventSinkGUID(IUnknown unknown) {
 				classInfo.ReleaseTypeAttr(ppTypeAttr[0]);
 				int implMask = COM.IMPLTYPEFLAG_FDEFAULT | COM.IMPLTYPEFLAG_FSOURCE | COM.IMPLTYPEFLAG_FRESTRICTED;
 				int implBits = COM.IMPLTYPEFLAG_FDEFAULT | COM.IMPLTYPEFLAG_FSOURCE;
-				
+
 				for (int i = 0; i < typeAttribute.cImplTypes; i++) {
 					int[] pImplTypeFlags = new int[1];
 					if (classInfo.GetImplTypeFlags(i, pImplTypeFlags) == COM.S_OK) {
@@ -297,7 +297,7 @@ static GUID getDefaultEventSinkGUID(IUnknown unknown) {
 				}
 			}
 			classInfo.Release();
-	
+
 			if (ppEI[0] != 0) {
 				ITypeInfo eventInfo = new ITypeInfo(ppEI[0]);
 				ppTypeAttr = new long /*int*/[1];
@@ -316,16 +316,16 @@ static GUID getDefaultEventSinkGUID(IUnknown unknown) {
 	return null;
 }
 
-/**	 
+/**
  * Adds the listener to receive events.
  *
  * @since 2.0
- * 
+ *
  * @param automation the automation object that provides the event notification
  * @param eventID the id of the event
  * @param listener the listener
  *
- * @exception IllegalArgumentException <ul> 
+ * @exception IllegalArgumentException <ul>
  *	   <li>ERROR_NULL_ARGUMENT when listener is null</li>
  * </ul>
  */
@@ -337,19 +337,19 @@ public void addEventListener(OleAutomation automation, int eventID, OleListener 
 	if (riid != null) {
 		addEventListener(address, riid, eventID, listener);
 	}
-	
+
 }
 /**
  * Adds the listener to receive events.
  *
  * @since 3.2
- * 
+ *
  * @param automation the automation object that provides the event notification
  * @param eventSinkId the GUID of the event sink
  * @param eventID the id of the event
  * @param listener the listener
  *
- * @exception IllegalArgumentException <ul> 
+ * @exception IllegalArgumentException <ul>
  *	   <li>ERROR_NULL_ARGUMENT when listener is null</li>
  * </ul>
  */
@@ -370,7 +370,7 @@ void addEventListener(long /*int*/ iunknown, GUID guid, int eventID, OleListener
 	for (int i = 0; i < oleEventSinkGUID.length; i++) {
 		if (COM.IsEqualGUID(oleEventSinkGUID[i], guid)) {
 			if (iunknown == oleEventSinkIUnknown[i]) {
-				index = i; 
+				index = i;
 				break;
 			}
 		}
@@ -388,21 +388,21 @@ void addEventListener(long /*int*/ iunknown, GUID guid, int eventID, OleListener
 		oleEventSink = newOleEventSink;
 		oleEventSinkGUID = newOleEventSinkGUID;
 		oleEventSinkIUnknown = newOleEventSinkIUnknown;
-		
+
 		oleEventSink[oldLength] = new OleEventSink(this, iunknown, guid);
 		oleEventSinkGUID[oldLength] = guid;
 		oleEventSinkIUnknown[oldLength] = iunknown;
 		oleEventSink[oldLength].AddRef();
 		oleEventSink[oldLength].connect();
 		oleEventSink[oldLength].addListener(eventID, listener);
-		
+
 	}
 }
 @Override
 protected void addObjectReferences() {
 
 	super.addObjectReferences();
-	
+
 	// Get property change notification from control
 	connectPropertyChangeSink();
 
@@ -415,21 +415,21 @@ protected void addObjectReferences() {
 		currentControlInfo = new CONTROLINFO();
 		objIOleControl.GetControlInfo(currentControlInfo);
 		objIOleControl.Release();
-	}		
+	}
 }
-/**	 
+/**
  * Adds the listener to receive events.
  *
  * @param propertyID the identifier of the property
  * @param listener the listener
  *
- * @exception IllegalArgumentException <ul> 
+ * @exception IllegalArgumentException <ul>
  *	    <li>ERROR_NULL_ARGUMENT when listener is null</li>
  * </ul>
  */
 public void addPropertyListener(int propertyID, OleListener listener) {
 	if (listener == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
-	olePropertyChangeSink.addListener(propertyID, listener);	
+	olePropertyChangeSink.addListener(propertyID, listener);
 }
 
 private void connectPropertyChangeSink() {
@@ -440,7 +440,7 @@ private void connectPropertyChangeSink() {
 @Override
 protected void createCOMInterfaces () {
 	super.createCOMInterfaces();
-	
+
 	// register each of the interfaces that this object implements
 	iOleControlSite = new COMObject(new int[]{2, 0, 0, 0, 1, 1, 3, 2, 1, 0}){
 		@Override
@@ -459,7 +459,7 @@ protected void createCOMInterfaces () {
 		public long /*int*/ method8(long /*int*/[] args) {return OnFocus((int)/*64*/args[0]);}
 		// method9 ShowPropertyFrame - not implemented
 	};
-	
+
 	iDispatch = new COMObject(new int[]{2, 0, 0, 1, 3, 5, 8}){
 		@Override
 		public long /*int*/ method0(long /*int*/[] args) {return QueryInterface(args[0], args[1]);}
@@ -513,14 +513,14 @@ public Color getBackground () {
 		OleAutomation oleObject= new OleAutomation(this);
 		Variant varBackColor = oleObject.getProperty(COM.DISPID_BACKCOLOR);
 		oleObject.dispose();
-	
+
 		if (varBackColor != null){
 			int[] colorRef = new int[1];
 			if (COM.OleTranslateColor(varBackColor.getInt(), getDisplay().hPalette, colorRef) == COM.S_OK)
 				return Color.win32_new(getDisplay(), colorRef[0]);
 		}
 	}
-		
+
 	return super.getBackground();
 }
 @Override
@@ -530,7 +530,7 @@ public Font getFont () {
 		OleAutomation oleObject= new OleAutomation(this);
 		Variant varDispFont = oleObject.getProperty(COM.DISPID_FONT);
 		oleObject.dispose();
-	
+
 		if (varDispFont != null){
 			OleAutomation iDispFont = varDispFont.getAutomation();
 			Variant lfFaceName = iDispFont.getProperty(COM.DISPID_FONT_NAME);
@@ -540,9 +540,9 @@ public Font getFont () {
 			Variant lfBold     = iDispFont.getProperty(COM.DISPID_FONT_BOLD);
 			iDispFont.dispose();
 
-			if (lfFaceName != null && 
-				lfHeight != null && 
-				lfItalic != null && 
+			if (lfFaceName != null &&
+				lfHeight != null &&
+				lfItalic != null &&
 				lfBold != null){
 				int style = 3 * lfBold.getInt() + 2 * lfItalic.getInt();
 				font = new Font(getShell().getDisplay(), lfFaceName.getString(), lfHeight.getInt(), style);
@@ -550,7 +550,7 @@ public Font getFont () {
 			}
 		}
 	}
-		
+
 	return super.getFont();
 }
 @Override
@@ -561,14 +561,14 @@ public Color getForeground () {
 		OleAutomation oleObject= new OleAutomation(this);
 		Variant varForeColor = oleObject.getProperty(COM.DISPID_FORECOLOR);
 		oleObject.dispose();
-	
+
 		if (varForeColor != null){
 			int[] colorRef = new int[1];
 			if (COM.OleTranslateColor(varForeColor.getInt(), getDisplay().hPalette, colorRef) == COM.S_OK)
 				return Color.win32_new(getDisplay(), colorRef[0]);
 		}
 	}
-		
+
 	return super.getForeground();
 }
 protected long /*int*/ getLicenseInfo(GUID clsid) {
@@ -592,18 +592,18 @@ protected long /*int*/ getLicenseInfo(GUID clsid) {
 		}
 		classFactory.Release();
 	}
-	unknown.Release();	
+	unknown.Release();
 	return result;
 }
 /**
- * 
+ *
  * Get the control site property specified by the dispIdMember, or
  * <code>null</code> if the dispId is not recognised.
- * 
+ *
  * @param dispId the dispId
- * 
+ *
  * @return the property value or <code>null</code>
- * 
+ *
  * @since 2.1
  */
 public Variant getSiteProperty(int dispId){
@@ -623,7 +623,7 @@ protected int GetWindow(long /*int*/ phwnd) {
 		COM.MoveMemory(phwnd, new long /*int*/[] {0}, OS.PTR_SIZEOF);
 		return COM.E_NOTIMPL;
 	}
-	
+
 	// Copy the Window's handle into the memory passed in
 	COM.MoveMemory(phwnd, new long /*int*/[] {handle}, OS.PTR_SIZEOF);
 	return COM.S_OK;
@@ -661,7 +661,7 @@ private int Invoke(int dispIdMember, long /*int*/ riid, int lcid, int dwFlags, l
 			if (pExcepInfo != 0) COM.MoveMemory(pExcepInfo, new long /*int*/ [] {0}, OS.PTR_SIZEOF);
 			if (pArgErr != 0) COM.MoveMemory(pArgErr, new int[] {0}, 4);
 			return COM.E_NOTIMPL;
-			
+
 		default :
 			if (pVarResult != 0) COM.MoveMemory(pVarResult, new long /*int*/ [] {0}, OS.PTR_SIZEOF);
 			if (pExcepInfo != 0) COM.MoveMemory(pExcepInfo,new long /*int*/ [] {0}, OS.PTR_SIZEOF);
@@ -721,7 +721,7 @@ void onFocusOut(Event e) {
 	* Bug in Windows.  When IE7 loses focus and UIDeactivate()
 	* is called, IE destroys the caret even though it is
 	* no longer owned by IE.  If focus has moved to a control
-	* that shows a caret then the caret disappears.  The fix 
+	* that shows a caret then the caret disappears.  The fix
 	* is to detect this case and restore the caret.
 	*/
 	int threadId = OS.GetCurrentThreadId();
@@ -794,18 +794,18 @@ protected int Release() {
 }
 @Override
 protected void releaseObjectInterfaces() {
-	
+
 	disconnectEventSinks();
-	
+
 	disconnectPropertyChangeSink();
 
 	super.releaseObjectInterfaces();
 }
-/**	 
+/**
  * Removes the listener.
  *
  * @param eventID the event identifier
- * 
+ *
  * @param listener the listener which should no longer be notified
  *
  * @exception IllegalArgumentException <ul>
@@ -815,24 +815,24 @@ protected void releaseObjectInterfaces() {
 public void removeEventListener(int eventID, OleListener listener) {
 	checkWidget();
 	if (listener == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
-	
+
 	GUID riid = getDefaultEventSinkGUID(objIUnknown);
 	if (riid != null) {
 		removeEventListener(objIUnknown.getAddress(), riid, eventID, listener);
 	}
 }
-/**	 
+/**
  * Removes the listener.
  *
  * @since 2.0
  * @deprecated - use OleControlSite.removeEventListener(OleAutomation, int, OleListener)
- * 
+ *
  * @param automation the automation object that provides the event notification
- * 
+ *
  * @param guid the identifier of the events COM interface
- * 
+ *
  * @param eventID the event identifier
- * 
+ *
  * @param listener the listener
  *
  * @exception IllegalArgumentException <ul>
@@ -845,7 +845,7 @@ public void removeEventListener(OleAutomation automation, GUID guid, int eventID
 	if (automation == null || listener == null || guid == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
 	removeEventListener(automation.getAddress(), guid, eventID, listener);
 }
-/**	 
+/**
  * Removes the listener.
  *
  * @param automation the automation object that provides the event notification
@@ -855,7 +855,7 @@ public void removeEventListener(OleAutomation automation, GUID guid, int eventID
  * @exception IllegalArgumentException <ul>
  *	    <li>ERROR_NULL_ARGUMENT when listener is null</li>
  * </ul>
- * 
+ *
  * @since 2.0
  */
 public void removeEventListener(OleAutomation automation, int eventID, OleListener listener) {
@@ -888,12 +888,12 @@ void removeEventListener(long /*int*/ iunknown, GUID guid, int eventID, OleListe
 						System.arraycopy(oleEventSink, 0, newOleEventSink, 0, i);
 						System.arraycopy(oleEventSink, i + 1, newOleEventSink, i, oldLength - i - 1);
 						oleEventSink = newOleEventSink;
-						
+
 						GUID[] newOleEventSinkGUID = new GUID[oldLength - 1];
 						System.arraycopy(oleEventSinkGUID, 0, newOleEventSinkGUID, 0, i);
 						System.arraycopy(oleEventSinkGUID, i + 1, newOleEventSinkGUID, i, oldLength - i - 1);
 						oleEventSinkGUID = newOleEventSinkGUID;
-						
+
 						long /*int*/[] newOleEventSinkIUnknown = new long /*int*/[oldLength - 1];
 						System.arraycopy(oleEventSinkIUnknown, 0, newOleEventSinkIUnknown, 0, i);
 						System.arraycopy(oleEventSinkIUnknown, i + 1, newOleEventSinkIUnknown, i, oldLength - i - 1);
@@ -905,7 +905,7 @@ void removeEventListener(long /*int*/ iunknown, GUID guid, int eventID, OleListe
 		}
 	}
 }
-/**	 
+/**
  * Removes the listener.
  *
  * @param propertyID the identifier of the property
@@ -935,14 +935,14 @@ public void setBackground (Color color) {
 public void setFont (Font font) {
 
 	super.setFont(font);
-	
+
 	//set the font of the ActiveX Control
 	if (objIUnknown != null) {
-		
+
 		OleAutomation oleObject= new OleAutomation(this);
 		Variant varDispFont = oleObject.getProperty(COM.DISPID_FONT);
 		oleObject.dispose();
-	
+
 		if (varDispFont != null){
 			OleAutomation iDispFont = varDispFont.getAutomation();
 			FontData[] fdata = font.getFontData();
@@ -954,7 +954,7 @@ public void setFont (Font font) {
 			iDispFont.dispose();
 		}
 	}
-	this.font = font;	
+	this.font = font;
 	return;
 }
 @Override
@@ -973,7 +973,7 @@ public void setForeground (Color color) {
  * Sets the control site property specified by the dispIdMember to a new value.
  * The value will be disposed by the control site when it is no longer required
  * using Variant.dispose.  Passing a value of null will clear the dispId value.
- * 
+ *
  * @param dispId the ID of the property as specified by the IDL of the ActiveX Control
  * @param value The new value for the property as expressed in a Variant.
  *

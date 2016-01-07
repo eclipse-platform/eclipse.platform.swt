@@ -12,19 +12,19 @@ package org.eclipse.swt.internal.win32;
 
 public class PAINTSTRUCT {
 	/** @field cast=(HDC) */
-	public long /*int*/  hdc; 
+	public long /*int*/  hdc;
 	public boolean fErase;
 //	public RECT rcPaint;
 	/** @field accessor=rcPaint.left */
-	public int left; 
+	public int left;
 	/** @field accessor=rcPaint.top */
-	public int top; 
+	public int top;
 	/** @field accessor=rcPaint.right */
-	public int right; 
+	public int right;
 	/** @field accessor=rcPaint.bottom */
 	public int bottom;
-	public boolean fRestore; 
-	public boolean fIncUpdate; 
+	public boolean fRestore;
+	public boolean fIncUpdate;
 	public byte[] rgbReserved = new byte[32];
 	public static final int sizeof = OS.PAINTSTRUCT_sizeof ();
 }

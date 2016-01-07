@@ -29,7 +29,7 @@ import org.eclipse.swt.events.*;
  * <p>
  * IMPORTANT: This class is <em>not</em> intended to be subclassed.
  * </p>
- * 
+ *
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  * @noextend This class is not intended to be subclassed by clients.
  */
@@ -47,7 +47,7 @@ public class CoolItem extends Item {
  * <p>
  * The style value is either one of the style constants defined in
  * class <code>SWT</code> which is applicable to instances of this
- * class, or must be built by <em>bitwise OR</em>'ing together 
+ * class, or must be built by <em>bitwise OR</em>'ing together
  * (that is, using the <code>int</code> "|" operator) two or more
  * of those <code>SWT</code> style constants. The class description
  * lists the style constants that are applicable to the class.
@@ -83,7 +83,7 @@ public CoolItem (CoolBar parent, int style) {
  * <p>
  * The style value is either one of the style constants defined in
  * class <code>SWT</code> which is applicable to instances of this
- * class, or must be built by <em>bitwise OR</em>'ing together 
+ * class, or must be built by <em>bitwise OR</em>'ing together
  * (that is, using the <code>int</code> "|" operator) two or more
  * of those <code>SWT</code> style constants. The class description
  * lists the style constants that are applicable to the class.
@@ -140,7 +140,7 @@ public CoolItem (CoolBar parent, int style, int index) {
  * @see SelectionListener
  * @see #removeSelectionListener
  * @see SelectionEvent
- * 
+ *
  * @since 2.0
  */
 public void addSelectionListener(SelectionListener listener) {
@@ -163,8 +163,8 @@ protected void checkSubclass () {
  * it would best be displayed at. The width hint and height hint arguments
  * allow the caller to ask the instance questions such as "Given a particular
  * width, how high does it need to be to show all of the contents?"
- * To indicate that the caller does not wish to constrain a particular 
- * dimension, the constant <code>SWT.DEFAULT</code> is passed for the hint. 
+ * To indicate that the caller does not wish to constrain a particular
+ * dimension, the constant <code>SWT.DEFAULT</code> is passed for the hint.
  * </p>
  *
  * @param wHint the width hint (can be <code>SWT.DEFAULT</code>)
@@ -255,7 +255,7 @@ Rectangle getClientArea () {
 	if ((parent.style & SWT.FLAT) == 0) {
 		y += insetRect.top;
 		width -= insetRect.right;
-		height -= insetRect.top + insetRect.bottom; 
+		height -= insetRect.top + insetRect.bottom;
 	}
 	if (index == 0) {
 		REBARBANDINFO rbBand = new REBARBANDINFO ();
@@ -312,7 +312,7 @@ void releaseHandle () {
  * @param control the new control that will be contained by the receiver
  *
  * @exception IllegalArgumentException <ul>
- *    <li>ERROR_INVALID_ARGUMENT - if the control has been disposed</li> 
+ *    <li>ERROR_INVALID_ARGUMENT - if the control has been disposed</li>
  *    <li>ERROR_INVALID_PARENT - if the control is not in the same widget tree</li>
  * </ul>
  * @exception SWTException <ul>
@@ -345,18 +345,18 @@ public void setControl (Control control) {
 	* it makes the new child visible and hides the old child and
 	* moves the new child to the top of the Z-order.  The fix is
 	* to save and restore the visibility and Z-order.
-	*/	
+	*/
 	long /*int*/ hwndAbove = 0;
 	if (newControl != null) {
 		hwndAbove = OS.GetWindow (hwndChild, OS.GW_HWNDPREV);
-	}		
+	}
 	boolean hideNew = newControl != null && !newControl.getVisible ();
 	boolean showOld = oldControl != null && oldControl.getVisible ();
 	OS.SendMessage (hwnd, OS.RB_SETBANDINFO, index, rbBand);
 	if (hideNew) newControl.setVisible (false);
 	if (showOld) oldControl.setVisible (true);
 	if (hwndAbove != 0 && hwndAbove != hwndChild) {
-		int flags = OS.SWP_NOSIZE | OS.SWP_NOMOVE | OS.SWP_NOACTIVATE; 
+		int flags = OS.SWP_NOSIZE | OS.SWP_NOMOVE | OS.SWP_NOACTIVATE;
 		SetWindowPos (hwndChild, hwndAbove, 0, 0, 0, 0, flags);
 	}
 }
@@ -418,11 +418,11 @@ public void setPreferredSize (int width, int height) {
 	}
 	REBARBANDINFO rbBand = new REBARBANDINFO ();
 	rbBand.cbSize = REBARBANDINFO.sizeof;
-	
+
 	/* Get the child size fields first so we don't overwrite them. */
 	rbBand.fMask = OS.RBBIM_CHILDSIZE;
 	OS.SendMessage (hwnd, OS.RB_GETBANDINFO, index, rbBand);
-	
+
 	/* Set the size fields we are currently modifying. */
 	rbBand.fMask = OS.RBBIM_CHILDSIZE | OS.RBBIM_IDEALSIZE;
 	rbBand.cxIdeal = cxIdeal;
@@ -522,19 +522,19 @@ public void setSize (int width, int height) {
 	}
 	REBARBANDINFO rbBand = new REBARBANDINFO ();
 	rbBand.cbSize = REBARBANDINFO.sizeof;
-	
+
 	/* Get the child size fields first so we don't overwrite them. */
 	rbBand.fMask = OS.RBBIM_CHILDSIZE | OS.RBBIM_IDEALSIZE;
 	OS.SendMessage (hwnd, OS.RB_GETBANDINFO, index, rbBand);
-	
+
 	/* Set the size fields we are currently modifying. */
 	if (!ideal) rbBand.cxIdeal = cxIdeal;
 	if (!minimum) rbBand.cyMinChild = cyChild;
 	rbBand.cyChild = cyChild;
-	
+
 	/*
 	* Do not set the size for the last item on the row.
-	*/	
+	*/
 	if (!parent.isLastItemOfRow (index)) {
 		if (OS.COMCTL32_MAJOR >= 6) {
 			MARGINS margins = new MARGINS ();
@@ -574,14 +574,14 @@ public void setSize (Point size) {
 /**
  * Returns the minimum size that the cool item can
  * be resized to using the cool item's gripper.
- * 
+ *
  * @return a point containing the minimum width and height of the cool item, in pixels
- * 
+ *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 2.0
  */
 public Point getMinimumSize () {
@@ -602,15 +602,15 @@ public Point getMinimumSize () {
 /**
  * Sets the minimum size that the cool item can be resized to
  * using the cool item's gripper, to the point specified by the arguments.
- * 
+ *
  * @param width the minimum width of the cool item, in pixels
  * @param height the minimum height of the cool item, in pixels
- * 
+ *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 2.0
  */
 public void setMinimumSize (int width, int height) {
@@ -631,11 +631,11 @@ public void setMinimumSize (int width, int height) {
 	}
 	REBARBANDINFO rbBand = new REBARBANDINFO ();
 	rbBand.cbSize = REBARBANDINFO.sizeof;
-	
+
 	/* Get the child size fields first so we don't overwrite them. */
 	rbBand.fMask = OS.RBBIM_CHILDSIZE;
 	OS.SendMessage (hwnd, OS.RB_GETBANDINFO, index, rbBand);
-	
+
 	/* Set the size fields we are currently modifying. */
 	rbBand.cxMinChild = cxMinChild;
 	rbBand.cyMinChild = cyMinChild;
@@ -645,9 +645,9 @@ public void setMinimumSize (int width, int height) {
 /**
  * Sets the minimum size that the cool item can be resized to
  * using the cool item's gripper, to the point specified by the argument.
- * 
+ *
  * @param size a point representing the minimum width and height of the cool item, in pixels
- * 
+ *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the point is null</li>
  * </ul>
@@ -655,7 +655,7 @@ public void setMinimumSize (int width, int height) {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 2.0
  */
 public void setMinimumSize (Point size) {
@@ -705,7 +705,7 @@ void setWrap(boolean wrap) {
  *
  * @see SelectionListener
  * @see #addSelectionListener
- * 
+ *
  * @since 2.0
  */
 public void removeSelectionListener(SelectionListener listener) {
@@ -713,7 +713,7 @@ public void removeSelectionListener(SelectionListener listener) {
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (eventTable == null) return;
 	eventTable.unhook (SWT.Selection, listener);
-	eventTable.unhook (SWT.DefaultSelection,listener);	
+	eventTable.unhook (SWT.DefaultSelection,listener);
 }
 
 }

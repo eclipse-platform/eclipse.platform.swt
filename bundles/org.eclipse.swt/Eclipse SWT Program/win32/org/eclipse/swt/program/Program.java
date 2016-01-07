@@ -227,7 +227,7 @@ public static Program [] getPrograms () {
 	int [] lpcName = new int [] {lpName.length ()};
 	FILETIME ft = new FILETIME ();
 	int dwIndex = 0, count = 0;
-	while (OS.RegEnumKeyEx (OS.HKEY_CLASSES_ROOT, dwIndex, lpName, lpcName, null, null, null, ft) != OS.ERROR_NO_MORE_ITEMS) {	
+	while (OS.RegEnumKeyEx (OS.HKEY_CLASSES_ROOT, dwIndex, lpName, lpcName, null, null, null, ft) != OS.ERROR_NO_MORE_ITEMS) {
 		String path = lpName.toString (0, lpcName [0]);
 		lpcName [0] = lpName.length ();
 		Program program = getProgram (path, null);
@@ -257,7 +257,7 @@ public static Program [] getPrograms () {
  *
  * @param fileName the file or program name or URL (http:// or https://)
  * @return <code>true</code> if the file is launched, otherwise <code>false</code>
- * 
+ *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT when fileName is null</li>
  * </ul>
@@ -278,23 +278,23 @@ public static boolean launch (String fileName) {
  * @param fileName the file name or program name or URL (http:// or https://)
  * @param workingDir the name of the working directory or null
  * @return <code>true</code> if the file is launched, otherwise <code>false</code>
- * 
+ *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT when fileName is null</li>
  * </ul>
- * 
+ *
  * @since 3.6
  */
 public static boolean launch (String fileName, String workingDir) {
 	if (fileName == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
-	
+
 	/* Use the character encoding for the default locale */
 	long /*int*/ hHeap = OS.GetProcessHeap ();
 	TCHAR buffer = new TCHAR (0, fileName, true);
 	int byteCount = buffer.length () * TCHAR.sizeof;
 	long /*int*/ lpFile = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, byteCount);
 	OS.MoveMemory (lpFile, buffer, byteCount);
-	
+
 	long /*int*/ lpDirectory = 0;
 	if (workingDir != null && OS.PathIsExe(lpFile)) {
 	    TCHAR buffer1 = new TCHAR (0, workingDir, true);
@@ -302,7 +302,7 @@ public static boolean launch (String fileName, String workingDir) {
 	    lpDirectory = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, byteCount);
 	    OS.MoveMemory (lpDirectory, buffer1, byteCount);
 	}
-	
+
 	SHELLEXECUTEINFO info = new SHELLEXECUTEINFO ();
 	info.cbSize = SHELLEXECUTEINFO.sizeof;
 	info.lpFile = lpFile;
@@ -317,12 +317,12 @@ public static boolean launch (String fileName, String workingDir) {
 /**
  * Executes the program with the file as the single argument
  * in the operating system.  It is the responsibility of the
- * programmer to ensure that the file contains valid data for 
+ * programmer to ensure that the file contains valid data for
  * this program.
  *
  * @param fileName the file or program name
  * @return <code>true</code> if the file is launched, otherwise <code>false</code>
- * 
+ *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT when fileName is null</li>
  * </ul>
@@ -441,8 +441,8 @@ public boolean equals(Object other) {
 }
 
 /**
- * Returns an integer hash code for the receiver. Any two 
- * objects that return <code>true</code> when passed to 
+ * Returns an integer hash code for the receiver. Any two
+ * objects that return <code>true</code> when passed to
  * <code>equals</code> must return the same value for this
  * method.
  *

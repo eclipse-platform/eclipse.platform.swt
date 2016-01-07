@@ -37,7 +37,7 @@ import org.eclipse.swt.events.*;
  * @see <a href="http://www.eclipse.org/swt/snippets/#spinner">Spinner snippets</a>
  * @see <a href="http://www.eclipse.org/swt/examples.php">SWT Example: ControlExample</a>
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
- * 
+ *
  * @since 3.1
  * @noextend This class is not intended to be subclassed by clients.
  */
@@ -48,7 +48,7 @@ public class Spinner extends Composite {
 	static final long /*int*/ EditProc;
 	static final TCHAR EditClass = new TCHAR (0, "EDIT", true);
 	static final long /*int*/ UpDownProc;
-	static final TCHAR UpDownClass = new TCHAR (0, OS.UPDOWN_CLASS, true);	
+	static final TCHAR UpDownClass = new TCHAR (0, OS.UPDOWN_CLASS, true);
 	static {
 		WNDCLASS lpWndClass = new WNDCLASS ();
 		OS.GetClassInfo (0, EditClass, lpWndClass);
@@ -56,31 +56,31 @@ public class Spinner extends Composite {
 		OS.GetClassInfo (0, UpDownClass, lpWndClass);
 		UpDownProc = lpWndClass.lpfnWndProc;
 	}
-	
+
 	/**
 	 * the operating system limit for the number of characters
 	 * that the text field in an instance of this class can hold
-	 * 
+	 *
 	 * @since 3.4
 	 */
 	public static final int LIMIT;
-	
+
 	/*
 	 * These values can be different on different platforms.
 	 * Therefore they are not initialized in the declaration
 	 * to stop the compiler from inlining.
 	 */
 	static {
-		LIMIT = OS.IsWinNT ? 0x7FFFFFFF : 0x7FFF;	
+		LIMIT = OS.IsWinNT ? 0x7FFFFFFF : 0x7FFF;
 	}
-	
+
 /**
  * Constructs a new instance of this class given its parent
  * and a style value describing its behavior and appearance.
  * <p>
  * The style value is either one of the style constants defined in
  * class <code>SWT</code> which is applicable to instances of this
- * class, or must be built by <em>bitwise OR</em>'ing together 
+ * class, or must be built by <em>bitwise OR</em>'ing together
  * (that is, using the <code>int</code> "|" operator) two or more
  * of those <code>SWT</code> style constants. The class description
  * lists the style constants that are applicable to the class.
@@ -189,7 +189,7 @@ void createHandle () {
 	if (OS.IsDBLocale) {
 		long /*int*/ hIMC = OS.ImmGetContext (handle);
 		OS.ImmAssociateContext (hwndText, hIMC);
-		OS.ImmAssociateContext (hwndUpDown, hIMC);		
+		OS.ImmAssociateContext (hwndUpDown, hIMC);
 		OS.ImmReleaseContext (handle, hIMC);
 	}
 	OS.SendMessage (hwndUpDown, OS.UDM_SETRANGE32, 0, 100);
@@ -341,7 +341,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 @Override
 public Rectangle computeTrim (int x, int y, int width, int height) {
 	checkWidget ();
-	
+
 	/* Get the trim of the text control */
 	RECT rect = new RECT ();
 	OS.SetRect (rect, x, y, x + width, y + height);
@@ -350,7 +350,7 @@ public Rectangle computeTrim (int x, int y, int width, int height) {
 	OS.AdjustWindowRectEx (rect, bits0, false, bits1);
 	width = rect.right - rect.left;
 	height = rect.bottom - rect.top;
-	
+
 	/*
 	* The preferred height of a single-line text widget
 	* has been hand-crafted to be the same height as
@@ -524,7 +524,7 @@ public int getPageIncrement () {
 /**
  * Returns the <em>selection</em>, which is the receiver's position.
  *
- * @return the selection 
+ * @return the selection
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -594,7 +594,7 @@ int getSelectionText (boolean [] parseFail) {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 3.4
  */
 public String getText () {
@@ -611,16 +611,16 @@ public String getText () {
  * text field is capable of holding. If this has not been changed
  * by <code>setTextLimit()</code>, it will be the constant
  * <code>Spinner.LIMIT</code>.
- * 
+ *
  * @return the text limit
- * 
+ *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  *
  * @see #LIMIT
- * 
+ *
  * @since 3.4
  */
 public int getTextLimit () {
@@ -660,7 +660,7 @@ public void paste () {
 @Override
 void register () {
 	super.register ();
-	display.addControl (hwndText, this);	
+	display.addControl (hwndText, this);
 	display.addControl (hwndUpDown, this);
 }
 
@@ -691,7 +691,7 @@ public void removeModifyListener (ModifyListener listener) {
 	checkWidget ();
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (eventTable == null) return;
-	eventTable.unhook (SWT.Modify, listener);	
+	eventTable.unhook (SWT.Modify, listener);
 }
 
 /**
@@ -716,7 +716,7 @@ public void removeSelectionListener(SelectionListener listener) {
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (eventTable == null) return;
 	eventTable.unhook (SWT.Selection, listener);
-	eventTable.unhook (SWT.DefaultSelection,listener);	
+	eventTable.unhook (SWT.DefaultSelection,listener);
 }
 
 /**
@@ -740,7 +740,7 @@ void removeVerifyListener (VerifyListener listener) {
 	checkWidget ();
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (eventTable == null) return;
-	eventTable.unhook (SWT.Verify, listener);	
+	eventTable.unhook (SWT.Verify, listener);
 }
 
 @Override
@@ -757,7 +757,7 @@ boolean sendKeyEvent (int type, int msg, long /*int*/ wParam, long /*int*/ lPara
 //	if (!hooks (SWT.Verify) && !filters (SWT.Verify)) return true;
 	char key = event.character;
 	int stateMask = event.stateMask;
-	
+
 	/*
 	* Disable all magic keys that could modify the text
 	* and don't send events when Alt, Shift or Ctrl is
@@ -843,17 +843,17 @@ void setBackgroundPixel (int pixel) {
  * Sets the number of decimal places used by the receiver.
  * <p>
  * The digit setting is used to allow for floating point values in the receiver.
- * For example, to set the selection to a floating point value of 1.37 call setDigits() with 
+ * For example, to set the selection to a floating point value of 1.37 call setDigits() with
  * a value of 2 and setSelection() with a value of 137. Similarly, if getDigits() has a value
  * of 2 and getSelection() returns 137 this should be interpreted as 1.37. This applies to all
- * numeric APIs. 
+ * numeric APIs.
  * </p>
- * 
+ *
  * @param value the new digits (must be greater than or equal to zero)
- * 
+ *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_INVALID_ARGUMENT - if the value is less than zero</li>
- * </ul> 
+ * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
@@ -935,7 +935,7 @@ public void setMaximum (int value) {
 	} else {
 		pos = (int)/*64*/OS.SendMessage (hwndUpDown, OS.UDM_GETPOS32, 0, 0);
 	}
-	OS.SendMessage (hwndUpDown , OS.UDM_SETRANGE32, min [0], value);	
+	OS.SendMessage (hwndUpDown , OS.UDM_SETRANGE32, min [0], value);
 	if (pos > value) setSelection (value, true, true, false);
 }
 
@@ -1064,9 +1064,9 @@ void setSelection (int value, boolean setPos, boolean setText, boolean notify) {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @see #LIMIT
- * 
+ *
  * @since 3.4
  */
 public void setTextLimit (int limit) {
@@ -1086,7 +1086,7 @@ void setToolTipText (Shell shell, String string) {
  * value, digits, increment and page increment all at once.
  * <p>
  * Note: This is similar to setting the values individually
- * using the appropriate methods, but may be implemented in a 
+ * using the appropriate methods, but may be implemented in a
  * more efficient fashion on some platforms.
  * </p>
  *
@@ -1101,7 +1101,7 @@ void setToolTipText (Shell shell, String string) {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 3.2
  */
 public void setValues (int selection, int minimum, int maximum, int digits, int increment, int pageIncrement) {
@@ -1211,7 +1211,7 @@ long /*int*/ windowProc (long /*int*/ hwnd, int msg, long /*int*/ wParam, long /
 			case OS.WM_SYSCHAR:		result = wmSysChar (hwnd, wParam, lParam); break;
 			case OS.WM_SYSKEYDOWN:	result = wmSysKeyDown (hwnd, wParam, lParam); break;
 			case OS.WM_SYSKEYUP:	result = wmSysKeyUp (hwnd, wParam, lParam); break;
-	
+
 			/* Mouse Messages */
 			case OS.WM_CAPTURECHANGED:	result = wmCaptureChanged (hwnd, wParam, lParam); break;
 			case OS.WM_LBUTTONDBLCLK:	result = wmLButtonDblClk (hwnd, wParam, lParam); break;
@@ -1230,18 +1230,18 @@ long /*int*/ windowProc (long /*int*/ hwnd, int msg, long /*int*/ wParam, long /
 			case OS.WM_XBUTTONDBLCLK:	result = wmXButtonDblClk (hwnd, wParam, lParam); break;
 			case OS.WM_XBUTTONDOWN:		result = wmXButtonDown (hwnd, wParam, lParam); break;
 			case OS.WM_XBUTTONUP:		result = wmXButtonUp (hwnd, wParam, lParam); break;
-			
+
 			/* Focus Messages */
 			case OS.WM_SETFOCUS:		result = wmSetFocus (hwnd, wParam, lParam); break;
 			case OS.WM_KILLFOCUS:		result = wmKillFocus (hwnd, wParam, lParam); break;
-	
+
 			/* Paint messages */
 			case OS.WM_PAINT:			result = wmPaint (hwnd, wParam, lParam); break;
-			case OS.WM_PRINT:			result = wmPrint (hwnd, wParam, lParam); break;			
-	
+			case OS.WM_PRINT:			result = wmPrint (hwnd, wParam, lParam); break;
+
 			/* Menu messages */
 			case OS.WM_CONTEXTMENU:		result = wmContextMenu (hwnd, wParam, lParam); break;
-				
+
 			/* Clipboard messages */
 			case OS.WM_CLEAR:
 			case OS.WM_CUT:
@@ -1302,7 +1302,7 @@ LRESULT WM_SIZE (long /*int*/ wParam, long /*int*/ lParam) {
 
 @Override
 LRESULT wmIMEChar(long /*int*/ hwnd, long /*int*/ wParam, long /*int*/ lParam) {
-	
+
 	/* Process a DBCS character */
 	Display display = this.display;
 	display.lastKey = 0;
@@ -1311,7 +1311,7 @@ LRESULT wmIMEChar(long /*int*/ hwnd, long /*int*/ wParam, long /*int*/ lParam) {
 	if (!sendKeyEvent (SWT.KeyDown, OS.WM_IME_CHAR, wParam, lParam)) {
 		return LRESULT.ZERO;
 	}
-	
+
 	/*
 	* Feature in Windows.  The Windows text widget uses
 	* two 2 WM_CHAR's to process a DBCS key instead of
@@ -1350,7 +1350,7 @@ LRESULT wmChar (long /*int*/ hwnd, long /*int*/ wParam, long /*int*/ lParam) {
 	switch ((int)/*64*/wParam) {
 		case SWT.CR:
 			sendSelectionEvent (SWT.DefaultSelection);
-			// FALL THROUGH		
+			// FALL THROUGH
 		case SWT.TAB:
 		case SWT.ESC: return LRESULT.ZERO;
 	}
@@ -1410,7 +1410,7 @@ LRESULT wmClipboard (long /*int*/ hwndText, int msg, long /*int*/ wParam, long /
 				long /*int*/ hHeap = OS.GetProcessHeap ();
 				int byteCount = buffer.length () * TCHAR.sizeof;
 				long /*int*/ pszText = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, byteCount);
-				OS.MoveMemory (pszText, buffer, byteCount); 
+				OS.MoveMemory (pszText, buffer, byteCount);
 				long /*int*/ code = OS.CallWindowProc (EditProc, hwndText, msg, wParam, pszText);
 				OS.HeapFree (hHeap, 0, pszText);
 				return new LRESULT (code);
@@ -1452,7 +1452,7 @@ LRESULT wmKeyDown (long /*int*/ hwnd, long /*int*/ wParam, long /*int*/ lParam) 
 	if (ignoreCharacter) return null;
 	LRESULT result = super.wmKeyDown (hwnd, wParam, lParam);
 	if (result != null) return result;
-	
+
 	/* Increment the value */
 	UDACCEL udaccel = new UDACCEL ();
 	OS.SendMessage (hwndUpDown, OS.UDM_GETACCEL, 1, udaccel);
@@ -1483,7 +1483,7 @@ LRESULT wmKeyDown (long /*int*/ hwnd, long /*int*/ wParam, long /*int*/ lParam) 
 		newValue = Math.min (Math.max (min [0], newValue), max [0]);
 		if (value != newValue) setSelection (newValue, true, true, true);
 	}
-	
+
 	/*  Stop the edit control from moving the caret */
 	switch ((int)/*64*/wParam) {
 		case OS.VK_UP:
@@ -1502,7 +1502,7 @@ LRESULT wmKillFocus (long /*int*/ hwnd, long /*int*/ wParam, long /*int*/ lParam
 			value = OS.LOWORD (OS.SendMessage (hwndUpDown, OS.UDM_GETPOS, 0, 0));
 		} else {
 			value = (int)/*64*/OS.SendMessage (hwndUpDown, OS.UDM_GETPOS32, 0, 0);
-		}		
+		}
 		setSelection (value, false, true, false);
 	}
 	return super.wmKillFocus (hwnd, wParam, lParam);

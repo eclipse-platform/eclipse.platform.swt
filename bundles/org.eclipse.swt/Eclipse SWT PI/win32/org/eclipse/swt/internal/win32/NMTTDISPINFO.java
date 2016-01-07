@@ -14,7 +14,7 @@ public abstract class NMTTDISPINFO extends NMHDR {
 	/** @field cast=(void *) */
 	public long /*int*/ lpszText;
 	/** @field cast=(HINSTANCE) */
-	public long /*int*/ hinst;   
+	public long /*int*/ hinst;
 	public int uFlags;
 	public long /*int*/ lParam;
 	public static final int sizeof = OS.IsUnicode ? OS.NMTTDISPINFOW_sizeof () : OS.NMTTDISPINFOA_sizeof ();

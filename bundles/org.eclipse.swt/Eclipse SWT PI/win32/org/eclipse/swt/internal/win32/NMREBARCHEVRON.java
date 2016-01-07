@@ -16,11 +16,11 @@ public class NMREBARCHEVRON extends NMHDR {
 	public long /*int*/ lParam;
 //	RECT rc;
 	/** @field accessor=rc.left */
-	public int left; 
+	public int left;
 	/** @field accessor=rc.top */
-	public int top; 
+	public int top;
 	/** @field accessor=rc.right */
-	public int right; 
+	public int right;
 	/** @field accessor=rc.bottom */
 	public int bottom;
 	public long /*int*/ lParamNM;

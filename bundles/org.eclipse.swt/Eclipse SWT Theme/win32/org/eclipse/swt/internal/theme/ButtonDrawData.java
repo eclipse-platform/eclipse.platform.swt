@@ -15,7 +15,7 @@ import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.win32.*;
 
 public class ButtonDrawData extends DrawData {
-	
+
 public ButtonDrawData() {
 	state = new int[1];
 }
@@ -24,7 +24,7 @@ public ButtonDrawData() {
 int[] getPartId(int part) {
 	int state = this.state[part];
 	int style = this.style;
-	int iPartId = 0, iStateId = 0;			
+	int iPartId = 0, iStateId = 0;
 	if ((style & SWT.PUSH) != 0) {
 		iPartId = OS.BP_PUSHBUTTON;
 		iStateId = OS.PBS_NORMAL;
@@ -70,7 +70,7 @@ void draw(Theme theme, GC gc, Rectangle bounds) {
 			SIZE size = new SIZE();
 			OS.GetThemePartSize(hTheme, gc.handle, part[0], part[1], rect, 2, size);
 			rect.right = rect.left + size.cx;
-			OS.DrawThemeBackground (hTheme, gc.handle, part[0], part[1], rect, null);			
+			OS.DrawThemeBackground (hTheme, gc.handle, part[0], part[1], rect, null);
 			rect.left = rect.right + 3;
 			rect.right = rect.left + bounds.width - size.cx - 3;
 		} else {
@@ -79,7 +79,7 @@ void draw(Theme theme, GC gc, Rectangle bounds) {
 		Rectangle clientArea = this.clientArea;
 		if (clientArea != null) {
 			RECT contentRect = new RECT();
-			OS.GetThemeBackgroundContentRect(hTheme, gc.handle, part[0], part[1], rect, contentRect);				
+			OS.GetThemeBackgroundContentRect(hTheme, gc.handle, part[0], part[1], rect, contentRect);
 			clientArea.x = contentRect.left;
 			clientArea.y = contentRect.top;
 			clientArea.width = contentRect.right - contentRect.left;

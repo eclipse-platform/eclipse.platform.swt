@@ -50,9 +50,9 @@ public class ProgressBar extends Control {
 		* Feature in Windows.  The progress bar window class
 		* does not include CS_DBLCLKS.  This means that these
 		* controls will not get double click messages such as
-		* WM_LBUTTONDBLCLK.  The fix is to register a new 
+		* WM_LBUTTONDBLCLK.  The fix is to register a new
 		* window class with CS_DBLCLKS.
-		* 
+		*
 		* NOTE:  Screen readers look for the exact class name
 		* of the control in order to provide the correct kind
 		* of assistance.  Therefore, it is critical that the
@@ -82,7 +82,7 @@ public class ProgressBar extends Control {
  * <p>
  * The style value is either one of the style constants defined in
  * class <code>SWT</code> which is applicable to instances of this
- * class, or must be built by <em>bitwise OR</em>'ing together 
+ * class, or must be built by <em>bitwise OR</em>'ing together
  * (that is, using the <code>int</code> "|" operator) two or more
  * of those <code>SWT</code> style constants. The class description
  * lists the style constants that are applicable to the class.
@@ -203,13 +203,13 @@ public int getSelection () {
  * 	<li>{@link SWT#PAUSED}</li>
  * </ul>
  *
- * @return the state 
+ * @return the state
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 3.4
  */
 public int getState () {
@@ -322,11 +322,11 @@ public void setMinimum (int value) {
 public void setSelection (int value) {
 	checkWidget ();
 	OS.SendMessage (handle, OS.PBM_SETPOS, value, 0);
-	
+
 	/*
 	* Bug in Vista.  For some reason, when the progress bar is not in
-	* a normal state, it shows the selection of previous call to 
-	* PBM_SETPOS. This is undocumented. The fix is to call PBM_SETPOS  
+	* a normal state, it shows the selection of previous call to
+	* PBM_SETPOS. This is undocumented. The fix is to call PBM_SETPOS
 	* a second time.
 	*/
 	if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (6, 0)) {
@@ -348,14 +348,14 @@ public void setSelection (int value) {
  * Note: This operation is a hint and is not supported on
  * platforms that do not have this concept.
  * </p>
- * 
+ *
  * @param state the new state
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 3.4
  */
 public void setState (int state) {
@@ -422,7 +422,7 @@ LRESULT WM_SIZE (long /*int*/ wParam, long /*int*/ lParam) {
 	* bar does not appear to be moving.  The fix is to detect
 	* this case, clear the PBS_MARQUEE style and emulate the
 	* animation using PBM_STEPIT.
-	* 
+	*
 	* NOTE:  This only happens on Window XP.
 	*/
 	if ((style & SWT.INDETERMINATE) != 0) {

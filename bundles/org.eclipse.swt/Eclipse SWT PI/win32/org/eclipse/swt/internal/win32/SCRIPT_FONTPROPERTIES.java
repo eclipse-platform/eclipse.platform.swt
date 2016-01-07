@@ -15,7 +15,7 @@ public class SCRIPT_FONTPROPERTIES {
 	public short wgBlank;
 	public short wgDefault;
 	public short wgInvalid;
-	public short wgKashida; 
+	public short wgKashida;
 	public int iKashidaWidth;
 	public static final int sizeof = OS.SCRIPT_FONTPROPERTIES_sizeof ();
 }

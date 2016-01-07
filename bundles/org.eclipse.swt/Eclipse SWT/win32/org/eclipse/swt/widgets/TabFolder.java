@@ -10,7 +10,7 @@
  *******************************************************************************/
 package org.eclipse.swt.widgets;
 
- 
+
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.win32.*;
 import org.eclipse.swt.*;
@@ -53,14 +53,14 @@ public class TabFolder extends Composite {
 	static final long /*int*/ TabFolderProc;
 	static final TCHAR TabFolderClass = new TCHAR (0, OS.WC_TABCONTROL, true);
 	boolean createdAsRTL;
-	
+
 	/*
 	* These are the undocumented control id's for the children of
 	* a tab control.  Since there are no constants for these values,
 	* they may change with different versions of Windows.
 	*/
 	static final int ID_UPDOWN = 1;
-	
+
 	static {
 		WNDCLASS lpWndClass = new WNDCLASS ();
 		OS.GetClassInfo (0, TabFolderClass, lpWndClass);
@@ -73,7 +73,7 @@ public class TabFolder extends Composite {
 		* register a new window class without these bits and
 		* implement special code that damages only the exposed
 		* area.
-		* 
+		*
 		* NOTE:  Screen readers look for the exact class name
 		* of the control in order to provide the correct kind
 		* of assistance.  Therefore, it is critical that the
@@ -102,7 +102,7 @@ public class TabFolder extends Composite {
  * <p>
  * The style value is either one of the style constants defined in
  * class <code>SWT</code> which is applicable to instances of this
- * class, or must be built by <em>bitwise OR</em>'ing together 
+ * class, or must be built by <em>bitwise OR</em>'ing together
  * (that is, using the <code>int</code> "|" operator) two or more
  * of those <code>SWT</code> style constants. The class description
  * lists the style constants that are applicable to the class.
@@ -177,7 +177,7 @@ static int checkStyle (int style) {
 		if ((style & SWT.TOP) == 0) style |= SWT.BOTTOM;
 	}
 	style = checkBits (style, SWT.TOP, SWT.BOTTOM, 0, 0, 0, 0);
-	
+
 	/*
 	* Even though it is legal to create this widget
 	* with scroll bars, they serve no useful purpose
@@ -243,7 +243,7 @@ void createItem (TabItem item, int index) {
 	}
 	System.arraycopy (items, index, items, index + 1, count - index);
 	items [index] = item;
-	
+
 	/*
 	* Send a selection event when the item that is added becomes
 	* the new selection.  This only happens when the first item
@@ -261,7 +261,7 @@ void createItem (TabItem item, int index) {
 void createHandle () {
 	super.createHandle ();
 	state &= ~(CANVAS | THEME_BACKGROUND);
-	
+
 	/* Enable the flat look for tab folders on PPC */
 	if (OS.IsPPC) {
 		OS.SendMessage (handle, OS.CCM_SETVERSION, 0x020c /*COMCTL32_VERSION*/, 0);
@@ -275,8 +275,8 @@ void createHandle () {
 	* a large value.
 	*/
 	long /*int*/ hwndToolTip = OS.SendMessage (handle, OS.TCM_GETTOOLTIPS, 0, 0);
-	OS.SendMessage (hwndToolTip, OS.TTM_SETMAXTIPWIDTH, 0, 0x7FFF);	
-	
+	OS.SendMessage (hwndToolTip, OS.TTM_SETMAXTIPWIDTH, 0, 0x7FFF);
+
 	createdAsRTL = (style & SWT.RIGHT_TO_LEFT) != 0;
 }
 
@@ -326,7 +326,7 @@ void drawThemeBackground (long /*int*/ hDC, long /*int*/ hwnd, RECT rect) {
 @Override
 Control findThemeControl () {
 	/* It is not possible to change the background of this control */
-	return this;	
+	return this;
 }
 
 @Override
@@ -378,7 +378,7 @@ public TabItem getItem (int index) {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 3.4
  */
 public TabItem getItem (Point point) {
@@ -409,11 +409,11 @@ public int getItemCount () {
 
 /**
  * Returns an array of <code>TabItem</code>s which are the items
- * in the receiver. 
+ * in the receiver.
  * <p>
  * Note: This is not the actual structure used by the receiver
  * to maintain its list of items, so modifying the array will
- * not affect the receiver. 
+ * not affect the receiver.
  * </p>
  *
  * @return the items in the receiver
@@ -438,7 +438,7 @@ public TabItem [] getItems () {
  * <p>
  * Note: This is not the actual structure used by the receiver
  * to maintain its selection, so modifying the array will
- * not affect the receiver. 
+ * not affect the receiver.
  * </p>
  * @return an array representing the selection
  *
@@ -491,7 +491,7 @@ int imageIndex (Image image) {
 
 /**
  * Searches the receiver's list starting at the first item
- * (index 0) until an item is found that is equal to the 
+ * (index 0) until an item is found that is equal to the
  * argument, and returns the index of that item. If no item
  * is found, returns -1.
  *
@@ -522,7 +522,7 @@ Point minimumSize (int wHint, int hHint, boolean flushCache) {
 	int width = 0, height = 0;
 	for (int i=0; i<children.length; i++) {
 		Control child = children [i];
-		int index = 0;	
+		int index = 0;
 		int count = (int)/*64*/OS.SendMessage (handle, OS.TCM_GETITEMCOUNT, 0, 0);
 		while (index < count) {
 			if (items [index].control == child) break;
@@ -564,7 +564,7 @@ boolean mnemonicMatch (char key) {
 		TabItem item = items [i];
 		if (item != null) {
 			char ch = findMnemonic (item.getText ());
-			if (Character.toUpperCase (key) == Character.toUpperCase (ch)) {		
+			if (Character.toUpperCase (key) == Character.toUpperCase (ch)) {
 				return true;
 			}
 		}
@@ -629,7 +629,7 @@ public void removeSelectionListener (SelectionListener listener) {
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (eventTable == null) return;
 	eventTable.unhook (SWT.Selection, listener);
-	eventTable.unhook (SWT.DefaultSelection,listener);	
+	eventTable.unhook (SWT.DefaultSelection,listener);
 }
 
 
@@ -659,7 +659,7 @@ void reskinChildren (int flags) {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 3.2
  */
 public void setSelection (TabItem item) {
@@ -716,7 +716,7 @@ public void setFont (Font font) {
 }
 
 /**
- * Selects the item at the given zero-relative index in the receiver. 
+ * Selects the item at the given zero-relative index in the receiver.
  * If the item at the index was already selected, it remains selected.
  * The current selection is first cleared, then the new items are
  * selected. Indices that are out of range are ignored.
@@ -927,11 +927,11 @@ LRESULT WM_KEYDOWN (long /*int*/ wParam, long /*int*/ lParam) {
 	switch ((int)/*64*/wParam) {
 		case OS.VK_LEFT:
 		case OS.VK_RIGHT:
-			/* 
+			/*
 			* Bug in Windows. The behavior for the left and right keys is not
 			* changed if the orientation changes after the control was created.
 			* The fix is to replace VK_LEFT by VK_RIGHT and VK_RIGHT by VK_LEFT
-			* when the current orientation differs from the orientation used to 
+			* when the current orientation differs from the orientation used to
 			* create the control.
 		    */
 			boolean isRTL = (style & SWT.RIGHT_TO_LEFT) != 0;
@@ -987,7 +987,7 @@ LRESULT WM_NCHITTEST (long /*int*/ wParam, long /*int*/ lParam) {
 	* events to be delivered to the window that wants
 	* to display the tool tip.  The fix is to call the
 	* default window proc that returns HTCLIENT when
-	* the mouse is in the client area.	
+	* the mouse is in the client area.
 	*/
 	long /*int*/ hittest = OS.DefWindowProc (handle, OS.WM_NCHITTEST, wParam, lParam);
 	return new LRESULT (hittest);
@@ -999,18 +999,18 @@ LRESULT WM_NOTIFY (long /*int*/ wParam, long /*int*/ lParam) {
 	* Feature in Windows.  When the tab folder window
 	* proc processes WM_NOTIFY, it forwards this
 	* message to its parent.  This is done so that
-	* children of this control that send this message 
+	* children of this control that send this message
 	* type to their parent will notify not only
 	* this control but also the parent of this control,
 	* which is typically the application window and
 	* the window that is looking for the message.
-	* If the control did not forward the message, 
-	* applications would have to subclass the control 
+	* If the control did not forward the message,
+	* applications would have to subclass the control
 	* window to see the message. Because the control
 	* window is subclassed by SWT, the message
 	* is delivered twice, once by SWT and once when
 	* the message is forwarded by the window proc.
-	* The fix is to avoid calling the window proc 
+	* The fix is to avoid calling the window proc
 	* for this control.
 	*/
 	LRESULT result = super.WM_NOTIFY (wParam, lParam);
@@ -1029,7 +1029,7 @@ LRESULT WM_PARENTNOTIFY (long /*int*/ wParam, long /*int*/ lParam) {
 	* and WS_EX_NOINHERITLAYOUT are specified for the tab folder, the buddy control
 	* will not be oriented correctly.  The fix is to explicitly set the orientation
 	* for the buddy control.
-	* 
+	*
 	* NOTE: WS_EX_LAYOUTRTL is not supported on Windows NT.
 	*/
 	if (OS.WIN32_VERSION < OS.VERSION (4, 10)) return result;
@@ -1126,7 +1126,7 @@ LRESULT WM_WINDOWPOSCHANGING (long /*int*/ wParam, long /*int*/ lParam) {
 LRESULT wmNotifyChild (NMHDR hdr, long /*int*/ wParam, long /*int*/ lParam) {
 	int code = hdr.code;
 	switch (code) {
-		case OS.TCN_SELCHANGE: 
+		case OS.TCN_SELCHANGE:
 		case OS.TCN_SELCHANGING:
 			TabItem item = null;
 			int index = (int)/*64*/OS.SendMessage (handle, OS.TCM_GETCURSEL, 0, 0);

@@ -10,7 +10,7 @@
  *******************************************************************************/
 package org.eclipse.swt.internal.win32;
 
-	
+
 public class DTTOPTS {
 	public int dwSize;
 	public int dwFlags;

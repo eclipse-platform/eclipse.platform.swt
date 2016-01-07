@@ -28,13 +28,13 @@ public class REBARBANDINFO {
 	/** @field cast=(HBITMAP) */
 	public long /*int*/ hbmBack;
 	public int wID;
-	public int cyChild;  
+	public int cyChild;
 	public int cyMaxChild;
 	public int cyIntegral;
 	public int cxIdeal;
 	public long /*int*/ lParam;
 	/** @field flags=no_wince */
 	public int cxHeader;
-	/* Note in WinCE.  The field cxHeader is not defined. */ 
+	/* Note in WinCE.  The field cxHeader is not defined. */
 	public static final int sizeof = OS.REBARBANDINFO_sizeof ();
 }

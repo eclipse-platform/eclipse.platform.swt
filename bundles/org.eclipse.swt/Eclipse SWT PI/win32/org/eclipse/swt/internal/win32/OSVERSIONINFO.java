@@ -11,7 +11,7 @@
 package org.eclipse.swt.internal.win32;
 
 public abstract class OSVERSIONINFO {
-	public int dwOSVersionInfoSize; 
+	public int dwOSVersionInfoSize;
 	public int dwMajorVersion;
 	public int dwMinorVersion;
 	public int dwBuildNumber;

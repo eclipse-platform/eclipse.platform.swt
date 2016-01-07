@@ -31,9 +31,9 @@ import java.util.List;
  *	<li>activate and deactivate the OLE Document's menus
  *	<li>position the OLE Document's menu in the application
  *	<li>translate accelerator keystrokes intended for the container's frame</ul>
- * 
+ *
  * <dl>
- *	<dt><b>Styles</b> <dd>BORDER 
+ *	<dt><b>Styles</b> <dd>BORDER
  *	<dt><b>Events</b> <dd>Dispose, Move, Resize
  * </dl>
  *
@@ -41,31 +41,31 @@ import java.util.List;
  * @see <a href="http://www.eclipse.org/swt/examples.php">SWT Examples: OLEExample, OleWebBrowser</a>
  */
 final public class OleFrame extends Composite
-{	
+{
 	// Interfaces for this Ole Client Container
 	private COMObject iUnknown;
 	private COMObject iOleInPlaceFrame;
 
-	// Access to the embedded/linked Ole Object 
+	// Access to the embedded/linked Ole Object
 	private IOleInPlaceActiveObject objIOleInPlaceActiveObject;
-	
+
 	private OleClientSite currentdoc;
 
 	private int refCount = 0;
-	
+
 	private MenuItem[] fileMenuItems;
 	private MenuItem[] containerMenuItems;
 	private MenuItem[] windowMenuItems;
 
 	private Listener listener;
-	
+
 	private static String CHECK_FOCUS = "OLE_CHECK_FOCUS"; //$NON-NLS-1$
 	private static String HHOOK = "OLE_HHOOK"; //$NON-NLS-1$
 	private static String HHOOKMSG = "OLE_HHOOK_MSG"; //$NON-NLS-1$
 
 	private static boolean ignoreNextKey;
 	private static final short [] ACCENTS = new short [] {'~', '`', '\'', '^', '"'};
-	
+
 	private static final String CONSUME_KEY = "org.eclipse.swt.OleFrame.ConsumeKey"; //$NON-NLS-1$
 	private static final String ACCEL_KEY_HIT = "org.eclipse.swt.internal.win32.accelKeyHit"; //$NON-NLS-1$
 
@@ -86,7 +86,7 @@ final public class OleFrame extends Composite
  */
 public OleFrame(Composite parent, int style) {
 	super(parent, style);
-	
+
 	createCOMInterfaces();
 
 	// setup cleanup proc
@@ -103,7 +103,7 @@ public OleFrame(Composite parent, int style) {
 			}
 		}
 	};
-	
+
 
 	addListener(SWT.Activate, listener);
 	addListener(SWT.Deactivate, listener);
@@ -111,7 +111,7 @@ public OleFrame(Composite parent, int style) {
 
 	// inform inplaceactiveobject whenever frame resizes
 	addListener(SWT.Resize, listener);
-	
+
 	// inform inplaceactiveobject whenever frame moves
 	addListener(SWT.Move, listener);
 
@@ -119,7 +119,7 @@ public OleFrame(Composite parent, int style) {
 	// ClientSites close, they don't take the frame away
 	// with them.
 	this.AddRef();
-	
+
 	// Check for focus change
 	Display display = getDisplay();
 	initCheckFocus(display);
@@ -138,12 +138,12 @@ private static void initCheckFocus (final Display display) {
 				long /*int*/ hwnd = OS.GetFocus();
 				while (hwnd != 0) {
 					long /*int*/ ownerHwnd = OS.GetWindow(hwnd, OS.GW_OWNER);
-					if (ownerHwnd != 0) {			
+					if (ownerHwnd != 0) {
 						display.timerExec(time, timer[0]);
 						return;
 					}
 					hwnd = OS.GetParent(hwnd);
-				}	
+				}
 			}
 			if (lastFocus[0] == null || lastFocus[0].isDisposed() || !lastFocus[0].isFocusControl()) {
 				Control currentFocus = display.getFocusControl();
@@ -198,7 +198,7 @@ static long /*int*/ getMsgProc(long /*int*/ code, long /*int*/ wParam, long /*in
 	MSG msg = (MSG)display.getData(HHOOKMSG);
 	OS.MoveMemory(msg, lParam, MSG.sizeof);
 	int message = msg.message;
-	if (OS.WM_KEYFIRST <= message && message <= OS.WM_KEYLAST) {		
+	if (OS.WM_KEYFIRST <= message && message <= OS.WM_KEYLAST) {
 		if (display != null) {
 			Widget widget = null;
 			long /*int*/ hwnd = msg.hwnd;
@@ -226,7 +226,7 @@ static long /*int*/ getMsgProc(long /*int*/ code, long /*int*/ wParam, long /*in
 						if (display.isDisposed()) return 0;
 						display.setData(ACCEL_KEY_HIT, Boolean.FALSE);
 						if (frame.isDisposed()) return 0;
-						String value = (String)frame.getData(CONSUME_KEY); 
+						String value = (String)frame.getData(CONSUME_KEY);
 						if (value != null) consumed = value.equals("true"); //$NON-NLS-1$
 						frame.setData(CONSUME_KEY, null);
 					}
@@ -244,7 +244,7 @@ static long /*int*/ getMsgProc(long /*int*/ code, long /*int*/ wParam, long /*in
 									case OS.VK_SCROLL:
 										break;
 									default: {
-										/* 
+										/*
 										* Bug in Windows. The high bit in the result of MapVirtualKey() on
 										* Windows NT is bit 32 while the high bit on Windows 95 is bit 16.
 										* They should both be bit 32.  The fix is to test the right bit.
@@ -336,7 +336,7 @@ private void createCOMInterfaces() {
 		@Override
 		public long /*int*/ method2(long /*int*/[] args) {return Release();}
 	};
-	
+
 	iOleInPlaceFrame = new COMObject(new int[]{2, 0, 0, 1, 1, 1, 1, 1, 2, 2, 3, 1, 1, 1, 2}){
 		@Override
 		public long /*int*/ method0(long /*int*/[] args) {return QueryInterface(args[0], args[1]);}
@@ -369,19 +369,19 @@ private void createCOMInterfaces() {
 	};
 }
 private void disposeCOMInterfaces () {
-	
+
 	if (iUnknown != null)
 		iUnknown.dispose();
 	iUnknown = null;
-	
+
 	if (iOleInPlaceFrame != null)
 		iOleInPlaceFrame.dispose();
 	iOleInPlaceFrame = null;
 }
 private int GetBorder(long /*int*/ lprectBorder) {
 	/*
-	The IOleInPlaceUIWindow::GetBorder function, when called on a document or frame window 
-	object, returns the outer rectangle (relative to the window) where the object can put 
+	The IOleInPlaceUIWindow::GetBorder function, when called on a document or frame window
+	object, returns the outer rectangle (relative to the window) where the object can put
 	toolbars or similar controls.
 	*/
 	if (lprectBorder == 0) return COM.E_INVALIDARG;
@@ -393,16 +393,16 @@ private int GetBorder(long /*int*/ lprectBorder) {
 }
 /**
  *
- * Returns the application menu items that will appear in the Container location when an OLE Document 
+ * Returns the application menu items that will appear in the Container location when an OLE Document
  * is in-place activated.
  *
  * <p>When an OLE Document is in-place active, the Document provides its own menus but the application
  * is given the opportunity to merge some of its menus into the menubar.  The application
- * is allowed to insert its menus in three locations: File (far left), Container(middle) and Window 
+ * is allowed to insert its menus in three locations: File (far left), Container(middle) and Window
  * (far right just before Help).  The OLE Document retains control of the Edit, Object and Help
  * menu locations.  Note that an application can insert more than one menu into a single location.
  *
- * @return the application menu items that will appear in the Container location when an OLE Document 
+ * @return the application menu items that will appear in the Container location when an OLE Document
  *         is in-place activated.
  *
  */
@@ -411,16 +411,16 @@ public MenuItem[] getContainerMenus(){
 }
 /**
  *
- * Returns the application menu items that will appear in the File location when an OLE Document 
+ * Returns the application menu items that will appear in the File location when an OLE Document
  * is in-place activated.
  *
  * <p>When an OLE Document is in-place active, the Document provides its own menus but the application
  * is given the opportunity to merge some of its menus into the menubar.  The application
- * is allowed to insert its menus in three locations: File (far left), Container(middle) and Window 
+ * is allowed to insert its menus in three locations: File (far left), Container(middle) and Window
  * (far right just before Help).  The OLE Document retains control of the Edit, Object and Help
  * menu locations.  Note that an application can insert more than one menu into a single location.
  *
- * @return the application menu items that will appear in the File location when an OLE Document 
+ * @return the application menu items that will appear in the File location when an OLE Document
  *         is in-place activated.
  *
  */
@@ -451,16 +451,16 @@ private int GetWindow(long /*int*/ phwnd) {
 }
 /**
  *
- * Returns the application menu items that will appear in the Window location when an OLE Document 
+ * Returns the application menu items that will appear in the Window location when an OLE Document
  * is in-place activated.
  *
  * <p>When an OLE Document is in-place active, the Document provides its own menus but the application
  * is given the opportunity to merge some of its menus into the menubar.  The application
- * is allowed to insert its menus in three locations: File (far left), Container(middle) and Window 
+ * is allowed to insert its menus in three locations: File (far left), Container(middle) and Window
  * (far right just before Help).  The OLE Document retains control of the Edit, Object and Help
  * menu locations.  Note that an application can insert more than one menu into a single location.
  *
- * @return the application menu items that will appear in the Window location when an OLE Document 
+ * @return the application menu items that will appear in the Window location when an OLE Document
  *         is in-place activated.
  *
  */
@@ -497,8 +497,8 @@ private int InsertMenus(long /*int*/ hmenuShared, long /*int*/ lpMenuWidths) {
 			MenuItem item = this.fileMenuItems[i];
 			if (item != null) {
 				int index = item.getParent().indexOf(item);
-				lpmii.cch = cch;  // lpmii.cch gets updated by GetMenuItemInfo to indicate the 
-				                  // exact number of characters in name.  Reset it to our max size 
+				lpmii.cch = cch;  // lpmii.cch gets updated by GetMenuItemInfo to indicate the
+				                  // exact number of characters in name.  Reset it to our max size
 				                  // before each call.
 				if (OS.GetMenuItemInfo(hMenu, index, true, lpmii)) {
 					if (OS.InsertMenuItem(hmenuShared, newindex, true, lpmii)) {
@@ -522,8 +522,8 @@ private int InsertMenus(long /*int*/ hmenuShared, long /*int*/ lpMenuWidths) {
 			MenuItem item = this.containerMenuItems[i];
 			if (item != null) {
 				int index = item.getParent().indexOf(item);
-				lpmii.cch = cch; // lpmii.cch gets updated by GetMenuItemInfo to indicate the 
-				                           // exact number of characters in name.  Reset it to a large number 
+				lpmii.cch = cch; // lpmii.cch gets updated by GetMenuItemInfo to indicate the
+				                           // exact number of characters in name.  Reset it to a large number
 				                           // before each call.
 				if (OS.GetMenuItemInfo(hMenu, index, true, lpmii)) {
 					if (OS.InsertMenuItem(hmenuShared, newindex, true, lpmii)) {
@@ -535,7 +535,7 @@ private int InsertMenus(long /*int*/ hmenuShared, long /*int*/ lpMenuWidths) {
 			}
 		}
 	}
-	
+
 	// copy the menu item count information to the pointer
 	COM.MoveMemory(lpMenuWidths + 8, new int[] {containerMenuCount}, 4);
 
@@ -547,8 +547,8 @@ private int InsertMenus(long /*int*/ hmenuShared, long /*int*/ lpMenuWidths) {
 			MenuItem item = this.windowMenuItems[i];
 			if (item != null) {
 				int index = item.getParent().indexOf(item);
-				lpmii.cch = cch; // lpmii.cch gets updated by GetMenuItemInfo to indicate the 
-				                           // exact number of characters in name.  Reset it to a large number 
+				lpmii.cch = cch; // lpmii.cch gets updated by GetMenuItemInfo to indicate the
+				                           // exact number of characters in name.  Reset it to a large number
 				                           // before each call.
 				if (OS.GetMenuItemInfo(hMenu, index, true, lpmii)) {
 					if (OS.InsertMenuItem(hmenuShared, newindex, true, lpmii)) {
@@ -560,10 +560,10 @@ private int InsertMenus(long /*int*/ hmenuShared, long /*int*/ lpMenuWidths) {
 			}
 		}
 	}
-	
+
 	// copy the menu item count information to the pointer
 	COM.MoveMemory(lpMenuWidths + 16, new int[] {windowMenuCount}, 4);
-		
+
 	// free resources used in querying the OS
 	if (pszText != 0)
 		OS.HeapFree(hHeap, 0, pszText);
@@ -640,7 +640,7 @@ private int RemoveMenus(long /*int*/ hmenuShared) {
 	if (menubar == null || menubar.isDisposed()) return COM.S_FALSE;
 
 	long /*int*/ hMenu = menubar.handle;
-	
+
 	List<LONG> ids = new ArrayList<LONG>();
 	if (this.fileMenuItems != null) {
 		for (int i = 0; i < this.fileMenuItems.length; i++) {
@@ -699,15 +699,15 @@ int SetActiveObject(long /*int*/ pActiveObject, long /*int*/ pszObjName) {
 }
 private int SetBorderSpace(long /*int*/ pborderwidths) {
 	// A Control/Document can :
-	// Use its own toolbars, requesting border space of a specific size, or, 
-	// Use no toolbars, but force the container to remove its toolbars by passing a 
-	//   valid BORDERWIDTHS structure containing nothing but zeros in the pborderwidths parameter, or, 
-	// Use no toolbars but allow the in-place container to leave its toolbars up by 
+	// Use its own toolbars, requesting border space of a specific size, or,
+	// Use no toolbars, but force the container to remove its toolbars by passing a
+	//   valid BORDERWIDTHS structure containing nothing but zeros in the pborderwidths parameter, or,
+	// Use no toolbars but allow the in-place container to leave its toolbars up by
 	//   passing NULL as the pborderwidths parameter.
 	if (objIOleInPlaceActiveObject == null) return COM.S_OK;
 	RECT borderwidth = new RECT();
 	if (pborderwidths == 0 || currentdoc == null ) return COM.S_OK;
-		
+
 	COM.MoveMemory(borderwidth, pborderwidths, RECT.sizeof);
 	currentdoc.setBorderSpace(borderwidth);
 
@@ -715,19 +715,19 @@ private int SetBorderSpace(long /*int*/ pborderwidths) {
 }
 /**
  *
- * Specify the menu items that should appear in the Container location when an OLE Document 
+ * Specify the menu items that should appear in the Container location when an OLE Document
  * is in-place activated.
  *
  * <p>When an OLE Document is in-place active, the Document provides its own menus but the application
  * is given the opportunity to merge some of its menus into the menubar.  The application
- * is allowed to insert its menus in three locations: File (far left), Container(middle) and Window 
+ * is allowed to insert its menus in three locations: File (far left), Container(middle) and Window
  * (far right just before Help).  The OLE Document retains control of the Edit, Object and Help
  * menu locations.  Note that an application can insert more than one menu into a single location.
  *
  * <p>This method must be called before in place activation of the OLE Document.  After the Document
  * is activated, the menu bar will not be modified until a subsequent activation.
  *
- * @param containerMenus an array of top level MenuItems to be inserted into the Container location of 
+ * @param containerMenus an array of top level MenuItems to be inserted into the Container location of
  *        the menubar
  */
 public void setContainerMenus(MenuItem[] containerMenus){
@@ -747,19 +747,19 @@ void setCurrentDocument(OleClientSite doc) {
 }
 /**
  *
- * Specify the menu items that should appear in the File location when an OLE Document 
+ * Specify the menu items that should appear in the File location when an OLE Document
  * is in-place activated.
  *
  * <p>When an OLE Document is in-place active, the Document provides its own menus but the application
  * is given the opportunity to merge some of its menus into the menubar.  The application
- * is allowed to insert its menus in three locations: File (far left), Container(middle) and Window 
+ * is allowed to insert its menus in three locations: File (far left), Container(middle) and Window
  * (far right just before Help).  The OLE Document retains control of the Edit, Object and Help
  * menu locations.  Note that an application can insert more than one menu into a single location.
  *
  * <p>This method must be called before in place activation of the OLE Document.  After the Document
  * is activated, the menu bar will not be modified until a subsequent activation.
  *
- * @param fileMenus an array of top level MenuItems to be inserted into the File location of 
+ * @param fileMenus an array of top level MenuItems to be inserted into the File location of
  *        the menubar
  */
 public void setFileMenus(MenuItem[] fileMenus){
@@ -768,41 +768,41 @@ public void setFileMenus(MenuItem[] fileMenus){
 private int SetMenu(long /*int*/ hmenuShared, long /*int*/ holemenu, long /*int*/ hwndActiveObject) {
 	long /*int*/ inPlaceActiveObject = 0;
 	if (objIOleInPlaceActiveObject != null)
-		inPlaceActiveObject = objIOleInPlaceActiveObject.getAddress();		
-	
+		inPlaceActiveObject = objIOleInPlaceActiveObject.getAddress();
+
 	Menu menubar = getShell().getMenuBar();
 	if (menubar == null || menubar.isDisposed()){
 		return COM.OleSetMenuDescriptor(0, getShell().handle, hwndActiveObject, iOleInPlaceFrame.getAddress(), inPlaceActiveObject);
 	}
-	
+
 	long /*int*/ handle = menubar.getShell().handle;
-	
+
 	if (hmenuShared == 0 && holemenu == 0) {
 		// re-instate the original menu - this occurs on deactivation
 		hmenuShared = menubar.handle;
 	}
 	if (hmenuShared == 0) return COM.E_FAIL;
-	
+
 	OS.SetMenu(handle, hmenuShared);
 	OS.DrawMenuBar(handle);
-	
+
 	return COM.OleSetMenuDescriptor(holemenu, handle, hwndActiveObject, iOleInPlaceFrame.getAddress(), inPlaceActiveObject);
 }
 /**
  *
- * Set the menu items that should appear in the Window location when an OLE Document 
+ * Set the menu items that should appear in the Window location when an OLE Document
  * is in-place activated.
  *
  * <p>When an OLE Document is in-place active, the Document provides its own menus but the application
  * is given the opportunity to merge some of its menus into the menubar.  The application
- * is allowed to insert its menus in three locations: File (far left), Container(middle) and Window 
+ * is allowed to insert its menus in three locations: File (far left), Container(middle) and Window
  * (far right just before Help).  The OLE Document retains control of the Edit, Object and Help
  * menu locations.  Note that an application can insert more than one menu into a single location.
  *
  * <p>This method must be called before in place activation of the OLE Document.  After the Document
  * is activated, the menu bar will not be modified until a subsequent activation.
  *
- * @param windowMenus an array of top level MenuItems to be inserted into the Window location of 
+ * @param windowMenus an array of top level MenuItems to be inserted into the Window location of
  *        the menubar
  */
 public void setWindowMenus(MenuItem[] windowMenus){
@@ -817,12 +817,12 @@ private int TranslateAccelerator(long /*int*/ lpmsg, int wID){
 	Menu menubar = getShell().getMenuBar();
 	if (menubar == null || menubar.isDisposed() || !menubar.isEnabled()) return COM.S_FALSE;
 	if (wID < 0) return COM.S_FALSE;
-	
+
 	Shell shell = menubar.getShell();
 	long /*int*/ hwnd = shell.handle;
 	long /*int*/ hAccel = OS.SendMessage(hwnd, OS.WM_APP+1, 0, 0);
 	if (hAccel == 0) return COM.S_FALSE;
-	
+
 	MSG msg = new MSG();
 	OS.MoveMemory(msg, lpmsg, MSG.sizeof);
 	int result = OS.TranslateAccelerator(hwnd, hAccel, msg);

@@ -17,14 +17,14 @@ final class OleEnumFORMATETC {
 
 	private COMObject iUnknown;
 	private COMObject iEnumFORMATETC;
-	
+
 	private int refCount;
 	private int index;
-	
+
 	private FORMATETC[] formats;
-	
+
 OleEnumFORMATETC() {
-	
+
 	createCOMInterfaces();
 
 }
@@ -59,11 +59,11 @@ private void createCOMInterfaces() {
 	};
 }
 private void disposeCOMInterfaces() {
-	
+
 	if (iUnknown != null)
 		iUnknown.dispose();
 	iUnknown = null;
-	
+
 	if (iEnumFORMATETC != null)
 		iEnumFORMATETC.dispose();
 	iEnumFORMATETC = null;
@@ -78,7 +78,7 @@ private FORMATETC[] getNextItems(int numItems){
 	int endIndex = index + numItems - 1;
 	if (endIndex > (formats.length - 1)) endIndex = formats.length - 1;
 	if (index > endIndex) return null;
-	
+
 	FORMATETC[] items =  new FORMATETC[endIndex - index + 1];
 	for (int i = 0; i < items.length; i++){
 		items[i] = formats[index];
@@ -88,39 +88,39 @@ private FORMATETC[] getNextItems(int numItems){
 	return items;
 }
 private int Next(int celt, long /*int*/ rgelt, long /*int*/ pceltFetched) {
-	/* Retrieves the next celt items in the enumeration sequence. 
-	   If there are fewer than the requested number of elements left in the sequence, 
-	   it retrieves the remaining elements. 
-	   The number of elements actually retrieved is returned through pceltFetched 
+	/* Retrieves the next celt items in the enumeration sequence.
+	   If there are fewer than the requested number of elements left in the sequence,
+	   it retrieves the remaining elements.
+	   The number of elements actually retrieved is returned through pceltFetched
 	   (unless the caller passed in NULL for that parameter).
 	*/
 
 	if (rgelt == 0)	return COM.E_INVALIDARG;
 	if (pceltFetched == 0 && celt != 1) return COM.E_INVALIDARG;
-		
+
 	FORMATETC[] nextItems = getNextItems(celt);
 	if (nextItems != null) {
 		for (int i = 0; i < nextItems.length; i++) {
 			COM.MoveMemory(rgelt + i*FORMATETC.sizeof, nextItems[i], FORMATETC.sizeof);
 		}
-		
+
 		if (pceltFetched != 0)
 			COM.MoveMemory(pceltFetched, new int[] {nextItems.length}, 4);
-			
+
 		if (nextItems.length == celt) return COM.S_OK;
-			
+
 	} else {
 		if (pceltFetched != 0)
 			COM.MoveMemory(pceltFetched, new int[] {0}, 4);
 		COM.MoveMemory(rgelt, new FORMATETC(), FORMATETC.sizeof);
-			
+
 	}
 	return COM.S_FALSE;
 }
 private int QueryInterface(long /*int*/ riid, long /*int*/ ppvObject) {
-	
+
 	if (riid == 0 || ppvObject == 0) return COM.E_NOINTERFACE;
-	
+
 	GUID guid = new GUID();
 	COM.MoveMemory(guid, riid, GUID.sizeof);
 
@@ -139,14 +139,14 @@ private int QueryInterface(long /*int*/ riid, long /*int*/ ppvObject) {
 }
 int Release() {
 	refCount--;
-	
+
 	if (refCount == 0) {
 		disposeCOMInterfaces();
 		if (COM.FreeUnusedLibraries) {
 			COM.CoFreeUnusedLibraries();
 		}
 	}
-	
+
 	return refCount;
 }
 private int Reset() {
@@ -161,7 +161,7 @@ void setFormats(FORMATETC[] newFormats) {
 private int Skip(int celt) {
 	//Skips over the next specified number of elements in the enumeration sequence.
 	if (celt < 1 ) return COM.E_INVALIDARG;
-	
+
 	index += celt;
 	if (index > (formats.length - 1)){
 		index = formats.length - 1;

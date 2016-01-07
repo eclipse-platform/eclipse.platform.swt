@@ -80,14 +80,14 @@ class WebKit extends WebBrowser {
 static {
 	/*
 	* Attempt to load the swt-webkit library.  This will only succeed if the Apple
-	* Application Support package is on the user's Windows Path environment variable. 
+	* Application Support package is on the user's Windows Path environment variable.
 	*/
 	try {
 		Library.loadLibrary ("swt-webkit"); // $NON-NLS-1$
 		LibraryLoaded = true;
 	} catch (Throwable e) {
 	}
-	
+
 	/*
 	* If needed, add the Apple Application Support package's directory to the library
 	* lookup path and try to load the swt-webkit library again.
@@ -327,7 +327,7 @@ static long /*int*/ JSObjectGetPropertyProc (long /*int*/ ctx, long /*int*/ obje
 		bytes = (FUNCTIONNAME_CALLJAVA + '\0').getBytes (CHARSET_UTF8);
 	} catch (UnsupportedEncodingException e) {
 		bytes = (FUNCTIONNAME_CALLJAVA + '\0').getBytes ();
-	} 
+	}
 	long /*int*/ name = WebKit_win32.JSStringCreateWithUTF8CString (bytes);
 	long /*int*/ addr = WebKit_win32.JSObjectCallAsFunctionProc_CALLBACK (WebKit.JSObjectCallAsFunctionProc.getAddress ());
 	long /*int*/ function = WebKit_win32.JSObjectMakeFunctionWithCallback (ctx, name, addr);
@@ -680,7 +680,7 @@ public void create (Composite parent, int style) {
 		@Override
 		public Object function (Object[] arguments) {
 			return handleEvent (arguments) ? Boolean.TRUE : Boolean.FALSE;
-		};	
+		};
 	};
 }
 
@@ -763,7 +763,7 @@ public String getText () {
 	}
 	String source = extractBSTR (result[0]);
 	COM.SysFreeString (result[0]);
-	return source;	
+	return source;
 }
 
 @Override
@@ -778,7 +778,7 @@ boolean handleEvent (Object[] arguments) {
 	* in javascript that invoke this method via a BrowserFunction.
 	* Document.addListener is not implemented on WebKit on windows.
 	* The argument lists received here are:
-	* 
+	*
 	* For key events:
 	* 	argument 0: type (String)
 	* 	argument 1: keyCode (Double)
@@ -788,7 +788,7 @@ boolean handleEvent (Object[] arguments) {
 	* 	argument 5: shiftKey (Boolean)
 	* 	argument 6: metaKey (Boolean)
 	* 	returns doit
-	* 
+	*
 	* For mouse events
 	* 	argument 0: type (String)
 	* 	argument 1: screenX (Double)
@@ -947,7 +947,7 @@ boolean handleEvent (Object[] arguments) {
 	 * level page.  Convert screen-relative coordinates to be browser-relative.
 	 */
 	Point position = new Point (((Double)arguments[1]).intValue (), ((Double)arguments[2]).intValue ());
-	position = browser.getDisplay ().map (null, browser, position); 
+	position = browser.getDisplay ().map (null, browser, position);
 
 	Event mouseEvent = new Event ();
 	mouseEvent.widget = browser;
@@ -1127,7 +1127,7 @@ boolean sendKeyEvent (Event event) {
 				if (event.character != 0 && (event.stateMask & (SWT.ALT | SWT.CTRL)) == SWT.ALT) {
 					int traversal = SWT.TRAVERSE_MNEMONIC;
 					boolean oldEventDoit = event.doit;
-					event.doit = true;	
+					event.doit = true;
 					doit = !browser.traverse (traversal, event);
 					event.doit = oldEventDoit;
 				}
@@ -1137,7 +1137,7 @@ boolean sendKeyEvent (Event event) {
 	}
 	if (doit) {
 		browser.notifyListeners (event.type, event);
-		doit = event.doit; 
+		doit = event.doit;
 	}
 	return doit;
 }
@@ -1194,7 +1194,7 @@ public boolean setUrl (String url, String postData, String[] headers) {
 		String testUrl = null;
 		if (new File (url).isAbsolute ()) {
 			/* appears to be a local file */
-			testUrl = PROTOCOL_FILE + url; 
+			testUrl = PROTOCOL_FILE + url;
 		} else {
 			testUrl = PROTOCOL_HTTP + url;
 		}
@@ -1227,7 +1227,7 @@ public boolean setUrl (String url, String postData, String[] headers) {
 //    	long /*int*/ postString = createBSTR (POST);
 //		hr = request.setHTTPMethod (postString);
 //		COM.SysFreeString (postString);
-//		
+//
 //		result[0] = 0;
 //		hr = request.QueryInterface (WebKit_win32.IID_IWebMutableURLRequestPrivate, result);
 //		if (hr == COM.S_OK && result[0] != 0) {
@@ -1236,7 +1236,7 @@ public boolean setUrl (String url, String postData, String[] headers) {
 //			byte[] bytes = postData.getBytes();
 //			long /*int*/ data = WebKit_win32.CFDataCreate(0, bytes, bytes.length);
 //			if (data != 0)WebKit_win32.CFURLRequestSetHTTPRequestBody(cfRequest, data);
-//			
+//
 //			long /*int*/ dataGet = WebKit_win32.CFURLRequestCopyHTTPRequestBody(cfRequest);
 //			int length = WebKit_win32.CFDataGetLength(dataGet);
 //			long /*int*/ bytePtr = WebKit_win32.CFDataGetBytePtr(dataGet);
@@ -1315,8 +1315,8 @@ public void stop () {
 }
 
 void initializeWebViewPreferences () {
-	/* 
-	 * Try to create separate preferences for each webview using different identifier for each webview. 
+	/*
+	 * Try to create separate preferences for each webview using different identifier for each webview.
 	 * Otherwise all the webviews use the shared preferences.
 	 */
 	long /*int*/[] result = new long /*int*/[1];
@@ -1332,7 +1332,7 @@ void initializeWebViewPreferences () {
 			preferences.Release ();
 		}
 	}
-	
+
 	result[0] = 0;
 	hr = webView.preferences (result);
 	if (hr == COM.S_OK && result[0] != 0) {

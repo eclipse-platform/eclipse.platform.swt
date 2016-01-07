@@ -28,7 +28,7 @@ import org.eclipse.swt.internal.win32.*;
  * pixels are specified as being transparent when drawn. Examples
  * of file formats that support transparency are GIF and PNG.
  * </p><p>
- * There are two primary ways to use <code>Images</code>. 
+ * There are two primary ways to use <code>Images</code>.
  * The first is to load a graphic file from disk and create an
  * <code>Image</code> from it. This is done using an <code>Image</code>
  * constructor, for example:
@@ -41,8 +41,8 @@ import org.eclipse.swt.internal.win32.*;
  * SWT. It is possible to get more control over the mapping of
  * colors as the image is being created, using code of the form:
  * <pre>
- *    ImageData data = new ImageData("C:\\graphic.bmp"); 
- *    RGB[] rgbs = data.getRGBs(); 
+ *    ImageData data = new ImageData("C:\\graphic.bmp");
+ *    RGB[] rgbs = data.getRGBs();
  *    // At this point, rgbs contains specifications of all
  *    // the colors contained within this image. You may
  *    // allocate as many of these colors as you wish by
@@ -55,7 +55,7 @@ import org.eclipse.swt.internal.win32.*;
  * loading process should use the support provided in class
  * <code>ImageLoader</code>.
  * </p><p>
- * Application code must explicitly invoke the <code>Image.dispose()</code> 
+ * Application code must explicitly invoke the <code>Image.dispose()</code>
  * method to release the operating system resources managed by each instance
  * when those instances are no longer required.
  * </p>
@@ -68,7 +68,7 @@ import org.eclipse.swt.internal.win32.*;
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  */
 public final class Image extends Resource implements Drawable {
-	
+
 	/**
 	 * specifies whether the receiver is a bitmap or an icon
 	 * (one of <code>SWT.BITMAP</code>, <code>SWT.ICON</code>)
@@ -78,11 +78,11 @@ public final class Image extends Resource implements Drawable {
 	 * within the packages provided by SWT. It is not available on all
 	 * platforms and should never be accessed from application code.
 	 * </p>
-	 * 
+	 *
 	 * @noreference This field is not intended to be referenced by clients.
 	 */
 	public int type;
-	
+
 	/**
 	 * the handle to the OS image resource
 	 * (Warning: This field is platform dependent)
@@ -92,31 +92,31 @@ public final class Image extends Resource implements Drawable {
 	 * within the packages provided by SWT. It is not available on all
 	 * platforms and should never be accessed from application code.
 	 * </p>
-	 * 
+	 *
 	 * @noreference This field is not intended to be referenced by clients.
 	 */
 	public long /*int*/ handle;
-	
+
 	/**
 	 * specifies the transparent pixel
 	 */
 	int transparentPixel = -1, transparentColor = -1;
-	
+
 	/**
 	 * the GC which is drawing on the image
 	 */
 	GC memGC;
-	
+
 	/**
 	 * the alpha data for the image
 	 */
 	byte[] alphaData;
-	
+
 	/**
 	 * the global alpha value to be used for every pixel
 	 */
 	int alpha = -1;
-	
+
 	/**
 	 * the image data used to create this image if it is a
 	 * icon. Used only in WinCE
@@ -142,12 +142,12 @@ public final class Image extends Resource implements Drawable {
 	 * width of the image
 	 */
 	int width = -1;
-	
+
 	/**
 	 * height of the image
 	 */
 	int height = -1;
-	
+
 	/**
 	 * specifies the default scanline padding
 	 */
@@ -178,7 +178,7 @@ Image (Device device) {
  * images larger than 16M.
  * </p>
  * <p>
- * You must dispose the image when it is no longer required. 
+ * You must dispose the image when it is no longer required.
  * </p>
  *
  * @param device the device on which to create the image
@@ -192,7 +192,7 @@ Image (Device device) {
  * @exception SWTError <ul>
  *    <li>ERROR_NO_HANDLES if a handle could not be obtained for image creation</li>
  * </ul>
- * 
+ *
  * @see #dispose()
  */
 public Image(Device device, int width, int height) {
@@ -214,7 +214,7 @@ public Image(Device device, int width, int height) {
  * <dd>the result is a copy of srcImage which has a <em>gray scale</em> look</dd>
  * </dl>
  * <p>
- * You must dispose the image when it is no longer required. 
+ * You must dispose the image when it is no longer required.
  * </p>
  *
  * @param device the device on which to create the image
@@ -234,7 +234,7 @@ public Image(Device device, int width, int height) {
  * @exception SWTError <ul>
  *    <li>ERROR_NO_HANDLES if a handle could not be obtained for image creation</li>
  * </ul>
- * 
+ *
  * @see #dispose()
  */
 public Image(Device device, Image srcImage, int flag) {
@@ -250,7 +250,7 @@ public Image(Device device, Image srcImage, int flag) {
 				case SWT.BITMAP:
 					/* Get the HDC for the device */
 					long /*int*/ hDC = device.internal_new_GC(null);
-					
+
 					/* Copy the bitmap */
 					long /*int*/ hdcSource = OS.CreateCompatibleDC(hDC);
 					long /*int*/ hdcDest = OS.CreateCompatibleDC(hDC);
@@ -339,7 +339,7 @@ public Image(Device device, Image srcImage, int flag) {
 						if (intensity < 98304) {
 							newData.data[offset] = (byte)1;
 						} else {
-							newData.data[offset] = (byte)2;	
+							newData.data[offset] = (byte)2;
 						}
 					}
 					offset++;
@@ -377,7 +377,7 @@ public Image(Device device, Image srcImage, int flag) {
 				newData.alphaData = data.alphaData;
 				newData.maskData = data.maskData;
 				newData.maskPad = data.maskPad;
-				if (data.transparentPixel != -1) newData.transparentPixel = 254; 
+				if (data.transparentPixel != -1) newData.transparentPixel = 254;
 
 				/* Convert the pixels. */
 				int[] scanline = new int[rect.width];
@@ -436,7 +436,7 @@ public Image(Device device, Image srcImage, int flag) {
  * images larger than 16M.
  * </p>
  * <p>
- * You must dispose the image when it is no longer required. 
+ * You must dispose the image when it is no longer required.
  * </p>
  *
  * @param device the device on which to create the image
@@ -450,21 +450,21 @@ public Image(Device device, Image srcImage, int flag) {
  * @exception SWTError <ul>
  *    <li>ERROR_NO_HANDLES if a handle could not be obtained for image creation</li>
  * </ul>
- * 
+ *
  * @see #dispose()
  */
 public Image(Device device, Rectangle bounds) {
 	super(device);
 	if (bounds == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	init(bounds.width, bounds.height);
-	init();	
+	init();
 }
 
 /**
  * Constructs an instance of this class from the given
  * <code>ImageData</code>.
  * <p>
- * You must dispose the image when it is no longer required. 
+ * You must dispose the image when it is no longer required.
  * </p>
  *
  * @param device the device on which to create the image
@@ -480,17 +480,17 @@ public Image(Device device, Rectangle bounds) {
  * @exception SWTError <ul>
  *    <li>ERROR_NO_HANDLES if a handle could not be obtained for image creation</li>
  * </ul>
- * 
+ *
  * @see #dispose()
  */
 public Image(Device device, ImageData data) {
 	super(device);
 	init(data);
-	init();	
+	init();
 }
 
 /**
- * Constructs an instance of this class, whose type is 
+ * Constructs an instance of this class, whose type is
  * <code>SWT.ICON</code>, from the two given <code>ImageData</code>
  * objects. The two images must be the same size. Pixel transparency
  * in either image will be ignored.
@@ -501,7 +501,7 @@ public Image(Device device, ImageData data) {
  * transparent.
  * </p>
  * <p>
- * You must dispose the image when it is no longer required. 
+ * You must dispose the image when it is no longer required.
  * </p>
  *
  * @param device the device on which to create the icon
@@ -516,7 +516,7 @@ public Image(Device device, ImageData data) {
  * @exception SWTError <ul>
  *    <li>ERROR_NO_HANDLES if a handle could not be obtained for image creation</li>
  * </ul>
- * 
+ *
  * @see #dispose()
  */
 public Image(Device device, ImageData source, ImageData mask) {
@@ -540,7 +540,7 @@ public Image(Device device, ImageData source, ImageData mask) {
  * <p>
  * This constructor is provided for convenience when loading a single
  * image only. If the stream contains multiple images, only the first
- * one will be loaded. To load multiple images, use 
+ * one will be loaded. To load multiple images, use
  * <code>ImageLoader.load()</code>.
  * </p><p>
  * This constructor may be used to load a resource as follows:
@@ -562,7 +562,7 @@ public Image(Device device, ImageData source, ImageData mask) {
  *     }
  * </pre>
  * <p>
- * You must dispose the image when it is no longer required. 
+ * You must dispose the image when it is no longer required.
  * </p>
  *
  * @param device the device on which to create the image
@@ -581,13 +581,13 @@ public Image(Device device, ImageData source, ImageData mask) {
  * @exception SWTError <ul>
  *    <li>ERROR_NO_HANDLES if a handle could not be obtained for image creation</li>
  * </ul>
- * 
+ *
  * @see #dispose()
  */
 public Image (Device device, InputStream stream) {
 	super(device);
 	init(new ImageData(stream));
-	init();	
+	init();
 }
 
 /**
@@ -600,7 +600,7 @@ public Image (Device device, InputStream stream) {
  * a single image only. If the specified file contains
  * multiple images, only the first one will be used.
  * <p>
- * You must dispose the image when it is no longer required. 
+ * You must dispose the image when it is no longer required.
  * </p>
  *
  * @param device the device on which to create the image
@@ -619,7 +619,7 @@ public Image (Device device, InputStream stream) {
  * @exception SWTError <ul>
  *    <li>ERROR_NO_HANDLES if a handle could not be obtained for image creation</li>
  * </ul>
- * 
+ *
  * @see #dispose()
  */
 public Image (Device device, String filename) {
@@ -767,7 +767,7 @@ void initNative(String filename) {
 	*/
 	if (gdip && OS.PTR_SIZEOF == 8 && filename.toLowerCase().endsWith(".gif")) gdip = false;
 	/*
-	* Bug in GDI+. Bitmap.LockBits() fails to load GIF files in 
+	* Bug in GDI+. Bitmap.LockBits() fails to load GIF files in
 	* Windows 7 when the image has a position offset in the first frame.
 	* The fix is to not use GDI+ image loading in this case.
 	*/
@@ -779,7 +779,7 @@ void initNative(String filename) {
 		long /*int*/ bitmap = Gdip.Bitmap_new(chars, false);
 		if (bitmap != 0) {
 			int error = SWT.ERROR_NO_HANDLES;
-			int status = Gdip.Image_GetLastStatus(bitmap);			
+			int status = Gdip.Image_GetLastStatus(bitmap);
 			if (status == 0) {
 				if (filename.toLowerCase().endsWith(".ico")) {
 					this.type = SWT.ICON;
@@ -811,7 +811,7 @@ void initNative(String filename) {
 							break;
 					}
 					if (this.handle != 0) {
-						/* 
+						/*
 						* This performs better than getting the bits with Bitmap.LockBits(),
 						* but it cannot be used when there is transparency.
 						*/
@@ -910,7 +910,7 @@ void initNative(String filename) {
 								}
 				 		 		Gdip.Bitmap_UnlockBits(bitmap, lockedBitmapData);
 							} else {
-								error = SWT.ERROR_INVALID_IMAGE;								
+								error = SWT.ERROR_INVALID_IMAGE;
 							}
 							Gdip.BitmapData_delete(lockedBitmapData);
 						}
@@ -925,17 +925,17 @@ void initNative(String filename) {
 	}
 }
 
-/** 
- * Create a DIB from a DDB without using GetDIBits. Note that 
+/**
+ * Create a DIB from a DDB without using GetDIBits. Note that
  * the DDB should not be selected into a HDC.
  */
 long /*int*/ createDIBFromDDB(long /*int*/ hDC, long /*int*/ hBitmap, int width, int height) {
-	
+
 	/* Determine the DDB depth */
 	int bits = OS.GetDeviceCaps (hDC, OS.BITSPIXEL);
 	int planes = OS.GetDeviceCaps (hDC, OS.PLANES);
 	int depth = bits * planes;
-	
+
 	/* Determine the DIB palette */
 	boolean isDirect = depth > 8;
 	RGB[] rgbs = null;
@@ -948,7 +948,7 @@ long /*int*/ createDIBFromDDB(long /*int*/ hDC, long /*int*/ hBitmap, int width,
 			rgbs[i] = new RGB(logPalette[i] & 0xFF, logPalette[i + 1] & 0xFF, logPalette[i + 2] & 0xFF);
 		}
 	}
-	
+
 	boolean useBitfields = OS.IsWinCE && (depth == 16 || depth == 32);
 	BITMAPINFOHEADER bmiHeader = new BITMAPINFOHEADER();
 	bmiHeader.biSize = BITMAPINFOHEADER.sizeof;
@@ -989,7 +989,7 @@ long /*int*/ createDIBFromDDB(long /*int*/ hDC, long /*int*/ hBitmap, int width,
 					bmi[offset + 10] = (byte)((blueMask & 0xFF0000) >> 16);
 					bmi[offset + 11] = (byte)((blueMask & 0xFF000000) >> 24);
 					break;
-				case 32: 
+				case 32:
 					redMask = 0xFF00;
 					greenMask = 0xFF0000;
 					blueMask = 0xFF000000;
@@ -1023,8 +1023,8 @@ long /*int*/ createDIBFromDDB(long /*int*/ hDC, long /*int*/ hBitmap, int width,
 	long /*int*/[] pBits = new long /*int*/[1];
 	long /*int*/ hDib = OS.CreateDIBSection(0, bmi, OS.DIB_RGB_COLORS, pBits, 0, 0);
 	if (hDib == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-	
-	/* Bitblt DDB into DIB */	
+
+	/* Bitblt DDB into DIB */
 	long /*int*/ hdcSource = OS.CreateCompatibleDC(hDC);
 	long /*int*/ hdcDest = OS.CreateCompatibleDC(hDC);
 	long /*int*/ hOldSrc = OS.SelectObject(hdcSource, hBitmap);
@@ -1034,7 +1034,7 @@ long /*int*/ createDIBFromDDB(long /*int*/ hDC, long /*int*/ hBitmap, int width,
 	OS.SelectObject(hdcDest, hOldDest);
 	OS.DeleteDC(hdcSource);
 	OS.DeleteDC(hdcDest);
-	
+
 	return hDib;
 }
 
@@ -1052,10 +1052,10 @@ long /*int*/ [] createGdipImage() {
 				long /*int*/ memHdc = OS.CreateCompatibleDC(hDC);
 				long /*int*/ memDib = createDIB(imgWidth, imgHeight, 32);
 				if (memDib == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-				long /*int*/ oldMemBitmap = OS.SelectObject(memHdc, memDib);	
+				long /*int*/ oldMemBitmap = OS.SelectObject(memHdc, memDib);
 				BITMAP dibBM = new BITMAP();
 				OS.GetObject(memDib, BITMAP.sizeof, dibBM);
-				int sizeInBytes = dibBM.bmWidthBytes * dibBM.bmHeight;	
+				int sizeInBytes = dibBM.bmWidthBytes * dibBM.bmHeight;
 			 	OS.BitBlt(memHdc, 0, 0, imgWidth, imgHeight, srcHdc, 0, 0, OS.SRCCOPY);
 			 	byte red = 0, green = 0, blue = 0;
 			 	if (transparentPixel != -1) {
@@ -1067,7 +1067,7 @@ long /*int*/ [] createGdipImage() {
 						red = color[2];
 					} else {
 						switch (bm.bmBitsPixel) {
-							case 16:								
+							case 16:
 								int blueMask = 0x1F;
 								int blueShift = ImageData.getChannelShift(blueMask);
 								byte[] blues = ImageData.ANY_TO_EIGHT[ImageData.getChannelWidth(blueMask, blueShift)];
@@ -1075,11 +1075,11 @@ long /*int*/ [] createGdipImage() {
 								int greenMask = 0x3E0;
 								int greenShift = ImageData.getChannelShift(greenMask);
 								byte[] greens = ImageData.ANY_TO_EIGHT[ImageData.getChannelWidth(greenMask, greenShift)];
-								green = greens[(transparentPixel & greenMask) >> greenShift];								
+								green = greens[(transparentPixel & greenMask) >> greenShift];
 								int redMask = 0x7C00;
 								int redShift = ImageData.getChannelShift(redMask);
 								byte[] reds = ImageData.ANY_TO_EIGHT[ImageData.getChannelWidth(redMask, redShift)];
-								red = reds[(transparentPixel & redMask) >> redShift];							
+								red = reds[(transparentPixel & redMask) >> redShift];
 								break;
 							case 24:
 								blue = (byte)((transparentPixel & 0xFF0000) >> 16);
@@ -1158,7 +1158,7 @@ long /*int*/ [] createGdipImage() {
 			/*
 			* Bug in GDI+.  Bitmap_new() segments fault if the image width
 			* is greater than the image height.
-			* 
+			*
 			* Note that it also fails to generated an appropriate alpha
 			* channel when the icon depth is 32.
 			*/
@@ -1169,7 +1169,7 @@ long /*int*/ [] createGdipImage() {
 				long /*int*/ memHdc = OS.CreateCompatibleDC(hDC);
 				long /*int*/ memDib = createDIB(imgWidth, imgHeight, 32);
 				if (memDib == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-				long /*int*/ oldMemBitmap = OS.SelectObject(memHdc, memDib);	
+				long /*int*/ oldMemBitmap = OS.SelectObject(memHdc, memDib);
 				BITMAP dibBM = new BITMAP();
 				OS.GetObject(memDib, BITMAP.sizeof, dibBM);
 			 	OS.BitBlt(memHdc, 0, 0, imgWidth, imgHeight, srcHdc, 0, hBitmap == iconInfo.hbmMask ? imgHeight : 0, OS.SRCCOPY);
@@ -1273,9 +1273,9 @@ public Color getBackground() {
 
 	/* Get the HDC for the device */
 	long /*int*/ hDC = device.internal_new_GC(null);
-	
+
 	/* Compute the background color */
-	BITMAP bm = new BITMAP();		
+	BITMAP bm = new BITMAP();
 	OS.GetObject(handle, BITMAP.sizeof, bm);
 	long /*int*/ hdcMem = OS.CreateCompatibleDC(hDC);
 	long /*int*/ hOldObject = OS.SelectObject(hdcMem, handle);
@@ -1284,13 +1284,13 @@ public Color getBackground() {
 		if (OS.IsWinCE) {
 			byte[] pBits = new byte[1];
 			OS.MoveMemory(pBits, bm.bmBits, 1);
-			byte oldValue = pBits[0];			
+			byte oldValue = pBits[0];
 			int mask = (0xFF << (8 - bm.bmBitsPixel)) & 0x00FF;
 			pBits[0] = (byte)((transparentPixel << (8 - bm.bmBitsPixel)) | (pBits[0] & ~mask));
 			OS.MoveMemory(bm.bmBits, pBits, 1);
 			int color = OS.GetPixel(hdcMem, 0, 0);
        		pBits[0] = oldValue;
-       		OS.MoveMemory(bm.bmBits, pBits, 1);				
+       		OS.MoveMemory(bm.bmBits, pBits, 1);
 			blue = (color & 0xFF0000) >> 16;
 			green = (color & 0xFF00) >> 8;
 			red = color & 0xFF;
@@ -1324,7 +1324,7 @@ public Color getBackground() {
 	}
 	OS.SelectObject(hdcMem, hOldObject);
 	OS.DeleteDC(hdcMem);
-	
+
 	/* Release the HDC for the device */
 	device.internal_dispose_GC(hDC, null);
 	return Color.win32_new(device, (blue << 16) | (green << 8) | red);
@@ -1394,7 +1394,7 @@ public ImageData getImageData() {
 	switch (type) {
 		case SWT.ICON: {
 			if (OS.IsWinCE) return data;
-			ICONINFO info = new ICONINFO();	
+			ICONINFO info = new ICONINFO();
 			if (OS.IsWinCE) SWT.error(SWT.ERROR_NOT_IMPLEMENTED);
 			OS.GetIconInfo(handle, info);
 			/* Get the basic BITMAP information */
@@ -1418,10 +1418,10 @@ public ImageData getImageData() {
 			bmiHeader.biCompression = OS.BI_RGB;
 			byte[] bmi = new byte[BITMAPINFOHEADER.sizeof + numColors * 4];
 			OS.MoveMemory(bmi, bmiHeader, BITMAPINFOHEADER.sizeof);
-			
+
 			/* Get the HDC for the device */
 			long /*int*/ hDC = device.internal_new_GC(null);
-	
+
 			/* Create the DC and select the bitmap */
 			long /*int*/ hBitmapDC = OS.CreateCompatibleDC(hDC);
 			long /*int*/ hOldBitmap = OS.SelectObject(hBitmapDC, hBitmap);
@@ -1484,7 +1484,7 @@ public ImageData getImageData() {
 				bmiHeader.biCompression = OS.BI_RGB;
 				bmi = new byte[BITMAPINFOHEADER.sizeof + 8];
 				OS.MoveMemory(bmi, bmiHeader, BITMAPINFOHEADER.sizeof);
-				
+
 				/* First color black, second color white */
 				int offset = BITMAPINFOHEADER.sizeof;
 				bmi[offset + 4] = bmi[offset + 5] = bmi[offset + 6] = (byte)0xFF;
@@ -1518,10 +1518,10 @@ public ImageData getImageData() {
 				OS.RealizePalette(hBitmapDC);
 			}
 			OS.DeleteDC(hBitmapDC);
-			
+
 			/* Release the HDC for the device */
 			device.internal_dispose_GC(hDC, null);
-			
+
 			if (info.hbmColor != 0) OS.DeleteObject(info.hbmColor);
 			if (info.hbmMask != 0) OS.DeleteObject(info.hbmMask);
 			/* Construct and return the ImageData */
@@ -1596,7 +1596,7 @@ public ImageData getImageData() {
 				bmi = new byte[BITMAPINFOHEADER.sizeof + numColors * 4];
 				OS.MoveMemory(bmi, bmiHeader, BITMAPINFOHEADER.sizeof);
 			}
-			
+
 			/* Create the DC and select the bitmap */
 			long /*int*/ hBitmapDC = OS.CreateCompatibleDC(hDC);
 			long /*int*/ hOldBitmap = OS.SelectObject(hBitmapDC, handle);
@@ -1639,7 +1639,7 @@ public ImageData getImageData() {
 				RGB[] rgbs = new RGB[numColors];
 				if (isDib) {
 					if (OS.IsWinCE) {
-						/* 
+						/*
 						* Feature on WinCE.  GetDIBColorTable is not supported.
 						* The workaround is to set a pixel to the desired
 						* palette index and use getPixel to get the corresponding
@@ -1648,7 +1648,7 @@ public ImageData getImageData() {
 						int red = 0, green = 0, blue = 0;
 						byte[] pBits = new byte[1];
 						OS.MoveMemory(pBits, bm.bmBits, 1);
-						byte oldValue = pBits[0];			
+						byte oldValue = pBits[0];
 						int mask = (0xFF << (8 - bm.bmBitsPixel)) & 0x00FF;
 						for (int i = 0; i < numColors; i++) {
 							pBits[0] = (byte)((i << (8 - bm.bmBitsPixel)) | (pBits[0] & ~mask));
@@ -1660,7 +1660,7 @@ public ImageData getImageData() {
 							rgbs[i] = new RGB(red, green, blue);
 						}
 		       			pBits[0] = oldValue;
-			       		OS.MoveMemory(bm.bmBits, pBits, 1);				
+			       		OS.MoveMemory(bm.bmBits, pBits, 1);
 					} else {
 						byte[] colors = new byte[numColors * 4];
 						OS.GetDIBColorTable(hBitmapDC, 0, numColors, colors);
@@ -1696,14 +1696,14 @@ public ImageData getImageData() {
 			if (OS.IsWinCE) {
 				if (handle != this.handle) {
 					/* free temporary DIB */
-					OS.DeleteObject (handle);					
+					OS.DeleteObject (handle);
 				}
 			}
 			OS.DeleteDC(hBitmapDC);
-			
+
 			/* Release the HDC for the device */
 			device.internal_dispose_GC(hDC, null);
-			
+
 			/* Construct and return the ImageData */
 			ImageData imageData = new ImageData(width, height, depth, palette, 4, data);
 			imageData.transparentPixel = this.transparentPixel;
@@ -1721,8 +1721,8 @@ public ImageData getImageData() {
 }
 
 /**
- * Returns an integer hash code for the receiver. Any two 
- * objects that return <code>true</code> when passed to 
+ * Returns an integer hash code for the receiver. Any two
+ * objects that return <code>true</code> when passed to
  * <code>equals</code> must return the same value for this
  * method.
  *
@@ -1826,7 +1826,7 @@ static void GetIconInfo(Image image, ICONINFO info) {
 	info.hbmMask = result[1];
 }
 
-static long /*int*/ [] init(Device device, Image image, ImageData i) {	
+static long /*int*/ [] init(Device device, Image image, ImageData i) {
 	/*
 	 * BUG in Windows 98:
 	 * A monochrome DIBSection will display as solid black
@@ -1837,10 +1837,10 @@ static long /*int*/ [] init(Device device, Image image, ImageData i) {
 	/* Windows does not support 2-bit images. Convert to 4-bit image. */
 	if ((OS.IsWin95 && i.depth == 1 && i.getTransparencyType() != SWT.TRANSPARENCY_MASK) || i.depth == 2) {
 		ImageData img = new ImageData(i.width, i.height, 4, i.palette);
-		ImageData.blit(ImageData.BLIT_SRC, 
+		ImageData.blit(ImageData.BLIT_SRC,
 			i.data, i.depth, i.bytesPerLine, i.getByteOrder(), 0, 0, i.width, i.height, null, null, null,
 			ImageData.ALPHA_OPAQUE, null, 0, 0, 0,
-			img.data, img.depth, img.bytesPerLine, i.getByteOrder(), 0, 0, img.width, img.height, null, null, null, 
+			img.data, img.depth, img.bytesPerLine, i.getByteOrder(), 0, 0, img.width, img.height, null, null, null,
 			false, false);
 		img.transparentPixel = i.transparentPixel;
 		img.maskPad = i.maskPad;
@@ -1852,8 +1852,8 @@ static long /*int*/ [] init(Device device, Image image, ImageData i) {
 	/*
 	 * Windows supports 16-bit mask of (0x7C00, 0x3E0, 0x1F),
 	 * 24-bit mask of (0xFF0000, 0xFF00, 0xFF) and 32-bit mask
-	 * (0x00FF0000, 0x0000FF00, 0x000000FF) as documented in 
-	 * MSDN BITMAPINFOHEADER.  Make sure the image is 
+	 * (0x00FF0000, 0x0000FF00, 0x000000FF) as documented in
+	 * MSDN BITMAPINFOHEADER.  Make sure the image is
 	 * Windows-supported.
 	 */
 	/*
@@ -1885,12 +1885,12 @@ static long /*int*/ [] init(Device device, Image image, ImageData i) {
 					newPalette = new PaletteData(0x7C00, 0x3E0, 0x1F);
 				}
 				break;
-			case 24: 
+			case 24:
 				if (!(redMask == 0xFF && greenMask == 0xFF00 && blueMask == 0xFF0000)) {
 					newPalette = new PaletteData(0xFF, 0xFF00, 0xFF0000);
 				}
 				break;
-			case 32: 
+			case 32:
 				if (!(redMask == 0xFF00 && greenMask == 0xFF0000 && blueMask == 0xFF000000)) {
 					newPalette = new PaletteData(0xFF00, 0xFF0000, 0xFF000000);
 				}
@@ -1900,7 +1900,7 @@ static long /*int*/ [] init(Device device, Image image, ImageData i) {
 		}
 		if (newPalette != null) {
 			ImageData img = new ImageData(i.width, i.height, newDepth, newPalette);
-			ImageData.blit(ImageData.BLIT_SRC, 
+			ImageData.blit(ImageData.BLIT_SRC,
 					i.data, i.depth, i.bytesPerLine, i.getByteOrder(), 0, 0, i.width, i.height, redMask, greenMask, blueMask,
 					ImageData.ALPHA_OPAQUE, null, 0, 0, 0,
 					img.data, img.depth, img.bytesPerLine, newOrder, 0, 0, img.width, img.height, newPalette.redMask, newPalette.greenMask, newPalette.blueMask,
@@ -1991,12 +1991,12 @@ static long /*int*/ [] init(Device device, Image image, ImageData i) {
 		data = ImageData.convertPad(data, i.width, i.height, i.depth, i.scanlinePad, 4);
 	}
 	OS.MoveMemory(pBits[0], data, data.length);
-	
+
 	long /*int*/ [] result = null;
 	if (i.getTransparencyType() == SWT.TRANSPARENCY_MASK) {
 		/* Get the HDC for the device */
 		long /*int*/ hDC = device.internal_new_GC(null);
-			
+
 		/* Create the color bitmap */
 		long /*int*/ hdcSrc = OS.CreateCompatibleDC(hDC);
 		OS.SelectObject(hdcSrc, hDib);
@@ -2005,22 +2005,22 @@ static long /*int*/ [] init(Device device, Image image, ImageData i) {
 		long /*int*/ hdcDest = OS.CreateCompatibleDC(hDC);
 		OS.SelectObject(hdcDest, hBitmap);
 		OS.BitBlt(hdcDest, 0, 0, i.width, i.height, hdcSrc, 0, 0, OS.SRCCOPY);
-		
-		/* Release the HDC for the device */	
+
+		/* Release the HDC for the device */
 		device.internal_dispose_GC(hDC, null);
-			
+
 		/* Create the mask. Windows requires icon masks to have a scanline pad of 2. */
 		byte[] maskData = ImageData.convertPad(i.maskData, i.width, i.height, 1, i.maskPad, 2);
 		long /*int*/ hMask = OS.CreateBitmap(i.width, i.height, 1, 1, maskData);
-		if (hMask == 0) SWT.error(SWT.ERROR_NO_HANDLES);	
+		if (hMask == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 		OS.SelectObject(hdcSrc, hMask);
 		OS.PatBlt(hdcSrc, 0, 0, i.width, i.height, OS.DSTINVERT);
 		OS.DeleteDC(hdcSrc);
 		OS.DeleteDC(hdcDest);
 		OS.DeleteObject(hDib);
-		
+
 		if (image == null) {
-			result = new long /*int*/ []{hBitmap, hMask}; 
+			result = new long /*int*/ []{hBitmap, hMask};
 		} else {
 			/* Create the icon */
 			ICONINFO info = new ICONINFO();
@@ -2125,7 +2125,7 @@ static long /*int*/ [] init(Device device, Image image, ImageData source, ImageD
 		}
 	}
 	imageData.maskPad = mask.scanlinePad;
-	imageData.maskData = mask.data;	
+	imageData.maskData = mask.data;
 	return init(device, image, imageData);
 }
 void init(ImageData i) {
@@ -2133,7 +2133,7 @@ void init(ImageData i) {
 	init(device, this, i);
 }
 
-/**	 
+/**
  * Invokes platform specific functionality to allocate a new GC handle.
  * <p>
  * <b>IMPORTANT:</b> This method is <em>not</em> part of the public
@@ -2143,9 +2143,9 @@ void init(ImageData i) {
  * application code.
  * </p>
  *
- * @param data the platform specific GC data 
+ * @param data the platform specific GC data
  * @return the platform specific GC handle
- * 
+ *
  * @noreference This method is not intended to be referenced by clients.
  */
 public long /*int*/ internal_new_GC (GCData data) {
@@ -2157,7 +2157,7 @@ public long /*int*/ internal_new_GC (GCData data) {
 	if (type != SWT.BITMAP || memGC != null) {
 		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
-	
+
 	/* Create a compatible HDC for the device */
 	long /*int*/ hDC = device.internal_new_GC(null);
 	long /*int*/ imageDC = OS.CreateCompatibleDC(hDC);
@@ -2179,7 +2179,7 @@ public long /*int*/ internal_new_GC (GCData data) {
 	return imageDC;
 }
 
-/**	 
+/**
  * Invokes platform specific functionality to dispose a GC handle.
  * <p>
  * <b>IMPORTANT:</b> This method is <em>not</em> part of the public
@@ -2191,7 +2191,7 @@ public long /*int*/ internal_new_GC (GCData data) {
  *
  * @param hDC the platform specific GC handle
  * @param data the platform specific GC data
- * 
+ *
  * @noreference This method is not intended to be referenced by clients.
  */
 public void internal_dispose_GC (long /*int*/ hDC, GCData data) {
@@ -2260,9 +2260,9 @@ public void setBackground(Color color) {
 
 	/* Get the HDC for the device */
 	long /*int*/ hDC = device.internal_new_GC(null);
-	
+
 	/* Change the background color in the image */
-	BITMAP bm = new BITMAP();		
+	BITMAP bm = new BITMAP();
 	OS.GetObject(handle, BITMAP.sizeof, bm);
 	long /*int*/ hdcMem = OS.CreateCompatibleDC(hDC);
 	OS.SelectObject(hdcMem, handle);
@@ -2277,8 +2277,8 @@ public void setBackground(Color color) {
 	if (OS.IsWinCE) SWT.error(SWT.ERROR_NOT_IMPLEMENTED);
 	OS.SetDIBColorTable(hdcMem, 0, numColors, colors);
 	OS.DeleteDC(hdcMem);
-	
-	/* Release the HDC for the device */	
+
+	/* Release the HDC for the device */
 	device.internal_dispose_GC(hDC, null);
 }
 
@@ -2294,7 +2294,7 @@ public String toString () {
 	return "Image {" + handle + "}";
 }
 
-/**	 
+/**
  * Invokes platform specific functionality to allocate a new image.
  * <p>
  * <b>IMPORTANT:</b> This method is <em>not</em> part of the public
@@ -2308,7 +2308,7 @@ public String toString () {
  * @param type the type of the image (<code>SWT.BITMAP</code> or <code>SWT.ICON</code>)
  * @param handle the OS handle for the image
  * @return a new image object containing the specified device, type and handle
- * 
+ *
  * @noreference This method is not intended to be referenced by clients.
  */
 public static Image win32_new(Device device, int type, long /*int*/ handle) {

@@ -16,14 +16,14 @@ import org.eclipse.swt.internal.ole.win32.*;
 import org.eclipse.swt.internal.win32.*;
 
 /**
- * OleAutomation provides a generic mechanism for accessing functionality that is 
+ * OleAutomation provides a generic mechanism for accessing functionality that is
  * specific to a particular ActiveX Control or OLE Document.
  *
  * <p>The OLE Document or ActiveX Control must support the IDispatch interface in order to provide
- * OleAutomation support. The additional functionality provided by the OLE Object is specified in 
- * its IDL file.  The additional methods can either be to get property values (<code>getProperty</code>), 
+ * OleAutomation support. The additional functionality provided by the OLE Object is specified in
+ * its IDL file.  The additional methods can either be to get property values (<code>getProperty</code>),
  * to set property values (<code>setProperty</code>) or to invoke a method (<code>invoke</code> or
- * <code>invokeNoReply</code>).  Arguments are passed around in the form of <code>Variant</code> 
+ * <code>invokeNoReply</code>).  Arguments are passed around in the form of <code>Variant</code>
  * objects.
  *
  * <p>Here is a sample IDL fragment:
@@ -59,7 +59,7 @@ import org.eclipse.swt.internal.win32.*;
  *
  *	// Invoke the AddFile method
  *	// Look up the IDs of the AddFile method and its parameter
- *	rgdispid = automation.getIDsOfNames(new String[]{"AddFile", "fileName"}); 
+ *	rgdispid = automation.getIDsOfNames(new String[]{"AddFile", "fileName"});
  *	int dispIdMember = rgdispid[0];
  *	int[] rgdispidNamedArgs = new int[] {rgdispid[1]};
  *
@@ -79,7 +79,7 @@ import org.eclipse.swt.internal.win32.*;
  *	automation.dispose();
  *
  * </pre></code>
- * 
+ *
  * @see <a href="http://www.eclipse.org/swt/snippets/#ole">OLE and ActiveX snippets</a>
  * @see <a href="http://www.eclipse.org/swt/examples.php">SWT Examples: OLEExample, OleWebBrowser</a>
  */
@@ -88,15 +88,15 @@ public final class OleAutomation {
 	private IDispatch objIDispatch;
 	private String exceptionDescription;
 	private ITypeInfo objITypeInfo;
-	
+
 OleAutomation(IDispatch idispatch) {
 	if (idispatch == null) OLE.error(OLE.ERROR_INVALID_INTERFACE_ADDRESS);
 	objIDispatch = idispatch;
 	objIDispatch.AddRef();
-	
+
 	long /*int*/[] ppv = new long /*int*/[1];
-	/* GetTypeInfo([in] iTInfo, [in] lcid, [out] ppTInfo) 
-	 * AddRef has already been called on ppTInfo by the callee and must be released by the caller. 
+	/* GetTypeInfo([in] iTInfo, [in] lcid, [out] ppTInfo)
+	 * AddRef has already been called on ppTInfo by the callee and must be released by the caller.
 	 */
 	int result = objIDispatch.GetTypeInfo(0, COM.LOCALE_USER_DEFAULT, ppv);
 	if (result == OLE.S_OK) {
@@ -106,7 +106,7 @@ OleAutomation(IDispatch idispatch) {
 /**
  * Creates an OleAutomation object for the specified client.
  *
- * @param clientSite the site for the OLE Document or ActiveX Control whose additional functionality 
+ * @param clientSite the site for the OLE Document or ActiveX Control whose additional functionality
  *        you need to access
  *
  * @exception IllegalArgumentException <ul>
@@ -118,8 +118,8 @@ public OleAutomation(OleClientSite clientSite) {
 	objIDispatch = clientSite.getAutomationObject();
 
 	long /*int*/[] ppv = new long /*int*/[1];
-	/* GetTypeInfo([in] iTInfo, [in] lcid, [out] ppTInfo) 
-	 * AddRef has already been called on ppTInfo by the callee and must be released by the caller. 
+	/* GetTypeInfo([in] iTInfo, [in] lcid, [out] ppTInfo)
+	 * AddRef has already been called on ppTInfo by the callee and must be released by the caller.
 	 */
 	int result = objIDispatch.GetTypeInfo(0, COM.LOCALE_USER_DEFAULT, ppv);
 	if (result == OLE.S_OK) {
@@ -129,17 +129,17 @@ public OleAutomation(OleClientSite clientSite) {
 /**
  * Creates an OleAutomation object for the specified <code>progID</code>.
  *
- * @param progId the unique program identifier of an OLE Document application; 
+ * @param progId the unique program identifier of an OLE Document application;
  *               the value of the ProgID key or the value of the VersionIndependentProgID key specified
  *               in the registry for the desired OLE Document (for example, the VersionIndependentProgID
  *               for Word is Word.Document)
- *               
+ *
  * @exception SWTException
  * <ul><li>ERROR_INVALID_CLASSID when the progId does not map to a registered CLSID
  *     <li>ERROR_CANNOT_CREATE_OBJECT when failed to create OLE Object
  *     <li>ERROR_INTERFACE_NOT_FOUND when the OLE object specified does not implement IDispatch
  * </ul>
- * 
+ *
  * @since 3.6
  */
 public OleAutomation(String progId) {
@@ -153,15 +153,15 @@ public OleAutomation(String progId) {
 		int flags = COM.CLSCTX_INPROC_SERVER;
 		if (progId.startsWith("Excel")) flags |= COM.CLSCTX_LOCAL_SERVER; //$NON-NLS-1$
 		long /*int*/[] ppvObject = new long /*int*/[1];
-		int result = COM.CoCreateInstance(appClsid, 0, flags, COM.IIDIUnknown, ppvObject); 
+		int result = COM.CoCreateInstance(appClsid, 0, flags, COM.IIDIUnknown, ppvObject);
 		if (result != COM.S_OK) {
 			OS.OleUninitialize();
 			OLE.error(OLE.ERROR_CANNOT_CREATE_OBJECT, result);
 		}
 		objIUnknown = new IUnknown(ppvObject[0]);
-		
+
 		ppvObject[0] = 0;
-		result = objIUnknown.QueryInterface(COM.IIDIDispatch, ppvObject); 
+		result = objIUnknown.QueryInterface(COM.IIDIDispatch, ppvObject);
 		if (result != COM.S_OK) OLE.error(OLE.ERROR_INTERFACE_NOT_FOUND);
 		objIDispatch = new IDispatch(ppvObject[0]);
 
@@ -187,19 +187,19 @@ public void dispose() {
 		objIDispatch.Release();
 	}
 	objIDispatch = null;
-	
+
 	if (objITypeInfo != null){
 		objITypeInfo.Release();
 	}
 	objITypeInfo = null;
-	
+
 	if (objIUnknown != null){
 		objIUnknown.Release();
 		OS.OleUninitialize();
 	}
 	objIUnknown = null;
 }
-long /*int*/ getAddress() {	
+long /*int*/ getAddress() {
 	return objIDispatch.getAddress();
 }
 GUID getClassID(String clientName) {
@@ -221,9 +221,9 @@ GUID getClassID(String clientName) {
 }
 /**
  * Returns the fully qualified name of the Help file for the given member ID.
- * 
+ *
  * @param dispId the member ID whose Help file is being retrieved.
- * @return a string representing the fully qualified name of a Help 
+ * @return a string representing the fully qualified name of a Help
  * file or null.
  */
 public String getHelpFile(int dispId) {
@@ -231,11 +231,11 @@ public String getHelpFile(int dispId) {
 	String[] file = new String[1];
 	int rc = objITypeInfo.GetDocumentation(dispId, null, null, null, file );
 	if (rc == OLE.S_OK) return file[0];
-	return null;	
+	return null;
 }
 /**
  * Returns the documentation string for the given member ID.
- * 
+ *
  * @param dispId the member ID in which the documentation is being retrieved.
  * @return the documentation string if it exists; otherwise return null.
  */
@@ -248,7 +248,7 @@ public String getDocumentation(int dispId) {
 }
 /**
  * Returns the property description of a variable at the given index.
- * 
+ *
  * @param index the index of a variable whose property is being retrieved.
  * @return an OlePropertyDescription for a variable at the given index.
  */
@@ -259,7 +259,7 @@ public OlePropertyDescription getPropertyDescription(int index) {
 	if (rc != OLE.S_OK) return null;
 	VARDESC vardesc = new VARDESC();
 	COM.MoveMemory(vardesc, ppVarDesc[0], VARDESC.sizeof);
-	
+
 	OlePropertyDescription data = new OlePropertyDescription();
 	data.id = vardesc.memid;
 	data.name = getName(vardesc.memid);
@@ -273,13 +273,13 @@ public OlePropertyDescription getPropertyDescription(int index) {
 	data.kind = vardesc.varkind;
 	data.description = getDocumentation(vardesc.memid);
 	data.helpFile = getHelpFile(vardesc.memid);
-	
+
 	objITypeInfo.ReleaseVarDesc(ppVarDesc[0]);
 	return data;
 }
 /**
  * Returns the description of a function at the given index.
- * 
+ *
  * @param index the index of a function whose property is being retrieved.
  * @return an OleFunctionDescription for a function at the given index.
  */
@@ -290,9 +290,9 @@ public OleFunctionDescription getFunctionDescription(int index) {
 	if (rc != OLE.S_OK) return null;
 	FUNCDESC funcdesc = new FUNCDESC();
 	COM.MoveMemory(funcdesc, ppFuncDesc[0], FUNCDESC.sizeof);
-	
+
 	OleFunctionDescription data = new OleFunctionDescription();
-	
+
 	data.id = funcdesc.memid;
 	data.optionalArgCount = funcdesc.cParamsOpt;
 	data.invokeKind = funcdesc.invkind;
@@ -301,7 +301,7 @@ public OleFunctionDescription getFunctionDescription(int index) {
 	data.callingConvention = funcdesc.callconv;
 	data.documentation = getDocumentation(funcdesc.memid);
 	data.helpFile = getHelpFile(funcdesc.memid);
-	
+
 	String[] names = getNames(funcdesc.memid, funcdesc.cParams + 1);
 	if (names.length > 0) {
 		data.name = names[0];
@@ -313,8 +313,8 @@ public OleFunctionDescription getFunctionDescription(int index) {
 			data.args[i].name = names[i + 1];
 		}
 		//TODO 0- use structures
-		short[] vt = new short[1];	
-		COM.MoveMemory(vt, funcdesc.lprgelemdescParam + i * COM.ELEMDESC_sizeof() + OS.PTR_SIZEOF, 2);				
+		short[] vt = new short[1];
+		COM.MoveMemory(vt, funcdesc.lprgelemdescParam + i * COM.ELEMDESC_sizeof() + OS.PTR_SIZEOF, 2);
 		if (vt[0] == OLE.VT_PTR) {
 			long /*int*/ [] pTypedesc = new long /*int*/ [1];
 			COM.MoveMemory(pTypedesc, funcdesc.lprgelemdescParam + i * COM.ELEMDESC_sizeof(), OS.PTR_SIZEOF);
@@ -325,9 +325,9 @@ public OleFunctionDescription getFunctionDescription(int index) {
 		data.args[i].type = vt[0];
 		short[] wParamFlags = new short[1];
 		COM.MoveMemory(wParamFlags, funcdesc.lprgelemdescParam + i * COM.ELEMDESC_sizeof() + COM.TYPEDESC_sizeof () + OS.PTR_SIZEOF, 2);
-		data.args[i].flags = wParamFlags[0];	
+		data.args[i].flags = wParamFlags[0];
 	}
-	
+
 	data.returnType = funcdesc.elemdescFunc_tdesc_vt;
 	if (data.returnType == OLE.VT_PTR) {
 		short[] vt = new short[1];
@@ -342,7 +342,7 @@ public OleFunctionDescription getFunctionDescription(int index) {
  * Returns the type info of the current object referenced by the automation.
  * The type info contains information about the object such as the function descriptions,
  * the member descriptions and attributes of the type.
- * 
+ *
  * @return the type info of the receiver
  */
 public TYPEATTR getTypeInfoAttributes() {
@@ -357,7 +357,7 @@ public TYPEATTR getTypeInfoAttributes() {
 }
 /**
  * Returns the name of the given member ID.
- * 
+ *
  * @param dispId the member ID in which the name is being retrieved.
  * @return the name if it exists; otherwise return null.
  */
@@ -370,7 +370,7 @@ public String getName(int dispId) {
 }
 /**
  * Returns the name of a function and parameter names for the specified function ID.
- * 
+ *
  * @param dispId the function ID in which the name and parameters are being retrieved.
  * @param maxSize the maximum number of names to retrieve.
  * @return an array of name containing the function name and the parameter names
@@ -389,7 +389,7 @@ public String[] getNames(int dispId, int maxSize) {
 }
 /**
  * Returns the positive integer values (IDs) that are associated with the specified names by the
- * IDispatch implementor.  If you are trying to get the names of the parameters in a method, the first 
+ * IDispatch implementor.  If you are trying to get the names of the parameters in a method, the first
  * String in the names array must be the name of the method followed by the names of the parameters.
  *
  * @param names an array of names for which you require the identifiers
@@ -402,7 +402,7 @@ public int[] getIDsOfNames(String[] names) {
 	int[] rgdispid = new int[names.length];
 	int result = objIDispatch.GetIDsOfNames(new GUID(), names, names.length, COM.LOCALE_USER_DEFAULT, rgdispid);
 	if (result != COM.S_OK) return null;
-	
+
 	return rgdispid;
 }
 /**
@@ -411,7 +411,7 @@ public int[] getIDsOfNames(String[] names) {
  * @return a description of the last error encountered
  */
 public String getLastError() {
-	
+
 	return exceptionDescription;
 
 }
@@ -436,16 +436,16 @@ public Variant getProperty(int dispIdMember) {
  *
  * @param rgvarg an array of arguments for the method.  All arguments are considered to be
  *        read only unless the Variant is a By Reference Variant type.
- * 
+ *
  * @return the value of the property specified by the dispIdMember or null
- * 
+ *
  * @since 2.0
  */
 public Variant getProperty(int dispIdMember, Variant[] rgvarg) {
 	Variant pVarResult = new Variant();
 	int result = invoke(dispIdMember, COM.DISPATCH_PROPERTYGET, rgvarg, null, pVarResult);
 	return (result == OLE.S_OK) ? pVarResult : null;
-	
+
 }
 /**
  * Returns the value of the property specified by the dispIdMember.
@@ -455,14 +455,14 @@ public Variant getProperty(int dispIdMember, Variant[] rgvarg) {
  *
  * @param rgvarg an array of arguments for the method.  All arguments are considered to be
  *        read only unless the Variant is a By Reference Variant type.
- * 
+ *
  * @param rgdispidNamedArgs an array of identifiers for the arguments specified in rgvarg; the
  *        parameter IDs must be in the same order as their corresponding values;
- *        all arguments must have an identifier - identifiers can be obtained using 
+ *        all arguments must have an identifier - identifiers can be obtained using
  *        OleAutomation.getIDsOfNames
- * 
+ *
  * @return the value of the property specified by the dispIdMember or null
- * 
+ *
  * @since 2.0
  */
 public Variant getProperty(int dispIdMember, Variant[] rgvarg, int[] rgdispidNamedArgs) {
@@ -475,7 +475,7 @@ public boolean equals(Object object) {
 	if (object == this) return true;
 	if (object instanceof OleAutomation) {
 		if (objIDispatch == null) return false;
-		OleAutomation oleAutomation = ((OleAutomation) object); 
+		OleAutomation oleAutomation = ((OleAutomation) object);
 		if (oleAutomation.objIDispatch == null) return false;
 		long /*int*/ address1 = objIDispatch.getAddress();
 		long /*int*/ address2 = oleAutomation.objIDispatch.getAddress();
@@ -483,7 +483,7 @@ public boolean equals(Object object) {
 	}
 	return false;
 }
-/** 
+/**
  * Invokes a method on the OLE Object; the method has no parameters.
  *
  * @param dispIdMember the ID of the method as specified by the IDL of the ActiveX Control; the
@@ -496,7 +496,7 @@ public Variant invoke(int dispIdMember) {
 	int result = invoke(dispIdMember, COM.DISPATCH_METHOD, null, null, pVarResult);
 	return (result == COM.S_OK) ? pVarResult : null;
 }
-/** 
+/**
  * Invokes a method on the OLE Object; the method has no optional parameters.
  *
  * @param dispIdMember the ID of the method as specified by the IDL of the ActiveX Control; the
@@ -512,7 +512,7 @@ public Variant invoke(int dispIdMember, Variant[] rgvarg) {
 	int result = invoke(dispIdMember, COM.DISPATCH_METHOD, rgvarg, null, pVarResult);
 	return (result == COM.S_OK) ? pVarResult : null;
 }
-/** 
+/**
  * Invokes a method on the OLE Object; the method has optional parameters.  It is not
  * necessary to specify all the optional parameters, only include the parameters for which
  * you are providing values.
@@ -525,7 +525,7 @@ public Variant invoke(int dispIdMember, Variant[] rgvarg) {
  *
  * @param rgdispidNamedArgs an array of identifiers for the arguments specified in rgvarg; the
  *        parameter IDs must be in the same order as their corresponding values;
- *        all arguments must have an identifier - identifiers can be obtained using 
+ *        all arguments must have an identifier - identifiers can be obtained using
  *        OleAutomation.getIDsOfNames
  *
  * @return the result of the method or null if the method failed to give result information
@@ -539,7 +539,7 @@ private int invoke(int dispIdMember, int wFlags, Variant[] rgvarg, int[] rgdispi
 
 	// get the IDispatch interface for the control
 	if (objIDispatch == null) return COM.E_FAIL;
-	
+
 	// create a DISPPARAMS structure for the input parameters
 	DISPPARAMS pDispParams = new DISPPARAMS();
 	// store arguments in rgvarg
@@ -576,7 +576,7 @@ private int invoke(int dispIdMember, int wFlags, Variant[] rgvarg, int[] rgdispi
 		COM.VariantClear(pVarResultAddress);
 		OS.GlobalFree(pVarResultAddress);
 	}
-	
+
 	// free the Dispparams resources
 	if (pDispParams.rgdispidNamedArgs != 0){
 		OS.GlobalFree(pDispParams.rgdispidNamedArgs);
@@ -592,12 +592,12 @@ private int invoke(int dispIdMember, int wFlags, Variant[] rgvarg, int[] rgdispi
 
 	// save error string and cleanup EXCEPINFO
 	manageExcepinfo(result, excepInfo);
-		
+
 	return result;
 }
-/** 
- * Invokes a method on the OLE Object; the method has no parameters.  In the early days of OLE, 
- * the IDispatch interface was not well defined and some applications (mainly Word) did not support 
+/**
+ * Invokes a method on the OLE Object; the method has no parameters.  In the early days of OLE,
+ * the IDispatch interface was not well defined and some applications (mainly Word) did not support
  * a return value.  For these applications, call this method instead of calling
  * <code>public void invoke(int dispIdMember)</code>.
  *
@@ -613,9 +613,9 @@ public void invokeNoReply(int dispIdMember) {
 	if (result != COM.S_OK)
 		OLE.error(OLE.ERROR_ACTION_NOT_PERFORMED, result);
 }
-/** 
- * Invokes a method on the OLE Object; the method has no optional parameters.  In the early days of OLE, 
- * the IDispatch interface was not well defined and some applications (mainly Word) did not support 
+/**
+ * Invokes a method on the OLE Object; the method has no optional parameters.  In the early days of OLE,
+ * the IDispatch interface was not well defined and some applications (mainly Word) did not support
  * a return value.  For these applications, call this method instead of calling
  * <code>public void invoke(int dispIdMember, Variant[] rgvarg)</code>.
  *
@@ -634,11 +634,11 @@ public void invokeNoReply(int dispIdMember, Variant[] rgvarg) {
 	if (result != COM.S_OK)
 		OLE.error(OLE.ERROR_ACTION_NOT_PERFORMED, result);
 }
-/** 
+/**
  * Invokes a method on the OLE Object; the method has optional parameters.  It is not
  * necessary to specify all the optional parameters, only include the parameters for which
- * you are providing values.  In the early days of OLE, the IDispatch interface was not well 
- * defined and some applications (mainly Word) did not support a return value.  For these 
+ * you are providing values.  In the early days of OLE, the IDispatch interface was not well
+ * defined and some applications (mainly Word) did not support a return value.  For these
  * applications, call this method instead of calling
  * <code>public void invoke(int dispIdMember, Variant[] rgvarg, int[] rgdispidNamedArgs)</code>.
  *
@@ -650,7 +650,7 @@ public void invokeNoReply(int dispIdMember, Variant[] rgvarg) {
  *
  * @param rgdispidNamedArgs an array of identifiers for the arguments specified in rgvarg; the
  *        parameter IDs must be in the same order as their corresponding values;
- *        all arguments must have an identifier - identifiers can be obtained using 
+ *        all arguments must have an identifier - identifiers can be obtained using
  *        OleAutomation.getIDsOfNames
  *
  * @exception org.eclipse.swt.SWTException <ul>

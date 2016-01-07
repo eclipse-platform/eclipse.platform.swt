@@ -10,7 +10,7 @@
  *******************************************************************************/
 package org.eclipse.swt.widgets;
 
- 
+
 import org.eclipse.swt.internal.win32.*;
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
@@ -39,8 +39,8 @@ public class TableItem extends Item {
 	Font font;
 	Font [] cellFont;
 	boolean checked, grayed, cached;
-	int imageIndent, background = -1, foreground = -1; 
-	int [] cellBackground, cellForeground; 
+	int imageIndent, background = -1, foreground = -1;
+	int [] cellBackground, cellForeground;
 
 /**
  * Constructs a new instance of this class given its parent
@@ -50,7 +50,7 @@ public class TableItem extends Item {
  * <p>
  * The style value is either one of the style constants defined in
  * class <code>SWT</code> which is applicable to instances of this
- * class, or must be built by <em>bitwise OR</em>'ing together 
+ * class, or must be built by <em>bitwise OR</em>'ing together
  * (that is, using the <code>int</code> "|" operator) two or more
  * of those <code>SWT</code> style constants. The class description
  * lists the style constants that are applicable to the class.
@@ -84,7 +84,7 @@ public TableItem (Table parent, int style) {
  * <p>
  * The style value is either one of the style constants defined in
  * class <code>SWT</code> which is applicable to instances of this
- * class, or must be built by <em>bitwise OR</em>'ing together 
+ * class, or must be built by <em>bitwise OR</em>'ing together
  * (that is, using the <code>int</code> "|" operator) two or more
  * of those <code>SWT</code> style constants. The class description
  * lists the style constants that are applicable to the class.
@@ -137,7 +137,7 @@ void clear () {
 	checked = grayed = false;
 	font = null;
 	background = foreground = -1;
-	cellFont = null; 
+	cellFont = null;
 	cellBackground = cellForeground = null;
 	if ((parent.style & SWT.VIRTUAL) != 0) cached = false;
 }
@@ -163,7 +163,7 @@ long /*int*/ fontHandle (int index) {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 2.0
  */
 public Color getBackground () {
@@ -183,7 +183,7 @@ public Color getBackground () {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 3.0
  */
 public Color getBackground (int index) {
@@ -205,7 +205,7 @@ public Color getBackground (int index) {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 3.2
  */
 public Rectangle getBounds () {
@@ -358,7 +358,7 @@ RECT getBounds (int row, int column, boolean getText, boolean getImage, boolean 
 			if (hasImage) {
 				if (column != 0 && getText && !getImage) {
 					RECT iconRect = new RECT ();
-					iconRect.top = column;		
+					iconRect.top = column;
 					iconRect.left = OS.LVIR_ICON;
 					if (OS.SendMessage (hwnd, OS. LVM_GETSUBITEMRECT, row, iconRect) != 0) {
 						rect.left = iconRect.right + Table.INSET / 2;
@@ -477,7 +477,7 @@ public Font getFont (int index) {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 2.0
  */
 public Color getForeground () {
@@ -488,7 +488,7 @@ public Color getForeground () {
 }
 
 /**
- * 
+ *
  * Returns the foreground color at the given column index in the receiver.
  *
  * @param index the column index
@@ -498,7 +498,7 @@ public Color getForeground () {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 3.0
  */
 public Color getForeground (int index) {
@@ -666,7 +666,7 @@ public String getText (int index) {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 3.3
  */
 public Rectangle getTextBounds (int index) {
@@ -714,7 +714,7 @@ void releaseWidget () {
 	super.releaseWidget ();
 	strings = null;
 	images = null;
-	cellFont = null; 
+	cellFont = null;
 	cellBackground = cellForeground = null;
 }
 
@@ -726,13 +726,13 @@ void releaseWidget () {
  * @param color the new color (or null)
  *
  * @exception IllegalArgumentException <ul>
- *    <li>ERROR_INVALID_ARGUMENT - if the argument has been disposed</li> 
+ *    <li>ERROR_INVALID_ARGUMENT - if the argument has been disposed</li>
  * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 2.0
  */
 public void setBackground (Color color) {
@@ -752,7 +752,7 @@ public void setBackground (Color color) {
 }
 
 /**
- * Sets the background color at the given column index in the receiver 
+ * Sets the background color at the given column index in the receiver
  * to the color specified by the argument, or to the default system color for the item
  * if the argument is null.
  *
@@ -760,13 +760,13 @@ public void setBackground (Color color) {
  * @param color the new color (or null)
  *
  * @exception IllegalArgumentException <ul>
- *    <li>ERROR_INVALID_ARGUMENT - if the argument has been disposed</li> 
+ *    <li>ERROR_INVALID_ARGUMENT - if the argument has been disposed</li>
  * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 3.0
  */
 public void setBackground (int index, Color color) {
@@ -794,7 +794,7 @@ public void setBackground (int index, Color color) {
 }
 
 /**
- * Sets the checked state of the checkbox for this item.  This state change 
+ * Sets the checked state of the checkbox for this item.  This state change
  * only applies if the Table was created with the SWT.CHECK style.
  *
  * @param checked the new checked state of the checkbox
@@ -831,13 +831,13 @@ void setChecked (boolean checked, boolean notify) {
  * @param font the new font (or null)
  *
  * @exception IllegalArgumentException <ul>
- *    <li>ERROR_INVALID_ARGUMENT - if the argument has been disposed</li> 
+ *    <li>ERROR_INVALID_ARGUMENT - if the argument has been disposed</li>
  * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 3.0
  */
 public void setFont (Font font){
@@ -854,7 +854,7 @@ public void setFont (Font font){
 	/*
 	* Bug in Windows.  Despite the fact that every item in the
 	* table always has LPSTR_TEXTCALLBACK, Windows caches the
-	* bounds for the selected items.  This means that 
+	* bounds for the selected items.  This means that
 	* when you change the string to be something else, Windows
 	* correctly asks you for the new string but when the item
 	* is selected, the selection draws using the bounds of the
@@ -880,21 +880,21 @@ public void setFont (Font font){
 
 /**
  * Sets the font that the receiver will use to paint textual information
- * for the specified cell in this item to the font specified by the 
- * argument, or to the default font for that kind of control if the 
+ * for the specified cell in this item to the font specified by the
+ * argument, or to the default font for that kind of control if the
  * argument is null.
  *
  * @param index the column index
  * @param font the new font (or null)
  *
  * @exception IllegalArgumentException <ul>
- *    <li>ERROR_INVALID_ARGUMENT - if the argument has been disposed</li> 
+ *    <li>ERROR_INVALID_ARGUMENT - if the argument has been disposed</li>
  * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 3.0
  */
 public void setFont (int index, Font font) {
@@ -918,7 +918,7 @@ public void setFont (int index, Font font) {
 		/*
 		* Bug in Windows.  Despite the fact that every item in the
 		* table always has LPSTR_TEXTCALLBACK, Windows caches the
-		* bounds for the selected items.  This means that 
+		* bounds for the selected items.  This means that
 		* when you change the string to be something else, Windows
 		* correctly asks you for the new string but when the item
 		* is selected, the selection draws using the bounds of the
@@ -939,7 +939,7 @@ public void setFont (int index, Font font) {
 			}
 		}
 		parent.setScrollWidth (this, false);
-	}	
+	}
 	redraw (index, true, false);
 }
 
@@ -951,13 +951,13 @@ public void setFont (int index, Font font) {
  * @param color the new color (or null)
  *
  * @exception IllegalArgumentException <ul>
- *    <li>ERROR_INVALID_ARGUMENT - if the argument has been disposed</li> 
+ *    <li>ERROR_INVALID_ARGUMENT - if the argument has been disposed</li>
  * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 2.0
  */
 public void setForeground (Color color){
@@ -977,7 +977,7 @@ public void setForeground (Color color){
 }
 
 /**
- * Sets the foreground color at the given column index in the receiver 
+ * Sets the foreground color at the given column index in the receiver
  * to the color specified by the argument, or to the default system color for the item
  * if the argument is null.
  *
@@ -985,13 +985,13 @@ public void setForeground (Color color){
  * @param color the new color (or null)
  *
  * @exception IllegalArgumentException <ul>
- *    <li>ERROR_INVALID_ARGUMENT - if the argument has been disposed</li> 
+ *    <li>ERROR_INVALID_ARGUMENT - if the argument has been disposed</li>
  * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 3.0
  */
 public void setForeground (int index, Color color){
@@ -1019,10 +1019,10 @@ public void setForeground (int index, Color color){
 }
 
 /**
- * Sets the grayed state of the checkbox for this item.  This state change 
+ * Sets the grayed state of the checkbox for this item.  This state change
  * only applies if the Table was created with the SWT.CHECK style.
  *
- * @param grayed the new grayed state of the checkbox; 
+ * @param grayed the new grayed state of the checkbox;
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -1039,8 +1039,8 @@ public void setGrayed (boolean grayed) {
 }
 
 /**
- * Sets the image for multiple columns in the table. 
- * 
+ * Sets the image for multiple columns in the table.
+ *
  * @param images the array of new images
  *
  * @exception IllegalArgumentException <ul>
@@ -1101,10 +1101,10 @@ public void setImage (int index, Image image) {
 		images [index] = image;
 	}
 	if ((parent.style & SWT.VIRTUAL) != 0) cached = true;
-	
+
 	/* Ensure that the image list is created */
 	parent.imageIndex (image, index);
-	
+
 	if (index == 0) parent.setScrollWidth (this, false);
 	boolean drawText = (image == null && oldImage != null) || (image != null && oldImage == null);
 	redraw (index, drawText, true);
@@ -1126,7 +1126,7 @@ public void setImage (Image image) {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @deprecated this functionality is not supported on most platforms
  */
 @Deprecated
@@ -1153,7 +1153,7 @@ public void setImageIndent (int indent) {
 }
 
 /**
- * Sets the text for multiple columns in the table. 
+ * Sets the text for multiple columns in the table.
  * <p>
  * Note: If control characters like '\n', '\t' etc. are used
  * in the string, then the behavior is platform dependent.
@@ -1216,7 +1216,7 @@ public void setText (int index, String string) {
 		/*
 		* Bug in Windows.  Despite the fact that every item in the
 		* table always has LPSTR_TEXTCALLBACK, Windows caches the
-		* bounds for the selected items.  This means that 
+		* bounds for the selected items.  This means that
 		* when you change the string to be something else, Windows
 		* correctly asks you for the new string but when the item
 		* is selected, the selection draws using the bounds of the

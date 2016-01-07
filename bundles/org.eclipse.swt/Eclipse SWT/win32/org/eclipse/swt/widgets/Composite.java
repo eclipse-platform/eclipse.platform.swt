@@ -66,7 +66,7 @@ Composite () {
  * <p>
  * The style value is either one of the style constants defined in
  * class <code>SWT</code> which is applicable to instances of this
- * class, or must be built by <em>bitwise OR</em>'ing together 
+ * class, or must be built by <em>bitwise OR</em>'ing together
  * (that is, using the <code>int</code> "|" operator) two or more
  * of those <code>SWT</code> style constants. The class description
  * lists the style constants that are applicable to the class.
@@ -139,14 +139,14 @@ Control [] _getTabList () {
 }
 
 /**
- * Clears any data that has been cached by a Layout for all widgets that 
- * are in the parent hierarchy of the changed control up to and including the 
+ * Clears any data that has been cached by a Layout for all widgets that
+ * are in the parent hierarchy of the changed control up to and including the
  * receiver.  If an ancestor does not have a layout, it is skipped.
- * 
+ *
  * @param changed an array of controls that changed state and require a recalculation of size
- * 
+ *
  * @exception IllegalArgumentException <ul>
- *    <li>ERROR_INVALID_ARGUMENT - if the changed array is null any of its controls are null or have been disposed</li> 
+ *    <li>ERROR_INVALID_ARGUMENT - if the changed array is null any of its controls are null or have been disposed</li>
  *    <li>ERROR_INVALID_PARENT - if any control in changed is not in the widget tree of the receiver</li>
  * </ul>
  * @exception SWTException <ul>
@@ -254,7 +254,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 /**
  * Copies a rectangular area of the receiver at the specified
  * position using the gc.
- * 
+ *
  * @param gc the gc where the rectangle is to be filled
  * @param x the x coordinate of the rectangle to be filled
  * @param y the y coordinate of the rectangle to be filled
@@ -274,7 +274,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget ();
 	if (gc == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (gc.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
-	
+
 	//XP only, no GDI+
 	//#define PW_CLIENTONLY 0x00000001
 	//DCOrg() wrong
@@ -282,7 +282,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	long /*int*/ hDC = gc.handle;
 	int nSavedDC = OS.SaveDC (hDC);
 	OS.IntersectClipRect (hDC, 0, 0, width, height);
-	
+
 	//WRONG PARENT
 	POINT lpPoint = new POINT ();
 	long /*int*/ hwndParent = OS.GetParent (handle);
@@ -329,7 +329,7 @@ int applyThemeBackground () {
 	 * Table, or Tree, and those controls do not inherit the background theme.
 	 * We assume that a Composite that did not have scrollbars was probably just
 	 * being used to group some other controls, therefore it should inherit.
-	 * 
+	 *
 	 * But when Composite background is set to COLOR_TRANSPARENT (i.e.
 	 * backgroundAlpha as '0') which means parent theme should be inherited, so
 	 * enable the THEME_BACKGROUND in 'state' to support background transparent.
@@ -338,20 +338,20 @@ int applyThemeBackground () {
 	return (backgroundAlpha == 0 || (style & (SWT.H_SCROLL | SWT.V_SCROLL)) == 0 || findThemeControl () == parent) ? 1 : 0;
 }
 
-/** 
+/**
  * Fills the interior of the rectangle specified by the arguments,
- * with the receiver's background. 
+ * with the receiver's background.
  *
  * <p>The <code>offsetX</code> and <code>offsetY</code> are used to map from
  * the <code>gc</code> origin to the origin of the parent image background. This is useful
  * to ensure proper alignment of the image background.</p>
- * 
+ *
  * @param gc the gc where the rectangle is to be filled
  * @param x the x coordinate of the rectangle to be filled
  * @param y the y coordinate of the rectangle to be filled
  * @param width the width of the rectangle to be filled
  * @param height the height of the rectangle to be filled
- * @param offsetX the image background x offset 
+ * @param offsetX the image background x offset
  * @param offsetY the image background y offset
  *
  * @exception IllegalArgumentException <ul>
@@ -362,7 +362,7 @@ int applyThemeBackground () {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 3.6
  */
 public void drawBackground(GC gc, int x, int y, int width, int height, int offsetX, int offsetY) {
@@ -443,7 +443,7 @@ void fixTabList (Control control) {
  * </ul>
  *
  * @see SWT
- * 
+ *
  * @since 3.2
  */
 public int getBackgroundMode () {
@@ -459,11 +459,11 @@ public int getBackgroundMode () {
  * <p>
  * Note: This is not the actual structure used by the receiver
  * to maintain its list of children, so modifying the array will
- * not affect the receiver. 
+ * not affect the receiver.
  * </p>
  *
  * @return an array of children
- * 
+ *
  * @see Control#moveAbove
  * @see Control#moveBelow
  *
@@ -516,7 +516,7 @@ public Layout getLayout () {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @see #setTabList
  */
 public Control [] getTabList () {
@@ -553,7 +553,7 @@ boolean hooksKeys () {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @see #setLayoutDeferred(boolean)
  * @see #isLayoutDeferred()
  *
@@ -565,7 +565,7 @@ public boolean getLayoutDeferred () {
 }
 
 /**
- * Returns <code>true</code> if the receiver or any ancestor 
+ * Returns <code>true</code> if the receiver or any ancestor
  * up to and including the receiver's nearest ancestor shell
  * has deferred the performing of layouts.  Otherwise, <code>false</code>
  * is returned.
@@ -576,10 +576,10 @@ public boolean getLayoutDeferred () {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @see #setLayoutDeferred(boolean)
  * @see #getLayoutDeferred()
- * 
+ *
  * @since 3.1
  */
 public boolean isLayoutDeferred () {
@@ -589,7 +589,7 @@ public boolean isLayoutDeferred () {
 
 /**
  * If the receiver has a layout, asks the layout to <em>lay out</em>
- * (that is, set the size and location of) the receiver's children. 
+ * (that is, set the size and location of) the receiver's children.
  * If the receiver does not have a layout, do nothing.
  * <p>
  * Use of this method is discouraged since it is the least-efficient
@@ -608,7 +608,7 @@ public boolean isLayoutDeferred () {
  * exposed, then the parent will paint. If no child is
  * affected, the parent will not paint.
  * </p>
- * 
+ *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
@@ -621,11 +621,11 @@ public void layout () {
 
 /**
  * If the receiver has a layout, asks the layout to <em>lay out</em>
- * (that is, set the size and location of) the receiver's children. 
+ * (that is, set the size and location of) the receiver's children.
  * If the argument is <code>true</code> the layout must not rely
  * on any information it has cached about the immediate children. If it
  * is <code>false</code> the layout may (potentially) optimize the
- * work it is doing by assuming that none of the receiver's 
+ * work it is doing by assuming that none of the receiver's
  * children has changed state since the last layout.
  * If the receiver does not have a layout, do nothing.
  * <p>
@@ -636,11 +636,11 @@ public void layout () {
  * this method.
  * </p>
  * <p>
- * If a child is resized as a result of a call to layout, the 
+ * If a child is resized as a result of a call to layout, the
  * resize event will invoke the layout of the child.  The layout
- * will cascade down through all child widgets in the receiver's widget 
- * tree until a child is encountered that does not resize.  Note that 
- * a layout due to a resize will not flush any cached information 
+ * will cascade down through all child widgets in the receiver's widget
+ * tree until a child is encountered that does not resize.  Note that
+ * a layout due to a resize will not flush any cached information
  * (same as <code>layout(false)</code>).
  * </p>
  * <p>
@@ -665,20 +665,20 @@ public void layout (boolean changed) {
 
 /**
  * If the receiver has a layout, asks the layout to <em>lay out</em>
- * (that is, set the size and location of) the receiver's children. 
+ * (that is, set the size and location of) the receiver's children.
  * If the changed argument is <code>true</code> the layout must not rely
  * on any information it has cached about its children. If it
  * is <code>false</code> the layout may (potentially) optimize the
- * work it is doing by assuming that none of the receiver's 
+ * work it is doing by assuming that none of the receiver's
  * children has changed state since the last layout.
  * If the all argument is <code>true</code> the layout will cascade down
  * through all child widgets in the receiver's widget tree, regardless of
- * whether the child has changed size.  The changed argument is applied to 
+ * whether the child has changed size.  The changed argument is applied to
  * all layouts.  If the all argument is <code>false</code>, the layout will
- * <em>not</em> cascade down through all child widgets in the receiver's widget 
- * tree.  However, if a child is resized as a result of a call to layout, the 
- * resize event will invoke the layout of the child.  Note that 
- * a layout due to a resize will not flush any cached information 
+ * <em>not</em> cascade down through all child widgets in the receiver's widget
+ * tree.  However, if a child is resized as a result of a call to layout, the
+ * resize event will invoke the layout of the child.  Note that
+ * a layout due to a resize will not flush any cached information
  * (same as <code>layout(false)</code>).
  * </p>
  * <p>
@@ -713,11 +713,11 @@ public void layout (boolean changed, boolean all) {
 }
 
 /**
- * Forces a lay out (that is, sets the size and location) of all widgets that 
- * are in the parent hierarchy of the changed control up to and including the 
- * receiver.  The layouts in the hierarchy must not rely on any information 
- * cached about the changed control or any of its ancestors.  The layout may 
- * (potentially) optimize the work it is doing by assuming that none of the 
+ * Forces a lay out (that is, sets the size and location) of all widgets that
+ * are in the parent hierarchy of the changed control up to and including the
+ * receiver.  The layouts in the hierarchy must not rely on any information
+ * cached about the changed control or any of its ancestors.  The layout may
+ * (potentially) optimize the work it is doing by assuming that none of the
  * peers of the changed control have changed state since the last layout.
  * If an ancestor does not have a layout, skip it.
  * <p>
@@ -733,11 +733,11 @@ public void layout (boolean changed, boolean all) {
  * exposed, then the parent will paint. If no child is
  * affected, the parent will not paint.
  * </p>
- * 
+ *
  * @param changed a control that has had a state change which requires a recalculation of its size
- * 
+ *
  * @exception IllegalArgumentException <ul>
- *    <li>ERROR_INVALID_ARGUMENT - if the changed array is null any of its controls are null or have been disposed</li> 
+ *    <li>ERROR_INVALID_ARGUMENT - if the changed array is null any of its controls are null or have been disposed</li>
  *    <li>ERROR_INVALID_PARENT - if any control in changed is not in the widget tree of the receiver</li>
  * </ul>
  * @exception SWTException <ul>
@@ -754,9 +754,9 @@ public void layout (Control [] changed) {
 }
 
 /**
- * Forces a lay out (that is, sets the size and location) of all widgets that 
- * are in the parent hierarchy of the changed control up to and including the 
- * receiver. 
+ * Forces a lay out (that is, sets the size and location) of all widgets that
+ * are in the parent hierarchy of the changed control up to and including the
+ * receiver.
  * <p>
  * The parameter <code>flags</code> may be a combination of:
  * <dl>
@@ -770,7 +770,7 @@ public void layout (Control [] changed) {
  * </p>
  * <p>
  * When the <code>changed</code> array is specified, the flags <code>SWT.ALL</code>
- * and <code>SWT.CHANGED</code> have no effect. In this case, the layouts in the 
+ * and <code>SWT.CHANGED</code> have no effect. In this case, the layouts in the
  * hierarchy must not rely on any information cached about the changed control or
  * any of its ancestors.  The layout may (potentially) optimize the
  * work it is doing by assuming that none of the peers of the changed
@@ -781,7 +781,7 @@ public void layout (Control [] changed) {
  * When the <code>changed</code> array is not specified, the flag <code>SWT.ALL</code>
  * indicates that the whole widget tree should be laid out. And the flag
  * <code>SWT.CHANGED</code> indicates that the layouts should flush any cached
- * information for all controls that are laid out. 
+ * information for all controls that are laid out.
  * </p>
  * <p>
  * The <code>SWT.DEFER</code> flag always causes the layout to be deferred by
@@ -796,12 +796,12 @@ public void layout (Control [] changed) {
  * exposed, then the parent will paint. If no child is
  * affected, the parent will not paint.
  * </p>
- * 
+ *
  * @param changed a control that has had a state change which requires a recalculation of its size
  * @param flags the flags specifying how the layout should happen
- * 
+ *
  * @exception IllegalArgumentException <ul>
- *    <li>ERROR_INVALID_ARGUMENT - if any of the controls in changed is null or has been disposed</li> 
+ *    <li>ERROR_INVALID_ARGUMENT - if any of the controls in changed is null or has been disposed</li>
  *    <li>ERROR_INVALID_PARENT - if any control in changed is not in the widget tree of the receiver</li>
  * </ul>
  * @exception SWTException <ul>
@@ -1058,7 +1058,7 @@ void sendResize () {
  * </ul>
  *
  * @see SWT
- * 
+ *
  * @since 3.2
  */
 public void setBackgroundMode (int mode) {
@@ -1066,7 +1066,7 @@ public void setBackgroundMode (int mode) {
 	backgroundMode = mode;
 	Control [] children = _getChildren ();
 	for (int i = 0; i < children.length; i++) {
-		children [i].updateBackgroundMode ();		
+		children [i].updateBackgroundMode ();
 	}
 }
 
@@ -1126,7 +1126,7 @@ public void setLayout (Layout layout) {
  * No layout of any kind can occur in the receiver or any of its
  * children until the flag is set to false.
  * Layout operations that occurred while the flag was
- * <code>true</code> are remembered and when the flag is set to 
+ * <code>true</code> are remembered and when the flag is set to
  * <code>false</code>, the layout operations are performed in an
  * optimized manner.  Nested calls to this method are stacked.
  *
@@ -1136,7 +1136,7 @@ public void setLayout (Layout layout) {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @see #layout(boolean)
  * @see #layout(Control[])
  *
@@ -1161,7 +1161,7 @@ public void setLayoutDeferred (boolean defer) {
  * @param tabList the ordered list of controls representing the tab order or null
  *
  * @exception IllegalArgumentException <ul>
- *    <li>ERROR_INVALID_ARGUMENT - if a widget in the tabList is null or has been disposed</li> 
+ *    <li>ERROR_INVALID_ARGUMENT - if a widget in the tabList is null or has been disposed</li>
  *    <li>ERROR_INVALID_PARENT - if widget in the tabList is not in the same widget tree</li>
  * </ul>
  * @exception SWTException <ul>
@@ -1181,7 +1181,7 @@ public void setTabList (Control [] tabList) {
 		Control [] newList = new Control [tabList.length];
 		System.arraycopy (tabList, 0, newList, 0, tabList.length);
 		tabList = newList;
-	} 
+	}
 	this.tabList = tabList;
 }
 
@@ -1225,7 +1225,7 @@ boolean setTabGroupFocus () {
 @Override
 boolean updateTextDirection(int textDirection) {
 	super.updateTextDirection (textDirection);
-	/* 
+	/*
 	 * Always continue, communicating the direction to the children since
 	 * OS.WS_EX_RTLREADING doesn't propagate to them natively, and since
 	 * the direction might need to be handled by each child individually.
@@ -1237,7 +1237,7 @@ boolean updateTextDirection(int textDirection) {
 			children[i].updateTextDirection(textDirection);
 		}
 	}
-	/* 
+	/*
 	 * Return value indicates whether or not to update derivatives, so in case
 	 * of AUTO always return true regardless of the actual update.
 	 */
@@ -1291,7 +1291,7 @@ boolean translateTraversal (MSG msg) {
 			case OS.VK_UP:
 			case OS.VK_LEFT:
 			case OS.VK_DOWN:
-			case OS.VK_RIGHT: 
+			case OS.VK_RIGHT:
 			case OS.VK_PRIOR:
 			case OS.VK_NEXT:
 				int uiState = (int)/*64*/OS.SendMessage (msg.hwnd, OS.WM_QUERYUISTATE, 0, 0);
@@ -1331,7 +1331,7 @@ void updateBackgroundMode () {
 	super.updateBackgroundMode ();
 	Control [] children = _getChildren ();
 	for (int i = 0; i < children.length; i++) {
-		children [i].updateBackgroundMode ();		
+		children [i].updateBackgroundMode ();
 	}
 }
 
@@ -1378,7 +1378,7 @@ void updateLayout (boolean resize, boolean all) {
 @Override
 void updateOrientation () {
 	Control [] controls = _getChildren ();
-	RECT [] rects = new RECT [controls.length]; 
+	RECT [] rects = new RECT [controls.length];
 	for (int i=0; i<controls.length; i++) {
 		Control control = controls [i];
 		RECT rect = rects [i] = new RECT();
@@ -1486,7 +1486,7 @@ LRESULT WM_NCHITTEST (long /*int*/ wParam, long /*int*/ lParam) {
 				RECT rect = new RECT ();
 				OS.GetClientRect (handle, rect);
 				POINT pt = new POINT ();
-				pt.x = OS.GET_X_LPARAM (lParam); 
+				pt.x = OS.GET_X_LPARAM (lParam);
 				pt.y = OS.GET_Y_LPARAM (lParam);
 				OS.MapWindowPoints (0, handle, pt, 1);
 				if (!OS.PtInRect (rect, pt)) {
@@ -1508,7 +1508,7 @@ LRESULT WM_PARENTNOTIFY (long /*int*/ wParam, long /*int*/ lParam) {
 			OS.GetClientRect (handle, rect);
 			resizeEmbeddedHandle (lParam, rect.right - rect.left, rect.bottom - rect.top);
 		}
-	}	
+	}
 	return super.WM_PARENTNOTIFY (wParam, lParam);
 }
 
@@ -1523,7 +1523,7 @@ LRESULT WM_PAINT (long /*int*/ wParam, long /*int*/ lParam) {
 	int oldBits = 0, newBits = 0;
 	if (!OS.IsWinCE) {
 		oldBits = OS.GetWindowLong (handle, OS.GWL_STYLE);
-		newBits = oldBits | OS.WS_CLIPSIBLINGS | OS.WS_CLIPCHILDREN;	
+		newBits = oldBits | OS.WS_CLIPSIBLINGS | OS.WS_CLIPCHILDREN;
 		if (newBits != oldBits) OS.SetWindowLong (handle, OS.GWL_STYLE, newBits);
 	}
 
@@ -1568,7 +1568,7 @@ LRESULT WM_PAINT (long /*int*/ wParam, long /*int*/ lParam) {
 				}
 				GC gc = GC.win32_new (phdc [0], data);
 				Event event = new Event ();
-				event.gc = gc;			
+				event.gc = gc;
 				event.x = ps.left;
 				event.y = ps.top;
 				event.width = width;
@@ -1580,7 +1580,7 @@ LRESULT WM_PAINT (long /*int*/ wParam, long /*int*/ lParam) {
 			}
 			OS.EndPaint (handle, ps);
 		} else {
-			
+
 			/* Create the paint GC */
 			GCData data = new GCData ();
 			data.ps = ps;
@@ -1609,7 +1609,7 @@ LRESULT WM_PAINT (long /*int*/ wParam, long /*int*/ lParam) {
 					}
 				}
 			}
-			
+
 			/* Send the paint event */
 			int width = ps.right - ps.left;
 			int height = ps.bottom - ps.top;
@@ -1626,17 +1626,17 @@ LRESULT WM_PAINT (long /*int*/ wParam, long /*int*/ lParam) {
 					gc.setBackground (getBackground ());
 					gc.setFont (getFont ());
 					if ((style & SWT.TRANSPARENT) != 0) {
-						OS.BitBlt (gc.handle, 0, 0, width, height, paintGC.handle, ps.left, ps.top, OS.SRCCOPY);						
-					} 
+						OS.BitBlt (gc.handle, 0, 0, width, height, paintGC.handle, ps.left, ps.top, OS.SRCCOPY);
+					}
 					OS.OffsetRgn (sysRgn, -ps.left, -ps.top);
 					OS.SelectClipRgn (gc.handle, sysRgn);
 					OS.OffsetRgn (sysRgn, ps.left, ps.top);
-					OS.SetMetaRgn (gc.handle);	
+					OS.SetMetaRgn (gc.handle);
 					OS.SetWindowOrgEx (gc.handle, ps.left, ps.top, null);
 					OS.SetBrushOrgEx (gc.handle, ps.left, ps.top, null);
 					if ((style & (SWT.NO_BACKGROUND | SWT.TRANSPARENT)) != 0) {
 						/* This code is intentionally commented because it may be slow to copy bits from the screen */
-						//paintGC.copyArea (image, ps.left, ps.top);						
+						//paintGC.copyArea (image, ps.left, ps.top);
 					} else {
 						RECT rect = new RECT ();
 						OS.SetRect (rect, ps.left, ps.top, ps.right, ps.bottom);
@@ -1644,7 +1644,7 @@ LRESULT WM_PAINT (long /*int*/ wParam, long /*int*/ lParam) {
 					}
 				}
 				Event event = new Event ();
-				event.gc = gc;			
+				event.gc = gc;
 				RECT rect = null;
 				if ((style & SWT.NO_MERGE_PAINTS) != 0 && OS.GetRgnBox (sysRgn, rect = new RECT ()) == OS.COMPLEXREGION) {
 					int nBytes = OS.GetRegionData (sysRgn, 0, null);
@@ -1691,7 +1691,7 @@ LRESULT WM_PAINT (long /*int*/ wParam, long /*int*/ lParam) {
 			}
 			if (sysRgn != 0) OS.DeleteObject (sysRgn);
 			if (data.focusDrawn && !isDisposed ()) updateUIState ();
-			
+
 			/* Dispose the paint GC */
 			gc.dispose ();
 		}
@@ -1706,7 +1706,7 @@ LRESULT WM_PAINT (long /*int*/ wParam, long /*int*/ lParam) {
 	}
 
 	/* Restore the clipping bits */
-	if (!OS.IsWinCE && !isDisposed ()) { 
+	if (!OS.IsWinCE && !isDisposed ()) {
 		if (newBits != oldBits) {
 			/*
 			* It is possible (but unlikely), that application
@@ -1773,7 +1773,7 @@ LRESULT WM_SIZE (long /*int*/ wParam, long /*int*/ lParam) {
 	} else {
 		/* Begin deferred window positioning */
 		setResizeChildren (false);
-		
+
 		/* Resize and Layout */
 		result = super.WM_SIZE (wParam, lParam);
 		/*
@@ -1788,11 +1788,11 @@ LRESULT WM_SIZE (long /*int*/ wParam, long /*int*/ lParam) {
 			markLayout (false, false);
 			updateLayout (false, false);
 		}
-	
+
 		/* End deferred window positioning */
 		setResizeChildren (true);
 	}
-	
+
 	/* Damage the widget to cause a repaint */
 	if (OS.IsWindowVisible (handle)) {
 		if ((state & CANVAS) != 0) {
@@ -1830,11 +1830,11 @@ LRESULT WM_SYSCOLORCHANGE (long /*int*/ wParam, long /*int*/ lParam) {
 LRESULT WM_SYSCOMMAND (long /*int*/ wParam, long /*int*/ lParam) {
 	LRESULT result = super.WM_SYSCOMMAND (wParam, lParam);
 	if (result != null) return result;
-		
+
 	/*
 	* Check to see if the command is a system command or
 	* a user menu item that was added to the system menu.
-	* 
+	*
 	* NOTE: This is undocumented.
 	*/
 	if ((wParam & 0xF000) == 0) return result;
@@ -1858,7 +1858,7 @@ LRESULT WM_SYSCOMMAND (long /*int*/ wParam, long /*int*/ lParam) {
 					(showVBar != (verticalBar != null && verticalBar.getVisible ()))) {
 						int flags = OS.RDW_FRAME | OS.RDW_INVALIDATE | OS.RDW_UPDATENOW;
 						OS.RedrawWindow (handle, null, 0, flags);
-					}		
+					}
 				if (code == 0) return LRESULT.ZERO;
 				return new LRESULT (code);
 		}
@@ -1928,7 +1928,7 @@ LRESULT wmNotify (NMHDR hdr, long /*int*/ wParam, long /*int*/ lParam) {
 				* dialog shell being moved behind its parent if the dialog
 				* has a sibling that is currently on top.  The fix is to
 				* lock the z-order of the active window.
-				* 
+				*
 				* Feature in Windows.  Using SetWindowPos() with HWND_NOTOPMOST
 				* to clear the topmost state of a window whose parent is already
 				* topmost clears the topmost state of the parent.  The fix is to
@@ -1953,7 +1953,7 @@ LRESULT wmNotify (NMHDR hdr, long /*int*/ wParam, long /*int*/ lParam) {
 			/*
 			* Bug in Windows 98.  For some reason, the tool bar control
 			* sends both TTN_GETDISPINFOW and TTN_GETDISPINFOA to get
-			* the tool tip text and the tab folder control sends only 
+			* the tool tip text and the tab folder control sends only
 			* TTN_GETDISPINFOW.  The fix is to handle only TTN_GETDISPINFOW,
 			* even though it should never be sent on Windows 98.
 			*
@@ -1986,7 +1986,7 @@ LRESULT wmNotify (NMHDR hdr, long /*int*/ wParam, long /*int*/ lParam) {
 						}
 					}
 					char [] chars = fixMnemonic (string);
-					
+
 					/*
 					* Ensure that the orientation of the tool tip matches
 					* the orientation of the control.
@@ -2009,7 +2009,7 @@ LRESULT wmNotify (NMHDR hdr, long /*int*/ wParam, long /*int*/ lParam) {
 							lpnmtdi.uFlags &= ~OS.TTF_RTLREADING;
 						}
 					}
-					
+
 					if (hdr.code == OS.TTN_GETDISPINFOA) {
 						byte [] bytes = new byte [chars.length * 2];
 						OS.WideCharToMultiByte (getCodePage (), 0, chars, chars.length, bytes, bytes.length, null, null);

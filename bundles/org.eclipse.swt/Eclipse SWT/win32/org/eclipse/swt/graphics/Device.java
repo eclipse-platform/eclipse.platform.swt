@@ -10,7 +10,7 @@
  *******************************************************************************/
 package org.eclipse.swt.graphics;
 
- 
+
 import org.eclipse.swt.*;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.gdip.*;
@@ -25,7 +25,7 @@ import org.eclipse.swt.internal.win32.*;
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  */
 public abstract class Device implements Drawable {
-	
+
 	/* Debugging */
 	public static boolean DEBUG;
 	boolean debug = DEBUG;
@@ -33,9 +33,9 @@ public abstract class Device implements Drawable {
 	Error [] errors;
 	Object [] objects;
 	Object trackingLock;
-	
+
 	/**
-	 * Palette 
+	 * Palette
 	 * (Warning: This field is platform dependent)
 	 * <p>
 	 * <b>IMPORTANT:</b> This field is <em>not</em> part of the SWT
@@ -43,12 +43,12 @@ public abstract class Device implements Drawable {
 	 * within the packages provided by SWT. It is not available on all
 	 * platforms and should never be accessed from application code.
 	 * </p>
-	 * 
+	 *
 	 * @noreference This field is not intended to be referenced by clients.
 	 */
 	public long /*int*/ hPalette = 0;
 	int [] colorRefCount;
-	
+
 	/* System Font */
 	Font systemFont;
 
@@ -84,14 +84,14 @@ public abstract class Device implements Drawable {
 		try {
 			Class.forName ("org.eclipse.swt.widgets.Display"); //$NON-NLS-1$
 		} catch (ClassNotFoundException e) {}
-	}	
+	}
 
 /*
 * TEMPORARY CODE.
 */
 static synchronized Device getDevice () {
 	if (DeviceFinder != null) DeviceFinder.run();
-	Device device = CurrentDevice;	
+	Device device = CurrentDevice;
 	CurrentDevice = null;
 	return device;
 }
@@ -99,12 +99,12 @@ static synchronized Device getDevice () {
 /**
  * Constructs a new instance of this class.
  * <p>
- * You must dispose the device when it is no longer required. 
+ * You must dispose the device when it is no longer required.
  * </p>
  *
  * @see #create
  * @see #init
- * 
+ *
  * @since 3.1
  */
 public Device() {
@@ -114,7 +114,7 @@ public Device() {
 /**
  * Constructs a new instance of this class.
  * <p>
- * You must dispose the device when it is no longer required. 
+ * You must dispose the device when it is no longer required.
  * </p>
  *
  * @param data the DeviceData which describes the receiver
@@ -240,7 +240,7 @@ int computePixels(float height) {
 float computePoints(LOGFONT logFont, long /*int*/ hFont) {
 	long /*int*/ hDC = internal_new_GC (null);
 	int logPixelsY = OS.GetDeviceCaps(hDC, OS.LOGPIXELSY);
-	int pixels = 0; 
+	int pixels = 0;
 	if (logFont.lfHeight > 0) {
 		/*
 		 * Feature in Windows. If the lfHeight of the LOGFONT structure
@@ -417,7 +417,7 @@ public DeviceData getDeviceData () {
 /**
  * Returns a rectangle which describes the area of the
  * receiver which is capable of displaying data.
- * 
+ *
  * @return the client area
  *
  * @exception SWTException <ul>
@@ -433,7 +433,7 @@ public Rectangle getClientArea () {
 /**
  * Returns the bit depth of the screen, which is the number of
  * bits it takes to represent the number of unique colors that
- * the screen is currently capable of displaying. This number 
+ * the screen is currently capable of displaying. This number
  * will typically be one of 1, 8, 15, 16, 24 or 32.
  *
  * @return the depth of the screen
@@ -498,12 +498,12 @@ int _getDPIx () {
  */
 public FontData [] getFontList (String faceName, boolean scalable) {
 	checkDevice ();
-	
+
 	/* Create the callback */
 	Callback callback = new Callback (this, "EnumFontFamProc", 4); //$NON-NLS-1$
 	long /*int*/ lpEnumFontFamProc = callback.getAddress ();
 	if (lpEnumFontFamProc == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
-	
+
 	/* Initialize the instance variables */
 	metrics = OS.IsUnicode ? (TEXTMETRIC)new TEXTMETRICW() : new TEXTMETRICA();
 	pixels = new int[nFonts];
@@ -516,10 +516,10 @@ public FontData [] getFontList (String faceName, boolean scalable) {
 	/* Enumerate */
 	int offset = 0;
 	long /*int*/ hDC = internal_new_GC (null);
-	if (faceName == null) {	
+	if (faceName == null) {
 		/* The user did not specify a face name, so they want all versions of all available face names */
 		OS.EnumFontFamilies (hDC, null, lpEnumFontFamProc, scalable ? 1 : 0);
-		
+
 		/**
 		 * For bitmapped fonts, EnumFontFamilies only enumerates once for each font, regardless
 		 * of how many styles are available. If the user wants bitmapped fonts, enumerate on
@@ -568,7 +568,7 @@ public FontData [] getFontList (String faceName, boolean scalable) {
 		System.arraycopy (result, 0, newResult, 0, count);
 		result = newResult;
 	}
-	
+
 	/* Clean up */
 	callback.dispose ();
 	logFonts = null;
@@ -691,7 +691,7 @@ public boolean getWarnings () {
  * If subclasses reimplement this method, they must
  * call the <code>super</code> implementation.
  * </p>
- * 
+ *
  * @see #create
  */
 protected void init () {
@@ -710,7 +710,7 @@ protected void init () {
 		scripts = new long /*int*/ [piNumScripts [0]];
 		OS.MoveMemory (scripts, ppSp [0], scripts.length * OS.PTR_SIZEOF);
 	}
-	
+
 	/*
 	 * If we're not on a device which supports palettes,
 	 * don't create one.
@@ -719,13 +719,13 @@ protected void init () {
 	int rc = OS.GetDeviceCaps (hDC, OS.RASTERCAPS);
 	int bits = OS.GetDeviceCaps (hDC, OS.BITSPIXEL);
 	int planes = OS.GetDeviceCaps (hDC, OS.PLANES);
-	
+
 	bits *= planes;
 	if ((rc & OS.RC_PALETTE) == 0 || bits != 8) {
 		internal_dispose_GC (hDC, null);
 		return;
 	}
-	
+
 	int numReserved = OS.GetDeviceCaps (hDC, OS.NUMRESERVED);
 	int numEntries = OS.GetDeviceCaps (hDC, OS.SIZEPALETTE);
 
@@ -745,16 +745,16 @@ protected void init () {
 
 	/* 4 bytes header + 4 bytes per entry * numEntries entries */
 	byte [] logPalette = new byte [4 + 4 * numEntries];
-	
+
 	/* 2 bytes = special header */
 	logPalette [0] = 0x00;
 	logPalette [1] = 0x03;
-	
+
 	/* 2 bytes = number of colors, LSB first */
 	logPalette [2] = 0;
 	logPalette [3] = 1;
 
-	/* 
+	/*
 	* Create a palette which contains the system entries
 	* as they are located in the system palette.  The
 	* MSDN article 'Memory Device Contexts' describes
@@ -774,7 +774,7 @@ protected void init () {
 	internal_dispose_GC (hDC, null);
 	hPalette = OS.CreatePalette (logPalette);
 }
-/**	 
+/**
  * Invokes platform specific functionality to allocate a new GC handle.
  * <p>
  * <b>IMPORTANT:</b> This method is <em>not</em> part of the public
@@ -784,14 +784,14 @@ protected void init () {
  * application code.
  * </p>
  *
- * @param data the platform specific GC data 
+ * @param data the platform specific GC data
  * @return the platform specific GC handle
- * 
+ *
  * @noreference This method is not intended to be referenced by clients.
  */
 public abstract long /*int*/ internal_new_GC (GCData data);
 
-/**	 
+/**
  * Invokes platform specific functionality to dispose a GC handle.
  * <p>
  * <b>IMPORTANT:</b> This method is <em>not</em> part of the public
@@ -802,8 +802,8 @@ public abstract long /*int*/ internal_new_GC (GCData data);
  * </p>
  *
  * @param hDC the platform specific GC handle
- * @param data the platform specific GC data 
- * 
+ * @param data the platform specific GC data
+ *
  * @noreference This method is not intended to be referenced by clients.
  */
 public abstract void /*long*/ internal_dispose_GC (long /*int*/ hDC, GCData data);
@@ -837,7 +837,7 @@ public boolean isDisposed () {
  * </ul>
  *
  * @see Font
- * 
+ *
  * @since 3.3
  */
 public boolean loadFont (String path) {

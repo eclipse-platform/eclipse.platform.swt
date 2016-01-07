@@ -10,7 +10,7 @@
  *******************************************************************************/
 package org.eclipse.swt.widgets;
 
- 
+
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.win32.*;
 import org.eclipse.swt.*;
@@ -27,7 +27,7 @@ import org.eclipse.swt.events.*;
  * <dd>Selection</dd>
  * </dl>
  * <p>
- * Note: Only one of the styles CHECK, PUSH, RADIO, SEPARATOR and DROP_DOWN 
+ * Note: Only one of the styles CHECK, PUSH, RADIO, SEPARATOR and DROP_DOWN
  * may be specified.
  * </p><p>
  * IMPORTANT: This class is <em>not</em> intended to be subclassed.
@@ -54,7 +54,7 @@ public class ToolItem extends Item {
  * <p>
  * The style value is either one of the style constants defined in
  * class <code>SWT</code> which is applicable to instances of this
- * class, or must be built by <em>bitwise OR</em>'ing together 
+ * class, or must be built by <em>bitwise OR</em>'ing together
  * (that is, using the <code>int</code> "|" operator) two or more
  * of those <code>SWT</code> style constants. The class description
  * lists the style constants that are applicable to the class.
@@ -94,7 +94,7 @@ public ToolItem (ToolBar parent, int style) {
  * <p>
  * The style value is either one of the style constants defined in
  * class <code>SWT</code> which is applicable to instances of this
- * class, or must be built by <em>bitwise OR</em>'ing together 
+ * class, or must be built by <em>bitwise OR</em>'ing together
  * (that is, using the <code>int</code> "|" operator) two or more
  * of those <code>SWT</code> style constants. The class description
  * lists the style constants that are applicable to the class.
@@ -140,7 +140,7 @@ public ToolItem (ToolBar parent, int style, int index) {
  * </p>
  * <p>
  * When the <code>SWT.RADIO</code> style bit is set, the <code>widgetSelected</code> method is
- * also called when the receiver loses selection because another item in the same radio group 
+ * also called when the receiver loses selection because another item in the same radio group
  * was selected by the user. During <code>widgetSelected</code> the application can use
  * <code>getSelection()</code> to determine the current selected state of the receiver.
  * </p>
@@ -176,14 +176,14 @@ protected void checkSubclass () {
 	if (!isValidSubclass ()) error (SWT.ERROR_INVALID_SUBCLASS);
 }
 
-void click (boolean dropDown) {	
+void click (boolean dropDown) {
 	long /*int*/ hwnd = parent.handle;
 	if (OS.GetKeyState (OS.VK_LBUTTON) < 0) return;
 	int index = (int)/*64*/OS.SendMessage (hwnd, OS.TB_COMMANDTOINDEX, id, 0);
 	RECT rect = new RECT ();
 	OS.SendMessage (hwnd, OS.TB_GETITEMRECT, index, rect);
 	int hotIndex = (int)/*64*/OS.SendMessage (hwnd, OS.TB_GETHOTITEM, 0, 0);
-	
+
 	/*
 	* In order to emulate all the processing that
 	* happens when a mnemonic key is pressed, fake
@@ -197,7 +197,7 @@ void click (boolean dropDown) {
 	OS.SendMessage (hwnd, OS.WM_LBUTTONDOWN, 0, lParam);
 	OS.SendMessage (hwnd, OS.WM_LBUTTONUP, 0, lParam);
 	parent.ignoreMouse = false;
-	
+
 	if (hotIndex != -1) {
 		OS.SendMessage (hwnd, OS.TB_SETHOTITEM, hotIndex, 0);
 	}
@@ -291,7 +291,7 @@ public Image getDisabledImage () {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @see #isEnabled
  */
 public boolean getEnabled () {
@@ -409,7 +409,7 @@ public int getWidth () {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @see #getEnabled
  */
 public boolean isEnabled () {
@@ -460,7 +460,7 @@ void releaseImages () {
 	* the style BTNS_SEP does not return I_IMAGENONE when queried
 	* for an image index, despite the fact that no attempt has been
 	* made to assign an image to the item.  As a result, operations
-	* on an image list that use the wrong index cause random results.	
+	* on an image list that use the wrong index cause random results.
 	* The fix is to ensure that the tool item is not a separator
 	* before using the image index.  Since separators cannot have
 	* an image and one is never assigned, this is not a problem.
@@ -497,7 +497,7 @@ public void removeSelectionListener(SelectionListener listener) {
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (eventTable == null) return;
 	eventTable.unhook (SWT.Selection, listener);
-	eventTable.unhook (SWT.DefaultSelection,listener);	
+	eventTable.unhook (SWT.DefaultSelection,listener);
 }
 
 void resizeControl () {
@@ -537,7 +537,7 @@ void selectRadio () {
  * @param control the new control
  *
  * @exception IllegalArgumentException <ul>
- *    <li>ERROR_INVALID_ARGUMENT - if the control has been disposed</li> 
+ *    <li>ERROR_INVALID_ARGUMENT - if the control has been disposed</li>
  *    <li>ERROR_INVALID_PARENT - if the control is not in the same widget tree</li>
  * </ul>
  * @exception SWTException <ul>
@@ -638,7 +638,7 @@ public void setEnabled (boolean enabled) {
 	* Feature in Windows.  When TB_SETSTATE is used to set the
 	* state of a tool item, the item redraws even when the state
 	* has not changed.  The fix is to detect this case and avoid
-	* setting the state. 
+	* setting the state.
 	*/
 	if (((fsState & OS.TBSTATE_ENABLED) != 0) == enabled) return;
 	if (enabled) {
@@ -664,7 +664,7 @@ public void setEnabled (boolean enabled) {
  * @param image the disabled image to display on the receiver (may be null)
  *
  * @exception IllegalArgumentException <ul>
- *    <li>ERROR_INVALID_ARGUMENT - if the image has been disposed</li> 
+ *    <li>ERROR_INVALID_ARGUMENT - if the image has been disposed</li>
  * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -689,7 +689,7 @@ public void setDisabledImage (Image image) {
  * @param image the hot image to display on the receiver (may be null)
  *
  * @exception IllegalArgumentException <ul>
- *    <li>ERROR_INVALID_ARGUMENT - if the image has been disposed</li> 
+ *    <li>ERROR_INVALID_ARGUMENT - if the image has been disposed</li>
  * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -746,7 +746,7 @@ public void setSelection (boolean selected) {
 	* Feature in Windows.  When TB_SETSTATE is used to set the
 	* state of a tool item, the item redraws even when the state
 	* has not changed.  The fix is to detect this case and avoid
-	* setting the state. 
+	* setting the state.
 	*/
 	if (((fsState & OS.TBSTATE_CHECKED) != 0) == selected) return;
 	if (selected) {
@@ -755,14 +755,14 @@ public void setSelection (boolean selected) {
 		fsState &= ~OS.TBSTATE_CHECKED;
 	}
 	OS.SendMessage (hwnd, OS.TB_SETSTATE, id, fsState);
-	
+
 	/*
 	* Bug in Windows.  When a tool item with the style
 	* BTNS_CHECK or BTNS_CHECKGROUP is selected and then
 	* disabled, the item does not draw using the disabled
 	* image.  The fix is to use the disabled image in all
 	* image lists for the item.
-	* 
+	*
 	* NOTE: This means that the image list must be updated
 	* when the selection changes in a disabled tool item.
 	*/
@@ -806,7 +806,7 @@ void _setText (String string) {
 		}
 		int byteCount = buffer.length () * TCHAR.sizeof;
 		pszText = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, byteCount);
-		OS.MoveMemory (pszText, buffer, byteCount); 
+		OS.MoveMemory (pszText, buffer, byteCount);
 		info.pszText = pszText;
 	}
 	OS.SendMessage (hwnd, OS.TB_SETBUTTONINFO, id, info);
@@ -830,7 +830,7 @@ void _setText (String string) {
  * Note: If control characters like '\n', '\t' etc. are used
  * in the string, then the behavior is platform dependent.
  * </p>
- * 
+ *
  * @param string the new text
  *
  * @exception IllegalArgumentException <ul>
@@ -879,17 +879,17 @@ boolean updateTextDirection(int textDirection) {
 
 /**
  * Sets the receiver's tool tip text to the argument, which
- * may be null indicating that the default tool tip for the 
+ * may be null indicating that the default tool tip for the
  * control will be shown. For a control that has a default
  * tool tip, such as the Tree control on Windows, setting
  * the tool tip text to an empty string replaces the default,
  * causing no tool tip text to be shown.
  * <p>
  * The mnemonic indicator (character '&amp;') is not displayed in a tool tip.
- * To display a single '&amp;' in the tool tip, the character '&amp;' can be 
+ * To display a single '&amp;' in the tool tip, the character '&amp;' can be
  * escaped by doubling it in the string.
  * </p>
- * 
+ *
  * @param string the new tool tip text (or null)
  *
  * @exception SWTException <ul>
@@ -908,11 +908,11 @@ public void setToolTipText (String string) {
  * @param width the new width. If the new value is <code>SWT.DEFAULT</code>,
  * the width is a fixed-width area whose amount is determined by the platform.
  * If the new value is 0 a vertical or horizontal line will be drawn, depending
- * on the setting of the corresponding style bit (<code>SWT.VERTICAL</code> or 
+ * on the setting of the corresponding style bit (<code>SWT.VERTICAL</code> or
  * <code>SWT.HORIZONTAL</code>). If the new value is <code>SWT.SEPARATOR_FILL</code>
  * a variable-width space is inserted that acts as a spring between the two adjoining
  * items which will push them out to the extent of the containing ToolBar.
- * 
+ *
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -1017,12 +1017,12 @@ void updateImages (boolean enabled) {
 
 	/*
 	* Bug in Windows.  If the width of an item has already been
-	* calculated, the tool bar control will not recalculate it to 
+	* calculated, the tool bar control will not recalculate it to
 	* include the space for the image.  The fix is to set the width
 	* to zero, forcing the control recalculate the width for the item.
 	*/
 	info.dwMask |= OS.TBIF_SIZE;
-	info.cx = 0;	
+	info.cx = 0;
 	OS.SendMessage (hwnd, OS.TB_SETBUTTONINFO, id, info);
 	long /*int*/ hFont = OS.SendMessage (hwnd, OS.WM_GETFONT, 0, 0);
 	OS.SendMessage (hwnd, OS.WM_SETFONT, hFont, 0);

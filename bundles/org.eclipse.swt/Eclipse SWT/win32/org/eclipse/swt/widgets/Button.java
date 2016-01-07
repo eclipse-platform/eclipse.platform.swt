@@ -19,7 +19,7 @@ import org.eclipse.swt.events.*;
 
 /**
  * Instances of this class represent a selectable user interface object that
- * issues notification when pressed and released. 
+ * issues notification when pressed and released.
  * <dl>
  * <dt><b>Styles:</b></dt>
  * <dd>ARROW, CHECK, PUSH, RADIO, TOGGLE, FLAT, WRAP</dd>
@@ -28,7 +28,7 @@ import org.eclipse.swt.events.*;
  * <dd>Selection</dd>
  * </dl>
  * <p>
- * Note: Only one of the styles ARROW, CHECK, PUSH, RADIO, and TOGGLE 
+ * Note: Only one of the styles ARROW, CHECK, PUSH, RADIO, and TOGGLE
  * may be specified.
  * </p><p>
  * Note: Only one of the styles LEFT, RIGHT, and CENTER may be specified.
@@ -38,7 +38,7 @@ import org.eclipse.swt.events.*;
  * </p><p>
  * IMPORTANT: This class is <em>not</em> intended to be subclassed.
  * </p>
- * 
+ *
  * @see <a href="http://www.eclipse.org/swt/snippets/#button">Button snippets</a>
  * @see <a href="http://www.eclipse.org/swt/examples.php">SWT Example: ControlExample</a>
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
@@ -78,7 +78,7 @@ public class Button extends Control {
  * <p>
  * The style value is either one of the style constants defined in
  * class <code>SWT</code> which is applicable to instances of this
- * class, or must be built by <em>bitwise OR</em>'ing together 
+ * class, or must be built by <em>bitwise OR</em>'ing together
  * (that is, using the <code>int</code> "|" operator) two or more
  * of those <code>SWT</code> style constants. The class description
  * lists the style constants that are applicable to the class.
@@ -171,7 +171,7 @@ void _setImage (Image image) {
 					Rectangle rect = image.getBounds ();
 					ImageData data = image.getImageData ();
 					switch (data.getTransparencyType ()) {
-						case SWT.TRANSPARENCY_PIXEL: 
+						case SWT.TRANSPARENCY_PIXEL:
 							if (rect.width <= ICON_WIDTH && rect.height <= ICON_HEIGHT) {
 								image2 = new Image (display, data, data.getTransparencyMask ());
 								hImage = image2.handle;
@@ -313,7 +313,7 @@ void _setText (String text) {
  * </p>
  * <p>
  * When the <code>SWT.RADIO</code> style bit is set, the <code>widgetSelected</code> method is
- * also called when the receiver loses selection because another item in the same radio group 
+ * also called when the receiver loses selection because another item in the same radio group
  * was selected by the user. During <code>widgetSelected</code> the application can use
  * <code>getSelection()</code> to determine the current selected state of the receiver.
  * </p>
@@ -468,7 +468,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 						flags = OS.DT_CALCRECT | OS.DT_WORDBREAK;
 						rect.right = wHint - width - 2 * border;
 						if ((style & (SWT.CHECK | SWT.RADIO)) != 0) {
-							rect.right -= CHECK_WIDTH + 3; 
+							rect.right -= CHECK_WIDTH + 3;
 						} else {
 							rect.right -= 6;
 						}
@@ -497,7 +497,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	}
 	if (wHint != SWT.DEFAULT) width = wHint;
 	if (hHint != SWT.DEFAULT) height = hHint;
-	width += border * 2; 
+	width += border * 2;
 	height += border * 2;
 	return new Point (width, height);
 }
@@ -516,10 +516,10 @@ void createHandle () {
 	parent.state |= IGNORE_WM_CHANGEUISTATE;
 	super.createHandle ();
 	parent.state &= ~IGNORE_WM_CHANGEUISTATE;
-	
+
 	/* Set the theme background */
 	if (OS.COMCTL32_MAJOR >= 6 && OS.IsAppThemed ()) {
-		/* 
+		/*
 		* NOTE: On Vista this causes problems when the tab
 		* key is pressed for push buttons so disable the
 		* theme background drawing for these widgets for
@@ -533,7 +533,7 @@ void createHandle () {
 			}
 		}
 	}
-	
+
 	/*
 	* Bug in Windows.  For some reason, the HBRUSH that
 	* is returned from WM_CTRLCOLOR is misaligned when
@@ -541,7 +541,7 @@ void createHandle () {
 	* color, this does not matter.  However, if the brush
 	* contains an image, the image is misaligned.  The
 	* fix is to draw the background in WM_CTRLCOLOR.
-	* 
+	*
 	* NOTE: For comctl32.dll 6.0 with themes disabled,
 	* drawing in WM_ERASEBKGND will draw on top of the
 	* text of the control.
@@ -549,13 +549,13 @@ void createHandle () {
 	if (OS.COMCTL32_MAJOR >= 6 && OS.IsAppThemed ()) {
 		if ((style & SWT.RADIO) != 0) state |= DRAW_BACKGROUND;
 	}
-	
+
 	/*
 	* Feature in Windows.  Push buttons draw border around
 	* the button using the default background color instead
 	* of using the color provided by WM_CTRLCOLOR.  The fix
 	* is to draw the background in WM_CTRLCOLOR.
-	* 
+	*
 	* NOTE: On Vista this causes problems when the tab key
 	* is pressed for push buttons so disable the fix for now.
 	*/
@@ -617,12 +617,12 @@ void enableWidget (boolean enabled) {
  * Returns a value which describes the position of the
  * text or image in the receiver. The value will be one of
  * <code>LEFT</code>, <code>RIGHT</code> or <code>CENTER</code>
- * unless the receiver is an <code>ARROW</code> button, in 
+ * unless the receiver is an <code>ARROW</code> button, in
  * which case, the alignment will indicate the direction of
- * the arrow (one of <code>LEFT</code>, <code>RIGHT</code>, 
+ * the arrow (one of <code>LEFT</code>, <code>RIGHT</code>,
  * <code>UP</code> or <code>DOWN</code>).
  *
- * @return the alignment 
+ * @return the alignment
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -661,7 +661,7 @@ boolean getDefault () {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 3.4
  */
 public boolean getGrayed () {
@@ -690,14 +690,14 @@ public Image getImage () {
  * Returns the widget message. When the widget is created
  * with the style <code>SWT.COMMAND</code>, the message text
  * is displayed to provide further information for the user.
- * 
+ *
  * @return the widget message
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 3.3
  */
 /*public*/ String getMessage () {
@@ -761,7 +761,7 @@ boolean isTabItem () {
 boolean mnemonicHit (char ch) {
 	if (!setFocus ()) return false;
 	/*
-	* Feature in Windows.  When a radio button gets focus, 
+	* Feature in Windows.  When a radio button gets focus,
 	* it selects the button in WM_SETFOCUS.  Therefore, it
 	* is not necessary to click the button or send events
 	* because this has already happened in WM_SETFOCUS.
@@ -812,7 +812,7 @@ public void removeSelectionListener (SelectionListener listener) {
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (eventTable == null) return;
 	eventTable.unhook (SWT.Selection, listener);
-	eventTable.unhook (SWT.DefaultSelection,listener);	
+	eventTable.unhook (SWT.DefaultSelection,listener);
 }
 
 @Override
@@ -849,12 +849,12 @@ void selectRadio () {
  * Controls how text, images and arrows will be displayed
  * in the receiver. The argument should be one of
  * <code>LEFT</code>, <code>RIGHT</code> or <code>CENTER</code>
- * unless the receiver is an <code>ARROW</code> button, in 
+ * unless the receiver is an <code>ARROW</code> button, in
  * which case, the argument indicates the direction of
- * the arrow (one of <code>LEFT</code>, <code>RIGHT</code>, 
+ * the arrow (one of <code>LEFT</code>, <code>RIGHT</code>,
  * <code>UP</code> or <code>DOWN</code>).
  *
- * @param alignment the new alignment 
+ * @param alignment the new alignment
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -864,7 +864,7 @@ void selectRadio () {
 public void setAlignment (int alignment) {
 	checkWidget ();
 	if ((style & SWT.ARROW) != 0) {
-		if ((style & (SWT.UP | SWT.DOWN | SWT.LEFT | SWT.RIGHT)) == 0) return; 
+		if ((style & (SWT.UP | SWT.DOWN | SWT.LEFT | SWT.RIGHT)) == 0) return;
 		style &= ~(SWT.UP | SWT.DOWN | SWT.LEFT | SWT.RIGHT);
 		style |= alignment & (SWT.UP | SWT.DOWN | SWT.LEFT | SWT.RIGHT);
 		OS.InvalidateRect (handle, null, true);
@@ -920,7 +920,7 @@ void setDefault (boolean value) {
 public boolean setFocus () {
 	checkWidget ();
 	/*
-	* Feature in Windows.  When a radio button gets focus, 
+	* Feature in Windows.  When a radio button gets focus,
 	* it selects the button in WM_SETFOCUS.  The fix is to
 	* not assign focus to an unselected radio button.
 	*/
@@ -941,7 +941,7 @@ public boolean setFocus () {
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_INVALID_ARGUMENT - if the image has been disposed</li>
- * </ul> 
+ * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
@@ -963,7 +963,7 @@ public void setImage (Image image) {
 }
 
 /**
- * Sets the grayed state of the receiver.  This state change 
+ * Sets the grayed state of the receiver.  This state change
  * only applies if the control was created with the SWT.CHECK
  * style.
  *
@@ -973,7 +973,7 @@ public void setImage (Image image) {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 3.4
  */
 public void setGrayed (boolean grayed) {
@@ -992,7 +992,7 @@ public void setGrayed (boolean grayed) {
  * Sets the widget message. When the widget is created
  * with the style <code>SWT.COMMAND</code>, the message text
  * is displayed to provide further information for the user.
- * 
+ *
  * @param message the new message
  *
  * @exception IllegalArgumentException <ul>
@@ -1002,7 +1002,7 @@ public void setGrayed (boolean grayed) {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 3.3
  */
 /*public*/ void setMessage (String message) {
@@ -1038,7 +1038,7 @@ boolean setRadioSelection (boolean value) {
 @Override
 boolean setSavedFocus () {
 	/*
-	* Feature in Windows.  When a radio button gets focus, 
+	* Feature in Windows.  When a radio button gets focus,
 	* it selects the button in WM_SETFOCUS.  If the previous
 	* saved focus widget was a radio button, allowing the shell
 	* to automatically restore the focus to the previous radio
@@ -1050,7 +1050,7 @@ boolean setSavedFocus () {
 }
 
 /**
- * Sets the selection state of the receiver, if it is of type <code>CHECK</code>, 
+ * Sets the selection state of the receiver, if it is of type <code>CHECK</code>,
  * <code>RADIO</code>, or <code>TOGGLE</code>.
  *
  * <p>
@@ -1162,7 +1162,7 @@ void updateImageList () {
 			*/
 			OS.InvalidateRect (handle, null, true);
 		}
-	}	
+	}
 }
 
 @Override
@@ -1355,7 +1355,7 @@ LRESULT WM_UPDATEUISTATE (long /*int*/ wParam, long /*int*/ lParam) {
 	* it will overwrite the contents of the control.  The
 	* fix is draw the button without drawing the background
 	* and avoid the button window proc.
-	* 
+	*
 	* NOTE:  This only happens for radio, check and toggle
 	* buttons.
 	*/
@@ -1457,7 +1457,7 @@ LRESULT wmDrawChild (long /*int*/ wParam, long /*int*/ lParam) {
 		if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (6, 0)) {
 			if ((style & SWT.MIRRORED) != 0) {
 				if ((style & (SWT.LEFT | SWT.RIGHT)) != 0) {
-					iStateId = iStateId == OS.ABS_RIGHTNORMAL ? OS.ABS_LEFTNORMAL : OS.ABS_RIGHTNORMAL; 
+					iStateId = iStateId == OS.ABS_RIGHTNORMAL ? OS.ABS_LEFTNORMAL : OS.ABS_RIGHTNORMAL;
 				}
 			}
 		}

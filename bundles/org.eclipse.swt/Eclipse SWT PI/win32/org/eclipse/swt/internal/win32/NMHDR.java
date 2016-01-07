@@ -12,8 +12,8 @@ package org.eclipse.swt.internal.win32;
 
 public class NMHDR {
 	/** @field cast=(HWND) */
-	public long /*int*/ hwndFrom; 
-	public long /*int*/ idFrom; 
+	public long /*int*/ hwndFrom;
+	public long /*int*/ idFrom;
 	public int code;
 	public static final int sizeof = OS.NMHDR_sizeof ();
 }

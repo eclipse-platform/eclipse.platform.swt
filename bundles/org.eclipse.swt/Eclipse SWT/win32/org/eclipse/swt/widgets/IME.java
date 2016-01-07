@@ -20,7 +20,7 @@ import org.eclipse.swt.graphics.*;
  * These are typically in-line pre-edit text areas that allow
  * the user to compose characters from Far Eastern languages
  * such as Japanese, Chinese or Korean.
- * 
+ *
  * <dl>
  * <dt><b>Styles:</b></dt>
  * <dd>(none)</dd>
@@ -30,9 +30,9 @@ import org.eclipse.swt.graphics.*;
  * <p>
  * IMPORTANT: This class is <em>not</em> intended to be subclassed.
  * </p>
- * 
+ *
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
- * 
+ *
  * @since 3.4
  * @noextend This class is not intended to be subclassed by clients.
  */
@@ -44,9 +44,9 @@ public class IME extends Widget {
 	String text;
 	int [] ranges;
 	TextStyle [] styles;
-	
+
 	static final int WM_MSIME_MOUSE = OS.RegisterWindowMessage (new TCHAR (0, "MSIMEMouseOperation", true)); //$NON-NLS-1$
-	
+
 	static final byte [] IID_ITfInputProcessorProfiles = new byte [16];
 	static final byte [] IID_ITfDisplayAttributeProvider = new byte [16];
 	static final byte [] CLSID_TF_InputProcessorProfiles = new byte [16];
@@ -57,12 +57,12 @@ public class IME extends Widget {
 		OS.IIDFromString ("{33C53A50-F456-4884-B049-85FD643ECFED}\0".toCharArray (), CLSID_TF_InputProcessorProfiles); //$NON-NLS-1$
 		OS.IIDFromString ("{34745C63-B2F0-4784-8B67-5E12C8701A31}\0".toCharArray (), GUID_TFCAT_TIP_KEYBOARD); //$NON-NLS-1$
 	}
-	
+
 	/* TextLayout has a copy of these constants */
 	static final int UNDERLINE_IME_DOT = 1 << 16;
 	static final int UNDERLINE_IME_DASH = 2 << 16;
 	static final int UNDERLINE_IME_THICK = 3 << 16;
-	
+
 /**
  * Prevents uninitialized instances from being created outside the package.
  */
@@ -75,7 +75,7 @@ IME () {
  * <p>
  * The style value is either one of the style constants defined in
  * class <code>SWT</code> which is applicable to instances of this
- * class, or must be built by <em>bitwise OR</em>'ing together 
+ * class, or must be built by <em>bitwise OR</em>'ing together
  * (that is, using the <code>int</code> "|" operator) two or more
  * of those <code>SWT</code> style constants. The class description
  * lists the style constants that are applicable to the class.
@@ -131,14 +131,14 @@ public int getCaretOffset () {
  * number of characters that have been composed.  When the
  * commit count is equal to the length of the composition
  * text, then the in-line edit operation is complete.
- * 
+ *
  * @return the commit count
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @see IME#getText
  */
 public int getCommitCount () {
@@ -197,7 +197,7 @@ TF_DISPLAYATTRIBUTE getDisplayAttribute (short langid, int attInfo) {
 					/* pEnum.Release () */
 					hr = OS.VtblCall (2, pEnum [0]);
 				}
-				/* pProvider.Release () */ 
+				/* pProvider.Release () */
 				hr = OS.VtblCall (2, pProvider [0]);
 			}
 		}
@@ -213,7 +213,7 @@ TF_DISPLAYATTRIBUTE getDisplayAttribute (short langid, int attInfo) {
 			case OS.TF_ATTR_CONVERTED:
 			case OS.TF_ATTR_TARGET_CONVERTED:
 				pda.lsStyle = OS.TF_LS_SOLID;
-				pda.fBoldLine = attInfo == OS.TF_ATTR_TARGET_CONVERTED; 
+				pda.fBoldLine = attInfo == OS.TF_ATTR_TARGET_CONVERTED;
 				break;
 		}
 	}
@@ -235,7 +235,7 @@ TF_DISPLAYATTRIBUTE getDisplayAttribute (short langid, int attInfo) {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @see IME#getStyles
  */
 public int [] getRanges () {
@@ -243,7 +243,7 @@ public int [] getRanges () {
 	if (ranges == null) return new int [0];
 	int [] result = new int [ranges.length];
 	for (int i = 0; i < result.length; i++) {
-		result [i] = ranges [i] + startOffset; 
+		result [i] = ranges [i] + startOffset;
 	}
 	return result;
 }
@@ -256,14 +256,14 @@ public int [] getRanges () {
  * that starts at ranges[n] and ends at ranges[n+1] uses the style
  * at styles[n/2].
  * </p>
- * 
+ *
  * @return the ranges for the styles
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @see IME#getRanges
  */
 public TextStyle [] getStyles () {
@@ -300,7 +300,7 @@ public String getText () {
  * <code>false</code> otherwise.  In some languages, for example
  * Korean, the caret is typically widened to the width of the
  * current character in the in-line edit session.
- * 
+ *
  * @return the wide caret state
  *
  * @exception SWTException <ul>
@@ -312,7 +312,7 @@ public boolean getWideCaret() {
 	checkWidget ();
 	long /*int*/ layout = OS.GetKeyboardLayout (0);
 	short langID = (short)OS.LOWORD (layout);
-	return OS.PRIMARYLANGID (langID) == OS.LANG_KOREAN; 
+	return OS.PRIMARYLANGID (langID) == OS.LANG_KOREAN;
 }
 
 boolean isInlineEnabled () {
@@ -434,7 +434,7 @@ LRESULT WM_IME_COMPOSITION (long /*int*/ wParam, long /*int*/ lParam) {
 						styles = new TextStyle [length];
 						long /*int*/ layout = OS.GetKeyboardLayout (0);
 						short langID = (short)OS.LOWORD (layout);
-						TF_DISPLAYATTRIBUTE attr = null; 
+						TF_DISPLAYATTRIBUTE attr = null;
 						TextStyle style = null;
 						for (int i = 0; i < length; i++) {
 							ranges [i * 2] = clauses [i];
@@ -477,7 +477,7 @@ LRESULT WM_IME_COMPOSITION (long /*int*/ wParam, long /*int*/ lParam) {
 											style.underlineStyle = SWT.UNDERLINE_SQUIGGLE;
 											break;
 										case OS.TF_LS_DASH:
-											style.underlineStyle = UNDERLINE_IME_DASH; 
+											style.underlineStyle = UNDERLINE_IME_DASH;
 											break;
 										case OS.TF_LS_DOT:
 											style.underlineStyle = UNDERLINE_IME_DOT;
@@ -529,11 +529,11 @@ LRESULT WM_KEYDOWN (long /*int*/ wParam, long /*int*/ lParam) {
 	if (wParam == OS.VK_HANJA) {
 		long /*int*/ hKL = OS.GetKeyboardLayout (0);
 		short langID = (short)OS.LOWORD (hKL);
-		if (OS.PRIMARYLANGID (langID) == OS.LANG_KOREAN) { 
+		if (OS.PRIMARYLANGID (langID) == OS.LANG_KOREAN) {
 			Event event = new Event ();
 			event.detail = SWT.COMPOSITION_SELECTION;
 			sendEvent (SWT.ImeComposition, event);
-			if (event.start == event.end) { 
+			if (event.start == event.end) {
 				event.text = null;
 				event.end = event.start + 1;
 				sendEvent (SWT.ImeComposition, event);
@@ -546,7 +546,7 @@ LRESULT WM_KEYDOWN (long /*int*/ wParam, long /*int*/ lParam) {
 				long /*int*/ hwnd = parent.handle;
 				long /*int*/ hIMC = OS.ImmGetContext (hwnd);
 				TCHAR buffer = new TCHAR (0, event.text, true);
-				long /*int*/ rc = OS.ImmEscape(hKL, hIMC, OS.IME_ESC_HANJA_MODE, buffer); 
+				long /*int*/ rc = OS.ImmEscape(hKL, hIMC, OS.IME_ESC_HANJA_MODE, buffer);
 				if (rc != 0) {
 					sendEvent (SWT.ImeComposition, event);
 				}
@@ -578,7 +578,7 @@ LRESULT WM_LBUTTONDOWN (long /*int*/ wParam, long /*int*/ lParam) {
 			if (OS.ImmGetCompositionString (hIMC, OS.GCS_COMPSTR, (TCHAR)null, 0) > 0) {
 				Event event = new Event ();
 				event.detail = SWT.COMPOSITION_OFFSET;
-				event.x = OS.GET_X_LPARAM (lParam); 
+				event.x = OS.GET_X_LPARAM (lParam);
 				event.y = OS.GET_Y_LPARAM (lParam);
 				sendEvent (SWT.ImeComposition, event);
 				int offset = event.index;

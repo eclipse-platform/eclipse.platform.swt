@@ -17,7 +17,7 @@ import org.eclipse.swt.internal.win32.*;
 public class ScaleDrawData extends RangeDrawData {
 	public int increment;
 	public int pageIncrement;
-	
+
 	static final int TICS_MARGIN = 10;
 
 public ScaleDrawData() {

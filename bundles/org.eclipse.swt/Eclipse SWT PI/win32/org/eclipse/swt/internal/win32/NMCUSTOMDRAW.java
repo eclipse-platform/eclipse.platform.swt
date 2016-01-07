@@ -11,16 +11,16 @@
 package org.eclipse.swt.internal.win32;
 
 public class NMCUSTOMDRAW extends NMHDR {
-	public int dwDrawStage; 
+	public int dwDrawStage;
 	/** @field cast=(HDC) */
 	public long /*int*/ hdc;
 //	RECT rc;
 	/** @field accessor=rc.left */
-	public int left; 
+	public int left;
 	/** @field accessor=rc.top */
-	public int top; 
+	public int top;
 	/** @field accessor=rc.right */
-	public int right; 
+	public int right;
 	/** @field accessor=rc.bottom */
 	public int bottom;
 	public long /*int*/ dwItemSpec;

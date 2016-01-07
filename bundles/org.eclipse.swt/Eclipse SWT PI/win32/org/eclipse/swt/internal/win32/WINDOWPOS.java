@@ -19,6 +19,6 @@ public class WINDOWPOS {
 	public int y;
 	public int cx;
 	public int cy;
-	public int flags;  
+	public int flags;
 	public static final int sizeof = OS.WINDOWPOS_sizeof ();
 }

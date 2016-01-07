@@ -67,7 +67,7 @@ public class Label extends Control {
  * <p>
  * The style value is either one of the style constants defined in
  * class <code>SWT</code> which is applicable to instances of this
- * class, or must be built by <em>bitwise OR</em>'ing together 
+ * class, or must be built by <em>bitwise OR</em>'ing together
  * (that is, using the <code>int</code> "|" operator) two or more
  * of those <code>SWT</code> style constants. The class description
  * lists the style constants that are applicable to the class.
@@ -106,9 +106,9 @@ public Label (Composite parent, int style) {
 long /*int*/ callWindowProc (long /*int*/ hwnd, int msg, long /*int*/ wParam, long /*int*/ lParam) {
 	if (handle == 0) return 0;
 	/*
-	* Feature in Windows 7.  When the user double clicks 
-	* on the label, the text of the label is copied to the 
-	* clipboard.  This is unwanted. The fix is to avoid 
+	* Feature in Windows 7.  When the user double clicks
+	* on the label, the text of the label is copied to the
+	* clipboard.  This is unwanted. The fix is to avoid
 	* calling the label window proc.
 	*/
 	if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION(6, 1)) {
@@ -124,7 +124,7 @@ static int checkStyle (int style) {
 	if ((style & SWT.SEPARATOR) != 0) {
 		style = checkBits (style, SWT.VERTICAL, SWT.HORIZONTAL, 0, 0, 0, 0);
 		return checkBits (style, SWT.SHADOW_OUT, SWT.SHADOW_IN, SWT.SHADOW_NONE, 0, 0, 0);
-	} 
+	}
 	return checkBits (style, SWT.LEFT, SWT.CENTER, SWT.RIGHT, 0, 0, 0);
 }
 
@@ -188,7 +188,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	if (hHint != SWT.DEFAULT) height = hHint;
 	width += border * 2;
 	height += border * 2;
-	/* 
+	/*
 	* Feature in WinCE PPC.  Text labels have a trim
 	* of one pixel wide on the right and left side.
 	* The fix is to increase the width to include
@@ -208,10 +208,10 @@ void createHandle () {
  * Returns a value which describes the position of the
  * text or image in the receiver. The value will be one of
  * <code>LEFT</code>, <code>RIGHT</code> or <code>CENTER</code>
- * unless the receiver is a <code>SEPARATOR</code> label, in 
+ * unless the receiver is a <code>SEPARATOR</code> label, in
  * which case, <code>NONE</code> is returned.
  *
- * @return the alignment 
+ * @return the alignment
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -310,7 +310,7 @@ int resolveTextDirection() {
  * or <code>CENTER</code>.  If the receiver is a <code>SEPARATOR</code>
  * label, the argument is ignored and the alignment is not changed.
  *
- * @param alignment the new alignment 
+ * @param alignment the new alignment
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -347,7 +347,7 @@ public void setAlignment (int alignment) {
  * @param image the image to display on the receiver (may be null)
  *
  * @exception IllegalArgumentException <ul>
- *    <li>ERROR_INVALID_ARGUMENT - if the image has been disposed</li> 
+ *    <li>ERROR_INVALID_ARGUMENT - if the image has been disposed</li>
  * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -388,7 +388,7 @@ public void setImage (Image image) {
  * Note: If control characters like '\n', '\t' etc. are used
  * in the string, then the behavior is platform dependent.
  * </p>
- * 
+ *
  * @param string the new text
  *
  * @exception IllegalArgumentException <ul>
@@ -457,7 +457,7 @@ int widgetStyle () {
 	if ((style & SWT.SEPARATOR) != 0) return bits | OS.SS_OWNERDRAW;
 	if (OS.WIN32_VERSION >= OS.VERSION (5, 0)) {
 		if ((style & SWT.WRAP) != 0) bits |= OS.SS_EDITCONTROL;
-	} 
+	}
 	if ((style & SWT.CENTER) != 0) return bits | OS.SS_CENTER;
 	if ((style & SWT.RIGHT) != 0) return bits | OS.SS_RIGHT;
 	if ((style & SWT.WRAP) != 0) return bits | OS.SS_LEFT;

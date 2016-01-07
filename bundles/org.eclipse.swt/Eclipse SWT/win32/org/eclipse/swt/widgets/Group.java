@@ -35,7 +35,7 @@ import org.eclipse.swt.graphics.*;
  * </p><p>
  * IMPORTANT: This class is <em>not</em> intended to be subclassed.
  * </p>
- * 
+ *
  * @see <a href="http://www.eclipse.org/swt/examples.php">SWT Example: ControlExample</a>
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  * @noextend This class is not intended to be subclassed by clients.
@@ -53,7 +53,7 @@ public class Group extends Composite {
 		* when resized.  This causes flashing.  The fix is to
 		* register a new window class without these bits and
 		* implement special code that damages only the control.
-		* 
+		*
 		* Feature in WinCE.  On certain devices, defining
 		* a new window class which looks like BUTTON causes
 		* CreateWindowEx() to crash.  The workaround is to use
@@ -88,7 +88,7 @@ public class Group extends Composite {
  * <p>
  * The style value is either one of the style constants defined in
  * class <code>SWT</code> which is applicable to instances of this
- * class, or must be built by <em>bitwise OR</em>'ing together 
+ * class, or must be built by <em>bitwise OR</em>'ing together
  * (that is, using the <code>int</code> "|" operator) two or more
  * of those <code>SWT</code> style constants. The class description
  * lists the style constants that are applicable to the class.
@@ -128,7 +128,7 @@ long /*int*/ callWindowProc (long /*int*/ hwnd, int msg, long /*int*/ wParam, lo
 	*/
 	switch (msg) {
 		case OS.WM_LBUTTONDOWN:
-		case OS.WM_LBUTTONDBLCLK: 
+		case OS.WM_LBUTTONDBLCLK:
 			return OS.DefWindowProc (hwnd, msg, wParam, lParam);
 	}
 	return OS.CallWindowProc (GroupProc, hwnd, msg, wParam, lParam);
@@ -325,7 +325,7 @@ void printWidget (long /*int*/ hwnd, long /*int*/ hdc, GC gc) {
 			OS.ShowWindow (hwnd, OS.SW_HIDE);
 		}
 	}
-	
+
 	/*
 	* Bug in Windows.  For some reason, PrintWindow() fails
 	* when it is called on a push button.  The fix is to

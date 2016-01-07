@@ -74,19 +74,19 @@ public class Text extends Scrollable {
 	* </p>
 	*/
 	public static final int LIMIT;
-	
+
 	/**
 	* The delimiter used by multi-line text widgets.  When text
 	* is queried and from the widget, it will be delimited using
 	* this delimiter.
 	*/
 	public static final String DELIMITER;
-	
+
 	/*
 	* This code is intentionally commented.
 	*/
 //	static final char PASSWORD;
-	
+
 	/*
 	* These values can be different on different platforms.
 	* Therefore they are not initialized in the declaration
@@ -96,7 +96,7 @@ public class Text extends Scrollable {
 		LIMIT = OS.IsWinNT ? 0x7FFFFFFF : 0x7FFF;
 		DELIMITER = "\r\n";
 	}
-	
+
 	static final long /*int*/ EditProc;
 	static final TCHAR EditClass = new TCHAR (0, "EDIT", true);
 	static {
@@ -126,7 +126,7 @@ public class Text extends Scrollable {
  * <p>
  * The style value is either one of the style constants defined in
  * class <code>SWT</code> which is applicable to instances of this
- * class, or must be built by <em>bitwise OR</em>'ing together 
+ * class, or must be built by <em>bitwise OR</em>'ing together
  * (that is, using the <code>int</code> "|" operator) two or more
  * of those <code>SWT</code> style constants. The class description
  * lists the style constants that are applicable to the class.
@@ -206,7 +206,7 @@ long /*int*/ callWindowProc (long /*int*/ hwnd, int msg, long /*int*/ wParam, lo
 						OS.SetRect (rect, ps.left, ps.top, ps.right, ps.bottom);
 						drawBackground (hDC, rect);
 					}
-					
+
 					OS.CallWindowProc (EditProc, hwnd, OS.WM_PAINT, hDC, lParam);
 					/*
 					* Bug in XP. Windows does not draw the cue message on XP when
@@ -229,7 +229,7 @@ long /*int*/ callWindowProc (long /*int*/ hwnd, int msg, long /*int*/ wParam, lo
 						TCHAR buffer = new TCHAR (getCodePage (), message, false);
 						int uFormat = OS.DT_EDITCONTROL;
 						boolean rtl = (style & SWT.RIGHT_TO_LEFT) != 0;
-						if (rtl) uFormat |= OS.DT_RTLREADING; 
+						if (rtl) uFormat |= OS.DT_RTLREADING;
 						int alignment = style & (SWT.LEFT | SWT.CENTER | SWT.RIGHT);
 						switch (alignment) {
 							case SWT.LEFT: uFormat |= (rtl ? OS.DT_RIGHT : OS.DT_LEFT); break;
@@ -243,7 +243,7 @@ long /*int*/ callWindowProc (long /*int*/ hwnd, int msg, long /*int*/ wParam, lo
 						OS.DrawText (hDC, buffer, buffer.length (), rect, uFormat);
 						OS.SelectObject (hDC, hOldFont);
 					}
-					
+
 					if (doubleBuffer) {
 						OS.SetWindowOrgEx (hDC, lpPoint1.x, lpPoint1.y, null);
 						OS.SetBrushOrgEx (hDC, lpPoint2.x, lpPoint2.y, null);
@@ -319,11 +319,11 @@ public void addModifyListener (ModifyListener listener) {
  * Adds a segment listener.
  * <p>
  * A <code>SegmentEvent</code> is sent whenever text content is being modified or
- * a segment listener is added or removed. You can 
+ * a segment listener is added or removed. You can
  * customize the appearance of text by indicating certain characters to be inserted
  * at certain text offsets. This may be used for bidi purposes, e.g. when
  * adjacent segments of right-to-left text should not be reordered relative to
- * each other. 
+ * each other.
  * E.g., multiple Java string literals in a right-to-left language
  * should generally remain in logical order to each other, that is, the
  * way they are stored.
@@ -346,7 +346,7 @@ public void addModifyListener (ModifyListener listener) {
  * @see SegmentEvent
  * @see SegmentListener
  * @see #removeSegmentListener
- * 
+ *
  * @since 3.8
  */
 public void addSegmentListener (SegmentListener listener) {
@@ -367,7 +367,7 @@ public void addSegmentListener (SegmentListener listener) {
  * <code>widgetDefaultSelected</code> is typically called when ENTER is pressed in a single-line text,
  * or when ENTER is pressed in a search text. If the receiver has the <code>SWT.SEARCH | SWT.ICON_CANCEL</code> style
  * and the user cancels the search, the event object detail field contains the value <code>SWT.ICON_CANCEL</code>.
- * Likewise, if the receiver has the <code>SWT.ICON_SEARCH</code> style and the icon search is selected, the 
+ * Likewise, if the receiver has the <code>SWT.ICON_SEARCH</code> style and the icon search is selected, the
  * event object detail field contains the value <code>SWT.ICON_SEARCH</code>.
  * </p>
  *
@@ -569,10 +569,10 @@ static int checkStyle (int style) {
 	if ((style & SWT.SEARCH) != 0) {
 		style |= SWT.SINGLE | SWT.BORDER;
 		style &= ~SWT.PASSWORD;
-		/* 
+		/*
 		* NOTE: ICON_CANCEL has the same value as H_SCROLL and
 		* ICON_SEARCH has the same value as V_SCROLL so they are
-		* cleared because SWT.SINGLE is set. 
+		* cleared because SWT.SINGLE is set.
 		*/
 	}
 	if ((style & SWT.SINGLE) != 0 && (style & SWT.MULTI) != 0) {
@@ -655,7 +655,7 @@ public void clearSelection () {
 		* text to be selected instead of clearing the selection.  The
 		* fix is to set the start of the selection to the  end of the
 		* current selection.
-		*/ 
+		*/
 		int [] end = new int [1];
 		OS.SendMessage (handle, OS.EM_GETSEL, (int []) null, end);
 		OS.SendMessage (handle, OS.EM_SETSEL, end [0], end [0]);
@@ -864,7 +864,7 @@ void fixAlignment () {
 	if ((style & SWT.LEFT_TO_RIGHT) != 0) {
 		/*
 		* Bug in Windows 98. When the edit control is created
-		* with the style ES_RIGHT it automatically sets the 
+		* with the style ES_RIGHT it automatically sets the
 		* WS_EX_LEFTSCROLLBAR bit.  The fix is to clear the
 		* bit when the orientation of the control is left
 		* to right.
@@ -890,7 +890,7 @@ void fixAlignment () {
 	}
 	if ((style & SWT.CENTER) != 0) {
 		bits2 |= OS.ES_CENTER;
-	}	
+	}
 	OS.SetWindowLong (handle, OS.GWL_EXSTYLE, bits1);
 	OS.SetWindowLong (handle, OS.GWL_STYLE, bits2);
 }
@@ -950,7 +950,7 @@ public Point getCaretLocation () {
 	* this is the only time the start of the selection can
 	* be equal to the last character position in the widget.
 	* If EM_POSFROMCHAR fails for any other reason, return
-	* pixel coordinates (0,0). 
+	* pixel coordinates (0,0).
 	*/
 	int position = translateOffset (getCaretPosition ());
 	long /*int*/ caretPos = OS.SendMessage (handle, OS.EM_POSFROMCHAR, position, 0);
@@ -1007,7 +1007,7 @@ public int getCaretPosition () {
 	* when the selection is not an i-beam.  The best that can be done
 	* is to query the pixel position of the current caret and compare
 	* it to the pixel position of the start and end of the selection.
-	* 
+	*
 	* NOTE:  This does not work when the i-beam belongs to another
 	* control.  In this case, guess that the i-beam is at the start
 	* of the selection.
@@ -1072,7 +1072,7 @@ public int getCharCount () {
  * default action of the text widget when the user
  * double clicks.
  * </p>
- * 
+ *
  * @return whether or not double click is enabled
  *
  * @exception SWTException <ul>
@@ -1092,14 +1092,14 @@ public boolean getDoubleClickEnabled () {
  * displayed when the user enters text or the
  * text is changed by the programmer.
  * </p>
- * 
+ *
  * @return the echo character
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @see #setEchoChar
  */
 public char getEchoChar () {
@@ -1113,7 +1113,7 @@ public char getEchoChar () {
  * Returns the editable state.
  *
  * @return whether or not the receiver is editable
- * 
+ *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
@@ -1149,7 +1149,7 @@ public int getLineCount () {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @see #DELIMITER
  */
 public String getLineDelimiter () {
@@ -1185,12 +1185,12 @@ public int getLineHeight () {
  * constants <code>SWT.LEFT_TO_RIGHT</code> or <code>SWT.RIGHT_TO_LEFT</code>.
  *
  * @return the orientation style
- * 
+ *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 2.1.2
  */
 @Override
@@ -1204,14 +1204,14 @@ public int getOrientation () {
  * <p>
  * Typically this is used in conjunction with <code>SWT.SEARCH</code>.
  * </p>
- * 
+ *
  * @return the widget message
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 3.3
  */
 public String getMessage () {
@@ -1233,7 +1233,7 @@ public String getMessage () {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 3.3
  */
 //TODO - Javadoc
@@ -1295,7 +1295,7 @@ public int getSelectionCount () {
  * Gets the selected text, or an empty string if there is no current selection.
  *
  * @return the selected text
- * 
+ *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
@@ -1391,7 +1391,7 @@ public String getText () {
  * However, the text can't be protected if an {@link SWT#Segments} or
  * {@link SWT#Verify} listener has been added to the widget.
  * </p>
- * 
+ *
  * @return a character array that contains the widget's text
  *
  * @exception SWTException <ul>
@@ -1451,19 +1451,19 @@ public String getText (int start, int end) {
 }
 
 /**
- * Returns the maximum number of characters that the receiver is capable of holding. 
+ * Returns the maximum number of characters that the receiver is capable of holding.
  * <p>
  * If this has not been changed by <code>setTextLimit()</code>,
  * it will be the constant <code>Text.LIMIT</code>.
  * </p>
- * 
+ *
  * @return the text limit
- * 
+ *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @see #LIMIT
  */
 public int getTextLimit () {
@@ -1659,7 +1659,7 @@ public void removeModifyListener (ModifyListener listener) {
 	checkWidget ();
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (eventTable == null) return;
-	eventTable.unhook (SWT.Modify, listener);	
+	eventTable.unhook (SWT.Modify, listener);
 }
 
 /**
@@ -1679,7 +1679,7 @@ public void removeModifyListener (ModifyListener listener) {
  * @see SegmentEvent
  * @see SegmentListener
  * @see #addSegmentListener
- * 
+ *
  * @since 3.8
  */
 public void removeSegmentListener (SegmentListener listener) {
@@ -1712,7 +1712,7 @@ public void removeSelectionListener (SelectionListener listener) {
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (eventTable == null) return;
 	eventTable.unhook (SWT.Selection, listener);
-	eventTable.unhook (SWT.DefaultSelection,listener);	
+	eventTable.unhook (SWT.DefaultSelection,listener);
 }
 
 /**
@@ -1736,7 +1736,7 @@ public void removeVerifyListener (VerifyListener listener) {
 	checkWidget ();
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (eventTable == null) return;
-	eventTable.unhook (SWT.Verify, listener);	
+	eventTable.unhook (SWT.Verify, listener);
 }
 
 @Override
@@ -1790,7 +1790,7 @@ boolean sendKeyEvent (int type, int msg, long /*int*/ wParam, long /*int*/ lPara
 	if (!hooks (SWT.Verify) && !filters (SWT.Verify)) return true;
 	char key = event.character;
 	int stateMask = event.stateMask;
-	
+
 	/*
 	* Disable all magic keys that could modify the text
 	* and don't send events when Alt, Shift or Ctrl is
@@ -1924,9 +1924,9 @@ void setBounds (int x, int y, int width, int height, int flags) {
 		}
 	}
 	super.setBounds (x, y, width, height, flags);
-	
+
 	/*
-	* Bug in Windows. If the client area height is smaller than 
+	* Bug in Windows. If the client area height is smaller than
 	* the font height, then the multi-line text widget does not
 	* update the formatting rectangle when resized. The fix is to
 	* detect this case and explicitly set the formatting rectangle.
@@ -1972,7 +1972,7 @@ void setDefaultFont () {
  * Note: This operation is a hint and is not supported on
  * platforms that do not have this concept.
  * </p>
- * 
+ *
  * @param doubleClick the new double click flag
  *
  * @exception SWTException <ul>
@@ -2036,7 +2036,7 @@ public void setEchoChar (char echo) {
 public void setEditable (boolean editable) {
 	checkWidget ();
 	style &= ~SWT.READ_ONLY;
-	if (!editable) style |= SWT.READ_ONLY; 
+	if (!editable) style |= SWT.READ_ONLY;
 	OS.SendMessage (handle, OS.EM_SETREADONLY, editable ? 0 : 1, 0);
 }
 
@@ -2068,7 +2068,7 @@ void setMargins () {
  * <p>
  * Typically this is used in conjunction with <code>SWT.SEARCH</code>.
  * </p>
- * 
+ *
  * @param message the new message
  *
  * @exception IllegalArgumentException <ul>
@@ -2078,7 +2078,7 @@ void setMargins () {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 3.3
  */
 public void setMessage (String message) {
@@ -2109,12 +2109,12 @@ public void setMessage (String message) {
  * </p>
  *
  * @param orientation new orientation style
- * 
+ *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 2.1.2
  */
 @Override
@@ -2416,7 +2416,7 @@ public void setTextChars (char[] text) {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @see #LIMIT
  */
 public void setTextLimit (int limit) {
@@ -2457,7 +2457,7 @@ public void setTopIndex (int index) {
  * in the receiver, this method simply returns.  Otherwise,
  * lines are scrolled until the selection is visible.
  * </p>
- * 
+ *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
@@ -2472,7 +2472,7 @@ int translateOffset (int offset) {
 	if (segments == null) return offset;
 	for (int i = 0, nSegments = segments.length; i < nSegments && offset - i >= segments [i]; i++) {
 		offset++;
-	}	
+	}
 	return offset;
 }
 
@@ -2530,7 +2530,7 @@ String verifyText (String string, int start, int end, Event keyEvent) {
 	}
 	event.start = untranslateOffset (event.start);
 	event.end = untranslateOffset (event.end);
-	
+
 	/*
 	* It is possible (but unlikely), that application
 	* code could have disposed the widget in the verify
@@ -2617,7 +2617,7 @@ int widgetStyle () {
 		}
 		return bits;
 	}
-	bits |= OS.ES_MULTILINE | OS.ES_NOHIDESEL | OS.ES_AUTOVSCROLL;	
+	bits |= OS.ES_MULTILINE | OS.ES_NOHIDESEL | OS.ES_AUTOVSCROLL;
 	if ((style & SWT.WRAP) != 0) bits &= ~(OS.WS_HSCROLL | OS.ES_AUTOHSCROLL);
 	return bits;
 }
@@ -2655,7 +2655,7 @@ long /*int*/ windowProc (long /*int*/ hwnd, int msg, long /*int*/ wParam, long /
 				processSegments = segments != null;
 				updateDirection = false;
 				break;
-			case OS.WM_CHAR: 
+			case OS.WM_CHAR:
 				if (ignoreCharacter || OS.GetKeyState (OS.VK_CONTROL) < 0 || OS.GetKeyState (OS.VK_MENU) < 0) {
 					processSegments = updateDirection = false;
 				}
@@ -2713,7 +2713,7 @@ LRESULT WM_CHAR (long /*int*/ wParam, long /*int*/ lParam) {
 	if (ignoreCharacter) return null;
 	LRESULT result = super.WM_CHAR (wParam, lParam);
 	if (result != null) return result;
-	
+
 	/*
 	* Bug in Windows.  When the user types CTRL and BS
 	* in an edit control, a DEL character is generated.
@@ -2747,7 +2747,7 @@ LRESULT WM_CHAR (long /*int*/ wParam, long /*int*/ lParam) {
 				return LRESULT.ZERO;
 			}
 	}
-	
+
 	/*
 	* Feature in Windows.  For some reason, when the
 	* widget is a single line text widget, when the
@@ -2812,7 +2812,7 @@ LRESULT WM_ERASEBKGND (long /*int*/ wParam, long /*int*/ lParam) {
 LRESULT WM_GETDLGCODE (long /*int*/ wParam, long /*int*/ lParam) {
 	LRESULT result = super.WM_GETDLGCODE (wParam, lParam);
 	if (result != null) return result;
-	
+
 	/*
 	* Bug in WinCE PPC.  For some reason, sending WM_GETDLGCODE
 	* to a multi-line edit control causes it to ignore return and
@@ -2828,9 +2828,9 @@ LRESULT WM_GETDLGCODE (long /*int*/ wParam, long /*int*/ lParam) {
 	/*
 	* Feature in Windows.  Despite the fact that the
 	* edit control is read only, it still returns a
-	* dialog code indicating that it wants all keys.  
+	* dialog code indicating that it wants all keys.
 	* The fix is to detect this case and clear the bits.
-	* 
+	*
 	* NOTE: A read only edit control processes arrow keys
 	* so DLGC_WANTARROWS should not be cleared.
 	*/
@@ -2883,7 +2883,7 @@ LRESULT WM_IME_CHAR (long /*int*/ wParam, long /*int*/ lParam) {
 		OS.DispatchMessage (msg);
 	}
 	ignoreCharacter = false;
-	
+
 	sendKeyEvent (SWT.KeyUp, OS.WM_IME_CHAR, wParam, lParam);
 	// widget could be disposed at this point
 	display.lastKey = display.lastAscii = 0;
@@ -2906,7 +2906,7 @@ LRESULT WM_LBUTTONDBLCLK (long /*int*/ wParam, long /*int*/ lParam) {
 		if (OS.GetCapture () != handle) OS.SetCapture (handle);
 	}
 	if (!doubleClick) return LRESULT.ZERO;
-		
+
 	/*
 	* Bug in Windows.  When the last line of text in the
 	* widget is double clicked and the line is empty, Windows
@@ -2940,7 +2940,7 @@ LRESULT WM_LBUTTONDOWN (long /*int*/ wParam, long /*int*/ lParam) {
 		* Note: On WinCE PPC, only attempt to recognize the gesture for
 		* a context menu when the control contains a valid menu or there
 		* are listeners for the MenuDetect event.
-		* 
+		*
 		* Note: On WinCE PPC, the gesture that brings up a popup menu
 		* on the text widget must keep the current text selection.  As a
 		* result, the window proc is only called if the menu is not shown.
@@ -2953,7 +2953,7 @@ LRESULT WM_LBUTTONDOWN (long /*int*/ wParam, long /*int*/ lParam) {
 			shrg.cbSize = SHRGINFO.sizeof;
 			shrg.hwndClient = handle;
 			shrg.ptDown_x = x;
-			shrg.ptDown_y = y; 
+			shrg.ptDown_y = y;
 			shrg.dwFlags = OS.SHRG_RETURNCMD;
 			int type = OS.SHRecognizeGesture (shrg);
 			if (type == OS.GN_CONTEXTMENU) {
@@ -3136,7 +3136,7 @@ LRESULT wmCommandChild (long /*int*/ wParam, long /*int*/ lParam) {
 					bits &= ~(OS.WS_EX_RTLREADING | OS.WS_EX_LEFTSCROLLBAR);
 					style &= ~SWT.RIGHT_TO_LEFT;
 					style |= SWT.LEFT_TO_RIGHT;
-				}	
+				}
 				OS.SetWindowLong (handle, OS.GWL_EXSTYLE, bits);
 			} else {
 				clearSegments (true);
@@ -3152,7 +3152,7 @@ LRESULT wmCommandChild (long /*int*/ wParam, long /*int*/ lParam) {
 LRESULT wmKeyDown (long /*int*/ hwnd, long /*int*/ wParam, long /*int*/ lParam) {
 	LRESULT result = super.wmKeyDown (hwnd, wParam, lParam);
 	if (result != null) return result;
-	
+
 	if (segments != null) {
 		switch ((int)/*64*/wParam) {
 		case OS.VK_LEFT:
@@ -3173,12 +3173,12 @@ LRESULT wmKeyDown (long /*int*/ hwnd, long /*int*/ wParam, long /*int*/ lParam) 
 					break;
 				}
 				start [0] = newStart [0];
-				end [0] = newEnd [0]; 
+				end [0] = newEnd [0];
 			}
 			result = code == 0 ? LRESULT.ZERO : new LRESULT (code);
 		}
 	}
-	return result; 
+	return result;
 }
 
 }

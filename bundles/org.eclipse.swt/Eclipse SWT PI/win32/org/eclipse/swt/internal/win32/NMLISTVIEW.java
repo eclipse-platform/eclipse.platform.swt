@@ -18,7 +18,7 @@ public class NMLISTVIEW extends NMHDR {
 	public int uChanged;
 //	POINT ptAction;
 	/** @field accessor=ptAction.x */
-	public int x; 
+	public int x;
 	/** @field accessor=ptAction.y */
 	public int y;
 	public long /*int*/ lParam;

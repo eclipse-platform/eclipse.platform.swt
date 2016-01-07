@@ -10,9 +10,9 @@
  *******************************************************************************/
 package org.eclipse.swt.internal.ole.win32;
 
- 
+
 import org.eclipse.swt.internal.win32.RECT;
- 
+
 public class IOleDocumentView extends IUnknown
 {
 public IOleDocumentView(long /*int*/ address) {

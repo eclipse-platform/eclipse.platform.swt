@@ -61,13 +61,13 @@ class Relation {
 		this.targets = new Accessible[0];
 		AddRef();
 	}
-	
+
 	long /*int*/ getAddress() {
 		/* The address of a Relation is the address of its IAccessibleRelation COMObject. */
 		if (objIAccessibleRelation == null) createIAccessibleRelation();
 		return objIAccessibleRelation.getAddress();
 	}
-	
+
 	void createIAccessibleRelation() {
 		objIAccessibleRelation = new COMObject(new int[] {2,0,0,1,1,1,2,3}) {
 			@Override
@@ -90,7 +90,7 @@ class Relation {
 	}
 
 	/* QueryInterface([in] iid, [out] ppvObject)
-	 * Ownership of ppvObject transfers from callee to caller so reference count on ppvObject 
+	 * Ownership of ppvObject transfers from callee to caller so reference count on ppvObject
 	 * must be incremented before returning.  Caller is responsible for releasing ppvObject.
 	 */
 	int QueryInterface(long /*int*/ iid, long /*int*/ ppvObject) {

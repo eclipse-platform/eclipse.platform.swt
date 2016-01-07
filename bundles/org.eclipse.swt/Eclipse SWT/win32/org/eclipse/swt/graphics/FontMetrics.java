@@ -24,7 +24,7 @@ import org.eclipse.swt.internal.win32.*;
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  */
 public final class FontMetrics {
-	
+
 	/**
 	 * On Windows, handle is a Win32 TEXTMETRIC struct
 	 * (Warning: This field is platform dependent)
@@ -34,11 +34,11 @@ public final class FontMetrics {
 	 * within the packages provided by SWT. It is not available on all
 	 * platforms and should never be accessed from application code.
 	 * </p>
-	 * 
+	 *
 	 * @noreference This field is not intended to be referenced by clients.
 	 */
 	public TEXTMETRIC handle;
-	
+
 /**
  * Prevents instances from being created outside the package.
  */
@@ -84,7 +84,7 @@ public boolean equals (Object object) {
 
 /**
  * Returns the ascent of the font described by the receiver. A
- * font's <em>ascent</em> is the distance from the baseline to the 
+ * font's <em>ascent</em> is the distance from the baseline to the
  * top of actual characters, not including any of the leading area,
  * measured in pixels.
  *
@@ -117,7 +117,7 @@ public int getDescent() {
 }
 
 /**
- * Returns the height of the font described by the receiver, 
+ * Returns the height of the font described by the receiver,
  * measured in pixels. A font's <em>height</em> is the sum of
  * its ascent, descent and leading area.
  *
@@ -143,8 +143,8 @@ public int getLeading() {
 }
 
 /**
- * Returns an integer hash code for the receiver. Any two 
- * objects that return <code>true</code> when passed to 
+ * Returns an integer hash code for the receiver. Any two
+ * objects that return <code>true</code> when passed to
  * <code>equals</code> must return the same value for this
  * method.
  *
@@ -163,7 +163,7 @@ public int hashCode() {
 		handle.tmPitchAndFamily ^ handle.tmCharSet;
 }
 
-/**	 
+/**
  * Invokes platform specific functionality to allocate a new font metrics.
  * <p>
  * <b>IMPORTANT:</b> This method is <em>not</em> part of the public
@@ -175,7 +175,7 @@ public int hashCode() {
  *
  * @param handle the <code>TEXTMETRIC</code> containing information about a font
  * @return a new font metrics object containing the specified <code>TEXTMETRIC</code>
- * 
+ *
  * @noreference This method is not intended to be referenced by clients.
  */
 public static FontMetrics win32_new(TEXTMETRIC handle) {

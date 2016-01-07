@@ -12,7 +12,7 @@ package org.eclipse.swt.internal.win32;
 
 public class MENUBARINFO {
 	public int cbSize;
-//	RECT  rcBar; 
+//	RECT  rcBar;
 	/** @field accessor=rcBar.left */
 	public int left;
 	/** @field accessor=rcBar.top */

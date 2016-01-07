@@ -10,12 +10,12 @@
  *******************************************************************************/
 package org.eclipse.swt.internal.ole.win32;
 
- 
+
 import org.eclipse.swt.internal.win32.OS;
 
 public class ITypeInfo extends IUnknown
 {
-	
+
 public ITypeInfo(long /*int*/ address) {
 	super(address);
 }
@@ -80,10 +80,10 @@ public int GetIDsOfNames(String[] rgszNames, int cNames, int[] pMemId) {
 	long /*int*/ hHeap = OS.GetProcessHeap();
 	long /*int*/ ppNames = OS.HeapAlloc(hHeap, OS.HEAP_ZERO_MEMORY, size * OS.PTR_SIZEOF);
 	long /*int*/[] memTracker = new long /*int*/[size];
-	
-	try {	
+
+	try {
 		// add the address of each string to the array
-		
+
 		for (int i=0; i<size; i++){
 			// create a null terminated array of char for each String
 			int nameSize = rgszNames[i].length();
@@ -97,9 +97,9 @@ public int GetIDsOfNames(String[] rgszNames, int cNames, int[] pMemId) {
 			// keep track of the Global Memory so we can free it
 			memTracker[i] = pName;
 		}
-	
+
 		return COM.VtblCall(10, address, ppNames, cNames, pMemId);
-		
+
 	} finally {
 		// free the memory
 		for (int i=0; i<memTracker.length; i++){
@@ -113,11 +113,11 @@ public int GetImplTypeFlags(int index, int[] pImplTypeFlags) {
 	return COM.VtblCall(9, address, index, pImplTypeFlags);
 }
 public int GetNames(int memid, String[] names, int cMaxNames, int[] pcNames){
-	
+
 	int nameSize = names.length;
 	long /*int*/[] rgBstrNames = new long /*int*/[nameSize];
 	int rc = COM.VtblCall(7, address, memid, rgBstrNames, nameSize, pcNames);
-	
+
 	if (rc == COM.S_OK) {
 		for (int i = 0; i < pcNames[0]; i++) {
 			int size = COM.SysStringByteLen(rgBstrNames[i]);
@@ -133,7 +133,7 @@ public int GetNames(int memid, String[] names, int cMaxNames, int[] pcNames){
 			COM.SysFreeString(rgBstrNames[i]);
 		}
 	}
-	
+
 	return rc;
 }
 public int GetRefTypeInfo(int hRefType, long /*int*/[] ppTInfo) {

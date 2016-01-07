@@ -20,7 +20,7 @@ import org.eclipse.swt.events.*;
 
 /**
  * Instances of this class are controls that allow the user
- * to choose an item from a list of items, or optionally 
+ * to choose an item from a list of items, or optionally
  * enter a new value by typing it into an editable text
  * field. Often, <code>Combo</code>s are used in the same place
  * where a single selection <code>List</code> widget could
@@ -33,7 +33,7 @@ import org.eclipse.swt.events.*;
  * which access one versus the other (compare for example,
  * <code>clearSelection()</code> and <code>deselectAll()</code>).
  * The API documentation is careful to indicate either "the
- * receiver's list" or the "the receiver's text field" to 
+ * receiver's list" or the "the receiver's text field" to
  * distinguish between the two cases.
  * </p><p>
  * Note that although this class is a subclass of <code>Composite</code>,
@@ -74,16 +74,16 @@ public class Combo extends Composite {
 	 * that the text field in an instance of this class can hold
 	 */
 	public static final int LIMIT;
-	
+
 	/*
 	 * These values can be different on different platforms.
 	 * Therefore they are not initialized in the declaration
 	 * to stop the compiler from inlining.
 	 */
 	static {
-		LIMIT = OS.IsWinNT ? 0x7FFFFFFF : 0x7FFF;	
+		LIMIT = OS.IsWinNT ? 0x7FFFFFFF : 0x7FFF;
 	}
-	
+
 	/*
 	 * These are the undocumented control id's for the children of
 	 * a combo box.  Since there are no constants for these values,
@@ -93,7 +93,7 @@ public class Combo extends Composite {
 	static final int CBID_LIST = 1000;
 	static final int CBID_EDIT = 1001;
 	static /*final*/ long /*int*/ EditProc, ListProc;
-	
+
 	static final long /*int*/ ComboProc;
 	static final TCHAR ComboClass = new TCHAR (0, "COMBOBOX", true);
 	static {
@@ -101,14 +101,14 @@ public class Combo extends Composite {
 		OS.GetClassInfo (0, ComboClass, lpWndClass);
 		ComboProc = lpWndClass.lpfnWndProc;
 	}
-	
+
 /**
  * Constructs a new instance of this class given its parent
  * and a style value describing its behavior and appearance.
  * <p>
  * The style value is either one of the style constants defined in
  * class <code>SWT</code> which is applicable to instances of this
- * class, or must be built by <em>bitwise OR</em>'ing together 
+ * class, or must be built by <em>bitwise OR</em>'ing together
  * (that is, using the <code>int</code> "|" operator) two or more
  * of those <code>SWT</code> style constants. The class description
  * lists the style constants that are applicable to the class.
@@ -238,11 +238,11 @@ public void addModifyListener (ModifyListener listener) {
  * Adds a segment listener.
  * <p>
  * A <code>SegmentEvent</code> is sent whenever text content is being modified or
- * a segment listener is added or removed. You can 
+ * a segment listener is added or removed. You can
  * customize the appearance of text by indicating certain characters to be inserted
  * at certain text offsets. This may be used for bidi purposes, e.g. when
  * adjacent segments of right-to-left text should not be reordered relative to
- * each other. 
+ * each other.
  * E.g., multiple Java string literals in a right-to-left language
  * should generally remain in logical order to each other, that is, the
  * way they are stored.
@@ -334,7 +334,7 @@ public void addSelectionListener(SelectionListener listener) {
  *
  * @see VerifyListener
  * @see #removeVerifyListener
- * 
+ *
  * @since 3.1
  */
 public void addVerifyListener (VerifyListener listener) {
@@ -358,7 +358,7 @@ void applyEditSegments () {
 	Event event = getSegments (string);
 	if (event == null || event.segments == null) return;
 	segments = event.segments;
-	int nSegments = segments.length; 
+	int nSegments = segments.length;
 	if (nSegments == 0) return;
 	char [] segmentsChars = event.segmentsChars;
 	int/*64*/ limit = (int/*64*/)OS.SendMessage (hwndText, OS.EM_GETLIMITTEXT, 0, 0) & 0x7fffffff;
@@ -408,7 +408,7 @@ void applyEditSegments () {
 		end [0] = wcsToMbcsPos (end [0]);
 	}
 	if (segmentsChars != null && segmentsChars.length > 0) {
-		/* 
+		/*
 		 * In addition to enforcing the required direction by prepending a UCC (LRE
 		 * or RLE), also set the direction through a Window style.
 		 * This is to ensure correct caret movement, and makes sense even when the
@@ -448,7 +448,7 @@ void applyListSegments () {
 			buffer = new TCHAR (cp, length + 1);
 			if (OS.SendMessage (handle, OS.CB_GETLBTEXT, index, buffer) == OS.CB_ERR) return;
 			items [index] = string = buffer.toString (0, length);
-	 	} else { 
+	 	} else {
 	 		string = items [index];
 	 	}
 		if (OS.SendMessage (handle, OS.CB_DELETESTRING, index, 0) == OS.CB_ERR) return;
@@ -486,10 +486,10 @@ long /*int*/ callWindowProc (long /*int*/ hwnd, int msg, long /*int*/ wParam, lo
 			OS.GetWindowText (handle, buffer, length + 1);
 			int byteCount = buffer.length () * TCHAR.sizeof;
 			long /*int*/ pszText = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, byteCount);
-			OS.MoveMemory (pszText, buffer, byteCount); 
+			OS.MoveMemory (pszText, buffer, byteCount);
 			long /*int*/ code = OS.CallWindowProc (EditProc, hwndText, msg, wParam, pszText);
 			OS.HeapFree (hHeap, 0, pszText);
-			return code; 
+			return code;
 		}
 		return OS.CallWindowProc (EditProc, hwnd, msg, wParam, lParam);
 	}
@@ -537,7 +537,7 @@ static int checkStyle (int style) {
 	 * all platforms.
 	 */
 	style &= ~SWT.BORDER;
-	
+
 	/*
 	 * Even though it is legal to create this widget
 	 * with scroll bars, they serve no useful purpose
@@ -606,7 +606,7 @@ void clearSegments (boolean applyText) {
  * text field is editable, this has the effect of placing the
  * i-beam at the start of the text.
  * <p>
- * Note: To clear the selected items in the receiver's list, 
+ * Note: To clear the selected items in the receiver's list,
  * use <code>deselectAll()</code>.
  * </p>
  *
@@ -684,10 +684,10 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	pcbi.cbSize = COMBOBOXINFO.sizeof;
 	if (((style & SWT.SIMPLE) == 0) && !OS.IsWinCE && OS.GetComboBoxInfo (handle, pcbi)) {
 		width += pcbi.itemLeft + (pcbi.buttonRight - pcbi.buttonLeft);
-		height = (pcbi.buttonBottom - pcbi.buttonTop) + pcbi.buttonTop * 2; 
+		height = (pcbi.buttonBottom - pcbi.buttonTop) + pcbi.buttonTop * 2;
 	} else {
 		int border = OS.GetSystemMetrics (OS.SM_CXEDGE);
-		width += OS.GetSystemMetrics (OS.SM_CXVSCROLL) + border * 2;		
+		width += OS.GetSystemMetrics (OS.SM_CXVSCROLL) + border * 2;
 		int textHeight = (int)/*64*/OS.SendMessage (handle, OS.CB_GETITEMHEIGHT, -1, 0);
 		if ((style & SWT.DROP_DOWN) != 0) {
 			height = textHeight + 6;
@@ -711,7 +711,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 2.1
  */
 public void copy () {
@@ -804,7 +804,7 @@ void createWidget() {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 2.1
  */
 public void cut () {
@@ -865,7 +865,7 @@ void deregister () {
 }
 
 /**
- * Deselects the item at the given zero-relative index in the receiver's 
+ * Deselects the item at the given zero-relative index in the receiver's
  * list.  If the item at the index was already deselected, it remains
  * deselected. Indices that are out of range are ignored.
  *
@@ -943,7 +943,7 @@ boolean dragDetect (long /*int*/ hwnd, int x, int y, boolean filter, boolean [] 
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 3.8
  */
 public Point getCaretLocation () {
@@ -957,7 +957,7 @@ public Point getCaretLocation () {
 	* this is the only time the start of the selection can
 	* be equal to the last character position in the widget.
 	* If EM_POSFROMCHAR fails for any other reason, return
-	* pixel coordinates (0,0). 
+	* pixel coordinates (0,0).
 	*/
 	int position = translateOffset (getCaretPosition ());
 	long /*int*/ hwndText = OS.GetDlgItem (handle, CBID_EDIT);
@@ -1009,7 +1009,7 @@ public Point getCaretLocation () {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 3.8
  */
 public int getCaretPosition () {
@@ -1022,7 +1022,7 @@ public int getCaretPosition () {
 	* when the selection is not an i-beam.  The best that can be done
 	* is to query the pixel position of the current caret and compare
 	* it to the pixel position of the start and end of the selection.
-	* 
+	*
 	* NOTE:  This does not work when the i-beam belongs to another
 	* control.  In this case, guess that the i-beam is at the start
 	* of the selection.
@@ -1125,11 +1125,11 @@ public int getItemHeight () {
 
 /**
  * Returns a (possibly empty) array of <code>String</code>s which are
- * the items in the receiver's list. 
+ * the items in the receiver's list.
  * <p>
  * Note: This is not the actual structure used by the receiver
  * to maintain its list of items, so modifying the array will
- * not affect the receiver. 
+ * not affect the receiver.
  * </p>
  *
  * @return the items in the receiver's list
@@ -1164,7 +1164,7 @@ public String [] getItems () {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 3.4
  */
 public boolean getListVisible () {
@@ -1195,7 +1195,7 @@ String getNameText () {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 3.4
  */
 public void setListVisible (boolean visible) {
@@ -1207,12 +1207,12 @@ public void setListVisible (boolean visible) {
  * Returns the orientation of the receiver.
  *
  * @return the orientation style
- * 
+ *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 2.1.2
  */
 @Override
@@ -1387,7 +1387,7 @@ public int getTextHeight () {
 	COMBOBOXINFO pcbi = new COMBOBOXINFO ();
 	pcbi.cbSize = COMBOBOXINFO.sizeof;
 	if (((style & SWT.SIMPLE) == 0) && !OS.IsWinCE && OS.GetComboBoxInfo (handle, pcbi)) {
-		return (pcbi.buttonBottom - pcbi.buttonTop) + pcbi.buttonTop * 2; 
+		return (pcbi.buttonBottom - pcbi.buttonTop) + pcbi.buttonTop * 2;
 	}
 	int result = (int)/*64*/OS.SendMessage (handle, OS.CB_GETITEMHEIGHT, -1, 0);
 	if (result == OS.CB_ERR) error (SWT.ERROR_CANNOT_GET_ITEM_HEIGHT);
@@ -1399,9 +1399,9 @@ public int getTextHeight () {
  * text field is capable of holding. If this has not been changed
  * by <code>setTextLimit()</code>, it will be the constant
  * <code>Combo.LIMIT</code>.
- * 
+ *
  * @return the text limit
- * 
+ *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
@@ -1432,7 +1432,7 @@ public int getTextLimit () {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 3.0
  */
 public int getVisibleItemCount () {
@@ -1454,7 +1454,7 @@ boolean hasFocus () {
 
 /**
  * Searches the receiver's list starting at the first item
- * (index 0) until an item is found that is equal to the 
+ * (index 0) until an item is found that is equal to the
  * argument, and returns the index of that item. If no item
  * is found, returns -1.
  *
@@ -1474,7 +1474,7 @@ public int indexOf (String string) {
 }
 
 /**
- * Searches the receiver's list starting at the given, 
+ * Searches the receiver's list starting at the given,
  * zero-relative index until an item is found that is equal
  * to the argument, and returns the index of that item. If
  * no item is found or the starting index is out of range,
@@ -1495,7 +1495,7 @@ public int indexOf (String string) {
 public int indexOf (String string, int start) {
 	checkWidget ();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
-	
+
 	/*
 	* Bug in Windows.  For some reason, CB_FINDSTRINGEXACT
 	* will not find empty strings even though it is legal
@@ -1510,7 +1510,7 @@ public int indexOf (String string, int start) {
 		return -1;
 	}
 
-	/* Use CB_FINDSTRINGEXACT to search for the item */	
+	/* Use CB_FINDSTRINGEXACT to search for the item */
 	int count = (int)/*64*/OS.SendMessage (handle, OS.CB_GETCOUNT, 0, 0);
 	if (!(0 <= start && start < count)) return -1;
 	int index = start - 1, last = 0;
@@ -1546,7 +1546,7 @@ int mbcsToWcsPos (int mbcsPos) {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 2.1
  */
 public void paste () {
@@ -1624,7 +1624,7 @@ void remove (int index, boolean notify) {
 
 /**
  * Removes the items from the receiver's list which are
- * between the given zero-relative start and end 
+ * between the given zero-relative start and end
  * indices (inclusive).
  *
  * @param start the start of the range
@@ -1696,7 +1696,7 @@ public void remove (int start, int end) {
 
 /**
  * Searches the receiver's list starting at the first item
- * until an item is found that is equal to the argument, 
+ * until an item is found that is equal to the argument,
  * and removes that item from the list.
  *
  * @param string the item to remove
@@ -1756,7 +1756,7 @@ public void removeModifyListener (ModifyListener listener) {
 	checkWidget ();
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (eventTable == null) return;
-	eventTable.unhook (SWT.Modify, listener);	
+	eventTable.unhook (SWT.Modify, listener);
 }
 
 /**
@@ -1776,7 +1776,7 @@ public void removeModifyListener (ModifyListener listener) {
  * @see SegmentEvent
  * @see SegmentListener
  * @see #addSegmentListener
- * 
+ *
  * @since 3.103
  */
 public void removeSegmentListener (SegmentListener listener) {
@@ -1816,7 +1816,7 @@ public void removeSelectionListener (SelectionListener listener) {
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (eventTable == null) return;
 	eventTable.unhook (SWT.Selection, listener);
-	eventTable.unhook (SWT.DefaultSelection,listener);	
+	eventTable.unhook (SWT.DefaultSelection,listener);
 }
 
 /**
@@ -1835,14 +1835,14 @@ public void removeSelectionListener (SelectionListener listener) {
  *
  * @see VerifyListener
  * @see #addVerifyListener
- * 
+ *
  * @since 3.1
  */
 public void removeVerifyListener (VerifyListener listener) {
 	checkWidget ();
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (eventTable == null) return;
-	eventTable.unhook (SWT.Verify, listener);	
+	eventTable.unhook (SWT.Verify, listener);
 }
 
 @Override
@@ -1859,7 +1859,7 @@ boolean sendKeyEvent (int type, int msg, long /*int*/ wParam, long /*int*/ lPara
 	if (!hooks (SWT.Verify) && !filters (SWT.Verify)) return true;
 	char key = event.character;
 	int stateMask = event.stateMask;
-	
+
 	/*
 	* Disable all magic keys that could modify the text
 	* and don't send events when Alt, Shift or Ctrl is
@@ -1935,7 +1935,7 @@ boolean sendKeyEvent (int type, int msg, long /*int*/ wParam, long /*int*/ lPara
 }
 
 /**
- * Selects the item at the given zero-relative index in the receiver's 
+ * Selects the item at the given zero-relative index in the receiver's
  * list.  If the item at the index was already selected, it remains
  * selected. Indices that are out of range are ignored.
  *
@@ -2007,7 +2007,7 @@ void setBounds (int x, int y, int width, int height, int flags) {
 		* the whole area, not just the text field.  The fix is to set the
 		* SWP_NOSIZE bits when the height of text field and the drop down
 		* list is the same as the requested height.
-		* 
+		*
 		* NOTE:  Setting the width of a combo box to zero does not update
 		* the width of the drop down control rect.  If the width of the
 		* combo box is zero, then do not set SWP_NOSIZE.
@@ -2140,12 +2140,12 @@ public void setItems (String... items) {
  * <p>
  *
  * @param orientation new orientation style
- * 
+ *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 2.1.2
  */
 @Override
@@ -2251,7 +2251,7 @@ void setScrollWidth (int newWidth, boolean grow) {
  * Sets the selection in the receiver's text field to the
  * range specified by the argument whose x coordinate is the
  * start of the selection and whose y coordinate is the end
- * of the selection. 
+ * of the selection.
  *
  * @param selection a point representing the new selection start and end
  *
@@ -2279,14 +2279,14 @@ public void setSelection (Point selection) {
  * Sets the contents of the receiver's text field to the
  * given string.
  * <p>
- * This call is ignored when the receiver is read only and 
+ * This call is ignored when the receiver is read only and
  * the given string is not in the receiver's list.
  * </p>
  * <p>
  * Note: The text field in a <code>Combo</code> is typically
  * only capable of displaying a single line of text. Thus,
  * setting the text to a string containing line breaks or
- * other special characters will probably cause it to 
+ * other special characters will probably cause it to
  * display incorrectly.
  * </p><p>
  * Also note, if control characters like '\n', '\t' etc. are used
@@ -2343,7 +2343,7 @@ public void setText (String string) {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @see #LIMIT
  */
 public void setTextLimit (int limit) {
@@ -2379,7 +2379,7 @@ void setToolTipText (Shell shell, String string) {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 3.0
  */
 public void setVisibleItemCount (int count) {
@@ -2398,7 +2398,7 @@ void subclass () {
 		OS.SetWindowLongPtr (hwndText, OS.GWLP_WNDPROC, newProc);
 	}
 	long /*int*/ hwndList = OS.GetDlgItem (handle, CBID_LIST);
-	if (hwndList != 0) {	
+	if (hwndList != 0) {
 		OS.SetWindowLongPtr (hwndList, OS.GWLP_WNDPROC, newProc);
 	}
 }
@@ -2407,7 +2407,7 @@ int translateOffset (int offset) {
 	if (segments == null) return offset;
 	for (int i = 0, nSegments = segments.length; i < nSegments && offset - i >= segments[i]; i++) {
 		offset++;
-	}	
+	}
 	return offset;
 }
 
@@ -2474,7 +2474,7 @@ int untranslateOffset (int offset) {
 }
 
 void updateDropDownHeight () {
-	/* 
+	/*
 	* Feature in Windows.  If the combo box has the CBS_DROPDOWN
 	* or CBS_DROPDOWNLIST style, Windows uses the height that the
 	* programmer sets in SetWindowPos () to control height of the
@@ -2500,7 +2500,7 @@ boolean updateTextDirection(int textDirection) {
 		if (textDirection == AUTO_TEXT_DIRECTION) {
 			/* To support auto direction we use UCC that are not available in ANSI CP */
 			if (!OS.IsUnicode) {
-				state &= ~HAS_AUTO_DIRECTION; 
+				state &= ~HAS_AUTO_DIRECTION;
 				return false;
 			}
 		}
@@ -2541,7 +2541,7 @@ void updateOrientation () {
 		}
 		OS.SetWindowLong (hwndText, OS.GWL_EXSTYLE, bits1);
 		OS.SetWindowLong (hwndText, OS.GWL_STYLE, bits2);
-		
+
 		/*
 		* Bug in Windows.  For some reason, the single line text field
 		* portion of the combo box does not redraw to reflect the new
@@ -2559,9 +2559,9 @@ void updateOrientation () {
 		SetWindowPos (hwndText, 0, 0, 0, width, height, uFlags);
 		SetWindowPos (handle, 0, 0, 0, widthCombo, heightCombo, uFlags);
 		OS.InvalidateRect (handle, null, true);
-	}	
+	}
 	if (hwndList != 0) {
-		int bits1 = OS.GetWindowLong (hwndList, OS.GWL_EXSTYLE);		
+		int bits1 = OS.GetWindowLong (hwndList, OS.GWL_EXSTYLE);
 		if ((style & SWT.RIGHT_TO_LEFT) != 0) {
 			bits1 |= OS.WS_EX_LAYOUTRTL;
 		} else {
@@ -2788,7 +2788,7 @@ long /*int*/ windowProc (long /*int*/ hwnd, int msg, long /*int*/ wParam, long /
 					long /*int*/ hHeap = OS.GetProcessHeap ();
 					length = buffer.length() * TCHAR.sizeof;
 					long /*int*/ pszText = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, length);
-					OS.MoveMemory (pszText, buffer, length); 
+					OS.MoveMemory (pszText, buffer, length);
 					code = super.windowProc (hwnd, msg, wParam, pszText);
 					OS.HeapFree (hHeap, 0, pszText);
 				}
@@ -2858,13 +2858,13 @@ LRESULT WM_KILLFOCUS (long /*int*/ wParam, long /*int*/ lParam) {
 	* is disposed in CBN_KILLFOCUS, Windows segment faults.
 	* The fix is to send focus from WM_KILLFOCUS instead
 	* of CBN_KILLFOCUS.
-	* 
+	*
 	* NOTE: In version 6 of COMCTL32.DLL, the bug is fixed.
 	*/
 	if ((style & SWT.READ_ONLY) != 0) {
 		return super.WM_KILLFOCUS (wParam, lParam);
 	}
-	
+
 	/*
 	* Return NULL - Focus notification is
 	* done in WM_COMMAND by CBN_KILLFOCUS.
@@ -2926,7 +2926,7 @@ LRESULT WM_SIZE (long /*int*/ wParam, long /*int*/ lParam) {
 	if ((style & SWT.SIMPLE) != 0) {
 		LRESULT result = super.WM_SIZE (wParam, lParam);
 		if (OS.IsWindowVisible (handle)) {
-			if (OS.IsWinCE) {	
+			if (OS.IsWinCE) {
 				long /*int*/ hwndText = OS.GetDlgItem (handle, CBID_EDIT);
 				if (hwndText != 0) OS.InvalidateRect (hwndText, null, true);
 				long /*int*/ hwndList = OS.GetDlgItem (handle, CBID_LIST);
@@ -2938,7 +2938,7 @@ LRESULT WM_SIZE (long /*int*/ wParam, long /*int*/ lParam) {
 		}
 		return result;
 	}
-	
+
 	/*
 	* Feature in Windows.  When an editable drop down combo box
 	* contains text that does not correspond to an item in the
@@ -2958,7 +2958,7 @@ LRESULT WM_SIZE (long /*int*/ wParam, long /*int*/ lParam) {
 	* the combo box has been resized.
 	*/
 	if ((style & SWT.H_SCROLL) != 0) setScrollWidth (scrollWidth);
-	return result; 
+	return result;
 }
 
 @Override
@@ -3156,7 +3156,7 @@ LRESULT wmClipboard (long /*int*/ hwndText, int msg, long /*int*/ wParam, long /
 				long /*int*/ hHeap = OS.GetProcessHeap ();
 				int byteCount = buffer.length () * TCHAR.sizeof;
 				long /*int*/ pszText = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, byteCount);
-				OS.MoveMemory (pszText, buffer, byteCount); 
+				OS.MoveMemory (pszText, buffer, byteCount);
 				long /*int*/ code = OS.CallWindowProc (EditProc, hwndText, msg, wParam, pszText);
 				OS.HeapFree (hHeap, 0, pszText);
 				return new LRESULT (code);
@@ -3228,7 +3228,7 @@ LRESULT wmCommandChild (long /*int*/ wParam, long /*int*/ lParam) {
 			* is disposed in CBN_KILLFOCUS, Windows segment faults.
 			* The fix is to send focus from WM_KILLFOCUS instead
 			* of CBN_KILLFOCUS.
-			* 
+			*
 			* NOTE: In version 6 of COMCTL32.DLL, the bug is fixed.
 			*/
 			if ((style & SWT.READ_ONLY) != 0) break;
@@ -3296,7 +3296,7 @@ LRESULT wmIMEChar (long /*int*/ hwnd, long /*int*/ wParam, long /*int*/ lParam) 
 		OS.DispatchMessage (msg);
 	}
 	ignoreCharacter = false;
-	
+
 	sendKeyEvent (SWT.KeyUp, OS.WM_IME_CHAR, wParam, lParam);
 	// widget could be disposed at this point
 	display.lastKey = display.lastAscii = 0;
@@ -3329,7 +3329,7 @@ LRESULT wmKeyDown (long /*int*/ hwnd, long /*int*/ wParam, long /*int*/ lParam) 
 						break;
 					}
 					start [0] = newStart [0];
-					end [0] = newEnd [0]; 
+					end [0] = newEnd [0];
 				}
 				result = code == 0 ? LRESULT.ZERO : new LRESULT (code);
 			}

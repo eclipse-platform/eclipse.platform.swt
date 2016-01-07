@@ -20,6 +20,6 @@ public class PANOSE {
 	public byte bArmStyle;
 	public byte bLetterform;
 	public byte bMidline;
-	public byte bXHeight; 
+	public byte bXHeight;
 	public static final int sizeof = OS.PANOSE_sizeof ();
 }

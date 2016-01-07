@@ -19,20 +19,20 @@ final class OlePropertyChangeSink {
 
 	private OleControlSite controlSite;
 	//private IUnknown objIUnknown;
-	
+
 	private COMObject iUnknown;
 	private COMObject iPropertyNotifySink;
 
 	private int refCount;
-	
+
 	private int propertyCookie;
 
 	private OleEventTable eventTable;
-	
+
 OlePropertyChangeSink(OleControlSite controlSite) {
-	
+
 	this.controlSite = controlSite;
-	
+
 	createCOMInterfaces();
 }
 void addListener(int propertyID, OleListener listener) {
@@ -71,7 +71,7 @@ private void createCOMInterfaces() {
 		@Override
 		public long /*int*/ method2(long /*int*/[] args) {return Release();}
 	};
-	
+
 	iPropertyNotifySink = new COMObject(new int[]{2, 0, 0, 1, 1}){
 		@Override
 		public long /*int*/ method0(long /*int*/[] args) {return QueryInterface(args[0], args[1]);}

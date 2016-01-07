@@ -19,7 +19,7 @@ import org.eclipse.swt.accessibility.*;
 
 /**
  * Instances of this class represent a selectable
- * user interface object that displays a text with 
+ * user interface object that displays a text with
  * links.
  * <p>
  * <dl>
@@ -35,7 +35,7 @@ import org.eclipse.swt.accessibility.*;
  * @see <a href="http://www.eclipse.org/swt/snippets/#link">Link snippets</a>
  * @see <a href="http://www.eclipse.org/swt/examples.php">SWT Example: ControlExample</a>
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
- * 
+ *
  * @since 3.1
  * @noextend This class is not intended to be subclassed by clients.
  */
@@ -61,9 +61,9 @@ public class Link extends Control {
 			* Feature in Windows.  The SysLink window class
 			* does not include CS_DBLCLKS.  This means that these
 			* controls will not get double click messages such as
-			* WM_LBUTTONDBLCLK.  The fix is to register a new 
+			* WM_LBUTTONDBLCLK.  The fix is to register a new
 			* window class with CS_DBLCLKS.
-			* 
+			*
 			* NOTE:  Screen readers look for the exact class name
 			* of the control in order to provide the correct kind
 			* of assistance.  Therefore, it is critical that the
@@ -89,14 +89,14 @@ public class Link extends Control {
 			LinkProc = 0;
 		}
 	}
-	
+
 /**
  * Constructs a new instance of this class given its parent
  * and a style value describing its behavior and appearance.
  * <p>
  * The style value is either one of the style constants defined in
  * class <code>SWT</code> which is applicable to instances of this
- * class, or must be built by <em>bitwise OR</em>'ing together 
+ * class, or must be built by <em>bitwise OR</em>'ing together
  * (that is, using the <code>int</code> "|" operator) two or more
  * of those <code>SWT</code> style constants. The class description
  * lists the style constants that are applicable to the class.
@@ -277,7 +277,7 @@ void drawWidget (GC gc, RECT rect) {
 		Rectangle [] rects = getRectangles (focusIndex);
 		for (int i = 0; i < rects.length; i++) {
 			Rectangle rectangle = rects [i];
-			gc.drawFocus (rectangle.x, rectangle.y, rectangle.width, rectangle.height);					
+			gc.drawFocus (rectangle.x, rectangle.y, rectangle.width, rectangle.height);
 		}
 	}
 	if (hooks (SWT.Paint) || filters (SWT.Paint)) {
@@ -317,7 +317,7 @@ void enableWidget (boolean enabled) {
 	* SysLink to become enabled.  To be specific,
 	* calling IsWindowEnabled() returns true.  The
 	* fix is disable the SysLink after LM_SETITEM.
-	*/	
+	*/
 	super.enableWidget (enabled);
 }
 
@@ -329,13 +329,13 @@ void initAccessible () {
 			e.result = parse (text);
 		}
 	});
-		
+
 	accessible.addAccessibleControlListener (new AccessibleControlAdapter () {
 		@Override
 		public void getChildAtPoint (AccessibleControlEvent e) {
 			e.childID = ACC.CHILDID_SELF;
 		}
-		
+
 		@Override
 		public void getLocation (AccessibleControlEvent e) {
 			Rectangle rect = display.map (getParent (), null, getBounds ());
@@ -344,33 +344,33 @@ void initAccessible () {
 			e.width = rect.width;
 			e.height = rect.height;
 		}
-		
+
 		@Override
 		public void getChildCount (AccessibleControlEvent e) {
 			e.detail = 0;
 		}
-		
+
 		@Override
 		public void getRole (AccessibleControlEvent e) {
 			e.detail = ACC.ROLE_LINK;
 		}
-		
+
 		@Override
 		public void getState (AccessibleControlEvent e) {
 			e.detail = ACC.STATE_FOCUSABLE;
 			if (hasFocus ()) e.detail |= ACC.STATE_FOCUSED;
 		}
-		
+
 		@Override
 		public void getDefaultAction (AccessibleControlEvent e) {
 			e.result = SWT.getMessage ("SWT_Press"); //$NON-NLS-1$
 		}
-		
+
 		@Override
 		public void getSelection (AccessibleControlEvent e) {
 			if (hasFocus ()) e.childID = ACC.CHILDID_SELF;
 		}
-		
+
 		@Override
 		public void getFocus (AccessibleControlEvent e) {
 			if (hasFocus ()) e.childID = ACC.CHILDID_SELF;
@@ -408,7 +408,7 @@ Rectangle [] getRectangles (int linkIndex) {
 		Rectangle [] tmp = new Rectangle [index];
 		System.arraycopy (rects, 0, tmp, 0, index);
 		rects = tmp;
-	}	
+	}
 	return rects;
 }
 
@@ -450,10 +450,10 @@ boolean mnemonicHit (char key) {
 						item.iLink = i;
 						item.state = OS.LIS_FOCUSED;
 						OS.SendMessage (handle, OS.LM_SETITEM, 0, item);
-						
-						/* Feature in Windows. For some reason, setting the focus to 
+
+						/* Feature in Windows. For some reason, setting the focus to
 						 * any item but first causes the control to clear the WS_TABSTOP
-						 * bit. The fix is always to reset the bit. 
+						 * bit. The fix is always to reset the bit.
 						 */
 						OS.SetWindowLong (handle, OS.GWL_STYLE, bits);
 					} else {
@@ -476,7 +476,7 @@ boolean mnemonicMatch (char key) {
 		for (int i = 0; i < mnemonics.length - 1; i++) {
 			if (mnemonics[i] != -1) {
 				char mnemonic = parsedText.charAt(mnemonics[i]);
-				if (uckey == Character.toUpperCase (mnemonic)) { 
+				if (uckey == Character.toUpperCase (mnemonic)) {
 					return true;
 				}
 			}
@@ -498,7 +498,7 @@ String parse (String string) {
 	while (index < length) {
 		char c = Character.toLowerCase (buffer [index]);
 		switch (state) {
-			case 0: 
+			case 0:
 				if (c == '<') {
 					tagStart = index;
 					state++;
@@ -611,7 +611,7 @@ String parse (String string) {
 		ids = newIDs;
 		int [] newMnemonics = new int [linkIndex + 1];
 		System.arraycopy (mnemonics, 0, newMnemonics, 0, linkIndex + 1);
-		mnemonics = newMnemonics;		
+		mnemonics = newMnemonics;
 	}
 	return result.toString ();
 }
@@ -670,7 +670,7 @@ public void removeSelectionListener (SelectionListener listener) {
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (eventTable == null) return;
 	eventTable.unhook (SWT.Selection, listener);
-	eventTable.unhook (SWT.DefaultSelection, listener);	
+	eventTable.unhook (SWT.DefaultSelection, listener);
 }
 
 /**
@@ -688,7 +688,7 @@ public void removeSelectionListener (SelectionListener listener) {
  * </p>
  * <p>
  * Mnemonics are indicated by an '&amp;' that causes the next
- * character to be the mnemonic. The receiver can have a    
+ * character to be the mnemonic. The receiver can have a
  * mnemonic in the text preceding each link. When the user presses a
  * key sequence that matches the mnemonic, focus is assigned
  * to the link that follows the text. Mnemonics in links and in
@@ -697,8 +697,8 @@ public void removeSelectionListener (SelectionListener listener) {
  * platform specific manner.  The mnemonic indicator character
  * '&amp;' can be escaped by doubling it in the string, causing
  * a single '&amp;' to be displayed.
- * </p> 
- * 
+ * </p>
+ *
  * @param string the new text
  *
  * @exception IllegalArgumentException <ul>
@@ -732,7 +732,7 @@ public void setText (String string) {
 		parse (text);
 		enableWidget (enabled);
 	} else {
-		layout.setText (parse (text));	
+		layout.setText (parse (text));
 		focusIndex = offsets.length > 0 ? 0 : -1;
 		selection.x = selection.y = -1;
 		int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
@@ -838,7 +838,7 @@ LRESULT WM_CHAR (long /*int*/ wParam, long /*int*/ lParam) {
 				long /*int*/ code = callWindowProc (handle, OS.WM_KEYDOWN, wParam, lParam);
 				return new LRESULT (code);
 		}
-		
+
 	}
 	return result;
 }
@@ -864,7 +864,7 @@ LRESULT WM_GETDLGCODE (long /*int*/ wParam, long /*int*/ lParam) {
 		code = callWindowProc (handle, OS.WM_GETDLGCODE, wParam, lParam);
 	} else {
 		index = focusIndex;
-		count = offsets.length; 
+		count = offsets.length;
 	}
 	if (count == 0) {
 		return new LRESULT (code | OS.DLGC_STATIC);
@@ -983,14 +983,14 @@ LRESULT WM_LBUTTONUP (long /*int*/ wParam, long /*int*/ lParam) {
 LRESULT WM_NCHITTEST (long /*int*/ wParam, long /*int*/ lParam) {
 	LRESULT result = super.WM_NCHITTEST (wParam, lParam);
 	if (result != null) return result;
-	
+
 	/*
 	* Feature in Windows. For WM_NCHITTEST, the Syslink window proc
 	* returns HTTRANSPARENT when mouse is over plain text. The fix is
 	* to always return HTCLIENT.
 	*/
 	if (OS.COMCTL32_MAJOR >= 6) return new LRESULT (OS.HTCLIENT);
-	
+
 	return result;
 }
 

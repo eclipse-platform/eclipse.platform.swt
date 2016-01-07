@@ -47,12 +47,12 @@ import org.eclipse.swt.internal.win32.*;
  * <code>Widget</code> and its subclasses), may only be called
  * from the thread. (To support multi-threaded user-interface
  * applications, class <code>Display</code> provides inter-thread
- * communication methods which allow threads other than the 
+ * communication methods which allow threads other than the
  * user-interface thread to request that it perform operations
  * on their behalf.)
  * </li>
  * <li>
- * The thread is not allowed to construct other 
+ * The thread is not allowed to construct other
  * <code>Display</code>s until that display has been disposed.
  * (Note that, this is in addition to the restriction mentioned
  * above concerning platform support for multiple displays. Thus,
@@ -61,8 +61,8 @@ import org.eclipse.swt.internal.win32.*;
  * </li>
  * </ul>
  * Enforcing these attributes allows SWT to be implemented directly
- * on the underlying operating system's event model. This has 
- * numerous benefits including smaller footprint, better use of 
+ * on the underlying operating system's event model. This has
+ * numerous benefits including smaller footprint, better use of
  * resources, safer memory management, clearer program logic,
  * better performance, and fewer overall operating system threads
  * required. The down side however, is that care must be taken
@@ -106,14 +106,14 @@ public class Display extends Device {
 	 * within the packages provided by SWT. It is not available on all
 	 * platforms and should never be accessed from application code.
 	 * </p>
-	 * 
+	 *
 	 * @noreference This field is not intended to be referenced by clients.
 	 */
 	public MSG msg = new MSG ();
 
 	static String APP_NAME = "SWT"; //$NON-NLS-1$
 	static String APP_VERSION = ""; //$NON-NLS-1$
-	
+
 	/* Windows and Events */
 	Event [] eventQueue;
 	Callback windowCallback;
@@ -143,7 +143,7 @@ public class Display extends Device {
 			SWT_OBJECT_INDEX = 0;
 		}
 	}
-	
+
 	/* Startup info */
 	static STARTUPINFO lpStartupInfo;
 	static {
@@ -153,7 +153,7 @@ public class Display extends Device {
 			OS.GetStartupInfo (lpStartupInfo);
 		}
 	}
-	
+
 	/* XP Themes */
 	long /*int*/ hButtonTheme, hEditTheme, hExplorerBarTheme, hScrollBarTheme, hTabTheme;
 	static final char [] BUTTON = new char [] {'B', 'U', 'T', 'T', 'O', 'N', 0};
@@ -164,35 +164,35 @@ public class Display extends Device {
 	static final char [] LISTVIEW = new char [] {'L', 'I', 'S', 'T', 'V', 'I', 'E', 'W', 0};
 	static final char [] TAB = new char [] {'T', 'A', 'B', 0};
 	static final char [] TREEVIEW = new char [] {'T', 'R', 'E', 'E', 'V', 'I', 'E', 'W', 0};
-	
+
 	/* Focus */
 	int focusEvent;
 	Control focusControl;
 	boolean fixFocus;
-	
+
 	/* Menus */
 	Menu [] bars, popups;
 	MenuItem [] items;
-	
+
 	/*
 	* The start value for WM_COMMAND id's.
 	* Windows reserves the values 0..100.
-	* 
+	*
 	* The SmartPhone SWT resource file reserves
 	* the values 101..107.
 	*/
 	static final int ID_START = 108;
-	
+
 	/* Filter Hook */
 	Callback msgFilterCallback;
 	long /*int*/ msgFilterProc, filterHook;
 	MSG hookMsg = new MSG ();
 	boolean runDragDrop = true, dragCancelled = false;
-	
+
 	/* Idle Hook */
 	Callback foregroundIdleCallback;
 	long /*int*/ foregroundIdleProc, idleHook;
-	
+
 	/* Message Hook and Embedding */
 	boolean ignoreNextKey;
 	Callback getMsgCallback, embeddedCallback;
@@ -211,7 +211,7 @@ public class Display extends Device {
 
 	/* Display Shutdown */
 	Runnable [] disposeList;
-	
+
 	/* Deferred Layout list */
 	Composite[] layoutDeferred;
 	int layoutDeferredCount;
@@ -219,22 +219,22 @@ public class Display extends Device {
 	/* System Tray */
 	Tray tray;
 	int nextTrayId;
-	
+
 	/* TaskBar */
 	TaskBar taskBar;
 	static final String TASKBAR_EVENT = "/SWTINTERNAL_ID"; //$NON-NLS-1$
 	static final String LAUNCHER_PREFIX = "--launcher.openFile "; //$NON-NLS-1$
-	
+
 	/* Timers */
 	long /*int*/ [] timerIds;
 	Runnable [] timerList;
 	long /*int*/ nextTimerId = SETTINGS_ID + 1;
-	
+
 	/* Settings */
 	static final long /*int*/ SETTINGS_ID = 100;
 	static final int SETTINGS_DELAY = 2000;
 	boolean lastHighContrast, sendSettings;
-	
+
 	/* Keyboard and Mouse */
 	RECT clickRect;
 	int clickCount, lastTime, lastButton;
@@ -245,27 +245,27 @@ public class Display extends Device {
 	byte [] keyboard = new byte [256];
 	boolean accelKeyHit, mnemonicKeyHit;
 	boolean lockActiveWindow, captureChanged, xMouse;
-	
+
 	/* Gesture state */
 	double magStartDistance, lastDistance;
 	double rotationAngle;
 	int lastX, lastY;
-	
+
 	/* Touch state */
 	TouchSource [] touchSources;
-	
+
 	/* Tool Tips */
 	int nextToolTipId;
-	
+
 	/* MDI */
 	boolean ignoreRestoreFocus;
 	Control lastHittestControl;
 	int lastHittest;
-	
+
 	/* Message Only Window */
 	Callback messageCallback;
 	long /*int*/ hwndMessage, messageProc;
-	
+
 	/* System Resources */
 	LOGFONT lfSystemFont;
 	Font systemFont;
@@ -274,7 +274,7 @@ public class Display extends Device {
 	Resource [] resources;
 	static final int RESOURCE_SIZE = 1 + 4 + SWT.CURSOR_HAND + 1;
 
-	/* ImageList Cache */	
+	/* ImageList Cache */
 	ImageList[] imageList, toolImageList, toolHotImageList, toolDisabledImageList;
 
 	/* Custom Colors for ChooseColor */
@@ -282,7 +282,7 @@ public class Display extends Device {
 
 	/* Sort Indicators */
 	Image upArrow, downArrow;
-	
+
 	/* Table */
 	char [] tableBuffer;
 	NMHDR hdr = new NMHDR ();
@@ -290,30 +290,30 @@ public class Display extends Device {
 	long /*int*/ hwndParent;
 	int columnCount;
 	boolean [] columnVisible;
-	
+
 	/* Resize and move recursion */
 	int resizeCount;
 	static final int RESIZE_LIMIT = 4;
-	
+
 	/* Display Data */
 	Object data;
 	String [] keys;
 	Object [] values;
-	
+
 	/* Key Mappings */
 	static final int [] [] KeyTable = {
-		
+
 		/* Keyboard and Mouse Masks */
 		{OS.VK_MENU,	SWT.ALT},
 		{OS.VK_SHIFT,	SWT.SHIFT},
 		{OS.VK_CONTROL,	SWT.CONTROL},
 //		{OS.VK_????,	SWT.COMMAND},
 
-		/* NOT CURRENTLY USED */		
+		/* NOT CURRENTLY USED */
 //		{OS.VK_LBUTTON, SWT.BUTTON1},
 //		{OS.VK_MBUTTON, SWT.BUTTON3},
 //		{OS.VK_RBUTTON, SWT.BUTTON2},
-		
+
 		/* Non-Numeric Keypad Keys */
 		{OS.VK_UP,		SWT.ARROW_UP},
 		{OS.VK_DOWN,	SWT.ARROW_DOWN},
@@ -332,7 +332,7 @@ public class Display extends Device {
 		{OS.VK_ESCAPE,	SWT.ESC},
 		{OS.VK_RETURN,	SWT.LF},
 		{OS.VK_TAB,		SWT.TAB},
-	
+
 		/* Functions Keys */
 		{OS.VK_F1,	SWT.F1},
 		{OS.VK_F2,	SWT.F2},
@@ -354,7 +354,7 @@ public class Display extends Device {
 		{OS.VK_F18,	SWT.F18},
 		{OS.VK_F19,	SWT.F19},
 		{OS.VK_F20,	SWT.F20},
-		
+
 		/* Numeric Keypad Keys */
 		{OS.VK_MULTIPLY,	SWT.KEYPAD_MULTIPLY},
 		{OS.VK_ADD,			SWT.KEYPAD_ADD},
@@ -382,7 +382,7 @@ public class Display extends Device {
 		{OS.VK_CANCEL,		SWT.BREAK},
 		{OS.VK_SNAPSHOT,	SWT.PRINT_SCREEN},
 //		{OS.VK_????,		SWT.HELP},
-		
+
 	};
 
 	/* Multiple Displays */
@@ -392,7 +392,7 @@ public class Display extends Device {
 	/* Multiple Monitors */
 	Monitor[] monitors = null;
 	int monitorCount = 0;
-	
+
 	/* Modality */
 	Shell [] modalShells;
 	Dialog modalDialog;
@@ -411,14 +411,14 @@ public class Display extends Device {
 	static int SWT_RESTORECARET;
 	static int DI_GETDRAGIMAGE;
 	static int SWT_OPENDOC;
-	
+
 	/* Workaround for Adobe Reader 7.0 */
 	int hitCount;
-	
+
 	/* Skinning support */
 	Widget [] skinList = new Widget [GROW_SIZE];
 	int skinCount;
-	
+
 	/* Package Name */
 	static final String PACKAGE_PREFIX = "org.eclipse.swt.widgets."; //$NON-NLS-1$
 	/*
@@ -448,7 +448,7 @@ public class Display extends Device {
 				setDevice (device);
 			}
 		};
-	}	
+	}
 
 /*
 * TEMPORARY CODE.
@@ -456,12 +456,12 @@ public class Display extends Device {
 static void setDevice (Device device) {
 	CurrentDevice = device;
 }
-	
+
 /**
  * Constructs a new instance of this class.
  * <p>
  * Note: The resulting display is marked as the <em>current</em>
- * display. If this is the first display which has been 
+ * display. If this is the first display which has been
  * constructed since the application started, it is also
  * marked as the <em>default</em> display.
  * </p>
@@ -482,7 +482,7 @@ public Display () {
 
 /**
  * Constructs a new instance of this class using the parameter.
- * 
+ *
  * @param data the device data
  */
 public Display (DeviceData data) {
@@ -562,7 +562,7 @@ void addSkinnableWidget (Widget widget) {
  * powerful and dangerous. They should generally be avoided for
  * performance, debugging and code maintenance reasons.
  * </p>
- * 
+ *
  * @param eventType the type of event to listen for
  * @param listener the listener which should be notified when the event occurs
  *
@@ -578,8 +578,8 @@ void addSkinnableWidget (Widget widget) {
  * @see SWT
  * @see #removeFilter
  * @see #removeListener
- * 
- * @since 3.0 
+ *
+ * @since 3.0
  */
 public void addFilter (int eventType, Listener listener) {
 	checkDevice ();
@@ -619,8 +619,8 @@ void addLayoutDeferred (Composite comp) {
  * @see Listener
  * @see SWT
  * @see #removeListener
- * 
- * @since 2.0 
+ *
+ * @since 2.0
  */
 public void addListener (int eventType, Listener listener) {
 	checkDevice ();
@@ -666,11 +666,11 @@ void addPopup (Menu menu) {
 
 int asciiKey (int key) {
 	if (OS.IsWinCE) return 0;
-	
+
 	/* Get the current keyboard. */
 	for (int i=0; i<keyboard.length; i++) keyboard [i] = 0;
 	if (!OS.GetKeyboardState (keyboard)) return 0;
-		
+
 	/* Translate the key to ASCII or UNICODE using the virtual keyboard */
 	if (OS.IsUnicode) {
 		char [] result = new char [1];
@@ -684,13 +684,13 @@ int asciiKey (int key) {
 
 /**
  * Causes the <code>run()</code> method of the runnable to
- * be invoked by the user-interface thread at the next 
- * reasonable opportunity. The caller of this method continues 
+ * be invoked by the user-interface thread at the next
+ * reasonable opportunity. The caller of this method continues
  * to run in parallel, and is not notified when the
  * runnable has completed.  Specifying <code>null</code> as the
  * runnable simply wakes the user-interface thread when run.
  * <p>
- * Note that at the time the runnable is invoked, widgets 
+ * Note that at the time the runnable is invoked, widgets
  * that have the receiver as their display may have been
  * disposed. Therefore, it is necessary to check for this
  * case inside the runnable before accessing the widget.
@@ -701,7 +701,7 @@ int asciiKey (int key) {
  * @exception SWTException <ul>
  *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
  * </ul>
- * 
+ *
  * @see #syncExec
  */
 public void asyncExec (Runnable runnable) {
@@ -714,7 +714,7 @@ public void asyncExec (Runnable runnable) {
 /**
  * Causes the system hardware to emit a short sound
  * (if it supports this capability).
- * 
+ *
  * @exception SWTException <ul>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
@@ -756,10 +756,10 @@ protected void checkDevice () {
 		* error happens seems to fix the problem.  The
 		* fix is to use operating system calls to verify
 		* that the current thread is not the Display thread.
-		* 
+		*
 		* NOTE: Despite the fact that Thread.currentThread()
 		* is used in other places, the failure has not been
-		* observed in all places where it is called. 
+		* observed in all places where it is called.
 		*/
 		if (threadId != OS.GetCurrentThreadId ()) {
 			error (SWT.ERROR_THREAD_INVALID_ACCESS);
@@ -811,7 +811,7 @@ int controlKey (int key) {
  * </ul>
  *
  * @see Device#dispose
- * 
+ *
  * @since 2.0
  */
 public void close () {
@@ -1196,7 +1196,7 @@ void destroyDisplay () {
  * is ignored.
  *
  * @param runnable code to run at dispose time.
- * 
+ *
  * @exception SWTException <ul>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
@@ -1284,7 +1284,7 @@ boolean filterMessage (MSG msg) {
 	if (OS.WM_KEYFIRST <= message && message <= OS.WM_KEYLAST) {
 		Control control = findControl (msg.hwnd);
 		if (control != null) {
-			if (translateAccelerator (msg, control) || translateMnemonic (msg, control) || translateTraversal (msg, control)) {	
+			if (translateAccelerator (msg, control) || translateMnemonic (msg, control) || translateTraversal (msg, control)) {
 				lastAscii = lastKey = 0;
 				lastVirtual = lastNull = lastDead = false;
 				return true;
@@ -1323,7 +1323,7 @@ Control findControl (long /*int*/ handle) {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
  * </ul>
- * 
+ *
  * @noreference This method is not intended to be referenced by clients.
  */
 public Widget findWidget (long /*int*/ handle) {
@@ -1350,9 +1350,9 @@ public Widget findWidget (long /*int*/ handle) {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
  * </ul>
- * 
+ *
  * @noreference This method is not intended to be referenced by clients.
- * 
+ *
  * @since 3.1
  */
 public Widget findWidget (long /*int*/ handle, long /*int*/ id) {
@@ -1375,9 +1375,9 @@ public Widget findWidget (long /*int*/ handle, long /*int*/ id) {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
  * </ul>
- * 
+ *
  * @noreference This method is not intended to be referenced by clients.
- * 
+ *
  * @since 3.3
  */
 public Widget findWidget (Widget widget, long /*int*/ id) {
@@ -1404,7 +1404,7 @@ long /*int*/ foregroundIdleProc (long /*int*/ code, long /*int*/ wParam, long /*
 			* when a message is posted to the queue from a foreground idle
 			* hook.  The fix is to detect that there are outstanding input
 			* events and avoid posting the wake event.
-			* 
+			*
 			* Note that PeekMessage() changes the state of events on the
 			* queue to no longer be considered new. If we peek for input
 			* events and posted messages (PM_QS_INPUT | PM_QS_POSTMESSAGE),
@@ -1426,7 +1426,7 @@ long /*int*/ foregroundIdleProc (long /*int*/ code, long /*int*/ wParam, long /*
  * user-interface thread for, or null if the given thread
  * is not a user-interface thread for any display.  Specifying
  * <code>null</code> as the thread will return <code>null</code>
- * for the display. 
+ * for the display.
  *
  * @param thread the user-interface thread
  * @return the display for the given thread
@@ -1461,7 +1461,7 @@ TouchSource findTouchSource (long /*int*/ touchDevice, Monitor monitor) {
 		System.arraycopy (touchSources, 0, newTouchSources, 0, length);
 		touchSources = newTouchSources;
 	}
-	return touchSources [index] = new TouchSource (touchDevice, true, monitor.getBounds ()); 
+	return touchSources [index] = new TouchSource (touchDevice, true, monitor.getBounds ());
 }
 
 /**
@@ -1487,7 +1487,7 @@ public Shell getActiveShell () {
  * <code>null</code> if there is no application menu bar for the platform.
  *
  * @return the application menu bar, or <code>null</code>
- * 
+ *
  * @exception SWTException <ul>
  *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
  * </ul>
@@ -1519,7 +1519,7 @@ public Rectangle getBounds () {
 		return new Rectangle (0, 0, width, height);
 	}
 	int x = OS.GetSystemMetrics (OS.SM_XVIRTUALSCREEN);
-	int y = OS.GetSystemMetrics (OS.SM_YVIRTUALSCREEN);	
+	int y = OS.GetSystemMetrics (OS.SM_YVIRTUALSCREEN);
 	int width = OS.GetSystemMetrics (OS.SM_CXVIRTUALSCREEN);
 	int height = OS.GetSystemMetrics (OS.SM_CYVIRTUALSCREEN);
 	return new Rectangle (x, y, width, height);
@@ -1568,7 +1568,7 @@ int getClickCount (int type, int button, long /*int*/ hwnd, long /*int*/ lParam)
 /**
  * Returns a rectangle which describes the area of the
  * receiver which is capable of displaying data.
- * 
+ *
  * @return the client area
  *
  * @exception SWTException <ul>
@@ -1589,7 +1589,7 @@ public Rectangle getClientArea () {
 		return new Rectangle (rect.left, rect.top, width, height);
 	}
 	int x = OS.GetSystemMetrics (OS.SM_XVIRTUALSCREEN);
-	int y = OS.GetSystemMetrics (OS.SM_YVIRTUALSCREEN);	
+	int y = OS.GetSystemMetrics (OS.SM_YVIRTUALSCREEN);
 	int width = OS.GetSystemMetrics (OS.SM_CXVIRTUALSCREEN);
 	int height = OS.GetSystemMetrics (OS.SM_CYVIRTUALSCREEN);
 	return new Rectangle (x, y, width, height);
@@ -1674,7 +1674,7 @@ public Point getCursorLocation () {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
  * </ul>
- * 
+ *
  * @since 3.0
  */
 public Point [] getCursorSizes () {
@@ -1754,7 +1754,7 @@ public Object getData (String key) {
  * Returns the application defined, display specific data
  * associated with the receiver, or null if it has not been
  * set. The <em>display specific data</em> is a single,
- * unnamed field that is stored with every display. 
+ * unnamed field that is stored with every display.
  * <p>
  * Applications may put arbitrary objects in this field. If
  * the object stored in the display specific data needs to
@@ -1792,7 +1792,7 @@ public Object getData () {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
  * </ul>
- * 
+ *
  * @since 2.1
  */
 public int getDismissalAlignment () {
@@ -1870,7 +1870,7 @@ String getFontName (LOGFONT logFont) {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
  * </ul>
- * 
+ *
  * @since 3.0
  */
 public boolean getHighContrast () {
@@ -1892,7 +1892,7 @@ public boolean getHighContrast () {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
  * </ul>
- * 
+ *
  * @see Device#getDepth
  */
 public int getIconDepth () {
@@ -1909,7 +1909,7 @@ public int getIconDepth () {
 	if (result != 0) return 4;
 	int depth = 4;
 	int [] lpcbData = new int [1];
-	
+
 	/* Use the character encoding for the default locale */
 	TCHAR buffer2 = new TCHAR (0, "Shell Icon BPP", true); //$NON-NLS-1$
 	result = OS.RegQueryValueEx (phkResult [0], buffer2, 0, null, (TCHAR) null, lpcbData);
@@ -1935,9 +1935,9 @@ public int getIconDepth () {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
  * </ul>
- * 
+ *
  * @see Decorations#setImages(Image[])
- * 
+ *
  * @since 3.0
  */
 public Point [] getIconSizes () {
@@ -1945,14 +1945,14 @@ public Point [] getIconSizes () {
 	return new Point [] {
 		new Point (OS.GetSystemMetrics (OS.SM_CXSMICON), OS.GetSystemMetrics (OS.SM_CYSMICON)),
 		new Point (OS.GetSystemMetrics (OS.SM_CXICON), OS.GetSystemMetrics (OS.SM_CYICON)),
-	};	
+	};
 }
 
 ImageList getImageList (int style, int width, int height) {
 	if (imageList == null) imageList = new ImageList [4];
-	
+
 	int i = 0;
-	int length = imageList.length; 
+	int length = imageList.length;
 	while (i < length) {
 		ImageList list = imageList [i];
 		if (list == null) break;
@@ -1965,13 +1965,13 @@ ImageList getImageList (int style, int width, int height) {
 		}
 		i++;
 	}
-	
+
 	if (i == length) {
 		ImageList [] newList = new ImageList [length + 4];
 		System.arraycopy (imageList, 0, newList, 0, length);
 		imageList = newList;
 	}
-	
+
 	ImageList list = new ImageList (style, width, height);
 	imageList [i] = list;
 	list.addRef();
@@ -1980,9 +1980,9 @@ ImageList getImageList (int style, int width, int height) {
 
 ImageList getImageListToolBar (int style, int width, int height) {
 	if (toolImageList == null) toolImageList = new ImageList [4];
-	
+
 	int i = 0;
-	int length = toolImageList.length; 
+	int length = toolImageList.length;
 	while (i < length) {
 		ImageList list = toolImageList [i];
 		if (list == null) break;
@@ -1995,13 +1995,13 @@ ImageList getImageListToolBar (int style, int width, int height) {
 		}
 		i++;
 	}
-	
+
 	if (i == length) {
 		ImageList [] newList = new ImageList [length + 4];
 		System.arraycopy (toolImageList, 0, newList, 0, length);
 		toolImageList = newList;
 	}
-	
+
 	ImageList list = new ImageList (style, width, height);
 	toolImageList [i] = list;
 	list.addRef();
@@ -2010,9 +2010,9 @@ ImageList getImageListToolBar (int style, int width, int height) {
 
 ImageList getImageListToolBarDisabled (int style, int width, int height) {
 	if (toolDisabledImageList == null) toolDisabledImageList = new ImageList [4];
-	
+
 	int i = 0;
-	int length = toolDisabledImageList.length; 
+	int length = toolDisabledImageList.length;
 	while (i < length) {
 		ImageList list = toolDisabledImageList [i];
 		if (list == null) break;
@@ -2025,13 +2025,13 @@ ImageList getImageListToolBarDisabled (int style, int width, int height) {
 		}
 		i++;
 	}
-	
+
 	if (i == length) {
 		ImageList [] newList = new ImageList [length + 4];
 		System.arraycopy (toolDisabledImageList, 0, newList, 0, length);
 		toolDisabledImageList = newList;
 	}
-	
+
 	ImageList list = new ImageList (style, width, height);
 	toolDisabledImageList [i] = list;
 	list.addRef();
@@ -2040,9 +2040,9 @@ ImageList getImageListToolBarDisabled (int style, int width, int height) {
 
 ImageList getImageListToolBarHot (int style, int width, int height) {
 	if (toolHotImageList == null) toolHotImageList = new ImageList [4];
-	
+
 	int i = 0;
-	int length = toolHotImageList.length; 
+	int length = toolHotImageList.length;
 	while (i < length) {
 		ImageList list = toolHotImageList [i];
 		if (list == null) break;
@@ -2055,13 +2055,13 @@ ImageList getImageListToolBarHot (int style, int width, int height) {
 		}
 		i++;
 	}
-	
+
 	if (i == length) {
 		ImageList [] newList = new ImageList [length + 4];
 		System.arraycopy (toolHotImageList, 0, newList, 0, length);
 		toolHotImageList = newList;
 	}
-	
+
 	ImageList list = new ImageList (style, width, height);
 	toolHotImageList [i] = list;
 	list.addRef();
@@ -2100,9 +2100,9 @@ Dialog getModalDialog () {
 
 /**
  * Returns an array of monitors attached to the device.
- * 
+ *
  * @return the array of monitors
- * 
+ *
  * @since 3.0
  */
 public Monitor [] getMonitors () {
@@ -2175,9 +2175,9 @@ long /*int*/ getMsgProc (long /*int*/ code, long /*int*/ wParam, long /*int*/ lP
 
 /**
  * Returns the primary monitor for that device.
- * 
+ *
  * @return the primary monitor
- * 
+ *
  * @since 3.0
  */
 public Monitor getPrimaryMonitor () {
@@ -2211,11 +2211,11 @@ public Monitor getPrimaryMonitor () {
 		if ((lpmi.dwFlags & OS.MONITORINFOF_PRIMARY) != 0) {
 			result = monitor;
 			break;
-		} 			
+		}
 	}
 	monitors = null;
 	monitorCount = 0;
-	return result;		
+	return result;
 }
 
 /**
@@ -2247,7 +2247,7 @@ public Shell [] getShells () {
 					System.arraycopy (result, 0, newResult, 0, index);
 					result = newResult;
 				}
-				result [index++] = (Shell) control;	
+				result [index++] = (Shell) control;
 			}
 		}
 	}
@@ -2309,12 +2309,12 @@ Image getSortImage (int direction) {
  * Gets the synchronizer used by the display.
  *
  * @return the receiver's synchronizer
- * 
+ *
  * @exception SWTException <ul>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
  * </ul>
- * 
+ *
  * @since 3.4
  */
 public Synchronizer getSynchronizer () {
@@ -2332,7 +2332,7 @@ public Synchronizer getSynchronizer () {
  * </p>
  *
  * @return the receiver's sync-interface thread
- * 
+ *
  * @exception SWTException <ul>
  *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
  * </ul>
@@ -2384,13 +2384,13 @@ public Color getSystemColor (int id) {
 		case SWT.COLOR_INFO_BACKGROUND:		pixel = OS.GetSysColor (OS.COLOR_INFOBK);		break;
 		case SWT.COLOR_TITLE_FOREGROUND: 		pixel = OS.GetSysColor (OS.COLOR_CAPTIONTEXT);	break;
 		case SWT.COLOR_TITLE_BACKGROUND:		pixel = OS.GetSysColor (OS.COLOR_ACTIVECAPTION);		break;
-		case SWT.COLOR_TITLE_BACKGROUND_GRADIENT: 
+		case SWT.COLOR_TITLE_BACKGROUND_GRADIENT:
 			pixel = OS.GetSysColor (OS.COLOR_GRADIENTACTIVECAPTION);
 			if (pixel == 0) pixel = OS.GetSysColor (OS.COLOR_ACTIVECAPTION);
 			break;
 		case SWT.COLOR_TITLE_INACTIVE_FOREGROUND: 		pixel = OS.GetSysColor (OS.COLOR_INACTIVECAPTIONTEXT);	break;
 		case SWT.COLOR_TITLE_INACTIVE_BACKGROUND:			pixel = OS.GetSysColor (OS.COLOR_INACTIVECAPTION);		break;
-		case SWT.COLOR_TITLE_INACTIVE_BACKGROUND_GRADIENT:	
+		case SWT.COLOR_TITLE_INACTIVE_BACKGROUND_GRADIENT:
 			pixel = OS.GetSysColor (OS.COLOR_GRADIENTINACTIVECAPTION);
 			if (pixel == 0) pixel = OS.GetSysColor (OS.COLOR_INACTIVECAPTION);
 			break;
@@ -2407,7 +2407,7 @@ public Color getSystemColor (int id) {
  * not be free'd because it was allocated by the system,
  * not the application.  A value of <code>null</code> will
  * be returned if the supplied constant is not an SWT cursor
- * constant. 
+ * constant.
  *
  * @param id the SWT cursor constant
  * @return the corresponding cursor or <code>null</code>
@@ -2439,7 +2439,7 @@ public Color getSystemColor (int id) {
  * @see SWT#CURSOR_IBEAM
  * @see SWT#CURSOR_NO
  * @see SWT#CURSOR_HAND
- * 
+ *
  * @since 3.0
  */
 public Cursor getSystemCursor (int id) {
@@ -2499,7 +2499,7 @@ public Font getSystemFont () {
  * not the application.  A value of <code>null</code> will
  * be returned either if the supplied constant is not an
  * SWT icon constant or if the platform does not define an
- * image that corresponds to the constant. 
+ * image that corresponds to the constant.
  *
  * @param id the SWT icon constant
  * @return the corresponding image or <code>null</code>
@@ -2514,7 +2514,7 @@ public Font getSystemFont () {
  * @see SWT#ICON_QUESTION
  * @see SWT#ICON_WARNING
  * @see SWT#ICON_WORKING
- * 
+ *
  * @since 3.0
  */
 public Image getSystemImage (int id) {
@@ -2550,7 +2550,7 @@ public Image getSystemImage (int id) {
  * <code>null</code> on platforms where no menu is provided for the application.
  *
  * @return the system menu, or <code>null</code>
- * 
+ *
  * @exception SWTException <ul>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
@@ -2568,7 +2568,7 @@ public Menu getSystemMenu () {
  * when there is no system taskBar available for the platform.
  *
  * @return the system taskBar or <code>null</code>
- * 
+ *
  * @exception SWTException <ul>
  *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
  * </ul>
@@ -2589,7 +2589,7 @@ public TaskBar getSystemTaskBar () {
  * when there is no system tray available for the platform.
  *
  * @return the system tray or <code>null</code>
- * 
+ *
  * @exception SWTException <ul>
  *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
  * </ul>
@@ -2607,7 +2607,7 @@ public Tray getSystemTray () {
  * Returns the user-interface thread for the receiver.
  *
  * @return the receiver's user-interface thread
- * 
+ *
  * @exception SWTException <ul>
  *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
  * </ul>
@@ -2619,7 +2619,7 @@ public Thread getThread () {
 	}
 }
 
-/**	 
+/**
  * Returns a boolean indicating whether a touch-aware input device is
  * attached to the system and is ready for use.
  *
@@ -2629,7 +2629,7 @@ public Thread getThread () {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
  * </ul>
- * 
+ *
  * @since 3.7
  */
 public boolean getTouchEnabled () {
@@ -2663,7 +2663,7 @@ long /*int*/ hTabTheme () {
 	return hTabTheme = OS.OpenThemeData (hwndMessage, TAB);
 }
 
-/**	 
+/**
  * Invokes platform specific functionality to allocate a new GC handle.
  * <p>
  * <b>IMPORTANT:</b> This method is <em>not</em> part of the public
@@ -2673,16 +2673,16 @@ long /*int*/ hTabTheme () {
  * application code.
  * </p>
  *
- * @param data the platform specific GC data 
+ * @param data the platform specific GC data
  * @return the platform specific GC handle
- * 
+ *
  * @exception SWTException <ul>
  *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
  * </ul>
  * @exception SWTError <ul>
  *    <li>ERROR_NO_HANDLES if a handle could not be obtained for gc creation</li>
  * </ul>
- * 
+ *
  * @noreference This method is not intended to be referenced by clients.
  */
 @Override
@@ -2709,13 +2709,13 @@ public long /*int*/ internal_new_GC (GCData data) {
  * <p>
  * This method is called after <code>create</code>.
  * </p>
- * 
+ *
  * @see #create
  */
 @Override
 protected void init () {
 	super.init ();
-	
+
 	/* Set the application user model ID, if APP_NAME is non Default */
 	char [] appName = null;
 	if (APP_NAME != null && !"SWT".equalsIgnoreCase (APP_NAME)) {
@@ -2730,21 +2730,21 @@ protected void init () {
 			if (appID[0] != 0) OS.CoTaskMemFree(appID[0]);
 		}
 	}
-	
+
 	/* Create the callbacks */
 	windowCallback = new Callback (this, "windowProc", 4); //$NON-NLS-1$
 	windowProc = windowCallback.getAddress ();
 	if (windowProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
-	
+
 	/* Remember the current thread id */
 	threadId = OS.GetCurrentThreadId ();
-	
+
 	/* Use the character encoding for the default locale */
 	windowClass = new TCHAR (0, WindowName + WindowClassCount, true);
 	windowShadowClass = new TCHAR (0, WindowShadowName + WindowClassCount, true);
 	windowOwnDCClass = new TCHAR (0, WindowOwnDCName + WindowClassCount, true);
 	WindowClassCount++;
-	
+
 	/* Register the SWT window class */
 	long /*int*/ hHeap = OS.GetProcessHeap ();
 	long /*int*/ hInstance = OS.GetModuleHandle (null);
@@ -2786,7 +2786,7 @@ protected void init () {
 	OS.MoveMemory (lpWndClass.lpszClassName, windowShadowClass, byteCount);
 	OS.RegisterClass (lpWndClass);
 	OS.HeapFree (hHeap, 0, lpWndClass.lpszClassName);
-	
+
 	/* Register the CS_OWNDC window class */
 	if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (5, 1)) {
 		lpWndClass.style |= OS.CS_OWNDC;
@@ -2796,7 +2796,7 @@ protected void init () {
 	OS.MoveMemory (lpWndClass.lpszClassName, windowOwnDCClass, byteCount);
 	OS.RegisterClass (lpWndClass);
 	OS.HeapFree (hHeap, 0, lpWndClass.lpszClassName);
-	
+
 	/* Create the message only HWND */
 	hwndMessage = OS.CreateWindowEx (0,
 		windowClass,
@@ -2821,7 +2821,7 @@ protected void init () {
 		if (msgFilterProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
 		filterHook = OS.SetWindowsHookEx (OS.WH_MSGFILTER, msgFilterProc, 0, threadId);
 	}
-	
+
 	/* Create the idle hook */
 	if (!OS.IsWinCE) {
 		foregroundIdleCallback = new Callback (this, "foregroundIdleProc", 3); //$NON-NLS-1$
@@ -2829,7 +2829,7 @@ protected void init () {
 		if (foregroundIdleProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
 		idleHook = OS.SetWindowsHookEx (OS.WH_FOREGROUNDIDLE, foregroundIdleProc, 0, threadId);
 	}
-	
+
 	/* Register window messages */
 	TASKBARCREATED = OS.RegisterWindowMessage (new TCHAR (0, "TaskbarCreated", true)); //$NON-NLS-1$
 	TASKBARBUTTONCREATED = OS.RegisterWindowMessage (new TCHAR (0, "TaskbarButtonCreated", true)); //$NON-NLS-1$
@@ -2839,7 +2839,7 @@ protected void init () {
 
 	/* Initialize OLE */
 	if (!OS.IsWinCE) OS.OleInitialize (0);
-	
+
 	if (appName != null) {
 		/* Delete any old jump list set for the ID */
 		long /*int*/ [] ppv = new long /*int*/ [1];
@@ -2851,23 +2851,23 @@ protected void init () {
 			OS.VtblCall (2, ppv [0]);
 		}
 	}
-	
+
 	/* Initialize buffered painting */
 	if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (6, 0)){
 		OS.BufferedPaintInit ();
 	}
-	
+
 	/* Initialize the Widget Table */
 	indexTable = new int [GROW_SIZE];
 	controlTable = new Control [GROW_SIZE];
 	for (int i=0; i<GROW_SIZE-1; i++) indexTable [i] = i + 1;
 	indexTable [GROW_SIZE - 1] = -1;
-	
+
 	/* Remember the last high contrast state */
 	lastHighContrast = getHighContrast ();
 }
 
-/**	 
+/**
  * Invokes platform specific functionality to dispose a GC handle.
  * <p>
  * <b>IMPORTANT:</b> This method is <em>not</em> part of the public
@@ -2878,8 +2878,8 @@ protected void init () {
  * </p>
  *
  * @param hDC the platform specific GC handle
- * @param data the platform specific GC data 
- * 
+ * @param data the platform specific GC data
+ *
  * @noreference This method is not intended to be referenced by clients.
  */
 @Override
@@ -2918,7 +2918,7 @@ boolean isValidThread () {
  * systems are mirrored, special care needs to be taken
  * when mapping coordinates from one control to another
  * to ensure the result is correctly mirrored.
- * 
+ *
  * Mapping a point that is the origin of a rectangle and
  * then adding the width and height is not equivalent to
  * mapping the rectangle.  When one control is mirrored
@@ -2928,26 +2928,26 @@ boolean isValidThread () {
  * instead of just one point causes both the origin and
  * the corner of the rectangle to be mapped.
  * </p>
- * 
+ *
  * @param from the source <code>Control</code> or <code>null</code>
  * @param to the destination <code>Control</code> or <code>null</code>
- * @param point to be mapped 
- * @return point with mapped coordinates 
- * 
+ * @param point to be mapped
+ * @return point with mapped coordinates
+ *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the point is null</li>
- *    <li>ERROR_INVALID_ARGUMENT - if the Control from or the Control to have been disposed</li> 
+ *    <li>ERROR_INVALID_ARGUMENT - if the Control from or the Control to have been disposed</li>
  * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
  * </ul>
- * 
+ *
  * @since 2.1.2
  */
 public Point map (Control from, Control to, Point point) {
 	checkDevice ();
-	if (point == null) error (SWT.ERROR_NULL_ARGUMENT);	
+	if (point == null) error (SWT.ERROR_NULL_ARGUMENT);
 	return map (from, to, point.x, point.y);
 }
 
@@ -2960,7 +2960,7 @@ public Point map (Control from, Control to, Point point) {
  * systems are mirrored, special care needs to be taken
  * when mapping coordinates from one control to another
  * to ensure the result is correctly mirrored.
- * 
+ *
  * Mapping a point that is the origin of a rectangle and
  * then adding the width and height is not equivalent to
  * mapping the rectangle.  When one control is mirrored
@@ -2970,21 +2970,21 @@ public Point map (Control from, Control to, Point point) {
  * instead of just one point causes both the origin and
  * the corner of the rectangle to be mapped.
  * </p>
- * 
+ *
  * @param from the source <code>Control</code> or <code>null</code>
  * @param to the destination <code>Control</code> or <code>null</code>
  * @param x coordinates to be mapped
  * @param y coordinates to be mapped
  * @return point with mapped coordinates
- * 
+ *
  * @exception IllegalArgumentException <ul>
- *    <li>ERROR_INVALID_ARGUMENT - if the Control from or the Control to have been disposed</li> 
+ *    <li>ERROR_INVALID_ARGUMENT - if the Control from or the Control to have been disposed</li>
  * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
  * </ul>
- * 
+ *
  * @since 2.1.2
  */
 public Point map (Control from, Control to, int x, int y) {
@@ -3010,7 +3010,7 @@ public Point map (Control from, Control to, int x, int y) {
  * systems are mirrored, special care needs to be taken
  * when mapping coordinates from one control to another
  * to ensure the result is correctly mirrored.
- * 
+ *
  * Mapping a point that is the origin of a rectangle and
  * then adding the width and height is not equivalent to
  * mapping the rectangle.  When one control is mirrored
@@ -3020,26 +3020,26 @@ public Point map (Control from, Control to, int x, int y) {
  * instead of just one point causes both the origin and
  * the corner of the rectangle to be mapped.
  * </p>
- * 
+ *
  * @param from the source <code>Control</code> or <code>null</code>
  * @param to the destination <code>Control</code> or <code>null</code>
  * @param rectangle to be mapped
  * @return rectangle with mapped coordinates
- * 
+ *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the rectangle is null</li>
- *    <li>ERROR_INVALID_ARGUMENT - if the Control from or the Control to have been disposed</li> 
+ *    <li>ERROR_INVALID_ARGUMENT - if the Control from or the Control to have been disposed</li>
  * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
  * </ul>
- * 
+ *
  * @since 2.1.2
  */
 public Rectangle map (Control from, Control to, Rectangle rectangle) {
 	checkDevice ();
-	if (rectangle == null) error (SWT.ERROR_NULL_ARGUMENT);	
+	if (rectangle == null) error (SWT.ERROR_NULL_ARGUMENT);
 	return map (from, to, rectangle.x, rectangle.y, rectangle.width, rectangle.height);
 }
 
@@ -3052,7 +3052,7 @@ public Rectangle map (Control from, Control to, Rectangle rectangle) {
  * systems are mirrored, special care needs to be taken
  * when mapping coordinates from one control to another
  * to ensure the result is correctly mirrored.
- * 
+ *
  * Mapping a point that is the origin of a rectangle and
  * then adding the width and height is not equivalent to
  * mapping the rectangle.  When one control is mirrored
@@ -3062,7 +3062,7 @@ public Rectangle map (Control from, Control to, Rectangle rectangle) {
  * instead of just one point causes both the origin and
  * the corner of the rectangle to be mapped.
  * </p>
- * 
+ *
  * @param from the source <code>Control</code> or <code>null</code>
  * @param to the destination <code>Control</code> or <code>null</code>
  * @param x coordinates to be mapped
@@ -3070,22 +3070,22 @@ public Rectangle map (Control from, Control to, Rectangle rectangle) {
  * @param width coordinates to be mapped
  * @param height coordinates to be mapped
  * @return rectangle with mapped coordinates
- * 
+ *
  * @exception IllegalArgumentException <ul>
- *    <li>ERROR_INVALID_ARGUMENT - if the Control from or the Control to have been disposed</li> 
+ *    <li>ERROR_INVALID_ARGUMENT - if the Control from or the Control to have been disposed</li>
  * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
  * </ul>
- * 
+ *
  * @since 2.1.2
  */
 public Rectangle map (Control from, Control to, int x, int y, int width, int height) {
 	checkDevice ();
 	if (from != null && from.isDisposed()) error (SWT.ERROR_INVALID_ARGUMENT);
 	if (to != null && to.isDisposed()) error (SWT.ERROR_INVALID_ARGUMENT);
-	if (from == to) return new Rectangle (x, y, width, height); 
+	if (from == to) return new Rectangle (x, y, width, height);
 	long /*int*/ hwndFrom = from != null ? from.handle : 0;
 	long /*int*/ hwndTo = to != null ? to.handle : 0;
 	RECT rect = new RECT ();
@@ -3173,7 +3173,7 @@ long /*int*/ messageProc (long /*int*/ hwnd, long /*int*/ msg, long /*int*/ wPar
 								case OS.VK_SCROLL:
 									break;
 								default: {
-									/* 
+									/*
 									* Bug in Windows. The high bit in the result of MapVirtualKey() on
 									* Windows NT is bit 32 while the high bit on Windows 95 is bit 16.
 									* They should both be bit 32.  The fix is to test the right bit.
@@ -3209,7 +3209,7 @@ long /*int*/ messageProc (long /*int*/ hwnd, long /*int*/ msg, long /*int*/ wPar
 					do {
 						if (!(consumed |= filterMessage (keyMsg))) {
 							OS.TranslateMessage (keyMsg);
-							consumed |= OS.DispatchMessage (keyMsg) == 1;	
+							consumed |= OS.DispatchMessage (keyMsg) == 1;
 						}
 					} while (OS.PeekMessage (keyMsg, keyMsg.hwnd, OS.WM_KEYFIRST, OS.WM_KEYLAST, flags));
 				}
@@ -3277,7 +3277,7 @@ long /*int*/ messageProc (long /*int*/ hwnd, long /*int*/ msg, long /*int*/ wPar
 			* the mouse.  The fix is to look for WM_ACTIVATEAPP
 			* and force the enabled dialog child to the front.
 			* This is typically what the user is expecting.
-			* 
+			*
 			* NOTE: If the modal shell is disabled for any
 			* reason, it should not be brought to the front.
 			*/
@@ -3343,7 +3343,7 @@ long /*int*/ messageProc (long /*int*/ hwnd, long /*int*/ msg, long /*int*/ wPar
 			}
 			if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (6, 0)) {
 				sendSettings = true;
-			} 
+			}
 			switch ((int)/*64*/wParam) {
 				case 0:
 				case 1:
@@ -3423,7 +3423,7 @@ String getSharedData(int pid, int  handle) {
 		OS.DuplicateHandle(processHandle, handle, OS.GetCurrentProcess(), mapHandle, OS.DUPLICATE_SAME_ACCESS, false, OS.DUPLICATE_SAME_ACCESS);
 		OS.CloseHandle(processHandle);
 	}
-	
+
 	long /*int*/ sharedData = OS.MapViewOfFile(mapHandle[0], OS.FILE_MAP_READ, 0, 0, 0);
 	if (sharedData == 0) return null;
 	int length = OS.IsUnicode ? OS.wcslen (sharedData) : OS.strlen (sharedData);
@@ -3528,7 +3528,7 @@ int numpadKey (int key) {
 
 /**
  * Generate a low level system event.
- * 
+ *
  * <code>post</code> is used to generate low level keyboard
  * and mouse events. The intent is to enable automated UI
  * testing by simulating the input from the user.  Most
@@ -3571,11 +3571,11 @@ int numpadKey (int key) {
  * <li>(in) count the number of lines or pages to scroll
  * </ul>
  * </dl>
- * 
+ *
  * @param event the event to be generated
- * 
+ *
  * @return true if the event was generated or false otherwise
- * 
+ *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the event is null</li>
  * </ul>
@@ -3584,7 +3584,7 @@ int numpadKey (int key) {
  * </ul>
  *
  * @since 3.0
- * 
+ *
  */
 public boolean post (Event event) {
 	synchronized (Device.class) {
@@ -3659,7 +3659,7 @@ public boolean post (Event event) {
 					if (OS.WIN32_VERSION >= OS.VERSION (5, 0)) {
 						inputs.dwFlags |= OS.MOUSEEVENTF_VIRTUALDESK;
 						x = OS.GetSystemMetrics (OS.SM_XVIRTUALSCREEN);
-						y = OS.GetSystemMetrics (OS.SM_YVIRTUALSCREEN);	
+						y = OS.GetSystemMetrics (OS.SM_YVIRTUALSCREEN);
 						width = OS.GetSystemMetrics (OS.SM_CXVIRTUALSCREEN);
 						height = OS.GetSystemMetrics (OS.SM_CYVIRTUALSCREEN);
 					} else {
@@ -3713,7 +3713,7 @@ public boolean post (Event event) {
 				OS.HeapFree (hHeap, 0, pInputs);
 				return result;
 			}
-		} 
+		}
 		return false;
 	}
 }
@@ -3801,7 +3801,7 @@ static void register (Display display) {
  * Releases any internal resources back to the operating
  * system and clears all fields except the device handle.
  * <p>
- * Disposes all shells which are currently open on the display. 
+ * Disposes all shells which are currently open on the display.
  * After this method has been invoked, all related related shells
  * will answer <code>true</code> when sent the message
  * <code>isDisposed()</code>.
@@ -3817,7 +3817,7 @@ static void register (Display display) {
  * The handle is needed by <code>destroy</code>.
  * </p>
  * This method is called before <code>destroy</code>.
- * 
+ *
  * @see Device#dispose
  * @see #destroy
  */
@@ -3850,7 +3850,7 @@ void releaseDisplay () {
 	if (embeddedHwnd != 0) {
 		OS.PostMessage (embeddedHwnd, SWT_DESTROY, 0, 0);
 	}
-	
+
 	/* Release XP Themes */
 	if (OS.COMCTL32_MAJOR >= 6) {
 		if (hButtonTheme != 0) OS.CloseThemeData (hButtonTheme);
@@ -3860,7 +3860,7 @@ void releaseDisplay () {
 		if (hTabTheme != 0) OS.CloseThemeData (hTabTheme);
 		hButtonTheme = hEditTheme = hExplorerBarTheme = hScrollBarTheme = hTabTheme = 0;
 	}
-	
+
 	/* Unhook the message hook */
 	if (!OS.IsWinCE) {
 		if (msgHook != 0) OS.UnhookWindowsHookEx (msgHook);
@@ -3875,7 +3875,7 @@ void releaseDisplay () {
 		msgFilterCallback = null;
 		msgFilterProc = 0;
 	}
-	
+
 	/* Unhook the idle hook */
 	if (!OS.IsWinCE) {
 		if (idleHook != 0) OS.UnhookWindowsHookEx (idleHook);
@@ -3884,22 +3884,22 @@ void releaseDisplay () {
 		foregroundIdleCallback = null;
 		foregroundIdleProc = 0;
 	}
-	
+
 	/* Stop the settings timer */
 	OS.KillTimer (hwndMessage, SETTINGS_ID);
-	
+
 	/* Destroy the message only HWND */
 	if (hwndMessage != 0) OS.DestroyWindow (hwndMessage);
 	hwndMessage = 0;
 	messageCallback.dispose ();
 	messageCallback = null;
 	messageProc = 0;
-	
+
 	/* Unregister the SWT window class */
 	long /*int*/ hHeap = OS.GetProcessHeap ();
 	long /*int*/ hInstance = OS.GetModuleHandle (null);
 	OS.UnregisterClass (windowClass, hInstance);
-	
+
 	/* Unregister the SWT drop shadow and CS_OWNDC window class */
 	OS.UnregisterClass (windowShadowClass, hInstance);
 	OS.UnregisterClass (windowOwnDCClass, hInstance);
@@ -3907,24 +3907,24 @@ void releaseDisplay () {
 	windowCallback.dispose ();
 	windowCallback = null;
 	windowProc = 0;
-	
+
 	/* Release the System fonts */
 	if (systemFont != null) systemFont.dispose ();
 	systemFont = null;
 	lfSystemFont = null;
-	
+
 	/* Release the System Images */
 	if (errorImage != null) errorImage.dispose ();
 	if (infoImage != null) infoImage.dispose ();
 	if (questionImage != null) questionImage.dispose ();
 	if (warningIcon != null) warningIcon.dispose ();
 	errorImage = infoImage = questionImage = warningIcon = null;
-	
+
 	/* Release Sort Indicators */
 	if (upArrow != null) upArrow.dispose ();
 	if (downArrow != null) downArrow.dispose ();
 	upArrow = downArrow = null;
-	
+
 	/* Release the System Cursors */
 	for (int i = 0; i < cursors.length; i++) {
 		if (cursors [i] != null) cursors [i].dispose ();
@@ -3942,7 +3942,7 @@ void releaseDisplay () {
 	/* Release Custom Colors for ChooseColor */
 	if (lpCustColors != 0) OS.HeapFree (hHeap, 0, lpCustColors);
 	lpCustColors = 0;
-	
+
 	/* Uninitialize OLE */
 	if (!OS.IsWinCE) OS.OleUninitialize ();
 
@@ -3950,7 +3950,7 @@ void releaseDisplay () {
 	if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (6, 0)) {
 		OS.BufferedPaintUnInit ();
 	}
-	
+
 	/* Release references */
 	thread = null;
 	msg = hookMsg = null;
@@ -3961,7 +3961,7 @@ void releaseDisplay () {
 	keys = null;
 	values = null;
 	bars = popups = null;
-	indexTable = null; 
+	indexTable = null;
 	timerIds = null;
 	controlTable = null;
 	lastControl = lastGetControl = lastHittestControl = null;
@@ -3976,14 +3976,14 @@ void releaseDisplay () {
 	plvfi = null;
 	monitors = null;
 	touchSources = null;
-	
+
 	/* Release handles */
 	threadId = 0;
 }
 
 void releaseImageList (ImageList list) {
 	int i = 0;
-	int length = imageList.length; 
+	int length = imageList.length;
 	while (i < length) {
 		if (imageList [i] == list) {
 			if (list.removeRef () > 0) return;
@@ -4002,7 +4002,7 @@ void releaseImageList (ImageList list) {
 
 void releaseToolImageList (ImageList list) {
 	int i = 0;
-	int length = toolImageList.length; 
+	int length = toolImageList.length;
 	while (i < length) {
 		if (toolImageList [i] == list) {
 			if (list.removeRef () > 0) return;
@@ -4021,7 +4021,7 @@ void releaseToolImageList (ImageList list) {
 
 void releaseToolHotImageList (ImageList list) {
 	int i = 0;
-	int length = toolHotImageList.length; 
+	int length = toolHotImageList.length;
 	while (i < length) {
 		if (toolHotImageList [i] == list) {
 			if (list.removeRef () > 0) return;
@@ -4040,7 +4040,7 @@ void releaseToolHotImageList (ImageList list) {
 
 void releaseToolDisabledImageList (ImageList list) {
 	int i = 0;
-	int length = toolDisabledImageList.length; 
+	int length = toolDisabledImageList.length;
 	while (i < length) {
 		if (toolDisabledImageList [i] == list) {
 			if (list.removeRef () > 0) return;
@@ -4077,7 +4077,7 @@ void releaseToolDisabledImageList (ImageList list) {
  * @see SWT
  * @see #addFilter
  * @see #addListener
- * 
+ *
  * @since 3.0
  */
 public void removeFilter (int eventType, Listener listener) {
@@ -4107,8 +4107,8 @@ public void removeFilter (int eventType, Listener listener) {
  * @see Listener
  * @see SWT
  * @see #addListener
- * 
- * @since 2.0 
+ *
+ * @since 2.0
  */
 public void removeListener (int eventType, Listener listener) {
 	checkDevice ();
@@ -4174,7 +4174,7 @@ boolean runDeferredEvents () {
 	* be re-enterant but need not be synchronized.
 	*/
 	while (eventQueue != null) {
-		
+
 		/* Take an event off the queue */
 		Event event = eventQueue [0];
 		if (event == null) break;
@@ -4215,7 +4215,7 @@ boolean runDeferredLayouts () {
 			if (!comp.isDisposed()) comp.setLayoutDeferred (false);
 		}
 		return true;
-	}	
+	}
 	return false;
 }
 
@@ -4259,8 +4259,8 @@ void runSettings () {
 
 boolean runSkin () {
 	if (skinCount > 0) {
-		Widget [] oldSkinWidgets = skinList;	
-		int count = skinCount;	
+		Widget [] oldSkinWidgets = skinList;
+		int count = skinCount;
 		skinList = new Widget[GROW_SIZE];
 		skinCount = 0;
 		if (eventTable != null && eventTable.hooks(SWT.Skin)) {
@@ -4276,10 +4276,10 @@ boolean runSkin () {
 			}
 		}
 		return true;
-	}	
+	}
 	return false;
 }
-	
+
 boolean runTimer (long /*int*/ id) {
 	if (timerList != null && timerIds != null) {
 		int index = 0;
@@ -4429,12 +4429,12 @@ public void sendPostExternalEventDispatchEvent () {
  *
  * @param x the new x coordinate for the cursor
  * @param y the new y coordinate for the cursor
- * 
+ *
  * @exception SWTException <ul>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
  * </ul>
- * 
+ *
  * @since 2.1
  */
 public void setCursorLocation (int x, int y) {
@@ -4448,13 +4448,13 @@ public void setCursorLocation (int x, int y) {
  * program to move the on-screen pointer location.</b>
  *
  * @param point new position
- * 
+ *
  * @exception SWTException <ul>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  *    <li>ERROR_NULL_ARGUMENT - if the point is null
  *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
  * </ul>
- * 
+ *
  * @since 2.0
  */
 public void setCursorLocation (Point point) {
@@ -4533,7 +4533,7 @@ public void setData (String key, Object value) {
 		}
 		return;
 	}
-	
+
 	/* Add the key/value pair */
 	if (keys == null) {
 		keys = new String [] {key};
@@ -4560,7 +4560,7 @@ public void setData (String key, Object value) {
  * Sets the application defined, display specific data
  * associated with the receiver, to the argument.
  * The <em>display specific data</em> is a single,
- * unnamed field that is stored with every display. 
+ * unnamed field that is stored with every display.
  * <p>
  * Applications may put arbitrary objects in this field. If
  * the object stored in the display specific data needs to
@@ -4588,9 +4588,9 @@ public void setData (Object data) {
  * Returns the application name.
  *
  * @return the application name
- * 
+ *
  * @see #setAppName(String)
- * 
+ *
  * @since 3.6
  */
 public static String getAppName () {
@@ -4601,9 +4601,9 @@ public static String getAppName () {
  * Returns the application version.
  *
  * @return the application version
- * 
+ *
  * @see #setAppVersion(String)
- * 
+ *
  * @since 3.6
  */
 public static String getAppVersion () {
@@ -4616,9 +4616,9 @@ public static String getAppVersion () {
  * The application name can be used in several ways,
  * depending on the platform and tools being used.
  * Accessibility tools could ask for the application
- * name. On Windows, if the application name is set 
+ * name. On Windows, if the application name is set
  * to any value other than "SWT" (case insensitive),
- * it is used to set the application user model ID 
+ * it is used to set the application user model ID
  * which is used by the OS for taskbar grouping.
  * @see <a href="http://msdn.microsoft.com/en-us/library/windows/desktop/dd378459%28v=vs.85%29.aspx#HOW">AppUserModelID (Windows)</a>
  * </p><p>
@@ -4635,7 +4635,7 @@ public static void setAppName (String name) {
  * Sets the application version to the argument.
  *
  * @param version the new app version
- * 
+ *
  * @since 3.6
  */
 public static void setAppVersion (String version) {
@@ -4697,7 +4697,7 @@ public void setSynchronizer (Synchronizer synchronizer) {
 
 int shiftedKey (int key) {
 	if (OS.IsWinCE) return 0;
-	
+
 	/* Clear the virtual keyboard and press the shift key */
 	for (int i=0; i<keyboard.length; i++) keyboard [i] = 0;
 	keyboard [OS.VK_SHIFT] |= 0x80;
@@ -4743,17 +4743,17 @@ public boolean sleep () {
 
 /**
  * Causes the <code>run()</code> method of the runnable to
- * be invoked by the user-interface thread at the next 
+ * be invoked by the user-interface thread at the next
  * reasonable opportunity. The thread which calls this method
  * is suspended until the runnable completes.  Specifying <code>null</code>
  * as the runnable simply wakes the user-interface thread.
  * <p>
- * Note that at the time the runnable is invoked, widgets 
+ * Note that at the time the runnable is invoked, widgets
  * that have the receiver as their display may have been
  * disposed. Therefore, it is necessary to check for this
  * case inside the runnable before accessing the widget.
  * </p>
- * 
+ *
  * @param runnable code to run on the user-interface thread or <code>null</code>
  *
  * @exception SWTException <ul>
@@ -4778,7 +4778,7 @@ public void syncExec (Runnable runnable) {
  * number of milliseconds have elapsed. If milliseconds is less
  * than zero, the runnable is not executed.
  * <p>
- * Note that at the time the runnable is invoked, widgets 
+ * Note that at the time the runnable is invoked, widgets
  * that have the receiver as their display may have been
  * disposed. Therefore, it is necessary to check for this
  * case inside the runnable before accessing the widget.
@@ -4810,7 +4810,7 @@ public void timerExec (int milliseconds, Runnable runnable) {
 	long /*int*/ timerId = 0;
 	if (index != timerList.length) {
 		timerId = timerIds [index];
-		if (milliseconds < 0) {			
+		if (milliseconds < 0) {
 			OS.KillTimer (hwndMessage, timerId);
 			timerList [index] = null;
 			timerIds [index] = 0;
@@ -4904,7 +4904,7 @@ static int untranslateKey (int key) {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
  * </ul>
- * 
+ *
  * @see Control#update()
  */
 public void update() {
@@ -4918,10 +4918,10 @@ public void update() {
 	* PM_REMOVE to tell Windows that the application is ready
 	* to dispatch events.  Note that the message does not have
 	* to be found or dispatched in order to wake Windows up.
-	* 
+	*
 	* NOTE: This allows other cross thread messages to be delivered,
 	* most notably WM_ACTIVATE.
-	*/	
+	*/
 	if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (4, 10)) {
 		if (OS.IsHungAppWindow (hwndMessage)) {
 			MSG msg = new MSG ();
@@ -4947,14 +4947,14 @@ void updateImages () {
 }
 
 /**
- * If the receiver's user-interface thread was <code>sleep</code>ing, 
+ * If the receiver's user-interface thread was <code>sleep</code>ing,
  * causes it to be awakened and start running again. Note that this
  * method may be called from any thread.
- * 
+ *
  * @exception SWTException <ul>
  *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
  * </ul>
- * 
+ *
  * @see #sleep
  */
 public void wake () {
@@ -5045,7 +5045,7 @@ long /*int*/ windowProc (long /*int*/ hwnd, long /*int*/ msg, long /*int*/ wPara
 	* if the control takes some time to respond to the message,
 	* Adobe stops sending them.  The fix is to detect this case
 	* and sleep.
-	* 
+	*
 	* NOTE: Under normal circumstances, Windows will never send
 	* consecutive WM_NCHITTEST messages to the same control without
 	* another message (normally WM_SETCURSOR) in between.
@@ -5152,7 +5152,7 @@ static String withCrLf (String string) {
 	/* If the string is empty, return the string. */
 	int length = string.length ();
 	if (length == 0) return string;
-	
+
 	/*
 	* Check for an LF or CR/LF and assume the rest of
 	* the string is formated that way.  This will not
@@ -5169,7 +5169,7 @@ static String withCrLf (String string) {
 	* number of lines and the size of the buffer
 	* needed to hold the result
 	*/
-	i++;	
+	i++;
 	int count = 1;
 	while (i < length) {
 		if ((i = string.indexOf ('\n', i)) == -1) break;
@@ -5196,7 +5196,7 @@ static char [] withCrLf (char [] string) {
 	/* If the string is empty, return the string. */
 	int length = string.length;
 	if (length == 0) return string;
-	
+
 	/*
 	* Check for an LF or CR/LF and assume the rest of
 	* the string is formated that way.  This will not
@@ -5213,7 +5213,7 @@ static char [] withCrLf (char [] string) {
 	if (count == 0) return string;
 
 	/*
-	* The string is formatted with LF.  
+	* The string is formatted with LF.
 	*/
 	count += length;
 
@@ -5225,7 +5225,7 @@ static char [] withCrLf (char [] string) {
 		}
 		result [j++] = string [i];
 	}
-	
+
 	return result;
 }
 

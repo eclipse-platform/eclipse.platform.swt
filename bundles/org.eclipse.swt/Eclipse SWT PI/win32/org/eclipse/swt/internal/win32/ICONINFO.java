@@ -12,7 +12,7 @@ package org.eclipse.swt.internal.win32;
 
 public class ICONINFO {
 	public boolean fIcon;
-	public int xHotspot; 
+	public int xHotspot;
 	public int yHotspot;
 	/** @field cast=(HBITMAP) */
 	public long /*int*/ hbmMask;

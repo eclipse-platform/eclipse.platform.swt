@@ -126,7 +126,7 @@ public class Tree extends Composite {
  * <p>
  * The style value is either one of the style constants defined in
  * class <code>SWT</code> which is applicable to instances of this
- * class, or must be built by <em>bitwise OR</em>'ing together 
+ * class, or must be built by <em>bitwise OR</em>'ing together
  * (that is, using the <code>int</code> "|" operator) two or more
  * of those <code>SWT</code> style constants. The class description
  * lists the style constants that are applicable to the class.
@@ -163,7 +163,7 @@ static int checkStyle (int style) {
 	* WS_VSCROLL is not specified, Windows creates
 	* trees and tables with scroll bars.  The fix
 	* is to set H_SCROLL and V_SCROLL.
-	* 
+	*
 	* NOTE: This code appears on all platforms so that
 	* applications have consistent scroll bar behavior.
 	*/
@@ -293,12 +293,12 @@ void _setBackgroundPixel (int newPixel) {
 
 		/* Set the background color */
 		OS.SendMessage (handle, OS.TVM_SETBKCOLOR, 0, newPixel);
-		
+
 		/*
 		* Feature in Windows.  When TVM_SETBKCOLOR is used to
 		* set the background color of a tree, the plus/minus
 		* animation draws badly.  The fix is to clear the effect.
-		*/	
+		*/
 		if (explorerTheme && ENABLE_TVS_EX_FADEINOUTEXPANDOS) {
 			int bits2 = (int)/*64*/OS.SendMessage (handle, OS.TVM_GETEXTENDEDSTYLE, 0, 0);
 			if (newPixel == -1 && findImageControl () == null) {
@@ -374,7 +374,7 @@ public void addTreeListener(TreeListener listener) {
 	TypedListener typedListener = new TypedListener (listener);
 	addListener (SWT.Expand, typedListener);
 	addListener (SWT.Collapse, typedListener);
-} 
+}
 
 @Override
 long /*int*/ borderHandle () {
@@ -387,14 +387,14 @@ LRESULT CDDS_ITEMPOSTPAINT (NMTVCUSTOMDRAW nmcd, long /*int*/ wParam, long /*int
 	long /*int*/ hDC = nmcd.hdc;
 	OS.RestoreDC (hDC, -1);
 	TreeItem item = getItem (nmcd);
-	
+
 	/*
 	* Feature in Windows.  When a new tree item is inserted
 	* using TVM_INSERTITEM and the tree is using custom draw,
 	* a NM_CUSTOMDRAW is sent before TVM_INSERTITEM returns
 	* and before the item is added to the items array.  The
 	* fix is to check for null.
-	* 
+	*
 	* NOTE: This only happens on XP with the version 6.00 of
 	* COMCTL32.DLL,
 	*/
@@ -406,7 +406,7 @@ LRESULT CDDS_ITEMPOSTPAINT (NMTVCUSTOMDRAW nmcd, long /*int*/ wParam, long /*int
 	* not a problem providing that graphics do not occur outside
 	* the rectangle.  The fix is to test for the rectangle and
 	* draw nothing.
-	* 
+	*
 	* NOTE:  This seems to happen when both I_IMAGECALLBACK
 	* and LPSTR_TEXTCALLBACK are used at the same time with
 	* TVM_SETITEM.
@@ -502,7 +502,7 @@ LRESULT CDDS_ITEMPOSTPAINT (NMTVCUSTOMDRAW nmcd, long /*int*/ wParam, long /*int
 						long /*int*/ hTheme = OS.OpenThemeData (handle, Display.TREEVIEW);
 						int iStateId = selected ? OS.TREIS_SELECTED : OS.TREIS_HOT;
 						if (OS.GetFocus () != handle && selected && !hot) iStateId = OS.TREIS_SELECTEDNOTFOCUS;
-						OS.DrawThemeBackground (hTheme, hDC, OS.TVP_TREEITEM, iStateId, pRect, pClipRect);	
+						OS.DrawThemeBackground (hTheme, hDC, OS.TVP_TREEITEM, iStateId, pRect, pClipRect);
 						OS.CloseThemeData (hTheme);
 					}
 					if (draw) fillBackground (hDC, OS.GetBkColor (hDC), pClipRect);
@@ -717,7 +717,7 @@ LRESULT CDDS_ITEMPOSTPAINT (NMTVCUSTOMDRAW nmcd, long /*int*/ wParam, long /*int
 										long /*int*/ hTheme = OS.OpenThemeData (handle, Display.TREEVIEW);
 										int iStateId = selected ? OS.TREIS_SELECTED : OS.TREIS_HOT;
 										if (OS.GetFocus () != handle && selected && !hot) iStateId = OS.TREIS_SELECTEDNOTFOCUS;
-										OS.DrawThemeBackground (hTheme, hDC, OS.TVP_TREEITEM, iStateId, pRect, backgroundRect);	
+										OS.DrawThemeBackground (hTheme, hDC, OS.TVP_TREEITEM, iStateId, pRect, backgroundRect);
 										OS.CloseThemeData (hTheme);
 									}
 								}
@@ -864,7 +864,7 @@ LRESULT CDDS_ITEMPOSTPAINT (NMTVCUSTOMDRAW nmcd, long /*int*/ wParam, long /*int
 							}
 						}
 					}
-				}				
+				}
 				event.x = itemRect.left;
 				event.y = itemRect.top;
 				event.width = itemRect.right - itemRect.left;
@@ -944,7 +944,7 @@ LRESULT CDDS_ITEMPREPAINT (NMTVCUSTOMDRAW nmcd, long /*int*/ wParam, long /*int*
 	* a NM_CUSTOMDRAW is sent before TVM_INSERTITEM returns
 	* and before the item is added to the items array.  The
 	* fix is to check for null.
-	* 
+	*
 	* NOTE: This only happens on XP with the version 6.00 of
 	* COMCTL32.DLL,
 	*/
@@ -983,7 +983,7 @@ LRESULT CDDS_ITEMPREPAINT (NMTVCUSTOMDRAW nmcd, long /*int*/ wParam, long /*int*
 			if (findImageControl () == null) {
 				if (indexOf (sortColumn) == index) {
 					clrSortBk = getSortColumnPixel ();
-					if (clrTextBk == -1) clrTextBk = clrSortBk; 
+					if (clrTextBk == -1) clrTextBk = clrSortBk;
 				}
 			}
 		}
@@ -1115,7 +1115,7 @@ LRESULT CDDS_ITEMPREPAINT (NMTVCUSTOMDRAW nmcd, long /*int*/ wParam, long /*int*
 						long /*int*/ hTheme = OS.OpenThemeData (handle, Display.TREEVIEW);
 						int iStateId = selected ? OS.TREIS_SELECTED : OS.TREIS_HOT;
 						if (OS.GetFocus () != handle && selected && !hot) iStateId = OS.TREIS_SELECTEDNOTFOCUS;
-						OS.DrawThemeBackground (hTheme, hDC, OS.TVP_TREEITEM, iStateId, pRect, pClipRect);	
+						OS.DrawThemeBackground (hTheme, hDC, OS.TVP_TREEITEM, iStateId, pRect, pClipRect);
 						OS.CloseThemeData (hTheme);
 					}
 				} else {
@@ -1216,7 +1216,7 @@ LRESULT CDDS_ITEMPREPAINT (NMTVCUSTOMDRAW nmcd, long /*int*/ wParam, long /*int*
 	}
 	LRESULT result = null;
 	if (clrText == -1 && clrTextBk == -1 && hFont == -1) {
-		result = new LRESULT (OS.CDRF_DODEFAULT | OS.CDRF_NOTIFYPOSTPAINT);	
+		result = new LRESULT (OS.CDRF_DODEFAULT | OS.CDRF_NOTIFYPOSTPAINT);
 	} else {
 		result = new LRESULT (OS.CDRF_NEWFONT | OS.CDRF_NOTIFYPOSTPAINT);
 		if (hFont != -1) OS.SelectObject (hDC, hFont);
@@ -1358,7 +1358,7 @@ LRESULT CDDS_POSTPAINT (NMTVCUSTOMDRAW nmcd, long /*int*/ wParam, long /*int*/ l
 						* child.  The fix is to use the bottom partially
 						* visible item rather than the last possible item
 						* that could be visible.
-						* 
+						*
 						* NOTE: This problem only happens on Vista during
 						* WM_NOTIFY with NM_CUSTOMDRAW and CDDS_POSTPAINT.
 						*/
@@ -1414,7 +1414,7 @@ LRESULT CDDS_POSTPAINT (NMTVCUSTOMDRAW nmcd, long /*int*/ wParam, long /*int*/ l
 			* child.  The fix is to use the bottom partially
 			* visible item rather than the last possible item
 			* that could be visible.
-			* 
+			*
 			* NOTE: This problem only happens on Vista during
 			* WM_NOTIFY with NM_CUSTOMDRAW and CDDS_POSTPAINT.
 			*/
@@ -1497,7 +1497,7 @@ long /*int*/ callWindowProc (long /*int*/ hwnd, int msg, long /*int*/ wParam, lo
 				}
 			}
 			break;
-		}	
+		}
 	}
 	long /*int*/ hItem = 0;
 	boolean redraw = false;
@@ -1513,18 +1513,18 @@ long /*int*/ callWindowProc (long /*int*/ hwnd, int msg, long /*int*/ wParam, lo
 		case OS.WM_SYSKEYDOWN:
 		case OS.WM_SYSKEYUP:
 			//FALL THROUGH
-			
+
 		/* Scroll messages */
 		case OS.WM_HSCROLL:
 		case OS.WM_VSCROLL:
 			//FALL THROUGH
-			
+
 		/* Resize messages */
 		case OS.WM_SIZE:
 			redraw = findImageControl () != null && getDrawing () && OS.IsWindowVisible (handle);
 			if (redraw) OS.DefWindowProc (handle, OS.WM_SETREDRAW, 0, 0);
 			//FALL THROUGH
-			
+
 		/* Mouse messages */
 		case OS.WM_LBUTTONDBLCLK:
 		case OS.WM_LBUTTONDOWN:
@@ -1543,7 +1543,7 @@ long /*int*/ callWindowProc (long /*int*/ hwnd, int msg, long /*int*/ wParam, lo
 		case OS.WM_XBUTTONDOWN:
 		case OS.WM_XBUTTONUP:
 			//FALL THROUGH
-			
+
 		/* Other messages */
 		case OS.WM_SETFONT:
 		case OS.WM_TIMER: {
@@ -1567,12 +1567,12 @@ long /*int*/ callWindowProc (long /*int*/ hwnd, int msg, long /*int*/ wParam, lo
 		case OS.WM_SYSKEYDOWN:
 		case OS.WM_SYSKEYUP:
 			//FALL THROUGH
-			
+
 		/* Scroll messages */
 		case OS.WM_HSCROLL:
 		case OS.WM_VSCROLL:
 			//FALL THROUGH
-			
+
 		/* Resize messages */
 		case OS.WM_SIZE:
 			if (redraw) {
@@ -1581,7 +1581,7 @@ long /*int*/ callWindowProc (long /*int*/ hwnd, int msg, long /*int*/ wParam, lo
 				if (hwndHeader != 0) OS.InvalidateRect (hwndHeader, null, true);
 			}
 			//FALL THROUGH
-			
+
 		/* Mouse messages */
 		case OS.WM_LBUTTONDBLCLK:
 		case OS.WM_LBUTTONDOWN:
@@ -1600,7 +1600,7 @@ long /*int*/ callWindowProc (long /*int*/ hwnd, int msg, long /*int*/ wParam, lo
 		case OS.WM_XBUTTONDOWN:
 		case OS.WM_XBUTTONUP:
 			//FALL THROUGH
-			
+
 		/* Other messages */
 		case OS.WM_SETFONT:
 		case OS.WM_TIMER: {
@@ -1612,7 +1612,7 @@ long /*int*/ callWindowProc (long /*int*/ hwnd, int msg, long /*int*/ wParam, lo
 			updateScrollBar ();
 			break;
 		}
-		
+
 		case OS.WM_PAINT:
 			painted = true;
 			break;
@@ -1679,13 +1679,13 @@ boolean checkHandle (long /*int*/ hwnd) {
 
 boolean checkScroll (long /*int*/ hItem) {
 	/*
-	* Feature in Windows.  If redraw is turned off using WM_SETREDRAW 
+	* Feature in Windows.  If redraw is turned off using WM_SETREDRAW
 	* and a tree item that is not a child of the first root is selected or
 	* scrolled using TVM_SELECTITEM or TVM_ENSUREVISIBLE, then scrolling
 	* does not occur.  The fix is to detect this case, and make sure
 	* that redraw is temporarily enabled.  To avoid flashing, DefWindowProc()
 	* is called to disable redrawing.
-	* 
+	*
 	* NOTE:  The code that actually works around the problem is in the
 	* callers of this method.
 	*/
@@ -1720,10 +1720,10 @@ protected void checkSubclass () {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @see SWT#VIRTUAL
  * @see SWT#SetData
- * 
+ *
  * @since 3.2
  */
 public void clear (int index, boolean all) {
@@ -1759,7 +1759,7 @@ void clear (long /*int*/ hItem, TVITEM tvItem) {
  * attributes of the items are set to their default values. If the
  * tree was created with the <code>SWT.VIRTUAL</code> style, these
  * attributes are requested again as needed.
- * 
+ *
  * @param all <code>true</code> if all child items should be cleared
  * recursively, and <code>false</code> otherwise
  *
@@ -1767,10 +1767,10 @@ void clear (long /*int*/ hItem, TVITEM tvItem) {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @see SWT#VIRTUAL
  * @see SWT#SetData
- * 
+ *
  * @since 3.2
  */
 public void clearAll (boolean all) {
@@ -1822,7 +1822,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 			OS.SendMessage (hwndHeader, OS.HDM_GETITEM, i, hdItem);
 			width += hdItem.cxy;
 		}
-		RECT rect = new RECT ();					
+		RECT rect = new RECT ();
 		OS.GetWindowRect (hwndHeader, rect);
 		height += rect.bottom - rect.top;
 	}
@@ -1902,10 +1902,10 @@ void createHandle () {
 			OS.SendMessage (handle, OS.CCM_SETVERSION, 5, 0);
 		}
 	}
-		
+
 	/* Set the checkbox image list */
 	if ((style & SWT.CHECK) != 0) setCheckboxImageList ();
-	
+
 	/*
 	* Feature in Windows.  When the control is created,
 	* it does not use the default system font.  A new HFONT
@@ -1920,7 +1920,7 @@ void createHandle () {
 	*/
 	long /*int*/ hFont = OS.GetStockObject (OS.SYSTEM_FONT);
 	OS.SendMessage (handle, OS.WM_SETFONT, hFont, 0);
-	
+
 	createdAsRTL = (style & SWT.RIGHT_TO_LEFT) != 0;
 }
 
@@ -2018,7 +2018,7 @@ void createItem (TreeColumn column, int index) {
 	}
 	System.arraycopy (columns, index, columns, index + 1, columnCount++ - index);
 	columns [index] = column;
-	
+
 	/*
 	* Bug in Windows.  For some reason, when HDM_INSERTITEM
 	* is used to insert an item into a header without text,
@@ -2035,7 +2035,7 @@ void createItem (TreeColumn column, int index) {
 	if ((column.style & SWT.RIGHT) == SWT.RIGHT) hdItem.fmt = OS.HDF_RIGHT;
 	OS.SendMessage (hwndHeader, OS.HDM_INSERTITEM, index, hdItem);
 	if (pszText != 0) OS.HeapFree (hHeap, 0, pszText);
-	
+
 	/* When the first column is created, hide the horizontal scroll bar */
 	if (columnCount == 1) {
 		scrollWidth = 0;
@@ -2062,12 +2062,12 @@ void createItem (TreeColumn column, int index) {
 	setScrollWidth ();
 	updateImageList ();
 	updateScrollBar ();
-	
+
 	/* Redraw to hide the items when the first column is created */
 	if (columnCount == 1 && OS.SendMessage (handle, OS.TVM_GETCOUNT, 0, 0) != 0) {
 		OS.InvalidateRect (handle, null, true);
 	}
-	
+
 	/* Add the tool tip item for the header */
 	if (headerToolTipHandle != 0) {
 		RECT rect = new RECT ();
@@ -2226,7 +2226,7 @@ void createItemToolTips () {
 	* is documented to affect painting, not hit testing.
 	*
 	* NOTE: Windows 2000 doesn't have the problem and
-	* setting WS_EX_TRANSPARENT causes pixel corruption. 
+	* setting WS_EX_TRANSPARENT causes pixel corruption.
 	*/
 	if (OS.COMCTL32_MAJOR >= 6) bits2 |= OS.WS_EX_TRANSPARENT;
 	itemToolTipHandle = OS.CreateWindowEx (
@@ -2272,9 +2272,9 @@ void createParent () {
 		super.windowClass (),
 		null,
 		newStyle,
-		rect.left, 
-		rect.top, 
-		rect.right - rect.left, 
+		rect.left,
+		rect.top,
+		rect.right - rect.left,
 		rect.bottom - rect.top,
 		parent.handle,
 		0,
@@ -2302,7 +2302,7 @@ void createParent () {
 	if (OS.IsDBLocale) {
 		long /*int*/ hIMC = OS.ImmGetContext (handle);
 		OS.ImmAssociateContext (hwndParent, hIMC);
-		OS.ImmAssociateContext (hwndHeader, hIMC);		
+		OS.ImmAssociateContext (hwndHeader, hIMC);
 		OS.ImmReleaseContext (handle, hIMC);
 	}
 	//This code is intentionally commented
@@ -2558,7 +2558,7 @@ void destroyItem (TreeColumn column) {
 		for (int i=orderIndex; i<newOrder.length; i++) {
 			newColumns [i - orderIndex] = columns [newOrder [i]];
 			newColumns [i - orderIndex].updateToolTip (newOrder [i]);
-		}	
+		}
 		for (int i=0; i<newColumns.length; i++) {
 			if (!newColumns [i].isDisposed ()) {
 				newColumns [i].sendEvent (SWT.Move);
@@ -2587,7 +2587,7 @@ void destroyItem (TreeItem item, long /*int*/ hItem) {
 	* force the widget to be fully painted, turn off redraw, remove
 	* the item and validate the damage caused by the removing of
 	* the item.
-	* 
+	*
 	* NOTE: This fix is not necessary when double buffering and
 	* can cause problems for virtual trees due to the call to
 	* UpdateWindow() that flushes outstanding WM_PAINT events,
@@ -2622,14 +2622,14 @@ void destroyItem (TreeItem item, long /*int*/ hItem) {
 	* multiple items are deleted, the tool tip flashes, showing
 	* each new item in the tool tip as it is scrolled into view.
 	* The fix is to hide tool tips when any item is deleted.
-	* 
+	*
 	* NOTE:  This only happens on Vista.
 	*/
 	if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (6, 0)) {
 		long /*int*/ hwndToolTip = OS.SendMessage (handle, OS.TVM_GETTOOLTIPS, 0, 0);
 		if (hwndToolTip != 0) OS.SendMessage (hwndToolTip, OS.TTM_POP, 0 ,0);
 	}
-	
+
 	shrink = ignoreShrink = true;
 	OS.SendMessage (handle, OS.TVM_DELETEITEM, 0, hItem);
 	ignoreShrink = false;
@@ -2689,7 +2689,7 @@ void destroyScrollBar (int type) {
 void enableDrag (boolean enabled) {
 	int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
 	if (enabled && hooks (SWT.DragDetect)) {
-		bits &= ~OS.TVS_DISABLEDRAGDROP;		
+		bits &= ~OS.TVS_DISABLEDRAGDROP;
 	} else {
 		bits |= OS.TVS_DISABLEDRAGDROP;
 	}
@@ -2895,7 +2895,7 @@ long /*int*/ findItem (long /*int*/ hFirstItem, int index) {
 		}
 		return 0;
 	}
-	int nextIndex = 0; 
+	int nextIndex = 0;
 	long /*int*/ hNextItem = hFirstItem;
 	while (hNextItem != 0 && nextIndex < index) {
 		hNextItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_NEXT, hNextItem);
@@ -2920,12 +2920,12 @@ TreeItem getFocusItem () {
  * Returns the width in pixels of a grid line.
  *
  * @return the width of a grid line in pixels
- * 
+ *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 3.1
  */
 public int getGridLineWidth () {
@@ -2934,7 +2934,7 @@ public int getGridLineWidth () {
 }
 
 /**
- * Returns the height of the receiver's header 
+ * Returns the height of the receiver's header
  *
  * @return the height of the header or zero if the header is not visible
  *
@@ -2942,13 +2942,13 @@ public int getGridLineWidth () {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
- * @since 3.1 
+ *
+ * @since 3.1
  */
 public int getHeaderHeight () {
 	checkWidget ();
 	if (hwndHeader == 0) return 0;
-	RECT rect = new RECT ();					
+	RECT rect = new RECT ();
 	OS.GetWindowRect (hwndHeader, rect);
 	return rect.bottom - rect.top;
 }
@@ -2969,7 +2969,7 @@ public int getHeaderHeight () {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 3.1
  */
 public boolean getHeaderVisible () {
@@ -3017,13 +3017,13 @@ long /*int*/ getBottomItem () {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @see Tree#getColumnOrder()
  * @see Tree#setColumnOrder(int[])
  * @see TreeColumn#getMoveable()
  * @see TreeColumn#setMoveable(boolean)
  * @see SWT#Move
- * 
+ *
  * @since 3.1
  */
 public TreeColumn getColumn (int index) {
@@ -3045,7 +3045,7 @@ public TreeColumn getColumn (int index) {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 3.1
  */
 public int getColumnCount () {
@@ -3064,7 +3064,7 @@ public int getColumnCount () {
  * </p><p>
  * Note: This is not the actual structure used by the receiver
  * to maintain its list of items, so modifying the array will
- * not affect the receiver. 
+ * not affect the receiver.
  * </p>
  *
  * @return the current visual order of the receiver's items
@@ -3073,12 +3073,12 @@ public int getColumnCount () {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @see Tree#setColumnOrder(int[])
  * @see TreeColumn#getMoveable()
  * @see TreeColumn#setMoveable(boolean)
  * @see SWT#Move
- * 
+ *
  * @since 3.2
  */
 public int[] getColumnOrder () {
@@ -3100,7 +3100,7 @@ public int[] getColumnOrder () {
  * <p>
  * Note: This is not the actual structure used by the receiver
  * to maintain its list of items, so modifying the array will
- * not affect the receiver. 
+ * not affect the receiver.
  * </p>
  *
  * @return the items in the receiver
@@ -3109,13 +3109,13 @@ public int[] getColumnOrder () {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @see Tree#getColumnOrder()
  * @see Tree#setColumnOrder(int[])
  * @see TreeColumn#getMoveable()
  * @see TreeColumn#setMoveable(boolean)
  * @see SWT#Move
- * 
+ *
  * @since 3.1
  */
 public TreeColumn [] getColumns () {
@@ -3139,7 +3139,7 @@ public TreeColumn [] getColumns () {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 3.1
  */
 public TreeItem getItem (int index) {
@@ -3180,8 +3180,8 @@ TreeItem getItem (NMTVCUSTOMDRAW nmcd) {
  * coordinate system of the receiver.
  * <p>
  * The item that is returned represents an item that could be selected by the user.
- * For example, if selection only occurs in items in the first column, then null is 
- * returned if the point is outside of the item. 
+ * For example, if selection only occurs in items in the first column, then null is
+ * returned if the point is outside of the item.
  * Note that the SWT.FULL_SELECTION style hint, which specifies the selection policy,
  * determines the extent of the selection.
  * </p>
@@ -3280,7 +3280,7 @@ public int getItemHeight () {
  * <p>
  * Note: This is not the actual structure used by the receiver
  * to maintain its list of items, so modifying the array will
- * not affect the receiver. 
+ * not affect the receiver.
  * </p>
  *
  * @return the items
@@ -3298,7 +3298,7 @@ public TreeItem [] getItems () {
 }
 
 TreeItem [] getItems (long /*int*/ hTreeItem) {
-	int count = 0; 
+	int count = 0;
 	long /*int*/ hItem = hTreeItem;
 	while (hItem != 0) {
 		hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_NEXT, hItem);
@@ -3332,7 +3332,7 @@ TreeItem [] getItems (long /*int*/ hTreeItem) {
 
 /**
  * Returns <code>true</code> if the receiver's lines are visible,
- * and <code>false</code> otherwise. Note that some platforms draw 
+ * and <code>false</code> otherwise. Note that some platforms draw
  * grid lines while others may draw alternating row colors.
  * <p>
  * If one of the receiver's ancestors is not visible or some
@@ -3347,7 +3347,7 @@ TreeItem [] getItems (long /*int*/ hTreeItem) {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 3.1
  */
 public boolean getLinesVisible () {
@@ -3445,11 +3445,11 @@ int getSelection (long /*int*/ hItem, TVITEM tvItem, TreeItem [] selection, int 
 /**
  * Returns an array of <code>TreeItem</code>s that are currently
  * selected in the receiver. The order of the items is unspecified.
- * An empty array indicates that no items are selected. 
+ * An empty array indicates that no items are selected.
  * <p>
  * Note: This is not the actual structure used by the receiver
  * to maintain its selection, so modifying the array will
- * not affect the receiver. 
+ * not affect the receiver.
  * </p>
  * @return an array representing the selection
  *
@@ -3596,15 +3596,15 @@ public int getSelectionCount () {
  * the receiver. The value may be null if no column shows
  * the sort indicator.
  *
- * @return the sort indicator 
+ * @return the sort indicator
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @see #setSortColumn(TreeColumn)
- * 
+ *
  * @since 3.2
  */
 public TreeColumn getSortColumn () {
@@ -3630,8 +3630,8 @@ int getSortColumnPixel () {
 }
 
 /**
- * Returns the direction of the sort indicator for the receiver. 
- * The value will be one of <code>UP</code>, <code>DOWN</code> 
+ * Returns the direction of the sort indicator for the receiver.
+ * The value will be one of <code>UP</code>, <code>DOWN</code>
  * or <code>NONE</code>.
  *
  * @return the sort direction
@@ -3640,9 +3640,9 @@ int getSortColumnPixel () {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @see #setSortDirection(int)
- * 
+ *
  * @since 3.2
  */
 public int getSortDirection () {
@@ -3655,13 +3655,13 @@ public int getSortDirection () {
  * This item can change when items are expanded, collapsed, scrolled
  * or new items are added or removed.
  *
- * @return the item at the top of the receiver 
- * 
+ * @return the item at the top of the receiver
+ *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 2.1
  */
 public TreeItem getTopItem () {
@@ -3676,11 +3676,11 @@ boolean hitTestSelection (long /*int*/ hItem, int x, int y) {
 	if (item == null) return false;
 	if (!hooks (SWT.MeasureItem)) return false;
 	boolean result = false;
-	
+
 	//BUG? - moved columns, only hittest first column
 	//BUG? - check drag detect
 	int [] order = new int [1], index = new int [1];
-	
+
 	long /*int*/ hDC = OS.GetDC (handle);
 	long /*int*/ oldFont = 0, newFont = OS.SendMessage (handle, OS.WM_GETFONT, 0, 0);
 	if (newFont != 0) oldFont = OS.SelectObject (hDC, newFont);
@@ -3741,7 +3741,7 @@ int imageIndexHeader (Image image) {
 
 /**
  * Searches the receiver's list starting at the first column
- * (index 0) until a column is found that is equal to the 
+ * (index 0) until a column is found that is equal to the
  * argument, and returns the index of that column. If no column
  * is found, returns -1.
  *
@@ -3755,7 +3755,7 @@ int imageIndexHeader (Image image) {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 3.1
  */
 public int indexOf (TreeColumn column) {
@@ -3770,7 +3770,7 @@ public int indexOf (TreeColumn column) {
 
 /**
  * Searches the receiver's list starting at the first item
- * (index 0) until an item is found that is equal to the 
+ * (index 0) until an item is found that is equal to the
  * argument, and returns the index of that item. If no item
  * is found, returns -1.
  *
@@ -3785,7 +3785,7 @@ public int indexOf (TreeColumn column) {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 3.1
  */
 public int indexOf (TreeItem item) {
@@ -3820,7 +3820,7 @@ boolean isItemSelected (NMTVCUSTOMDRAW nmcd) {
 			* not draw with the correct background until the mouse is
 			* moved.  The fix is to test for the selection colors and
 			* guess that the item is not selected.
-			* 
+			*
 			* NOTE: This code does not work when the foreground and
 			* background of the tree are set to the selection colors
 			* but this does not happen in a regular application.
@@ -3848,7 +3848,7 @@ boolean isItemSelected (NMTVCUSTOMDRAW nmcd) {
 				* will not draw the entire row selected until the user
 				* moves the mouse.  The fix is to test for the selection
 				* colors and guess that the item is selected.
-				* 
+				*
 				* NOTE: This code does not work when the foreground and
 				* background of the tree are set to the selection colors
 				* but this does not happen in a regular application.
@@ -3974,7 +3974,7 @@ void releaseWidget () {
 	* messages.  This behavior is unwanted when the tree is being
 	* disposed.  The fix is to ignore NM_CUSTOMDRAW messages by
 	* clearing the custom draw flag.
-	* 
+	*
 	* NOTE: This only happens on Windows XP.
 	*/
 	customDraw = false;
@@ -3999,7 +3999,7 @@ void releaseWidget () {
 
 /**
  * Removes all of the items from the receiver.
- * 
+ *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
@@ -4022,7 +4022,7 @@ public void removeAll () {
 	long /*int*/ result = OS.SendMessage (handle, OS.TVM_DELETEITEM, 0, OS.TVI_ROOT);
 	ignoreShrink = false;
 	if (redraw) {
-		OS.DefWindowProc (handle, OS.WM_SETREDRAW, 1, 0);	
+		OS.DefWindowProc (handle, OS.WM_SETREDRAW, 1, 0);
 		OS.InvalidateRect (handle, null, true);
 	}
 	ignoreDeselect = ignoreSelect = false;
@@ -4066,7 +4066,7 @@ public void removeSelectionListener (SelectionListener listener) {
 	checkWidget ();
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	eventTable.unhook (SWT.Selection, listener);
-	eventTable.unhook (SWT.DefaultSelection, listener);	
+	eventTable.unhook (SWT.DefaultSelection, listener);
 }
 
 /**
@@ -4114,11 +4114,11 @@ void reskinChildren (int flags) {
 
 /**
  * Display a mark indicating the point at which an item will be inserted.
- * The drop insert item has a visual hint to show where a dragged item 
+ * The drop insert item has a visual hint to show where a dragged item
  * will be inserted when dropped on the tree.
- * 
+ *
  * @param item the insert item.  Null will clear the insertion mark.
- * @param before true places the insert mark above 'item'. false places 
+ * @param before true places the insert mark above 'item'. false places
  *	the insert mark below 'item'.
  *
  * @exception IllegalArgumentException <ul>
@@ -4235,7 +4235,7 @@ void setItemCount (int count, long /*int*/ hParent, long /*int*/ hItem) {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 3.2
  */
 /*public*/ void setItemHeight (int itemHeight) {
@@ -4246,7 +4246,7 @@ void setItemCount (int count, long /*int*/ hParent, long /*int*/ hItem) {
 
 /**
  * Marks the receiver's lines as visible if the argument is <code>true</code>,
- * and marks it invisible otherwise. Note that some platforms draw 
+ * and marks it invisible otherwise. Note that some platforms draw
  * grid lines while others may draw alternating row colors.
  * <p>
  * If one of the receiver's ancestors is not visible or some
@@ -4260,7 +4260,7 @@ void setItemCount (int count, long /*int*/ hParent, long /*int*/ hItem) {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 3.1
  */
 public void setLinesVisible (boolean show) {
@@ -4363,7 +4363,7 @@ public void select (TreeItem item) {
 		* is sent with SB_THUMBPOSITION.  The fix is to use
 		* SetScrollInfo() to move the scroll bar thumb before
 		* calling WM_VSCROLL.
-		* 
+		*
 		* NOTE: This code is only necessary on Windows Vista.
 		*/
 		if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (6, 0)) {
@@ -4577,7 +4577,7 @@ void setCursor () {
 	* is sent from SendMessage(), Windows GP's in the window proc for
 	* the tree.  The fix is to avoid calling the tree window proc and
 	* set the cursor for the tree outside of WM_SETCURSOR.
-	* 
+	*
 	* NOTE:  This code assumes that the default cursor for the tree
 	* is IDC_ARROW.
 	*/
@@ -4587,7 +4587,7 @@ void setCursor () {
 }
 
 /**
- * Sets the order that the items in the receiver should 
+ * Sets the order that the items in the receiver should
  * be displayed in to the given argument which is described
  * in terms of the zero-relative ordering of when the items
  * were added.
@@ -4602,12 +4602,12 @@ void setCursor () {
  *    <li>ERROR_NULL_ARGUMENT - if the item order is null</li>
  *    <li>ERROR_INVALID_ARGUMENT - if the item order is not the same length as the number of items</li>
  * </ul>
- * 
+ *
  * @see Tree#getColumnOrder()
  * @see TreeColumn#getMoveable()
  * @see TreeColumn#setMoveable(boolean)
  * @see SWT#Move
- * 
+ *
  * @since 3.2
  */
 public void setColumnOrder (int [] order) {
@@ -4772,7 +4772,7 @@ void setForegroundPixel (int pixel) {
 
 /**
  * Marks the receiver's header as visible if the argument is <code>true</code>,
- * and marks it invisible otherwise. 
+ * and marks it invisible otherwise.
  * <p>
  * If one of the receiver's ancestors is not visible or some
  * other condition makes the receiver not visible, marking
@@ -4785,7 +4785,7 @@ void setForegroundPixel (int pixel) {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 3.1
  */
 public void setHeaderVisible (boolean show) {
@@ -4819,7 +4819,7 @@ public void setRedraw (boolean redraw) {
 	* turn off redraw, the scroll bars are updated when
 	* items are added and removed.  The fix is to call
 	* the default window proc to stop all drawing.
-	* 
+	*
 	* Bug in Windows.  For some reason, when WM_SETREDRAW
 	* is used to turn redraw on for a tree and the tree
 	* contains no items, the last item in the tree does
@@ -4967,7 +4967,7 @@ void setSelection (long /*int*/ hItem, TVITEM tvItem, TreeItem [] selection) {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 3.2
  */
 public void setSelection (TreeItem item) {
@@ -5007,14 +5007,14 @@ public void setSelection (TreeItem [] items) {
 		deselectAll();
 		return;
 	}
-		
+
 	/* Select/deselect the first item */
 	TreeItem item = items [0];
 	if (item != null) {
 		if (item.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
 		long /*int*/ hOldItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_CARET, 0);
 		long /*int*/ hNewItem = hAnchor = item.handle;
-		
+
 		/*
 		* Bug in Windows.  When TVM_SELECTITEM is used to select and
 		* scroll an item to be visible and the client area of the tree
@@ -5023,7 +5023,7 @@ public void setSelection (TreeItem [] items) {
 		* instead of making the desired item visible.  The fix is to
 		* detect the case when the client area is too small and make
 		* the desired visible item be the top item in the tree.
-		* 
+		*
 		* Note that TVM_SELECTITEM when called with TVGN_FIRSTVISIBLE
 		* also requires the work around for scrolling.
 		*/
@@ -5044,7 +5044,7 @@ public void setSelection (TreeItem [] items) {
 			OS.DefWindowProc (handle, OS.WM_SETREDRAW, 1, 0);
 			OS.SendMessage (handle, OS.WM_SETREDRAW, 0, 0);
 		}
-		
+
 		/*
 		* Feature in Windows.  When the old and new focused item
 		* are the same, Windows does not check to make sure that
@@ -5115,19 +5115,19 @@ void expandToItem(TreeItem item) {
 
 /**
  * Sets the column used by the sort indicator for the receiver. A null
- * value will clear the sort indicator.  The current sort column is cleared 
+ * value will clear the sort indicator.  The current sort column is cleared
  * before the new column is set.
  *
  * @param column the column used by the sort indicator or <code>null</code>
- * 
+ *
  * @exception IllegalArgumentException <ul>
- *    <li>ERROR_INVALID_ARGUMENT - if the column is disposed</li> 
+ *    <li>ERROR_INVALID_ARGUMENT - if the column is disposed</li>
  * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 3.2
  */
 public void setSortColumn (TreeColumn column) {
@@ -5143,16 +5143,16 @@ public void setSortColumn (TreeColumn column) {
 }
 
 /**
- * Sets the direction of the sort indicator for the receiver. The value 
+ * Sets the direction of the sort indicator for the receiver. The value
  * can be one of <code>UP</code>, <code>DOWN</code> or <code>NONE</code>.
  *
- * @param direction the direction of the sort indicator 
+ * @param direction the direction of the sort indicator
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 3.2
  */
 public void setSortDirection (int direction) {
@@ -5181,7 +5181,7 @@ public void setSortDirection (int direction) {
  * </ul>
  *
  * @see Tree#getTopItem()
- * 
+ *
  * @since 2.1
  */
 public void setTopItem (TreeItem item) {
@@ -5396,7 +5396,7 @@ public void showItem (TreeItem item) {
 public void showSelection () {
 	checkWidget ();
 	long /*int*/ hItem = 0;
-	if ((style & SWT.SINGLE) != 0) {	
+	if ((style & SWT.SINGLE) != 0) {
 		hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_CARET, 0);
 		if (hItem == 0) return;
 		int state = 0;
@@ -5696,7 +5696,7 @@ void updateOrientation () {
 				Image image = item.image;
 				if (image != null) {
 					int index = imageList.indexOf (image);
-					if (index == -1) imageList.add (image);	
+					if (index == -1) imageList.add (image);
 				}
 			}
 		}
@@ -5707,7 +5707,7 @@ void updateOrientation () {
 		if (headerImageList != null) {
 			Point size = headerImageList.getImageSize ();
 			display.releaseImageList (headerImageList);
-			headerImageList = display.getImageList (style & SWT.RIGHT_TO_LEFT, size.x, size.y);	
+			headerImageList = display.getImageList (style & SWT.RIGHT_TO_LEFT, size.x, size.y);
 			if (columns != null) {
 				for (int i = 0; i < columns.length; i++) {
 					TreeColumn column = columns[i];
@@ -5717,20 +5717,20 @@ void updateOrientation () {
 							HDITEM hdItem = new HDITEM ();
 							hdItem.mask = OS.HDI_FORMAT;
 							OS.SendMessage (hwndHeader, OS.HDM_GETITEM, i, hdItem);
-							if ((hdItem.fmt & OS.HDF_IMAGE)!= 0) {      
+							if ((hdItem.fmt & OS.HDF_IMAGE)!= 0) {
 								int index = headerImageList.indexOf (image);
-								if (index == -1) index = headerImageList.add (image);	
+								if (index == -1) index = headerImageList.add (image);
 								hdItem.mask = OS.HDI_IMAGE;
 								hdItem.iImage = index;
 								OS.SendMessage (hwndHeader, OS.HDM_SETITEM, i, hdItem);
 							}
 						}
-					}	
+					}
 				}
 			}
 			long /*int*/ hImageListHeader = headerImageList.getHandle ();
 			OS.SendMessage (hwndHeader, OS.HDM_SETIMAGELIST, 0, hImageListHeader);
-		}	
+		}
 	}
 }
 
@@ -5827,7 +5827,7 @@ long /*int*/ windowProc (long /*int*/ hwnd, int msg, long /*int*/ wParam, long /
 				* the header not notified and NM_RELEASEDCAPTURE is not
 				* sent.  The fix is to redraw the header when the capture
 				* changes to another control.
-				* 
+				*
 				* This does not happen on XP.
 				*/
 				if (OS.COMCTL32_MAJOR < 6) {
@@ -5854,7 +5854,7 @@ long /*int*/ windowProc (long /*int*/ hwnd, int msg, long /*int*/ wParam, long /
 				OS.MoveMemory (hdr, lParam, NMHDR.sizeof);
 				switch (hdr.code) {
 					case OS.TTN_SHOW:
-					case OS.TTN_POP: 
+					case OS.TTN_POP:
 					case OS.TTN_GETDISPINFOA:
 					case OS.TTN_GETDISPINFOW:
 						return OS.SendMessage (handle, msg, wParam, lParam);
@@ -5945,7 +5945,7 @@ long /*int*/ windowProc (long /*int*/ hwnd, int msg, long /*int*/ wParam, long /
 				* Update the nPos field to match the nTrackPos field
 				* so that the tree scrolls when the scroll bar of the
 				* parent is dragged.
-				* 
+				*
 				* NOTE: For some reason, this code is only necessary
 				* on Windows Vista.
 				*/
@@ -5967,7 +5967,7 @@ long /*int*/ windowProc (long /*int*/ hwnd, int msg, long /*int*/ wParam, long /
 		/*
 		* When there is more than one item selected, DI_GETDRAGIMAGE
 		* returns the item under the cursor.  This happens because
-		* the tree does not have implement multi-select.  The fix 
+		* the tree does not have implement multi-select.  The fix
 		* is to disable DI_GETDRAGIMAGE when more than one item is
 		* selected.
 		*/
@@ -6013,10 +6013,10 @@ long /*int*/ windowProc (long /*int*/ hwnd, int msg, long /*int*/ wParam, long /
 				OS.CombineRgn (hRgn, hRgn, rectRgn, OS.RGN_OR);
 				OS.DeleteObject (rectRgn);
 				rect.bottom = itemRect.bottom;
-				
+
 			}
 			OS.GetRgnBox (hRgn, rect);
-			
+
 			/* Create resources */
 			long /*int*/ hdc = OS.GetDC (handle);
 			long /*int*/ memHdc = OS.CreateCompatibleDC (hdc);
@@ -6054,7 +6054,7 @@ long /*int*/ windowProc (long /*int*/ hwnd, int msg, long /*int*/ wParam, long /
 			shdi.ptOffset.x = mousePos.x - rect.left;
 			shdi.ptOffset.y = mousePos.y - rect.top;
 			if ((style & SWT.MIRRORED) != 0) {
-				shdi.ptOffset.x = shdi.sizeDragImage.cx - shdi.ptOffset.x; 
+				shdi.ptOffset.x = shdi.sizeDragImage.cx - shdi.ptOffset.x;
 			}
 			OS.MoveMemory (lParam, shdi, SHDRAGIMAGE.sizeof);
 			return 1;
@@ -6101,7 +6101,7 @@ LRESULT WM_CHAR (long /*int*/ wParam, long /*int*/ lParam) {
 						if (OS.COMCTL32_MAJOR >= 6) {
 							id = OS.SendMessage (handle, OS.TVM_MAPHTREEITEMTOACCID, hItem, 0);
 						}
-						OS.NotifyWinEvent (OS.EVENT_OBJECT_FOCUS, handle, OS.OBJID_CLIENT, (int)/*64*/id);	
+						OS.NotifyWinEvent (OS.EVENT_OBJECT_FOCUS, handle, OS.OBJID_CLIENT, (int)/*64*/id);
 					}
 				}
 				tvItem.stateMask = OS.TVIS_SELECTED;
@@ -6202,11 +6202,11 @@ LRESULT WM_KEYDOWN (long /*int*/ wParam, long /*int*/ lParam) {
 	switch ((int)/*64*/wParam) {
 		case OS.VK_LEFT:
 		case OS.VK_RIGHT:
-			/* 
+			/*
 			* Bug in Windows. The behavior for the left and right keys is not
 			* changed if the orientation changes after the control was created.
 			* The fix is to replace VK_LEFT by VK_RIGHT and VK_RIGHT by VK_LEFT
-			* when the current orientation differs from the orientation used to 
+			* when the current orientation differs from the orientation used to
 			* create the control.
 		    */
 		    boolean isRTL = (style & SWT.RIGHT_TO_LEFT) != 0;
@@ -6257,7 +6257,7 @@ LRESULT WM_KEYDOWN (long /*int*/ wParam, long /*int*/ lParam) {
 					TVITEM tvItem = new TVITEM ();
 					tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_STATE;
 					tvItem.stateMask = OS.TVIS_SELECTED;
-					long /*int*/ hDeselectItem = hItem;					
+					long /*int*/ hDeselectItem = hItem;
 					RECT rect1 = new RECT ();
 					if (!OS.TreeView_GetItemRect (handle, hAnchor, rect1, false)) {
 						hAnchor = hItem;
@@ -6319,7 +6319,7 @@ LRESULT WM_KEYDOWN (long /*int*/ wParam, long /*int*/ lParam) {
 								hNewItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_FIRSTVISIBLE, 0);
 							}
 							break;
-						case OS.VK_NEXT:			
+						case OS.VK_NEXT:
 							RECT rect = new RECT (), clientRect = new RECT ();
 							OS.GetClientRect (handle, clientRect);
 							hNewItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_FIRSTVISIBLE, 0);
@@ -6394,7 +6394,7 @@ LRESULT WM_KILLFOCUS (long /*int*/ wParam, long /*int*/ lParam) {
 	* the image is drawn is not erased before it is drawn.
 	* This means that the image gets darker each time.
 	* The fix is to redraw the selection.
-	* 
+	*
 	* Feature in Windows.  When multiple item have
 	* the TVIS_SELECTED state, Windows redraws only
 	* the focused item in the color used to show the
@@ -6441,7 +6441,7 @@ LRESULT WM_LBUTTONDBLCLK (long /*int*/ wParam, long /*int*/ lParam) {
 				OS.SetFocus (handle);
 				TVITEM tvItem = new TVITEM ();
 				tvItem.hItem = lpht.hItem;
-				tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_PARAM | OS.TVIF_STATE;	
+				tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_PARAM | OS.TVIF_STATE;
 				tvItem.stateMask = OS.TVIS_STATEIMAGEMASK;
 				OS.SendMessage (handle, OS.TVM_GETITEM, 0, tvItem);
 				int state = tvItem.state >> 12;
@@ -6452,12 +6452,12 @@ LRESULT WM_LBUTTONDBLCLK (long /*int*/ wParam, long /*int*/ lParam) {
 				}
 				tvItem.state = state << 12;
 				OS.SendMessage (handle, OS.TVM_SETITEM, 0, tvItem);
-				if (!OS.IsWinCE) {	
+				if (!OS.IsWinCE) {
 					long /*int*/ id = tvItem.hItem;
 					if (OS.COMCTL32_MAJOR >= 6) {
 						id = OS.SendMessage (handle, OS.TVM_MAPHTREEITEMTOACCID, tvItem.hItem, 0);
 					}
-					OS.NotifyWinEvent (OS.EVENT_OBJECT_FOCUS, handle, OS.OBJID_CLIENT, (int)/*64*/id);	
+					OS.NotifyWinEvent (OS.EVENT_OBJECT_FOCUS, handle, OS.OBJID_CLIENT, (int)/*64*/id);
 				}
 				Event event = new Event ();
 				event.item = _getItem (tvItem.hItem, (int)/*64*/tvItem.lParam);
@@ -6591,7 +6591,7 @@ LRESULT WM_LBUTTONDOWN (long /*int*/ wParam, long /*int*/ lParam) {
 		}
 		return new LRESULT (code);
 	}
-	
+
 	/* Look for check/uncheck */
 	if ((style & SWT.CHECK) != 0) {
 		if ((lpht.flags & OS.TVHT_ONITEMSTATEICON) != 0) {
@@ -6609,7 +6609,7 @@ LRESULT WM_LBUTTONDOWN (long /*int*/ wParam, long /*int*/ lParam) {
 			OS.SetFocus (handle);
 			TVITEM tvItem = new TVITEM ();
 			tvItem.hItem = lpht.hItem;
-			tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_PARAM | OS.TVIF_STATE;	
+			tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_PARAM | OS.TVIF_STATE;
 			tvItem.stateMask = OS.TVIS_STATEIMAGEMASK;
 			OS.SendMessage (handle, OS.TVM_GETITEM, 0, tvItem);
 			int state = tvItem.state >> 12;
@@ -6625,7 +6625,7 @@ LRESULT WM_LBUTTONDOWN (long /*int*/ wParam, long /*int*/ lParam) {
 				if (OS.COMCTL32_MAJOR >= 6) {
 					id = OS.SendMessage (handle, OS.TVM_MAPHTREEITEMTOACCID, tvItem.hItem, 0);
 				}
-				OS.NotifyWinEvent (OS.EVENT_OBJECT_FOCUS, handle, OS.OBJID_CLIENT, (int)/*64*/id);	
+				OS.NotifyWinEvent (OS.EVENT_OBJECT_FOCUS, handle, OS.OBJID_CLIENT, (int)/*64*/id);
 			}
 			Event event = new Event ();
 			event.item = _getItem (tvItem.hItem, (int)/*64*/tvItem.lParam);
@@ -6634,7 +6634,7 @@ LRESULT WM_LBUTTONDOWN (long /*int*/ wParam, long /*int*/ lParam) {
 			return LRESULT.ZERO;
 		}
 	}
-	
+
 	/*
 	* Feature in Windows.  When the tree has the style
 	* TVS_FULLROWSELECT, the background color for the
@@ -6657,7 +6657,7 @@ LRESULT WM_LBUTTONDOWN (long /*int*/ wParam, long /*int*/ lParam) {
 			}
 		}
 	}
-	
+
 	/* Process the mouse when an item is not selected */
 	if (!selected && (style & SWT.FULL_SELECTION) == 0) {
 		if ((lpht.flags & OS.TVHT_ONITEM) == 0) {
@@ -6690,7 +6690,7 @@ LRESULT WM_LBUTTONDOWN (long /*int*/ wParam, long /*int*/ lParam) {
 		OS.SendMessage (handle, OS.TVM_GETITEM, 0, tvItem);
 		hittestSelected = (tvItem.state & OS.TVIS_SELECTED) != 0;
 	}
-	
+
 	/* Get the selected state of the last selected item */
 	long /*int*/ hOldItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_CARET, 0);
 	if ((style & SWT.MULTI) != 0) {
@@ -6715,7 +6715,7 @@ LRESULT WM_LBUTTONDOWN (long /*int*/ wParam, long /*int*/ lParam) {
 			* focus from WM_MOUSEACTIVATE of the shell.  The fix is to
 			* force the WM_UPDATEUISTATE to be sent before disabling
 			* the drawing.
-			* 
+			*
 			* NOTE:  Any redraw of a parent (or sibling) will be dispatched
 			* during the modal drag detect loop.  This code only fixes the
 			* case where the tree causes a redraw from WM_UPDATEUISTATE.
@@ -6784,10 +6784,10 @@ LRESULT WM_LBUTTONDOWN (long /*int*/ wParam, long /*int*/ lParam) {
 			OS.SendMessage (handle, OS.TVM_SETITEM, 0, tvItem);
 		}
 	}
-	
+
 	/* Reselect the last item that was unselected */
 	if ((style & SWT.MULTI) != 0) {
-		
+
 		/* Check for CONTROL and reselect the last item */
 		if (hittestSelected || (wParam & OS.MK_CONTROL) != 0) {
 			if (hOldItem == hNewItem && hOldItem == lpht.hItem) {
@@ -6849,7 +6849,7 @@ LRESULT WM_LBUTTONDOWN (long /*int*/ wParam, long /*int*/ lParam) {
 					if (OS.TreeView_GetItemRect (handle, hAnchor, rect1, false)) {
 						RECT rect2 = new RECT ();
 						if (OS.TreeView_GetItemRect (handle, hNewItem, rect2, false)) {
-							int flags = rect1.top < rect2.top ? OS.TVGN_NEXTVISIBLE : OS.TVGN_PREVIOUSVISIBLE;			
+							int flags = rect1.top < rect2.top ? OS.TVGN_NEXTVISIBLE : OS.TVGN_PREVIOUSVISIBLE;
 							tvItem.state = OS.TVIS_SELECTED;
 							long /*int*/ hItem = tvItem.hItem = hAnchor;
 							OS.SendMessage (handle, OS.TVM_SETITEM, 0, tvItem);
@@ -6865,7 +6865,7 @@ LRESULT WM_LBUTTONDOWN (long /*int*/ wParam, long /*int*/ lParam) {
 		}
 	}
 	if ((wParam & OS.MK_SHIFT) == 0) hAnchor = hNewItem;
-			
+
 	/* Issue notification */
 	if (!gestureCompleted) {
 		tvItem.hItem = hNewItem;
@@ -6876,7 +6876,7 @@ LRESULT WM_LBUTTONDOWN (long /*int*/ wParam, long /*int*/ lParam) {
 		sendSelectionEvent (SWT.Selection, event, false);
 	}
 	gestureCompleted = false;
-	
+
 	/*
 	* Feature in Windows.  Inside WM_LBUTTONDOWN and WM_RBUTTONDOWN,
 	* the widget starts a modal loop to determine if the user wants
@@ -6984,7 +6984,7 @@ LRESULT WM_RBUTTONDOWN (long /*int*/ wParam, long /*int*/ lParam) {
 	*/
 //	if (OS.GetCapture () != handle) OS.SetCapture (handle);
 	if (OS.GetFocus () != handle) OS.SetFocus (handle);
-	
+
 	/*
 	* Feature in Windows.  When the user selects a tree item
 	* with the right mouse button, the item remains selected
@@ -7137,12 +7137,12 @@ LRESULT WM_PRINTCLIENT (long /*int*/ wParam, long /*int*/ lParam) {
 LRESULT WM_SETCURSOR (long /*int*/ wParam, long /*int*/ lParam) {
 	LRESULT result = super.WM_SETCURSOR (wParam, lParam);
 	if (result != null) return result;
-	
+
 	/*
 	* Feature in Windows. On Windows 7, the tree control show the
 	* hand cursor when the mouse is over an item.  This is the
 	* correct Windows 7 behavior but not correct for SWT. The fix
-	* is to always ensure a cursor is set. 
+	* is to always ensure a cursor is set.
 	*/
 	if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (6, 1)) {
 		if (wParam == handle) {
@@ -7164,7 +7164,7 @@ LRESULT WM_SETFOCUS (long /*int*/ wParam, long /*int*/ lParam) {
 	* the image is drawn is not erased before it is drawn.
 	* This means that the image gets darker each time.
 	* The fix is to redraw the selection.
-	* 
+	*
 	* Feature in Windows.  When multiple item have
 	* the TVIS_SELECTED state, Windows redraws only
 	* the focused item in the color used to show the
@@ -7225,7 +7225,7 @@ LRESULT WM_SETREDRAW (long /*int*/ wParam, long /*int*/ lParam) {
 	* that is not inside the client area, Windows segment
 	* faults.  The fix is to call the default window proc
 	* rather than the default tree proc.
-	* 
+	*
 	* NOTE:  This problem is intermittent and happens on
 	* Windows Vista running under the theme manager.
 	*/
@@ -7319,13 +7319,13 @@ LRESULT WM_TIMER (long /*int*/ wParam, long /*int*/ lParam) {
 	if (result != null) return result;
 
 	/* Bug in Windows. When the expandos are visible (or in process of fading away)
-	 * and the tree control is hidden the animation timer does not stop calling the 
+	 * and the tree control is hidden the animation timer does not stop calling the
 	 * window proc till the tree is visible again. This can cause performance problems
 	 * specially in cases there the application has several tree controls in this state.
 	 * The fix is to detect a timer that repeats itself several times when the control
 	 * is not visible and stop it. The timer is stopped by sending a fake mouse move event.
-	 * 
-	 * Note: Just killing the timer could cause some internal clean up task related to the 
+	 *
+	 * Note: Just killing the timer could cause some internal clean up task related to the
 	 * animation not to run.
 	 */
 	long /*int*/ bits = OS.SendMessage (handle, OS.TVM_GETEXTENDEDSTYLE, 0, 0);
@@ -7394,7 +7394,7 @@ LRESULT wmNotifyChild (NMHDR hdr, long /*int*/ wParam, long /*int*/ lParam) {
 				* using TVM_INSERTITEM, a TVN_GETDISPINFO is sent before
 				* TVM_INSERTITEM returns and before the item is added to
 				* the items array.  The fix is to check for null.
-				* 
+				*
 				* NOTE: This only happens on XP with the version 6.00 of
 				* COMCTL32.DLL.
 				*/
@@ -7455,10 +7455,10 @@ LRESULT wmNotifyChild (NMHDR hdr, long /*int*/ wParam, long /*int*/ lParam) {
 			* using TVM_INSERTITEM, a TVN_GETDISPINFO is sent before
 			* TVM_INSERTITEM returns and before the item is added to
 			* the items array.  The fix is to check for null.
-			* 
+			*
 			* NOTE: This only happens on XP with the version 6.00 of
 			* COMCTL32.DLL.
-			* 
+			*
 			* Feature in Windows.  When TVM_DELETEITEM is called with
 			* TVI_ROOT to remove all items from a tree, under certain
 			* circumstances, the tree sends TVN_GETDISPINFO for items
@@ -7527,7 +7527,7 @@ LRESULT wmNotifyChild (NMHDR hdr, long /*int*/ wParam, long /*int*/ lParam) {
 				}
 			}
 			NMTVCUSTOMDRAW nmcd = new NMTVCUSTOMDRAW ();
-			OS.MoveMemory (nmcd, lParam, NMTVCUSTOMDRAW.sizeof);		
+			OS.MoveMemory (nmcd, lParam, NMTVCUSTOMDRAW.sizeof);
 			switch (nmcd.dwDrawStage) {
 				case OS.CDDS_PREPAINT: return CDDS_PREPAINT (nmcd, wParam, lParam);
 				case OS.CDDS_ITEMPREPAINT: return CDDS_ITEMPREPAINT (nmcd, wParam, lParam);
@@ -7582,7 +7582,7 @@ LRESULT wmNotifyChild (NMHDR hdr, long /*int*/ wParam, long /*int*/ lParam) {
 						return LRESULT.ONE;
 					}
 				}
-			}			
+			}
 			break;
 		}
 		case OS.TVN_SELCHANGINGA:
@@ -7676,7 +7676,7 @@ LRESULT wmNotifyChild (NMHDR hdr, long /*int*/ wParam, long /*int*/ lParam) {
 				* is sent from within TVM_DELETEITEM for the tree item
 				* being destroyed.  By the time the message is sent,
 				* the item has already been removed from the list of
-				* items.  The fix is to check for null. 
+				* items.  The fix is to check for null.
 				*/
 				if (items == null) break;
 				TreeItem item = _getItem (tvItem.hItem, (int)/*64*/tvItem.lParam);
@@ -7779,7 +7779,7 @@ LRESULT wmNotifyChild (NMHDR hdr, long /*int*/ wParam, long /*int*/ lParam) {
 			break;
 		}
 		case OS.NM_RECOGNIZEGESTURE: {
-			/* 
+			/*
 			* Feature in Pocket PC.  The tree and table controls detect the tap
 			* and hold gesture by default. They send a GN_CONTEXTMENU message to show
 			* the popup menu.  This default behaviour is unwanted on Pocket PC 2002
@@ -7969,7 +7969,7 @@ LRESULT wmNotifyHeader (NMHDR hdr, long /*int*/ wParam, long /*int*/ lParam) {
 					if (column != null) {
 						column.updateToolTip (phdn.iItem);
 						column.sendEvent (SWT.Resize);
-						if (isDisposed ()) return LRESULT.ZERO;	
+						if (isDisposed ()) return LRESULT.ZERO;
 						TreeColumn [] newColumns = new TreeColumn [columnCount];
 						System.arraycopy (columns, 0, newColumns, 0, columnCount);
 						int [] order = new int [columnCount];
@@ -7999,7 +7999,7 @@ LRESULT wmNotifyHeader (NMHDR hdr, long /*int*/ wParam, long /*int*/ lParam) {
 			}
 			break;
 		}
-		case OS.HDN_ITEMDBLCLICKW:      
+		case OS.HDN_ITEMDBLCLICKW:
 		case OS.HDN_ITEMDBLCLICKA: {
 			NMHEADER phdn = new NMHEADER ();
 			OS.MoveMemory (phdn, lParam, NMHEADER.sizeof);

@@ -14,7 +14,7 @@ import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.win32.*;
 
 public class ComboDrawData extends DrawData {
-	
+
 public ComboDrawData() {
 	state = new int[2];
 }
@@ -31,7 +31,7 @@ void draw(Theme theme, GC gc, Rectangle bounds) {
 		int[] part = getPartId(DrawData.WIDGET_WHOLE);
 		OS.DrawThemeBackground (hTheme, gc.handle, part[0], part[1], rect, null);
 		RECT contentRect = new RECT();
-		OS.GetThemeBackgroundContentRect(hTheme, gc.handle, part[0], part[1], rect, contentRect);				
+		OS.GetThemeBackgroundContentRect(hTheme, gc.handle, part[0], part[1], rect, contentRect);
 		Rectangle clientArea = this.clientArea;
 		if (clientArea != null) {
 			clientArea.x = contentRect.left;
@@ -65,7 +65,7 @@ int[] getPartId(int part) {
 	int state = this.state[part];
 	int iPartId = 0, iStateId = 0;
 	switch (part) {
-		case DrawData.WIDGET_WHOLE: 
+		case DrawData.WIDGET_WHOLE:
 			iPartId = OS.EP_EDITTEXT;
 			iStateId = OS.ETS_NORMAL;
 			if ((state & DrawData.DISABLED) != 0) iStateId = OS.ETS_DISABLED;
@@ -78,7 +78,7 @@ int[] getPartId(int part) {
 			if ((state & DrawData.PRESSED) != 0) iStateId = OS.CBXS_PRESSED;
 			break;
 	}
-	return new int[]{iPartId, iStateId};	
+	return new int[]{iPartId, iStateId};
 }
 
 @Override

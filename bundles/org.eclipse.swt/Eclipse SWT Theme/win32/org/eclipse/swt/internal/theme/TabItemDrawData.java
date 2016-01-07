@@ -18,10 +18,10 @@ public class TabItemDrawData extends DrawData {
 
 	public TabFolderDrawData parent;
 	public int position;
-	
+
 	static final int TABITEM_INSET = 2;
 	static final int TABITEM_INSET2 = 6;
-	
+
 public TabItemDrawData() {
 	state = new int[1];
 }
@@ -112,7 +112,7 @@ int[] getPartId(int part) {
 	if ((state & DrawData.FOCUSED) != 0) iStateId = OS.TIS_FOCUSED;
 	if ((state & DrawData.SELECTED) != 0) iStateId = OS.TIS_SELECTED;
 	if ((state & DrawData.DISABLED) != 0) iStateId = OS.TIS_DISABLED;
-	return new int[]{iPartId, iStateId};	
+	return new int[]{iPartId, iStateId};
 }
 
 @Override

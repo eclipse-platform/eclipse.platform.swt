@@ -54,7 +54,7 @@ Scrollable () {
  * <p>
  * The style value is either one of the style constants defined in
  * class <code>SWT</code> which is applicable to instances of this
- * class, or must be built by <em>bitwise OR</em>'ing together 
+ * class, or must be built by <em>bitwise OR</em>'ing together
  * (that is, using the <code>int</code> "|" operator) two or more
  * of those <code>SWT</code> style constants. The class description
  * lists the style constants that are applicable to the class.
@@ -100,7 +100,7 @@ long /*int*/ callWindowProc (long /*int*/ hwnd, int msg, long /*int*/ wParam, lo
  * rectangle described by the arguments (relative to the
  * receiver's parent).
  * </p>
- * 
+ *
  * @param x the desired x coordinate of the client area
  * @param y the desired y coordinate of the client area
  * @param width the desired width of the client area
@@ -182,7 +182,7 @@ void destroyScrollBar (int type) {
  * Returns a rectangle which describes the area of the
  * receiver which is capable of displaying data (that is,
  * not covered by the "trimmings").
- * 
+ *
  * @return the client area
  *
  * @exception SWTException <ul>
@@ -233,18 +233,18 @@ public ScrollBar getHorizontalBar () {
  * <li><code>SWT.SCROLLBAR_OVERLAY</code> - if receiver
  * uses overlay scrollbars</li>
  * <li><code>SWT.NONE</code> - otherwise</li>
- * 
+ *
  * @return the mode of scrollbars
- * 
+ *
  * @exception SWTException <ul>
  * <li>ERROR_WIDGET_DISPOSED - if the receiver has been
  * disposed</li>
  * <li>ERROR_THREAD_INVALID_ACCESS - if not called from the
  * thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @see SWT#SCROLLBAR_OVERLAY
- * 
+ *
  * @since 3.8
  */
 public int getScrollbarsMode () {
@@ -329,7 +329,7 @@ long /*int*/ windowProc () {
 LRESULT WM_HSCROLL (long /*int*/ wParam, long /*int*/ lParam) {
 	LRESULT result = super.WM_HSCROLL (wParam, lParam);
 	if (result != null) return result;
-	
+
 	/*
 	* Bug on WinCE.  lParam should be NULL when the message is not sent
 	* by a scroll bar control, but it contains the handle to the window.
@@ -482,7 +482,7 @@ LRESULT wmScrollWheel (boolean update, long /*int*/ wParam, long /*int*/ lParam)
 		}
 		return LRESULT.ZERO;
 	}
-		
+
 	/*
 	* When the native widget scrolls inside WM_MOUSEWHEEL, it
 	* may or may not send a WM_VSCROLL or WM_HSCROLL to do the
@@ -501,7 +501,7 @@ LRESULT wmScrollWheel (boolean update, long /*int*/ wParam, long /*int*/ lParam)
 		int position = verticalBar.getSelection ();
 		if (position != vPosition) {
 			Event event = new Event ();
-			event.detail = position < vPosition ? SWT.PAGE_UP : SWT.PAGE_DOWN; 
+			event.detail = position < vPosition ? SWT.PAGE_UP : SWT.PAGE_DOWN;
 			verticalBar.sendSelectionEvent (SWT.Selection, event, true);
 		}
 	}
@@ -509,7 +509,7 @@ LRESULT wmScrollWheel (boolean update, long /*int*/ wParam, long /*int*/ lParam)
 		int position = horizontalBar.getSelection ();
 		if (position != hPosition) {
 			Event event = new Event ();
-			event.detail = position < hPosition ? SWT.PAGE_UP : SWT.PAGE_DOWN; 
+			event.detail = position < hPosition ? SWT.PAGE_UP : SWT.PAGE_DOWN;
 			horizontalBar.sendSelectionEvent (SWT.Selection, event, true);
 		}
 	}
@@ -530,7 +530,7 @@ LRESULT wmScroll (ScrollBar bar, boolean update, long /*int*/ hwnd, int msg, lon
 			case OS.SB_ENDSCROLL:  return null;
 			case OS.SB_THUMBPOSITION:
 			case OS.SB_THUMBTRACK:
-				/* 
+				/*
 				* Note: On WinCE, the value in SB_THUMBPOSITION is relative to nMin.
 				* Same for SB_THUMBPOSITION 'except' for the very first thumb track
 				* message which has the actual value of nMin. This is a problem when

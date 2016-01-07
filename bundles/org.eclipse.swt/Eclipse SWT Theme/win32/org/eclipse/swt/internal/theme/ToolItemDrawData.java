@@ -17,9 +17,9 @@ import org.eclipse.swt.internal.win32.*;
 public class ToolItemDrawData extends DrawData {
 
 	public ToolBarDrawData parent;
-	
+
 	static final int INSET = 1;
-	
+
 public ToolItemDrawData() {
 	state = new int[2];
 }
@@ -85,7 +85,7 @@ void draw(Theme theme, GC gc, Rectangle bounds) {
 		if ((style & SWT.DROP_DOWN) != 0) {
 			rect.left = rect.right;
 			rect.right = rect.left + size.cx;
-			OS.DrawThemeBackground(hTheme, gc.handle, dropPart[0], dropPart[1], rect, null);			
+			OS.DrawThemeBackground(hTheme, gc.handle, dropPart[0], dropPart[1], rect, null);
 		}
 		OS.CloseThemeData(hTheme);
 	}
@@ -122,7 +122,7 @@ int[] getPartId(int part) {
 					}
 				}
 				if ((style & (SWT.RADIO | SWT.CHECK)) != 0 && (state & DrawData.SELECTED) != 0) {
-					iStateId = OS.TS_CHECKED;			
+					iStateId = OS.TS_CHECKED;
 				}
 				if ((state & DrawData.PRESSED) != 0) iStateId = OS.TS_PRESSED;
 				if ((state & DrawData.DISABLED) != 0) iStateId = OS.TS_DISABLED;

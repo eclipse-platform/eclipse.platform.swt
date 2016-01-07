@@ -17,7 +17,7 @@ public class COMPOSITIONFORM {
 	public int x;
 	/** @field accessor=ptCurrentPos.y */
 	public int y;
-//	RECT rcArea;  
+//	RECT rcArea;
 	/** @field accessor=rcArea.left */
 	public int left;
 	/** @field accessor=rcArea.top */

@@ -20,7 +20,7 @@ import org.eclipse.swt.internal.win32.*;
  * by providing a device and either name, size and style information
  * or a <code>FontData</code> object which encapsulates this data.
  * <p>
- * Application code must explicitly invoke the <code>Font.dispose()</code> 
+ * Application code must explicitly invoke the <code>Font.dispose()</code>
  * method to release the operating system resources managed by each instance
  * when those instances are no longer required.
  * </p>
@@ -31,7 +31,7 @@ import org.eclipse.swt.internal.win32.*;
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  */
 public final class Font extends Resource {
-	
+
 	/**
 	 * the handle to the OS font resource
 	 * (Warning: This field is platform dependent)
@@ -41,11 +41,11 @@ public final class Font extends Resource {
 	 * within the packages provided by SWT. It is not available on all
 	 * platforms and should never be accessed from application code.
 	 * </p>
-	 * 
+	 *
 	 * @noreference This field is not intended to be referenced by clients.
 	 */
 	public long /*int*/ handle;
-	
+
 /**
  * Prevents uninitialized instances from being created outside the package.
  */
@@ -53,16 +53,16 @@ Font(Device device) {
 	super(device);
 }
 
-/**	 
+/**
  * Constructs a new font given a device and font data
  * which describes the desired font's appearance.
  * <p>
- * You must dispose the font when it is no longer required. 
+ * You must dispose the font when it is no longer required.
  * </p>
  *
  * @param device the device to create the font on
  * @param fd the FontData that describes the desired font (must not be null)
- * 
+ *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if device is null and there is no current device</li>
  *    <li>ERROR_NULL_ARGUMENT - if the fd argument is null</li>
@@ -70,7 +70,7 @@ Font(Device device) {
  * @exception SWTError <ul>
  *    <li>ERROR_NO_HANDLES - if a font could not be created from the given font data</li>
  * </ul>
- * 
+ *
  * @see #dispose()
  */
 public Font(Device device, FontData fd) {
@@ -79,17 +79,17 @@ public Font(Device device, FontData fd) {
 	init();
 }
 
-/**	 
+/**
  * Constructs a new font given a device and an array
  * of font data which describes the desired font's
  * appearance.
  * <p>
- * You must dispose the font when it is no longer required. 
+ * You must dispose the font when it is no longer required.
  * </p>
  *
  * @param device the device to create the font on
  * @param fds the array of FontData that describes the desired font (must not be null)
- * 
+ *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if device is null and there is no current device</li>
  *    <li>ERROR_NULL_ARGUMENT - if the fds argument is null</li>
@@ -99,9 +99,9 @@ public Font(Device device, FontData fd) {
  * @exception SWTError <ul>
  *    <li>ERROR_NO_HANDLES - if a font could not be created from the given font data</li>
  * </ul>
- * 
+ *
  * @see #dispose()
- * 
+ *
  * @since 2.1
  */
 public Font(Device device, FontData[] fds) {
@@ -112,22 +112,22 @@ public Font(Device device, FontData[] fds) {
 		if (fds[i] == null) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
 	init(fds[0]);
-	init();	
+	init();
 }
 
-/**	 
+/**
  * Constructs a new font given a device, a font name,
  * the height of the desired font in points, and a font
  * style.
  * <p>
- * You must dispose the font when it is no longer required. 
+ * You must dispose the font when it is no longer required.
  * </p>
  *
  * @param device the device to create the font on
  * @param name the name of the font (must not be null)
  * @param height the font height in points
  * @param style a bit or combination of NORMAL, BOLD, ITALIC
- * 
+ *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if device is null and there is no current device</li>
  *    <li>ERROR_NULL_ARGUMENT - if the name argument is null</li>
@@ -136,7 +136,7 @@ public Font(Device device, FontData[] fds) {
  * @exception SWTError <ul>
  *    <li>ERROR_NO_HANDLES - if a font could not be created from the given arguments</li>
  * </ul>
- * 
+ *
  * @see #dispose()
  */
 public Font(Device device, String name, int height, int style) {
@@ -150,7 +150,7 @@ public Font(Device device, String name, int height, int style) {
 	super(device);
 	if (name == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	init(new FontData (name, height, style));
-	init();	
+	init();
 }
 @Override
 void destroy() {
@@ -178,8 +178,8 @@ public boolean equals(Object object) {
 
 /**
  * Returns an array of <code>FontData</code>s representing the receiver.
- * On Windows, only one FontData will be returned per font. On X however, 
- * a <code>Font</code> object <em>may</em> be composed of multiple X 
+ * On Windows, only one FontData will be returned per font. On X however,
+ * a <code>Font</code> object <em>may</em> be composed of multiple X
  * fonts. To support this case, we return an array of font data objects.
  *
  * @return an array of font data objects describing the receiver
@@ -196,8 +196,8 @@ public FontData[] getFontData() {
 }
 
 /**
- * Returns an integer hash code for the receiver. Any two 
- * objects that return <code>true</code> when passed to 
+ * Returns an integer hash code for the receiver. Any two
+ * objects that return <code>true</code> when passed to
  * <code>equals</code> must return the same value for this
  * method.
  *
@@ -247,7 +247,7 @@ public String toString () {
 	return "Font {" + handle + "}";
 }
 
-/**	 
+/**
  * Invokes platform specific functionality to allocate a new font.
  * <p>
  * <b>IMPORTANT:</b> This method is <em>not</em> part of the public
@@ -260,7 +260,7 @@ public String toString () {
  * @param device the device on which to allocate the color
  * @param handle the handle for the font
  * @return a new font object containing the specified device and handle
- * 
+ *
  * @noreference This method is not intended to be referenced by clients.
  */
 public static Font win32_new(Device device, long /*int*/ handle) {

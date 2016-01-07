@@ -21,7 +21,7 @@ import org.eclipse.swt.widgets.*;
 /*
  * Wraps Win32 API used to bidi enable widgets. Up to 3.104 was used by
  * StyledText widget exclusively. 3.105 release introduced the method
- * #resolveTextDirection, which is used by other widgets as well. 
+ * #resolveTextDirection, which is used by other widgets as well.
  */
 public class BidiUtil {
 
@@ -37,8 +37,8 @@ public class BidiUtil {
 	public static final int LINKBEFORE = 2;
 	public static final int LINKAFTER = 4;
 
-	// variables used for providing a listener mechanism for keyboard language 
-	// switching 
+	// variables used for providing a listener mechanism for keyboard language
+	// switching
 	static Map<LONG, Runnable> languageMap = new HashMap<LONG, Runnable> ();
 	static Map<LONG, LONG> oldProcMap = new HashMap<LONG, LONG> ();
 	/*
@@ -63,7 +63,7 @@ public class BidiUtil {
 	static final int GCP_LIGATE = 0x0020;
 	static final int GCP_CLASSIN = 0x00080000;
 	static final byte GCPCLASS_ARABIC = 2;
-	static final byte GCPCLASS_HEBREW = 2;	
+	static final byte GCPCLASS_HEBREW = 2;
 	static final byte GCPCLASS_LOCALNUMBER = 4;
 	static final byte GCPCLASS_LATINNUMBER = 5;
 	static final int GCPGLYPH_LINKBEFORE = 0x8000;
@@ -83,27 +83,27 @@ public class BidiUtil {
 	static final int HKL_PREV = 0;
 
 	/*
-	 * Public character class constants are the same as Windows 
-	 * platform constants. 
-	 * Saves conversion of class array in getRenderInfo to arbitrary 
+	 * Public character class constants are the same as Windows
+	 * platform constants.
+	 * Saves conversion of class array in getRenderInfo to arbitrary
 	 * constants for now.
 	 */
 	public static final int CLASS_HEBREW = GCPCLASS_ARABIC;
 	public static final int CLASS_ARABIC = GCPCLASS_HEBREW;
 	public static final int CLASS_LOCALNUMBER = GCPCLASS_LOCALNUMBER;
 	public static final int CLASS_LATINNUMBER = GCPCLASS_LATINNUMBER;
-	public static final int REORDER = GCP_REORDER;				
+	public static final int REORDER = GCP_REORDER;
 	public static final int LIGATE = GCP_LIGATE;
 	public static final int GLYPHSHAPE = GCP_GLYPHSHAPE;
 
 /**
  * Adds a language listener. The listener will get notified when the language of
- * the keyboard changes (via Alt-Shift on Win platforms).  Do this by creating a 
+ * the keyboard changes (via Alt-Shift on Win platforms).  Do this by creating a
  * window proc for the Control so that the window messages for the Control can be
  * monitored.
  * <p>
  *
- * @param hwnd the handle of the Control that is listening for keyboard language 
+ * @param hwnd the handle of the Control that is listening for keyboard language
  *  changes
  * @param runnable the code that should be executed when a keyboard language change
  *  occurs
@@ -128,7 +128,7 @@ static long /*int*/ EnumSystemLanguageGroupsProc(long /*int*/ lpLangGrpId, long 
 		return 0;
 	}
 	return 1;
-} 
+}
 /**
  * Wraps the ExtTextOut function.
  * <p>
@@ -141,14 +141,14 @@ static long /*int*/ EnumSystemLanguageGroupsProc(long /*int*/ lpLangGrpId, long 
  */
 public static void drawGlyphs(GC gc, char[] renderBuffer, int[] renderDx, int x, int y) {
 	int length = renderDx.length;
-	
+
 	if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION(4, 10)) {
 		if (OS.GetLayout (gc.handle) != 0) {
 			reverse(renderDx);
 			renderDx[length-1]--;               //fixes bug 40006
 			reverse(renderBuffer);
 		}
-	}	
+	}
 	// render transparently to avoid overlapping segments. fixes bug 40006
 	int oldBkMode = OS.SetBkMode(gc.handle, OS.TRANSPARENT);
 	OS.ExtTextOutW(gc.handle, x, y, ETO_GLYPH_INDEX , null, renderBuffer, renderBuffer.length, renderDx);
@@ -158,17 +158,17 @@ public static void drawGlyphs(GC gc, char[] renderBuffer, int[] renderDx, int x,
  * Return ordering and rendering information for the given text.  Wraps the GetFontLanguageInfo
  * and GetCharacterPlacement functions.
  * <p>
- * 
+ *
  * @param gc the GC to use for measuring of this line, input parameter
  * @param text text that bidi data should be calculated for, input parameter
  * @param order an array of integers representing the visual position of each character in
  *  the text array, output parameter
- * @param classBuffer an array of integers representing the type (e.g., ARABIC, HEBREW, 
+ * @param classBuffer an array of integers representing the type (e.g., ARABIC, HEBREW,
  *  LOCALNUMBER) of each character in the text array, input/output parameter
  * @param dx an array of integers representing the pixel width of each glyph in the returned
  *  glyph buffer, output parameter
  * @param flags an integer representing rendering flag information, input parameter
- * @param offsets text segments that should be measured and reordered separately, input 
+ * @param offsets text segments that should be measured and reordered separately, input
  *  parameter. See org.eclipse.swt.custom.BidiSegmentEvent for details.
  * @return buffer with the glyphs that should be rendered for the given text
  */
@@ -180,7 +180,7 @@ public static char[] getRenderInfo(GC gc, String text, int[] order, byte[] class
 	boolean isRightOriented = false;
 	if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION(4, 10)) {
 		isRightOriented = OS.GetLayout(gc.handle) != 0;
-	} 
+	}
 	OS.TranslateCharsetInfo(cs, lpCs, OS.TCI_SRCCHARSET);
 	TCHAR textBuffer = new TCHAR(lpCs[1], text, false);
 	int byteCount = textBuffer.length();
@@ -246,9 +246,9 @@ public static char[] getRenderInfo(GC gc, String text, int[] order, byte[] class
 		if (dx != null) {
 			int [] dx2 = new int [result.nGlyphs];
 			OS.MoveMemory(dx2, result.lpDx, dx2.length * 4);
-			if (isRightOriented) { 
+			if (isRightOriented) {
 				reverse(dx2);
-			} 
+			}
 			System.arraycopy (dx2, 0, dx, glyphCount, dx2.length);
 		}
 		if (order != null) {
@@ -266,7 +266,7 @@ public static char[] getRenderInfo(GC gc, String text, int[] order, byte[] class
 		OS.MoveMemory(glyphBuffer2, result.lpGlyphs, glyphBuffer2.length * 2);
 		if (isRightOriented) {
 			reverse(glyphBuffer2);
-		} 
+		}
 		System.arraycopy (glyphBuffer2, 0, glyphBuffer, glyphCount, glyphBuffer2.length);
 		glyphCount += glyphBuffer2.length;
 
@@ -289,20 +289,20 @@ public static char[] getRenderInfo(GC gc, String text, int[] order, byte[] class
 	return glyphBuffer;
 }
 /**
- * Return bidi ordering information for the given text.  Does not return rendering 
- * information (e.g., glyphs, glyph distances).  Use this method when you only need 
- * ordering information.  Doing so will improve performance.  Wraps the 
+ * Return bidi ordering information for the given text.  Does not return rendering
+ * information (e.g., glyphs, glyph distances).  Use this method when you only need
+ * ordering information.  Doing so will improve performance.  Wraps the
  * GetFontLanguageInfo and GetCharacterPlacement functions.
  * <p>
- * 
+ *
  * @param gc the GC to use for measuring of this line, input parameter
  * @param text text that bidi data should be calculated for, input parameter
  * @param order an array of integers representing the visual position of each character in
  *  the text array, output parameter
- * @param classBuffer an array of integers representing the type (e.g., ARABIC, HEBREW, 
+ * @param classBuffer an array of integers representing the type (e.g., ARABIC, HEBREW,
  *  LOCALNUMBER) of each character in the text array, input/output parameter
  * @param flags an integer representing rendering flag information, input parameter
- * @param offsets text segments that should be measured and reordered separately, input 
+ * @param offsets text segments that should be measured and reordered separately, input
  *  parameter. See org.eclipse.swt.custom.BidiSegmentEvent for details.
  */
 public static void getOrderInfo(GC gc, String text, int[] order, byte[] classBuffer, int flags, int [] offsets) {
@@ -316,7 +316,7 @@ public static void getOrderInfo(GC gc, String text, int[] order, byte[] classBuf
 	boolean isRightOriented = false;
 	if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION(4, 10)) {
 		isRightOriented = OS.GetLayout(gc.handle) != 0;
-	} 
+	}
 
 	GCP_RESULTS result = new GCP_RESULTS();
 	result.lStructSize = GCP_RESULTS.sizeof;
@@ -380,7 +380,7 @@ public static void getOrderInfo(GC gc, String text, int[] order, byte[] classBuf
 	OS.HeapFree(hHeap, 0, lpOrder);
 }
 /**
- * Return bidi attribute information for the font in the specified gc.  
+ * Return bidi attribute information for the font in the specified gc.
  * <p>
  *
  * @param gc the gc to query
@@ -399,10 +399,10 @@ public static int getFontBidiAttributes(GC gc) {
 	if (((fontLanguageInfo & GCP_GLYPHSHAPE) != 0)) {
 		fontStyle |= GLYPHSHAPE;
 	}
-	return fontStyle;	
+	return fontStyle;
 }
 /**
- * Return the active keyboard language type.  
+ * Return the active keyboard language type.
  * <p>
  *
  * @return an integer representing the active keyboard language (KEYBOARD_BIDI,
@@ -413,7 +413,7 @@ public static int getKeyboardLanguage() {
 	return isBidiLang(layout) ? KEYBOARD_BIDI : KEYBOARD_NON_BIDI;
 }
 /**
- * Return the languages that are installed for the keyboard.  
+ * Return the languages that are installed for the keyboard.
  * <p>
  *
  * @return integer array with an entry for each installed language
@@ -432,10 +432,10 @@ static boolean isBidiLang(long /*int*/ lang) {
 }
 /**
  * Return whether or not the platform supports a bidi language.  Determine this
- * by looking at the languages that are installed.  
+ * by looking at the languages that are installed.
  * <p>
  *
- * @return true if bidi is supported, false otherwise. Always 
+ * @return true if bidi is supported, false otherwise. Always
  * 	false on Windows CE.
  */
 public static boolean isBidiPlatform() {
@@ -443,21 +443,21 @@ public static boolean isBidiPlatform() {
 	if (isBidiPlatform != -1) return isBidiPlatform == 1; // already set
 
 	isBidiPlatform = 0;
-	
+
 	// The following test is a workaround for bug report 27629. On WinXP,
 	// both bidi and complex script (e.g., Thai) languages must be installed
 	// at the same time.  Since the bidi platform calls do not support
 	// double byte characters, there is no way to run Eclipse using the
 	// complex script languages on XP, so constrain this test to answer true
 	// only if a bidi input language is defined.  Doing so will allow complex
-	// script languages to work (e.g., one can install bidi and complex script 
+	// script languages to work (e.g., one can install bidi and complex script
 	// languages, but only install the Thai keyboard).
 	if (!isKeyboardBidi()) return false;
-	
+
 	Callback callback = null;
 	try {
 		callback = new Callback (Class.forName (CLASS_NAME), "EnumSystemLanguageGroupsProc", 5); //$NON-NLS-1$
-		long /*int*/ lpEnumSystemLanguageGroupsProc = callback.getAddress ();	
+		long /*int*/ lpEnumSystemLanguageGroupsProc = callback.getAddress ();
 		if (lpEnumSystemLanguageGroupsProc == 0) SWT.error(SWT.ERROR_NO_MORE_CALLBACKS);
 		OS.EnumSystemLanguageGroups(lpEnumSystemLanguageGroupsProc, OS.LGRPID_INSTALLED, 0);
 		callback.dispose ();
@@ -475,7 +475,7 @@ public static boolean isBidiPlatform() {
 }
 /**
  * Return whether or not the keyboard supports input of a bidi language.  Determine this
- * by looking at the languages that are installed for the keyboard.  
+ * by looking at the languages that are installed for the keyboard.
  * <p>
  *
  * @return true if bidi is supported, false otherwise.
@@ -508,7 +508,7 @@ public static void removeLanguageListener (Control control) {
  * doesn't contain any strong characters, the base direction is to be
  * derived from a higher-level protocol (e.g. the widget orientation).
  * <p>
- * 
+ *
  * @param text
  *            Text base direction should be resolved for.
  * @return SWT#LEFT_RIGHT or SWT#RIGHT_TO_LEFT if the text contains strong
@@ -523,7 +523,7 @@ public static int resolveTextDirection (String text) {
 	char[] rtlProbe = {' ', ' ', '1'};
 	/*
 	 * "Wide" version of win32 API can also run even on non-Unicode Windows,
-	 * hence need for OS.IsUnicode check here. 
+	 * hence need for OS.IsUnicode check here.
 	 */
 	char[] ltrProbe = {'\u202b', 'a', ' '};
 	char[] numberProbe = {'\u05d0', ' ', ' '};
@@ -568,12 +568,12 @@ public static int resolveTextDirection (String text) {
  * set the keyboard to the first language of the given type.
  * <p>
  *
- * @param language integer representing language. One of 
+ * @param language integer representing language. One of
  * 	KEYBOARD_BIDI, KEYBOARD_NON_BIDI.
  */
 public static void setKeyboardLanguage(int language) {
 	if (language == getKeyboardLanguage()) return;
-	boolean bidi = language == KEYBOARD_BIDI; 
+	boolean bidi = language == KEYBOARD_BIDI;
 	long /*int*/[] list = getKeyboardLanguageList();
 	for (int i=0; i<list.length; i++) {
 		if (bidi == isBidiLang(list[i])) {
@@ -583,13 +583,13 @@ public static void setKeyboardLanguage(int language) {
 	}
 }
 /**
- * Sets the orientation (writing order) of the specified control. Text will 
+ * Sets the orientation (writing order) of the specified control. Text will
  * be right aligned for right to left writing order.
  * <p>
- * 
+ *
  * @param hwnd the handle of the Control to change the orientation of
  * @param orientation one of SWT.RIGHT_TO_LEFT or SWT.LEFT_TO_RIGHT
- * @return true if the orientation was changed, false if the orientation 
+ * @return true if the orientation was changed, false if the orientation
  * 	could not be changed
  */
 public static boolean setOrientation (long /*int*/ hwnd, int orientation) {
@@ -597,10 +597,10 @@ public static boolean setOrientation (long /*int*/ hwnd, int orientation) {
 	if (OS.WIN32_VERSION < OS.VERSION(4, 10)) return false;
 	int bits = OS.GetWindowLong (hwnd, OS.GWL_EXSTYLE);
 	if ((orientation & SWT.RIGHT_TO_LEFT) != 0) {
-		bits |= OS.WS_EX_LAYOUTRTL; 
+		bits |= OS.WS_EX_LAYOUTRTL;
 	} else {
 		bits &= ~OS.WS_EX_LAYOUTRTL;
-	} 
+	}
 	OS.SetWindowLong (hwnd, OS.GWL_EXSTYLE, bits);
 	return true;
 }
@@ -609,7 +609,7 @@ public static boolean setOrientation (Control control, int orientation) {
 }
 /**
  * Override the window proc.
- * 
+ *
  * @param hwnd control to override the window proc of
  */
 static void subclass(long /*int*/ hwnd) {
@@ -622,7 +622,7 @@ static void subclass(long /*int*/ hwnd) {
 }
 /**
  *  Reverse the character array.  Used for right orientation.
- * 
+ *
  * @param charArray character array to reverse
  */
 static void reverse(char[] charArray) {
@@ -632,10 +632,10 @@ static void reverse(char[] charArray) {
 		charArray[i] = charArray[length - 1 - i];
 		charArray[length - 1 - i] = tmp;
 	}
-}	
+}
 /**
  *  Reverse the integer array.  Used for right orientation.
- * 
+ *
  * @param intArray integer array to reverse
  */
 static void reverse(int[] intArray) {
@@ -645,11 +645,11 @@ static void reverse(int[] intArray) {
 		intArray[i] = intArray[length - 1 - i];
 		intArray[length - 1 - i] = tmp;
 	}
-}	
+}
 /**
  * Adjust the order array so that it is relative to the start of the line.  Also reverse the order array if the orientation
  * is to the right.
- * 
+ *
  * @param orderArray  integer array of order values to translate
  * @param glyphCount  number of glyphs that have been processed for the current line
  * @param isRightOriented  flag indicating whether or not current orientation is to the right
@@ -657,19 +657,19 @@ static void reverse(int[] intArray) {
 static void translateOrder(int[] orderArray, int glyphCount, boolean isRightOriented) {
 	int maxOrder = 0;
 	int length = orderArray.length;
-	if (isRightOriented) {  
+	if (isRightOriented) {
 		for (int i=0; i<length; i++) {
 			maxOrder = Math.max(maxOrder, orderArray[i]);
-		}	
-	} 
+		}
+	}
 	for (int i=0; i<length; i++) {
-		if (isRightOriented) orderArray[i] = maxOrder - orderArray[i]; 
+		if (isRightOriented) orderArray[i] = maxOrder - orderArray[i];
 		orderArray [i] += glyphCount;
 	}
 }
 /**
  * Remove the overridden the window proc.
- * 
+ *
  * @param hwnd control to remove the window proc override for
  */
 static void unsubclass(long /*int*/ hwnd) {
@@ -678,13 +678,13 @@ static void unsubclass(long /*int*/ hwnd) {
 		LONG proc = oldProcMap.remove(key);
 		if (proc == null) return;
 		OS.SetWindowLongPtr(hwnd, OS.GWLP_WNDPROC, proc.value);
-	}	
+	}
 }
 /**
  * Window proc to intercept keyboard language switch event (WS_INPUTLANGCHANGE)
  * and widget orientation changes.
  * Run the Control's registered runnable when the keyboard language is switched.
- * 
+ *
  * @param hwnd handle of the control that is listening for the keyboard language
  *  change event
  * @param msg window message

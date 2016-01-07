@@ -84,7 +84,7 @@ class IE extends WebBrowser {
 	static final int URLACTION_JAVA_MIN = 0x00001C00;
 	static final int URLACTION_JAVA_MAX = 0x00001Cff;
 	static final int URLACTION_SCRIPT_RUN = 0x00001400;
-	
+
 	static final int DISPID_AMBIENT_DLCONTROL = -5512;
 	static final int DLCTL_DLIMAGES = 0x00000010;
 	static final int DLCTL_VIDEOS = 0x00000020;
@@ -104,7 +104,7 @@ class IE extends WebBrowser {
 	static final int DOCHOSTUIFLAG_NO3DBORDER  = 0x0000004;
 	static final int DOCHOSTUIFLAG_NO3DOUTERBORDER = 0x00200000;
 	static final int DOCHOSTUIFLAG_ENABLE_REDIRECT_NOTIFICATION = 0x04000000;
-	
+
 	static final String ABOUT_BLANK = "about:blank"; //$NON-NLS-1$
 	static final String CLSID_SHELLEXPLORER1 = "{EAB22AC3-30C1-11CF-A7EB-0000C05BAE0B}"; //$NON-NLS-1$
 	static final int DEFAULT_IE_VERSION = 9999;
@@ -289,7 +289,7 @@ public void create(Composite parent, int style) {
 				try {
 					version = Integer.valueOf(versionProperty).intValue();
 				} catch (NumberFormatException e) {
-					/* 
+					/*
 					 * An invalid value was specified for the IEVersion java property.  Ignore it
 					 * and continue with the usual steps for determining the version to specify.
 					 */
@@ -304,7 +304,7 @@ public void create(Composite parent, int style) {
 				 * As per MSDN IE8 and onwards, there is a way we could hint
 				 * embedded IE to use current documentMode via appropriate
 				 * version value in the registry. Refer bug 342145.
-				 * 
+				 *
 				 * Complete list of IE emulation modes is listed on MSDN:
 				 * http://msdn.microsoft
 				 * .com/en-us/library/ie/ee330730%28v=vs
@@ -345,7 +345,7 @@ public void create(Composite parent, int style) {
 				int result = OS.RegQueryValueEx(key[0], lpValueName, 0, null, (int[])null, null);
 				if (result == 0 || result == OS.ERROR_FILE_NOT_FOUND) {
 					if (OS.RegSetValueEx(key[0], lpValueName, 0, OS.REG_DWORD, new int[] {version}, 4) == 0) {
-						parent.getDisplay().addListener(SWT.Dispose, new Listener() {			
+						parent.getDisplay().addListener(SWT.Dispose, new Listener() {
 							public void handleEvent(Event event) {
 								long /*int*/[] key = new long /*int*/[1];
 								if (OS.RegOpenKeyEx(OS.HKEY_CURRENT_USER, subkey, 0, OS.KEY_WRITE, key) == 0) {
@@ -538,7 +538,7 @@ public void create(Composite parent, int style) {
 						for (int i = 0; i < locationListeners.length; i++) {
 							locationListeners[i].changing(newEvent);
 						}
-						boolean doit = newEvent.doit && !browser.isDisposed(); 
+						boolean doit = newEvent.doit && !browser.isDisposed();
 						Variant cancel = event.arguments[6];
 						if (cancel != null) {
 							long /*int*/ pCancel = cancel.getByRef();
@@ -648,7 +648,7 @@ public void create(Composite parent, int style) {
 							/*
 							 * Note.  The completion of the page loading is detected as
 							 * described in the MSDN article "Determine when a page is
-							 * done loading in WebBrowser Control". 
+							 * done loading in WebBrowser Control".
 							 */
 							if (globalDispatch != 0 && dispatch.getAddress() == globalDispatch) {
 								/* final document complete */
@@ -680,7 +680,7 @@ public void create(Composite parent, int style) {
 						* IE feature.  Some events that swt relies on are not sent when
 						* a page is refreshed (as opposed to being navigated to).  The
 						* workaround is to use DownloadComplete as an opportunity to
-						* do this work.   
+						* do this work.
 						*/
 
 						Iterator<BrowserFunction> elements = functions.values().iterator ();
@@ -702,7 +702,7 @@ public void create(Composite parent, int style) {
 						progressEvent.widget = browser;
 						for (int i = 0; i < progressListeners.length; i++) {
 							progressListeners[i].completed(progressEvent);
-						}						
+						}
 
 						break;
 					}
@@ -760,7 +760,7 @@ public void create(Composite parent, int style) {
 								/*
 								* UNC first segment has been successfully navigated,
 								* now redirect to the full UNC path.
-								*/ 
+								*/
 								navigate(uncRedirect, null, null, true);
 								break;
 							}
@@ -770,7 +770,7 @@ public void create(Composite parent, int style) {
 						varResult = event.arguments[0];
 						IDispatch dispatch = varResult.getDispatch();
 						if (globalDispatch == 0) globalDispatch = dispatch.getAddress();
-	
+
 						OleAutomation webBrowser = varResult.getAutomation();
 						Variant variant = new Variant(auto); /* does not need to be disposed */
 						IDispatch top = variant.getDispatch();
@@ -861,7 +861,7 @@ public void create(Composite parent, int style) {
 							* When a Browser is opened in a new window, BrowserFunctions that are
 							* installed in it in the NavigateComplete2 callback are not retained
 							* through the loading of the page.  The workaround is to re-install
-							* the functions when DocumentComplete is received. 
+							* the functions when DocumentComplete is received.
 							*/
 							browser.installFunctionsOnDocumentComplete = true;
 
@@ -890,7 +890,7 @@ public void create(Composite parent, int style) {
 						Variant arg0 = event.arguments[0];
 						toolBar = arg0.getBoolean();
 						/*
-						* Feature in Internet Explorer.  OnToolBar FALSE is emitted 
+						* Feature in Internet Explorer.  OnToolBar FALSE is emitted
 						* when both tool bar, address bar and menu bar must not be visible.
 						* OnToolBar TRUE is emitted when either of tool bar, address bar
 						* or menu bar is visible.
@@ -1002,7 +1002,7 @@ public void create(Composite parent, int style) {
 						/*
 						* Disposing the Browser directly from this callback will crash if the
 						* Browser has a text field with an active caret.  As a workaround fire
-						* the Close event and dispose the Browser in an async block. 
+						* the Close event and dispose the Browser in an async block.
 						*/
 						browser.getDisplay().asyncExec(new Runnable() {
 							public void run() {
@@ -1128,7 +1128,7 @@ public boolean close() {
 						/* cancelled by user */
 						result = false;
 					} else {
-						pVarResult.dispose();				
+						pVarResult.dispose();
 					}
 					args[0].dispose();
 					locationListeners = oldListeners;
@@ -1157,7 +1157,7 @@ static Variant createSafeArray(String string) {
 	safeArray.fFeatures = OS.FADF_FIXEDSIZE;
 	safeArray.cbElements = 1;
 	safeArray.pvData = pvData;
-	SAFEARRAYBOUND safeArrayBound = new SAFEARRAYBOUND(); 
+	SAFEARRAYBOUND safeArrayBound = new SAFEARRAYBOUND();
 	safeArray.rgsabound = safeArrayBound;
 	safeArrayBound.cElements = cElements1;
 	OS.MoveMemory (pSafeArray, safeArray, SAFEARRAY.sizeof);
@@ -1210,7 +1210,7 @@ public boolean execute(String script) {
 	OleAutomation ihtmlWindow2 = pVarResult.getAutomation();
 	pVarResult.dispose();
 	document.dispose();
-	
+
 	rgdispid = ihtmlWindow2.getIDsOfNames(new String[] { "execScript", "code" }); //$NON-NLS-1$  //$NON-NLS-2$
 	if (rgdispid == null) {
 		ihtmlWindow2.dispose();
@@ -1412,7 +1412,7 @@ void setHTML (String string) {
 	string.getChars(0, charCount, chars, 0);
 	int byteCount = OS.WideCharToMultiByte(OS.CP_UTF8, 0, chars, charCount, null, 0, null, null);
 	/*
-	* Internet Explorer appears to treat the data loaded with 
+	* Internet Explorer appears to treat the data loaded with
 	* nsIPersistStreamInit.Load as if it were encoded using the default
 	* local charset.  There does not seem to be an API to set the
 	* desired charset explicitly in this case.  The fix is to
@@ -1422,9 +1422,9 @@ void setHTML (String string) {
 	long /*int*/ hGlobal = OS.GlobalAlloc(OS.GMEM_FIXED | OS.GMEM_ZEROINIT, UTF8BOM.length + byteCount);
 	if (hGlobal != 0) {
 		OS.MoveMemory(hGlobal, UTF8BOM, UTF8BOM.length);
-		OS.WideCharToMultiByte(OS.CP_UTF8, 0, chars, charCount, hGlobal + UTF8BOM.length, byteCount, null, null);							
+		OS.WideCharToMultiByte(OS.CP_UTF8, 0, chars, charCount, hGlobal + UTF8BOM.length, byteCount, null, null);
 		long /*int*/ [] ppstm = new long /*int*/ [1];
-		/* 
+		/*
 		* CreateStreamOnHGlobal is called with the flag fDeleteOnRelease.
 		* If the call succeeds the buffer hGlobal is freed automatically
 		* when the IStream object is released. If the call fails, free the
@@ -1480,13 +1480,13 @@ public boolean setText(final String html, boolean trusted) {
 	* Navigate to the blank page and insert the given html when
 	* receiving the next DocumentComplete notification.  See the
 	* MSDN article "Loading HTML content from a Stream".
-	* 
+	*
 	* Note.  Stop any pending request.  This is required to avoid displaying a
-	* blank page as a result of consecutive calls to setUrl and/or setText.  
+	* blank page as a result of consecutive calls to setUrl and/or setText.
 	* The previous request would otherwise render the new html content and
 	* reset the html field before the browser actually navigates to the blank
 	* page as requested below.
-	* 
+	*
 	* Feature in Internet Explorer.  Stopping pending requests when no request
 	* is pending causes a default page 'Action cancelled' to be displayed.  The
 	* workaround is to not invoke 'stop' when no request has been set since
@@ -1555,7 +1555,7 @@ public boolean setUrl(String url, String postData, String headers[]) {
 	* a previous Navigate has completed will leave the Browser in a bad state if the
 	* Navigate to the xml document does not complete.  This bad state causes a GP when
 	* the parent window is eventually disposed.  The workaround is to issue a Stop before
-	* navigating to any xml document. 
+	* navigating to any xml document.
 	*/
 	if (url.endsWith(".xml")) {	//$NON-NLS-1$
 		int[] rgdispid = auto.getIDsOfNames(new String[] { "Stop" }); //$NON-NLS-1$
@@ -1580,7 +1580,7 @@ public void stop() {
 	/*
 	* Feature of IE.  Invoking Stop in IE before any content has been shown
 	* displays a Navigation Cancelled error page.  The workaround is to not
-	* invoke Stop if no content has been shown yet. 
+	* invoke Stop if no content has been shown yet.
 	*/
 	if (_getUrl().length() == 0) return;
 
@@ -1632,7 +1632,7 @@ void handleDOMEvent (OleEvent e) {
 		}
 
 		if (consume) {
-			/* 
+			/*
 			 * an event should not be sent if another listener has vetoed the
 			 * KeyDown (this is for non-character cases like arrow keys, etc.)
 			 */
@@ -1738,7 +1738,7 @@ void handleDOMEvent (OleEvent e) {
 		/*
 		* WebSite.TranslateAccelerator() explicitly does not translate OS.VK_RETURN
 		* keys, so the PeekMessage check in the keydown handler always allows a
-		* KeyDown to be sent for this key.  However, keydown and keypress events are 
+		* KeyDown to be sent for this key.  However, keydown and keypress events are
 		* both sometimes received for OS.VK_RETURN, depending on the page's focus
 		* control.  To handle this, do not send a KeyDown for CR or LF here since
 		* one is always sent for it from the keydown handler.
@@ -1835,7 +1835,7 @@ void handleDOMEvent (OleEvent e) {
 		event.dispose();
 		return;
 	}
-	
+
 	/*
 	 * Feature in IE. MouseOver/MouseOut events are fired any time the mouse enters
 	 * or exits any element within the Browser.  To ensure that SWT events are only
@@ -1887,7 +1887,7 @@ void handleDOMEvent (OleEvent e) {
 	pVarResult = event.getProperty(dispIdMember);
 	int screenY = pVarResult.getInt();
 	pVarResult.dispose();
-	
+
 	Point position = new Point(screenX, screenY);
 	position = browser.getDisplay().map(null, browser, position);
 	newEvent.x = position.x; newEvent.y = position.y;
@@ -1948,7 +1948,7 @@ void handleDOMEvent (OleEvent e) {
 	} else if (eventType.equals(EVENT_MOUSEMOVE)) {
 		/*
 		* Feature in IE.  Spurious and redundant mousemove events are often received.  The workaround
-		* is to not fire MouseMove events whose x and y values match the last MouseMove.  
+		* is to not fire MouseMove events whose x and y values match the last MouseMove.
 		*/
 		if (newEvent.x == lastMouseMoveX && newEvent.y == lastMouseMoveY) {
 			event.dispose();
@@ -1978,7 +1978,7 @@ void handleDOMEvent (OleEvent e) {
 		newEvent.type = SWT.MouseDoubleClick;
 		newEvent.button = 1; /* dblclick only comes for button 1 and does not set the button property */
 		newEvent.count = 2;
-		browser.notifyListeners (newEvent.type, newEvent);	
+		browser.notifyListeners (newEvent.type, newEvent);
 	}
 }
 
@@ -1999,7 +1999,7 @@ void hookDOMListeners(OleAutomation webBrowser, final boolean isTop) {
 	 * NavigateComplete2 is received multiple times for a top-level document.
 	 * For cases like this, any previously-hooked DOM listeners must be
 	 * removed from the document before hooking the new set of listeners,
-	 * otherwise multiple sets of events will be received.  
+	 * otherwise multiple sets of events will be received.
 	 */
 	unhookDOMListeners (new OleAutomation[] {document});
 

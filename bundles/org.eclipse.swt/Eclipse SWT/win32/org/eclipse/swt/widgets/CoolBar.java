@@ -37,7 +37,7 @@ import org.eclipse.swt.graphics.*;
  * </p><p>
  * IMPORTANT: This class is <em>not</em> intended to be subclassed.
  * </p>
- * 
+ *
  * @see <a href="http://www.eclipse.org/swt/snippets/#coolbar">CoolBar snippets</a>
  * @see <a href="http://www.eclipse.org/swt/examples.php">SWT Example: ControlExample</a>
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
@@ -70,7 +70,7 @@ public class CoolBar extends Composite {
  * <p>
  * The style value is either one of the style constants defined in
  * class <code>SWT</code> which is applicable to instances of this
- * class, or must be built by <em>bitwise OR</em>'ing together 
+ * class, or must be built by <em>bitwise OR</em>'ing together
  * (that is, using the <code>int</code> "|" operator) two or more
  * of those <code>SWT</code> style constants. The class description
  * lists the style constants that are applicable to the class.
@@ -104,7 +104,7 @@ public CoolBar (Composite parent, int style) {
 	* clear these bits to avoid scroll bars and then reset
 	* the bits using the original style supplied by the
 	* programmer.
-	* 
+	*
 	* NOTE: The CCS_VERT style cannot be applied when the
 	* widget is created because of this conflict.
 	*/
@@ -163,12 +163,12 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 					OS.SendMessage (handle, OS.WM_SETREDRAW, 0, 0);
 				}
 			}
-		}	
+		}
 		RECT oldRect = new RECT ();
 		OS.GetWindowRect (handle, oldRect);
 		int oldWidth = oldRect.right - oldRect.left;
 		int oldHeight = oldRect.bottom - oldRect.top;
-		int flags = OS.SWP_NOACTIVATE | OS.SWP_NOMOVE | OS.SWP_NOREDRAW | OS.SWP_NOZORDER;	
+		int flags = OS.SWP_NOACTIVATE | OS.SWP_NOMOVE | OS.SWP_NOREDRAW | OS.SWP_NOZORDER;
 		SetWindowPos (handle, 0, 0, 0, newWidth, newHeight, flags);
 		RECT rect = new RECT ();
 		OS.SendMessage (handle, OS.RB_GETRECT, count - 1, rect);
@@ -206,7 +206,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	if (wHint != SWT.DEFAULT) width = wHint;
 	if (hHint != SWT.DEFAULT) height = hHint;
 	height += border * 2;
-	width += border * 2;	
+	width += border * 2;
 	return new Point (width, height);
 }
 
@@ -214,7 +214,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 void createHandle () {
 	super.createHandle ();
 	state &= ~(CANVAS | THEME_BACKGROUND);
-	
+
 	/*
 	* Feature in Windows.  When the control is created,
 	* it does not use the default system font.  A new HFONT
@@ -262,11 +262,11 @@ void createItem (CoolItem item, int index) {
 	*/
 	int lastIndex = getLastIndexOfRow (index - 1);
 	boolean fixLast = index == lastIndex + 1;
-	if (fixLast) {  	
+	if (fixLast) {
 		rbBand.fMask |= OS.RBBIM_SIZE;
-		rbBand.cx = MAX_WIDTH; 
+		rbBand.cx = MAX_WIDTH;
 	}
-	
+
 	/*
 	* Feature in Windows. Is possible that the item at index zero
 	* has the RBBS_BREAK flag set. When a new item is inserted at
@@ -276,19 +276,19 @@ void createItem (CoolItem item, int index) {
 	* new item.
 	*/
 	if (index == 0 && count > 0) {
-		getItem (0).setWrap (false); 
+		getItem (0).setWrap (false);
 	}
-	
+
 	/* Insert the item */
 	if (OS.SendMessage (handle, OS.RB_INSERTBAND, index, rbBand) == 0) {
 		error (SWT.ERROR_ITEM_NOT_ADDED);
 	}
-	
+
 	/* Resize the next to last item to the ideal size */
-	if (fixLast) {  	
+	if (fixLast) {
 		resizeToPreferredWidth (lastIndex);
 	}
-	
+
 	OS.HeapFree (hHeap, 0, lpText);
 	items [item.id = id] = item;
 	int length = originalItems.length;
@@ -317,19 +317,19 @@ void destroyItem (CoolItem item) {
 			* given its ideal size, it will be placed at the far
 			* right hand edge of the coolbar.  It is preferred
 			* that the last item appear next to the second last
-			* item.  The fix is to size the last item of each row 
+			* item.  The fix is to size the last item of each row
 			* so that it occupies all the available space to the
 			* right in the row.
 			*/
 			resizeToMaximumWidth (lastIndex - 1);
-		}						
-	}	
-		
+		}
+	}
+
 	/*
 	* Feature in Windows.  When Windows removed a rebar
 	* band, it makes the band child invisible.  The fix
 	* is to show the child.
-	*/		
+	*/
 	Control control = item.control;
 	boolean wasVisible = control != null && !control.isDisposed() && control.getVisible ();
 
@@ -356,10 +356,10 @@ void destroyItem (CoolItem item) {
 		nextItem.setWrap (true);
 		ignoreResize = false;
 	}
-	
+
 	/* Restore the visible state of the control */
 	if (wasVisible) control.setVisible (true);
-	
+
 	index = 0;
 	while (index < originalItems.length) {
 		if (originalItems [index] == item) break;
@@ -412,7 +412,7 @@ int getMargin (int index) {
 		* Bug in Windows.  When the style bit  RBS_BANDBORDERS is not set
 		* the rectangle returned by RBS_BANDBORDERS is four pixels too small.
 		* The fix is to add four pixels to the result.
-		*/	
+		*/
 		if ((style & SWT.VERTICAL) != 0) {
 			margin += rect.top + 4;
 		} else {
@@ -486,7 +486,7 @@ public int getItemCount () {
  * </p><p>
  * Note: This is not the actual structure used by the receiver
  * to maintain its list of items, so modifying the array will
- * not affect the receiver. 
+ * not affect the receiver.
  * </p>
  *
  * @return the current visual order of the receiver's items
@@ -523,7 +523,7 @@ public int [] getItemOrder () {
  * <p>
  * Note: This is not the actual structure used by the receiver
  * to maintain its list of items, so modifying the array will
- * not affect the receiver. 
+ * not affect the receiver.
  * </p>
  *
  * @return the receiver's items in their current visual order
@@ -560,7 +560,7 @@ public CoolItem [] getItems () {
  * </ul>
  */
 public Point [] getItemSizes () {
-	checkWidget ();	
+	checkWidget ();
 	int count = (int)/*64*/OS.SendMessage (handle, OS.RB_GETBANDCOUNT, 0, 0);
 	Point [] sizes = new Point [count];
 	REBARBANDINFO rbBand = new REBARBANDINFO ();
@@ -590,7 +590,7 @@ public Point [] getItemSizes () {
 int getLastIndexOfRow (int index) {
 	int count = (int)/*64*/OS.SendMessage (handle, OS.RB_GETBANDCOUNT, 0, 0);
 	if (count == 0) return -1;
-	REBARBANDINFO rbBand = new REBARBANDINFO ();	
+	REBARBANDINFO rbBand = new REBARBANDINFO ();
 	rbBand.cbSize = REBARBANDINFO.sizeof;
 	rbBand.fMask = OS.RBBIM_STYLE;
 	for (int i=index + 1; i<count; i++) {
@@ -622,7 +622,7 @@ boolean isLastItemOfRow (int index) {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 2.0
  */
 public boolean getLocked () {
@@ -649,7 +649,7 @@ public int [] getWrapIndices () {
 	int [] indices = new int [items.length];
 	int count = 0;
 	for (int i=0; i<items.length; i++) {
-		if (items [i].getWrap ()) indices [count++] = i;	
+		if (items [i].getWrap ()) indices [count++] = i;
 	}
 	int [] result = new int [count];
 	System.arraycopy (indices, 0, result, 0, count);
@@ -708,7 +708,7 @@ void resizeToMaximumWidth (int index) {
 	rbBand.fMask = OS.RBBIM_SIZE;
 	rbBand.cx = MAX_WIDTH;
 	OS.SendMessage (handle, OS.RB_SETBANDINFO, index, rbBand);
-}	
+}
 
 @Override
 void releaseChildren (boolean destroy) {
@@ -828,7 +828,7 @@ public void setItemLayout (int [] itemOrder, int [] wrapIndices, Point [] sizes)
 }
 
 /*
- * Sets the order that the items in the receiver should 
+ * Sets the order that the items in the receiver should
  * be displayed in to the given argument which is described
  * in terms of the zero-relative ordering of when the items
  * were added.
@@ -848,7 +848,7 @@ void setItemOrder (int [] itemOrder) {
 	if (itemOrder == null) error (SWT.ERROR_NULL_ARGUMENT);
 	int itemCount = (int)/*64*/OS.SendMessage (handle, OS.RB_GETBANDCOUNT, 0, 0);
 	if (itemOrder.length != itemCount) error (SWT.ERROR_INVALID_ARGUMENT);
-	
+
 	/* Ensure that itemOrder does not contain any duplicates. */
 	boolean [] set = new boolean [itemCount];
 	for (int i=0; i<itemOrder.length; i++) {
@@ -857,7 +857,7 @@ void setItemOrder (int [] itemOrder) {
 		if (set [index]) error (SWT.ERROR_INVALID_ARGUMENT);
 		set [index] = true;
 	}
-	
+
 	REBARBANDINFO rbBand = new REBARBANDINFO ();
 	rbBand.cbSize = REBARBANDINFO.sizeof;
 	for (int i=0; i<itemOrder.length; i++) {
@@ -865,14 +865,14 @@ void setItemOrder (int [] itemOrder) {
 		int index = (int)/*64*/OS.SendMessage (handle, OS.RB_IDTOINDEX, id, 0);
 		if (index != i) {
 			int lastItemSrcRow = getLastIndexOfRow (index);
-			int lastItemDstRow = getLastIndexOfRow (i);									
+			int lastItemDstRow = getLastIndexOfRow (i);
 			if (index == lastItemSrcRow) {
 				resizeToPreferredWidth (index);
-			} 
+			}
 			if (i == lastItemDstRow) {
 				resizeToPreferredWidth (i);
-			}	
-			
+			}
+
 			/* Move the item */
 			OS.SendMessage (handle, OS.RB_MOVEBAND, index, i);
 
@@ -881,8 +881,8 @@ void setItemOrder (int [] itemOrder) {
 			}
 			if (i == lastItemDstRow) {
 				resizeToMaximumWidth (i);
-			}	
-		}	
+			}
+		}
 	}
 }
 
@@ -926,7 +926,7 @@ void setItemSizes (Point [] sizes) {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 2.0
  */
 public void setLocked (boolean locked) {
@@ -969,7 +969,7 @@ public void setWrapIndices (int [] indices) {
 	for (int i=0; i<indices.length; i++) {
 		if (indices [i] < 0 || indices [i] >= count) {
 			error (SWT.ERROR_INVALID_RANGE);
-		}	
+		}
 	}
 	setRedraw (false);
 	CoolItem [] items = getItems ();
@@ -996,7 +996,7 @@ public void setWrapIndices (int [] indices) {
 int widgetStyle () {
 	int bits = super.widgetStyle () | OS.CCS_NODIVIDER | OS.CCS_NORESIZE;
 	bits |= OS.RBS_VARHEIGHT | OS.RBS_DBLCLKTOGGLE;
-	if ((style & SWT.FLAT) == 0) bits |= OS.RBS_BANDBORDERS; 
+	if ((style & SWT.FLAT) == 0) bits |= OS.RBS_BANDBORDERS;
 	return bits;
 }
 
@@ -1016,18 +1016,18 @@ LRESULT WM_COMMAND (long /*int*/ wParam, long /*int*/ lParam) {
 	* Feature in Windows.  When the coolbar window
 	* proc processes WM_COMMAND, it forwards this
 	* message to its parent.  This is done so that
-	* children of this control that send this message 
+	* children of this control that send this message
 	* type to their parent will notify not only
 	* this control but also the parent of this control,
 	* which is typically the application window and
 	* the window that is looking for the message.
-	* If the control did not forward the message, 
-	* applications would have to subclass the control 
+	* If the control did not forward the message,
+	* applications would have to subclass the control
 	* window to see the message. Because the control
 	* window is subclassed by SWT, the message
 	* is delivered twice, once by SWT and once when
 	* the message is forwarded by the window proc.
-	* The fix is to avoid calling the window proc 
+	* The fix is to avoid calling the window proc
 	* for this control.
 	*/
 	LRESULT result = super.WM_COMMAND (wParam, lParam);
@@ -1044,7 +1044,7 @@ LRESULT WM_ERASEBKGND (long /*int*/ wParam, long /*int*/ lParam) {
 	* occupies when the size of the cool bar is larger
 	* than the space occupied by the cool bar items.
 	* The fix is to erase the cool bar background.
-	* 
+	*
 	* NOTE: On versions of Windows prior to XP, for
 	* some reason, the cool bar draws separators in
 	* WM_ERASEBKGND.  Therefore it is essential to run
@@ -1064,18 +1064,18 @@ LRESULT WM_NOTIFY (long /*int*/ wParam, long /*int*/ lParam) {
 	* Feature in Windows.  When the cool bar window
 	* proc processes WM_NOTIFY, it forwards this
 	* message to its parent.  This is done so that
-	* children of this control that send this message 
+	* children of this control that send this message
 	* type to their parent will notify not only
 	* this control but also the parent of this control,
 	* which is typically the application window and
 	* the window that is looking for the message.
-	* If the control did not forward the message, 
-	* applications would have to subclass the control 
+	* If the control did not forward the message,
+	* applications would have to subclass the control
 	* window to see the message. Because the control
 	* window is subclassed by SWT, the message
 	* is delivered twice, once by SWT and once when
 	* the message is forwarded by the window proc.
-	* The fix is to avoid calling the window proc 
+	* The fix is to avoid calling the window proc
 	* for this control.
 	*/
 	LRESULT result = super.WM_NOTIFY (wParam, lParam);
@@ -1099,7 +1099,7 @@ LRESULT WM_SETREDRAW (long /*int*/ wParam, long /*int*/ lParam) {
 	* can leave pixel corruption in the parent.  The fix is to
 	* detect the size change and damage the previous area in the
 	* parent.
-	* 
+	*
 	* NOTE:  In version 6.00 of COMCTL32.DLL, when WM_SETREDRAW
 	* is off, we cannot detect that the size has changed causing
 	* pixel corruption.  The fix is to disallow WM_SETREDRAW by
@@ -1107,7 +1107,7 @@ LRESULT WM_SETREDRAW (long /*int*/ wParam, long /*int*/ lParam) {
 	* proc.
 	*/
 	if (OS.COMCTL32_MAJOR >= 6) return LRESULT.ZERO;
-	Rectangle rect = getBounds ();		
+	Rectangle rect = getBounds ();
 	long /*int*/ code = callWindowProc (handle, OS.WM_SETREDRAW, wParam, lParam);
 	OS.DefWindowProc (handle, OS.WM_SETREDRAW, wParam, lParam);
 	if (!rect.equals (getBounds ())) {

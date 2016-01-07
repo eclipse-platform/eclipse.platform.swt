@@ -32,7 +32,7 @@ import org.eclipse.swt.internal.win32.*;
  *	<li>provides a mechanism for saving changes made to the document
  * </ul>
  *
- * <p>This object implements the OLE Interfaces IUnknown, IOleClientSite, IAdviseSink, 
+ * <p>This object implements the OLE Interfaces IUnknown, IOleClientSite, IAdviseSink,
  * IOleInPlaceSite
  *
  * <p>Note that although this class is a subclass of <code>Composite</code>,
@@ -40,7 +40,7 @@ import org.eclipse.swt.internal.win32.*;
  * or set a layout on it.
  * </p><p>
  * <dl>
- *	<dt><b>Styles</b> <dd>BORDER 
+ *	<dt><b>Styles</b> <dd>BORDER
  *	<dt><b>Events</b> <dd>Dispose, Move, Resize
  * </dl>
  *
@@ -48,7 +48,7 @@ import org.eclipse.swt.internal.win32.*;
  * @see <a href="http://www.eclipse.org/swt/examples.php">SWT Examples: OLEExample, OleWebBrowser</a>
  */
 public class OleClientSite extends Composite {
-		
+
 	// Interfaces for this Ole Client Container
 	private COMObject  iUnknown;
 	COMObject  iOleClientSite;
@@ -59,21 +59,21 @@ public class OleClientSite extends Composite {
 	protected GUID appClsid;
 	private GUID objClsid;
 	private int  refCount;
-	
+
 	// References to the associated Frame.
 	protected OleFrame frame;
-	
-	// Access to the embedded/linked Ole Object 
+
+	// Access to the embedded/linked Ole Object
 	protected IUnknown                  objIUnknown;
 	protected IOleObject                 objIOleObject;
 	protected IViewObject2             objIViewObject2;
 	protected IOleInPlaceObject     objIOleInPlaceObject;
 	protected IOleCommandTarget objIOleCommandTarget;
 	protected IOleDocumentView    objDocumentView;
-		   
+
 	// Related storage information
 	protected IStorage tempStorage;     // IStorage interface of the receiver
-	
+
 	// Internal state and style information
 	private int     aspect;    // the display aspect of the embedded object, e.g., DvaspectContent or DvaspectIcon
 	private int     type;      // Indicates the type of client that can be supported inside this container
@@ -85,27 +85,27 @@ public class OleClientSite extends Composite {
 	private boolean inUpdate = false;
 	private boolean inInit = true;
 	private boolean inDispose = false;
-		
+
 	private static final String WORDPROGID = "Word.Document"; //$NON-NLS-1$
 
 	private Listener listener;
-	
+
 	static final int STATE_NONE = 0;
 	static final int STATE_RUNNING = 1;
 	static final int STATE_INPLACEACTIVE = 2;
 	static final int STATE_UIACTIVE = 3;
 	static final int STATE_ACTIVE = 4;
 	int state = STATE_NONE;
-	
+
 protected OleClientSite(Composite parent, int style) {
 	/*
 	 * NOTE: this constructor should never be used by itself because it does
 	 * not create an Ole Object
 	 */
 	super(parent, style);
-	
+
 	createCOMInterfaces();
-	
+
 	// install the Ole Frame for this Client Site
 	while (parent != null) {
 		if (parent instanceof OleFrame){
@@ -116,7 +116,7 @@ protected OleClientSite(Composite parent, int style) {
 	}
 	if (frame == null) OLE.error(SWT.ERROR_INVALID_ARGUMENT);
 	frame.AddRef();
-	
+
 	aspect   = COM.DVASPECT_CONTENT;
 	type     = COM.OLEEMBEDDED;
 	isStatic = false;
@@ -153,8 +153,8 @@ protected OleClientSite(Composite parent, int style) {
 }
 /**
  * Create an OleClientSite child widget using the OLE Document type associated with the
- * specified file.  The OLE Document type is determined either through header information in the file 
- * or through a Registry entry for the file extension. Use style bits to select a particular look 
+ * specified file.  The OLE Document type is determined either through header information in the file
+ * or through a Registry entry for the file extension. Use style bits to select a particular look
  * or set of properties.
  *
  * @param parent a composite widget; must be an OleFrame
@@ -163,7 +163,7 @@ protected OleClientSite(Composite parent, int style) {
  *
  * @exception IllegalArgumentException
  * <ul><li>ERROR_NULL_ARGUMENT when the parent is null
- *     <li>ERROR_INVALID_ARGUMENT when the parent is not an OleFrame</ul> 
+ *     <li>ERROR_INVALID_ARGUMENT when the parent is not an OleFrame</ul>
  * @exception SWTException
  * <ul><li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread
  *     <li>ERROR_CANNOT_CREATE_OBJECT when failed to create OLE Object
@@ -178,16 +178,16 @@ public OleClientSite(Composite parent, int style, File file) {
 
 		if (file == null || file.isDirectory() || !file.exists())
 			OLE.error(OLE.ERROR_INVALID_ARGUMENT);
-			
+
 		// Is there an associated CLSID?
 		GUID fileClsid = new GUID();
 		char[] fileName = (file.getAbsolutePath()+"\0").toCharArray();
 		int result = COM.GetClassFile(fileName, fileClsid);
 		if (result != COM.S_OK)	OLE.error(OLE.ERROR_INVALID_CLASSID, result);
 		// associated CLSID may not be installed on this machine
-		String progID = getProgID(fileClsid); 
+		String progID = getProgID(fileClsid);
 		if (progID == null)	OLE.error(OLE.ERROR_INVALID_CLASSID, result);
-			
+
 		appClsid = fileClsid;
 		OleCreate(appClsid, fileClsid, fileName, file);
 	} catch (SWTException e) {
@@ -202,7 +202,7 @@ public OleClientSite(Composite parent, int style, File file) {
  *
  * @param parent a composite widget; must be an OleFrame
  * @param style the bitwise OR'ing of widget styles
- * @param progId the unique program identifier of an OLE Document application; 
+ * @param progId the unique program identifier of an OLE Document application;
  *               the value of the ProgID key or the value of the VersionIndependentProgID key specified
  *               in the registry for the desired OLE Document (for example, the VersionIndependentProgID
  *               for Word is Word.Document)
@@ -224,17 +224,17 @@ public OleClientSite(Composite parent, int style, String progId) {
 		appClsid = getClassID(progId);
 		if (appClsid == null)
 			OLE.error(OLE.ERROR_INVALID_CLASSID);
-			
+
 		// Open a temporary storage object
 		tempStorage = createTempStorage();
-	
+
 		// Create ole object with storage object
 		long /*int*/[] address = new long /*int*/[1];
 		/*
 		* Bug in ICA Client 2.7. The creation of the IOleObject fails if the client
 		* site is provided to OleCreate().  The fix is to detect that the program
 		* id is an ICA Client and do not pass a client site to OleCreate().
-		* IOleObject.SetClientSite() is called later on.  
+		* IOleObject.SetClientSite() is called later on.
 		*/
 		long /*int*/ clientSite = isICAClient() ? 0 : iOleClientSite.getAddress();
 		int result = COM.OleCreate(appClsid, COM.IIDIUnknown, COM.OLERENDER_DRAW, null, clientSite, tempStorage.getAddress(), address);
@@ -247,7 +247,7 @@ public OleClientSite(Composite parent, int style, String progId) {
 		addObjectReferences();
 
 		if (COM.OleRun(objIUnknown.getAddress()) == OLE.S_OK) state = STATE_RUNNING;
-		
+
 	} catch (SWTException e) {
 		dispose();
 		disposeCOMInterfaces();
@@ -256,7 +256,7 @@ public OleClientSite(Composite parent, int style, String progId) {
 }
 /**
  * Create an OleClientSite child widget to edit the specified file using the specified OLE Document
- * application.  Use style bits to select a particular look or set of properties. 
+ * application.  Use style bits to select a particular look or set of properties.
  * <p>
  * <b>IMPORTANT:</b> This method is <em>not</em> part of the public
  * API for <code>OleClientSite</code>. It is marked public only so that it
@@ -266,7 +266,7 @@ public OleClientSite(Composite parent, int style, String progId) {
  * </p>
  * @param parent a composite widget; must be an OleFrame
  * @param style the bitwise OR'ing of widget styles
- * @param progId the unique program identifier of am OLE Document application; 
+ * @param progId the unique program identifier of am OLE Document application;
  *               the value of the ProgID key or the value of the VersionIndependentProgID key specified
  *               in the registry for the desired OLE Document (for example, the VersionIndependentProgID
  *               for Word is Word.Document)
@@ -281,21 +281,21 @@ public OleClientSite(Composite parent, int style, String progId) {
  *     <li>ERROR_CANNOT_CREATE_OBJECT when failed to create OLE Object
  *     <li>ERROR_CANNOT_OPEN_FILE when failed to open file
  * </ul>
- * 
+ *
  * @noreference This method is not intended to be referenced by clients.
  */
 public OleClientSite(Composite parent, int style, String progId, File file) {
 	this(parent, style);
 	try {
-		if (file == null || file.isDirectory() || !file.exists()) OLE.error(OLE.ERROR_INVALID_ARGUMENT);				
+		if (file == null || file.isDirectory() || !file.exists()) OLE.error(OLE.ERROR_INVALID_ARGUMENT);
 		appClsid = getClassID(progId);
 		if (appClsid == null) OLE.error(OLE.ERROR_INVALID_CLASSID);
-		
+
 		// Are we opening this file with the preferred OLE object?
 		char[] fileName = (file.getAbsolutePath()+"\0").toCharArray();
 		GUID fileClsid = new GUID();
 		COM.GetClassFile(fileName, fileClsid);
-	
+
 		OleCreate(appClsid, fileClsid, fileName, file);
 	} catch (SWTException e) {
 		dispose();
@@ -305,11 +305,11 @@ public OleClientSite(Composite parent, int style, String progId, File file) {
 }
 
 void OleCreate(GUID appClsid, GUID fileClsid, char[] fileName, File file) {
-	
-	/* Bug in Windows. In some machines running Windows Vista and 
-	 * Office 2007, OleCreateFromFile() fails to open files from 
-	 * Office Word 97 - 2003 and in some other cases it fails to 
-	 * save files due to a lock. The fix is to detect this case and 
+
+	/* Bug in Windows. In some machines running Windows Vista and
+	 * Office 2007, OleCreateFromFile() fails to open files from
+	 * Office Word 97 - 2003 and in some other cases it fails to
+	 * save files due to a lock. The fix is to detect this case and
 	 * create the activeX using CoCreateInstance().
 	 */
 	boolean isOffice2007 = isOffice2007(true);
@@ -378,7 +378,7 @@ void OleCreate(GUID appClsid, GUID fileClsid, char[] fileName, File file) {
 				OLE.error(OLE.ERROR_CANNOT_OPEN_FILE);
 			}
 		}
-		
+
 		// Open a temporary storage object
 		tempStorage = createTempStorage();
 		// Copy over contents of file
@@ -401,10 +401,10 @@ void OleCreate(GUID appClsid, GUID fileClsid, char[] fileName, File file) {
 		iPersistStorage.Release();
 		if (result != COM.S_OK)OLE.error(OLE.ERROR_CANNOT_CREATE_OBJECT, result);
 	}
-	
+
 	// Init sinks
 	addObjectReferences();
-	
+
 	if (COM.OleRun(objIUnknown.getAddress()) == OLE.S_OK) state = STATE_RUNNING;
 }
 protected void addObjectReferences() {
@@ -417,7 +417,7 @@ protected void addObjectReferences() {
 			objClsid = tempid;
 		objIPersist.Release();
 	}
-	
+
 	//
 	ppvObject = new long /*int*/[1];
 	int result = objIUnknown.QueryInterface(COM.IIDIViewObject2, ppvObject);
@@ -433,10 +433,10 @@ protected void addObjectReferences() {
 		OLE.error(OLE.ERROR_INTERFACE_NOT_FOUND, result);
 	objIOleObject = new IOleObject(ppvObject[0]);
 	/*
-	 * Feature in Windows. Despite the fact that the clientSite was provided during the 
-	 * creation of the OleObject (which is required by WMP11 - see bug 173556), 
-	 * some applications choose to ignore this optional parameter (see bug 211663) 
-	 * during OleCreate. The fix is to check whether the clientSite has already been set 
+	 * Feature in Windows. Despite the fact that the clientSite was provided during the
+	 * creation of the OleObject (which is required by WMP11 - see bug 173556),
+	 * some applications choose to ignore this optional parameter (see bug 211663)
+	 * during OleCreate. The fix is to check whether the clientSite has already been set
 	 * and set it. Note that setting it twice can result in assert failures.
 	 */
 	long /*int*/[] ppvClientSite = new long /*int*/[1];
@@ -476,14 +476,14 @@ protected int AddRef() {
 private int CanInPlaceActivate() {
 	if (aspect == COM.DVASPECT_CONTENT && type == COM.OLEEMBEDDED)
 		return COM.S_OK;
-		
+
 	return COM.S_FALSE;
 }
 private int ContextSensitiveHelp(int fEnterMode) {
 	return COM.S_OK;
 }
 protected void createCOMInterfaces() {
-	
+
 	iUnknown = new COMObject(new int[]{2, 0, 0}){
 		@Override
 		public long /*int*/ method0(long /*int*/[] args) {return QueryInterface(args[0], args[1]);}
@@ -492,7 +492,7 @@ protected void createCOMInterfaces() {
 		@Override
 		public long /*int*/ method2(long /*int*/[] args) {return Release();}
 	};
-	
+
 	iOleClientSite = new COMObject(new int[]{2, 0, 0, 0, 3, 1, 0, 1, 0}){
 		@Override
 		public long /*int*/ method0(long /*int*/[] args) {return QueryInterface(args[0], args[1]);}
@@ -511,7 +511,7 @@ protected void createCOMInterfaces() {
 		public long /*int*/ method7(long /*int*/[] args) {return OnShowWindow((int)/*64*/args[0]);}
 		// method8 RequestNewObjectLayout - not implemented
 	};
-	
+
 	iAdviseSink = new COMObject(new int[]{2, 0, 0, 2, 2, 1, 0, 0}){
 		@Override
 		public long /*int*/ method0(long /*int*/[] args) {return QueryInterface(args[0], args[1]);}
@@ -527,9 +527,9 @@ protected void createCOMInterfaces() {
 		@Override
 		public long /*int*/ method6(long /*int*/[] args) {OnSave();return 0;}
 		@Override
-		public long /*int*/ method7(long /*int*/[] args) {return OnClose();}	
+		public long /*int*/ method7(long /*int*/[] args) {return OnClose();}
 	};
-	
+
 	iOleInPlaceSite = new COMObject(new int[]{2, 0, 0, 1, 1, 0, 0, 0, 5, C.PTR_SIZEOF == 4 ? 2 : 1, 1, 0, 0, 0, 1}){
 		@Override
 		public long /*int*/ method0(long /*int*/[] args) {return QueryInterface(args[0], args[1]);}
@@ -566,7 +566,7 @@ protected void createCOMInterfaces() {
 		@Override
 		public long /*int*/ method14(long /*int*/[] args) {return OnPosRectChange(args[0]);}
 	};
-	
+
 	iOleDocumentSite = new COMObject(new int[]{2, 0, 0, 1}){
 		@Override
 		public long /*int*/ method0(long /*int*/[] args) {return QueryInterface(args[0], args[1]);}
@@ -576,7 +576,7 @@ protected void createCOMInterfaces() {
 		public long /*int*/ method2(long /*int*/[] args) {return Release();}
 		@Override
 		public long /*int*/ method3(long /*int*/[] args) {return ActivateMe(args[0]);}
-	};	
+	};
 }
 protected IStorage createTempStorage() {
 	long /*int*/[] tempStorage = new long /*int*/[1];
@@ -604,19 +604,19 @@ protected void disposeCOMInterfaces() {
 	if (iUnknown != null)
 		iUnknown.dispose();
 	iUnknown = null;
-	
+
 	if (iOleClientSite != null)
 	iOleClientSite.dispose();
 	iOleClientSite = null;
-	
+
 	if (iAdviseSink != null)
 		iAdviseSink.dispose();
 	iAdviseSink = null;
-	
+
 	if (iOleInPlaceSite != null)
 		iOleInPlaceSite.dispose();
 	iOleInPlaceSite = null;
-	
+
 	if (iOleDocumentSite != null)
 		iOleDocumentSite.dispose();
 	iOleDocumentSite = null;
@@ -635,10 +635,10 @@ public int doVerb(int verb) {
 	// The fix is to ensure that the client is in the running state before invoking any verb on it.
 	if (state == STATE_NONE) {
 		if (COM.OleRun(objIUnknown.getAddress()) == OLE.S_OK) state = STATE_RUNNING;
-	}	
+	}
 	if (state == STATE_NONE || isStatic)
 		return COM.E_FAIL;
-	
+
 	// See PR: 1FV9RZW
 	RECT rect = new RECT();
 	OS.GetClientRect(handle, rect);
@@ -651,7 +651,7 @@ public int doVerb(int verb) {
 	return result;
 }
 /**
- * Asks the OLE Document or ActiveX Control to execute a command from a standard 
+ * Asks the OLE Document or ActiveX Control to execute a command from a standard
  * list of commands. The OLE Document or ActiveX Control must support the IOleCommandTarget
  * interface.  The OLE Document or ActiveX Control does not have to support all the commands
  * in the standard list.  To check if a command is supported, you can call queryStatus with
@@ -667,14 +667,14 @@ public int doVerb(int verb) {
  *
  */
 public int exec(int cmdID, int options, Variant in, Variant out) {
-	
+
 	if (objIOleCommandTarget == null) {
 		long /*int*/[] address = new long /*int*/[1];
 		if (objIUnknown.QueryInterface(COM.IIDIOleCommandTarget, address) != COM.S_OK)
 			return OLE.ERROR_INTERFACE_NOT_FOUND;
 		objIOleCommandTarget = new IOleCommandTarget(address[0]);
 	}
-	
+
 	long /*int*/ inAddress = 0;
 	if (in != null){
 		inAddress = OS.GlobalAlloc(OS.GMEM_FIXED | OS.GMEM_ZEROINIT, VARIANT.sizeof);
@@ -685,9 +685,9 @@ public int exec(int cmdID, int options, Variant in, Variant out) {
 		outAddress = OS.GlobalAlloc(OS.GMEM_FIXED | OS.GMEM_ZEROINIT, VARIANT.sizeof);
 		out.getData(outAddress);
 	}
-		
+
 	int result = objIOleCommandTarget.Exec(null, cmdID, options, inAddress, outAddress);
-	
+
 	if (inAddress != 0){
 		COM.VariantClear(inAddress);
 		OS.GlobalFree(inAddress);
@@ -697,7 +697,7 @@ public int exec(int cmdID, int options, Variant in, Variant out) {
 		COM.VariantClear(outAddress);
 		OS.GlobalFree(outAddress);
 	}
-		
+
 	return result;
 }
 IDispatch getAutomationObject() {
@@ -724,8 +724,8 @@ protected GUID getClassID(String clientName) {
 	return guid;
 }
 private int GetContainer(long /*int*/ ppContainer) {
-	/* Simple containers that do not support links to their embedded 
-	 * objects probably do not need to implement this method. Instead, 
+	/* Simple containers that do not support links to their embedded
+	 * objects probably do not need to implement this method. Instead,
 	 * they can return E_NOINTERFACE and set ppContainer to NULL.
 	 */
 	if (ppContainer != 0)
@@ -747,9 +747,9 @@ private SIZE getExtent() {
 /**
  * Returns the indent value that would be used to compute the clipping area
  * of the active X object.
- * 
+ *
  * NOTE: The indent value is no longer being used by the client site.
- * 
+ *
  * @return the rectangle representing the indent
  */
 public Rectangle getIndent() {
@@ -809,7 +809,7 @@ protected int GetWindow(long /*int*/ phwnd) {
 		COM.MoveMemory(phwnd, new long /*int*/[] {0}, OS.PTR_SIZEOF);
 		return COM.E_NOTIMPL;
 	}
-	
+
 	// Copy the Window's handle into the memory passed in
 	COM.MoveMemory(phwnd, new long /*int*/[] {handle}, OS.PTR_SIZEOF);
 	return COM.S_OK;
@@ -823,7 +823,7 @@ RECT getRect() {
 	rect.bottom = area.y + area.height;
 	return rect;
 }
-private int GetWindowContext(long /*int*/ ppFrame, long /*int*/ ppDoc, long /*int*/ lprcPosRect, long /*int*/ lprcClipRect, long /*int*/ lpFrameInfo) {	
+private int GetWindowContext(long /*int*/ ppFrame, long /*int*/ ppDoc, long /*int*/ lprcPosRect, long /*int*/ lprcClipRect, long /*int*/ lpFrameInfo) {
 	if (frame == null || ppFrame == 0)
 		return COM.E_NOTIMPL;
 
@@ -859,16 +859,16 @@ private int GetWindowContext(long /*int*/ ppFrame, long /*int*/ ppDoc, long /*in
 		}
 	}
 	COM.MoveMemory(lpFrameInfo, frameInfo, OLEINPLACEFRAMEINFO.sizeof);
-	
+
 	return COM.S_OK;
 }
 boolean isICAClient() {
-	return getProgramID().startsWith("Citrix.ICAClient"); //$NON-NLS-1$ 
+	return getProgramID().startsWith("Citrix.ICAClient"); //$NON-NLS-1$
 }
 /**
- * Returns whether ole document is dirty by checking whether the content 
+ * Returns whether ole document is dirty by checking whether the content
  * of the file representing the document is dirty.
- * 
+ *
  * @return <code>true</code> if the document has been modified,
  *         <code>false</code> otherwise.
  * @since 3.1
@@ -879,7 +879,7 @@ public boolean isDirty() {
 	 * contents of the Ole Document do not differ from the contents in the file
 	 * on the file system.
 	 */
-	
+
 	// Get access to the persistent storage mechanism
 	long /*int*/[] address = new long /*int*/[1];
 	if (objIOleObject.QueryInterface(COM.IIDIPersistFile, address) != COM.S_OK)
@@ -895,7 +895,7 @@ public boolean isDirty() {
 public boolean isFocusControl () {
 	checkWidget ();
 	long /*int*/ focusHwnd = OS.GetFocus();
-	if (objIOleInPlaceObject == null) return (handle == focusHwnd); 
+	if (objIOleInPlaceObject == null) return (handle == focusHwnd);
 	long /*int*/[] phwnd = new long /*int*/[1];
 	objIOleInPlaceObject.GetWindow(phwnd);
 	while (focusHwnd != 0) {
@@ -911,14 +911,14 @@ private boolean isOffice2007(boolean program) {
 		int lastDot = programID.lastIndexOf('.');
 		if (lastDot != -1) {
 			programID = programID.substring(0, lastDot);
-			GUID guid = getClassID(programID); 
+			GUID guid = getClassID(programID);
 			programID = getProgID(guid);
 			if (programID == null) return false;
 		}
 	}
-	if (programID.equals("Word.Document.12")) return true; //$NON-NLS-1$ 
-	if (programID.equals("Excel.Sheet.12")) return true; //$NON-NLS-1$ 
-	if (programID.equals("PowerPoint.Show.12")) return true; //$NON-NLS-1$ 
+	if (programID.equals("Word.Document.12")) return true; //$NON-NLS-1$
+	if (programID.equals("Excel.Sheet.12")) return true; //$NON-NLS-1$
+	if (programID.equals("PowerPoint.Show.12")) return true; //$NON-NLS-1$
 	return false;
 }
 private int OnClose() {
@@ -937,16 +937,16 @@ private void onDispose(Event e) {
 	removeListener(SWT.Paint, listener);
 	removeListener(SWT.Traverse, listener);
 	removeListener(SWT.KeyDown, listener);
-	
+
 	if (state != STATE_NONE)
 		doVerb(OLE.OLEIVERB_DISCARDUNDOSTATE);
 	deactivateInPlaceClient();
 	releaseObjectInterfaces(); // Note, must release object interfaces before releasing frame
 	deleteTempStorage();
-	
+
 	frame.removeListener(SWT.Resize, listener);
 	frame.removeListener(SWT.Move, listener);
-	
+
 	frame.Release();
 	frame = null;
 }
@@ -1008,7 +1008,7 @@ private void onPaint(Event e) {
 			rect.left = area.x; rect.right = area.x + size.cx;
 			rect.top = area.y; rect.bottom = area.y + size.cy;
 		}
-		
+
 		long /*int*/ pArea = OS.GlobalAlloc(COM.GMEM_FIXED | COM.GMEM_ZEROINIT, RECT.sizeof);
 		OS.MoveMemory(pArea, rect, RECT.sizeof);
 		COM.OleDraw(objIUnknown.getAddress(), aspect, e.gc.handle, pArea);
@@ -1045,7 +1045,7 @@ int OnUIDeactivate(int fUndoable) {
 	Menu menubar = shell.getMenuBar();
 	if (menubar == null || menubar.isDisposed())
 		return COM.S_OK;
-		
+
 	long /*int*/ shellHandle = shell.handle;
 	OS.SetMenu(shellHandle, menubar.handle);
 	return COM.OleSetMenuDescriptor(0, shellHandle, 0, 0, 0);
@@ -1105,7 +1105,7 @@ protected int QueryInterface(long /*int*/ riid, long /*int*/ ppvObject) {
 	return COM.E_NOINTERFACE;
 }
 /**
- * Returns the status of the specified command.  The status is any bitwise OR'd combination of 
+ * Returns the status of the specified command.  The status is any bitwise OR'd combination of
  * SWTOLE.OLECMDF_SUPPORTED, SWTOLE.OLECMDF_ENABLED, SWTOLE.OLECMDF_LATCHED, SWTOLE.OLECMDF_NINCHED.
  * You can query the status of a command before invoking it with OleClientSite.exec.  The
  * OLE Document or ActiveX Control must support the IOleCommandTarget to make use of this method.
@@ -1115,19 +1115,19 @@ protected int QueryInterface(long /*int*/ riid, long /*int*/ ppvObject) {
  *
  * @return the status of the specified command or 0 if unable to query the OLE Object; these are the
  *			  OLE.OLECMDF_ values
- */ 
+ */
 public int queryStatus(int cmd) {
-	
+
 	if (objIOleCommandTarget == null) {
 		long /*int*/[] address = new long /*int*/[1];
 		if (objIUnknown.QueryInterface(COM.IIDIOleCommandTarget, address) != COM.S_OK)
 			return 0;
 		objIOleCommandTarget = new IOleCommandTarget(address[0]);
 	}
-	
+
 	OLECMD olecmd = new OLECMD();
 	olecmd.cmdID = cmd;
-	
+
 	int result = objIOleCommandTarget.QueryStatus(null, 1, olecmd, null);
 
 	if (result != COM.S_OK) return 0;
@@ -1136,7 +1136,7 @@ public int queryStatus(int cmd) {
 }
 protected int Release() {
 	refCount--;
-	
+
 	if (refCount == 0) {
 		disposeCOMInterfaces();
 	}
@@ -1147,41 +1147,41 @@ protected void releaseObjectInterfaces() {
 	if (objIOleInPlaceObject!= null)
 		objIOleInPlaceObject.Release();
 	objIOleInPlaceObject = null;
-	
-	if (objIOleObject != null) {	
+
+	if (objIOleObject != null) {
 		objIOleObject.Close(COM.OLECLOSE_NOSAVE);
 		objIOleObject.Release();
 	}
 	objIOleObject = null;
-	
+
 	if (objDocumentView != null){
 		objDocumentView.Release();
 	}
 	objDocumentView = null;
-	
+
 	if (objIViewObject2 != null) {
 		objIViewObject2.SetAdvise(aspect, 0, 0);
 		objIViewObject2.Release();
 	}
 	objIViewObject2 = null;
-	
+
 	if (objIOleCommandTarget != null)
 		objIOleCommandTarget.Release();
 	objIOleCommandTarget = null;
-		
+
 	if (objIUnknown != null){
 		objIUnknown.Release();
 	}
 	objIUnknown = null;
-	
+
 	if (COM.FreeUnusedLibraries) {
 		COM.CoFreeUnusedLibraries();
 	}
 }
 /**
- * Saves the document to the specified file and includes OLE specific information if specified.  
- * This method must <b>only</b> be used for files that have an OLE Storage format.  For example, 
- * a word file edited with Word.Document should be saved using this method because there is 
+ * Saves the document to the specified file and includes OLE specific information if specified.
+ * This method must <b>only</b> be used for files that have an OLE Storage format.  For example,
+ * a word file edited with Word.Document should be saved using this method because there is
  * formating information that should be stored in the OLE specific Storage format.
  *
  * @param file the file to which the changes are to be saved
@@ -1193,7 +1193,7 @@ public boolean save(File file, boolean includeOleInfo) {
 	/*
 	* Bug in Office 2007. Saving Office 2007 documents to compound file storage object
 	* causes the output file to be corrupted. The fix is to detect Office 2007 documents
-	* using the program ID and save only the content of the 'Package' stream. 
+	* using the program ID and save only the content of the 'Package' stream.
 	*/
 	if (isOffice2007(false)) {
 		return saveOffice2007(file);
@@ -1205,27 +1205,27 @@ public boolean save(File file, boolean includeOleInfo) {
 private boolean saveFromContents(long /*int*/ address, File file) {
 
 	boolean success = false;
-	
+
 	IStream tempContents = new IStream(address);
 	tempContents.AddRef();
 
 	try {
 		FileOutputStream writer = new FileOutputStream(file);
-		
+
 		int increment = 1024 * 4;
 		long /*int*/ pv = COM.CoTaskMemAlloc(increment);
 		int[] pcbWritten = new int[1];
 		while (tempContents.Read(pv, increment, pcbWritten) == COM.S_OK && pcbWritten[0] > 0) {
 			byte[] buffer = new byte[ pcbWritten[0]];
 			OS.MoveMemory(buffer, pv, pcbWritten[0]);
-			writer.write(buffer); // Note: if file does not exist, this will create the file the 
+			writer.write(buffer); // Note: if file does not exist, this will create the file the
 			                      // first time it is called
 			success = true;
 		}
 		COM.CoTaskMemFree(pv);
-			
+
 		writer.close();
-		
+
 	} catch (IOException err) {
 	}
 
@@ -1236,11 +1236,11 @@ private boolean saveFromContents(long /*int*/ address, File file) {
 private boolean saveFromOle10Native(long /*int*/ address, File file) {
 
 	boolean success = false;
-	
+
 	IStream tempContents = new IStream(address);
 	tempContents.AddRef();
-	
-	// The "\1Ole10Native" stream contains a DWORD header whose value is the length 
+
+	// The "\1Ole10Native" stream contains a DWORD header whose value is the length
 	// of the native data that follows.
 	long /*int*/ pv = COM.CoTaskMemAlloc(4);
 	int[] size = new int[1];
@@ -1248,7 +1248,7 @@ private boolean saveFromOle10Native(long /*int*/ address, File file) {
 	OS.MoveMemory(size, pv, 4);
 	COM.CoTaskMemFree(pv);
 	if (rc == COM.S_OK && size[0] > 0) {
-		
+
 		// Read the data
 		byte[] buffer = new byte[size[0]];
 		pv = COM.CoTaskMemAlloc(size[0]);
@@ -1273,14 +1273,14 @@ private boolean saveFromOle10Native(long /*int*/ address, File file) {
 private int SaveObject() {
 
 	updateStorage();
-		
+
 	return COM.S_OK;
 }
 private boolean saveOffice2007(File file) {
 	if (file == null || file.isDirectory()) return false;
 	if (!updateStorage()) return false;
 	boolean result = false;
-	
+
 	/* Excel fails to open the package stream when the PersistStorage is not in hands off mode */
 	long /*int*/[] ppv = new long /*int*/[1];
 	IPersistStorage iPersistStorage = null;
@@ -1302,8 +1302,8 @@ private boolean saveOffice2007(File file) {
 	return result;
 }
 /**
- * Saves the document to the specified file and includes OLE specific information.  This method 
- * must <b>only</b> be used for files that have an OLE Storage format.  For example, a word file 
+ * Saves the document to the specified file and includes OLE specific information.  This method
+ * must <b>only</b> be used for files that have an OLE Storage format.  For example, a word file
  * edited with Word.Document should be saved using this method because there is formating information
  * that should be stored in the OLE specific Storage format.
  *
@@ -1314,14 +1314,14 @@ private boolean saveOffice2007(File file) {
 private boolean saveToStorageFile(File file) {
 	// The file will be saved using the formating of the current application - this
 	// may not be the format of the application that was originally used to create the file
-	// e.g. if an Excel file is opened in Word, the Word application will save the file in the 
+	// e.g. if an Excel file is opened in Word, the Word application will save the file in the
 	// Word format
 	// Note: if the file already exists, some applications will not overwrite the file
 	// In these cases, you should delete the file first (probably save the contents of the file in case the
 	// save fails)
 	if (file == null || file.isDirectory()) return false;
 	if (!updateStorage()) return false;
-	
+
 	// get access to the persistent storage mechanism
 	long /*int*/[] address = new long /*int*/[1];
 	if (objIOleObject.QueryInterface(COM.IIDIPersistStorage, address) != COM.S_OK) return false;
@@ -1349,7 +1349,7 @@ private boolean saveToStorageFile(File file) {
 }
 /**
  * Saves the document to the specified file.  This method must be used for
- * files that do not have an OLE Storage format.  For example, a bitmap file edited with MSPaint 
+ * files that do not have an OLE Storage format.  For example, a bitmap file edited with MSPaint
  * should be saved using this method because bitmap is a standard format that does not include any
  * OLE specific data.
  *
@@ -1365,16 +1365,16 @@ private boolean saveToTraditionalFile(File file) {
 		return false;
 	if (!updateStorage())
 		return false;
-	
+
 	long /*int*/[] address = new long /*int*/[1];
 	// Look for a CONTENTS stream
 	if (tempStorage.OpenStream("CONTENTS", 0, COM.STGM_DIRECT | COM.STGM_READ | COM.STGM_SHARE_EXCLUSIVE, 0, address) == COM.S_OK) //$NON-NLS-1$
 		return saveFromContents(address[0], file);
-		
+
 	// Look for Ole 1.0 object stream
 	if (tempStorage.OpenStream("\1Ole10Native", 0, COM.STGM_DIRECT | COM.STGM_READ | COM.STGM_SHARE_EXCLUSIVE, 0, address) == COM.S_OK) //$NON-NLS-1$
 		return saveFromOle10Native(address[0], file);
-		
+
 	return false;
 }
 private int Scroll_64(long /*int*/ scrollExtent) {
@@ -1390,9 +1390,9 @@ void setBorderSpace(RECT newBorderwidth) {
 }
 void setBounds() {
 	Rectangle area = frame.getClientArea();
-	setBounds(borderWidths.left, 
-		      borderWidths.top, 
-			  area.width - borderWidths.left - borderWidths.right, 
+	setBounds(borderWidths.left,
+		      borderWidths.top,
+			  area.width - borderWidths.left - borderWidths.right,
 			  area.height - borderWidths.top - borderWidths.bottom);
 	setObjectRects();
 }
@@ -1407,12 +1407,12 @@ private void setExtent(int width, int height){
 	SIZE newExtent = new SIZE();
 	newExtent.cx = width; newExtent.cy = height;
 	newExtent = xFormPixelsToHimetric(newExtent);
-	
+
    // Get the server running first, then do a SetExtent, then show it
 	boolean alreadyRunning = COM.OleIsRunning(objIOleObject.getAddress());
 	if (!alreadyRunning)
 		COM.OleRun(objIOleObject.getAddress());
-	
+
 	if (objIOleObject.SetExtent(aspect, newExtent) == COM.S_OK){
 		inUpdate = true;
 		objIOleObject.Update();
@@ -1424,7 +1424,7 @@ private void setExtent(int width, int height){
 }
 /**
  * The indent value is no longer being used by the client site.
- * 
+ *
  * @param newIndent the rectangle representing the indent amount
  */
 public void setIndent(Rectangle newIndent) {
@@ -1435,7 +1435,7 @@ public void setIndent(Rectangle newIndent) {
 	indent.bottom = newIndent.height;
 }
 private void setObjectRects() {
-	if (objIOleInPlaceObject == null) return;	
+	if (objIOleInPlaceObject == null) return;
 	// size the object to fill the available space
 	// leave a border
 	RECT rect = getRect();
@@ -1443,8 +1443,8 @@ private void setObjectRects() {
 }
 
 private int ShowObject() {
-	/* Tells the container to position the object so it is visible to 
-	 * the user. This method ensures that the container itself is 
+	/* Tells the container to position the object so it is visible to
+	 * the user. This method ensures that the container itself is
 	 * visible and not minimized.
 	 */
 	setBounds();
@@ -1493,15 +1493,15 @@ private boolean updateStorage() {
 		COM.WriteClassStg(tempStorage.getAddress(), objClsid);
 		result = iPersistStorage.Save(tempStorage.getAddress(), true);
 	}
-	
+
 	tempStorage.Commit(COM.STGC_DEFAULT);
 	result = iPersistStorage.SaveCompleted(0);
-	iPersistStorage.Release();	
-		
+	iPersistStorage.Release();
+
 	return true;
 }
 private SIZE xFormHimetricToPixels(SIZE aSize) {
-	// Return a new Size which is the pixel transformation of a 
+	// Return a new Size which is the pixel transformation of a
 	// size in HIMETRIC units.
 
 	long /*int*/ hDC = OS.GetDC(0);
@@ -1516,7 +1516,7 @@ private SIZE xFormHimetricToPixels(SIZE aSize) {
 	return size;
 }
 private SIZE xFormPixelsToHimetric(SIZE aSize) {
-	// Return a new size which is the HIMETRIC transformation of a 
+	// Return a new size which is the HIMETRIC transformation of a
 	// size in pixel units.
 
 	long /*int*/ hDC = OS.GetDC(0);

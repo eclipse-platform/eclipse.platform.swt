@@ -12,36 +12,36 @@ package org.eclipse.swt.internal.win32;
 
 public class SHELLEXECUTEINFO {
 	public int cbSize;
-	public int fMask; 
+	public int fMask;
 	/** @field cast=(HWND) */
 	public long /*int*/ hwnd;
 	/** @field cast=(LPCTSTR) */
 	public long /*int*/ lpVerb;
 	/** @field cast=(LPCTSTR) */
-	public long /*int*/ lpFile; 
+	public long /*int*/ lpFile;
 	/** @field cast=(LPCTSTR) */
 	public long /*int*/ lpParameters;
 	/** @field cast=(LPCTSTR) */
 	public long /*int*/ lpDirectory;
-	public int nShow; 
+	public int nShow;
 	/** @field cast=(HINSTANCE) */
 	public long /*int*/ hInstApp;
 	// Optional members
 	/** @field cast=(LPVOID) */
-	public long /*int*/ lpIDList; 
+	public long /*int*/ lpIDList;
 	/** @field cast=(LPCTSTR) */
 	public long /*int*/ lpClass;
 	/** @field cast=(HKEY) */
 	public long /*int*/ hkeyClass;
 	public int dwHotKey;
 //	union {
-//		HANDLE hIcon;		
+//		HANDLE hIcon;
 //		HANDLE hMonitor;
 //	};
 	/** @field cast=(HANDLE) */
 	public long /*int*/ hIcon;
 	/** @field cast=(HANDLE) */
-	public long /*int*/ hProcess; 
+	public long /*int*/ hProcess;
 	public static final int sizeof = OS.SHELLEXECUTEINFO_sizeof ();
 }
 

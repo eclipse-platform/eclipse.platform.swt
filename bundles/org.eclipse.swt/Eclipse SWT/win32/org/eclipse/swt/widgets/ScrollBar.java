@@ -18,9 +18,9 @@ import org.eclipse.swt.events.*;
 
 /**
  * Instances of this class are selectable user interface
- * objects that represent a range of positive, numeric values. 
+ * objects that represent a range of positive, numeric values.
  * <p>
- * At any given moment, a given scroll bar will have a 
+ * At any given moment, a given scroll bar will have a
  * single 'selection' that is considered to be its
  * value, which is constrained to be within the range of
  * values the scroll bar represents (that is, between its
@@ -60,7 +60,7 @@ import org.eclipse.swt.events.*;
  * have no operating system resources and are not children of the control.
  * For this reason, scroll bars are treated specially.  To create a control
  * that looks like a scroll bar but has operating system resources, use
- * <code>Slider</code>. 
+ * <code>Slider</code>.
  * </p>
  * <dl>
  * <dt><b>Styles:</b></dt>
@@ -82,7 +82,7 @@ import org.eclipse.swt.events.*;
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  * @noextend This class is not intended to be subclassed by clients.
  */
-public class ScrollBar extends Widget {	
+public class ScrollBar extends Widget {
 	Scrollable parent;
 	int increment, pageIncrement;
 
@@ -92,7 +92,7 @@ public class ScrollBar extends Widget {
  * <p>
  * The style value is either one of the style constants defined in
  * class <code>SWT</code> which is applicable to instances of this
- * class, or must be built by <em>bitwise OR</em>'ing together 
+ * class, or must be built by <em>bitwise OR</em>'ing together
  * (that is, using the <code>int</code> "|" operator) two or more
  * of those <code>SWT</code> style constants. The class description
  * lists the style constants that are applicable to the class.
@@ -231,7 +231,7 @@ Rectangle getBounds () {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @see #isEnabled
  */
 public boolean getEnabled () {
@@ -407,14 +407,14 @@ public int getThumb () {
 /**
  * Returns a rectangle describing the size and location of the
  * receiver's thumb relative to its parent.
- * 
+ *
  * @return the thumb bounds, relative to the {@link #getParent() parent}
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 3.6
  */
 public Rectangle getThumbBounds () {
@@ -449,14 +449,14 @@ public Rectangle getThumbBounds () {
  * Returns a rectangle describing the size and location of the
  * receiver's thumb track relative to its parent. This rectangle
  * comprises the areas 2, 3, and 4 as described in {@link ScrollBar}.
- * 
+ *
  * @return the thumb track bounds, relative to the {@link #getParent() parent}
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 3.6
  */
 public Rectangle getThumbTrackBounds () {
@@ -546,7 +546,7 @@ long /*int*/ hwndScrollBar () {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @see #getEnabled
  */
 public boolean isEnabled () {
@@ -608,7 +608,7 @@ public void removeSelectionListener (SelectionListener listener) {
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (eventTable == null) return;
 	eventTable.unhook (SWT.Selection, listener);
-	eventTable.unhook (SWT.DefaultSelection,listener);	
+	eventTable.unhook (SWT.DefaultSelection,listener);
 }
 
 int scrollBarType () {
@@ -651,7 +651,7 @@ public void setEnabled (boolean enabled) {
 /**
  * Sets the amount that the receiver's value will be
  * modified by when the up/down (or right/left) arrows
- * are pressed to the argument, which must be at least 
+ * are pressed to the argument, which must be at least
  * one.
  *
  * @param value the new increment (must be greater than zero)
@@ -751,7 +751,7 @@ boolean SetScrollInfo (long /*int*/ hwnd, int flags, SCROLLINFO info, boolean fR
 	*/
 	boolean barVisible = false;
 	boolean visible = getVisible ();
-	
+
 	/*
 	* This line is intentionally commented.  Currently
 	* always show scrollbar as being enabled and visible.
@@ -771,7 +771,7 @@ boolean SetScrollInfo (long /*int*/ hwnd, int flags, SCROLLINFO info, boolean fR
 	}
 	if (!visible || (state & DISABLED) != 0) fRedraw = false;
 	boolean result = OS.SetScrollInfo (hwnd, flags, info, fRedraw);
-	
+
 	/*
 	* Bug in Windows.  For some reason, when the widget
 	* is a standard scroll bar, and SetScrollInfo() is
@@ -791,7 +791,7 @@ boolean SetScrollInfo (long /*int*/ hwnd, int flags, SCROLLINFO info, boolean fR
 			OS.ShowScrollBar (hwnd, !barVisible ? OS.SB_BOTH : flags, false);
 		}
 	}
-	
+
 	/*
 	* Bug in Windows.  When only one scroll bar is visible,
 	* and the thumb changes using SIF_RANGE or SIF_PAGE
@@ -799,8 +799,8 @@ boolean SetScrollInfo (long /*int*/ hwnd, int flags, SCROLLINFO info, boolean fR
 	* bar is incorrectly made visible.  The next time the
 	* parent is resized (or another scroll bar operation
 	* is performed), the opposite scroll bar draws.  The
-	* fix is to hide the opposite scroll bar again. 
-	*  
+	* fix is to hide the opposite scroll bar again.
+	*
 	* NOTE: This problem only happens on Vista
 	*/
 	if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (6, 0)) {
@@ -808,7 +808,7 @@ boolean SetScrollInfo (long /*int*/ hwnd, int flags, SCROLLINFO info, boolean fR
 			OS.ShowScrollBar (hwnd, flags == OS.SB_HORZ ? OS.SB_VERT : OS.SB_HORZ, false);
 		}
 	}
-		
+
 	/*
 	* Feature in Windows.  Using SIF_DISABLENOSCROLL,
 	* SetScrollInfo () can change enabled and disabled
@@ -854,11 +854,11 @@ public void setSelection (int selection) {
 }
 
 /**
- * Sets the thumb value. The thumb value should be used to represent 
+ * Sets the thumb value. The thumb value should be used to represent
  * the size of the visual portion of the current range. This value is
  * usually the same as the page increment value.
  * <p>
- * This new value will be ignored if it is less than one, and will be 
+ * This new value will be ignored if it is less than one, and will be
  * clamped if it exceeds the receiver's current range.
  * </p>
  *
@@ -889,7 +889,7 @@ public void setThumb (int value) {
  * value, thumb, increment and page increment all at once.
  * <p>
  * Note: This is similar to setting the values individually
- * using the appropriate methods, but may be implemented in a 
+ * using the appropriate methods, but may be implemented in a
  * more efficient fashion on some platforms.
  * </p>
  *
@@ -912,7 +912,7 @@ public void setValues (int selection, int minimum, int maximum, int thumb, int i
 	if (thumb < 1) return;
 	if (increment < 1) return;
 	if (pageIncrement < 1) return;
-	this.increment = increment;	
+	this.increment = increment;
 	this.pageIncrement = pageIncrement;
 	SCROLLINFO info = new SCROLLINFO ();
 	info.cbSize = SCROLLINFO.sizeof;
@@ -929,7 +929,7 @@ public void setValues (int selection, int minimum, int maximum, int thumb, int i
 
 /**
  * Marks the receiver as visible if the argument is <code>true</code>,
- * and marks it invisible otherwise. 
+ * and marks it invisible otherwise.
  * <p>
  * If one of the receiver's ancestors is not visible or some
  * other condition makes the receiver not visible, marking
@@ -946,7 +946,7 @@ public void setValues (int selection, int minimum, int maximum, int thumb, int i
 public void setVisible (boolean visible) {
 	checkWidget();
 	if (visible == getVisible ()) return;
-	
+
 	/*
 	* On Windows CE, use SIF_DISABLENOSCROLL to show and
 	* hide the scroll bar when the page size is equal to
@@ -963,11 +963,11 @@ public void setVisible (boolean visible) {
 		if (info.nPage == info.nMax - info.nMin + 1) {
 			/*
 			* Bug in Windows.  When the only changed flag to
-			* SetScrollInfo () is OS.SIF_DISABLENOSCROLL, 
+			* SetScrollInfo () is OS.SIF_DISABLENOSCROLL,
 			* Windows does not update the scroll bar state.
 			* The fix is to increase and then decrease the
 			* maximum, causing Windows to honour the flag.
-			*/  
+			*/
 			int max = info.nMax;
 			info.nMax++;
 			OS.SetScrollInfo (hwnd, type, info, false);
@@ -982,7 +982,7 @@ public void setVisible (boolean visible) {
 		}
 		return;
 	}
-	
+
 	/*
 	* Set the state bits before calling ShowScrollBar ()
 	* because hiding and showing the scroll bar can cause
@@ -995,7 +995,7 @@ public void setVisible (boolean visible) {
 	long /*int*/ hwnd = hwndScrollBar ();
 	int type = scrollBarType ();
 	/*
-	* Bug in Windows 7. Windows will cause pixel corruption 
+	* Bug in Windows 7. Windows will cause pixel corruption
 	* when there is only one scroll bar visible and it is
 	* hidden.  The fix is to temporarily show the other scroll
 	* bar and hide both.

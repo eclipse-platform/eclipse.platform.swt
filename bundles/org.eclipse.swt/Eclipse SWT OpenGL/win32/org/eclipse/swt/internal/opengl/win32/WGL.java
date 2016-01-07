@@ -12,14 +12,14 @@ package org.eclipse.swt.internal.opengl.win32;
 
 import org.eclipse.swt.internal.*;
 
-public class WGL extends Platform {	
+public class WGL extends Platform {
 	static {
 		Library.loadLibrary("swt-wgl");
 	}
-	
+
 	public static final int WGL_FONT_LINES      = 0;
 	public static final int WGL_FONT_POLYGONS   = 1;
-	
+
 	/* LAYERPLANEDESCRIPTOR flags */
 	public static final int LPD_DOUBLEBUFFER        = 0x00000001;
 	public static final int LPD_STEREO              = 0x00000002;
@@ -31,10 +31,10 @@ public class WGL extends Platform {
 	public static final int LPD_SWAP_EXCHANGE       = 0x00000200;
 	public static final int LPD_SWAP_COPY           = 0x00000400;
 	public static final int LPD_TRANSPARENT         = 0x00001000;
-	
+
 	public static final int LPD_TYPE_RGBA        = 0;
 	public static final int LPD_TYPE_COLORINDEX  = 1;
-	
+
 	/* wglSwapLayerBuffers flags */
 	public static final int WGL_SWAP_MAIN_PLANE     = 0x00000001;
 	public static final int WGL_SWAP_OVERLAY1       = 0x00000002;
@@ -67,16 +67,16 @@ public class WGL extends Platform {
 	public static final int WGL_SWAP_UNDERLAY13     = 0x10000000;
 	public static final int WGL_SWAP_UNDERLAY14     = 0x20000000;
 	public static final int WGL_SWAP_UNDERLAY15     = 0x40000000;
-	
+
 	/* pixel types */
 	public static final int PFD_TYPE_RGBA        = 0;
 	public static final int PFD_TYPE_COLORINDEX  = 1;
-	
+
 	/* layer types */
 	public static final int PFD_MAIN_PLANE       = 0;
 	public static final int PFD_OVERLAY_PLANE    = 1;
 	public static final int PFD_UNDERLAY_PLANE   = (-1);
-	
+
 	/* PIXELFORMATDESCRIPTOR flags */
 	public static final int PFD_DOUBLEBUFFER            = 0x00000001;
 	public static final int PFD_STEREO                  = 0x00000002;
@@ -92,7 +92,7 @@ public class WGL extends Platform {
 	public static final int PFD_SWAP_LAYER_BUFFERS      = 0x00000800;
 	public static final int PFD_GENERIC_ACCELERATED     = 0x00001000;
 	public static final int PFD_SUPPORT_DIRECTDRAW      = 0x00002000;
-	
+
 	/* PIXELFORMATDESCRIPTOR flags for use in ChoosePixelFormat only */
 	public static final int PFD_DEPTH_DONTCARE          = 0x20000000;
 	public static final int PFD_DOUBLEBUFFER_DONTCARE   = 0x40000000;

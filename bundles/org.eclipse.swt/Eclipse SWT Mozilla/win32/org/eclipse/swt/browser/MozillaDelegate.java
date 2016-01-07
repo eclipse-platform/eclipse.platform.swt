@@ -26,7 +26,7 @@ class MozillaDelegate {
 	List<Composite> childWindows = new ArrayList<Composite> (9);
 	static long /*int*/ MozillaProc;
 	static Callback SubclassProc;
-	
+
 	static Boolean IsXULRunner24;
 	static final String LIB_XPCOM = "xpcom.dll"; //$NON-NLS-1$
 	static final String LIB_XUL = "xul.dll"; //$NON-NLS-1$
@@ -179,7 +179,7 @@ long /*int*/ getSiteWindow () {
 	* All children that are created here are stored and then destroyed once
 	* the current page is left.  This is guard code that should only be needed
 	* if Mozilla.getSiteWindow() is ever invoked by a path other than one of
-	* the two described above. 
+	* the two described above.
 	*/
 	if (!MozillaVersion.CheckVersion (MozillaVersion.VERSION_XR10) || Mozilla.IsGettingSiteWindow) {
 		return getHandle ();

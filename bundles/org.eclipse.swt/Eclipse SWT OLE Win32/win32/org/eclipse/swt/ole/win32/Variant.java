@@ -43,7 +43,7 @@ public final class Variant {
 
 	/**
 	 * A shared Variant instance with type VT_NULL.
-	 * 
+	 *
 	 * @since 3.7
 	 */
 	public static final Variant NULL;
@@ -52,7 +52,7 @@ public final class Variant {
 		NULL.type = COM.VT_NULL;
 	}
 
-/**	 
+/**
  * Invokes platform specific functionality to copy a variant
  * into operating system memory.
  * <p>
@@ -74,7 +74,7 @@ public static void win32_copy (long /*int*/ pVarDest, Variant varSrc) {
 	varSrc.getData (pVarDest);
 }
 
-/**	 
+/**
  * Invokes platform specific functionality to wrap a variant
  * that was allocated in operating system memory.
  * <p>
@@ -88,7 +88,7 @@ public static void win32_copy (long /*int*/ pVarDest, Variant varSrc) {
  * @param pVariant pointer to a variant
  *
  * @return a new <code>Variant</code>
- * 
+ *
  * @noreference This method is not intended to be referenced by clients.
  *
  * @since 3.3
@@ -101,9 +101,9 @@ public static Variant win32_new (long /*int*/ pVariant) {
 
 /**
  * Create an empty Variant object with type VT_EMPTY.
- * 
+ *
  * @since 2.0
- */	
+ */
 public Variant() {
 	type = COM.VT_EMPTY;
 }
@@ -141,9 +141,9 @@ public Variant(double val) {
 /**
  * Create a Variant object which contains a reference to the data being transferred.
  *
- * <p>When creating a VT_BYREF Variant, you must give the full Variant type 
+ * <p>When creating a VT_BYREF Variant, you must give the full Variant type
  * including VT_BYREF such as
- * 
+ *
  * <pre><code>short byRefType = OLE.VT_BSTR | OLE.VT_BYREF</code></pre>.
  *
  * @param ptr a pointer to the data being transferred.
@@ -158,7 +158,7 @@ public Variant(long /*int*/ ptr, short byRefType) {
  * Create a Variant object which represents an IDispatch interface as a VT_Dispatch.
  *
  * @param automation the OleAutomation object that this Variant represents
- * 
+ *
  */
 public Variant(OleAutomation automation) {
 	type = COM.VT_DISPATCH;
@@ -166,13 +166,13 @@ public Variant(OleAutomation automation) {
 }
 /**
  * Create a Variant object which represents an IDispatch interface as a VT_Dispatch.
- * <p>The caller is expected to have appropriately invoked unknown.AddRef() before creating 
+ * <p>The caller is expected to have appropriately invoked unknown.AddRef() before creating
  * this Variant.
- * 
+ *
  * @since 2.0
- * 
+ *
  * @param idispatch the IDispatch object that this Variant represents
- * 
+ *
  */
 public Variant(IDispatch idispatch) {
 	type = COM.VT_DISPATCH;
@@ -181,7 +181,7 @@ public Variant(IDispatch idispatch) {
 /**
  * Create a Variant object which represents an IUnknown interface as a VT_UNKNOWN.
  *
- * <p>The caller is expected to have appropriately invoked unknown.AddRef() before creating 
+ * <p>The caller is expected to have appropriately invoked unknown.AddRef() before creating
  * this Variant.
  *
  * @param unknown the IUnknown object that this Variant represents
@@ -237,14 +237,14 @@ public Variant(boolean val) {
  * Calling dispose will release resources associated with this Variant.
  * If the resource is an IDispatch or IUnknown interface, Release will be called.
  * If the resource is a ByRef pointer, nothing is released.
- * 
+ *
  * @since 2.1
  */
 public void dispose() {
 	if ((type & COM.VT_BYREF) == COM.VT_BYREF) {
 		return;
 	}
-		
+
 	switch (type) {
 		case COM.VT_DISPATCH :
 			dispatchData.Release();
@@ -253,7 +253,7 @@ public void dispose() {
 			unknownData.Release();
 			break;
 	}
-	
+
 }
 /**
  * Returns the OleAutomation object represented by this Variant.
@@ -290,9 +290,9 @@ public OleAutomation getAutomation() {
 	} finally {
 		COM.VariantClear(oldPtr);
 		OS.GlobalFree(oldPtr);
-		COM.VariantClear(newPtr); // Note: This must absolutely be done AFTER the 
-		                          // OleAutomation object is created as Variant Clear 
-		                          // will result in a Release being performed on the 
+		COM.VariantClear(newPtr); // Note: This must absolutely be done AFTER the
+		                          // OleAutomation object is created as Variant Clear
+		                          // will result in a Release being performed on the
 		                          // Dispatch object
 		OS.GlobalFree(newPtr);
 	}
@@ -305,7 +305,7 @@ public OleAutomation getAutomation() {
  * thrown.
  *
  * @since 2.0
- * 
+ *
  * @return the IDispatch object represented by this Variant
  *
  * @exception SWTException <ul>
@@ -333,9 +333,9 @@ public IDispatch getDispatch() {
 	} finally {
 		COM.VariantClear(oldPtr);
 		OS.GlobalFree(oldPtr);
-		COM.VariantClear(newPtr); // Note: This must absolutely be done AFTER the 
-		                          // OleAutomation object is created as Variant Clear 
-		                          // will result in a Release being performed on the 
+		COM.VariantClear(newPtr); // Note: This must absolutely be done AFTER the
+		                          // OleAutomation object is created as Variant Clear
+		                          // will result in a Release being performed on the
 		                          // Dispatch object
 		OS.GlobalFree(newPtr);
 	}
@@ -394,7 +394,7 @@ public long /*int*/ getByRef() {
 	if ((type & COM.VT_BYREF)== COM.VT_BYREF) {
 		return byRefPtr;
 	}
-		
+
 	return 0;
 }
 /**
@@ -408,7 +408,7 @@ public long /*int*/ getByRef() {
  * @exception SWTException <ul>
  *     <li>ERROR_CANNOT_CHANGE_VARIANT_TYPE when type of Variant can not be coerced into a byte</li>
  * </ul>
- * 
+ *
  * @since 3.3
  */
 public byte getByte() {
@@ -418,7 +418,7 @@ public byte getByte() {
 	if (type == COM.VT_I1) {
 		return byteData;
 	}
-		
+
 	// try to coerce the value to the desired type
 	long /*int*/ oldPtr = OS.GlobalAlloc(COM.GMEM_FIXED | COM.GMEM_ZEROINIT, sizeof);
 	long /*int*/ newPtr = OS.GlobalAlloc(COM.GMEM_FIXED | COM.GMEM_ZEROINIT, sizeof);
@@ -448,7 +448,7 @@ public byte getByte() {
  * @exception SWTException <ul>
  *     <li>ERROR_CANNOT_CHANGE_VARIANT_TYPE when type of Variant can not be coerced into a char</li>
  * </ul>
- * 
+ *
  * @since 3.3
  */
 public char getChar() {
@@ -458,7 +458,7 @@ public char getChar() {
 	if (type == COM.VT_UI2) {
 		return charData;
 	}
-		
+
 	// try to coerce the value to the desired type
 	long /*int*/ oldPtr = OS.GlobalAlloc(COM.GMEM_FIXED | COM.GMEM_ZEROINIT, sizeof);
 	long /*int*/ newPtr = OS.GlobalAlloc(COM.GMEM_FIXED | COM.GMEM_ZEROINIT, sizeof);
@@ -479,7 +479,7 @@ public char getChar() {
 }
 void getData(long /*int*/ pData){
 	if (pData == 0) OLE.error(OLE.ERROR_OUT_OF_MEMORY);
-	
+
 	COM.VariantInit(pData);
 
 	if ((type & COM.VT_BYREF) == COM.VT_BYREF) {
@@ -542,7 +542,7 @@ void getData(long /*int*/ pData){
 			long /*int*/ ptr = COM.SysAllocString(data);
 			COM.MoveMemory(pData + 8, new long /*int*/[] {ptr}, OS.PTR_SIZEOF);
 			break;
-	
+
 		default :
 			OLE.error(SWT.ERROR_NOT_IMPLEMENTED);
 	}
@@ -558,7 +558,7 @@ void getData(long /*int*/ pData){
  * @exception SWTException <ul>
  *     <li>ERROR_CANNOT_CHANGE_VARIANT_TYPE when type of Variant can not be coerced into a double</li>
  * </ul>
- * 
+ *
  * @since 3.2
  */
 public double getDouble() {
@@ -568,7 +568,7 @@ public double getDouble() {
     if (type == COM.VT_R8) {
         return doubleData;
     }
-    
+
     // try to coerce the value to the desired type
     long /*int*/ oldPtr = OS.GlobalAlloc(COM.GMEM_FIXED | COM.GMEM_ZEROINIT, sizeof);
     long /*int*/ newPtr = OS.GlobalAlloc(COM.GMEM_FIXED | COM.GMEM_ZEROINIT, sizeof);
@@ -585,7 +585,7 @@ public double getDouble() {
         OS.GlobalFree(oldPtr);
         COM.VariantClear(newPtr);
         OS.GlobalFree(newPtr);
-    } 
+    }
 }
 
 /**
@@ -625,7 +625,7 @@ public float getFloat() {
 		COM.VariantClear(newPtr);
 		OS.GlobalFree(newPtr);
 	}
-	
+
 }
 /**
  * Returns the Java int represented by this Variant.
@@ -646,7 +646,7 @@ public int getInt() {
 	if (type == COM.VT_I4) {
 		return intData;
 	}
-		
+
 	// try to coerce the value to the desired type
 	long /*int*/ oldPtr = OS.GlobalAlloc(COM.GMEM_FIXED | COM.GMEM_ZEROINIT, sizeof);
 	long /*int*/ newPtr = OS.GlobalAlloc(COM.GMEM_FIXED | COM.GMEM_ZEROINIT, sizeof);
@@ -686,7 +686,7 @@ public long getLong() {
 	if (type == COM.VT_I8) {
 		return longData;
 	}
-		
+
 	// try to coerce the value to the desired type
 	long /*int*/ oldPtr = OS.GlobalAlloc(COM.GMEM_FIXED | COM.GMEM_ZEROINIT, sizeof);
 	long /*int*/ newPtr = OS.GlobalAlloc(COM.GMEM_FIXED | COM.GMEM_ZEROINIT, sizeof);
@@ -724,7 +724,7 @@ public short getShort() {
 	if (type == COM.VT_I2) {
 		return shortData;
 	}
-		
+
 	// try to coerce the value to the desired type
 	long /*int*/ oldPtr = OS.GlobalAlloc(COM.GMEM_FIXED | COM.GMEM_ZEROINIT, sizeof);
 	long /*int*/ newPtr = OS.GlobalAlloc(COM.GMEM_FIXED | COM.GMEM_ZEROINIT, sizeof);
@@ -742,7 +742,7 @@ public short getShort() {
 		COM.VariantClear(newPtr);
 		OS.GlobalFree(newPtr);
 	}
-	
+
 }
 /**
  * Returns the Java String represented by this Variant.
@@ -776,7 +776,7 @@ public String getString() {
 		Variant stringVar = new Variant();
 		stringVar.setData(newPtr);
 		return stringVar.getString();
-			
+
 	} finally {
 		COM.VariantClear(oldPtr);
 		OS.GlobalFree(oldPtr);
@@ -786,11 +786,11 @@ public String getString() {
 }
 /**
  * Returns the type of the variant type.  This will be an OLE.VT_* value or
- * a bitwise combination of OLE.VT_* values as in the case of 
+ * a bitwise combination of OLE.VT_* values as in the case of
  * OLE.VT_BSTR | OLE.VT_BYREF.
- * 
+ *
  * @return the type of the variant data
- * 
+ *
  * @since 2.0
  */
 public short getType() {
@@ -806,7 +806,7 @@ public short getType() {
  * @return the IUnknown object represented by this Variant
  *
  * @exception SWTException <ul>
- *     <li>ERROR_CANNOT_CHANGE_VARIANT_TYPE when type of Variant can not be coerced into 
+ *     <li>ERROR_CANNOT_CHANGE_VARIANT_TYPE when type of Variant can not be coerced into
  *			an IUnknown object</li>
  * </ul>
  */
@@ -832,20 +832,20 @@ public IUnknown getUnknown() {
 	} finally {
 		COM.VariantClear(oldPtr);
 		OS.GlobalFree(oldPtr);
-		COM.VariantClear(newPtr); // Note: This must absolutely be done AFTER the 
-		                          // IUnknown object is created as Variant Clear 
-		                          // will result in a Release being performed on the 
+		COM.VariantClear(newPtr); // Note: This must absolutely be done AFTER the
+		                          // IUnknown object is created as Variant Clear
+		                          // will result in a Release being performed on the
 		                          // Dispatch object
 		OS.GlobalFree(newPtr);
 	}
 }
 /**
  * Update the by reference value of this variant with a new boolean value.
- * 
+ *
  * @param val the new boolean value
- * 
+ *
  * @exception SWTException <ul>
- *     <li>ERROR_CANNOT_CHANGE_VARIANT_TYPE when type of Variant is not 
+ *     <li>ERROR_CANNOT_CHANGE_VARIANT_TYPE when type of Variant is not
  *			a (VT_BYREF | VT_BOOL) object</li>
  * </ul>
  *
@@ -859,11 +859,11 @@ public void setByRef(boolean val) {
 }
 /**
  * Update the by reference value of this variant with a new float value.
- * 
+ *
  * @param val the new float value
- * 
+ *
  * @exception SWTException <ul>
- *     <li>ERROR_CANNOT_CHANGE_VARIANT_TYPE when type of Variant is not 
+ *     <li>ERROR_CANNOT_CHANGE_VARIANT_TYPE when type of Variant is not
  *			a (VT_BYREF | VT_R4) object</li>
  * </ul>
  *
@@ -873,13 +873,13 @@ public void setByRef(float val) {
 	if ((type & COM.VT_BYREF) == 0 || (type & COM.VT_R4) == 0) {
 		OLE.error(OLE.ERROR_CANNOT_CHANGE_VARIANT_TYPE);
 	}
-	COM.MoveMemory(byRefPtr, new float[]{val}, 4);	
+	COM.MoveMemory(byRefPtr, new float[]{val}, 4);
 }
 /**
  * Update the by reference value of this variant with a new integer value.
- * 
+ *
  * @param val the new integer value
- * 
+ *
  * @exception SWTException <ul>
  *     <li>ERROR_CANNOT_CHANGE_VARIANT_TYPE when type of Variant is not a (VT_BYREF | VT_I4) object</li>
  * </ul>
@@ -887,8 +887,8 @@ public void setByRef(float val) {
  * @since 2.1
  */
 public void setByRef(long /*int*/ val) {
-	if ((type & COM.VT_BYREF) == 0 
-			|| (OS.PTR_SIZEOF == 4 && (type & COM.VT_I4) == 0) 
+	if ((type & COM.VT_BYREF) == 0
+			|| (OS.PTR_SIZEOF == 4 && (type & COM.VT_I4) == 0)
 			|| (OS.PTR_SIZEOF == 8 && (type & COM.VT_I8) == 0)) {
 		OLE.error(OLE.ERROR_CANNOT_CHANGE_VARIANT_TYPE);
 	}
@@ -896,9 +896,9 @@ public void setByRef(long /*int*/ val) {
 }
 /**
  * Update the by reference value of this variant with a new short value.
- * 
+ *
  * @param val the new short value
- * 
+ *
  * @exception SWTException <ul>
  *     <li>ERROR_CANNOT_CHANGE_VARIANT_TYPE when type of Variant is not a (VT_BYREF | VT_I2) object
  * </ul>
@@ -925,7 +925,7 @@ void setData(long /*int*/ pData){
 		byRefPtr = newByRefPtr[0];
 		return;
 	}
-	
+
 	switch (type) {
 		case COM.VT_EMPTY :
 		case COM.VT_NULL :
@@ -1012,7 +1012,7 @@ void setData(long /*int*/ pData){
 				stringData = ""; //$NON-NLS-1$
 			}
 			break;
-	
+
 		default :
 			// try coercing it into one of the known forms
 			long /*int*/ newPData = OS.GlobalAlloc(OS.GMEM_FIXED | OS.GMEM_ZEROINIT, sizeof);

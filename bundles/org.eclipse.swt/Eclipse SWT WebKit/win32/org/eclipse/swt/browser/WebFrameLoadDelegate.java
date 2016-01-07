@@ -207,7 +207,7 @@ int didClearWindowObject (long /*int*/ webView, long /*int*/ context, long /*int
 		bytes = (OBJECTNAME_EXTERNAL + '\0').getBytes (WebKit.CHARSET_UTF8);
 	} catch (UnsupportedEncodingException e) {
 		bytes = (OBJECTNAME_EXTERNAL + '\0').getBytes ();
-	} 
+	}
 	long /*int*/ name = WebKit_win32.JSStringCreateWithUTF8CString (bytes);
 	WebKit_win32.JSObjectSetProperty (context, globalObject, name, externalObject, 0, null);
 	WebKit_win32.JSStringRelease (name);
@@ -279,7 +279,7 @@ int didCommitLoadForFrame (long /*int*/ webview, long /*int*/ frame) {
 		* twice, once for the initial navigate to about:blank, and once for the auto-navigate
 		* to about:blank that WebKit does when loadHTMLString is invoked.  If this is the
 		* first webView_didCommitLoadForFrame callback received for a setText() invocation
-		* then do not send any events or re-install registered BrowserFunctions. 
+		* then do not send any events or re-install registered BrowserFunctions.
 		*/
 		if (url2.startsWith (WebKit.ABOUT_BLANK) && html != null) return COM.S_OK;
 
@@ -406,7 +406,7 @@ int didFinishLoadForFrame (long /*int*/ webview, long /*int*/ frame) {
 
 	/*
 	 * If html is not null then there is html from a previous setText() call
-	 * waiting to be set into the about:blank page once it has completed loading. 
+	 * waiting to be set into the about:blank page once it has completed loading.
 	 */
 	if (html != null) {
 		if (getUrl ().startsWith (WebKit.ABOUT_BLANK)) {
@@ -514,7 +514,7 @@ void disposeCOMInterfaces () {
 	if (iWebFrameLoadDelegate != null) {
 		iWebFrameLoadDelegate.dispose ();
 		iWebFrameLoadDelegate = null;
-	}	
+	}
 }
 
 long /*int*/ getAddress () {
@@ -596,7 +596,7 @@ boolean showCertificateDialog (long /*int*/ webView, final String failingUrlStri
 				result[0] = event.widget == buttons[0];
 				shell.close();
 			}
-		}	
+		}
 	};
 
 	Composite composite = new Composite (shell, SWT.NONE);

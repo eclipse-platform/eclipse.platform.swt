@@ -193,7 +193,7 @@ void disposeCOMInterfaces () {
 	if (iWebResourceLoadDelegate != null) {
 		iWebResourceLoadDelegate.dispose ();
 		iWebResourceLoadDelegate = null;
-	}	
+	}
 }
 
 long /*int*/ getAddress () {
@@ -314,7 +314,7 @@ boolean showAuthenticationDialog (final String[] user, final String[] password, 
 			password[0] = passwordText.getText ();
 			result[0] = event.widget == buttons[1];
 			shell.close ();
-		}	
+		}
 	};
 
 	Composite composite = new Composite (shell, SWT.NONE);
@@ -355,7 +355,7 @@ int willSendRequest (long /*int*/ webView, long /*int*/ identifier, long /*int*/
 		String url = WebKit.extractBSTR (result[0]);
 		COM.SysFreeString (result[0]);
 		/*
-		 * file://c|/ doesn't work on Webkit but works on other browsers. 
+		 * file://c|/ doesn't work on Webkit but works on other browsers.
 		 * So change file:// to file:/// to be consistent
 		 */
 		if (url.startsWith (WebKit.PROTOCOL_FILE) && !url.startsWith (WebKit.URI_FILEROOT)) {

@@ -20,7 +20,7 @@ import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.win32.*;
 
-/** 
+/**
  * Instances of this class implement a selectable user interface
  * object that displays a list of images and strings and issues
  * notification when selected.
@@ -45,7 +45,7 @@ import org.eclipse.swt.internal.win32.*;
  *          item.setText ("Item " + index);
  *          System.out.println (item.getText ());
  *      }
- *  }); 
+ *  });
  * </pre></code>
  * </p><p>
  * Note that although this class is a subclass of <code>Composite</code>,
@@ -111,7 +111,7 @@ public class Table extends Composite {
  * <p>
  * The style value is either one of the style constants defined in
  * class <code>SWT</code> which is applicable to instances of this
- * class, or must be built by <em>bitwise OR</em>'ing together 
+ * class, or must be built by <em>bitwise OR</em>'ing together
  * (that is, using the <code>int</code> "|" operator) two or more
  * of those <code>SWT</code> style constants. The class description
  * lists the style constants that are applicable to the class.
@@ -276,9 +276,9 @@ TableItem _getItem (int index, boolean create, int count) {
 			if (keyCount == 0) return null;
 			if (index > keys [keyCount - 1]) return null;
 		}
-		int keyIndex = binarySearch (keys, 0, keyCount, index); 
+		int keyIndex = binarySearch (keys, 0, keyCount, index);
 		if ((style & SWT.VIRTUAL) == 0 || !create) {
-			return keyIndex < 0 ? null : items [keyIndex]; 
+			return keyIndex < 0 ? null : items [keyIndex];
 		}
         if (keyIndex < 0) {
         	if (count == -1) {
@@ -290,12 +290,12 @@ TableItem _getItem (int index, boolean create, int count) {
 	    		return items [index] = new TableItem (this, SWT.NONE, -1, false);
 	        }
 	        keyIndex = -keyIndex - 1;
-	        if (keyIndex < keyCount) { 
-	        	System.arraycopy(keys, keyIndex, keys, keyIndex + 1, keyCount - keyIndex); 
-	        	System.arraycopy(items, keyIndex, items, keyIndex + 1, keyCount - keyIndex); 
-	        } 
-	        keyCount++; 
-	        keys [keyIndex] = index; 
+	        if (keyIndex < keyCount) {
+	        	System.arraycopy(keys, keyIndex, keys, keyIndex + 1, keyCount - keyIndex);
+	        	System.arraycopy(items, keyIndex, items, keyIndex + 1, keyCount - keyIndex);
+	        }
+	        keyCount++;
+	        keys [keyIndex] = index;
         } else {
     		if (items [keyIndex] != null) return items [keyIndex];
         }
@@ -335,11 +335,11 @@ void _insertItem (int index, TableItem item, int count) {
 		System.arraycopy (items, index, items, index + 1, count - index);
 		items [index] = item;
 	} else {
-		int keyIndex = binarySearch (keys, 0, keyCount, index); 
+		int keyIndex = binarySearch (keys, 0, keyCount, index);
         if (keyIndex < 0) keyIndex = -keyIndex - 1;
-        System.arraycopy(keys, keyIndex, keys, keyIndex + 1, keyCount - keyIndex); 
+        System.arraycopy(keys, keyIndex, keys, keyIndex + 1, keyCount - keyIndex);
         keys [keyIndex] = index;
-        System.arraycopy(items, keyIndex, items, keyIndex + 1, keyCount - keyIndex); 
+        System.arraycopy(items, keyIndex, items, keyIndex + 1, keyCount - keyIndex);
         items [keyIndex] = item;
         keyCount++;
         for (int i=keyIndex + 1; i<keyCount; i++) keys[i]++;
@@ -351,7 +351,7 @@ void _removeItem (int index, int count) {
 		System.arraycopy (items, index + 1, items, index, --count - index);
 		items [count] = null;
 	} else {
-		int keyIndex = binarySearch (keys, 0, keyCount, index); 
+		int keyIndex = binarySearch (keys, 0, keyCount, index);
         if (keyIndex < 0) {
         	keyIndex = -keyIndex - 1;
         } else {
@@ -394,7 +394,7 @@ void _setItemCount (int count, int itemCount) {
 		items = newItems;
 	} else {
 		int index = Math.min (count, itemCount);
-		keyCount = binarySearch (keys, 0, keyCount, index); 
+		keyCount = binarySearch (keys, 0, keyCount, index);
 	    if (keyCount < 0) keyCount = -keyCount - 1;
 	    int length = Math.max (4, (keyCount + 3) / 4 * 4);
 	    int [] newKeys = new int [length];
@@ -472,12 +472,12 @@ long /*int*/ callWindowProc (long /*int*/ hwnd, int msg, long /*int*/ wParam, lo
 		case OS.WM_SYSKEYDOWN:
 		case OS.WM_SYSKEYUP:
 			//FALL THROUGH
-			
+
 		/* Scroll messages */
 		case OS.WM_HSCROLL:
 		case OS.WM_VSCROLL:
 			//FALL THROUGH
-						
+
 		/* Resize messages */
 		case OS.WM_WINDOWPOSCHANGED:
 			redraw = findImageControl () != null && getDrawing () && OS.IsWindowVisible (handle);
@@ -492,7 +492,7 @@ long /*int*/ callWindowProc (long /*int*/ hwnd, int msg, long /*int*/ wParam, lo
 				OS.SendMessage (handle, OS.LVM_SETBKCOLOR, 0, 0xFFFFFF);
 			}
 			//FALL THROUGH
-			
+
 		/* Mouse messages */
 		case OS.WM_LBUTTONDBLCLK:
 		case OS.WM_LBUTTONDOWN:
@@ -512,7 +512,7 @@ long /*int*/ callWindowProc (long /*int*/ hwnd, int msg, long /*int*/ wParam, lo
 		case OS.WM_XBUTTONUP:
 			checkSelection = true;
 			//FALL THROUGH
-			
+
 		/* Other messages */
 		case OS.WM_SETFONT:
 		case OS.WM_TIMER: {
@@ -524,7 +524,7 @@ long /*int*/ callWindowProc (long /*int*/ hwnd, int msg, long /*int*/ wParam, lo
 	boolean oldSelected = wasSelected;
 	if (checkSelection) wasSelected = false;
 	if (checkActivate) ignoreActivate = true;
-	
+
 	/*
 	* Bug in Windows.  For some reason, when the WS_EX_COMPOSITED
 	* style is set in a parent of a table and the header is visible,
@@ -549,7 +549,7 @@ long /*int*/ callWindowProc (long /*int*/ hwnd, int msg, long /*int*/ wParam, lo
 			}
 		}
 	}
-	
+
 	/* Remove the scroll bars that Windows keeps automatically adding */
 	boolean fixScroll = false;
 	if ((style & SWT.H_SCROLL) == 0 || (style & SWT.V_SCROLL) == 0) {
@@ -583,7 +583,7 @@ long /*int*/ callWindowProc (long /*int*/ hwnd, int msg, long /*int*/ wParam, lo
 		int flags = OS.RDW_FRAME | OS.RDW_INVALIDATE;
 		OS.RedrawWindow (handle, null, 0, flags);
 	}
-	
+
 	if (checkActivate) ignoreActivate = false;
 	if (checkSelection) {
 		if (wasSelected || forceSelect) {
@@ -604,23 +604,23 @@ long /*int*/ callWindowProc (long /*int*/ hwnd, int msg, long /*int*/ wParam, lo
 		case OS.WM_SYSKEYDOWN:
 		case OS.WM_SYSKEYUP:
 			//FALL THROUGH
-			
+
 		/* Scroll messages */
 		case OS.WM_HSCROLL:
 		case OS.WM_VSCROLL:
 			//FALL THROUGH
-			
+
 		/* Resize messages */
 		case OS.WM_WINDOWPOSCHANGED:
 			if (redraw) {
 				OS.SendMessage (handle, OS.LVM_SETBKCOLOR, 0, OS.CLR_NONE);
 				OS.DefWindowProc (handle, OS.WM_SETREDRAW, 1, 0);
 				OS.InvalidateRect (handle, null, true);
-				long /*int*/ hwndHeader = OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);	
+				long /*int*/ hwndHeader = OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
 				if (hwndHeader != 0) OS.InvalidateRect (hwndHeader, null, true);
 			}
 			//FALL THROUGH
-			
+
 		/* Mouse messages */
 		case OS.WM_LBUTTONDBLCLK:
 		case OS.WM_LBUTTONDOWN:
@@ -639,7 +639,7 @@ long /*int*/ callWindowProc (long /*int*/ hwnd, int msg, long /*int*/ wParam, lo
 		case OS.WM_XBUTTONDOWN:
 		case OS.WM_XBUTTONUP:
 			//FALL THROUGH
-			
+
 		/* Other messages */
 		case OS.WM_SETFONT:
 		case OS.WM_TIMER: {
@@ -650,7 +650,7 @@ long /*int*/ callWindowProc (long /*int*/ hwnd, int msg, long /*int*/ wParam, lo
 			}
 			break;
 		}
-		
+
 		case OS.WM_PAINT:
 			painted = true;
 			break;
@@ -664,7 +664,7 @@ static int checkStyle (int style) {
 	* WS_VSCROLL is not specified, Windows creates
 	* trees and tables with scroll bars.  The fix
 	* is to set H_SCROLL and V_SCROLL.
-	* 
+	*
 	* NOTE: This code appears on all platforms so that
 	* applications have consistent scroll bar behavior.
 	*/
@@ -689,7 +689,7 @@ LRESULT CDDS_ITEMPOSTPAINT (NMLVCUSTOMDRAW nmcd, long /*int*/ wParam, long /*int
 	* a black rectangle around any column that contains an
 	* image.  The fix is clear LVS_EX_FULLROWSELECT during
 	* custom draw.
-	* 
+	*
 	* NOTE: Since CDIS_FOCUS is cleared during custom draw,
 	* it is necessary to draw the focus rectangle after the
 	* item has been drawn.
@@ -743,7 +743,7 @@ LRESULT CDDS_ITEMPREPAINT (NMLVCUSTOMDRAW nmcd, long /*int*/ wParam, long /*int*
 	* a black rectangle around any column that contains an
 	* image.  The fix is clear LVS_EX_FULLROWSELECT during
 	* custom draw.
-	* 
+	*
 	* NOTE: It is also necessary to clear CDIS_FOCUS to stop
 	* the table from drawing the focus rectangle around the
 	* first item instead of the full row.
@@ -967,7 +967,7 @@ LRESULT CDDS_SUBITEMPOSTPAINT (NMLVCUSTOMDRAW nmcd, long /*int*/ wParam, long /*
 					}
 				}
 			}
-		} 
+		}
 		if (hooks (SWT.PaintItem)) {
 			TableItem item = _getItem ((int)/*64*/nmcd.dwItemSpec);
 			sendPaintItemEvent (item, nmcd);
@@ -995,7 +995,7 @@ LRESULT CDDS_SUBITEMPREPAINT (NMLVCUSTOMDRAW nmcd, long /*int*/ wParam, long /*i
 	* TVM_INSERTITEM calls NM_CUSTOMDRAW before the new item
 	* has been added to the array.  The fix is to check for
 	* null.
-	* 
+	*
 	* NOTE: Force the item to be created if it does not exist.
 	*/
 	TableItem item = _getItem ((int)/*64*/nmcd.dwItemSpec);
@@ -1219,10 +1219,10 @@ protected void checkSubclass () {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @see SWT#VIRTUAL
  * @see SWT#SetData
- * 
+ *
  * @since 3.0
  */
 public void clear (int index) {
@@ -1235,7 +1235,7 @@ public void clear (int index) {
 		/*
 		* Bug in Windows.  Despite the fact that every item in the
 		* table always has LPSTR_TEXTCALLBACK, Windows caches the
-		* bounds for the selected items.  This means that 
+		* bounds for the selected items.  This means that
 		* when you change the string to be something else, Windows
 		* correctly asks you for the new string but when the item
 		* is selected, the selection draws using the bounds of the
@@ -1275,10 +1275,10 @@ public void clear (int index) {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @see SWT#VIRTUAL
  * @see SWT#SetData
- * 
+ *
  * @since 3.0
  */
 public void clear (int start, int end) {
@@ -1303,7 +1303,7 @@ public void clear (int start, int end) {
 				/*
 				* Bug in Windows.  Despite the fact that every item in the
 				* table always has LPSTR_TEXTCALLBACK, Windows caches the
-				* bounds for the selected items.  This means that 
+				* bounds for the selected items.  This means that
 				* when you change the string to be something else, Windows
 				* correctly asks you for the new string but when the item
 				* is selected, the selection draws using the bounds of the
@@ -1327,7 +1327,7 @@ public void clear (int start, int end) {
 			if (currentItem == null && getDrawing () && OS.IsWindowVisible (handle)) {
 				OS.SendMessage (handle, OS.LVM_REDRAWITEMS, start, end);
 			}
-			TableItem item = start == end ? _getItem (start, false) : null; 
+			TableItem item = start == end ? _getItem (start, false) : null;
 			setScrollWidth (item, false);
 		}
 	}
@@ -1349,10 +1349,10 @@ public void clear (int start, int end) {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @see SWT#VIRTUAL
  * @see SWT#SetData
- * 
+ *
  * @since 3.0
  */
 public void clear (int [] indices) {
@@ -1378,7 +1378,7 @@ public void clear (int [] indices) {
 			/*
 			* Bug in Windows.  Despite the fact that every item in the
 			* table always has LPSTR_TEXTCALLBACK, Windows caches the
-			* bounds for the selected items.  This means that 
+			* bounds for the selected items.  This means that
 			* when you change the string to be something else, Windows
 			* correctly asks you for the new string but when the item
 			* is selected, the selection draws using the bounds of the
@@ -1414,10 +1414,10 @@ public void clear (int [] indices) {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @see SWT#VIRTUAL
  * @see SWT#SetData
- * 
+ *
  * @since 3.0
  */
 public void clearAll () {
@@ -1435,7 +1435,7 @@ public void clearAll () {
 			/*
 			* Bug in Windows.  Despite the fact that every item in the
 			* table always has LPSTR_TEXTCALLBACK, Windows caches the
-			* bounds for the selected items.  This means that 
+			* bounds for the selected items.  This means that
 			* when you change the string to be something else, Windows
 			* correctly asks you for the new string but when the item
 			* is selected, the selection draws using the bounds of the
@@ -1490,7 +1490,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 //		}
 //	}
 	long /*int*/ hwndHeader = OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
-	RECT rect = new RECT ();					
+	RECT rect = new RECT ();
 	OS.GetWindowRect (hwndHeader, rect);
 	int height = rect.bottom - rect.top;
 	int bits = 0;
@@ -1529,7 +1529,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 void createHandle () {
 	super.createHandle ();
 	state &= ~(CANVAS | THEME_BACKGROUND);
-	
+
 	/* Use the Explorer theme */
 	if (EXPLORER_THEME) {
 		if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (6, 0) && OS.IsAppThemed ()) {
@@ -1537,13 +1537,13 @@ void createHandle () {
 			OS.SetWindowTheme (handle, Display.EXPLORER, null);
 		}
 	}
-	
+
 	/* Get the header window proc */
 	if (HeaderProc == 0) {
 		long /*int*/ hwndHeader = OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
 		HeaderProc = OS.GetWindowLongPtr (hwndHeader, OS.GWLP_WNDPROC);
 	}
-	
+
 	/*
 	* Feature in Windows.  In version 5.8 of COMCTL32.DLL,
 	* if the font is changed for an item, the bounds for the
@@ -1559,13 +1559,13 @@ void createHandle () {
 			OS.SendMessage (handle, OS.CCM_SETVERSION, 5, 0);
 		}
 	}
-	
-	/* 
+
+	/*
 	* This code is intentionally commented.  According to
 	* the documentation, setting the default item size is
 	* supposed to improve performance.  By experimentation,
 	* this does not seem to have much of an effect.
-	*/	
+	*/
 //	OS.SendMessage (handle, OS.LVM_SETITEMCOUNT, 1024 * 2, 0);
 
 	/* Set the checkbox image list */
@@ -1612,7 +1612,7 @@ void createHandle () {
 	if ((style & SWT.FULL_SELECTION) != 0) bits1 |= OS.LVS_EX_FULLROWSELECT;
 	if (OS.COMCTL32_MAJOR >= 6) bits1 |= OS.LVS_EX_DOUBLEBUFFER;
 	OS.SendMessage (handle, OS.LVM_SETEXTENDEDLISTVIEWSTYLE, bits1, bits1);
-	
+
 	/*
 	* Feature in Windows.  Windows does not explicitly set the orientation of
 	* the header.  Instead, the orientation is inherited when WS_EX_LAYOUTRTL
@@ -1620,7 +1620,7 @@ void createHandle () {
 	* and WS_EX_NOINHERITLAYOUT are specified for the table, the header will
 	* not be oriented correctly.  The fix is to explicitly set the orientation
 	* for the header.
-	* 
+	*
 	* NOTE: WS_EX_LAYOUTRTL is not supported on Windows NT.
 	*/
 	if (OS.WIN32_VERSION >= OS.VERSION (4, 10)) {
@@ -1748,12 +1748,12 @@ void createItem (TableColumn column, int index) {
 	*/
 	System.arraycopy (columns, index, columns, index + 1, columnCount++ - index);
 	columns [index] = column;
-	
+
 	/*
 	* Ensure that resize listeners for the table and for columns
 	* within the table are not called.  This can happen when the
 	* first column is inserted into a table or when a new column
-	* is inserted in the first position. 
+	* is inserted in the first position.
 	*/
 	ignoreColumnResize = true;
 	if (index == 0) {
@@ -1787,7 +1787,7 @@ void createItem (TableColumn column, int index) {
 		/*
 		* Bug in Windows.  Despite the fact that every item in the
 		* table always has LPSTR_TEXTCALLBACK, Windows caches the
-		* bounds for the selected items.  This means that 
+		* bounds for the selected items.  This means that
 		* when you change the string to be something else, Windows
 		* correctly asks you for the new string but when the item
 		* is selected, the selection draws using the bounds of the
@@ -1815,7 +1815,7 @@ void createItem (TableColumn column, int index) {
 		OS.SendMessage (handle, OS.LVM_INSERTCOLUMN, index, lvColumn);
 	}
 	ignoreColumnResize = false;
-	
+
 	/* Add the tool tip item for the header */
 	if (headerToolTipHandle != 0) {
 		RECT rect = new RECT ();
@@ -1864,7 +1864,7 @@ void createItem (TableItem item, int index) {
 	if (result == -1) error (SWT.ERROR_ITEM_NOT_ADDED);
 	_insertItem (index, item, count);
 	setDeferResize (false);
-	
+
 	/* Resize to show the first item */
 	if (count == 0) setScrollWidth (item, false);
 }
@@ -1891,7 +1891,7 @@ void deregister () {
 
 /**
  * Deselects the items at the given zero-relative indices in the receiver.
- * If the item at the given zero-relative index in the receiver 
+ * If the item at the given zero-relative index in the receiver
  * is selected, it is deselected.  If the item at the index
  * was not selected, it remains deselected. Indices that are out
  * of range and duplicate indices are ignored.
@@ -1953,7 +1953,7 @@ public void deselect (int index) {
 
 /**
  * Deselects the items at the given zero-relative indices in the receiver.
- * If the item at the given zero-relative index in the receiver 
+ * If the item at the given zero-relative index in the receiver
  * is selected, it is deselected.  If the item at the index
  * was not selected, it remains deselected.  The range of the
  * indices is inclusive. Indices that are out of range are ignored.
@@ -2032,7 +2032,7 @@ void destroyItem (TableColumn column) {
 		first = true;
 		/*
 		* Changing the content of a column using LVM_SETCOLUMN causes
-		* the table control to send paint events. At this point the 
+		* the table control to send paint events. At this point the
 		* partially disposed column is still part of the table and
 		* paint handler can try to access it. This can cause exceptions.
 		* The fix is to turn redraw off.
@@ -2075,7 +2075,7 @@ void destroyItem (TableColumn column) {
 		/*
 		* Bug in Windows.  Despite the fact that every item in the
 		* table always has LPSTR_TEXTCALLBACK, Windows caches the
-		* bounds for the selected items.  This means that 
+		* bounds for the selected items.  This means that
 		* when you change the string to be something else, Windows
 		* correctly asks you for the new string but when the item
 		* is selected, the selection draws using the bounds of the
@@ -2163,7 +2163,7 @@ void destroyItem (TableColumn column) {
 	if (columnCount == 0) setScrollWidth (null, true);
 	updateMoveable ();
 	ignoreColumnResize = false;
-	if (columnCount != 0) {	
+	if (columnCount != 0) {
 		/*
 		* Bug in Windows.  When LVM_DELETECOLUMN is used to delete a
 		* column zero when that column is both the first column in the
@@ -2197,20 +2197,20 @@ void destroyItem (TableColumn column) {
 			* the column order, the header redraws correctly but the table does
 			* not.  The fix is to force a redraw.
 			*/
-			OS.InvalidateRect (handle, null, true);			
+			OS.InvalidateRect (handle, null, true);
 		}
 		TableColumn [] newColumns = new TableColumn [columnCount - orderIndex];
 		for (int i=orderIndex; i<newOrder.length; i++) {
 			newColumns [i - orderIndex] = columns [newOrder [i]];
 			newColumns [i - orderIndex].updateToolTip (newOrder [i]);
-		}	
+		}
 		for (int i=0; i<newColumns.length; i++) {
 			if (!newColumns [i].isDisposed ()) {
 				newColumns [i].sendEvent (SWT.Move);
 			}
 		}
 	}
-	
+
 	/* Remove the tool tip item for the header */
 	if (headerToolTipHandle != 0) {
 		TOOLINFO lpti = new TOOLINFO ();
@@ -2285,7 +2285,7 @@ void fixItemHeight (boolean fixScroll) {
 	if (OS.COMCTL32_VERSION >= OS.VERSION (5, 80)) return;
 	int bits = (int)/*64*/OS.SendMessage (handle, OS.LVM_GETEXTENDEDLISTVIEWSTYLE, 0, 0);
 	if ((bits & OS.LVS_EX_GRIDLINES) == 0) return;
-	bits = OS.GetWindowLong (handle, OS.GWL_STYLE);	
+	bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
 	if ((bits & OS.LVS_NOCOLUMNHEADER) != 0) return;
 	/*
 	* Bug in Windows.  Making any change to an item that
@@ -2342,7 +2342,7 @@ void fixItemHeight (boolean fixScroll) {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @see Table#getColumnOrder()
  * @see Table#setColumnOrder(int[])
  * @see TableColumn#getMoveable()
@@ -2385,7 +2385,7 @@ public int getColumnCount () {
  * </p><p>
  * Note: This is not the actual structure used by the receiver
  * to maintain its list of items, so modifying the array will
- * not affect the receiver. 
+ * not affect the receiver.
  * </p>
  *
  * @return the current visual order of the receiver's items
@@ -2394,12 +2394,12 @@ public int getColumnCount () {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @see Table#setColumnOrder(int[])
  * @see TableColumn#getMoveable()
  * @see TableColumn#setMoveable(boolean)
  * @see SWT#Move
- * 
+ *
  * @since 3.1
  */
 public int[] getColumnOrder () {
@@ -2421,7 +2421,7 @@ public int[] getColumnOrder () {
  * <p>
  * Note: This is not the actual structure used by the receiver
  * to maintain its list of items, so modifying the array will
- * not affect the receiver. 
+ * not affect the receiver.
  * </p>
  *
  * @return the items in the receiver
@@ -2430,7 +2430,7 @@ public int[] getColumnOrder () {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @see Table#getColumnOrder()
  * @see Table#setColumnOrder(int[])
  * @see TableColumn#getMoveable()
@@ -2453,7 +2453,7 @@ int getFocusIndex () {
  * Returns the width in pixels of a grid line.
  *
  * @return the width of a grid line in pixels
- * 
+ *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
@@ -2465,7 +2465,7 @@ public int getGridLineWidth () {
 }
 
 /**
- * Returns the height of the receiver's header 
+ * Returns the height of the receiver's header
  *
  * @return the height of the header or zero if the header is not visible
  *
@@ -2473,14 +2473,14 @@ public int getGridLineWidth () {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
- * @since 2.0 
+ *
+ * @since 2.0
  */
 public int getHeaderHeight () {
 	checkWidget ();
 	long /*int*/ hwndHeader = OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
 	if (hwndHeader == 0) return 0;
-	RECT rect = new RECT ();					
+	RECT rect = new RECT ();
 	OS.GetWindowRect (hwndHeader, rect);
 	return rect.bottom - rect.top;
 }
@@ -2536,8 +2536,8 @@ public TableItem getItem (int index) {
  * coordinate system of the receiver.
  * <p>
  * The item that is returned represents an item that could be selected by the user.
- * For example, if selection only occurs in items in the first column, then null is 
- * returned if the point is outside of the item. 
+ * For example, if selection only occurs in items in the first column, then null is
+ * returned if the point is outside of the item.
  * Note that the SWT.FULL_SELECTION style hint, which specifies the selection policy,
  * determines the extent of the selection.
  * </p>
@@ -2610,7 +2610,7 @@ public TableItem getItem (Point point) {
 			if ((bits & OS.LVS_NOCOLUMNHEADER) == 0) {
 				long /*int*/ hwndHeader = OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
 				if (hwndHeader != 0) {
-					RECT rect = new RECT ();					
+					RECT rect = new RECT ();
 					OS.GetWindowRect (hwndHeader, rect);
 					POINT pt = new POINT ();
 					pt.x = pinfo.x;
@@ -2661,11 +2661,11 @@ public int getItemHeight () {
 
 /**
  * Returns a (possibly empty) array of <code>TableItem</code>s which
- * are the items in the receiver. 
+ * are the items in the receiver.
  * <p>
  * Note: This is not the actual structure used by the receiver
  * to maintain its list of items, so modifying the array will
- * not affect the receiver. 
+ * not affect the receiver.
  * </p>
  *
  * @return the items in the receiver
@@ -2691,7 +2691,7 @@ public TableItem [] getItems () {
 
 /**
  * Returns <code>true</code> if the receiver's lines are visible,
- * and <code>false</code> otherwise. Note that some platforms draw 
+ * and <code>false</code> otherwise. Note that some platforms draw
  * grid lines while others may draw alternating row colors.
  * <p>
  * If one of the receiver's ancestors is not visible or some
@@ -2720,7 +2720,7 @@ public boolean getLinesVisible () {
  * <p>
  * Note: This is not the actual structure used by the receiver
  * to maintain its selection, so modifying the array will
- * not affect the receiver. 
+ * not affect the receiver.
  * </p>
  * @return an array representing the selection
  *
@@ -2784,7 +2784,7 @@ public int getSelectionIndex () {
  * <p>
  * Note: This is not the actual structure used by the receiver
  * to maintain its selection, so modifying the array will
- * not affect the receiver. 
+ * not affect the receiver.
  * </p>
  * @return the array of indices of the selected items
  *
@@ -2808,15 +2808,15 @@ public int [] getSelectionIndices () {
  * the receiver. The value may be null if no column shows
  * the sort indicator.
  *
- * @return the sort indicator 
+ * @return the sort indicator
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @see #setSortColumn(TableColumn)
- * 
+ *
  * @since 3.2
  */
 public TableColumn getSortColumn () {
@@ -2842,8 +2842,8 @@ int getSortColumnPixel () {
 }
 
 /**
- * Returns the direction of the sort indicator for the receiver. 
- * The value will be one of <code>UP</code>, <code>DOWN</code> 
+ * Returns the direction of the sort indicator for the receiver.
+ * The value will be one of <code>UP</code>, <code>DOWN</code>
  * or <code>NONE</code>.
  *
  * @return the sort direction
@@ -2852,9 +2852,9 @@ int getSortColumnPixel () {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @see #setSortDirection(int)
- * 
+ *
  * @since 3.2
  */
 public int getSortDirection () {
@@ -2982,7 +2982,7 @@ int imageIndexHeader (Image image) {
 
 /**
  * Searches the receiver's list starting at the first column
- * (index 0) until a column is found that is equal to the 
+ * (index 0) until a column is found that is equal to the
  * argument, and returns the index of that column. If no column
  * is found, returns -1.
  *
@@ -3008,7 +3008,7 @@ public int indexOf (TableColumn column) {
 
 /**
  * Searches the receiver's list starting at the first item
- * (index 0) until an item is found that is equal to the 
+ * (index 0) until an item is found that is equal to the
  * argument, and returns the index of that item. If no item
  * is found, returns -1.
  *
@@ -3143,7 +3143,7 @@ void releaseChildren (boolean destroy) {
 	}
 	super.releaseChildren (destroy);
 }
-	
+
 @Override
 void releaseWidget () {
 	super.releaseWidget ();
@@ -3246,7 +3246,7 @@ public void remove (int index) {
 
 /**
  * Removes the items from the receiver which are
- * between the given zero-relative start and end 
+ * between the given zero-relative start and end
  * indices (inclusive).
  *
  * @param start the start of the range
@@ -3295,7 +3295,7 @@ public void remove (int start, int end) {
 
 /**
  * Removes all of the items from the receiver.
- * 
+ *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
@@ -3321,7 +3321,7 @@ public void removeAll () {
 	*
 	* NOTE: LVM_DELETEALLITEMS is also sent by the table
 	* when the table is destroyed.
-	*/	
+	*/
 	setDeferResize (true);
 	if (OS.IsWin95 && columnCount > 1) {
 		boolean redraw = getDrawing () && OS.IsWindowVisible (handle);
@@ -3378,7 +3378,7 @@ public void removeSelectionListener(SelectionListener listener) {
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (eventTable == null) return;
 	eventTable.unhook (SWT.Selection, listener);
-	eventTable.unhook (SWT.DefaultSelection,listener);	
+	eventTable.unhook (SWT.DefaultSelection,listener);
 }
 
 /**
@@ -3401,7 +3401,7 @@ public void removeSelectionListener(SelectionListener listener) {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @see Table#setSelection(int[])
  */
 public void select (int [] indices) {
@@ -3444,7 +3444,7 @@ void reskinChildren (int flags) {
 }
 
 /**
- * Selects the item at the given zero-relative index in the receiver. 
+ * Selects the item at the given zero-relative index in the receiver.
  * If the item at the index was already selected, it remains
  * selected. Indices that are out of range are ignored.
  *
@@ -3490,7 +3490,7 @@ public void select (int index) {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @see Table#setSelection(int,int)
  */
 public void select (int start, int end) {
@@ -3835,7 +3835,7 @@ LRESULT sendMouseDownEvent (int type, int button, int msg, long /*int*/ wParam, 
 		}
 		return LRESULT.ZERO;
 	}
-	
+
 	/*
 	* Feature in Windows.  Inside WM_LBUTTONDOWN and WM_RBUTTONDOWN,
 	* the widget starts a modal loop to determine if the user wants
@@ -3886,7 +3886,7 @@ LRESULT sendMouseDownEvent (int type, int button, int msg, long /*int*/ wParam, 
 			}
 		}
 	}
-	
+
 	/*
 	* Force the table to have focus so that when the user
 	* reselects the focus item, the LVIS_FOCUSED state bits
@@ -3896,7 +3896,7 @@ LRESULT sendMouseDownEvent (int type, int button, int msg, long /*int*/ wParam, 
 	* below.
 	*/
 	OS.SetFocus (handle);
-		
+
 	/*
 	* Feature in Windows.  When the user selects outside of
 	* a table item, Windows deselects all the items, even
@@ -3912,7 +3912,7 @@ LRESULT sendMouseDownEvent (int type, int button, int msg, long /*int*/ wParam, 
 			return LRESULT.ZERO;
 		}
 	}
-	
+
 	/*
 	* Feature in Windows.  When a table item is reselected
 	* in a single-select table, Windows does not issue a
@@ -3934,7 +3934,7 @@ LRESULT sendMouseDownEvent (int type, int button, int msg, long /*int*/ wParam, 
 			forceSelect = true;
 		}
 	}
-	
+
 	/* Determine whether the user has selected an item based on SWT.MeasureItem */
 	fullRowSelect = false;
 	if (pinfo.iItem != -1) {
@@ -3963,7 +3963,7 @@ LRESULT sendMouseDownEvent (int type, int button, int msg, long /*int*/ wParam, 
 		dragDetect = pinfo.iItem == -1 || (pinfo.flags & flags) == 0;
 		if (fullRowSelect) dragDetect = true;
 	}
-	
+
 	/*
 	* Temporarily set LVS_EX_FULLROWSELECT to allow drag and drop
 	* and the mouse to manipulate items based on the results of
@@ -3984,7 +3984,7 @@ LRESULT sendMouseDownEvent (int type, int button, int msg, long /*int*/ wParam, 
 		OS.DefWindowProc (handle, OS.WM_SETREDRAW, 1, 0);
 		OS.SendMessage (handle, OS.LVM_SETEXTENDEDLISTVIEWSTYLE, OS.LVS_EX_FULLROWSELECT, 0);
 	}
-	
+
 	if (dragStarted || display.dragCancelled) {
 		if (!display.captureChanged && !isDisposed ()) {
 			if (OS.GetCapture () != handle) OS.SetCapture (handle);
@@ -4171,7 +4171,7 @@ void setBackgroundTransparent (boolean transparent) {
 	* CLR_NONE to make the table transparent, Windows draws
 	* a black rectangle around the first column.  The fix is
 	* clear LVS_EX_FULLROWSELECT.
-	* 
+	*
 	* Feature in Windows.  When LVM_SETBKCOLOR is used with
 	* CLR_NONE and LVM_SETSELECTEDCOLUMN is used to select
 	* a column, Windows fills the column with the selection
@@ -4190,18 +4190,18 @@ void setBackgroundTransparent (boolean transparent) {
 			OS.SendMessage (handle, OS.LVM_SETBKCOLOR, 0, OS.CLR_NONE);
 			OS.SendMessage (handle, OS.LVM_SETTEXTBKCOLOR, 0, OS.CLR_NONE);
 			OS.InvalidateRect (handle, null, true);
-			
+
 			/* Clear LVS_EX_FULLROWSELECT */
 			if (!explorerTheme && (style & SWT.FULL_SELECTION) != 0) {
 				int bits = OS.LVS_EX_FULLROWSELECT;
 				OS.SendMessage (handle, OS.LVM_SETEXTENDEDLISTVIEWSTYLE, bits, 0);
 			}
-			
+
 			/* Clear LVM_SETSELECTEDCOLUMN */
 			if ((sortDirection & (SWT.UP | SWT.DOWN)) != 0) {
 				if (sortColumn != null && !sortColumn.isDisposed ()) {
 					OS.SendMessage (handle, OS.LVM_SETSELECTEDCOLUMN, -1, 0);
-					/* 
+					/*
 					* Bug in Windows.  When LVM_SETSELECTEDCOLUMN is set, Windows
 					* does not redraw either the new or the previous selected column.
 					* The fix is to force a redraw.
@@ -4221,7 +4221,7 @@ void setBackgroundTransparent (boolean transparent) {
 				if ((style & SWT.CHECK) != 0) fixCheckboxImageListColor (true);
 				OS.InvalidateRect (handle, null, true);
 			}
-			
+
 			/* Set LVS_EX_FULLROWSELECT */
 			if (!explorerTheme && (style & SWT.FULL_SELECTION) != 0) {
 				if (!hooks (SWT.EraseItem) && !hooks (SWT.PaintItem)) {
@@ -4229,14 +4229,14 @@ void setBackgroundTransparent (boolean transparent) {
 					OS.SendMessage (handle, OS.LVM_SETEXTENDEDLISTVIEWSTYLE, bits, bits);
 				}
 			}
-			
+
 			/* Set LVM_SETSELECTEDCOLUMN */
 			if ((sortDirection & (SWT.UP | SWT.DOWN)) != 0) {
 				if (sortColumn != null && !sortColumn.isDisposed ()) {
 					int column = indexOf (sortColumn);
 					if (column != -1) {
 						OS.SendMessage (handle, OS.LVM_SETSELECTEDCOLUMN, column, 0);
-						/* 
+						/*
 						* Bug in Windows.  When LVM_SETSELECTEDCOLUMN is set, Windows
 						* does not redraw either the new or the previous selected column.
 						* The fix is to force a redraw.
@@ -4261,7 +4261,7 @@ void setBounds (int x, int y, int width, int height, int flags, boolean defer) {
 	* destroying and recreating the table.  The fix is to send
 	* the resize notification after the size has been changed in
 	* the operating system.
-	* 
+	*
 	* NOTE:  This does not fix the case when the user is resizing
 	* columns dynamically.  There is no fix for this case at this
 	* time.
@@ -4272,7 +4272,7 @@ void setBounds (int x, int y, int width, int height, int flags, boolean defer) {
 }
 
 /**
- * Sets the order that the items in the receiver should 
+ * Sets the order that the items in the receiver should
  * be displayed in to the given argument which is described
  * in terms of the zero-relative ordering of when the items
  * were added.
@@ -4287,12 +4287,12 @@ void setBounds (int x, int y, int width, int height, int flags, boolean defer) {
  *    <li>ERROR_NULL_ARGUMENT - if the item order is null</li>
  *    <li>ERROR_INVALID_ARGUMENT - if the item order is not the same length as the number of items</li>
  * </ul>
- * 
+ *
  * @see Table#getColumnOrder()
  * @see TableColumn#getMoveable()
  * @see TableColumn#setMoveable(boolean)
  * @see SWT#Move
- * 
+ *
  * @since 3.1
  */
 public void setColumnOrder (int [] order) {
@@ -4376,7 +4376,7 @@ void setDeferResize (boolean defer) {
 					OS.SendMessage (handle, OS.LVM_SETBKCOLOR, 0, OS.CLR_NONE);
 					OS.DefWindowProc (handle, OS.WM_SETREDRAW, 1, 0);
 					if (OS.IsWinCE) {
-						long /*int*/ hwndHeader = OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);	
+						long /*int*/ hwndHeader = OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
 						if (hwndHeader != 0) OS.InvalidateRect (hwndHeader, null, true);
 						OS.InvalidateRect (handle, null, true);
 					} else {
@@ -4528,7 +4528,7 @@ void setCheckboxImageList (int width, int height, boolean fixScroll) {
 }
 
 void setFocusIndex (int index) {
-//	checkWidget ();	
+//	checkWidget ();
 	/*
 	* An index of -1 will apply the change to all
 	* items.  Ensure that index is greater than -1.
@@ -4574,13 +4574,13 @@ public void setFont (Font font) {
 		setTopIndex (topIndex);
 		setRedraw (true);
 	}
-	
+
 	/*
 	* Bug in Windows.  Setting the font will cause the table
 	* to be redrawn but not the column headers.  The fix is
 	* to force a redraw of the column headers.
 	*/
-	long /*int*/ hwndHeader = OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);		 
+	long /*int*/ hwndHeader = OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
 	OS.InvalidateRect (hwndHeader, null, true);
 }
 
@@ -4593,7 +4593,7 @@ void setForegroundPixel (int pixel) {
 	*/
 	if (pixel == -1) pixel = OS.CLR_DEFAULT;
 	OS.SendMessage (handle, OS.LVM_SETTEXTCOLOR, 0, pixel);
-		
+
 	/*
 	* Feature in Windows.  When the foreground color is
 	* changed, the table does not redraw until the next
@@ -4604,7 +4604,7 @@ void setForegroundPixel (int pixel) {
 
 /**
  * Marks the receiver's header as visible if the argument is <code>true</code>,
- * and marks it invisible otherwise. 
+ * and marks it invisible otherwise.
  * <p>
  * If one of the receiver's ancestors is not visible or some
  * other condition makes the receiver not visible, marking
@@ -4631,7 +4631,7 @@ public void setHeaderVisible (boolean show) {
 	*/
 	int oldIndex = getTopIndex ();
 	OS.SetWindowLong (handle, OS.GWL_STYLE, newBits);
-	
+
 	/*
 	* Bug in Windows.  Making any change to an item that
 	* changes the item height of a table while the table
@@ -4775,7 +4775,7 @@ void setItemHeight (boolean fixScroll) {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 3.2
  */
 /*public*/ void setItemHeight (int itemHeight) {
@@ -4808,7 +4808,7 @@ public void setLinesVisible (boolean show) {
 	int newBits = show  ? OS.LVS_EX_GRIDLINES : 0;
 	OS.SendMessage (handle, OS.LVM_SETEXTENDEDLISTVIEWSTYLE, OS.LVS_EX_GRIDLINES, newBits);
 	if (show) {
-		int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);	
+		int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
 		if ((bits & OS.LVS_NOCOLUMNHEADER) == 0) fixItemHeight (true);
 	}
 }
@@ -4840,16 +4840,16 @@ public void setRedraw (boolean redraw) {
 			* operation can occur when redraw is turned off, even operations
 			* where the table must be subclassed in order to have the correct
 			* behavior or work around a Windows bug.
-			* 
-			* This code is intentionally commented. 
+			*
+			* This code is intentionally commented.
 			*/
 //			subclass ();
-			
+
 			/* Set the width of the horizontal scroll bar */
 			setScrollWidth (null, true);
 
 			/*
-			* Bug in Windows.  For some reason, when WM_SETREDRAW is used 
+			* Bug in Windows.  For some reason, when WM_SETREDRAW is used
 			* to turn redraw back on this may result in a WM_SIZE.  If the
 			* table column widths are adjusted in WM_SIZE, blank lines may
 			* be inserted at the top of the widget.  A call to LVM_GETTOPINDEX
@@ -4859,7 +4859,7 @@ public void setRedraw (boolean redraw) {
 			*/
 			setDeferResize (true);
 			OS.SendMessage (handle, OS.WM_SETREDRAW, 1, 0);
-			long /*int*/ hwndHeader = OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);	
+			long /*int*/ hwndHeader = OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
 			if (hwndHeader != 0) OS.SendMessage (hwndHeader, OS.WM_SETREDRAW, 1, 0);
 			if ((state & HIDDEN) != 0) {
 				state &= ~HIDDEN;
@@ -4882,7 +4882,7 @@ public void setRedraw (boolean redraw) {
 			OS.SendMessage (handle, OS.WM_SETREDRAW, 0, 0);
 			long /*int*/ hwndHeader = OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
 			if (hwndHeader != 0) OS.SendMessage (hwndHeader, OS.WM_SETREDRAW, 0, 0);
-			
+
 			/*
 			* When many items are added to a table, it is faster to
 			* temporarily unsubclass the window proc so that messages
@@ -4893,7 +4893,7 @@ public void setRedraw (boolean redraw) {
 			* where the table must be subclassed in order to have the correct
 			* behavior or work around a Windows bug.
 			*
-			* This code is intentionally commented. 
+			* This code is intentionally commented.
 			*/
 //			unsubclass ();
 		}
@@ -4920,7 +4920,7 @@ void setScrollWidth (int width) {
 		if (redraw) {
 			OS.DefWindowProc (handle, OS.WM_SETREDRAW, 1, 0);
 			if (OS.IsWinCE) {
-				long /*int*/ hwndHeader = OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);	
+				long /*int*/ hwndHeader = OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
 				if (hwndHeader != 0) OS.InvalidateRect (hwndHeader, null, true);
 				OS.InvalidateRect (handle, null, true);
 			} else {
@@ -5087,7 +5087,7 @@ public void setSelection (int [] indices) {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 3.2
  */
 public void setSelection (TableItem  item) {
@@ -5139,7 +5139,7 @@ public void setSelection (TableItem [] items) {
 }
 
 /**
- * Selects the item at the given zero-relative index in the receiver. 
+ * Selects the item at the given zero-relative index in the receiver.
  * The current selection is first cleared, then the new item is selected,
  * and if necessary the receiver is scrolled to make the new selection visible.
  *
@@ -5172,7 +5172,7 @@ public void setSelection (int index) {
  * If the receiver is single-select and there is more than one item in the
  * given range, then all indices are ignored.
  * </p>
- * 
+ *
  * @param start the start index of the items to select
  * @param end the end index of the items to select
  *
@@ -5199,19 +5199,19 @@ public void setSelection (int start, int end) {
 
 /**
  * Sets the column used by the sort indicator for the receiver. A null
- * value will clear the sort indicator.  The current sort column is cleared 
+ * value will clear the sort indicator.  The current sort column is cleared
  * before the new column is set.
  *
  * @param column the column used by the sort indicator or <code>null</code>
- * 
+ *
  * @exception IllegalArgumentException <ul>
- *    <li>ERROR_INVALID_ARGUMENT - if the column is disposed</li> 
+ *    <li>ERROR_INVALID_ARGUMENT - if the column is disposed</li>
  * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 3.2
  */
 public void setSortColumn (TableColumn column) {
@@ -5227,16 +5227,16 @@ public void setSortColumn (TableColumn column) {
 }
 
 /**
- * Sets the direction of the sort indicator for the receiver. The value 
+ * Sets the direction of the sort indicator for the receiver. The value
  * can be one of <code>UP</code>, <code>DOWN</code> or <code>NONE</code>.
  *
- * @param direction the direction of the sort indicator 
+ * @param direction the direction of the sort indicator
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 3.2
  */
 public void setSortDirection (int direction) {
@@ -5308,11 +5308,11 @@ void setTableEmpty () {
  * </ul>
  */
 public void setTopIndex (int index) {
-	checkWidget (); 
+	checkWidget ();
 	int topIndex = (int)/*64*/OS.SendMessage (handle, OS.LVM_GETTOPINDEX, 0, 0);
 	if (index == topIndex) return;
 	if (!painted && hooks (SWT.MeasureItem)) hitTestSelection (index, 0, 0);
-	
+
 	/*
 	* Bug in Windows.  For some reason, LVM_SCROLL refuses to
 	* scroll a table vertically when the width and height of
@@ -5466,8 +5466,8 @@ void showItem (int index) {
 	* Bug in Windows.  For some reason, when there is insufficient space
 	* to show an item, LVM_ENSUREVISIBLE causes blank lines to be
 	* inserted at the top of the widget.  A call to LVM_GETTOPINDEX will
-	* return a negative number (this is an impossible result).  The fix 
-	* is to use LVM_GETCOUNTPERPAGE to detect the case when the number 
+	* return a negative number (this is an impossible result).  The fix
+	* is to use LVM_GETCOUNTPERPAGE to detect the case when the number
 	* of visible items is zero and use LVM_ENSUREVISIBLE with the
 	* fPartialOK flag set to true to scroll the table.
 	*/
@@ -5485,7 +5485,7 @@ void showItem (int index) {
 		OS.SendMessage (handle, OS.LVM_ENSUREVISIBLE, index, 1);
 		if (index != OS.SendMessage (handle, OS.LVM_GETTOPINDEX, 0, 0)) {
 			OS.SendMessage (handle, OS.LVM_ENSUREVISIBLE, index, 1);
-		}		
+		}
 	} else if (OS.WIN32_VERSION >= OS.VERSION (6, 0)) {
 		/*
 		 * Bug in Windows Vista and onwards: For some reason,
@@ -5540,7 +5540,7 @@ public void showItem (TableItem item) {
  * @see Table#showItem(TableItem)
  */
 public void showSelection () {
-	checkWidget (); 
+	checkWidget ();
 	int index = (int)/*64*/OS.SendMessage (handle, OS.LVM_GETNEXTITEM, -1, OS.LVNI_SELECTED);
 	if (index != -1) {
 		/*
@@ -5549,7 +5549,7 @@ public void showSelection () {
 		 * vertical scroll bar is no more visible/needed, even then top of
 		 * the table is not visible. Fix is to make sure on show selection
 		 * table gets vertically scrolled back to the top, refer bug 442275
-		 * 
+		 *
 		 * Make sure above fix is only applied to the active shell, see bug 450391.
 		 */
 		if (display.getActiveShell() == getShell() && (style & SWT.NO_SCROLL) == 0
@@ -5645,7 +5645,7 @@ void update (boolean all) {
 	* If the application expects to see a paint event or has a child
 	* whose font, foreground or background color might be needed,
 	* the window proc cannot be unsubclassed.
-	* 
+	*
 	* NOTE: The header tooltip can subclass the header proc so the
 	* current proc must be restored or header tooltips stop working.
 	*/
@@ -5762,18 +5762,18 @@ void updateOrientation () {
 				Image image = item.image;
 				if (image != null) {
 					int index = imageList.indexOf (image);
-					if (index == -1) imageList.add (image);	
+					if (index == -1) imageList.add (image);
 				}
 			}
 		}
 		long /*int*/ hImageList = imageList.getHandle ();
 		OS.SendMessage (handle, OS.LVM_SETIMAGELIST, OS.LVSIL_SMALL, hImageList);
-	}	
+	}
 	if (hwndHeader != 0) {
 		if (headerImageList != null) {
 			Point size = headerImageList.getImageSize ();
 			display.releaseImageList (headerImageList);
-			headerImageList = display.getImageList (style & SWT.RIGHT_TO_LEFT, size.x, size.y);	
+			headerImageList = display.getImageList (style & SWT.RIGHT_TO_LEFT, size.x, size.y);
 			if (columns != null) {
 				for (int i = 0; i < columns.length; i++) {
 					TableColumn column = columns [i];
@@ -5786,7 +5786,7 @@ void updateOrientation () {
 								OS.SendMessage (hwndHeader, OS.HDM_GETITEM, i, hdItem);
 								if ((hdItem.fmt & OS.HDF_IMAGE) != 0) {
 									int index = headerImageList.indexOf (image);
-									if (index == -1) headerImageList.add (image);	
+									if (index == -1) headerImageList.add (image);
 									hdItem.mask = OS.HDI_IMAGE;
 									hdItem.iImage = index;
 									OS.SendMessage (hwndHeader, OS.HDM_SETITEM, i, hdItem);
@@ -5797,7 +5797,7 @@ void updateOrientation () {
 								OS.SendMessage (hwndHeader, OS.LVM_GETCOLUMN, i, lvColumn);
 								if ((lvColumn.fmt & OS.LVCFMT_IMAGE) != 0) {
 									int index = headerImageList.indexOf (image);
-									if (index == -1) headerImageList.add (image);	
+									if (index == -1) headerImageList.add (image);
 									lvColumn.iImage = index;
 									lvColumn.mask = OS.LVCF_IMAGE;
 									OS.SendMessage (hwndHeader, OS.LVM_SETCOLUMN, i, lvColumn);
@@ -5876,7 +5876,7 @@ long /*int*/ windowProc (long /*int*/ hwnd, int msg, long /*int*/ wParam, long /
 				* the header not notified and NM_RELEASEDCAPTURE is not
 				* sent.  The fix is to redraw the header when the capture
 				* changes to another control.
-				* 
+				*
 				* This does not happen on XP.
 				*/
 				if (OS.COMCTL32_MAJOR < 6) {
@@ -5904,7 +5904,7 @@ long /*int*/ windowProc (long /*int*/ hwnd, int msg, long /*int*/ wParam, long /
 				OS.MoveMemory (hdr, lParam, NMHDR.sizeof);
 				switch (hdr.code) {
 					case OS.TTN_SHOW:
-					case OS.TTN_POP: 
+					case OS.TTN_POP:
 					case OS.TTN_GETDISPINFOA:
 					case OS.TTN_GETDISPINFOW:
 						return OS.SendMessage (handle, msg, wParam, lParam);
@@ -5941,11 +5941,11 @@ long /*int*/ windowProc (long /*int*/ hwnd, int msg, long /*int*/ wParam, long /
 		/*
 		* Bug in Windows.  On Vista, for some reason, DI_GETDRAGIMAGE
 		* returns an image that does not contain strings.
-		* 
-		* Bug in Windows. For custom draw control the window origin the 
+		*
+		* Bug in Windows. For custom draw control the window origin the
 		* in HDC is wrong.
-		* 
-		* The fix for both cases is to create the image using PrintWindow(). 
+		*
+		* The fix for both cases is to create the image using PrintWindow().
 		*/
 		if ((!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (6, 0)) || (style & SWT.VIRTUAL) != 0 || hooks (SWT.EraseItem) || hooks (SWT.PaintItem)) {
 			int topIndex = (int)/*64*/OS.SendMessage (handle, OS.LVM_GETTOPINDEX, 0, 0);
@@ -5979,7 +5979,7 @@ long /*int*/ windowProc (long /*int*/ hwnd, int msg, long /*int*/ wParam, long /
 				rect.bottom = itemRect.bottom;
 			}
 			OS.GetRgnBox (hRgn, rect);
-			
+
 			/* Create resources */
 			long /*int*/ hdc = OS.GetDC (handle);
 			long /*int*/ memHdc = OS.CreateCompatibleDC (hdc);
@@ -6008,7 +6008,7 @@ long /*int*/ windowProc (long /*int*/ hwnd, int msg, long /*int*/ wParam, long /
 			OS.DeleteDC (memHdc);
 			OS.ReleaseDC (0, hdc);
 			OS.DeleteObject (hRgn);
-			
+
 			SHDRAGIMAGE shdi = new SHDRAGIMAGE ();
 			shdi.hbmpDragImage = memDib;
 			shdi.crColorKey = colorKey;
@@ -6017,7 +6017,7 @@ long /*int*/ windowProc (long /*int*/ hwnd, int msg, long /*int*/ wParam, long /
 			shdi.ptOffset.x = mousePos.x - rect.left;
 			shdi.ptOffset.y = mousePos.y - rect.top;
 			if ((style & SWT.MIRRORED) != 0) {
-				shdi.ptOffset.x = shdi.sizeDragImage.cx - shdi.ptOffset.x; 
+				shdi.ptOffset.x = shdi.sizeDragImage.cx - shdi.ptOffset.x;
 			}
 			OS.MoveMemory (lParam, shdi, SHDRAGIMAGE.sizeof);
 			return 1;
@@ -6078,7 +6078,7 @@ LRESULT WM_CONTEXTMENU (long /*int*/ wParam, long /*int*/ lParam) {
 	* WM_RBUTTONUP.  This causes two context menus requests
 	* to be sent.  The fix is to ignore WM_CONTEXTMENU on
 	* mouse down.
-	* 
+	*
 	* NOTE: This only happens when dragging is disabled.
 	* When the table is detecting drag, the WM_CONTEXTMENU
 	* is not sent WM_RBUTTONUP.
@@ -6156,7 +6156,7 @@ LRESULT WM_KEYDOWN (long /*int*/ wParam, long /*int*/ lParam) {
 			* so that internal messages are dispatched directly to the table.
 			* If the application expects to see a paint event, the window
 			* proc cannot be unsubclassed or the event will not be seen.
-			* 
+			*
 			* NOTE: The header tooltip can subclass the header proc so the
 			* current proc must be restored or header tooltips stop working.
 			*/
@@ -6224,7 +6224,7 @@ LRESULT WM_LBUTTONDBLCLK (long /*int*/ wParam, long /*int*/ lParam) {
 	if (!display.captureChanged && !isDisposed ()) {
 		if (OS.GetCapture () != handle) OS.SetCapture (handle);
 	}
-	
+
 	/* Look for check/uncheck */
 	if ((style & SWT.CHECK) != 0) {
 		/*
@@ -6243,7 +6243,7 @@ LRESULT WM_LBUTTONDBLCLK (long /*int*/ wParam, long /*int*/ lParam) {
 					OS.NotifyWinEvent (OS.EVENT_OBJECT_FOCUS, handle, OS.OBJID_CLIENT, index + 1);
 				}
 			}
-		}	
+		}
 	}
 	return LRESULT.ZERO;
 }
@@ -6282,7 +6282,7 @@ LRESULT WM_LBUTTONDOWN (long /*int*/ wParam, long /*int*/ lParam) {
 					OS.NotifyWinEvent (OS.EVENT_OBJECT_FOCUS, handle, OS.OBJID_CLIENT, index + 1);
 				}
 			}
-		}	
+		}
 	}
 	return result;
 }
@@ -6422,7 +6422,7 @@ LRESULT WM_SETFOCUS (long /*int*/ wParam, long /*int*/ lParam) {
 	if (imageList != null || (style & SWT.CHECK) != 0) {
 		OS.InvalidateRect (handle, null, false);
 	}
-	
+
 	/*
 	* Bug in Windows.  For some reason, the table does
 	* not set the default focus rectangle to be the first
@@ -6448,21 +6448,21 @@ LRESULT WM_SETFOCUS (long /*int*/ wParam, long /*int*/ lParam) {
 LRESULT WM_SETFONT (long /*int*/ wParam, long /*int*/ lParam) {
 	LRESULT result = super.WM_SETFONT (wParam, lParam);
 	if (result != null) return result;
-	
+
 	/*
 	* Bug in Windows.  When a header has a sort indicator
 	* triangle, Windows resizes the indicator based on the
 	* size of the n-1th font.  The fix is to always make
 	* the n-1th font be the default.  This makes the sort
 	* indicator always be the default size.
-	* 
+	*
 	* NOTE: The table window proc sets the actual font in
 	* the header so that all that is necessary here is to
 	* set the default first.
 	*/
 	long /*int*/ hwndHeader = OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
 	OS.SendMessage (hwndHeader, OS.WM_SETFONT, 0, lParam);
-	
+
 	if (headerToolTipHandle != 0) {
 		OS.SendMessage (headerToolTipHandle, OS.WM_SETFONT, wParam, lParam);
 	}
@@ -6550,7 +6550,7 @@ LRESULT WM_HSCROLL (long /*int*/ wParam, long /*int*/ lParam) {
 		OS.GetScrollInfo (handle, OS.SB_HORZ, info);
 		oldPos = info.nPos;
 	}
-	
+
 	/*
 	* Feature in Windows.  When there are many columns in a table,
 	* scrolling performance can be improved by unsubclassing the
@@ -6558,7 +6558,7 @@ LRESULT WM_HSCROLL (long /*int*/ wParam, long /*int*/ lParam) {
 	* to the table.  If the application expects to see a paint event
 	* or has a child whose font, foreground or background color might
 	* be needed, the window proc cannot be unsubclassed
-	* 
+	*
 	* NOTE: The header tooltip can subclass the header proc so the
 	* current proc must be restored or header tooltips stop working.
 	*/
@@ -6569,7 +6569,7 @@ LRESULT WM_HSCROLL (long /*int*/ wParam, long /*int*/ lParam) {
 		oldTableProc = OS.SetWindowLongPtr (handle, OS.GWLP_WNDPROC, TableProc);
 		oldHeaderProc = OS.SetWindowLongPtr (hwndHeader, OS.GWLP_WNDPROC, HeaderProc);
 	}
-	
+
 	/*
 	* Feature in Windows.  For some reason, when the table window
 	* proc processes WM_HSCROLL or WM_VSCROLL when there are many
@@ -6628,7 +6628,7 @@ LRESULT WM_HSCROLL (long /*int*/ wParam, long /*int*/ lParam) {
 		OS.SetWindowLongPtr (handle, OS.GWLP_WNDPROC, oldTableProc);
 		OS.SetWindowLongPtr (hwndHeader, OS.GWLP_WNDPROC, oldHeaderProc);
 	}
-	
+
 	/*
 	* Bug in Windows.  When a table that is drawing grid lines
 	* is slowly scrolled horizontally to the left, the table does
@@ -6726,12 +6726,12 @@ LRESULT WM_VSCROLL (long /*int*/ wParam, long /*int*/ lParam) {
 			}
 		}
 	}
-	
+
 	if (fixSubclass) {
 		OS.SetWindowLongPtr (handle, OS.GWLP_WNDPROC, oldTableProc);
 		OS.SetWindowLongPtr (hwndHeader, OS.GWLP_WNDPROC, oldHeaderProc);
 	}
-	
+
 	/*
 	* Bug in Windows.  When a table is drawing grid lines and the
 	* user scrolls vertically up or down by a line or a page, the
@@ -6750,7 +6750,7 @@ LRESULT WM_VSCROLL (long /*int*/ wParam, long /*int*/ lParam) {
 				break;
 			case OS.SB_LINEDOWN:
 			case OS.SB_LINEUP:
-				RECT rect = new RECT ();					
+				RECT rect = new RECT ();
 				OS.GetWindowRect (hwndHeader, rect);
 				int headerHeight = rect.bottom - rect.top;
 				RECT clientRect = new RECT ();
@@ -6830,12 +6830,12 @@ LRESULT wmNotifyChild (NMHDR hdr, long /*int*/ wParam, long /*int*/ lParam) {
 //			if (drawCount != 0 || !OS.IsWindowVisible (handle)) break;
 			NMLVDISPINFO plvfi = new NMLVDISPINFO ();
 			OS.MoveMemory (plvfi, lParam, NMLVDISPINFO.sizeof);
-			
+
 			boolean [] visible = display.columnVisible;
 			if (visible != null && !visible [plvfi.iSubItem]) {
 				break;
 			}
-			
+
 			/*
 			* Feature in Windows.  When a new table item is inserted
 			* using LVM_INSERTITEM in a table that is transparent
@@ -6843,30 +6843,30 @@ LRESULT wmNotifyChild (NMHDR hdr, long /*int*/ wParam, long /*int*/ lParam) {
 			* TVM_INSERTITEM calls LVN_GETDISPINFO before the item
 			* has been added to the array.  The fix is to check for
 			* null.
-			* 
+			*
 			* NOTE: Force the item to be created if it does not exist.
 			*/
 			TableItem item = _getItem (plvfi.iItem);
 			if (item == null) break;
-			
+
 			/*
-			* Feature in Windows. On Vista, the list view expects the item array 
+			* Feature in Windows. On Vista, the list view expects the item array
 			* to be up to date when a LVM_DELETEITEM message is being processed.
-			*  
-			* Also, when the table is virtual, do not allow the application to 
+			*
+			* Also, when the table is virtual, do not allow the application to
 			* provide data for a new item that becomes visible until the item has
 			* been removed from the items array.  Because arbitrary application
-			* code can run during the callback, the items array might be accessed 
+			* code can run during the callback, the items array might be accessed
 			* in an inconsistent state.
-			*   
-			* On both cases, Rather than answering the data right away, queue a 
+			*
+			* On both cases, Rather than answering the data right away, queue a
 			* redraw for later.
 			*/
 			if (ignoreShrink) {
 				/*
 				* Feature in Windows Vista and newer. Using LVM_REDRAWITEMS causes LVN_GETDISPINFO
 				* to be sent before the method returns. For this reason, LVM_REDRAWITEMS
-				* can never be used from a LVN_GETDISPINFO handler. The fix is to 
+				* can never be used from a LVN_GETDISPINFO handler. The fix is to
 				* InvalidateRect() passing the bounds for the entire item.
 				*/
 				if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (6, 0)) {
@@ -6884,7 +6884,7 @@ LRESULT wmNotifyChild (NMHDR hdr, long /*int*/ wParam, long /*int*/ lParam) {
 					}
 				}
 			}
-			
+
 			/*
 			* The cached flag is used by both virtual and non-virtual
 			* tables to indicate that Windows has asked at least once
@@ -6920,7 +6920,7 @@ LRESULT wmNotifyChild (NMHDR hdr, long /*int*/ wParam, long /*int*/ lParam) {
 					* The fix is to use a space rather than an empty string
 					* when anything but a tool tip is requested (to avoid
 					* a tool tip that is a single space).
-					* 
+					*
 					* NOTE: This is only a problem for items in the first
 					* column.  Assigning NULL to other columns stops Windows
 					* from drawing the selection when LVS_EX_FULLROWSELECT
@@ -7132,7 +7132,7 @@ LRESULT wmNotifyChild (NMHDR hdr, long /*int*/ wParam, long /*int*/ lParam) {
 			break;
 		}
 		case OS.NM_RECOGNIZEGESTURE:
-			/* 
+			/*
 			* Feature on Pocket PC.  The tree and table controls detect the tap
 			* and hold gesture by default. They send a GN_CONTEXTMENU message to show
 			* the popup menu.  This default behaviour is unwanted on Pocket PC 2002
@@ -7198,7 +7198,7 @@ LRESULT wmNotifyHeader (NMHDR hdr, long /*int*/ wParam, long /*int*/ lParam) {
 					* Windows packs the column but does not take into account
 					* the empty space left for the image.  The fix is to pack
 					* the column explicitly rather than letting Windows do it.
-					* 
+					*
 					* NOTE:  This bug does not happen on Vista.
 					*/
 					boolean fixPack = false;
@@ -7225,7 +7225,7 @@ LRESULT wmNotifyHeader (NMHDR hdr, long /*int*/ wParam, long /*int*/ lParam) {
 		case OS.HDN_BEGINDRAG: {
 			if (ignoreColumnMove) return LRESULT.ONE;
 			int bits = (int)/*64*/OS.SendMessage (handle, OS.LVM_GETEXTENDEDLISTVIEWSTYLE, 0, 0);
-			if ((bits & OS.LVS_EX_HEADERDRAGDROP) == 0) break; 
+			if ((bits & OS.LVS_EX_HEADERDRAGDROP) == 0) break;
 			if (columnCount == 0) return LRESULT.ONE;
 			NMHEADER phdn = new NMHEADER ();
 			OS.MoveMemory (phdn, lParam, NMHEADER.sizeof);
@@ -7355,7 +7355,7 @@ LRESULT wmNotifyToolTip (NMHDR hdr, long /*int*/ wParam, long /*int*/ lParam) {
 			break;
 		}
 		case OS.TTN_GETDISPINFOA:
-		case OS.TTN_GETDISPINFOW: 
+		case OS.TTN_GETDISPINFOW:
 		case OS.TTN_SHOW: {
 			LRESULT result = super.wmNotify (hdr, wParam, lParam);
 			if (result != null) return result;
@@ -7370,7 +7370,7 @@ LRESULT wmNotifyToolTip (NMHDR hdr, long /*int*/ wParam, long /*int*/ lParam) {
 				OS.POINTSTOPOINT (pt, pos);
 				OS.ScreenToClient (handle, pt);
 				pinfo.x = pt.x;
-				pinfo.y = pt.y;	
+				pinfo.y = pt.y;
 				/*
 				*  Bug in Windows.  When LVM_SUBITEMHITTEST is used to hittest
 				*  a point that is above the table, instead of returning -1 to
@@ -7413,7 +7413,7 @@ LRESULT wmNotifyToolTip (NMHDR hdr, long /*int*/ wParam, long /*int*/ lParam) {
 								}
 							}
 							RECT cellRect = item.getBounds (pinfo.iItem, pinfo.iSubItem, true, true, true, true, hDC);
-							RECT clientRect = new RECT (); 
+							RECT clientRect = new RECT ();
 							OS.GetClientRect (handle, clientRect);
 							if (itemRect.right > cellRect.right || itemRect.right > clientRect.right) {
 								//TEMPORARY CODE
@@ -7440,7 +7440,7 @@ LRESULT wmNotifyToolTip (NMHDR hdr, long /*int*/ wParam, long /*int*/ lParam) {
 									}
 								}
 							}
-						}			
+						}
 					}
 					if (hFont != -1) hFont = OS.SelectObject (hDC, hFont);
 					if (newFont != 0) OS.SelectObject (hDC, oldFont);

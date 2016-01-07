@@ -41,7 +41,7 @@ import org.eclipse.swt.*;
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  */
 public final class FontData {
-	
+
 	/**
 	 * A Win32 LOGFONT struct
 	 * (Warning: This field is platform dependent)
@@ -51,11 +51,11 @@ public final class FontData {
 	 * within the packages provided by SWT. It is not available on all
 	 * platforms and should never be accessed from application code.
 	 * </p>
-	 * 
+	 *
 	 * @noreference This field is not intended to be referenced by clients.
 	 */
 	public LOGFONT data;
-	
+
 	/**
 	 * The height of the font data in points
 	 * (Warning: This field is platform dependent)
@@ -65,17 +65,17 @@ public final class FontData {
 	 * within the packages provided by SWT. It is not available on all
 	 * platforms and should never be accessed from application code.
 	 * </p>
-	 * 
+	 *
 	 * @noreference This field is not intended to be referenced by clients.
 	 */
 	public float height;
-	
+
 	/**
 	 * The locales of the font
 	 */
 	String lang, country, variant;
-	
-/**	 
+
+/**
  * Constructs a new uninitialized font data.
  */
 public FontData() {
@@ -90,7 +90,7 @@ public FontData() {
 /**
  * Constructs a new font data given the Windows <code>LOGFONT</code>
  * that it should represent.
- * 
+ *
  * @param data the <code>LOGFONT</code> for the result
  */
 FontData(LOGFONT data, float height) {
@@ -104,7 +104,7 @@ FontData(LOGFONT data, float height) {
  * method.
  * <p>
  * Note that the representation varies between platforms,
- * and a FontData can only be created from a string that was 
+ * and a FontData can only be created from a string that was
  * generated on the same platform.
  * </p>
  *
@@ -124,16 +124,16 @@ public FontData(String string) {
 	if (end == -1) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	String version1 = string.substring(start, end);
 	try {
-		if (Integer.parseInt(version1) != 1) SWT.error(SWT.ERROR_INVALID_ARGUMENT); 
+		if (Integer.parseInt(version1) != 1) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	} catch (NumberFormatException e) {
 		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
-	
+
 	start = end + 1;
 	end = string.indexOf('|', start);
 	if (end == -1) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	String name = string.substring(start, end);
-	
+
 	start = end + 1;
 	end = string.indexOf('|', start);
 	if (end == -1) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
@@ -143,7 +143,7 @@ public FontData(String string) {
 	} catch (NumberFormatException e) {
 		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
-	
+
 	start = end + 1;
 	end = string.indexOf('|', start);
 	if (end == -1) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
@@ -244,9 +244,9 @@ public FontData(String string) {
 	}
 }
 
-/**	 
+/**
  * Constructs a new font data given a font name,
- * the height of the desired font in points, 
+ * the height of the desired font in points,
  * and a font style.
  *
  * @param name the name of the font (must not be null)
@@ -303,7 +303,7 @@ public boolean equals (Object object) {
 		* This code is intentionally commented.  When creating
 		* a FontData, lfHeight is not necessarily set.  Instead
 		* we check the height field which is always set.
-		*/ 
+		*/
 //		data.lfHeight == lf.lfHeight &&
 		height == fd.height &&
 		data.lfWidth == lf.lfWidth &&
@@ -322,7 +322,7 @@ public boolean equals (Object object) {
 }
 
 long /*int*/ EnumLocalesProc(long /*int*/ lpLocaleString) {
-	
+
 	/* Get the locale ID */
 	int length = 8;
 	TCHAR buffer = new TCHAR(0, length);
@@ -379,7 +379,7 @@ public int getHeight() {
  * given language/country locale, the variant portion of the
  * locale will determine the character set.
  * </p>
- * 
+ *
  * @return the <code>String</code> representing a Locale object
  * @since 3.0
  */
@@ -397,14 +397,14 @@ public String getLocale () {
 	if (variant != null) {
 		buffer.append (variant);
 	}
-	
+
 	String result = buffer.toString ();
 	int length = result.length ();
 	if (length > 0) {
 		if (result.charAt (length - 1) == sep) {
 			result = result.substring (0, length - 1);
 		}
-	} 
+	}
 	return result;
 }
 
@@ -435,12 +435,12 @@ public String getName() {
 }
 
 /**
- * Returns the style of the receiver which is a bitwise OR of 
+ * Returns the style of the receiver which is a bitwise OR of
  * one or more of the <code>SWT</code> constants NORMAL, BOLD
  * and ITALIC.
  *
  * @return the style of this <code>FontData</code>
- * 
+ *
  * @see #setStyle
  */
 public int getStyle() {
@@ -451,8 +451,8 @@ public int getStyle() {
 }
 
 /**
- * Returns an integer hash code for the receiver. Any two 
- * objects that return <code>true</code> when passed to 
+ * Returns an integer hash code for the receiver. Any two
+ * objects that return <code>true</code> when passed to
  * <code>equals</code> must return the same value for this
  * method.
  *
@@ -479,7 +479,7 @@ public int hashCode () {
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_INVALID_ARGUMENT - if the height is negative</li>
  * </ul>
- * 
+ *
  * @see #getHeight
  */
 public void setHeight(int height) {
@@ -506,17 +506,17 @@ public void setHeight(int height) {
  * given language/country locale, the variant portion of the
  * locale will determine the character set.
  * </p>
- * 
+ *
  * @param locale the <code>String</code> representing a Locale object
  * @see java.util.Locale#toString
  */
-public void setLocale(String locale) {	
+public void setLocale(String locale) {
 	lang = country = variant = null;
 	if (locale != null) {
 		char sep = '_';
 		int length = locale.length();
 		int firstSep, secondSep;
-		
+
 		firstSep = locale.indexOf(sep);
 		if (firstSep == -1) {
 			firstSep = secondSep = length;
@@ -532,7 +532,7 @@ public void setLocale(String locale) {
 		data.lfCharSet = (byte)OS.DEFAULT_CHARSET;
 	} else {
 		Callback callback = new Callback (this, "EnumLocalesProc", 1); //$NON-NLS-1$
-		long /*int*/ lpEnumLocalesProc = callback.getAddress ();	
+		long /*int*/ lpEnumLocalesProc = callback.getAddress ();
 		if (lpEnumLocalesProc == 0) SWT.error(SWT.ERROR_NO_MORE_CALLBACKS);
 		OS.EnumSystemLocales(lpEnumLocalesProc, OS.LCID_SUPPORTED);
 		callback.dispose ();
@@ -553,7 +553,7 @@ public void setLocale(String locale) {
  * </p>
  * <p>
  * On platforms that do not support font foundries, only the face name
- * (for example, "courier") is used in <code>setName()</code> and 
+ * (for example, "courier") is used in <code>setName()</code> and
  * <code>getName()</code>.
  * </p>
  *
@@ -583,7 +583,7 @@ public void setName(String name) {
 
 /**
  * Sets the style of the receiver to the argument which must
- * be a bitwise OR of one or more of the <code>SWT</code> 
+ * be a bitwise OR of one or more of the <code>SWT</code>
  * constants NORMAL, BOLD and ITALIC.  All other style bits are
  * ignored.
  *
@@ -606,7 +606,7 @@ public void setStyle(int style) {
 
 /**
  * Returns a string representation of the receiver which is suitable
- * for constructing an equivalent instance using the 
+ * for constructing an equivalent instance using the
  * <code>FontData(String)</code> constructor.
  *
  * @return a string representation of the FontData
@@ -624,30 +624,30 @@ public String toString() {
 	buffer.append("|"); //$NON-NLS-1$
 	buffer.append(getStyle());
 	buffer.append("|"); //$NON-NLS-1$
-	buffer.append("WINDOWS|1|"); //$NON-NLS-1$	
+	buffer.append("WINDOWS|1|"); //$NON-NLS-1$
 	buffer.append(data.lfHeight);
 	buffer.append("|"); //$NON-NLS-1$
 	buffer.append(data.lfWidth);
 	buffer.append("|"); //$NON-NLS-1$
 	buffer.append(data.lfEscapement);
 	buffer.append("|"); //$NON-NLS-1$
-	buffer.append(data.lfOrientation);  
+	buffer.append(data.lfOrientation);
 	buffer.append("|"); //$NON-NLS-1$
-	buffer.append(data.lfWeight);  
+	buffer.append(data.lfWeight);
 	buffer.append("|"); //$NON-NLS-1$
 	buffer.append(data.lfItalic);
 	buffer.append("|"); //$NON-NLS-1$
 	buffer.append(data.lfUnderline);
 	buffer.append("|"); //$NON-NLS-1$
-	buffer.append(data.lfStrikeOut);  
+	buffer.append(data.lfStrikeOut);
 	buffer.append("|"); //$NON-NLS-1$
-	buffer.append(data.lfCharSet); 
+	buffer.append(data.lfCharSet);
 	buffer.append("|"); //$NON-NLS-1$
 	buffer.append(data.lfOutPrecision);
 	buffer.append("|"); //$NON-NLS-1$
-	buffer.append(data.lfClipPrecision);  
+	buffer.append(data.lfClipPrecision);
 	buffer.append("|"); //$NON-NLS-1$
-	buffer.append(data.lfQuality); 
+	buffer.append(data.lfQuality);
 	buffer.append("|"); //$NON-NLS-1$
 	buffer.append(data.lfPitchAndFamily);
 	buffer.append("|"); //$NON-NLS-1$
@@ -655,7 +655,7 @@ public String toString() {
 	return buffer.toString();
 }
 
-/**	 
+/**
  * Invokes platform specific functionality to allocate a new font data.
  * <p>
  * <b>IMPORTANT:</b> This method is <em>not</em> part of the public
@@ -668,7 +668,7 @@ public String toString() {
  * @param data the <code>LOGFONT</code> for the font data
  * @param height the height of the font data
  * @return a new font data object containing the specified <code>LOGFONT</code> and height
- * 
+ *
  * @noreference This method is not intended to be referenced by clients.
  */
 public static FontData win32_new(LOGFONT data, float height) {

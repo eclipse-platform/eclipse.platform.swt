@@ -159,7 +159,7 @@ long /*int*/ copyWithAlpha (long /*int*/ hBitmap, int background, byte[] alphaDa
 	OS.GetObject (hBitmap, BITMAP.sizeof, bm);
 	int srcWidth = bm.bmWidth;
 	int srcHeight = bm.bmHeight;
-	
+
 	/* Create resources */
 	long /*int*/ hdc = OS.GetDC (0);
 	long /*int*/ srcHdc = OS.CreateCompatibleDC (hdc);
@@ -187,7 +187,7 @@ long /*int*/ copyWithAlpha (long /*int*/ hBitmap, int background, byte[] alphaDa
  	OS.BitBlt (memHdc, 0, 0, srcWidth, srcHeight, srcHdc, 0, 0, OS.SRCCOPY);
  	byte[] srcData = new byte [sizeInBytes];
 	OS.MoveMemory (srcData, dibBM.bmBits, sizeInBytes);
-	
+
 	/* Merge the alpha channel in place */
 	if (alphaData != null) {
 		int spinc = dibBM.bmWidthBytes - srcWidth * 4;
@@ -214,7 +214,7 @@ long /*int*/ copyWithAlpha (long /*int*/ hBitmap, int background, byte[] alphaDa
 		}
 	}
 	OS.MoveMemory (dibBM.bmBits, srcData, sizeInBytes);
-	
+
 	/* Stretch and free resources */
 	if (srcWidth != destWidth || srcHeight != destHeight) {
 		BITMAPINFOHEADER bmiHeader2 = new BITMAPINFOHEADER ();
@@ -289,14 +289,14 @@ long /*int*/ createMask (long /*int*/ hBitmap, int destWidth, int destHeight, in
 	long /*int*/ hdc1 = OS.CreateCompatibleDC (hDC);
 	if (background != -1) {
 		OS.SelectObject (hdc1, hBitmap);
-		
+
 		/*
 		* If the image has a palette with multiple entries having
 		* the same color and one of those entries is the transparentPixel,
 		* only the first entry becomes transparent. To avoid this
 		* problem, temporarily change the image palette to a palette
 		* where the transparentPixel is white and everything else is
-		* black. 
+		* black.
 		*/
 		boolean isDib = bm.bmBits != 0;
 		byte[] originalColors = null;
@@ -315,7 +315,7 @@ long /*int*/ createMask (long /*int*/ hBitmap, int destWidth, int destHeight, in
 		} else {
 			OS.SetBkColor (hdc1, background);
 		}
-		
+
 		long /*int*/ hdc2 = OS.CreateCompatibleDC (hDC);
 		OS.SelectObject (hdc2, hMask);
 		if (destWidth != srcWidth || destHeight != srcHeight) {
@@ -399,7 +399,7 @@ void set (int index, Image image, int count) {
 	switch (image.type) {
 		case SWT.BITMAP: {
 			/*
-			* Note that the image size has to match the image list icon size. 
+			* Note that the image size has to match the image list icon size.
 			*/
 			long /*int*/ hBitmap = 0, hMask = 0;
 			ImageData data = image.getImageData ();
@@ -409,7 +409,7 @@ void set (int index, Image image, int count) {
 					 * Fully transparent image is rendered as a black image, so such
 					 * image needs to be rendered using ImageData mask approach.
 					 * Refer bug 426247
-					 * 
+					 *
 					 * TODO: Explore using createMaskFromAlpha() method even
 					 * for newer versions of the COMCTL32 library.
 					 */
@@ -456,7 +456,7 @@ void set (int index, Image image, int count) {
 			break;
 		}
 		case SWT.ICON: {
-			if (OS.IsWinCE) {	
+			if (OS.IsWinCE) {
 				OS.ImageList_ReplaceIcon (handle, index == count ? -1 : index, hImage);
 			} else {
 				long /*int*/ hIcon = copyIcon (hImage, cx [0], cy [0]);

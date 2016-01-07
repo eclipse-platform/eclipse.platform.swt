@@ -17,7 +17,7 @@ import org.eclipse.swt.internal.ole.win32.*;
 final class OleEventSink
 {
 	private OleControlSite widget;
-	
+
 	private COMObject iDispatch;
 	private int refCount;
 
@@ -26,13 +26,13 @@ final class OleEventSink
 	private GUID eventGuid;
 
 	private OleEventTable eventTable;
-	
+
 OleEventSink(OleControlSite widget, long /*int*/ iUnknown, GUID riid) {
 
 	this.widget = widget;
 	this.eventGuid = riid;
 	this.objIUnknown = new IUnknown(iUnknown);
-	
+
 	createCOMInterfaces();
 }
 
@@ -96,22 +96,22 @@ private void disposeCOMInterfaces() {
 	if (iDispatch != null)
 		iDispatch.dispose();
 	iDispatch = null;
-	
+
 }
 private int Invoke(int dispIdMember, long /*int*/ riid, int lcid, int dwFlags, long /*int*/ pDispParams, long /*int*/ pVarResult, long /*int*/ pExcepInfo, long /*int*/ pArgErr)
 {
 	if (eventTable == null || !eventTable.hooks(dispIdMember)) return COM.S_OK;
-	
+
 	// Construct an array of the parameters that are passed in
 	// Note: parameters are passed in reverse order - here we will correct the order
 	Variant[] eventInfo = null;
-	if (pDispParams != 0) {	
+	if (pDispParams != 0) {
 		DISPPARAMS dispParams = new DISPPARAMS();
 		COM.MoveMemory(dispParams, pDispParams, DISPPARAMS.sizeof);
 		eventInfo = new Variant[dispParams.cArgs];
 		int size = VARIANT.sizeof;
 		long /*int*/ offset = (dispParams.cArgs - 1) * size;
-		
+
 		for (int j = 0; j < dispParams.cArgs; j++){
 			eventInfo[j] = new Variant();
 			eventInfo[j].setData(dispParams.rgvarg + offset);
@@ -124,9 +124,9 @@ private int Invoke(int dispIdMember, long /*int*/ riid, int lcid, int dwFlags, l
 	notifyListener(dispIdMember,event);
 
 	if (eventInfo != null) {
-		for (int j = 0; j < eventInfo.length; j++){ 
-			eventInfo[j].dispose(); 
-		} 
+		for (int j = 0; j < eventInfo.length; j++){
+			eventInfo[j].dispose();
+		}
 	}
 
 	return COM.S_OK;
@@ -177,7 +177,7 @@ int Release() {
 	if (refCount == 0) {
 		disposeCOMInterfaces();
 	}
-	
+
 	return refCount;
 }
 void removeListener(int eventID, OleListener listener) {

@@ -14,21 +14,21 @@ import org.eclipse.swt.internal.ole.win32.*;
 import org.eclipse.swt.internal.win32.*;
 
 /**
- * The class <code>ByteArrayTransfer</code> provides a platform specific 
- * mechanism for converting a java <code>byte[]</code> to a platform 
+ * The class <code>ByteArrayTransfer</code> provides a platform specific
+ * mechanism for converting a java <code>byte[]</code> to a platform
  * specific representation of the byte array and vice versa.
  *
- * <p><code>ByteArrayTransfer</code> is never used directly but is sub-classed 
+ * <p><code>ByteArrayTransfer</code> is never used directly but is sub-classed
  * by transfer agents that convert between data in a java format such as a
  * <code>String</code> and a platform specific byte array.
- * 
- * <p>If the data you are converting <b>does not</b> map to a 
- * <code>byte[]</code>, you should sub-class <code>Transfer</code> directly 
+ *
+ * <p>If the data you are converting <b>does not</b> map to a
+ * <code>byte[]</code>, you should sub-class <code>Transfer</code> directly
  * and do your own mapping to a platform data type.</p>
- * 
+ *
  * <p>The following snippet shows a subclass of ByteArrayTransfer that transfers
  * data defined by the class <code>MyType</code>.</p>
- * 
+ *
  * <pre><code>
  * public class MyType {
  *	public String fileName;
@@ -36,24 +36,24 @@ import org.eclipse.swt.internal.win32.*;
  *	public long lastModified;
  * }
  * </code></pre>
- * 
+ *
  * <pre><code>
  * public class MyTypeTransfer extends ByteArrayTransfer {
- *	
+ *
  *	private static final String MYTYPENAME = "my_type_name";
  *	private static final int MYTYPEID = registerType(MYTYPENAME);
  *	private static MyTypeTransfer _instance = new MyTypeTransfer();
- * 
+ *
  * private MyTypeTransfer() {}
- * 
+ *
  * public static MyTypeTransfer getInstance () {
  * 	return _instance;
  * }
  * public void javaToNative (Object object, TransferData transferData) {
  * 	if (object == null || !(object instanceof MyType[])) return;
- * 	
+ *
  * 	if (isSupportedType(transferData)) {
- * 		MyType[] myTypes = (MyType[]) object;	
+ * 		MyType[] myTypes = (MyType[]) object;
  * 		try {
  * 			// write data to a byte array and then ask super to convert to pMedium
  * 			ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -67,20 +67,20 @@ import org.eclipse.swt.internal.win32.*;
  * 			}
  * 			byte[] buffer = out.toByteArray();
  * 			writeOut.close();
- * 
+ *
  * 			super.javaToNative(buffer, transferData);
- * 			
+ *
  * 		} catch (IOException e) {
  * 		}
  * 	}
  * }
- * public Object nativeToJava(TransferData transferData){	
- * 
+ * public Object nativeToJava(TransferData transferData){
+ *
  * 	if (isSupportedType(transferData)) {
- * 		
+ *
  * 		byte[] buffer = (byte[])super.nativeToJava(transferData);
  * 		if (buffer == null) return null;
- * 		
+ *
  * 		MyType[] myData = new MyType[0];
  * 		try {
  * 			ByteArrayInputStream in = new ByteArrayInputStream(buffer);
@@ -104,7 +104,7 @@ import org.eclipse.swt.internal.win32.*;
  * 		}
  * 		return myData;
  * 	}
- * 
+ *
  * 	return null;
  * }
  * protected String[] getTypeNames(){
@@ -131,7 +131,7 @@ public TransferData[] getSupportedTypes() {
 		data[i].formatetc.cfFormat = types[i];
 		data[i].formatetc.dwAspect = COM.DVASPECT_CONTENT;
 		data[i].formatetc.lindex = -1;
-		data[i].formatetc.tymed = COM.TYMED_HGLOBAL;	
+		data[i].formatetc.tymed = COM.TYMED_HGLOBAL;
 	}
 	return data;
 }
@@ -143,7 +143,7 @@ public boolean isSupportedType(TransferData transferData){
 	for (int i = 0; i < types.length; i++) {
 		FORMATETC format = transferData.formatetc;
 		if (format.cfFormat == types[i] &&
-		    (format.dwAspect & COM.DVASPECT_CONTENT) == COM.DVASPECT_CONTENT && 
+		    (format.dwAspect & COM.DVASPECT_CONTENT) == COM.DVASPECT_CONTENT &&
 		    (format.tymed & COM.TYMED_HGLOBAL) == COM.TYMED_HGLOBAL  )
 		    return true;
 	}
@@ -151,13 +151,13 @@ public boolean isSupportedType(TransferData transferData){
 }
 
 /**
- * This implementation of <code>javaToNative</code> converts a java 
+ * This implementation of <code>javaToNative</code> converts a java
  * <code>byte[]</code> to a platform specific representation.
- * 
+ *
  * @param object a java <code>byte[]</code> containing the data to be converted
  * @param transferData an empty <code>TransferData</code> object that will
  *  	be filled in on return with the platform specific format of the data
- * 
+ *
  * @see Transfer#nativeToJava
  */
 @Override
@@ -170,7 +170,7 @@ protected void javaToNative (Object object, TransferData transferData) {
 	byte[] data = (byte[])object;
 	int size = data.length;
 	long /*int*/ newPtr = OS.GlobalAlloc(OS.GMEM_FIXED | OS.GMEM_ZEROINIT, size);
-	OS.MoveMemory(newPtr, data, size);	
+	OS.MoveMemory(newPtr, data, size);
 	transferData.stgmedium = new STGMEDIUM();
 	transferData.stgmedium.tymed = COM.TYMED_HGLOBAL;
 	transferData.stgmedium.unionField = newPtr;
@@ -179,24 +179,24 @@ protected void javaToNative (Object object, TransferData transferData) {
 }
 
 /**
- * This implementation of <code>nativeToJava</code> converts a platform specific 
- * representation of a byte array to a java <code>byte[]</code>.   
- * 
+ * This implementation of <code>nativeToJava</code> converts a platform specific
+ * representation of a byte array to a java <code>byte[]</code>.
+ *
  * @param transferData the platform specific representation of the data to be converted
  * @return a java <code>byte[]</code> containing the converted data if the conversion was
  * 		successful; otherwise null
- * 
+ *
  * @see Transfer#javaToNative
  */
 @Override
 protected Object nativeToJava(TransferData transferData) {
 	if (!isSupportedType(transferData) || transferData.pIDataObject == 0)  return null;
-	
+
 	IDataObject data = new IDataObject(transferData.pIDataObject);
 	data.AddRef();
 	FORMATETC formatetc = transferData.formatetc;
 	STGMEDIUM stgmedium = new STGMEDIUM();
-	stgmedium.tymed = COM.TYMED_HGLOBAL;	
+	stgmedium.tymed = COM.TYMED_HGLOBAL;
 	transferData.result = getData(data, formatetc, stgmedium);
 	data.Release();
 	if (transferData.result != COM.S_OK) return null;
@@ -205,7 +205,7 @@ protected Object nativeToJava(TransferData transferData) {
 	byte[] buffer = new byte[size];
 	long /*int*/ ptr = OS.GlobalLock(hMem);
 	OS.MoveMemory(buffer, ptr, size);
-	OS.GlobalUnlock(hMem);	
+	OS.GlobalUnlock(hMem);
 	OS.GlobalFree(hMem);
 	return buffer;
 }

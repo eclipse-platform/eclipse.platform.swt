@@ -36,7 +36,7 @@ import org.eclipse.swt.graphics.*;
  * </p><p>
  * IMPORTANT: This class is <em>not</em> intended to be subclassed.
  * </p>
- * 
+ *
  * @see <a href="http://www.eclipse.org/swt/snippets/#datetime">DateTime snippets</a>
  * @see <a href="http://www.eclipse.org/swt/examples.php">SWT Example: ControlExample</a>
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
@@ -68,9 +68,9 @@ public class DateTime extends Composite {
 		* Feature in Windows.  The date time window class
 		* does not include CS_DBLCLKS.  This means that these
 		* controls will not get double click messages such as
-		* WM_LBUTTONDBLCLK.  The fix is to register a new 
+		* WM_LBUTTONDBLCLK.  The fix is to register a new
 		* window class with CS_DBLCLKS.
-		* 
+		*
 		* NOTE:  Screen readers look for the exact class name
 		* of the control in order to provide the correct kind
 		* of assistance.  Therefore, it is critical that the
@@ -101,9 +101,9 @@ public class DateTime extends Composite {
 		* Feature in Windows.  The date time window class
 		* does not include CS_DBLCLKS.  This means that these
 		* controls will not get double click messages such as
-		* WM_LBUTTONDBLCLK.  The fix is to register a new 
+		* WM_LBUTTONDBLCLK.  The fix is to register a new
 		* window class with CS_DBLCLKS.
-		* 
+		*
 		* NOTE:  Screen readers look for the exact class name
 		* of the control in order to provide the correct kind
 		* of assistance.  Therefore, it is critical that the
@@ -152,7 +152,7 @@ public class DateTime extends Composite {
  * <p>
  * The style value is either one of the style constants defined in
  * class <code>SWT</code> which is applicable to instances of this
- * class, or must be built by <em>bitwise OR</em>'ing together 
+ * class, or must be built by <em>bitwise OR</em>'ing together
  * (that is, using the <code>int</code> "|" operator) two or more
  * of those <code>SWT</code> style constants. The class description
  * lists the style constants that are applicable to the class.
@@ -327,7 +327,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 void createHandle () {
 	super.createHandle ();
 	state &= ~(CANVAS | THEME_BACKGROUND);
-	
+
 	if ((style & SWT.BORDER) == 0) {
 		int bits = OS.GetWindowLong (handle, OS.GWL_EXSTYLE);
 		bits &= ~(OS.WS_EX_CLIENTEDGE | OS.WS_EX_STATICEDGE);
@@ -537,7 +537,7 @@ public void removeSelectionListener (SelectionListener listener) {
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (eventTable == null) return;
 	eventTable.unhook (SWT.Selection, listener);
-	eventTable.unhook (SWT.DefaultSelection, listener);	
+	eventTable.unhook (SWT.DefaultSelection, listener);
 }
 
 /**
@@ -576,7 +576,7 @@ public void setDate (int year, int month, int day) {
  * Sets the receiver's date, or day of the month, to the specified day.
  * <p>
  * The first day of the month is 1, and the last day depends on the month and year.
- * If the specified day is not valid for the receiver's month and year, then it is ignored. 
+ * If the specified day is not valid for the receiver's month and year, then it is ignored.
  * </p>
  *
  * @param day a positive integer beginning with 1
@@ -585,7 +585,7 @@ public void setDate (int year, int month, int day) {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @see #setDate
  */
 public void setDay (int day) {
@@ -653,7 +653,7 @@ public void setMinutes (int minutes) {
  * Sets the receiver's month.
  * <p>
  * The first month of the year is 0, and the last month is 11.
- * If the specified month is not valid for the receiver's day and year, then it is ignored. 
+ * If the specified month is not valid for the receiver's day and year, then it is ignored.
  * </p>
  *
  * @param month an integer between 0 and 11
@@ -662,7 +662,7 @@ public void setMinutes (int minutes) {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @see #setDate
  */
 public void setMonth (int month) {
@@ -745,7 +745,7 @@ public void setTime (int hours, int minutes, int seconds) {
  * Sets the receiver's year.
  * <p>
  * The first year is 1752 and the last year is 9999.
- * If the specified year is not valid for the receiver's day and month, then it is ignored. 
+ * If the specified year is not valid for the receiver's day and month, then it is ignored.
  * </p>
  *
  * @param year an integer between 1752 and 9999
@@ -754,7 +754,7 @@ public void setTime (int hours, int minutes, int seconds) {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @see #setDate
  */
 public void setYear (int year) {
@@ -854,7 +854,7 @@ LRESULT WM_CHAR (long /*int*/ wParam, long /*int*/ lParam) {
 }
 
 @Override
-LRESULT WM_LBUTTONDBLCLK (long /*int*/ wParam, long /*int*/ lParam) {	
+LRESULT WM_LBUTTONDBLCLK (long /*int*/ wParam, long /*int*/ lParam) {
 	LRESULT result = super.WM_LBUTTONDBLCLK (wParam, lParam);
 	if (isDisposed ()) return LRESULT.ZERO;
 	if ((style & SWT.CALENDAR) != 0) {
@@ -887,7 +887,7 @@ LRESULT WM_LBUTTONDOWN (long /*int*/ wParam, long /*int*/ lParam) {
 }
 
 @Override
-LRESULT WM_LBUTTONUP (long /*int*/ wParam, long /*int*/ lParam) {	
+LRESULT WM_LBUTTONUP (long /*int*/ wParam, long /*int*/ lParam) {
 	LRESULT result = super.WM_LBUTTONUP (wParam, lParam);
 	if (isDisposed ()) return LRESULT.ZERO;
 	if (doubleClick) sendSelectionEvent (SWT.DefaultSelection);

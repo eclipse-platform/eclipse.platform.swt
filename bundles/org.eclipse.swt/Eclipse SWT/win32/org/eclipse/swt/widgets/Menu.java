@@ -10,7 +10,7 @@
  *******************************************************************************/
 package org.eclipse.swt.widgets;
 
- 
+
 import org.eclipse.swt.*;
 import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
@@ -41,7 +41,7 @@ import org.eclipse.swt.internal.win32.*;
  */
 public class Menu extends Widget {
 	/**
-	 * the handle to the OS resource 
+	 * the handle to the OS resource
 	 * (Warning: This field is platform dependent)
 	 * <p>
 	 * <b>IMPORTANT:</b> This field is <em>not</em> part of the SWT
@@ -49,31 +49,31 @@ public class Menu extends Widget {
 	 * within the packages provided by SWT. It is not available on all
 	 * platforms and should never be accessed from application code.
 	 * </p>
-	 * 
+	 *
 	 * @noreference This field is not intended to be referenced by clients.
 	 */
 	public long /*int*/ handle;
-	
-	int x, y; 
+
+	int x, y;
 	long /*int*/ hBrush, hwndCB;
 	int id0, id1;
 	int foreground = -1, background = -1;
-	Image backgroundImage;	
+	Image backgroundImage;
 	boolean hasLocation;
 	MenuItem cascade;
 	Decorations parent;
 	ImageList imageList;
 	MenuItem selectedMenuItem;
-	
+
 	/* Resource ID for SHMENUBARINFO */
 	static final int ID_PPC = 100;
-	
+
 	/* SmartPhone SoftKeyBar resource ids */
 	static final int ID_SPMM = 102;
 	static final int ID_SPBM = 103;
 	static final int ID_SPMB = 104;
 	static final int ID_SPBB = 105;
-	static final int ID_SPSOFTKEY0 = 106; 
+	static final int ID_SPSOFTKEY0 = 106;
 	static final int ID_SPSOFTKEY1 = 107;
 
 	/* Timer ID for MenuItem ToolTip */
@@ -114,7 +114,7 @@ public Menu (Control parent) {
  * <p>
  * The style value is either one of the style constants defined in
  * class <code>SWT</code> which is applicable to instances of this
- * class, or must be built by <em>bitwise OR</em>'ing together 
+ * class, or must be built by <em>bitwise OR</em>'ing together
  * (that is, using the <code>int</code> "|" operator) two or more
  * of those <code>SWT</code> style constants. The class description
  * lists the style constants that are applicable to the class.
@@ -213,13 +213,13 @@ Menu (Decorations parent, int style, long /*int*/ handle) {
 	* called from createWidget(), the JVM issues this error:
 	*
 	* JVM Exception 0x2 (subcode 0x0) occurred in thread "main" (TID:0x9F19D8)
-	* 
+	*
 	* In addition, on Windows XP, a dialog appears with following error message,
 	* indicating that the problem may be in the JIT:
-	* 
+	*
 	* AppName: java.exe	 AppVer: 0.0.0.0	 ModName: jitc.dll
 	* ModVer: 0.0.0.0	 Offset: 000b6912
-	* 
+	*
 	* The fix is to call checkOrientation() from here.
 	*/
 	checkOrientation (parent);
@@ -371,7 +371,7 @@ void createHandle () {
 		}
 		/*
 		* Note in WinCE SmartPhone.  The SoftBar contains only 2 items.
-		* An item can either be a menu or a button. 
+		* An item can either be a menu or a button.
 		* SWT.BAR: creates a SoftBar with 2 menus
 		* SWT.BAR | SWT.BUTTON1: creates a SoftBar with 1 button
 		*    for button1, and a menu for button2
@@ -386,7 +386,7 @@ void createHandle () {
 			} else {
 				nToolBarId = ((style & SWT.BUTTON2) != 0) ? ID_SPMB : ID_SPMM;
 			}
-			
+
 			/* Create SHMENUBAR */
 			SHMENUBARINFO mbi = new SHMENUBARINFO ();
 			mbi.cbSize = SHMENUBARINFO.sizeof;
@@ -396,7 +396,7 @@ void createHandle () {
 			mbi.hInstRes = OS.GetLibraryHandle ();
 			if (!OS.SHCreateMenuBar (mbi)) error (SWT.ERROR_NO_HANDLES);
 			hwndCB = mbi.hwndMB;
-			
+
 			/*
 			* Feature on WinCE SmartPhone.  The SHCMBF_HIDDEN flag causes the
 			* SHMENUBAR to not be drawn. However the keyboard events still go
@@ -404,12 +404,12 @@ void createHandle () {
 			* ShowWindow ().
 			*/
 			OS.ShowWindow (hwndCB, OS.SW_HIDE);
-			
+
 			TBBUTTONINFO info = new TBBUTTONINFO ();
 			info.cbSize = TBBUTTONINFO.sizeof;
 			info.dwMask = OS.TBIF_COMMAND;
 			MenuItem item;
-			
+
 			/* Set first item */
 			if (nToolBarId == ID_SPMM || nToolBarId == ID_SPMB) {
 				long /*int*/ hMenu = OS.SendMessage (hwndCB, OS.SHCMBM_GETSUBMENU, 0, ID_SPSOFTKEY0);
@@ -421,7 +421,7 @@ void createHandle () {
 				item = new MenuItem (this, null, SWT.PUSH, 0);
 			}
 			info.idCommand = id0 = item.id;
-			OS.SendMessage (hwndCB, OS.TB_SETBUTTONINFO, ID_SPSOFTKEY0, info);	
+			OS.SendMessage (hwndCB, OS.TB_SETBUTTONINFO, ID_SPSOFTKEY0, info);
 
 			/* Set second item */
 			if (nToolBarId == ID_SPMM || nToolBarId == ID_SPBM) {
@@ -505,7 +505,7 @@ void createItem (MenuItem item, int index) {
 			* is used to insert an item without text, it is not possible
 			* to use SetMenuItemInfo() to set the text at a later time.
 			* The fix is to insert the item with some text.
-			* 
+			*
 			* Feature in Windows.  When an empty string is used instead
 			* of a space and InsertMenuItem() is used to set a submenu
 			* before setting text to a non-empty string, the menu item
@@ -516,7 +516,7 @@ void createItem (MenuItem item, int index) {
 			TCHAR buffer = new TCHAR (0, " ", true);
 			int byteCount = buffer.length () * TCHAR.sizeof;
 			long /*int*/ pszText = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, byteCount);
-			OS.MoveMemory (pszText, buffer, byteCount);	
+			OS.MoveMemory (pszText, buffer, byteCount);
 			MENUITEMINFO info = new MENUITEMINFO ();
 			info.cbSize = MENUITEMINFO.sizeof;
 			info.fMask = OS.MIIM_ID | OS.MIIM_TYPE | OS.MIIM_DATA;
@@ -534,20 +534,20 @@ void createItem (MenuItem item, int index) {
 	}
 	redraw ();
 }
-	
+
 void createWidget () {
 	/*
 	* Bug in IBM JVM 1.3.1.  For some reason, when the following code is called
 	* from this method, the JVM issues this error:
 	*
 	* JVM Exception 0x2 (subcode 0x0) occurred in thread "main" (TID:0x9F19D8)
-	* 
+	*
 	* In addition, on Windows XP, a dialog appears with following error message,
 	* indicating that the problem may be in the JIT:
-	* 
+	*
 	* AppName: java.exe	 AppVer: 0.0.0.0	 ModName: jitc.dll
 	* ModVer: 0.0.0.0	 Offset: 000b6912
-	* 
+	*
 	* The fix is to move the code to the caller of this method.
 	*/
 //	checkOrientation (parent);
@@ -597,7 +597,7 @@ void destroyItem (MenuItem item) {
 			}
 			if (info.dwItemData != item.id) {
 				error (SWT.ERROR_ITEM_NOT_REMOVED);
-			}	
+			}
 			if (!OS.DeleteMenu (handle, index, OS.MF_BYPOSITION)) {
 				error (SWT.ERROR_ITEM_NOT_REMOVED);
 			}
@@ -645,7 +645,7 @@ void fixMenus (Decorations newParent) {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 3.3
  */
 /*public*/ Color getBackground () {
@@ -662,7 +662,7 @@ void fixMenus (Decorations newParent) {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 3.3
  */
 /*public*/ Image getBackgroundImage () {
@@ -687,7 +687,7 @@ void fixMenus (Decorations newParent) {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 3.1
  */
 /*public*/ Rectangle getBounds () {
@@ -761,7 +761,7 @@ public MenuItem getDefaultItem () {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @see #isEnabled
  */
 public boolean getEnabled () {
@@ -842,11 +842,11 @@ public int getItemCount () {
 
 /**
  * Returns a (possibly empty) array of <code>MenuItem</code>s which
- * are the items in the receiver. 
+ * are the items in the receiver.
  * <p>
  * Note: This is not the actual structure used by the receiver
  * to maintain its list of items, so modifying the array will
- * not affect the receiver. 
+ * not affect the receiver.
  * </p>
  *
  * @return the items in the receiver
@@ -933,12 +933,12 @@ String getNameText () {
  * constants <code>SWT.LEFT_TO_RIGHT</code> or <code>SWT.RIGHT_TO_LEFT</code>.
  *
  * @return the orientation style
- * 
+ *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 3.7
  */
 public int getOrientation () {
@@ -1000,7 +1000,7 @@ public Menu getParentMenu () {
  * Returns the receiver's shell. For all controls other than
  * shells, this simply returns the control's nearest ancestor
  * shell. Shells return themselves, even if they are children
- * of other shells. Returns null if receiver or its ancestor 
+ * of other shells. Returns null if receiver or its ancestor
  * is the application menubar.
  *
  * @return the receiver's shell or null
@@ -1081,7 +1081,7 @@ int imageIndex (Image image) {
 
 /**
  * Searches the receiver's list starting at the first item
- * (index 0) until an item is found that is equal to the 
+ * (index 0) until an item is found that is equal to the
  * argument, and returns the index of that item. If no item
  * is found, returns -1.
  *
@@ -1134,7 +1134,7 @@ public int indexOf (MenuItem item) {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @see #getEnabled
  */
 public boolean isEnabled () {
@@ -1296,13 +1296,13 @@ void reskinChildren (int flags) {
  * @param color the new color (or null)
  *
  * @exception IllegalArgumentException <ul>
- *    <li>ERROR_INVALID_ARGUMENT - if the argument has been disposed</li> 
+ *    <li>ERROR_INVALID_ARGUMENT - if the argument has been disposed</li>
  * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 3.3
  */
 /*public*/ void setBackground (Color color) {
@@ -1326,14 +1326,14 @@ void reskinChildren (int flags) {
  * @param image the new image (or null)
  *
  * @exception IllegalArgumentException <ul>
- *    <li>ERROR_INVALID_ARGUMENT - if the argument has been disposed</li> 
- *    <li>ERROR_INVALID_ARGUMENT - if the argument is not a bitmap</li> 
+ *    <li>ERROR_INVALID_ARGUMENT - if the argument has been disposed</li>
+ *    <li>ERROR_INVALID_ARGUMENT - if the argument is not a bitmap</li>
  * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 3.3
  */
 /*public*/ void setBackgroundImage (Image image) {
@@ -1355,13 +1355,13 @@ void reskinChildren (int flags) {
  * @param color the new color (or null)
  *
  * @exception IllegalArgumentException <ul>
- *    <li>ERROR_INVALID_ARGUMENT - if the argument has been disposed</li> 
+ *    <li>ERROR_INVALID_ARGUMENT - if the argument has been disposed</li>
  * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 3.3
  */
 /*public*/ void setForeground (Color color) {
@@ -1379,11 +1379,11 @@ void reskinChildren (int flags) {
 /**
  * Sets the default menu item to the argument or removes
  * the default emphasis when the argument is <code>null</code>.
- * 
+ *
  * @param item the default menu item or null
  *
  * @exception IllegalArgumentException <ul>
- *    <li>ERROR_INVALID_ARGUMENT - if the menu item has been disposed</li> 
+ *    <li>ERROR_INVALID_ARGUMENT - if the menu item has been disposed</li>
  * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -1473,7 +1473,7 @@ public void setLocation (int x, int y) {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 2.1
  */
 public void setLocation (Point location) {
@@ -1488,15 +1488,15 @@ public void setLocation (Point location) {
  * <p>
  *
  * @param orientation new orientation style
- * 
+ *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
- * @since 3.7  
+ *
+ * @since 3.7
  */
-public void setOrientation (int orientation) { 
+public void setOrientation (int orientation) {
     checkWidget ();
     if ((style & (SWT.BAR | SWT.DROP_DOWN)) != 0) return;
     _setOrientation (orientation);
@@ -1518,7 +1518,7 @@ void _setOrientation (int orientation) {
 
 /**
  * Marks the receiver as visible if the argument is <code>true</code>,
- * and marks it invisible otherwise. 
+ * and marks it invisible otherwise.
  * <p>
  * If one of the receiver's ancestors is not visible or some
  * other condition makes the receiver not visible, marking
@@ -1583,7 +1583,7 @@ void update () {
 			if ((hasCheck = true) && hasImage) break;
 		}
 	}
-	
+
 	/*
 	* Bug in Windows.  If a menu contains items that have
 	* images and can be checked, Windows does not include
@@ -1593,16 +1593,16 @@ void update () {
 	* text can overlap.  The fix is to use SetMenuItemInfo()
 	* to indicate that all items have a bitmap and then include
 	* the width of the widest bitmap in WM_MEASURECHILD.
-	* 
+	*
 	* NOTE:  This work around causes problems on Windows 98.
 	* Under certain circumstances that have yet to be isolated,
 	* some menus can become huge and blank.  For now, do not
 	* run the code on Windows 98.
-	* 
+	*
 	* NOTE:  This work around doesn't run on Vista because
 	* WM_MEASURECHILD and WM_DRAWITEM cause Vista to lose
 	* the menu theme.
-	*/	
+	*/
 	if (!OS.IsWin95) {
 		if (OS.WIN32_VERSION < OS.VERSION (6, 0)) {
 			MENUITEMINFO info = new MENUITEMINFO ();

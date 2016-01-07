@@ -32,10 +32,10 @@ public class OLE extends SWT {
 	public static final int E_INVALIDARG = -2147024809; // Invalid argument
 	public static final int E_NOINTERFACE = -2147467262;  // QueryInterface did not recognize the requested interface.
 	public static final int E_NOTIMPL = -2147467263; // Not implemented
-	
+
 	public static final String IID_IUNKNOWN = "{00000000-0000-0000-C000-000000000046}"; //$NON-NLS-1$
 	public static final String IID_IDISPATCH = "{00020400-0000-0000-C000-000000000046}"; //$NON-NLS-1$
-	
+
 	// Verbs that can be invoked on this client
 	public static final int OLEIVERB_DISCARDUNDOSTATE = -6; // close the OLE object and discard the undo state
 	public static final int OLEIVERB_HIDE             = -3; // hide the OLE object
@@ -103,7 +103,7 @@ public class OLE extends SWT {
 	public static final int ERROR_ACTION_NOT_PERFORMED = 1014;
 
 	public static final int OLECMDF_SUPPORTED    = 1;
-	public static final int OLECMDF_ENABLED      = 2; 
+	public static final int OLECMDF_ENABLED      = 2;
 	public static final int OLECMDF_LATCHED      = 4;
 	public static final int OLECMDF_NINCHED      = 8;
 
@@ -113,38 +113,38 @@ public class OLE extends SWT {
 
 	public static final int OLECMDEXECOPT_DODEFAULT        = 0;
 	public static final int OLECMDEXECOPT_PROMPTUSER       = 1;
-	public static final int OLECMDEXECOPT_DONTPROMPTUSER   = 2;     
+	public static final int OLECMDEXECOPT_DONTPROMPTUSER   = 2;
 	public static final int OLECMDEXECOPT_SHOWHELP         = 3;
-	
+
 	public static final int OLECMDID_OPEN              = 1;
 	public static final int OLECMDID_NEW               = 2;
-	public static final int OLECMDID_SAVE              = 3;      
-	public static final int OLECMDID_SAVEAS            = 4; 
-	public static final int OLECMDID_SAVECOPYAS        = 5;      
-	public static final int OLECMDID_PRINT             = 6; 
-	public static final int OLECMDID_PRINTPREVIEW      = 7;      
-	public static final int OLECMDID_PAGESETUP         = 8; 
-	public static final int OLECMDID_SPELL             = 9;     
-	public static final int OLECMDID_PROPERTIES        = 10; 
-	public static final int OLECMDID_CUT               = 11;      
-	public static final int OLECMDID_COPY              = 12; 
-	public static final int OLECMDID_PASTE             = 13;      
-	public static final int OLECMDID_PASTESPECIAL      = 14; 
-	public static final int OLECMDID_UNDO              = 15;      
-	public static final int OLECMDID_REDO              = 16; 
-	public static final int OLECMDID_SELECTALL         = 17;      
-	public static final int OLECMDID_CLEARSELECTION    = 18; 
-	public static final int OLECMDID_ZOOM              = 19;      
+	public static final int OLECMDID_SAVE              = 3;
+	public static final int OLECMDID_SAVEAS            = 4;
+	public static final int OLECMDID_SAVECOPYAS        = 5;
+	public static final int OLECMDID_PRINT             = 6;
+	public static final int OLECMDID_PRINTPREVIEW      = 7;
+	public static final int OLECMDID_PAGESETUP         = 8;
+	public static final int OLECMDID_SPELL             = 9;
+	public static final int OLECMDID_PROPERTIES        = 10;
+	public static final int OLECMDID_CUT               = 11;
+	public static final int OLECMDID_COPY              = 12;
+	public static final int OLECMDID_PASTE             = 13;
+	public static final int OLECMDID_PASTESPECIAL      = 14;
+	public static final int OLECMDID_UNDO              = 15;
+	public static final int OLECMDID_REDO              = 16;
+	public static final int OLECMDID_SELECTALL         = 17;
+	public static final int OLECMDID_CLEARSELECTION    = 18;
+	public static final int OLECMDID_ZOOM              = 19;
 	public static final int OLECMDID_GETZOOMRANGE      = 20;
-	public static final int OLECMDID_UPDATECOMMANDS    = 21;     
+	public static final int OLECMDID_UPDATECOMMANDS    = 21;
 	public static final int OLECMDID_REFRESH           = 22;
-	public static final int OLECMDID_STOP              = 23;     
+	public static final int OLECMDID_STOP              = 23;
 	public static final int OLECMDID_HIDETOOLBARS      = 24;
-	public static final int OLECMDID_SETPROGRESSMAX    = 25;     
+	public static final int OLECMDID_SETPROGRESSMAX    = 25;
 	public static final int OLECMDID_SETPROGRESSPOS    = 26;
-	public static final int OLECMDID_SETPROGRESSTEXT   = 27;     
+	public static final int OLECMDID_SETPROGRESSTEXT   = 27;
 	public static final int OLECMDID_SETTITLE          = 28;
-	public static final int OLECMDID_SETDOWNLOADSTATE  = 29;     
+	public static final int OLECMDID_SETDOWNLOADSTATE  = 29;
 	public static final int OLECMDID_STOPDOWNLOAD      = 30;
 
 	/* Ole Property Description flags */
@@ -167,14 +167,14 @@ public class OLE extends SWT {
 	public static int VAR_STATIC = 1;
 	public static int VAR_CONST = 2;
 	public static int VAR_DISPATCH = 3;
-	
+
 	/* Ole Parameter Description flags */
 	public static short IDLFLAG_NONE = 0;
 	public static short IDLFLAG_FIN = 1;
 	public static short IDLFLAG_FOUT = 2;
 	public static short IDLFLAG_FLCID = 4;
 	public static short IDLFLAG_FRETVAL = 8;
-		
+
 	/* Ole Description types */
 	public static final short VT_BOOL = 11;     // Boolean; True=-1, False=0.
 	public static final short VT_BSTR = 8;      // Binary String.
@@ -228,15 +228,15 @@ public class OLE extends SWT {
 	public static final int INVOKE_PROPERTYGET = 2;
 	public static final int INVOKE_PROPERTYPUT = 4;
 	public static final int INVOKE_PROPERTYPUTREF = 8;
-	
+
 	/* Ole Function Description function kind */
 	public static final int FUNC_VIRTUAL = 0;
 	public static final int FUNC_PUREVIRTUAL = 1;
 	public static final int FUNC_NONVIRTUAL = 2;
 	public static final int FUNC_STATIC = 3;
 	public static final int FUNC_DISPATCH = 4;
-	
-	/* Ole Function Description function flags */	
+
+	/* Ole Function Description function flags */
 	public static final short FUNCFLAG_FRESTRICTED = 1;
 	public static final short FUNCFLAG_FSOURCE = 0x2;
 	public static final short FUNCFLAG_FBINDABLE = 0x4;
@@ -250,7 +250,7 @@ public class OLE extends SWT {
 	public static final short FUNCFLAG_FNONBROWSABLE = 0x400;
 	public static final short FUNCFLAG_FREPLACEABLE = 0x800;
 	public static final short FUNCFLAG_FIMMEDIATEBIND = 0x1000;
-	
+
 	/* Ole Function Description calling convention */
 	public static final int CC_FASTCALL = 0;
 	public static final int CC_CDECL = 1;
@@ -263,7 +263,7 @@ public class OLE extends SWT {
 	public static final int CC_MPWCDECL = 7;
 	public static final int CC_MPWPASCAL = 8;
 	public static final int CC_MAX = 9;
-	
+
 	static final String ERROR_NOT_IMPLEMENTED_MSG = "Required functionality not currently supported.";//$NON-NLS-1$
 	static final String ERROR_CANNOT_CREATE_FILE_MSG = "Failed to create file.";//$NON-NLS-1$
 	static final String ERROR_CANNOT_CREATE_OBJECT_MSG = "Failed to create Ole Client.";//$NON-NLS-1$
@@ -283,13 +283,13 @@ public static void error (int code) {
 	error (code, 0);
 }
 public static void error (int code, int hresult) {
-		
+
 	switch (code) {
 		/* Illegal Arguments (non-fatal) */
 		case ERROR_INVALID_INTERFACE_ADDRESS :{
 			throw new IllegalArgumentException (ERROR_INVALID_INTERFACE_ADDRESS_MSG);
 		}
-	
+
 		/* SWT Errors (non-fatal) */
 		case ERROR_CANNOT_CREATE_FILE : {
 			String msg = ERROR_CANNOT_CREATE_FILE_MSG;
@@ -341,7 +341,7 @@ public static void error (int code, int hresult) {
 			if (hresult != 0) msg += " result = "+hresult;//$NON-NLS-1$
 			throw new SWTException (code, msg);
 		}
-		
+
 		/* OS Failure/Limit (fatal, may occur only on some platforms) */
 		case ERROR_OUT_OF_MEMORY : {
 			String msg = ERROR_ACTION_NOT_PERFORMED_MSG;
@@ -349,7 +349,7 @@ public static void error (int code, int hresult) {
 			throw new SWTError (code, msg);
 		}
 	}
-			
+
 	/* Unknown/Undefined Error */
 	SWT.error(code);
 }
@@ -369,7 +369,7 @@ public static void error (int code, int hresult) {
 public static String findProgramID (String extension) {
 	if (extension == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
 	if (extension.length () == 0) return ""; //$NON-NLS-1$
-	
+
 	if (extension.charAt (0) != '.') extension = "." + extension; //$NON-NLS-1$
 
 	/* Use the character encoding for the default locale */
@@ -386,7 +386,7 @@ public static String findProgramID (String extension) {
 		TCHAR serverKey = new TCHAR(0, result+"\\protocol\\StdFileEditing\\server", true); //$NON-NLS-1$
 		if (getKeyExists(serverKey)) return result;
 	}
-	
+
 	return ""; //$NON-NLS-1$
 }
 static String getKeyValue (TCHAR key) {

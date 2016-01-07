@@ -10,7 +10,7 @@
  *******************************************************************************/
 package org.eclipse.swt.graphics;
 
- 
+
 import org.eclipse.swt.*;
 import org.eclipse.swt.internal.win32.*;
 

@@ -10,7 +10,7 @@
  *******************************************************************************/
 package org.eclipse.swt.dnd;
 
- 
+
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.widgets.*;
@@ -23,34 +23,34 @@ import org.eclipse.swt.internal.win32.*;
  * <code>DragSource</code> defines the source object for a drag and drop transfer.
  *
  * <p>IMPORTANT: This class is <em>not</em> intended to be subclassed.</p>
- *  
- * <p>A drag source is the object which originates a drag and drop operation. For the specified widget, 
- * it defines the type of data that is available for dragging and the set of operations that can 
- * be performed on that data.  The operations can be any bit-wise combination of DND.MOVE, DND.COPY or 
- * DND.LINK.  The type of data that can be transferred is specified by subclasses of Transfer such as 
- * TextTransfer or FileTransfer.  The type of data transferred can be a predefined system type or it 
+ *
+ * <p>A drag source is the object which originates a drag and drop operation. For the specified widget,
+ * it defines the type of data that is available for dragging and the set of operations that can
+ * be performed on that data.  The operations can be any bit-wise combination of DND.MOVE, DND.COPY or
+ * DND.LINK.  The type of data that can be transferred is specified by subclasses of Transfer such as
+ * TextTransfer or FileTransfer.  The type of data transferred can be a predefined system type or it
  * can be a type defined by the application.  For instructions on how to define your own transfer type,
  * refer to <code>ByteArrayTransfer</code>.</p>
  *
- * <p>You may have several DragSources in an application but you can only have one DragSource 
- * per Control.  Data dragged from this DragSource can be dropped on a site within this application 
+ * <p>You may have several DragSources in an application but you can only have one DragSource
+ * per Control.  Data dragged from this DragSource can be dropped on a site within this application
  * or it can be dropped on another application such as an external Text editor.</p>
- * 
+ *
  * <p>The application supplies the content of the data being transferred by implementing the
  * <code>DragSourceListener</code> and associating it with the DragSource via DragSource#addDragListener.</p>
- * 
- * <p>When a successful move operation occurs, the application is required to take the appropriate 
+ *
+ * <p>When a successful move operation occurs, the application is required to take the appropriate
  * action to remove the data from its display and remove any associated operating system resources or
- * internal references.  Typically in a move operation, the drop target makes a copy of the data 
- * and the drag source deletes the original.  However, sometimes copying the data can take a long 
- * time (such as copying a large file).  Therefore, on some platforms, the drop target may actually 
- * move the data in the operating system rather than make a copy.  This is usually only done in 
+ * internal references.  Typically in a move operation, the drop target makes a copy of the data
+ * and the drag source deletes the original.  However, sometimes copying the data can take a long
+ * time (such as copying a large file).  Therefore, on some platforms, the drop target may actually
+ * move the data in the operating system rather than make a copy.  This is usually only done in
  * file transfers.  In this case, the drag source is informed in the DragEnd event that a
- * DROP_TARGET_MOVE was performed.  It is the responsibility of the drag source at this point to clean 
+ * DROP_TARGET_MOVE was performed.  It is the responsibility of the drag source at this point to clean
  * up its displayed information.  No action needs to be taken on the operating system resources.</p>
  *
  * <p> The following example shows a Label widget that allows text to be dragged from it.</p>
- * 
+ *
  * <code><pre>
  *	// Enable a label as a Drag Source
  *	Label label = new Label(shell, SWT.NONE);
@@ -58,7 +58,7 @@ import org.eclipse.swt.internal.win32.*;
  *	Transfer[] types = new Transfer[] {TextTransfer.getInstance()};
  *	// This example will allow the text to be copied or moved to the drop target
  *	int operations = DND.DROP_MOVE | DND.DROP_COPY;
- *	
+ *
  *	DragSource source = new DragSource(label, operations);
  *	source.setTransfer(types);
  *	source.addDragListener(new DragSourceListener() {
@@ -70,10 +70,10 @@ import org.eclipse.swt.internal.win32.*;
  *			}
  *		};
  *		public void dragSetData(DragSourceEvent event) {
- *			// A drop has been performed, so provide the data of the 
+ *			// A drop has been performed, so provide the data of the
  *			// requested type.
- *			// (Checking the type of the requested data is only 
- *			// necessary if the drag source supports more than 
+ *			// (Checking the type of the requested data is only
+ *			// necessary if the drag source supports more than
  *			// one data type but is shown here as an example).
  *			if (TextTransfer.getInstance().isSupportedType(event.dataType)){
  *				event.data = label.getText();
@@ -108,28 +108,28 @@ public class DragSource extends Widget {
 	DragSourceEffect dragEffect;
 	Composite topControl;
 	long /*int*/ hwndDrag;
-	
+
 	// ole interfaces
 	COMObject iDropSource;
 	COMObject iDataObject;
 	int refCount;
-	
+
 	//workaround - track the operation performed by the drop target for DragEnd event
-	int dataEffect = DND.DROP_NONE;	
-	
+	int dataEffect = DND.DROP_NONE;
+
 	static final String DEFAULT_DRAG_SOURCE_EFFECT = "DEFAULT_DRAG_SOURCE_EFFECT"; //$NON-NLS-1$
 	static final int CFSTR_PERFORMEDDROPEFFECT  = Transfer.registerType("Performed DropEffect");	 //$NON-NLS-1$
 	static final TCHAR WindowClass = new TCHAR (0, "#32770", true);
 
 /**
  * Creates a new <code>DragSource</code> to handle dragging from the specified <code>Control</code>.
- * Creating an instance of a DragSource may cause system resources to be allocated depending on the platform.  
+ * Creating an instance of a DragSource may cause system resources to be allocated depending on the platform.
  * It is therefore mandatory that the DragSource instance be disposed when no longer required.
  *
  * @param control the <code>Control</code> that the user clicks on to initiate the drag
- * @param style the bitwise OR'ing of allowed operations; this may be a combination of any of 
+ * @param style the bitwise OR'ing of allowed operations; this may be a combination of any of
  *					DND.DROP_NONE, DND.DROP_COPY, DND.DROP_MOVE, DND.DROP_LINK
- * 
+ *
  * @exception SWTException <ul>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the parent</li>
  *    <li>ERROR_INVALID_SUBCLASS - if this class is not an allowed subclass</li>
@@ -139,10 +139,10 @@ public class DragSource extends Widget {
  *        drag source is created for a control or if the operating system will not allow the creation
  *        of the drag source</li>
  * </ul>
- * 
+ *
  * <p>NOTE: ERROR_CANNOT_INIT_DRAG should be an SWTException, since it is a
  * recoverable error, but can not be changed due to backward compatibility.</p>
- * 
+ *
  * @see Widget#dispose
  * @see DragSource#checkSubclass
  * @see DND#DROP_NONE
@@ -176,7 +176,7 @@ public DragSource(Control control, int style) {
 	};
 	control.addListener(SWT.Dispose, controlListener);
 	control.addListener(SWT.DragDetect, controlListener);
-	
+
 	this.addListener(SWT.Dispose, new Listener() {
 		public void handleEvent(Event e) {
 			DragSource.this.onDispose();
@@ -203,13 +203,13 @@ static int checkStyle(int style) {
  * be notified when a drag and drop operation is in progress, by sending
  * it one of the messages defined in the <code>DragSourceListener</code>
  * interface.
- * 
+ *
  * <p><ul>
- * <li><code>dragStart</code> is called when the user has begun the actions required to drag the widget. 
+ * <li><code>dragStart</code> is called when the user has begun the actions required to drag the widget.
  * This event gives the application the chance to decide if a drag should be started.
  * <li><code>dragSetData</code> is called when the data is required from the drag source.
- * <li><code>dragFinished</code> is called when the drop has successfully completed (mouse up 
- * over a valid target) or has been terminated (such as hitting the ESC key). Perform cleanup 
+ * <li><code>dragFinished</code> is called when the drop has successfully completed (mouse up
+ * over a valid target) or has been terminated (such as hitting the ESC key). Perform cleanup
  * such as removing data from the source side on a successful move operation.
  * </ul></p>
  *
@@ -256,7 +256,7 @@ private void createCOMInterfaces() {
 		@Override
 		public long /*int*/ method4(long /*int*/[] args) {return GiveFeedback((int)/*64*/args[0]);}
 	};
-	
+
 	iDataObject = new COMObject(new int[]{2, 0, 0, 2, 2, 1, 2, 3, 2, 4, 1, 1}){
 		@Override
 		public long /*int*/ method0(long /*int*/[] args) {return QueryInterface(args[0], args[1]);}
@@ -308,7 +308,7 @@ private void drag(Event dragEvent) {
 	event.doit = true;
 	notifyListeners(DND.DragStart,event);
 	if (!event.doit || transferAgents == null || transferAgents.length == 0 ) return;
-	
+
 	int[] pdwEffect = new int[1];
 	int operations = opToOs(getStyle());
 	Display display = control.getDisplay();
@@ -323,7 +323,7 @@ private void drag(Event dragEvent) {
 		imagelist = new ImageList(SWT.NONE);
 		imagelist.add(image);
 		topControl = control.getShell();
-		/* 
+		/*
 		 * Bug in Windows. The image is inverted if the shell is RIGHT_TO_LEFT.
 		 * The fix is to create a transparent window that covers the shell client
 		 * area and use it during the drag to prevent the image from being inverted.
@@ -341,7 +341,7 @@ private void drag(Event dragEvent) {
 				null,
 				OS.WS_CHILD | OS.WS_CLIPSIBLINGS,
 				0, 0,
-				rect.right - rect.left, rect.bottom - rect.top, 
+				rect.right - rect.left, rect.bottom - rect.top,
 				topControl.handle,
 				0,
 				OS.GetModuleHandle (null),
@@ -402,9 +402,9 @@ private void drag(Event dragEvent) {
 	notifyListeners(DND.DragEnd,event);
 	dataEffect = DND.DROP_NONE;
 }
-/* 
+/*
  * EnumFormatEtc([in] dwDirection, [out] ppenumFormatetc)
- * Ownership of ppenumFormatetc transfers from callee to caller so reference count on ppenumFormatetc 
+ * Ownership of ppenumFormatetc transfers from callee to caller so reference count on ppenumFormatetc
  * must be incremented before returning.  Caller is responsible for releasing ppenumFormatetc.
  */
 private int EnumFormatEtc(int dwDirection, long /*int*/ ppenumFormatetc) {
@@ -423,21 +423,21 @@ private int EnumFormatEtc(int dwDirection, long /*int*/ ppenumFormatetc) {
 			allowedDataTypes = newAllowedDataTypes;
 		}
 	}
-	
+
 	OleEnumFORMATETC enumFORMATETC = new OleEnumFORMATETC();
 	enumFORMATETC.AddRef();
-	
+
 	FORMATETC[] formats = new FORMATETC[allowedDataTypes.length];
 	for (int i = 0; i < formats.length; i++){
 		formats[i] = allowedDataTypes[i].formatetc;
 	}
 	enumFORMATETC.setFormats(formats);
-	
+
 	OS.MoveMemory(ppenumFormatetc, new long /*int*/[] {enumFORMATETC.getAddress()}, OS.PTR_SIZEOF);
 	return COM.S_OK;
 }
 /**
- * Returns the Control which is registered for this DragSource.  This is the control that the 
+ * Returns the Control which is registered for this DragSource.  This is the control that the
  * user clicks in to initiate dragging.
  *
  * @return the Control which is registered for this DragSource
@@ -447,9 +447,9 @@ public Control getControl() {
 }
 
 private int GetData(long /*int*/ pFormatetc, long /*int*/ pmedium) {
-	/* Called by a data consumer to obtain data from a source data object. 
-	   The GetData method renders the data described in the specified FORMATETC 
-	   structure and transfers it through the specified STGMEDIUM structure. 
+	/* Called by a data consumer to obtain data from a source data object.
+	   The GetData method renders the data described in the specified FORMATETC
+	   structure and transfers it through the specified STGMEDIUM structure.
 	   The caller then assumes responsibility for releasing the STGMEDIUM structure.
 	*/
 	if (pFormatetc == 0 || pmedium == 0) return COM.E_INVALIDARG;
@@ -462,15 +462,15 @@ private int GetData(long /*int*/ pFormatetc, long /*int*/ pmedium) {
 	transferData.type = transferData.formatetc.cfFormat;
 	transferData.stgmedium = new STGMEDIUM();
 	transferData.result = COM.E_FAIL;
-	
+
 	DNDEvent event = new DNDEvent();
 	event.widget = this;
 	event.time = OS.GetMessageTime();
 	event.dataType = transferData;
 	notifyListeners(DND.DragSetData,event);
-	
+
 	if (!event.doit) return COM.E_FAIL;
-	
+
 	// get matching transfer agent to perform conversion
 	Transfer transfer = null;
 	for (int i = 0; i < transferAgents.length; i++){
@@ -480,7 +480,7 @@ private int GetData(long /*int*/ pFormatetc, long /*int*/ pmedium) {
 			break;
 		}
 	}
-	
+
 	if (transfer == null) return COM.DV_E_FORMATETC;
 	transfer.javaToNative(event.data, transferData);
 	if (transferData.result != COM.S_OK) return transferData.result;
@@ -489,8 +489,8 @@ private int GetData(long /*int*/ pFormatetc, long /*int*/ pmedium) {
 }
 
 /**
- * Returns an array of listeners who will be notified when a drag and drop 
- * operation is in progress, by sending it one of the messages defined in 
+ * Returns an array of listeners who will be notified when a drag and drop
+ * operation is in progress, by sending it one of the messages defined in
  * the <code>DragSourceListener</code> interface.
  *
  * @return the listeners who will be notified when a drag and drop
@@ -505,7 +505,7 @@ private int GetData(long /*int*/ pFormatetc, long /*int*/ pmedium) {
  * @see #addDragListener
  * @see #removeDragListener
  * @see DragSourceEvent
- * 
+ *
  * @since 3.4
  */
 public DragSourceListener[] getDragListeners() {
@@ -531,7 +531,7 @@ public DragSourceListener[] getDragListeners() {
  * effect will be used during a drag and drop operation.
  *
  * @return the drag effect that is registered for this DragSource
- * 
+ *
  * @since 3.3
  */
 public DragSourceEffect getDragSourceEffect() {
@@ -569,7 +569,7 @@ private int QueryContinueDrag(int fEscapePressed, int grfKeyState) {
 		if (hwndDrag != 0) OS.ImageList_DragLeave(hwndDrag);
 		return COM.DRAGDROP_S_DROP;
 	}
-	
+
 	if (hwndDrag != 0) {
 		POINT pt = new POINT ();
 		OS.GetCursorPos (pt);
@@ -634,12 +634,12 @@ private int QueryGetData(long /*int*/ pFormatetc) {
 		if (transfer != null && transfer.isSupportedType(transferData))
 			return COM.S_OK;
 	}
-	
+
 	return COM.DV_E_FORMATETC;
 }
 
 /* QueryInterface([in] riid, [out] ppvObject)
- * Ownership of ppvObject transfers from callee to caller so reference count on ppvObject 
+ * Ownership of ppvObject transfers from callee to caller so reference count on ppvObject
  * must be incremented before returning.  Caller is responsible for releasing ppvObject.
  */
 private int QueryInterface(long /*int*/ riid, long /*int*/ ppvObject) {
@@ -647,7 +647,7 @@ private int QueryInterface(long /*int*/ riid, long /*int*/ ppvObject) {
 		return COM.E_INVALIDARG;
 	GUID guid = new GUID();
 	COM.MoveMemory(guid, riid, GUID.sizeof);
-	
+
 	if (COM.IsEqualGUID(guid, COM.IIDIUnknown) || COM.IsEqualGUID(guid, COM.IIDIDropSource)) {
 		OS.MoveMemory(ppvObject, new long /*int*/[] {iDropSource.getAddress()}, OS.PTR_SIZEOF);
 		AddRef();
@@ -659,7 +659,7 @@ private int QueryInterface(long /*int*/ riid, long /*int*/ ppvObject) {
 		AddRef();
 		return COM.S_OK;
 	}
-	
+
 	OS.MoveMemory(ppvObject, new long /*int*/[] {0}, OS.PTR_SIZEOF);
 	return COM.E_NOINTERFACE;
 }
@@ -721,11 +721,11 @@ private int SetData(long /*int*/ pFormatetc, long /*int*/ pmedium, int fRelease)
 }
 
 /**
- * Specifies the drag effect for this DragSource.  This drag effect will be 
+ * Specifies the drag effect for this DragSource.  This drag effect will be
  * used during a drag and drop operation.
  *
  * @param effect the drag effect that is registered for this DragSource
- * 
+ *
  * @since 3.3
  */
 public void setDragSourceEffect(DragSourceEffect effect) {
@@ -736,7 +736,7 @@ public void setDragSourceEffect(DragSourceEffect effect) {
  * Specifies the list of data types that can be transferred by this DragSource.
  * The application must be able to provide data to match each of these types when
  * a successful drop has occurred.
- * 
+ *
  * @param transferAgents a list of Transfer objects which define the types of data that can be
  * dragged from this source
  */

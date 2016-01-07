@@ -40,7 +40,7 @@ import org.eclipse.swt.graphics.*;
 public class Canvas extends Composite {
 	Caret caret;
 	IME ime;
-	
+
 /**
  * Prevents uninitialized instances from being created outside the package.
  */
@@ -53,7 +53,7 @@ Canvas () {
  * <p>
  * The style value is either one of the style constants defined in
  * class <code>SWT</code> which is applicable to instances of this
- * class, or must be built by <em>bitwise OR</em>'ing together 
+ * class, or must be built by <em>bitwise OR</em>'ing together
  * (that is, using the <code>int</code> "|" operator) two or more
  * of those <code>SWT</code> style constants. The class description
  * lists the style constants that are applicable to the class.
@@ -88,9 +88,9 @@ void clearArea (int x, int y, int width, int height) {
 	}
 }
 
-/** 
+/**
  * Fills the interior of the rectangle specified by the arguments,
- * with the receiver's background. 
+ * with the receiver's background.
  *
  * @param gc the gc where the rectangle is to be filled
  * @param x the x coordinate of the rectangle to be filled
@@ -106,7 +106,7 @@ void clearArea (int x, int y, int width, int height) {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 3.2
  */
 public void drawBackground (GC gc, int x, int y, int width, int height) {
@@ -145,7 +145,7 @@ public Caret getCaret () {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 3.4
  */
 public IME getIME () {
@@ -174,7 +174,7 @@ void reskinChildren (int flags) {
 }
 
 /**
- * Scrolls a rectangular area of the receiver by first copying 
+ * Scrolls a rectangular area of the receiver by first copying
  * the source area to the destination and then causing the area
  * of the source which is not covered by the destination to
  * be repainted. Children that intersect the rectangle are
@@ -236,14 +236,14 @@ public void scroll (int destX, int destY, int x, int y, int width, int height, b
 		* intersects the scrolling rectangle, Windows moves the child
 		* and copies the bits that intersect the scrolling rectangle but
 		* does not redraw the child.
-		* 
+		*
 		* Feature in Windows.  When any child in the widget tree does not
 		* intersect the scrolling rectangle but the parent does intersect,
 		* Windows does not move the child.  This is the documented (but
 		* strange) Windows behavior.
-		* 
+		*
 		* The fix is to not use SW_SCROLLCHILDREN and move the children
-		* explicitly after scrolling.  
+		* explicitly after scrolling.
 		*/
 //		if (all) flags |= OS.SW_SCROLLCHILDREN;
 		OS.ScrollWindowEx (handle, deltaX, deltaY, sourceRect, null, 0, null, flags);
@@ -253,7 +253,7 @@ public void scroll (int destX, int destY, int x, int y, int width, int height, b
 		for (int i=0; i<children.length; i++) {
 			Control child = children [i];
 			Rectangle rect = child.getBounds ();
-			if (Math.min (x + width, rect.x + rect.width) >= Math.max (x, rect.x) && 
+			if (Math.min (x + width, rect.x + rect.width) >= Math.max (x, rect.x) &&
 				Math.min (y + height, rect.y + rect.height) >= Math.max (y, rect.y)) {
 					child.setLocation (rect.x + deltaX, rect.y + deltaY);
 			}
@@ -305,7 +305,7 @@ public void setFont (Font font) {
 
 /**
  * Sets the receiver's IME.
- * 
+ *
  * @param ime the new IME for the receiver, may be null
  *
  * @exception IllegalArgumentException <ul>
@@ -315,7 +315,7 @@ public void setFont (Font font) {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 3.4
  */
 public void setIME (IME ime) {
@@ -373,10 +373,10 @@ LRESULT WM_IME_COMPOSITION (long /*int*/ wParam, long /*int*/ lParam) {
 		LRESULT result = ime.WM_IME_COMPOSITION (wParam, lParam);
 		if (result != null) return result;
 	}
-	
+
 	/*
 	* Bug in Windows.  On Korean Windows XP, the IME window
-	* for the Korean Input System (MS-IME 2002) always opens 
+	* for the Korean Input System (MS-IME 2002) always opens
 	* in the top left corner of the screen, despite the fact
 	* that ImmSetCompositionWindow() was called to position
 	* the IME when focus is gained.  The fix is to position

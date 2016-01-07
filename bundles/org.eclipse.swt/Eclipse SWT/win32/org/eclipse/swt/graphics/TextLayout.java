@@ -23,15 +23,15 @@ import org.eclipse.swt.internal.win32.*;
  * navigation, hit testing, text wrapping, alignment, tab expansion
  * line breaking, etc.  These are aspects required for rendering internationalized text.
  * </p><p>
- * Application code must explicitly invoke the <code>TextLayout#dispose()</code> 
+ * Application code must explicitly invoke the <code>TextLayout#dispose()</code>
  * method to release the operating system resources managed by each instance
  * when those instances are no longer required.
  * </p>
- * 
+ *
  * @see <a href="http://www.eclipse.org/swt/snippets/#textlayout">TextLayout, TextStyle snippets</a>
  * @see <a href="http://www.eclipse.org/swt/examples.php">SWT Example: CustomControlExample, StyledText tab</a>
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
- * 
+ *
  * @since 3.0
  */
 public final class TextLayout extends Resource {
@@ -56,8 +56,8 @@ public final class TextLayout extends Resource {
 	StyleItem[][] runs;
 	int[] lineOffset, lineY, lineWidth;
 	long /*int*/ mLangFontLink2;
-	
-	static final char LTR_MARK = '\u200E', RTL_MARK = '\u200F';	
+
+	static final char LTR_MARK = '\u200E', RTL_MARK = '\u200F';
 	static final int SCRIPT_VISATTR_SIZEOF = 2;
 	static final int GOFFSET_SIZEOF = 8;
 	static final byte[] CLSID_CMultiLanguage = new byte[16];
@@ -66,30 +66,30 @@ public final class TextLayout extends Resource {
 		OS.IIDFromString("{275c23e2-3747-11d0-9fea-00aa003f8646}\0".toCharArray(), CLSID_CMultiLanguage);
 		OS.IIDFromString("{DCCFC162-2B38-11d2-B7EC-00C04F8F5D9A}\0".toCharArray(), IID_IMLangFontLink2);
 	}
-	
+
 	static final int MERGE_MAX = 512;
 	static final int TOO_MANY_RUNS = 1024;
-	
+
 	/* IME has a copy of these constants */
 	static final int UNDERLINE_IME_DOT = 1 << 16;
 	static final int UNDERLINE_IME_DASH = 2 << 16;
 	static final int UNDERLINE_IME_THICK = 3 << 16;
-	
+
 	class StyleItem {
 		TextStyle style;
 		int start, length;
 		boolean lineBreak, softBreak, tab;
-		
+
 		/*Script cache and analysis */
 		SCRIPT_ANALYSIS analysis;
 		long /*int*/ psc = 0;
-		
+
 		/*Shape info (malloc when the run is shaped) */
 		long /*int*/ glyphs;
 		int glyphCount;
 		long /*int*/ clusters;
 		long /*int*/ visAttrs;
-		
+
 		/*Place info (malloc when the run is placed) */
 		long /*int*/ advances;
 		long /*int*/ goffsets;
@@ -108,7 +108,7 @@ public final class TextLayout extends Resource {
 		long /*int*/ psla;
 
 		long /*int*/ fallbackFont;
-	
+
 	void free() {
 		long /*int*/ hHeap = OS.GetProcessHeap();
 		if (psc != 0) {
@@ -150,7 +150,7 @@ public final class TextLayout extends Resource {
 			fallbackFont = 0;
 		}
 		width = ascent = descent = x = 0;
-		lineBreak = softBreak = false;		
+		lineBreak = softBreak = false;
 	}
 	@Override
 	public String toString () {
@@ -158,18 +158,18 @@ public final class TextLayout extends Resource {
 	}
 	}
 
-/**	 
+/**
  * Constructs a new instance of this class on the given device.
  * <p>
- * You must dispose the text layout when it is no longer required. 
+ * You must dispose the text layout when it is no longer required.
  * </p>
- * 
+ *
  * @param device the device on which to allocate the text layout
- * 
+ *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if device is null and there is no current device</li>
  * </ul>
- * 
+ *
  * @see #dispose()
  */
 public TextLayout (Device device) {
@@ -230,7 +230,7 @@ void checkLayout () {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 }
 
-/* 
+/*
 *  Compute the runs: itemize, shape, place, and reorder the runs.
 * 	Break paragraphs into lines, wraps the text, and initialize caches.
 */
@@ -279,7 +279,7 @@ void computeRuns (GC gc) {
 					run.width += lastTabWidth * (length - 1);
 				}
 			}
-		} 
+		}
 		if (wrapWidth != -1 && lineWidth + run.width > wrapWidth && !run.tab && !run.lineBreak) {
 			int start = 0;
 			int[] piDx = new int[run.length];
@@ -297,11 +297,11 @@ void computeRuns (GC gc) {
 			while (i >= lineStart) {
 				breakRun(run);
 				while (start >= 0) {
-					OS.MoveMemory(logAttr, run.psla + (start * SCRIPT_LOGATTR.sizeof), SCRIPT_LOGATTR.sizeof); 
+					OS.MoveMemory(logAttr, run.psla + (start * SCRIPT_LOGATTR.sizeof), SCRIPT_LOGATTR.sizeof);
 					if (logAttr.fSoftBreak || logAttr.fWhiteSpace) break;
 					start--;
 				}
-				
+
 				/*
 				*  Bug in Windows. For some reason Uniscribe sets the fSoftBreak flag for the first letter
 				*  after a letter with an accent. This cause a break line to be set in the middle of a word.
@@ -315,7 +315,7 @@ void computeRuns (GC gc) {
 						OS.MoveMemory(properties, device.scripts[pRun.analysis.eScript], SCRIPT_PROPERTIES.sizeof);
 						if (properties.langid == langID || langID == OS.LANG_NEUTRAL || properties.langid == OS.LANG_NEUTRAL) {
 							breakRun(pRun);
-							OS.MoveMemory(logAttr, pRun.psla + ((pRun.length - 1) * SCRIPT_LOGATTR.sizeof), SCRIPT_LOGATTR.sizeof); 
+							OS.MoveMemory(logAttr, pRun.psla + ((pRun.length - 1) * SCRIPT_LOGATTR.sizeof), SCRIPT_LOGATTR.sizeof);
 							if (!logAttr.fWhiteSpace) start = -1;
 						}
 					}
@@ -351,7 +351,7 @@ void computeRuns (GC gc) {
 			}
 			breakRun(run);
 			while (start < run.length) {
-				OS.MoveMemory(logAttr, run.psla + (start * SCRIPT_LOGATTR.sizeof), SCRIPT_LOGATTR.sizeof); 
+				OS.MoveMemory(logAttr, run.psla + (start * SCRIPT_LOGATTR.sizeof), SCRIPT_LOGATTR.sizeof);
 				if (!logAttr.fWhiteSpace) break;
 				start++;
 			}
@@ -414,7 +414,7 @@ void computeRuns (GC gc) {
 			}
 			runs[line] = new StyleItem[lineRunCount];
 			System.arraycopy(lineRuns, 0, runs[line], 0, lineRunCount);
-			
+
 			if (justify && wrapWidth != -1 && run.softBreak && lineWidth > 0) {
 				int lineIndent = wrapIndent;
 				if (line == 0) {
@@ -438,12 +438,12 @@ void computeRuns (GC gc) {
 						OS.ScriptJustify(item.visAttrs, item.advances, item.glyphCount, iDx - item.width, 2, item.justify);
 						item.width = iDx;
 					}
-					newLineWidth += item.width; 
+					newLineWidth += item.width;
 				}
 				lineWidth = newLineWidth;
 			}
 			this.lineWidth[line] = lineWidth;
-			
+
 			StyleItem lastRun = runs[line][lineRunCount - 1];
 			int lastOffset = lastRun.start + lastRun.length;
 			runs[line] = reorder(runs[line], i == allRuns.length - 1);
@@ -452,7 +452,7 @@ void computeRuns (GC gc) {
 				run.softBreak = run.lineBreak = false;
 				lastRun.softBreak = lastRun.lineBreak = true;
 			}
-			
+
 			lineWidth = getLineIndent(line);
 			for (int j = 0; j < runs[line].length; j++) {
 				runs[line][j].x = lineWidth;
@@ -467,13 +467,13 @@ void computeRuns (GC gc) {
 		}
 	}
 	if (srcHdc != 0) OS.DeleteDC(srcHdc);
-	if (gc == null) device.internal_dispose_GC(hDC, null);	
+	if (gc == null) device.internal_dispose_GC(hDC, null);
 }
 
 @Override
 void destroy () {
 	freeRuns();
-	font = null;	
+	font = null;
 	text = null;
 	segmentsText = null;
 	tabs = null;
@@ -502,7 +502,7 @@ SCRIPT_ANALYSIS cloneScriptAnalysis (SCRIPT_ANALYSIS src) {
 	dst.fLogicalOrder = src.fLogicalOrder;
 	dst.fNoGlyphIndex = src.fNoGlyphIndex;
 	dst.s = new SCRIPT_STATE();
-	dst.s.uBidiLevel = src.s.uBidiLevel; 
+	dst.s.uBidiLevel = src.s.uBidiLevel;
 	dst.s.fOverrideDirection = src.s.fOverrideDirection;
 	dst.s.fInhibitSymSwap = src.s.fInhibitSymSwap;
 	dst.s.fCharShape = src.s.fCharShape;
@@ -525,7 +525,7 @@ int[] computePolyline(int left, int top, int right, int bottom) {
 	}
 	int length = ((2 * peaks) + 1) * 2;
 	if (length < 0) return new int[0];
-	
+
 	int[] coordinates = new int[length];
 	for (int i = 0; i < peaks; i++) {
 		int index = 4 * i;
@@ -541,7 +541,7 @@ int[] computePolyline(int left, int top, int right, int bottom) {
 
 long /*int*/ createGdipBrush(int pixel, int alpha) {
 	int argb = ((alpha & 0xFF) << 24) | ((pixel >> 16) & 0xFF) | (pixel & 0xFF00) | ((pixel & 0xFF) << 16);
-	long /*int*/ gdiColor = Gdip.Color_new(argb); 
+	long /*int*/ gdiColor = Gdip.Color_new(argb);
 	long /*int*/ brush = Gdip.SolidBrush_new(gdiColor);
 	Gdip.Color_delete(gdiColor);
 	return brush;
@@ -554,7 +554,7 @@ long /*int*/ createGdipBrush(Color color, int alpha) {
 /**
  * Draws the receiver's text using the specified GC at the specified
  * point.
- * 
+ *
  * @param gc the GC to draw
  * @param x the x coordinate of the top left corner of the rectangular area where the text is to be drawn
  * @param y the y coordinate of the top left corner of the rectangular area where the text is to be drawn
@@ -573,7 +573,7 @@ public void draw (GC gc, int x, int y) {
 /**
  * Draws the receiver's text using the specified GC at the specified
  * point.
- * 
+ *
  * @param gc the GC to draw
  * @param x the x coordinate of the top left corner of the rectangular area where the text is to be drawn
  * @param y the y coordinate of the top left corner of the rectangular area where the text is to be drawn
@@ -617,14 +617,14 @@ public void draw (GC gc, int x, int y, int selectionStart, int selectionEnd, Col
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the gc is null</li>
  * </ul>
- * 
+ *
  * @since 3.3
  */
 public void draw (GC gc, int x, int y, int selectionStart, int selectionEnd, Color selectionForeground, Color selectionBackground, int flags) {
 	checkLayout();
 	computeRuns(gc);
 	if (gc == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	if (gc.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);	
+	if (gc.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	if (selectionForeground != null && selectionForeground.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	if (selectionBackground != null && selectionBackground.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	int length = text.length();
@@ -654,8 +654,8 @@ public void draw (GC gc, int x, int y, int selectionStart, int selectionEnd, Col
 	long /*int*/ selBackground = 0;
 	int selForeground = 0;
 	if (hasSelection || ((flags & SWT.LAST_LINE_SELECTION) != 0 && (flags & (SWT.FULL_SELECTION | SWT.DELIMITER_SELECTION)) != 0)) {
-		int fgSel = selectionForeground != null ? selectionForeground.handle : OS.GetSysColor (OS.COLOR_HIGHLIGHTTEXT); 
-		int bgSel = selectionBackground != null ? selectionBackground.handle : OS.GetSysColor (OS.COLOR_HIGHLIGHT); 
+		int fgSel = selectionForeground != null ? selectionForeground.handle : OS.GetSysColor (OS.COLOR_HIGHLIGHTTEXT);
+		int bgSel = selectionBackground != null ? selectionBackground.handle : OS.GetSysColor (OS.COLOR_HIGHLIGHT);
 		if (gdip) {
 			gdipSelBackground = createGdipBrush(bgSel, alpha);
 			gdipSelForeground = createGdipBrush(fgSel, alpha);
@@ -675,7 +675,7 @@ public void draw (GC gc, int x, int y, int selectionStart, int selectionEnd, Col
 		int drawY = y + lineY[line];
 		StyleItem[] lineRuns = runs[line];
 		int lineHeight = lineY[line+1] - lineY[line] - lineSpacing;
-		
+
 		//Draw last line selection
 		if ((flags & (SWT.FULL_SELECTION | SWT.DELIMITER_SELECTION)) != 0 && (hasSelection || (flags & SWT.LAST_LINE_SELECTION) != 0)) {
 			boolean extents = false;
@@ -709,8 +709,8 @@ public void draw (GC gc, int x, int y, int selectionStart, int selectionEnd, Col
 		}
 		if (drawX > clip.x + clip.width) continue;
 		if (drawX + lineWidth[line] < clip.x) continue;
-		
-		//Draw the background of the runs in the line 
+
+		//Draw the background of the runs in the line
 		int alignmentX = drawX;
 		for (int i = 0; i < lineRuns.length; i++) {
 			StyleItem run = lineRuns[i];
@@ -728,7 +728,7 @@ public void draw (GC gc, int x, int y, int selectionStart, int selectionEnd, Col
 			}
 			drawX += run.width;
 		}
-		
+
 		//Draw the text, underline, strikeout, and border of the runs in the line
 		int baseline = Math.max(0, this.ascent);
 		int lineUnderlinePos = 0;
@@ -797,7 +797,7 @@ public void draw (GC gc, int x, int y, int selectionStart, int selectionEnd, Col
 }
 
 RECT drawBorder(long /*int*/ hdc, int x, int y, int lineHeight, StyleItem[] line, int index, int color, int selectionColor, RECT clipRect, RECT pRect, int selectionStart, int selectionEnd, Rectangle drawClip) {
-	StyleItem run = line[index]; 
+	StyleItem run = line[index];
 	TextStyle style = run.style;
 	if (style == null) return null;
 	if (style.borderStyle == SWT.NONE) return null;
@@ -884,7 +884,7 @@ RECT drawBorder(long /*int*/ hdc, int x, int y, int lineHeight, StyleItem[] line
 }
 
 RECT drawBorderGDIP(long /*int*/ graphics, int x, int y, int lineHeight, StyleItem[] line, int index, long /*int*/ color, long /*int*/ selectionColor, RECT clipRect, RECT pRect,  int selectionStart, int selectionEnd, int alpha, Rectangle drawClip) {
-	StyleItem run = line[index]; 
+	StyleItem run = line[index];
 	TextStyle style = run.style;
 	if (style == null) return null;
 	if (style.borderStyle == SWT.NONE) return null;
@@ -1067,12 +1067,12 @@ RECT drawRunTextGDIP(long /*int*/ graphics, StyleItem run, RECT rect, long /*int
 		switch (Gdip.Brush_GetType(brush)) {
 			case Gdip.BrushTypeLinearGradient:
 				Gdip.LinearGradientBrush_ScaleTransform(brush, -1, 1, Gdip.MatrixOrderPrepend);
-				Gdip.LinearGradientBrush_TranslateTransform(brush, -2 * drawX - run.width, 0, Gdip.MatrixOrderPrepend);	
-				break;			
+				Gdip.LinearGradientBrush_TranslateTransform(brush, -2 * drawX - run.width, 0, Gdip.MatrixOrderPrepend);
+				break;
 			case Gdip.BrushTypeTextureFill:
 				Gdip.TextureBrush_ScaleTransform(brush, -1, 1, Gdip.MatrixOrderPrepend);
-				Gdip.TextureBrush_TranslateTransform(brush, -2 * drawX - run.width, 0, Gdip.MatrixOrderPrepend);	
-				break;			
+				Gdip.TextureBrush_TranslateTransform(brush, -2 * drawX - run.width, 0, Gdip.MatrixOrderPrepend);
+				break;
 		}
 		gstateMirrored = Gdip.Graphics_Save(graphics);
 		Gdip.Graphics_ScaleTransform(graphics, -1, 1, Gdip.MatrixOrderPrepend);
@@ -1344,7 +1344,7 @@ RECT drawUnderline(long /*int*/ hdc, int x, int baseline, int lineUnderlinePos, 
 					rect.top -= run.underlineThickness;
 					if (clipRect != null) clipRect.top -= run.underlineThickness;
 				}
-				int bottom = style.underlineStyle == SWT.UNDERLINE_DOUBLE ? rect.bottom + run.underlineThickness * 2 : rect.bottom; 
+				int bottom = style.underlineStyle == SWT.UNDERLINE_DOUBLE ? rect.bottom + run.underlineThickness * 2 : rect.bottom;
 				if (bottom > lineBottom) {
 					OS.OffsetRect(rect, 0, lineBottom - bottom);
 					if (clipRect != null) OS.OffsetRect(clipRect, 0, lineBottom - bottom);
@@ -1482,7 +1482,7 @@ RECT drawUnderlineGDIP (long /*int*/ graphics, int x, int baseline, int lineUnde
 				if (style.underlineStyle == UNDERLINE_IME_THICK) {
 					rect.top -= run.underlineThickness;
 				}
-				int bottom = style.underlineStyle == SWT.UNDERLINE_DOUBLE ? rect.bottom + run.underlineThickness * 2 : rect.bottom; 
+				int bottom = style.underlineStyle == SWT.UNDERLINE_DOUBLE ? rect.bottom + run.underlineThickness * 2 : rect.bottom;
 				if (bottom > lineBottom) {
 					OS.OffsetRect(rect, 0, lineBottom - bottom);
 				}
@@ -1555,7 +1555,7 @@ void freeRuns () {
 	segmentsText = null;
 }
 
-/** 
+/**
  * Returns the receiver's horizontal text alignment, which will be one
  * of <code>SWT.LEFT</code>, <code>SWT.CENTER</code> or
  * <code>SWT.RIGHT</code>.
@@ -1579,7 +1579,7 @@ public int getAlignment () {
  * @exception SWTException <ul>
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
- * 
+ *
  * @see #getDescent()
  * @see #setDescent(int)
  * @see #setAscent(int)
@@ -1594,13 +1594,13 @@ public int getAscent () {
  * Returns the bounds of the receiver. The width returned is either the
  * width of the longest line or the width set using {@link TextLayout#setWidth(int)}.
  * To obtain the text bounds of a line use {@link TextLayout#getLineBounds(int)}.
- * 
+ *
  * @return the bounds of the receiver
- * 
+ *
  * @exception SWTException <ul>
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
- * 
+ *
  * @see #setWidth(int)
  * @see #getLineBounds(int)
  */
@@ -1623,11 +1623,11 @@ public Rectangle getBounds () {
  * bounds is the smallest rectangle that encompasses all characters
  * in the range. The start and end offsets are inclusive and will be
  * clamped if out of range.
- * 
+ *
  * @param start the start offset
  * @param end the end offset
  * @return the bounds of the character range
- * 
+ *
  * @exception SWTException <ul>
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
@@ -1726,7 +1726,7 @@ public Rectangle getBounds (int start, int end) {
  * @exception SWTException <ul>
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
- * 
+ *
  * @see #getAscent()
  * @see #setAscent(int)
  * @see #setDescent(int)
@@ -1737,7 +1737,7 @@ public int getDescent () {
 	return descent;
 }
 
-/** 
+/**
  * Returns the default font currently being used by the receiver
  * to draw and measure text.
  *
@@ -1756,11 +1756,11 @@ public Font getFont () {
 * Returns the receiver's indent.
 *
 * @return the receiver's indent
-* 
+*
 * @exception SWTException <ul>
 *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
 * </ul>
-* 
+*
 * @since 3.2
 */
 public int getIndent () {
@@ -1772,11 +1772,11 @@ public int getIndent () {
 * Returns the receiver's justification.
 *
 * @return the receiver's justification
-* 
+*
 * @exception SWTException <ul>
 *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
 * </ul>
-* 
+*
 * @since 3.2
 */
 public boolean getJustify () {
@@ -1799,10 +1799,10 @@ long /*int*/ getItemFont (StyleItem item) {
  * Returns the embedding level for the specified character offset. The
  * embedding level is usually used to determine the directionality of a
  * character in bidirectional text.
- * 
+ *
  * @param offset the character offset
  * @return the embedding level
- * 
+ *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_INVALID_ARGUMENT - if the character offset is out of range</li>
  * </ul>
@@ -1825,10 +1825,10 @@ public int getLevel (int offset) {
 
 /**
  * Returns the bounds of the line for the specified line index.
- * 
+ *
  * @param lineIndex the line index
- * @return the line bounds 
- * 
+ * @return the line bounds
+ *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_INVALID_ARGUMENT - if the line index is out of range</li>
  * </ul>
@@ -1852,7 +1852,7 @@ public Rectangle getLineBounds(int lineIndex) {
  * by wrapping.
  *
  * @return the line count
- * 
+ *
  * @exception SWTException <ul>
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
@@ -1896,10 +1896,10 @@ int getLineIndent (int lineIndex) {
 /**
  * Returns the index of the line that contains the specified
  * character offset.
- * 
+ *
  * @param offset the character offset
  * @return the line index
- * 
+ *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_INVALID_ARGUMENT - if the character offset is out of range</li>
  * </ul>
@@ -1923,10 +1923,10 @@ public int getLineIndex (int offset) {
 
 /**
  * Returns the font metrics for the specified line index.
- * 
+ *
  * @param lineIndex the line index
- * @return the font metrics 
- * 
+ * @return the font metrics
+ *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_INVALID_ARGUMENT - if the line index is out of range</li>
  * </ul>
@@ -1945,7 +1945,7 @@ public FontMetrics getLineMetrics (int lineIndex) {
 	OS.GetTextMetrics(srcHdc, lptm);
 	OS.DeleteDC(srcHdc);
 	device.internal_dispose_GC(hDC, null);
-	
+
 	int ascent = Math.max(lptm.tmAscent, this.ascent);
 	int descent = Math.max(lptm.tmDescent, this.descent);
 	int leading = lptm.tmInternalLeading;
@@ -1972,9 +1972,9 @@ public FontMetrics getLineMetrics (int lineIndex) {
  * Returns the line offsets.  Each value in the array is the
  * offset for the first character in a line except for the last
  * value, which contains the length of the text.
- * 
+ *
  * @return the line offsets
- *  
+ *
  * @exception SWTException <ul>
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
@@ -1993,15 +1993,15 @@ public int[] getLineOffsets () {
  * Returns the location for the specified character offset. The
  * <code>trailing</code> argument indicates whether the offset
  * corresponds to the leading or trailing edge of the cluster.
- * 
+ *
  * @param offset the character offset
  * @param trailing the trailing flag
  * @return the location of the character offset
- *  
+ *
  * @exception SWTException <ul>
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
- * 
+ *
  * @see #getOffset(Point, int[])
  * @see #getOffset(int, int, int[])
  */
@@ -2064,7 +2064,7 @@ public Point getLocation (int offset, boolean trailing) {
 				int[] piX = new int[1];
 				long /*int*/ advances = run.justify != 0 ? run.justify : run.advances;
 				OS.ScriptCPtoX(runOffset, trailing, cChars, gGlyphs, run.clusters, run.visAttrs, advances, run.analysis, piX);
-				width = (orientation & SWT.RIGHT_TO_LEFT) != 0 ? run.width - piX[0] : piX[0];   
+				width = (orientation & SWT.RIGHT_TO_LEFT) != 0 ? run.width - piX[0] : piX[0];
 			}
 			return new Point(run.x + width, lineY[line]);
 		}
@@ -2074,12 +2074,12 @@ public Point getLocation (int offset, boolean trailing) {
 
 /**
  * Returns the next offset for the specified offset and movement
- * type.  The movement is one of <code>SWT.MOVEMENT_CHAR</code>, 
+ * type.  The movement is one of <code>SWT.MOVEMENT_CHAR</code>,
  * <code>SWT.MOVEMENT_CLUSTER</code>, <code>SWT.MOVEMENT_WORD</code>,
  * <code>SWT.MOVEMENT_WORD_END</code> or <code>SWT.MOVEMENT_WORD_START</code>.
- * 
+ *
  * @param offset the start offset
- * @param movement the movement type 
+ * @param movement the movement type
  * @return the next offset
  *
  * @exception IllegalArgumentException <ul>
@@ -2088,7 +2088,7 @@ public Point getLocation (int offset, boolean trailing) {
  * @exception SWTException <ul>
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
- * 
+ *
  * @see #getPreviousOffset(int, int)
  */
 public int getNextOffset (int offset, int movement) {
@@ -2175,18 +2175,18 @@ int _getOffset(int offset, int movement, boolean forward) {
 }
 
 /**
- * Returns the character offset for the specified point.  
- * For a typical character, the trailing argument will be filled in to 
+ * Returns the character offset for the specified point.
+ * For a typical character, the trailing argument will be filled in to
  * indicate whether the point is closer to the leading edge (0) or
- * the trailing edge (1).  When the point is over a cluster composed 
- * of multiple characters, the trailing argument will be filled with the 
+ * the trailing edge (1).  When the point is over a cluster composed
+ * of multiple characters, the trailing argument will be filled with the
  * position of the character in the cluster that is closest to
  * the point.
- * 
+ *
  * @param point the point
  * @param trailing the trailing buffer
  * @return the character offset
- *  
+ *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_INVALID_ARGUMENT - if the trailing length is less than <code>1</code></li>
  *    <li>ERROR_NULL_ARGUMENT - if the point is null</li>
@@ -2194,7 +2194,7 @@ int _getOffset(int offset, int movement, boolean forward) {
  * @exception SWTException <ul>
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
- * 
+ *
  * @see #getLocation(int, boolean)
  */
 public int getOffset (Point point, int[] trailing) {
@@ -2204,26 +2204,26 @@ public int getOffset (Point point, int[] trailing) {
 }
 
 /**
- * Returns the character offset for the specified point.  
- * For a typical character, the trailing argument will be filled in to 
+ * Returns the character offset for the specified point.
+ * For a typical character, the trailing argument will be filled in to
  * indicate whether the point is closer to the leading edge (0) or
- * the trailing edge (1).  When the point is over a cluster composed 
- * of multiple characters, the trailing argument will be filled with the 
+ * the trailing edge (1).  When the point is over a cluster composed
+ * of multiple characters, the trailing argument will be filled with the
  * position of the character in the cluster that is closest to
  * the point.
- * 
+ *
  * @param x the x coordinate of the point
  * @param y the y coordinate of the point
  * @param trailing the trailing buffer
  * @return the character offset
- *  
+ *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_INVALID_ARGUMENT - if the trailing length is less than <code>1</code></li>
  * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
- * 
+ *
  * @see #getLocation(int, boolean)
  */
 public int getOffset (int x, int y, int[] trailing) {
@@ -2310,7 +2310,7 @@ public int getOffset (int x, int y, int[] trailing) {
  * Returns the orientation of the receiver.
  *
  * @return the orientation style
- * 
+ *
  * @exception SWTException <ul>
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
@@ -2339,12 +2339,12 @@ void getPartialSelection(StyleItem run, int selectionStart, int selectionEnd, RE
 
 /**
  * Returns the previous offset for the specified offset and movement
- * type.  The movement is one of <code>SWT.MOVEMENT_CHAR</code>, 
+ * type.  The movement is one of <code>SWT.MOVEMENT_CHAR</code>,
  * <code>SWT.MOVEMENT_CLUSTER</code> or <code>SWT.MOVEMENT_WORD</code>,
  * <code>SWT.MOVEMENT_WORD_END</code> or <code>SWT.MOVEMENT_WORD_START</code>.
- * 
+ *
  * @param offset the start offset
- * @param movement the movement type 
+ * @param movement the movement type
  * @return the previous offset
  *
  * @exception IllegalArgumentException <ul>
@@ -2353,7 +2353,7 @@ void getPartialSelection(StyleItem run, int selectionStart, int selectionEnd, RE
  * @exception SWTException <ul>
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
- * 
+ *
  * @see #getNextOffset(int, int)
  */
 public int getPreviousOffset (int offset, int movement) {
@@ -2365,14 +2365,14 @@ public int getPreviousOffset (int offset, int movement) {
  * Gets the ranges of text that are associated with a <code>TextStyle</code>.
  *
  * @return the ranges, an array of offsets representing the start and end of each
- * text style. 
+ * text style.
  *
  * @exception SWTException <ul>
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
- * 
+ *
  * @see #getStyles()
- * 
+ *
  * @since 3.2
  */
 public int[] getRanges () {
@@ -2415,7 +2415,7 @@ public int[] getSegments () {
  * @exception SWTException <ul>
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
- * 
+ *
  * @since 3.6
  */
 public char[] getSegmentsChars () {
@@ -2466,7 +2466,7 @@ String getSegmentsText() {
  * </ul>
  */
 public int getSpacing () {
-	checkLayout();	
+	checkLayout();
 	return lineSpacing;
 }
 
@@ -2503,9 +2503,9 @@ public TextStyle getStyle (int offset) {
  * @exception SWTException <ul>
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
- * 
+ *
  * @see #getRanges()
- * 
+ *
  * @since 3.2
  */
 public TextStyle[] getStyles () {
@@ -2558,7 +2558,7 @@ public String getText () {
  * Returns the text direction of the receiver.
  *
  * @return the text direction value
- * 
+ *
  * @exception SWTException <ul>
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
@@ -2587,11 +2587,11 @@ public int getWidth () {
 * Returns the receiver's wrap indent.
 *
 * @return the receiver's wrap indent
-* 
+*
 * @exception SWTException <ul>
 *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
 * </ul>
-* 
+*
 * @since 3.6
 */
 public int getWrapIndent () {
@@ -2624,44 +2624,44 @@ StyleItem[] itemize () {
 	SCRIPT_CONTROL scriptControl = new SCRIPT_CONTROL();
 	SCRIPT_STATE scriptState = new SCRIPT_STATE();
 	final int MAX_ITEM = length + 1;
-	
+
 	if ((resolveTextDirection() & SWT.RIGHT_TO_LEFT) != 0) {
 		scriptState.uBidiLevel = 1;
 		scriptState.fArabicNumContext = true;
 	}
-	
+
 	/*
 	* In the version of Usp10.h that SWT is compiled the fReserved field is declared
 	* as a bitfield size 8. In newer versions of the Uniscribe, the first bit of fReserved
 	* was used to implement the fMergeNeutralItems feature which can be used to increase
 	* performance by reducing the number of SCRIPT_ITEM returned by ScriptItemize.
-	* 
+	*
 	* Note: This code is wrong on a big endian machine.
-	* 
+	*
 	* Note: This code is intentionally commented because it causes bug#377472.
 	*/
 //	if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (6, 0)) {
 //		scriptControl.fReserved = 0x1;
 //	}
-	
+
 	OS.ScriptApplyDigitSubstitution(null, scriptControl, scriptState);
-	
+
 	long /*int*/ hHeap = OS.GetProcessHeap();
 	long /*int*/ pItems = OS.HeapAlloc(hHeap, OS.HEAP_ZERO_MEMORY, MAX_ITEM * SCRIPT_ITEM.sizeof);
 	if (pItems == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-	int[] pcItems = new int[1];	
+	int[] pcItems = new int[1];
 	char[] chars = new char[length];
-	segmentsText.getChars(0, length, chars, 0); 
+	segmentsText.getChars(0, length, chars, 0);
 	OS.ScriptItemize(chars, length, MAX_ITEM, scriptControl, scriptState, pItems, pcItems);
 //	if (hr == E_OUTOFMEMORY) //TODO handle it
-	
+
 	StyleItem[] runs = merge(pItems, pcItems[0]);
 	OS.HeapFree(hHeap, 0, pItems);
 	return runs;
 }
 
-/* 
- *  Merge styles ranges and script items 
+/*
+ *  Merge styles ranges and script items
  */
 StyleItem[] merge (long /*int*/ items, int itemCount) {
 	if (styles.length > stylesCount) {
@@ -2727,7 +2727,7 @@ StyleItem[] merge (long /*int*/ items, int itemCount) {
 				}
 			}
 		}
-		
+
 		int styleLimit = translateOffset(styles[styleIndex + 1].start);
 		if (styleLimit <= itemLimit) {
 			styleIndex++;
@@ -2761,17 +2761,17 @@ StyleItem[] merge (long /*int*/ items, int itemCount) {
 	return runs;
 }
 
-/* 
+/*
  *  Resolves text direction. If the nominal direction is LTR or RTL, no
  *  resolution is needed; if the nominal direction is "auto", have BidiUtil
- *  resolve it according to the first strong bidi character.  
+ *  resolve it according to the first strong bidi character.
  */
 int resolveTextDirection () {
 	return textDirection == SWT.AUTO_TEXT_DIRECTION ? BidiUtil.resolveTextDirection (text) : textDirection;
 }
 
-/* 
- *  Reorder the run 
+/*
+ *  Reorder the run
  */
 StyleItem[] reorder (StyleItem[] runs, boolean terminate) {
 	int length = runs.length;
@@ -2782,7 +2782,7 @@ StyleItem[] reorder (StyleItem[] runs, boolean terminate) {
 	}
 	/*
 	* Feature in Windows.  If the orientation is RTL Uniscribe will
-	* resolve the level of line breaks to 1, this can cause the line 
+	* resolve the level of line breaks to 1, this can cause the line
 	* break to be reorder to the middle of the line. The fix is to set
 	* the level to zero to prevent it to be reordered.
 	*/
@@ -2795,7 +2795,7 @@ StyleItem[] reorder (StyleItem[] runs, boolean terminate) {
 	StyleItem[] result = new StyleItem[length];
 	for (int i=0; i<length; i++) {
 		result[log2vis[i]] = runs[i];
-	}	
+	}
 	if ((orientation & SWT.RIGHT_TO_LEFT) != 0) {
 		if (terminate) length--;
 		for (int i = 0; i < length / 2 ; i++) {
@@ -2817,12 +2817,12 @@ StyleItem[] reorder (StyleItem[] runs, boolean terminate) {
  * alignment.
  * </p>
  *
- * @param alignment the new alignment 
+ * @param alignment the new alignment
  *
  * @exception SWTException <ul>
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
- * 
+ *
  * @see #setWidth(int)
  */
 public void setAlignment (int alignment) {
@@ -2851,7 +2851,7 @@ public void setAlignment (int alignment) {
  * @exception SWTException <ul>
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
- * 
+ *
  * @see #setDescent(int)
  * @see #getLineMetrics(int)
  */
@@ -2877,7 +2877,7 @@ public void setAscent(int ascent) {
  * @exception SWTException <ul>
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
- * 
+ *
  * @see #setAscent(int)
  * @see #getLineMetrics(int)
  */
@@ -2889,7 +2889,7 @@ public void setDescent(int descent) {
 	this.descent = descent;
 }
 
-/** 
+/**
  * Sets the default font which will be used by the receiver
  * to draw and measure text. If the
  * argument is null, then a default font appropriate
@@ -2916,22 +2916,22 @@ public void setFont (Font font) {
 }
 
 /**
- * Sets the indent of the receiver. This indent is applied to the first line of 
- * each paragraph.  
+ * Sets the indent of the receiver. This indent is applied to the first line of
+ * each paragraph.
  *
  * @param indent new indent
- * 
+ *
  * @exception SWTException <ul>
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
- * 
+ *
  * @see #setWrapIndent(int)
- * 
+ *
  * @since 3.2
  */
 public void setIndent (int indent) {
 	checkLayout();
-	if (indent < 0) return;	
+	if (indent < 0) return;
 	if (this.indent == indent) return;
 	freeRuns();
 	this.indent = indent;
@@ -2939,14 +2939,14 @@ public void setIndent (int indent) {
 
 /**
  * Sets the justification of the receiver. Note that the receiver's
- * width must be set in order to use justification. 
+ * width must be set in order to use justification.
  *
  * @param justify new justify
- * 
+ *
  * @exception SWTException <ul>
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
- * 
+ *
  * @since 3.2
  */
 public void setJustify (boolean justify) {
@@ -2955,13 +2955,13 @@ public void setJustify (boolean justify) {
 	freeRuns();
 	this.justify = justify;
 }
- 
+
 /**
  * Sets the orientation of the receiver, which must be one
  * of <code>SWT.LEFT_TO_RIGHT</code> or <code>SWT.RIGHT_TO_LEFT</code>.
  *
  * @param orientation new orientation style
- * 
+ *
  * @exception SWTException <ul>
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
@@ -2980,25 +2980,25 @@ public void setOrientation (int orientation) {
 /**
  * Sets the offsets of the receiver's text segments. Text segments are used to
  * override the default behavior of the bidirectional algorithm.
- * Bidirectional reordering can happen within a text segment but not 
+ * Bidirectional reordering can happen within a text segment but not
  * between two adjacent segments.
  * <p>
- * Each text segment is determined by two consecutive offsets in the 
- * <code>segments</code> arrays. The first element of the array should 
+ * Each text segment is determined by two consecutive offsets in the
+ * <code>segments</code> arrays. The first element of the array should
  * always be zero and the last one should always be equals to length of
  * the text.
  * </p>
  * <p>
  * When segments characters are set, the segments are the offsets where
  * the characters are inserted in the text.
- * <p> 
- * 
+ * <p>
+ *
  * @param segments the text segments offset
- * 
+ *
  * @exception SWTException <ul>
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
- * 
+ *
  * @see #setSegmentsChars(char[])
  */
 public void setSegments(int[] segments) {
@@ -3018,20 +3018,20 @@ public void setSegments(int[] segments) {
 }
 
 /**
- * Sets the characters to be used in the segments boundaries. The segments 
+ * Sets the characters to be used in the segments boundaries. The segments
  * are set by calling <code>setSegments(int[])</code>. The application can
  * use this API to insert Unicode Control Characters in the text to control
- * the display of the text and bidi reordering. The characters are not 
+ * the display of the text and bidi reordering. The characters are not
  * accessible by any other API in <code>TextLayout</code>.
- * 
- * @param segmentsChars the segments characters 
+ *
+ * @param segmentsChars the segments characters
  *
  * @exception SWTException <ul>
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
- * 
+ *
  * @see #setSegments(int[])
- * 
+ *
  * @since 3.6
  */
 public void setSegmentsChars(char[] segmentsChars) {
@@ -3054,7 +3054,7 @@ public void setSegmentsChars(char[] segmentsChars) {
  * Sets the line spacing of the receiver.  The line spacing
  * is the space left between lines.
  *
- * @param spacing the new line spacing 
+ * @param spacing the new line spacing
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_INVALID_ARGUMENT - if the spacing is negative</li>
@@ -3075,11 +3075,11 @@ public void setSpacing (int spacing) {
  * Sets the style of the receiver for the specified range.  Styles previously
  * set for that range will be overwritten.  The start and end offsets are
  * inclusive and will be clamped if out of range.
- * 
+ *
  * @param style the style
  * @param start the start offset
  * @param end the end offset
- * 
+ *
  * @exception SWTException <ul>
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
@@ -3119,14 +3119,14 @@ public void setStyle (TextStyle style, int start, int end) {
 		modifyEnd++;
 	}
 	if (modifyStart == modifyEnd) {
-		int styleStart = styles[modifyStart].start; 
+		int styleStart = styles[modifyStart].start;
 		int styleEnd = styles[modifyEnd + 1].start - 1;
 		if (styleStart == start && styleEnd == end) {
 			styles[modifyStart].style = style;
 			return;
 		}
 		if (styleStart != start && styleEnd != end) {
-			int newLength = stylesCount + 2; 
+			int newLength = stylesCount + 2;
 			if (newLength > styles.length) {
 				int newSize = Math.min(newLength + 1024, Math.max(64, newLength * 2));
 				StyleItem[] newStyles = new StyleItem[newSize];
@@ -3137,7 +3137,7 @@ public void setStyle (TextStyle style, int start, int end) {
 			StyleItem item = new StyleItem();
 			item.start = start;
 			item.style = style;
-			styles[modifyStart + 1] = item;	
+			styles[modifyStart + 1] = item;
 			item = new StyleItem();
 			item.start = end + 1;
 			item.style = styles[modifyStart].style;
@@ -3168,9 +3168,9 @@ public void setStyle (TextStyle style, int start, int end) {
  * Sets the receiver's tab list. Each value in the tab list specifies
  * the space in pixels from the origin of the text layout to the respective
  * tab stop.  The last tab stop width is repeated continuously.
- * 
+ *
  * @param tabs the new tab list
- * 
+ *
  * @exception SWTException <ul>
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
@@ -3189,16 +3189,16 @@ public void setTabs (int[] tabs) {
 	}
 	freeRuns();
 	this.tabs = tabs;
-} 
+}
 
 /**
  * Sets the receiver's text.
  *<p>
- * Note: Setting the text also clears all the styles. This method 
- * returns without doing anything if the new text is the same as 
+ * Note: Setting the text also clears all the styles. This method
+ * returns without doing anything if the new text is the same as
  * the current text.
  * </p>
- * 
+ *
  * @param text the new text
  *
  * @exception IllegalArgumentException <ul>
@@ -3232,7 +3232,7 @@ public void setText (String text) {
  * </p>
  *
  * @param textDirection the new text direction
- * 
+ *
  * @exception SWTException <ul>
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
@@ -3256,7 +3256,7 @@ public void setTextDirection (int textDirection) {
  * text should be wrapped and aligned. The default value is
  * <code>-1</code> which means wrapping is disabled.
  *
- * @param width the new width 
+ * @param width the new width
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_INVALID_ARGUMENT - if the width is <code>0</code> or less than <code>-1</code></li>
@@ -3264,7 +3264,7 @@ public void setTextDirection (int textDirection) {
  * @exception SWTException <ul>
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
- * 
+ *
  * @see #setAlignment(int)
  */
 public void setWidth (int width) {
@@ -3277,21 +3277,21 @@ public void setWidth (int width) {
 
 /**
  * Sets the wrap indent of the receiver. This indent is applied to all lines
- * in the paragraph except the first line.  
+ * in the paragraph except the first line.
  *
  * @param wrapIndent new wrap indent
- * 
+ *
  * @exception SWTException <ul>
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
- * 
+ *
  * @see #setIndent(int)
- * 
+ *
  * @since 3.6
  */
 public void setWrapIndent (int wrapIndent) {
 	checkLayout();
-	if (wrapIndent < 0) return;	
+	if (wrapIndent < 0) return;
 	if (this.wrapIndent == wrapIndent) return;
 	freeRuns();
 	this.wrapIndent = wrapIndent;
@@ -3313,7 +3313,7 @@ boolean shape (long /*int*/ hdc, StyleItem run, char[] chars, int[] glyphCount, 
 	int hr = OS.ScriptShape(hdc, run.psc, chars, chars.length, maxGlyphs, run.analysis, run.glyphs, run.clusters, run.visAttrs, glyphCount);
 	run.glyphCount = glyphCount[0];
 	if (useCMAPcheck) return true;
-	
+
 	if (hr != OS.USP_E_SCRIPT_NOT_IN_FONT) {
 		if (run.analysis.fNoGlyphIndex) return true;
 		SCRIPT_FONTPROPERTIES fp = new SCRIPT_FONTPROPERTIES ();
@@ -3336,7 +3336,7 @@ boolean shape (long /*int*/ hdc, StyleItem run, char[] chars, int[] glyphCount, 
 	return false;
 }
 
-/* 
+/*
  * Generate glyphs for one Run.
  */
 void shape (final long /*int*/ hdc, final StyleItem run) {
@@ -3345,7 +3345,7 @@ void shape (final long /*int*/ hdc, final StyleItem run) {
 	final int[] buffer = new int[1];
 	final char[] chars = new char[run.length];
 	segmentsText.getChars(run.start, run.start + run.length, chars, 0);
-	
+
 	final int maxGlyphs = (chars.length * 3 / 2) + 16;
 	long /*int*/ hHeap = OS.GetProcessHeap();
 	run.glyphs = OS.HeapAlloc(hHeap, OS.HEAP_ZERO_MEMORY, maxGlyphs * 2);
@@ -3372,7 +3372,7 @@ void shape (final long /*int*/ hdc, final StyleItem run) {
 		/*
 		* Bug in Uniscribe. In some version of Uniscribe, ScriptStringAnalyse crashes
 		* when the character array is too long. The fix is to limit the size of character
-		* array to two. Note, limiting the array to only one character would cause surrogate 
+		* array to two. Note, limiting the array to only one character would cause surrogate
 		* pairs to stop working.
 		*/
 		char[] sampleChars = new char[Math.min(chars.length, 2)];
@@ -3380,7 +3380,7 @@ void shape (final long /*int*/ hdc, final StyleItem run) {
 		breakRun(run);
 		int count = 0;
 		for (int i = 0; i < chars.length; i++) {
-			OS.MoveMemory(logAttr, run.psla + (i * SCRIPT_LOGATTR.sizeof), SCRIPT_LOGATTR.sizeof); 
+			OS.MoveMemory(logAttr, run.psla + (i * SCRIPT_LOGATTR.sizeof), SCRIPT_LOGATTR.sizeof);
 			if (!logAttr.fWhiteSpace) {
 				sampleChars[count++] = chars[i];
 				if (count == sampleChars.length) break;
@@ -3427,8 +3427,8 @@ void shape (final long /*int*/ hdc, final StyleItem run) {
 			/*
 			* The run is composed only by white spaces, this happens when a run is split
 			* by a visual style. The font fallback for the script can not be determined
-			* using only white spaces. The solution is to use the font of the previous  
-			* or next run of the same script.    
+			* using only white spaces. The solution is to use the font of the previous
+			* or next run of the same script.
 			*/
 			int index = 0;
 			while (index < allRuns.length - 1) {
@@ -3502,12 +3502,12 @@ void shape (final long /*int*/ hdc, final StyleItem run) {
 		if (!shapeSucceed) OS.SelectObject(hdc, hFont);
 		if (newFont != 0 && newFont != run.fallbackFont) OS.DeleteObject(newFont);
 	}
-	
+
 	if (!shapeSucceed) {
 		/*
 		* Shape Failed.
-		* Give up and shape the run with the default font. 
-		* Missing glyphs typically will be represent as black boxes in the text. 
+		* Give up and shape the run with the default font.
+		* Missing glyphs typically will be represent as black boxes in the text.
 		*/
 		OS.ScriptShape(hdc, run.psc, chars, chars.length, maxGlyphs, run.analysis, run.glyphs, run.clusters, run.visAttrs, buffer);
 		run.glyphCount = buffer[0];
@@ -3604,7 +3604,7 @@ int translateOffset(int offset) {
 	}
 	for (int i = 0; i < nSegments && offset - i >= segments[i]; i++) {
 		offset++;
-	}	
+	}
 	return offset;
 }
 

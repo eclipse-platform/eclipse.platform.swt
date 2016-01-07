@@ -47,6 +47,6 @@ public class OPENFILENAME {
 	/** @field flags=no_wince */
 	public int dwReserved;
 	/** @field flags=no_wince */
-	public int FlagsEx;   
+	public int FlagsEx;
 	public static final int sizeof = !OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (5, 0) ? OS.OPENFILENAME_sizeof () : 76;
 }

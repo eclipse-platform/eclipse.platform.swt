@@ -23,10 +23,10 @@ import org.eclipse.swt.internal.win32.*;
  * <p>IMPORTANT: This class is <em>not</em> intended to be subclassed.</p>
  *
  * <p>This class identifies the <code>Control</code> over which the user must position the cursor
- * in order to drop the data being transferred.  It also specifies what data types can be dropped on 
- * this control and what operations can be performed.  You may have several DropTragets in an 
+ * in order to drop the data being transferred.  It also specifies what data types can be dropped on
+ * this control and what operations can be performed.  You may have several DropTragets in an
  * application but there can only be a one to one mapping between a <code>Control</code> and a <code>DropTarget</code>.
- * The DropTarget can receive data from within the same application or from other applications 
+ * The DropTarget can receive data from within the same application or from other applications
  * (such as text dragged from a text editor like Word).</p>
  *
  * <code><pre>
@@ -36,11 +36,11 @@ import org.eclipse.swt.internal.win32.*;
  *	target.setTransfer(types);
  * </code></pre>
  *
- * <p>The application is notified of data being dragged over this control and of when a drop occurs by 
- * implementing the interface <code>DropTargetListener</code> which uses the class 
- * <code>DropTargetEvent</code>.  The application can modify the type of drag being performed 
- * on this Control at any stage of the drag by modifying the <code>event.detail</code> field or the 
- * <code>event.currentDataType</code> field.  When the data is dropped, it is the responsibility of 
+ * <p>The application is notified of data being dragged over this control and of when a drop occurs by
+ * implementing the interface <code>DropTargetListener</code> which uses the class
+ * <code>DropTargetEvent</code>.  The application can modify the type of drag being performed
+ * on this Control at any stage of the drag by modifying the <code>event.detail</code> field or the
+ * <code>event.currentDataType</code> field.  When the data is dropped, it is the responsibility of
  * the application to copy this data for its own purposes.
  *
  * <code><pre>
@@ -63,7 +63,7 @@ import org.eclipse.swt.internal.win32.*;
  *
  * <dl>
  *	<dt><b>Styles</b></dt> <dd>DND.DROP_NONE, DND.DROP_COPY, DND.DROP_MOVE, DND.DROP_LINK</dd>
- *	<dt><b>Events</b></dt> <dd>DND.DragEnter, DND.DragLeave, DND.DragOver, DND.DragOperationChanged, 
+ *	<dt><b>Events</b></dt> <dd>DND.DragEnter, DND.DragLeave, DND.DragOver, DND.DragOperationChanged,
  *                             DND.DropAccept, DND.Drop </dd>
  * </dl>
  *
@@ -73,39 +73,39 @@ import org.eclipse.swt.internal.win32.*;
  * @noextend This class is not intended to be subclassed by clients.
  */
 public class DropTarget extends Widget {
-	
+
 	Control control;
 	Listener controlListener;
 	Transfer[] transferAgents = new Transfer[0];
 	DropTargetEffect dropEffect;
-	
+
 	// Track application selections
 	TransferData selectedDataType;
 	int selectedOperation;
-	
+
 	// workaround - There is no event for "operation changed" so track operation based on key state
 	int keyOperation = -1;
-	
-	// workaround - The dataobject address is only passed as an argument in drag enter and drop.  
-	// To allow applications to query the data values during the drag over operations, 
+
+	// workaround - The dataobject address is only passed as an argument in drag enter and drop.
+	// To allow applications to query the data values during the drag over operations,
 	// maintain a reference to it.
 	IDataObject iDataObject;
-	
+
 	// interfaces
 	COMObject iDropTarget;
 	int refCount;
-	
+
 	static final String DEFAULT_DROP_TARGET_EFFECT = "DEFAULT_DROP_TARGET_EFFECT"; //$NON-NLS-1$
 
 /**
- * Creates a new <code>DropTarget</code> to allow data to be dropped on the specified 
+ * Creates a new <code>DropTarget</code> to allow data to be dropped on the specified
  * <code>Control</code>.
- * Creating an instance of a DropTarget may cause system resources to be allocated 
- * depending on the platform.  It is therefore mandatory that the DropTarget instance 
+ * Creating an instance of a DropTarget may cause system resources to be allocated
+ * depending on the platform.  It is therefore mandatory that the DropTarget instance
  * be disposed when no longer required.
- * 
+ *
  * @param control the <code>Control</code> over which the user positions the cursor to drop the data
- * @param style the bitwise OR'ing of allowed operations; this may be a combination of any of 
+ * @param style the bitwise OR'ing of allowed operations; this may be a combination of any of
  *		   DND.DROP_NONE, DND.DROP_COPY, DND.DROP_MOVE, DND.DROP_LINK
  *
  * @exception SWTException <ul>
@@ -120,7 +120,7 @@ public class DropTarget extends Widget {
  *
  * <p>NOTE: ERROR_CANNOT_INIT_DROP should be an SWTException, since it is a
  * recoverable error, but can not be changed due to backward compatibility.</p>
- * 
+ *
  * @see Widget#dispose
  * @see DropTarget#checkSubclass
  * @see DND#DROP_NONE
@@ -137,7 +137,7 @@ public DropTarget(Control control, int style) {
 	control.setData(DND.DROP_TARGET_KEY, this);
 	createCOMInterfaces();
 	this.AddRef();
-	
+
 	if (COM.CoLockObjectExternal(iDropTarget.getAddress(), true, true) != COM.S_OK)
 		DND.error(DND.ERROR_CANNOT_INIT_DROP);
 	if (COM.RegisterDragDrop( control.handle, iDropTarget.getAddress()) != COM.S_OK)
@@ -151,13 +151,13 @@ public DropTarget(Control control, int style) {
 		}
 	};
 	control.addListener (SWT.Dispose, controlListener);
-	
+
 	this.addListener(SWT.Dispose, new Listener () {
 		public void handleEvent (Event event) {
 			onDispose();
 		}
 	});
-	
+
 	Object effect = control.getData(DEFAULT_DROP_TARGET_EFFECT);
 	if (effect instanceof DropTargetEffect) {
 		dropEffect = (DropTargetEffect) effect;
@@ -178,15 +178,15 @@ static int checkStyle (int style) {
  * be notified when a drag and drop operation is in progress, by sending
  * it one of the messages defined in the <code>DropTargetListener</code>
  * interface.
- * 
+ *
  * <p><ul>
  * <li><code>dragEnter</code> is called when the cursor has entered the drop target boundaries
  * <li><code>dragLeave</code> is called when the cursor has left the drop target boundaries and just before
  * the drop occurs or is cancelled.
- * <li><code>dragOperationChanged</code> is called when the operation being performed has changed 
+ * <li><code>dragOperationChanged</code> is called when the operation being performed has changed
  * (usually due to the user changing the selected modifier key(s) while dragging)
  * <li><code>dragOver</code> is called when the cursor is moving over the drop target
- * <li><code>dropAccept</code> is called just before the drop is performed.  The drop target is given 
+ * <li><code>dropAccept</code> is called just before the drop is performed.  The drop target is given
  * the chance to change the nature of the drop or veto the drop by setting the <code>event.detail</code> field
  * <li><code>drop</code> is called when the data is being dropped
  * </ul></p>
@@ -288,17 +288,17 @@ int DragEnter(long /*int*/ pDataObject, int grfKeyState, int pt_x, int pt_y, lon
 	selectedOperation = DND.DROP_NONE;
 	if (iDataObject != null) iDataObject.Release();
 	iDataObject = null;
-	
+
 	DNDEvent event = new DNDEvent();
 	if (!setEventData(event, pDataObject, grfKeyState, pt_x, pt_y, pdwEffect)) {
 		OS.MoveMemory(pdwEffect, new int[] {COM.DROPEFFECT_NONE}, 4);
 		return COM.S_FALSE;
-	}	
+	}
 
 	// Remember the iDataObject because it is not passed into the DragOver callback
 	iDataObject = new IDataObject(pDataObject);
 	iDataObject.AddRef();
-	
+
 	int allowedOperations = event.operations;
 	TransferData[] allowedDataTypes = new TransferData[event.dataTypes.length];
 	System.arraycopy(event.dataTypes, 0, allowedDataTypes, 0, allowedDataTypes.length);
@@ -307,7 +307,7 @@ int DragEnter(long /*int*/ pDataObject, int grfKeyState, int pt_x, int pt_y, lon
 	if (event.detail == DND.DROP_DEFAULT) {
 		event.detail = (allowedOperations & DND.DROP_MOVE) != 0 ? DND.DROP_MOVE : DND.DROP_NONE;
 	}
-	
+
 	selectedDataType = null;
 	for (int i = 0; i < allowedDataTypes.length; i++) {
 		if (TransferData.sameType(allowedDataTypes[i], event.dataType)){
@@ -315,12 +315,12 @@ int DragEnter(long /*int*/ pDataObject, int grfKeyState, int pt_x, int pt_y, lon
 			break;
 		}
 	}
-	
+
 	selectedOperation = DND.DROP_NONE;
 	if (selectedDataType != null && ((allowedOperations & event.detail) != 0)) {
 		selectedOperation = event.detail;
 	}
-	
+
 	OS.MoveMemory(pdwEffect, new int[] {opToOs(selectedOperation)}, 4);
 	return COM.S_OK;
 }
@@ -336,7 +336,7 @@ int DragLeave() {
 	event.detail = DND.DROP_NONE;
 	notifyListeners(DND.DragLeave, event);
 	refresh();
-	
+
 	iDataObject.Release();
 	iDataObject = null;
 	return COM.S_OK;
@@ -351,14 +351,14 @@ int DragOver_64(int grfKeyState, long pt, long /*int*/ pdwEffect) {
 int DragOver(int grfKeyState, int pt_x, int pt_y, long /*int*/ pdwEffect) {
 	if (iDataObject == null) return COM.S_FALSE;
 	int oldKeyOperation = keyOperation;
-	
+
 	DNDEvent event = new DNDEvent();
 	if (!setEventData(event, iDataObject.getAddress(), grfKeyState, pt_x, pt_y, pdwEffect)) {
 		keyOperation = -1;
 		OS.MoveMemory(pdwEffect, new int[] {COM.DROPEFFECT_NONE}, 4);
 		return COM.S_FALSE;
 	}
-	
+
 	int allowedOperations = event.operations;
 	TransferData[] allowedDataTypes = new TransferData[event.dataTypes.length];
 	System.arraycopy(event.dataTypes, 0, allowedDataTypes, 0, allowedDataTypes.length);
@@ -376,7 +376,7 @@ int DragOver(int grfKeyState, int pt_x, int pt_y, long /*int*/ pdwEffect) {
 	if (event.detail == DND.DROP_DEFAULT) {
 		event.detail = (allowedOperations & DND.DROP_MOVE) != 0 ? DND.DROP_MOVE : DND.DROP_NONE;
 	}
-	
+
 	selectedDataType = null;
 	for (int i = 0; i < allowedDataTypes.length; i++) {
 		if (TransferData.sameType(allowedDataTypes[i], event.dataType)){
@@ -389,7 +389,7 @@ int DragOver(int grfKeyState, int pt_x, int pt_y, long /*int*/ pdwEffect) {
 	if (selectedDataType != null && ((allowedOperations & event.detail) == event.detail)) {
 		selectedOperation = event.detail;
 	}
-	
+
 	OS.MoveMemory(pdwEffect, new int[] {opToOs(selectedOperation)}, 4);
 	return COM.S_OK;
 }
@@ -410,7 +410,7 @@ int Drop(long /*int*/ pDataObject, int grfKeyState, int pt_x, int pt_y, long /*i
 	event.detail = DND.DROP_NONE;
 	notifyListeners(DND.DragLeave, event);
 	refresh();
-	
+
 	event = new DNDEvent();
 	if (!setEventData(event, pDataObject, grfKeyState, pt_x, pt_y, pdwEffect)) {
 		keyOperation = -1;
@@ -425,7 +425,7 @@ int Drop(long /*int*/ pDataObject, int grfKeyState, int pt_x, int pt_y, long /*i
 	event.detail = selectedOperation;
 	notifyListeners(DND.DropAccept,event);
 	refresh();
-	
+
 	selectedDataType = null;
 	for (int i = 0; i < allowedDataTypes.length; i++) {
 		if (TransferData.sameType(allowedDataTypes[i], event.dataType)){
@@ -439,10 +439,10 @@ int Drop(long /*int*/ pDataObject, int grfKeyState, int pt_x, int pt_y, long /*i
 	}
 
 	if (selectedOperation == DND.DROP_NONE){
-		OS.MoveMemory(pdwEffect, new int[] {COM.DROPEFFECT_NONE}, 4);	
+		OS.MoveMemory(pdwEffect, new int[] {COM.DROPEFFECT_NONE}, 4);
 		return COM.S_OK;
 	}
-	
+
 	// Get Data in a Java format
 	Object object = null;
 	for (int i = 0; i < transferAgents.length; i++){
@@ -455,7 +455,7 @@ int Drop(long /*int*/ pDataObject, int grfKeyState, int pt_x, int pt_y, long /*i
 	if (object == null){
 		selectedOperation = DND.DROP_NONE;
 	}
-	
+
 	event.detail = selectedOperation;
 	event.dataType = selectedDataType;
 	event.data = object;
@@ -470,13 +470,13 @@ int Drop(long /*int*/ pDataObject, int grfKeyState, int pt_x, int pt_y, long /*i
 	if ((allowedOperations & event.detail) == event.detail) {
 		selectedOperation = event.detail;
 	}
-	//notify source of action taken		
-	OS.MoveMemory(pdwEffect, new int[] {opToOs(selectedOperation)}, 4);	
+	//notify source of action taken
+	OS.MoveMemory(pdwEffect, new int[] {opToOs(selectedOperation)}, 4);
 	return COM.S_OK;
 }
 
 /**
- * Returns the Control which is registered for this DropTarget.  This is the control over which the 
+ * Returns the Control which is registered for this DropTarget.  This is the control over which the
  * user positions the cursor to drop the data.
  *
  * @return the Control which is registered for this DropTarget
@@ -486,11 +486,11 @@ public Control getControl () {
 }
 
 /**
- * Returns an array of listeners who will be notified when a drag and drop 
- * operation is in progress, by sending it one of the messages defined in 
+ * Returns an array of listeners who will be notified when a drag and drop
+ * operation is in progress, by sending it one of the messages defined in
  * the <code>DropTargetListener</code> interface.
  *
- * @return the listeners who will be notified when a drag and drop 
+ * @return the listeners who will be notified when a drag and drop
  * operation is in progress
  *
  * @exception SWTException <ul>
@@ -502,7 +502,7 @@ public Control getControl () {
  * @see #addDropListener
  * @see #removeDropListener
  * @see DropTargetEvent
- * 
+ *
  * @since 3.4
  */
 public DropTargetListener[] getDropListeners() {
@@ -524,12 +524,12 @@ public DropTargetListener[] getDropListeners() {
 }
 
 /**
- * Returns the drop effect for this DropTarget.  This drop effect will be 
- * used during a drag and drop to display the drag under effect on the 
+ * Returns the drop effect for this DropTarget.  This drop effect will be
+ * used during a drag and drop to display the drag under effect on the
  * target widget.
  *
  * @return the drop effect that is registered for this DropTarget
- * 
+ *
  * @since 3.3
  */
 public DropTargetEffect getDropTargetEffect() {
@@ -559,26 +559,26 @@ public Transfer[] getTransfer() {
 	return transferAgents;
 }
 
-void onDispose () {	
+void onDispose () {
 	if (control == null) return;
 
 	COM.RevokeDragDrop(control.handle);
-	
+
 	if (controlListener != null)
 		control.removeListener(SWT.Dispose, controlListener);
 	controlListener = null;
 	control.setData(DND.DROP_TARGET_KEY, null);
 	transferAgents = null;
 	control = null;
-	
+
 	COM.CoLockObjectExternal(iDropTarget.getAddress(), false, true);
-	
+
 	this.Release();
 	if (iDataObject != null) {
 		iDataObject.Release();
 	}
 	iDataObject = null;
-	
+
 	if (COM.FreeUnusedLibraries) {
 		COM.CoFreeUnusedLibraries();
 	}
@@ -613,11 +613,11 @@ int osToOp(int osOperation){
 }
 
 /* QueryInterface([in] iid, [out] ppvObject)
- * Ownership of ppvObject transfers from callee to caller so reference count on ppvObject 
+ * Ownership of ppvObject transfers from callee to caller so reference count on ppvObject
  * must be incremented before returning.  Caller is responsible for releasing ppvObject.
  */
 int QueryInterface(long /*int*/ riid, long /*int*/ ppvObject) {
-	
+
 	if (riid == 0 || ppvObject == 0)
 		return COM.E_INVALIDARG;
 	GUID guid = new GUID();
@@ -634,14 +634,14 @@ int QueryInterface(long /*int*/ riid, long /*int*/ ppvObject) {
 
 int Release() {
 	refCount--;
-	
+
 	if (refCount == 0) {
 		disposeCOMInterfaces();
 		if (COM.FreeUnusedLibraries) {
 			COM.CoFreeUnusedLibraries();
 		}
 	}
-	
+
 	return refCount;
 }
 
@@ -674,7 +674,7 @@ void refresh() {
  * @see #addDropListener
  * @see #getDropListeners
  */
-public void removeDropListener(DropTargetListener listener) {	
+public void removeDropListener(DropTargetListener listener) {
 	if (listener == null) DND.error (SWT.ERROR_NULL_ARGUMENT);
 	removeListener (DND.DragEnter, listener);
 	removeListener (DND.DragLeave, listener);
@@ -685,28 +685,28 @@ public void removeDropListener(DropTargetListener listener) {
 }
 
 /**
- * Specifies the drop effect for this DropTarget.  This drop effect will be 
- * used during a drag and drop to display the drag under effect on the 
+ * Specifies the drop effect for this DropTarget.  This drop effect will be
+ * used during a drag and drop to display the drag under effect on the
  * target widget.
  *
  * @param effect the drop effect that is registered for this DropTarget
- * 
+ *
  * @since 3.3
  */
 public void setDropTargetEffect(DropTargetEffect effect) {
 	dropEffect = effect;
 }
 
-boolean setEventData(DNDEvent event, long /*int*/ pDataObject, int grfKeyState, int pt_x, int pt_y, long /*int*/ pdwEffect) {	
+boolean setEventData(DNDEvent event, long /*int*/ pDataObject, int grfKeyState, int pt_x, int pt_y, long /*int*/ pdwEffect) {
 	if (pDataObject == 0 || pdwEffect == 0) return false;
-	
+
 	// get allowed operations
 	int style = getStyle();
 	int[] operations = new int[1];
 	OS.MoveMemory(operations, pdwEffect, 4);
 	operations[0] = osToOp(operations[0]) & style;
 	if (operations[0] == DND.DROP_NONE) return false;
-	
+
 	// get current operation
 	int operation = getOperationFromKeyState(grfKeyState);
 	keyOperation = operation;
@@ -717,7 +717,7 @@ boolean setEventData(DNDEvent event, long /*int*/ pDataObject, int grfKeyState, 
 	} else {
 		if ((operation & operations[0]) == 0) operation = DND.DROP_NONE;
 	}
-	
+
 	// Get allowed transfer types
 	TransferData[] dataTypes = new TransferData[0];
 	IDataObject dataObject = new IDataObject(pDataObject);
@@ -761,7 +761,7 @@ boolean setEventData(DNDEvent event, long /*int*/ pDataObject, int grfKeyState, 
 		dataObject.Release();
 	}
 	if (dataTypes.length == 0) return false;
-	
+
 	event.widget = this;
 	event.x = pt_x;
 	event.y = pt_y;
@@ -778,14 +778,14 @@ boolean setEventData(DNDEvent event, long /*int*/ pDataObject, int grfKeyState, 
 }
 
 /**
- * Specifies the data types that can be transferred to this DropTarget.  If data is 
- * being dragged that does not match one of these types, the drop target will be notified of 
- * the drag and drop operation but the currentDataType will be null and the operation 
+ * Specifies the data types that can be transferred to this DropTarget.  If data is
+ * being dragged that does not match one of these types, the drop target will be notified of
+ * the drag and drop operation but the currentDataType will be null and the operation
  * will be DND.NONE.
  *
  * @param transferAgents a list of Transfer objects which define the types of data that can be
  *						 dropped on this target
- * 
+ *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if transferAgents is null</li>
  * </ul>

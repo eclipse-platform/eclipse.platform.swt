@@ -45,7 +45,7 @@ public class TabItem extends Item {
  * <p>
  * The style value is either one of the style constants defined in
  * class <code>SWT</code> which is applicable to instances of this
- * class, or must be built by <em>bitwise OR</em>'ing together 
+ * class, or must be built by <em>bitwise OR</em>'ing together
  * (that is, using the <code>int</code> "|" operator) two or more
  * of those <code>SWT</code> style constants. The class description
  * lists the style constants that are applicable to the class.
@@ -81,7 +81,7 @@ public TabItem (TabFolder parent, int style) {
  * <p>
  * The style value is either one of the style constants defined in
  * class <code>SWT</code> which is applicable to instances of this
- * class, or must be built by <em>bitwise OR</em>'ing together 
+ * class, or must be built by <em>bitwise OR</em>'ing together
  * (that is, using the <code>int</code> "|" operator) two or more
  * of those <code>SWT</code> style constants. The class description
  * lists the style constants that are applicable to the class.
@@ -117,7 +117,7 @@ void _setText (int index, String string) {
 	* items with an image and a label that includes '&' cause
 	* the tab to draw incorrectly (even when doubled '&&').
 	* The image overlaps the label.  The fix is to remove
-	* all '&' characters from the string. 
+	* all '&' characters from the string.
 	*/
 	if (OS.COMCTL32_MAJOR >= 6 && image != null) {
 		if (string.indexOf ('&') != -1) {
@@ -136,7 +136,7 @@ void _setText (int index, String string) {
 	TCHAR buffer = new TCHAR (parent.getCodePage (), string, true);
 	int byteCount = buffer.length () * TCHAR.sizeof;
 	long /*int*/ pszText = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, byteCount);
-	OS.MoveMemory (pszText, buffer, byteCount); 
+	OS.MoveMemory (pszText, buffer, byteCount);
 	TCITEM tcItem = new TCITEM ();
 	tcItem.mask = OS.TCIF_TEXT;
 	tcItem.pszText = pszText;
@@ -182,7 +182,7 @@ public Control getControl () {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 3.4
  */
 public Rectangle getBounds() {
@@ -253,7 +253,7 @@ void releaseWidget () {
  * @param control the new control (or null)
  *
  * @exception IllegalArgumentException <ul>
- *    <li>ERROR_INVALID_ARGUMENT - if the control has been disposed</li> 
+ *    <li>ERROR_INVALID_ARGUMENT - if the control has been disposed</li>
  *    <li>ERROR_INVALID_PARENT - if the control is not in the same widget tree</li>
  * </ul>
  * @exception SWTException <ul>
@@ -328,7 +328,7 @@ public void setImage (Image image) {
  * escaped by doubling it in the string, causing a single
  * '&amp;' to be displayed.
  * </p>
- * 
+ *
  * @param string the new text
  *
  * @exception IllegalArgumentException <ul>
@@ -338,7 +338,7 @@ public void setImage (Image image) {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  */
 @Override
 public void setText (String string) {
@@ -348,7 +348,7 @@ public void setText (String string) {
 	int index = parent.indexOf (this);
 	if (index == -1) return;
 	super.setText (string);
-	/* 
+	/*
 	 * Need to update direction since it is set via UCC which the new text
 	 * overrides
 	 */
@@ -378,17 +378,17 @@ boolean updateTextDirection(int textDirection) {
 
 /**
  * Sets the receiver's tool tip text to the argument, which
- * may be null indicating that the default tool tip for the 
+ * may be null indicating that the default tool tip for the
  * control will be shown. For a control that has a default
  * tool tip, such as the Tree control on Windows, setting
  * the tool tip text to an empty string replaces the default,
  * causing no tool tip text to be shown.
  * <p>
  * The mnemonic indicator (character '&amp;') is not displayed in a tool tip.
- * To display a single '&amp;' in the tool tip, the character '&amp;' can be 
+ * To display a single '&amp;' in the tool tip, the character '&amp;' can be
  * escaped by doubling it in the string.
  * </p>
- * 
+ *
  * @param string the new tool tip text (or null)
  *
  * @exception SWTException <ul>

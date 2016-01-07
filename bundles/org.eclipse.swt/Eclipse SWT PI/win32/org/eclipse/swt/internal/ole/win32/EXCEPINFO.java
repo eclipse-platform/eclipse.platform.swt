@@ -11,15 +11,15 @@
 package org.eclipse.swt.internal.ole.win32;
 
 public final class EXCEPINFO {
-	public short wCode;   
+	public short wCode;
 	public short wReserved;
 	/** @field cast=(BSTR) */
-	public long /*int*/ bstrSource; 
+	public long /*int*/ bstrSource;
 	/** @field cast=(BSTR) */
-	public long /*int*/ bstrDescription; 
+	public long /*int*/ bstrDescription;
 	/** @field cast=(BSTR) */
 	public long /*int*/ bstrHelpFile;
-	public int dwHelpContext; 
+	public int dwHelpContext;
 	/** @field cast=(void FAR *) */
 	public long /*int*/ pvReserved;
 	/** @field cast=(HRESULT (STDAPICALLTYPE FAR* )(struct tagEXCEPINFO FAR*)) */
