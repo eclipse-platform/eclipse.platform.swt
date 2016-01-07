@@ -137,6 +137,7 @@ public void test_addLjava_lang_StringI() {
 public void test_addModifyListenerLorg_eclipse_swt_events_ModifyListener() {
 	boolean exceptionThrown = false;
 	ModifyListener listener = new ModifyListener() {
+		@Override
 		public void modifyText(ModifyEvent event) {
 			listenerCalled = true;
 		}
@@ -199,9 +200,11 @@ public void test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener()
 	listenerCalled = false;
 	boolean exceptionThrown = false;
 	SelectionListener listener = new SelectionListener() {
+		@Override
 		public void widgetSelected(SelectionEvent event) {
 			listenerCalled = true;
 		}
+		@Override
 		public void widgetDefaultSelected(SelectionEvent event) {
 		}
 	};
@@ -990,6 +993,7 @@ public void test_consistency_Segments () {
 		return;
 	}
 	final SegmentListener sl1 = new SegmentListener() {
+		@Override
 		public void getSegments(SegmentEvent event) {
 			if ((event.lineText.length() & 1) == 1) {
 				event.segments = new int [] {1, event.lineText.length()};

@@ -169,10 +169,13 @@ public void run() {
 		tearDown();
 	}
 }
+@Override
 public void textSet(TextChangedEvent event) {
 }
+@Override
 public void textChanged(TextChangedEvent event) {
 }
+@Override
 public void textChanging(TextChangingEvent event) {
 	switch (verify) {
 		case 1 : {

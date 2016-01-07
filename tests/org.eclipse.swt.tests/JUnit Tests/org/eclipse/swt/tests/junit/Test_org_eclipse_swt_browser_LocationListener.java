@@ -31,8 +31,10 @@ public void test_changedLorg_eclipse_swt_browser_LocationEvent() {
 	Shell shell = new Shell(display);
 	Browser browser = new Browser(shell, SWT.NONE);
 	browser.addLocationListener(new LocationListener() {
+		@Override
 		public void changed(LocationEvent event) {
 		}
+		@Override
 		public void changing(LocationEvent event) {
 		}		
 	});

@@ -34,34 +34,45 @@ public class Test_org_eclipse_swt_custom_StyledTextContent {
 	class ContentImplementation implements StyledTextContent {
 		String textContent = "";
 		
+		@Override
 		public void addTextChangeListener(TextChangeListener listener){
 		}
+		@Override
 		public int getCharCount() {
 			return 0;
 		}
+		@Override
 		public String getLine(int lineIndex) {
 			return "getLine";
 		}
+		@Override
 		public int getLineAtOffset(int offset) {
 			return 0;
 		}
+		@Override
 		public int getLineCount() {
 			return 0;
 		}
+		@Override
 		public String getLineDelimiter() {
 			return "getLineDelimiter";
 		}
+		@Override
 		public int getOffsetAtLine(int lineIndex) {
 			return 0;
 		}
+		@Override
 		public String getTextRange(int start, int length) {
 			return textContent;
 		}
+		@Override
 		public void removeTextChangeListener(TextChangeListener listener) {
 		}
+		@Override
 		public void replaceTextRange(int start, int replaceLength, String text) {
 			textContent = text;
 		}
+		@Override
 		public void setText(String text) {
 			textContent = text;
 		}

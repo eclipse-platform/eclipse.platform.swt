@@ -75,6 +75,7 @@ public void test_addCloseWindowListenerLorg_eclipse_swt_browser_CloseWindowListe
 	}
 	
 	CloseWindowListener listener = new CloseWindowListener() {
+		@Override
 		public void close(WindowEvent event) {
 		}
 	};
@@ -93,8 +94,10 @@ public void test_addLocationListenerLorg_eclipse_swt_browser_LocationListener() 
 	}
 	
 	LocationListener listener = new LocationListener() {
+		@Override
 		public void changed(LocationEvent event) {
 		}
+		@Override
 		public void changing(LocationEvent event) {
 		}
 	};
@@ -113,6 +116,7 @@ public void test_addOpenWindowListenerLorg_eclipse_swt_browser_OpenWindowListene
 	}
 	
 	OpenWindowListener listener = new OpenWindowListener() {
+		@Override
 		public void open(WindowEvent event) {
 		}
 	};
@@ -131,8 +135,10 @@ public void test_addProgressListenerLorg_eclipse_swt_browser_ProgressListener() 
 	}
 	
 	ProgressListener listener = new ProgressListener() {
+		@Override
 		public void changed(ProgressEvent event) {
 		}
+		@Override
 		public void completed(ProgressEvent event) {
 		}
 	};
@@ -151,6 +157,7 @@ public void test_addStatusTextListenerLorg_eclipse_swt_browser_StatusTextListene
 	}
 	
 	StatusTextListener listener = new StatusTextListener() {
+		@Override
 		public void changed(StatusTextEvent event) {
 		}
 	};
@@ -169,6 +176,7 @@ public void test_addTitleListenerLorg_eclipse_swt_browser_TitleListener() {
 	}
 	
 	TitleListener listener = new TitleListener() {
+		@Override
 		public void changed(TitleEvent event) {
 		}
 	};
@@ -187,8 +195,10 @@ public void test_addVisibilityWindowListenerLorg_eclipse_swt_browser_VisibilityW
 	}
 	
 	VisibilityWindowListener listener = new VisibilityWindowListener() {
+		@Override
 		public void hide(WindowEvent event) {
 		}
+		@Override
 		public void show(WindowEvent event) {
 		}
 	};
@@ -421,6 +431,7 @@ void runLoopTimer(final int seconds) {
 			Display display = Display.getDefault();
 			if (!display.isDisposed()) {
 				display.asyncExec(new Runnable() {
+					@Override
 					public void run() {
 						if (!shell.isDisposed()) shell.redraw();						
 					}

@@ -42,6 +42,7 @@ public void setUp() {
 public void test_lineGetStyleLorg_eclipse_swt_custom_LineStyleEvent() {
 	styledText.setText("0123456789");
 	LineStyleListener listener = new LineStyleListener() {
+		@Override
 		public void lineGetStyle(LineStyleEvent event) {
 			assertEquals(0, event.lineOffset);
 			assertEquals("0123456789",event.lineText);

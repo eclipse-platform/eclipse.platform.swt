@@ -76,7 +76,7 @@ final static RGB YELLOW = new RGB(255,255,0);
 final static RGB CYAN = new RGB(0,255,255);
 final static RGB PURPLE = new RGB(255,0,255);
 final static String PLATFORM_LINE_DELIMITER = System.getProperty("line.separator");
-Map<RGB, Color> colors = new HashMap<RGB, Color>();
+Map<RGB, Color> colors = new HashMap<>();
 private boolean listenerCalled;	
 private boolean listener2Called;
 
@@ -164,6 +164,7 @@ public void test_addExtendedModifyListenerLorg_eclipse_swt_custom_ExtendedModify
 	final String line = "Line1";
 	boolean exceptionThrown = false;
 	ExtendedModifyListener listener = new ExtendedModifyListener() {
+		@Override
 		public void modifyText(ExtendedModifyEvent event) {
 			listenerCalled = true;
 			assertEquals("ExtendedModify event data invalid", 0, event.start);
@@ -194,6 +195,7 @@ public void test_addExtendedModifyListenerLorg_eclipse_swt_custom_ExtendedModify
 	listenerCalled = false;
 	text.removeExtendedModifyListener(listener);
 	listener = new ExtendedModifyListener() {
+		@Override
 		public void modifyText(ExtendedModifyEvent event) {
 			listenerCalled = true;
 			assertEquals("ExtendedModify event data invalid", 0, event.start);
@@ -208,6 +210,7 @@ public void test_addExtendedModifyListenerLorg_eclipse_swt_custom_ExtendedModify
 	listenerCalled = false;
 	text.removeExtendedModifyListener(listener);
 	listener = new ExtendedModifyListener() {
+		@Override
 		public void modifyText(ExtendedModifyEvent event) {
 			listenerCalled = true;
 			assertEquals("ExtendedModify event data invalid", 0, event.start);
@@ -249,6 +252,7 @@ public void test_addBidiSegmentListenerLorg_eclipse_swt_custom_BidiSegmentListen
 	String line = "Line1";
 	boolean exceptionThrown = false;
 	BidiSegmentListener listener = new BidiSegmentListener() {
+		@Override
 		public void lineGetSegments(BidiSegmentEvent event) {
 			listenerCalled = true;
 		}
@@ -285,6 +289,7 @@ public void test_addLineBackgroundListenerLorg_eclipse_swt_custom_LineBackground
 	String line = "Line1";
 	boolean exceptionThrown = false;
 	LineBackgroundListener listener = new LineBackgroundListener() {
+		@Override
 		public void lineGetBackground(LineBackgroundEvent event) {
 			listenerCalled = true;
 		}
@@ -320,6 +325,7 @@ public void test_addLineStyleListenerLorg_eclipse_swt_custom_LineStyleListener()
 	String line = "Line1";
 	boolean exceptionThrown = false;
 	LineStyleListener listener = new LineStyleListener() {
+		@Override
 		public void lineGetStyle(LineStyleEvent event) {
 			listenerCalled = true;
 		}
@@ -355,6 +361,7 @@ public void test_addModifyListenerLorg_eclipse_swt_events_ModifyListener() {
 	String line = "Line1";
 	boolean exceptionThrown = false;
 	ModifyListener listener = new ModifyListener() {
+		@Override
 		public void modifyText(ModifyEvent event) {
 			listenerCalled = true;
 		}
@@ -399,9 +406,11 @@ public void test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener()
 	String line = "Line1";
 	boolean exceptionThrown = false;
 	SelectionListener listener = new SelectionListener() {
+		@Override
 		public void widgetSelected(SelectionEvent event) {
 			listenerCalled = true;
 		}
+		@Override
 		public void widgetDefaultSelected(SelectionEvent event) {
 			listener2Called = true;
 		}
@@ -437,6 +446,7 @@ public void test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener()
 public void test_addVerifyKeyListenerLorg_eclipse_swt_custom_VerifyKeyListener() {
 	boolean exceptionThrown = false;
 	VerifyKeyListener listener = new VerifyKeyListener() {
+		@Override
 		public void verifyKey(VerifyEvent event) {
 		}
 	};
@@ -462,6 +472,7 @@ public void test_addVerifyListenerLorg_eclipse_swt_events_VerifyListener() {
 	final int textLength;
 	boolean exceptionThrown = false;
 	VerifyListener listener = new VerifyListener() {
+		@Override
 		public void verifyText(VerifyEvent event) {
 			listenerCalled = true;
 			assertEquals("Verify event data invalid", 0, event.start);
@@ -497,6 +508,7 @@ public void test_addVerifyListenerLorg_eclipse_swt_events_VerifyListener() {
 	listenerCalled = false;
 	text.removeVerifyListener(listener);
 	listener = new VerifyListener() {
+		@Override
 		public void verifyText(VerifyEvent event) {
 			listenerCalled = true;
 			assertEquals("Verify event data invalid", 0, event.start);
@@ -516,6 +528,7 @@ public void test_addVerifyListenerLorg_eclipse_swt_events_VerifyListener() {
 	listenerCalled = false;
 	text.removeVerifyListener(listener);
 	listener = new VerifyListener() {
+		@Override
 		public void verifyText(VerifyEvent event) {
 			listenerCalled = true;
 			assertEquals("Verify event data invalid", 0, event.start);
@@ -535,6 +548,7 @@ public void test_addVerifyListenerLorg_eclipse_swt_events_VerifyListener() {
 
 	listenerCalled = false;	
 	listener = new VerifyListener() {
+		@Override
 		public void verifyText(VerifyEvent event) {
 			listenerCalled = true;
 			assertEquals("Verify event data invalid", 2, event.start);
@@ -771,33 +785,44 @@ public void test_getContent() {
 	
 	assertTrue(content != null);
 	content = new StyledTextContent() {
+		@Override
 		public void addTextChangeListener(TextChangeListener listener) {
 		}
+		@Override
 		public int getCharCount() {
 			return 0;
 		}
+		@Override
 		public String getLine(int lineIndex) {
 			return "";
 		}
+		@Override
 		public int getLineAtOffset(int offset) {
 			return 0;
 		}
+		@Override
 		public int getLineCount() {
 			return 0;
 		}
+		@Override
 		public String getLineDelimiter() {
 			return "";
 		}
+		@Override
 		public int getOffsetAtLine(int lineIndex) {
 			return 0;
 		}		
+		@Override
 		public String getTextRange(int start, int length) {
 			return "";
 		}
+		@Override
 		public void removeTextChangeListener(TextChangeListener listener) {
 		}
+		@Override
 		public void replaceTextRange(int start, int replaceLength, String text) {
 		}
+		@Override
 		public void setText(String text) {
 		}
 	};
@@ -983,33 +1008,44 @@ public void test_getLineDelimiter() {
 	assertEquals(content.getLineDelimiter(), text.getLineDelimiter());
 
 	content = new StyledTextContent() {
+		@Override
 		public void addTextChangeListener(TextChangeListener listener) {
 		}
+		@Override
 		public int getCharCount() {
 			return 0;
 		}
+		@Override
 		public String getLine(int lineIndex) {
 			return "";
 		}
+		@Override
 		public int getLineAtOffset(int offset) {
 			return 0;
 		}
+		@Override
 		public int getLineCount() {
 			return 0;
 		}
+		@Override
 		public String getLineDelimiter() {
 			return lineDelimiter;
 		}
+		@Override
 		public int getOffsetAtLine(int lineIndex) {
 			return 0;
 		}		
+		@Override
 		public String getTextRange(int start, int length) {
 			return "";
 		}
+		@Override
 		public void removeTextChangeListener(TextChangeListener listener) {
 		}
+		@Override
 		public void replaceTextRange(int start, int replaceLength, String text) {
 		}
+		@Override
 		public void setText(String text) {
 		}
 	};
@@ -3172,33 +3208,44 @@ public void test_setCaretOffsetI(){
 public void test_setContentLorg_eclipse_swt_custom_StyledTextContent() {
 	boolean exceptionThrown;
 	StyledTextContent content = new StyledTextContent() {
+		@Override
 		public void addTextChangeListener(TextChangeListener listener) {
 		}
+		@Override
 		public int getCharCount() {
 			return 0;
 		}
+		@Override
 		public String getLine(int lineIndex) {
 			return "";
 		}
+		@Override
 		public int getLineAtOffset(int offset) {
 			return 0;
 		}
+		@Override
 		public int getLineCount() {
 			return 0;
 		}
+		@Override
 		public String getLineDelimiter() {
 			return "";
 		}
+		@Override
 		public int getOffsetAtLine(int lineIndex) {
 			return 0;
 		}		
+		@Override
 		public String getTextRange(int start, int length) {
 			return "";
 		}
+		@Override
 		public void removeTextChangeListener(TextChangeListener listener) {
 		}
+		@Override
 		public void replaceTextRange(int start, int replaceLength, String text) {
 		}
+		@Override
 		public void setText(String text) {
 		}
 	};
@@ -4644,6 +4691,7 @@ protected void rtfCopy() {
 	String lines = "Line0\nLine1\nLine2\nLine3\nLine4\nLine5";
 	final int[] linesCalled = new int[] {0};
 	LineStyleListener listener = new LineStyleListener() {
+		@Override
 		public void lineGetStyle(LineStyleEvent event) {
 			Display display = Display.getDefault();
 			Color red = display.getSystemColor(SWT.COLOR_RED);

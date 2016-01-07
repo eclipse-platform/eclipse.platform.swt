@@ -180,34 +180,34 @@ private void createToolBar(List<String> events) {
 
 @Test
 public void test_consistency_MouseSelection() {
-    List<String> events = new ArrayList<String>();
+    List<String> events = new ArrayList<>();
     createToolBar(events);
     consistencyEvent(30, 10, 1, 0, ConsistencyUtility.MOUSE_CLICK, events);
 }
 
 @Test
 public void test_consistency_EnterSelection () {
-    List<String> events = new ArrayList<String>();
+    List<String> events = new ArrayList<>();
     createToolBar(events);
     consistencyEvent(13, 10, 0, 0, ConsistencyUtility.KEY_PRESS, events);
 }
 
 @Test
 public void test_consistency_SpaceSelection () {
-    List<String> events = new ArrayList<String>();
+    List<String> events = new ArrayList<>();
     createToolBar(events);
     consistencyEvent(' ', 32, 0, 0, ConsistencyUtility.KEY_PRESS, events);
 }
 
 @Test
 public void test_consistency_MenuDetect () {
-    List<String> events = new ArrayList<String>();
+    List<String> events = new ArrayList<>();
     createToolBar(events);
     consistencyEvent(50, 15, 3, 0, ConsistencyUtility.MOUSE_CLICK, events);
 }
 @Test
 public void test_consistency_DragDetect () {
-    List<String> events = new ArrayList<String>();
+    List<String> events = new ArrayList<>();
     createToolBar(events);
     consistencyEvent(30, 20, 50, 20, ConsistencyUtility.MOUSE_DRAG, events);
 }

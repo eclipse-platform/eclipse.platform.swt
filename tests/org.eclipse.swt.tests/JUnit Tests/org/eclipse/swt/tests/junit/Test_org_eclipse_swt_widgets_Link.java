@@ -62,9 +62,11 @@ public void test_ConstructorLorg_eclipse_swt_widgets_CompositeI() {
 public void test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener() {
 	listenerCalled = false;
 	SelectionListener listener = new SelectionListener() {
+		@Override
 		public void widgetSelected(SelectionEvent e) {
 			listenerCalled = true;
 		}
+		@Override
 		public void widgetDefaultSelected(SelectionEvent e) {
 		}
 	};

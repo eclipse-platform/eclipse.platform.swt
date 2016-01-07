@@ -31,6 +31,7 @@ public void test_changedLorg_eclipse_swt_browser_TitleEvent() {
 	Shell shell = new Shell(display);
 	Browser browser = new Browser(shell, SWT.NONE);
 	browser.addTitleListener(new TitleListener() {
+		@Override
 		public void changed(TitleEvent event) {
 		}
 	});

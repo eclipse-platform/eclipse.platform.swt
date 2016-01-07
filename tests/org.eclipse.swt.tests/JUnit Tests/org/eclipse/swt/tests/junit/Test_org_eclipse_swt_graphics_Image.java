@@ -47,6 +47,7 @@ import org.junit.Test;
  */
 public class Test_org_eclipse_swt_graphics_Image {
 ImageFileNameProvider imageFileNameProvider = new ImageFileNameProvider() {
+	@Override
 	public String getImagePath(int zoom) {
 		String fileName;
 		switch (zoom) {
@@ -66,6 +67,7 @@ ImageFileNameProvider imageFileNameProvider = new ImageFileNameProvider() {
 	}
 };
 ImageDataProvider imageDataProvider = new ImageDataProvider() {
+	@Override
 	public ImageData getImageData(int zoom) {
 		String fileName;
 		switch (zoom) {
@@ -482,6 +484,7 @@ public void test_ConstructorLorg_eclipse_swt_graphics_Device_ImageFileNameProvid
 	}
 	// Invalid provider
 	provider = new ImageFileNameProvider() {
+		@Override
 		public String getImagePath(int zoom) {
 			return null;
 		}
@@ -498,6 +501,7 @@ public void test_ConstructorLorg_eclipse_swt_graphics_Device_ImageFileNameProvid
 	image.dispose();
 	// Corrupt Image provider
 	provider = new ImageFileNameProvider() {
+		@Override
 		public String getImagePath(int zoom) {
 			String fileName;
 			switch (zoom) {
@@ -522,6 +526,7 @@ public void test_ConstructorLorg_eclipse_swt_graphics_Device_ImageFileNameProvid
 	}		
 	// Valid provider only 100% zoom
 	provider = new ImageFileNameProvider() {
+		@Override
 		public String getImagePath(int zoom) {
 			String fileName;
 			switch (zoom) {
@@ -553,6 +558,7 @@ public void test_ConstructorLorg_eclipse_swt_graphics_Device_ImageDataProvider()
 	}
 	// Invalid provider
 	provider = new ImageDataProvider() {
+		@Override
 		public ImageData getImageData(int zoom) {
 			return null;
 		}
@@ -569,6 +575,7 @@ public void test_ConstructorLorg_eclipse_swt_graphics_Device_ImageDataProvider()
 	image.dispose();
 	// Corrupt Image provider
 	provider = new ImageDataProvider() {
+		@Override
 		public ImageData getImageData(int zoom) {
 			String fileName;
 			switch (zoom) {
@@ -593,6 +600,7 @@ public void test_ConstructorLorg_eclipse_swt_graphics_Device_ImageDataProvider()
 	}
 	// Valid provider only 100% zoom
 	provider = new ImageDataProvider() {
+		@Override
 		public ImageData getImageData(int zoom) {
 			String fileName;
 			switch (zoom) {

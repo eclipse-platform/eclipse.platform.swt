@@ -48,6 +48,7 @@ public void tearDown() {
 private void testListener(final String message, final int[] segments, boolean exceptionExpected) {
 	boolean exceptionThrown = false;
 	BidiSegmentListener listener = new BidiSegmentListener() {
+		@Override
 		public void lineGetSegments(BidiSegmentEvent event) {
 			assertEquals(message + " incorrect BidiSegmentEvent", 0, event.lineOffset);
 			assertEquals(message + " incorrect BidiSegmentEvent", line, event.lineText);
@@ -84,6 +85,7 @@ private void testListener(final String message, final int[] segments, boolean ex
 private void testStyleRangeSegmenting(final int[] segments, int[] boldRanges) {
 	boolean exceptionThrown = false;
 	BidiSegmentListener listener = new BidiSegmentListener() {
+		@Override
 		public void lineGetSegments(BidiSegmentEvent event) {
 			assertEquals(" incorrect BidiSegmentEvent", 0, event.lineOffset);
 			assertEquals(" incorrect BidiSegmentEvent", line, event.lineText);

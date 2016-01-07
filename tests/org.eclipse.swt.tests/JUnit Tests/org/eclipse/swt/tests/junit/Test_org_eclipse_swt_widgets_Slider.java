@@ -60,9 +60,11 @@ public void test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener()
 	listenerCalled = false;
 	boolean exceptionThrown = false;
 	SelectionListener listener = new SelectionListener() {
+		@Override
 		public void widgetSelected(SelectionEvent event) {
 			listenerCalled = true;
 		}
+		@Override
 		public void widgetDefaultSelected(SelectionEvent event) {
 		}
 	};

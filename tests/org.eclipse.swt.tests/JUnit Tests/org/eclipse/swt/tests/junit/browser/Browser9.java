@@ -10,10 +10,15 @@
  *******************************************************************************/
 package org.eclipse.swt.tests.junit.browser;
 
-import org.eclipse.swt.widgets.*;
-import org.eclipse.swt.layout.*;
-import org.eclipse.swt.browser.*;
-import org.eclipse.swt.*;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.browser.Browser;
+import org.eclipse.swt.browser.ProgressEvent;
+import org.eclipse.swt.browser.ProgressListener;
+import org.eclipse.swt.browser.StatusTextEvent;
+import org.eclipse.swt.browser.StatusTextListener;
+import org.eclipse.swt.layout.FillLayout;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Shell;
 
 public class Browser9 {
 	public static boolean verbose = false;
@@ -32,12 +37,15 @@ public class Browser9 {
 		shell.setLayout(new FillLayout());
 		final Browser browser = new Browser(shell, SWT.NONE);
 		browser.addStatusTextListener(new StatusTextListener() {
+			@Override
 			public void changed(StatusTextEvent event) {
 				browser.setData("query", event.text);
 		}});
 		browser.addProgressListener(new ProgressListener() {
+			@Override
 			public void changed(ProgressEvent event) {
 			}
+			@Override
 			public void completed(ProgressEvent event) {
 				boolean result = browser.execute(script);
 				if (!result) {
@@ -79,6 +87,7 @@ public class Browser9 {
 				/* wake up the event loop */
 				if (!display.isDisposed()) {
 					display.asyncExec(new Runnable() {
+						@Override
 						public void run() {
 							if (!shell.isDisposed()) shell.redraw();						
 						}

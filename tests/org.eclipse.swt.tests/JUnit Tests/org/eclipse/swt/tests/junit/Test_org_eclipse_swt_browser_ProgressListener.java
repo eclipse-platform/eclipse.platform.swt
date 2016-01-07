@@ -31,8 +31,10 @@ public void test_changedLorg_eclipse_swt_browser_ProgressEvent() {
 	Shell shell = new Shell(display);
 	Browser browser = new Browser(shell, SWT.NONE);
 	browser.addProgressListener(new ProgressListener() {
+		@Override
 		public void changed(ProgressEvent event) {
 		}
+		@Override
 		public void completed(ProgressEvent event) {
 		}
 	});

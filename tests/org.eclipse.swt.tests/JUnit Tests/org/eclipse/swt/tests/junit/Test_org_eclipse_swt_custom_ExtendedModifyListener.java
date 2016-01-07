@@ -42,6 +42,7 @@ public void setUp() {
 @Test
 public void test_modifyTextLorg_eclipse_swt_custom_ExtendedModifyEvent() {
 	ExtendedModifyListener listener = new ExtendedModifyListener() {
+		@Override
 		public void modifyText(ExtendedModifyEvent event) {
 			switch(verify) {
 				case 1 : {

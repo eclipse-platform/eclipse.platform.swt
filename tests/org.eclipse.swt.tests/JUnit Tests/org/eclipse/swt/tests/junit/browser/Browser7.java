@@ -10,11 +10,16 @@
  *******************************************************************************/
 package org.eclipse.swt.tests.junit.browser;
 
-import org.eclipse.swt.widgets.*;
-import org.eclipse.swt.layout.*;
-import org.eclipse.swt.browser.*;
-import org.eclipse.swt.*;
-import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.browser.Browser;
+import org.eclipse.swt.browser.CloseWindowListener;
+import org.eclipse.swt.browser.OpenWindowListener;
+import org.eclipse.swt.browser.VisibilityWindowListener;
+import org.eclipse.swt.browser.WindowEvent;
+import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.layout.FillLayout;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Shell;
 
 public class Browser7 {
 	public static boolean verbose = false;
@@ -51,6 +56,7 @@ public class Browser7 {
 
 	static void initialize(final Display display, Browser browser) {
 		browser.addOpenWindowListener(new OpenWindowListener() {
+			@Override
 			public void open(WindowEvent event) {
 				if (verbose) System.out.println("VisibilityWindowListener.open");
 				Shell shell = new Shell(display);
@@ -63,11 +69,13 @@ public class Browser7 {
 			}
 		});
 		browser.addVisibilityWindowListener(new VisibilityWindowListener() {
+			@Override
 			public void hide(WindowEvent event) {
 				Browser browser = (Browser)event.widget;
 				Shell shell = browser.getShell();
 				shell.setVisible(false);
 			}
+			@Override
 			public void show(WindowEvent event) {
 				if (verbose) System.out.println("VisibilityWindowListener.show location="+event.location+" size="+event.size+" addressBar="+event.addressBar+" menuBar="+event.menuBar+" statusBar="+event.statusBar+" toolBar="+event.toolBar);
 				Browser browser = (Browser)event.widget;
@@ -82,6 +90,7 @@ public class Browser7 {
 			}
 		});
 		browser.addCloseWindowListener(new CloseWindowListener() {
+			@Override
 			public void close(WindowEvent event) {
 				Browser browser = (Browser)event.widget;
 				Shell shell = browser.getShell();
@@ -106,6 +115,7 @@ public class Browser7 {
 				/* wake up the event loop */
 				if (!display.isDisposed()) {
 					display.asyncExec(new Runnable() {
+						@Override
 						public void run() {
 							if (!shell.isDisposed()) shell.redraw();						
 						}

@@ -260,28 +260,28 @@ private void createTableTree(List<String> events, boolean traverse) {
 
 @Test
 public void test_consistency_KeySelection() {
-    List<String> events = new ArrayList<String>();
+    List<String> events = new ArrayList<>();
     createTableTree(events, true);
     consistencyEvent(0, SWT.ARROW_DOWN, 0, 0, ConsistencyUtility.KEY_PRESS, events);
 }
 
 @Test
 public void test_consistency_MouseSelection() {
-    List<String> events = new ArrayList<String>();
+    List<String> events = new ArrayList<>();
     createTableTree(events, true);
     consistencyEvent(30, 30, 1, 0, ConsistencyUtility.MOUSE_CLICK, events);
 }
 
 @Test
 public void test_consistency_MouseExpand() {
-    List<String> events = new ArrayList<String>();
+    List<String> events = new ArrayList<>();
     createTableTree(events, true);
     consistencyEvent(11, 10, 1, 0, ConsistencyUtility.MOUSE_CLICK, events);
 }
 
 @Test
 public void test_consistency_KeyExpand() {
-    List<String> events = new ArrayList<String>();
+    List<String> events = new ArrayList<>();
     createTableTree(events, true);
     tableTree.setSelection(new TableTreeItem[] { tableTree.getItems()[0]});
     int code=SWT.ARROW_RIGHT;
@@ -292,7 +292,7 @@ public void test_consistency_KeyExpand() {
 
 @Test
 public void test_consistency_DoubleClick () {
-    List<String> events = new ArrayList<String>();
+    List<String> events = new ArrayList<>();
     createTableTree(events, true);
     consistencyPrePackShell();
     consistencyEvent(20, tableTree.getItemHeight()*2, 1, 0, 
@@ -301,28 +301,28 @@ public void test_consistency_DoubleClick () {
 
 @Test
 public void test_consistency_EnterSelection () {
-    List<String> events = new ArrayList<String>();
+    List<String> events = new ArrayList<>();
     createTableTree(events, false);
     consistencyEvent(13, 10, 0, 0, ConsistencyUtility.KEY_PRESS, events);
 }
 
 @Test
 public void test_consistency_SpaceSelection () {
-    List<String> events = new ArrayList<String>();
+    List<String> events = new ArrayList<>();
     createTableTree(events, true);
     consistencyEvent(' ', 32, 0, 0, ConsistencyUtility.KEY_PRESS, events);
 }
 
 @Test
 public void test_consistency_MenuDetect () {
-    List<String> events = new ArrayList<String>();
+    List<String> events = new ArrayList<>();
     createTableTree(events, true);
     consistencyEvent(50, 25, 3, 0, ConsistencyUtility.MOUSE_CLICK, events);
 }
 
 @Test
 public void test_consistency_DragDetect () {
-    List<String> events = new ArrayList<String>();
+    List<String> events = new ArrayList<>();
     createTableTree(events, true);
     consistencyEvent(30, 20, 50, 30, ConsistencyUtility.MOUSE_DRAG, events);
 }

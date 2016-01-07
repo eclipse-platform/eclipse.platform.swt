@@ -10,10 +10,18 @@
  *******************************************************************************/
 package org.eclipse.swt.tests.junit.browser;
 
-import org.eclipse.swt.widgets.*;
-import org.eclipse.swt.layout.*;
-import org.eclipse.swt.browser.*;
-import org.eclipse.swt.*;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.browser.Browser;
+import org.eclipse.swt.browser.LocationEvent;
+import org.eclipse.swt.browser.LocationListener;
+import org.eclipse.swt.browser.OpenWindowListener;
+import org.eclipse.swt.browser.ProgressEvent;
+import org.eclipse.swt.browser.ProgressListener;
+import org.eclipse.swt.browser.VisibilityWindowListener;
+import org.eclipse.swt.browser.WindowEvent;
+import org.eclipse.swt.layout.FillLayout;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Shell;
 
 public class Browser3 {
 	public static boolean verbose = false;
@@ -33,6 +41,7 @@ public class Browser3 {
 		shell2.setLayout(new FillLayout());
 		final Browser browser2 = new Browser(shell2, SWT.NONE);
 		browser1.addOpenWindowListener(new OpenWindowListener() {
+			@Override
 			public void open(WindowEvent event) {
 				openWindow = true;
 				Browser src = (Browser)event.widget;
@@ -52,6 +61,7 @@ public class Browser3 {
 			}
 		});
 		browser2.addLocationListener(new LocationListener() {
+			@Override
 			public void changed(LocationEvent event) {
 				if (!openWindow || !locationChanging) {
 					if (verbose) System.out.println("Failure - LocationEvent.changing received at wrong time");
@@ -61,6 +71,7 @@ public class Browser3 {
 				}
 				locationChanged = true;
 			}
+			@Override
 			public void changing(LocationEvent event) {
 				if (!openWindow) {
 					if (verbose) System.out.println("Failure - LocationEvent.changing received at wrong time");
@@ -72,11 +83,13 @@ public class Browser3 {
 			}
 		});
 		browser2.addVisibilityWindowListener(new VisibilityWindowListener() {
+			@Override
 			public void hide(WindowEvent event) {
 				if (verbose) System.out.println("Failure - did not expect VisibilityEvent.hide");
 				passed = false;
 				shell.close();
 			}
+			@Override
 			public void show(WindowEvent event) {
 				if (!openWindow) {
 					if (verbose) System.out.println("Failure - VisibilityEvent.show received at wrong time");
@@ -88,9 +101,11 @@ public class Browser3 {
 			}
 		});
 		browser2.addProgressListener(new ProgressListener() {
+			@Override
 			public void changed(ProgressEvent event) {
 			}
 
+			@Override
 			public void completed(ProgressEvent event) {
 				new Thread() {
 					@Override
@@ -100,6 +115,7 @@ public class Browser3 {
 						passed = true;
 						if (!display.isDisposed())
 							display.asyncExec(new Runnable(){
+								@Override
 								public void run() {
 									if (verbose) System.out.println("timer asyncexec shell.close");
 									if (!shell.isDisposed()) shell.close();							
@@ -136,6 +152,7 @@ public class Browser3 {
 				/* wake up the event loop */
 				if (!display.isDisposed()) {
 					display.asyncExec(new Runnable() {
+						@Override
 						public void run() {
 							if (!shell.isDisposed()) shell.redraw();						
 						}

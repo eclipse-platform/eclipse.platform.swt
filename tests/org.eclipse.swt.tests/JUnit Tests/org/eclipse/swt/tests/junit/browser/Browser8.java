@@ -40,8 +40,10 @@ public class Browser8 {
 		shell.setLayout(new FillLayout());
 		final Browser browser = new Browser(shell, SWT.NONE);
 		browser.addProgressListener(new ProgressListener() {
+			@Override
 			public void changed(ProgressEvent event) {
 			}
+			@Override
 			public void completed(ProgressEvent event) {
 				passed = browser.execute(script[index]);
 			}
@@ -71,6 +73,7 @@ public class Browser8 {
 				/* wake up the event loop */
 				if (!display.isDisposed()) {
 					display.asyncExec(new Runnable() {
+						@Override
 						public void run() {
 							if (!shell.isDisposed()) shell.redraw();						
 						}

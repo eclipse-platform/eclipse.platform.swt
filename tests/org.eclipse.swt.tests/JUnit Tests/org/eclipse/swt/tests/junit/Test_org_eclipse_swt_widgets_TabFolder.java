@@ -65,7 +65,7 @@ public void test_computeTrimIIII() {
 
 @Test
 public void test_TabFolder_getChildren() {
-	ArrayList<Control> children = new ArrayList<Control>();
+	ArrayList<Control> children = new ArrayList<>();
 	for (int i = 0; i < 6; i++) {
 		TabItem item = new TabItem(tabFolder, SWT.NONE);
 		item.setText("TabItem " + i);
@@ -427,14 +427,14 @@ private void createTabFolder(List<String> events) {
 
 @Test
 public void test_consistency_KeySelection() {
-    List<String> events = new ArrayList<String>();
+    List<String> events = new ArrayList<>();
     createTabFolder(events);
     consistencyEvent(0, SWT.ARROW_RIGHT, 0, 0, ConsistencyUtility.KEY_PRESS, events, false);
 }
 
 @Test
 public void test_consistency_MouseSelection() {
-    List<String> events = new ArrayList<String>();
+    List<String> events = new ArrayList<>();
     createTabFolder(events);
     consistencyPrePackShell();
     consistencyEvent(tabFolder.getSize().x/2, 5, 1, 0, ConsistencyUtility.MOUSE_CLICK, events);
@@ -442,14 +442,14 @@ public void test_consistency_MouseSelection() {
 
 @Test
 public void test_consistency_PgdwnSelection () {
-    List<String> events = new ArrayList<String>();
+    List<String> events = new ArrayList<>();
     createTabFolder(events);
     consistencyEvent(0, SWT.CTRL, 0, SWT.PAGE_DOWN, ConsistencyUtility.DOUBLE_KEY_PRESS, events, false);
 }
 
 @Test
 public void test_consistency_PgupSelection () {
-    List<String> events = new ArrayList<String>();
+    List<String> events = new ArrayList<>();
     createTabFolder(events);
     tabFolder.setSelection(2);
     consistencyEvent(0, SWT.CTRL, 0, SWT.PAGE_UP, ConsistencyUtility.DOUBLE_KEY_PRESS, events, false);
@@ -457,7 +457,7 @@ public void test_consistency_PgupSelection () {
 
 @Test
 public void test_consistency_MenuDetect () {
-    List<String> events = new ArrayList<String>();
+    List<String> events = new ArrayList<>();
     createTabFolder(events);
     tabFolder.setSelection(1);
     consistencyEvent(50, 5, 3, 0, ConsistencyUtility.MOUSE_CLICK, events);
@@ -465,7 +465,7 @@ public void test_consistency_MenuDetect () {
 
 @Test
 public void test_consistency_DragDetect () {
-    List<String> events = new ArrayList<String>();
+    List<String> events = new ArrayList<>();
     createTabFolder(events);
     tabFolder.setSelection(1);
     consistencyEvent(50, 5, 70, 10, ConsistencyUtility.MOUSE_DRAG, events);

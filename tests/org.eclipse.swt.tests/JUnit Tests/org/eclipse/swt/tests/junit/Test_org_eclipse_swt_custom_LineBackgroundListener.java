@@ -41,6 +41,7 @@ public void setUp() {
 @Test
 public void test_lineGetBackgroundLorg_eclipse_swt_custom_LineBackgroundEvent() {
 	LineBackgroundListener listener = new LineBackgroundListener() {
+		@Override
 		public void lineGetBackground(LineBackgroundEvent event) {
 			assertTrue(":1:", event.lineOffset==0);
 			assertTrue(":2:",event.lineText.equals("0123456789"));

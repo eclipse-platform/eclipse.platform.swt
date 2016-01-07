@@ -31,6 +31,7 @@ public void test_changedLorg_eclipse_swt_browser_StatusTextEvent() {
 	Shell shell = new Shell(display);
 	Browser browser = new Browser(shell, SWT.NONE);
 	browser.addStatusTextListener(new StatusTextListener() {
+		@Override
 		public void changed(StatusTextEvent event) {
 		}
 	});

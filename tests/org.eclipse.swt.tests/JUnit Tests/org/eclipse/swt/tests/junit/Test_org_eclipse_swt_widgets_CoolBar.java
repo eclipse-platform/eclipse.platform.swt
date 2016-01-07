@@ -94,7 +94,7 @@ private void createCoolBar(List<String> events) {
 
 @Test
 public void test_consistency_ChevronMenuDetect () {
-    List<String> events = new ArrayList<String>();
+    List<String> events = new ArrayList<>();
     createCoolBar(events);
     consistencyPrePackShell();
     Point[] points = coolBar.getItemSizes();
@@ -104,7 +104,7 @@ public void test_consistency_ChevronMenuDetect () {
 
 @Test
 public void test_consistency_MenuDetect () {
-    List<String> events = new ArrayList<String>();
+    List<String> events = new ArrayList<>();
     createCoolBar(events);
     consistencyPrePackShell();
     Point[] points = coolBar.getItemSizes();
@@ -113,7 +113,7 @@ public void test_consistency_MenuDetect () {
 
 @Test
 public void test_consistency_ChevronDragDetect () {
-    List<String> events = new ArrayList<String>();
+    List<String> events = new ArrayList<>();
     createCoolBar(events);
     consistencyPrePackShell();
     Point[] points = coolBar.getItemSizes();
@@ -122,7 +122,7 @@ public void test_consistency_ChevronDragDetect () {
 
 @Test
 public void test_consistency_DragDetect () {
-    List<String> events = new ArrayList<String>();
+    List<String> events = new ArrayList<>();
     createCoolBar(events);
     consistencyPrePackShell();
     Point[] points = coolBar.getItemSizes();
@@ -131,7 +131,7 @@ public void test_consistency_DragDetect () {
 
 @Test
 public void test_consistency_ChevronMouseSelection() {
-    List<String> events = new ArrayList<String>();
+    List<String> events = new ArrayList<>();
     createCoolBar(events);
     consistencyPrePackShell();
     Point[] points = coolBar.getItemSizes();

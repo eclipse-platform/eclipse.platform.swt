@@ -38,7 +38,7 @@ public class Test_org_eclipse_swt_custom_StyleRange {
 	final static RGB RED = new RGB(255,0,0);
 	final static RGB BLUE = new RGB(0,0,255);
 	final static RGB GREEN = new RGB(0,255,0);
-	Map<RGB, Color> colors = new HashMap<RGB, Color>();
+	Map<RGB, Color> colors = new HashMap<>();
 private Color getColor(RGB rgb) {
 	return colors.get(rgb);
 }
@@ -119,7 +119,7 @@ public void test_equalsLjava_lang_Object() {
 
 @Test
 public void test_hashCode() {
-	Set<StyleRange> set = new HashSet<StyleRange>();
+	Set<StyleRange> set = new HashSet<>();
 	Color testColor = new Color(Display.getDefault(), 0, 0, 0);
 	
 	//regression test for bug 30924

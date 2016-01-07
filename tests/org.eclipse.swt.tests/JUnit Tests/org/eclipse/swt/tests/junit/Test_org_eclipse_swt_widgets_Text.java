@@ -68,6 +68,7 @@ public void test_ConstructorLorg_eclipse_swt_widgets_CompositeI() {
 public void test_addModifyListenerLorg_eclipse_swt_events_ModifyListener() {
 	boolean exceptionThrown = false;
 	ModifyListener listener = new ModifyListener() {
+		@Override
 		public void modifyText(ModifyEvent event) {
 			listenerCalled = true;
 		}
@@ -106,9 +107,11 @@ public void test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener()
 	boolean exceptionThrown = false;
 	listenerCalled = false;
 	SelectionListener listener = new SelectionListener() {
+		@Override
 		public void widgetSelected(SelectionEvent event) {
 			listenerCalled = true;
 		}
+		@Override
 		public void widgetDefaultSelected(SelectionEvent event) {
 		}
 	};
@@ -152,6 +155,7 @@ public void test_addVerifyListenerLorg_eclipse_swt_events_VerifyListener() {
 	
 	// test append case
 	VerifyListener listener = new VerifyListener() {
+		@Override
 		public void verifyText(VerifyEvent event) {
 			listenerCalled = true;
 			assertEquals("Verify event data invalid", 0, event.start);
@@ -169,6 +173,7 @@ public void test_addVerifyListenerLorg_eclipse_swt_events_VerifyListener() {
 
 	// test insert case
 	listener = new VerifyListener() {
+		@Override
 		public void verifyText(VerifyEvent event) {
 			listenerCalled = true;
 			assertEquals("Verify event data invalid", 8, event.start);
@@ -186,6 +191,7 @@ public void test_addVerifyListenerLorg_eclipse_swt_events_VerifyListener() {
 
 	// test setText case
 	listener = new VerifyListener() {
+		@Override
 		public void verifyText(VerifyEvent event) {
 			listenerCalled = true;
 			assertEquals("Verify event data invalid", 0, event.start);
@@ -1498,6 +1504,7 @@ public void test_consistency_Segments () {
 		return;
 	}
 	final SegmentListener sl1 = new SegmentListener() {
+		@Override
 		public void getSegments(SegmentEvent event) {
 			if ((event.lineText.length() & 1) == 1) {
 				event.segments = new int [] {1, event.lineText.length()};

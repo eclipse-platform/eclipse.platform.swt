@@ -148,7 +148,7 @@ public void test_getPrograms() {
 	
 	assertNotNull(programs);
 	
-	Map<Integer, Program> lookup = new HashMap<Integer, Program>();
+	Map<Integer, Program> lookup = new HashMap<>();
 	for (int i=0; i<programs.length; i++) {
 		
 		// test non-null entry

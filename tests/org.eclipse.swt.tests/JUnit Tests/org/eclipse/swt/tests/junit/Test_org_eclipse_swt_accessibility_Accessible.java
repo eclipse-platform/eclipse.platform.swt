@@ -49,26 +49,37 @@ public void tearDown() {
 @Test
 public void test_addAccessibleControlListenerLorg_eclipse_swt_accessibility_AccessibleControlListener() {
 	AccessibleControlListener listener = new AccessibleControlListener() {
+		@Override
 		public void getValue(AccessibleControlEvent e) {
 		}
+		@Override
 		public void getChild(AccessibleControlEvent e) {
 		}
+		@Override
 		public void getChildAtPoint(AccessibleControlEvent e) {
 		}
+		@Override
 		public void getChildCount(AccessibleControlEvent e) {
 		}
+		@Override
 		public void getChildren(AccessibleControlEvent e) {
 		}
+		@Override
 		public void getDefaultAction(AccessibleControlEvent e) {
 		}
+		@Override
 		public void getFocus(AccessibleControlEvent e) {
 		}
+		@Override
 		public void getLocation(AccessibleControlEvent e) {
 		}
+		@Override
 		public void getRole(AccessibleControlEvent e) {
 		}
+		@Override
 		public void getSelection(AccessibleControlEvent e) {
 		}
+		@Override
 		public void getState(AccessibleControlEvent e) {
 		}
 	};
@@ -79,12 +90,16 @@ public void test_addAccessibleControlListenerLorg_eclipse_swt_accessibility_Acce
 @Test
 public void test_addAccessibleListenerLorg_eclipse_swt_accessibility_AccessibleListener() {
 	AccessibleListener listener = new AccessibleListener() {
+		@Override
 		public void getName(AccessibleEvent e) {
 		}
+		@Override
 		public void getDescription(AccessibleEvent e) {
 		}
+		@Override
 		public void getHelp(AccessibleEvent e) {
 		}
+		@Override
 		public void getKeyboardShortcut(AccessibleEvent e) {
 		}
 	};
@@ -95,8 +110,10 @@ public void test_addAccessibleListenerLorg_eclipse_swt_accessibility_AccessibleL
 @Test
 public void test_addAccessibleTextListenerLorg_eclipse_swt_accessibility_AccessibleTextListener() {
 	AccessibleTextListener listener = new AccessibleTextListener() {
+		@Override
 		public void getSelectionRange(AccessibleTextEvent e) {
 		}
+		@Override
 		public void getCaretOffset(AccessibleTextEvent e) {
 		}
 	};

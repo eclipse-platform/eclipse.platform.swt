@@ -44,6 +44,7 @@ public void setUp() {
 public void test_textChangedLorg_eclipse_swt_custom_TextChangedEvent() {
 	StyledTextContent content = styledText.getContent();
 	TextChangeListener listener = new TextChangeListener() {
+		@Override
 		public void textChanged(TextChangedEvent event) {
 			switch (verify) {
 				case 1 : {
@@ -128,8 +129,10 @@ public void test_textChangedLorg_eclipse_swt_custom_TextChangedEvent() {
 				}
 			}
 		}
+		@Override
 		public void textChanging(TextChangingEvent event) {
 		}
+		@Override
 		public void textSet(TextChangedEvent event) {
 		}
 	};
@@ -277,6 +280,7 @@ public void test_textChangedLorg_eclipse_swt_custom_TextChangedEvent() {
 public void test_textChangingLorg_eclipse_swt_custom_TextChangingEvent() {
 	StyledTextContent content = styledText.getContent();
 	TextChangeListener listener = new TextChangeListener() {
+		@Override
 		public void textChanging(TextChangingEvent event) {
 			switch(verify) {
 				case 1 : {
@@ -374,8 +378,10 @@ public void test_textChangingLorg_eclipse_swt_custom_TextChangingEvent() {
 				}
 			}
 		}
+		@Override
 		public void textChanged(TextChangedEvent event) {
 		}
+		@Override
 		public void textSet(TextChangedEvent event) {
 		}
 	};
@@ -502,10 +508,13 @@ public void test_textChangingLorg_eclipse_swt_custom_TextChangingEvent() {
 public void test_textSetLorg_eclipse_swt_custom_TextChangedEvent() {
 	StyledTextContent content = styledText.getContent();
 	TextChangeListener listener = new TextChangeListener() {
+		@Override
 		public void textChanging(TextChangingEvent event) {
 		}
+		@Override
 		public void textChanged(TextChangedEvent event) {
 		}
+		@Override
 		public void textSet(TextChangedEvent event) {
 			switch (verify) {
 				case 1 : {

@@ -88,6 +88,7 @@ public void test_ConstructorLorg_eclipse_swt_widgets_MenuII() {
 public void test_addArmListenerLorg_eclipse_swt_events_ArmListener() {
 	listenerCalled = false;
 	ArmListener listener = new ArmListener() {
+		@Override
 		public void widgetArmed(ArmEvent e) {
 			listenerCalled = true;
 		}
@@ -118,6 +119,7 @@ public void test_addArmListenerLorg_eclipse_swt_events_ArmListener() {
 public void test_addHelpListenerLorg_eclipse_swt_events_HelpListener() {
 	listenerCalled = false;
 	HelpListener listener = new HelpListener() {
+		@Override
 		public void helpRequested(HelpEvent e) {
 			listenerCalled = true;
 		}
@@ -148,9 +150,11 @@ public void test_addHelpListenerLorg_eclipse_swt_events_HelpListener() {
 public void test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener() {
 	listenerCalled = false;
 	SelectionListener listener = new SelectionListener() {
+		@Override
 		public void widgetSelected(SelectionEvent e) {
 			listenerCalled = true;
 		}
+		@Override
 		public void widgetDefaultSelected(SelectionEvent e) {
 		}
 	};

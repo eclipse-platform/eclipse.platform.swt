@@ -115,15 +115,20 @@ public void test_addShellListenerLorg_eclipse_swt_events_ShellListener() {
 	listenerCalled = false;
 	boolean exceptionThrown = false;
 	ShellListener listener = new ShellListener() {
+		@Override
 		public void shellActivated(ShellEvent e) {
 			listenerCalled = true;
 		}
+		@Override
 		public void shellClosed(ShellEvent e) {
 		}
+		@Override
 		public void shellDeactivated(ShellEvent e) {
 		}
+		@Override
 		public void shellDeiconified(ShellEvent e) {
 		}
+		@Override
 		public void shellIconified(ShellEvent e) {
 		}
 	};
@@ -465,7 +470,7 @@ public void test_consistency_Open() {
 	if (SwtTestUtil.fTestConsistency) {
 	    createShell();
 	    final Display display = shell.getDisplay();
-	    List<String> events = new ArrayList<String>();
+	    List<String> events = new ArrayList<>();
 	    String[] temp = hookExpectedEvents(testShell, getTestName(), events);
 	    shell.pack();
 	    shell.open();
@@ -518,7 +523,7 @@ public void test_consistency_Dispose() {
             testShell.dispose();
         }
     });
-    List<String> events = new ArrayList<String>();
+    List<String> events = new ArrayList<>();
     consistencyPrePackShell(testShell);
     Point pt = button.getLocation();
     consistencyEvent(pt.x, pt.y, 1, 0, ConsistencyUtility.MOUSE_CLICK, events);

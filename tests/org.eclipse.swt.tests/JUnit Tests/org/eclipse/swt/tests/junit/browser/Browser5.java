@@ -42,6 +42,7 @@ public class Browser5 {
 		shell.setLayout(new FillLayout());
 		final Browser browser = new Browser(shell, SWT.NONE);
 		browser.addOpenWindowListener(new OpenWindowListener() {
+			@Override
 			public void open(WindowEvent event) {
 				if (verbose) System.out.println("OpenWindow "+index);
 				Shell newShell = new Shell(display);
@@ -49,8 +50,10 @@ public class Browser5 {
 				Browser browser = new Browser(newShell, SWT.NONE);
 				browser.setData("index", new Integer(index));
 				browser.addVisibilityWindowListener(new VisibilityWindowListener() {
+					@Override
 					public void hide(WindowEvent event) {
 					}
+					@Override
 					public void show(WindowEvent event) {
 						Browser browser = (Browser)event.widget;
 						Shell parent = browser.getShell();
@@ -101,6 +104,7 @@ public class Browser5 {
 					}
 				});
 				browser.addCloseWindowListener(new CloseWindowListener() {
+					@Override
 					public void close(WindowEvent event) {
 						cntClosed++;
 						if (verbose) System.out.println("Close");
@@ -142,6 +146,7 @@ public class Browser5 {
 				/* wake up the event loop */
 				if (!display.isDisposed()) {
 					display.asyncExec(new Runnable() {
+						@Override
 						public void run() {
 							if (!shell.isDisposed()) shell.redraw();						
 						}

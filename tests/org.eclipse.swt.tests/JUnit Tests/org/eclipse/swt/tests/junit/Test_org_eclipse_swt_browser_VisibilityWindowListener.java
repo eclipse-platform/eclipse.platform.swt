@@ -30,8 +30,10 @@ public void test_hideLorg_eclipse_swt_browser_WindowEvent() {
 	Shell shell = new Shell(display);
 	Browser browser = new Browser(shell, SWT.NONE);
 	browser.addVisibilityWindowListener(new VisibilityWindowListener() {
+		@Override
 		public void hide(WindowEvent event) {
 		}
+		@Override
 		public void show(WindowEvent event) {
 		}
 	});

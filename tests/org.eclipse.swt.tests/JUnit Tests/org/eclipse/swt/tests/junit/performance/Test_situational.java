@@ -392,7 +392,7 @@ public static Test suite() {
 	return suite;
 }
 public static java.util.List<String> methodNames() {
-	java.util.List<String> methodNames = new java.util.ArrayList<String>();
+	java.util.List<String> methodNames = new java.util.ArrayList<>();
 	methodNames.add("test_createComposites");
 	methodNames.add("test_createWidgets");
 	methodNames.add("test_imageDrawing");

@@ -42,6 +42,7 @@ public void test_Constructor() {
 public void test_addImageLoaderListenerLorg_eclipse_swt_graphics_ImageLoaderListener() {
 	ImageLoader loader = new ImageLoader();
 	ImageLoaderListener loaderListener = new ImageLoaderListener() {
+		@Override
 		public void imageDataLoaded(ImageLoaderEvent e) {
 			loaderListenerCalled = true;
 		}

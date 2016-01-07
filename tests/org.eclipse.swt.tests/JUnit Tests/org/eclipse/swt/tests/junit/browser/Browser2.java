@@ -37,6 +37,7 @@ public class Browser2 {
 		shell.setLayout(new FillLayout());
 		Browser browser = new Browser(shell, SWT.NONE);
 		browser.addLocationListener(new LocationListener() {
+			@Override
 			public void changing(LocationEvent event) {
 				if (verbose) System.out.println("changing "+event.location);
 				/* certain browsers do send multiple changing events. Safari does this. */
@@ -44,6 +45,7 @@ public class Browser2 {
 				locationChanging = true;
 				if (!passed) shell.close();
 			}
+			@Override
 			public void changed(LocationEvent event) {
 				if (verbose) System.out.println("changed "+event.location);
 				passed = locationChanging && !locationChanged && !progressCompleted;
@@ -52,8 +54,10 @@ public class Browser2 {
 			}
 		});
 		browser.addProgressListener(new ProgressListener() {
+			@Override
 			public void changed(ProgressEvent event) {
 			}
+			@Override
 			public void completed(ProgressEvent event) {
 				if (verbose) System.out.println("completed");
 				passed = locationChanging && locationChanged && !progressCompleted;
@@ -70,6 +74,7 @@ public class Browser2 {
 							try { sleep(2000); } catch (Exception e) {}
 							if (!display.isDisposed())
 								display.asyncExec(new Runnable(){
+									@Override
 									public void run() {
 										if (verbose) System.out.println("timer asyncexec shell.close");
 										if (!shell.isDisposed()) shell.close();							
@@ -100,6 +105,7 @@ public class Browser2 {
 		shell.setLayout(new FillLayout());
 		final Browser browser = new Browser(shell, SWT.NONE);
 		browser.addLocationListener(new LocationListener() {
+			@Override
 			public void changing(LocationEvent event) {
 				if (verbose) System.out.println("changing "+event.location);
 				/*
@@ -124,6 +130,7 @@ public class Browser2 {
 						try { sleep(2000); } catch (Exception e) {}
 						if (!display.isDisposed())
 							display.asyncExec(new Runnable(){
+								@Override
 								public void run() {
 									if (verbose) System.out.println("timer asyncexec shell.close");
 									if (!shell.isDisposed()) shell.close();							
@@ -133,6 +140,7 @@ public class Browser2 {
 					}
 				}.start();
 			}
+			@Override
 			public void changed(LocationEvent event) {
 				/*
 				 * Feature on Internet Explorer. If there is no current location, IE still fires a DocumentComplete
@@ -149,8 +157,10 @@ public class Browser2 {
 			}
 		});
 		browser.addProgressListener(new ProgressListener() {
+			@Override
 			public void changed(ProgressEvent event) {
 			}
+			@Override
 			public void completed(ProgressEvent event) {
 				/*
 				 * Feature on Internet Explorer. If there is no current location, IE still fires a DocumentComplete
@@ -190,6 +200,7 @@ public class Browser2 {
 				/* wake up the event loop */
 				if (!display.isDisposed()) {
 					display.asyncExec(new Runnable() {
+						@Override
 						public void run() {
 							if (!shell.isDisposed()) shell.redraw();						
 						}

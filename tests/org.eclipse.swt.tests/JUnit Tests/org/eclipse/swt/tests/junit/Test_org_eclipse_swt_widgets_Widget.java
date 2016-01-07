@@ -65,6 +65,7 @@ public void test_ConstructorLorg_eclipse_swt_widgets_WidgetI() {
 @Test
 public void test_addDisposeListenerLorg_eclipse_swt_events_DisposeListener() {
 	DisposeListener listener = new DisposeListener() {
+		@Override
 		public void widgetDisposed(DisposeEvent e) {
 		}
 	};
@@ -81,6 +82,7 @@ public void test_addListenerILorg_eclipse_swt_widgets_Listener() {
 	}
 
 	Listener listener = new Listener() {
+		@Override
 		public void handleEvent(Event e) {
 		}
 	};
@@ -117,11 +119,13 @@ public void test_removeListenerILorg_eclipse_swt_widgets_Listener() {
 	}
 
 	widget.removeListener(SWT.Paint, new Listener() {
+		@Override
 		public void handleEvent(Event e) {
 		}
 	});
 	
 	Listener listener = new Listener() {
+		@Override
 		public void handleEvent(Event e) {
 		}
 	};
@@ -177,7 +181,8 @@ protected String[] hookExpectedEvents(Widget w, String type, final java.util.Lis
 protected void hookExpectedEvents(Widget w, String[] types, final java.util.List<String> events) {
     hookListeners(w, ConsistencyUtility.convertEventNames(types), 
 	        new Listener() {
-	            public void handleEvent(Event e) {
+	            @Override
+				public void handleEvent(Event e) {
 	                String temp = ConsistencyUtility.eventNames[e.type];
 	                if(e.type == SWT.Traverse)
 	                    temp += ":"+ConsistencyUtility.getTraversalType(e.detail);

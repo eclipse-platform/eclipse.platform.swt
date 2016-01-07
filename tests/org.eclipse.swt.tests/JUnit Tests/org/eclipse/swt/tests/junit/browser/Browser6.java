@@ -32,12 +32,14 @@ public class Browser6 {
 		shell.setLayout(new FillLayout());
 		Browser browser = new Browser(shell, SWT.NONE);
 		browser.addTitleListener(new TitleListener() {
+			@Override
 			public void changed(TitleEvent event) {
 				Browser browser = (Browser)event.widget;
 				String url = browser.getUrl();
 				if (verbose) System.out.println("Title changed <"+event.title+"> for location <"+url+">");
 				passed = true;
 				Runnable runnable = new Runnable() {
+					@Override
 					public void run() {
 						shell.close();
 					}
@@ -68,6 +70,7 @@ public class Browser6 {
 		shell.setLayout(new FillLayout());
 		Browser browser = new Browser(shell, SWT.NONE);
 		browser.addTitleListener(new TitleListener() {
+			@Override
 			public void changed(TitleEvent event) {
 				Browser browser = (Browser)event.widget;
 				String url = browser.getUrl();
@@ -75,6 +78,7 @@ public class Browser6 {
 				if (event.title.equals(expectedTitle)) {
 					passed = true;
 					Runnable runnable = new Runnable() {
+						@Override
 						public void run() {
 							shell.close();
 						}
@@ -112,6 +116,7 @@ public class Browser6 {
 				/* wake up the event loop */
 				if (!display.isDisposed()) {
 					display.asyncExec(new Runnable() {
+						@Override
 						public void run() {
 							if (!shell.isDisposed()) shell.redraw();						
 						}

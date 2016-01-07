@@ -70,9 +70,11 @@ public void test_ConstructorLorg_eclipse_swt_widgets_CompositeI() {
 @Test
 public void test_addControlListenerLorg_eclipse_swt_events_ControlListener() {
 	ControlListener listener = new ControlListener() {
+		@Override
 		public void controlMoved(ControlEvent e) {
 			eventOccurred = true;
 		}
+		@Override
 		public void controlResized(ControlEvent e) {
 			eventOccurred = true;
 		}
@@ -90,9 +92,11 @@ public void test_addControlListenerLorg_eclipse_swt_events_ControlListener() {
 @Test
 public void test_addFocusListenerLorg_eclipse_swt_events_FocusListener() {
 	FocusListener listener = new FocusListener() {
+		@Override
 		public void focusGained(FocusEvent e) {
 			eventOccurred = true;
 		}
+		@Override
 		public void focusLost(FocusEvent e) {
 			eventOccurred = true;
 		}
@@ -110,6 +114,7 @@ public void test_addFocusListenerLorg_eclipse_swt_events_FocusListener() {
 @Test
 public void test_addHelpListenerLorg_eclipse_swt_events_HelpListener() {
 	HelpListener listener = new HelpListener() {
+		@Override
 		public void helpRequested(HelpEvent e) {
 			eventOccurred = true;
 		}
@@ -124,9 +129,11 @@ public void test_addHelpListenerLorg_eclipse_swt_events_HelpListener() {
 @Test
 public void test_addKeyListenerLorg_eclipse_swt_events_KeyListener() {
 	KeyListener listener = new KeyListener() {
+		@Override
 		public void keyPressed(KeyEvent e) {
 			eventOccurred = true;
 		}
+		@Override
 		public void keyReleased(KeyEvent e) {
 			eventOccurred = true;
 		}
@@ -144,12 +151,15 @@ public void test_addKeyListenerLorg_eclipse_swt_events_KeyListener() {
 @Test
 public void test_addMouseListenerLorg_eclipse_swt_events_MouseListener() {
 	MouseListener listener = new MouseListener() {
+		@Override
 		public void mouseDown(MouseEvent e) {
 			eventOccurred = true;
 		}
+		@Override
 		public void mouseUp(MouseEvent e) {
 			eventOccurred = true;
 		}
+		@Override
 		public void mouseDoubleClick(MouseEvent e) {
 			eventOccurred = true;
 		}
@@ -170,6 +180,7 @@ public void test_addMouseListenerLorg_eclipse_swt_events_MouseListener() {
 @Test
 public void test_addMouseMoveListenerLorg_eclipse_swt_events_MouseMoveListener() {
 	MouseMoveListener listener = new MouseMoveListener() {
+		@Override
 		public void mouseMove(MouseEvent e) {
 			eventOccurred = true;
 		}
@@ -184,12 +195,15 @@ public void test_addMouseMoveListenerLorg_eclipse_swt_events_MouseMoveListener()
 @Test
 public void test_addMouseTrackListenerLorg_eclipse_swt_events_MouseTrackListener() {
 	MouseTrackListener listener = new MouseTrackListener() {
+		@Override
 		public void mouseEnter(MouseEvent e) {
 			eventOccurred = true;
 		}
+		@Override
 		public void mouseExit(MouseEvent e) {
 			eventOccurred = true;
 		}
+		@Override
 		public void mouseHover(MouseEvent e) {
 			eventOccurred = true;
 		}
@@ -209,6 +223,7 @@ public void test_addMouseTrackListenerLorg_eclipse_swt_events_MouseTrackListener
 @Test
 public void test_addPaintListenerLorg_eclipse_swt_events_PaintListener() {
 	PaintListener listener = new PaintListener() {
+		@Override
 		public void paintControl(PaintEvent e) {
 			eventOccurred = true;
 		}
@@ -225,6 +240,7 @@ public void test_addPaintListenerLorg_eclipse_swt_events_PaintListener() {
 @Test
 public void test_addTraverseListenerLorg_eclipse_swt_events_TraverseListener() {
 	TraverseListener listener = new TraverseListener() {
+		@Override
 		public void keyTraversed(TraverseEvent e) {
 			eventOccurred = true;
 		}
@@ -729,7 +745,7 @@ protected void consistencyEvent(final int paramA, final int paramB,
     if(SwtTestUtil.fTestConsistency) {
         final Display display = shell.getDisplay();
         if(events == null) 
-            events = new ArrayList<String>();
+            events = new ArrayList<>();
         final String test = getTestName();
         
         shell.setLayout(new org.eclipse.swt.layout.FillLayout());

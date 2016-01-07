@@ -91,6 +91,7 @@ public void test_ConstructorLorg_eclipse_swt_widgets_MenuItem() {
 public void test_addHelpListenerLorg_eclipse_swt_events_HelpListener() {
 	listenerCalled = false;
 	HelpListener listener = new HelpListener() {
+		@Override
 		public void helpRequested(HelpEvent e) {
 			listenerCalled = true;
 		}
@@ -122,9 +123,11 @@ public void test_addHelpListenerLorg_eclipse_swt_events_HelpListener() {
 public void test_addMenuListenerLorg_eclipse_swt_events_MenuListener() {
 	listenerCalled = false;
 	MenuListener menuListener = new MenuListener() {
+		@Override
 		public void menuShown(MenuEvent e) {
 			listenerCalled = true;
 		}
+		@Override
 		public void menuHidden(MenuEvent e) {
 			listenerCalled = true;
 		}

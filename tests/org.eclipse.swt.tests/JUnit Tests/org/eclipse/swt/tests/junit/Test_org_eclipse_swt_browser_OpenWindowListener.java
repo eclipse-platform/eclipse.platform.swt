@@ -31,6 +31,7 @@ public void test_openWindowLorg_eclipse_swt_browser_WindowEvent() {
 	Shell shell = new Shell(display);
 	Browser browser = new Browser(shell, SWT.NONE);
 	browser.addOpenWindowListener(new OpenWindowListener() {
+		@Override
 		public void open(WindowEvent event) {
 		}
 	});

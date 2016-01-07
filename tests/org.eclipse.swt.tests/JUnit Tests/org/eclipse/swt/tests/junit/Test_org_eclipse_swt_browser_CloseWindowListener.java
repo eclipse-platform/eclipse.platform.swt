@@ -31,6 +31,7 @@ public void test_closeLorg_eclipse_swt_browser_WindowEvent() {
 	Shell shell = new Shell(display);
 	Browser browser = new Browser(shell, SWT.NONE);
 	browser.addCloseWindowListener(new CloseWindowListener() {
+		@Override
 		public void close(WindowEvent event) {
 		}
 	});

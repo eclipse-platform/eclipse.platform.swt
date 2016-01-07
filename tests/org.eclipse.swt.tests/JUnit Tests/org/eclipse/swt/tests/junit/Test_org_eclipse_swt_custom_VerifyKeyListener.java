@@ -43,6 +43,7 @@ public void setUp() {
 @Test
 public void test_verifyKeyLorg_eclipse_swt_events_VerifyEvent() {
 	VerifyKeyListener listener = new VerifyKeyListener() {
+		@Override
 		public void verifyKey(VerifyEvent event) {
 			if (verify != 1) {event.doit = false;}
 		}

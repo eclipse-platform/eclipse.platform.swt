@@ -65,6 +65,7 @@ public void test_addFilterILorg_eclipse_swt_widgets_Listener() {
 	final boolean[] callbackReceived = new boolean[] {false, false};
 	
 	Listener listener = new Listener() {
+		@Override
 		public void handleEvent(Event e) {
 			if (e.type == SWT.Close)
 				callbackReceived[CLOSE_CALLBACK] = true;
@@ -97,6 +98,7 @@ public void test_addListenerILorg_eclipse_swt_widgets_Listener() {
 	final boolean[] callbackReceived = new boolean[] {false, false};
 	
 	Listener listener = new Listener() {
+		@Override
 		public void handleEvent(Event e) {
 			if (e.type == SWT.Close)
 				callbackReceived[CLOSE_CALLBACK] = true;
@@ -135,6 +137,7 @@ public void test_asyncExecLjava_lang_Runnable() {
 	final Display display = new Display();
 	try {
 		display.asyncExec(new Runnable() {
+			@Override
 			public void run() {
 				display.beep();
 			}
@@ -150,6 +153,7 @@ public void test_asyncExecLjava_lang_Runnable_dispose() {
 	try {
 		disposeExecRan = false;
 		display.asyncExec(new Runnable() {
+			@Override
 			public void run() {
 				display.dispose();
 				disposeExecRan = true;
@@ -185,6 +189,7 @@ public void test_disposeExecLjava_lang_Runnable() {
 	Display testDisplay = new Display();
 	disposeExecRan = false;
 	testDisplay.disposeExec(new Runnable() {
+		@Override
 		public void run() {
 			disposeExecRan = true;
 		}
@@ -389,6 +394,7 @@ public void test_getSyncThread() {
 	try {
 		final boolean[] threadRan = new boolean[] {false};
 		Thread nonUIThread = new Thread(new Runnable() {
+			@Override
 			public void run() {
 				// Assume no syncExec runnable is currently being invoked.
 				assertNull(display.getSyncThread());
@@ -397,6 +403,7 @@ public void test_getSyncThread() {
 				// the invoking thread is the syncThread.
 				final Thread invokingThread = Thread.currentThread();
 				display.syncExec(new Runnable() {
+					@Override
 					public void run() {
 						assertEquals(invokingThread, display.getSyncThread());
 					}
@@ -406,6 +413,7 @@ public void test_getSyncThread() {
 				// the syncThread is null while it's running.
 				final boolean[] asyncExecRan = new boolean[] {false};
 				display.asyncExec(new Runnable() {
+					@Override
 					public void run() {
 						assertNull(display.getSyncThread());
 						asyncExecRan[0] = true;
@@ -1107,6 +1115,7 @@ public void test_removeFilterILorg_eclipse_swt_widgets_Listener() {
 	final boolean[] callbackReceived = new boolean[] {false, false};
 	
 	Listener listener = new Listener() {
+		@Override
 		public void handleEvent(Event e) {
 			if (e.type == SWT.Close)
 				callbackReceived[CLOSE_CALLBACK] = true;
@@ -1140,6 +1149,7 @@ public void test_removeListenerILorg_eclipse_swt_widgets_Listener() {
 	final boolean[] callbackReceived = new boolean[] {false, false};
 	
 	Listener listener = new Listener() {
+		@Override
 		public void handleEvent(Event e) {
 			if (e.type == SWT.Close)
 				callbackReceived[CLOSE_CALLBACK] = true;
@@ -1256,12 +1266,14 @@ public void test_setSynchronizerLorg_eclipse_swt_widgets_Synchronizer() {
 		
 		MySynchronizer mySynchronizer = new MySynchronizer(display);
 		display.asyncExec(new Runnable() {
+			@Override
 			public void run() {
 				asyncExec0Ran[0] = true;
 			}
 		});
 		display.setSynchronizer(mySynchronizer);
 		display.asyncExec(new Runnable() {
+			@Override
 			public void run() {
 				asyncExec1Ran[0] = true;
 			}
@@ -1315,6 +1327,7 @@ public void test_sleep() {
 				}
 				// Cause OS to generate an event to revive from sleep().
 				display.syncExec(new Runnable() {
+					@Override
 					public void run() {
 						Shell s = new Shell(display);
 						s.open();
@@ -1336,6 +1349,7 @@ public void test_syncExecLjava_lang_Runnable() {
 	final Display display = new Display();
 	try {
 		display.syncExec(new Runnable() {
+			@Override
 			public void run() {
 				display.beep();
 			}
@@ -1350,6 +1364,7 @@ public void test_syncExecLjava_lang_Runnable_dispose() {
 	final Display display = new Display();
 	try {
 		display.syncExec(new Runnable() {
+			@Override
 			public void run() {
 				display.dispose();
 			}
@@ -1374,6 +1389,7 @@ public void test_timerExecILjava_lang_Runnable() {
 		}
 		
 		display.timerExec(-100, new Runnable() {
+			@Override
 			public void run() {
 				timerExecRan[0] = true;
 			}
@@ -1382,6 +1398,7 @@ public void test_timerExecILjava_lang_Runnable() {
 		final int delay = 3000;
 		final long startTime = System.currentTimeMillis();
 		display.timerExec(delay, new Runnable() {
+			@Override
 			public void run() {
 				long endTime = System.currentTimeMillis();
 				// debug intermittent test failure
