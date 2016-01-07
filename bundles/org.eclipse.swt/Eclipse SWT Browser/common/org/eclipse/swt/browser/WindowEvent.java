@@ -24,7 +24,7 @@ import org.eclipse.swt.graphics.*;
  * <p>
  * The following example shows how <code>WindowEvent</code>'s are typically
  * handled.
- * 
+ *
  * <code><pre>
  *	public static void main(String[] args) {
  *		Display display = new Display();
@@ -90,10 +90,10 @@ import org.eclipse.swt.graphics.*;
  *		});
  *	}
  * </pre></code>
- * 
+ *
  * The following notifications are emitted when the user selects a hyperlink that targets a new window
- * or as the result of a javascript that executes window.open. 
- * 
+ * or as the result of a javascript that executes window.open.
+ *
  * <p>Main Browser
  * <ul>
  *    <li>User selects a link that opens in a new window or javascript requests a new window</li>
@@ -104,7 +104,7 @@ import org.eclipse.swt.graphics.*;
  *	    	<li>Application returns the second Browser as the host for the new window content</li>
  *    </ul>
  * </ul>
- * 
+ *
  * <p>Second Browser
  * <ul>
  *    <li>VisibilityWindowListener.show() notified</li>
@@ -112,49 +112,49 @@ import org.eclipse.swt.graphics.*;
  *    		<li>Application sets navigation tool bar, status bar, menu bar and Shell size
  *    		<li>Application makes the Shell hosting the second Browser visible
  *    		<li>User now sees the new window
- *    </ul> 
+ *    </ul>
  * </ul>
- * 
+ *
  * @see CloseWindowListener
  * @see OpenWindowListener
  * @see VisibilityWindowListener
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
- * 
+ *
  * @since 3.0
  */
 public class WindowEvent extends TypedEvent {
 
-	/** 
+	/**
 	 * Specifies whether the platform requires the user to provide a
 	 * <code>Browser</code> to handle the new window.
-	 * 
+	 *
 	 * @since 3.1
 	 */
 	public boolean required;
-	
-	
-	/** 
+
+
+	/**
 	 * <code>Browser</code> provided by the application.
 	 */
 	public Browser browser;
 
-	/** 
+	/**
 	 * Requested location for the <code>Shell</code> hosting the <code>Browser</code>.
 	 * It is <code>null</code> if no location has been requested.
 	 */
 	public Point location;
 
-	/** 
-	 * Requested <code>Browser</code> size. The client area of the <code>Shell</code> 
-	 * hosting the <code>Browser</code> should be large enough to accommodate that size. 
+	/**
+	 * Requested <code>Browser</code> size. The client area of the <code>Shell</code>
+	 * hosting the <code>Browser</code> should be large enough to accommodate that size.
 	 * It is <code>null</code> if no size has been requested.
 	 */
 	public Point size;
-	
+
 	/**
 	 * Specifies whether the <code>Shell</code> hosting the <code>Browser</code> should
 	 * display an address bar.
-	 * 
+	 *
 	 * @since 3.1
 	 */
 	public boolean addressBar;
@@ -162,29 +162,29 @@ public class WindowEvent extends TypedEvent {
 	/**
 	 * Specifies whether the <code>Shell</code> hosting the <code>Browser</code> should
 	 * display a menu bar.  Note that this is always <code>true</code> on OS X.
-	 * 
+	 *
 	 * @since 3.1
 	 */
 	public boolean menuBar;
-	
+
 	/**
 	 * Specifies whether the <code>Shell</code> hosting the <code>Browser</code> should
 	 * display a status bar.
-	 * 
+	 *
 	 * @since 3.1
 	 */
 	public boolean statusBar;
-	
+
 	/**
 	 * Specifies whether the <code>Shell</code> hosting the <code>Browser</code> should
 	 * display a tool bar.
-	 * 
+	 *
 	 * @since 3.1
 	 */
 	public boolean toolBar;
-	
+
 	static final long serialVersionUID = 3617851997387174969L;
-	
+
 /**
  * Constructs a new instance of this class.
  *

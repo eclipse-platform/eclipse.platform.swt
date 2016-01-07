@@ -18,12 +18,12 @@ public class PngLzBlockReader {
 	int uncompressedBytesRemaining;
 	PngDecodingDataStream stream;
 	PngHuffmanTables huffmanTables;
-	
+
 	byte[] window;
 	int windowIndex;
 	int copyIndex;
 	int copyBytesRemaining;
-	
+
 	static final int UNCOMPRESSED = 0;
 	static final int COMPRESSED_FIXED = 1;
 	static final int COMPRESSED_DYNAMIC = 2;
@@ -37,11 +37,11 @@ public class PngLzBlockReader {
 	static final int LAST_CODE_LENGTH_CODE = 19;
 
 	static final int[] lengthBases = {
-		3, 4, 5, 6, 7, 8, 9, 10, 11, 13, 15, 17, 19, 23, 27, 
+		3, 4, 5, 6, 7, 8, 9, 10, 11, 13, 15, 17, 19, 23, 27,
 		31, 35, 43, 51, 59, 67, 83, 99, 115, 131, 163, 195, 227, 258
-	} ;	
+	} ;
 	static final int[] extraLengthBits = {
-		0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 
+		0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2,
 		3, 3, 3, 3, 4, 4, 4, 4, 5, 5, 5, 5, 0,
 	};
 	static final int[] distanceBases = {
@@ -52,7 +52,7 @@ public class PngLzBlockReader {
 	static final int[] extraDistanceBits = {
 		0, 0, 0, 0, 1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6, 7,  7,
 		8,  8, 9, 9, 10, 10, 11, 11, 12, 12, 13, 13,
-	};	
+	};
 
 
 PngLzBlockReader(PngDecodingDataStream stream) {
@@ -62,13 +62,13 @@ PngLzBlockReader(PngDecodingDataStream stream) {
 
 void setWindowSize(int windowSize) {
 	window = new byte[windowSize];
-}	
+}
 
 void readNextBlockHeader() throws IOException {
 	isLastBlock = stream.getNextIdatBit() != 0;
 	compressionType = (byte) stream.getNextIdatBits(2);
-	if (compressionType > 2) stream.error();	
-	
+	if (compressionType > 2) stream.error();
+
 	if (compressionType == UNCOMPRESSED) {
 		byte b1 = stream.getNextIdatByte();
 		byte b2 = stream.getNextIdatByte();
@@ -100,17 +100,17 @@ private void assertBlockAtEnd() throws IOException {
 	if (compressionType == UNCOMPRESSED) {
 		if (uncompressedBytesRemaining > 0) stream.error();
 	} else if (copyBytesRemaining > 0 ||
-		(huffmanTables.getNextLiteralValue(stream) != END_OF_COMPRESSED_BLOCK)) 
+		(huffmanTables.getNextLiteralValue(stream) != END_OF_COMPRESSED_BLOCK))
 	{
-		stream.error();		
+		stream.error();
 	}
 }
 void assertCompressedDataAtEnd() throws IOException {
-	assertBlockAtEnd();		
+	assertBlockAtEnd();
 	while (!isLastBlock) {
 		readNextBlockHeader();
 		assertBlockAtEnd();
-	}	
+	}
 }
 
 private byte getNextCompressedByte() throws IOException {
@@ -118,21 +118,21 @@ private byte getNextCompressedByte() throws IOException {
 		byte value = window[copyIndex];
 		window[windowIndex] = value;
 		copyBytesRemaining--;
-		
+
 		copyIndex++;
-		windowIndex++;		
+		windowIndex++;
 		if (copyIndex == window.length) copyIndex = 0;
 		if (windowIndex == window.length) windowIndex = 0;
 
-		return value;		
+		return value;
 	}
-	
+
 	int value = huffmanTables.getNextLiteralValue(stream);
 	if (value < END_OF_COMPRESSED_BLOCK) {
 		window[windowIndex] = (byte) value;
 		windowIndex++;
 		if (windowIndex >= window.length) windowIndex = 0;
-		return (byte) value;		
+		return (byte) value;
 	} else if (value == END_OF_COMPRESSED_BLOCK) {
 		readNextBlockHeader();
 		return getNextByte();
@@ -142,7 +142,7 @@ private byte getNextCompressedByte() throws IOException {
 		if (extraBits > 0) {
 			length += stream.getNextIdatBits(extraBits);
 		}
-		
+
 		value = huffmanTables.getNextDistanceValue(stream);
 		if (value > LAST_DISTANCE_CODE) stream.error();
 		extraBits = extraDistanceBits[value];
@@ -150,7 +150,7 @@ private byte getNextCompressedByte() throws IOException {
 		if (extraBits > 0) {
 			distance += stream.getNextIdatBits(extraBits);
 		}
-		
+
 		copyIndex = windowIndex - distance;
 		if (copyIndex < 0) copyIndex += window.length;
 
@@ -161,5 +161,5 @@ private byte getNextCompressedByte() throws IOException {
 		return 0;
 	}
 }
-	
+
 }

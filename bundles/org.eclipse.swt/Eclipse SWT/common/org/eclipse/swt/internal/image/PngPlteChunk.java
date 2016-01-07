@@ -15,7 +15,7 @@ import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 
 class PngPlteChunk extends PngChunk {
-	
+
 	int paletteSize;
 
 PngPlteChunk(PaletteData palette) {
@@ -24,7 +24,7 @@ PngPlteChunk(PaletteData palette) {
 	setType(TYPE_PLTE);
 	setPaletteData(palette);
 	setCRC(computeCRC());
-}		
+}
 
 PngPlteChunk(byte[] reference){
 	super(reference);
@@ -58,7 +58,7 @@ PaletteData getPaletteData() {
 		int red = reference[offset] & 0xFF;
 		int green = reference[offset + 1] & 0xFF;
 		int blue = reference[offset + 2] & 0xFF;
-		rgbs[i] = new RGB(red, green, blue);		
+		rgbs[i] = new RGB(red, green, blue);
 	}
 	return new PaletteData(rgbs);
 }
@@ -88,31 +88,31 @@ void validate(PngFileReadState readState, PngIhdrChunk headerChunk) {
 		|| readState.readPLTE
 		|| readState.readTRNS
 		|| readState.readIDAT
-		|| readState.readIEND) 
+		|| readState.readIEND)
 	{
 		SWT.error(SWT.ERROR_INVALID_IMAGE);
 	} else {
 		readState.readPLTE = true;
 	}
-	
+
 	super.validate(readState, headerChunk);
-	
+
 	// Palettes cannot be included in grayscale images.
-	// 
+	//
 	// Note: just ignore the palette.
 //	if (!headerChunk.getCanHavePalette()) SWT.error(SWT.ERROR_INVALID_IMAGE);
-	
+
 	// Palette chunks' data fields must be event multiples
 	// of 3. Each 3-byte group represents an RGB value.
-	if (getLength() % 3 != 0) SWT.error(SWT.ERROR_INVALID_IMAGE);	
-	
+	if (getLength() % 3 != 0) SWT.error(SWT.ERROR_INVALID_IMAGE);
+
 	// Palettes cannot have more entries than 2^bitDepth
 	// where bitDepth is the bit depth of the image given
 	// in the IHDR chunk.
 	if (1 << headerChunk.getBitDepth() < paletteSize) {
 		SWT.error(SWT.ERROR_INVALID_IMAGE);
 	}
-	
+
 	// Palettes cannot have more than 256 entries.
 	if (256 < paletteSize) SWT.error(SWT.ERROR_INVALID_IMAGE);
 }

@@ -30,13 +30,13 @@ public final class MenuDetectEvent extends TypedEvent {
 	 * at the time the context menu trigger occurred.
 	 */
 	public int x;
-	
+
 	/**
 	 * The display-relative y coordinate of the pointer
 	 * at the time the context menu trigger occurred.
-	 */	
+	 */
 	public int y;
-	
+
 	/**
 	 * A flag indicating whether the operation should be allowed.
 	 * Setting this field to <code>false</code> will cancel the operation.
@@ -49,19 +49,19 @@ public final class MenuDetectEvent extends TypedEvent {
 	 * <li>{@link org.eclipse.swt.SWT#MENU_MOUSE}</li>
 	 * <li>{@link org.eclipse.swt.SWT#MENU_KEYBOARD}</li>
 	 * </ul></p>
-	 * 
+	 *
 	 * A field indicating whether the context menu was triggered by a
 	 * pointing device such as a mouse (indicated by <code>MENU_MOUSE</code>),
 	 * or by a focus-based device such as a keyboard (<code>MENU_KEYBOARD</code>).
 	 * If the trigger was <code>MENU_KEYBOARD</code>, then the application should
 	 * provide new display-relative x and y coordinates based on the current
 	 * selection or the current focus.
-	 * 
+	 *
 	 * @since 3.8
 	 */
 	public int detail;
-	
-	
+
+
 	private static final long serialVersionUID = -3061660596590828941L;
 
 /**

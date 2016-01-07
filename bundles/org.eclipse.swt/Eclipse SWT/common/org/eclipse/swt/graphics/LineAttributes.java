@@ -20,11 +20,11 @@ import org.eclipse.swt.*;
  * resources managed by each instance when those instances are no longer
  * required, and thus no <code>dispose()</code> method is provided.
  * </p>
- * 
+ *
  * @see GC#getLineAttributes()
  * @see GC#setLineAttributes(LineAttributes)
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
- *  
+ *
  * @since 3.3
  */
 public class LineAttributes {
@@ -36,7 +36,7 @@ public class LineAttributes {
 
 	/**
 	 * The line style.
-	 * 
+	 *
 	 * @see org.eclipse.swt.SWT#LINE_CUSTOM
 	 * @see org.eclipse.swt.SWT#LINE_DASH
 	 * @see org.eclipse.swt.SWT#LINE_DASHDOT
@@ -48,7 +48,7 @@ public class LineAttributes {
 
 	/**
 	 * The line cap style.
-	 * 
+	 *
 	 * @see org.eclipse.swt.SWT#CAP_FLAT
 	 * @see org.eclipse.swt.SWT#CAP_ROUND
 	 * @see org.eclipse.swt.SWT#CAP_SQUARE
@@ -57,7 +57,7 @@ public class LineAttributes {
 
 	/**
 	 * The line join style.
-	 * 
+	 *
 	 * @see org.eclipse.swt.SWT#JOIN_BEVEL
 	 * @see org.eclipse.swt.SWT#JOIN_MITER
 	 * @see org.eclipse.swt.SWT#JOIN_ROUND
@@ -79,7 +79,7 @@ public class LineAttributes {
 	 */
 	public float miterLimit;
 
-/** 
+/**
  * Create a new line attributes with the specified line width.
  *
  * @param width the line width
@@ -87,8 +87,8 @@ public class LineAttributes {
 public LineAttributes(float width) {
 	this(width, SWT.CAP_FLAT, SWT.JOIN_MITER, SWT.LINE_SOLID, null, 0, 10);
 }
-	
-/** 
+
+/**
  * Create a new line attributes with the specified line cap, join and width.
  *
  * @param width the line width
@@ -99,7 +99,7 @@ public LineAttributes(float width, int cap, int join) {
 	this(width, cap, join, SWT.LINE_SOLID, null, 0, 10);
 }
 
-/** 
+/**
  * Create a new line attributes with the specified arguments.
  *
  * @param width the line width
@@ -153,8 +153,8 @@ public boolean equals (Object object) {
 }
 
 /**
- * Returns an integer hash code for the receiver. Any two 
- * objects that return <code>true</code> when passed to 
+ * Returns an integer hash code for the receiver. Any two
+ * objects that return <code>true</code> when passed to
  * <code>equals</code> must return the same value for this
  * method.
  *

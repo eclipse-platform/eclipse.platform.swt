@@ -16,12 +16,12 @@ final class JPEGRestartInterval extends JPEGFixedSizeSegment {
 	public JPEGRestartInterval(LEDataInputStream byteStream) {
 		super(byteStream);
 	}
-	
+
 	@Override
 	public int signature() {
 		return JPEGFileFormat.DRI;
 	}
-	
+
 	public int getRestartInterval() {
 		return ((reference[4] & 0xFF) << 8 | (reference[5] & 0xFF));
 	}

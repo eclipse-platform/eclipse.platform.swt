@@ -37,5 +37,5 @@ public interface MouseWheelListener extends SWTEventListener {
  *
  * @param e an event containing information about the mouse wheel action
  */
-public void mouseScrolled (MouseEvent e);	
+public void mouseScrolled (MouseEvent e);
 }

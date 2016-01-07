@@ -29,9 +29,9 @@ public class Execute extends nsISupports {
 	public int EvalInWindow(nsIDOMWindow aWindow, nsEmbedString code, long /*int*/[] aVariant) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 1, getAddress(), aWindow.getAddress(), code.getAddress(), aVariant);
 	}
-	
+
 	public int EvalAsChrome(nsIDOMWindow aWindow, nsEmbedString code, long /*int*/[] aVariant) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 2, getAddress(), aWindow.getAddress(), code.getAddress(), aVariant);
  	}
-	
+
 }

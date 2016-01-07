@@ -15,9 +15,9 @@ import org.eclipse.swt.internal.SWTEventListener;
 import org.eclipse.swt.*;
 import org.eclipse.swt.events.*;
 
-/**	 
+/**
  * Instances of this class are <em>internal SWT implementation</em>
- * objects which provide a mapping between the typed and untyped 
+ * objects which provide a mapping between the typed and untyped
  * listener mechanisms that SWT supports.
  * <p>
  * <b>IMPORTANT:</b> This class is <em>not</em> part of the SWT
@@ -30,7 +30,7 @@ import org.eclipse.swt.events.*;
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  */
 public class TypedListener implements Listener {
-	
+
 	/**
 	 * The receiver's event listener
 	 */
@@ -46,7 +46,7 @@ public class TypedListener implements Listener {
  * </p>
  *
  * @param listener the event listener to store in the receiver
- * 
+ *
  * @noreference This method is not intended to be referenced by clients.
  */
 public TypedListener (SWTEventListener listener) {
@@ -63,7 +63,7 @@ public TypedListener (SWTEventListener listener) {
  * </p>
  *
  * @return the receiver's event listener
- * 
+ *
  * @noreference This method is not intended to be referenced by clients.
  */
 public SWTEventListener getEventListener () {
@@ -79,7 +79,7 @@ public SWTEventListener getEventListener () {
  * referenced from application code.
  * </p>
  * @param e the event to handle
- * 
+ *
  * @noreference This method is not intended to be referenced by clients.
  */
 public void handleEvent (Event e) {
@@ -103,7 +103,7 @@ public void handleEvent (Event e) {
 			if (eventListener instanceof TreeListener) {
 				((TreeListener) eventListener).treeCollapsed(new TreeEvent(e));
 			} else {
-				((ExpandListener) eventListener).itemCollapsed(new ExpandEvent(e));	
+				((ExpandListener) eventListener).itemCollapsed(new ExpandEvent(e));
 			}
 			break;
 		}
@@ -131,7 +131,7 @@ public void handleEvent (Event e) {
 			if (eventListener instanceof TreeListener) {
 				((TreeListener) eventListener).treeExpanded(new TreeEvent(e));
 			} else {
-				((ExpandListener) eventListener).itemExpanded(new ExpandEvent(e));	
+				((ExpandListener) eventListener).itemExpanded(new ExpandEvent(e));
 			}
 			break;
 		}
@@ -245,7 +245,7 @@ public void handleEvent (Event e) {
 		case SWT.Selection: {
 			/* Fields set by Sash */
 			SelectionEvent event = new SelectionEvent (e);
-			((SelectionListener) eventListener).widgetSelected (event);			
+			((SelectionListener) eventListener).widgetSelected (event);
 			e.x = event.x;
 			e.y = event.y;
 			e.doit = event.doit;

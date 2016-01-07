@@ -30,7 +30,7 @@ public TIFFRandomFileAccess(LEDataInputStream stream) {
 void seek(int pos) throws IOException {
 	if (pos == current) return;
 	if (pos < start) throw new IOException();
-	current = pos;	
+	current = pos;
 	if (current > next) {
 		int n = current - next;
 		/* store required bytes */
@@ -60,11 +60,11 @@ void read(byte b[]) throws IOException {
 	if (nCached > 0) {
 		/* Get cached bytes */
 		int index = current / CHUNK_SIZE;
-		int offset = current % CHUNK_SIZE;		
+		int offset = current % CHUNK_SIZE;
 		while (nCached > 0) {
 			int cnt = Math.min(nCached, CHUNK_SIZE - offset);
 			System.arraycopy(buffers[index], offset, b, destNext, cnt);
-			nCached -= cnt; 
+			nCached -= cnt;
 			destNext += cnt;
 			index++;
 			offset = 0;

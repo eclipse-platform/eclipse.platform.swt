@@ -43,14 +43,14 @@ import org.eclipse.swt.internal.image.*;
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  */
 public class ImageLoader {
-	
+
 	/**
 	 * the array of ImageData objects in this ImageLoader.
 	 * This array is read in when the load method is called,
 	 * and it is written out when the save method is called
 	 */
 	public ImageData[] data;
-	
+
 	/**
 	 * the width of the logical screen on which the images
 	 * reside, in pixels (this corresponds to the GIF89a
@@ -66,10 +66,10 @@ public class ImageLoader {
 	public int logicalScreenHeight;
 
 	/**
-	 * the background pixel for the logical screen (this 
+	 * the background pixel for the logical screen (this
 	 * corresponds to the GIF89a Background Color Index value).
 	 * The default is -1 which means 'unspecified background'
-	 * 
+	 *
 	 */
 	public int backgroundPixel;
 
@@ -80,23 +80,23 @@ public class ImageLoader {
 	 * The default is 1. A value of 0 means 'display repeatedly'
 	 */
 	public int repeatCount;
-	
+
 	/**
 	 * This is the compression used when saving jpeg and png files.
 	 * <p>
-	 * When saving jpeg files, the value is from 1 to 100, 
-	 * where 1 is very high compression but low quality, and 100 is 
+	 * When saving jpeg files, the value is from 1 to 100,
+	 * where 1 is very high compression but low quality, and 100 is
 	 * no compression and high quality; default is 75.
 	 * </p><p>
-	 * When saving png files, the value is from 0 to 3, but they do not impact the quality 
+	 * When saving png files, the value is from 0 to 3, but they do not impact the quality
 	 * because PNG is lossless compression. 0 is uncompressed, 1 is low compression and fast,
 	 * 2 is default compression, and 3 is high compression but slow.
 	 * </p>
-	 * 
+	 *
 	 * @since 3.8
 	 */
 	public int compression;
-		
+
 	/*
 	 * the set of ImageLoader event listeners, created on demand
 	 */
@@ -263,22 +263,22 @@ public void save(String filename, int format) {
 	}
 }
 
-/**	 
+/**
  * Adds the listener to the collection of listeners who will be
  * notified when image data is either partially or completely loaded.
  * <p>
  * An ImageLoaderListener should be added before invoking
- * one of the receiver's load methods. The listener's 
+ * one of the receiver's load methods. The listener's
  * <code>imageDataLoaded</code> method is called when image
  * data has been partially loaded, as is supported by interlaced
  * GIF/PNG or progressive JPEG images.
  *
  * @param listener the listener which should be notified
- * 
+ *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
  * </ul>
- * 
+ *
  * @see ImageLoaderListener
  * @see ImageLoaderEvent
  */
@@ -290,16 +290,16 @@ public void addImageLoaderListener(ImageLoaderListener listener) {
 	imageLoaderListeners.add(listener);
 }
 
-/**	 
+/**
  * Removes the listener from the collection of listeners who will be
  * notified when image data is either partially or completely loaded.
  *
  * @param listener the listener which should no longer be notified
- * 
+ *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
  * </ul>
- * 
+ *
  * @see #addImageLoaderListener(ImageLoaderListener)
  */
 public void removeImageLoaderListener(ImageLoaderListener listener) {
@@ -308,7 +308,7 @@ public void removeImageLoaderListener(ImageLoaderListener listener) {
 	imageLoaderListeners.remove(listener);
 }
 
-/**	 
+/**
  * Returns <code>true</code> if the receiver has image loader
  * listeners, and <code>false</code> otherwise.
  *
@@ -321,7 +321,7 @@ public boolean hasListeners() {
 	return imageLoaderListeners != null && imageLoaderListeners.size() > 0;
 }
 
-/**	 
+/**
  * Notifies all image loader listeners that an image loader event
  * has occurred. Pass the specified event object to each listener.
  *

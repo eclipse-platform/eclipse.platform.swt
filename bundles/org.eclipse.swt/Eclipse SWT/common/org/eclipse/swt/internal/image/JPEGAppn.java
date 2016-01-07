@@ -16,11 +16,11 @@ final class JPEGAppn extends JPEGVariableSizeSegment {
 	public JPEGAppn(byte[] reference) {
 		super(reference);
 	}
-	
+
 	public JPEGAppn(LEDataInputStream byteStream) {
 		super(byteStream);
 	}
-	
+
 	@Override
 	public boolean verify() {
 		int marker = getSegmentMarker();

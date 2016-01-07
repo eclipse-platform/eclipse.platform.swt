@@ -62,10 +62,10 @@ void disposeCOMInterfaces () {
 	if (supports != null) {
 		supports.dispose ();
 		supports = null;
-	}	
+	}
 	if (simpleEnumerator != null) {
 		simpleEnumerator.dispose ();
-		simpleEnumerator = null;	
+		simpleEnumerator = null;
 	}
 	if (values != null) {
 		for (int i = 0; i < values.length; i++) {
@@ -109,14 +109,14 @@ int HasMoreElements (long /*int*/ _retval) {
 	boolean more = values != null && index < values.length;
 	XPCOM.memmove (_retval, new boolean[] {more});
 	return XPCOM.NS_OK;
-}	
-	
+}
+
 int GetNext (long /*int*/ _retval) {
 	if (values == null || index == values.length) return XPCOM.NS_ERROR_UNEXPECTED;
 	nsISupports value = values[index++];
     value.AddRef ();
     XPCOM.memmove (_retval, new long /*int*/[] {value.getAddress ()}, C.PTR_SIZEOF);
     return XPCOM.NS_OK;
-}		
+}
 }
 

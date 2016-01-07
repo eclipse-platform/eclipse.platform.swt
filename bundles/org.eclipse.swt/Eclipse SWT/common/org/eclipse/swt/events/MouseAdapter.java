@@ -15,7 +15,7 @@ package org.eclipse.swt.events;
  * This adapter class provides default implementations for the
  * methods described by the <code>MouseListener</code> interface.
  * <p>
- * Classes that wish to deal with <code>MouseEvent</code>s 
+ * Classes that wish to deal with <code>MouseEvent</code>s
  * which occur as mouse buttons are pressed and released can
  * extend this class and override only the methods which they are
  * interested in.
@@ -28,7 +28,7 @@ package org.eclipse.swt.events;
 public abstract class MouseAdapter implements MouseListener {
 
 /**
- * Sent when a mouse button is pressed twice within the 
+ * Sent when a mouse button is pressed twice within the
  * (operating system specified) double click period.
  * The default behavior is to do nothing.
  *

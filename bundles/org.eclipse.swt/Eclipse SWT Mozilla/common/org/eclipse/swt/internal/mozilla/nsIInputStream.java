@@ -48,7 +48,7 @@ public class nsIInputStream extends nsISupports {
 		if (IsXULRVersionOrLater(MozillaVersion.VERSION_XR24)) return XPCOM.NS_COMFALSE;
 		return XPCOM.VtblCall(this.getMethodIndex("available"), getAddress(), _retval);
 	}
-	
+
 	public int Available(long[] _retval) {
 		if (!IsXULRVersionOrLater(MozillaVersion.VERSION_XR24)) return XPCOM.NS_COMFALSE;
 		return XPCOM.VtblCall(this.getMethodIndex("available"), getAddress(), _retval);

@@ -29,7 +29,7 @@ public abstract class IIDStore {
 		if (version <= MozillaVersion.GetLatestVersion ()) {
 			nsID[] table = IIDs.get (clazz);
 			if (table == null) {
-				/* The nsI* class has not been loaded, so attempt to create a default instance to make this happen */ 
+				/* The nsI* class has not been loaded, so attempt to create a default instance to make this happen */
 				try {
 					Class<?> argType = C.PTR_SIZEOF == 4 ? Integer.TYPE : Long.TYPE;
 					clazz.getConstructor (new Class<?>[] {argType}).newInstance (new Object[] {0});

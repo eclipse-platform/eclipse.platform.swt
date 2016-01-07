@@ -16,16 +16,16 @@ package org.eclipse.swt.graphics;
  *
  * @see Path
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
- * 
+ *
  * @since 3.1
  */
 public final class PathData {
-	
+
 	/**
-	 * The type of each point. 
+	 * The type of each point.
 	 */
 	public byte[] types;
-	
+
 	/**
 	 * The points of a path.
 	 */

@@ -15,7 +15,7 @@ package org.eclipse.swt.graphics;
  * when the application is moved from a low DPI monitor to a high DPI monitor.
  * This provides API which will be called by SWT during the image rendering.
  *
- * This interface needs to be implemented by client code to provide the 
+ * This interface needs to be implemented by client code to provide the
  * image information on demand.
  *
  * @since 3.104
@@ -28,7 +28,7 @@ public interface ImageFileNameProvider {
 	 * If no image is available for a particular zoom level, this method should
 	 * return <code>null</code>. For <code>zoom == 100</code>, returning
 	 * <code>null</code> in not allowed, and SWT will throw an exception.
-	 * 
+	 *
 	 * @param zoom
 	 *            The zoom level in % of the standard resolution (which is 1
 	 *            physical monitor pixel == 1 SWT logical pixel). Typically 100,

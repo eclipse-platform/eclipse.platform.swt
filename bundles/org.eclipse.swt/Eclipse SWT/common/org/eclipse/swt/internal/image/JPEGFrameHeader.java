@@ -22,62 +22,62 @@ final class JPEGFrameHeader extends JPEGVariableSizeSegment {
 	public JPEGFrameHeader(byte[] reference) {
 		super(reference);
 	}
-	
+
 	public JPEGFrameHeader(LEDataInputStream byteStream) {
 		super(byteStream);
 		initializeComponentParameters();
 	}
-	
+
 	public int getSamplePrecision() {
 		return reference[4] & 0xFF;
 	}
-	
+
 	public int getNumberOfLines() {
 		return (reference[5] & 0xFF) << 8 | (reference[6] & 0xFF);
 	}
-	
+
 	public int getSamplesPerLine() {
 		return (reference[7] & 0xFF) << 8 | (reference[8] & 0xFF);
 	}
-	
+
 	public int getNumberOfImageComponents() {
 		return reference[9] & 0xFF;
 	}
-	
+
 	public void setSamplePrecision(int precision) {
 		reference[4] = (byte)(precision & 0xFF);
 	}
-	
+
 	public void setNumberOfLines(int anInteger) {
 		reference[5] = (byte)((anInteger & 0xFF00) >> 8);
 		reference[6] = (byte)(anInteger & 0xFF);
 	}
-	
+
 	public void setSamplesPerLine(int samples) {
 		reference[7] = (byte)((samples & 0xFF00) >> 8);
 		reference[8] = (byte)(samples & 0xFF);
 	}
-	
+
 	public void setNumberOfImageComponents(int anInteger) {
 		reference[9] = (byte)(anInteger & 0xFF);
 	}
-	
+
 	public int getMaxHFactor() {
 		return maxHFactor;
 	}
-	
+
 	public int getMaxVFactor() {
 		return maxVFactor;
 	}
-	
+
 	public void setMaxHFactor(int anInteger) {
 		maxHFactor = anInteger;
 	}
-	
+
 	public void setMaxVFactor(int anInteger) {
 		maxVFactor = anInteger;
 	}
-	
+
 	/* Used when decoding. */
 	void initializeComponentParameters() {
 		int nf = getNumberOfImageComponents();
@@ -127,7 +127,7 @@ final class JPEGFrameHeader extends JPEGVariableSizeSegment {
 		setMaxVFactor(vmax);
 		componentParameters = compSpecParams;
 	}
-	
+
 	/* Used when encoding. */
 	public void initializeContents() {
 		int nf = getNumberOfImageComponents();
@@ -168,12 +168,12 @@ final class JPEGFrameHeader extends JPEGVariableSizeSegment {
 		setMaxHFactor(hmax);
 		setMaxVFactor(vmax);
 	}
-	
+
 	int roundUpToMultiple(int anInteger, int mInteger) {
 		int a = anInteger + mInteger - 1;
 		return a - (a % mInteger);
 	}
-	
+
 	/*
 	 * Verify the information contained in the receiver is correct.
 	 * Answer true if the header contains a valid marker. Otherwise,
@@ -208,7 +208,7 @@ final class JPEGFrameHeader extends JPEGVariableSizeSegment {
 			|| marker == JPEGFileFormat.SOF10
 			|| marker == JPEGFileFormat.SOF14;
 	}
-	
+
 	public boolean isArithmeticCoding() {
 		return getSegmentMarker() >= JPEGFileFormat.SOF9;
 	}

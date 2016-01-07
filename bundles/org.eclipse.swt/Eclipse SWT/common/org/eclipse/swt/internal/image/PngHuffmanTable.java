@@ -15,7 +15,7 @@ import java.io.*;
 public class PngHuffmanTable {
 	CodeLengthInfo[] codeLengthInfo;
 	int[] codeValues;
-	
+
 	static final int MAX_CODE_LENGTH = 15;
 	static final int BAD_CODE = 0xFFFFFFF;
 	static final int incs[] = {1391376, 463792, 198768, 86961, 33936, 13776, 4592, 1968, 861, 336, 112, 48, 21, 7, 3, 1};
@@ -31,7 +31,7 @@ private void initialize(int[] lengths) {
 	for (int i = 0; i < codeValues.length; i++) {
 		codeValues[i] = i;
 	}
-	
+
 	// minCodesByLength[n] : The smallest Huffman code of length n + 1.
 	// maxCodesByLength[n] : The largest Huffman code of length n + 1.
 	// indexesByLength[n] : Index into the values array. First value with a code of length n + 1.
@@ -44,7 +44,7 @@ private void initialize(int[] lengths) {
 		codeLengthInfo[i].max = -1;
 	}
 }
-	
+
 private void generateTable(int[] lengths) {
 	// Sort the values using shellsort. Primary key is code size. Secondary key is value.
 	int codeValuesTemp;
@@ -79,7 +79,7 @@ private void generateTable(int[] lengths) {
 			code++;
 		}
 	}
-	
+
 	int last = 0;
 	for (int i = 0; i < lengths.length; i++) {
 		if (last != lengths[i]) {
@@ -113,8 +113,8 @@ int getNextValue(PngDecodingDataStream stream) throws IOException {
 	// so now we can look up the value for the Huffman code in the table.
 	int index = codeLengthInfo[codelength].baseIndex + offset;
 	return codeValues[index];
-}	
-	
+}
+
 static class CodeLengthInfo {
 	int length;
 	int max;

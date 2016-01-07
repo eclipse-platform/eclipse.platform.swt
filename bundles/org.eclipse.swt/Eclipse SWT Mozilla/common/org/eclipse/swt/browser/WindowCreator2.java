@@ -72,15 +72,15 @@ void disposeCOMInterfaces () {
 	if (supports != null) {
 		supports.dispose ();
 		supports = null;
-	}	
+	}
 	if (windowCreator != null) {
 		windowCreator.dispose ();
-		windowCreator = null;	
+		windowCreator = null;
 	}
 
 	if (windowCreator2 != null) {
 		windowCreator2.dispose ();
-		windowCreator2 = null;	
+		windowCreator2 = null;
 	}
 }
 
@@ -92,7 +92,7 @@ int QueryInterface (long /*int*/ riid, long /*int*/ ppvObject) {
 	if (riid == 0 || ppvObject == 0) return XPCOM.NS_ERROR_NO_INTERFACE;
 	nsID guid = new nsID ();
 	XPCOM.memmove (guid, riid, nsID.sizeof);
-	
+
 	if (guid.Equals (XPCOM.NS_ISUPPORTS_IID)) {
 		XPCOM.memmove (ppvObject, new long /*int*/[] {supports.getAddress ()}, C.PTR_SIZEOF);
 		AddRef ();
@@ -112,13 +112,13 @@ int QueryInterface (long /*int*/ riid, long /*int*/ ppvObject) {
 	XPCOM.memmove (ppvObject, new long /*int*/[] {0}, C.PTR_SIZEOF);
 	return XPCOM.NS_ERROR_NO_INTERFACE;
 }
-        	
+
 int Release () {
 	refCount--;
 	if (refCount == 0) disposeCOMInterfaces ();
 	return refCount;
 }
-	
+
 /* nsIWindowCreator */
 
 int CreateChromeWindow (long /*int*/ parent, int chromeFlags, long /*int*/ _retval) {
@@ -131,7 +131,7 @@ int CreateChromeWindow2 (long /*int*/ parent, int chromeFlags, int contextFlags,
 	if (parent == 0 && (chromeFlags & nsIWebBrowserChrome.CHROME_OPENAS_CHROME) == 0) {
 		return XPCOM.NS_ERROR_NOT_IMPLEMENTED;
 	}
-	Browser src = null; 
+	Browser src = null;
 	if (parent != 0) {
 		nsIWebBrowserChrome browserChromeParent = new nsIWebBrowserChrome (parent);
 		long /*int*/[] aWebBrowser = new long /*int*/[1];
@@ -171,7 +171,7 @@ int CreateChromeWindow2 (long /*int*/ parent, int chromeFlags, int contextFlags,
 			/* add dialog trim for all windows except pop-ups */
 			style |= SWT.DIALOG_TRIM;
 		}
-		if ((chromeFlags & nsIWebBrowserChrome.CHROME_MODAL) != 0) style |= SWT.APPLICATION_MODAL; 
+		if ((chromeFlags & nsIWebBrowserChrome.CHROME_MODAL) != 0) style |= SWT.APPLICATION_MODAL;
 		final Shell shell = src == null ?
 			new Shell (style) :
 			new Shell (src.getShell(), style);
@@ -218,7 +218,7 @@ int CreateChromeWindow2 (long /*int*/ parent, int chromeFlags, int contextFlags,
 		}
 		browser = event.browser;
 
-		/* Ensure that the Browser provided by the client is valid for use */ 
+		/* Ensure that the Browser provided by the client is valid for use */
 		doit = browser != null && !browser.isDisposed ();
 		if (doit) {
 			String platform = Platform.PLATFORM;

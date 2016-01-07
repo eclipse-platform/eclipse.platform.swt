@@ -18,7 +18,7 @@ import org.eclipse.swt.events.*;
  * {@link StatusTextListener}'s when the status text is changed.
  * The status text is typically displayed in the status bar of
  * a browser application.
- * 
+ *
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  *
  * @since 3.0
@@ -26,7 +26,7 @@ import org.eclipse.swt.events.*;
 public class StatusTextEvent extends TypedEvent {
 	/** status text */
 	public String text;
-	
+
 	static final long serialVersionUID = 3258407348371600439L;
 
 /**

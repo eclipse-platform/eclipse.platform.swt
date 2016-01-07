@@ -13,7 +13,7 @@ package org.eclipse.swt.internal;
 /** @jniclass flags=no_gen */
 public class LONG {
 	public long /*int*/ value;
-	
+
 	public LONG (long /*int*/ value) {
 		this.value = value;
 	}

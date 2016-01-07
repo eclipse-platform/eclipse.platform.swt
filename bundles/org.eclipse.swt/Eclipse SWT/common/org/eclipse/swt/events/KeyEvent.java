@@ -35,9 +35,9 @@ import org.eclipse.swt.widgets.Event;
  */
 
 public class KeyEvent extends TypedEvent {
-	
+
  	/**
- 	 * the character represented by the key that was typed.  
+ 	 * the character represented by the key that was typed.
 	 * This is the final character that results after all modifiers have been
  	 * applied.  For example, when the user types Ctrl+A, the character value
  	 * is 0x01.  It is important that applications do not attempt to modify the
@@ -45,7 +45,7 @@ public class KeyEvent extends TypedEvent {
  	 * character will not be correct.
  	 */
 	public char character;
-	
+
 	/**
 	 * the key code of the key that was typed,
 	 * as defined by the key code constants in class <code>SWT</code>.
@@ -53,11 +53,11 @@ public class KeyEvent extends TypedEvent {
 	 * contains the unicode value of the original character.  For example,
 	 * typing Ctrl+M or Return both result in the character '\r' but the
 	 * keyCode field will also contain '\r' when Return was typed.
-	 * 
+	 *
 	 * @see org.eclipse.swt.SWT
 	 */
 	public int keyCode;
-	
+
 	/**
 	 * depending on the event, the location of key specified by the
 	 * keyCode or character. The possible values for this field are
@@ -74,24 +74,24 @@ public class KeyEvent extends TypedEvent {
 	 * the key code or character in the current event. It does not include
 	 * information about the location of modifiers in the state mask.
 	 * </p>
-	 * 
+	 *
 	 * @see org.eclipse.swt.SWT#LEFT
 	 * @see org.eclipse.swt.SWT#RIGHT
 	 * @see org.eclipse.swt.SWT#KEYPAD
-	 * 
+	 *
 	 * @since 3.6
 	 */
 	public int keyLocation;
-	
+
 	/**
 	 * the state of the keyboard modifier keys and mouse masks
 	 * at the time the event was generated.
-	 * 
+	 *
 	 * @see org.eclipse.swt.SWT#MODIFIER_MASK
 	 * @see org.eclipse.swt.SWT#BUTTON_MASK
 	 */
 	public int stateMask;
-	
+
 	/**
 	 * A flag indicating whether the operation should be allowed.
 	 * Setting this field to <code>false</code> will cancel the operation.
@@ -99,7 +99,7 @@ public class KeyEvent extends TypedEvent {
 	public boolean doit;
 
 	static final long serialVersionUID = 3256442491011412789L;
-	
+
 /**
  * Constructs a new instance of this class based on the
  * information in the given untyped event.

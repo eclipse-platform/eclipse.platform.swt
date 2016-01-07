@@ -43,7 +43,7 @@ public class nsIScriptContext extends nsISupports {
 		IIDStore.RegisterIID(nsIScriptContext.class, MozillaVersion.VERSION_XR24, new nsID(NS_ISCRIPTCONTEXT_24_IID_STR));
 		IIDStore.RegisterIID(nsIScriptContext.class, MozillaVersion.VERSION_XR31, new nsID(NS_ISCRIPTCONTEXT_31_IID_STR));
 	}
-	
+
 	public nsIScriptContext(long /*int*/ address) {
 		super(address);
 	}

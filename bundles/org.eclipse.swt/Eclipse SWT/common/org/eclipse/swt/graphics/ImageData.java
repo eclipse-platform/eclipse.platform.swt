@@ -18,10 +18,10 @@ import org.eclipse.swt.*;
 /**
  * Instances of this class are device-independent descriptions
  * of images. They are typically used as an intermediate format
- * between loading from or writing to streams and creating an 
+ * between loading from or writing to streams and creating an
  * <code>Image</code>.
  * <p>
- * Note that the public fields <code>x</code>, <code>y</code>, 
+ * Note that the public fields <code>x</code>, <code>y</code>,
  * <code>disposalMethod</code> and <code>delayTime</code> are
  * typically only used when the image is in a set of images used
  * for animation.
@@ -35,7 +35,7 @@ import org.eclipse.swt.*;
  */
 
 public final class ImageData implements Cloneable {
-	
+
 	/**
 	 * The width of the image, in pixels.
 	 */
@@ -121,7 +121,7 @@ public final class ImageData implements Cloneable {
 	 * </p>
 	 */
 	public int maskPad;
-	
+
 	/**
 	 * The alpha data of the image.
 	 * <p>
@@ -132,7 +132,7 @@ public final class ImageData implements Cloneable {
 	 * </p>
 	 */
 	public byte[] alphaData;
-	
+
 	/**
 	 * The global alpha value to be used for every pixel.
 	 * <p>
@@ -148,7 +148,7 @@ public final class ImageData implements Cloneable {
 
 	/**
 	 * The type of file from which the image was read.
-	 * 
+	 *
 	 * It is expressed as one of the following values:
 	 * <dl>
 	 * <dt><code>IMAGE_BMP</code></dt>
@@ -184,7 +184,7 @@ public final class ImageData implements Cloneable {
 	/**
 	 * A description of how to dispose of the current image
 	 * before displaying the next.
-	 * 
+	 *
 	 * It is expressed as one of the following values:
 	 * <dl>
 	 * <dt><code>DM_UNSPECIFIED</code></dt>
@@ -292,7 +292,7 @@ public ImageData(int width, int height, int depth, PaletteData palette, int scan
  * <p>
  * This constructor is provided for convenience when loading a single
  * image only. If the stream contains multiple images, only the first
- * one will be loaded. To load multiple images, use 
+ * one will be loaded. To load multiple images, use
  * <code>ImageLoader.load()</code>.
  * </p><p>
  * This constructor may be used to load a resource as follows:
@@ -358,7 +358,7 @@ public ImageData(InputStream stream) {
  * <p>
  * This constructor is provided for convenience when loading a single
  * image only. If the file contains multiple images, only the first
- * one will be loaded. To load multiple images, use 
+ * one will be loaded. To load multiple images, use
  * <code>ImageLoader.load()</code>.
  * </p>
  *
@@ -428,7 +428,7 @@ ImageData(
 
 	int bytesPerLine = (((width * depth + 7) / 8) + (scanlinePad - 1))
 		/ scanlinePad * scanlinePad;
-	
+
 	/*
 	 * When the image is being loaded from a PNG, we need to use the theoretical minimum
 	 * number of bytes per line to check whether there is enough data, because the actual
@@ -492,7 +492,7 @@ void setAllFields(int width, int height, int depth, int scanlinePad,
 	this.delayTime = delayTime;
 }
 
-/**	 
+/**
  * Invokes internal SWT functionality to create a new instance of
  * this class.
  * <p>
@@ -505,7 +505,7 @@ void setAllFields(int width, int height, int depth, int scanlinePad,
  * <p>
  * This method is for internal use, and is not described further.
  * </p>
- * 
+ *
  * @noreference This method is not intended to be referenced by clients.
  */
 public static ImageData internal_new(
@@ -1090,7 +1090,7 @@ public int getTransparencyType() {
 
 /**
  * Returns the byte order of the receiver.
- * 
+ *
  * @return MSB_FIRST or LSB_FIRST
  */
 int getByteOrder() {
@@ -1131,7 +1131,7 @@ public ImageData scaledTo(int width, int height) {
 		ALPHA_OPAQUE, null, 0, 0, 0,
 		dest.data, dest.depth, dest.bytesPerLine, dest.getByteOrder(), 0, 0, dest.width, dest.height, null, null, null,
 		flipX, flipY);
-	
+
 	/* Scale the image mask or alpha */
 	if (maskData != null) {
 		dest.maskPad = this.maskPad;
@@ -1175,9 +1175,9 @@ public ImageData scaledTo(int width, int height) {
 public void setAlpha(int x, int y, int alpha) {
 	if (x >= width || y >= height || x < 0 || y < 0 || alpha < 0 || alpha > 255)
 		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-	
+
 	if (alphaData == null) alphaData = new byte[width * height];
-	alphaData[y * width + x] = (byte)alpha;	
+	alphaData[y * width + x] = (byte)alpha;
 }
 
 /**
@@ -1204,7 +1204,7 @@ public void setAlphas(int x, int y, int putWidth, byte[] alphas, int startIndex)
 	if (alphas == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (putWidth < 0 || x >= width || y >= height || x < 0 || y < 0) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	if (putWidth == 0) return;
-	
+
 	if (alphaData == null) alphaData = new byte[width * height];
 	// may throw an IndexOutOfBoundsException
 	System.arraycopy(alphas, startIndex, alphaData, y * width + x, putWidth);
@@ -1665,7 +1665,7 @@ static final ImageData convertMask(ImageData mask) {
 static final byte[] convertPad(byte[] data, int width, int height, int depth, int pad, int newPad) {
 	if (pad == newPad) return data;
 	int stride = (width * depth + 7) / 8;
-	int bpl = (stride + (pad - 1)) / pad * pad;	
+	int bpl = (stride + (pad - 1)) / pad * pad;
 	int newBpl = (stride + (newPad - 1)) / newPad * newPad;
 	byte[] newData = new byte[height * newBpl];
 	int srcIndex = 0, destIndex = 0;
@@ -1730,7 +1730,7 @@ private static final int
  * the masks are ignored.  Hence when not changing the image
  * data format, 0 may be specified for the masks.
  * </p>
- * 
+ *
  * @param op the blitter operation: a combination of BLIT_xxx flags
  *        (see BLIT_xxx constants)
  * @param srcData the source byte array containing image data
@@ -1811,7 +1811,7 @@ static void blit(int op,
 		default:
 			//throw new IllegalArgumentException("Invalid source type");
 			return;
-	}			
+	}
 	int spr = srcY * srcStride + srcX * sbpp;
 
 	/*** Prepare destination-related data ***/
@@ -1836,7 +1836,7 @@ static void blit(int op,
 		default:
 			//throw new IllegalArgumentException("Invalid destination type");
 			return;
-	}			
+	}
 	int dpr = ((flipY) ? destY + dhm1 : destY) * destStride + ((flipX) ? destX + dwm1 : destX) * dbpp;
 	final int dprxi = (flipX) ? -dbpp : dbpp;
 	final int dpryi = (flipY) ? -destStride : destStride;
@@ -1888,7 +1888,7 @@ static void blit(int op,
 						sp += (sfx >>> 16);
 					}
 				}
-				break;					
+				break;
 			case 2:
 				for (int dy = destHeight, sfy = sfyi; dy > 0; --dy, sp = spr += (sfy >>> 16) * srcStride, sfy = (sfy & 0xffff) + sfyi, dp = dpr += dpryi) {
 					for (int dx = destWidth, sfx = sfxi; dx > 0; --dx, dp += dprxi, sfx = (sfx & 0xffff) + sfxi) {
@@ -2063,7 +2063,7 @@ static void blit(int op,
 				case ALPHA_MASK_UNPACKED:
 					alpha = (alphaData[ap] != 0) ? 0x10000 : 0;
 					ap += (sfx >> 16);
-					break;						
+					break;
 				case ALPHA_MASK_PACKED:
 					alpha = (alphaData[ap >> 3] << ((ap & 7) + 9)) & 0x10000;
 					ap += (sfx >> 16);
@@ -2140,7 +2140,7 @@ static void blit(int op,
 			}
 
 			/*** WRITE NEXT PIXEL ***/
-			final int data = 
+			final int data =
 				(r >>> destRedPreShift << destRedShift) |
 				(g >>> destGreenPreShift << destGreenShift) |
 				(b >>> destBluePreShift << destBlueShift) |
@@ -2176,7 +2176,7 @@ static void blit(int op,
 				} break;
 			}
 		}
-	}			
+	}
 }
 
 /**
@@ -2186,7 +2186,7 @@ static void blit(int op,
  * arrays may be null if no alpha blending or dither is to be
  * performed.
  * </p>
- * 
+ *
  * @param op the blitter operation: a combination of BLIT_xxx flags
  *        (see BLIT_xxx constants)
  * @param srcData the source byte array containing image data
@@ -2262,8 +2262,8 @@ static void blit(int op,
 			break;
 		default:
 			//throw new IllegalArgumentException("Invalid source type");
-			return;		
-	}			
+			return;
+	}
 	int spr = srcY * srcStride + srcX;
 
 	/*** Prepare destination-related data ***/
@@ -2287,7 +2287,7 @@ static void blit(int op,
 		default:
 			//throw new IllegalArgumentException("Invalid source type");
 			return;
-	}			
+	}
 	int dpr = ((flipY) ? destY + dhm1 : destY) * destStride + ((flipX) ? destX + dwm1 : destX);
 	final int dprxi = (flipX) ? -1 : 1;
 	final int dpryi = (flipY) ? -destStride : destStride;
@@ -2390,7 +2390,7 @@ static void blit(int op,
 							sp += (sfx >>> 16);
 						}
 					}
-					break;					
+					break;
 				case TYPE_INDEX_4:
 					for (int dy = destHeight, sfy = sfyi; dy > 0; --dy, sp = spr += (sfy >>> 16) * srcStride, sfy = (sfy & 0xffff) + sfyi, dp = dpr += dpryi) {
 						for (int dx = destWidth, sfx = sfxi; dx > 0; --dx, dp += dprxi, sfx = (sfx & 0xffff) + sfxi) {
@@ -2412,7 +2412,7 @@ static void blit(int op,
 							destData[dp >> 2] = (byte)(destData[dp >> 2] & ~(0x03 << shift) | (index << shift));
 						}
 					}
-					break;					
+					break;
 				case TYPE_INDEX_1_MSB:
 					for (int dy = destHeight, sfy = sfyi; dy > 0; --dy, sp = spr += (sfy >>> 16) * srcStride, sfy = (sfy & 0xffff) + sfyi, dp = dpr += dpryi) {
 						for (int dx = destWidth, sfx = sfxi; dx > 0; --dx, dp += dprxi, sfx = (sfx & 0xffff) + sfxi) {
@@ -2422,7 +2422,7 @@ static void blit(int op,
 							destData[dp >> 3] = (byte)(destData[dp >> 3] & ~(0x01 << shift) | (index << shift));
 						}
 					}
-					break;					
+					break;
 				case TYPE_INDEX_1_LSB:
 					for (int dy = destHeight, sfy = sfyi; dy > 0; --dy, sp = spr += (sfy >>> 16) * srcStride, sfy = (sfy & 0xffff) + sfyi, dp = dpr += dpryi) {
 						for (int dx = destWidth, sfx = sfxi; dx > 0; --dx, dp += dprxi, sfx = (sfx & 0xffff) + sfxi) {
@@ -2449,20 +2449,20 @@ static void blit(int op,
 						case TYPE_INDEX_8:
 							index = srcData[sp] & 0xff;
 							sp += (sfx >>> 16);
-							break;					
+							break;
 						case TYPE_INDEX_4:
 							if ((sp & 1) != 0) index = srcData[sp >> 1] & 0x0f;
 							else index = (srcData[sp >> 1] >>> 4) & 0x0f;
 							sp += (sfx >>> 16);
-							break;					
+							break;
 						case TYPE_INDEX_2:
 							index = (srcData[sp >> 2] >>> (6 - (sp & 3) * 2)) & 0x03;
 							sp += (sfx >>> 16);
-							break;					
+							break;
 						case TYPE_INDEX_1_MSB:
 							index = (srcData[sp >> 3] >>> (7 - (sp & 7))) & 0x01;
 							sp += (sfx >>> 16);
-							break;					
+							break;
 						case TYPE_INDEX_1_LSB:
 							index = (srcData[sp >> 3] >>> (sp & 7)) & 0x01;
 							sp += (sfx >>> 16);
@@ -2500,7 +2500,7 @@ static void blit(int op,
 						} break;
 					}
 					index = paletteMapping[index] & 0xff;
-			
+
 					/*** WRITE NEXT PIXEL ***/
 					switch (dtype) {
 						case TYPE_INDEX_8:
@@ -2509,11 +2509,11 @@ static void blit(int op,
 						case TYPE_INDEX_4:
 							if ((dp & 1) != 0) destData[dp >> 1] = (byte)((destData[dp >> 1] & 0xf0) | index);
 							else destData[dp >> 1] = (byte)((destData[dp >> 1] & 0x0f) | (index << 4));
-							break;					
+							break;
 						case TYPE_INDEX_2: {
 							final int shift = 6 - (dp & 3) * 2;
 							destData[dp >> 2] = (byte)(destData[dp >> 2] & ~(0x03 << shift) | (index << shift));
-						} break;					
+						} break;
 						case TYPE_INDEX_1_MSB: {
 							final int shift = 7 - (dp & 7);
 							destData[dp >> 3] = (byte)(destData[dp >> 3] & ~(0x01 << shift) | (index << shift));
@@ -2521,14 +2521,14 @@ static void blit(int op,
 						case TYPE_INDEX_1_LSB: {
 							final int shift = dp & 7;
 							destData[dp >> 3] = (byte)(destData[dp >> 3] & ~(0x01 << shift) | (index << shift));
-						} break;					
+						} break;
 					}
 				}
 			}
 		}
 		return;
 	}
-		
+
 	/*** Comprehensive blit (apply transformations) ***/
 	int alpha = alphaMode;
 	int index = 0;
@@ -2586,7 +2586,7 @@ static void blit(int op,
 				case ALPHA_MASK_UNPACKED:
 					alpha = (alphaData[ap] != 0) ? 0x10000 : 0;
 					ap += (sfx >> 16);
-					break;						
+					break;
 				case ALPHA_MASK_PACKED:
 					alpha = (alphaData[ap >> 3] << ((ap & 7) + 9)) & 0x10000;
 					ap += (sfx >> 16);
@@ -2693,7 +2693,7 @@ static void blit(int op,
 				case TYPE_INDEX_2: {
 					final int shift = 6 - (dp & 3) * 2;
 					destData[dp >> 2] = (byte)(destData[dp >> 2] & ~(0x03 << shift) | (lastindex << shift));
-				} break;					
+				} break;
 				case TYPE_INDEX_1_MSB: {
 					final int shift = 7 - (dp & 7);
 					destData[dp >> 3] = (byte)(destData[dp >> 3] & ~(0x01 << shift) | (lastindex << shift));
@@ -2701,7 +2701,7 @@ static void blit(int op,
 				case TYPE_INDEX_1_LSB: {
 					final int shift = dp & 7;
 					destData[dp >> 3] = (byte)(destData[dp >> 3] & ~(0x01 << shift) | (lastindex << shift));
-				} break;					
+				} break;
 			}
 		}
 	}
@@ -2713,7 +2713,7 @@ static void blit(int op,
  * Note: The source and destination masks and palettes must
  * always be fully specified.
  * </p>
- * 
+ *
  * @param op the blitter operation: a combination of BLIT_xxx flags
  *        (see BLIT_xxx constants)
  * @param srcData the source byte array containing image data
@@ -2819,7 +2819,7 @@ static void blit(int op,
 		default:
 			//throw new IllegalArgumentException("Invalid source type");
 			return;
-	}			
+	}
 	int spr = srcY * srcStride + srcX;
 
 	/*** Prepare destination-related data ***/
@@ -2844,7 +2844,7 @@ static void blit(int op,
 		default:
 			//throw new IllegalArgumentException("Invalid destination type");
 			return;
-	}			
+	}
 	int dpr = ((flipY) ? destY + dhm1 : destY) * destStride + ((flipX) ? destX + dwm1 : destX) * dbpp;
 	final int dprxi = (flipX) ? -dbpp : dbpp;
 	final int dpryi = (flipY) ? -destStride : destStride;
@@ -2947,7 +2947,7 @@ static void blit(int op,
 				case ALPHA_MASK_UNPACKED:
 					alpha = (alphaData[ap] != 0) ? 0x10000 : 0;
 					ap += (sfx >> 16);
-					break;						
+					break;
 				case ALPHA_MASK_PACKED:
 					alpha = (alphaData[ap >> 3] << ((ap & 7) + 9)) & 0x10000;
 					ap += (sfx >> 16);
@@ -3032,7 +3032,7 @@ static void blit(int op,
 			}
 
 			/*** WRITE NEXT PIXEL ***/
-			final int data = 
+			final int data =
 				(r >>> destRedPreShift << destRedShift) |
 				(g >>> destGreenPreShift << destGreenShift) |
 				(b >>> destBluePreShift << destBlueShift) |
@@ -3068,7 +3068,7 @@ static void blit(int op,
 				} break;
 			}
 		}
-	}			
+	}
 }
 
 /**
@@ -3077,7 +3077,7 @@ static void blit(int op,
  * Note: The source and destination masks and palettes must
  * always be fully specified.
  * </p>
- * 
+ *
  * @param op the blitter operation: a combination of BLIT_xxx flags
  *        (see BLIT_xxx constants)
  * @param srcData the source byte array containing image data
@@ -3158,7 +3158,7 @@ static void blit(int op,
 		default:
 			//throw new IllegalArgumentException("Invalid source type");
 			return;
-	}			
+	}
 	int spr = srcY * srcStride + srcX * sbpp;
 
 	/*** Prepare destination-related data ***/
@@ -3182,7 +3182,7 @@ static void blit(int op,
 		default:
 			//throw new IllegalArgumentException("Invalid source type");
 			return;
-	}			
+	}
 	int dpr = ((flipY) ? destY + dhm1 : destY) * destStride + ((flipX) ? destX + dwm1 : destX);
 	final int dprxi = (flipX) ? -1 : 1;
 	final int dpryi = (flipY) ? -destStride : destStride;
@@ -3327,7 +3327,7 @@ static void blit(int op,
 				case ALPHA_MASK_UNPACKED:
 					alpha = (alphaData[ap] != 0) ? 0x10000 : 0;
 					ap += (sfx >> 16);
-					break;						
+					break;
 				case ALPHA_MASK_PACKED:
 					alpha = (alphaData[ap >> 3] << ((ap & 7) + 9)) & 0x10000;
 					ap += (sfx >> 16);
@@ -3426,7 +3426,7 @@ static void blit(int op,
 				case TYPE_INDEX_2: {
 					final int shift = 6 - (dp & 3) * 2;
 					destData[dp >> 2] = (byte)(destData[dp >> 2] & ~(0x03 << shift) | (lastindex << shift));
-				} break;					
+				} break;
 				case TYPE_INDEX_1_MSB: {
 					final int shift = 7 - (dp & 7);
 					destData[dp >> 3] = (byte)(destData[dp >> 3] & ~(0x01 << shift) | (lastindex << shift));
@@ -3434,7 +3434,7 @@ static void blit(int op,
 				case TYPE_INDEX_1_LSB: {
 					final int shift = dp & 7;
 					destData[dp >> 3] = (byte)(destData[dp >> 3] & ~(0x01 << shift) | (lastindex << shift));
-				} break;					
+				} break;
 			}
 		}
 	}
@@ -3534,7 +3534,7 @@ static ImageData createGradientBand(
 			bitmapData = new byte[bandHeight * bytesPerLine];
 			buildDitheredGradientChannel(fromRGB.blue, toRGB.blue, steps, bandWidth, bandHeight, vertical, bitmapData, 0, bytesPerLine, blueBits);
 			buildDitheredGradientChannel(fromRGB.green, toRGB.green, steps, bandWidth, bandHeight, vertical, bitmapData, 1, bytesPerLine, greenBits);
-			buildDitheredGradientChannel(fromRGB.red, toRGB.red, steps, bandWidth, bandHeight, vertical, bitmapData, 2, bytesPerLine, redBits);			
+			buildDitheredGradientChannel(fromRGB.red, toRGB.red, steps, bandWidth, bandHeight, vertical, bitmapData, 2, bytesPerLine, redBits);
 		}
 	} else {
 		/* Dithered two tone */
@@ -3559,7 +3559,7 @@ static ImageData createGradientBand(
 					bitmapData[dp + dx] = (blend + DITHER_MATRIX[dy & 7][dx]) <
 						0x1000000 ? (byte)0 : (byte)1;
 				}
-			}		
+			}
 		} else {
 			for (int dx = 0, blend = 0; dx < bandWidth; ++dx, blend += blendi) {
 				for (int dy = 0, dptr = dx; dy < bandHeight; ++dy, dptr += bytesPerLine) {
@@ -3572,7 +3572,7 @@ static ImageData createGradientBand(
 	return new ImageData(bandWidth, bandHeight, bitmapDepth, paletteData, 4, bitmapData);
 }
 
-/* 
+/*
  * Fill in gradated values for a color channel
  */
 static final void buildPreciseGradientChannel(int from, int to, int steps,
@@ -3590,10 +3590,10 @@ static final void buildPreciseGradientChannel(int from, int to, int steps,
 			bitmapData[dp] = (byte)(val >>> 16);
 			val += inc;
 		}
-	}		
+	}
 }
 
-/* 
+/*
  * Fill in dithered gradated values for a color channel
  */
 static final void buildDitheredGradientChannel(int from, int to, int steps,

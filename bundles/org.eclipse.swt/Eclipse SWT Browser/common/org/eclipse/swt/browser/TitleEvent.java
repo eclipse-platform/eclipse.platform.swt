@@ -17,7 +17,7 @@ import org.eclipse.swt.events.*;
  * A <code>TitleEvent</code> is sent by a {@link Browser} to
  * {@link TitleListener}'s when the title of the current document
  * is available or when it is modified.
- * 
+ *
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  *
  * @since 3.0
@@ -25,7 +25,7 @@ import org.eclipse.swt.events.*;
 public class TitleEvent extends TypedEvent {
 	/** the title of the current document */
 	public String title;
-	
+
 	static final long serialVersionUID = 4121132532906340919L;
 
 /**

@@ -15,7 +15,7 @@ import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.widgets.*;
 
 /**
- * Instances of this class control the position and size of the 
+ * Instances of this class control the position and size of the
  * children of a composite control by using <code>FormAttachments</code>
  * to optionally configure the left, top, right and bottom edges of
  * each child.
@@ -51,7 +51,7 @@ import org.eclipse.swt.widgets.*;
  * </pre>
  * </p>
  * <p>
- * Each side of a child control can be attached to a position in the parent 
+ * Each side of a child control can be attached to a position in the parent
  * composite, or to other controls within the <code>Composite</code> by
  * creating instances of <code>FormAttachment</code> and setting them into
  * the top, bottom, left, and right fields of the child's <code>FormData</code>.
@@ -77,17 +77,17 @@ import org.eclipse.swt.widgets.*;
  * <code>button1</code>.  This will over constrain the layout, causing undefined
  * behavior.  The algorithm will terminate, but the results are undefined.
  * </p>
- * 
+ *
  * @see FormData
  * @see FormAttachment
  * @see <a href="http://www.eclipse.org/swt/snippets/#formlayout">FormLayout snippets</a>
  * @see <a href="http://www.eclipse.org/swt/examples.php">SWT Example: LayoutExample</a>
- * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a> 
- * 
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
+ *
  * @since 2.0
  */
 public final class FormLayout extends Layout {
-	
+
 	/**
 	 * marginWidth specifies the number of pixels of horizontal margin
 	 * that will be placed along the left and right edges of the layout.
@@ -95,7 +95,7 @@ public final class FormLayout extends Layout {
 	 * The default value is 0.
 	 */
  	public int marginWidth = 0;
- 	
+
 	/**
 	 * marginHeight specifies the number of pixels of vertical margin
 	 * that will be placed along the top and bottom edges of the layout.
@@ -103,14 +103,14 @@ public final class FormLayout extends Layout {
 	 * The default value is 0.
 	 */
  	public int marginHeight = 0;
- 
+
 
  	/**
 	 * marginLeft specifies the number of pixels of horizontal margin
 	 * that will be placed along the left edge of the layout.
 	 *
 	 * The default value is 0.
-	 * 
+	 *
 	 * @since 3.1
 	 */
 	public int marginLeft = 0;
@@ -120,7 +120,7 @@ public final class FormLayout extends Layout {
 	 * that will be placed along the top edge of the layout.
 	 *
 	 * The default value is 0.
-	 * 
+	 *
 	 * @since 3.1
 	 */
 	public int marginTop = 0;
@@ -130,7 +130,7 @@ public final class FormLayout extends Layout {
 	 * that will be placed along the right edge of the layout.
 	 *
 	 * The default value is 0.
-	 * 
+	 *
 	 * @since 3.1
 	 */
 	public int marginRight = 0;
@@ -140,7 +140,7 @@ public final class FormLayout extends Layout {
 	 * that will be placed along the bottom edge of the layout.
 	 *
 	 * The default value is 0.
-	 * 
+	 *
 	 * @since 3.1
 	 */
 	public int marginBottom = 0;
@@ -150,11 +150,11 @@ public final class FormLayout extends Layout {
 	 * and the edge of its neighbouring control.
 	 *
 	 * The default value is 0.
-	 * 
+	 *
 	 * @since 3.0
 	 */
 	public int spacing = 0;
-	
+
 /**
  * Constructs a new instance of this class.
  */
@@ -164,28 +164,28 @@ public FormLayout () {
 /*
  * Computes the preferred height of the form with
  * respect to the preferred height of the control.
- * 
+ *
  * Given that the equations for top (T) and bottom (B)
  * of the control in terms of the height of the form (X)
  * are:
  *		T = AX + B
  *		B = CX + D
- * 
+ *
  * The equation for the height of the control (H)
  * is bottom (B) minus top (T) or (H = B - T) or:
- * 
+ *
  *		H = (CX + D) - (AX + B)
- * 
+ *
  * Solving for (X), the height of the form, we get:
- * 
+ *
  *		X = (H + B - D) / (C - A)
- * 
+ *
  * When (A = C), (C - A = 0) and the equation has no
  * solution for X.  This is a special case meaning that
  * the control does not constrain the height of the
  * form.  In this case, we need to arbitrarily define
  * the height of the form (X):
- * 
+ *
  * Case 1: A = C, A = 0, C = 0
  *
  * 		Let X = D, the distance from the top of the form
@@ -193,9 +193,9 @@ public FormLayout () {
  * 		the control was attached to the top of the form
  * 		and the form needs to be large enough to show the
  * 		bottom edge of the control.
- * 
+ *
  * Case 2: A = C, A = 1, C = 1
- * 
+ *
  * 		Let X = -B, the distance from the bottom of the
  *		form to the top edge of the control.  In this case,
  * 		the control was attached to the bottom of the form
@@ -204,21 +204,21 @@ public FormLayout () {
  * 		positive, there is no possible height for the form
  * 		that will show the control as it will always be
  * 		below the bottom edge of the form.
- * 
+ *
  * Case 3: A = C, A != 0, C != 0 and A != 1, C != 0
- * 
- * 		Let X = D / (1 - C), the distance from the top of the 
- * 		form to the bottom edge of the control.  In this case, 
- * 		since C is not 0 or 1, it must be a fraction, U / V.  
- * 		The offset D is the distance from CX to the bottom edge 
- * 		of the control.  This represents a fraction of the form 
- * 		(1 - C)X. Since the height of a fraction of the form is 
+ *
+ * 		Let X = D / (1 - C), the distance from the top of the
+ * 		form to the bottom edge of the control.  In this case,
+ * 		since C is not 0 or 1, it must be a fraction, U / V.
+ * 		The offset D is the distance from CX to the bottom edge
+ * 		of the control.  This represents a fraction of the form
+ * 		(1 - C)X. Since the height of a fraction of the form is
  * 		known, the height of the entire form can be found by setting
- * 		(1 - C)X = D.  We solve this equation for X in terms of U 
- * 		and V, giving us X = (U * D) / (U - V). Similarly, if the 
+ * 		(1 - C)X = D.  We solve this equation for X in terms of U
+ * 		and V, giving us X = (U * D) / (U - V). Similarly, if the
  * 		offset D is	negative, the control is positioned above CX.
  * 		The offset -B is the distance from the top edge of the control
- * 		to CX. We can find the height of the entire form by setting 
+ * 		to CX. We can find the height of the entire form by setting
  * 		CX = -B. Solving in terms of U and V gives us X = (-B * V) / U.
  */
 int computeHeight (Control control, FormData data, boolean flushCache) {
@@ -231,7 +231,7 @@ int computeHeight (Control control, FormData data, boolean flushCache) {
 		if (bottom.offset <= 0) {
 			return -top.offset * top.denominator / bottom.numerator;
 		}
-		int divider = bottom.denominator - bottom.numerator; 
+		int divider = bottom.denominator - bottom.numerator;
 		return bottom.denominator * bottom.offset / divider;
 	}
 	return height.solveY (data.getHeight (control, flushCache));
@@ -273,7 +273,7 @@ int computeWidth (Control control, FormData data, boolean flushCache) {
 		if (right.offset <= 0) {
 			return -left.offset * left.denominator / left.numerator;
 		}
-		int divider = right.denominator - right.numerator; 
+		int divider = right.denominator - right.numerator;
 		return right.denominator * right.offset / divider;
 	}
 	return width.solveY (data.getWidth (control, flushCache));
@@ -385,5 +385,5 @@ public String toString () {
  	string = string.trim();
  	string += "}";
  	return string;
-}	
+}
 }

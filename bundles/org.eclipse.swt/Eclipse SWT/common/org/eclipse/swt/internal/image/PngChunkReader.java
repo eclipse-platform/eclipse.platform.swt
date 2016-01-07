@@ -18,7 +18,7 @@ public class PngChunkReader {
 	PngFileReadState readState;
 	PngIhdrChunk headerChunk;
 	PngPlteChunk paletteChunk;
-	
+
 PngChunkReader(LEDataInputStream inputStream) {
 	this.inputStream = inputStream;
 	readState = new PngFileReadState();
@@ -27,7 +27,7 @@ PngChunkReader(LEDataInputStream inputStream) {
 
 PngIhdrChunk getIhdrChunk() {
 	if (headerChunk == null) {
-		try { 
+		try {
 			PngChunk chunk = PngChunk.readNextFromStream(inputStream);
 			if (chunk == null) SWT.error(SWT.ERROR_INVALID_IMAGE);
 			headerChunk = (PngIhdrChunk) chunk;
@@ -41,7 +41,7 @@ PngIhdrChunk getIhdrChunk() {
 
 PngChunk readNextChunk() {
 	if (headerChunk == null) return getIhdrChunk();
-	
+
 	PngChunk chunk = PngChunk.readNextFromStream(inputStream);
 	if (chunk == null) SWT.error(SWT.ERROR_INVALID_IMAGE);
 	switch (chunk.getChunkType()) {

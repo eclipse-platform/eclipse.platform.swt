@@ -25,7 +25,7 @@ import org.eclipse.swt.internal.SWTEventObject;
  * @see AccessibleListener
  * @see AccessibleAdapter
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
- * 
+ *
  * @since 2.0
  */
 public class AccessibleEvent extends SWTEventObject {
@@ -36,7 +36,7 @@ public class AccessibleEvent extends SWTEventObject {
 	 * or a 0-based integer representing a specific child of the control.
 	 */
 	public int childID;
-	
+
 	/**
 	 * The value of this field must be set in the accessible listener
 	 * method before returning.
@@ -44,9 +44,9 @@ public class AccessibleEvent extends SWTEventObject {
 	 * the childID specified by the client.
 	 */
 	public String result;
-	
+
 	static final long serialVersionUID = 3257567304224026934L;
-	
+
 /**
  * Constructs a new instance of this class.
  *
@@ -65,5 +65,5 @@ public AccessibleEvent(Object source) {
 @Override
 public String toString () {
 	return "AccessibleEvent {childID=" + childID + " result=" + result + "}"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-}	
+}
 }

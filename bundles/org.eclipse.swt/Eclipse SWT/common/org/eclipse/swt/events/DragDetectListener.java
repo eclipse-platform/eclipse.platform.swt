@@ -26,7 +26,7 @@ import org.eclipse.swt.internal.SWTEventListener;
  * </p>
  *
  * @see DragDetectEvent
- * 
+ *
  * @since 3.3
  */
 public interface DragDetectListener extends SWTEventListener {

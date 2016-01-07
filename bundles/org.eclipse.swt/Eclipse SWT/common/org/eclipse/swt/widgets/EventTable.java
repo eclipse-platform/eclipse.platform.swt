@@ -26,7 +26,7 @@ class EventTable {
 	Listener [] listeners;
 	int level;
 	static final int GROW_SIZE = 4;
-	
+
 public Listener [] getListeners (int eventType) {
 	if (types == null) return new Listener [0];
 	int count = 0;

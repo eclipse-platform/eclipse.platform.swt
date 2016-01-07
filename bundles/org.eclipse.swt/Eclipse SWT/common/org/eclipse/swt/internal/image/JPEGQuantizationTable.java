@@ -34,7 +34,7 @@ final class JPEGQuantizationTable extends JPEGVariableSizeSegment {
 		99, 99, 99, 99, 99, 99, 99, 99,
 		99, 99, 99, 99, 99, 99, 99, 99
 	};
-	
+
 public JPEGQuantizationTable(byte[] reference) {
 	super(reference);
 }

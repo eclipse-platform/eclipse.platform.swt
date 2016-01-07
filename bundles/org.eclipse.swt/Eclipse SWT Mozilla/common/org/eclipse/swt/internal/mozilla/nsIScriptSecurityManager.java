@@ -58,7 +58,7 @@ public class nsIScriptSecurityManager extends nsIXPCSecurityManager {
 	public int GetSystemPrincipal(long /*int*/[] _retval) {
 		return XPCOM.VtblCall(this.getMethodIndex("getSystemPrincipal"), getAddress(), _retval);
 	}
-	
+
 	public int GetSubjectPrincipal(long /*int*/[] _retval) {
 		return XPCOM.VtblCall(this.getMethodIndex("getSubjectPrincipal"), getAddress(), _retval);
 	}

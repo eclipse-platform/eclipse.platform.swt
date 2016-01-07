@@ -18,7 +18,7 @@ abstract class JPEGVariableSizeSegment extends JPEGSegment {
 	public JPEGVariableSizeSegment(byte[] reference) {
 		super(reference);
 	}
-	
+
 	public JPEGVariableSizeSegment(LEDataInputStream byteStream) {
 		try {
 			byte[] header = new byte[4];

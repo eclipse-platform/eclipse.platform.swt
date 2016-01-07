@@ -16,7 +16,7 @@ import org.eclipse.swt.graphics.*;
 
 class PngIhdrChunk extends PngChunk {
 	static final int IHDR_DATA_LENGTH = 13;
-	
+
 	static final int WIDTH_DATA_OFFSET = DATA_OFFSET + 0;
 	static final int HEIGHT_DATA_OFFSET = DATA_OFFSET + 4;
 	static final int BIT_DEPTH_OFFSET = DATA_OFFSET + 8;
@@ -24,28 +24,28 @@ class PngIhdrChunk extends PngChunk {
 	static final int COMPRESSION_METHOD_OFFSET = DATA_OFFSET + 10;
 	static final int FILTER_METHOD_OFFSET = DATA_OFFSET + 11;
 	static final int INTERLACE_METHOD_OFFSET = DATA_OFFSET + 12;
-	
+
 	static final byte COLOR_TYPE_GRAYSCALE = 0;
 	static final byte COLOR_TYPE_RGB = 2;
 	static final byte COLOR_TYPE_PALETTE = 3;
 	static final byte COLOR_TYPE_GRAYSCALE_WITH_ALPHA = 4;
 	static final byte COLOR_TYPE_RGB_WITH_ALPHA = 6;
-	
+
 	static final int INTERLACE_METHOD_NONE = 0;
 	static final int INTERLACE_METHOD_ADAM7 = 1;
-	
+
 	static final int FILTER_NONE = 0;
 	static final int FILTER_SUB = 1;
 	static final int FILTER_UP = 2;
 	static final int FILTER_AVERAGE = 3;
 	static final int FILTER_PAETH = 4;
-	
+
 	static final byte[] ValidBitDepths = {1, 2, 4, 8, 16};
 	static final byte[] ValidColorTypes = {0, 2, 3, 4, 6};
-	
+
 	int width, height;
 	byte bitDepth, colorType, compressionMethod, filterMethod, interlaceMethod;
-	
+
 PngIhdrChunk(int width, int height, byte bitDepth, byte colorType, byte compressionMethod, byte filterMethod, byte interlaceMethod) {
 	super(IHDR_DATA_LENGTH);
 	setType(TYPE_IHDR);
@@ -62,7 +62,7 @@ PngIhdrChunk(int width, int height, byte bitDepth, byte colorType, byte compress
 /**
  * Construct a PNGChunk using the reference bytes
  * given.
- */	
+ */
 PngIhdrChunk(byte[] reference) {
 	super(reference);
 	if (reference.length <= IHDR_DATA_LENGTH) SWT.error(SWT.ERROR_INVALID_IMAGE);
@@ -216,25 +216,25 @@ void setInterlaceMethod(byte value) {
 void validate(PngFileReadState readState, PngIhdrChunk headerChunk) {
 	// An IHDR chunk is invalid if any other chunk has
 	// been read.
-	if (readState.readIHDR 
+	if (readState.readIHDR
 		|| readState.readPLTE
 		|| readState.readIDAT
-		|| readState.readIEND) 
+		|| readState.readIEND)
 	{
 		SWT.error(SWT.ERROR_INVALID_IMAGE);
 	} else {
 		readState.readIHDR = true;
 	}
-	
+
 	super.validate(readState, headerChunk);
-	
+
 	if (length != IHDR_DATA_LENGTH) SWT.error(SWT.ERROR_INVALID_IMAGE);
 	if (compressionMethod != 0) SWT.error(SWT.ERROR_INVALID_IMAGE);
 	if (interlaceMethod != INTERLACE_METHOD_NONE &&
 		interlaceMethod != INTERLACE_METHOD_ADAM7) {
 			SWT.error(SWT.ERROR_INVALID_IMAGE);
 	}
-	
+
 	boolean colorTypeIsValid = false;
 	for (int i = 0; i < ValidColorTypes.length; i++) {
 		if (ValidColorTypes[i] == colorType) {
@@ -252,15 +252,15 @@ void validate(PngFileReadState readState, PngIhdrChunk headerChunk) {
 		}
 	}
 	if (!bitDepthIsValid) SWT.error(SWT.ERROR_INVALID_IMAGE);
-	
-	if ((colorType == COLOR_TYPE_RGB 
+
+	if ((colorType == COLOR_TYPE_RGB
 		|| colorType == COLOR_TYPE_RGB_WITH_ALPHA
 		|| colorType == COLOR_TYPE_GRAYSCALE_WITH_ALPHA)
-		&& bitDepth < 8) 
+		&& bitDepth < 8)
 	{
 			SWT.error(SWT.ERROR_INVALID_IMAGE);
 	}
-	
+
 	if (colorType == COLOR_TYPE_PALETTE && bitDepth > 8) {
 		SWT.error(SWT.ERROR_INVALID_IMAGE);
 	}
@@ -269,7 +269,7 @@ void validate(PngFileReadState readState, PngIhdrChunk headerChunk) {
 String getColorTypeString() {
 	switch (colorType) {
 		case COLOR_TYPE_GRAYSCALE: 				return "Grayscale";
-		case COLOR_TYPE_RGB: 					return "RGB";		
+		case COLOR_TYPE_RGB: 					return "RGB";
 		case COLOR_TYPE_PALETTE:				return "Palette";
 		case COLOR_TYPE_GRAYSCALE_WITH_ALPHA:	return "Grayscale with Alpha";
 		case COLOR_TYPE_RGB_WITH_ALPHA:			return "RGB with Alpha";
@@ -319,7 +319,7 @@ boolean getMustHavePalette() {
 }
 
 boolean getCanHavePalette() {
-	return colorType != COLOR_TYPE_GRAYSCALE && 
+	return colorType != COLOR_TYPE_GRAYSCALE &&
 		colorType != COLOR_TYPE_GRAYSCALE_WITH_ALPHA;
 }
 
@@ -385,7 +385,7 @@ PaletteData createGrayscalePalette() {
 	int max = (1 << depth) - 1;
 	int delta = 255 / max;
 	int gray = 0;
-	RGB[] rgbs = new RGB[max + 1]; 
+	RGB[] rgbs = new RGB[max + 1];
 	for (int i = 0; i <= max; i++) {
 		rgbs[i] = new RGB(gray, gray, gray);
 		gray += delta;
@@ -403,7 +403,7 @@ PaletteData getPaletteData() {
 			return new PaletteData(0xFF0000, 0xFF00, 0xFF);
 		default:
 			return null;
-	}	
+	}
 }
 
 

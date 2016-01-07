@@ -17,22 +17,22 @@ import java.util.jar.*;
 public class Library {
 
 	/* SWT Version - Mmmm (M=major, mmm=minor) */
-	
+
 	/**
 	 * SWT Major version number (must be >= 0)
 	 */
     static int MAJOR_VERSION = 4;
-	
+
 	/**
 	 * SWT Minor version number (must be in the range 0..999)
 	 */
     static int MINOR_VERSION = 612;
-	
+
 	/**
 	 * SWT revision number (must be >= 0)
 	 */
 	static int REVISION = 0;
-	
+
 	/**
 	 * The JAVA and SWT versions
 	 */
@@ -40,7 +40,7 @@ public class Library {
 
 	static final String SEPARATOR;
 	static final String DELIMITER;
-	
+
 	/* 64-bit support */
 	static final boolean IS_64 = longConst() == (long /*int*/)longConst();
 	static final String SUFFIX_64 = "-64";	//$NON-NLS-1$
@@ -109,7 +109,7 @@ static int parseVersion(String version) {
 
 /**
  * Returns the Java version number as an integer.
- * 
+ *
  * @param major
  * @param minor
  * @param micro
@@ -121,7 +121,7 @@ public static int JAVA_VERSION (int major, int minor, int micro) {
 
 /**
  * Returns the SWT version number as an integer.
- * 
+ *
  * @param major
  * @param minor
  * @return the version
@@ -196,7 +196,7 @@ static boolean isLoadable () {
 	/*
 	* Mac has a special case since SWT's 32-bit libraries on Mac contain natives
 	* for both the x86 and PPC architectures.  For this reason SWT's manifest file
-	* for 32-bit Mac does not specify a value for SWT-Arch. 
+	* for 32-bit Mac does not specify a value for SWT-Arch.
 	*/
 	if (os.equals ("macosx") && os.equals (manifestOS)) { //$NON-NLS-1$
 		return manifestArch.length () == 0 && (arch.equals ("ppc") || arch.equals ("x86")); //$NON-NLS-1$ //$NON-NLS-2$
@@ -210,7 +210,7 @@ static boolean load (String libName, StringBuffer message) {
 			System.load (libName);
 		} else {
 			System.loadLibrary (libName);
-		}		
+		}
 		return true;
 	} catch (UnsatisfiedLinkError e) {
 		if (message.length() == 0) message.append(DELIMITER);
@@ -259,7 +259,7 @@ public static void loadLibrary (String name, boolean mapName) {
 			throw new UnsatisfiedLinkError ("Cannot load 32-bit SWT libraries on 64-bit JVM"); //$NON-NLS-1$
 		}
 	}
-	
+
 	/* Compute the library name and mapped name */
 	String libName1, libName2, mappedName1, mappedName2;
 	if (mapName) {
@@ -272,7 +272,7 @@ public static void loadLibrary (String name, boolean mapName) {
 			} else {
 				if (MINOR_VERSION < 100) version += "0"; //$NON-NLS-1$
 			}
-			version += MINOR_VERSION;		
+			version += MINOR_VERSION;
 			/* No "r" until first revision */
 			if (REVISION > 0) version += "r" + REVISION; //$NON-NLS-1$
 		}
@@ -285,7 +285,7 @@ public static void loadLibrary (String name, boolean mapName) {
 	}
 
 	StringBuffer message = new StringBuffer();
-	
+
 	/* Try loading library from swt library path */
 	String path = System.getProperty ("swt.library.path"); //$NON-NLS-1$
 	if (path != null) {
@@ -316,13 +316,13 @@ public static void loadLibrary (String name, boolean mapName) {
 		if (load (path + SEPARATOR + fileName1, message)) return;
 		if (mapName && load (path + SEPARATOR + fileName2, message)) return;
 	}
-		
+
 	/* Try extracting and loading library from jar */
 	if (path != null) {
 		if (extract (path + SEPARATOR + fileName1, mappedName1, message)) return;
 		if (mapName && extract (path + SEPARATOR + fileName2, mappedName2, message)) return;
 	}
-	
+
 	/* Failed to find the library */
 	throw new UnsatisfiedLinkError ("Could not load SWT library. Reasons: " + message.toString()); //$NON-NLS-1$
 }

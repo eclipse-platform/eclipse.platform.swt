@@ -21,7 +21,7 @@ public class XPCOMObject {
 		String osName = System.getProperty ("os.name").toLowerCase (); //$NON-NLS-1$
 		IsSolaris = osName.startsWith ("sunos") || osName.startsWith("solaris"); //$NON-NLS-1$
 	}
-	
+
 	long /*int*/ ppVtable;
 
 	static private final int MAX_ARG_COUNT = 12;
@@ -29,8 +29,8 @@ public class XPCOMObject {
 	static final int OS_OFFSET = IsSolaris ? 2 : 0;
 	static private Callback[][] Callbacks = new Callback[MAX_VTABLE_LENGTH + OS_OFFSET][MAX_ARG_COUNT];
 	static private Map<LONG, XPCOMObject> ObjectMap = new HashMap<LONG, XPCOMObject> ();
-	
-	
+
+
 public XPCOMObject (int[] argCounts) {
 	long /*int*/[] callbackAddresses = new long /*int*/[argCounts.length + OS_OFFSET];
 	synchronized (Callbacks) {
@@ -780,14 +780,14 @@ public void dispose() {
 	long /*int*/[] pVtable = new long /*int*/[1];
 	XPCOM.memmove (pVtable, ppVtable, C.PTR_SIZEOF);
 	C.free (pVtable[0]);
-	C.free (ppVtable);	
+	C.free (ppVtable);
 
 	// remove this ppVtable from the list
-	ObjectMap.remove (new LONG (ppVtable));	
+	ObjectMap.remove (new LONG (ppVtable));
 
 	ppVtable = 0;
 }
-	
+
 public long /*int*/ getAddress () {
 	return ppVtable;
 }

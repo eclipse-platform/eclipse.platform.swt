@@ -32,7 +32,7 @@ import org.eclipse.swt.internal.SWTEventListener;
 public interface MouseListener extends SWTEventListener {
 
 /**
- * Sent when a mouse button is pressed twice within the 
+ * Sent when a mouse button is pressed twice within the
  * (operating system specified) double click period.
  *
  * @param e an event containing information about the mouse double click

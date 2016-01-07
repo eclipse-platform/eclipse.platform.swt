@@ -19,7 +19,7 @@ import org.eclipse.swt.internal.mozilla.*;
 class AppFileLocProvider {
 	XPCOMObject supports;
 	XPCOMObject directoryServiceProvider;
-	XPCOMObject directoryServiceProvider2;	
+	XPCOMObject directoryServiceProvider2;
 	int refCount = 0;
 	String mozillaPath, profilePath, cacheParentPath;
 	String[] pluginDirs;
@@ -42,7 +42,7 @@ class AppFileLocProvider {
 		String osArch = System.getProperty ("os.arch").toLowerCase (); //$NON-NLS-1$
 		IsSparc = (osName.startsWith ("sunos") || osName.startsWith ("solaris")) && osArch.startsWith("sparc"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 	}
-	
+
 AppFileLocProvider (String mozillaPath, String profilePath, String cacheParentPath, boolean isXULRunner) {
 	this.mozillaPath = mozillaPath + SEPARATOR_OS;
 	this.profilePath = profilePath + SEPARATOR_OS;
@@ -79,7 +79,7 @@ void createCOMInterfaces () {
 		@Override
 		public long /*int*/ method2 (long /*int*/[] args) {return Release ();}
 	};
-	
+
 	directoryServiceProvider = new XPCOMObject (new int[] {2, 0, 0, 3}) {
 		@Override
 		public long /*int*/ method0 (long /*int*/[] args) {return QueryInterface (args[0], args[1]);}
@@ -90,7 +90,7 @@ void createCOMInterfaces () {
 		@Override
 		public long /*int*/ method3 (long /*int*/[] args) {return getFile (args[0], args[1], args[2]);}
 	};
-		
+
 	directoryServiceProvider2 = new XPCOMObject (new int[] {2, 0, 0, 3, 2}) {
 		@Override
 		public long /*int*/ method0 (long /*int*/[] args) {return QueryInterface (args[0], args[1]);}
@@ -109,15 +109,15 @@ void disposeCOMInterfaces () {
 	if (supports != null) {
 		supports.dispose ();
 		supports = null;
-	}	
+	}
 	if (directoryServiceProvider != null) {
 		directoryServiceProvider.dispose ();
-		directoryServiceProvider = null;	
+		directoryServiceProvider = null;
 	}
 	if (directoryServiceProvider2 != null) {
 		directoryServiceProvider2.dispose ();
-		directoryServiceProvider2 = null;	
-	}	
+		directoryServiceProvider2 = null;
+	}
 }
 
 long /*int*/ getAddress () {
@@ -128,7 +128,7 @@ int QueryInterface (long /*int*/ riid, long /*int*/ ppvObject) {
 	if (riid == 0 || ppvObject == 0) return XPCOM.NS_ERROR_NO_INTERFACE;
 	nsID guid = new nsID ();
 	XPCOM.memmove (guid, riid, nsID.sizeof);
-	
+
 	if (guid.Equals (XPCOM.NS_ISUPPORTS_IID)) {
 		XPCOM.memmove (ppvObject, new long /*int*/[] {supports.getAddress ()}, C.PTR_SIZEOF);
 		AddRef ();
@@ -144,7 +144,7 @@ int QueryInterface (long /*int*/ riid, long /*int*/ ppvObject) {
 		AddRef ();
 		return XPCOM.NS_OK;
 	}
-	
+
 	XPCOM.memmove (ppvObject, new long /*int*/[] {0}, C.PTR_SIZEOF);
 	return XPCOM.NS_ERROR_NO_INTERFACE;
 }
@@ -207,7 +207,7 @@ int getFiles (long /*int*/ prop, long /*int*/ _retval) {
 			* error indicating that PR_NewMonitor could not be found.  This is a well-
 			* known problem that many other apps have also encountered, with no
 			* resolution other than to remove this plug-in.  The Browser workaround is
-			* to not add the directory containing this plug-in to the plug-in search path. 
+			* to not add the directory containing this plug-in to the plug-in search path.
 			*/
 			if (!IsSparc) {
 				pluginDirs[index++] = mozillaPath + PLUGINS_DIR;
@@ -260,8 +260,8 @@ int getFiles (long /*int*/ prop, long /*int*/ _retval) {
 	}
 
 	return XPCOM.NS_ERROR_FAILURE;
-}	
-	
+}
+
 /* nsIDirectoryServiceProvider implementation */
 
 int getFile(long /*int*/ prop, long /*int*/ persistent, long /*int*/ _retval) {
@@ -321,10 +321,10 @@ int getFile(long /*int*/ prop, long /*int*/ persistent, long /*int*/ _retval) {
 		* < 1.7.  Unfortunately this property is queried early enough in the
 		* Browser creation process that the Mozilla version being used is not
 		* yet determined.  However it is known if XULRunner is being used or not.
-		* 
+		*
 		* For now answer a value for this property iff XULRunner is the GRE.
 		* If the range of Mozilla versions supported by the Browser is changed
-		* in the future to be >= 1.7 then this value can always be answered.  
+		* in the future to be >= 1.7 then this value can always be answered.
 		*/
 		if (isXULRunner) propertyValue = profilePath;
 	}
@@ -338,10 +338,10 @@ int getFile(long /*int*/ prop, long /*int*/ persistent, long /*int*/ _retval) {
 		if (rc != XPCOM.NS_OK) Mozilla.error (rc);
 		if (result[0] == 0) Mozilla.error (XPCOM.NS_ERROR_NULL_POINTER);
 		pathString.dispose ();
-		
+
 		nsILocalFile localFile = new nsILocalFile (result [0]);
 		result[0] = 0;
-	    rc = localFile.QueryInterface (IIDStore.GetIID (nsIFile.class), result); 
+	    rc = localFile.QueryInterface (IIDStore.GetIID (nsIFile.class), result);
 		if (rc != XPCOM.NS_OK) Mozilla.error (rc);
 		if (result[0] == 0) Mozilla.error (XPCOM.NS_ERROR_NO_INTERFACE);
 
@@ -351,5 +351,5 @@ int getFile(long /*int*/ prop, long /*int*/ persistent, long /*int*/ _retval) {
 	}
 
 	return XPCOM.NS_ERROR_FAILURE;
-}		
+}
 }

@@ -18,13 +18,13 @@ public class PngTrnsChunk extends PngChunk {
 	static final int TRANSPARENCY_TYPE_PIXEL = 0;
 	static final int TRANSPARENCY_TYPE_ALPHAS = 1;
 	static final int RGB_DATA_LENGTH = 6;
-	
+
 PngTrnsChunk(RGB rgb) {
 	super(RGB_DATA_LENGTH);
 	setType(TYPE_tRNS);
 	setInt16(DATA_OFFSET, rgb.red);
 	setInt16(DATA_OFFSET + 2, rgb.green);
-	setInt16(DATA_OFFSET + 4, rgb.blue);	
+	setInt16(DATA_OFFSET + 4, rgb.blue);
 	setCRC(computeCRC());
 }
 
@@ -70,15 +70,15 @@ void validate(PngFileReadState readState, PngIhdrChunk headerChunk, PngPlteChunk
 	if (!readState.readIHDR
 		|| (headerChunk.getMustHavePalette() && !readState.readPLTE)
 		|| readState.readIDAT
-		|| readState.readIEND) 
+		|| readState.readIEND)
 	{
 		SWT.error(SWT.ERROR_INVALID_IMAGE);
 	} else {
 		readState.readTRNS = true;
 	}
-	
+
 	validateLength(headerChunk, paletteChunk);
-	
+
 	super.validate(readState, headerChunk);
 }
 
@@ -114,13 +114,13 @@ int getSwtTransparentPixel(PngIhdrChunk header) {
 			int green = ((reference[DATA_OFFSET + 2] & 0xFF) << 8)
 				| (reference[DATA_OFFSET + 3] & 0xFF);
 			int blue = ((reference[DATA_OFFSET + 4] & 0xFF) << 8)
-				| (reference[DATA_OFFSET + 5] & 0xFF);			
+				| (reference[DATA_OFFSET + 5] & 0xFF);
 			if (header.getBitDepth() > 8) {
 				red = PNGFileFormat.compress16BitDepthTo8BitDepth(red);
 				green = PNGFileFormat.compress16BitDepthTo8BitDepth(green);
-				blue = PNGFileFormat.compress16BitDepthTo8BitDepth(blue);			
+				blue = PNGFileFormat.compress16BitDepthTo8BitDepth(blue);
 			}
-			return (red << 16) | (green << 8) | blue;	
+			return (red << 16) | (green << 8) | blue;
 		default:
 			SWT.error(SWT.ERROR_INVALID_IMAGE);
 			return -1;
@@ -128,7 +128,7 @@ int getSwtTransparentPixel(PngIhdrChunk header) {
 }
 
 /**
- * Answer an array of Alpha values that correspond to the 
+ * Answer an array of Alpha values that correspond to the
  * colors in the palette.
  * This is only valid for the COLOR_TYPE_PALETTE color type.
  */
@@ -144,7 +144,7 @@ byte[] getAlphaValues(PngIhdrChunk header, PngPlteChunk paletteChunk) {
 	}
 	/**
 	 * Any palette entries which do not have a corresponding
-	 * alpha value in the tRNS chunk are spec'd to have an 
+	 * alpha value in the tRNS chunk are spec'd to have an
 	 * alpha of 255.
 	 */
 	for (int j = i; j < alphas.length; j++) {

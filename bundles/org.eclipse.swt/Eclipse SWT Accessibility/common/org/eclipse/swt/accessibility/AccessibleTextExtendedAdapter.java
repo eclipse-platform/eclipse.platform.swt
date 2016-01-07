@@ -27,7 +27,7 @@ package org.eclipse.swt.accessibility;
 public class AccessibleTextExtendedAdapter extends AccessibleTextAdapter implements AccessibleTextExtendedListener {
 	/**
 	 * Adds a text selection.
-	 * 
+	 *
 	 * @param e an event object containing the following fields:<ul>
 	 * <li>[in] start - the 0 based offset of the first character of the new selection</li>
 	 * <li>[in] end - the 0 based offset after the last character of the new selection</li>
@@ -38,7 +38,7 @@ public class AccessibleTextExtendedAdapter extends AccessibleTextAdapter impleme
 
 	/**
 	 * Returns the total number of characters in the text.
-	 * 
+	 *
 	 * @param e an event object containing the following fields:<ul>
 	 * <li>[out] count - the total number of characters</li>
 	 * </ul>
@@ -48,7 +48,7 @@ public class AccessibleTextExtendedAdapter extends AccessibleTextAdapter impleme
 	/**
 	 * Returns the number of links and link groups contained within this hypertext
 	 * paragraph.
-	 * 
+	 *
 	 * @param e an event object containing the following fields:<ul>
 	 * <li>[out] count - the number of links and link groups within this hypertext paragraph,
 	 * 		or 0 if there are none</li>
@@ -58,7 +58,7 @@ public class AccessibleTextExtendedAdapter extends AccessibleTextAdapter impleme
 
 	/**
 	 * Returns the specified hyperlink.
-	 * 
+	 *
 	 * @param e an event object containing the following fields:<ul>
 	 * <li>[in] index - the 0 based index of the hyperlink to return</li>
 	 * <li>[out] accessible - the specified hyperlink object, or null if the index is invalid</li>
@@ -81,7 +81,7 @@ public class AccessibleTextExtendedAdapter extends AccessibleTextAdapter impleme
 
 	/**
 	 * Returns the offset of the character under the specified point.
-	 * 
+	 *
 	 * @param e an event object containing the following fields:<ul>
 	 * <li>[in] x - the X value in display coordinates for which to look up the offset of the character
 	 * 		that is rendered on the display at that point</li>
@@ -98,7 +98,7 @@ public class AccessibleTextExtendedAdapter extends AccessibleTextAdapter impleme
 	 * <p>
 	 * Partially visible characters are included in the returned ranges.
 	 * </p>
-	 * 
+	 *
 	 * @param e an event object containing the following fields:<ul>
 	 * <li>[in] x - the X coordinate of the top left corner of the bounding box, in display relative coordinates</li>
 	 * <li>[in] y - the Y coordinate of the top left corner of the bounding box, in display relative coordinates</li>
@@ -114,7 +114,7 @@ public class AccessibleTextExtendedAdapter extends AccessibleTextAdapter impleme
 
 	/**
 	 * Returns the character offsets of the specified text selection.
-	 * 
+	 *
 	 * @param e an event object containing the following fields:<ul>
 	 * <li>[in] index - the 0 based index of the selection</li>
 	 * <li>[out] start - the 0 based offset of first selected character</li>
@@ -125,7 +125,7 @@ public class AccessibleTextExtendedAdapter extends AccessibleTextAdapter impleme
 
 	/**
 	 * Returns the number of active non-contiguous selections.
-	 * 
+	 *
 	 * @param e an event object containing the following fields:<ul>
 	 * <li>[out] count - the number of active non-contiguous selections</li>
 	 * </ul>
@@ -152,7 +152,7 @@ public class AccessibleTextExtendedAdapter extends AccessibleTextAdapter impleme
 	 * If start and end are valid, but no suitable word (or other boundary type) is found,
 	 * the returned string is null and the returned range is degenerate (start == end).
 	 * </p>
-	 * 
+	 *
 	 * @param e an event object containing the following fields:<ul>
 	 * <li>[in] type - the boundary type of the substring to return. One of:<ul>
 	 * 		<li> {@link ACC#TEXT_BOUNDARY_CHAR}</li>
@@ -190,7 +190,7 @@ public class AccessibleTextExtendedAdapter extends AccessibleTextAdapter impleme
 	 * characters in the text or the height of the preceding character, its width
 	 * being at least one pixel so that the bounding box is not degenerate.
 	 * </p>
-	 * 
+	 *
 	 * @param e an event object containing the following fields:<ul>
 	 * <li>[in] start - the 0 based offset of the first character of the substring in the bounding box</li>
 	 * <li>[in] end - the 0 based offset after the last character of the substring in the bounding box</li>
@@ -209,7 +209,7 @@ public class AccessibleTextExtendedAdapter extends AccessibleTextAdapter impleme
 	 * <p>
 	 * Partially visible characters are included in the returned ranges.
 	 * </p>
-	 * 
+	 *
 	 * @param e an event object containing the following fields:<ul>
 	 * <li>[typical out] start - the 0 based offset of the first character of the visible substring</li>
 	 * <li>[typical out] end - the 0 based offset after the last character of the visible substring</li>
@@ -221,7 +221,7 @@ public class AccessibleTextExtendedAdapter extends AccessibleTextAdapter impleme
 
 	/**
 	 * Deselects a range of text.
-	 * 
+	 *
 	 * @param e an event object containing the following fields:<ul>
 	 * <li>[in] index - the 0 based index of selection to remove</li>
 	 * <li>[out] result - set to {@link ACC#OK} if the range of text was deselected</li>
@@ -231,7 +231,7 @@ public class AccessibleTextExtendedAdapter extends AccessibleTextAdapter impleme
 
 	/**
 	 * Scrolls a specific part of a substring according to the scroll type.
-	 * 
+	 *
 	 * @param e an event object containing the following fields:<ul>
 	 * <li>[in] start - the 0 based offset of the first character of the substring</li>
 	 * <li>[in] end - the 0 based offset after the last character of the substring</li>
@@ -270,7 +270,7 @@ public class AccessibleTextExtendedAdapter extends AccessibleTextAdapter impleme
 	 * When the new caret position differs from the old one, this is notified to the
 	 * accessibility event listeners with an EVENT_TEXT_CARET_MOVED event.
 	 * </p>
-	 * 
+	 *
 	 * @param e an event object containing the following fields:<ul>
 	 * <li>[in] offset - the new offset of the caret</li>
 	 * <li>[out] result - set to {@link ACC#OK} if the caret position was set</li>
@@ -280,7 +280,7 @@ public class AccessibleTextExtendedAdapter extends AccessibleTextAdapter impleme
 
 	/**
 	 * Changes the bounds of an existing selection.
-	 * 
+	 *
 	 * @param e an event object containing the following fields:<ul>
 	 * <li>[in] index - the 0 based index of the selection to change</li>
 	 * <li>[in] start - the new 0 based offset of the first character of the selection</li>

@@ -10,7 +10,7 @@
  *******************************************************************************/
 package org.eclipse.swt.internal;
 
- 
+
 import java.util.EventObject;
 
 /**
@@ -18,7 +18,7 @@ import java.util.EventObject;
  * java.util.EventObject class.
  * <p>
  * It is part of our effort to provide support for both J2SE
- * and J2ME platforms. Under this scheme, classes need to 
+ * and J2ME platforms. Under this scheme, classes need to
  * extend SWTEventObject instead of java.util.EventObject.
  * </p>
  * <p>

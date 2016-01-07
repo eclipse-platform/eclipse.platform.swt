@@ -16,7 +16,7 @@ import org.eclipse.swt.internal.SWTEventListener;
 /**
  * Classes which implement this interface provide methods
  * that deal with the events that are generated when the
- * control needs to be painted. 
+ * control needs to be painted.
  * <p>
  * After creating an instance of a class that implements
  * this interface it can be added to a control using the

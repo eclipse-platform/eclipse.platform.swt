@@ -31,7 +31,7 @@ package org.eclipse.swt.internal.mozilla;
 public class nsIInterfaceInfo extends nsISupports {
 
 	static final int LAST_METHOD_ID = nsISupports.LAST_METHOD_ID + ((IsXULRVersionOrLater (MozillaVersion.VERSION_XR10)) ? 21 : 20);
-	
+
 	static final String NS_IINTERFACEINFO_IID_STR = "215dbe04-94a7-11d2-ba58-00805f8a5dd7";
 	static final String NS_IINTERFACEINFO_10_IID_STR = "1affa260-8965-4612-869a-78af4ccfb287";
 

@@ -50,7 +50,7 @@ public class nsIDOMSerializer extends nsISupports {
 		}
 		return XPCOM.VtblCall(this.getMethodIndex("serializeToString"), getAddress(), root, _retval);
 	}
-	
+
 	public int SerializeToString(long /*int*/ root, long /*int*/ _retval) {
 		if (!MozillaVersion.CheckVersion (MozillaVersion.VERSION_XR1_8)) { /* 1.4.x */
 			return XPCOM.NS_COMFALSE;

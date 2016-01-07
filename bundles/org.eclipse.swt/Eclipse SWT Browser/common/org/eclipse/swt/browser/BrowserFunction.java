@@ -21,7 +21,7 @@ import org.eclipse.swt.*;
  * overriding its <code>function(Object[])</code> method.  This
  * method will be invoked whenever javascript running in the
  * Browser makes a call with the function's name.
- * 
+ *
  * <p>
  * Application code must explicitly invoke the
  * <code>BrowserFunction.dispose()</code> method to release the
@@ -35,11 +35,11 @@ import org.eclipse.swt.*;
  * Note that disposing a Browser automatically disposes all
  * BrowserFunctions associated with it.
  * </p>
- * 
+ *
  * @see #dispose()
  * @see #function(Object[])
  * @see org.eclipse.swt.browser.LocationListener#changed(LocationEvent)
- * 
+ *
  * @since 3.5
  */
 public class BrowserFunction {
@@ -65,17 +65,17 @@ public class BrowserFunction {
  * </p>
  * @param browser the browser whose javascript can invoke this function
  * @param name the name that javascript will use to invoke this function
- *  
+ *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the browser is null</li>
  *    <li>ERROR_NULL_ARGUMENT - if the name is null</li>
  * </ul>
- * 
+ *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the browser has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @see #dispose()
  * @see #BrowserFunction(Browser, String, boolean, String[])
  * @see org.eclipse.swt.browser.LocationListener#changed(LocationEvent)
@@ -104,21 +104,21 @@ public BrowserFunction (Browser browser, String name) {
  * top-level window and <code>false</code> otherwise
  * @param frameNames the names of the child frames that the function should
  * be accessible in
- * 
+ *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the browser is null</li>
  *    <li>ERROR_NULL_ARGUMENT - if the name is null</li>
  * </ul>
- * 
+ *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the browser has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @see #dispose()
  * @see #BrowserFunction(Browser, String)
  * @see org.eclipse.swt.browser.LocationListener#changed(LocationEvent)
- * 
+ *
  * @since 3.8
  */
 public BrowserFunction (Browser browser, String name, boolean top, String[] frameNames) {
@@ -173,7 +173,7 @@ void dispose (boolean remove) {
  * arguments that are passed to the javascript function call are of
  * supported types then this method is invoked with the argument values
  * converted as follows:
- * 
+ *
  * javascript null or undefined -> <code>null</code>
  * javascript number -> <code>java.lang.Double</code>
  * javascript string -> <code>java.lang.String</code>
@@ -182,16 +182,16 @@ void dispose (boolean remove) {
  *
  * If any of the javascript arguments are of unsupported types then the
  * function invocation will fail and this method will not be called.
- * 
+ *
  * This method must return a value with one of these supported java types to
  * the javascript caller.  Note that <code>null</code> values are converted
  * to javascript's <code>null</code> value (not <code>undefined</code>), and
  * instances of any <code>java.lang.Number</code> subclass will be converted
  * to a javascript number.
- * 
- * @param arguments the javascript arguments converted to java equivalents 
+ *
+ * @param arguments the javascript arguments converted to java equivalents
  * @return the value to return to the javascript caller
- * 
+ *
  * @exception SWTException <ul>
  *    <li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
  *    <li>ERROR_FUNCTION_DISPOSED when the BrowserFunction has been disposed</li>
@@ -207,7 +207,7 @@ public Object function (Object[] arguments) {
  * Returns the Browser whose pages can invoke this BrowserFunction.
  *
  * @return the Browser associated with this BrowserFunction
- * 
+ *
  * @exception SWTException <ul>
  *    <li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
  *    <li>ERROR_FUNCTION_DISPOSED when the BrowserFunction has been disposed</li>
@@ -221,9 +221,9 @@ public Browser getBrowser () {
 
 /**
  * Returns the name that javascript can use to invoke this BrowserFunction.
- * 
+ *
  * @return the BrowserFunction's name
- * 
+ *
  * @exception SWTException <ul>
  *    <li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
  *    <li>ERROR_FUNCTION_DISPOSED when the BrowserFunction has been disposed</li>

@@ -18,7 +18,7 @@ class FillData {
 
 	int defaultWidth = -1, defaultHeight = -1;
 	int currentWhint, currentHhint, currentWidth = -1, currentHeight = -1;
-	
+
 Point computeSize (Control control, int wHint, int hHint, boolean flushCache) {
 	if (flushCache) flushCache();
 	if (wHint == SWT.DEFAULT && hHint == SWT.DEFAULT) {

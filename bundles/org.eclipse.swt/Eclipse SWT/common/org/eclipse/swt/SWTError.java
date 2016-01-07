@@ -12,7 +12,7 @@ package org.eclipse.swt;
 
 /**
  * This error is thrown whenever an unrecoverable error
- * occurs internally in SWT. The message text and error code 
+ * occurs internally in SWT. The message text and error code
  * provide a further description of the problem. The exception
  * has a <code>throwable</code> field which holds the underlying
  * throwable that caused the problem (if this information is
@@ -27,7 +27,7 @@ package org.eclipse.swt;
  * still catch them.
  * </p><p>
  * This class also provides support methods used by SWT to match
- * error codes to the appropriate exception class (SWTError, 
+ * error codes to the appropriate exception class (SWTError,
  * SWTException, or IllegalArgumentException) and to provide
  * human readable strings for SWT error codes.
  * </p>
@@ -50,9 +50,9 @@ public class SWTError extends Error {
 	public Throwable throwable;
 
     static final long serialVersionUID = 3833467327105808433L;
-    
+
 /**
- * Constructs a new instance of this class with its 
+ * Constructs a new instance of this class with its
  * stack trace filled in. The error code is set to an
  * unspecified value.
  */
@@ -61,7 +61,7 @@ public SWTError () {
 }
 
 /**
- * Constructs a new instance of this class with its 
+ * Constructs a new instance of this class with its
  * stack trace and message filled in. The error code is
  * set to an unspecified value.  Specifying <code>null</code>
  * as the message is equivalent to specifying an empty string.
@@ -73,7 +73,7 @@ public SWTError (String message) {
 }
 
 /**
- * Constructs a new instance of this class with its 
+ * Constructs a new instance of this class with its
  * stack trace and error code filled in.
  *
  * @param code the SWT error code
@@ -83,11 +83,11 @@ public SWTError (int code) {
 }
 
 /**
- * Constructs a new instance of this class with its 
+ * Constructs a new instance of this class with its
  * stack trace, error code and message filled in.
  * Specifying <code>null</code> as the message is
  * equivalent to specifying an empty string.
- * 
+ *
  * @param code the SWT error code
  * @param message the detail message for the exception
  */
@@ -105,7 +105,7 @@ public SWTError (int code, String message) {
  * in order for inherited printStackTrace() methods to work.
  * </p>
  * @return the underlying throwable
- * 
+ *
  * @since 3.1
  */
 @Override

@@ -116,7 +116,7 @@ public void handleEvent (Event e) {
 			event.updateEvent((DNDEvent)e);
 			break;
 		}
-		
+
 	}
 }
 }

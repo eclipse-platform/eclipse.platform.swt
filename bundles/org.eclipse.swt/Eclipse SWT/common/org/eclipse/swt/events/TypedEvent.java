@@ -23,35 +23,35 @@ import org.eclipse.swt.internal.SWTEventObject;
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  */
 public class TypedEvent extends SWTEventObject {
-	
+
 	/**
 	 * the display where the event occurred
-	 * 
-	 * @since 2.0 
-	 */	
+	 *
+	 * @since 2.0
+	 */
 	public Display display;
-		
+
 	/**
 	 * the widget that issued the event
 	 */
 	public Widget widget;
-	
+
 	/**
 	 * the time that the event occurred.
-	 * 
+	 *
 	 * NOTE: This field is an unsigned integer and should
 	 * be AND'ed with 0xFFFFFFFFL so that it can be treated
 	 * as a signed long.
-	 */	
+	 */
 	public int time;
-	
+
 	/**
 	 * a field for application use
 	 */
 	public Object data;
 
 	static final long serialVersionUID = 3257285846578377524L;
-	
+
 /**
  * Constructs a new instance of this class.
  *

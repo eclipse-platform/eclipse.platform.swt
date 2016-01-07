@@ -29,7 +29,7 @@ package org.eclipse.swt.internal.mozilla;
 
 public class nsEmbedString {
 	long /*int*/ handle;
-	
+
 public nsEmbedString() {
 	handle = XPCOM.nsEmbedString_new();
 }
@@ -39,7 +39,7 @@ public nsEmbedString(String string) {
 	   char[] aString = new char[string.length() + 1];
 	   string.getChars(0, string.length(), aString, 0);
 	   handle = XPCOM.nsEmbedString_new(aString);
-	}   
+	}
 }
 
 public nsEmbedString(long /*int*/ handle) {
@@ -48,8 +48,8 @@ public nsEmbedString(long /*int*/ handle) {
 
 public long /*int*/ getAddress() {
 	return handle;
-}	
-	
+}
+
 @Override
 public String toString() {
 	if (handle == 0) return null;
@@ -58,11 +58,11 @@ public String toString() {
 	char[] dest = new char[length];
 	XPCOM.memmove(dest, buffer, length * 2);
 	return new String(dest);
-}	
-	
+}
+
 public void dispose() {
-	if (handle == 0) return;			
+	if (handle == 0) return;
 	XPCOM.nsEmbedString_delete(handle);
-	handle = 0; 	
-}	
+	handle = 0;
+}
 }

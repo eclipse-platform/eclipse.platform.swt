@@ -18,13 +18,13 @@ package org.eclipse.swt.internal;
  * <p>
  * IMPORTANT: A callback is only valid when invoked on the
  * thread which created it. The results are undefined (and
- * typically bad) when a callback is passed out to the 
+ * typically bad) when a callback is passed out to the
  * operating system (or other code) in such a way that the
  * callback is called from a different thread.
  */
 
 public class Callback {
-	
+
 	Object object;
 	String method, signature;
 	int argCount;
@@ -58,7 +58,7 @@ public Callback (Object object, String method, int argCount) {
  * Constructs a new instance of this class given an object
  * to send the message to, a string naming the method to
  * invoke, an argument count and a flag indicating whether
- * or not the arguments will be passed in an array. Note 
+ * or not the arguments will be passed in an array. Note
  * that, if the object is an instance of <code>Class</code>
  * it is assumed that the method is a static method on that
  * class.
@@ -97,7 +97,7 @@ public Callback (Object object, String method, int argCount, boolean isArrayBase
 	this.isStatic = object instanceof Class;
 	this.isArrayBased = isArrayBased;
 	this.errorResult = errorResult;
-	
+
 	/* Inline the common cases */
 	if (isArrayBased) {
 		signature = SIGNATURE_N;
@@ -112,7 +112,7 @@ public Callback (Object object, String method, int argCount, boolean isArrayBase
 				signature = getSignature(argCount);
 		}
 	}
-	
+
 	/* Bind the address */
 	address = bind (this, object, method, signature, argCount, isStatic, isArrayBased, errorResult);
 }
@@ -169,9 +169,9 @@ public static native String getPlatform ();
  * <p>
  * Note: This should not be called by application code.
  * </p>
- * 
+ *
  * @return the entry count
- * 
+ *
  * @since 2.1
  */
 public static native int getEntryCount ();
@@ -222,7 +222,7 @@ public static final native synchronized boolean getEnabled ();
 @Deprecated
 static final void ignoreCallbacks (boolean ignore) {
 	setEnabled (!ignore);
-} 
+}
 
 /**
  * Immediately wipes out all native level state associated

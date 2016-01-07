@@ -19,7 +19,7 @@ import org.eclipse.swt.widgets.*;
  * This class implements the nsIHelperAppLauncherDialog interface for mozilla
  * versions >= 10.  For earlier mozilla versions this interface is implemented
  * by class HelperAppLauncherDialog(_1_9).  HelperAppLauncherDialogFactory
- * determines at runtime which of these classes to instantiate. 
+ * determines at runtime which of these classes to instantiate.
  */
 class HelperAppLauncherDialog_10 extends HelperAppLauncherDialog_1_9 {
 	XPCOMObject supports;
@@ -69,7 +69,7 @@ int PromptForSaveToFile (long /*int*/ aLauncher, long /*int*/ aWindowContext, lo
 	if (rc != XPCOM.NS_OK) Mozilla.error (rc);
 	if (result[0] == 0) Mozilla.error (XPCOM.NS_ERROR_NULL_POINTER);
 	/* Our own nsIDownload has been registered during the Browser initialization. It will be invoked by Mozilla. */
-	XPCOM.memmove (_retval, result, C.PTR_SIZEOF);	
+	XPCOM.memmove (_retval, result, C.PTR_SIZEOF);
 	return XPCOM.NS_OK;
 }
 }

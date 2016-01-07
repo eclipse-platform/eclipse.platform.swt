@@ -23,12 +23,12 @@ public class DropTargetEvent extends TypedEvent {
 	 * The x-cordinate of the cursor relative to the <code>Display</code>
 	 */
 	public int x;
-	
+
 	/**
 	 * The y-cordinate of the cursor relative to the <code>Display</code>
 	 */
 	public int y;
-	
+
 	/**
 	 * The operation being performed.
 	 * @see DND#DROP_NONE
@@ -38,9 +38,9 @@ public class DropTargetEvent extends TypedEvent {
 	 * @see DND#DROP_DEFAULT
 	 */
 	public int detail;
-	
+
 	/**
-	 * A bitwise OR'ing of the operations that the DragSource can support 
+	 * A bitwise OR'ing of the operations that the DragSource can support
 	 * (e.g. DND.DROP_MOVE | DND.DROP_COPY | DND.DROP_LINK).
 	 * The detail value must be a member of this list or DND.DROP_NONE.
 	 * @see DND#DROP_NONE
@@ -50,7 +50,7 @@ public class DropTargetEvent extends TypedEvent {
 	 * @see DND#DROP_DEFAULT
 	 */
 	public int operations;
-	
+
 	/**
 	 * A bitwise OR'ing of the drag under effect feedback to be displayed to the user
 	 * (e.g. DND.FEEDBACK_SELECT | DND.FEEDBACK_SCROLL | DND.FEEDBACK_EXPAND).
@@ -65,18 +65,18 @@ public class DropTargetEvent extends TypedEvent {
 	 * @see DND#FEEDBACK_EXPAND
 	 */
 	public int feedback;
-	
+
 	/**
-	 * If the associated control is a table or tree, this field contains the item located 
+	 * If the associated control is a table or tree, this field contains the item located
 	 * at the cursor coordinates.
 	 */
 	public Widget item;
-	
+
 	/**
 	 * The type of data that will be dropped.
 	 */
 	public TransferData currentDataType;
-	
+
 	/**
 	 * A list of the types of data that the DragSource is capable of providing.
 	 * The currentDataType must be a member of this list.
@@ -84,7 +84,7 @@ public class DropTargetEvent extends TypedEvent {
 	public TransferData[] dataTypes;
 
 	static final long serialVersionUID = 3256727264573338678L;
-	
+
 /**
  * Constructs a new instance of this class based on the
  * information in the given untyped event.

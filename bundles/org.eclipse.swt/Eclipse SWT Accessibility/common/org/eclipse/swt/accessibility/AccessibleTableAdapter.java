@@ -32,7 +32,7 @@ package org.eclipse.swt.accessibility;
 public class AccessibleTableAdapter implements AccessibleTableListener {
 	/**
 	 * Deselects one column, leaving other selected columns selected (if any).
-	 * 
+	 *
 	 * @param e an event object containing the following fields:<ul>
 	 * <li>[in] column - 0 based index of the column to be unselected.</li>
 	 * <li>[out] result - set to {@link ACC#OK} if the column was deselected.</li>
@@ -42,7 +42,7 @@ public class AccessibleTableAdapter implements AccessibleTableListener {
 
 	/**
 	 * Deselects one row, leaving other selected rows selected (if any).
-	 * 
+	 *
 	 * @param e an event object containing the following fields:<ul>
 	 * <li>[in] row - 0 based index of the row to be unselected</li>
 	 * <li>[out] result - set to {@link ACC#OK} if the row was deselected.</li>
@@ -52,7 +52,7 @@ public class AccessibleTableAdapter implements AccessibleTableListener {
 
 	/**
 	 * Returns the caption for the table.
-	 * 
+	 *
 	 * @param e an event object containing the following fields:<ul>
 	 * <li>[out] accessible - the caption for the table, or null if the table does not have a caption</li>
 	 * </ul>
@@ -61,7 +61,7 @@ public class AccessibleTableAdapter implements AccessibleTableListener {
 
 	/**
 	 * Returns the accessible object at the specified row and column in the table.
-	 * 
+	 *
 	 * @param e an event object containing the following fields:<ul>
 	 * <li>[in] row - the 0 based row index for which to retrieve the accessible cell</li>
 	 * <li>[in] column - the 0 based column index for which to retrieve the accessible cell</li>
@@ -73,7 +73,7 @@ public class AccessibleTableAdapter implements AccessibleTableListener {
 
 	/**
 	 * Returns the accessible object for the specified column in the table.
-	 * 
+	 *
 	 * @param e an event object containing the following fields:<ul>
 	 * <li>[in] column - the 0 based column index for which to retrieve the accessible column</li>
 	 * <li>[out] accessible - the table column at the specified column index,
@@ -84,7 +84,7 @@ public class AccessibleTableAdapter implements AccessibleTableListener {
 
 	/**
 	 * Returns the total number of columns in the table.
-	 * 
+	 *
 	 * @param e an event object containing the following fields:<ul>
 	 * <li>[out] count - the number of columns in the table</li>
 	 * </ul>
@@ -93,7 +93,7 @@ public class AccessibleTableAdapter implements AccessibleTableListener {
 
 	/**
 	 * Returns the description text of the specified column in the table.
-	 * 
+	 *
 	 * @param e an event object containing the following fields:<ul>
 	 * <li>[in] column - the 0 based index of the column for which to retrieve the description</li>
 	 * <li>[out] result - the description text of the specified column in the table,
@@ -104,7 +104,7 @@ public class AccessibleTableAdapter implements AccessibleTableListener {
 
 	/**
 	 * Returns the accessible object for the column header.
-	 * 
+	 *
 	 * @param e an event object containing the following fields:<ul>
 	 * <li>[out] accessible - an accessible object representing the column header,
 	 * 		or null if there is no column header</li>
@@ -114,7 +114,7 @@ public class AccessibleTableAdapter implements AccessibleTableListener {
 
 	/**
 	 * Returns the column header cells as an array of accessible objects.
-	 * 
+	 *
 	 * @param e an event object containing the following fields:<ul>
 	 * <li>[out] accessibles - an array of accessible objects representing column header cells,
 	 * 		or null if there are no column header cells</li>
@@ -124,7 +124,7 @@ public class AccessibleTableAdapter implements AccessibleTableListener {
 
 	/**
 	 * Returns the columns as an array of accessible objects.
-	 * 
+	 *
 	 * @param e an event object containing the following fields:<ul>
 	 * <li>[out] accessibles - an array of accessible objects representing columns,
 	 * 		or null if there are no columns</li>
@@ -134,7 +134,7 @@ public class AccessibleTableAdapter implements AccessibleTableListener {
 
 	/**
 	 * Returns the accessible object for the specified row in the table.
-	 * 
+	 *
 	 * @param e an event object containing the following fields:<ul>
 	 * <li>[in] row - the 0 based row index for which to retrieve the accessible row</li>
 	 * <li>[out] accessible - the table row at the specified row index,
@@ -145,7 +145,7 @@ public class AccessibleTableAdapter implements AccessibleTableListener {
 
 	/**
 	 * Returns the total number of rows in the table.
-	 * 
+	 *
 	 * @param e an event object containing the following fields:<ul>
 	 * <li>[out] count - the number of rows in the table</li>
 	 * </ul>
@@ -154,7 +154,7 @@ public class AccessibleTableAdapter implements AccessibleTableListener {
 
 	/**
 	 * Returns the description text of the specified row in the table.
-	 * 
+	 *
 	 * @param e an event object containing the following fields:<ul>
 	 * <li>[in] row - the 0 based index of the row for which to retrieve the description</li>
 	 * <li>[out] result - the description text of the specified row in the table,
@@ -165,7 +165,7 @@ public class AccessibleTableAdapter implements AccessibleTableListener {
 
 	/**
 	 * Returns the accessible object for the row header.
-	 * 
+	 *
 	 * @param e an event object containing the following fields:<ul>
 	 * <li>[out] accessible - an accessible object representing the row header,
 	 * 		or null if there is no row header</li>
@@ -175,7 +175,7 @@ public class AccessibleTableAdapter implements AccessibleTableListener {
 
 	/**
 	 * Returns the row header cells as an array of accessible objects.
-	 * 
+	 *
 	 * @param e an event object containing the following fields:<ul>
 	 * <li>[out] accessibles - an array of accessible objects representing row header cells,
 	 * 		or null if there are no row header cells</li>
@@ -185,7 +185,7 @@ public class AccessibleTableAdapter implements AccessibleTableListener {
 
 	/**
 	 * Returns the rows as an array of accessible objects.
-	 * 
+	 *
 	 * @param e an event object containing the following fields:<ul>
 	 * <li>[out] accessibles - an array of accessible objects representing rows,
 	 * 		or null if there are no rows</li>
@@ -195,7 +195,7 @@ public class AccessibleTableAdapter implements AccessibleTableListener {
 
 	/**
 	 * Returns the number of selected cells.
-	 * 
+	 *
 	 * @param e an event object containing the following fields:<ul>
 	 * <li>[out] count -  the number of cells currently selected</li>
 	 * </ul>
@@ -204,7 +204,7 @@ public class AccessibleTableAdapter implements AccessibleTableListener {
 
 	/**
 	 * Returns the currently selected cells.
-	 * 
+	 *
 	 * @param e an event object containing the following fields:<ul>
 	 * <li>[out] accessibles - array containing the selected accessible cells</li>
 	 * </ul>
@@ -213,7 +213,7 @@ public class AccessibleTableAdapter implements AccessibleTableListener {
 
 	/**
 	 * Returns the number of selected columns.
-	 * 
+	 *
 	 * @param e an event object containing the following fields:<ul>
 	 * <li>[out] count - the number of columns currently selected</li>
 	 * </ul>
@@ -222,7 +222,7 @@ public class AccessibleTableAdapter implements AccessibleTableListener {
 
 	/**
 	 * Returns the column indexes that are currently selected.
-	 * 
+	 *
 	 * @param e an event object containing the following fields:<ul>
 	 * <li>[out] selected - an array of 0 based column indexes of selected columns</li>
 	 * </ul>
@@ -231,7 +231,7 @@ public class AccessibleTableAdapter implements AccessibleTableListener {
 
 	/**
 	 * Returns the number of selected rows.
-	 * 
+	 *
 	 * @param e an event object containing the following fields:<ul>
 	 * <li>[out] count - the number of rows currently selected</li>
 	 * </ul>
@@ -240,7 +240,7 @@ public class AccessibleTableAdapter implements AccessibleTableListener {
 
 	/**
 	 * Returns the row indexes that are currently selected.
-	 * 
+	 *
 	 * @param e an event object containing the following fields:<ul>
 	 * <li>[out] selected - an array of 0 based row indexes of selected rows</li>
 	 * </ul>
@@ -249,7 +249,7 @@ public class AccessibleTableAdapter implements AccessibleTableListener {
 
 	/**
 	 * Returns the summary description of the table.
-	 * 
+	 *
 	 * @param e an event object containing the following fields:<ul>
 	 * <li>[out] accessible - the summary for the table,
 	 * 		or null if the table does not have a summary</li>
@@ -259,7 +259,7 @@ public class AccessibleTableAdapter implements AccessibleTableListener {
 
 	/**
 	 * Returns the visible columns as an array of accessible objects.
-	 * 
+	 *
 	 * @param e an event object containing the following fields:<ul>
 	 * <li>[out] accessibles - an array of accessible objects representing visible columns,
 	 * 		or null if there are no visible columns</li>
@@ -269,7 +269,7 @@ public class AccessibleTableAdapter implements AccessibleTableListener {
 
 	/**
 	 * Returns the visible rows as an array of accessible objects.
-	 * 
+	 *
 	 * @param e an event object containing the following fields:<ul>
 	 * <li>[out] accessibles - an array of accessible objects representing visible rows,
 	 * 		or null if there are no visible rows</li>
@@ -280,7 +280,7 @@ public class AccessibleTableAdapter implements AccessibleTableListener {
 	/**
 	 * Returns a boolean value indicating whether the specified column is
 	 * completely selected.
-	 * 
+	 *
 	 * @param e an event object containing the following fields:<ul>
 	 * <li>[in] column - 0 based index of the column for which to determine whether it is selected</li>
 	 * <li>[out] isSelected - true if the specified column is selected completely, and false otherwise</li>
@@ -291,7 +291,7 @@ public class AccessibleTableAdapter implements AccessibleTableListener {
 	/**
 	 * Returns a boolean value indicating whether the specified row is
 	 * completely selected.
-	 * 
+	 *
 	 * @param e an event object containing the following fields:<ul>
 	 * <li>[in] row - 0 based index of the row for which to determine whether it is selected</li>
 	 * <li>[out] isSelected - true if the specified row is selected completely, and false otherwise</li>
@@ -301,7 +301,7 @@ public class AccessibleTableAdapter implements AccessibleTableListener {
 
 	/**
 	 * Selects a column.
-	 * 
+	 *
 	 * @param e an event object containing the following fields:<ul>
 	 * <li>[in] column - 0 based index of the column to be selected</li>
 	 * <li>[out] result - set to {@link ACC#OK} if the column was selected.</li>
@@ -311,7 +311,7 @@ public class AccessibleTableAdapter implements AccessibleTableListener {
 
 	/**
 	 * Selects a row.
-	 * 
+	 *
 	 * @param e an event object containing the following fields:<ul>
 	 * <li>[in] row - 0 based index of the row to be selected</li>
 	 * <li>[out] result - set to {@link ACC#OK} if the row was selected.</li>
@@ -321,7 +321,7 @@ public class AccessibleTableAdapter implements AccessibleTableListener {
 
 	/**
 	 * Selects a column and deselects all previously selected columns.
-	 * 
+	 *
 	 * @param e an event object containing the following fields:<ul>
 	 * <li>[in] column - 0 based index of the column to be selected</li>
 	 * <li>[out] result - set to {@link ACC#OK} if the column was selected.</li>
@@ -331,7 +331,7 @@ public class AccessibleTableAdapter implements AccessibleTableListener {
 
 	/**
 	 * Selects a row and deselects all previously selected rows.
-	 * 
+	 *
 	 * @param e an event object containing the following fields:<ul>
 	 * <li>[in] row - 0 based index of the row to be selected</li>
 	 * <li>[out] result - set to {@link ACC#OK} if the row was selected.</li>

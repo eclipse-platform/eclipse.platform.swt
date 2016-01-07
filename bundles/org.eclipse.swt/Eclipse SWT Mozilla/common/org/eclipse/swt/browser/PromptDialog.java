@@ -19,15 +19,15 @@ import org.eclipse.swt.layout.*;
 import org.eclipse.swt.widgets.*;
 
 class PromptDialog extends Dialog {
-	
+
 	PromptDialog(Shell parent, int style) {
 		super(parent, style);
 	}
-	
+
 	PromptDialog(Shell parent) {
 		this(parent, 0);
 	}
-	
+
 	void alertCheck(String title, String text, String check, final boolean[] checkValue) {
 		Shell parent = getParent();
 		final Shell shell = new Shell(parent, SWT.DIALOG_TRIM | SWT.APPLICATION_MODAL);
@@ -153,10 +153,10 @@ class PromptDialog extends Dialog {
 				if (rc != XPCOM.NS_OK) Mozilla.error (rc);
 				if (result[0] == 0) Mozilla.error (XPCOM.NS_NOINTERFACE);
 				serviceManager.Release();
-				
+
 				nsICertificateDialogs dialogs = new nsICertificateDialogs(result[0]);
 				result[0] = 0;
-				
+
 				/*
 				* Bug in Mozilla.  The certificate viewer dialog does not show its content when
 				* opened.  The workaround is to periodically wake up the UI thread.
@@ -236,7 +236,7 @@ class PromptDialog extends Dialog {
 					}
 				}
 				shell.close();
-			}	
+			}
 		};
 		if (check != null) {
 			buttons[0] = new Button(shell, SWT.CHECK);
@@ -286,7 +286,7 @@ class PromptDialog extends Dialog {
 			if (!display.readAndDispatch()) display.sleep();
 		}
 	}
-	
+
 	void prompt(String title, String text, String check, final String[] value, final boolean[] checkValue, final boolean[] result) {
 		Shell parent = getParent();
 		final Shell shell = new Shell(parent, SWT.DIALOG_TRIM | SWT.APPLICATION_MODAL);
@@ -303,7 +303,7 @@ class PromptDialog extends Dialog {
 		data.horizontalAlignment = GridData.FILL;
 		data.grabExcessHorizontalSpace = true;
 		label.setLayoutData (data);
-				
+
 		final Text valueText = new Text(shell, SWT.BORDER);
 		if (value[0] != null) valueText.setText(value[0]);
 		data = new GridData();
@@ -320,7 +320,7 @@ class PromptDialog extends Dialog {
 				value[0] = valueText.getText();
 				result[0] = event.widget == buttons[1];
 				shell.close();
-			}	
+			}
 		};
 		if (check != null) {
 			buttons[0] = new Button(shell, SWT.CHECK);
@@ -349,7 +349,7 @@ class PromptDialog extends Dialog {
 		Display display = parent.getDisplay();
 		while (!shell.isDisposed()) {
 			if (!display.readAndDispatch()) display.sleep();
-		}	
+		}
 	}
 
 	void promptUsernameAndPassword(String title, String text, String check, final String[] user, final String[] pass, final boolean[] checkValue, final boolean[] result) {
@@ -368,20 +368,20 @@ class PromptDialog extends Dialog {
 		data.horizontalAlignment = GridData.FILL;
 		data.grabExcessHorizontalSpace = true;
 		label.setLayoutData (data);
-		
+
 		Label userLabel = new Label(shell, SWT.NONE);
 		userLabel.setText(SWT.getMessage("SWT_Username")); //$NON-NLS-1$
-		
+
 		final Text userText = new Text(shell, SWT.BORDER);
 		if (user[0] != null) userText.setText(user[0]);
 		data = new GridData();
 		data.horizontalAlignment = GridData.FILL;
 		data.grabExcessHorizontalSpace = true;
 		userText.setLayoutData(data);
-		
+
 		Label passwordLabel = new Label(shell, SWT.NONE);
 		passwordLabel.setText(SWT.getMessage("SWT_Password")); //$NON-NLS-1$
-		
+
 		final Text passwordText = new Text(shell, SWT.PASSWORD | SWT.BORDER);
 		if (pass[0] != null) passwordText.setText(pass[0]);
 		data = new GridData();
@@ -397,7 +397,7 @@ class PromptDialog extends Dialog {
 				pass[0] = passwordText.getText();
 				result[0] = event.widget == buttons[1];
 				shell.close();
-			}	
+			}
 		};
 		if (check != null) {
 			buttons[0] = new Button(shell, SWT.CHECK);

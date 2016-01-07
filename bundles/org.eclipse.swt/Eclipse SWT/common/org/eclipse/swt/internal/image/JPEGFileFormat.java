@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * This source file is based in part on the work of the Independent JPEG Group (IJG)
  * and is made available under the terms contained in the about_files/IJG_README
  * file accompanying this program.
@@ -133,11 +133,11 @@ public final class JPEGFileFormat extends FileFormat {
 		new RGB(0xFF,0xFF,0xFF),
 	};
 	public static final int[] ExtendTest = {
-		0, 1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024, 2048, 
+		0, 1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024, 2048,
 		4096, 8192, 16384, 32768, 65536, 131072, 262144
 	};
 	public static final int[] ExtendOffset = new int[] {
-		0, -1, -3, -7, -15, -31, -63, -127, -255, -511, -1023, -2047, 
+		0, -1, -3, -7, -15, -31, -63, -127, -255, -511, -1023, -2047,
 		-4095, -8191, -16383, -32767, -65535, -131071, -262143
 	};
 	public static final int[] ZigZag8x8 = {
@@ -427,7 +427,7 @@ void convertMultiRGBToYCbCr(ImageData image) {
 				int g = pixel & greenMask;
 				g = (greenShift < 0) ? g >>> -greenShift : g << greenShift;
 				int b = pixel & blueMask;
-				b = (blueShift < 0) ? b >>> -blueShift : b << blueShift;				
+				b = (blueShift < 0) ? b >>> -blueShift : b << blueShift;
 				dataYComp[dstDataIndex] = (byte)((RYTable[r] + GYTable[g] + BYTable[b]) >> 16);
 				dataCbComp[dstDataIndex] = (byte)((RCbTable[r] + GCbTable[g] + BCbTable[b]) >> 16);
 				dataCrComp[dstDataIndex] = (byte)((RCrTable[r] + GCrTable[g] + BCrTable[b]) >> 16);
@@ -488,13 +488,13 @@ byte[] convertYCbCrToRGB() {
 	 * 	B = Y + 1.77200 * Cb
 	 * where Cb and Cr represent the incoming values less MAXJSAMPLE/2.
 	 * (These numbers are derived from TIFF 6.0 section 21, dated 3-June-92.)
-	 * 
+	 *
 	 * To avoid floating-point arithmetic, we represent the fractional constants
 	 * as integers scaled up by 2^16 (about 4 digits precision); we have to divide
 	 * the products by 2^16, with appropriate rounding, to get the correct answer.
 	 * Notice that Y, being an integral input, does not contribute any fraction
 	 * so it need not participate in the rounding.
-	 * 
+	 *
 	 * For even more speed, we avoid doing any multiplications in the inner loop
 	 * by precalculating the constants times Cb and Cr for all possible values.
 	 * For 8-bit JSAMPLEs this is very reasonable (only 256 entries per table);
@@ -825,7 +825,7 @@ void emit(int huffCode, int nBits) {
 		SWT.error(SWT.ERROR_INVALID_IMAGE);
 	}
 	int[] power2m1 = new int[] {
-		1, 3, 7, 15, 31, 63, 127, 255, 511, 1023, 2047, 4095, 8191, 
+		1, 3, 7, 15, 31, 63, 127, 255, 511, 1023, 2047, 4095, 8191,
 		16383, 32767, 65535, 131125
 	};
 	int code = (huffCode & power2m1[nBits - 1]) << (24 - nBits - currentBitCount);
@@ -1006,7 +1006,7 @@ void forwardDCT(int[] dataUnit) {
 		int tmp4 = dataUnit[rIndex + 3] - dataUnit[rIndex + 4];
 
 		/**
-		 * Even part per LL&M figure 1 --- note that published figure 
+		 * Even part per LL&M figure 1 --- note that published figure
 		 * is faulty; rotator 'sqrt(2)*c1' should be 'sqrt(2)*c6'.
 		 */
 		int tmp10 = tmp0 + tmp3;
@@ -1086,7 +1086,7 @@ void forwardDCT(int[] dataUnit) {
 		int tmp4 = dataUnit[c3] - dataUnit[c4];
 
 		/**
-		 * Even part per LL&M figure 1 --- note that published figure 
+		 * Even part per LL&M figure 1 --- note that published figure
 		 * is faulty; rotator 'sqrt(2)*c1' should be 'sqrt(2)*c6'.
 		 */
 		int tmp10 = tmp0 + tmp3;
@@ -1249,7 +1249,7 @@ void inverseDCT(int[] dataUnit) {
 			z3 = tmp0 + tmp2;
 			int z4 = tmp1 + tmp3;
 			int z5 = (z3 + z4) * FIX_1_175875602; /* sqrt(2) * c3 */
-			  
+
 			tmp0 *= FIX_0_298631336;		/* sqrt(2) * (-c1+c3+c5-c7) */
 			tmp1 *= FIX_2_053119869;		/* sqrt(2) * ( c1+c3-c5+c7) */
 			tmp2 *= FIX_3_072711026;		/* sqrt(2) * ( c1+c3+c5-c7) */
@@ -1331,7 +1331,7 @@ void inverseDCT(int[] dataUnit) {
 			z3 = tmp0 + tmp2;
 			z4 = tmp1 + tmp3;
 			z0 = (z3 + z4) * FIX_1_175875602;	/* sqrt(2) * c3 */
-			
+
 			tmp0 *= FIX_0_298631336;		/* sqrt(2) * (-c1+c3+c5-c7) */
 			tmp1 *= FIX_2_053119869;		/* sqrt(2) * ( c1+c3-c5+c7) */
 			tmp2 *= FIX_3_072711026;		/* sqrt(2) * ( c1+c3+c5-c7) */
@@ -1340,10 +1340,10 @@ void inverseDCT(int[] dataUnit) {
 			z2 *= 0 - FIX_2_562915447;	/* sqrt(2) * (-c1-c3) */
 			z3 *= 0 - FIX_1_961570560;	/* sqrt(2) * (-c3-c5) */
 			z4 *= 0 - FIX_0_390180644;	/* sqrt(2) * (c5-c3) */
-			
+
 			z3 += z0;
 			z4 += z0;
-			
+
 			tmp0 += z1 + z3;
 			tmp1 += z2 + z4;
 			tmp2 += z2 + z3;
@@ -1395,7 +1395,7 @@ ImageData[] loadFromByteStream() {
 
 	/* Process the tables preceding the frame header. */
 	processTables();
-	
+
 	/* Start of Frame. */
 	frameHeader = new JPEGFrameHeader(inputStream);
 	if (!frameHeader.verify()) SWT.error(SWT.ERROR_INVALID_IMAGE);
@@ -1431,11 +1431,11 @@ ImageData[] loadFromByteStream() {
 
 	/* Process the tables preceding the scan header. */
 	processTables();
-	
+
 	/* Start of Scan. */
 	scanHeader = new JPEGScanHeader(inputStream);
 	if (!scanHeader.verify()) SWT.error(SWT.ERROR_INVALID_IMAGE);
-	
+
 	/* Process scan(s) and further tables until EOI. */
 	int progressiveScanCount = 0;
 	boolean done = false;
@@ -1460,7 +1460,7 @@ ImageData[] loadFromByteStream() {
 				SWT.error(SWT.ERROR_IO, e);
 			}
 		}
-		
+
 		/* Process the tables preceding the next scan header. */
 		JPEGSegment jpegSegment = processTables();
 		if (jpegSegment == null || jpegSegment.getSegmentMarker() == EOI) {
@@ -1470,7 +1470,7 @@ ImageData[] loadFromByteStream() {
 			if (!scanHeader.verify()) SWT.error(SWT.ERROR_INVALID_IMAGE);
 		}
 	}
-	
+
 	if (progressive) {
 		for (int ymcu = 0; ymcu < interleavedMcuRows; ymcu++) {
 			for (int xmcu = 0; xmcu < interleavedMcuCols; xmcu++) {
@@ -1502,7 +1502,7 @@ ImageData[] loadFromByteStream() {
 ImageData createImageData() {
 	return ImageData.internal_new(
 		imageWidth,
-		imageHeight, 
+		imageHeight,
 		nComponents * samplePrecision,
 		setUpPalette(),
 		nComponents == 1 ? 4 : 1,
@@ -1643,7 +1643,7 @@ JPEGSegment processTables() {
 				break;
 			default:
 				skipSegmentFrom(inputStream);
-			
+
 		}
 	}
 }
@@ -1731,7 +1731,7 @@ static void skipSegmentFrom(LEDataInputStream byteStream) {
 	try {
 		byte[] byteArray = new byte[4];
 		JPEGSegment jpegSegment = new JPEGSegment(byteArray);
-	
+
 		if (byteStream.read(byteArray) != byteArray.length) {
 			SWT.error(SWT.ERROR_INVALID_IMAGE);
 		}

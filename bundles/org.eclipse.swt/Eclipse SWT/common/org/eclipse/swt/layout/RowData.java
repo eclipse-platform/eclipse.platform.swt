@@ -14,8 +14,8 @@ import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 
 /**
- * Each control controlled by a <code>RowLayout</code> can have its initial 
- * width and height specified by setting a <code>RowData</code> object 
+ * Each control controlled by a <code>RowLayout</code> can have its initial
+ * width and height specified by setting a <code>RowData</code> object
  * into the control.
  * <p>
  * The following code uses a <code>RowData</code> object to change the initial
@@ -29,14 +29,14 @@ import org.eclipse.swt.graphics.*;
  * 		button1.setLayoutData(new RowData(50, 40));
  * </pre>
  * </p>
- * 
+ *
  * @see RowLayout
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  */
 public final class RowData {
 	/**
 	 * width specifies the desired width in pixels. This value
-	 * is the wHint passed into Control.computeSize(int, int, boolean) 
+	 * is the wHint passed into Control.computeSize(int, int, boolean)
 	 * to determine the preferred size of the control.
 	 *
 	 * The default value is SWT.DEFAULT.
@@ -46,7 +46,7 @@ public final class RowData {
 	public int width = SWT.DEFAULT;
 	/**
 	 * height specifies the preferred height in pixels. This value
-	 * is the hHint passed into Control.computeSize(int, int, boolean) 
+	 * is the hHint passed into Control.computeSize(int, int, boolean)
 	 * to determine the preferred size of the control.
 	 *
 	 * The default value is SWT.DEFAULT.
@@ -54,20 +54,20 @@ public final class RowData {
 	 * @see org.eclipse.swt.widgets.Control#computeSize(int, int, boolean)
 	 */
 	public int height = SWT.DEFAULT;
-	
+
 	/**
 	 * exclude informs the layout to ignore this control when sizing
 	 * and positioning controls.  If this value is <code>true</code>,
 	 * the size and position of the control will not be managed by the
-	 * layout.  If this	value is <code>false</code>, the size and 
+	 * layout.  If this	value is <code>false</code>, the size and
 	 * position of the control will be computed and assigned.
-	 * 
+	 *
 	 * The default value is <code>false</code>.
-	 * 
+	 *
 	 * @since 3.1
 	 */
 	public boolean exclude = false;
-	
+
 /**
  * Constructs a new instance of RowData using
  * default values.
@@ -79,7 +79,7 @@ public RowData () {
  * Constructs a new instance of RowData according to the parameters.
  * A value of SWT.DEFAULT indicates that no minimum width or
  * no minimum height is specified.
- * 
+ *
  * @param width a minimum width for the control
  * @param height a minimum height for the control
  */
@@ -92,7 +92,7 @@ public RowData (int width, int height) {
  * Constructs a new instance of RowData according to the parameter.
  * A value of SWT.DEFAULT indicates that no minimum width or
  * no minimum height is specified.
- * 
+ *
  * @param point a point whose x coordinate specifies a minimum width for the control
  * and y coordinate specifies a minimum height for the control
  */

@@ -15,10 +15,10 @@ import java.io.*;
 public class PngHuffmanTables {
 	PngHuffmanTable literalTable;
 	PngHuffmanTable distanceTable;
-	
+
 	static PngHuffmanTable FixedLiteralTable;
 	static PngHuffmanTable FixedDistanceTable;
-	
+
 	static final int LiteralTableSize = 288;
 	static final int[] FixedLiteralLengths = {
         8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8,
@@ -40,13 +40,13 @@ public class PngHuffmanTables {
 		5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
 		5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
 	};
-	
+
 	static final int LengthCodeTableSize = 19;
 	static final int[] LengthCodeOrder = {
 		16, 17, 18, 0, 8, 7, 9, 6, 10, 5,
 		11, 4, 12, 3, 13, 2, 14, 1, 15
 	};
-	
+
 static PngHuffmanTables getDynamicTables(PngDecodingDataStream stream) throws IOException {
 	return new PngHuffmanTables(stream);
 }
@@ -74,47 +74,47 @@ private PngHuffmanTables () {
 }
 
 private PngHuffmanTables (PngDecodingDataStream stream) throws IOException {
-	int literals = PngLzBlockReader.FIRST_LENGTH_CODE 
+	int literals = PngLzBlockReader.FIRST_LENGTH_CODE
 		+ stream.getNextIdatBits(5);
-	int distances = PngLzBlockReader.FIRST_DISTANCE_CODE 
+	int distances = PngLzBlockReader.FIRST_DISTANCE_CODE
 		+ stream.getNextIdatBits(5);
-	int codeLengthCodes = PngLzBlockReader.FIRST_CODE_LENGTH_CODE 
+	int codeLengthCodes = PngLzBlockReader.FIRST_CODE_LENGTH_CODE
 		+ stream.getNextIdatBits(4);
 
 	if (codeLengthCodes > PngLzBlockReader.LAST_CODE_LENGTH_CODE) {
 		stream.error();
 	}
-	
+
 	/* Tricky, tricky, tricky. The length codes are stored in
 	 * a very odd order. (For the order, see the definition of
-	 * the static field lengthCodeOrder.) Also, the data may 
-	 * not contain values for all the codes. It may just contain 
+	 * the static field lengthCodeOrder.) Also, the data may
+	 * not contain values for all the codes. It may just contain
 	 * values for the first X number of codes. The table should
 	 * be of size <LengthCodeTableSize> regardless of the number
 	 * of values actually given in the table.
-	 */	
+	 */
 	int[] lengthCodes = new int[LengthCodeTableSize];
 	for (int i = 0; i < codeLengthCodes; i++) {
 		lengthCodes[LengthCodeOrder[i]] = stream.getNextIdatBits(3);
 	}
 	PngHuffmanTable codeLengthsTable = new PngHuffmanTable(lengthCodes);
-	
+
 	int[] literalLengths = readLengths(
 		stream, literals, codeLengthsTable, LiteralTableSize);
 	int[] distanceLengths = readLengths(
 		stream, distances, codeLengthsTable, DistanceTableSize);
-	
+
 	literalTable = new PngHuffmanTable(literalLengths);
 	distanceTable = new PngHuffmanTable(distanceLengths);
 }
 
-private int [] readLengths (PngDecodingDataStream stream, 
-	int numLengths, 
+private int [] readLengths (PngDecodingDataStream stream,
+	int numLengths,
 	PngHuffmanTable lengthsTable,
 	int tableSize) throws IOException
 {
 	int[] lengths = new int[tableSize];
-	
+
 	for (int index = 0; index < numLengths;) {
 		int value = lengthsTable.getNextValue(stream);
 		if (value < 16) {

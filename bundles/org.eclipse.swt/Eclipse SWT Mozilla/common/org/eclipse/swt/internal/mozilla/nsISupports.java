@@ -48,19 +48,19 @@ public class nsISupports {
 	protected static boolean IsXULRunner24 () {
 		return MozillaVersion.CheckVersion (MozillaVersion.VERSION_XR24, true);
 	}
-	
+
 	protected static boolean IsXULRunner31 () {
 		return MozillaVersion.CheckVersion (MozillaVersion.VERSION_XR31, true);
 	}
-	
+
 	protected static boolean IsXULRVersionOrLater (int version) {
 		return MozillaVersion.CheckVersion (version, false);
 	}
 
 	public static final String NS_ISUPPORTS_IID_STR = "00000000-0000-0000-c000-000000000046";
-	
+
 	static {
-		IIDStore.RegisterIID (nsISupports.class, MozillaVersion.VERSION_BASE, new nsID (NS_ISUPPORTS_IID_STR));	
+		IIDStore.RegisterIID (nsISupports.class, MozillaVersion.VERSION_BASE, new nsID (NS_ISUPPORTS_IID_STR));
 	}
 
 	private static byte[] toByteArray (String str) {
@@ -77,11 +77,11 @@ public class nsISupports {
 	protected int getSetterIndex (String attribute) {
 		return getMethodIndex (attribute) + 1;
 	}
-	
+
 	protected String getClassName() {
 		return getClass ().getSimpleName ();
 	}
-	
+
 	protected int getMethodIndex (String methodString) {
 		long /*int*/[] result = new long /*int*/[1];
 		result[0] = 0;
@@ -114,7 +114,7 @@ public class nsISupports {
 		if (rc != XPCOM.NS_OK) {
 			throw new SWTError(rc);
 		}
-		
+
 		return index[0];
 	}
 

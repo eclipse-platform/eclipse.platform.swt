@@ -26,7 +26,7 @@ import org.eclipse.swt.*;
  * The hashCode() method in this class uses the values of the public
  * fields to compute the hash value. When storing instances of the
  * class in hashed collections, do not modify these fields after the
- * object has been inserted.  
+ * object has been inserted.
  * </p>
  * <p>
  * Application code does <em>not</em> need to explicitly release the
@@ -40,24 +40,24 @@ import org.eclipse.swt.*;
  */
 
 public final class RGB implements Serializable {
-	
+
 	/**
 	 * the red component of the RGB
 	 */
 	public int red;
-	
+
 	/**
 	 * the green component of the RGB
 	 */
 	public int green;
-	
+
 	/**
 	 * the blue component of the RGB
 	 */
 	public int blue;
-	
+
 	static final long serialVersionUID = 3258415023461249074L;
-	
+
 /**
  * Constructs an instance of this class with the given
  * red, green and blue values.
@@ -92,20 +92,20 @@ public RGB(int red, int green, int blue) {
 *    <li>ERROR_INVALID_ARGUMENT - if the hue is not between 0 and 360 or
 *    the saturation or brightness is not between 0 and 1</li>
 * </ul>
-* 
+*
 * @since 3.2
 */
 public RGB(float hue, float saturation, float brightness) {
-	if (hue < 0 || hue > 360 || saturation < 0 || saturation > 1 || 
+	if (hue < 0 || hue > 360 || saturation < 0 || saturation > 1 ||
 		brightness < 0 || brightness > 1) {
 		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
 	float r, g, b;
 	if (saturation == 0) {
-		r = g = b = brightness; 
+		r = g = b = brightness;
 	} else {
 		if (hue == 360) hue = 0;
-		hue /= 60;	
+		hue /= 60;
 		int i = (int)hue;
 		float f = hue - i;
 		float p = brightness * (1 - saturation);
@@ -147,22 +147,22 @@ public RGB(float hue, float saturation, float brightness) {
 	}
 	red = (int)(r * 255 + 0.5);
 	green = (int)(g * 255 + 0.5);
-	blue = (int)(b * 255 + 0.5);	
+	blue = (int)(b * 255 + 0.5);
 }
 
 /**
  * Returns the hue, saturation, and brightness of the color.
- * 
+ *
  * @return color space values in float format:<ul>
  *             <li>hue (from 0 to 360)</li>
  *             <li>saturation (from 0 to 1)</li>
  *             <li>brightness (from 0 to 1)</li>
  *             </ul>
  * @see #RGB(float, float, float)
- * 
+ *
  * @since 3.2
  */
-public float[] getHSB() {	
+public float[] getHSB() {
 	float r = red / 255f;
 	float g = green / 255f;
 	float b = blue / 255f;
@@ -177,7 +177,7 @@ public float[] getHSB() {
 			hue = (g  - b) / delta;
 		} else {
 			if (g == max) {
-				hue = 2 + (b - r) / delta;	
+				hue = 2 + (b - r) / delta;
 			} else {
 				hue = 4 + (r - g) / delta;
 			}
@@ -186,7 +186,7 @@ public float[] getHSB() {
 		if (hue < 0) hue += 360;
 	}
 	return new float[] {hue, saturation, brightness};
-}	
+}
 
 /**
  * Compares the argument to the receiver, and returns true
@@ -207,8 +207,8 @@ public boolean equals(Object object) {
 }
 
 /**
- * Returns an integer hash code for the receiver. Any two 
- * objects that return <code>true</code> when passed to 
+ * Returns an integer hash code for the receiver. Any two
+ * objects that return <code>true</code> when passed to
  * <code>equals</code> must return the same value for this
  * method.
  *

@@ -16,10 +16,10 @@ import org.eclipse.swt.internal.SWTEventListener;
  * This listener interface may be implemented in order to receive
  * an {@link AuthenticationEvent} notification when the {@link Browser}
  * encounters a page that requires authentication.
- * 
+ *
  * @see Browser#addAuthenticationListener(AuthenticationListener)
  * @see Browser#removeAuthenticationListener(AuthenticationListener)
- * 
+ *
  * @since 3.5
  */
 public interface AuthenticationListener extends SWTEventListener {
@@ -47,7 +47,7 @@ public interface AuthenticationListener extends SWTEventListener {
  * <li>(out) user the user name to authenticate with
  * <li>(out) password the password to authenticate with
  * </ul>
- * 
+ *
  * @param event the <code>AuthenticationEvent</code> that can be used to
  * either supply authentication credentials, defer credential input to
  * an authentication prompter, or cancel an authentication challenge.

@@ -14,7 +14,7 @@ package org.eclipse.swt.dnd;
 /**
  * This adapter class provides default implementations for the
  * methods described by the <code>DragSourceListener</code> interface.
- * 
+ *
  * <p>Classes that wish to deal with <code>DragSourceEvent</code>s can
  * extend this class and override only the methods which they are
  * interested in.</p>
@@ -28,7 +28,7 @@ public class DragSourceAdapter implements DragSourceListener {
 /**
  * This implementation of <code>dragStart</code> permits the drag operation to start.
  * For additional information see <code>DragSourceListener.dragStart</code>.
- * 
+ *
  * @param event the information associated with the drag start event
  */
 public void dragStart(DragSourceEvent event){}
@@ -36,7 +36,7 @@ public void dragStart(DragSourceEvent event){}
 /**
  * This implementation of <code>dragFinished</code> does nothing.
  * For additional information see <code>DragSourceListener.dragFinished</code>.
- * 
+ *
  * @param event the information associated with the drag finished event
  */
 public void dragFinished(DragSourceEvent event){}
@@ -44,7 +44,7 @@ public void dragFinished(DragSourceEvent event){}
 /**
  * This implementation of <code>dragSetData</code> does nothing.
  * For additional information see <code>DragSourceListener.dragSetData</code>.
- * 
+ *
  * @param event the information associated with the drag set data event
  */
 public void dragSetData(DragSourceEvent event){}

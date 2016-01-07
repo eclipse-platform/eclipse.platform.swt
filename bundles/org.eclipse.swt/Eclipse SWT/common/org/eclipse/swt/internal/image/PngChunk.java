@@ -33,13 +33,13 @@ class PngChunk extends Object {
 	static final int CHUNK_IEND = 3;
 	// Non-critical chunks.
 	static final int CHUNK_tRNS = 5;
-	
+
 	static final byte[] TYPE_IHDR = {(byte) 'I', (byte) 'H', (byte) 'D', (byte) 'R'};
 	static final byte[] TYPE_PLTE = {(byte) 'P', (byte) 'L', (byte) 'T', (byte) 'E'};
 	static final byte[] TYPE_IDAT = {(byte) 'I', (byte) 'D', (byte) 'A', (byte) 'T'};
 	static final byte[] TYPE_IEND = {(byte) 'I', (byte) 'E', (byte) 'N', (byte) 'D'};
 	static final byte[] TYPE_tRNS = {(byte) 't', (byte) 'R', (byte) 'N', (byte) 'S'};
-	
+
 	static final int[] CRC_TABLE;
 	static {
 		CRC_TABLE = new int[256];
@@ -52,15 +52,15 @@ class PngChunk extends Object {
 					CRC_TABLE[i] = 0xEDB88320 ^ ((CRC_TABLE[i] >> 1) & 0x7FFFFFFF);
 				}
 			}
-		}	
+		}
 	}
-	
+
 	int length;
-	
+
 /**
  * Construct a PngChunk using the reference bytes
  * given.
- */	
+ */
 PngChunk(byte[] reference) {
 	super();
 	setReference(reference);
@@ -71,7 +71,7 @@ PngChunk(byte[] reference) {
 /**
  * Construct a PngChunk with the specified number of
  * data bytes.
- */	
+ */
 PngChunk(int dataLength) {
 	this(new byte[MIN_LENGTH + dataLength]);
 	setLength(dataLength);
@@ -79,14 +79,14 @@ PngChunk(int dataLength) {
 
 /**
  * Get the PngChunk's reference byteArray;
- */	
+ */
 byte[] getReference() {
 	return reference;
 }
 
 /**
  * Set the PngChunk's reference byteArray;
- */	
+ */
 void setReference(byte[] reference) {
 	this.reference = reference;
 }
@@ -94,18 +94,18 @@ void setReference(byte[] reference) {
 /**
  * Get the 16-bit integer from the reference byte
  * array at the given offset.
- */	
+ */
 int getInt16(int offset) {
 	int answer = 0;
 	answer |= (reference[offset] & 0xFF) << 8;
 	answer |= (reference[offset + 1] & 0xFF);
-	return answer;	
+	return answer;
 }
 
 /**
  * Set the 16-bit integer in the reference byte
  * array at the given offset.
- */	
+ */
 void setInt16(int offset, int value) {
 	reference[offset] = (byte) ((value >> 8) & 0xFF);
 	reference[offset + 1] = (byte) (value & 0xFF);
@@ -114,20 +114,20 @@ void setInt16(int offset, int value) {
 /**
  * Get the 32-bit integer from the reference byte
  * array at the given offset.
- */	
+ */
 int getInt32(int offset) {
 	int answer = 0;
 	answer |= (reference[offset] & 0xFF) << 24;
 	answer |= (reference[offset + 1] & 0xFF) << 16;
 	answer |= (reference[offset + 2] & 0xFF) << 8;
 	answer |= (reference[offset + 3] & 0xFF);
-	return answer;	
+	return answer;
 }
 
 /**
  * Set the 32-bit integer in the reference byte
  * array at the given offset.
- */	
+ */
 void setInt32(int offset, int value) {
 	reference[offset] = (byte) ((value >> 24) & 0xFF);
 	reference[offset + 1] = (byte) ((value >> 16) & 0xFF);
@@ -138,7 +138,7 @@ void setInt32(int offset, int value) {
 /**
  * Get the length of the data component of this chunk.
  * This is not the length of the entire chunk.
- */	
+ */
 int getLength() {
 	return length;
 }
@@ -146,7 +146,7 @@ int getLength() {
 /**
  * Set the length of the data component of this chunk.
  * This is not the length of the entire chunk.
- */	
+ */
 void setLength(int value) {
 	setInt32(LENGTH_OFFSET, value);
 	length = value;
@@ -158,14 +158,14 @@ void setLength(int value) {
  * The first byte is upper case if the chunk is critical.
  * The second byte is upper case if the chunk is publicly defined.
  * The third byte must be upper case.
- * The fourth byte is upper case if the chunk is unsafe to copy. 
+ * The fourth byte is upper case if the chunk is unsafe to copy.
  * Public chunk types are defined by the PNG Development Group.
- */	
+ */
 byte[] getTypeBytes() {
 	byte[] type = new byte[4];
 	System.arraycopy(reference, TYPE_OFFSET, type, 0, TYPE_FIELD_LENGTH);
 	return type;
-}	
+}
 
 /**
  * Set the chunk type. This is a four byte value.
@@ -173,9 +173,9 @@ byte[] getTypeBytes() {
  * The first byte is upper case if the chunk is critical.
  * The second byte is upper case if the chunk is publicly defined.
  * The third byte must be upper case.
- * The fourth byte is upper case if the chunk is unsafe to copy. 
+ * The fourth byte is upper case if the chunk is unsafe to copy.
  * Public chunk types are defined by the PNG Development Group.
- */	
+ */
 void setType(byte[] value) {
 	if (value.length != TYPE_FIELD_LENGTH) {
 		SWT.error (SWT.ERROR_INVALID_ARGUMENT);
@@ -267,12 +267,12 @@ boolean typeMatchesArray(byte[] array) {
 		if (reference[TYPE_OFFSET + i] != array[i]){
 			return false;
 		}
-	}	
+	}
 	return true;
 }
 
 boolean isCritical() {
-	char c = (char) getTypeBytes()[0]; 
+	char c = (char) getTypeBytes()[0];
 	return 'A' <= c && c <= 'Z';
 }
 
@@ -281,7 +281,7 @@ int getChunkType() {
 	if (typeMatchesArray(TYPE_PLTE)) return CHUNK_PLTE;
 	if (typeMatchesArray(TYPE_IDAT)) return CHUNK_IDAT;
 	if (typeMatchesArray(TYPE_IEND)) return CHUNK_IEND;
-	if (typeMatchesArray(TYPE_tRNS)) return CHUNK_tRNS;	
+	if (typeMatchesArray(TYPE_tRNS)) return CHUNK_tRNS;
 	return CHUNK_UNKNOWN;
 }
 
@@ -296,14 +296,14 @@ static PngChunk readNextFromStream(LEDataInputStream stream) {
 		int result = stream.read(headerBytes, 0, headerLength);
 		stream.unread(headerBytes);
 		if (result != headerLength) return null;
-		
+
 		PngChunk tempChunk = new PngChunk(headerBytes);
-		
+
 		int chunkLength = tempChunk.getSize();
 		byte[] chunk = new byte[chunkLength];
 		result = stream.read(chunk, 0, chunkLength);
 		if (result != chunkLength) return null;
-	
+
 		switch (tempChunk.getChunkType()) {
 			case CHUNK_IHDR:
 				return new PngIhdrChunk(chunk);
@@ -317,7 +317,7 @@ static PngChunk readNextFromStream(LEDataInputStream stream) {
 				return new PngTrnsChunk(chunk);
 			default:
 				return new PngChunk(chunk);
-		}		
+		}
 	} catch (IOException e) {
 		return null;
 	}
@@ -328,13 +328,13 @@ static PngChunk readNextFromStream(LEDataInputStream stream) {
  */
 void validate(PngFileReadState readState, PngIhdrChunk headerChunk) {
 	if (reference.length < MIN_LENGTH) SWT.error(SWT.ERROR_INVALID_IMAGE);
-	
+
 	byte[] type = getTypeBytes();
-	
+
 	// The third character MUST be upper case.
 	char c = (char) type[2];
 	if (!('A' <= c && c <= 'Z')) SWT.error(SWT.ERROR_INVALID_IMAGE);
-	
+
 	// All characters must be letters.
 	for (int i = 0; i < TYPE_FIELD_LENGTH; i++) {
 		c = (char) type[i];
@@ -342,7 +342,7 @@ void validate(PngFileReadState readState, PngIhdrChunk headerChunk) {
 			SWT.error(SWT.ERROR_INVALID_IMAGE);
 		}
 	}
-	
+
 	// The stored CRC must match the data's computed CRC.
 	if (!checkCRC()) SWT.error(SWT.ERROR_INVALID_IMAGE);
 }
@@ -370,9 +370,9 @@ public String toString() {
 	for(int i = 0; i < type.length; i++) {
 		buffer.append((char) type[i]);
 	}
-	
+
 	contributeToString(buffer);
-	
+
 	buffer.append("\n\tCRC: ");
 	buffer.append(Integer.toHexString(getCRC()));
 	buffer.append("\n}");

@@ -22,14 +22,14 @@ package org.eclipse.swt.graphics;
  * within the packages provided by SWT. It should never be
  * referenced from application code.
  * </p>
- * 
+ *
  * @see Device
  * @see Image
  * @see GC
  */
 public interface Drawable {
 
-/**	 
+/**
  * Invokes platform specific functionality to allocate a new GC handle.
  * <p>
  * <b>IMPORTANT:</b> This method is <em>not</em> part of the public
@@ -39,15 +39,15 @@ public interface Drawable {
  * application code.
  * </p>
  *
- * @param data the platform specific GC data 
+ * @param data the platform specific GC data
  * @return the platform specific GC handle
- * 
+ *
  * @noreference This method is not intended to be referenced by clients.
  */
- 
+
 public long /*int*/ internal_new_GC (GCData data);
 
-/**	 
+/**
  * Invokes platform specific functionality to dispose a GC handle.
  * <p>
  * <b>IMPORTANT:</b> This method is <em>not</em> part of the public
@@ -58,8 +58,8 @@ public long /*int*/ internal_new_GC (GCData data);
  * </p>
  *
  * @param handle the platform specific GC handle
- * @param data the platform specific GC data 
- * 
+ * @param data the platform specific GC data
+ *
  * @noreference This method is not intended to be referenced by clients.
  */
 public void internal_dispose_GC (long /*int*/ handle, GCData data);

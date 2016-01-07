@@ -16,7 +16,7 @@ import org.eclipse.swt.*;
 /**
  * Instances of this class represent the system tray that is part
  * of the task bar status area on some operating systems.
- * 
+ *
  * <dl>
  * <dt><b>Styles:</b></dt>
  * <dd>(none)</dd>
@@ -26,11 +26,11 @@ import org.eclipse.swt.*;
  * <p>
  * IMPORTANT: This class is <em>not</em> intended to be subclassed.
  * </p>
- * 
+ *
  * @see Display#getSystemTray
  * @see <a href="http://www.eclipse.org/swt/snippets/#tray">Tray, TrayItem snippets</a>
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
- * 
+ *
  * @since 3.0
  * @noextend This class is not intended to be subclassed by clients.
  */
@@ -47,7 +47,7 @@ Tray (Display display, int style) {
 	this.display = display;
 	reskinWidget ();
 }
-	
+
 void createItem (TrayItem item, int index) {
 	if (!(0 <= index && index <= itemCount)) error (SWT.ERROR_INVALID_RANGE);
 	if (itemCount == items.length) {
@@ -108,11 +108,11 @@ public int getItemCount () {
 
 /**
  * Returns an array of <code>TrayItem</code>s which are the items
- * in the receiver. 
+ * in the receiver.
  * <p>
  * Note: This is not the actual structure used by the receiver
  * to maintain its list of items, so modifying the array will
- * not affect the receiver. 
+ * not affect the receiver.
  * </p>
  *
  * @return the items in the receiver
@@ -150,7 +150,7 @@ void releaseParent () {
 }
 
 @Override
-void reskinChildren (int flags) {	
+void reskinChildren (int flags) {
 	if (items != null) {
 		for (int i=0; i<items.length; i++) {
 			TrayItem item = items [i];

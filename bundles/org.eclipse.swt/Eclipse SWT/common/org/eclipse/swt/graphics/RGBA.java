@@ -27,7 +27,7 @@ import org.eclipse.swt.*;
  * The hashCode() method in this class uses the values of the public
  * fields to compute the hash value. When storing instances of the
  * class in hashed collections, do not modify these fields after the
- * object has been inserted.  
+ * object has been inserted.
  * </p>
  * <p>
  * Application code does <em>not</em> need to explicitly release the
@@ -45,14 +45,14 @@ public final class RGBA implements Serializable {
 	 * the RGB component of the RGBA
 	 */
 	public final RGB rgb;
-	
+
 	/**
 	 * the alpha component of the RGBA
 	 */
 	public int alpha;
-	
+
 	static final long serialVersionUID = 1049467103126495855L;
-	
+
 /**
  * Constructs an instance of this class with the given
  * red, green, blue and alpha values.
@@ -86,7 +86,7 @@ public RGBA(int red, int green, int blue, int alpha) {
 *    the saturation or brightness is not between 0 and 1 or if the alpha
 *    is not between 0 and 255</li>
 * </ul>
-* 
+*
 */
 public RGBA(float hue, float saturation, float brightness, float alpha) {
 	if ((alpha > 255) || (alpha < 0)) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
@@ -96,7 +96,7 @@ public RGBA(float hue, float saturation, float brightness, float alpha) {
 
 /**
  * Returns the hue, saturation, and brightness of the color.
- * 
+ *
  * @return color space values in float format:<ul>
  *             <li>hue (from 0 to 360)</li>
  *             <li>saturation (from 0 to 1)</li>
@@ -105,10 +105,10 @@ public RGBA(float hue, float saturation, float brightness, float alpha) {
  *             </ul>
  * @see #RGBA(float, float, float, float)
  */
-public float[] getHSBA() {	
+public float[] getHSBA() {
 	float[] hsb = rgb.getHSB();
 	return new float[] {hsb[0], hsb[1], hsb[2], alpha};
-}	
+}
 
 /**
  * Compares the argument to the receiver, and returns true
@@ -130,8 +130,8 @@ public boolean equals(Object object) {
 }
 
 /**
- * Returns an integer hash code for the receiver. Any two 
- * objects that return <code>true</code> when passed to 
+ * Returns an integer hash code for the receiver. Any two
+ * objects that return <code>true</code> when passed to
  * <code>equals</code> must return the same value for this
  * method.
  *

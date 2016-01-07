@@ -20,7 +20,7 @@ class PromptAuth2 {
 	XPCOMObject promptAuth;
 	int refCount = 0;
 	long /*int*/ parent;
-	
+
 PromptAuth2 () {
 	createCOMInterfaces ();
 }
@@ -40,7 +40,7 @@ void createCOMInterfaces () {
 		@Override
 		public long /*int*/ method2 (long /*int*/[] args) {return Release ();}
 	};
-	
+
 	promptAuth = new XPCOMObject (new int[] {2, 0, 0, 4, 6}) {
 		@Override
 		public long /*int*/ method0 (long /*int*/[] args) {return QueryInterface (args[0], args[1]);}
@@ -59,7 +59,7 @@ void disposeCOMInterfaces () {
 	if (supports != null) {
 		supports.dispose ();
 		supports = null;
-	}	
+	}
 	if (promptAuth != null) {
 		promptAuth.dispose ();
 		promptAuth = null;
@@ -74,7 +74,7 @@ int QueryInterface (long /*int*/ riid, long /*int*/ ppvObject) {
 	if (riid == 0 || ppvObject == 0) return XPCOM.NS_ERROR_NO_INTERFACE;
 	nsID guid = new nsID ();
 	XPCOM.memmove (guid, riid, nsID.sizeof);
-	
+
 	if (guid.Equals (XPCOM.NS_ISUPPORTS_IID)) {
 		XPCOM.memmove (ppvObject, new long /*int*/[] {supports.getAddress ()}, C.PTR_SIZEOF);
 		AddRef ();
@@ -89,7 +89,7 @@ int QueryInterface (long /*int*/ riid, long /*int*/ ppvObject) {
 	XPCOM.memmove (ppvObject, new long /*int*/[] {0}, C.PTR_SIZEOF);
 	return XPCOM.NS_ERROR_NO_INTERFACE;
 }
-        	
+
 int Release () {
 	refCount--;
 	if (refCount == 0) disposeCOMInterfaces ();
@@ -208,7 +208,7 @@ int PromptAuth(long /*int*/ aChannel, int level, long /*int*/ authInfo, long /*i
 		rc = auth.SetUsername(string.getAddress ());
 		if (rc != XPCOM.NS_OK) SWT.error (rc);
 		string.dispose ();
-		
+
 		string = new nsEmbedString (passLabel[0]);
 		rc = auth.SetPassword(string.getAddress ());
 		if (rc != XPCOM.NS_OK) SWT.error (rc);

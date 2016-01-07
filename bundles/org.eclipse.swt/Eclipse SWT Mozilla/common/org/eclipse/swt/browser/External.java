@@ -31,7 +31,7 @@ class External {
 	XPCOMObject securityCheckedComponent;
 	XPCOMObject scriptObjectOwner;
 	int refCount = 0;
-	
+
 	static final String CALLJAVA = "callJava"; //$NON-NLS-1$
 
 	static Callback CallJavaProc;
@@ -215,7 +215,7 @@ static Object convertToJava (nsIVariant variant) {
 			byte[] aContractID = MozillaDelegate.wcsToMbcs (null, XPCOM.NS_MEMORY_CONTRACTID, true);
 			rc = serviceManager.GetServiceByContractID (aContractID, IIDStore.GetIID (nsIMemory.class), result);
 			if (rc != XPCOM.NS_OK) Mozilla.error (rc);
-			if (result[0] == 0) Mozilla.error (XPCOM.NS_NOINTERFACE);		
+			if (result[0] == 0) Mozilla.error (XPCOM.NS_NOINTERFACE);
 			serviceManager.Release ();
 
 			nsIMemory memory = new nsIMemory (result[0]);
@@ -599,7 +599,7 @@ int getClassDescription (long /*int*/ _retValue) {
 	byte[] aContractID = MozillaDelegate.wcsToMbcs (null, XPCOM.NS_MEMORY_CONTRACTID, true);
 	rc = serviceManager.GetServiceByContractID (aContractID, IIDStore.GetIID (nsIMemory.class), result);
 	if (rc != XPCOM.NS_OK) Mozilla.error (rc);
-	if (result[0] == 0) Mozilla.error (XPCOM.NS_NOINTERFACE);		
+	if (result[0] == 0) Mozilla.error (XPCOM.NS_NOINTERFACE);
 	serviceManager.Release ();
 
 	nsIMemory memory = new nsIMemory (result[0]);
@@ -651,7 +651,7 @@ int getInterfaces (long /*int*/ count, long /*int*/ array) {
 	byte[] aContractID = MozillaDelegate.wcsToMbcs (null, XPCOM.NS_MEMORY_CONTRACTID, true);
 	rc = serviceManager.GetServiceByContractID (aContractID, IIDStore.GetIID (nsIMemory.class), result);
 	if (rc != XPCOM.NS_OK) Mozilla.error (rc);
-	if (result[0] == 0) Mozilla.error (XPCOM.NS_NOINTERFACE);		
+	if (result[0] == 0) Mozilla.error (XPCOM.NS_NOINTERFACE);
 	serviceManager.Release ();
 
 	nsIMemory memory = new nsIMemory (result[0]);
@@ -703,7 +703,7 @@ int canCreateWrapper (long /*int*/ iid, long /*int*/ _retVal) {
 	byte[] aContractID = MozillaDelegate.wcsToMbcs (null, XPCOM.NS_MEMORY_CONTRACTID, true);
 	rc = serviceManager.GetServiceByContractID (aContractID, IIDStore.GetIID (nsIMemory.class), result);
 	if (rc != XPCOM.NS_OK) Mozilla.error (rc);
-	if (result[0] == 0) Mozilla.error (XPCOM.NS_NOINTERFACE);		
+	if (result[0] == 0) Mozilla.error (XPCOM.NS_NOINTERFACE);
 	serviceManager.Release ();
 
 	nsIMemory memory = new nsIMemory (result[0]);
@@ -728,7 +728,7 @@ int canCallMethod (long /*int*/ iid, long /*int*/ methodName, long /*int*/ _retV
 	byte[] aContractID = MozillaDelegate.wcsToMbcs (null, XPCOM.NS_MEMORY_CONTRACTID, true);
 	rc = serviceManager.GetServiceByContractID (aContractID, IIDStore.GetIID (nsIMemory.class), result);
 	if (rc != XPCOM.NS_OK) Mozilla.error (rc);
-	if (result[0] == 0) Mozilla.error (XPCOM.NS_NOINTERFACE);		
+	if (result[0] == 0) Mozilla.error (XPCOM.NS_NOINTERFACE);
 	serviceManager.Release ();
 
 	nsIMemory memory = new nsIMemory (result[0]);
@@ -739,7 +739,7 @@ int canCallMethod (long /*int*/ iid, long /*int*/ methodName, long /*int*/ _retV
 	String string = new String (dest);
 	byte[] bytes;
 	if (string.equals (CALLJAVA)) {
-		bytes = MozillaDelegate.wcsToMbcs (null, "allAccess", true); //$NON-NLS-1$ 
+		bytes = MozillaDelegate.wcsToMbcs (null, "allAccess", true); //$NON-NLS-1$
 	} else {
 		bytes = MozillaDelegate.wcsToMbcs (null, "noAccess", true); //$NON-NLS-1$
 	}
@@ -762,7 +762,7 @@ int canGetProperty (long /*int*/ iid, long /*int*/ propertyName, long /*int*/ _r
 	byte[] aContractID = MozillaDelegate.wcsToMbcs (null, XPCOM.NS_MEMORY_CONTRACTID, true);
 	rc = serviceManager.GetServiceByContractID (aContractID, IIDStore.GetIID (nsIMemory.class), result);
 	if (rc != XPCOM.NS_OK) Mozilla.error (rc);
-	if (result[0] == 0) Mozilla.error (XPCOM.NS_NOINTERFACE);		
+	if (result[0] == 0) Mozilla.error (XPCOM.NS_NOINTERFACE);
 	serviceManager.Release ();
 
 	nsIMemory memory = new nsIMemory (result[0]);
@@ -787,7 +787,7 @@ int canSetProperty (long /*int*/ iid, long /*int*/ propertyName, long /*int*/ _r
 	byte[] aContractID = MozillaDelegate.wcsToMbcs (null, XPCOM.NS_MEMORY_CONTRACTID, true);
 	rc = serviceManager.GetServiceByContractID (aContractID, IIDStore.GetIID (nsIMemory.class), result);
 	if (rc != XPCOM.NS_OK) Mozilla.error (rc);
-	if (result[0] == 0) Mozilla.error (XPCOM.NS_NOINTERFACE);		
+	if (result[0] == 0) Mozilla.error (XPCOM.NS_NOINTERFACE);
 	serviceManager.Release ();
 
 	nsIMemory memory = new nsIMemory (result[0]);

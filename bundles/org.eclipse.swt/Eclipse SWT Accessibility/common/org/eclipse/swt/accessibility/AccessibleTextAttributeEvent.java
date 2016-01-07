@@ -29,14 +29,14 @@ public class AccessibleTextAttributeEvent extends SWTEventObject {
 
 	/**
 	 * [in] the 0-based text offset for which to return attribute information
-	 * 
+	 *
 	 * @see AccessibleAttributeListener#getTextAttributes
 	 */
 	public int offset;
 
 	/**
 	 * [in/out] the starting and ending offsets of the character range
-	 * 
+	 *
 	 * @see AccessibleAttributeListener#getTextAttributes
 	 * @see AccessibleEditableTextListener#setTextAttributes
 	 */
@@ -44,16 +44,16 @@ public class AccessibleTextAttributeEvent extends SWTEventObject {
 
 	/**
 	 * [in/out] the TextStyle of the character range
-	 * 
+	 *
 	 * @see AccessibleAttributeListener#getTextAttributes
 	 * @see AccessibleEditableTextListener#setTextAttributes
 	 */
 	public TextStyle textStyle;
-	
+
 	/**
 	 * [in/out] an array of alternating key and value Strings
 	 * that represent attributes that do not correspond to TextStyle fields
-	 * 
+	 *
 	 * @see AccessibleAttributeListener#getTextAttributes
 	 * @see AccessibleEditableTextListener#setTextAttributes
 	 */
@@ -62,9 +62,9 @@ public class AccessibleTextAttributeEvent extends SWTEventObject {
 	/**
 	 * [out] Set this field to {@link ACC#OK} if the operation
 	 * was completed successfully, and null otherwise.
-	 * 
+	 *
 	 * @see AccessibleEditableTextListener#setTextAttributes
-	 * 
+	 *
 	 * @since 3.7
 	 */
 	public String result;

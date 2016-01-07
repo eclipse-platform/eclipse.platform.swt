@@ -19,16 +19,16 @@ public class PngDeflater {
 	static final int MIN_LENGTH = 3;
 	static final int MAX_MATCHES = 32;
 	static final int HASH = 8209;
-	
+
 	byte[] in;
 	int inLength;
-	
+
 	ByteArrayOutputStream bytes = new ByteArrayOutputStream(1024);
-	
+
 	int adler32 = 1;
-	
+
 	int buffer, bitCount;
-	
+
 	Link[] hashtable = new Link[HASH];
 	Link[] window = new Link[WINDOW];
 	int nextWindow;
@@ -37,14 +37,14 @@ static class Link {
 
 	int hash, value;
 	Link previous, next;
-	
+
 	Link() {
-	
+
 		this.hash = 0;
 		this.value = 0;
 		this.previous = null;
 		this.next = null;
-	
+
 	}
 
 }
@@ -52,12 +52,12 @@ static class Link {
 static class Match {
 
 	int length, distance;
-	
+
 	Match(int length, int distance) {
-	
+
 		this.length = length;
 		this.distance = distance;
-	
+
 	}
 
 }
@@ -102,14 +102,14 @@ static final short mirrorBytes[] = {
 static class Code {
 
 	int code, extraBits, min, max;
-	
+
 	Code(int code, int extraBits, int min, int max) {
-	
+
 		this.code = code;
 		this.extraBits = extraBits;
 		this.min = min;
 		this.max = max;
-    
+
     }
 
 }
@@ -251,7 +251,7 @@ void alignToByte() {
 void outputLiteral(byte literal) {
 
 	int i = literal & 0xff;
-	
+
 	if (i <= 143) {
 		// 0 through 143 are 8 bits long starting at 00110000
 		writeBits(mirrorBytes[0x30 + i], 8);
@@ -266,7 +266,7 @@ void outputLiteral(byte literal) {
 Code findCode(int value, Code[] codes) {
 
 	int i, j, k;
-	
+
 	i = -1;
 	j = codes.length;
 	while (true) {
@@ -288,13 +288,13 @@ void outputMatch(int length, int distance) {
 
 	Code d, l;
 	int thisLength;
-	
+
 	while (length > 0) {
 
 		// we can transmit matches of lengths 3 through 258 inclusive
 		// so if length exceeds 258, we must transmit in several steps,
 		// with 258 or less in each step
-		
+
 		if (length > 260) {
 			thisLength = 258;
 		}
@@ -304,12 +304,12 @@ void outputMatch(int length, int distance) {
 		else {
 			thisLength = length - 3;
 		}
-		
+
 		length = length - thisLength;
-				
+
 		// find length code
 		l = findCode(thisLength, lengthCodes);
-		
+
 		// transmit the length code
 		// 256 through 279 are 7 bits long starting at 0000000
 		// 280 through 287 are 8 bits long starting at 11000000
@@ -319,24 +319,24 @@ void outputMatch(int length, int distance) {
 		else {
 			writeBits(mirrorBytes[0xc0 - 280 + l.code], 8);
 		}
-		
+
 		// transmit the extra bits
 		if (l.extraBits != 0) {
 			writeBits(thisLength - l.min, l.extraBits);
 		}
-		
+
 		// find distance code
 		d = findCode(distance, distanceCodes);
-		
+
 		// transmit the distance code
 		// 5 bits long starting at 00000
 		writeBits(mirrorBytes[d.code * 8], 5);
-		
+
 		// transmit the extra bits
 		if (d.extraBits != 0) {
 			writeBits(distance - d.min, d.extraBits);
 		}
-	
+
 	}
 
 }
@@ -346,50 +346,50 @@ Match findLongestMatch(int position, Link firstPosition) {
 	Link link = firstPosition;
 	int numberOfMatches = 0;
 	Match bestMatch = new Match(-1, -1);
-	
+
 	while (true) {
-	
+
 		int matchPosition = link.value;
-		
+
 		if (position - matchPosition < WINDOW && matchPosition != 0) {
 
 			int i;
-			
+
 			for (i = 1; position + i < inLength; i++) {
 				if (in[position + i] != in[matchPosition + i]) {
 					break;
 				}
 			}
-			
+
 			if (i >= MIN_LENGTH) {
-			
+
 				if (i > bestMatch.length) {
 					bestMatch.length = i;
 					bestMatch.distance = position - matchPosition;
 				}
-				
+
 				numberOfMatches = numberOfMatches + 1;
-				
+
 				if (numberOfMatches == MAX_MATCHES) {
 					break;
 				}
-			
+
 			}
-						
+
 		}
-		
+
 		link = link.next;
 		if (link == null) {
 			break;
 		}
-	
+
 	}
-	
+
 	if (bestMatch.length < MIN_LENGTH || bestMatch.distance < 1 || bestMatch.distance > WINDOW) {
 		return null;
 	}
-	
-	return bestMatch;	
+
+	return bestMatch;
 
 }
 
@@ -398,26 +398,26 @@ void updateHashtable(int to, int from) {
 	byte[] data = new byte[3];
 	int hash;
 	Link temp;
-	
+
 	for (int i = to; i < from; i++) {
-		
+
 		if (i + MIN_LENGTH > inLength) {
 			break;
 		}
-		
+
 		data[0] = in[i];
 		data[1] = in[i + 1];
 		data[2] = in[i + 2];
-		
+
 		hash = hash(data);
-		
+
 		if (window[nextWindow].previous != null) {
 			window[nextWindow].previous.next = null;
 		}
 		else if (window[nextWindow].hash != 0) {
 			hashtable[window[nextWindow].hash].next = null;
 		}
-		
+
 		window[nextWindow].hash = hash;
 		window[nextWindow].value = i;
 		window[nextWindow].previous = null;
@@ -426,12 +426,12 @@ void updateHashtable(int to, int from) {
 		if (temp != null) {
 			temp.previous = window[nextWindow];
 		}
-		
+
 		nextWindow = nextWindow + 1;
 		if (nextWindow == WINDOW) {
 			nextWindow = 0;
 		}
-			
+
 	}
 
 }
@@ -452,35 +452,35 @@ void compress() {
 	Match match;
 	int deferredPosition = -1;
 	Match deferredMatch = null;
-	
+
 	writeBits(0x01, 1); // BFINAL = 0x01 (final block)
 	writeBits(0x01, 2); // BTYPE = 0x01 (compression with fixed Huffman codes)
-	
+
 	// just output first byte so we never match at zero
 	outputLiteral(in[0]);
 	position = 1;
-	
+
 	while (position < inLength) {
-	
+
 		if (inLength - position < MIN_LENGTH) {
 			outputLiteral(in[position]);
 			position = position + 1;
 			continue;
 		}
-		
+
 		data[0] = in[position];
 		data[1] = in[position + 1];
 		data[2] = in[position + 2];
-		
+
 		hash = hash(data);
 		firstPosition = hashtable[hash];
-		
+
 		match = findLongestMatch(position, firstPosition);
-		
+
 		updateHashtable(position, position + 1);
-		
+
 		if (match != null) {
-		
+
 			if (deferredMatch != null) {
 				if (match.length > deferredMatch.length + 1) {
 					// output literal at deferredPosition
@@ -506,11 +506,11 @@ void compress() {
 				deferredMatch = match;
 				position = position + 1;
 			}
-		
+
 		}
-		
+
 		else {
-		
+
 			// no match found
 			if (deferredMatch != null) {
 				outputMatch(deferredMatch.length, deferredMatch.distance);
@@ -524,11 +524,11 @@ void compress() {
 				outputLiteral(in[position]);
 				position = position + 1;
 			}
-		
+
 		}
-	
+
 	}
-	
+
 	writeBits(0, 7); // end of block code
 	alignToByte();
 
@@ -537,17 +537,17 @@ void compress() {
 void compressHuffmanOnly() {
 
 	int position;
-	
+
 	writeBits(0x01, 1); // BFINAL = 0x01 (final block)
 	writeBits(0x01, 2); // BTYPE = 0x01 (compression with fixed Huffman codes)
-	
+
 	for (position = 0; position < inLength;) {
-	
+
 		outputLiteral(in[position]);
 		position = position + 1;
-	
+
 	}
-	
+
 	writeBits(0, 7); // end of block code
 	alignToByte();
 
@@ -556,14 +556,14 @@ void compressHuffmanOnly() {
 void store() {
 
 	// stored blocks are limited to 0xffff bytes
-	
+
 	int start = 0;
 	int length = inLength;
 	int blockLength;
 	int BFINAL = 0x00; // BFINAL = 0x00 or 0x01 (if final block), BTYPE = 0x00 (no compression)
-	
+
 	while (length > 0) {
-	
+
 		if (length < 65535) {
 			blockLength = length;
 			BFINAL = 0x01;
@@ -572,18 +572,18 @@ void store() {
 			blockLength = 65535;
 			BFINAL = 0x00;
 		}
-		
+
 		// write data header
 		bytes.write((byte) BFINAL);
 		writeShortLSB(bytes, blockLength); // LEN
 		writeShortLSB(bytes, blockLength ^ 0xffff); // NLEN (one's complement of LEN)
-	
+
 		// write actual data
 		bytes.write(in, start, blockLength);
-		
+
 		length = length - blockLength;
 		start = start + blockLength;
-	
+
 	}
 
 }
@@ -592,25 +592,25 @@ public byte[] deflate(byte[] input) {
 
 	in = input;
 	inLength = input.length;
-	
+
 	// write zlib header
 	bytes.write((byte) 0x78); // window size = 0x70 (32768), compression method = 0x08
 	bytes.write((byte) 0x9C); // compression level = 0x80 (default), check bits = 0x1C
-	
+
 	// compute checksum
 	for (int i = 0; i < inLength; i++) {
 		updateAdler(in[i]);
 	}
-	
+
 	//store();
-	
+
 	//compressHuffmanOnly();
-	
+
 	compress();
-	
+
 	// write checksum
 	writeInt(bytes, adler32);
-	
+
 	return bytes.toByteArray();
 
 }

@@ -31,7 +31,7 @@ import org.eclipse.swt.internal.SWTEventListener;
 public interface AccessibleAttributeListener extends SWTEventListener {
 	/**
 	 * Returns attributes specific to this Accessible object.
-	 * 
+	 *
 	 * @param e an event object containing the following fields:<ul>
 	 * <li>[out] topMargin - the top margin in pixels</li>
 	 * <li>[out] bottomMargin - the bottom margin in pixels</li>
@@ -52,7 +52,7 @@ public interface AccessibleAttributeListener extends SWTEventListener {
 
 	/**
 	 * Returns text attributes specific to this Accessible object.
-	 * 
+	 *
 	 * @param e an event object containing the following fields:<ul>
 	 * <li>[in] offset - the 0 based text offset for which to return attribute information</li>
 	 * <li>[out] start - the 0 based starting offset of the character range

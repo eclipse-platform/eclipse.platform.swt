@@ -10,17 +10,17 @@
  *******************************************************************************/
 package org.eclipse.swt.layout;
 
- 
+
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.widgets.*;
 
 /**
- * Instances of this class are used to define the attachments 
- * of a control in a <code>FormLayout</code>. 
+ * Instances of this class are used to define the attachments
+ * of a control in a <code>FormLayout</code>.
  * <p>
- * To set a <code>FormData</code> object into a control, you use the 
- * <code>setLayoutData ()</code> method. To define attachments for the 
+ * To set a <code>FormData</code> object into a control, you use the
+ * <code>setLayoutData ()</code> method. To define attachments for the
  * <code>FormData</code>, set the fields directly, like this:
  * <pre>
  * 		FormData data = new FormData();
@@ -30,23 +30,23 @@ import org.eclipse.swt.widgets.*;
  * </pre>
  * </p>
  * <p>
- * <code>FormData</code> contains the <code>FormAttachments</code> for 
+ * <code>FormData</code> contains the <code>FormAttachments</code> for
  * each edge of the control that the <code>FormLayout</code> uses to
  * determine the size and position of the control. <code>FormData</code>
  * objects also allow you to set the width and height of controls within
- * a <code>FormLayout</code>. 
+ * a <code>FormLayout</code>.
  * </p>
- * 
+ *
  * @see FormLayout
  * @see FormAttachment
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
- * 
+ *
  * @since 2.0
  */
 public final class FormData {
 	/**
 	 * width specifies the preferred width in pixels. This value
-	 * is the wHint passed into Control.computeSize(int, int, boolean) 
+	 * is the wHint passed into Control.computeSize(int, int, boolean)
 	 * to determine the preferred size of the control.
 	 *
 	 * The default value is SWT.DEFAULT.
@@ -56,7 +56,7 @@ public final class FormData {
 	public int width = SWT.DEFAULT;
 	/**
 	 * height specifies the preferred height in pixels. This value
-	 * is the hHint passed into Control.computeSize(int, int, boolean) 
+	 * is the hHint passed into Control.computeSize(int, int, boolean)
 	 * to determine the preferred size of the control.
 	 *
 	 * The default value is SWT.DEFAULT.
@@ -65,7 +65,7 @@ public final class FormData {
 	 */
 	public int height = SWT.DEFAULT;
 	/**
-	 * left specifies the attachment of the left side of 
+	 * left specifies the attachment of the left side of
 	 * the control.
 	 */
 	public FormAttachment left;
@@ -83,25 +83,25 @@ public final class FormData {
 	 * control.
 	 */
 	public FormAttachment bottom;
-	
+
 	int cacheWidth = -1, cacheHeight = -1;
 	int defaultWhint, defaultHhint, defaultWidth = -1, defaultHeight = -1;
 	int currentWhint, currentHhint, currentWidth = -1, currentHeight = -1;
 	FormAttachment cacheLeft, cacheRight, cacheTop, cacheBottom;
 	boolean isVisited, needed;
-	
+
 /**
  * Constructs a new instance of FormData using
  * default values.
  */
 public FormData () {
 }
-	
+
 /**
  * Constructs a new instance of FormData according to the parameters.
  * A value of SWT.DEFAULT indicates that no minimum width or
  * no minimum height is specified.
- * 
+ *
  * @param width a minimum width for the control
  * @param height a minimum height for the control
  */
@@ -174,7 +174,7 @@ FormAttachment getBottomAttachment (Control control, int spacing, boolean flushC
 	FormData bottomData = (FormData) bottomControl.getLayoutData ();
 	FormAttachment bottomAttachment = bottomData.getBottomAttachment (bottomControl, spacing, flushCache);
 	switch (bottom.alignment) {
-		case SWT.BOTTOM: 
+		case SWT.BOTTOM:
 			cacheBottom = bottomAttachment.plus (bottom.offset);
 			break;
 		case SWT.CENTER: {
@@ -185,7 +185,7 @@ FormAttachment getBottomAttachment (Control control, int spacing, boolean flushC
 		}
 		default: {
 			FormAttachment topAttachment = bottomData.getTopAttachment (bottomControl, spacing, flushCache);
-			cacheBottom = topAttachment.plus (bottom.offset - spacing);	
+			cacheBottom = topAttachment.plus (bottom.offset - spacing);
 			break;
 		}
 	}
@@ -226,13 +226,13 @@ FormAttachment getLeftAttachment (Control control, int spacing, boolean flushCac
 		}
 		default: {
 			FormAttachment rightAttachment = leftData.getRightAttachment (leftControl, spacing, flushCache);
-			cacheLeft = rightAttachment.plus (left.offset + spacing); 
+			cacheLeft = rightAttachment.plus (left.offset + spacing);
 		}
 	}
-	isVisited = false; 
+	isVisited = false;
 	return cacheLeft;
 }
-	
+
 String getName () {
 	String string = getClass ().getName ();
 	int index = string.lastIndexOf ('.');
@@ -262,7 +262,7 @@ FormAttachment getRightAttachment (Control control, int spacing, boolean flushCa
 	FormData rightData = (FormData) rightControl.getLayoutData ();
 	FormAttachment rightAttachment = rightData.getRightAttachment (rightControl, spacing, flushCache);
 	switch (right.alignment) {
-		case SWT.RIGHT: 
+		case SWT.RIGHT:
 			cacheRight = rightAttachment.plus (right.offset);
 			break;
 		case SWT.CENTER: {

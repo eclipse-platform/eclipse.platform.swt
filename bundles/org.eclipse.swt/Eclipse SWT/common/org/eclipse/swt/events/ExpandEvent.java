@@ -19,14 +19,14 @@ import org.eclipse.swt.widgets.*;
  *
  * @see ExpandListener
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
- * 
+ *
  * @since 3.2
  */
 
 public class ExpandEvent extends SelectionEvent {
-	
+
 	static final long serialVersionUID = 3976735856884987356L;
-	
+
 /**
  * Constructs a new instance of this class based on the
  * information in the given untyped event.

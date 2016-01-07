@@ -16,11 +16,11 @@ final class JPEGComment extends JPEGVariableSizeSegment {
 	public JPEGComment(byte[] reference) {
 		super(reference);
 	}
-	
+
 	public JPEGComment(LEDataInputStream byteStream) {
 		super(byteStream);
 	}
-	
+
 	@Override
 	public int signature() {
 		return JPEGFileFormat.COM;

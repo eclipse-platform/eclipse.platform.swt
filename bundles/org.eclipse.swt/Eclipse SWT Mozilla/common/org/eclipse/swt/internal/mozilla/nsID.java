@@ -29,7 +29,7 @@ package org.eclipse.swt.internal.mozilla;
 
 /** @jniclass flags=cpp */
 public class nsID {
-	
+
 	public int m0;
 	public short m1;
 	public short m2;
@@ -131,10 +131,10 @@ static String toHex (int v, int length) {
 
 @Override
 public String toString () {
-	return '{' + toHex (m0, 8) + '-' + 
-    	toHex (m1, 4) + '-' + 
-    	toHex (m2, 4) + '-' + 
-    	toHex (m3[0], 2) + toHex (m3[1], 2) + '-' + 
+	return '{' + toHex (m0, 8) + '-' +
+    	toHex (m1, 4) + '-' +
+    	toHex (m2, 4) + '-' +
+    	toHex (m3[0], 2) + toHex (m3[1], 2) + '-' +
     	toHex (m3[2], 2) + toHex (m3[3], 2) + toHex (m3[4], 2) + toHex (m3[5], 2) + toHex (m3[6], 2) + toHex (m3[7], 2) + '}';
 }
 

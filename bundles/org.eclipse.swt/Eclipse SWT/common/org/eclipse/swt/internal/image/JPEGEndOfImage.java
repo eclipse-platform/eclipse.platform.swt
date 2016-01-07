@@ -16,16 +16,16 @@ final class JPEGEndOfImage extends JPEGFixedSizeSegment {
 	public JPEGEndOfImage() {
 		super();
 	}
-	
+
 	public JPEGEndOfImage(byte[] reference) {
 		super(reference);
 	}
-	
+
 	@Override
 	public int signature() {
 		return JPEGFileFormat.EOI;
 	}
-	
+
 	@Override
 	public int fixedSize() {
 		return 2;

@@ -22,13 +22,13 @@ import org.eclipse.swt.widgets.Event;
  */
 
 public final class VerifyEvent extends KeyEvent {
-	
+
 	/**
 	 * the range of text being modified.
 	 * Setting these fields has no effect.
 	 */
 	public int start, end;
-	
+
 	/**
 	 * the new text that will be inserted.
 	 * Setting this field will change the text that is about to
@@ -37,7 +37,7 @@ public final class VerifyEvent extends KeyEvent {
 	public String text;
 
 	static final long serialVersionUID = 3257003246269577014L;
-	
+
 /**
  * Constructs a new instance of this class based on the
  * information in the given untyped event.

@@ -27,7 +27,7 @@ public class GestureEvent extends TypedEvent {
 	/**
 	 * The state of the keyboard modifier keys and mouse masks
 	 * at the time the event was generated.
-	 * 
+	 *
 	 * @see org.eclipse.swt.SWT#MODIFIER_MASK
 	 * @see org.eclipse.swt.SWT#BUTTON_MASK
 	 */
@@ -43,7 +43,7 @@ public class GestureEvent extends TypedEvent {
 	 * <li>{@link org.eclipse.swt.SWT#GESTURE_ROTATE}</li>
 	 * <li>{@link org.eclipse.swt.SWT#GESTURE_SWIPE}</li>
 	 * </ul></p>
-	 * 
+	 *
 	 * This field determines the <code>GestureEvent</code> fields that contain valid data.
 	 */
 	public int detail;
@@ -52,7 +52,7 @@ public class GestureEvent extends TypedEvent {
 	 * The meaning of this field is dependent on the value of the <code>detail</code> field
 	 * and the platform.  It can represent either the x coordinate of the centroid of the
 	 * touches that make up the gesture, or the x coordinate of the cursor at the time the
-	 * gesture was performed. 
+	 * gesture was performed.
 	 */
 	public int x;
 
@@ -60,7 +60,7 @@ public class GestureEvent extends TypedEvent {
 	 * The meaning of this field is dependent on the value of the <code>detail</code> field
 	 * and the platform.  It can represent either the y coordinate of the centroid of the
 	 * touches that make up the gesture, or the y coordinate of the cursor at the time the
-	 * gesture was performed. 
+	 * gesture was performed.
 	 */
 	public int y;
 
@@ -79,11 +79,11 @@ public class GestureEvent extends TypedEvent {
 	 * <p>
 	 * If <code>detail</code> is <code>GESTURE_SWIPE</code> then a positive value indicates a swipe
 	 * to the right and a negative value indicates a swipe to the left.
-	 * 
+	 *
 	 * If <code>detail</code> is <code>GESTURE_PAN</code> then a positive value indicates a pan to
 	 * the right by this field's count of pixels and a negative value indicates a pan to the left
-	 * by this field's count of pixels. 
-	 */	
+	 * by this field's count of pixels.
+	 */
 	public int xDirection;
 
 	/**
@@ -91,14 +91,14 @@ public class GestureEvent extends TypedEvent {
 	 * or <code>GESTURE_PAN</code>.  Both <code>xDirection</code> and <code>yDirection</code>
 	 * can be valid for an individual gesture.  The meaning of this field is dependent on the value
 	 * of the <code>detail</code> field.
-	 * 
+	 *
 	 * If <code>detail</code> is <code>GESTURE_SWIPE</code> then a positive value indicates a downward
 	 * swipe and a negative value indicates an upward swipe.
-	 * 
+	 *
 	 * If <code>detail</code> is <code>GESTURE_PAN</code> then a positive value indicates a downward
 	 * pan by this field's count of pixels and a negative value indicates an upward pan by this
-	 * field's count of pixels. 
-	 */	
+	 * field's count of pixels.
+	 */
 	public int yDirection;
 
 	/**

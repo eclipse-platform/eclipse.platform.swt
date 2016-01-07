@@ -35,7 +35,7 @@ public class nsIPrefBranch extends nsISupports {
 	static final String NS_IPREFBRANCH_IID_STR = "56c35506-f14b-11d3-99d3-ddbfac2ccf65";
 	static final String NS_IPREFBRANCH_10_IID_STR = "e162bfa0-01bd-4e9f-9843-8fb2efcd6d1f";
 	static final String NS_IPREFBRANCH_24_IID_STR = "55d25e49-793f-4727-a69f-de8b15f4b985";
-	
+
 	static {
 		IIDStore.RegisterIID(nsIPrefBranch.class, MozillaVersion.VERSION_BASE, new nsID(NS_IPREFBRANCH_IID_STR));
 		IIDStore.RegisterIID(nsIPrefBranch.class, MozillaVersion.VERSION_XR10, new nsID(NS_IPREFBRANCH_10_IID_STR));

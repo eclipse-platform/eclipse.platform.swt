@@ -18,37 +18,37 @@ import org.eclipse.swt.*;
  * The hashCode() method in this class uses the values of the public
  * fields to compute the hash value. When storing instances of the
  * class in hashed collections, do not modify these fields after the
- * object has been inserted.  
+ * object has been inserted.
  * </p>
  * <p>
  * Application code does <em>not</em> need to explicitly release the
  * resources managed by each instance when those instances are no longer
  * required, and thus no <code>dispose()</code> method is provided.
  * </p>
- * 
+ *
  * @see TextStyle
  * @see TextLayout
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
- * 
+ *
  * @since 3.2
  */
 public final class GlyphMetrics {
-	
+
 	/**
 	 * the ascent of the GlyphMetrics
 	 */
 	public int ascent;
-	
+
 	/**
 	 * the descent of the GlyphMetrics
 	 */
 	public int descent;
-	
+
 	/**
 	 * the width of the GlyphMetrics
 	 */
 	public int width;
-	
+
 /**
  * Constructs an instance of this class with the given
  * ascent, descent and width values.
@@ -89,8 +89,8 @@ public boolean equals (Object object) {
 }
 
 /**
- * Returns an integer hash code for the receiver. Any two 
- * objects that return <code>true</code> when passed to 
+ * Returns an integer hash code for the receiver. Any two
+ * objects that return <code>true</code> when passed to
  * <code>equals</code> must return the same value for this
  * method.
  *

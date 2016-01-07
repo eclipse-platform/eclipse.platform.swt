@@ -19,7 +19,7 @@ import org.eclipse.swt.widgets.*;
  * This class implements the nsIHelperAppLauncherDialog interface for mozilla
  * versions 1.9.x.x.  For other mozilla versions this interface is implemented
  * by class HelperAppLauncherDialog(_10).  HelperAppLauncherDialogFactory
- * determines at runtime which of these classes to instantiate. 
+ * determines at runtime which of these classes to instantiate.
  */
 class HelperAppLauncherDialog_1_9 {
 	XPCOMObject supports;
@@ -45,7 +45,7 @@ void createCOMInterfaces () {
 		@Override
 		public long /*int*/ method2 (long /*int*/[] args) {return Release ();}
 	};
-	
+
 	helperAppLauncherDialog = new XPCOMObject (new int[] {2, 0, 0, 3, 6}) {
 		@Override
 		public long /*int*/ method0 (long /*int*/[] args) {return QueryInterface (args[0], args[1]);}
@@ -57,17 +57,17 @@ void createCOMInterfaces () {
 		public long /*int*/ method3 (long /*int*/[] args) {return Show (args[0], args[1], (int)/*64*/args[2]);}
 		@Override
 		public long /*int*/ method4 (long /*int*/[] args) {return PromptForSaveToFile (args[0], args[1], args[2], args[3], (int)/*64*/args[4], args[5]);}
-	};		
+	};
 }
 
 void disposeCOMInterfaces () {
 	if (supports != null) {
 		supports.dispose ();
 		supports = null;
-	}	
+	}
 	if (helperAppLauncherDialog != null) {
 		helperAppLauncherDialog.dispose ();
-		helperAppLauncherDialog = null;	
+		helperAppLauncherDialog = null;
 	}
 }
 
@@ -94,7 +94,7 @@ int QueryInterface (long /*int*/ riid, long /*int*/ ppvObject) {
 	XPCOM.memmove (ppvObject, new long /*int*/[] {0}, C.PTR_SIZEOF);
 	return XPCOM.NS_ERROR_NO_INTERFACE;
 }
-        	
+
 int Release () {
 	refCount--;
 	/*
@@ -145,7 +145,7 @@ int PromptForSaveToFile (long /*int*/ aLauncher, long /*int*/ aWindowContext, lo
 	if (rc != XPCOM.NS_OK) Mozilla.error (rc);
 	if (result[0] == 0) Mozilla.error (XPCOM.NS_ERROR_NULL_POINTER);
 	/* Our own nsIDownload has been registered during the Browser initialization. It will be invoked by Mozilla. */
-	XPCOM.memmove (_retval, result, C.PTR_SIZEOF);	
+	XPCOM.memmove (_retval, result, C.PTR_SIZEOF);
 	return XPCOM.NS_OK;
 }
 }

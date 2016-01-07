@@ -18,20 +18,20 @@ import org.eclipse.swt.graphics.*;
  * @see Display
  * @see <a href="http://www.eclipse.org/swt/snippets/#monitor">Monitor snippets</a>
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
- * 
+ *
  * @since 3.0
  */
 public final class Monitor {
 	long /*int*/ handle;
 	int x, y, width, height;
 	int clientX, clientY, clientWidth, clientHeight;
-	
+
 /**
  * Prevents uninitialized instances from being created outside the package.
  */
-Monitor () {	
+Monitor () {
 }
-	
+
 /**
  * Compares the argument to the receiver, and returns true
  * if they represent the <em>same</em> object using a class
@@ -56,24 +56,24 @@ public boolean equals (Object object) {
  * origin can be negative.
  *
  * @return the receiver's bounding rectangle
- */	
+ */
 public Rectangle getBounds () {
 	return new Rectangle (x, y, width, height);
 }
-	
+
 /**
  * Returns a rectangle which describes the area of the
  * receiver which is capable of displaying data.
- * 
+ *
  * @return the client area
  */
 public Rectangle getClientArea () {
 	return new Rectangle (clientX, clientY, clientWidth, clientHeight);
 }
-	
+
 /**
- * Returns an integer hash code for the receiver. Any two 
- * objects that return <code>true</code> when passed to 
+ * Returns an integer hash code for the receiver. Any two
+ * objects that return <code>true</code> when passed to
  * <code>equals</code> must return the same value for this
  * method.
  *

@@ -19,8 +19,8 @@ import org.eclipse.swt.widgets.*;
 /**
  * This class implements the nsIDownload interface for mozilla
  * version 1.8.x.  For mozilla versions 1.4 - 1.7.x this interface
- * is implemented by class nsIDownload.  Mozilla versions later 
- * than 1.8.x do not need to call this interface. 
+ * is implemented by class nsIDownload.  Mozilla versions later
+ * than 1.8.x do not need to call this interface.
  */
 class Download_1_8 {
 	XPCOMObject supports;
@@ -204,18 +204,18 @@ void disposeCOMInterfaces() {
 	if (supports != null) {
 		supports.dispose ();
 		supports = null;
-	}	
+	}
 	if (download != null) {
 		download.dispose ();
-		download = null;	
+		download = null;
 	}
 	if (progressDialog != null) {
 		progressDialog.dispose ();
-		progressDialog = null;	
+		progressDialog = null;
 	}
 	if (webProgressListener != null) {
 		webProgressListener.dispose ();
-		webProgressListener = null;	
+		webProgressListener = null;
 	}
 }
 
@@ -322,7 +322,7 @@ int Init (long /*int*/ aSource, long /*int*/ aTarget, long /*int*/ aDisplayName,
 	data.grabExcessHorizontalSpace = true;
 	data.grabExcessVerticalSpace = true;
 	status.setLayoutData (data);
-	
+
 	cancel = new Button (shell, SWT.PUSH);
 	cancel.setText (SWT.getMessage ("SWT_Cancel")); //$NON-NLS-1$
 	data = new GridData ();
@@ -447,9 +447,9 @@ int OnStateChange (long /*int*/ aWebProgress, long /*int*/ aRequest, int aStateF
 		shell = null;
 	}
 	return XPCOM.NS_OK;
-}	
+}
 
 int OnStatusChange (long /*int*/ aWebProgress, long /*int*/ aRequest, int aStatus, long /*int*/ aMessage) {
 	return XPCOM.NS_OK;
-}		
+}
 }

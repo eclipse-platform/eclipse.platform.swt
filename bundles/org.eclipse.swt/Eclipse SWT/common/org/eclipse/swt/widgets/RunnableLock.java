@@ -22,7 +22,7 @@ class RunnableLock {
 	Runnable runnable;
 	Thread thread;
 	Throwable throwable;
-	
+
 RunnableLock (Runnable runnable) {
 	this.runnable = runnable;
 }

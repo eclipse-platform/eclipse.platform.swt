@@ -20,7 +20,7 @@ import org.eclipse.swt.widgets.*;
  * This class implements the nsIDownload interface for mozilla
  * versions 1.4 - 1.7.x.  For mozilla version 1.8.x this interface
  * is implemented by class nsIDownload_1_8.  Later versions of
- * mozilla do not need to call this interface. 
+ * mozilla do not need to call this interface.
  */
 class Download {
 	XPCOMObject supports;
@@ -33,7 +33,7 @@ class Download {
 	Shell shell;
 	Label status;
 	Button cancel;
-	
+
 Download () {
 	createCOMInterfaces ();
 }
@@ -53,7 +53,7 @@ void createCOMInterfaces () {
 		@Override
 		public long /*int*/ method2 (long /*int*/[] args) {return Release ();}
 	};
-	
+
 	download = new XPCOMObject (new int[] {2, 0, 0, 7, 1, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1}) {
 		@Override
 		public long /*int*/ method0 (long /*int*/[] args) {return QueryInterface (args[0], args[1]);}
@@ -88,7 +88,7 @@ void createCOMInterfaces () {
 		@Override
 		public long /*int*/ method15 (long /*int*/[] args) {return SetObserver (args[0]);}
 	};
-	
+
 	progressDialog = new XPCOMObject (new int[] {2, 0, 0, 7, 1, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}) {
 		@Override
 		public long /*int*/ method0 (long /*int*/[] args) {return QueryInterface (args[0], args[1]);}
@@ -133,7 +133,7 @@ void createCOMInterfaces () {
 		@Override
 		public long /*int*/ method20 (long /*int*/[] args) {return SetDialog (args[0]);}
 	};
-	
+
 	webProgressListener = new XPCOMObject (new int[] {2, 0, 0, 4, 6, 3, 4, 3}) {
 		@Override
 		public long /*int*/ method0 (long /*int*/[] args) {return QueryInterface (args[0], args[1]);}
@@ -158,10 +158,10 @@ void disposeCOMInterfaces () {
 	if (supports != null) {
 		supports.dispose ();
 		supports = null;
-	}	
+	}
 	if (download != null) {
 		download.dispose ();
-		download = null;	
+		download = null;
 	}
 	if (progressDialog != null) {
 		progressDialog.dispose ();
@@ -205,7 +205,7 @@ int QueryInterface (long /*int*/ riid, long /*int*/ ppvObject) {
 	XPCOM.memmove (ppvObject, new long /*int*/[] {0}, C.PTR_SIZEOF);
 	return XPCOM.NS_ERROR_NO_INTERFACE;
 }
-        	
+
 int Release () {
 	refCount--;
 	if (refCount == 0) disposeCOMInterfaces ();
@@ -228,9 +228,9 @@ int Init (long /*int*/ aSource, long /*int*/ aTarget, long /*int*/ aDisplayName,
 	String url = new String (dest);
 
 	/*
-	* As of mozilla 1.7 the second argument of the nsIDownload interface's 
+	* As of mozilla 1.7 the second argument of the nsIDownload interface's
 	* Init function changed from nsILocalFile to nsIURI.  Detect which of
-	* these interfaces the second argument implements and act accordingly.  
+	* these interfaces the second argument implements and act accordingly.
 	*/
 	String filename = null;
 	nsISupports supports = new nsISupports (aTarget);

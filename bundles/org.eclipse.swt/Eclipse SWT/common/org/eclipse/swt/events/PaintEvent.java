@@ -23,7 +23,7 @@ import org.eclipse.swt.graphics.GC;
  */
 
 public final class PaintEvent extends TypedEvent {
-	
+
 	/**
 	 * the graphics context to use when painting
 	 * that is configured to use the colors, font and
@@ -31,27 +31,27 @@ public final class PaintEvent extends TypedEvent {
 	 * only during the paint and must not be disposed
 	 */
 	public GC gc;
-	
+
 	/**
-	 * the x offset of the bounding rectangle of the 
+	 * the x offset of the bounding rectangle of the
 	 * region that requires painting
 	 */
 	public int x;
-	
+
 	/**
-	 * the y offset of the bounding rectangle of the 
+	 * the y offset of the bounding rectangle of the
 	 * region that requires painting
 	 */
 	public int y;
-	
+
 	/**
-	 * the width of the bounding rectangle of the 
+	 * the width of the bounding rectangle of the
 	 * region that requires painting
 	 */
 	public int width;
-	
+
 	/**
-	 * the height of the bounding rectangle of the 
+	 * the height of the bounding rectangle of the
 	 * region that requires painting
 	 */
 	public int height;
@@ -64,7 +64,7 @@ public final class PaintEvent extends TypedEvent {
 	public int count;
 
 	static final long serialVersionUID = 3256446919205992497L;
-	
+
 /**
  * Constructs a new instance of this class based on the
  * information in the given untyped event.

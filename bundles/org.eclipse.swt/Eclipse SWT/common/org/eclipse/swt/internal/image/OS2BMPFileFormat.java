@@ -153,7 +153,7 @@ static byte[] paletteToBytes(PaletteData pal) {
 	return bytes;
 }
 /**
- * Unload the given image's data into the given byte stream. 
+ * Unload the given image's data into the given byte stream.
  * Answer the number of bytes written.
  */
 int unloadData(ImageData image, OutputStream out) {
@@ -240,7 +240,7 @@ void unloadIntoByteStream(ImageLoader loader) {
 	ByteArrayOutputStream out = new ByteArrayOutputStream();
 	unloadData(image, out);
 	byte[] data = out.toByteArray();
-	
+
 	// Calculate file size
 	fileHeader[1] = fileHeader[4] + data.length;
 
@@ -263,7 +263,7 @@ void unloadIntoByteStream(ImageLoader loader) {
 	} catch (IOException e) {
 		SWT.error(SWT.ERROR_IO, e);
 	}
-	
+
 	// Unload palette
 	if (numCols > 0) {
 		try {

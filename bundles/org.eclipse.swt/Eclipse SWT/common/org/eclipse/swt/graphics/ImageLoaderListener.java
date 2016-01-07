@@ -15,7 +15,7 @@ import org.eclipse.swt.internal.SWTEventListener;
 
 /**
  * Classes which implement this interface provide methods
- * that deal with the incremental loading of image data. 
+ * that deal with the incremental loading of image data.
  * <p>
  * After creating an instance of a class that implements
  * this interface it can be added to an image loader using the

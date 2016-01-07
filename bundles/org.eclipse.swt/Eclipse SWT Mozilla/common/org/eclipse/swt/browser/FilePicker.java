@@ -91,10 +91,10 @@ void disposeCOMInterfaces () {
 	if (supports != null) {
 		supports.dispose ();
 		supports = null;
-	}	
+	}
 	if (filePicker != null) {
 		filePicker.dispose ();
-		filePicker = null;	
+		filePicker = null;
 	}
 }
 
@@ -179,7 +179,7 @@ int Show (long /*int*/ _retval) {
 	directory = dialog.getFilterPath ();
 	title = defaultFilename = null;
 	masks = null;
-	int result = filename == null ? nsIFilePicker.returnCancel : nsIFilePicker.returnOK; 
+	int result = filename == null ? nsIFilePicker.returnCancel : nsIFilePicker.returnOK;
 	XPCOM.memmove (_retval, new short[] {(short)result}, 2); /* PRInt16 */
 	return XPCOM.NS_OK;
 }

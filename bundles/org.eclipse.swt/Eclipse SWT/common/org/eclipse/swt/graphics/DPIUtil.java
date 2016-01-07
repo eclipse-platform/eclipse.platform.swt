@@ -40,7 +40,7 @@ class DPIUtil {
 		}
 		return zoom;
 	}
-	
+
 	/**
 	 * Gets Image file path at specified zoom level, if image is missing then
 	 * fall-back to 100% image. If provider or fall-back image is not available,
@@ -55,7 +55,7 @@ class DPIUtil {
 		if (filename == null) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 		return filename;
 	}
-	
+
 	/**
 	 * Gets Image data at specified zoom level, if image is missing then
 	 * fall-back to 100% image. If provider or fall-back image is not available,

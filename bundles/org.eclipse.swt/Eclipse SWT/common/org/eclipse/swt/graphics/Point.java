@@ -26,7 +26,7 @@ import java.io.*;
  * The hashCode() method in this class uses the values of the public
  * fields to compute the hash value. When storing instances of the
  * class in hashed collections, do not modify these fields after the
- * object has been inserted.  
+ * object has been inserted.
  * </p>
  * <p>
  * Application code does <em>not</em> need to explicitly release the
@@ -39,19 +39,19 @@ import java.io.*;
  */
 
 public final class Point implements Serializable {
-	
+
 	/**
 	 * the x coordinate of the point
 	 */
 	public int x;
-	
+
 	/**
 	 * the y coordinate of the point
 	 */
 	public int y;
-	
+
 	static final long serialVersionUID = 3257002163938146354L;
-	
+
 /**
  * Constructs a new point with the given x and y coordinates.
  *
@@ -82,8 +82,8 @@ public boolean equals (Object object) {
 }
 
 /**
- * Returns an integer hash code for the receiver. Any two 
- * objects that return <code>true</code> when passed to 
+ * Returns an integer hash code for the receiver. Any two
+ * objects that return <code>true</code> when passed to
  * <code>equals</code> must return the same value for this
  * method.
  *

@@ -12,15 +12,15 @@ package org.eclipse.swt.widgets;
 
 
 /**
- * Implementers of <code>Listener</code> provide a simple 
- * <code>handleEvent()</code> method that is used internally 
+ * Implementers of <code>Listener</code> provide a simple
+ * <code>handleEvent()</code> method that is used internally
  * by SWT to dispatch events.
  * <p>
  * After creating an instance of a class that implements this interface
- * it can be added to a widget using the 
+ * it can be added to a widget using the
  * <code>addListener(int eventType, Listener handler)</code> method and
- * removed using the 
- * <code>removeListener (int eventType, Listener handler)</code> method. 
+ * removed using the
+ * <code>removeListener (int eventType, Listener handler)</code> method.
  * When the specified event occurs, <code>handleEvent(...)</code> will
  * be sent to the instance.
  * </p>
@@ -29,10 +29,10 @@ package org.eclipse.swt.widgets;
  * providing the <em>untyped listener</em> API. Typically, widgets will
  * also provide a higher-level <em>typed listener</em> API, that is based
  * on the standard <code>java.util.EventListener</code> pattern.
- * </p> 
+ * </p>
  * <p>
  * Note that, since all internal SWT event dispatching is based on untyped
- * listeners, it is simple to build subsets of SWT for use on memory 
+ * listeners, it is simple to build subsets of SWT for use on memory
  * constrained, small footprint devices, by removing the classes and
  * methods which implement the typed listener API.
  * </p>

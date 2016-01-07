@@ -37,7 +37,7 @@ void createCOMInterfaces () {
 		@Override
 		public long /*int*/ method2 (long /*int*/[] args) {return Release ();}
 	};
-	
+
 	factory = new XPCOMObject (new int[] {2, 0, 0, 3, 1}) {
 		@Override
 		public long /*int*/ method0 (long /*int*/[] args) {return QueryInterface (args[0], args[1]);}
@@ -54,10 +54,10 @@ void disposeCOMInterfaces () {
 	if (supports != null) {
 		supports.dispose ();
 		supports = null;
-	}	
+	}
 	if (factory != null) {
 		factory.dispose ();
-		factory = null;	
+		factory = null;
 	}
 }
 
@@ -69,7 +69,7 @@ int QueryInterface (long /*int*/ riid, long /*int*/ ppvObject) {
 	if (riid == 0 || ppvObject == 0) return XPCOM.NS_ERROR_NO_INTERFACE;
 	nsID guid = new nsID ();
 	XPCOM.memmove (guid, riid, nsID.sizeof);
-	
+
 	if (guid.Equals (XPCOM.NS_ISUPPORTS_IID)) {
 		XPCOM.memmove (ppvObject, new long /*int*/[] {supports.getAddress ()}, C.PTR_SIZEOF);
 		AddRef ();
@@ -80,23 +80,23 @@ int QueryInterface (long /*int*/ riid, long /*int*/ ppvObject) {
 		AddRef ();
 		return XPCOM.NS_OK;
 	}
-	
+
 	XPCOM.memmove (ppvObject, new long /*int*/[] {0}, C.PTR_SIZEOF);
 	return XPCOM.NS_ERROR_NO_INTERFACE;
 }
-        	
+
 int Release () {
 	refCount--;
 	if (refCount == 0) disposeCOMInterfaces ();
 	return refCount;
 }
-	
+
 /* nsIPromptFactory */
 
 int GetPrompt (long /*int*/ aParent, long /*int*/ iid, long /*int*/ result) {
 	nsID guid = new nsID ();
 	XPCOM.memmove (guid, iid, nsID.sizeof);
-	
+
 	if (guid.Equals (IIDStore.GetIID (nsIPrompt.class))) {
 		Prompter prompter = new Prompter ();
 		prompter.AddRef ();
@@ -113,7 +113,7 @@ int GetPrompt (long /*int*/ aParent, long /*int*/ iid, long /*int*/ result) {
 		AddRef ();
 		return XPCOM.NS_OK;
 	}
-	
+
 	return XPCOM.NS_NOINTERFACE;
 }
 

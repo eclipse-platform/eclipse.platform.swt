@@ -32,7 +32,7 @@ public interface AccessibleEditableTextListener extends SWTEventListener {
 	/**
 	 * Copies the substring beginning at the specified <code>start</code> offset
 	 * and extending to the character at offset <code>end - 1</code> to the clipboard.
-	 * 
+	 *
 	 * @param e an event object containing the following information:<ul>
 	 * <li>[in] start - the 0 based offset of the first character of the substring
 	 * 		to be copied to the clipboard</li>
@@ -46,7 +46,7 @@ public interface AccessibleEditableTextListener extends SWTEventListener {
 	/**
 	 * Moves the substring beginning at the specified <code>start</code> offset
 	 * and extending to the character at offset <code>end - 1</code> to the clipboard.
-	 * 
+	 *
 	 * @param e an event object containing the following information:<ul>
 	 * <li>[in] start - the 0 based offset of the first character of the substring
 	 * 		to be moved to the clipboard</li>
@@ -59,7 +59,7 @@ public interface AccessibleEditableTextListener extends SWTEventListener {
 
 	/**
 	 * Inserts the text in the clipboard at the leading edge of the specified <code>start</code> offset.
-	 * 
+	 *
 	 * @param e an event object containing the following information:<ul>
 	 * <li>[in] start - the offset at which to insert the text from the clipboard.
 	 * 		The valid range is 0..length</li>
@@ -75,7 +75,7 @@ public interface AccessibleEditableTextListener extends SWTEventListener {
 	 * This event notification is also used to delete text if <code>string</code> is an empty string,
 	 * or to insert text at the leading edge of the specified offset if <code>start</code> and <code>end</code> are equal.
 	 * </p>
-	 * 
+	 *
 	 * @param e an event object containing the following information:<ul>
 	 * <li>[in] start - the 0 based offset of the first character of the substring
 	 * 		to be replaced</li>
@@ -91,7 +91,7 @@ public interface AccessibleEditableTextListener extends SWTEventListener {
 	/**
 	 * Replaces the set of attributes of the substring beginning at the specified <code>start</code> offset
 	 * and extending to the character at offset <code>end - 1</code> by the specified set of attributes.
-	 * 
+	 *
 	 * @param e an event object containing the following information:<ul>
 	 * <li>[in] start - the 0 based offset of the first character of the substring
 	 * 		whose attributes are modified</li>

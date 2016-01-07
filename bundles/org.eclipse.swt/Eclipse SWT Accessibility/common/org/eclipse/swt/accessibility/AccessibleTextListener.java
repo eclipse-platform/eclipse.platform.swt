@@ -37,11 +37,11 @@ import org.eclipse.swt.internal.*;
  *
  * @see AccessibleTextAdapter
  * @see AccessibleTextEvent
- * 
+ *
  * @since 3.0
  */
 public interface AccessibleTextListener extends SWTEventListener {
-	
+
 	/**
 	 * Sent when an accessibility client requests the current character offset
 	 * of the text caret.

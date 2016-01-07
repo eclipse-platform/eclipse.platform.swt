@@ -25,15 +25,15 @@ import org.eclipse.swt.widgets.*;
  */
 
 public class SelectionEvent extends TypedEvent {
-	
+
 	/**
 	 * The item that was selected.
 	 */
 	public Widget item;
-	
+
 	/**
 	 * Extra detail information about the selection, depending on the widget.
-	 * 
+	 *
 	 * <p><b>Sash</b><ul>
 	 * <li>{@link org.eclipse.swt.SWT#DRAG}</li>
 	 * </ul></p><p><b>ScrollBar and Slider</b><ul>
@@ -58,17 +58,17 @@ public class SelectionEvent extends TypedEvent {
 	 * The x location of the selected area.
 	 */
 	public int x;
-	
+
 	/**
 	 * The y location of selected area.
 	 */
 	public int y;
-	
+
 	/**
 	 * The width of selected area.
 	 */
 	public int width;
-	
+
 	/**
 	 * The height of selected area.
 	 */
@@ -84,21 +84,21 @@ public class SelectionEvent extends TypedEvent {
 	 * The text of the hyperlink that was selected.
 	 * This will be either the text of the hyperlink or the value of its HREF,
 	 * if one was specified.
-	 * 
+	 *
 	 * @see org.eclipse.swt.widgets.Link#setText(String)
 	 * @since 3.1
 	 */
 	public String text;
-	
+
 	/**
 	 * A flag indicating whether the operation should be allowed.
 	 * Setting this field to <code>false</code> will cancel the
 	 * operation, depending on the widget.
 	 */
 	public boolean doit;
-	
+
 	static final long serialVersionUID = 3976735856884987953L;
-	
+
 /**
  * Constructs a new instance of this class based on the
  * information in the given untyped event.

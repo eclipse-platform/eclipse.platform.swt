@@ -21,7 +21,7 @@ final class TIFFDirectory {
 	boolean isLittleEndian;
 	ImageLoader loader;
 	int depth;
-	
+
 	/* Directory fields */
 	int subfileType;
 	int imageWidth;
@@ -35,13 +35,13 @@ final class TIFFDirectory {
 	int[] stripByteCounts;
 	int t4Options;
 	int colorMapOffset;
-	
+
 	/* Encoder fields */
 	ImageData image;
 	LEDataOutputStream out;
-	
+
 	static final int NO_VALUE = -1;
-	
+
 	static final short TAG_NewSubfileType = 254;
 	static final short TAG_SubfileType = 255;
 	static final short TAG_ImageWidth = 256;
@@ -64,27 +64,27 @@ final class TIFFDirectory {
 	static final short TAG_Software = 305;
 	static final short TAG_DateTime = 306;
 	static final short TAG_ColorMap = 320;
-	
+
 	static final int TYPE_BYTE = 1;
 	static final int TYPE_ASCII = 2;
 	static final int TYPE_SHORT = 3;
 	static final int TYPE_LONG = 4;
 	static final int TYPE_RATIONAL = 5;
-	
+
 	static final int FILETYPE_REDUCEDIMAGE = 1;
 	static final int FILETYPE_PAGE = 2;
 	static final int FILETYPE_MASK = 4;
 	static final int OFILETYPE_IMAGE = 1;
 	static final int OFILETYPE_REDUCEDIMAGE = 2;
 	static final int OFILETYPE_PAGE = 3;
-	
+
 	/* Different compression schemes */
 	static final int COMPRESSION_NONE = 1;
 	static final int COMPRESSION_CCITT_3_1 = 2;
 	static final int COMPRESSION_PACKBITS = 32773;
-	
+
 	static final int IFD_ENTRY_SIZE = 12;
-	
+
 public TIFFDirectory(TIFFRandomFileAccess file, boolean isLittleEndian, ImageLoader loader) {
 	this.file = file;
 	this.isLittleEndian = isLittleEndian;
@@ -104,8 +104,8 @@ int decodePackBits(byte[] src, byte[] dest, int offsetDest) {
 		if (n >= 0) {
 			/* Copy next n+1 bytes literally */
 			System.arraycopy(src, ++srcIndex, dest, destIndex, n + 1);
-			srcIndex += n + 1;		
-			destIndex += n + 1;	
+			srcIndex += n + 1;
+			destIndex += n + 1;
 		} else if (n >= -127) {
 			/* Copy next byte -n+1 times */
 			byte value = src[++srcIndex];
@@ -132,14 +132,14 @@ void getEntryValue(int type, byte[] buffer, int index, int[] values) throws IOEx
 	int offset = toInt(buffer, start, TYPE_LONG);
 	switch (type) {
 		case TYPE_SHORT: size = 2; break;
-		case TYPE_LONG: size = 4; break; 
+		case TYPE_LONG: size = 4; break;
 		case TYPE_RATIONAL: size = 8; break;
 		case TYPE_ASCII:
 		case TYPE_BYTE: size = 1; break;
 		default: SWT.error(SWT.ERROR_UNSUPPORTED_FORMAT); return;
 	}
 	if (values.length * size > 4) {
-		buffer = new byte[values.length * size]; 
+		buffer = new byte[values.length * size];
 		file.seek(offset);
 		file.read(buffer);
 		start = 0;
@@ -150,7 +150,7 @@ void getEntryValue(int type, byte[] buffer, int index, int[] values) throws IOEx
 }
 
 void decodePixels(ImageData image) throws IOException {
-	/* Each row is byte aligned */ 
+	/* Each row is byte aligned */
 	byte[] imageData = new byte[(imageWidth * depth + 7) / 8 * imageLength];
 	image.data = imageData;
 	int destIndex = 0;
@@ -221,7 +221,7 @@ PaletteData getGrayPalette() {
 	return new PaletteData(rgbs);
 }
 
-PaletteData getRGBPalette(int bitsR, int bitsG, int bitsB) {	
+PaletteData getRGBPalette(int bitsR, int bitsG, int bitsB) {
 	int blueMask = 0;
 	for (int i = 0; i < bitsB; i++) {
 		blueMask |= 1 << i;
@@ -233,16 +233,16 @@ PaletteData getRGBPalette(int bitsR, int bitsG, int bitsB) {
 	int redMask = 0;
 	for (int i = bitsB + bitsG; i < bitsB + bitsG + bitsR; i++) {
 		redMask |= 1 << i;
-	}	
+	}
 	return new PaletteData(redMask, greenMask, blueMask);
 }
 
 int formatStrips(int rowByteSize, int nbrRows, byte[] data, int maxStripByteSize, int offsetPostIFD, int extraBytes, int[][] strips) {
-	/* 
-	* Calculate the nbr of required strips given the following requirements: 
+	/*
+	* Calculate the nbr of required strips given the following requirements:
 	* - each strip should, if possible, not be greater than maxStripByteSize
 	* - each strip should contain 1 or more entire rows
-	* 
+	*
 	* Format the strip fields arrays so that the image data is stored in one
 	* contiguous block. This block is stored after the IFD and after any tag
 	* info described in the IFD.
@@ -255,13 +255,13 @@ int formatStrips(int rowByteSize, int nbrRows, byte[] data, int maxStripByteSize
 	} else {
 		int nbr = (data.length + maxStripByteSize - 1) / maxStripByteSize;
 		nbrRowsPerStrip = nbrRows / nbr;
-		n = (nbrRows + nbrRowsPerStrip - 1) / nbrRowsPerStrip;	
+		n = (nbrRows + nbrRowsPerStrip - 1) / nbrRowsPerStrip;
 	}
 	int stripByteSize = rowByteSize * nbrRowsPerStrip;
 
 	int[] offsets = new int[n];
 	int[] counts = new int[n];
-	/* 
+	/*
 	* Nbr of bytes between the end of the IFD directory and the start of
 	* the image data. Keep space for at least the offsets and counts
 	* data, each field being TYPE_LONG (4 bytes). If other tags require
@@ -272,10 +272,10 @@ int formatStrips(int rowByteSize, int nbrRows, byte[] data, int maxStripByteSize
 	*/
 	int postIFDData = n == 1 ? 0 : n * 2 * 4;
 	int startOffset = offsetPostIFD + extraBytes + postIFDData; /* offset of image data */
-	
+
 	int offset = startOffset;
 	for (int i = 0; i < n; i++) {
-		/* 
+		/*
 		* Store all strips sequentially to allow us
 		* to copy all pixels in one contiguous area.
 		*/
@@ -286,17 +286,17 @@ int formatStrips(int rowByteSize, int nbrRows, byte[] data, int maxStripByteSize
 	/* The last strip may contain fewer rows */
 	int mod = data.length % stripByteSize;
 	if (mod != 0) counts[counts.length - 1] = mod;
-	
+
 	strips[0] = offsets;
 	strips[1] = counts;
 	return nbrRowsPerStrip;
 }
 
 int[] formatColorMap(RGB[] rgbs) {
-	/* 
+	/*
 	* In a TIFF ColorMap, all red come first, followed by
 	* green and blue. All values must be converted from
-	* 8 bit to 16 bit. 
+	* 8 bit to 16 bit.
 	*/
 	int[] colorMap = new int[rgbs.length * 3];
 	int offsetGreen = rgbs.length;
@@ -435,7 +435,7 @@ public ImageData read(int [] nextIFDOffset) throws IOException {
 	samplesPerPixel = 1;
 	stripByteCounts = null;
 	stripOffsets = null;
-	
+
 	byte[] buffer = new byte[2];
 	file.read(buffer);
 	int numberEntries = toInt(buffer, 0, TYPE_SHORT);
@@ -445,7 +445,7 @@ public ImageData read(int [] nextIFDOffset) throws IOException {
 	file.read(buffer2);
 	nextIFDOffset[0] = toInt(buffer2, 0, TYPE_LONG);
 	parseEntries(buffer);
-	
+
 	PaletteData palette = null;
 	depth = 0;
 	switch (photometricInterpretation) {
@@ -462,7 +462,7 @@ public ImageData read(int [] nextIFDOffset) throws IOException {
 			/* SamplesPerPixel 3 is the only value supported */
 			palette = getRGBPalette(bitsPerSample[0], bitsPerSample[1], bitsPerSample[2]);
 			depth = bitsPerSample[0] + bitsPerSample[1] + bitsPerSample[2];
-			break;		
+			break;
 		}
 		case 3: {
 			/* Palette Color image */
@@ -478,7 +478,7 @@ public ImageData read(int [] nextIFDOffset) throws IOException {
 
 	ImageData image = ImageData.internal_new(
 			imageWidth,
-			imageLength, 
+			imageLength,
 			depth,
 			palette,
 			1,
@@ -499,14 +499,14 @@ public ImageData read(int [] nextIFDOffset) throws IOException {
 
 int toInt(byte[] buffer, int i, int type) {
 	if (type == TYPE_LONG) {
-		return isLittleEndian ? 
+		return isLittleEndian ?
 		(buffer[i] & 0xFF) | ((buffer[i + 1] & 0xFF) << 8) | ((buffer[i + 2] & 0xFF) << 16) | ((buffer[i + 3] & 0xFF) << 24) :
 		(buffer[i + 3] & 0xFF) | ((buffer[i + 2] & 0xFF) << 8) | ((buffer[i + 1] & 0xFF) << 16) | ((buffer[i] & 0xFF) << 24);
 	}
 	if (type == TYPE_SHORT) {
-		return isLittleEndian ? 
+		return isLittleEndian ?
 		(buffer[i] & 0xFF) | ((buffer[i + 1] & 0xFF) << 8) :
-		(buffer[i + 1] & 0xFF) | ((buffer[i] & 0xFF) << 8);		
+		(buffer[i + 1] & 0xFF) | ((buffer[i] & 0xFF) << 8);
 	}
 	/* Invalid type */
 	SWT.error(SWT.ERROR_INVALID_IMAGE);
@@ -521,7 +521,7 @@ void write(int photometricInterpretation) throws IOException {
 	int imageWidth = image.width;
 	int imageLength = image.height;
 	int rowByteSize = image.bytesPerLine;
-	
+
 	int numberEntries = isBiLevel ? 9 : 11;
 	int lengthDirectory = 2 + 12 * numberEntries + 4;
 	/* Offset following the header and the directory */
@@ -531,7 +531,7 @@ void write(int photometricInterpretation) throws IOException {
 	int extraBytes = 16;
 
 	int[] colorMap = null;
-	if (isColorMap) {	
+	if (isColorMap) {
 		PaletteData palette = image.palette;
 		RGB[] rgbs = palette.getRGBs();
 		colorMap = formatColorMap(rgbs);
@@ -543,7 +543,7 @@ void write(int photometricInterpretation) throws IOException {
 	if (isRGB) {
 		/* Extra space used by BitsPerSample values */
 		extraBytes += 6;
-	} 
+	}
 	/* TIFF recommends storing the data in strips of no more than 8 Ko */
 	byte[] data = image.data;
 	int[][] strips = new int[2][];
@@ -575,10 +575,10 @@ void write(int photometricInterpretation) throws IOException {
 	}
 	/* TIFF header */
 	writeHeader();
-	
+
 	/* Image File Directory */
-	out.writeShort(numberEntries);	
-	writeEntry(TAG_ImageWidth, TYPE_LONG, 1, imageWidth);	
+	out.writeShort(numberEntries);
+	writeEntry(TAG_ImageWidth, TYPE_LONG, 1, imageWidth);
 	writeEntry(TAG_ImageLength, TYPE_LONG, 1, imageLength);
 	if (isColorMap) writeEntry(TAG_BitsPerSample, TYPE_SHORT, 1, image.depth);
 	if (isRGB) writeEntry(TAG_BitsPerSample, TYPE_SHORT, 3, bitsPerSampleOffset);
@@ -593,9 +593,9 @@ void write(int photometricInterpretation) throws IOException {
 	if (isColorMap) writeEntry(TAG_ColorMap, TYPE_SHORT, colorMap.length, colorMapOffset);
 	/* Offset of next IFD (0 for last IFD) */
 	out.writeInt(0);
-	
+
 	/* Values longer than 4 bytes Section */
-	
+
 	/* BitsPerSample 8,8,8 */
 	if (isRGB) for (int i = 0; i < 3; i++) out.writeShort(8);
 	if (cnt > 1) {
@@ -609,7 +609,7 @@ void write(int photometricInterpretation) throws IOException {
 	}
 	/* ColorMap */
 	if (isColorMap) for (int i = 0; i < colorMap.length; i++) out.writeShort(colorMap[i]);
-	
+
 	/* Image Data */
 	out.write(data);
 }
@@ -628,7 +628,7 @@ void writeHeader() throws IOException {
 
 	/* TIFF identifier */
 	out.writeShort(42);
-	/* 
+	/*
 	* Offset of the first IFD is chosen to be 8.
 	* It is word aligned and immediately after this header.
 	*/
@@ -638,7 +638,7 @@ void writeHeader() throws IOException {
 void writeToStream(LEDataOutputStream byteStream) throws IOException {
 	out = byteStream;
 	int photometricInterpretation = -1;
-	
+
 	/* Scanline pad must be 1 */
 	if (image.scanlinePad != 1) SWT.error(SWT.ERROR_UNSUPPORTED_FORMAT);
 	switch (image.depth) {
@@ -652,7 +652,7 @@ void writeToStream(LEDataOutputStream byteStream) throws IOException {
 			if (!(rgb0.red == rgb0.green && rgb0.green == rgb0.blue &&
 				rgb1.red == rgb1.green && rgb1.green == rgb1.blue &&
 				((rgb0.red == 0x0 && rgb1.red == 0xFF) || (rgb0.red == 0xFF && rgb1.red == 0x0)))) {
-				SWT.error(SWT.ERROR_UNSUPPORTED_FORMAT); 
+				SWT.error(SWT.ERROR_UNSUPPORTED_FORMAT);
 			}
 			/* 0 means a color index of 0 is imaged as white */
 			photometricInterpretation = image.palette.colors[0].red == 0xFF ? 0 : 1;

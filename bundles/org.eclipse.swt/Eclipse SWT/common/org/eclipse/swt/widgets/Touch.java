@@ -17,7 +17,7 @@ package org.eclipse.swt.widgets;
  *
  * @see org.eclipse.swt.events.TouchEvent
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
- * 
+ *
  * @since 3.7
  */
 public final class Touch {
@@ -38,7 +38,7 @@ public final class Touch {
 	 * The state of this touch at the time it was generated. If this field is 0
 	 * then the finger is still touching the device but has not moved
 	 * since the last <code>TouchEvent</code> was generated.
-	 * 
+	 *
 	 * @see org.eclipse.swt.SWT#TOUCHSTATE_DOWN
 	 * @see org.eclipse.swt.SWT#TOUCHSTATE_MOVE
 	 * @see org.eclipse.swt.SWT#TOUCHSTATE_UP
@@ -48,15 +48,15 @@ public final class Touch {
 	/**
 	 * A flag indicating that the touch is the first touch from a previous
 	 * state of no touch points. Once designated as such, the touch remains
-	 * the primary touch until all fingers are removed from the device. 
+	 * the primary touch until all fingers are removed from the device.
 	 */
 	public boolean primary;
-	
-	/** 
+
+	/**
 	 * The x location of the touch in TouchSource coordinates.
 	 */
 	public int x;
-	
+
 	/**
 	 * The y location of the touch in TouchSource coordinates.
 	 */
@@ -64,9 +64,9 @@ public final class Touch {
 
 /**
  * Constructs a new touch state from the given inputs.
- * 
+ *
  * @param identity Identity of the touch
- * @param source Object representing the device that generated the touch 
+ * @param source Object representing the device that generated the touch
  * @param state One of the state constants representing the state of this touch
  * @param primary Whether or not the touch is the primary touch
  * @param x X location of the touch in screen coordinates

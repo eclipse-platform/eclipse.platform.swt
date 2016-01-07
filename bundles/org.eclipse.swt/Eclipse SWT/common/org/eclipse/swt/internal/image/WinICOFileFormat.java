@@ -16,7 +16,7 @@ import org.eclipse.swt.graphics.*;
 import java.io.*;
 
 public final class WinICOFileFormat extends FileFormat {
-	
+
 byte[] bitInvertData(byte[] data, int startIndex, int endIndex) {
 	// Destructively bit invert data in the given byte array.
 	for (int i = startIndex; i < endIndex; i++) {
@@ -212,8 +212,8 @@ byte[] loadInfoHeader(int[] iconHeader) {
 	int infoHeight = (infoHeader[8] & 0xFF) | ((infoHeader[9] & 0xFF) << 8) | ((infoHeader[10] & 0xFF) << 16) | ((infoHeader[11] & 0xFF) << 24);
 	int bitCount = (infoHeader[14] & 0xFF) | ((infoHeader[15] & 0xFF) << 8);
 	/*
-	 * Feature in the ico spec. The spec says that a width/height of 0 represents 256, however, newer images can be created with even larger sizes. 
-	 * Images with a width/height >= 256 will have their width/height set to 0 in the icon header; the fix for this case is to read the width/height 
+	 * Feature in the ico spec. The spec says that a width/height of 0 represents 256, however, newer images can be created with even larger sizes.
+	 * Images with a width/height >= 256 will have their width/height set to 0 in the icon header; the fix for this case is to read the width/height
 	 * directly from the image header.
 	 */
 	if (width == 0) width = infoWidth;
@@ -249,7 +249,7 @@ void unloadIcon(ImageData icon) {
 	} catch (IOException e) {
 		SWT.error(SWT.ERROR_IO, e);
 	}
-	
+
 	byte[] rgbs = WinBMPFileFormat.paletteToBytes(icon.palette);
 	try {
 		outputStream.write(rgbs);

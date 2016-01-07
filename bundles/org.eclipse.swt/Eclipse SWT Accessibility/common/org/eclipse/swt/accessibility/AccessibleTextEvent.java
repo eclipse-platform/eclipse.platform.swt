@@ -28,7 +28,7 @@ import org.eclipse.swt.internal.*;
  * @see AccessibleTextListener
  * @see AccessibleTextAdapter
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
- * 
+ *
  * @since 3.0
  */
 public class AccessibleTextEvent extends SWTEventObject {
@@ -43,7 +43,7 @@ public class AccessibleTextEvent extends SWTEventObject {
 	 * @since 3.6
 	 */
 	public String result;
-	
+
 	/** @since 3.6 */
 	public int count;
 	/** @since 3.6 */
@@ -58,9 +58,9 @@ public class AccessibleTextEvent extends SWTEventObject {
 	public int [] ranges;
 	/** @since 3.6 */
 	public Rectangle [] rectangles;
-	
+
 	static final long serialVersionUID = 3977019530868308275L;
-	
+
 /**
  * Constructs a new instance of this class.
  *
@@ -82,5 +82,5 @@ public String toString () {
 		" offset=" + offset +  //$NON-NLS-1$
 		" length=" + length +  //$NON-NLS-1$
 		"}"; //$NON-NLS-1$
-}	
+}
 }

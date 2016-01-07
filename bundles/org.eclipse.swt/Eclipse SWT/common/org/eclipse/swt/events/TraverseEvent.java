@@ -73,13 +73,13 @@ import org.eclipse.swt.widgets.*;
  * Note: A widget implementor will typically implement traversal using
  * only the doit flag to either enable or disable system traversal.
  * </p>
- * 
+ *
  * @see TraverseListener
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  */
 
 public final class TraverseEvent extends KeyEvent {
-	
+
 	/**
 	 * The traversal type.
 	 * <p><ul>
@@ -94,11 +94,11 @@ public final class TraverseEvent extends KeyEvent {
 	 * <li>{@link org.eclipse.swt.SWT#TRAVERSE_PAGE_NEXT}</li>
 	 * <li>{@link org.eclipse.swt.SWT#TRAVERSE_PAGE_PREVIOUS}</li>
 	 * </ul></p>
-	 * 
+	 *
 	 * Setting this field will change the type of traversal.
 	 * For example, setting the detail to <code>TRAVERSE_NONE</code>
 	 * causes no traversal action to be taken.
-	 * 
+	 *
 	 * When used in conjunction with the <code>doit</code> field, the
 	 * traversal detail field can be useful when overriding the default
 	 * traversal mechanism for a control. For example, setting the doit
@@ -108,9 +108,9 @@ public final class TraverseEvent extends KeyEvent {
 	 * described by the detail field is to be performed.
 	 */
 	public int detail;
-	
+
 	static final long serialVersionUID = 3257565105301239349L;
-	
+
 /**
  * Constructs a new instance of this class based on the
  * information in the given untyped event.

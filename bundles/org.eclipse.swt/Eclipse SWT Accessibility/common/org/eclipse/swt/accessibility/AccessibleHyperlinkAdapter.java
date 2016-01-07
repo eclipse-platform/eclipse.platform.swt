@@ -27,7 +27,7 @@ package org.eclipse.swt.accessibility;
 public class AccessibleHyperlinkAdapter implements AccessibleHyperlinkListener {
 	/**
 	 * Returns the anchor for the link at the specified index.
-	 * 
+	 *
 	 * @param e an event object containing the following fields:<ul>
 	 * <li>[in] index - a 0 based index identifying the anchor if this object
 	 * 		has more than one link, as in the case of an image map</li>
@@ -43,7 +43,7 @@ public class AccessibleHyperlinkAdapter implements AccessibleHyperlinkListener {
 
 	/**
 	 * Returns the target of the link at the specified index.
-	 * 
+	 *
 	 * @param e an event object containing the following fields:<ul>
 	 * <li>[in] index - a 0 based index identifying the anchor if this object
 	 * 		has more than one link, as in the case of an image map</li>
@@ -62,7 +62,7 @@ public class AccessibleHyperlinkAdapter implements AccessibleHyperlinkListener {
 	 * The returned value is related to the AccessibleTextExtended interface of the object that
 	 * owns this hyperlink.
 	 * </p>
-	 * 
+	 *
 	 * @param e an event object containing the following fields:<ul>
 	 * <li>[out] index</li>
 	 * </ul>
@@ -75,7 +75,7 @@ public class AccessibleHyperlinkAdapter implements AccessibleHyperlinkListener {
 	 * The returned value is related to the AccessibleTextExtended interface of the object that
 	 * owns this hyperlink. The character at the index is not part of the hypertext.
 	 * </p>
-	 * 
+	 *
 	 * @param e an event object containing the following fields:<ul>
 	 * <li>[out] index</li>
 	 * </ul>

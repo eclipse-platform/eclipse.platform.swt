@@ -19,13 +19,13 @@ public class PngDecodingDataStream extends InputStream {
 	InputStream stream;
 	byte currentByte;
 	int nextBitIndex;
-	
+
 	PngLzBlockReader lzBlockReader;
 	int adlerValue;
-	
+
 	static final int PRIME = 65521;
-	static final int MAX_BIT = 7;		
-	
+	static final int MAX_BIT = 7;
+
 PngDecodingDataStream(InputStream stream) throws IOException {
 	super();
 	this.stream = stream;
@@ -39,7 +39,7 @@ PngDecodingDataStream(InputStream stream) throws IOException {
 /**
  * This method should be called when the image decoder thinks
  * that all of the compressed image data has been read. This
- * method will ensure that the next data value is an end of 
+ * method will ensure that the next data value is an end of
  * block marker. If there are more blocks after this one,
  * the method will read them and ensure that they are empty.
  */
@@ -69,7 +69,7 @@ int getNextIdatBit() throws IOException {
 	return (currentByte & (1 << nextBitIndex)) >> nextBitIndex++;
 }
 
-byte getNextIdatByte() throws IOException {	
+byte getNextIdatByte() throws IOException {
 	byte nextByte = (byte)stream.read();
 	nextBitIndex = MAX_BIT + 1;
 	return nextByte;
@@ -108,21 +108,21 @@ void error() {
 private void readCompressedDataHeader() throws IOException {
 	byte headerByte1 = getNextIdatByte();
 	byte headerByte2 = getNextIdatByte();
-	
+
 	int number = ((headerByte1 & 0xFF) << 8) | (headerByte2 & 0xFF);
 	if (number % 31 != 0) error();
-	
+
 	int compressionMethod = headerByte1 & 0x0F;
 	if (compressionMethod != 8) error();
-	
+
 	int windowSizeHint = (headerByte1 & 0xF0) >> 4;
 	if (windowSizeHint > 7) error();
 	int windowSize = (1 << (windowSizeHint + 8));
 	lzBlockReader.setWindowSize(windowSize);
-	
+
 	int dictionary = (headerByte2 & (1 << 5));
 	if (dictionary != 0) error();
-	
+
 //	int compressionLevel = (headerByte2 & 0xC0) >> 6;
 }
 

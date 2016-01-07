@@ -22,7 +22,7 @@ import org.eclipse.swt.internal.*;
 public interface SegmentListener extends SWTEventListener {
 
 /**
- * This method is called when text content is being modified. 
+ * This method is called when text content is being modified.
  * <p>
  * The following event fields are used:<ul>
  * <li>event.lineText text content (input)</li>

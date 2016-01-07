@@ -24,7 +24,7 @@ public abstract class FileFormat {
 	static final String FORMAT_PACKAGE = "org.eclipse.swt.internal.image"; //$NON-NLS-1$
 	static final String FORMAT_SUFFIX = "FileFormat"; //$NON-NLS-1$
 	static final String[] FORMATS = {"WinBMP", "WinBMP", "GIF", "WinICO", "JPEG", "PNG", "TIFF", "OS2BMP"}; //$NON-NLS-1$//$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$//$NON-NLS-5$ //$NON-NLS-6$//$NON-NLS-7$//$NON-NLS-8$
-	
+
 	LEDataInputStream inputStream;
 	LEDataOutputStream outputStream;
 	ImageLoader loader;
@@ -48,7 +48,7 @@ abstract ImageData[] loadFromByteStream();
 /**
  * Read the specified input stream, and return the
  * device independent image array represented by the stream.
- */	
+ */
 public ImageData[] loadFromStream(LEDataInputStream stream) {
 	try {
 		inputStream = stream;
@@ -66,7 +66,7 @@ public ImageData[] loadFromStream(LEDataInputStream stream) {
 /**
  * Read the specified input stream using the specified loader, and
  * return the device independent image array represented by the stream.
- */	
+ */
 public static ImageData[] load(InputStream is, ImageLoader loader) {
 	FileFormat fileFormat = null;
 	LEDataInputStream stream = new LEDataInputStream(is);
@@ -89,7 +89,7 @@ public static ImageData[] load(InputStream is, ImageLoader loader) {
 /**
  * Write the device independent image array stored in the specified loader
  * to the specified output stream using the specified file format.
- */	
+ */
 public static void save(OutputStream os, int format, ImageLoader loader) {
 	if (format < 0 || format >= FORMATS.length) SWT.error(SWT.ERROR_UNSUPPORTED_FORMAT);
 	if (FORMATS[format] == null) SWT.error(SWT.ERROR_UNSUPPORTED_FORMAT);
@@ -117,7 +117,7 @@ abstract void unloadIntoByteStream(ImageLoader loader);
 /**
  * Write the device independent image array stored in the specified loader
  * to the specified output stream.
- */	
+ */
 public void unloadIntoStream(ImageLoader loader, LEDataOutputStream stream) {
 	try {
 		outputStream = stream;

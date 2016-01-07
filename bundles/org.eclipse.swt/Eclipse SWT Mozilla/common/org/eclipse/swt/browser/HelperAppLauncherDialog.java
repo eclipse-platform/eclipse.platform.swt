@@ -19,7 +19,7 @@ import org.eclipse.swt.widgets.*;
  * This class implements the nsIHelperAppLauncherDialog interface for mozilla
  * versions 1.4 - 1.8.x.  For mozilla versions >= 1.9 this interface is
  * implemented by class HelperAppLauncherDialog_1_9.  HelperAppLauncherDialogFactory
- * determines at runtime which of these classes to instantiate. 
+ * determines at runtime which of these classes to instantiate.
  */
 class HelperAppLauncherDialog {
 	XPCOMObject supports;
@@ -45,7 +45,7 @@ void createCOMInterfaces () {
 		@Override
 		public long /*int*/ method2 (long /*int*/[] args) {return Release ();}
 	};
-	
+
 	helperAppLauncherDialog = new XPCOMObject (new int[] {2, 0, 0, 3, 5}) {
 		@Override
 		public long /*int*/ method0 (long /*int*/[] args) {return QueryInterface (args[0], args[1]);}
@@ -57,17 +57,17 @@ void createCOMInterfaces () {
 		public long /*int*/ method3 (long /*int*/[] args) {return Show (args[0], args[1], (int)/*64*/args[2]);}
 		@Override
 		public long /*int*/ method4 (long /*int*/[] args) {return PromptForSaveToFile (args[0], args[1], args[2], args[3], args[4]);}
-	};		
+	};
 }
 
 void disposeCOMInterfaces () {
 	if (supports != null) {
 		supports.dispose ();
 		supports = null;
-	}	
+	}
 	if (helperAppLauncherDialog != null) {
 		helperAppLauncherDialog.dispose ();
-		helperAppLauncherDialog = null;	
+		helperAppLauncherDialog = null;
 	}
 }
 
@@ -79,7 +79,7 @@ int QueryInterface (long /*int*/ riid, long /*int*/ ppvObject) {
 	if (riid == 0 || ppvObject == 0) return XPCOM.NS_ERROR_NO_INTERFACE;
 	nsID guid = new nsID ();
 	XPCOM.memmove (guid, riid, nsID.sizeof);
-	
+
 	if (guid.Equals (XPCOM.NS_ISUPPORTS_IID)) {
 		XPCOM.memmove (ppvObject, new long /*int*/[] {supports.getAddress ()}, C.PTR_SIZEOF);
 		AddRef ();
@@ -90,11 +90,11 @@ int QueryInterface (long /*int*/ riid, long /*int*/ ppvObject) {
 		AddRef ();
 		return XPCOM.NS_OK;
 	}
-	
+
 	XPCOM.memmove (ppvObject, new long /*int*/[] {0}, C.PTR_SIZEOF);
 	return XPCOM.NS_ERROR_NO_INTERFACE;
 }
-        	
+
 int Release () {
 	refCount--;
 	/*
@@ -114,7 +114,7 @@ int Show (long /*int*/ aLauncher, long /*int*/ aContext, int aReason) {
 	/*
 	 * The interface for nsIHelperAppLauncher changed as of mozilla 1.8.  Query the received
 	 * nsIHelperAppLauncher for the new interface, and if it is not found then fall back to
-	 * the old interface. 
+	 * the old interface.
 	 */
 	nsISupports supports = new nsISupports (aLauncher);
 	long /*int*/[] result = new long /*int*/[1];
@@ -136,15 +136,15 @@ int PromptForSaveToFile (long /*int*/ arg0, long /*int*/ arg1, long /*int*/ arg2
 	/*
 	* The interface for nsIHelperAppLauncherDialog changed as of mozilla 1.5 when an
 	* extra argument was added to the PromptForSaveToFile method (this resulted in all
-	* subsequent arguments shifting right).  The workaround is to provide an XPCOMObject 
+	* subsequent arguments shifting right).  The workaround is to provide an XPCOMObject
 	* that fits the newer API, and to use the first argument's type to infer whether
 	* the old or new nsIHelperAppLauncherDialog interface is being used (and by extension
 	* the ordering of the arguments).  In mozilla >= 1.5 the first argument is an
-	* nsIHelperAppLauncher. 
+	* nsIHelperAppLauncher.
 	*/
 	/*
 	 * The interface for nsIHelperAppLauncher changed as of mozilla 1.8, so the first
-	 * argument must be queried for both the old and new nsIHelperAppLauncher interfaces. 
+	 * argument must be queried for both the old and new nsIHelperAppLauncher interfaces.
 	 */
  	boolean using_1_8 = false;
 	nsISupports support = new nsISupports (arg0);
@@ -210,7 +210,7 @@ int PromptForSaveToFile (long /*int*/ arg0, long /*int*/ arg1, long /*int*/ arg2
 	if (rc != XPCOM.NS_OK) Mozilla.error (rc);
 	if (result[0] == 0) Mozilla.error (XPCOM.NS_ERROR_NULL_POINTER);
 	/* Our own nsIDownload has been registered during the Browser initialization. It will be invoked by Mozilla. */
-	XPCOM.memmove (_retval, result, C.PTR_SIZEOF);	
+	XPCOM.memmove (_retval, result, C.PTR_SIZEOF);
 	return XPCOM.NS_OK;
 }
 }

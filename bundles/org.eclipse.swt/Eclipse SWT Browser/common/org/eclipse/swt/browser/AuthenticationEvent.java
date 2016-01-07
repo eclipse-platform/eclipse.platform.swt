@@ -33,7 +33,7 @@ public class AuthenticationEvent extends TypedEvent {
 	/** The password to authenticate with */
 	public String password;
 
-	/** 
+	/**
 	 * A flag indicating whether the authentication should proceed.
 	 * Setting this field to <code>false</code> will cancel the operation.
 	 */

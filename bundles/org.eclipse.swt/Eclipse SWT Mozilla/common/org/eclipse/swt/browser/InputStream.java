@@ -19,7 +19,7 @@ class InputStream {
 
 	byte[] buffer;
 	int index = 0;
-	
+
 InputStream (byte[] buffer) {
 	this.buffer = buffer;
 	index = 0;
@@ -56,7 +56,7 @@ void createCOMInterfaces () {
 void disposeCOMInterfaces () {
 	if (inputStream != null) {
 		inputStream.dispose ();
-		inputStream = null;	
+		inputStream = null;
 	}
 }
 
@@ -68,7 +68,7 @@ int QueryInterface (long /*int*/ riid, long /*int*/ ppvObject) {
 	if (riid == 0 || ppvObject == 0) return XPCOM.NS_ERROR_NO_INTERFACE;
 	nsID guid = new nsID ();
 	XPCOM.memmove (guid, riid, nsID.sizeof);
-	
+
 	if (guid.Equals (XPCOM.NS_ISUPPORTS_IID)) {
 		XPCOM.memmove (ppvObject, new long /*int*/[] {inputStream.getAddress ()}, C.PTR_SIZEOF);
 		AddRef ();
@@ -78,17 +78,17 @@ int QueryInterface (long /*int*/ riid, long /*int*/ ppvObject) {
 		XPCOM.memmove (ppvObject, new long /*int*/[] {inputStream.getAddress ()}, C.PTR_SIZEOF);
 		AddRef ();
 		return XPCOM.NS_OK;
-	}	
+	}
 	XPCOM.memmove (ppvObject, new long /*int*/[] {0}, C.PTR_SIZEOF);
 	return XPCOM.NS_ERROR_NO_INTERFACE;
 }
-        	
+
 int Release () {
 	refCount--;
 	if (refCount == 0) disposeCOMInterfaces ();
 	return refCount;
 }
-	
+
 /* nsIInputStream implementation */
 
 int Close () {
@@ -139,5 +139,5 @@ int IsNonBlocking (long /*int*/ _retval) {
 	/* blocking */
 	XPCOM.memmove (_retval, new boolean[] {false});
 	return XPCOM.NS_OK;
-}		
+}
 }

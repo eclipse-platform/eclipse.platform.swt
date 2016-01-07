@@ -41,15 +41,15 @@ void validate(PngFileReadState readState, PngIhdrChunk headerChunk) {
 	if (!readState.readIHDR
 		|| (headerChunk.getMustHavePalette() && !readState.readPLTE)
 		|| !readState.readIDAT
-		|| readState.readIEND) 
+		|| readState.readIEND)
 	{
 		SWT.error(SWT.ERROR_INVALID_IMAGE);
 	} else {
 		readState.readIEND = true;
 	}
-	
+
 	super.validate(readState, headerChunk);
-	
+
 	// IEND chunks are not allowed to have any data.
 	if (getLength() > 0) SWT.error(SWT.ERROR_INVALID_IMAGE);
 }

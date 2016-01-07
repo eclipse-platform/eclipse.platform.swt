@@ -34,7 +34,7 @@ package org.eclipse.swt.accessibility;
  * @see AccessibleControlListener
  * @see AccessibleControlEvent
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
- * 
+ *
  * @since 2.0
  */
 public abstract class AccessibleControlAdapter implements AccessibleControlListener {
@@ -59,7 +59,7 @@ public abstract class AccessibleControlAdapter implements AccessibleControlListe
 	 */
 	public void getChildAtPoint(AccessibleControlEvent e) {
 	}
-	
+
 	/**
 	 * Sent when an accessibility client requests the location
 	 * of the control, or the location of a child of the control.
@@ -77,7 +77,7 @@ public abstract class AccessibleControlAdapter implements AccessibleControlListe
 	 */
 	public void getLocation(AccessibleControlEvent e) {
 	}
-	
+
 	/**
 	 * Sent when an accessibility client requests the accessible object
 	 * for a child of the control by index or childID, or when a client
@@ -100,7 +100,7 @@ public abstract class AccessibleControlAdapter implements AccessibleControlListe
 	 */
 	public void getChild(AccessibleControlEvent e) {
 	}
-	
+
 	/**
 	 * Sent when an accessibility client requests the number of
 	 * children in the control.
@@ -116,7 +116,7 @@ public abstract class AccessibleControlAdapter implements AccessibleControlListe
 	 */
 	public void getChildCount(AccessibleControlEvent e) {
 	}
-	
+
 	/**
 	 * Sent when an accessibility client requests the default action
 	 * of the control, or the default action of a child of the control.
@@ -138,7 +138,7 @@ public abstract class AccessibleControlAdapter implements AccessibleControlListe
 	 */
 	public void getDefaultAction(AccessibleControlEvent e) {
 	}
-	
+
 	/**
 	 * Sent when an accessibility client requests the identity of
 	 * the child or control that has keyboard focus.
@@ -157,7 +157,7 @@ public abstract class AccessibleControlAdapter implements AccessibleControlListe
 	 */
 	public void getFocus(AccessibleControlEvent e) {
 	}
-	
+
 	/**
 	 * Sent when an accessibility client requests the role
 	 * of the control, or the role of a child of the control.
@@ -175,7 +175,7 @@ public abstract class AccessibleControlAdapter implements AccessibleControlListe
 	 */
 	public void getRole(AccessibleControlEvent e) {
 	}
-	
+
 	/**
 	 * Sent when an accessibility client requests the identity of
 	 * the child or control that is currently selected.
@@ -196,7 +196,7 @@ public abstract class AccessibleControlAdapter implements AccessibleControlListe
 	 */
 	public void getSelection(AccessibleControlEvent e) {
 	}
-	
+
 	/**
 	 * Sent when an accessibility client requests the state
 	 * of the control, or the state of a child of the control.
@@ -214,7 +214,7 @@ public abstract class AccessibleControlAdapter implements AccessibleControlListe
 	 */
 	public void getState(AccessibleControlEvent e) {
 	}
-	
+
 	/**
 	 * Sent when an accessibility client requests the value
 	 * of the control, or the value of a child of the control.
@@ -238,7 +238,7 @@ public abstract class AccessibleControlAdapter implements AccessibleControlListe
 	 */
 	public void getValue(AccessibleControlEvent e) {
 	}
-	
+
 	/**
 	 * Sent when an accessibility client requests the children, or visible children,
 	 * of the control. The default behavior is to do nothing.

@@ -18,7 +18,7 @@ package org.eclipse.swt.browser;
  * extend this class and override only the methods which they are
  * interested in.
  * </p>
- * 
+ *
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  *
  * @since 3.0

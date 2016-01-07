@@ -103,7 +103,7 @@ int compressRLE4Data(byte[] src, int srcOffset, int numBytes, byte[] dest, boole
 		dest[dp] = 0; dp++;
 	}
 	size += 2;
-	
+
 	return size;
 }
 int compressRLE8Data(byte[] src, int srcOffset, int numBytes, byte[] dest, boolean last) {
@@ -178,7 +178,7 @@ int compressRLE8Data(byte[] src, int srcOffset, int numBytes, byte[] dest, boole
 		dest[dp] = 0; dp++;
 	}
 	size += 2;
-	
+
 	return size;
 }
 void convertPixelsToBGR(ImageData image, byte[] dest) {
@@ -186,8 +186,8 @@ void convertPixelsToBGR(ImageData image, byte[] dest) {
 	 * For direct palette, uncompressed image, BMP encoders expect the
 	 * pixels to be in BGR format for 24 & 32 bit and RGB 1555 for 16 bit
 	 * On Linux and MacOS, the pixels are in RGB format. Also, in
-	 * MacOS, the alpha byte may be first. 
-	 * Hence, we use the palette information of the image and convert 
+	 * MacOS, the alpha byte may be first.
+	 * Hence, we use the palette information of the image and convert
 	 * the pixels to the required format. Converted pixels are stored
 	 * in dest byte array.
 	 */
@@ -602,7 +602,7 @@ static byte[] paletteToBytes(PaletteData pal) {
 }
 /**
  * Unload the given image's data into the given byte stream
- * using the given compression strategy. 
+ * using the given compression strategy.
  * Answer the number of bytes written.
  * Method modified to use the passed data if it is not null.
  */
@@ -735,13 +735,13 @@ void unloadIntoByteStream(ImageLoader loader) {
 	    iData = new byte[image.data.length];
 		convertPixelsToBGR(image, iData);
 	}
-	
+
 	// Prepare data. This is done first so we don't have to try to rewind
 	// the stream and fill in the details later.
 	ByteArrayOutputStream out = new ByteArrayOutputStream();
 	unloadData(image, iData, out, comp);
 	byte[] data = out.toByteArray();
-	
+
 	// Calculate file size
 	fileHeader[1] = fileHeader[4] + data.length;
 
@@ -770,7 +770,7 @@ void unloadIntoByteStream(ImageLoader loader) {
 	} catch (IOException e) {
 		SWT.error(SWT.ERROR_IO, e);
 	}
-	
+
 	// Unload palette
 	if (numCols > 0) {
 		try {

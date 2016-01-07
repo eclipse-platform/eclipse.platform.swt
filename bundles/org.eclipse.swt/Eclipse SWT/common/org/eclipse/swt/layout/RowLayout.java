@@ -15,22 +15,22 @@ import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.widgets.*;
 
 /**
- * Instances of this class determine the size and position of the 
- * children of a <code>Composite</code> by placing them either in 
- * horizontal rows or vertical columns within the parent <code>Composite</code>. 
+ * Instances of this class determine the size and position of the
+ * children of a <code>Composite</code> by placing them either in
+ * horizontal rows or vertical columns within the parent <code>Composite</code>.
  * <p>
  * <code>RowLayout</code> aligns all controls in one row if the
  * <code>type</code> is set to horizontal, and one column if it is
- * set to vertical. It has the ability to wrap, and provides configurable 
- * margins and spacing. <code>RowLayout</code> has a number of configuration 
- * fields. In addition, the height and width of each control in a 
+ * set to vertical. It has the ability to wrap, and provides configurable
+ * margins and spacing. <code>RowLayout</code> has a number of configuration
+ * fields. In addition, the height and width of each control in a
  * <code>RowLayout</code> can be specified by setting a <code>RowData</code>
  * object into the control using <code>setLayoutData ()</code>.
  * </p>
  * <p>
- * The following example code creates a <code>RowLayout</code>, sets all 
- * of its fields to non-default values, and then sets it into a 
- * <code>Shell</code>. 
+ * The following example code creates a <code>RowLayout</code>, sets all
+ * of its fields to non-default values, and then sets it into a
+ * <code>Shell</code>.
  * <pre>
  * 		RowLayout rowLayout = new RowLayout();
  * 		rowLayout.wrap = false;
@@ -49,45 +49,45 @@ import org.eclipse.swt.widgets.*;
  * 		shell.setLayout(new RowLayout());
  * </pre>
  * </p>
- * 
+ *
  * @see RowData
  * @see <a href="http://www.eclipse.org/swt/snippets/#rowlayout">RowLayout snippets</a>
  * @see <a href="http://www.eclipse.org/swt/examples.php">SWT Example: LayoutExample</a>
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  */
 public final class RowLayout extends Layout {
-	
+
 	/**
-	 * type specifies whether the layout places controls in rows or 
+	 * type specifies whether the layout places controls in rows or
 	 * columns.
-	 * 
+	 *
 	 * The default value is HORIZONTAL.
-	 * 
+	 *
 	 * Possible values are: <ul>
 	 *    <li>HORIZONTAL: Position the controls horizontally from left to right</li>
 	 *    <li>VERTICAL: Position the controls vertically from top to bottom</li>
 	 * </ul>
-	 * 
+	 *
 	 * @since 2.0
 	 */
 	public int type = SWT.HORIZONTAL;
-	
+
 	/**
 	 * marginWidth specifies the number of pixels of horizontal margin
 	 * that will be placed along the left and right edges of the layout.
 	 *
 	 * The default value is 0.
-	 * 
+	 *
 	 * @since 3.0
 	 */
  	public int marginWidth = 0;
- 	
+
 	/**
 	 * marginHeight specifies the number of pixels of vertical margin
 	 * that will be placed along the top and bottom edges of the layout.
 	 *
 	 * The default value is 0.
-	 * 
+	 *
 	 * @since 3.0
 	 */
  	public int marginHeight = 0;
@@ -99,7 +99,7 @@ public final class RowLayout extends Layout {
 	 * The default value is 3.
 	 */
 	public int spacing = 3;
-	 		
+
 	/**
 	 * wrap specifies whether a control will be wrapped to the next
 	 * row if there is insufficient space on the current row.
@@ -110,22 +110,22 @@ public final class RowLayout extends Layout {
 
 	/**
 	 * pack specifies whether all controls in the layout take
-	 * their preferred size.  If pack is false, all controls will 
-	 * have the same size which is the size required to accommodate the 
-	 * largest preferred height and the largest preferred width of all 
+	 * their preferred size.  If pack is false, all controls will
+	 * have the same size which is the size required to accommodate the
+	 * largest preferred height and the largest preferred width of all
 	 * the controls in the layout.
 	 *
 	 * The default value is true.
 	 */
 	public boolean pack = true;
-	
+
 	/**
 	 * fill specifies whether the controls in a row should be
 	 * all the same height for horizontal layouts, or the same
 	 * width for vertical layouts.
 	 *
 	 * The default value is false.
-	 * 
+	 *
 	 * @since 3.0
 	 */
 	public boolean fill = false;
@@ -136,11 +136,11 @@ public final class RowLayout extends Layout {
 	 * or centered horizontally in each cell for vertical layouts.
 	 *
 	 * The default value is false.
-	 * 
+	 *
 	 * @since 3.4
 	 */
 	public boolean center = false;
-	
+
 	/**
 	 * justify specifies whether the controls in a row should be
 	 * fully justified, with any extra space placed between the controls.
@@ -191,7 +191,7 @@ public RowLayout () {
  * Constructs a new instance of this class given the type.
  *
  * @param type the type of row layout
- * 
+ *
  * @since 2.0
  */
 public RowLayout (int type) {
@@ -251,7 +251,7 @@ Point layoutHorizontal (Composite composite, boolean move, boolean wrap, int wid
 		RowData data = (RowData) control.getLayoutData ();
 		if (data == null || !data.exclude) {
 			children [count++] = children [i];
-		} 
+		}
 	}
 	if (count == 0) {
 		return new Point (marginLeft + marginWidth * 2 + marginRight, marginTop + marginHeight * 2 + marginBottom);
@@ -370,7 +370,7 @@ Point layoutVertical (Composite composite, boolean move, boolean wrap, int heigh
 		RowData data = (RowData) control.getLayoutData ();
 		if (data == null || !data.exclude) {
 			children [count++] = children [i];
-		} 
+		}
 	}
 	if (count == 0) {
 		return new Point (marginLeft + marginWidth * 2 + marginRight, marginTop + marginHeight * 2 + marginBottom);

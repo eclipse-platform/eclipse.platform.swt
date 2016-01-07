@@ -26,27 +26,27 @@ public class AccessibleEditableTextEvent extends SWTEventObject {
 	/**
 	 * [in] 0-based start offset of the character range to perform
 	 * the operation on
-	 * 
+	 *
 	 * @see AccessibleEditableTextListener#copyText
 	 * @see AccessibleEditableTextListener#cutText
 	 * @see AccessibleEditableTextListener#pasteText
 	 * @see AccessibleEditableTextListener#replaceText
 	 */
 	public int start;
-	
+
 	/**
 	 * [in] 0-based ending offset of the character range to perform
 	 * the operation on
-	 * 
+	 *
 	 * @see AccessibleEditableTextListener#copyText
 	 * @see AccessibleEditableTextListener#cutText
 	 * @see AccessibleEditableTextListener#replaceText
 	 */
 	public int end;
-	
+
 	/**
 	 * [in] a string that will replace the specified character range
-	 * 
+	 *
 	 * @see AccessibleEditableTextListener#replaceText
 	 */
 	public String string;
@@ -54,7 +54,7 @@ public class AccessibleEditableTextEvent extends SWTEventObject {
 	/**
 	 * [out] Set this field to {@link ACC#OK} if the operation
 	 * was completed successfully, and <code>null</code> otherwise.
-	 * 
+	 *
 	 * @see AccessibleEditableTextListener#copyText
 	 * @see AccessibleEditableTextListener#cutText
 	 * @see AccessibleEditableTextListener#pasteText

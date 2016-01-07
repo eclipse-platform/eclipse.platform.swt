@@ -10,7 +10,7 @@
  *******************************************************************************/
 package org.eclipse.swt.internal;
 
- 
+
 import java.io.*;
 import java.text.*;
 import java.util.*;
@@ -27,16 +27,16 @@ import org.eclipse.swt.*;
  * </p>
  * <p>
  * IMPORTANT: some of the methods have been modified from their
- * J2SE parents. Refer to the description of each method for 
+ * J2SE parents. Refer to the description of each method for
  * specific changes.
  * </p>
  * <ul>
- * <li>Exceptions thrown may differ since J2ME's set of 
+ * <li>Exceptions thrown may differ since J2ME's set of
  * exceptions is a subset of J2SE's one.
  * </li>
  * <li>The range of the mathematic functions is subject to
  * change.
- * </li>		
+ * </li>
  * </ul>
  */
 public final class Compatibility {
@@ -45,7 +45,7 @@ public final class Compatibility {
  * Answers the most negative (i.e. closest to negative infinity)
  * integer value which is greater than the number obtained by dividing
  * the first argument p by the second argument q.
- * 
+ *
  * @param p numerator
  * @param q denominator (must be different from zero)
  * @return the ceiling of the rational number p / q.
@@ -56,7 +56,7 @@ public static int ceil(int p, int q) {
 
 /**
  * Answers whether the indicated file exists or not.
- * 
+ *
  * @param parent the file's parent directory
  * @param child the file's name
  * @return true if the file exists
@@ -66,14 +66,14 @@ public static boolean fileExists(String parent, String child) {
 }
 
 /**
- * Answers the result of rounding to the closest integer the number obtained 
+ * Answers the result of rounding to the closest integer the number obtained
  * by dividing the first argument p by the second argument q.
  * <p>
  * IMPORTANT: the j2me version has an additional restriction on
  * the arguments. p must be within the range 0 - 32767 (inclusive).
  * q must be within the range 1 - 32767 (inclusive).
  * </p>
- * 
+ *
  * @param p numerator
  * @param q denominator (must be different from zero)
  * @return the closest integer to the rational number p / q
@@ -132,18 +132,18 @@ private static ResourceBundle msgs = null;
 /**
  * Returns the NLS'ed message for the given argument. This is only being
  * called from SWT.
- * 
+ *
  * @param key the key to look up
  * @return the message for the given key
- * 
+ *
  * @see SWT#getMessage(String)
  */
 public static String getMessage(String key) {
 	String answer = key;
-	
+
 	if (key == null) {
 		SWT.error (SWT.ERROR_NULL_ARGUMENT);
-	}	
+	}
 	if (msgs == null) {
 		try {
 			msgs = ResourceBundle.getBundle("org.eclipse.swt.internal.SWTMessages"); //$NON-NLS-1$
@@ -161,7 +161,7 @@ public static String getMessage(String key) {
 
 public static String getMessage(String key, Object[] args) {
 	String answer = key;
-	
+
 	if (key == null || args == null) {
 		SWT.error (SWT.ERROR_NULL_ARGUMENT);
 	}
@@ -174,8 +174,8 @@ public static String getMessage(String key, Object[] args) {
 	}
 	if (msgs != null) {
 		try {
-			MessageFormat formatter = new MessageFormat("");			
-			formatter.applyPattern(msgs.getString(key));			
+			MessageFormat formatter = new MessageFormat("");
+			formatter.applyPattern(msgs.getString(key));
 			answer = formatter.format(args);
 		} catch (MissingResourceException ex2) {}
 	}

@@ -13,11 +13,11 @@ package org.eclipse.swt.internal.image;
 import org.eclipse.swt.*;
 
 /*
-* Decoder for 
+* Decoder for
 * - CCITT Group 3 1-Dimensional Modified Huffman run length encoding
 *   (TIFF compression type 2)
 * - CCITT T.4 bi-level encoding 1D
-*   (TIFF compression type 3 option 1D) 
+*   (TIFF compression type 3 option 1D)
 */
 final class TIFFModifiedHuffmanCodec {
 	static final short[][][] BLACK_CODE = {
@@ -88,7 +88,7 @@ final class TIFFModifiedHuffmanCodec {
 		{/* EOL */{1, -1}, {18, 1984}, {19, 2048}, {20, 2112}, {21, 2176}, {22, 2240}, {23, 2304},
 		{28, 2368}, {29, 2432}, {30, 2496}, {31, 2560}}
 	};
-	
+
 	static final int BLACK_MIN_BITS = 2;
 	static final int WHITE_MIN_BITS = 4;
 
@@ -120,7 +120,7 @@ public int decode(byte[] src, byte[] dest, int offsetDest, int rowSize, int nRow
 		/* byte aligned */
 		if (bitOffsetDest > 0) {
 			byteOffsetDest++;
-			bitOffsetDest = 0; 
+			bitOffsetDest = 0;
 		}
 	}
 	return byteOffsetDest - offsetDest;
@@ -166,7 +166,7 @@ int decodeRunLength() {
 			if (found) break;
 			code = code << 1 | getNextBit();
 		}
-		if (!found) SWT.error(SWT.ERROR_INVALID_IMAGE);			 
+		if (!found) SWT.error(SWT.ERROR_INVALID_IMAGE);
 	}
 }
 
@@ -195,7 +195,7 @@ void setNextBits(int value, int cnt) {
 			(byte)(dest[byteOffsetDest] | (1 << (7 - bitOffsetDest))) :
 			(byte)(dest[byteOffsetDest] & ~(1 << (7 - bitOffsetDest)));
 		n--;
-		bitOffsetDest++; 
+		bitOffsetDest++;
 	}
 	if (bitOffsetDest == 8) {
 		byteOffsetDest++;
@@ -210,8 +210,8 @@ void setNextBits(int value, int cnt) {
 			(byte)(dest[byteOffsetDest] | (1 << (7 - bitOffsetDest))) :
 			(byte)(dest[byteOffsetDest] & ~(1 << (7 - bitOffsetDest)));
 		n--;
-		bitOffsetDest++;		
-	}	
+		bitOffsetDest++;
+	}
 }
 
 }

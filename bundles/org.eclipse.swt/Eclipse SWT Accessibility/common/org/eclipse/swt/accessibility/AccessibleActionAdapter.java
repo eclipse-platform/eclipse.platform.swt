@@ -31,7 +31,7 @@ public class AccessibleActionAdapter implements AccessibleActionListener {
 	 * If there are more than one, the first one (index 0) is considered the
 	 * "default" action of the object.
 	 * </p>
-	 * 
+	 *
 	 * @param e an event object containing the following fields:<ul>
 	 * <li>[out] count - the number of actions, or zero if there are no actions</li>
 	 * </ul>
@@ -40,7 +40,7 @@ public class AccessibleActionAdapter implements AccessibleActionListener {
 
 	/**
 	 * Performs the specified action on the object.
-	 * 
+	 *
 	 * @param e an event object containing the following fields:<ul>
 	 * <li>[in] index - a 0 based index specifying the action to perform.
 	 * 		If the index lies outside the valid range no action is performed.</li>
@@ -51,7 +51,7 @@ public class AccessibleActionAdapter implements AccessibleActionListener {
 
 	/**
 	 * Returns a description of the specified action.
-	 * 
+	 *
 	 * @param e an event object containing the following fields:<ul>
 	 * <li>[in] index - a 0 based index specifying which action's description to return</li>
 	 * <li>[out] result - a localized string describing the specified action,
@@ -67,7 +67,7 @@ public class AccessibleActionAdapter implements AccessibleActionListener {
 	 * The returned string is of the following form: mnemonic;accelerator
 	 * for example: "C;CTRL+C" for the Copy item in a typical Edit menu.
 	 * </p>
-	 * 
+	 *
 	 * @param e an event object containing the following fields:<ul>
 	 * <li>[in] index - a 0 based index specifying which action's key bindings to return</li>
 	 * <li>[out] result - a semicolon-delimited string of localized key bindings
@@ -82,7 +82,7 @@ public class AccessibleActionAdapter implements AccessibleActionListener {
 	 * There is no need to implement this method for single action controls
 	 * since that would be redundant with AccessibleControlListener.getDefaultAction.
 	 * </p>
-	 * 
+	 *
 	 * @param e an event object containing the following fields:<ul>
 	 * <li>[in] index - a 0 based index specifying which action's name to return</li>
 	 * <li>[in] localized - a boolean indicating whether or not to return a localized name</li>

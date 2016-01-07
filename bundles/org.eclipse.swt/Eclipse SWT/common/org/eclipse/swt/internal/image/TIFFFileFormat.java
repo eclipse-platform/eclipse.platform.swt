@@ -31,7 +31,7 @@ boolean isFileFormat(LEDataInputStream stream) {
 		if (!(header[0] == 0x49 && header[2] == 42 && header[3] == 0) &&
 			!(header[0] == 0x4d && header[2] == 0 && header[3] == 42)) {
 			return false;
-		} 	
+		}
 		return true;
 	} catch (Exception e) {
 		return false;
@@ -39,7 +39,7 @@ boolean isFileFormat(LEDataInputStream stream) {
 }
 
 @Override
-ImageData[] loadFromByteStream() {	
+ImageData[] loadFromByteStream() {
 	byte[] header = new byte[8];
 	boolean isLittleEndian;
 	ImageData[] images = new ImageData[0];
@@ -50,9 +50,9 @@ ImageData[] loadFromByteStream() {
 		if (!(header[0] == 0x49 && header[2] == 42 && header[3] == 0) &&
 			!(header[0] == 0x4d && header[2] == 0 && header[3] == 42)) {
 			SWT.error(SWT.ERROR_INVALID_IMAGE);
-		} 
-		isLittleEndian = header[0] == 0x49;	
-		int offset = isLittleEndian ? 
+		}
+		isLittleEndian = header[0] == 0x49;
+		int offset = isLittleEndian ?
 			(header[4] & 0xFF) | ((header[5] & 0xFF) << 8) | ((header[6] & 0xFF) << 16) | ((header[7] & 0xFF) << 24) :
 			(header[7] & 0xFF) | ((header[6] & 0xFF) << 8) | ((header[5] & 0xFF) << 16) | ((header[4] & 0xFF) << 24);
 		while (offset != 0) {

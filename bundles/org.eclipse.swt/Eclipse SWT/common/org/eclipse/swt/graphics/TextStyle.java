@@ -19,20 +19,20 @@ import org.eclipse.swt.*;
  * The hashCode() method in this class uses the values of the public
  * fields to compute the hash value. When storing instances of the
  * class in hashed collections, do not modify these fields after the
- * object has been inserted.  
+ * object has been inserted.
  * </p>
  * <p>
  * Application code does <em>not</em> need to explicitly release the
  * resources managed by each instance when those instances are no longer
  * required, and thus no <code>dispose()</code> method is provided.
  * </p>
- * 
+ *
  * @see TextLayout
  * @see Font
  * @see Color
  * @see <a href="http://www.eclipse.org/swt/snippets/#textlayout">TextLayout, TextStyle snippets</a>
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
- *  
+ *
  * @since 3.0
  */
 public class TextStyle {
@@ -55,131 +55,131 @@ public class TextStyle {
 	/**
 	 * the underline flag of the style. The default underline
 	 * style is <code>SWT.UNDERLINE_SINGLE</code>.
-	 * 
-	 * 
+	 *
+	 *
 	 * @since 3.1
-	 */	
+	 */
 	public boolean underline;
-	
+
 	/**
 	 * the underline color of the style
-	 * 
+	 *
 	 * @since 3.4
-	 */	
+	 */
 	public Color underlineColor;
 
 	/**
 	 * the underline style. This style is ignored when
 	 * <code>underline</code> is false.
-	 * <p> 
+	 * <p>
 	 * This value should be one of <code>SWT.UNDERLINE_SINGLE</code>,
 	 * <code>SWT.UNDERLINE_DOUBLE</code>, <code>SWT.UNDERLINE_ERROR</code>,
 	 * <code>SWT.UNDERLINE_SQUIGGLE</code>, or <code>SWT.UNDERLINE_LINK</code>.
 	 * </p>
-	 * 
+	 *
 	 * @see SWT#UNDERLINE_SINGLE
-	 * @see SWT#UNDERLINE_DOUBLE 
+	 * @see SWT#UNDERLINE_DOUBLE
 	 * @see SWT#UNDERLINE_ERROR
 	 * @see SWT#UNDERLINE_SQUIGGLE
 	 * @see SWT#UNDERLINE_LINK
-	 * 
+	 *
 	 * @since 3.4
-	 */	
+	 */
 	public int underlineStyle;
 
 	/**
 	 * the strikeout flag of the style
-	 * 
+	 *
 	 * @since 3.1
-	 */	
+	 */
 	public boolean strikeout;
-	
+
 	/**
 	 * the strikeout color of the style
-	 * 
+	 *
 	 * @since 3.4
-	 */	
+	 */
 	public Color strikeoutColor;
-	
+
 	/**
 	 * the border style. The default border style is <code>SWT.NONE</code>.
-	 * <p> 
+	 * <p>
 	 * This value should be one of <code>SWT.BORDER_SOLID</code>,
 	 * <code>SWT.BORDER_DASH</code>,<code>SWT.BORDER_DOT</code> or
 	 * <code>SWT.NONE</code>.
 	 * </p>
-	 * 
+	 *
 	 * @see SWT#BORDER_SOLID
-	 * @see SWT#BORDER_DASH 
+	 * @see SWT#BORDER_DASH
 	 * @see SWT#BORDER_DOT
 	 * @see SWT#NONE
-	 * 
+	 *
 	 * @since 3.4
-	 */	
+	 */
 	public int borderStyle;
-	
+
 	/**
 	 * the border color of the style
-	 * 
+	 *
 	 * @since 3.4
-	 */	
+	 */
 	public Color borderColor;
-	
+
 	/**
 	 * the GlyphMetrics of the style
-	 * 
+	 *
 	 * @since 3.2
-	 */	
+	 */
 	public GlyphMetrics metrics;
-	
+
 	/**
-	 * the baseline rise of the style. 
-	 * 
+	 * the baseline rise of the style.
+	 *
 	 * @since 3.2
-	 */	
+	 */
 	public int rise;
-	
-	
+
+
 	/**
-	 * the data. An user data field. It can be used to hold the HREF when the range 
+	 * the data. An user data field. It can be used to hold the HREF when the range
 	 * is used as a link or the embed object when the range is used with <code>GlyphMetrics</code>.
 	 * <p>
-	 * 
+	 *
 	 * @since 3.5
 	 */
 	public Object data;
 
 
-/** 
+/**
  * Create an empty text style.
  *
  * @since 3.4
  */
 public TextStyle () {
 }
-	
-/** 
+
+/**
  * Create a new text style with the specified font, foreground
  * and background.
  *
- * @param font the font of the style, <code>null</code> if none 
- * @param foreground the foreground color of the style, <code>null</code> if none 
+ * @param font the font of the style, <code>null</code> if none
+ * @param foreground the foreground color of the style, <code>null</code> if none
  * @param background the background color of the style, <code>null</code> if none
  */
 public TextStyle (Font font, Color foreground, Color background) {
 	if (font != null && font.isDisposed()) SWT.error (SWT.ERROR_INVALID_ARGUMENT);
 	if (foreground != null && foreground.isDisposed()) SWT.error (SWT.ERROR_INVALID_ARGUMENT);
-	if (background != null && background.isDisposed()) SWT.error (SWT.ERROR_INVALID_ARGUMENT);	
+	if (background != null && background.isDisposed()) SWT.error (SWT.ERROR_INVALID_ARGUMENT);
 	this.font = font;
 	this.foreground = foreground;
 	this.background = background;
 }
 
 
-/** 
+/**
  * Create a new text style from an existing text style.
- * 
- * @param style the style to copy 
+ *
+ * @param style the style to copy
  *
  * @since 3.4
  */
@@ -215,7 +215,7 @@ public boolean equals(Object object) {
 	if (object == this) return true;
 	if (object == null) return false;
 	if (!(object instanceof TextStyle)) return false;
-	TextStyle style = (TextStyle)object;	
+	TextStyle style = (TextStyle)object;
 	if (foreground != null) {
 		if (!foreground.equals(style.foreground)) return false;
 	} else if (style.foreground != null) return false;
@@ -248,8 +248,8 @@ public boolean equals(Object object) {
 }
 
 /**
- * Returns an integer hash code for the receiver. Any two 
- * objects that return <code>true</code> when passed to 
+ * Returns an integer hash code for the receiver. Any two
+ * objects that return <code>true</code> when passed to
  * <code>equals</code> must return the same value for this
  * method.
  *
@@ -261,7 +261,7 @@ public boolean equals(Object object) {
 public int hashCode() {
 	int hash = 0;
 	if (foreground != null) hash ^= foreground.hashCode();
-	if (background != null) hash ^= background.hashCode();	
+	if (background != null) hash ^= background.hashCode();
 	if (font != null) hash ^= font.hashCode();
 	if (metrics != null) hash ^= metrics.hashCode();
 	if (underline) hash ^= (hash << 1);
@@ -336,7 +336,7 @@ public String toString () {
 		buffer.append(font);
 	}
 	if (foreground != null) {
-		if (buffer.length() > startLength) buffer.append(", "); //$NON-NLS-1$ 
+		if (buffer.length() > startLength) buffer.append(", "); //$NON-NLS-1$
 		buffer.append("foreground="); //$NON-NLS-1$
 		buffer.append(foreground);
 	}
@@ -349,11 +349,11 @@ public String toString () {
 		if (buffer.length() > startLength) buffer.append(", "); //$NON-NLS-1$
 		buffer.append("underline="); //$NON-NLS-1$
 		switch (underlineStyle) {
-			case SWT.UNDERLINE_SINGLE: buffer.append("single"); break; //$NON-NLS-1$ 
-			case SWT.UNDERLINE_DOUBLE: buffer.append("double"); break; //$NON-NLS-1$ 
-			case SWT.UNDERLINE_SQUIGGLE: buffer.append("squiggle"); break; //$NON-NLS-1$ 
-			case SWT.UNDERLINE_ERROR: buffer.append("error"); break; //$NON-NLS-1$ 
-			case SWT.UNDERLINE_LINK: buffer.append("link"); break; //$NON-NLS-1$ 
+			case SWT.UNDERLINE_SINGLE: buffer.append("single"); break; //$NON-NLS-1$
+			case SWT.UNDERLINE_DOUBLE: buffer.append("double"); break; //$NON-NLS-1$
+			case SWT.UNDERLINE_SQUIGGLE: buffer.append("squiggle"); break; //$NON-NLS-1$
+			case SWT.UNDERLINE_ERROR: buffer.append("error"); break; //$NON-NLS-1$
+			case SWT.UNDERLINE_LINK: buffer.append("link"); break; //$NON-NLS-1$
 		}
 		if (underlineColor != null) {
 			buffer.append(", underlineColor="); //$NON-NLS-1$

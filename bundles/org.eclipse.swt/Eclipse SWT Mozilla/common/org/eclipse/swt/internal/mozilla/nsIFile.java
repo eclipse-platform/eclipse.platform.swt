@@ -34,7 +34,7 @@ public class nsIFile extends nsISupports {
 	 * Note: The following value is likely wrong for XULRunner 24 because nsIFile is referenced
 	 * (which initializes this value) before it has been determined whether XULRunner 24
 	 * is being used or not.  However this does not currently cause a problem because the
-	 * only reference to it is nsILocalFile.LAST_METHOD_ID, which is currently not used.  
+	 * only reference to it is nsILocalFile.LAST_METHOD_ID, which is currently not used.
 	 */
 	static final int LAST_METHOD_ID = nsISupports.LAST_METHOD_ID + (IsXULRVersionOrLater(MozillaVersion.VERSION_XR24) ? 62 : 45);
 

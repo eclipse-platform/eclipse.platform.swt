@@ -27,7 +27,7 @@ import org.eclipse.swt.internal.SWTEventObject;
  * @see AccessibleControlListener
  * @see AccessibleControlAdapter
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
- * 
+ *
  * @since 2.0
  */
 public class AccessibleControlEvent extends SWTEventObject {
@@ -38,9 +38,9 @@ public class AccessibleControlEvent extends SWTEventObject {
 	public int detail;			// IN/OUT
 	public String result;			// OUT
 	public Object children[];		// [OUT]
-	
+
 	static final long serialVersionUID = 3257281444169529141L;
-	
+
 /**
  * Constructs a new instance of this class.
  *
@@ -67,5 +67,5 @@ public String toString () {
 		" detail=" + detail +  //$NON-NLS-1$
 		" result=" + result +  //$NON-NLS-1$
 		"}"; //$NON-NLS-1$
-}	
+}
 }

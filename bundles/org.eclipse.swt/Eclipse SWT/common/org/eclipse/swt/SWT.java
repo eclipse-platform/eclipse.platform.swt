@@ -35,9 +35,9 @@ import org.eclipse.swt.internal.*;
  *
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  */
- 
+
 /* NOTE:
- *   Good javadoc coding style is to put the values of static final 
+ *   Good javadoc coding style is to put the values of static final
  *   constants in the comments. This reinforces the fact that
  *   consumers are allowed to rely on the value (and they must
  *   since the values are compiled inline in their code). We
@@ -45,142 +45,142 @@ import org.eclipse.swt.internal.*;
  *   releases.
  */
 public class SWT {
-	
+
 	/* Widget Event Constants */
-	
+
 	/**
 	 * The null event type (value is 0).
-	 * 
+	 *
 	 * @since 3.0
 	 */
 	public static final int None = 0;
-	
+
 	/**
 	 * The key down event type (value is 1).
-	 * 
+	 *
 	 * @see org.eclipse.swt.widgets.Widget#addListener
 	 * @see org.eclipse.swt.widgets.Display#addFilter
 	 * @see org.eclipse.swt.widgets.Event
-	 * 
+	 *
 	 * @see org.eclipse.swt.widgets.Control#addKeyListener
 	 * @see org.eclipse.swt.widgets.Tracker#addKeyListener
 	 * @see org.eclipse.swt.events.KeyListener#keyPressed
 	 * @see org.eclipse.swt.events.KeyEvent
 	 */
 	public static final int KeyDown = 1;
-	
+
 	/**
 	 * The key up event type (value is 2).
-	 * 
+	 *
 	 * @see org.eclipse.swt.widgets.Widget#addListener
 	 * @see org.eclipse.swt.widgets.Display#addFilter
 	 * @see org.eclipse.swt.widgets.Event
-	 * 
+	 *
 	 * @see org.eclipse.swt.widgets.Control#addKeyListener
 	 * @see org.eclipse.swt.widgets.Tracker#addKeyListener
 	 * @see org.eclipse.swt.events.KeyListener#keyReleased
 	 * @see org.eclipse.swt.events.KeyEvent
 	 */
 	public static final int KeyUp = 2;
-	
+
 	/**
 	 * The mouse down event type (value is 3).
-	 * 
+	 *
 	 * @see org.eclipse.swt.widgets.Widget#addListener
 	 * @see org.eclipse.swt.widgets.Display#addFilter
 	 * @see org.eclipse.swt.widgets.Event
-	 * 
+	 *
 	 * @see org.eclipse.swt.widgets.Control#addMouseListener
 	 * @see org.eclipse.swt.events.MouseListener#mouseDown
 	 * @see org.eclipse.swt.events.MouseEvent
 	 */
 	public static final int MouseDown = 3;
-	
+
 	/**
 	 * The mouse up event type (value is 4).
-	 * 
+	 *
 	 * @see org.eclipse.swt.widgets.Widget#addListener
 	 * @see org.eclipse.swt.widgets.Display#addFilter
 	 * @see org.eclipse.swt.widgets.Event
-	 * 
+	 *
 	 * @see org.eclipse.swt.widgets.Control#addMouseListener
 	 * @see org.eclipse.swt.events.MouseListener#mouseUp
 	 * @see org.eclipse.swt.events.MouseEvent
 	 */
 	public static final int MouseUp = 4;
-	
+
 	/**
 	 * The mouse move event type (value is 5).
-	 * 
+	 *
 	 * @see org.eclipse.swt.widgets.Widget#addListener
 	 * @see org.eclipse.swt.widgets.Display#addFilter
 	 * @see org.eclipse.swt.widgets.Event
-	 * 
+	 *
 	 * @see org.eclipse.swt.widgets.Control#addMouseMoveListener
 	 * @see org.eclipse.swt.events.MouseMoveListener#mouseMove
 	 * @see org.eclipse.swt.events.MouseEvent
 	 */
 	public static final int MouseMove = 5;
-	
+
 	/**
 	 * The mouse enter event type (value is 6).
-	 * 
+	 *
 	 * @see org.eclipse.swt.widgets.Widget#addListener
 	 * @see org.eclipse.swt.widgets.Display#addFilter
 	 * @see org.eclipse.swt.widgets.Event
-	 * 
+	 *
 	 * @see org.eclipse.swt.widgets.Control#addMouseTrackListener
 	 * @see org.eclipse.swt.events.MouseTrackListener#mouseEnter
 	 * @see org.eclipse.swt.events.MouseEvent
 	 */
-	public static final int MouseEnter = 6;		
-	
+	public static final int MouseEnter = 6;
+
 	/**
 	 * The mouse exit event type (value is 7).
-	 * 
+	 *
 	 * @see org.eclipse.swt.widgets.Widget#addListener
 	 * @see org.eclipse.swt.widgets.Display#addFilter
 	 * @see org.eclipse.swt.widgets.Event
-	 * 
+	 *
 	 * @see org.eclipse.swt.widgets.Control#addMouseTrackListener
 	 * @see org.eclipse.swt.events.MouseTrackListener#mouseExit
 	 * @see org.eclipse.swt.events.MouseEvent
 	 */
 	public static final int MouseExit = 7;
-	
+
 	/**
 	 * The mouse double click event type (value is 8).
-	 * 
+	 *
 	 * @see org.eclipse.swt.widgets.Widget#addListener
 	 * @see org.eclipse.swt.widgets.Display#addFilter
 	 * @see org.eclipse.swt.widgets.Event
-	 * 
+	 *
 	 * @see org.eclipse.swt.widgets.Control#addMouseListener
 	 * @see org.eclipse.swt.events.MouseListener#mouseDoubleClick
 	 * @see org.eclipse.swt.events.MouseEvent
 	 */
-	public static final int MouseDoubleClick = 8;	
-	
+	public static final int MouseDoubleClick = 8;
+
 	/**
 	 * The paint event type (value is 9).
-	 * 
+	 *
 	 * @see org.eclipse.swt.widgets.Widget#addListener
 	 * @see org.eclipse.swt.widgets.Display#addFilter
 	 * @see org.eclipse.swt.widgets.Event
-	 * 
+	 *
 	 * @see org.eclipse.swt.widgets.Control#addPaintListener
 	 * @see org.eclipse.swt.events.PaintListener#paintControl
 	 * @see org.eclipse.swt.events.PaintEvent
 	 */
-	public static final int Paint = 9;	
-	
+	public static final int Paint = 9;
+
 	/**
 	 * The move event type (value is 10).
-	 * 
+	 *
 	 * @see org.eclipse.swt.widgets.Widget#addListener
 	 * @see org.eclipse.swt.widgets.Display#addFilter
 	 * @see org.eclipse.swt.widgets.Event
-	 * 
+	 *
 	 * @see org.eclipse.swt.widgets.Control#addControlListener
 	 * @see org.eclipse.swt.widgets.TableColumn#addControlListener
 	 * @see org.eclipse.swt.widgets.Tracker#addControlListener
@@ -189,14 +189,14 @@ public class SWT {
 	 * @see org.eclipse.swt.events.ControlEvent
 	 */
 	public static final int Move = 10;
-	
+
 	/**
 	 * The resize event type (value is 11).
-	 * 
+	 *
 	 * @see org.eclipse.swt.widgets.Widget#addListener
 	 * @see org.eclipse.swt.widgets.Display#addFilter
 	 * @see org.eclipse.swt.widgets.Event
-	 * 
+	 *
 	 * @see org.eclipse.swt.widgets.Control#addControlListener
 	 * @see org.eclipse.swt.widgets.TableColumn#addControlListener
 	 * @see org.eclipse.swt.widgets.Tracker#addControlListener
@@ -205,28 +205,28 @@ public class SWT {
 	 * @see org.eclipse.swt.events.ControlEvent
 	 */
 	public static final int Resize = 11;
-	
+
 	/**
 	 * The dispose event type (value is 12).
-	 * 
+	 *
 	 * @see org.eclipse.swt.widgets.Widget#addListener
 	 * @see org.eclipse.swt.widgets.Display#addListener
 	 * @see org.eclipse.swt.widgets.Display#addFilter
 	 * @see org.eclipse.swt.widgets.Event
-	 * 
+	 *
 	 * @see org.eclipse.swt.widgets.Widget#addDisposeListener
 	 * @see org.eclipse.swt.events.DisposeListener#widgetDisposed
 	 * @see org.eclipse.swt.events.DisposeEvent
 	 */
 	public static final int Dispose = 12;
-	
+
 	/**
 	 * The selection event type (value is 13).
-	 * 
+	 *
 	 * @see org.eclipse.swt.widgets.Widget#addListener
 	 * @see org.eclipse.swt.widgets.Display#addFilter
 	 * @see org.eclipse.swt.widgets.Event
-	 * 
+	 *
 	 * @see org.eclipse.swt.widgets.Button#addSelectionListener
 	 * @see org.eclipse.swt.widgets.Combo#addSelectionListener
 	 * @see org.eclipse.swt.widgets.CoolItem#addSelectionListener
@@ -248,14 +248,14 @@ public class SWT {
 	 * @see org.eclipse.swt.events.SelectionEvent
 	 */
 	public static final int Selection = 13;
-	
+
 	/**
 	 * The default selection event type (value is 14).
-	 * 
+	 *
 	 * @see org.eclipse.swt.widgets.Widget#addListener
 	 * @see org.eclipse.swt.widgets.Display#addFilter
 	 * @see org.eclipse.swt.widgets.Event
-	 * 
+	 *
 	 * @see org.eclipse.swt.widgets.Combo#addSelectionListener
 	 * @see org.eclipse.swt.widgets.List#addSelectionListener
 	 * @see org.eclipse.swt.widgets.Spinner#addSelectionListener
@@ -267,132 +267,132 @@ public class SWT {
 	 * @see org.eclipse.swt.events.SelectionEvent
 	 */
 	public static final int DefaultSelection = 14;
-	
+
 	/**
 	 * The focus in event type (value is 15).
-	 * 
+	 *
 	 * @see org.eclipse.swt.widgets.Widget#addListener
 	 * @see org.eclipse.swt.widgets.Display#addFilter
 	 * @see org.eclipse.swt.widgets.Event
-	 * 
+	 *
 	 * @see org.eclipse.swt.widgets.Control#addFocusListener
 	 * @see org.eclipse.swt.events.FocusListener#focusGained
 	 * @see org.eclipse.swt.events.FocusEvent
 	 */
 	public static final int FocusIn = 15;
-	
+
 	/**
 	 * The focus out event type (value is 16).
-	 * 
+	 *
 	 * @see org.eclipse.swt.widgets.Widget#addListener
 	 * @see org.eclipse.swt.widgets.Display#addFilter
 	 * @see org.eclipse.swt.widgets.Event
-	 * 
+	 *
 	 * @see org.eclipse.swt.widgets.Control#addFocusListener
 	 * @see org.eclipse.swt.events.FocusListener#focusLost
 	 * @see org.eclipse.swt.events.FocusEvent
 	 */
 	public static final int FocusOut = 16;
-	
+
 	/**
 	 * The expand event type (value is 17).
-	 * 
+	 *
 	 * @see org.eclipse.swt.widgets.Widget#addListener
 	 * @see org.eclipse.swt.widgets.Display#addFilter
 	 * @see org.eclipse.swt.widgets.Event
-	 * 
+	 *
 	 * @see org.eclipse.swt.widgets.Tree#addTreeListener
 	 * @see org.eclipse.swt.events.TreeListener#treeExpanded
 	 * @see org.eclipse.swt.events.TreeEvent
 	 */
 	public static final int Expand = 17;
-	
+
 	/**
 	 * The collapse event type (value is 18).
-	 * 
+	 *
 	 * @see org.eclipse.swt.widgets.Widget#addListener
 	 * @see org.eclipse.swt.widgets.Display#addFilter
 	 * @see org.eclipse.swt.widgets.Event
-	 * 
+	 *
 	 * @see org.eclipse.swt.widgets.Tree#addTreeListener
 	 * @see org.eclipse.swt.events.TreeListener#treeCollapsed
 	 * @see org.eclipse.swt.events.TreeEvent
 	 */
 	public static final int Collapse = 18;
-	
+
 	/**
 	 * The iconify event type (value is 19).
-	 * 
+	 *
 	 * @see org.eclipse.swt.widgets.Widget#addListener
 	 * @see org.eclipse.swt.widgets.Display#addFilter
 	 * @see org.eclipse.swt.widgets.Event
-	 * 
+	 *
 	 * @see org.eclipse.swt.widgets.Shell#addShellListener
 	 * @see org.eclipse.swt.events.ShellListener#shellIconified
 	 * @see org.eclipse.swt.events.ShellEvent
 	 */
 	public static final int Iconify = 19;
-	
+
 	/**
 	 * The de-iconify event type (value is 20).
-	 * 
+	 *
 	 * @see org.eclipse.swt.widgets.Widget#addListener
 	 * @see org.eclipse.swt.widgets.Display#addFilter
 	 * @see org.eclipse.swt.widgets.Event
-	 * 
+	 *
 	 * @see org.eclipse.swt.widgets.Shell#addShellListener
 	 * @see org.eclipse.swt.events.ShellListener#shellDeiconified
 	 * @see org.eclipse.swt.events.ShellEvent
 	 */
 	public static final int Deiconify = 20;
-	
+
 	/**
 	 * The close event type (value is 21).
-	 * 
+	 *
 	 * @see org.eclipse.swt.widgets.Widget#addListener
 	 * @see org.eclipse.swt.widgets.Display#addListener
 	 * @see org.eclipse.swt.widgets.Display#addFilter
 	 * @see org.eclipse.swt.widgets.Event
-	 * 
+	 *
 	 * @see org.eclipse.swt.widgets.Shell#addShellListener
 	 * @see org.eclipse.swt.events.ShellListener#shellClosed
 	 * @see org.eclipse.swt.events.ShellEvent
 	 */
 	public static final int Close = 21;
-	
+
 	/**
 	 * The show event type (value is 22).
-	 * 
+	 *
 	 * @see org.eclipse.swt.widgets.Widget#addListener
 	 * @see org.eclipse.swt.widgets.Display#addFilter
 	 * @see org.eclipse.swt.widgets.Event
-	 * 
+	 *
 	 * @see org.eclipse.swt.widgets.Menu#addMenuListener
 	 * @see org.eclipse.swt.events.MenuListener#menuShown
 	 * @see org.eclipse.swt.events.MenuEvent
 	 */
 	public static final int Show = 22;
-	
+
 	/**
 	 * The hide event type (value is 23).
-	 * 
+	 *
 	 * @see org.eclipse.swt.widgets.Widget#addListener
 	 * @see org.eclipse.swt.widgets.Display#addFilter
 	 * @see org.eclipse.swt.widgets.Event
-	 * 
+	 *
 	 * @see org.eclipse.swt.widgets.Menu#addMenuListener
 	 * @see org.eclipse.swt.events.MenuListener#menuHidden
 	 * @see org.eclipse.swt.events.MenuEvent
 	 */
 	public static final int Hide = 23;
-	
+
 	/**
 	 * The modify event type (value is 24).
-	 * 
+	 *
 	 * @see org.eclipse.swt.widgets.Widget#addListener
 	 * @see org.eclipse.swt.widgets.Display#addFilter
 	 * @see org.eclipse.swt.widgets.Event
-	 * 
+	 *
 	 * @see org.eclipse.swt.widgets.Combo#addModifyListener
 	 * @see org.eclipse.swt.widgets.Spinner#addModifyListener
 	 * @see org.eclipse.swt.widgets.Text#addModifyListener
@@ -400,14 +400,14 @@ public class SWT {
 	 * @see org.eclipse.swt.events.ModifyEvent
 	 */
 	public static final int Modify = 24;
-	
+
 	/**
 	 * The verify event type (value is 25).
-	 * 
+	 *
 	 * @see org.eclipse.swt.widgets.Widget#addListener
 	 * @see org.eclipse.swt.widgets.Display#addFilter
 	 * @see org.eclipse.swt.widgets.Event
-	 * 
+	 *
 	 * @see org.eclipse.swt.custom.CCombo#addVerifyListener
 	 * @see org.eclipse.swt.widgets.Combo#addVerifyListener
 	 * @see org.eclipse.swt.custom.StyledText#addVerifyListener
@@ -416,40 +416,40 @@ public class SWT {
 	 * @see org.eclipse.swt.events.VerifyEvent
 	 */
 	public static final int Verify = 25;
-	
+
 	/**
 	 * The activate event type (value is 26).
-	 * 
+	 *
 	 * @see org.eclipse.swt.widgets.Widget#addListener
 	 * @see org.eclipse.swt.widgets.Display#addFilter
 	 * @see org.eclipse.swt.widgets.Event
-	 * 
+	 *
 	 * @see org.eclipse.swt.widgets.Shell#addShellListener
 	 * @see org.eclipse.swt.events.ShellListener#shellActivated
 	 * @see org.eclipse.swt.events.ShellEvent
 	 */
 	public static final int Activate = 26;
-	
+
 	/**
 	 * The deactivate event type (value is 27).
-	 * 
+	 *
 	 * @see org.eclipse.swt.widgets.Widget#addListener
 	 * @see org.eclipse.swt.widgets.Display#addFilter
 	 * @see org.eclipse.swt.widgets.Event
-	 * 
+	 *
 	 * @see org.eclipse.swt.widgets.Shell#addShellListener
 	 * @see org.eclipse.swt.events.ShellListener#shellDeactivated
 	 * @see org.eclipse.swt.events.ShellEvent
 	 */
-	public static final int Deactivate = 27;	
-	
+	public static final int Deactivate = 27;
+
 	/**
 	 * The help event type (value is 28).
-	 * 
+	 *
 	 * @see org.eclipse.swt.widgets.Widget#addListener
 	 * @see org.eclipse.swt.widgets.Display#addFilter
 	 * @see org.eclipse.swt.widgets.Event
-	 * 
+	 *
 	 * @see org.eclipse.swt.widgets.Control#addHelpListener
 	 * @see org.eclipse.swt.widgets.Menu#addHelpListener
 	 * @see org.eclipse.swt.widgets.MenuItem#addHelpListener
@@ -457,54 +457,54 @@ public class SWT {
 	 * @see org.eclipse.swt.events.HelpEvent
 	 */
 	public static final int Help = 28;
-	
+
 	/**
 	 * The drag detect event type (value is 29).
-	 * 
+	 *
 	 * @see org.eclipse.swt.widgets.Widget#addListener
 	 * @see org.eclipse.swt.widgets.Display#addFilter
 	 * @see org.eclipse.swt.widgets.Event
-	 * 
+	 *
 	 * @see org.eclipse.swt.widgets.Control#addDragDetectListener
 	 * @see org.eclipse.swt.events.DragDetectListener#dragDetected
 	 * @see org.eclipse.swt.events.DragDetectEvent
 	 * @see org.eclipse.swt.dnd.DragSource
 	 */
 	public static final int DragDetect = 29;
-	
+
 	/**
 	 * The arm event type (value is 30).
-	 * 
+	 *
 	 * @see org.eclipse.swt.widgets.Widget#addListener
 	 * @see org.eclipse.swt.widgets.Display#addFilter
 	 * @see org.eclipse.swt.widgets.Event
-	 * 
+	 *
 	 * @see org.eclipse.swt.widgets.MenuItem#addArmListener
 	 * @see org.eclipse.swt.events.ArmListener#widgetArmed
 	 * @see org.eclipse.swt.events.ArmEvent
 	 */
 	public static final int Arm = 30;
-	
+
 	/**
 	 * The traverse event type (value is 31).
-	 * 
+	 *
 	 * @see org.eclipse.swt.widgets.Widget#addListener
 	 * @see org.eclipse.swt.widgets.Display#addFilter
 	 * @see org.eclipse.swt.widgets.Event
-	 * 
+	 *
 	 * @see org.eclipse.swt.widgets.Control#addTraverseListener
 	 * @see org.eclipse.swt.events.TraverseListener#keyTraversed
 	 * @see org.eclipse.swt.events.TraverseEvent
 	 */
 	public static final int Traverse = 31;
-	
+
 	/**
 	 * The mouse hover event type (value is 32).
-	 * 
+	 *
 	 * @see org.eclipse.swt.widgets.Widget#addListener
 	 * @see org.eclipse.swt.widgets.Display#addFilter
 	 * @see org.eclipse.swt.widgets.Event
-	 * 
+	 *
 	 * @see org.eclipse.swt.widgets.Control#addMouseTrackListener
 	 * @see org.eclipse.swt.events.MouseTrackListener#mouseHover
 	 * @see org.eclipse.swt.events.MouseEvent
@@ -513,16 +513,16 @@ public class SWT {
 
 	/**
 	 * The hardware key down event type (value is 33).
-	 * 
+	 *
 	 * @see org.eclipse.swt.widgets.Widget#addListener
 	 * @see org.eclipse.swt.widgets.Display#addFilter
 	 * @see org.eclipse.swt.widgets.Event
 	 */
 	public static final int HardKeyDown = 33;
-	
+
 	/**
 	 * The hardware key up event type (value is 34).
-	 * 
+	 *
 	 * @see org.eclipse.swt.widgets.Widget#addListener
 	 * @see org.eclipse.swt.widgets.Display#addFilter
 	 * @see org.eclipse.swt.widgets.Event
@@ -531,66 +531,66 @@ public class SWT {
 
 	/**
 	 * The menu detect event type (value is 35).
-	 * 
+	 *
 	 * @see org.eclipse.swt.widgets.Widget#addListener
 	 * @see org.eclipse.swt.widgets.Display#addFilter
 	 * @see org.eclipse.swt.widgets.Event
-	 * 
+	 *
 	 * @see org.eclipse.swt.widgets.Control#addMenuDetectListener
 	 * @see org.eclipse.swt.widgets.TrayItem#addMenuDetectListener
 	 * @see org.eclipse.swt.events.MenuDetectListener#menuDetected
 	 * @see org.eclipse.swt.events.MenuDetectEvent
-	 * 
+	 *
 	 * @since 3.0
 	 */
 	public static final int MenuDetect = 35;
-	
+
 	/**
 	 * The set data event type (value is 36).
-	 * 
+	 *
 	 * @see org.eclipse.swt.widgets.Widget#addListener
 	 * @see org.eclipse.swt.widgets.Display#addFilter
 	 * @see org.eclipse.swt.widgets.Event
-	 * 
+	 *
 	 * @see org.eclipse.swt.widgets.Table
 	 * @see org.eclipse.swt.widgets.Tree
-	 * 
+	 *
 	 * @since 3.0
 	 */
 	public static final int SetData = 36;
 
 	/**
 	 * The mouse vertical wheel event type (value is 37).
-	 * 
+	 *
 	 * @see org.eclipse.swt.widgets.Control#addMouseWheelListener
 	 * @see org.eclipse.swt.widgets.Display#addFilter
 	 * @see org.eclipse.swt.widgets.Event
-	 * 
+	 *
 	 * @since 3.6
 	 */
 	public static final int MouseVerticalWheel = 37;
-	
+
 	/**
 	 * The mouse horizontal wheel event type (value is 38).
-	 * 
+	 *
 	 * @see org.eclipse.swt.widgets.Widget#addListener
 	 * @see org.eclipse.swt.widgets.Display#addFilter
 	 * @see org.eclipse.swt.widgets.Event
-	 * 
+	 *
 	 * @since 3.6
 	 */
 	public static final int MouseHorizontalWheel = 38;
-	
+
 	/**
 	 * The mouse wheel event type (value is 37).
-	 * This is a synonym for {@link #MouseVerticalWheel} (value is 37).  
-	 * Newer applications should use {@link #MouseVerticalWheel} instead 
+	 * This is a synonym for {@link #MouseVerticalWheel} (value is 37).
+	 * Newer applications should use {@link #MouseVerticalWheel} instead
 	 * of {@link #MouseWheel} to make code more understandable.
-	 *  
+	 *
 	 * @see org.eclipse.swt.widgets.Control#addMouseWheelListener
 	 * @see org.eclipse.swt.widgets.Display#addFilter
 	 * @see org.eclipse.swt.widgets.Event
-	 * 
+	 *
 	 * @since 3.1
 	 */
 	public static final int MouseWheel = MouseVerticalWheel;
@@ -608,122 +608,122 @@ public class SWT {
 	 * cached value.  The operating system automatically redraws and
 	 * lays out all widgets after this event is sent.
 	 * </p>
-	 * 
+	 *
 	 * @see org.eclipse.swt.widgets.Display#addListener
 	 * @see org.eclipse.swt.widgets.Event
-	 * 
+	 *
 	 * @since 3.2
 	 */
 	public static final int Settings = 39;
-	
+
 	/**
 	 * The erase item event type (value is 40).
-	 * 
+	 *
 	 * @see org.eclipse.swt.widgets.Widget#addListener
 	 * @see org.eclipse.swt.widgets.Display#addFilter
 	 * @see org.eclipse.swt.widgets.Event
-	 * 
+	 *
 	 * @since 3.2
 	 */
 	public static final int EraseItem = 40;
-	
+
 	/**
 	 * The measure item event type (value is 41).
-	 * 
+	 *
 	 * @see org.eclipse.swt.widgets.Widget#addListener
 	 * @see org.eclipse.swt.widgets.Display#addFilter
 	 * @see org.eclipse.swt.widgets.Event
-	 * 
+	 *
 	 * @since 3.2
 	 */
 	public static final int MeasureItem = 41;
-	
+
 	/**
 	 * The paint item event type (value is 42).
-	 * 
+	 *
 	 * @see org.eclipse.swt.widgets.Widget#addListener
 	 * @see org.eclipse.swt.widgets.Display#addFilter
 	 * @see org.eclipse.swt.widgets.Event
-	 * 
+	 *
 	 * @since 3.2
 	 */
-	public static final int PaintItem = 42;	
-	
+	public static final int PaintItem = 42;
+
 	/**
-	 * The IME composition event type (value is 43).  
+	 * The IME composition event type (value is 43).
 	 * <p>
 	 * The IME composition event is sent to allow
 	 * custom text editors to implement in-line
-	 * editing of international text. 
-	 * </p> 
-	 * 
+	 * editing of international text.
+	 * </p>
+	 *
 	 * The detail field indicates the action to be taken:
 	 * <p><ul>
 	 * <li>{@link SWT#COMPOSITION_CHANGED}</li>
 	 * <li>{@link SWT#COMPOSITION_OFFSET}</li>
 	 * <li>{@link SWT#COMPOSITION_SELECTION}</li>
 	 * </ul></p>
-	 * 
+	 *
 	 * @see org.eclipse.swt.widgets.Widget#addListener
 	 * @see org.eclipse.swt.widgets.Display#addFilter
 	 * @see org.eclipse.swt.widgets.Event
-	 * 
+	 *
 	 * @since 3.4
 	 */
 	public static final int ImeComposition = 43;
 
 	/**
-	 * The orientation change event type (value is 44).  
+	 * The orientation change event type (value is 44).
 	 * <p>
 	 * On some platforms the orientation of text widgets
 	 * can be changed by keyboard shortcut.
 	 * The application can use the <code>doit</code> field
 	 * of the event to stop the change from happening.
-	 * </p> 
-	 * 
+	 * </p>
+	 *
 	 * @see org.eclipse.swt.widgets.Widget#addListener
 	 * @see org.eclipse.swt.widgets.Display#addFilter
 	 * @see org.eclipse.swt.widgets.Event
-	 * 
+	 *
 	 * @since 3.6
 	 */
 	public static final int OrientationChange = 44;
 
 	/**
 	 * The skin event type (value is 45).
-	 * 
+	 *
 	 * <p>
 	 * The skin event is sent by the display when a widget needs to
-	 * be skinned. 
+	 * be skinned.
 	 * </p>
-	 * 
+	 *
 	 * @see org.eclipse.swt.widgets.Widget#addListener
 	 * @see org.eclipse.swt.widgets.Display#addFilter
 	 * @see org.eclipse.swt.widgets.Event
 	 * @see org.eclipse.swt.widgets.Widget#reskin(int)
-	 * 
+	 *
 	 * @since 3.6
 	 */
 	public static final int Skin = 45;
-	
+
 	/**
 	 * The open document event type (value is 46).
-	 * 
+	 *
 	 * <p>
-	 * This event is sent when SWT receives notification that a document 
+	 * This event is sent when SWT receives notification that a document
 	 * should be opened.
 	 * </p>
-	 *  
+	 *
      * @see org.eclipse.swt.widgets.Display#addListener
      * @see org.eclipse.swt.widgets.Event
-     * 
+     *
      * @since 3.6
 	 */
 	public static final int OpenDocument = 46;
-	
+
 	/**
 	 * The touch event type (value is 47).
-	 * 
+	 *
 	 * <p>
 	 * This event is sent when a touch has been performed
 	 * on a touch-based input source.
@@ -731,47 +731,47 @@ public class SWT {
 	 *
      * @see org.eclipse.swt.widgets.Display#addListener
      * @see org.eclipse.swt.widgets.Event
-     * 
+     *
      * @since 3.7
 	 */
 	public static final int Touch = 47;
 
 	/**
 	 * The gesture event type (value is 48).
-	 * 
+	 *
 	 * <p>
 	 * This event is sent when a gesture has been performed.
 	 * </p>
-	 *  
+	 *
      * @see org.eclipse.swt.widgets.Display#addListener
      * @see org.eclipse.swt.widgets.Event
      * @see SWT#GESTURE_MAGNIFY
      * @see SWT#GESTURE_PAN
      * @see SWT#GESTURE_ROTATE
      * @see SWT#GESTURE_SWIPE
-     * 
+     *
      * @since 3.7
 	 */
 	public static final int Gesture = 48;
 
 	/**
 	 * The segments event type (value is 49).
-	 * 
+	 *
 	 * <p>
 	 * This event is sent when text content has been changed.
 	 * </p>
-	 *  
+	 *
 	 * @see org.eclipse.swt.widgets.Widget#addListener
 	 * @see org.eclipse.swt.widgets.Display#addFilter
 	 * @see org.eclipse.swt.widgets.Event
-	 * 
+	 *
 	 * @see org.eclipse.swt.widgets.Text#addSegmentListener
 	 * @see org.eclipse.swt.events.SegmentEvent
-     * 
+     *
      * @since 3.8
 	 */
 	public static final int Segments = 49;
-	
+
 	/**
 	 * The PreEvent event type (value is 50).
 	 *
@@ -834,54 +834,54 @@ public class SWT {
 	public static final int Sleep = PreExternalEventDispatch;
 
 	/**
-	 * @deprecated The same as PostExternalEventDispatch (value is 53). 
+	 * @deprecated The same as PostExternalEventDispatch (value is 53).
 	 * @since 3.103
 	 */
 	@Deprecated
 	public static final int Wakeup = PostExternalEventDispatch;
 
 	/* Event Details */
-	
+
 	/**
 	 * The IME composition event detail that indicates
 	 * a change in the IME composition. The text field
-	 * of the event is the new composition text. 
+	 * of the event is the new composition text.
 	 * The start and end indicate the offsets where the
 	 * composition text should be inserted.
-	 * The styles and ranges are stored in the IME 
+	 * The styles and ranges are stored in the IME
 	 * object (value is 1).
-	 * 
+	 *
 	 * @see SWT#ImeComposition
-	 * 
+	 *
 	 * @since 3.4
 	 */
 	public static final int COMPOSITION_CHANGED = 1;
-	
+
 	/**
 	 * The IME composition event detail that indicates
 	 * that the IME needs the offset for a given location.
-	 * The x and y fields of the event are used by the 
+	 * The x and y fields of the event are used by the
 	 * application to determine the offset.
-	 * 
-	 * The index field of the event should be set to the 
-	 * text offset at that location. The count field should 
+	 *
+	 * The index field of the event should be set to the
+	 * text offset at that location. The count field should
 	 * be set to indicate whether the location is closer to
 	 * the leading edge (0) or the trailing edge (1) (value is 2).
-	 * 
+	 *
 	 * @see SWT#ImeComposition
 	 * @see org.eclipse.swt.graphics.TextLayout#getOffset(int, int, int[])
-	 * 
+	 *
 	 * @since 3.4
 	 */
 	public static final int COMPOSITION_OFFSET = 2;
-	
+
 	/**
 	 * The IME composition event detail that indicates
 	 * that IME needs the selected text and its start
 	 * and end offsets (value is 3).
-	 * 
+	 *
 	 * @see SWT#ImeComposition
-	 * 
+	 *
 	 * @since 3.4
 	 */
 	public static final int COMPOSITION_SELECTION = 3;
@@ -891,7 +891,7 @@ public class SWT {
 	 * for example dragging the thumb of a scroll bar (value is 1).
 	 */
 	public static final int DRAG = 1;
-	
+
 	/**
 	 * Event detail field that indicates a user-interface component
 	 * state is selected (value is 1&lt;&lt;1).
@@ -899,15 +899,15 @@ public class SWT {
 	 * @since 3.2
 	 */
 	public static final int SELECTED = 1 << 1;
-	
+
 	/**
 	 * Event detail field that indicates a user-interface component
 	 * state is focused (value is 1&lt;&lt;2).
 	 *
 	 * @since 3.2
-	 */	
+	 */
 	public static final int FOCUSED = 1 << 2;
-	
+
 	/**
 	 * Event detail field that indicates a user-interface component
 	 * draws the background (value is 1&lt;&lt;3).
@@ -915,7 +915,7 @@ public class SWT {
 	 * @since 3.2
 	 */
 	public static final int BACKGROUND = 1 << 3;
-	
+
 	/**
 	 * Event detail field that indicates a user-interface component
 	 * draws the foreground (value is 1&lt;&lt;4).
@@ -923,7 +923,7 @@ public class SWT {
 	 * @since 3.2
 	 */
 	public static final int FOREGROUND = 1 << 4;
-	
+
 	/**
 	 * Event detail field that indicates a user-interface component
 	 * state is hot (value is 1&lt;&lt;5).
@@ -931,7 +931,7 @@ public class SWT {
 	 * @since 3.3
 	 */
 	public static final int HOT = 1 << 5;
-	
+
 	/* This code is intentionally commented */
 	//public static final int PRESSED = 1 << 3;
 	//public static final int ACTIVE = 1 << 4;
@@ -940,14 +940,14 @@ public class SWT {
 	//public static final int DEFAULTED = 1 << 7;
 
 	/**
-	 * Traversal event detail field value indicating that no 
+	 * Traversal event detail field value indicating that no
 	 * traversal action should be taken
 	 * (value is 0).
 	 */
 	public static final int TRAVERSE_NONE = 0;
-	
+
 	/**
-	 * Traversal event detail field value indicating that the 
+	 * Traversal event detail field value indicating that the
 	 * key which designates that a dialog should be cancelled was
 	 * pressed; typically, this is the ESC key
 	 * (value is 1&lt;&lt;1).
@@ -963,7 +963,7 @@ public class SWT {
 	public static final int TRAVERSE_RETURN = 1 << 2;
 
 	/**
-	 * Traversal event detail field value indicating that the 
+	 * Traversal event detail field value indicating that the
 	 * key which designates that focus should be given to the
 	 * previous tab group was pressed; typically, this is the
 	 * SHIFT-TAB key sequence
@@ -972,7 +972,7 @@ public class SWT {
 	public static final int TRAVERSE_TAB_PREVIOUS = 1 << 3;
 
 	/**
-	 * Traversal event detail field value indicating that the 
+	 * Traversal event detail field value indicating that the
 	 * key which designates that focus should be given to the
 	 * next tab group was pressed; typically, this is the
 	 * TAB key
@@ -981,7 +981,7 @@ public class SWT {
 	public static final int TRAVERSE_TAB_NEXT = 1 << 4;
 
 	/**
-	 * Traversal event detail field value indicating that the 
+	 * Traversal event detail field value indicating that the
 	 * key which designates that focus should be given to the
 	 * previous tab item was pressed; typically, this is either
 	 * the LEFT-ARROW or UP-ARROW keys
@@ -990,7 +990,7 @@ public class SWT {
 	public static final int TRAVERSE_ARROW_PREVIOUS = 1 << 5;
 
 	/**
-	 * Traversal event detail field value indicating that the 
+	 * Traversal event detail field value indicating that the
 	 * key which designates that focus should be given to the
 	 * previous tab item was pressed; typically, this is either
 	 * the RIGHT-ARROW or DOWN-ARROW keys
@@ -999,23 +999,23 @@ public class SWT {
 	public static final int TRAVERSE_ARROW_NEXT = 1 << 6;
 
 	/**
-	 * Traversal event detail field value indicating that a 
+	 * Traversal event detail field value indicating that a
 	 * mnemonic key sequence was pressed
 	 * (value is 1&lt;&lt;7).
 	 */
 	public static final int TRAVERSE_MNEMONIC = 1 << 7;
 
 	/**
-	 * Traversal event detail field value indicating that the 
+	 * Traversal event detail field value indicating that the
 	 * key which designates that the previous page of a multi-page
 	 * window should be shown was pressed; typically, this
 	 * is the CTRL-PAGEUP key sequence
 	 * (value is 1&lt;&lt;8).
 	 */
 	public static final int TRAVERSE_PAGE_PREVIOUS = 1 << 8;
-	
+
 	/**
-	 * Traversal event detail field value indicating that the 
+	 * Traversal event detail field value indicating that the
 	 * key which designates that the next page of a multi-page
 	 * window should be shown was pressed; typically, this
 	 * is the CTRL-PAGEDOWN key sequence
@@ -1026,91 +1026,91 @@ public class SWT {
 	/**
 	 * Gesture event detail field value indicating that a continuous
 	 * gesture is about to begin.
-	 * 
+	 *
 	 * @since 3.7
 	 */
 	public static final int GESTURE_BEGIN = 1 << 1;
 
 	/**
-	 * Gesture event detail field value indicating that a continuous 
+	 * Gesture event detail field value indicating that a continuous
 	 * gesture has ended.
-	 * 
+	 *
 	 * @since 3.7
 	 */
 	public static final int GESTURE_END = 1 << 2;
 
 	/**
-	 * Gesture event detail field value indicating that a 
+	 * Gesture event detail field value indicating that a
 	 * rotation gesture has happened. Only the rotation field
 	 * of the event is valid.
-	 * 
+	 *
 	 * @since 3.7
 	 */
 	public static final int GESTURE_ROTATE = 1 << 3;
-	
+
 	/**
-	 * Gesture event detail field value indicating that a 
+	 * Gesture event detail field value indicating that a
 	 * swipe gesture has happened.
-	 * 
+	 *
 	 * @since 3.7
 	 */
 	public static final int GESTURE_SWIPE = 1 << 4;
-	
+
 	/**
-	 * Gesture event detail field value indicating that a 
+	 * Gesture event detail field value indicating that a
 	 * magnification gesture has happened.
-	 * 
+	 *
 	 * @since 3.7
 	 */
 	public static final int GESTURE_MAGNIFY = 1 << 5;
-	
+
 	/**
-	 * Gesture event detail field value indicating that a 
+	 * Gesture event detail field value indicating that a
 	 * panning (two-finger scroll) gesture has happened.
-	 * 
+	 *
 	 * @since 3.7
 	 */
 	public static final int GESTURE_PAN = 1 << 6;
-	
+
 	/**
-	 * A constant indicating that a finger touched the device.  
-	 * 
+	 * A constant indicating that a finger touched the device.
+	 *
 	 * @see org.eclipse.swt.widgets.Touch#state
-	 * 
+	 *
 	 * @since 3.7
 	 */
 	public static final int TOUCHSTATE_DOWN = 1 << 0;
 
 	/**
 	 * A constant indicating that a finger moved on the device.
-	 * 
+	 *
 	 * @see org.eclipse.swt.widgets.Touch#state
-	 * 
+	 *
 	 * @since 3.7
 	 */
 	public static final int TOUCHSTATE_MOVE = 1 << 1;
 
 	/**
-	 * A constant indicating that a finger was lifted from the device. 
-	 * 
+	 * A constant indicating that a finger was lifted from the device.
+	 *
 	 * @see org.eclipse.swt.widgets.Touch#state
-	 * 
+	 *
 	 * @since 3.7
 	 */
 	public static final int TOUCHSTATE_UP = 1 << 2;
-	
+
 	/**
 	 * MenuDetect event detail value indicating that a context menu
 	 * was requested by a mouse or other pointing device (value is 0).
-	 * 
+	 *
 	 * @since 3.8
 	 */
 	public static final int MENU_MOUSE = 0;
-	
+
 	/**
 	 * MenuDetect event detail value indicating that a context menu
 	 * was requested by a keyboard or other focus-based device (value is 1).
-	 * 
+	 *
 	 * @since 3.8
 	 */
 	public static final int MENU_KEYBOARD = 1;
@@ -1118,13 +1118,13 @@ public class SWT {
 	/**
 	 * A constant indicating that widgets have changed.
 	 * (value is 1&lt;&lt;1).
-	 * 
+	 *
 	 * <p><b>Used By:</b><ul>
 	 * <li><code>Composite</code> layout</li>
 	 * </ul></p>
-	 * 
+	 *
 	 * @see org.eclipse.swt.widgets.Composite#layout(org.eclipse.swt.widgets.Control[], int)
-	 * 
+	 *
 	 * @since 3.6
 	 */
 	public static final int CHANGED = 1 << 1;
@@ -1132,13 +1132,13 @@ public class SWT {
 	/**
 	 * A constant indicating that a given operation should be deferred.
 	 * (value is 1&lt;&lt;2).
-	 * 
+	 *
 	 * <p><b>Used By:</b><ul>
 	 * <li><code>Composite</code> layout</li>
 	 * </ul></p>
-	 * 
+	 *
 	 * @see org.eclipse.swt.widgets.Composite#layout(org.eclipse.swt.widgets.Control[], int)
-	 * 
+	 *
 	 * @since 3.6
 	 */
 	public static final int DEFER = 1 << 2;
@@ -1148,13 +1148,13 @@ public class SWT {
 	 * which take bit flags to indicate that "no bits are set".
 	 */
 	public static final int NONE = 0;
-	
+
 	/**
 	 * A constant known to be zero (0), used in operations which
 	 * take pointers to indicate a null argument.
 	 */
 	public static final int NULL = 0;
-	
+
 	/**
 	 * Indicates that a default should be used (value is -1).
 	 */
@@ -1162,28 +1162,28 @@ public class SWT {
 
 	/**
 	 * Indicates that a property is off (value is 0).
-	 * 
+	 *
 	 * @since 3.1
 	 */
 	public static final int OFF = 0;
-	
+
 	/**
 	 * Indicates that a property is on (value is 1).
-	 * 
+	 *
 	 * @since 3.1
 	 */
 	public static final int ON = 1;
 
 	/**
 	 * Indicates low quality (value is 1).
-	 * 
+	 *
 	 * @since 3.1
 	 */
 	public static final int LOW = 1;
 
 	/**
 	 * Indicates high quality (value is 2).
-	 * 
+	 *
 	 * @since 3.1
 	 */
 	public static final int HIGH = 2;
@@ -1343,7 +1343,7 @@ public class SWT {
 	 * <p><b>Used By:</b><ul>
 	 * <li><code>Text</code></li>
 	 * </ul></p>
-	 * 
+	 *
 	 * @since 3.3
 	 */
 	public static final int SEARCH = 1 << 7;
@@ -1362,11 +1362,11 @@ public class SWT {
 	 * <p><b>Used By:</b><ul>
 	 * <li><code>Text</code></li>
 	 * </ul></p>
-	 * 
+	 *
 	 * @since 3.0
 	 */
 	public static final int PASSWORD = 1 << 22;
-	
+
 	/**
 	 * Style constant for shadow in behavior (value is 1&lt;&lt;2).
 	 * <br>Note that this is a <em>HINT</em>.
@@ -1423,7 +1423,7 @@ public class SWT {
 	 * </ul></p>
 	 */
 	public static final int INDETERMINATE = 1 << 1;
-	
+
 	/**
 	 * Style constant for tool window behavior (value is 1&lt;&lt;2).
 	 * <p>
@@ -1435,7 +1435,7 @@ public class SWT {
 	 * <li><code>Decorations</code> and subclasses</li>
 	 * </ul></p>
 	 */
-	public static final int TOOL = 1 << 2; 
+	public static final int TOOL = 1 << 2;
 
 	/**
 	 * Style constant to ensure no trimmings are used (value is 1&lt;&lt;3).
@@ -1445,7 +1445,7 @@ public class SWT {
 	 * </ul></p>
 	 */
 	public static final int NO_TRIM = 1 << 3;
-	
+
 	/**
 	 * Style constant for resize box trim (value is 1&lt;&lt;4).
 	 * <p><b>Used By:</b><ul>
@@ -1496,7 +1496,7 @@ public class SWT {
 	 * </ul></p>
 	 */
 	public static final int MAX = 1 << 10;
-	
+
 	/**
 	 * Style constant for the no move behavior (value is 1&lt;&lt;23).
 	 * Creates the title trim when no other trim style is specified.
@@ -1532,7 +1532,7 @@ public class SWT {
 	 * are free to create the default scroll bars for the control.
 	 * Using NO_SCROLL overrides the default and forces the control
 	 * to have no scroll bars.
-	 * 
+	 *
 	 * <b>Used By:</b><ul>
 	 * <li><code>Tree</code></li>
 	 * <li><code>Table</code></li>
@@ -1541,7 +1541,7 @@ public class SWT {
 	 * @since 3.4
 	 */
 	public static final int NO_SCROLL = 1 << 4;
-	
+
 	/**
 	 * Style constant for bordered behavior (value is 1&lt;&lt;11).
 	 * <br>Note that this is a <em>HINT</em>.
@@ -1559,7 +1559,7 @@ public class SWT {
 	 * <li><code>Control</code> and subclasses</li>
 	 * </ul></p>
 	 */
-	public static final int CLIP_CHILDREN = 1 << 12; 
+	public static final int CLIP_CHILDREN = 1 << 12;
 
 	/**
 	 * Style constant indicating that the window manager should clip
@@ -1579,7 +1579,7 @@ public class SWT {
 	 * </ul></p>
 	 */
 	public static final int ON_TOP = 1 << 14;
-	
+
 	/**
 	 * Style constant for sheet window behavior (value is 1&lt;&lt;28).
 	 * <p>
@@ -1594,7 +1594,7 @@ public class SWT {
 	 * <li><code>Dialog</code> and subclasses</li>
 	 * <li><code>Shell</code> and subclasses</li>
 	 * </ul></p>
-	 * 
+	 *
 	 * @since 3.5
 	 */
 	public static final int SHEET = 1 << 28;
@@ -1667,15 +1667,15 @@ public class SWT {
 	public static final int HIDE_SELECTION = 1 << 15;
 
 	/**
-	 * Style constant for full row selection behavior and 
-	 * selection constant indicating that a full line should be 
+	 * Style constant for full row selection behavior and
+	 * selection constant indicating that a full line should be
 	 * drawn. (value is 1&lt;&lt;16).
 	 * <br>Note that for some widgets this is a <em>HINT</em>.
 	 * <p><b>Used By:</b><ul>
 	 * <li><code>Table</code></li>
 	 * <li><code>Tree</code></li>
 	 * <li><code>StyledText</code></li>
-	 * <li><code>TextLayout</code></li> 
+	 * <li><code>TextLayout</code></li>
 	 * </ul></p>
 	 */
 	public static final int FULL_SELECTION = 1 << 16;
@@ -1722,7 +1722,7 @@ public class SWT {
 	 * tool bars and sashes, don't normally take focus when the mouse is clicked
 	 * or accept focus when assigned from within the program.  This style allows
 	 * Composites to implement "no focus" mouse behavior.
-	 * 
+	 *
 	 * <br>Note that this is a <em>HINT</em>.
 	 * </p>
 	 * <p><b>Used By:</b><ul>
@@ -1739,7 +1739,7 @@ public class SWT {
 	 * the SWT.Paint event is not sent. When it gets bigger, an SWT.Paint event is
 	 * sent with a GC clipped to only the new areas to be painted. Without this
 	 * style, the entire client area will be repainted.
-	 * 
+	 *
 	 * <br>Note that this is a <em>HINT</em>.
 	 * </p><p><b>Used By:</b><ul>
 	 * <li><code>Composite</code></li>
@@ -1749,7 +1749,7 @@ public class SWT {
 
 	/**
 	 * Style constant for no paint event merging behavior (value is 1&lt;&lt;21).
-	 * 
+	 *
 	 * <br>Note that this is a <em>HINT</em>.
 	 * <p><b>Used By:</b><ul>
 	 * <li><code>Composite</code></li>
@@ -1765,7 +1765,7 @@ public class SWT {
 	 * </ul></p>
 	 */
 	public static final int NO_RADIO_GROUP = 1 << 22;
-	
+
 	/**
 	 * Style constant for left to right orientation (value is 1&lt;&lt;25).
 	 * <p>
@@ -1779,13 +1779,13 @@ public class SWT {
 	 * <p><b>Used By:</b><ul>
 	 * <li><code>Control</code></li>
 	 * <li><code>Menu</code></li>
-	 * <li><code>GC</code></li> 
+	 * <li><code>GC</code></li>
 	 * </ul></p>
-	 * 
+	 *
 	 * @since 2.1.2
 	 */
 	public static final int LEFT_TO_RIGHT = 1 << 25;
-	
+
 	/**
 	 * Style constant for right to left orientation (value is 1&lt;&lt;26).
 	 * <p>
@@ -1799,41 +1799,41 @@ public class SWT {
 	 * <p><b>Used By:</b><ul>
 	 * <li><code>Control</code></li>
 	 * <li><code>Menu</code></li>
-	 * <li><code>GC</code></li> 
+	 * <li><code>GC</code></li>
 	 * </ul></p>
-	 * 
+	 *
 	 * @since 2.1.2
 	 */
 	public static final int RIGHT_TO_LEFT = 1 << 26;
-	
+
 	/**
 	 * Style constant to indicate coordinate mirroring (value is 1&lt;&lt;27).
 	 * <p><b>Used By:</b><ul>
 	 * <li><code>Control</code></li>
 	 * <li><code>Menu</code></li>
 	 * </ul></p>
-	 * 
+	 *
 	 * @since 2.1.2
 	 */
 	public static final int MIRRORED = 1 << 27;
-	
+
 	/**
 	 * Style constant to allow embedding (value is 1&lt;&lt;24).
 	 * <p><b>Used By:</b><ul>
 	 * <li><code>Composite</code></li>
 	 * </ul></p>
-	 * 
+	 *
 	 * @since 3.0
 	 */
 	public static final int EMBEDDED = 1 << 24;
-	
+
 	/**
 	 * Style constant to allow virtual data (value is 1&lt;&lt;28).
 	 * <p><b>Used By:</b><ul>
 	 * <li><code>Table</code></li>
 	 * <li><code>Tree</code></li>
 	 * </ul></p>
-	 * 
+	 *
 	 * @since 3.0
 	 */
 	public static final int VIRTUAL = 1 << 28;
@@ -1843,11 +1843,11 @@ public class SWT {
 	 * <p><b>Used By:</b><ul>
 	 * <li><code>Control</code></li>
 	 * </ul></p>
-	 * 
+	 *
 	 * @since 3.1
 	 */
 	public static final int DOUBLE_BUFFERED = 1 << 29;
-	
+
 	/**
 	 * Style constant for transparent behavior (value is 1&lt;&lt;30).
 	 * <p>
@@ -1859,11 +1859,11 @@ public class SWT {
 	 * </ul></p>
 	 *
 	 * @since 3.4
-	 * 
+	 *
 	 * WARNING: THIS API IS UNDER CONSTRUCTION AND SHOULD NOT BE USED
 	 */
 	public static final int TRANSPARENT = 1 << 30;
-	
+
 	/**
 	 * Style constant to indicate base text direction (value is 1&lt;&lt;31).
 	 * <p>
@@ -1873,10 +1873,10 @@ public class SWT {
 	 * <p><b>Used By:</b><ul>
 	 * <li><code>Control</code></li>
 	 * </ul></p>
-	 * 
+	 *
 	 * @see org.eclipse.swt.widgets.Control#setTextDirection(int)
 	 * @see org.eclipse.swt.widgets.Control#getTextDirection()
-	 * 
+	 *
 	 * @since 3.102
 	 */
 	public static final int FLIP_TEXT_DIRECTION = 1 << 31;
@@ -1892,10 +1892,10 @@ public class SWT {
 	 * <li><code>Control</code></li>
 	 * <li><code>TextLayout</code></li>
 	 * </ul></p>
-	 * 
+	 *
 	 * @see org.eclipse.swt.widgets.Control#setTextDirection(int)
 	 * @see org.eclipse.swt.graphics.TextLayout#setTextDirection(int)
-	 * 
+	 *
 	 * @since 3.105
 	*/
 	public static final int AUTO_TEXT_DIRECTION = SWT.LEFT_TO_RIGHT | SWT.RIGHT_TO_LEFT;
@@ -1911,13 +1911,13 @@ public class SWT {
 	 * </ul></p>
 	 */
 	public static final int UP = 1 << 7;
-	
+
 	/**
 	 * Style constant to indicate single underline (value is 0).
 	 * <p><b>Used By:</b><ul>
 	 * <li><code>TextStyle</code></li>
 	 * </ul></p>
-	 * 
+	 *
 	 * @since 3.4
 	 */
 	public static final int UNDERLINE_SINGLE = 0;
@@ -1927,31 +1927,31 @@ public class SWT {
 	 * <p><b>Used By:</b><ul>
 	 * <li><code>TextStyle</code></li>
 	 * </ul></p>
-	 * 
+	 *
 	 * @since 3.4
 	 */
 	public static final int UNDERLINE_DOUBLE = 1;
-	
+
 	/**
 	 * Style constant to indicate error underline (value is 2).
 	 * <p><b>Used By:</b><ul>
 	 * <li><code>TextStyle</code></li>
 	 * </ul></p>
-	 * 
+	 *
 	 * @since 3.4
 	 */
 	public static final int UNDERLINE_ERROR = 2;
-	
+
 	/**
 	 * Style constant to indicate squiggle underline (value is 3).
 	 * <p><b>Used By:</b><ul>
 	 * <li><code>TextStyle</code></li>
 	 * </ul></p>
-	 * 
+	 *
 	 * @since 3.4
 	 */
 	public static final int UNDERLINE_SQUIGGLE = 3;
-	
+
 	/**
 	 * Style constant to indicate link underline (value is 0).
 	 * <p>
@@ -1965,7 +1965,7 @@ public class SWT {
 	 * <p><b>Used By:</b><ul>
 	 * <li><code>TextStyle</code></li>
 	 * </ul></p>
-	 * 
+	 *
 	 * @since 3.5
 	 */
 	public static final int UNDERLINE_LINK = 4;
@@ -1975,7 +1975,7 @@ public class SWT {
 	 * <p><b>Used By:</b><ul>
 	 * <li><code>TextStyle</code></li>
 	 * </ul></p>
-	 * 
+	 *
 	 * @since 3.4
 	 */
 	public static final int BORDER_SOLID = 1;
@@ -1985,21 +1985,21 @@ public class SWT {
 	 * <p><b>Used By:</b><ul>
 	 * <li><code>TextStyle</code></li>
 	 * </ul></p>
-	 * 
+	 *
 	 * @since 3.4
 	 */
 	public static final int BORDER_DASH = 2;
-	
+
 	/**
 	 * Style constant to indicate dotted border (value is 4).
 	 * <p><b>Used By:</b><ul>
 	 * <li><code>TextStyle</code></li>
 	 * </ul></p>
-	 * 
+	 *
 	 * @since 3.4
 	 */
 	public static final int BORDER_DOT = 4;
-	
+
 	/**
 	 * Style constant for align top behavior (value is 1&lt;&lt;7,
 	 * since align UP and align TOP are considered the same).
@@ -2042,18 +2042,18 @@ public class SWT {
 	 * <li><code>Tracker</code></li>
 	 * <li><code>FormAttachment</code> in a <code>FormLayout</code></li>
 	 * </ul></p>
-	 * 
+	 *
 	 * @since 2.1.2
 	 */
 	public static final int LEAD               = 1 << 14;
-	
+
 	/**
 	 * Style constant for align left behavior (value is 1&lt;&lt;14).
 	 * This is a synonym for {@link #LEAD} (value is 1&lt;&lt;14).  Newer
 	 * applications should use {@link #LEAD} instead of {@link #LEFT} to make code more
 	 * understandable on right-to-left platforms.
 	 * <p>
-	 * This constant can also be used to representing the left keyboard 
+	 * This constant can also be used to representing the left keyboard
 	 * location during a key event.
 	 * </p>
 	 */
@@ -2070,18 +2070,18 @@ public class SWT {
 	 * <li><code>Tracker</code></li>
 	 * <li><code>FormAttachment</code> in a <code>FormLayout</code></li>
 	 * </ul></p>
-	 * 
+	 *
 	 * @since 2.1.2
 	 */
 	public static final int TRAIL              = 1 << 17;
-		
+
 	/**
 	 * Style constant for align right behavior (value is 1&lt;&lt;17).
 	 * This is a synonym for {@link #TRAIL} (value is 1&lt;&lt;17).  Newer
 	 * applications should use {@link #TRAIL} instead of {@link #RIGHT} to make code more
 	 * understandable on right-to-left platforms.
 	 * <p>
-	 * This constant can also be used to representing the right keyboard 
+	 * This constant can also be used to representing the right keyboard
 	 * location during a key event.
 	 * </p>
 	 */
@@ -2136,7 +2136,7 @@ public class SWT {
 	 * <p><b>Used By:</b><ul>
 	 * <li><code>DateTime</code></li>
 	 * </ul></p>
-	 * 
+	 *
 	 * @since 3.3
 	 */
 	public static final int DATE = 1 << 5;
@@ -2146,17 +2146,17 @@ public class SWT {
 	 * <p><b>Used By:</b><ul>
 	 * <li><code>DateTime</code></li>
 	 * </ul></p>
-	 * 
+	 *
 	 * @since 3.3
 	 */
 	public static final int TIME = 1 << 7;
-	
+
 	/**
 	 * Style constant for calendar display (value is 1&lt;&lt;10).
 	 * <p><b>Used By:</b><ul>
 	 * <li><code>DateTime</code></li>
 	 * </ul></p>
-	 * 
+	 *
 	 * @since 3.3
 	 */
 	public static final int CALENDAR = 1 << 10;
@@ -2171,7 +2171,7 @@ public class SWT {
 	 * <p><b>Used By:</b><ul>
 	 * <li><code>DateTime</code></li>
 	 * </ul></p>
-	 * 
+	 *
 	 * @since 3.3
 	 */
 	public static final int SHORT = 1 << 15;
@@ -2186,7 +2186,7 @@ public class SWT {
 	 * <p><b>Used By:</b><ul>
 	 * <li><code>DateTime</code></li>
 	 * </ul></p>
-	 * 
+	 *
 	 * @since 3.3
 	 */
 	public static final int MEDIUM = 1 << 16;
@@ -2202,7 +2202,7 @@ public class SWT {
 	 * <p><b>Used By:</b><ul>
 	 * <li><code>DateTime</code></li>
 	 * </ul></p>
-	 * 
+	 *
 	 * @since 3.3
 	 */
 	public static final int LONG = 1 << 28;
@@ -2214,7 +2214,7 @@ public class SWT {
 	 * <p><b>Used By:</b><ul>
 	 * <li><code>Browser</code></li>
 	 * </ul></p>
-	 * 
+	 *
 	 * @since 3.3
 	 */
 	public static final int MOZILLA = 1 << 15;
@@ -2226,7 +2226,7 @@ public class SWT {
 	 * <p><b>Used By:</b><ul>
 	 * <li><code>Browser</code></li>
 	 * </ul></p>
-	 * 
+	 *
 	 * @since 3.7
 	 */
 	public static final int WEBKIT = 1 << 16;
@@ -2238,9 +2238,9 @@ public class SWT {
 	 * </ul></p>
 	 *
 	 * @since 3.2
-	 */	
+	 */
 	public static final int BALLOON = 1 << 12;
-	
+
 	/**
 	 * Style constant for vertical alignment or orientation behavior (value is 1).
 	 * <p><b>Used By:</b><ul>
@@ -2248,7 +2248,7 @@ public class SWT {
 	 * </ul></p>
 	 */
 	public static final int BEGINNING = 1;
-	
+
 	/**
 	 * Style constant for vertical alignment or orientation behavior (value is 4).
 	 * <p><b>Used By:</b><ul>
@@ -2256,7 +2256,7 @@ public class SWT {
 	 * </ul></p>
 	 */
 	public static final int FILL = 4;
-	
+
 	/**
 	 * Input Method Editor style constant for double byte
 	 * input behavior (value is 1&lt;&lt;1).
@@ -2304,7 +2304,7 @@ public class SWT {
 	 * (value is the <code>char</code> with value 127).
 	 */
 	public static final char DEL = 0x7F;
- 
+
 	/**
 	 * ASCII character convenience constant for the escape character
 	 * (value is the <code>char</code> with value 27).
@@ -2320,33 +2320,33 @@ public class SWT {
 	/**
 	 * ASCII character convenience constant for the tab character
 	 * (value is the <code>char</code> '\t').
-	 * 
+	 *
 	 * @since 2.1
 	 */
 	public static final char TAB = '\t';
-						
+
 	/**
 	 * ASCII character convenience constant for the space character
 	 * (value is the <code>char</code> ' ').
-	 * 
+	 *
 	 * @since 3.7
 	 */
 	public static final char SPACE = ' ';
-						
+
 	/**
 	 * keyboard and/or mouse event mask indicating that the ALT key
 	 * was pushed on the keyboard when the event was generated
 	 * (value is 1&lt;&lt;16).
 	 */
 	public static final int ALT = 1 << 16;
-					
+
 	/**
 	 * Keyboard and/or mouse event mask indicating that the SHIFT key
 	 * was pushed on the keyboard when the event was generated
 	 * (value is 1&lt;&lt;17).
 	 */
 	public static final int SHIFT = 1 << 17;
-					
+
 	/**
 	 * Keyboard and/or mouse event mask indicating that the CTRL key
 	 * was pushed on the keyboard when the event was generated
@@ -2365,27 +2365,27 @@ public class SWT {
 	 * Keyboard and/or mouse event mask indicating that the COMMAND key
 	 * was pushed on the keyboard when the event was generated
 	 * (value is 1&lt;&lt;22).
-	 * 
+	 *
 	 * @since 2.1
 	 */
 	public static final int COMMAND = 1 << 22;
-	
+
 	/**
 	 * Keyboard and/or mouse event mask indicating all possible
 	 * keyboard modifiers.
-	 * 
-	 * To allow for the future, this mask  is intended to be used in 
-	 * place of code that references  each individual keyboard mask. 
-	 *  For example, the following expression will determine whether 
-	 * any modifier is pressed and will continue to work as new modifier 
+	 *
+	 * To allow for the future, this mask  is intended to be used in
+	 * place of code that references  each individual keyboard mask.
+	 *  For example, the following expression will determine whether
+	 * any modifier is pressed and will continue to work as new modifier
 	 * masks are added.
-	 * 
+	 *
  	 * <code>(stateMask & SWT.MODIFIER_MASK) != 0</code>.
-	 * 
+	 *
 	 * @since 2.1
 	 */
 	public static final int MODIFIER_MASK;
-	
+
 	/**
 	 * Keyboard and/or mouse event mask indicating that mouse button one (usually 'left')
 	 * was pushed when the event was generated. (value is 1&lt;&lt;19).
@@ -2407,7 +2407,7 @@ public class SWT {
 	/**
 	 * Keyboard and/or mouse event mask indicating that mouse button four
 	 * was pushed when the event was generated. (value is 1&lt;&lt;23).
-	 * 
+	 *
 	 * @since 3.1
 	 */
 	public static final int BUTTON4 = 1 << 23;
@@ -2415,7 +2415,7 @@ public class SWT {
 	/**
 	 * Keyboard and/or mouse event mask indicating that mouse button five
 	 * was pushed when the event was generated. (value is 1&lt;&lt;25).
-	 * 
+	 *
 	 * @since 3.1
 	 */
 	public static final int BUTTON5 = 1 << 25;
@@ -2423,41 +2423,41 @@ public class SWT {
 	/**
 	 * Keyboard and/or mouse event mask indicating all possible
 	 * mouse buttons.
-	 * 
-	 * To allow for the future, this mask  is intended to be used 
-	 * in place of code that references each individual button mask.  
+	 *
+	 * To allow for the future, this mask  is intended to be used
+	 * in place of code that references each individual button mask.
 	 * For example, the following expression will determine whether
-	 * any button is pressed and will continue to work as new button 
+	 * any button is pressed and will continue to work as new button
 	 * masks are added.
-	 * 
+	 *
  	 * <code>(stateMask & SWT.BUTTON_MASK) != 0</code>.
-	 * 
+	 *
 	 * @since 2.1
 	 */
 	public static final int BUTTON_MASK;
-	
+
 	/**
 	 * Keyboard and/or mouse event mask indicating that the MOD1 key
 	 * was pushed on the keyboard when the event was generated.
-	 * 
+	 *
 	 * This is the primary keyboard modifier for the platform.
 	 * <p>
 	 * {@link #CTRL} on most platforms ({@link #COMMAND} on the Mac).
 	 * </p>
-	 * 
+	 *
 	 * @since 2.1
 	 */
 	public static final int MOD1;
-	
+
 	/**
 	 * Keyboard and/or mouse event mask indicating that the MOD2 key
 	 * was pushed on the keyboard when the event was generated.
-	 * 
+	 *
 	 * This is the secondary keyboard modifier for the platform.
 	 * <p>
 	 * {@link #SHIFT} on most platforms.
 	 * </p>
-	 * 
+	 *
 	 * @since 2.1
 	 */
 	public static final int MOD2;
@@ -2468,7 +2468,7 @@ public class SWT {
 	 * <p>
 	 * {@link #ALT} on most platforms.
 	 * </p>
-	 * 
+	 *
 	 * @since 2.1
 	 */
 	public static final int MOD3;
@@ -2479,17 +2479,17 @@ public class SWT {
 	 * <p>
 	 * Undefined on most platforms ({@link #CTRL} on the Mac).
 	 * </p>
-	 * 
+	 *
 	 * @since 2.1
 	 */
 	public static final int MOD4;
-	
+
 	/**
 	 * Constants to indicate line scrolling (value is 1).
 	 * <p><b>Used By:</b><ul>
 	 * <li><code>Control</code></li>
 	 * </ul></p>
-	 * 
+	 *
 	 * @since 3.1
 	 */
 	public static final int SCROLL_LINE = 1;
@@ -2499,46 +2499,46 @@ public class SWT {
 	 * <p><b>Used By:</b><ul>
 	 * <li><code>Control</code></li>
 	 * </ul></p>
-	 * 
+	 *
 	 * @since 3.1
 	 */
 	public static final int SCROLL_PAGE = 2;
-	
+
 	/**
 	 * Accelerator constant used to differentiate a key code from a
 	 * unicode character.
-	 * 
+	 *
 	 * If this bit is set, then the key stroke
 	 * portion of an accelerator represents a key code.  If this bit
 	 * is not set, then the key stroke portion of an accelerator is
 	 * a unicode character.
-	 * 
+	 *
 	 * The following expression is false:
-	 * 
+	 *
 	 * <code>((SWT.MOD1 | SWT.MOD2 | 'T') & SWT.KEYCODE_BIT) != 0</code>.
-	 * 
+	 *
 	 * The following expression is true:
-	 * 
+	 *
 	 * <code>((SWT.MOD3 | SWT.F2) & SWT.KEYCODE_BIT) != 0</code>.
-	 * 
+	 *
 	 * (value is (1&lt;&lt;24))
-	 * 
+	 *
 	 * @since 2.1
-	 */	
+	 */
 	public static final int KEYCODE_BIT = (1 << 24);
 
 	/**
 	 * Accelerator constant used to extract the key stroke portion of
 	 * an accelerator.
-	 * 
+	 *
 	 * The key stroke may be a key code or a unicode
 	 * value.  If the key stroke is a key code <code>KEYCODE_BIT</code>
 	 * will be set.
-	 * 
+	 *
 	 * @since 2.1
-	 */	
+	 */
 	public static final int KEY_MASK = KEYCODE_BIT + 0xFFFF;
-	
+
 	/**
 	 * Keyboard event constant representing the UP ARROW key
 	 * (value is (1&lt;&lt;24)+1).
@@ -2598,67 +2598,67 @@ public class SWT {
 	 * (value is (1&lt;&lt;24)+10).
 	 */
 	public static final int F1 = KEYCODE_BIT + 10;
-	
+
 	/**
 	 * Keyboard event constant representing the F2 key
 	 * (value is (1&lt;&lt;24)+11).
 	 */
 	public static final int F2 = KEYCODE_BIT + 11;
-	
+
 	/**
 	 * Keyboard event constant representing the F3 key
 	 * (value is (1&lt;&lt;24)+12).
 	 */
 	public static final int F3 = KEYCODE_BIT + 12;
-	
+
 	/**
 	 * Keyboard event constant representing the F4 key
 	 * (value is (1&lt;&lt;24)+13).
 	 */
 	public static final int F4 = KEYCODE_BIT + 13;
-	
+
 	/**
 	 * Keyboard event constant representing the F5 key
 	 * (value is (1&lt;&lt;24)+14).
 	 */
 	public static final int F5 = KEYCODE_BIT + 14;
-	
+
 	/**
 	 * Keyboard event constant representing the F6 key
 	 * (value is (1&lt;&lt;24)+15).
 	 */
 	public static final int F6 = KEYCODE_BIT + 15;
-	
+
 	/**
 	 * Keyboard event constant representing the F7 key
 	 * (value is (1&lt;&lt;24)+16).
 	 */
 	public static final int F7 = KEYCODE_BIT + 16;
-	
+
 	/**
 	 * Keyboard event constant representing the F8 key
 	 * (value is (1&lt;&lt;24)+17).
 	 */
 	public static final int F8 = KEYCODE_BIT + 17;
-	
+
 	/**
 	 * Keyboard event constant representing the F9 key
 	 * (value is (1&lt;&lt;24)+18).
 	 */
 	public static final int F9 = KEYCODE_BIT + 18;
-	
+
 	/**
 	 * Keyboard event constant representing the F10 key
 	 * (value is (1&lt;&lt;24)+19).
 	 */
 	public static final int F10 = KEYCODE_BIT + 19;
-	
+
 	/**
 	 * Keyboard event constant representing the F11 key
 	 * (value is (1&lt;&lt;24)+20).
 	 */
 	public static final int F11 = KEYCODE_BIT + 20;
-	
+
 	/**
 	 * Keyboard event constant representing the F12 key
 	 * (value is (1&lt;&lt;24)+21).
@@ -2668,98 +2668,98 @@ public class SWT {
 	/**
 	 * Keyboard event constant representing the F13 key
 	 * (value is (1&lt;&lt;24)+22).
-	 * 
+	 *
 	 * @since 3.0
 	 */
 	public static final int F13 = KEYCODE_BIT + 22;
-	
+
 	/**
 	 * Keyboard event constant representing the F14 key
 	 * (value is (1&lt;&lt;24)+23).
-	 * 
+	 *
 	 * @since 3.0
 	 */
 	public static final int F14 = KEYCODE_BIT + 23;
-	
+
 	/**
 	 * Keyboard event constant representing the F15 key
 	 * (value is (1&lt;&lt;24)+24).
-	 * 
+	 *
 	 * @since 3.0
 	 */
 	public static final int F15 = KEYCODE_BIT + 24;
-	
+
 	/**
 	 * Keyboard event constant representing the F16 key
 	 * (value is (1&lt;&lt;25)+25).
-	 * 
+	 *
 	 * @since 3.6
 	 */
 	public static final int F16 = KEYCODE_BIT + 25;
 
-	
+
 	/**
 	 * Keyboard event constant representing the F17 key
 	 * (value is (1&lt;&lt;26)+26).
-	 * 
+	 *
 	 * @since 3.6
 	 */
 	public static final int F17 = KEYCODE_BIT + 26;
 
-	
+
 	/**
 	 * Keyboard event constant representing the F18 key
 	 * (value is (1&lt;&lt;27)+27).
-	 * 
+	 *
 	 * @since 3.6
 	 */
 	public static final int F18 = KEYCODE_BIT + 27;
 
-	
+
 	/**
 	 * Keyboard event constant representing the F19 key
 	 * (value is (1&lt;&lt;28)+28).
-	 * 
+	 *
 	 * @since 3.6
 	 */
 	public static final int F19 = KEYCODE_BIT + 28;
-	
+
 	/**
 	 * Keyboard event constant representing the F20 key
 	 * (value is (1&lt;&lt;29)+29).
-	 * 
+	 *
 	 * @since 3.6
 	 */
 	public static final int F20 = KEYCODE_BIT + 29;
-	
+
 	/**
 	 * Keyboard event constant representing the keypad location.
 	 * (value is 1&lt;&lt;1).
-	 * 
+	 *
 	 * @since 3.6
 	 */
 	public static final int KEYPAD = 1 << 1;
-	
+
 	/**
 	 * Keyboard event constant representing the numeric key
 	 * pad multiply key (value is (1&lt;&lt;24)+42).
-	 * 
+	 *
 	 * @since 3.0
 	 */
 	public static final int KEYPAD_MULTIPLY = KEYCODE_BIT + 42;
-	
+
 	/**
 	 * Keyboard event constant representing the numeric key
 	 * pad add key (value is (1&lt;&lt;24)+43).
-	 * 
+	 *
 	 * @since 3.0
 	 */
 	public static final int KEYPAD_ADD = KEYCODE_BIT + 43;
-	
+
 	/**
 	 * Keyboard event constant representing the numeric key
 	 * pad subtract key (value is (1&lt;&lt;24)+45).
-	 * 
+	 *
 	 * @since 3.0
 	 */
 	public static final int KEYPAD_SUBTRACT = KEYCODE_BIT + 45;
@@ -2767,7 +2767,7 @@ public class SWT {
 	/**
 	 * Keyboard event constant representing the numeric key
 	 * pad decimal key (value is (1&lt;&lt;24)+46).
-	 * 
+	 *
 	 * @since 3.0
 	 */
 	public static final int KEYPAD_DECIMAL = KEYCODE_BIT + 46;
@@ -2775,7 +2775,7 @@ public class SWT {
 	/**
 	 * Keyboard event constant representing the numeric key
 	 * pad divide key (value is (1&lt;&lt;24)+47).
-	 * 
+	 *
 	 * @since 3.0
 	 */
 	public static final int KEYPAD_DIVIDE = KEYCODE_BIT + 47;
@@ -2783,7 +2783,7 @@ public class SWT {
 	/**
 	 * Keyboard event constant representing the numeric key
 	 * pad zero key (value is (1&lt;&lt;24)+48).
-	 * 
+	 *
 	 * @since 3.0
 	 */
 	public static final int KEYPAD_0 = KEYCODE_BIT + 48;
@@ -2791,7 +2791,7 @@ public class SWT {
 	/**
 	 * Keyboard event constant representing the numeric key
 	 * pad one key (value is (1&lt;&lt;24)+49).
-	 * 
+	 *
 	 * @since 3.0
 	 */
 	public static final int KEYPAD_1 = KEYCODE_BIT + 49;
@@ -2799,7 +2799,7 @@ public class SWT {
 	/**
 	 * Keyboard event constant representing the numeric key
 	 * pad two key (value is (1&lt;&lt;24)+50).
-	 * 
+	 *
 	 * @since 3.0
 	 */
 	public static final int KEYPAD_2 = KEYCODE_BIT + 50;
@@ -2807,7 +2807,7 @@ public class SWT {
 	/**
 	 * Keyboard event constant representing the numeric key
 	 * pad three key (value is (1&lt;&lt;24)+51).
-	 * 
+	 *
 	 * @since 3.0
 	 */
 	public static final int KEYPAD_3 = KEYCODE_BIT + 51;
@@ -2815,23 +2815,23 @@ public class SWT {
 	/**
 	 * Keyboard event constant representing the numeric key
 	 * pad four key (value is (1&lt;&lt;24)+52).
-	 * 
+	 *
 	 * @since 3.0
 	 */
 	public static final int KEYPAD_4 = KEYCODE_BIT + 52;
-	
+
 	/**
 	 * Keyboard event constant representing the numeric key
 	 * pad five key (value is (1&lt;&lt;24)+53).
-	 * 
+	 *
 	 * @since 3.0
 	 */
 	public static final int KEYPAD_5 = KEYCODE_BIT + 53;
-	
+
 	/**
 	 * Keyboard event constant representing the numeric key
 	 * pad six key (value is (1&lt;&lt;24)+54).
-	 * 
+	 *
 	 * @since 3.0
 	 */
 	public static final int KEYPAD_6 = KEYCODE_BIT + 54;
@@ -2839,7 +2839,7 @@ public class SWT {
 	/**
 	 * Keyboard event constant representing the numeric key
 	 * pad seven key (value is (1&lt;&lt;24)+55).
-	 * 
+	 *
 	 * @since 3.0
 	 */
 	public static final int KEYPAD_7 = KEYCODE_BIT + 55;
@@ -2847,15 +2847,15 @@ public class SWT {
 	/**
 	 * Keyboard event constant representing the numeric key
 	 * pad eight key (value is (1&lt;&lt;24)+56).
-	 * 
+	 *
 	 * @since 3.0
 	 */
 	public static final int KEYPAD_8 = KEYCODE_BIT + 56;
-	
+
 	/**
 	 * Keyboard event constant representing the numeric key
 	 * pad nine key (value is (1&lt;&lt;24)+57).
-	 * 
+	 *
 	 * @since 3.0
 	 */
 	public static final int KEYPAD_9 = KEYCODE_BIT + 57;
@@ -2863,82 +2863,82 @@ public class SWT {
 	/**
 	 * Keyboard event constant representing the numeric key
 	 * pad equal key (value is (1&lt;&lt;24)+61).
-	 * 
+	 *
 	 * @since 3.0
 	 */
 	public static final int KEYPAD_EQUAL = KEYCODE_BIT + 61;
-	
+
 	/**
 	 * Keyboard event constant representing the numeric key
 	 * pad enter key (value is (1&lt;&lt;24)+80).
-	 * 
+	 *
 	 * @since 3.0
 	 */
 	public static final int KEYPAD_CR = KEYCODE_BIT + 80;
-	
+
 	/**
 	 * Keyboard event constant representing the help
 	 * key (value is (1&lt;&lt;24)+81).
-	 * 
+	 *
 	 * NOTE: The HELP key maps to the key labeled "help",
 	 * not "F1". If your keyboard does not have a HELP key,
 	 * you will never see this key press.  To listen for
 	 * help on a control, use SWT.Help.
-	 * 
+	 *
 	 * @since 3.0
-	 * 
+	 *
 	 * @see SWT#Help
 	 */
 	public static final int HELP = KEYCODE_BIT + 81;
-	
+
 	/**
 	 * Keyboard event constant representing the caps
 	 * lock key (value is (1&lt;&lt;24)+82).
-	 * 
+	 *
 	 * @since 3.0
 	 */
 	public static final int CAPS_LOCK = KEYCODE_BIT + 82;
-	
+
 	/**
 	 * Keyboard event constant representing the num
 	 * lock key (value is (1&lt;&lt;24)+83).
-	 * 
+	 *
 	 * @since 3.0
 	 */
 	public static final int NUM_LOCK = KEYCODE_BIT + 83;
-	
+
 	/**
 	 * Keyboard event constant representing the scroll
 	 * lock key (value is (1&lt;&lt;24)+84).
-	 * 
+	 *
 	 * @since 3.0
 	 */
 	public static final int SCROLL_LOCK = KEYCODE_BIT + 84;
-	
+
 	/**
 	 * Keyboard event constant representing the pause
 	 * key (value is (1&lt;&lt;24)+85).
-	 * 
+	 *
 	 * @since 3.0
 	 */
 	public static final int PAUSE = KEYCODE_BIT + 85;
-	
+
 	/**
 	 * Keyboard event constant representing the break
 	 * key (value is (1&lt;&lt;24)+86).
-	 * 
+	 *
 	 * @since 3.0
 	 */
 	public static final int BREAK = KEYCODE_BIT + 86;
-	
+
 	/**
 	 * Keyboard event constant representing the print screen
 	 * key (value is (1&lt;&lt;24)+87).
-	 * 
+	 *
 	 * @since 3.0
 	 */
 	public static final int PRINT_SCREEN = KEYCODE_BIT + 87;
-	
+
 	/**
 	 * The <code>MessageBox</code> style constant for error icon
 	 * behavior (value is 1).
@@ -2968,41 +2968,41 @@ public class SWT {
 	 * behavior (value is 1&lt;&lt;4).
 	 */
 	public static final int ICON_WORKING = 1 << 4;
-	
+
 	/**
-	 * The style constant for "search" icon. This style constant is 
+	 * The style constant for "search" icon. This style constant is
 	 * used with <code>Text</code> in combination with <code>SWT.SEARCH
 	 * </code> (value is 1&lt;&lt;9).
-	 * <br>Note that this is a <em>HINT</em>. 
-	 * 
+	 * <br>Note that this is a <em>HINT</em>.
+	 *
 	 * <p><b>Used By:</b><ul>
 	 * <li><code>Text</code></li>
 	 * </ul></p>
-	 * 
+	 *
 	 * @see #SEARCH
 	 * @see #ICON_CANCEL
-	 * 
+	 *
 	 * @since 3.5
 	 */
 	public static final int ICON_SEARCH = 1 << 9;
-	
+
 	/**
-	 * The style constant for "cancel" icon. This style constant is 
+	 * The style constant for "cancel" icon. This style constant is
 	 * used with <code>Text</code> in combination with <code>SWT.SEARCH
 	 * </code> (value is 1&lt;&lt;8).
-	 * <br>Note that this is a <em>HINT</em>. 
-	 * 
+	 * <br>Note that this is a <em>HINT</em>.
+	 *
 	 * <p><b>Used By:</b><ul>
 	 * <li><code>Text</code></li>
 	 * </ul></p>
-	 * 
+	 *
 	 * @see #SEARCH
 	 * @see #ICON_SEARCH
-	 * 
+	 *
 	 * @since 3.5
 	 */
 	public static final int ICON_CANCEL = 1 << 8;
-	
+
 
 	/**
 	 * The <code>MessageBox</code> style constant for an OK button;
@@ -3029,7 +3029,7 @@ public class SWT {
 	 * The <code>MessageBox</code> style constant for a CANCEL button;
 	 * valid combinations are OK|CANCEL, YES|NO|CANCEL, RETRY|CANCEL
 	 * (value is 1&lt;&lt;8).
-	 * 
+	 *
 	 * <p><b>Used By:</b><ul>
 	 * <li><code>MessageBox</code></li>
 	 * </ul></p>
@@ -3077,7 +3077,7 @@ public class SWT {
 	 * @since 3.2
 	 */
 	public static final int INHERIT_NONE = 0;
-	
+
 	/**
 	 * The <code>Composite</code> constant to indicate that
 	 * an attribute (such as background) is inherited by
@@ -3089,7 +3089,7 @@ public class SWT {
 	 * @since 3.2
 	 */
 	public static final int INHERIT_DEFAULT = 1;
-	
+
 	/**
 	 * The <code>Composite</code> constant to indicate that
 	 * an attribute (such as background) is inherited by
@@ -3098,7 +3098,7 @@ public class SWT {
 	 * @since 3.2
 	 */
 	public static final int INHERIT_FORCE = 2;
-	
+
 	/**
 	 * Default color white (value is 1).
 	 */
@@ -3178,7 +3178,7 @@ public class SWT {
 	 * Default color dark gray (value is 16).
 	 */
 	public static final int COLOR_DARK_GRAY = 16;
-	
+
 	/*
 	 * System Colors
 	 *
@@ -3194,7 +3194,7 @@ public class SWT {
 	 *	It is expected that the list of supported colors
 	 * will grow over time.
 	 */
-	
+
 	/**
 	 * System color used to paint dark shadow areas (value is 17).
 	 */
@@ -3259,7 +3259,7 @@ public class SWT {
 	 * System color used to paint tooltip background areas (value is 29).
 	 */
 	public static final int COLOR_INFO_BACKGROUND = 29;
-	
+
 	/**
 	 * System color used to paint title text (value is 30).
 	 */
@@ -3274,7 +3274,7 @@ public class SWT {
 	 * System color used to paint title background gradient (value is 32).
 	 */
 	public static final int COLOR_TITLE_BACKGROUND_GRADIENT = 32;
-	
+
 	/**
 	 * System color used to paint inactive title text (value is 33).
 	 */
@@ -3292,11 +3292,11 @@ public class SWT {
 
 	/**
 	 * System color used to paint link text (value is 36).
-	 * 
+	 *
 	 * @since 3.102
 	 */
 	public static final int COLOR_LINK_FOREGROUND = 36;
-	
+
 	/**
 	 * System color used to paint with alpha 0 (value is 37).
 	 * <p>
@@ -3313,11 +3313,11 @@ public class SWT {
 	 * background on Windows only whereas {@link org.eclipse.swt.widgets.Table
 	 * Table} supports transparent background on GTK3 only.</li>
 	 * </ul>
-	 * 
+	 *
 	 * @since 3.104
 	 */
 	public static final int COLOR_TRANSPARENT = 37;
-	
+
 	/**
 	 * Draw constant indicating whether the drawing operation
 	 * should fill the background (value is 1&lt;&lt;0).
@@ -3340,164 +3340,164 @@ public class SWT {
 	 * Draw constant indicating whether the string drawing operation
 	 * should handle mnemonics (value is 1&lt;&lt;3).
 	 */
-	public static final int DRAW_MNEMONIC = 1 << 3;	
+	public static final int DRAW_MNEMONIC = 1 << 3;
 
-	
+
 	/**
-	 * Selection constant indicating that a line delimiter should be 
+	 * Selection constant indicating that a line delimiter should be
 	 * drawn (value is 1&lt;&lt;17).
-	 * 
+	 *
 	 * <p><b>Used By:</b><ul>
 	 * <li><code>TextLayout</code></li>
 	 * </ul></p>
 	 *
 	 * @see #FULL_SELECTION
 	 * @see #LAST_LINE_SELECTION
-	 * 
+	 *
 	 * @since 3.3
 	 */
 	public static final int DELIMITER_SELECTION = 1 << 17;
-	
+
 	/**
 	 * Selection constant indicating that the last line is selected
-	 * to the end and should be drawn using either a line delimiter 
+	 * to the end and should be drawn using either a line delimiter
 	 * or full line selection (value is 1&lt;&lt;20).
-	 * 
+	 *
 	 * <p><b>Used By:</b><ul>
 	 * <li><code>TextLayout</code></li>
 	 * </ul></p>
-	 * 
+	 *
 	 * @see #DELIMITER_SELECTION
 	 * @see #FULL_SELECTION
-	 * 
+	 *
 	 * @since 3.3
 	 */
 	public static final int LAST_LINE_SELECTION = 1 << 20;
-	
-	/** 
+
+	/**
 	 * SWT error constant indicating that no error number was specified
 	 * (value is 1).
 	 */
 	public static final int ERROR_UNSPECIFIED = 1;
-	
-	/** 
+
+	/**
 	 * SWT error constant indicating that no more handles for an
 	 * operating system resource are available
 	 * (value is 2).
 	 */
 	public static final int ERROR_NO_HANDLES = 2;
-	
-	/** 
+
+	/**
 	 * SWT error constant indicating that no more callback resources are available
 	 * (value is 3).
 	 */
 	public static final int ERROR_NO_MORE_CALLBACKS = 3;
-	
-	/** 
+
+	/**
 	 * SWT error constant indicating that a null argument was passed in
-	 * (value is 4). 
+	 * (value is 4).
 	 */
 	public static final int ERROR_NULL_ARGUMENT = 4;
-	
-	/** 
+
+	/**
 	 * SWT error constant indicating that an invalid argument was passed in
 	 * (value is 5).
 	 */
 	public static final int ERROR_INVALID_ARGUMENT = 5;
-	
-	/** 
+
+	/**
 	 * SWT error constant indicating that a value was found to be
 	 * outside the allowable range
 	 * (value is 6).
 	 */
 	public static final int ERROR_INVALID_RANGE = 6;
-	
-	/** 
-	 * SWT error constant indicating that a value which can not be 
+
+	/**
+	 * SWT error constant indicating that a value which can not be
 	 * zero was found to be
 	 * (value is 7).
 	 */
 	public static final int ERROR_CANNOT_BE_ZERO = 7;
-	
-	/** 
+
+	/**
 	 * SWT error constant indicating that the underlying operating
 	 * system was unable to provide the value of an item
 	 * (value is 8).
 	 */
 	public static final int ERROR_CANNOT_GET_ITEM = 8;
-	
-	/** 
+
+	/**
 	 * SWT error constant indicating that the underlying operating
 	 * system was unable to provide the selection
 	 * (value is 9).
 	 */
 	public static final int ERROR_CANNOT_GET_SELECTION = 9;
 
-	/** 
+	/**
 	 * SWT error constant indicating that the matrix is not invertible
 	 * (value is 10).
-	 * 
+	 *
 	 * @since 3.1
 	 */
 	public static final int ERROR_CANNOT_INVERT_MATRIX = 10;
 
-	/** 
+	/**
 	 * SWT error constant indicating that the underlying operating
 	 * system was unable to provide the height of an item
 	 * (value is 11).
 	 */
 	public static final int ERROR_CANNOT_GET_ITEM_HEIGHT = 11;
 
-	/** 
+	/**
 	 * SWT error constant indicating that the underlying operating
 	 * system was unable to provide the text of a widget
 	 * (value is 12).
 	 */
 	public static final int ERROR_CANNOT_GET_TEXT = 12;
 
-	/** 
+	/**
 	 * SWT error constant indicating that the underlying operating
 	 * system was unable to set the text of a widget
 	 * (value is 13).
 	 */
 	public static final int ERROR_CANNOT_SET_TEXT = 13;
 
-	/** 
+	/**
 	 * SWT error constant indicating that the underlying operating
 	 * system was unable to add an item
 	 * (value is 14).
 	 */
 	public static final int ERROR_ITEM_NOT_ADDED = 14;
 
-	/** 
+	/**
 	 * SWT error constant indicating that the underlying operating
 	 * system was unable to remove an item
 	 * (value is 15).
 	 */
 	public static final int ERROR_ITEM_NOT_REMOVED = 15;
 
-	/** 
+	/**
 	 * SWT error constant indicating that the graphics library
 	 * is not available
 	 * (value is 16).
 	 */
 	public static final int ERROR_NO_GRAPHICS_LIBRARY = 16;
 
-	/** 
+	/**
 	 * SWT error constant indicating that a particular feature has
 	 * not been implemented on this platform
 	 * (value is 20).
 	 */
 	public static final int ERROR_NOT_IMPLEMENTED = 20;
 
-	/** 
+	/**
 	 * SWT error constant indicating that a menu which needed
 	 * to have the drop down style had some other style instead
 	 * (value is 21).
 	 */
 	public static final int ERROR_MENU_NOT_DROP_DOWN = 21;
 
-	/** 
+	/**
 	 * SWT error constant indicating that an attempt was made to
 	 * invoke an SWT operation which can only be executed by the
 	 * user-interface thread from some other thread
@@ -3505,99 +3505,99 @@ public class SWT {
 	 */
 	public static final int ERROR_THREAD_INVALID_ACCESS = 22;
 
-	/** 
+	/**
 	 * SWT error constant indicating that an attempt was made to
 	 * invoke an SWT operation using a widget which had already
 	 * been disposed
-	 * (value is 24). 
+	 * (value is 24).
 	 */
 	public static final int ERROR_WIDGET_DISPOSED = 24;
 
-	/** 
+	/**
 	 * SWT error constant indicating that a menu item which needed
 	 * to have the cascade style had some other style instead
 	 * (value is 27).
 	 */
 	public static final int ERROR_MENUITEM_NOT_CASCADE = 27;
 
-	/** 
+	/**
 	 * SWT error constant indicating that the underlying operating
 	 * system was unable to set the selection of a widget
 	 * (value is 28).
 	 */
 	public static final int ERROR_CANNOT_SET_SELECTION = 28;
 
-	/** 
+	/**
 	 * SWT error constant indicating that the underlying operating
 	 * system was unable to set the menu
 	 * (value is 29).
 	 */
 	public static final int ERROR_CANNOT_SET_MENU = 29;
 
-	/** 
+	/**
 	 * SWT error constant indicating that the underlying operating
 	 * system was unable to set the enabled state
 	 * (value is 30).
 	 */
 	public static final int ERROR_CANNOT_SET_ENABLED = 30;
 
-	/** 
+	/**
 	 * SWT error constant indicating that the underlying operating
 	 * system was unable to provide enabled/disabled state information
 	 * (value is 31).
 	 */
 	public static final int ERROR_CANNOT_GET_ENABLED = 31;
 
-	/** 
+	/**
 	 * SWT error constant indicating that a provided widget can
 	 * not be used as a parent in the current operation
 	 * (value is 32).
 	 */
 	public static final int ERROR_INVALID_PARENT = 32;
-	
-	/** 
+
+	/**
 	 * SWT error constant indicating that a menu which needed
 	 * to have the menu bar style had some other style instead
 	 * (value is 33).
 	 */
 	public static final int ERROR_MENU_NOT_BAR = 33;
 
-	/** 
+	/**
 	 * SWT error constant indicating that the underlying operating
 	 * system was unable to provide count information
 	 * (value is 36).
 	 */
 	public static final int ERROR_CANNOT_GET_COUNT = 36;
 
-	/** 
+	/**
 	 * SWT error constant indicating that a menu which needed
 	 * to have the pop up menu style had some other style instead
 	 * (value is 37).
 	 */
 	public static final int ERROR_MENU_NOT_POP_UP = 37;
 
-	/** 
+	/**
 	 * SWT error constant indicating that a graphics operation
 	 * was attempted with an image of an unsupported depth
 	 * (value is 38).
 	 */
 	public static final int ERROR_UNSUPPORTED_DEPTH = 38;
 
-	/** 
+	/**
 	 * SWT error constant indicating that an input/output operation
 	 * failed during the execution of an SWT operation
 	 * (value is 39).
 	 */
 	public static final int ERROR_IO = 39;
 
-	/** 
+	/**
 	 * SWT error constant indicating that a graphics operation
 	 * was attempted with an image having an invalid format
 	 * (value is 40).
 	 */
 	public static final int ERROR_INVALID_IMAGE = 40;
 
-	/** 
+	/**
 	 * SWT error constant indicating that a graphics operation
 	 * was attempted with an image having a valid but unsupported
 	 * format
@@ -3605,100 +3605,100 @@ public class SWT {
 	 */
 	public static final int ERROR_UNSUPPORTED_FORMAT = 42;
 
-	/** 
+	/**
 	 * SWT error constant indicating that an attempt was made
 	 * to subclass an SWT widget class without implementing the
 	 * <code>checkSubclass()</code> method
 	 * (value is 43).
-	 * 
-	 * For additional information see the comment in 
+	 *
+	 * For additional information see the comment in
 	 * <code>Widget.checkSubclass()</code>.
 	 *
 	 * @see org.eclipse.swt.widgets.Widget#checkSubclass
 	 */
 	public static final int ERROR_INVALID_SUBCLASS = 43;
 
-	/** 
+	/**
 	 * SWT error constant indicating that an attempt was made to
 	 * invoke an SWT operation using a graphics object which had
 	 * already been disposed
 	 * (value is 44).
 	 */
 	public static final int ERROR_GRAPHIC_DISPOSED = 44;
-	
-	/** 
+
+	/**
 	 * SWT error constant indicating that an attempt was made to
 	 * invoke an SWT operation using a device which had already
 	 * been disposed
-	 * (value is 45). 
+	 * (value is 45).
 	 */
 	public static final int ERROR_DEVICE_DISPOSED = 45;
-	
-	/** 
+
+	/**
 	 * SWT error constant indicating that an exception happened
 	 * when executing a runnable
 	 * (value is 46).
 	 */
 	public static final int ERROR_FAILED_EXEC = 46;
-	
-	/** 
+
+	/**
 	 * SWT error constant indicating that an unsatisfied link
 	 * error occurred while attempting to load a library
 	 * (value is 47).
-	 * 
+	 *
 	 * @since 3.1
 	 */
 	public static final int ERROR_FAILED_LOAD_LIBRARY = 47;
 
-	/** 
+	/**
 	 * SWT error constant indicating that a font is not valid
 	 * (value is 48).
-	 * 
+	 *
 	 * @since 3.1
 	 */
 	public static final int ERROR_INVALID_FONT = 48;
 
-	/** 
+	/**
 	 * SWT error constant indicating that an attempt was made to
 	 * use an BrowserFunction object which had already been disposed
 	 * (value is 49).
-	 * 
+	 *
 	 * @since 3.5
 	 */
 	public static final int ERROR_FUNCTION_DISPOSED = 49;
 
-	/** 
+	/**
 	 * SWT error constant indicating that an exception happened
 	 * when evaluating a javascript expression
 	 * (value is 50).
-	 * 
+	 *
 	 * @since 3.5
 	 */
 	public static final int ERROR_FAILED_EVALUATE = 50;
 
-	/** 
+	/**
 	 * SWT error constant indicating that an invalid value was returned
 	 * (value is 51).
-	 * 
+	 *
 	 * @since 3.5
 	 */
 	public static final int ERROR_INVALID_RETURN_VALUE = 51;
 
 	/**
 	 * Constant indicating that an image or operation is of type bitmap  (value is 0).
-	 */	
+	 */
 	public static final int BITMAP = 0;
 
 	/**
 	 * Constant indicating that an image or operation is of type icon  (value is 1).
-	 */	
+	 */
 	public static final int ICON = 1;
 
 	/**
 	 * The <code>Image</code> constructor argument indicating that
 	 * the new image should be a copy of the image provided as
 	 * an argument  (value is 0).
-	 */	
+	 */
 	public static final int IMAGE_COPY = 0;
 
 	/**
@@ -3706,36 +3706,36 @@ public class SWT {
 	 * the new image should have the appearance of a "disabled"
 	 * (using the platform's rules for how this should look)
 	 * copy of the image provided as an argument  (value is 1).
-	 */	
+	 */
 	public static final int IMAGE_DISABLE = 1;
-	
+
 	/**
 	 * The <code>Image</code> constructor argument indicating that
 	 * the new image should have the appearance of a "gray scaled"
 	 * copy of the image provided as an argument  (value is 2).
-	 */	
+	 */
 	public static final int IMAGE_GRAY = 2;
-	
+
 	/**
 	 * Constant to indicate an error state (value is 1).
 	 * <p><b>Used By:</b><ul>
 	 * <li><code>ProgressBar</code></li>
 	 * </ul></p>
-	 * 
+	 *
 	 * @since 3.4
 	 */
 	public static final int ERROR = 1;
-	
+
 	/**
 	 * Constant to a indicate a paused state (value is 4).
 	 * <p><b>Used By:</b><ul>
 	 * <li><code>ProgressBar</code></li>
 	 * </ul></p>
-	 * 
+	 *
 	 * @since 3.4
 	 */
 	public static final int PAUSED = 1 << 2;
-	
+
 	/**
 	 * The font style constant indicating a normal weight, non-italic font
 	 * (value is 0). This constant is also used with <code>ProgressBar</code>
@@ -3745,185 +3745,185 @@ public class SWT {
 	 * </ul></p>
 	 */
 	public static final int NORMAL = 0;
-	
+
 	/**
 	 * The font style constant indicating a bold weight font
 	 * (value is 1&lt;&lt;0).
 	 */
 	public static final int BOLD = 1 << 0;
-	
+
 	/**
 	 * The font style constant indicating an italic font
 	 * (value is 1&lt;&lt;1).
 	 */
 	public static final int ITALIC = 1 << 1;
-		
+
 	/**
 	 * System arrow cursor  (value is 0).
 	 */
 	public static final int CURSOR_ARROW = 0;
-		
+
 	/**
 	 * System wait cursor  (value is 1).
 	 */
 	public static final int CURSOR_WAIT = 1;
-		
+
 	/**
 	 * System cross hair cursor  (value is 2).
 	 */
 	public static final int CURSOR_CROSS = 2;
-		
+
 	/**
 	 * System app startup cursor  (value is 3).
 	 */
 	public static final int CURSOR_APPSTARTING = 3;
-		
+
 	/**
 	 * System help cursor  (value is 4).
 	 */
 	public static final int CURSOR_HELP = 4;
-		
+
 	/**
 	 * System resize all directions cursor (value is 5).
 	 */
 	public static final int CURSOR_SIZEALL = 5;
-		
+
 	/**
 	 * System resize north-east-south-west cursor  (value is 6).
 	 */
 	public static final int CURSOR_SIZENESW = 6;
-		
+
 	/**
 	 * System resize north-south cursor  (value is 7).
 	 */
 	public static final int CURSOR_SIZENS = 7;
-		
+
 	/**
 	 * System resize north-west-south-east cursor  (value is 8).
 	 */
 	public static final int CURSOR_SIZENWSE = 8;
-		
+
 	/**
 	 * System resize west-east cursor  (value is 9).
 	 */
 	public static final int CURSOR_SIZEWE = 9;
-		
+
 	/**
 	 * System resize north cursor  (value is 10).
 	 */
 	public static final int CURSOR_SIZEN = 10;
-		
+
 	/**
 	 * System resize south cursor  (value is 11).
 	 */
 	public static final int CURSOR_SIZES = 11;
-		
+
 	/**
 	 * System resize east cursor  (value is 12).
 	 */
 	public static final int CURSOR_SIZEE = 12;
-		
+
 	/**
 	 * System resize west cursor  (value is 13).
 	 */
 	public static final int CURSOR_SIZEW = 13;
-		
+
 	/**
 	 * System resize north-east cursor (value is 14).
 	 */
 	public static final int CURSOR_SIZENE = 14;
-		
+
 	/**
 	 * System resize south-east cursor (value is 15).
 	 */
 	public static final int CURSOR_SIZESE = 15;
-		
+
 	/**
 	 * System resize south-west cursor (value is 16).
 	 */
 	public static final int CURSOR_SIZESW = 16;
-		
+
 	/**
 	 * System resize north-west cursor (value is 17).
 	 */
 	public static final int CURSOR_SIZENW = 17;
-		
+
 	/**
 	 * System up arrow cursor  (value is 18).
 	 */
 	public static final int CURSOR_UPARROW = 18;
-		
+
 	/**
 	 * System i-beam cursor (value is 19).
 	 */
 	public static final int CURSOR_IBEAM = 19;
-		
+
 	/**
 	 * System "not allowed" cursor (value is 20).
 	 */
 	public static final int CURSOR_NO = 20;
-		
+
 	/**
 	 * System hand cursor (value is 21).
 	 */
 	public static final int CURSOR_HAND = 21;
-		
+
 	/**
 	 * Line drawing style for flat end caps (value is 1).
-	 * 
+	 *
 	 * @see org.eclipse.swt.graphics.GC#setLineCap(int)
 	 * @see org.eclipse.swt.graphics.GC#getLineCap()
-	 * 
+	 *
 	 * @since 3.1
 	 */
 	public static final int CAP_FLAT = 1;
 
 	/**
 	 * Line drawing style for rounded end caps (value is 2).
-	 * 
+	 *
 	 * @see org.eclipse.swt.graphics.GC#setLineCap(int)
 	 * @see org.eclipse.swt.graphics.GC#getLineCap()
-	 * 
+	 *
 	 * @since 3.1
 	 */
 	public static final int CAP_ROUND = 2;
 
 	/**
 	 * Line drawing style for square end caps (value is 3).
-	 * 
+	 *
 	 * @see org.eclipse.swt.graphics.GC#setLineCap(int)
 	 * @see org.eclipse.swt.graphics.GC#getLineCap()
-	 * 
+	 *
 	 * @since 3.1
 	 */
 	public static final int CAP_SQUARE = 3;
 
 	/**
 	 * Line drawing style for miter joins (value is 1).
-	 * 
+	 *
 	 * @see org.eclipse.swt.graphics.GC#setLineJoin(int)
 	 * @see org.eclipse.swt.graphics.GC#getLineJoin()
-	 * 
+	 *
 	 * @since 3.1
 	 */
 	public static final int JOIN_MITER = 1;
 
 	/**
 	 * Line drawing  style for rounded joins (value is 2).
-	 * 
+	 *
 	 * @see org.eclipse.swt.graphics.GC#setLineJoin(int)
 	 * @see org.eclipse.swt.graphics.GC#getLineJoin()
-	 * 
+	 *
 	 * @since 3.1
 	 */
 	public static final int JOIN_ROUND = 2;
 
 	/**
 	 * Line drawing style for bevel joins (value is 3).
-	 * 
+	 *
 	 * @see org.eclipse.swt.graphics.GC#setLineJoin(int)
 	 * @see org.eclipse.swt.graphics.GC#getLineJoin()
-	 * 
+	 *
 	 * @since 3.1
 	 */
 	public static final int JOIN_BEVEL = 3;
@@ -3932,22 +3932,22 @@ public class SWT {
 	 * Line drawing style for solid lines  (value is 1).
 	 */
 	public static final int LINE_SOLID = 1;
-		
+
 	/**
 	 * Line drawing style for dashed lines (value is 2).
 	 */
 	public static final int LINE_DASH = 2;
-		
+
 	/**
 	 * Line drawing style for dotted lines (value is 3).
 	 */
 	public static final int LINE_DOT = 3;
-		
+
 	/**
 	 * Line drawing style for alternating dash-dot lines (value is 4).
 	 */
 	public static final int LINE_DASHDOT = 4;
-		
+
 	/**
 	 * Line drawing style for dash-dot-dot lines (value is 5).
 	 */
@@ -3955,59 +3955,59 @@ public class SWT {
 
 	/**
 	 * Line drawing style for custom dashed lines (value is 6).
-	 * 
+	 *
 	 * @see org.eclipse.swt.graphics.GC#setLineDash(int[])
 	 * @see org.eclipse.swt.graphics.GC#getLineDash()
-	 * 
+	 *
 	 * @since 3.1
 	 */
 	public static final int LINE_CUSTOM = 6;
-	
+
 	/**
 	 * Path constant that represents a "move to" operation (value is 1).
-	 * 
+	 *
 	 * @since 3.1
 	 */
 	public static final int PATH_MOVE_TO = 1;
 
 	/**
 	 * Path constant that represents a "line to" operation (value is 2).
-	 * 
+	 *
 	 * @since 3.1
 	 */
 	public static final int PATH_LINE_TO = 2;
 
 	/**
 	 * Path constant that represents a "quadratic curve to" operation (value is 3).
-	 * 
+	 *
 	 * @since 3.1
 	 */
 	public static final int PATH_QUAD_TO = 3;
 
 	/**
 	 * Path constant that represents a "cubic curve to" operation (value is 4).
-	 * 
+	 *
 	 * @since 3.1
 	 */
 	public static final int PATH_CUBIC_TO = 4;
 
 	/**
 	 * Path constant that represents a "close" operation (value is 5).
-	 * 
+	 *
 	 * @since 3.1
 	 */
 	public static final int PATH_CLOSE = 5;
 
 	/**
 	 * Even odd rule for filling operations (value is 1).
-	 * 
+	 *
 	 * @since 3.1
 	 */
 	public static final int FILL_EVEN_ODD = 1;
 
 	/**
 	 * Winding rule for filling operations (value is 2).
-	 * 
+	 *
 	 * @since 3.1
 	 */
 	public static final int FILL_WINDING = 2;
@@ -4023,7 +4023,7 @@ public class SWT {
 	public static final int IMAGE_BMP = 0;
 
 	/**
-	 * Image format constant indicating a run-length encoded 
+	 * Image format constant indicating a run-length encoded
 	 * Windows BMP format image (value is 1).
 	 */
 	public static final int IMAGE_BMP_RLE = 1;
@@ -4066,7 +4066,7 @@ public class SWT {
 
 	/**
 	 * GIF image disposal method constants indicating that the
-	 * disposal method is to do nothing; that is, to leave the 
+	 * disposal method is to do nothing; that is, to leave the
 	 * previous image in place (value is 1).
 	 */
 	public static final int DM_FILL_NONE = 0x1;
@@ -4084,25 +4084,25 @@ public class SWT {
 	 * (value is 3).
 	 */
 	public static final int DM_FILL_PREVIOUS = 0x3;
-	
+
 	/**
 	 * Image transparency constant indicating that the image
 	 * contains no transparency information (value is 0).
 	 */
 	public static final int TRANSPARENCY_NONE = 0x0;
-	
+
 	/**
 	 * Image transparency constant indicating that the image
 	 * contains alpha transparency information (value is 1&lt;&lt;0).
 	 */
 	public static final int TRANSPARENCY_ALPHA = 1 << 0;
-	
+
 	/**
 	 * Image transparency constant indicating that the image
 	 * contains a transparency mask (value is 1&lt;&lt;1).
 	 */
 	public static final int TRANSPARENCY_MASK = 1 << 1;
-	
+
 	/**
 	 * Image transparency constant indicating that the image
 	 * contains a transparent pixel (value is 1&lt;&lt;2).
@@ -4112,24 +4112,24 @@ public class SWT {
 	/**
 	 * The character movement type (value is 1&lt;&lt;0).
 	 * This constant is used to move a text offset over a character.
-	 * 
+	 *
 	 * @see org.eclipse.swt.graphics.TextLayout#getNextOffset(int, int)
 	 * @see org.eclipse.swt.graphics.TextLayout#getPreviousOffset(int, int)
-	 * 
+	 *
 	 * @since 3.0
-	 */	
+	 */
 	public static final int MOVEMENT_CHAR = 1 << 0;
 
 	/**
 	 * The cluster movement type (value is 1&lt;&lt;1).
 	 * This constant is used to move a text offset over a cluster.
-	 * A cluster groups one or more characters. A cluster is 
+	 * A cluster groups one or more characters. A cluster is
 	 * undivisible, this means that a caret offset can not be placed in the
-	 * middle of a cluster.  
-	 * 
+	 * middle of a cluster.
+	 *
 	 * @see org.eclipse.swt.graphics.TextLayout#getNextOffset(int, int)
 	 * @see org.eclipse.swt.graphics.TextLayout#getPreviousOffset(int, int)
-	 * 
+	 *
 	 * @since 3.0
 	 */
 	public static final int MOVEMENT_CLUSTER = 1 << 1;
@@ -4137,138 +4137,138 @@ public class SWT {
 	/**
 	 * The word movement type (value is 1&lt;&lt;2).
 	 * This constant is used to move a text offset over a word.
-	 * The behavior of this constant depends on the platform and on the 
-	 * direction of the movement. For example, on Windows the stop is 
-	 * always at the start of the word. On GTK and Mac the stop is at the end 
-	 * of the word if the direction is next and at the start of the word if the 
+	 * The behavior of this constant depends on the platform and on the
+	 * direction of the movement. For example, on Windows the stop is
+	 * always at the start of the word. On GTK and Mac the stop is at the end
+	 * of the word if the direction is next and at the start of the word if the
 	 * direction is previous.
-	 * 
+	 *
 	 * @see org.eclipse.swt.graphics.TextLayout#getNextOffset(int, int)
 	 * @see org.eclipse.swt.graphics.TextLayout#getPreviousOffset(int, int)
-	 * 
+	 *
 	 * @since 3.0
-	 */	
+	 */
 	public static final int MOVEMENT_WORD = 1 << 2;
 
 	/**
 	 * The word end movement type (value is 1&lt;&lt;3).
 	 * This constant is used to move a text offset to the next or previous
-	 * word end. The behavior of this constant does not depend on the platform.  
-	 * 
-	 * 
+	 * word end. The behavior of this constant does not depend on the platform.
+	 *
+	 *
 	 * @see org.eclipse.swt.graphics.TextLayout#getNextOffset(int, int)
 	 * @see org.eclipse.swt.graphics.TextLayout#getPreviousOffset(int, int)
-	 * 
+	 *
 	 * @since 3.3
-	 */	
+	 */
 	public static final int MOVEMENT_WORD_END = 1 << 3;
 
 	/**
 	 * The word start movement type (value is 1&lt;&lt;4).
 	 * This constant is used to move a text offset to the next or previous
-	 * word start. The behavior of this constant does not depend on the platform.  
-	 * 
+	 * word start. The behavior of this constant does not depend on the platform.
+	 *
 	 * @see org.eclipse.swt.graphics.TextLayout#getNextOffset(int, int)
 	 * @see org.eclipse.swt.graphics.TextLayout#getPreviousOffset(int, int)
-	 * 
+	 *
 	 * @since 3.3
-	 */	
+	 */
 	public static final int MOVEMENT_WORD_START = 1 << 4;
 
 	/**
 	 * A constant indicating that a given operation should be performed on
 	 * all widgets (value is 1&lt;&lt;0).
-	 * 
+	 *
 	 * <p><b>Used By:</b><ul>
 	 * <li><code>Composite</code> layout</li>
 	 * </ul></p>
-	 * 
+	 *
 	 * @see org.eclipse.swt.widgets.Composite#layout(org.eclipse.swt.widgets.Control[], int)
-	 * 
+	 *
 	 * @since 3.6
 	 */
 	public static final int ALL = 1 << 0;
-	
+
 	/**
 	 * ID for the About menu item (value is -1).
-	 * 
+	 *
 	 * @see org.eclipse.swt.widgets.MenuItem#setID(int)
 	 * @see org.eclipse.swt.widgets.MenuItem#getID()
-	 * 
+	 *
 	 * @since 3.7
 	 */
 	public static final int ID_ABOUT = -1;
 
 	/**
 	 * ID for the Preferences menu item (value is -2).
-	 * 
+	 *
 	 * @see org.eclipse.swt.widgets.MenuItem#setID(int)
 	 * @see org.eclipse.swt.widgets.MenuItem#getID()
-	 * 
+	 *
 	 * @since 3.7
 	 */
 	public static final int ID_PREFERENCES = -2;
 
 	/**
 	 * ID for the Hide menu item (value is -3).
-	 * 
+	 *
 	 * @see org.eclipse.swt.widgets.MenuItem#setID(int)
 	 * @see org.eclipse.swt.widgets.MenuItem#getID()
-	 * 
+	 *
 	 * @since 3.7
 	 */
 	public static final int ID_HIDE = -3;
 
 	/**
 	 * ID for the Hide Others menu item (value is -4).
-	 * 
+	 *
 	 * @see org.eclipse.swt.widgets.MenuItem#setID(int)
 	 * @see org.eclipse.swt.widgets.MenuItem#getID()
-	 * 
+	 *
 	 * @since 3.7
 	 */
 	public static final int ID_HIDE_OTHERS = -4;
-	
+
 	/**
 	 * ID for the Show All menu item (value is -5).
-	 * 
+	 *
 	 * @see org.eclipse.swt.widgets.MenuItem#setID(int)
 	 * @see org.eclipse.swt.widgets.MenuItem#getID()
-	 * 
+	 *
 	 * @since 3.7
 	 */
 	public static final int ID_SHOW_ALL = -5;
-	
+
 	/**
 	 * ID for the Quit menu item (value is -6).
-	 * 
+	 *
 	 * @see org.eclipse.swt.widgets.MenuItem#setID(int)
 	 * @see org.eclipse.swt.widgets.MenuItem#getID()
-	 * 
+	 *
 	 * @since 3.7
 	 */
 	public static final int ID_QUIT = -6;
 
 	/**
-	 * Key value for setting and getting the skin class of a widget. 
-	 * 
+	 * Key value for setting and getting the skin class of a widget.
+	 *
 	 * @see org.eclipse.swt.widgets.Widget#getData(String)
 	 * @see org.eclipse.swt.widgets.Widget#setData(String, Object)
-	 * 
+	 *
 	 * @since 3.6
 	 */
 	public static final String SKIN_CLASS = "org.eclipse.swt.skin.class"; //$NON-NLS-1$
 
 	/**
 	 * Key value for setting and getting the skin id of a widget.
-	 * 
+	 *
 	 * @see org.eclipse.swt.widgets.Widget#getData(String)
 	 * @see org.eclipse.swt.widgets.Widget#setData(String, Object)
-	 * 
+	 *
 	 * @since 3.6
 	 */
 	public static final String SKIN_ID = "org.eclipse.swt.skin.id"; //$NON-NLS-1$
-	
+
 	/**
 	 * The <code>Scrollable</code> constant to indicate that
 	 * the receiver is using overlay scrollbars. (value is 1)
@@ -4276,7 +4276,7 @@ public class SWT {
 	 * @since 3.8
 	 */
 	public static final int SCROLLBAR_OVERLAY = 1 << 1;
-	 	
+
 
 /**
  * Returns a boolean indicating whether this SWT implementation can
@@ -4350,10 +4350,10 @@ static String findErrorText (int code) {
 
 /**
  * Returns the NLS'ed message for the given argument.
- * 
+ *
  * @param key the key to look up
  * @return the message for the given key
- * 
+ *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the key is null</li>
  * </ul>
@@ -4364,15 +4364,15 @@ public static String getMessage(String key) {
 
 /**
  * Returns the NLS'ed message for the given arguments.
- * 
+ *
  * @param key the key to look up
  * @param args the parameters to insert into the message
  * @return the message for the given parameterized key
- * 
+ *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the key or args are null</li>
  * </ul>
- * 
+ *
  * @since 3.8
  */
 public static String getMessage(String key, Object[] args) {
@@ -4462,14 +4462,14 @@ public static void error (int code, Throwable throwable) {
  * @see SWTError
  * @see SWTException
  * @see IllegalArgumentException
- * 
+ *
  * @since 3.0
  */
 public static void error (int code, Throwable throwable, String detail) {
 
 	/*
 	* This code prevents the creation of "chains" of SWTErrors and
-	* SWTExceptions which in turn contain other SWTErrors and 
+	* SWTExceptions which in turn contain other SWTErrors and
 	* SWTExceptions as their throwable. This can occur when low level
 	* code throws an exception past a point where a higher layer is
 	* being "safe" and catching all exceptions. (Note that, this is
@@ -4477,7 +4477,7 @@ public static void error (int code, Throwable throwable, String detail) {
 	*
 	* On the theory that the low level code is closest to the
 	* original problem, we simply re-throw the original exception here.
-	* 
+	*
 	* NOTE: Exceptions thrown in syncExec and asyncExec must be
 	* wrapped.
 	*/
@@ -4489,20 +4489,20 @@ public static void error (int code, Throwable throwable, String detail) {
 	String message = findErrorText (code);
 	if (detail != null) message += detail;
 	switch (code) {
-		
+
 		/* Illegal Arguments (non-fatal) */
-		case ERROR_NULL_ARGUMENT: 
+		case ERROR_NULL_ARGUMENT:
 		case ERROR_CANNOT_BE_ZERO:
 		case ERROR_INVALID_ARGUMENT:
 		case ERROR_MENU_NOT_BAR:
 		case ERROR_MENU_NOT_DROP_DOWN:
 		case ERROR_MENU_NOT_POP_UP:
 		case ERROR_MENUITEM_NOT_CASCADE:
-		case ERROR_INVALID_PARENT: 		
+		case ERROR_INVALID_PARENT:
 		case ERROR_INVALID_RANGE: {
 			throw new IllegalArgumentException (message);
 		}
-		
+
 		/* SWT Exceptions (non-fatal) */
 		case ERROR_INVALID_SUBCLASS:
 		case ERROR_THREAD_INVALID_ACCESS:
@@ -4523,7 +4523,7 @@ public static void error (int code, Throwable throwable, String detail) {
 			exception.throwable = throwable;
 			throw exception;
 		}
-		
+
 		/* Operation System Errors (fatal, may occur only on some platforms) */
 		case ERROR_CANNOT_GET_COUNT:
 		case ERROR_CANNOT_GET_ENABLED:
@@ -4539,7 +4539,7 @@ public static void error (int code, Throwable throwable, String detail) {
 		case ERROR_ITEM_NOT_REMOVED:
 		case ERROR_NO_HANDLES:
 		//FALL THROUGH
-		
+
 		/* SWT Errors (fatal, may occur only on some platforms) */
 		case ERROR_FAILED_LOAD_LIBRARY:
 		case ERROR_NO_MORE_CALLBACKS:
@@ -4550,7 +4550,7 @@ public static void error (int code, Throwable throwable, String detail) {
 			throw error;
 		}
 	}
-	
+
 	/* Unknown/Undefined Error */
 	SWTError error = new SWTError (code, message);
 	error.throwable = throwable;
@@ -4565,7 +4565,7 @@ static {
 	*/
 	BUTTON_MASK = BUTTON1 | BUTTON2 | BUTTON3 | BUTTON4 | BUTTON5;
 	MODIFIER_MASK = ALT | SHIFT | CTRL | COMMAND;
-	
+
 	/*
 	* These values can be different on different platforms.
 	* Therefore they are not initialized in the declaration

@@ -31,7 +31,7 @@ public class AccessibleTableCellAdapter implements AccessibleTableCellListener {
 	 * This is 1 if the specified cell is only in one column, or
 	 * more than 1 if the specified cell spans multiple columns.
 	 * </p>
-	 * 
+	 *
 	 * @param e an event object containing the following fields:<ul>
 	 * <li>[out] count - the 1 based number of columns spanned by the specified cell
 	 * </ul>
@@ -41,7 +41,7 @@ public class AccessibleTableCellAdapter implements AccessibleTableCellListener {
 	/**
 	 * Returns the column headers as an array of cell accessibles.
 	 * TODO: doc that this is a more efficient way to get headers of a cell than TableListener.getRow/ColHeaders
-	 * 
+	 *
 	 * @param e an event object containing the following fields:<ul>
 	 * <li>[out] accessibles - an array of cell accessibles, or null if there are no column headers
 	 * </ul>
@@ -50,7 +50,7 @@ public class AccessibleTableCellAdapter implements AccessibleTableCellListener {
 
 	/**
 	 * Translates this cell accessible into the corresponding column index.
-	 * 
+	 *
 	 * @param e an event object containing the following fields:<ul>
 	 * <li>[out] index - the 0 based column index of the specified cell,
 	 * 		or the index of the first column if the cell spans multiple columns
@@ -64,7 +64,7 @@ public class AccessibleTableCellAdapter implements AccessibleTableCellListener {
 	 * This is 1 if the specified cell is only in one row, or
 	 * more than 1 if the specified cell spans multiple rows.
 	 * </p>
-	 * 
+	 *
 	 * @param e an event object containing the following fields:<ul>
 	 * <li>[out] count - the 1 based number of rows spanned by the specified cell
 	 * </ul>
@@ -74,7 +74,7 @@ public class AccessibleTableCellAdapter implements AccessibleTableCellListener {
 	/**
 	 * Returns the row headers as an array of cell accessibles.
 	 * TODO: doc that this is a more efficient way to get headers of a cell than TableListener.getRow/ColHeaders
-	 * 
+	 *
 	 * @param e an event object containing the following fields:<ul>
 	 * <li>[out] accessibles - an array of cell accessibles, or null if there are no row headers
 	 * </ul>
@@ -83,7 +83,7 @@ public class AccessibleTableCellAdapter implements AccessibleTableCellListener {
 
 	/**
 	 * Translates this cell accessible into the corresponding row index.
-	 * 
+	 *
 	 * @param e an event object containing the following fields:<ul>
 	 * <li>[out] index - the 0 based row index of the specified cell,
 	 * 		or the index of the first row if the cell spans multiple rows
@@ -93,7 +93,7 @@ public class AccessibleTableCellAdapter implements AccessibleTableCellListener {
 
 	/**
 	 * Returns the accessible for the table containing this cell.
-	 * 
+	 *
 	 * @param e an event object containing the following fields:<ul>
 	 * <li>[out] accessible - the accessible for the containing table
 	 * </ul>
@@ -102,7 +102,7 @@ public class AccessibleTableCellAdapter implements AccessibleTableCellListener {
 
 	/**
 	 * Returns a boolean value indicating whether this cell is selected.
-	 * 
+	 *
 	 * @param e an event object containing the following fields:<ul>
 	 * <li>[out] isSelected - true if the specified cell is selected and false otherwise
 	 * </ul>

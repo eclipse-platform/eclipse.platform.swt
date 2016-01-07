@@ -16,11 +16,11 @@ import org.eclipse.swt.widgets.*;
 /**
  * A <code>LocationEvent</code> is sent by a {@link Browser} to
  * {@link LocationListener}'s when the <code>Browser</code>
- * navigates to a different URL. This notification typically 
- * occurs when the application navigates to a new location with 
+ * navigates to a different URL. This notification typically
+ * occurs when the application navigates to a new location with
  * {@link Browser#setUrl(String)} or when the user activates a
  * hyperlink.
- * 
+ *
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  *
  * @since 3.0
@@ -31,13 +31,13 @@ public class LocationEvent extends TypedEvent {
 	 * {@link java.net.URI#URI(String)}.
 	 */
 	public String location;
-	
+
 	/**
 	 * A flag indicating whether the location opens in the top frame
 	 * or not.
 	 */
 	public boolean top;
-	
+
 	/**
 	 * A flag indicating whether the location loading should be allowed.
 	 * Setting this field to <code>false</code> will cancel the operation.
@@ -45,7 +45,7 @@ public class LocationEvent extends TypedEvent {
 	public boolean doit;
 
 	static final long serialVersionUID = 3906644198244299574L;
-	
+
 /**
  * Constructs a new instance of this class.
  *

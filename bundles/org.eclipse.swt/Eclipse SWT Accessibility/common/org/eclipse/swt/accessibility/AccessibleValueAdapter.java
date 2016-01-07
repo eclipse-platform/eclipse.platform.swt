@@ -27,7 +27,7 @@ package org.eclipse.swt.accessibility;
 public class AccessibleValueAdapter implements AccessibleValueListener {
 	/**
 	 * Returns the value of this object as a number.
-	 * 
+	 *
 	 * @param e an event object containing the following fields:<ul>
 	 * <li>[out] value - the number that is the current value of this object</li>
 	 * </ul>
@@ -36,12 +36,12 @@ public class AccessibleValueAdapter implements AccessibleValueListener {
 
 	/**
 	 * Sets the value of this object to the given number.
-	 * 
+	 *
 	 * The argument is clipped to the valid interval whose upper and lower
 	 * bounds are returned by getMaximumValue and getMinimumValue,
 	 * i.e. if it is lower than the minimum value the new value will be the minimum,
 	 * and if it is greater than the maximum then the new value will be the maximum.
-	 * 
+	 *
 	 * @param e an event object containing the following fields:<ul>
 	 * <li>[in/out] value - on input, the number that will be the new value of this object
 	 * 		<br>- on output, set to null if the value cannot be set</li>
@@ -51,7 +51,7 @@ public class AccessibleValueAdapter implements AccessibleValueListener {
 
 	/**
 	 * Returns the maximum value that can be represented by this object.
-	 * 
+	 *
 	 * @param e an event object containing the following fields:<ul>
 	 * <li>[out] value - the number that is the maximum value that this object can represent.
 	 * 		If this object has no upper bound then null is returned.</li>
@@ -61,7 +61,7 @@ public class AccessibleValueAdapter implements AccessibleValueListener {
 
 	/**
 	 * Returns the minimum value that can be represented by this object.
-	 * 
+	 *
 	 * @param e an event object containing the following fields:<ul>
 	 * <li>[out] value - the number that is the minimum value that this object can represent.
 	 * 		If this object has no lower bound then null is returned.</li>

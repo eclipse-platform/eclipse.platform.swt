@@ -30,7 +30,7 @@ public class MozillaVersion {
 	}
 
 	public static boolean CheckVersion (int version, boolean exact) {
-		return exact ? version == CurrentVersion : version <= CurrentVersion; 
+		return exact ? version == CurrentVersion : version <= CurrentVersion;
 	}
 
 	public static int GetCurrentVersion () {

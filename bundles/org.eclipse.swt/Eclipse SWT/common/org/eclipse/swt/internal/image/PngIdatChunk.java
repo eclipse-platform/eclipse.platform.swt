@@ -30,7 +30,7 @@ PngIdatChunk(byte headerByte1, byte headerByte2, byte[] data, int adler) {
 	setInt32(ADLER_DATA_OFFSET, adler);
 	setCRC(computeCRC());
 }
-		
+
 PngIdatChunk(byte[] reference) {
 	super(reference);
 }
@@ -47,13 +47,13 @@ int getChunkType() {
 void validate(PngFileReadState readState, PngIhdrChunk headerChunk) {
 	if (!readState.readIHDR
 		|| (headerChunk.getMustHavePalette() && !readState.readPLTE)
-		|| readState.readIEND) 
+		|| readState.readIEND)
 	{
 		SWT.error(SWT.ERROR_INVALID_IMAGE);
 	} else {
 		readState.readIDAT = true;
 	}
-	
+
 	super.validate(readState, headerChunk);
 }
 

@@ -16,7 +16,7 @@ import org.eclipse.swt.widgets.*;
 /**
  * Instances of this class are sent whenever mouse
  * related actions occur. This includes mouse buttons
- * being pressed and released, the mouse pointer being 
+ * being pressed and released, the mouse pointer being
  * moved and the mouse pointer crossing widget boundaries.
  * <p>
  * Note: The <code>button</code> field is an integer that
@@ -31,7 +31,7 @@ import org.eclipse.swt.widgets.*;
  */
 
 public class MouseEvent extends TypedEvent {
-	
+
 	/**
 	 * the button that was pressed or released;
 	 * <ul>
@@ -41,39 +41,39 @@ public class MouseEvent extends TypedEvent {
 	 * <li>etc.</li>
 	 */
 	public int button;
-	
+
 	/**
 	 * the state of the keyboard modifier keys and mouse masks
 	 * at the time the event was generated.
-	 * 
+	 *
 	 * @see org.eclipse.swt.SWT#MODIFIER_MASK
 	 * @see org.eclipse.swt.SWT#BUTTON_MASK
 	 */
 	public int stateMask;
-	
+
 	/**
 	 * the widget-relative, x coordinate of the pointer
 	 * at the time the mouse button was pressed or released
 	 */
 	public int x;
-	
+
 	/**
 	 * the widget-relative, y coordinate of the pointer
 	 * at the time the mouse button was pressed or released
-	 */	
+	 */
 	public int y;
-	
+
 	/**
 	 * the number times the mouse has been clicked, as defined
 	 * by the operating system; 1 for the first click, 2 for the
 	 * second click and so on.
-	 * 
+	 *
 	 * @since 3.3
 	 */
 	public int count;
 
 	static final long serialVersionUID = 3257288037011566898L;
-	
+
 /**
  * Constructs a new instance of this class based on the
  * information in the given untyped event.

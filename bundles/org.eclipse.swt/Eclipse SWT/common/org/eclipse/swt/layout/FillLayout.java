@@ -15,22 +15,22 @@ import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.widgets.*;
 
 /**
- * <code>FillLayout</code> is the simplest layout class. It lays out 
- * controls in a single row or column, forcing them to be the same size. 
+ * <code>FillLayout</code> is the simplest layout class. It lays out
+ * controls in a single row or column, forcing them to be the same size.
  * <p>
- * Initially, the controls will all be as tall as the tallest control, 
- * and as wide as the widest. <code>FillLayout</code> does not wrap, 
- * but you can specify margins and spacing. You might use it to 
- * lay out buttons in a task bar or tool bar, or to stack checkboxes 
- * in a <code>Group</code>. <code>FillLayout</code> can also be used 
- * when a <code>Composite</code> only has one child. For example, 
- * if a <code>Shell</code> has a single <code>Group</code> child, 
- * <code>FillLayout</code> will cause the <code>Group</code> to 
+ * Initially, the controls will all be as tall as the tallest control,
+ * and as wide as the widest. <code>FillLayout</code> does not wrap,
+ * but you can specify margins and spacing. You might use it to
+ * lay out buttons in a task bar or tool bar, or to stack checkboxes
+ * in a <code>Group</code>. <code>FillLayout</code> can also be used
+ * when a <code>Composite</code> only has one child. For example,
+ * if a <code>Shell</code> has a single <code>Group</code> child,
+ * <code>FillLayout</code> will cause the <code>Group</code> to
  * completely fill the <code>Shell</code> (if margins are 0).
  * </p>
  * <p>
  * Example code: first a <code>FillLayout</code> is created and
- * its type field is set, and then the layout is set into the 
+ * its type field is set, and then the layout is set into the
  * <code>Composite</code>. Note that in a <code>FillLayout</code>,
  * children are always the same size, and they fill all available space.
  * <pre>
@@ -45,7 +45,7 @@ import org.eclipse.swt.widgets.*;
  */
 public final class FillLayout extends Layout {
 	/**
-	 * type specifies how controls will be positioned 
+	 * type specifies how controls will be positioned
 	 * within the layout.
 	 *
 	 * The default value is HORIZONTAL.
@@ -56,37 +56,37 @@ public final class FillLayout extends Layout {
 	 * </ul>
 	 */
 	public int type = SWT.HORIZONTAL;
-	
+
 	/**
 	 * marginWidth specifies the number of pixels of horizontal margin
 	 * that will be placed along the left and right edges of the layout.
 	 *
 	 * The default value is 0.
-	 * 
+	 *
 	 * @since 3.0
 	 */
  	public int marginWidth = 0;
- 	
+
 	/**
 	 * marginHeight specifies the number of pixels of vertical margin
 	 * that will be placed along the top and bottom edges of the layout.
 	 *
 	 * The default value is 0.
-	 * 
+	 *
 	 * @since 3.0
 	 */
  	public int marginHeight = 0;
- 	
+
  	/**
 	 * spacing specifies the number of pixels between the edge of one cell
 	 * and the edge of its neighbouring cell.
 	 *
 	 * The default value is 0.
-	 * 
+	 *
 	 * @since 3.0
 	 */
 	public int spacing = 0;
-	
+
 /**
  * Constructs a new instance of this class.
  */
@@ -97,7 +97,7 @@ public FillLayout () {
  * Constructs a new instance of this class given the type.
  *
  * @param type the type of fill layout
- * 
+ *
  * @since 2.0
  */
 public FillLayout (int type) {

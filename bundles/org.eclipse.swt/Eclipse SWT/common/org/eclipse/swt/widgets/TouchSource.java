@@ -24,7 +24,7 @@ import org.eclipse.swt.graphics.*;
  * as a tablet or a touch screen. There is a one-to-one mapping between a touch point and a location in
  * a window.
  * </li><li>
- * When an instance is <em>indirect</em> (more precisely, not direct), the touch source is a track pad or 
+ * When an instance is <em>indirect</em> (more precisely, not direct), the touch source is a track pad or
  * other device that normally moves the cursor, but is also able to interpret multiple touches on its surface.
  * In this case there is not a one-to-one mapping between the location of the touch on the device and a
  * location on the display because the user can remove their finger or stylus and touch another part of
@@ -34,18 +34,18 @@ import org.eclipse.swt.graphics.*;
  *
  * @see Touch
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
- * 
+ *
  * @since 3.7
  */
 public final class TouchSource {
 	long /*int*/ handle;
-	boolean direct;	
+	boolean direct;
 	Rectangle bounds;
 
 /**
  * Constructs a new touch source from the given inputs.
- * 
- * @param direct Is the touch source direct or indirect? 
+ *
+ * @param direct Is the touch source direct or indirect?
  * @param height height of the source in pixels.
  * @param width width of the source in pixels.
  */

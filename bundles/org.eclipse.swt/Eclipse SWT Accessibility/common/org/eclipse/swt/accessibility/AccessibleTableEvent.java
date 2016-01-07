@@ -25,13 +25,13 @@ public class AccessibleTableEvent extends SWTEventObject {
 
 	public Accessible accessible;
 	public Accessible[] accessibles;
-	
+
 	/**
 	 * The value of this field must be set in the accessible table listener method
 	 * before returning. What to set it to depends on the listener method called.
 	 */
 	public String result;
-	
+
 	public int column;
 	public int row;
 	public int count;

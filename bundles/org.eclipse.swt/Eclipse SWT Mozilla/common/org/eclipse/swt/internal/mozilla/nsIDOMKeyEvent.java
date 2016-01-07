@@ -162,7 +162,7 @@ public class nsIDOMKeyEvent extends nsIDOMUIEvent {
 	public static final int DOM_VK_CLOSE_BRACKET = 221;
 	public static final int DOM_VK_QUOTE = 222;
 	public static final int DOM_VK_META = 224;
-	
+
 	/* the following constants are defined in Mozilla 10 */
 	public static final int DOM_VK_KANA = 21;
 	public static final int DOM_VK_HANGUL = 21;

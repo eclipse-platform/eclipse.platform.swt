@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * This source file is based in part on the work of the Independent JPEG Group (IJG)
  * and is made available under the terms contained in the about_files/IJG_README
  * file accompanying this program.
@@ -20,7 +20,7 @@ import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 
 public class JPEGDecoder {
-	
+
 	static final int DCTSIZE = 8;
 	static final int DCTSIZE2 = 64;
 	static final int NUM_QUANT_TBLS = 4;
@@ -40,24 +40,24 @@ public class JPEGDecoder {
 
 	static final int SCALEBITS = 16;	/* speediest right-shift on some machines */
 	static final int ONE_HALF = 1 << (SCALEBITS-1);
-	
+
 	static final int RGB_RED = 2;	/* Offset of Red in an RGB scanline element */
 	static final int RGB_GREEN = 1;	/* Offset of Green */
 	static final int RGB_BLUE = 0;	/* Offset of Blue */
 	static final int RGB_PIXELSIZE = 3;
-	
+
 	static final int JBUF_PASS_THRU = 0;
 	static final int JBUF_SAVE_SOURCE = 1;	/* Run source subobject only, save output */
 	static final int JBUF_CRANK_DEST = 2;	/* Run dest subobject only, using saved data */
-	static final int JBUF_SAVE_AND_PASS = 3;	
-	
+	static final int JBUF_SAVE_AND_PASS = 3;
+
 	static final int JPEG_MAX_DIMENSION = 65500;
 	static final int BITS_IN_JSAMPLE = 8;
-	
+
 	static final int JDITHER_NONE = 0;		/* no dithering */
 	static final int JDITHER_ORDERED = 1;	/* simple ordered dither */
-	static final int JDITHER_FS = 2;	
-	
+	static final int JDITHER_FS = 2;
+
 	static final int JDCT_ISLOW = 0;	/* slow but accurate integer algorithm */
 	static final int JDCT_IFAST = 1;	/* faster, less accurate integer method */
 	static final int JDCT_FLOAT = 2;	/* floating-point: accurate, fast on fast HW */
@@ -76,11 +76,11 @@ public class JPEGDecoder {
 	static final int Q20_POS = 16;
 	static final int Q11_POS = 9;
 	static final int Q02_POS = 2;
-	
+
 	static final int CTX_PREPARE_FOR_IMCU = 0;	/* need to prepare for MCU row */
 	static final int CTX_PROCESS_IMCU = 1;	/* feeding iMCU to postprocessor */
 	static final int CTX_POSTPONED_ROW = 2;	/* feeding postponed row group */
-	
+
 	static final int APP0_DATA_LEN = 14;	/* Length of interesting data in APP0 */
 	static final int APP14_DATA_LEN = 12;	/* Length of interesting data in APP14 */
 	static final int APPN_DATA_LEN = 14;	/* Must be the largest of the above!! */
@@ -139,7 +139,7 @@ public class JPEGDecoder {
 	static final int M_COM = 0xfe;
 	static final int M_TEM = 0x01;
 	static final int M_ERROR = 0x100;
-	
+
 	/* Values of global_state field (jdapi.c has some dependencies on ordering!) */
 	static final int CSTATE_START = 100;	/* after create_compress */
 	static final int CSTATE_SCANNING = 101;	/* start_compress done, write_scanlines OK */
@@ -161,7 +161,7 @@ public class JPEGDecoder {
 	static final int JPEG_REACHED_EOI = 2; /* Reached end of image */
 	static final int JPEG_ROW_COMPLETED = 3; /* Completed one iMCU row */
 	static final int JPEG_SCAN_COMPLETED = 4; /* Completed last iMCU row of a scan */
-	
+
 	static final int JPEG_SUSPENDED = 0; /* Suspended due to lack of input data */
 	static final int JPEG_HEADER_OK = 1; /* Found valid image datastream */
 	static final int JPEG_HEADER_TABLES_ONLY = 2; /* Found valid table-specs-only datastream */
@@ -170,23 +170,23 @@ public class JPEGDecoder {
 	static final int DECOMPRESS_DATA = 0;
 	static final int DECOMPRESS_SMOOTH_DATA = 1;
 	static final int DECOMPRESS_ONEPASS = 2;
-	
+
 	static final int CONSUME_DATA = 0;
 	static final int DUMMY_CONSUME_DATA = 1;
-	
+
 	static final int PROCESS_DATA_SIMPLE_MAIN = 0;
 	static final int PROCESS_DATA_CONTEXT_MAIN = 1;
 	static final int PROCESS_DATA_CRANK_POST = 2;
-	
+
 	static final int POST_PROCESS_1PASS = 0;
 	static final int POST_PROCESS_DATA_UPSAMPLE = 1;
-	
+
 	static final int NULL_CONVERT = 0;
 	static final int GRAYSCALE_CONVERT = 1;
 	static final int YCC_RGB_CONVERT = 2;
 	static final int GRAY_RGB_CONVERT = 3;
 	static final int YCCK_CMYK_CONVERT = 4;
-	
+
 	static final int NOOP_UPSAMPLE = 0;
 	static final int FULLSIZE_UPSAMPLE = 1;
 	static final int H2V1_FANCY_UPSAMPLE = 2;
@@ -194,10 +194,10 @@ public class JPEGDecoder {
 	static final int H2V2_FANCY_UPSAMPLE = 4;
 	static final int H2V2_UPSAMPLE = 5;
 	static final int INT_UPSAMPLE = 6;
-	
+
 	static final int INPUT_CONSUME_INPUT = 0;
 	static final int COEF_CONSUME_INPUT = 1;
-	
+
 	static int extend_test[] =	 /* entry n is 2**(n-1) */
 	{
 		0, 0x0001, 0x0002, 0x0004, 0x0008, 0x0010, 0x0020, 0x0040, 0x0080,
@@ -211,7 +211,7 @@ public class JPEGDecoder {
 		((-1)<<9) + 1, ((-1)<<10) + 1, ((-1)<<11) + 1, ((-1)<<12) + 1,
 		((-1)<<13) + 1, ((-1)<<14) + 1, ((-1)<<15) + 1
 	};
-	
+
 	static int jpeg_natural_order[] = {
 		0,	1,	8, 16,	9,	2,	3, 10,
 		17, 24, 32, 25, 18, 11,	4,	5,
@@ -224,7 +224,7 @@ public class JPEGDecoder {
 		63, 63, 63, 63, 63, 63, 63, 63, /* extra entries for safety in decoder */
 		63, 63, 63, 63, 63, 63, 63, 63
 	};
-	
+
 	static final class JQUANT_TBL {
 		/* This array gives the coefficient quantizers in natural array order
 		 * (not the zigzag order in which they are stored in a JPEG DQT marker).
@@ -238,7 +238,7 @@ public class JPEGDecoder {
 		 */
 		boolean sent_table;		/* true when table has been output */
 	}
-	
+
 	static final class JHUFF_TBL {
 		/* These two fields directly represent the contents of a JPEG DHT marker */
 		byte[] bits = new byte[17]; /* bits[k] = # of symbols with codes of */
@@ -251,12 +251,12 @@ public class JPEGDecoder {
 		 */
 		boolean sent_table;		/* true when table has been output */
 	}
-	
+
 	static final class bitread_perm_state {		/* Bitreading state saved across MCUs */
 		int get_buffer;	/* current bit-extraction buffer */
 		int bits_left;		/* # of unused bits in it */
 	}
-	
+
 	static final class bitread_working_state {		/* Bitreading working state within an MCU */
 		/* Current data source location */
 		/* We need a copy, rather than munging the original, in case of suspension */
@@ -270,13 +270,13 @@ public class JPEGDecoder {
 		int bits_left;		/* # of unused bits in it */
 		/* Pointer needed by jpeg_fill_bit_buffer. */
 		jpeg_decompress_struct cinfo;	/* back link to decompress master record */
-	} 
-	
+	}
+
 	static final class savable_state {
 		int EOBRUN; //Note that this is only used in the progressive case
 		int[] last_dc_val = new int[MAX_COMPS_IN_SCAN]; /* last DC coef for each component */
 	}
-	
+
 	static final class d_derived_tbl {
 		/* Basic tables: (element [0] of each array is unused) */
 		int[] maxcode = new int[18];		/* largest code of length k (-1 if none) */
@@ -297,15 +297,15 @@ public class JPEGDecoder {
 		 */
 		int[] look_nbits = new int[1<<HUFF_LOOKAHEAD]; /* # bits, or 0 if too long */
 		byte[] look_sym = new byte[1<<HUFF_LOOKAHEAD]; /* symbol, or unused */
-	} 
-	
+	}
+
 	static final class jpeg_d_coef_controller {
 		int consume_data;
 		int decompress_data;
 
 		/* Pointer to array of coefficient virtual arrays, or null if none */
 		short[][][] coef_arrays;
-	
+
 		/* These variables keep track of the current location of the input side. */
 		/* cinfo.input_iMCU_row is also used for this. */
 		int MCU_ctr;		/* counts MCUs processed in current row */
@@ -330,14 +330,14 @@ public class JPEGDecoder {
 
 		/* When doing block smoothing, we latch coefficient Al values here */
 		int[] coef_bits_latch;
-		
+
 		short[] workspace;
 
 		void start_input_pass (jpeg_decompress_struct cinfo) {
 			cinfo.input_iMCU_row = 0;
 			start_iMCU_row(cinfo);
 		}
-		
+
 		/* Reset within-iMCU-row counters for a new row (input side) */
 		void start_iMCU_row (jpeg_decompress_struct cinfo) {
 			jpeg_d_coef_controller coef = cinfo.coef;
@@ -358,9 +358,9 @@ public class JPEGDecoder {
 			coef.MCU_ctr = 0;
 			coef.MCU_vert_offset = 0;
 		}
-		
+
 	}
-	
+
 	static abstract class jpeg_entropy_decoder {
 		abstract void start_pass (jpeg_decompress_struct cinfo);
 		abstract boolean decode_mcu (jpeg_decompress_struct cinfo, short[][] MCU_data);
@@ -368,10 +368,10 @@ public class JPEGDecoder {
 		/* This is here to share code between baseline and progressive decoders; */
 		/* other modules probably should not use it */
 		boolean insufficient_data;	/* set true after emitting warning */
-		
+
 		bitread_working_state br_state_local = new bitread_working_state();
 		savable_state state_local = new savable_state();
-	}	
+	}
 
 	static final class huff_entropy_decoder extends jpeg_entropy_decoder {
 		bitread_perm_state bitstate = new bitread_perm_state();	/* Bit buffer at start of MCU */
@@ -392,7 +392,7 @@ public class JPEGDecoder {
 		/* Whether we care about the DC and AC coefficient values for each block */
 		boolean[] dc_needed = new boolean[D_MAX_BLOCKS_IN_MCU];
 		boolean[] ac_needed = new boolean[D_MAX_BLOCKS_IN_MCU];
-		
+
 		@Override
 		void start_pass (jpeg_decompress_struct cinfo) {
 			start_pass_huff_decoder(cinfo);
@@ -425,12 +425,12 @@ public class JPEGDecoder {
 				/* Load up working state */
 //				BITREAD_LOAD_STATE(cinfo,entropy.bitstate);
 				br_state.cinfo = cinfo;
-				br_state.buffer = cinfo.buffer; 
+				br_state.buffer = cinfo.buffer;
 				br_state.bytes_in_buffer = cinfo.bytes_in_buffer;
 				br_state.bytes_offset = cinfo.bytes_offset;
 				get_buffer = entropy.bitstate.get_buffer;
 				bits_left = entropy.bitstate.bits_left;
-					
+
 //				ASSIGN_STATE(state, entropy.saved);
 				state.last_dc_val[0] = entropy.saved.last_dc_val[0];
 				state.last_dc_val[1] = entropy.saved.last_dc_val[1];
@@ -513,7 +513,7 @@ public class JPEGDecoder {
 						/* Section F.2.2.2: decode the AC coefficients */
 						/* Since zeroes are skipped, output area must be cleared beforehand */
 						for (k = 1; k < DCTSIZE2; k++) {
-//							HUFF_DECODE(s, br_state, actbl, return FALSE, label2);	
+//							HUFF_DECODE(s, br_state, actbl, return FALSE, label2);
 							{
 							int nb = 0, look;
 							if (bits_left < HUFF_LOOKAHEAD) {
@@ -522,7 +522,7 @@ public class JPEGDecoder {
 								}
 								get_buffer = br_state.get_buffer; bits_left = br_state.bits_left;
 								if (bits_left < HUFF_LOOKAHEAD) {
-									nb = 1; 
+									nb = 1;
 //									goto slowlabel;
 									if ((s=jpeg_huff_decode(br_state,get_buffer,bits_left,actbl,nb)) < 0) {
 										return false;
@@ -546,10 +546,10 @@ public class JPEGDecoder {
 									get_buffer = br_state.get_buffer; bits_left = br_state.bits_left;
 								}
 							}
-							}			
+							}
 							r = s >> 4;
 							s &= 15;
-						
+
 							if (s != 0) {
 								k += r;
 //								CHECK_BIT_BUFFER(br_state, s, return FALSE);
@@ -619,10 +619,10 @@ public class JPEGDecoder {
 									get_buffer = br_state.get_buffer; bits_left = br_state.bits_left;
 								}
 							}
-							}			
+							}
 							r = s >> 4;
 							s &= 15;
-						
+
 							if (s != 0) {
 								k += r;
 //								CHECK_BIT_BUFFER(br_state, s, return FALSE);
@@ -716,7 +716,7 @@ public class JPEGDecoder {
 			/* Initialize restart counter */
 			entropy.restarts_to_go = cinfo.restart_interval;
 		}
-	
+
 		boolean process_restart (jpeg_decompress_struct cinfo) {
 			huff_entropy_decoder entropy = this;
 			int ci;
@@ -748,7 +748,7 @@ public class JPEGDecoder {
 			return true;
 		}
 	}
-	
+
 	static final class phuff_entropy_decoder extends jpeg_entropy_decoder {
 
 		/* These fields are loaded into local variables at start of each MCU.
@@ -764,14 +764,14 @@ public class JPEGDecoder {
 		d_derived_tbl[] derived_tbls = new d_derived_tbl[NUM_HUFF_TBLS];
 
 		d_derived_tbl ac_derived_tbl; /* active table during an AC scan */
-		
+
 		int[] newnz_pos = new int[DCTSIZE2];
-			
+
 		@Override
 		void start_pass (jpeg_decompress_struct cinfo) {
 			start_pass_phuff_decoder(cinfo);
 		}
-			
+
 		@Override
 		boolean decode_mcu (jpeg_decompress_struct cinfo, short[][] MCU_data) {
 			boolean is_DC_band = (cinfo.Ss == 0);
@@ -787,7 +787,7 @@ public class JPEGDecoder {
 					return decode_mcu_AC_refine(cinfo, MCU_data);
 			}
 		}
-			
+
 		boolean decode_mcu_DC_refine (jpeg_decompress_struct cinfo, short[][] MCU_data) {
 			phuff_entropy_decoder entropy = this;
 			int p1 = 1 << cinfo.Al;	/* 1 in the bit position being coded */
@@ -798,7 +798,7 @@ public class JPEGDecoder {
 			int bits_left;
 //			bitread_working_state br_state = new bitread_working_state();
 			bitread_working_state br_state = br_state_local;
-					
+
 			/* Process restart marker if needed; may have to suspend */
 			if (cinfo.restart_interval != 0) {
 				if (entropy.restarts_to_go == 0)
@@ -813,12 +813,12 @@ public class JPEGDecoder {
 			/* Load up working state */
 //			BITREAD_LOAD_STATE(cinfo,entropy.bitstate);
 			br_state.cinfo = cinfo;
-			br_state.buffer = cinfo.buffer; 
+			br_state.buffer = cinfo.buffer;
 			br_state.bytes_in_buffer = cinfo.bytes_in_buffer;
 			br_state.bytes_offset = cinfo.bytes_offset;
 			get_buffer = entropy.bitstate.get_buffer;
 			bits_left = entropy.bitstate.bits_left;
-					
+
 			/* Outer loop handles each block in the MCU */
 
 			for (blkn = 0; blkn < cinfo.blocks_in_MCU; blkn++) {
@@ -847,14 +847,14 @@ public class JPEGDecoder {
 			cinfo.bytes_offset = br_state.bytes_offset;
 			entropy.bitstate.get_buffer = get_buffer;
 			entropy.bitstate.bits_left = bits_left;
-					
+
 			/* Account for restart interval (no-op if not using restarts) */
 			entropy.restarts_to_go--;
 
 			return true;
 
 		}
-			
+
 		boolean decode_mcu_AC_refine (jpeg_decompress_struct cinfo, short[][] MCU_data) {
 			phuff_entropy_decoder entropy = this;
 			int Se = cinfo.Se;
@@ -869,7 +869,7 @@ public class JPEGDecoder {
 			int bits_left;
 //			bitread_working_state br_state = new bitread_working_state();
 			bitread_working_state br_state = br_state_local;
-				
+
 			d_derived_tbl tbl;
 			int num_newnz;
 			int[] newnz_pos = entropy.newnz_pos;
@@ -888,12 +888,12 @@ public class JPEGDecoder {
 				/* Load up working state */
 //				BITREAD_LOAD_STATE(cinfo,entropy.bitstate);
 				br_state.cinfo = cinfo;
-				br_state.buffer = cinfo.buffer; 
+				br_state.buffer = cinfo.buffer;
 				br_state.bytes_in_buffer = cinfo.bytes_in_buffer;
 				br_state.bytes_offset = cinfo.bytes_offset;
 				get_buffer = entropy.bitstate.get_buffer;
 				bits_left = entropy.bitstate.bits_left;
-					
+
 				EOBRUN = entropy.saved.EOBRUN; /* only part of saved state we need */
 
 				/* There is always only one block per MCU */
@@ -926,7 +926,7 @@ public class JPEGDecoder {
 							}
 							get_buffer = br_state.get_buffer; bits_left = br_state.bits_left;
 							if (bits_left < HUFF_LOOKAHEAD) {
-								nb = 1; 
+								nb = 1;
 //								goto slowlabel;
 								if ((s=jpeg_huff_decode(br_state,get_buffer,bits_left,tbl,nb)) < 0) {
 //									failaction;
@@ -948,7 +948,7 @@ public class JPEGDecoder {
 							} else {
 								nb = HUFF_LOOKAHEAD+1;
 //								slowlabel:
-								if ((s=jpeg_huff_decode(br_state,get_buffer,bits_left,tbl,nb)) < 0) { 
+								if ((s=jpeg_huff_decode(br_state,get_buffer,bits_left,tbl,nb)) < 0) {
 //									failaction;
 									while (num_newnz > 0)
 										block[newnz_pos[--num_newnz]] = 0;
@@ -1071,7 +1071,7 @@ public class JPEGDecoder {
 //									failaction;
 									while (num_newnz > 0)
 										block[newnz_pos[--num_newnz]] = 0;
-	
+
 									return false;
 								}
 								get_buffer = (br_state).get_buffer; bits_left = (br_state).bits_left;
@@ -1099,7 +1099,7 @@ public class JPEGDecoder {
 				cinfo.bytes_offset = br_state.bytes_offset;
 				entropy.bitstate.get_buffer = get_buffer;
 				entropy.bitstate.bits_left = bits_left;
-						
+
 				entropy.saved.EOBRUN = EOBRUN; /* only part of saved state we need */
 			}
 
@@ -1115,8 +1115,8 @@ public class JPEGDecoder {
 //
 //				return false;
 
-		}			
-			
+		}
+
 		boolean decode_mcu_AC_first (jpeg_decompress_struct cinfo, short[][] MCU_data) {
 			phuff_entropy_decoder entropy = this;
 			int Se = cinfo.Se;
@@ -1129,7 +1129,7 @@ public class JPEGDecoder {
 			int bits_left;
 //			bitread_working_state br_state = new bitread_working_state();
 			bitread_working_state br_state = br_state_local;
-					
+
 			d_derived_tbl tbl;
 
 			/* Process restart marker if needed; may have to suspend */
@@ -1156,12 +1156,12 @@ public class JPEGDecoder {
 				else {
 //					BITREAD_LOAD_STATE(cinfo,entropy.bitstate);
 					br_state.cinfo = cinfo;
-					br_state.buffer = cinfo.buffer; 
+					br_state.buffer = cinfo.buffer;
 					br_state.bytes_in_buffer = cinfo.bytes_in_buffer;
 					br_state.bytes_offset = cinfo.bytes_offset;
 					get_buffer = entropy.bitstate.get_buffer;
 					bits_left = entropy.bitstate.bits_left;
-						
+
 					block = MCU_data[0];
 					tbl = entropy.ac_derived_tbl;
 
@@ -1262,8 +1262,8 @@ public class JPEGDecoder {
 
 			return true;
 		}
-			
-		boolean decode_mcu_DC_first (jpeg_decompress_struct cinfo, short[][] MCU_data) {	 
+
+		boolean decode_mcu_DC_first (jpeg_decompress_struct cinfo, short[][] MCU_data) {
 			phuff_entropy_decoder entropy = this;
 			int Al = cinfo.Al;
 			int s = 0, r;
@@ -1274,7 +1274,7 @@ public class JPEGDecoder {
 			int bits_left;
 //			bitread_working_state br_state = new bitread_working_state();
 			bitread_working_state br_state = br_state_local;
-				
+
 //			savable_state state = new savable_state();
 			savable_state state = state_local;
 			d_derived_tbl tbl;
@@ -1295,19 +1295,19 @@ public class JPEGDecoder {
 				/* Load up working state */
 //				BITREAD_LOAD_STATE(cinfo,entropy.bitstate);
 				br_state.cinfo = cinfo;
-				br_state.buffer = cinfo.buffer; 
+				br_state.buffer = cinfo.buffer;
 				br_state.bytes_in_buffer = cinfo.bytes_in_buffer;
 				br_state.bytes_offset = cinfo.bytes_offset;
 				get_buffer = entropy.bitstate.get_buffer;
 				bits_left = entropy.bitstate.bits_left;
-					
+
 //				ASSIGN_STATE(state, entropy.saved);
 				state.EOBRUN = entropy.saved.EOBRUN;
 				state.last_dc_val[0] = entropy.saved.last_dc_val[0];
 				state.last_dc_val[1] = entropy.saved.last_dc_val[1];
 				state.last_dc_val[2] = entropy.saved.last_dc_val[2];
 				state.last_dc_val[3] = entropy.saved.last_dc_val[3];
-					
+
 				/* Outer loop handles each block in the MCU */
 
 				for (blkn = 0; blkn < cinfo.blocks_in_MCU; blkn++) {
@@ -1397,7 +1397,7 @@ public class JPEGDecoder {
 
 			return true;
 		}
-			
+
 		boolean process_restart (jpeg_decompress_struct cinfo) {
 			phuff_entropy_decoder entropy = this;
 			int ci;
@@ -1534,7 +1534,7 @@ public class JPEGDecoder {
 		}
 
 	}
-	
+
 	static final class jpeg_component_info {
 		/* These values are fixed over the whole image. */
 		/* For compression, they must be supplied by parameter setup; */
@@ -1550,9 +1550,9 @@ public class JPEGDecoder {
 		/* The decompressor output side may not use these variables. */
 		int dc_tbl_no;		/* DC entropy table selector (0..3) */
 		int ac_tbl_no;		/* AC entropy table selector (0..3) */
-		
+
 		/* Remaining fields should be treated as private by applications. */
-		
+
 		/* These values are computed during compression or decompression startup: */
 		/* Component's size in DCT blocks.
 		 * Any dummy blocks added to complete an MCU are not counted; therefore
@@ -1599,7 +1599,7 @@ public class JPEGDecoder {
 		/* Private per-component storage for DCT or IDCT subsystem. */
 		int[] dct_table;
 	}
-	
+
 	static final class jpeg_color_quantizer {
 //		JMETHOD(void, start_pass, (j_decompress_ptr cinfo, boolean is_pre_scan));
 //		JMETHOD(void, color_quantize, (j_decompress_ptr cinfo,
@@ -1607,7 +1607,7 @@ public class JPEGDecoder {
 //					 int num_rows));
 //		JMETHOD(void, finish_pass, (j_decompress_ptr cinfo));
 //		JMETHOD(void, new_color_map, (j_decompress_ptr cinfo));
-		
+
 		/* Initially allocated colormap is saved here */
 		int[][] sv_colormap;	/* The color map as a 2-D pixel array */
 		int sv_actual;		/* number of entries in use */
@@ -1627,13 +1627,13 @@ public class JPEGDecoder {
 
 		/* Variables for Floyd-Steinberg dithering */
 //			FSERRPTR fserrors[MAX_Q_COMPS]; /* accumulated errors */
-		boolean on_odd_row;	
-			
+		boolean on_odd_row;
+
 		void start_pass (jpeg_decompress_struct cinfo, boolean is_pre_scan) {
 			error();
 		}
 	}
-	
+
 	static final class jpeg_upsampler {
 //		JMETHOD(void, start_pass, (j_decompress_ptr cinfo));
 //		JMETHOD(void, upsample, (j_decompress_ptr cinfo,
@@ -1645,7 +1645,7 @@ public class JPEGDecoder {
 //					 JDIMENSION out_rows_avail));
 
 		boolean need_context_rows;	/* TRUE if need rows above & below */
-			
+
 		/* Color conversion buffer.	When using separate upsampling and color
 		 * conversion steps, this buffer holds one upsampled row group until it
 		 * has been color converted and output.
@@ -1670,7 +1670,7 @@ public class JPEGDecoder {
 		 */
 		byte[] h_expand = new byte[MAX_COMPONENTS];
 		byte[] v_expand = new byte[MAX_COMPONENTS];
-			
+
 		void start_pass (jpeg_decompress_struct cinfo) {
 			jpeg_upsampler upsample = cinfo.upsample;
 
@@ -1679,9 +1679,9 @@ public class JPEGDecoder {
 			/* Initialize total-height counter for detecting bottom of image */
 			upsample.rows_to_go = cinfo.output_height;
 		}
-			
+
 	}
-	
+
 	static final class jpeg_marker_reader {
 		/* Read a restart marker --- exported for use by entropy decoder only */
 //		jpeg_marker_parser_method read_restart_marker;
@@ -1693,7 +1693,7 @@ public class JPEGDecoder {
 		boolean saw_SOF;		/* found SOF? */
 		int next_restart_num;		/* next restart number expected (0-7) */
 		int discarded_bytes;	/* # of bytes skipped looking for a marker */
-		
+
 		/* Application-overridable marker processing methods */
 //		jpeg_marker_parser_method process_COM;
 //		jpeg_marker_parser_method process_APPn[16];
@@ -1707,12 +1707,12 @@ public class JPEGDecoder {
 //		int bytes_read;		/* data bytes read so far in marker */
 		/* Note: cur_marker is not linked into marker_list until it's all read. */
 	}
-	
-	
+
+
 	static final class jpeg_d_main_controller {
 //		JMETHOD(void, start_pass, (j_decompress_ptr cinfo, J_BUF_MODE pass_mode));
 		int process_data;
-				
+
 		 /* Pointer to allocated workspace (M or M+2 row groups). */
 		byte[][][] buffer = new byte[MAX_COMPONENTS][][];
 		int[] buffer_offset = new int[MAX_COMPONENTS];
@@ -1730,7 +1730,7 @@ public class JPEGDecoder {
 		int context_state;		/* process_data state machine status */
 		int rowgroups_avail;	/* row groups available to postprocessor */
 		int iMCU_row_ctr;	/* counts iMCU rows to detect image top/bot */
-					
+
 		void start_pass (jpeg_decompress_struct cinfo, int pass_mode) {
 			jpeg_d_main_controller main = cinfo.main;
 
@@ -1761,7 +1761,7 @@ public class JPEGDecoder {
 					break;
 			}
 		}
-					
+
 	}
 
 	static final class jpeg_decomp_master {
@@ -1781,13 +1781,13 @@ public class JPEGDecoder {
 		jpeg_color_quantizer quantizer_1pass;
 		jpeg_color_quantizer quantizer_2pass;
 	}
-	
+
 	static final class jpeg_inverse_dct {
 //		JMETHOD(void, start_pass, (j_decompress_ptr cinfo));
 //		/* It is useful to allow each component to have a separate IDCT method. */
 //		inverse_DCT_method_ptr inverse_DCT[MAX_COMPONENTS];
 		int[] cur_method = new int[MAX_COMPONENTS];
-			
+
 		void start_pass (jpeg_decompress_struct cinfo) {
 			jpeg_inverse_dct idct = cinfo.idct;
 			int ci, i;
@@ -1896,7 +1896,7 @@ public class JPEGDecoder {
 //								4520,	6270,	5906,	5315,	4520,	3552,	2446,	1247
 //							};
 //							SHIFT_TEMPS
-//							
+//
 //							for (i = 0; i < DCTSIZE2; i++) {
 //								ifmtbl[i] = DESCALE(MULTIPLY16V16( qtbl.quantval[i], aanscales[i]), CONST_BITS-IFAST_SCALE_BITS);
 //							}
@@ -1938,7 +1938,7 @@ public class JPEGDecoder {
 			}
 		}
 	}
-			
+
 	static final class jpeg_input_controller {
 		int consume_input;
 		boolean has_multiple_scans;	/* True if file has multiple scans */
@@ -1946,27 +1946,27 @@ public class JPEGDecoder {
 
 		boolean inheaders;		/* true until first SOS is reached */
 	}
-	
+
 	static final class	jpeg_color_deconverter {
 //		JMETHOD(void, start_pass, (j_decompress_ptr cinfo));
 		int color_convert;
-		
+
 		/* Private state for YCC.RGB conversion */
 		int[] Cr_r_tab;		/* => table for Cr to R conversion */
 		int[] Cb_b_tab;		/* => table for Cb to B conversion */
 		int[] Cr_g_tab;		/* => table for Cr to G conversion */
 		int[] Cb_g_tab;		/* => table for Cb to G conversion */
-			
+
 		void start_pass (jpeg_decompress_struct cinfo) {
 			/* no work needed */
 		}
 
 	}
-		
+
 	static final class jpeg_d_post_controller {
 //		JMETHOD(void, start_pass, (j_decompress_ptr cinfo, J_BUF_MODE pass_mode));
 		int post_process_data;
-			
+
 		/* Color quantization source buffer: this holds output data from
 		 * the upsample/color conversion step to be passed to the quantizer.
 		 * For two-pass color quantization, we need a full-image buffer;
@@ -1978,7 +1978,7 @@ public class JPEGDecoder {
 		/* for two-pass mode only: */
 		int starting_row;	/* row # of first row in current strip */
 		int next_row;		/* index of next row to fill/empty in strip */
-				
+
 		void start_pass (jpeg_decompress_struct cinfo, int pass_mode) {
 			jpeg_d_post_controller post = cinfo.post;
 
@@ -2027,7 +2027,7 @@ public class JPEGDecoder {
 		}
 
 	}
-	
+
 	static final class jpeg_decompress_struct {
 //		jpeg_error_mgr * err;	/* Error handler module */\
 //		struct jpeg_memory_mgr * mem;	/* Memory manager module */\
@@ -2243,7 +2243,7 @@ public class JPEGDecoder {
 		 * read from the data source, but has not yet been processed.
 		 */
 		int unread_marker;
-		
+
 		int[] workspace = new int[DCTSIZE2];
 		int[] row_ctr = new int[1];
 
@@ -2319,7 +2319,7 @@ static void jinit_d_coef_controller (jpeg_decompress_struct cinfo, boolean need_
 			//if (cinfo.progressive_mode)
 				//access_rows *= 3;
 //#endif
-			coef.whole_image[ci] = 
+			coef.whole_image[ci] =
 				new short
 					[(int)jround_up( compptr.height_in_blocks, compptr.v_samp_factor)]
 				    [(int)jround_up( compptr.width_in_blocks, compptr.h_samp_factor)]
@@ -2707,7 +2707,7 @@ static void make_funny_pointers (jpeg_decompress_struct cinfo)
 	int M = cinfo.min_DCT_scaled_size;
 	jpeg_component_info compptr;
 	byte[][] buf, xbuf0, xbuf1;
-	
+
 	for (ci = 0; ci < cinfo.num_components; ci++) {
 		compptr = cinfo.comp_info[ci];
 		rgroup = (compptr.v_samp_factor * compptr.DCT_scaled_size) /
@@ -2895,7 +2895,7 @@ static void jinit_phuff_decoder (jpeg_decompress_struct cinfo) {
 	/* Create progression status table */
 	cinfo.coef_bits = new int[cinfo.num_components][DCTSIZE2];
 	coef_bit_ptr = cinfo.coef_bits;
-	for (ci = 0; ci < cinfo.num_components; ci++) 
+	for (ci = 0; ci < cinfo.num_components; ci++)
 		for (i = 0; i < DCTSIZE2; i++)
 			coef_bit_ptr[ci][i] = -1;
 }
@@ -2944,11 +2944,11 @@ static void jpeg_idct_islow (jpeg_decompress_struct cinfo, jpeg_component_info c
 	int ctr;
 	int[] workspace = cinfo.workspace;	/* buffers data between passes */
 //	SHIFT_TEMPS
-	
+
 	/* Pass 1: process columns from input, store into work array. */
 	/* Note results are scaled up by sqrt(8) compared to a true IDCT; */
 	/* furthermore, we scale the results by 2**PASS1_BITS. */
-	
+
 	inptr = coef_block;
 	quantptr = compptr.dct_table;
 	wsptr = workspace;
@@ -2962,7 +2962,7 @@ static void jpeg_idct_islow (jpeg_decompress_struct cinfo, jpeg_component_info c
 		 * With typical images and quantization tables, half or more of the
 		 * column DCT calculations can be simplified this way.
 		 */
-		
+
 		if (inptr[DCTSIZE*1+inptr_offset] == 0 && inptr[DCTSIZE*2+inptr_offset] == 0 &&
 			inptr[DCTSIZE*3+inptr_offset] == 0 && inptr[DCTSIZE*4+inptr_offset] == 0 &&
 			inptr[DCTSIZE*5+inptr_offset] == 0 && inptr[DCTSIZE*6+inptr_offset] == 0 &&
@@ -2970,7 +2970,7 @@ static void jpeg_idct_islow (jpeg_decompress_struct cinfo, jpeg_component_info c
 		{
 			/* AC terms all zero */
 			int dcval = ((inptr[DCTSIZE*0+inptr_offset]) * quantptr[DCTSIZE*0+quantptr_offset]) << PASS1_BITS;
-			
+
 			wsptr[DCTSIZE*0+wsptr_offset] = dcval;
 			wsptr[DCTSIZE*1+wsptr_offset] = dcval;
 			wsptr[DCTSIZE*2+wsptr_offset] = dcval;
@@ -2979,49 +2979,49 @@ static void jpeg_idct_islow (jpeg_decompress_struct cinfo, jpeg_component_info c
 			wsptr[DCTSIZE*5+wsptr_offset] = dcval;
 			wsptr[DCTSIZE*6+wsptr_offset] = dcval;
 			wsptr[DCTSIZE*7+wsptr_offset] = dcval;
-			
+
 			inptr_offset++;			/* advance pointers to next column */
 			quantptr_offset++;
 			wsptr_offset++;
 			continue;
 		}
-		
+
 		/* Even part: reverse the even part of the forward DCT. */
 		/* The rotator is sqrt(2)*c(-6). */
-		
+
 		z2 = ((inptr[DCTSIZE*2+inptr_offset]) * quantptr[DCTSIZE*2+quantptr_offset]);
 		z3 = ((inptr[DCTSIZE*6+inptr_offset]) * quantptr[DCTSIZE*6+quantptr_offset]);
-		
+
 		z1 = ((z2 + z3) * 4433/*FIX_0_541196100*/);
 		tmp2 = z1 + (z3 * - 15137/*FIX_1_847759065*/);
 		tmp3 = z1 + (z2 * 6270/*FIX_0_765366865*/);
-		
+
 		z2 = ((inptr[DCTSIZE*0+inptr_offset]) * quantptr[DCTSIZE*0+quantptr_offset]);
 		z3 = ((inptr[DCTSIZE*4+inptr_offset]) * quantptr[DCTSIZE*4+quantptr_offset]);
 
 		tmp0 = (z2 + z3) << CONST_BITS;
 		tmp1 = (z2 - z3) << CONST_BITS;
-		
+
 		tmp10 = tmp0 + tmp3;
 		tmp13 = tmp0 - tmp3;
 		tmp11 = tmp1 + tmp2;
 		tmp12 = tmp1 - tmp2;
-		
+
 		/* Odd part per figure 8; the matrix is unitary and hence its
 		 * transpose is its inverse.	i0..i3 are y7,y5,y3,y1 respectively.
 		 */
-		
+
 		tmp0 = ((inptr[DCTSIZE*7+inptr_offset]) * quantptr[DCTSIZE*7+quantptr_offset]);
 		tmp1 = ((inptr[DCTSIZE*5+inptr_offset]) * quantptr[DCTSIZE*5+quantptr_offset]);
 		tmp2 = ((inptr[DCTSIZE*3+inptr_offset]) * quantptr[DCTSIZE*3+quantptr_offset]);
 		tmp3 = ((inptr[DCTSIZE*1+inptr_offset]) * quantptr[DCTSIZE*1+quantptr_offset]);
-		
+
 		z1 = tmp0 + tmp3;
 		z2 = tmp1 + tmp2;
 		z3 = tmp0 + tmp2;
 		z4 = tmp1 + tmp3;
 		z5 = ((z3 + z4) * 9633/*FIX_1_175875602*/); /* sqrt(2) * c3 */
-		
+
 		tmp0 = (tmp0 * 2446/*FIX_0_298631336*/); /* sqrt(2) * (-c1+c3+c5-c7) */
 		tmp1 = (tmp1 * 16819/*FIX_2_053119869*/); /* sqrt(2) * ( c1+c3-c5+c7) */
 		tmp2 = (tmp2 * 25172/*FIX_3_072711026*/); /* sqrt(2) * ( c1+c3+c5-c7) */
@@ -3030,17 +3030,17 @@ static void jpeg_idct_islow (jpeg_decompress_struct cinfo, jpeg_component_info c
 		z2 = (z2 * - 20995/*FIX_2_562915447*/); /* sqrt(2) * (-c1-c3) */
 		z3 = (z3 * - 16069/*FIX_1_961570560*/); /* sqrt(2) * (-c3-c5) */
 		z4 = (z4 * - 3196/*FIX_0_390180644*/); /* sqrt(2) * (c5-c3) */
-		
+
 		z3 += z5;
 		z4 += z5;
-		
+
 		tmp0 += z1 + z3;
 		tmp1 += z2 + z4;
 		tmp2 += z2 + z3;
 		tmp3 += z1 + z4;
-		
+
 		/* Final output stage: inputs are tmp10..tmp13, tmp0..tmp3 */
-		
+
 //		#define DESCALE(x,n)	RIGHT_SHIFT((x) + (ONE << ((n)-1)), n)
 		wsptr[DCTSIZE*0+wsptr_offset] = (((tmp10 + tmp3) + (1 << ((CONST_BITS-PASS1_BITS)-1))) >> (CONST_BITS-PASS1_BITS));
 		wsptr[DCTSIZE*7+wsptr_offset] = (((tmp10 - tmp3) + (1 << ((CONST_BITS-PASS1_BITS)-1))) >> (CONST_BITS-PASS1_BITS));
@@ -3050,13 +3050,13 @@ static void jpeg_idct_islow (jpeg_decompress_struct cinfo, jpeg_component_info c
 		wsptr[DCTSIZE*5+wsptr_offset] = (((tmp12 - tmp1) + (1 << ((CONST_BITS-PASS1_BITS)-1))) >> (CONST_BITS-PASS1_BITS));
 		wsptr[DCTSIZE*3+wsptr_offset] = (((tmp13 + tmp0) + (1 << ((CONST_BITS-PASS1_BITS)-1))) >> (CONST_BITS-PASS1_BITS));
 		wsptr[DCTSIZE*4+wsptr_offset] = (((tmp13 - tmp0) + (1 << ((CONST_BITS-PASS1_BITS)-1))) >> (CONST_BITS-PASS1_BITS));
-		
+
 		inptr_offset++;			/* advance pointers to next column */
 		quantptr_offset++;
 		wsptr_offset++;
 	}
 
-	
+
 	/* Pass 2: process rows from work array, store into output array. */
 	/* Note that we must descale the results by a factor of 8 == 2**3, */
 	/* and also undo the PASS1_BITS scaling. */
@@ -3074,7 +3074,7 @@ static void jpeg_idct_islow (jpeg_decompress_struct cinfo, jpeg_component_info c
 		 * test takes more time than it's worth.	In that case this section
 		 * may be commented out.
 		 */
-		
+
 //#ifndef NO_ZERO_ROW_TEST
 		if (wsptr[1+wsptr_offset] == 0 && wsptr[2+wsptr_offset] == 0 && wsptr[3+wsptr_offset] == 0 && wsptr[4+wsptr_offset] == 0 &&
 			wsptr[5+wsptr_offset] == 0 && wsptr[6+wsptr_offset] == 0 && wsptr[7+wsptr_offset] == 0)
@@ -3083,7 +3083,7 @@ static void jpeg_idct_islow (jpeg_decompress_struct cinfo, jpeg_component_info c
 //			#define DESCALE(x,n)	RIGHT_SHIFT((x) + (ONE << ((n)-1)), n)
 			byte dcval = range_limit[range_limit_offset + ((((wsptr[0+wsptr_offset]) + (1 << ((PASS1_BITS+3)-1))) >> PASS1_BITS+3)
 					& RANGE_MASK)];
-			
+
 			outptr[0+outptr_offset] = dcval;
 			outptr[1+outptr_offset] = dcval;
 			outptr[2+outptr_offset] = dcval;
@@ -3097,40 +3097,40 @@ static void jpeg_idct_islow (jpeg_decompress_struct cinfo, jpeg_component_info c
 			continue;
 		}
 //#endif
-		
+
 		/* Even part: reverse the even part of the forward DCT. */
 		/* The rotator is sqrt(2)*c(-6). */
-		
+
 		z2 = wsptr[2+wsptr_offset];
 		z3 = wsptr[6+wsptr_offset];
-		
+
 		z1 = ((z2 + z3) * 4433/*FIX_0_541196100*/);
 		tmp2 = z1 + (z3 * - 15137/*FIX_1_847759065*/);
 		tmp3 = z1 + (z2 * 6270/*FIX_0_765366865*/);
-		
+
 		tmp0 = (wsptr[0+wsptr_offset] + wsptr[4+wsptr_offset]) << CONST_BITS;
 		tmp1 = (wsptr[0+wsptr_offset] - wsptr[4+wsptr_offset]) << CONST_BITS;
-		
+
 		tmp10 = tmp0 + tmp3;
 		tmp13 = tmp0 - tmp3;
 		tmp11 = tmp1 + tmp2;
 		tmp12 = tmp1 - tmp2;
-		
+
 		/* Odd part per figure 8; the matrix is unitary and hence its
 		 * transpose is its inverse.	i0..i3 are y7,y5,y3,y1 respectively.
 		 */
-		
+
 		tmp0 = wsptr[7+wsptr_offset];
 		tmp1 = wsptr[5+wsptr_offset];
 		tmp2 = wsptr[3+wsptr_offset];
 		tmp3 = wsptr[1+wsptr_offset];
-		
+
 		z1 = tmp0 + tmp3;
 		z2 = tmp1 + tmp2;
 		z3 = tmp0 + tmp2;
 		z4 = tmp1 + tmp3;
 		z5 = ((z3 + z4) * 9633/*FIX_1_175875602*/); /* sqrt(2) * c3 */
-		
+
 		tmp0 = (tmp0 * 2446/*FIX_0_298631336*/); /* sqrt(2) * (-c1+c3+c5-c7) */
 		tmp1 = (tmp1 * 16819/*FIX_2_053119869*/); /* sqrt(2) * ( c1+c3-c5+c7) */
 		tmp2 = (tmp2 * 25172/*FIX_3_072711026*/); /* sqrt(2) * ( c1+c3+c5-c7) */
@@ -3139,17 +3139,17 @@ static void jpeg_idct_islow (jpeg_decompress_struct cinfo, jpeg_component_info c
 		z2 = (z2 * - 20995/*FIX_2_562915447*/); /* sqrt(2) * (-c1-c3) */
 		z3 = (z3 * - 16069/*FIX_1_961570560*/); /* sqrt(2) * (-c3-c5) */
 		z4 = (z4 * - 3196/*FIX_0_390180644*/); /* sqrt(2) * (c5-c3) */
-		
+
 		z3 += z5;
 		z4 += z5;
-		
+
 		tmp0 += z1 + z3;
 		tmp1 += z2 + z4;
 		tmp2 += z2 + z3;
 		tmp3 += z1 + z4;
-		
+
 		/* Final output stage: inputs are tmp10..tmp13, tmp0..tmp3 */
-		
+
 
 //		#define DESCALE(x,n)	RIGHT_SHIFT((x) + (ONE << ((n)-1)), n)
 		outptr[0+outptr_offset] = range_limit[range_limit_offset + ((((tmp10 + tmp3) + (1 << ((CONST_BITS+PASS1_BITS+3)-1))) >>
@@ -3490,7 +3490,7 @@ static void prepare_for_output_pass (jpeg_decompress_struct cinfo) {
 			if (! master.using_merged_upsample)
 				cinfo.cconvert.start_pass (cinfo);
 			cinfo.upsample.start_pass (cinfo);
-			if (cinfo.quantize_colors) 
+			if (cinfo.quantize_colors)
 				cinfo.cquantize.start_pass (cinfo, master.is_dummy_pass);
 			cinfo.post.start_pass (cinfo, (master.is_dummy_pass ? JBUF_SAVE_AND_PASS : JBUF_PASS_THRU));
 			cinfo.main.start_pass (cinfo, JBUF_PASS_THRU);
@@ -3515,10 +3515,10 @@ static void prepare_for_output_pass (jpeg_decompress_struct cinfo) {
 static boolean jpeg_resync_to_restart (jpeg_decompress_struct cinfo, int desired) {
 	int marker = cinfo.unread_marker;
 	int action = 1;
-	
+
 	/* Always put up a warning. */
 //	WARNMS2(cinfo, JWRN_MUST_RESYNC, marker, desired);
-	
+
 	/* Outer loop handles repeated decision after scanning forward. */
 	for (;;) {
 		if (marker < M_SOF0)
@@ -3661,7 +3661,7 @@ static boolean jpeg_fill_bit_buffer (bitread_working_state state, int get_buffer
 					state.bits_left = bits_left;
 
 					return true;
-		
+
 				}
 			}
 
@@ -3711,7 +3711,7 @@ static int jpeg_huff_decode (bitread_working_state state, int get_buffer, int bi
 //	CHECK_BIT_BUFFER(*state, l, return -1);
 	{
 	if (bits_left < (l)) {
-		if (! jpeg_fill_bit_buffer(state,get_buffer,bits_left,l)) { 
+		if (! jpeg_fill_bit_buffer(state,get_buffer,bits_left,l)) {
 			return -1;
 		}
 		get_buffer = (state).get_buffer; bits_left = (state).bits_left;
@@ -3728,7 +3728,7 @@ static int jpeg_huff_decode (bitread_working_state state, int get_buffer, int bi
 //		CHECK_BIT_BUFFER(*state, 1, return -1);
 		{
 		if (bits_left < (1)) {
-			if (! jpeg_fill_bit_buffer(state,get_buffer,bits_left,1)) { 
+			if (! jpeg_fill_bit_buffer(state,get_buffer,bits_left,1)) {
 				return -1;
 			}
 			get_buffer = (state).get_buffer; bits_left = (state).bits_left;
@@ -4264,7 +4264,7 @@ static void process_data_simple_main (jpeg_decompress_struct cinfo, byte[][] out
 			case DECOMPRESS_SMOOTH_DATA:
 				result = decompress_smooth_data(cinfo, main.buffer, main.buffer_offset);
 				break;
-			case DECOMPRESS_ONEPASS: 
+			case DECOMPRESS_ONEPASS:
 				result = decompress_onepass(cinfo, main.buffer, main.buffer_offset);
 				break;
 			default: result = 0;
@@ -4383,13 +4383,13 @@ static boolean get_dht (jpeg_decompress_struct cinfo)
 	if (cinfo.bytes_offset == cinfo.bytes_in_buffer) fill_input_buffer(cinfo);
 	length |= cinfo.buffer[cinfo.bytes_offset++] & 0xFF;
 	length -= 2;
-	
+
 	while (length > 16) {
 		if (cinfo.bytes_offset == cinfo.bytes_in_buffer) fill_input_buffer(cinfo);
 		index = cinfo.buffer[cinfo.bytes_offset++] & 0xFF;
 
 //		TRACEMS1(cinfo, 1, JTRC_DHT, index);
-			
+
 		bits[0] = 0;
 		count = 0;
 		for (i = 1; i <= 16; i++) {
@@ -4469,7 +4469,7 @@ static boolean get_dqt (jpeg_decompress_struct cinfo)
 		if (n >= NUM_QUANT_TBLS)
 			error();
 //			ERREXIT1(cinfo, JERR_DQT_INDEX, n);
-			
+
 		if (cinfo.quant_tbl_ptrs[n] == null)
 			cinfo.quant_tbl_ptrs[n] = new JQUANT_TBL();
 		quant_ptr = cinfo.quant_tbl_ptrs[n];
@@ -4519,7 +4519,7 @@ static boolean get_dri (jpeg_decompress_struct cinfo)
 	length = (cinfo.buffer[cinfo.bytes_offset++] & 0xFF) << 8;
 	if (cinfo.bytes_offset == cinfo.bytes_in_buffer) fill_input_buffer(cinfo);
 	length |= cinfo.buffer[cinfo.bytes_offset++] & 0xFF;
-	
+
 	if (length != 4)
 	error();
 //		ERREXIT(cinfo, JERR_BAD_LENGTH);
@@ -4546,7 +4546,7 @@ static boolean get_dac (jpeg_decompress_struct cinfo)
 	if (cinfo.bytes_offset == cinfo.bytes_in_buffer) fill_input_buffer(cinfo);
 	length |= cinfo.buffer[cinfo.bytes_offset++] & 0xFF;
 	length -= 2;
-	
+
 	while (length > 0) {
 		if (cinfo.bytes_offset == cinfo.bytes_in_buffer) fill_input_buffer(cinfo);
 		index = cinfo.buffer[cinfo.bytes_offset++] & 0xFF;
@@ -4614,7 +4614,7 @@ static boolean get_sos (jpeg_decompress_struct cinfo)
 		cc = cinfo.buffer[cinfo.bytes_offset++] & 0xFF;
 		if (cinfo.bytes_offset == cinfo.bytes_in_buffer) fill_input_buffer(cinfo);
 		c = cinfo.buffer[cinfo.bytes_offset++] & 0xFF;
-		
+
 		for (ci = 0; ci < cinfo.num_components; ci++) {
 			compptr = cinfo.comp_info[ci];
 			if (cc == compptr.component_id)
@@ -4628,7 +4628,7 @@ static boolean get_sos (jpeg_decompress_struct cinfo)
 		cinfo.cur_comp_info[i] = compptr;
 		compptr.dc_tbl_no = (c >> 4) & 15;
 		compptr.ac_tbl_no = (c		 ) & 15;
-		
+
 //		TRACEMS3(cinfo, 1, JTRC_SOS_COMPONENT, cc, compptr.dc_tbl_no, compptr.ac_tbl_no);
 	}
 
@@ -4679,7 +4679,7 @@ static boolean get_sof (jpeg_decompress_struct cinfo, boolean is_prog, boolean i
 	cinfo.image_width = (cinfo.buffer[cinfo.bytes_offset++] & 0xFF) << 8;
 	if (cinfo.bytes_offset == cinfo.bytes_in_buffer) fill_input_buffer(cinfo);
 	cinfo.image_width |= cinfo.buffer[cinfo.bytes_offset++] & 0xFF;
-	
+
 	if (cinfo.bytes_offset == cinfo.bytes_in_buffer) fill_input_buffer(cinfo);
 	cinfo.num_components = cinfo.buffer[cinfo.bytes_offset++] & 0xFF;
 
@@ -4706,7 +4706,7 @@ static boolean get_sof (jpeg_decompress_struct cinfo, boolean is_prog, boolean i
 
 	if (cinfo.comp_info == null)	/* do only once, even if suspend */
 		cinfo.comp_info = new jpeg_component_info[cinfo.num_components];
-	
+
 	for (ci = 0; ci < cinfo.num_components; ci++) {
 		jpeg_component_info compptr = cinfo.comp_info[ci] = new jpeg_component_info();
 		compptr.component_index = ci;
@@ -4766,7 +4766,7 @@ static void sep_upsample (jpeg_decompress_struct cinfo, byte[][][] input_buf, in
 	/* Not more than the distance to the end of the image.	Need this test
 	 * in case the image height is not a multiple of max_v_samp_factor:
 	 */
-	if (num_rows > upsample.rows_to_go) 
+	if (num_rows > upsample.rows_to_go)
 		num_rows = upsample.rows_to_go;
 	/* And not more than what the client can accept: */
 	out_rows_avail -= out_row_ctr[0];
@@ -4790,20 +4790,20 @@ static void sep_upsample (jpeg_decompress_struct cinfo, byte[][][] input_buf, in
 		in_row_group_ctr[0]++;
 	}
 }
-	
+
 static void noop_upsample (jpeg_decompress_struct cinfo, jpeg_component_info compptr,
 	 byte[][] input_data, int input_data_offset, byte[][][] output_data_ptr, int[] output_data_offset, int output_data_index)
 {
 	output_data_ptr[output_data_index] = null;	/* safety check */
 }
-	
+
 static void fullsize_upsample (jpeg_decompress_struct cinfo, jpeg_component_info compptr,
 	 byte[][] input_data, int input_data_offset, byte[][][] output_data_ptr, int[] output_data_offset, int output_data_index)
 {
 	output_data_ptr[output_data_index] = input_data;
 	output_data_offset[output_data_index] = input_data_offset;
 }
-	
+
 static void h2v1_upsample (jpeg_decompress_struct cinfo, jpeg_component_info compptr,
 	 byte[][] input_data, int input_data_offset, byte[][][] output_data_ptr, int[] output_data_offset, int output_data_index)
 {
@@ -4826,7 +4826,7 @@ static void h2v1_upsample (jpeg_decompress_struct cinfo, jpeg_component_info com
 		}
 	}
 }
-	
+
 static void h2v2_upsample (jpeg_decompress_struct cinfo, jpeg_component_info compptr,
 	byte[][] input_data, int input_data_offset, byte[][][] output_data_ptr, int[] output_data_offset, int output_data_index)
 {
@@ -4853,7 +4853,7 @@ static void h2v2_upsample (jpeg_decompress_struct cinfo, jpeg_component_info com
 		outrow += 2;
 	}
 }
-	
+
 static void h2v1_fancy_upsample (jpeg_decompress_struct cinfo, jpeg_component_info compptr,
 	 byte[][] input_data, int input_data_offset, byte[][][] output_data_ptr, int[] output_data_offset, int output_data_index)
 {
@@ -4861,7 +4861,7 @@ static void h2v1_fancy_upsample (jpeg_decompress_struct cinfo, jpeg_component_in
 	byte[] inptr, outptr;
 	int invalue;
 	int colctr;
-	int inrow;					
+	int inrow;
 	output_data_offset[output_data_index] = 0;
 
 	for (inrow = 0; inrow < cinfo.max_v_samp_factor; inrow++) {
@@ -4886,7 +4886,7 @@ static void h2v1_fancy_upsample (jpeg_decompress_struct cinfo, jpeg_component_in
 		outptr[outptr_offset++] = (byte) invalue;
 	}
 }
-	
+
 static void h2v2_fancy_upsample (jpeg_decompress_struct cinfo, jpeg_component_info compptr,
 	byte[][] input_data, int input_data_offset, byte[][][] output_data_ptr, int[] output_data_offset, int output_data_index)
 {
@@ -4907,7 +4907,7 @@ static void h2v2_fancy_upsample (jpeg_decompress_struct cinfo, jpeg_component_in
 			else			/* next nearest is row below */
 				inptr1 = input_data[inrow+1+input_data_offset];
 			outptr = output_data[outrow++];
-				
+
 			int inptr0_offset = 0, inptr1_offset = 0, outptr_offset = 0;
 
 			/* Special case for first column */
@@ -4933,7 +4933,7 @@ static void h2v2_fancy_upsample (jpeg_decompress_struct cinfo, jpeg_component_in
 		inrow++;
 	}
 }
-	
+
 static void int_upsample (jpeg_decompress_struct cinfo, jpeg_component_info compptr,
 	 byte[][] input_data, int input_data_offset, byte[][][] output_data_ptr, int[] output_data_offset, int output_data_index)
 {
@@ -4946,7 +4946,7 @@ static void int_upsample (jpeg_decompress_struct cinfo, jpeg_component_info comp
 	int h_expand, v_expand;
 	int inrow, outrow;
 	output_data_offset[output_data_index] = 0;
-		
+
 	h_expand = upsample.h_expand[compptr.component_index];
 	v_expand = upsample.v_expand[compptr.component_index];
 
@@ -5004,7 +5004,7 @@ static void null_convert (jpeg_decompress_struct cinfo,
 		output_buf_offset++;
 	}
 }
-	
+
 static void grayscale_convert (jpeg_decompress_struct cinfo,
 	byte[][][] input_buf, int[] input_buf_offset, int input_row,
 	byte[][] output_buf, int output_buf_offset, int num_rows)
@@ -5032,7 +5032,7 @@ static void gray_rgb_convert (jpeg_decompress_struct cinfo,
 		}
 	}
 }
-	
+
 static void ycc_rgb_convert (jpeg_decompress_struct cinfo,
 	byte[][][] input_buf, int[] input_buf_offset, int input_row,
 	byte[][] output_buf, int output_buf_offset, int num_rows)
@@ -5107,13 +5107,13 @@ static boolean skip_variable (jpeg_decompress_struct cinfo)
 	length |= cinfo.buffer[cinfo.bytes_offset++] & 0xFF;
 
 	length -= 2;
-	
+
 //	TRACEMS2(cinfo, 1, JTRC_MISC_MARKER, cinfo.unread_marker, (int) length);
 
 	if (length > 0) {
 		skip_input_data (cinfo, length);
 	}
-	
+
 	return true;
 }
 
@@ -5272,7 +5272,7 @@ static void examine_app14 (jpeg_decompress_struct cinfo, byte[] data, int datale
 
 static boolean get_soi (jpeg_decompress_struct cinfo) /* Process an SOI marker */ {
 	int i;
-	
+
 //	TRACEMS(cinfo, 1, JTRC_SOI);
 
 	if (cinfo.marker.saw_SOI)
@@ -5543,7 +5543,7 @@ static int consume_input (jpeg_decompress_struct cinfo) {
 		default:
 			error();
 	}
-	return 0;	
+	return 0;
 }
 
 static boolean fill_input_buffer(jpeg_decompress_struct cinfo) {
@@ -5699,32 +5699,32 @@ static int read_markers (jpeg_decompress_struct cinfo) {
 					return JPEG_SUSPENDED;
 				cinfo.unread_marker = 0;	/* processed the marker */
 				return JPEG_REACHED_SOS;
-	
+
 			case M_EOI:
 //				TRACEMS(cinfo, 1, JTRC_EOI);
 				cinfo.unread_marker = 0;	/* processed the marker */
 				return JPEG_REACHED_EOI;
-		
+
 			case M_DAC:
 				if (! get_dac(cinfo))
 					return JPEG_SUSPENDED;
 				break;
-		
+
 			case M_DHT:
 				if (! get_dht(cinfo))
 					return JPEG_SUSPENDED;
 				break;
-		
+
 			case M_DQT:
 				if (! get_dqt(cinfo))
 					return JPEG_SUSPENDED;
 				break;
-		
+
 			case M_DRI:
 				if (! get_dri(cinfo))
 					return JPEG_SUSPENDED;
 				break;
-		
+
 			case M_APP0:
 			case M_APP1:
 			case M_APP2:
@@ -5744,7 +5744,7 @@ static int read_markers (jpeg_decompress_struct cinfo) {
 				if (! process_APPn(cinfo.unread_marker - M_APP0, cinfo))
 					return JPEG_SUSPENDED;
 				break;
-		
+
 			case M_COM:
 				if (! process_COM(cinfo))
 					return JPEG_SUSPENDED;
@@ -5865,16 +5865,16 @@ static void per_scan_setup (jpeg_decompress_struct cinfo)
 {
 	int ci, mcublks, tmp = 0;
 	jpeg_component_info compptr;
-	
+
 	if (cinfo.comps_in_scan == 1) {
-		
+
 		/* Noninterleaved (single-component) scan */
 		compptr = cinfo.cur_comp_info[0];
-		
+
 		/* Overall image size in MCUs */
 		cinfo.MCUs_per_row = compptr.width_in_blocks;
 		cinfo.MCU_rows_in_scan = compptr.height_in_blocks;
-		
+
 		/* For noninterleaved scan, always one block per MCU */
 		compptr.MCU_width = 1;
 		compptr.MCU_height = 1;
@@ -5887,24 +5887,24 @@ static void per_scan_setup (jpeg_decompress_struct cinfo)
 		tmp = (compptr.height_in_blocks % compptr.v_samp_factor);
 		if (tmp == 0) tmp = compptr.v_samp_factor;
 		compptr.last_row_height = tmp;
-		
+
 		/* Prepare array describing MCU composition */
 		cinfo.blocks_in_MCU = 1;
 		cinfo.MCU_membership[0] = 0;
-		
+
 	} else {
-		
+
 		/* Interleaved (multi-component) scan */
 		if (cinfo.comps_in_scan <= 0 || cinfo.comps_in_scan > MAX_COMPS_IN_SCAN)
 			error();
 //			ERREXIT2(cinfo, JERR_COMPONENT_COUNT, cinfo.comps_in_scan, MAX_COMPS_IN_SCAN);
-		
+
 		/* Overall image size in MCUs */
 		cinfo.MCUs_per_row = (int)jdiv_round_up( cinfo.image_width, (cinfo.max_h_samp_factor*DCTSIZE));
 		cinfo.MCU_rows_in_scan = (int)jdiv_round_up( cinfo.image_height, (cinfo.max_v_samp_factor*DCTSIZE));
-		
+
 		cinfo.blocks_in_MCU = 0;
-		
+
 		for (ci = 0; ci < cinfo.comps_in_scan; ci++) {
 			compptr = cinfo.cur_comp_info[ci];
 			/* Sampling factors give # of blocks of component in each MCU */
@@ -5928,7 +5928,7 @@ static void per_scan_setup (jpeg_decompress_struct cinfo)
 				cinfo.MCU_membership[cinfo.blocks_in_MCU++] = ci;
 			}
 		}
-		
+
 	}
 }
 
@@ -5978,7 +5978,7 @@ static void jpeg_make_d_derived_tbl (jpeg_decompress_struct cinfo, boolean isDC,
 
 	/* Allocate a workspace if we haven't already done so. */
 	dtbl.pub = htbl;		/* fill in back link */
-	
+
 	/* Figure C.1: make table of Huffman code length for each symbol */
 
 	p = 0;
@@ -5992,10 +5992,10 @@ static void jpeg_make_d_derived_tbl (jpeg_decompress_struct cinfo, boolean isDC,
 	}
 	huffsize[p] = 0;
 	numsymbols = p;
-	
+
 	/* Figure C.2: generate the codes themselves */
 	/* We also validate that the counts represent a legal Huffman code tree. */
-	
+
 	code = 0;
 	si = huffsize[0];
 	p = 0;
@@ -6139,7 +6139,7 @@ static void default_decompress_parms (jpeg_decompress_struct cinfo) {
 			cinfo.jpeg_color_space = JCS_GRAYSCALE;
 			cinfo.out_color_space = JCS_GRAYSCALE;
 			break;
-			
+
 		case 3:
 			if (cinfo.saw_JFIF_marker) {
 				cinfo.jpeg_color_space = JCS_YCbCr; /* JFIF implies YCbCr */
@@ -6151,7 +6151,7 @@ static void default_decompress_parms (jpeg_decompress_struct cinfo) {
 					case 1:
 						cinfo.jpeg_color_space = JCS_YCbCr;
 						break;
-					default:	
+					default:
 //						WARNMS1(cinfo, JWRN_ADOBE_XFORM, cinfo.Adobe_transform);
 						cinfo.jpeg_color_space = JCS_YCbCr; /* assume it's YCbCr */
 					break;
@@ -6161,7 +6161,7 @@ static void default_decompress_parms (jpeg_decompress_struct cinfo) {
 				int cid0 = cinfo.comp_info[0].component_id;
 				int cid1 = cinfo.comp_info[1].component_id;
 				int cid2 = cinfo.comp_info[2].component_id;
-	
+
 				if (cid0 == 1 && cid1 == 2 && cid2 == 3)
 					cinfo.jpeg_color_space = JCS_YCbCr; /* assume JFIF w/out marker */
 				else if (cid0 == 82 && cid1 == 71 && cid2 == 66)
@@ -6174,7 +6174,7 @@ static void default_decompress_parms (jpeg_decompress_struct cinfo) {
 			/* Always guess RGB is proper output colorspace. */
 			cinfo.out_color_space = JCS_RGB;
 			break;
-			
+
 		case 4:
 			if (cinfo.saw_Adobe_marker) {
 				switch (cinfo.Adobe_transform) {
@@ -6195,7 +6195,7 @@ static void default_decompress_parms (jpeg_decompress_struct cinfo) {
 			}
 			cinfo.out_color_space = JCS_CMYK;
 			break;
-			
+
 		default:
 			cinfo.jpeg_color_space = JCS_UNKNOWN;
 			cinfo.out_color_space = JCS_UNKNOWN;
@@ -6305,7 +6305,7 @@ static boolean isFileFormat(LEDataInputStream stream) {
 		return false;
 	}
 }
-	
+
 static ImageData[] loadFromByteStream(InputStream inputStream, ImageLoader loader) {
 	jpeg_decompress_struct cinfo = new jpeg_decompress_struct();
 	cinfo.inputStream = inputStream;

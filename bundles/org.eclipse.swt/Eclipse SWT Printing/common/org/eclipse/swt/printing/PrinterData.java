@@ -34,7 +34,7 @@ import org.eclipse.swt.graphics.*;
  */
 
 public final class PrinterData extends DeviceData {
-	
+
 	/**
 	 * the printer driver
 	 * On Windows systems, this is the name of the driver (often "winspool").
@@ -45,14 +45,14 @@ public final class PrinterData extends DeviceData {
 	 */
 	// TODO: note that this api is not finalized for GTK+
 	public String driver;
-	
+
 	/**
 	 * the name of the printer
 	 * On Windows systems, this is the name of the 'device'.
 	 * On Mac OSX, X/Window systems, and GTK+, this is the printer's 'name'.
 	 */
 	public String name;
-	
+
 	/**
 	 * the scope of the print job, expressed as one of the following values:
 	 * <dl>
@@ -65,7 +65,7 @@ public final class PrinterData extends DeviceData {
 	 * </dl>
 	 */
 	public int scope = ALL_PAGES;
-	
+
 	/**
 	 * the start page of a page range, used when scope is PAGE_RANGE.
 	 * This value can be from 1 to the maximum number of pages for the platform.
@@ -77,18 +77,18 @@ public final class PrinterData extends DeviceData {
 	 * This value can be from 1 to the maximum number of pages for the platform.
 	 */
 	public int endPage = 1;
-	
+
 	/**
 	 * whether or not the print job should go to a file
 	 */
 	public boolean printToFile = false;
-	
+
 	/**
 	 * the name of the file to print to if printToFile is true.
 	 * Note that this field is ignored if printToFile is false.
 	 */
 	public String fileName;
-	
+
 	/**
 	 * the number of copies to print.
 	 * Note that this field may be controlled by the printer driver
@@ -96,7 +96,7 @@ public final class PrinterData extends DeviceData {
 	 * multiple copies, and if so, the value of this field will always be 1.
 	 */
 	public int copyCount = 1;
-	
+
 	/**
 	 * whether or not the printer should collate the printed paper
 	 * Note that this field may be controlled by the printer driver.
@@ -104,11 +104,11 @@ public final class PrinterData extends DeviceData {
 	 * collation, and if so, the value of this field will always be false.
 	 */
 	public boolean collate = false;
-	
+
 	/**
 	 * The orientation of the paper, which can be either PORTRAIT
 	 * or LANDSCAPE.
-	 * 
+	 *
 	 * @since 3.5
 	 */
 	public int orientation = PORTRAIT;
@@ -132,7 +132,7 @@ public final class PrinterData extends DeviceData {
 	 * A printer's default value is typically single-sided,
 	 * however it can default to double-sided in order to save paper.
 	 * </p>
-	 * 
+	 *
 	 * @since 3.7
 	 */
 	public int duplex = SWT.DEFAULT;
@@ -140,49 +140,49 @@ public final class PrinterData extends DeviceData {
 	/**
 	 * <code>scope</code> field value indicating that
 	 * all pages should be printed
-	 */	
+	 */
 	public static final int ALL_PAGES = 0;
-	
+
 	/**
 	 * <code>scope</code> field value indicating that
 	 * the range of pages specified by startPage and endPage
 	 * should be printed
-	 */	
+	 */
 	public static final int PAGE_RANGE = 1;
-	
+
 	/**
 	 * <code>scope</code> field value indicating that
 	 * the current selection should be printed
-	 */	
+	 */
 	public static final int SELECTION = 2;
-		
+
 	/**
 	 * <code>orientation</code> field value indicating
 	 * portrait paper orientation
-	 * 
+	 *
 	 * @since 3.5
 	 */
 	public static final int PORTRAIT = 1;
-	
+
 	/**
 	 * <code>orientation</code> field value indicating
 	 * landscape paper orientation
-	 * 
+	 *
 	 * @since 3.5
 	 */
 	public static final int LANDSCAPE = 2;
-	
+
  	/**
 	 * <code>duplex</code> field value indicating
 	 * single-sided printing.
 	 * <p>
 	 * This is also known as simplex printing.
 	 * </p>
-	 * 
+	 *
 	 * @since 3.7
 	 */
 	public static final int DUPLEX_NONE = 0;
-	
+
 	/**
 	 * <code>duplex</code> field value indicating
 	 * double-sided printing for binding on the long edge.
@@ -192,11 +192,11 @@ public final class PrinterData extends DeviceData {
 	 * </p><p>
 	 * This is also known as duplex printing.
 	 * </p>
-	 * 
+	 *
 	 * @since 3.7
 	 */
 	public static final int DUPLEX_LONG_EDGE = 1;
-	
+
 	/**
 	 * <code>duplex</code> field value indicating
 	 * double-sided printing for binding on the short edge.
@@ -206,11 +206,11 @@ public final class PrinterData extends DeviceData {
 	 * </p><p>
 	 * This is also known as duplex tumble printing.
 	 * </p>
-	 * 
+	 *
 	 * @since 3.7
 	 */
 	public static final int DUPLEX_SHORT_EDGE = 2;
-	
+
 	/**
 	 * private, platform-specific data
 	 * On Windows, this contains a copy of the DEVMODE struct
@@ -220,13 +220,13 @@ public final class PrinterData extends DeviceData {
 	 * On OS X Carbon, this contains a copy of the PrintSettings and PageFormat
 	 * returned from the <code>PrintDialog</code>.
 	 * This field is not currently used on the X/Window System.
-	 */	
+	 */
 	byte [] otherData;
 
 	/**
 	 * Constructs an instance of this class that can be
 	 * used to print to the default printer.
-	 * 
+	 *
 	 * @see Printer#getDefaultPrinterData
 	 */
 	public PrinterData() {

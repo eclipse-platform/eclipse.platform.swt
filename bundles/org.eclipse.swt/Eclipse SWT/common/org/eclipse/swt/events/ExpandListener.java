@@ -19,16 +19,16 @@ import org.eclipse.swt.internal.SWTEventListener;
  *
  * <p>
  * After creating an instance of a class that implements
- * this interface it can be added to a <code>ExpandBar</code> 
+ * this interface it can be added to a <code>ExpandBar</code>
  * control using the <code>addExpandListener</code> method and
- * removed using the <code>removeExpandListener</code> method. 
+ * removed using the <code>removeExpandListener</code> method.
  * When a item of the <code>ExpandBar</code> is expanded or
  * collapsed, the appropriate method will be invoked.
  * </p>
  *
  * @see ExpandAdapter
  * @see ExpandEvent
- * 
+ *
  * @since 3.2
  */
 public interface ExpandListener extends SWTEventListener {

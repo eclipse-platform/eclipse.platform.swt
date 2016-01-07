@@ -34,11 +34,11 @@ package org.eclipse.swt.accessibility;
  * @see AccessibleTextListener
  * @see AccessibleTextEvent
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
- * 
+ *
  * @since 3.0
  */
 public abstract class AccessibleTextAdapter implements AccessibleTextListener {
-	
+
 	/**
 	 * Sent when an accessibility client requests the current character offset
 	 * of the text caret.

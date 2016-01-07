@@ -15,13 +15,13 @@ import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.widgets.*;
 
 /**
- * Instances of this class lay out the control children of a 
- * <code>Composite</code> in a grid. 
+ * Instances of this class lay out the control children of a
+ * <code>Composite</code> in a grid.
  * <p>
- * <code>GridLayout</code> has a number of configuration fields, and the 
- * controls it lays out can have an associated layout data object, called 
- * <code>GridData</code>. The power of <code>GridLayout</code> lies in the 
- * ability to configure <code>GridData</code> for each control in the layout. 
+ * <code>GridLayout</code> has a number of configuration fields, and the
+ * controls it lays out can have an associated layout data object, called
+ * <code>GridData</code>. The power of <code>GridLayout</code> lies in the
+ * ability to configure <code>GridData</code> for each control in the layout.
  * </p>
  * <p>
  * The following code creates a shell managed by a <code>GridLayout</code>
@@ -33,19 +33,19 @@ import org.eclipse.swt.widgets.*;
  * 		gridLayout.numColumns = 3;
  * 		shell.setLayout(gridLayout);
  * </pre>
- * The <code>numColumns</code> field is the most important field in a 
- * <code>GridLayout</code>. Widgets are laid out in columns from left 
- * to right, and a new row is created when <code>numColumns</code> + 1 
+ * The <code>numColumns</code> field is the most important field in a
+ * <code>GridLayout</code>. Widgets are laid out in columns from left
+ * to right, and a new row is created when <code>numColumns</code> + 1
  * controls are added to the <code>Composite<code>.
  * </p>
- * 
+ *
  * @see GridData
  * @see <a href="http://www.eclipse.org/swt/snippets/#gridlayout">GridLayout snippets</a>
  * @see <a href="http://www.eclipse.org/swt/examples.php">SWT Example: LayoutExample</a>
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  */
 public final class GridLayout extends Layout {
- 
+
  	/**
  	 * numColumns specifies the number of cell columns in the layout.
  	 * If numColumns has a value less than 1, the layout will not
@@ -62,7 +62,7 @@ public final class GridLayout extends Layout {
 	 * The default value is false.
 	 */
 	public boolean makeColumnsEqualWidth = false;
-	
+
 	/**
 	 * marginWidth specifies the number of pixels of horizontal margin
 	 * that will be placed along the left and right edges of the layout.
@@ -70,7 +70,7 @@ public final class GridLayout extends Layout {
 	 * The default value is 5.
 	 */
  	public int marginWidth = 5;
- 	
+
 	/**
 	 * marginHeight specifies the number of pixels of vertical margin
 	 * that will be placed along the top and bottom edges of the layout.
@@ -84,7 +84,7 @@ public final class GridLayout extends Layout {
 	 * that will be placed along the left edge of the layout.
 	 *
 	 * The default value is 0.
-	 * 
+	 *
 	 * @since 3.1
 	 */
 	public int marginLeft = 0;
@@ -94,7 +94,7 @@ public final class GridLayout extends Layout {
 	 * that will be placed along the top edge of the layout.
 	 *
 	 * The default value is 0.
-	 * 
+	 *
 	 * @since 3.1
 	 */
 	public int marginTop = 0;
@@ -104,7 +104,7 @@ public final class GridLayout extends Layout {
 	 * that will be placed along the right edge of the layout.
 	 *
 	 * The default value is 0.
-	 * 
+	 *
 	 * @since 3.1
 	 */
 	public int marginRight = 0;
@@ -114,7 +114,7 @@ public final class GridLayout extends Layout {
 	 * that will be placed along the bottom edge of the layout.
 	 *
 	 * The default value is 0.
-	 * 
+	 *
 	 * @since 3.1
 	 */
 	public int marginBottom = 0;
@@ -135,7 +135,7 @@ public final class GridLayout extends Layout {
 	 * The default value is 5.
 	 */
  	public int verticalSpacing = 5;
- 
+
 /**
  * Constructs a new instance of this class
  * with a single column.
@@ -151,7 +151,7 @@ public GridLayout () {}
  *
  * @param numColumns the number of columns in the grid
  * @param makeColumnsEqualWidth whether or not the columns will have equal width
- * 
+ *
  * @since 2.0
  */
 public GridLayout (int numColumns, boolean makeColumnsEqualWidth) {
@@ -208,7 +208,7 @@ Point layout (Composite composite, boolean move, int x, int y, int width, int he
 		GridData data = (GridData) control.getLayoutData ();
 		if (data == null || !data.exclude) {
 			children [count++] = children [i];
-		} 
+		}
 	}
 	if (count == 0) {
 		return new Point (marginLeft + marginWidth * 2 + marginRight, marginTop + marginHeight * 2 + marginBottom);
@@ -241,7 +241,7 @@ Point layout (Composite composite, boolean move, int x, int y, int width, int he
 	/* Build the grid */
 	int row = 0, column = 0, rowCount = 0, columnCount = numColumns;
 	Control [][] grid = new Control [4] [columnCount];
-	for (int i=0; i<count; i++) {	
+	for (int i=0; i<count; i++) {
 		Control child = children [i];
 		GridData data = (GridData) child.getLayoutData ();
 		int hSpan = Math.max (1, Math.min (data.horizontalSpan, columnCount));
@@ -407,7 +407,7 @@ Point layout (Composite composite, boolean move, int x, int y, int width, int he
 					}
 				}
 				if (last > -1) widths [last] += remainder;
-				
+
 				for (int j=0; j<columnCount; j++) {
 					for (int i=0; i<rowCount; i++) {
 						GridData data = getData (grid, i, j, rowCount, columnCount, false);
@@ -433,7 +433,7 @@ Point layout (Composite composite, boolean move, int x, int y, int width, int he
 													widths [last2=j-k] += delta2;
 												}
 											}
-											if (last2 > -1) widths [last2] += remainder2;	
+											if (last2 > -1) widths [last2] += remainder2;
 										}
 									}
 								}
@@ -545,7 +545,7 @@ Point layout (Composite composite, boolean move, int x, int y, int width, int he
 									heights [last=i-k] += delta;
 								}
 							}
-							if (last > -1) heights [last] += remainder;	
+							if (last > -1) heights [last] += remainder;
 						}
 					}
 					if (!data.grabExcessVerticalSpace || data.minimumHeight != 0) {
@@ -562,7 +562,7 @@ Point layout (Composite composite, boolean move, int x, int y, int width, int he
 										minHeights [last=i-k] += delta;
 									}
 								}
-								if (last > -1) minHeights [last] += remainder;	
+								if (last > -1) minHeights [last] += remainder;
 							}
 						}
 					}
@@ -592,7 +592,7 @@ Point layout (Composite composite, boolean move, int x, int y, int width, int he
 				}
 			}
 			if (last > -1) heights [last] += remainder;
-			
+
 			for (int i=0; i<rowCount; i++) {
 				for (int j=0; j<columnCount; j++) {
 					GridData data = getData (grid, i, j, rowCount, columnCount, false);

@@ -16,9 +16,9 @@ public class PngInputStream extends InputStream {
 	PngChunkReader reader;
 	PngChunk chunk;
 	int offset, length;
-	
-	final static int DATA_OFFSET = 8; 
-	
+
+	final static int DATA_OFFSET = 8;
+
 public PngInputStream(PngIdatChunk chunk, PngChunkReader reader) {
 	this.chunk = chunk;
 	this.reader = reader;
