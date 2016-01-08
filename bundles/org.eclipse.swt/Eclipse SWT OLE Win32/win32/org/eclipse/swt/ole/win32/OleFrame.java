@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2012 IBM Corporation and others.
+ * Copyright (c) 2000, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -57,6 +57,10 @@ final public class OleFrame extends Composite
 
 	private Listener listener;
 	
+	private long /*int*/ shellHandle;
+	private long /*int*/ oldMenuHandle;
+	private long /*int*/ newMenuHandle;
+
 	private static String CHECK_FOCUS = "OLE_CHECK_FOCUS"; //$NON-NLS-1$
 	private static String HHOOK = "OLE_HHOOK"; //$NON-NLS-1$
 	private static String HHOOKMSG = "OLE_HHOOK_MSG"; //$NON-NLS-1$
@@ -573,6 +577,15 @@ private void onDispose(Event e) {
 	removeListener(SWT.Resize, listener);
 	removeListener(SWT.Move, listener);
 }
+void onFocusIn(Event e) {
+	if (OS.GetMenu(shellHandle) != newMenuHandle)
+		OS.SetMenu(shellHandle, newMenuHandle);
+}
+void onFocusOut(Event e) {
+	Control control = getDisplay().getFocusControl();
+	if (OS.GetMenu(shellHandle) != oldMenuHandle && control != null && control.handle != shellHandle)
+		OS.SetMenu(shellHandle, oldMenuHandle);
+}
 private void onResize(Event e) {
 	if (objIOleInPlaceActiveObject != null) {
 		RECT lpRect = new RECT();
@@ -765,8 +778,9 @@ private int SetMenu(long /*int*/ hmenuShared, long /*int*/ holemenu, long /*int*
 	}
 	if (hmenuShared == 0) return COM.E_FAIL;
 	
-	OS.SetMenu(handle, hmenuShared);
-	OS.DrawMenuBar(handle);
+	shellHandle = handle;
+	oldMenuHandle = menubar.handle;
+	newMenuHandle = hmenuShared;
 	
 	return COM.OleSetMenuDescriptor(holemenu, handle, hwndActiveObject, iOleInPlaceFrame.getAddress(), inPlaceActiveObject);
 }
