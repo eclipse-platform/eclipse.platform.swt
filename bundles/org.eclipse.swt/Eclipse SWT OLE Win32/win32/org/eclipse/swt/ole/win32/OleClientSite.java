@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2012 IBM Corporation and others.
+ * Copyright (c) 2000, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -122,13 +122,26 @@ protected OleClientSite(Composite parent, int style) {
 	isStatic = false;
 
 	listener = new Listener() {
+		private int nestedFocusEvents = 0;
 		public void handleEvent(Event e) {
 			switch (e.type) {
 			case SWT.Resize :
 			case SWT.Move :    onResize(e); break;
 			case SWT.Dispose : onDispose(e); break;
-			case SWT.FocusIn:  onFocusIn(e); break;
-			case SWT.FocusOut:  onFocusOut(e); break;
+			case SWT.FocusIn:
+				nestedFocusEvents++;
+				onFocusIn(e);
+				nestedFocusEvents--;
+				if (nestedFocusEvents == 0)
+					frame.onFocusIn(e);
+				break;
+			case SWT.FocusOut:
+				nestedFocusEvents++;
+				onFocusOut(e);
+				nestedFocusEvents--;
+				if (nestedFocusEvents == 0)
+					frame.onFocusOut(e);
+				break;
 			case SWT.Paint:    onPaint(e); break;
 			case SWT.Traverse: onTraverse(e); break;
 			case SWT.KeyDown: /* required for traversal */ break;
