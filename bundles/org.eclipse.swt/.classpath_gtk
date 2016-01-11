@@ -33,6 +33,7 @@
 	<classpathentry kind="src" path="Eclipse SWT Browser/gtk"/>
 	<classpathentry kind="src" path="Eclipse SWT Mozilla/common"/>
 	<classpathentry kind="src" path="Eclipse SWT Mozilla/gtk"/>
+	<classpathentry kind="src" path="components"/>
 	<classpathentry kind="src" path="Eclipse SWT OpenGL/gtk"/>
 	<classpathentry kind="src" path="Eclipse SWT OpenGL/glx"/>
 	<classpathentry kind="src" path="Eclipse SWT OpenGL/common"/>
