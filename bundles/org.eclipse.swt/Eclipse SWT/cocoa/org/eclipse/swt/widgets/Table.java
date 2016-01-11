@@ -1291,13 +1291,21 @@ int getCheckColumnWidth () {
 public Rectangle getClientArea () {
 	checkWidget ();
 	Rectangle rect = super.getClientArea ();
-	NSTableHeaderView headerView = ((NSTableView) view).headerView ();
-	if (headerView != null) {
-		// The origin of the table is the top-left of the rows of the table,
-		// not the header.  Adjust the y value accordingly.
-		int height =  (int) headerView.bounds ().height;
-		rect.y -= height;
-		rect.height += height;
+	/*
+	 * OSX version < 10.11 - The origin of the table is the top-left of the rows
+	 * of the table, not the header. We adjust the y value and height of the rect
+	 * accordingly, to include the header.
+	 *
+	 * OSX 10.11 - The origin of the table is the header and the header's
+	 * height is already included in the rect. Hence, we return the rect as is.
+	 */
+	if (OS.VERSION_MMB < OS.VERSION_MMB (10, 11, 0)) {
+		NSTableHeaderView headerView = ((NSTableView) view).headerView ();
+		if (headerView != null) {
+			int height =  (int) headerView.bounds ().height;
+			rect.y -= height;
+			rect.height += height;
+		}
 	}
 	return rect;
 }
@@ -1798,6 +1806,17 @@ public int getTopIndex () {
 	point.x = rect.x;
 	point.y = rect.y;
 
+	/*
+	 * In OSX 10.11, the origin of the table is the header, not the top-left of the rows.
+	 * Offset the point's y coordinate accordingly.
+	 */
+	if (OS.VERSION_MMB >= OS.VERSION_MMB (10, 11, 0)) {
+		NSTableHeaderView headerView = ((NSTableView) view).headerView ();
+		if (headerView != null) {
+			int height =  (int) headerView.bounds ().height;
+			point.y += height;
+		}
+	}
 	int /*64*/ rowAtPoint = (int)/*64*/((NSTableView)view).rowAtPoint(point);
 	if (rowAtPoint == -1) return 0; /* Empty table */
 	return rowAtPoint;
@@ -2999,6 +3018,16 @@ public void setTopIndex (int index) {
 	NSPoint pt = new NSPoint();
 	pt.x = scrollView.contentView().bounds().x;
 	pt.y = widget.frameOfCellAtColumn(0, row).y;
+	/*
+	 * In OSX 10.11, the origin of the table is the header, not the top-left of the rows.
+	 * Offset the point's y coordinate accordingly.
+	 */
+	if (OS.VERSION_MMB >= OS.VERSION_MMB(10, 11, 0)) {
+		if (widget.headerView() != null) {
+			NSRect headerRect = headerView.frame();
+			pt.y -= headerRect.y + headerRect.height;
+		}
+	}
 	view.scrollPoint(pt);
 }
 
