@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015 IBM Corporation and others.
+ * Copyright (c) 2015, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -401,7 +401,7 @@ public void test_getHSBA() {
 
 @Test
 public void test_hashCode() {
-	int r = 255, g = 100, b = 0, a = 0;
+	int r = 255, g = 100, b = 0, a = 0, different = 150;
 	RGBA rgba1 = new RGBA(r, g, b, a);
 	RGBA rgba2 = new RGBA(r, g, b, a);
 	
@@ -415,6 +415,22 @@ public void test_hashCode() {
 	if (rgba1.hashCode() == new RGBA(g, b, r, a).hashCode() ||
 		rgba1.hashCode() == new RGBA(b, r, g, a).hashCode()) {
 		fail("Two RGB instances with different R G B A parameters returned the same hash code");
+	}
+
+	if (rgba1.hashCode() == new RGBA(different, g, b, a).hashCode()) {
+		fail("Two RGBA instances with different RED parameters returned the same hash code");
+	}
+
+	if (rgba1.hashCode() == new RGBA(r, different, b, a).hashCode()) {
+		fail("Two RGBA instances with different GREEN parameters returned the same hash code");
+	}
+
+	if (rgba1.hashCode() == new RGBA(r, g, different, a).hashCode()) {
+		fail("Two RGBA instances with different BLUE parameters returned the same hash code");
+	}
+
+	if (rgba1.hashCode() == new RGBA(r, g, b, different).hashCode()) {
+		fail("Two RGBA instances with different ALPHA parameters returned the same hash code");
 	}
 }
 
