@@ -13,7 +13,6 @@ package org.eclipse.swt.internal.theme;
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.*;
-import org.eclipse.swt.internal.cairo.Cairo;
 import org.eclipse.swt.internal.gtk.*;
 
 public class ToolItemDrawData extends DrawData {
@@ -50,7 +49,7 @@ Rectangle computeTrim(Theme theme, GC gc) {
 @Override
 void draw(Theme theme, GC gc, Rectangle bounds) {
 	int state = this.state[DrawData.WIDGET_WHOLE];
-	long /*int*/ drawable = gc.getGCData().drawable;
+	long /*int*/ drawable = OS.GTK3 ? gc.getGCData().cairo : gc.getGCData().drawable;
 
 	if ((style & SWT.SEPARATOR) != 0) {
 		int state_type = getStateType(DrawData.WIDGET_WHOLE);
@@ -60,19 +59,15 @@ void draw(Theme theme, GC gc, Rectangle bounds) {
 		theme.transferClipping(gc, gtkStyle);
 		if ((parent.style & SWT.VERTICAL) != 0) {
 			if (OS.GTK3) {
-				long /*int*/ cairo = OS.gdk_cairo_create (drawable);
 				long /*int*/ context = OS.gtk_widget_get_style_context (separatorHandle);
-				OS.gtk_render_line (context, cairo, bounds.x, bounds.y + bounds.height / 2, bounds.x + bounds.width, bounds.y + bounds.height / 2);
-				Cairo.cairo_destroy(cairo);
+				OS.gtk_render_line (context, drawable, bounds.x, bounds.y + bounds.height / 2, bounds.x + bounds.width, bounds.y + bounds.height / 2);
 			} else {
 				OS.gtk_paint_hline(gtkStyle, drawable, state_type, null, separatorHandle, detail, bounds.x, bounds.x + bounds.width, bounds.y + bounds.height / 2);
 			}
 		} else {
 			if (OS.GTK3) {
-				long /*int*/ cairo = OS.gdk_cairo_create (drawable);
 				long /*int*/ context = OS.gtk_widget_get_style_context (separatorHandle);
-				OS.gtk_render_line (context, cairo, bounds.x + bounds.width / 2, bounds.y, bounds.x + bounds.width / 2, bounds.y + bounds.height);
-				Cairo.cairo_destroy (cairo);
+				OS.gtk_render_line (context, drawable, bounds.x + bounds.width / 2, bounds.y, bounds.x + bounds.width / 2, bounds.y + bounds.height);
 			} else {
 				OS.gtk_paint_vline(gtkStyle, drawable, state_type, null, separatorHandle, detail, bounds.y, bounds.y + bounds.height, bounds.x + bounds.width / 2);
 			}

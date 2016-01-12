@@ -13,7 +13,6 @@ package org.eclipse.swt.internal.theme;
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.*;
-import org.eclipse.swt.internal.cairo.Cairo;
 import org.eclipse.swt.internal.gtk.*;
 
 public class ButtonDrawData extends DrawData {
@@ -221,10 +220,8 @@ int hit(Theme theme, Point position, Rectangle bounds) {
 
 void gtk_render_option (long /*int*/ style, long /*int*/ window, int state_type, int shadow_type, GdkRectangle area, long /*int*/ widget, byte[] detail, int x , int y, int width, int height) {
 	if (OS.GTK3) {
-		long /*int*/ cairo = OS.gdk_cairo_create (window);
 		long /*int*/ context = OS.gtk_widget_get_style_context (style);
-		OS.gtk_render_option (context, cairo, x, y, width, height);
-		Cairo.cairo_destroy (cairo);
+		OS.gtk_render_option (context, window, x, y, width, height);
 	} else {
 		OS.gtk_paint_option (style, window, state_type, shadow_type, area, widget, detail, x, y, width, height);
 	}
@@ -232,10 +229,8 @@ void gtk_render_option (long /*int*/ style, long /*int*/ window, int state_type,
 
 void gtk_render_check(long /*int*/ style, long /*int*/ window, int state_type, int shadow_type,  long /*int*/ widget, byte[] detail, int x , int y, int width, int height) {
 	if (OS.GTK3) {
-		long /*int*/ cairo = OS.gdk_cairo_create (window);
 		long /*int*/ context = OS.gtk_widget_get_style_context (style);
-		OS.gtk_render_check (context, cairo, x, y, width, height);
-		Cairo.cairo_destroy (cairo);
+		OS.gtk_render_check (context, window, x, y, width, height);
 	} else {
 		OS.gtk_paint_check (style, window, state_type, shadow_type, null, widget, detail, x, y, width, height);
 	}

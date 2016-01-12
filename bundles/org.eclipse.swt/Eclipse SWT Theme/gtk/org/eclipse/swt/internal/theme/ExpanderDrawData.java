@@ -13,7 +13,6 @@ package org.eclipse.swt.internal.theme;
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.*;
-import org.eclipse.swt.internal.cairo.Cairo;
 import org.eclipse.swt.internal.gtk.*;
 
 public class ExpanderDrawData extends DrawData {
@@ -26,7 +25,7 @@ public ExpanderDrawData() {
 void draw(Theme theme, GC gc, Rectangle bounds) {
 	long /*int*/ treeHandle = theme.treeHandle;
 	long /*int*/ gtkStyle = OS.gtk_widget_get_style (treeHandle);
-	long /*int*/ drawable = gc.getGCData().drawable;
+	long /*int*/ drawable = OS.GTK3 ? gc.getGCData().cairo : gc.getGCData().drawable;
 	theme.transferClipping(gc, gtkStyle);
 	int state_type = getStateType(DrawData.WIDGET_WHOLE);
 	int expander_style = OS.GTK_EXPANDER_COLAPSED;
@@ -36,10 +35,8 @@ void draw(Theme theme, GC gc, Rectangle bounds) {
 	int x = bounds.x + expander_size / 2;
 	int y = bounds.y + expander_size / 2;
 	if (OS.GTK3) {
-		long /*int*/ cairo = OS.gdk_cairo_create (drawable);
 		long /*int*/ context = OS.gtk_widget_get_style_context (gtkStyle);
-		OS.gtk_render_expander (context, cairo, bounds.x, bounds.y, expander_size, expander_size);
-		Cairo.cairo_destroy (cairo);
+		OS.gtk_render_expander (context, drawable, bounds.x, bounds.y, expander_size, expander_size);
 	} else {
 		OS.gtk_paint_expander(gtkStyle, drawable, state_type, null, treeHandle, detail, x, y, expander_style);
 	}
