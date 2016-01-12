@@ -732,7 +732,11 @@ void createHandle (int index) {
 		if ((style & (SWT.NO_TRIM | SWT.BORDER | SWT.SHELL_TRIM)) == 0) {
 			OS.gtk_container_set_border_width (shellHandle, 1);
 			if (OS.GTK3) {
-				OS.gtk_widget_override_background_color (shellHandle, OS.GTK_STATE_FLAG_NORMAL, new GdkRGBA());
+				if (OS.GTK_VERSION >= OS.VERSION (3, 16, 0)) {
+					setBackgroundColor (OS.gtk_widget_get_style_context(shellHandle), shellHandle, new GdkRGBA());
+				} else {
+					OS.gtk_widget_override_background_color (shellHandle, OS.GTK_STATE_FLAG_NORMAL, new GdkRGBA());
+				}
 			} else {
 				GdkColor color = new GdkColor ();
 				OS.gtk_style_get_black (OS.gtk_widget_get_style (shellHandle), color);

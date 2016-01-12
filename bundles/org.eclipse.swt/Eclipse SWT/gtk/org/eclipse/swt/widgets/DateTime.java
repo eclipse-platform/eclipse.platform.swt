@@ -1369,7 +1369,12 @@ void setBackgroundColor (GdkColor color) {
 	if (isCalendar () && !OS.GTK3) {
 		OS.gtk_widget_modify_base (containerHandle, 0, color);
 	} else {
-		super.setBackgroundColor (color);
+		if (isCalendar() && (OS.GTK_VERSION >= OS.VERSION(3, 16, 0))) {
+			super.setBackgroundColor (calendarHandle, color);
+		} else {
+			super.setBackgroundColor (color);
+		}
+
 	}
 }
 

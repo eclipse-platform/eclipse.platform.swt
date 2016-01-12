@@ -660,6 +660,16 @@ public void setText (String string) {
 }
 
 @Override
+void setWidgetBackground  () {
+	if (OS.GTK_VERSION >= OS.VERSION(3, 16, 0)) {
+		GdkColor color = (state & BACKGROUND) != 0 ? getBackgroundColor () : null;
+		super.setBackgroundColor (color);
+	} else {
+		super.setWidgetBackground();
+	}
+}
+
+@Override
 void showWidget () {
 	super.showWidget ();
 	if (frameHandle != 0) OS.gtk_widget_show (frameHandle);

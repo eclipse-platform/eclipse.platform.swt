@@ -2610,8 +2610,12 @@ public Image getBackgroundImage () {
 
 GdkColor getContextBackground () {
 	long /*int*/ fontHandle = fontHandle ();
-	if (OS.GTK_VERSION >= OS.VERSION(3, 16, 0) && provider != 0) {
-		return gtk_css_parse_background (provider);
+	if (OS.GTK_VERSION >= OS.VERSION(3, 16, 0)) {
+		if (provider != 0) {
+			return gtk_css_parse_background (provider);
+		} else {
+			return display.COLOR_WIDGET_BACKGROUND;
+		}
 	} else {
 		long /*int*/ context = OS.gtk_widget_get_style_context (fontHandle);
 		int styleState = OS.gtk_widget_get_state_flags(handle);
@@ -4221,7 +4225,7 @@ GdkRGBA gtk_css_property_to_rgba(String property) {
 void setBackgroundColor (long /*int*/ handle, GdkColor color) {
 	if (OS.GTK3) {
 		GdkRGBA rgba = null;
-		double alpha = 1;
+		double alpha = 1.0;
 		if (color == null) {
 			if ((state & PARENT_BACKGROUND) != 0) {
 				alpha = 0;

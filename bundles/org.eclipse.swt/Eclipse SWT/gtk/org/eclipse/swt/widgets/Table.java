@@ -3135,7 +3135,8 @@ void setBackgroundColor (long /*int*/ context, long /*int*/ handle, GdkRGBA rgba
 	 */
 	if (rgba == null) {
 		GdkColor temp = getDisplay().COLOR_LIST_BACKGROUND;
-		background.alpha = 1;
+		GdkRGBA background = new GdkRGBA ();
+		background.alpha = 1.0;
 		background.red = (temp.red & 0xFFFF) / (float)0xFFFF;
 		background.green = (temp.green & 0xFFFF) / (float)0xFFFF;
 		background.blue = (temp.blue & 0xFFFF) / (float)0xFFFF;
