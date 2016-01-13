@@ -24,7 +24,7 @@ public ExpanderDrawData() {
 @Override
 void draw(Theme theme, GC gc, Rectangle bounds) {
 	long /*int*/ treeHandle = theme.treeHandle;
-	long /*int*/ gtkStyle = OS.gtk_widget_get_style (treeHandle);
+	long /*int*/ gtkStyle = gtk_widget_get_style (treeHandle);
 	long /*int*/ drawable = OS.GTK3 ? gc.getGCData().cairo : gc.getGCData().drawable;
 	theme.transferClipping(gc, gtkStyle);
 	int state_type = getStateType(DrawData.WIDGET_WHOLE);
@@ -35,8 +35,7 @@ void draw(Theme theme, GC gc, Rectangle bounds) {
 	int x = bounds.x + expander_size / 2;
 	int y = bounds.y + expander_size / 2;
 	if (OS.GTK3) {
-		long /*int*/ context = OS.gtk_widget_get_style_context (gtkStyle);
-		OS.gtk_render_expander (context, drawable, bounds.x, bounds.y, expander_size, expander_size);
+		OS.gtk_render_expander (gtkStyle, drawable, bounds.x, bounds.y, expander_size, expander_size);
 	} else {
 		OS.gtk_paint_expander(gtkStyle, drawable, state_type, null, treeHandle, detail, x, y, expander_style);
 	}

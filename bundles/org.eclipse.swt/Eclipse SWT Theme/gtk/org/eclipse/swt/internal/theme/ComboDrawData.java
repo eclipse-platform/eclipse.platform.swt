@@ -26,7 +26,7 @@ public ComboDrawData() {
 @Override
 void draw(Theme theme, GC gc, Rectangle bounds) {
 	long /*int*/ buttonHandle = theme.buttonHandle;
-	long /*int*/ gtkStyle = OS.gtk_widget_get_style(buttonHandle);
+	long /*int*/ gtkStyle = gtk_widget_get_style(buttonHandle);
 	long /*int*/ drawable = gc.getGCData().drawable;
 	theme.transferClipping(gc, gtkStyle);
 
@@ -66,7 +66,7 @@ void draw(Theme theme, GC gc, Rectangle bounds) {
 	gtk_render_arrow (gtkStyle, drawable, state_type, OS.GTK_SHADOW_OUT, null, arrowHandle, arrow_detail, OS.GTK_ARROW_DOWN, true, arrow_x, arrow_y, arrow_width, arrow_height);
 
 	long /*int*/ entryHandle = theme.entryHandle;
-	gtkStyle = OS.gtk_widget_get_style(entryHandle);
+	gtkStyle = gtk_widget_get_style(entryHandle);
 	theme.transferClipping(gc, gtkStyle);
 	state_type = getStateType(DrawData.WIDGET_WHOLE);
 	byte[] detail = Converter.wcsToMbcs(null, "entry", true);
@@ -104,7 +104,7 @@ int getStateType(int part) {
 int hit(Theme theme, Point position, Rectangle bounds) {
 	if (!bounds.contains(position)) return DrawData.WIDGET_NOWHERE;
 	long /*int*/ buttonHandle = theme.buttonHandle;
-	long /*int*/ gtkStyle = OS.gtk_widget_get_style(buttonHandle);
+	long /*int*/ gtkStyle = gtk_widget_get_style(buttonHandle);
 	int interior_focus = theme.getWidgetProperty(buttonHandle, "interior-focus");
 	int focus_line_width = theme.getWidgetProperty(buttonHandle, "focus-line-width");
 	int focus_padding = theme.getWidgetProperty(buttonHandle, "focus-padding");
@@ -127,10 +127,9 @@ int hit(Theme theme, Point position, Rectangle bounds) {
 
 void gtk_render_shadow(long /*int*/ style, long /*int*/ window, int state_type, int shadow_type, GdkRectangle area, long /*int*/ widget, byte[] detail, int x , int y, int width, int height) {
 	if (OS.GTK3) {
-		long /*int*/ context = OS.gtk_widget_get_style_context (style);
-		OS.gtk_style_context_save(context);
+		OS.gtk_style_context_save(style);
 		OS.gtk_style_context_set_state (style, state_type);
-		OS.gtk_render_frame (context, window, x, y, width, height);
+		OS.gtk_render_frame (style, window, x, y, width, height);
 	} else {
 		OS.gtk_paint_shadow(style, window, state_type, shadow_type, area, widget, detail, x, y, width, height);
 	}

@@ -33,7 +33,7 @@ public TabFolderDrawData() {
 @Override
 void draw(Theme theme, GC gc, Rectangle bounds) {
 	long /*int*/ notebookHandle = theme.notebookHandle;
-	long /*int*/ gtkStyle = OS.gtk_widget_get_style (notebookHandle);
+	long /*int*/ gtkStyle = gtk_widget_get_style (notebookHandle);
 	long /*int*/ drawable = OS.GTK3 ? gc.getGCData().cairo : gc.getGCData().drawable;
 	theme.transferClipping(gc, gtkStyle);
 	int x = bounds.x, y = bounds.y, width = bounds.width, height = bounds.height;
@@ -69,8 +69,7 @@ int hit(Theme theme, Point position, Rectangle bounds) {
 
 void gtk_render_frame_gap (long /*int*/ style, long /*int*/ window, int state_type, int shadow_type, GdkRectangle area, long /*int*/ widget, byte[] detail, int x , int y, int width, int height, int gap_side, int gap_x, int gap_width) {
 	if (OS.GTK3) {
-		long /*int*/ context = OS.gtk_widget_get_style_context (style);
-		OS.gtk_render_frame_gap (context, window, context, y, gap_width, height, gap_side, gap_x, gap_x + gap_width);
+		OS.gtk_render_frame_gap (style, window, style, y, gap_width, height, gap_side, gap_x, gap_x + gap_width);
 	} else {
 		OS.gtk_paint_box_gap (style, window, state_type, shadow_type, area, widget, detail, x, y, width, height, gap_side, gap_x, gap_width);
 	}

@@ -23,7 +23,7 @@ public ToolBarDrawData() {
 @Override
 void draw(Theme theme, GC gc, Rectangle bounds) {
 	long /*int*/ toolbarHandle = theme.toolbarHandle;
-	long /*int*/ gtkStyle = OS.gtk_widget_get_style (toolbarHandle);
+	long /*int*/ gtkStyle = gtk_widget_get_style (toolbarHandle);
 	long /*int*/ drawable = gc.getGCData().drawable;
 	theme.transferClipping(gc, gtkStyle);
 	int x = bounds.x, y = bounds.y, width = bounds.width, height = bounds.height;

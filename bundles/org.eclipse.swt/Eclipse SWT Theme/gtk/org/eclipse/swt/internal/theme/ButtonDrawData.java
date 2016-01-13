@@ -29,7 +29,7 @@ void draw(Theme theme, GC gc, Rectangle bounds) {
 	long /*int*/ drawable = gc.getGCData().drawable;
 	if ((style & SWT.RADIO) != 0) {
 		long /*int*/ radioButtonHandle = theme.radioButtonHandle;
-		long /*int*/ gtkStyle = OS.gtk_widget_get_style (radioButtonHandle);
+		long /*int*/ gtkStyle = gtk_widget_get_style (radioButtonHandle);
 		theme.transferClipping (gc, gtkStyle);
 		int indicator_size = theme.getWidgetProperty(radioButtonHandle, "indicator-size");
 		int indicator_spacing = theme.getWidgetProperty(radioButtonHandle, "indicator-spacing");
@@ -124,7 +124,7 @@ void draw(Theme theme, GC gc, Rectangle bounds) {
 
 	if ((style & SWT.PUSH) != 0) {
 		long /*int*/ buttonHandle = theme.buttonHandle;
-		long /*int*/ gtkStyle = OS.gtk_widget_get_style (buttonHandle);
+		long /*int*/ gtkStyle = gtk_widget_get_style (buttonHandle);
 		theme.transferClipping (gc, gtkStyle);
 		int focus_line_width = theme.getWidgetProperty(buttonHandle, "focus-line-width");
 		int focus_padding = theme.getWidgetProperty(buttonHandle, "focus-padding");
@@ -220,8 +220,7 @@ int hit(Theme theme, Point position, Rectangle bounds) {
 
 void gtk_render_option (long /*int*/ style, long /*int*/ window, int state_type, int shadow_type, GdkRectangle area, long /*int*/ widget, byte[] detail, int x , int y, int width, int height) {
 	if (OS.GTK3) {
-		long /*int*/ context = OS.gtk_widget_get_style_context (style);
-		OS.gtk_render_option (context, window, x, y, width, height);
+		OS.gtk_render_option (style, window, x, y, width, height);
 	} else {
 		OS.gtk_paint_option (style, window, state_type, shadow_type, area, widget, detail, x, y, width, height);
 	}
@@ -229,8 +228,7 @@ void gtk_render_option (long /*int*/ style, long /*int*/ window, int state_type,
 
 void gtk_render_check(long /*int*/ style, long /*int*/ window, int state_type, int shadow_type,  long /*int*/ widget, byte[] detail, int x , int y, int width, int height) {
 	if (OS.GTK3) {
-		long /*int*/ context = OS.gtk_widget_get_style_context (style);
-		OS.gtk_render_check (context, window, x, y, width, height);
+		OS.gtk_render_check (style, window, x, y, width, height);
 	} else {
 		OS.gtk_paint_check (style, window, state_type, shadow_type, null, widget, detail, x, y, width, height);
 	}

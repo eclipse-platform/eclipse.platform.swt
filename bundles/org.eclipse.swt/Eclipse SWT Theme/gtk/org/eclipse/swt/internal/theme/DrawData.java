@@ -92,7 +92,7 @@ void drawImage(Theme theme, Image image, GC gc, Rectangle bounds) {
 			OS.gtk_icon_source_set_pixbuf(source, pixbuf);
 			//TODO - always uses buttonHandle
 			long /*int*/ buttonHandle = theme.buttonHandle;
-			long /*int*/ gtkStyle = OS.gtk_widget_get_style (buttonHandle);
+			long /*int*/ gtkStyle = gtk_widget_get_style (buttonHandle);
 			theme.transferClipping(gc, gtkStyle);
 			long /*int*/ rendered = OS.gtk_style_render_icon(gtkStyle, source, OS.GTK_TEXT_DIR_NONE, state_type, -1, buttonHandle, null);
 			OS.g_object_unref(pixbuf);
@@ -116,7 +116,7 @@ void drawImage(Theme theme, Image image, GC gc, Rectangle bounds) {
 
 void drawText(Theme theme, String text, int flags, GC gc, Rectangle bounds) {
 	long /*int*/ widget = getTextHandle(theme);
-	long /*int*/ gtkStyle = OS.gtk_widget_get_style(widget);
+	long /*int*/ gtkStyle = gtk_widget_get_style(widget);
 	long /*int*/ drawable = gc.getGCData().drawable;
 	theme.transferClipping (gc, gtkStyle);
 	byte[] buffer = Converter.wcsToMbcs(null, text, true);
@@ -199,8 +199,7 @@ Rectangle measureText(Theme theme, String text, int flags, GC gc, Rectangle boun
 
 void gtk_render_frame (long /*int*/ style, long /*int*/ window, int state_type, int shadow_type, GdkRectangle area, long /*int*/ widget, byte[] detail, int x , int y, int width, int height) {
 	if (OS.GTK3) {
-		long /*int*/ context = OS.gtk_widget_get_style_context (style);
-		OS.gtk_render_frame (context, window, x, y, width, height);
+		OS.gtk_render_frame (style, window, x, y, width, height);
 	} else {
 		OS.gtk_paint_flat_box (style, window, state_type, shadow_type, area, widget, detail, x, y, width, height);
 	}
@@ -208,9 +207,8 @@ void gtk_render_frame (long /*int*/ style, long /*int*/ window, int state_type, 
 
 void gtk_render_box (long /*int*/ style, long /*int*/ window, int state_type, int shadow_type, GdkRectangle area, long /*int*/ widget, byte[] detail, int x , int y, int width, int height) {
 	if (OS.GTK3) {
-		long /*int*/ context = OS.gtk_widget_get_style_context (style);
-		OS.gtk_render_frame (context, window, x, y, width, height);
-		OS.gtk_render_background (context, window, x, y, width, height);
+		OS.gtk_render_frame (style, window, x, y, width, height);
+		OS.gtk_render_background (style, window, x, y, width, height);
 	} else {
 		OS.gtk_paint_box (style, window, state_type, shadow_type, area, widget, detail, x, y, width, height);
 	}
@@ -219,8 +217,7 @@ void gtk_render_box (long /*int*/ style, long /*int*/ window, int state_type, in
 
 void gtk_render_layout (long /*int*/ style, long /*int*/ window, int state_type, boolean use_text, GdkRectangle area, long /*int*/ widget, byte[] detail, int x , int y, long /*int*/ layout) {
 	if (OS.GTK3) {
-		long /*int*/ context = OS.gtk_widget_get_style_context (style);
-		OS.gtk_render_layout (context, window, x, y, layout);
+		OS.gtk_render_layout (style, window, x, y, layout);
 	} else {
 		OS.gtk_paint_layout (style, window, state_type, use_text, area, widget, detail, x , y, layout);
 	}
@@ -228,13 +225,12 @@ void gtk_render_layout (long /*int*/ style, long /*int*/ window, int state_type,
 
 void gtk_render_focus (long /*int*/ style, long /*int*/ window, int state_type, GdkRectangle area, long /*int*/ widget, byte[] detail, int x , int y, int width, int height) {
 	if (OS.GTK3) {
-		long /*int*/  context = OS.gtk_widget_get_style_context (style);
-		OS.gtk_style_context_save (context);
-		OS.gtk_style_context_set_state (context, OS.gtk_widget_get_state_flags (widget));
+		OS.gtk_style_context_save (style);
+		OS.gtk_style_context_set_state (style, OS.gtk_widget_get_state_flags (widget));
 		Cairo.cairo_save (window);
-		OS.gtk_render_focus(context, window, x, y, width, height);
+		OS.gtk_render_focus(style, window, x, y, width, height);
 		Cairo.cairo_restore (window);
-		OS.gtk_style_context_restore (context);
+		OS.gtk_style_context_restore (style);
 
 	} else {
 		OS.gtk_paint_focus (style, window, state_type, area, widget, detail, x, y, width, height);
@@ -263,14 +259,18 @@ void gtk_render_arrow(long /*int*/ style, long /*int*/ window, int state_type, i
 				size = height;
 				break;
 		}
-		long /*int*/  context = OS.gtk_widget_get_style_context (style);
-		OS.gtk_style_context_set_state(context, state_type);
-		OS.gtk_render_background(context, window, x, y, width, height);
-		OS.gtk_render_frame (context, window, x, y, width, height);
-		OS.gtk_render_arrow(context, window, angle, x, y, size);
+		OS.gtk_style_context_set_state(style, state_type);
+		OS.gtk_render_background(style, window, x, y, width, height);
+		OS.gtk_render_frame (style, window, x, y, width, height);
+		OS.gtk_render_arrow(style, window, angle, x, y, size);
 	} else {
 		OS.gtk_paint_arrow(style, window, state_type, shadow_type, area, widget, detail, arrow_type, fill, x, y, width, height);
 	}
 }
+
+long /*int*/ gtk_widget_get_style(long /*int*/ handle) {
+	return OS.GTK3 ? OS.gtk_widget_get_style_context(handle) : OS.gtk_widget_get_style(handle);
+}
+
 
 }

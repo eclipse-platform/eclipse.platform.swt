@@ -29,7 +29,7 @@ public ToolItemDrawData() {
 @Override
 Rectangle computeTrim(Theme theme, GC gc) {
 	long /*int*/ buttonHandle = theme.buttonHandle;
-	long /*int*/ gtkStyle = OS.gtk_widget_get_style(buttonHandle);
+	long /*int*/ gtkStyle = gtk_widget_get_style(buttonHandle);
 	int focus_width = theme.getWidgetProperty(buttonHandle, "focus-line-width");
 	int focus_padding = theme.getWidgetProperty(buttonHandle, "focus-padding");
 	int xthickness = OS.gtk_style_get_xthickness(gtkStyle);
@@ -55,19 +55,17 @@ void draw(Theme theme, GC gc, Rectangle bounds) {
 		int state_type = getStateType(DrawData.WIDGET_WHOLE);
 		long /*int*/ separatorHandle = theme.separatorHandle;
 		byte[] detail = Converter.wcsToMbcs(null, "vseparator", true);
-		long /*int*/ gtkStyle = OS.gtk_widget_get_style (separatorHandle);
+		long /*int*/ gtkStyle = gtk_widget_get_style (separatorHandle);
 		theme.transferClipping(gc, gtkStyle);
 		if ((parent.style & SWT.VERTICAL) != 0) {
 			if (OS.GTK3) {
-				long /*int*/ context = OS.gtk_widget_get_style_context (separatorHandle);
-				OS.gtk_render_line (context, drawable, bounds.x, bounds.y + bounds.height / 2, bounds.x + bounds.width, bounds.y + bounds.height / 2);
+				OS.gtk_render_line (gtkStyle, drawable, bounds.x, bounds.y + bounds.height / 2, bounds.x + bounds.width, bounds.y + bounds.height / 2);
 			} else {
 				OS.gtk_paint_hline(gtkStyle, drawable, state_type, null, separatorHandle, detail, bounds.x, bounds.x + bounds.width, bounds.y + bounds.height / 2);
 			}
 		} else {
 			if (OS.GTK3) {
-				long /*int*/ context = OS.gtk_widget_get_style_context (separatorHandle);
-				OS.gtk_render_line (context, drawable, bounds.x + bounds.width / 2, bounds.y, bounds.x + bounds.width / 2, bounds.y + bounds.height);
+				OS.gtk_render_line (gtkStyle, drawable, bounds.x + bounds.width / 2, bounds.y, bounds.x + bounds.width / 2, bounds.y + bounds.height);
 			} else {
 				OS.gtk_paint_vline(gtkStyle, drawable, state_type, null, separatorHandle, detail, bounds.y, bounds.y + bounds.height, bounds.x + bounds.width / 2);
 			}
@@ -76,7 +74,7 @@ void draw(Theme theme, GC gc, Rectangle bounds) {
 	}
 
 	long /*int*/ buttonHandle = theme.buttonHandle;
-	long /*int*/ gtkStyle = OS.gtk_widget_get_style (buttonHandle);
+	long /*int*/ gtkStyle = gtk_widget_get_style (buttonHandle);
 	theme.transferClipping (gc, gtkStyle);
 	int focus_line_width = theme.getWidgetProperty(buttonHandle, "focus-line-width");
 	int focus_padding = theme.getWidgetProperty(buttonHandle, "focus-padding");
@@ -160,7 +158,7 @@ int hit(Theme theme, Point position, Rectangle bounds) {
 	if (!bounds.contains(position)) return DrawData.WIDGET_NOWHERE;
 	if ((style & SWT.DROP_DOWN) != 0) {
 		long /*int*/ buttonHandle = theme.buttonHandle;
-		long /*int*/ gtkStyle = OS.gtk_widget_get_style (buttonHandle);
+		long /*int*/ gtkStyle = gtk_widget_get_style (buttonHandle);
 		int xthickness = OS.gtk_style_get_xthickness(gtkStyle);
 		int interior_focus = theme.getWidgetProperty(buttonHandle, "interior-focus");
 		int focus_line_width = theme.getWidgetProperty(buttonHandle, "focus-line-width");

@@ -24,7 +24,7 @@ public ProgressBarDrawData() {
 @Override
 void draw(Theme theme, GC gc, Rectangle bounds) {
 	long /*int*/ progressHandle = theme.progressHandle;
-	long /*int*/ gtkStyle = OS.gtk_widget_get_style (progressHandle);
+	long /*int*/ gtkStyle = gtk_widget_get_style (progressHandle);
 	long /*int*/ drawable = gc.getGCData().drawable;
 	theme.transferClipping(gc, gtkStyle);
 	byte[] detail = Converter.wcsToMbcs(null, "trough", true);
