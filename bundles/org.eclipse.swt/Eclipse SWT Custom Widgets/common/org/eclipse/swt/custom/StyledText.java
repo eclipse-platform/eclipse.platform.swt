@@ -2632,6 +2632,7 @@ void doLineDown(boolean select) {
 			caretLine++;
 		} else {
 			y = layout.getLineBounds(lineIndex + 1).y;
+			y++; // bug 485722: workaround for fractional line heights
 		}
 		renderer.disposeTextLayout(layout);
 	} else {
@@ -2714,9 +2715,11 @@ void doLineUp(boolean select) {
 			if (!firstLine) {
 				caretLine--;
 				y = renderer.getLineHeight(caretLine) - 1;
+				y--; // bug 485722: workaround for fractional line heights
 			}
 		} else {
 			y = layout.getLineBounds(lineIndex - 1).y;
+			y++; // bug 485722: workaround for fractional line heights
 		}
 		renderer.disposeTextLayout(layout);
 	} else {
