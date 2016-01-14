@@ -73,7 +73,7 @@ static int getDesktop(final Display display) {
 	if (desktopValue != null) return desktopValue.intValue();
 	int desktop = DESKTOP_UNKNOWN;
 
-	if (OS.GDK_WINDOWING_WAYLAND ()) {
+	if (!OS.isX11 ()) {
 		desktop = DESKTOP_GIO;
 		display.setData(DESKTOP_DATA, new Integer(desktop));
 		return desktop;
