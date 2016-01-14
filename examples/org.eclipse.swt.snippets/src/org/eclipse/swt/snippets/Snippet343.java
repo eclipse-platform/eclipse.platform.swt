@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2010 IBM Corporation and others.
+ * Copyright (c) 2000, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -17,10 +17,10 @@ package org.eclipse.swt.snippets;
  * For a list of all SWT example snippets see
  * http://www.eclipse.org/swt/snippets/
  */
-import org.eclipse.swt.SWT;
+import org.eclipse.swt.*;
 import org.eclipse.swt.custom.*;
-import org.eclipse.swt.graphics.Point;
-import org.eclipse.swt.layout.FillLayout;
+import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.layout.*;
 import org.eclipse.swt.widgets.*;
 
 public class Snippet343 {
@@ -63,14 +63,11 @@ public static void main(String[] args) {
 			 * The following is done asynchronously to allow the Text's width
 			 * to be changed before re-calculating its preferred height. 
 			 */
-			display.asyncExec(new Runnable() {
-				@Override
-				public void run() {
-					if (text.isDisposed()) return;
-					Point size = text.computeSize(text.getSize().x - trimWidth, SWT.DEFAULT);
-					if (expandItem1.getHeight() != size.y) {
-						expandItem1.setHeight(size.y);
-					}
+			display.asyncExec(() -> {
+				if (text.isDisposed()) return;
+				Point size = text.computeSize(text.getSize().x - trimWidth, SWT.DEFAULT);
+				if (expandItem1.getHeight() != size.y) {
+					expandItem1.setHeight(size.y);
 				}
 			});
 		}

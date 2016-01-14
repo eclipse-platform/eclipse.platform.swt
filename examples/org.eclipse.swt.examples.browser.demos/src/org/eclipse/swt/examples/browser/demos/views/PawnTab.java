@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2004 IBM Corporation and others.
+ * Copyright (c) 2000, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -151,11 +151,7 @@ public class PawnTab {
 				game = new byte[8][8];
 				if (computer) ttr = new Pawns();
 				for (int i = 0; i < 5; i++) game[(int)(Math.random()*game.length)][(int)(Math.random()*game[0].length)] = WALL;
-				e.display.asyncExec(new Runnable() {
-					@Override
-					public void run() {
-						browser.setText(getHtml(TYPE_BOARD));
-				}});
+				e.display.asyncExec(() -> browser.setText(getHtml(TYPE_BOARD)));
 				e.doit = false;
 				return;
 			}
@@ -164,11 +160,7 @@ public class PawnTab {
 				CSS_FOLDER = e.location.substring(index, index + 4);
 				URL_CSS = PLUGIN_PATH+CSS_FOLDER+"/style.css";
 				URL_WELCOME = PLUGIN_PATH+CSS_FOLDER+"/welcome.html";
-				e.display.asyncExec(new Runnable() {
-					@Override
-					public void run() {
-						browser.setUrl(URL_WELCOME);
-				}});
+				e.display.asyncExec(() -> browser.setUrl(URL_WELCOME));
 				e.doit = false;
 				return;
 			}

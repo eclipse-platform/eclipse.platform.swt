@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2004 IBM Corporation and others.
+ * Copyright (c) 2000, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -45,24 +45,18 @@ public class Snippet130 {
 							@Override
 							public void run() {
 								id = nextId[0]++;
-								display.syncExec(new Runnable() {
-									@Override
-									public void run() {
-										if (text.isDisposed()) return;
-										text.append("\nStart long running task "+id);
-									}
+								display.syncExec(() -> {
+									if (text.isDisposed()) return;
+									text.append("\nStart long running task "+id);
 								});
 								for (int i = 0; i < 100000; i++) {
 									if (display.isDisposed()) return;
 									System.out.println("do task that takes a long time in a separate thread "+id);
 								}
 								if (display.isDisposed()) return;
-								display.syncExec(new Runnable() {
-									@Override
-									public void run() {
-										if (text.isDisposed()) return;
-										text.append("\nCompleted long running task "+id);
-									}
+								display.syncExec(() -> {
+									if (text.isDisposed()) return;
+									text.append("\nCompleted long running task "+id);
 								});
 								done = true;
 								display.wake();

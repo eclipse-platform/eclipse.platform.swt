@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2004 IBM Corporation and others.
+ * Copyright (c) 2000, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -18,8 +18,8 @@ package org.eclipse.swt.snippets;
  */
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.layout.*;
+import org.eclipse.swt.widgets.*;
 
 public class Snippet104 {
 
@@ -55,27 +55,24 @@ public static void main(String[] args) {
 	int y = (displayRect.height - splashRect.height) / 2;
 	splash.setLocation(x, y);
 	splash.open();
-	display.asyncExec(new Runnable() {
-		@Override
-		public void run() {
-			Shell [] shells = new Shell[count[0]];
-			for (int i=0; i<count[0]; i++) {
-				shells [i] = new Shell(display);
-				shells [i].setSize (300, 300);
-				shells [i].addListener(SWT.Close, new Listener() {
-					@Override
-					public void handleEvent (Event e) {
-						--count[0];
-					}
-				});
-				bar.setSelection(i+1);
-				try {Thread.sleep(1000);} catch (Throwable e) {}
-			}
-			splash.close();
-			image.dispose();
-			for (int i=0; i<count[0]; i++) {
-				shells [i].open();
-			}
+	display.asyncExec(() -> {
+		Shell [] shells = new Shell[count[0]];
+		for (int i1=0; i1<count[0]; i1++) {
+			shells [i1] = new Shell(display);
+			shells [i1].setSize (300, 300);
+			shells [i1].addListener(SWT.Close, new Listener() {
+				@Override
+				public void handleEvent (Event e) {
+					--count[0];
+				}
+			});
+			bar.setSelection(i1+1);
+			try {Thread.sleep(1000);} catch (Throwable e) {}
+		}
+		splash.close();
+		image.dispose();
+		for (int i2=0; i2<count[0]; i2++) {
+			shells [i2].open();
 		}
 	});
 	while (count [0] != 0) {

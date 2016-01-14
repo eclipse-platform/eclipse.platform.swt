@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2008 IBM Corporation and others.
+ * Copyright (c) 2008, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -16,7 +16,8 @@ package org.eclipse.swt.snippets;
  * For a list of all SWT example snippets see
  * http://www.eclipse.org/swt/snippets/
  */
-import java.io.File;
+import java.io.*;
+
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.widgets.*;
@@ -156,12 +157,9 @@ public class Snippet288 {
 						while (loader[i].repeatCount == 0 || repeatCount > 0) {
 							imageDataIndex = (imageDataIndex + 1) % imageDataArray[i].length;
 							if (!display.isDisposed()) {
-								display.asyncExec(new Runnable() {
-									@Override
-									public void run() {
-										if (!item[i].isDisposed())
-											item[i].setImage(image[i][imageDataIndex]);
-									}
+								display.asyncExec(() -> {
+									if (!item[i].isDisposed())
+										item[i].setImage(image[i][imageDataIndex]);
 								});
 							}
 							

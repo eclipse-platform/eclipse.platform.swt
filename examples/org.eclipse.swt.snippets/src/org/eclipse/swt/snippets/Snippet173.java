@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -19,10 +19,10 @@ package org.eclipse.swt.snippets;
  * @since 3.1
  */
 import org.eclipse.swt.*;
-import org.eclipse.swt.widgets.*;
+import org.eclipse.swt.browser.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.layout.*;
-import org.eclipse.swt.browser.*;
+import org.eclipse.swt.widgets.*;
 
 public class Snippet173 {
 
@@ -80,12 +80,7 @@ static void initialize(final Display display, Browser browser) {
 			boolean isOSX = SWT.getPlatform().equals ("cocoa");
 			if (!event.addressBar && !event.statusBar && !event.toolBar && (!event.menuBar || isOSX)) {
 				System.out.println("Popup blocked.");
-				event.display.asyncExec(new Runnable() {
-					@Override
-					public void run() {
-						shell.close();
-					}
-				});
+				event.display.asyncExec(() -> shell.close());
 				return;
 			}
 			if (event.location != null) shell.setLocation(event.location);

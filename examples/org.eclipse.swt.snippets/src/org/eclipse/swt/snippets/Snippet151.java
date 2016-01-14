@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -19,6 +19,7 @@ package org.eclipse.swt.snippets;
  * @since 3.0
  */
 import java.util.*;
+
 import org.eclipse.swt.*;
 import org.eclipse.swt.layout.*;
 import org.eclipse.swt.widgets.*;
@@ -57,13 +58,10 @@ public static void main (String [] args) {
 					data[index++] = random.nextInt();
 				}
 				Arrays.sort(data);
-				display.syncExec(new Runnable() {
-					@Override
-					public void run() {
-						if (table.isDisposed()) return;
-						table.setItemCount(data.length);
-						table.clearAll();
-					}
+				display.syncExec(() -> {
+					if (table.isDisposed()) return;
+					table.setItemCount(data.length);
+					table.clearAll();
 				});
 				try {Thread.sleep(500);} catch (Throwable t) {}
 			}

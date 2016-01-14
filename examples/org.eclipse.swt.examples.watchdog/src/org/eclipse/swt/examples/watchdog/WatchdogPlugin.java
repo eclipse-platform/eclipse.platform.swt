@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013, Google Inc. and others.
+ * Copyright (c) 2013, 2016 Google Inc. and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -40,12 +40,9 @@ public class WatchdogPlugin extends AbstractUIPlugin implements IStartup {
 	@Override
 	public void earlyStartup() {
 		if (display != null) {
-			display.asyncExec(new Runnable() {
-				@Override
-				public void run() {
-					display.addListener(SWT.PreEvent, watchdog);
-					display.addListener(SWT.PostEvent, watchdog);
-				}
+			display.asyncExec(() -> {
+				display.addListener(SWT.PreEvent, watchdog);
+				display.addListener(SWT.PostEvent, watchdog);
 			});
 		}
 	}
@@ -54,13 +51,10 @@ public class WatchdogPlugin extends AbstractUIPlugin implements IStartup {
 	public void stop(BundleContext context) throws Exception {
 		try {
 			if (display != null && !display.isDisposed()) {
-				display.asyncExec(new Runnable() {
-					@Override
-					public void run() {
-						if (!display.isDisposed()) {
-							display.removeListener(SWT.PreEvent, watchdog);
-							display.removeListener(SWT.PostEvent, watchdog);
-						}
+				display.asyncExec(() -> {
+					if (!display.isDisposed()) {
+						display.removeListener(SWT.PreEvent, watchdog);
+						display.removeListener(SWT.PostEvent, watchdog);
 					}
 				});
 			}

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2006 IBM Corporation and others.
+ * Copyright (c) 2000, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -1581,14 +1581,11 @@ public class FileViewer {
 	private void workerExecute() {
 		File[] dirList;
 		// Clear existing information
-		display.syncExec(new Runnable() {
-			@Override
-			public void run() {
-				tableContentsOfLabel.setText(FileViewer.getResourceString("details.ContentsOf.text",
-					new Object[] { workerStateDir.getPath() }));
-				table.removeAll();
-				table.setData(TABLEDATA_DIR, workerStateDir);
-			}
+		display.syncExec(() -> {
+			tableContentsOfLabel.setText(FileViewer.getResourceString("details.ContentsOf.text",
+				new Object[] { workerStateDir.getPath() }));
+			table.removeAll();
+			table.setData(TABLEDATA_DIR, workerStateDir);
 		});
 		dirList = getDirectoryList(workerStateDir);
 		
@@ -1634,16 +1631,13 @@ public class FileViewer {
 		}
 		final String[] strings = new String[] { nameString, sizeString, typeString, dateString };
 
-		display.syncExec(new Runnable() {
-			@Override
-			public void run () {
-				// guard against the shell being closed before this runs
-				if (shell.isDisposed()) return;
-				TableItem tableItem = new TableItem(table, 0);
-				tableItem.setText(strings);
-				tableItem.setImage(iconImage);
-				tableItem.setData(TABLEITEMDATA_FILE, file);
-			}
+		display.syncExec(() -> {
+			// guard against the shell being closed before this runs
+			if (shell.isDisposed()) return;
+			TableItem tableItem = new TableItem(table, 0);
+			tableItem.setText(strings);
+			tableItem.setImage(iconImage);
+			tableItem.setData(TABLEITEMDATA_FILE, file);
 		});
 	}
 	

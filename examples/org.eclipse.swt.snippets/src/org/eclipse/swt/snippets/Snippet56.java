@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2004 IBM Corporation and others.
+ * Copyright (c) 2000, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -17,7 +17,7 @@ package org.eclipse.swt.snippets;
  * http://www.eclipse.org/swt/snippets/
  */
 import org.eclipse.swt.*;
-import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.widgets.*;
 
 public class Snippet56 {
@@ -36,12 +36,9 @@ public class Snippet56 {
 				for (final int[] i = new int[1]; i[0] <= maximum; i[0]++) {
 				try {Thread.sleep (100);} catch (Throwable th) {}
 					if (display.isDisposed()) return;
-					display.asyncExec(new Runnable() {
-						@Override
-						public void run() {
-						if (bar.isDisposed ()) return;
-							bar.setSelection(i[0]);
-						}
+					display.asyncExec(() -> {
+					if (bar.isDisposed ()) return;
+						bar.setSelection(i[0]);
 					});
 				}
 			}

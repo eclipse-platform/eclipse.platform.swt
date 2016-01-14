@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2007 IBM Corporation and others.
+ * Copyright (c) 2000, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -1632,14 +1632,9 @@ public class ImageAnalyzer {
 					try {
 						animateLoop();
 					} catch (final SWTException e) {
-						display.syncExec(new Runnable() {
-							@Override
-							public void run() {
-								showErrorDialog(createMsg(bundle.getString("Creating_image"), 
-										    new Integer(imageDataIndex+1)),
-										    currentName, e);
-							}
-						});
+						display.syncExec(() -> showErrorDialog(createMsg(bundle.getString("Creating_image"), 
+								    new Integer(imageDataIndex+1)),
+								    currentName, e));
 					}
 					
 					// Post animation widget reset.
@@ -1663,12 +1658,7 @@ public class ImageAnalyzer {
 		
 		try {
 			// Use syncExec to get the background color of the imageCanvas.
-			display.syncExec(new Runnable() {
-				@Override
-				public void run() {
-					canvasBackground = imageCanvas.getBackground();
-				}
-			});
+			display.syncExec(() -> canvasBackground = imageCanvas.getBackground());
 
 			// Fill the off-screen image with the background color of the canvas.
 			offScreenImageGC.setBackground(canvasBackground);
@@ -1766,29 +1756,26 @@ public class ImageAnalyzer {
 	 * Pre animation setup.
 	 */
 	void preAnimation() {
-		display.syncExec(new Runnable() {
-			@Override
-			public void run() {
-				// Change the label of the Animate button to 'Stop'.
-				animateButton.setText(bundle.getString("Stop"));
-				
-				// Disable anything we don't want the user
-				// to select during the animation.
-				previousButton.setEnabled(false);
-				nextButton.setEnabled(false);
-				backgroundCombo.setEnabled(false);
-				scaleXCombo.setEnabled(false);
-				scaleYCombo.setEnabled(false);
-				alphaCombo.setEnabled(false);
-				incrementalCheck.setEnabled(false);
-				transparentCheck.setEnabled(false);
-				maskCheck.setEnabled(false);
-				// leave backgroundCheck enabled
+		display.syncExec(() -> {
+			// Change the label of the Animate button to 'Stop'.
+			animateButton.setText(bundle.getString("Stop"));
 			
-				// Reset the scale combos and scrollbars.
-				resetScaleCombos();
-				resetScrollBars();
-			}
+			// Disable anything we don't want the user
+			// to select during the animation.
+			previousButton.setEnabled(false);
+			nextButton.setEnabled(false);
+			backgroundCombo.setEnabled(false);
+			scaleXCombo.setEnabled(false);
+			scaleYCombo.setEnabled(false);
+			alphaCombo.setEnabled(false);
+			incrementalCheck.setEnabled(false);
+			transparentCheck.setEnabled(false);
+			maskCheck.setEnabled(false);
+			// leave backgroundCheck enabled
+		
+			// Reset the scale combos and scrollbars.
+			resetScaleCombos();
+			resetScrollBars();
 		});
 	}
 
@@ -1796,31 +1783,28 @@ public class ImageAnalyzer {
 	 * Post animation reset.
 	 */
 	void postAnimation() {
-		display.syncExec(new Runnable() {
-			@Override
-			public void run() {
-				// Enable anything we disabled before the animation.
-				previousButton.setEnabled(true);
-				nextButton.setEnabled(true);
-				backgroundCombo.setEnabled(true);
-				scaleXCombo.setEnabled(true);
-				scaleYCombo.setEnabled(true);
-				alphaCombo.setEnabled(true);
-				incrementalCheck.setEnabled(true);
-				transparentCheck.setEnabled(true);
-				maskCheck.setEnabled(true);
-			
-				// Reset the label of the Animate button.
-				animateButton.setText(bundle.getString("Animate"));
-			
-				if (animate) {
-					// If animate is still true, we finished the
-					// full number of repeats. Leave the image as-is.
-					animate = false;
-				} else {
-					// Redisplay the current image and its palette.
-					displayImage(imageDataArray[imageDataIndex]);
-				}
+		display.syncExec(() -> {
+			// Enable anything we disabled before the animation.
+			previousButton.setEnabled(true);
+			nextButton.setEnabled(true);
+			backgroundCombo.setEnabled(true);
+			scaleXCombo.setEnabled(true);
+			scaleYCombo.setEnabled(true);
+			alphaCombo.setEnabled(true);
+			incrementalCheck.setEnabled(true);
+			transparentCheck.setEnabled(true);
+			maskCheck.setEnabled(true);
+		
+			// Reset the label of the Animate button.
+			animateButton.setText(bundle.getString("Animate"));
+		
+			if (animate) {
+				// If animate is still true, we finished the
+				// full number of repeats. Leave the image as-is.
+				animate = false;
+			} else {
+				// Redisplay the current image and its palette.
+				displayImage(imageDataArray[imageDataIndex]);
 			}
 		});
 	}

@@ -6,24 +6,18 @@ package org.eclipse.swt.snippets;
  * For a list of all SWT example snippets see
  * http://www.eclipse.org/swt/snippets/
  */
-
-import java.awt.BorderLayout;
+import java.awt.*;
 import java.awt.Canvas;
-import java.awt.EventQueue;
-import java.awt.FlowLayout;
-import java.awt.Frame;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
+import java.awt.event.*;
 
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.awt.SWT_AWT;
-import org.eclipse.swt.browser.Browser;
-import org.eclipse.swt.layout.GridData;
+import javax.swing.*;
+
+import org.eclipse.swt.*;
+import org.eclipse.swt.awt.*;
+import org.eclipse.swt.browser.*;
+import org.eclipse.swt.layout.*;
 import org.eclipse.swt.widgets.*;
+import org.eclipse.swt.widgets.Event;
 
 public class Snippet337 {
 
@@ -46,17 +40,14 @@ public static void main(String args[]) {
 					childFrame.setSize(850, 650);
 					childFrame.getContentPane().add(canvas);
 					childFrame.setVisible(true);
-					display.asyncExec(new Runnable() {
-						@Override
-						public void run() {
-							Shell shell = SWT_AWT.new_Shell(display, canvas);
-							shell.setSize(800, 600);
-							Browser browser = new Browser(shell, SWT.NONE);
-							browser.setLayoutData(new GridData(GridData.FILL_BOTH));
-							browser.setSize(800, 600);
-							browser.setUrl("http://www.eclipse.org");
-							shell.open();
-						}
+					display.asyncExec(() -> {
+						Shell shell = SWT_AWT.new_Shell(display, canvas);
+						shell.setSize(800, 600);
+						Browser browser = new Browser(shell, SWT.NONE);
+						browser.setLayoutData(new GridData(GridData.FILL_BOTH));
+						browser.setSize(800, 600);
+						browser.setUrl("http://www.eclipse.org");
+						shell.open();
 					});
 				}
 			});

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2004 IBM Corporation and others.
+ * Copyright (c) 2000, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -17,8 +17,8 @@ package org.eclipse.swt.snippets;
  * http://www.eclipse.org/swt/snippets/
  */
 import org.eclipse.swt.*;
-import org.eclipse.swt.layout.*;
 import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.layout.*;
 import org.eclipse.swt.widgets.*;
 
 public class Snippet7 {
@@ -41,14 +41,11 @@ public static void main (String [] args) {
 			for (int i=0; i<20000; i++) {
 				if (table.isDisposed ()) return;
 				final int [] index = new int [] {i};
-				display.syncExec (new Runnable () {
-					@Override
-					public void run () {
-						if (table.isDisposed ()) return;
-						TableItem item = new TableItem (table, SWT.NONE);
-						item.setText ("Table Item " + index [0]);
-						item.setImage (image);
-					}
+				display.syncExec (() -> {
+					if (table.isDisposed ()) return;
+					TableItem item = new TableItem (table, SWT.NONE);
+					item.setText ("Table Item " + index [0]);
+					item.setImage (image);
 				});
 			}
 		}

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2009 IBM Corporation and others.
+ * Copyright (c) 2000, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -104,14 +104,11 @@ public static void main(String [] args) {
 		@Override
 		public void handleEvent(Event event) {
 			/* async is needed to wait until focus reaches its new Control */
-			display.asyncExec(new Runnable() {
-				@Override
-				public void run() {
-					if (display.isDisposed()) return;
-					Control control = display.getFocusControl();
-					if (control == null || (control != text && control != table)) {
-						popupShell.setVisible(false);
-					}
+			display.asyncExec(() -> {
+				if (display.isDisposed()) return;
+				Control control = display.getFocusControl();
+				if (control == null || (control != text && control != table)) {
+					popupShell.setVisible(false);
 				}
 			});
 		}
