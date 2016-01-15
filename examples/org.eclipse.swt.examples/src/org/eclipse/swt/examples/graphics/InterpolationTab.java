@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006 IBM Corporation and others.
+ * Copyright (c) 2006, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -22,9 +22,7 @@ import org.eclipse.swt.graphics.Transform;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.Listener;
 
 /**
  * This tab shows the effects of applying various interpolation algorithms to
@@ -73,12 +71,7 @@ public void createControlPanel(Composite parent) {
 	imageCb.add(GraphicsExample.getResourceString("SWT")); //$NON-NLS-1$
 	imageCb.add(GraphicsExample.getResourceString("Ovals")); //$NON-NLS-1$
 	imageCb.select(0);
-	imageCb.addListener(SWT.Selection, new Listener() {
-		@Override
-		public void handleEvent(Event event) {
-				example.redraw();
-		}
-	});
+	imageCb.addListener(SWT.Selection, event -> example.redraw());
 }
 
 @Override

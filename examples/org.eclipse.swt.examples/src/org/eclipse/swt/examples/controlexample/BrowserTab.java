@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2012 IBM Corporation and others.
+ * Copyright (c) 2000, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -41,9 +41,7 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Group;
-import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.Widget;
@@ -179,20 +177,10 @@ class BrowserTab extends Tab {
 		/* Create the extra widgets */
 		mozillaButton = new Button (styleGroup, SWT.CHECK);
 		mozillaButton.setText ("SWT.MOZILLA");
-		mozillaButton.addListener(SWT.Selection, new Listener() {
-			@Override
-			public void handleEvent(Event event) {
-				webKitButton.setSelection(false);
-			}
-		});
+		mozillaButton.addListener(SWT.Selection, event -> webKitButton.setSelection(false));
 		webKitButton = new Button (styleGroup, SWT.CHECK);
 		webKitButton.setText ("SWT.WEBKIT");
-		webKitButton.addListener(SWT.Selection, new Listener() {
-			@Override
-			public void handleEvent(Event event) {
-				mozillaButton.setSelection(false);
-			}
-		});
+		webKitButton.addListener(SWT.Selection, event -> mozillaButton.setSelection(false));
 		borderButton = new Button (styleGroup, SWT.CHECK);
 		borderButton.setText ("SWT.BORDER");
 	}

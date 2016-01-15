@@ -19,8 +19,6 @@ import org.eclipse.swt.browser.LocationListener;
 import org.eclipse.swt.examples.browser.demos.BrowserDemoPlugin;
 import org.eclipse.swt.examples.browser.demos.Pawns;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.TabItem;
@@ -77,15 +75,12 @@ public class PawnTab {
 		menu = new Menu(browser.getShell(), SWT.POP_UP);
 		MenuItem item2 = new MenuItem(menu, SWT.PUSH);
 		item2.setText("End Game");
-		item2.addListener(SWT.Selection, new Listener() {
-			@Override
-			public void handleEvent(Event e) {
-				game = null;
-				isWhite = true;
-				cntWhite = 0; cntBlack = 0;
-				ttr = null;
-				browser.setUrl(URL_WELCOME);
-			}
+		item2.addListener(SWT.Selection, e -> {
+			game = null;
+			isWhite = true;
+			cntWhite = 0; cntBlack = 0;
+			ttr = null;
+			browser.setUrl(URL_WELCOME);
 		});
 		browser.setMenu(menu);
 		

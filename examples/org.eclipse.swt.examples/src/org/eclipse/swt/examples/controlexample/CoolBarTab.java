@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2007 IBM Corporation and others.
+ * Copyright (c) 2000, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -25,10 +25,8 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.CoolBar;
 import org.eclipse.swt.widgets.CoolItem;
-import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Item;
-import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.Text;
@@ -231,12 +229,7 @@ class CoolBarTab extends Tab {
 		}
 		
 		/* Add a listener to resize the group box to match the coolbar */
-		coolBar.addListener(SWT.Resize, new Listener() {
-			@Override
-			public void handleEvent(Event event) {
-				exampleGroup.layout();
-			}
-		});
+		coolBar.addListener(SWT.Resize, event -> exampleGroup.layout());
 	}
 	
 	/**

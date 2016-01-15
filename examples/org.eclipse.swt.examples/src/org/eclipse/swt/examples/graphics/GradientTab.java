@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006 IBM Corporation and others.
+ * Copyright (c) 2006, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -22,8 +22,6 @@ import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
@@ -101,16 +99,13 @@ public void createControlPanel(final Composite parent) {
 	colorItem1 = new ToolItem(toolBar, SWT.PUSH);
 	colorItem1.setText(GraphicsExample.getResourceString("GradientTabItem1"));
 	colorItem1.setImage(colorGB1.getThumbNail());
-	colorItem1.addListener(SWT.Selection, new Listener(){
-		@Override
-		public void handleEvent(Event event) {
-			final ToolItem toolItem = (ToolItem) event.widget;
-			final ToolBar  toolBar = toolItem.getParent();
-			Rectangle toolItemBounds = toolItem.getBounds();
-			Point point = toolBar.toDisplay(new Point(toolItemBounds.x, toolItemBounds.y));
-			menu1.setLocation(point.x, point.y + toolItemBounds.height);
-			menu1.setVisible(true);
-		}
+	colorItem1.addListener(SWT.Selection, event -> {
+		final ToolItem toolItem = (ToolItem) event.widget;
+		final ToolBar  toolBar = toolItem.getParent();
+		Rectangle toolItemBounds = toolItem.getBounds();
+		Point point = toolBar.toDisplay(new Point(toolItemBounds.x, toolItemBounds.y));
+		menu1.setLocation(point.x, point.y + toolItemBounds.height);
+		menu1.setVisible(true);
 	});
 	
 	// menu for colorItem2
@@ -130,32 +125,26 @@ public void createControlPanel(final Composite parent) {
 	colorItem2 = new ToolItem(toolBar, SWT.PUSH);
 	colorItem2.setText(GraphicsExample.getResourceString("GradientTabItem2"));
 	colorItem2.setImage(colorGB2.getThumbNail());
-	colorItem2.addListener(SWT.Selection, new Listener(){
-		@Override
-		public void handleEvent(Event event) {
-			final ToolItem toolItem = (ToolItem) event.widget;
-			final ToolBar  toolBar = toolItem.getParent();
-			Rectangle toolItemBounds = toolItem.getBounds();
-			Point point = toolBar.toDisplay(new Point(toolItemBounds.x, toolItemBounds.y));
-			menu2.setLocation(point.x, point.y + toolItemBounds.height);
-			menu2.setVisible(true);
-		}
+	colorItem2.addListener(SWT.Selection, event -> {
+		final ToolItem toolItem = (ToolItem) event.widget;
+		final ToolBar  toolBar = toolItem.getParent();
+		Rectangle toolItemBounds = toolItem.getBounds();
+		Point point = toolBar.toDisplay(new Point(toolItemBounds.x, toolItemBounds.y));
+		menu2.setLocation(point.x, point.y + toolItemBounds.height);
+		menu2.setVisible(true);
 	});
 	
 	// toolbar item for swapping colors
 	ToolItem swapItem = new ToolItem(toolBar, SWT.PUSH);
 	swapItem.setText(GraphicsExample.getResourceString("SwapColors")); //$NON-NLS-1$
 	swapItem.setImage(example.loadImage(display, "swap.gif"));
-	swapItem.addListener(SWT.Selection, new Listener(){
-		@Override
-		public void handleEvent(Event event) {
-			GraphicsBackground tmp = colorGB1;
-			colorGB1 = colorGB2;
-			colorGB2 = tmp;
-			colorItem1.setImage(colorGB1.getThumbNail());
-			colorItem2.setImage(colorGB2.getThumbNail());
-			example.redraw();
-		}
+	swapItem.addListener(SWT.Selection, event -> {
+		GraphicsBackground tmp = colorGB1;
+		colorGB1 = colorGB2;
+		colorGB2 = tmp;
+		colorItem1.setImage(colorGB1.getThumbNail());
+		colorItem2.setImage(colorGB2.getThumbNail());
+		example.redraw();
 	});
 }
 

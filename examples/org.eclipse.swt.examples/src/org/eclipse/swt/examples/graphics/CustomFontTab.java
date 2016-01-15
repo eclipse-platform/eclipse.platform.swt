@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006 IBM Corporation and others.
+ * Copyright (c) 2006, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -115,12 +115,7 @@ public void createControlPanel(Composite parent) {
 		fontFaceCb.add(name);
 	}
 	fontFaceCb.select(0);
-	fontFaceCb.addListener(SWT.Selection, new Listener() {
-		@Override
-		public void handleEvent (Event event) {
-			example.redraw();
-		}
-	});
+	fontFaceCb.addListener(SWT.Selection, event -> example.redraw());
 	
 	// create combo for font style
 	comp = new Composite(mainComp, SWT.NONE);
@@ -132,12 +127,7 @@ public void createControlPanel(Composite parent) {
 		fontStyleCb.add(fontStyle);
 	}
 	fontStyleCb.select(0);
-	fontStyleCb.addListener(SWT.Selection, new Listener() {
-		@Override
-		public void handleEvent (Event event) {
-			example.redraw();
-		}
-	});
+	fontStyleCb.addListener(SWT.Selection, event -> example.redraw());
 	
 	// create spinner for font size (points)
 	comp = new Composite(mainComp, SWT.NONE);
@@ -148,12 +138,7 @@ public void createControlPanel(Composite parent) {
 	fontPointSpinner.setMinimum(1);
 	fontPointSpinner.setMaximum(1000);
 	fontPointSpinner.setSelection(200);
-	fontPointSpinner.addListener(SWT.Selection, new Listener() {
-		@Override
-		public void handleEvent(Event event) {
-				example.redraw();
-		}
-	});
+	fontPointSpinner.addListener(SWT.Selection, event -> example.redraw());
 
 	ColorMenu cm = new ColorMenu();
 	cm.setColorItems(true);

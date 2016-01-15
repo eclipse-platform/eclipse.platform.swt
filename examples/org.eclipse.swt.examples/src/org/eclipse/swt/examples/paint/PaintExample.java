@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -289,20 +289,17 @@ public class PaintExample {
 				return paintColors[Math.min(Math.max(row * numPaletteCols + col, 0), paintColors.length - 1)];
 			}
 		});
-		Listener refreshListener = new Listener() {
-			@Override
-			public void handleEvent(Event e) {
-				if (e.gc == null) return;
-				Rectangle bounds = paletteCanvas.getClientArea();
-				for (int row = 0; row < numPaletteRows; ++row) {
-					for (int col = 0; col < numPaletteCols; ++col) {
-						final int x = bounds.width * col / numPaletteCols;
-						final int y = bounds.height * row / numPaletteRows;
-						final int width = Math.max(bounds.width * (col + 1) / numPaletteCols - x, 1);
-						final int height = Math.max(bounds.height * (row + 1) / numPaletteRows - y, 1);
-						e.gc.setBackground(paintColors[row * numPaletteCols + col]);
-						e.gc.fillRectangle(bounds.x + x, bounds.y + y, width, height);
-					}
+		Listener refreshListener = e -> {
+			if (e.gc == null) return;
+			Rectangle bounds = paletteCanvas.getClientArea();
+			for (int row = 0; row < numPaletteRows; ++row) {
+				for (int col = 0; col < numPaletteCols; ++col) {
+					final int x = bounds.width * col / numPaletteCols;
+					final int y = bounds.height * row / numPaletteRows;
+					final int width = Math.max(bounds.width * (col + 1) / numPaletteCols - x, 1);
+					final int height = Math.max(bounds.height * (row + 1) / numPaletteRows - y, 1);
+					e.gc.setBackground(paintColors[row * numPaletteCols + col]);
+					e.gc.fillRectangle(bounds.x + x, bounds.y + y, width, height);
 				}
 			}
 		};

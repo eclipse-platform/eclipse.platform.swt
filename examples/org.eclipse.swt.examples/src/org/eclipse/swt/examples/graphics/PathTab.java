@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006 IBM Corporation and others.
+ * Copyright (c) 2006, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -74,12 +74,7 @@ public void createControlPanel(Composite parent) {
 	
 	drawButton = new Button(comp, SWT.TOGGLE);
 	drawButton.setText(GraphicsExample.getResourceString("DrawPath")); //$NON-NLS-1$
-	drawButton.addListener(SWT.Selection, new Listener() { 
-		@Override
-		public void handleEvent(Event event) {
-			example.redraw();
-		}
-	});
+	drawButton.addListener(SWT.Selection, event -> example.redraw());
 	drawButton.setSelection(true);
 	
 	// create fill button
@@ -88,12 +83,7 @@ public void createControlPanel(Composite parent) {
 	
 	fillButton = new Button(comp, SWT.TOGGLE);
 	fillButton.setText(GraphicsExample.getResourceString("FillPath")); //$NON-NLS-1$
-	fillButton.addListener(SWT.Selection, new Listener() { 
-		@Override
-		public void handleEvent(Event event) {
-			example.redraw();
-		}
-	});
+	fillButton.addListener(SWT.Selection, event -> example.redraw());
 	
 	// create close button
 	comp = new Composite(parent, SWT.NONE);
@@ -101,12 +91,7 @@ public void createControlPanel(Composite parent) {
 	
 	closeButton = new Button(comp, SWT.TOGGLE);
 	closeButton.setText(GraphicsExample.getResourceString("ClosePath")); //$NON-NLS-1$
-	closeButton.addListener(SWT.Selection, new Listener() { 
-		@Override
-		public void handleEvent(Event event) {
-			example.redraw();
-		}
-	});
+	closeButton.addListener(SWT.Selection, event -> example.redraw());
 		
 	// create color button
 	comp = new Composite(parent, SWT.NONE);

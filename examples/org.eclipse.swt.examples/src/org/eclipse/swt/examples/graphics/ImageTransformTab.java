@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006 IBM Corporation and others.
+ * Copyright (c) 2006, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -21,9 +21,7 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Spinner;
 
 /**
@@ -85,12 +83,7 @@ public void createControlPanel(Composite parent) {
 	rotateSpinner.setMinimum(-720);
 	rotateSpinner.setMaximum(720);
 	rotateSpinner.setIncrement(30);
-	rotateSpinner.addListener(SWT.Selection, new Listener() {
-		@Override
-		public void handleEvent(Event event) {	
-				example.redraw();
-		}
-	});
+	rotateSpinner.addListener(SWT.Selection, event -> example.redraw());
 	
 	// create a spinner for translating along the x axis
 	comp = new Composite(parent, SWT.NONE);
@@ -103,12 +96,7 @@ public void createControlPanel(Composite parent) {
 	translateSpinnerX.setMaximum(500);
 	translateSpinnerX.setSelection(0);
 	translateSpinnerX.setIncrement(10);
-	translateSpinnerX.addListener(SWT.Selection, new Listener() {
-		@Override
-		public void handleEvent(Event event) {	
-				example.redraw();
-		}
-	});
+	translateSpinnerX.addListener(SWT.Selection, event -> example.redraw());
 	
 	// create a spinner for translating along the y axis
 	comp = new Composite(parent, SWT.NONE);
@@ -121,12 +109,7 @@ public void createControlPanel(Composite parent) {
 	translateSpinnerY.setMaximum(500);
 	translateSpinnerY.setSelection(0);
 	translateSpinnerY.setIncrement(10);
-	translateSpinnerY.addListener(SWT.Selection, new Listener() {
-		@Override
-		public void handleEvent(Event event) {	
-				example.redraw();
-		}
-	});
+	translateSpinnerY.addListener(SWT.Selection, event -> example.redraw());
 	
 	// create a spinner for scaling along the x axis
 	comp = new Composite(parent, SWT.NONE);
@@ -140,12 +123,7 @@ public void createControlPanel(Composite parent) {
 	scaleSpinnerX.setMaximum(400);
 	scaleSpinnerX.setSelection(100);
 	scaleSpinnerX.setIncrement(10);
-	scaleSpinnerX.addListener(SWT.Selection, new Listener() {
-		@Override
-		public void handleEvent(Event event) {	
-				example.redraw();
-		}
-	});
+	scaleSpinnerX.addListener(SWT.Selection, event -> example.redraw());
 	
 	// create a spinner for scaling along the y axis
 	comp = new Composite(parent, SWT.NONE);
@@ -159,24 +137,14 @@ public void createControlPanel(Composite parent) {
 	scaleSpinnerY.setMaximum(400);
 	scaleSpinnerY.setSelection(100);
 	scaleSpinnerY.setIncrement(10);
-	scaleSpinnerY.addListener(SWT.Selection, new Listener() {
-		@Override
-		public void handleEvent(Event event) {	
-				example.redraw();
-		}
-	});
+	scaleSpinnerY.addListener(SWT.Selection, event -> example.redraw());
 	
 	// create a button for inverting the transform matrix
 	comp = new Composite(parent, SWT.NONE);
 	comp.setLayout(new GridLayout());
 	invertButton = new Button(comp, SWT.TOGGLE);
 	invertButton.setText(GraphicsExample.getResourceString("Invert")); //$NON-NLS-1$
-	invertButton.addListener(SWT.Selection, new Listener() {
-		@Override
-		public void handleEvent(Event event) {	
-				example.redraw();
-		}
-	});
+	invertButton.addListener(SWT.Selection, event -> example.redraw());
 }
 
 /* (non-Javadoc)

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006 IBM Corporation and others.
+ * Copyright (c) 2006, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -21,9 +21,7 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Menu;
 
 /**
@@ -86,12 +84,7 @@ public void createControlPanel(Composite parent) {
 	clippingCb.add(GraphicsExample.getResourceString("Sub")); //$NON-NLS-1$
 	clippingCb.add(GraphicsExample.getResourceString("Inter")); //$NON-NLS-1$
 	clippingCb.select(0);
-	clippingCb.addListener(SWT.Selection, new Listener() {
-		@Override
-		public void handleEvent(Event event) {
-				example.redraw();
-		}
-	});
+	clippingCb.addListener(SWT.Selection, event -> example.redraw());
 
 	// color menu
 	ColorMenu cm = new ColorMenu();
@@ -125,16 +118,13 @@ public void createControlPanel(Composite parent) {
 	colorButton1.setText(GraphicsExample
 			.getResourceString("Color1")); //$NON-NLS-1$
 	colorButton1.setImage(colorGB1.getThumbNail());
-	colorButton1.addListener(SWT.Selection, new Listener() { 
-		@Override
-		public void handleEvent(Event event) {
-			final Button button = (Button) event.widget;
-			final Composite parent = button.getParent(); 
-			Rectangle bounds = button.getBounds();
-			Point point = parent.toDisplay(new Point(bounds.x, bounds.y));
-			menu1.setLocation(point.x, point.y + bounds.height);
-			menu1.setVisible(true);
-		}
+	colorButton1.addListener(SWT.Selection, event -> {
+		final Button button = (Button) event.widget;
+		final Composite parent1 = button.getParent(); 
+		Rectangle bounds = button.getBounds();
+		Point point = parent1.toDisplay(new Point(bounds.x, bounds.y));
+		menu1.setLocation(point.x, point.y + bounds.height);
+		menu1.setVisible(true);
 	});
 
 	// color button 2
@@ -145,16 +135,13 @@ public void createControlPanel(Composite parent) {
 	colorButton2.setText(GraphicsExample
 			.getResourceString("Color2")); //$NON-NLS-1$
 	colorButton2.setImage(colorGB2.getThumbNail());
-	colorButton2.addListener(SWT.Selection, new Listener() { 
-		@Override
-		public void handleEvent(Event event) {
-			final Button button = (Button) event.widget;
-			final Composite parent = button.getParent(); 
-			Rectangle bounds = button.getBounds();
-			Point point = parent.toDisplay(new Point(bounds.x, bounds.y));
-			menu2.setLocation(point.x, point.y + bounds.height);
-			menu2.setVisible(true);
-		}
+	colorButton2.addListener(SWT.Selection, event -> {
+		final Button button = (Button) event.widget;
+		final Composite parent1 = button.getParent(); 
+		Rectangle bounds = button.getBounds();
+		Point point = parent1.toDisplay(new Point(bounds.x, bounds.y));
+		menu2.setLocation(point.x, point.y + bounds.height);
+		menu2.setVisible(true);
 	});
 }
 

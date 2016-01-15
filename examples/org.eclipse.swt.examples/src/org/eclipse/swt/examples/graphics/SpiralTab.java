@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006 IBM Corporation and others.
+ * Copyright (c) 2006, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -71,12 +71,7 @@ public void createControlPanel(Composite parent) {
 	petalSpinner.setSelection(8);
 	petalSpinner.setMinimum(3);
 	petalSpinner.setMaximum(20);
-	petalSpinner.addListener(SWT.Selection, new Listener() {
-		@Override
-		public void handleEvent (Event event) {
-			example.redraw();
-		}
-	});
+	petalSpinner.addListener(SWT.Selection, event -> example.redraw());
 	
 	// create color button
 	comp = new Composite(parent, SWT.NONE);

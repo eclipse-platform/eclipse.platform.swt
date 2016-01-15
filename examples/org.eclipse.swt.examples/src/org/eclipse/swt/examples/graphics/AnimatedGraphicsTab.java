@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006 IBM Corporation and others.
+ * Copyright (c) 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -16,7 +16,6 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Spinner;
@@ -64,23 +63,20 @@ public abstract class AnimatedGraphicsTab extends GraphicsTab {
 		final Display display = parent.getDisplay();
 				
 		toolBar = new ToolBar(parent, SWT.FLAT);
-		Listener toolBarListener = new Listener() {
-			@Override
-			public void handleEvent(Event event) {
-				switch (event.type) {
-					case SWT.Selection: {
-						if (event.widget == playItem) {
-							animate = true;
-							playItem.setEnabled(!animate);
-							pauseItem.setEnabled(animate);
-						} else if (event.widget == pauseItem) {
-							animate = false;
-							playItem.setEnabled(!animate);
-							pauseItem.setEnabled(animate);
-						}
+		Listener toolBarListener = event -> {
+			switch (event.type) {
+				case SWT.Selection: {
+					if (event.widget == playItem) {
+						animate = true;
+						playItem.setEnabled(!animate);
+						pauseItem.setEnabled(animate);
+					} else if (event.widget == pauseItem) {
+						animate = false;
+						playItem.setEnabled(!animate);
+						pauseItem.setEnabled(animate);
 					}
-					break;
 				}
+				break;
 			}
 		};
 		

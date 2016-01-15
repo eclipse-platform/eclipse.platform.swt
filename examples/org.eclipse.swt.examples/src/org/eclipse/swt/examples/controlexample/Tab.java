@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2014 IBM Corporation and others.
+ * Copyright (c) 2000, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -798,37 +798,17 @@ abstract class Tab {
 
 		MenuItem cut = new MenuItem (popup, SWT.PUSH);
 		cut.setText (ControlExample.getResourceString("MenuItem_Cut"));
-		cut.addListener (SWT.Selection, new Listener () {
-			@Override
-			public void handleEvent (Event event) {
-				eventConsole.cut ();
-			}
-		});
+		cut.addListener (SWT.Selection, event -> eventConsole.cut ());
 		MenuItem copy = new MenuItem (popup, SWT.PUSH);
 		copy.setText (ControlExample.getResourceString("MenuItem_Copy"));
-		copy.addListener (SWT.Selection, new Listener () {
-			@Override
-			public void handleEvent (Event event) {
-				eventConsole.copy ();
-			}
-		});
+		copy.addListener (SWT.Selection, event -> eventConsole.copy ());
 		MenuItem paste = new MenuItem (popup, SWT.PUSH);
 		paste.setText (ControlExample.getResourceString("MenuItem_Paste"));
-		paste.addListener (SWT.Selection, new Listener () {
-			@Override
-			public void handleEvent (Event event) {
-				eventConsole.paste ();
-			}
-		});
+		paste.addListener (SWT.Selection, event -> eventConsole.paste ());
 		new MenuItem (popup, SWT.SEPARATOR);
 		MenuItem selectAll = new MenuItem (popup, SWT.PUSH);
 		selectAll.setText(ControlExample.getResourceString("MenuItem_SelectAll"));
-		selectAll.addListener (SWT.Selection, new Listener () {
-			@Override
-			public void handleEvent (Event event) {
-				eventConsole.selectAll ();
-			}
-		});
+		selectAll.addListener (SWT.Selection, event -> eventConsole.selectAll ());
 	}
 
 	/**
@@ -1383,22 +1363,19 @@ abstract class Tab {
 	void setExampleWidgetPopupMenu() {
 		Control[] controls = getExampleControls();
 		for (final Control control : controls) {
-			control.addListener(SWT.MenuDetect, new Listener() {
-				@Override
-				public void handleEvent(Event event) {
-		        	Menu menu = control.getMenu();
-		        	if (menu != null && samplePopup) {
-		        		menu.dispose();
-		        		menu = null;
-		        	}
-		        	if (menu == null && popupMenuButton.getSelection()) {
-		        		menu = new Menu(shell, SWT.POP_UP | (control.getStyle() & (SWT.RIGHT_TO_LEFT | SWT.LEFT_TO_RIGHT)));
-			        	MenuItem item = new MenuItem(menu, SWT.PUSH);
-			        	item.setText("Sample popup menu item");
-			        	specialPopupMenuItems(menu, event);
-			        	control.setMenu(menu);
-		        		samplePopup = true;
-		        	}
+			control.addListener(SWT.MenuDetect, event -> {
+				Menu menu = control.getMenu();
+				if (menu != null && samplePopup) {
+					menu.dispose();
+					menu = null;
+				}
+				if (menu == null && popupMenuButton.getSelection()) {
+					menu = new Menu(shell, SWT.POP_UP | (control.getStyle() & (SWT.RIGHT_TO_LEFT | SWT.LEFT_TO_RIGHT)));
+			    	MenuItem item = new MenuItem(menu, SWT.PUSH);
+			    	item.setText("Sample popup menu item");
+			    	specialPopupMenuItems(menu, event);
+			    	control.setMenu(menu);
+					samplePopup = true;
 				}
 			});
 		}
@@ -1593,12 +1570,7 @@ abstract class Tab {
 	 */
 	void hookListeners (Widget widget) {
 		if (logging) {
-			Listener listener = new Listener() {
-				@Override
-				public void handleEvent (Event event) {
-					log (event);
-				}
-			};
+			Listener listener = event -> log (event);
 			for (int i = 0; i < EVENT_INFO.length; i++) {
 				if (eventsFilter [i]) {
 					widget.addListener (EVENT_INFO[i].type, listener);

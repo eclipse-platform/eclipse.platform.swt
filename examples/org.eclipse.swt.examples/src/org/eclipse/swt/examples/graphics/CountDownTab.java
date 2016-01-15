@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006 IBM Corporation and others.
+ * Copyright (c) 2006, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -68,12 +68,9 @@ public class CountDownTab extends AnimatedGraphicsTab {
 
 		// add selection listener to reset nextNumber after
 		// the sequence has completed
-		playItem.addListener(SWT.Selection, new Listener() {
-			@Override
-			public void handleEvent(Event event) {
-				if (nextNumber < 1)
-					nextNumber = startNumber;
-			}
+		playItem.addListener(SWT.Selection, event -> {
+			if (nextNumber < 1)
+				nextNumber = startNumber;
 		});
 
 		Composite comp;
@@ -88,12 +85,9 @@ public class CountDownTab extends AnimatedGraphicsTab {
 		lineWidthSpinner.setSelection(20);
 		lineWidthSpinner.setMinimum(1);
 		lineWidthSpinner.setMaximum(100);
-		lineWidthSpinner.addListener(SWT.Selection, new Listener() {
-			@Override
-			public void handleEvent(Event event) {
-				if (!pauseItem.isEnabled()) {
-					example.redraw();
-				}
+		lineWidthSpinner.addListener(SWT.Selection, event -> {
+			if (!pauseItem.isEnabled()) {
+				example.redraw();
 			}
 		});
 
@@ -108,13 +102,10 @@ public class CountDownTab extends AnimatedGraphicsTab {
 		aliasCombo.add("ON");
 		aliasCombo.select(0);
 		antialias = aliasValues[0];
-		aliasCombo.addListener(SWT.Selection, new Listener() {
-			@Override
-			public void handleEvent(Event event) {
-				antialias = aliasValues[aliasCombo.getSelectionIndex()];
-				if (!pauseItem.isEnabled()) {
-					example.redraw();
-				}
+		aliasCombo.addListener(SWT.Selection, event -> {
+			antialias = aliasValues[aliasCombo.getSelectionIndex()];
+			if (!pauseItem.isEnabled()) {
+				example.redraw();
 			}
 		});
 

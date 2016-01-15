@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006 IBM Corporation and others.
+ * Copyright (c) 2006, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -21,9 +21,7 @@ import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.Spinner;
 
@@ -79,12 +77,7 @@ public void createControlPanel(Composite parent) {
 	lineWidthSpinner.setSelection(10);
 	lineWidthSpinner.setMinimum(1);
 	lineWidthSpinner.setMaximum(30);
-	lineWidthSpinner.addListener(SWT.Selection, new Listener() {
-		@Override
-		public void handleEvent(Event event) {
-				example.redraw();
-		}
-	});
+	lineWidthSpinner.addListener(SWT.Selection, event -> example.redraw());
 		
 	ColorMenu cm = new ColorMenu();
 	cm.setPatternItems(example.checkAdvancedGraphics());
@@ -109,16 +102,13 @@ public void createControlPanel(Composite parent) {
 	colorButton.setText(GraphicsExample
 			.getResourceString("Color")); //$NON-NLS-1$
 	colorButton.setImage(lineColor.getThumbNail());
-	colorButton.addListener(SWT.Selection, new Listener() { 
-		@Override
-		public void handleEvent(Event event) {
-			final Button button = (Button) event.widget;
-			final Composite parent = button.getParent(); 
-			Rectangle bounds = button.getBounds();
-			Point point = parent.toDisplay(new Point(bounds.x, bounds.y));
-			menu.setLocation(point.x, point.y + bounds.height);
-			menu.setVisible(true);
-		}
+	colorButton.addListener(SWT.Selection, event -> {
+		final Button button = (Button) event.widget;
+		final Composite parent1 = button.getParent(); 
+		Rectangle bounds = button.getBounds();
+		Point point = parent1.toDisplay(new Point(bounds.x, bounds.y));
+		menu.setLocation(point.x, point.y + bounds.height);
+		menu.setVisible(true);
 	});
 }
 

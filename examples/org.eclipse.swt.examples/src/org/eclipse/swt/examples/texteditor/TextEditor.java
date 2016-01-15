@@ -1,5 +1,5 @@
 /*****************************************************************************
- * Copyright (c) 2000, 2008 IBM Corporation and others.
+ * Copyright (c) 2000, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -566,39 +566,19 @@ public class TextEditor {
 		final MenuItem cutItem = new MenuItem (menu, SWT.PUSH);
 		cutItem.setText (getResourceString("Cut_menuitem")); //$NON-NLS-1$
 		cutItem.setImage(iCut);
-		cutItem.addListener (SWT.Selection, new Listener () {
-			@Override
-			public void handleEvent (Event event) {
-				styledText.cut();
-			}
-		});
+		cutItem.addListener (SWT.Selection, event -> styledText.cut());
 		final MenuItem copyItem = new MenuItem (menu, SWT.PUSH);
 		copyItem.setText (getResourceString("Copy_menuitem")); //$NON-NLS-1$
 		copyItem.setImage(iCopy);
-		copyItem.addListener (SWT.Selection, new Listener () {
-			@Override
-			public void handleEvent (Event event) {
-				styledText.copy();
-			}
-		});
+		copyItem.addListener (SWT.Selection, event -> styledText.copy());
 		final MenuItem pasteItem = new MenuItem (menu, SWT.PUSH);
 		pasteItem.setText (getResourceString("Paste_menuitem")); //$NON-NLS-1$
 		pasteItem.setImage(iPaste);
-		pasteItem.addListener (SWT.Selection, new Listener () {
-			@Override
-			public void handleEvent (Event event) {
-				styledText.paste();
-			}
-		});
+		pasteItem.addListener (SWT.Selection, event -> styledText.paste());
 		new MenuItem (menu, SWT.SEPARATOR);
 		final MenuItem selectAllItem = new MenuItem (menu, SWT.PUSH);
 		selectAllItem.setText (getResourceString("SelectAll_menuitem")); //$NON-NLS-1$
-		selectAllItem.addListener (SWT.Selection, new Listener () {
-			@Override
-			public void handleEvent (Event event) {
-				styledText.selectAll();
-			}
-		});
+		selectAllItem.addListener (SWT.Selection, event -> styledText.selectAll());
 		menu.addMenuListener(new MenuAdapter() {
 			@Override
 			public void menuShown(MenuEvent event) {
@@ -1325,18 +1305,8 @@ public class TextEditor {
 				updateToolBar();
 			}
 		});
-		styledText.addListener(SWT.MouseUp, new Listener() {
-			@Override
-			public void handleEvent(Event event) {
-				handleMouseUp(event);
-			}
-		});
-		styledText.addListener(SWT.KeyDown, new Listener() {
-			@Override
-			public void handleEvent(Event event) {
-				handleKeyDown(event);
-			}
-		});
+		styledText.addListener(SWT.MouseUp, event -> handleMouseUp(event));
+		styledText.addListener(SWT.KeyDown, event -> handleKeyDown(event));
 		styledText.addVerifyListener(new VerifyListener() {
 			@Override
 			public void verifyText(VerifyEvent event) {
@@ -1355,16 +1325,13 @@ public class TextEditor {
 				handlePaintObject(event);
 			}
 		});
-		styledText.addListener(SWT.Dispose, new Listener() {
-			@Override
-			public void handleEvent(Event event) {
-				StyleRange[] styles = styledText.getStyleRanges(0, styledText.getCharCount(), false);
-				for (int i = 0; i < styles.length; i++) {
-					Object data = styles[i].data;
-					if (data != null) {
-						if (data instanceof Image) ((Image)data).dispose();
-						if (data instanceof Control) ((Control)data).dispose();
-					}
+		styledText.addListener(SWT.Dispose, event -> {
+			StyleRange[] styles = styledText.getStyleRanges(0, styledText.getCharCount(), false);
+			for (int i = 0; i < styles.length; i++) {
+				Object data = styles[i].data;
+				if (data != null) {
+					if (data instanceof Image) ((Image)data).dispose();
+					if (data instanceof Control) ((Control)data).dispose();
 				}
 			}
 		});
@@ -1540,15 +1507,12 @@ public class TextEditor {
 		okButton.setText(getResourceString("Ok")); //$NON-NLS-1$
 		final Button cancelButton = new Button(dialog, SWT.PUSH);
 		cancelButton.setText(getResourceString("Cancel")); //$NON-NLS-1$
-		Listener listener = new Listener() {
-			@Override
-			public void handleEvent(Event event) {
-				if (event.widget == okButton) {
-					link = text.getText();
-					setStyle(UNDERLINE_LINK);
-				}
-				dialog.dispose();
+		Listener listener = event -> {
+			if (event.widget == okButton) {
+				link = text.getText();
+				setStyle(UNDERLINE_LINK);
 			}
+			dialog.dispose();
 		};
 		okButton.addListener(SWT.Selection, listener);
 		cancelButton.addListener(SWT.Selection, listener);

@@ -193,12 +193,7 @@ public CTable (Composite parent, int style) {
 	arrowBounds = getArrowDownImage ().getBounds ();
 	clientArea = getClientArea ();
 	
-	Listener listener = new Listener () {
-		@Override
-		public void handleEvent (Event event) {
-			handleEvents (event);
-		}
-	};
+	Listener listener = event -> handleEvents (event);
 	addListener (SWT.Paint, listener);
 	addListener (SWT.MouseDown, listener);
 	addListener (SWT.MouseUp, listener);
@@ -224,19 +219,16 @@ public CTable (Composite parent, int style) {
 	header.addListener (SWT.MouseExit, listener);
 	header.addListener (SWT.MenuDetect, listener);
 
-	toolTipListener = new Listener () {
-		@Override
-		public void handleEvent (Event event) {
-			switch (event.type) {
-				case SWT.MouseHover:
-				case SWT.MouseMove:
-					if (headerUpdateToolTip (event.x)) break;
-					// FALL THROUGH
-				case SWT.MouseExit:
-				case SWT.MouseDown:
-					headerHideToolTip ();
-					break;
-			}
+	toolTipListener = event -> {
+		switch (event.type) {
+			case SWT.MouseHover:
+			case SWT.MouseMove:
+				if (headerUpdateToolTip (event.x)) break;
+				// FALL THROUGH
+			case SWT.MouseExit:
+			case SWT.MouseDown:
+				headerHideToolTip ();
+				break;
 		}
 	};
 

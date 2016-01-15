@@ -22,7 +22,6 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Sash;
@@ -86,18 +85,15 @@ public class EditorTab {
 		sashData.top = new FormAttachment(0, 0);
 		sashData.bottom = new FormAttachment(100, 0);
 		sash.setLayoutData(sashData);
-		sash.addListener(SWT.Selection, new Listener() {
-			@Override
-			public void handleEvent(Event e) {
-				Rectangle rect = sash.getBounds();
-				Rectangle parentRect = sash.getParent().getClientArea();
-				int right = parentRect.width - rect.width - 20;
-				e.x = Math.max(Math.min(e.x, right), 20);
-				if (e.x != rect.x) {
-					sashData.left = new FormAttachment(0, e.x);
-					parent.layout();
-				}
-			}			
+		sash.addListener(SWT.Selection, e -> {
+			Rectangle rect = sash.getBounds();
+			Rectangle parentRect = sash.getParent().getClientArea();
+			int right = parentRect.width - rect.width - 20;
+			e.x = Math.max(Math.min(e.x, right), 20);
+			if (e.x != rect.x) {
+				sashData.left = new FormAttachment(0, e.x);
+				parent.layout();
+			}
 		});
 		data = new FormData();
 		data.left = new FormAttachment(sash, 0);
@@ -149,13 +145,10 @@ public class EditorTab {
 		scriptText.setText(script);
 		parent.layout();
 		
-		Listener listener = new Listener() {
-			@Override
-			public void handleEvent(Event e) {
-				Widget w = e.widget;
-				if (w == htmlButton) browser.setText(htmlText.getText());
-				if (w == scriptButton) browser.execute(scriptText.getText());
-			}
+		Listener listener = e -> {
+			Widget w = e.widget;
+			if (w == htmlButton) browser.setText(htmlText.getText());
+			if (w == scriptButton) browser.execute(scriptText.getText());
 		};
 		
 		htmlButton.addListener(SWT.Selection, listener);

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2012 IBM Corporation and others.
+ * Copyright (c) 2000, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -28,10 +28,8 @@ import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
-import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Item;
-import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.ToolBar;
@@ -269,12 +267,7 @@ class CTabFolderTab extends Tab {
 			text.setText(ControlExample.getResourceString("CTabItem_content") + ": " + i);
 			item.setControl(text);
 		}
-		tabFolder1.addListener(SWT.Selection, new Listener() {
-			@Override
-			public void handleEvent(Event event) {
-				lastSelectedTab = tabFolder1.getSelectionIndex();
-			}
-		});
+		tabFolder1.addListener(SWT.Selection, event -> lastSelectedTab = tabFolder1.getSelectionIndex());
 		
 		/* If we have saved state, restore it */
 		tabFolder1.setSelection(lastSelectedTab);

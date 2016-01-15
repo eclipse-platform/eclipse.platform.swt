@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006 IBM Corporation and others.
+ * Copyright (c) 2006, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -21,8 +21,6 @@ import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Menu;
 
 /**
@@ -96,16 +94,13 @@ public class PathClippingAnimTab extends AnimatedGraphicsTab {
 		colorButton = new Button(comp, SWT.PUSH);
 		colorButton.setText(GraphicsExample.getResourceString("Color")); //$NON-NLS-1$
 		colorButton.setImage(background.getThumbNail());
-		colorButton.addListener(SWT.Selection, new Listener() {
-			@Override
-			public void handleEvent(Event event) {
-				final Button button = (Button) event.widget;
-				final Composite parent = button.getParent();
-				Rectangle bounds = button.getBounds();
-				Point point = parent.toDisplay(new Point(bounds.x, bounds.y));
-				menu.setLocation(point.x, point.y + bounds.height);
-				menu.setVisible(true);
-			}
+		colorButton.addListener(SWT.Selection, event -> {
+			final Button button = (Button) event.widget;
+			final Composite parent1 = button.getParent();
+			Rectangle bounds = button.getBounds();
+			Point point = parent1.toDisplay(new Point(bounds.x, bounds.y));
+			menu.setLocation(point.x, point.y + bounds.height);
+			menu.setVisible(true);
 		});
 	}
 

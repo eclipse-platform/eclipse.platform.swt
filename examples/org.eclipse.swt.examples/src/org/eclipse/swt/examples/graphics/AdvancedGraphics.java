@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2006 IBM Corporation and others.
+ * Copyright (c) 2000, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -31,8 +31,6 @@ import org.eclipse.swt.graphics.Path;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.graphics.Transform;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 
@@ -73,36 +71,30 @@ public class AdvancedGraphics {
 		final Font font = new Font(display, fd.getName(), 96, SWT.BOLD | SWT.ITALIC);
 		final Image image = loadImage(display, AdvancedGraphics.class, "irmaos.jpg");
 		final Rectangle rect = image.getBounds();
-		shell.addListener(SWT.Paint, new Listener() {
-			@Override
-			public void handleEvent(Event event) {
-				GC gc = event.gc;				
-				Transform tr = new Transform(display);
-				tr.translate(rect.width / 4, rect.height / 2);
-				tr.rotate(-30);
-				if (image != null) {
-					gc.drawImage(image, 0, 0, rect.width, rect.height, 0, 0, rect.width, rect.height);
-				}
-				gc.setAlpha(100);
-				gc.setTransform(tr);
-				Path path = new Path(display);
-				path.addString("SWT", 0, 0, font);
-				gc.setBackground(display.getSystemColor(SWT.COLOR_GREEN));
-				gc.setForeground(display.getSystemColor(SWT.COLOR_BLUE));
-				gc.fillPath(path);
-				gc.drawPath(path);
-				tr.dispose();
-				path.dispose();
-			}			
+		shell.addListener(SWT.Paint, event -> {
+			GC gc = event.gc;				
+			Transform tr = new Transform(display);
+			tr.translate(rect.width / 4, rect.height / 2);
+			tr.rotate(-30);
+			if (image != null) {
+				gc.drawImage(image, 0, 0, rect.width, rect.height, 0, 0, rect.width, rect.height);
+			}
+			gc.setAlpha(100);
+			gc.setTransform(tr);
+			Path path = new Path(display);
+			path.addString("SWT", 0, 0, font);
+			gc.setBackground(display.getSystemColor(SWT.COLOR_GREEN));
+			gc.setForeground(display.getSystemColor(SWT.COLOR_BLUE));
+			gc.fillPath(path);
+			gc.drawPath(path);
+			tr.dispose();
+			path.dispose();
 		});
 		shell.setSize(shell.computeSize(rect.width, rect.height));
 		shell.open();
-		shell.addListener(SWT.Dispose, new Listener() {
-			@Override
-			public void handleEvent(Event event) {
-				if (image != null) image.dispose();
-				font.dispose();
-			}
+		shell.addListener(SWT.Dispose, event -> {
+			if (image != null) image.dispose();
+			font.dispose();
 		});	
 		return shell;
 	}

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2006 IBM Corporation and others.
+ * Copyright (c) 2000, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -177,31 +177,25 @@ void createControls(final Composite parent) {
 	data.bottom = new FormAttachment(100, -MARGIN);
 	tabControlPanel.setLayoutData(data);
 	
-	vSash.addListener(SWT.Selection, new Listener() {
-		@Override
-		public void handleEvent(Event event) {
-			Rectangle rect = hSash.getParent().getClientArea();
-			event.x = Math.min (Math.max (event.x, 60), rect.width - 60);
-			if (event.detail != SWT.DRAG) {
-				FormData data = (FormData)vSash.getLayoutData();
-				data.left.offset = event.x;
-				vSash.requestLayout();
-				animate = true;
-			} else {
-				animate = false;
-			}
+	vSash.addListener(SWT.Selection, event -> {
+		Rectangle rect = hSash.getParent().getClientArea();
+		event.x = Math.min (Math.max (event.x, 60), rect.width - 60);
+		if (event.detail != SWT.DRAG) {
+			FormData data1 = (FormData)vSash.getLayoutData();
+			data1.left.offset = event.x;
+			vSash.requestLayout();
+			animate = true;
+		} else {
+			animate = false;
 		}
 	});
-	hSash.addListener (SWT.Selection, new Listener () {
-		@Override
-		public void handleEvent (Event event) {
-			Rectangle rect = vSash.getParent().getClientArea();
-			event.y = Math.min (Math.max (event.y, tabList.getLocation().y + 60), rect.height - 60);
-			if (event.detail != SWT.DRAG) {
-				FormData data = (FormData)hSash.getLayoutData();
-				data.top.offset = event.y;
-				hSash.requestLayout();
-			}
+	hSash.addListener (SWT.Selection, event -> {
+		Rectangle rect = vSash.getParent().getClientArea();
+		event.y = Math.min (Math.max (event.y, tabList.getLocation().y + 60), rect.height - 60);
+		if (event.detail != SWT.DRAG) {
+			FormData data1 = (FormData)hSash.getLayoutData();
+			data1.top.offset = event.y;
+			hSash.requestLayout();
 		}
 	});
 }
@@ -210,32 +204,29 @@ void createCanvas(Composite parent) {
 	int style = SWT.NO_BACKGROUND;
 	if (dbItem.getSelection()) style |= SWT.DOUBLE_BUFFERED;
 	canvas = new Canvas(parent, style);
-	canvas.addListener(SWT.Paint, new Listener() {
-		@Override
-		public void handleEvent(Event event) {
-			GC gc = event.gc;
-			Rectangle rect = canvas.getClientArea();			
-			Device device = gc.getDevice();
-			Pattern pattern = null;
-			if (background.getBgColor1() != null) {
-				if (background.getBgColor2() != null) { // gradient
-					pattern = new Pattern(device, 0, 0, rect.width, 
-							rect.height,
-							background.getBgColor1(),
-							background.getBgColor2());
-					gc.setBackgroundPattern(pattern);
-				} else {	// solid color
-					gc.setBackground(background.getBgColor1());
-				}
-			} else if (background.getBgImage() != null) {		// image
-				pattern = new Pattern(device, background.getBgImage());
+	canvas.addListener(SWT.Paint, event -> {
+		GC gc = event.gc;
+		Rectangle rect = canvas.getClientArea();			
+		Device device = gc.getDevice();
+		Pattern pattern = null;
+		if (background.getBgColor1() != null) {
+			if (background.getBgColor2() != null) { // gradient
+				pattern = new Pattern(device, 0, 0, rect.width, 
+						rect.height,
+						background.getBgColor1(),
+						background.getBgColor2());
 				gc.setBackgroundPattern(pattern);
+			} else {	// solid color
+				gc.setBackground(background.getBgColor1());
 			}
-			gc.fillRectangle(rect);
-			GraphicsTab tab = getTab();
-			if (tab != null) tab.paint(gc, rect.width, rect.height);
-			if (pattern != null) pattern.dispose();
+		} else if (background.getBgImage() != null) {		// image
+			pattern = new Pattern(device, background.getBgImage());
+			gc.setBackgroundPattern(pattern);
 		}
+		gc.fillRectangle(rect);
+		GraphicsTab tab = getTab();
+		if (tab != null) tab.paint(gc, rect.width, rect.height);
+		if (pattern != null) pattern.dispose();
 	});
 }
 
@@ -268,25 +259,19 @@ void createToolBar(final Composite parent) {
 	back.setText(getResourceString("Back")); //$NON-NLS-1$
 	back.setImage(loadImage(display, "back.gif")); //$NON-NLS-1$
 	
-	back.addListener(SWT.Selection, new Listener() {
-		@Override
-		public void handleEvent(Event event) {
-			int index = tabs_in_order.indexOf(tab) - 1;
-			if (index < 0)
-				index = tabs_in_order.size() - 1;
-			setTab(tabs_in_order.get(index));
-		}
+	back.addListener(SWT.Selection, event -> {
+		int index = tabs_in_order.indexOf(tab) - 1;
+		if (index < 0)
+			index = tabs_in_order.size() - 1;
+		setTab(tabs_in_order.get(index));
 	});
 	
 	ToolItem  next = new ToolItem(toolBar, SWT.PUSH);
 	next.setText(getResourceString("Next")); //$NON-NLS-1$
 	next.setImage(loadImage(display, "next.gif")); //$NON-NLS-1$
-	next.addListener(SWT.Selection, new Listener() {
-		@Override
-		public void handleEvent(Event event) {
-			int index = (tabs_in_order.indexOf(tab) + 1)%tabs_in_order.size();
-			setTab(tabs_in_order.get(index));
-		}
+	next.addListener(SWT.Selection, event -> {
+		int index = (tabs_in_order.indexOf(tab) + 1)%tabs_in_order.size();
+		setTab(tabs_in_order.get(index));
 	});
 	
 	ColorMenu colorMenu = new ColorMenu();
@@ -439,15 +424,12 @@ void createTabList(Composite parent) {
 			}
 		}
 	}
-	tabList.addListener(SWT.Selection, new Listener() {
-		@Override
-		public void handleEvent(Event event) {
-			TreeItem item = (TreeItem)event.item;
-			if (item != null) {
-				GraphicsTab gt = (GraphicsTab)item.getData();
-				if (gt == tab) return;
-				setTab((GraphicsTab)item.getData());
-			}
+	tabList.addListener(SWT.Selection, event -> {
+		TreeItem item = (TreeItem)event.item;
+		if (item != null) {
+			GraphicsTab gt = (GraphicsTab)item.getData();
+			if (gt == tab) return;
+			setTab((GraphicsTab)item.getData());
 		}
 	});
 }
@@ -581,12 +563,7 @@ public Shell open(final Display display) {
 	Shell shell = new Shell(display);
 	shell.setText(getResourceString("GraphicsExample")); //$NON-NLS-1$
 	final GraphicsExample example = new GraphicsExample(shell);
-	shell.addListener(SWT.Close, new Listener() {
-		@Override
-		public void handleEvent(Event event) {
-			example.dispose();
-		}
-	});	
+	shell.addListener(SWT.Close, event -> example.dispose());	
 	shell.open();
 	return shell;
 }

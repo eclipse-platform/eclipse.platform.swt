@@ -42,7 +42,6 @@ import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.ProgressBar;
@@ -184,16 +183,13 @@ public class BrowserExample {
 			
 			itemBack.setEnabled(browser.isBackEnabled());
 			itemForward.setEnabled(browser.isForwardEnabled());
-			Listener listener = new Listener() {
-				@Override
-				public void handleEvent(Event event) {
-					ToolItem item = (ToolItem)event.widget;
-					if (item == itemBack) browser.back(); 
-					else if (item == itemForward) browser.forward();
-					else if (item == itemStop) browser.stop();
-					else if (item == itemRefresh) browser.refresh();
-					else if (item == itemGo) browser.setUrl(locationBar.getText());
-				}
+			Listener listener = event -> {
+				ToolItem item = (ToolItem)event.widget;
+				if (item == itemBack) browser.back(); 
+				else if (item == itemForward) browser.forward();
+				else if (item == itemStop) browser.stop();
+				else if (item == itemRefresh) browser.refresh();
+				else if (item == itemGo) browser.setUrl(locationBar.getText());
 			};
 			itemBack.addListener(SWT.Selection, listener);
 			itemForward.addListener(SWT.Selection, listener);
@@ -210,19 +206,11 @@ public class BrowserExample {
 			canvas.setLayoutData(data);
 			
 			final Rectangle rect = images[0].getBounds();
-			canvas.addListener(SWT.Paint, new Listener() {
-				@Override
-				public void handleEvent(Event e) {
-					Point pt = ((Canvas)e.widget).getSize();
-					e.gc.drawImage(images[index], 0, 0, rect.width, rect.height, 0, 0, pt.x, pt.y);			
-				}
+			canvas.addListener(SWT.Paint, e -> {
+				Point pt = ((Canvas)e.widget).getSize();
+				e.gc.drawImage(images[index], 0, 0, rect.width, rect.height, 0, 0, pt.x, pt.y);			
 			});
-			canvas.addListener(SWT.MouseDown, new Listener() {
-				@Override
-				public void handleEvent(Event e) {
-					browser.setUrl(getResourceString("Startup"));
-				}
-			});
+			canvas.addListener(SWT.MouseDown, e -> browser.setUrl(getResourceString("Startup")));
 			
 			final Display display = parent.getDisplay();
 			display.asyncExec(new Runnable() {
@@ -251,12 +239,7 @@ public class BrowserExample {
 				data.right = new FormAttachment(100, 0);			
 			}
 			locationBar.setLayoutData(data);
-			locationBar.addListener(SWT.DefaultSelection, new Listener() {
-				@Override
-				public void handleEvent(Event e) {
-					browser.setUrl(locationBar.getText());
-				}
-			});
+			locationBar.addListener(SWT.DefaultSelection, e -> browser.setUrl(locationBar.getText()));
 		}
 		if (statusBar) {
 			status = new Label(parent, SWT.NONE);

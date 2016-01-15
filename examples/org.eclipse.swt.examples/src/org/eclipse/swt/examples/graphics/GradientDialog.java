@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006 IBM Corporation and others.
+ * Copyright (c) 2006, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -81,17 +81,14 @@ public class GradientDialog extends Dialog {
 	    // create the controls in the dialog
 	    createDialogControls(dialog);
 		
-		dialog.addListener(SWT.Close, new Listener() {
-			@Override
-			public void handleEvent(Event event) {
-				for (int i = 0; i < resources.size(); i++) {
-					Object obj = resources.get(i);
-					if (obj != null && obj instanceof Resource) {
-						((Resource) obj).dispose();
-					}
+		dialog.addListener(SWT.Close, event -> {
+			for (int i = 0; i < resources.size(); i++) {
+				Object obj = resources.get(i);
+				if (obj != null && obj instanceof Resource) {
+					((Resource) obj).dispose();
 				}
-				dialog.dispose();
 			}
+			dialog.dispose();
 		});	
 
 		dialog.setDefaultButton (okButton);
@@ -146,21 +143,18 @@ public class GradientDialog extends Dialog {
 		gridData.widthHint = 200;
 		gridData.heightHint = 100;
 		canvas.setLayoutData(gridData);
-		canvas.addListener (SWT.Paint, new Listener () {
-			@Override
-			public void handleEvent (Event e) {
-				Image preview = null;
-				Point size = canvas.getSize();
-				Color color1 = new Color(display, rgb1);
-				Color color2 = new Color(display, rgb2);
-				preview = GraphicsExample.createImage(display, color1, color2, size.x, size.y);
-				if (preview != null) {
-					e.gc.drawImage (preview, 0, 0);
-				}
-				preview.dispose();
-				color1.dispose();
-				color2.dispose();
+		canvas.addListener (SWT.Paint, e -> {
+			Image preview = null;
+			Point size = canvas.getSize();
+			Color color1 = new Color(display, rgb1);
+			Color color2 = new Color(display, rgb2);
+			preview = GraphicsExample.createImage(display, color1, color2, size.x, size.y);
+			if (preview != null) {
+				e.gc.drawImage (preview, 0, 0);
 			}
+			preview.dispose();
+			color1.dispose();
+			color2.dispose();
 		});
 		
 		// composite used for both color buttons
@@ -222,16 +216,13 @@ public class GradientDialog extends Dialog {
 				if (canvas != null) canvas.redraw();
 			}
 		});
-		colorButton2.addListener(SWT.Selection, new Listener() { 
-			@Override
-			public void handleEvent(Event event) {
-				final Button button = (Button) event.widget;
-				final Composite parent = button.getParent(); 
-				Rectangle bounds = button.getBounds();
-				Point point = parent.toDisplay(new Point(bounds.x, bounds.y));
-				menu2.setLocation(point.x, point.y + bounds.height);
-				menu2.setVisible(true);
-			}
+		colorButton2.addListener(SWT.Selection, event -> {
+			final Button button = (Button) event.widget;
+			final Composite parent1 = button.getParent(); 
+			Rectangle bounds = button.getBounds();
+			Point point = parent1.toDisplay(new Point(bounds.x, bounds.y));
+			menu2.setLocation(point.x, point.y + bounds.height);
+			menu2.setVisible(true);
 		});
 		
 		// composite used for ok and cancel buttons
@@ -251,23 +242,15 @@ public class GradientDialog extends Dialog {
 	    // OK button
 		okButton = new Button (okCancelComp, SWT.PUSH);
 		okButton.setText("&OK");
-		okButton.addListener(SWT.Selection, new Listener() {
-			@Override
-			public void handleEvent(Event event) {
-				returnVal = SWT.OK;
-				parent.close();
-			}
+		okButton.addListener(SWT.Selection, event -> {
+			returnVal = SWT.OK;
+			parent.close();
 		});
 		
 		// cancel button
 		cancelButton = new Button (okCancelComp, SWT.PUSH);
 		cancelButton.setText("&Cancel");
-		cancelButton.addListener(SWT.Selection, new Listener() {
-			@Override
-			public void handleEvent(Event event) {
-				parent.close();
-			}
-		});
+		cancelButton.addListener(SWT.Selection, event -> parent.close());
 	}
 	
 	/**

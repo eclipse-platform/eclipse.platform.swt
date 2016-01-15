@@ -36,12 +36,10 @@ import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.DirectoryDialog;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.List;
-import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.ScrollBar;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
@@ -401,50 +399,41 @@ void createImageTransfer(Composite copyParent, Composite pasteParent){
 	final Point copyOrigin = new Point(0, 0);
 	final ScrollBar copyHBar = copyImageCanvas.getHorizontalBar();
 	copyHBar.setEnabled(false);	
-	copyHBar.addListener(SWT.Selection, new Listener() {
-		@Override
-		public void handleEvent(Event e) {
-			if (copyImage[0] != null) {
-				int hSelection = copyHBar.getSelection();
-				int destX = -hSelection - copyOrigin.x;
-				Rectangle rect = copyImage[0].getBounds();
-				copyImageCanvas.scroll(destX, 0, 0, 0, rect.width, rect.height, false);
-				copyOrigin.x = -hSelection;
-			}
+	copyHBar.addListener(SWT.Selection, e -> {
+		if (copyImage[0] != null) {
+			int hSelection = copyHBar.getSelection();
+			int destX = -hSelection - copyOrigin.x;
+			Rectangle rect = copyImage[0].getBounds();
+			copyImageCanvas.scroll(destX, 0, 0, 0, rect.width, rect.height, false);
+			copyOrigin.x = -hSelection;
 		}
 	});
 	final ScrollBar copyVBar = copyImageCanvas.getVerticalBar();
 	copyVBar.setEnabled(false);
-	copyVBar.addListener(SWT.Selection, new Listener() {
-		@Override
-		public void handleEvent (Event e) {
-			if (copyImage[0] != null) {
-				int vSelection = copyVBar.getSelection();
-				int destY = -vSelection - copyOrigin.y;
-				Rectangle rect = copyImage[0].getBounds();
-				copyImageCanvas.scroll(0, destY, 0, 0, rect.width, rect.height, false);
-				copyOrigin.y = -vSelection;
-			}
+	copyVBar.addListener(SWT.Selection, e -> {
+		if (copyImage[0] != null) {
+			int vSelection = copyVBar.getSelection();
+			int destY = -vSelection - copyOrigin.y;
+			Rectangle rect = copyImage[0].getBounds();
+			copyImageCanvas.scroll(0, destY, 0, 0, rect.width, rect.height, false);
+			copyOrigin.y = -vSelection;
 		}
 	});
-	copyImageCanvas.addListener(SWT.Paint, new Listener() {
-		@Override
-		public void handleEvent(Event e) {
-			if(copyImage[0] != null) {
-				GC gc = e.gc;
-				gc.drawImage(copyImage[0], copyOrigin.x, copyOrigin.y);
-				Rectangle rect = copyImage[0].getBounds();
-				Rectangle client = copyImageCanvas.getClientArea ();
-				int marginWidth = client.width - rect.width;
-				if (marginWidth > 0) {
-					gc.fillRectangle (rect.width, 0, marginWidth, client.height);
-				}
-				int marginHeight = client.height - rect.height;
-				if (marginHeight > 0) {
-					gc.fillRectangle(0, rect.height, client.width, marginHeight);
-				}
-				gc.dispose();
+	copyImageCanvas.addListener(SWT.Paint, e -> {
+		if(copyImage[0] != null) {
+			GC gc = e.gc;
+			gc.drawImage(copyImage[0], copyOrigin.x, copyOrigin.y);
+			Rectangle rect = copyImage[0].getBounds();
+			Rectangle client = copyImageCanvas.getClientArea ();
+			int marginWidth = client.width - rect.width;
+			if (marginWidth > 0) {
+				gc.fillRectangle (rect.width, 0, marginWidth, client.height);
 			}
+			int marginHeight = client.height - rect.height;
+			if (marginHeight > 0) {
+				gc.fillRectangle(0, rect.height, client.width, marginHeight);
+			}
+			gc.dispose();
 		}
 	});
 	Button openButton = new Button(copyParent, SWT.PUSH);
@@ -502,48 +491,39 @@ void createImageTransfer(Composite copyParent, Composite pasteParent){
 	final Point pasteOrigin = new Point(0, 0);
 	final ScrollBar pasteHBar = pasteImageCanvas.getHorizontalBar();
 	pasteHBar.setEnabled(false);	
-	pasteHBar.addListener(SWT.Selection, new Listener() {
-		@Override
-		public void handleEvent(Event e) {
-			if (pasteImage[0] != null) {
-				int hSelection = pasteHBar.getSelection();
-				int destX = -hSelection - pasteOrigin.x;
-				Rectangle rect = pasteImage[0].getBounds();
-				pasteImageCanvas.scroll(destX, 0, 0, 0, rect.width, rect.height, false);
-				pasteOrigin.x = -hSelection;
-			}
+	pasteHBar.addListener(SWT.Selection, e -> {
+		if (pasteImage[0] != null) {
+			int hSelection = pasteHBar.getSelection();
+			int destX = -hSelection - pasteOrigin.x;
+			Rectangle rect = pasteImage[0].getBounds();
+			pasteImageCanvas.scroll(destX, 0, 0, 0, rect.width, rect.height, false);
+			pasteOrigin.x = -hSelection;
 		}
 	});
 	final ScrollBar pasteVBar = pasteImageCanvas.getVerticalBar();
 	pasteVBar.setEnabled(false);
-	pasteVBar.addListener(SWT.Selection, new Listener() {
-		@Override
-		public void handleEvent(Event e) {
-			if (pasteImage[0] != null) {
-				int vSelection = pasteVBar.getSelection();
-				int destY = -vSelection - pasteOrigin.y;
-				Rectangle rect = pasteImage[0].getBounds();
-				pasteImageCanvas.scroll(0, destY, 0, 0, rect.width, rect.height, false);
-				pasteOrigin.y = -vSelection;
-			}
+	pasteVBar.addListener(SWT.Selection, e -> {
+		if (pasteImage[0] != null) {
+			int vSelection = pasteVBar.getSelection();
+			int destY = -vSelection - pasteOrigin.y;
+			Rectangle rect = pasteImage[0].getBounds();
+			pasteImageCanvas.scroll(0, destY, 0, 0, rect.width, rect.height, false);
+			pasteOrigin.y = -vSelection;
 		}
 	});
-	pasteImageCanvas.addListener(SWT.Paint, new Listener() {
-		@Override
-		public void handleEvent(Event e) {
-			if(pasteImage[0] != null) {
-				GC gc = e.gc;
-				gc.drawImage(pasteImage[0], pasteOrigin.x, pasteOrigin.y);
-				Rectangle rect = pasteImage[0].getBounds();
-				Rectangle client = pasteImageCanvas.getClientArea ();
-				int marginWidth = client.width - rect.width;
-				if (marginWidth > 0) {
-					gc.fillRectangle(rect.width, 0, marginWidth, client.height);
-				}
-				int marginHeight = client.height - rect.height;
-				if (marginHeight > 0) {
-					gc.fillRectangle(0, rect.height, client.width, marginHeight);
-				}
+	pasteImageCanvas.addListener(SWT.Paint, e -> {
+		if(pasteImage[0] != null) {
+			GC gc = e.gc;
+			gc.drawImage(pasteImage[0], pasteOrigin.x, pasteOrigin.y);
+			Rectangle rect = pasteImage[0].getBounds();
+			Rectangle client = pasteImageCanvas.getClientArea ();
+			int marginWidth = client.width - rect.width;
+			if (marginWidth > 0) {
+				gc.fillRectangle(rect.width, 0, marginWidth, client.height);
+			}
+			int marginHeight = client.height - rect.height;
+			if (marginHeight > 0) {
+				gc.fillRectangle(0, rect.height, client.width, marginHeight);
 			}
 		}
 	});
