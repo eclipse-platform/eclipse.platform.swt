@@ -251,14 +251,11 @@ public class PawnTab {
 	
 	public static void play(final Display display, final Browser browser, int delay) {
 		ttr.playRequest(game, BLACK);
-		display.timerExec(3000, new Runnable() {
-				@Override
-				public void run() {
-					ttr.getBestMove(move);
-					boolean hasMore = add(move[0], move[1], BLACK);
-					isWhite = true;
-					browser.setText(getHtml(hasMore ? TYPE_BOARD : TYPE_BOARD_OVER));
-				}
+		display.timerExec(3000, () -> {
+			ttr.getBestMove(move);
+			boolean hasMore = add(move[0], move[1], BLACK);
+			isWhite = true;
+			browser.setText(getHtml(hasMore ? TYPE_BOARD : TYPE_BOARD_OVER));
 		});
 	}
 	
