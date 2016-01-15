@@ -64,7 +64,7 @@ class StyledTextTab extends ScrollableTab {
 	Button wrapButton, readOnlyButton, fullSelectionButton;
 	
 	/* Buttons for adding StyleRanges to StyledText */
-	Button boldButton, italicButton, redButton, yellowButton, underlineButton, strikeoutButton;
+	Button boldButton, italicButton, redButton, yellowButton, underlineButton, strikeoutButton, resetButton;
 	Image boldImage, italicImage, redImage, yellowImage, underlineImage, strikeoutImage;
 	
 	/* Variables for saving state. */
@@ -192,7 +192,10 @@ class StyledTextTab extends ScrollableTab {
 		/* Create controls to modify the StyledText */
 		Label label = new Label (styledTextStyleGroup, SWT.NONE);
 		label.setText (ControlExample.getResourceString ("StyledText_Style_Instructions"));
-		label.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 6, 1));
+		label.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 4, 1));
+		resetButton = new Button (styledTextStyleGroup, SWT.PUSH);
+		resetButton.setText(ControlExample.getResourceString ("Clear"));
+		resetButton.setLayoutData(new GridData(SWT.END, SWT.CENTER, true, false, 2, 1));
 		label = new Label (styledTextStyleGroup, SWT.NONE);
 		label.setText (ControlExample.getResourceString ("Bold"));
 		label.setLayoutData(new GridData(SWT.END, SWT.CENTER, true, false));
@@ -231,7 +234,7 @@ class StyledTextTab extends ScrollableTab {
 				StyleRange style;
 				for (int i = sel.x; i<sel.x+sel.y; i++) {
 					StyleRange range = styledText.getStyleRangeAtOffset(i);
-					if (range != null) {
+					if (range != null && e.widget != resetButton) {
 						style = (StyleRange)range.clone();
 						style.start = i;
 						style.length = 1;
@@ -270,8 +273,8 @@ class StyledTextTab extends ScrollableTab {
 						style = (StyleRange)range.clone();
 						style.start = i;
 						style.length = 1;
-						style.foreground = style.foreground != null ? null : fg;
-						style.background = style.background != null ? null : bg;
+						if (fg != null) style.foreground = style.foreground != null ? null : fg;
+						if (bg != null) style.background = style.background != null ? null : bg;
 					} else {
 						style = new StyleRange (i, 1, fg, bg, SWT.NORMAL);
 					}
@@ -280,6 +283,7 @@ class StyledTextTab extends ScrollableTab {
 				styledText.setSelectionRange(sel.x + sel.y, 0);
 			}
 		};
+		resetButton.addSelectionListener(styleListener);
 		boldButton.addSelectionListener(styleListener);
 		italicButton.addSelectionListener(styleListener);
 		underlineButton.addSelectionListener(styleListener);
