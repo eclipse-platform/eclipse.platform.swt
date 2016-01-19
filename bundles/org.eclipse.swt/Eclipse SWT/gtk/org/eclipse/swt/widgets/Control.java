@@ -1026,6 +1026,7 @@ int setBounds (int x, int y, int width, int height, boolean move, boolean resize
 		 */
 		if (OS.GTK_VERSION >= OS.VERSION (3, 8, 0) && !OS.gtk_widget_get_visible(handle))  {
 			OS.gtk_widget_show(handle);
+			gtk_widget_get_preferred_size (topHandle, requisition);
 			OS.gtk_widget_size_allocate (topHandle, allocation);
 			OS.gtk_widget_hide(handle);
 		} else {

@@ -588,9 +588,13 @@ static void swt_fixed_size_allocate (GtkWidget *widget, GtkAllocation *allocatio
 			if (w == -1) w = requisition.width;
 			if (h == -1) h = requisition.height;
 		}
+		// Feature in GTK: gtk_widget_preferred_size() has to be called before
+		// gtk_widget_size_allocate otherwise a warning is thrown. See Bug 486068.
+		gtk_widget_get_preferred_size (child, &requisition, NULL);
+
 		child_allocation.width = w;
 		child_allocation.height = h;
-		
+
 		gtk_widget_size_allocate (child, &child_allocation);
     }
 }
