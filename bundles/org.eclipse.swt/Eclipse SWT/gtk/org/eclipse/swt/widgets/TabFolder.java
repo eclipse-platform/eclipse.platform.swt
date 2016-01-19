@@ -565,6 +565,8 @@ long /*int*/ gtk_switch_page (long /*int*/ widget, long /*int*/ page, long /*int
 		if (control != null && !control.isDisposed ()) {
 			control.setVisible (false);
 		}
+	} else {
+		return 0;
 	}
 	TabItem item = items [(int)/*64*/page_num];
 	Control control = item.getControl ();
