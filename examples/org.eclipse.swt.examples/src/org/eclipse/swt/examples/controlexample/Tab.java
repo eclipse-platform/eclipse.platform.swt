@@ -108,6 +108,8 @@ abstract class Tab {
 	static final boolean RTL_SUPPORT_ENABLE = "win32".equals(SWT.getPlatform()) || "gtk".equals(SWT.getPlatform());
 	Group orientationGroup;
 	Button rtlButton, ltrButton, defaultOrietationButton;
+	Group directionGroup;
+	Button rtlDirectionButton, ltrDirectionButton, autoDirectionButton, defaultDirectionButton;
 
 	/* Controls and resources for the "Colors & Fonts" group */
 	static final int IMAGE_SIZE = 12;
@@ -295,6 +297,7 @@ abstract class Tab {
 		createColorAndFontGroup ();
 		if (rtlSupport()) {
 			createOrientationGroup ();
+			createDirectionGroup ();
 		}
 		createBackgroundModeGroup ();
 	
@@ -315,7 +318,16 @@ abstract class Tab {
 				if ((event.widget.getStyle () & SWT.RADIO) != 0) {
 					if (!((Button) event.widget).getSelection ()) return;
 				}
-				recreateExampleWidgets ();
+				if (!handleTextDirection (event.widget)) {
+					recreateExampleWidgets ();
+					if (rtlSupport ()) {
+						/* Reflect the base direction falls back to the default (i.e. orientation). */
+						ltrDirectionButton.setSelection (false);
+						rtlDirectionButton.setSelection (false);
+						autoDirectionButton.setSelection (false);
+						defaultDirectionButton.setSelection (true);
+					}
+				}
 			}
 		};
 		Control [] children = styleGroup.getChildren ();
@@ -341,6 +353,10 @@ abstract class Tab {
 			rtlButton.addSelectionListener (selectionListener); 
 			ltrButton.addSelectionListener (selectionListener);		
 			defaultOrietationButton.addSelectionListener (selectionListener);
+			rtlDirectionButton.addSelectionListener (selectionListener); 
+			ltrDirectionButton.addSelectionListener (selectionListener);		
+			autoDirectionButton.addSelectionListener (selectionListener); 
+			defaultDirectionButton.addSelectionListener (selectionListener); 
 		}
 	}
 	
@@ -1265,6 +1281,23 @@ abstract class Tab {
 		rtlButton.setText ("SWT.RIGHT_TO_LEFT");
 	}
 	
+	void createDirectionGroup () {
+		/* Create Text Direction group*/
+		directionGroup = new Group (controlGroup, SWT.NONE);
+		directionGroup.setLayout (new GridLayout());
+		directionGroup.setLayoutData (new GridData (SWT.FILL, SWT.FILL, false, false));
+		directionGroup.setText (ControlExample.getResourceString("Text_Direction"));
+		defaultDirectionButton = new Button (directionGroup, SWT.RADIO);
+		defaultDirectionButton.setText (ControlExample.getResourceString("Default"));
+		defaultDirectionButton.setSelection (true);
+		ltrDirectionButton = new Button (directionGroup, SWT.RADIO);
+		ltrDirectionButton.setText ("SWT.LEFT_TO_RIGHT");
+		rtlDirectionButton = new Button (directionGroup, SWT.RADIO);
+		rtlDirectionButton.setText ("SWT.RIGHT_TO_LEFT");
+		autoDirectionButton = new Button (directionGroup, SWT.RADIO);
+		autoDirectionButton.setText ("AUTO direction");
+	}
+
 	/**
 	 * Creates the "Size" group.  The "Size" group contains
 	 * controls that allow the user to change the size of
@@ -1532,6 +1565,35 @@ abstract class Tab {
 	 */
 	String getTabText () {
 		return "";
+	}
+	
+	/**
+	 * In case one of the buttons that control text direction was selected,
+	 * apply the text direction on the controls in the client area.
+	 *
+	 * @return true if text direction style was applied and false otherwise.
+	 */
+	boolean handleTextDirection (Widget widget) {
+		int textDirection = SWT.NONE;
+		if (ltrDirectionButton.equals (widget)) {
+			textDirection = SWT.LEFT_TO_RIGHT;
+		} else if (rtlDirectionButton.equals (widget)) {
+			textDirection = SWT.RIGHT_TO_LEFT;
+		} else if (autoDirectionButton.equals (widget)) {
+			textDirection = SWT.AUTO_TEXT_DIRECTION;
+		} else if (!defaultDirectionButton.equals (widget)) {
+			return false;
+		}
+		Control [] children = getExampleControls ();
+		if (children.length > 0) {
+			if (SWT.NONE == textDirection) {
+				textDirection = children [0].getOrientation ();
+			}
+			for (Control child : children) {
+				child.setTextDirection (textDirection);
+			}
+		}
+		return true;
 	}
 	
 	/**
