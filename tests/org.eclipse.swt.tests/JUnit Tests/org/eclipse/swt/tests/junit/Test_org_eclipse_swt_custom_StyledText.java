@@ -3621,6 +3621,74 @@ public void test_setSelectionII(){
 }
 
 @Test
+public void test_addSelectionListener() {
+	text.setText("0123456789");
+	class TestSelectionListener extends SelectionAdapter {
+		public int counter;
+		public Point eventSelection = new Point(0, 0);
+		@Override
+		public void widgetSelected(SelectionEvent e) {
+			eventSelection.x = e.x;
+			eventSelection.y = e.y;
+			counter++;
+		}
+	}
+	final TestSelectionListener selectionListener = new TestSelectionListener();
+	text.addSelectionListener(selectionListener);
+	
+	assertEquals(0, selectionListener.counter);
+	assertEquals(new Point(0, 0), selectionListener.eventSelection);
+	
+	text.invokeAction(ST.COLUMN_NEXT);
+	assertEquals(new Point(1, 1), text.getSelection());
+	
+	text.invokeAction(ST.SELECT_COLUMN_NEXT);
+	assertEquals(1, selectionListener.counter);
+	assertEquals(new Point(1, 2), selectionListener.eventSelection);
+	
+	text.invokeAction(ST.SELECT_COLUMN_NEXT);
+	assertEquals(2, selectionListener.counter);
+	assertEquals(new Point(1, 3), selectionListener.eventSelection);
+	
+	// replace text while selection is non-empty:
+	text.replaceTextRange(0, 1, "a");
+	assertEquals(2, selectionListener.counter);
+	assertEquals(new Point(1, 3), selectionListener.eventSelection);
+	
+	text.replaceTextRange(9, 1, "z");
+	assertEquals(2, selectionListener.counter);
+	assertEquals(new Point(1, 3), selectionListener.eventSelection);
+	
+	text.replaceTextRange(0, 1, "ab");
+	assertEquals(3, selectionListener.counter);
+	assertEquals(new Point(2, 4), selectionListener.eventSelection);
+	assertEquals(new Point(2, 4), text.getSelection());
+	
+	text.invokeAction(ST.COLUMN_NEXT);
+	assertEquals(4, selectionListener.counter);
+	assertEquals(new Point(4, 4), selectionListener.eventSelection);
+	assertEquals(new Point(4, 4), text.getSelection());
+	
+	// replace text while selection is empty:
+	text.replaceTextRange(0, 2, "a");
+	assertEquals(4, selectionListener.counter);
+	assertEquals(new Point(3, 3), text.getSelection());
+	
+	text.replaceTextRange(9, 1, "9");
+	assertEquals(4, selectionListener.counter);
+	assertEquals(new Point(3, 3), text.getSelection());
+	
+	text.replaceTextRange(0, 1, "0");
+	assertEquals(4, selectionListener.counter);
+	assertEquals(new Point(3, 3), text.getSelection());
+	
+	// replace text that overlaps empty selection:
+	text.replaceTextRange(0, 9, "");
+	assertEquals(4, selectionListener.counter);
+	assertEquals(new Point(0, 0), text.getSelection());
+}
+
+@Test
 public void test_setSelectionBackgroundLorg_eclipse_swt_graphics_Color(){
 	text.setSelectionBackground(getColor(YELLOW));
 	assertTrue(":1a:", text.getSelectionBackground() ==  getColor(YELLOW));

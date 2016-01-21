@@ -115,7 +115,7 @@ public class StyledText extends Canvas {
 	int columnX;						// keep track of the horizontal caret position when changing lines/pages. Fixes bug 5935
 	int caretOffset;
 	int caretAlignment;
-	Point selection = new Point(0, 0);	// x and y are start and end caret offsets of selection
+	Point selection = new Point(0, 0);	// x and y are start and end caret offsets of selection (x <= y)
 	Point clipboardSelection;           // x and y are start and end caret offsets of previous selection
 	int selectionAnchor;				// position of selection anchor. 0 based offset from beginning of text
 	Point doubleClickSelection;			// selection after last mouse double click
@@ -1437,7 +1437,10 @@ public void addPaintObjectListener(PaintObjectListener listener) {
  * user changes the selection.
  * <p>
  * When <code>widgetSelected</code> is called, the event x and y fields contain
- * the start and end caret indices of the selection.
+ * the start and end caret indices of the selection. The selection values returned are visual
+ * (i.e., x will always always be <= y).
+ * No event is sent when the caret is moved while the selection length is 0.
+ * </p><p>
  * <code>widgetDefaultSelected</code> is not called for StyledTexts.
  * </p>
  *
@@ -9670,6 +9673,8 @@ void setSelection(int start, int length, boolean sendEvent, boolean doBlock) {
 				setBlockSelectionOffset(start, end, sendEvent);
 			}
 		} else {
+			int oldStart = selection.x;
+			int oldLength = selection.y - selection.x;
 			int charCount = content.getCharCount();
 			// called internally to remove selection after text is removed
 			// therefore make sure redraw range is valid.
@@ -9689,7 +9694,7 @@ void setSelection(int start, int length, boolean sendEvent, boolean doBlock) {
 			if (redrawY - redrawX > 0) {
 				internalRedrawRange(redrawX, redrawY - redrawX);
 			}
-			if (sendEvent) {
+			if (sendEvent && (oldLength != end - start || (oldLength != 0 && oldStart != start))) {
 				sendSelectionEvent();
 			}
 			sendAccessibleTextCaretMoved();
