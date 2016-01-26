@@ -1571,9 +1571,12 @@ abstract class Tab {
 	 * In case one of the buttons that control text direction was selected,
 	 * apply the text direction on the controls in the client area.
 	 *
-	 * @return true if text direction style was applied and false otherwise.
+	 * @return false iff example widgets must be re-created
 	 */
 	boolean handleTextDirection (Widget widget) {
+		if (!rtlSupport ()) {
+			return false;
+		}
 		int textDirection = SWT.NONE;
 		if (ltrDirectionButton.equals (widget)) {
 			textDirection = SWT.LEFT_TO_RIGHT;
