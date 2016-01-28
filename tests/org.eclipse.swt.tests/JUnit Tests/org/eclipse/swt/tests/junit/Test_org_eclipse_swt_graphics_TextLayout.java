@@ -130,12 +130,33 @@ public void test_getSegments() {
 	layout.dispose();
 	layout = new TextLayout(display);
 	
+	//Bug 486600 comment 2
+	layout.setText("Abcdef\nGhij\nKl");
+	Rectangle bounds1 = layout.getBounds(0, 6 - 1);
+	int[] trailing = new int[1];
+	offset = layout.getOffset(bounds1.width, bounds1.height + 2, trailing);
+	assertEquals(10, offset);
+	assertEquals(1, trailing[0]);
+	layout.dispose();
+	layout = new TextLayout(display);
+	
+	layout.setText("AbcdefGhijKl");
+	layout.setSegments(new int[] {6, 10});
+	layout.setSegmentsChars(new char[] {'\n', '\n'});
+	bounds1 = layout.getBounds(0, 6 - 1);
+	trailing = new int[1];
+	offset = layout.getOffset(bounds1.width, bounds1.height + 2, trailing);
+	assertEquals(9, offset);
+	assertEquals(1, trailing[0]);
+	layout.dispose();
+	layout = new TextLayout(display);
+	
 	//Lina's bug (bug 241482, comment 37)
 	boolean doit = false; //known to be broken
 	if (doit) {
 		int length = layout.getText().length();
 		layout.setSegments(new int[] { length});
-		int[] trailing = new int [1];
+		trailing = new int [1];
 		int width = layout.getBounds().width + 20;
 		assertEquals("hit test to the left", 0, layout.getOffset(0, 0, trailing));
 		assertEquals("hit test to the left (trailing)", 0, trailing[0]);
@@ -782,13 +803,13 @@ public void test_getLineSpacing() {
 
 @Test
 public void test_getOffset() {
-	if (SwtTestUtil.isCocoa) {
+	boolean isCocoa = SwtTestUtil.isCocoa;
+	if (isCocoa) {
 		// TODO Fix Cocoa failure.
 		if (SwtTestUtil.verbose) {
 			System.out
-					.println("Excluded test_getOffset(org.eclipse.swt.tests.junit.Test_org_eclipse_swt_graphics_TextLayout).");
+					.println("Partially excluded test_getOffset(org.eclipse.swt.tests.junit.Test_org_eclipse_swt_graphics_TextLayout).");
 		}
-		return;
 	}
 	TextLayout layout = new TextLayout(display);
 	String text = "AB \u05E9\u05E0 CD\nHello";
@@ -850,7 +871,7 @@ public void test_getOffset() {
 	assertEquals(1, trailing[0]);
 	point = layout.getLocation(4, true);
 	assertEquals(2, layout.getOffset(point.x - 1, 0, trailing));	
-	assertEquals(1, trailing[0]);	
+	if (!isCocoa) assertEquals(1, trailing[0]);	
 	point = layout.getLocation(4, false);
 	assertEquals(3, layout.getOffset(point.x + 1, 0, trailing));	
 	assertEquals(1, trailing[0]);

@@ -10,9 +10,9 @@
  *******************************************************************************/
 package org.eclipse.swt.graphics;
 
+import org.eclipse.swt.*;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.cocoa.*;
-import org.eclipse.swt.*;
 
 /**
  * <code>TextLayout</code> is a graphic object that represents
@@ -1265,7 +1265,9 @@ public int getOffset(int x, int y, int[] trailing) {
 		pt.y = y;
 		double /*float*/[] partialFraction = new double /*float*/[1];
 		long /*int*/ glyphIndex = layoutManager.glyphIndexForPoint(pt, textContainer, partialFraction);
-		int offset = (int)/*64*/layoutManager.characterIndexForGlyphAtIndex(glyphIndex);
+		long /*int*/ charOffset = layoutManager.characterIndexForGlyphAtIndex(glyphIndex);
+		if (textStorage.string().characterAtIndex(charOffset) == '\n') charOffset--;
+		int offset = (int)/*64*/charOffset;
 		offset = Math.min(untranslateOffset(offset), length - 1);
 		if (trailing != null) {
 			trailing[0] = Math.round((float)/*64*/partialFraction[0]);
