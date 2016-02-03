@@ -38,6 +38,7 @@ public class TableItem extends Item {
 	Font font;
 	Font[] cellFont;
 	boolean cached, grayed;
+	int columnSetHeight, columnSetWidth;
 
 /**
  * Constructs a new instance of this class given its parent
@@ -560,7 +561,33 @@ public Rectangle getImageBounds (int index) {
 	if ((parent.getStyle () & SWT.MIRRORED) != 0) rect.x = parent.getClientWidth () - rect.width - rect.x;
 	int [] x = new int [1], w = new int[1];
 	OS.gtk_tree_view_column_cell_get_position (column, pixbufRenderer, x, w);
-	rect.x += x [0];
+	/*
+	 * Feature in GTK. When a pixbufRenderer has size of 0x0, gtk_tree_view_column_cell_get_position
+	 * returns a position of 0 as well. This causes offset issues meaning that images/widgets/etc.
+	 * can be placed over the text. We need to account for the base case of a pixbufRenderer that has
+	 * yet to be sized, as per Bug 469277 & 476419. NOTE: this change has been ported to Tables since Tables/Trees both
+	 * use the same underlying GTK structure.
+	 */
+	if (OS.GTK3) {
+		if (parent.pixbufSizeSet) {
+			if (x [0] > 0) {
+				rect.x += x [0];
+			}
+		} else {
+			/*
+			 * If the size of the pixbufRenderer hasn't been set, we need to take into account the
+			 * position of the textRenderer, to ensure images/widgets/etc. aren't placed over the TableItem's
+			 * text.
+			 */
+			long /*int*/ textRenderer = parent.getTextRenderer (column);
+			if (textRenderer == 0)  return new Rectangle (0, 0, 0, 0);
+			int [] xText = new int [1], wText = new int [1];
+			OS.gtk_tree_view_column_cell_get_position (column, textRenderer, xText, wText);
+			rect.x += xText [0];
+		}
+	} else {
+		rect.x += x [0];
+	}
 	rect.width = w [0];
 	int width = OS.gtk_tree_view_column_get_visible (column) ? rect.width : 0;
 	return new Rectangle (rect.x, rect.y, width, rect.height + 1);
@@ -693,7 +720,27 @@ public Rectangle getTextBounds (int index) {
 	rect.x += horizontalSeparator;
 
 	OS.gtk_tree_view_column_cell_get_position (column, textRenderer, x, null);
-	rect.x += x [0];
+	/*
+	 * Fix for Eclipse bug 476562, we need to re-adjust the bounds for the text
+	 * when the separator value is less than the width of the image. Previously
+	 * images larger than 16px in width would be cut off on the right side.
+	 * NOTE: this change has been ported to Tables since Tables/Trees both use the
+	 * same underlying GTK structure.
+	 */
+	if (OS.GTK3) {
+		Image image = _getImage(index);
+		int imageWidth = 0;
+		if (image != null) {
+			imageWidth = image.getBounds ().width;
+		}
+		if (x [0] < imageWidth) {
+			rect.x += imageWidth;
+		} else {
+			rect.x += x [0];
+		}
+	} else {
+		rect.x += x [0];
+	}
 	if (parent.columnCount > 0) {
 		if (rect.x + rect.width > right) {
 			rect.width = Math.max (0, right - rect.x);
@@ -1067,6 +1114,44 @@ public void setImage (int index, Image image) {
 		int imageIndex = imageList.indexOf (image);
 		if (imageIndex == -1) imageIndex = imageList.add (image);
 		pixbuf = imageList.getPixbuf (imageIndex);
+	}
+	/*
+	 * Reset size of pixbufRenderer if we have an image being set that is larger
+	 * than the current size of the pixbufRenderer. Fix for bug 457196.
+	 * We only do this if the size of the pixbufRenderer has not yet been set.
+	 * Otherwise, the pixbufRenderer retains the same size as the first image added.
+	 * See comment #4, Bug 478560. Note that all columns need to have their
+	 * pixbufRenderer set to this size after the initial image is set. NOTE: this
+	 * change has been ported to Tables since Tables/Trees both use the same
+	 * underlying GTK structure.
+	 */
+	if (OS.GTK3) {
+		long /*int*/parentHandle = parent.handle;
+		long /*int*/ column = OS.gtk_tree_view_get_column (parentHandle, index);
+		long /*int*/ pixbufRenderer = parent.getPixbufRenderer (column);
+		int [] currentWidth = new int [1];
+		int [] currentHeight= new int [1];
+		OS.gtk_cell_renderer_get_fixed_size (pixbufRenderer, currentWidth, currentHeight);
+		if (!parent.pixbufSizeSet) {
+			if (image != null) {
+				int iWidth = image.getBounds ().width;
+				int iHeight = image.getBounds ().height;
+				if (iWidth > currentWidth [0] || iHeight > currentHeight [0]) {
+					OS.gtk_cell_renderer_set_fixed_size (pixbufRenderer, iWidth, iHeight);
+					parent.pixbufSizeSet = true;
+					columnSetHeight = iHeight;
+					columnSetWidth = iWidth;
+				}
+			}
+		} else {
+			/*
+			 * We check to see if the cached value is greater than the size of the pixbufRenderer.
+			 * If it is, then we change the size of the pixbufRenderer accordingly.
+			 */
+			if (columnSetWidth > currentWidth [0] || columnSetHeight > currentHeight [0]) {
+				OS.gtk_cell_renderer_set_fixed_size (pixbufRenderer, columnSetWidth, columnSetHeight);
+			}
+		}
 	}
 	int modelIndex = parent.columnCount == 0 ? Table.FIRST_COLUMN : parent.columns [index].modelIndex;
 	OS.gtk_list_store_set (parent.modelHandle, handle, modelIndex + Table.CELL_PIXBUF, pixbuf, -1);

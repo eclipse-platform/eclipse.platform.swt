@@ -81,7 +81,7 @@ public class Table extends Composite {
 	int drawState, drawFlags;
 	GdkColor drawForeground;
 	GdkRGBA background;
-	boolean ownerDraw, ignoreSize, ignoreAccessibility;
+	boolean ownerDraw, ignoreSize, ignoreAccessibility, pixbufSizeSet;
 
 	static final int CHECKED_COLUMN = 0;
 	static final int GRAYED_COLUMN = 1;
@@ -132,16 +132,6 @@ public class Table extends Composite {
  */
 public Table (Composite parent, int style) {
 	super (parent, checkStyle (style));
-	// A workaround for https://bugs.eclipse.org/bugs/show_bug.cgi?id=457196
-	if (OS.GTK3) {
-		addListener(SWT.MeasureItem, new Listener() {
-			@Override
-			public void handleEvent(Event event) {
-				layout();
-				removeListener(SWT.MeasureItem, this);
-			}
-		});
-	}
 }
 
 @Override
@@ -649,7 +639,12 @@ void createHandle (int index) {
 	int vsp = (style & SWT.V_SCROLL) != 0 ? OS.GTK_POLICY_AUTOMATIC : OS.GTK_POLICY_NEVER;
 	OS.gtk_scrolled_window_set_policy (scrolledHandle, hsp, vsp);
 	if ((style & SWT.BORDER) != 0) OS.gtk_scrolled_window_set_shadow_type (scrolledHandle, OS.GTK_SHADOW_ETCHED_IN);
-	if ((style & SWT.VIRTUAL) != 0) {
+	/*
+	 * Feature in GTK3: because of Bug 469277 & 476419, we now size Table icons dynamically, giving them an
+	 * initial size of 0x0 until an image is added. We need to disable fixed_height_mode in GTK3 to enable
+	 * this dynamic sizing behavior.
+	 */
+	if ((style & SWT.VIRTUAL) != 0 && !OS.GTK3) {
 		OS.g_object_set (handle, OS.fixed_height_mode, true, 0);
 	}
 	if (!searchEnabled ()) {
@@ -771,7 +766,9 @@ void createRenderers (long /*int*/ columnHandle, int modelIndex, boolean check, 
 	} else {
 		// set default size this size is used for calculating the icon and text positions in a table
 		if ((!ownerDraw) && (OS.GTK3)) {
-			OS.gtk_cell_renderer_set_fixed_size(pixbufRenderer, 16, 16);
+			// Set render size to 0x0 until we actually add images, fix for
+			// Bug 457196 (this applies to Tables as well).
+			OS.gtk_cell_renderer_set_fixed_size(pixbufRenderer, 0, 0);
 		}
 	}
 	long /*int*/ textRenderer = ownerDraw ? OS.g_object_new (display.gtk_cell_renderer_text_get_type (), 0) : OS.gtk_cell_renderer_text_new ();
@@ -810,7 +807,12 @@ void createRenderers (long /*int*/ columnHandle, int modelIndex, boolean check, 
 	}
 
 	/* Add attributes */
-	OS.gtk_tree_view_column_add_attribute (columnHandle, pixbufRenderer, OS.GTK3 ? OS.gicon : OS.pixbuf, modelIndex + CELL_PIXBUF);
+	/*
+	 * Formerly OS.gicon was set if on GTK3, but this is being removed do to spacing issues in Tables/Trees with
+	 * no images. Fix for Bug 457196. NOTE: this change has been ported to Tables since Tables/Trees both
+	 * use the same underlying GTK structure.
+	 */
+	OS.gtk_tree_view_column_add_attribute (columnHandle, pixbufRenderer, OS.pixbuf, modelIndex + CELL_PIXBUF);
 	if (!ownerDraw) {
 		OS.gtk_tree_view_column_add_attribute (columnHandle, pixbufRenderer, OS.cell_background_gdk, BACKGROUND_COLUMN);
 		OS.gtk_tree_view_column_add_attribute (columnHandle, textRenderer, OS.cell_background_gdk, BACKGROUND_COLUMN);

@@ -720,11 +720,13 @@ public Rectangle getImageBounds (int index) {
 	OS.gtk_tree_view_get_cell_area (parentHandle, path, column, rect);
 	if ((parent.getStyle () & SWT.MIRRORED) != 0) rect.x = parent.getClientWidth () - rect.width - rect.x;
 	OS.gtk_tree_path_free (path);
-
-//	Feature in GTK. When a pixbufRenderer has size of 0x0, gtk_tree_view_column_cell_get_position
-//	returns a position of 0 as well. This causes offset issues meaning that images/widgets/etc.
-//	can be placed over the text. We need to account for the base case of a pixbufRenderer that has
-//	yet to be sized, as per Bug 469277 & 476419.
+	/*
+	 * Feature in GTK. When a pixbufRenderer has size of 0x0, gtk_tree_view_column_cell_get_position
+	 * returns a position of 0 as well. This causes offset issues meaning that images/widgets/etc.
+	 * can be placed over the text. We need to account for the base case of a pixbufRenderer that has
+	 * yet to be sized, as per Bug 469277 & 476419. NOTE: this change has been ported to Tables since Tables/Trees both
+	 * use the same underlying GTK structure.
+	 */
 	int [] x = new int [1], w = new int [1];
 	OS.gtk_tree_view_column_cell_get_position (column, pixbufRenderer, x, w);
 	if (OS.GTK3) {
@@ -733,9 +735,11 @@ public Rectangle getImageBounds (int index) {
 				rect.x += x [0];
 			}
 		} else {
-//			If the size of the pixbufRenderer hasn't been set, we need to take into account the
-//			position of the textRenderer, to ensure images/widgets/etc. aren't placed over the TreeItem's
-//			text.
+			/*
+			 * If the size of the pixbufRenderer hasn't been set, we need to take into account the
+			 * position of the textRenderer, to ensure images/widgets/etc. aren't placed over the TreeItem's
+			 * text.
+			 */
 			long /*int*/ textRenderer = parent.getTextRenderer (column);
 			if (textRenderer == 0)  return new Rectangle (0, 0, 0, 0);
 			int [] xText = new int [1], wText = new int [1];
@@ -951,9 +955,13 @@ public Rectangle getTextBounds (int index) {
 	int horizontalSeparator = buffer[0];
 	rect.x += horizontalSeparator;
 	OS.gtk_tree_view_column_cell_get_position (column, textRenderer, x, null);
-	// Fix for Eclipse bug 476562, we need to re-adjust the bounds for the text
-	// when the separator value is less than the width of the image. Previously
-	// images larger than 16px in width would be cut off on the right side.
+	/*
+	 * Fix for Eclipse bug 476562, we need to re-adjust the bounds for the text
+	 * when the separator value is less than the width of the image. Previously
+	 * images larger than 16px in width would be cut off on the right side.
+	 * NOTE: this change has been ported to Tables since Tables/Trees both use the
+	 * same underlying GTK structure.
+	 */
 	if (OS.GTK3) {
 		Image image = _getImage(index);
 		int imageWidth = 0;
@@ -1481,7 +1489,9 @@ public void setImage (int index, Image image) {
 	 * We only do this if the size of the pixbufRenderer has not yet been set.
 	 * Otherwise, the pixbufRenderer retains the same size as the first image added.
 	 * See comment #4, Bug 478560. Note that all columns need to have their
-	 * pixbufRenderer set to this size after the initial image is set.
+	 * pixbufRenderer set to this size after the initial image is set. NOTE: this
+	 * change has been ported to Tables since Tables/Trees both use the same
+	 * underlying GTK structure.
 	 */
 	if (OS.GTK3) {
 		long /*int*/parentHandle = parent.handle;
