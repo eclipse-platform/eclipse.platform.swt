@@ -297,14 +297,21 @@ public Rectangle computeTrim (int x, int y, int width, int height) {
 		if (OS.GTK3) {
 			GtkBorder tmp = new GtkBorder ();
 			long /*int*/ context = OS.gtk_widget_get_style_context (textEntryHandle);
-			int styleState = OS.gtk_widget_get_state_flags(textEntryHandle);
-			OS.gtk_style_context_get_padding (context, styleState, tmp);
+			if (OS.GTK_VERSION < OS.VERSION(3, 18, 0)) {
+				OS.gtk_style_context_get_padding (context, OS.GTK_STATE_FLAG_NORMAL, tmp);
+			} else {
+				OS.gtk_style_context_get_padding (context, OS.gtk_widget_get_state_flags(textEntryHandle), tmp);
+			}
 			trim.x -= tmp.left;
 			trim.y -= tmp.top;
 			trim.width += tmp.left + tmp.right;
 			trim.height += tmp.top + tmp.bottom;
 			if ((style & SWT.BORDER) != 0) {
-				OS.gtk_style_context_get_border (context, styleState, tmp);
+				if (OS.GTK_VERSION < OS.VERSION(3, 18, 0)) {
+					OS.gtk_style_context_get_border (context, OS.GTK_STATE_FLAG_NORMAL, tmp);
+				} else {
+					OS.gtk_style_context_get_border (context, OS.gtk_widget_get_state_flags(textEntryHandle), tmp);
+				}
 				trim.x -= tmp.left;
 				trim.y -= tmp.top;
 				trim.width += tmp.left + tmp.right;
@@ -1751,8 +1758,11 @@ GtkBorder getGtkBorderPadding () {
 		//In Gtk3, acquire border.
 		GtkBorder gtkBorderPadding = new GtkBorder ();
 		long /*int*/ context = OS.gtk_widget_get_style_context (textEntryHandle);
-		int styleState = OS.gtk_widget_get_state_flags(textEntryHandle);
-		OS.gtk_style_context_get_padding (context, styleState, gtkBorderPadding);
+		if (OS.GTK_VERSION < OS.VERSION(3, 18 , 0)) {
+			OS.gtk_style_context_get_padding (context, OS.GTK_STATE_FLAG_NORMAL, gtkBorderPadding);
+		} else {
+			OS.gtk_style_context_get_padding (context, OS.gtk_widget_get_state_flags(textEntryHandle), gtkBorderPadding);
+		}
 		return gtkBorderPadding;
 	} else {
 		//in GTK2 hard code the padding

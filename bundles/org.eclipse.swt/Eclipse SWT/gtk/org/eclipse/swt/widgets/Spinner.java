@@ -259,10 +259,17 @@ public Rectangle computeTrim (int x, int y, int width, int height) {
 	if (OS.GTK3) {
 		GtkBorder tmp = new GtkBorder();
 		long /*int*/ context = OS.gtk_widget_get_style_context (handle);
-		int styleState = OS.gtk_widget_get_state_flags(handle);
-		OS.gtk_style_context_get_padding (context, styleState, tmp);
+		if (OS.GTK_VERSION < OS.VERSION(3, 18, 0)) {
+			OS.gtk_style_context_get_padding (context, OS.GTK_STATE_FLAG_NORMAL, tmp);
+		} else {
+			OS.gtk_style_context_get_padding (context, OS.gtk_widget_get_state_flags(handle), tmp);
+		}
 		if ((style & SWT.BORDER) != 0) {
-			OS.gtk_style_context_get_border (context, styleState, tmp);
+			if (OS.GTK_VERSION < OS.VERSION(3, 18, 0)) {
+				OS.gtk_style_context_get_border (context, OS.GTK_STATE_FLAG_NORMAL, tmp);
+			} else {
+				OS.gtk_style_context_get_border (context, OS.gtk_widget_get_state_flags(handle), tmp);
+			}
 			trim.x -= tmp.left;
 			trim.y -= tmp.top;
 			trim.width += tmp.left + tmp.right;
