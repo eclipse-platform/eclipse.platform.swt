@@ -43,7 +43,7 @@ public final class Compatibility {
 
 /**
  * Answers the most negative (i.e. closest to negative infinity)
- * integer value which is greater than the number obtained by dividing
+ * integer value which is greater than or equal to the number obtained by dividing
  * the first argument p by the second argument q.
  *
  * @param p numerator
