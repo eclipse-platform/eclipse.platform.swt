@@ -1595,7 +1595,7 @@ void calculateTopIndex(int delta) {
 				// client area or if space is available but not used (the latter should
 				// never happen because we use claimBottomFreeSpace)
 				if (fullLineVisibleHeight < verticalIncrement) {
-					topIndex--;
+					topIndex = getVerticalScrollOffset() / verticalIncrement;
 				}
 			} else if (topIndex >= content.getLineCount()) {
 				topIndex = content.getLineCount() - 1;
