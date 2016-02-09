@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2012 IBM Corporation and others.
+ * Copyright (c) 2000, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -149,6 +149,7 @@ public ScrolledComposite(Composite parent, int style) {
 	if (hBar != null) {
 		hBar.setVisible(false);
 		hBar.addListener (SWT.Selection, new Listener () {
+			@Override
 			public void handleEvent (Event e) {
 				hScroll();
 			}
@@ -159,6 +160,7 @@ public ScrolledComposite(Composite parent, int style) {
 	if (vBar != null) {
 		vBar.setVisible(false);
 		vBar.addListener (SWT.Selection, new Listener () {
+			@Override
 			public void handleEvent (Event e) {
 				vScroll();
 			}
@@ -166,6 +168,7 @@ public ScrolledComposite(Composite parent, int style) {
 	}
 
 	contentListener = new Listener() {
+		@Override
 		public void handleEvent(Event e) {
 			if (e.type != SWT.Resize) return;
 			layout(false);
@@ -173,6 +176,7 @@ public ScrolledComposite(Composite parent, int style) {
 	};
 
 	filter = new Listener() {
+		@Override
 		public void handleEvent(Event event) {
 			if (event.type == SWT.FocusIn) {
 				if (!showNextFocusedControl) {
@@ -191,6 +195,7 @@ public ScrolledComposite(Composite parent, int style) {
 	};
 
 	addDisposeListener(new DisposeListener() {
+		@Override
 		public void widgetDisposed(DisposeEvent e) {
 			getDisplay().removeFilter(SWT.FocusIn, filter);
 			getDisplay().removeFilter(SWT.FocusOut, filter);

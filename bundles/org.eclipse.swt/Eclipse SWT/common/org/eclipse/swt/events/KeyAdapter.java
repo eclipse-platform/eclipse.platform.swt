@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2011 IBM Corporation and others.
+ * Copyright (c) 2000, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -32,6 +32,7 @@ public abstract class KeyAdapter implements KeyListener {
  *
  * @param e an event containing information about the key press
  */
+@Override
 public void keyPressed(KeyEvent e) {
 }
 
@@ -41,6 +42,7 @@ public void keyPressed(KeyEvent e) {
  *
  * @param e an event containing information about the key release
  */
+@Override
 public void keyReleased(KeyEvent e) {
 }
 }

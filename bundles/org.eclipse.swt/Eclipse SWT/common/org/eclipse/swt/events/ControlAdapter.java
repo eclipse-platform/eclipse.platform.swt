@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2011 IBM Corporation and others.
+ * Copyright (c) 2000, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -33,6 +33,7 @@ public abstract class ControlAdapter implements ControlListener {
  *
  * @param e an event containing information about the move
  */
+@Override
 public void controlMoved(ControlEvent e) {
 }
 
@@ -42,6 +43,7 @@ public void controlMoved(ControlEvent e) {
  *
  * @param e an event containing information about the resize
  */
+@Override
 public void controlResized(ControlEvent e) {
 }
 }

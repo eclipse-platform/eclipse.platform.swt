@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2003, 2013 IBM Corporation and others.
+ * Copyright (c) 2003, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -178,8 +178,10 @@ int CreateChromeWindow2 (long /*int*/ parent, int chromeFlags, int contextFlags,
 		shell.setLayout (new FillLayout ());
 		browser = new Browser (shell, src == null ? SWT.MOZILLA : src.getStyle () & SWT.MOZILLA);
 		browser.addVisibilityWindowListener (new VisibilityWindowListener () {
+			@Override
 			public void hide (WindowEvent event) {
 			}
+			@Override
 			public void show (WindowEvent event) {
 				if (event.location != null) shell.setLocation (event.location);
 				if (event.size != null) {
@@ -190,6 +192,7 @@ int CreateChromeWindow2 (long /*int*/ parent, int chromeFlags, int contextFlags,
 			}
 		});
 		browser.addCloseWindowListener (new CloseWindowListener () {
+			@Override
 			public void close (WindowEvent event) {
 				shell.close ();
 			}

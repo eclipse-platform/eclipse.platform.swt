@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2012 IBM Corporation and others.
+ * Copyright (c) 2000, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -423,6 +423,7 @@ public void setProgressState (int progressState) {
 void setShell (Shell shell) {
 	this.shell = shell;
 	shell.addListener (SWT.Dispose, new Listener () {
+		@Override
 		public void handleEvent (Event event) {
 			if (isDisposed ()) return;
 			dispose ();

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2010, 2012 IBM Corporation and others.
+ * Copyright (c) 2010, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -189,6 +189,7 @@ void openDownloadWindow (final IWebDownload download, String name) {
 	data.horizontalAlignment = GridData.CENTER;
 	cancel.setLayoutData (data);
 	final Listener cancelListener = new Listener () {
+		@Override
 		public void handleEvent (Event event) {
 			download.cancel ();
 			status = DOWNLOAD_CANCELLED;
@@ -200,6 +201,7 @@ void openDownloadWindow (final IWebDownload download, String name) {
 	final Display display = browser.getDisplay ();
 	final int INTERVAL = 500;
 	display.timerExec (INTERVAL, new Runnable () {
+		@Override
 		public void run () {
 			if (shell.isDisposed () || status == DOWNLOAD_FINISHED || status == DOWNLOAD_CANCELLED) {
 				shell.dispose ();
@@ -209,6 +211,7 @@ void openDownloadWindow (final IWebDownload download, String name) {
 				statusLabel.setText (Compatibility.getMessage ("SWT_Download_Error")); //$NON-NLS-1$
 				cancel.removeListener (SWT.Selection, cancelListener);
 				cancel.addListener (SWT.Selection, new Listener () {
+					@Override
 					public void handleEvent (Event event) {
 						shell.dispose ();
 					}

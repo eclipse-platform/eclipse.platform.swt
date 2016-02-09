@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2008 IBM Corporation and others.
+ * Copyright (c) 2000, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -38,6 +38,7 @@ public class CTabFolder2Adapter implements CTabFolder2Listener {
  *
  * @param event an event indicating the item being closed
  */
+@Override
 public void close(CTabFolderEvent event){}
 
 /**
@@ -48,6 +49,7 @@ public void close(CTabFolderEvent event){}
  *
  * @param event an event containing information about the minimize
  */
+@Override
 public void minimize(CTabFolderEvent event){}
 
 /**
@@ -58,6 +60,7 @@ public void minimize(CTabFolderEvent event){}
  *
  * @param event an event containing information about the maximize
  */
+@Override
 public void maximize(CTabFolderEvent event){}
 
 /**
@@ -68,6 +71,7 @@ public void maximize(CTabFolderEvent event){}
  *
  * @param event an event containing information about the restore
  */
+@Override
 public void restore(CTabFolderEvent event){}
 
 /**
@@ -79,5 +83,6 @@ public void restore(CTabFolderEvent event){}
  *
  * @param event an event containing information about the show list
  */
+@Override
 public void showList(CTabFolderEvent event){}
 }

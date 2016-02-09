@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2012 IBM Corporation and others.
+ * Copyright (c) 2011, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -79,6 +79,7 @@ public TreeCursor(Tree parent, int style) {
 	setForeground(null);
 
 	listener = new Listener() {
+		@Override
 		public void handleEvent(Event event) {
 			if (row != null) {
 				/*
@@ -135,6 +136,7 @@ public TreeCursor(Tree parent, int style) {
 	}
 
 	treeListener = new Listener() {
+		@Override
 		public void handleEvent(Event event) {
 			switch (event.type) {
 				case SWT.Collapse:
@@ -158,6 +160,7 @@ public TreeCursor(Tree parent, int style) {
 	tree.addListener(SWT.MouseDown, treeListener);
 
 	disposeItemListener = new Listener() {
+		@Override
 		public void handleEvent(Event event) {
 			TreeItem currentItem = row;
 			while (currentItem != null) {
@@ -197,6 +200,7 @@ public TreeCursor(Tree parent, int style) {
 		}
 	};
 	disposeColumnListener = new Listener() {
+		@Override
 		public void handleEvent(Event event) {
 			if (column != null) {
 				if (tree.getColumnCount() == 1) {
@@ -222,6 +226,7 @@ public TreeCursor(Tree parent, int style) {
 		}
 	};
 	resizeListener = new Listener() {
+		@Override
 		public void handleEvent(Event event) {
 			_resize();
 		}
@@ -885,6 +890,7 @@ void treeCollapse(Event event) {
 	}
 
 	getDisplay().asyncExec(new Runnable() {
+		@Override
 		public void run() {
 			if (isDisposed()) return;
 			setRowColumn(row, column, true);
@@ -894,6 +900,7 @@ void treeCollapse(Event event) {
 
 void treeExpand(Event event) {
 	getDisplay().asyncExec(new Runnable() {
+		@Override
 		public void run() {
 			if (isDisposed()) return;
 			setRowColumn(row, column, true);

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2015 IBM Corporation and others.
+ * Copyright (c) 2000, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -101,6 +101,7 @@ public CCombo (Composite parent, int style) {
 	arrow = new Button (this, arrowStyle);
 
 	listener = new Listener () {
+		@Override
 		public void handleEvent (Event event) {
 			if (isDisposed ()) return;
 			if (popup == event.widget) {
@@ -125,6 +126,7 @@ public CCombo (Composite parent, int style) {
 			}
 			if (getShell () == event.widget) {
 				getDisplay().asyncExec(new Runnable() {
+					@Override
 					public void run() {
 						if (isDisposed ()) return;
 						handleFocus (SWT.FocusOut);
@@ -134,6 +136,7 @@ public CCombo (Composite parent, int style) {
 		}
 	};
 	filter = new Listener() {
+		@Override
 		public void handleEvent(Event event) {
 			if (isDisposed ()) return;
 			if (event.type == SWT.Selection) {

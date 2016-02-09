@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2012 IBM Corporation and others.
+ * Copyright (c) 2000, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -398,6 +398,7 @@ public void setProgressState (int progressState) {
 void setShell (Shell shell) {
 	this.shell = shell;
 	shell.addListener (SWT.Dispose, new Listener () {
+		@Override
 		public void handleEvent (Event event) {
 			if (isDisposed ()) return;
 			dispose ();
@@ -459,6 +460,7 @@ void updateImage () {
 			count = iProgress;
 			iProgress = (iProgress + 1) % (PROGRESS_BARS + 1);
 			getDisplay ().timerExec (PROGRESS_TIMER, new Runnable () {
+				@Override
 				public void run () {
 					updateImage ();
 				}

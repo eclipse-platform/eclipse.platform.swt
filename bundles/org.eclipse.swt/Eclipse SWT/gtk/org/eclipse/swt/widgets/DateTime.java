@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2014 IBM Corporation and others.
+ * Copyright (c) 2000, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -148,6 +148,7 @@ public DateTime (Composite parent, int style) {
 		createDropDownButton ();
 		createPopupShell (-1, -1, -1);
 		addListener (SWT.Resize, new Listener () {
+			@Override
 			public void handleEvent (Event event) {
 				setDropDownButtonSize ();
 			}
@@ -420,6 +421,7 @@ void createDropDownButton () {
 	down = new Button (this, SWT.ARROW  | SWT.DOWN);
 	OS.gtk_widget_set_can_focus (down.handle, false);
 	down.addListener (SWT.Selection, new Listener () {
+		@Override
 		public void handleEvent (Event event) {
 			popupCalendar.calendarDisplayed = !isDropped ();
 			setFocus ();
@@ -428,6 +430,7 @@ void createDropDownButton () {
 	});
 
 	popupListener = new Listener () {
+		@Override
 		public void handleEvent (Event event) {
 			if (event.widget == popupShell) {
 				popupShellEvent (event);
@@ -443,6 +446,7 @@ void createDropDownButton () {
 			}
 			if (event.widget == getShell ()) {
 				getDisplay ().asyncExec (new Runnable () {
+					@Override
 					public void run () {
 						if (isDisposed ()) return;
 						handleFocus (SWT.FocusOut);
@@ -452,6 +456,7 @@ void createDropDownButton () {
 		}
 	};
 	popupFilter = new Listener () {
+		@Override
 		public void handleEvent (Event event) {
 			Shell shell = ((Control)event.widget).getShell ();
 			if (shell == DateTime.this.getShell ()) {
@@ -469,6 +474,7 @@ void createPopupShell (int year, int month, int day) {
 	if (bg != null) popupCalendar.setBackground (bg);
 
 	mouseEventListener = new Listener () {
+		@Override
 		public void handleEvent (Event event) {
 			if (event.widget instanceof Control) {
 				Control c = (Control)event.widget;
@@ -1312,6 +1318,7 @@ void selectField (int index) {
 	}
 	currentField = index;
 	display.syncExec (new Runnable () {
+		@Override
 		public void run () {
 			if (textEntryHandle != 0) {
 				String value = getText (getText (),start, end - 1);

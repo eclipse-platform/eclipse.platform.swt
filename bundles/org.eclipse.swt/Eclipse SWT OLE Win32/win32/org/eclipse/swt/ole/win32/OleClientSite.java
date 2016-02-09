@@ -123,6 +123,7 @@ protected OleClientSite(Composite parent, int style) {
 
 	listener = new Listener() {
 		private int nestedFocusEvents = 0;
+		@Override
 		public void handleEvent(Event e) {
 			switch (e.type) {
 			case SWT.Resize :

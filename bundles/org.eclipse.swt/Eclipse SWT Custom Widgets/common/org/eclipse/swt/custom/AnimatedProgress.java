@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2011 IBM Corporation and others.
+ * Copyright (c) 2000, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -81,11 +81,13 @@ public AnimatedProgress(Composite parent, int style) {
 		}
 	});
 	addPaintListener(new PaintListener() {
+		@Override
 		public void paintControl(PaintEvent e) {
 			paint(e);
 		}
 	});
 	addDisposeListener(new DisposeListener() {
+		@Override
 		public void widgetDisposed(DisposeEvent e){
 			stop();
 		}
@@ -204,6 +206,7 @@ public synchronized void start() {
 	final Display display = getDisplay();
 	final Runnable [] timer = new Runnable [1];
 	timer [0] = new Runnable () {
+		@Override
 		public void run () {
 			if (!active) return;
 			GC gc = new GC(AnimatedProgress.this);

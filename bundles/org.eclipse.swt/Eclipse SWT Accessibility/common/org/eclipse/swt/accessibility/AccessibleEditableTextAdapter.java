@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2010, 2011 IBM Corporation and others.
+ * Copyright (c) 2010, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -38,6 +38,7 @@ public class AccessibleEditableTextAdapter implements AccessibleEditableTextList
 	 * <li>[out] result - set to {@link ACC#OK} if the operation was completed successfully</li>
 	 * </ul>
 	 */
+	@Override
 	public void copyText(AccessibleEditableTextEvent e) {}
 
 	/**
@@ -52,6 +53,7 @@ public class AccessibleEditableTextAdapter implements AccessibleEditableTextList
 	 * <li>[out] result - set to {@link ACC#OK} if the operation was completed successfully</li>
 	 * </ul>
 	 */
+	@Override
 	public void cutText(AccessibleEditableTextEvent e) {}
 
 	/**
@@ -63,6 +65,7 @@ public class AccessibleEditableTextAdapter implements AccessibleEditableTextList
 	 * <li>[out] result - set to {@link ACC#OK} if the operation was completed successfully</li>
 	 * </ul>
 	 */
+	@Override
 	public void pasteText(AccessibleEditableTextEvent e) {}
 
 	/**
@@ -83,6 +86,7 @@ public class AccessibleEditableTextAdapter implements AccessibleEditableTextList
 	 * <li>[out] result - set to {@link ACC#OK} if the operation was completed successfully</li>
 	 * </ul>
 	 */
+	@Override
 	public void replaceText(AccessibleEditableTextEvent e) {}
 
 	/**
@@ -103,5 +107,6 @@ public class AccessibleEditableTextAdapter implements AccessibleEditableTextList
 	 * <li>[out] result - set to {@link ACC#OK} if the operation was completed successfully</li>
 	 * </ul>
 	 */
+	@Override
 	public void setTextAttributes(AccessibleTextAttributeEvent e) {}
 }

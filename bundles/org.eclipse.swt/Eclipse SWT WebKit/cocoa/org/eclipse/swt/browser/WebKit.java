@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2012 IBM Corporation and others.
+ * Copyright (c) 2011, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -68,6 +68,7 @@ class WebKit extends WebBrowser {
 
 	static {
 		NativeClearSessions = new Runnable() {
+			@Override
 			public void run() {
 				NSHTTPCookieStorage storage = NSHTTPCookieStorage.sharedHTTPCookieStorage();
 				NSArray cookies = storage.cookies();
@@ -82,6 +83,7 @@ class WebKit extends WebBrowser {
 		};
 
 		NativeGetCookie = new Runnable () {
+			@Override
 			public void run () {
 				NSHTTPCookieStorage storage = NSHTTPCookieStorage.sharedHTTPCookieStorage ();
 				NSURL url = NSURL.URLWithString (NSString.stringWith (CookieUrl));
@@ -101,6 +103,7 @@ class WebKit extends WebBrowser {
 		};
 
 		NativeSetCookie = new Runnable () {
+			@Override
 			public void run () {
 				NSURL url = NSURL.URLWithString (NSString.stringWith (CookieUrl));
 				NSMutableDictionary headers = NSMutableDictionary.dictionaryWithCapacity (1);
@@ -216,6 +219,7 @@ public void create (Composite parent, int style) {
 	browser.view.addSubview(webView);
 
 	Listener listener = new Listener() {
+		@Override
 		public void handleEvent(Event e) {
 			switch (e.type) {
 				case SWT.FocusIn:
@@ -1131,6 +1135,7 @@ boolean showAuthenticationDialog (final String[] user, final String[] password, 
 	final boolean[] result = new boolean[1];
 	final Button[] buttons = new Button[2];
 	Listener listener = new Listener() {
+		@Override
 		public void handleEvent(Event event) {
 			user[0] = userText.getText();
 			password[0] = passwordText.getText();

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2010, 2012 IBM Corporation and others.
+ * Copyright (c) 2010, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -309,6 +309,7 @@ boolean showAuthenticationDialog (final String[] user, final String[] password, 
 	final boolean[] result = new boolean[1];
 	final Button[] buttons = new Button[2];
 	Listener listener = new Listener () {
+		@Override
 		public void handleEvent (Event event) {
 			user[0] = userText.getText ();
 			password[0] = passwordText.getText ();

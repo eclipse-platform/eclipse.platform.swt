@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2009, 2010 IBM Corporation and others.
+ * Copyright (c) 2009, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -36,6 +36,7 @@ public class AccessibleTableCellAdapter implements AccessibleTableCellListener {
 	 * <li>[out] count - the 1 based number of columns spanned by the specified cell
 	 * </ul>
 	 */
+	@Override
 	public void getColumnSpan(AccessibleTableCellEvent e) {}
 
 	/**
@@ -46,6 +47,7 @@ public class AccessibleTableCellAdapter implements AccessibleTableCellListener {
 	 * <li>[out] accessibles - an array of cell accessibles, or null if there are no column headers
 	 * </ul>
 	 */
+	@Override
 	public void getColumnHeaders(AccessibleTableCellEvent e) {}
 
 	/**
@@ -56,6 +58,7 @@ public class AccessibleTableCellAdapter implements AccessibleTableCellListener {
 	 * 		or the index of the first column if the cell spans multiple columns
 	 * </ul>
 	 */
+	@Override
 	public void getColumnIndex(AccessibleTableCellEvent e) {}
 
 	/**
@@ -69,6 +72,7 @@ public class AccessibleTableCellAdapter implements AccessibleTableCellListener {
 	 * <li>[out] count - the 1 based number of rows spanned by the specified cell
 	 * </ul>
 	 */
+	@Override
 	public void getRowSpan(AccessibleTableCellEvent e) {}
 
 	/**
@@ -79,6 +83,7 @@ public class AccessibleTableCellAdapter implements AccessibleTableCellListener {
 	 * <li>[out] accessibles - an array of cell accessibles, or null if there are no row headers
 	 * </ul>
 	 */
+	@Override
 	public void getRowHeaders(AccessibleTableCellEvent e) {}
 
 	/**
@@ -89,6 +94,7 @@ public class AccessibleTableCellAdapter implements AccessibleTableCellListener {
 	 * 		or the index of the first row if the cell spans multiple rows
 	 * </ul>
 	 */
+	@Override
 	public void getRowIndex(AccessibleTableCellEvent e) {}
 
 	/**
@@ -98,6 +104,7 @@ public class AccessibleTableCellAdapter implements AccessibleTableCellListener {
 	 * <li>[out] accessible - the accessible for the containing table
 	 * </ul>
 	 */
+	@Override
 	public void getTable(AccessibleTableCellEvent e) {}
 
 	/**
@@ -107,5 +114,6 @@ public class AccessibleTableCellAdapter implements AccessibleTableCellListener {
 	 * <li>[out] isSelected - true if the specified cell is selected and false otherwise
 	 * </ul>
 	 */
+	@Override
 	public void isSelected(AccessibleTableCellEvent e) {}
 }

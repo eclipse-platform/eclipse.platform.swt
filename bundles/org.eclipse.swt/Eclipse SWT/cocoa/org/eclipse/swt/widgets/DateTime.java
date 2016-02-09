@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2015 IBM Corporation and others.
+ * Copyright (c) 2000, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -223,6 +223,7 @@ void createPopupShell(int year, int month, int day) {
 
 	if (clickListener == null) {
 		clickListener = new Listener() {
+			@Override
 			public void handleEvent(Event event) {
 				if (event.widget instanceof Control && event.widget != DateTime.this) {
 					Control c = (Control)event.widget;
@@ -235,6 +236,7 @@ void createPopupShell(int year, int month, int day) {
 	}
 
 	popupCalendar.addListener (SWT.Selection, new Listener() {
+		@Override
 		public void handleEvent(Event event) {
 			int year = popupCalendar.getYear ();
 			int month = popupCalendar.getMonth ();
@@ -248,6 +250,7 @@ void createPopupShell(int year, int month, int day) {
 	});
 
 	addListener (SWT.Dispose, new Listener() {
+		@Override
 		public void handleEvent(Event event) {
 			if (popupShell != null && !popupShell.isDisposed ()) {
 				disposePopupShell();
@@ -255,6 +258,7 @@ void createPopupShell(int year, int month, int day) {
 		}
 	});
 	addListener(SWT.FocusOut, new Listener() {
+		@Override
 		public void handleEvent(Event event) {
 			hideCalendar();
 			display.removeFilter(SWT.MouseDown, clickListener);

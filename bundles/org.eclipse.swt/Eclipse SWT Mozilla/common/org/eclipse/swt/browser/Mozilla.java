@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2003, 2015 IBM Corporation and others.
+ * Copyright (c) 2003, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -128,6 +128,7 @@ class Mozilla extends WebBrowser {
 
 	static {
 		DisplayListener = new Listener () {
+			@Override
 			public void handleEvent (Event event) {
 				if (BrowserCount > 0) return; /* another display is still active */
 
@@ -332,6 +333,7 @@ class Mozilla extends WebBrowser {
 		};
 
 		MozillaClearSessions = new Runnable () {
+			@Override
 			public void run () {
 				if (!Initialized) return;
 				long /*int*/[] result = new long /*int*/[1];
@@ -386,6 +388,7 @@ class Mozilla extends WebBrowser {
 		};
 
 		MozillaGetCookie = new Runnable() {
+			@Override
 			public void run() {
 				if (!Initialized) return;
 
@@ -474,6 +477,7 @@ class Mozilla extends WebBrowser {
 		};
 
 		MozillaSetCookie = new Runnable() {
+			@Override
 			public void run() {
 				if (!Initialized) return;
 
@@ -940,6 +944,7 @@ public void create (Composite parent, int style) {
 	delegate.init ();
 
 	listener = new Listener () {
+		@Override
 		public void handleEvent (Event event) {
 			switch (event.type) {
 				case SWT.Dispose: {
@@ -1019,6 +1024,7 @@ public void create (Composite parent, int style) {
 					*/
 					Display display = event.display;
 					display.asyncExec(new Runnable () {
+						@Override
 						public void run() {
 							if (browser.isDisposed ()) return;
 							onResize ();
@@ -4180,6 +4186,7 @@ int OnStateChange (long /*int*/ aWebProgress, long /*int*/ aRequest, int aStateF
 			event2.display = display;
 			event2.widget = browser;
 			Runnable runnable = new Runnable () {
+				@Override
 				public void run () {
 					if (browser.isDisposed ()) return;
 					for (int i = 0; i < progressListeners.length; i++) {
@@ -4653,6 +4660,7 @@ int FocusNextElement () {
 	* send the traversal notification after this callback returns.
 	*/
 	browser.getDisplay ().asyncExec (new Runnable () {
+		@Override
 		public void run () {
 			if (browser.isDisposed ()) return;
 			browser.traverse (SWT.TRAVERSE_TAB_NEXT);
@@ -4669,6 +4677,7 @@ int FocusPrevElement () {
 	* send the traversal notification after this callback returns.
 	*/
 	browser.getDisplay ().asyncExec (new Runnable () {
+		@Override
 		public void run () {
 			if (browser.isDisposed ()) return;
 			browser.traverse (SWT.TRAVERSE_TAB_PREVIOUS);
@@ -5320,6 +5329,7 @@ int NotifyCertProblem (long /*int*/ socketInfo, long /*int*/ status, long /*int*
 	System.arraycopy (problems, 0, finalProblems, 0, problemCount);
 	final String url = lastNavigateURL;
 	browser.getDisplay().asyncExec(new Runnable() {
+		@Override
 		public void run() {
 			if (browser.isDisposed ()) return;
 			if (url.equals (lastNavigateURL)) {

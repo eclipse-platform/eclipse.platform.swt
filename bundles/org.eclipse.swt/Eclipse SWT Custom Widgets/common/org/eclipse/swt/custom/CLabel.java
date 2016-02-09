@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2015 IBM Corporation and others.
+ * Copyright (c) 2000, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -117,12 +117,14 @@ public CLabel(Composite parent, int style) {
 	if ((style & SWT.LEFT) != 0)   align = SWT.LEFT;
 
 	addPaintListener(new PaintListener() {
+		@Override
 		public void paintControl(PaintEvent event) {
 			onPaint(event);
 		}
 	});
 
 	addTraverseListener(new TraverseListener() {
+		@Override
 		public void keyTraversed(TraverseEvent event) {
 			if (event.detail == SWT.TRAVERSE_MNEMONIC) {
 				onMnemonic(event);
@@ -131,6 +133,7 @@ public CLabel(Composite parent, int style) {
 	});
 
 	addListener(SWT.Dispose, new Listener() {
+		@Override
 		public void handleEvent(Event event) {
 			onDispose(event);
 		}

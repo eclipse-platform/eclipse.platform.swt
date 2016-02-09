@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2008 IBM Corporation and others.
+ * Copyright (c) 2000, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -50,6 +50,7 @@ public abstract class AccessibleAdapter implements AccessibleListener {
 	 *    <li>result [OUT] - the requested name string, or null</li>
 	 * </ul>
 	 */
+	@Override
 	public void getName(AccessibleEvent e) {
 	}
 
@@ -75,6 +76,7 @@ public abstract class AccessibleAdapter implements AccessibleListener {
 	 *    <li>result [OUT] - the requested help string, or null</li>
 	 * </ul>
 	 */
+	@Override
 	public void getHelp(AccessibleEvent e) {
 	}
 
@@ -100,6 +102,7 @@ public abstract class AccessibleAdapter implements AccessibleListener {
 	 *    <li>result [OUT] - the requested keyboard shortcut string (example: "ALT+N"), or null</li>
 	 * </ul>
 	 */
+	@Override
 	public void getKeyboardShortcut(AccessibleEvent e) {
 	}
 
@@ -124,6 +127,7 @@ public abstract class AccessibleAdapter implements AccessibleListener {
 	 *    <li>result [OUT] - the requested description string, or null</li>
 	 * </ul>
 	 */
+	@Override
 	public void getDescription(AccessibleEvent e) {
 	}
 }

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2011 IBM Corporation and others.
+ * Copyright (c) 2000, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -98,6 +98,7 @@ int[][] addLineIndex(int start, int length, int[][] linesArray, int count) {
  *    <li>ERROR_NULL_ARGUMENT when listener is null</li>
  * </ul>
  */
+@Override
 public void addTextChangeListener(TextChangeListener listener) {
 	if (listener == null) error(SWT.ERROR_NULL_ARGUMENT);
 	StyledTextListener typedListener = new StyledTextListener(listener);
@@ -462,6 +463,7 @@ int lineCount(String text){
 /**
  * @return the logical length of the text store
  */
+@Override
 public int getCharCount() {
 	int length = gapEnd - gapStart;
 	return (textStore.length - length);
@@ -476,6 +478,7 @@ public int getCharCount() {
  *   <li>ERROR_INVALID_ARGUMENT when index is out of range</li>
  * </ul>
  */
+@Override
 public String getLine(int index) {
 	if ((index >= lineCount) || (index < 0)) error(SWT.ERROR_INVALID_ARGUMENT);
 	int start = lines[index][0];
@@ -509,6 +512,7 @@ public String getLine(int index) {
  * @return the platform line delimiter as specified in the line.separator
  * 	system property.
  */
+@Override
 public String getLineDelimiter() {
 	return LineDelimiter;
 }
@@ -549,6 +553,7 @@ String getPhysicalLine(int index) {
 /**
  * @return the number of lines in the text store
  */
+@Override
 public int getLineCount(){
 	return lineCount;
 }
@@ -562,6 +567,7 @@ public int getLineCount(){
  *    <li>ERROR_INVALID_ARGUMENT when charPosition is out of range</li>
  * </ul>
  */
+@Override
 public int getLineAtOffset(int charPosition){
 	if ((charPosition > getCharCount()) || (charPosition < 0)) error(SWT.ERROR_INVALID_ARGUMENT);
 	int position;
@@ -637,6 +643,7 @@ int getLineAtPhysicalOffset(int position){
  *   <li>ERROR_INVALID_ARGUMENT when lineIndex is out of range</li>
  * </ul>
  */
+@Override
 public int getOffsetAtLine(int lineIndex) {
 	if (lineIndex == 0) return 0;
 	if ((lineIndex >= lineCount) || (lineIndex < 0)) error(SWT.ERROR_INVALID_ARGUMENT);
@@ -701,6 +708,7 @@ String getPhysicalText(int start, int length) {
  * @param length the logical length of the text to return
  * @return the text
  */
+@Override
 public String getTextRange(int start, int length) {
 	if (textStore == null)
 		return "";
@@ -728,6 +736,7 @@ public String getTextRange(int start, int length) {
  *    <li>ERROR_NULL_ARGUMENT when listener is null</li>
  * </ul>
  */
+@Override
 public void removeTextChangeListener(TextChangeListener listener){
 	if (listener == null) error(SWT.ERROR_NULL_ARGUMENT);
 	for (int i = 0; i < textListeners.size(); i++) {
@@ -765,6 +774,7 @@ public void removeTextChangeListener(TextChangeListener listener){
  *      \r\n delimiter or deleting part of this line delimiter is not supported</li>
  * </ul>
  */
+@Override
 public void replaceTextRange(int start, int replaceLength, String newText){
 	// check for invalid replace operations
 	if (!isValidReplace(start, replaceLength, newText)) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
@@ -804,6 +814,7 @@ void sendTextEvent(StyledTextEvent event) {
  *
  * @param text the text
  */
+@Override
 public void setText (String text){
 	textStore = text.toCharArray();
 	gapStart = -1;

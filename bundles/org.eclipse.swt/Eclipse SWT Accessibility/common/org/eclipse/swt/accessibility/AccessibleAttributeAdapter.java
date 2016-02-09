@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2009, 2013 IBM Corporation and others.
+ * Copyright (c) 2009, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -45,6 +45,7 @@ public class AccessibleAttributeAdapter implements AccessibleAttributeListener {
 	 * 		which represent additional (i.e. non predefined) attributes</li>
 	 * </ul>
 	 */
+	@Override
 	public void getAttributes(AccessibleAttributeEvent e) {}
 
 	/**
@@ -61,5 +62,6 @@ public class AccessibleAttributeAdapter implements AccessibleAttributeListener {
 	 * 		that represent additional attributes that do not correspond to TextStyle fields</li>
 	 * </ul>
 	 */
+	@Override
 	public void getTextAttributes(AccessibleTextAttributeEvent e) {}
 }

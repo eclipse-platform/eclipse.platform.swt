@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2003, 2015 IBM Corporation and others.
+ * Copyright (c) 2003, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -145,6 +145,7 @@ class IE extends WebBrowser {
 
 	static {
 		NativeClearSessions = new Runnable() {
+			@Override
 			public void run() {
 				if (OS.IsPPC) return;
 				OS.InternetSetOption (0, OS.INTERNET_OPTION_END_BROWSER_SESSION, 0, 0);
@@ -152,6 +153,7 @@ class IE extends WebBrowser {
 		};
 
 		NativeGetCookie = new Runnable () {
+			@Override
 			public void run () {
 				if (OS.IsPPC) return;
 				TCHAR url = new TCHAR (0, CookieUrl, true);
@@ -180,6 +182,7 @@ class IE extends WebBrowser {
 		};
 
 		NativeSetCookie = new Runnable () {
+			@Override
 			public void run () {
 				if (OS.IsPPC) return;
 				TCHAR url = new TCHAR (0, CookieUrl, true);
@@ -346,6 +349,7 @@ public void create(Composite parent, int style) {
 				if (result == 0 || result == OS.ERROR_FILE_NOT_FOUND) {
 					if (OS.RegSetValueEx(key[0], lpValueName, 0, OS.REG_DWORD, new int[] {version}, 4) == 0) {
 						parent.getDisplay().addListener(SWT.Dispose, new Listener() {
+							@Override
 							public void handleEvent(Event event) {
 								long /*int*/[] key = new long /*int*/[1];
 								if (OS.RegOpenKeyEx(OS.HKEY_CURRENT_USER, subkey, 0, OS.KEY_WRITE, key) == 0) {
@@ -364,12 +368,14 @@ public void create(Composite parent, int style) {
 	auto = new OleAutomation(site);
 
 	domListener = new OleListener() {
+		@Override
 		public void handleEvent (OleEvent e) {
 			handleDOMEvent(e);
 		}
 	};
 
 	Listener listener = new Listener() {
+		@Override
 		public void handleEvent(Event e) {
 			switch (e.type) {
 				case SWT.Dispose: {
@@ -465,6 +471,7 @@ public void create(Composite parent, int style) {
 	site.addListener(SWT.Traverse, listener);
 
 	OleListener oleListener = new OleListener() {
+		@Override
 		public void handleEvent(OleEvent event) {
 			/* callbacks are asynchronous, auto could be disposed */
 			if (auto != null) {
@@ -607,6 +614,7 @@ public void create(Composite parent, int style) {
 							if (delaySetText) {
 								delaySetText = false;
 								browser.getDisplay().asyncExec(new Runnable() {
+									@Override
 									public void run() {
 										if (browser.isDisposed() || html == null) return;
 										setHTML(html);
@@ -820,6 +828,7 @@ public void create(Composite parent, int style) {
 										COM.MoveMemory(pCancel, new short[] {COM.VARIANT_TRUE}, 2);
 									}
 									browser.getDisplay().asyncExec(new Runnable() {
+										@Override
 										public void run() {
 											if (browser.isDisposed()) return;
 											/*
@@ -1005,6 +1014,7 @@ public void create(Composite parent, int style) {
 						* the Close event and dispose the Browser in an async block.
 						*/
 						browser.getDisplay().asyncExec(new Runnable() {
+							@Override
 							public void run() {
 								if (browser.isDisposed()) return;
 								WindowEvent newEvent = new WindowEvent(browser);

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2003, 2012 IBM Corporation and others.
+ * Copyright (c) 2003, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -59,6 +59,7 @@ class PromptDialog extends Dialog {
 		data.horizontalAlignment = GridData.CENTER;
 		okButton.setLayoutData (data);
 		okButton.addListener(SWT.Selection, new Listener() {
+			@Override
 			public void handleEvent(Event event) {
 				if (checkButton != null) checkValue[0] = checkButton.getSelection();
 				shell.close();
@@ -140,6 +141,7 @@ class PromptDialog extends Dialog {
 		viewCertButton.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, false));
 		viewCertButton.setText(Compatibility.getMessage("SWT_ViewCertificate")); //$NON-NLS-1$
 		viewCertButton.addListener(SWT.Selection, new Listener() {
+			@Override
 			public void handleEvent(Event event) {
 				long /*int*/[] result = new long /*int*/[1];
 				int rc = XPCOM.NS_GetServiceManager (result);
@@ -162,6 +164,7 @@ class PromptDialog extends Dialog {
 				* opened.  The workaround is to periodically wake up the UI thread.
 				*/
 				Runnable runnable = new Runnable() {
+					@Override
 					public void run() {
 						browser.getDisplay().timerExec(1000, this);
 					}
@@ -189,6 +192,7 @@ class PromptDialog extends Dialog {
 		cancelButton.setText(Compatibility.getMessage("SWT_Cancel")); //$NON-NLS-1$
 		final boolean[] result = new boolean[1];
 		Listener listener = new Listener() {
+			@Override
 			public void handleEvent(Event event) {
 				shell.dispose();
 				result[0] = event.widget == okButton;
@@ -226,6 +230,7 @@ class PromptDialog extends Dialog {
 
 		final Button[] buttons = new Button[4];
 		Listener listener = new Listener() {
+			@Override
 			public void handleEvent(Event event) {
 				if (buttons[0] != null) checkValue[0] = buttons[0].getSelection();
 				Widget widget = event.widget;
@@ -315,6 +320,7 @@ class PromptDialog extends Dialog {
 
 		final Button[] buttons = new Button[3];
 		Listener listener = new Listener() {
+			@Override
 			public void handleEvent(Event event) {
 				if (buttons[0] != null) checkValue[0] = buttons[0].getSelection();
 				value[0] = valueText.getText();
@@ -391,6 +397,7 @@ class PromptDialog extends Dialog {
 
 		final Button[] buttons = new Button[3];
 		Listener listener = new Listener() {
+			@Override
 			public void handleEvent(Event event) {
 				if (buttons[0] != null) checkValue[0] = buttons[0].getSelection();
 				user[0] = userText.getText();

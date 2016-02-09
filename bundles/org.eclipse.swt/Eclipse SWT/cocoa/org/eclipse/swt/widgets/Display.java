@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2015 IBM Corporation and others.
+ * Copyright (c) 2000, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -353,6 +353,7 @@ public class Display extends Device {
 	*/
 	static {
 		DeviceFinder = new Runnable () {
+			@Override
 			public void run () {
 				Device device = getCurrent ();
 				if (device == null) {
@@ -4380,6 +4381,7 @@ public static void setAppVersion (String version) {
 //TODO use custom timer instead of timerExec
 NSPoint hoverLastLocation;
 Runnable hoverTimer = new Runnable () {
+	@Override
 	public void run () {
 		if (currentControl != null && !currentControl.isDisposed()) {
 			currentControl.sendMouseEvent (null, SWT.MouseHover, trackingControl != null && !trackingControl.isDisposed());
@@ -4388,6 +4390,7 @@ Runnable hoverTimer = new Runnable () {
 };
 //TODO - use custom timer instead of timerExec
 Runnable caretTimer = new Runnable () {
+	@Override
 	public void run () {
 		if (currentCaret != null) {
 			if (currentCaret == null || currentCaret.isDisposed()) return;
@@ -4404,6 +4407,7 @@ Runnable caretTimer = new Runnable () {
 
 //TODO - use custom timer instead of timerExec
 Runnable defaultButtonTimer = new Runnable() {
+	@Override
 	public void run() {
 		if (isDisposed ()) return;
 		Shell shell = getActiveShell();

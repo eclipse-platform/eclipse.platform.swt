@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2010 IBM Corporation and others.
+ * Copyright (c) 2000, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -105,6 +105,7 @@ public CBanner(Composite parent, int style) {
 	resizeCursor = getDisplay().getSystemCursor(SWT.CURSOR_SIZEWE);
 
 	listener = new Listener() {
+		@Override
 		public void handleEvent(Event e) {
 			switch (e.type) {
 				case SWT.Dispose:

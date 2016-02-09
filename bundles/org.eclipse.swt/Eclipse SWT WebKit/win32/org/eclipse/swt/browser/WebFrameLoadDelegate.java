@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2010, 2012 IBM Corporation and others.
+ * Copyright (c) 2010, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -589,6 +589,7 @@ boolean showCertificateDialog (long /*int*/ webView, final String failingUrlStri
 	final boolean[] result = new boolean[1];
 	final Button[] buttons = new Button[3];
 	Listener listener = new Listener() {
+		@Override
 		public void handleEvent (Event event) {
 			if (event.widget == buttons[2]) {
 				showCertificate (shell, certificate);

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2012 IBM Corporation and others.
+ * Copyright (c) 2000, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -99,6 +99,7 @@ public ToolTip (Shell parent, int style) {
 	Color background = display.getSystemColor (SWT.COLOR_INFO_BACKGROUND);
 	tip.setBackground (background);
 	listener = new Listener () {
+		@Override
 		public void handleEvent (Event event) {
 			switch (event.type) {
 				case SWT.Dispose: onDispose (event); break;
@@ -111,6 +112,7 @@ public ToolTip (Shell parent, int style) {
 	tip.addListener (SWT.Paint, listener);
 	tip.addListener (SWT.MouseDown, listener);
 	parentListener = new Listener () {
+		@Override
 		public void handleEvent (Event event) {
 			dispose ();
 		}
@@ -632,6 +634,7 @@ public void setVisible (boolean visible) {
 	runnable = null;
 	if (autohide && visible) {
 		runnable = new Runnable () {
+			@Override
 			public void run () {
 				if (!isDisposed ()) setVisible (false);
 			}

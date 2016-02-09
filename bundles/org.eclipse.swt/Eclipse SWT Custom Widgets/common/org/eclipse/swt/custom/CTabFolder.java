@@ -318,6 +318,7 @@ void init(int style) {
 
 	// Add all listeners
 	listener = new Listener() {
+		@Override
 		public void handleEvent(Event event) {
 			switch (event.type) {
 				case SWT.Dispose:          onDispose(event); break;
@@ -1517,6 +1518,7 @@ void initAccessible() {
 	});
 
 	addListener(SWT.Selection, new Listener() {
+		@Override
 		public void handleEvent(Event event) {
 			if (isFocusControl()) {
 				if (selectedIndex == -1) {
@@ -1529,6 +1531,7 @@ void initAccessible() {
 	});
 
 	addListener(SWT.FocusIn, new Listener() {
+		@Override
 		public void handleEvent(Event event) {
 			if (selectedIndex == -1) {
 				accessible.setFocus(ACC.CHILDID_SELF);
@@ -1783,6 +1786,7 @@ void onMouse(Event event) {
 				updateItems();
 				hoverTimerRunning = true;
 				event.display.timerExec(2000, new Runnable() {
+					@Override
 					public void run() {
 						if (isDisposed()) return;
 						if (hovering) {
@@ -3790,6 +3794,7 @@ void updateFolder (int flags) {
 	updateFlags |= flags;
 	if (updateRun != null) return;
 	updateRun = new Runnable() {
+		@Override
 		public void run() {
 			updateRun = null;
 			if (isDisposed()) return;

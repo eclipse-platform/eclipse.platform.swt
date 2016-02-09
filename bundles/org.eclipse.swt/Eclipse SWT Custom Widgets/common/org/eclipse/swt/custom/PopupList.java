@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2011 IBM Corporation and others.
+ * Copyright (c) 2000, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -56,6 +56,7 @@ public PopupList(Shell parent, int style) {
 
 	// close dialog if user selects outside of the shell
 	shell.addListener(SWT.Deactivate, new Listener() {
+		@Override
 		public void handleEvent(Event e){
 			shell.setVisible (false);
 		}
@@ -63,7 +64,9 @@ public PopupList(Shell parent, int style) {
 
 	// resize shell when list resizes
 	shell.addControlListener(new ControlListener() {
+		@Override
 		public void controlMoved(ControlEvent e){}
+		@Override
 		public void controlResized(ControlEvent e){
 			Rectangle shellSize = shell.getClientArea();
 			list.setSize(shellSize.width, shellSize.height);
@@ -72,14 +75,19 @@ public PopupList(Shell parent, int style) {
 
 	// return list selection on Mouse Up or Carriage Return
 	list.addMouseListener(new MouseListener() {
+		@Override
 		public void mouseDoubleClick(MouseEvent e){}
+		@Override
 		public void mouseDown(MouseEvent e){}
+		@Override
 		public void mouseUp(MouseEvent e){
 			shell.setVisible (false);
 		}
 	});
 	list.addKeyListener(new KeyListener() {
+		@Override
 		public void keyReleased(KeyEvent e){}
+		@Override
 		public void keyPressed(KeyEvent e){
 			if (e.character == '\r'){
 				shell.setVisible (false);

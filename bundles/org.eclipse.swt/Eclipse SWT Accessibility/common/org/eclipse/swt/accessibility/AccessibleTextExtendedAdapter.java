@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2009, 2010 IBM Corporation and others.
+ * Copyright (c) 2009, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -34,6 +34,7 @@ public class AccessibleTextExtendedAdapter extends AccessibleTextAdapter impleme
 	 * <li>[out] result - set to {@link ACC#OK} if the text selection was added</li>
 	 * </ul>
 	 */
+	@Override
 	public void addSelection(AccessibleTextEvent e) {}
 
 	/**
@@ -43,6 +44,7 @@ public class AccessibleTextExtendedAdapter extends AccessibleTextAdapter impleme
 	 * <li>[out] count - the total number of characters</li>
 	 * </ul>
 	 */
+	@Override
 	public void getCharacterCount(AccessibleTextEvent e) {}
 
 	/**
@@ -54,6 +56,7 @@ public class AccessibleTextExtendedAdapter extends AccessibleTextAdapter impleme
 	 * 		or 0 if there are none</li>
 	 * </ul>
 	 */
+	@Override
 	public void getHyperlinkCount(AccessibleTextEvent e) {}
 
 	/**
@@ -64,6 +67,7 @@ public class AccessibleTextExtendedAdapter extends AccessibleTextAdapter impleme
 	 * <li>[out] accessible - the specified hyperlink object, or null if the index is invalid</li>
 	 * </ul>
 	 */
+	@Override
 	public void getHyperlink(AccessibleTextEvent e) {}
 
 	/**
@@ -77,6 +81,7 @@ public class AccessibleTextExtendedAdapter extends AccessibleTextAdapter impleme
 	 * 		character offset, or -1 if the offset is not in a link</li>
 	 * </ul>
 	 */
+	@Override
 	public void getHyperlinkIndex(AccessibleTextEvent e) {}
 
 	/**
@@ -91,6 +96,7 @@ public class AccessibleTextExtendedAdapter extends AccessibleTextAdapter impleme
 	 * 		or -1 if the point is invalid or there is no character under the point</li>
 	 * </ul>
 	 */
+	@Override
 	public void getOffsetAtPoint(AccessibleTextEvent e) {}
 
 	/**
@@ -110,6 +116,7 @@ public class AccessibleTextExtendedAdapter extends AccessibleTextAdapter impleme
 	 * 		if the text range is clipped by the bounding box</li>
 	 * </ul>
 	 */
+	@Override
 	public void getRanges(AccessibleTextEvent e) {}
 
 	/**
@@ -121,6 +128,7 @@ public class AccessibleTextExtendedAdapter extends AccessibleTextAdapter impleme
 	 * <li>[out] end - the 0 based offset after the last selected character</li>
 	 * </ul>
 	 */
+	@Override
 	public void getSelection(AccessibleTextEvent e) {}
 
 	/**
@@ -130,6 +138,7 @@ public class AccessibleTextExtendedAdapter extends AccessibleTextAdapter impleme
 	 * <li>[out] count - the number of active non-contiguous selections</li>
 	 * </ul>
 	 */
+	@Override
 	public void getSelectionCount(AccessibleTextEvent e) {}
 
 	/**
@@ -172,6 +181,7 @@ public class AccessibleTextExtendedAdapter extends AccessibleTextAdapter impleme
 	 * 		when no appropriate substring is found, or if the type is invalid.</li>
 	 * </ul>
 	 */
+	@Override
 	public void getText(AccessibleTextEvent e) {}
 
 	/**
@@ -202,6 +212,7 @@ public class AccessibleTextExtendedAdapter extends AccessibleTextAdapter impleme
 	 * 		partial lines</li>
 	 * </ul>
 	 */
+	@Override
 	public void getTextBounds(AccessibleTextEvent e) {}
 
 	/**
@@ -217,6 +228,7 @@ public class AccessibleTextExtendedAdapter extends AccessibleTextAdapter impleme
 	 * 		if the visible text range is clipped</li>
 	 * </ul>
 	 */
+	@Override
 	public void getVisibleRanges(AccessibleTextEvent e) {}
 
 	/**
@@ -227,6 +239,7 @@ public class AccessibleTextExtendedAdapter extends AccessibleTextAdapter impleme
 	 * <li>[out] result - set to {@link ACC#OK} if the range of text was deselected</li>
 	 * </ul>
 	 */
+	@Override
 	public void removeSelection(AccessibleTextEvent e) {}
 
 	/**
@@ -251,6 +264,7 @@ public class AccessibleTextExtendedAdapter extends AccessibleTextAdapter impleme
 	 * <li>[out] result - set to {@link ACC#OK} if the text was scrolled</li>
 	 * </ul>
 	 */
+	@Override
 	public void scrollText(AccessibleTextEvent e) {}
 
 	/**
@@ -276,6 +290,7 @@ public class AccessibleTextExtendedAdapter extends AccessibleTextAdapter impleme
 	 * <li>[out] result - set to {@link ACC#OK} if the caret position was set</li>
 	 * </ul>
 	 */
+	@Override
 	public void setCaretOffset(AccessibleTextEvent e) {}
 
 	/**
@@ -288,5 +303,6 @@ public class AccessibleTextExtendedAdapter extends AccessibleTextAdapter impleme
 	 * <li>[out] result - set to {@link ACC#OK} if the selection was set</li>
 	 * </ul>
 	 */
+	@Override
 	public void setSelection(AccessibleTextEvent e) {}
 }

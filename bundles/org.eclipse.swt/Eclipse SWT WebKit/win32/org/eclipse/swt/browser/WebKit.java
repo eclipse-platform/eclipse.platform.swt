@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2010, 2012 IBM Corporation and others.
+ * Copyright (c) 2010, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -144,6 +144,7 @@ static {
 		if (JSObjectCallAsFunctionProc.getAddress () == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
 
 		NativeClearSessions = new Runnable () {
+			@Override
 			public void run () {
 				long /*int*/[] result = new long /*int*/[1];
 				int hr = WebKit_win32.WebKitCreateInstance (WebKit_win32.CLSID_WebCookieManager, 0, WebKit_win32.IID_IWebCookieManager, result);
@@ -174,6 +175,7 @@ static {
 		};
 
 		NativeGetCookie = new Runnable () {
+			@Override
 			public void run () {
 				long /*int*/[] result = new long /*int*/[1];
 				int hr = WebKit_win32.WebKitCreateInstance (WebKit_win32.CLSID_WebCookieManager, 0, WebKit_win32.IID_IWebCookieManager, result);
@@ -221,6 +223,7 @@ static {
 		};
 
 		NativeSetCookie = new Runnable () {
+			@Override
 			public void run () {
 				long /*int*/[] result = new long /*int*/[1];
 				int hr = WebKit_win32.WebKitCreateInstance (WebKit_win32.CLSID_WebCookieManager, 0, WebKit_win32.IID_IWebCookieManager, result);
@@ -635,6 +638,7 @@ public void create (Composite parent, int style) {
 	initializeWebViewPreferences ();
 
 	Listener listener = new Listener () {
+		@Override
 		public void handleEvent (Event e) {
 			switch (e.type) {
 				case SWT.Dispose: {

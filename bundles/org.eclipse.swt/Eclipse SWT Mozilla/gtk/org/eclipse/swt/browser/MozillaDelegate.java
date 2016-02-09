@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2003, 2013 IBM Corporation and others.
+ * Copyright (c) 2003, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -265,6 +265,7 @@ void handleFocus () {
 	if (hasFocus) return;
 	hasFocus = true;
 	listener = new Listener () {
+		@Override
 		public void handleEvent (Event event) {
 			if (event.widget == browser) return;
 			if (event.type != SWT.Dispose) {
@@ -288,6 +289,7 @@ void handleMouseDown () {
 	int shellStyle = browser.getShell ().getStyle ();
 	if ((shellStyle & SWT.ON_TOP) != 0 && (((shellStyle & SWT.NO_FOCUS) == 0) || ((browser.getStyle () & SWT.NO_FOCUS) == 0))) {
 		browser.getDisplay ().asyncExec (new Runnable () {
+			@Override
 			public void run () {
 				if (browser == null || browser.isDisposed ()) return;
 				((Mozilla)browser.webBrowser).Activate ();

@@ -95,6 +95,7 @@ public OleFrame(Composite parent, int style) {
 
 	// setup cleanup proc
 	listener = new Listener()  {
+		@Override
 		public void handleEvent(Event e) {
 			switch (e.type) {
 			case SWT.Activate :    onActivate(e); break;
@@ -136,6 +137,7 @@ private static void initCheckFocus (final Display display) {
 	final Runnable[] timer = new Runnable[1];
 	final Control[] lastFocus = new Control[1];
 	timer[0] = new Runnable() {
+		@Override
 		public void run() {
 			if (lastFocus[0] instanceof OleClientSite && !lastFocus[0].isDisposed()) {
 				// ignore popup menus and dialogs
@@ -185,6 +187,7 @@ private static void initMsgHook(Display display) {
 	display.setData(HHOOK, new LONG(hHook));
 	display.setData(HHOOKMSG, new MSG());
 	display.disposeExec(new Runnable() {
+		@Override
 		public void run() {
 			if (hHook != 0) OS.UnhookWindowsHookEx(hHook);
 			if (callback != null) callback.dispose();

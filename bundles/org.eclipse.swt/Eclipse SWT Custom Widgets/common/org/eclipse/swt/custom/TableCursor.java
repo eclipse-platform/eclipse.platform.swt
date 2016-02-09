@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2011 IBM Corporation and others.
+ * Copyright (c) 2000, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -84,6 +84,7 @@ public TableCursor(Table parent, int style) {
 	setForeground(null);
 
 	listener = new Listener() {
+		@Override
 		public void handleEvent(Event event) {
 			switch (event.type) {
 				case SWT.Dispose :
@@ -119,6 +120,7 @@ public TableCursor(Table parent, int style) {
 	}
 
 	tableListener = new Listener() {
+		@Override
 		public void handleEvent(Event event) {
 			switch (event.type) {
 				case SWT.MouseDown :
@@ -134,6 +136,7 @@ public TableCursor(Table parent, int style) {
 	table.addListener(SWT.MouseDown, tableListener);
 
 	disposeItemListener = new Listener() {
+		@Override
 		public void handleEvent(Event event) {
 			unhookRowColumnListeners();
 			row = null;
@@ -142,6 +145,7 @@ public TableCursor(Table parent, int style) {
 		}
 	};
 	disposeColumnListener = new Listener() {
+		@Override
 		public void handleEvent(Event event) {
 			unhookRowColumnListeners();
 			row = null;
@@ -150,6 +154,7 @@ public TableCursor(Table parent, int style) {
 		}
 	};
 	resizeListener = new Listener() {
+		@Override
 		public void handleEvent(Event event) {
 			_resize();
 		}

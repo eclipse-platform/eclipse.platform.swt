@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2003, 2012 IBM Corporation and others.
+ * Copyright (c) 2003, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -293,6 +293,7 @@ int Init (long /*int*/ aSource, long /*int*/ aTarget, long /*int*/ aDisplayName,
 	filename = filename.substring (separator + 1);
 
 	Listener listener = new Listener() {
+		@Override
 		public void handleEvent (Event event) {
 			if (event.widget == cancel) {
 				shell.close ();

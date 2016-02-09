@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2010, 2015 IBM Corporation and others.
+ * Copyright (c) 2010, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -134,6 +134,7 @@ class WebKit extends WebBrowser {
 			if (JSDOMEventProc.getAddress () == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
 
 			NativeClearSessions = new Runnable () {
+				@Override
 				public void run () {
 					if (!LibraryLoaded) return;
 					long /*int*/ session = WebKitGTK.webkit_get_default_session ();
@@ -158,6 +159,7 @@ class WebKit extends WebBrowser {
 			};
 
 			NativeGetCookie = new Runnable () {
+				@Override
 				public void run () {
 					if (!LibraryLoaded) return;
 					long /*int*/ session = WebKitGTK.webkit_get_default_session ();
@@ -191,6 +193,7 @@ class WebKit extends WebBrowser {
 			};
 
 			NativeSetCookie = new Runnable () {
+				@Override
 				public void run () {
 					if (!LibraryLoaded) return;
 					long /*int*/ session = WebKitGTK.webkit_get_default_session ();
@@ -328,6 +331,7 @@ static long /*int*/ JSDOMEventProc (long /*int*/ arg0, long /*int*/ event, long 
 								case OS.GDK_Tab: {
 									if ((gdkEvent.state & (OS.GDK_CONTROL_MASK | OS.GDK_MOD1_MASK)) == 0) {
 										browser.getDisplay ().asyncExec (new Runnable () {
+											@Override
 											public void run () {
 												if (browser.isDisposed ()) return;
 												if (browser.getDisplay ().getFocusControl () == null) {
@@ -683,6 +687,7 @@ public void create (Composite parent, int style) {
 	}
 
 	Listener listener = new Listener () {
+		@Override
 		public void handleEvent (Event event) {
 			switch (event.type) {
 				case SWT.Dispose: {
@@ -1218,6 +1223,7 @@ boolean handleKeyEvent (String type, int keyCode, int charCode, boolean altKey, 
 				if (browser.isFocusControl ()) {
 					if (keyCode == SWT.TAB && (stateMask & (SWT.CTRL | SWT.ALT)) == 0) {
 						browser.getDisplay ().asyncExec (new Runnable () {
+							@Override
 							public void run () {
 								if (browser.isDisposed ()) return;
 								if (browser.getDisplay ().getFocusControl () == null) {
@@ -1599,6 +1605,7 @@ void openDownloadWindow (final long /*int*/ webkitDownload) {
 	data.horizontalAlignment = GridData.CENTER;
 	cancel.setLayoutData (data);
 	final Listener cancelListener = new Listener () {
+		@Override
 		public void handleEvent (Event event) {
 			WebKitGTK.webkit_download_cancel (webkitDownload);
 		}
@@ -1609,6 +1616,7 @@ void openDownloadWindow (final long /*int*/ webkitDownload) {
 	final Display display = browser.getDisplay ();
 	final int INTERVAL = 500;
 	display.timerExec (INTERVAL, new Runnable () {
+		@Override
 		public void run () {
 			int status = WebKitGTK.webkit_download_get_status (webkitDownload);
 			if (shell.isDisposed () || status == WebKitGTK.WEBKIT_DOWNLOAD_STATUS_FINISHED || status == WebKitGTK.WEBKIT_DOWNLOAD_STATUS_CANCELLED) {
@@ -1623,6 +1631,7 @@ void openDownloadWindow (final long /*int*/ webkitDownload) {
 				OS.g_object_unref (webkitDownload);
 				cancel.removeListener (SWT.Selection, cancelListener);
 				cancel.addListener (SWT.Selection, new Listener () {
+					@Override
 					public void handleEvent (Event event) {
 						shell.dispose ();
 					}
@@ -1835,6 +1844,7 @@ long /*int*/ webkit_download_requested (long /*int*/ web_view, long /*int*/ down
 	* a hang.  The workaround is to open it asynchronously with a new download.
 	*/
 	browser.getDisplay ().asyncExec (new Runnable () {
+		@Override
 		public void run () {
 			if (!browser.isDisposed ()) {
 				FileDialog dialog = new FileDialog (browser.getShell (), SWT.SAVE);

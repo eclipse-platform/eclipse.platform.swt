@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2015 IBM Corporation and others.
+ * Copyright (c) 2000, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -647,6 +647,7 @@ public class StyledText extends Canvas {
 	/**
 	 * Starts a print job and prints the pages specified in the constructor.
 	 */
+	@Override
 	public void run() {
 		String jobName = printOptions.jobName;
 		if (jobName == null) {
@@ -1258,6 +1259,7 @@ public StyledText(Composite parent, int style) {
 	if (isBidiCaret()) {
 		createCaretBitmaps();
 		Runnable runnable = new Runnable() {
+			@Override
 			public void run() {
 				int direction = BidiUtil.getKeyboardLanguage() == BidiUtil.KEYBOARD_BIDI ? SWT.RIGHT : SWT.LEFT;
 				if (direction == caretDirection) return;
@@ -2165,6 +2167,7 @@ void doAutoScroll(int direction, int distance) {
 	// down a cursor key (i.e., arrowUp, arrowDown).
 	if (direction == SWT.UP) {
 		timer = new Runnable() {
+			@Override
 			public void run() {
 				/* Bug 437357 - NPE in StyledText.getCaretLine
 				 * StyledText.content is null at times, probably because the
@@ -2191,6 +2194,7 @@ void doAutoScroll(int direction, int distance) {
 		display.timerExec(V_SCROLL_RATE, timer);
 	} else if (direction == SWT.DOWN) {
 		timer = new Runnable() {
+			@Override
 			public void run() {
 				/* Bug 437357 - NPE in StyledText.getCaretLine
 				 * StyledText.content is null at times, probably because the
@@ -2218,6 +2222,7 @@ void doAutoScroll(int direction, int distance) {
 		display.timerExec(V_SCROLL_RATE, timer);
 	} else if (direction == ST.COLUMN_NEXT) {
 		timer = new Runnable() {
+			@Override
 			public void run() {
 				/* Bug 437357 - NPE in StyledText.getCaretLine
 				 * StyledText.content is null at times, probably because the
@@ -2246,6 +2251,7 @@ void doAutoScroll(int direction, int distance) {
 		display.timerExec(H_SCROLL_RATE, timer);
 	} else if (direction == ST.COLUMN_PREVIOUS) {
 		timer = new Runnable() {
+			@Override
 			public void run() {
 				/* Bug 437357 - NPE in StyledText.getCaretLine
 				 * StyledText.content is null at times, probably because the
@@ -5662,12 +5668,15 @@ void insertBlockSelectionText(char key, int action) {
  */
 void installDefaultContent() {
 	textChangeListener = new TextChangeListener() {
+		@Override
 		public void textChanging(TextChangingEvent event) {
 			handleTextChanging(event);
 		}
+		@Override
 		public void textChanged(TextChangedEvent event) {
 			handleTextChanged(event);
 		}
+		@Override
 		public void textSet(TextChangedEvent event) {
 			handleTextSet(event);
 		}
@@ -5683,6 +5692,7 @@ void installListeners() {
 	ScrollBar horizontalBar = getHorizontalBar();
 
 	listener = new Listener() {
+		@Override
 		public void handleEvent(Event event) {
 			switch (event.type) {
 				case SWT.Dispose: handleDispose(event); break;
@@ -5709,6 +5719,7 @@ void installListeners() {
 	addListener(SWT.Resize, listener);
 	addListener(SWT.Traverse, listener);
 	ime.addListener(SWT.ImeComposition, new Listener() {
+		@Override
 		public void handleEvent(Event event) {
 			switch (event.detail) {
 				case SWT.COMPOSITION_SELECTION: handleCompositionSelection(event); break;
@@ -5719,6 +5730,7 @@ void installListeners() {
 	});
 	if (verticalBar != null) {
 		verticalBar.addListener(SWT.Selection, new Listener() {
+			@Override
 			public void handleEvent(Event event) {
 				handleVerticalScroll(event);
 			}
@@ -5726,6 +5738,7 @@ void installListeners() {
 	}
 	if (horizontalBar != null) {
 		horizontalBar.addListener(SWT.Selection, new Listener() {
+			@Override
 			public void handleEvent(Event event) {
 				handleHorizontalScroll(event);
 			}
@@ -6751,27 +6764,32 @@ void initializeAccessible() {
 	acc.addAccessibleTextListener(accTextExtendedAdapter);
 
 	accEditableTextListener = new AccessibleEditableTextListener() {
+		@Override
 		public void setTextAttributes(AccessibleTextAttributeEvent e) {
 			// This method must be implemented by the application
 			e.result = ACC.OK;
 		}
+		@Override
 		public void replaceText(AccessibleEditableTextEvent e) {
 			StyledText st = StyledText.this;
 			st.replaceTextRange(e.start, e.end - e.start, e.string);
             e.result = ACC.OK;
 		}
+		@Override
 		public void pasteText(AccessibleEditableTextEvent e) {
 			StyledText st = StyledText.this;
 			st.setSelection(e.start);
             st.paste();
             e.result = ACC.OK;
 		}
+		@Override
 		public void cutText(AccessibleEditableTextEvent e) {
 			StyledText st = StyledText.this;
 			st.setSelection(e.start, e.end);
             st.cut();
             e.result = ACC.OK;
 		}
+		@Override
 		public void copyText(AccessibleEditableTextEvent e) {
 			StyledText st = StyledText.this;
 			st.setSelection(e.start, e.end);
@@ -6895,6 +6913,7 @@ void initializeAccessible() {
 	acc.addAccessibleControlListener(accControlAdapter);
 
 	addListener(SWT.FocusIn, new Listener() {
+		@Override
 		public void handleEvent(Event event) {
 			acc.setFocus(ACC.CHILDID_SELF);
 		}

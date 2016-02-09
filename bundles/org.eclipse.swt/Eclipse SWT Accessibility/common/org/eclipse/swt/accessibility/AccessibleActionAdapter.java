@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2009, 2010 IBM Corporation and others.
+ * Copyright (c) 2009, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -36,6 +36,7 @@ public class AccessibleActionAdapter implements AccessibleActionListener {
 	 * <li>[out] count - the number of actions, or zero if there are no actions</li>
 	 * </ul>
 	 */
+	@Override
 	public void getActionCount(AccessibleActionEvent e) {}
 
 	/**
@@ -47,6 +48,7 @@ public class AccessibleActionAdapter implements AccessibleActionListener {
 	 * <li>[out] result - set to {@link ACC#OK} if the action was performed.</li>
 	 * </ul>
 	 */
+	@Override
 	public void doAction(AccessibleActionEvent e) {}
 
 	/**
@@ -58,6 +60,7 @@ public class AccessibleActionAdapter implements AccessibleActionListener {
 	 * 		or null if the index lies outside the valid range</li>
 	 * </ul>
 	 */
+	@Override
 	public void getDescription(AccessibleActionEvent e) {}
 
 	/**
@@ -74,6 +77,7 @@ public class AccessibleActionAdapter implements AccessibleActionListener {
 	 * 		(example: "C;CTRL+C"), or null if the index lies outside the valid range</li>
 	 * </ul>
 	 */
+	@Override
 	public void getKeyBinding(AccessibleActionEvent e) {}
 
 	/**
@@ -90,5 +94,6 @@ public class AccessibleActionAdapter implements AccessibleActionListener {
 	 * 		or null if the index lies outside the valid range</li>
 	 * </ul>
 	 */
+	@Override
 	public void getName(AccessibleActionEvent e) {}
 }

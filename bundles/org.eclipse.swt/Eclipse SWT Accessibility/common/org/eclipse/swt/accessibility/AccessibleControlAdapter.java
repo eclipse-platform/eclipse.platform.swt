@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2010 IBM Corporation and others.
+ * Copyright (c) 2000, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -57,6 +57,7 @@ public abstract class AccessibleControlAdapter implements AccessibleControlListe
 	 *    <li>accessible [Optional OUT] - the accessible object for the control or child may be returned instead of the childID</li>
 	 * </ul>
 	 */
+	@Override
 	public void getChildAtPoint(AccessibleControlEvent e) {
 	}
 
@@ -75,6 +76,7 @@ public abstract class AccessibleControlAdapter implements AccessibleControlListe
 	 *    <li>x, y, width, height [OUT] - the control or child location in display coordinates</li>
 	 * </ul>
 	 */
+	@Override
 	public void getLocation(AccessibleControlEvent e) {
 	}
 
@@ -98,6 +100,7 @@ public abstract class AccessibleControlAdapter implements AccessibleControlListe
 	 *    <li>accessible [Optional OUT] - an Accessible for the specified childID or index, or null if one does not exist</li>
 	 * </ul>
 	 */
+	@Override
 	public void getChild(AccessibleControlEvent e) {
 	}
 
@@ -114,6 +117,7 @@ public abstract class AccessibleControlAdapter implements AccessibleControlListe
 	 *    <li>detail [OUT] - the number of child items in this control</li>
 	 * </ul>
 	 */
+	@Override
 	public void getChildCount(AccessibleControlEvent e) {
 	}
 
@@ -136,6 +140,7 @@ public abstract class AccessibleControlAdapter implements AccessibleControlListe
 	 *    <li>result [OUT] - the requested default action string, or null</li>
 	 * </ul>
 	 */
+	@Override
 	public void getDefaultAction(AccessibleControlEvent e) {
 	}
 
@@ -155,6 +160,7 @@ public abstract class AccessibleControlAdapter implements AccessibleControlListe
 	 *    <li>accessible [Optional OUT] - the accessible object for a child may be returned instead of its childID</li>
 	 * </ul>
 	 */
+	@Override
 	public void getFocus(AccessibleControlEvent e) {
 	}
 
@@ -173,6 +179,7 @@ public abstract class AccessibleControlAdapter implements AccessibleControlListe
 	 *    <li>detail [OUT] - a role constant describing the role of the control or child</li>
 	 * </ul>
 	 */
+	@Override
 	public void getRole(AccessibleControlEvent e) {
 	}
 
@@ -194,6 +201,7 @@ public abstract class AccessibleControlAdapter implements AccessibleControlListe
 	 *    <li>accessible [Optional OUT] - the accessible object for the control or child may be returned instead of the childID</li>
 	 * </ul>
 	 */
+	@Override
 	public void getSelection(AccessibleControlEvent e) {
 	}
 
@@ -212,6 +220,7 @@ public abstract class AccessibleControlAdapter implements AccessibleControlListe
 	 *    <li>detail [OUT] - a state mask describing the current state of the control or child</li>
 	 * </ul>
 	 */
+	@Override
 	public void getState(AccessibleControlEvent e) {
 	}
 
@@ -236,6 +245,7 @@ public abstract class AccessibleControlAdapter implements AccessibleControlListe
 	 *    <li>result [OUT] - the requested value string, or null</li>
 	 * </ul>
 	 */
+	@Override
 	public void getValue(AccessibleControlEvent e) {
 	}
 
@@ -256,6 +266,7 @@ public abstract class AccessibleControlAdapter implements AccessibleControlListe
 	 *    <li>children [Optional OUT] - an array of accessible objects for the children may be returned instead of the childIDs</li>
 	 * </ul>
 	 */
+	@Override
 	public void getChildren(AccessibleControlEvent e) {
 	}
 }

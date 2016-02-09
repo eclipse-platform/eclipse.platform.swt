@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2011 IBM Corporation and others.
+ * Copyright (c) 2000, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -31,6 +31,7 @@ public class DragSourceAdapter implements DragSourceListener {
  *
  * @param event the information associated with the drag start event
  */
+@Override
 public void dragStart(DragSourceEvent event){}
 
 /**
@@ -39,6 +40,7 @@ public void dragStart(DragSourceEvent event){}
  *
  * @param event the information associated with the drag finished event
  */
+@Override
 public void dragFinished(DragSourceEvent event){}
 
 /**
@@ -47,6 +49,7 @@ public void dragFinished(DragSourceEvent event){}
  *
  * @param event the information associated with the drag set data event
  */
+@Override
 public void dragSetData(DragSourceEvent event){}
 
 }

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2011 IBM Corporation and others.
+ * Copyright (c) 2000, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -45,6 +45,7 @@ public class DropTargetAdapter implements DropTargetListener {
  *
  * @param event the information associated with the drag enter event
  */
+@Override
 public void dragEnter(DropTargetEvent event){}
 
 /**
@@ -53,6 +54,7 @@ public void dragEnter(DropTargetEvent event){}
  *
  * @param event the information associated with the drag leave event
  */
+@Override
 public void dragLeave(DropTargetEvent event){}
 
 /**
@@ -63,6 +65,7 @@ public void dragLeave(DropTargetEvent event){}
  *
  * @param event the information associated with the drag operation changed event
  */
+@Override
 public void dragOperationChanged(DropTargetEvent event){}
 
 /**
@@ -73,6 +76,7 @@ public void dragOperationChanged(DropTargetEvent event){}
  *
  * @param event the information associated with the drag over event
  */
+@Override
 public void dragOver(DropTargetEvent event){}
 
 /**
@@ -81,6 +85,7 @@ public void dragOver(DropTargetEvent event){}
  *
  * @param event the information associated with the drop event
  */
+@Override
 public void drop(DropTargetEvent event){}
 
 /**
@@ -91,6 +96,7 @@ public void drop(DropTargetEvent event){}
  *
  * @param event the information associated with the drop accept event
  */
+@Override
 public void dropAccept(DropTargetEvent event){}
 
 }

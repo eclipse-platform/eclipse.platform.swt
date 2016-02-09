@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2009, 2010 IBM Corporation and others.
+ * Copyright (c) 2009, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -39,6 +39,7 @@ public class AccessibleHyperlinkAdapter implements AccessibleHyperlinkListener {
 	 * 		the accessible for the image.</li>
 	 * </ul>
 	 */
+	@Override
 	public void getAnchor(AccessibleHyperlinkEvent e) {}
 
 	/**
@@ -54,6 +55,7 @@ public class AccessibleHyperlinkAdapter implements AccessibleHyperlinkListener {
 	 * 		object to be activated when the link is activated.</li>
 	 * </ul>
 	 */
+	@Override
 	public void getAnchorTarget(AccessibleHyperlinkEvent e) {}
 
 	/**
@@ -67,6 +69,7 @@ public class AccessibleHyperlinkAdapter implements AccessibleHyperlinkListener {
 	 * <li>[out] index</li>
 	 * </ul>
 	 */
+	@Override
 	public void getStartIndex(AccessibleHyperlinkEvent e) {}
 
 	/**
@@ -80,5 +83,6 @@ public class AccessibleHyperlinkAdapter implements AccessibleHyperlinkListener {
 	 * <li>[out] index</li>
 	 * </ul>
 	 */
+	@Override
 	public void getEndIndex(AccessibleHyperlinkEvent e) {}
 }

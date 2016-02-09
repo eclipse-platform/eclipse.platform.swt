@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2009, 2010 IBM Corporation and others.
+ * Copyright (c) 2009, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -32,6 +32,7 @@ public class AccessibleValueAdapter implements AccessibleValueListener {
 	 * <li>[out] value - the number that is the current value of this object</li>
 	 * </ul>
 	 */
+	@Override
 	public void getCurrentValue(AccessibleValueEvent e) {}
 
 	/**
@@ -47,6 +48,7 @@ public class AccessibleValueAdapter implements AccessibleValueListener {
 	 * 		<br>- on output, set to null if the value cannot be set</li>
 	 * </ul>
 	 */
+	@Override
 	public void setCurrentValue(AccessibleValueEvent e) {}
 
 	/**
@@ -57,6 +59,7 @@ public class AccessibleValueAdapter implements AccessibleValueListener {
 	 * 		If this object has no upper bound then null is returned.</li>
 	 * </ul>
 	 */
+	@Override
 	public void getMaximumValue(AccessibleValueEvent e) {}
 
 	/**
@@ -67,5 +70,6 @@ public class AccessibleValueAdapter implements AccessibleValueListener {
 	 * 		If this object has no lower bound then null is returned.</li>
 	 * </ul>
 	 */
+	@Override
 	public void getMinimumValue(AccessibleValueEvent e) {}
 }

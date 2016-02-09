@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2008 IBM Corporation and others.
+ * Copyright (c) 2000, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -34,6 +34,7 @@ public abstract class ExpandAdapter implements ExpandListener {
  *
  * @param e an event containing information about the operation
  */
+@Override
 public void itemCollapsed(ExpandEvent e) {
 }
 
@@ -43,6 +44,7 @@ public void itemCollapsed(ExpandEvent e) {
  *
  * @param e an event containing information about the operation
  */
+@Override
 public void itemExpanded(ExpandEvent e) {
 }
 }

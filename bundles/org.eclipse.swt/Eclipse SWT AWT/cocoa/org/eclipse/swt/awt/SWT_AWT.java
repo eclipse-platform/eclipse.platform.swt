@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2013 IBM Corporation and others.
+ * Copyright (c) 2000, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -164,6 +164,7 @@ public static Frame new_Frame(final Composite parent) {
 	final Throwable[] exception = new Throwable[1];
 	Runnable runnable = new Runnable () {
 		boolean run;
+		@Override
 		public void run() {
 			if (run) return;
 			run = true;
@@ -204,10 +205,12 @@ public static Frame new_Frame(final Composite parent) {
 
 	/* Forward the iconify and deiconify events */
 	final Listener shellListener = new Listener () {
+		@Override
 		public void handleEvent (Event e) {
 			switch (e.type) {
 				case SWT.Deiconify:
 					EventQueue.invokeLater(new Runnable () {
+						@Override
 						public void run () {
 							frame.dispatchEvent (new WindowEvent (frame, WindowEvent.WINDOW_DEICONIFIED));
 						}
@@ -215,6 +218,7 @@ public static Frame new_Frame(final Composite parent) {
 					break;
 				case SWT.Iconify:
 					EventQueue.invokeLater(new Runnable () {
+						@Override
 						public void run () {
 							frame.dispatchEvent (new WindowEvent (frame, WindowEvent.WINDOW_ICONIFIED));
 						}
@@ -232,6 +236,7 @@ public static Frame new_Frame(final Composite parent) {
 	 */
 	final Display display = parent.getDisplay();
 	display.addListener(SWT.Dispose, new Listener() {
+		@Override
 		public void handleEvent(Event event) {
 			while (frame.isDisplayable() && !display.isDisposed()) {
 				if (!display.readAndDispatch()) {
@@ -251,6 +256,7 @@ public static Frame new_Frame(final Composite parent) {
 	 * focus work properly for lightweights.
 	 */
 	Listener listener = new Listener () {
+		@Override
 		public void handleEvent (Event e) {
 			switch (e.type) {
 				case SWT.Dispose:
@@ -263,6 +269,7 @@ public static Frame new_Frame(final Composite parent) {
 					}
 					parent.setVisible(false);
 					EventQueue.invokeLater(new Runnable () {
+						@Override
 						public void run () {
 							try {
 								frame.dispose ();
@@ -274,6 +281,7 @@ public static Frame new_Frame(final Composite parent) {
 					if (!parent.isFocusControl()) return;
 				case SWT.FocusIn:
 					EventQueue.invokeLater(new Runnable () {
+						@Override
 						public void run () {
 							if (frame.isActive()) return;
 							try {
@@ -287,6 +295,7 @@ public static Frame new_Frame(final Composite parent) {
 				case SWT.Deactivate:
 				case SWT.FocusOut:
 					EventQueue.invokeLater(new Runnable () {
+						@Override
 						public void run () {
 							if (!frame.isActive()) return;
 							try {
@@ -313,6 +322,7 @@ public static Frame new_Frame(final Composite parent) {
 	parent.addListener (SWT.Dispose, listener);
 
 	display.asyncExec(new Runnable() {
+		@Override
 		public void run () {
 			if (parent.isDisposed()) return;
 			final Rectangle clientArea = parent.getClientArea();
@@ -323,6 +333,7 @@ public static Frame new_Frame(final Composite parent) {
 				} catch (Throwable e) {e.printStackTrace();}
 			} else {
 				EventQueue.invokeLater(new Runnable () {
+					@Override
 					public void run () {
 						frame.setSize(clientArea.width, clientArea.height);
 						frame.validate();
@@ -374,6 +385,7 @@ public static Shell new_Shell(final Display display, final Canvas parent) {
 		@Override
 		public void componentResized (ComponentEvent e) {
 			display.asyncExec (new Runnable () {
+				@Override
 				public void run () {
 					if (shell.isDisposed()) return;
 					Dimension dim = parent.getSize ();
@@ -384,6 +396,7 @@ public static Shell new_Shell(final Display display, final Canvas parent) {
 	};
 	parent.addComponentListener(listener);
 	shell.addListener(SWT.Dispose, new Listener() {
+		@Override
 		public void handleEvent(Event event) {
 			parent.removeComponentListener(listener);
 		}

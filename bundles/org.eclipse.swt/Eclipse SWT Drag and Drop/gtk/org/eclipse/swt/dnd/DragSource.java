@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2013 IBM Corporation and others.
+ * Copyright (c) 2000, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -170,6 +170,7 @@ public DragSource(Control control, int style) {
 	OS.g_signal_connect(control.handle, OS.drag_data_delete, DragDataDelete.getAddress(), 0);
 
 	controlListener = new Listener () {
+		@Override
 		public void handleEvent (Event event) {
 			if (event.type == SWT.Dispose) {
 				if (!DragSource.this.isDisposed()) {
@@ -196,6 +197,7 @@ public DragSource(Control control, int style) {
 	}
 
 	this.addListener(SWT.Dispose, new Listener() {
+		@Override
 		public void handleEvent(Event e) {
 			onDispose();
 		}

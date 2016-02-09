@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2011 IBM Corporation and others.
+ * Copyright (c) 2000, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -101,6 +101,7 @@ public TableTreeEditor (TableTree tableTree) {
 
 	treeListener = new TreeListener () {
 		final Runnable runnable = new Runnable() {
+			@Override
 			public void run() {
 				if (editor == null || editor.isDisposed()) return;
 				if (TableTreeEditor.this.tableTree.isDisposed()) return;
@@ -108,11 +109,13 @@ public TableTreeEditor (TableTree tableTree) {
 				editor.setVisible(true);
 			}
 		};
+		@Override
 		public void treeCollapsed(TreeEvent e) {
 			if (editor == null || editor.isDisposed ()) return;
 			editor.setVisible(false);
 			e.display.asyncExec(runnable);
 		}
+		@Override
 		public void treeExpanded(TreeEvent e) {
 			if (editor == null || editor.isDisposed ()) return;
 			editor.setVisible(false);
@@ -122,9 +125,11 @@ public TableTreeEditor (TableTree tableTree) {
 	tableTree.addTreeListener(treeListener);
 
 	columnListener = new ControlListener() {
+		@Override
 		public void controlMoved(ControlEvent e){
 			layout ();
 		}
+		@Override
 		public void controlResized(ControlEvent e){
 			layout ();
 		}

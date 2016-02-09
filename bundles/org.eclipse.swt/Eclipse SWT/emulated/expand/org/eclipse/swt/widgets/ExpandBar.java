@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2009 IBM Corporation and others.
+ * Copyright (c) 2000, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -86,6 +86,7 @@ public ExpandBar (Composite parent, int style) {
 	items = new ExpandItem [4];
 
 	listener = new Listener () {
+		@Override
 		public void handleEvent (Event event) {
 			switch (event.type) {
 				case SWT.Dispose:		onDispose (event);        	break;
@@ -113,6 +114,7 @@ public ExpandBar (Composite parent, int style) {
 	ScrollBar verticalBar = getVerticalBar ();
 	if (verticalBar != null) {
 		verticalBar.addListener (SWT.Selection, new Listener () {
+			@Override
 			public void handleEvent (Event event) {
 				onScroll (event);
 			}

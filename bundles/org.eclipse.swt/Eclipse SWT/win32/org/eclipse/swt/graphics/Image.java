@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2015 IBM Corporation and others.
+ * Copyright (c) 2000, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -2148,6 +2148,7 @@ void init(ImageData i) {
  *
  * @noreference This method is not intended to be referenced by clients.
  */
+@Override
 public long /*int*/ internal_new_GC (GCData data) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	/*
@@ -2194,6 +2195,7 @@ public long /*int*/ internal_new_GC (GCData data) {
  *
  * @noreference This method is not intended to be referenced by clients.
  */
+@Override
 public void internal_dispose_GC (long /*int*/ hDC, GCData data) {
 	OS.DeleteDC(hDC);
 }
