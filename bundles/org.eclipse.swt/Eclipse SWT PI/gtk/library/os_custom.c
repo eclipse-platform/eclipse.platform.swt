@@ -512,6 +512,9 @@ static void swt_fixed_realize (GtkWidget *widget) {
 	window = gdk_window_new (gtk_widget_get_parent_window (widget), &attributes, attributes_mask);
 	gtk_widget_set_window (widget, window);
 	gdk_window_set_user_data (window, widget);
+	if (NULL != gtk_check_version (3, 18, 0)) {
+		gtk_style_context_set_background (gtk_widget_get_style_context (widget), window);
+	}
 }
 
 static void swt_fixed_map (GtkWidget *widget) {
