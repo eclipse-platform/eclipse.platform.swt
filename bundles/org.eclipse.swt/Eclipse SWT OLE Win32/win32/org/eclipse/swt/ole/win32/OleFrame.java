@@ -62,6 +62,7 @@ final public class OleFrame extends Composite
 	private long /*int*/ shellHandle;
 	private long /*int*/ oldMenuHandle;
 	private long /*int*/ newMenuHandle;
+	private static long /*int*/ lastActivatedMenuHandle;
 
 	private static String CHECK_FOCUS = "OLE_CHECK_FOCUS"; //$NON-NLS-1$
 	private static String HHOOK = "OLE_HHOOK"; //$NON-NLS-1$
@@ -590,6 +591,8 @@ private void onDispose(Event e) {
 	removeListener(SWT.Move, listener);
 }
 void onFocusIn(Event e) {
+	if (lastActivatedMenuHandle != newMenuHandle)
+		currentdoc.doVerb(OLE.OLEIVERB_SHOW);
 	if (OS.GetMenu(shellHandle) != newMenuHandle)
 		OS.SetMenu(shellHandle, newMenuHandle);
 }
@@ -793,6 +796,7 @@ private int SetMenu(long /*int*/ hmenuShared, long /*int*/ holemenu, long /*int*
 	shellHandle = handle;
 	oldMenuHandle = menubar.handle;
 	newMenuHandle = hmenuShared;
+	lastActivatedMenuHandle = newMenuHandle;
 
 	return COM.OleSetMenuDescriptor(holemenu, handle, hwndActiveObject, iOleInPlaceFrame.getAddress(), inPlaceActiveObject);
 }
