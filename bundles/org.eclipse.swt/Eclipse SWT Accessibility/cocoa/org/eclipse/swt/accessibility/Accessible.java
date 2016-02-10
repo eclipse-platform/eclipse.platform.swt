@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2013 IBM Corporation and others.
+ * Copyright (c) 2000, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -177,7 +177,7 @@ public class Accessible {
 	public void addAccessibleListener(AccessibleListener listener) {
 		checkWidget();
 		if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-		if (accessibleListeners == null) accessibleListeners = new ArrayList<AccessibleListener>();
+		if (accessibleListeners == null) accessibleListeners = new ArrayList<>();
 		accessibleListeners.add(listener);
 	}
 
@@ -205,7 +205,7 @@ public class Accessible {
 	public void addAccessibleControlListener(AccessibleControlListener listener) {
 		checkWidget();
 		if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-		if (accessibleControlListeners == null) accessibleControlListeners = new ArrayList<AccessibleControlListener>();
+		if (accessibleControlListeners == null) accessibleControlListeners = new ArrayList<>();
 		accessibleControlListeners.add(listener);
 	}
 
@@ -237,10 +237,10 @@ public class Accessible {
 		checkWidget ();
 		if (listener == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
 		if (listener instanceof AccessibleTextExtendedListener) {
-			if (accessibleTextExtendedListeners == null) accessibleTextExtendedListeners = new ArrayList<AccessibleTextExtendedListener>();
+			if (accessibleTextExtendedListeners == null) accessibleTextExtendedListeners = new ArrayList<>();
 			accessibleTextExtendedListeners.add ((AccessibleTextExtendedListener) listener);
 		} else {
-			if (accessibleTextListeners == null) accessibleTextListeners = new ArrayList<AccessibleTextListener>();
+			if (accessibleTextListeners == null) accessibleTextListeners = new ArrayList<>();
 			accessibleTextListeners.add (listener);
 		}
 	}
@@ -269,7 +269,7 @@ public class Accessible {
 	public void addAccessibleActionListener(AccessibleActionListener listener) {
 		checkWidget();
 		if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-		if (accessibleActionListeners == null) accessibleActionListeners = new ArrayList<AccessibleActionListener>();
+		if (accessibleActionListeners == null) accessibleActionListeners = new ArrayList<>();
 		accessibleActionListeners.add(listener);
 	}
 
@@ -297,7 +297,7 @@ public class Accessible {
 	public void addAccessibleEditableTextListener(AccessibleEditableTextListener listener) {
 	    checkWidget();
 	    if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-		if (accessibleEditableTextListeners == null) accessibleEditableTextListeners = new ArrayList<AccessibleEditableTextListener>();
+		if (accessibleEditableTextListeners == null) accessibleEditableTextListeners = new ArrayList<>();
 	    accessibleEditableTextListeners.add(listener);
 	}
 
@@ -325,7 +325,7 @@ public class Accessible {
 	public void addAccessibleHyperlinkListener(AccessibleHyperlinkListener listener) {
 		checkWidget();
 		if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-		if (accessibleHyperlinkListeners == null) accessibleHyperlinkListeners = new ArrayList<AccessibleHyperlinkListener>();
+		if (accessibleHyperlinkListeners == null) accessibleHyperlinkListeners = new ArrayList<>();
 		accessibleHyperlinkListeners.add(listener);
 	}
 
@@ -353,7 +353,7 @@ public class Accessible {
 	public void addAccessibleTableListener(AccessibleTableListener listener) {
 		checkWidget();
 		if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-		if (accessibleTableListeners == null) accessibleTableListeners = new ArrayList<AccessibleTableListener>();
+		if (accessibleTableListeners == null) accessibleTableListeners = new ArrayList<>();
 		accessibleTableListeners.add(listener);
 	}
 
@@ -381,7 +381,7 @@ public class Accessible {
 	public void addAccessibleTableCellListener(AccessibleTableCellListener listener) {
 		checkWidget();
 		if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-		if (accessibleTableCellListeners == null) accessibleTableCellListeners = new ArrayList<AccessibleTableCellListener>();
+		if (accessibleTableCellListeners == null) accessibleTableCellListeners = new ArrayList<>();
 		accessibleTableCellListeners.add(listener);
 	}
 
@@ -409,7 +409,7 @@ public class Accessible {
 	public void addAccessibleValueListener(AccessibleValueListener listener) {
 		checkWidget();
 		if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-		if (accessibleValueListeners == null) accessibleValueListeners = new ArrayList<AccessibleValueListener>();
+		if (accessibleValueListeners == null) accessibleValueListeners = new ArrayList<>();
 		accessibleValueListeners.add(listener);
 	}
 
@@ -437,7 +437,7 @@ public class Accessible {
 	public void addAccessibleAttributeListener(AccessibleAttributeListener listener) {
 		checkWidget();
 		if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-		if (accessibleAttributeListeners == null) accessibleAttributeListeners = new ArrayList<AccessibleAttributeListener>();
+		if (accessibleAttributeListeners == null) accessibleAttributeListeners = new ArrayList<>();
 		accessibleAttributeListeners.add(listener);
 	}
 

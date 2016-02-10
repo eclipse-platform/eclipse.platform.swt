@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2013 IBM Corporation and others.
+ * Copyright (c) 2000, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -18,8 +18,8 @@ import org.eclipse.swt.internal.gtk.*;
 import org.eclipse.swt.*;
 
 class AccessibleFactory {
-	static final Map<LONG, Accessible> Accessibles = new HashMap<LONG, Accessible> (9);
-	static final Map<LONG, LONG> Factories = new HashMap<LONG, LONG> (9);
+	static final Map<LONG, Accessible> Accessibles = new HashMap<> (9);
+	static final Map<LONG, LONG> Factories = new HashMap<> (9);
 	static final String SWT_TYPE_PREFIX = "SWTAccessible"; //$NON-NLS-1$
 	static final String CHILD_TYPENAME = "Child"; //$NON-NLS-1$
 	static final String FACTORY_TYPENAME = "SWTFactory"; //$NON-NLS-1$

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2003, 2015 IBM Corporation and others.
+ * Copyright (c) 2003, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -176,7 +176,7 @@ int getFiles (long /*int*/ prop, long /*int*/ _retval) {
 				String value = new String (MozillaDelegate.mbcsToWcs (null, buffer));
 				if (value.length () > 0) {
 					String separator = System.getProperty ("path.separator"); // $NON-NLS-1$
-					List<String> segments = new ArrayList<String> ();
+					List<String> segments = new ArrayList<> ();
 					int start, end = -1;
 					do {
 						start = end + 1;

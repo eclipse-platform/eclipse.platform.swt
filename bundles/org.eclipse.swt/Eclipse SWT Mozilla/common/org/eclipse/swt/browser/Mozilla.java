@@ -57,7 +57,7 @@ class Mozilla extends WebBrowser {
 	boolean updateLastNavigateUrl;
 	Shell tip = null;
 	Listener listener;
-	List<LONG> unhookedDOMWindows = new ArrayList<LONG> ();
+	List<LONG> unhookedDOMWindows = new ArrayList<> ();
 	String lastNavigateURL;
 	byte[] htmlBytes;
 
@@ -65,7 +65,7 @@ class Mozilla extends WebBrowser {
 	static AppFileLocProvider LocationProvider;
 	static WindowCreator2 WindowCreator;
 	static int BrowserCount, NextJSFunctionIndex = 1;
-	static Map<Integer, BrowserFunction> AllFunctions = new HashMap<Integer, BrowserFunction> ();
+	static Map<Integer, BrowserFunction> AllFunctions = new HashMap<> ();
 	static Listener DisplayListener;
 	static boolean Initialized, IsXULRunner, PerformedVersionCheck, XPCOMWasGlued, XPCOMInitWasGlued;
 	static boolean IsGettingSiteWindow;
@@ -3069,7 +3069,7 @@ void navigate (long /*int*/ requestHandle) {
 	/* get the request post data, if any */
 	long /*int*/[] result = new long /*int*/[1];
 	byte[] postData = null;
-	final List<String> headers = new ArrayList<String> ();
+	final List<String> headers = new ArrayList<> ();
 	int rc = request.QueryInterface (IIDStore.GetIID (nsIUploadChannel.class), result);
 	if (rc == XPCOM.NS_OK && result[0] != 0) {
 		nsIUploadChannel uploadChannel = new nsIUploadChannel (result[0]);

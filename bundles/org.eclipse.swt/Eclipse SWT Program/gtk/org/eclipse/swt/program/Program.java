@@ -212,7 +212,7 @@ static String cde_getAttribute(String dataType, String attrName) {
 }
 
 static Map<String, List<String>> cde_getDataTypeInfo() {
-	Map<String, List<String>> dataTypeInfo = new HashMap<String, List<String>>();
+	Map<String, List<String>> dataTypeInfo = new HashMap<>();
 	int index;
 	long /*int*/ dataTypeList = CDE.DtDtsDataTypeNames();
 	if (dataTypeList != 0) {
@@ -231,7 +231,7 @@ static Map<String, List<String>> cde_getDataTypeInfo() {
 			String extension = cde_getExtension(dataTypeName);
 			if (!CDE.DtDtsDataTypeIsAction(dataTypeBuf) &&
 				extension != null && cde_getAction(dataTypeName) != null) {
-				List<String> exts = new ArrayList<String>();
+				List<String> exts = new ArrayList<>();
 				exts.add(extension);
 				dataTypeInfo.put(dataTypeName, exts);
 			}
@@ -328,7 +328,7 @@ static boolean cde_isExecutable(String fileName) {
 }
 
 static String[] parseCommand(String cmd) {
-	List<String> args = new ArrayList<String>();
+	List<String> args = new ArrayList<>();
 	int sIndex = 0;
 	int eIndex;
 	while (sIndex < cmd.length()) {
@@ -563,7 +563,7 @@ static String[] getExtensions(Display display) {
 	if (mimeInfo == null) return new String[0];
 
 	/* Create a unique set of the file extensions. */
-	List<String> extensions = new ArrayList<String>();
+	List<String> extensions = new ArrayList<>();
 	Iterator<String> keys = mimeInfo.keySet().iterator();
 	while (keys.hasNext()) {
 		String mimeType = keys.next();
@@ -603,7 +603,7 @@ static Program[] getPrograms(Display display) {
 		case DESKTOP_CDE: mimeInfo = cde_getDataTypeInfo(); break;
 	}
 	if (mimeInfo == null) return new Program[0];
-	List<Program> programs = new ArrayList<Program>();
+	List<Program> programs = new ArrayList<>();
 	Iterator<String> keys = mimeInfo.keySet().iterator();
 	while (keys.hasNext()) {
 		String mimeType = keys.next();
@@ -684,7 +684,7 @@ static Map<String, List<String>> gio_getMimeInfo() {
 			if (modTime != 0 && modTimestamp[0] == modTime) {
 				return mimeTable;
 			} else {
-				mimeTable = new HashMap<String, List<String>>();
+				mimeTable = new HashMap<>();
 				modTime = modTimestamp[0];
 				long /*int*/ reader = OS.g_data_input_stream_new (fileInputStream);
 				long /*int*/ [] length = new long /*int*/ [1];
@@ -698,7 +698,7 @@ static Map<String, List<String>> gio_getMimeInfo() {
 
 						int separatorIndex = line.indexOf (':');
 						if (separatorIndex > 0) {
-							List<String> mimeTypes = new ArrayList<String> ();
+							List<String> mimeTypes = new ArrayList<> ();
 						    String mimeType = line.substring (0, separatorIndex);
 							String extensionFormat = line.substring (separatorIndex+1);
 							int extensionIndex = extensionFormat.indexOf (".");
@@ -797,7 +797,7 @@ static Program[] gio_getPrograms(Display display) {
 	long /*int*/ applicationList = OS.g_app_info_get_all ();
 	long /*int*/ list = applicationList;
 	Program program;
-	List<Program> programs = new ArrayList<Program>();
+	List<Program> programs = new ArrayList<>();
 	while (list != 0) {
 		long /*int*/ application = OS.g_list_data(list);
 		if (application != 0) {
@@ -896,7 +896,7 @@ static String[] gio_getExtensions() {
 	Map<String, List<String>> mimeInfo = gio_getMimeInfo();
 	if (mimeInfo == null) return new String[0];
 	/* Create a unique set of the file extensions. */
-	List<String> extensions = new ArrayList<String>(mimeInfo.keySet());
+	List<String> extensions = new ArrayList<>(mimeInfo.keySet());
 	/* Return the list of extensions. */
 	return extensions.toArray(new String[extensions.size()]);
 }

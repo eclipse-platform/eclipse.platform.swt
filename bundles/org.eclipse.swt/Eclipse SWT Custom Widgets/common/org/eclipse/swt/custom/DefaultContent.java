@@ -20,7 +20,7 @@ import org.eclipse.swt.widgets.*;
 class DefaultContent implements StyledTextContent {
 	private final static String LineDelimiter = System.getProperty("line.separator");
 
-	List<StyledTextListener> textListeners = new ArrayList<StyledTextListener>(); // stores text listeners for event sending
+	List<StyledTextListener> textListeners = new ArrayList<>(); // stores text listeners for event sending
 	char[] textStore = new char[0];	// stores the actual text
 	int gapStart = -1;	// the character position start of the gap
 	int gapEnd = -1;	// the character position after the end of the gap

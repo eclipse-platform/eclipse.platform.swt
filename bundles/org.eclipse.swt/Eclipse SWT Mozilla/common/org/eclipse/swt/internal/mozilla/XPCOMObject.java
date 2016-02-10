@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2003, 2012 IBM Corporation and others.
+ * Copyright (c) 2003, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -28,7 +28,7 @@ public class XPCOMObject {
 	static private final int MAX_VTABLE_LENGTH = 80;
 	static final int OS_OFFSET = IsSolaris ? 2 : 0;
 	static private Callback[][] Callbacks = new Callback[MAX_VTABLE_LENGTH + OS_OFFSET][MAX_ARG_COUNT];
-	static private Map<LONG, XPCOMObject> ObjectMap = new HashMap<LONG, XPCOMObject> ();
+	static private Map<LONG, XPCOMObject> ObjectMap = new HashMap<> ();
 
 
 public XPCOMObject (int[] argCounts) {

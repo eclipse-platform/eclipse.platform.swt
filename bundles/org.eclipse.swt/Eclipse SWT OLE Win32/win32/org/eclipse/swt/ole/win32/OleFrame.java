@@ -657,7 +657,7 @@ private int RemoveMenus(long /*int*/ hmenuShared) {
 
 	long /*int*/ hMenu = menubar.handle;
 
-	List<LONG> ids = new ArrayList<LONG>();
+	List<LONG> ids = new ArrayList<>();
 	if (this.fileMenuItems != null) {
 		for (int i = 0; i < this.fileMenuItems.length; i++) {
 			MenuItem item = this.fileMenuItems[i];

@@ -23,7 +23,7 @@ import org.eclipse.swt.widgets.*;
 
 class MozillaDelegate {
 	Browser browser;
-	List<Composite> childWindows = new ArrayList<Composite> (9);
+	List<Composite> childWindows = new ArrayList<> (9);
 	static long /*int*/ MozillaProc;
 	static Callback SubclassProc;
 

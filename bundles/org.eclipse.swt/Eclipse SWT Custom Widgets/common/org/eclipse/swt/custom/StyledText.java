@@ -125,7 +125,7 @@ public class StyledText extends Canvas {
 	boolean doubleClickEnabled = true;	// see getDoubleClickEnabled
 	boolean overwrite = false;			// insert/overwrite edit mode
 	int textLimit = -1;					// limits the number of characters the user can type in the widget. Unlimited by default.
-	Map<Integer, Integer> keyActionMap = new HashMap<Integer, Integer>();
+	Map<Integer, Integer> keyActionMap = new HashMap<>();
 	Color background = null;			// workaround for bug 4791
 	Color foreground = null;			//
 	Clipboard clipboard;
@@ -283,7 +283,7 @@ public class StyledText extends Canvas {
 		}
 		Point screenDPI = styledText.getDisplay().getDPI();
 		Point printerDPI = printer.getDPI();
-		resources = new HashMap<Resource, Resource> ();
+		resources = new HashMap<> ();
 		for (int i = 0; i < lineCount; i++) {
 			Color color = printerRenderer.getLineBackground(i, null);
 			if (color != null) {
@@ -694,8 +694,8 @@ public class StyledText extends Canvas {
 	 */
 	public RTFWriter(int start, int length) {
 		super(start, length);
-		colorTable = new ArrayList<Color>();
-		fontTable = new ArrayList<Font>();
+		colorTable = new ArrayList<>();
+		fontTable = new ArrayList<>();
 		colorTable.add(getForeground());
 		colorTable.add(getBackground());
 		fontTable.add(getFont());

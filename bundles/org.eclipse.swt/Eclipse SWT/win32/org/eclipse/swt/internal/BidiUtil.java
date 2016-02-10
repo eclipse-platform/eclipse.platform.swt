@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2015 IBM Corporation and others.
+ * Copyright (c) 2000, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -39,8 +39,8 @@ public class BidiUtil {
 
 	// variables used for providing a listener mechanism for keyboard language
 	// switching
-	static Map<LONG, Runnable> languageMap = new HashMap<LONG, Runnable> ();
-	static Map<LONG, LONG> oldProcMap = new HashMap<LONG, LONG> ();
+	static Map<LONG, Runnable> languageMap = new HashMap<> ();
+	static Map<LONG, LONG> oldProcMap = new HashMap<> ();
 	/*
 	 * This code is intentionally commented.  In order
 	 * to support CLDC, .class cannot be used because

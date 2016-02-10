@@ -36,7 +36,7 @@ class WebKit extends WebBrowser {
 	static int DisabledJSCount;
 	static long /*int*/ ExternalClass, PostString, WebViewType;
 	static boolean IsWebKit14orNewer, LibraryLoaded;
-	static Map<LONG, LONG> WindowMappings = new HashMap<LONG, LONG> ();
+	static Map<LONG, LONG> WindowMappings = new HashMap<> ();
 
 	static final String ABOUT_BLANK = "about:blank"; //$NON-NLS-1$
 	static final String CHARSET_UTF8 = "UTF-8"; //$NON-NLS-1$

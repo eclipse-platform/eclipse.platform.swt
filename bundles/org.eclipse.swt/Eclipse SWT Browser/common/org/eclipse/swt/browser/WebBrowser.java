@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2003, 2012 IBM Corporation and others.
+ * Copyright (c) 2003, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -18,7 +18,7 @@ import org.eclipse.swt.widgets.*;
 
 abstract class WebBrowser {
 	Browser browser;
-	Map<Integer, BrowserFunction> functions = new HashMap<Integer, BrowserFunction> ();
+	Map<Integer, BrowserFunction> functions = new HashMap<> ();
 	AuthenticationListener[] authenticationListeners = new AuthenticationListener[0];
 	CloseWindowListener[] closeWindowListeners = new CloseWindowListener[0];
 	LocationListener[] locationListeners = new LocationListener[0];
@@ -34,8 +34,8 @@ abstract class WebBrowser {
 	static final String ERROR_ID = "org.eclipse.swt.browser.error"; // $NON-NLS-1$
 	static final String EXECUTE_ID = "SWTExecuteTemporaryFunction"; // $NON-NLS-1$
 
-	static List<String[]> NativePendingCookies = new ArrayList<String[]> ();
-	static List<String[]> MozillaPendingCookies = new ArrayList<String[]> ();
+	static List<String[]> NativePendingCookies = new ArrayList<> ();
+	static List<String[]> MozillaPendingCookies = new ArrayList<> ();
 	static String CookieName, CookieValue, CookieUrl;
 	static boolean CookieResult;
 	static Runnable MozillaClearSessions, NativeClearSessions;
