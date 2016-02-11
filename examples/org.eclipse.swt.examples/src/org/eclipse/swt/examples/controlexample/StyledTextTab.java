@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2014 IBM Corporation and others.
+ * Copyright (c) 2000, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -15,32 +15,18 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.custom.BidiSegmentEvent;
-import org.eclipse.swt.custom.BidiSegmentListener;
-import org.eclipse.swt.custom.ExtendedModifyEvent;
-import org.eclipse.swt.custom.ExtendedModifyListener;
-import org.eclipse.swt.custom.LineBackgroundEvent;
-import org.eclipse.swt.custom.LineBackgroundListener;
-import org.eclipse.swt.custom.LineStyleEvent;
-import org.eclipse.swt.custom.LineStyleListener;
 import org.eclipse.swt.custom.MovementEvent;
 import org.eclipse.swt.custom.MovementListener;
-import org.eclipse.swt.custom.PaintObjectEvent;
-import org.eclipse.swt.custom.PaintObjectListener;
 import org.eclipse.swt.custom.StyleRange;
 import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.custom.TextChangeListener;
 import org.eclipse.swt.custom.TextChangedEvent;
 import org.eclipse.swt.custom.TextChangingEvent;
-import org.eclipse.swt.custom.VerifyKeyListener;
 import org.eclipse.swt.events.ControlAdapter;
 import org.eclipse.swt.events.ControlEvent;
-import org.eclipse.swt.events.DisposeEvent;
-import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
-import org.eclipse.swt.events.VerifyEvent;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.ImageData;
@@ -62,11 +48,11 @@ class StyledTextTab extends ScrollableTab {
 
 	/* Style widgets added to the "Style" group */
 	Button wrapButton, readOnlyButton, fullSelectionButton;
-	
+
 	/* Buttons for adding StyleRanges to StyledText */
 	Button boldButton, italicButton, redButton, yellowButton, underlineButton, strikeoutButton, resetButton;
 	Image boldImage, italicImage, redImage, yellowImage, underlineImage, strikeoutImage;
-	
+
 	/* Variables for saving state. */
 	String text;
 	StyleRange[] styleRanges;
@@ -77,9 +63,9 @@ class StyledTextTab extends ScrollableTab {
 	StyledTextTab(ControlExample instance) {
 		super(instance);
 	}
-	
+
 	/**
-	 * Creates a bitmap image. 
+	 * Creates a bitmap image.
 	 */
 	Image createBitmapImage (Display display, String name) {
 		InputStream sourceStream = ControlExample.class.getResourceAsStream (name + ".bmp");
@@ -95,14 +81,14 @@ class StyledTextTab extends ScrollableTab {
 		}
 		return result;
 	}
-	
+
 	/**
 	 * Creates the "Control" widget children.
 	 */
 	@Override
 	void createControlWidgets () {
 		super.createControlWidgets ();
-		
+
 		/* Add a group for modifying the StyledText widget */
 		createStyledTextStyleGroup ();
 	}
@@ -113,20 +99,20 @@ class StyledTextTab extends ScrollableTab {
 	@Override
 	void createExampleGroup () {
 		super.createExampleGroup ();
-		
+
 		/* Create a group for the styled text widget */
 		styledTextGroup = new Group (exampleGroup, SWT.NONE);
 		styledTextGroup.setLayout (new GridLayout ());
 		styledTextGroup.setLayoutData (new GridData (SWT.FILL, SWT.FILL, true, true));
 		styledTextGroup.setText ("StyledText");
 	}
-	
+
 	/**
 	 * Creates the "Example" widgets.
 	 */
 	@Override
 	void createExampleWidgets () {
-		
+
 		/* Compute the widget style */
 		int style = getDefaultStyle();
 		if (singleButton.getSelection ()) style |= SWT.SINGLE;
@@ -137,13 +123,13 @@ class StyledTextTab extends ScrollableTab {
 		if (readOnlyButton.getSelection ()) style |= SWT.READ_ONLY;
 		if (borderButton.getSelection ()) style |= SWT.BORDER;
 		if (fullSelectionButton.getSelection ()) style |= SWT.FULL_SELECTION;
-	
+
 		/* Create the example widgets */
 		styledText = new StyledText (styledTextGroup, style);
 		styledText.setText (ControlExample.getResourceString("Example_string"));
 		styledText.append ("\n");
 		styledText.append (ControlExample.getResourceString("One_Two_Three"));
-		
+
 		if (text != null) {
 			styledText.setText(text);
 			text = null;
@@ -153,14 +139,14 @@ class StyledTextTab extends ScrollableTab {
 			styleRanges = null;
 		}
 	}
-	
+
 	/**
 	 * Creates the "Style" group.
 	 */
 	@Override
 	void createStyleGroup() {
 		super.createStyleGroup();
-	
+
 		/* Create the extra widgets */
 		wrapButton = new Button (styleGroup, SWT.CHECK);
 		wrapButton.setText ("SWT.WRAP");
@@ -169,7 +155,7 @@ class StyledTextTab extends ScrollableTab {
 		fullSelectionButton = new Button (styleGroup, SWT.CHECK);
 		fullSelectionButton.setText ("SWT.FULL_SELECTION");
 	}
-	
+
 	/**
 	 * Creates the "StyledText Style" group.
 	 */
@@ -180,7 +166,7 @@ class StyledTextTab extends ScrollableTab {
 		GridData data = new GridData (GridData.HORIZONTAL_ALIGN_FILL);
 		data.horizontalSpan = 2;
 		styledTextStyleGroup.setLayoutData (data);
-		
+
 		/* Get images */
 		boldImage = createBitmapImage (display, "bold");
 		italicImage = createBitmapImage (display, "italic");
@@ -188,7 +174,7 @@ class StyledTextTab extends ScrollableTab {
 		yellowImage = createBitmapImage (display, "yellow");
 		underlineImage = createBitmapImage (display, "underline");
 		strikeoutImage = createBitmapImage (display, "strikeout");
-		
+
 		/* Create controls to modify the StyledText */
 		Label label = new Label (styledTextStyleGroup, SWT.NONE);
 		label.setText (ControlExample.getResourceString ("StyledText_Style_Instructions"));
@@ -244,7 +230,7 @@ class StyledTextTab extends ScrollableTab {
 					if (e.widget == boldButton) {
 						style.fontStyle ^= SWT.BOLD;
 					} else if (e.widget == italicButton) {
-						style.fontStyle ^= SWT.ITALIC;						
+						style.fontStyle ^= SWT.ITALIC;
 					} else if (e.widget == underlineButton) {
 						style.underline = !style.underline;
 					} else if (e.widget == strikeoutButton) {
@@ -252,7 +238,7 @@ class StyledTextTab extends ScrollableTab {
 					}
 					styledText.setStyleRange(style);
 				}
-				styledText.setSelectionRange(sel.x + sel.y, 0);			
+				styledText.setSelectionRange(sel.x + sel.y, 0);
 			}
 		};
 		SelectionListener colorListener = new SelectionAdapter () {
@@ -290,19 +276,16 @@ class StyledTextTab extends ScrollableTab {
 		strikeoutButton.addSelectionListener(styleListener);
 		redButton.addSelectionListener(colorListener);
 		yellowButton.addSelectionListener(colorListener);
-		yellowButton.addDisposeListener(new DisposeListener () {
-			@Override
-			public void widgetDisposed (DisposeEvent e) {
-				boldImage.dispose();
-				italicImage.dispose();
-				redImage.dispose();
-				yellowImage.dispose();
-				underlineImage.dispose();
-				strikeoutImage.dispose();
-			}
+		yellowButton.addDisposeListener(e -> {
+			boldImage.dispose();
+			italicImage.dispose();
+			redImage.dispose();
+			yellowImage.dispose();
+			underlineImage.dispose();
+			strikeoutImage.dispose();
 		});
 	}
-	
+
 	/**
 	 * Creates the tab folder page.
 	 *
@@ -325,7 +308,7 @@ class StyledTextTab extends ScrollableTab {
 				setExampleWidgetSize ();
 			}
 		});
-		
+
 		return tabFolderPage;
 	}
 
@@ -339,12 +322,12 @@ class StyledTextTab extends ScrollableTab {
 			styleRanges = styledText.getStyleRanges();
 			text = styledText.getText();
 		}
-		super.disposeExampleWidgets();	
+		super.disposeExampleWidgets();
 	}
 
 	/**
 	 * Gets the list of custom event names.
-	 * 
+	 *
 	 * @return an array containing custom event names
 	 */
 	@Override
@@ -362,7 +345,7 @@ class StyledTextTab extends ScrollableTab {
 	Widget [] getExampleWidgets () {
 		return new Widget [] {styledText};
 	}
-	
+
 	/**
 	 * Returns a list of set/get API method names (without the set/get prefix)
 	 * that can be used to set/get values in the example control(s).
@@ -372,7 +355,7 @@ class StyledTextTab extends ScrollableTab {
 		return new String[] {"Alignment", "AlwaysShowScrollBars", "BlockSelection", "BottomMargin", "CaretOffset", "DoubleClickEnabled", "Editable", "HorizontalIndex", "HorizontalPixel", "Indent", "Justify", "LeftMargin", "LineSpacing", "Orientation", "RightMargin", "Selection", "Tabs", "TabStops", "Text", "TextLimit", "ToolTipText", "TopIndex", "TopMargin", "TopPixel", "WrapIndent", "WordWrap"};
 	}
 
-	
+
 	/**
 	 * Gets the text for the tab folder item.
 	 */
@@ -380,51 +363,26 @@ class StyledTextTab extends ScrollableTab {
 	String getTabText () {
 		return "StyledText";
 	}
-	
+
 	/**
 	 * Hooks the custom listener specified by eventName.
 	 */
 	@Override
 	void hookCustomListener (final String eventName) {
 		if (eventName == "ExtendedModifyListener") {
-			styledText.addExtendedModifyListener (new ExtendedModifyListener() {
-				@Override
-				public void modifyText(ExtendedModifyEvent event) {
-					log (eventName, event);
-				}
-			});
+			styledText.addExtendedModifyListener (event -> log (eventName, event));
 		}
 		if (eventName == "BidiSegmentListener") {
-			styledText.addBidiSegmentListener (new BidiSegmentListener() {
-				@Override
-				public void lineGetSegments(BidiSegmentEvent event) {
-					log (eventName, event);
-				}
-			});
+			styledText.addBidiSegmentListener (event -> log (eventName, event));
 		}
 		if (eventName == "LineBackgroundListener") {
-			styledText.addLineBackgroundListener (new LineBackgroundListener() {
-				@Override
-				public void lineGetBackground(LineBackgroundEvent event) {
-					log (eventName, event);
-				}
-			});
+			styledText.addLineBackgroundListener (event -> log (eventName, event));
 		}
 		if (eventName == "LineStyleListener") {
-			styledText.addLineStyleListener (new LineStyleListener() {
-				@Override
-				public void lineGetStyle(LineStyleEvent event) {
-					log (eventName, event);
-				}
-			});
+			styledText.addLineStyleListener (event -> log (eventName, event));
 		}
 		if (eventName == "PaintObjectListener") {
-			styledText.addPaintObjectListener (new PaintObjectListener() {
-				@Override
-				public void paintObject(PaintObjectEvent event) {
-					log (eventName, event);
-				}
-			});
+			styledText.addPaintObjectListener (event -> log (eventName, event));
 		}
 		if (eventName == "TextChangeListener") {
 			styledText.getContent().addTextChangeListener (new TextChangeListener() {
@@ -443,12 +401,7 @@ class StyledTextTab extends ScrollableTab {
 			});
 		}
 		if (eventName == "VerifyKeyListener") {
-			styledText.addVerifyKeyListener (new VerifyKeyListener() {
-				@Override
-				public void verifyKey(VerifyEvent event) {
-					log (eventName, event);
-				}
-			});
+			styledText.addVerifyKeyListener (event -> log (eventName, event));
 		}
 		if (eventName == "WordMovementListener") {
 			styledText.addWordMovementListener (new MovementListener() {

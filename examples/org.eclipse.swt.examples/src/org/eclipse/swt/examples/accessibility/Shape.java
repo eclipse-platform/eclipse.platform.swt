@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2008 IBM Corporation and others.
+ * Copyright (c) 2008, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -25,10 +25,6 @@ import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
-import org.eclipse.swt.events.PaintEvent;
-import org.eclipse.swt.events.PaintListener;
-import org.eclipse.swt.events.TraverseEvent;
-import org.eclipse.swt.events.TraverseListener;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Rectangle;
@@ -48,7 +44,7 @@ public class Shape extends Canvas {
 	static ResourceBundle bundle = ResourceBundle.getBundle("examples_accessibility");
 	int color = SWT.COLOR_BLUE;
 	int shape = SQUARE;
-	
+
 	/**
 	 * Constructs a new instance of this class given its parent
 	 * and a style value describing its behavior and appearance.
@@ -63,24 +59,21 @@ public class Shape extends Canvas {
 	}
 
 	void addListeners() {
-		addPaintListener(new PaintListener() {
-			@Override
-			public void paintControl(PaintEvent e) {
-				GC gc = e.gc;
-				Display display = getDisplay();
-				Color c = display.getSystemColor(color);
-				gc.setBackground(c);
-				Rectangle rect = getClientArea();
-				int length = Math.min(rect.width, rect.height);
-				if (shape == CIRCLE) {
-					gc.fillOval(0, 0, length, length);
-				} else {
-					gc.fillRectangle(0, 0, length, length);
-				}
-				if (isFocusControl()) gc.drawFocus(rect.x, rect.y, rect.width, rect.height);
+		addPaintListener(e -> {
+			GC gc = e.gc;
+			Display display = getDisplay();
+			Color c = display.getSystemColor(color);
+			gc.setBackground(c);
+			Rectangle rect = getClientArea();
+			int length = Math.min(rect.width, rect.height);
+			if (shape == CIRCLE) {
+				gc.fillOval(0, 0, length, length);
+			} else {
+				gc.fillRectangle(0, 0, length, length);
 			}
+			if (isFocusControl()) gc.drawFocus(rect.x, rect.y, rect.width, rect.height);
 		});
-		
+
 		addFocusListener(new FocusAdapter() {
 			@Override
 			public void focusGained(FocusEvent e) {
@@ -91,7 +84,7 @@ public class Shape extends Canvas {
 				redraw();
 			}
 		});
-		
+
 		addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseDown(MouseEvent e) {
@@ -100,23 +93,20 @@ public class Shape extends Canvas {
 				}
 			}
 		});
-		
+
 		addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyPressed(KeyEvent e) {
 				// key listener enables traversal out
 			}
 		});
-		
-		addTraverseListener(new TraverseListener() {
-			@Override
-			public void keyTraversed(TraverseEvent e) {
-				switch (e.detail) {
-					case SWT.TRAVERSE_TAB_NEXT:
-					case SWT.TRAVERSE_TAB_PREVIOUS:
-						e.doit = true;
-						break;
-				}
+
+		addTraverseListener(e -> {
+			switch (e.detail) {
+				case SWT.TRAVERSE_TAB_NEXT:
+				case SWT.TRAVERSE_TAB_PREVIOUS:
+					e.doit = true;
+					break;
 			}
 		});
 
@@ -130,7 +120,7 @@ public class Shape extends Canvas {
 				e.result = formatter.format(new String [] {colorName, shapeName}); //$NON_NLS$
 			}
 		});
-		
+
 		getAccessible().addAccessibleControlListener(new AccessibleControlAdapter() {
 			@Override
 			public void getRole(AccessibleControlEvent e) {
@@ -143,11 +133,11 @@ public class Shape extends Canvas {
 			}
 		});
 	}
-	
+
 	/**
 	 * Return the receiver's color.
 	 * The default color is SWT.COLOR_BLUE.
-	 * 
+	 *
 	 * @return the color, which may be any of the SWT.COLOR_ constants
 	 */
 	public int getColor () {
@@ -157,7 +147,7 @@ public class Shape extends Canvas {
 	/**
 	 * Return the receiver's shape.
 	 * The default shape is SQUARE.
-	 * 
+	 *
 	 * @return the shape, which may be either CIRCLE or SQUARE
 	 */
 	public int getShape () {
@@ -167,7 +157,7 @@ public class Shape extends Canvas {
 	/**
 	 * Set the receiver's color to the specified color.
 	 * The default color is SWT.COLOR_BLUE.
-	 * 
+	 *
 	 * @param color any of the SWT.COLOR_ constants
 	 */
 	public void setColor (int color) {
@@ -177,7 +167,7 @@ public class Shape extends Canvas {
 	/**
 	 * Set the receiver's shape to the specified shape.
 	 * The default shape is SQUARE.
-	 * 
+	 *
 	 * @param shape an int that can be either CIRCLE or SQUARE
 	 */
 	public void setShape (int shape) {

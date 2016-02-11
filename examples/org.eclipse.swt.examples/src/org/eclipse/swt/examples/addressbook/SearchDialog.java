@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2003 IBM Corporation and others.
+ * Copyright (c) 2000, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -15,8 +15,6 @@ package org.eclipse.swt.examples.addressbook;
 import java.util.ResourceBundle;
 
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.ModifyEvent;
-import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.ShellAdapter;
@@ -34,7 +32,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
 /**
- * SearchDialog is a simple class that uses <code>org.eclipse.swt</code> 
+ * SearchDialog is a simple class that uses <code>org.eclipse.swt</code>
  * libraries to implement a basic search dialog.
  */
 public class SearchDialog {
@@ -55,7 +53,7 @@ public class SearchDialog {
  * Class constructor that sets the parent shell and the table widget that
  * the dialog will search.
  *
- * @param parent	Shell 
+ * @param parent	Shell
  *			The shell that is the parent of the dialog.
  */
 public SearchDialog(Shell parent) {
@@ -72,19 +70,16 @@ public SearchDialog(Shell parent) {
 			shell.setVisible(false);
 		}
 	});
-		
+
 	Label label = new Label(shell, SWT.LEFT);
-	label.setText(resAddressBook.getString("Dialog_find_what"));	
+	label.setText(resAddressBook.getString("Dialog_find_what"));
 	searchText = new Text(shell, SWT.BORDER);
 	GridData gridData = new GridData(GridData.FILL_HORIZONTAL);
 	gridData.widthHint = 200;
 	searchText.setLayoutData(gridData);
-	searchText.addModifyListener(new ModifyListener() {
-		@Override
-		public void modifyText(ModifyEvent e) {
-			boolean enableFind = (searchText.getCharCount() != 0);
-			findButton.setEnabled(enableFind);
-		}
+	searchText.addModifyListener(e -> {
+		boolean enableFind = (searchText.getCharCount() != 0);
+		findButton.setEnabled(enableFind);
 	});
 
 	searchAreaLabel = new Label(shell, SWT.LEFT);
@@ -92,30 +87,30 @@ public SearchDialog(Shell parent) {
 	gridData = new GridData(GridData.FILL_HORIZONTAL);
 	gridData.widthHint = 200;
 	searchArea.setLayoutData(gridData);
-	
+
 	matchCase = new Button(shell, SWT.CHECK);
 	matchCase.setText(resAddressBook.getString("Dialog_match_case"));
 	gridData = new GridData();
 	gridData.horizontalSpan = 2;
 	matchCase.setLayoutData(gridData);
-	
+
 	matchWord = new Button(shell, SWT.CHECK);
 	matchWord.setText(resAddressBook.getString("Dialog_match_word"));
 	gridData = new GridData();
 	gridData.horizontalSpan = 2;
 	matchWord.setLayoutData(gridData);
-	
+
 	Group direction = new Group(shell, SWT.NONE);
 	gridData = new GridData();
 	gridData.horizontalSpan = 2;
 	direction.setLayoutData(gridData);
-	direction.setLayout (new FillLayout ());	
+	direction.setLayout (new FillLayout ());
 	direction.setText(resAddressBook.getString("Dialog_direction"));
-	
+
 	Button up = new Button(direction, SWT.RADIO);
 	up.setText(resAddressBook.getString("Dialog_dir_up"));
 	up.setSelection(false);
-		
+
 	down = new Button(direction, SWT.RADIO);
 	down.setText(resAddressBook.getString("Dialog_dir_down"));
 	down.setSelection(true);
@@ -128,7 +123,7 @@ public SearchDialog(Shell parent) {
 	layout.numColumns = 2;
 	layout.makeColumnsEqualWidth = true;
 	composite.setLayout(layout);
-	
+
 	findButton = new Button(composite, SWT.PUSH);
 	findButton.setText(resAddressBook.getString("Dialog_find"));
 	findButton.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_END));
@@ -140,11 +135,11 @@ public SearchDialog(Shell parent) {
 				MessageBox box = new MessageBox(shell, SWT.ICON_INFORMATION | SWT.OK | SWT.PRIMARY_MODAL);
 				box.setText(shell.getText());
 				box.setMessage(resAddressBook.getString("Cannot_find") + "\"" + searchText.getText() + "\"");
-				box.open();	
-			}		
+				box.open();
+			}
 		}
 	});
-			
+
 	Button cancelButton = new Button(composite, SWT.PUSH);
 	cancelButton.setText(resAddressBook.getString("Cancel"));
 	cancelButton.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_BEGINNING));
@@ -154,7 +149,7 @@ public SearchDialog(Shell parent) {
 			shell.setVisible(false);
 		}
 	});
-	
+
 	shell.pack();
 }
 public String getSearchAreaLabel(String label) {
@@ -213,7 +208,7 @@ public void setSelectedSearchArea(int index) {
 	searchArea.select(index);
 }
 public void addFindListener(FindListener listener) {
-	this.findHandler = listener;	
+	this.findHandler = listener;
 }
 public void removeFindListener(FindListener listener) {
 	this.findHandler = null;

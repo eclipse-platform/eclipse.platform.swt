@@ -21,9 +21,7 @@ import org.eclipse.swt.graphics.Transform;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Spinner;
 
 /**
@@ -43,7 +41,7 @@ public class CountDownTab extends AnimatedGraphicsTab {
 
 	/**
 	 * Constructor
-	 * 
+	 *
 	 * @param example
 	 *            A GraphicsExample
 	 */
@@ -55,7 +53,7 @@ public class CountDownTab extends AnimatedGraphicsTab {
 	 * This method creates the controls specific to the tab. The call to the
 	 * createControlPanel method in the super class create the controls that are
 	 * defined in the super class.
-	 * 
+	 *
 	 * @param parent
 	 *            The parent composite
 	 */
@@ -120,13 +118,10 @@ public class CountDownTab extends AnimatedGraphicsTab {
 		lineCapCombo.add("ROUND");
 		lineCapCombo.select(0);
 		lineCap = capValues[0];
-		lineCapCombo.addListener(SWT.Selection, new Listener() {
-			@Override
-			public void handleEvent(Event event) {
-				lineCap = capValues[lineCapCombo.getSelectionIndex()];
-				if (!pauseItem.isEnabled()) {
-					example.redraw();
-				}
+		lineCapCombo.addListener(SWT.Selection, event -> {
+			lineCap = capValues[lineCapCombo.getSelectionIndex()];
+			if (!pauseItem.isEnabled()) {
+				example.redraw();
 			}
 		});
 	}
@@ -140,7 +135,7 @@ public class CountDownTab extends AnimatedGraphicsTab {
 	public String getText() {
 		return GraphicsExample.getResourceString("Countdown"); //$NON-NLS-1$
 	}
-	
+
 	@Override
 	public String getDescription() {
 		return GraphicsExample.getResourceString("CountdownDescription"); //$NON-NLS-1$
@@ -148,7 +143,7 @@ public class CountDownTab extends AnimatedGraphicsTab {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see org.eclipse.swt.examples.graphics.AnimatedGraphicsTab#getAnimationTime()
 	 */
 	@Override
@@ -158,7 +153,7 @@ public class CountDownTab extends AnimatedGraphicsTab {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see org.eclipse.swt.examples.graphics.AnimatedGraphicsTab#next(int, int)
 	 */
 	@Override
@@ -177,7 +172,7 @@ public class CountDownTab extends AnimatedGraphicsTab {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see org.eclipse.swt.examples.graphics.GraphicsTab#paint(org.eclipse.swt.graphics.GC,
 	 *      int, int)
 	 */
@@ -254,7 +249,7 @@ public class CountDownTab extends AnimatedGraphicsTab {
 
 	/**
 	 * Returns the name of a valid font for the resident platform.
-	 * 
+	 *
 	 * @param index
 	 *            index is used to determine the appropriate font face
 	 */
@@ -263,7 +258,7 @@ public class CountDownTab extends AnimatedGraphicsTab {
 			return new String[] { "Courier", "Impact" }[index];
 		} else if (SWT.getPlatform() == "gtk") {
 			return new String[] { "Courier", "Baekmuk Headline" }[index];
-		} else { 
+		} else {
 			return new String[] { "Courier", "Verdana" }[index];
 		}
 	}

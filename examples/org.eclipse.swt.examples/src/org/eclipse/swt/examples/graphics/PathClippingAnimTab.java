@@ -51,7 +51,7 @@ public class PathClippingAnimTab extends AnimatedGraphicsTab {
 	public String getText() {
 		return GraphicsExample.getResourceString("AnimPathClipping"); //$NON-NLS-1$
 	}
-	
+
 	@Override
 	public String getDescription() {
 		return GraphicsExample.getResourceString("AnimPathClippingDesc"); //$NON-NLS-1$
@@ -75,13 +75,10 @@ public class PathClippingAnimTab extends AnimatedGraphicsTab {
 		// color menu
 		ColorMenu cm = new ColorMenu();
 		cm.setPatternItems(example.checkAdvancedGraphics());
-		menu = cm.createMenu(parent.getParent(), new ColorListener() {
-			@Override
-			public void setColor(GraphicsBackground gb) {
-				background = gb;
-				colorButton.setImage(gb.getThumbNail());
-				example.redraw();
-			}
+		menu = cm.createMenu(parent.getParent(), gb -> {
+			background = gb;
+			colorButton.setImage(gb.getThumbNail());
+			example.redraw();
 		});
 
 		// initialize the background to the 5th item in the menu (blue)
@@ -132,56 +129,56 @@ public class PathClippingAnimTab extends AnimatedGraphicsTab {
 	public void paint(GC gc, int width, int height) {
 		if (!example.checkAdvancedGraphics()) return;
 		Device device = gc.getDevice();
-		
+
 		// top triangle
 		Path path = new Path(device);
 		path.moveTo(width/2, 0);
 		path.lineTo(width/2+100, 173);
 		path.lineTo(width/2-100, 173);
 		path.lineTo(width/2, 0);
-		
+
 		// bottom triangle
 		Path path2 = new Path(device);
 		path2.moveTo(width/2, height);
 		path2.lineTo(width/2+100, height-173);
 		path2.lineTo(width/2-100, height-173);
 		path2.lineTo(width/2, height);
-		
+
 		// left triangle
 		Path path3 = new Path(device);
 		path3.moveTo(0, height/2);
 		path3.lineTo(173, height/2-100);
 		path3.lineTo(173, height/2+100);
 		path3.lineTo(0, height/2);
-		
+
 		// right triangle
 		Path path4 = new Path(device);
 		path4.moveTo(width, height/2);
 		path4.lineTo(width-173, height/2-100);
 		path4.lineTo(width-173, height/2+100);
 		path4.lineTo(width, height/2);
-		
+
 		// circle
 		Path path5 = new Path(device);
 		path5.moveTo((width-200)/2, (height-200)/2);
 		path5.addArc((width-200)/2, (height-200)/2, 200, 200, 0, 360);
-		
+
 		// top rectangle
 		Path path6 = new Path(device);
 		path6.addRectangle((width-40)/2, 175, 40, ((height-200)/2)-177);
-		
+
 		// bottom rectangle
 		Path path7 = new Path(device);
 		path7.addRectangle((width-40)/2, ((height-200)/2)+202, 40, (height-175)-(((height-200)/2)+202));
-		
+
 		// left rectangle
 		Path path8 = new Path(device);
 		path8.addRectangle(175, (height-40)/2, ((width-200)/2)-177, 40);
-		
+
 		// right rectangle
 		Path path9 = new Path(device);
 		path9.addRectangle((width-200)/2+202, (height-40)/2, (width-175)-((width-200)/2+202), 40);
-		
+
 		path.addPath(path2);
 		path.addPath(path3);
 		path.addPath(path4);
@@ -203,10 +200,10 @@ public class PathClippingAnimTab extends AnimatedGraphicsTab {
 		gc.setLineWidth(2);
 		gc.fillRectangle((width-rectWidth)/2, (height-rectHeight)/2, rectWidth, rectHeight);
 		gc.drawPath(path);
-		
+
 		if (pattern != null)
 			pattern.dispose();
-		
+
 		path9.dispose();
 		path8.dispose();
 		path7.dispose();

@@ -29,7 +29,7 @@ import org.eclipse.swt.widgets.Menu;
  * applying one.
  */
 public class RegionClippingTab extends GraphicsTab {
-	
+
 	private Combo clippingCb;
 	private Button colorButton1, colorButton2;
 	private Menu menu1, menu2;
@@ -66,7 +66,7 @@ public void dispose() {
 	}
 }
 
-/** 
+/**
  * Creates the widgets used to control the drawing.
  */
 @Override
@@ -74,7 +74,7 @@ public void createControlPanel(Composite parent) {
 	// create drop down combo for choosing clipping
 	Composite comp = new Composite(parent, SWT.NONE);
 	comp.setLayout(new GridLayout(2, false));
-	
+
 	new Label(comp, SWT.CENTER).setText(GraphicsExample
 			.getResourceString("Clipping")); //$NON-NLS-1$
 	clippingCb = new Combo(comp, SWT.DROP_DOWN);
@@ -88,39 +88,33 @@ public void createControlPanel(Composite parent) {
 
 	// color menu
 	ColorMenu cm = new ColorMenu();
-	menu1 = cm.createMenu(parent.getParent(), new ColorListener() {
-		@Override
-		public void setColor(GraphicsBackground gb) {
-			colorGB1 = gb;		
-			colorButton1.setImage(gb.getThumbNail());
-			example.redraw();
-		}
+	menu1 = cm.createMenu(parent.getParent(), gb -> {
+		colorGB1 = gb;
+		colorButton1.setImage(gb.getThumbNail());
+		example.redraw();
 	});
-	menu2 = cm.createMenu(parent.getParent(), new ColorListener() {
-		@Override
-		public void setColor(GraphicsBackground gb) {
-			colorGB2 = gb;		
-			colorButton2.setImage(gb.getThumbNail());
-			example.redraw();
-		}
+	menu2 = cm.createMenu(parent.getParent(), gb -> {
+		colorGB2 = gb;
+		colorButton2.setImage(gb.getThumbNail());
+		example.redraw();
 	});
-	
+
 	// initialize the color to blue
 	colorGB1 = (GraphicsBackground)menu1.getItem(4).getData();
 	// initialize the color to red
 	colorGB2 = (GraphicsBackground)menu2.getItem(2).getData();
-	
+
 	// color button 1
 	comp = new Composite(parent, SWT.NONE);
 	comp.setLayout(new GridLayout(2, false));
-	
+
 	colorButton1 = new Button(comp, SWT.PUSH);
 	colorButton1.setText(GraphicsExample
 			.getResourceString("Color1")); //$NON-NLS-1$
 	colorButton1.setImage(colorGB1.getThumbNail());
 	colorButton1.addListener(SWT.Selection, event -> {
 		final Button button = (Button) event.widget;
-		final Composite parent1 = button.getParent(); 
+		final Composite parent1 = button.getParent();
 		Rectangle bounds = button.getBounds();
 		Point point = parent1.toDisplay(new Point(bounds.x, bounds.y));
 		menu1.setLocation(point.x, point.y + bounds.height);
@@ -130,14 +124,14 @@ public void createControlPanel(Composite parent) {
 	// color button 2
 	comp = new Composite(parent, SWT.NONE);
 	comp.setLayout(new GridLayout(2, false));
-	
+
 	colorButton2 = new Button(comp, SWT.PUSH);
 	colorButton2.setText(GraphicsExample
 			.getResourceString("Color2")); //$NON-NLS-1$
 	colorButton2.setImage(colorGB2.getThumbNail());
 	colorButton2.addListener(SWT.Selection, event -> {
 		final Button button = (Button) event.widget;
-		final Composite parent1 = button.getParent(); 
+		final Composite parent1 = button.getParent();
 		Rectangle bounds = button.getBounds();
 		Point point = parent1.toDisplay(new Point(bounds.x, bounds.y));
 		menu2.setLocation(point.x, point.y + bounds.height);
@@ -149,7 +143,7 @@ public void createControlPanel(Composite parent) {
 public void paint(GC gc, int width, int height) {
 	if (!example.checkAdvancedGraphics()) return;
 	Device device = gc.getDevice();
-	
+
 	// array of coordinate points of polygon 1 (region 1)
 	int [] polygon1 = new int [] {10, height/2, 9*width/16, 10, 9*width/16, height-10};
 	Region region1 = new Region(device);
@@ -170,11 +164,11 @@ public void paint(GC gc, int width, int height) {
 	};
 	Region region2 = new Region(device);
 	region2.add(polygon2);
-	
+
 	gc.setAlpha(127);
-	
+
 	int clippingIndex = clippingCb.getSelectionIndex();
-	
+
 	switch (clippingIndex) {
 	case 0:
 		// region 1
@@ -189,7 +183,7 @@ public void paint(GC gc, int width, int height) {
 		gc.fillPolygon(polygon2);
 		break;
 	case 2:
-		// add		
+		// add
 		region1.add(region2);
 		break;
 	case 3:
@@ -199,19 +193,19 @@ public void paint(GC gc, int width, int height) {
 	case 4:
 		// intersect
 		region1.intersect(region2);
-		break;		
+		break;
 	}
-	
+
 	if (clippingIndex > 1) {
 		gc.setClipping(region1);
-		
+
 		gc.setBackground(colorGB1.getBgColor1());
 		gc.fillPolygon(polygon1);
-		
+
 		gc.setBackground(colorGB2.getBgColor1());
 	    gc.fillPolygon(polygon2);
 	}
-	
+
 	region1.dispose();
 	region2.dispose();
     }

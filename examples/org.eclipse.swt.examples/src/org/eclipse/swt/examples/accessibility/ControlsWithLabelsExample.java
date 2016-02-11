@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2008 IBM Corporation and others.
+ * Copyright (c) 2008, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -18,10 +18,6 @@ import org.eclipse.swt.custom.CTabItem;
 import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
-import org.eclipse.swt.events.PaintEvent;
-import org.eclipse.swt.events.PaintListener;
-import org.eclipse.swt.events.TraverseEvent;
-import org.eclipse.swt.events.TraverseListener;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
@@ -226,12 +222,7 @@ public class ControlsWithLabelsExample {
 		new Label(shell, SWT.NONE).setText("Label for Canvas");
 		canvas = new Canvas(shell, SWT.BORDER);
 		canvas.setLayoutData(new GridData(64, 64));
-		canvas.addPaintListener(new PaintListener() {
-			@Override
-			public void paintControl(PaintEvent e) {
-				e.gc.drawString("Canvas", 15, 25);
-			}
-		});
+		canvas.addPaintListener(e -> e.gc.drawString("Canvas", 15, 25));
 		canvas.setCaret (new Caret(canvas, SWT.NONE));
 		/* Hook key listener so canvas will take focus during traversal in. */
 		canvas.addKeyListener(new KeyAdapter() {
@@ -243,12 +234,7 @@ public class ControlsWithLabelsExample {
 			}
 		});
 		/* Hook traverse listener to make canvas give up focus during traversal out. */
-		canvas.addTraverseListener(new TraverseListener() {
-			@Override
-			public void keyTraversed(TraverseEvent e) {
-				e.doit = true;
-			}
-		});
+		canvas.addTraverseListener(e -> e.doit = true);
 
 		new Label(shell, SWT.NONE).setText("Label for Group");
 		group = new Group(shell, SWT.NONE);

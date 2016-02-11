@@ -29,9 +29,7 @@ import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Dialog;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.Shell;
 
@@ -48,39 +46,39 @@ public class GradientDialog extends Dialog {
 	Button okButton, cancelButton;
 
 	Menu menu1, menu2;
-	
+
 	RGB rgb1, rgb2;			// first and second color used in gradient
-	int returnVal; 			// value to be returned by open(), set to SWT.OK 
-							// if the ok button has been pressed		
+	int returnVal; 			// value to be returned by open(), set to SWT.OK
+							// if the ok button has been pressed
 	List<Image> resources;
-			
-	public GradientDialog(Shell parent) {		
+
+	public GradientDialog(Shell parent) {
 		this (parent, SWT.PRIMARY_MODAL);
 	}
-	
+
 	public GradientDialog(Shell parent, int style) {
 		super(parent, style);
 		rgb1 = rgb2 = null;
 		returnVal = SWT.CANCEL;
 		resources = new ArrayList<>();
 	}
-	
+
 	/**
 	 * Sets up the dialog and opens it.
 	 * */
 	public int open() {
 		final Shell dialog = new Shell(getParent(), SWT.DIALOG_TRIM | SWT.RESIZE | getStyle());
 		dialog.setText(GraphicsExample.getResourceString("Gradient")); //$NON-NLS-1$
-				
+
 		GridLayout gridLayout = new GridLayout();
 	    gridLayout.numColumns = 2;
 	    gridLayout.marginHeight = 10;
 	    gridLayout.marginWidth = 10;
 	    dialog.setLayout(gridLayout);
-	    
+
 	    // create the controls in the dialog
 	    createDialogControls(dialog);
-		
+
 		dialog.addListener(SWT.Close, event -> {
 			for (int i = 0; i < resources.size(); i++) {
 				Object obj = resources.get(i);
@@ -89,7 +87,7 @@ public class GradientDialog extends Dialog {
 				}
 			}
 			dialog.dispose();
-		});	
+		});
 
 		dialog.setDefaultButton (okButton);
 		dialog.pack ();
@@ -97,19 +95,19 @@ public class GradientDialog extends Dialog {
 		Rectangle bounds = dialog.getBounds();
 		dialog.setLocation(rect.x + (rect.width - bounds.width) / 2, rect.y + (rect.height - bounds.height) / 2);
 		dialog.setMinimumSize(bounds.width, bounds.height);
-		
+
 		dialog.open ();
-		
+
 		Display display = getParent().getDisplay();
 		while (!dialog.isDisposed()) {
 			if (!display.readAndDispatch()) display.sleep();
 		}
-		
+
 		if (menu1 != null) {
 			menu1.dispose();
 			menu1 = null;
 		}
-		
+
 		if (menu2 != null) {
 			menu2.dispose();
 			menu2 = null;
@@ -117,25 +115,25 @@ public class GradientDialog extends Dialog {
 
 		return returnVal;
 	}
-	
+
 	/**
 	 * Creates the controls of the dialog.
 	 * */
 	public void createDialogControls(final Shell parent) {
 		final Display display = parent.getDisplay();
-		
+
 		// message
-		Label message = new Label(parent, SWT.NONE); 
+		Label message = new Label(parent, SWT.NONE);
 		message.setText(GraphicsExample.getResourceString("GradientDlgMsg"));
 		GridData gridData = new GridData(GridData.HORIZONTAL_ALIGN_FILL);
 		gridData.horizontalSpan = 2;
 		message.setLayoutData(gridData);
-		
+
 		// default colors are white and black
 		if (rgb1 == null || rgb2 == null) {
 			rgb1 = display.getSystemColor(SWT.COLOR_WHITE).getRGB();
 			rgb2 = display.getSystemColor(SWT.COLOR_BLACK).getRGB();
-		}			
+		}
 
 		// canvas
 		canvas = new Canvas(parent, SWT.NONE);
@@ -156,10 +154,10 @@ public class GradientDialog extends Dialog {
 			color1.dispose();
 			color2.dispose();
 		});
-		
+
 		// composite used for both color buttons
 		Composite colorButtonComp = new Composite(parent, SWT.NONE);
-		
+
 		// layout buttons
 		RowLayout layout = new RowLayout();
 		layout.type = SWT.VERTICAL;
@@ -169,9 +167,9 @@ public class GradientDialog extends Dialog {
 		// position composite
 		gridData = new GridData(GridData.VERTICAL_ALIGN_BEGINNING);
 	    colorButtonComp.setLayoutData(gridData);
-	    
+
 		ColorMenu colorMenu = new ColorMenu();
-		
+
 		// color controls: first color
 		colorButton1 = new Button(colorButtonComp, SWT.PUSH);
 		colorButton1.setText(GraphicsExample.getResourceString("GradientDlgButton1"));
@@ -180,27 +178,21 @@ public class GradientDialog extends Dialog {
 		color1.dispose();
 		colorButton1.setImage(img1);
 		resources.add(img1);
-		menu1 = colorMenu.createMenu(parent.getParent(), new ColorListener() {
-			@Override
-			public void setColor(GraphicsBackground gb) {
-				rgb1 = gb.getBgColor1().getRGB();
-				colorButton1.setImage(gb.getThumbNail());
-				if (canvas != null) canvas.redraw();
-			}
+		menu1 = colorMenu.createMenu(parent.getParent(), gb -> {
+			rgb1 = gb.getBgColor1().getRGB();
+			colorButton1.setImage(gb.getThumbNail());
+			if (canvas != null) canvas.redraw();
 		});
-		colorButton1.addListener(SWT.Selection, new Listener() { 
-			@Override
-			public void handleEvent(Event event) {
-				final Button button = (Button) event.widget;
-				final Composite parent = button.getParent(); 
-				Rectangle bounds = button.getBounds();
-				Point point = parent.toDisplay(new Point(bounds.x, bounds.y));
-				menu1.setLocation(point.x, point.y + bounds.height);
-				menu1.setVisible(true);
-			}
+		colorButton1.addListener(SWT.Selection, event -> {
+			final Button button = (Button) event.widget;
+			final Composite parent1 = button.getParent();
+			Rectangle bounds = button.getBounds();
+			Point point = parent1.toDisplay(new Point(bounds.x, bounds.y));
+			menu1.setLocation(point.x, point.y + bounds.height);
+			menu1.setVisible(true);
 		});
-		
-		// color controls: second color 
+
+		// color controls: second color
 		colorButton2 = new Button(colorButtonComp, SWT.PUSH);
 		colorButton2.setText(GraphicsExample.getResourceString("GradientDlgButton2"));
 		Color color2 = new Color(display, rgb2);
@@ -208,23 +200,20 @@ public class GradientDialog extends Dialog {
 		color2.dispose();
 		colorButton2.setImage(img2);
 		resources.add(img2);
-		menu2 = colorMenu.createMenu(parent.getParent(), new ColorListener() {
-			@Override
-			public void setColor(GraphicsBackground gb) {
-				rgb2 = gb.getBgColor1().getRGB();
-				colorButton2.setImage(gb.getThumbNail());
-				if (canvas != null) canvas.redraw();
-			}
+		menu2 = colorMenu.createMenu(parent.getParent(), gb -> {
+			rgb2 = gb.getBgColor1().getRGB();
+			colorButton2.setImage(gb.getThumbNail());
+			if (canvas != null) canvas.redraw();
 		});
 		colorButton2.addListener(SWT.Selection, event -> {
 			final Button button = (Button) event.widget;
-			final Composite parent1 = button.getParent(); 
+			final Composite parent1 = button.getParent();
 			Rectangle bounds = button.getBounds();
 			Point point = parent1.toDisplay(new Point(bounds.x, bounds.y));
 			menu2.setLocation(point.x, point.y + bounds.height);
 			menu2.setVisible(true);
 		});
-		
+
 		// composite used for ok and cancel buttons
 		Composite okCancelComp = new Composite(parent, SWT.NONE);
 
@@ -238,7 +227,7 @@ public class GradientDialog extends Dialog {
 		gridData = new GridData(GridData.HORIZONTAL_ALIGN_END);
 	    gridData.horizontalSpan = 2;
 	    okCancelComp.setLayoutData(gridData);
-		
+
 	    // OK button
 		okButton = new Button (okCancelComp, SWT.PUSH);
 		okButton.setText("&OK");
@@ -246,20 +235,20 @@ public class GradientDialog extends Dialog {
 			returnVal = SWT.OK;
 			parent.close();
 		});
-		
+
 		// cancel button
 		cancelButton = new Button (okCancelComp, SWT.PUSH);
 		cancelButton.setText("&Cancel");
 		cancelButton.addListener(SWT.Selection, event -> parent.close());
 	}
-	
+
 	/**
 	 * Returns the first RGB selected by the user.
 	 * */
 	public RGB getFirstRGB() {
-		return rgb1;		
+		return rgb1;
 	}
-	
+
 	/**
 	 * Sets the first RGB.
 	 * @param rgb
@@ -267,7 +256,7 @@ public class GradientDialog extends Dialog {
 	public void setFirstRGB(RGB rgb) {
 		this.rgb1 = rgb;
 	}
-	
+
 	/**
 	 * Returns the second RGB selected by the user.
 	 * */

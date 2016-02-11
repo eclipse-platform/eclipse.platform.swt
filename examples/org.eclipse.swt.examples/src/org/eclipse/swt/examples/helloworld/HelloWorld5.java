@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2003 IBM Corporation and others.
+ * Copyright (c) 2000, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -14,10 +14,6 @@ package org.eclipse.swt.examples.helloworld;
 
 import java.util.ResourceBundle;
 
-import org.eclipse.swt.events.DisposeEvent;
-import org.eclipse.swt.events.DisposeListener;
-import org.eclipse.swt.events.PaintEvent;
-import org.eclipse.swt.events.PaintListener;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Rectangle;
@@ -43,22 +39,14 @@ public static void main (String [] args) {
 public Shell open (Display display) {
 	final Color red = new Color(display, 0xFF, 0, 0);
 	final Shell shell = new Shell (display);
-	shell.addPaintListener(new PaintListener () {
-		@Override
-		public void paintControl(PaintEvent event){
-			GC gc = event.gc;
-			gc.setForeground(red);
-			Rectangle rect = shell.getClientArea();
-			gc.drawRectangle(rect.x + 10, rect.y + 10, rect.width - 20, rect.height - 20);
-			gc.drawString(resHello.getString("Hello_world"), rect.x + 20, rect.y + 20);
-		}
+	shell.addPaintListener(event -> {
+		GC gc = event.gc;
+		gc.setForeground(red);
+		Rectangle rect = shell.getClientArea();
+		gc.drawRectangle(rect.x + 10, rect.y + 10, rect.width - 20, rect.height - 20);
+		gc.drawString(resHello.getString("Hello_world"), rect.x + 20, rect.y + 20);
 	});
-	shell.addDisposeListener (new DisposeListener () {
-		@Override
-		public void widgetDisposed (DisposeEvent e) {
-			red.dispose();
-		}
-	});
+	shell.addDisposeListener (e -> red.dispose());
 	shell.open ();
 	return shell;
 }

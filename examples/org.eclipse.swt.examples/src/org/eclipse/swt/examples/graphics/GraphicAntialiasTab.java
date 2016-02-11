@@ -33,12 +33,12 @@ public class GraphicAntialiasTab extends GraphicsTab {
 
 	Combo aliasCombo;
 	int[] aliasValues = { SWT.OFF, SWT.DEFAULT, SWT.ON };
-	
+
 	Button colorButton;
 	Menu menu;
 	GraphicsBackground ovalColorGB;
 
-	
+
 public GraphicAntialiasTab(GraphicsExample example) {
 	super(example);
 }
@@ -70,7 +70,7 @@ public void dispose() {
 public void createControlPanel(Composite parent) {
 
 	Composite comp;
-	
+
 	// create drop down combo for antialiasing
 	comp = new Composite(parent, SWT.NONE);
 	comp.setLayout(new GridLayout(2, false));
@@ -85,29 +85,26 @@ public void createControlPanel(Composite parent) {
 
 	ColorMenu cm = new ColorMenu();
 	cm.setColorItems(true);
-	menu = cm.createMenu(parent.getParent(), new ColorListener() {
-		@Override
-		public void setColor(GraphicsBackground gb) {
-			ovalColorGB = gb;
-			colorButton.setImage(gb.getThumbNail());
-			example.redraw();
-		}
+	menu = cm.createMenu(parent.getParent(), gb -> {
+		ovalColorGB = gb;
+		colorButton.setImage(gb.getThumbNail());
+		example.redraw();
 	});
-	
+
 	// create color button
 	comp = new Composite(parent, SWT.NONE);
 	comp.setLayout(new GridLayout());
-	
+
     // initialize the background to the 5th item in the menu (blue)
 	ovalColorGB = (GraphicsBackground)menu.getItem(4).getData();
-	
+
 	// color button
 	colorButton = new Button(comp, SWT.PUSH);
 	colorButton.setText(GraphicsExample.getResourceString("Color")); //$NON-NLS-1$
 	colorButton.setImage(ovalColorGB.getThumbNail());
 	colorButton.addListener(SWT.Selection, event -> {
 		final Button button = (Button) event.widget;
-		final Composite parent1 = button.getParent(); 
+		final Composite parent1 = button.getParent();
 		Rectangle bounds = button.getBounds();
 		Point point = parent1.toDisplay(new Point(bounds.x, bounds.y));
 		menu.setLocation(point.x, point.y + bounds.height);
@@ -122,10 +119,10 @@ public void createControlPanel(Composite parent) {
 public void paint(GC gc, int width, int height) {
 	if (!example.checkAdvancedGraphics()) return;
 	Device device = gc.getDevice();
-	
+
 	if (ovalColorGB != null && ovalColorGB.getBgColor1() != null)
 		gc.setBackground(ovalColorGB.getBgColor1());
-	
+
 	gc.setAntialias(aliasValues[aliasCombo.getSelectionIndex()]);
 
 	Path path = new Path(device);

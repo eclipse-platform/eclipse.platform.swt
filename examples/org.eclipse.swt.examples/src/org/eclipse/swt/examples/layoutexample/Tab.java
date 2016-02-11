@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -10,7 +10,7 @@
  *******************************************************************************/
 package org.eclipse.swt.examples.layoutexample;
 
- 
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,7 +22,6 @@ import org.eclipse.swt.custom.TableEditor;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
-import org.eclipse.swt.events.TraverseEvent;
 import org.eclipse.swt.events.TraverseListener;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.FontData;
@@ -74,7 +73,7 @@ import org.eclipse.swt.widgets.TreeItem;
  * containing code that will regenerate the layout. This code
  * (or parts of it) can be selected and copied to the clipboard.
  */
-abstract class Tab {	
+abstract class Tab {
 	Shell shell;
 	Display display;
 	/* Common groups and composites */
@@ -92,7 +91,7 @@ abstract class Tab {
 	Table table;
 	int index;
 	boolean comboReset = false;
-	final String[] OPTIONS = {"Button", "Canvas", "Combo", "Composite",	"CoolBar", 
+	final String[] OPTIONS = {"Button", "Canvas", "Combo", "Composite",	"CoolBar",
 			"Group", "Label", "Link", "List", "ProgressBar", "Scale", "Slider", "StyledText",
 			"Table", "Text", "ToolBar", "Tree"};
 	TableItem newItem, lastSelected;
@@ -107,14 +106,11 @@ abstract class Tab {
 			resetEditors ();
 		}
 	};
-		
-	TraverseListener traverseListener = new TraverseListener () {
-		@Override
-		public void keyTraversed (TraverseEvent e) {
-			if (e.detail == SWT.TRAVERSE_RETURN) {
-				e.doit = false;
-				resetEditors ();
-			}
+
+	TraverseListener traverseListener = e -> {
+		if (e.detail == SWT.TRAVERSE_RETURN) {
+			e.doit = false;
+			resetEditors ();
 		}
 	};
 
@@ -124,7 +120,7 @@ abstract class Tab {
 	Tab(LayoutExample instance) {
 		this.instance = instance;
 	}
-	
+
 	/**
 	 * Creates the "children" group. This is the group that allows
 	 * you to add children to the layout. It exists within the
@@ -134,12 +130,12 @@ abstract class Tab {
 		childGroup = new Group (controlGroup, SWT.NONE);
 		childGroup.setText (LayoutExample.getResourceString("Children"));
 		childGroup.setLayout(new GridLayout ());
-		childGroup.setLayoutData(new GridData (SWT.FILL, SWT.FILL, true, true, 2, 1)); 
+		childGroup.setLayoutData(new GridData (SWT.FILL, SWT.FILL, true, true, 2, 1));
 
-		ToolBar toolBar = new ToolBar(childGroup, SWT.FLAT);	
+		ToolBar toolBar = new ToolBar(childGroup, SWT.FLAT);
 		toolBar.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, false, false));
 		add = new ToolItem(toolBar, SWT.DROP_DOWN);
-		add.setText(LayoutExample.getResourceString("Add"));	
+		add.setText(LayoutExample.getResourceString("Add"));
 		add.addSelectionListener (new SelectionAdapter () {
 			@Override
 			public void widgetSelected(SelectionEvent event) {
@@ -149,7 +145,7 @@ abstract class Tab {
 					final Menu menu = new Menu (shell, SWT.POP_UP);
 					for (int i = 0; i < OPTIONS.length; i++) {
 						final MenuItem newItem = new MenuItem (menu, SWT.RADIO);
-						newItem.setText (OPTIONS [i]);						
+						newItem.setText (OPTIONS [i]);
 						newItem.addSelectionListener (new SelectionAdapter () {
 							@Override
 							public void widgetSelected (SelectionEvent event) {
@@ -168,13 +164,13 @@ abstract class Tab {
 									resetEditors ();
 								}
 							}
-						});							
+						});
 						newItem.setSelection (i == prevSelected);
 					}
 					Point pt = display.map (bar, null, event.x, event.y);
 					menu.setLocation (pt.x, pt.y);
 					menu.setVisible (true);
-					
+
 					while (menu != null && !menu.isDisposed () && menu.isVisible ()) {
 						if (!display.readAndDispatch ()) {
 							display.sleep ();
@@ -215,7 +211,7 @@ abstract class Tab {
 				layoutGroup.layout (true);
 			}
 		});
-		
+
 		new ToolItem(toolBar,SWT.SEPARATOR);
 		clear = new ToolItem(toolBar, SWT.PUSH);
 		clear.setText (LayoutExample.getResourceString ("Clear"));
@@ -234,21 +230,21 @@ abstract class Tab {
 			}
 		});
 		toolBar.pack();
-		
+
 		new ToolItem (toolBar,SWT.SEPARATOR);
 		code = new ToolItem (toolBar, SWT.PUSH);
 		code.setText (LayoutExample.getResourceString ("Generate_Code"));
 		code.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				final Shell shell = new Shell();	
+				final Shell shell = new Shell();
 				shell.setText(LayoutExample.getResourceString("Generated_Code"));
 				shell.setLayout(new FillLayout());
 				final Text text = new Text(shell, SWT.BORDER | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL);
 				String layoutCode = generateCode().toString ();
 				if (layoutCode.length() == 0) return;
 				text.setText(layoutCode);
-				
+
 				Menu bar = new Menu(shell, SWT.BAR);
 				shell.setMenuBar(bar);
 				MenuItem editItem = new MenuItem(bar, SWT.CASCADE);
@@ -281,7 +277,7 @@ abstract class Tab {
 					}
 				});
 				editItem.setMenu(menu);
-				
+
 				shell.pack();
 				shell.setSize(500, 600);
 				shell.open();
@@ -289,12 +285,12 @@ abstract class Tab {
 					if (!display.readAndDispatch()) display.sleep();
 			}
 		});
-	
+
 		createChildWidgets();
 	}
-	
+
 	/**
-	 * Creates the controls for modifying the "children" 
+	 * Creates the controls for modifying the "children"
 	 * table, and the table itself.
 	 * Subclasses override this method to augment the
 	 * standard table.
@@ -310,7 +306,7 @@ abstract class Tab {
 		gridData.heightHint = 150;
 		table.setLayoutData (gridData);
 		table.addTraverseListener (traverseListener);
-		
+
 		/* Add columns to the table */
 		String [] columnHeaders = getLayoutDataFieldNames ();
 		for (int i = 0; i < columnHeaders.length; i++) {
@@ -330,34 +326,31 @@ abstract class Tab {
 	void createComboEditor (CCombo combo, TableEditor comboEditor) {
 		combo.setItems (OPTIONS);
 		combo.setText (newItem.getText (1));
-		
+
 		/* Set up editor */
 		comboEditor.horizontalAlignment = SWT.LEFT;
 		comboEditor.grabHorizontal = true;
 		comboEditor.minimumWidth = 50;
 		comboEditor.setEditor (combo, newItem, 1);
-		
+
 		/* Add listener */
-		combo.addTraverseListener(new TraverseListener() {
-        	@Override
-			public void keyTraversed(TraverseEvent e) {
-            	if (e.detail == SWT.TRAVERSE_TAB_NEXT || e.detail == SWT.TRAVERSE_RETURN) {
-            		comboReset = true;
-                    resetEditors ();
-                }
-                if (e.detail == SWT.TRAVERSE_ESCAPE) {
-                	disposeEditors ();
-                }
-            }
-        });
+		combo.addTraverseListener(e -> {
+			if (e.detail == SWT.TRAVERSE_TAB_NEXT || e.detail == SWT.TRAVERSE_RETURN) {
+				comboReset = true;
+		        resetEditors ();
+		    }
+		    if (e.detail == SWT.TRAVERSE_ESCAPE) {
+		    	disposeEditors ();
+		    }
+		});
 	}
-	
+
 	/**
 	 * Creates the "control" group. This is the group on the
 	 * right half of each example tab. It contains controls
 	 * for adding new children to the layoutComposite, and
 	 * for modifying the children's layout data.
-	 */	
+	 */
 	void createControlGroup () {
 		controlGroup = new Group (sash, SWT.NONE);
 		controlGroup.setText (LayoutExample.getResourceString("Parameters"));
@@ -373,7 +366,7 @@ abstract class Tab {
 				resetEditors ();
 				GridData data = (GridData)layoutComposite.getLayoutData();
 				if (preferredButton.getSelection ()) {
-					data.heightHint = data.widthHint = SWT.DEFAULT;	
+					data.heightHint = data.widthHint = SWT.DEFAULT;
 					data.verticalAlignment = data.horizontalAlignment = 0;
 					data.grabExcessVerticalSpace = data.grabExcessHorizontalSpace = false;
 				} else {
@@ -384,10 +377,10 @@ abstract class Tab {
 				layoutGroup.layout (true);
 			}
 		});
-		preferredButton.setLayoutData (new GridData (SWT.FILL, SWT.CENTER, true, false, 2, 1));	
+		preferredButton.setLayoutData (new GridData (SWT.FILL, SWT.CENTER, true, false, 2, 1));
 		createControlWidgets ();
 	}
-		
+
 	/**
 	 * Creates the "control" widget children.
 	 * Subclasses override this method to augment
@@ -396,14 +389,14 @@ abstract class Tab {
 	void createControlWidgets () {
 		createChildGroup ();
 	}
-	
+
 	/**
 	 * Creates the example layout.
 	 * Subclasses override this method.
 	 */
 	void createLayout () {
 	}
-	
+
 	/**
 	 * Creates the composite that contains the example layout.
 	 */
@@ -412,7 +405,7 @@ abstract class Tab {
 		layoutComposite.setLayoutData (new GridData (SWT.FILL, SWT.FILL, true, true));
 		createLayout ();
 	}
-	
+
 	/**
 	 * Creates the layout group. This is the group on the
 	 * left half of each example tab.
@@ -423,7 +416,7 @@ abstract class Tab {
 		layoutGroup.setLayout (new GridLayout ());
 		createLayoutComposite ();
 	}
-	
+
 	/**
 	 * Creates the tab folder page.
 	 *
@@ -440,22 +433,22 @@ abstract class Tab {
 		tabFolderPage.setLayoutData (new GridData(SWT.FILL, SWT.FILL, true, true));
 		tabFolderPage.setLayout (new FillLayout ());
 		sash = new SashForm (tabFolderPage, SWT.HORIZONTAL);
-	
+
 		/* Create the "layout" and "control" columns */
 		createLayoutGroup ();
 		createControlGroup ();
-		
-		sash.setWeights(sashWeights ());		
+
+		sash.setWeights(sashWeights ());
 		return tabFolderPage;
 	}
-	
+
 	/**
 	 * Return the initial weight of the layout and control groups within the SashForm.
 	 * Subclasses may override to provide tab-specific weights.
 	 * @return the desired sash weights for the tab page
 	 */
 	int[] sashWeights () {
-		return new int[] {50, 50};		
+		return new int[] {50, 50};
 	}
 
 	/**
@@ -468,35 +461,32 @@ abstract class Tab {
 		textEditor.horizontalAlignment = SWT.LEFT;
 		textEditor.grabHorizontal = true;
 		textEditor.setEditor (text, newItem, column);
-		
-		text.addTraverseListener(new TraverseListener() {
-        	@Override
-			public void keyTraversed(TraverseEvent e) {
-            	if (e.detail == SWT.TRAVERSE_TAB_NEXT) {
-                    resetEditors (true);
-                }
-                if (e.detail == SWT.TRAVERSE_ESCAPE) {
-                	disposeEditors ();
-                }
-            }
-        });
+
+		text.addTraverseListener(e -> {
+			if (e.detail == SWT.TRAVERSE_TAB_NEXT) {
+		        resetEditors (true);
+		    }
+		    if (e.detail == SWT.TRAVERSE_ESCAPE) {
+		    	disposeEditors ();
+		    }
+		});
 	}
-	
-	/** 
+
+	/**
 	 * Disposes the editors without placing their contents
 	 * into the table.
 	 * Subclasses override this method.
 	 */
 	void disposeEditors () {
 	}
-	
+
 	/**
 	 * Generates the code needed to produce the example layout.
-	 */	
+	 */
 	StringBuffer generateCode () {
 		/* Make sure all information being entered is stored in the table */
 		resetEditors ();
-		
+
 		/* Get names for controls in the layout */
 		names = new String [children.length];
 		for (int i = 0; i < children.length; i++) {
@@ -509,9 +499,9 @@ abstract class Tab {
 				names [i] = controlType.toLowerCase () + i;
 			} else {
 				names [i] = myItem.getText(0);
-			}	
+			}
 		}
-	
+
 		/* Create StringBuffer containing the code */
 		StringBuffer code = new StringBuffer ();
 		code.append ("import org.eclipse.swt.*;\n");
@@ -524,18 +514,18 @@ abstract class Tab {
 		code.append ("\tpublic static void main (String [] args) {\n");
 		code.append ("\t\tDisplay display = new Display ();\n");
 		code.append ("\t\tShell shell = new Shell (display);\n");
-		
+
 		/* Get layout specific code */
 		code.append (generateLayoutCode ());
-		
+
 		code.append ("\n\t\tshell.pack ();\n\t\tshell.open ();\n\n");
 		code.append ("\t\twhile (!shell.isDisposed ()) {\n");
 		code.append ("\t\t\tif (!display.readAndDispatch ())\n");
 		code.append ("\t\t\t\tdisplay.sleep ();\n\t\t}\n\t\tdisplay.dispose ();\n\t}\n}");
-		
+
 		return code;
 	}
-	
+
 	boolean needsGraphics() {
 		return false;
 	}
@@ -551,9 +541,9 @@ abstract class Tab {
 	StringBuffer generateLayoutCode () {
 		return new StringBuffer ();
 	}
-	
+
 	/**
-	 * Returns the StringBuffer for the code which will 
+	 * Returns the StringBuffer for the code which will
 	 * create a child control.
 	 */
 	StringBuffer getChildCode (Control control, int i) {
@@ -567,14 +557,14 @@ abstract class Tab {
 			styleString = "SWT.PUSH";
 		} else if (controlType.equals ("StyledText")) {
 			styleString = "SWT.MULTI | SWT.BORDER | SWT.V_SCROLL | SWT.H_SCROLL";
-		} else if (controlType.equals ("Canvas") || controlType.equals ("Composite") || 
+		} else if (controlType.equals ("Canvas") || controlType.equals ("Composite") ||
 					controlType.equals ("Table") || controlType.equals ("StyledText") ||
 					controlType.equals ("ToolBar") || controlType.equals ("Tree") ||
 					controlType.equals ("List") || controlType.equals ("Text")) {
 			styleString = "SWT.BORDER";
 		} else styleString = "SWT.NONE";
 		/* Write out the control being declared */
-		code.append ("\n\t\t" + controlType + " " + names [i] + 
+		code.append ("\n\t\t" + controlType + " " + names [i] +
 					 " = new " + controlType + " (shell, " + styleString + ");\n");
 		/* Add items to those controls that need items */
 		if (controlType.equals ("Combo") || controlType.equals ("List")) {
@@ -614,8 +604,8 @@ abstract class Tab {
 			code.append ("\t\t" + names [i] + ".setSize (" + names [i] + ".computeSize (SWT.DEFAULT, SWT.DEFAULT));\n");
 		} else if (controlType.equals ("ProgressBar")) {
 			code.append ("\t\t" + names [i] + ".setSelection (50);\n");
-		} 
-		/* Set text for those controls that support it */			 
+		}
+		/* Set text for those controls that support it */
 		if (controlType.equals ("Button") ||
 			controlType.equals ("Combo") ||
 			controlType.equals ("Group") ||
@@ -643,7 +633,7 @@ abstract class Tab {
 	String [] getLayoutDataFieldNames () {
 		return new String [] {};
 	}
-	
+
 	/**
 	 * Gets the text for the tab folder item.
 	 * Subclasses override this method.
@@ -651,7 +641,7 @@ abstract class Tab {
 	String getTabText () {
 		return "";
 	}
-	
+
 	/**
 	 * Refreshes the composite and draws all controls
 	 * in the layout example.
@@ -684,10 +674,10 @@ abstract class Tab {
 				combo.setItems (itemValues);
 				combo.setText (controlName);
 				children [i] = combo;
-			} else if (control.equals ("Composite")) { 
+			} else if (control.equals ("Composite")) {
 				Composite composite = new Composite (layoutComposite, SWT.BORDER);
 				children [i] = composite;
-		    } else if (control.equals ("CoolBar")) { 
+		    } else if (control.equals ("CoolBar")) {
 		    	CoolBar coolBar = new CoolBar (layoutComposite, SWT.NONE);
 		    	ToolBar toolBar = new ToolBar (coolBar, SWT.BORDER);
 				ToolItem item = new ToolItem (toolBar, 0);
@@ -737,7 +727,7 @@ abstract class Tab {
 			} else if (control.equals ("StyledText")) {
 				StyledText styledText = new StyledText (layoutComposite, SWT.MULTI | SWT.BORDER | SWT.V_SCROLL | SWT.H_SCROLL);
 				styledText.setText (controlName);
-				children [i] = styledText;			
+				children [i] = styledText;
 			} else if (control.equals ("Table")) {
 				Table table = new Table (layoutComposite, SWT.BORDER);
 				table.setLinesVisible (true);
@@ -764,28 +754,28 @@ abstract class Tab {
 				TreeItem item2 = new TreeItem (tree, 0);
 				item2.setText (LayoutExample.getResourceString ("Item",new String [] {"2"}));
 				children [i] = tree;
-			} 
+			}
 		}
-	}	
-	
+	}
+
 	void resetEditors () {
 		resetEditors (false);
 	}
-	
+
 	/**
 	 * Takes information from TableEditors and stores it.
 	 * Subclasses override this method.
 	 */
 	void resetEditors (boolean tab) {
 	}
-	
+
 	/**
-	 * Sets the layout data for the children of the layout. 
+	 * Sets the layout data for the children of the layout.
 	 * Subclasses override this method.
 	 */
 	void setLayoutData () {
 	}
-	
+
 	/**
 	 * Sets the state of the layout.
 	 * Subclasses override this method.

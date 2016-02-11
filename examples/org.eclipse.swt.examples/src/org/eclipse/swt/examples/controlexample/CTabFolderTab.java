@@ -16,8 +16,6 @@ import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.CTabFolder2Listener;
 import org.eclipse.swt.custom.CTabFolderEvent;
 import org.eclipse.swt.custom.CTabItem;
-import org.eclipse.swt.events.DisposeEvent;
-import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Color;
@@ -38,11 +36,11 @@ import org.eclipse.swt.widgets.Widget;
 
 class CTabFolderTab extends Tab {
 	int lastSelectedTab = 0;
-	
+
 	/* Example widgets and groups that contain them */
 	CTabFolder tabFolder1;
 	Group tabFolderGroup, itemGroup;
-	
+
 	/* Style widgets added to the "Style" group */
 	Button topButton, bottomButton, flatButton, closeButton;
 	Button rightButton, fillButton, wrapButton;
@@ -57,7 +55,7 @@ class CTabFolderTab extends Tab {
 	static final int ITEM_FONT = 5;
 	Color selectionForegroundColor, selectionBackgroundColor;
 	Font itemFont;
-	
+
 	/* Other widgets added to the "Other" group */
 	Button simpleTabButton, singleTabButton, imageButton, showMinButton, showMaxButton,
 	topRightButton, unselectedCloseButton, unselectedImageButton;
@@ -70,14 +68,14 @@ class CTabFolderTab extends Tab {
 	CTabFolderTab(ControlExample instance) {
 		super(instance);
 	}
-	
+
 	/**
 	 * Creates the "Colors and Fonts" group.
 	 */
 	@Override
 	void createColorAndFontGroup () {
 		super.createColorAndFontGroup();
-		
+
 		TableItem item = new TableItem(colorAndFontTable, SWT.None);
 		item.setText(ControlExample.getResourceString ("Selection_Foreground_Color"));
 		item = new TableItem(colorAndFontTable, SWT.None);
@@ -85,16 +83,13 @@ class CTabFolderTab extends Tab {
 		item = new TableItem(colorAndFontTable, SWT.None);
 		item.setText(ControlExample.getResourceString ("Item_Font"));
 
-		shell.addDisposeListener(new DisposeListener() {
-			@Override
-			public void widgetDisposed(DisposeEvent event) {
-				if (selectionBackgroundColor != null) selectionBackgroundColor.dispose();
-				if (selectionForegroundColor != null) selectionForegroundColor.dispose();
-				if (itemFont != null) itemFont.dispose();
-				selectionBackgroundColor = null;
-				selectionForegroundColor = null;			
-				itemFont = null;
-			}
+		shell.addDisposeListener(event -> {
+			if (selectionBackgroundColor != null) selectionBackgroundColor.dispose();
+			if (selectionForegroundColor != null) selectionForegroundColor.dispose();
+			if (itemFont != null) itemFont.dispose();
+			selectionBackgroundColor = null;
+			selectionForegroundColor = null;
+			itemFont = null;
 		});
 	}
 
@@ -149,7 +144,7 @@ class CTabFolderTab extends Tab {
 	@Override
 	void createOtherGroup () {
 		super.createOtherGroup ();
-	
+
 		/* Create display controls specific to this example */
 		simpleTabButton = new Button (otherGroup, SWT.CHECK);
 		simpleTabButton.setText (ControlExample.getResourceString("Set_Simple_Tabs"));
@@ -160,7 +155,7 @@ class CTabFolderTab extends Tab {
 				setSimpleTabs();
 			}
 		});
-				
+
 		singleTabButton = new Button (otherGroup, SWT.CHECK);
 		singleTabButton.setText (ControlExample.getResourceString("Set_Single_Tabs"));
 		singleTabButton.setSelection(false);
@@ -170,7 +165,7 @@ class CTabFolderTab extends Tab {
 				setSingleTabs();
 			}
 		});
-		
+
 		showMinButton = new Button (otherGroup, SWT.CHECK);
 		showMinButton.setText (ControlExample.getResourceString("Set_Min_Visible"));
 		showMinButton.setSelection(false);
@@ -180,7 +175,7 @@ class CTabFolderTab extends Tab {
 				setMinimizeVisible();
 			}
 		});
-		
+
 		showMaxButton = new Button (otherGroup, SWT.CHECK);
 		showMaxButton.setText (ControlExample.getResourceString("Set_Max_Visible"));
 		showMaxButton.setSelection(false);
@@ -190,7 +185,7 @@ class CTabFolderTab extends Tab {
 				setMaximizeVisible();
 			}
 		});
-		
+
 		topRightButton = new Button (otherGroup, SWT.CHECK);
 		topRightButton.setText (ControlExample.getResourceString("Set_Top_Right"));
 		topRightButton.setSelection(false);
@@ -200,7 +195,7 @@ class CTabFolderTab extends Tab {
 				setTopRight();
 			}
 		});
-		
+
 		imageButton = new Button (otherGroup, SWT.CHECK);
 		imageButton.setText (ControlExample.getResourceString("Set_Image"));
 		imageButton.addSelectionListener (new SelectionAdapter () {
@@ -209,7 +204,7 @@ class CTabFolderTab extends Tab {
 				setImages();
 			}
 		});
-		
+
 		unselectedImageButton = new Button (otherGroup, SWT.CHECK);
 		unselectedImageButton.setText (ControlExample.getResourceString("Set_Unselected_Image_Visible"));
 		unselectedImageButton.setSelection(true);
@@ -236,20 +231,20 @@ class CTabFolderTab extends Tab {
 	@Override
 	void createExampleGroup () {
 		super.createExampleGroup ();
-		
+
 		/* Create a group for the CTabFolder */
 		tabFolderGroup = new Group (exampleGroup, SWT.NONE);
 		tabFolderGroup.setLayout (new GridLayout ());
 		tabFolderGroup.setLayoutData (new GridData (SWT.FILL, SWT.FILL, true, true));
 		tabFolderGroup.setText ("CTabFolder");
 	}
-	
+
 	/**
 	 * Creates the "Example" widgets.
 	 */
 	@Override
 	void createExampleWidgets () {
-		
+
 		/* Compute the widget style */
 		int style = getDefaultStyle();
 		if (topButton.getSelection ()) style |= SWT.TOP;
@@ -268,19 +263,19 @@ class CTabFolderTab extends Tab {
 			item.setControl(text);
 		}
 		tabFolder1.addListener(SWT.Selection, event -> lastSelectedTab = tabFolder1.getSelectionIndex());
-		
+
 		/* If we have saved state, restore it */
 		tabFolder1.setSelection(lastSelectedTab);
 		setTopRight ();
 	}
-	
+
 	/**
 	 * Creates the "Style" group.
 	 */
 	@Override
 	void createStyleGroup() {
 		super.createStyleGroup ();
-		
+
 		/* Create the extra widgets */
 		topButton = new Button (styleGroup, SWT.RADIO);
 		topButton.setText ("SWT.TOP");
@@ -293,7 +288,7 @@ class CTabFolderTab extends Tab {
 		flatButton.setText ("SWT.FLAT");
 		closeButton = new Button (styleGroup, SWT.CHECK);
 		closeButton.setText ("SWT.CLOSE");
-		
+
 		Group topRightGroup = new Group(styleGroup, SWT.NONE);
 		topRightGroup.setLayout (new GridLayout ());
 		topRightGroup.setLayoutData (new GridData (SWT.FILL, SWT.FILL, false, false));
@@ -306,17 +301,17 @@ class CTabFolderTab extends Tab {
 		wrapButton = new Button (topRightGroup, SWT.RADIO);
 		wrapButton.setText ("SWT.RIGHT | SWT.WRAP");
 	}
-	
+
 	/**
 	 * Gets the list of custom event names.
-	 * 
+	 *
 	 * @return an array containing custom event names
 	 */
 	@Override
 	String [] getCustomEventNames () {
 		return new String [] {"CTabFolderEvent"};
 	}
-	
+
 	/**
 	 * Gets the "Example" widget children's items, if any.
 	 *
@@ -326,7 +321,7 @@ class CTabFolderTab extends Tab {
 	Item [] getExampleWidgetItems () {
 		return tabFolder1.getItems();
 	}
-	
+
 	/**
 	 * Gets the "Example" widget children.
 	 */
@@ -334,7 +329,7 @@ class CTabFolderTab extends Tab {
 	Widget [] getExampleWidgets () {
 		return new Widget [] {tabFolder1};
 	}
-	
+
 	/**
 	 * Gets the text for the tab folder item.
 	 */
@@ -396,7 +391,7 @@ class CTabFolderTab extends Tab {
 		setItemFont ();
 		if (oldFont != null) oldFont.dispose();
 	}
-	
+
 	/**
 	 * Sets the state of the "Example" widgets.
 	 */
@@ -415,15 +410,15 @@ class CTabFolderTab extends Tab {
 		setItemFont ();
 		setExampleWidgetSize();
 	}
-	
+
 	/**
-	 * Sets the shape that the CTabFolder will use to render itself. 
+	 * Sets the shape that the CTabFolder will use to render itself.
 	 */
 	void setSimpleTabs () {
 		tabFolder1.setSimple (simpleTabButton.getSelection ());
 		setExampleWidgetSize();
 	}
-	
+
 	/**
 	 * Sets the number of tabs that the CTabFolder should display.
 	 */
@@ -512,7 +507,7 @@ class CTabFolderTab extends Tab {
 		if (oldImage != null) oldImage.dispose();
 		item.setImage (colorImage(color));
 	}
-	
+
 	/**
 	 * Sets the foreground color of CTabItem 0.
 	 */
@@ -528,7 +523,7 @@ class CTabFolderTab extends Tab {
 		if (oldImage != null) oldImage.dispose();
 		item.setImage (colorImage(color));
 	}
-	
+
 	/**
 	 * Sets the font of CTabItem 0.
 	 */

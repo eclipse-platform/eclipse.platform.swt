@@ -31,7 +31,7 @@ import org.eclipse.swt.widgets.Menu;
  * applying one.
  */
 public class PathClippingTab extends GraphicsTab {
-	
+
 	private Combo clippingCb;
 	private Button colorButton;
 	private GraphicsBackground background;
@@ -64,16 +64,16 @@ public void dispose() {
 	}
 }
 
-/** 
+/**
  * Creates the widgets used to control the drawing.
  */
 @Override
-public void createControlPanel(Composite parent) {	
-	
+public void createControlPanel(Composite parent) {
+
 	// create drop down combo for choosing clipping
 	Composite comp = new Composite(parent, SWT.NONE);
 	comp.setLayout(new GridLayout(2, false));
-	
+
 	new Label(comp, SWT.CENTER).setText(GraphicsExample
 				.getResourceString("Clipping")); //$NON-NLS-1$
 	clippingCb = new Combo(comp, SWT.DROP_DOWN);
@@ -86,33 +86,30 @@ public void createControlPanel(Composite parent) {
 	clippingCb.add(GraphicsExample.getResourceString("Default")); //$NON-NLS-1$
 	clippingCb.select(0);
 	clippingCb.addListener(SWT.Selection, event -> example.redraw());
-	
+
 	// color menu
 	ColorMenu cm = new ColorMenu();
 	cm.setPatternItems(example.checkAdvancedGraphics());
-	menu = cm.createMenu(parent.getParent(), new ColorListener() {
-		@Override
-		public void setColor(GraphicsBackground gb) {
-			background = gb;		
-			colorButton.setImage(gb.getThumbNail());
-			example.redraw();
-		}
+	menu = cm.createMenu(parent.getParent(), gb -> {
+		background = gb;
+		colorButton.setImage(gb.getThumbNail());
+		example.redraw();
 	});
 
 	// initialize the background to the 5th item in the menu (blue)
 	background =(GraphicsBackground)menu.getItem(4).getData();
-	
+
 	// color button
 	comp = new Composite(parent, SWT.NONE);
 	comp.setLayout(new GridLayout(2, false));
-	
+
 	colorButton = new Button(comp, SWT.PUSH);
 	colorButton.setText(GraphicsExample
 			.getResourceString("Color")); //$NON-NLS-1$
 	colorButton.setImage(background.getThumbNail());
 	colorButton.addListener(SWT.Selection, event -> {
 		final Button button = (Button) event.widget;
-		final Composite parent1 = button.getParent(); 
+		final Composite parent1 = button.getParent();
 		Rectangle bounds = button.getBounds();
 		Point point = parent1.toDisplay(new Point(bounds.x, bounds.y));
 		menu.setLocation(point.x, point.y + bounds.height);
@@ -126,7 +123,7 @@ public void paint(GC gc, int width, int height) {
 
 	int clipping = clippingCb.getSelectionIndex();
 	switch (clipping) {
-	
+
 	case 0:		// circles
 		Path path = new Path(device);
 		path.addArc((width-width/5)/2, (height-height/5)/2, width/5, height/5, 0, 360);
@@ -184,10 +181,10 @@ public void paint(GC gc, int width, int height) {
 		path.lineTo(0, height/3);
 		path.lineTo(3*width/8, height/3);
 		path.lineTo(width/2, 0);
-		
+
 		Path ovalPath = new Path(device);
 		ovalPath.addArc(90, 90, width-180, height-180, 0, 360);
-		
+
 		path.addPath(ovalPath);
 		gc.setClipping(path);
 		ovalPath.dispose();
@@ -200,37 +197,37 @@ public void paint(GC gc, int width, int height) {
 		path.lineTo(width/4, height/2);
 		path.lineTo(0, height/2);
 		path.lineTo(width/4, 0);
-		
+
 		Path path2 = new Path(device);
 		path2.lineTo(width/2, 0);
 		path2.lineTo(width/4, height/2);
 		path2.lineTo(3*width/4, height/2);
 		path2.lineTo(width/2, 0);
-		
+
 		Path path3 = new Path(device);
 		path3.lineTo(3*width/4, 0);
 		path3.lineTo(3*width/4, height/2);
 		path3.lineTo(width, height/2);
 		path3.lineTo(3*width/4, 0);
-		
+
 		Path path4 = new Path(device);
 		path4.lineTo(0, height);
 		path4.lineTo(width/4, height/2);
 		path4.lineTo(width/2, height);
 		path4.lineTo(0, height);
-		
+
 		Path path5 = new Path(device);
 		path5.lineTo(width/2, height);
 		path5.lineTo(3*width/4, height/2);
 		path5.lineTo(width, height);
 		path5.lineTo(width/2, height);
-		
+
 		path.addPath(path2);
 		path.addPath(path3);
 		path.addPath(path4);
 		path.addPath(path5);
 		gc.setClipping(path);
-		
+
 		path5.dispose();
 		path4.dispose();
 		path3.dispose();
@@ -241,7 +238,7 @@ public void paint(GC gc, int width, int height) {
 		gc.setClipping(0, 0, width, height);
 		break;
 	}
-	
+
 	Pattern pattern = null;
 	if (background.getBgColor1() != null) {
 		gc.setBackground(background.getBgColor1());

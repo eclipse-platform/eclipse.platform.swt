@@ -28,9 +28,7 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.Spinner;
 
@@ -49,10 +47,10 @@ public class CustomFontTab extends GraphicsTab {
 	int [] styleValues;
 	String [] fontStyles;
 	Menu menu;
-	
+
 public CustomFontTab(GraphicsExample example) {
 	super(example);
-	
+
 	// create list of fonts for this platform
 	FontData [] fontData = Display.getCurrent().getFontList(null, true);
 	fontNames = new ArrayList<>();
@@ -104,11 +102,11 @@ public void createControlPanel(Composite parent) {
 
 	Composite mainComp = new Composite(parent, SWT.NONE);
 	mainComp.setLayout(new RowLayout());
-	
+
 	// create combo for font face
 	Composite comp = new Composite(mainComp, SWT.NONE);
 	comp.setLayout(new GridLayout(2, false));
-	
+
 	new Label(comp, SWT.LEFT).setText(GraphicsExample.getResourceString("FontFace")); //$NON-NLS-1$
 	fontFaceCb = new Combo(comp, SWT.DROP_DOWN);
 	for (String name : fontNames) {
@@ -116,11 +114,11 @@ public void createControlPanel(Composite parent) {
 	}
 	fontFaceCb.select(0);
 	fontFaceCb.addListener(SWT.Selection, event -> example.redraw());
-	
+
 	// create combo for font style
 	comp = new Composite(mainComp, SWT.NONE);
 	comp.setLayout(new GridLayout(2, false));
-	
+
 	new Label(comp, SWT.LEFT).setText(GraphicsExample.getResourceString("FontStyle")); //$NON-NLS-1$
 	fontStyleCb = new Combo(comp, SWT.DROP_DOWN);
 	for (String fontStyle : fontStyles) {
@@ -128,11 +126,11 @@ public void createControlPanel(Composite parent) {
 	}
 	fontStyleCb.select(0);
 	fontStyleCb.addListener(SWT.Selection, event -> example.redraw());
-	
+
 	// create spinner for font size (points)
 	comp = new Composite(mainComp, SWT.NONE);
 	comp.setLayout(new GridLayout(2, false));
-	
+
 	new Label(comp, SWT.LEFT).setText(GraphicsExample.getResourceString("FontSize")); //$NON-NLS-1$
 	fontPointSpinner = new Spinner(comp, SWT.BORDER | SWT.WRAP);
 	fontPointSpinner.setMinimum(1);
@@ -143,35 +141,29 @@ public void createControlPanel(Composite parent) {
 	ColorMenu cm = new ColorMenu();
 	cm.setColorItems(true);
 	cm.setPatternItems(example.checkAdvancedGraphics());
-	menu = cm.createMenu(parent.getParent(), new ColorListener() {
-		@Override
-		public void setColor(GraphicsBackground gb) {
-			fontForeground = gb;
-			colorButton.setImage(gb.getThumbNail());
-			example.redraw();
-		}
+	menu = cm.createMenu(parent.getParent(), gb -> {
+		fontForeground = gb;
+		colorButton.setImage(gb.getThumbNail());
+		example.redraw();
 	});
-	
+
 	// initialize the background to the 2nd item in the menu (black)
 	fontForeground = (GraphicsBackground)menu.getItem(1).getData();
-	
+
 	// create color button
 	comp = new Composite(parent, SWT.NONE);
 	comp.setLayout(new GridLayout());
-		
+
 	colorButton = new Button(comp, SWT.PUSH);
 	colorButton.setText(GraphicsExample.getResourceString("Color")); //$NON-NLS-1$
 	colorButton.setImage(fontForeground.getThumbNail());
-	colorButton.addListener(SWT.Selection, new Listener() { 
-		@Override
-		public void handleEvent(Event event) {
-			final Button button = (Button) event.widget;
-			final Composite parent = button.getParent(); 
-			Rectangle bounds = button.getBounds();
-			Point point = parent.toDisplay(new Point(bounds.x, bounds.y));
-			menu.setLocation(point.x, point.y + bounds.height);
-			menu.setVisible(true);
-		}
+	colorButton.addListener(SWT.Selection, event -> {
+		final Button button = (Button) event.widget;
+		final Composite parent1 = button.getParent();
+		Rectangle bounds = button.getBounds();
+		Point point = parent1.toDisplay(new Point(bounds.x, bounds.y));
+		menu.setLocation(point.x, point.y + bounds.height);
+		menu.setVisible(true);
 	});
 }
 
@@ -182,11 +174,11 @@ public void createControlPanel(Composite parent) {
 public void paint(GC gc, int width, int height) {
 	if (!example.checkAdvancedGraphics()) return;
 	Device device = gc.getDevice();
-	
+
 	String fontFace = fontNames.get(fontFaceCb.getSelectionIndex());
 	int points = fontPointSpinner.getSelection();
 	int style = styleValues[fontStyleCb.getSelectionIndex()];
-	
+
 	Font font = new Font(device, fontFace, points, style);
 	gc.setFont(font);
 	gc.setTextAntialias(SWT.ON);
@@ -202,11 +194,11 @@ public void paint(GC gc, int width, int height) {
 		pattern = new Pattern(device, fontForeground.getBgImage());
 		gc.setForegroundPattern(pattern);
 	}
-	
+
 	gc.drawString(text, (width-textWidth)/2, (height-textHeight)/2, true);
 
 	font.dispose();
-	if (pattern != null) pattern.dispose();	
+	if (pattern != null) pattern.dispose();
 }
 
 }

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2007 IBM Corporation and others.
+ * Copyright (c) 2000, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -10,7 +10,7 @@
  *******************************************************************************/
 package org.eclipse.swt.examples.dnd;
 
- 
+
 import java.net.MalformedURLException;
 import java.net.URL;
 
@@ -31,8 +31,6 @@ import org.eclipse.swt.dnd.RTFTransfer;
 import org.eclipse.swt.dnd.TextTransfer;
 import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.dnd.URLTransfer;
-import org.eclipse.swt.events.PaintEvent;
-import org.eclipse.swt.events.PaintListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.FontMetrics;
@@ -68,7 +66,7 @@ import org.eclipse.swt.widgets.TreeColumn;
 import org.eclipse.swt.widgets.TreeItem;
 
 public class DNDExample {
-	
+
 	private int dragOperation = 0;
 	private Transfer[] dragTypes = new Transfer[0];
 	private Control dragControl;
@@ -81,7 +79,7 @@ public class DNDExample {
 	private String[] dragDataFiles;
 	private List fileList;
 	private boolean dragEnabled = false;
-	
+
 	private int dropOperation = 0;
 	private int dropFeedback = 0;
 	private int dropDefaultOperation = 0;
@@ -91,14 +89,14 @@ public class DNDExample {
 	private int dropControlType = 0;
 	private Composite defaultParent;
 	private boolean dropEnabled = false;
-	
+
 	private Text dragConsole;
 	private boolean dragEventDetail = false;
 	private Text dropConsole;
 	private boolean dropEventDetail = false;
-	
+
 	private Image itemImage;
-	
+
 	private static final int BUTTON_TOGGLE = 0;
 	private static final int BUTTON_RADIO = 1;
 	private static final int BUTTON_CHECK = 2;
@@ -110,7 +108,7 @@ public class DNDExample {
 	private static final int TEXT = 8;
 	private static final int STYLED_TEXT = 9;
 	private static final int COMBO = 10;
-	
+
 public static void main(String[] args) {
 	Display display = new Display();
 	DNDExample example = new DNDExample();
@@ -147,7 +145,7 @@ private void createDragOperations(Composite parent) {
 		public void widgetSelected(SelectionEvent e) {
 			Button b = (Button)e.widget;
 			if (b.getSelection()) {
-				dragOperation |= DND.DROP_MOVE;			
+				dragOperation |= DND.DROP_MOVE;
 			} else {
 				dragOperation = dragOperation &~DND.DROP_MOVE;
 				if (dragOperation == 0) {
@@ -160,7 +158,7 @@ private void createDragOperations(Composite parent) {
 			}
 		}
 	});
-	
+
 
 	Button copyButton = new Button(parent, SWT.CHECK);
 	copyButton.setText("DND.DROP_COPY");
@@ -169,7 +167,7 @@ private void createDragOperations(Composite parent) {
 		public void widgetSelected(SelectionEvent e) {
 			Button b = (Button)e.widget;
 			if (b.getSelection()) {
-				dragOperation |= DND.DROP_COPY;			
+				dragOperation |= DND.DROP_COPY;
 			} else {
 				dragOperation = dragOperation &~DND.DROP_COPY;
 				if (dragOperation == 0) {
@@ -190,7 +188,7 @@ private void createDragOperations(Composite parent) {
 		public void widgetSelected(SelectionEvent e) {
 			Button b = (Button)e.widget;
 			if (b.getSelection()) {
-				dragOperation |= DND.DROP_LINK;			
+				dragOperation |= DND.DROP_LINK;
 			} else {
 				dragOperation = dragOperation &~DND.DROP_LINK;
 				if (dragOperation == 0) {
@@ -203,7 +201,7 @@ private void createDragOperations(Composite parent) {
 			}
 		}
 	});
-	
+
 	//initialize state
 	moveButton.setSelection(true);
 	copyButton.setSelection(true);
@@ -435,7 +433,7 @@ private void createDragSource() {
 					dragDataURL = null;
 				}
 			}
-			
+
 			for (int i = 0; i < dragTypes.length; i++) {
 				if (dragTypes[i] instanceof TextTransfer && dragDataText == null) {
 					event.doit = false;
@@ -466,13 +464,13 @@ private void createDragTypes(Composite parent) {
 		public void widgetSelected(SelectionEvent e) {
 			Button b = (Button)e.widget;
 			if (b.getSelection()) {
-				addDragTransfer(TextTransfer.getInstance());			
+				addDragTransfer(TextTransfer.getInstance());
 			} else {
 				removeDragTransfer(TextTransfer.getInstance());
 			}
 		}
 	});
-	
+
 	Button b = new Button(parent, SWT.CHECK);
 	b.setText("RTF Transfer");
 	b.addSelectionListener(new SelectionAdapter() {
@@ -480,13 +478,13 @@ private void createDragTypes(Composite parent) {
 		public void widgetSelected(SelectionEvent e) {
 			Button b = (Button)e.widget;
 			if (b.getSelection()) {
-				addDragTransfer(RTFTransfer.getInstance());			
+				addDragTransfer(RTFTransfer.getInstance());
 			} else {
 				removeDragTransfer(RTFTransfer.getInstance());
 			}
 		}
 	});
-	
+
 	b = new Button(parent, SWT.CHECK);
 	b.setText("HTML Transfer");
 	b.addSelectionListener(new SelectionAdapter() {
@@ -494,13 +492,13 @@ private void createDragTypes(Composite parent) {
 		public void widgetSelected(SelectionEvent e) {
 			Button b = (Button)e.widget;
 			if (b.getSelection()) {
-				addDragTransfer(HTMLTransfer.getInstance());			
+				addDragTransfer(HTMLTransfer.getInstance());
 			} else {
 				removeDragTransfer(HTMLTransfer.getInstance());
 			}
 		}
 	});
-	
+
 	b = new Button(parent, SWT.CHECK);
 	b.setText("URL Transfer");
 	b.addSelectionListener(new SelectionAdapter() {
@@ -508,13 +506,13 @@ private void createDragTypes(Composite parent) {
 		public void widgetSelected(SelectionEvent e) {
 			Button b = (Button)e.widget;
 			if (b.getSelection()) {
-				addDragTransfer(URLTransfer.getInstance());			
+				addDragTransfer(URLTransfer.getInstance());
 			} else {
 				removeDragTransfer(URLTransfer.getInstance());
 			}
 		}
 	});
-	
+
 	b = new Button(parent, SWT.CHECK);
 	b.setText("File Transfer");
 	b.setLayoutData(new GridData(GridData.VERTICAL_ALIGN_BEGINNING));
@@ -523,7 +521,7 @@ private void createDragTypes(Composite parent) {
 		public void widgetSelected(SelectionEvent e) {
 			Button b = (Button)e.widget;
 			if (b.getSelection()) {
-				addDragTransfer(FileTransfer.getInstance());			
+				addDragTransfer(FileTransfer.getInstance());
 			} else {
 				removeDragTransfer(FileTransfer.getInstance());
 			}
@@ -554,7 +552,7 @@ private void createDragTypes(Composite parent) {
 	data.horizontalAlignment = GridData.FILL;
 	data.verticalAlignment = GridData.BEGINNING;
 	fileList.setLayoutData(data);
-	
+
 	// initialize state
 	textButton.setSelection(true);
 	addDragTransfer(TextTransfer.getInstance());
@@ -567,14 +565,14 @@ private void createDragWidget(Composite parent) {
 	combo.select(LABEL);
 	dragControlType = combo.getSelectionIndex();
 	dragControl = createWidget(dragControlType, parent, "Drag Source");
-	
+
 	combo.addSelectionListener(new SelectionAdapter() {
 		@Override
 		public void widgetSelected(SelectionEvent e) {
 			Object data = dragControl.getLayoutData();
 			Composite parent = dragControl.getParent();
 			dragControl.dispose();
-			Combo c = (Combo)e.widget; 
+			Combo c = (Combo)e.widget;
 			dragControlType = c.getSelectionIndex();
 			dragControl = createWidget(dragControlType, parent, "Drag Source");
 			dragControl.setLayoutData(data);
@@ -582,7 +580,7 @@ private void createDragWidget(Composite parent) {
 			parent.layout();
 		}
 	});
-	
+
 	Button b = new Button(parent, SWT.CHECK);
 	b.setText("DragSource");
 	b.addSelectionListener(new SelectionAdapter() {
@@ -602,19 +600,19 @@ private void createDragWidget(Composite parent) {
 	});
 	b.setSelection(true);
 	dragEnabled = true;
-	
+
 	FormData data = new FormData();
 	data.top = new FormAttachment(0, 10);
 	data.bottom = new FormAttachment(combo, -10);
 	data.left = new FormAttachment(0, 10);
 	data.right = new FormAttachment(100, -10);
 	dragControl.setLayoutData(data);
-	
+
 	data = new FormData();
 	data.bottom = new FormAttachment(100, -10);
 	data.left = new FormAttachment(0, 10);
 	combo.setLayoutData(data);
-	
+
 	data = new FormData();
 	data.bottom = new FormAttachment(100, -10);
 	data.left = new FormAttachment(combo, 10);
@@ -630,7 +628,7 @@ private void createDropOperations(Composite parent) {
 		public void widgetSelected(SelectionEvent e) {
 			Button b = (Button)e.widget;
 			if (b.getSelection()) {
-				dropOperation |= DND.DROP_MOVE;			
+				dropOperation |= DND.DROP_MOVE;
 			} else {
 				dropOperation = dropOperation & ~DND.DROP_MOVE;
 				if (dropOperation == 0 || (dropDefaultOperation & DND.DROP_MOVE) != 0) {
@@ -643,7 +641,7 @@ private void createDropOperations(Composite parent) {
 			}
 		}
 	});
-	
+
 
 	final Button copyButton = new Button(parent, SWT.CHECK);
 	copyButton.setText("DND.DROP_COPY");
@@ -652,7 +650,7 @@ private void createDropOperations(Composite parent) {
 		public void widgetSelected(SelectionEvent e) {
 			Button b = (Button)e.widget;
 			if (b.getSelection()) {
-				dropOperation |= DND.DROP_COPY;			
+				dropOperation |= DND.DROP_COPY;
 			} else {
 				dropOperation = dropOperation & ~DND.DROP_COPY;
 				if (dropOperation == 0 || (dropDefaultOperation & DND.DROP_COPY) != 0) {
@@ -673,7 +671,7 @@ private void createDropOperations(Composite parent) {
 		public void widgetSelected(SelectionEvent e) {
 			Button b = (Button)e.widget;
 			if (b.getSelection()) {
-				dropOperation |= DND.DROP_LINK;			
+				dropOperation |= DND.DROP_LINK;
 			} else {
 				dropOperation = dropOperation & ~DND.DROP_LINK;
 				if (dropOperation == 0 || (dropDefaultOperation & DND.DROP_LINK) != 0) {
@@ -686,7 +684,7 @@ private void createDropOperations(Composite parent) {
 			}
 		}
 	});
-	
+
 	Button b = new Button(parent, SWT.CHECK);
 	b.setText("DND.DROP_DEFAULT");
 	defaultParent = new Composite(parent, SWT.NONE);
@@ -696,7 +694,7 @@ private void createDropOperations(Composite parent) {
 			Button b = (Button)e.widget;
 			if (b.getSelection()) {
 				dropOperation |= DND.DROP_DEFAULT;
-				defaultParent.setVisible(true);			
+				defaultParent.setVisible(true);
 			} else {
 				dropOperation = dropOperation & ~DND.DROP_DEFAULT;
 				defaultParent.setVisible(false);
@@ -706,7 +704,7 @@ private void createDropOperations(Composite parent) {
 			}
 		}
 	});
-	
+
 	defaultParent.setVisible(false);
 	GridLayout layout = new GridLayout();
 	layout.marginWidth = 20;
@@ -729,7 +727,7 @@ private void createDropOperations(Composite parent) {
 			}
 		}
 	});
-	
+
 	b = new Button(defaultParent, SWT.RADIO);
 	b.setText("DND.DROP_COPY");
 	b.addSelectionListener(new SelectionAdapter() {
@@ -763,7 +761,7 @@ private void createDropOperations(Composite parent) {
 			}
 		}
 	});
-	
+
 	b = new Button(defaultParent, SWT.RADIO);
 	b.setText("DND.DROP_NONE");
 	b.setSelection(true);
@@ -780,7 +778,7 @@ private void createDropOperations(Composite parent) {
 			}
 		}
 	});
-	
+
 	// initialize state
 	moveButton.setSelection(true);
 	copyButton.setSelection(true);
@@ -840,11 +838,11 @@ private void createDropTarget() {
 				dropConsole.append("!!Invalid data dropped");
 				return;
 			}
-			
-			if (strings.length == 1 && (dropControlType == TABLE || 
-			                            dropControlType == TREE || 
+
+			if (strings.length == 1 && (dropControlType == TABLE ||
+			                            dropControlType == TREE ||
 			                            dropControlType == LIST)) {
-				// convert string separated by "\n" into an array of strings 
+				// convert string separated by "\n" into an array of strings
 				String string = strings[0];
 				int count = 0;
 				int offset = string.indexOf("\n", 0);
@@ -956,13 +954,13 @@ private void createFeedbackTypes(Group parent) {
 		public void widgetSelected(SelectionEvent e) {
 			Button b = (Button)e.widget;
 			if (b.getSelection()) {
-				dropFeedback |= DND.FEEDBACK_SELECT;			
+				dropFeedback |= DND.FEEDBACK_SELECT;
 			} else {
 				dropFeedback &= ~DND.FEEDBACK_SELECT;
 			}
 		}
 	});
-	
+
 	b = new Button(parent, SWT.CHECK);
 	b.setText("FEEDBACK_SCROLL");
 	b.addSelectionListener(new SelectionAdapter() {
@@ -970,14 +968,14 @@ private void createFeedbackTypes(Group parent) {
 		public void widgetSelected(SelectionEvent e) {
 			Button b = (Button)e.widget;
 			if (b.getSelection()) {
-				dropFeedback |= DND.FEEDBACK_SCROLL;			
+				dropFeedback |= DND.FEEDBACK_SCROLL;
 			} else {
 				dropFeedback &= ~DND.FEEDBACK_SCROLL;
 			}
 		}
 	});
-	
-	
+
+
 	b = new Button(parent, SWT.CHECK);
 	b.setText("FEEDBACK_INSERT_BEFORE");
 	b.addSelectionListener(new SelectionAdapter() {
@@ -985,13 +983,13 @@ private void createFeedbackTypes(Group parent) {
 		public void widgetSelected(SelectionEvent e) {
 			Button b = (Button)e.widget;
 			if (b.getSelection()) {
-				dropFeedback |= DND.FEEDBACK_INSERT_BEFORE;			
+				dropFeedback |= DND.FEEDBACK_INSERT_BEFORE;
 			} else {
 				dropFeedback &= ~DND.FEEDBACK_INSERT_BEFORE;
 			}
 		}
 	});
-	
+
 	b = new Button(parent, SWT.CHECK);
 	b.setText("FEEDBACK_INSERT_AFTER");
 	b.addSelectionListener(new SelectionAdapter() {
@@ -1005,7 +1003,7 @@ private void createFeedbackTypes(Group parent) {
 			}
 		}
 	});
-	
+
 	b = new Button(parent, SWT.CHECK);
 	b.setText("FEEDBACK_EXPAND");
 	b.addSelectionListener(new SelectionAdapter() {
@@ -1013,7 +1011,7 @@ private void createFeedbackTypes(Group parent) {
 		public void widgetSelected(SelectionEvent e) {
 			Button b = (Button)e.widget;
 			if (b.getSelection()) {
-				dropFeedback |= DND.FEEDBACK_EXPAND;			
+				dropFeedback |= DND.FEEDBACK_EXPAND;
 			} else {
 				dropFeedback &= ~DND.FEEDBACK_EXPAND;
 			}
@@ -1030,13 +1028,13 @@ private void createDropTypes(Composite parent) {
 		public void widgetSelected(SelectionEvent e) {
 			Button b = (Button)e.widget;
 			if (b.getSelection()) {
-				addDropTransfer(TextTransfer.getInstance());			
+				addDropTransfer(TextTransfer.getInstance());
 			} else {
 				removeDropTransfer(TextTransfer.getInstance());
 			}
 		}
 	});
-	
+
 	Button b = new Button(parent, SWT.CHECK);
 	b.setText("RTF Transfer");
 	b.addSelectionListener(new SelectionAdapter() {
@@ -1044,14 +1042,14 @@ private void createDropTypes(Composite parent) {
 		public void widgetSelected(SelectionEvent e) {
 			Button b = (Button)e.widget;
 			if (b.getSelection()) {
-				addDropTransfer(RTFTransfer.getInstance());			
+				addDropTransfer(RTFTransfer.getInstance());
 			} else {
 				removeDropTransfer(RTFTransfer.getInstance());
 			}
 		}
 	});
-	
-	
+
+
 	b = new Button(parent, SWT.CHECK);
 	b.setText("HTML Transfer");
 	b.addSelectionListener(new SelectionAdapter() {
@@ -1059,13 +1057,13 @@ private void createDropTypes(Composite parent) {
 		public void widgetSelected(SelectionEvent e) {
 			Button b = (Button)e.widget;
 			if (b.getSelection()) {
-				addDropTransfer(HTMLTransfer.getInstance());			
+				addDropTransfer(HTMLTransfer.getInstance());
 			} else {
 				removeDropTransfer(HTMLTransfer.getInstance());
 			}
 		}
 	});
-	
+
 	b = new Button(parent, SWT.CHECK);
 	b.setText("URL Transfer");
 	b.addSelectionListener(new SelectionAdapter() {
@@ -1073,13 +1071,13 @@ private void createDropTypes(Composite parent) {
 		public void widgetSelected(SelectionEvent e) {
 			Button b = (Button)e.widget;
 			if (b.getSelection()) {
-				addDropTransfer(URLTransfer.getInstance());			
+				addDropTransfer(URLTransfer.getInstance());
 			} else {
 				removeDropTransfer(URLTransfer.getInstance());
 			}
 		}
 	});
-	
+
 	b = new Button(parent, SWT.CHECK);
 	b.setText("File Transfer");
 	b.addSelectionListener(new SelectionAdapter() {
@@ -1087,13 +1085,13 @@ private void createDropTypes(Composite parent) {
 		public void widgetSelected(SelectionEvent e) {
 			Button b = (Button)e.widget;
 			if (b.getSelection()) {
-				addDropTransfer(FileTransfer.getInstance());			
+				addDropTransfer(FileTransfer.getInstance());
 			} else {
 				removeDropTransfer(FileTransfer.getInstance());
 			}
 		}
 	});
-	
+
 	// initialize state
 	textButton.setSelection(true);
 	addDropTransfer(TextTransfer.getInstance());
@@ -1113,14 +1111,14 @@ private void createDropWidget(Composite parent) {
 			Composite parent = dropControl.getParent();
 			dropControl.dispose();
 			Combo c = (Combo)e.widget;
-			dropControlType = c.getSelectionIndex(); 
+			dropControlType = c.getSelectionIndex();
 			dropControl = createWidget(dropControlType, parent, "Drop Target");
 			dropControl.setLayoutData(data);
 			if (dropEnabled) createDropTarget();
 			parent.layout();
 		}
 	});
-	
+
 	Button b = new Button(parent, SWT.CHECK);
 	b.setText("DropTarget");
 	b.addSelectionListener(new SelectionAdapter() {
@@ -1141,19 +1139,19 @@ private void createDropWidget(Composite parent) {
 	// initialize state
 	b.setSelection(true);
 	dropEnabled = true;
-	
+
 	FormData data = new FormData();
 	data.top = new FormAttachment(0, 10);
 	data.bottom = new FormAttachment(combo, -10);
 	data.left = new FormAttachment(0, 10);
 	data.right = new FormAttachment(100, -10);
 	dropControl.setLayoutData(data);
-	
+
 	data = new FormData();
 	data.bottom = new FormAttachment(100, -10);
 	data.left = new FormAttachment(0, 10);
 	combo.setLayoutData(data);
-	
+
 	data = new FormData();
 	data.bottom = new FormAttachment(100, -10);
 	data.left = new FormAttachment(combo, 10);
@@ -1246,23 +1244,20 @@ private Control createWidget(int type, Composite parent, String prefix){
 		case CANVAS: {
 			Canvas canvas = new Canvas(parent, SWT.BORDER);
 			canvas.setData("STRINGS", new String[] {prefix+" Canvas widget"});
-			canvas.addPaintListener(new PaintListener() {
-				@Override
-				public void paintControl(PaintEvent e) {
-					Canvas c = (Canvas)e.widget;
-					Image image = (Image)c.getData("IMAGE");
-					if (image != null) {
-						e.gc.drawImage(image, 5, 5);
-					} else {
-						String[] strings = (String[])c.getData("STRINGS");
-						if (strings != null) {
-							FontMetrics metrics = e.gc.getFontMetrics();
-							int height = metrics.getHeight();
-							int y = 5;
-							for(int i = 0; i < strings.length; i++) {
-								e.gc.drawString(strings[i], 5, y);
-								y += height + 5;
-							}
+			canvas.addPaintListener(e -> {
+				Canvas c = (Canvas)e.widget;
+				Image image = (Image)c.getData("IMAGE");
+				if (image != null) {
+					e.gc.drawImage(image, 5, 5);
+				} else {
+					String[] strings = (String[])c.getData("STRINGS");
+					if (strings != null) {
+						FontMetrics metrics = e.gc.getFontMetrics();
+						int height = metrics.getHeight();
+						int y = 5;
+						for(int i = 0; i < strings.length; i++) {
+							e.gc.drawString(strings[i], 5, y);
+							y += height + 5;
 						}
 					}
 				}
@@ -1293,34 +1288,34 @@ public void open(Display display) {
 	Shell shell = new Shell(display);
 	shell.setText("Drag and Drop Example");
 	shell.setLayout(new FillLayout());
-	
+
 	itemImage = new Image (display, DNDExample.class.getResourceAsStream("openFolder.gif"));
 
 	ScrolledComposite sc = new ScrolledComposite(shell, SWT.H_SCROLL | SWT.V_SCROLL);
 	Composite parent = new Composite(sc, SWT.NONE);
 	sc.setContent(parent);
 	parent.setLayout(new FormLayout());
-	
+
 	Label dragLabel = new Label(parent, SWT.LEFT);
 	dragLabel.setText("Drag Source:");
-	
+
 	Group dragWidgetGroup = new Group(parent, SWT.NONE);
 	dragWidgetGroup.setText("Widget");
 	createDragWidget(dragWidgetGroup);
-	
+
 	Composite cLeft = new Composite(parent, SWT.NONE);
 	cLeft.setLayout(new GridLayout(2, false));
-	
+
 	Group dragOperationsGroup = new Group(cLeft, SWT.NONE);
 	dragOperationsGroup.setLayoutData(new GridData(SWT.LEFT, SWT.FILL, false, false, 1, 1));
 	dragOperationsGroup.setText("Allowed Operation(s):");
 	createDragOperations(dragOperationsGroup);
-	
+
 	Group dragTypesGroup = new Group(cLeft, SWT.NONE);
 	dragTypesGroup.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 1, 1));
 	dragTypesGroup.setText("Transfer Type(s):");
 	createDragTypes(dragTypesGroup);
-	
+
 	dragConsole = new Text(cLeft, SWT.READ_ONLY | SWT.BORDER |SWT.V_SCROLL | SWT.H_SCROLL | SWT.MULTI);
 	dragConsole.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 2, 1));
 	Menu menu = new Menu (shell, SWT.POP_UP);
@@ -1342,30 +1337,30 @@ public void open(Display display) {
 		}
 	});
 	dragConsole.setMenu(menu);
-	
+
 	Label dropLabel = new Label(parent, SWT.LEFT);
 	dropLabel.setText("Drop Target:");
-	
+
 	Group dropWidgetGroup = new Group(parent, SWT.NONE);
 	dropWidgetGroup.setText("Widget");
 	createDropWidget(dropWidgetGroup);
-	
+
 	Composite cRight = new Composite(parent, SWT.NONE);
 	cRight.setLayout(new GridLayout(2, false));
-	
+
 	Group dropOperationsGroup = new Group(cRight, SWT.NONE);
 	dropOperationsGroup.setLayoutData(new GridData(SWT.LEFT, SWT.FILL, false, false, 1, 2));
 	dropOperationsGroup.setText("Allowed Operation(s):");
 	createDropOperations(dropOperationsGroup);
-	
+
 	Group dropTypesGroup = new Group(cRight, SWT.NONE);
 	dropTypesGroup.setText("Transfer Type(s):");
 	createDropTypes(dropTypesGroup);
-	
+
 	Group feedbackTypesGroup = new Group(cRight, SWT.NONE);
 	feedbackTypesGroup.setText("Feedback Type(s):");
 	createFeedbackTypes(feedbackTypesGroup);
-	
+
 	dropConsole = new Text(cRight, SWT.READ_ONLY | SWT.BORDER |SWT.V_SCROLL | SWT.H_SCROLL | SWT.MULTI);
 	dropConsole.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 2, 1));
 	menu = new Menu (shell, SWT.POP_UP);
@@ -1387,23 +1382,23 @@ public void open(Display display) {
 		}
 	});
 	dropConsole.setMenu(menu);
-	
+
 	if (dragEnabled) createDragSource();
 	if (dropEnabled) createDropTarget();
-	
+
 	int height = 200;
 	FormData data = new FormData();
 	data.top = new FormAttachment(0, 10);
 	data.left = new FormAttachment(0, 10);
 	dragLabel.setLayoutData(data);
-	
+
 	data = new FormData();
 	data.top = new FormAttachment(dragLabel, 10);
 	data.left = new FormAttachment(0, 10);
 	data.right = new FormAttachment(50, -10);
 	data.height = height;
 	dragWidgetGroup.setLayoutData(data);
-	
+
 	data = new FormData();
 	data.top = new FormAttachment(dragWidgetGroup, 10);
 	data.left = new FormAttachment(0, 10);
@@ -1415,30 +1410,30 @@ public void open(Display display) {
 	data.top = new FormAttachment(0, 10);
 	data.left = new FormAttachment(cLeft, 10);
 	dropLabel.setLayoutData(data);
-	
+
 	data = new FormData();
 	data.top = new FormAttachment(dropLabel, 10);
 	data.left = new FormAttachment(cLeft, 10);
 	data.right = new FormAttachment(100, -10);
 	data.height = height;
 	dropWidgetGroup.setLayoutData(data);
-	
+
 	data = new FormData();
 	data.top = new FormAttachment(dropWidgetGroup, 10);
 	data.left = new FormAttachment(cLeft, 10);
 	data.right = new FormAttachment(100, -10);
 	data.bottom = new FormAttachment(100, -10);
 	cRight.setLayoutData(data);
-		
+
 	sc.setMinSize(parent.computeSize(SWT.DEFAULT, SWT.DEFAULT));
 	sc.setExpandHorizontal(true);
 	sc.setExpandVertical(true);
-	
+
 	Point size = shell.computeSize(SWT.DEFAULT, SWT.DEFAULT);
 	Rectangle monitorArea = shell.getMonitor().getClientArea();
 	shell.setSize(Math.min(size.x, monitorArea.width - 20), Math.min(size.y, monitorArea.height - 20));
 	shell.open();
-		
+
 	while (!shell.isDisposed()) {
 		if (!display.readAndDispatch())
 			display.sleep();

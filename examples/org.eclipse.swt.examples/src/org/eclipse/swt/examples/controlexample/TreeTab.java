@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2007 IBM Corporation and others.
+ * Copyright (c) 2000, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -12,8 +12,6 @@ package org.eclipse.swt.examples.controlexample;
 
 
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.DisposeEvent;
-import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
@@ -42,16 +40,16 @@ class TreeTab extends ScrollableTab {
 	Tree tree1, tree2;
 	TreeItem textNode1, imageNode1;
 	Group treeGroup, imageTreeGroup, itemGroup;
-	
+
 	/* Size widgets added to the "Size" group */
 	Button packColumnsButton;
-	
+
 	/* Style widgets added to the "Style" group */
 	Button noScrollButton, checkButton, fullSelectionButton;
 
 	/* Other widgets added to the "Other" group */
 	Button multipleColumns, moveableColumns, resizableColumns, headerVisibleButton, sortIndicatorButton, headerImagesButton, subImagesButton, linesVisibleButton;
-	
+
 	/* Controls and resources added to the "Colors and Fonts" group */
 	static final int ITEM_FOREGROUND_COLOR = 3;
 	static final int ITEM_BACKGROUND_COLOR = 4;
@@ -66,7 +64,7 @@ class TreeTab extends ScrollableTab {
 		   ControlExample.getResourceString("TableTitle_1"),
 		   ControlExample.getResourceString("TableTitle_2"),
 		   ControlExample.getResourceString("TableTitle_3")};
-		   
+
 	static String[][] tableData = {
 			{ ControlExample.getResourceString("TableLine0_0"),
 					ControlExample.getResourceString("TableLine0_1"),
@@ -96,7 +94,7 @@ class TreeTab extends ScrollableTab {
 	@Override
 	void createColorAndFontGroup () {
 		super.createColorAndFontGroup();
-		
+
 		TableItem item = new TableItem(colorAndFontTable, SWT.None);
 		item.setText(ControlExample.getResourceString ("Item_Foreground_Color"));
 		item = new TableItem(colorAndFontTable, SWT.None);
@@ -110,22 +108,19 @@ class TreeTab extends ScrollableTab {
 		item = new TableItem(colorAndFontTable, SWT.None);
 		item.setText(ControlExample.getResourceString ("Cell_Font"));
 
-		shell.addDisposeListener(new DisposeListener() {
-			@Override
-			public void widgetDisposed(DisposeEvent event) {
-				if (itemBackgroundColor != null) itemBackgroundColor.dispose();
-				if (itemForegroundColor != null) itemForegroundColor.dispose();
-				if (itemFont != null) itemFont.dispose();
-				if (cellBackgroundColor != null) cellBackgroundColor.dispose();
-				if (cellForegroundColor != null) cellForegroundColor.dispose();
-				if (cellFont != null) cellFont.dispose();
-				itemBackgroundColor = null;
-				itemForegroundColor = null;			
-				itemFont = null;
-				cellBackgroundColor = null;
-				cellForegroundColor = null;			
-				cellFont = null;
-			}
+		shell.addDisposeListener(event -> {
+			if (itemBackgroundColor != null) itemBackgroundColor.dispose();
+			if (itemForegroundColor != null) itemForegroundColor.dispose();
+			if (itemFont != null) itemFont.dispose();
+			if (cellBackgroundColor != null) cellBackgroundColor.dispose();
+			if (cellForegroundColor != null) cellForegroundColor.dispose();
+			if (cellFont != null) cellFont.dispose();
+			itemBackgroundColor = null;
+			itemForegroundColor = null;
+			itemFont = null;
+			cellBackgroundColor = null;
+			cellForegroundColor = null;
+			cellFont = null;
 		});
 	}
 
@@ -217,7 +212,7 @@ class TreeTab extends ScrollableTab {
 	@Override
 	void createOtherGroup () {
 		super.createOtherGroup ();
-	
+
 		/* Create display controls specific to this example */
 		linesVisibleButton = new Button (otherGroup, SWT.CHECK);
 		linesVisibleButton.setText (ControlExample.getResourceString("Lines_Visible"));
@@ -235,7 +230,7 @@ class TreeTab extends ScrollableTab {
 		headerImagesButton.setText (ControlExample.getResourceString("Header_Images"));
 		subImagesButton = new Button (otherGroup, SWT.CHECK);
 		subImagesButton.setText (ControlExample.getResourceString("Sub_Images"));
-	
+
 		/* Add the listeners */
 		linesVisibleButton.addSelectionListener (new SelectionAdapter () {
 			@Override
@@ -286,27 +281,27 @@ class TreeTab extends ScrollableTab {
 			}
 		});
 	}
-	
+
 	/**
 	 * Creates the "Example" group.
 	 */
 	@Override
 	void createExampleGroup () {
 		super.createExampleGroup ();
-		
+
 		/* Create a group for the text tree */
 		treeGroup = new Group (exampleGroup, SWT.NONE);
 		treeGroup.setLayout (new GridLayout ());
 		treeGroup.setLayoutData (new GridData (SWT.FILL, SWT.FILL, true, true));
 		treeGroup.setText ("Tree");
-	
+
 		/* Create a group for the image tree */
 		imageTreeGroup = new Group (exampleGroup, SWT.NONE);
 		imageTreeGroup.setLayout (new GridLayout ());
 		imageTreeGroup.setLayoutData (new GridData (SWT.FILL, SWT.FILL, true, true));
 		imageTreeGroup.setText (ControlExample.getResourceString("Tree_With_Images"));
 	}
-	
+
 	/**
 	 * Creates the "Example" widgets.
 	 */
@@ -322,7 +317,7 @@ class TreeTab extends ScrollableTab {
 		if (checkButton.getSelection()) style |= SWT.CHECK;
 		if (fullSelectionButton.getSelection ()) style |= SWT.FULL_SELECTION;
 		if (borderButton.getSelection()) style |= SWT.BORDER;
-	
+
 		/* Create the text tree */
 		tree1 = new Tree (treeGroup, style);
 		boolean multiColumn = multipleColumns.getSelection();
@@ -346,7 +341,7 @@ class TreeTab extends ScrollableTab {
 		TreeItem item = new TreeItem (treeRoots[1], SWT.NONE);
 		setItemText(item, 1, ControlExample.getResourceString("Node_2_2"));
 		item = new TreeItem (item, SWT.NONE);
-		setItemText(item, 1, ControlExample.getResourceString("Node_2_2_1"));					
+		setItemText(item, 1, ControlExample.getResourceString("Node_2_2_1"));
 		textNode1 = treeRoots[0];
 		packColumns(tree1);
 		try {
@@ -354,7 +349,7 @@ class TreeTab extends ScrollableTab {
 			resizableColumns.setSelection (column.getResizable());
 		} catch (IllegalArgumentException ex) {}
 
-		/* Create the image tree */	
+		/* Create the image tree */
 		tree2 = new Tree (imageTreeGroup, style);
 		Image image = instance.images[ControlExample.ciClosedFolder];
 		if (multiColumn) {
@@ -409,7 +404,7 @@ class TreeTab extends ScrollableTab {
 		imageNode1 = treeRoots[0];
 		packColumns(tree2);
 	}
-	
+
 	void setItemText(TreeItem item, int i, String node) {
 		int index = i % 3;
 		if (multipleColumns.getSelection()) {
@@ -417,9 +412,9 @@ class TreeTab extends ScrollableTab {
 			item.setText (tableData [index]);
 		} else {
 			item.setText (node);
-		}		
+		}
 	}
-	
+
 	/**
 	 * Creates the "Size" group.  The "Size" group contains
 	 * controls that allow the user to change the size of
@@ -428,7 +423,7 @@ class TreeTab extends ScrollableTab {
 	@Override
 	void createSizeGroup () {
 		super.createSizeGroup();
-	
+
 		packColumnsButton = new Button (sizeGroup, SWT.PUSH);
 		packColumnsButton.setText (ControlExample.getResourceString("Pack_Columns"));
 		packColumnsButton.addSelectionListener(new SelectionAdapter () {
@@ -440,14 +435,14 @@ class TreeTab extends ScrollableTab {
 			}
 		});
 	}
-	
+
 	/**
 	 * Creates the "Style" group.
 	 */
 	@Override
 	void createStyleGroup() {
 		super.createStyleGroup();
-		
+
 		/* Create the extra widgets */
 		noScrollButton = new Button (styleGroup, SWT.CHECK);
 		noScrollButton.setText ("SWT.NO_SCROLL");
@@ -457,7 +452,7 @@ class TreeTab extends ScrollableTab {
 		fullSelectionButton = new Button (styleGroup, SWT.CHECK);
 		fullSelectionButton.setText ("SWT.FULL_SELECTION");
 	}
-	
+
 	/**
 	 * Gets the "Example" widget children's items, if any.
 	 *
@@ -476,7 +471,7 @@ class TreeTab extends ScrollableTab {
 		System.arraycopy(columns2, 0, allItems, columns1.length, columns2.length);
 		return allItems;
 	}
-	
+
 	/**
 	 * Gets the "Example" widget children.
 	 */
@@ -484,7 +479,7 @@ class TreeTab extends ScrollableTab {
 	Widget [] getExampleWidgets () {
 		return new Widget [] {tree1, tree2};
 	}
-	
+
 	/**
 	 * Returns a list of set/get API method names (without the set/get prefix)
 	 * that can be used to set/get values in the example control(s).
@@ -506,7 +501,7 @@ class TreeTab extends ScrollableTab {
 			for (int i = 0; i < values.length; i++) {
 				TreeItem item = findItem(values[i], ((Tree) widget).getItems());
 				if (item == null) break;
-				items[i] = item;				
+				items[i] = item;
 			}
 			return new Object[] {items};
 		}
@@ -539,7 +534,7 @@ class TreeTab extends ScrollableTab {
 			}
 		}
 	}
-	
+
 	/**
 	 * Sets the moveable columns state of the "Example" widgets.
 	 */
@@ -604,7 +599,7 @@ class TreeTab extends ScrollableTab {
 		setCellFont ();
 		if (oldFont != null) oldFont.dispose();
 	}
-	
+
 	/**
 	 * Sets the state of the "Example" widgets.
 	 */
@@ -635,7 +630,7 @@ class TreeTab extends ScrollableTab {
 		headerVisibleButton.setSelection (tree1.getHeaderVisible());
 		linesVisibleButton.setSelection (tree1.getLinesVisible());
 	}
-	
+
 	/**
 	 * Sets the background color of the Node 1 TreeItems in column 1.
 	 */
@@ -652,7 +647,7 @@ class TreeTab extends ScrollableTab {
 		if (oldImage != null) oldImage.dispose();
 		item.setImage (colorImage(color));
 	}
-	
+
 	/**
 	 * Sets the foreground color of the Node 1 TreeItems in column 1.
 	 */
@@ -669,7 +664,7 @@ class TreeTab extends ScrollableTab {
 		if (oldImage != null) oldImage.dispose();
 		item.setImage (colorImage(color));
 	}
-	
+
 	/**
 	 * Sets the font of the Node 1 TreeItems in column 1.
 	 */
@@ -705,7 +700,7 @@ class TreeTab extends ScrollableTab {
 		if (oldImage != null) oldImage.dispose();
 		item.setImage (colorImage(color));
 	}
-	
+
 	/**
 	 * Sets the foreground color of the Node 1 TreeItems.
 	 */
@@ -722,7 +717,7 @@ class TreeTab extends ScrollableTab {
 		if (oldImage != null) oldImage.dispose();
 		item.setImage (colorImage(color));
 	}
-	
+
 	/**
 	 * Sets the font of the Node 1 TreeItems.
 	 */
@@ -749,7 +744,7 @@ class TreeTab extends ScrollableTab {
 		tree1.setHeaderVisible (headerVisibleButton.getSelection ());
 		tree2.setHeaderVisible (headerVisibleButton.getSelection ());
 	}
-	
+
 	/**
 	 * Sets the sort indicator state of the "Example" widgets.
 	 */
@@ -762,7 +757,7 @@ class TreeTab extends ScrollableTab {
 			resetSortState (tree2);
 		}
 	}
-	
+
 	/**
 	 * Sets the initial sort indicator state and adds a listener
 	 * to cycle through sort states and columns.
@@ -803,7 +798,7 @@ class TreeTab extends ScrollableTab {
 			if (listener != null) column.removeSelectionListener(listener);
 		}
 	}
-	
+
 	/**
 	 * Sets the lines visible state of the "Example" widgets.
 	 */

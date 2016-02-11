@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2008 IBM Corporation and others.
+ * Copyright (c) 2008, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -27,10 +27,6 @@ import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
-import org.eclipse.swt.events.PaintEvent;
-import org.eclipse.swt.events.PaintListener;
-import org.eclipse.swt.events.TraverseEvent;
-import org.eclipse.swt.events.TraverseListener;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
@@ -53,7 +49,7 @@ public class BarChart extends Canvas {
 	int valueIncrement = 1;
 	static final int GAP = 4;
 	static final int AXIS_WIDTH = 2;
-	
+
 	/**
 	 * Constructs a new instance of this class given its parent
 	 * and a style value describing its behavior and appearance.
@@ -68,62 +64,59 @@ public class BarChart extends Canvas {
 	}
 
 	void addListeners() {
-		addPaintListener(new PaintListener() {
-			@Override
-			public void paintControl(PaintEvent e) {
-				GC gc = e.gc;
-				Rectangle rect = getClientArea();
-				Display display = getDisplay();
-				int count = data.size();
-				Point valueSize = gc.stringExtent (new Integer(valueMax).toString());
-				int leftX = rect.x + 2 * GAP + valueSize.x;
-				int bottomY = rect.y + rect.height - 2 * GAP - valueSize.y;
-				int unitWidth = (rect.width - 4 * GAP - valueSize.x - AXIS_WIDTH) / count - GAP;
-				int unitHeight = (rect.height - 3 * GAP - AXIS_WIDTH - 2 * valueSize.y) / ((valueMax - valueMin) / valueIncrement);
-				// draw the title
-				int titleWidth = gc.stringExtent (title).x;
-				int center = (Math.max(titleWidth, count * (unitWidth + GAP) + GAP) - titleWidth) / 2;
-				gc.setForeground(display.getSystemColor(SWT.COLOR_BLACK));
-				gc.drawString(title, leftX + AXIS_WIDTH + center, rect.y + GAP);
-				// draw the y axis and value labels
-				gc.setLineWidth(AXIS_WIDTH);
-				gc.drawLine(leftX, rect.y + GAP + valueSize.y, leftX, bottomY);
-				for (int i = valueMin; i <= valueMax; i+=valueIncrement) {
-					int y = bottomY - i * unitHeight;
-					gc.drawLine(leftX, y, leftX - GAP, y);
-					gc.drawString(new Integer(i).toString(), rect.x + GAP, y - valueSize.y);
-				}
-				// draw the x axis and item labels
-				gc.drawLine(leftX, bottomY, rect.x + rect.width - GAP, bottomY);
-				for (int i = 0; i < count; i++) {
-					Object [] dataItem = data.get(i);
-					String itemLabel = (String)dataItem[0];
-					int x = leftX + AXIS_WIDTH + GAP + i * (unitWidth + GAP);
-					gc.drawString(itemLabel, x, bottomY + GAP);
-				}
-				// draw the bars
-				gc.setBackground(display.getSystemColor(color));
-				for (int i = 0; i < count; i++) {
-					Object [] dataItem = data.get(i);
-					int itemValue = ((Integer)dataItem[1]).intValue();
-					int x = leftX + AXIS_WIDTH + GAP + i * (unitWidth + GAP);
-					gc.fillRectangle(x, bottomY - AXIS_WIDTH - itemValue * unitHeight, unitWidth, itemValue * unitHeight);
-				}
-				if (isFocusControl()) {
-					if (selectedItem == -1) {
-						// draw the focus rectangle around the whole bar chart
-						gc.drawFocus(rect.x, rect.y, rect.width, rect.height);
-					} else {
-						// draw the focus rectangle around the selected item
-						Object [] dataItem = data.get(selectedItem);
-						int itemValue = ((Integer)dataItem[1]).intValue();
-						int x = leftX + AXIS_WIDTH + GAP + selectedItem * (unitWidth + GAP);
-						gc.drawFocus(x, bottomY - itemValue * unitHeight - AXIS_WIDTH, unitWidth, itemValue * unitHeight + AXIS_WIDTH + GAP + valueSize.y);
-					}
+		addPaintListener(e -> {
+			GC gc = e.gc;
+			Rectangle rect = getClientArea();
+			Display display = getDisplay();
+			int count = data.size();
+			Point valueSize = gc.stringExtent (new Integer(valueMax).toString());
+			int leftX = rect.x + 2 * GAP + valueSize.x;
+			int bottomY = rect.y + rect.height - 2 * GAP - valueSize.y;
+			int unitWidth = (rect.width - 4 * GAP - valueSize.x - AXIS_WIDTH) / count - GAP;
+			int unitHeight = (rect.height - 3 * GAP - AXIS_WIDTH - 2 * valueSize.y) / ((valueMax - valueMin) / valueIncrement);
+			// draw the title
+			int titleWidth = gc.stringExtent (title).x;
+			int center = (Math.max(titleWidth, count * (unitWidth + GAP) + GAP) - titleWidth) / 2;
+			gc.setForeground(display.getSystemColor(SWT.COLOR_BLACK));
+			gc.drawString(title, leftX + AXIS_WIDTH + center, rect.y + GAP);
+			// draw the y axis and value labels
+			gc.setLineWidth(AXIS_WIDTH);
+			gc.drawLine(leftX, rect.y + GAP + valueSize.y, leftX, bottomY);
+			for (int i1 = valueMin; i1 <= valueMax; i1+=valueIncrement) {
+				int y = bottomY - i1 * unitHeight;
+				gc.drawLine(leftX, y, leftX - GAP, y);
+				gc.drawString(new Integer(i1).toString(), rect.x + GAP, y - valueSize.y);
+			}
+			// draw the x axis and item labels
+			gc.drawLine(leftX, bottomY, rect.x + rect.width - GAP, bottomY);
+			for (int i2 = 0; i2 < count; i2++) {
+				Object [] dataItem1 = data.get(i2);
+				String itemLabel = (String)dataItem1[0];
+				int x1 = leftX + AXIS_WIDTH + GAP + i2 * (unitWidth + GAP);
+				gc.drawString(itemLabel, x1, bottomY + GAP);
+			}
+			// draw the bars
+			gc.setBackground(display.getSystemColor(color));
+			for (int i3 = 0; i3 < count; i3++) {
+				Object [] dataItem2 = data.get(i3);
+				int itemValue1 = ((Integer)dataItem2[1]).intValue();
+				int x2 = leftX + AXIS_WIDTH + GAP + i3 * (unitWidth + GAP);
+				gc.fillRectangle(x2, bottomY - AXIS_WIDTH - itemValue1 * unitHeight, unitWidth, itemValue1 * unitHeight);
+			}
+			if (isFocusControl()) {
+				if (selectedItem == -1) {
+					// draw the focus rectangle around the whole bar chart
+					gc.drawFocus(rect.x, rect.y, rect.width, rect.height);
+				} else {
+					// draw the focus rectangle around the selected item
+					Object [] dataItem3 = data.get(selectedItem);
+					int itemValue2 = ((Integer)dataItem3[1]).intValue();
+					int x3 = leftX + AXIS_WIDTH + GAP + selectedItem * (unitWidth + GAP);
+					gc.drawFocus(x3, bottomY - itemValue2 * unitHeight - AXIS_WIDTH, unitWidth, itemValue2 * unitHeight + AXIS_WIDTH + GAP + valueSize.y);
 				}
 			}
 		});
-		
+
 		addFocusListener(new FocusAdapter() {
 			@Override
 			public void focusGained(FocusEvent e) {
@@ -134,7 +127,7 @@ public class BarChart extends Canvas {
 				redraw();
 			}
 		});
-		
+
 		addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseDown(MouseEvent e) {
@@ -157,7 +150,7 @@ public class BarChart extends Canvas {
 				}
 			}
 		});
-		
+
 		addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyPressed(KeyEvent e) {
@@ -191,16 +184,13 @@ public class BarChart extends Canvas {
 				}
 			}
 		});
-		
-		addTraverseListener(new TraverseListener() {
-			@Override
-			public void keyTraversed(TraverseEvent e) {
-				switch (e.detail) {
-					case SWT.TRAVERSE_TAB_NEXT:
-					case SWT.TRAVERSE_TAB_PREVIOUS:
-						e.doit = true;
-						break;
-				}
+
+		addTraverseListener(e -> {
+			switch (e.detail) {
+				case SWT.TRAVERSE_TAB_NEXT:
+				case SWT.TRAVERSE_TAB_PREVIOUS:
+					e.doit = true;
+					break;
 			}
 		});
 
@@ -230,7 +220,7 @@ public class BarChart extends Canvas {
 				}
 			}
 		});
-		
+
 		getAccessible().addAccessibleControlListener(new AccessibleControlAdapter() {
 			@Override
 			public void getRole(AccessibleControlEvent e) {
@@ -297,7 +287,7 @@ public class BarChart extends Canvas {
 					}
 				}
 				e.childID = childID;
-			
+
 			}
 			@Override
 			public void getSelection(AccessibleControlEvent e) {
@@ -308,7 +298,7 @@ public class BarChart extends Canvas {
 				int childID = e.childID;
 				if (childID != ACC.CHILDID_SELF) {
 					Object [] dataItem = data.get(childID);
-					e.result = ((Integer)dataItem[1]).toString();					
+					e.result = ((Integer)dataItem[1]).toString();
 				}
 			}
 			@Override
@@ -323,7 +313,7 @@ public class BarChart extends Canvas {
 			}
 		});
 	}
-	
+
 	@Override
 	public Point computeSize (int wHint, int hHint, boolean changed) {
 		checkWidget ();
@@ -349,7 +339,7 @@ public class BarChart extends Canvas {
 
 	/**
 	 * Add a labeled data value to the bar chart.
-	 * 
+	 *
 	 * @param label a string describing the value
 	 * @param value the data value
 	 */
@@ -357,10 +347,10 @@ public class BarChart extends Canvas {
 		checkWidget ();
 		data.add(new Object[] {label, new Integer(value)});
 	}
-	
+
 	/**
 	 * Set the title of the bar chart.
-	 * 
+	 *
 	 * @param title a string to display as the bar chart's title.
 	 */
 	public void setTitle (String title) {
@@ -371,7 +361,7 @@ public class BarChart extends Canvas {
 	/**
 	 * Set the bar color to the specified color.
 	 * The default color is SWT.COLOR_RED.
-	 * 
+	 *
 	 * @param color any of the SWT.COLOR_* constants
 	 */
 	public void setColor (int color) {
@@ -382,7 +372,7 @@ public class BarChart extends Canvas {
 	/**
 	 * Set the minimum value for the y axis.
 	 * The default minimum is 0.
-	 * 
+	 *
 	 * @param min the minimum value
 	 */
 	public void setValueMin (int min) {
@@ -393,7 +383,7 @@ public class BarChart extends Canvas {
 	/**
 	 * Set the maximum value for the y axis.
 	 * The default maximum is 10.
-	 * 
+	 *
 	 * @param max the maximum value
 	 */
 	public void setValueMax (int max) {
@@ -404,7 +394,7 @@ public class BarChart extends Canvas {
 	/**
 	 * Set the increment value for the y axis.
 	 * The default increment is 1.
-	 * 
+	 *
 	 * @param increment the increment value
 	 */
 	public void setValueIncrement (int increment) {

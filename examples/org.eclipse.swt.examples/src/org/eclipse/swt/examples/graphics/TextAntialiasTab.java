@@ -33,13 +33,13 @@ public class TextAntialiasTab extends GraphicsTab {
 
 	Combo aliasCombo;
 	static int[] aliasValues = { SWT.OFF, SWT.DEFAULT, SWT.ON };
-	
+
 	Button colorButton;
 	Menu menu;
 	GraphicsBackground textColor;
 	String text = GraphicsExample.getResourceString("SWT");
 
-	
+
 public TextAntialiasTab(GraphicsExample example) {
 	super(example);
 }
@@ -51,7 +51,7 @@ public String getCategory() {
 
 @Override
 public String getText() {
-	return GraphicsExample.getResourceString("Text"); //$NON-NLS-1$ 
+	return GraphicsExample.getResourceString("Text"); //$NON-NLS-1$
 }
 
 @Override
@@ -71,7 +71,7 @@ public void dispose() {
 public void createControlPanel(Composite parent) {
 
 	Composite comp;
-	
+
 	// create drop down combo for antialiasing
 	comp = new Composite(parent, SWT.NONE);
 	comp.setLayout(new GridLayout(2, false));
@@ -83,32 +83,29 @@ public void createControlPanel(Composite parent) {
 	aliasCombo.add("ON");
 	aliasCombo.select(0);
 	aliasCombo.addListener(SWT.Selection, event -> example.redraw());
-		
+
 	ColorMenu cm = new ColorMenu();
 	cm.setColorItems(true);
-	menu = cm.createMenu(parent.getParent(), new ColorListener() {
-		@Override
-		public void setColor(GraphicsBackground gb) {
-			textColor = gb;
-			colorButton.setImage(gb.getThumbNail());
-			example.redraw();
-		}
+	menu = cm.createMenu(parent.getParent(), gb -> {
+		textColor = gb;
+		colorButton.setImage(gb.getThumbNail());
+		example.redraw();
 	});
-	
+
 	// create color button
 	comp = new Composite(parent, SWT.NONE);
 	comp.setLayout(new GridLayout());
-	
+
 	// initialize the color to black
 	textColor = (GraphicsBackground)menu.getItem(1).getData();
-	
+
 	colorButton = new Button(comp, SWT.PUSH);
 	colorButton.setText(GraphicsExample.getResourceString("Color")); //$NON-NLS-1$
 	colorButton.setImage(textColor.getThumbNail());
-	
+
 	colorButton.addListener(SWT.Selection, event -> {
 		final Button button = (Button) event.widget;
-		final Composite parent1 = button.getParent(); 
+		final Composite parent1 = button.getParent();
 		Rectangle bounds = button.getBounds();
 		Point point = parent1.toDisplay(new Point(bounds.x, bounds.y));
 		menu.setLocation(point.x, point.y + bounds.height);
@@ -120,7 +117,7 @@ public void createControlPanel(Composite parent) {
 public void paint(GC gc, int width, int height) {
 	if (!example.checkAdvancedGraphics()) return;
 	Device device = gc.getDevice();
-	
+
 	if (textColor != null && textColor.getBgColor1() != null)
 		gc.setForeground(textColor.getBgColor1());
 
@@ -132,42 +129,42 @@ public void paint(GC gc, int width, int height) {
 	Point size = gc.stringExtent(text);
 	gc.drawString(text, width/4 - size.x/2, height/4 - size.y/2, true);
 	font.dispose();
-	
+
 	// column 1, row 2
 	font = new Font(device, getPlatformFontFace(1), 100, SWT.NORMAL);
 	gc.setFont(font);
 	size = gc.stringExtent(text);
 	gc.drawString(text, width/4 - size.x/2, 3*height/4 - size.y/2, true);
 	font.dispose();
-	
+
 	// column 2, row 1
 	font = new Font(device, getPlatformFontFace(2), 50, SWT.NORMAL);
 	gc.setFont(font);
 	size = gc.stringExtent(text);
 	gc.drawString(text, (width-size.x)/2, 0, true);
 	font.dispose();
-	
+
 	// column 2, row 2
 	font = new Font(device, getPlatformFontFace(3), 100, SWT.ITALIC);
 	gc.setFont(font);
 	size = gc.stringExtent(text);
 	gc.drawString(text, (width-size.x)/2, (height-size.y)/2, true);
 	font.dispose();
-	
+
 	// column 2, row 3
 	font = new Font(device, getPlatformFontFace(4), 50, SWT.NORMAL);
 	gc.setFont(font);
 	size = gc.stringExtent(text);
 	gc.drawString(text, (width-size.x)/2, height-size.y, true);
 	font.dispose();
-	
+
 	// column 3, row 1
 	font = new Font(device, getPlatformFontFace(5), 100, SWT.NORMAL);
 	gc.setFont(font);
 	size = gc.stringExtent(text);
 	gc.drawString(text, 3*width/4 - size.x/2, height/4 - size.y/2, true);
 	font.dispose();
-	
+
 	// column 3, row 2
 	font = new Font(device, getPlatformFontFace(6), 100, SWT.NORMAL);
 	gc.setFont(font);
@@ -178,13 +175,13 @@ public void paint(GC gc, int width, int height) {
 
 /**
  * Returns the name of a valid font for the host platform.
- * 
+ *
  * @param index
  *            index is used to determine the appropriate font face
  */
 static String getPlatformFontFace(int index) {
 	if(SWT.getPlatform() == "win32") {
-		return new String [] {"Bookman Old Style", "Century Gothic", "Comic Sans MS", "Impact", "Garamond", "Lucida Console", "Monotype Corsiva"} [index];	
+		return new String [] {"Bookman Old Style", "Century Gothic", "Comic Sans MS", "Impact", "Garamond", "Lucida Console", "Monotype Corsiva"} [index];
 	} else if (SWT.getPlatform() == "gtk") {
 		return new String [] {"Luxi Mono", "KacstTitleL", "Baekmuk Batang", "Baekmuk Headline", "KacstFarsi", "Baekmuk Gulim", "URW Chancery L"} [index];
 	} else {

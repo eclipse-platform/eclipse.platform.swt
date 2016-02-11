@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2006 IBM Corporation and others.
+ * Copyright (c) 2000, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -18,16 +18,10 @@ import java.util.ResourceBundle;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.SWTError;
 import org.eclipse.swt.browser.Browser;
-import org.eclipse.swt.browser.CloseWindowListener;
 import org.eclipse.swt.browser.LocationEvent;
 import org.eclipse.swt.browser.LocationListener;
-import org.eclipse.swt.browser.OpenWindowListener;
 import org.eclipse.swt.browser.ProgressEvent;
 import org.eclipse.swt.browser.ProgressListener;
-import org.eclipse.swt.browser.StatusTextEvent;
-import org.eclipse.swt.browser.StatusTextListener;
-import org.eclipse.swt.browser.TitleEvent;
-import org.eclipse.swt.browser.TitleListener;
 import org.eclipse.swt.browser.VisibilityWindowListener;
 import org.eclipse.swt.browser.WindowEvent;
 import org.eclipse.swt.graphics.Image;
@@ -72,7 +66,7 @@ public class BrowserExample {
 			"eclipse06.bmp", "eclipse07.bmp", "eclipse08.bmp", "eclipse09.bmp", "eclipse10.bmp",
 			"eclipse11.bmp", "eclipse12.bmp",};
 	static final String iconLocation = "document.gif";
-		
+
 	public BrowserExample(Composite parent, boolean top) {
 		this.parent = parent;
 		try {
@@ -89,16 +83,13 @@ public class BrowserExample {
 		initResources();
 		final Display display = parent.getDisplay();
 		browser.setData("org.eclipse.swt.examples.browserexample.BrowserApplication", this);
-		browser.addOpenWindowListener(new OpenWindowListener() {
-			@Override
-			public void open(WindowEvent event) {
-				Shell shell = new Shell(display);
-				if (icon != null) shell.setImage(icon);
-				shell.setLayout(new FillLayout());
-				BrowserExample app = new BrowserExample(shell, false);
-				app.setShellDecoration(icon, true);
-				event.browser = app.getBrowser();
-			}
+		browser.addOpenWindowListener(event -> {
+			Shell shell = new Shell(display);
+			if (icon != null) shell.setImage(icon);
+			shell.setLayout(new FillLayout());
+			BrowserExample app = new BrowserExample(shell, false);
+			app.setShellDecoration(icon, true);
+			event.browser = app.getBrowser();
 		});
 		if (top) {
 			browser.setUrl(getResourceString("Startup"));
@@ -115,13 +106,10 @@ public class BrowserExample {
 					app.show(true, e.location, e.size, e.addressBar, e.menuBar, e.statusBar, e.toolBar);
 				}
 			});
-			browser.addCloseWindowListener(new CloseWindowListener() {
-				@Override
-				public void close(WindowEvent event) {
-					Browser browser = (Browser)event.widget;
-					Shell shell = browser.getShell();
-					shell.close();
-				}
+			browser.addCloseWindowListener(event -> {
+				Browser browser = (Browser)event.widget;
+				Shell shell = browser.getShell();
+				shell.close();
 			});
 		}
 	}
@@ -129,11 +117,11 @@ public class BrowserExample {
 	/**
 	 * Disposes of all resources associated with a particular
 	 * instance of the BrowserApplication.
-	 */	
+	 */
 	public void dispose() {
 		freeResources();
 	}
-	
+
 	/**
 	 * Gets a string from the resource bundle.
 	 * We don't want to crash because of a missing String.
@@ -146,18 +134,18 @@ public class BrowserExample {
 			return key;
 		} catch (NullPointerException e) {
 			return "!" + key + "!";
-		}			
+		}
 	}
-	
+
 	public SWTError getError() { return error; }
-	
+
 	public Browser getBrowser() { return browser; }
-	
+
 	public void setShellDecoration(Image icon, boolean title) {
 		this.icon = icon;
 		this.title = title;
 	}
-	
+
 	void show(boolean owned, Point location, Point size, boolean addressBar, boolean menuBar, boolean statusBar, boolean toolBar) {
 		final Shell shell = browser.getShell();
 		if (owned) {
@@ -180,12 +168,12 @@ public class BrowserExample {
 			itemRefresh.setText(getResourceString("Refresh"));
 			final ToolItem itemGo = new ToolItem(toolbar, SWT.PUSH);
 			itemGo.setText(getResourceString("Go"));
-			
+
 			itemBack.setEnabled(browser.isBackEnabled());
 			itemForward.setEnabled(browser.isForwardEnabled());
 			Listener listener = event -> {
 				ToolItem item = (ToolItem)event.widget;
-				if (item == itemBack) browser.back(); 
+				if (item == itemBack) browser.back();
 				else if (item == itemForward) browser.forward();
 				else if (item == itemStop) browser.stop();
 				else if (item == itemRefresh) browser.refresh();
@@ -204,14 +192,14 @@ public class BrowserExample {
 			data.top = new FormAttachment(0, 5);
 			data.right = new FormAttachment(100, -5);
 			canvas.setLayoutData(data);
-			
+
 			final Rectangle rect = images[0].getBounds();
 			canvas.addListener(SWT.Paint, e -> {
 				Point pt = ((Canvas)e.widget).getSize();
-				e.gc.drawImage(images[index], 0, 0, rect.width, rect.height, 0, 0, pt.x, pt.y);			
+				e.gc.drawImage(images[index], 0, 0, rect.width, rect.height, 0, 0, pt.x, pt.y);
 			});
 			canvas.addListener(SWT.MouseDown, e -> browser.setUrl(getResourceString("Startup")));
-			
+
 			final Display display = parent.getDisplay();
 			display.asyncExec(new Runnable() {
 				@Override
@@ -232,11 +220,11 @@ public class BrowserExample {
 			if (toolbar != null) {
 				data.top = new FormAttachment(toolbar, 0, SWT.TOP);
 				data.left = new FormAttachment(toolbar, 5, SWT.RIGHT);
-				data.right = new FormAttachment(canvas, -5, SWT.DEFAULT);			
+				data.right = new FormAttachment(canvas, -5, SWT.DEFAULT);
 			} else {
 				data.top = new FormAttachment(0, 0);
 				data.left = new FormAttachment(0, 0);
-				data.right = new FormAttachment(100, 0);			
+				data.right = new FormAttachment(100, 0);
 			}
 			locationBar.setLayoutData(data);
 			locationBar.addListener(SWT.DefaultSelection, e -> browser.setUrl(locationBar.getText()));
@@ -244,24 +232,19 @@ public class BrowserExample {
 		if (statusBar) {
 			status = new Label(parent, SWT.NONE);
 			progressBar = new ProgressBar(parent, SWT.NONE);
-			
+
 			data = new FormData();
 			data.left = new FormAttachment(0, 5);
 			data.right = new FormAttachment(progressBar, 0, SWT.DEFAULT);
 			data.bottom = new FormAttachment(100, -5);
 			status.setLayoutData(data);
-			
+
 			data = new FormData();
 			data.right = new FormAttachment(100, -5);
 			data.bottom = new FormAttachment(100, -5);
 			progressBar.setLayoutData(data);
-			
-			browser.addStatusTextListener(new StatusTextListener() {
-				@Override
-				public void changed(StatusTextEvent event) {
-					status.setText(event.text);	
-				}
-			});
+
+			browser.addStatusTextListener(event -> status.setText(event.text));
 		}
 		parent.setLayout(new FormLayout());
 
@@ -272,12 +255,12 @@ public class BrowserExample {
 		data.right = new FormAttachment(100, 0);
 		data.bottom = status != null ? new FormAttachment(status, -5, SWT.DEFAULT) : new FormAttachment(100, 0);
 		browser.setLayoutData(data);
-			
+
 		if (statusBar || toolBar) {
 			browser.addProgressListener(new ProgressListener() {
 				@Override
 				public void changed(ProgressEvent event) {
-					if (event.total == 0) return;                            
+					if (event.total == 0) return;
 					int ratio = event.current * 100 / event.total;
 					if (progressBar != null) progressBar.setSelection(ratio);
 					busy = event.current != event.total;
@@ -312,12 +295,7 @@ public class BrowserExample {
 			});
 		}
 		if (title) {
-			browser.addTitleListener(new TitleListener() {
-				@Override
-				public void changed(TitleEvent event) {
-					shell.setText(event.title+" - "+getResourceString("window.title"));
-				}
-			});
+			browser.addTitleListener(event -> shell.setText(event.title+" - "+getResourceString("window.title")));
 		}
 		parent.layout(true);
 		if (owned) shell.open();
@@ -331,7 +309,7 @@ public class BrowserExample {
 		else if (browser != null) browser.setFocus();
 		else parent.setFocus();
 	}
-	
+
 	/**
 	 * Frees the resources
 	 */
@@ -344,7 +322,7 @@ public class BrowserExample {
 			images = null;
 		}
 	}
-	
+
 	/**
 	 * Loads the resources
 	 */
@@ -374,7 +352,7 @@ public class BrowserExample {
 		freeResources();
 		throw new RuntimeException(error);
 	}
-	
+
 	public static void main(String [] args) {
 		Display display = new Display();
 		Shell shell = new Shell(display);

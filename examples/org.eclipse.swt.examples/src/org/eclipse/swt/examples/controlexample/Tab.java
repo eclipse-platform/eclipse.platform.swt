@@ -17,14 +17,12 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ArmEvent;
 import org.eclipse.swt.events.ControlEvent;
 import org.eclipse.swt.events.DisposeEvent;
-import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.events.FocusEvent;
 import org.eclipse.swt.events.HelpEvent;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.MenuEvent;
 import org.eclipse.swt.events.ModifyEvent;
-import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.PaintEvent;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -87,7 +85,7 @@ import org.eclipse.swt.widgets.Widget;
 abstract class Tab {
 	Shell shell;
 	Display display;
-	
+
 	/* Common control buttons */
 	Button borderButton, enabledButton, visibleButton, backgroundImageButton, popupMenuButton;
 	Button preferredButton, tooSmallButton, smallButton, largeButton, fillHButton, fillVButton;
@@ -103,7 +101,7 @@ abstract class Tab {
 	static final int TOO_SMALL_SIZE	= 10;
 	static final int SMALL_SIZE		= 50;
 	static final int LARGE_SIZE		= 100;
-	
+
 	/* Right-to-left support */
 	static final boolean RTL_SUPPORT_ENABLE = "win32".equals(SWT.getPlatform()) || "gtk".equals(SWT.getPlatform());
 	Group orientationGroup;
@@ -121,13 +119,13 @@ abstract class Tab {
 	FontDialog fontDialog;
 	Color foregroundColor, backgroundColor;
 	Font font;
-	
+
 	/* Controls and resources for the "Background Mode" group */
 	Combo backgroundModeCombo;
 	Button backgroundModeImageButton, backgroundModeColorButton;
 
 	boolean samplePopup = false;
-	
+
 	/* Set/Get API controls */
 	Combo nameCombo;
 	Label returnTypeLabel;
@@ -143,7 +141,7 @@ abstract class Tab {
 	int setFieldsMask = 0;
 	Event setFieldsEvent = new Event ();
 	boolean ignore = false;
-	
+
 	/* Event logging constants */
 	static final int DOIT	= 0x0100;
 	static final int DETAIL	= 0x0200;
@@ -171,48 +169,48 @@ abstract class Tab {
 			this.event = event;
 		}
 	}
-	
+
 	final EventInfo [] EVENT_INFO = {
-		new EventInfo ("Activate", SWT.Activate, 0, 0, new Event()), 
-		new EventInfo ("Arm", SWT.Arm, 0, 0, new Event()), 
+		new EventInfo ("Activate", SWT.Activate, 0, 0, new Event()),
+		new EventInfo ("Arm", SWT.Arm, 0, 0, new Event()),
 		new EventInfo ("Close", SWT.Close, DOIT, 0, new Event()),
 		new EventInfo ("Collapse", SWT.Collapse, 0, 0, new Event()),
 		new EventInfo ("Deactivate", SWT.Deactivate, 0, 0, new Event()),
 		new EventInfo ("DefaultSelection", SWT.DefaultSelection, 0, 0, new Event()),
-		new EventInfo ("Deiconify", SWT.Deiconify, 0, 0, new Event()), 
+		new EventInfo ("Deiconify", SWT.Deiconify, 0, 0, new Event()),
 		new EventInfo ("Dispose", SWT.Dispose, 0, 0, new Event()),
-		new EventInfo ("DragDetect", SWT.DragDetect, 0, 0, new Event()), 
+		new EventInfo ("DragDetect", SWT.DragDetect, 0, 0, new Event()),
 		new EventInfo ("EraseItem", SWT.EraseItem, DETAIL | DETAIL_ERASE_ITEM, 0, new Event()),
-		new EventInfo ("Expand", SWT.Expand, 0, 0, new Event()), 
-		new EventInfo ("FocusIn", SWT.FocusIn, 0, 0, new Event()), 
+		new EventInfo ("Expand", SWT.Expand, 0, 0, new Event()),
+		new EventInfo ("FocusIn", SWT.FocusIn, 0, 0, new Event()),
 		new EventInfo ("FocusOut", SWT.FocusOut, 0, 0, new Event()),
-		new EventInfo ("HardKeyDown", SWT.HardKeyDown, 0, 0, new Event()), 
+		new EventInfo ("HardKeyDown", SWT.HardKeyDown, 0, 0, new Event()),
 		new EventInfo ("HardKeyUp", SWT.HardKeyUp, 0, 0, new Event()),
-		new EventInfo ("Help", SWT.Help, 0, 0, new Event()), 
+		new EventInfo ("Help", SWT.Help, 0, 0, new Event()),
 		new EventInfo ("Hide", SWT.Hide, 0, 0, new Event()),
-		new EventInfo ("Iconify", SWT.Iconify, 0, 0, new Event()), 
+		new EventInfo ("Iconify", SWT.Iconify, 0, 0, new Event()),
 		new EventInfo ("KeyDown", SWT.KeyDown, DOIT, 0, new Event()),
 		new EventInfo ("KeyUp", SWT.KeyUp, DOIT, 0, new Event()),
 		new EventInfo ("MeasureItem", SWT.MeasureItem, 0, 0, new Event()),
 		new EventInfo ("MenuDetect", SWT.MenuDetect, X | Y | DOIT, 0, new Event()),
-		new EventInfo ("Modify", SWT.Modify, 0, 0, new Event()), 
+		new EventInfo ("Modify", SWT.Modify, 0, 0, new Event()),
 		new EventInfo ("MouseDoubleClick", SWT.MouseDoubleClick, 0, 0, new Event()),
-		new EventInfo ("MouseDown", SWT.MouseDown, 0, 0, new Event()), 
-		new EventInfo ("MouseEnter", SWT.MouseEnter, 0, 0, new Event()), 
-		new EventInfo ("MouseExit", SWT.MouseExit, 0, 0, new Event()), 
+		new EventInfo ("MouseDown", SWT.MouseDown, 0, 0, new Event()),
+		new EventInfo ("MouseEnter", SWT.MouseEnter, 0, 0, new Event()),
+		new EventInfo ("MouseExit", SWT.MouseExit, 0, 0, new Event()),
 		new EventInfo ("MouseHorizontalWheel", SWT.MouseHorizontalWheel, 0, 0, new Event()),
 		new EventInfo ("MouseHover", SWT.MouseHover, 0, 0, new Event()),
-		new EventInfo ("MouseMove", SWT.MouseMove, 0, 0, new Event()), 
-		new EventInfo ("MouseUp", SWT.MouseUp, 0, 0, new Event()), 
+		new EventInfo ("MouseMove", SWT.MouseMove, 0, 0, new Event()),
+		new EventInfo ("MouseUp", SWT.MouseUp, 0, 0, new Event()),
 		new EventInfo ("MouseVerticalWheel", SWT.MouseVerticalWheel, 0, 0, new Event()),
-		new EventInfo ("Move", SWT.Move, 0, 0, new Event()), 
-		new EventInfo ("Paint", SWT.Paint, 0, 0, new Event()), 
+		new EventInfo ("Move", SWT.Move, 0, 0, new Event()),
+		new EventInfo ("Paint", SWT.Paint, 0, 0, new Event()),
 		new EventInfo ("PaintItem", SWT.PaintItem, 0, 0, new Event()),
-		new EventInfo ("Resize", SWT.Resize, 0, 0, new Event()), 
+		new EventInfo ("Resize", SWT.Resize, 0, 0, new Event()),
 		new EventInfo ("Selection", SWT.Selection, X | Y | DOIT, 0, new Event()), // sash
 		new EventInfo ("SetData", SWT.SetData, 0, 0, new Event()),
 //		new EventInfo ("Settings", SWT.Settings, 0, 0, new Event()),  // note: this event only goes to Display
-		new EventInfo ("Show", SWT.Show, 0, 0, new Event()), 
+		new EventInfo ("Show", SWT.Show, 0, 0, new Event()),
 		new EventInfo ("Traverse", SWT.Traverse, DETAIL | DETAIL_TRAVERSE | DOIT, 0, new Event()),
 		new EventInfo ("Verify", SWT.Verify, TEXT | DOIT, 0, new Event()),
 		new EventInfo ("ImeComposition", SWT.ImeComposition, DETAIL | DETAIL_IME | TEXT | DOIT, 0, new Event()),
@@ -265,7 +263,7 @@ abstract class Tab {
 		"SWT.TRAVERSE_PAGE_PREVIOUS", new Integer(SWT.TRAVERSE_PAGE_PREVIOUS),
 		"SWT.TRAVERSE_PAGE_NEXT", new Integer(SWT.TRAVERSE_PAGE_NEXT),
 	};
-		
+
 	/**
 	 * Creates the Tab within a given instance of ControlExample.
 	 */
@@ -278,17 +276,17 @@ abstract class Tab {
 	 * is typically the right hand column in the tab.
 	 */
 	void createControlGroup () {
-	
+
 		/*
 		 * Create the "Control" group.  This is the group on the
 		 * right half of each example tab.  It consists of the
 		 * "Style" group, the "Other" group and the "Size" group.
-		 */	
+		 */
 		controlGroup = new Group (tabFolderPage, SWT.NONE);
 		controlGroup.setLayout (new GridLayout (2, true));
 		controlGroup.setLayoutData (new GridData(SWT.FILL, SWT.FILL, false, false));
 		controlGroup.setText (ControlExample.getResourceString("Parameters"));
-	
+
 		/* Create individual groups inside the "Control" group */
 		createStyleGroup ();
 		createOtherGroup ();
@@ -300,7 +298,7 @@ abstract class Tab {
 			createDirectionGroup ();
 		}
 		createBackgroundModeGroup ();
-	
+
 		/*
 		 * For each Button child in the style group, add a selection
 		 * listener that will recreate the example controls.  If the
@@ -350,16 +348,16 @@ abstract class Tab {
 			}
 		}
 		if (rtlSupport()) {
-			rtlButton.addSelectionListener (selectionListener); 
-			ltrButton.addSelectionListener (selectionListener);		
+			rtlButton.addSelectionListener (selectionListener);
+			ltrButton.addSelectionListener (selectionListener);
 			defaultOrietationButton.addSelectionListener (selectionListener);
-			rtlDirectionButton.addSelectionListener (selectionListener); 
-			ltrDirectionButton.addSelectionListener (selectionListener);		
-			autoDirectionButton.addSelectionListener (selectionListener); 
-			defaultDirectionButton.addSelectionListener (selectionListener); 
+			rtlDirectionButton.addSelectionListener (selectionListener);
+			ltrDirectionButton.addSelectionListener (selectionListener);
+			autoDirectionButton.addSelectionListener (selectionListener);
+			defaultDirectionButton.addSelectionListener (selectionListener);
 		}
 	}
-	
+
 	/**
 	 * Append the Set/Get API controls to the "Other" group.
 	 */
@@ -397,7 +395,7 @@ abstract class Tab {
 	 */
 	void createControlWidgets () {
 	}
-	
+
 	/**
 	 * Creates the "Colors and Fonts" group. This is typically
 	 * a child of the "Control" group. Subclasses override
@@ -446,26 +444,23 @@ abstract class Tab {
 				resetColorsAndFonts ();
 			}
 		});
-		shell.addDisposeListener(new DisposeListener() {
-			@Override
-			public void widgetDisposed(DisposeEvent event) {
-				if (foregroundColor != null) foregroundColor.dispose();
-				if (backgroundColor != null) backgroundColor.dispose();
-				if (font != null) font.dispose();
-				foregroundColor = null;
-				backgroundColor = null;
-				font = null;
-				if (colorAndFontTable != null && !colorAndFontTable.isDisposed()) {
-					TableItem [] items = colorAndFontTable.getItems();
-					for (int i = 0; i < items.length; i++) {
-						Image image = items[i].getImage();
-						if (image != null) image.dispose();
-					}
+		shell.addDisposeListener(event -> {
+			if (foregroundColor != null) foregroundColor.dispose();
+			if (backgroundColor != null) backgroundColor.dispose();
+			if (font != null) font.dispose();
+			foregroundColor = null;
+			backgroundColor = null;
+			font = null;
+			if (colorAndFontTable != null && !colorAndFontTable.isDisposed()) {
+				TableItem [] items = colorAndFontTable.getItems();
+				for (int i = 0; i < items.length; i++) {
+					Image image = items[i].getImage();
+					if (image != null) image.dispose();
 				}
 			}
 		});
 	}
-	
+
 	void changeFontOrColor(int index) {
 		switch (index) {
 			case FOREGROUND_COLOR: {
@@ -527,7 +522,7 @@ abstract class Tab {
 		otherGroup.setLayout (new GridLayout ());
 		otherGroup.setLayoutData (new GridData (SWT.FILL, SWT.FILL, false, false));
 		otherGroup.setText (ControlExample.getResourceString("Other"));
-	
+
 		/* Create the controls */
 		enabledButton = new Button(otherGroup, SWT.CHECK);
 		enabledButton.setText(ControlExample.getResourceString("Enabled"));
@@ -537,7 +532,7 @@ abstract class Tab {
 		backgroundImageButton.setText(ControlExample.getResourceString("BackgroundImage"));
 		popupMenuButton = new Button(otherGroup, SWT.CHECK);
 		popupMenuButton.setText(ControlExample.getResourceString("PopupMenu"));
-		
+
 		/* Add the listeners */
 		enabledButton.addSelectionListener (new SelectionAdapter () {
 			@Override
@@ -563,14 +558,14 @@ abstract class Tab {
 				setExampleWidgetPopupMenu ();
 			}
 		});
-	
+
 		/* Set the default state */
 		enabledButton.setSelection(true);
 		visibleButton.setSelection(true);
 		backgroundImageButton.setSelection(false);
 		popupMenuButton.setSelection(false);
 	}
-	
+
 	/**
 	 * Creates the "Background Mode" group.
 	 */
@@ -580,7 +575,7 @@ abstract class Tab {
 		backgroundModeGroup.setLayout (new GridLayout ());
 		backgroundModeGroup.setLayoutData (new GridData (SWT.FILL, SWT.FILL, false, false));
 		backgroundModeGroup.setText (ControlExample.getResourceString("Background_Mode"));
-	
+
 		/* Create the controls */
 		backgroundModeCombo = new Combo(backgroundModeGroup, SWT.READ_ONLY);
 		backgroundModeCombo.setItems("SWT.INHERIT_NONE", "SWT.INHERIT_DEFAULT", "SWT.INHERIT_FORCE");
@@ -588,7 +583,7 @@ abstract class Tab {
 		backgroundModeImageButton.setText(ControlExample.getResourceString("BackgroundImage"));
 		backgroundModeColorButton = new Button(backgroundModeGroup, SWT.CHECK);
 		backgroundModeColorButton.setText(ControlExample.getResourceString("BackgroundColor"));
-	
+
 		/* Add the listeners */
 		backgroundModeCombo.addSelectionListener (new SelectionAdapter () {
 			@Override
@@ -608,29 +603,29 @@ abstract class Tab {
 				setExampleGroupBackgroundColor ();
 			}
 		});
-	
+
 		/* Set the default state */
 		backgroundModeCombo.setText(backgroundModeCombo.getItem(0));
 		backgroundModeImageButton.setSelection(false);
 		backgroundModeColorButton.setSelection(false);
 	}
-	
+
 	void createEditEventDialog(Shell parent, int x, int y, final int index) {
 		final Shell dialog = new Shell(parent, SWT.DIALOG_TRIM | SWT.RESIZE | SWT.APPLICATION_MODAL);
 		dialog.setLayout(new GridLayout());
 		dialog.setText(ControlExample.getResourceString ("Edit_Event"));
 		Label label = new Label (dialog, SWT.NONE);
 		label.setText (ControlExample.getResourceString ("Edit_Event_Fields", new String [] {EVENT_INFO[index].name}));
-		
+
 		Group group = new Group (dialog, SWT.NONE);
 		group.setLayout(new GridLayout(2, false));
-		group.setLayoutData(new GridData (SWT.FILL, SWT.FILL, true, true)); 
-		
+		group.setLayoutData(new GridData (SWT.FILL, SWT.FILL, true, true));
+
 		final int fields = EVENT_INFO[index].settableFields;
 		final int eventType = EVENT_INFO[index].type;
 		setFieldsMask = EVENT_INFO[index].setFields;
 		setFieldsEvent = EVENT_INFO[index].event;
-		
+
 		if ((fields & DOIT) != 0) {
 			new Label (group, SWT.NONE).setText ("doit");
 			final Combo doitCombo = new Combo (group, SWT.READ_ONLY);
@@ -653,7 +648,7 @@ abstract class Tab {
 		}
 
 		if ((fields & DETAIL) != 0) {
-			new Label (group, SWT.NONE).setText ("detail");			
+			new Label (group, SWT.NONE).setText ("detail");
 			int detailType = fields & 0xFF;
 			final Combo detailCombo = new Combo (group, SWT.READ_ONLY);
 			detailCombo.setItems (DETAIL_CONSTANTS[detailType]);
@@ -682,105 +677,90 @@ abstract class Tab {
 		}
 
 		if ((fields & TEXT) != 0) {
-			new Label (group, SWT.NONE).setText ("text");	
+			new Label (group, SWT.NONE).setText ("text");
 			final Text textText = new Text (group, SWT.BORDER);
 			if ((setFieldsMask & TEXT) != 0) textText.setText(setFieldsEvent.text);
 			textText.setLayoutData (new GridData (SWT.FILL, SWT.CENTER, true, false));
-			textText.addModifyListener(new ModifyListener () {
-				@Override
-				public void modifyText(ModifyEvent e) {
-					String newValue = textText.getText();
-					if (newValue.length() == 0) {
-						setFieldsMask &= ~TEXT;
-					} else {
-						setFieldsEvent.type = eventType;
-						setFieldsEvent.text = newValue;
-						setFieldsMask |= TEXT;
-					}
+			textText.addModifyListener(e -> {
+				String newValue = textText.getText();
+				if (newValue.length() == 0) {
+					setFieldsMask &= ~TEXT;
+				} else {
+					setFieldsEvent.type = eventType;
+					setFieldsEvent.text = newValue;
+					setFieldsMask |= TEXT;
 				}
 			});
 		}
 
 		if ((fields & X) != 0) {
-			new Label (group, SWT.NONE).setText ("x");	
+			new Label (group, SWT.NONE).setText ("x");
 			final Text xText = new Text (group, SWT.BORDER);
 			if ((setFieldsMask & X) != 0) xText.setText(Integer.toString(setFieldsEvent.x));
 			xText.setLayoutData (new GridData (SWT.FILL, SWT.CENTER, true, false));
-			xText.addModifyListener(new ModifyListener () {
-				@Override
-				public void modifyText(ModifyEvent e) {
-					String newValue = xText.getText ();
-					try {
-						int newIntValue = Integer.parseInt (newValue);
-						setFieldsEvent.type = eventType;
-						setFieldsEvent.x = newIntValue;
-						setFieldsMask |= X;
-					} catch (NumberFormatException ex) {
-						setFieldsMask &= ~X;
-					}
+			xText.addModifyListener(e -> {
+				String newValue = xText.getText ();
+				try {
+					int newIntValue = Integer.parseInt (newValue);
+					setFieldsEvent.type = eventType;
+					setFieldsEvent.x = newIntValue;
+					setFieldsMask |= X;
+				} catch (NumberFormatException ex) {
+					setFieldsMask &= ~X;
 				}
 			});
 		}
 
 		if ((fields & Y) != 0) {
-			new Label (group, SWT.NONE).setText ("y");	
+			new Label (group, SWT.NONE).setText ("y");
 			final Text yText = new Text (group, SWT.BORDER);
 			if ((setFieldsMask & Y) != 0) yText.setText(Integer.toString(setFieldsEvent.y));
 			yText.setLayoutData (new GridData (SWT.FILL, SWT.CENTER, true, false));
-			yText.addModifyListener(new ModifyListener () {
-				@Override
-				public void modifyText(ModifyEvent e) {
-					String newValue = yText.getText ();
-					try {
-						int newIntValue = Integer.parseInt (newValue);
-						setFieldsEvent.type = eventType;
-						setFieldsEvent.y = newIntValue;
-						setFieldsMask |= Y;
-					} catch (NumberFormatException ex) {
-						setFieldsMask &= ~Y;
-					}
+			yText.addModifyListener(e -> {
+				String newValue = yText.getText ();
+				try {
+					int newIntValue = Integer.parseInt (newValue);
+					setFieldsEvent.type = eventType;
+					setFieldsEvent.y = newIntValue;
+					setFieldsMask |= Y;
+				} catch (NumberFormatException ex) {
+					setFieldsMask &= ~Y;
 				}
 			});
 		}
 
 		if ((fields & WIDTH) != 0) {
-			new Label (group, SWT.NONE).setText ("width");	
+			new Label (group, SWT.NONE).setText ("width");
 			final Text widthText = new Text (group, SWT.BORDER);
 			if ((setFieldsMask & WIDTH) != 0) widthText.setText(Integer.toString(setFieldsEvent.width));
 			widthText.setLayoutData (new GridData (SWT.FILL, SWT.CENTER, true, false));
-			widthText.addModifyListener(new ModifyListener () {
-				@Override
-				public void modifyText(ModifyEvent e) {
-					String newValue = widthText.getText ();
-					try {
-						int newIntValue = Integer.parseInt (newValue);
-						setFieldsEvent.type = eventType;
-						setFieldsEvent.width = newIntValue;
-						setFieldsMask |= WIDTH;
-					} catch (NumberFormatException ex) {
-						setFieldsMask &= ~WIDTH;
-					}
+			widthText.addModifyListener(e -> {
+				String newValue = widthText.getText ();
+				try {
+					int newIntValue = Integer.parseInt (newValue);
+					setFieldsEvent.type = eventType;
+					setFieldsEvent.width = newIntValue;
+					setFieldsMask |= WIDTH;
+				} catch (NumberFormatException ex) {
+					setFieldsMask &= ~WIDTH;
 				}
 			});
 		}
 
 		if ((fields & HEIGHT) != 0) {
-			new Label (group, SWT.NONE).setText ("height");	
+			new Label (group, SWT.NONE).setText ("height");
 			final Text heightText = new Text (group, SWT.BORDER);
 			if ((setFieldsMask & HEIGHT) != 0) heightText.setText(Integer.toString(setFieldsEvent.height));
 			heightText.setLayoutData (new GridData (SWT.FILL, SWT.CENTER, true, false));
-			heightText.addModifyListener(new ModifyListener () {
-				@Override
-				public void modifyText(ModifyEvent e) {
-					String newValue = heightText.getText ();
-					try {
-						int newIntValue = Integer.parseInt (newValue);
-						setFieldsEvent.type = eventType;
-						setFieldsEvent.height = newIntValue;
-						setFieldsMask |= HEIGHT;
-					} catch (NumberFormatException ex) {
-						setFieldsMask &= ~HEIGHT;
-					}
+			heightText.addModifyListener(e -> {
+				String newValue = heightText.getText ();
+				try {
+					int newIntValue = Integer.parseInt (newValue);
+					setFieldsEvent.type = eventType;
+					setFieldsEvent.height = newIntValue;
+					setFieldsMask |= HEIGHT;
+				} catch (NumberFormatException ex) {
+					setFieldsMask &= ~HEIGHT;
 				}
 			});
 		}
@@ -836,7 +816,7 @@ abstract class Tab {
 		exampleGroup.setLayout (new GridLayout ());
 		exampleGroup.setLayoutData (new GridData (SWT.FILL, SWT.FILL, true, true));
 	}
-	
+
 	/**
 	 * Creates the "Example" widget children of the "Example" group.
 	 * Subclasses override this method to create the particular
@@ -845,7 +825,7 @@ abstract class Tab {
 	void createExampleWidgets () {
 		/* Do nothing */
 	}
-	
+
 	/**
 	 * Creates and opens the "Listener selection" dialog.
 	 */
@@ -994,7 +974,7 @@ abstract class Tab {
 				recreateExampleWidgets ();
 			}
 		});
-		
+
 		/*
 		 * Create the checkbox to specify whether typed or untyped events are displayed in the log.
 		 */
@@ -1032,7 +1012,7 @@ abstract class Tab {
 				eventConsole.setText ("");
 			}
 		});
-		
+
 		/* Initialize the eventsFilter to log all events. */
 		int customEventCount = getCustomEventNames ().length;
 		eventsFilter = new boolean [EVENT_INFO.length + customEventCount];
@@ -1057,7 +1037,7 @@ abstract class Tab {
 			}
 		});
 	}
-	
+
 	/**
 	 * Returns a list of set/get API method names (without the set/get prefix)
 	 * that can be used to set/get values in the example control(s).
@@ -1111,12 +1091,7 @@ abstract class Tab {
 		resetLabels();
 		dialog.setDefaultButton(setButton);
 		dialog.pack();
-		dialog.addDisposeListener(new DisposeListener() {
-			@Override
-			public void widgetDisposed(DisposeEvent e) {
-				setGetDialog = null;
-			}
-		});
+		dialog.addDisposeListener(e -> setGetDialog = null);
 		return dialog;
 	}
 
@@ -1198,7 +1173,7 @@ abstract class Tab {
 		}
 		return returnType;
 	}
-	
+
 	void setValue() {
 		/* The parameter type must be the same as the get method's return type */
 		String methodRoot = nameCombo.getText();
@@ -1280,7 +1255,7 @@ abstract class Tab {
 		rtlButton = new Button (orientationGroup, SWT.RADIO);
 		rtlButton.setText ("SWT.RIGHT_TO_LEFT");
 	}
-	
+
 	void createDirectionGroup () {
 		/* Create Text Direction group*/
 		directionGroup = new Group (controlGroup, SWT.NONE);
@@ -1309,9 +1284,9 @@ abstract class Tab {
 		sizeGroup.setLayout (new GridLayout());
 		sizeGroup.setLayoutData (new GridData (SWT.FILL, SWT.FILL, false, false));
 		sizeGroup.setText (ControlExample.getResourceString("Size"));
-	
+
 		/* Create the controls */
-	
+
 		/*
 		 * The preferred size of a widget is the size returned
 		 * by widget.computeSize (SWT.DEFAULT, SWT.DEFAULT).
@@ -1330,7 +1305,7 @@ abstract class Tab {
 		fillHButton.setText (ControlExample.getResourceString("Fill_X"));
 		fillVButton = new Button (sizeGroup, SWT.CHECK);
 		fillVButton.setText (ControlExample.getResourceString("Fill_Y"));
-		
+
 		/* Add the listeners */
 		SelectionAdapter selectionListener = new SelectionAdapter () {
 			@Override
@@ -1344,11 +1319,11 @@ abstract class Tab {
 		largeButton.addSelectionListener(selectionListener);
 		fillHButton.addSelectionListener(selectionListener);
 		fillVButton.addSelectionListener(selectionListener);
-	
+
 		/* Set the default state */
 		preferredButton.setSelection (true);
 	}
-	
+
 	/**
 	 * Creates the "Style" group.  The "Style" group contains
 	 * controls that allow the user to change the style of
@@ -1361,7 +1336,7 @@ abstract class Tab {
 		styleGroup.setLayoutData (new GridData (SWT.FILL, SWT.FILL, false, false));
 		styleGroup.setText (ControlExample.getResourceString("Styles"));
 	}
-	
+
 	/**
 	 * Creates the tab folder page.
 	 *
@@ -1372,27 +1347,27 @@ abstract class Tab {
 		/* Cache the shell and display. */
 		shell = tabFolder.getShell ();
 		display = shell.getDisplay ();
-		
+
 		/* Create a two column page. */
 		tabFolderPage = new Composite (tabFolder, SWT.NONE);
 		tabFolderPage.setLayout (new GridLayout (2, false));
-	
+
 		/* Create the "Example" and "Control" groups. */
 		createExampleGroup ();
 		createControlGroup ();
-		
+
 		/* Create the "Listeners" group under the "Control" group. */
 		createListenersGroup ();
-		
+
 		/* Create and initialize the example and control widgets. */
 		createExampleWidgets ();
 		hookExampleWidgetListeners ();
 		createControlWidgets ();
 		setExampleWidgetState ();
-		
+
 		return tabFolderPage;
 	}
-	
+
 	void setExampleWidgetPopupMenu() {
 		Control[] controls = getExampleControls();
 		for (final Control control : controls) {
@@ -1426,7 +1401,7 @@ abstract class Tab {
 			widget.dispose ();
 		}
 	}
-	
+
 	Image colorImage (Color color) {
 		Image image = new Image (display, IMAGE_SIZE, IMAGE_SIZE);
 		GC gc = new GC(image);
@@ -1438,7 +1413,7 @@ abstract class Tab {
 		gc.dispose();
 		return image;
 	}
-	
+
 	Image fontImage (Font font) {
 		Image image = new Image (display, IMAGE_SIZE, IMAGE_SIZE);
 		GC gc = new GC(image);
@@ -1484,18 +1459,18 @@ abstract class Tab {
 		gc.dispose();
 		return image;
 	}
-	
+
 	/**
 	 * Gets the list of custom event names.
 	 * Subclasses override this method to allow adding of custom events.
-	 * 
+	 *
 	 * @return an array containing custom event names
 	 * @see hookCustomListener
 	 */
 	String [] getCustomEventNames () {
 		return new String [0];
 	}
-	
+
 	/**
 	 * Gets the default style for a widget
 	 *
@@ -1510,7 +1485,7 @@ abstract class Tab {
 		}
 		return SWT.NONE;
 	}
-	
+
 	/**
 	 * Gets the "Example" widgets.
 	 *
@@ -1519,7 +1494,7 @@ abstract class Tab {
 	Widget [] getExampleWidgets () {
 		return new Widget [0];
 	}
-	
+
 	/**
 	 * Gets the "Example" controls.
 	 * This is the subset of "Example" widgets that are controls.
@@ -1539,7 +1514,7 @@ abstract class Tab {
 		}
 		return controls;
 	}
-	
+
 	/**
 	 * Gets the "Example" widget's items, if any.
 	 *
@@ -1548,7 +1523,7 @@ abstract class Tab {
 	Item [] getExampleWidgetItems () {
 		return new Item [0];
 	}
-	
+
 	/**
 	 * Gets the short text for the tab folder item.
 	 *
@@ -1566,7 +1541,7 @@ abstract class Tab {
 	String getTabText () {
 		return "";
 	}
-	
+
 	/**
 	 * In case one of the buttons that control text direction was selected,
 	 * apply the text direction on the controls in the client area.
@@ -1598,7 +1573,7 @@ abstract class Tab {
 		}
 		return true;
 	}
-	
+
 	/**
 	 * Hooks all listeners to all example controls
 	 * and example control items.
@@ -1621,7 +1596,7 @@ abstract class Tab {
 			}
 		}
 	}
-	
+
 	/**
 	 * Hooks the custom listener specified by eventName.
 	 * Subclasses override this method to add custom listeners.
@@ -1629,7 +1604,7 @@ abstract class Tab {
 	 */
 	void hookCustomListener (String eventName) {
 	}
-	
+
 	/**
 	 * Hooks all listeners to the specified widget.
 	 */
@@ -1643,7 +1618,7 @@ abstract class Tab {
 			}
 		}
 	}
-	
+
 	/**
 	 * Logs an untyped event to the event console.
 	 */
@@ -1664,7 +1639,7 @@ abstract class Tab {
 				case SWT.MouseEnter:
 				case SWT.MouseExit:
 				case SWT.MouseDoubleClick:
-				case SWT.MouseWheel: 
+				case SWT.MouseWheel:
 				case SWT.MouseHover: toString += new MouseEvent (event).toString (); break;
 				case SWT.Paint: toString += new PaintEvent (event).toString (); break;
 				case SWT.Move:
@@ -1699,7 +1674,7 @@ abstract class Tab {
 			toString += event.toString();
 		}
 		log (toString);
-		
+
 		/* Return values for event fields. */
 		int mask = EVENT_INFO[i].setFields;
 		if (!ignore && mask != 0) {
@@ -1717,7 +1692,7 @@ abstract class Tab {
 			ignore = false;
 		}
 	}
-	
+
 	/**
 	 * Logs a string to the event console.
 	 */
@@ -1734,7 +1709,7 @@ abstract class Tab {
 	void log (String eventName, TypedEvent event) {
 		log (eventName + ": " + event.toString ());
 	}
-	
+
 	/**
 	 * Recreates the "Example" widgets.
 	 */
@@ -1744,7 +1719,7 @@ abstract class Tab {
 		hookExampleWidgetListeners ();
 		setExampleWidgetState ();
 	}
-	
+
 	/**
 	 * Sets the foreground color, background color, and font
 	 * of the "Example" widgets to their default settings.
@@ -1766,11 +1741,11 @@ abstract class Tab {
 		setExampleWidgetSize ();
 		if (oldFont != null) oldFont.dispose();
 	}
-	
+
 	boolean rtlSupport() {
 		return RTL_SUPPORT_ENABLE;
 	}
-	
+
 	/**
 	 * Sets the background color of the "Example" widgets' parent.
 	 */
@@ -1818,7 +1793,7 @@ abstract class Tab {
 		if (oldImage != null) oldImage.dispose();
 		item.setImage (colorImage (color));
 	}
-	
+
 	/**
 	 * Sets the enabled state of the "Example" widgets.
 	 */
@@ -1828,7 +1803,7 @@ abstract class Tab {
 			control.setEnabled (enabledButton.getSelection ());
 		}
 	}
-	
+
 	/**
 	 * Sets the font of the "Example" widgets.
 	 */
@@ -1851,7 +1826,7 @@ abstract class Tab {
 		item.setFont(ft);
 		colorAndFontTable.layout ();
 	}
-	
+
 	/**
 	 * Sets the foreground color of the "Example" widgets.
 	 */
@@ -1872,7 +1847,7 @@ abstract class Tab {
 		if (oldImage != null) oldImage.dispose();
 		item.setImage (colorImage(color));
 	}
-	
+
 	/**
 	 * Sets the size of the "Example" widgets.
 	 */
@@ -1885,7 +1860,7 @@ abstract class Tab {
 		if (largeButton.getSelection()) size = LARGE_SIZE;
 		Control [] controls = getExampleControls ();
 		for (Control control : controls) {
-			GridData gridData = new GridData(size, size); 
+			GridData gridData = new GridData(size, size);
 			gridData.grabExcessHorizontalSpace = fillHButton.getSelection();
 			gridData.grabExcessVerticalSpace = fillVButton.getSelection();
 			gridData.horizontalAlignment = fillHButton.getSelection() ? SWT.FILL : SWT.LEFT;
@@ -1894,7 +1869,7 @@ abstract class Tab {
 		}
 		tabFolderPage.layout (controls);
 	}
-	
+
 	/**
 	 * Sets the state of the "Example" widgets.  Subclasses
 	 * may extend this method to set "Example" widget state
@@ -1920,7 +1895,7 @@ abstract class Tab {
 //			log ("Control=" + controls [i] + ", border width=" + controls [i].getBorderWidth ());
 //		}
 	}
-	
+
 	/**
 	 * Sets the visibility of the "Example" widgets.
 	 */
@@ -1941,10 +1916,10 @@ abstract class Tab {
 			control.setBackgroundImage (backgroundImageButton.getSelection () ? instance.images[ControlExample.ciBackground] : null);
 		}
 	}
-	
+
 	/**
 	 * Splits the given string around matches of the given character.
-	 * 
+	 *
 	 * This subset of java.lang.String.split(String regex)
 	 * uses only code that can be run on CLDC platforms.
 	 */

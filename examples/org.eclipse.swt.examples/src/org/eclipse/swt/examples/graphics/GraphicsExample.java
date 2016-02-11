@@ -38,9 +38,7 @@ import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Group;
-import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Sash;
@@ -56,12 +54,12 @@ import org.eclipse.swt.widgets.TreeItem;
  * created and made visible by this class.
  */
 public class GraphicsExample {
-		
+
 	Composite parent;
 	GraphicsTab[] tabs;				// tabs to be found in the application
 	GraphicsTab tab;				// the current tab
 	GraphicsBackground background;	// used to store information about the background
-	
+
 	ToolBar toolBar;				// toolbar that contains backItem and dbItem
 	Tree tabList;					// tree structure of tabs
 	Text tabDesc;					// multi-line text widget that displays a tab description
@@ -70,20 +68,20 @@ public class GraphicsExample {
 	Composite tabControlPanel;
 	ToolItem backItem, dbItem;		// background, double buffer items
 	Menu backMenu;					// background menu item
-	
+
 	List<Image> resources;			// stores resources that will be disposed
 	List<GraphicsTab> tabs_in_order;		// stores GraphicsTabs in the order that they appear in the tree
 	boolean animate = true;			// whether animation should happen
 
 	static boolean advanceGraphics, advanceGraphicsInit;
-	
+
 	static final int MARGIN = 5;
 	static final int SASH_SPACING = 1;
 	static final int TIMER = 30;
 	static final ResourceBundle RESOURCE_BUNDLE = ResourceBundle.getBundle("examples_graphics"); //$NON-NLS-1$
 
 /*
- * Default constructor is needed so that example launcher can create an instance. 
+ * Default constructor is needed so that example launcher can create an instance.
  */
 public GraphicsExample() {
 	super();
@@ -122,15 +120,15 @@ void createControls(final Composite parent) {
 	createToolBar(parent);
 	createTabList(parent);
 	hSash = new Sash(parent, SWT.HORIZONTAL);
-	createTabDesc(parent);	
+	createTabDesc(parent);
 	vSash = new Sash(parent, SWT.VERTICAL);
 	createCanvas(parent);
 	createControlPanel(parent);
-	
+
 	FormData data;
 	FormLayout layout = new FormLayout();
 	parent.setLayout(layout);
-	
+
 	data = new FormData();
 	data.left = new FormAttachment(0, MARGIN);
 	data.top = new FormAttachment(0, MARGIN);
@@ -157,7 +155,7 @@ void createControls(final Composite parent) {
 	data.right = new FormAttachment(vSash, -SASH_SPACING);
 	data.bottom = new FormAttachment(100, -MARGIN);
 	tabDesc.setLayoutData(data);
-	
+
 	data = new FormData();
 	data.left = new FormAttachment(null, tabList.computeSize(SWT.DEFAULT, SWT.DEFAULT).x + 50);
 	data.top = new FormAttachment(toolBar, MARGIN);
@@ -176,7 +174,7 @@ void createControls(final Composite parent) {
 	data.right = new FormAttachment(100, -MARGIN);
 	data.bottom = new FormAttachment(100, -MARGIN);
 	tabControlPanel.setLayoutData(data);
-	
+
 	vSash.addListener(SWT.Selection, event -> {
 		Rectangle rect = hSash.getParent().getClientArea();
 		event.x = Math.min (Math.max (event.x, 60), rect.width - 60);
@@ -206,12 +204,12 @@ void createCanvas(Composite parent) {
 	canvas = new Canvas(parent, style);
 	canvas.addListener(SWT.Paint, event -> {
 		GC gc = event.gc;
-		Rectangle rect = canvas.getClientArea();			
+		Rectangle rect = canvas.getClientArea();
 		Device device = gc.getDevice();
 		Pattern pattern = null;
 		if (background.getBgColor1() != null) {
 			if (background.getBgColor2() != null) { // gradient
-				pattern = new Pattern(device, 0, 0, rect.width, 
+				pattern = new Pattern(device, 0, 0, rect.width,
 						rect.height,
 						background.getBgColor1(),
 						background.getBgColor2());
@@ -240,7 +238,7 @@ void recreateCanvas() {
 }
 
 /**
- * Creates the control panel 
+ * Creates the control panel
  * @param parent
  */
 void createControlPanel(Composite parent) {
@@ -252,20 +250,20 @@ void createControlPanel(Composite parent) {
 
 void createToolBar(final Composite parent) {
 	final Display display = parent.getDisplay();
-	
+
 	toolBar = new ToolBar(parent, SWT.FLAT);
-	
+
 	ToolItem  back = new ToolItem(toolBar, SWT.PUSH);
 	back.setText(getResourceString("Back")); //$NON-NLS-1$
 	back.setImage(loadImage(display, "back.gif")); //$NON-NLS-1$
-	
+
 	back.addListener(SWT.Selection, event -> {
 		int index = tabs_in_order.indexOf(tab) - 1;
 		if (index < 0)
 			index = tabs_in_order.size() - 1;
 		setTab(tabs_in_order.get(index));
 	});
-	
+
 	ToolItem  next = new ToolItem(toolBar, SWT.PUSH);
 	next.setText(getResourceString("Next")); //$NON-NLS-1$
 	next.setImage(loadImage(display, "next.gif")); //$NON-NLS-1$
@@ -273,60 +271,49 @@ void createToolBar(final Composite parent) {
 		int index = (tabs_in_order.indexOf(tab) + 1)%tabs_in_order.size();
 		setTab(tabs_in_order.get(index));
 	});
-	
+
 	ColorMenu colorMenu = new ColorMenu();
-	
+
 	// setup items to be contained in the background menu
 	colorMenu.setColorItems(true);
 	colorMenu.setPatternItems(checkAdvancedGraphics());
 	colorMenu.setGradientItems(checkAdvancedGraphics());
-	
+
 	// create the background menu
-	backMenu = colorMenu.createMenu(parent, new ColorListener() {
-		@Override
-		public void setColor(GraphicsBackground gb) {
-			background = gb;
-			backItem.setImage(gb.getThumbNail());
-			if (canvas != null) canvas.redraw();
-		}
+	backMenu = colorMenu.createMenu(parent, gb -> {
+		background = gb;
+		backItem.setImage(gb.getThumbNail());
+		if (canvas != null) canvas.redraw();
 	});
-	
+
 	// initialize the background to the first item in the menu
 	background = (GraphicsBackground)backMenu.getItem(0).getData();
-	
+
 	// background tool item
 	backItem = new ToolItem(toolBar, SWT.PUSH);
 	backItem.setText(getResourceString("Background")); //$NON-NLS-1$
 	backItem.setImage(background.getThumbNail());
-	backItem.addListener(SWT.Selection, new Listener() {
-		@Override
-		public void handleEvent(Event event) {
-			if (event.widget == backItem) {
-				final ToolItem toolItem = (ToolItem) event.widget;
-				final ToolBar  toolBar = toolItem.getParent();
-				Rectangle toolItemBounds = toolItem.getBounds();
-				Point point = toolBar.toDisplay(new Point(toolItemBounds.x, toolItemBounds.y));
-				backMenu.setLocation(point.x, point.y + toolItemBounds.height);
-				backMenu.setVisible(true);
-			}
+	backItem.addListener(SWT.Selection, event -> {
+		if (event.widget == backItem) {
+			final ToolItem toolItem = (ToolItem) event.widget;
+			final ToolBar  toolBar = toolItem.getParent();
+			Rectangle toolItemBounds = toolItem.getBounds();
+			Point point = toolBar.toDisplay(new Point(toolItemBounds.x, toolItemBounds.y));
+			backMenu.setLocation(point.x, point.y + toolItemBounds.height);
+			backMenu.setVisible(true);
 		}
 	});
-	
+
 	// double buffer tool item
 	dbItem = new ToolItem(toolBar, SWT.CHECK);
 	dbItem.setText(getResourceString("DoubleBuffer")); //$NON-NLS-1$
 	dbItem.setImage(loadImage(display, "db.gif")); //$NON-NLS-1$
-	dbItem.addListener(SWT.Selection, new Listener() {
-		@Override
-		public void handleEvent(Event event) {
-			setDoubleBuffered(dbItem.getSelection());
-		}
-	});
+	dbItem.addListener(SWT.Selection, event -> setDoubleBuffered(dbItem.getSelection()));
 }
 
 /**
  * Creates and returns a thumbnail image.
- * 
+ *
  * @param device
  * 			a device
  * @param name
@@ -341,7 +328,7 @@ static Image createThumbnail(Device device, String name) {
 		GC gc = new GC(result);
 		Rectangle dest = result.getBounds();
 		gc.drawImage(image, src.x, src.y, src.width, src.height, dest.x, dest.y, dest.width, dest.height);
-		gc.dispose();				
+		gc.dispose();
 	}
 	if (result != null) {
 		image.dispose();
@@ -352,11 +339,11 @@ static Image createThumbnail(Device device, String name) {
 
 /**
  * Creates an image based on a gradient pattern made up of two colors.
- * 
+ *
  * @param device - The Device
  * @param color1 - The first color used to create the image
  * @param color2 - The second color used to create the image
- * 
+ *
  * */
 static Image createImage(Device device, Color color1, Color color2, int width, int height) {
 	Image image = new Image(device, width, height);
@@ -374,10 +361,10 @@ static Image createImage(Device device, Color color1, Color color2, int width, i
 
 /**
  * Creates an image based on the color provided and returns it.
- * 
+ *
  * @param device - The Device
  * @param color - The color used to create the image
- * 
+ *
  * */
 static Image createImage(Device device, Color color) {
 	Image image = new Image(device, 16, 16);
@@ -435,7 +422,7 @@ void createTabList(Composite parent) {
 }
 
 /**
- * Creates the multi-line text widget that will contain the tab description. 
+ * Creates the multi-line text widget that will contain the tab description.
  * */
 void createTabDesc(Composite parent) {
 	tabDesc = new Text(parent, SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL | SWT.WRAP | SWT.BORDER);
@@ -500,7 +487,7 @@ public void dispose() {
 		}
 	}
 	resources = null;
-	
+
 	if (backMenu != null) {
 		backMenu.dispose();
 		backMenu = null;
@@ -535,7 +522,7 @@ static String getResourceString(String key) {
 		return key;
 	} catch (NullPointerException e) {
 		return "!" + key + "!"; //$NON-NLS-1$ //$NON-NLS-2$
-	}			
+	}
 }
 
 static Image loadImage (Device device, Class<GraphicsExample> clazz, String string) {
@@ -563,7 +550,7 @@ public Shell open(final Display display) {
 	Shell shell = new Shell(display);
 	shell.setText(getResourceString("GraphicsExample")); //$NON-NLS-1$
 	final GraphicsExample example = new GraphicsExample(shell);
-	shell.addListener(SWT.Close, event -> example.dispose());	
+	shell.addListener(SWT.Close, event -> example.dispose());
 	shell.open();
 	return shell;
 }
@@ -637,7 +624,7 @@ void startAnimationTimer() {
 			int timeout = TIMER;
 			GraphicsTab tab = getTab();
 			if (tab instanceof AnimatedGraphicsTab) {
-				AnimatedGraphicsTab animTab = (AnimatedGraphicsTab) tab;	
+				AnimatedGraphicsTab animTab = (AnimatedGraphicsTab) tab;
 				if (animate && animTab.getAnimation()) {
 					Rectangle rect = canvas.getClientArea();
 					animTab.next(rect.width, rect.height);

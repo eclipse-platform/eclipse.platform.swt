@@ -30,7 +30,7 @@ import org.eclipse.swt.widgets.Menu;
  * bevel, miter and round.
  */
 public class LineJoinTab extends GraphicsTab {
-	
+
 	private Combo joinCb;
 	private Button colorButton;
 	private GraphicsBackground shapeColor;
@@ -66,11 +66,11 @@ public void dispose() {
 
 @Override
 public void createControlPanel(Composite parent) {
-	
+
 	// create drop down combo for choosing clipping
 	Composite comp = new Composite(parent, SWT.NONE);
 	comp.setLayout(new GridLayout(2, false));
-	
+
 	new Label(comp, SWT.CENTER).setText(GraphicsExample
 				.getResourceString("LineJoin")); //$NON-NLS-1$
 	joinCb = new Combo(comp, SWT.DROP_DOWN);
@@ -82,33 +82,30 @@ public void createControlPanel(Composite parent) {
 			.getResourceString("round")); //$NON-NLS-1$
 	joinCb.select(1);
 	joinCb.addListener(SWT.Selection, event -> example.redraw());
-	
+
 	// color menu
 	ColorMenu cm = new ColorMenu();
 	cm.setPatternItems(example.checkAdvancedGraphics());
-	menu = cm.createMenu(parent.getParent(), new ColorListener() {
-		@Override
-		public void setColor(GraphicsBackground gb) {
-			shapeColor = gb;		
-			colorButton.setImage(gb.getThumbNail());
-			example.redraw();
-		}
+	menu = cm.createMenu(parent.getParent(), gb -> {
+		shapeColor = gb;
+		colorButton.setImage(gb.getThumbNail());
+		example.redraw();
 	});
 
 	// initialize the shape color to the 4th item in the menu (green)
 	shapeColor =(GraphicsBackground)menu.getItem(3).getData();
-	
+
 	// color button
 	comp = new Composite(parent, SWT.NONE);
 	comp.setLayout(new GridLayout(2, false));
-	
+
 	colorButton = new Button(comp, SWT.PUSH);
 	colorButton.setText(GraphicsExample
 			.getResourceString("Color")); //$NON-NLS-1$
 	colorButton.setImage(shapeColor.getThumbNail());
 	colorButton.addListener(SWT.Selection, event -> {
 		final Button button = (Button) event.widget;
-		final Composite parent1 = button.getParent(); 
+		final Composite parent1 = button.getParent();
 		Rectangle bounds = button.getBounds();
 		Point point = parent1.toDisplay(new Point(bounds.x, bounds.y));
 		menu.setLocation(point.x, point.y + bounds.height);
@@ -124,7 +121,7 @@ public void paint(GC gc, int width, int height) {
 
 	gc.setLineWidth(20);
 	gc.setLineJoin(joinValues[joinCb.getSelectionIndex()]);
-	
+
 	// set the foreground color or pattern
 	Pattern pattern = null;
 	if (shapeColor.getBgColor1() != null) {
@@ -133,7 +130,7 @@ public void paint(GC gc, int width, int height) {
 		pattern = new Pattern(device, shapeColor.getBgImage());
 		gc.setForegroundPattern(pattern);
 	}
-	
+
 	// draw the shape
 	Path path = new Path(device);
 	path.moveTo(width/2, 25);
@@ -148,7 +145,7 @@ public void paint(GC gc, int width, int height) {
 	path.close();
 	gc.drawPath(path);
 	path.dispose();
-	
+
 	if (pattern != null) pattern.dispose();
 }
 

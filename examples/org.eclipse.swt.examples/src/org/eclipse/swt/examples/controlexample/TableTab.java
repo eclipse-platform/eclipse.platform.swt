@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2007 IBM Corporation and others.
+ * Copyright (c) 2000, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -12,8 +12,6 @@ package org.eclipse.swt.examples.controlexample;
 
 
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.DisposeEvent;
-import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
@@ -43,13 +41,13 @@ class TableTab extends ScrollableTab {
 
 	/* Size widgets added to the "Size" group */
 	Button packColumnsButton;
-	
+
 	/* Style widgets added to the "Style" group */
 	Button noScrollButton, checkButton, fullSelectionButton, hideSelectionButton;
 
 	/* Other widgets added to the "Other" group */
 	Button multipleColumns, moveableColumns, resizableColumns, headerVisibleButton, sortIndicatorButton, headerImagesButton, linesVisibleButton, subImagesButton;
-	
+
 	/* Controls and resources added to the "Colors and Fonts" group */
 	static final int ITEM_FOREGROUND_COLOR = 3;
 	static final int ITEM_BACKGROUND_COLOR = 4;
@@ -59,12 +57,12 @@ class TableTab extends ScrollableTab {
 	static final int CELL_FONT = 8;
 	Color itemForegroundColor, itemBackgroundColor, cellForegroundColor, cellBackgroundColor;
 	Font itemFont, cellFont;
-	
+
 	static String [] columnTitles	= {ControlExample.getResourceString("TableTitle_0"),
 									   ControlExample.getResourceString("TableTitle_1"),
 									   ControlExample.getResourceString("TableTitle_2"),
 									   ControlExample.getResourceString("TableTitle_3")};
-									   
+
 	static String[][] tableData = {
 		{ ControlExample.getResourceString("TableLine0_0"),
 				ControlExample.getResourceString("TableLine0_1"),
@@ -80,21 +78,21 @@ class TableTab extends ScrollableTab {
 				ControlExample.getResourceString("TableLine2_3") } };
 
 	Point menuMouseCoords;
-	
+
 	/**
 	 * Creates the Tab within a given instance of ControlExample.
 	 */
 	TableTab(ControlExample instance) {
 		super(instance);
 	}
-	
+
 	/**
 	 * Creates the "Colors and Fonts" group.
 	 */
 	@Override
 	void createColorAndFontGroup () {
 		super.createColorAndFontGroup();
-		
+
 		TableItem item = new TableItem(colorAndFontTable, SWT.None);
 		item.setText(ControlExample.getResourceString ("Item_Foreground_Color"));
 		item = new TableItem(colorAndFontTable, SWT.None);
@@ -108,22 +106,19 @@ class TableTab extends ScrollableTab {
 		item = new TableItem(colorAndFontTable, SWT.None);
 		item.setText(ControlExample.getResourceString ("Cell_Font"));
 
-		shell.addDisposeListener(new DisposeListener() {
-			@Override
-			public void widgetDisposed(DisposeEvent event) {
-				if (itemBackgroundColor != null) itemBackgroundColor.dispose();
-				if (itemForegroundColor != null) itemForegroundColor.dispose();
-				if (itemFont != null) itemFont.dispose();
-				if (cellBackgroundColor != null) cellBackgroundColor.dispose();
-				if (cellForegroundColor != null) cellForegroundColor.dispose();
-				if (cellFont != null) cellFont.dispose();
-				itemBackgroundColor = null;
-				itemForegroundColor = null;			
-				itemFont = null;
-				cellBackgroundColor = null;
-				cellForegroundColor = null;			
-				cellFont = null;
-			}
+		shell.addDisposeListener(event -> {
+			if (itemBackgroundColor != null) itemBackgroundColor.dispose();
+			if (itemForegroundColor != null) itemForegroundColor.dispose();
+			if (itemFont != null) itemFont.dispose();
+			if (cellBackgroundColor != null) cellBackgroundColor.dispose();
+			if (cellForegroundColor != null) cellForegroundColor.dispose();
+			if (cellFont != null) cellFont.dispose();
+			itemBackgroundColor = null;
+			itemForegroundColor = null;
+			itemFont = null;
+			cellBackgroundColor = null;
+			cellForegroundColor = null;
+			cellFont = null;
 		});
 	}
 
@@ -215,7 +210,7 @@ class TableTab extends ScrollableTab {
 	@Override
 	void createOtherGroup () {
 		super.createOtherGroup ();
-	
+
 		/* Create display controls specific to this example */
 		linesVisibleButton = new Button (otherGroup, SWT.CHECK);
 		linesVisibleButton.setText (ControlExample.getResourceString("Lines_Visible"));
@@ -285,26 +280,26 @@ class TableTab extends ScrollableTab {
 			}
 		});
 	}
-	
+
 	/**
 	 * Creates the "Example" group.
 	 */
 	@Override
 	void createExampleGroup () {
 		super.createExampleGroup ();
-		
+
 		/* Create a group for the table */
 		tableGroup = new Group (exampleGroup, SWT.NONE);
 		tableGroup.setLayout (new GridLayout ());
 		tableGroup.setLayoutData (new GridData (SWT.FILL, SWT.FILL, true, true));
 		tableGroup.setText ("Table");
 	}
-	
+
 	/**
 	 * Creates the "Example" widgets.
 	 */
 	@Override
-	void createExampleWidgets () {	
+	void createExampleWidgets () {
 		/* Compute the widget style */
 		int style = getDefaultStyle();
 		if (singleButton.getSelection ()) style |= SWT.SINGLE;
@@ -316,10 +311,10 @@ class TableTab extends ScrollableTab {
 		if (fullSelectionButton.getSelection ()) style |= SWT.FULL_SELECTION;
 		if (hideSelectionButton.getSelection ()) style |= SWT.HIDE_SELECTION;
 		if (borderButton.getSelection ()) style |= SWT.BORDER;
-	
+
 		/* Create the table widget */
 		table1 = new Table (tableGroup, style);
-	
+
 		/* Fill the table with data */
 		boolean multiColumn = multipleColumns.getSelection();
 		if (multiColumn) {
@@ -344,7 +339,7 @@ class TableTab extends ScrollableTab {
 		}
 		packColumns();
 	}
-	
+
 	void setItemText(TableItem item, int i, String node) {
 		int index = i % 3;
 		if (multipleColumns.getSelection()) {
@@ -354,7 +349,7 @@ class TableTab extends ScrollableTab {
 			item.setText (node);
 		}
 	}
-	
+
 	/**
 	 * Creates the "Size" group.  The "Size" group contains
 	 * controls that allow the user to change the size of
@@ -363,7 +358,7 @@ class TableTab extends ScrollableTab {
 	@Override
 	void createSizeGroup () {
 		super.createSizeGroup();
-	
+
 		packColumnsButton = new Button (sizeGroup, SWT.PUSH);
 		packColumnsButton.setText (ControlExample.getResourceString("Pack_Columns"));
 		packColumnsButton.addSelectionListener(new SelectionAdapter () {
@@ -374,14 +369,14 @@ class TableTab extends ScrollableTab {
 			}
 		});
 	}
-	
+
 	/**
 	 * Creates the "Style" group.
 	 */
 	@Override
 	void createStyleGroup () {
 		super.createStyleGroup ();
-		
+
 		/* Create the extra widgets */
 		noScrollButton = new Button (styleGroup, SWT.CHECK);
 		noScrollButton.setText ("SWT.NO_SCROLL");
@@ -393,7 +388,7 @@ class TableTab extends ScrollableTab {
 		hideSelectionButton = new Button (styleGroup, SWT.CHECK);
 		hideSelectionButton.setText ("SWT.HIDE_SELECTION");
 	}
-	
+
 	/**
 	 * Gets the "Example" widget children's items, if any.
 	 *
@@ -408,7 +403,7 @@ class TableTab extends ScrollableTab {
 		System.arraycopy(items, 0, allItems, columns.length, items.length);
 		return allItems;
 	}
-	
+
 	/**
 	 * Gets the "Example" widget children.
 	 */
@@ -416,7 +411,7 @@ class TableTab extends ScrollableTab {
 	Widget [] getExampleWidgets () {
 		return new Widget [] {table1};
 	}
-	
+
 	/**
 	 * Returns a list of set/get API method names (without the set/get prefix)
 	 * that can be used to set/get values in the example control(s).
@@ -433,7 +428,7 @@ class TableTab extends ScrollableTab {
 	}
 
 	void packColumns () {
-		int columnCount = table1.getColumnCount(); 
+		int columnCount = table1.getColumnCount();
 		for (int i = 0; i < columnCount; i++) {
 			TableColumn tableColumn = table1.getColumn(i);
 			tableColumn.pack();
@@ -472,7 +467,7 @@ class TableTab extends ScrollableTab {
 	String getTabText () {
 		return "Table";
 	}
-	
+
 	/**
 	 * Sets the foreground color, background color, and font
 	 * of the "Example" widgets to their default settings.
@@ -507,7 +502,7 @@ class TableTab extends ScrollableTab {
 		setCellFont ();
 		if (oldFont != null) oldFont.dispose();
 	}
-	
+
 	/**
 	 * Sets the background color of the Row 0 TableItem in column 1.
 	 */
@@ -523,7 +518,7 @@ class TableTab extends ScrollableTab {
 		if (oldImage != null) oldImage.dispose();
 		item.setImage (colorImage(color));
 	}
-	
+
 	/**
 	 * Sets the foreground color of the Row 0 TableItem in column 1.
 	 */
@@ -539,7 +534,7 @@ class TableTab extends ScrollableTab {
 		if (oldImage != null) oldImage.dispose();
 		item.setImage (colorImage(color));
 	}
-	
+
 	/**
 	 * Sets the font of the Row 0 TableItem in column 1.
 	 */
@@ -573,7 +568,7 @@ class TableTab extends ScrollableTab {
 		if (oldImage != null) oldImage.dispose();
 		item.setImage (colorImage(color));
 	}
-	
+
 	/**
 	 * Sets the foreground color of TableItem [0].
 	 */
@@ -589,7 +584,7 @@ class TableTab extends ScrollableTab {
 		if (oldImage != null) oldImage.dispose();
 		item.setImage (colorImage(color));
 	}
-	
+
 	/**
 	 * Sets the font of TableItem 0.
 	 */
@@ -661,14 +656,14 @@ class TableTab extends ScrollableTab {
 		headerVisibleButton.setSelection (table1.getHeaderVisible());
 		linesVisibleButton.setSelection (table1.getLinesVisible());
 	}
-	
+
 	/**
 	 * Sets the header visible state of the "Example" widgets.
 	 */
 	void setWidgetHeaderVisible () {
 		table1.setHeaderVisible (headerVisibleButton.getSelection ());
 	}
-	
+
 	/**
 	 * Sets the sort indicator state of the "Example" widgets.
 	 */
@@ -707,14 +702,14 @@ class TableTab extends ScrollableTab {
 			}
 		}
 	}
-	
+
 	/**
 	 * Sets the lines visible state of the "Example" widgets.
 	 */
 	void setWidgetLinesVisible () {
 		table1.setLinesVisible (linesVisibleButton.getSelection ());
 	}
-	
+
 	@Override
 	protected void specialPopupMenuItems(Menu menu, Event event) {
     	MenuItem item = new MenuItem(menu, SWT.PUSH);

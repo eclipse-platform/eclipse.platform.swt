@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -18,10 +18,6 @@ import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.DisposeEvent;
-import org.eclipse.swt.events.DisposeListener;
-import org.eclipse.swt.events.HelpEvent;
-import org.eclipse.swt.events.HelpListener;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.MouseTrackAdapter;
@@ -52,7 +48,7 @@ import org.eclipse.swt.widgets.Widget;
  */
 public class HoverHelp {
 	private static ResourceBundle resourceBundle = ResourceBundle.getBundle("examples_hoverhelp");
-	
+
 	static final int
 		hhiInformation = 0,
 		hhiWarning = 1;
@@ -76,17 +72,17 @@ public class HoverHelp {
 		display.dispose();
 
 	}
-	
+
 	/**
 	 * Opens the main program.
 	 */
-	public Shell open(Display display) {		
+	public Shell open(Display display) {
 		// Load the images
 		Class<HoverHelp> clazz = HoverHelp.class;
 		try {
 			if (images == null) {
 				images = new Image[imageLocations.length];
-				
+
 				for (int i = 0; i < imageLocations.length; ++i) {
 					InputStream stream = clazz.getResourceAsStream(imageLocations[i]);
 					ImageData source = new ImageData(stream);
@@ -98,7 +94,7 @@ public class HoverHelp {
 						e.printStackTrace();
 					}
 				}
-			}	
+			}
 		} catch (Exception ex) {
 			System.err.println(getResourceString("error.CouldNotLoadResources",
 				new Object[] { ex.getMessage() }));
@@ -108,17 +104,14 @@ public class HoverHelp {
 		// Create the window
 		Shell shell = new Shell();
 		createPartControl(shell);
-		shell.addDisposeListener(new DisposeListener() {
-			@Override
-			public void widgetDisposed(DisposeEvent e) {
-				/* Free resources */
-				if (images != null) {
-					for (int i = 0; i < images.length; i++) {
-						final Image image = images[i];
-						if (image != null) image.dispose();
-					}
-					images = null;
+		shell.addDisposeListener(e -> {
+			/* Free resources */
+			if (images != null) {
+				for (int i = 0; i < images.length; i++) {
+					final Image image = images[i];
+					if (image != null) image.dispose();
 				}
+				images = null;
 			}
 		});
 		shell.pack();
@@ -138,7 +131,7 @@ public class HoverHelp {
 			return key;
 		} catch (NullPointerException e) {
 			return "!" + key + "!";
-		}			
+		}
 	}
 
 	/**
@@ -161,11 +154,11 @@ public class HoverHelp {
 	 */
 	public void createPartControl(Composite frame) {
 		final ToolTipHandler tooltip = new ToolTipHandler(frame.getShell());
-		
+
 		GridLayout layout = new GridLayout();
 		layout.numColumns = 3;
 		frame.setLayout(layout);
-	
+
 		String platform = SWT.getPlatform();
 		String helpKey = "F1";
 		if (platform.equals("gtk")) helpKey = "Ctrl+F1";
@@ -208,7 +201,7 @@ public class HoverHelp {
 		}
 		table.setLayoutData(new GridData(GridData.VERTICAL_ALIGN_FILL));
 		tooltip.activateHoverHelp(table);
-	
+
 		Tree tree = new Tree (frame, SWT.BORDER);
 		for (int i=0; i<4; i++) {
 			TreeItem item = new TreeItem (tree, SWT.PUSH);
@@ -227,7 +220,7 @@ public class HoverHelp {
 		}
 		tree.setLayoutData(new GridData(GridData.VERTICAL_ALIGN_FILL));
 		tooltip.activateHoverHelp(tree);
-	
+
 		Button button = new Button (frame, SWT.PUSH);
 		button.setText (getResourceString("Hello.text"));
 		button.setData ("TIP_TEXT", getResourceString("Hello.tooltip"));
@@ -247,41 +240,41 @@ public class HoverHelp {
 		private Label  tipLabelImage, tipLabelText;
 		private Widget tipWidget; // widget this tooltip is hovering over
 		private Point  tipPosition; // the position being hovered over
-	
+
 		/**
 		 * Creates a new tooltip handler
 		 *
 		 * @param parent the parent Shell
-		 */	
+		 */
 		public ToolTipHandler(Shell parent) {
 			final Display display = parent.getDisplay();
 			this.parentShell = parent;
-	
+
 			tipShell = new Shell(parent, SWT.ON_TOP | SWT.TOOL);
 			GridLayout gridLayout = new GridLayout();
 			gridLayout.numColumns = 2;
 			gridLayout.marginWidth = 2;
 			gridLayout.marginHeight = 2;
 			tipShell.setLayout(gridLayout);
-	
+
 			tipShell.setBackground(display.getSystemColor(SWT.COLOR_INFO_BACKGROUND));
-			
+
 			tipLabelImage = new Label(tipShell, SWT.NONE);
 			tipLabelImage.setForeground(display.getSystemColor(SWT.COLOR_INFO_FOREGROUND));
 			tipLabelImage.setBackground(display.getSystemColor(SWT.COLOR_INFO_BACKGROUND));
 			tipLabelImage.setLayoutData(new GridData(GridData.FILL_HORIZONTAL |
 				GridData.VERTICAL_ALIGN_CENTER));
-	
+
 			tipLabelText = new Label(tipShell, SWT.NONE);
 			tipLabelText.setForeground(display.getSystemColor(SWT.COLOR_INFO_FOREGROUND));
 			tipLabelText.setBackground(display.getSystemColor(SWT.COLOR_INFO_BACKGROUND));
 			tipLabelText.setLayoutData(new GridData(GridData.FILL_HORIZONTAL |
 				GridData.VERTICAL_ALIGN_CENTER));
 		}
-	
+
 		/**
 		 * Enables customized hover help for a specified control
-		 * 
+		 *
 		 * @control the control on which to enable hoverhelp
 		 */
 		public void activateHoverHelp(final Control control) {
@@ -292,9 +285,9 @@ public class HoverHelp {
 				@Override
 				public void mouseDown (MouseEvent e) {
 					if (tipShell.isVisible()) tipShell.setVisible(false);
-				}	
+				}
 			});
-	
+
 			/*
 			 * Trap hover events to pop-up tooltip
 			 */
@@ -337,34 +330,31 @@ public class HoverHelp {
 					tipShell.setVisible(true);
 				}
 			});
-	
+
 			/*
 			 * Trap F1 Help to pop up a custom help box
 			 */
-			control.addHelpListener(new HelpListener () {
-				@Override
-				public void helpRequested(HelpEvent event) {
-					if (tipWidget == null) return;
-					ToolTipHelpTextHandler handler = (ToolTipHelpTextHandler)
-						tipWidget.getData("TIP_HELPTEXTHANDLER");
-					if (handler == null) return;
-					String text = handler.getHelpText(tipWidget);
-					if (text == null) return;
-					
-					if (tipShell.isVisible()) {
-						tipShell.setVisible(false);
-						Shell helpShell = new Shell(parentShell, SWT.SHELL_TRIM);
-						helpShell.setLayout(new FillLayout());
-						Label label = new Label(helpShell, SWT.NONE);
-						label.setText(text);
-						helpShell.pack();
-						setHoverLocation(helpShell, tipPosition);
-						helpShell.open();
-					}
+			control.addHelpListener(event -> {
+				if (tipWidget == null) return;
+				ToolTipHelpTextHandler handler = (ToolTipHelpTextHandler)
+					tipWidget.getData("TIP_HELPTEXTHANDLER");
+				if (handler == null) return;
+				String text = handler.getHelpText(tipWidget);
+				if (text == null) return;
+
+				if (tipShell.isVisible()) {
+					tipShell.setVisible(false);
+					Shell helpShell = new Shell(parentShell, SWT.SHELL_TRIM);
+					helpShell.setLayout(new FillLayout());
+					Label label = new Label(helpShell, SWT.NONE);
+					label.setText(text);
+					helpShell.pack();
+					setHoverLocation(helpShell, tipPosition);
+					helpShell.open();
 				}
 			});
 		}
-		
+
 		/**
 		 * Sets the location for a hovering shell
 		 * @param shell the object that is to hover
@@ -379,7 +369,7 @@ public class HoverHelp {
 			shell.setBounds(shellBounds);
 		}
 	}
-	
+
 	/**
 	 * ToolTip help handler
 	 */
@@ -390,5 +380,5 @@ public class HoverHelp {
 		 * @return a help text string
 		 */
 		public String getHelpText(Widget widget);
-	}	
+	}
 }

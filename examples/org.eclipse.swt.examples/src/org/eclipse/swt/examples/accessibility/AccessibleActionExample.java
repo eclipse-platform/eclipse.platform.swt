@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2008 IBM Corporation and others.
+ * Copyright (c) 2008, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -10,14 +10,30 @@
  *******************************************************************************/
 package org.eclipse.swt.examples.accessibility;
 
-import java.util.*;
+import java.util.MissingResourceException;
+import java.util.ResourceBundle;
 
-import org.eclipse.swt.*;
-import org.eclipse.swt.widgets.*;
-import org.eclipse.swt.layout.*;
-import org.eclipse.swt.events.*;
-import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.accessibility.*;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.accessibility.ACC;
+import org.eclipse.swt.accessibility.Accessible;
+import org.eclipse.swt.accessibility.AccessibleActionAdapter;
+import org.eclipse.swt.accessibility.AccessibleActionEvent;
+import org.eclipse.swt.accessibility.AccessibleAdapter;
+import org.eclipse.swt.accessibility.AccessibleControlAdapter;
+import org.eclipse.swt.accessibility.AccessibleControlEvent;
+import org.eclipse.swt.accessibility.AccessibleEvent;
+import org.eclipse.swt.events.KeyAdapter;
+import org.eclipse.swt.events.KeyEvent;
+import org.eclipse.swt.events.MouseAdapter;
+import org.eclipse.swt.events.MouseEvent;
+import org.eclipse.swt.graphics.GC;
+import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.layout.FillLayout;
+import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Canvas;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Shell;
 
 /**
  * This example shows how to use an AccessibleActionListener
@@ -33,7 +49,7 @@ public class AccessibleActionExample {
 			return key;
 		} catch (NullPointerException e) {
 			return "!" + key + "!"; //$NON-NLS-1$ //$NON-NLS-2$
-		}			
+		}
 	}
 	final static String buttonText = "Action Button";
 
@@ -42,10 +58,10 @@ public class AccessibleActionExample {
 		Shell shell = new Shell(display);
 		shell.setLayout(new FillLayout());
 		shell.setText("Accessible Action Example");
-		
+
 		Button button = new Button(shell, SWT.PUSH);
 		button.setText("Button");
-		
+
 		final Canvas customButton = new Canvas(shell, SWT.NONE) {
 			@Override
 			public Point computeSize(int wHint, int hHint, boolean changed) {
@@ -57,15 +73,12 @@ public class AccessibleActionExample {
 				return point;
 			}
 		};
-		customButton.addPaintListener(new PaintListener() {
-			@Override
-			public void paintControl(PaintEvent e) {
-				Rectangle clientArea = customButton.getClientArea();
-				Point stringExtent = e.gc.stringExtent(buttonText);
-				int x = clientArea.x + (clientArea.width - stringExtent.x) / 2;
-				int y = clientArea.y + (clientArea.height - stringExtent.y) / 2;
-				e.gc.drawString(buttonText, x, y);
-			}
+		customButton.addPaintListener(e -> {
+			Rectangle clientArea = customButton.getClientArea();
+			Point stringExtent = e.gc.stringExtent(buttonText);
+			int x = clientArea.x + (clientArea.width - stringExtent.x) / 2;
+			int y = clientArea.y + (clientArea.height - stringExtent.y) / 2;
+			e.gc.drawString(buttonText, x, y);
 		});
 		customButton.addMouseListener(new MouseAdapter() {
 			@Override
@@ -132,7 +145,7 @@ public class AccessibleActionExample {
 			}
 			@Override
 			public void getKeyBinding(AccessibleActionEvent e) {
-				switch (e.index) { 
+				switch (e.index) {
 					case 0: e.result = "1;CTRL+1"; break;
 					case 1: e.result = "2;CTRL+2"; break;
 					default: e.result = null;
@@ -147,7 +160,7 @@ public class AccessibleActionExample {
 		}
 		display.dispose();
 	}
-	
+
 	/**
 	 * Perform the specified action.
 	 * @param action - must be 0 (for action 1) or 1 (for action 2)

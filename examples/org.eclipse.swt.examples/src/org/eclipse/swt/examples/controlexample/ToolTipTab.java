@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2007 IBM Corporation and others.
+ * Copyright (c) 2000, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -14,8 +14,6 @@ package org.eclipse.swt.examples.controlexample;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ControlAdapter;
 import org.eclipse.swt.events.ControlEvent;
-import org.eclipse.swt.events.DisposeEvent;
-import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridData;
@@ -34,30 +32,30 @@ class ToolTipTab extends Tab {
 	/* Example widgets and groups that contain them */
 	ToolTip toolTip1;
 	Group toolTipGroup;
-	
+
 	/* Style widgets added to the "Style" group */
 	Button balloonButton, iconErrorButton, iconInformationButton, iconWarningButton, noIconButton;
-	
+
 	/* Other widgets added to the "Other" group */
 	Button autoHideButton, showInTrayButton;
-	
+
 	Tray tray;
 	TrayItem trayItem;
-	
+
 	/**
 	 * Creates the Tab within a given instance of ControlExample.
 	 */
 	ToolTipTab(ControlExample instance) {
 		super(instance);
 	}
-	
+
 	/**
 	 * Creates the "Example" group.
 	 */
 	@Override
 	void createExampleGroup () {
 		super.createExampleGroup ();
-		
+
 		/* Create a group for the tooltip visibility check box */
 		toolTipGroup = new Group (exampleGroup, SWT.NONE);
 		toolTipGroup.setLayout (new GridLayout ());
@@ -72,26 +70,26 @@ class ToolTipTab extends Tab {
 			}
 		});
 	}
-	
+
 	/**
 	 * Creates the "Example" widgets.
 	 */
 	@Override
 	void createExampleWidgets () {
-		
+
 		/* Compute the widget style */
 		int style = getDefaultStyle();
 		if (balloonButton.getSelection ()) style |= SWT.BALLOON;
 		if (iconErrorButton.getSelection ()) style |= SWT.ICON_ERROR;
 		if (iconInformationButton.getSelection ()) style |= SWT.ICON_INFORMATION;
 		if (iconWarningButton.getSelection ()) style |= SWT.ICON_WARNING;
-		
+
 		/* Create the example widgets */
 		toolTip1 = new ToolTip (shell, style);
 		toolTip1.setText(ControlExample.getResourceString("ToolTip_Title"));
 		toolTip1.setMessage(ControlExample.getResourceString("Example_string"));
 	}
-	
+
 	/**
 	 * Creates the tab folder page.
 	 *
@@ -114,7 +112,7 @@ class ToolTipTab extends Tab {
 				setExampleWidgetSize ();
 			}
 		});
-		
+
 		return tabFolderPage;
 	}
 
@@ -124,7 +122,7 @@ class ToolTipTab extends Tab {
 	@Override
 	void createStyleGroup () {
 		super.createStyleGroup ();
-	
+
 		/* Create the extra widgets */
 		balloonButton = new Button (styleGroup, SWT.CHECK);
 		balloonButton.setText ("SWT.BALLOON");
@@ -137,12 +135,12 @@ class ToolTipTab extends Tab {
 		noIconButton = new Button (styleGroup, SWT.RADIO);
 		noIconButton.setText(ControlExample.getResourceString("No_Icon"));
 	}
-	
+
 	@Override
 	void createColorAndFontGroup () {
 		// ToolTip does not need a color and font group.
 	}
-	
+
 	@Override
 	void createOtherGroup () {
 		/* Create the group */
@@ -150,7 +148,7 @@ class ToolTipTab extends Tab {
 		otherGroup.setLayout (new GridLayout ());
 		otherGroup.setLayoutData (new GridData (SWT.FILL, SWT.FILL, false, false));
 		otherGroup.setText (ControlExample.getResourceString("Other"));
-	
+
 		/* Create the controls */
 		autoHideButton = new Button(otherGroup, SWT.CHECK);
 		autoHideButton.setText(ControlExample.getResourceString("AutoHide"));
@@ -172,27 +170,22 @@ class ToolTipTab extends Tab {
 				showExampleWidgetInTray ();
 			}
 		});
-		shell.addDisposeListener(new DisposeListener() {
-			@Override
-			public void widgetDisposed(DisposeEvent event) {
-				disposeTrayItem();
-			}
-		});
+		shell.addDisposeListener(event -> disposeTrayItem());
 
 		/* Set the default state */
 		autoHideButton.setSelection(true);
 	}
-	
+
 	@Override
 	void createSizeGroup () {
 		// ToolTip does not need a size group.
 	}
-	
+
 	@Override
 	void createBackgroundModeGroup () {
 		// ToolTip does not need a background mode group.
 	}
-	
+
 	/**
 	 * Disposes the "Example" widgets.
 	 */
@@ -201,7 +194,7 @@ class ToolTipTab extends Tab {
 		disposeTrayItem();
 		super.disposeExampleWidgets();
 	}
-	
+
 	/**
 	 * Gets the "Example" widget children.
 	 */
@@ -210,7 +203,7 @@ class ToolTipTab extends Tab {
 	Widget[] getExampleWidgets () {
 		return new Widget [] {toolTip1};
 	}
-	
+
 	/**
 	 * Returns a list of set/get API method names (without the set/get prefix)
 	 * that can be used to set/get values in the example control(s).
@@ -235,7 +228,7 @@ class ToolTipTab extends Tab {
 	String getTabText () {
 		return "ToolTip";
 	}
-	
+
 	/**
 	 * Sets the state of the "Example" widgets.
 	 */
@@ -259,14 +252,14 @@ class ToolTipTab extends Tab {
 	void setExampleWidgetVisibility () {
 		toolTip1.setVisible (visibleButton.getSelection ());
 	}
-	
+
 	/**
 	 * Sets the autoHide state of the "Example" widgets.
 	 */
 	void setExampleWidgetAutoHide () {
 		toolTip1.setAutoHide(autoHideButton.getSelection ());
 	}
-	
+
 	void showExampleWidgetInTray () {
 		if (showInTrayButton.getSelection ()) {
 			createTrayItem();
@@ -282,7 +275,7 @@ class ToolTipTab extends Tab {
 			trayItem.setImage(instance.images[ControlExample.ciTarget]);
 		}
 	}
-	
+
 	void disposeTrayItem() {
 		if (trayItem != null) {
 			trayItem.setToolTip(null);

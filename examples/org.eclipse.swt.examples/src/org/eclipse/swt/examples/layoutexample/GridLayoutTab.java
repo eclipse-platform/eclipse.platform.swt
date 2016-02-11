@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -16,7 +16,6 @@ import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.custom.TableEditor;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
-import org.eclipse.swt.events.TraverseEvent;
 import org.eclipse.swt.events.TraverseListener;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
@@ -59,35 +58,32 @@ class GridLayoutTab extends Tab {
 	static final int MINWIDTH_COL = 12;
 	static final int MINHEIGHT_COL = 13;
 	static final int EXCLUDE_COL = 14;
-	
+
 	static final int TOTAL_COLS = 15;
-		
+
 	/**
 	 * Creates the Tab within a given instance of LayoutExample.
 	 */
 	GridLayoutTab(LayoutExample instance) {
 		super(instance);
 	}
-	
+
 	/**
 	 * Creates the widgets in the "child" group.
 	 */
 	@Override
 	void createChildWidgets () {
 		/* Create the TraverseListener */
-		final TraverseListener traverseListener = new TraverseListener () {
-			@Override
-			public void keyTraversed (TraverseEvent e) {
-				if (e.detail == SWT.TRAVERSE_RETURN || e.detail == SWT.TRAVERSE_TAB_NEXT)
-					resetEditors ();
-				if (e.detail == SWT.TRAVERSE_ESCAPE)
-					disposeEditors ();
-			}
+		final TraverseListener traverseListener = e -> {
+			if (e.detail == SWT.TRAVERSE_RETURN || e.detail == SWT.TRAVERSE_TAB_NEXT)
+				resetEditors ();
+			if (e.detail == SWT.TRAVERSE_ESCAPE)
+				disposeEditors ();
 		};
-		
+
 		/* Add common controls */
 		super.createChildWidgets ();
-			
+
 		/* Add hovers to the column headers whose field names have been shortened to save space */
 		table.getColumn (HALIGN_COL).setToolTipText ("horizontalAlignment");
 		table.getColumn (VALIGN_COL).setToolTipText ("verticalAlignment");
@@ -99,8 +95,8 @@ class GridLayoutTab extends Tab {
 		table.getColumn (VINDENT_COL).setToolTipText ("verticalIndent");
 		table.getColumn (MINWIDTH_COL).setToolTipText ("minimumWidth");
 		table.getColumn (MINHEIGHT_COL).setToolTipText ("minimumHeight");
-		
-		/* Add TableEditors */		
+
+		/* Add TableEditors */
 		nameEditor = new TableEditor (table);
 		comboEditor = new TableEditor (table);
 		widthEditor = new TableEditor (table);
@@ -130,22 +126,22 @@ class GridLayoutTab extends Tab {
 					return;
 				}
 				table.showSelection ();
-				
+
 				nameText = new Text (table, SWT.SINGLE);
 				nameText.setText (data.get (index) [NAME_COL]);
 				createTextEditor (nameText, nameEditor, NAME_COL);
-				
+
 				combo = new CCombo (table, SWT.READ_ONLY);
 				createComboEditor (combo, comboEditor);
-				
+
 				widthText = new Text (table, SWT.SINGLE);
 				widthText.setText (data.get (index) [WIDTH_COL]);
 				createTextEditor (widthText, widthEditor, WIDTH_COL);
-				
+
 				heightText = new Text (table, SWT.SINGLE);
 				heightText.setText (data.get (index) [HEIGHT_COL]);
 				createTextEditor (heightText, heightEditor, HEIGHT_COL);
-				
+
 				String [] alignValues = new String [] {"BEGINNING","CENTER","END","FILL"};
 				hAlign = new CCombo (table, SWT.NONE);
 				hAlign.setItems (alignValues);
@@ -155,7 +151,7 @@ class GridLayoutTab extends Tab {
 				hAlignEditor.minimumWidth = 50;
 				hAlignEditor.setEditor (hAlign, newItem, HALIGN_COL);
 				hAlign.addTraverseListener (traverseListener);
-				
+
 				vAlign = new CCombo (table, SWT.NONE);
 				vAlign.setItems (alignValues);
 				vAlign.setText (newItem.getText (VALIGN_COL));
@@ -164,7 +160,7 @@ class GridLayoutTab extends Tab {
 				vAlignEditor.minimumWidth = 50;
 				vAlignEditor.setEditor (vAlign, newItem, VALIGN_COL);
 				vAlign.addTraverseListener (traverseListener);
-				
+
 				String [] boolValues = new String [] {"false", "true"};
 				hGrab = new CCombo (table, SWT.NONE);
 				hGrab.setItems (boolValues);
@@ -174,7 +170,7 @@ class GridLayoutTab extends Tab {
 				hGrabEditor.minimumWidth = 50;
 				hGrabEditor.setEditor (hGrab, newItem, HGRAB_COL);
 				hGrab.addTraverseListener (traverseListener);
-				
+
 				vGrab = new CCombo (table, SWT.NONE);
 				vGrab.setItems (boolValues);
 				vGrab.setText (newItem.getText (VGRAB_COL));
@@ -183,27 +179,27 @@ class GridLayoutTab extends Tab {
 				vGrabEditor.minimumWidth = 50;
 				vGrabEditor.setEditor (vGrab, newItem, VGRAB_COL);
 				vGrab.addTraverseListener (traverseListener);
-                
+
 				hSpan = new Text (table, SWT.SINGLE);
 				hSpan.setText (data.get (index) [HSPAN_COL]);
 				createTextEditor (hSpan, hSpanEditor, HSPAN_COL);
-				
+
 				vSpan = new Text (table, SWT.SINGLE);
 				vSpan.setText (data.get (index) [VSPAN_COL]);
 				createTextEditor (vSpan, vSpanEditor, VSPAN_COL);
-				
+
 				hIndent = new Text (table, SWT.SINGLE);
 				hIndent.setText (data.get (index) [HINDENT_COL]);
 				createTextEditor (hIndent, hIndentEditor, HINDENT_COL);
-				
+
 				vIndent = new Text (table, SWT.SINGLE);
 				vIndent.setText (data.get (index) [VINDENT_COL]);
 				createTextEditor (vIndent, vIndentEditor, VINDENT_COL);
-				
+
 				minWidthText = new Text (table, SWT.SINGLE);
 				minWidthText.setText (data.get (index) [MINWIDTH_COL]);
 				createTextEditor (minWidthText, minWidthEditor, MINWIDTH_COL);
-				
+
 				minHeightText = new Text (table, SWT.SINGLE);
 				minHeightText.setText (data.get (index) [MINHEIGHT_COL]);
 				createTextEditor (minHeightText, minHeightEditor, MINHEIGHT_COL);
@@ -216,7 +212,7 @@ class GridLayoutTab extends Tab {
 				excludeEditor.minimumWidth = 50;
 				excludeEditor.setEditor (exclude, newItem, EXCLUDE_COL);
 				exclude.addTraverseListener (traverseListener);
-                
+
                 for (int i=0; i<table.getColumnCount (); i++) {
                 	Rectangle rect = newItem.getBounds (i);
                     if (rect.contains (pt)) {
@@ -225,9 +221,9 @@ class GridLayoutTab extends Tab {
                     			nameText.setFocus ();
                     			break;
 							case COMBO_COL :
-								combo.setFocus ();	
+								combo.setFocus ();
 								break;
-							case WIDTH_COL :	
+							case WIDTH_COL :
 								widthText.setFocus ();
 								break;
 							case HEIGHT_COL :
@@ -257,7 +253,7 @@ class GridLayoutTab extends Tab {
 							case VINDENT_COL :
 								vIndent.setFocus ();
 								break;
-							case MINWIDTH_COL :	
+							case MINWIDTH_COL :
 								minWidthText.setFocus ();
 								break;
 							case MINHEIGHT_COL :
@@ -271,7 +267,7 @@ class GridLayoutTab extends Tab {
 								break;
 						}
                     }
-                } 
+                }
 			}
 		});
 	}
@@ -333,12 +329,12 @@ class GridLayoutTab extends Tab {
 		verticalSpacing = new Spinner(marginGroup, SWT.BORDER);
 		verticalSpacing.setSelection(5);
 		verticalSpacing.addSelectionListener(selectionListener);
-        
+
 		/* Add common controls */
 		super.createControlWidgets ();
 		controlGroup.pack();
 	}
-	
+
 	/**
 	 * Creates the example layout.
 	 */
@@ -347,8 +343,8 @@ class GridLayoutTab extends Tab {
 		gridLayout = new GridLayout ();
 		layoutComposite.setLayout (gridLayout);
 	}
-	
-	/** 
+
+	/**
 	 * Disposes the editors without placing their contents
 	 * into the table.
 	 */
@@ -371,10 +367,10 @@ class GridLayoutTab extends Tab {
 		minHeightText.dispose ();
 		exclude.dispose ();
 	}
-	
+
 	/**
 	 * Generates code for the example layout.
-	 */	
+	 */
 	@Override
 	StringBuffer generateLayoutCode () {
 		StringBuffer code = new StringBuffer ();
@@ -408,7 +404,7 @@ class GridLayoutTab extends Tab {
 			code.append ("\t\tgridLayout.verticalSpacing = " + gridLayout.verticalSpacing + ";\n");
 		}
 		code.append ("\t\tshell.setLayout (gridLayout);\n");
-		
+
 		boolean first = true;
 		boolean bounds, align, grab, span;
 		for (int i = 0; i < children.length; i++) {
@@ -472,16 +468,16 @@ class GridLayoutTab extends Tab {
 				if (code.substring (code.length () - 33).equals ("GridData data = new GridData ();\n")) {
 					code.delete (code.length () - 33, code.length ());
 					first = true;
-				} else if (code.substring (code.length () - 24).equals ("data = new GridData ();\n")) { 
+				} else if (code.substring (code.length () - 24).equals ("data = new GridData ();\n")) {
 					code.delete (code.length () - 24, code.length ());
-				} else {	
+				} else {
 					code.append ("\t\t" + names [i] + ".setLayoutData (data);\n");
 				}
 			}
 		}
 		return code;
 	}
-	
+
 	String alignmentString(int alignment) {
 		if (alignment == SWT.BEGINNING) return "SWT.BEGINNING";
 		if (alignment == SWT.CENTER) return "SWT.CENTER";
@@ -507,23 +503,23 @@ class GridLayoutTab extends Tab {
 	String [] getLayoutDataFieldNames() {
 		return new String [] {
 			"Control Name",
-			"Control Type", 
-			"width", 
-			"height", 
-			"hAlignment", //"horizontalAlignment", 
-			"vAlignment", //"verticalAlignment", 
-			"grabH", //"grabExcessHorizontalSpace", 
-			"grabV", //"grabExcessVerticalSpace", 
+			"Control Type",
+			"width",
+			"height",
+			"hAlignment", //"horizontalAlignment",
+			"vAlignment", //"verticalAlignment",
+			"grabH", //"grabExcessHorizontalSpace",
+			"grabV", //"grabExcessVerticalSpace",
 			"hSpan", //"horizontalSpan",
-			"vSpan", //"verticalSpan", 
-			"hIndent", //"horizontalIndent", 
+			"vSpan", //"verticalSpan",
+			"hIndent", //"horizontalIndent",
 			"vIndent", //"verticalIndent",
 			"minWidth", //"minimumWidth",
-			"minHeight", //"minimumHeight", 
+			"minHeight", //"minimumHeight",
 			"exclude"
 		};
 	}
-	
+
 	/**
 	 * Gets the text for the tab folder item.
 	 */
@@ -531,7 +527,7 @@ class GridLayoutTab extends Tab {
 	String getTabText () {
 		return "GridLayout";
 	}
-	
+
 	/**
 	 * Takes information from TableEditors and stores it.
 	 */
@@ -541,7 +537,7 @@ class GridLayoutTab extends Tab {
 		if (oldItem != null) {
 			int row = table.indexOf (oldItem);
 			/** Make sure user enters a valid data*/
-			try {				
+			try {
 				new String (nameText.getText ());
 			} catch (NumberFormatException e) {
 				nameText.setText (oldItem.getText (NAME_COL));
@@ -588,8 +584,8 @@ class GridLayoutTab extends Tab {
 			}
 			String [] insert = new String [] {
 				nameText.getText (), combo.getText (), widthText.getText (), heightText.getText (),
-				hAlign.getText (), vAlign.getText (), hGrab.getText (), vGrab.getText (), 
-				hSpan.getText (), vSpan.getText (), hIndent.getText (), vIndent.getText (), 
+				hAlign.getText (), vAlign.getText (), hGrab.getText (), vGrab.getText (),
+				hSpan.getText (), vSpan.getText (), hIndent.getText (), vIndent.getText (),
 				minWidthText.getText (), minHeightText.getText (), exclude.getText ()
 			};
 			data.set (row, insert);
@@ -603,15 +599,15 @@ class GridLayoutTab extends Tab {
 		setLayoutData ();
 		layoutComposite.layout (true);
 		layoutGroup.layout (true);
-	}	
-	
+	}
+
 	/**
 	 * Return the initial weight of the layout and control groups within the SashForm.
 	 * @return the desired sash weights for the tab page
 	 */
 	@Override
 	int[] sashWeights () {
-		return new int[] {35, 65};		
+		return new int[] {35, 65};
 	}
 
 	/**
@@ -670,11 +666,11 @@ class GridLayoutTab extends Tab {
 			/* Set exclude boolean */
 			exclude = items [i].getText (EXCLUDE_COL);
 			data.exclude = exclude.equals ("true");
-			
+
 			children [i].setLayoutData (data);
 		}
 	}
-	
+
 	/**
 	 * Sets the state of the layout.
 	 */
@@ -684,7 +680,7 @@ class GridLayoutTab extends Tab {
 		gridLayout.numColumns = numColumns.getSelection ();
 		gridLayout.makeColumnsEqualWidth = makeColumnsEqualWidth.getSelection ();
 		makeColumnsEqualWidth.setEnabled (numColumns.getSelection () > 1);
-		
+
 		/* Set the margins and spacing */
 		gridLayout.marginWidth = marginWidth.getSelection ();
 		gridLayout.marginHeight = marginHeight.getSelection ();

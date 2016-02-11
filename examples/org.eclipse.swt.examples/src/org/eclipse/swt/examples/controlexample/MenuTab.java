@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2014 IBM Corporation and others.
+ * Copyright (c) 2000, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -12,8 +12,6 @@ package org.eclipse.swt.examples.controlexample;
 
 
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.PaintEvent;
-import org.eclipse.swt.events.PaintListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridData;
@@ -25,7 +23,7 @@ import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.Shell;
 
-class MenuTab extends Tab {	
+class MenuTab extends Tab {
 	/* Widgets added to the "Menu Style", "MenuItem Style" and "Other" groups */
 	Button barButton, dropDownButton, popUpButton, noRadioGroupButton, leftToRightButton, rightToLeftButton;
 	Button checkButton, cascadeButton, pushButton, radioButton, separatorButton;
@@ -36,7 +34,7 @@ class MenuTab extends Tab {
 	/* Variables used to track the open shells */
 	int shellCount = 0;
 	Shell [] shells = new Shell [4];
-	
+
 	/**
 	 * Creates the Tab within a given instance of ControlExample.
 	 */
@@ -55,14 +53,14 @@ class MenuTab extends Tab {
 		}
 		shellCount = 0;
 	}
-	
+
 	/**
 	 * Handle the Create button selection event.
 	 *
 	 * @param event org.eclipse.swt.events.SelectionEvent
 	 */
 	public void createButtonSelected(SelectionEvent event) {
-	
+
 		/*
 		 * Remember the example shells so they
 		 * can be disposed by the user.
@@ -72,13 +70,13 @@ class MenuTab extends Tab {
 			System.arraycopy (shells, 0, newShells, 0, shells.length);
 			shells = newShells;
 		}
-	
+
 		int orientation = 0;
 		if (leftToRightButton.getSelection()) orientation |= SWT.LEFT_TO_RIGHT;
 		if (rightToLeftButton.getSelection()) orientation |= SWT.RIGHT_TO_LEFT;
 		int radioBehavior = 0;
 		if (noRadioGroupButton.getSelection()) radioBehavior |= SWT.NO_RADIO_GROUP;
-		
+
 		/* Create the shell and menu(s) */
 		Shell shell = new Shell (SWT.SHELL_TRIM | orientation);
 		shells [shellCount] = shell;
@@ -98,12 +96,12 @@ class MenuTab extends Tab {
 				Menu dropDownMenu = new Menu(shell, SWT.DROP_DOWN | radioBehavior);
 				item.setMenu(dropDownMenu);
 				hookListeners(dropDownMenu);
-	
+
 				/* Create various menu items, depending on selections. */
 				createMenuItems(dropDownMenu, subMenuButton.getSelection(), subSubMenuButton.getSelection());
 			}
 		}
-		
+
 		if (popUpButton.getSelection()) {
 			/* Create pop-up menu. */
 			Menu popUpMenu = new Menu(shell, SWT.POP_UP | radioBehavior);
@@ -113,22 +111,17 @@ class MenuTab extends Tab {
 			/* Create various menu items, depending on selections. */
 			createMenuItems(popUpMenu, subMenuButton.getSelection(), subSubMenuButton.getSelection());
 		}
-		
+
 		/* Set the size, title and open the shell. */
 		shell.setSize (300, 100);
 		shell.setText (ControlExample.getResourceString("Title") + shellCount);
-		shell.addPaintListener(new PaintListener() {
-			@Override
-			public void paintControl(PaintEvent e) {
-				e.gc.drawString(ControlExample.getResourceString("PopupMenuHere"), 20, 20);
-			}
-		});
+		shell.addPaintListener(e -> e.gc.drawString(ControlExample.getResourceString("PopupMenuHere"), 20, 20));
 		shell.open ();
 		shellCount++;
 	}
-	
+
 	/**
-	 * Creates the "Control" group. 
+	 * Creates the "Control" group.
 	 */
 	@Override
 	void createControlGroup () {
@@ -136,18 +129,18 @@ class MenuTab extends Tab {
 		 * Create the "Control" group.  This is the group on the
 		 * right half of each example tab.  For MenuTab, it consists of
 		 * the Menu style group, the MenuItem style group and the 'other' group.
-		 */		
+		 */
 		controlGroup = new Group (tabFolderPage, SWT.NONE);
 		controlGroup.setLayout (new GridLayout (2, true));
 		controlGroup.setLayoutData (new GridData (GridData.HORIZONTAL_ALIGN_FILL | GridData.VERTICAL_ALIGN_FILL));
 		controlGroup.setText (ControlExample.getResourceString("Parameters"));
-	
+
 		/* Create a group for the menu style controls */
 		styleGroup = new Group (controlGroup, SWT.NONE);
 		styleGroup.setLayout (new GridLayout ());
 		styleGroup.setLayoutData (new GridData (GridData.HORIZONTAL_ALIGN_FILL | GridData.VERTICAL_ALIGN_FILL));
 		styleGroup.setText (ControlExample.getResourceString("Menu_Styles"));
-	
+
 		/* Create a group for the menu item style controls */
 		menuItemStyleGroup = new Group (controlGroup, SWT.NONE);
 		menuItemStyleGroup.setLayout (new GridLayout ());
@@ -160,13 +153,13 @@ class MenuTab extends Tab {
 		otherGroup.setLayoutData (new GridData(GridData.HORIZONTAL_ALIGN_FILL | GridData.VERTICAL_ALIGN_FILL));
 		otherGroup.setText (ControlExample.getResourceString("Other"));
 	}
-	
+
 	/**
 	 * Creates the "Control" widget children.
 	 */
 	@Override
 	void createControlWidgets () {
-	
+
 		/* Create the menu style buttons */
 		barButton = new Button (styleGroup, SWT.CHECK);
 		barButton.setText ("SWT.BAR");
@@ -181,7 +174,7 @@ class MenuTab extends Tab {
 		leftToRightButton.setSelection(true);
 		rightToLeftButton = new Button (styleGroup, SWT.RADIO);
 		rightToLeftButton.setText ("SWT.RIGHT_TO_LEFT");
-	
+
 		/* Create the menu item style buttons */
 		cascadeButton = new Button (menuItemStyleGroup, SWT.CHECK);
 		cascadeButton.setText ("SWT.CASCADE");
@@ -193,7 +186,7 @@ class MenuTab extends Tab {
 		radioButton.setText ("SWT.RADIO");
 		separatorButton = new Button (menuItemStyleGroup, SWT.CHECK);
 		separatorButton.setText ("SWT.SEPARATOR");
-		
+
 		/* Create the 'other' buttons */
 		enabledButton = new Button(otherGroup, SWT.CHECK);
 		enabledButton.setText(ControlExample.getResourceString("Enabled"));
@@ -210,7 +203,7 @@ class MenuTab extends Tab {
 		subSubMenuButton.setText (ControlExample.getResourceString("SubSubMenu"));
 		tooltipButton = new Button (otherGroup, SWT.CHECK);
 		tooltipButton.setText (ControlExample.getResourceString("Show_Tooltip"));
-		
+
 		/* Create the "create" and "closeAll" buttons (and a 'filler' label to place them) */
 		new Label(controlGroup, SWT.NONE);
 		createButton = new Button (controlGroup, SWT.NONE);
@@ -219,7 +212,7 @@ class MenuTab extends Tab {
 		closeAllButton = new Button (controlGroup, SWT.NONE);
 		closeAllButton.setLayoutData (new GridData (GridData.HORIZONTAL_ALIGN_BEGINNING));
 		closeAllButton.setText (ControlExample.getResourceString("Close_All_Shells"));
-	
+
 		/* Add the listeners */
 		createButton.addSelectionListener(new SelectionAdapter() {
 			@Override
@@ -239,7 +232,7 @@ class MenuTab extends Tab {
 				subSubMenuButton.setEnabled (subMenuButton.getSelection ());
 			}
 		});
-	
+
 		/* Set the default state */
 		barButton.setSelection (true);
 		dropDownButton.setSelection (true);
@@ -251,7 +244,7 @@ class MenuTab extends Tab {
 		separatorButton.setSelection (true);
 		subSubMenuButton.setEnabled (subMenuButton.getSelection ());
 	}
-	
+
 	/* Create various menu items, depending on selections. */
 	void createMenuItems(Menu menu, boolean createSubMenu, boolean createSubSubMenu) {
 		MenuItem item;
@@ -264,12 +257,12 @@ class MenuTab extends Tab {
 			if (tooltipButton.getSelection()) item.setToolTipText(ControlExample.getResourceString("Tooltip", new String[] {item.getText() }));
 			hookListeners(item);
 		}
-		
+
 		if (separatorButton.getSelection()) {
 			item = new MenuItem(menu, SWT.SEPARATOR);
 			if (tooltipButton.getSelection()) item.setToolTipText(ControlExample.getResourceString("Tooltip", new String[] {item.getText() }));
 		}
-		
+
 		if (checkButton.getSelection()) {
 			item = new MenuItem(menu, SWT.CHECK);
 			item.setText(getMenuItemText("Check"));
@@ -279,7 +272,7 @@ class MenuTab extends Tab {
 			if (tooltipButton.getSelection()) item.setToolTipText(ControlExample.getResourceString("Tooltip", new String[] {item.getText() }));
 			hookListeners(item);
 		}
-				
+
 		if (radioButton.getSelection()) {
 			item = new MenuItem(menu, SWT.RADIO);
 			item.setText(getMenuItemText("1Radio"));
@@ -313,7 +306,7 @@ class MenuTab extends Tab {
 			createMenuItems(subMenu, createSubSubMenu, false);
 		}
 	}
-	
+
 	String getMenuItemText(String item) {
 		boolean cascade = item.equals("Cascade");
 		boolean mnemonic = mnemonicsButton.getSelection();
@@ -330,7 +323,7 @@ class MenuTab extends Tab {
 		}
 		return ControlExample.getResourceString(item);
 	}
-	
+
 	/**
 	 * Gets the text for the tab folder item.
 	 */

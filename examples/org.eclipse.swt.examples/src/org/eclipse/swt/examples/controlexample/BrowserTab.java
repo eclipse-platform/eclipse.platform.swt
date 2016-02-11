@@ -18,19 +18,11 @@ import java.io.InputStreamReader;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.SWTError;
-import org.eclipse.swt.browser.AuthenticationEvent;
-import org.eclipse.swt.browser.AuthenticationListener;
 import org.eclipse.swt.browser.Browser;
-import org.eclipse.swt.browser.CloseWindowListener;
 import org.eclipse.swt.browser.LocationEvent;
 import org.eclipse.swt.browser.LocationListener;
-import org.eclipse.swt.browser.OpenWindowListener;
 import org.eclipse.swt.browser.ProgressEvent;
 import org.eclipse.swt.browser.ProgressListener;
-import org.eclipse.swt.browser.StatusTextEvent;
-import org.eclipse.swt.browser.StatusTextListener;
-import org.eclipse.swt.browser.TitleEvent;
-import org.eclipse.swt.browser.TitleListener;
 import org.eclipse.swt.browser.VisibilityWindowListener;
 import org.eclipse.swt.browser.WindowEvent;
 import org.eclipse.swt.events.ControlAdapter;
@@ -305,20 +297,10 @@ class BrowserTab extends Tab {
 	void hookCustomListener (final String eventName) {
 		if (browser == null) return;
 		if (eventName == "AuthenticationListener") {
-			browser.addAuthenticationListener(new AuthenticationListener () {
-				@Override
-				public void authenticate(AuthenticationEvent event) {
-					log (eventName, event);
-				}
-			});
+			browser.addAuthenticationListener(event -> log (eventName, event));
 		}
 		if (eventName == "CloseWindowListener") {
-			browser.addCloseWindowListener (new CloseWindowListener () {
-				@Override
-				public void close(WindowEvent event) {
-					log (eventName, event);
-				}
-			});
+			browser.addCloseWindowListener (event -> log (eventName, event));
 		}
 		if (eventName == "LocationListener") {
 			browser.addLocationListener (new LocationListener () {
@@ -333,12 +315,7 @@ class BrowserTab extends Tab {
 			});
 		}
 		if (eventName == "OpenWindowListener") {
-			browser.addOpenWindowListener (new OpenWindowListener () {
-				@Override
-				public void open(WindowEvent event) {
-					log (eventName, event);
-				}
-			});
+			browser.addOpenWindowListener (event -> log (eventName, event));
 		}
 		if (eventName == "ProgressListener") {
 			browser.addProgressListener (new ProgressListener () {
@@ -353,20 +330,10 @@ class BrowserTab extends Tab {
 			});
 		}
 		if (eventName == "StatusTextListener") {
-			browser.addStatusTextListener (new StatusTextListener () {
-				@Override
-				public void changed(StatusTextEvent event) {
-					log (eventName, event);
-				}
-			});
+			browser.addStatusTextListener (event -> log (eventName, event));
 		}
 		if (eventName == "TitleListener") {
-			browser.addTitleListener (new TitleListener () {
-				@Override
-				public void changed(TitleEvent event) {
-					log (eventName, event);
-				}
-			});
+			browser.addTitleListener (event -> log (eventName, event));
 		}
 		if (eventName == "VisibilityWindowListener") {
 			browser.addVisibilityWindowListener (new VisibilityWindowListener () {

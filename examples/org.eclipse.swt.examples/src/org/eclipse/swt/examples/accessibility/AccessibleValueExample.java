@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2008 IBM Corporation and others.
+ * Copyright (c) 2008, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -19,8 +19,6 @@ import org.eclipse.swt.accessibility.AccessibleControlEvent;
 import org.eclipse.swt.accessibility.AccessibleEvent;
 import org.eclipse.swt.accessibility.AccessibleValueAdapter;
 import org.eclipse.swt.accessibility.AccessibleValueEvent;
-import org.eclipse.swt.events.PaintEvent;
-import org.eclipse.swt.events.PaintListener;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.FillLayout;
@@ -36,26 +34,23 @@ public class AccessibleValueExample {
 	static int value = 40;
 	static int min = 0;
 	static int max = 100;
-	
+
 	public static void main(String[] args) {
 		Display display = new Display();
 		Shell shell = new Shell(display);
 		shell.setLayout(new FillLayout());
 		shell.setText("Accessible Value Example");
-		
+
 		final Canvas canvas = new Canvas(shell, SWT.DOUBLE_BUFFERED);
-		canvas.addPaintListener(new PaintListener() {
-			@Override
-			public void paintControl(PaintEvent e) {
-				Rectangle rect = canvas.getClientArea();
-				String val = String.valueOf(value);
-				Point size = e.gc.stringExtent(val);
-				e.gc.setBackground(e.display.getSystemColor(SWT.COLOR_LIST_SELECTION));
-				e.gc.fillRectangle(0, 0, rect.width * value / (max - min), rect.height);
-				e.gc.drawString(val, rect.x + (rect.width - size.x) / 2, rect.y + (rect.height - size.y) / 2, true);
-			}
+		canvas.addPaintListener(e -> {
+			Rectangle rect = canvas.getClientArea();
+			String val = String.valueOf(value);
+			Point size = e.gc.stringExtent(val);
+			e.gc.setBackground(e.display.getSystemColor(SWT.COLOR_LIST_SELECTION));
+			e.gc.fillRectangle(0, 0, rect.width * value / (max - min), rect.height);
+			e.gc.drawString(val, rect.x + (rect.width - size.x) / 2, rect.y + (rect.height - size.y) / 2, true);
 		});
-		
+
 		Accessible accessible = canvas.getAccessible();
 		accessible.addAccessibleListener(new AccessibleAdapter() {
 			@Override

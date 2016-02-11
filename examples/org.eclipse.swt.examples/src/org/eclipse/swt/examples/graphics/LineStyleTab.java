@@ -65,12 +65,12 @@ public void dispose() {
 
 @Override
 public void createControlPanel(Composite parent) {
-	
+
 	Composite comp;
-	
+
 	comp = new Composite(parent, SWT.NONE);
 	comp.setLayout(new GridLayout(2, false));
-	
+
 	new Label(comp, SWT.CENTER).setText(GraphicsExample
 			.getResourceString("LineWidth")); //$NON-NLS-1$
 	lineWidthSpinner = new Spinner(comp, SWT.BORDER | SWT.WRAP);
@@ -78,25 +78,22 @@ public void createControlPanel(Composite parent) {
 	lineWidthSpinner.setMinimum(1);
 	lineWidthSpinner.setMaximum(30);
 	lineWidthSpinner.addListener(SWT.Selection, event -> example.redraw());
-		
+
 	ColorMenu cm = new ColorMenu();
 	cm.setPatternItems(example.checkAdvancedGraphics());
-	menu = cm.createMenu(parent.getParent(), new ColorListener() {
-		@Override
-		public void setColor(GraphicsBackground gb) {
-			lineColor = gb;		
-			colorButton.setImage(gb.getThumbNail());
-			example.redraw();
-		}
+	menu = cm.createMenu(parent.getParent(), gb -> {
+		lineColor = gb;
+		colorButton.setImage(gb.getThumbNail());
+		example.redraw();
 	});
 
 	// create color button
 	comp = new Composite(parent, SWT.NONE);
 	comp.setLayout(new GridLayout());
-	
+
 	// initialize the foreground to the 5th item in the menu (blue)
 	lineColor = (GraphicsBackground)menu.getItem(4).getData();
-	
+
 	// color button
 	colorButton = new Button(comp, SWT.PUSH);
 	colorButton.setText(GraphicsExample
@@ -104,7 +101,7 @@ public void createControlPanel(Composite parent) {
 	colorButton.setImage(lineColor.getThumbNail());
 	colorButton.addListener(SWT.Selection, event -> {
 		final Button button = (Button) event.widget;
-		final Composite parent1 = button.getParent(); 
+		final Composite parent1 = button.getParent();
 		Rectangle bounds = button.getBounds();
 		Point point = parent1.toDisplay(new Point(bounds.x, bounds.y));
 		menu.setLocation(point.x, point.y + bounds.height);
@@ -123,10 +120,10 @@ public void paint(GC gc, int width, int height) {
 		pattern = new Pattern(device, lineColor.getBgImage());
 		gc.setForegroundPattern(pattern);
 	}
-	
+
 	// set line width
 	gc.setLineWidth(lineWidthSpinner.getSelection());
-	
+
 	// draw lines with caps
 	gc.drawLine(3*width/16, 1*height/6, 13*width/16, 1*height/6);
 	gc.setLineStyle(SWT.LINE_DASH);
@@ -137,18 +134,18 @@ public void paint(GC gc, int width, int height) {
 	gc.drawLine(3*width/16, 4*height/6, 13*width/16, 4*height/6);
 	gc.setLineStyle(SWT.LINE_DASHDOTDOT);
 	gc.drawLine(3*width/16, 5*height/6, 13*width/16, 5*height/6);
-	
+
 	// draw labels
 	Font font = new Font(device, getPlatformFont(), 20, SWT.NORMAL);
 	gc.setFont(font);
 
 	gc.setForeground(device.getSystemColor(SWT.COLOR_BLACK));
-	
+
 	String text = GraphicsExample.getResourceString("Solid"); //$NON-NLS-1$
 	Point size = gc.stringExtent(text);
 	gc.drawString(text, (width-size.x)/2, 1*height/12, true);
 	text = GraphicsExample.getResourceString("Dash"); //$NON-NLS-1$
-	size = gc.stringExtent(text);	
+	size = gc.stringExtent(text);
 	gc.drawString(text, (width-size.x)/2, 3*height/12, true);
 	text = GraphicsExample.getResourceString("Dot"); //$NON-NLS-1$
 	size = gc.stringExtent(text);
@@ -167,9 +164,9 @@ public void paint(GC gc, int width, int height) {
  */
 static String getPlatformFont() {
 	if(SWT.getPlatform() == "win32") {
-		return "Arial";	
+		return "Arial";
 	} else if (SWT.getPlatform() == "gtk") {
-		return "Baekmuk Batang";		
+		return "Baekmuk Batang";
 	} else {
 		return "Verdana";
 	}

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -15,8 +15,6 @@ package org.eclipse.swt.examples.addressbook;
 import java.util.ResourceBundle;
 
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.ModifyEvent;
-import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridData;
@@ -29,31 +27,28 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
 /**
- * DataEntryDialog class uses <code>org.eclipse.swt</code> 
+ * DataEntryDialog class uses <code>org.eclipse.swt</code>
  * libraries to implement a dialog that accepts basic personal information that
- * is added to a <code>Table</code> widget or edits a <code>TableItem</code> entry 
+ * is added to a <code>Table</code> widget or edits a <code>TableItem</code> entry
  * to represent the entered data.
  */
 public class DataEntryDialog {
 
 	private static ResourceBundle resAddressBook = ResourceBundle.getBundle("examples_addressbook");
-	
+
 	Shell shell;
 	String[] values;
 	String[] labels;
-	
+
 public DataEntryDialog(Shell parent) {
 	shell = new Shell(parent, SWT.DIALOG_TRIM | SWT.PRIMARY_MODAL);
-	shell.setLayout(new GridLayout());		
+	shell.setLayout(new GridLayout());
 }
 
 private void addTextListener(final Text text) {
-	text.addModifyListener(new ModifyListener() {
-		@Override
-		public void modifyText(ModifyEvent e){
-			Integer index = (Integer)(text.getData("index"));
-			values[index.intValue()] = text.getText();
-		}
+	text.addModifyListener(e -> {
+		Integer index = (Integer)(text.getData("index"));
+		values[index.intValue()] = text.getText();
 	});
 }
 private void createControlButtons() {
@@ -62,7 +57,7 @@ private void createControlButtons() {
 	GridLayout layout = new GridLayout();
 	layout.numColumns = 2;
 	composite.setLayout(layout);
-	
+
 	Button okButton = new Button(composite, SWT.PUSH);
 	okButton.setText(resAddressBook.getString("OK"));
 	okButton.addSelectionListener(new SelectionAdapter() {
@@ -71,7 +66,7 @@ private void createControlButtons() {
 			shell.close();
 		}
 	});
-	
+
 	Button cancelButton = new Button(composite, SWT.PUSH);
 	cancelButton.setText(resAddressBook.getString("Cancel"));
 	cancelButton.addSelectionListener(new SelectionAdapter() {
@@ -81,25 +76,25 @@ private void createControlButtons() {
 			shell.close();
 		}
 	});
-	
+
 	shell.setDefaultButton(okButton);
 }
 
 private void createTextWidgets() {
 	if (labels == null) return;
-	
+
 	Composite composite = new Composite(shell, SWT.NONE);
 	composite.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 	GridLayout layout= new GridLayout();
 	layout.numColumns = 2;
 	composite.setLayout(layout);
-	
+
 	if (values == null)
 		values = new String[labels.length];
-	
+
 	for (int i = 0; i < labels.length; i++) {
 		Label label = new Label(composite, SWT.RIGHT);
-		label.setText(labels[i]);	
+		label.setText(labels[i]);
 		Text text = new Text(composite, SWT.BORDER);
 		GridData gridData = new GridData();
 		gridData.widthHint = 400;
@@ -108,7 +103,7 @@ private void createTextWidgets() {
 			text.setText(values[i]);
 		}
 		text.setData("index", new Integer(i));
-		addTextListener(text);	
+		addTextListener(text);
 	}
 }
 
@@ -119,18 +114,18 @@ public String getTitle() {
 	return shell.getText();
 }
 /**
- * Returns the contents of the <code>Text</code> widgets in the dialog in a 
+ * Returns the contents of the <code>Text</code> widgets in the dialog in a
  * <code>String</code> array.
  *
- * @return	String[]	
+ * @return	String[]
  *			The contents of the text widgets of the dialog.
  *			May return null if all text widgets are empty.
- */ 
+ */
 public String[] getValues() {
 	return values;
 }
-/** 
- * Opens the dialog in the given state.  Sets <code>Text</code> widget contents 
+/**
+ * Opens the dialog in the given state.  Sets <code>Text</code> widget contents
  * and dialog behaviour accordingly.
  *
  * @param 	dialogState	int
@@ -146,7 +141,7 @@ public String[] open() {
 		if(!display.readAndDispatch())
 			display.sleep();
 	}
-	
+
 	return getValues();
 }
 public void setLabels(String[] labels) {
@@ -164,13 +159,13 @@ public void setTitle(String title) {
  */
 public void setValues(String[] itemInfo) {
 	if (labels == null) return;
-	
+
 	if (values == null)
 		values = new String[labels.length];
 
 	int numItems = Math.min(values.length, itemInfo.length);
 	for(int i = 0; i < numItems; i++) {
 		values[i] = itemInfo[i];
-	}	
+	}
 }
 }

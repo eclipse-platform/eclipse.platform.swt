@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -12,13 +12,8 @@ package org.eclipse.swt.examples.paint;
 
 import org.eclipse.swt.events.ControlAdapter;
 import org.eclipse.swt.events.ControlEvent;
-import org.eclipse.swt.events.DisposeEvent;
-import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
-import org.eclipse.swt.events.MouseMoveListener;
-import org.eclipse.swt.events.PaintEvent;
-import org.eclipse.swt.events.PaintListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Color;
@@ -90,12 +85,7 @@ public class PaintSurface {
 		setPaintSession(null);
 
 		/* Add our listeners */
-		paintCanvas.addDisposeListener(new DisposeListener() {
-			@Override
-			public void widgetDisposed(DisposeEvent e) {
-				displayFDC.gc.dispose();
-			}			
-		});
+		paintCanvas.addDisposeListener(e -> displayFDC.gc.dispose());
 		paintCanvas.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseDown(MouseEvent event) {
@@ -111,73 +101,67 @@ public class PaintSurface {
 			public void mouseDoubleClick(MouseEvent event) {
 				processMouseEventCoordinates(event);
 				if (paintSession != null) paintSession.mouseDoubleClick(event);
-			}			
-		});
-		paintCanvas.addMouseMoveListener(new MouseMoveListener() {
-			@Override
-			public void mouseMove(MouseEvent event) {
-				processMouseEventCoordinates(event);
-				if (paintSession != null) paintSession.mouseMove(event);
 			}
 		});
-		paintCanvas.addPaintListener(new PaintListener() {
-			@Override
-			public void paintControl(PaintEvent event) {
-				if (rubberband.isEmpty()) {
-					// Nothing to merge, so we just refresh
-					event.gc.drawImage(image,
-						displayFDC.xOffset + event.x, displayFDC.yOffset + event.y, event.width, event.height,
-						event.x, event.y, event.width, event.height);
-				} else {
-					/*
-					 * Avoid flicker when merging overlayed objects by constructing the image on
-					 * a backbuffer first, then blitting it to the screen.
-					 */
-					// Check that the backbuffer is large enough
-					if (paintImage != null) {
-						Rectangle rect = paintImage.getBounds();
-						if ((event.width + event.x > rect.width) ||
-							(event.height + event.y > rect.height)) {
-							paintFDC.gc.dispose();
-							paintImage.dispose();
-							paintImage = null;
-						}
+		paintCanvas.addMouseMoveListener(event -> {
+			processMouseEventCoordinates(event);
+			if (paintSession != null) paintSession.mouseMove(event);
+		});
+		paintCanvas.addPaintListener(event -> {
+			if (rubberband.isEmpty()) {
+				// Nothing to merge, so we just refresh
+				event.gc.drawImage(image,
+					displayFDC.xOffset + event.x, displayFDC.yOffset + event.y, event.width, event.height,
+					event.x, event.y, event.width, event.height);
+			} else {
+				/*
+				 * Avoid flicker when merging overlayed objects by constructing the image on
+				 * a backbuffer first, then blitting it to the screen.
+				 */
+				// Check that the backbuffer is large enough
+				if (paintImage != null) {
+					Rectangle rect1 = paintImage.getBounds();
+					if ((event.width + event.x > rect1.width) ||
+						(event.height + event.y > rect1.height)) {
+						paintFDC.gc.dispose();
+						paintImage.dispose();
+						paintImage = null;
 					}
-					if (paintImage == null) {
-						Display display = getDisplay();
-						Rectangle rect = display.getClientArea();
-						paintImage = new Image(display,
-							Math.max(rect.width, event.width + event.x),
-							Math.max(rect.height, event.height + event.y));
-						paintFDC.gc = new GC(paintImage);
-					}
-					// Setup clipping and the FDC
-					Region clipRegion = new Region();
-					event.gc.getClipping(clipRegion);					
-					paintFDC.gc.setClipping(clipRegion);
-					clipRegion.dispose();
-
-					paintFDC.xOffset = displayFDC.xOffset;
-					paintFDC.yOffset = displayFDC.yOffset;
-					paintFDC.xScale = displayFDC.xScale;
-					paintFDC.yScale = displayFDC.yScale;
-					
-					// Merge the overlayed objects into the image, then blit
-					paintFDC.gc.drawImage(image,
-						displayFDC.xOffset + event.x, displayFDC.yOffset + event.y, event.width, event.height,
-						event.x, event.y, event.width, event.height);
-					rubberband.draw(paintFDC);
-					event.gc.drawImage(paintImage,
-						event.x, event.y, event.width, event.height,
-						event.x, event.y, event.width, event.height);
 				}
+				if (paintImage == null) {
+					Display display = getDisplay();
+					Rectangle rect2 = display.getClientArea();
+					paintImage = new Image(display,
+						Math.max(rect2.width, event.width + event.x),
+						Math.max(rect2.height, event.height + event.y));
+					paintFDC.gc = new GC(paintImage);
+				}
+				// Setup clipping and the FDC
+				Region clipRegion = new Region();
+				event.gc.getClipping(clipRegion);
+				paintFDC.gc.setClipping(clipRegion);
+				clipRegion.dispose();
+
+				paintFDC.xOffset = displayFDC.xOffset;
+				paintFDC.yOffset = displayFDC.yOffset;
+				paintFDC.xScale = displayFDC.xScale;
+				paintFDC.yScale = displayFDC.yScale;
+
+				// Merge the overlayed objects into the image, then blit
+				paintFDC.gc.drawImage(image,
+					displayFDC.xOffset + event.x, displayFDC.yOffset + event.y, event.width, event.height,
+					event.x, event.y, event.width, event.height);
+				rubberband.draw(paintFDC);
+				event.gc.drawImage(paintImage,
+					event.x, event.y, event.width, event.height,
+					event.x, event.y, event.width, event.height);
 			}
 		});
 		paintCanvas.addControlListener(new ControlAdapter() {
 			@Override
 			public void controlResized(ControlEvent event) {
 				handleResize();
-			}			
+			}
 		});
 
 		/* Set up the paint canvas scroll bars */
@@ -199,7 +183,7 @@ public class PaintSurface {
 		});
 		handleResize();
 	}
-	
+
 	/**
 	 * Disposes of the PaintSurface's resources.
 	 */
@@ -255,7 +239,7 @@ public class PaintSurface {
 	 * If oldPaintSession != paintSession calls oldPaintSession.end()
 	 * and paintSession.begin()
 	 * </p>
-	 * 
+	 *
 	 * @param paintSession the paint session to activate; null to disable all sessions
 	 */
 	public void setPaintSession(PaintSession paintSession) {
@@ -276,7 +260,7 @@ public class PaintSurface {
 
 	/**
 	 * Returns the current paint session.
-	 * 
+	 *
 	 * @return the current paint session, null if none is active
 	 */
 	public PaintSession getPaintSession() {
@@ -285,7 +269,7 @@ public class PaintSurface {
 
 	/**
 	 * Returns the current paint tool.
-	 * 
+	 *
 	 * @return the current paint tool, null if none is active (though some other session
 	 *         might be)
 	 */
@@ -305,7 +289,7 @@ public class PaintSurface {
 
 	/**
 	 * Draws a Figure object to the screen and to the backing store permanently.
-	 * 
+	 *
 	 * @param object the object to draw onscreen
 	 */
 	public void drawFigure(Figure object) {
@@ -319,7 +303,7 @@ public class PaintSurface {
 	 * This object will be drawn to the screen as a preview and refreshed appropriately
 	 * until the selection is either cleared or committed.
 	 * </p>
-	 * 
+	 *
 	 * @param object the object to add to the selection
 	 */
 	public void addRubberbandSelection(Figure object) {
@@ -356,7 +340,7 @@ public class PaintSurface {
 		if (isRubberbandHidden()) rubberband.draw(displayFDC);
 		rubberband.clear();
 	}
-	
+
 	/**
 	 * Hides the rubberband (but does not eliminate it).
 	 * <p>
@@ -372,7 +356,7 @@ public class PaintSurface {
 			paintCanvas.redraw(r.x, r.y, r.width, r.height, true);
 			region.dispose();
 		}
-	}		
+	}
 
 	/**
 	 * Shows (un-hides) the rubberband.
@@ -390,10 +374,10 @@ public class PaintSurface {
 			rubberband.draw(displayFDC);
 		}
 	}
-	
+
 	/**
 	 * Determines if the rubberband is hidden.
-	 * 
+	 *
 	 * @return true iff the rubber is hidden
 	 */
 	public boolean isRubberbandHidden() {
@@ -402,7 +386,7 @@ public class PaintSurface {
 
 	/**
 	 * Handles a horizontal scroll event
-	 * 
+	 *
 	 * @param scrollbar the horizontal scroll bar that posted this event
 	 */
 	public void scrollHorizontally(ScrollBar scrollBar) {
@@ -421,7 +405,7 @@ public class PaintSurface {
 
 	/**
 	 * Handles a vertical scroll event
-	 * 
+	 *
 	 * @param scrollbar the vertical scroll bar that posted this event
 	 */
 	public void scrollVertically(ScrollBar scrollBar) {
@@ -437,7 +421,7 @@ public class PaintSurface {
 			}
 		}
 	}
-	
+
 	/**
 	 * Handles resize events
 	 */
@@ -484,7 +468,7 @@ public class PaintSurface {
 		currentPosition.y = event.y =
 			Math.min(Math.max(event.y, 0), visibleHeight - 1) + displayFDC.yOffset;
 	}
-	
+
 	/**
 	 * Clears the status bar.
 	 */
@@ -504,10 +488,10 @@ public class PaintSurface {
 		statusActionInfo = (action != null) ? action : "";
 		updateStatus();
 	}
-	
+
 	/**
 	 * Sets the status bar message text.
-	 * 
+	 *
 	 * @param message the message to display, null to clear
 	 */
 	public void setStatusMessage(String message) {
@@ -517,7 +501,7 @@ public class PaintSurface {
 
 	/**
 	 * Sets the coordinates in the status bar.
-	 * 
+	 *
 	 * @param coord the coordinates to display, null to clear
 	 */
 	public void setStatusCoord(Point coord) {
@@ -528,7 +512,7 @@ public class PaintSurface {
 
 	/**
 	 * Sets the coordinate range in the status bar.
-	 * 
+	 *
 	 * @param a the "from" coordinate, must not be null
 	 * @param b the "to" coordinate, must not be null
 	 */
