@@ -261,6 +261,9 @@ Point layoutHorizontal (Composite composite, boolean move, boolean wrap, int wid
 		for (int i=0; i<count; i++) {
 			Control child = children [i];
 			Point size = computeSize (child, flushCache);
+			if (width > SWT.DEFAULT && width < size.x && wrap) {
+				size = child.computeSize (width, child.getLayoutData() == null ? SWT.DEFAULT : ((RowData) child.getLayoutData()).height, flushCache);
+			}
 			childWidth = Math.max (childWidth, size.x);
 			childHeight = Math.max (childHeight, size.y);
 		}
@@ -284,6 +287,9 @@ Point layoutHorizontal (Composite composite, boolean move, boolean wrap, int wid
 		Control child = children [i];
 		if (pack) {
 			Point size = computeSize (child, flushCache);
+			if (width > SWT.DEFAULT && width < size.x && wrap) {
+				size = child.computeSize (width, child.getLayoutData() == null ? SWT.DEFAULT : ((RowData) child.getLayoutData()).height, flushCache);
+			}
 			childWidth = size.x;
 			childHeight = size.y;
 		}
@@ -380,6 +386,8 @@ Point layoutVertical (Composite composite, boolean move, boolean wrap, int heigh
 		for (int i=0; i<count; i++) {
 			Control child = children [i];
 			Point size = computeSize (child, flushCache);
+			if(height>SWT.DEFAULT && height<size.y && wrap)
+				size=child.computeSize(child.getLayoutData()==null?SWT.DEFAULT:((RowData)child.getLayoutData()).width,height,flushCache);
 			childWidth = Math.max (childWidth, size.x);
 			childHeight = Math.max (childHeight, size.y);
 		}
@@ -403,6 +411,8 @@ Point layoutVertical (Composite composite, boolean move, boolean wrap, int heigh
 		Control child = children [i];
 		if (pack) {
 			Point size = computeSize (child, flushCache);
+			if(height>SWT.DEFAULT && height<size.y && wrap)
+				size=child.computeSize(child.getLayoutData()==null?SWT.DEFAULT:((RowData)child.getLayoutData()).width,height,flushCache);
 			childWidth = size.x;
 			childHeight = size.y;
 		}
