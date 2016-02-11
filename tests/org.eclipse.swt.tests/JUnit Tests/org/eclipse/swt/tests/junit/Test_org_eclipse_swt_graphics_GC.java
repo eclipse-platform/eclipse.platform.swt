@@ -139,11 +139,11 @@ public void test_copyAreaIIIIII() {
 	PaletteData palette = imageData.palette; 
 	int pixel = imageData.getPixel(destX + 4, destY);
 	assertEquals(":a:", whiteRGB, palette.getRGB(pixel));
-	pixel = imageData.getPixel(destX + 5, destY);
+	pixel = imageData.getPixel(destX + 6 , destY);
  	assertEquals(":b:", blueRGB, palette.getRGB(pixel));	
 	pixel = imageData.getPixel(destX + 10, destY);
 	assertEquals(":c:", blueRGB, palette.getRGB(pixel));	
-	pixel = imageData.getPixel(destX + 11, destY);
+	pixel = imageData.getPixel(destX + 12, destY);
 	assertEquals(":d:", whiteRGB, palette.getRGB(pixel));
 }
 

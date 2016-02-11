@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2015 IBM Corporation and others.
+ * Copyright (c) 2000, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -13,6 +13,7 @@ package org.eclipse.swt.widgets;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.cairo.*;
 import org.eclipse.swt.internal.gtk.*;
 
@@ -64,6 +65,7 @@ public class Composite extends Scrollable {
 	Layout layout;
 	Control[] tabList;
 	int layoutCount, backgroundMode;
+	GdkRGBA background;
 
 	static final String NO_INPUT_METHOD = "org.eclipse.swt.internal.gtk.noInputMethod"; //$NON-NLS-1$
 
@@ -226,8 +228,7 @@ long /*int*/ childStyle () {
 	return super.childStyle ();
 }
 
-@Override
-public Point computeSize (int wHint, int hHint, boolean changed) {
+@Override Point computeSizeInPixels (int wHint, int hHint, boolean changed) {
 	checkWidget ();
 	display.runSkin();
 	if (wHint != SWT.DEFAULT && wHint < 0) wHint = 0;
@@ -236,7 +237,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	if (layout != null) {
 		if (wHint == SWT.DEFAULT || hHint == SWT.DEFAULT) {
 			changed |= (state & LAYOUT_CHANGED) != 0;
-			size = layout.computeSize (this, wHint, hHint, changed);
+			size = DPIUtil.autoScaleUp(layout.computeSize (this, wHint, hHint, changed));
 			state &= ~LAYOUT_CHANGED;
 		} else {
 			size = new Point (wHint, hHint);
@@ -248,7 +249,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	}
 	if (wHint != SWT.DEFAULT) size.x = wHint;
 	if (hHint != SWT.DEFAULT) size.y = hHint;
-	Rectangle trim = computeTrim (0, 0, size.x, size.y);
+	Rectangle trim = computeTrimInPixels (0, 0, size.x, size.y);
 	return new Point (trim.width, trim.height);
 }
 
@@ -400,6 +401,40 @@ void deregister () {
  * @since 3.6
  */
 public void drawBackground (GC gc, int x, int y, int width, int height, int offsetX, int offsetY) {
+	Rectangle rect = DPIUtil.autoScaleUp(new Rectangle (x, y, width, height));
+	offsetX = DPIUtil.autoScaleUp(offsetX);
+	offsetY = DPIUtil.autoScaleUp(offsetY);
+	drawBackgroundInPixels(gc, rect.x, rect.y, rect.width, rect.height, offsetX, offsetY);
+}
+
+/**
+ * Fills the interior of the rectangle specified by the arguments,
+ * with the receiver's background.
+ *
+ * <p>The <code>offsetX</code> and <code>offsetY</code> are used to map from
+ * the <code>gc</code> origin to the origin of the parent image background. This is useful
+ * to ensure proper alignment of the image background.</p>
+ *
+ * @param gc the gc where the rectangle is to be filled
+ * @param x the x coordinate of the rectangle to be filled
+ * @param y the y coordinate of the rectangle to be filled
+ * @param width the width of the rectangle to be filled
+ * @param height the height of the rectangle to be filled
+ * @param offsetX the image background x offset
+ * @param offsetY the image background y offset
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the gc is null</li>
+ *    <li>ERROR_INVALID_ARGUMENT - if the gc has been disposed</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @since 3.105
+ */
+void drawBackgroundInPixels (GC gc, int x, int y, int width, int height, int offsetX, int offsetY) {
 	checkWidget ();
 	if (gc == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (gc.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
@@ -410,7 +445,7 @@ public void drawBackground (GC gc, int x, int y, int width, int height, int offs
 		if (cairo != 0) {
 			Cairo.cairo_save (cairo);
 			if (control.backgroundImage != null) {
-				Point pt = display.map (this, control, 0, 0);
+				Point pt = display.mapInPixels (this, control, 0, 0);
 				Cairo.cairo_translate (cairo, -pt.x - offsetX, -pt.y - offsetY);
 				x += pt.x + offsetX;
 				y += pt.y + offsetY;
@@ -453,7 +488,7 @@ public void drawBackground (GC gc, int x, int y, int width, int height, int offs
 			GdkGCValues values = new GdkGCValues ();
 			OS.gdk_gc_get_values (gdkGC, values);
 			if (control.backgroundImage != null) {
-				Point pt = display.map (this, control, 0, 0);
+				Point pt = display.mapInPixels (this, control, 0, 0);
 				OS.gdk_gc_set_fill (gdkGC, OS.GDK_TILED);
 				OS.gdk_gc_set_ts_origin (gdkGC, -pt.x - offsetX, -pt.y - offsetY);
 				OS.gdk_gc_set_tile (gdkGC, control.backgroundImage.pixmap);
@@ -469,7 +504,8 @@ public void drawBackground (GC gc, int x, int y, int width, int height, int offs
 			}
 		}
 	} else {
-		gc.fillRectangle (x, y, width, height);
+		gc.fillRectangle(DPIUtil.autoScaleDown(new Rectangle(x, y, width, height)));
+
 	}
 }
 
@@ -648,7 +684,7 @@ int getChildrenCount () {
 }
 
 @Override
-public Rectangle getClientArea () {
+Rectangle getClientAreaInPixels () {
 	checkWidget();
 	if ((state & CANVAS) != 0) {
 		if ((state & ZERO_WIDTH) != 0 && (state & ZERO_HEIGHT) != 0) {
@@ -662,7 +698,24 @@ public Rectangle getClientArea () {
 		int height = (state & ZERO_HEIGHT) != 0 ? 0 : allocation.height;
 		return new Rectangle (0, 0, width, height);
 	}
-	return super.getClientArea();
+	return super.getClientAreaInPixels();
+}
+
+@Override
+GdkColor getContextBackground () {
+	if (OS.GTK_VERSION >= OS.VERSION(3, 16, 0)) {
+		if (background != null) {
+			GdkColor color = new GdkColor ();
+			color.red = (short)(background.red * 0xFFFF);
+			color.green = (short)(background.green * 0xFFFF);
+			color.blue = (short)(background.blue * 0xFFFF);
+			return color;
+		} else {
+			return display.COLOR_WIDGET_BACKGROUND;
+		}
+	} else {
+		return super.getContextBackground();
+	}
 }
 
 /**
@@ -769,11 +822,8 @@ long /*int*/ gtk_expose_event (long /*int*/ widget, long /*int*/ eventPtr) {
 	for (int i=0; i<n_rectangles[0]; i++) {
 		Event event = new Event ();
 		OS.memmove (rect, rectangles [0] + i * GdkRectangle.sizeof, GdkRectangle.sizeof);
-		event.x = rect.x;
-		event.y = rect.y;
-		event.width = rect.width;
-		event.height = rect.height;
-		if ((style & SWT.MIRRORED) != 0) event.x = getClientWidth () - event.width - event.x;
+		event.setBounds (DPIUtil.autoScaleDown (new Rectangle(rect.x, rect.y, rect.width, rect.height)));
+		if ((style & SWT.MIRRORED) != 0) event.x = DPIUtil.autoScaleDown (getClientWidth ()) - event.width - event.x;
 		long /*int*/ damageRgn = OS.gdk_region_new ();
 		OS.gdk_region_union_with_rect (damageRgn, rect);
 		GCData data = new GCData ();
@@ -1339,10 +1389,10 @@ void moveChildren(int oldWidth) {
 
 Point minimumSize (int wHint, int hHint, boolean changed) {
 	Control [] children = _getChildren ();
-	Rectangle clientArea = getClientArea ();
+	Rectangle clientArea = getClientAreaInPixels ();
 	int width = 0, height = 0;
 	for (int i=0; i<children.length; i++) {
-		Rectangle rect = children [i].getBounds ();
+		Rectangle rect = children [i].getBoundsInPixels ();
 		width = Math.max (width, rect.x - clientArea.x + rect.width);
 		height = Math.max (height, rect.y - clientArea.y + rect.height);
 	}
@@ -1358,23 +1408,24 @@ long /*int*/ parentingHandle () {
 void printWidget (GC gc, long /*int*/ drawable, int depth, int x, int y) {
 	Region oldClip = new Region (gc.getDevice ());
 	Region newClip = new Region (gc.getDevice ());
+	Point loc = DPIUtil.autoScaleDown(new Point (x, y));
 	gc.getClipping (oldClip);
 	Rectangle rect = getBounds ();
 	newClip.add (oldClip);
-	newClip.intersect (x, y, rect.width, rect.height);
+	newClip.intersect (loc.x, loc.y, rect.width, rect.height);
 	gc.setClipping (newClip);
 	super.printWidget (gc, drawable, depth, x, y);
-	Rectangle clientRect = getClientArea ();
-	Point pt = display.map (this, parent, clientRect.x, clientRect.y);
+	Rectangle clientRect = getClientAreaInPixels ();
+	Point pt = display.mapInPixels (this, parent, clientRect.x, clientRect.y);
 	clientRect.x = x + pt.x - rect.x;
 	clientRect.y = y + pt.y - rect.y;
-	newClip.intersect (clientRect);
+	newClip.intersect (DPIUtil.autoScaleDown(clientRect));
 	gc.setClipping (newClip);
 	Control [] children = _getChildren ();
 	for (int i=children.length-1; i>=0; --i) {
 		Control child = children [i];
 		if (child.getVisible ()) {
-			Point location = child.getLocation ();
+			Point location = child.getLocationInPixels ();
 			child.printWidget (gc, drawable, depth, x + location.x, y + location.y);
 		}
 	}
@@ -1478,6 +1529,18 @@ public void setBackgroundMode (int mode) {
 	Control[] children = _getChildren ();
 	for (int i = 0; i < children.length; i++) {
 		children [i].updateBackgroundMode ();
+	}
+}
+
+@Override
+void setBackgroundColor (long /*int*/ context, long /*int*/ handle, GdkRGBA rgba) {
+	if (OS.GTK_VERSION >= OS.VERSION(3, 16, 0)) {
+		background = rgba;
+		String color = gtk_rgba_to_css_string(background);
+		String css = "SwtFixed {background-color: " + color + "}";
+		gtk_css_provider_load_from_css(context, css);
+	} else {
+		super.setBackgroundColor(context, handle, rgba);
 	}
 }
 

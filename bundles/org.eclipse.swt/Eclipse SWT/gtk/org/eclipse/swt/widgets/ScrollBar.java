@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2013 IBM Corporation and others.
+ * Copyright (c) 2000, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -14,6 +14,7 @@ package org.eclipse.swt.widgets;
 import org.eclipse.swt.*;
 import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.gtk.*;
 
 /**
@@ -276,6 +277,7 @@ public int getSelection () {
 	return (int) OS.gtk_adjustment_get_value (adjustmentHandle);
 }
 
+
 /**
  * Returns a point describing the receiver's size. The
  * x coordinate of the result is the width of the receiver.
@@ -290,6 +292,23 @@ public int getSelection () {
  * </ul>
  */
 public Point getSize () {
+	return DPIUtil.autoScaleDown (getSizeInPixels ());
+}
+/**
+ * Returns a point describing the receiver's size. The
+ * x coordinate of the result is the width of the receiver.
+ * The y coordinate of the result is the height of the
+ * receiver.
+ *
+ * @return the receiver's size
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * @since 3.105
+ */
+Point getSizeInPixels () {
 	checkWidget ();
 	if (handle == 0) return new Point (0,0);
 	GtkRequisition requisition = new GtkRequisition ();
@@ -328,6 +347,23 @@ public int getThumb () {
  * @since 3.6
  */
 public Rectangle getThumbBounds () {
+	return DPIUtil.autoScaleDown(getThumbBoundsInPixels());
+}
+
+/**
+ * Returns a rectangle describing the size and location of the
+ * receiver's thumb relative to its parent.
+ *
+ * @return the thumb bounds, relative to the {@link #getParent() parent}
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @since 3.105
+ */
+Rectangle getThumbBoundsInPixels () {
 	checkWidget();
 	int [] slider_start = new int [1], slider_end = new int [1];
 	gtk_range_get_slider_range (handle, slider_start, slider_end);
@@ -373,6 +409,24 @@ public Rectangle getThumbBounds () {
  * @since 3.6
  */
 public Rectangle getThumbTrackBounds () {
+	return DPIUtil.autoScaleDown(getThumbTrackBoundsInPixels());
+}
+
+/**
+ * Returns a rectangle describing the size and location of the
+ * receiver's thumb track relative to its parent. This rectangle
+ * comprises the areas 2, 3, and 4 as described in {@link ScrollBar}.
+ *
+ * @return the thumb track bounds, relative to the {@link #getParent() parent}
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @since 3.105
+ */
+Rectangle getThumbTrackBoundsInPixels () {
 	checkWidget();
 	int x = 0, y = 0, width, height;
 	int[] has_stepper = new int[1];

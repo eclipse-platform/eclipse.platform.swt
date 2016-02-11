@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2015 IBM Corporation and others.
+ * Copyright (c) 2000, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -536,8 +536,7 @@ void clearAll (boolean all, long /*int*/ parentIter) {
 	OS.g_free (iter);
 }
 
-@Override
-public Point computeSize (int wHint, int hHint, boolean changed) {
+@Override Point computeSizeInPixels (int wHint, int hHint, boolean changed) {
 	checkWidget ();
 	if (wHint != SWT.DEFAULT && wHint < 0) wHint = 0;
 	if (hHint != SWT.DEFAULT && hHint < 0) hHint = 0;
@@ -551,7 +550,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	 * based on the number of items in the table
 	 */
 	if (OS.GTK3 && size.y == 0 && hHint == SWT.DEFAULT) {
-		size.y = getItemCount() * getItemHeight();
+		size.y = getItemCount() * getItemHeightInPixels();
 	}
 
 	/*
@@ -560,7 +559,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	 * so need to assign default height
 	 */
 	if (size.y == 0 && hHint == SWT.DEFAULT) size.y = DEFAULT_HEIGHT;
-	Rectangle trim = computeTrim (0, 0, size.x, size.y);
+	Rectangle trim = computeTrimInPixels (0, 0, size.x, size.y);
 	size.x = trim.width;
 	size.y = trim.height;
 	return size;
@@ -1139,8 +1138,7 @@ GdkColor getBackgroundColor () {
 	return getBaseColor ();
 }
 
-@Override
-public Rectangle getClientArea () {
+@Override Rectangle getClientAreaInPixels () {
 	checkWidget ();
 	forceResize ();
 	OS.gtk_widget_realize (handle);
@@ -1157,7 +1155,7 @@ public Rectangle getClientArea () {
 	int height = (state & ZERO_HEIGHT) != 0 ? 0 : allocation.height;
 	Rectangle rect = new Rectangle (fixedX [0] - binX [0], fixedY [0] - binY [0], width, height);
 	if (getHeaderVisible() && OS.GTK_VERSION > OS.VERSION(3, 9, 0)) {
-		rect.y += getHeaderHeight();
+		rect.y += getHeaderHeightInPixels();
 	}
 	return rect;
 }
@@ -1387,6 +1385,21 @@ GdkColor getForegroundColor () {
  * @since 3.1
  */
 public int getGridLineWidth () {
+	return DPIUtil.autoScaleDown (getGridLineWidthInPixels ());
+}
+/**
+ * Returns the width in pixels of a grid line.
+ *
+ * @return the width of a grid line in pixels
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @since 3.105
+ */
+protected int getGridLineWidthInPixels () {
 	checkWidget();
 	return 0;
 }
@@ -1404,6 +1417,22 @@ public int getGridLineWidth () {
  * @since 3.1
  */
 public int getHeaderHeight () {
+	return DPIUtil.autoScaleDown (getHeaderHeightInPixels ());
+}
+
+/**
+ * Returns the height of the receiver's header
+ *
+ * @return the height of the header or zero if the header is not visible
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @since 3.105
+ */
+int getHeaderHeightInPixels () {
 	checkWidget ();
 	if (!OS.gtk_tree_view_get_headers_visible (handle)) return 0;
 	if (columnCount > 0) {
@@ -1508,7 +1537,7 @@ public TreeItem getItem (Point point) {
 	int x = point.x;
 	int y = point.y;
 	if (getHeaderVisible() && OS.GTK_VERSION > OS.VERSION(3, 9, 0)) {
-		y -= getHeaderHeight();
+		y -= getHeaderHeightInPixels();
 	}
 	if ((style & SWT.MIRRORED) != 0) x = getClientWidth () - x;
 	long /*int*/ [] columnHandle = new long /*int*/ [1];
@@ -1566,6 +1595,22 @@ public int getItemCount () {
  * </ul>
  */
 public int getItemHeight () {
+	return DPIUtil.autoScaleDown (getItemHeightInPixels ());
+}
+
+/**
+ * Returns the height of the area which would be used to
+ * display <em>one</em> of the items in the tree.
+ *
+ * @return the height of one item
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * @since 3.105
+ */
+int getItemHeightInPixels () {
 	checkWidget ();
 	int itemCount = OS.gtk_tree_model_iter_n_children (modelHandle, 0);
 	if (itemCount == 0) {
@@ -2624,7 +2669,7 @@ void sendMeasureEvent (long /*int*/ cell, long /*int*/ width, long /*int*/ heigh
 			Image image = item.getImage (columnIndex);
 			int imageWidth = 0;
 			if (image != null) {
-				Rectangle bounds = image.getBounds ();
+				Rectangle bounds = image.getBoundsInPixels ();
 				imageWidth = bounds.width;
 			}
 			contentWidth [0] += imageWidth;
@@ -2634,8 +2679,8 @@ void sendMeasureEvent (long /*int*/ cell, long /*int*/ width, long /*int*/ heigh
 			event.item = item;
 			event.index = columnIndex;
 			event.gc = gc;
-			event.width = contentWidth [0];
-			event.height = contentHeight [0];
+			Rectangle eventRect = new Rectangle (0, 0, contentWidth [0], contentHeight [0]);
+			event.setBounds (DPIUtil.autoScaleDown (eventRect));
 			long /*int*/ path = OS.gtk_tree_model_get_path (modelHandle, iter);
 			long /*int*/ selection = OS.gtk_tree_view_get_selection (handle);
 			if (OS.gtk_tree_selection_path_is_selected (selection, path)) {
@@ -2644,8 +2689,9 @@ void sendMeasureEvent (long /*int*/ cell, long /*int*/ width, long /*int*/ heigh
 			OS.gtk_tree_path_free (path);
 			sendEvent (SWT.MeasureItem, event);
 			gc.dispose ();
-			contentWidth [0] = event.width - imageWidth;
-			if (contentHeight [0] < event.height) contentHeight [0] = event.height;
+			Rectangle rect = DPIUtil.autoScaleUp (event.getBounds ());
+			contentWidth [0] = rect.width - imageWidth;
+			if (contentHeight [0] < rect.height) contentHeight [0] = rect.height;
 			if (width != 0) OS.memmove (width, contentWidth, 4);
 			if (height != 0) OS.memmove (height, contentHeight, 4);
 			if (OS.GTK3) {
@@ -2784,21 +2830,19 @@ void rendererRender (long /*int*/ cell, long /*int*/ cr, long /*int*/ window, lo
 				if (OS.GTK_VERSION >= OS.VERSION(3, 9, 0) && cr != 0) {
 					GdkRectangle r = new GdkRectangle();
 					OS.gdk_cairo_get_clip_rectangle(cr, r);
-					gc.setClipping(rect.x, r.y, r.width, r.height);
+					gc.setClipping(DPIUtil.autoScaleDown(new Rectangle(rect.x, r.y, r.width, r.height)));
 					if (OS.GTK_VERSION <= OS.VERSION(3, 14, 8)) {
 						rect.width = r.width;
 					}
 				} else {
-					gc.setClipping (rect.x, rect.y, rect.width, rect.height);
+					gc.setClipping(DPIUtil.autoScaleDown(new Rectangle(rect.x, rect.y, rect.width, rect.height)));
 				}
 				Event event = new Event ();
 				event.item = item;
 				event.index = columnIndex;
 				event.gc = gc;
-				event.x = rect.x;
-				event.y = rect.y;
-				event.width = rect.width;
-				event.height = rect.height;
+				Rectangle eventRect = new Rectangle (rect.x, rect.y, rect.width, rect.height);
+				event.setBounds (DPIUtil.autoScaleDown (eventRect));
 				event.detail = drawState;
 				sendEvent (SWT.EraseItem, event);
 				drawForeground = null;
@@ -2826,7 +2870,7 @@ void rendererRender (long /*int*/ cell, long /*int*/ cr, long /*int*/ window, lo
 		gc.setBackground (item.getBackground (columnIndex));
 		GdkRectangle rect = new GdkRectangle ();
 		OS.memmove (rect, background_area, GdkRectangle.sizeof);
-		gc.fillRectangle (rect.x, rect.y, rect.width, rect.height);
+		gc.fillRectangle(DPIUtil.autoScaleDown(new Rectangle(rect.x, rect.y, rect.width, rect.height)));
 		gc.dispose ();
 	}
 	if ((drawState & SWT.FOREGROUND) != 0 || OS.GTK_IS_CELL_RENDERER_TOGGLE (cell)) {
@@ -2864,7 +2908,7 @@ void rendererRender (long /*int*/ cell, long /*int*/ cr, long /*int*/ window, lo
 				Image image = item.getImage (columnIndex);
 				int imageWidth = 0;
 				if (image != null) {
-					Rectangle bounds = image.getBounds ();
+					Rectangle bounds = image.getBoundsInPixels ();
 					imageWidth = bounds.width;
 				}
 				// On gtk >3.9 and <3.14.8 the clip rectangle does not have image area into clip rectangle
@@ -2902,16 +2946,14 @@ void rendererRender (long /*int*/ cell, long /*int*/ cr, long /*int*/ window, lo
 					rect.x = getClientWidth () - rect.width - rect.x;
 				}
 
-				gc.setClipping (rect.x, rect.y, rect.width, rect.height);
+				gc.setClipping(DPIUtil.autoScaleDown(new Rectangle(rect.x, rect.y, rect.width, rect.height)));
 
 				Event event = new Event ();
 				event.item = item;
 				event.index = columnIndex;
 				event.gc = gc;
-				event.x = rect.x + contentX [0];
-				event.y = rect.y;
-				event.width = contentWidth [0];
-				event.height = rect.height;
+				Rectangle eventRect = new Rectangle (rect.x + contentX [0], rect.y, contentWidth [0], rect.height);
+				event.setBounds (DPIUtil.autoScaleDown (eventRect));
 				event.detail = drawState;
 				sendEvent(SWT.PaintItem, event);
 				gc.dispose();
@@ -2993,7 +3035,7 @@ public void setInsertMark (TreeItem item, boolean before) {
 	}
 	if (item.isDisposed()) error (SWT.ERROR_INVALID_ARGUMENT);
 	if (item.parent != this) return;
-	Rectangle rect = item.getBounds();
+	Rectangle rect = item.getBoundsInPixels();
 	long /*int*/ [] path = new long /*int*/ [1];
 	OS.gtk_widget_realize (handle);
 	if (!OS.gtk_tree_view_get_path_at_pos(handle, rect.x, rect.y, path, null, null, null)) return;

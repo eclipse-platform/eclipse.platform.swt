@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2014 IBM Corporation and others.
+ * Copyright (c) 2000, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -422,6 +422,24 @@ public Color getBackground (int index) {
  * @since 3.1
  */
 public Rectangle getBounds (int index) {
+	return DPIUtil.autoScaleDown (getBoundsInPixels (index));
+}
+
+/**
+ * Returns a rectangle describing the receiver's size and location
+ * relative to its parent at a column in the tree.
+ *
+ * @param index the index that specifies the column
+ * @return the receiver's bounding column rectangle
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @since 3.105
+ */
+Rectangle getBoundsInPixels (int index) {
 	// TODO fully test on early and later versions of GTK
 	checkWidget();
 	if (!parent.checkData (this)) error (SWT.ERROR_WIDGET_DISPOSED);
@@ -450,7 +468,7 @@ public Rectangle getBounds (int index) {
 	int width = OS.gtk_tree_view_column_get_visible (column) ? rect.width + 1 : 0;
 	Rectangle r = new Rectangle (rect.x, rect.y, width, rect.height + 1);
 	if (parent.getHeaderVisible() && OS.GTK_VERSION > OS.VERSION(3, 9, 0)) {
-		r.y += parent.getHeaderHeight();
+		r.y += parent.getHeaderHeightInPixels();
 	}
 	return r;
 }
@@ -467,6 +485,21 @@ public Rectangle getBounds (int index) {
  * </ul>
  */
 public Rectangle getBounds () {
+	return DPIUtil.autoScaleDown (getBoundsInPixels ());
+}
+/**
+ * Returns a rectangle describing the size and location of the receiver's
+ * text relative to its parent.
+ *
+ * @return the bounding rectangle of the receiver's text
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * @since 3.105
+ */
+Rectangle getBoundsInPixels () {
 	// TODO fully test on early and later versions of GTK
 	// shifted a bit too far right on later versions of GTK - however, old Tree also had this problem
 	checkWidget ();
@@ -512,7 +545,7 @@ public Rectangle getBounds () {
 	int width = OS.gtk_tree_view_column_get_visible (column) ? rect.width + 1 : 0;
 	Rectangle r = new Rectangle (rect.x, rect.y, width, rect.height + 1);
 	if (parent.getHeaderVisible() && OS.GTK_VERSION > OS.VERSION(3, 9, 0)) {
-		r.y += parent.getHeaderHeight();
+		r.y += parent.getHeaderHeightInPixels();
 	}
 	return r;
 }
@@ -701,6 +734,24 @@ public Image getImage (int index) {
  * @since 3.1
  */
 public Rectangle getImageBounds (int index) {
+	return DPIUtil.autoScaleDown(getImageBoundsInPixels(index));
+}
+/**
+ * Returns a rectangle describing the size and location
+ * relative to its parent of an image at a column in the
+ * tree.
+ *
+ * @param index the index that specifies the column
+ * @return the receiver's bounding image rectangle
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @since 3.105
+ */
+Rectangle getImageBoundsInPixels (int index) {
 	// TODO fully test on early and later versions of GTK
 	checkWidget ();
 	if (!parent.checkData (this)) error (SWT.ERROR_WIDGET_DISPOSED);
@@ -910,6 +961,25 @@ public String getText (int index) {
  * @since 3.3
  */
 public Rectangle getTextBounds (int index) {
+	return DPIUtil.autoScaleDown(getTextBoundsInPixels(index));
+}
+
+/**
+ * Returns a rectangle describing the size and location
+ * relative to its parent of the text at a column in the
+ * tree.
+ *
+ * @param index the index that specifies the column
+ * @return the receiver's bounding text rectangle
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @since 3.105
+ */
+Rectangle getTextBoundsInPixels (int index) {
 	checkWidget ();
 	if (!parent.checkData (this)) error (SWT.ERROR_WIDGET_DISPOSED);
 	int count = Math.max (1, parent.getColumnCount ());
@@ -958,7 +1028,7 @@ public Rectangle getTextBounds (int index) {
 		Image image = _getImage(index);
 		int imageWidth = 0;
 		if (image != null) {
-			imageWidth = image.getBounds ().width;
+			imageWidth = image.getBoundsInPixels ().width;
 		}
 		if (x [0] < imageWidth) {
 			rect.x += imageWidth;
@@ -1492,8 +1562,8 @@ public void setImage (int index, Image image) {
 		OS.gtk_cell_renderer_get_fixed_size (pixbufRenderer, currentWidth, currentHeight);
 		if (!parent.pixbufSizeSet) {
 			if (image != null) {
-				int iWidth = image.getBounds ().width;
-				int iHeight = image.getBounds ().height;
+				int iWidth = image.getBoundsInPixels ().width;
+				int iHeight = image.getBoundsInPixels ().height;
 				if (iWidth > currentWidth [0] || iHeight > currentHeight [0]) {
 					OS.gtk_cell_renderer_set_fixed_size (pixbufRenderer, iWidth, iHeight);
 					parent.pixbufSizeSet = true;
@@ -1525,7 +1595,7 @@ public void setImage (int index, Image image) {
 			int [] w = new int [1];
 			long /*int*/ pixbufRenderer = parent.getPixbufRenderer(column);
 			OS.gtk_tree_view_column_cell_get_position (column, pixbufRenderer, null, w);
-			if (w[0] < image.getBounds().width) {
+			if (w[0] < image.getBoundsInPixels().width) {
 				/*
 				 * There is no direct way to clear the cell renderer width so we
 				 * are relying on the fact that it is done as part of modifying

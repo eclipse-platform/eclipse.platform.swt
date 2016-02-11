@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2012 IBM Corporation and others.
+ * Copyright (c) 2000, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -153,6 +153,22 @@ void destroyWidget () {
  * @since 3.4
  */
 public Rectangle getBounds () {
+	return DPIUtil.autoScaleDown (getBoundsInPixels ());
+}
+/**
+ * Returns a rectangle describing the receiver's size and location
+ * relative to its parent.
+ *
+ * @return the receiver's bounding rectangle
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @since 3.105
+ */
+Rectangle getBoundsInPixels () {
 	checkWidget();
 	GtkAllocation allocation = new GtkAllocation ();
 	OS.gtk_widget_get_allocation (handle, allocation);
@@ -306,7 +322,7 @@ public void setControl (Control control) {
 		}
 	}
 	if (newControl != null) {
-		newControl.setBounds (parent.getClientArea ());
+		newControl.setBoundsInPixels (parent.getClientAreaInPixels ());
 		newControl.setVisible (true);
 	}
 

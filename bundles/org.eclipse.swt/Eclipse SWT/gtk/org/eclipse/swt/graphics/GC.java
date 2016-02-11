@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2015 IBM Corporation and others.
+ * Copyright (c) 2000, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -297,7 +297,7 @@ void checkGC (int mask) {
 			Cairo.cairo_set_line_join(cairo, join_style);
 		}
 		if ((state & LINE_WIDTH) != 0) {
-			Cairo.cairo_set_line_width(cairo, data.lineWidth == 0 ? 1 : data.lineWidth);
+			Cairo.cairo_set_line_width(cairo, data.lineWidth == 0 ? DPIUtil.autoScaleUp(1) : data.lineWidth);
 			switch (data.lineStyle) {
 				case SWT.LINE_DOT:
 				case SWT.LINE_DASH:
@@ -474,6 +474,27 @@ long /*int*/ convertRgn(long /*int*/ rgn, double[] matrix) {
  * </ul>
  */
 public void copyArea(Image image, int x, int y) {
+	Point loc = DPIUtil.autoScaleUp(new Point(x, y));
+	copyAreaInPixels(image, loc.x, loc.y);
+}
+/**
+ * Copies a rectangular area of the receiver at the specified
+ * position into the image, which must be of type <code>SWT.BITMAP</code>.
+ *
+ * @param image the image to copy into
+ * @param x the x coordinate in the receiver of the area to be copied
+ * @param y the y coordinate in the receiver of the area to be copied
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the image is null</li>
+ *    <li>ERROR_INVALID_ARGUMENT - if the image is not a bitmap or has been disposed</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ * @since 3.105
+ */
+void copyAreaInPixels(Image image, int x, int y) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (image == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (image.type != SWT.BITMAP || image.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
@@ -508,7 +529,7 @@ public void copyArea(Image image, int x, int y) {
 		Cairo.cairo_destroy(cairo);
         return;
 	}
-	Rectangle rect = image.getBounds();
+	Rectangle rect = image.getBoundsInPixels();
 	long /*int*/ gdkGC = OS.gdk_gc_new(image.pixmap);
 	if (gdkGC == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	OS.gdk_gc_set_subwindow(gdkGC, OS.GDK_INCLUDE_INFERIORS);
@@ -532,7 +553,28 @@ public void copyArea(Image image, int x, int y) {
  * </ul>
  */
 public void copyArea(int srcX, int srcY, int width, int height, int destX, int destY) {
-	copyArea(srcX, srcY, width, height, destX, destY, true);
+	Rectangle src = DPIUtil.autoScaleUp(new Rectangle(srcX, srcY, width, height));
+	Point dest = DPIUtil.autoScaleUp(new Point(destX, destY));
+	copyAreaInPixels(src.x, src.y, src.width, src.height, dest.x, dest.y);
+}
+/**
+ * Copies a rectangular area of the receiver at the source
+ * position onto the receiver at the destination position.
+ *
+ * @param srcX the x coordinate in the receiver of the area to be copied
+ * @param srcY the y coordinate in the receiver of the area to be copied
+ * @param width the width of the area to copy
+ * @param height the height of the area to copy
+ * @param destX the x coordinate in the receiver of the area to copy to
+ * @param destY the y coordinate in the receiver of the area to copy to
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ * @since 3.105
+ */
+void copyAreaInPixels(int srcX, int srcY, int width, int height, int destX, int destY) {
+	copyAreaInPixels(srcX, srcY, width, height, destX, destY, true);
 }
 /**
  * Copies a rectangular area of the receiver at the source
@@ -553,6 +595,29 @@ public void copyArea(int srcX, int srcY, int width, int height, int destX, int d
  * @since 3.1
  */
 public void copyArea(int srcX, int srcY, int width, int height, int destX, int destY, boolean paint) {
+	Rectangle srcLoc = DPIUtil.autoScaleUp(new Rectangle(srcX, srcY, width, height));
+	Point destLoc = DPIUtil.autoScaleUp(new Point(destX, destY));
+	copyAreaInPixels(srcLoc.x, srcLoc.y, srcLoc.width, srcLoc.height, destLoc.x, destLoc.y, paint);
+}
+/**
+ * Copies a rectangular area of the receiver at the source
+ * position onto the receiver at the destination position.
+ *
+ * @param srcX the x coordinate in the receiver of the area to be copied
+ * @param srcY the y coordinate in the receiver of the area to be copied
+ * @param width the width of the area to copy
+ * @param height the height of the area to copy
+ * @param destX the x coordinate in the receiver of the area to copy to
+ * @param destY the y coordinate in the receiver of the area to copy to
+ * @param paint if <code>true</code> paint events will be generated for old and obscured areas
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ *
+ * @since 3.105
+ */
+void copyAreaInPixels(int srcX, int srcY, int width, int height, int destX, int destY, boolean paint) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (width <= 0 || height <= 0) return;
 	int deltaX = destX - srcX, deltaY = destY - srcY;
@@ -721,6 +786,41 @@ void destroy() {
  * </ul>
  */
 public void drawArc(int x, int y, int width, int height, int startAngle, int arcAngle) {
+	Rectangle loc = DPIUtil.autoScaleUp(new Rectangle(x, y, width, height));
+	drawArcInPixels(loc.x, loc.y, loc.width, loc.height, startAngle, arcAngle);
+}
+
+/**
+ * Draws the outline of a circular or elliptical arc
+ * within the specified rectangular area.
+ * <p>
+ * The resulting arc begins at <code>startAngle</code> and extends
+ * for <code>arcAngle</code> degrees, using the current color.
+ * Angles are interpreted such that 0 degrees is at the 3 o'clock
+ * position. A positive value indicates a counter-clockwise rotation
+ * while a negative value indicates a clockwise rotation.
+ * </p><p>
+ * The center of the arc is the center of the rectangle whose origin
+ * is (<code>x</code>, <code>y</code>) and whose size is specified by the
+ * <code>width</code> and <code>height</code> arguments.
+ * </p><p>
+ * The resulting arc covers an area <code>width + 1</code> pixels wide
+ * by <code>height + 1</code> pixels tall.
+ * </p>
+ *
+ * @param x the x coordinate of the upper-left corner of the arc to be drawn
+ * @param y the y coordinate of the upper-left corner of the arc to be drawn
+ * @param width the width of the arc to be drawn
+ * @param height the height of the arc to be drawn
+ * @param startAngle the beginning angle
+ * @param arcAngle the angular extent of the arc, relative to the start angle
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ * @since 3.105
+ */
+void drawArcInPixels(int x, int y, int width, int height, int startAngle, int arcAngle) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	checkGC(DRAW);
 	if (width < 0) {
@@ -776,6 +876,28 @@ public void drawArc(int x, int y, int width, int height, int startAngle, int arc
  * @see #drawRectangle(int, int, int, int)
  */
 public void drawFocus(int x, int y, int width, int height) {
+	Rectangle loc = DPIUtil.autoScaleUp(new Rectangle(x, y, width, height));
+	drawFocusInPixels(loc.x, loc.y, loc.width, loc.height);
+}
+/**
+ * Draws a rectangle, based on the specified arguments, which has
+ * the appearance of the platform's <em>focus rectangle</em> if the
+ * platform supports such a notion, and otherwise draws a simple
+ * rectangle in the receiver's foreground color.
+ *
+ * @param x the x coordinate of the rectangle
+ * @param y the y coordinate of the rectangle
+ * @param width the width of the rectangle
+ * @param height the height of the rectangle
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ *
+ * @see #drawRectangle(int, int, int, int)
+ * @since 3.105
+ */
+void drawFocusInPixels(int x, int y, int width, int height) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	long /*int*/ cairo = data.cairo;
 	if (cairo != 0) {
@@ -828,12 +950,73 @@ public void drawFocus(int x, int y, int width, int height) {
  * </ul>
  */
 public void drawImage(Image image, int x, int y) {
+	Point loc = DPIUtil.autoScaleUp(new Point(x, y));
+	drawImageInPixels(image, loc.x, loc.y);
+}
+/**
+ * Draws the given image in the receiver at the specified
+ * coordinates.
+ *
+ * @param image the image to draw
+ * @param x the x coordinate of where to draw
+ * @param y the y coordinate of where to draw
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the image is null</li>
+ *    <li>ERROR_INVALID_ARGUMENT - if the image has been disposed</li>
+ *    <li>ERROR_INVALID_ARGUMENT - if the given coordinates are outside the bounds of the image</li>
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ * @exception SWTError <ul>
+ *    <li>ERROR_NO_HANDLES - if no handles are available to perform the operation</li>
+ * </ul>
+ * @since 3.105
+ */
+void drawImageInPixels(Image image, int x, int y) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (image == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (image.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	drawImage(image, 0, 0, -1, -1, x, y, -1, -1, true);
 }
 
+/**
+ * Copies a rectangular area from the source image into a (potentially
+ * different sized) rectangular area in the receiver. If the source
+ * and destination areas are of differing sizes, then the source
+ * area will be stretched or shrunk to fit the destination area
+ * as it is copied. The copy fails if any part of the source rectangle
+ * lies outside the bounds of the source image, or if any of the width
+ * or height arguments are negative.
+ *
+ * @param image the source image
+ * @param srcX the x coordinate in the source image to copy from
+ * @param srcY the y coordinate in the source image to copy from
+ * @param srcWidth the width in points to copy from the source
+ * @param srcHeight the height in points to copy from the source
+ * @param destX the x coordinate in the destination to copy to
+ * @param destY the y coordinate in the destination to copy to
+ * @param destWidth the width in points of the destination rectangle
+ * @param destHeight the height in points of the destination rectangle
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the image is null</li>
+ *    <li>ERROR_INVALID_ARGUMENT - if the image has been disposed</li>
+ *    <li>ERROR_INVALID_ARGUMENT - if any of the width or height arguments are negative.
+ *    <li>ERROR_INVALID_ARGUMENT - if the source rectangle is not contained within the bounds of the source image</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ * @exception SWTError <ul>
+ *    <li>ERROR_NO_HANDLES - if no handles are available to perform the operation</li>
+ * </ul>
+ */
+public void drawImage(Image image, int srcX, int srcY, int srcWidth, int srcHeight, int destX, int destY, int destWidth, int destHeight) {
+	Rectangle srcRect = DPIUtil.autoScaleUp(new Rectangle(srcX, srcY, srcWidth, srcHeight));
+	Rectangle destRect = DPIUtil.autoScaleUp(new Rectangle(destX, destY, destWidth, destHeight));
+	drawImageInPixels(image, srcRect.x, srcRect.y, srcRect.width, srcRect.height, destRect.x, destRect.y, destRect.width, destRect.height);
+}
 /**
  * Copies a rectangular area from the source image into a (potentially
  * different sized) rectangular area in the receiver. If the source
@@ -865,8 +1048,9 @@ public void drawImage(Image image, int x, int y) {
  * @exception SWTError <ul>
  *    <li>ERROR_NO_HANDLES - if no handles are available to perform the operation</li>
  * </ul>
+ * @since 3.105
  */
-public void drawImage(Image image, int srcX, int srcY, int srcWidth, int srcHeight, int destX, int destY, int destWidth, int destHeight) {
+void drawImageInPixels(Image image, int srcX, int srcY, int srcWidth, int srcHeight, int destX, int destY, int destWidth, int destHeight) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (srcWidth == 0 || srcHeight == 0 || destWidth == 0 || destHeight == 0) return;
 	if (srcX < 0 || srcY < 0 || srcWidth < 0 || srcHeight < 0 || destWidth < 0 || destHeight < 0) {
@@ -903,7 +1087,7 @@ void drawImage(Image srcImage, int srcX, int srcY, int srcWidth, int srcHeight, 
  		simple = srcX == 0 && srcY == 0 &&
  			srcWidth == destWidth && destWidth == imgWidth &&
  			srcHeight == destHeight && destHeight == imgHeight;
-		if (srcX + srcWidth > imgWidth || srcY + srcHeight > imgHeight) {
+		if (srcX + srcWidth > imgWidth + 1 || srcY + srcHeight > imgHeight + 1) { //rounding error correction for hidpi
 			SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 		}
  	}
@@ -1255,6 +1439,26 @@ long /*int*/ scale(long /*int*/ src, int srcX, int srcY, int srcWidth, int srcHe
  * </ul>
  */
 public void drawLine(int x1, int y1, int x2, int y2) {
+	Point loc1 = DPIUtil.autoScaleUp(new Point(x1, y1));
+	Point loc2 = DPIUtil.autoScaleUp(new Point(x2, y2));
+	drawLineInPixels(loc1.x, loc1.y, loc2.x, loc2.y);
+}
+
+/**
+ * Draws a line, using the foreground color, between the points
+ * (<code>x1</code>, <code>y1</code>) and (<code>x2</code>, <code>y2</code>).
+ *
+ * @param x1 the first point's x coordinate
+ * @param y1 the first point's y coordinate
+ * @param x2 the second point's x coordinate
+ * @param y2 the second point's y coordinate
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ * @since 3.105
+ */
+void drawLineInPixels(int x1, int y1, int x2, int y2) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	checkGC(DRAW);
 	long /*int*/ cairo = data.cairo;
@@ -1290,6 +1494,32 @@ public void drawLine(int x1, int y1, int x2, int y2) {
  * </ul>
  */
 public void drawOval(int x, int y, int width, int height) {
+	Rectangle rect = DPIUtil.autoScaleUp(new Rectangle(x, y, width, height));
+	drawOvalInPixels(rect.x, rect.y, rect.width, rect.height);
+}
+/**
+ * Draws the outline of an oval, using the foreground color,
+ * within the specified rectangular area.
+ * <p>
+ * The result is a circle or ellipse that fits within the
+ * rectangle specified by the <code>x</code>, <code>y</code>,
+ * <code>width</code>, and <code>height</code> arguments.
+ * </p><p>
+ * The oval covers an area that is <code>width + 1</code>
+ * pixels wide and <code>height + 1</code> pixels tall.
+ * </p>
+ *
+ * @param x the x coordinate of the upper left corner of the oval to be drawn
+ * @param y the y coordinate of the upper left corner of the oval to be drawn
+ * @param width the width of the oval to be drawn
+ * @param height the height of the oval to be drawn
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ * @since 3.105
+ */
+void drawOvalInPixels(int x, int y, int width, int height) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	checkGC(DRAW);
 	if (width < 0) {
@@ -1377,6 +1607,27 @@ public void drawPath(Path path) {
  * @since 3.0
  */
 public void drawPoint (int x, int y) {
+	Point loc = DPIUtil.autoScaleUp(new Point(x, y));
+	drawPointInPixels(loc.x, loc.y);
+}
+/**
+ * Draws a pixel, using the foreground color, at the specified
+ * point (<code>x</code>, <code>y</code>).
+ * <p>
+ * Note that the receiver's line attributes do not affect this
+ * operation.
+ * </p>
+ *
+ * @param x the point's x coordinate
+ * @param y the point's y coordinate
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ *
+ * @since 3.105
+ */
+void drawPointInPixels (int x, int y) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	checkGC(DRAW);
 	long /*int*/ cairo = data.cairo;
@@ -1406,6 +1657,29 @@ public void drawPoint (int x, int y) {
  * </ul>
  */
 public void drawPolygon(int[] pointArray) {
+	int [] scaledPointArray = DPIUtil.autoScaleUp(pointArray);
+	drawPolygonInPixels(scaledPointArray);
+}
+
+/**
+ * Draws the closed polygon which is defined by the specified array
+ * of integer coordinates, using the receiver's foreground color. The array
+ * contains alternating x and y values which are considered to represent
+ * points which are the vertices of the polygon. Lines are drawn between
+ * each consecutive pair, and between the first pair and last pair in the
+ * array.
+ *
+ * @param pointArray an array of alternating x and y values which are the vertices of the polygon
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT if pointArray is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ * @since 3.105
+ */
+void drawPolygonInPixels(int[] pointArray) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (pointArray == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	checkGC(DRAW);
@@ -1436,6 +1710,28 @@ public void drawPolygon(int[] pointArray) {
  * </ul>
  */
 public void drawPolyline(int[] pointArray) {
+	int [] scaledPointArray = DPIUtil.autoScaleUp(pointArray);
+	drawPolylineInPixels(scaledPointArray);
+}
+/**
+ * Draws the polyline which is defined by the specified array
+ * of integer coordinates, using the receiver's foreground color. The array
+ * contains alternating x and y values which are considered to represent
+ * points which are the corners of the polyline. Lines are drawn between
+ * each consecutive pair, but not between the first pair and last pair in
+ * the array.
+ *
+ * @param pointArray an array of alternating x and y values which are the corners of the polyline
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the point array is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ * @since 3.105
+ */
+void drawPolylineInPixels(int[] pointArray) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (pointArray == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	checkGC(DRAW);
@@ -1475,6 +1771,25 @@ void drawPolyline(long /*int*/ cairo, int[] pointArray, boolean close) {
  * </ul>
  */
 public void drawRectangle(int x, int y, int width, int height) {
+	drawRectangle(new Rectangle(x, y, width, height));
+}
+/**
+ * Draws the outline of the rectangle specified by the arguments,
+ * using the receiver's foreground color. The left and right edges
+ * of the rectangle are at <code>x</code> and <code>x + width</code>.
+ * The top and bottom edges are at <code>y</code> and <code>y + height</code>.
+ *
+ * @param x the x coordinate of the rectangle to be drawn
+ * @param y the y coordinate of the rectangle to be drawn
+ * @param width the width of the rectangle to be drawn
+ * @param height the height of the rectangle to be drawn
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ * @since 3.105
+ */
+void drawRectangleInPixels(int x, int y, int width, int height) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	checkGC(DRAW);
 	if (width < 0) {
@@ -1512,8 +1827,28 @@ public void drawRectangle(int x, int y, int width, int height) {
  * </ul>
  */
 public void drawRectangle(Rectangle rect) {
+	drawRectangleInPixels(DPIUtil.autoScaleUp(rect));
+}
+/**
+ * Draws the outline of the specified rectangle, using the receiver's
+ * foreground color. The left and right edges of the rectangle are at
+ * <code>rect.x</code> and <code>rect.x + rect.width</code>. The top
+ * and bottom edges are at <code>rect.y</code> and
+ * <code>rect.y + rect.height</code>.
+ *
+ * @param rect the rectangle to draw
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the rectangle is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ * @since 3.105
+ */
+void drawRectangleInPixels(Rectangle rect) {
 	if (rect == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	drawRectangle (rect.x, rect.y, rect.width, rect.height);
+	drawRectangleInPixels (rect.x, rect.y, rect.width, rect.height);
 }
 /**
  * Draws the outline of the round-cornered rectangle specified by
@@ -1537,6 +1872,33 @@ public void drawRectangle(Rectangle rect) {
  * </ul>
  */
 public void drawRoundRectangle(int x, int y, int width, int height, int arcWidth, int arcHeight) {
+	Rectangle rect = DPIUtil.autoScaleUp(new Rectangle(x, y, width, height));
+	Point arcSize = DPIUtil.autoScaleUp(new Point(arcWidth, arcHeight));
+	drawRoundRectangleInPixels(rect.x, rect.y, rect.width, rect.height, arcSize.x, arcSize.y);
+}
+/**
+ * Draws the outline of the round-cornered rectangle specified by
+ * the arguments, using the receiver's foreground color. The left and
+ * right edges of the rectangle are at <code>x</code> and <code>x + width</code>.
+ * The top and bottom edges are at <code>y</code> and <code>y + height</code>.
+ * The <em>roundness</em> of the corners is specified by the
+ * <code>arcWidth</code> and <code>arcHeight</code> arguments, which
+ * are respectively the width and height of the ellipse used to draw
+ * the corners.
+ *
+ * @param x the x coordinate of the rectangle to be drawn
+ * @param y the y coordinate of the rectangle to be drawn
+ * @param width the width of the rectangle to be drawn
+ * @param height the height of the rectangle to be drawn
+ * @param arcWidth the width of the arc
+ * @param arcHeight the height of the arc
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ * @since 3.105
+ */
+void drawRoundRectangleInPixels(int x, int y, int width, int height, int arcWidth, int arcHeight) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	checkGC(DRAW);
 	int nx = x;
@@ -1629,7 +1991,29 @@ public void drawRoundRectangle(int x, int y, int width, int height, int arcWidth
  * </ul>
  */
 public void drawString (String string, int x, int y) {
-	drawString(string, x, y, false);
+	drawString (string, x, y, false);
+}
+/**
+ * Draws the given string, using the receiver's current font and
+ * foreground color. No tab expansion or carriage return processing
+ * will be performed. The background of the rectangular area where
+ * the string is being drawn will be filled with the receiver's
+ * background color.
+ *
+ * @param string the string to be drawn
+ * @param x the x coordinate of the top left corner of the rectangular area where the string is to be drawn
+ * @param y the y coordinate of the top left corner of the rectangular area where the string is to be drawn
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the string is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ * @since 3.105
+ */
+void drawStringInPixels (String string, int x, int y) {
+	drawStringInPixels(string, x, y, false);
 }
 /**
  * Draws the given string, using the receiver's current font and
@@ -1652,7 +2036,32 @@ public void drawString (String string, int x, int y) {
  * </ul>
  */
 public void drawString(String string, int x, int y, boolean isTransparent) {
-	drawText(string, x, y, isTransparent ? SWT.DRAW_TRANSPARENT : 0);
+	Point loc = DPIUtil.autoScaleUp(new Point(x, y));
+	drawStringInPixels(string, loc.x, loc.y, isTransparent);
+}
+/**
+ * Draws the given string, using the receiver's current font and
+ * foreground color. No tab expansion or carriage return processing
+ * will be performed. If <code>isTransparent</code> is <code>true</code>,
+ * then the background of the rectangular area where the string is being
+ * drawn will not be modified, otherwise it will be filled with the
+ * receiver's background color.
+ *
+ * @param string the string to be drawn
+ * @param x the x coordinate of the top left corner of the rectangular area where the string is to be drawn
+ * @param y the y coordinate of the top left corner of the rectangular area where the string is to be drawn
+ * @param isTransparent if <code>true</code> the background will be transparent, otherwise it will be opaque
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the string is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ * @since 3.105
+ */
+void drawStringInPixels(String string, int x, int y, boolean isTransparent) {
+	drawTextInPixels(string, x, y, isTransparent ? SWT.DRAW_TRANSPARENT : 0);
 }
 
 /**
@@ -1676,6 +2085,28 @@ public void drawString(String string, int x, int y, boolean isTransparent) {
 public void drawText(String string, int x, int y) {
 	drawText(string, x, y, SWT.DRAW_DELIMITER | SWT.DRAW_TAB);
 }
+/**
+ * Draws the given string, using the receiver's current font and
+ * foreground color. Tab expansion and carriage return processing
+ * are performed. The background of the rectangular area where
+ * the text is being drawn will be filled with the receiver's
+ * background color.
+ *
+ * @param string the string to be drawn
+ * @param x the x coordinate of the top left corner of the rectangular area where the text is to be drawn
+ * @param y the y coordinate of the top left corner of the rectangular area where the text is to be drawn
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the string is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ * @since 3.105
+ */
+void drawTextInPixels(String string, int x, int y) {
+	drawTextInPixels(string, x, y, SWT.DRAW_DELIMITER | SWT.DRAW_TAB);
+}
 
 /**
  * Draws the given string, using the receiver's current font and
@@ -1698,9 +2129,34 @@ public void drawText(String string, int x, int y) {
  * </ul>
  */
 public void drawText(String string, int x, int y, boolean isTransparent) {
+	Point loc = DPIUtil.autoScaleUp(new Point (x, y));
+	drawTextInPixels(string, loc.x, loc.y, isTransparent);
+}
+/**
+ * Draws the given string, using the receiver's current font and
+ * foreground color. Tab expansion and carriage return processing
+ * are performed. If <code>isTransparent</code> is <code>true</code>,
+ * then the background of the rectangular area where the text is being
+ * drawn will not be modified, otherwise it will be filled with the
+ * receiver's background color.
+ *
+ * @param string the string to be drawn
+ * @param x the x coordinate of the top left corner of the rectangular area where the text is to be drawn
+ * @param y the y coordinate of the top left corner of the rectangular area where the text is to be drawn
+ * @param isTransparent if <code>true</code> the background will be transparent, otherwise it will be opaque
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the string is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ * @since 3.105
+ */
+void drawTextInPixels(String string, int x, int y, boolean isTransparent) {
 	int flags = SWT.DRAW_DELIMITER | SWT.DRAW_TAB;
 	if (isTransparent) flags |= SWT.DRAW_TRANSPARENT;
-	drawText(string, x, y, flags);
+	drawTextInPixels(string, x, y, flags);
 }
 
 /**
@@ -1738,6 +2194,45 @@ public void drawText(String string, int x, int y, boolean isTransparent) {
  * </ul>
  */
 public void drawText (String string, int x, int y, int flags) {
+	Point loc = DPIUtil.autoScaleUp(new Point (x, y));
+	drawTextInPixels(string, loc.x, loc.y, flags);
+}
+/**
+ * Draws the given string, using the receiver's current font and
+ * foreground color. Tab expansion, line delimiter and mnemonic
+ * processing are performed according to the specified flags. If
+ * <code>flags</code> includes <code>DRAW_TRANSPARENT</code>,
+ * then the background of the rectangular area where the text is being
+ * drawn will not be modified, otherwise it will be filled with the
+ * receiver's background color.
+ * <p>
+ * The parameter <code>flags</code> may be a combination of:
+ * <dl>
+ * <dt><b>DRAW_DELIMITER</b></dt>
+ * <dd>draw multiple lines</dd>
+ * <dt><b>DRAW_TAB</b></dt>
+ * <dd>expand tabs</dd>
+ * <dt><b>DRAW_MNEMONIC</b></dt>
+ * <dd>underline the mnemonic character</dd>
+ * <dt><b>DRAW_TRANSPARENT</b></dt>
+ * <dd>transparent background</dd>
+ * </dl>
+ * </p>
+ *
+ * @param string the string to be drawn
+ * @param x the x coordinate of the top left corner of the rectangular area where the text is to be drawn
+ * @param y the y coordinate of the top left corner of the rectangular area where the text is to be drawn
+ * @param flags the flags specifying how to process the text
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the string is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ * @since 3.105
+ */
+void drawTextInPixels (String string, int x, int y, int flags) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (string == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (string.length() == 0) return;
@@ -1845,6 +2340,43 @@ public boolean equals(Object object) {
  * @see #drawArc
  */
 public void fillArc(int x, int y, int width, int height, int startAngle, int arcAngle) {
+	Rectangle rect = DPIUtil.autoScaleUp(new Rectangle(x, y, width, height));
+	fillArcInPixels(rect.x, rect.y, rect.width, rect.height, startAngle, arcAngle);
+}
+/**
+ * Fills the interior of a circular or elliptical arc within
+ * the specified rectangular area, with the receiver's background
+ * color.
+ * <p>
+ * The resulting arc begins at <code>startAngle</code> and extends
+ * for <code>arcAngle</code> degrees, using the current color.
+ * Angles are interpreted such that 0 degrees is at the 3 o'clock
+ * position. A positive value indicates a counter-clockwise rotation
+ * while a negative value indicates a clockwise rotation.
+ * </p><p>
+ * The center of the arc is the center of the rectangle whose origin
+ * is (<code>x</code>, <code>y</code>) and whose size is specified by the
+ * <code>width</code> and <code>height</code> arguments.
+ * </p><p>
+ * The resulting arc covers an area <code>width + 1</code> pixels wide
+ * by <code>height + 1</code> pixels tall.
+ * </p>
+ *
+ * @param x the x coordinate of the upper-left corner of the arc to be filled
+ * @param y the y coordinate of the upper-left corner of the arc to be filled
+ * @param width the width of the arc to be filled
+ * @param height the height of the arc to be filled
+ * @param startAngle the beginning angle
+ * @param arcAngle the angular extent of the arc, relative to the start angle
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ *
+ * @see #drawArc
+ * @since 3.105
+ */
+void fillArcInPixels(int x, int y, int width, int height, int startAngle, int arcAngle) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	checkGC(FILL);
 	if (width < 0) {
@@ -1904,6 +2436,32 @@ public void fillArc(int x, int y, int width, int height, int startAngle, int arc
  * @see #drawRectangle(int, int, int, int)
  */
 public void fillGradientRectangle(int x, int y, int width, int height, boolean vertical) {
+	Rectangle rect = DPIUtil.autoScaleUp(new Rectangle(x, y, width, height));
+	fillGradientRectangleInPixels(rect.x, rect.y, rect.width, rect.height, vertical);
+}
+
+/**
+ * Fills the interior of the specified rectangle with a gradient
+ * sweeping from left to right or top to bottom progressing
+ * from the receiver's foreground color to its background color.
+ *
+ * @param x the x coordinate of the rectangle to be filled
+ * @param y the y coordinate of the rectangle to be filled
+ * @param width the width of the rectangle to be filled, may be negative
+ *        (inverts direction of gradient if horizontal)
+ * @param height the height of the rectangle to be filled, may be negative
+ *        (inverts direction of gradient if vertical)
+ * @param vertical if true sweeps from top to bottom, else
+ *        sweeps from left to right
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ *
+ * @see #drawRectangle(int, int, int, int)
+ * @since 3.105
+ */
+void fillGradientRectangleInPixels(int x, int y, int width, int height, boolean vertical) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if ((width == 0) || (height == 0)) return;
 
@@ -1930,7 +2488,7 @@ public void fillGradientRectangle(int x, int y, int width, int height, boolean v
 		toRGB   = foregroundRGB;
 	}
 	if (fromRGB.equals(toRGB)) {
-		fillRectangle(x, y, width, height);
+		fillRectangleInPixels(x, y, width, height);
 		return;
 	}
 	long /*int*/ cairo = data.cairo;
@@ -1975,6 +2533,28 @@ public void fillGradientRectangle(int x, int y, int width, int height, boolean v
  * @see #drawOval
  */
 public void fillOval(int x, int y, int width, int height) {
+	Rectangle rect = DPIUtil.autoScaleUp(new Rectangle(x, y, width, height));
+	fillOvalInPixels(rect.x, rect.y, rect.width, rect.height);
+}
+
+/**
+ * Fills the interior of an oval, within the specified
+ * rectangular area, with the receiver's background
+ * color.
+ *
+ * @param x the x coordinate of the upper left corner of the oval to be filled
+ * @param y the y coordinate of the upper left corner of the oval to be filled
+ * @param width the width of the oval to be filled
+ * @param height the height of the oval to be filled
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ *
+ * @see #drawOval
+ * @since 3.105
+ */
+void fillOvalInPixels(int x, int y, int width, int height) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	checkGC(FILL);
 	if (width < 0) {
@@ -2059,6 +2639,31 @@ public void fillPath (Path path) {
  * @see #drawPolygon
  */
 public void fillPolygon(int[] pointArray) {
+	int [] scaledPointArray = DPIUtil.autoScaleUp(pointArray);
+	fillPolygonInPixels(scaledPointArray);
+}
+
+/**
+ * Fills the interior of the closed polygon which is defined by the
+ * specified array of integer coordinates, using the receiver's
+ * background color. The array contains alternating x and y values
+ * which are considered to represent points which are the vertices of
+ * the polygon. Lines are drawn between each consecutive pair, and
+ * between the first pair and last pair in the array.
+ *
+ * @param pointArray an array of alternating x and y values which are the vertices of the polygon
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT if pointArray is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ *
+ * @see #drawPolygon
+ * @since 3.105
+ */
+void fillPolygonInPixels(int[] pointArray) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (pointArray == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	checkGC(FILL);
@@ -2087,6 +2692,26 @@ public void fillPolygon(int[] pointArray) {
  * @see #drawRectangle(int, int, int, int)
  */
 public void fillRectangle(int x, int y, int width, int height) {
+	fillRectangle(new Rectangle(x, y, width, height));
+}
+
+/**
+ * Fills the interior of the rectangle specified by the arguments,
+ * using the receiver's background color.
+ *
+ * @param x the x coordinate of the rectangle to be filled
+ * @param y the y coordinate of the rectangle to be filled
+ * @param width the width of the rectangle to be filled
+ * @param height the height of the rectangle to be filled
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ *
+ * @see #drawRectangle(int, int, int, int)
+ * @since 3.105
+ */
+void fillRectangleInPixels(int x, int y, int width, int height) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	checkGC(FILL);
 	if (width < 0) {
@@ -2122,9 +2747,28 @@ public void fillRectangle(int x, int y, int width, int height) {
  * @see #drawRectangle(int, int, int, int)
  */
 public void fillRectangle(Rectangle rect) {
+	fillRectangleInPixels(DPIUtil.autoScaleUp(rect));
+}
+/**
+ * Fills the interior of the specified rectangle, using the receiver's
+ * background color.
+ *
+ * @param rect the rectangle to be filled
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the rectangle is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ *
+ * @see #drawRectangle(int, int, int, int)
+ * @since 3.105
+ */
+void fillRectangleInPixels(Rectangle rect) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (rect == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	fillRectangle(rect.x, rect.y, rect.width, rect.height);
+	fillRectangleInPixels(rect.x, rect.y, rect.width, rect.height);
 }
 
 /**
@@ -2145,6 +2789,29 @@ public void fillRectangle(Rectangle rect) {
  * @see #drawRoundRectangle
  */
 public void fillRoundRectangle(int x, int y, int width, int height, int arcWidth, int arcHeight) {
+	Rectangle rect = DPIUtil.autoScaleUp(new Rectangle(x, y, width, height));
+	Point arcSize = DPIUtil.autoScaleUp(new Point(arcWidth, arcHeight));
+	fillRoundRectangleInPixels(rect.x, rect.y, rect.width, rect.height, arcSize.x, arcSize.y);
+}
+/**
+ * Fills the interior of the round-cornered rectangle specified by
+ * the arguments, using the receiver's background color.
+ *
+ * @param x the x coordinate of the rectangle to be filled
+ * @param y the y coordinate of the rectangle to be filled
+ * @param width the width of the rectangle to be filled
+ * @param height the height of the rectangle to be filled
+ * @param arcWidth the width of the arc
+ * @param arcHeight the height of the arc
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ *
+ * @see #drawRoundRectangle
+ * @since 3.105
+ */
+void fillRoundRectangleInPixels(int x, int y, int width, int height, int arcWidth, int arcHeight) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	checkGC(FILL);
 	int nx = x;
@@ -2247,7 +2914,7 @@ int fixMnemonic (char [] buffer) {
 public int getAdvanceWidth(char ch) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	//BOGUS
-	return stringExtent(new String(new char[]{ch})).x;
+	return stringExtentInPixels(new String(new char[]{ch})).x;
 }
 
 /**
@@ -2378,7 +3045,7 @@ public Pattern getBackgroundPattern() {
 public int getCharWidth(char ch) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	//BOGUS
-	return stringExtent(new String(new char[]{ch})).x;
+	return stringExtentInPixels(new String(new char[]{ch})).x;
 }
 
 /**
@@ -2394,6 +3061,22 @@ public int getCharWidth(char ch) {
  * </ul>
  */
 public Rectangle getClipping() {
+	return DPIUtil.autoScaleDown(getClippingInPixels());
+}
+/**
+ * Returns the bounding rectangle of the receiver's clipping
+ * region. If no clipping region is set, the return value
+ * will be a rectangle which covers the entire bounds of the
+ * object the receiver is drawing on.
+ *
+ * @return the bounding rectangle of the clipping region
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ * @since 3.105
+ */
+Rectangle getClippingInPixels() {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	/* Calculate visible bounds in device space */
 	int x = 0, y = 0, width = 0, height = 0;
@@ -2650,6 +3333,23 @@ public int getInterpolation() {
  * @since 3.3
  */
 public LineAttributes getLineAttributes() {
+	LineAttributes attributes = getLineAttributesInPixels();
+	attributes.width = DPIUtil.autoScaleDown(attributes.width);
+	return attributes;
+}
+
+/**
+ * Returns the receiver's line attributes.
+ *
+ * @return the line attributes used for drawing lines
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ *
+ * @since 3.3
+ */
+LineAttributes getLineAttributesInPixels() {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	float[] dashes = null;
 	if (data.lineDashes != null) {
@@ -2747,6 +3447,22 @@ public int getLineStyle() {
  * </ul>
  */
 public int getLineWidth() {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	return (int)DPIUtil.autoScaleDown(data.lineWidth);
+}
+/**
+ * Returns the width that will be used when drawing lines
+ * for all of the figure drawing operations (that is,
+ * <code>drawLine</code>, <code>drawRectangle</code>,
+ * <code>drawPolyline</code>, and so forth.
+ *
+ * @return the receiver's line width
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ */
+int getLineWidthInPixels() {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	return (int)data.lineWidth;
 }
@@ -3329,6 +4045,25 @@ void setClipping(long /*int*/ clipRgn) {
  * </ul>
  */
 public void setClipping(int x, int y, int width, int height) {
+	setClipping(new Rectangle(x, y, width, height));
+}
+
+/**
+ * Sets the area of the receiver which can be changed
+ * by drawing operations to the rectangular area specified
+ * by the arguments.
+ *
+ * @param x the x coordinate of the clipping rectangle
+ * @param y the y coordinate of the clipping rectangle
+ * @param width the width of the clipping rectangle
+ * @param height the height of the clipping rectangle
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ * @since 3.105
+ */
+void setClippingInPixels(int x, int y, int width, int height) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (width < 0) {
 		x = x + width;
@@ -3404,6 +4139,23 @@ public void setClipping(Path path) {
  * </ul>
  */
 public void setClipping(Rectangle rect) {
+	setClippingInPixels(DPIUtil.autoScaleUp(rect));
+}
+/**
+ * Sets the area of the receiver which can be changed
+ * by drawing operations to the rectangular area specified
+ * by the argument.  Specifying <code>null</code> for the
+ * rectangle reverts the receiver's clipping area to its
+ * original value.
+ *
+ * @param rect the clipping rectangle or <code>null</code>
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ * @since 3.105
+ */
+void setClippingInPixels(Rectangle rect) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (OS.GTK_VERSION >= OS.VERSION(3, 9, 0)) {
 		return;
@@ -3411,7 +4163,7 @@ public void setClipping(Rectangle rect) {
 	if (rect == null) {
 		setClipping(0);
 	} else {
-		setClipping(rect.x, rect.y, rect.width, rect.height);
+		setClippingInPixels(rect.x, rect.y, rect.width, rect.height);
 	}
 }
 /**
@@ -3617,6 +4369,35 @@ public void setInterpolation(int interpolation) {
  * @since 3.3
  */
 public void setLineAttributes(LineAttributes attributes) {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	if (attributes == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	attributes.width = DPIUtil.autoScaleUp(attributes.width);
+}
+/**
+ * Sets the receiver's line attributes.
+ * <p>
+ * This operation requires the operating system's advanced
+ * graphics subsystem which may not be available on some
+ * platforms.
+ * </p>
+ * @param attributes the line attributes
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the attributes is null</li>
+ *    <li>ERROR_INVALID_ARGUMENT - if any of the line attributes is not valid</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_NO_GRAPHICS_LIBRARY - if advanced graphics are not available</li>
+ * </ul>
+ *
+ * @see LineAttributes
+ * @see #getAdvanced
+ * @see #setAdvanced
+ *
+ * @since 3.3
+ */
+void setLineAttributesInPixels(LineAttributes attributes) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (attributes == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	int mask = 0;
@@ -3866,6 +4647,28 @@ public void setLineStyle(int lineStyle) {
  * </ul>
  */
 public void setLineWidth(int lineWidth) {
+	setLineWidthInPixels(DPIUtil.autoScaleUp(lineWidth));
+}
+
+/**
+ * Sets the width that will be used when drawing lines
+ * for all of the figure drawing operations (that is,
+ * <code>drawLine</code>, <code>drawRectangle</code>,
+ * <code>drawPolyline</code>, and so forth.
+ * <p>
+ * Note that line width of zero is used as a hint to
+ * indicate that the fastest possible line drawing
+ * algorithms should be used. This means that the
+ * output may be different from line width one.
+ * </p>
+ *
+ * @param lineWidth the width of a line
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ */
+void setLineWidthInPixels(int lineWidth) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (data.lineWidth == lineWidth) return;
 	data.lineWidth = lineWidth;
@@ -4037,7 +4840,6 @@ public void setXORMode(boolean xor) {
 	}
 	data.xorMode = xor;
 }
-
 /**
  * Returns the extent of the given string. No tab
  * expansion or carriage return processing will be performed.
@@ -4058,7 +4860,30 @@ public void setXORMode(boolean xor) {
  * </ul>
  */
 public Point stringExtent(String string) {
-	return textExtent(string, 0);
+	return DPIUtil.autoScaleDown(stringExtentInPixels(string));
+}
+/**
+ * Returns the extent of the given string. No tab
+ * expansion or carriage return processing will be performed.
+ * <p>
+ * The <em>extent</em> of a string is the width and height of
+ * the rectangular area it would cover if drawn in a particular
+ * font (in this case, the current font in the receiver).
+ * </p>
+ *
+ * @param string the string to measure
+ * @return a point containing the extent of the string
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the string is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ * @since 3.105
+ */
+Point stringExtentInPixels(String string) {
+	return textExtentInPixels(string, 0);
 }
 
 /**
@@ -4081,7 +4906,30 @@ public Point stringExtent(String string) {
  * </ul>
  */
 public Point textExtent(String string) {
-	return textExtent(string, SWT.DRAW_DELIMITER | SWT.DRAW_TAB);
+	return DPIUtil.autoScaleDown(textExtentInPixels(string));
+}
+/**
+ * Returns the extent of the given string. Tab expansion and
+ * carriage return processing are performed.
+ * <p>
+ * The <em>extent</em> of a string is the width and height of
+ * the rectangular area it would cover if drawn in a particular
+ * font (in this case, the current font in the receiver).
+ * </p>
+ *
+ * @param string the string to measure
+ * @return a point containing the extent of the string
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the string is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ * @since 3.105
+ */
+Point textExtentInPixels(String string) {
+	return textExtentInPixels(string, SWT.DRAW_DELIMITER | SWT.DRAW_TAB);
 }
 
 /**
@@ -4116,6 +4964,41 @@ public Point textExtent(String string) {
  * </ul>
  */
 public Point textExtent(String string, int flags) {
+	return DPIUtil.autoScaleDown(textExtentInPixels(string, flags));
+}
+/**
+ * Returns the extent of the given string. Tab expansion, line
+ * delimiter and mnemonic processing are performed according to
+ * the specified flags, which can be a combination of:
+ * <dl>
+ * <dt><b>DRAW_DELIMITER</b></dt>
+ * <dd>draw multiple lines</dd>
+ * <dt><b>DRAW_TAB</b></dt>
+ * <dd>expand tabs</dd>
+ * <dt><b>DRAW_MNEMONIC</b></dt>
+ * <dd>underline the mnemonic character</dd>
+ * <dt><b>DRAW_TRANSPARENT</b></dt>
+ * <dd>transparent background</dd>
+ * </dl>
+ * <p>
+ * The <em>extent</em> of a string is the width and height of
+ * the rectangular area it would cover if drawn in a particular
+ * font (in this case, the current font in the receiver).
+ * </p>
+ *
+ * @param string the string to measure
+ * @param flags the flags specifying how to process the text
+ * @return a point containing the extent of the string
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the string is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ * @since 3.105
+ */
+Point textExtentInPixels(String string, int flags) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (string == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	setString(string, flags);

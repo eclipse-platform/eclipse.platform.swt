@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2015 IBM Corporation and others. All rights reserved.
+ * Copyright (c) 2000, 2016 IBM Corporation and others. All rights reserved.
  * The contents of this file are made available under the terms
  * of the GNU Lesser General Public License (LGPL) Version 2.1 that
  * accompanies this distribution (lgpl-v21.txt).  The LGPL is also
@@ -20,6 +20,8 @@ import org.eclipse.swt.internal.cairo.*;
 
 public class OS extends C {
 	static {
+		String scalingProperty = "GDK_SCALE";
+		OS.setenv(ascii(scalingProperty), ascii("1"), 1);
 		String propertyName = "SWT_GTK3";
 		String gtk3 = getEnvironmentalVariable (propertyName);
 		if (gtk3 != null && gtk3.equals("0")) {
@@ -17059,4 +17061,189 @@ public static final void setDarkThemePreferred(boolean preferred){
 	g_object_notify(gtk_settings_get_default(),
 			gtk_application_prefer_dark_theme);
 }
+
+/**
+ * @method flags=dynamic
+ * @param schema_id cast=(const gchar *)
+ */
+public static final native long /*int*/ _g_settings_new (byte[] schema_id);
+public static final long /*int*/ g_settings_new (byte[] schema_id) {
+	lock.lock();
+	try {
+		return _g_settings_new (schema_id);
+	} finally {
+		lock.unlock();
+	}
+}
+/**
+ * @method flags=dynamic
+ * @param settings cast=(GSettings *)
+ * @param key cast=(const gchar *)
+ * @param format = (const gchar *)
+ * @param monitorId = (const gchar *)
+ * @param scalingfactor = (gint *)
+ */
+public static final native void _g_settings_get (long /*int*/ settings, byte[] key, byte[] format, byte[] monitorId, int[] scalingfactor);
+public static final void g_settings_get (long /*int*/ settings, byte[] key, byte[] format, byte[] monitorId, int[] scalingfactor) {
+	lock.lock();
+	try {
+		_g_settings_get (settings, key, format, monitorId, scalingfactor);
+	} finally {
+		lock.unlock();
+	}
+}
+/**
+ * @method flags=dynamic
+ * @param settings cast=(GSettings *)
+ * @param key cast=(const gchar *)
+ */
+public static final native long /*int*/ _g_settings_get_value (long /*int*/ settings, byte[] key);
+public static final long /*int*/ g_settings_get_value (long /*int*/ settings, byte[] key) {
+	lock.lock();
+	try {
+		return _g_settings_get_value (settings, key);
+	} finally {
+		lock.unlock();
+	}
+}
+/**
+ * @method flags=dynamic
+ * @param variant cast=(GVariant *)
+ * @param key cast=(const gchar *)
+ * @param expectedType cast=(const GVariantType *)
+ */
+public static final native long /*int*/ _g_variant_dict_lookup_value (long /*int*/ variant, byte[] key, long /*int*/ expectedType);
+public static final long /*int*/ g_variant_dict_lookup_value (long /*int*/ variant, byte[] key, long /*int*/ expectedType) {
+	lock.lock();
+	try {
+		return _g_variant_dict_lookup_value (variant, key, expectedType);
+	} finally {
+		lock.unlock();
+	}
+}
+/**
+ * @method flags=dynamic
+ * @param variant cast=(GVariant *)
+ */
+public static final native long /*int*/ _g_variant_iter_new (long /*int*/ variant);
+public static final long /*int*/ g_variant_iter_new (long /*int*/ variant) {
+	lock.lock();
+	try {
+		return _g_variant_iter_new (variant);
+	} finally {
+		lock.unlock();
+	}
+}
+/**
+ * @method flags=dynamic
+ * @param variant cast=(GVariantIter *)
+ */
+public static final native void _g_variant_iter_free (long /*int*/ variant);
+public static final void g_variant_iter_free (long /*int*/ variant) {
+	lock.lock();
+	try {
+		_g_variant_iter_free (variant);
+	} finally {
+		lock.unlock();
+	}
+}
+/**
+ * @method flags=dynamic
+ * @param iter cast=(GVariantIter *)
+ * @param variant cast=(GVariant *)
+ */
+public static final native int _g_variant_iter_init (long /*int*/ iter, long /*int*/ variant);
+public static final int g_variant_iter_init (long /*int*/ iter, long /*int*/ variant) {
+	lock.lock();
+	try {
+		return _g_variant_iter_init (iter, variant);
+	} finally {
+		lock.unlock();
+	}
+}
+/**
+ * @method flags=dynamic
+ * @param iter cast=(const GVariantIter *)
+ * @param key cast = (gchar *)
+ * @param format = (const gchar *)
+ * @param value = (GVariant *)
+ */
+public static final native boolean _g_variant_iter_next (long /*int*/ iter, byte[] format, long /*int*/ key, long /*int*/ value);
+public static final boolean g_variant_iter_next (long /*int*/ iter, byte[] format, long /*int*/ key, long /*int*/ value) {
+	lock.lock();
+	try {
+		return _g_variant_iter_next (iter, format, key, value);
+	} finally {
+		lock.unlock();
+	}
+}
+/**
+ * @method flags=dynamic
+ * @param iter cast=(const GVariantIter *)
+ */
+public static final native long /*int*/ _g_variant_iter_next_value (long /*int*/ iter);
+public static final long /*int*/ g_variant_iter_next_value (long /*int*/ iter) {
+	lock.lock();
+	try {
+		return _g_variant_iter_next_value (iter);
+	} finally {
+		lock.unlock();
+	}
+}
+/**
+ * @method flags=dynamic
+ * @param value cast=(const GVariant *)
+ */
+public static final native long /*int*/ _g_variant_print (long /*int*/ value);
+public static final long /*int*/ g_variant_print (long /*int*/ value) {
+	lock.lock();
+	try {
+		return _g_variant_print (value);
+	} finally {
+		lock.unlock();
+	}
+}
+/**
+ * @method flags=dynamic
+ * @param variant cast=(GVariant *)
+ */
+public static final native void _g_variant_unref (long /*int*/ variant);
+public static final void g_variant_unref (long /*int*/ variant) {
+	lock.lock();
+	try {
+		_g_variant_unref (variant);
+	} finally {
+		lock.unlock();
+	}
+}
+/**
+ * @method flags=dynamic
+ */
+public static final native long /*int*/ _g_settings_schema_source_get_default ();
+public static final long /*int*/ g_settings_schema_source_get_default () {
+	lock.lock();
+	try {
+		return _g_settings_schema_source_get_default ();
+	} finally {
+		lock.unlock();
+	}
+}
+/**
+ * @method flags=dynamic
+ * @param schemaSource cast = (GSettingsSchemaSource *)
+ * @param schema_id cast = (const gchar *)
+ * @param recursive cast = (gboolean)
+ */
+public static final native long /*int*/ _g_settings_schema_source_lookup (long /*int*/ schemaSource, byte[] schema_id, boolean recursive);
+public static final long /*int*/ g_settings_schema_source_lookup (long /*int*/ schemaSource, byte[] schema_id, boolean recursive) {
+	lock.lock();
+	try {
+		return _g_settings_schema_source_lookup (schemaSource, schema_id, recursive);
+	} finally {
+		lock.unlock();
+	}
+}
+
+
+
 }

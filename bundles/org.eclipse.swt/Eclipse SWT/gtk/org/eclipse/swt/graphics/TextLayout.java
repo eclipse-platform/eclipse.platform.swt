@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2012 IBM Corporation and others.
+ * Copyright (c) 2000, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -10,10 +10,10 @@
  *******************************************************************************/
 package org.eclipse.swt.graphics;
 
+import org.eclipse.swt.*;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.cairo.*;
 import org.eclipse.swt.internal.gtk.*;
-import org.eclipse.swt.*;
 
 /**
  * <code>TextLayout</code> is a graphic object that represents
@@ -367,7 +367,29 @@ void destroy() {
  * </ul>
  */
 public void draw(GC gc, int x, int y) {
-	draw(gc, x, y, -1, -1, null, null);
+	x = DPIUtil.autoScaleUp(x);
+	y = DPIUtil.autoScaleUp(y);
+	drawInPixels(gc, x, y);
+}
+
+/**
+ * Draws the receiver's text using the specified GC at the specified
+ * point.
+ *
+ * @param gc the GC to draw
+ * @param x the x coordinate of the top left corner of the rectangular area where the text is to be drawn
+ * @param y the y coordinate of the top left corner of the rectangular area where the text is to be drawn
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the gc is null</li>
+ * </ul>
+ * @since 3.105
+ */
+void drawInPixels(GC gc, int x, int y) {
+	drawInPixels(gc, x, y, -1, -1, null, null);
 }
 
 /**
@@ -390,7 +412,32 @@ public void draw(GC gc, int x, int y) {
  * </ul>
  */
 public void draw(GC gc, int x, int y, int selectionStart, int selectionEnd, Color selectionForeground, Color selectionBackground) {
-	draw(gc, x, y, selectionStart, selectionEnd, selectionForeground, selectionBackground, 0);
+	x = DPIUtil.autoScaleUp(x);
+	y = DPIUtil.autoScaleUp(y);
+	drawInPixels(gc, x, y, selectionStart, selectionEnd, selectionForeground, selectionBackground);
+}
+/**
+ * Draws the receiver's text using the specified GC at the specified
+ * point.
+ *
+ * @param gc the GC to draw
+ * @param x the x coordinate of the top left corner of the rectangular area where the text is to be drawn
+ * @param y the y coordinate of the top left corner of the rectangular area where the text is to be drawn
+ * @param selectionStart the offset where the selections starts, or -1 indicating no selection
+ * @param selectionEnd the offset where the selections ends, or -1 indicating no selection
+ * @param selectionForeground selection foreground, or NULL to use the system default color
+ * @param selectionBackground selection background, or NULL to use the system default color
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the gc is null</li>
+ * </ul>
+ * @since 3.105
+ */
+void drawInPixels(GC gc, int x, int y, int selectionStart, int selectionEnd, Color selectionForeground, Color selectionBackground) {
+	drawInPixels(gc, x, y, selectionStart, selectionEnd, selectionForeground, selectionBackground, 0);
 }
 
 /**
@@ -421,6 +468,38 @@ public void draw(GC gc, int x, int y, int selectionStart, int selectionEnd, Colo
  * @since 3.3
  */
 public void draw(GC gc, int x, int y, int selectionStart, int selectionEnd, Color selectionForeground, Color selectionBackground, int flags) {
+	x = DPIUtil.autoScaleUp(x);
+	y = DPIUtil.autoScaleUp(y);
+	drawInPixels(gc, x, y, selectionStart, selectionEnd, selectionForeground, selectionBackground, flags);
+}
+/**
+ * Draws the receiver's text using the specified GC at the specified
+ * point.
+ * <p>
+ * The parameter <code>flags</code> can include one of <code>SWT.DELIMITER_SELECTION</code>
+ * or <code>SWT.FULL_SELECTION</code> to specify the selection behavior on all lines except
+ * for the last line, and can also include <code>SWT.LAST_LINE_SELECTION</code> to extend
+ * the specified selection behavior to the last line.
+ * </p>
+ * @param gc the GC to draw
+ * @param x the x coordinate of the top left corner of the rectangular area where the text is to be drawn
+ * @param y the y coordinate of the top left corner of the rectangular area where the text is to be drawn
+ * @param selectionStart the offset where the selections starts, or -1 indicating no selection
+ * @param selectionEnd the offset where the selections ends, or -1 indicating no selection
+ * @param selectionForeground selection foreground, or NULL to use the system default color
+ * @param selectionBackground selection background, or NULL to use the system default color
+ * @param flags drawing options
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the gc is null</li>
+ * </ul>
+ *
+ * @since 3.105
+ */
+void drawInPixels(GC gc, int x, int y, int selectionStart, int selectionEnd, Color selectionForeground, Color selectionBackground, int flags) {
 	checkLayout ();
 	computeRuns();
 	if (gc == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
@@ -775,6 +854,24 @@ public int getAscent () {
  * @see #getLineBounds(int)
  */
 public Rectangle getBounds() {
+	return DPIUtil.autoScaleDown(getBoundsInPixels());
+}
+/**
+ * Returns the bounds of the receiver. The width returned is either the
+ * width of the longest line or the width set using {@link TextLayout#setWidth(int)}.
+ * To obtain the text bounds of a line use {@link TextLayout#getLineBounds(int)}.
+ *
+ * @return the bounds of the receiver
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ *
+ * @see #setWidth(int)
+ * @see #getLineBounds(int)
+ * @since 3.105
+ */
+Rectangle getBoundsInPixels() {
 	checkLayout();
 	computeRuns();
 	int[] w = new int[1], h = new int[1];
@@ -805,6 +902,24 @@ public Rectangle getBounds() {
  * </ul>
  */
 public Rectangle getBounds(int start, int end) {
+	return DPIUtil.autoScaleDown(getBoundsInPixels(start, end));
+}
+/**
+ * Returns the bounds for the specified range of characters. The
+ * bounds is the smallest rectangle that encompasses all characters
+ * in the range. The start and end offsets are inclusive and will be
+ * clamped if out of range.
+ *
+ * @param start the start offset
+ * @param end the end offset
+ * @return the bounds of the character range
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ * @since 3.105
+ */
+Rectangle getBoundsInPixels(int start, int end) {
 	checkLayout();
 	computeRuns();
 	int length = text.length();
@@ -909,6 +1024,21 @@ public Font getFont () {
 * @since 3.2
 */
 public int getIndent () {
+	return DPIUtil.autoScaleDown(getIndentInPixels());
+}
+
+/**
+* Returns the receiver's indent.
+*
+* @return the receiver's indent
+*
+* @exception SWTException <ul>
+*    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+* </ul>
+*
+* @since 3.105
+*/
+int getIndentInPixels () {
 	checkLayout();
 	return indent;
 }
@@ -987,6 +1117,23 @@ public int getLevel(int offset) {
  * </ul>
  */
 public Rectangle getLineBounds(int lineIndex) {
+	return DPIUtil.autoScaleDown(getLineBoundsInPixels(lineIndex));
+}
+/**
+ * Returns the bounds of the line for the specified line index.
+ *
+ * @param lineIndex the line index
+ * @return the line bounds
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_ARGUMENT - if the line index is out of range</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ * @since 3.105
+ */
+Rectangle getLineBoundsInPixels(int lineIndex) {
 	checkLayout();
 	computeRuns();
 	int lineCount = OS.pango_layout_get_line_count(layout);
@@ -1146,6 +1293,27 @@ public int[] getLineOffsets() {
  * @see #getOffset(int, int, int[])
  */
 public Point getLocation(int offset, boolean trailing) {
+	return DPIUtil.autoScaleDown(getLocationInPixels(offset, trailing));
+}
+
+/**
+ * Returns the location for the specified character offset. The
+ * <code>trailing</code> argument indicates whether the offset
+ * corresponds to the leading or trailing edge of the cluster.
+ *
+ * @param offset the character offset
+ * @param trailing the trailing flag
+ * @return the location of the character offset
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ *
+ * @see #getOffset(Point, int[])
+ * @see #getOffset(int, int, int[])
+ * @since 3.105
+ */
+Point getLocationInPixels(int offset, boolean trailing) {
 	checkLayout();
 	computeRuns();
 	int length = text.length();
@@ -1281,9 +1449,36 @@ int _getOffset (int offset, int movement, boolean forward) {
  * @see #getLocation(int, boolean)
  */
 public int getOffset(Point point, int[] trailing) {
+	return getOffsetInPixels(DPIUtil.autoScaleUp(point), trailing);
+}
+/**
+ * Returns the character offset for the specified point.
+ * For a typical character, the trailing argument will be filled in to
+ * indicate whether the point is closer to the leading edge (0) or
+ * the trailing edge (1).  When the point is over a cluster composed
+ * of multiple characters, the trailing argument will be filled with the
+ * position of the character in the cluster that is closest to
+ * the point.
+ *
+ * @param point the point
+ * @param trailing the trailing buffer
+ * @return the character offset
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_ARGUMENT - if the trailing length is less than <code>1</code></li>
+ *    <li>ERROR_NULL_ARGUMENT - if the point is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ *
+ * @see #getLocation(int, boolean)
+ * @since 3.105
+ */
+int getOffsetInPixels(Point point, int[] trailing) {
 	checkLayout();
 	if (point == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	return getOffset(point.x, point.y, trailing);
+	return getOffsetInPixels(point.x, point.y, trailing);
 }
 
 /**
@@ -1310,6 +1505,33 @@ public int getOffset(Point point, int[] trailing) {
  * @see #getLocation(int, boolean)
  */
 public int getOffset(int x, int y, int[] trailing) {
+	return getOffset(new Point(x, y), trailing);
+}
+/**
+ * Returns the character offset for the specified point.
+ * For a typical character, the trailing argument will be filled in to
+ * indicate whether the point is closer to the leading edge (0) or
+ * the trailing edge (1).  When the point is over a cluster composed
+ * of multiple characters, the trailing argument will be filled with the
+ * position of the character in the cluster that is closest to
+ * the point.
+ *
+ * @param x the x coordinate of the point
+ * @param y the y coordinate of the point
+ * @param trailing the trailing buffer
+ * @return the character offset
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_ARGUMENT - if the trailing length is less than <code>1</code></li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ *
+ * @see #getLocation(int, boolean)
+ * @since 3.105
+ */
+int getOffsetInPixels(int x, int y, int[] trailing) {
 	checkLayout();
 	computeRuns();
 	if (trailing != null && trailing.length < 1) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
@@ -1499,6 +1721,20 @@ String getSegmentsText() {
  * </ul>
  */
 public int getSpacing () {
+	return DPIUtil.autoScaleDown(getSpacingInPixels());
+}
+
+/**
+ * Returns the line spacing of the receiver.
+ *
+ * @return the line spacing
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ * @since 3.105
+ */
+int getSpacingInPixels () {
 	checkLayout();
 	return OS.PANGO_PIXELS(OS.pango_layout_get_spacing(layout));
 }
@@ -1612,6 +1848,20 @@ public int getTextDirection () {
  * </ul>
  */
 public int getWidth () {
+	return DPIUtil.autoScaleDown(getWidthInPixels());
+}
+
+/**
+ * Returns the width of the receiver.
+ *
+ * @return the width
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ * @since 3.105
+ */
+protected int getWidthInPixels () {
 	checkLayout ();
 	return wrapWidth;
 }
@@ -1628,6 +1878,20 @@ public int getWidth () {
 * @since 3.6
 */
 public int getWrapIndent () {
+	return DPIUtil.autoScaleDown(getWrapIndentInPixels());
+}
+/**
+* Returns the receiver's wrap indent.
+*
+* @return the receiver's wrap indent
+*
+* @exception SWTException <ul>
+*    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+* </ul>
+*
+* @since 3.105
+*/
+int getWrapIndentInPixels () {
 	checkLayout ();
 	return wrapIndent;
 }
@@ -1780,6 +2044,24 @@ public void setFont (Font font) {
  * @since 3.2
  */
 public void setIndent (int indent) {
+	setIndentInPixels(DPIUtil.autoScaleUp(indent));
+}
+
+/**
+ * Sets the indent of the receiver. This indent is applied to the first line of
+ * each paragraph.
+ *
+ * @param indent new indent
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ *
+ * @see #setWrapIndent(int)
+ *
+ * @since 3.105
+ */
+void setIndentInPixels (int indent) {
 	checkLayout();
 	if (indent < 0) return;
 	if (this.indent == indent) return;
@@ -1847,6 +2129,24 @@ public void setOrientation(int orientation) {
  * </ul>
  */
 public void setSpacing (int spacing) {
+	setSpacingInPixels(DPIUtil.autoScaleUp(spacing));
+}
+
+/**
+ * Sets the line spacing of the receiver.  The line spacing
+ * is the space left between lines.
+ *
+ * @param spacing the new line spacing
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_ARGUMENT - if the spacing is negative</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ * @since 3.105
+ */
+void setSpacingInPixels (int spacing) {
 	checkLayout();
 	if (spacing < 0) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	OS.pango_layout_set_spacing(layout, spacing * OS.PANGO_SCALE);
@@ -2144,6 +2444,27 @@ public void setTextDirection (int textDirection) {
  * @see #setAlignment(int)
  */
 public void setWidth (int width) {
+	setWidthInPixels(DPIUtil.autoScaleUp(width));
+}
+
+/**
+ * Sets the line width of the receiver, which determines how
+ * text should be wrapped and aligned. The default value is
+ * <code>-1</code> which means wrapping is disabled.
+ *
+ * @param width the new width
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_ARGUMENT - if the width is <code>0</code> or less than <code>-1</code></li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ *
+ * @see #setAlignment(int)
+ * @since 3.105
+ */
+void setWidthInPixels (int width) {
 	checkLayout ();
 	if (width < -1 || width == 0) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	if (wrapWidth == width) return;
@@ -2178,6 +2499,24 @@ void setWidth () {
  * @since 3.6
  */
 public void setWrapIndent (int wrapIndent) {
+	setWrapIndentInPixels(DPIUtil.autoScaleUp(wrapIndent));
+}
+
+/**
+ * Sets the wrap indent of the receiver. This indent is applied to all lines
+ * in the paragraph except the first line.
+ *
+ * @param wrapIndent new wrap indent
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ *
+ * @see #setIndent(int)
+ *
+ * @since 3.105
+ */
+void setWrapIndentInPixels (int wrapIndent) {
 	checkLayout();
 	if (wrapIndent < 0) return;
 	if (this.wrapIndent == wrapIndent) return;

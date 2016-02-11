@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2015 IBM Corporation and others.
+ * Copyright (c) 2000, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -250,8 +250,7 @@ int applyThemeBackground () {
 	return -1; /* No Change */
 }
 
-@Override
-public Point computeSize (int wHint, int hHint, boolean changed) {
+@Override Point computeSizeInPixels (int wHint, int hHint, boolean changed) {
 	checkWidget ();
 	if (wHint != SWT.DEFAULT && wHint < 0) wHint = 0;
 	if (hHint != SWT.DEFAULT && hHint < 0) hHint = 0;
@@ -264,7 +263,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	 * based on the number of items in the table
 	 */
 	 if (OS.GTK3 && size.y == 0 && hHint == SWT.DEFAULT) {
-	 size.y = getItemCount() * getItemHeight();
+	 size.y = getItemCount() * getItemHeightInPixels();
 	 }
 
 	 /*
@@ -273,7 +272,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	 * so need to assign default height
 	 */
 	if (size.y == 0 && hHint == SWT.DEFAULT) size.y = DEFAULT_HEIGHT;
-	Rectangle trim = computeTrim (0, 0, size.x, size.y);
+	Rectangle trim = computeTrimInPixels (0, 0, size.x, size.y);
 	size.x = trim.width;
 	size.y = trim.height;
 	return size;
@@ -510,6 +509,23 @@ public int getItemCount () {
  * </ul>
  */
 public int getItemHeight () {
+	checkWidget();
+	return DPIUtil.autoScaleDown(getItemHeightInPixels());
+}
+
+/**
+ * Returns the height of the area which would be used to
+ * display <em>one</em> of the items in the list.
+ *
+ * @return the height of one item
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * @since 3.105
+ */
+int getItemHeightInPixels () {
 	checkWidget();
 	int itemCount = OS.gtk_tree_model_iter_n_children (modelHandle, 0);
 	long /*int*/ column = OS.gtk_tree_view_get_column (handle, 0);

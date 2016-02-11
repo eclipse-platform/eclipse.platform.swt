@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2013 IBM Corporation and others.
+ * Copyright (c) 2000, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -299,6 +299,22 @@ public void dispose () {
  * </ul>
  */
 public Rectangle getBounds () {
+	return DPIUtil.autoScaleDown (getBoundsInPixels ());
+}
+
+/**
+ * Returns a rectangle describing the receiver's size and location
+ * relative to its parent.
+ *
+ * @return the receiver's bounding rectangle
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * @since 3.105
+ */
+Rectangle getBoundsInPixels () {
 	checkWidget();
 	parent.forceResize ();
 	long /*int*/ topHandle = topHandle ();
@@ -453,6 +469,20 @@ public String getToolTipText () {
  * </ul>
  */
 public int getWidth () {
+	return DPIUtil.autoScaleDown (getWidthInPixels ());
+}
+/**
+ * Gets the width of the receiver.
+ *
+ * @return the width
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * @since 3.105
+ */
+int getWidthInPixels () {
 	checkWidget();
 	parent.forceResize ();
 	long /*int*/ topHandle = topHandle ();
@@ -523,9 +553,9 @@ long /*int*/ gtk_clicked (long /*int*/ widget) {
 						event.detail = SWT.ARROW;
 						GtkAllocation allocation = new GtkAllocation ();
 						OS.gtk_widget_get_allocation (topHandle, allocation);
-						event.x = allocation.x;
-						if ((parent.style & SWT.MIRRORED) != 0) event.x = parent.getClientWidth () - allocation.width - event.x;
-						event.y = allocation.y + allocation.height;
+						event.x = DPIUtil.autoScaleDown(allocation.x);
+						if ((style & SWT.MIRRORED) != 0) event.x = DPIUtil.autoScaleDown (parent.getClientWidth ()- allocation.width) - event.x;
+						event.y = DPIUtil.autoScaleDown(allocation.y + allocation.height);
 					}
 					break;
 				}
@@ -869,13 +899,13 @@ void resizeControl () {
 		* case can occur when the control is a
 		* combo box.
 		*/
-		Rectangle itemRect = getBounds ();
-		control.setSize (itemRect.width, itemRect.height);
+		Rectangle itemRect = getBoundsInPixels ();
+		control.setSizeInPixels (itemRect.width, itemRect.height);
 		resizeHandle(itemRect.width, itemRect.height);
-		Rectangle rect = control.getBounds ();
+		Rectangle rect = control.getBoundsInPixels ();
 		rect.x = itemRect.x + (itemRect.width - rect.width) / 2;
 		rect.y = itemRect.y + (itemRect.height - rect.height) / 2;
-		control.setLocation (rect.x, rect.y);
+		control.setLocationInPixels (rect.x, rect.y);
 	}
 }
 
@@ -988,7 +1018,7 @@ public void setEnabled (boolean enabled) {
 			*/
 			int [] x = new int [1], y = new int [1];
 			gdk_window_get_device_position (parent.paintWindow (), x, y, null);
-			if (getBounds ().contains (x [0], y [0])) {
+			if (getBoundsInPixels ().contains (x [0], y [0])) {
 				OS.gtk_widget_hide (handle);
 				OS.gtk_widget_show (handle);
 			}
@@ -1249,6 +1279,28 @@ void setToolTipText (Shell shell, String newString) {
  * </ul>
  */
 public void setWidth (int width) {
+	setWidthInPixels(DPIUtil.autoScaleUp(width));
+}
+
+/**
+ * Sets the width of the receiver, for <code>SEPARATOR</code> ToolItems.
+ *
+ * @param width the new width. If the new value is <code>SWT.DEFAULT</code>,
+ * the width is a fixed-width area whose amount is determined by the platform.
+ * If the new value is 0 a vertical or horizontal line will be drawn, depending
+ * on the setting of the corresponding style bit (<code>SWT.VERTICAL</code> or
+ * <code>SWT.HORIZONTAL</code>). If the new value is <code>SWT.SEPARATOR_FILL</code>
+ * a variable-width space is inserted that acts as a spring between the two adjoining
+ * items which will push them out to the extent of the containing ToolBar.
+ *
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * @since 3.105
+ */
+void setWidthInPixels (int width) {
 	checkWidget();
 	if ((style & SWT.SEPARATOR) == 0) return;
 	if (width < 0) return;

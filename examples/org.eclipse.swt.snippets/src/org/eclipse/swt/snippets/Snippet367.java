@@ -12,6 +12,7 @@ package org.eclipse.swt.snippets;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.internal.*;
 import org.eclipse.swt.layout.*;
 import org.eclipse.swt.widgets.*;
 
@@ -32,6 +33,7 @@ public class Snippet367 {
 	private static final String IMAGE_PATH_150 = IMAGES_ROOT + IMAGE_150;
 	private static final String IMAGE_PATH_200 = IMAGES_ROOT + IMAGE_200;
 
+	@SuppressWarnings("restriction")
 	public static void main (String [] args) {
 		final ImageFileNameProvider filenameProvider = zoom -> {
 			switch (zoom) {
@@ -157,7 +159,7 @@ public class Snippet367 {
 		new Label (shell, SWT.NONE).setText ("5. 50x50 box\n(Display#getDPI(): " + display.getDPI().x + ")");
 		Label box= new Label (shell, SWT.NONE);
 		box.setBackground(display.getSystemColor(SWT.COLOR_WIDGET_DARK_SHADOW));
-		box.setLayoutData (new GridData (50, 50));
+		box.setLayoutData (new GridData (DPIUtil.autoScaleDown(50), DPIUtil.autoScaleDown(50)));
 
 		shell.pack ();
 		shell.open ();

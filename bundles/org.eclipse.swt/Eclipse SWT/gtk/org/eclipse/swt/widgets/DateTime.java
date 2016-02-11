@@ -159,8 +159,8 @@ public DateTime (Composite parent, int style) {
 	if (isDateWithDropDownButton ()) {
 		//Date w/ drop down button is in containers.
 		//first time round we set the bounds manually for correct Right_to_left behaviour
-		Point size = computeSize (SWT.DEFAULT, SWT.DEFAULT);
-		setBounds (0, 0, size.x, size.y);
+		Point size = computeSizeInPixels (SWT.DEFAULT, SWT.DEFAULT);
+		setBoundsInPixels (0, 0, size.x, size.y);
 	}
 }
 
@@ -235,8 +235,7 @@ protected void checkSubclass () {
 	if (!isValidSubclass ()) error (SWT.ERROR_INVALID_SUBCLASS);
 }
 
-@Override
-public Point computeSize (int wHint, int hHint, boolean changed) {
+@Override Point computeSizeInPixels (int wHint, int hHint, boolean changed) {
 	checkWidget ();
 
 	int width = 0, height = 0;
@@ -254,9 +253,9 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 			height = size.y;
 		} else {
 			Point textSize = computeNativeSize (textEntryHandle, wHint, hHint, changed);
-			Rectangle trim = computeTrim (0,0, textSize.x,textSize.y);
+			Rectangle trim = computeTrimInPixels (0,0, textSize.x,textSize.y);
 			if (isDateWithDropDownButton ()){
-				Point buttonSize = down.computeSize (SWT.DEFAULT, SWT.DEFAULT, changed);
+				Point buttonSize = down.computeSizeInPixels (SWT.DEFAULT, SWT.DEFAULT, changed);
 				width = trim.width + buttonSize.x;
 				height = Math.max (trim.height, buttonSize.y);
 			} else if (isDate () || isTime ()) {
@@ -275,7 +274,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	if (height == 0) height = DEFAULT_HEIGHT;
 	if (wHint != SWT.DEFAULT) width = wHint;
 	if (hHint != SWT.DEFAULT) height = hHint;
-	int borderWidth = getBorderWidth ();
+	int borderWidth = getBorderWidthInPixels ();
 
 	if (prefferedSize == null && (isDateWithDropDownButton () && OS.GTK3)) {
 		prefferedSize = new Point (width + 2*borderWidth, height+ 2*borderWidth);
@@ -285,14 +284,13 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	}
 }
 
-@Override
-public Rectangle computeTrim (int x, int y, int width, int height) {
+@Override Rectangle computeTrimInPixels (int x, int y, int width, int height) {
 	if (isCalendar ()) {
-		return super.computeTrim (x, y, width, height);
+		return super.computeTrimInPixels (x, y, width, height);
 	}
 
 	checkWidget ();
-	Rectangle trim = super.computeTrim (x, y, width, height);
+	Rectangle trim = super.computeTrimInPixels (x, y, width, height);
 	int xborder = 0, yborder = 0;
 		if (OS.GTK3) {
 			GtkBorder tmp = new GtkBorder ();
@@ -552,11 +550,11 @@ void dropDownCalendar (boolean drop) {
 	}
 
 	//This is the x/y/width/height of the container of DateTime
-	Point containerBounds = getSize ();
-	Point calendarSize = popupCalendar.computeSize (SWT.DEFAULT, SWT.DEFAULT, false);
+	Point containerBounds = getSizeInPixels ();
+	Point calendarSize = popupCalendar.computeSizeInPixels (SWT.DEFAULT, SWT.DEFAULT, false);
 
 	//Set the inner calendar pos/size. (not the popup shell pos/size)
-	popupCalendar.setBounds (1, 1, Math.max (containerBounds.x - 2, calendarSize.x), calendarSize.y);
+	popupCalendar.setBoundsInPixels (1, 1, Math.max (containerBounds.x - 2, calendarSize.x), calendarSize.y);
 
 	//Set Date & focus current day
 	popupCalendar.setDate (savedYear, savedMonth, savedDay);
@@ -565,7 +563,7 @@ void dropDownCalendar (boolean drop) {
 	Display display = getDisplay ();
 
 	//To display popup calendar, we need to know where the parent is relative to the whole screen.
-	Rectangle coordsRelativeToScreen = display.map (getParent (), null, getBounds ());
+	Rectangle coordsRelativeToScreen = display.mapInPixels (getParent (), null, getBoundsInPixels ());
 	Rectangle displayRect = getMonitor ().getClientArea ();
 
 	showPopupShell (containerBounds, calendarSize, coordsRelativeToScreen, displayRect);
@@ -580,7 +578,7 @@ private void showPopupShell (Point containerBounds, Point calendarSize, Rectangl
 	int y = calculateCalendarYpos (containerBounds, coordsRelativeToScreen, height, displayRect);
 	int x = calculateCalendarXpos (calendarSize, coordsRelativeToScreen, displayRect, width);
 
-	popupShell.setBounds (x, y, width, height);
+	popupShell.setBoundsInPixels (x, y, width, height);
 	popupShell.setVisible (true);
 	if (isFocusControl ()) {
 		popupCalendar.setFocus ();
@@ -1064,7 +1062,7 @@ void initAccessible () {
 
 		@Override
 		public void getLocation (AccessibleControlEvent e) {
-			Rectangle rect = display.map (getParent (), null, getBounds ());
+			Rectangle rect = display.mapInPixels (getParent (), null, getBoundsInPixels ());
 			e.x = rect.x;
 			e.y = rect.y;
 			e.width = rect.width;
@@ -1683,8 +1681,7 @@ public void setYear (int year) {
 	}
 }
 
-@Override
-public void setBounds (int x, int y, int width, int height) {
+@Override void setBoundsInPixels (int x, int y, int width, int height) {
 
 	//Date with Drop down is in container. Needs extra handling.
 	if (isDateWithDropDownButton () && OS.GTK3) {
@@ -1692,7 +1689,7 @@ public void setBounds (int x, int y, int width, int height) {
 		OS.gtk_widget_get_preferred_size (textEntryHandle, null, requisition);
 		int oldHeight = requisition.height; //Entry should not expand vertically. It is single liner.
 
-		int newWidth = width - (down.getSize ().x + getGtkBorderPadding ().right);
+		int newWidth = width - (down.getSizeInPixels ().x + getGtkBorderPadding ().right);
 		OS.gtk_widget_set_size_request (textEntryHandle, (newWidth >= 0) ? newWidth : 0, oldHeight);
 	}
 
@@ -1711,12 +1708,12 @@ public void setBounds (int x, int y, int width, int height) {
 	 */
 	int fixedGtkVersion = OS.VERSION (3, 14, 2);
 	if (isCalendar () && OS.GTK3 && (OS.GTK_VERSION < fixedGtkVersion)) {
-			int calendarPrefferedVerticalSize = computeSize (SWT.DEFAULT, SWT.DEFAULT, true).y;
+			int calendarPrefferedVerticalSize = computeSizeInPixels (SWT.DEFAULT, SWT.DEFAULT, true).y;
 			if (height > calendarPrefferedVerticalSize) {
 				height = calendarPrefferedVerticalSize;
 		}
 	}
-	super.setBounds (x, y, width, height);
+	super.setBoundsInPixels (x, y, width, height);
 
 }
 
@@ -1724,10 +1721,10 @@ public void setBounds (int x, int y, int width, int height) {
  * Usually called when control is resized or first initialized.
  */
 private void setDropDownButtonSize () {
-	Rectangle rect = getClientArea ();
+	Rectangle rect = getClientAreaInPixels ();
 	int parentWidth = rect.width;
 	int parentHeight = rect.height;
-	Point buttonSize = down.computeSize (SWT.DEFAULT, parentHeight);
+	Point buttonSize = down.computeSizeInPixels (SWT.DEFAULT, parentHeight);
 
 	//TAG_GTK3__NO_VERTICAL_FILL_ADJUSTMENT
 	int dateEntryHeight = computeNativeSize (textEntryHandle, SWT.DEFAULT, SWT.DEFAULT, false).y;
@@ -1737,7 +1734,7 @@ private void setDropDownButtonSize () {
 	int newXpos = parentWidth - buttonSize.x;
 
 	int newYPos = parentHeight/2 - dateEntryHeight/2;
-	down.setBounds (newXpos, newYPos, buttonSize.x, newHeight);
+	down.setBoundsInPixels (newXpos, newYPos, buttonSize.x, newHeight);
 }
 
 /**

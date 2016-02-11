@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2012 IBM Corporation and others.
+ * Copyright (c) 2000, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -11,6 +11,7 @@
 package org.eclipse.swt.dnd;
 
 import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.gtk.*;
 import org.eclipse.swt.widgets.*;
 
@@ -152,7 +153,7 @@ public class TableDropTargetEffect extends DropTargetEffect {
 		} else {
 			if (index != -1 && scrollIndex == index && scrollBeginTime != 0) {
 				if (System.currentTimeMillis() >= scrollBeginTime) {
-					if (coordinates.y < table.getItemHeight()) {
+					if (coordinates.y < DPIUtil.autoScaleUp(table.getItemHeight())) {
 						OS.gtk_tree_path_prev(path[0]);
 					} else {
 						OS.gtk_tree_path_next(path[0]);

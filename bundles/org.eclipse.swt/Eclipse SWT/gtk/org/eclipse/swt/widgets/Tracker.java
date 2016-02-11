@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2012 IBM Corporation and others.
+ * Copyright (c) 2000, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -195,7 +195,7 @@ Point adjustMoveCursor () {
 	int newX = bounds.x + bounds.width / 2;
 	int newY = bounds.y;
 
-	Point point = display.map (parent, null, newX, newY);
+	Point point = display.mapInPixels (parent, null, newX, newY);
 	display.setCursorLocation (point);
 
 	/*
@@ -228,7 +228,7 @@ Point adjustResizeCursor () {
 		newY = bounds.y + bounds.height / 2;
 	}
 
-	Point point = display.map (parent, null, newX, newY);
+	Point point = display.mapInPixels (parent, null, newX, newY);
 	display.setCursorLocation (point);
 
 	/*
@@ -318,7 +318,7 @@ void drawRectangles (Rectangle [] rects) {
 		long /*int*/ region = OS.gdk_region_new ();
 		GdkRectangle rect = new GdkRectangle();
 		for (int i = 0; i < rects.length; i++) {
-			Rectangle r = parent != null ? display.map(parent, null, rects[i]) : rects[i];
+			Rectangle r = parent != null ? display.mapInPixels(parent, null, rects[i]) : rects[i];
 			rect.x = r.x;
 			rect.y = r.y;
 			rect.width = r.width + 1;
@@ -372,6 +372,29 @@ void drawRectangles (Rectangle [] rects) {
  * </ul>
  */
 public Rectangle [] getRectangles () {
+	checkWidget();
+	Rectangle [] result = new Rectangle [rectangles.length];
+	for (int i = 0; i < rectangles.length; i++) {
+		Rectangle current = rectangles [i];
+		result [i] = DPIUtil.autoScaleDown (new Rectangle (current.x, current.y, current.width, current.height));
+	}
+	return result;
+}
+
+/**
+ * Returns the bounds that are being drawn, expressed relative to the parent
+ * widget.  If the parent is a <code>Display</code> then these are screen
+ * coordinates.
+ *
+ * @return the bounds of the Rectangles being drawn
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * @since 3.105
+ */
+Rectangle [] getRectanglesInPixels () {
 	checkWidget();
 	Rectangle [] result = new Rectangle [rectangles.length];
 	for (int i = 0; i < rectangles.length; i++) {
@@ -443,10 +466,10 @@ long /*int*/ gtk_key_press_event (long /*int*/ widget, long /*int*/ eventPtr) {
 			rectsToErase [i] = new Rectangle (current.x, current.y, current.width, current.height);
 		}
 		Event event = new Event ();
-		event.x = oldX + xChange;
-		event.y = oldY + yChange;
+		Rectangle eventRect = new Rectangle (oldX + xChange, oldY + yChange, 0, 0);
+		event.setBounds (DPIUtil.autoScaleDown (eventRect));
 		if (parent != null && (parent.style & SWT.MIRRORED) != 0) {
-			event.x = parent.getClientWidth () - event.width - event.x;
+			event.x = DPIUtil.autoScaleDown (parent.getClientWidth ()) - event.width - event.x;
 		}
 		if ((style & SWT.RESIZE) != 0) {
 			resizeRectangles (xChange, yChange);
@@ -568,12 +591,12 @@ long /*int*/ gtk_mouse (int eventType, long /*int*/ widget, long /*int*/ eventPt
 		}
 		Event event = new Event ();
 		if (parent == null) {
-			event.x = newX [0];
-			event.y = newY [0];
+			Rectangle eventRect = new Rectangle (newX [0], newY [0], 0, 0);
+			event.setBounds (DPIUtil.autoScaleDown (eventRect));
 		} else {
-			Point screenCoord = display.map (parent, null, newX [0], newY [0]);
-			event.x = screenCoord.x;
-			event.y = screenCoord.y;
+			Point screenCoord = display.mapInPixels (parent, null, newX [0], newY [0]);
+			Rectangle eventRect = new Rectangle (screenCoord.x, screenCoord.y, 0, 0);
+			event.setBounds (DPIUtil.autoScaleDown (eventRect));
 		}
 		if ((style & SWT.RESIZE) != 0) {
 			resizeRectangles (newX [0] - oldX, newY [0] - oldY);
@@ -772,7 +795,7 @@ public boolean open () {
 		OS.gtk_widget_shape_combine_region (overlay, region);
 		OS.gtk_widget_input_shape_combine_region (overlay, region);
 		OS.gdk_region_destroy (region);
-		Rectangle bounds = display.getBounds();
+		Rectangle bounds = display.getBoundsInPixels();
 		OS.gtk_window_move (overlay, bounds.x, bounds.y);
 		OS.gtk_window_resize (overlay, bounds.width, bounds.height);
 		OS.gtk_widget_show (overlay);
@@ -1047,6 +1070,31 @@ public void setCursor (Cursor newCursor) {
  * </ul>
  */
 public void setRectangles (Rectangle [] rectangles) {
+	checkWidget();
+	if (rectangles == null) error (SWT.ERROR_NULL_ARGUMENT);
+	int length = rectangles.length;
+	for (int i = 0; i < length; i++) {
+		rectangles [i] = DPIUtil.autoScaleUp (rectangles [i]);
+	}
+	setRectanglesInPixels (rectangles);
+}
+
+/**
+ * Specifies the rectangles that should be drawn, expressed relative to the parent
+ * widget.  If the parent is a Display then these are screen coordinates.
+ *
+ * @param rectangles the bounds of the rectangles to be drawn
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the set of rectangles is null or contains a null rectangle</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * @since 3.105
+ */
+void setRectanglesInPixels (Rectangle [] rectangles) {
 	checkWidget();
 	if (rectangles == null) error (SWT.ERROR_NULL_ARGUMENT);
 	int length = rectangles.length;

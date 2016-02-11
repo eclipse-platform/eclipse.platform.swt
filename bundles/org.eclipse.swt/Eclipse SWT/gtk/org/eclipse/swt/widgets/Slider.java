@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2013 IBM Corporation and others.
+ * Copyright (c) 2000, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -263,8 +263,7 @@ void deregister () {
 	display.removeWidget (hAdjustment);
 }
 
-@Override
-public Point computeSize (int wHint, int hHint, boolean changed) {
+@Override Point computeSizeInPixels (int wHint, int hHint, boolean changed) {
 	checkWidget();
 	OS.gtk_widget_realize(handle);
 	if (wHint != SWT.DEFAULT && wHint < 0) wHint = 0;

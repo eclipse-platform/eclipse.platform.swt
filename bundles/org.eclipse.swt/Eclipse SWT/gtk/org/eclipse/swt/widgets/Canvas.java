@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2012 IBM Corporation and others.
+ * Copyright (c) 2000, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -13,6 +13,7 @@ package org.eclipse.swt.widgets;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.cairo.*;
 import org.eclipse.swt.internal.gtk.*;
 
@@ -257,6 +258,35 @@ void reskinChildren (int flags) {
  * </ul>
  */
 public void scroll (int destX, int destY, int x, int y, int width, int height, boolean all) {
+	Point destination = DPIUtil.autoScaleUp (new Point (destX, destY));
+	Rectangle srcRect = DPIUtil.autoScaleUp (new Rectangle (x, y, width, height));
+	scrollInPixels(destination.x, destination.y, srcRect.x, srcRect.y, srcRect.width, srcRect.height, all);
+}
+
+/**
+ * Scrolls a rectangular area of the receiver by first copying
+ * the source area to the destination and then causing the area
+ * of the source which is not covered by the destination to
+ * be repainted. Children that intersect the rectangle are
+ * optionally moved during the operation. In addition, all outstanding
+ * paint events are flushed before the source area is copied to
+ * ensure that the contents of the canvas are drawn correctly.
+ *
+ * @param destX the x coordinate of the destination
+ * @param destY the y coordinate of the destination
+ * @param x the x coordinate of the source
+ * @param y the y coordinate of the source
+ * @param width the width of the area
+ * @param height the height of the area
+ * @param all <code>true</code>if children should be scrolled, and <code>false</code> otherwise
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * @since 3.105
+ */
+void scrollInPixels (int destX, int destY, int x, int y, int width, int height, boolean all) {
 	checkWidget();
 	if (width <= 0 || height <= 0) return;
 	if ((style & SWT.MIRRORED) != 0) {
@@ -357,10 +387,10 @@ public void scroll (int destX, int destY, int x, int y, int width, int height, b
 		Control [] children = _getChildren ();
 		for (int i=0; i<children.length; i++) {
 			Control child = children [i];
-			Rectangle rect = child.getBounds ();
+			Rectangle rect = child.getBoundsInPixels ();
 			if (Math.min(x + width, rect.x + rect.width) >= Math.max (x, rect.x) &&
 				Math.min(y + height, rect.y + rect.height) >= Math.max (y, rect.y)) {
-					child.setLocation (rect.x + deltaX, rect.y + deltaY);
+					child.setLocationInPixels (rect.x + deltaX, rect.y + deltaY);
 			}
 		}
 	}

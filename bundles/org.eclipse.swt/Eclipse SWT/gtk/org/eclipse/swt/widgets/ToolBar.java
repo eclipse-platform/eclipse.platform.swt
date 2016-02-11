@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2015 IBM Corporation and others.
+ * Copyright (c) 2000, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -161,8 +161,7 @@ int applyThemeBackground () {
 	return -1; /* No Change */
 }
 
-@Override
-public Point computeSize (int wHint, int hHint, boolean changed) {
+@Override Point computeSizeInPixels (int wHint, int hHint, boolean changed) {
 	checkWidget ();
 	if (wHint != SWT.DEFAULT && wHint < 0) wHint = 0;
 	if (hHint != SWT.DEFAULT && hHint < 0) hHint = 0;
@@ -302,7 +301,7 @@ public ToolItem getItem (Point point) {
 	if (point == null) error (SWT.ERROR_NULL_ARGUMENT);
 	ToolItem[] items = getItems();
 	for (int i=0; i<items.length; i++) {
-		if (items[i].getBounds().contains(point)) return items[i];
+		if (items[i].getBoundsInPixels().contains(point)) return items[i];
 	}
 	return null;
 }
@@ -475,9 +474,9 @@ long /*int*/ menuItemSelected (long /*int*/ widget, ToolItem item) {
 			event.detail = SWT.ARROW;
 			GtkAllocation allocation = new GtkAllocation ();
 			OS.gtk_widget_get_allocation (widget, allocation);
-			event.x = allocation.x;
-			if ((style & SWT.MIRRORED) != 0) event.x = getClientWidth () - allocation.width - event.x;
-			event.y = allocation.y + allocation.height;
+			event.x = DPIUtil.autoScaleDown(allocation.x);
+			if ((style & SWT.MIRRORED) != 0) event.x = DPIUtil.autoScaleDown (getClientWidth () - allocation.width) - event.x;
+			event.y = DPIUtil.autoScaleDown(allocation.y + allocation.height);
 			break;
 		case SWT.RADIO :
 			if ((style & SWT.NO_RADIO_GROUP) == 0)	item.selectRadio ();

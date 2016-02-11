@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2015 IBM Corporation and others.
+ * Copyright (c) 2000, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -393,8 +393,7 @@ void clearText () {
 	OS.g_signal_handlers_unblock_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
 }
 
-@Override
-public Point computeSize (int wHint, int hHint, boolean changed) {
+@Override Point computeSizeInPixels (int wHint, int hHint, boolean changed) {
 	checkWidget ();
 	if ((style & SWT.READ_ONLY) != 0 || OS.GTK3) {
 		return computeNativeSize (handle, wHint, hHint, changed);
@@ -850,6 +849,23 @@ GdkColor getBackgroundColor () {
  */
 public Point getCaretLocation () {
 	checkWidget ();
+	return DPIUtil.autoScaleDown(getCaretLocationInPixels());
+}
+/**
+ * Returns a point describing the location of the caret relative
+ * to the receiver.
+ *
+ * @return a point, the location of the caret
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @since 3.105
+ */
+Point getCaretLocationInPixels () {
+	checkWidget ();
 	if ((style & SWT.READ_ONLY) != 0) {
 		return new Point (0, 0);
 	}
@@ -860,7 +876,7 @@ public Point getCaretLocation () {
 	long /*int*/ layout = OS.gtk_entry_get_layout (entryHandle);
 	PangoRectangle pos = new PangoRectangle ();
 	OS.pango_layout_index_to_pos (layout, index, pos);
-	int x = offset_x [0] + OS.PANGO_PIXELS (pos.x) - getBorderWidth ();
+	int x = offset_x [0] + OS.PANGO_PIXELS (pos.x) - getBorderWidthInPixels ();
 	int y = offset_y [0] + OS.PANGO_PIXELS (pos.y);
 	return new Point (x, y);
 }
@@ -1136,6 +1152,22 @@ String getText (int start, int stop) {
  * </ul>
  */
 public int getTextHeight () {
+	checkWidget();
+	return DPIUtil.autoScaleDown(getTextHeightInPixels());
+}
+
+/**
+ * Returns the height of the receivers's text field.
+ *
+ * @return the text height
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * @since 3.105
+ */
+int getTextHeightInPixels () {
 	checkWidget();
 	GtkRequisition requisition = new GtkRequisition ();
 	gtk_widget_size_request (handle, requisition);
@@ -1915,7 +1947,7 @@ void setBackgroundColor (GdkColor color) {
 @Override
 int setBounds (int x, int y, int width, int height, boolean move, boolean resize) {
 	int newHeight = height;
-	if (resize) newHeight = Math.max (getTextHeight (), height);
+	if (resize) newHeight = Math.max (getTextHeightInPixels (), height);
 	return super.setBounds (x, y, width, newHeight, move, resize);
 }
 
@@ -2151,6 +2183,27 @@ public void setOrientation (int orientation) {
  * </ul>
  */
 public void setSelection (Point selection) {
+	selection = DPIUtil.autoScaleUp(selection);
+}
+
+/**
+ * Sets the selection in the receiver's text field to the
+ * range specified by the argument whose x coordinate is the
+ * start of the selection and whose y coordinate is the end
+ * of the selection.
+ *
+ * @param selection a point representing the new selection start and end
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the point is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * @since 3.105
+ */
+void setSelectionInPixels (Point selection) {
 	checkWidget();
 	if (selection == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if ((style & SWT.READ_ONLY) != 0) return;

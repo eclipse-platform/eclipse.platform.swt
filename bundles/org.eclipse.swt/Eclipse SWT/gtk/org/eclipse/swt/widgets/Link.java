@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2013 IBM Corporation and others.
+ * Copyright (c) 2000, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -14,6 +14,7 @@ import org.eclipse.swt.*;
 import org.eclipse.swt.accessibility.*;
 import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.gtk.*;
 
 /**
@@ -113,8 +114,7 @@ public void addSelectionListener (SelectionListener listener) {
 	addListener (SWT.DefaultSelection, typedListener);
 }
 
-@Override
-public Point computeSize (int wHint, int hHint, boolean changed) {
+@Override Point computeSizeInPixels (int wHint, int hHint, boolean changed) {
 	checkWidget ();
 	if (wHint != SWT.DEFAULT && wHint < 0) wHint = 0;
 	if (hHint != SWT.DEFAULT && hHint < 0) hHint = 0;
@@ -123,19 +123,19 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	//TEMPORARY CODE
 	if (wHint == 0) {
 		layout.setWidth (1);
-		Rectangle rect = layout.getBounds ();
+		Rectangle rect = DPIUtil.autoScaleUp(layout.getBounds ());
 		width = 0;
 		height = rect.height;
 	} else {
 		layout.setWidth (wHint);
-		Rectangle rect = layout.getBounds ();
+		Rectangle rect = DPIUtil.autoScaleUp(layout.getBounds ());
 		width = rect.width;
 		height = rect.height;
 	}
 	layout.setWidth (layoutWidth);
 	if (wHint != SWT.DEFAULT) width = wHint;
 	if (hHint != SWT.DEFAULT) height = hHint;
-	int border = getBorderWidth ();
+	int border = getBorderWidthInPixels ();
 	width += border * 2;
 	height += border * 2;
 	return new Point (width, height);
@@ -222,7 +222,7 @@ void initAccessible () {
 
 		@Override
 		public void getLocation (AccessibleControlEvent e) {
-			Rectangle rect = display.map (getParent (), null, getBounds ());
+			Rectangle rect = display.mapInPixels (getParent (), null, getBoundsInPixels ());
 			e.x = rect.x;
 			e.y = rect.y;
 			e.width = rect.width;
@@ -323,7 +323,7 @@ long /*int*/ gtk_button_press_event (long /*int*/ widget, long /*int*/ event) {
 		int x = (int) gdkEvent.x;
 		int y = (int) gdkEvent.y;
 		if ((style & SWT.MIRRORED) != 0) x = getClientWidth () - x;
-		int offset = layout.getOffset (x, y, null);
+		int offset = DPIUtil.autoScaleUp(layout.getOffset (x, y, null));
 		int oldSelectionX = selection.x;
 		int oldSelectionY = selection.y;
 		selection.x = offset;
@@ -335,7 +335,7 @@ long /*int*/ gtk_button_press_event (long /*int*/ widget, long /*int*/ event) {
 				oldSelectionY = temp;
 			}
 			Rectangle rect = layout.getBounds (oldSelectionX, oldSelectionY);
-			redraw (rect.x, rect.y, rect.width, rect.height, false);
+			redrawInPixels (rect.x, rect.y, rect.width, rect.height, false);
 		}
 		for (int j = 0; j < offsets.length; j++) {
 			Rectangle [] rects = getRectangles (j);
@@ -447,7 +447,7 @@ long /*int*/ gtk_motion_notify_event (long /*int*/ widget, long /*int*/ event) {
 	if ((style & SWT.MIRRORED) != 0) x = getClientWidth () - x;
 	if ((gdkEvent.state & OS.GDK_BUTTON1_MASK) != 0) {
 		int oldSelection = selection.y;
-		selection.y = layout.getOffset (x, y, null);
+		selection.y = DPIUtil.autoScaleUp(layout.getOffset (x, y, null));
 		if (selection.y != oldSelection) {
 			int newSelection = selection.y;
 			if (oldSelection > newSelection) {
@@ -456,7 +456,7 @@ long /*int*/ gtk_motion_notify_event (long /*int*/ widget, long /*int*/ event) {
 				newSelection = temp;
 			}
 			Rectangle rect = layout.getBounds (oldSelection, newSelection);
-			redraw (rect.x, rect.y, rect.width, rect.height, false);
+			redrawInPixels (rect.x, rect.y, rect.width, rect.height, false);
 		}
 	} else {
 		for (int j = 0; j < offsets.length; j++) {
@@ -705,7 +705,7 @@ int parseMnemonics (char[] buffer, int start, int end, StringBuffer result) {
 int setBounds(int x, int y, int width, int height, boolean move, boolean resize) {
 	int result = super.setBounds (x, y, width,height, move, resize);
 	if ((result & RESIZED) != 0) {
-		layout.setWidth (width > 0 ? width : -1);
+		layout.setWidth (DPIUtil.autoScaleDown((width > 0 ? width : -1)));
 		redraw ();
 	}
 	return result;

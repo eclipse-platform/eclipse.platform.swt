@@ -520,7 +520,7 @@ public void test_mapLorg_eclipse_swt_widgets_ControlLorg_eclipse_swt_widgets_Con
 		result = display.map(button2, null, 0, 0);
 		assertEquals(new Point(shellOffset.x + 200,shellOffset.y + 100), result);
 		result = display.map(button2, null, -3, -6);
-		assertEquals(new Point(shellOffset.x + 197,shellOffset.y + 94), result);
+		assertEquals(new Point(shellOffset.x + 197, shellOffset.y + 94), result);
 		result = display.map(button2, null, 9, 12);
 		assertEquals(new Point(shellOffset.x + 209,shellOffset.y + 112), result);
 

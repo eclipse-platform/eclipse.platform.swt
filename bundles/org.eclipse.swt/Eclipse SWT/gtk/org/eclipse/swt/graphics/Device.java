@@ -82,6 +82,9 @@ public abstract class Device implements Drawable {
 	/* Device dpi */
 	Point dpi;
 
+	/*Device Scale Factor in percentage*/
+	int scaleFactor;
+
 	long /*int*/ emptyTab;
 
 	boolean useXRender;
@@ -315,6 +318,20 @@ protected void destroy () {
  * </ul>
  */
 public Rectangle getBounds () {
+	return DPIUtil.autoScaleDown (getBoundsInPixels ());
+}
+
+/**
+ * Returns a rectangle describing the receiver's size and location.
+ *
+ * @return the bounding rectangle
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ * @since 3.105
+ */
+protected Rectangle getBoundsInPixels () {
 	checkDevice ();
 	return new Rectangle(0, 0, 0, 0);
 }
@@ -374,8 +391,24 @@ public DeviceData getDeviceData () {
  * @see #getBounds
  */
 public Rectangle getClientArea () {
+	return DPIUtil.autoScaleDown (getClientAreaInPixels ());
+}
+/**
+ * Returns a rectangle which describes the area of the
+ * receiver which is capable of displaying data.
+ *
+ * @return the client area
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ *
+ * @see #getBounds
+ * @since 3.105
+ */
+protected Rectangle getClientAreaInPixels () {
 	checkDevice ();
-	return getBounds ();
+	return getBoundsInPixels ();
 }
 
 /**
@@ -579,6 +612,8 @@ public boolean getWarnings () {
  */
 protected void init () {
 	this.dpi = getDPI();
+	this.scaleFactor = getDeviceZoom ();
+	DPIUtil.setDeviceZoom (scaleFactor);
 
 	if (xDisplay != 0 && !OS.USE_CAIRO) {
 		int[] event_basep = new int[1], error_basep = new int [1];
@@ -979,13 +1014,56 @@ static long /*int*/ XIOErrorProc (long /*int*/ xDisplay) {
  * @return the horizontal DPI
  */
 int _getDPIx () {
+	return scaleFactor * 96/100;
+}
+/**
+ * Gets the scaling factor from the device and calculates zoom level
+ * @return zoom in percentage. scaling factor 1 corresponds to 100%
+ * @since 3.105
+ */
+private int getDeviceZoom() {
+	final String schemaId = "com.ubuntu.user-interface";
+	final String key = "scale-factor";
+	int fontHeight = 0;
 	long /*int*/ screen = OS.gdk_screen_get_default();
 	int monitor = OS.gdk_screen_get_monitor_at_point(screen, 0, 0);
 
-	GdkRectangle dest = new GdkRectangle ();
-	OS.gdk_screen_get_monitor_geometry(screen, monitor, dest);
-	int widthMM = OS.gdk_screen_get_monitor_width_mm(screen, monitor);
-	return Compatibility.round (254 * dest.width, widthMM * 10);
-}
+	byte[] schema_id = Converter.wcsToMbcs (null, schemaId, true);
+	long /*int*/ schemaSource = OS.g_settings_schema_source_get_default ();
+	if (OS.g_settings_schema_source_lookup(schemaSource, schema_id, false) != 0) {
+		long /*int*/ displaySettings = OS.g_settings_new (schema_id);
+		byte[] keyString = Converter.wcsToMbcs (null, key, true);
+		long /*int*/ settingsDict = OS.g_settings_get_value (displaySettings, keyString);
+		long /*int*/ keyArray = 0;
 
+		long /*int*/ iter = OS.g_variant_iter_new (settingsDict);
+		int size = OS.g_variant_iter_init(iter, settingsDict);
+		for (int i =0; i<size; i++) {
+			long /*int*/ iterValue = OS.g_variant_iter_next_value(iter);
+			keyArray = OS.g_variant_print(iterValue);
+			int len = OS.strlen(keyArray);
+			byte[] buffer = new byte [len];
+			OS.memmove (buffer, keyArray, len);
+			String type = new String(Converter.mbcsToWcs(null, buffer));
+			if (i == monitor) {
+				int index = type.indexOf(",");
+				String height = type.substring((index + 1), (type.length() - 1));
+				fontHeight = Integer.valueOf(height.trim());
+				OS.g_free(keyArray);
+				OS.g_variant_unref(iterValue);
+				break;
+			}
+			OS.g_free(keyArray);
+			OS.g_variant_unref(iterValue);
+		}
+
+		OS.g_variant_iter_free(iter);
+		return DPIUtil.mapSFToZoom(fontHeight/ 8f);
+	} else {
+		GdkRectangle dest = new GdkRectangle ();
+		OS.gdk_screen_get_monitor_geometry(screen, monitor, dest);
+		int widthMM = OS.gdk_screen_get_monitor_width_mm(screen, monitor);
+		return (DPIUtil.mapDPIToZoom(Compatibility.round (254 * dest.width, widthMM * 10)));
+	}
+}
 }

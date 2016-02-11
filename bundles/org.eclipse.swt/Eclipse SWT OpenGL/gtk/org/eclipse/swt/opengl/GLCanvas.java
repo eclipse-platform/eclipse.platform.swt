@@ -12,6 +12,7 @@ package org.eclipse.swt.opengl;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.gtk.*;
 import org.eclipse.swt.internal.opengl.glx.*;
 import org.eclipse.swt.widgets.*;
@@ -161,7 +162,7 @@ public GLCanvas (Composite parent, int style, GLData data) {
 				GLX.glViewport (viewport [0],viewport [1],viewport [2],viewport [3]);
 				break;
 			case SWT.Resize:
-				Rectangle clientArea = getClientArea();
+				Rectangle clientArea = DPIUtil.autoScaleUp(getClientArea());
 				OS.gdk_window_move (glWindow, clientArea.x, clientArea.y);
 				OS.gdk_window_resize (glWindow, clientArea.width, clientArea.height);
 				break;

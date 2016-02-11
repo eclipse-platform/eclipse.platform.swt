@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2012 IBM Corporation and others.
+ * Copyright (c) 2000, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -11,10 +11,10 @@
 package org.eclipse.swt.internal;
 
 
-import org.eclipse.swt.SWT;
+import org.eclipse.swt.*;
+import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.cairo.*;
 import org.eclipse.swt.internal.gtk.*;
-import org.eclipse.swt.graphics.*;
 
 public class ImageList {
 	long /*int*/ [] pixbufs;
@@ -30,7 +30,7 @@ public static long /*int*/ convertSurface(Image image) {
 	long /*int*/ newSurface = image.surface;
 	int type = Cairo.cairo_surface_get_type(newSurface);
 	if (type != Cairo.CAIRO_SURFACE_TYPE_IMAGE) {
-		Rectangle bounds = image.getBounds();
+		Rectangle bounds = image.getBoundsInPixels();
 		int format = Cairo.cairo_surface_get_content(newSurface) == Cairo.CAIRO_CONTENT_COLOR ? Cairo.CAIRO_FORMAT_RGB24 : Cairo.CAIRO_FORMAT_ARGB32;
 		newSurface = Cairo.cairo_image_surface_create(format, bounds.width, bounds.height);
 		if (newSurface == 0) SWT.error(SWT.ERROR_NO_HANDLES);
@@ -136,7 +136,7 @@ public static long /*int*/ createPixbuf(Image image) {
 			}
 			OS.g_object_unref(maskPixbuf);
 		} else {
-			ImageData data = image.getImageData ();
+			ImageData data = image.getImageDataInPixels ();
 			boolean hasAlpha = data.getTransparencyType () == SWT.TRANSPARENCY_ALPHA;
 			pixbuf = OS.gdk_pixbuf_new (OS.GDK_COLORSPACE_RGB, hasAlpha, 8, w [0], h [0]);
 			if (pixbuf == 0) SWT.error (SWT.ERROR_NO_HANDLES);

@@ -1414,7 +1414,7 @@ public Shell getActiveShell () {
  * </ul>
  */
 @Override
-public Rectangle getBounds () {
+protected Rectangle getBoundsInPixels () {
 	checkDevice ();
 	return new Rectangle (0, 0, OS.gdk_screen_width (), OS.gdk_screen_height ());
 }
@@ -1579,6 +1579,22 @@ long /*int*/ filterProc (long /*int*/ xEvent, long /*int*/ gdkEvent, long /*int*
  * </ul>
  */
 public Point getCursorLocation () {
+	return DPIUtil.autoScaleDown(getCursorLocationInPixels());
+}
+
+/**
+ * Returns the location of the on-screen pointer relative
+ * to the top left corner of the screen.
+ *
+ * @return the cursor location
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ * @since 3.105
+ */
+Point getCursorLocationInPixels () {
 	checkDevice ();
 	int [] x = new int [1], y = new int [1];
 	gdk_window_get_device_position (0, x, y, null);
@@ -1989,7 +2005,7 @@ public Monitor [] getMonitors () {
 	if (monitors == null) {
 		/* No multimonitor support detected, default to one monitor */
 		Monitor monitor = new Monitor ();
-		Rectangle bounds = getBounds ();
+		Rectangle bounds = getBoundsInPixels ();
 		monitor.x = bounds.x;
 		monitor.y = bounds.y;
 		monitor.width = bounds.width;
@@ -3029,9 +3045,49 @@ boolean isValidThread () {
  * @since 2.1.2
  */
 public Point map (Control from, Control to, Point point) {
+	return DPIUtil.autoScaleDown(mapInPixels(from, to, DPIUtil.autoScaleUp(point)));
+}
+
+/**
+ * Maps a point from one coordinate system to another.
+ * When the control is null, coordinates are mapped to
+ * the display.
+ * <p>
+ * NOTE: On right-to-left platforms where the coordinate
+ * systems are mirrored, special care needs to be taken
+ * when mapping coordinates from one control to another
+ * to ensure the result is correctly mirrored.
+ *
+ * Mapping a point that is the origin of a rectangle and
+ * then adding the width and height is not equivalent to
+ * mapping the rectangle.  When one control is mirrored
+ * and the other is not, adding the width and height to a
+ * point that was mapped causes the rectangle to extend
+ * in the wrong direction.  Mapping the entire rectangle
+ * instead of just one point causes both the origin and
+ * the corner of the rectangle to be mapped.
+ * </p>
+ *
+ * @param from the source <code>Control</code> or <code>null</code>
+ * @param to the destination <code>Control</code> or <code>null</code>
+ * @param point to be mapped
+ * @return point with mapped coordinates
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the point is null</li>
+ *    <li>ERROR_INVALID_ARGUMENT - if the Control from or the Control to have been disposed</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ *
+ * @since 3.105
+ */
+Point mapInPixels (Control from, Control to, Point point) {
 	checkDevice ();
 	if (point == null) error (SWT.ERROR_NULL_ARGUMENT);
-	return map (from, to, point.x, point.y);
+	return mapInPixels (from, to, point.x, point.y);
 }
 
 /**
@@ -3071,6 +3127,46 @@ public Point map (Control from, Control to, Point point) {
  * @since 2.1.2
  */
 public Point map (Control from, Control to, int x, int y) {
+	return map(from, to, new Point(x, y));
+}
+
+/**
+ * Maps a point from one coordinate system to another.
+ * When the control is null, coordinates are mapped to
+ * the display.
+ * <p>
+ * NOTE: On right-to-left platforms where the coordinate
+ * systems are mirrored, special care needs to be taken
+ * when mapping coordinates from one control to another
+ * to ensure the result is correctly mirrored.
+ *
+ * Mapping a point that is the origin of a rectangle and
+ * then adding the width and height is not equivalent to
+ * mapping the rectangle.  When one control is mirrored
+ * and the other is not, adding the width and height to a
+ * point that was mapped causes the rectangle to extend
+ * in the wrong direction.  Mapping the entire rectangle
+ * instead of just one point causes both the origin and
+ * the corner of the rectangle to be mapped.
+ * </p>
+ *
+ * @param from the source <code>Control</code> or <code>null</code>
+ * @param to the destination <code>Control</code> or <code>null</code>
+ * @param x coordinates to be mapped
+ * @param y coordinates to be mapped
+ * @return point with mapped coordinates
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_ARGUMENT - if the Control from or the Control to have been disposed</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ *
+ * @since 3.105
+ */
+Point mapInPixels (Control from, Control to, int x, int y) {
 	checkDevice ();
 	if (from != null && from.isDisposed()) error (SWT.ERROR_INVALID_ARGUMENT);
 	if (to != null && to.isDisposed()) error (SWT.ERROR_INVALID_ARGUMENT);
@@ -3128,9 +3224,49 @@ public Point map (Control from, Control to, int x, int y) {
  * @since 2.1.2
  */
 public Rectangle map (Control from, Control to, Rectangle rectangle) {
+	return DPIUtil.autoScaleDown(mapInPixels(from, to, DPIUtil.autoScaleUp(rectangle)));
+}
+
+/**
+ * Maps a point from one coordinate system to another.
+ * When the control is null, coordinates are mapped to
+ * the display.
+ * <p>
+ * NOTE: On right-to-left platforms where the coordinate
+ * systems are mirrored, special care needs to be taken
+ * when mapping coordinates from one control to another
+ * to ensure the result is correctly mirrored.
+ *
+ * Mapping a point that is the origin of a rectangle and
+ * then adding the width and height is not equivalent to
+ * mapping the rectangle.  When one control is mirrored
+ * and the other is not, adding the width and height to a
+ * point that was mapped causes the rectangle to extend
+ * in the wrong direction.  Mapping the entire rectangle
+ * instead of just one point causes both the origin and
+ * the corner of the rectangle to be mapped.
+ * </p>
+ *
+ * @param from the source <code>Control</code> or <code>null</code>
+ * @param to the destination <code>Control</code> or <code>null</code>
+ * @param rectangle to be mapped
+ * @return rectangle with mapped coordinates
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the rectangle is null</li>
+ *    <li>ERROR_INVALID_ARGUMENT - if the Control from or the Control to have been disposed</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ *
+ * @since 3.105
+ */
+Rectangle mapInPixels (Control from, Control to, Rectangle rectangle) {
 	checkDevice();
 	if (rectangle == null) error (SWT.ERROR_NULL_ARGUMENT);
-	return map (from, to, rectangle.x, rectangle.y, rectangle.width, rectangle.height);
+	return mapInPixels (from, to, rectangle.x, rectangle.y, rectangle.width, rectangle.height);
 }
 
 static char mbcsToWcs (char ch) {
@@ -3195,6 +3331,48 @@ long /*int*/ menuPositionProc (long /*int*/ menu, long /*int*/ x, long /*int*/ y
  * @since 2.1.2
  */
 public Rectangle map (Control from, Control to, int x, int y, int width, int height) {
+	return map(from, to, new Rectangle(x, y, width, height));
+}
+
+/**
+ * Maps a point from one coordinate system to another.
+ * When the control is null, coordinates are mapped to
+ * the display.
+ * <p>
+ * NOTE: On right-to-left platforms where the coordinate
+ * systems are mirrored, special care needs to be taken
+ * when mapping coordinates from one control to another
+ * to ensure the result is correctly mirrored.
+ *
+ * Mapping a point that is the origin of a rectangle and
+ * then adding the width and height is not equivalent to
+ * mapping the rectangle.  When one control is mirrored
+ * and the other is not, adding the width and height to a
+ * point that was mapped causes the rectangle to extend
+ * in the wrong direction.  Mapping the entire rectangle
+ * instead of just one point causes both the origin and
+ * the corner of the rectangle to be mapped.
+ * </p>
+ *
+ * @param from the source <code>Control</code> or <code>null</code>
+ * @param to the destination <code>Control</code> or <code>null</code>
+ * @param x coordinates to be mapped
+ * @param y coordinates to be mapped
+ * @param width coordinates to be mapped
+ * @param height coordinates to be mapped
+ * @return rectangle with mapped coordinates
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_ARGUMENT - if the Control from or the Control to have been disposed</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ *
+ * @since 3.105
+ */
+Rectangle mapInPixels (Control from, Control to, int x, int y, int width, int height) {
 	checkDevice();
 	if (from != null && from.isDisposed()) error (SWT.ERROR_INVALID_ARGUMENT);
 	if (to != null && to.isDisposed()) error (SWT.ERROR_INVALID_ARGUMENT);
@@ -3330,7 +3508,8 @@ public boolean post (Event event) {
 				case SWT.MouseMove:
 				case SWT.MouseUp: {
 					if (type == SWT.MouseMove) {
-						OS.XTestFakeMotionEvent (xDisplay, -1, event.x, event.y, 0);
+						Rectangle loc = DPIUtil.autoScaleUp(event.getBounds ());
+						OS.XTestFakeMotionEvent (xDisplay, -1, loc.x, loc.y, 0);
 					} else {
 						int button = event.button;
 						switch (button) {
@@ -4255,7 +4434,7 @@ void showIMWindow (Control control) {
 		widget.setFontDescription (preeditLabel, control.getFontDescription ());
 		if (pangoAttrs [0] != 0) OS.gtk_label_set_attributes (preeditLabel, pangoAttrs[0]);
 		OS.gtk_label_set_text (preeditLabel, preeditString [0]);
-		Point point = control.toDisplay (control.getIMCaretPos ());
+		Point point = control.toDisplayInPixels (control.getIMCaretPos ());
 		OS.gtk_window_move (preeditWindow, point.x, point.y);
 		GtkRequisition requisition = new GtkRequisition ();
 		if (OS.GTK3) {

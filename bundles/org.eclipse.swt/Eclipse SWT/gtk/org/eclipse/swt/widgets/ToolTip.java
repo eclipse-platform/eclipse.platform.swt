@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2012 IBM Corporation and others.
+ * Copyright (c) 2000, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -252,7 +252,7 @@ void configure () {
 	}
 	OS.gtk_widget_realize(handle);
 	Region region = new Region (display);
-	region.add(polyline);
+	region.add(DPIUtil.autoScaleDown(polyline));
 	if (OS.GTK3) {
 		OS.gtk_widget_shape_combine_region (handle, region.handle);
 	} else {
@@ -710,6 +710,28 @@ public void setAutoHide (boolean autoHide) {
  * </ul>
  */
 public void setLocation (int x, int y) {
+	setLocation (new Point (x, y));
+}
+
+/**
+ * Sets the location of the receiver, which must be a tooltip,
+ * to the point specified by the arguments which are relative
+ * to the display.
+ * <p>
+ * Note that this is different from most widgets where the
+ * location of the widget is relative to the parent.
+ * </p>
+ *
+ * @param x the new x coordinate for the receiver
+ * @param y the new y coordinate for the receiver
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * @since 3.105
+ */
+void setLocationInPixels (int x, int y) {
 	checkWidget ();
 	this.x = x;
 	this.y = y;
@@ -717,7 +739,6 @@ public void setLocation (int x, int y) {
 		if (OS.gtk_widget_get_visible (handle)) configure ();
 	}
 }
-
 /**
  * Sets the location of the receiver, which must be a tooltip,
  * to the point specified by the argument which is relative
@@ -741,9 +762,36 @@ public void setLocation (int x, int y) {
  * </ul>
  */
 public void setLocation (Point location) {
+	setLocationInPixels(DPIUtil.autoScaleUp(location));
+}
+
+/**
+ * Sets the location of the receiver, which must be a tooltip,
+ * to the point specified by the argument which is relative
+ * to the display.
+ * <p>
+ * Note that this is different from most widgets where the
+ * location of the widget is relative to the parent.
+ * </p><p>
+ * Note that the platform window manager ultimately has control
+ * over the location of tooltips.
+ * </p>
+ *
+ * @param location the new location for the receiver
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the point is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * @since 3.105
+ */
+void setLocationInPixels (Point location) {
 	checkWidget ();
 	if (location == null) error (SWT.ERROR_NULL_ARGUMENT);
-	setLocation (location.x, location.y);
+	setLocationInPixels (location.x, location.y);
 }
 
 /**

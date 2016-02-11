@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2012 IBM Corporation and others.
+ * Copyright (c) 2000, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -12,9 +12,10 @@ package org.eclipse.swt.widgets;
 
 
 import org.eclipse.swt.*;
+import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.cairo.*;
 import org.eclipse.swt.internal.gtk.*;
-import org.eclipse.swt.graphics.*;
 
 /**
  * Instances of this class provide an i-beam that is typically used
@@ -171,8 +172,25 @@ boolean drawCaret () {
  */
 public Rectangle getBounds () {
 	checkWidget();
+	return DPIUtil.autoScaleDown(getBoundsInPixels());
+}
+
+/**
+ * Returns a rectangle describing the receiver's size and location
+ * relative to its parent (or its display if its parent is null).
+ *
+ * @return the receiver's bounding rectangle
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * @since 3.105
+ */
+Rectangle getBoundsInPixels () {
+	checkWidget();
 	if (image != null) {
-		Rectangle rect = image.getBounds ();
+		Rectangle rect = image.getBoundsInPixels ();
 		return new Rectangle (x, y, rect.width, rect.height);
 	} else {
 		if (width == 0) {
@@ -226,6 +244,23 @@ public Image getImage () {
  */
 public Point getLocation () {
 	checkWidget();
+	return DPIUtil.autoScaleDown(getLocationInPixels());
+}
+
+/**
+ * Returns a point describing the receiver's location relative
+ * to its parent (or its display if its parent is null).
+ *
+ * @return the receiver's location
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * @since 3.105
+ */
+Point getLocationInPixels () {
+	checkWidget();
 	return new Point (x, y);
 }
 
@@ -255,9 +290,24 @@ public Canvas getParent () {
  * </ul>
  */
 public Point getSize () {
+	return DPIUtil.autoScaleDown(getSizeInPixels());
+}
+
+/**
+ * Returns a point describing the receiver's size.
+ *
+ * @return the receiver's size
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * @since 3.105
+ */
+Point getSizeInPixels () {
 	checkWidget();
 	if (image != null) {
-		Rectangle rect = image.getBounds ();
+		Rectangle rect = image.getBoundsInPixels ();
 		return new Point (rect.width, rect.height);
 	} else {
 		if (width == 0) {
@@ -358,6 +408,26 @@ void releaseWidget () {
  * </ul>
  */
 public void setBounds (int x, int y, int width, int height) {
+	setBounds (new Rectangle (x, y, width, height));
+}
+/**
+ * Sets the receiver's size and location to the rectangular
+ * area specified by the arguments. The <code>x</code> and
+ * <code>y</code> arguments are relative to the receiver's
+ * parent (or its display if its parent is null).
+ *
+ * @param x the new x coordinate for the receiver
+ * @param y the new y coordinate for the receiver
+ * @param width the new width for the receiver
+ * @param height the new height for the receiver
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * @since 3.105
+ */
+void setBoundsInPixels (int x, int y, int width, int height) {
 	checkWidget();
 	if (this.x == x && this.y == y && this.width == width && this.height == height) return;
 	boolean isFocus = isFocusCaret ();
@@ -382,9 +452,27 @@ public void setBounds (int x, int y, int width, int height) {
  * </ul>
  */
 public void setBounds (Rectangle rect) {
+	rect = DPIUtil.autoScaleUp(rect);
+	setBoundsInPixels(rect);
+}
+/**
+ * Sets the receiver's size and location to the rectangular
+ * area specified by the argument. The <code>x</code> and
+ * <code>y</code> fields of the rectangle are relative to
+ * the receiver's parent (or its display if its parent is null).
+ *
+ * @param rect the new bounds for the receiver
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * @since 3.105
+ */
+void setBoundsInPixels (Rectangle rect) {
 	checkWidget();
 	if (rect == null) error (SWT.ERROR_NULL_ARGUMENT);
-	setBounds (rect.x, rect.y, rect.width, rect.height);
+	setBoundsInPixels (rect.x, rect.y, rect.width, rect.height);
 }
 
 void setFocus () {
@@ -456,8 +544,25 @@ public void setImage (Image image) {
  * </ul>
  */
 public void setLocation (int x, int y) {
+	setLocation (new Point (x, y));
+}
+/**
+ * Sets the receiver's location to the point specified by
+ * the arguments which are relative to the receiver's
+ * parent (or its display if its parent is null).
+ *
+ * @param x the new x coordinate for the receiver
+ * @param y the new y coordinate for the receiver
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * @since 3.105
+ */
+void setLocationInPixels (int x, int y) {
 	checkWidget();
-	setBounds (x, y, width, height);
+	setBoundsInPixels (x, y, width, height);
 }
 
 /**
@@ -473,9 +578,26 @@ public void setLocation (int x, int y) {
  * </ul>
  */
 public void setLocation (Point location) {
+	setLocationInPixels (DPIUtil.autoScaleUp (location));
+}
+
+/**
+ * Sets the receiver's location to the point specified by
+ * the argument which is relative to the receiver's
+ * parent (or its display if its parent is null).
+ *
+ * @param location the new location for the receiver
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * @since 3.105
+ */
+protected void setLocationInPixels (Point location) {
 	checkWidget();
 	if (location == null) error (SWT.ERROR_NULL_ARGUMENT);
-	setLocation (location.x, location.y);
+	setLocationInPixels (location.x, location.y);
 }
 
 /**
@@ -490,8 +612,24 @@ public void setLocation (Point location) {
  * </ul>
  */
 public void setSize (int width, int height) {
+	setSize (new Point (width,height));
+}
+
+/**
+ * Sets the receiver's size to the point specified by the arguments.
+ *
+ * @param width the new width for the receiver
+ * @param height the new height for the receiver
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * @since 3.105
+ */
+void setSizeInPixels (int width, int height) {
 	checkWidget();
-	setBounds (x, y, width, height);
+	setBoundsInPixels (x, y, width, height);
 }
 
 /**
@@ -508,9 +646,27 @@ public void setSize (int width, int height) {
  * </ul>
  */
 public void setSize (Point size) {
+	setSizeInPixels(DPIUtil.autoScaleUp (size));
+}
+
+/**
+ * Sets the receiver's size to the point specified by the argument.
+ *
+ * @param size the new extent for the receiver
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the point is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * @since 3.105
+ */
+void setSizeInPixels (Point size) {
 	checkWidget();
 	if (size == null) error (SWT.ERROR_NULL_ARGUMENT);
-	setSize (size.x, size.y);
+	setSizeInPixels (size.x, size.y);
 }
 
 /**

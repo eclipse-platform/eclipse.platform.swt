@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2015 IBM Corporation and others.
+ * Copyright (c) 2000, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -1352,7 +1352,9 @@ void sendEvent (int eventType, Event event, boolean send) {
 	if (eventTable == null && !display.filters (eventType)) {
 		return;
 	}
-	if (event == null) event = new Event ();
+	if (event == null) {
+		event = new Event();
+	}
 	event.type = eventType;
 	event.display = display;
 	event.widget = this;

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2013 IBM Corporation and others.
+ * Copyright (c) 2000, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -113,8 +113,7 @@ void addRelation (Control control) {
 	control.labelRelation = this;
 }
 
-@Override
-public Point computeSize (int wHint, int hHint, boolean changed) {
+@Override Point computeSizeInPixels (int wHint, int hHint, boolean changed) {
 	checkWidget ();
 	if (wHint != SWT.DEFAULT && wHint < 0) wHint = 0;
 	if (hHint != SWT.DEFAULT && hHint < 0) hHint = 0;
@@ -296,8 +295,7 @@ public int getAlignment () {
 	return SWT.LEFT;
 }
 
-@Override
-public int getBorderWidth () {
+@Override int getBorderWidthInPixels () {
 	checkWidget();
 	if (frameHandle != 0) {
 		return getThickness (frameHandle).x;

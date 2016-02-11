@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2014 IBM Corporation and others.
+ * Copyright (c) 2000, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -12,10 +12,10 @@ package org.eclipse.swt.widgets;
 
 
 import org.eclipse.swt.*;
+import org.eclipse.swt.events.*;
+import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.gtk.*;
-import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.events.*;
 
 /**
  * Instances of this class represent a column in a tree widget.
@@ -322,6 +322,21 @@ public String getToolTipText () {
  * </ul>
  */
 public int getWidth () {
+	return DPIUtil.autoScaleDown (getWidthInPixels ());
+}
+
+/**
+ * Gets the width of the receiver.
+ *
+ * @return the width
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * @since 3.105
+ */
+int getWidthInPixels () {
 	checkWidget();
 	if (!OS.gtk_tree_view_column_get_visible (handle)) {
 		return 0;
@@ -449,7 +464,7 @@ public void pack () {
 		}
 		OS.g_free (iter);
 	}
-	setWidth(width);
+	setWidthInPixels(width);
 }
 
 @Override
@@ -689,6 +704,21 @@ void setToolTipText (Shell shell, String newString) {
  * </ul>
  */
 public void setWidth (int width) {
+	setWidthInPixels (DPIUtil.autoScaleUp (width));
+}
+
+/**
+ * Sets the width of the receiver.
+ *
+ * @param width the new width
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * @since 3.105
+ */
+void setWidthInPixels (int width) {
 	checkWidget();
 	if (width < 0) return;
 	if (width == lastWidth) return;
