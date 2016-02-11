@@ -2760,7 +2760,7 @@ protected void init () {
 	* versions of Java starting at JDK 1.6 set the icon in the
 	* executable instead of leaving the default.
 	*/
-	if (!OS.IsWinCE && Library.JAVA_VERSION >= Library.JAVA_VERSION (1, 6, 0)) {
+	if (!OS.IsWinCE) {
 		TCHAR lpszFile = new TCHAR (0, OS.MAX_PATH);
 		while (OS.GetModuleFileName (0, lpszFile, lpszFile.length ()) == lpszFile.length ()) {
 			lpszFile = new TCHAR (0, lpszFile.length () + OS.MAX_PATH);

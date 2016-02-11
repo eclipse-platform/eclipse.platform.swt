@@ -249,15 +249,13 @@ public static Frame new_Frame (final Composite parent) {
 					});
 					break;
 				case SWT.Resize:
-					if (Library.JAVA_VERSION >= Library.JAVA_VERSION(1, 6, 0)) {
-						final Rectangle clientArea = parent.getClientArea();
-						EventQueue.invokeLater(new Runnable () {
-							@Override
-							public void run () {
-								frame.setSize (clientArea.width, clientArea.height);
-							}
-						});
-					}
+					final Rectangle clientArea = parent.getClientArea();
+					EventQueue.invokeLater(new Runnable () {
+						@Override
+						public void run () {
+							frame.setSize (clientArea.width, clientArea.height);
+						}
+					});
 					break;
 			}
 		}
