@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -12,10 +12,10 @@ package org.eclipse.swt.snippets;
 
 /*
  * Create a path from some text
- * 
+ *
  * For a list of all SWT example snippets see
  * http://www.eclipse.org/swt/snippets/
- * 
+ *
  * @since 3.1
  */
 import org.eclipse.swt.*;
@@ -34,22 +34,19 @@ public static void main(String[] args) {
 		path = new Path(display);
 		path.addString("SWT", 0, 0, font);
 	} catch (SWTException e) {
-		//Advanced Graphics not supported.  
+		//Advanced Graphics not supported.
 		//This new API requires the Cairo Vector engine on GTK and GDI+ on Windows.
 		System.out.println(e.getMessage());
 		display.dispose();
 		return;
 	}
 	Shell shell = new Shell(display);
-	shell.addListener(SWT.Paint, new Listener() {
-		@Override
-		public void handleEvent(Event e) {			
-			GC gc = e.gc;
-			gc.setBackground(green);
-			gc.setForeground(blue);
-			gc.fillPath(path);
-			gc.drawPath(path);
-		}
+	shell.addListener(SWT.Paint, e -> {
+		GC gc = e.gc;
+		gc.setBackground(green);
+		gc.setForeground(blue);
+		gc.fillPath(path);
+		gc.drawPath(path);
 	});
 	shell.open();
 	while (!shell.isDisposed()) {

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2004 IBM Corporation and others.
+ * Copyright (c) 2000, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -17,9 +17,8 @@ package org.eclipse.swt.snippets;
  * http://www.eclipse.org/swt/snippets/
  */
 import org.eclipse.swt.*;
-import org.eclipse.swt.events.*;
-import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.layout.*;
+import org.eclipse.swt.widgets.*;
 
 public class Snippet127 {
 public static void main (String [] args) {
@@ -28,14 +27,11 @@ public static void main (String [] args) {
 	shell.setLayout(new RowLayout ());
 	Button button1 = new Button(shell, SWT.PUSH);
 	button1.setText("Can't Traverse");
-	button1.addTraverseListener(new TraverseListener () {
-		@Override
-		public void keyTraversed(TraverseEvent e) {
-			switch (e.detail) {
-				case SWT.TRAVERSE_TAB_NEXT:
-				case SWT.TRAVERSE_TAB_PREVIOUS: {
-					e.doit = false;
-				}
+	button1.addTraverseListener(e -> {
+		switch (e.detail) {
+			case SWT.TRAVERSE_TAB_NEXT:
+			case SWT.TRAVERSE_TAB_PREVIOUS: {
+				e.doit = false;
 			}
 		}
 	});

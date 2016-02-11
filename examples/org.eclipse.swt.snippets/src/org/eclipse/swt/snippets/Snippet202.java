@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -15,9 +15,9 @@ package org.eclipse.swt.snippets;
  *
  * For a list of all SWT example snippets see
  * http://www.eclipse.org/swt/snippets/
- * 
+ *
  * @since 3.2
- */ 
+ */
 import org.eclipse.swt.*;
 import org.eclipse.swt.layout.*;
 import org.eclipse.swt.widgets.*;
@@ -29,20 +29,17 @@ public static void main(String[] args) {
 	final Shell shell = new Shell(display);
 	shell.setLayout (new FillLayout());
 	final Tree tree = new Tree(shell, SWT.VIRTUAL | SWT.BORDER);
-	tree.addListener(SWT.SetData, new Listener() {
-		@Override
-		public void handleEvent(Event event) {
-			TreeItem item = (TreeItem)event.item;
-			TreeItem parentItem = item.getParentItem();
-			String text = null;
-			if (parentItem == null) {
-				text = "node "+tree.indexOf(item);
-			} else {
-				text = parentItem.getText()+" - "+parentItem.indexOf(item);
-			}
-			item.setText(text);
-			item.setItemCount(10);
+	tree.addListener(SWT.SetData, event -> {
+		TreeItem item = (TreeItem)event.item;
+		TreeItem parentItem = item.getParentItem();
+		String text = null;
+		if (parentItem == null) {
+			text = "node "+tree.indexOf(item);
+		} else {
+			text = parentItem.getText()+" - "+parentItem.indexOf(item);
 		}
+		item.setText(text);
+		item.setItemCount(10);
 	});
 	tree.setItemCount(20);
 	shell.setSize(400, 300);

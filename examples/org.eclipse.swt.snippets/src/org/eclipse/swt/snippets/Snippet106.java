@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2004 IBM Corporation and others.
+ * Copyright (c) 2000, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -43,17 +43,14 @@ public static void main (String [] args) {
 	Button button = new Button (shell, SWT.PUSH);
 	final int index = 1;
 	button.setText ("Insert Column " + index + "a");
-	button.addListener (SWT.Selection, new Listener () {
-		@Override
-		public void handleEvent (Event e) {
-			TableColumn column = new TableColumn (table, SWT.NONE, index);
-			column.setText ("Column " + index + "a");
-			TableItem [] items = table.getItems ();
-			for (int i=0; i<items.length; i++) {
-				items [i].setText (index, "Item " + i + "a");
-			}
-			column.pack ();
+	button.addListener (SWT.Selection, e -> {
+		TableColumn column = new TableColumn (table, SWT.NONE, index);
+		column.setText ("Column " + index + "a");
+		TableItem [] items = table.getItems ();
+		for (int i=0; i<items.length; i++) {
+			items [i].setText (index, "Item " + i + "a");
 		}
+		column.pack ();
 	});
 	shell.pack ();
 	shell.open ();

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2004 IBM Corporation and others.
+ * Copyright (c) 2000, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -9,7 +9,7 @@
  *     IBM Corporation - initial API and implementation
  *******************************************************************************/
 package org.eclipse.swt.snippets;
- 
+
 /*
  * Tree example snippet: detect a selection or check event in a tree (SWT.CHECK)
  *
@@ -17,7 +17,7 @@ package org.eclipse.swt.snippets;
  * http://www.eclipse.org/swt/snippets/
  */
 import org.eclipse.swt.*;
-import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.widgets.*;
 
 public class Snippet114 {
@@ -32,12 +32,9 @@ public static void main (String [] args) {
 	}
 	Rectangle clientArea = shell.getClientArea ();
 	tree.setBounds (clientArea.x, clientArea.y, 100, 100);
-	tree.addListener (SWT.Selection, new Listener () {
-		@Override
-		public void handleEvent (Event event) {
-			String string = event.detail == SWT.CHECK ? "Checked" : "Selected";
-			System.out.println (event.item + " " + string);
-		}
+	tree.addListener (SWT.Selection, event -> {
+		String string = event.detail == SWT.CHECK ? "Checked" : "Selected";
+		System.out.println (event.item + " " + string);
 	});
 	shell.setSize (200, 200);
 	shell.open ();

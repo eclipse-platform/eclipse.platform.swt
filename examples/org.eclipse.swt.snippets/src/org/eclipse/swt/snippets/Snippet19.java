@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2004 IBM Corporation and others.
+ * Copyright (c) 2000, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -17,7 +17,7 @@ package org.eclipse.swt.snippets;
  * http://www.eclipse.org/swt/snippets/
  */
 import org.eclipse.swt.*;
-import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.widgets.*;
 
 public class Snippet19 {
@@ -28,17 +28,14 @@ public static void main (String [] args) {
 	Text text = new Text (shell, SWT.BORDER | SWT.V_SCROLL);
 	Rectangle clientArea = shell.getClientArea ();
 	text.setBounds ( clientArea.x + 10, clientArea.y + 10, 200, 200);
-	text.addListener (SWT.Verify, new Listener () {
-		@Override
-		public void handleEvent (Event e) {
-			String string = e.text;
-			char [] chars = new char [string.length ()];
-			string.getChars (0, chars.length, chars, 0);
-			for (int i=0; i<chars.length; i++) {
-				if (!('0' <= chars [i] && chars [i] <= '9')) {
-					e.doit = false;
-					return;
-				}
+	text.addListener (SWT.Verify, e -> {
+		String string = e.text;
+		char [] chars = new char [string.length ()];
+		string.getChars (0, chars.length, chars, 0);
+		for (int i=0; i<chars.length; i++) {
+			if (!('0' <= chars [i] && chars [i] <= '9')) {
+				e.doit = false;
+				return;
 			}
 		}
 	});
@@ -48,4 +45,4 @@ public static void main (String [] args) {
 	}
 	display.dispose ();
 }
-} 
+}

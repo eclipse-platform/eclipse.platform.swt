@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -12,10 +12,10 @@ package org.eclipse.swt.snippets;
 
 /*
  * Control example snippet: set a background image (a dynamic gradient)
- * 
+ *
  * For a list of all SWT example snippets see
  * http://www.eclipse.org/swt/snippets/
- * 
+ *
  * @since 3.2
  */
 import org.eclipse.swt.*;
@@ -41,20 +41,17 @@ public class Snippet214 {
 			Button button = new Button (group, SWT.RADIO);
 			button.setText ("Button " + i);
 		}
-		shell.addListener (SWT.Resize, new Listener () {
-			@Override
-			public void handleEvent (Event event) {
-				Rectangle rect = shell.getClientArea ();
-				Image newImage = new Image (display, Math.max (1, rect.width), 1);	
-				GC gc = new GC (newImage);
-				gc.setForeground (display.getSystemColor (SWT.COLOR_WHITE));
-				gc.setBackground (display.getSystemColor (SWT.COLOR_BLUE));
-				gc.fillGradientRectangle (rect.x, rect.y, rect.width, 1, false);
-				gc.dispose ();
-				shell.setBackgroundImage (newImage);
-				if (oldImage != null) oldImage.dispose ();
-				oldImage = newImage;
-			}
+		shell.addListener (SWT.Resize, event -> {
+			Rectangle rect = shell.getClientArea ();
+			Image newImage = new Image (display, Math.max (1, rect.width), 1);
+			GC gc = new GC (newImage);
+			gc.setForeground (display.getSystemColor (SWT.COLOR_WHITE));
+			gc.setBackground (display.getSystemColor (SWT.COLOR_BLUE));
+			gc.fillGradientRectangle (rect.x, rect.y, rect.width, 1, false);
+			gc.dispose ();
+			shell.setBackgroundImage (newImage);
+			if (oldImage != null) oldImage.dispose ();
+			oldImage = newImage;
 		});
 		shell.pack ();
 		shell.open ();

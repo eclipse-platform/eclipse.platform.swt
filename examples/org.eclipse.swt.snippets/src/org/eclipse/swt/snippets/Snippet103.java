@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2004 IBM Corporation and others.
+ * Copyright (c) 2000, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -17,7 +17,7 @@ package org.eclipse.swt.snippets;
  * http://www.eclipse.org/swt/snippets/
  */
 import org.eclipse.swt.*;
-import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.widgets.*;
 
 public class Snippet103 {
@@ -44,12 +44,9 @@ public static void main(String[] args) {
 	button.setText("Change");
 	button.pack();
 	button.setLocation(10, 180);
-	button.addListener(SWT.Selection, new Listener() {
-		@Override
-		public void handleEvent(Event event) {
-			for (int i = 0; i < 4; i++) {
-				populateItem(items[i]);
-			}
+	button.addListener(SWT.Selection, event -> {
+		for (int i = 0; i < 4; i++) {
+			populateItem(items[i]);
 		}
 	});
 

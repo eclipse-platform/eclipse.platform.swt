@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -12,10 +12,10 @@ package org.eclipse.swt.snippets;
 
 /*
  * Tree example snippet: allow user to reorder columns by dragging and programmatically.
- * 
+ *
  * For a list of all SWT example snippets see
  * http://www.eclipse.org/swt/snippets/
- * 
+ *
  * @since 3.2
  */
 import org.eclipse.swt.*;
@@ -56,12 +56,7 @@ public class Snippet193 {
 				}
 			}
 		}
-		Listener listener = new Listener() {
-			@Override
-			public void handleEvent(Event e) {
-				System.out.println("Move "+e.widget);
-			}
-		};
+		Listener listener = e -> System.out.println("Move "+e.widget);
 		TreeColumn[] columns = tree.getColumns();
 		for (int i = 0; i < columns.length; i++) {
 			columns[i].setWidth(100);
@@ -70,17 +65,14 @@ public class Snippet193 {
 		}
 		Button b = new Button(shell, SWT.PUSH);
 		b.setText("invert column order");
-		b.addListener(SWT.Selection, new Listener() {
-			@Override
-			public void handleEvent(Event e) {
-				int[] order = tree.getColumnOrder();
-				for (int i = 0; i < order.length / 2; i++) {
-					int temp = order[i];
-					order[i] = order[order.length - i - 1];
-					order[order.length - i - 1] = temp;
-				}
-				tree.setColumnOrder(order);
+		b.addListener(SWT.Selection, e -> {
+			int[] order = tree.getColumnOrder();
+			for (int i = 0; i < order.length / 2; i++) {
+				int temp = order[i];
+				order[i] = order[order.length - i - 1];
+				order[order.length - i - 1] = temp;
 			}
+			tree.setColumnOrder(order);
 		});
 		shell.pack();
 		shell.open();

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -34,31 +34,28 @@ public static void main (String[] args) {
 	}
 	// Disable native tooltip
 	table.setToolTipText ("");
-	
+
 	// Implement a "fake" tooltip
-	final Listener labelListener = new Listener () {
-		@Override
-		public void handleEvent (Event event) {
-			Label label = (Label)event.widget;
-			Shell shell = label.getShell ();
-			switch (event.type) {
-				case SWT.MouseDown:
-					Event e = new Event ();
-					e.item = (TableItem) label.getData ("_TABLEITEM");
-					// Assuming table is single select, set the selection as if
-					// the mouse down event went through to the table
-					table.setSelection (new TableItem [] {(TableItem) e.item});
-					table.notifyListeners (SWT.Selection, e);
-					shell.dispose ();
-					table.setFocus();
-					break;
-				case SWT.MouseExit:
-					shell.dispose ();
-					break;
-			}
+	final Listener labelListener = event -> {
+		Label label = (Label)event.widget;
+		Shell shell1 = label.getShell ();
+		switch (event.type) {
+			case SWT.MouseDown:
+				Event e = new Event ();
+				e.item = (TableItem) label.getData ("_TABLEITEM");
+				// Assuming table is single select, set the selection as if
+				// the mouse down event went through to the table
+				table.setSelection (new TableItem [] {(TableItem) e.item});
+				table.notifyListeners (SWT.Selection, e);
+				shell1.dispose ();
+				table.setFocus();
+				break;
+			case SWT.MouseExit:
+				shell1.dispose ();
+				break;
 		}
 	};
-	
+
 	Listener tableListener = new Listener () {
 		Shell tip = null;
 		Label label = null;

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2004 IBM Corporation and others.
+ * Copyright (c) 2000, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -17,7 +17,6 @@ package org.eclipse.swt.snippets;
  * http://www.eclipse.org/swt/snippets/
  */
 import org.eclipse.swt.*;
-import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.layout.*;
 import org.eclipse.swt.widgets.*;
@@ -39,12 +38,7 @@ public static void main (String [] args) {
 	group.setLayout (new FillLayout ());
 	group.setText ("a square");
 	Canvas canvas = new Canvas (group, SWT.NONE);
-	canvas.addPaintListener (new PaintListener () {
-		@Override
-		public void paintControl (PaintEvent e) {
-			e.gc.drawImage (image, 0, 0);
-		}
-	});
+	canvas.addPaintListener (e -> e.gc.drawImage (image, 0, 0));
 
 	shell.pack ();
 	shell.open ();

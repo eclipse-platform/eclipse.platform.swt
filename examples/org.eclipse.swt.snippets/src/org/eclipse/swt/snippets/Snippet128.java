@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2004 IBM Corporation and others.
+ * Copyright (c) 2000, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -15,13 +15,13 @@ package org.eclipse.swt.snippets;
  *
  * For a list of all SWT example snippets see
  * http://www.eclipse.org/swt/snippets/
- * 
+ *
  * @since 3.0
  */
 import org.eclipse.swt.*;
+import org.eclipse.swt.browser.*;
 import org.eclipse.swt.layout.*;
 import org.eclipse.swt.widgets.*;
-import org.eclipse.swt.browser.*;
 
 public class Snippet128 {
 	public static void main(String [] args) {
@@ -41,14 +41,14 @@ public class Snippet128 {
 		itemRefresh.setText("Refresh");
 		ToolItem itemGo = new ToolItem(toolbar, SWT.PUSH);
 		itemGo.setText("Go");
-		
+
 		GridData data = new GridData();
 		data.horizontalSpan = 3;
 		toolbar.setLayoutData(data);
 
 		Label labelAddress = new Label(shell, SWT.NONE);
 		labelAddress.setText("Address");
-		
+
 		final Text location = new Text(shell, SWT.BORDER);
 		data = new GridData();
 		data.horizontalAlignment = GridData.FILL;
@@ -83,22 +83,19 @@ public class Snippet128 {
 		progressBar.setLayoutData(data);
 
 		/* event handling */
-		Listener listener = new Listener() {
-			@Override
-			public void handleEvent(Event event) {
-				ToolItem item = (ToolItem)event.widget;
-				String string = item.getText();
-				if (string.equals("Back")) browser.back(); 
-				else if (string.equals("Forward")) browser.forward();
-				else if (string.equals("Stop")) browser.stop();
-				else if (string.equals("Refresh")) browser.refresh();
-				else if (string.equals("Go")) browser.setUrl(location.getText());
-		   }
-		};
+		Listener listener = event -> {
+			ToolItem item = (ToolItem)event.widget;
+			String string = item.getText();
+			if (string.equals("Back")) browser.back();
+			else if (string.equals("Forward")) browser.forward();
+			else if (string.equals("Stop")) browser.stop();
+			else if (string.equals("Refresh")) browser.refresh();
+			else if (string.equals("Go")) browser.setUrl(location.getText());
+   };
 		browser.addProgressListener(new ProgressListener() {
 			@Override
 			public void changed(ProgressEvent event) {
-					if (event.total == 0) return;                            
+					if (event.total == 0) return;
 					int ratio = event.current * 100 / event.total;
 					progressBar.setSelection(ratio);
 			}
@@ -107,12 +104,7 @@ public class Snippet128 {
 				progressBar.setSelection(0);
 			}
 		});
-		browser.addStatusTextListener(new StatusTextListener() {
-			@Override
-			public void changed(StatusTextEvent event) {
-				status.setText(event.text);	
-			}
-		});
+		browser.addStatusTextListener(event -> status.setText(event.text));
 		browser.addLocationListener(new LocationListener() {
 			@Override
 			public void changed(LocationEvent event) {
@@ -127,16 +119,11 @@ public class Snippet128 {
 		itemStop.addListener(SWT.Selection, listener);
 		itemRefresh.addListener(SWT.Selection, listener);
 		itemGo.addListener(SWT.Selection, listener);
-		location.addListener(SWT.DefaultSelection, new Listener() {
-			@Override
-			public void handleEvent(Event e) {
-				browser.setUrl(location.getText());
-			}
-		});
-		
+		location.addListener(SWT.DefaultSelection, e -> browser.setUrl(location.getText()));
+
 		shell.open();
 		browser.setUrl("http://eclipse.org");
-		
+
 		while (!shell.isDisposed()) {
 			if (!display.readAndDispatch())
 				display.sleep();

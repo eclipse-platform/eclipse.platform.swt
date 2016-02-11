@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -12,10 +12,10 @@ package org.eclipse.swt.snippets;
 
 /*
  * Fill a shape with a predefined pattern
- * 
+ *
  * For a list of all SWT example snippets see
  * http://www.eclipse.org/swt/snippets/
- * 
+ *
  * @since 3.1
  */
 import org.eclipse.swt.*;
@@ -39,30 +39,27 @@ public static void main(String[] args) {
 		gc.setForeground(blue);
 		gc.drawLine(i, 0, 500 + i, 1000);
 		gc.drawLine(500 + i, 0, i, 1000);
-	}	
+	}
 	gc.dispose();
 	final Pattern pattern;
 	try {
 		pattern = new Pattern(display, image);
 	} catch (SWTException e) {
-		//Advanced Graphics not supported.  
+		//Advanced Graphics not supported.
 		//This new API requires the Cairo Vector engine on GTK and GDI+ on Windows.
 		System.out.println(e.getMessage());
 		display.dispose();
 		return;
 	}
-	
+
 	Shell shell = new Shell(display);
 	shell.setLayout(new FillLayout());
 	Composite c = new Composite(shell, SWT.DOUBLE_BUFFERED);
-	c.addListener(SWT.Paint, new Listener() {
-		@Override
-		public void handleEvent(Event event) {
-			Rectangle r = ((Composite)event.widget).getClientArea();
-			GC gc = event.gc;
-			gc.setBackgroundPattern(pattern);
-			gc.fillOval(5, 5, r.width - 10, r.height - 10);	
-		}
+	c.addListener(SWT.Paint, event -> {
+		Rectangle r = ((Composite)event.widget).getClientArea();
+		GC gc1 = event.gc;
+		gc1.setBackgroundPattern(pattern);
+		gc1.fillOval(5, 5, r.width - 10, r.height - 10);
 	});
 	shell.open();
 	while (!shell.isDisposed()) {

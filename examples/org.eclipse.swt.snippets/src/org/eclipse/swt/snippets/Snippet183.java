@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -12,18 +12,18 @@ package org.eclipse.swt.snippets;
 
 /*
  * Link example snippet: detect selection events in a link widget
- * 
+ *
  * For a list of all SWT example snippets see
  * http://www.eclipse.org/swt/snippets/
- * 
+ *
  * @since 3.1
  */
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.*;
+import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.widgets.*;
 
 public class Snippet183 {
-	
+
 	public static void main(String[] args) {
 		Display display = new Display();
 		Shell shell = new Shell(display);
@@ -32,12 +32,7 @@ public class Snippet183 {
 		link.setText(text);
 		Rectangle clientArea = shell.getClientArea();
 		link.setBounds(clientArea.x, clientArea.y, 400, 400);
-		link.addListener (SWT.Selection, new Listener () {
-			@Override
-			public void handleEvent(Event event) {
-				System.out.println("Selection: " + event.text);
-			}
-		});
+		link.addListener (SWT.Selection, event -> System.out.println("Selection: " + event.text));
 		shell.pack ();
 		shell.open();
 		while (!shell.isDisposed()) {

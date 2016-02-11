@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2004 IBM Corporation and others.
+ * Copyright (c) 2000, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -9,7 +9,7 @@
  *     IBM Corporation - initial API and implementation
  *******************************************************************************/
 package org.eclipse.swt.snippets;
- 
+
 /*
  * Control example snippet: detect mouse enter, exit and hover events
  *
@@ -25,28 +25,13 @@ public static void main (String [] args) {
 	Display display = new Display ();
 	Shell shell = new Shell (display);
 	shell.setSize (100, 100);
-	shell.addListener (SWT.MouseEnter, new Listener () {
-		@Override
-		public void handleEvent (Event e) {
-			System.out.println ("ENTER");
-		}
-	});
-	shell.addListener (SWT.MouseExit, new Listener () {
-		@Override
-		public void handleEvent (Event e) {
-			System.out.println ("EXIT");
-		}
-	});
-	shell.addListener (SWT.MouseHover, new Listener () {
-		@Override
-		public void handleEvent (Event e) {
-			System.out.println ("HOVER");
-		}
-	});
+	shell.addListener (SWT.MouseEnter, e -> System.out.println ("ENTER"));
+	shell.addListener (SWT.MouseExit, e -> System.out.println ("EXIT"));
+	shell.addListener (SWT.MouseHover, e -> System.out.println ("HOVER"));
 	shell.open ();
 	while (!shell.isDisposed()) {
 		if (!display.readAndDispatch ()) display.sleep ();
 	}
 	display.dispose ();
 }
-} 
+}

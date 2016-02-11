@@ -9,7 +9,7 @@
  *     IBM Corporation - initial API and implementation
  *******************************************************************************/
 package org.eclipse.swt.snippets;
- 
+
 /*
  * Shell example snippet: create a splash screen
  *
@@ -60,12 +60,7 @@ public static void main(String[] args) {
 		for (int i1=0; i1<count[0]; i1++) {
 			shells [i1] = new Shell(display);
 			shells [i1].setSize (300, 300);
-			shells [i1].addListener(SWT.Close, new Listener() {
-				@Override
-				public void handleEvent (Event e) {
-					--count[0];
-				}
-			});
+			shells [i1].addListener(SWT.Close, e -> --count[0]);
 			bar.setSelection(i1+1);
 			try {Thread.sleep(1000);} catch (Throwable e) {}
 		}

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2004 IBM Corporation and others.
+ * Copyright (c) 2000, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -15,7 +15,7 @@ package org.eclipse.swt.snippets;
  *
  * For a list of all SWT example snippets see
  * http://www.eclipse.org/swt/snippets/
- * 
+ *
  * @since 3.1
  */
 import org.eclipse.swt.*;
@@ -37,12 +37,9 @@ public class Snippet159 {
 			display.dispose();
 			return;
 		}
-		browser.addTitleListener(new TitleListener() {
-			@Override
-			public void changed(TitleEvent event) {
-				System.out.println("TitleEvent: "+event.title);
-				shell.setText(event.title);
-			}
+		browser.addTitleListener(event -> {
+			System.out.println("TitleEvent: "+event.title);
+			shell.setText(event.title);
 		});
 		browser.addProgressListener(new ProgressListener() {
 			@Override

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2004 IBM Corporation and others.
+ * Copyright (c) 2000, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -34,37 +34,31 @@ public class Snippet216 {
 			new Rectangle (80, 80, 10, 10),
 		};
 		final Shell shell = new Shell (display);
-		Listener mouseListener = new Listener () {
-			@Override
-			public void handleEvent (Event event) {
-				switch (event.type) {
-					case SWT.MouseEnter:
-					case SWT.MouseMove:
-						for (int i=0; i<rects.length; i++) {
-							if (rects [i].contains (event.x, event.y)) {
-								String text = "ToolTip " + i;
-								if (!(text.equals (shell.getToolTipText ()))) {
-									shell.setToolTipText ("ToolTip " + i);
-								}
-								return;
+		Listener mouseListener = event -> {
+			switch (event.type) {
+				case SWT.MouseEnter:
+				case SWT.MouseMove:
+					for (int i=0; i<rects.length; i++) {
+						if (rects [i].contains (event.x, event.y)) {
+							String text = "ToolTip " + i;
+							if (!(text.equals (shell.getToolTipText ()))) {
+								shell.setToolTipText ("ToolTip " + i);
 							}
+							return;
 						}
-						shell.setToolTipText (null);
-						break;
 					}
-			}
+					shell.setToolTipText (null);
+					break;
+				}
 		};
 		shell.addListener (SWT.MouseMove, mouseListener);
 		shell.addListener (SWT.MouseEnter, mouseListener);
-		shell.addListener (SWT.Paint, new Listener () {
-			@Override
-			public void handleEvent (Event event) {
-				GC gc = event.gc;
-				for (int i=0; i<rects.length; i++) {
-					gc.setBackground (colors [i]);
-					gc.fillRectangle (rects [i]);
-					gc.drawRectangle (rects [i]);
-				}
+		shell.addListener (SWT.Paint, event -> {
+			GC gc = event.gc;
+			for (int i=0; i<rects.length; i++) {
+				gc.setBackground (colors [i]);
+				gc.fillRectangle (rects [i]);
+				gc.drawRectangle (rects [i]);
 			}
 		});
 		shell.setSize (200, 200);

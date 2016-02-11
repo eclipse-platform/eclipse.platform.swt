@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2004 IBM Corporation and others.
+ * Copyright (c) 2000, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -15,7 +15,7 @@ package org.eclipse.swt.snippets;
  *
  * For a list of all SWT example snippets see
  * http://www.eclipse.org/swt/snippets/
- * 
+ *
  * @since 3.1
  */
 import org.eclipse.swt.*;
@@ -48,14 +48,11 @@ public class Snippet161 {
 				"document.bgColor='yellow';");
 		final Button button = new Button(comp, SWT.PUSH);
 		button.setText("Execute Script");
-		button.addListener(SWT.Selection, new Listener() {
-			@Override
-			public void handleEvent(Event event) {
-				boolean result = browser.execute(text.getText());
-				if (!result) {
-					/* Script may fail or may not be supported on certain platforms. */
-					System.out.println("Script was not executed.");
-				}
+		button.addListener(SWT.Selection, event -> {
+			boolean result = browser.execute(text.getText());
+			if (!result) {
+				/* Script may fail or may not be supported on certain platforms. */
+				System.out.println("Script was not executed.");
 			}
 		});
 		browser.setText(html);

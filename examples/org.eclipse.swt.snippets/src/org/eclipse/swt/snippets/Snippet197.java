@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -12,10 +12,10 @@ package org.eclipse.swt.snippets;
 
 /*
  * Draw wrapped text using TextLayout
- * 
+ *
  * For a list of all SWT example snippets see
  * http://www.eclipse.org/swt/snippets/
- * 
+ *
  * @since 3.0
  */
 import org.eclipse.swt.*;
@@ -29,17 +29,14 @@ public static void main(String[] args) {
 	final Shell shell = new Shell(display);
 	final TextLayout layout = new TextLayout(display);
 	layout.setText(longString);
-	Listener listener = new Listener() {
-		@Override
-		public void handleEvent (Event event) {
-			switch (event.type) {
-			case SWT.Paint:
-				layout.draw(event.gc, 10, 10);
-				break;
-			case SWT.Resize:
-				layout.setWidth(shell.getSize().x - 20);
-				break;
-			}
+	Listener listener = event -> {
+		switch (event.type) {
+		case SWT.Paint:
+			layout.draw(event.gc, 10, 10);
+			break;
+		case SWT.Resize:
+			layout.setWidth(shell.getSize().x - 20);
+			break;
 		}
 	};
 	shell.addListener(SWT.Paint, listener);

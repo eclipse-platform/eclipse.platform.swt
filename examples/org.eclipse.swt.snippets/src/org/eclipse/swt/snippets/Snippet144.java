@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2004 IBM Corporation and others.
+ * Copyright (c) 2000, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -15,12 +15,12 @@ package org.eclipse.swt.snippets;
  *
  * For a list of all SWT example snippets see
  * http://www.eclipse.org/swt/snippets/
- * 
+ *
  * @since 3.0
  */
 import org.eclipse.swt.*;
-import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.layout.*;
+import org.eclipse.swt.widgets.*;
 
 public class Snippet144 {
 
@@ -31,28 +31,22 @@ public static void main(String[] args) {
 	final Shell shell = new Shell (display);
 	shell.setLayout (new RowLayout (SWT.VERTICAL));
 	final Table table = new Table (shell, SWT.VIRTUAL | SWT.BORDER);
-	table.addListener (SWT.SetData, new Listener () {
-		@Override
-		public void handleEvent (Event event) {
-			TableItem item = (TableItem) event.item;
-			int index = table.indexOf (item);
-			item.setText ("Item " + index);
-			System.out.println (item.getText ());
-		}
+	table.addListener (SWT.SetData, event -> {
+		TableItem item = (TableItem) event.item;
+		int index = table.indexOf (item);
+		item.setText ("Item " + index);
+		System.out.println (item.getText ());
 	});
 	table.setLayoutData (new RowData (200, 200));
 	Button button = new Button (shell, SWT.PUSH);
 	button.setText ("Add Items");
 	final Label label = new Label(shell, SWT.NONE);
-	button.addListener (SWT.Selection, new Listener () {
-		@Override
-		public void handleEvent (Event event) {
-			long t1 = System.currentTimeMillis ();
-			table.setItemCount (COUNT);
-			long t2 = System.currentTimeMillis ();
-			label.setText ("Items: " + COUNT + ", Time: " + (t2 - t1) + " (ms)");
-			shell.layout ();
-		}
+	button.addListener (SWT.Selection, event -> {
+		long t1 = System.currentTimeMillis ();
+		table.setItemCount (COUNT);
+		long t2 = System.currentTimeMillis ();
+		label.setText ("Items: " + COUNT + ", Time: " + (t2 - t1) + " (ms)");
+		shell.layout ();
 	});
 	shell.pack ();
 	shell.open ();

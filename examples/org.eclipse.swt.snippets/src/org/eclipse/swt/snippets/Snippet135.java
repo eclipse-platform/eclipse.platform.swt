@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2004 IBM Corporation and others.
+ * Copyright (c) 2000, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -9,33 +9,41 @@
  *     IBM Corporation - initial API and implementation
  *******************************************************************************/
 package org.eclipse.swt.snippets;
- 
+
 /*
  * example snippet: embed Swing/AWT in SWT
  *
  * For a list of all SWT example snippets see
  * http://www.eclipse.org/swt/snippets/
- * 
+ *
  * @since 3.0
  */
-import java.awt.EventQueue;
+import java.awt.*;
 import java.io.*;
 import java.util.*;
+
 import javax.swing.*;
 import javax.swing.table.*;
 
 import org.eclipse.swt.*;
-import org.eclipse.swt.widgets.*;
+import org.eclipse.swt.awt.*;
 import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.*;
-import org.eclipse.swt.awt.SWT_AWT;
+import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.*;
+import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Menu;
+import org.eclipse.swt.widgets.MenuItem;
 
 public class Snippet135 {
 
-	static class FileTableModel extends AbstractTableModel {		
-		File[] files;        
+	static class FileTableModel extends AbstractTableModel {
+		File[] files;
 		String[] columnsName = {"Name", "Size", "Date Modified"};
-		
+
 		public FileTableModel (File[] files) {
 			this.files = files;
 		}
@@ -71,49 +79,38 @@ public class Snippet135 {
 		final Shell shell = new Shell(display);
 		shell.setText("SWT and Swing/AWT Example");
 
-		Listener exitListener = new Listener() {
-			@Override
-			public void handleEvent(Event e) {
-				MessageBox dialog = new MessageBox(shell, SWT.OK | SWT.CANCEL | SWT.ICON_QUESTION);
-				dialog.setText("Question");
-				dialog.setMessage("Exit?");
-				if (e.type == SWT.Close) e.doit = false;
-				if (dialog.open() != SWT.OK) return;
-				shell.dispose();
-			}
-		};	
-		Listener aboutListener = new Listener() {
-			@Override
-			public void handleEvent(Event e) {
-				final Shell s = new Shell(shell, SWT.DIALOG_TRIM | SWT.APPLICATION_MODAL);
-				s.setText("About");
-				GridLayout layout = new GridLayout(1, false);
-				layout.verticalSpacing = 20;
-				layout.marginHeight = layout.marginWidth = 10;
-				s.setLayout(layout);
-				Label label = new Label(s, SWT.NONE);
-				label.setText("SWT and AWT Example.");
-				Button button = new Button(s, SWT.PUSH);
-				button.setText("OK");
-				GridData data = new GridData();
-				data.horizontalAlignment = GridData.CENTER;
-				button.setLayoutData(data);
-				button.addListener(SWT.Selection, new Listener() {
-					@Override
-					public void handleEvent(Event event) {
-						s.dispose();
-					}
-				});
-				s.pack();
-				Rectangle parentBounds = shell.getBounds();
-				Rectangle bounds = s.getBounds();
-				int x = parentBounds.x + (parentBounds.width - bounds.width) / 2;
-				int y = parentBounds.y + (parentBounds.height - bounds.height) / 2;
-				s.setLocation(x, y);
-				s.open();
-				while (!s.isDisposed()) {
-					if (!display.readAndDispatch()) display.sleep();
-				}
+		Listener exitListener = e -> {
+			MessageBox dialog = new MessageBox(shell, SWT.OK | SWT.CANCEL | SWT.ICON_QUESTION);
+			dialog.setText("Question");
+			dialog.setMessage("Exit?");
+			if (e.type == SWT.Close) e.doit = false;
+			if (dialog.open() != SWT.OK) return;
+			shell.dispose();
+		};
+		Listener aboutListener = e -> {
+			final Shell s = new Shell(shell, SWT.DIALOG_TRIM | SWT.APPLICATION_MODAL);
+			s.setText("About");
+			GridLayout layout = new GridLayout(1, false);
+			layout.verticalSpacing = 20;
+			layout.marginHeight = layout.marginWidth = 10;
+			s.setLayout(layout);
+			Label label = new Label(s, SWT.NONE);
+			label.setText("SWT and AWT Example.");
+			Button button = new Button(s, SWT.PUSH);
+			button.setText("OK");
+			GridData data = new GridData();
+			data.horizontalAlignment = GridData.CENTER;
+			button.setLayoutData(data);
+			button.addListener(SWT.Selection, event -> s.dispose());
+			s.pack();
+			Rectangle parentBounds = shell.getBounds();
+			Rectangle bounds = s.getBounds();
+			int x = parentBounds.x + (parentBounds.width - bounds.width) / 2;
+			int y = parentBounds.y + (parentBounds.height - bounds.height) / 2;
+			s.setLocation(x, y);
+			s.open();
+			while (!s.isDisposed()) {
+				if (!display.readAndDispatch()) display.sleep();
 			}
 		};
 		shell.addListener(SWT.Close, exitListener);
@@ -172,15 +169,12 @@ public class Snippet135 {
 		statusFrame.add(statusLabel);
 		statusLabel.setText("Select a file");
 
-		sash.addListener(SWT.Selection, new Listener() {
-			@Override
-			public void handleEvent(Event e) {
-				if (e.detail == SWT.DRAG) return;
-				GridData data = (GridData)fileTree.getLayoutData();
-				Rectangle trim = fileTree.computeTrim(0, 0, 0, 0);
-				data.widthHint = e.x - trim.width;
-				comp.layout();
-			}
+		sash.addListener(SWT.Selection, e -> {
+			if (e.detail == SWT.DRAG) return;
+			GridData data = (GridData)fileTree.getLayoutData();
+			Rectangle trim = fileTree.computeTrim(0, 0, 0, 0);
+			data.widthHint = e.x - trim.width;
+			comp.layout();
 		});
 
 		File[] roots = File.listRoots();
@@ -191,54 +185,45 @@ public class Snippet135 {
 			treeItem.setData(file);
 			new TreeItem(treeItem, SWT.NONE);
 		}
-		fileTree.addListener(SWT.Expand, new Listener() {
-			@Override
-			public void handleEvent(Event e) {
-				TreeItem item = (TreeItem)e.item;
-				if (item == null) return;
-				if (item.getItemCount() == 1) {
-					TreeItem firstItem = item.getItems()[0];
-					if (firstItem.getData() != null) return;
-					firstItem.dispose();
-				} else {
-					return;
-				}
-				File root = (File)item.getData();
-				File[] files = root.listFiles();
-				if (files == null) return;
-				for (int i = 0; i < files.length; i++) {
-					File file = files[i];
-					if (file.isDirectory()) {
-						TreeItem treeItem = new TreeItem(item, SWT.NONE);
-						treeItem.setText(file.getName());
-						treeItem.setData(file);
-						new TreeItem(treeItem, SWT.NONE);
-					}
+		fileTree.addListener(SWT.Expand, e -> {
+			TreeItem item = (TreeItem)e.item;
+			if (item == null) return;
+			if (item.getItemCount() == 1) {
+				TreeItem firstItem = item.getItems()[0];
+				if (firstItem.getData() != null) return;
+				firstItem.dispose();
+			} else {
+				return;
+			}
+			File root = (File)item.getData();
+			File[] files = root.listFiles();
+			if (files == null) return;
+			for (int i = 0; i < files.length; i++) {
+				File file = files[i];
+				if (file.isDirectory()) {
+					TreeItem treeItem = new TreeItem(item, SWT.NONE);
+					treeItem.setText(file.getName());
+					treeItem.setData(file);
+					new TreeItem(treeItem, SWT.NONE);
 				}
 			}
 		});
-		fileTree.addListener(SWT.Selection, new Listener() {
-			@Override
-			public void handleEvent(Event e) {
-				TreeItem item = (TreeItem)e.item;
-				if (item == null) return;
-				final File root = (File)item.getData();
-				EventQueue.invokeLater(new Runnable() {
-					@Override
-					public void run() {
-						statusLabel.setText(root.getAbsolutePath());
-						locationText.setText(root.getAbsolutePath());
-						fileTable.setModel(new FileTableModel(root.listFiles()));
-					}
-				});
-			}
+		fileTree.addListener(SWT.Selection, e -> {
+			TreeItem item = (TreeItem)e.item;
+			if (item == null) return;
+			final File root = (File)item.getData();
+			EventQueue.invokeLater(() -> {
+				statusLabel.setText(root.getAbsolutePath());
+				locationText.setText(root.getAbsolutePath());
+				fileTable.setModel(new FileTableModel(root.listFiles()));
+			});
 		});
-		
+
 		GridLayout layout = new GridLayout(4, false);
 		layout.marginWidth = layout.marginHeight = 0;
 		layout.horizontalSpacing = layout.verticalSpacing = 1;
 		shell.setLayout(layout);
-		GridData data;		
+		GridData data;
 		data = new GridData(GridData.FILL_HORIZONTAL);
 		data.horizontalSpan = 4;
 		separator1.setLayoutData(data);
@@ -266,16 +251,16 @@ public class Snippet135 {
 		data.horizontalSpan = 4;
 		data.heightHint = statusLabel.getPreferredSize().height;
 		statusComp.setLayoutData(data);
-		
+
 		layout = new GridLayout(3, false);
 		layout.marginWidth = layout.marginHeight = 0;
 		layout.horizontalSpacing = layout.verticalSpacing = 1;
-		comp.setLayout(layout);			
+		comp.setLayout(layout);
 		data = new GridData(GridData.FILL_VERTICAL);
 		data.widthHint = 200;
-		fileTree.setLayoutData(data);		
+		fileTree.setLayoutData(data);
 		data = new GridData(GridData.FILL_VERTICAL);
-		sash.setLayoutData(data);		
+		sash.setLayoutData(data);
 		data = new GridData(GridData.FILL_BOTH);
 		tableComp.setLayoutData(data);
 

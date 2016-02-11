@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2006 IBM Corporation and others.
+ * Copyright (c) 2000, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -9,24 +9,24 @@
  *     IBM Corporation - initial API and implementation
  *******************************************************************************/
 package org.eclipse.swt.snippets;
-/* 
+/*
  * example snippet: StyledText bulleted list example
  *
  * For a list of all SWT example snippets see
  * http://www.eclipse.org/swt/snippets/
- * 
+ *
  * @since 3.2
  */
 
 import org.eclipse.swt.*;
-import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.custom.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.layout.*;
+import org.eclipse.swt.widgets.*;
 
 public class Snippet222 {
-	
-public static void main(String[] args) {	
+
+public static void main(String[] args) {
 	Display display = new Display();
 	Shell shell = new Shell(display);
 	shell.setText("StyledText Bullet Example");
@@ -40,9 +40,9 @@ public static void main(String[] args) {
 	for (int i = 0; i < 4; i++) text.append("Sub List Item " + i + "\n");
 	for (int i = 0; i < 2; i++) text.append("Numbered List Item " + (2 + i) + "\n");
 	text.append("\n");
-	for (int i = 0; i < 4; i++) text.append("Custom Draw List Item " + i + "\n");	
+	for (int i = 0; i < 4; i++) text.append("Custom Draw List Item " + i + "\n");
 	styledText.setText(text.toString());
-		
+
 	StyleRange style0 = new StyleRange();
 	style0.metrics = new GlyphMetrics(0, 0, 40);
 	style0.foreground = display.getSystemColor(SWT.COLOR_RED);
@@ -67,21 +67,18 @@ public static void main(String[] args) {
 	styledText.setLineBullet(13, 2, bullet1);
 	styledText.setLineBullet(16, 4, bullet3);
 
-	styledText.addPaintObjectListener(new PaintObjectListener() {
-		@Override
-		public void paintObject(PaintObjectEvent event) {
-			Display display = event.display;
-			StyleRange style = event.style;
-			Font font = style.font;
-			if (font == null) font = styledText.getFont();
-			TextLayout layout = new TextLayout(display);
-			layout.setAscent(event.ascent);
-			layout.setDescent(event.descent);
-			layout.setFont(font);
-			layout.setText("\u2023 1." + event.bulletIndex + ")");
-			layout.draw(event.gc, event.x + 10, event.y);
-			layout.dispose();
-		}
+	styledText.addPaintObjectListener(event -> {
+		Display display1 = event.display;
+		StyleRange style = event.style;
+		Font font = style.font;
+		if (font == null) font = styledText.getFont();
+		TextLayout layout = new TextLayout(display1);
+		layout.setAscent(event.ascent);
+		layout.setDescent(event.descent);
+		layout.setFont(font);
+		layout.setText("\u2023 1." + event.bulletIndex + ")");
+		layout.draw(event.gc, event.x + 10, event.y);
+		layout.dispose();
 	});
 	shell.open();
 	while (!shell.isDisposed()) {

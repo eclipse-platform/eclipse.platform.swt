@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2004 IBM Corporation and others.
+ * Copyright (c) 2000, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -15,13 +15,13 @@ package org.eclipse.swt.snippets;
  *
  * For a list of all SWT example snippets see
  * http://www.eclipse.org/swt/snippets/
- * 
+ *
  * @since 3.0
  */
 
 import org.eclipse.swt.*;
-import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.layout.*;
+import org.eclipse.swt.widgets.*;
 
 public class Snippet152 {
 
@@ -31,32 +31,23 @@ public static void main(String[] args) {
     FormLayout layout = new FormLayout();
     shell.setLayout(layout);
     final Label label = new Label(shell, SWT.BORDER);
-    Listener armListener = new Listener() {
-        @Override
-		public void handleEvent(Event event) {
-            MenuItem item = (MenuItem) event.widget;
-            label.setText(item.getText());
-            label.update();
-        }
-    };
-    Listener showListener = new Listener() {
-        @Override
-		public void handleEvent(Event event) {
-            Menu menu = (Menu) event.widget;
-            MenuItem item = menu.getParentItem();
-            if (item != null) {
-                label.setText(item.getText());
-                label.update();
-            }
-        }
-    };
-    Listener hideListener = new Listener() {
-        @Override
-		public void handleEvent(Event event) {
-            label.setText("");
-            label.update();
-        }
-    };
+    Listener armListener = event -> {
+	    MenuItem item = (MenuItem) event.widget;
+	    label.setText(item.getText());
+	    label.update();
+	};
+    Listener showListener = event -> {
+	    Menu menu = (Menu) event.widget;
+	    MenuItem item = menu.getParentItem();
+	    if (item != null) {
+	        label.setText(item.getText());
+	        label.update();
+	    }
+	};
+    Listener hideListener = event -> {
+	    label.setText("");
+	    label.update();
+	};
     FormData labelData = new FormData();
     labelData.left = new FormAttachment(0);
     labelData.right = new FormAttachment(100);

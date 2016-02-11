@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -16,10 +16,10 @@ import org.eclipse.swt.widgets.*;
 
 /*
  * Exclude a widget from a GridLayout
- * 
+ *
  * For a list of all SWT example snippets see
  * http://www.eclipse.org/swt/snippets/
- * 
+ *
  * @since 3.1
  */
 
@@ -52,15 +52,12 @@ public static void main(String[] args) {
 	b = new Button(shell, SWT.CHECK);
 	b.setText("hide");
 	b.setSelection(true);
-	b.addListener(SWT.Selection, new Listener() {
-		@Override
-		public void handleEvent(Event e) {
-			Button b = (Button) e.widget;
-			GridData data = (GridData) bHidden.getLayoutData();
-			data.exclude = b.getSelection();
-			bHidden.setVisible(!data.exclude);
-			shell.layout(false);
-		}
+	b.addListener(SWT.Selection, e -> {
+		Button b1 = (Button) e.widget;
+		GridData data1 = (GridData) bHidden.getLayoutData();
+		data1.exclude = b1.getSelection();
+		bHidden.setVisible(!data1.exclude);
+		shell.layout(false);
 	});
 	shell.setSize(400, 400);
 	shell.open();

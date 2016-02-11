@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2014 IBM Corporation and others.
+ * Copyright (c) 2000, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -9,13 +9,13 @@
  *     IBM Corporation - initial API and implementation
  *******************************************************************************/
 package org.eclipse.swt.snippets;
- 
+
 /*
  * Shell example snippet: create a non-rectangular window
  *
  * For a list of all SWT example snippets see
  * http://www.eclipse.org/swt/snippets/
- * 
+ *
  * @since 3.0
  */
 import org.eclipse.swt.*;
@@ -85,12 +85,7 @@ public static void main(String[] args) {
 	b.setText("close");
 	b.pack();
 	b.setLocation(10, 68);
-	b.addListener(SWT.Selection, new Listener() {
-		@Override
-		public void handleEvent(Event e) {
-			shell.close();
-		}
-	});
+	b.addListener(SWT.Selection, e -> shell.close());
 	shell.open();
 	while (!shell.isDisposed()) {
 		if (!display.readAndDispatch())

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2004 IBM Corporation and others.
+ * Copyright (c) 2000, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -34,46 +34,28 @@ public static void main (String [] args) {
 	shell.setDefaultButton (b);
 	final Canvas c = new Canvas (shell, SWT.BORDER);
 	c.setBounds (10, 50, 100, 32);
-	c.addListener (SWT.Traverse, new Listener () {
-		@Override
-		public void handleEvent (Event e) {
-			switch (e.detail) {
-				/* Do tab group traversal */
-				case SWT.TRAVERSE_ESCAPE:
-				case SWT.TRAVERSE_RETURN:
-				case SWT.TRAVERSE_TAB_NEXT:	
-				case SWT.TRAVERSE_TAB_PREVIOUS:
-				case SWT.TRAVERSE_PAGE_NEXT:	
-				case SWT.TRAVERSE_PAGE_PREVIOUS:
-					e.doit = true;
-					break;
-			}
+	c.addListener (SWT.Traverse, e -> {
+		switch (e.detail) {
+			/* Do tab group traversal */
+			case SWT.TRAVERSE_ESCAPE:
+			case SWT.TRAVERSE_RETURN:
+			case SWT.TRAVERSE_TAB_NEXT:
+			case SWT.TRAVERSE_TAB_PREVIOUS:
+			case SWT.TRAVERSE_PAGE_NEXT:
+			case SWT.TRAVERSE_PAGE_PREVIOUS:
+				e.doit = true;
+				break;
 		}
 	});
-	c.addListener (SWT.FocusIn, new Listener () {
-		@Override
-		public void handleEvent (Event e) {
-			c.setBackground (red);
-		}
-	});
-	c.addListener (SWT.FocusOut, new Listener () {
-		@Override
-		public void handleEvent (Event e) {
-			c.setBackground (blue);
-		}
-	});
-	c.addListener (SWT.KeyDown, new Listener () {
-		@Override
-		public void handleEvent (Event e) {
-			System.out.println ("KEY");
-		}
-	});
+	c.addListener (SWT.FocusIn, e -> c.setBackground (red));
+	c.addListener (SWT.FocusOut, e -> c.setBackground (blue));
+	c.addListener (SWT.KeyDown, e -> System.out.println ("KEY"));
 	Text t = new Text (shell, SWT.SINGLE | SWT.BORDER);
 	t.setBounds (10, 85, 100, 32);
 
 	Text r = new Text (shell, SWT.MULTI | SWT.BORDER);
 	r.setBounds (10, 120, 100, 32);
-	
+
 	c.setFocus ();
 	shell.setSize (200, 200);
 	shell.open ();
@@ -82,4 +64,4 @@ public static void main (String [] args) {
 	}
 	display.dispose ();
 }
-} 
+}

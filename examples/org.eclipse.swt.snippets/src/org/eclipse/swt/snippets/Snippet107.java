@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2004 IBM Corporation and others.
+ * Copyright (c) 2000, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -17,8 +17,8 @@ package org.eclipse.swt.snippets;
  */
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.layout.*;
+import org.eclipse.swt.widgets.*;
 
 public class Snippet107 {
 
@@ -30,10 +30,10 @@ public static void main (String [] args) {
 	final Sash sash = new Sash (shell, SWT.VERTICAL);
 	Button button2 = new Button (shell, SWT.PUSH);
 	button2.setText ("Button 2");
-	
+
 	final FormLayout form = new FormLayout ();
 	shell.setLayout (form);
-	
+
 	FormData button1Data = new FormData ();
 	button1Data.left = new FormAttachment (0, 0);
 	button1Data.right = new FormAttachment (sash, 0);
@@ -47,27 +47,24 @@ public static void main (String [] args) {
 	sashData.top = new FormAttachment (0, 0);
 	sashData.bottom = new FormAttachment (100, 0);
 	sash.setLayoutData (sashData);
-	sash.addListener (SWT.Selection, new Listener () {
-		@Override
-		public void handleEvent (Event e) {
-			Rectangle sashRect = sash.getBounds ();
-			Rectangle shellRect = shell.getClientArea ();
-			int right = shellRect.width - sashRect.width - limit;
-			e.x = Math.max (Math.min (e.x, right), limit);
-			if (e.x != sashRect.x)  {
-				sashData.left = new FormAttachment (0, e.x);
-				shell.layout ();
-			}
+	sash.addListener (SWT.Selection, e -> {
+		Rectangle sashRect = sash.getBounds ();
+		Rectangle shellRect = shell.getClientArea ();
+		int right = shellRect.width - sashRect.width - limit;
+		e.x = Math.max (Math.min (e.x, right), limit);
+		if (e.x != sashRect.x)  {
+			sashData.left = new FormAttachment (0, e.x);
+			shell.layout ();
 		}
 	});
-	
+
 	FormData button2Data = new FormData ();
 	button2Data.left = new FormAttachment (sash, 0);
 	button2Data.right = new FormAttachment (100, 0);
 	button2Data.top = new FormAttachment (0, 0);
 	button2Data.bottom = new FormAttachment (100, 0);
 	button2.setLayoutData (button2Data);
-	
+
 	shell.pack ();
 	shell.open ();
 	while (!shell.isDisposed ()) {
@@ -75,4 +72,4 @@ public static void main (String [] args) {
 	}
 	display.dispose ();
 }
-} 
+}

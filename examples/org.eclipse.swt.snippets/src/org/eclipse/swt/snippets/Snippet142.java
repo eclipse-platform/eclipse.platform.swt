@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2004 IBM Corporation and others.
+ * Copyright (c) 2000, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -9,13 +9,13 @@
  *     IBM Corporation - initial API and implementation
  *******************************************************************************/
 package org.eclipse.swt.snippets;
-  
+
 /*
  * UI Automation (for testing tools) snippet: post mouse events
  *
  * For a list of all SWT example snippets see
  * http://www.eclipse.org/swt/snippets/
- * 
+ *
  * @since 3.0
  */
 import org.eclipse.swt.*;
@@ -32,12 +32,7 @@ public static void main(String[] args) {
 	button.setText("Click");
 	shell.pack();
 	shell.open();
-	button.addListener(SWT.MouseDown, new Listener() {
-		@Override
-		public void handleEvent(Event e){
-			System.out.println("Mouse Down (button: " + e.button + " x: " + e.x + " y: " + e.y + ")");
-		}
-	});
+	button.addListener(SWT.MouseDown, e -> System.out.println("Mouse Down (button: " + e.button + " x: " + e.x + " y: " + e.y + ")"));
 	final Point pt = display.map(shell, null, 50, 50);
 	new Thread(){
 		Event event;
@@ -62,7 +57,7 @@ public static void main(String[] args) {
 			} catch (InterruptedException e) {}
 			event.type = SWT.MouseUp;
 			display.post(event);
-		}	
+		}
 	}.start();
 	while (!shell.isDisposed()) {
 		if (!display.readAndDispatch()) display.sleep();

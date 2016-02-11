@@ -15,7 +15,7 @@ package org.eclipse.swt.snippets;
  *
  * For a list of all SWT example snippets see
  * http://www.eclipse.org/swt/snippets/
- * 
+ *
  * @since 3.0
  */
 import java.util.*;
@@ -33,13 +33,10 @@ public static void main (String [] args) {
 	Shell shell = new Shell (display);
 	shell.setLayout(new FillLayout());
 	final Table table = new Table(shell, SWT.BORDER | SWT.VIRTUAL);
-	table.addListener(SWT.SetData, new Listener() {
-		@Override
-		public void handleEvent(Event e) {
-			TableItem item = (TableItem)e.item;
-			int index = table.indexOf(item);
-			item.setText("Item "+data[index]);
-		}
+	table.addListener(SWT.SetData, e -> {
+		TableItem item = (TableItem)e.item;
+		int index = table.indexOf(item);
+		item.setText("Item "+data[index]);
 	});
 	Thread thread = new Thread() {
 		@Override

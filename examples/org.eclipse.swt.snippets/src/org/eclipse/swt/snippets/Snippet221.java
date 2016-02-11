@@ -9,7 +9,7 @@
  *     IBM Corporation - initial API and implementation
  *******************************************************************************/
 package org.eclipse.swt.snippets;
-/* 
+/*
  * example snippet: Scroll tree when mouse at top or bottom
  *
  * For a list of all SWT example snippets see
@@ -25,7 +25,7 @@ public class Snippet221 {
 	static Runnable Heartbeat;
 	static boolean Tracking;
 	static int ScrollSpeed = 40;
-	
+
 public static void main(String[] args) {
 	final Display display = new Display();
 	Shell shell = new Shell(display);
@@ -59,7 +59,7 @@ public static void main(String[] args) {
 	column0.pack();
 	column1.pack();
 	column2.pack();
-	
+
 	Heartbeat = () -> {
 		if (!Tracking || tree.isDisposed()) return;
 		Point cursor = display.getCursorLocation();
@@ -67,21 +67,18 @@ public static void main(String[] args) {
 		Scroll(tree, cursor.x, cursor.y);
 		display.timerExec(ScrollSpeed, Heartbeat);
 	};
-	Listener listener = new Listener() {
-		@Override
-		public void handleEvent(Event event) {
-			switch (event.type) {
-			case SWT.MouseEnter:
-				Tracking = true;
-				display.timerExec(0, Heartbeat);
-				break;
-			case SWT.MouseExit:
-				Tracking = false;
-				break;
-			}
+	Listener listener = event -> {
+		switch (event.type) {
+		case SWT.MouseEnter:
+			Tracking = true;
+			display.timerExec(0, Heartbeat);
+			break;
+		case SWT.MouseExit:
+			Tracking = false;
+			break;
 		}
 	};
-	tree.addListener(SWT.MouseEnter, listener); 
+	tree.addListener(SWT.MouseEnter, listener);
 	tree.addListener(SWT.MouseExit, listener);
 	shell.open();
 	while (!shell.isDisposed()) {

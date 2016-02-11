@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -18,10 +18,10 @@ import org.eclipse.swt.widgets.*;
 
 /*
  * Show a sort indicator in the column header
- * 
+ *
  * For a list of all SWT example snippets see
  * http://www.eclipse.org/swt/snippets/
- * 
+ *
  * @since 3.2
  */
 
@@ -48,47 +48,38 @@ public static void main(String[] args) {
 	final TableColumn column2 = new TableColumn(table, SWT.NONE);
 	column2.setText("Value");
 	column2.setWidth(200);
-	table.addListener(SWT.SetData, new Listener() {
-		@Override
-		public void handleEvent(Event e) {
-			TableItem item = (TableItem) e.item;
-			int index = table.indexOf(item);
-			int[] datum = data[index];
-			item.setText(new String[] {Integer.toString(datum[0]),
-					Integer.toString(datum[1]) });
-		}
+	table.addListener(SWT.SetData, e -> {
+		TableItem item = (TableItem) e.item;
+		int index = table.indexOf(item);
+		int[] datum = data[index];
+		item.setText(new String[] {Integer.toString(datum[0]),
+				Integer.toString(datum[1]) });
 	});
 	// Add sort indicator and sort data when column selected
-	Listener sortListener = new Listener() {
-		@Override
-		public void handleEvent(Event e) {
-			// determine new sort column and direction
-			TableColumn sortColumn = table.getSortColumn();
-			TableColumn currentColumn = (TableColumn) e.widget;
-			int dir = table.getSortDirection();
-			if (sortColumn == currentColumn) {
-				dir = dir == SWT.UP ? SWT.DOWN : SWT.UP;
-			} else {
-				table.setSortColumn(currentColumn);
-				dir = SWT.UP;
-			}
-			// sort the data based on column and direction
-			final int index = currentColumn == column1 ? 0 : 1;
-			final int direction = dir;
-			Arrays.sort(data, new Comparator<int[]>() {
-				@Override
-				public int compare(int[] a, int[] b) {
-					if (a[index] == b[index]) return 0;
-					if (direction == SWT.UP) {
-						return a[index] < b[index] ? -1 : 1;
-					}
-					return a[index] < b[index] ? 1 : -1;
-				}
-			});
-			// update data displayed in table
-			table.setSortDirection(dir);
-			table.clearAll();
+	Listener sortListener = e -> {
+		// determine new sort column and direction
+		TableColumn sortColumn = table.getSortColumn();
+		TableColumn currentColumn = (TableColumn) e.widget;
+		int dir = table.getSortDirection();
+		if (sortColumn == currentColumn) {
+			dir = dir == SWT.UP ? SWT.DOWN : SWT.UP;
+		} else {
+			table.setSortColumn(currentColumn);
+			dir = SWT.UP;
 		}
+		// sort the data based on column and direction
+		final int index = currentColumn == column1 ? 0 : 1;
+		final int direction = dir;
+		Arrays.sort(data, (a, b) -> {
+			if (a[index] == b[index]) return 0;
+			if (direction == SWT.UP) {
+				return a[index] < b[index] ? -1 : 1;
+			}
+			return a[index] < b[index] ? 1 : -1;
+		});
+		// update data displayed in table
+		table.setSortDirection(dir);
+		table.clearAll();
 	};
 	column1.addListener(SWT.Selection, sortListener);
 	column2.addListener(SWT.Selection, sortListener);

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -12,17 +12,17 @@ package org.eclipse.swt.snippets;
 
 /*
  * SWT StyledText snippet: use gradient background.
- * 
+ *
  * For a list of all SWT example snippets see
  * http://www.eclipse.org/swt/snippets/
- * 
+ *
  * @since 3.2
  */
 import org.eclipse.swt.*;
-import org.eclipse.swt.layout.*;
-import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.custom.*;
 import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.layout.*;
+import org.eclipse.swt.widgets.*;
 
 public class Snippet218 {
 
@@ -33,7 +33,7 @@ public class Snippet218 {
 		"operating environments, and release-to-release compatibility. These are all things that need to be clear for "+
 		"any release, even if no features were to change.  \n";
 	static Image oldImage;
-	
+
 	public static void main(String [] args) {
 		final Display display = new Display();
 		final Shell shell = new Shell(display);
@@ -44,21 +44,18 @@ public class Snippet218 {
 		Font font = new Font(display, data.getName(), 16, SWT.BOLD);
 		styledText.setFont(font);
 		styledText.setForeground(display.getSystemColor (SWT.COLOR_BLUE));
-		styledText.addListener (SWT.Resize, new Listener () {
-			@Override
-			public void handleEvent (Event event) {
-				Rectangle rect = styledText.getClientArea ();
-				Image newImage = new Image (display, 1, Math.max (1, rect.height));
-				GC gc = new GC (newImage);
-				gc.setForeground (display.getSystemColor (SWT.COLOR_WHITE));
-				gc.setBackground (display.getSystemColor (SWT.COLOR_YELLOW));
-				gc.fillGradientRectangle (rect.x, rect.y, 1, rect.height, true);
-				gc.dispose ();
-				styledText.setBackgroundImage (newImage);
-				if (oldImage != null) oldImage.dispose ();
-				oldImage = newImage;
-			}
-		});	
+		styledText.addListener (SWT.Resize, event -> {
+			Rectangle rect = styledText.getClientArea ();
+			Image newImage = new Image (display, 1, Math.max (1, rect.height));
+			GC gc = new GC (newImage);
+			gc.setForeground (display.getSystemColor (SWT.COLOR_WHITE));
+			gc.setBackground (display.getSystemColor (SWT.COLOR_YELLOW));
+			gc.fillGradientRectangle (rect.x, rect.y, 1, rect.height, true);
+			gc.dispose ();
+			styledText.setBackgroundImage (newImage);
+			if (oldImage != null) oldImage.dispose ();
+			oldImage = newImage;
+		});
 		shell.setSize(700, 400);
 		shell.open();
 		while (!shell.isDisposed()) {

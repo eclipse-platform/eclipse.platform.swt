@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2004 IBM Corporation and others.
+ * Copyright (c) 2000, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -16,21 +16,18 @@ package org.eclipse.swt.snippets;
  * For a list of all SWT example snippets see
  * http://www.eclipse.org/swt/snippets/
  */
-import java.awt.Frame;
-import java.awt.Graphics;
-import java.awt.Insets;
-import java.awt.image.BufferedImage;
-import java.awt.image.ColorModel;
-import java.awt.image.DirectColorModel;
-import java.awt.image.IndexColorModel;
-import java.awt.image.WritableRaster;
+import java.awt.*;
+import java.awt.image.*;
 
 import org.eclipse.swt.*;
-import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.widgets.*;
 
 public class Snippet156 {
-	
+
 static BufferedImage convertToAWT(ImageData data) {
 	ColorModel colorModel = null;
 	PaletteData palette = data.palette;
@@ -60,7 +57,7 @@ static BufferedImage convertToAWT(ImageData data) {
 			colorModel = new IndexColorModel(data.depth, rgbs.length, red, green, blue, data.transparentPixel);
 		} else {
 			colorModel = new IndexColorModel(data.depth, rgbs.length, red, green, blue);
-		}		
+		}
 		BufferedImage bufferedImage = new BufferedImage(colorModel, colorModel.createCompatibleWritableRaster(data.width, data.height), false, null);
 		WritableRaster raster = bufferedImage.getRaster();
 		int[] pixelArray = new int[1];
@@ -83,14 +80,14 @@ static ImageData convertToSWT(BufferedImage bufferedImage) {
 		for (int y = 0; y < data.height; y++) {
 			for (int x = 0; x < data.width; x++) {
 				int rgb = bufferedImage.getRGB(x, y);
-				int pixel = palette.getPixel(new RGB((rgb >> 16) & 0xFF, (rgb >> 8) & 0xFF, rgb & 0xFF)); 
+				int pixel = palette.getPixel(new RGB((rgb >> 16) & 0xFF, (rgb >> 8) & 0xFF, rgb & 0xFF));
 				data.setPixel(x, y, pixel);
 				if (colorModel.hasAlpha()) {
 					data.setAlpha(x, y, (rgb >> 24) & 0xFF);
 				}
 			}
 		}
-		return data;		
+		return data;
 	} else if (bufferedImage.getColorModel() instanceof IndexColorModel) {
 		IndexColorModel colorModel = (IndexColorModel)bufferedImage.getColorModel();
 		int size = colorModel.getMapSize();
@@ -151,17 +148,14 @@ public static void main(String[] args) {
 	final Image swtImage = new Image(display, data);
 	final BufferedImage awtImage = convertToAWT(data);
 	final Image swtImage2 = new Image(display, convertToSWT(awtImage));
-	shell.addListener(SWT.Paint, new Listener() {
-		@Override
-		public void handleEvent(Event e) {
-			int y = 10;
-			if (swtImage != null) {
-				e.gc.drawImage(swtImage, 10, y);
-				y += swtImage.getBounds().height + 10;
-			}
-			if (swtImage2 != null) {
-				e.gc.drawImage(swtImage2, 10, y);
-			}
+	shell.addListener(SWT.Paint, e -> {
+		int y = 10;
+		if (swtImage != null) {
+			e.gc.drawImage(swtImage, 10, y);
+			y += swtImage.getBounds().height + 10;
+		}
+		if (swtImage2 != null) {
+			e.gc.drawImage(swtImage2, 10, y);
 		}
 	});
 	Frame frame = new Frame() {
@@ -182,7 +176,7 @@ public static void main(String[] args) {
 	Insets insets = frame.getInsets();
 	frame.setLocation(location.x + size.x + 10, location.y);
 	frame.setSize(size.x - (insets.left + insets.right), size.y - (insets.top + insets.bottom));
-	frame.setVisible(true);	
+	frame.setVisible(true);
 	shell.open();
 	while (!shell.isDisposed()) {
 		if (!display.readAndDispatch()) display.sleep();

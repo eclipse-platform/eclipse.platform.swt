@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2004 IBM Corporation and others.
+ * Copyright (c) 2000, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -17,10 +17,10 @@ package org.eclipse.swt.snippets;
  * http://www.eclipse.org/swt/snippets/
  */
 import org.eclipse.swt.*;
-import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.widgets.*;
-import org.eclipse.swt.layout.*;
 import org.eclipse.swt.custom.*;
+import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.layout.*;
+import org.eclipse.swt.widgets.*;
 
 public class Snippet111 {
 
@@ -40,70 +40,61 @@ public static void main (String [] args) {
 	}
 	final TreeItem [] lastItem = new TreeItem [1];
 	final TreeEditor editor = new TreeEditor (tree);
-	tree.addListener (SWT.Selection, new Listener () {
-		@Override
-		public void handleEvent (Event event) {
-			final TreeItem item = (TreeItem) event.item;
-			if (item != null && item == lastItem [0]) {
-				boolean showBorder = true;
-				final Composite composite = new Composite (tree, SWT.NONE);
-				if (showBorder) composite.setBackground (black);
-				final Text text = new Text (composite, SWT.NONE);
-				final int inset = showBorder ? 1 : 0;
-				composite.addListener (SWT.Resize, new Listener () {
-					@Override
-					public void handleEvent (Event e) {
-						Rectangle rect = composite.getClientArea ();
-						text.setBounds (rect.x + inset, rect.y + inset, rect.width - inset * 2, rect.height - inset * 2);
-					}
-				});
-				Listener textListener = new Listener () {
-					@Override
-					public void handleEvent (final Event e) {
-						switch (e.type) {
-							case SWT.FocusOut:
+	tree.addListener (SWT.Selection, event -> {
+		final TreeItem item = (TreeItem) event.item;
+		if (item != null && item == lastItem [0]) {
+			boolean showBorder = true;
+			final Composite composite = new Composite (tree, SWT.NONE);
+			if (showBorder) composite.setBackground (black);
+			final Text text = new Text (composite, SWT.NONE);
+			final int inset = showBorder ? 1 : 0;
+			composite.addListener (SWT.Resize, e1 -> {
+				Rectangle rect1 = composite.getClientArea ();
+				text.setBounds (rect1.x + inset, rect1.y + inset, rect1.width - inset * 2, rect1.height - inset * 2);
+			});
+			Listener textListener = e2 -> {
+				switch (e2.type) {
+					case SWT.FocusOut:
+						item.setText (text.getText ());
+						composite.dispose ();
+						break;
+					case SWT.Verify:
+						String newText = text.getText ();
+						String leftText = newText.substring (0, e2.start);
+						String rightText = newText.substring (e2.end, newText.length ());
+						GC gc = new GC (text);
+						Point size = gc.textExtent (leftText + e2.text + rightText);
+						gc.dispose ();
+						size = text.computeSize (size.x, SWT.DEFAULT);
+						editor.horizontalAlignment = SWT.LEFT;
+						Rectangle itemRect = item.getBounds (), rect2 = tree.getClientArea ();
+						editor.minimumWidth = Math.max (size.x, itemRect.width) + inset * 2;
+						int left = itemRect.x, right = rect2.x + rect2.width;
+						editor.minimumWidth = Math.min (editor.minimumWidth, right - left);
+						editor.minimumHeight = size.y + inset * 2;
+						editor.layout ();
+						break;
+					case SWT.Traverse:
+						switch (e2.detail) {
+							case SWT.TRAVERSE_RETURN:
 								item.setText (text.getText ());
+								//FALL THROUGH
+							case SWT.TRAVERSE_ESCAPE:
 								composite.dispose ();
-								break;
-							case SWT.Verify:
-								String newText = text.getText ();
-								String leftText = newText.substring (0, e.start);
-								String rightText = newText.substring (e.end, newText.length ());
-								GC gc = new GC (text);
-								Point size = gc.textExtent (leftText + e.text + rightText);
-								gc.dispose ();
-								size = text.computeSize (size.x, SWT.DEFAULT);
-								editor.horizontalAlignment = SWT.LEFT;
-								Rectangle itemRect = item.getBounds (), rect = tree.getClientArea ();
-								editor.minimumWidth = Math.max (size.x, itemRect.width) + inset * 2;
-								int left = itemRect.x, right = rect.x + rect.width;
-								editor.minimumWidth = Math.min (editor.minimumWidth, right - left);
-								editor.minimumHeight = size.y + inset * 2;
-								editor.layout ();
-								break;
-							case SWT.Traverse:
-								switch (e.detail) {
-									case SWT.TRAVERSE_RETURN:
-										item.setText (text.getText ());
-										//FALL THROUGH
-									case SWT.TRAVERSE_ESCAPE:
-										composite.dispose ();
-										e.doit = false;
-								}
-								break;
+								e2.doit = false;
 						}
-					}
-				};
-				text.addListener (SWT.FocusOut, textListener);
-				text.addListener (SWT.Traverse, textListener);
-				text.addListener (SWT.Verify, textListener);
-				editor.setEditor (composite, item);
-				text.setText (item.getText ());
-				text.selectAll ();
-				text.setFocus ();
-			}
-			lastItem [0] = item;
+						break;
+				}
+			};
+			text.addListener (SWT.FocusOut, textListener);
+			text.addListener (SWT.Traverse, textListener);
+			text.addListener (SWT.Verify, textListener);
+			editor.setEditor (composite, item);
+			text.setText (item.getText ());
+			text.selectAll ();
+			text.setFocus ();
 		}
+		lastItem [0] = item;
 	});
 	shell.pack ();
 	shell.open ();

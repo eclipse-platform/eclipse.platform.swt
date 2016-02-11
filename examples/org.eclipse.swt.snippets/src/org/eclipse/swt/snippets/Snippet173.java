@@ -12,10 +12,10 @@ package org.eclipse.swt.snippets;
 
 /*
  * Browser snippet: bring up a browser with pop-up blocker
- * 
+ *
  * For a list of all SWT example snippets see
  * http://www.eclipse.org/swt/snippets/
- * 
+ *
  * @since 3.1
  */
 import org.eclipse.swt.*;
@@ -54,16 +54,13 @@ public static void main(String[] args) {
 
 /* register WindowEvent listeners */
 static void initialize(final Display display, Browser browser) {
-	browser.addOpenWindowListener(new OpenWindowListener() {
-		@Override
-		public void open(WindowEvent event) {
-			Shell shell = new Shell(display);
-			shell.setText("New Window");
-			shell.setLayout(new FillLayout());
-			Browser browser = new Browser(shell, BROWSER_STYLE);
-			initialize(display, browser);
-			event.browser = browser;
-		}
+	browser.addOpenWindowListener(event -> {
+		Shell shell = new Shell(display);
+		shell.setText("New Window");
+		shell.setLayout(new FillLayout());
+		Browser browser1 = new Browser(shell, BROWSER_STYLE);
+		initialize(display, browser1);
+		event.browser = browser1;
 	});
 	browser.addVisibilityWindowListener(new VisibilityWindowListener() {
 		@Override
@@ -91,13 +88,10 @@ static void initialize(final Display display, Browser browser) {
 			shell.open();
 		}
 	});
-	browser.addCloseWindowListener(new CloseWindowListener() {
-		@Override
-		public void close(WindowEvent event) {
-			Browser browser = (Browser)event.widget;
-			Shell shell = browser.getShell();
-			shell.close();
-		}
+	browser.addCloseWindowListener(event -> {
+		Browser browser1 = (Browser)event.widget;
+		Shell shell = browser1.getShell();
+		shell.close();
 	});
 }
 }

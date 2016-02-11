@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -12,10 +12,10 @@ package org.eclipse.swt.snippets;
 
 /*
  * Allow user to reorder columns by dragging or programmatically.
- * 
+ *
  * For a list of all SWT example snippets see
  * http://www.eclipse.org/swt/snippets/
- * 
+ *
  * @since 3.1
  */
 import org.eclipse.swt.*;
@@ -46,12 +46,7 @@ public class Snippet181 {
 			String[] text = new String[]{i+" 0", i+" 1", i+" 2", i+" 3", i+" 4"};
 			item.setText(text);
 		}
-		Listener listener = new Listener() {
-			@Override
-			public void handleEvent(Event e) {
-				System.out.println("Move "+e.widget);
-			}
-		};
+		Listener listener = e -> System.out.println("Move "+e.widget);
 		TableColumn[] columns = table.getColumns();
 		for (int i = 0; i < columns.length; i++) {
 			columns[i].pack();
@@ -60,17 +55,14 @@ public class Snippet181 {
 		}
 		Button b = new Button(shell, SWT.PUSH);
 		b.setText("invert column order");
-		b.addListener(SWT.Selection, new Listener() {
-			@Override
-			public void handleEvent(Event e) {
-				int[] order = table.getColumnOrder();
-				for (int i = 0; i < order.length / 2; i++) {
-					int temp = order[i];
-					order[i] = order[order.length - i - 1];
-					order[order.length - i - 1] = temp;
-				}
-				table.setColumnOrder(order);
+		b.addListener(SWT.Selection, e -> {
+			int[] order = table.getColumnOrder();
+			for (int i = 0; i < order.length / 2; i++) {
+				int temp = order[i];
+				order[i] = order[order.length - i - 1];
+				order[order.length - i - 1] = temp;
 			}
+			table.setColumnOrder(order);
 		});
 		shell.pack();
 		shell.open();

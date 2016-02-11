@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2006 IBM Corporation and others.
+ * Copyright (c) 2000, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -9,7 +9,7 @@
  *     IBM Corporation - initial API and implementation
  *******************************************************************************/
 package org.eclipse.swt.snippets;
-/* 
+/*
  * Tree example snippet: Images on the right side of the TreeItem
  *
  * For a detailed explanation of this snippet see
@@ -17,7 +17,7 @@ package org.eclipse.swt.snippets;
  *
  * For a list of all SWT example snippets see
  * http://www.eclipse.org/swt/snippets/
- * 
+ *
  * @since 3.2
  */
 
@@ -25,8 +25,8 @@ import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.widgets.*;
 
-public class Snippet220 {	
-	
+public class Snippet220 {
+
 public static void main(String [] args) {
 	Display display = new Display();
 	Shell shell = new Shell(display);
@@ -55,28 +55,22 @@ public static void main(String [] args) {
 	 * NOTE: MeasureItem and PaintItem are called repeatedly.  Therefore it is
 	 * critical for performance that these methods be as efficient as possible.
 	 */
-	tree.addListener(SWT.MeasureItem, new Listener() {
-		@Override
-		public void handleEvent(Event event) {
-			TreeItem item = (TreeItem)event.item;
-			Image trailingImage = (Image)item.getData();
-			if (trailingImage != null) {
-				event.width += trailingImage.getBounds().width + IMAGE_MARGIN;
-			}
+	tree.addListener(SWT.MeasureItem, event -> {
+		TreeItem item1 = (TreeItem)event.item;
+		Image trailingImage = (Image)item1.getData();
+		if (trailingImage != null) {
+			event.width += trailingImage.getBounds().width + IMAGE_MARGIN;
 		}
 	});
-	tree.addListener(SWT.PaintItem, new Listener() {
-		@Override
-		public void handleEvent(Event event) {
-			TreeItem item = (TreeItem)event.item;
-			Image trailingImage = (Image)item.getData();
-			if (trailingImage != null) {
-				int x = event.x + event.width + IMAGE_MARGIN;
-				int itemHeight = tree.getItemHeight();
-				int imageHeight = trailingImage.getBounds().height;
-				int y = event.y + (itemHeight - imageHeight) / 2;
-				event.gc.drawImage(trailingImage, x, y);
-			}
+	tree.addListener(SWT.PaintItem, event -> {
+		TreeItem item1 = (TreeItem)event.item;
+		Image trailingImage = (Image)item1.getData();
+		if (trailingImage != null) {
+			int x = event.x + event.width + IMAGE_MARGIN;
+			int itemHeight = tree.getItemHeight();
+			int imageHeight = trailingImage.getBounds().height;
+			int y = event.y + (itemHeight - imageHeight) / 2;
+			event.gc.drawImage(trailingImage, x, y);
 		}
 	});
 

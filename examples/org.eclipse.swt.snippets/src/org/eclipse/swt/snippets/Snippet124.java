@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2004 IBM Corporation and others.
+ * Copyright (c) 2000, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -9,7 +9,7 @@
  *     IBM Corporation - initial API and implementation
  *******************************************************************************/
 package org.eclipse.swt.snippets;
- 
+
 /*
  * TableEditor example snippet: edit a cell in a table (in place, fancy)
  *
@@ -17,10 +17,10 @@ package org.eclipse.swt.snippets;
  * http://www.eclipse.org/swt/snippets/
  */
 import org.eclipse.swt.*;
-import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.widgets.*;
-import org.eclipse.swt.layout.*;
 import org.eclipse.swt.custom.*;
+import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.layout.*;
+import org.eclipse.swt.widgets.*;
 
 public class Snippet124 {
 public static void main (String[] args) {
@@ -40,56 +40,50 @@ public static void main (String[] args) {
 	final TableEditor editor = new TableEditor (table);
 	editor.horizontalAlignment = SWT.LEFT;
 	editor.grabHorizontal = true;
-	table.addListener (SWT.MouseDown, new Listener () {
-		@Override
-		public void handleEvent (Event event) {
-			Rectangle clientArea = table.getClientArea ();
-			Point pt = new Point (event.x, event.y);
-			int index = table.getTopIndex ();
-			while (index < table.getItemCount ()) {
-				boolean visible = false;
-				final TableItem item = table.getItem (index);
-				for (int i=0; i<table.getColumnCount (); i++) {
-					Rectangle rect = item.getBounds (i);
-					if (rect.contains (pt)) {
-						final int column = i;
-						final Text text = new Text (table, SWT.NONE);
-						Listener textListener = new Listener () {
-							@Override
-							public void handleEvent (final Event e) {
-								switch (e.type) {
-									case SWT.FocusOut:
+	table.addListener (SWT.MouseDown, event -> {
+		Rectangle clientArea = table.getClientArea ();
+		Point pt = new Point (event.x, event.y);
+		int index = table.getTopIndex ();
+		while (index < table.getItemCount ()) {
+			boolean visible = false;
+			final TableItem item = table.getItem (index);
+			for (int i=0; i<table.getColumnCount (); i++) {
+				Rectangle rect = item.getBounds (i);
+				if (rect.contains (pt)) {
+					final int column = i;
+					final Text text = new Text (table, SWT.NONE);
+					Listener textListener = e -> {
+						switch (e.type) {
+							case SWT.FocusOut:
+								item.setText (column, text.getText ());
+								text.dispose ();
+								break;
+							case SWT.Traverse:
+								switch (e.detail) {
+									case SWT.TRAVERSE_RETURN:
 										item.setText (column, text.getText ());
+										//FALL THROUGH
+									case SWT.TRAVERSE_ESCAPE:
 										text.dispose ();
-										break;
-									case SWT.Traverse:
-										switch (e.detail) {
-											case SWT.TRAVERSE_RETURN:
-												item.setText (column, text.getText ());
-												//FALL THROUGH
-											case SWT.TRAVERSE_ESCAPE:
-												text.dispose ();
-												e.doit = false;
-										}
-										break;
+										e.doit = false;
 								}
-							}
-						};
-						text.addListener (SWT.FocusOut, textListener);
-						text.addListener (SWT.Traverse, textListener);
-						editor.setEditor (text, item, i);
-						text.setText (item.getText (i));
-						text.selectAll ();
-						text.setFocus ();
-						return;
-					}
-					if (!visible && rect.intersects (clientArea)) {
-						visible = true;
-					}
+								break;
+						}
+					};
+					text.addListener (SWT.FocusOut, textListener);
+					text.addListener (SWT.Traverse, textListener);
+					editor.setEditor (text, item, i);
+					text.setText (item.getText (i));
+					text.selectAll ();
+					text.setFocus ();
+					return;
 				}
-				if (!visible) return;
-				index++;
+				if (!visible && rect.intersects (clientArea)) {
+					visible = true;
+				}
 			}
+			if (!visible) return;
+			index++;
 		}
 	});
 	shell.pack ();

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2004 IBM Corporation and others.
+ * Copyright (c) 2000, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -9,13 +9,13 @@
  *     IBM Corporation - initial API and implementation
  *******************************************************************************/
 package org.eclipse.swt.snippets;
- 
+
 /*
  * Cursor example snippet: create a color cursor from an image file
  *
  * For a list of all SWT example snippets see
  * http://www.eclipse.org/swt/snippets/
- * 
+ *
  * @since 3.0
  */
 import org.eclipse.swt.*;
@@ -33,19 +33,16 @@ public static void main (String [] args) {
 	button.setText("Change cursor");
 	Point size = button.computeSize(SWT.DEFAULT, SWT.DEFAULT);
 	button.setSize(size);
-	button.addListener(SWT.Selection, new Listener() {
-		@Override
-		public void handleEvent(Event e) {
-			FileDialog dialog = new FileDialog(shell);
-			dialog.setFilterExtensions(new String[] {"*.ico", "*.gif", "*.*"});
-			String name = dialog.open();
-			if (name == null) return;
-			ImageData image = new ImageData(name);
-			Cursor oldCursor = cursor[0];
-			cursor[0] = new Cursor(display, image, 0, 0);
-			shell.setCursor(cursor[0]);
-			if (oldCursor != null) oldCursor.dispose();
-		}
+	button.addListener(SWT.Selection, e -> {
+		FileDialog dialog = new FileDialog(shell);
+		dialog.setFilterExtensions(new String[] {"*.ico", "*.gif", "*.*"});
+		String name = dialog.open();
+		if (name == null) return;
+		ImageData image = new ImageData(name);
+		Cursor oldCursor = cursor[0];
+		cursor[0] = new Cursor(display, image, 0, 0);
+		shell.setCursor(cursor[0]);
+		if (oldCursor != null) oldCursor.dispose();
 	});
 	shell.open();
 	while (!shell.isDisposed()) {

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2004 IBM Corporation and others.
+ * Copyright (c) 2000, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -15,13 +15,13 @@ package org.eclipse.swt.snippets;
  *
  * For a list of all SWT example snippets see
  * http://www.eclipse.org/swt/snippets/
- * 
+ *
  * @since 3.0
  */
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.layout.*;
+import org.eclipse.swt.widgets.*;
 
 public class Snippet150 {
 
@@ -58,12 +58,7 @@ public static void main(String[] args) {
     coolData.right = new FormAttachment(100);
     coolData.top = new FormAttachment(0);
     coolBar.setLayoutData(coolData);
-    coolBar.addListener(SWT.Resize, new Listener() {
-        @Override
-		public void handleEvent(Event event) {
-            shell.layout();
-        }
-    });
+    coolBar.addListener(SWT.Resize, event -> shell.layout());
     FormData textData = new FormData();
     textData.left = new FormAttachment(0);
     textData.right = new FormAttachment(100);

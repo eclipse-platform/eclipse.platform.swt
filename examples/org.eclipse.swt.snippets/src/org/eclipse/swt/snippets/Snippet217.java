@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -12,7 +12,6 @@ package org.eclipse.swt.snippets;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.custom.*;
-import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.layout.*;
 import org.eclipse.swt.widgets.*;
@@ -22,17 +21,17 @@ import org.eclipse.swt.widgets.*;
  *
  * For a list of all SWT example snippets see
  * http://www.eclipse.org/swt/snippets/
- * 
+ *
  * @since 3.2
  */
 public class Snippet217 {
-	
+
 	static StyledText styledText;
-	static String text = 
+	static String text =
 		"This snippet shows how to embed widgets in a StyledText.\n"+
 		"Here is one: \uFFFC, and here is another: \uFFFC.";
 	static int MARGIN = 5;
-	
+
 	static void addControl(Control control, int offset) {
 		StyleRange style = new StyleRange ();
 		style.start = offset;
@@ -43,9 +42,9 @@ public class Snippet217 {
 		int ascent = 2*rect.height/3;
 		int descent = rect.height - ascent;
 		style.metrics = new GlyphMetrics(ascent + MARGIN, descent + MARGIN, rect.width + 2*MARGIN);
-		styledText.setStyleRange(style);	
+		styledText.setStyleRange(style);
 	}
-	
+
 	public static void main(String [] args) {
 		final Display display = new Display();
 		Font font = new Font(display, "Tahoma", 16, SWT.NORMAL);
@@ -67,37 +66,31 @@ public class Snippet217 {
 		offset = text.indexOf('\uFFFC', offset + 1);
 		addControl(combo, offset);
 		combo.setLocation(styledText.getLocationAtOffset(offset));
-		
+
 		// use a verify listener to dispose the controls
-		styledText.addVerifyListener(new VerifyListener()  {
-			@Override
-			public void verifyText(VerifyEvent event) {
-				if (event.start == event.end) return;
-				String text = styledText.getText(event.start, event.end - 1);
-				int index = text.indexOf('\uFFFC');
-				while (index != -1) {
-					StyleRange style = styledText.getStyleRangeAtOffset(event.start + index);
-					if (style != null) {
-						Control control = (Control)style.data;
-						if (control != null) control.dispose();
-					}
-					index = text.indexOf('\uFFFC', index + 1);
+		styledText.addVerifyListener(event -> {
+			if (event.start == event.end) return;
+			String text = styledText.getText(event.start, event.end - 1);
+			int index = text.indexOf('\uFFFC');
+			while (index != -1) {
+				StyleRange style = styledText.getStyleRangeAtOffset(event.start + index);
+				if (style != null) {
+					Control control = (Control)style.data;
+					if (control != null) control.dispose();
 				}
+				index = text.indexOf('\uFFFC', index + 1);
 			}
 		});
-		
+
 		// reposition widgets on paint event
-		styledText.addPaintObjectListener(new PaintObjectListener() {
-			@Override
-			public void paintObject(PaintObjectEvent event) {
-				Control control = (Control)event.style.data;
-				Point pt = control.getSize();
-				int x = event.x + MARGIN;
-				int y = event.y + event.ascent - 2*pt.y/3;
-				control.setLocation(x, y);
-			}
+		styledText.addPaintObjectListener(event -> {
+			Control control = (Control)event.style.data;
+			Point pt = control.getSize();
+			int x = event.x + MARGIN;
+			int y = event.y + event.ascent - 2*pt.y/3;
+			control.setLocation(x, y);
 		});
-			
+
 		shell.setSize(400, 400);
 		shell.open();
 		while (!shell.isDisposed()) {

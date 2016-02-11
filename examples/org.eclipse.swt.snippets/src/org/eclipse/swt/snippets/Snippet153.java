@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2004 IBM Corporation and others.
+ * Copyright (c) 2000, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -17,12 +17,11 @@ package org.eclipse.swt.snippets;
  * http://www.eclipse.org/swt/snippets/
  */
 import org.eclipse.swt.*;
-import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.widgets.*;
 
 public class Snippet153 {
-	
+
 static String statusText = "";
 public static void main(String[] args) {
     final Display display = new Display();
@@ -35,20 +34,17 @@ public static void main(String[] args) {
     new ToolItem(bar, SWT.NONE).setText("item 1");
     new ToolItem(bar, SWT.NONE).setText("item 2");
     new ToolItem(bar, SWT.NONE).setText("item 3");
-    bar.addMouseMoveListener(new MouseMoveListener() {
-        @Override
-		public void mouseMove(MouseEvent e) {
-            ToolItem item = bar.getItem(new Point(e.x, e.y));
-            String name = "";
-            if (item != null) {
-                name = item.getText();
-            }
-            if (!statusText.equals(name)) {
-                statusLine.setText(name);
-                statusText = name;
-            }
-        }
-    });
+    bar.addMouseMoveListener(e -> {
+	    ToolItem item = bar.getItem(new Point(e.x, e.y));
+	    String name = "";
+	    if (item != null) {
+	        name = item.getText();
+	    }
+	    if (!statusText.equals(name)) {
+	        statusLine.setText(name);
+	        statusText = name;
+	    }
+	});
     shell.open();
     while (!shell.isDisposed()) {
         if (!display.readAndDispatch()) display.sleep();
