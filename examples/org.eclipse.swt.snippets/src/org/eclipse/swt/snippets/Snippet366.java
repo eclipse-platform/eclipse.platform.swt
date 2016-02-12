@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015 Red Hat Inc.
+ * Copyright (c) 2015, 2016 Red Hat Inc.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -28,7 +28,7 @@ public class Snippet366 {
 
 	public static void main (String [] args) {
 		shell.setLayout (new RowLayout ());
-		
+
 		makeArrowGroup ();
 		makeAlignGroup ();
 		makeOrientationGroup ();
@@ -49,22 +49,18 @@ public class Snippet366 {
 
 		final AtomicInteger prevDir = new AtomicInteger (0);
 		final Button alignmentButton = new Button (orientationGroup, SWT.ARROW | SWT.RIGHT);
-		alignmentButton.addListener (SWT.MouseDown, new Listener() {
-
-			@Override
-			public void handleEvent (Event event) {
-				switch (prevDir.get ()) {
-					case 0:
-						alignmentButton.setOrientation (SWT.LEFT_TO_RIGHT);
-						prevDir.set (1);
-						break;
-					case 1:
-						alignmentButton.setOrientation (SWT.RIGHT_TO_LEFT);
-						prevDir.set (0);
-						break;
-					default:
-						break;
-				}
+		alignmentButton.addListener (SWT.MouseDown, event -> {
+			switch (prevDir.get ()) {
+				case 0:
+					alignmentButton.setOrientation (SWT.LEFT_TO_RIGHT);
+					prevDir.set (1);
+					break;
+				case 1:
+					alignmentButton.setOrientation (SWT.RIGHT_TO_LEFT);
+					prevDir.set (0);
+					break;
+				default:
+					break;
 			}
 		});
 	}
@@ -76,29 +72,25 @@ public class Snippet366 {
 
 		final AtomicInteger prevDir = new AtomicInteger (0);
 		final Button alignmentButton = new Button (alignGroup, SWT.ARROW | SWT.UP);
-		alignmentButton.addListener (SWT.MouseDown, new Listener() {
-
-			@Override
-			public void handleEvent (Event event) {
-				switch (prevDir.get ()) {
-					case 0:
-						alignmentButton.setAlignment (SWT.RIGHT);
-						prevDir.set (1);
-						break;
-					case 1:
-						alignmentButton.setAlignment (SWT.DOWN);
-						prevDir.set (2);
-						break;
-					case 2:
-						alignmentButton.setAlignment (SWT.LEFT);
-						prevDir.set (3);
-						break;
-					case 3:
-						alignmentButton.setAlignment (SWT.UP);
-						prevDir.set (0);
-					default:
-						break;
-				}
+		alignmentButton.addListener (SWT.MouseDown, event -> {
+			switch (prevDir.get ()) {
+				case 0:
+					alignmentButton.setAlignment (SWT.RIGHT);
+					prevDir.set (1);
+					break;
+				case 1:
+					alignmentButton.setAlignment (SWT.DOWN);
+					prevDir.set (2);
+					break;
+				case 2:
+					alignmentButton.setAlignment (SWT.LEFT);
+					prevDir.set (3);
+					break;
+				case 3:
+					alignmentButton.setAlignment (SWT.UP);
+					prevDir.set (0);
+				default:
+					break;
 			}
 		});
 	}

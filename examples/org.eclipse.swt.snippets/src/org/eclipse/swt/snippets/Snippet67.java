@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2004 IBM Corporation and others.
+ * Copyright (c) 2000, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -34,16 +34,13 @@ public static void main (String [] args) {
 		item.setText ("Item " + i);
 	}
 	final ToolItem item = new ToolItem (toolBar, SWT.DROP_DOWN);
-	item.addListener (SWT.Selection, new Listener () {
-		@Override
-		public void handleEvent (Event event) {
-			if (event.detail == SWT.ARROW) {
-				Rectangle rect = item.getBounds ();
-				Point pt = new Point (rect.x, rect.y + rect.height);
-				pt = toolBar.toDisplay (pt);
-				menu.setLocation (pt.x, pt.y);
-				menu.setVisible (true);
-			}
+	item.addListener (SWT.Selection, event -> {
+		if (event.detail == SWT.ARROW) {
+			Rectangle rect = item.getBounds ();
+			Point pt = new Point (rect.x, rect.y + rect.height);
+			pt = toolBar.toDisplay (pt);
+			menu.setLocation (pt.x, pt.y);
+			menu.setVisible (true);
 		}
 	});
 	toolBar.pack ();
@@ -55,4 +52,4 @@ public static void main (String [] args) {
 	menu.dispose ();
 	display.dispose ();
 }
-} 
+}

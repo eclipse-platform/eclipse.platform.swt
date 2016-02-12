@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011 IBM Corporation and others.
+ * Copyright (c) 2011, 2016 IBM Corporation and others.
  * All rights reserved. This Example Content is intended to demonstrate
  * usage of Eclipse technology. It is provided to you under the terms and
  * conditions of the Eclipse Distribution License v1.0 which is available
@@ -29,38 +29,35 @@ public class Snippet356 {
 		FillLayout layout = new FillLayout();
 		layout.marginHeight = layout.marginWidth = 10;
 		shell.setLayout(layout);
-		
+
 		String string = "This is sample text with a link and some other link here.";
 		final StyledText styledText = new StyledText (shell, SWT.MULTI | SWT.BORDER);
 		styledText.setText(string);
-		
+
 		String link1 = "link";
 		String link2 = "here";
 		StyleRange style = new StyleRange();
 		style.underline = true;
 		style.underlineStyle = SWT.UNDERLINE_LINK;
-		
-		int[] ranges = {string.indexOf(link1), link1.length(), string.indexOf(link2), link2.length()}; 
+
+		int[] ranges = {string.indexOf(link1), link1.length(), string.indexOf(link2), link2.length()};
 		StyleRange[] styles = {style, style};
 		styledText.setStyleRanges(ranges, styles);
-		
-		styledText.addListener(SWT.MouseDown, new Listener() {
-			@Override
-			public void handleEvent(Event event) {
-				// It is up to the application to determine when and how a link should be activated.
-				// In this snippet links are activated on mouse down when the control key is held down 
-				if ((event.stateMask & SWT.MOD1) != 0) {
-					try {
-						int offset = styledText.getOffsetAtLocation(new Point (event.x, event.y));
-						StyleRange style = styledText.getStyleRangeAtOffset(offset);
-						if (style != null && style.underline && style.underlineStyle == SWT.UNDERLINE_LINK) {
-							System.out.println("Click on a Link");
-						}
-					} catch (IllegalArgumentException e) {
-						// no character under event.x, event.y
+
+		styledText.addListener(SWT.MouseDown, event -> {
+			// It is up to the application to determine when and how a link should be activated.
+			// In this snippet links are activated on mouse down when the control key is held down
+			if ((event.stateMask & SWT.MOD1) != 0) {
+				try {
+					int offset = styledText.getOffsetAtLocation(new Point (event.x, event.y));
+					StyleRange style1 = styledText.getStyleRangeAtOffset(offset);
+					if (style1 != null && style1.underline && style1.underlineStyle == SWT.UNDERLINE_LINK) {
+						System.out.println("Click on a Link");
 					}
-					
+				} catch (IllegalArgumentException e) {
+					// no character under event.x, event.y
 				}
+
 			}
 		});
 		shell.setSize (600, 400);

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2009 IBM Corporation and others.
+ * Copyright (c) 2009, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -15,7 +15,7 @@ package org.eclipse.swt.snippets;
  *
  * For a list of all SWT example snippets see
  * http://www.eclipse.org/swt/snippets/
- * 
+ *
  * @since 3.5
  */
 import org.eclipse.swt.*;
@@ -36,37 +36,18 @@ public class Snippet314 {
 		MenuItem saveItem = new MenuItem (fileMenu, SWT.PUSH);
 		saveItem.setText ("&Save\tCtrl+S");
 		saveItem.setAccelerator (SWT.MOD1 + 'S');
-		saveItem.addListener (SWT.Selection, new Listener () {
-			@Override
-			public void handleEvent (Event e) {
-				//SAVE CODE GOES HERE ...
-				shell.setModified (false);
-			}
-		});
+		saveItem.addListener (SWT.Selection, e -> shell.setModified (false));
 		MenuItem exitItem =  new MenuItem (fileMenu, SWT.PUSH);
 		exitItem.setText ("Exit");
-		exitItem.addListener (SWT.Selection, new Listener () {
-			@Override
-			public void handleEvent (Event e) {
-				shell.close ();
-			}
-		});
+		exitItem.addListener (SWT.Selection, e -> shell.close ());
 		Text text = new Text (shell, SWT.H_SCROLL | SWT.V_SCROLL | SWT.BORDER);
-		text.addListener (SWT.Modify, new Listener () {
-			@Override
-			public void handleEvent (Event e) {
-				shell.setModified (true);
-			}
-		});
-		shell.addListener (SWT.Close, new Listener () {
-			@Override
-			public void handleEvent (Event e) {
-				if (shell.getModified()) {
-					MessageBox box = new MessageBox (shell, SWT.PRIMARY_MODAL | SWT.OK | SWT.CANCEL);
-					box.setText (shell.getText ());
-					box.setMessage ("You have unsaved changes, do you want to exit?");
-					e.doit = box.open () == SWT.OK;
-				}
+		text.addListener (SWT.Modify, e -> shell.setModified (true));
+		shell.addListener (SWT.Close, e -> {
+			if (shell.getModified()) {
+				MessageBox box = new MessageBox (shell, SWT.PRIMARY_MODAL | SWT.OK | SWT.CANCEL);
+				box.setText (shell.getText ());
+				box.setMessage ("You have unsaved changes, do you want to exit?");
+				e.doit = box.open () == SWT.OK;
 			}
 		});
 		shell.setLayout (new FillLayout());

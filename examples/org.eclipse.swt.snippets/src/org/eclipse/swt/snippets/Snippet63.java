@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2004 IBM Corporation and others.
+ * Copyright (c) 2000, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -17,8 +17,8 @@ package org.eclipse.swt.snippets;
  * http://www.eclipse.org/swt/snippets/
  */
 import org.eclipse.swt.*;
-import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.layout.*;
+import org.eclipse.swt.widgets.*;
 
 public class Snippet63 {
 
@@ -34,12 +34,9 @@ public static void main (String [] args) {
 	ok.setText ("OK");
 	Button cancel = new Button (dialog, SWT.PUSH);
 	cancel.setText ("Cancel");
-	Listener listener =new Listener () {
-		@Override
-		public void handleEvent (Event event) {
-			result [0] = event.widget == ok;
-			dialog.close ();
-		}
+	Listener listener =event -> {
+		result [0] = event.widget == ok;
+		dialog.close ();
 	};
 	ok.addListener (SWT.Selection, listener);
 	cancel.addListener (SWT.Selection, listener);
@@ -55,4 +52,4 @@ public static void main (String [] args) {
 	}
 	display.dispose ();
 }
-} 
+}

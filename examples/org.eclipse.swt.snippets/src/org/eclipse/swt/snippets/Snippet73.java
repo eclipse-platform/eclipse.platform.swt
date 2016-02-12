@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2004 IBM Corporation and others.
+ * Copyright (c) 2000, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -17,7 +17,7 @@ package org.eclipse.swt.snippets;
  * http://www.eclipse.org/swt/snippets/
  */
 import org.eclipse.swt.*;
-import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.widgets.*;
 
 public class Snippet73 {
@@ -34,20 +34,17 @@ public static void main (String [] args) {
 		MenuItem menuItem = new MenuItem (menu, SWT.PUSH);
 		menuItem.setText (treeItem.getText ());
 	}
-	menu.addListener (SWT.Show, new Listener () {
-		@Override
-		public void handleEvent (Event event) {
-			MenuItem [] menuItems = menu.getItems ();
-			TreeItem [] treeItems = tree.getSelection ();
-			for (int i=0; i<menuItems.length; i++) {
-				String text = menuItems [i].getText ();
-				int index = 0;
-				while (index<treeItems.length) {
-					if (treeItems [index].getText ().equals (text)) break;
-					index++;
-				}
-				menuItems [i].setEnabled (index != treeItems.length);
+	menu.addListener (SWT.Show, event -> {
+		MenuItem [] menuItems = menu.getItems ();
+		TreeItem [] treeItems = tree.getSelection ();
+		for (int i=0; i<menuItems.length; i++) {
+			String text = menuItems [i].getText ();
+			int index = 0;
+			while (index<treeItems.length) {
+				if (treeItems [index].getText ().equals (text)) break;
+				index++;
 			}
+			menuItems [i].setEnabled (index != treeItems.length);
 		}
 	});
 	Rectangle clientArea = shell.getClientArea ();
@@ -59,4 +56,4 @@ public static void main (String [] args) {
 	}
 	display.dispose ();
 }
-} 
+}

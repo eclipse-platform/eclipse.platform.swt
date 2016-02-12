@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2004 IBM Corporation and others.
+ * Copyright (c) 2000, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -9,7 +9,7 @@
  *     IBM Corporation - initial API and implementation
  *******************************************************************************/
 package org.eclipse.swt.snippets;
- 
+
 /*
  * Table example snippet: remove selected items (using popup menu)
  *
@@ -17,7 +17,7 @@ package org.eclipse.swt.snippets;
  * http://www.eclipse.org/swt/snippets/
  */
 import org.eclipse.swt.*;
-import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.widgets.*;
 
 public class Snippet53 {
@@ -36,12 +36,7 @@ public static void main (String [] args) {
 	table.setMenu (menu);
 	MenuItem item = new MenuItem (menu, SWT.PUSH);
 	item.setText ("Delete Selection");
-	item.addListener (SWT.Selection, new Listener () {
-		@Override
-		public void handleEvent (Event event) {
-			table.remove (table.getSelectionIndices ());
-		}
-	});
+	item.addListener (SWT.Selection, event -> table.remove (table.getSelectionIndices ()));
 	shell.pack ();
 	shell.open ();
 	while (!shell.isDisposed ()) {
@@ -49,4 +44,4 @@ public static void main (String [] args) {
 	}
 	display.dispose ();
 }
-} 
+}

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2009 IBM Corporation and others.
+ * Copyright (c) 2009, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -15,7 +15,7 @@ package org.eclipse.swt.snippets;
  *
  * For a list of all SWT example snippets see
  * http://www.eclipse.org/swt/snippets/
- * 
+ *
  * @since 3.5
  */
 
@@ -31,18 +31,15 @@ public class Snippet309 {
 		shell.setLayout(new GridLayout(1, true));
 		Text text;
 
-		Listener listener = new Listener() {
-			@Override
-			public void handleEvent(Event event) {
-				Text t = (Text) event.widget;
-				String msg = t.getMessage();
-				if (event.detail == SWT.ICON_CANCEL) {
-					System.out.println("Cancel on " + msg);
-				} else if (event.detail == SWT.ICON_SEARCH) {
-					System.out.println("ICON on " + msg);
-				} else {
-					System.out.println("Default selection on " + msg);
-				}
+		Listener listener = event -> {
+			Text t = (Text) event.widget;
+			String msg = t.getMessage();
+			if (event.detail == SWT.ICON_CANCEL) {
+				System.out.println("Cancel on " + msg);
+			} else if (event.detail == SWT.ICON_SEARCH) {
+				System.out.println("ICON on " + msg);
+			} else {
+				System.out.println("Default selection on " + msg);
 			}
 		};
 

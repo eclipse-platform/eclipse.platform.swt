@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2009 IBM Corporation and others.
+ * Copyright (c) 2000, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -12,16 +12,16 @@ package org.eclipse.swt.snippets;
 
 /*
  * Browser example snippet: Send custom headers and post data with HTTP requests
- * 
+ *
  * For a list of all SWT example snippets see
  * http://www.eclipse.org/swt/snippets/
- * 
+ *
  * @since 3.6
  */
 import org.eclipse.swt.*;
-import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.browser.*;
 import org.eclipse.swt.layout.*;
+import org.eclipse.swt.widgets.*;
 
 public class Snippet330 {
 
@@ -47,29 +47,19 @@ public static void main(String [] args) {
 	data = new GridData();
 	data.horizontalAlignment = GridData.FILL;
 	headersButton.setLayoutData(data);
-	headersButton.addListener(SWT.Selection, new Listener() {
-		@Override
-		public void handleEvent(Event event) {
-			browser.setUrl(
-				"http://www.ericgiguere.com/tools/http-header-viewer.html",
-				null,
-				new String[] {"User-agent: SWT Browser","Custom-header: this is just a demo"});
-		}
-	});
+	headersButton.addListener(SWT.Selection, event -> browser.setUrl(
+		"http://www.ericgiguere.com/tools/http-header-viewer.html",
+		null,
+		new String[] {"User-agent: SWT Browser","Custom-header: this is just a demo"}));
 	Button postDataButton = new Button(shell, SWT.PUSH);
 	postDataButton.setText("Send post data");
 	data = new GridData();
 	data.horizontalAlignment = GridData.FILL;
 	postDataButton.setLayoutData(data);
-	postDataButton.addListener(SWT.Selection, new Listener() {
-		@Override
-		public void handleEvent(Event event) {
-			browser.setUrl(
-				"https://bugs.eclipse.org/bugs/buglist.cgi",
-				"emailassigned_to1=1&bug_severity=enhancement&bug_status=NEW&email1=platform-swt-inbox&emailtype1=substring",
-				null);
-		}
-	});
+	postDataButton.addListener(SWT.Selection, event -> browser.setUrl(
+		"https://bugs.eclipse.org/bugs/buglist.cgi",
+		"emailassigned_to1=1&bug_severity=enhancement&bug_status=NEW&email1=platform-swt-inbox&emailtype1=substring",
+		null));
 
 	shell.setBounds(10,10,600,600);
 	shell.open();

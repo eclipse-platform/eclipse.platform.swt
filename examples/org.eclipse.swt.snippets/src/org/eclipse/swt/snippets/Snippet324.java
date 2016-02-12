@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2009 IBM Corporation and others.
+ * Copyright (c) 2000, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -9,20 +9,20 @@
  *     IBM Corporation - initial API and implementation
  *******************************************************************************/
 package org.eclipse.swt.snippets;
- 
+
 /*
  * Control example snippet: print mouse events (all)
  *
  * For a list of all SWT example snippets see
  * http://www.eclipse.org/swt/snippets/
- * 
+ *
  * @since 3.1
  */
 import org.eclipse.swt.*;
 import org.eclipse.swt.widgets.*;
 
 public class Snippet324 {
-	
+
 	static String stateMask (int stateMask) {
 		String string = "[";
 		if ((stateMask & SWT.CTRL) != 0) string += " CTRL";
@@ -35,35 +35,32 @@ public class Snippet324 {
 		if ((stateMask & SWT.BUTTON4) != 0) string += " BUTTON4";
 		if ((stateMask & SWT.BUTTON5) != 0) string += " BUTTON5";
 		return string + "], ";
-	}	
+	}
 
 	public static void main (String [] args) {
 		Display display = new Display ();
 		final Shell shell = new Shell (display);
-		Listener listener = new Listener () {
-			@Override
-			public void handleEvent (Event e) {
-				String string = "Unknown";
-				switch (e.type) {
-					case SWT.MouseDoubleClick: string = "DOUBLE-CLICK"; break;
-					case SWT.MouseDown: string = "DOWN"; break;
-					case SWT.MouseMove: string = "MOVE"; break;
-					case SWT.MouseUp: string = "UP"; break;
-					case SWT.MouseEnter: string = "ENTER"; break;
-					case SWT.MouseExit: string = "EXIT"; break;
-					case SWT.MouseVerticalWheel: string = "WHEEL VERTICAL"; break;
-					case SWT.MouseHorizontalWheel: string = "WHEEL HORIZONTAL"; break;
-				}
-				string += " - button=" + e.button + ", ";
-				string += "stateMask=0x" + Integer.toHexString (e.stateMask) + stateMask(e.stateMask);
-				string += "location=(" + e.x + ", " + e.y + "), ";
-				if (e.type == SWT.MouseVerticalWheel) {
-					string += "detail=";
-					string += e.detail == SWT.SCROLL_PAGE ? "SCROLL_PAGE, " : "SCROLL_LINE, ";  
-				}
-				string += "count=" + e.count + ", widget=" + e.widget;
-				System.out.println (string);
+		Listener listener = e -> {
+			String string = "Unknown";
+			switch (e.type) {
+				case SWT.MouseDoubleClick: string = "DOUBLE-CLICK"; break;
+				case SWT.MouseDown: string = "DOWN"; break;
+				case SWT.MouseMove: string = "MOVE"; break;
+				case SWT.MouseUp: string = "UP"; break;
+				case SWT.MouseEnter: string = "ENTER"; break;
+				case SWT.MouseExit: string = "EXIT"; break;
+				case SWT.MouseVerticalWheel: string = "WHEEL VERTICAL"; break;
+				case SWT.MouseHorizontalWheel: string = "WHEEL HORIZONTAL"; break;
 			}
+			string += " - button=" + e.button + ", ";
+			string += "stateMask=0x" + Integer.toHexString (e.stateMask) + stateMask(e.stateMask);
+			string += "location=(" + e.x + ", " + e.y + "), ";
+			if (e.type == SWT.MouseVerticalWheel) {
+				string += "detail=";
+				string += e.detail == SWT.SCROLL_PAGE ? "SCROLL_PAGE, " : "SCROLL_LINE, ";
+			}
+			string += "count=" + e.count + ", widget=" + e.widget;
+			System.out.println (string);
 		};
 		shell.addListener (SWT.MouseDoubleClick, listener);
 		shell.addListener (SWT.MouseDown, listener);
@@ -90,4 +87,4 @@ public class Snippet324 {
 		}
 		display.dispose ();
 	}
-} 
+}

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2004 IBM Corporation and others.
+ * Copyright (c) 2000, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -9,7 +9,9 @@
  *     IBM Corporation - initial API and implementation
  *******************************************************************************/
 package org.eclipse.swt.snippets;
- 
+
+import java.io.*;
+
 /*
  * Tree example snippet: create a tree (lazy)
  *
@@ -17,14 +19,12 @@ package org.eclipse.swt.snippets;
  * http://www.eclipse.org/swt/snippets/
  */
 import org.eclipse.swt.*;
-import org.eclipse.swt.layout.*;
 import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.layout.*;
 import org.eclipse.swt.widgets.*;
 
-import java.io.*;
-
 public class Snippet8 {
-	
+
 public static void main (String [] args) {
 	final Display display = new Display ();
 	final Shell shell = new Shell (display);
@@ -38,25 +38,22 @@ public static void main (String [] args) {
 		root.setData (roots [i]);
 		new TreeItem (root, 0);
 	}
-	tree.addListener (SWT.Expand, new Listener () {
-		@Override
-		public void handleEvent (final Event event) {
-			final TreeItem root = (TreeItem) event.item;
-			TreeItem [] items = root.getItems ();
-			for (int i= 0; i<items.length; i++) {
-				if (items [i].getData () != null) return;
-				items [i].dispose ();
-			}
-			File file = (File) root.getData ();
-			File [] files = file.listFiles ();
-			if (files == null) return;
-			for (int i= 0; i<files.length; i++) {
-				TreeItem item = new TreeItem (root, 0);
-				item.setText (files [i].getName ());
-				item.setData (files [i]);
-				if (files [i].isDirectory()) {
-					new TreeItem (item, 0);
-				}
+	tree.addListener (SWT.Expand, event -> {
+		final TreeItem root = (TreeItem) event.item;
+		TreeItem [] items = root.getItems ();
+		for (int i1= 0; i1<items.length; i1++) {
+			if (items [i1].getData () != null) return;
+			items [i1].dispose ();
+		}
+		File file = (File) root.getData ();
+		File [] files = file.listFiles ();
+		if (files == null) return;
+		for (int i2= 0; i2<files.length; i2++) {
+			TreeItem item = new TreeItem (root, 0);
+			item.setText (files [i2].getName ());
+			item.setData (files [i2]);
+			if (files [i2].isDirectory()) {
+				new TreeItem (item, 0);
 			}
 		}
 	});

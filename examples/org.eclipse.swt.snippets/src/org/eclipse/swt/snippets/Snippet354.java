@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2010 IBM Corporation and others.
+ * Copyright (c) 2000, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -12,10 +12,10 @@ package org.eclipse.swt.snippets;
 
 /*
  * Display snippet: use the application system menu when available.
- * 
+ *
  * For a list of all SWT example snippets see
  * http://www.eclipse.org/swt/snippets/
- * 
+ *
  * @since 3.7
  */
 import org.eclipse.swt.*;
@@ -24,7 +24,7 @@ import org.eclipse.swt.layout.*;
 import org.eclipse.swt.widgets.*;
 
 public class Snippet354 {
-	
+
 	static MenuItem getItem(Menu menu, int id) {
 		MenuItem[] items = menu.getItems();
 		for (int i = 0; i < items.length; i++) {
@@ -32,12 +32,12 @@ public class Snippet354 {
 		}
 		return null;
 	}
-	
+
 	public static void main(String[] args) {
 		final Display display = new Display();
 		Shell shell = new Shell(display);
 		shell.setLayout(new GridLayout(1, false));
-		
+
 		Menu appMenuBar = display.getMenuBar();
 		if (appMenuBar == null) {
 			appMenuBar = new Menu(shell, SWT.BAR);
@@ -55,24 +55,13 @@ public class Snippet354 {
 				display.dispose();
 			}
 		});
-		
-		Listener keyDownFilter = new Listener() {
-			@Override
-			public void handleEvent(Event event) {
-				System.out.println("Key event!");
-			}
-			
-		};
+
+		Listener keyDownFilter = event -> System.out.println("Key event!");
 		display.addFilter(SWT.KeyDown, keyDownFilter);
 		display.addFilter(SWT.KeyUp, keyDownFilter);
-		
-		ArmListener armListener = new ArmListener() {
-			@Override
-			public void widgetArmed(ArmEvent e) {
-				System.out.println(e);
-			}
-		};
-		
+
+		ArmListener armListener = e -> System.out.println(e);
+
 		Menu systemMenu = display.getSystemMenu();
 		if (systemMenu != null) {
 			systemMenu.addMenuListener(new MenuListener() {
@@ -80,13 +69,13 @@ public class Snippet354 {
 				public void menuHidden(MenuEvent e) {
 					System.out.println("App menu closed");
 				}
-	
+
 				@Override
 				public void menuShown(MenuEvent e) {
-					System.out.println("App menu opened");	
-				}	
+					System.out.println("App menu opened");
+				}
 			});
-			
+
 			MenuItem sysItem = getItem(systemMenu, SWT.ID_QUIT);
 			sysItem.addArmListener(armListener);
 			sysItem.addSelectionListener(new SelectionAdapter() {
@@ -129,7 +118,7 @@ public class Snippet354 {
 					System.out.println("About selected");
 				}
 			});
-			
+
 			int prefsIndex = systemMenu.indexOf(getItem(systemMenu, SWT.ID_PREFERENCES));
 			MenuItem newAppMenuItem = new MenuItem(systemMenu, SWT.CASCADE, prefsIndex + 1);
 			newAppMenuItem.setText("SWT-added item");
@@ -142,7 +131,7 @@ public class Snippet354 {
 				}
 			});
 			Menu subMenu = new Menu(systemMenu);
-			
+
 			for (int i = 0; i < 4; i++) {
 				MenuItem subItem = new MenuItem(subMenu, SWT.PUSH);
 				subItem.setText("Item " + i);

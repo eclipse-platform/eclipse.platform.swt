@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2004 IBM Corporation and others.
+ * Copyright (c) 2000, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -9,7 +9,7 @@
  *     IBM Corporation - initial API and implementation
  *******************************************************************************/
 package org.eclipse.swt.snippets;
- 
+
 /*
  * Composite example snippet: create and dispose children of a composite
  *
@@ -35,26 +35,23 @@ public static void main(String args[]) {
 	pageComposite.setLayout(new GridLayout());
 	pageComposite.setLayoutData(new GridData());
 
-	button.addListener(SWT.Selection, new Listener() {
-		@Override
-		public void handleEvent(Event event) {
-			if ((pageComposite != null) && (!pageComposite.isDisposed())) {
-				pageComposite.dispose();
-			}
-			pageComposite = new Composite(shell, SWT.NONE);
-			pageComposite.setLayout(new GridLayout());
-			pageComposite.setLayoutData(new GridData());
-			if (pageNum++ % 2 == 0) {
-				Table table = new Table(pageComposite, SWT.BORDER);
-				table.setLayoutData(new GridData());
-				for (int i = 0; i < 5; i++) {
-					new TableItem(table, SWT.NONE).setText("table item " + i);
-				}
-			} else {
-				new Button(pageComposite, SWT.RADIO).setText("radio");
-			}
-			shell.layout(true);
+	button.addListener(SWT.Selection, event -> {
+		if ((pageComposite != null) && (!pageComposite.isDisposed())) {
+			pageComposite.dispose();
 		}
+		pageComposite = new Composite(shell, SWT.NONE);
+		pageComposite.setLayout(new GridLayout());
+		pageComposite.setLayoutData(new GridData());
+		if (pageNum++ % 2 == 0) {
+			Table table = new Table(pageComposite, SWT.BORDER);
+			table.setLayoutData(new GridData());
+			for (int i = 0; i < 5; i++) {
+				new TableItem(table, SWT.NONE).setText("table item " + i);
+			}
+		} else {
+			new Button(pageComposite, SWT.RADIO).setText("radio");
+		}
+		shell.layout(true);
 	});
 
 	shell.open();

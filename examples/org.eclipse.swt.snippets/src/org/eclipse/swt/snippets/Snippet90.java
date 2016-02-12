@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2004 IBM Corporation and others.
+ * Copyright (c) 2000, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -30,14 +30,11 @@ public static void main (String [] args) {
 		TreeItem treeItem = new TreeItem (tree, SWT.NONE);
 		treeItem.setText ("Item " + i);
 	}
-	tree.addListener (SWT.MouseDown, new Listener () {
-		@Override
-		public void handleEvent (Event event) {
-			Point point = new Point (event.x, event.y);
-			TreeItem item = tree.getItem (point);
-			if (item != null) {
-				System.out.println ("Mouse down: " + item);
-			}
+	tree.addListener (SWT.MouseDown, event -> {
+		Point point = new Point (event.x, event.y);
+		TreeItem item = tree.getItem (point);
+		if (item != null) {
+			System.out.println ("Mouse down: " + item);
 		}
 	});
 	Rectangle clientArea = shell.getClientArea ();

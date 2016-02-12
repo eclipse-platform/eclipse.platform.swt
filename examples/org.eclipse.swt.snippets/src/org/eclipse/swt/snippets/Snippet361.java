@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012 IBM Corporation and others.
+ * Copyright (c) 2012, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -18,7 +18,7 @@ import java.awt.Canvas;
  *
  * For a list of all SWT example snippets see
  * http://www.eclipse.org/swt/snippets/
- * 
+ *
  * @since 3.8
  */
 import java.awt.Color;
@@ -47,13 +47,13 @@ public class Snippet361 {
 	static Image image = null; // AWT
 	static double translateX = 0, translateY = 0;
 	static double rotate = 0;
-	
+
 	public static void main(String[] args) {
 		final Display display = new Display();
 		final Shell shell = new Shell(display);
 		shell.setText("Translate and Rotate an AWT Image in an SWT GUI");
 		shell.setLayout(new GridLayout(8, false));
-		
+
 		Button fileButton = new Button(shell, SWT.PUSH);
 		fileButton.setText("&Open Image File");
 		fileButton.addSelectionListener(new SelectionAdapter() {
@@ -66,41 +66,32 @@ public class Snippet361 {
 				}
 			}
 		});
-		
+
 		new Label(shell, SWT.NONE).setText("Translate &X by:");
 		final Combo translateXCombo = new Combo(shell, SWT.NONE);
 		translateXCombo.setItems("0", "image width", "image height", "100", "200");
 		translateXCombo.select(0);
-		translateXCombo.addModifyListener(new ModifyListener() {
-			@Override
-			public void modifyText(ModifyEvent e) {
-				translateX = numericValue(translateXCombo);
-				canvas.repaint();
-			}
+		translateXCombo.addModifyListener(e -> {
+			translateX = numericValue(translateXCombo);
+			canvas.repaint();
 		});
-		
+
 		new Label(shell, SWT.NONE).setText("Translate &Y by:");
 		final Combo translateYCombo = new Combo(shell, SWT.NONE);
 		translateYCombo.setItems("0", "image width", "image height", "100", "200");
 		translateYCombo.select(0);
-		translateYCombo.addModifyListener(new ModifyListener() {
-			@Override
-			public void modifyText(ModifyEvent e) {
-				translateY = numericValue(translateYCombo);
-				canvas.repaint();
-			}
+		translateYCombo.addModifyListener(e -> {
+			translateY = numericValue(translateYCombo);
+			canvas.repaint();
 		});
-		
+
 		new Label(shell, SWT.NONE).setText("&Rotate by:");
 		final Combo rotateCombo = new Combo(shell, SWT.NONE);
 		rotateCombo.setItems("0", "Pi", "Pi/2", "Pi/4", "Pi/8");
 		rotateCombo.select(0);
-		rotateCombo.addModifyListener(new ModifyListener() {
-			@Override
-			public void modifyText(ModifyEvent e) {
-				rotate = numericValue(rotateCombo);
-				canvas.repaint();
-			}
+		rotateCombo.addModifyListener(e -> {
+			rotate = numericValue(rotateCombo);
+			canvas.repaint();
 		});
 
 		Button printButton = new Button(shell, SWT.PUSH);
@@ -152,7 +143,7 @@ public class Snippet361 {
 				snapshotGC.dispose ();
 			}
 		});
-		
+
 		composite = new Composite(shell, SWT.EMBEDDED | SWT.BORDER);
 		GridData data = new GridData(SWT.FILL, SWT.FILL, true, true, 8, 1);
 		data.widthHint = 640;
@@ -165,7 +156,7 @@ public class Snippet361 {
 				if (image != null) {
 					g.setColor(Color.WHITE);
 					g.fillRect(0, 0, canvas.getWidth(), canvas.getHeight());
-					
+
 					/* Use Java2D here to modify the image as desired. */
 					Graphics2D g2d = (Graphics2D) g;
 					AffineTransform t = new AffineTransform();
@@ -173,7 +164,7 @@ public class Snippet361 {
 					t.rotate(rotate);
 					g2d.setTransform(t);
 					/*------------*/
-					
+
 					g.drawImage(image, 0, 0, this);
 				}
 			}
@@ -185,7 +176,7 @@ public class Snippet361 {
 				e.result = "Image drawn in AWT Canvas";
 			}
 		});
-		
+
 		shell.pack();
 		shell.open();
 		while(!shell.isDisposed()) {
@@ -193,7 +184,7 @@ public class Snippet361 {
 		}
 		display.dispose();
 	}
-	
+
 	static double numericValue(Combo combo) {
 		String string = combo.getText();
 		if (string.equals("image width")) return image.getWidth(canvas);

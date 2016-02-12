@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2004 IBM Corporation and others.
+ * Copyright (c) 2000, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -36,39 +36,23 @@ public static void main (String [] args) {
 			for (int k=0; k<4; k++) {
 				TreeItem item2 = new TreeItem (item1, 0);
 				item2.setText ("SubItem " + i + " " + j + " " + k);
-			}	
+			}
 		}
 	}
-	tree.addListener (SWT.Selection, new Listener () {
-		@Override
-		public void handleEvent (Event e) {
-			String string = "";
-			TreeItem [] selection = tree.getSelection ();
-			for (int i=0; i<selection.length; i++) string += selection [i] + " ";
-			System.out.println ("Selection={" + string + "}");
-		}
+	tree.addListener (SWT.Selection, e -> {
+		String string = "";
+		TreeItem [] selection = tree.getSelection ();
+		for (int i=0; i<selection.length; i++) string += selection [i] + " ";
+		System.out.println ("Selection={" + string + "}");
 	});
-	tree.addListener (SWT.DefaultSelection, new Listener () {
-		@Override
-		public void handleEvent (Event e) {
-			String string = "";
-			TreeItem [] selection = tree.getSelection ();
-			for (int i=0; i<selection.length; i++) string += selection [i] + " ";
-			System.out.println ("DefaultSelection={" + string + "}");
-		}
+	tree.addListener (SWT.DefaultSelection, e -> {
+		String string = "";
+		TreeItem [] selection = tree.getSelection ();
+		for (int i=0; i<selection.length; i++) string += selection [i] + " ";
+		System.out.println ("DefaultSelection={" + string + "}");
 	});
-	tree.addListener (SWT.Expand, new Listener () {
-		@Override
-		public void handleEvent (Event e) {
-			System.out.println ("Expand={" + e.item + "}");
-		}
-	});
-	tree.addListener (SWT.Collapse, new Listener () {
-		@Override
-		public void handleEvent (Event e) {
-			System.out.println ("Collapse={" + e.item + "}");
-		}
-	});
+	tree.addListener (SWT.Expand, e -> System.out.println ("Expand={" + e.item + "}"));
+	tree.addListener (SWT.Collapse, e -> System.out.println ("Collapse={" + e.item + "}"));
 	tree.getItems () [0].setExpanded (true);
 	shell.pack ();
 	shell.open ();
@@ -77,4 +61,4 @@ public static void main (String [] args) {
 	}
 	display.dispose ();
 }
-} 
+}

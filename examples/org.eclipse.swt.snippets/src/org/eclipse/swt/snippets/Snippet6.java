@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2004 IBM Corporation and others.
+ * Copyright (c) 2000, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -15,7 +15,7 @@ package org.eclipse.swt.snippets;
  *
  * For a list of all SWT example snippets see
  * http://www.eclipse.org/swt/snippets/
- * 
+ *
  * @since 3.1
  */
 import org.eclipse.swt.*;
@@ -40,17 +40,14 @@ public static void main (String [] args) {
     Button b = new Button(shell, SWT.PUSH);
     b.setText("add a new button at row 2 column 1");
     final int[] index = new int[1];
-    b.addListener(SWT.Selection, new Listener() {
-        @Override
-		public void handleEvent(Event e) {
-            Button s = new Button(c, SWT.PUSH);
-            s.setText("Special "+index[0]);
-            index[0]++;
-            Control[] children = c.getChildren();
-            s.moveAbove(children[3]);
-            shell.layout(new Control[] {s});
-        }
-    });
+    b.addListener(SWT.Selection, e -> {
+	    Button s = new Button(c, SWT.PUSH);
+	    s.setText("Special "+index[0]);
+	    index[0]++;
+	    Control[] children = c.getChildren();
+	    s.moveAbove(children[3]);
+	    shell.layout(new Control[] {s});
+	});
 
     shell.open ();
     while (!shell.isDisposed ()) {

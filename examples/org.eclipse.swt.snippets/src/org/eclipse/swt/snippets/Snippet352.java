@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011 IBM Corporation and others.
+ * Copyright (c) 2011, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -10,7 +10,7 @@
  *******************************************************************************/
 package org.eclipse.swt.snippets;
 
-/* 
+/*
  * Touch example: create a shell and listen for TouchEvents. Paint
  * circles where the user touched.
  *
@@ -28,72 +28,65 @@ import org.eclipse.swt.layout.*;
 import org.eclipse.swt.widgets.*;
 
 public class Snippet352 {
-	
+
 	private static class CircleInfo {
-		
+
 		public CircleInfo(Point inCenter, Color inColor) {
 			this.center = inCenter;
 			this.color = inColor;
 		}
-		
+
 		Point center;
 		Color color;
 	}
-	
+
 	static Map<Long, CircleInfo> touchLocations = new HashMap<>();
 	static int colorIndex = 0;
 	static final int PAINTABLE_COLORS = 15;
 	static final int CIRCLE_RADIUS = 40;
-	
+
 	public static void main (String [] args) {
 		final Display display = new Display ();
 		final Shell shell = new Shell (display);
 		shell.setLayout(new FillLayout(SWT.HORIZONTAL));
 		shell.setText ("Touch demonstration");
-		
-		TouchListener tl = new TouchListener() {
-			@Override
-			public void touch(TouchEvent e) {
-				
-				Touch touches[] = e.touches;
 
-				for (int i = 0; i < touches.length; i++) {
-					Touch currTouch = touches[i];
+		TouchListener tl = e -> {
 
-					if ((currTouch.state & (SWT.TOUCHSTATE_UP)) != 0) {
-						touchLocations.remove(currTouch.id);
-					} else {
-						CircleInfo info = touchLocations.get(currTouch.id);
-						Point newPoint = Display.getCurrent().map(null, (Control)e.widget, new Point(currTouch.x, currTouch.y));
+			Touch touches[] = e.touches;
 
-						if (info == null) {
-							info = new CircleInfo(newPoint, display.getSystemColor((colorIndex + 2) % PAINTABLE_COLORS));
-							colorIndex++;
-						}
+			for (int i = 0; i < touches.length; i++) {
+				Touch currTouch = touches[i];
 
-						info.center = newPoint;
-						touchLocations.put(currTouch.id, info);
+				if ((currTouch.state & (SWT.TOUCHSTATE_UP)) != 0) {
+					touchLocations.remove(currTouch.id);
+				} else {
+					CircleInfo info = touchLocations.get(currTouch.id);
+					Point newPoint = Display.getCurrent().map(null, (Control)e.widget, new Point(currTouch.x, currTouch.y));
+
+					if (info == null) {
+						info = new CircleInfo(newPoint, display.getSystemColor((colorIndex + 2) % PAINTABLE_COLORS));
+						colorIndex++;
 					}
-				}
 
-				Control c = (Control)e.widget;
-				c.redraw();
-			}
-
-		};
-
-		PaintListener pl = new PaintListener() {
-			@Override
-			public void paintControl(PaintEvent e) {
-				Iterator<Map.Entry<Long, CircleInfo>> iter = touchLocations.entrySet().iterator();
-				while (iter.hasNext()) {
-					CircleInfo ci = iter.next().getValue();
-					e.gc.setBackground(ci.color);
-					e.gc.fillOval(ci.center.x - CIRCLE_RADIUS, ci.center.y - CIRCLE_RADIUS, CIRCLE_RADIUS * 2, CIRCLE_RADIUS * 2);
+					info.center = newPoint;
+					touchLocations.put(currTouch.id, info);
 				}
 			}
+
+			Control c = (Control)e.widget;
+			c.redraw();
 		};
-		
+
+		PaintListener pl = e -> {
+			Iterator<Map.Entry<Long, CircleInfo>> iter = touchLocations.entrySet().iterator();
+			while (iter.hasNext()) {
+				CircleInfo ci = iter.next().getValue();
+				e.gc.setBackground(ci.color);
+				e.gc.fillOval(ci.center.x - CIRCLE_RADIUS, ci.center.y - CIRCLE_RADIUS, CIRCLE_RADIUS * 2, CIRCLE_RADIUS * 2);
+			}
+		};
+
 		Canvas c = new Canvas(shell, SWT.NONE);
 		c.setTouchEnabled(true);
 		c.setSize(800, 800);

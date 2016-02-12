@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2004 IBM Corporation and others.
+ * Copyright (c) 2000, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -9,7 +9,7 @@
  *     IBM Corporation - initial API and implementation
  *******************************************************************************/
 package org.eclipse.swt.snippets;
- 
+
 /*
  * Display example snippet: stop a repeating timer when a button is pressed
  *
@@ -18,8 +18,8 @@ package org.eclipse.swt.snippets;
  */
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.layout.*;
+import org.eclipse.swt.widgets.*;
 
 public class Snippet68 {
 
@@ -44,12 +44,7 @@ public static void main (String [] args) {
 		}
 	};
 	display.timerExec (time, timer);
-	button.addListener (SWT.Selection, new Listener () {
-		@Override
-		public void handleEvent (Event event) {
-			display.timerExec (-1, timer);
-		}
-	});
+	button.addListener (SWT.Selection, event -> display.timerExec (-1, timer));
 	button.pack ();
 	label.setLayoutData (new RowData (button.getSize ()));
 	shell.pack ();
@@ -59,4 +54,4 @@ public static void main (String [] args) {
 	}
 	display.dispose ();
 }
-} 
+}

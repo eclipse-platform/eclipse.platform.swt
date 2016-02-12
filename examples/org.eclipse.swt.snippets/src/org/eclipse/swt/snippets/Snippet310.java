@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2009 IBM Corporation and others.
+ * Copyright (c) 2009, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -15,12 +15,11 @@ package org.eclipse.swt.snippets;
  *
  * For a list of all SWT example snippets see
  * http://www.eclipse.org/swt/snippets/
- * 
+ *
  * @since 3.5
  */
 
 import org.eclipse.swt.*;
-import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.layout.*;
 import org.eclipse.swt.widgets.*;
@@ -34,36 +33,33 @@ public class Snippet310 {
 		spinner.setValues(0, -100, 100, 0, 1, 10);
 		spinner.setLayoutData(new GridData(200, SWT.DEFAULT));
 		final ToolTip toolTip = new ToolTip(shell, SWT.BALLOON | SWT.ICON_WARNING);
-		spinner.addModifyListener(new ModifyListener() {
-			@Override
-			public void modifyText(ModifyEvent e) {
-				String string = spinner.getText();
-				String message = null;
-				try {
-					int value = Integer.parseInt(string);
-					int maximum = spinner.getMaximum();
-					int minimum = spinner.getMinimum();
-					if (value > maximum) {
-						message = "Current input is greater than the maximum limit ("+maximum+")";
-					} else if (value < minimum) {
-						message = "Current input is less than the minimum limit ("+minimum+")";
-					}
-				} catch (Exception ex) {
-					message = "Current input is not numeric";
+		spinner.addModifyListener(e -> {
+			String string = spinner.getText();
+			String message = null;
+			try {
+				int value = Integer.parseInt(string);
+				int maximum = spinner.getMaximum();
+				int minimum = spinner.getMinimum();
+				if (value > maximum) {
+					message = "Current input is greater than the maximum limit ("+maximum+")";
+				} else if (value < minimum) {
+					message = "Current input is less than the minimum limit ("+minimum+")";
 				}
-				if (message != null) {
-					spinner.setForeground(display.getSystemColor(SWT.COLOR_RED));
-					Rectangle rect = spinner.getBounds();
-					GC gc = new GC(spinner);
-					Point pt = gc.textExtent(string);
-					gc.dispose();
-					toolTip.setLocation(display.map(shell, null, rect.x + pt.x, rect.y + rect.height));
-					toolTip.setMessage(message);
-					toolTip.setVisible(true);
-				} else {
-					toolTip.setVisible(false);
-					spinner.setForeground(null);
-				}
+			} catch (Exception ex) {
+				message = "Current input is not numeric";
+			}
+			if (message != null) {
+				spinner.setForeground(display.getSystemColor(SWT.COLOR_RED));
+				Rectangle rect = spinner.getBounds();
+				GC gc = new GC(spinner);
+				Point pt = gc.textExtent(string);
+				gc.dispose();
+				toolTip.setLocation(display.map(shell, null, rect.x + pt.x, rect.y + rect.height));
+				toolTip.setMessage(message);
+				toolTip.setVisible(true);
+			} else {
+				toolTip.setVisible(false);
+				spinner.setForeground(null);
 			}
 		});
 		shell.setSize(300, 100);

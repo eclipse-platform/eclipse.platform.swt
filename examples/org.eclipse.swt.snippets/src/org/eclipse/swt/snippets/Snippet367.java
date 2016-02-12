@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015 IBM Corporation and others.
+ * Copyright (c) 2015, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -11,7 +11,6 @@
 package org.eclipse.swt.snippets;
 
 import org.eclipse.swt.*;
-import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.layout.*;
 import org.eclipse.swt.widgets.*;
@@ -34,30 +33,24 @@ public class Snippet367 {
 	private static final String IMAGE_PATH_200 = IMAGES_ROOT + IMAGE_200;
 
 	public static void main (String [] args) {
-		final ImageFileNameProvider filenameProvider = new ImageFileNameProvider () {
-			@Override
-			public String getImagePath (int zoom) {
-				switch (zoom) {
-				case 150:
-					return IMAGE_PATH_150;
-				case 200:
-					return IMAGE_PATH_200;
-				default:
-					return IMAGE_PATH_100;
-				}
+		final ImageFileNameProvider filenameProvider = zoom -> {
+			switch (zoom) {
+			case 150:
+				return IMAGE_PATH_150;
+			case 200:
+				return IMAGE_PATH_200;
+			default:
+				return IMAGE_PATH_100;
 			}
 		};
-		final ImageDataProvider imageDataProvider = new ImageDataProvider () {
-			@Override
-			public ImageData getImageData (int zoom) {
-				switch (zoom) {
-				case 150:
-					return new ImageData (IMAGE_PATH_150);
-				case 200:
-					return new ImageData (IMAGE_PATH_200);
-				default:
-					return new ImageData (IMAGE_PATH_100);
-				}
+		final ImageDataProvider imageDataProvider = zoom -> {
+			switch (zoom) {
+			case 150:
+				return new ImageData (IMAGE_PATH_150);
+			case 200:
+				return new ImageData (IMAGE_PATH_200);
+			default:
+				return new ImageData (IMAGE_PATH_100);
 			}
 		};
 
@@ -65,7 +58,7 @@ public class Snippet367 {
 		final Shell shell = new Shell (display);
 		shell.setText("Snippet367");
 		shell.setLayout (new GridLayout (3, false));
-		
+
 		Menu menuBar = new Menu(shell, SWT.BAR);
 		shell.setMenuBar(menuBar);
 		MenuItem fileItem = new MenuItem(menuBar, SWT.CASCADE);
@@ -103,12 +96,9 @@ public class Snippet367 {
 		new Label (shell, SWT.NONE).setText ("1. Canvas\n(PaintListener)");
 		final Point size = new Point (550, 40);
 		final Canvas canvas = new Canvas (shell, SWT.NONE);
-		canvas.addPaintListener (new PaintListener () {
-			@Override
-			public void paintControl (PaintEvent e) {
-				Point size = canvas.getSize ();
-				paintImage (e.gc, size);
-			}
+		canvas.addPaintListener (e -> {
+			Point size1 = canvas.getSize ();
+			paintImage (e.gc, size1);
 		});
 		GridData gridData = new GridData (size.x, size.y);
 		gridData.horizontalSpan = 2;
@@ -132,18 +122,15 @@ public class Snippet367 {
 
 		new Label (shell, SWT.NONE).setText ("3. Painted image\n(multi-res, unzoomed paint)");
 		imageLabel = new Label (shell, SWT.NONE);
-		imageLabel.setImage (new Image (display, new ImageDataProvider () {
-			@Override
-			public ImageData getImageData (int zoom) {
-				Image temp = new Image (display, size.x * zoom / 100, size.y * zoom / 100);
-				GC gc = new GC (temp);
-				try {
-					paintImage (gc, size);
-					return temp.getImageData ();
-				} finally {
-					gc.dispose ();
-					temp.dispose ();
-				}
+		imageLabel.setImage (new Image (display, (ImageDataProvider) zoom -> {
+			Image temp = new Image (display, size.x * zoom / 100, size.y * zoom / 100);
+			GC gc1 = new GC (temp);
+			try {
+				paintImage (gc1, size);
+				return temp.getImageData ();
+			} finally {
+				gc1.dispose ();
+				temp.dispose ();
 			}
 		}));
 		imageLabel.setLayoutData (new GridData (SWT.BEGINNING, SWT.BEGINNING, false, false, 2, 1));
@@ -152,24 +139,21 @@ public class Snippet367 {
 
 		new Label (shell, SWT.NONE).setText ("4. Painted image\n(multi-res, zoomed paint)");
 		imageLabel = new Label (shell, SWT.NONE);
-		imageLabel.setImage (new Image (display, new ImageDataProvider () {
-			@Override
-			public ImageData getImageData (int zoom) {
-				Image temp = new Image (display, size.x * zoom / 100, size.y * zoom / 100);
-				GC gc = new GC (temp);
-				try {
-					paintImage2 (gc, new Point (size.x * zoom / 100, size.y * zoom / 100), zoom / 100);
-					return temp.getImageData ();
-				} finally {
-					gc.dispose ();
-					temp.dispose ();
-				}
+		imageLabel.setImage (new Image (display, (ImageDataProvider) zoom -> {
+			Image temp = new Image (display, size.x * zoom / 100, size.y * zoom / 100);
+			GC gc1 = new GC (temp);
+			try {
+				paintImage2 (gc1, new Point (size.x * zoom / 100, size.y * zoom / 100), zoom / 100);
+				return temp.getImageData ();
+			} finally {
+				gc1.dispose ();
+				temp.dispose ();
 			}
 		}));
 		imageLabel.setLayoutData (new GridData (SWT.BEGINNING, SWT.BEGINNING, false, false, 2, 1));
 
 		createSeparator(shell);
-		
+
 		new Label (shell, SWT.NONE).setText ("5. 50x50 box\n(Display#getDPI(): " + display.getDPI().x + ")");
 		Label box= new Label (shell, SWT.NONE);
 		box.setBackground(display.getSystemColor(SWT.COLOR_WIDGET_DARK_SHADOW));

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2009 IBM Corporation and others.
+ * Copyright (c) 2000, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -12,28 +12,18 @@ package org.eclipse.swt.snippets;
 
 /*
  * SWT skin snippet: Listen for and print out skin events
- * 
+ *
  * For a list of all SWT example snippets see
  * http://www.eclipse.org/swt/snippets/
- * 
+ *
  * @since 3.6
  */
-import java.util.Random;
+import java.util.*;
 
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.widgets.Button;
-import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.widgets.Group;
-import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.Listener;
-import org.eclipse.swt.widgets.Shell;
-import org.eclipse.swt.widgets.Text;
+import org.eclipse.swt.*;
+import org.eclipse.swt.events.*;
+import org.eclipse.swt.layout.*;
+import org.eclipse.swt.widgets.*;
 
 public class Snippet333 {
 
@@ -51,21 +41,21 @@ public class Snippet333 {
 		SWT.COLOR_DARK_BLUE,
 		SWT.COLOR_DARK_CYAN
 	};
-	
+
 	public static void main(String[] arg) {
 		Display display = new Display();
 		final Shell shell = new Shell(display);
 		shell.setText("Skin example");
 		shell.setLayout (new GridLayout());
-		
+
 		Group container = new Group(shell, SWT.None);
 		container.setText("Container");
 		container.setLayout(new GridLayout(3, false));
-		
+
 		Composite child1 = new Composite(container,SWT.BORDER);
 		child1.setLayout(new GridLayout());
 		new Label(child1,SWT.NONE).setText("Label in pane 1");
-		
+
 		Composite child2 = new Composite(container,SWT.BORDER);
 		child2.setLayout(new GridLayout());
 		new Button(child2,SWT.PUSH).setText("Button in pane2");
@@ -73,14 +63,12 @@ public class Snippet333 {
 		final Composite child3 = new Composite(container,SWT.BORDER);
 		child3.setLayout(new GridLayout());
 		new Text(child3, SWT.BORDER).setText("Text in pane3");
-		
-		display.addListener(SWT.Skin, new Listener() {
-			@Override
-			public void handleEvent(Event event) {
-				System.out.println("Skin: " + event.widget);
-				setBackground (event.display, (Control) event.widget);
-			}});
-		
+
+		display.addListener(SWT.Skin, event -> {
+			System.out.println("Skin: " + event.widget);
+			setBackground (event.display, (Control) event.widget);
+		});
+
 		Composite buttonContainer = new Composite(shell, SWT.NONE);
 		buttonContainer.setLayout(new GridLayout(3, false));
 		Button reskin = new Button(buttonContainer, SWT.PUSH);
@@ -110,7 +98,7 @@ public class Snippet333 {
 				child3.reskin(SWT.ALL);
 			}
 		});
-		
+
 		shell.pack();
 		shell.open();
 		while (!shell.isDisposed()) {
@@ -126,5 +114,5 @@ public class Snippet333 {
 		 control.setBackground(display.getSystemColor(colors[nextColor % colors.length]));
 	}
 
-	
+
 }

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2009 IBM Corporation and others.
+ * Copyright (c) 2009, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -9,35 +9,35 @@
  *     IBM Corporation - initial API and implementation
  *******************************************************************************/
 package org.eclipse.swt.snippets;
- 
+
 /*
  * StyledText: Variable tab stops per line
  *
  * For a list of all SWT example snippets see
  * http://www.eclipse.org/swt/snippets/
- * 
+ *
  */
 import org.eclipse.swt.*;
 import org.eclipse.swt.custom.*;
-import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.layout.*;
+import org.eclipse.swt.widgets.*;
 
 public class Snippet328 {
-	
+
 	public static void main(String[] args) {
 		Display display = new Display();
 		Shell shell = new Shell(display);
 		shell.setLayout(new GridLayout());
 		shell.setText("StyledText: Variable tab stops");
-		
+
 		Ruler ruler = new Ruler(shell, SWT.NONE);
 		GridData data = new GridData();
 		data.heightHint = 10;
 		data.horizontalAlignment = SWT.FILL;
 		ruler.setLayoutData(data);
 		ruler.setBackground(display.getSystemColor(SWT.COLOR_INFO_BACKGROUND));
-		
+
 		StyledText styledText = new StyledText (shell, SWT.FULL_SELECTION | SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL);
 		styledText.setText("0\t1\t2\t3\t4\nDrag\tthe\ttab\tmarks\ton\ttop\tto\tchange\tthe\tposition\tof\tthe\ttab\tstops");
 		styledText.setTabStops(new int[] {30, 70, 90, 140});
@@ -45,7 +45,7 @@ public class Snippet328 {
 		styledText.setLineTabStops(1, 1, new int[] {40, 70, 100, 150});
 		styledText.setLayoutData(new GridData(GridData.FILL_BOTH));
 		ruler.setEditor(styledText);
-		
+
 		shell.setSize(800, 400);
 		shell.open();
 		while (!shell.isDisposed()) {
@@ -53,7 +53,7 @@ public class Snippet328 {
 		}
 		display.dispose ();
 	}
-	
+
 	public static class Ruler extends Canvas {
 		StyledText styledText;
 		int hover = -1;
@@ -62,25 +62,22 @@ public class Snippet328 {
 			super(parent, style | SWT.DOUBLE_BUFFERED);
 			Display display = getDisplay();
 			setBackground(display.getSystemColor(SWT.COLOR_INFO_BACKGROUND));
-			Listener listener = new Listener() {
-				@Override
-				public void handleEvent(Event e) {
-					switch (e.type) {
-						case SWT.Paint:
-							handlePaint(e);
-							break;
-						case SWT.MouseMove:
-							if ((e.stateMask & SWT.BUTTON1) != 0) {
-								handleDragMark(e);
-							} else {
-								handleMouseMove(e);
-							}
-							break;
-						case SWT.MouseExit:
-							if (hover != -1) redraw();
-							hover = -1;
-							break;
-					}
+			Listener listener = e -> {
+				switch (e.type) {
+					case SWT.Paint:
+						handlePaint(e);
+						break;
+					case SWT.MouseMove:
+						if ((e.stateMask & SWT.BUTTON1) != 0) {
+							handleDragMark(e);
+						} else {
+							handleMouseMove(e);
+						}
+						break;
+					case SWT.MouseExit:
+						if (hover != -1) redraw();
+						hover = -1;
+						break;
 				}
 			};
 			addListener(SWT.Paint, listener);
@@ -89,15 +86,12 @@ public class Snippet328 {
 		}
 		public void setEditor(StyledText editor) {
 			styledText = editor;
-			styledText.addCaretListener(new CaretListener() {
-				@Override
-				public void caretMoved(CaretEvent event) {
-					int caretLine = styledText.getLineAtOffset(event.caretOffset);
-					if (caretLine != line) {
-						line = caretLine;
-						redraw();
-					}
-				}				
+			styledText.addCaretListener(event -> {
+				int caretLine = styledText.getLineAtOffset(event.caretOffset);
+				if (caretLine != line) {
+					line = caretLine;
+					redraw();
+				}
 			});
 		}
 		void handleMouseMove(Event e) {
@@ -137,7 +131,7 @@ public class Snippet328 {
 				redraw();
 			}
 		}
-		
+
 		void handleDragMark (Event e) {
 			if (hover <= 0) return;
 			int [] tabs = styledText.getLineTabStops(line);
@@ -206,4 +200,4 @@ public class Snippet328 {
 			}
 		}
 	}
-} 
+}

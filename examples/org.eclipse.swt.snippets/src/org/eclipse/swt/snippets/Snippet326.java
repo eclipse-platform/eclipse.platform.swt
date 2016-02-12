@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2009 IBM Corporation and others.
+ * Copyright (c) 2009, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -9,20 +9,20 @@
  *     IBM Corporation - initial API and implementation
  *******************************************************************************/
 package org.eclipse.swt.snippets;
- 
+
 /*
  * Browser example snippet: Close a Browser such that it can be
  * cancelled by an onbeforeunload handler.
  *
  * For a list of all SWT example snippets see
  * http://www.eclipse.org/swt/snippets/
- * 
+ *
  * @since 3.6
  */
 import org.eclipse.swt.*;
 import org.eclipse.swt.browser.*;
-import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.layout.*;
+import org.eclipse.swt.widgets.*;
 
 public class Snippet326 {
 	static final String HTML =
@@ -51,14 +51,11 @@ public static void main(String[] args) {
 
 	final Button button = new Button(shell, SWT.PUSH);
 	button.setText("Invoke Browser.close()");
-	button.addListener(SWT.Selection, new Listener() {
-		@Override
-		public void handleEvent(Event event) {
-			boolean result = browser.close();
-			System.out.println("was Browser disposed: " + result);
-			if (result) {
-				button.setEnabled(false);
-			}
+	button.addListener(SWT.Selection, event -> {
+		boolean result = browser.close();
+		System.out.println("was Browser disposed: " + result);
+		if (result) {
+			button.setEnabled(false);
 		}
 	});
 	shell.pack();

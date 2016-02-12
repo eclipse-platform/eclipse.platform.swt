@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2004 IBM Corporation and others.
+ * Copyright (c) 2000, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -17,7 +17,7 @@ package org.eclipse.swt.snippets;
  * http://www.eclipse.org/swt/snippets/
  */
 import org.eclipse.swt.*;
-import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.widgets.*;
 
 public class Snippet59 {
@@ -29,23 +29,17 @@ public static void main (String [] args) {
 	for (int i=0; i<128; i++) list.add ("Item " + i);
 	Rectangle clientArea = shell.getClientArea ();
 	list.setBounds (clientArea.x, clientArea.y, 100, 100);
-	list.addListener (SWT.Selection, new Listener () {
-		@Override
-		public void handleEvent (Event e) {
-			String string = "";
-			int [] selection = list.getSelectionIndices ();
-			for (int i=0; i<selection.length; i++) string += selection [i] + " ";
-			System.out.println ("Selection={" + string + "}");
-		}
+	list.addListener (SWT.Selection, e -> {
+		String string = "";
+		int [] selection = list.getSelectionIndices ();
+		for (int i=0; i<selection.length; i++) string += selection [i] + " ";
+		System.out.println ("Selection={" + string + "}");
 	});
-	list.addListener (SWT.DefaultSelection, new Listener () {
-		@Override
-		public void handleEvent (Event e) {
-			String string = "";
-			int [] selection = list.getSelectionIndices ();
-			for (int i=0; i<selection.length; i++) string += selection [i] + " ";
-			System.out.println ("DefaultSelection={" + string + "}");
-		}
+	list.addListener (SWT.DefaultSelection, e -> {
+		String string = "";
+		int [] selection = list.getSelectionIndices ();
+		for (int i=0; i<selection.length; i++) string += selection [i] + " ";
+		System.out.println ("DefaultSelection={" + string + "}");
 	});
 	shell.pack ();
 	shell.open ();
@@ -54,4 +48,4 @@ public static void main (String [] args) {
 	}
 	display.dispose ();
 }
-} 
+}

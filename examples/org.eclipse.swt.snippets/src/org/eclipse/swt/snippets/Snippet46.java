@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2004 IBM Corporation and others.
+ * Copyright (c) 2000, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -9,7 +9,7 @@
  *     IBM Corporation - initial API and implementation
  *******************************************************************************/
 package org.eclipse.swt.snippets;
- 
+
 /*
  * Composite example snippet: intercept mouse events (drag a button with the mouse)
  *
@@ -18,8 +18,8 @@ package org.eclipse.swt.snippets;
  */
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.layout.*;
+import org.eclipse.swt.widgets.*;
 
 public class Snippet46 {
 public static void main (String [] args) {
@@ -33,28 +33,25 @@ public static void main (String [] args) {
 	composite.pack ();
 	composite.setLocation (10, 10);
 	final Point [] offset = new Point [1];
-	Listener listener = new Listener () {
-		@Override
-		public void handleEvent (Event event) {
-			switch (event.type) {
-				case SWT.MouseDown:
-					Rectangle rect = composite.getBounds ();
-					if (rect.contains (event.x, event.y)) {
-						Point pt1 = composite.toDisplay (0, 0);
-						Point pt2 = shell.toDisplay (event.x, event.y); 
-						offset [0] = new Point (pt2.x - pt1.x, pt2.y - pt1.y);
-					}
-					break;
-				case SWT.MouseMove:
-					if (offset [0] != null) {
-						Point pt = offset [0];
-						composite.setLocation (event.x - pt.x, event.y - pt.y);
-					}
-					break;
-				case SWT.MouseUp:
-					offset [0] = null;
-					break;
-			}
+	Listener listener = event -> {
+		switch (event.type) {
+			case SWT.MouseDown:
+				Rectangle rect = composite.getBounds ();
+				if (rect.contains (event.x, event.y)) {
+					Point pt1 = composite.toDisplay (0, 0);
+					Point pt2 = shell.toDisplay (event.x, event.y);
+					offset [0] = new Point (pt2.x - pt1.x, pt2.y - pt1.y);
+				}
+				break;
+			case SWT.MouseMove:
+				if (offset [0] != null) {
+					Point pt = offset [0];
+					composite.setLocation (event.x - pt.x, event.y - pt.y);
+				}
+				break;
+			case SWT.MouseUp:
+				offset [0] = null;
+				break;
 		}
 	};
 	shell.addListener (SWT.MouseDown, listener);

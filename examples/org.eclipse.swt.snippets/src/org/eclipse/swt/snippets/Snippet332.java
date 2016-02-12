@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2014 IBM Corporation and others.
+ * Copyright (c) 2000, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -14,24 +14,23 @@ package org.eclipse.swt.snippets;
  * SWT StyledText and Combo snippet: using BidiSegmentListener and
  * SegmentListener to implement custom bidi segments, such as right-to-left
  * override
- * 
+ *
  * Note that SegmentListener in the Combo widget is supported since 4.4 and
  * currently only on win32 platform
- * 
+ *
  * For a list of all SWT example snippets see
  * http://www.eclipse.org/swt/snippets/
- * 
+ *
  * @since 3.6
  */
 import org.eclipse.swt.*;
 import org.eclipse.swt.custom.*;
-import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.layout.*;
 import org.eclipse.swt.widgets.*;
 
 public class Snippet332 {
-	
+
 	public static void main(String [] args) {
 		final Display display = new Display();
 		Shell shell = new Shell(display);
@@ -47,26 +46,20 @@ public class Snippet332 {
 		text.setStyleRanges(segments, ranges);
 		Font font = new Font(display, "Tahoma", 16, 0);
 		text.setFont(font);
-		text.addBidiSegmentListener(new BidiSegmentListener() {
-			@Override
-			public void lineGetSegments(BidiSegmentEvent event) {
-				String string = event.lineText;
-				int start = string.indexOf(segment);
-				event.segments = new int []{start, start + segment.length()};
-				event.segmentsChars = new char[] {'\u202e', '\u202C'};
-			}
+		text.addBidiSegmentListener(event -> {
+			String string1 = event.lineText;
+			int start = string1.indexOf(segment);
+			event.segments = new int []{start, start + segment.length()};
+			event.segmentsChars = new char[] {'\u202e', '\u202C'};
 		});
 		Combo combo = new Combo(shell, SWT.SIMPLE);
 		combo.setFont(font);
 		combo.setBackground(display.getSystemColor(SWT.COLOR_YELLOW));
 		combo.setItems("Option 1...", "Option 2...", "Option 3...", "Option 4...");
 		combo.select(1);
-		combo.addSegmentListener(new SegmentListener() {
-			@Override
-			public void getSegments(SegmentEvent event) {
-				event.segments = new int [] {0, event.lineText.length()};
-				event.segmentsChars = new char [] {'\u202e', '\u202c'};
-			}
+		combo.addSegmentListener(event -> {
+			event.segments = new int [] {0, event.lineText.length()};
+			event.segmentsChars = new char [] {'\u202e', '\u202c'};
 		});
 		shell.setSize(500, 250);
 		shell.open();

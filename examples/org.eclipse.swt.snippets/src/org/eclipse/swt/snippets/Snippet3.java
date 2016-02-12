@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2004 IBM Corporation and others.
+ * Copyright (c) 2000, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -17,8 +17,8 @@ package org.eclipse.swt.snippets;
  * http://www.eclipse.org/swt/snippets/
  */
 import org.eclipse.swt.*;
-import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.widgets.*;
 
 public class Snippet3 {
 
@@ -48,19 +48,16 @@ public static void main(String[] args) {
 	Point size = table.computeSize(SWT.DEFAULT, 200);
 	table.setSize(size);
 	shell.pack();
-	table.addListener(SWT.MouseDown, new Listener() {
-		@Override
-		public void handleEvent(Event event) {
-			Point pt = new Point(event.x, event.y);
-			TableItem item = table.getItem(pt);
-			if (item == null)
-				return;
-			for (int i = 0; i < columnCount; i++) {
-				Rectangle rect = item.getBounds(i);
-				if (rect.contains(pt)) {
-					int index = table.indexOf(item);
-					System.out.println("Item " + index + "-" + i);
-				}
+	table.addListener(SWT.MouseDown, event -> {
+		Point pt = new Point(event.x, event.y);
+		TableItem item = table.getItem(pt);
+		if (item == null)
+			return;
+		for (int i = 0; i < columnCount; i++) {
+			Rectangle rect = item.getBounds(i);
+			if (rect.contains(pt)) {
+				int index = table.indexOf(item);
+				System.out.println("Item " + index + "-" + i);
 			}
 		}
 	});

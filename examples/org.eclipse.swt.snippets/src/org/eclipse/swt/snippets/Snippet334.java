@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2010 IBM Corporation and others.
+ * Copyright (c) 2000, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -12,10 +12,10 @@ package org.eclipse.swt.snippets;
 
 /*
  * SWT accessibility snippet: respond to text-based questions from an AT
- * 
+ *
  * For a list of all SWT example snippets see
  * http://www.eclipse.org/swt/snippets/
- * 
+ *
  * @since 3.6
  */
 import org.eclipse.swt.*;
@@ -39,27 +39,21 @@ public static void main(String[] arg) {
 		label.setText("Test:");
 		canvas = new Canvas(shell, SWT.MULTI | SWT.BORDER);
 		final Caret caret = new Caret (canvas, SWT.NONE);
-		canvas.addPaintListener(new PaintListener() {
-			@Override
-			public void paintControl(PaintEvent e) {
-				GC gc = e.gc;
-				gc.drawText(text, 10, 10);
-				caret.setBounds (10, 10, 2, gc.getFontMetrics().getHeight());
-				Rectangle rect = canvas.getClientArea();
-				if (canvas.isFocusControl()) {
-					gc.drawFocus(rect.x, rect.y, rect.width, rect.height);
-				}
+		canvas.addPaintListener(e -> {
+			GC gc = e.gc;
+			gc.drawText(text, 10, 10);
+			caret.setBounds (10, 10, 2, gc.getFontMetrics().getHeight());
+			Rectangle rect = canvas.getClientArea();
+			if (canvas.isFocusControl()) {
+				gc.drawFocus(rect.x, rect.y, rect.width, rect.height);
 			}
 		});
-		canvas.addTraverseListener(new TraverseListener() {
-			@Override
-			public void keyTraversed(TraverseEvent e) {
-				switch (e.detail) {
-					case SWT.TRAVERSE_TAB_NEXT:
-					case SWT.TRAVERSE_TAB_PREVIOUS:
-						e.doit = true; // enable traversal
-						break;
-				}
+		canvas.addTraverseListener(e -> {
+			switch (e.detail) {
+				case SWT.TRAVERSE_TAB_NEXT:
+				case SWT.TRAVERSE_TAB_PREVIOUS:
+					e.doit = true; // enable traversal
+					break;
 			}
 		});
 		canvas.addKeyListener(new KeyAdapter() {
@@ -147,7 +141,7 @@ public static void main(String[] arg) {
 				switch (e.type) {
 					case ACC.TEXT_BOUNDARY_ALL:
 						start = e.start;
-						end = e.end; 
+						end = e.end;
 						break;
 					case ACC.TEXT_BOUNDARY_CHAR:
 						start = e.count >= 0 ? e.start + e.count : e.start - e.count;
@@ -173,7 +167,7 @@ public static void main(String[] arg) {
 						String[] lines = new String[lineCount];
 						for (int i = 0; i < lines.length; i++) {
 							index = text.indexOf("\n", index);
-							lines[i] = index != -1 ? 
+							lines[i] = index != -1 ?
 											text.substring(lastIndex, index) :
 											text.substring(lastIndex);
 							lastIndex = index;

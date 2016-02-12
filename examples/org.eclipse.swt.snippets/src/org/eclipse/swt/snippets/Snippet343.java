@@ -13,7 +13,7 @@ package org.eclipse.swt.snippets;
 /*
  * ExpandBar snippet: change an ExpandItem's height in response to a change in a
  * contained Control
- * 
+ *
  * For a list of all SWT example snippets see
  * http://www.eclipse.org/swt/snippets/
  */
@@ -44,34 +44,26 @@ public static void main(String[] args) {
 	expandItem1.setControl(text);
 	text.setText("initial text that will wrap if it's long enough");
 
-	/* update the item's height if needed in response to changes in the text's size */ 
+	/* update the item's height if needed in response to changes in the text's size */
 	final int TRIAL_WIDTH = 100;
 	final int trimWidth = text.computeTrim(0, 0, TRIAL_WIDTH, 100).width - TRIAL_WIDTH;
-	text.addListener(SWT.Modify, new Listener() {
-		@Override
-		public void handleEvent(Event event) {
-			Point size = text.computeSize(text.getSize().x - trimWidth, SWT.DEFAULT);
-			if (expandItem1.getHeight() != size.y) {
-				expandItem1.setHeight(size.y);
-			}
+	text.addListener(SWT.Modify, event -> {
+		Point size = text.computeSize(text.getSize().x - trimWidth, SWT.DEFAULT);
+		if (expandItem1.getHeight() != size.y) {
+			expandItem1.setHeight(size.y);
 		}
 	});
-	expandBar.addListener(SWT.Resize, new Listener() {
-		@Override
-		public void handleEvent(Event event) {
-			/* 
-			 * The following is done asynchronously to allow the Text's width
-			 * to be changed before re-calculating its preferred height. 
-			 */
-			display.asyncExec(() -> {
-				if (text.isDisposed()) return;
-				Point size = text.computeSize(text.getSize().x - trimWidth, SWT.DEFAULT);
-				if (expandItem1.getHeight() != size.y) {
-					expandItem1.setHeight(size.y);
-				}
-			});
+	expandBar.addListener(SWT.Resize, event -> display.asyncExec(() -> {
+		/*
+		 * The following is done asynchronously to allow the Text's width
+		 * to be changed before re-calculating its preferred height.
+		 */
+		if (text.isDisposed()) return;
+		Point size = text.computeSize(text.getSize().x - trimWidth, SWT.DEFAULT);
+		if (expandItem1.getHeight() != size.y) {
+			expandItem1.setHeight(size.y);
 		}
-	});
+	}));
 
 	shell.open();
 	/* set the item's initial height */

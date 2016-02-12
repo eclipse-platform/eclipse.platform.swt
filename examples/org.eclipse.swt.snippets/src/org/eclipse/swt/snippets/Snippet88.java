@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2004 IBM Corporation and others.
+ * Copyright (c) 2000, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -23,7 +23,7 @@ import org.eclipse.swt.layout.*;
 import org.eclipse.swt.widgets.*;
 
 public class Snippet88 {
-	
+
 public static void main(String[] args) {
 	Display display = new Display();
 	Shell shell = new Shell(display);
@@ -37,7 +37,7 @@ public static void main(String[] args) {
 	}
 	column1.pack();
 	column2.pack();
-	
+
 	final TableEditor editor = new TableEditor(table);
 	//The editor must have the same size as the cell and must
 	//not be any smaller than 50 pixels.
@@ -46,27 +46,24 @@ public static void main(String[] args) {
 	editor.minimumWidth = 50;
 	// editing the second column
 	final int EDITABLECOLUMN = 1;
-	
+
 	table.addSelectionListener(new SelectionAdapter() {
 		@Override
 		public void widgetSelected(SelectionEvent e) {
 			// Clean up any previous editor control
 			Control oldEditor = editor.getEditor();
 			if (oldEditor != null) oldEditor.dispose();
-	
+
 			// Identify the selected row
 			TableItem item = (TableItem)e.item;
 			if (item == null) return;
-	
+
 			// The control that will be the editor must be a child of the Table
 			Text newEditor = new Text(table, SWT.NONE);
 			newEditor.setText(item.getText(EDITABLECOLUMN));
-			newEditor.addModifyListener(new ModifyListener() {
-				@Override
-				public void modifyText(ModifyEvent me) {
-					Text text = (Text)editor.getEditor();
-					editor.getItem().setText(EDITABLECOLUMN, text.getText());
-				}
+			newEditor.addModifyListener(me -> {
+				Text text = (Text)editor.getEditor();
+				editor.getItem().setText(EDITABLECOLUMN, text.getText());
 			});
 			newEditor.selectAll();
 			newEditor.setFocus();
@@ -75,7 +72,7 @@ public static void main(String[] args) {
 	});
 	shell.setSize(300, 300);
 	shell.open();
-	
+
 	while (!shell.isDisposed()) {
 		if (!display.readAndDispatch())
 			display.sleep();

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2009 IBM Corporation and others.
+ * Copyright (c) 2000, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -12,7 +12,7 @@ package org.eclipse.swt.snippets;
 
 /*
  * SWT Table snippet: scroll a Table one "page" at a time.
- * 
+ *
  * For a list of all SWT example snippets see
  * http://www.eclipse.org/swt/snippets/
  */
@@ -37,31 +37,25 @@ public static void main(String [] args) {
 	Button upButton = new Button(shell, SWT.PUSH);
 	upButton.setText("Scroll up one page");
 	upButton.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
-	upButton.addListener(SWT.Selection, new Listener() {
-		@Override
-		public void handleEvent(Event event) {
-			int height = table.getClientArea().height;
-			int visibleItemCount = height / table.getItemHeight();
-			int topIndex = table.getTopIndex();
-			int newTopIndex = Math.max(0, topIndex - visibleItemCount);
-			if (topIndex != newTopIndex) {
-				table.setTopIndex(newTopIndex);
-			}
+	upButton.addListener(SWT.Selection, event -> {
+		int height = table.getClientArea().height;
+		int visibleItemCount = height / table.getItemHeight();
+		int topIndex = table.getTopIndex();
+		int newTopIndex = Math.max(0, topIndex - visibleItemCount);
+		if (topIndex != newTopIndex) {
+			table.setTopIndex(newTopIndex);
 		}
 	});
 	Button downButton = new Button(shell, SWT.PUSH);
 	downButton.setText("Scroll down one page");
 	downButton.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
-	downButton.addListener(SWT.Selection, new Listener() {
-		@Override
-		public void handleEvent(Event event) {
-			int height = table.getClientArea().height;
-			int visibleItemCount = height / table.getItemHeight();
-			int topIndex = table.getTopIndex();
-			int newTopIndex = Math.min(table.getItemCount(), topIndex + visibleItemCount);
-			if (topIndex != newTopIndex) {
-				table.setTopIndex(newTopIndex);
-			}
+	downButton.addListener(SWT.Selection, event -> {
+		int height = table.getClientArea().height;
+		int visibleItemCount = height / table.getItemHeight();
+		int topIndex = table.getTopIndex();
+		int newTopIndex = Math.min(table.getItemCount(), topIndex + visibleItemCount);
+		if (topIndex != newTopIndex) {
+			table.setTopIndex(newTopIndex);
 		}
 	});
 	shell.open();

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2004 IBM Corporation and others.
+ * Copyright (c) 2000, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -9,7 +9,7 @@
  *     IBM Corporation - initial API and implementation
  *******************************************************************************/
 package org.eclipse.swt.snippets;
- 
+
 /*
  * Menu example snippet: fill a menu dynamically (when menu shown)
  *
@@ -17,7 +17,7 @@ package org.eclipse.swt.snippets;
  * http://www.eclipse.org/swt/snippets/
  */
 import org.eclipse.swt.*;
-import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.widgets.*;
 
 public class Snippet97 {
@@ -32,18 +32,15 @@ public static void main (String [] args) {
 		TreeItem item = new TreeItem (tree, SWT.NONE);
 		item.setText ("Item " + i);
 	}
-	menu.addListener (SWT.Show, new Listener () {
-		@Override
-		public void handleEvent (Event event) {
-			MenuItem [] menuItems = menu.getItems ();
-			for (int i=0; i<menuItems.length; i++) {
-				menuItems [i].dispose ();
-			}
-			TreeItem [] treeItems = tree.getSelection ();
-			for (int i=0; i<treeItems.length; i++) {
-				MenuItem menuItem = new MenuItem (menu, SWT.PUSH);
-				menuItem.setText (treeItems [i].getText ());
-			}
+	menu.addListener (SWT.Show, event -> {
+		MenuItem [] menuItems = menu.getItems ();
+		for (int i1=0; i1<menuItems.length; i1++) {
+			menuItems [i1].dispose ();
+		}
+		TreeItem [] treeItems = tree.getSelection ();
+		for (int i2=0; i2<treeItems.length; i2++) {
+			MenuItem menuItem = new MenuItem (menu, SWT.PUSH);
+			menuItem.setText (treeItems [i2].getText ());
 		}
 	});
 	Rectangle clientArea = shell.getClientArea ();
@@ -55,4 +52,4 @@ public static void main (String [] args) {
 	}
 	display.dispose ();
 }
-} 
+}

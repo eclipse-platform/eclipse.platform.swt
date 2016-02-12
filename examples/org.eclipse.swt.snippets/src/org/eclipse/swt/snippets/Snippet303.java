@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2008 IBM Corporation and others.
+ * Copyright (c) 2000, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -18,7 +18,7 @@ package org.eclipse.swt.snippets;
  *
  * This snippet works for all supported browser types (ie.- Browsers created with style
  * SWT.NONE).  For a Browser created with style SWT.MOZILLA an alternate approach would
- * be to use JavaXPCOM to hook the DOM listeners. 
+ * be to use JavaXPCOM to hook the DOM listeners.
  *
  * For a list of all SWT example snippets see
  * http://www.eclipse.org/swt/snippets/
@@ -49,13 +49,10 @@ public static void main(String [] args) {
 			browser.execute(SCRIPT);
 		}
 	});
-	browser.addStatusTextListener(new StatusTextListener() {
-		@Override
-		public void changed(StatusTextEvent event) {
-			if (event.text.startsWith("MOUSEDOWN: ")) {
-				System.out.println(event.text);
-				browser.execute("window.status = '';");
-			}
+	browser.addStatusTextListener(event -> {
+		if (event.text.startsWith("MOUSEDOWN: ")) {
+			System.out.println(event.text);
+			browser.execute("window.status = '';");
 		}
 	});
 	browser.setUrl("eclipse.org");

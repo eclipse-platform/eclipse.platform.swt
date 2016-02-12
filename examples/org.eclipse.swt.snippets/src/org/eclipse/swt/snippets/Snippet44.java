@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2004 IBM Corporation and others.
+ * Copyright (c) 2000, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -31,15 +31,10 @@ public static void main (String [] args) {
 	b.setText("Push to set cursor to hand");
 	Rectangle clientArea = shell.getClientArea ();
 	b.setBounds (clientArea.x + 10, clientArea.y + 10, 200, 200);
-	b.addListener (SWT.Selection, new Listener () {
-		@Override
-		public void handleEvent (Event e) {
-			b.setCursor (cursor);
-		}
-	});
+	b.addListener (SWT.Selection, e -> b.setCursor (cursor));
 	while (!shell.isDisposed ()) {
 		if (!display.readAndDispatch ()) display.sleep ();
 	}
 	display.dispose ();
 }
-} 
+}

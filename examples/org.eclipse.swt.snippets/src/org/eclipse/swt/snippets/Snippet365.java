@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015 IBM Corporation and others.
+ * Copyright (c) 2015, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -26,14 +26,14 @@ import org.eclipse.swt.widgets.*;
 public class Snippet365 {
 	static Image oldImage;
 	static Image newImage;
-	
+
 	// Containers
 	static Composite containerGroup;
 	static Canvas canvas;
 	static Composite composite;
 	static Group group;
 	static Sash sash;
-	
+
 	// Native
 	static Composite nativeGroup;
 	static Button buttonCheckBox;
@@ -60,7 +60,7 @@ public class Snippet365 {
 	static Table table;
 	static Tree tree;
 	static ExpandBar expandBar;
-	
+
 	// As Designed
 	static Composite defaultBackgroundGroup;
 	static Text text;
@@ -70,7 +70,7 @@ public class Snippet365 {
 	static Slider slider;
 	static List list;
 	static CCombo ccombo;
-	
+
 	public static void main(String[] args) {
 		final Display display = new Display();
 		final Shell shell = new Shell(display);
@@ -84,21 +84,18 @@ public class Snippet365 {
 		// shell.setBackground(display.getSystemColor(SWT.COLOR_CYAN));
 
 		// Gradient background for Shell
-		shell.addListener(SWT.Resize, new Listener() {
-			@Override
-			public void handleEvent(Event event) {
-				Rectangle rect = shell.getClientArea();
-				Image newImage = new Image(display, Math.max(1, rect.width), 1);
-				GC gc = new GC(newImage);
-				gc.setForeground(display.getSystemColor(SWT.COLOR_BLUE));
-				gc.setBackground(display.getSystemColor(SWT.COLOR_GREEN));
-				gc.fillGradientRectangle(rect.x, rect.y, rect.width, 1, false);
-				gc.dispose();
-				shell.setBackgroundImage(newImage);
-				if (oldImage != null)
-					oldImage.dispose();
-				oldImage = newImage;
-			}
+		shell.addListener(SWT.Resize, event -> {
+			Rectangle rect = shell.getClientArea();
+			Image newImage = new Image(display, Math.max(1, rect.width), 1);
+			GC gc = new GC(newImage);
+			gc.setForeground(display.getSystemColor(SWT.COLOR_BLUE));
+			gc.setBackground(display.getSystemColor(SWT.COLOR_GREEN));
+			gc.fillGradientRectangle(rect.x, rect.y, rect.width, 1, false);
+			gc.dispose();
+			shell.setBackgroundImage(newImage);
+			if (oldImage != null)
+				oldImage.dispose();
+			oldImage = newImage;
 		});
 
 		// Transparent
@@ -119,7 +116,7 @@ public class Snippet365 {
 					for (TabItem item : tabFolder.getItems()) {
 						item.getControl().setBackground(display.getSystemColor(SWT.COLOR_TRANSPARENT));
 					}
-					
+
 					// Native
 					nativeGroup.setBackground(display.getSystemColor(SWT.COLOR_TRANSPARENT));
 					toolBar.setBackground(display.getSystemColor(SWT.COLOR_TRANSPARENT));
@@ -155,7 +152,7 @@ public class Snippet365 {
 					expandBar.setBackground(display.getSystemColor(SWT.COLOR_TRANSPARENT));
 					table.setBackground(display.getSystemColor(SWT.COLOR_TRANSPARENT));
 					tree.setBackground(display.getSystemColor(SWT.COLOR_TRANSPARENT));
-					
+
 					// ItemGroup
 					itemGroup.setBackground(display.getSystemColor(SWT.COLOR_TRANSPARENT));
 				} else {
@@ -174,7 +171,7 @@ public class Snippet365 {
 					slider.setBackground(display.getSystemColor(SWT.COLOR_CYAN));
 					list.setBackground(display.getSystemColor(SWT.COLOR_CYAN));
 					text.setBackground(display.getSystemColor(SWT.COLOR_CYAN));
-					
+
 					// ContainerGroup
 					containerGroup.setBackground(display.getSystemColor(SWT.COLOR_WIDGET_BACKGROUND));
 					canvas.setBackground(display.getSystemColor(SWT.COLOR_WIDGET_BACKGROUND));
@@ -207,7 +204,7 @@ public class Snippet365 {
 					expandBar.setBackground(display.getSystemColor(SWT.COLOR_CYAN));
 					table.setBackground(display.getSystemColor(SWT.COLOR_CYAN));
 					tree.setBackground(display.getSystemColor(SWT.COLOR_CYAN));
-					
+
 					// ItemGroup
 					itemGroup.setBackground(display.getSystemColor(SWT.COLOR_WIDGET_BACKGROUND));
 				}
@@ -225,7 +222,7 @@ public class Snippet365 {
 		layout = new RowLayout();
 		layout.spacing = 20;
 		containerGroup.setLayout(layout);
-		
+
 		// Native
 		nativeGroup = new Composite(shell, SWT.NONE);
 		nativeGroup.setBackground(display.getSystemColor(SWT.COLOR_WIDGET_BACKGROUND));
@@ -233,7 +230,7 @@ public class Snippet365 {
 		layout = new RowLayout();
 		layout.spacing = 20;
 		nativeGroup.setLayout(layout);
-		
+
 		// Custom
 		customGroup = new Composite(shell, SWT.NONE);
 		customGroup.setBackground(display.getSystemColor(SWT.COLOR_WIDGET_BACKGROUND));
@@ -257,17 +254,17 @@ public class Snippet365 {
 		layout = new RowLayout();
 		layout.spacing = 20;
 		itemGroup.setLayout(layout);
-		
+
 		// Label
 		label = new Label(nativeGroup, SWT.NONE);
 		label.setText("Label");
-		
+
 		// Radio button
 		radio = new Button(nativeGroup, SWT.RADIO);
 		radio.setText("Radio Button");
 		radio.setSelection(true);
 		radio.setBackground(display.getSystemColor(SWT.COLOR_CYAN));
-		
+
 		// Checkbox button with image
 		check = new Button(nativeGroup, SWT.CHECK);
 		check.setText("CheckBox Image");
@@ -277,7 +274,7 @@ public class Snippet365 {
 		// Push Button
 		push = new Button(defaultBackgroundGroup, SWT.PUSH);
 		push.setText("Push Button");
-		
+
 		// Toolbar
 		toolBar = new ToolBar(nativeGroup, SWT.FLAT);
 		toolBar.pack();
@@ -298,7 +295,7 @@ public class Snippet365 {
 		scale = new Scale(nativeGroup, SWT.None);
 		scale.setMaximum(100);
 		scale.setSelection(20);
-		
+
 		// Link
 		link = new Link(nativeGroup, SWT.NONE);
 		link.setText("<A>Sample link</A>");
@@ -310,24 +307,21 @@ public class Snippet365 {
 		list.add("List_two");
 		list.add("List_three");
 		list.add("List_four");
-		
+
 		// Canvas
 		canvas = new Canvas (containerGroup, SWT.NONE);
 		canvas.setToolTipText("Canvas");
-		canvas.addPaintListener(new PaintListener () {
-			@Override
-			public void paintControl(PaintEvent e) {
-				GC gc = e.gc;
-				gc.setForeground(display.getSystemColor(SWT.COLOR_RED));
-				gc.drawRectangle(e.x+1, e.y+1, e.width-2, e.height-2);
-				gc.drawArc(2, 2, e.width-4, e.height-4, 0, 360);
-			}
+		canvas.addPaintListener(e -> {
+			GC gc = e.gc;
+			gc.setForeground(display.getSystemColor(SWT.COLOR_RED));
+			gc.drawRectangle(e.x+1, e.y+1, e.width-2, e.height-2);
+			gc.drawArc(2, 2, e.width-4, e.height-4, 0, 360);
 		});
-		
+
 		// Composite
 		composite = new Composite(containerGroup, SWT.BORDER | SWT.V_SCROLL | SWT.H_SCROLL);
 		composite.setToolTipText("Composite");
-		
+
 		// TabFolder
 		tabFolder = new TabFolder(containerGroup, SWT.BORDER);
 		tabFolder.setBackground(display.getSystemColor(SWT.COLOR_CYAN));
@@ -340,7 +334,7 @@ public class Snippet365 {
 			tabItem.getControl().setBackground(display.getSystemColor(SWT.COLOR_CYAN));
 		}
 		tabFolder.pack ();
-		
+
 		// Group
 		group = new Group(containerGroup, SWT.NONE);
 		group.setText("Group");
@@ -350,7 +344,7 @@ public class Snippet365 {
 		sash.setBackground(display.getSystemColor(SWT.COLOR_DARK_CYAN));
 		sash.setLayoutData(new RowData(100, 100));
 		sash.setToolTipText("Sash");
-		
+
 		// SashForm
 		sashForm = new SashForm(containerGroup, SWT.HORIZONTAL | SWT.BORDER);
 		Label leftLabel = new Label(sashForm, SWT.NONE);
@@ -361,23 +355,23 @@ public class Snippet365 {
 		// DateTime
 		dateTime = new DateTime(defaultBackgroundGroup, SWT.NONE);
 		dateTime.setBackground(display.getSystemColor(SWT.COLOR_CYAN));
-		
+
 		// Text
 		text = new Text(nativeGroup, SWT.BORDER);
 		text.setBackground(display.getSystemColor(SWT.COLOR_CYAN));
 		text.setText("text");
-		
+
 		// ProgressBar
 		progressBar = new ProgressBar(defaultBackgroundGroup, SWT.NONE);
 		progressBar.setMaximum(100);
 		progressBar.setSelection(80);
-		
+
 		// Combo
 		combo = new Combo(defaultBackgroundGroup, SWT.BORDER);
 		combo.setBackground(display.getSystemColor(SWT.COLOR_CYAN));
 		combo.add("combo");
 		combo.setText("combo");
-		
+
 		// Slider
 		slider = new Slider(nativeGroup, SWT.HORIZONTAL | SWT.BORDER);
 		slider.setSelection(20);
@@ -433,7 +427,7 @@ public class Snippet365 {
 		tableItem.setText("TableItem - One");
 		tableItem = new TableItem(table, SWT.NONE);
 		tableItem.setText("TableItem - Two");
-		
+
 		// Tree
 		tree = new Tree(itemGroup, SWT.NONE);
 		TreeItem treeItem = new TreeItem (tree, SWT.NONE);
@@ -444,7 +438,7 @@ public class Snippet365 {
 		childItem.setText("Child2");
 		treeItem.setExpanded(true);
 		tree.setBackground(display.getSystemColor(SWT.COLOR_CYAN));
-		
+
 		// ExpandBar
 		expandBar = new ExpandBar (itemGroup, SWT.V_SCROLL);
 		expandBar.setBackground(display.getSystemColor(SWT.COLOR_CYAN));
@@ -454,7 +448,7 @@ public class Snippet365 {
 			item1.setExpanded(true);
 			item1.setHeight(20);
 		}
-		
+
 		shell.open();
 		shell.pack();
 		while (!shell.isDisposed()) {

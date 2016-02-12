@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2004 IBM Corporation and others.
+ * Copyright (c) 2000, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -9,7 +9,7 @@
  *     IBM Corporation - initial API and implementation
  *******************************************************************************/
 package org.eclipse.swt.snippets;
- 
+
 /*
  * Shell example snippet: prevent escape from closing a dialog
  *
@@ -18,7 +18,7 @@ package org.eclipse.swt.snippets;
  */
 import org.eclipse.swt.*;
 import org.eclipse.swt.events.*;
-import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.widgets.*;
 
 public class Snippet4 {
@@ -35,12 +35,9 @@ public class Snippet4 {
 			@Override
 			public void widgetSelected(SelectionEvent se) {
 				Shell dialog = new Shell(shell, SWT.DIALOG_TRIM);
-				dialog.addListener(SWT.Traverse, new Listener() {
-					@Override
-					public void handleEvent(Event e) {
-						if (e.detail == SWT.TRAVERSE_ESCAPE) {
-							e.doit = false;
-						}
+				dialog.addListener(SWT.Traverse, e -> {
+					if (e.detail == SWT.TRAVERSE_ESCAPE) {
+						e.doit = false;
 					}
 				});
 				dialog.open();

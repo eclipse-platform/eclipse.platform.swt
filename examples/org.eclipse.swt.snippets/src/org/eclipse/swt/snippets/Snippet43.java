@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2004 IBM Corporation and others.
+ * Copyright (c) 2000, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -39,20 +39,17 @@ public static void main (String [] args) {
 	caret.setLocation (10, 10);
 	caret.setImage (image);
 	caret.setVisible (true);
-	shell.addListener(SWT.Paint, new Listener() {
-		@Override
-		public void handleEvent(Event event) {
-			GC gc = event.gc;
-			gc.drawImage (image, 10, 64);
-			gc.drawString ("Test", 12, 12);
-		}
+	shell.addListener(SWT.Paint, event -> {
+		GC gc1 = event.gc;
+		gc1.drawImage (image, 10, 64);
+		gc1.drawString ("Test", 12, 12);
 	});
 	shell.open ();
-	
+
 	while (!shell.isDisposed ()) {
 		if (!display.readAndDispatch ()) display.sleep ();
 	}
 	image.dispose ();
 	display.dispose ();
 }
-} 
+}

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011 IBM Corporation and others.
+ * Copyright (c) 2011, 2016 IBM Corporation and others.
  * All rights reserved. This Example Content is intended to demonstrate
  * usage of Eclipse technology. It is provided to you under the terms and
  * conditions of the Eclipse Distribution License v1.0 which is available
@@ -17,12 +17,12 @@ package org.eclipse.swt.snippets;
  * http://www.eclipse.org/swt/snippets/
  */
 import org.eclipse.swt.*;
-import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.layout.*;
+import org.eclipse.swt.widgets.*;
 
 public class Snippet358 {
-	
+
 public static void main(String [] args) {
 	Display display = new Display();
 	Shell shell = new Shell(display);
@@ -39,22 +39,19 @@ public static void main(String [] args) {
 
 	Button button = new Button(shell, SWT.PUSH);
 	button.setText("Print item visibilities");
-	button.addListener(SWT.Selection, new Listener() {
-		@Override
-		public void handleEvent(Event event) {
-			Rectangle treeBounds = new Rectangle(0, 0, 0, 0);
-			Point treeSize = tree.getSize();
-			treeBounds.width = treeSize.x;
-			treeBounds.height = treeSize.y;
-			TreeItem[] rootItems = tree.getItems();
-			for (int i = 0; i < rootItems.length; i++) {
-				TreeItem rootItem = rootItems[i];
-				System.out.println(rootItem.getText() + " is at least partially visible? " + treeBounds.intersects(rootItem.getBounds()));
-				TreeItem[] childItems = rootItem.getItems();
-				for (int j = 0; j < childItems.length; j++) {
-					TreeItem childItem = childItems[j];
-					System.out.println(childItem.getText() + " is at least partially visible? " + treeBounds.intersects(childItem.getBounds()));
-				}
+	button.addListener(SWT.Selection, event -> {
+		Rectangle treeBounds = new Rectangle(0, 0, 0, 0);
+		Point treeSize = tree.getSize();
+		treeBounds.width = treeSize.x;
+		treeBounds.height = treeSize.y;
+		TreeItem[] rootItems = tree.getItems();
+		for (int i = 0; i < rootItems.length; i++) {
+			TreeItem rootItem = rootItems[i];
+			System.out.println(rootItem.getText() + " is at least partially visible? " + treeBounds.intersects(rootItem.getBounds()));
+			TreeItem[] childItems = rootItem.getItems();
+			for (int j = 0; j < childItems.length; j++) {
+				TreeItem childItem = childItems[j];
+				System.out.println(childItem.getText() + " is at least partially visible? " + treeBounds.intersects(childItem.getBounds()));
 			}
 		}
 	});

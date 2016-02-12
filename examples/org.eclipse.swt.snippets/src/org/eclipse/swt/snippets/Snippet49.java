@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2004 IBM Corporation and others.
+ * Copyright (c) 2000, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -30,13 +30,10 @@ public static void main (String [] args) {
 		ToolItem item = new ToolItem (toolBar, SWT.PUSH);
 		item.setText ("Item " + i);
 	}
-	shell.addListener (SWT.Resize, new Listener () {
-		@Override
-		public void handleEvent (Event e) {
-			Rectangle rect = shell.getClientArea ();
-			Point size = toolBar.computeSize (rect.width, SWT.DEFAULT);
-			toolBar.setSize (size);
-		}
+	shell.addListener (SWT.Resize, e -> {
+		Rectangle rect = shell.getClientArea ();
+		Point size = toolBar.computeSize (rect.width, SWT.DEFAULT);
+		toolBar.setSize (size);
 	});
 	Rectangle clientArea = shell.getClientArea ();
 	toolBar.setLocation (clientArea.x, clientArea.y);
@@ -48,4 +45,4 @@ public static void main (String [] args) {
 	}
 	display.dispose ();
 }
-} 
+}
