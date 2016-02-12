@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2015 IBM Corporation and others. All rights reserved.
+ * Copyright (c) 2000, 2016 IBM Corporation and others. All rights reserved.
  * The contents of this file are made available under the terms
  * of the GNU Lesser General Public License (LGPL) Version 2.1 that
  * accompanies this distribution (lgpl-v21.txt).  The LGPL is also
@@ -554,6 +554,7 @@ char * OS_nativeFunctionNames[] = {
 	"_1gdk_1region_1subtract",
 	"_1gdk_1region_1union",
 	"_1gdk_1region_1union_1with_1rect",
+	"_1gdk_1rgba_1parse",
 	"_1gdk_1rgba_1to_1string",
 	"_1gdk_1screen_1get_1default",
 	"_1gdk_1screen_1get_1monitor_1at_1point",
@@ -730,6 +731,7 @@ char * OS_nativeFunctionNames[] = {
 	"_1gtk_1container_1set_1border_1width",
 	"_1gtk_1css_1provider_1load_1from_1data",
 	"_1gtk_1css_1provider_1new",
+	"_1gtk_1css_1provider_1to_1string",
 	"_1gtk_1dialog_1add_1button",
 	"_1gtk_1dialog_1run",
 	"_1gtk_1drag_1begin",
@@ -1354,6 +1356,7 @@ char * OS_nativeFunctionNames[] = {
 	"_1gtk_1widget_1get_1has_1window",
 	"_1gtk_1widget_1get_1mapped",
 	"_1gtk_1widget_1get_1modifier_1style",
+	"_1gtk_1widget_1get_1name",
 	"_1gtk_1widget_1get_1pango_1context",
 	"_1gtk_1widget_1get_1parent",
 	"_1gtk_1widget_1get_1parent_1window",

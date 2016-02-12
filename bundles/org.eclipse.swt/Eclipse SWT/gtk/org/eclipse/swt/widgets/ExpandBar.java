@@ -427,6 +427,16 @@ void reskinChildren (int flags) {
 }
 
 @Override
+void setWidgetBackground  () {
+	if (OS.GTK_VERSION >= OS.VERSION(3, 16, 0)) {
+		GdkColor color = (state & BACKGROUND) != 0 ? getBackgroundColor () : null;
+		super.setBackgroundColor (color);
+	} else {
+		super.setWidgetBackground();
+	}
+}
+
+@Override
 void setFontDescription (long /*int*/ font) {
 	super.setFontDescription (font);
 	for (int i = 0; i < itemCount; i++) {

@@ -300,6 +300,7 @@
 #define gdk_region_polygon_LIB LIB_GDK
 #define gdk_region_get_rectangles_LIB LIB_GDK
 #define gdk_rgba_to_string_LIB LIB_GDK
+#define gdk_rgba_parse_LIB LIB_GDK
 #define gdk_screen_get_default_LIB LIB_GDK
 #define gdk_screen_get_monitor_at_point_LIB LIB_GDK
 #define gdk_screen_get_monitor_at_window_LIB LIB_GDK
@@ -352,6 +353,7 @@
 #define gtk_window_set_skip_taskbar_hint_LIB LIB_GTK
 #define gtk_widget_is_composited_LIB LIB_GTK
 #define gtk_widget_get_allocation_LIB LIB_GTK
+#define gtk_widget_get_name_LIB LIB_GTK
 #define gtk_widget_size_request_LIB LIB_GTK
 #define gtk_widget_get_default_style_LIB LIB_GTK
 #define gtk_widget_get_preferred_size_LIB LIB_GTK
@@ -519,6 +521,7 @@
 #define gtk_cell_renderer_get_preferred_height_for_width_LIB LIB_GTK
 #define gtk_css_provider_load_from_data_LIB LIB_GTK
 #define gtk_css_provider_new_LIB LIB_GTK
+#define gtk_css_provider_to_string_LIB LIB_GTK
 #define gtk_icon_set_render_icon_pixbuf_LIB LIB_GTK
 #define gtk_drag_set_icon_surface_LIB LIB_GTK
 #define gtk_accel_label_set_accel_LIB LIB_GTK

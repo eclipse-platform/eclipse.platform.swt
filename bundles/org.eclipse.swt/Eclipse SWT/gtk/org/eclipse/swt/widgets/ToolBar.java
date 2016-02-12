@@ -132,7 +132,7 @@ void createHandle (int index) {
 	handle = OS.gtk_toolbar_new ();
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 	OS.gtk_container_add (fixedHandle, handle);
-	if ((style & SWT.FLAT) != 0) {
+	if ((style & SWT.FLAT) != 0 && !OS.GTK3) {
 		byte [] swt_toolbar_flat = Converter.wcsToMbcs (null, "swt-toolbar-flat", true);
 		OS.gtk_widget_set_name (handle, swt_toolbar_flat);
 	}

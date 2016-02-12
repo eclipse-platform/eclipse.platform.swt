@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2015 IBM Corporation and others. All rights reserved.
+ * Copyright (c) 2000, 2016 IBM Corporation and others. All rights reserved.
  * The contents of this file are made available under the terms
  * of the GNU Lesser General Public License (LGPL) Version 2.1 that
  * accompanies this distribution (lgpl-v21.txt).  The LGPL is also
@@ -564,6 +564,7 @@ typedef enum {
 	_1gdk_1region_1subtract_FUNC,
 	_1gdk_1region_1union_FUNC,
 	_1gdk_1region_1union_1with_1rect_FUNC,
+	_1gdk_1rgba_1parse_FUNC,
 	_1gdk_1rgba_1to_1string_FUNC,
 	_1gdk_1screen_1get_1default_FUNC,
 	_1gdk_1screen_1get_1monitor_1at_1point_FUNC,
@@ -740,6 +741,7 @@ typedef enum {
 	_1gtk_1container_1set_1border_1width_FUNC,
 	_1gtk_1css_1provider_1load_1from_1data_FUNC,
 	_1gtk_1css_1provider_1new_FUNC,
+	_1gtk_1css_1provider_1to_1string_FUNC,
 	_1gtk_1dialog_1add_1button_FUNC,
 	_1gtk_1dialog_1run_FUNC,
 	_1gtk_1drag_1begin_FUNC,
@@ -1364,6 +1366,7 @@ typedef enum {
 	_1gtk_1widget_1get_1has_1window_FUNC,
 	_1gtk_1widget_1get_1mapped_FUNC,
 	_1gtk_1widget_1get_1modifier_1style_FUNC,
+	_1gtk_1widget_1get_1name_FUNC,
 	_1gtk_1widget_1get_1pango_1context_FUNC,
 	_1gtk_1widget_1get_1parent_FUNC,
 	_1gtk_1widget_1get_1parent_1window_FUNC,

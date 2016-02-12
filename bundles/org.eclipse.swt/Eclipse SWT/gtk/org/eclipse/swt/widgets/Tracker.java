@@ -12,9 +12,10 @@ package org.eclipse.swt.widgets;
 
 
 import org.eclipse.swt.*;
-import org.eclipse.swt.internal.gtk.*;
-import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.events.*;
+import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.internal.*;
+import org.eclipse.swt.internal.gtk.*;
 
 /**
  *  Instances of this class implement rubber banding rectangles that are
@@ -754,7 +755,19 @@ public boolean open () {
 		OS.gtk_widget_realize (overlay);
 		long /*int*/ overlayWindow = OS.gtk_widget_get_window (overlay);
 		OS.gdk_window_set_override_redirect (overlayWindow, true);
-		OS.gtk_widget_override_background_color (overlay, OS.GTK_STATE_FLAG_NORMAL, new GdkRGBA());
+		if (OS.GTK_VERSION < OS.VERSION (3, 16, 0)) {
+			OS.gtk_widget_override_background_color (overlay, OS.GTK_STATE_FLAG_NORMAL, new GdkRGBA());
+		} else {
+			String css = "GtkWindow {background-color: rgb(0,0,0);}";
+			long /*int*/ provider = 0;
+			long /*int*/ context = OS.gtk_widget_get_style_context (overlay);
+			if (provider == 0) {
+				provider = OS.gtk_css_provider_new ();
+				OS.gtk_style_context_add_provider (context, provider, OS.GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
+				OS.g_object_unref (provider);
+			}
+			OS.gtk_css_provider_load_from_data (provider, Converter.wcsToMbcs (null, css, true), -1, null);
+		}
 		long /*int*/ region = OS.gdk_region_new ();
 		OS.gtk_widget_shape_combine_region (overlay, region);
 		OS.gtk_widget_input_shape_combine_region (overlay, region);

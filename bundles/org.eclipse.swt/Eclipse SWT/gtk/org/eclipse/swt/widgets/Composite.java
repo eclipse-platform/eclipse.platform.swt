@@ -64,7 +64,6 @@ public class Composite extends Scrollable {
 	Layout layout;
 	Control[] tabList;
 	int layoutCount, backgroundMode;
-	GdkRGBA background;
 
 	static final String NO_INPUT_METHOD = "org.eclipse.swt.internal.gtk.noInputMethod"; //$NON-NLS-1$
 
@@ -664,23 +663,6 @@ public Rectangle getClientArea () {
 		return new Rectangle (0, 0, width, height);
 	}
 	return super.getClientArea();
-}
-
-@Override
-GdkColor getContextBackground () {
-	if (OS.GTK_VERSION >= OS.VERSION(3, 16, 0)) {
-		if (background != null) {
-			GdkColor color = new GdkColor ();
-			color.red = (short)(background.red * 0xFFFF);
-			color.green = (short)(background.green * 0xFFFF);
-			color.blue = (short)(background.blue * 0xFFFF);
-			return color;
-		} else {
-			return display.COLOR_WIDGET_BACKGROUND;
-		}
-	} else {
-		return super.getContextBackground();
-	}
 }
 
 /**
@@ -1461,18 +1443,6 @@ public void setBackgroundMode (int mode) {
 	Control[] children = _getChildren ();
 	for (int i = 0; i < children.length; i++) {
 		children [i].updateBackgroundMode ();
-	}
-}
-
-@Override
-void setBackgroundColor (long /*int*/ context, long /*int*/ handle, GdkRGBA rgba) {
-	if (OS.GTK_VERSION >= OS.VERSION(3, 16, 0)) {
-		background = rgba;
-		String color = gtk_rgba_to_css_string(background);
-		String css = "SwtFixed {background-color: " + color + "}";
-		gtk_css_provider_load_from_css(context, css);
-	} else {
-		super.setBackgroundColor(context, handle, rgba);
 	}
 }
 

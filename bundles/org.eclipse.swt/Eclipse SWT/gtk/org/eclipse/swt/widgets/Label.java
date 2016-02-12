@@ -484,9 +484,11 @@ private void gtk_label_set_align (float xalign, float yalign) {
 @Override
 void setBackgroundColor (GdkColor color) {
 	super.setBackgroundColor (color);
-	setBackgroundColor(fixedHandle, color);
-	if (labelHandle != 0) setBackgroundColor(labelHandle, color);
-	if (imageHandle != 0) setBackgroundColor(imageHandle, color);
+	if (OS.GTK_VERSION < OS.VERSION(3, 16, 0)) {
+		setBackgroundColor(fixedHandle, color);
+		if (labelHandle != 0) setBackgroundColor(labelHandle, color);
+		if (imageHandle != 0) setBackgroundColor(imageHandle, color);
+	}
 }
 
 @Override
@@ -637,6 +639,16 @@ public void setText (String string) {
 	OS.gtk_label_set_text_with_mnemonic (labelHandle, buffer);
 	OS.gtk_widget_hide (imageHandle);
 	OS.gtk_widget_show (labelHandle);
+}
+
+@Override
+void setWidgetBackground  () {
+	if (OS.GTK_VERSION >= OS.VERSION(3, 16, 0)) {
+		GdkColor color = (state & BACKGROUND) != 0 ? getBackgroundColor () : null;
+		super.setBackgroundColor (color);
+	} else {
+		super.setWidgetBackground();
+	}
 }
 
 @Override

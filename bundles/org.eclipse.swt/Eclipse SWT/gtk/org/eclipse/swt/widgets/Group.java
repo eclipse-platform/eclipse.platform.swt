@@ -294,10 +294,17 @@ void releaseWidget () {
 
 @Override
 void setBackgroundColor (GdkColor color) {
-	super.setBackgroundColor (color);
-	setBackgroundColor (fixedHandle, color);
-	// Bug 453827 - client handle should also be painted as it's visible to the user now.
-	setBackgroundColor (clientHandle, color);
+	if (OS.GTK_VERSION >= OS.VERSION(3, 16, 0)) {
+		// With CSS theming we only need to set the background color
+		// of the parent SwtFixed container.
+		setBackgroundColor (fixedHandle, color);
+		return;
+	} else {
+		super.setBackgroundColor (color);
+		setBackgroundColor (fixedHandle, color);
+		// Bug 453827 - client handle should also be painted as it's visible to the user now.
+		setBackgroundColor (clientHandle, color);
+	}
 }
 
 @Override
