@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2008 IBM Corporation and others.
+ * Copyright (c) 2000, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -23,7 +23,7 @@ import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.widgets.*;
 
 public class Snippet296 {
-	
+
 public static void main (String[] args) {
 	final Display display = new Display ();
 	Shell shell = new Shell (display);
@@ -81,37 +81,24 @@ public static void main (String[] args) {
 	 * The following listener scrolls the Tree one item at a time
 	 * in response to MouseWheel events.
 	 */
-	tree.addListener(SWT.MouseWheel, new Listener() {
-		@Override
-		public void handleEvent(Event event) {
-			Point origin = sc.getOrigin();
-			if (event.count < 0) {
-				origin.y = Math.min(origin.y + tree.getItemHeight(), tree.getSize().y);
-			} else {
-				origin.y = Math.max(origin.y - tree.getItemHeight(), 0);
-			}
-			sc.setOrigin(origin);
+	tree.addListener(SWT.MouseWheel, event -> {
+		Point origin = sc.getOrigin();
+		if (event.count < 0) {
+			origin.y = Math.min(origin.y + tree.getItemHeight(), tree.getSize().y);
+		} else {
+			origin.y = Math.max(origin.y - tree.getItemHeight(), 0);
 		}
+		sc.setOrigin(origin);
 	});
 
 	Button downButton = new Button (shell, SWT.PUSH);
 	downButton.setBounds (10, 220, 120, 30);
 	downButton.setText ("Down 10px");
-	downButton.addListener (SWT.Selection, new Listener () {
-		@Override
-		public void handleEvent (Event event) {
-			sc.setOrigin (0, sc.getOrigin ().y + 10);
-		}
-	});
+	downButton.addListener (SWT.Selection, event -> sc.setOrigin (0, sc.getOrigin ().y + 10));
 	Button upButton = new Button (shell, SWT.PUSH);
 	upButton.setBounds (140, 220, 120, 30);
 	upButton.setText ("Up 10px");
-	upButton.addListener (SWT.Selection, new Listener () {
-		@Override
-		public void handleEvent (Event event) {
-			sc.setOrigin (0, sc.getOrigin ().y - 10);
-		}
-	});
+	upButton.addListener (SWT.Selection, event -> sc.setOrigin (0, sc.getOrigin ().y - 10));
 	shell.open ();
 	while (!shell.isDisposed ()) {
 		if (!display.readAndDispatch ()) display.sleep ();

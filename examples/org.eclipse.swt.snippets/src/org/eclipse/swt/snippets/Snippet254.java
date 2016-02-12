@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2007 IBM Corporation and others.
+ * Copyright (c) 2000, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -18,8 +18,8 @@ package org.eclipse.swt.snippets;
  */
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.layout.*;
+import org.eclipse.swt.widgets.*;
 
 public class Snippet254 {
 
@@ -39,7 +39,7 @@ public class Snippet254 {
 			count = parentItem == null ? tree.getItemCount() : parentItem.getItemCount();
 		}
 	}
-	
+
 	public static void main(String[] args) {
 		final Display display = new Display();
 		final Shell shell = new Shell(display);
@@ -56,7 +56,7 @@ public class Snippet254 {
 				item1.setText ("Item " + i + " " + j + " is quite long");
 				for (int k=0; k<3; k++) {
 					TreeItem item2 = new TreeItem (item1, SWT.NONE);
-					item2.setText ("Item " + i + " " + j + " " + k + " is quite long");	
+					item2.setText ("Item " + i + " " + j + " " + k + " is quite long");
 					for (int l=0; l<3; l++) {
 						TreeItem item3 = new TreeItem (item2, SWT.NONE);
 						item3.setText ("Item " + i + " " + j + " " + k + " " + l + " is quite long");
@@ -67,22 +67,19 @@ public class Snippet254 {
 		tree.setLayoutData(new RowData (200, 200));
 		final Button button = new Button (shell, SWT.PUSH);
 		button.setText ("Visible Items []");
-		button.addListener (SWT.Selection, new Listener () {
-			@Override
-			public void handleEvent (Event e) {
-				int visibleCount = 0;
-				Rectangle rect = tree.getClientArea ();
-				TreeItem item = tree.getTopItem ();
-				while (item != null) {
-					visibleCount++;
-					Rectangle itemRect = item.getBounds();
-					if (itemRect.y + itemRect.height > rect.y + rect.height) {
-						break;
-					}
-					item = nextItem (tree, item);
-				}				
-				button.setText ("Visible Items [" + visibleCount + "]");
+		button.addListener (SWT.Selection, e -> {
+			int visibleCount = 0;
+			Rectangle rect = tree.getClientArea ();
+			TreeItem item = tree.getTopItem ();
+			while (item != null) {
+				visibleCount++;
+				Rectangle itemRect = item.getBounds();
+				if (itemRect.y + itemRect.height > rect.y + rect.height) {
+					break;
+				}
+				item = nextItem (tree, item);
 			}
+			button.setText ("Visible Items [" + visibleCount + "]");
 		});
 		shell.pack();
 		shell.open();
@@ -91,4 +88,4 @@ public class Snippet254 {
 		}
 		display.dispose();
 	}
-} 
+}

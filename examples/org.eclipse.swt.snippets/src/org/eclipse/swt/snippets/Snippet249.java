@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2004 IBM Corporation and others.
+ * Copyright (c) 2000, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -18,7 +18,7 @@ package org.eclipse.swt.snippets;
  */
 import org.eclipse.swt.*;
 import org.eclipse.swt.custom.*;
-import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.layout.*;
 import org.eclipse.swt.widgets.*;
 
@@ -44,7 +44,7 @@ public static void main (String [] args) {
 	label.setText ("Label on page 1");
 	label.pack ();
 
-	// create the second page's content	
+	// create the second page's content
 	final Composite page1 = new Composite (contentPanel, SWT.NONE);
 	page1.setLayout (new RowLayout ());
 	Button button = new Button (page1, SWT.NONE);
@@ -55,13 +55,10 @@ public static void main (String [] args) {
 	Button pageButton = new Button (shell, SWT.PUSH);
 	pageButton.setText ("Push");
 	pageButton.setBounds (clientArea.x + 10, clientArea.y + 10, 80, 25);
-	pageButton.addListener (SWT.Selection, new Listener () {
-		@Override
-		public void handleEvent (Event event) {
-			pageNum = ++pageNum % 2;
-			layout.topControl = pageNum == 0 ? page0 : page1;
-			contentPanel.layout ();
-		}
+	pageButton.addListener (SWT.Selection, event -> {
+		pageNum = ++pageNum % 2;
+		layout.topControl = pageNum == 0 ? page0 : page1;
+		contentPanel.layout ();
 	});
 
 	shell.open ();
@@ -70,4 +67,4 @@ public static void main (String [] args) {
 	}
 	display.dispose ();
 }
-} 
+}

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2004 IBM Corporation and others.
+ * Copyright (c) 2000, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -26,19 +26,16 @@ public static void main (String [] args) {
 	Display display = new Display ();
 	final Shell shell = new Shell (display);
 	shell.open ();
-	shell.addListener (SWT.MouseDown, new Listener () {
-		@Override
-		public void handleEvent (Event e) {
-			Tracker tracker = new Tracker (shell, SWT.NONE);
-			tracker.setRectangles (new Rectangle [] {
-				new Rectangle (e.x, e.y, 100, 100),
-			});
-			tracker.open ();
-		}
+	shell.addListener (SWT.MouseDown, e -> {
+		Tracker tracker = new Tracker (shell, SWT.NONE);
+		tracker.setRectangles (new Rectangle [] {
+			new Rectangle (e.x, e.y, 100, 100),
+		});
+		tracker.open ();
 	});
 	while (!shell.isDisposed()) {
 		if (!display.readAndDispatch ()) display.sleep ();
 	}
 	display.dispose ();
 }
-} 
+}

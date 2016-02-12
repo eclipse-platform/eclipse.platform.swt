@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2004 IBM Corporation and others.
+ * Copyright (c) 2000, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -31,12 +31,7 @@ public static void main (String [] args) {
 	Menu submenu = new Menu (shell, SWT.DROP_DOWN);
 	fileItem.setMenu (submenu);
 	MenuItem item = new MenuItem (submenu, SWT.PUSH);
-	item.addListener (SWT.Selection, new Listener () {
-		@Override
-		public void handleEvent (Event e) {
-			System.out.println ("Select All");
-		}
-	});
+	item.addListener (SWT.Selection, e -> System.out.println ("Select All"));
 	item.setText ("Select &All\tCtrl+A");
 	item.setAccelerator (SWT.MOD1 + 'A');
 	shell.setSize (200, 200);
@@ -47,4 +42,4 @@ public static void main (String [] args) {
 	display.dispose ();
 }
 
-} 
+}

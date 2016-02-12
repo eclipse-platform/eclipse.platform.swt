@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2007 IBM Corporation and others.
+ * Copyright (c) 2000, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -12,18 +12,18 @@ package org.eclipse.swt.snippets;
 
 /*
  * Tree snippet: implement standard tree check box behavior (SWT.CHECK)
- * 
+ *
  * For a list of all SWT example snippets see
  * http://www.eclipse.org/swt/snippets/
- * 
+ *
  * @since 3.3
  */
 import org.eclipse.swt.*;
-import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.widgets.*;
 
 public class Snippet274 {
-	
+
 	static void checkPath(TreeItem item, boolean checked, boolean grayed) {
 	    if (item == null) return;
 	    if (grayed) {
@@ -58,17 +58,14 @@ public class Snippet274 {
 	    Display display = new Display();
 	    Shell shell = new Shell(display);
 	    Tree tree = new Tree(shell, SWT.BORDER | SWT.CHECK);
-	    tree.addListener(SWT.Selection, new Listener() {
-	        @Override
-			public void handleEvent(Event event) {
-	            if (event.detail == SWT.CHECK) {
-	                TreeItem item = (TreeItem) event.item;
-	                boolean checked = item.getChecked();
-	                checkItems(item, checked);
-	                checkPath(item.getParentItem(), checked, false);
-	            }
-	        }
-	    });
+	    tree.addListener(SWT.Selection, event -> {
+		    if (event.detail == SWT.CHECK) {
+		        TreeItem item = (TreeItem) event.item;
+		        boolean checked = item.getChecked();
+		        checkItems(item, checked);
+		        checkPath(item.getParentItem(), checked, false);
+		    }
+		});
 	    for (int i = 0; i < 4; i++) {
 	        TreeItem itemI = new TreeItem(tree, SWT.NONE);
 	        itemI.setText("Item " + i);

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2004 IBM Corporation and others.
+ * Copyright (c) 2000, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -9,19 +9,19 @@
  *     IBM Corporation - initial API and implementation
  *******************************************************************************/
 package org.eclipse.swt.snippets;
-  
+
 /*
  * UI Automation (for testing tools) snippet: post mouse wheel events to a styled text
  *
  * For a list of all SWT example snippets see
  * http://www.eclipse.org/swt/snippets/
- * 
+ *
  * @since 3.0
  */
 import org.eclipse.swt.*;
-import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.custom.*;
 import org.eclipse.swt.layout.*;
+import org.eclipse.swt.widgets.*;
 
 public class Snippet268 {
 
@@ -37,12 +37,7 @@ public static void main(String[] args) {
 	styledText.setText(multiLineString);
 	shell.setSize(styledText.computeSize(SWT.DEFAULT, 400));
 	shell.open();
-	styledText.addListener(SWT.MouseWheel, new Listener() {
-		@Override
-		public void handleEvent(Event e){
-			System.out.println("Mouse Wheel event " + e);
-		}
-	});
+	styledText.addListener(SWT.MouseWheel, e -> System.out.println("Mouse Wheel event " + e));
 	new Thread(){
 		Event event;
 		@Override
@@ -57,7 +52,7 @@ public static void main(String[] args) {
 					Thread.sleep(100);
 				} catch (InterruptedException e) {}
 			}
-		}	
+		}
 	}.start();
 	while (!shell.isDisposed()) {
 		if (!display.readAndDispatch()) display.sleep();

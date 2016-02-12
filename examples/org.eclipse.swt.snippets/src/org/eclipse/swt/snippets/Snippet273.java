@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2007 IBM Corporation and others.
+ * Copyright (c) 2000, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -12,13 +12,13 @@ package org.eclipse.swt.snippets;
 
 /*
  * Table snippet: modify the clipping of custom background paints
- * 
+ *
  * For a detailed explanation of this snippet see
  * http://www.eclipse.org/articles/Article-CustomDrawingTableAndTreeItems/customDraw.htm#_example4
- * 
+ *
  * For a list of all SWT example snippets see
  * http://www.eclipse.org/swt/snippets/
- * 
+ *
  * @since 3.2
  */
 import org.eclipse.swt.*;
@@ -58,39 +58,33 @@ public static void main(String[] args) {
 	 * NOTE: MeasureItem and EraseItem are called repeatedly. Therefore it is
 	 * critical for performance that these methods be as efficient as possible.
 	 */
-	table.addListener(SWT.MeasureItem, new Listener() {
-		@Override
-		public void handleEvent(Event event) {
-			int itemIndex = table.indexOf((TableItem)event.item);
-			int rightX = (HIGHS[itemIndex] - SCALE_MIN) * clientWidth / SCALE_RANGE;
-			event.width = rightX;
-		}
+	table.addListener(SWT.MeasureItem, event -> {
+		int itemIndex = table.indexOf((TableItem)event.item);
+		int rightX = (HIGHS[itemIndex] - SCALE_MIN) * clientWidth / SCALE_RANGE;
+		event.width = rightX;
 	});
-	table.addListener(SWT.EraseItem, new Listener() {
-		@Override
-		public void handleEvent(Event event) {
-			int itemIndex = table.indexOf((TableItem)event.item);
-			int leftX = (LOWS[itemIndex] - SCALE_MIN) * clientWidth / SCALE_RANGE;
-			int rightX = (HIGHS[itemIndex] - SCALE_MIN) * clientWidth / SCALE_RANGE;
-			GC gc = event.gc;
-			Rectangle clipping = gc.getClipping();
-			clipping.x = leftX;
-			clipping.width = rightX - leftX;
-			gc.setClipping(clipping);
-			Color oldForeground = gc.getForeground();
-			Color oldBackground = gc.getBackground();
-			gc.setForeground(blue);
-			gc.setBackground(white);
-			gc.fillGradientRectangle(event.x, event.y, event.width / 2, event.height, false);
-			gc.setForeground(white);
-			gc.setBackground(red);
-			gc.fillGradientRectangle(
-				event.x + event.width / 2, event.y, event.width / 2, event.height, false);
-			gc.setForeground(oldForeground);
-			gc.setBackground(oldBackground);
-			event.detail &= ~SWT.BACKGROUND;
-			event.detail &= ~SWT.HOT;
-		}
+	table.addListener(SWT.EraseItem, event -> {
+		int itemIndex = table.indexOf((TableItem)event.item);
+		int leftX = (LOWS[itemIndex] - SCALE_MIN) * clientWidth / SCALE_RANGE;
+		int rightX = (HIGHS[itemIndex] - SCALE_MIN) * clientWidth / SCALE_RANGE;
+		GC gc = event.gc;
+		Rectangle clipping = gc.getClipping();
+		clipping.x = leftX;
+		clipping.width = rightX - leftX;
+		gc.setClipping(clipping);
+		Color oldForeground = gc.getForeground();
+		Color oldBackground = gc.getBackground();
+		gc.setForeground(blue);
+		gc.setBackground(white);
+		gc.fillGradientRectangle(event.x, event.y, event.width / 2, event.height, false);
+		gc.setForeground(white);
+		gc.setBackground(red);
+		gc.fillGradientRectangle(
+			event.x + event.width / 2, event.y, event.width / 2, event.height, false);
+		gc.setForeground(oldForeground);
+		gc.setBackground(oldBackground);
+		event.detail &= ~SWT.BACKGROUND;
+		event.detail &= ~SWT.HOT;
 	});
 
 	shell.open();

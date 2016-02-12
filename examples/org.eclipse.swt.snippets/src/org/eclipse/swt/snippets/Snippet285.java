@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2007, 2014 IBM Corporation and others.
+ * Copyright (c) 2007, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -70,26 +70,21 @@ public class Snippet285 {
 		Region region = new Region(display);
 		loadPath(region, data.points, data.types);
 		shell.setRegion(region);
-		Listener listener = new Listener() {
-			@Override
-			public void handleEvent(Event event) {
-				switch (event.type) {
-					case SWT.MouseDown: {
-						shell.dispose();
-						break;
-					}
-					case SWT.Paint: {
-						GC gc = event.gc;
-						Rectangle rect = shell.getClientArea();
-						Pattern pattern = new Pattern(display, rect.x, rect.y
-								+ rect.height, rect.x + rect.width, rect.y, display
-								.getSystemColor(SWT.COLOR_BLUE), display
-								.getSystemColor(SWT.COLOR_WHITE));
-						gc.setBackgroundPattern(pattern);
-						gc.fillRectangle(rect);
-						pattern.dispose();
-						break;
-					}
+		Listener listener = event -> {
+			switch (event.type) {
+				case SWT.MouseDown: {
+					shell.dispose();
+					break;
+				}
+				case SWT.Paint: {
+					GC gc = event.gc;
+					Rectangle rect = shell.getClientArea();
+					Pattern pattern = new Pattern(display, rect.x, rect.y + rect.height, rect.x + rect.width, rect.y,
+							display.getSystemColor(SWT.COLOR_BLUE), display.getSystemColor(SWT.COLOR_WHITE));
+					gc.setBackgroundPattern(pattern);
+					gc.fillRectangle(rect);
+					pattern.dispose();
+					break;
 				}
 			}
 		};
@@ -103,5 +98,5 @@ public class Snippet285 {
 		region.dispose();
 		display.dispose();
 	}
-	
+
 }

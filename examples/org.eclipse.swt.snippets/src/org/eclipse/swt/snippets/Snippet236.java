@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2006 IBM Corporation and others.
+ * Copyright (c) 2000, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -9,15 +9,15 @@
  *     IBM Corporation - initial API and implementation
  *******************************************************************************/
 package org.eclipse.swt.snippets;
-/* 
+/*
  * Table example snippet: draw different foreground colors for text in a TableItem.
  *
- * For more info on custom-drawing TableItem and TreeItem content see 
+ * For more info on custom-drawing TableItem and TreeItem content see
  * http://www.eclipse.org/articles/article.php?file=Article-CustomDrawingTableAndTreeItems/index.html
  *
  * For a list of all SWT example snippets see
  * http://www.eclipse.org/swt/snippets/
- * 
+ *
  * @since 3.2
  */
 
@@ -36,7 +36,7 @@ public static void main(String [] args) {
 	Table table = new Table(shell, SWT.MULTI | SWT.FULL_SELECTION);
 	table.setLinesVisible(true);
 	for(int i = 0; i < 10; i++) {
-		new TableItem(table, SWT.NONE);			
+		new TableItem(table, SWT.NONE);
 	}
 	final TextLayout textLayout = new TextLayout(display);
 	textLayout.setText("SWT: Standard Widget Toolkit");
@@ -55,19 +55,11 @@ public static void main(String [] args) {
 	 * Therefore, it is critical for performance that these methods be
 	 * as efficient as possible.
 	 */
-	table.addListener(SWT.PaintItem, new Listener() {
-		@Override
-		public void handleEvent(Event event) {
-			textLayout.draw(event.gc, event.x, event.y);
-		}
-	});
+	table.addListener(SWT.PaintItem, event -> textLayout.draw(event.gc, event.x, event.y));
 	final Rectangle textLayoutBounds = textLayout.getBounds();
-	table.addListener(SWT.MeasureItem, new Listener() {
-		@Override
-		public void handleEvent(Event e) {
-			e.width = textLayoutBounds.width + 2;
-			e.height = textLayoutBounds.height + 2;
-		}
+	table.addListener(SWT.MeasureItem, e -> {
+		e.width = textLayoutBounds.width + 2;
+		e.height = textLayoutBounds.height + 2;
 	});
 	shell.setSize(400, 200);
 	shell.open();

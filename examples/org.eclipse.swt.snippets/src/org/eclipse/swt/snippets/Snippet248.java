@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2006 IBM Corporation and others.
+ * Copyright (c) 2000, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -17,24 +17,21 @@ package org.eclipse.swt.snippets;
  * http://www.eclipse.org/swt/snippets/
  */
 import org.eclipse.swt.*;
-import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.layout.*;
+import org.eclipse.swt.widgets.*;
 
 public class Snippet248 {
 public static void main (String [] args) {
 	Display display = new Display ();
 	final Shell shell = new Shell (display);
 	shell.setLayout (new FillLayout ());
-	shell.addListener (SWT.Traverse, new Listener () {
-		@Override
-		public void handleEvent (Event event) {
-			switch (event.detail) {
-				case SWT.TRAVERSE_ESCAPE:
-					shell.close ();
-					event.detail = SWT.TRAVERSE_NONE;
-					event.doit = false;
-					break;
-			}
+	shell.addListener (SWT.Traverse, event -> {
+		switch (event.detail) {
+			case SWT.TRAVERSE_ESCAPE:
+				shell.close ();
+				event.detail = SWT.TRAVERSE_NONE;
+				event.doit = false;
+				break;
 		}
 	});
 	Button button = new Button (shell, SWT.PUSH);

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -12,17 +12,17 @@ package org.eclipse.swt.snippets;
 
 /*
  * Browser snippet: bring up a browser with pop-up window support
- * 
+ *
  * For a list of all SWT example snippets see
  * http://www.eclipse.org/swt/snippets/
- * 
+ *
  * @since 3.1
  */
 import org.eclipse.swt.*;
-import org.eclipse.swt.widgets.*;
+import org.eclipse.swt.browser.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.layout.*;
-import org.eclipse.swt.browser.*;
+import org.eclipse.swt.widgets.*;
 
 public class Snippet270 {
 
@@ -53,17 +53,14 @@ public static void main(String[] args) {
 
 /* register WindowEvent listeners */
 static void initialize(final Display display, Browser browser) {
-	browser.addOpenWindowListener(new OpenWindowListener() {
-		@Override
-		public void open(WindowEvent event) {
-			if (!event.required) return;	/* only do it if necessary */
-			Shell shell = new Shell(display);
-			shell.setText("New Window");
-			shell.setLayout(new FillLayout());
-			Browser browser = new Browser(shell, BROWSER_STYLE);
-			initialize(display, browser);
-			event.browser = browser;
-		}
+	browser.addOpenWindowListener(event -> {
+		if (!event.required) return;	/* only do it if necessary */
+		Shell shell = new Shell(display);
+		shell.setText("New Window");
+		shell.setLayout(new FillLayout());
+		Browser browser1 = new Browser(shell, BROWSER_STYLE);
+		initialize(display, browser1);
+		event.browser = browser1;
 	});
 	browser.addVisibilityWindowListener(new VisibilityWindowListener() {
 		@Override
@@ -84,13 +81,10 @@ static void initialize(final Display display, Browser browser) {
 			shell.open();
 		}
 	});
-	browser.addCloseWindowListener(new CloseWindowListener() {
-		@Override
-		public void close(WindowEvent event) {
-			Browser browser = (Browser)event.widget;
-			Shell shell = browser.getShell();
-			shell.close();
-		}
+	browser.addCloseWindowListener(event -> {
+		Browser browser1 = (Browser)event.widget;
+		Shell shell = browser1.getShell();
+		shell.close();
 	});
 }
 }

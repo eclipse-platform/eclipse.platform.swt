@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2007 IBM Corporation and others.
+ * Copyright (c) 2007, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -17,7 +17,6 @@ package org.eclipse.swt.snippets;
  * http://www.eclipse.org/swt/snippets/
  */
 import org.eclipse.swt.*;
-import org.eclipse.swt.events.*;
 import org.eclipse.swt.layout.*;
 import org.eclipse.swt.widgets.*;
 
@@ -27,7 +26,7 @@ public class Snippet286 {
 		Display display = new Display();
 		Shell shell = new Shell(display);
 		shell.setLayout(new GridLayout());
-		
+
 		Canvas blankCanvas = new Canvas(shell, SWT.BORDER);
 		blankCanvas.setLayoutData(new GridData(200, 200));
 		final Label statusLine = new Label(shell, SWT.NONE);
@@ -35,26 +34,21 @@ public class Snippet286 {
 
 		Menu bar = new Menu (shell, SWT.BAR);
 		shell.setMenuBar (bar);
-		
+
 		MenuItem menuItem = new MenuItem (bar, SWT.CASCADE);
 		menuItem.setText ("Test");
 		Menu menu = new Menu(bar);
 		menuItem.setMenu (menu);
-		
+
 		for (int i = 0; i < 5; i++) {
 			MenuItem item = new MenuItem (menu, SWT.PUSH);
 			item.setText ("Item " + i);
-			item.addArmListener(new ArmListener() {
-				@Override
-				public void widgetArmed(ArmEvent e) {
-					statusLine.setText(((MenuItem)e.getSource()).getText());
-				}
-			});
+			item.addArmListener(e -> statusLine.setText(((MenuItem)e.getSource()).getText()));
 		}
-		
+
 		shell.pack();
 		shell.open();
-		
+
 		while(!shell.isDisposed()) {
 			if(!display.readAndDispatch()) display.sleep();
 		}

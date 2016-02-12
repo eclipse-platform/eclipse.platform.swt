@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2004 IBM Corporation and others.
+ * Copyright (c) 2000, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -30,18 +30,8 @@ public static void main (String [] args) {
 	combo.setItems ("A-1", "B-1", "C-1");
 	Text text = new Text (shell, SWT.SINGLE | SWT.BORDER);
 	text.setText ("some text");
-	combo.addListener (SWT.DefaultSelection, new Listener () {
-		@Override
-		public void handleEvent (Event e) {
-			System.out.println (e.widget + " - Default Selection");
-		}
-	});
-	text.addListener (SWT.DefaultSelection, new Listener () {
-		@Override
-		public void handleEvent (Event e) {
-			System.out.println (e.widget + " - Default Selection");
-		}
-	});
+	combo.addListener (SWT.DefaultSelection, e -> System.out.println (e.widget + " - Default Selection"));
+	text.addListener (SWT.DefaultSelection, e -> System.out.println (e.widget + " - Default Selection"));
 	shell.pack ();
 	shell.open ();
 	while (!shell.isDisposed()) {
@@ -49,4 +39,4 @@ public static void main (String [] args) {
 	}
 	display.dispose ();
 }
-} 
+}

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2007 IBM Corporation and others.
+ * Copyright (c) 2007, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -15,14 +15,14 @@ package org.eclipse.swt.snippets;
  *
  * For a list of all SWT example snippets see
  * http://www.eclipse.org/swt/snippets/
- * 
+ *
  * @since 3.3
- */ 
+ */
 import org.eclipse.swt.*;
-import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.events.*;
-import org.eclipse.swt.widgets.*;
+import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.layout.*;
+import org.eclipse.swt.widgets.*;
 
 public class Snippet259 {
 
@@ -31,7 +31,7 @@ static class MyList extends Canvas {
 	String [] items = new String [0];
 	static final int INSET_X = 2;
 	static final int INSET_Y = 2;
-	
+
 static int checkStyle (int style) {
 	style &= ~(SWT.H_SCROLL | SWT.V_SCROLL);
 	style |= SWT.NO_BACKGROUND | SWT.NO_REDRAW_RESIZE;
@@ -65,27 +65,24 @@ public MyList (Composite parent, int style) {
 			dragDetect (event);
 		}
 	});
-	addPaintListener (new PaintListener () {
-		@Override
-		public void paintControl (PaintEvent event) {
-			GC gc = event.gc;
-			Color foreground = event.display.getSystemColor (SWT.COLOR_LIST_FOREGROUND);
-			Color background = event.display.getSystemColor (SWT.COLOR_LIST_BACKGROUND);
-			Color selectForeground = event.display.getSystemColor (SWT.COLOR_LIST_SELECTION_TEXT);
-			Color selectBackground = event.display.getSystemColor (SWT.COLOR_LIST_SELECTION);
-			gc.setForeground (foreground);
-			gc.setBackground (background);
-			MyList.this.drawBackground (gc, event.x, event.y, event.width, event.height);
-			int x = INSET_X, y = INSET_Y;
-			for (int i=0; i<items.length; i++) {
-				Point pt = gc.stringExtent(items [i]);
-				gc.setForeground (i == selection ? selectForeground : foreground);
-				gc.setBackground (i == selection ? selectBackground : background);
-				gc.drawString (items [i], x, y);
-				y += pt.y;
-			}
-			
+	addPaintListener (event -> {
+		GC gc = event.gc;
+		Color foreground = event.display.getSystemColor (SWT.COLOR_LIST_FOREGROUND);
+		Color background = event.display.getSystemColor (SWT.COLOR_LIST_BACKGROUND);
+		Color selectForeground = event.display.getSystemColor (SWT.COLOR_LIST_SELECTION_TEXT);
+		Color selectBackground = event.display.getSystemColor (SWT.COLOR_LIST_SELECTION);
+		gc.setForeground (foreground);
+		gc.setBackground (background);
+		MyList.this.drawBackground (gc, event.x, event.y, event.width, event.height);
+		int x = INSET_X, y = INSET_Y;
+		for (int i=0; i<items.length; i++) {
+			Point pt = gc.stringExtent(items [i]);
+			gc.setForeground (i == selection ? selectForeground : foreground);
+			gc.setBackground (i == selection ? selectBackground : background);
+			gc.drawString (items [i], x, y);
+			y += pt.y;
 		}
+
 	});
 }
 
@@ -115,7 +112,7 @@ public void setItems (String [] items) {
 	checkWidget ();
 	if (items == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
 	this.items = items;
-	redraw ();	
+	redraw ();
 }
 }
 
@@ -125,20 +122,10 @@ public static void main (String [] args) {
 	shell.setLayout (new FillLayout ());
 	MyList t1 = new MyList (shell, SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL);
 	t1.setItems (new String [] {"Some", "items", "in", "the", "list"});
-	t1.addDragDetectListener (new DragDetectListener () {
-		@Override
-		public void dragDetected (DragDetectEvent event) {
-			System.out.println ("Drag started ...");
-		}
-	});
+	t1.addDragDetectListener (event -> System.out.println ("Drag started ..."));
 	MyList t2 = new MyList (shell, SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL);
 	t2.setItems (new String [] {"Some", "items", "in", "another", "list"});
-	t2.addDragDetectListener (new DragDetectListener () {
-		@Override
-		public void dragDetected (DragDetectEvent event) {
-			System.out.println ("Drag started ...");
-		}
-	});
+	t2.addDragDetectListener (event -> System.out.println ("Drag started ..."));
 	shell.pack ();
 	shell.open ();
 	while (!shell.isDisposed ()) {

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2006 IBM Corporation and others.
+ * Copyright (c) 2000, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -9,12 +9,12 @@
  *     IBM Corporation - initial API and implementation
  *******************************************************************************/
 package org.eclipse.swt.snippets;
-/* 
+/*
  * example snippet: detect a system settings change
  *
  * For a list of all SWT example snippets see
  * http://www.eclipse.org/swt/snippets/
- * 
+ *
  * @since 3.2
  */
 
@@ -50,18 +50,15 @@ public static void main(String [] args) {
 	TableColumn[] columns = table.getColumns();
 	columns[0].pack();
 	columns[2].pack();
-	display.addListener(SWT.Settings, new Listener() {
-		@Override
-		public void handleEvent(Event event) {
-			for (int i = 0; i < colorIds.length; i++) {
-				Color color = display.getSystemColor(colorIds[i]);
-				TableItem item = table.getItem(i);
-				item.setBackground(1, color);
-			}
-			TableColumn[] columns = table.getColumns();
-			columns[0].pack();
-			columns[2].pack();
+	display.addListener(SWT.Settings, event -> {
+		for (int i = 0; i < colorIds.length; i++) {
+			Color color = display.getSystemColor(colorIds[i]);
+			TableItem item = table.getItem(i);
+			item.setBackground(1, color);
 		}
+		TableColumn[] columns1 = table.getColumns();
+		columns1[0].pack();
+		columns1[2].pack();
 	});
 
 	shell.pack();
@@ -72,7 +69,7 @@ public static void main(String [] args) {
 	}
 	display.dispose();
 }
-static int[] colorIds = new int[] {SWT.COLOR_INFO_BACKGROUND, 
+static int[] colorIds = new int[] {SWT.COLOR_INFO_BACKGROUND,
 		SWT.COLOR_INFO_FOREGROUND,
 		SWT.COLOR_LINK_FOREGROUND,
 		SWT.COLOR_LIST_BACKGROUND,

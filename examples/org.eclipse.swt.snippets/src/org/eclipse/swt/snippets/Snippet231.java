@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2007 IBM Corporation and others.
+ * Copyright (c) 2000, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -10,7 +10,7 @@
  *******************************************************************************/
 package org.eclipse.swt.snippets;
 
-/* 
+/*
  * Table example snippet: draw multiple lines of text in a table item
  *
  * For a detailed explanation of this snippet see
@@ -18,7 +18,7 @@ package org.eclipse.swt.snippets;
  *
  * For a list of all SWT example snippets see
  * http://www.eclipse.org/swt/snippets/
- * 
+ *
  * @since 3.2
  */
 
@@ -27,7 +27,7 @@ import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.widgets.*;
 
 public class Snippet231 {
-	
+
 public static void main(String [] args) {
 	final int COLUMN_COUNT = 4;
 	final int ITEM_COUNT = 8;
@@ -59,35 +59,24 @@ public static void main(String [] args) {
 	 * Therefore, it is critical for performance that these methods be
 	 * as efficient as possible.
 	 */
-	table.addListener(SWT.MeasureItem, new Listener() {
-		@Override
-		public void handleEvent(Event event) {
-			TableItem item = (TableItem)event.item;
-			String text = item.getText(event.index);
+	table.addListener(SWT.MeasureItem, event -> {
+		TableItem item = (TableItem)event.item;
+		String text = item.getText(event.index);
+		Point size = event.gc.textExtent(text);
+		event.width = size.x + 2 * TEXT_MARGIN;
+		event.height = Math.max(event.height, size.y + TEXT_MARGIN);
+	});
+	table.addListener(SWT.EraseItem, event -> event.detail &= ~SWT.FOREGROUND);
+	table.addListener(SWT.PaintItem, event -> {
+		TableItem item = (TableItem)event.item;
+		String text = item.getText(event.index);
+		/* center column 1 vertically */
+		int yOffset = 0;
+		if (event.index == 1) {
 			Point size = event.gc.textExtent(text);
-			event.width = size.x + 2 * TEXT_MARGIN;
-			event.height = Math.max(event.height, size.y + TEXT_MARGIN);
+			yOffset = Math.max(0, (event.height - size.y) / 2);
 		}
-	});
-	table.addListener(SWT.EraseItem, new Listener() {
-		@Override
-		public void handleEvent(Event event) {
-			event.detail &= ~SWT.FOREGROUND;
-		}
-	});
-	table.addListener(SWT.PaintItem, new Listener() {
-		@Override
-		public void handleEvent(Event event) {
-			TableItem item = (TableItem)event.item;
-			String text = item.getText(event.index);
-			/* center column 1 vertically */
-			int yOffset = 0;
-			if (event.index == 1) {
-				Point size = event.gc.textExtent(text);
-				yOffset = Math.max(0, (event.height - size.y) / 2);
-			}
-			event.gc.drawText(text, event.x + TEXT_MARGIN, event.y + yOffset, true);
-		}
+		event.gc.drawText(text, event.x + TEXT_MARGIN, event.y + yOffset, true);
 	});
 
 	for (int i = 0; i < COLUMN_COUNT; i++) {

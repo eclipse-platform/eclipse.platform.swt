@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2007 IBM Corporation and others.
+ * Copyright (c) 2000, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -18,8 +18,8 @@ package org.eclipse.swt.snippets;
  */
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.layout.*;
+import org.eclipse.swt.widgets.*;
 
 public class Snippet253 {
 	public static void main(String[] args) {
@@ -34,15 +34,12 @@ public class Snippet253 {
 		}
 		final Button button = new Button (shell, SWT.PUSH);
 		button.setText ("Visible Items []");
-		button.addListener (SWT.Selection, new Listener () {
-			@Override
-			public void handleEvent (Event e) {
-				Rectangle rect = table.getClientArea ();
-				int itemHeight = table.getItemHeight ();
-				int headerHeight = table.getHeaderHeight ();
-				int visibleCount = (rect.height - headerHeight + itemHeight - 1) / itemHeight;
-				button.setText ("Visible Items [" + visibleCount + "]");
-			}
+		button.addListener (SWT.Selection, e -> {
+			Rectangle rect = table.getClientArea ();
+			int itemHeight = table.getItemHeight ();
+			int headerHeight = table.getHeaderHeight ();
+			int visibleCount = (rect.height - headerHeight + itemHeight - 1) / itemHeight;
+			button.setText ("Visible Items [" + visibleCount + "]");
 		});
 		shell.setSize(200, 250);
 		shell.open();
@@ -51,4 +48,4 @@ public class Snippet253 {
 		}
 		display.dispose();
 	}
-} 
+}

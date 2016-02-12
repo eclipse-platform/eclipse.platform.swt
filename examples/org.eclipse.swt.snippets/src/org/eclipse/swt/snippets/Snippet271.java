@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2007 IBM Corporation and others.
+ * Copyright (c) 2000, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -12,13 +12,13 @@ package org.eclipse.swt.snippets;
 
 /*
  * Table snippet: specify custom content dimensions in a table with no columns
- * 
+ *
  * For a detailed explanation of this snippet see
  * http://www.eclipse.org/articles/Article-CustomDrawingTableAndTreeItems/customDraw.htm#_example1
- *  
+ *
  * For a list of all SWT example snippets see
  * http://www.eclipse.org/swt/snippets/
- * 
+ *
  * @since 3.2
  */
 import org.eclipse.swt.*;
@@ -41,13 +41,10 @@ public static void main(String[] args) {
 	 * NOTE: MeasureItem is called repeatedly.  Therefore it is critical
 	 * for performance that this method be as efficient as possible.
 	 */
-	table.addListener(SWT.MeasureItem, new Listener() {
-		@Override
-		public void handleEvent(Event event) {
-			int clientWidth = table.getClientArea().width;
-			event.height = event.gc.getFontMetrics().getHeight() * 2;
-			event.width = clientWidth * 2;
-		}
+	table.addListener(SWT.MeasureItem, event -> {
+		int clientWidth = table.getClientArea().width;
+		event.height = event.gc.getFontMetrics().getHeight() * 2;
+		event.width = clientWidth * 2;
 	});
 
 	shell.open();

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2006 IBM Corporation and others.
+ * Copyright (c) 2000, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -10,15 +10,15 @@
  *******************************************************************************/
 package org.eclipse.swt.snippets;
 
-/* 
+/*
  * Tree snippet: Text that spans multiple columns
  *
- * For more info on custom-drawing TableItem and TreeItem content see 
+ * For more info on custom-drawing TableItem and TreeItem content see
  * http://www.eclipse.org/articles/article.php?file=Article-CustomDrawingTableAndTreeItems/index.html
  *
  * For a list of all SWT example snippets see
  * http://www.eclipse.org/swt/snippets/
- * 
+ *
  * @since 3.2
  */
 
@@ -39,7 +39,7 @@ public static void main(String [] args) {
 	int columnCount = 4;
 	for (int i=0; i<columnCount; i++) {
 		TreeColumn column = new TreeColumn(tree, SWT.NONE);
-		column.setText("Column " + i);	
+		column.setText("Column " + i);
 	}
 	int itemCount = 8;
 	for (int i = 0; i < itemCount; i++) {
@@ -51,7 +51,7 @@ public static void main(String [] args) {
 			subItem.setText(0, "subItem "+i+"-"+j+" a");
 			subItem.setText(3, "subItem "+i+"-"+j+" d");
 		}
-	}	
+	}
 	/*
 	 * NOTE: MeasureItem, PaintItem and EraseItem are called repeatedly.
 	 * Therefore, it is critical for performance that these methods be
@@ -62,30 +62,27 @@ public static void main(String [] args) {
 	final Point extent = gc.stringExtent(string);
 	gc.dispose();
 	final Color red = display.getSystemColor(SWT.COLOR_RED);
-	Listener paintListener = new Listener() {
-		@Override
-		public void handleEvent(Event event) {
-			switch(event.type) {		
-				case SWT.MeasureItem: {
-					if (event.index == 1 || event.index == 2) {
-						event.width = extent.x/2;
-						event.height = Math.max(event.height, extent.y + 2);
-					}
-					break;
+	Listener paintListener = event -> {
+		switch(event.type) {
+			case SWT.MeasureItem: {
+				if (event.index == 1 || event.index == 2) {
+					event.width = extent.x/2;
+					event.height = Math.max(event.height, extent.y + 2);
 				}
-				case SWT.PaintItem: {
-					if (event.index == 1 || event.index == 2) {
-						int offset = 0;
-						if (event.index == 2) {
-							TreeColumn column1 = tree.getColumn(1);
-							offset = column1.getWidth();
-						}
-						event.gc.setForeground(red);
-						int y = event.y + (event.height - extent.y)/2;
-						event.gc.drawString(string, event.x - offset, y, true);
+				break;
+			}
+			case SWT.PaintItem: {
+				if (event.index == 1 || event.index == 2) {
+					int offset = 0;
+					if (event.index == 2) {
+						TreeColumn column1 = tree.getColumn(1);
+						offset = column1.getWidth();
 					}
-					break;
+					event.gc.setForeground(red);
+					int y = event.y + (event.height - extent.y)/2;
+					event.gc.drawString(string, event.x - offset, y, true);
 				}
+				break;
 			}
 		}
 	};

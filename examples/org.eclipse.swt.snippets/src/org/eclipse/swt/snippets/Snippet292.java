@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2008 IBM Corporation and others.
+ * Copyright (c) 2000, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -10,18 +10,18 @@
  *******************************************************************************/
 package org.eclipse.swt.snippets;
 
-/* 
+/*
  * Take a snapshot of a control
  *
  * For a list of all SWT example snippets see
  * http://www.eclipse.org/swt/snippets/
- * 
+ *
  * @since 3.4
  */
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.layout.*;
+import org.eclipse.swt.widgets.*;
 
 public class Snippet292 {
 	public static void main(String[] args) {
@@ -42,30 +42,24 @@ public class Snippet292 {
 		}
 		new Button(group, SWT.PUSH).setText("Button");
 		final Label label = new Label (shell, SWT.NONE);
-		label.addListener (SWT.Dispose, new Listener () {
-			@Override
-			public void handleEvent (Event e) {
-				Image image = label.getImage ();
-				if (image != null) image.dispose ();
-			}
+		label.addListener (SWT.Dispose, e -> {
+			Image image = label.getImage ();
+			if (image != null) image.dispose ();
 		});
 		Button button = new Button (shell, SWT.PUSH);
 		button.setText ("Snapshot");
-		button.addListener (SWT.Selection, new Listener () {
-			@Override
-			public void handleEvent (Event e) {
-				Image image = label.getImage ();
-				if (image != null) image.dispose ();
-				image = new Image (display, group.getBounds ());
-				GC gc = new GC (image);
-				boolean success = group.print (gc);
-				gc.dispose ();
-				label.setImage (image);
-				if (!success) {
-					MessageBox messageBox = new MessageBox (shell, SWT.OK | SWT.PRIMARY_MODAL);
-					messageBox.setMessage ("Sorry, taking a snapshot is not supported on your platform");
-					messageBox.open ();
-				}
+		button.addListener (SWT.Selection, e -> {
+			Image image = label.getImage ();
+			if (image != null) image.dispose ();
+			image = new Image (display, group.getBounds ());
+			GC gc = new GC (image);
+			boolean success = group.print (gc);
+			gc.dispose ();
+			label.setImage (image);
+			if (!success) {
+				MessageBox messageBox = new MessageBox (shell, SWT.OK | SWT.PRIMARY_MODAL);
+				messageBox.setMessage ("Sorry, taking a snapshot is not supported on your platform");
+				messageBox.open ();
 			}
 		});
 		GridLayout layout = new GridLayout (2, true);

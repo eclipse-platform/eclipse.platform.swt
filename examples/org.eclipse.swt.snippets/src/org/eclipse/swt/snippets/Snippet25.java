@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2004 IBM Corporation and others.
+ * Copyright (c) 2000, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -9,13 +9,13 @@
  *     IBM Corporation - initial API and implementation
  *******************************************************************************/
 package org.eclipse.swt.snippets;
- 
+
 /*
  * Control example snippet: print key state, code and character
  *
  * For a list of all SWT example snippets see
  * http://www.eclipse.org/swt/snippets/
- * 
+ *
  * @since 3.0
  */
 import org.eclipse.swt.*;
@@ -47,13 +47,13 @@ static String character (char character) {
 
 static String keyCode (int keyCode) {
 	switch (keyCode) {
-		
+
 		/* Keyboard and Mouse Masks */
 		case SWT.ALT: 		return "ALT";
 		case SWT.SHIFT: 	return "SHIFT";
 		case SWT.CONTROL:	return "CONTROL";
 		case SWT.COMMAND:	return "COMMAND";
-			
+
 		/* Non-Numeric Keypad Keys */
 		case SWT.ARROW_UP:		return "ARROW_UP";
 		case SWT.ARROW_DOWN:	return "ARROW_DOWN";
@@ -67,13 +67,13 @@ static String keyCode (int keyCode) {
 
 		/* Virtual and Ascii Keys */
 		case SWT.BS:	return "BS";
-		case SWT.CR:	return "CR";		
+		case SWT.CR:	return "CR";
 		case SWT.DEL:	return "DEL";
 		case SWT.ESC:	return "ESC";
 		case SWT.LF:	return "LF";
 		case SWT.TAB:	return "TAB";
 		case SWT.SPACE:	return "SPACE";
-	
+
 		/* Functions Keys */
 		case SWT.F1:	return "F1";
 		case SWT.F2:	return "F2";
@@ -90,7 +90,7 @@ static String keyCode (int keyCode) {
 		case SWT.F13:	return "F13";
 		case SWT.F14:	return "F14";
 		case SWT.F15:	return "F15";
-		
+
 		/* Numeric Keypad Keys */
 		case SWT.KEYPAD_ADD:		return "KEYPAD_ADD";
 		case SWT.KEYPAD_SUBTRACT:	return "KEYPAD_SUBTRACT";
@@ -125,21 +125,18 @@ static String keyCode (int keyCode) {
 public static void main (String [] args) {
 	Display display = new Display ();
 	Shell shell = new Shell (display);
-	Listener listener = new Listener () {
-		@Override
-		public void handleEvent (Event e) {
-			String string = e.type == SWT.KeyDown ? "DOWN:" : "UP  :";
-			string += " stateMask=0x" + Integer.toHexString (e.stateMask) + stateMask (e.stateMask) + ",";
-			string += " keyCode=0x" + Integer.toHexString (e.keyCode) + " " + keyCode (e.keyCode) + ",";
-			string += " character=0x" + Integer.toHexString (e.character) + " " + character (e.character);
-			if (e.keyLocation != 0) {
-				string +=  " location="; 
-				if (e.keyLocation == SWT.LEFT) string +=  "LEFT"; 
-				if (e.keyLocation == SWT.RIGHT) string +=  "RIGHT"; 
-				if (e.keyLocation == SWT.KEYPAD) string +=  "KEYPAD"; 
-			}
-			System.out.println (string);
+	Listener listener = e -> {
+		String string = e.type == SWT.KeyDown ? "DOWN:" : "UP  :";
+		string += " stateMask=0x" + Integer.toHexString (e.stateMask) + stateMask (e.stateMask) + ",";
+		string += " keyCode=0x" + Integer.toHexString (e.keyCode) + " " + keyCode (e.keyCode) + ",";
+		string += " character=0x" + Integer.toHexString (e.character) + " " + character (e.character);
+		if (e.keyLocation != 0) {
+			string +=  " location=";
+			if (e.keyLocation == SWT.LEFT) string +=  "LEFT";
+			if (e.keyLocation == SWT.RIGHT) string +=  "RIGHT";
+			if (e.keyLocation == SWT.KEYPAD) string +=  "KEYPAD";
 		}
+		System.out.println (string);
 	};
 	shell.addListener (SWT.KeyDown, listener);
 	shell.addListener (SWT.KeyUp, listener);

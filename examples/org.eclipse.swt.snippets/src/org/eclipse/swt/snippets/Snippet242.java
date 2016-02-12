@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2006 IBM Corporation and others.
+ * Copyright (c) 2000, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -10,14 +10,13 @@
  *******************************************************************************/
 package org.eclipse.swt.snippets;
 
-/* 
+/*
  * Cursor snippet: Hide the Cursor over a control.
  *
  * For a list of all SWT example snippets see
  * http://www.eclipse.org/swt/snippets/
  */
 import org.eclipse.swt.*;
-import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.widgets.*;
 
@@ -29,12 +28,7 @@ public static void main(String [] args) {
 	shell.setBounds(10, 10, 200, 200);
 	Canvas canvas = new Canvas(shell, SWT.BORDER);
 	canvas.setBounds(10,50,150,100);
-	canvas.addPaintListener(new PaintListener() {
-		@Override
-		public void paintControl(PaintEvent e) {
-			e.gc.drawString("hide Cursor here", 10, 10);
-		}
-	});
+	canvas.addPaintListener(e -> e.gc.drawString("hide Cursor here", 10, 10));
 
 	// create a cursor with a transparent image
 	Color white = display.getSystemColor (SWT.COLOR_WHITE);

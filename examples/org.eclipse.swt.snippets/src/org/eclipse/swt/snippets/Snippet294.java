@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2008 IBM Corporation and others.
+ * Copyright (c) 2000, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -17,10 +17,10 @@ import org.eclipse.swt.widgets.*;
 
 /*
  * Region on a control: create a non-rectangular button
- * 
+ *
  * For a list of all SWT example snippets see
  * http://www.eclipse.org/swt/snippets/
- * 
+ *
  * @since 3.4
  */
 
@@ -42,35 +42,30 @@ public class Snippet294 {
 
 	public static void main(String[] args) {
 		final Display display = new Display();
-		
+
 		final Shell shell = new Shell(display);
 		shell.setText("Regions on a Control");
 		shell.setLayout(new FillLayout());
 		shell.setBackground(display.getSystemColor(SWT.COLOR_DARK_RED));
-		
+
 		Button b2 = new Button(shell, SWT.PUSH);
 		b2.setText("Button with Regions");
-		
+
 		// define a region that looks like a circle with two holes in ot
 		Region region = new Region();
 		region.add(circle(67, 87, 77));
 		region.subtract(circle(20, 87, 47));
 		region.subtract(circle(20, 87, 113));
-		
+
 		// define the shape of the button using setRegion
 		b2.setRegion(region);
 		b2.setLocation(100,50);
-		
-		b2.addListener(SWT.Selection, new Listener() {
-			@Override
-			public void handleEvent(Event e) {
-				shell.close();
-			}
-		});
-		
+
+		b2.addListener(SWT.Selection, e -> shell.close());
+
 		shell.setSize(200,200);
 		shell.open();
-		
+
 		while (!shell.isDisposed()) {
 			if (!display.readAndDispatch())
 				display.sleep();
@@ -78,5 +73,5 @@ public class Snippet294 {
 		region.dispose();
 		display.dispose();
 	}
-	
+
 }
