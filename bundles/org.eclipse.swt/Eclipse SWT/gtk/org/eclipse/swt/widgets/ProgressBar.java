@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2013 IBM Corporation and others.
+ * Copyright (c) 2000, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -301,16 +301,18 @@ void updateBar (int selection, int minimum, int maximum) {
 
 	double fraction = minimum == maximum ? 1 : (double)(selection - minimum) / (maximum - minimum);
 	OS.gtk_progress_bar_set_fraction (handle, fraction);
-	/*
-	* Feature in GTK.  The progress bar does
-	* not redraw right away when a value is
-	* changed.  This is not strictly incorrect
-	* but unexpected.  The fix is to force all
-	* outstanding redraws to be delivered.
-	*/
-	long /*int*/ window = paintWindow ();
-	OS.gdk_window_process_updates (window, false);
-	OS.gdk_flush ();
+	if (!OS.GTK3) {
+		/*
+		* Feature in GTK.  The progress bar does
+		* not redraw right away when a value is
+		* changed.  This is not strictly incorrect
+		* but unexpected.  The fix is to force all
+		* outstanding redraws to be delivered.
+		*/
+		long /*int*/ window = paintWindow ();
+		OS.gdk_window_process_updates (window, false);
+		OS.gdk_flush ();
+	}
 }
 
 void gtk_orientable_set_orientation (long /*int*/ pbar, int orientation) {
