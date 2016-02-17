@@ -1878,8 +1878,9 @@ void setBackgroundColor (long /*int*/ context, long /*int*/ handle, GdkRGBA rgba
 	String css = "* {\n";
 	if (rgba != null) {
 		String color = gtk_rgba_to_css_string (rgba);
-		css += "background: " + color + ";}";
+		css += "background: " + color + ";\n";
 	}
+	css += "}\n";
 	if (entryHandle == 0 || (style & SWT.READ_ONLY) != 0) {
 		// For read only Combos, we can just apply the background CSS to the GtkToggleButton.
 		gtk_css_provider_load_from_css (OS.gtk_widget_get_style_context(buttonHandle), css);
