@@ -4178,7 +4178,7 @@ GdkColor gtk_css_parse_background (long /*int*/ provider) {
 		shortOutput = cssOutput.substring (startIndex + 18);
 		// Double check to make sure with have a valid rgb/rgba property
 		if (shortOutput.contains ("rgba") || shortOutput.contains ("rgb")) {
-			rgba = gtk_css_property_to_rgba (shortOutput);
+			rgba = display.gtk_css_property_to_rgba (shortOutput);
 		} else {
 			return display.COLOR_WIDGET_BACKGROUND;
 		}
@@ -4187,25 +4187,12 @@ GdkColor gtk_css_parse_background (long /*int*/ provider) {
 		shortOutput = cssOutput.substring (startIndex + 13);
 		// Double check to make sure with have a valid rgb/rgba property
 		if (shortOutput.contains ("rgba") || shortOutput.contains ("rgb")) {
-			rgba = gtk_css_property_to_rgba (shortOutput);
+			rgba = display.gtk_css_property_to_rgba (shortOutput);
 		} else {
 			return display.COLOR_WIDGET_BACKGROUND;
 		}
 	}
 	return display.toGdkColor (rgba);
-}
-
-GdkRGBA gtk_css_property_to_rgba(String property) {
-	/* Here we convert rgb(...) or rgba(...) properties
-	 * into GdkRGBA objects using gdk_rgba_parse(). Note
-	 * that we still need to remove the ";" character from the
-	 * input string.
-	 */
-	GdkRGBA rgba = new GdkRGBA ();
-	String [] propertyParsed = new String [1];
-	propertyParsed = property.split (";");
-	OS.gdk_rgba_parse (rgba, Converter.wcsToMbcs (null, propertyParsed[0], true));
-	return rgba;
 }
 
 void setBackgroundColor (long /*int*/ handle, GdkColor color) {

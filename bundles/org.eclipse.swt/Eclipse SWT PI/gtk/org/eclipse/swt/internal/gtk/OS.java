@@ -650,6 +650,7 @@ public class OS extends C {
 	public static final byte[] gtk_show_input_method_menu = ascii("gtk-show-input-method-menu");
 	public static final byte[] gtk_menu_bar_accel = ascii("gtk-menu-bar-accel");
 	public static final byte[] gtk_menu_images = ascii("gtk-menu-images");
+	public static final byte[] gtk_theme_name = ascii("gtk-theme-name");
 	public static final byte[] inner_border = ascii("inner-border");
 	public static final byte[] has_backward_stepper = ascii("has-backward-stepper");
 	public static final byte[] has_secondary_backward_stepper = ascii("has-secondary-backward-stepper");
@@ -9295,6 +9296,19 @@ public static final long /*int*/gtk_css_provider_to_string(long /*int*/ provider
 	lock.lock();
 	try {
 		return _gtk_css_provider_to_string(provider);
+	} finally {
+		lock.unlock();
+	}
+}
+/** @method flags=dynamic
+ *  @param name cast=(const gchar *)
+ *  @param variant cast=(const gchar *)
+ */
+public static final native long /*int*/ _gtk_css_provider_get_named (byte[] name, byte[] variant);
+public static final long /*int*/gtk_css_provider_get_named(byte[] name, byte[] variant) {
+	lock.lock();
+	try {
+		return _gtk_css_provider_get_named(name, variant);
 	} finally {
 		lock.unlock();
 	}

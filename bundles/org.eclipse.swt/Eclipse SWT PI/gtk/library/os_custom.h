@@ -530,6 +530,7 @@
 #define gtk_css_provider_load_from_data_LIB LIB_GTK
 #define gtk_css_provider_new_LIB LIB_GTK
 #define gtk_css_provider_to_string_LIB LIB_GTK
+#define gtk_css_provider_get_named_LIB LIB_GTK
 #define gtk_icon_set_render_icon_pixbuf_LIB LIB_GTK
 #define gtk_drag_set_icon_surface_LIB LIB_GTK
 #define gtk_accel_label_set_accel_LIB LIB_GTK

@@ -1693,6 +1693,99 @@ long /*int*/ gtk_cell_renderer_toggle_get_type () {
 	return toggle_renderer_type;
 }
 
+String gtk_css_default_theme_values (int swt) {
+	/*
+	 * This method fetches GTK theme values/properties. This is accomplished
+	 * by determining the name of the current system theme loaded, giving that
+	 * name to GTK, and then parsing values from the returned theme contents.
+	 *
+	 * The idea here is that SWT variables that have corresponding GTK theme
+	 * elements can be fetched easily by supplying the SWT variable as an
+	 * parameter to this method.
+	 */
+
+	// Find CSS theme name
+	byte [] buffer;
+	int length;
+	long /*int*/ settings = OS.gtk_settings_get_default ();
+	long /*int*/ [] ptr = new long /*int*/ [1];
+	long /*int*/ str;
+	OS.g_object_get (settings, OS.gtk_theme_name, ptr, 0);
+	if (ptr [0] == 0) {
+		return "";
+	}
+	length = OS.strlen (ptr [0]);
+	if (length == 0) {
+		return "";
+	}
+	buffer = new byte [length];
+	OS.memmove (buffer, ptr [0], length);
+	OS.g_free (ptr [0]);
+
+	// Fetch the actual theme in char/string format
+	long /*int*/ themeProvider = OS.gtk_css_provider_get_named(buffer, null);
+	str = OS.gtk_css_provider_to_string (themeProvider);
+	length = OS.strlen (str);
+	if (length == 0) {
+		return "";
+	}
+	buffer = new byte [length];
+	OS.memmove (buffer, str, length);
+	String cssOutput = new String (Converter.mbcsToWcs (null, buffer));
+
+	// Parse the theme values based on the corresponding SWT value
+	// i.e. theme_selected_bg_color in GTK is SWT.COLOR_LIST_SELECTION in SWT
+	String color;
+	switch (swt) {
+		case SWT.COLOR_LIST_SELECTION:
+			/*
+			 * These strings are the GTK named colors we are looking for.
+			 *
+			 * NOTE: we need to be careful of cases where one is being assigned
+			 * to the other. For example we do NOT want to parse:
+			 * @define-color theme_selected_bg_color selected_bg_color
+			 * Instead we want the actual value for selected_bg_color, i.e.
+			 * @define-color selected_bg_color rgb(255, 255, 255)
+			 *
+			 * We also want to filter out any color formats other than #xxyyzz,
+			 * rgb(xxx,yyy,zzz) and rgba(www,xxx,yyy,zzz) since gdk_rgba_parse()
+			 * can only handle strings in this format.
+			 */
+			int tSelected = cssOutput.indexOf ("@define-color theme_selected_bg_color");
+			int selected = cssOutput.indexOf ("@define-color selected_bg_color");
+			if (tSelected != -1) {
+				color = cssOutput.substring(tSelected + 38);
+				if (color.startsWith("#") || color.startsWith("rgb")) {
+					return color;
+				}
+			}
+			if (selected != -1) {
+				color = cssOutput.substring(selected + 32);
+				if (color.startsWith("#") || color.startsWith("rgb")) {
+					return color;
+				}
+			}
+			else {
+				return "";
+			}
+		default:
+			return "";
+	}
+}
+
+GdkRGBA gtk_css_property_to_rgba(String property) {
+	/* Here we convert rgb(...) or rgba(...) properties
+	 * into GdkRGBA objects using gdk_rgba_parse(). Note
+	 * that we still need to remove the ";" character from the
+	 * input string.
+	 */
+	GdkRGBA rgba = new GdkRGBA ();
+	String [] propertyParsed = new String [1];
+	propertyParsed = property.split (";");
+	OS.gdk_rgba_parse (rgba, Converter.wcsToMbcs (null, propertyParsed[0], true));
+	return rgba;
+}
+
 /**
  * Returns the default display. One is created (making the
  * thread that invokes this method its user-interface thread)
@@ -2409,7 +2502,20 @@ void initializeSystemColors () {
 		COLOR_LIST_BACKGROUND = toGdkColor (rgba);
 		OS.gtk_style_context_restore (context);
 		COLOR_LIST_SELECTION_TEXT = toGdkColor (styleContextGetColor (context, OS.GTK_STATE_FLAG_SELECTED, rgba));
-		OS.gtk_style_context_get_background_color (context, OS.GTK_STATE_FLAG_SELECTED, rgba);
+
+		// SWT.COLOR_LIST_SELECTION will be fetched using GTK CSS for GTK3.14+.
+		// TODO: convert other system colors to this method and re-factor.
+		if (OS.GTK_VERSION >= OS.VERSION(3, 14, 0)) {
+			String colorListSelection = gtk_css_default_theme_values(SWT.COLOR_LIST_SELECTION);
+			if (!colorListSelection.isEmpty()) {
+				rgba = gtk_css_property_to_rgba (colorListSelection);
+			} else {
+				OS.gtk_style_context_get_background_color (context, OS.GTK_STATE_FLAG_SELECTED, rgba);
+			}
+		} else {
+			OS.gtk_style_context_get_background_color (context, OS.GTK_STATE_FLAG_SELECTED, rgba);
+		}
+
 		COLOR_LIST_SELECTION = toGdkColor (rgba);
 		COLOR_LIST_SELECTION_TEXT_INACTIVE = toGdkColor (styleContextGetColor (context, OS.GTK_STATE_FLAG_ACTIVE, rgba));
 		OS.gtk_style_context_get_background_color (context, OS.GTK_STATE_FLAG_ACTIVE, rgba);

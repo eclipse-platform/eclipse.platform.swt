@@ -10056,6 +10056,33 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1container_1set_1border_1width)
 }
 #endif
 
+#ifndef NO__1gtk_1css_1provider_1get_1named
+JNIEXPORT jintLong JNICALL OS_NATIVE(_1gtk_1css_1provider_1get_1named)
+	(JNIEnv *env, jclass that, jbyteArray arg0, jbyteArray arg1)
+{
+	jbyte *lparg0=NULL;
+	jbyte *lparg1=NULL;
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, _1gtk_1css_1provider_1get_1named_FUNC);
+	if (arg0) if ((lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL)) == NULL) goto fail;
+	if (arg1) if ((lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL)) == NULL) goto fail;
+/*
+	rc = (jintLong)gtk_css_provider_get_named((const gchar *)lparg0, (const gchar *)lparg1);
+*/
+	{
+		OS_LOAD_FUNCTION(fp, gtk_css_provider_get_named)
+		if (fp) {
+			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(const gchar *, const gchar *))fp)((const gchar *)lparg0, (const gchar *)lparg1);
+		}
+	}
+fail:
+	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+	if (arg0 && lparg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
+	OS_NATIVE_EXIT(env, that, _1gtk_1css_1provider_1get_1named_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO__1gtk_1css_1provider_1load_1from_1data
 JNIEXPORT jboolean JNICALL OS_NATIVE(_1gtk_1css_1provider_1load_1from_1data)
 	(JNIEnv *env, jclass that, jintLong arg0, jbyteArray arg1, jintLong arg2, jintLongArray arg3)

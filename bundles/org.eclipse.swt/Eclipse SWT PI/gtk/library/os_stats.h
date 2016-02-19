@@ -744,6 +744,7 @@ typedef enum {
 	_1gtk_1container_1get_1children_FUNC,
 	_1gtk_1container_1remove_FUNC,
 	_1gtk_1container_1set_1border_1width_FUNC,
+	_1gtk_1css_1provider_1get_1named_FUNC,
 	_1gtk_1css_1provider_1load_1from_1data_FUNC,
 	_1gtk_1css_1provider_1new_FUNC,
 	_1gtk_1css_1provider_1to_1string_FUNC,
