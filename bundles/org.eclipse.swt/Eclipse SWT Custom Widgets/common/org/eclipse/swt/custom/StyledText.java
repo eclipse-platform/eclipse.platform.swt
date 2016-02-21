@@ -7,6 +7,7 @@
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
+ *     Andrey Loskutov <loskutov@gmx.de> - bug 488172
  *******************************************************************************/
 package org.eclipse.swt.custom;
 
@@ -5488,7 +5489,21 @@ Point getPointAtOffset(int offset) {
 					break;
 				case PREVIOUS_OFFSET_TRAILING:
 				default:
-					if (offsetInLine == 0) {
+					boolean lineBegin = offsetInLine == 0;
+					// If word wrap is enabled, we should also consider offsets
+					// of wrapped line parts as line begin and do NOT go back.
+					// This prevents clients to jump one line higher as
+					// expected, see bug 488172.
+					if (wordWrap && !lineBegin) {
+						int[] offsets = layout.getLineOffsets();
+						for (int i : offsets) {
+							if (i == offsetInLine) {
+								lineBegin = true;
+								break;
+							}
+						}
+					}
+					if (lineBegin) {
 						point = layout.getLocation(offsetInLine, false);
 					} else {
 						offsetInLine = layout.getPreviousOffset(offsetInLine, SWT.MOVEMENT_CLUSTER);
