@@ -924,11 +924,7 @@ void removeVerifyListener (VerifyListener listener) {
 GdkColor getContextBackground () {
 	if (OS.GTK_VERSION >= OS.VERSION(3, 16, 0)) {
 		if (background != null) {
-			GdkColor color = new GdkColor ();
-			color.red = (short)(background.red * 0xFFFF);
-			color.green = (short)(background.green * 0xFFFF);
-			color.blue = (short)(background.blue * 0xFFFF);
-			return color;
+			return display.toGdkColor (background);
 		} else {
 			return display.COLOR_WIDGET_BACKGROUND;
 		}

@@ -927,11 +927,7 @@ private void gtk_swt_set_border_color (GdkColor color) {
 	//TODO : Reactor in future commit. This and widget:setForegroundColor have duplicate code.
 	GdkRGBA rgba = null;
 	if (color != null) {
-		rgba = new GdkRGBA ();
-		rgba.alpha = 1;
-		rgba.red = (color.red & 0xFFFF) / (float) 0xFFFF;
-		rgba.green = (color.green & 0xFFFF) / (float) 0xFFFF;
-		rgba.blue = (color.blue & 0xFFFF) / (float) 0xFFFF;
+		rgba = display.toGdkRGBA (color);
 	}
 
 	//Construct CSS String

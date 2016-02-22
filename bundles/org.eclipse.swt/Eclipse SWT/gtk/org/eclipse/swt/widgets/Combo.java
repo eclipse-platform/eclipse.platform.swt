@@ -893,11 +893,7 @@ public int getCaretPosition () {
 GdkColor getContextBackground () {
 	if (OS.GTK_VERSION >= OS.VERSION(3, 16, 0)) {
 		if (background != null) {
-			GdkColor color = new GdkColor ();
-			color.red = (short)(background.red * 0xFFFF);
-			color.green = (short)(background.green * 0xFFFF);
-			color.blue = (short)(background.blue * 0xFFFF);
-			return color;
+			return display.toGdkColor (background);
 		} else {
 			return display.COLOR_WIDGET_BACKGROUND;
 		}
@@ -1983,13 +1979,7 @@ void setForegroundColor (GdkColor color) {
 GdkRGBA gdk_color_to_rgba (GdkColor color) {
 	GdkRGBA rgba = null;
 	if (color != null) {
-		rgba = new GdkRGBA();
-		rgba.alpha = 1;  //TODO, we are loosing Alpha in Control:setForeground(Color color),
-		                 //as alpha is only defined in Color and not GtkColor.
-		                 //This function should ideally be factored out to Control, and convert Color to GdkRGBA.
-		rgba.red = (color.red & 0xFFFF) / (float)0xFFFF;
-		rgba.green = (color.green & 0xFFFF) / (float)0xFFFF;
-		rgba.blue = (color.blue & 0xFFFF) / (float)0xFFFF;
+		rgba = display.toGdkRGBA (color);
 	}
 	return rgba;
 }

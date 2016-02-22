@@ -443,7 +443,8 @@ public void drawBackground (GC gc, int x, int y, int width, int height, int offs
 				Cairo.cairo_pattern_destroy (pattern);
 			} else {
 				GdkColor color = control.getBackgroundColor ();
-				Cairo.cairo_set_source_rgba (cairo, (color.red & 0xFFFF) / (float)0xFFFF, (color.green & 0xFFFF) / (float)0xFFFF, (color.blue & 0xFFFF) / (float)0xFFFF, data.alpha / (float)0xFF);
+				GdkRGBA rgba = display.toGdkRGBA (color);
+				Cairo.cairo_set_source_rgba (cairo, rgba.red, rgba.green, rgba.blue, rgba.alpha);
 			}
 			Cairo.cairo_rectangle (cairo, x, y, width, height);
 			Cairo.cairo_fill (cairo);

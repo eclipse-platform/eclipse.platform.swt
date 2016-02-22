@@ -1608,11 +1608,7 @@ void setForegroundColor (long /*int*/ handle, GdkColor color, boolean setStateAc
 	if (OS.GTK3) {
 		GdkRGBA rgba = null;
 		if (color != null) {
-			rgba = new GdkRGBA();
-			rgba.alpha = 1;
-			rgba.red = (color.red & 0xFFFF) / (float)0xFFFF;
-			rgba.green = (color.green & 0xFFFF) / (float)0xFFFF;
-			rgba.blue = (color.blue & 0xFFFF) / (float)0xFFFF;
+			rgba = display.toGdkRGBA (color);
 		}
 		OS.gtk_widget_override_color (handle, OS.GTK_STATE_FLAG_NORMAL, rgba);
 		long /*int*/ context = OS.gtk_widget_get_style_context (handle);

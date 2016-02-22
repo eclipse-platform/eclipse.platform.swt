@@ -1342,11 +1342,7 @@ public TableColumn [] getColumns () {
 GdkColor getContextBackground () {
 	if (OS.GTK_VERSION >= OS.VERSION(3, 16, 0)) {
 		if (background != null) {
-			GdkColor color = new GdkColor ();
-			color.red = (short)(background.red * 0xFFFF);
-			color.green = (short)(background.green * 0xFFFF);
-			color.blue = (short)(background.blue * 0xFFFF);
-			return color;
+			return display.toGdkColor (background);
 		} else {
 			// For Tables and Trees, the default background is
 			// COLOR_LIST_BACKGROUND instead of COLOR_WIDGET_BACKGROUND.
@@ -3135,20 +3131,12 @@ void setBackgroundColor (long /*int*/ context, long /*int*/ handle, GdkRGBA rgba
 	 */
 	if (rgba == null) {
 		GdkColor temp = getDisplay().COLOR_LIST_BACKGROUND;
-		background = new GdkRGBA ();
-		background.alpha = 1.0;
-		background.red = (temp.red & 0xFFFF) / (float)0xFFFF;
-		background.green = (temp.green & 0xFFFF) / (float)0xFFFF;
-		background.blue = (temp.blue & 0xFFFF) / (float)0xFFFF;
+		background = display.toGdkRGBA (temp);
 	} else {
 		background = rgba;
 	}
 	GdkColor defaultColor = getDisplay().COLOR_LIST_SELECTION;
-	GdkRGBA selectedBackground = new GdkRGBA ();
-	selectedBackground.alpha = 1;
-	selectedBackground.red = (defaultColor.red & 0xFFFF) / (float)0xFFFF;
-	selectedBackground.green = (defaultColor.green & 0xFFFF) / (float)0xFFFF;
-	selectedBackground.blue = (defaultColor.blue & 0xFFFF) / (float)0xFFFF;
+	GdkRGBA selectedBackground = display.toGdkRGBA (defaultColor);
 	if (OS.GTK_VERSION >= OS.VERSION(3, 16, 0)) {
 		String css = "GtkTreeView {background-color: " + gtk_rgba_to_css_string(background) + ";}\n"
 				+ "GtkTreeView:selected {background-color: " + gtk_rgba_to_css_string(selectedBackground) + ";}";

@@ -145,7 +145,8 @@ void drawBackground (Control control, long /*int*/ window, long /*int*/ cr, long
 			Cairo.cairo_pattern_destroy (pattern);
 		} else {
 			GdkColor color = control.getBackgroundColor ();
-			Cairo.cairo_set_source_rgba (cairo, (color.red & 0xFFFF) / (float)0xFFFF, (color.green & 0xFFFF) / (float)0xFFFF, (color.blue & 0xFFFF) / (float)0xFFFF, 1);
+			GdkRGBA rgba = display.toGdkRGBA (color);
+			Cairo.cairo_set_source_rgba (cairo, rgba.red, rgba.green, rgba.blue, rgba.alpha);
 		}
 		Cairo.cairo_rectangle (cairo, x, y, width, height);
 		Cairo.cairo_fill (cairo);
@@ -2625,11 +2626,7 @@ GdkColor getContextBackground () {
 		if (rgba.alpha == 0) {
 			return display.COLOR_WIDGET_BACKGROUND;
 		}
-		GdkColor color = new GdkColor ();
-		color.red = (short)(rgba.red * 0xFFFF);
-		color.green = (short)(rgba.green * 0xFFFF);
-		color.blue = (short)(rgba.blue * 0xFFFF);
-		return color;
+		return display.toGdkColor (rgba);
 	}
 }
 
@@ -2639,11 +2636,7 @@ GdkColor getContextColor () {
 	int styleState = OS.gtk_widget_get_state_flags(handle);
 	GdkRGBA rgba = new GdkRGBA ();
 	rgba = display.styleContextGetColor (context, styleState, rgba);
-	GdkColor color = new GdkColor ();
-	color.red = (short)(rgba.red * 0xFFFF);
-	color.green = (short)(rgba.green * 0xFFFF);
-	color.blue = (short)(rgba.blue * 0xFFFF);
-	return color;
+	return display.toGdkColor (rgba);
 }
 
 GdkColor getBgColor () {
@@ -4155,11 +4148,7 @@ String gtk_rgba_to_css_string (GdkRGBA rgba) {
 	} else {
 		// If we have a null RGBA, set it to the default COLOR_WIDGET_BACKGROUND.
 		GdkColor defaultGdkColor = display.getSystemColor(SWT.COLOR_WIDGET_BACKGROUND).handle;
-		toConvert = new GdkRGBA ();
-		toConvert.alpha = 1.0;
-		toConvert.red = (defaultGdkColor.red & 0xFFFF) / (float)0xFFFF;
-		toConvert.green = (defaultGdkColor.green & 0xFFFF) / (float)0xFFFF;
-		toConvert.blue = (defaultGdkColor.blue & 0xFFFF) / (float)0xFFFF;
+		toConvert = display.toGdkRGBA (defaultGdkColor);
 	}
 	long /*int*/ str = OS.gdk_rgba_to_string (toConvert);
 	int length = OS.strlen (str);
@@ -4171,7 +4160,6 @@ String gtk_rgba_to_css_string (GdkRGBA rgba) {
 GdkColor gtk_css_parse_background (long /*int*/ provider) {
 	String shortOutput;
 	int startIndex;
-	GdkColor color = new GdkColor ();
 	GdkRGBA rgba = new GdkRGBA ();
 	// Fetch the CSS in char/string format from the GtkCssProvider.
 	long /*int*/ str = OS.gtk_css_provider_to_string (provider);
@@ -4204,10 +4192,7 @@ GdkColor gtk_css_parse_background (long /*int*/ provider) {
 			return display.COLOR_WIDGET_BACKGROUND;
 		}
 	}
-	color.red = (short)(rgba.red * 0xFFFF);
-	color.green = (short)(rgba.green * 0xFFFF);
-	color.blue = (short)(rgba.blue * 0xFFFF);
-	return color;
+	return display.toGdkColor (rgba);
 }
 
 GdkRGBA gtk_css_property_to_rgba(String property) {
@@ -4239,11 +4224,8 @@ void setBackgroundColor (long /*int*/ handle, GdkColor color) {
 			alpha = backgroundAlpha;
 		}
 		if (color != null) {
-			rgba = new GdkRGBA ();
+			rgba = display.toGdkRGBA (color);
 			rgba.alpha = alpha / (float)255;
-			rgba.red = (color.red & 0xFFFF) / (float)0xFFFF;
-			rgba.green = (color.green & 0xFFFF) / (float)0xFFFF;
-			rgba.blue = (color.blue & 0xFFFF) / (float)0xFFFF;
 		}
 		long /*int*/ context = OS.gtk_widget_get_style_context (handle);
 		setBackgroundColor (context, handle, rgba);

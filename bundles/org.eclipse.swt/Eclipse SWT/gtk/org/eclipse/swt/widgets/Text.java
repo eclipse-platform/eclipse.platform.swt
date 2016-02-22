@@ -1670,9 +1670,7 @@ void drawMessage (long /*int*/ cr) {
 				long /*int*/ styleContext = OS.gtk_widget_get_style_context (handle);
 				GdkRGBA rgba = new GdkRGBA ();
 				rgba = display.styleContextGetColor (styleContext, OS.GTK_STATE_FLAG_INSENSITIVE, rgba);
-				textColor.red = (short)(rgba.red * 0xFFFF);
-				textColor.green = (short)(rgba.green * 0xFFFF);
-				textColor.blue = (short)(rgba.blue * 0xFFFF);
+				textColor = display.toGdkColor (rgba);
 				Point thickness = getThickness (handle);
 				x += thickness.x;
 				y += thickness.y;
@@ -1683,7 +1681,8 @@ void drawMessage (long /*int*/ cr) {
 			}
 			if (OS.USE_CAIRO) {
 				long /*int*/ cairo = cr != 0 ? cr : OS.gdk_cairo_create(window);
-				Cairo.cairo_set_source_rgba(cairo, (textColor.red & 0xFFFF) / (float)0xFFFF, (textColor.green & 0xFFFF) / (float)0xFFFF, (textColor.blue & 0xFFFF) / (float)0xFFFF, 1);
+				GdkRGBA rgba = display.toGdkRGBA (textColor);
+				Cairo.cairo_set_source_rgba(cairo, rgba.red, rgba.green, rgba.blue, rgba.alpha);
 				Cairo.cairo_move_to(cairo, x, y);
 				OS.pango_cairo_show_layout(cairo, layout);
 				if (cr != cairo) Cairo.cairo_destroy(cairo);
@@ -2153,11 +2152,7 @@ void setBackgroundColor (GdkColor color) {
 GdkColor getContextBackground () {
 	if (OS.GTK_VERSION >= OS.VERSION(3, 16, 0)) {
 		if (background != null) {
-			GdkColor color = new GdkColor ();
-			color.red = (short)(background.red * 0xFFFF);
-			color.green = (short)(background.green * 0xFFFF);
-			color.blue = (short)(background.blue * 0xFFFF);
-			return color;
+			return display.toGdkColor (background);
 		} else {
 			return display.COLOR_WIDGET_BACKGROUND;
 		}

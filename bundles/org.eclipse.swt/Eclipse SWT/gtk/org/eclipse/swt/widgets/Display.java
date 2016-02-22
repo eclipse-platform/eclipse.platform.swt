@@ -2289,6 +2289,15 @@ public Menu getSystemMenu () {
 	return null;
 }
 
+GdkRGBA toGdkRGBA (GdkColor color) {
+	GdkRGBA rgba = new GdkRGBA ();
+	rgba.alpha = 1.0;
+	rgba.red = (color.red & 0xFFFF) / (float)0xFFFF;
+	rgba.green = (color.green & 0xFFFF) / (float)0xFFFF;
+	rgba.blue = (color.blue & 0xFFFF) / (float)0xFFFF;
+	return rgba;
+}
+
 GdkColor toGdkColor (GdkRGBA rgba) {
 	GdkColor gdkColor = new GdkColor();
 	gdkColor.red = (short)(rgba.red * 0xFFFF);
