@@ -145,7 +145,7 @@ case $SWT_OS.$SWT_ARCH in
 			export CC=gcc
 		fi
 		if [ "${JAVA_HOME}" = "" ]; then
-			export JAVA_HOME="/home/sravanl/EclipseDev/jdk1.8.0_71"
+			export JAVA_HOME="/bluebird/teamswt/swt-builddir/JDKs/x86_64/jdk1.5.0"
 		fi
 		if [ "${PKG_CONFIG_PATH}" = "" ]; then
 			export PKG_CONFIG_PATH="/usr/lib64/pkgconfig"
@@ -566,5 +566,5 @@ fi
 if [ "x${1}" = "xclean" ]; then
 	${MAKE_TYPE} -f $MAKEFILE clean
 else
-	${MAKE_TYPE} -f $MAKEFILE all ${1} ${2} ${3} ${4} ${5} ${6} ${7} ${8} ${9}
+	${MAKE_TYPE} -f $MAKEFILE all $MAKE_GNOME $MAKE_CAIRO $MAKE_AWT $MAKE_MOZILLA ${1} ${2} ${3} ${4} ${5} ${6} ${7} ${8} ${9}
 fi

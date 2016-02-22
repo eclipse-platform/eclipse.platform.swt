@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2016 IBM Corporation and others.
+ * Copyright (c) 2000, 2012 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -200,8 +200,8 @@ void drawChevron (GC gc, int x, int y) {
 				px+3,py+2, px+4,py+2, px+4,py+1,  px+5,py+1, px+5,py, px+6,py};
 	}
 	gc.setForeground (display.getSystemColor (SWT.COLOR_TITLE_FOREGROUND));
-	gc.drawPolyline (DPIUtil.autoScaleDown(polyline1));
-	gc.drawPolyline (DPIUtil.autoScaleDown(polyline2));
+	gc.drawPolyline (polyline1);
+	gc.drawPolyline (polyline2);
 }
 
 void drawItem (GC gc, boolean drawFocus) {
@@ -282,25 +282,12 @@ public boolean getExpanded () {
  * </ul>
  */
 public int getHeaderHeight () {
-	return DPIUtil.autoScaleDown (getHeaderHeightInPixels ());
-}
-/**
- * Returns the height of the receiver's header
- *
- * @return the height of the header
- *
- * @exception SWTException <ul>
- *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
- *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
- * </ul>
- * @since 3.105
- */
-int getHeaderHeightInPixels () {
 	checkWidget ();
 	GtkAllocation allocation = new GtkAllocation ();
 	OS.gtk_widget_get_allocation (handle, allocation);
 	return allocation.height - (expanded ? height : 0);
 }
+
 /**
  * Gets the height of the receiver.
  *
@@ -312,20 +299,6 @@ int getHeaderHeightInPixels () {
  * </ul>
  */
 public int getHeight () {
-	return DPIUtil.autoScaleDown(getHeightInPixels());
-}
-/**
- * Gets the height of the receiver.
- *
- * @return the height
- *
- * @exception SWTException <ul>
- *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
- *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
- * </ul>
- * @since 3.105
- */
-int getHeightInPixels () {
 	checkWidget ();
 	return height;
 }
@@ -499,8 +472,8 @@ void setBounds (int x, int y, int width, int height, boolean move, boolean size)
 		redraw ();
 	}
 	if (control != null && !control.isDisposed ()) {
-		if (move) control.setLocationInPixels (x + BORDER, y + headerHeight);
-		if (size) control.setSizeInPixels (Math.max (0, width - 2 * BORDER), Math.max (0, height - BORDER));
+		if (move) control.setLocation (x + BORDER, y + headerHeight);
+		if (size) control.setSize (Math.max (0, width - 2 * BORDER), Math.max (0, height - BORDER));
 	}
 }
 
@@ -600,22 +573,6 @@ void setForegroundColor (GdkColor color) {
  * </ul>
  */
 public void setHeight (int height) {
-	setHeightInPixels(DPIUtil.autoScaleUp(height));
-}
-
-/**
- * Sets the height of the receiver. This is height of the item when it is expanded,
- * excluding the height of the header.
- *
- * @param height the new height
- *
- * @exception SWTException <ul>
- *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
- *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
- * </ul>
- * @since 3.105
- */
-void setHeightInPixels (int height) {
 	checkWidget ();
 	if (height < 0) return;
 	this.height = height;

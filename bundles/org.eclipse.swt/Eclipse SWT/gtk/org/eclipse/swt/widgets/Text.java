@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2016 IBM Corporation and others.
+ * Copyright (c) 2000, 2015 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -548,7 +548,8 @@ public void clearSelection () {
 	}
 }
 
-@Override Point computeSizeInPixels (int wHint, int hHint, boolean changed) {
+@Override
+public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget ();
 	if (wHint != SWT.DEFAULT && wHint < 0) wHint = 0;
 	if (hHint != SWT.DEFAULT && hHint < 0) hHint = 0;
@@ -581,13 +582,14 @@ public void clearSelection () {
 	if (height == 0) height = DEFAULT_HEIGHT;
 	width = wHint == SWT.DEFAULT ? width : wHint;
 	height = hHint == SWT.DEFAULT ? height : hHint;
-	Rectangle trim = computeTrimInPixels (0, 0, width, height);
+	Rectangle trim = computeTrim (0, 0, width, height);
 	return new Point (trim.width, trim.height);
 }
 
-@Override Rectangle computeTrimInPixels (int x, int y, int width, int height) {
+@Override
+public Rectangle computeTrim (int x, int y, int width, int height) {
 	checkWidget ();
-	Rectangle trim = super.computeTrimInPixels (x, y, width, height);
+	Rectangle trim = super.computeTrim (x, y, width, height);
 	int xborder = 0, yborder = 0;
 	if ((style & SWT.SINGLE) != 0) {
 		if (OS.GTK3) {
@@ -818,9 +820,10 @@ GdkColor getBackgroundColor () {
 	return getBaseColor ();
 }
 
-@Override int getBorderWidthInPixels () {
+@Override
+public int getBorderWidth () {
 	checkWidget();
-	if ((style & SWT.MULTI) != 0) return super.getBorderWidthInPixels ();
+	if ((style & SWT.MULTI) != 0) return super.getBorderWidth ();
 	if ((this.style & SWT.BORDER) != 0) {
 		 return getThickness (handle).x;
 	}
@@ -862,23 +865,6 @@ public int getCaretLineNumber () {
  */
 public Point getCaretLocation () {
 	checkWidget ();
-	return DPIUtil.autoScaleDown(getCaretLocationInPixels());
-}
-
-/**
- * Returns a point describing the location of the caret relative
- * to the receiver.
- *
- * @return a point, the location of the caret
- *
- * @exception SWTException <ul>
- *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
- *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
- * </ul>
- * @since 3.105
- */
-Point getCaretLocationInPixels () {
-	checkWidget ();
 	if ((style & SWT.SINGLE) != 0) {
 		int index = OS.gtk_editable_get_position (handle);
 		index = OS.gtk_entry_text_index_to_layout_index (handle, index);
@@ -887,7 +873,7 @@ Point getCaretLocationInPixels () {
 		long /*int*/ layout = OS.gtk_entry_get_layout (handle);
 		PangoRectangle pos = new PangoRectangle ();
 		OS.pango_layout_index_to_pos (layout, index, pos);
-		int x = offset_x [0] + OS.PANGO_PIXELS (pos.x) - getBorderWidthInPixels ();
+		int x = offset_x [0] + OS.PANGO_PIXELS (pos.x) - getBorderWidth ();
 		int y = offset_y [0] + OS.PANGO_PIXELS (pos.y);
 		return new Point (x, y);
 	}
@@ -1411,7 +1397,7 @@ public int getTopIndex () {
  * The top pixel does not include the widget trimming.
  * </p>
  *
- * @return the point position of the top line
+ * @return the pixel position of the top line
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -1419,32 +1405,6 @@ public int getTopIndex () {
  * </ul>
  */
 public int getTopPixel () {
-	checkWidget ();
-	return DPIUtil.autoScaleDown(getTopPixelInPixels());
-}
-
-/**
- * Returns the top pixel.
- * <p>
- * The top pixel is the pixel position of the line
- * that is currently at the top of the widget.  On
- * some platforms, a text widget can be scrolled by
- * pixels instead of lines so that a partial line
- * is displayed at the top of the widget.
- * </p><p>
- * The top pixel changes when the widget is scrolled.
- * The top pixel does not include the widget trimming.
- * </p>
- *
- * @return the pixel position of the top line
- *
- * @exception SWTException <ul>
- *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
- *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
- * </ul>
- * @since 3.105
- */
-int getTopPixelInPixels () {
 	checkWidget ();
 	if ((style & SWT.SINGLE) != 0) return 0;
 	byte [] position = new byte [ITER_SIZEOF];

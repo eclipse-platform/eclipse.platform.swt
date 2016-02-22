@@ -19,7 +19,6 @@ import java.lang.reflect.*;
 /* SWT Imports */
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.gtk.*;
@@ -250,7 +249,7 @@ public static Frame new_Frame (final Composite parent) {
 					});
 					break;
 				case SWT.Resize:
-					final Rectangle clientArea = DPIUtil.autoScaleUp(parent.getClientArea());
+					final Rectangle clientArea = parent.getClientArea();
 					EventQueue.invokeLater(new Runnable () {
 						@Override
 						public void run () {
@@ -268,7 +267,7 @@ public static Frame new_Frame (final Composite parent) {
 		@Override
 		public void run () {
 			if (parent.isDisposed()) return;
-			final Rectangle clientArea = DPIUtil.autoScaleUp(parent.getClientArea());
+			final Rectangle clientArea = parent.getClientArea();
 			EventQueue.invokeLater(new Runnable () {
 				@Override
 				public void run () {
@@ -318,7 +317,7 @@ public static Shell new_Shell (final Display display, final Canvas parent) {
 				public void run () {
 					if (shell.isDisposed()) return;
 					Dimension dim = parent.getSize ();
-					shell.setSize (DPIUtil.autoScaleDown(new Point(dim.width, dim.height)));
+					shell.setSize (dim.width, dim.height);
 				}
 			});
 		}

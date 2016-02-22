@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2016 IBM Corporation and others.
+ * Copyright (c) 2000, 2015 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -102,13 +102,15 @@ long /*int*/ clientHandle () {
 	return clientHandle;
 }
 
-@Override Point computeSizeInPixels (int wHint, int hHint, boolean changed) {
-	Point size = super.computeSizeInPixels(wHint, hHint, changed);
+@Override
+public Point computeSize (int wHint, int hHint, boolean changed) {
+	Point size = super.computeSize(wHint, hHint, changed);
 	int width = computeNativeSize (handle, SWT.DEFAULT, SWT.DEFAULT, false).x;
 	size.x = Math.max (size.x, width);
 	return size;
 }
-@Override Rectangle computeTrimInPixels (int x, int y, int width, int height) {
+@Override
+public Rectangle computeTrim (int x, int y, int width, int height) {
 	checkWidget();
 	forceResize ();
 	GtkAllocation allocation = new GtkAllocation();
@@ -122,8 +124,9 @@ long /*int*/ clientHandle () {
 	return new Rectangle (x, y, width, height);
 }
 
-@Override Rectangle getClientAreaInPixels () {
-	Rectangle clientRectangle = super.getClientAreaInPixels ();
+@Override
+public Rectangle getClientArea () {
+	Rectangle clientRectangle = super.getClientArea ();
 	/*
 	* Bug 453827 Child position fix.
 	* SWT's calls to gtk_widget_size_allocate and gtk_widget_set_allocation
