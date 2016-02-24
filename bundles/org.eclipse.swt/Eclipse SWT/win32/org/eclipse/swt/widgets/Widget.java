@@ -1014,17 +1014,17 @@ public void removeDisposeListener (DisposeListener listener) {
  * <p>
  * The skin event is sent to the receiver's display when appropriate (usually before the next event
  * is handled). Widgets are automatically marked for skinning upon creation as well as when its skin
- * id or class changes. The skin id and/or class can be changed by calling <code>Display.setData(String, Object)</code>
- * with the keys SWT.SKIN_ID and/or SWT.SKIN_CLASS. Once the skin event is sent to a widget, it
+ * id or class changes. The skin id and/or class can be changed by calling {@link Display#setData(String, Object)}
+ * with the keys {@link SWT#SKIN_ID} and/or {@link SWT#SKIN_CLASS}. Once the skin event is sent to a widget, it
  * will not be sent again unless <code>reskin(int)</code> is called on the widget or on an ancestor
  * while specifying the <code>SWT.ALL</code> flag.
  * </p>
  * <p>
  * The parameter <code>flags</code> may be either:
  * <dl>
- * <dt><b>SWT.ALL</b></dt>
+ * <dt><b>{@link SWT#ALL}</b></dt>
  * <dd>all children in the receiver's widget tree should be skinned</dd>
- * <dt><b>SWT.NONE</b></dt>
+ * <dt><b>{@link SWT#NONE}</b></dt>
  * <dd>only the receiver should be skinned</dd>
  * </dl>
  * </p>

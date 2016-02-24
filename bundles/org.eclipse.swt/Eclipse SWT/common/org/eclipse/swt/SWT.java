@@ -13,6 +13,7 @@ package org.eclipse.swt;
 
 
 import org.eclipse.swt.internal.*;
+import org.eclipse.swt.widgets.*;
 
 /**
  * This class provides access to a small number of SWT system-wide
@@ -4250,7 +4251,12 @@ public class SWT {
 	public static final int ID_QUIT = -6;
 
 	/**
-	 * Key value for setting and getting the skin class of a widget.
+	 * Key name for setting and getting the skin class of a widget.
+	 * <p>
+	 * Note: SWT currently doesn't read or process this property. The only
+	 * effect of setting this property is to trigger a call to
+	 * {@link Widget#reskin(int) Widget#reskin(SWT.ALL)}.
+	 * </p>
 	 *
 	 * @see org.eclipse.swt.widgets.Widget#getData(String)
 	 * @see org.eclipse.swt.widgets.Widget#setData(String, Object)
@@ -4260,7 +4266,12 @@ public class SWT {
 	public static final String SKIN_CLASS = "org.eclipse.swt.skin.class"; //$NON-NLS-1$
 
 	/**
-	 * Key value for setting and getting the skin id of a widget.
+	 * Key name for setting and getting the skin id of a widget.
+	 * <p>
+	 * Note: SWT currently doesn't read or process this property. The only
+	 * effect of setting this property is to trigger a call to
+	 * {@link Widget#reskin(int) Widget#reskin(SWT.ALL)}.
+	 * </p>
 	 *
 	 * @see org.eclipse.swt.widgets.Widget#getData(String)
 	 * @see org.eclipse.swt.widgets.Widget#setData(String, Object)
