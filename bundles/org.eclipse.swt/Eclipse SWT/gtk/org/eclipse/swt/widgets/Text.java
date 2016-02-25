@@ -600,12 +600,7 @@ public Rectangle computeTrim (int x, int y, int width, int height) {
 			trim.x -= tmp.left;
 			trim.y -= tmp.top;
 			trim.width += tmp.left + tmp.right;
-			if (OS.GTK_VERSION >= OS.VERSION (3, 19, 0)) {
-				Point widthNative = computeNativeSize(handle, trim.width, SWT.DEFAULT, true);
-				trim.height = widthNative.y;
-			} else {
-				trim.height = tmp.bottom + tmp.top;
-			}
+			trim.height += tmp.top + tmp.bottom;
 			if ((style & SWT.BORDER) != 0) {
 				OS.gtk_style_context_get_border (context, styleState, tmp);
 				trim.x -= tmp.left;
