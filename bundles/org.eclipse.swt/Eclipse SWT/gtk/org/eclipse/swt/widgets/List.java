@@ -43,6 +43,7 @@ public class List extends Scrollable {
 	long /*int*/ modelHandle;
 
 	static final int TEXT_COLUMN = 0;
+	GdkRGBA background;
 
 /**
  * Constructs a new instance of this class given its parent
@@ -420,6 +421,21 @@ long /*int*/ eventWindow () {
 @Override
 GdkColor getBackgroundColor () {
 	return getBaseColor ();
+}
+
+@Override
+GdkColor getContextBackground () {
+	if (OS.GTK_VERSION >= OS.VERSION(3, 16, 0)) {
+		if (background != null) {
+			return display.toGdkColor (background);
+		} else {
+			// List is a GtkTreeView, same as Table/Tree: its default
+			// background color is COLOR_LIST_BACKGROUND.
+			return display.COLOR_LIST_BACKGROUND;
+		}
+	} else {
+		return super.getContextBackground ();
+	}
 }
 
 /**
@@ -1315,6 +1331,31 @@ void setBackgroundColor (GdkColor color) {
 	super.setBackgroundColor (color);
 	if (!OS.GTK3) {
 		OS.gtk_widget_modify_base (handle, 0, color);
+	}
+}
+
+@Override
+void setBackgroundColor (long /*int*/ context, long /*int*/ handle, GdkRGBA rgba) {
+	/* Setting the background color overrides the selected background color.
+	 * To prevent this, we need to re-set the default. This can be done with CSS
+	 * on GTK3.16+, or by using GtkStateFlags as an argument to
+	 * gtk_widget_override_background_color() on versions of GTK3 less than 3.16.
+	 */
+	if (rgba == null) {
+		GdkColor temp = getDisplay().COLOR_LIST_BACKGROUND;
+		background = display.toGdkRGBA (temp);
+	} else {
+		background = rgba;
+	}
+	GdkColor defaultColor = getDisplay().COLOR_LIST_SELECTION;
+	GdkRGBA selectedBackground = display.toGdkRGBA (defaultColor);
+	if (OS.GTK_VERSION >= OS.VERSION(3, 16, 0)) {
+		String css = "GtkTreeView {background-color: " + gtk_rgba_to_css_string(background) + ";}\n"
+				+ "GtkTreeView:selected {background-color: " + gtk_rgba_to_css_string(selectedBackground) + ";}";
+		gtk_css_provider_load_from_css(context, css);
+	} else {
+		super.setBackgroundColor(context, handle, rgba);
+		OS.gtk_widget_override_background_color(handle, OS.GTK_STATE_FLAG_SELECTED, selectedBackground);
 	}
 }
 
