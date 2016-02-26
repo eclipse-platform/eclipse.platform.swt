@@ -10,7 +10,7 @@
  *******************************************************************************/
 package org.eclipse.swt.browser;
 
-import java.io.File;
+import java.io.*;
 import java.util.*;
 import java.util.List;
 
@@ -212,8 +212,7 @@ void init () {
 			@Override
 			public void handleEvent (Event event) {
 				switch (event.detail) {
-					case SWT.TRAVERSE_RETURN:
-					case SWT.TRAVERSE_ESCAPE: {
+					case SWT.TRAVERSE_RETURN: {
 						/* always veto the traversal */
 						event.doit = false;
 						break;
