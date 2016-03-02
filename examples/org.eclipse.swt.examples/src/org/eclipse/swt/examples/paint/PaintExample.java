@@ -449,47 +449,29 @@ public class PaintExample {
 			final Tool tool = tools[i];
 			String group = tool.group;
 			if (group.equals("tool")) {
-				tool.action = new Runnable() {
-					@Override
-					public void run() {
-						setPaintTool(tool.id);
-					}
-				};
+				tool.action = () -> setPaintTool(tool.id);
 			} else if (group.equals("fill")) {
-				tool.action = new Runnable() {
-					@Override
-					public void run() {
-						setFillType(tool.id);
-					}
-				};
+				tool.action = () -> setFillType(tool.id);
 			} else if (group.equals("linestyle")) {
-				tool.action = new Runnable() {
-					@Override
-					public void run() {
-						setLineStyle(tool.id);
-					}
-				};
+				tool.action = () -> setLineStyle(tool.id);
 			} else if (group.equals("options")) {
-				tool.action = new Runnable() {
-					@Override
-					public void run() {
-						FontDialog fontDialog = new FontDialog(paintSurface.getShell(), SWT.PRIMARY_MODAL);
-						FontData[] fontDatum = toolSettings.commonFont.getFontData();
-						if (fontDatum != null && fontDatum.length > 0) {
-							fontDialog.setFontList(fontDatum);
-						}
-						fontDialog.setText(getResourceString("options.Font.dialog.title"));
+				tool.action = () -> {
+					FontDialog fontDialog = new FontDialog(paintSurface.getShell(), SWT.PRIMARY_MODAL);
+					FontData[] fontDatum = toolSettings.commonFont.getFontData();
+					if (fontDatum != null && fontDatum.length > 0) {
+						fontDialog.setFontList(fontDatum);
+					}
+					fontDialog.setText(getResourceString("options.Font.dialog.title"));
 
-						paintSurface.hideRubberband();
-						FontData fontData = fontDialog.open();
-						paintSurface.showRubberband();
-						if (fontData != null) {
-							try {
-								Font font = new Font(mainComposite.getDisplay(), fontData);
-								toolSettings.commonFont = font;
-								updateToolSettings();
-							} catch (SWTException ex) {
-							}
+					paintSurface.hideRubberband();
+					FontData fontData = fontDialog.open();
+					paintSurface.showRubberband();
+					if (fontData != null) {
+						try {
+							Font font = new Font(mainComposite.getDisplay(), fontData);
+							toolSettings.commonFont = font;
+							updateToolSettings();
+						} catch (SWTException ex) {
 						}
 					}
 				};

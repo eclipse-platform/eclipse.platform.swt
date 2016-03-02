@@ -22,45 +22,39 @@ public class Snippet337 {
 public static void main(String args[]) {
 	final Display display = new Display();
 
-	EventQueue.invokeLater(new Runnable() {
-		@Override
-		public void run() {
-			JFrame mainFrame = new JFrame("Main Window");
-			mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-			JPanel mainPanel = new JPanel();
-			mainPanel.setLayout(new FlowLayout());
-			JButton launchBrowserButton = new JButton("Launch Browser");
-			launchBrowserButton.addActionListener(e -> {
-				JFrame childFrame = new JFrame();
-				final Canvas canvas = new Canvas();
-				childFrame.setSize(850, 650);
-				childFrame.getContentPane().add(canvas);
-				childFrame.setVisible(true);
-				display.asyncExec(() -> {
-					Shell shell = SWT_AWT.new_Shell(display, canvas);
-					shell.setSize(800, 600);
-					Browser browser = new Browser(shell, SWT.NONE);
-					browser.setLayoutData(new GridData(GridData.FILL_BOTH));
-					browser.setSize(800, 600);
-					browser.setUrl("http://www.eclipse.org");
-					shell.open();
-				});
+	EventQueue.invokeLater(() -> {
+		JFrame mainFrame = new JFrame("Main Window");
+		mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		JPanel mainPanel = new JPanel();
+		mainPanel.setLayout(new FlowLayout());
+		JButton launchBrowserButton = new JButton("Launch Browser");
+		launchBrowserButton.addActionListener(e -> {
+			JFrame childFrame = new JFrame();
+			final Canvas canvas = new Canvas();
+			childFrame.setSize(850, 650);
+			childFrame.getContentPane().add(canvas);
+			childFrame.setVisible(true);
+			display.asyncExec(() -> {
+				Shell shell = SWT_AWT.new_Shell(display, canvas);
+				shell.setSize(800, 600);
+				Browser browser = new Browser(shell, SWT.NONE);
+				browser.setLayoutData(new GridData(GridData.FILL_BOTH));
+				browser.setSize(800, 600);
+				browser.setUrl("http://www.eclipse.org");
+				shell.open();
 			});
+		});
 
-			mainPanel.add(new JTextField("a JTextField"));
-			mainPanel.add(launchBrowserButton);
-			mainFrame.getContentPane().add(mainPanel, BorderLayout.CENTER);
-			mainFrame.pack();
-			mainFrame.setVisible(true);
-		}
+		mainPanel.add(new JTextField("a JTextField"));
+		mainPanel.add(launchBrowserButton);
+		mainFrame.getContentPane().add(mainPanel, BorderLayout.CENTER);
+		mainFrame.pack();
+		mainFrame.setVisible(true);
 	});
-	display.addListener(SWT.Close, event -> EventQueue.invokeLater(new Runnable() {
-		@Override
-		public void run() {
-			Frame[] frames = Frame.getFrames();
-			for (int i = 0; i < frames.length; i++) {
-				frames[i].dispose();
-			}
+	display.addListener(SWT.Close, event -> EventQueue.invokeLater(() -> {
+		Frame[] frames = Frame.getFrames();
+		for (int i = 0; i < frames.length; i++) {
+			frames[i].dispose();
 		}
 	}));
 	while (!display.isDisposed()) {
