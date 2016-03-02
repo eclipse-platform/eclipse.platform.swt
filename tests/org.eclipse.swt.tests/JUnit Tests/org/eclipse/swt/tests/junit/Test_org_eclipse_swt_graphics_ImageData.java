@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2015 IBM Corporation and others.
+ * Copyright (c) 2000, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -151,34 +151,28 @@ public void test_ConstructorIIILorg_eclipse_swt_graphics_PaletteDataI$B() {
 
 @Test
 public void test_ConstructorLjava_io_InputStream() {
-	InputStream stream = null;
-	try {
-		try {
+		try (InputStream stream = null){
 			new ImageData(stream);
 			fail("No exception thrown for InputStream == null");
-		} catch (IllegalArgumentException e) {
+		} catch (IllegalArgumentException|IOException e) {
 		}
 		
-		stream = SwtTestUtil.class.getResourceAsStream("empty.txt");
-		try {
+		
+		try (InputStream stream = SwtTestUtil.class.getResourceAsStream("empty.txt")){
 			new ImageData(stream);
 			fail("No exception thrown for invalid InputStream");
-		} catch (SWTException e) {
+		} catch (SWTException|IOException e) {
 		}
 	
 		int numFormats = SwtTestUtil.imageFormats.length;
 		String fileName = SwtTestUtil.imageFilenames[0];
 		for (int i=0; i<numFormats; i++) {
 			String format = SwtTestUtil.imageFormats[i];
-			stream = SwtTestUtil.class.getResourceAsStream(fileName + "." + format);
-			new ImageData(stream);
+			try (InputStream stream = SwtTestUtil.class.getResourceAsStream(fileName + "." + format)) {
+				new ImageData(stream);
+			} catch (IOException e) {
+			}
 		}
-	} finally {
-		try {
-			stream.close();
-		} catch (Exception e) {
-		}
-	}
 }
 
 @Test
@@ -193,9 +187,7 @@ public void test_ConstructorLjava_lang_String() {
 
 @Test
 public void test_clone() {
-	InputStream stream = null;
-	try {
-		stream = SwtTestUtil.class.getResourceAsStream(SwtTestUtil.imageFilenames[0] + "." + SwtTestUtil.imageFormats[0]);
+	try (InputStream stream = SwtTestUtil.class.getResourceAsStream(SwtTestUtil.imageFilenames[0] + "." + SwtTestUtil.imageFormats[0])) {
 		ImageData data1 = new ImageData(stream);
 		ImageData data2 = (ImageData) data1.clone();
 		// imageData does not implement an equals(Object) method
@@ -216,11 +208,7 @@ public void test_clone() {
 		assertEquals(":o:", data1.width, data2.width);
 		assertEquals(":p:", data1.x, data2.x);
 		assertEquals(":q:", data1.y, data2.y);
-	} finally {
-		try {
-			stream.close();
-		} catch (Exception e) {
-		}
+	} catch (IOException e) {
 	}
 }
 
@@ -725,15 +713,13 @@ public void test_getTransparencyMask() {
 //	Bug 71472 - transparency mask should be null	
 //	assertNull(":a:", imageData.getTransparencyMask());
 
-	InputStream stream = getClass().getResourceAsStream(SwtTestUtil.transparentImageFilenames[0]);
-	Image image = new Image(Display.getDefault(), stream);
-	try {
-		stream.close();
+	try (InputStream stream = getClass().getResourceAsStream(SwtTestUtil.transparentImageFilenames[0])) {
+		Image image = new Image(Display.getDefault(), stream);
+		imageData = image.getImageData();
+		ImageData maskData = imageData.getTransparencyMask();
+		assertNotNull(":b:", maskData);
+		image.dispose();
 	} catch (IOException e) {}
-	imageData = image.getImageData();
-	ImageData maskData = imageData.getTransparencyMask();
-	assertNotNull(":b:", maskData);
-	image.dispose();
 
 //	Bug 71472 - transparency mask should be null	
 /*	image = new Image(Display.getDefault(), getClass().getResourceAsStream(imageFilenames[0] + '.' + imageFormats[imageFormats.length-1]));
@@ -747,23 +733,19 @@ public void test_getTransparencyMask() {
 public void test_getTransparencyType() {
 	assertEquals(":a:", SWT.TRANSPARENCY_NONE, imageData.getTransparencyType());
 
-	InputStream stream = getClass().getResourceAsStream(SwtTestUtil.transparentImageFilenames[0]);
-	Image image = new Image(Display.getDefault(), stream);
-	try {
-		stream.close();
+	try (InputStream stream = getClass().getResourceAsStream(SwtTestUtil.transparentImageFilenames[0])) {
+		Image image = new Image(Display.getDefault(), stream);
+		imageData = image.getImageData();
+		assertFalse(":b:", SWT.TRANSPARENCY_NONE == imageData.getTransparencyType());
+		image.dispose();
 	} catch (IOException e) {}
-	imageData = image.getImageData();
-	assertFalse(":b:", SWT.TRANSPARENCY_NONE == imageData.getTransparencyType());
-	image.dispose();
 	
-	stream = getClass().getResourceAsStream(SwtTestUtil.imageFilenames[0] + '.' + SwtTestUtil.imageFormats[SwtTestUtil.imageFormats.length-1]);
-	image = new Image(Display.getDefault(), stream);
-	try {
-		stream.close();
+	try (InputStream stream = getClass().getResourceAsStream(SwtTestUtil.imageFilenames[0] + '.' + SwtTestUtil.imageFormats[SwtTestUtil.imageFormats.length-1])) {
+		Image image = new Image(Display.getDefault(), stream);
+		imageData = image.getImageData();
+		assertEquals(":c:", SWT.TRANSPARENCY_NONE, imageData.getTransparencyType());
+		image.dispose();
 	} catch (IOException e) {}
-	imageData = image.getImageData();
-	assertEquals(":c:", SWT.TRANSPARENCY_NONE, imageData.getTransparencyType());
-	image.dispose();
 }
 
 @Test

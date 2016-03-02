@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2015 IBM Corporation and others.
+ * Copyright (c) 2000, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -59,18 +59,14 @@ public void test_addImageLoaderListenerLorg_eclipse_swt_graphics_ImageLoaderList
 	assertTrue(":b:", loader.hasListeners());
 
 	loaderListenerCalled = false;
-	InputStream stream = SwtTestUtil.class.getResourceAsStream("interlaced_target.png");	
-	loader.load(stream);
-	try {
-		stream.close();
+	try (InputStream stream = SwtTestUtil.class.getResourceAsStream("interlaced_target.png")) {
+		loader.load(stream);
 	} catch (IOException e) {}
 	assertTrue(":c:", loaderListenerCalled);
 
 	loaderListenerCalled = false;
-	stream = SwtTestUtil.class.getResourceAsStream("target.png");	
-	loader.load(stream);
-	try {
-		stream.close();
+	try (InputStream stream = SwtTestUtil.class.getResourceAsStream("target.png")) {
+		loader.load(stream);
 	} catch (IOException e) {}
 	assertFalse(":d:", loaderListenerCalled);
 
@@ -84,41 +80,28 @@ public void test_addImageLoaderListenerLorg_eclipse_swt_graphics_ImageLoaderList
 
 @Test
 public void test_loadLjava_io_InputStream() {
-	ImageLoader loader = new ImageLoader();
-	InputStream stream = null;
-	try {
-		try {
+		ImageLoader loader = new ImageLoader();
+		try (InputStream stream = null) {
 			loader.load(stream);
 			fail("No exception thrown for load inputStream == null");
-		} catch (IllegalArgumentException e) {
+		} catch (IllegalArgumentException | IOException e) {
 		}
-		
-		stream = SwtTestUtil.class.getResourceAsStream("empty.txt");
-		try {
+
+		try (InputStream stream = SwtTestUtil.class.getResourceAsStream("empty.txt")) {
 			loader.load(stream);
-			try {
-				stream.close();
-			} catch (IOException e) {}
 			fail("No exception thrown for load from invalid inputStream");
-		} catch (SWTException e) {
+		} catch (IOException|SWTException e) {
 		}
-	
+
 		int numFormats = SwtTestUtil.imageFormats.length;
 		String fileName = SwtTestUtil.imageFilenames[0];
-		for (int i=0; i<numFormats; i++) {
+		for (int i = 0; i < numFormats; i++) {
 			String format = SwtTestUtil.imageFormats[i];
-			stream = SwtTestUtil.class.getResourceAsStream(fileName + "." + format);
-			loader.load(stream);
-			try {
-				stream.close();
-			} catch (IOException e) {}
+			try (InputStream stream = SwtTestUtil.class.getResourceAsStream(fileName + "." + format)) {
+				loader.load(stream);
+			} catch (IOException e) {
+			}
 		}
-	} finally {
-		try {
-			stream.close();
-		} catch (Exception e) {
-		}
-	}
 }
 
 @Test
@@ -136,7 +119,6 @@ public void test_loadLjava_lang_String() {
 public void test_saveLjava_io_OutputStreamI() {
 	ImageLoader loader = new ImageLoader();
 	ByteArrayOutputStream outStream = null;
-	InputStream inStream = null;
 	try {
 		try {
 			loader.save(outStream, 0);
@@ -161,10 +143,8 @@ public void test_saveLjava_io_OutputStreamI() {
 			String filename = SwtTestUtil.imageFilenames[0];
 			// must use jpg since save is not implemented yet in png format		
 			String filetype = "jpg";
-			inStream = SwtTestUtil.class.getResourceAsStream(filename + "." + filetype);	
-			loader.load(inStream);
-			try {
-				inStream.close();
+			try (InputStream inStream = SwtTestUtil.class.getResourceAsStream(filename + "." + filetype)) {
+				loader.load(inStream);
 			} catch (IOException e) {}
 			for (int i = 0; i < SwtTestUtil.imageFormats.length; i++) {
 				if (SwtTestUtil.imageFormats[i].equals(filetype)) {

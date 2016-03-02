@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2015 IBM Corporation and others.
+ * Copyright (c) 2000, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -139,15 +139,13 @@ public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_gra
 	for (int i=0; i<numFormats; i++) {
 		String format = SwtTestUtil.imageFormats[i];
 		ImageLoader loader = new ImageLoader();
-		InputStream stream = SwtTestUtil.class.getResourceAsStream(fileName + "." + format);
-		ImageData source = loader.load(stream)[0];
-		ImageData mask = source.getTransparencyMask();
-		if (mask != null && (source.depth == 1)) {
-			Cursor cursor = new Cursor(display, source, mask, 0, 0);
-			cursor.dispose();
-		}
-		try {
-			stream.close();
+		try (InputStream stream = SwtTestUtil.class.getResourceAsStream(fileName + "." + format)) {
+			ImageData source = loader.load(stream)[0];
+			ImageData mask = source.getTransparencyMask();
+			if (mask != null && (source.depth == 1)) {
+				Cursor cursor = new Cursor(display, source, mask, 0, 0);
+				cursor.dispose();
+			}
 		} catch (IOException e) {
 			// continue;
 		}

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2015 IBM Corporation and others.
+ * Copyright (c) 2000, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -874,15 +874,13 @@ void getImageData1() {
 	String fileName = SwtTestUtil.imageFilenames[0];
 	for (int i=0; i<numFormats; i++) {
 		String format = SwtTestUtil.imageFormats[i];
-		InputStream stream = SwtTestUtil.class.getResourceAsStream(fileName + "." + format);
-		ImageData data1 = new ImageData(stream);
-		Image image = new Image(display, data1);
-		ImageData data2 = image.getImageData();
-		image.dispose();
-		assertEquals("Image width should be the same", data1.width, data2.width);
-		assertEquals("Image height should be the same", data1.height, data2.height);
-		try {
-			stream.close();
+		try (InputStream stream = SwtTestUtil.class.getResourceAsStream(fileName + "." + format)) {
+			ImageData data1 = new ImageData(stream);
+			Image image = new Image(display, data1);
+			ImageData data2 = image.getImageData();
+			image.dispose();
+			assertEquals("Image width should be the same", data1.width, data2.width);
+			assertEquals("Image height should be the same", data1.height, data2.height);
 		} catch (IOException e) {
 			// continue;
 		}

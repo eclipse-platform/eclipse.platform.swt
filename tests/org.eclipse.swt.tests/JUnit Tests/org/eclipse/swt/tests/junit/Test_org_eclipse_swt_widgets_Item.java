@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2004 IBM Corporation and others.
+ * Copyright (c) 2000, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -83,10 +83,8 @@ private void loadImages() {
 		int index = i*numFiles;
 		for (int j=0; j<numFiles; j++){
 			String fileName = SwtTestUtil.imageFilenames[j];
-			InputStream  resource = this.getClass().getResourceAsStream(fileName + "." + format);
-			images [index+j] = new Image (shell.getDisplay(), resource);
-			try {
-				resource.close();
+			try (InputStream  resource = this.getClass().getResourceAsStream(fileName + "." + format)) {
+				images [index+j] = new Image (shell.getDisplay(), resource);
 			} catch (IOException e) {
 				// continue;
 			}

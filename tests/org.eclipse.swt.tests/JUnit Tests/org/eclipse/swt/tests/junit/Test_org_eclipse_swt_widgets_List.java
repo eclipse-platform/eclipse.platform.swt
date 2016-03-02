@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2006 IBM Corporation and others.
+ * Copyright (c) 2000, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -1315,9 +1315,9 @@ public void test_select$I() {
 	list.deselectAll();
 	items = list.getItems();
 
-	select$I_helper(items, 0, 3, new int[] { 0, 1, 2, 3 });
-	select$I_helper(items, -1, 3, new int[] { 0, 1, 2, 3 });
-	select$I_helper(items, -1, 30, new int[] { 0, 1, 2, 3, 4 });
+	select$I_helper(0, 3, new int[] { 0, 1, 2, 3 });
+	select$I_helper(-1, 3, new int[] { 0, 1, 2, 3 });
+	select$I_helper(-1, 30, new int[] { 0, 1, 2, 3, 4 });
 
 	
 	/*--- Single-select ---*/
@@ -2386,7 +2386,6 @@ protected void selectII_helper(
  * will be filled all integers from start to end inclusive, in order.
  */
 protected void select$I_helper(
-	String[] items,
 	int start,
 	int end,
 	int[] expectedIndices) {

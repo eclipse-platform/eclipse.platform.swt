@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2009 IBM Corporation and others.
+ * Copyright (c) 2000, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -119,14 +119,14 @@ public void testBrowser9() {
 }
 
 @Before
-public void setUp() throws Exception {
+public void setUp() {
 	System.out.println("Browser#setUp(): " + name.getMethodName());
 	Display display = Display.getCurrent();
 	if (display != null) display.dispose();
 }
 
 @After
-public void tearDown() throws Exception {
+public void tearDown() {
 	Display display = Display.getCurrent();
 	if (display != null) display.dispose();
 }
