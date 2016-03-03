@@ -233,7 +233,6 @@ Point computeSizeInPixels (int wHint, int hHint, boolean changed) {
 	byte [] buffer2 = new byte [length];
 	OS.memmove (buffer2, ptr, length);
 	OS.pango_layout_set_text (layout, buffer1, buffer1.length);
-	OS.pango_layout_set_text (layout, buffer2, buffer2.length);
 	int width, height = 0 ;
 	OS.gtk_widget_realize (handle);
 	if (OS.GTK3) {
@@ -247,6 +246,7 @@ Point computeSizeInPixels (int wHint, int hHint, boolean changed) {
 		width = wHint == SWT.DEFAULT ? w [0] : wHint;
 		height = hHint == SWT.DEFAULT ? h [0] : hHint;
 	}
+	OS.pango_layout_set_text (layout, buffer2, buffer2.length);
 	Rectangle trim = computeTrimInPixels (0, 0, width, height);
 	return new Point (trim.width, trim.height);
 }
