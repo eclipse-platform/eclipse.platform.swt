@@ -8,6 +8,7 @@
  * Contributors:
  *     IBM Corporation - initial API and implementation
  *     Andrey Loskutov <loskutov@gmx.de> - bug 488172
+ *     Stefan Xenos (Google) - bug 487254 - StyledText.getTopIndex() can return negative values
  *******************************************************************************/
 package org.eclipse.swt.custom;
 
@@ -1573,6 +1574,7 @@ void calculateScrollBars() {
  * The top index starts at 0.
  */
 void calculateTopIndex(int delta) {
+	int oldDelta = delta;
 	int oldTopIndex = topIndex;
 	int oldTopIndexY = topIndexY;
 	if (isFixedLineHeight()) {
@@ -1632,6 +1634,21 @@ void calculateTopIndex(int delta) {
 				topIndexY = - renderer.getLineHeight(topIndex) - delta;
 			}
 		}
+	}
+	if (topIndex < 0) {
+		// TODO: This logging is in place to determine why topIndex is getting set to negative values.
+		// It should be deleted once we fix the root cause of this issue. See bug 487254 for details.
+		System.err.println("StyledText: topIndex was " + topIndex
+				+ ", isFixedLineHeight() = " + isFixedLineHeight()
+				+ ", delta = " + delta
+				+ ", content.getLineCount() = " + content.getLineCount()
+				+ ", clientAreaHeight = " + clientAreaHeight
+				+ ", oldTopIndex = " + oldTopIndex
+				+ ", oldTopIndexY = " + oldTopIndexY
+				+ ", getVerticalScrollOffset = " + getVerticalScrollOffset()
+				+ ", oldDelta = " + oldDelta
+				+ ", getVerticalIncrement() = " + getVerticalIncrement());
+		topIndex = 0;
 	}
 	if (topIndex != oldTopIndex || oldTopIndexY != topIndexY) {
 		int width = renderer.getWidth();
@@ -6272,6 +6289,15 @@ void handleTextChanged(TextChangedEvent event) {
 	resetCache(firstLine, 0);
 	if (!isFixedLineHeight() && topIndex > firstLine) {
 		topIndex = firstLine;
+		if (topIndex < 0) {
+			// TODO: This logging is in place to determine why topIndex is getting set to negative values.
+			// It should be deleted once we fix the root cause of this issue. See bug 487254 for details.
+			System.err.println("StyledText: topIndex was " + topIndex
+					+ ", lastTextChangeStart = " + lastTextChangeStart
+					+ ", content.getClass() = " + content.getClass()
+					);
+			topIndex = 0;
+		}
 		topIndexY = 0;
 		super.redraw();
 	} else {
