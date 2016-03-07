@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2012 IBM Corporation and others.
+ * Copyright (c) 2000, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -78,7 +78,7 @@ public TrayItem (Tray parent, int style) {
 	super (parent, style);
 	this.parent = parent;
 	parent.createItem (this, parent.getItemCount ());
-	createWidget ();
+	createUpdateWidget (true);
 }
 
 /**
@@ -146,14 +146,27 @@ protected void checkSubclass () {
 	if (!isValidSubclass ()) error (SWT.ERROR_INVALID_SUBCLASS);
 }
 
-void createWidget () {
+void createUpdateWidget (boolean newIcon) {
 	NOTIFYICONDATA iconData = OS.IsUnicode ? (NOTIFYICONDATA) new NOTIFYICONDATAW () : new NOTIFYICONDATAA ();
 	iconData.cbSize = NOTIFYICONDATA.sizeof;
-	iconData.uID = id = display.nextTrayId++;
+	/*
+	 * As per MSDN article iconData.uID is unique for every TrayItem
+	 * instance(https://msdn.microsoft.com/en-us/library/windows/desktop/
+	 * bb762159%28v=vs.85%29.aspx) and this uID value should be specified
+	 * during TrayItem instance creation & should be cached and used in
+	 * subsequent calls to Shell_NotifyIcon to perform later actions on the
+	 * TrayItem instance refer Win10 bug 488739.
+	 */
+	iconData.uID = id = (newIcon ? display.nextTrayId++ : id);
 	iconData.hWnd = display.hwndMessage;
 	iconData.uFlags = OS.NIF_MESSAGE;
 	iconData.uCallbackMessage = Display.SWT_TRAYICONMSG;
-	OS.Shell_NotifyIcon (OS.NIM_ADD, iconData);
+	/*
+	 * OS.NIM_ADD message should be called only once in a TrayItem instance
+	 * life-cycle i.e. in the TrayItem instance creation step only, else
+	 * will lead to multiple TrayIcons entries on Win10 refer bug 488739.
+	 */
+	OS.Shell_NotifyIcon ((newIcon ? OS.NIM_ADD : OS.NIM_MODIFY), iconData);
 }
 
 @Override
@@ -322,7 +335,7 @@ long /*int*/ messageProc (long /*int*/ hwnd, int msg, long /*int*/ wParam, long 
 }
 
 void recreate () {
-	createWidget ();
+	createUpdateWidget (false);
 	if (!visible) setVisible (false);
 	if (text.length () != 0) setText (text);
 	if (image != null) setImage (image);
@@ -564,7 +577,7 @@ public void setVisible (boolean visible) {
 		if (visible) {
 			iconData.uFlags = OS.NIF_MESSAGE;
 			iconData.uCallbackMessage = Display.SWT_TRAYICONMSG;
-			OS.Shell_NotifyIcon (OS.NIM_ADD, iconData);
+			OS.Shell_NotifyIcon (OS.NIM_MODIFY, iconData);
 			setImage (image);
 			setToolTipText (toolTipText);
 		} else {
