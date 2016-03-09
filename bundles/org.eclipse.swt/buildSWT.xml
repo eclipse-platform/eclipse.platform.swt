@@ -863,9 +863,9 @@
 	<target name="copy.library.src">
 		<script language="javascript">
 			<![CDATA[
-				importClass(java.io.File);
-				importClass(java.io.StreamTokenizer);
-				importClass(java.io.StringReader);
+				var File = java.io.File;
+				var StreamTokenizer = java.io.StreamTokenizer;
+				var StringReader = java.io.StringReader;
 				task = project.createTask("copy");
 				projectDir = project.getProperty("project_dir");
 				task.setTodir(new File(project.getProperty("build_dir")));
