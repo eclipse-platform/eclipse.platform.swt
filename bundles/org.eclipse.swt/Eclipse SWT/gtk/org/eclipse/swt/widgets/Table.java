@@ -494,12 +494,12 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	if (size.x == 0 && wHint == SWT.DEFAULT) size.x = DEFAULT_WIDTH;
 
 	/*
-	 * in GTK 3.8 computeNativeSize returning 0 for height.
-	 * So if the height is returned as zero calculate the table height
-	 * based on the number of items in the table
+	 * In GTK 3, computeNativeSize(..) sometimes just returns the header
+	 * height as height. In that case, calculate the table height based on
+	 * the number of items in the table.
 	 */
-	if (OS.GTK3 && size.y == 0 && hHint == SWT.DEFAULT) {
-		size.y = getItemCount() * getItemHeight();
+	if (OS.GTK3 && hHint == SWT.DEFAULT && size.y == getHeaderHeight()) {
+		size.y = getItemCount() * getItemHeight() + getHeaderHeight();
 	}
 
 	/*
