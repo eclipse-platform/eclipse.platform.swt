@@ -82,6 +82,7 @@ public class Table extends Composite {
 	GdkColor drawForeground;
 	GdkRGBA background;
 	boolean ownerDraw, ignoreSize, ignoreAccessibility, pixbufSizeSet;
+	int maxWidth = 0;
 
 	static final int CHECKED_COLUMN = 0;
 	static final int GRAYED_COLUMN = 1;
@@ -491,23 +492,32 @@ Point computeSizeInPixels (int wHint, int hHint, boolean changed) {
 	if (wHint != SWT.DEFAULT && wHint < 0) wHint = 0;
 	if (hHint != SWT.DEFAULT && hHint < 0) hHint = 0;
 	Point size = computeNativeSize (handle, wHint, hHint, changed);
-	if (size.x == 0 && wHint == SWT.DEFAULT) size.x = DEFAULT_WIDTH;
-
-	/*
-	 * In GTK 3, computeNativeSize(..) sometimes just returns the header
-	 * height as height. In that case, calculate the table height based on
-	 * the number of items in the table.
-	 */
-	if (OS.GTK3 && hHint == SWT.DEFAULT && size.y == getHeaderHeight()) {
-		size.y = getItemCount() * getItemHeightInPixels() + getHeaderHeight();
+	if (OS.GTK3) {
+		/*
+		 * In GTK 3, computeNativeSize(..) sometimes just returns the header
+		 * height as height. In that case, calculate the table height based on
+		 * the number of items in the table.
+		 */
+		if (hHint == SWT.DEFAULT && size.y == getHeaderHeight()) {
+			size.y = getItemCount() * getItemHeight() + getHeaderHeight();
+		}
+		/*
+		 * Bug 465056: single column Tables have a very small initial width.
+		 * Fix: set the width of the Table to the width of the widest
+		 * TableItem.
+		 */
+		if (wHint == SWT.DEFAULT && size.x == 0 && columnCount == 0) {
+			size.x = maxWidth;
+		}
 	}
-
 	/*
 	 * In case the table doesn't contain any elements,
 	 * getItemCount returns 0 and size.y will be 0
-	 * so need to assign default height
+	 * so need to assign default height. The same applies
+	 * for size.x.
 	 */
 	if (size.y == 0 && hHint == SWT.DEFAULT) size.y = DEFAULT_HEIGHT;
+	if (size.x == 0 && wHint == SWT.DEFAULT) size.x = DEFAULT_WIDTH;
 	Rectangle trim = computeTrimInPixels (0, 0, size.x, size.y);
 	size.x = trim.width;
 	size.y = trim.height;

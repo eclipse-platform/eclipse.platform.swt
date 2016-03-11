@@ -1213,6 +1213,16 @@ public void setImage (int index, Image image) {
 		}
 	}
 	cached = true;
+	/*
+	 * Bug 465056: single column Tables have a very small initial width.
+	 * Fix: when text or an image is set for a Table, compute its
+	 * width and see if it's larger than the maximum of the previous widths.
+	 */
+	long /*int*/ column;
+	if (parent.columnCount == 0) {
+		column = OS.gtk_tree_view_get_column (parent.handle, index);
+		parent.maxWidth = Math.max(parent.maxWidth, parent.calculateWidth(column, this.handle));
+	}
 }
 
 @Override
@@ -1291,6 +1301,16 @@ public void setText (int index, String string) {
 	int modelIndex = parent.columnCount == 0 ? Table.FIRST_COLUMN : parent.columns [index].modelIndex;
 	OS.gtk_list_store_set (parent.modelHandle, handle, modelIndex + Table.CELL_TEXT, buffer, -1);
 	cached = true;
+	/*
+	 * Bug 465056: single column Tables have a very small initial width.
+	 * Fix: when text or an image is set for a Table, compute its
+	 * width and see if it's larger than the maximum of the previous widths.
+	 */
+	long /*int*/ column;
+	if (parent.columnCount == 0) {
+		column = OS.gtk_tree_view_get_column (parent.handle, index);
+		parent.maxWidth = Math.max(parent.maxWidth, parent.calculateWidth(column, this.handle));
+	}
 }
 
 @Override
