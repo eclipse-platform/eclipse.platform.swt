@@ -3875,12 +3875,12 @@ JNIEXPORT void JNICALL OS_NATIVE(_1g_1settings_1get)
 	if (arg3) if ((lparg3 = (*env)->GetByteArrayElements(env, arg3, NULL)) == NULL) goto fail;
 	if (arg4) if ((lparg4 = (*env)->GetIntArrayElements(env, arg4, NULL)) == NULL) goto fail;
 /*
-	g_settings_get((GSettings *)arg0, (const gchar *)lparg1, lparg2, lparg3, lparg4);
+	g_settings_get(arg0, lparg1, lparg2, lparg3, lparg4);
 */
 	{
 		OS_LOAD_FUNCTION(fp, g_settings_get)
 		if (fp) {
-			((void (CALLING_CONVENTION*)(GSettings *, const gchar *, jbyte *, jbyte *, jint *))fp)((GSettings *)arg0, (const gchar *)lparg1, lparg2, lparg3, lparg4);
+			((void (CALLING_CONVENTION*)(jintLong, jbyte *, jbyte *, jbyte *, jint *))fp)(arg0, lparg1, lparg2, lparg3, lparg4);
 		}
 	}
 fail:
@@ -3901,12 +3901,12 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(_1g_1settings_1get_1value)
 	OS_NATIVE_ENTER(env, that, _1g_1settings_1get_1value_FUNC);
 	if (arg1) if ((lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL)) == NULL) goto fail;
 /*
-	rc = (jintLong)g_settings_get_value((GSettings *)arg0, (const gchar *)lparg1);
+	rc = (jintLong)g_settings_get_value(arg0, lparg1);
 */
 	{
 		OS_LOAD_FUNCTION(fp, g_settings_get_value)
 		if (fp) {
-			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(GSettings *, const gchar *))fp)((GSettings *)arg0, (const gchar *)lparg1);
+			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(jintLong, jbyte *))fp)(arg0, lparg1);
 		}
 	}
 fail:
@@ -3969,12 +3969,12 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(_1g_1settings_1schema_1source_1lookup)
 	OS_NATIVE_ENTER(env, that, _1g_1settings_1schema_1source_1lookup_FUNC);
 	if (arg1) if ((lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL)) == NULL) goto fail;
 /*
-	rc = (jintLong)g_settings_schema_source_lookup((GSettingsSchemaSource *)arg0, (const gchar *)lparg1, (gboolean)arg2);
+	rc = (jintLong)g_settings_schema_source_lookup(arg0, lparg1, arg2);
 */
 	{
 		OS_LOAD_FUNCTION(fp, g_settings_schema_source_lookup)
 		if (fp) {
-			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(GSettingsSchemaSource *, const gchar *, gboolean))fp)((GSettingsSchemaSource *)arg0, (const gchar *)lparg1, (gboolean)arg2);
+			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(jintLong, jbyte *, jboolean))fp)(arg0, lparg1, arg2);
 		}
 	}
 fail:
@@ -4740,12 +4740,12 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(_1g_1variant_1dict_1lookup_1value)
 	OS_NATIVE_ENTER(env, that, _1g_1variant_1dict_1lookup_1value_FUNC);
 	if (arg1) if ((lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL)) == NULL) goto fail;
 /*
-	rc = (jintLong)g_variant_dict_lookup_value((GVariant *)arg0, (const gchar *)lparg1, (const GVariantType *)arg2);
+	rc = (jintLong)g_variant_dict_lookup_value(arg0, lparg1, arg2);
 */
 	{
 		OS_LOAD_FUNCTION(fp, g_variant_dict_lookup_value)
 		if (fp) {
-			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(GVariant *, const gchar *, const GVariantType *))fp)((GVariant *)arg0, (const gchar *)lparg1, (const GVariantType *)arg2);
+			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(jintLong, jbyte *, jintLong))fp)(arg0, lparg1, arg2);
 		}
 	}
 fail:
@@ -4929,12 +4929,12 @@ JNIEXPORT void JNICALL OS_NATIVE(_1g_1variant_1iter_1free)
 {
 	OS_NATIVE_ENTER(env, that, _1g_1variant_1iter_1free_FUNC);
 /*
-	g_variant_iter_free((GVariantIter *)arg0);
+	g_variant_iter_free(arg0);
 */
 	{
 		OS_LOAD_FUNCTION(fp, g_variant_iter_free)
 		if (fp) {
-			((void (CALLING_CONVENTION*)(GVariantIter *))fp)((GVariantIter *)arg0);
+			((void (CALLING_CONVENTION*)(jintLong))fp)(arg0);
 		}
 	}
 	OS_NATIVE_EXIT(env, that, _1g_1variant_1iter_1free_FUNC);
@@ -4948,12 +4948,12 @@ JNIEXPORT jint JNICALL OS_NATIVE(_1g_1variant_1iter_1init)
 	jint rc = 0;
 	OS_NATIVE_ENTER(env, that, _1g_1variant_1iter_1init_FUNC);
 /*
-	rc = (jint)g_variant_iter_init((GVariantIter *)arg0, (GVariant *)arg1);
+	rc = (jint)g_variant_iter_init(arg0, arg1);
 */
 	{
 		OS_LOAD_FUNCTION(fp, g_variant_iter_init)
 		if (fp) {
-			rc = (jint)((jint (CALLING_CONVENTION*)(GVariantIter *, GVariant *))fp)((GVariantIter *)arg0, (GVariant *)arg1);
+			rc = (jint)((jint (CALLING_CONVENTION*)(jintLong, jintLong))fp)(arg0, arg1);
 		}
 	}
 	OS_NATIVE_EXIT(env, that, _1g_1variant_1iter_1init_FUNC);
@@ -4968,12 +4968,12 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(_1g_1variant_1iter_1new)
 	jintLong rc = 0;
 	OS_NATIVE_ENTER(env, that, _1g_1variant_1iter_1new_FUNC);
 /*
-	rc = (jintLong)g_variant_iter_new((GVariant *)arg0);
+	rc = (jintLong)g_variant_iter_new(arg0);
 */
 	{
 		OS_LOAD_FUNCTION(fp, g_variant_iter_new)
 		if (fp) {
-			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(GVariant *))fp)((GVariant *)arg0);
+			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(jintLong))fp)(arg0);
 		}
 	}
 	OS_NATIVE_EXIT(env, that, _1g_1variant_1iter_1new_FUNC);
@@ -4990,12 +4990,12 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(_1g_1variant_1iter_1next)
 	OS_NATIVE_ENTER(env, that, _1g_1variant_1iter_1next_FUNC);
 	if (arg1) if ((lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL)) == NULL) goto fail;
 /*
-	rc = (jboolean)g_variant_iter_next((const GVariantIter *)arg0, lparg1, (gchar *)arg2, arg3);
+	rc = (jboolean)g_variant_iter_next(arg0, lparg1, arg2, arg3);
 */
 	{
 		OS_LOAD_FUNCTION(fp, g_variant_iter_next)
 		if (fp) {
-			rc = (jboolean)((jboolean (CALLING_CONVENTION*)(const GVariantIter *, jbyte *, gchar *, jintLong))fp)((const GVariantIter *)arg0, lparg1, (gchar *)arg2, arg3);
+			rc = (jboolean)((jboolean (CALLING_CONVENTION*)(jintLong, jbyte *, jintLong, jintLong))fp)(arg0, lparg1, arg2, arg3);
 		}
 	}
 fail:
@@ -5012,12 +5012,12 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(_1g_1variant_1iter_1next_1value)
 	jintLong rc = 0;
 	OS_NATIVE_ENTER(env, that, _1g_1variant_1iter_1next_1value_FUNC);
 /*
-	rc = (jintLong)g_variant_iter_next_value((const GVariantIter *)arg0);
+	rc = (jintLong)g_variant_iter_next_value(arg0);
 */
 	{
 		OS_LOAD_FUNCTION(fp, g_variant_iter_next_value)
 		if (fp) {
-			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(const GVariantIter *))fp)((const GVariantIter *)arg0);
+			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(jintLong))fp)(arg0);
 		}
 	}
 	OS_NATIVE_EXIT(env, that, _1g_1variant_1iter_1next_1value_FUNC);
@@ -5224,12 +5224,12 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(_1g_1variant_1print)
 	jintLong rc = 0;
 	OS_NATIVE_ENTER(env, that, _1g_1variant_1print_FUNC);
 /*
-	rc = (jintLong)g_variant_print((const GVariant *)arg0);
+	rc = (jintLong)g_variant_print(arg0);
 */
 	{
 		OS_LOAD_FUNCTION(fp, g_variant_print)
 		if (fp) {
-			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(const GVariant *))fp)((const GVariant *)arg0);
+			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(jintLong))fp)(arg0);
 		}
 	}
 	OS_NATIVE_EXIT(env, that, _1g_1variant_1print_FUNC);
@@ -5243,12 +5243,12 @@ JNIEXPORT void JNICALL OS_NATIVE(_1g_1variant_1unref)
 {
 	OS_NATIVE_ENTER(env, that, _1g_1variant_1unref_FUNC);
 /*
-	g_variant_unref((GVariant *)arg0);
+	g_variant_unref(arg0);
 */
 	{
 		OS_LOAD_FUNCTION(fp, g_variant_unref)
 		if (fp) {
-			((void (CALLING_CONVENTION*)(GVariant *))fp)((GVariant *)arg0);
+			((void (CALLING_CONVENTION*)(jintLong))fp)(arg0);
 		}
 	}
 	OS_NATIVE_EXIT(env, that, _1g_1variant_1unref_FUNC);

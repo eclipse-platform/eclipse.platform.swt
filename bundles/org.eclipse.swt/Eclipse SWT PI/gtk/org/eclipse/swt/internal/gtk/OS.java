@@ -17089,14 +17089,7 @@ public static final long /*int*/ g_settings_new (byte[] schema_id) {
 		lock.unlock();
 	}
 }
-/**
- * @method flags=dynamic
- * @param settings cast=(GSettings *)
- * @param key cast=(const gchar *)
- * @param format = (const gchar *)
- * @param monitorId = (const gchar *)
- * @param scalingfactor = (gint *)
- */
+/** @method flags=dynamic */
 public static final native void _g_settings_get (long /*int*/ settings, byte[] key, byte[] format, byte[] monitorId, int[] scalingfactor);
 public static final void g_settings_get (long /*int*/ settings, byte[] key, byte[] format, byte[] monitorId, int[] scalingfactor) {
 	lock.lock();
@@ -17106,11 +17099,7 @@ public static final void g_settings_get (long /*int*/ settings, byte[] key, byte
 		lock.unlock();
 	}
 }
-/**
- * @method flags=dynamic
- * @param settings cast=(GSettings *)
- * @param key cast=(const gchar *)
- */
+/** @method flags=dynamic */
 public static final native long /*int*/ _g_settings_get_value (long /*int*/ settings, byte[] key);
 public static final long /*int*/ g_settings_get_value (long /*int*/ settings, byte[] key) {
 	lock.lock();
@@ -17120,12 +17109,7 @@ public static final long /*int*/ g_settings_get_value (long /*int*/ settings, by
 		lock.unlock();
 	}
 }
-/**
- * @method flags=dynamic
- * @param variant cast=(GVariant *)
- * @param key cast=(const gchar *)
- * @param expectedType cast=(const GVariantType *)
- */
+/** @method flags=dynamic */
 public static final native long /*int*/ _g_variant_dict_lookup_value (long /*int*/ variant, byte[] key, long /*int*/ expectedType);
 public static final long /*int*/ g_variant_dict_lookup_value (long /*int*/ variant, byte[] key, long /*int*/ expectedType) {
 	lock.lock();
@@ -17135,10 +17119,7 @@ public static final long /*int*/ g_variant_dict_lookup_value (long /*int*/ varia
 		lock.unlock();
 	}
 }
-/**
- * @method flags=dynamic
- * @param variant cast=(GVariant *)
- */
+/** @method flags=dynamic */
 public static final native long /*int*/ _g_variant_iter_new (long /*int*/ variant);
 public static final long /*int*/ g_variant_iter_new (long /*int*/ variant) {
 	lock.lock();
@@ -17148,10 +17129,7 @@ public static final long /*int*/ g_variant_iter_new (long /*int*/ variant) {
 		lock.unlock();
 	}
 }
-/**
- * @method flags=dynamic
- * @param variant cast=(GVariantIter *)
- */
+/** @method flags=dynamic */
 public static final native void _g_variant_iter_free (long /*int*/ variant);
 public static final void g_variant_iter_free (long /*int*/ variant) {
 	lock.lock();
@@ -17161,11 +17139,7 @@ public static final void g_variant_iter_free (long /*int*/ variant) {
 		lock.unlock();
 	}
 }
-/**
- * @method flags=dynamic
- * @param iter cast=(GVariantIter *)
- * @param variant cast=(GVariant *)
- */
+/** @method flags=dynamic */
 public static final native int _g_variant_iter_init (long /*int*/ iter, long /*int*/ variant);
 public static final int g_variant_iter_init (long /*int*/ iter, long /*int*/ variant) {
 	lock.lock();
@@ -17175,13 +17149,7 @@ public static final int g_variant_iter_init (long /*int*/ iter, long /*int*/ var
 		lock.unlock();
 	}
 }
-/**
- * @method flags=dynamic
- * @param iter cast=(const GVariantIter *)
- * @param key cast = (gchar *)
- * @param format = (const gchar *)
- * @param value = (GVariant *)
- */
+/** @method flags=dynamic */
 public static final native boolean _g_variant_iter_next (long /*int*/ iter, byte[] format, long /*int*/ key, long /*int*/ value);
 public static final boolean g_variant_iter_next (long /*int*/ iter, byte[] format, long /*int*/ key, long /*int*/ value) {
 	lock.lock();
@@ -17191,10 +17159,7 @@ public static final boolean g_variant_iter_next (long /*int*/ iter, byte[] forma
 		lock.unlock();
 	}
 }
-/**
- * @method flags=dynamic
- * @param iter cast=(const GVariantIter *)
- */
+/** @method flags=dynamic */
 public static final native long /*int*/ _g_variant_iter_next_value (long /*int*/ iter);
 public static final long /*int*/ g_variant_iter_next_value (long /*int*/ iter) {
 	lock.lock();
@@ -17204,10 +17169,7 @@ public static final long /*int*/ g_variant_iter_next_value (long /*int*/ iter) {
 		lock.unlock();
 	}
 }
-/**
- * @method flags=dynamic
- * @param value cast=(const GVariant *)
- */
+/** @method flags=dynamic */
 public static final native long /*int*/ _g_variant_print (long /*int*/ value);
 public static final long /*int*/ g_variant_print (long /*int*/ value) {
 	lock.lock();
@@ -17217,10 +17179,7 @@ public static final long /*int*/ g_variant_print (long /*int*/ value) {
 		lock.unlock();
 	}
 }
-/**
- * @method flags=dynamic
- * @param variant cast=(GVariant *)
- */
+/** @method flags=dynamic */
 public static final native void _g_variant_unref (long /*int*/ variant);
 public static final void g_variant_unref (long /*int*/ variant) {
 	lock.lock();
@@ -17230,9 +17189,7 @@ public static final void g_variant_unref (long /*int*/ variant) {
 		lock.unlock();
 	}
 }
-/**
- * @method flags=dynamic
- */
+/** @method flags=dynamic */
 public static final native long /*int*/ _g_settings_schema_source_get_default ();
 public static final long /*int*/ g_settings_schema_source_get_default () {
 	lock.lock();
@@ -17242,12 +17199,7 @@ public static final long /*int*/ g_settings_schema_source_get_default () {
 		lock.unlock();
 	}
 }
-/**
- * @method flags=dynamic
- * @param schemaSource cast = (GSettingsSchemaSource *)
- * @param schema_id cast = (const gchar *)
- * @param recursive cast = (gboolean)
- */
+/** @method flags=dynamic */
 public static final native long /*int*/ _g_settings_schema_source_lookup (long /*int*/ schemaSource, byte[] schema_id, boolean recursive);
 public static final long /*int*/ g_settings_schema_source_lookup (long /*int*/ schemaSource, byte[] schema_id, boolean recursive) {
 	lock.lock();
@@ -17257,7 +17209,5 @@ public static final long /*int*/ g_settings_schema_source_lookup (long /*int*/ s
 		lock.unlock();
 	}
 }
-
-
 
 }
