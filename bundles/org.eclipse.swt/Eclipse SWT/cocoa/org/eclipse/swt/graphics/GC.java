@@ -448,29 +448,19 @@ public void copyArea(Image image, int x, int y) {
 			return;
 		}
 		if (data.view != null) {
-			NSPoint pt = new NSPoint();
-			pt.x = x;
-			pt.y = y;
-			NSWindow window = data.view.window();
-			pt = data.view.convertPoint_toView_(pt, window.contentView().superview());
-			NSRect frame = window.frame();
-			pt.y = frame.height - pt.y;
 			NSSize size = image.handle.size();
-			CGRect destRect = new CGRect();
-			destRect.size.width = size.width;
-			destRect.size.height = size.height;
-			CGRect srcRect = new CGRect();
-			srcRect.origin.x = pt.x;
-			srcRect.origin.y = pt.y;
-			srcRect.size.width = size.width;
-			srcRect.size.height = size.height;
-			NSBitmapImageRep imageRep = image.getRepresentation();
-			NSGraphicsContext context = NSGraphicsContext.graphicsContextWithBitmapImageRep(imageRep);
-			NSGraphicsContext.static_saveGraphicsState();
-			NSGraphicsContext.setCurrentContext(context);
-			long /*int*/ contextID = OS.objc_msgSend(NSApplication.sharedApplication().id, OS.sel_contextID);
-			OS.CGContextCopyWindowContentsToRect(context.graphicsPort(), destRect, contextID, window.windowNumber(), srcRect);
-			NSGraphicsContext.static_restoreGraphicsState();
+			NSView topView = getTopView(data.view);
+			NSRect rect = new NSRect();
+			rect.x = x;
+			rect.y = y;
+			rect.width = size.width;
+			rect.height = size.height;
+			NSBitmapImageRep imageRep = topView.bitmapImageRepForCachingDisplayInRect(rect);
+			imageRep.setSize(size);
+			topView.cacheDisplayInRect(rect, imageRep);
+			NSBitmapImageRep rep = image.getRepresentation();
+			image.handle.addRepresentation(imageRep);
+			image.handle.removeRepresentation(rep);
 			return;
 		}
 		if (handle.isDrawingToScreen()) {
@@ -2847,6 +2837,27 @@ public int getStyle () {
 public int getTextAntialias() {
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	return data.textAntialias;
+}
+
+// Internal methos that returns the topView of the Control. It's the same view that would be returned
+// by Control.topView(). But, we don't use Control.topView() since classes in the graphics package
+// are not supposed to reference the classes in widgets package.
+NSView getTopView(NSView view) {
+	if (view != null) {
+		NSView contentView = view.superview();
+		if (contentView != null && contentView.isKindOfClass(OS.class_NSClipView)) {
+			NSView superView = contentView.superview();
+			if (superView != null && superView.isKindOfClass(OS.class_NSScrollView)) {
+				NSScrollView scrollView = new NSScrollView(superView.id);
+				if (scrollView.documentView() != null) {
+					if (scrollView.documentView().id == view.id) {
+						return superView;
+					}
+				}
+			}
+		}
+	}
+	return view;
 }
 
 /**

@@ -3927,7 +3927,16 @@
 			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
+		<method selector="bitmapImageRepForCachingDisplayInRect:" swt_gen="true">
+			<arg swt_gen="true"></arg>
+			<retval swt_gen="true"></retval>
+		</method>
 		<method selector="bounds" swt_gen="true">
+			<retval swt_gen="true"></retval>
+		</method>
+		<method selector="cacheDisplayInRect:toBitmapImageRep:" swt_gen="true">
+			<arg swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="canBecomeKeyView" swt_gen="true">

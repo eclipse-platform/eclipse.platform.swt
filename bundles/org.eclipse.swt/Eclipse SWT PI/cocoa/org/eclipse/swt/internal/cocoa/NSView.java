@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2013 IBM Corporation and others.
+ * Copyright (c) 2000, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -48,10 +48,19 @@ public void beginPageInRect(NSRect aRect, NSPoint location) {
 	OS.objc_msgSend(this.id, OS.sel_beginPageInRect_atPlacement_, aRect, location);
 }
 
+public NSBitmapImageRep bitmapImageRepForCachingDisplayInRect(NSRect rect) {
+	long /*int*/ result = OS.objc_msgSend(this.id, OS.sel_bitmapImageRepForCachingDisplayInRect_, rect);
+	return result != 0 ? new NSBitmapImageRep(result) : null;
+}
+
 public NSRect bounds() {
 	NSRect result = new NSRect();
 	OS.objc_msgSend_stret(result, this.id, OS.sel_bounds);
 	return result;
+}
+
+public void cacheDisplayInRect(NSRect rect, NSBitmapImageRep bitmapImageRep) {
+	OS.objc_msgSend(this.id, OS.sel_cacheDisplayInRect_toBitmapImageRep_, rect, bitmapImageRep != null ? bitmapImageRep.id : 0);
 }
 
 public boolean canBecomeKeyView() {
