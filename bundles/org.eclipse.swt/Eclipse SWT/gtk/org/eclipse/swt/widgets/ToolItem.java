@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2013 IBM Corporation and others.
+ * Copyright (c) 2000, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -299,6 +299,11 @@ public void dispose () {
  * </ul>
  */
 public Rectangle getBounds () {
+	checkWidget ();
+	return DPIUtil.autoScaleDown (getBoundsInPixels ());
+}
+
+Rectangle getBoundsInPixels () {
 	checkWidget();
 	parent.forceResize ();
 	long /*int*/ topHandle = topHandle ();
@@ -453,6 +458,11 @@ public String getToolTipText () {
  * </ul>
  */
 public int getWidth () {
+	checkWidget ();
+	return DPIUtil.autoScaleDown (getWidthInPixels ());
+}
+
+int getWidthInPixels () {
 	checkWidget();
 	parent.forceResize ();
 	long /*int*/ topHandle = topHandle ();
@@ -523,9 +533,9 @@ long /*int*/ gtk_clicked (long /*int*/ widget) {
 						event.detail = SWT.ARROW;
 						GtkAllocation allocation = new GtkAllocation ();
 						OS.gtk_widget_get_allocation (topHandle, allocation);
-						event.x = allocation.x;
-						if ((parent.style & SWT.MIRRORED) != 0) event.x = parent.getClientWidth () - allocation.width - event.x;
-						event.y = allocation.y + allocation.height;
+						event.x = DPIUtil.autoScaleDown(allocation.x);
+						if ((style & SWT.MIRRORED) != 0) event.x = DPIUtil.autoScaleDown (parent.getClientWidth ()- allocation.width) - event.x;
+						event.y = DPIUtil.autoScaleDown(allocation.y + allocation.height);
 					}
 					break;
 				}
@@ -869,13 +879,13 @@ void resizeControl () {
 		* case can occur when the control is a
 		* combo box.
 		*/
-		Rectangle itemRect = getBounds ();
-		control.setSize (itemRect.width, itemRect.height);
+		Rectangle itemRect = getBoundsInPixels ();
+		control.setSizeInPixels (itemRect.width, itemRect.height);
 		resizeHandle(itemRect.width, itemRect.height);
-		Rectangle rect = control.getBounds ();
+		Rectangle rect = control.getBoundsInPixels ();
 		rect.x = itemRect.x + (itemRect.width - rect.width) / 2;
 		rect.y = itemRect.y + (itemRect.height - rect.height) / 2;
-		control.setLocation (rect.x, rect.y);
+		control.setLocationInPixels (rect.x, rect.y);
 	}
 }
 
@@ -988,7 +998,7 @@ public void setEnabled (boolean enabled) {
 			*/
 			int [] x = new int [1], y = new int [1];
 			gdk_window_get_device_position (parent.paintWindow (), x, y, null);
-			if (getBounds ().contains (x [0], y [0])) {
+			if (getBoundsInPixels ().contains (x [0], y [0])) {
 				OS.gtk_widget_hide (handle);
 				OS.gtk_widget_show (handle);
 			}
@@ -1249,6 +1259,11 @@ void setToolTipText (Shell shell, String newString) {
  * </ul>
  */
 public void setWidth (int width) {
+	checkWidget ();
+	setWidthInPixels(DPIUtil.autoScaleUp(width));
+}
+
+void setWidthInPixels (int width) {
 	checkWidget();
 	if ((style & SWT.SEPARATOR) == 0) return;
 	if (width < 0) return;

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2012 IBM Corporation and others.
+ * Copyright (c) 2000, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -10,10 +10,10 @@
  *******************************************************************************/
 package org.eclipse.swt.graphics;
 
+import org.eclipse.swt.*;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.cairo.*;
 import org.eclipse.swt.internal.gtk.*;
-import org.eclipse.swt.*;
 
 /**
  * <code>TextLayout</code> is a graphic object that represents
@@ -367,7 +367,13 @@ void destroy() {
  * </ul>
  */
 public void draw(GC gc, int x, int y) {
-	draw(gc, x, y, -1, -1, null, null);
+	x = DPIUtil.autoScaleUp(x);
+	y = DPIUtil.autoScaleUp(y);
+	drawInPixels(gc, x, y);
+}
+
+void drawInPixels(GC gc, int x, int y) {
+	drawInPixels(gc, x, y, -1, -1, null, null);
 }
 
 /**
@@ -390,7 +396,13 @@ public void draw(GC gc, int x, int y) {
  * </ul>
  */
 public void draw(GC gc, int x, int y, int selectionStart, int selectionEnd, Color selectionForeground, Color selectionBackground) {
-	draw(gc, x, y, selectionStart, selectionEnd, selectionForeground, selectionBackground, 0);
+	checkLayout ();
+	x = DPIUtil.autoScaleUp(x);
+	y = DPIUtil.autoScaleUp(y);
+	drawInPixels(gc, x, y, selectionStart, selectionEnd, selectionForeground, selectionBackground);
+}
+void drawInPixels(GC gc, int x, int y, int selectionStart, int selectionEnd, Color selectionForeground, Color selectionBackground) {
+	drawInPixels(gc, x, y, selectionStart, selectionEnd, selectionForeground, selectionBackground, 0);
 }
 
 /**
@@ -421,6 +433,12 @@ public void draw(GC gc, int x, int y, int selectionStart, int selectionEnd, Colo
  * @since 3.3
  */
 public void draw(GC gc, int x, int y, int selectionStart, int selectionEnd, Color selectionForeground, Color selectionBackground, int flags) {
+	checkLayout ();
+	x = DPIUtil.autoScaleUp(x);
+	y = DPIUtil.autoScaleUp(y);
+	drawInPixels(gc, x, y, selectionStart, selectionEnd, selectionForeground, selectionBackground, flags);
+}
+void drawInPixels(GC gc, int x, int y, int selectionStart, int selectionEnd, Color selectionForeground, Color selectionBackground, int flags) {
 	checkLayout ();
 	computeRuns();
 	if (gc == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
@@ -776,6 +794,10 @@ public int getAscent () {
  */
 public Rectangle getBounds() {
 	checkLayout();
+	return DPIUtil.autoScaleDown(getBoundsInPixels());
+}
+Rectangle getBoundsInPixels() {
+	checkLayout();
 	computeRuns();
 	int[] w = new int[1], h = new int[1];
 	OS.pango_layout_get_size(layout, w, h);
@@ -805,6 +827,11 @@ public Rectangle getBounds() {
  * </ul>
  */
 public Rectangle getBounds(int start, int end) {
+	checkLayout();
+	return DPIUtil.autoScaleDown(getBoundsInPixels(start, end));
+}
+
+Rectangle getBoundsInPixels(int start, int end) {
 	checkLayout();
 	computeRuns();
 	int length = text.length();
@@ -910,6 +937,10 @@ public Font getFont () {
 */
 public int getIndent () {
 	checkLayout();
+	return DPIUtil.autoScaleDown(getIndentInPixels());
+}
+
+int getIndentInPixels () {
 	return indent;
 }
 
@@ -988,6 +1019,10 @@ public int getLevel(int offset) {
  */
 public Rectangle getLineBounds(int lineIndex) {
 	checkLayout();
+	return DPIUtil.autoScaleDown(getLineBoundsInPixels(lineIndex));
+}
+
+Rectangle getLineBoundsInPixels(int lineIndex) {
 	computeRuns();
 	int lineCount = OS.pango_layout_get_line_count(layout);
 	if (!(0 <= lineIndex && lineIndex < lineCount)) SWT.error(SWT.ERROR_INVALID_RANGE);
@@ -1147,6 +1182,10 @@ public int[] getLineOffsets() {
  */
 public Point getLocation(int offset, boolean trailing) {
 	checkLayout();
+	return DPIUtil.autoScaleDown(getLocationInPixels(offset, trailing));
+}
+
+Point getLocationInPixels(int offset, boolean trailing) {
 	computeRuns();
 	int length = text.length();
 	if (!(0 <= offset && offset <= length)) SWT.error(SWT.ERROR_INVALID_RANGE);
@@ -1282,8 +1321,12 @@ int _getOffset (int offset, int movement, boolean forward) {
  */
 public int getOffset(Point point, int[] trailing) {
 	checkLayout();
+	return getOffsetInPixels(DPIUtil.autoScaleUp(point), trailing);
+}
+
+int getOffsetInPixels(Point point, int[] trailing) {
 	if (point == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	return getOffset(point.x, point.y, trailing);
+	return getOffsetInPixels(point.x, point.y, trailing);
 }
 
 /**
@@ -1311,6 +1354,10 @@ public int getOffset(Point point, int[] trailing) {
  */
 public int getOffset(int x, int y, int[] trailing) {
 	checkLayout();
+	return getOffset(new Point(x, y), trailing);
+}
+
+int getOffsetInPixels(int x, int y, int[] trailing) {
 	computeRuns();
 	if (trailing != null && trailing.length < 1) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	x -= Math.min (indent, wrapIndent);
@@ -1500,6 +1547,10 @@ String getSegmentsText() {
  */
 public int getSpacing () {
 	checkLayout();
+	return DPIUtil.autoScaleDown(getSpacingInPixels());
+}
+
+int getSpacingInPixels () {
 	return OS.PANGO_PIXELS(OS.pango_layout_get_spacing(layout));
 }
 
@@ -1613,6 +1664,10 @@ public int getTextDirection () {
  */
 public int getWidth () {
 	checkLayout ();
+	return DPIUtil.autoScaleDown(getWidthInPixels());
+}
+
+int getWidthInPixels () {
 	return wrapWidth;
 }
 
@@ -1629,6 +1684,9 @@ public int getWidth () {
 */
 public int getWrapIndent () {
 	checkLayout ();
+	return DPIUtil.autoScaleDown(getWrapIndentInPixels());
+}
+int getWrapIndentInPixels () {
 	return wrapIndent;
 }
 
@@ -1780,6 +1838,11 @@ public void setFont (Font font) {
  * @since 3.2
  */
 public void setIndent (int indent) {
+	checkLayout ();
+	setIndentInPixels(DPIUtil.autoScaleUp(indent));
+}
+
+void setIndentInPixels (int indent) {
 	checkLayout();
 	if (indent < 0) return;
 	if (this.indent == indent) return;
@@ -1849,6 +1912,10 @@ public void setOrientation(int orientation) {
 public void setSpacing (int spacing) {
 	checkLayout();
 	if (spacing < 0) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	setSpacingInPixels(DPIUtil.autoScaleUp(spacing));
+}
+
+void setSpacingInPixels (int spacing) {
 	OS.pango_layout_set_spacing(layout, spacing * OS.PANGO_SCALE);
 }
 
@@ -2146,6 +2213,10 @@ public void setTextDirection (int textDirection) {
 public void setWidth (int width) {
 	checkLayout ();
 	if (width < -1 || width == 0) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	setWidthInPixels(DPIUtil.autoScaleUp(width));
+}
+
+void setWidthInPixels (int width) {
 	if (wrapWidth == width) return;
 	freeRuns();
 	wrapWidth = width;
@@ -2180,6 +2251,10 @@ void setWidth () {
 public void setWrapIndent (int wrapIndent) {
 	checkLayout();
 	if (wrapIndent < 0) return;
+	setWrapIndentInPixels(DPIUtil.autoScaleUp(wrapIndent));
+}
+
+void setWrapIndentInPixels (int wrapIndent) {
 	if (this.wrapIndent == wrapIndent) return;
 	this.wrapIndent = wrapIndent;
 	OS.pango_layout_set_indent(layout, (indent - wrapIndent) * OS.PANGO_SCALE);

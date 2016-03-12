@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2012 IBM Corporation and others.
+ * Copyright (c) 2000, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -13,6 +13,7 @@ package org.eclipse.swt.widgets;
 import org.eclipse.swt.*;
 import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.gtk.*;
 
 /**
@@ -115,7 +116,7 @@ protected void checkSubclass () {
 }
 
 @Override
-public Point computeSize (int wHint, int hHint, boolean changed) {
+Point computeSizeInPixels (int wHint, int hHint, boolean changed) {
 	if (wHint != SWT.DEFAULT && wHint < 0) wHint = 0;
 	if (hHint != SWT.DEFAULT && hHint < 0) hHint = 0;
 	Point size = computeNativeSize (handle, wHint, hHint, changed);
@@ -168,7 +169,7 @@ void createItem (ExpandItem item, int style, int index) {
 	System.arraycopy (items, index, items, index + 1, itemCount - index);
 	items [index] = item;
 	itemCount++;
-	item.width = Math.max (0, getClientArea ().width - spacing * 2);
+	item.width = Math.max (0, getClientAreaInPixels ().width - spacing * 2);
 	layoutItems (index, true);
 }
 
@@ -301,6 +302,11 @@ public ExpandItem [] getItems () {
  * </ul>
  */
 public int getSpacing () {
+	checkWidget ();
+	return DPIUtil.autoScaleDown(spacing);
+}
+
+int getSpacingInPixels () {
 	checkWidget ();
 	return spacing;
 }
@@ -466,7 +472,7 @@ void setOrientation (boolean create) {
 void setScrollbar () {
 	if (itemCount == 0) return;
 	if ((style & SWT.V_SCROLL) == 0) return;
-	int height = getClientArea ().height;
+	int height = getClientAreaInPixels ().height;
 	ExpandItem item = items [itemCount - 1];
 	int maxHeight = item.y + getBandHeight () + spacing;
 	if (item.expanded) maxHeight += item.height;
@@ -517,6 +523,11 @@ void setScrollbar () {
  * </ul>
  */
 public void setSpacing (int spacing) {
+	checkWidget ();
+	setSpacingInPixels(DPIUtil.autoScaleUp(spacing));
+}
+
+void setSpacingInPixels (int spacing) {
 	checkWidget ();
 	if (spacing < 0) return;
 	if (spacing == this.spacing) return;

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2013 IBM Corporation and others.
+ * Copyright (c) 2000, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -204,7 +204,7 @@ protected void checkSubclass () {
 }
 
 @Override
-public Point computeSize (int wHint, int hHint, boolean changed) {
+Point computeSizeInPixels (int wHint, int hHint, boolean changed) {
 	checkWidget ();
 	if (wHint != SWT.DEFAULT && wHint < 0) wHint = 0;
 	if (hHint != SWT.DEFAULT && hHint < 0) hHint = 0;
@@ -247,15 +247,15 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 		width = wHint == SWT.DEFAULT ? w [0] : wHint;
 		height = hHint == SWT.DEFAULT ? h [0] : hHint;
 	}
-	Rectangle trim = computeTrim (0, 0, width, height);
+	Rectangle trim = computeTrimInPixels (0, 0, width, height);
 	return new Point (trim.width, trim.height);
 }
 
 @Override
-public Rectangle computeTrim (int x, int y, int width, int height) {
+Rectangle computeTrimInPixels (int x, int y, int width, int height) {
 	checkWidget ();
 	int xborder = 0, yborder = 0;
-	Rectangle trim = super.computeTrim (x, y, width, height);
+	Rectangle trim = super.computeTrimInPixels (x, y, width, height);
 	if (OS.GTK3) {
 		GtkBorder tmp = new GtkBorder();
 		long /*int*/ context = OS.gtk_widget_get_style_context (handle);
@@ -420,7 +420,7 @@ GdkColor getBackgroundColor () {
 }
 
 @Override
-public int getBorderWidth () {
+int getBorderWidthInPixels () {
 	checkWidget();
 	if ((this.style & SWT.BORDER) != 0) {
 		return getThickness (handle).x;

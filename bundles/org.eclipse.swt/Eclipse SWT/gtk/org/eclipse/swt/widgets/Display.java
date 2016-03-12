@@ -1402,19 +1402,13 @@ public Shell getActiveShell () {
 	return activeShell;
 }
 
-/**
- * Returns a rectangle describing the receiver's size and location. Note that
- * on multi-monitor systems the origin can be negative.
- *
- * @return the bounding rectangle
- *
- * @exception SWTException <ul>
- *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
- *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
- * </ul>
- */
 @Override
 public Rectangle getBounds () {
+	checkDevice ();
+	return DPIUtil.autoScaleDown (getBoundsInPixels ());
+}
+
+Rectangle getBoundsInPixels () {
 	checkDevice ();
 	return new Rectangle (0, 0, OS.gdk_screen_width (), OS.gdk_screen_height ());
 }
@@ -1579,6 +1573,10 @@ long /*int*/ filterProc (long /*int*/ xEvent, long /*int*/ gdkEvent, long /*int*
  * </ul>
  */
 public Point getCursorLocation () {
+	return DPIUtil.autoScaleDown(getCursorLocationInPixels());
+}
+
+Point getCursorLocationInPixels () {
 	checkDevice ();
 	int [] x = new int [1], y = new int [1];
 	gdk_window_get_device_position (0, x, y, null);
@@ -2025,7 +2023,7 @@ Rectangle getWorkArea() {
 public Monitor [] getMonitors () {
 	checkDevice ();
 	Monitor [] monitors = null;
-	Rectangle workArea = getWorkArea ();
+	Rectangle workArea = DPIUtil.autoScaleDown (getWorkArea ());
 	long /*int*/ screen = OS.gdk_screen_get_default ();
 	if (screen != 0) {
 		int monitorCount = OS.gdk_screen_get_n_monitors (screen);
@@ -2036,19 +2034,19 @@ public Monitor [] getMonitors () {
 				OS.gdk_screen_get_monitor_geometry (screen, i, dest);
 				Monitor monitor = new Monitor ();
 				monitor.handle = i;
-				monitor.x = dest.x;
-				monitor.y = dest.y;
-				monitor.width = dest.width;
-				monitor.height = dest.height;
+				monitor.x = DPIUtil.autoScaleDown (dest.x);
+				monitor.y = DPIUtil.autoScaleDown (dest.y);
+				monitor.width = DPIUtil.autoScaleDown (dest.width);
+				monitor.height = DPIUtil.autoScaleDown (dest.height);
 
 				if (OS.GTK_VERSION >= OS.VERSION (3, 4, 0)) {
 					// workarea was defined in GTK 3.4. If present, it will return the best results
 					// since it takes into account per-monitor trim
 					OS.gdk_screen_get_monitor_workarea (screen, i, dest);
-					monitor.clientX = dest.x;
-					monitor.clientY = dest.y;
-					monitor.clientWidth = dest.width;
-					monitor.clientHeight = dest.height;
+					monitor.clientX = DPIUtil.autoScaleDown (dest.x);
+					monitor.clientY = DPIUtil.autoScaleDown (dest.y);
+					monitor.clientWidth = DPIUtil.autoScaleDown (dest.width);
+					monitor.clientHeight = DPIUtil.autoScaleDown (dest.height);
 				} else {
 					// If we're on an older version of gtk without the workarea function, see if we can use
 					// the getWorkArea function. In the case of multi-monitors, this will return something that
@@ -3144,9 +3142,14 @@ boolean isValidThread () {
  * @since 2.1.2
  */
 public Point map (Control from, Control to, Point point) {
+	checkDevice();
+	return DPIUtil.autoScaleDown(mapInPixels(from, to, DPIUtil.autoScaleUp(point)));
+}
+
+Point mapInPixels (Control from, Control to, Point point) {
 	checkDevice ();
 	if (point == null) error (SWT.ERROR_NULL_ARGUMENT);
-	return map (from, to, point.x, point.y);
+	return mapInPixels (from, to, point.x, point.y);
 }
 
 /**
@@ -3186,6 +3189,11 @@ public Point map (Control from, Control to, Point point) {
  * @since 2.1.2
  */
 public Point map (Control from, Control to, int x, int y) {
+	checkDevice();
+	return map(from, to, new Point(x, y));
+}
+
+Point mapInPixels (Control from, Control to, int x, int y) {
 	checkDevice ();
 	if (from != null && from.isDisposed()) error (SWT.ERROR_INVALID_ARGUMENT);
 	if (to != null && to.isDisposed()) error (SWT.ERROR_INVALID_ARGUMENT);
@@ -3244,8 +3252,13 @@ public Point map (Control from, Control to, int x, int y) {
  */
 public Rectangle map (Control from, Control to, Rectangle rectangle) {
 	checkDevice();
+	return DPIUtil.autoScaleDown(mapInPixels(from, to, DPIUtil.autoScaleUp(rectangle)));
+}
+
+Rectangle mapInPixels (Control from, Control to, Rectangle rectangle) {
+	checkDevice();
 	if (rectangle == null) error (SWT.ERROR_NULL_ARGUMENT);
-	return map (from, to, rectangle.x, rectangle.y, rectangle.width, rectangle.height);
+	return mapInPixels (from, to, rectangle.x, rectangle.y, rectangle.width, rectangle.height);
 }
 
 static char mbcsToWcs (char ch) {
@@ -3310,6 +3323,11 @@ long /*int*/ menuPositionProc (long /*int*/ menu, long /*int*/ x, long /*int*/ y
  * @since 2.1.2
  */
 public Rectangle map (Control from, Control to, int x, int y, int width, int height) {
+	checkDevice();
+	return map(from, to, new Rectangle(x, y, width, height));
+}
+
+Rectangle mapInPixels (Control from, Control to, int x, int y, int width, int height) {
 	checkDevice();
 	if (from != null && from.isDisposed()) error (SWT.ERROR_INVALID_ARGUMENT);
 	if (to != null && to.isDisposed()) error (SWT.ERROR_INVALID_ARGUMENT);
@@ -3445,7 +3463,8 @@ public boolean post (Event event) {
 				case SWT.MouseMove:
 				case SWT.MouseUp: {
 					if (type == SWT.MouseMove) {
-						OS.XTestFakeMotionEvent (xDisplay, -1, event.x, event.y, 0);
+						Rectangle loc = DPIUtil.autoScaleUp(event.getBounds ());
+						OS.XTestFakeMotionEvent (xDisplay, -1, loc.x, loc.y, 0);
 					} else {
 						int button = event.button;
 						switch (button) {
@@ -4370,7 +4389,7 @@ void showIMWindow (Control control) {
 		widget.setFontDescription (preeditLabel, control.getFontDescription ());
 		if (pangoAttrs [0] != 0) OS.gtk_label_set_attributes (preeditLabel, pangoAttrs[0]);
 		OS.gtk_label_set_text (preeditLabel, preeditString [0]);
-		Point point = control.toDisplay (control.getIMCaretPos ());
+		Point point = control.toDisplayInPixels (control.getIMCaretPos ());
 		OS.gtk_window_move (preeditWindow, point.x, point.y);
 		GtkRequisition requisition = new GtkRequisition ();
 		if (OS.GTK3) {
@@ -4891,5 +4910,24 @@ long /*int*/ gdk_device_get_window_at_position (int[] win_x, int[] win_y) {
 		return OS.gdk_window_at_pointer (win_x, win_y);
 	}
 }
+
+/**
+ * @noreference This method is not intended to be referenced by clients.
+ * @nooverride This method is not intended to be re-implemented or extended by clients.
+ */
+@Override
+protected long /*int*/ gsettingsProc (long /*int*/ gobject, long /*int*/ arg1, long /*int*/ user_data) {
+	switch((int)/*64*/user_data) {
+		case CHANGE_SCALEFACTOR:
+			this.scaleFactor = getDeviceZoom ();
+			DPIUtil.setDeviceZoom (scaleFactor);
+			Shell[] shells = getShells();
+			for (int i = 0; i < shells.length; i++) {
+				shells[i].layout(true, true);
+			}
+	}
+	return 0;
+}
+
 
 }

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2014 IBM Corporation and others.
+ * Copyright (c) 2000, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -1012,6 +1012,11 @@ public void setEnabled (boolean enabled) {
  * </ul>
  */
 public void setLocation (int x, int y) {
+	checkWidget ();
+	setLocation (new Point (x, y));
+}
+
+void setLocationInPixels (int x, int y) {
 	checkWidget();
 	if ((style & (SWT.BAR | SWT.DROP_DOWN)) != 0) return;
 	this.x = x;
@@ -1044,9 +1049,14 @@ public void setLocation (int x, int y) {
  * @since 2.1
  */
 public void setLocation (Point location) {
+	checkWidget ();
+	setLocationInPixels (DPIUtil.autoScaleUp (location));
+}
+
+void setLocationInPixels (Point location) {
 	checkWidget();
 	if (location == null) error (SWT.ERROR_NULL_ARGUMENT);
-	setLocation (location.x, location.y);
+	setLocationInPixels (location.x, location.y);
 }
 
 /**

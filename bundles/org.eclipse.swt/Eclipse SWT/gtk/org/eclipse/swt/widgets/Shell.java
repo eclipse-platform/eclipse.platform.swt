@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2015 IBM Corporation and others.
+ * Copyright (c) 2000, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -600,8 +600,8 @@ void bringToTop (boolean force) {
 
 void center () {
 	if (parent == null) return;
-	Rectangle rect = getBounds ();
-	Rectangle parentRect = display.map (parent, null, parent.getClientArea());
+	Rectangle rect = getBoundsInPixels ();
+	Rectangle parentRect = display.mapInPixels (parent, null, parent.getClientAreaInPixels());
 	int x = Math.max (parentRect.x, parentRect.x + (parentRect.width - rect.width) / 2);
 	int y = Math.max (parentRect.y, parentRect.y + (parentRect.height - rect.height) / 2);
 	Rectangle monitorRect = parent.getMonitor ().getClientArea();
@@ -615,7 +615,7 @@ void center () {
 	} else {
 		y = Math.max (y, monitorRect.y);
 	}
-	setLocation (x, y);
+	setLocationInPixels (x, y);
 }
 
 @Override
@@ -659,9 +659,9 @@ void closeWidget () {
 }
 
 @Override
-public Rectangle computeTrim (int x, int y, int width, int height) {
+Rectangle computeTrimInPixels (int x, int y, int width, int height) {
 	checkWidget();
-	Rectangle trim = super.computeTrim (x, y, width, height);
+	Rectangle trim = super.computeTrimInPixels (x, y, width, height);
 	int border = 0;
 	if ((style & (SWT.NO_TRIM | SWT.BORDER | SWT.SHELL_TRIM)) == 0) {
 		border = OS.gtk_container_get_border_width (shellHandle);
@@ -1053,7 +1053,7 @@ public boolean getFullScreen () {
 }
 
 @Override
-public Point getLocation () {
+Point getLocationInPixels () {
 	checkWidget ();
 	int [] x = new int [1], y = new int [1];
 	OS.gtk_window_get_position (shellHandle, x,y);
@@ -1079,9 +1079,14 @@ public boolean getMaximized () {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  *
- * @since 3.1
+ * @since 3.105
  */
 public Point getMinimumSize () {
+	checkWidget ();
+	return DPIUtil.autoScaleDown (getMinimumSizeInPixels ());
+}
+
+Point getMinimumSizeInPixels () {
 	checkWidget ();
 	int width = Math.max (1, minWidth + trimWidth ());
 	int height = Math.max (1, minHeight + trimHeight ());
@@ -1134,7 +1139,7 @@ public boolean getModified () {
 }
 
 @Override
-public Point getSize () {
+Point getSizeInPixels () {
 	checkWidget ();
 	GtkAllocation allocation = new GtkAllocation ();
 	OS.gtk_widget_get_allocation (vboxHandle, allocation);
@@ -1869,7 +1874,7 @@ int setBounds (int x, int y, int width, int height, boolean move, boolean resize
 	* anything different from the current bounds.
 	*/
 	if (getMaximized ()) {
-		Rectangle rect = getBounds ();
+		Rectangle rect = getBoundsInPixels ();
 		boolean sameOrigin = !move || (rect.x == x && rect.y == y);
 		boolean sameExtent = !resize || (rect.width == width && rect.height == height);
 		if (sameOrigin && sameExtent) return 0;
@@ -1950,7 +1955,7 @@ public void setEnabled (boolean enabled) {
 		long /*int*/ parentHandle = shellHandle;
 		OS.gtk_widget_realize (parentHandle);
 		long /*int*/ window = gtk_widget_get_window (parentHandle);
-		Rectangle rect = getBounds ();
+		Rectangle rect = getBoundsInPixels ();
 		GdkWindowAttr attributes = new GdkWindowAttr ();
 		attributes.width = rect.width;
 		attributes.height = rect.height;
@@ -2138,6 +2143,11 @@ public void setMinimized (boolean minimized) {
  */
 public void setMinimumSize (int width, int height) {
 	checkWidget ();
+	setMinimumSize (new Point (width, height));
+}
+
+void setMinimumSizeInPixels (int width, int height) {
+	checkWidget ();
 	GdkGeometry geometry = new GdkGeometry ();
 	minWidth = geometry.min_width = Math.max (width, trimWidth ()) - trimWidth ();
 	minHeight = geometry.min_height = Math.max (height, trimHeight ()) - trimHeight ();
@@ -2163,8 +2173,13 @@ public void setMinimumSize (int width, int height) {
  */
 public void setMinimumSize (Point size) {
 	checkWidget ();
+	setMinimumSizeInPixels (DPIUtil.autoScaleUp (size));
+}
+
+void setMinimumSizeInPixels (Point size) {
+	checkWidget ();
 	if (size == null) error (SWT.ERROR_NULL_ARGUMENT);
-	setMinimumSize (size.x, size.y);
+	setMinimumSizeInPixels (size.x, size.y);
 }
 
 /**
@@ -2254,7 +2269,7 @@ static Region mirrorRegion (Region region) {
 	int [] nRects = new int [1];
 	long /*int*/ [] rects = new long /*int*/ [1];
 	gdk_region_get_rectangles (rgn, rects, nRects);
-	Rectangle bounds = region.getBounds ();
+	Rectangle bounds = DPIUtil.autoScaleUp(region.getBounds ());
 	GdkRectangle rect = new GdkRectangle ();
 	for (int i = 0; i < nRects [0]; i++) {
 		OS.memmove (rect, rects[0] + (i * GdkRectangle.sizeof), GdkRectangle.sizeof);
@@ -2296,7 +2311,7 @@ public void setVisible (boolean visible) {
 	checkWidget();
 
 	if (moved) { //fix shell location if it was moved.
-		setLocation(oldX, oldY);
+		setLocationInPixels(oldX, oldY);
 	}
 	int mask = SWT.PRIMARY_MODAL | SWT.APPLICATION_MODAL | SWT.SYSTEM_MODAL;
 	if ((style & mask) != 0) {
@@ -2377,7 +2392,7 @@ public void setVisible (boolean visible) {
 		opened = true;
 		if (!moved) {
 			moved = true;
-			Point location = getLocation();
+			Point location = getLocationInPixels();
 			oldX = location.x;
 			oldY = location.y;
 			sendEvent (SWT.Move);
@@ -2385,7 +2400,7 @@ public void setVisible (boolean visible) {
 		}
 		if (!resized) {
 			resized = true;
-			Point size = getSize ();
+			Point size = getSizeInPixels ();
 			oldWidth = size.x - trimWidth ();
 			oldHeight = size.y - trimHeight ();
 			sendEvent (SWT.Resize);
@@ -2654,7 +2669,7 @@ public void forceActive () {
 }
 
 @Override
-public Rectangle getBounds () {
+Rectangle getBoundsInPixels () {
 	checkWidget ();
 	int [] x = new int [1], y = new int [1];
 	OS.gtk_window_get_position (shellHandle, x, y);
@@ -2751,7 +2766,7 @@ Point getWindowOrigin () {
 		 * window trims etc. from the window manager. That's why getLocation ()
 		 * is not safe to use for coordinate mappings after the shell has been made visible.
 		 */
-		return getLocation ();
+		return getLocationInPixels ();
 	}
 	return super.getWindowOrigin( );
 }

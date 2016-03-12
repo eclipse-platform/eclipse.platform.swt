@@ -382,11 +382,11 @@ public void test_hashCode() {
 
 @Test
 public void test_intersectLorg_eclipse_swt_graphics_Rectangle() {
-	Rectangle rect1 = new Rectangle(0,0,50,25);
-	Rectangle rect2 = new Rectangle(0,0,50,25);
+	Rectangle rect1 = new Rectangle(0,0,48,24);
+	Rectangle rect2 = new Rectangle(0,0,48,24);
 	Rectangle rect3 = new Rectangle(10,10,10,10);
-	Rectangle rect4 = new Rectangle(50,25,10,10);
-	Rectangle rect5 = new Rectangle(25,20,25,10);
+	Rectangle rect4 = new Rectangle(48,24,10,10);
+	Rectangle rect5 = new Rectangle(24,20,24,10);
 
 	Region reg = new Region(display);
 	reg.dispose();
@@ -435,7 +435,7 @@ public void test_intersectLorg_eclipse_swt_graphics_Rectangle() {
 	reg.add(rect4);
 	reg.intersect(rect5);
 	box = reg.getBounds();
-	if (!box.equals(new Rectangle(25,20,25,5))) {
+	if (!box.equals(new Rectangle(24,20,24,4))) {
 		reg.dispose();
 		fail("intersect failed 5");
 	}
@@ -446,7 +446,7 @@ public void test_intersectLorg_eclipse_swt_graphics_Rectangle() {
 public void test_intersectLorg_eclipse_swt_graphics_Region() {
 	Region reg = new Region(display);
 	Region reg1 = new Region(display);
-	reg1.add(new Rectangle(0,0,50,25));
+	reg1.add(new Rectangle(0,0,48,24));
 
 	reg.dispose();
 	try {
@@ -466,7 +466,7 @@ public void test_intersectLorg_eclipse_swt_graphics_Region() {
 	}
 	
 	Region reg2 = new Region(display);
-	reg2.add(new Rectangle(0,0,50,25));
+	reg2.add(new Rectangle(0,0,48,24));
 
 	reg.add(reg1);
 	reg.intersect(reg2);
@@ -493,7 +493,7 @@ public void test_intersectLorg_eclipse_swt_graphics_Region() {
 	reg3.dispose();
 	
 	Region reg4 = new Region(display);
-	reg4.add(new Rectangle(50,25,10,10));
+	reg4.add(new Rectangle(48,24,10,10));
 
 	reg.intersect(reg4);
 	if (!reg.isEmpty()) {
@@ -504,7 +504,7 @@ public void test_intersectLorg_eclipse_swt_graphics_Region() {
 	}
 	
 	Region reg5 = new Region(display);
-	reg5.add(new Rectangle(25,20,25,10));
+	reg5.add(new Rectangle(24,20,24,10));
 	
 	reg.add(reg1.getBounds().union(reg4.getBounds()));
 	reg.intersect(reg5);
@@ -522,7 +522,7 @@ public void test_intersectLorg_eclipse_swt_graphics_Region() {
 	reg.add(reg4);
 	reg.intersect(reg5);
 	box = reg.getBounds();
-	if (!box.equals(new Rectangle(25,20,25,5))) {
+	if (!box.equals(new Rectangle(24,20,24,4))) {
 		reg.dispose();
 		reg1.dispose();
 		reg4.dispose();

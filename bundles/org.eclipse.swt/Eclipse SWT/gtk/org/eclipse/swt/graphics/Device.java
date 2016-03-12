@@ -25,6 +25,17 @@ import org.eclipse.swt.internal.gtk.*;
  */
 public abstract class Device implements Drawable {
 	/**
+	 * @noreference This field is not intended to be referenced by clients.
+	 * @since 3.105
+	 */
+	protected static final int CHANGE_SCALEFACTOR = 1;
+	/* Settings callbacks */
+	long /*int*/ gsettingsProc;
+	Callback gsettingsCallback;
+	boolean isConnected = false;
+	long /*int*/ displaySettings; //gsettings Dictionary
+
+	/**
 	 * the handle to the X Display
 	 * (Warning: This field is platform dependent)
 	 * <p>
@@ -81,6 +92,13 @@ public abstract class Device implements Drawable {
 
 	/* Device dpi */
 	Point dpi;
+
+	/*Device Scale Factor in percentage*/
+	/**
+	 * @noreference This field is not intended to be referenced by clients.
+	 * @since 3.105
+	 */
+	protected int scaleFactor;
 
 	long /*int*/ emptyTab;
 
@@ -316,6 +334,10 @@ protected void destroy () {
  */
 public Rectangle getBounds () {
 	checkDevice ();
+	return DPIUtil.autoScaleDown (getBoundsInPixels ());
+}
+
+private Rectangle getBoundsInPixels () {
 	return new Rectangle(0, 0, 0, 0);
 }
 
@@ -375,7 +397,11 @@ public DeviceData getDeviceData () {
  */
 public Rectangle getClientArea () {
 	checkDevice ();
-	return getBounds ();
+	return DPIUtil.autoScaleDown (getClientAreaInPixels ());
+}
+
+private Rectangle getClientAreaInPixels () {
+	return getBoundsInPixels ();
 }
 
 /**
@@ -579,6 +605,8 @@ public boolean getWarnings () {
  */
 protected void init () {
 	this.dpi = getDPI();
+	this.scaleFactor = getDeviceZoom ();
+	DPIUtil.setDeviceZoom (scaleFactor);
 
 	if (xDisplay != 0 && !OS.USE_CAIRO) {
 		int[] event_basep = new int[1], error_basep = new int [1];
@@ -910,6 +938,11 @@ protected void release () {
 		handler_ids = null;  log_domains = null;
 		logProc = 0;
 	}
+	/* Dispose the settings callback */
+	gsettingsCallback.dispose(); gsettingsCallback = null;
+	gsettingsProc = 0;
+
+
 }
 
 /**
@@ -991,13 +1024,80 @@ static long /*int*/ XIOErrorProc (long /*int*/ xDisplay) {
  * @return the horizontal DPI
  */
 int _getDPIx () {
+	return scaleFactor * 96/100;
+}
+/**
+ * Gets the scaling factor from the device and calculates the zoom level.
+ * @return zoom in percentage
+ *
+ * @noreference This method is not intended to be referenced by clients.
+ * @nooverride This method is not intended to be re-implemented or extended by clients.
+ * @since 3.105
+ */
+protected int getDeviceZoom() {
 	long /*int*/ screen = OS.gdk_screen_get_default();
 	int monitor = OS.gdk_screen_get_monitor_at_point(screen, 0, 0);
 
-	GdkRectangle dest = new GdkRectangle ();
-	OS.gdk_screen_get_monitor_geometry(screen, monitor, dest);
-	int widthMM = OS.gdk_screen_get_monitor_width_mm(screen, monitor);
-	return Compatibility.round (254 * dest.width, widthMM * 10);
+	final String schemaId = "com.ubuntu.user-interface";
+	final String key = "scale-factor";
+	int fontHeight = 0;
+	byte[] schema_id = Converter.wcsToMbcs (null, schemaId, true);
+	long /*int*/ schemaSource = OS.g_settings_schema_source_get_default ();
+	if (OS.g_settings_schema_source_lookup(schemaSource, schema_id, false) != 0) {
+		displaySettings = OS.g_settings_new (schema_id);
+		byte[] keyString = Converter.wcsToMbcs (null, key, true);
+		long /*int*/ settingsDict = OS.g_settings_get_value (displaySettings, keyString);
+		long /*int*/ keyArray = 0;
+		if (!isConnected) {
+			gsettingsCallback = new Callback (this, "gsettingsProc", 3); //$NON-NLS-1$
+			gsettingsProc = gsettingsCallback.getAddress ();
+			if (gsettingsProc == 0) {
+				SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
+			}
+			int retVal = OS.g_signal_connect (displaySettings, OS.changed, gsettingsProc, CHANGE_SCALEFACTOR);
+			if (retVal > 0) {
+				isConnected = true;
+			}
+		}
+
+
+		long /*int*/ iter = OS.g_variant_iter_new (settingsDict);
+		int size = OS.g_variant_iter_init(iter, settingsDict);
+		for (int i =0; i<size; i++) {
+			long /*int*/ iterValue = OS.g_variant_iter_next_value(iter);
+			keyArray = OS.g_variant_print(iterValue);
+			int len = OS.strlen(keyArray);
+			byte[] buffer = new byte [len];
+			OS.memmove (buffer, keyArray, len);
+			String type = new String(Converter.mbcsToWcs(null, buffer));
+			int index = type.indexOf(",");
+			String height = type.substring((index + 1), (type.length() - 1));
+			fontHeight = Math.max(fontHeight, Integer.valueOf(height.trim()));
+			OS.g_free(keyArray);
+			OS.g_variant_unref(iterValue);
+		}
+
+		OS.g_variant_iter_free(iter);
+		return DPIUtil.mapSFToZoom(fontHeight/ 8f);
+	} else {
+		GdkRectangle dest = new GdkRectangle ();
+		OS.gdk_screen_get_monitor_geometry(screen, monitor, dest);
+		int widthMM = OS.gdk_screen_get_monitor_width_mm(screen, monitor);
+		return (DPIUtil.mapDPIToZoom(Compatibility.round (254 * dest.width, widthMM * 10)));
+	}
+}
+/**
+ * @noreference This method is not intended to be referenced by clients.
+ * @nooverride This method is not intended to be re-implemented or extended by clients.
+ * @since 3.105
+ */
+protected long /*int*/ gsettingsProc (long /*int*/ gobject, long /*int*/ arg1, long /*int*/ user_data) {
+	switch((int)/*64*/user_data) {
+		case CHANGE_SCALEFACTOR:
+			this.scaleFactor = getDeviceZoom ();
+			DPIUtil.setDeviceZoom (scaleFactor);
+	}
+	return 0;
 }
 
 }

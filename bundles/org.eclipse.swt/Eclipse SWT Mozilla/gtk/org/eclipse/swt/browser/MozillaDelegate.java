@@ -361,6 +361,8 @@ boolean sendTraverse () {
 }
 
 void setSize (long /*int*/ embedHandle, int width, int height) {
+	width = DPIUtil.autoScaleUp(width);
+	height = DPIUtil.autoScaleUp(height);
 	OS.gtk_widget_set_size_request (embedHandle, width, height);
 }
 

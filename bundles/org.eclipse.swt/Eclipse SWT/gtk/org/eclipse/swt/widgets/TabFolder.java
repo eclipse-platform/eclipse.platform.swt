@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2012 IBM Corporation and others.
+ * Copyright (c) 2000, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -189,9 +189,9 @@ long /*int*/ clientHandle () {
 }
 
 @Override
-public Point computeSize (int wHint, int hHint, boolean changed) {
+Point computeSizeInPixels (int wHint, int hHint, boolean changed) {
 	checkWidget ();
-	Point size = super.computeSize (wHint, hHint, changed);
+	Point size = super.computeSizeInPixels (wHint, hHint, changed);
 	if (wHint != SWT.DEFAULT && wHint < 0) wHint = 0;
 	if (hHint != SWT.DEFAULT && hHint < 0) hHint = 0;
 	boolean scrollable = OS.gtk_notebook_get_scrollable (handle);
@@ -209,7 +209,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 }
 
 @Override
-public Rectangle computeTrim (int x, int y, int width, int height) {
+Rectangle computeTrimInPixels (int x, int y, int width, int height) {
 	checkWidget();
 	forceResize ();
 	long /*int*/ clientHandle = clientHandle ();
@@ -232,8 +232,8 @@ public Rectangle computeTrim (int x, int y, int width, int height) {
 }
 
 @Override
-public Rectangle getClientArea () {
-	Rectangle clientRectangle = super.getClientArea ();
+Rectangle getClientAreaInPixels () {
+	Rectangle clientRectangle = super.getClientAreaInPixels ();
 
 	if (OS.GTK3) {
 		/*
@@ -352,7 +352,7 @@ void destroyItem (TabItem item) {
 		if (newIndex != -1) {
 			Control control = items [newIndex].getControl ();
 			if (control != null && !control.isDisposed ()) {
-				control.setBounds (getClientArea());
+				control.setBoundsInPixels (getClientAreaInPixels());
 				control.setVisible (true);
 			}
 			Event event = new Event ();
@@ -571,7 +571,7 @@ long /*int*/ gtk_switch_page (long /*int*/ widget, long /*int*/ page, long /*int
 	TabItem item = items [(int)/*64*/page_num];
 	Control control = item.getControl ();
 	if (control != null && !control.isDisposed ()) {
-		control.setBounds(getClientArea());
+		control.setBoundsInPixels(getClientAreaInPixels());
 		control.setVisible (true);
 	}
 	Event event = new Event();
@@ -634,11 +634,11 @@ Point minimumSize (int wHint, int hHint, boolean flushCache) {
 			index++;
 		}
 		if (index == count) {
-			Rectangle rect = child.getBounds ();
+			Rectangle rect = child.getBoundsInPixels ();
 			width = Math.max (width, rect.x + rect.width);
 			height = Math.max (height, rect.y + rect.height);
 		} else {
-			Point size = child.computeSize (wHint, hHint, flushCache);
+			Point size = child.computeSizeInPixels (wHint, hHint, flushCache);
 			width = Math.max (width, size.x);
 			height = Math.max (height, size.y);
 		}
@@ -747,7 +747,7 @@ int setBounds (int x, int y, int width, int height, boolean move, boolean resize
 			TabItem item = items [index];
 			Control control = item.control;
 			if (control != null && !control.isDisposed ()) {
-				control.setBounds (getClientArea ());
+				control.setBoundsInPixels (getClientAreaInPixels ());
 			}
 		}
 	}
@@ -824,7 +824,7 @@ void setSelection (int index, boolean notify) {
 		TabItem item = items [newIndex];
 		Control control = item.control;
 		if (control != null && !control.isDisposed ()) {
-			control.setBounds (getClientArea ());
+			control.setBoundsInPixels (getClientAreaInPixels ());
 			control.setVisible (true);
 		}
 		if (notify) {

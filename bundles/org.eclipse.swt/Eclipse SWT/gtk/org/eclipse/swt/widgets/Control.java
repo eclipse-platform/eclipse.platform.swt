@@ -130,7 +130,7 @@ void drawBackground (Control control, long /*int*/ window, long /*int*/ cr, long
 			Cairo.cairo_clip(cairo);
 		}
 		if (control.backgroundImage != null) {
-			Point pt = display.map (this, control, 0, 0);
+			Point pt = display.mapInPixels (this, control, 0, 0);
 			Cairo.cairo_translate (cairo, -pt.x, -pt.y);
 			x += pt.x;
 			y += pt.y;
@@ -156,7 +156,7 @@ void drawBackground (Control control, long /*int*/ window, long /*int*/ cr, long
 	long /*int*/ gdkGC = OS.gdk_gc_new (window);
 	if (region != 0) OS.gdk_gc_set_clip_region (gdkGC, region);
 	if (control.backgroundImage != null) {
-		Point pt = display.map (this, control, 0, 0);
+		Point pt = display.mapInPixels (this, control, 0, 0);
 		OS.gdk_gc_set_fill (gdkGC, OS.GDK_TILED);
 		OS.gdk_gc_set_ts_origin (gdkGC, -pt.x, -pt.y);
 		OS.gdk_gc_set_tile (gdkGC, control.backgroundImage.pixmap);
@@ -561,7 +561,7 @@ void printWindow (boolean first, Control control, GC gc, long /*int*/ drawable, 
 }
 
 /**
- * Returns the preferred size of the receiver.
+ * Returns the preferred size(in Points) of the receiver.
  * <p>
  * The <em>preferred size</em> of a control is the size that it would
  * best be displayed at. The width hint and height hint arguments
@@ -589,6 +589,10 @@ void printWindow (boolean first, Control control, GC gc, long /*int*/ drawable, 
  */
 public Point computeSize (int wHint, int hHint) {
 	return computeSize (wHint, hHint, true);
+}
+
+Point computeSizeInPixels (int wHint, int hHint) {
+	return computeSizeInPixels (wHint, hHint, true);
 }
 
 Widget computeTabGroup () {
@@ -661,7 +665,7 @@ void checkForeground () {
 }
 
 void checkBorder () {
-	if (getBorderWidth () == 0) style &= ~SWT.BORDER;
+	if (getBorderWidthInPixels () == 0) style &= ~SWT.BORDER;
 }
 
 void checkMirrored () {
@@ -690,7 +694,7 @@ void createWidget (int index) {
 }
 
 /**
- * Returns the preferred size of the receiver.
+ * Returns the preferred size (in points) of the receiver.
  * <p>
  * The <em>preferred size</em> of a control is the size that it would
  * best be displayed at. The width hint and height hint arguments
@@ -724,6 +728,15 @@ void createWidget (int index) {
  * @see "computeTrim, getClientArea for controls that implement them"
  */
 public Point computeSize (int wHint, int hHint, boolean changed) {
+	checkWidget();
+	if (wHint != SWT.DEFAULT && wHint < 0) wHint = 0;
+	if (hHint != SWT.DEFAULT && hHint < 0) hHint = 0;
+	wHint = DPIUtil.autoScaleUp(wHint);
+	hHint = DPIUtil.autoScaleUp(hHint);
+	return DPIUtil.autoScaleDown (computeSizeInPixels (wHint, hHint, changed));
+}
+
+Point computeSizeInPixels (int wHint, int hHint, boolean changed) {
 	checkWidget();
 	if (wHint != SWT.DEFAULT && wHint < 0) wHint = 0;
 	if (hHint != SWT.DEFAULT && hHint < 0) hHint = 0;
@@ -815,7 +828,7 @@ Accessible _getAccessible () {
 }
 
 /**
- * Returns a rectangle describing the receiver's size and location
+ * Returns a rectangle describing the receiver's size and location in points
  * relative to its parent (or its display if its parent is null),
  * unless the receiver is a shell. In this case, the location is
  * relative to the display.
@@ -829,6 +842,11 @@ Accessible _getAccessible () {
  */
 public Rectangle getBounds () {
 	checkWidget();
+	return DPIUtil.autoScaleDown(getBoundsInPixels());
+}
+
+Rectangle getBoundsInPixels () {
+	checkWidget();
 	long /*int*/ topHandle = topHandle ();
 	GtkAllocation allocation = new GtkAllocation ();
 	OS.gtk_widget_get_allocation (topHandle, allocation);
@@ -841,7 +859,7 @@ public Rectangle getBounds () {
 }
 
 /**
- * Sets the receiver's size and location to the rectangular
+ * Sets the receiver's size and location in points to the rectangular
  * area specified by the argument. The <code>x</code> and
  * <code>y</code> fields of the rectangle are relative to
  * the receiver's parent (or its display if its parent is null).
@@ -866,11 +884,18 @@ public Rectangle getBounds () {
 public void setBounds (Rectangle rect) {
 	checkWidget ();
 	if (rect == null) error (SWT.ERROR_NULL_ARGUMENT);
+	rect = DPIUtil.autoScaleUp(rect);
+	setBounds (rect.x, rect.y, Math.max (0, rect.width), Math.max (0, rect.height), true, true);
+}
+
+void setBoundsInPixels (Rectangle rect) {
+	checkWidget ();
+	if (rect == null) error (SWT.ERROR_NULL_ARGUMENT);
 	setBounds (rect.x, rect.y, Math.max (0, rect.width), Math.max (0, rect.height), true, true);
 }
 
 /**
- * Sets the receiver's size and location to the rectangular
+ * Sets the receiver's size and location in points to the rectangular
  * area specified by the arguments. The <code>x</code> and
  * <code>y</code> arguments are relative to the receiver's
  * parent (or its display if its parent is null), unless
@@ -898,6 +923,12 @@ public void setBounds (Rectangle rect) {
  * </ul>
  */
 public void setBounds (int x, int y, int width, int height) {
+	checkWidget();
+	Rectangle rect = DPIUtil.autoScaleUp(new Rectangle (x, y, width, height));
+	setBounds (rect.x, rect.y, Math.max (0, rect.width), Math.max (0, rect.height), true, true);
+}
+
+void setBoundsInPixels (int x, int y, int width, int height) {
 	checkWidget();
 	setBounds (x, y, Math.max (0, width), Math.max (0, height), true, true);
 }
@@ -1075,7 +1106,7 @@ int setBounds (int x, int y, int width, int height, boolean move, boolean resize
 
 /**
  * Returns a point describing the receiver's location relative
- * to its parent (or its display if its parent is null), unless
+ * to its parent in points (or its display if its parent is null), unless
  * the receiver is a shell. In this case, the point is
  * relative to the display.
  *
@@ -1087,6 +1118,11 @@ int setBounds (int x, int y, int width, int height, boolean move, boolean resize
  * </ul>
  */
 public Point getLocation () {
+	checkWidget();
+	return DPIUtil.autoScaleDown(getLocationInPixels());
+}
+
+Point getLocationInPixels () {
 	checkWidget();
 	long /*int*/ topHandle = topHandle ();
 	GtkAllocation allocation = new GtkAllocation ();
@@ -1117,6 +1153,13 @@ public Point getLocation () {
 public void setLocation (Point location) {
 	checkWidget ();
 	if (location == null) error (SWT.ERROR_NULL_ARGUMENT);
+	location = DPIUtil.autoScaleUp(location);
+	setBounds (location.x, location.y, 0, 0, true, false);
+}
+
+void setLocationInPixels (Point location) {
+	checkWidget ();
+	if (location == null) error (SWT.ERROR_NULL_ARGUMENT);
 	setBounds (location.x, location.y, 0, 0, true, false);
 }
 
@@ -1127,7 +1170,7 @@ public void setLocation (Point location) {
  * the receiver is a shell. In this case, the point is
  * relative to the display.
  *
- * @param x the new x coordinate for the receiver
+ * @param x the new x coordinate in for the receiver
  * @param y the new y coordinate for the receiver
  *
  * @exception SWTException <ul>
@@ -1137,11 +1180,17 @@ public void setLocation (Point location) {
  */
 public void setLocation(int x, int y) {
 	checkWidget();
+	Point loc = DPIUtil.autoScaleUp(new Point (x, y));
+	setBounds (loc.x, loc.y, 0, 0, true, false);
+}
+
+void setLocationInPixels(int x, int y) {
+	checkWidget();
 	setBounds (x, y, 0, 0, true, false);
 }
 
 /**
- * Returns a point describing the receiver's size. The
+ * Returns a point describing the receiver's size in points. The
  * x coordinate of the result is the width of the receiver.
  * The y coordinate of the result is the height of the
  * receiver.
@@ -1154,6 +1203,11 @@ public void setLocation(int x, int y) {
  * </ul>
  */
 public Point getSize () {
+	checkWidget();
+	return DPIUtil.autoScaleDown(getSizeInPixels());
+}
+
+Point getSizeInPixels () {
 	checkWidget();
 	long /*int*/ topHandle = topHandle ();
 	GtkAllocation allocation = new GtkAllocation ();
@@ -1176,7 +1230,7 @@ public Point getSize () {
  * set to (2^14)-1 instead.
  * </p>
  *
- * @param size the new size for the receiver
+ * @param size the new size in points for the receiver
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the point is null</li>
@@ -1185,8 +1239,16 @@ public Point getSize () {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
+ * @since 3.105
  */
 public void setSize (Point size) {
+	checkWidget ();
+	if (size == null) error (SWT.ERROR_NULL_ARGUMENT);
+	size = DPIUtil.autoScaleUp(size);
+	setBounds (0, 0, Math.max (0, size.x), Math.max (0, size.y), false, true);
+}
+
+void setSizeInPixels (Point size) {
 	checkWidget ();
 	if (size == null) error (SWT.ERROR_NULL_ARGUMENT);
 	setBounds (0, 0, Math.max (0, size.x), Math.max (0, size.y), false, true);
@@ -1255,8 +1317,8 @@ void setRelations () {
  * set to (2^14)-1 instead.
  * </p>
  *
- * @param width the new width for the receiver
- * @param height the new height for the receiver
+ * @param width the new width in points for the receiver
+ * @param height the new height in points for the receiver
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -1264,6 +1326,12 @@ void setRelations () {
  * </ul>
  */
 public void setSize (int width, int height) {
+	checkWidget();
+	Point size = DPIUtil.autoScaleUp(new Point (width, height));
+	setBounds (0, 0, Math.max (0, size.x), Math.max (0, size.y), false, true);
+}
+
+void setSizeInPixels (int width, int height) {
 	checkWidget();
 	setBounds (0, 0, Math.max (0, width), Math.max (0, height), false, true);
 }
@@ -1414,8 +1482,8 @@ public void setLayoutData (Object layoutData) {
  * {@link Display#map(Control, Control, Rectangle)}.
  * </p>
  *
- * @param x the x coordinate to be translated
- * @param y the y coordinate to be translated
+ * @param x the x coordinate in points to be translated
+ * @param y the y coordinate in points to be translated
  * @return the translated coordinates
  *
  * @exception SWTException <ul>
@@ -1426,6 +1494,11 @@ public void setLayoutData (Object layoutData) {
  * @since 2.1
  */
 public Point toControl (int x, int y) {
+	checkWidget ();
+	return toControl (new Point (x, y));
+}
+
+Point toControlInPixels (int x, int y) {
 	checkWidget ();
 	long /*int*/ window = eventWindow ();
 	int [] origin_x = new int [1], origin_y = new int [1];
@@ -1459,7 +1532,14 @@ public Point toControl (int x, int y) {
 public Point toControl (Point point) {
 	checkWidget ();
 	if (point == null) error (SWT.ERROR_NULL_ARGUMENT);
-	return toControl (point.x, point.y);
+	point = DPIUtil.autoScaleUp(point);
+	return DPIUtil.autoScaleDown(toControlInPixels (point.x, point.y));
+}
+
+Point toControlInPixels (Point point) {
+	checkWidget ();
+	if (point == null) error (SWT.ERROR_NULL_ARGUMENT);
+	return toControlInPixels (point.x, point.y);
 }
 
 /**
@@ -1483,6 +1563,11 @@ public Point toControl (Point point) {
  * @since 2.1
  */
 public Point toDisplay (int x, int y) {
+	checkWidget();
+	return toDisplay (new Point (x, y));
+}
+
+Point toDisplayInPixels (int x, int y) {
 	checkWidget();
 	long /*int*/ window = eventWindow ();
 	int [] origin_x = new int [1], origin_y = new int [1];
@@ -1516,9 +1601,15 @@ public Point toDisplay (int x, int y) {
 public Point toDisplay (Point point) {
 	checkWidget();
 	if (point == null) error (SWT.ERROR_NULL_ARGUMENT);
-	return toDisplay (point.x, point.y);
+	point = DPIUtil.autoScaleUp(point);
+	return DPIUtil.autoScaleDown(toDisplayInPixels (point.x, point.y));
 }
 
+Point toDisplayInPixels (Point point) {
+	checkWidget();
+	if (point == null) error (SWT.ERROR_NULL_ARGUMENT);
+	return toDisplayInPixels (point.x, point.y);
+}
 /**
  * Adds the listener to the collection of listeners who will
  * be notified when the control is moved or resized, by sending
@@ -2395,7 +2486,7 @@ boolean dragDetect (int x, int y, boolean filter, boolean dragOnTimeout, boolean
 	Point startPos = null;
 	Point currPos = null;
 	if (OS.GTK3) {
-		startPos = display.getCursorLocation();
+		startPos = display.getCursorLocationInPixels();
 	}
 
 	while (!quit) {
@@ -2413,7 +2504,7 @@ boolean dragDetect (int x, int y, boolean filter, boolean dragOnTimeout, boolean
 				break;
 			} else {
 				if (OS.GTK3) { //428852
-					currPos = display.getCursorLocation();
+					currPos = display.getCursorLocationInPixels();
 					dragging = OS.gtk_drag_check_threshold (handle,
 								startPos.x, startPos.y, currPos.x, currPos.y);
 					if (dragging) break;
@@ -2669,7 +2760,7 @@ GdkColor getBaseColor () {
 }
 
 /**
- * Returns the receiver's border width.
+ * Returns the receiver's border width in points.
  *
  * @return the border width
  *
@@ -2679,6 +2770,10 @@ GdkColor getBaseColor () {
  * </ul>
  */
 public int getBorderWidth () {
+	return DPIUtil.autoScaleDown(getBorderWidthInPixels());
+}
+
+int getBorderWidthInPixels () {
 	checkWidget();
 	return 0;
 }
@@ -3255,18 +3350,18 @@ long /*int*/ gtk_draw (long /*int*/ widget, long /*int*/ cairo) {
 	OS.gdk_cairo_get_clip_rectangle (cairo, rect);
 	Event event = new Event ();
 	event.count = 1;
-	event.x = rect.x;
-	event.y = rect.y;
-	event.width = rect.width;
-	event.height = rect.height;
-	if ((style & SWT.MIRRORED) != 0) event.x = getClientWidth () - event.width - event.x;
+	Rectangle eventRect = new Rectangle (rect.x, rect.y, rect.width, rect.height);
+	event.setBounds (DPIUtil.autoScaleDown (eventRect));
+	if ((style & SWT.MIRRORED) != 0) event.x = DPIUtil.autoScaleDown (getClientWidth ()) - event.width - event.x;
 	GCData data = new GCData ();
 //	data.damageRgn = gdkEvent.region;
 	if (OS.GTK_VERSION <= OS.VERSION (3, 9, 0)) {
 		data.cairo = cairo;
 	}
 	GC gc = event.gc = GC.gtk_new (this, data);
-	gc.setClipping (rect.x, rect.y, rect.width, rect.height);
+	Rectangle rect2 = DPIUtil.autoScaleDown(new Rectangle(rect.x, rect.y, rect.width, rect.height));
+	// Caveat: rect2 is necessary because GC#setClipping(Rectangle) got broken by bug 446075
+	gc.setClipping (rect2.x, rect2.y, rect2.width, rect2.height);
 	drawWidget (gc);
 	sendEvent (SWT.Paint, event);
 	gc.dispose ();
@@ -3282,11 +3377,9 @@ long /*int*/ gtk_expose_event (long /*int*/ widget, long /*int*/ eventPtr) {
 	OS.memmove(gdkEvent, eventPtr, GdkEventExpose.sizeof);
 	Event event = new Event ();
 	event.count = gdkEvent.count;
-	event.x = gdkEvent.area_x;
-	event.y = gdkEvent.area_y;
-	event.width = gdkEvent.area_width;
-	event.height = gdkEvent.area_height;
-	if ((style & SWT.MIRRORED) != 0) event.x = getClientWidth () - event.width - event.x;
+	Rectangle eventRect = new Rectangle (gdkEvent.area_x, gdkEvent.area_y, gdkEvent.area_width, gdkEvent.area_height);
+	event.setBounds (DPIUtil.autoScaleDown (eventRect));
+	if ((style & SWT.MIRRORED) != 0) event.x = DPIUtil.autoScaleDown (getClientWidth ()) - event.width - event.x;
 	GCData data = new GCData ();
 	data.damageRgn = gdkEvent.region;
 	GC gc = event.gc = GC.gtk_new (this, data);
@@ -3633,7 +3726,7 @@ boolean isShowing () {
 	if (!isVisible ()) return false;
 	Control control = this;
 	while (control != null) {
-		Point size = control.getSize ();
+		Point size = control.getSizeInPixels ();
 		if (size.x == 0 || size.y == 0) {
 			return false;
 		}
@@ -3831,6 +3924,12 @@ void redraw (boolean all) {
  */
 public void redraw (int x, int y, int width, int height, boolean all) {
 	checkWidget();
+	Rectangle rect = DPIUtil.autoScaleUp(new Rectangle(x, y, width, height));
+	redrawInPixels(rect.x, rect.y, rect.width, rect.height, all);
+}
+
+void redrawInPixels (int x, int y, int width, int height, boolean all) {
+	checkWidget();
 	if (!OS.gtk_widget_get_visible (topHandle ())) return;
 	if ((style & SWT.MIRRORED) != 0) x = getClientWidth () - width - x;
 	redrawWidget (x, y, width, height, false, all, false);
@@ -3931,9 +4030,9 @@ void restackWindow (long /*int*/ window, long /*int*/ sibling, boolean above) {
 boolean sendDragEvent (int button, int stateMask, int x, int y, boolean isStateMask) {
 	Event event = new Event ();
 	event.button = button;
-	event.x = x;
-	event.y = y;
-	if ((style & SWT.MIRRORED) != 0) event.x = getClientWidth () - event.x;
+	Rectangle eventRect = new Rectangle (x, y, 0, 0);
+	event.setBounds (eventRect);
+	if ((style & SWT.MIRRORED) != 0) event.x = DPIUtil.autoScaleDown(getClientWidth ()) - event.x;
 	if (isStateMask) {
 		event.stateMask = stateMask;
 	} else {
@@ -4000,16 +4099,16 @@ boolean sendMouseEvent (int type, int button, int count, int detail, boolean sen
 	event.detail = detail;
 	event.count = count;
 	if (is_hint) {
-		event.x = (int)x;
-		event.y = (int)y;
+		Rectangle eventRect = new Rectangle ((int)x, (int)y, 0, 0);
+		event.setBounds (DPIUtil.autoScaleDown (eventRect));
 	} else {
 		long /*int*/ window = eventWindow ();
 		int [] origin_x = new int [1], origin_y = new int [1];
 		OS.gdk_window_get_origin (window, origin_x, origin_y);
-		event.x = (int)x - origin_x [0];
-		event.y = (int)y - origin_y [0];
+		Rectangle eventRect = new Rectangle ((int)x - origin_x [0], (int)y - origin_y [0], 0, 0);
+		event.setBounds (DPIUtil.autoScaleDown (eventRect));
 	}
-	if ((style & SWT.MIRRORED) != 0) event.x = getClientWidth () - event.x;
+	if ((style & SWT.MIRRORED) != 0) event.x = DPIUtil.autoScaleDown (getClientWidth ()) - event.x;
 	setInputState (event, state);
 	if (send) {
 		sendEvent (type, event);
@@ -4873,7 +4972,7 @@ public void setRedraw (boolean redraw) {
 		if (drawCount++ == 0) {
 			if (gtk_widget_get_realized (handle)) {
 				long /*int*/ window = paintWindow ();
-				Rectangle rect = getBounds ();
+				Rectangle rect = getBoundsInPixels ();
 				GdkWindowAttr attributes = new GdkWindowAttr ();
 				attributes.width = rect.width;
 				attributes.height = rect.height;
@@ -5196,8 +5295,8 @@ boolean showMenu (int x, int y) {
 
 boolean showMenu (int x, int y, int detail) {
 	Event event = new Event ();
-	event.x = x;
-	event.y = y;
+	Rectangle eventRect = new Rectangle (x, y, 0, 0);
+	event.setBounds (DPIUtil.autoScaleDown (eventRect));
 	event.detail = detail;
 	sendEvent (SWT.MenuDetect, event);
 	//widget could be disposed at this point
@@ -5206,8 +5305,9 @@ boolean showMenu (int x, int y, int detail) {
 		if (menu != null && !menu.isDisposed ()) {
 			boolean hooksKeys = hooks (SWT.KeyDown) || hooks (SWT.KeyUp);
 			menu.createIMMenu (hooksKeys ? imHandle() : 0);
-			if (event.x != x || event.y != y) {
-				menu.setLocation (event.x, event.y);
+			Rectangle rect = DPIUtil.autoScaleUp (event.getBounds ());
+			if (rect.x != x || rect.y != y) {
+				menu.setLocationInPixels (rect.x, rect.y);
 			}
 			menu.setVisible (true);
 			return true;

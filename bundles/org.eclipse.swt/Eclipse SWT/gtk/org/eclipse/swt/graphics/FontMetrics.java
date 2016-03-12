@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2008 IBM Corporation and others.
+ * Copyright (c) 2000, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -10,6 +10,7 @@
  *******************************************************************************/
 package org.eclipse.swt.graphics;
 
+import org.eclipse.swt.internal.*;
 
 /**
  * Instances of this class provide measurement information
@@ -56,7 +57,7 @@ public boolean equals (Object object) {
  * @return the ascent of the font
  */
 public int getAscent() {
-	return ascent;
+	return DPIUtil.autoScaleDown(ascent);
 }
 
 /**
@@ -66,7 +67,7 @@ public int getAscent() {
  * @return the average character width of the font
  */
 public int getAverageCharWidth() {
-	return averageCharWidth;
+	return DPIUtil.autoScaleDown(averageCharWidth);
 }
 
 /**
@@ -78,7 +79,7 @@ public int getAverageCharWidth() {
  * @return the descent of the font
  */
 public int getDescent() {
-	return descent;
+	return DPIUtil.autoScaleDown(descent);
 }
 
 /**
@@ -93,7 +94,7 @@ public int getDescent() {
  * @see #getLeading
  */
 public int getHeight() {
-	return height;
+	return DPIUtil.autoScaleDown(height);
 }
 
 /**
@@ -104,7 +105,7 @@ public int getHeight() {
  * @return the leading space of the font
  */
 public int getLeading() {
-	return leading;
+	return DPIUtil.autoScaleDown(leading);
 }
 
 public static FontMetrics gtk_new(int ascent, int descent, int averageCharWidth, int leading, int height) {

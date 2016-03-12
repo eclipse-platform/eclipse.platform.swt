@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2012 IBM Corporation and others.
+ * Copyright (c) 2000, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -252,7 +252,7 @@ void configure () {
 	}
 	OS.gtk_widget_realize(handle);
 	Region region = new Region (display);
-	region.add(polyline);
+	region.add(DPIUtil.autoScaleDown(polyline));
 	if (OS.GTK3) {
 		OS.gtk_widget_shape_combine_region (handle, region.handle);
 	} else {
@@ -711,13 +711,17 @@ public void setAutoHide (boolean autoHide) {
  */
 public void setLocation (int x, int y) {
 	checkWidget ();
+	setLocation (new Point (x, y));
+}
+
+void setLocationInPixels (int x, int y) {
+	checkWidget ();
 	this.x = x;
 	this.y = y;
 	if ((style & SWT.BALLOON) != 0) {
 		if (OS.gtk_widget_get_visible (handle)) configure ();
 	}
 }
-
 /**
  * Sets the location of the receiver, which must be a tooltip,
  * to the point specified by the argument which is relative
@@ -742,8 +746,13 @@ public void setLocation (int x, int y) {
  */
 public void setLocation (Point location) {
 	checkWidget ();
+	setLocationInPixels(DPIUtil.autoScaleUp(location));
+}
+
+void setLocationInPixels (Point location) {
+	checkWidget ();
 	if (location == null) error (SWT.ERROR_NULL_ARGUMENT);
-	setLocation (location.x, location.y);
+	setLocationInPixels (location.x, location.y);
 }
 
 /**

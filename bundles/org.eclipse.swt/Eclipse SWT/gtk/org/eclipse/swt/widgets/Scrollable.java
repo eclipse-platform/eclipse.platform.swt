@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2015 IBM Corporation and others.
+ * Copyright (c) 2000, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -13,6 +13,7 @@ package org.eclipse.swt.widgets;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.gtk.*;
 
 /**
@@ -107,6 +108,12 @@ long /*int*/ clientHandle () {
  */
 public Rectangle computeTrim (int x, int y, int width, int height) {
 	checkWidget();
+	Rectangle rect = DPIUtil.autoScaleUp(new Rectangle (x, y, width, height));
+	return DPIUtil.autoScaleDown(computeTrimInPixels(rect.x, rect.y, rect.width, rect.height));
+}
+
+Rectangle computeTrimInPixels (int x, int y, int width, int height) {
+	checkWidget();
 	int border = 0;
 	if (fixedHandle != 0) border += OS.gtk_container_get_border_width (fixedHandle);
 	if (scrolledHandle != 0) border += OS.gtk_container_get_border_width (scrolledHandle);
@@ -189,7 +196,7 @@ void destroyScrollBar (ScrollBar bar) {
 }
 
 @Override
-public int getBorderWidth () {
+int getBorderWidthInPixels () {
 	checkWidget();
 	int border = 0;
 	if (fixedHandle != 0) border += OS.gtk_container_get_border_width (fixedHandle);
@@ -201,7 +208,6 @@ public int getBorderWidth () {
 	}
 	return border;
 }
-
 /**
  * Returns a rectangle which describes the area of the
  * receiver which is capable of displaying data (that is,
@@ -217,6 +223,11 @@ public int getBorderWidth () {
  * @see #computeTrim
  */
 public Rectangle getClientArea () {
+	checkWidget ();
+	return DPIUtil.autoScaleDown(getClientAreaInPixels());
+}
+
+Rectangle getClientAreaInPixels () {
 	checkWidget ();
 	forceResize ();
 	long /*int*/ clientHandle = clientHandle ();

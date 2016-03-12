@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2013 IBM Corporation and others.
+ * Copyright (c) 2000, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -14,6 +14,7 @@ package org.eclipse.swt.widgets;
 import org.eclipse.swt.*;
 import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.gtk.*;
 
 /**
@@ -276,6 +277,7 @@ public int getSelection () {
 	return (int) OS.gtk_adjustment_get_value (adjustmentHandle);
 }
 
+
 /**
  * Returns a point describing the receiver's size. The
  * x coordinate of the result is the width of the receiver.
@@ -290,6 +292,11 @@ public int getSelection () {
  * </ul>
  */
 public Point getSize () {
+	checkWidget ();
+	return DPIUtil.autoScaleDown (getSizeInPixels ());
+}
+
+Point getSizeInPixels () {
 	checkWidget ();
 	if (handle == 0) return new Point (0,0);
 	GtkRequisition requisition = new GtkRequisition ();
@@ -328,6 +335,11 @@ public int getThumb () {
  * @since 3.6
  */
 public Rectangle getThumbBounds () {
+	checkWidget ();
+	return DPIUtil.autoScaleDown(getThumbBoundsInPixels());
+}
+
+Rectangle getThumbBoundsInPixels () {
 	checkWidget();
 	int [] slider_start = new int [1], slider_end = new int [1];
 	gtk_range_get_slider_range (handle, slider_start, slider_end);
@@ -373,6 +385,11 @@ public Rectangle getThumbBounds () {
  * @since 3.6
  */
 public Rectangle getThumbTrackBounds () {
+	checkWidget ();
+	return DPIUtil.autoScaleDown(getThumbTrackBoundsInPixels());
+}
+
+Rectangle getThumbTrackBoundsInPixels () {
 	checkWidget();
 	int x = 0, y = 0, width, height;
 	int[] has_stepper = new int[1];

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2012 IBM Corporation and others.
+ * Copyright (c) 2000, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -13,6 +13,7 @@ package org.eclipse.swt.widgets;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.cairo.*;
 import org.eclipse.swt.internal.gtk.*;
 
@@ -259,6 +260,12 @@ void reskinChildren (int flags) {
 public void scroll (int destX, int destY, int x, int y, int width, int height, boolean all) {
 	checkWidget();
 	if (width <= 0 || height <= 0) return;
+	Point destination = DPIUtil.autoScaleUp (new Point (destX, destY));
+	Rectangle srcRect = DPIUtil.autoScaleUp (new Rectangle (x, y, width, height));
+	scrollInPixels(destination.x, destination.y, srcRect.x, srcRect.y, srcRect.width, srcRect.height, all);
+}
+
+void scrollInPixels (int destX, int destY, int x, int y, int width, int height, boolean all) {
 	if ((style & SWT.MIRRORED) != 0) {
 		int clientWidth = getClientWidth ();
 		x = clientWidth - width - x;
@@ -357,10 +364,10 @@ public void scroll (int destX, int destY, int x, int y, int width, int height, b
 		Control [] children = _getChildren ();
 		for (int i=0; i<children.length; i++) {
 			Control child = children [i];
-			Rectangle rect = child.getBounds ();
+			Rectangle rect = child.getBoundsInPixels ();
 			if (Math.min(x + width, rect.x + rect.width) >= Math.max (x, rect.x) &&
 				Math.min(y + height, rect.y + rect.height) >= Math.max (y, rect.y)) {
-					child.setLocation (rect.x + deltaX, rect.y + deltaY);
+					child.setLocationInPixels (rect.x + deltaX, rect.y + deltaY);
 			}
 		}
 	}

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2014 IBM Corporation and others.
+ * Copyright (c) 2000, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -422,6 +422,11 @@ public Color getBackground (int index) {
  * @since 3.1
  */
 public Rectangle getBounds (int index) {
+	checkWidget ();
+	return DPIUtil.autoScaleDown (getBoundsInPixels (index));
+}
+
+Rectangle getBoundsInPixels (int index) {
 	// TODO fully test on early and later versions of GTK
 	checkWidget();
 	if (!parent.checkData (this)) error (SWT.ERROR_WIDGET_DISPOSED);
@@ -450,7 +455,7 @@ public Rectangle getBounds (int index) {
 	int width = OS.gtk_tree_view_column_get_visible (column) ? rect.width + 1 : 0;
 	Rectangle r = new Rectangle (rect.x, rect.y, width, rect.height + 1);
 	if (parent.getHeaderVisible() && OS.GTK_VERSION > OS.VERSION(3, 9, 0)) {
-		r.y += parent.getHeaderHeight();
+		r.y += parent.getHeaderHeightInPixels();
 	}
 	return r;
 }
@@ -467,6 +472,11 @@ public Rectangle getBounds (int index) {
  * </ul>
  */
 public Rectangle getBounds () {
+	checkWidget ();
+	return DPIUtil.autoScaleDown (getBoundsInPixels ());
+}
+
+Rectangle getBoundsInPixels () {
 	// TODO fully test on early and later versions of GTK
 	// shifted a bit too far right on later versions of GTK - however, old Tree also had this problem
 	checkWidget ();
@@ -512,7 +522,7 @@ public Rectangle getBounds () {
 	int width = OS.gtk_tree_view_column_get_visible (column) ? rect.width + 1 : 0;
 	Rectangle r = new Rectangle (rect.x, rect.y, width, rect.height + 1);
 	if (parent.getHeaderVisible() && OS.GTK_VERSION > OS.VERSION(3, 9, 0)) {
-		r.y += parent.getHeaderHeight();
+		r.y += parent.getHeaderHeightInPixels();
 	}
 	return r;
 }
@@ -701,6 +711,11 @@ public Image getImage (int index) {
  * @since 3.1
  */
 public Rectangle getImageBounds (int index) {
+	checkWidget ();
+	return DPIUtil.autoScaleDown(getImageBoundsInPixels(index));
+}
+
+Rectangle getImageBoundsInPixels (int index) {
 	// TODO fully test on early and later versions of GTK
 	checkWidget ();
 	if (!parent.checkData (this)) error (SWT.ERROR_WIDGET_DISPOSED);
@@ -915,6 +930,11 @@ public String getText (int index) {
  */
 public Rectangle getTextBounds (int index) {
 	checkWidget ();
+	return DPIUtil.autoScaleDown(getTextBoundsInPixels(index));
+}
+
+Rectangle getTextBoundsInPixels (int index) {
+	checkWidget ();
 	if (!parent.checkData (this)) error (SWT.ERROR_WIDGET_DISPOSED);
 	int count = Math.max (1, parent.getColumnCount ());
 	if (0 > index || index > count - 1) return new Rectangle (0, 0, 0, 0);
@@ -966,7 +986,7 @@ public Rectangle getTextBounds (int index) {
 		Image image = _getImage(index);
 		int imageWidth = 0;
 		if (image != null) {
-			imageWidth = image.getBounds ().width;
+			imageWidth = image.getBoundsInPixels ().width;
 		}
 		if (x [0] < imageWidth) {
 			rect.x += imageWidth;
@@ -1502,8 +1522,8 @@ public void setImage (int index, Image image) {
 		OS.gtk_cell_renderer_get_fixed_size (pixbufRenderer, currentWidth, currentHeight);
 		if (!parent.pixbufSizeSet) {
 			if (image != null) {
-				int iWidth = image.getBounds ().width;
-				int iHeight = image.getBounds ().height;
+				int iWidth = image.getBoundsInPixels ().width;
+				int iHeight = image.getBoundsInPixels ().height;
 				if (iWidth > currentWidth [0] || iHeight > currentHeight [0]) {
 					OS.gtk_cell_renderer_set_fixed_size (pixbufRenderer, iWidth, iHeight);
 					parent.pixbufSizeSet = true;
@@ -1535,7 +1555,7 @@ public void setImage (int index, Image image) {
 			int [] w = new int [1];
 			long /*int*/ pixbufRenderer = parent.getPixbufRenderer(column);
 			OS.gtk_tree_view_column_cell_get_position (column, pixbufRenderer, null, w);
-			if (w[0] < image.getBounds().width) {
+			if (w[0] < image.getBoundsInPixels().width) {
 				/*
 				 * There is no direct way to clear the cell renderer width so we
 				 * are relying on the fact that it is done as part of modifying

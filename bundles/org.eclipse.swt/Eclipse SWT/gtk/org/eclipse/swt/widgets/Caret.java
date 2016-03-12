@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2012 IBM Corporation and others.
+ * Copyright (c) 2000, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -12,9 +12,10 @@ package org.eclipse.swt.widgets;
 
 
 import org.eclipse.swt.*;
+import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.cairo.*;
 import org.eclipse.swt.internal.gtk.*;
-import org.eclipse.swt.graphics.*;
 
 /**
  * Instances of this class provide an i-beam that is typically used
@@ -171,8 +172,13 @@ boolean drawCaret () {
  */
 public Rectangle getBounds () {
 	checkWidget();
+	return DPIUtil.autoScaleDown(getBoundsInPixels());
+}
+
+Rectangle getBoundsInPixels () {
+	checkWidget();
 	if (image != null) {
-		Rectangle rect = image.getBounds ();
+		Rectangle rect = image.getBoundsInPixels ();
 		return new Rectangle (x, y, rect.width, rect.height);
 	} else {
 		if (width == 0) {
@@ -226,6 +232,11 @@ public Image getImage () {
  */
 public Point getLocation () {
 	checkWidget();
+	return DPIUtil.autoScaleDown(getLocationInPixels());
+}
+
+Point getLocationInPixels () {
+	checkWidget();
 	return new Point (x, y);
 }
 
@@ -256,8 +267,13 @@ public Canvas getParent () {
  */
 public Point getSize () {
 	checkWidget();
+	return DPIUtil.autoScaleDown(getSizeInPixels());
+}
+
+Point getSizeInPixels () {
+	checkWidget();
 	if (image != null) {
-		Rectangle rect = image.getBounds ();
+		Rectangle rect = image.getBoundsInPixels ();
 		return new Point (rect.width, rect.height);
 	} else {
 		if (width == 0) {
@@ -359,6 +375,11 @@ void releaseWidget () {
  */
 public void setBounds (int x, int y, int width, int height) {
 	checkWidget();
+	setBounds (new Rectangle (x, y, width, height));
+}
+
+void setBoundsInPixels (int x, int y, int width, int height) {
+	checkWidget();
 	if (this.x == x && this.y == y && this.width == width && this.height == height) return;
 	boolean isFocus = isFocusCaret ();
 	if (isFocus && isVisible) hideCaret ();
@@ -383,8 +404,14 @@ public void setBounds (int x, int y, int width, int height) {
  */
 public void setBounds (Rectangle rect) {
 	checkWidget();
+	rect = DPIUtil.autoScaleUp(rect);
+	setBoundsInPixels(rect);
+}
+
+void setBoundsInPixels (Rectangle rect) {
+	checkWidget();
 	if (rect == null) error (SWT.ERROR_NULL_ARGUMENT);
-	setBounds (rect.x, rect.y, rect.width, rect.height);
+	setBoundsInPixels (rect.x, rect.y, rect.width, rect.height);
 }
 
 void setFocus () {
@@ -457,7 +484,12 @@ public void setImage (Image image) {
  */
 public void setLocation (int x, int y) {
 	checkWidget();
-	setBounds (x, y, width, height);
+	setLocation (new Point (x, y));
+}
+
+void setLocationInPixels (int x, int y) {
+	checkWidget();
+	setBoundsInPixels (x, y, width, height);
 }
 
 /**
@@ -474,8 +506,13 @@ public void setLocation (int x, int y) {
  */
 public void setLocation (Point location) {
 	checkWidget();
+	setLocationInPixels (DPIUtil.autoScaleUp (location));
+}
+
+void setLocationInPixels (Point location) {
+	checkWidget();
 	if (location == null) error (SWT.ERROR_NULL_ARGUMENT);
-	setLocation (location.x, location.y);
+	setLocationInPixels (location.x, location.y);
 }
 
 /**
@@ -491,7 +528,12 @@ public void setLocation (Point location) {
  */
 public void setSize (int width, int height) {
 	checkWidget();
-	setBounds (x, y, width, height);
+	setSize (new Point (width,height));
+}
+
+void setSizeInPixels (int width, int height) {
+	checkWidget();
+	setBoundsInPixels (x, y, width, height);
 }
 
 /**
@@ -509,8 +551,13 @@ public void setSize (int width, int height) {
  */
 public void setSize (Point size) {
 	checkWidget();
+	setSizeInPixels(DPIUtil.autoScaleUp (size));
+}
+
+void setSizeInPixels (Point size) {
+	checkWidget();
 	if (size == null) error (SWT.ERROR_NULL_ARGUMENT);
-	setSize (size.x, size.y);
+	setSizeInPixels (size.x, size.y);
 }
 
 /**

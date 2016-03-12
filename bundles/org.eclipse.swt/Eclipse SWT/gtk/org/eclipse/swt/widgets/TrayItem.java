@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2012 IBM Corporation and others.
+ * Copyright (c) 2000, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -293,7 +293,7 @@ long /*int*/ gtk_size_allocate (long /*int*/ widget, long /*int*/ allocation) {
 			OS.gtk_widget_get_allocation (widget, widgetAllocation);
 			int xoffset = (int) Math.floor (widgetAllocation.x + ((widgetAllocation.width -OS.GTK_WIDGET_REQUISITION_WIDTH (widget)) * 0.5) + 0.5);
 			int yoffset = (int) Math.floor (widgetAllocation.y + ((widgetAllocation.height - OS.GTK_WIDGET_REQUISITION_HEIGHT (widget)) * 0.5) + 0.5);
-			Rectangle b = image.getBounds();
+			Rectangle b = image.getBoundsInPixels();
 			long /*int*/ gdkImagePtr = OS.gdk_drawable_get_image (image.mask, 0, 0, b.width, b.height);
 			if (gdkImagePtr == 0) error(SWT.ERROR_NO_HANDLES);
 			GdkImage gdkImage = new GdkImage();
@@ -308,7 +308,8 @@ long /*int*/ gtk_size_allocate (long /*int*/ widget, long /*int*/ allocation) {
 					int theByte = maskData [index] & 0xFF;
 					int mask = 1 << (x & 0x7);
 					if ((theByte & mask) != 0) {
-						region.add (xoffset + x, yoffset + y, 1, 1);
+						Rectangle rect = DPIUtil.autoScaleDown(new Rectangle(xoffset + x, yoffset + y, 1, 1));
+						region.add(rect.x, rect.y, rect.width, rect.height);
 					}
 				}
 			}

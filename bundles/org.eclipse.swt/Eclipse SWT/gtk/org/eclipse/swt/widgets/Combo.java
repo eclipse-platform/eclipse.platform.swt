@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2015 IBM Corporation and others.
+ * Copyright (c) 2000, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -394,7 +394,7 @@ void clearText () {
 }
 
 @Override
-public Point computeSize (int wHint, int hHint, boolean changed) {
+Point computeSizeInPixels (int wHint, int hHint, boolean changed) {
 	checkWidget ();
 	if ((style & SWT.READ_ONLY) != 0 || OS.GTK3) {
 		return computeNativeSize (handle, wHint, hHint, changed);
@@ -850,6 +850,12 @@ GdkColor getBackgroundColor () {
  */
 public Point getCaretLocation () {
 	checkWidget ();
+	return DPIUtil.autoScaleDown(getCaretLocationInPixels());
+}
+
+
+Point getCaretLocationInPixels () {
+	checkWidget ();
 	if ((style & SWT.READ_ONLY) != 0) {
 		return new Point (0, 0);
 	}
@@ -860,7 +866,7 @@ public Point getCaretLocation () {
 	long /*int*/ layout = OS.gtk_entry_get_layout (entryHandle);
 	PangoRectangle pos = new PangoRectangle ();
 	OS.pango_layout_index_to_pos (layout, index, pos);
-	int x = offset_x [0] + OS.PANGO_PIXELS (pos.x) - getBorderWidth ();
+	int x = offset_x [0] + OS.PANGO_PIXELS (pos.x) - getBorderWidthInPixels ();
 	int y = offset_y [0] + OS.PANGO_PIXELS (pos.y);
 	return new Point (x, y);
 }
@@ -1132,6 +1138,12 @@ String getText (int start, int stop) {
  * </ul>
  */
 public int getTextHeight () {
+	checkWidget();
+	return DPIUtil.autoScaleDown(getTextHeightInPixels());
+}
+
+
+int getTextHeightInPixels () {
 	checkWidget();
 	GtkRequisition requisition = new GtkRequisition ();
 	gtk_widget_size_request (handle, requisition);
@@ -1911,7 +1923,7 @@ void setBackgroundColor (GdkColor color) {
 @Override
 int setBounds (int x, int y, int width, int height, boolean move, boolean resize) {
 	int newHeight = height;
-	if (resize) newHeight = Math.max (getTextHeight (), height);
+	if (resize) newHeight = Math.max (getTextHeightInPixels (), height);
 	return super.setBounds (x, y, width, newHeight, move, resize);
 }
 
@@ -2141,6 +2153,11 @@ public void setOrientation (int orientation) {
  * </ul>
  */
 public void setSelection (Point selection) {
+	checkWidget();
+	selection = DPIUtil.autoScaleUp(selection);
+}
+
+void setSelectionInPixels (Point selection) {
 	checkWidget();
 	if (selection == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if ((style & SWT.READ_ONLY) != 0) return;

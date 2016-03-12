@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2012 IBM Corporation and others.
+ * Copyright (c) 2000, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -22,6 +22,11 @@ public class C extends Platform {
 public static final native void free (long /*int*/ ptr);
 /** @param env cast=(const char *) */
 public static final native long /*int*/ getenv (byte[] env);
+/**
+ * @param env cast=(const char *)
+ * @param value cast=(const char *)
+ */
+public static final native int setenv (byte[] env, byte[] value, int overwrite);
 public static final native long /*int*/ malloc (long /*int*/ size);
 /**
  * @param dest cast=(void *)

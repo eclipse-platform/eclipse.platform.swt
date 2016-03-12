@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2012 IBM Corporation and others.
+ * Copyright (c) 2000, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -200,8 +200,8 @@ void drawChevron (GC gc, int x, int y) {
 				px+3,py+2, px+4,py+2, px+4,py+1,  px+5,py+1, px+5,py, px+6,py};
 	}
 	gc.setForeground (display.getSystemColor (SWT.COLOR_TITLE_FOREGROUND));
-	gc.drawPolyline (polyline1);
-	gc.drawPolyline (polyline2);
+	gc.drawPolyline (DPIUtil.autoScaleDown(polyline1));
+	gc.drawPolyline (DPIUtil.autoScaleDown(polyline2));
 }
 
 void drawItem (GC gc, boolean drawFocus) {
@@ -283,11 +283,15 @@ public boolean getExpanded () {
  */
 public int getHeaderHeight () {
 	checkWidget ();
+	return DPIUtil.autoScaleDown (getHeaderHeightInPixels ());
+}
+
+int getHeaderHeightInPixels () {
+	checkWidget ();
 	GtkAllocation allocation = new GtkAllocation ();
 	OS.gtk_widget_get_allocation (handle, allocation);
 	return allocation.height - (expanded ? height : 0);
 }
-
 /**
  * Gets the height of the receiver.
  *
@@ -299,6 +303,11 @@ public int getHeaderHeight () {
  * </ul>
  */
 public int getHeight () {
+	checkWidget ();
+	return DPIUtil.autoScaleDown(getHeightInPixels());
+}
+
+int getHeightInPixels () {
 	checkWidget ();
 	return height;
 }
@@ -472,8 +481,8 @@ void setBounds (int x, int y, int width, int height, boolean move, boolean size)
 		redraw ();
 	}
 	if (control != null && !control.isDisposed ()) {
-		if (move) control.setLocation (x + BORDER, y + headerHeight);
-		if (size) control.setSize (Math.max (0, width - 2 * BORDER), Math.max (0, height - BORDER));
+		if (move) control.setLocationInPixels (x + BORDER, y + headerHeight);
+		if (size) control.setSizeInPixels (Math.max (0, width - 2 * BORDER), Math.max (0, height - BORDER));
 	}
 }
 
@@ -573,6 +582,11 @@ void setForegroundColor (GdkColor color) {
  * </ul>
  */
 public void setHeight (int height) {
+	checkWidget ();
+	setHeightInPixels(DPIUtil.autoScaleUp(height));
+}
+
+void setHeightInPixels (int height) {
 	checkWidget ();
 	if (height < 0) return;
 	this.height = height;
