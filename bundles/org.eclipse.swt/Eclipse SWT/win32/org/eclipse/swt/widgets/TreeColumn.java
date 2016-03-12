@@ -11,10 +11,11 @@
 package org.eclipse.swt.widgets;
 
 
-import org.eclipse.swt.internal.win32.*;
 import org.eclipse.swt.*;
-import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.events.*;
+import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.internal.*;
+import org.eclipse.swt.internal.win32.*;
 
 /**
  * Instances of this class represent a column in a tree widget.
@@ -311,6 +312,10 @@ public String getToolTipText () {
  */
 public int getWidth () {
 	checkWidget ();
+	return DPIUtil.autoScaleDown(getWidthInPixels());
+}
+
+int getWidthInPixels () {
 	int index = parent.indexOf (this);
 	if (index == -1) return 0;
 	long /*int*/ hwndHeader = parent.hwndHeader;
@@ -355,7 +360,8 @@ public void pack () {
 				int detail = (tvItem.state & OS.TVIS_SELECTED) != 0 ? SWT.SELECTED : 0;
 				Event event = parent.sendMeasureItemEvent (item, index, hDC, detail);
 				if (isDisposed () || parent.isDisposed ()) break;
-				itemRight = event.x + event.width;
+				Rectangle bounds = event.getBoundsInPixels();
+				itemRight = bounds.x + bounds.width;
 			} else {
 				long /*int*/ hFont = item.fontHandle (index);
 				if (hFont != -1) hFont = OS.SelectObject (hDC, hFont);
@@ -385,7 +391,7 @@ public void pack () {
 			headerImage = image;
 		}
 		if (headerImage != null) {
-			Rectangle bounds = headerImage.getBounds ();
+			Rectangle bounds = headerImage.getBoundsInPixels ();
 			headerWidth += bounds.width;
 		}
 		int margin = 0;
@@ -399,7 +405,7 @@ public void pack () {
 	if (newFont != 0) OS.SelectObject (hDC, oldFont);
 	OS.ReleaseDC (hwnd, hDC);
 	int gridWidth = parent.linesVisible ? Tree.GRID_WIDTH : 0;
-	setWidth (Math.max (headerWidth, columnWidth + gridWidth));
+	setWidthInPixels (Math.max (headerWidth, columnWidth + gridWidth));
 }
 
 @Override
@@ -726,6 +732,10 @@ public void setToolTipText (String string) {
  */
 public void setWidth (int width) {
 	checkWidget ();
+	setWidthInPixels(DPIUtil.autoScaleUp(width));
+}
+
+void setWidthInPixels (int width) {
 	if (width < 0) return;
 	int index = parent.indexOf (this);
 	if (index == -1) return;

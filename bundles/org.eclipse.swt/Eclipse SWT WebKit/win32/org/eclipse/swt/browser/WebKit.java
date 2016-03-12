@@ -658,7 +658,7 @@ public void create (Composite parent, int style) {
 					break;
 				}
 				case SWT.Resize: {
-					Rectangle bounds = browser.getClientArea ();
+					Rectangle bounds = DPIUtil.autoScaleUp(browser.getClientArea ()); // To Pixels
 					OS.SetWindowPos (webViewWindowHandle, 0, bounds.x, bounds.y, bounds.width, bounds.height, OS.SWP_DRAWFRAME);
 					break;
 				}
@@ -950,7 +950,7 @@ boolean handleEvent (Object[] arguments) {
 	 * coordinates relative to themselves rather than relative to their top-
 	 * level page.  Convert screen-relative coordinates to be browser-relative.
 	 */
-	Point position = new Point (((Double)arguments[1]).intValue (), ((Double)arguments[2]).intValue ());
+	Point position = new Point (((Double)arguments[1]).intValue (), ((Double)arguments[2]).intValue ());// Points or Pixles ?
 	position = browser.getDisplay ().map (null, browser, position);
 
 	Event mouseEvent = new Event ();

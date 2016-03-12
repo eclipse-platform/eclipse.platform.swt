@@ -11,10 +11,10 @@
 package org.eclipse.swt.dnd;
 
 import org.eclipse.swt.*;
-import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.ole.win32.*;
 import org.eclipse.swt.internal.win32.*;
+import org.eclipse.swt.widgets.*;
 
 /**
  *
@@ -286,6 +286,8 @@ int DragEnter_64(long /*int*/ pDataObject, int grfKeyState, long pt, long /*int*
 }
 
 int DragEnter(long /*int*/ pDataObject, int grfKeyState, int pt_x, int pt_y, long /*int*/ pdwEffect) {
+	pt_x = DPIUtil.autoScaleDown(pt_x);// To Points
+	pt_y = DPIUtil.autoScaleDown(pt_y);// To Points
 	selectedDataType = null;
 	selectedOperation = DND.DROP_NONE;
 	if (iDataObject != null) iDataObject.Release();
@@ -351,6 +353,8 @@ int DragOver_64(int grfKeyState, long pt, long /*int*/ pdwEffect) {
 }
 
 int DragOver(int grfKeyState, int pt_x, int pt_y, long /*int*/ pdwEffect) {
+	pt_x = DPIUtil.autoScaleDown(pt_x);// To Points
+	pt_y = DPIUtil.autoScaleDown(pt_y);// To Points
 	if (iDataObject == null) return COM.S_FALSE;
 	int oldKeyOperation = keyOperation;
 
@@ -403,6 +407,8 @@ int Drop_64(long /*int*/ pDataObject, int grfKeyState, long pt, long /*int*/ pdw
 }
 
 int Drop(long /*int*/ pDataObject, int grfKeyState, int pt_x, int pt_y, long /*int*/ pdwEffect) {
+	pt_x = DPIUtil.autoScaleDown(pt_x);// To Points
+	pt_y = DPIUtil.autoScaleDown(pt_y);// To Points
 	DNDEvent event = new DNDEvent();
 	event.widget = this;
 	event.time = OS.GetMessageTime();

@@ -11,6 +11,7 @@
 package org.eclipse.swt.graphics;
 
 
+import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.win32.*;
 
 /**
@@ -91,7 +92,7 @@ public boolean equals (Object object) {
  * @return the ascent of the font
  */
 public int getAscent() {
-	return handle.tmAscent - handle.tmInternalLeading;
+	return DPIUtil.autoScaleDown(handle.tmAscent - handle.tmInternalLeading);
 }
 
 /**
@@ -101,7 +102,7 @@ public int getAscent() {
  * @return the average character width of the font
  */
 public int getAverageCharWidth() {
-	return handle.tmAveCharWidth;
+	return DPIUtil.autoScaleDown(handle.tmAveCharWidth);
 }
 
 /**
@@ -113,7 +114,7 @@ public int getAverageCharWidth() {
  * @return the descent of the font
  */
 public int getDescent() {
-	return handle.tmDescent;
+	return DPIUtil.autoScaleDown(handle.tmDescent);
 }
 
 /**
@@ -128,7 +129,7 @@ public int getDescent() {
  * @see #getLeading
  */
 public int getHeight() {
-	return handle.tmHeight;
+	return DPIUtil.autoScaleDown(handle.tmHeight);
 }
 
 /**
@@ -139,7 +140,7 @@ public int getHeight() {
  * @return the leading space of the font
  */
 public int getLeading() {
-	return handle.tmInternalLeading;
+	return DPIUtil.autoScaleDown(handle.tmInternalLeading);
 }
 
 /**

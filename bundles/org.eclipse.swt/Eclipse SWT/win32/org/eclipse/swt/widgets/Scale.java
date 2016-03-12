@@ -11,10 +11,10 @@
 package org.eclipse.swt.widgets;
 
 
-import org.eclipse.swt.internal.win32.*;
 import org.eclipse.swt.*;
-import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.events.*;
+import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.internal.win32.*;
 
 /**
  * Instances of the receiver represent a selectable user
@@ -151,10 +151,9 @@ static int checkStyle (int style) {
 	return checkBits (style, SWT.HORIZONTAL, SWT.VERTICAL, 0, 0, 0, 0);
 }
 
-@Override
-public Point computeSize (int wHint, int hHint, boolean changed) {
+@Override Point computeSizeInPixels (int wHint, int hHint, boolean changed) {
 	checkWidget ();
-	int border = getBorderWidth ();
+	int border = getBorderWidthInPixels ();
 	int width = border * 2, height = border * 2;
 	RECT rect = new RECT ();
 	OS.SendMessage (handle, OS.TBM_GETTHUMBRECT, 0, rect);
@@ -320,7 +319,7 @@ void setBackgroundPixel (int pixel) {
 }
 
 @Override
-void setBounds (int x, int y, int width, int height, int flags, boolean defer) {
+void setBoundsInPixels (int x, int y, int width, int height, int flags, boolean defer) {
 	/*
 	* Bug in Windows.  If SetWindowPos() is called on a
 	* track bar with either SWP_DRAWFRAME, a new size,
@@ -344,7 +343,7 @@ void setBounds (int x, int y, int width, int height, int flags, boolean defer) {
 	* mouse down.
 	*/
 	flags &= ~OS.SWP_DRAWFRAME;
-	super.setBounds (x, y, width, height, flags, true);
+	super.setBoundsInPixels (x, y, width, height, flags, true);
 }
 
 /**

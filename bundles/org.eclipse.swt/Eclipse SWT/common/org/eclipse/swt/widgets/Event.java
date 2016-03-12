@@ -12,6 +12,7 @@ package org.eclipse.swt.widgets;
 
 
 import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.internal.*;
 
 /**
  * Instances of this class provide a description of a particular
@@ -265,7 +266,6 @@ public class Event {
 	 */
 	public double rotation;
 
-
 /**
  * Gets the bounds.
  *
@@ -273,6 +273,17 @@ public class Event {
  */
 public Rectangle getBounds () {
 	return new Rectangle (x, y, width, height);
+}
+Rectangle getBoundsInPixels () {
+	return DPIUtil.autoScaleUp(getBounds());
+}
+
+Point getLocation () {
+	return new Point (x, y);
+}
+
+Point getLocationInPixels () {
+	return DPIUtil.autoScaleUp(new Point(x, y));
 }
 
 /**
@@ -285,6 +296,15 @@ public void setBounds (Rectangle rect) {
 	this.y = rect.y;
 	this.width = rect.width;
 	this.height = rect.height;
+}
+
+void setBoundsInPixels (Rectangle rect) {
+	setBounds(DPIUtil.autoScaleDown(rect));
+}
+
+void setLocationInPixels (int x, int y) {
+	this.x = DPIUtil.autoScaleDown(x);
+	this.y = DPIUtil.autoScaleDown(y);
 }
 
 /**

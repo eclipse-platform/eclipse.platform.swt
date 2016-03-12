@@ -11,9 +11,10 @@
 package org.eclipse.swt.widgets;
 
 
-import org.eclipse.swt.internal.win32.*;
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.internal.*;
+import org.eclipse.swt.internal.win32.*;
 
 /**
  * Instances of this class provide an i-beam that is typically used
@@ -110,8 +111,12 @@ long /*int*/ defaultFont () {
  */
 public Rectangle getBounds () {
 	checkWidget();
+	return DPIUtil.autoScaleDown(getBoundsInPixels());
+}
+
+Rectangle getBoundsInPixels () {
 	if (image != null) {
-		Rectangle rect = image.getBounds ();
+		Rectangle rect = image.getBoundsInPixels ();
 		return new Rectangle (x, y, rect.width, rect.height);
 	} else {
 		if (!OS.IsWinCE && width == 0) {
@@ -171,6 +176,10 @@ public Image getImage () {
  */
 public Point getLocation () {
 	checkWidget();
+	return DPIUtil.autoScaleDown(getLocationInPixels());
+}
+
+Point getLocationInPixels () {
 	return new Point (x, y);
 }
 
@@ -201,8 +210,12 @@ public Canvas getParent () {
  */
 public Point getSize () {
 	checkWidget();
+	return DPIUtil.autoScaleDown(getSizeInPixels());
+}
+
+Point getSizeInPixels () {
 	if (image != null) {
-		Rectangle rect = image.getBounds ();
+		Rectangle rect = image.getBoundsInPixels ();
 		return new Point (rect.width, rect.height);
 	} else {
 		if (!OS.IsWinCE && width == 0) {
@@ -283,7 +296,7 @@ void resizeIME () {
 	long /*int*/ hIMC = OS.ImmGetContext (hwnd);
 	IME ime = parent.getIME ();
 	if (ime != null && ime.isInlineEnabled ()) {
-		Point size = getSize ();
+		Point size = getSizeInPixels ();
 		CANDIDATEFORM lpCandidate = new CANDIDATEFORM ();
 		lpCandidate.dwStyle = OS.CFS_EXCLUDE;
 		lpCandidate.ptCurrentPos = ptCurrentPos;
@@ -367,6 +380,10 @@ void restoreIMEFont () {
  */
 public void setBounds (int x, int y, int width, int height) {
 	checkWidget();
+	setBoundsInPixels(DPIUtil.autoScaleUp(x), DPIUtil.autoScaleUp(y), DPIUtil.autoScaleUp(width), DPIUtil.autoScaleUp(height));
+}
+
+void setBoundsInPixels (int x, int y, int width, int height) {
 	boolean samePosition = this.x == x && this.y == y;
 	boolean sameExtent = this.width == width && this.height == height;
 	if (samePosition && sameExtent) return;
@@ -398,7 +415,11 @@ public void setBounds (int x, int y, int width, int height) {
  */
 public void setBounds (Rectangle rect) {
 	if (rect == null) error (SWT.ERROR_NULL_ARGUMENT);
-	setBounds (rect.x, rect.y, rect.width, rect.height);
+	setBoundsInPixels(DPIUtil.autoScaleUp(rect));
+}
+
+void setBoundsInPixels (Rectangle rect) {
+	setBoundsInPixels (rect.x, rect.y, rect.width, rect.height);
 }
 
 void setFocus () {
@@ -501,6 +522,10 @@ void setIMEFont () {
  */
 public void setLocation (int x, int y) {
 	checkWidget();
+	setLocationInPixels(DPIUtil.autoScaleUp(x), DPIUtil.autoScaleUp(y));
+}
+
+void setLocationInPixels (int x, int y) {
 	if (this.x == x && this.y == y) return;
 	this.x = x;  this.y = y;
 	moved = true;
@@ -522,7 +547,8 @@ public void setLocation (int x, int y) {
 public void setLocation (Point location) {
 	checkWidget();
 	if (location == null) error (SWT.ERROR_NULL_ARGUMENT);
-	setLocation (location.x, location.y);
+	location = DPIUtil.autoScaleUp(location);
+	setLocationInPixels(location.x, location.y);
 }
 
 /**
@@ -538,6 +564,10 @@ public void setLocation (Point location) {
  */
 public void setSize (int width, int height) {
 	checkWidget();
+	setSizeInPixels(DPIUtil.autoScaleUp(width), DPIUtil.autoScaleUp(height));
+}
+
+void setSizeInPixels (int width, int height) {
 	if (this.width == width && this.height == height) return;
 	this.width = width;  this.height = height;
 	resized = true;
@@ -560,7 +590,8 @@ public void setSize (int width, int height) {
 public void setSize (Point size) {
 	checkWidget();
 	if (size == null) error (SWT.ERROR_NULL_ARGUMENT);
-	setSize (size.x, size.y);
+	size = DPIUtil.autoScaleUp(size);
+	setSizeInPixels(size.x, size.y);
 }
 
 /**

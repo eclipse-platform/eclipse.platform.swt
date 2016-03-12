@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2015 IBM Corporation and others.
+ * Copyright (c) 2000, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -935,9 +935,9 @@ public class CTabFolderRenderer {
 				gc.drawLine(x+1,y,   x+3,y+2);
 				gc.drawLine(x+3,y+2, x+1,y+4);
 				gc.drawLine(x+4,y,   x+6,y+2);
-				gc.drawLine(x+6,y+2, x+5,y+4);
+				gc.drawLine(x+6,y+2, x+4,y+4);
 				gc.drawLine(x+5,y,   x+7,y+2);
-				gc.drawLine(x+7,y+2, x+4,y+4);
+				gc.drawLine(x+7,y+2, x+5,y+4);
 				gc.drawString(chevronString, x+7, y+3, true);
 				break;
 			}
@@ -952,9 +952,9 @@ public class CTabFolderRenderer {
 				gc.drawLine(x+1,y,   x+3,y+2);
 				gc.drawLine(x+3,y+2, x+1,y+4);
 				gc.drawLine(x+4,y,   x+6,y+2);
-				gc.drawLine(x+6,y+2, x+5,y+4);
+				gc.drawLine(x+6,y+2, x+4,y+4);
 				gc.drawLine(x+5,y,   x+7,y+2);
-				gc.drawLine(x+7,y+2, x+4,y+4);
+				gc.drawLine(x+7,y+2, x+5,y+4);
 				gc.drawString(chevronString, x+7, y+3, true);
 				break;
 			}
@@ -969,9 +969,9 @@ public class CTabFolderRenderer {
 				gc.drawLine(x+2,y+1, x+4,y+3);
 				gc.drawLine(x+4,y+3, x+2,y+5);
 				gc.drawLine(x+5,y+1, x+7,y+3);
-				gc.drawLine(x+7,y+3, x+6,y+5);
+				gc.drawLine(x+7,y+3, x+5,y+5);
 				gc.drawLine(x+6,y+1, x+8,y+3);
-				gc.drawLine(x+8,y+3, x+5,y+5);
+				gc.drawLine(x+8,y+3, x+6,y+5);
 				gc.drawString(chevronString, x+8, y+4, true);
 				break;
 			}
@@ -1129,14 +1129,14 @@ public class CTabFolderRenderer {
 				if (!parent.getMaximized()) {
 					gc.fillRectangle(x, y, 9, 9);
 					gc.drawRectangle(x, y, 9, 9);
-					gc.drawLine(x+1, y+2, x+8, y+2);
+					gc.drawLine(x, y+2, x+9, y+2);
 				} else {
 					gc.fillRectangle(x, y+3, 5, 4);
 					gc.fillRectangle(x+2, y, 5, 4);
 					gc.drawRectangle(x, y+3, 5, 4);
 					gc.drawRectangle(x+2, y, 5, 4);
-					gc.drawLine(x+3, y+1, x+6, y+1);
-					gc.drawLine(x+1, y+4, x+4, y+4);
+					gc.drawLine(x+2, y+1, x+7, y+1);
+					gc.drawLine(x, y+4, x+5, y+4);
 				}
 				break;
 			}
@@ -1146,14 +1146,14 @@ public class CTabFolderRenderer {
 				if (!parent.getMaximized()) {
 					gc.fillRectangle(x, y, 9, 9);
 					gc.drawRectangle(x, y, 9, 9);
-					gc.drawLine(x+1, y+2, x+8, y+2);
+					gc.drawLine(x, y+2, x+9, y+2);
 				} else {
 					gc.fillRectangle(x, y+3, 5, 4);
 					gc.fillRectangle(x+2, y, 5, 4);
 					gc.drawRectangle(x, y+3, 5, 4);
 					gc.drawRectangle(x+2, y, 5, 4);
-					gc.drawLine(x+3, y+1, x+6, y+1);
-					gc.drawLine(x+1, y+4, x+4, y+4);
+					gc.drawLine(x+2, y+1, x+7, y+1);
+					gc.drawLine(x, y+4, x+5, y+4);
 				}
 				break;
 			}
@@ -1163,14 +1163,14 @@ public class CTabFolderRenderer {
 				if (!parent.getMaximized()) {
 					gc.fillRectangle(x+1, y+1, 9, 9);
 					gc.drawRectangle(x+1, y+1, 9, 9);
-					gc.drawLine(x+2, y+3, x+9, y+3);
+					gc.drawLine(x+1, y+3, x+10, y+3);
 				} else {
 					gc.fillRectangle(x+1, y+4, 5, 4);
 					gc.fillRectangle(x+3, y+1, 5, 4);
 					gc.drawRectangle(x+1, y+4, 5, 4);
 					gc.drawRectangle(x+3, y+1, 5, 4);
-					gc.drawLine(x+4, y+2, x+7, y+2);
-					gc.drawLine(x+2, y+5, x+5, y+5);
+					gc.drawLine(x+3, y+2, x+8, y+2);
+					gc.drawLine(x+1, y+5, x+6, y+5);
 				}
 				break;
 			}

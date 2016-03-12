@@ -11,9 +11,10 @@
 package org.eclipse.swt.widgets;
 
 
-import org.eclipse.swt.internal.win32.*;
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.internal.*;
+import org.eclipse.swt.internal.win32.*;
 
 /**
  * Instances of this class provide a surface for drawing
@@ -110,7 +111,11 @@ void clearArea (int x, int y, int width, int height) {
  * @since 3.2
  */
 public void drawBackground (GC gc, int x, int y, int width, int height) {
-	drawBackground(gc, x, y, width, height, 0, 0);
+	x = DPIUtil.autoScaleUp(x);
+	y = DPIUtil.autoScaleUp(y);
+	width = DPIUtil.autoScaleUp(width);
+	height = DPIUtil.autoScaleUp(height);
+	drawBackgroundInPixels(gc, x, y, width, height, 0, 0);
 }
 
 /**
@@ -197,6 +202,16 @@ void reskinChildren (int flags) {
  */
 public void scroll (int destX, int destY, int x, int y, int width, int height, boolean all) {
 	checkWidget ();
+	destX = DPIUtil.autoScaleUp(destX);
+	destY = DPIUtil.autoScaleUp(destY);
+	x = DPIUtil.autoScaleUp(x);
+	y = DPIUtil.autoScaleUp(y);
+	width = DPIUtil.autoScaleUp(width);
+	height = DPIUtil.autoScaleUp(height);
+	scrollInPixels(destX, destY, x, y, width, height, all);
+}
+
+void scrollInPixels (int destX, int destY, int x, int y, int width, int height, boolean all) {
 	forceResize ();
 	boolean isFocus = caret != null && caret.isFocusCaret ();
 	if (isFocus) caret.killFocus ();
@@ -252,10 +267,10 @@ public void scroll (int destX, int destY, int x, int y, int width, int height, b
 		Control [] children = _getChildren ();
 		for (int i=0; i<children.length; i++) {
 			Control child = children [i];
-			Rectangle rect = child.getBounds ();
+			Rectangle rect = child.getBoundsInPixels ();
 			if (Math.min (x + width, rect.x + rect.width) >= Math.max (x, rect.x) &&
 				Math.min (y + height, rect.y + rect.height) >= Math.max (y, rect.y)) {
-					child.setLocation (rect.x + deltaX, rect.y + deltaY);
+					child.setLocationInPixels (rect.x + deltaX, rect.y + deltaY);
 			}
 		}
 	}

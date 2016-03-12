@@ -11,9 +11,9 @@
 package org.eclipse.swt.internal;
 
 
-import org.eclipse.swt.internal.win32.*;
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.internal.win32.*;
 
 public class ImageList {
 	long /*int*/ handle;
@@ -64,7 +64,7 @@ public int add (Image image) {
 		index++;
 	}
 	if (count == 0) {
-		Rectangle rect = image.getBounds ();
+		Rectangle rect = image.getBoundsInPixels ();
 		OS.ImageList_SetIconSize (handle, rect.width, rect.height);
 	}
 	set (index, image, count);
@@ -402,7 +402,7 @@ void set (int index, Image image, int count) {
 			* Note that the image size has to match the image list icon size.
 			*/
 			long /*int*/ hBitmap = 0, hMask = 0;
-			ImageData data = image.getImageData ();
+			ImageData data = image.getImageDataAtCurrentZoom ();
 			switch (data.getTransparencyType ()) {
 				case SWT.TRANSPARENCY_ALPHA:
 					/*

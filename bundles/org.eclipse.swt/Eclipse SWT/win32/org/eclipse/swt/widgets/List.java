@@ -14,7 +14,7 @@ package org.eclipse.swt.widgets;
 import org.eclipse.swt.*;
 import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.internal.BidiUtil;
+import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.win32.*;
 
 /**
@@ -215,8 +215,7 @@ static int checkStyle (int style) {
 	return checkBits (style, SWT.SINGLE, SWT.MULTI, 0, 0, 0, 0);
 }
 
-@Override
-public Point computeSize (int wHint, int hHint, boolean changed) {
+@Override Point computeSizeInPixels (int wHint, int hHint, boolean changed) {
 	checkWidget ();
 	int width = 0, height = 0;
 	if (wHint == SWT.DEFAULT) {
@@ -259,7 +258,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	if (height == 0) height = DEFAULT_HEIGHT;
 	if (wHint != SWT.DEFAULT) width = wHint;
 	if (hHint != SWT.DEFAULT) height = hHint;
-	int border = getBorderWidth ();
+	int border = getBorderWidthInPixels ();
 	width += border * 2 + INSET;
 	height += border * 2;
 	if ((style & SWT.V_SCROLL) != 0) {
@@ -477,6 +476,10 @@ public int getItemCount () {
  */
 public int getItemHeight () {
 	checkWidget ();
+	return DPIUtil.autoScaleDown(getItemHeightInPixels());
+}
+
+int getItemHeightInPixels () {
 	int result = (int)/*64*/OS.SendMessage (handle, OS.LB_GETITEMHEIGHT, 0, 0);
 	if (result == OS.LB_ERR) error (SWT.ERROR_CANNOT_GET_ITEM_HEIGHT);
 	return result;
@@ -1525,7 +1528,7 @@ public void showSelection () {
 
 @Override
 void updateMenuLocation (Event event) {
-	Rectangle clientArea = getClientArea ();
+	Rectangle clientArea = getClientAreaInPixels ();
 	int x = clientArea.x, y = clientArea.y;
 	int focusIndex = getFocusIndex();
 	if (focusIndex != -1) {
@@ -1556,9 +1559,8 @@ void updateMenuLocation (Event event) {
 		y = Math.max (y, rect.bottom);
 		y = Math.min (y, clientArea.y + clientArea.height);
 	}
-	Point pt = toDisplay (x, y);
-	event.x = pt.x;
-	event.y = pt.y;
+	Point pt = toDisplayInPixels (x, y);
+	event.setLocationInPixels(pt.x, pt.y);
 }
 
 @Override

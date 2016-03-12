@@ -11,10 +11,11 @@
 package org.eclipse.swt.widgets;
 
 
-import org.eclipse.swt.internal.win32.*;
 import org.eclipse.swt.*;
-import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.events.*;
+import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.internal.*;
+import org.eclipse.swt.internal.win32.*;
 
 /**
  * Instances of this class are selectable user interface
@@ -366,6 +367,10 @@ public int getSelection () {
  */
 public Point getSize () {
 	checkWidget();
+	return DPIUtil.autoScaleDown(getSizeInPixels());
+}
+
+Point getSizeInPixels () {
 	parent.forceResize ();
 	RECT rect = new RECT ();
 	OS.GetClientRect (parent.scrolledHandle (), rect);
@@ -419,6 +424,10 @@ public int getThumb () {
  */
 public Rectangle getThumbBounds () {
 	checkWidget();
+	return DPIUtil.autoScaleDown(getThumbBoundsInPixels());
+}
+
+Rectangle getThumbBoundsInPixels () {
 	parent.forceResize ();
 	SCROLLBARINFO info = new SCROLLBARINFO();
 	info.cbSize = SCROLLBARINFO.sizeof;
@@ -461,6 +470,10 @@ public Rectangle getThumbBounds () {
  */
 public Rectangle getThumbTrackBounds () {
 	checkWidget();
+	return DPIUtil.autoScaleDown(getThumbTrackBoundsInPixels());
+}
+
+Rectangle getThumbTrackBoundsInPixels () {
 	parent.forceResize ();
 	SCROLLBARINFO info = new SCROLLBARINFO();
 	info.cbSize = SCROLLBARINFO.sizeof;

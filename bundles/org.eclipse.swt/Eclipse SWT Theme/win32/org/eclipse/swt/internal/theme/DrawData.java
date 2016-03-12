@@ -12,6 +12,7 @@ package org.eclipse.swt.internal.theme;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.win32.*;
 
 public class DrawData {
@@ -102,8 +103,9 @@ void drawImage(Theme theme, Image image, GC gc, Rectangle bounds) {
 //		OS.DrawThemeIcon(hTheme, gc.handle, part[0], part[1], rect, imageList.getHandle(), imageIndex);
 //		imageList.dispose();
 //		OS.CloseThemeData(hTheme);
-		Rectangle rect = image.getBounds();
-		gc.drawImage(image, 0, 0, rect.width, rect.height, bounds.x, bounds.y, bounds.width, bounds.height);
+		Rectangle rect = image.getBounds ();
+		bounds = DPIUtil.autoScaleDown (bounds);
+		gc.drawImage (image, 0, 0, rect.width, rect.height, bounds.x, bounds.y, bounds.width, bounds.height);
 	}
 }
 

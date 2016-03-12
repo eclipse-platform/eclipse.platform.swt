@@ -13,6 +13,7 @@ package org.eclipse.swt.printing;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.win32.*;
 
 /**
@@ -482,6 +483,11 @@ public Point getDPI() {
  */
 @Override
 public Rectangle getBounds() {
+	checkDevice ();
+	return DPIUtil.autoScaleDown(getBoundsInPixels());
+}
+
+Rectangle getBoundsInPixels() {
 	checkDevice();
 	int width = OS.GetDeviceCaps(handle, OS.PHYSICALWIDTH);
 	int height = OS.GetDeviceCaps(handle, OS.PHYSICALHEIGHT);
@@ -506,7 +512,11 @@ public Rectangle getBounds() {
  * @see #computeTrim
  */
 @Override
-public Rectangle getClientArea() {
+public Rectangle getClientArea () {
+	checkDevice ();
+	return DPIUtil.autoScaleDown(getClientAreaInPixels());
+}
+Rectangle getClientAreaInPixels() {
 	checkDevice();
 	int width = OS.GetDeviceCaps(handle, OS.HORZRES);
 	int height = OS.GetDeviceCaps(handle, OS.VERTRES);

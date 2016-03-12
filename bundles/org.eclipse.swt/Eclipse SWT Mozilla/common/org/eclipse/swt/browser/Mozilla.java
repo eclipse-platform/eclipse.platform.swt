@@ -4704,6 +4704,8 @@ int OnShowContextMenu (int aContextFlags, long /*int*/ aEvent, long /*int*/ aNod
 	domMouseEvent.Release ();
 
 	Event event = new Event ();
+	aScreenX[0] = DPIUtil.autoScaleDown(aScreenX[0]); // To Points
+	aScreenY[0] = DPIUtil.autoScaleDown(aScreenY[0]); // To Points
 	event.x = aScreenX[0];
 	event.y = aScreenY[0];
 	browser.notifyListeners (SWT.MenuDetect, event);
@@ -5154,7 +5156,7 @@ int HandleEvent (long /*int*/ event) {
 	if (rc != XPCOM.NS_OK) error (rc);
 	rc = domMouseEvent.GetScreenY (aScreenY);
 	if (rc != XPCOM.NS_OK) error (rc);
-	Point position = new Point (aScreenX[0], aScreenY[0]);
+	Point position = DPIUtil.autoScaleDown(new Point (aScreenX[0], aScreenY[0]));// To Points
 	position = browser.getDisplay ().map (null, browser, position);
 
 	int[] aDetail = new int[1]; /* PRInt32 */

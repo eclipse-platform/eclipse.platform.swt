@@ -11,6 +11,7 @@
 package org.eclipse.swt.dnd;
 
 import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.win32.*;
 import org.eclipse.swt.widgets.*;
 
@@ -151,7 +152,7 @@ public class TableDropTargetEffect extends DropTargetEffect {
 		int effect = checkEffect(event.feedback);
 		long /*int*/ handle = table.handle;
 		Point coordinates = new Point(event.x, event.y);
-		coordinates = table.toControl(coordinates);
+		coordinates = DPIUtil.autoScaleUp(table.toControl(coordinates)); // To Pixels
 		LVHITTESTINFO pinfo = new LVHITTESTINFO();
 		pinfo.x = coordinates.x;
 		pinfo.y = coordinates.y;

@@ -13,7 +13,7 @@ package org.eclipse.swt.widgets;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.internal.BidiUtil;
+import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.win32.*;
 
 /**
@@ -128,10 +128,9 @@ static int checkStyle (int style) {
 	return checkBits (style, SWT.LEFT, SWT.CENTER, SWT.RIGHT, 0, 0, 0);
 }
 
-@Override
-public Point computeSize (int wHint, int hHint, boolean changed) {
+@Override Point computeSizeInPixels (int wHint, int hHint, boolean changed) {
 	checkWidget ();
-	int width = 0, height = 0, border = getBorderWidth ();
+	int width = 0, height = 0, border = getBorderWidthInPixels ();
 	if ((style & SWT.SEPARATOR) != 0) {
 		int lineWidth = OS.GetSystemMetrics (OS.SM_CXBORDER);
 		if ((style & SWT.HORIZONTAL) != 0) {
@@ -149,7 +148,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	boolean drawImage = (bits & OS.SS_OWNERDRAW) == OS.SS_OWNERDRAW;
 	if (drawImage) {
 		if (image != null) {
-			Rectangle rect = image.getBounds();
+			Rectangle rect = image.getBoundsInPixels();
 			width += rect.width;
 			height += rect.height;
 			if (IMAGE_AND_TEXT) {
@@ -611,7 +610,7 @@ LRESULT WM_PAINT (long /*int*/ wParam, long /*int*/ lParam) {
 					result = LRESULT.ONE;
 				}
 				if (drawImage) {
-					Rectangle imageBounds = image.getBounds ();
+					Rectangle imageBounds = image.getBoundsInPixels ();
 					int x = 0;
 					if ((style & SWT.CENTER) != 0) {
 						x = Math.max (0, (clientRect.right - imageBounds.width) / 2);
@@ -620,7 +619,7 @@ LRESULT WM_PAINT (long /*int*/ wParam, long /*int*/ lParam) {
 							x = Math.max (0, (clientRect.right - imageBounds.width));
 						}
 					}
-					gc.drawImage (image, x, Math.max (0, (clientRect.bottom - imageBounds.height) / 2));
+					gc.drawImage (image, DPIUtil.autoScaleDown(x), DPIUtil.autoScaleDown(Math.max (0, (clientRect.bottom - imageBounds.height) / 2)));
 					result = LRESULT.ONE;
 				}
 				int width = ps.right - ps.left;
@@ -628,10 +627,7 @@ LRESULT WM_PAINT (long /*int*/ wParam, long /*int*/ lParam) {
 				if (width != 0 && height != 0) {
 					Event event = new Event ();
 					event.gc = gc;
-					event.x = ps.left;
-					event.y = ps.top;
-					event.width = width;
-					event.height = height;
+					event.setBoundsInPixels(new Rectangle(ps.left, ps.top, width, height));
 					sendEvent (SWT.Paint, event);
 					// widget could be disposed at this point
 					event.gc = null;
@@ -672,7 +668,7 @@ LRESULT wmDrawChild (long /*int*/ wParam, long /*int*/ lParam) {
 			int margin = drawText && drawImage ? MARGIN : 0;
 			int imageWidth = 0, imageHeight = 0;
 			if (drawImage) {
-				Rectangle rect = image.getBounds ();
+				Rectangle rect = image.getBoundsInPixels ();
 				imageWidth = rect.width;
 				imageHeight = rect.height;
 			}
@@ -707,7 +703,7 @@ LRESULT wmDrawChild (long /*int*/ wParam, long /*int*/ lParam) {
 				data.device = display;
 				GC gc = GC.win32_new (struct.hDC, data);
 				Image image = getEnabled () ? this.image : new Image (display, this.image, SWT.IMAGE_DISABLE);
-				gc.drawImage (image, x, Math.max (0, (height - imageHeight) / 2));
+				gc.drawImage (image, DPIUtil.autoScaleDown(x), DPIUtil.autoScaleDown(Math.max (0, (height - imageHeight) / 2)));
 				if (image != this.image) image.dispose ();
 				gc.dispose ();
 				x += imageWidth + margin;

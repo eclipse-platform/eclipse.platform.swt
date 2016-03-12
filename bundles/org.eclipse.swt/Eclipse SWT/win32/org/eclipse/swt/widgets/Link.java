@@ -178,8 +178,7 @@ long /*int*/ callWindowProc (long /*int*/ hwnd, int msg, long /*int*/ wParam, lo
 	return OS.DefWindowProc (hwnd, msg, wParam, lParam);
 }
 
-@Override
-public Point computeSize (int wHint, int hHint, boolean changed) {
+@Override Point computeSizeInPixels (int wHint, int hHint, boolean changed) {
 	checkWidget ();
 	if (wHint != SWT.DEFAULT && wHint < 0) wHint = 0;
 	if (hHint != SWT.DEFAULT && hHint < 0) hHint = 0;
@@ -211,13 +210,13 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 		int layoutWidth = layout.getWidth ();
 		//TEMPORARY CODE
 		if (wHint == 0) {
-			layout.setWidth (1);
-			Rectangle rect = layout.getBounds ();
+			layout.setWidth (DPIUtil.autoScaleDown(1));
+			Rectangle rect = DPIUtil.autoScaleUp(layout.getBounds ());
 			width = 0;
 			height = rect.height;
 		} else {
-			layout.setWidth (wHint);
-			Rectangle rect = layout.getBounds ();
+			layout.setWidth (DPIUtil.autoScaleDown(wHint));
+			Rectangle rect = DPIUtil.autoScaleUp(layout.getBounds ());
 			width = rect.width;
 			height = rect.height;
 		}
@@ -225,7 +224,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	}
 	if (wHint != SWT.DEFAULT) width = wHint;
 	if (hHint != SWT.DEFAULT) height = hHint;
-	int border = getBorderWidth ();
+	int border = getBorderWidthInPixels ();
 	width += border * 2;
 	height += border * 2;
 	return new Point (width, height);
@@ -267,19 +266,16 @@ void drawWidget (GC gc, RECT rect) {
 	if (!OS.IsWindowEnabled (handle)) gc.setForeground (disabledColor);
 	layout.draw (gc, 0, 0, selStart, selEnd, null, null);
 	if (hasFocus () && focusIndex != -1) {
-		Rectangle [] rects = getRectangles (focusIndex);
+		Rectangle [] rects = getRectanglesInPixels (focusIndex);
 		for (int i = 0; i < rects.length; i++) {
-			Rectangle rectangle = rects [i];
+			Rectangle rectangle = DPIUtil.autoScaleDown(rects [i]);
 			gc.drawFocus (rectangle.x, rectangle.y, rectangle.width, rectangle.height);
 		}
 	}
 	if (hooks (SWT.Paint) || filters (SWT.Paint)) {
 		Event event = new Event ();
 		event.gc = gc;
-		event.x = rect.left;
-		event.y = rect.top;
-		event.width = rect.right - rect.left;
-		event.height = rect.bottom - rect.top;
+		event.setBoundsInPixels(new Rectangle(rect.left, rect.top, rect.right - rect.left, rect.bottom - rect.top));
 		sendEvent (SWT.Paint, event);
 		event.gc = null;
 	}
@@ -325,7 +321,7 @@ void initAccessible () {
 
 		@Override
 		public void getLocation (AccessibleControlEvent e) {
-			Rectangle rect = display.map (getParent (), null, getBounds ());
+			Rectangle rect = display.mapInPixels (getParent (), null, getBoundsInPixels ());
 			e.x = rect.x;
 			e.y = rect.y;
 			e.width = rect.width;
@@ -396,7 +392,7 @@ String getNameText () {
 	return getText ();
 }
 
-Rectangle [] getRectangles (int linkIndex) {
+Rectangle [] getRectanglesInPixels (int linkIndex) {
 	int lineCount = layout.getLineCount ();
 	Rectangle [] rects = new Rectangle [lineCount];
 	int [] lineOffsets = layout.getLineOffsets ();
@@ -407,13 +403,13 @@ Rectangle [] getRectangles (int linkIndex) {
 	while (point.y > lineOffsets [lineEnd]) lineEnd++;
 	int index = 0;
 	if (lineStart == lineEnd) {
-		rects [index++] = layout.getBounds (point.x, point.y);
+		rects [index++] = DPIUtil.autoScaleUp(layout.getBounds (point.x, point.y));
 	} else {
-		rects [index++] = layout.getBounds (point.x, lineOffsets [lineStart]-1);
-		rects [index++] = layout.getBounds (lineOffsets [lineEnd-1], point.y);
+		rects [index++] = DPIUtil.autoScaleUp(layout.getBounds (point.x, lineOffsets [lineStart]-1));
+		rects [index++] = DPIUtil.autoScaleUp(layout.getBounds (lineOffsets [lineEnd-1], point.y));
 		if (lineEnd - lineStart > 1) {
 			for (int i = lineStart; i < lineEnd - 1; i++) {
-				rects [index++] = layout.getLineBounds (i);
+				rects [index++] = DPIUtil.autoScaleUp(layout.getLineBounds (i));
 			}
 		}
 	}
@@ -988,7 +984,7 @@ LRESULT WM_LBUTTONDOWN (long /*int*/ wParam, long /*int*/ lParam) {
 		if (focusIndex != -1) setFocus ();
 		int x = OS.GET_X_LPARAM (lParam);
 		int y = OS.GET_Y_LPARAM (lParam);
-		int offset = layout.getOffset (x, y, null);
+		int offset = layout.getOffset (DPIUtil.autoScaleDown(x), DPIUtil.autoScaleDown(y), null);
 		int oldSelectionX = selection.x;
 		int oldSelectionY = selection.y;
 		selection.x = offset;
@@ -999,11 +995,11 @@ LRESULT WM_LBUTTONDOWN (long /*int*/ wParam, long /*int*/ lParam) {
 				oldSelectionX = oldSelectionY;
 				oldSelectionY = temp;
 			}
-			Rectangle rect = layout.getBounds (oldSelectionX, oldSelectionY);
-			redraw (rect.x, rect.y, rect.width, rect.height, false);
+			Rectangle rect = DPIUtil.autoScaleUp(layout.getBounds (oldSelectionX, oldSelectionY)); // To Pixels
+			redrawInPixels (rect.x, rect.y, rect.width, rect.height, false);
 		}
 		for (int j = 0; j < offsets.length; j++) {
-			Rectangle [] rects = getRectangles (j);
+			Rectangle [] rects = getRectanglesInPixels (j);
 			for (int i = 0; i < rects.length; i++) {
 				Rectangle rect = rects [i];
 				if (rect.contains (x, y)) {
@@ -1027,7 +1023,7 @@ LRESULT WM_LBUTTONUP (long /*int*/ wParam, long /*int*/ lParam) {
 		if (mouseDownIndex == -1) return result;
 		int x = OS.GET_X_LPARAM (lParam);
 		int y = OS.GET_Y_LPARAM (lParam);
-		Rectangle [] rects = getRectangles (mouseDownIndex);
+		Rectangle [] rects = getRectanglesInPixels (mouseDownIndex);
 		for (int i = 0; i < rects.length; i++) {
 			Rectangle rect = rects [i];
 			if (rect.contains (x, y)) {
@@ -1063,7 +1059,7 @@ LRESULT WM_MOUSEMOVE (long /*int*/ wParam, long /*int*/ lParam) {
 		int y = OS.GET_Y_LPARAM (lParam);
 		if (OS.GetKeyState (OS.VK_LBUTTON) < 0) {
 			int oldSelection = selection.y;
-			selection.y = layout.getOffset (x, y, null);
+			selection.y = layout.getOffset (DPIUtil.autoScaleDown(x), DPIUtil.autoScaleDown(y), null);
 			if (selection.y != oldSelection) {
 				int newSelection = selection.y;
 				if (oldSelection > newSelection) {
@@ -1071,12 +1067,12 @@ LRESULT WM_MOUSEMOVE (long /*int*/ wParam, long /*int*/ lParam) {
 					oldSelection = newSelection;
 					newSelection = temp;
 				}
-				Rectangle rect = layout.getBounds (oldSelection, newSelection);
-				redraw (rect.x, rect.y, rect.width, rect.height, false);
+				Rectangle rect = DPIUtil.autoScaleUp(layout.getBounds (oldSelection, newSelection));// To Pixels
+				redrawInPixels (rect.x, rect.y, rect.width, rect.height, false);
 			}
 		} else {
 			for (int j = 0; j < offsets.length; j++) {
-				Rectangle [] rects = getRectangles (j);
+				Rectangle [] rects = getRectanglesInPixels (j);
 				for (int i = 0; i < rects.length; i++) {
 					Rectangle rect = rects [i];
 					if (rect.contains (x, y)) {
@@ -1151,7 +1147,7 @@ LRESULT WM_SIZE (long /*int*/ wParam, long /*int*/ lParam) {
 	LRESULT result = super.WM_SIZE (wParam, lParam);
 	RECT rect = new RECT ();
 	OS.GetClientRect (handle, rect);
-	layout.setWidth (rect.right > 0 ? rect.right : -1);
+	layout.setWidth (DPIUtil.autoScaleDown(rect.right > 0 ? rect.right : -1));
 	if (!useCommonControl()) {
 		redraw ();
 	}

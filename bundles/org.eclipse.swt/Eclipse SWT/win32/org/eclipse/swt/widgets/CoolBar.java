@@ -11,9 +11,10 @@
 package org.eclipse.swt.widgets;
 
 
-import org.eclipse.swt.internal.win32.*;
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.internal.*;
+import org.eclipse.swt.internal.win32.*;
 
 /**
  * Instances of this class provide an area for dynamically
@@ -140,11 +141,9 @@ protected void checkSubclass () {
 	if (!isValidSubclass ()) error (SWT.ERROR_INVALID_SUBCLASS);
 }
 
-@Override
-public Point computeSize (int wHint, int hHint, boolean changed) {
-	checkWidget ();
+@Override Point computeSizeInPixels (int wHint, int hHint, boolean changed) {
 	int width = 0, height = 0;
-	int border = getBorderWidth ();
+	int border = getBorderWidthInPixels ();
 	int newWidth = wHint == SWT.DEFAULT ? 0x3FFF : wHint + (border * 2);
 	int newHeight = hHint == SWT.DEFAULT ? 0x3FFF : hHint + (border * 2);
 	int count = (int)/*64*/OS.SendMessage (handle, OS.RB_GETBANDCOUNT, 0, 0);
@@ -561,6 +560,16 @@ public CoolItem [] getItems () {
  */
 public Point [] getItemSizes () {
 	checkWidget ();
+	Point [] sizes = getItemSizesInPixels();
+	if (sizes != null) {
+		for (int i = 0; i < sizes.length; i++) {
+			sizes[i] = DPIUtil.autoScaleDown(sizes[i]);
+		}
+	}
+	return sizes;
+}
+
+Point [] getItemSizesInPixels () {
 	int count = (int)/*64*/OS.SendMessage (handle, OS.RB_GETBANDCOUNT, 0, 0);
 	Point [] sizes = new Point [count];
 	REBARBANDINFO rbBand = new REBARBANDINFO ();
@@ -820,6 +829,15 @@ void setItemColors (int foreColor, int backColor) {
  */
 public void setItemLayout (int [] itemOrder, int [] wrapIndices, Point [] sizes) {
 	checkWidget ();
+	if (sizes == null) error (SWT.ERROR_NULL_ARGUMENT);
+	Point [] sizesInPoints = new Point [sizes.length];
+	for (int i = 0; i < sizes.length; i++) {
+		sizesInPoints[i] = DPIUtil.autoScaleUp(sizes[i]);
+	}
+	setItemLayoutInPixels (itemOrder, wrapIndices, sizesInPoints);
+}
+
+void setItemLayoutInPixels (int [] itemOrder, int [] wrapIndices, Point [] sizes) {
 	setRedraw (false);
 	setItemOrder (itemOrder);
 	setWrapIndices (wrapIndices);
@@ -912,7 +930,7 @@ void setItemSizes (Point [] sizes) {
 	rbBand.fMask = OS.RBBIM_ID;
 	for (int i=0; i<count; i++) {
 		OS.SendMessage (handle, OS.RB_GETBANDINFO, i, rbBand);
-		items [rbBand.wID].setSize (sizes [i].x, sizes [i].y);
+		items [rbBand.wID].setSizeInPixels (sizes [i].x, sizes [i].y);
 	}
 }
 
@@ -1107,11 +1125,11 @@ LRESULT WM_SETREDRAW (long /*int*/ wParam, long /*int*/ lParam) {
 	* proc.
 	*/
 	if (OS.COMCTL32_MAJOR >= 6) return LRESULT.ZERO;
-	Rectangle rect = getBounds ();
+	Rectangle rect = getBoundsInPixels ();
 	long /*int*/ code = callWindowProc (handle, OS.WM_SETREDRAW, wParam, lParam);
 	OS.DefWindowProc (handle, OS.WM_SETREDRAW, wParam, lParam);
-	if (!rect.equals (getBounds ())) {
-		parent.redraw (rect.x, rect.y, rect.width, rect.height, true);
+	if (!rect.equals (getBoundsInPixels ())) {
+		parent.redrawInPixels (rect.x, rect.y, rect.width, rect.height, true);
 	}
 	return new LRESULT (code);
 }
@@ -1162,20 +1180,20 @@ LRESULT wmNotifyChild (NMHDR hdr, long /*int*/ wParam, long /*int*/ lParam) {
 				if (control != null) {
 					int width = lprbcs.rcChild_right - lprbcs.rcChild_left;
 					int height = lprbcs.rcChild_bottom - lprbcs.rcChild_top;
-					control.setBounds (lprbcs.rcChild_left, lprbcs.rcChild_top, width, height);
+					control.setBoundsInPixels (lprbcs.rcChild_left, lprbcs.rcChild_top, width, height);
 				}
 			}
 			break;
 		}
 		case OS.RBN_HEIGHTCHANGE: {
 			if (!ignoreResize) {
-				Point size = getSize ();
-				int border = getBorderWidth ();
+				Point size = getSizeInPixels ();
+				int border = getBorderWidthInPixels ();
 				int barHeight = (int)/*64*/OS.SendMessage (handle, OS.RB_GETBARHEIGHT, 0, 0);
 				if ((style & SWT.VERTICAL) != 0) {
-					setSize (barHeight + 2 * border, size.y);
+					setSizeInPixels (barHeight + 2 * border, size.y);
 				} else {
-					setSize (size.x, barHeight + 2 * border);
+					setSizeInPixels (size.x, barHeight + 2 * border);
 				}
 			}
 			break;
@@ -1188,11 +1206,9 @@ LRESULT wmNotifyChild (NMHDR hdr, long /*int*/ wParam, long /*int*/ lParam) {
 				Event event = new Event();
 				event.detail = SWT.ARROW;
 				if ((style & SWT.VERTICAL) != 0) {
-					event.x = lpnm.right;
-					event.y = lpnm.top;
+					event.setLocationInPixels(lpnm.right, lpnm.top);
 				} else {
-					event.x = lpnm.left;
-					event.y = lpnm.bottom;
+					event.setLocationInPixels(lpnm.left, lpnm.bottom);
 				}
 				item.sendSelectionEvent(SWT.Selection, event, false);
 			}

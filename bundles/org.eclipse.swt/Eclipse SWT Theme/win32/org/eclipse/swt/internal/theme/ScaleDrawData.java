@@ -12,6 +12,7 @@ package org.eclipse.swt.internal.theme;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.win32.*;
 
 public class ScaleDrawData extends RangeDrawData {
@@ -72,13 +73,13 @@ void draw(Theme theme, GC gc, Rectangle bounds) {
 				rect.bottom = rect.top + 1;
 				//TODO - why tics are ot drawn
 				OS.DrawThemeBackground(hTheme, gc.handle, OS.TKP_TICSVERT, 1, rect, null);
-				gc.drawLine(rect.left, rect.top, rect.right, rect.top);
+				gc.drawLine(DPIUtil.autoScaleDown(rect.left), DPIUtil.autoScaleDown(rect.top), DPIUtil.autoScaleDown(rect.right), DPIUtil.autoScaleDown(rect.top));
 				rect.left = bounds.x + TICS_MARGIN + thumbWidth + 1;
 				rect.right = rect.left + ticWidth;
 				if (sel != minimum && sel != maximum) rect.right--;
 				//TODO - why tics are ot drawn
 				OS.DrawThemeBackground(hTheme, gc.handle, OS.TKP_TICSVERT, 1, rect, null);
-				gc.drawLine(rect.left, rect.top, rect.right, rect.top);
+				gc.drawLine (DPIUtil.autoScaleDown(rect.left), DPIUtil.autoScaleDown(rect.top), DPIUtil.autoScaleDown(rect.right), DPIUtil.autoScaleDown(rect.top));
 			}
 		} else {
 

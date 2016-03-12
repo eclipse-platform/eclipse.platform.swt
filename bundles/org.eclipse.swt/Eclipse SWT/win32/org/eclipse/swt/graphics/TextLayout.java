@@ -567,7 +567,12 @@ long /*int*/ createGdipBrush(Color color, int alpha) {
  * </ul>
  */
 public void draw (GC gc, int x, int y) {
-	draw(gc, x, y, -1, -1, null, null);
+	checkLayout();
+	drawInPixels(gc, DPIUtil.autoScaleUp(x), DPIUtil.autoScaleUp(y));
+}
+
+void drawInPixels (GC gc, int x, int y) {
+	drawInPixels(gc, x, y, -1, -1, null, null);
 }
 
 /**
@@ -590,7 +595,12 @@ public void draw (GC gc, int x, int y) {
  * </ul>
  */
 public void draw (GC gc, int x, int y, int selectionStart, int selectionEnd, Color selectionForeground, Color selectionBackground) {
-	draw(gc, x, y, selectionStart, selectionEnd, selectionForeground, selectionBackground, 0);
+	checkLayout();
+	drawInPixels(gc, DPIUtil.autoScaleUp(x), DPIUtil.autoScaleUp(y), selectionStart, selectionEnd, selectionForeground, selectionBackground);
+}
+
+void drawInPixels (GC gc, int x, int y, int selectionStart, int selectionEnd, Color selectionForeground, Color selectionBackground) {
+	drawInPixels(gc, x, y, selectionStart, selectionEnd, selectionForeground, selectionBackground, 0);
 }
 
 /**
@@ -622,6 +632,10 @@ public void draw (GC gc, int x, int y, int selectionStart, int selectionEnd, Col
  */
 public void draw (GC gc, int x, int y, int selectionStart, int selectionEnd, Color selectionForeground, Color selectionBackground, int flags) {
 	checkLayout();
+	drawInPixels(gc, DPIUtil.autoScaleUp(x), DPIUtil.autoScaleUp(y), selectionStart, selectionEnd, selectionForeground, selectionBackground, flags);
+}
+
+void drawInPixels (GC gc, int x, int y, int selectionStart, int selectionEnd, Color selectionForeground, Color selectionBackground, int flags) {
 	computeRuns(gc);
 	if (gc == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (gc.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
@@ -630,7 +644,7 @@ public void draw (GC gc, int x, int y, int selectionStart, int selectionEnd, Col
 	int length = text.length();
 	if (length == 0 && flags == 0) return;
 	long /*int*/ hdc = gc.handle;
-	Rectangle clip = gc.getClipping();
+	Rectangle clip = gc.getClippingInPixels();
 	GCData data = gc.data;
 	long /*int*/ gdipGraphics = data.gdipGraphics;
 	int foreground = data.foreground;
@@ -1580,20 +1594,24 @@ public int getAlignment () {
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
  *
- * @see #getDescent()
- * @see #setDescent(int)
- * @see #setAscent(int)
+ * @see #getDescentInPixels()
+ * @see #setDescentInPixels(int)
+ * @see #setAscentInPixels(int)
  * @see #getLineMetrics(int)
  */
 public int getAscent () {
 	checkLayout();
+	return DPIUtil.autoScaleDown(getAscentInPixels());
+}
+
+int getAscentInPixels () {
 	return ascent;
 }
 
 /**
  * Returns the bounds of the receiver. The width returned is either the
  * width of the longest line or the width set using {@link TextLayout#setWidth(int)}.
- * To obtain the text bounds of a line use {@link TextLayout#getLineBounds(int)}.
+ * To obtain the text bounds of a line use {@link TextLayout#getLineBoundsInPixels(int)}.
  *
  * @return the bounds of the receiver
  *
@@ -1606,6 +1624,10 @@ public int getAscent () {
  */
 public Rectangle getBounds () {
 	checkLayout();
+	return DPIUtil.autoScaleDown(getBoundsInPixels());
+}
+
+Rectangle getBoundsInPixels () {
 	computeRuns(null);
 	int width = 0;
 	if (wrapWidth != -1) {
@@ -1634,6 +1656,10 @@ public Rectangle getBounds () {
  */
 public Rectangle getBounds (int start, int end) {
 	checkLayout();
+	return DPIUtil.autoScaleDown(getBoundsInPixels(start, end));
+}
+
+Rectangle getBoundsInPixels (int start, int end) {
 	computeRuns(null);
 	int length = text.length();
 	if (length == 0) return new Rectangle(0, 0, 0, 0);
@@ -1676,7 +1702,7 @@ public Rectangle getBounds (int start, int end) {
 			int cx = 0;
 			if (run.style != null && run.style.metrics != null) {
 				GlyphMetrics metrics = run.style.metrics;
-				cx = metrics.width * (start - run.start);
+				cx = metrics.getWidthInPixels() * (start - run.start);
 			} else if (!run.tab) {
 				int[] piX = new int[1];
 				long /*int*/ advances = run.justify != 0 ? run.justify : run.advances;
@@ -1693,7 +1719,7 @@ public Rectangle getBounds (int start, int end) {
 			int cx = run.width;
 			if (run.style != null && run.style.metrics != null) {
 				GlyphMetrics metrics = run.style.metrics;
-				cx = metrics.width * (end - run.start + 1);
+				cx = metrics.getWidthInPixels() * (end - run.start + 1);
 			} else if (!run.tab) {
 				int[] piX = new int[1];
 				long /*int*/ advances = run.justify != 0 ? run.justify : run.advances;
@@ -1727,13 +1753,17 @@ public Rectangle getBounds (int start, int end) {
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
  *
- * @see #getAscent()
- * @see #setAscent(int)
- * @see #setDescent(int)
+ * @see #getAscentInPixels()
+ * @see #setAscentInPixels(int)
+ * @see #setDescentInPixels(int)
  * @see #getLineMetrics(int)
  */
 public int getDescent () {
 	checkLayout();
+	return DPIUtil.autoScaleDown(getDescentInPixels());
+}
+
+int getDescentInPixels () {
 	return descent;
 }
 
@@ -1765,6 +1795,10 @@ public Font getFont () {
 */
 public int getIndent () {
 	checkLayout();
+	return DPIUtil.autoScaleDown(getIndentInPixels());
+}
+
+int getIndentInPixels () {
 	return indent;
 }
 
@@ -1836,8 +1870,12 @@ public int getLevel (int offset) {
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
  */
-public Rectangle getLineBounds(int lineIndex) {
+public Rectangle getLineBounds (int lineIndex) {
 	checkLayout();
+	return DPIUtil.autoScaleDown(getLineBoundsInPixels(lineIndex));
+}
+
+Rectangle getLineBoundsInPixels(int lineIndex) {
 	computeRuns(null);
 	if (!(0 <= lineIndex && lineIndex < runs.length)) SWT.error(SWT.ERROR_INVALID_RANGE);
 	int x = getLineIndent(lineIndex);
@@ -2002,11 +2040,15 @@ public int[] getLineOffsets () {
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
  *
- * @see #getOffset(Point, int[])
- * @see #getOffset(int, int, int[])
+ * @see #getOffsetInPixels(Point, int[])
+ * @see #getOffsetInPixels(int, int, int[])
  */
 public Point getLocation (int offset, boolean trailing) {
 	checkLayout();
+	return DPIUtil.autoScaleDown(getLocationInPixels(offset, trailing));
+}
+
+Point getLocationInPixels (int offset, boolean trailing) {
 	computeRuns(null);
 	int length = text.length();
 	if (!(0 <= offset && offset <= length)) SWT.error(SWT.ERROR_INVALID_RANGE);
@@ -2054,7 +2096,7 @@ public Point getLocation (int offset, boolean trailing) {
 			int width;
 			if (run.style != null && run.style.metrics != null) {
 				GlyphMetrics metrics = run.style.metrics;
-				width = metrics.width * (offset - run.start + (trailing ? 1 : 0));
+				width = metrics.getWidthInPixels() * (offset - run.start + (trailing ? 1 : 0));
 			} else if (run.tab) {
 				width = (trailing || (offset == length)) ? run.width : 0;
 			} else {
@@ -2195,12 +2237,15 @@ int _getOffset(int offset, int movement, boolean forward) {
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
  *
- * @see #getLocation(int, boolean)
+ * @see #getLocationInPixels(int, boolean)
  */
 public int getOffset (Point point, int[] trailing) {
 	checkLayout();
-	if (point == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
-	return getOffset (point.x, point.y, trailing) ;
+	if (point == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);	return getOffsetInPixels(DPIUtil.autoScaleUp(point), trailing);
+}
+
+int getOffsetInPixels (Point point, int[] trailing) {
+	return getOffsetInPixels (point.x, point.y, trailing) ;
 }
 
 /**
@@ -2228,6 +2273,10 @@ public int getOffset (Point point, int[] trailing) {
  */
 public int getOffset (int x, int y, int[] trailing) {
 	checkLayout();
+	return getOffsetInPixels(DPIUtil.autoScaleUp(x), DPIUtil.autoScaleUp(y), trailing);
+}
+
+int getOffsetInPixels (int x, int y, int[] trailing) {
 	computeRuns(null);
 	if (trailing != null && trailing.length < 1) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	int line;
@@ -2254,11 +2303,11 @@ public int getOffset (int x, int y, int[] trailing) {
 			int xRun = x - run.x;
 			if (run.style != null && run.style.metrics != null) {
 				GlyphMetrics metrics = run.style.metrics;
-				if (metrics.width > 0) {
+				if (metrics.getWidthInPixels() > 0) {
 					if (trailing != null) {
-						trailing[0] = (xRun % metrics.width < metrics.width / 2) ? 0 : 1;
+						trailing[0] = (xRun % metrics.getWidthInPixels() < metrics.getWidthInPixels() / 2) ? 0 : 1;
 					}
-					return untranslateOffset(run.start + xRun / metrics.width);
+					return untranslateOffset(run.start + xRun / metrics.getWidthInPixels());
 				}
 			}
 			if (run.tab) {
@@ -2467,6 +2516,10 @@ String getSegmentsText() {
  */
 public int getSpacing () {
 	checkLayout();
+	return DPIUtil.autoScaleDown(getSpacingInPixels());
+}
+
+int getSpacingInPixels () {
 	return lineSpacing;
 }
 
@@ -2580,6 +2633,10 @@ public int getTextDirection () {
  */
 public int getWidth () {
 	checkLayout();
+	return DPIUtil.autoScaleDown(getWidthInPixels());
+}
+
+int getWidthInPixels () {
 	return wrapWidth;
 }
 
@@ -2596,6 +2653,10 @@ public int getWidth () {
 */
 public int getWrapIndent () {
 	checkLayout();
+	return DPIUtil.autoScaleDown(getWrapIndentInPixels());
+}
+
+int getWrapIndentInPixels () {
 	return wrapIndent;
 }
 
@@ -2852,11 +2913,15 @@ public void setAlignment (int alignment) {
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
  *
- * @see #setDescent(int)
+ * @see #setDescentInPixels(int)
  * @see #getLineMetrics(int)
  */
-public void setAscent(int ascent) {
+public void setAscent (int ascent) {
 	checkLayout();
+	setAscentInPixels(DPIUtil.autoScaleUp(ascent));
+}
+
+void setAscentInPixels(int ascent) {
 	if (ascent < -1) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	if (this.ascent == ascent) return;
 	freeRuns();
@@ -2878,11 +2943,15 @@ public void setAscent(int ascent) {
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
  *
- * @see #setAscent(int)
+ * @see #setAscentInPixels(int)
  * @see #getLineMetrics(int)
  */
-public void setDescent(int descent) {
+public void setDescent (int descent) {
 	checkLayout();
+	setDescentInPixels(DPIUtil.autoScaleUp(descent));
+}
+
+void setDescentInPixels(int descent) {
 	if (descent < -1) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	if (this.descent == descent) return;
 	freeRuns();
@@ -2931,6 +3000,10 @@ public void setFont (Font font) {
  */
 public void setIndent (int indent) {
 	checkLayout();
+	setIndentInPixels(DPIUtil.autoScaleUp(indent));
+}
+
+void setIndentInPixels (int indent) {
 	if (indent < 0) return;
 	if (this.indent == indent) return;
 	freeRuns();
@@ -3066,6 +3139,10 @@ public void setSegmentsChars(char[] segmentsChars) {
 public void setSpacing (int spacing) {
 	checkLayout();
 	if (spacing < 0) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	setSpacingInPixels(DPIUtil.autoScaleUp(spacing));
+}
+
+void setSpacingInPixels (int spacing) {
 	if (this.lineSpacing == spacing) return;
 	freeRuns();
 	this.lineSpacing = spacing;
@@ -3269,6 +3346,10 @@ public void setTextDirection (int textDirection) {
  */
 public void setWidth (int width) {
 	checkLayout();
+	setWidthInPixels(width != SWT.DEFAULT ? DPIUtil.autoScaleUp(width) : width);
+}
+
+void setWidthInPixels (int width) {
 	if (width < -1 || width == 0) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	if (this.wrapWidth == width) return;
 	freeRuns();
@@ -3285,12 +3366,16 @@ public void setWidth (int width) {
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
  *
- * @see #setIndent(int)
+ * @see #setIndentInPixels(int)
  *
  * @since 3.6
  */
 public void setWrapIndent (int wrapIndent) {
 	checkLayout();
+	setWrapIndentInPixels(DPIUtil.autoScaleUp(wrapIndent));
+}
+
+void setWrapIndentInPixels (int wrapIndent) {
 	if (wrapIndent < 0) return;
 	if (this.wrapIndent == wrapIndent) return;
 	freeRuns();
@@ -3535,9 +3620,9 @@ void shape (final long /*int*/ hdc, final StyleItem run) {
 			 *  equals zero for FFFC (possibly other unicode code points), the fix
 			 *  is to make sure the glyph is at least one pixel wide.
 			 */
-			run.width = metrics.width * Math.max (1, run.glyphCount);
-			run.ascent = metrics.ascent;
-			run.descent = metrics.descent;
+			run.width = metrics.getWidthInPixels() * Math.max (1, run.glyphCount);
+			run.ascent = metrics.getAscentInPixels();
+			run.descent = metrics.getDescentInPixels();
 			run.leading = 0;
 		} else {
 			TEXTMETRIC lptm = null;

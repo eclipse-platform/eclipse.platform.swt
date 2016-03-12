@@ -11,9 +11,10 @@
 package org.eclipse.swt.widgets;
 
 
-import org.eclipse.swt.internal.win32.*;
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.internal.*;
+import org.eclipse.swt.internal.win32.*;
 
 /**
  * Instances of this class represent a selectable user interface object
@@ -394,6 +395,10 @@ public Color getBackground (int index) {
  */
 public Rectangle getBounds () {
 	checkWidget ();
+	return DPIUtil.autoScaleDown(getBoundsInPixels());
+}
+
+Rectangle getBoundsInPixels () {
 	if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
 	RECT rect = getBounds (0, true, false, false);
 	int width = rect.right - rect.left, height = rect.bottom - rect.top;
@@ -416,6 +421,10 @@ public Rectangle getBounds () {
  */
 public Rectangle getBounds (int index) {
 	checkWidget();
+	return DPIUtil.autoScaleDown(getBoundsInPixels(index));
+}
+
+Rectangle getBoundsInPixels (int index) {
 	if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
 	RECT rect = getBounds (index, true, true, true);
 	int width = rect.right - rect.left, height = rect.bottom - rect.top;
@@ -839,6 +848,10 @@ public Image getImage (int index) {
  */
 public Rectangle getImageBounds (int index) {
 	checkWidget();
+	return DPIUtil.autoScaleDown(getImageBoundsInPixels(index));
+}
+
+Rectangle getImageBoundsInPixels (int index) {
 	if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
 	RECT rect = getBounds (index, false, true, false);
 	int width = rect.right - rect.left, height = rect.bottom - rect.top;
@@ -930,6 +943,10 @@ public String getText (int index) {
  */
 public Rectangle getTextBounds (int index) {
 	checkWidget();
+	return DPIUtil.autoScaleDown(getTextBoundsInPixels(index));
+}
+
+Rectangle getTextBoundsInPixels (int index) {
 	if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
 	RECT rect = getBounds (index, true, false, true);
 	if (index == 0) rect.left += Tree.INSET - 1;

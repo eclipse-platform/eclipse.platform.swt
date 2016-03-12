@@ -12,6 +12,7 @@ package org.eclipse.swt.dnd;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.win32.*;
 import org.eclipse.swt.widgets.*;
 
@@ -162,7 +163,7 @@ public class TreeDropTargetEffect extends DropTargetEffect {
 		int effect = checkEffect(event.feedback);
 		long /*int*/ handle = tree.handle;
 		Point coordinates = new Point(event.x, event.y);
-		coordinates = tree.toControl(coordinates);
+		coordinates = DPIUtil.autoScaleUp(tree.toControl(coordinates)); // To Pixels
 		TVHITTESTINFO lpht = new TVHITTESTINFO ();
 		lpht.x = coordinates.x;
 		lpht.y = coordinates.y;

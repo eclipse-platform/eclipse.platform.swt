@@ -227,16 +227,14 @@ Widget [] computeTabList () {
 	return result;
 }
 
-@Override
-public Point computeSize (int wHint, int hHint, boolean changed) {
-	checkWidget ();
+@Override Point computeSizeInPixels (int wHint, int hHint, boolean changed) {
 	display.runSkin ();
 	Point size;
 	if (layout != null) {
 		if (wHint == SWT.DEFAULT || hHint == SWT.DEFAULT) {
 			changed |= (state & LAYOUT_CHANGED) != 0;
 			state &= ~LAYOUT_CHANGED;
-			size = layout.computeSize (this, wHint, hHint, changed);
+			size = DPIUtil.autoScaleUp(layout.computeSize (this, DPIUtil.autoScaleDown(wHint), DPIUtil.autoScaleDown(hHint), changed));
 		} else {
 			size = new Point (wHint, hHint);
 		}
@@ -247,7 +245,11 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	}
 	if (wHint != SWT.DEFAULT) size.x = wHint;
 	if (hHint != SWT.DEFAULT) size.y = hHint;
-	Rectangle trim = computeTrim (0, 0, size.x, size.y);
+	/*
+	 * Since computeTrim is overridden by Custom classes like CTabFolder
+	 * etc... hence we cannot call computeTrimInPixels directly.
+	 */
+	Rectangle trim = DPIUtil.autoScaleUp(computeTrim (0, 0, DPIUtil.autoScaleDown(size.x), DPIUtil.autoScaleDown(size.y)));
 	return new Point (trim.width, trim.height);
 }
 
@@ -365,8 +367,18 @@ int applyThemeBackground () {
  *
  * @since 3.6
  */
-public void drawBackground(GC gc, int x, int y, int width, int height, int offsetX, int offsetY) {
+public void drawBackground (GC gc, int x, int y, int width, int height, int offsetX, int offsetY) {
 	checkWidget ();
+	x = DPIUtil.autoScaleUp(x);
+	y = DPIUtil.autoScaleUp(y);
+	width = DPIUtil.autoScaleUp(width);
+	height = DPIUtil.autoScaleUp(height);
+	offsetX = DPIUtil.autoScaleUp(offsetX);
+	offsetY = DPIUtil.autoScaleUp(offsetY);
+	drawBackgroundInPixels(gc, x, y, width, height, offsetX, offsetY);
+}
+
+void drawBackgroundInPixels(GC gc, int x, int y, int width, int height, int offsetX, int offsetY) {
 	if (gc == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (gc.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
 	RECT rect = new RECT ();
@@ -882,10 +894,10 @@ void markLayout (boolean changed, boolean all) {
 
 Point minimumSize (int wHint, int hHint, boolean changed) {
 	Control [] children = _getChildren ();
-	Rectangle clientArea = getClientArea ();
+	Rectangle clientArea = getClientAreaInPixels ();
 	int width = 0, height = 0;
 	for (int i=0; i<children.length; i++) {
-		Rectangle rect = children [i].getBounds ();
+		Rectangle rect = children [i].getBoundsInPixels ();
 		width = Math.max (width, rect.x - clientArea.x + rect.width);
 		height = Math.max (height, rect.y - clientArea.y + rect.height);
 	}
@@ -1071,7 +1083,7 @@ public void setBackgroundMode (int mode) {
 }
 
 @Override
-void setBounds (int x, int y, int width, int height, int flags, boolean defer) {
+void setBoundsInPixels (int x, int y, int width, int height, int flags, boolean defer) {
 	if (display.resizeCount > Display.RESIZE_LIMIT) {
 		defer = false;
 	}
@@ -1079,7 +1091,7 @@ void setBounds (int x, int y, int width, int height, int flags, boolean defer) {
 		state &= ~(RESIZE_OCCURRED | MOVE_OCCURRED);
 		state |= RESIZE_DEFERRED | MOVE_DEFERRED;
 	}
-	super.setBounds (x, y, width, height, flags, defer);
+	super.setBoundsInPixels (x, y, width, height, flags, defer);
 	if (!defer && (state & CANVAS) != 0) {
 		boolean wasMoved = (state & MOVE_OCCURRED) != 0;
 		boolean wasResized = (state & RESIZE_OCCURRED) != 0;
@@ -1569,10 +1581,7 @@ LRESULT WM_PAINT (long /*int*/ wParam, long /*int*/ lParam) {
 				GC gc = GC.win32_new (phdc [0], data);
 				Event event = new Event ();
 				event.gc = gc;
-				event.x = ps.left;
-				event.y = ps.top;
-				event.width = width;
-				event.height = height;
+				event.setBoundsInPixels(new Rectangle(ps.left, ps.top, width, height));
 				sendEvent (SWT.Paint, event);
 				if (data.focusDrawn && !isDisposed ()) updateUIState ();
 				gc.dispose ();
@@ -1657,10 +1666,7 @@ LRESULT WM_PAINT (long /*int*/ wParam, long /*int*/ lParam) {
 						if ((style & (SWT.DOUBLE_BUFFERED | SWT.NO_BACKGROUND | SWT.TRANSPARENT)) == 0) {
 							drawBackground (gc.handle, rect);
 						}
-						event.x = rect.left;
-						event.y = rect.top;
-						event.width = rect.right - rect.left;
-						event.height = rect.bottom - rect.top;
+						event.setBoundsInPixels(new Rectangle(rect.left, rect.top, rect.right - rect.left, rect.bottom - rect.top));
 						event.count = count - 1 - i;
 						sendEvent (SWT.Paint, event);
 					}
@@ -1670,10 +1676,7 @@ LRESULT WM_PAINT (long /*int*/ wParam, long /*int*/ lParam) {
 						OS.SetRect (rect, ps.left, ps.top, ps.right, ps.bottom);
 						drawBackground (gc.handle, rect);
 					}
-					event.x = ps.left;
-					event.y = ps.top;
-					event.width = width;
-					event.height = height;
+					event.setBoundsInPixels(new Rectangle(ps.left, ps.top, width, height));
 					sendEvent (SWT.Paint, event);
 				}
 				// widget could be disposed at this point
@@ -1684,7 +1687,7 @@ LRESULT WM_PAINT (long /*int*/ wParam, long /*int*/ lParam) {
 						if (gcData.focusDrawn && !isDisposed ()) updateUIState ();
 					}
 					gc.dispose();
-					if (!isDisposed ()) paintGC.drawImage (image, ps.left, ps.top);
+					if (!isDisposed ()) paintGC.drawImage (image, DPIUtil.autoScaleDown(ps.left), DPIUtil.autoScaleDown(ps.top));
 					image.dispose ();
 					gc = paintGC;
 				}
@@ -1746,10 +1749,7 @@ LRESULT WM_PRINTCLIENT (long /*int*/ wParam, long /*int*/ lParam) {
 			GC gc = GC.win32_new (wParam, data);
 			Event event = new Event ();
 			event.gc = gc;
-			event.x = rect.left;
-			event.y = rect.top;
-			event.width = rect.right - rect.left;
-			event.height = rect.bottom - rect.top;
+			event.setBoundsInPixels(new Rectangle(rect.left, rect.top, rect.right - rect.left, rect.bottom - rect.top));
 			sendEvent (SWT.Paint, event);
 			event.gc = null;
 			gc.dispose ();

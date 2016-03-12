@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2008 IBM Corporation and others.
+ * Copyright (c) 2000, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -11,6 +11,7 @@
 package org.eclipse.swt.graphics;
 
 import org.eclipse.swt.*;
+import org.eclipse.swt.internal.*;
 
 /**
  * Instances of this class represent glyph metrics.
@@ -68,6 +69,18 @@ public GlyphMetrics(int ascent, int descent, int width) {
 	this.ascent = ascent;
 	this.descent = descent;
 	this.width = width;
+}
+
+int getAscentInPixels() {
+	return DPIUtil.autoScaleUp(ascent);
+}
+
+int getDescentInPixels() {
+	return DPIUtil.autoScaleUp(descent);
+}
+
+int getWidthInPixels() {
+	return DPIUtil.autoScaleUp(width);
 }
 
 /**

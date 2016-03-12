@@ -11,6 +11,7 @@
 package org.eclipse.swt.graphics;
 
 import org.eclipse.swt.*;
+import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.gdip.*;
 
 /**
@@ -143,7 +144,7 @@ public Transform(Device device, float[] elements) {
 public Transform (Device device, float m11, float m12, float m21, float m22, float dx, float dy) {
 	super(device);
 	this.device.checkGDIP();
-	handle = Gdip.Matrix_new(m11, m12, m21, m22, dx, dy);
+	handle = Gdip.Matrix_new(m11, m12, m21, m22, DPIUtil.autoScaleUp(dx), DPIUtil.autoScaleUp(dy));
 	if (handle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	init();
 }
@@ -179,6 +180,8 @@ public void getElements(float[] elements) {
 	if (elements == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (elements.length < 6) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	Gdip.Matrix_GetElements(handle, elements);
+	elements[4] = DPIUtil.autoScaleDown(elements[4]);
+	elements[5] = DPIUtil.autoScaleDown(elements[5]);
 }
 
 /**
@@ -309,7 +312,7 @@ public void scale(float scaleX, float scaleY) {
  */
 public void setElements(float m11, float m12, float m21, float m22, float dx, float dy) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	Gdip.Matrix_SetElements(handle, m11, m12, m21, m22, dx, dy);
+	Gdip.Matrix_SetElements(handle, m11, m12, m21, m22, DPIUtil.autoScaleUp(dx), DPIUtil.autoScaleUp(dy));
 }
 
 /**
@@ -347,7 +350,14 @@ public void shear(float shearX, float shearY) {
 public void transform(float[] pointArray) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (pointArray == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	Gdip.Matrix_TransformPoints(handle, pointArray, pointArray.length / 2);
+	int length = pointArray.length;
+	for (int i = 0; i < length; i++) {
+		pointArray[i] = DPIUtil.autoScaleUp(pointArray[i]);
+	}
+	Gdip.Matrix_TransformPoints(handle, pointArray, length / 2);
+	for (int i = 0; i < length; i++) {
+		pointArray[i] = DPIUtil.autoScaleDown(pointArray[i]);
+	}
 }
 
 /**
@@ -363,7 +373,7 @@ public void transform(float[] pointArray) {
  */
 public void translate(float offsetX, float offsetY) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	Gdip.Matrix_Translate(handle, offsetX, offsetY, Gdip.MatrixOrderPrepend);
+	Gdip.Matrix_Translate(handle, DPIUtil.autoScaleUp(offsetX), DPIUtil.autoScaleUp(offsetY), Gdip.MatrixOrderPrepend);
 }
 
 /**

@@ -858,7 +858,7 @@ static long /*int*/ create32bitDIB (Image image) {
 			hMask = info.hbmMask;
 			break;
 		case SWT.BITMAP:
-			ImageData data = image.getImageData ();
+			ImageData data = image.getImageDataAtCurrentZoom ();
 			hBitmap = image.handle;
 			alpha = data.alpha;
 			alphaData = data.alphaData;
@@ -1087,7 +1087,7 @@ static long /*int*/ create32bitDIB (long /*int*/ hBitmap, int alpha, byte [] alp
 
 static Image createIcon (Image image) {
 	Device device = image.getDevice ();
-	ImageData data = image.getImageData ();
+	ImageData data = image.getImageDataAtCurrentZoom ();
 	if (data.alpha == -1 && data.alphaData == null) {
 		ImageData mask = data.getTransparencyMask ();
 		return new Image (device, data, mask);
@@ -1512,7 +1512,12 @@ public Menu getMenuBar () {
  * </ul>
  */
 @Override
-public Rectangle getBounds () {
+public Rectangle getBounds() {
+	checkDevice ();
+	return DPIUtil.autoScaleDown(getBoundsInPixels());
+}
+
+Rectangle getBoundsInPixels () {
 	checkDevice ();
 	if (OS.GetSystemMetrics (OS.SM_CMONITORS) < 2) {
 		int width = OS.GetSystemMetrics (OS.SM_CXSCREEN);
@@ -1581,6 +1586,11 @@ int getClickCount (int type, int button, long /*int*/ hwnd, long /*int*/ lParam)
  */
 @Override
 public Rectangle getClientArea () {
+	checkDevice ();
+	return DPIUtil.autoScaleDown(getClientAreaInPixels());
+}
+
+Rectangle getClientAreaInPixels () {
 	checkDevice ();
 	if (OS.GetSystemMetrics (OS.SM_CMONITORS) < 2) {
 		RECT rect = new RECT ();
@@ -1661,6 +1671,10 @@ public Control getCursorControl () {
  */
 public Point getCursorLocation () {
 	checkDevice ();
+	return DPIUtil.autoScaleDown(getCursorLocationInPixels());
+}
+
+Point getCursorLocationInPixels () {
 	POINT pt = new POINT ();
 	OS.GetCursorPos (pt);
 	return new Point (pt.x, pt.y);
@@ -2187,14 +2201,14 @@ public Monitor getPrimaryMonitor () {
 		Monitor monitor = new Monitor();
 		int width = OS.GetSystemMetrics (OS.SM_CXSCREEN);
 		int height = OS.GetSystemMetrics (OS.SM_CYSCREEN);
-		monitor.width = width;
-		monitor.height = height;
+		Rectangle bounds = new Rectangle (0, 0, width, height);
+		bounds = DPIUtil.autoScaleDown (bounds);
+		monitor.setBounds (bounds);
 		RECT rect = new RECT ();
 		OS.SystemParametersInfo (OS.SPI_GETWORKAREA, 0, rect, 0);
-		monitor.clientX = rect.left;
-		monitor.clientY = rect.top;
-		monitor.clientWidth = rect.right - rect.left;
-		monitor.clientHeight = rect.bottom - rect.top;
+		Rectangle clientArea = new Rectangle (rect.left, rect.top, rect.right - rect.left, rect.bottom - rect.top);
+		clientArea = DPIUtil.autoScaleDown (clientArea);
+		monitor.setClientArea( clientArea);
 		return monitor;
 	}
 	monitors = new Monitor [4];
@@ -2210,6 +2224,11 @@ public Monitor getPrimaryMonitor () {
 		Monitor monitor = monitors [i];
 		OS.GetMonitorInfo (monitors [i].handle, lpmi);
 		if ((lpmi.dwFlags & OS.MONITORINFOF_PRIMARY) != 0) {
+			// Convert Monitor's bounds/client-area to Points.
+			Rectangle bounds = DPIUtil.autoScaleDown (monitor.getBounds ());
+			monitor.setBounds (bounds);
+			Rectangle clientArea = DPIUtil.autoScaleDown (monitor.getClientArea ());
+			monitor.setClientArea (clientArea);
 			result = monitor;
 			break;
 		}
@@ -2949,7 +2968,12 @@ boolean isValidThread () {
 public Point map (Control from, Control to, Point point) {
 	checkDevice ();
 	if (point == null) error (SWT.ERROR_NULL_ARGUMENT);
-	return map (from, to, point.x, point.y);
+	point = DPIUtil.autoScaleUp(point);
+	return DPIUtil.autoScaleDown(mapInPixels(from, to, point));
+}
+
+Point mapInPixels (Control from, Control to, Point point) {
+	return mapInPixels (from, to, point.x, point.y);
 }
 
 /**
@@ -2990,6 +3014,12 @@ public Point map (Control from, Control to, Point point) {
  */
 public Point map (Control from, Control to, int x, int y) {
 	checkDevice ();
+	x = DPIUtil.autoScaleUp(x);
+	y = DPIUtil.autoScaleUp(y);
+	return DPIUtil.autoScaleDown(mapInPixels(from, to, x, y));
+}
+
+Point mapInPixels (Control from, Control to, int x, int y) {
 	if (from != null && from.isDisposed()) error (SWT.ERROR_INVALID_ARGUMENT);
 	if (to != null && to.isDisposed()) error (SWT.ERROR_INVALID_ARGUMENT);
 	if (from == to) return new Point (x, y);
@@ -3041,7 +3071,12 @@ public Point map (Control from, Control to, int x, int y) {
 public Rectangle map (Control from, Control to, Rectangle rectangle) {
 	checkDevice ();
 	if (rectangle == null) error (SWT.ERROR_NULL_ARGUMENT);
-	return map (from, to, rectangle.x, rectangle.y, rectangle.width, rectangle.height);
+	rectangle = DPIUtil.autoScaleUp(rectangle);
+	return DPIUtil.autoScaleDown(mapInPixels(from, to, rectangle));
+}
+
+Rectangle mapInPixels (Control from, Control to, Rectangle rectangle) {
+	return mapInPixels (from, to, rectangle.x, rectangle.y, rectangle.width, rectangle.height);
 }
 
 /**
@@ -3084,6 +3119,14 @@ public Rectangle map (Control from, Control to, Rectangle rectangle) {
  */
 public Rectangle map (Control from, Control to, int x, int y, int width, int height) {
 	checkDevice ();
+	x = DPIUtil.autoScaleUp(x);
+	y = DPIUtil.autoScaleUp(y);
+	width = DPIUtil.autoScaleUp(width);
+	height = DPIUtil.autoScaleUp(height);
+	return DPIUtil.autoScaleDown(mapInPixels(from, to, x, y, width, height));
+}
+
+Rectangle mapInPixels (Control from, Control to, int x, int y, int width, int height) {
 	if (from != null && from.isDisposed()) error (SWT.ERROR_INVALID_ARGUMENT);
 	if (to != null && to.isDisposed()) error (SWT.ERROR_INVALID_ARGUMENT);
 	if (from == to) return new Rectangle (x, y, width, height);
@@ -3450,14 +3493,10 @@ long /*int*/ monitorEnumProc (long /*int*/ hmonitor, long /*int*/ hdc, long /*in
 	OS.GetMonitorInfo (hmonitor, lpmi);
 	Monitor monitor = new Monitor ();
 	monitor.handle = hmonitor;
-	monitor.x = lpmi.rcMonitor_left;
-	monitor.y = lpmi.rcMonitor_top;
-	monitor.width = lpmi.rcMonitor_right - lpmi.rcMonitor_left;
-	monitor.height = lpmi.rcMonitor_bottom - lpmi.rcMonitor_top;
-	monitor.clientX = lpmi.rcWork_left;
-	monitor.clientY = lpmi.rcWork_top;
-	monitor.clientWidth = lpmi.rcWork_right - lpmi.rcWork_left;
-	monitor.clientHeight = lpmi.rcWork_bottom - lpmi.rcWork_top;
+	Rectangle boundsInPixels = new Rectangle (lpmi.rcMonitor_left, lpmi.rcMonitor_top, lpmi.rcMonitor_right - lpmi.rcMonitor_left,lpmi.rcMonitor_bottom - lpmi.rcMonitor_top);
+	monitor.setBounds (boundsInPixels);
+	Rectangle clientAreaInPixels = new Rectangle (lpmi.rcWork_left, lpmi.rcWork_top, lpmi.rcWork_right - lpmi.rcWork_left, lpmi.rcWork_bottom - lpmi.rcWork_top);
+	monitor.setClientArea (clientAreaInPixels);
 	monitors [monitorCount++] = monitor;
 	return 1;
 }
@@ -3667,8 +3706,9 @@ public boolean post (Event event) {
 						width = OS.GetSystemMetrics (OS.SM_CXSCREEN);
 						height = OS.GetSystemMetrics (OS.SM_CYSCREEN);
 					}
-					inputs.dx = ((event.x - x) * 65535 + width - 2) / (width - 1);
-					inputs.dy = ((event.y - y) * 65535 + height - 2) / (height - 1);
+					Point loc = event.getLocationInPixels();
+					inputs.dx = ((loc.x - x) * 65535 + width - 2) / (width - 1);
+					inputs.dy = ((loc.y - y) * 65535 + height - 2) / (height - 1);
 				} else {
 					if (type == SWT.MouseWheel) {
 						if (OS.WIN32_VERSION < OS.VERSION (5, 0)) return false;

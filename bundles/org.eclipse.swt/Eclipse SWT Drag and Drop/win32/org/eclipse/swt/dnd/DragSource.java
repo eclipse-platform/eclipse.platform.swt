@@ -13,10 +13,10 @@ package org.eclipse.swt.dnd;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.ole.win32.*;
 import org.eclipse.swt.internal.win32.*;
+import org.eclipse.swt.widgets.*;
 
 /**
  *
@@ -334,7 +334,7 @@ private void drag(Event dragEvent) {
 		int offsetX = event.offsetX;
 		hwndDrag = topControl.handle;
 		if ((topControl.getStyle() & SWT.RIGHT_TO_LEFT) != 0) {
-			offsetX = image.getBounds().width - offsetX;
+			offsetX = image.getBoundsInPixels().width - offsetX;
 			RECT rect = new RECT ();
 			OS.GetClientRect (topControl.handle, rect);
 			hwndDrag = OS.CreateWindowEx (
@@ -366,8 +366,8 @@ private void drag(Event dragEvent) {
 			OS.RedrawWindow (topControl.handle, null, 0, flags);
 		}
 		POINT pt = new POINT ();
-		pt.x = dragEvent.x;
-		pt.y = dragEvent.y;
+		pt.x = DPIUtil.autoScaleUp(dragEvent.x);// To Pixels
+		pt.y = DPIUtil.autoScaleUp(dragEvent.y);// To Pixels
 		OS.MapWindowPoints (control.handle, 0, pt, 1);
 		RECT rect = new RECT ();
 		OS.GetWindowRect (hwndDrag, rect);

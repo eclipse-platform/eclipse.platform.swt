@@ -14,6 +14,7 @@ package org.eclipse.swt.widgets;
 import org.eclipse.swt.*;
 import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.win32.*;
 
 /**
@@ -504,8 +505,8 @@ long /*int*/ callWindowProc (long /*int*/ hwnd, int msg, long /*int*/ wParam, lo
 
 void center () {
 	if (parent == null) return;
-	Rectangle rect = getBounds ();
-	Rectangle parentRect = display.map (parent, null, parent.getClientArea());
+	Rectangle rect = getBoundsInPixels ();
+	Rectangle parentRect = display.mapInPixels (parent, null, parent.getClientAreaInPixels());
 	int x = Math.max (parentRect.x, parentRect.x + (parentRect.width - rect.width) / 2);
 	int y = Math.max (parentRect.y, parentRect.y + (parentRect.height - rect.height) / 2);
 	Rectangle monitorRect = parent.getMonitor ().getClientArea();
@@ -519,7 +520,7 @@ void center () {
 	} else {
 		y = Math.max (y, monitorRect.y);
 	}
-	setLocation (x, y);
+	setLocationInPixels (x, y);
 }
 
 /**
@@ -930,11 +931,9 @@ public int getAlpha () {
 	return 0xFF;
 }
 
-@Override
-public Rectangle getBounds () {
-	checkWidget ();
+@Override Rectangle getBoundsInPixels () {
 	if (!OS.IsWinCE) {
-		if (OS.IsIconic (handle)) return super.getBounds ();
+		if (OS.IsIconic (handle)) return super.getBoundsInPixels ();
 	}
 	RECT rect = new RECT ();
 	OS.GetWindowRect (handle, rect);
@@ -1030,12 +1029,10 @@ public int getImeInputMode () {
 	return result | SWT.ALPHA;
 }
 
-@Override
-public Point getLocation () {
-	checkWidget ();
+@Override Point getLocationInPixels () {
 	if (!OS.IsWinCE) {
 		if (OS.IsIconic (handle)) {
-			return super.getLocation ();
+			return super.getLocationInPixels ();
 		}
 	}
 	RECT rect = new RECT ();
@@ -1066,6 +1063,10 @@ public boolean getMaximized () {
  */
 public Point getMinimumSize () {
 	checkWidget ();
+	return DPIUtil.autoScaleDown(getMinimumSizeInPixels());
+}
+
+Point getMinimumSizeInPixels () {
 	int width = Math.max (0, minWidth);
 	int trim = SWT.TITLE | SWT.CLOSE | SWT.MIN | SWT.MAX;
 	if ((style & SWT.NO_TRIM) == 0 && (style & trim) != 0) {
@@ -1130,11 +1131,9 @@ public Shell getShell () {
 	return this;
 }
 
-@Override
-public Point getSize () {
-	checkWidget ();
+@Override Point getSizeInPixels () {
 	if (!OS.IsWinCE) {
-		if (OS.IsIconic (handle)) return super.getSize ();
+		if (OS.IsIconic (handle)) return super.getSizeInPixels ();
 	}
 	RECT rect = new RECT ();
 	OS.GetWindowRect (handle, rect);
@@ -1576,7 +1575,7 @@ public void setAlpha (int alpha) {
 }
 
 @Override
-void setBounds (int x, int y, int width, int height, int flags, boolean defer) {
+void setBoundsInPixels (int x, int y, int width, int height, int flags, boolean defer) {
 	if (fullScreen) setFullScreen (false);
 	/*
 	* Bug in Windows.  When a window has alpha and
@@ -1590,7 +1589,7 @@ void setBounds (int x, int y, int width, int height, int flags, boolean defer) {
 	if ((bits & OS.WS_EX_LAYERED) != 0) {
 		flags &= ~OS.SWP_DRAWFRAME;
 	}
-	super.setBounds (x, y, width, height, flags, false);
+	super.setBoundsInPixels (x, y, width, height, flags, false);
 }
 
 @Override
@@ -1732,6 +1731,10 @@ public void setImeInputMode (int mode) {
  */
 public void setMinimumSize (int width, int height) {
 	checkWidget ();
+	setMinimumSizeInPixels(DPIUtil.autoScaleUp(width), DPIUtil.autoScaleUp(height));
+}
+
+void setMinimumSizeInPixels (int width, int height) {
 	int widthLimit = 0, heightLimit = 0;
 	int trim = SWT.TITLE | SWT.CLOSE | SWT.MIN | SWT.MAX;
 	if ((style & SWT.NO_TRIM) == 0 && (style & trim) != 0) {
@@ -1748,12 +1751,12 @@ public void setMinimumSize (int width, int height) {
 	}
 	minWidth = Math.max (widthLimit, width);
 	minHeight = Math.max (heightLimit, height);
-	Point size = getSize ();
+	Point size = getSizeInPixels ();
 	int newWidth = Math.max (size.x, minWidth);
 	int newHeight = Math.max (size.y, minHeight);
 	if (minWidth <= widthLimit) minWidth = SWT.DEFAULT;
 	if (minHeight <= heightLimit) minHeight = SWT.DEFAULT;
-	if (newWidth != size.x || newHeight != size.y) setSize (newWidth, newHeight);
+	if (newWidth != size.x || newHeight != size.y) setSizeInPixels (newWidth, newHeight);
 }
 
 /**
@@ -1776,7 +1779,8 @@ public void setMinimumSize (int width, int height) {
 public void setMinimumSize (Point size) {
 	checkWidget ();
 	if (size == null) error (SWT.ERROR_NULL_ARGUMENT);
-	setMinimumSize (size.x, size.y);
+	size = DPIUtil.autoScaleUp(size);
+	setMinimumSizeInPixels(size.x, size.y);
 }
 
 /**

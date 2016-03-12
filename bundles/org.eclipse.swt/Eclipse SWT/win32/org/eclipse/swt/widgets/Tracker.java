@@ -11,11 +11,11 @@
 package org.eclipse.swt.widgets;
 
 
-import org.eclipse.swt.internal.*;
-import org.eclipse.swt.internal.win32.*;
-import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.*;
 import org.eclipse.swt.events.*;
+import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.internal.*;
+import org.eclipse.swt.internal.win32.*;
 
 /**
  *  Instances of this class implement rubber banding rectangles that are
@@ -411,6 +411,14 @@ void drawRectangles (Rectangle [] rects, boolean stippled) {
  */
 public Rectangle [] getRectangles () {
 	checkWidget();
+	Rectangle [] result = getRectanglesInPixels();
+	for (int i = 0; i < result.length; i++) {
+		result[i] = DPIUtil.autoScaleDown(result[i]);
+	}
+	return result;
+}
+
+Rectangle [] getRectanglesInPixels () {
 	Rectangle [] result = new Rectangle [rectangles.length];
 	for (int i = 0; i < rectangles.length; i++) {
 		Rectangle current = rectangles [i];
@@ -488,7 +496,7 @@ public boolean open () {
 	* second window is used for drawing the rectangles.
 	*/
 	if (IsVista && parent == null) {
-		Rectangle bounds = display.getBounds();
+		Rectangle bounds = display.getBoundsInPixels();
 		hwndTransparent = OS.CreateWindowEx (
 			OS.WS_EX_LAYERED | OS.WS_EX_NOACTIVATE | OS.WS_EX_TOOLWINDOW,
 			display.windowClass,
@@ -531,7 +539,7 @@ public boolean open () {
 		* outside of our visible windows (ie.- over the desktop).
 		*/
 		if (!mouseDown) {
-			Rectangle bounds = display.getBounds();
+			Rectangle bounds = display.getBoundsInPixels();
 			hwndTransparent = OS.CreateWindowEx (
 				OS.WS_EX_TRANSPARENT,
 				display.windowClass,
@@ -850,6 +858,14 @@ public void setCursor(Cursor newCursor) {
 public void setRectangles (Rectangle [] rectangles) {
 	checkWidget ();
 	if (rectangles == null) error (SWT.ERROR_NULL_ARGUMENT);
+	Rectangle [] rectanglesInPixels = new Rectangle [rectangles.length];
+	for (int i = 0; i < rectangles.length; i++) {
+		rectanglesInPixels [i] = DPIUtil.autoScaleUp (rectangles [i]);
+	}
+	setRectanglesInPixels (rectanglesInPixels);
+}
+
+void setRectanglesInPixels (Rectangle [] rectangles) {
 	this.rectangles = new Rectangle [rectangles.length];
 	for (int i = 0; i < rectangles.length; i++) {
 		Rectangle current = rectangles [i];
@@ -999,8 +1015,7 @@ LRESULT wmKeyDown (long /*int*/ hwnd, long /*int*/ wParam, long /*int*/ lParam) 
 			rectsToErase [i] = new Rectangle (current.x, current.y, current.width, current.height);
 		}
 		Event event = new Event ();
-		event.x = oldX + xChange;
-		event.y = oldY + yChange;
+		event.setLocationInPixels(oldX + xChange, oldY + yChange);
 		Point cursorPos;
 		if ((style & SWT.RESIZE) != 0) {
 			resizeRectangles (xChange, yChange);
@@ -1120,8 +1135,7 @@ LRESULT wmMouse (int message, long /*int*/ wParam, long /*int*/ lParam) {
 			rectsToErase [i] = new Rectangle (current.x, current.y, current.width, current.height);
 		}
 		Event event = new Event ();
-		event.x = newX;
-		event.y = newY;
+		event.setLocationInPixels(newX, newY);
 		if ((style & SWT.RESIZE) != 0) {
 			if (isMirrored) {
 			   resizeRectangles (oldX - newX, newY - oldY);

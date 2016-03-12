@@ -11,11 +11,11 @@
 package org.eclipse.swt.widgets;
 
 
+import org.eclipse.swt.*;
+import org.eclipse.swt.events.*;
+import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.win32.*;
-import org.eclipse.swt.*;
-import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.events.*;
 
 /**
  * Instances of this class represent a selectable user interface object
@@ -235,6 +235,10 @@ void destroyWidget () {
  */
 public Rectangle getBounds () {
 	checkWidget();
+	return DPIUtil.autoScaleDown(getBoundsInPixels());
+}
+
+Rectangle getBoundsInPixels () {
 	long /*int*/ hwnd = parent.handle;
 	int index = (int)/*64*/OS.SendMessage (hwnd, OS.TB_COMMANDTOINDEX, id, 0);
 	RECT rect = new RECT ();
@@ -390,6 +394,10 @@ public String getToolTipText () {
  */
 public int getWidth () {
 	checkWidget();
+	return DPIUtil.autoScaleDown(getWidthInPixels());
+}
+
+int getWidthInPixels () {
 	long /*int*/ hwnd = parent.handle;
 	int index = (int)/*64*/OS.SendMessage (hwnd, OS.TB_COMMANDTOINDEX, id, 0);
 	RECT rect = new RECT ();
@@ -510,12 +518,12 @@ void resizeControl () {
 		* case can occur when the control is a
 		* combo box.
 		*/
-		Rectangle itemRect = getBounds ();
-		control.setSize (itemRect.width, itemRect.height);
-		Rectangle rect = control.getBounds ();
+		Rectangle itemRect = getBoundsInPixels ();
+		control.setSizeInPixels (itemRect.width, itemRect.height);
+		Rectangle rect = control.getBoundsInPixels ();
 		rect.x = itemRect.x + (itemRect.width - rect.width) / 2;
 		rect.y = itemRect.y + (itemRect.height - rect.height) / 2;
-		control.setLocation (rect.x, rect.y);
+		control.setLocationInPixels (rect.x, rect.y);
 	}
 }
 
@@ -921,6 +929,10 @@ public void setToolTipText (String string) {
  */
 public void setWidth (int width) {
 	checkWidget();
+	setWidthInPixels(DPIUtil.autoScaleUp(width));
+}
+
+void setWidthInPixels (int width) {
 	if ((style & SWT.SEPARATOR) == 0) return;
 	if (width < 0) return;
 	long /*int*/ hwnd = parent.handle;
@@ -944,7 +956,7 @@ void updateImages (boolean enabled) {
 	ImageList hotImageList = parent.getHotImageList ();
 	ImageList disabledImageList = parent.getDisabledImageList();
 	if (info.iImage == OS.I_IMAGENONE) {
-		Rectangle bounds = image.getBounds ();
+		Rectangle bounds = image.getBoundsInPixels ();
 		int listStyle = parent.style & SWT.RIGHT_TO_LEFT;
 		if (imageList == null) {
 			imageList = display.getImageListToolBar (listStyle, bounds.width, bounds.height);

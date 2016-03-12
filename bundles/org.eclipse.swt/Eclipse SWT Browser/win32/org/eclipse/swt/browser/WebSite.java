@@ -322,6 +322,8 @@ int ShowContextMenu(int dwID, long /*int*/ ppt, long /*int*/ pcmdtReserved, long
 	Event event = new Event();
 	POINT pt = new POINT();
 	OS.MoveMemory(pt, ppt, POINT.sizeof);
+	pt.x = DPIUtil.autoScaleDown(pt.x); // To Points
+	pt.y = DPIUtil.autoScaleDown(pt.y); // To Points
 	event.x = pt.x;
 	event.y = pt.y;
 	browser.notifyListeners(SWT.MenuDetect, event);

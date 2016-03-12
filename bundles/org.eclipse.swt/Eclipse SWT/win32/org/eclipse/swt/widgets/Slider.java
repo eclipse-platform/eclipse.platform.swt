@@ -175,10 +175,9 @@ static int checkStyle (int style) {
 	return checkBits (style, SWT.HORIZONTAL, SWT.VERTICAL, 0, 0, 0, 0);
 }
 
-@Override
-public Point computeSize (int wHint, int hHint, boolean changed) {
+@Override Point computeSizeInPixels (int wHint, int hHint, boolean changed) {
 	checkWidget ();
-	int border = getBorderWidth ();
+	int border = getBorderWidthInPixels ();
 	int width = border * 2, height = border * 2;
 	if ((style & SWT.HORIZONTAL) != 0) {
 		width += OS.GetSystemMetrics (OS.SM_CXHSCROLL) * 10;
@@ -378,8 +377,8 @@ public void removeSelectionListener (SelectionListener listener) {
 }
 
 @Override
-void setBounds (int x, int y, int width, int height, int flags) {
-	super.setBounds (x, y, width, height, flags);
+void setBoundsInPixels (int x, int y, int width, int height, int flags) {
+	super.setBoundsInPixels (x, y, width, height, flags);
 	/*
 	* Bug in Windows.  If the scroll bar is resized when it has focus,
 	* the flashing cursor that is used to show that the scroll bar has

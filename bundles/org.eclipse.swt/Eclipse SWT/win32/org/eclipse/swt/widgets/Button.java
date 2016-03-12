@@ -11,11 +11,11 @@
 package org.eclipse.swt.widgets;
 
 
+import org.eclipse.swt.*;
+import org.eclipse.swt.events.*;
+import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.win32.*;
-import org.eclipse.swt.*;
-import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.events.*;
 
 /**
  * Instances of this class represent a selectable user interface object that
@@ -213,7 +213,7 @@ void _setImage (Image image) {
 			*/
 			if ((style & SWT.RIGHT_TO_LEFT) != 0) {
 				if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (4, 10)) {
-					Rectangle rect = image.getBounds ();
+					Rectangle rect = image.getBoundsInPixels ();
 					long /*int*/ hDC = OS.GetDC (handle);
 					long /*int*/ dstHdc = OS.CreateCompatibleDC (hDC);
 					long /*int*/ hBitmap = OS.CreateCompatibleBitmap (hDC, rect.width, rect.height);
@@ -378,7 +378,7 @@ int computeLeftMargin () {
 	if ((style & (SWT.PUSH | SWT.TOGGLE)) == 0) return MARGIN;
 	int margin = 0;
 	if (image != null && text.length () != 0) {
-		Rectangle bounds = image.getBounds ();
+		Rectangle bounds = image.getBoundsInPixels ();
 		margin += bounds.width + MARGIN * 2;
 		long /*int*/ oldFont = 0;
 		long /*int*/ hDC = OS.GetDC (handle);
@@ -397,10 +397,9 @@ int computeLeftMargin () {
 	return margin;
 }
 
-@Override
-public Point computeSize (int wHint, int hHint, boolean changed) {
+@Override Point computeSizeInPixels (int wHint, int hHint, boolean changed) {
 	checkWidget ();
-	int width = 0, height = 0, border = getBorderWidth ();
+	int width = 0, height = 0, border = getBorderWidthInPixels ();
 	if ((style & SWT.ARROW) != 0) {
 		if ((style & (SWT.UP | SWT.DOWN)) != 0) {
 			width += OS.GetSystemMetrics (OS.SM_CXVSCROLL);
@@ -440,7 +439,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 			}
 			if (hasImage) {
 				if (image != null) {
-					Rectangle rect = image.getBounds ();
+					Rectangle rect = image.getBoundsInPixels ();
 					width = rect.width;
 					if (hasText && text.length () != 0) {
 						width += MARGIN * 2;

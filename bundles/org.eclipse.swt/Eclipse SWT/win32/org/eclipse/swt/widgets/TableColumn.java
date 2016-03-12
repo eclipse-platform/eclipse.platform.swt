@@ -11,10 +11,11 @@
 package org.eclipse.swt.widgets;
 
 
-import org.eclipse.swt.internal.win32.*;
 import org.eclipse.swt.*;
-import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.events.*;
+import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.internal.*;
+import org.eclipse.swt.internal.win32.*;
 
 /**
  * Instances of this class represent a column in a table widget.
@@ -309,6 +310,10 @@ public String getToolTipText () {
  */
 public int getWidth () {
 	checkWidget ();
+	return DPIUtil.autoScaleDown(getWidthInPixels());
+}
+
+int getWidthInPixels () {
 	int index = parent.indexOf (this);
 	if (index == -1) return 0;
 	long /*int*/ hwnd = parent.handle;
@@ -349,7 +354,7 @@ public void pack () {
 			headerImage = image;
 		}
 		if (headerImage != null) {
-			Rectangle bounds = headerImage.getBounds ();
+			Rectangle bounds = headerImage.getBoundsInPixels ();
 			headerWidth += bounds.width;
 		}
 		int margin = 0;
@@ -380,7 +385,8 @@ public void pack () {
 				Event event = parent.sendMeasureItemEvent (item, i, index, hDC);
 				if (hFont != -1) hFont = OS.SelectObject (hDC, hFont);
 				if (isDisposed () || parent.isDisposed ()) break;
-				columnWidth = Math.max (columnWidth, event.x + event.width - headerRect.left);
+				Rectangle bounds = event.getBoundsInPixels();
+				columnWidth = Math.max (columnWidth, bounds.x + bounds.width - headerRect.left);
 			}
 		}
 		if (newFont != 0) OS.SelectObject (hDC, oldFont);
@@ -869,6 +875,10 @@ public void setToolTipText (String string) {
  */
 public void setWidth (int width) {
 	checkWidget ();
+	setWidthInPixels(DPIUtil.autoScaleUp(width));
+}
+
+void setWidthInPixels (int width) {
 	if (width < 0) return;
 	int index = parent.indexOf (this);
 	if (index == -1) return;

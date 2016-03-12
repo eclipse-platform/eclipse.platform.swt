@@ -16,6 +16,7 @@ import org.eclipse.swt.*;
 import org.eclipse.swt.accessibility.*;
 import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.gdip.*;
 import org.eclipse.swt.internal.win32.*;
 
@@ -568,7 +569,7 @@ void checkBackground () {
 }
 
 void checkBorder () {
-	if (getBorderWidth () == 0) style &= ~SWT.BORDER;
+	if (getBorderWidthInPixels () == 0) style &= ~SWT.BORDER;
 }
 
 void checkBuffered () {
@@ -618,7 +619,10 @@ void checkMirrored () {
  * @see "computeTrim, getClientArea for controls that implement them"
  */
 public Point computeSize (int wHint, int hHint) {
-	return computeSize (wHint, hHint, true);
+	checkWidget ();
+	wHint = (wHint != SWT.DEFAULT ? DPIUtil.autoScaleUp(wHint) : wHint);
+	hHint = (hHint != SWT.DEFAULT ? DPIUtil.autoScaleUp(hHint) : hHint);
+	return DPIUtil.autoScaleDown(computeSizeInPixels(wHint, hHint, true));
 }
 
 /**
@@ -655,13 +659,19 @@ public Point computeSize (int wHint, int hHint) {
  * @see #pack(boolean)
  * @see "computeTrim, getClientArea for controls that implement them"
  */
-public Point computeSize (int wHint, int hHint, boolean changed) {
+public Point computeSize (int wHint, int hHint, boolean changed){
 	checkWidget ();
+	wHint = (wHint != SWT.DEFAULT ? DPIUtil.autoScaleUp(wHint) : wHint);
+	hHint = (hHint != SWT.DEFAULT ? DPIUtil.autoScaleUp(hHint) : hHint);
+	return DPIUtil.autoScaleDown(computeSizeInPixels(wHint, hHint, changed));
+}
+
+Point computeSizeInPixels (int wHint, int hHint, boolean changed) {
 	int width = DEFAULT_WIDTH;
 	int height = DEFAULT_HEIGHT;
 	if (wHint != SWT.DEFAULT) width = wHint;
 	if (hHint != SWT.DEFAULT) height = hHint;
-	int border = getBorderWidth ();
+	int border = getBorderWidthInPixels ();
 	width += border * 2;
 	height += border * 2;
 	return new Point (width, height);
@@ -828,7 +838,8 @@ void destroyWidget () {
 public boolean dragDetect (Event event) {
 	checkWidget ();
 	if (event == null) error (SWT.ERROR_NULL_ARGUMENT);
-	return dragDetect (event.button, event.count, event.stateMask, event.x, event.y);
+	Point loc = event.getLocationInPixels();
+	return dragDetect (event.button, event.count, event.stateMask, loc.x, loc.y);
 }
 
 /**
@@ -870,7 +881,7 @@ public boolean dragDetect (Event event) {
 public boolean dragDetect (MouseEvent event) {
 	checkWidget ();
 	if (event == null) error (SWT.ERROR_NULL_ARGUMENT);
-	return dragDetect (event.button, event.count, event.stateMask, event.x, event.y);
+	return dragDetect (event.button, event.count, event.stateMask, DPIUtil.autoScaleUp(event.x), DPIUtil.autoScaleUp(event.y)); // To Pixels
 }
 
 boolean dragDetect (int button, int count, int stateMask, int x, int y) {
@@ -1221,6 +1232,10 @@ int getBackgroundPixel () {
  */
 public int getBorderWidth () {
 	checkWidget ();
+	return DPIUtil.autoScaleDown(getBorderWidthInPixels ());
+}
+
+int getBorderWidthInPixels () {
 	long /*int*/ borderHandle = borderHandle ();
 	int bits1 = OS.GetWindowLong (borderHandle, OS.GWL_EXSTYLE);
 	if ((bits1 & OS.WS_EX_CLIENTEDGE) != 0) return OS.GetSystemMetrics (OS.SM_CXEDGE);
@@ -1243,8 +1258,12 @@ public int getBorderWidth () {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  */
-public Rectangle getBounds () {
+public Rectangle getBounds (){
 	checkWidget ();
+	return DPIUtil.autoScaleDown(getBoundsInPixels ());
+}
+
+Rectangle getBoundsInPixels () {
 	forceResize ();
 	RECT rect = new RECT ();
 	OS.GetWindowRect (topHandle (), rect);
@@ -1419,6 +1438,10 @@ public Object getLayoutData () {
  */
 public Point getLocation () {
 	checkWidget ();
+	return DPIUtil.autoScaleDown(getLocationInPixels());
+}
+
+Point getLocationInPixels () {
 	forceResize ();
 	RECT rect = new RECT ();
 	OS.GetWindowRect (topHandle (), rect);
@@ -1471,14 +1494,12 @@ public Monitor getMonitor () {
 	OS.GetMonitorInfo (hmonitor, lpmi);
 	Monitor monitor = new Monitor ();
 	monitor.handle = hmonitor;
-	monitor.x = lpmi.rcMonitor_left;
-	monitor.y = lpmi.rcMonitor_top;
-	monitor.width = lpmi.rcMonitor_right - lpmi.rcMonitor_left;
-	monitor.height = lpmi.rcMonitor_bottom - lpmi.rcMonitor_top;
-	monitor.clientX = lpmi.rcWork_left;
-	monitor.clientY = lpmi.rcWork_top;
-	monitor.clientWidth = lpmi.rcWork_right - lpmi.rcWork_left;
-	monitor.clientHeight = lpmi.rcWork_bottom - lpmi.rcWork_top;
+	Rectangle bounds = new Rectangle (lpmi.rcMonitor_left, lpmi.rcMonitor_top, lpmi.rcMonitor_right - lpmi.rcMonitor_left, lpmi.rcMonitor_bottom - lpmi.rcMonitor_top);
+	bounds = DPIUtil.autoScaleDown (bounds);
+	monitor.setBounds (bounds);
+	Rectangle clientArea = new Rectangle (lpmi.rcWork_left, lpmi.rcWork_top, lpmi.rcWork_right - lpmi.rcWork_left, lpmi.rcWork_bottom - lpmi.rcWork_top);
+	clientArea = DPIUtil.autoScaleDown (clientArea);
+	monitor.setClientArea (clientArea);
 	return monitor;
 }
 
@@ -1585,8 +1606,12 @@ public Shell getShell () {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  */
-public Point getSize () {
+public Point getSize (){
 	checkWidget ();
+	return DPIUtil.autoScaleDown(getSizeInPixels ());
+}
+
+Point getSizeInPixels () {
 	forceResize ();
 	RECT rect = new RECT ();
 	OS.GetWindowRect (topHandle (), rect);
@@ -1899,7 +1924,7 @@ boolean isShowing () {
 	if (!isVisible ()) return false;
 	Control control = this;
 	while (control != null) {
-		Point size = control.getSize ();
+		Point size = control.getSizeInPixels ();
 		if (size.x == 0 || size.y == 0) {
 			return false;
 		}
@@ -1969,11 +1994,11 @@ public boolean isVisible () {
 void mapEvent (long /*int*/ hwnd, Event event) {
 	if (hwnd != handle) {
 		POINT point = new POINT ();
-		point.x = event.x;
-		point.y = event.y;
+		Point loc = event.getLocationInPixels();
+		point.x = loc.x;
+		point.y = loc.y;
 		OS.MapWindowPoints (hwnd, handle, point, 1);
-		event.x = point.x;
-		event.y = point.y;
+		event.setLocationInPixels(point.x, point.y);
 	}
 }
 
@@ -2146,6 +2171,10 @@ public void pack () {
  */
 public void pack (boolean changed) {
 	checkWidget ();
+	/*
+	 * Since computeSize is overridden by Custom classes like CCombo
+	 * etc... hence we cannot call computeSizeInPixels directly.
+	 */
 	setSize (computeSize (SWT.DEFAULT, SWT.DEFAULT, changed));
 }
 
@@ -2429,6 +2458,14 @@ void redraw (boolean all) {
  */
 public void redraw (int x, int y, int width, int height, boolean all) {
 	checkWidget ();
+	x = DPIUtil.autoScaleUp(x);
+	y = DPIUtil.autoScaleUp(y);
+	width = DPIUtil.autoScaleUp(width);
+	height = DPIUtil.autoScaleUp(height);
+	redrawInPixels(x, y, width, height, all);
+}
+
+void redrawInPixels (int x, int y, int width, int height, boolean all) {
 	if (width <= 0 || height <= 0) return;
 	if (!OS.IsWindowVisible (handle)) return;
 	RECT rect = new RECT ();
@@ -2924,9 +2961,8 @@ boolean sendGestureEvent (GESTUREINFO gi) {
 	Event event = new Event ();
 	int type = 0;
 	Point globalPt = new Point(gi.x, gi.y);
-	Point point = toControl(globalPt);
-	event.x = point.x;
-	event.y = point.y;
+	Point point = toControlInPixels(globalPt.x, globalPt.y);
+	event.setLocationInPixels(point.x, point.y);
 	switch (gi.dwID) {
 		case OS.GID_ZOOM:
 			type = SWT.Gesture;
@@ -3006,8 +3042,7 @@ void sendTouchEvent (TOUCHINPUT touchInput []) {
 	POINT pt = new POINT ();
 	OS.GetCursorPos (pt);
 	OS.ScreenToClient (handle, pt);
-	event.x = pt.x;
-	event.y = pt.y;
+	event.setLocationInPixels(pt.x, pt.y);
 	Touch [] touches = new Touch [touchInput.length];
 	Monitor monitor = getMonitor ();
 	for (int i = 0; i < touchInput.length; i++) {
@@ -3157,17 +3192,25 @@ void setBackgroundPixel (int pixel) {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  */
-public void setBounds (int x, int y, int width, int height) {
+public void setBounds(int x, int y, int width, int height) {
 	checkWidget ();
+	x = DPIUtil.autoScaleUp(x);
+	y = DPIUtil.autoScaleUp(y);
+	width = DPIUtil.autoScaleUp(width);
+	height = DPIUtil.autoScaleUp(height);
+	setBoundsInPixels(x, y, width, height);
+}
+
+void setBoundsInPixels (int x, int y, int width, int height) {
 	int flags = OS.SWP_NOZORDER | OS.SWP_DRAWFRAME | OS.SWP_NOACTIVATE;
-	setBounds (x, y, Math.max (0, width), Math.max (0, height), flags);
+	setBoundsInPixels (x, y, Math.max (0, width), Math.max (0, height), flags);
 }
 
-void setBounds (int x, int y, int width, int height, int flags) {
-	setBounds (x, y, width, height, flags, true);
+void setBoundsInPixels (int x, int y, int width, int height, int flags) {
+	setBoundsInPixels (x, y, width, height, flags, true);
 }
 
-void setBounds (int x, int y, int width, int height, int flags, boolean defer) {
+void setBoundsInPixels (int x, int y, int width, int height, int flags, boolean defer) {
 	if (findImageControl () != null) {
 		if (backgroundImage == null) flags |= OS.SWP_NOCOPYBITS;
 	} else {
@@ -3227,7 +3270,11 @@ void setBounds (int x, int y, int width, int height, int flags, boolean defer) {
 public void setBounds (Rectangle rect) {
 	checkWidget ();
 	if (rect == null) error (SWT.ERROR_NULL_ARGUMENT);
-	setBounds (rect.x, rect.y, rect.width, rect.height);
+	setBoundsInPixels(DPIUtil.autoScaleUp(rect));
+}
+
+void setBoundsInPixels (Rectangle rect) {
+	setBoundsInPixels (rect.x, rect.y, rect.width, rect.height);
 }
 
 /**
@@ -3477,6 +3524,12 @@ public void setLayoutData (Object layoutData) {
  */
 public void setLocation (int x, int y) {
 	checkWidget ();
+	x = DPIUtil.autoScaleUp(x);
+	y = DPIUtil.autoScaleUp(y);
+	setLocationInPixels(x, y);
+}
+
+void setLocationInPixels (int x, int y) {
 	int flags = OS.SWP_NOSIZE | OS.SWP_NOZORDER | OS.SWP_NOACTIVATE;
 	/*
 	* Feature in WinCE.  The SWP_DRAWFRAME flag for SetWindowPos()
@@ -3485,7 +3538,7 @@ public void setLocation (int x, int y) {
 	* not running on WinCE.
 	*/
 	if (!OS.IsWinCE) flags |= OS.SWP_DRAWFRAME;
-	setBounds (x, y, 0, 0, flags);
+	setBoundsInPixels (x, y, 0, 0, flags);
 }
 
 /**
@@ -3505,7 +3558,8 @@ public void setLocation (int x, int y) {
 public void setLocation (Point location) {
 	checkWidget ();
 	if (location == null) error (SWT.ERROR_NULL_ARGUMENT);
-	setLocation (location.x, location.y);
+	location = DPIUtil.autoScaleUp(location);
+	setLocationInPixels(location.x, location.y);
 }
 
 /**
@@ -3700,8 +3754,14 @@ boolean setSavedFocus () {
  */
 public void setSize (int width, int height) {
 	checkWidget ();
+	width = DPIUtil.autoScaleUp(width);
+	height = DPIUtil.autoScaleUp(height);
+	setSizeInPixels(width, height);
+}
+
+void setSizeInPixels (int width, int height) {
 	int flags = OS.SWP_NOMOVE | OS.SWP_NOZORDER | OS.SWP_DRAWFRAME | OS.SWP_NOACTIVATE;
-	setBounds (0, 0, Math.max (0, width), Math.max (0, height), flags);
+	setBoundsInPixels (0, 0, Math.max (0, width), Math.max (0, height), flags);
 }
 
 /**
@@ -3725,7 +3785,8 @@ public void setSize (int width, int height) {
 public void setSize (Point size) {
 	checkWidget ();
 	if (size == null) error (SWT.ERROR_NULL_ARGUMENT);
-	setSize (size.x, size.y);
+	size = DPIUtil.autoScaleUp(size);
+	setSizeInPixels(size.x, size.y);
 }
 
 @Override
@@ -3915,7 +3976,7 @@ void subclass () {
  * to coordinates relative to the receiver.
  * <p>
  * NOTE: To properly map a rectangle or a corner of a rectangle on a right-to-left platform, use
- * {@link Display#map(Control, Control, Rectangle)}.
+ * {@link Display#mapInPixels(Control, Control, Rectangle)}.
  * </p>
  *
  * @param x the x coordinate to be translated
@@ -3931,6 +3992,10 @@ void subclass () {
  */
 public Point toControl (int x, int y) {
 	checkWidget ();
+	return DPIUtil.autoScaleDown(toControlInPixels(DPIUtil.autoScaleUp(x), DPIUtil.autoScaleUp(y)));
+}
+
+Point toControlInPixels (int x, int y) {
 	POINT pt = new POINT ();
 	pt.x = x;  pt.y = y;
 	OS.ScreenToClient (handle, pt);
@@ -3943,7 +4008,7 @@ public Point toControl (int x, int y) {
  * to coordinates relative to the receiver.
  * <p>
  * NOTE: To properly map a rectangle or a corner of a rectangle on a right-to-left platform, use
- * {@link Display#map(Control, Control, Rectangle)}.
+ * {@link Display#mapInPixels(Control, Control, Rectangle)}.
  * </p>
  *
  * @param point the point to be translated (must not be null)
@@ -3960,7 +4025,8 @@ public Point toControl (int x, int y) {
 public Point toControl (Point point) {
 	checkWidget ();
 	if (point == null) error (SWT.ERROR_NULL_ARGUMENT);
-	return toControl (point.x, point.y);
+	point = DPIUtil.autoScaleUp(point);
+	return DPIUtil.autoScaleDown(toControlInPixels(point.x, point.y));
 }
 
 /**
@@ -3969,7 +4035,7 @@ public Point toControl (Point point) {
  * the receiver, to display relative coordinates.
  * <p>
  * NOTE: To properly map a rectangle or a corner of a rectangle on a right-to-left platform, use
- * {@link Display#map(Control, Control, Rectangle)}.
+ * {@link Display#mapInPixels(Control, Control, Rectangle)}.
  * </p>
  *
  * @param x the x coordinate to be translated
@@ -3985,6 +4051,10 @@ public Point toControl (Point point) {
  */
 public Point toDisplay (int x, int y) {
 	checkWidget ();
+	return DPIUtil.autoScaleDown(toDisplayInPixels(DPIUtil.autoScaleUp(x), DPIUtil.autoScaleUp(y)));
+}
+
+Point toDisplayInPixels (int x, int y) {
 	POINT pt = new POINT ();
 	pt.x = x;  pt.y = y;
 	OS.ClientToScreen (handle, pt);
@@ -3997,7 +4067,7 @@ public Point toDisplay (int x, int y) {
  * the receiver, to display relative coordinates.
  * <p>
  * NOTE: To properly map a rectangle or a corner of a rectangle on a right-to-left platform, use
- * {@link Display#map(Control, Control, Rectangle)}.
+ * {@link Display#mapInPixels(Control, Control, Rectangle)}.
  * </p>
  *
  * @param point the point to be translated (must not be null)
@@ -4014,7 +4084,8 @@ public Point toDisplay (int x, int y) {
 public Point toDisplay (Point point) {
 	checkWidget ();
 	if (point == null) error (SWT.ERROR_NULL_ARGUMENT);
-	return toDisplay (point.x, point.y);
+	point = DPIUtil.autoScaleUp(point);
+	return DPIUtil.autoScaleDown(toDisplayInPixels(point.x, point.y));
 }
 
 long /*int*/ topHandle () {
@@ -5544,9 +5615,7 @@ LRESULT WM_TABLET_FLICK (long /*int*/ wParam, long /*int*/ lParam) {
 			event.yDirection = 1;
 			break;
 	}
-
-	event.x = fPoint.x;
-	event.y = fPoint.y;
+	event.setLocationInPixels(fPoint.x, fPoint.y);
 	event.type = SWT.Gesture;
 	event.detail = SWT.GESTURE_SWIPE;
 	setInputState (event, SWT.Gesture);

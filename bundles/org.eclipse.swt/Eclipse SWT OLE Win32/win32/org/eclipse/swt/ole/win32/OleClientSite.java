@@ -10,17 +10,14 @@
  *******************************************************************************/
 package org.eclipse.swt.ole.win32;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.FileInputStream;
-import java.io.IOException;
+import java.io.*;
+
 import org.eclipse.swt.*;
-import org.eclipse.swt.internal.C;
-import org.eclipse.swt.internal.Compatibility;
-import org.eclipse.swt.internal.ole.win32.*;
 import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.widgets.*;
+import org.eclipse.swt.internal.*;
+import org.eclipse.swt.internal.ole.win32.*;
 import org.eclipse.swt.internal.win32.*;
+import org.eclipse.swt.widgets.*;
 /**
  * OleClientSite provides a site to manage an embedded OLE Document within a container.
  *
@@ -829,7 +826,7 @@ protected int GetWindow(long /*int*/ phwnd) {
 	return COM.S_OK;
 }
 RECT getRect() {
-	Rectangle area = getClientArea();
+	Rectangle area = DPIUtil.autoScaleUp(getClientArea()); // To Pixels
 	RECT rect = new RECT();
 	rect.left   = area.x;
 	rect.top    = area.y;
@@ -1006,14 +1003,14 @@ private int OnInPlaceDeactivate() {
 	return COM.S_OK;
 }
 private int OnPosRectChange(long /*int*/ lprcPosRect) {
-	Point size = getSize();
+	Point size = DPIUtil.autoScaleUp(getSize()); // To Pixels
 	setExtent(size.x, size.y);
 	return COM.S_OK;
 }
 private void onPaint(Event e) {
 	if (state == STATE_RUNNING || state == STATE_INPLACEACTIVE) {
 		SIZE size = getExtent();
-		Rectangle area = getClientArea();
+		Rectangle area = DPIUtil.autoScaleUp(getClientArea()); // To Pixels
 		RECT rect = new RECT();
 		if (getProgramID().startsWith("Excel.Sheet")) { //$NON-NLS-1$
 			rect.left = area.x; rect.right = area.x + (area.height * size.cx / size.cy);
@@ -1403,11 +1400,11 @@ void setBorderSpace(RECT newBorderwidth) {
 	setBounds();
 }
 void setBounds() {
-	Rectangle area = frame.getClientArea();
-	setBounds(borderWidths.left,
-		      borderWidths.top,
-			  area.width - borderWidths.left - borderWidths.right,
-			  area.height - borderWidths.top - borderWidths.bottom);
+	Rectangle area = DPIUtil.autoScaleUp(frame.getClientArea()); // To Pixels
+	setBounds(DPIUtil.autoScaleDown(borderWidths.left),
+		      DPIUtil.autoScaleDown(borderWidths.top),
+			  DPIUtil.autoScaleDown(area.width - borderWidths.left - borderWidths.right),
+			  DPIUtil.autoScaleDown(area.height - borderWidths.top - borderWidths.bottom));
 	setObjectRects();
 }
 private void setExtent(int width, int height){

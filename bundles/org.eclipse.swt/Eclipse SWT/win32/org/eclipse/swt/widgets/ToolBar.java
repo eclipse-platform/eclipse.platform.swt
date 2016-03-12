@@ -11,10 +11,10 @@
 package org.eclipse.swt.widgets;
 
 
-import org.eclipse.swt.internal.*;
-import org.eclipse.swt.internal.win32.*;
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.internal.*;
+import org.eclipse.swt.internal.win32.*;
 
 /**
  * Instances of this class support the layout of selectable
@@ -188,9 +188,7 @@ protected void checkSubclass () {
 	if (!isValidSubclass ()) error (SWT.ERROR_INVALID_SUBCLASS);
 }
 
-@Override
-public Point computeSize (int wHint, int hHint, boolean changed) {
-	checkWidget ();
+@Override Point computeSizeInPixels (int wHint, int hHint, boolean changed) {
 	int width = 0, height = 0;
 	if ((style & SWT.VERTICAL) != 0) {
 		RECT rect = new RECT ();
@@ -215,7 +213,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 		OS.GetWindowRect (handle, oldRect);
 		int oldWidth = oldRect.right - oldRect.left;
 		int oldHeight = oldRect.bottom - oldRect.top;
-		int border = getBorderWidth ();
+		int border = getBorderWidthInPixels ();
 		int newWidth = wHint == SWT.DEFAULT ? 0x3FFF : wHint + border * 2;
 		int newHeight = hHint == SWT.DEFAULT ? 0x3FFF : hHint + border * 2;
 		boolean redraw = getDrawing () && OS.IsWindowVisible (handle);
@@ -246,15 +244,13 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	if (height == 0) height = DEFAULT_HEIGHT;
 	if (wHint != SWT.DEFAULT) width = wHint;
 	if (hHint != SWT.DEFAULT) height = hHint;
-	Rectangle trim = computeTrim (0, 0, width, height);
+	Rectangle trim = computeTrimInPixels (0, 0, width, height);
 	width = trim.width;  height = trim.height;
 	return new Point (width, height);
 }
 
-@Override
-public Rectangle computeTrim (int x, int y, int width, int height) {
-	checkWidget ();
-	Rectangle trim = super.computeTrim (x, y, width, height);
+@Override Rectangle computeTrimInPixels (int x, int y, int width, int height) {
+	Rectangle trim = super.computeTrimInPixels (x, y, width, height);
 	int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
 	if ((bits & OS.CCS_NODIVIDER) == 0) trim.height += 2;
 	return trim;
@@ -550,9 +546,13 @@ public ToolItem getItem (int index) {
 public ToolItem getItem (Point point) {
 	checkWidget ();
 	if (point == null) error (SWT.ERROR_NULL_ARGUMENT);
+	return getItemInPixels(DPIUtil.autoScaleUp(point));
+}
+
+ToolItem getItemInPixels (Point point) {
 	ToolItem [] items = getItems ();
 	for (int i=0; i<items.length; i++) {
-		Rectangle rect = items [i].getBounds ();
+		Rectangle rect = items [i].getBoundsInPixels ();
 		if (rect.contains (point)) return items [i];
 	}
 	return null;
@@ -918,7 +918,7 @@ void setBackgroundTransparent (boolean transparent) {
 }
 
 @Override
-void setBounds (int x, int y, int width, int height, int flags) {
+void setBoundsInPixels (int x, int y, int width, int height, int flags) {
 	/*
 	* Feature in Windows.  For some reason, when a tool bar is
 	* repositioned more than once using DeferWindowPos () into
@@ -934,7 +934,7 @@ void setBounds (int x, int y, int width, int height, int flags) {
 			parent.setResizeChildren (true);
 		}
 	}
-	super.setBounds (x, y, width, height, flags);
+	super.setBoundsInPixels (x, y, width, height, flags);
 }
 
 @Override
@@ -1502,7 +1502,7 @@ LRESULT WM_SIZE (long /*int*/ wParam, long /*int*/ lParam) {
 	if ((style & SWT.BORDER) != 0 && (style & SWT.WRAP) != 0) {
 		RECT windowRect = new RECT ();
 		OS.GetWindowRect (handle, windowRect);
-		int index = 0, border = getBorderWidth () * 2;
+		int index = 0, border = getBorderWidthInPixels () * 2;
 		RECT rect = new RECT ();
 		int count = (int)/*64*/OS.SendMessage (handle, OS.TB_BUTTONCOUNT, 0, 0);
 		while (index < count) {
@@ -1586,8 +1586,7 @@ LRESULT wmNotifyChild (NMHDR hdr, long /*int*/ wParam, long /*int*/ lParam) {
 				int index = (int)/*64*/OS.SendMessage (handle, OS.TB_COMMANDTOINDEX, lpnmtb.iItem, 0);
 				RECT rect = new RECT ();
 				OS.SendMessage (handle, OS.TB_GETITEMRECT, index, rect);
-				event.x = rect.left;
-				event.y = rect.bottom;
+				event.setLocationInPixels(rect.left, rect.bottom);
 				child.sendSelectionEvent (SWT.Selection, event, false);
 			}
 			break;

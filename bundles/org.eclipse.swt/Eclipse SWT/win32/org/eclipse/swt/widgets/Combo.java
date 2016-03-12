@@ -12,11 +12,11 @@
 package org.eclipse.swt.widgets;
 
 
+import org.eclipse.swt.*;
+import org.eclipse.swt.events.*;
+import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.win32.*;
-import org.eclipse.swt.*;
-import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.events.*;
 
 /**
  * Instances of this class are controls that allow the user
@@ -622,8 +622,7 @@ public void clearSelection () {
 	OS.SendMessage (handle, OS.CB_SETEDITSEL, 0, -1);
 }
 
-@Override
-public Point computeSize (int wHint, int hHint, boolean changed) {
+@Override Point computeSizeInPixels (int wHint, int hHint, boolean changed) {
 	checkWidget ();
 	int width = 0, height = 0;
 	if (wHint == SWT.DEFAULT) {
@@ -948,6 +947,10 @@ boolean dragDetect (long /*int*/ hwnd, int x, int y, boolean filter, boolean [] 
  */
 public Point getCaretLocation () {
 	checkWidget ();
+	return DPIUtil.autoScaleDown(getCaretLocationInPixels());
+}
+
+Point getCaretLocationInPixels () {
 	/*
 	* Bug in Windows.  For some reason, Windows is unable
 	* to return the pixel coordinates of the last character
@@ -1118,6 +1121,10 @@ public int getItemCount () {
  */
 public int getItemHeight () {
 	checkWidget ();
+	return DPIUtil.autoScaleDown(getItemHeightInPixels());
+}
+
+int getItemHeightInPixels () {
 	int result = (int)/*64*/OS.SendMessage (handle, OS.CB_GETITEMHEIGHT, 0, 0);
 	if (result == OS.CB_ERR) error (SWT.ERROR_CANNOT_GET_ITEM_HEIGHT);
 	return result;
@@ -1384,6 +1391,10 @@ public String getText () {
  */
 public int getTextHeight () {
 	checkWidget ();
+	return DPIUtil.autoScaleDown(getTextHeightInPixels());
+}
+
+int getTextHeightInPixels () {
 	COMBOBOXINFO pcbi = new COMBOBOXINFO ();
 	pcbi.cbSize = COMBOBOXINFO.sizeof;
 	if (((style & SWT.SIMPLE) == 0) && !OS.IsWinCE && OS.GetComboBoxInfo (handle, pcbi)) {
@@ -1978,7 +1989,7 @@ void setBackgroundPixel (int pixel) {
 }
 
 @Override
-void setBounds (int x, int y, int width, int height, int flags) {
+void setBoundsInPixels (int x, int y, int width, int height, int flags) {
 	/*
 	* Feature in Windows.  If the combo box has the CBS_DROPDOWN
 	* or CBS_DROPDOWNLIST style, Windows uses the height that the
@@ -1998,7 +2009,7 @@ void setBounds (int x, int y, int width, int height, int flags) {
 	*/
 	if ((style & SWT.DROP_DOWN) != 0) {
 		int visibleCount = getItemCount() == 0 ? VISIBLE_COUNT : this.visibleCount;
-		height = getTextHeight () + (getItemHeight () * visibleCount) + 2;
+		height = getTextHeightInPixels () + (getItemHeightInPixels () * visibleCount) + 2;
 		/*
 		* Feature in Windows.  When a drop down combo box is resized,
 		* the combo box resizes the height of the text field and uses
@@ -2022,7 +2033,7 @@ void setBounds (int x, int y, int width, int height, int flags) {
 		}
 		SetWindowPos (handle, 0, x, y, width, height, flags);
 	} else {
-		super.setBounds (x, y, width, height, flags);
+		super.setBoundsInPixels (x, y, width, height, flags);
 	}
 }
 
@@ -2484,7 +2495,7 @@ void updateDropDownHeight () {
 		RECT rect = new RECT ();
 		OS.SendMessage (handle, OS.CB_GETDROPPEDCONTROLRECT, 0, rect);
 		int visibleCount = getItemCount() == 0 ? VISIBLE_COUNT : this.visibleCount;
-		int height = getTextHeight () + (getItemHeight () * visibleCount) + 2;
+		int height = getTextHeightInPixels () + (getItemHeightInPixels () * visibleCount) + 2;
 		if (height != (rect.bottom - rect.top)) {
 			forceResize ();
 			OS.GetWindowRect (handle, rect);

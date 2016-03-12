@@ -11,10 +11,10 @@
 package org.eclipse.swt.widgets;
 
 
-import org.eclipse.swt.internal.win32.*;
 import org.eclipse.swt.*;
-import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.events.*;
+import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.internal.win32.*;
 
 /**
  * Instances of the receiver represent a selectable user interface object
@@ -126,10 +126,9 @@ static int checkStyle (int style) {
 	return checkBits (style, SWT.HORIZONTAL, SWT.VERTICAL, 0, 0, 0, 0);
 }
 
-@Override
-public Point computeSize (int wHint, int hHint, boolean changed) {
+@Override Point computeSizeInPixels (int wHint, int hHint, boolean changed) {
 	checkWidget ();
-	int border = getBorderWidth ();
+	int border = getBorderWidthInPixels ();
 	int width = border * 2, height = border * 2;
 	if ((style & SWT.HORIZONTAL) != 0) {
 		width += DEFAULT_WIDTH;  height += 3;
@@ -245,15 +244,12 @@ LRESULT WM_KEYDOWN (long /*int*/ wParam, long /*int*/ lParam) {
 			OS.SetCursorPos (cursorPt.x, cursorPt.y);
 
 			Event event = new Event ();
-			event.x = newX;
-			event.y = newY;
-			event.width = width;
-			event.height = height;
+			event.setBoundsInPixels(new Rectangle(newX, newY, width, height));
 			sendSelectionEvent  (SWT.Selection, event, true);
 			if (isDisposed ()) return LRESULT.ZERO;
 			if (event.doit) {
 				if ((style & SWT.SMOOTH) != 0) {
-					setBounds (event.x, event.y, width, height);
+					setBoundsInPixels (event.getBoundsInPixels());
 				}
 			}
 			return result;
@@ -288,10 +284,7 @@ LRESULT WM_LBUTTONDOWN (long /*int*/ wParam, long /*int*/ lParam) {
 
 	/* The event must be sent because doit flag is used */
 	Event event = new Event ();
-	event.x = lastX;
-	event.y = lastY;
-	event.width = width;
-	event.height = height;
+	event.setBoundsInPixels(new Rectangle(lastX, lastY, width, height));
 	if ((style & SWT.SMOOTH) == 0) {
 		event.detail = SWT.DRAG;
 	}
@@ -299,10 +292,11 @@ LRESULT WM_LBUTTONDOWN (long /*int*/ wParam, long /*int*/ lParam) {
 	if (isDisposed ()) return LRESULT.ZERO;
 
 	/* Draw the banding rectangle */
+	Rectangle bounds = event.getBoundsInPixels();
 	if (event.doit) {
 		dragging = true;
-		lastX = event.x;
-		lastY = event.y;
+		lastX = bounds.x;
+		lastY = bounds.y;
 		menuShell ().bringToTop ();
 		if (isDisposed ()) return LRESULT.ZERO;
 		if (OS.IsWinCE) {
@@ -311,9 +305,9 @@ LRESULT WM_LBUTTONDOWN (long /*int*/ wParam, long /*int*/ lParam) {
 			int flags = OS.RDW_UPDATENOW | OS.RDW_ALLCHILDREN;
 			OS.RedrawWindow (hwndTrack, null, 0, flags);
 		}
-		drawBand (event.x, event.y, width, height);
+		drawBand (bounds.x, bounds.y, width, height);
 		if ((style & SWT.SMOOTH) != 0) {
-			setBounds (event.x, event.y, width, height);
+			setBoundsInPixels (bounds.x, bounds.y, width, height);
 			// widget could be disposed at this point
 		}
 	}
@@ -335,16 +329,14 @@ LRESULT WM_LBUTTONUP (long /*int*/ wParam, long /*int*/ lParam) {
 
 	/* The event must be sent because doit flag is used */
 	Event event = new Event ();
-	event.x = lastX;
-	event.y = lastY;
-	event.width = width;
-	event.height = height;
-	drawBand (event.x, event.y, width, height);
+	event.setBoundsInPixels(new Rectangle(lastX, lastY, width, height));
+	drawBand (lastX, lastY, width, height);
 	sendSelectionEvent (SWT.Selection, event, true);
 	if (isDisposed ()) return result;
+	Rectangle bounds = event.getBoundsInPixels();
 	if (event.doit) {
 		if ((style & SWT.SMOOTH) != 0) {
-			setBounds (event.x, event.y, width, height);
+			setBoundsInPixels (bounds.x, bounds.y, width, height);
 			// widget could be disposed at this point
 		}
 	}
@@ -380,18 +372,16 @@ LRESULT WM_MOUSEMOVE (long /*int*/ wParam, long /*int*/ lParam) {
 
 	/* The event must be sent because doit flag is used */
 	Event event = new Event ();
-	event.x = newX;
-	event.y = newY;
-	event.width = width;
-	event.height = height;
+	event.setBoundsInPixels(new Rectangle(newX, newY, width, height));
 	if ((style & SWT.SMOOTH) == 0) {
 		event.detail = SWT.DRAG;
 	}
 	sendSelectionEvent (SWT.Selection, event, true);
 	if (isDisposed ()) return LRESULT.ZERO;
 	if (event.doit) {
-		lastX = event.x;
-		lastY = event.y;
+		Rectangle boundsInPixels = event.getBoundsInPixels();
+		lastX = boundsInPixels.x;
+		lastY = boundsInPixels.y;
 	}
 	if (OS.IsWinCE) {
 		OS.UpdateWindow (hwndTrack);
@@ -401,7 +391,7 @@ LRESULT WM_MOUSEMOVE (long /*int*/ wParam, long /*int*/ lParam) {
 	}
 	drawBand (lastX, lastY, width, height);
 	if ((style & SWT.SMOOTH) != 0) {
-		setBounds (lastX, lastY, width, height);
+		setBoundsInPixels (lastX, lastY, width, height);
 		// widget could be disposed at this point
 	}
 	return result;

@@ -14,6 +14,8 @@ import org.eclipse.swt.*;
 import org.eclipse.swt.accessibility.*;
 import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.internal.*;
+import org.eclipse.swt.internal.DPIUtil.*;
 import org.eclipse.swt.widgets.*;
 
 /**
@@ -719,10 +721,10 @@ Image createButtonImage(Display display, int button) {
 	renderer.draw(button, SWT.NONE, new Rectangle(trim.x, trim.y, size.x, size.y), gc);
 	gc.dispose ();
 	transColor.dispose();
-	ImageData imageData = image.getImageData();
+	final ImageData imageData = image.getImageDataAtCurrentZoom();
 	imageData.transparentPixel = imageData.palette.getPixel(transparent);
 	image.dispose();
-	image = new Image(display, imageData);
+	image = new Image(display, new AutoScaleImageDataProvider(imageData, DPIUtil.getDeviceZoom()));
 	return image;
 }
 void createItem (CTabItem item, int index) {

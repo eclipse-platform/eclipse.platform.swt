@@ -195,9 +195,9 @@ long /*int*/ createShellLink (MenuItem item, String directory) {
 				ImageData data;
 				if (item.hBitmap != 0) {
 					Image image2 = Image.win32_new (display, SWT.BITMAP, item.hBitmap);
-					data = image2.getImageData ();
+					data = image2.getImageDataAtCurrentZoom ();
 				} else {
-					data = image.getImageData ();
+					data = image.getImageDataAtCurrentZoom ();
 				}
 				ImageLoader loader = new ImageLoader ();
 				loader.data = new ImageData [] {data};

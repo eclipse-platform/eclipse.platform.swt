@@ -456,7 +456,7 @@ int setFrame (long /*int*/ sender, long /*int*/ frame) {
 	RECT rect = new RECT ();
 	COM.MoveMemory (rect, frame, RECT.sizeof);
 	/* convert to SWT system coordinates */
-	location = browser.getDisplay ().map (browser, null, rect.left, rect.top);
+	location = DPIUtil.autoScaleUp(browser.getDisplay ().map (browser, null, DPIUtil.autoScaleDown(new Point(rect.left, rect.top)))); // To Pixels
 	int x = rect.right - rect.left;
 	int y = rect.bottom - rect.top;
 	if (y < 0 || x < 0 || (x == 0 && y == 0)) return COM.S_OK;

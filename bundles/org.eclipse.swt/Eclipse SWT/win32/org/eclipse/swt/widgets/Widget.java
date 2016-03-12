@@ -1056,8 +1056,7 @@ void reskinWidget() {
 boolean sendDragEvent (int button, int x, int y) {
 	Event event = new Event ();
 	event.button = button;
-	event.x = x;
-	event.y = y;
+	event.setLocationInPixels(x, y); // In Pixels
 	setInputState (event, SWT.DragDetect);
 	postEvent (SWT.DragDetect, event);
 	if (isDisposed ()) return false;
@@ -1067,8 +1066,7 @@ boolean sendDragEvent (int button, int x, int y) {
 boolean sendDragEvent (int button, int stateMask, int x, int y) {
 	Event event = new Event ();
 	event.button = button;
-	event.x = x;
-	event.y = y;
+	event.setLocationInPixels(x, y);
 	event.stateMask = stateMask;
 	postEvent (SWT.DragDetect, event);
 	if (isDisposed ()) return false;
@@ -1144,8 +1142,7 @@ boolean sendMouseEvent (int type, int button, int count, int detail, boolean sen
 	event.button = button;
 	event.detail = detail;
 	event.count = count;
-	event.x = OS.GET_X_LPARAM (lParam);
-	event.y = OS.GET_Y_LPARAM (lParam);
+	event.setLocationInPixels(OS.GET_X_LPARAM (lParam), OS.GET_Y_LPARAM (lParam));
 	setInputState (event, type);
 	mapEvent (hwnd, event);
 	if (send) {
@@ -1491,8 +1488,7 @@ boolean showMenu (int x, int y) {
 
 boolean showMenu (int x, int y, int detail) {
 	Event event = new Event ();
-	event.x = x;
-	event.y = y;
+	event.setLocationInPixels(x, y);
 	event.detail = detail;
 	if (event.detail == SWT.MENU_KEYBOARD) {
 		updateMenuLocation (event);
@@ -1503,8 +1499,9 @@ boolean showMenu (int x, int y, int detail) {
 	if (!event.doit) return true;
 	Menu menu = getMenu ();
 	if (menu != null && !menu.isDisposed ()) {
-		if (x != event.x || y != event.y) {
-			menu.setLocation (event.x, event.y);
+		Point loc = event.getLocationInPixels(); // In Pixels
+		if (x != loc.x || y != loc.y) {
+			menu.setLocation (event.getLocation());
 		}
 		menu.setVisible (true);
 		return true;
@@ -2300,10 +2297,7 @@ LRESULT wmPaint (long /*int*/ hwnd, long /*int*/ wParam, long /*int*/ lParam) {
 			if (width != 0 && height != 0) {
 				Event event = new Event ();
 				event.gc = gc;
-				event.x = ps.left;
-				event.y = ps.top;
-				event.width = width;
-				event.height = height;
+				event.setBoundsInPixels(new Rectangle(ps.left, ps.top, width, height));
 				sendEvent (SWT.Paint, event);
 				// widget could be disposed at this point
 				event.gc = null;
@@ -2329,10 +2323,7 @@ LRESULT wmPaint (long /*int*/ hwnd, long /*int*/ wParam, long /*int*/ lParam) {
 				OS.SetMetaRgn (hDC);
 				Event event = new Event ();
 				event.gc = gc;
-				event.x = rect.left;
-				event.y = rect.top;
-				event.width = width;
-				event.height = height;
+				event.setBoundsInPixels(new Rectangle(rect.left, rect.top, width, height));
 				sendEvent (SWT.Paint, event);
 				// widget could be disposed at this point
 				event.gc = null;
