@@ -2735,6 +2735,7 @@ public long /*int*/ internal_new_GC (GCData data) {
 @Override
 protected void init () {
 	super.init ();
+	DPIUtil.setDeviceZoom (getDeviceZoom ());
 
 	/* Set the application user model ID, if APP_NAME is non Default */
 	char [] appName = null;

@@ -707,7 +707,6 @@ public boolean getWarnings () {
  * @see #create
  */
 protected void init () {
-	DPIUtil.setDeviceZoom (getDeviceZoom ());
 	if (debug) {
 		if (!OS.IsWinCE) OS.GdiSetBatchLimit(1);
 	}
@@ -1012,7 +1011,15 @@ void setEnableAutoScaling(boolean value) {
 	enableAutoScaling = value;
 }
 
-private int getDeviceZoom () {
+/**
+ * Gets the scaling factor from the device and calculates the zoom level.
+ * @return zoom in percentage
+ *
+ * @noreference This method is not intended to be referenced by clients.
+ * @nooverride This method is not intended to be re-implemented or extended by clients.
+ * @since 3.105
+ */
+protected int getDeviceZoom () {
 	return DPIUtil.mapDPIToZoom ( _getDPIx ());
 }
 
