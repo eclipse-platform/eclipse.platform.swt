@@ -2154,12 +2154,6 @@ public void setOrientation (int orientation) {
  */
 public void setSelection (Point selection) {
 	checkWidget();
-	selection = DPIUtil.autoScaleUp(selection);
-	setSelectionInPixels(selection);
-}
-
-void setSelectionInPixels (Point selection) {
-	checkWidget();
 	if (selection == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if ((style & SWT.READ_ONLY) != 0) return;
 	if (entryHandle != 0) {
