@@ -227,7 +227,8 @@ Widget [] computeTabList () {
 	return result;
 }
 
-@Override Point computeSizeInPixels (int wHint, int hHint, boolean changed) {
+@Override
+Point computeSizeInPixels (int wHint, int hHint, boolean changed) {
 	display.runSkin ();
 	Point size;
 	if (layout != null) {
@@ -246,8 +247,8 @@ Widget [] computeTabList () {
 	if (wHint != SWT.DEFAULT) size.x = wHint;
 	if (hHint != SWT.DEFAULT) size.y = hHint;
 	/*
-	 * Since computeTrim is overridden by Custom classes like CTabFolder
-	 * etc... hence we cannot call computeTrimInPixels directly.
+	 * Since computeTrim can be overridden by subclasses, we cannot
+	 * call computeTrimInPixels directly.
 	 */
 	Rectangle trim = DPIUtil.autoScaleUp(computeTrim (0, 0, DPIUtil.autoScaleDown(size.x), DPIUtil.autoScaleDown(size.y)));
 	return new Point (trim.width, trim.height);
@@ -894,10 +895,14 @@ void markLayout (boolean changed, boolean all) {
 
 Point minimumSize (int wHint, int hHint, boolean changed) {
 	Control [] children = _getChildren ();
-	Rectangle clientArea = getClientAreaInPixels ();
+	/*
+	 * Since getClientArea can be overridden by subclasses, we cannot
+	 * call getClientAreaInPixels directly.
+	 */
+	Rectangle clientArea = DPIUtil.autoScaleUp(getClientArea ());
 	int width = 0, height = 0;
 	for (int i=0; i<children.length; i++) {
-		Rectangle rect = children [i].getBoundsInPixels ();
+		Rectangle rect = DPIUtil.autoScaleUp(children [i].getBounds ());
 		width = Math.max (width, rect.x - clientArea.x + rect.width);
 		height = Math.max (height, rect.y - clientArea.y + rect.height);
 	}
