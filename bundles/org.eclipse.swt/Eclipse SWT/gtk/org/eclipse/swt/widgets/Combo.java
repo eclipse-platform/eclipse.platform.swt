@@ -2155,6 +2155,7 @@ public void setOrientation (int orientation) {
 public void setSelection (Point selection) {
 	checkWidget();
 	selection = DPIUtil.autoScaleUp(selection);
+	setSelectionInPixels(selection);
 }
 
 void setSelectionInPixels (Point selection) {

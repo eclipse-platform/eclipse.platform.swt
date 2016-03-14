@@ -513,6 +513,7 @@ boolean intersectsInPixels (int x, int y, int width, int height) {
  */
 public boolean intersects(Rectangle rect) {
 	if (rect == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	return intersectsInPixels(DPIUtil.autoScaleUp(rect));
 }
 
