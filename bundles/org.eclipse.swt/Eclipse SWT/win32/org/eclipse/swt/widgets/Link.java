@@ -384,7 +384,10 @@ Color internalGetLinkForeground() {
 	if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (4, 10)) {
 		return Color.win32_new (display, OS.GetSysColor (OS.COLOR_HOTLIGHT));
 	}
-	return new Color (display, LAST_FALLBACK_LINK_FOREGROUND);
+	// Create and cache the linkForeground Color native handle for re-use.
+	Color color = new Color (display, LAST_FALLBACK_LINK_FOREGROUND);
+	linkForeground = color.handle;
+	return color;
 }
 
 @Override
