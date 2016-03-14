@@ -1000,14 +1000,19 @@ NSBitmapImageRep getActualRepresentation () {
 	NSArray reps = handle.representations();
 	NSSize size = handle.size();
 	long /*int*/ count = reps.count();
-	NSBitmapImageRep bestRep = null;
 	for (int i = 0; i < count; i++) {
 		NSBitmapImageRep rep = new NSBitmapImageRep(reps.objectAtIndex(i));
-		if (bestRep == null || ((int)size.width == rep.pixelsWide() && (int)size.height == rep.pixelsHigh())) {
-			bestRep = rep;
+		if (((int)size.width == rep.pixelsWide() && (int)size.height == rep.pixelsHigh())) {
+			if (rep.isKindOfClass(OS.class_NSBitmapImageRep)) {
+				return rep;
+			}
 		}
 	}
-	return bestRep;
+	NSBitmapImageRep newRep = (NSBitmapImageRep)new NSBitmapImageRep().alloc();
+	newRep = newRep.initWithData(handle.TIFFRepresentation());
+	handle.addRepresentation(newRep);
+	newRep.release();
+	return newRep;
 }
 
 NSBitmapImageRep getRepresentation () {
