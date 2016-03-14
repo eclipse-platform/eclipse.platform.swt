@@ -939,7 +939,10 @@ protected void release () {
 		logProc = 0;
 	}
 	/* Dispose the settings callback */
-	gsettingsCallback.dispose(); gsettingsCallback = null;
+	if (gsettingsCallback != null) {
+		gsettingsCallback.dispose();
+		gsettingsCallback = null;
+	}
 	gsettingsProc = 0;
 
 
