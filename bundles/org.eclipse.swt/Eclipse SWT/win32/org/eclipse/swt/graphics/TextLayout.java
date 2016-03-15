@@ -1594,9 +1594,9 @@ public int getAlignment () {
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
  *
- * @see #getDescentInPixels()
- * @see #setDescentInPixels(int)
- * @see #setAscentInPixels(int)
+ * @see #getDescent()
+ * @see #setDescent(int)
+ * @see #setAscent(int)
  * @see #getLineMetrics(int)
  */
 public int getAscent () {
@@ -1611,7 +1611,7 @@ int getAscentInPixels () {
 /**
  * Returns the bounds of the receiver. The width returned is either the
  * width of the longest line or the width set using {@link TextLayout#setWidth(int)}.
- * To obtain the text bounds of a line use {@link TextLayout#getLineBoundsInPixels(int)}.
+ * To obtain the text bounds of a line use {@link TextLayout#getLineBounds(int)}.
  *
  * @return the bounds of the receiver
  *
@@ -1753,9 +1753,9 @@ Rectangle getBoundsInPixels (int start, int end) {
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
  *
- * @see #getAscentInPixels()
- * @see #setAscentInPixels(int)
- * @see #setDescentInPixels(int)
+ * @see #getAscent()
+ * @see #setAscent(int)
+ * @see #setDescent(int)
  * @see #getLineMetrics(int)
  */
 public int getDescent () {
@@ -2040,8 +2040,8 @@ public int[] getLineOffsets () {
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
  *
- * @see #getOffsetInPixels(Point, int[])
- * @see #getOffsetInPixels(int, int, int[])
+ * @see #getOffset(Point, int[])
+ * @see #getOffset(int, int, int[])
  */
 public Point getLocation (int offset, boolean trailing) {
 	checkLayout();
@@ -2237,7 +2237,7 @@ int _getOffset(int offset, int movement, boolean forward) {
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
  *
- * @see #getLocationInPixels(int, boolean)
+ * @see #getLocation(int, boolean)
  */
 public int getOffset (Point point, int[] trailing) {
 	checkLayout();
@@ -2913,7 +2913,7 @@ public void setAlignment (int alignment) {
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
  *
- * @see #setDescentInPixels(int)
+ * @see #setDescent(int)
  * @see #getLineMetrics(int)
  */
 public void setAscent (int ascent) {
@@ -2943,7 +2943,7 @@ void setAscentInPixels(int ascent) {
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
  *
- * @see #setAscentInPixels(int)
+ * @see #setAscent(int)
  * @see #getLineMetrics(int)
  */
 public void setDescent (int descent) {
@@ -3366,7 +3366,7 @@ void setWidthInPixels (int width) {
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
  *
- * @see #setIndentInPixels(int)
+ * @see #setIndent(int)
  *
  * @since 3.6
  */

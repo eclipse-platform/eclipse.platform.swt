@@ -3973,7 +3973,7 @@ void subclass () {
  * to coordinates relative to the receiver.
  * <p>
  * NOTE: To properly map a rectangle or a corner of a rectangle on a right-to-left platform, use
- * {@link Display#mapInPixels(Control, Control, Rectangle)}.
+ * {@link Display#map(Control, Control, Rectangle)}.
  * </p>
  *
  * @param x the x coordinate to be translated
@@ -4005,7 +4005,7 @@ Point toControlInPixels (int x, int y) {
  * to coordinates relative to the receiver.
  * <p>
  * NOTE: To properly map a rectangle or a corner of a rectangle on a right-to-left platform, use
- * {@link Display#mapInPixels(Control, Control, Rectangle)}.
+ * {@link Display#map(Control, Control, Rectangle)}.
  * </p>
  *
  * @param point the point to be translated (must not be null)
@@ -4032,7 +4032,7 @@ public Point toControl (Point point) {
  * the receiver, to display relative coordinates.
  * <p>
  * NOTE: To properly map a rectangle or a corner of a rectangle on a right-to-left platform, use
- * {@link Display#mapInPixels(Control, Control, Rectangle)}.
+ * {@link Display#map(Control, Control, Rectangle)}.
  * </p>
  *
  * @param x the x coordinate to be translated
@@ -4064,7 +4064,7 @@ Point toDisplayInPixels (int x, int y) {
  * the receiver, to display relative coordinates.
  * <p>
  * NOTE: To properly map a rectangle or a corner of a rectangle on a right-to-left platform, use
- * {@link Display#mapInPixels(Control, Control, Rectangle)}.
+ * {@link Display#map(Control, Control, Rectangle)}.
  * </p>
  *
  * @param point the point to be translated (must not be null)

@@ -249,6 +249,7 @@ public Image(Device device, Image srcImage, int flag) {
 	if (srcImage.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	Rectangle rect = srcImage.getBoundsInPixels();
 	this.type = srcImage.type;
+	this.currentDeviceZoom = srcImage.currentDeviceZoom;
 	switch (flag) {
 		case SWT.IMAGE_COPY: {
 			switch (type) {

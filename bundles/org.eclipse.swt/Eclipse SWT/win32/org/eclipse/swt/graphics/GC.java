@@ -2928,7 +2928,7 @@ void fillArcInPixels (int x, int y, int width, int height, int startAngle, int a
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
  *
- * @see #drawRectangleInPixels(int, int, int, int)
+ * @see #drawRectangle(int, int, int, int)
  */
 public void fillGradientRectangle (int x, int y, int width, int height, boolean vertical) {
 	x = DPIUtil.autoScaleUp (x);
