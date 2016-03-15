@@ -5509,9 +5509,11 @@ Point getPointAtOffset(int offset) {
 					boolean lineBegin = offsetInLine == 0;
 					// If word wrap is enabled, we should also consider offsets
 					// of wrapped line parts as line begin and do NOT go back.
-					// This prevents clients to jump one line higher as
+					// This prevents clients to jump one line higher than
 					// expected, see bug 488172.
-					if (wordWrap && !lineBegin) {
+					// Respect caretAlignment at the caretOffset, unless there's
+					// a non-empty selection, see bug 488172 comment 6.
+					if (wordWrap && !lineBegin && (offset != caretOffset || selection.x != selection.y)) {
 						int[] offsets = layout.getLineOffsets();
 						for (int i : offsets) {
 							if (i == offsetInLine) {
