@@ -3495,9 +3495,9 @@ long /*int*/ monitorEnumProc (long /*int*/ hmonitor, long /*int*/ hdc, long /*in
 	Monitor monitor = new Monitor ();
 	monitor.handle = hmonitor;
 	Rectangle boundsInPixels = new Rectangle (lpmi.rcMonitor_left, lpmi.rcMonitor_top, lpmi.rcMonitor_right - lpmi.rcMonitor_left,lpmi.rcMonitor_bottom - lpmi.rcMonitor_top);
-	monitor.setBounds (boundsInPixels);
+	monitor.setBounds (DPIUtil.autoScaleDown (boundsInPixels));
 	Rectangle clientAreaInPixels = new Rectangle (lpmi.rcWork_left, lpmi.rcWork_top, lpmi.rcWork_right - lpmi.rcWork_left, lpmi.rcWork_bottom - lpmi.rcWork_top);
-	monitor.setClientArea (clientAreaInPixels);
+	monitor.setClientArea (DPIUtil.autoScaleDown (clientAreaInPixels));
 	monitors [monitorCount++] = monitor;
 	return 1;
 }
