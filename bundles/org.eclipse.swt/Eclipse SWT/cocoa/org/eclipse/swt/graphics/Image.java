@@ -923,7 +923,8 @@ ImageData _getImageData(NSBitmapImageRep imageRep) {
  * Modifications made to this <code>ImageData</code> will not
  * affect the Image.
  *
- * @return an <code>ImageData</code> containing the image's data and attributes
+ * @return an <code>ImageData</code> containing the image's data and
+ *         attributes at 100% zoom level.
  *
  * @exception SWTException <ul>
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
