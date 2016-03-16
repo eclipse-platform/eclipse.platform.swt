@@ -434,12 +434,7 @@ public DeviceData getDeviceData () {
  * @see #getBounds
  */
 public Rectangle getClientArea () {
-	checkDevice ();
-	return DPIUtil.autoScaleDown(getClientAreaInPixels());
-}
-
-private Rectangle getClientAreaInPixels () {
-	return getBoundsInPixels ();
+	return getBounds ();
 }
 
 /**
