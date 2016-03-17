@@ -682,10 +682,6 @@ protected void init () {
 	shellHandle = OS.gtk_window_new(OS.GTK_WINDOW_TOPLEVEL);
 	if (shellHandle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	OS.gtk_widget_realize(shellHandle);
-	int scaleFactor = OS.gdk_window_get_scale_factor(shellHandle);
-	System.out.println(scaleFactor);
-	scaleFactor = OS.gtk_widget_get_scale_factor(shellHandle);
-	System.out.println(scaleFactor);
 
 	/* Initialize the system font slot */
 	long /*int*/ defaultFont;
