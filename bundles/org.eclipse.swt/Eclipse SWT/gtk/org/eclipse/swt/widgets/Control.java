@@ -2708,7 +2708,7 @@ GdkColor getContextBackground () {
 	long /*int*/ fontHandle = fontHandle ();
 	if (OS.GTK_VERSION >= OS.VERSION(3, 16, 0)) {
 		if (provider != 0) {
-			return display.gtk_css_parse_background (provider);
+			return display.gtk_css_parse_background (provider, null);
 		} else {
 			return display.COLOR_WIDGET_BACKGROUND;
 		}
@@ -2726,7 +2726,7 @@ GdkColor getContextBackground () {
 GdkColor getContextColor () {
 	long /*int*/ fontHandle = fontHandle ();
 	if (OS.GTK_VERSION >= OS.VERSION(3, 16, 0) && provider != 0) {
-		return display.gtk_css_parse_foreground(provider);
+		return display.gtk_css_parse_foreground(provider, null);
 	} else {
 		long /*int*/ context = OS.gtk_widget_get_style_context (fontHandle);
 		GdkRGBA rgba = new GdkRGBA ();
