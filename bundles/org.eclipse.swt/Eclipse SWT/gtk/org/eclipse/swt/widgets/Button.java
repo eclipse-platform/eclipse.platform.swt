@@ -50,6 +50,7 @@ public class Button extends Control {
 	ImageList imageList;
 	Image image;
 	String text;
+	GdkRGBA background;
 
 	static final int INNER_BORDER = 1;
 	static final int DEFAULT_BORDER = 1;
@@ -125,6 +126,14 @@ static GtkBorder getBorder (byte[] border, long /*int*/ handle, int defaultBorde
     gtkBorder.right = defaultBorder;
     gtkBorder.bottom = defaultBorder;
     return gtkBorder;
+}
+
+@Override
+GdkColor getContextBackground () {
+	if (background != null) {
+		return display.toGdkColor (background);
+	}
+	return display.COLOR_WIDGET_BACKGROUND;
 }
 
 /**
@@ -799,6 +808,7 @@ void _setAlignment (int alignment) {
 void setBackgroundColor (long /*int*/ context, long /*int*/ handle, GdkRGBA rgba) {
 	/* Note: this function is called on Gtk3 only */
 
+	background = rgba;
 	//Pre Gtk 3.10 doesn't handle CSS background color very well for Gtk Check/Radio button.
 	// 3.10.3 as it was the latest to affect themeing in button.
 	if (OS.GTK_VERSION < OS.VERSION(3, 10, 3) && (style & (SWT.CHECK | SWT.RADIO)) != 0) {
