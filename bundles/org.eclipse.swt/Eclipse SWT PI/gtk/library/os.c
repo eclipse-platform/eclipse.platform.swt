@@ -19137,6 +19137,24 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1widget_1override_1font)
 }
 #endif
 
+#ifndef NO__1gtk_1widget_1queue_1draw
+JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1widget_1queue_1draw)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	OS_NATIVE_ENTER(env, that, _1gtk_1widget_1queue_1draw_FUNC);
+/*
+	gtk_widget_queue_draw(arg0);
+*/
+	{
+		OS_LOAD_FUNCTION(fp, gtk_widget_queue_draw)
+		if (fp) {
+			((void (CALLING_CONVENTION*)(jintLong))fp)(arg0);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, _1gtk_1widget_1queue_1draw_FUNC);
+}
+#endif
+
 #ifndef NO__1gtk_1widget_1queue_1resize
 JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1widget_1queue_1resize)
 	(JNIEnv *env, jclass that, jintLong arg0)

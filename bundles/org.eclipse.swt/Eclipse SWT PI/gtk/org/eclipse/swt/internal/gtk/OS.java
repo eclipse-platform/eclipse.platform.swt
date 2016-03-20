@@ -14832,6 +14832,16 @@ public static final void gtk_widget_set_can_default(long /*int*/ widget, boolean
 	}
 }
 /** @method flags=dynamic */
+public static final native void _gtk_widget_queue_draw(long /*int*/ widget);
+public static final void gtk_widget_queue_draw(long /*int*/ widget) {
+	lock.lock();
+	try {
+		_gtk_widget_queue_draw(widget) ;
+	} finally {
+		lock.unlock();
+	}
+}
+/** @method flags=dynamic */
 public static final native boolean _gtk_widget_set_can_focus(long /*int*/ widget, boolean can_focus);
 public static final boolean gtk_widget_set_can_focus(long /*int*/ widget, boolean can_focus) {
 	lock.lock();

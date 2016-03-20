@@ -548,6 +548,7 @@
 #define gtk_drag_set_icon_surface_LIB LIB_GTK
 #define gtk_accel_label_set_accel_LIB LIB_GTK
 #define gtk_drag_begin_with_coordinates_LIB LIB_GTK
+#define gtk_widget_queue_draw_LIB LIB_GTK
 #ifndef g_thread_supported
 #define g_thread_supported() 0
 #endif

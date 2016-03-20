@@ -1420,6 +1420,7 @@ char * OS_nativeFunctionNames[] = {
 	"_1gtk_1widget_1override_1background_1color",
 	"_1gtk_1widget_1override_1color",
 	"_1gtk_1widget_1override_1font",
+	"_1gtk_1widget_1queue_1draw",
 	"_1gtk_1widget_1queue_1resize",
 	"_1gtk_1widget_1realize",
 	"_1gtk_1widget_1remove_1accelerator",

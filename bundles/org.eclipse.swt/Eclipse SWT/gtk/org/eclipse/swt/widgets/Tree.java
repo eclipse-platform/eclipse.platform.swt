@@ -3647,9 +3647,6 @@ void updateScrollBarValue (ScrollBar bar) {
 		temp = OS.g_list_next (temp);
 	}
 	OS.g_list_free (list);
-	if (OS.GTK3) {
-		OS.gtk_widget_queue_resize  (handle);
-	}
 }
 
 @Override

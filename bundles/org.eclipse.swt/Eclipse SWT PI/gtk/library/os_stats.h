@@ -1430,6 +1430,7 @@ typedef enum {
 	_1gtk_1widget_1override_1background_1color_FUNC,
 	_1gtk_1widget_1override_1color_FUNC,
 	_1gtk_1widget_1override_1font_FUNC,
+	_1gtk_1widget_1queue_1draw_FUNC,
 	_1gtk_1widget_1queue_1resize_FUNC,
 	_1gtk_1widget_1realize_FUNC,
 	_1gtk_1widget_1remove_1accelerator_FUNC,
