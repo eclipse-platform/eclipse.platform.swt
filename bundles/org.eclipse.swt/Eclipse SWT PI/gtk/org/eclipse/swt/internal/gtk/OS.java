@@ -5544,6 +5544,33 @@ public static final long /*int*/ gdk_screen_get_default() {
 /**
  * @method flags=dynamic
  * @param screen cast=(GdkScreen *)
+ */
+public static final native double _gdk_screen_get_resolution(long /*int*/ screen);
+public static final double gdk_screen_get_resolution(long /*int*/ screen) {
+	lock.lock();
+	try {
+		return _gdk_screen_get_resolution(screen);
+	} finally {
+		lock.unlock();
+	}
+}
+/**
+ * @method flags=dynamic
+ * @param screen cast=(GdkScreen *)
+ * @param monitor_num cast=(gint)
+ */
+public static final native int _gdk_screen_get_monitor_scale_factor(long /*int*/ screen, int monitor_num);
+public static final int gdk_screen_get_monitor_scale_factor(long /*int*/ screen, int monitor_num) {
+	lock.lock();
+	try {
+		return _gdk_screen_get_monitor_scale_factor(screen, monitor_num);
+	} finally {
+		lock.unlock();
+	}
+}
+/**
+ * @method flags=dynamic
+ * @param screen cast=(GdkScreen *)
  * @param x cast=(gint)
  * @param y cast=(gint)
  */

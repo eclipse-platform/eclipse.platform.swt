@@ -311,6 +311,8 @@
 #define gdk_rgba_to_string_LIB LIB_GDK
 #define gdk_rgba_parse_LIB LIB_GDK
 #define gdk_screen_get_default_LIB LIB_GDK
+#define gdk_screen_get_resolution_LIB LIB_GDK
+#define gdk_screen_get_monitor_scale_factor_LIB LIB_GDK
 #define gdk_screen_get_monitor_at_point_LIB LIB_GDK
 #define gdk_screen_get_monitor_at_window_LIB LIB_GDK
 #define gdk_screen_get_monitor_geometry_LIB LIB_GDK

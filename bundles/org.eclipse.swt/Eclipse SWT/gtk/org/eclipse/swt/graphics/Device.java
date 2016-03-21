@@ -1034,55 +1034,15 @@ int _getDPIx () {
  */
 protected int getDeviceZoom() {
 	long /*int*/ screen = OS.gdk_screen_get_default();
-	int monitor = OS.gdk_screen_get_monitor_at_point(screen, 0, 0);
-
-	final String schemaId = "com.ubuntu.user-interface";
-	final String key = "scale-factor";
-	int fontHeight = 0;
-	byte[] schema_id = Converter.wcsToMbcs (null, schemaId, true);
-	long /*int*/ schemaSource = OS.g_settings_schema_source_get_default ();
-	if (OS.g_settings_schema_source_lookup(schemaSource, schema_id, false) != 0) {
-		displaySettings = OS.g_settings_new (schema_id);
-		byte[] keyString = Converter.wcsToMbcs (null, key, true);
-		long /*int*/ settingsDict = OS.g_settings_get_value (displaySettings, keyString);
-		long /*int*/ keyArray = 0;
-		if (!isConnected) {
-			gsettingsCallback = new Callback (this, "gsettingsProc", 3); //$NON-NLS-1$
-			gsettingsProc = gsettingsCallback.getAddress ();
-			if (gsettingsProc == 0) {
-				SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
-			}
-			int retVal = OS.g_signal_connect (displaySettings, OS.changed, gsettingsProc, CHANGE_SCALEFACTOR);
-			if (retVal > 0) {
-				isConnected = true;
-			}
-		}
-
-
-		long /*int*/ iter = OS.g_variant_iter_new (settingsDict);
-		int size = OS.g_variant_iter_init(iter, settingsDict);
-		for (int i =0; i<size; i++) {
-			long /*int*/ iterValue = OS.g_variant_iter_next_value(iter);
-			keyArray = OS.g_variant_print(iterValue);
-			int len = OS.strlen(keyArray);
-			byte[] buffer = new byte [len];
-			OS.memmove (buffer, keyArray, len);
-			String type = new String(Converter.mbcsToWcs(null, buffer));
-			int index = type.indexOf(",");
-			String height = type.substring((index + 1), (type.length() - 1));
-			fontHeight = Math.max(fontHeight, Integer.valueOf(height.trim()));
-			OS.g_free(keyArray);
-			OS.g_variant_unref(iterValue);
-		}
-
-		OS.g_variant_iter_free(iter);
-		return DPIUtil.mapSFToZoom(fontHeight/ 8f);
-	} else {
-		GdkRectangle dest = new GdkRectangle ();
-		OS.gdk_screen_get_monitor_geometry(screen, monitor, dest);
-		int widthMM = OS.gdk_screen_get_monitor_width_mm(screen, monitor);
-		return (DPIUtil.mapDPIToZoom(Compatibility.round (254 * dest.width, widthMM * 10)));
+	int scaleFactor = (int) OS.gdk_screen_get_resolution (screen);
+	if (scaleFactor <= 0) scaleFactor = 96; //gdk_screen_get_resolution returns -1 in case of error
+	if (OS.GTK_VERSION > OS.VERSION(3, 9, 0)) {
+		Rectangle rect = getBounds();
+		int monitor_num = OS.gdk_screen_get_monitor_at_point (screen, rect.x, rect.y);
+		int scale = OS.gdk_screen_get_monitor_scale_factor (screen, monitor_num);
+		scaleFactor = Math.max (scaleFactor, scale * 96); //scalefactor of 1 corresponds to 96 dpi
 	}
+	return DPIUtil.mapDPIToZoom (scaleFactor);
 }
 /**
  * @noreference This method is not intended to be referenced by clients.

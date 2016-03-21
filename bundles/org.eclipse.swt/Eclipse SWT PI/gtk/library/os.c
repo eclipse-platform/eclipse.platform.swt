@@ -7589,6 +7589,26 @@ fail:
 }
 #endif
 
+#ifndef NO__1gdk_1screen_1get_1monitor_1scale_1factor
+JNIEXPORT jint JNICALL OS_NATIVE(_1gdk_1screen_1get_1monitor_1scale_1factor)
+	(JNIEnv *env, jclass that, jintLong arg0, jint arg1)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, _1gdk_1screen_1get_1monitor_1scale_1factor_FUNC);
+/*
+	rc = (jint)gdk_screen_get_monitor_scale_factor((GdkScreen *)arg0, (gint)arg1);
+*/
+	{
+		OS_LOAD_FUNCTION(fp, gdk_screen_get_monitor_scale_factor)
+		if (fp) {
+			rc = (jint)((jint (CALLING_CONVENTION*)(GdkScreen *, gint))fp)((GdkScreen *)arg0, (gint)arg1);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, _1gdk_1screen_1get_1monitor_1scale_1factor_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO__1gdk_1screen_1get_1monitor_1width_1mm
 JNIEXPORT jint JNICALL OS_NATIVE(_1gdk_1screen_1get_1monitor_1width_1mm)
 	(JNIEnv *env, jclass that, jintLong arg0, jint arg1)
@@ -7667,6 +7687,26 @@ JNIEXPORT jint JNICALL OS_NATIVE(_1gdk_1screen_1get_1primary_1monitor)
 		}
 	}
 	OS_NATIVE_EXIT(env, that, _1gdk_1screen_1get_1primary_1monitor_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1gdk_1screen_1get_1resolution
+JNIEXPORT jdouble JNICALL OS_NATIVE(_1gdk_1screen_1get_1resolution)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	jdouble rc = 0;
+	OS_NATIVE_ENTER(env, that, _1gdk_1screen_1get_1resolution_FUNC);
+/*
+	rc = (jdouble)gdk_screen_get_resolution((GdkScreen *)arg0);
+*/
+	{
+		OS_LOAD_FUNCTION(fp, gdk_screen_get_resolution)
+		if (fp) {
+			rc = (jdouble)((jdouble (CALLING_CONVENTION*)(GdkScreen *))fp)((GdkScreen *)arg0);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, _1gdk_1screen_1get_1resolution_FUNC);
 	return rc;
 }
 #endif
