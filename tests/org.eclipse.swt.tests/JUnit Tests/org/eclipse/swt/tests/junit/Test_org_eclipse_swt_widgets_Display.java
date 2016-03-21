@@ -46,6 +46,9 @@ public class Test_org_eclipse_swt_widgets_Display {
 public void test_Constructor() {
 	Display disp = new Display();
 	disp.dispose();
+	if (SwtTestUtil.isGTK) {
+		System.out.println("org.eclipse.swt.internal.gtk.version=" + System.getProperty("org.eclipse.swt.internal.gtk.version"));
+	}
 }
 
 @Test
