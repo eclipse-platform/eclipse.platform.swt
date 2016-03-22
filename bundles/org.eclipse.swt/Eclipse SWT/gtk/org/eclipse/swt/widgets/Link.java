@@ -124,12 +124,12 @@ Point computeSizeInPixels (int wHint, int hHint, boolean changed) {
 	int layoutWidth = layout.getWidth ();
 	//TEMPORARY CODE
 	if (wHint == 0) {
-		layout.setWidth (1);
+		layout.setWidth (DPIUtil.autoScaleDown(1));
 		Rectangle rect = DPIUtil.autoScaleUp(layout.getBounds ());
 		width = 0;
 		height = rect.height;
 	} else {
-		layout.setWidth (wHint);
+		layout.setWidth (DPIUtil.autoScaleDown(wHint));
 		Rectangle rect = DPIUtil.autoScaleUp(layout.getBounds ());
 		width = rect.width;
 		height = rect.height;
@@ -180,9 +180,9 @@ void drawWidget(GC gc) {
 	if ((state & DISABLED) != 0) gc.setForeground (disabledColor);
 	layout.draw (gc, 0, 0, selStart, selEnd, null, null);
 	if (hasFocus () && focusIndex != -1) {
-		Rectangle [] rects = getRectangles (focusIndex);
+		Rectangle [] rects = getRectanglesInPixels (focusIndex);
 		for (int i = 0; i < rects.length; i++) {
-			Rectangle rect = rects [i];
+			Rectangle rect = DPIUtil.autoScaleDown(rects [i]);
 			gc.drawFocus (rect.x, rect.y, rect.width, rect.height);
 		}
 	}
@@ -279,7 +279,7 @@ String getNameText () {
 	return getText ();
 }
 
-Rectangle [] getRectangles (int linkIndex) {
+Rectangle [] getRectanglesInPixels (int linkIndex) {
 	int lineCount = layout.getLineCount ();
 	Rectangle [] rects = new Rectangle [lineCount];
 	int [] lineOffsets = layout.getLineOffsets ();
@@ -290,13 +290,13 @@ Rectangle [] getRectangles (int linkIndex) {
 	while (point.y > lineOffsets [lineEnd]) lineEnd++;
 	int index = 0;
 	if (lineStart == lineEnd) {
-		rects [index++] = layout.getBounds (point.x, point.y);
+		rects [index++] = DPIUtil.autoScaleUp (layout.getBounds (point.x, point.y));
 	} else {
-		rects [index++] = layout.getBounds (point.x, lineOffsets [lineStart]-1);
-		rects [index++] = layout.getBounds (lineOffsets [lineEnd-1], point.y);
+		rects [index++] = DPIUtil.autoScaleUp (layout.getBounds (point.x, lineOffsets [lineStart]-1));
+		rects [index++] = DPIUtil.autoScaleUp (layout.getBounds (lineOffsets [lineEnd-1], point.y));
 		if (lineEnd - lineStart > 1) {
 			for (int i = lineStart; i < lineEnd - 1; i++) {
-				rects [index++] = layout.getLineBounds (i);
+				rects [index++] = DPIUtil.autoScaleUp (layout.getLineBounds (i));
 			}
 		}
 	}
@@ -350,7 +350,7 @@ long /*int*/ gtk_button_press_event (long /*int*/ widget, long /*int*/ event) {
 			redrawInPixels (rect.x, rect.y, rect.width, rect.height, false);
 		}
 		for (int j = 0; j < offsets.length; j++) {
-			Rectangle [] rects = getRectangles (j);
+			Rectangle [] rects = getRectanglesInPixels (j);
 			for (int i = 0; i < rects.length; i++) {
 				Rectangle rect = rects [i];
 				if (rect.contains (x, y)) {
@@ -375,7 +375,7 @@ long /*int*/ gtk_button_release_event (long /*int*/ widget, long /*int*/ event) 
 		int x = (int) gdkEvent.x;
 		int y = (int) gdkEvent.y;
 		if ((style & SWT.MIRRORED) != 0) x = getClientWidth () - x;
-		Rectangle [] rects = getRectangles (focusIndex);
+		Rectangle [] rects = getRectanglesInPixels (focusIndex);
 		for (int i = 0; i < rects.length; i++) {
 			Rectangle rect = rects [i];
 			if (rect.contains (x, y)) {
@@ -472,7 +472,7 @@ long /*int*/ gtk_motion_notify_event (long /*int*/ widget, long /*int*/ event) {
 		}
 	} else {
 		for (int j = 0; j < offsets.length; j++) {
-			Rectangle [] rects = getRectangles (j);
+			Rectangle [] rects = getRectanglesInPixels (j);
 			for (int i = 0; i < rects.length; i++) {
 				Rectangle rect = rects [i];
 				if (rect.contains (x, y)) {
