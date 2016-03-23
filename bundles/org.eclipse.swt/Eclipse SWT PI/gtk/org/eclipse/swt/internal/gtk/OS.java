@@ -9645,12 +9645,13 @@ public static final long /*int*/ gtk_menu_tool_button_new(long /*int*/ icon_widg
  * @param type cast=(GtkMessageType)
  * @param buttons cast=(GtkButtonsType)
  * @param message_format cast=(const gchar *)
+ * @param arg cast=(const gchar *)
  */
-public static final native long /*int*/ _gtk_message_dialog_new(long /*int*/ parent, int flags, int type, int buttons, byte[] message_format);
-public static final long /*int*/ gtk_message_dialog_new(long /*int*/ parent, int flags, int type, int buttons, byte[] message_format) {
+public static final native long /*int*/ _gtk_message_dialog_new(long /*int*/ parent, int flags, int type, int buttons, byte[] message_format, byte[] arg);
+public static final long /*int*/ gtk_message_dialog_new(long /*int*/ parent, int flags, int type, int buttons, byte[] message_format, byte[] arg) {
 	lock.lock();
 	try {
-		return _gtk_message_dialog_new(parent, flags, type, buttons, message_format);
+		return _gtk_message_dialog_new(parent, flags, type, buttons, message_format, arg);
 	} finally {
 		lock.unlock();
 	}

@@ -150,8 +150,9 @@ public int open () {
 	if ((style & (SWT.ICON_QUESTION)) != 0) messageType = OS.GTK_MESSAGE_QUESTION;
 	if ((style & (SWT.ICON_ERROR)) != 0)    messageType = OS.GTK_MESSAGE_ERROR;
 
-	byte [] buffer = Converter.wcsToMbcs (null, fixPercent (message), true);
-	handle = OS.gtk_message_dialog_new(parentHandle, dialogFlags, messageType, 0, buffer);
+	byte [] format = Converter.wcsToMbcs (null, "%s", true);
+	byte [] buffer = Converter.wcsToMbcs (null, message, true);
+	handle = OS.gtk_message_dialog_new(parentHandle, dialogFlags, messageType, 0, format, buffer);
 	if (handle == 0) error(SWT.ERROR_NO_HANDLES);
 	if (parentHandle != 0) {
 		long /*int*/ pixbufs = OS.gtk_window_get_icon_list (parentHandle);
@@ -235,20 +236,4 @@ private static int checkStyle (int style) {
 	return style;
 }
 
-char[] fixPercent (String string) {
-	int length = string.length ();
-	char [] text = new char [length];
-	string.getChars (0, length, text, 0);
-	int i = 0, j = 0;
-	char [] result = new char [length * 2];
-	while (i < length) {
-		switch (text [i]) {
-			case '%':
-				result [j++] = '%';
-				break;
-		}
-		result [j++] = text [i++];
-	}
-	return result;
-}
 }

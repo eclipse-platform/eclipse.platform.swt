@@ -12972,14 +12972,17 @@ fail:
 
 #ifndef NO__1gtk_1message_1dialog_1new
 JNIEXPORT jintLong JNICALL OS_NATIVE(_1gtk_1message_1dialog_1new)
-	(JNIEnv *env, jclass that, jintLong arg0, jint arg1, jint arg2, jint arg3, jbyteArray arg4)
+	(JNIEnv *env, jclass that, jintLong arg0, jint arg1, jint arg2, jint arg3, jbyteArray arg4, jbyteArray arg5)
 {
 	jbyte *lparg4=NULL;
+	jbyte *lparg5=NULL;
 	jintLong rc = 0;
 	OS_NATIVE_ENTER(env, that, _1gtk_1message_1dialog_1new_FUNC);
 	if (arg4) if ((lparg4 = (*env)->GetByteArrayElements(env, arg4, NULL)) == NULL) goto fail;
-	rc = (jintLong)gtk_message_dialog_new((GtkWindow *)arg0, (GtkDialogFlags)arg1, (GtkMessageType)arg2, (GtkButtonsType)arg3, (const gchar *)lparg4);
+	if (arg5) if ((lparg5 = (*env)->GetByteArrayElements(env, arg5, NULL)) == NULL) goto fail;
+	rc = (jintLong)gtk_message_dialog_new((GtkWindow *)arg0, (GtkDialogFlags)arg1, (GtkMessageType)arg2, (GtkButtonsType)arg3, (const gchar *)lparg4, (const gchar *)lparg5);
 fail:
+	if (arg5 && lparg5) (*env)->ReleaseByteArrayElements(env, arg5, lparg5, 0);
 	if (arg4 && lparg4) (*env)->ReleaseByteArrayElements(env, arg4, lparg4, 0);
 	OS_NATIVE_EXIT(env, that, _1gtk_1message_1dialog_1new_FUNC);
 	return rc;
