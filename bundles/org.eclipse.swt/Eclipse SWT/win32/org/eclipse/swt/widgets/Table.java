@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2015 IBM Corporation and others.
+ * Copyright (c) 2000, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -4451,7 +4451,7 @@ void setCheckboxImageList (int width, int height, boolean fixScroll) {
 	OS.SelectObject (hDC, oldFont);
 	int itemWidth = Math.min (tm.tmHeight, width);
 	int itemHeight = Math.min (tm.tmHeight, height);
-	int left = (width - itemWidth) / 2, top = (height - itemHeight) / 2 + 1;
+	int left = (width - itemWidth) / 2, top = (height - itemHeight) / 2;
 	OS.SetRect (rect, left, top, left + itemWidth, top + itemHeight);
 	if (OS.COMCTL32_MAJOR >= 6 && OS.IsAppThemed ()) {
 		long /*int*/ hTheme = display.hButtonTheme ();
