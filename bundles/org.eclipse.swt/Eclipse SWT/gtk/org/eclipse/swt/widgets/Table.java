@@ -650,8 +650,8 @@ void createHandle (int index) {
 	OS.gtk_scrolled_window_set_policy (scrolledHandle, hsp, vsp);
 	if ((style & SWT.BORDER) != 0) OS.gtk_scrolled_window_set_shadow_type (scrolledHandle, OS.GTK_SHADOW_ETCHED_IN);
 	/*
-	 * We keep fixed-height-mode enabled for Tables for performance reasons. GTK3 Trees have it disabled
-	 * to prevent bug 480261.
+	 * We keep fixed-height-mode enabled in Table for performance reasons (see bug 490203).
+	 * GTK3 Trees have it disabled to prevent bug 480261.
 	 */
 	if ((style & SWT.VIRTUAL) != 0) {
 		OS.g_object_set (handle, OS.fixed_height_mode, true, 0);
