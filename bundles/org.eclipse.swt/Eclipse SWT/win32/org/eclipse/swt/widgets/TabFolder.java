@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2013 IBM Corporation and others.
+ * Copyright (c) 2000, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -526,11 +526,15 @@ Point minimumSize (int wHint, int hHint, boolean flushCache) {
 			index++;
 		}
 		if (index == count) {
-			Rectangle rect = child.getBoundsInPixels ();
+			Rectangle rect = DPIUtil.autoScaleUp(child.getBounds ());
 			width = Math.max (width, rect.x + rect.width);
 			height = Math.max (height, rect.y + rect.height);
 		} else {
-			Point size = child.computeSizeInPixels (wHint, hHint, flushCache);
+			/*
+			 * Since computeSize can be overridden by subclasses, we cannot
+			 * call computeSizeInPixels directly.
+			 */
+			Point size = DPIUtil.autoScaleUp(child.computeSize (DPIUtil.autoScaleDown(wHint), DPIUtil.autoScaleDown(hHint), flushCache));
 			width = Math.max (width, size.x);
 			height = Math.max (height, size.y);
 		}
