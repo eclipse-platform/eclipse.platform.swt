@@ -31,9 +31,8 @@ import org.eclipse.swt.graphics.*;
 public class DPIUtil {
 
 	/* DPI Constants */
-	static final int DPI_ZOOM_200 = 192;
-	static final int DPI_ZOOM_150 = 144;
 	static final int DPI_ZOOM_100 = 96;
+	private static final double MIN_ZOOM_INTERVAL = 25;
 
 	private static boolean autoScaleEnable = true;
 	private static int deviceZoom = 100;
@@ -235,15 +234,9 @@ public static int mapSFToZoom (float scaleFactor) {
  * @return zoom
  */
 public static int mapDPIToZoom (int dpi) {
-	int zoom;
-	if (dpi >= DPI_ZOOM_200) {
-		zoom = 200;
-	} else if (dpi >= DPI_ZOOM_150) {
-		zoom = 150;
-	} else {
-		zoom = 100;
-	}
-	return zoom;
+	double zoom = dpi * 100 / DPI_ZOOM_100; //convert to percentage
+	int roundedZoom = (int) (Math.round (zoom / MIN_ZOOM_INTERVAL) * MIN_ZOOM_INTERVAL); //rounding to MIN_ZOOM_INTERVAL steps
+	return roundedZoom;
 }
 /**
  * Gets Image data at specified zoom level, if image is missing then
