@@ -1513,7 +1513,7 @@ void initAccessible() {
 			int childIdCount = items.length;
 			Object[] children = new Object[childIdCount];
 			for (int i = 0; i < childIdCount; i++) {
-				children[i] = new Integer(i);
+				children[i] = Integer.valueOf(i);
 			}
 			e.children = children;
 		}

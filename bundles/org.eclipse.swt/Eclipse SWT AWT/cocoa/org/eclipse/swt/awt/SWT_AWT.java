@@ -329,7 +329,7 @@ public static Frame new_Frame(final Composite parent) {
 			if (isJDK17) {
 				try {
 					Method method = frame.getClass().getMethod("validateWithBounds", int.class, int.class, int.class, int.class);
-					if (method != null) method.invoke(frame, new Integer(clientArea.x), new Integer(clientArea.y), new Integer(clientArea.width), new Integer(clientArea.height));
+					if (method != null) method.invoke(frame, Integer.valueOf(clientArea.x), Integer.valueOf(clientArea.y), Integer.valueOf(clientArea.width), Integer.valueOf(clientArea.height));
 				} catch (Throwable e) {e.printStackTrace();}
 			} else {
 				EventQueue.invokeLater(new Runnable () {

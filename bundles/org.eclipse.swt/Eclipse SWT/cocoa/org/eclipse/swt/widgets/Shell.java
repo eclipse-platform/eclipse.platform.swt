@@ -498,9 +498,9 @@ void attachObserversToWindow(NSWindow newWindow) {
 	if (windowEmbedCounts == null) windowEmbedCounts = new HashMap();
 	Integer embedCount = (Integer) windowEmbedCounts.get(hostWindow);
 	if (embedCount == null) {
-		embedCount = new Integer(0);
+		embedCount = Integer.valueOf(0);
 	}
-	embedCount = new Integer(embedCount.intValue() + 1);
+	embedCount = Integer.valueOf(embedCount.intValue() + 1);
 	windowEmbedCounts.put(hostWindow, embedCount);
 
 	// Register for notifications. An embedded shell has no control over the host window,
@@ -1453,9 +1453,9 @@ void removeObserversFromWindow () {
 	if (hostWindow != null) {
 		Integer embedCount = (Integer) windowEmbedCounts.get(hostWindow);
 		if (embedCount == null) {
-			embedCount = new Integer(0);
+			embedCount = Integer.valueOf(0);
 		}
-		embedCount = new Integer(embedCount.intValue() - 1);
+		embedCount = Integer.valueOf(embedCount.intValue() - 1);
 		windowEmbedCounts.put(hostWindow, embedCount);
 
 		if (embedCount.intValue() <= 0) {

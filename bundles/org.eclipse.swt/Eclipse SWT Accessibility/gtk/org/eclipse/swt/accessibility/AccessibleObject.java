@@ -3310,7 +3310,7 @@ class AccessibleObject {
 		if (type == OS.G_TYPE_DOUBLE()) return new Double(OS.g_value_get_double(value));
 		if (type == OS.G_TYPE_FLOAT()) return new Float(OS.g_value_get_float(value));
 		if (type == OS.G_TYPE_INT64()) return new Long(OS.g_value_get_int64(value));
-		return new Integer(OS.g_value_get_int(value));
+		return Integer.valueOf(OS.g_value_get_int(value));
 	}
 
 	static AtkValueIface getValueIface (long /*int*/ atkObject) {

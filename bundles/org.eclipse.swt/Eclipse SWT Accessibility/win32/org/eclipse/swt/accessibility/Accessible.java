@@ -1760,9 +1760,9 @@ public class Accessible {
 		}
 		if (event.result != null) {
 			Object[] eventData = new Object[] {
-					new Integer(type),
-					new Integer(startIndex),
-					new Integer(startIndex + length),
+					Integer.valueOf(type),
+					Integer.valueOf(startIndex),
+					Integer.valueOf(startIndex + length),
 					event.result};
 			sendEvent(ACC.EVENT_TEXT_CHANGED, eventData);
 			return;
@@ -3049,7 +3049,7 @@ public class Accessible {
 				for (int i = 0; i < nextItems.length; i++) {
 					Object child = variants[enumIndex];
 					if (child instanceof Integer) {
-						nextItems[i] = new Integer(childIDToOs(((Integer)child).intValue()));
+						nextItems[i] = Integer.valueOf(childIDToOs(((Integer)child).intValue()));
 					} else {
 						nextItems[i] = child;
 					}
@@ -5314,7 +5314,7 @@ public class Accessible {
 		VARIANT v = new VARIANT();
 		COM.MoveMemory(v, variant, VARIANT.sizeof);
 		if (v.vt == COM.VT_I8) return new Long(v.lVal); // TODO: Fix this - v.lVal is an int - don't use struct
-		return new Integer(v.lVal);
+		return Integer.valueOf(v.lVal);
 	}
 
 	void setIntVARIANT(long /*int*/ variant, short vt, int lVal) {

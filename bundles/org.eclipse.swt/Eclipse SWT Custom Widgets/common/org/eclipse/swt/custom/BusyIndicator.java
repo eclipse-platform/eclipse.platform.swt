@@ -54,7 +54,7 @@ public static void showWhile(Display display, Runnable runnable) {
 		}
 	}
 
-	Integer busyId = new Integer(nextBusyId);
+	Integer busyId = Integer.valueOf(nextBusyId);
 	nextBusyId++;
 	Cursor cursor = display.getSystemCursor(SWT.CURSOR_WAIT);
 	Shell[] shells = display.getShells();

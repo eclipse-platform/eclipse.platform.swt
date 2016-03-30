@@ -169,7 +169,7 @@ class TableAccessibleDelegate {
 				int columnCount = childColumnToIdMap.size() > 0 ? childColumnToIdMap.size() : 1;
 				Accessible[] accessibles = new Accessible[columnCount];
 				for (int i = 0; i < columnCount; i++) {
-					accessibles[i] = (Accessible) childColumnToIdMap.get(new Integer(i));
+					accessibles[i] = (Accessible) childColumnToIdMap.get(Integer.valueOf(i));
 				}
 				e.accessibles = accessibles;
 			}
@@ -215,7 +215,7 @@ class TableAccessibleDelegate {
 				int columnCount = childRowToIdMap.size() > 0 ? childRowToIdMap.size() : 1;
 				Accessible[] accessibles = new Accessible[columnCount];
 				for (int i = 0; i < columnCount; i++) {
-					accessibles[i] = (Accessible) childRowToIdMap.get(new Integer(i));
+					accessibles[i] = (Accessible) childRowToIdMap.get(Integer.valueOf(i));
 				}
 				e.accessibles = accessibles;
 			}
@@ -229,11 +229,11 @@ class TableAccessibleDelegate {
 		}
 
 		/* Check cache for childID, if found, return corresponding osChildID. */
-		AccessibleTableColumn childRef = (AccessibleTableColumn) childColumnToIdMap.get(new Integer(childID));
+		AccessibleTableColumn childRef = (AccessibleTableColumn) childColumnToIdMap.get(Integer.valueOf(childID));
 
 		if (childRef == null) {
 			childRef = new AccessibleTableColumn(tableAccessible, childID);
-			childColumnToIdMap.put(new Integer(childID), childRef);
+			childColumnToIdMap.put(Integer.valueOf(childID), childRef);
 		}
 
 		return childRef;
@@ -245,11 +245,11 @@ class TableAccessibleDelegate {
 		}
 
 		/* Check cache for childID, if found, return corresponding osChildID. */
-		AccessibleTableRow childRef = (AccessibleTableRow) childRowToIdMap.get(new Integer(childID));
+		AccessibleTableRow childRef = (AccessibleTableRow) childRowToIdMap.get(Integer.valueOf(childID));
 
 		if (childRef == null) {
 			childRef = new AccessibleTableRow(tableAccessible, childID);
-			childRowToIdMap.put(new Integer(childID), childRef);
+			childRowToIdMap.put(Integer.valueOf(childID), childRef);
 		}
 
 		return childRef;

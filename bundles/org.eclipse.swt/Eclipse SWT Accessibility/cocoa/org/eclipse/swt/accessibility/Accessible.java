@@ -3448,11 +3448,11 @@ public class Accessible {
 		}
 
 		/* Check cache for childID, if found, return corresponding osChildID. */
-		SWTAccessibleDelegate childRef = (SWTAccessibleDelegate) childToIdMap.get(new Integer(childID));
+		SWTAccessibleDelegate childRef = (SWTAccessibleDelegate) childToIdMap.get(Integer.valueOf(childID));
 
 		if (childRef == null) {
 			childRef = new SWTAccessibleDelegate(this, childID);
-			childToIdMap.put(new Integer(childID), childRef);
+			childToIdMap.put(Integer.valueOf(childID), childRef);
 		}
 
 		return childRef;

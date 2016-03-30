@@ -75,7 +75,7 @@ static int getDesktop(final Display display) {
 
 	if (!OS.isX11 ()) {
 		desktop = DESKTOP_GIO;
-		display.setData(DESKTOP_DATA, new Integer(desktop));
+		display.setData(DESKTOP_DATA, Integer.valueOf(desktop));
 		return desktop;
 	}
 
@@ -163,7 +163,7 @@ static int getDesktop(final Display display) {
 		}
 	}
 
-	display.setData(DESKTOP_DATA, new Integer(desktop));
+	display.setData(DESKTOP_DATA, Integer.valueOf(desktop));
 	return desktop;
 }
 
