@@ -15279,7 +15279,15 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1settings_1set_1string_1property)
 	if (arg1) if ((lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL)) == NULL) goto fail;
 	if (arg2) if ((lparg2 = (*env)->GetByteArrayElements(env, arg2, NULL)) == NULL) goto fail;
 	if (arg3) if ((lparg3 = (*env)->GetByteArrayElements(env, arg3, NULL)) == NULL) goto fail;
+/*
 	gtk_settings_set_string_property((GtkSettings *)arg0, (const gchar *)lparg1, (const gchar *)lparg2, (const gchar *)lparg3);
+*/
+	{
+		OS_LOAD_FUNCTION(fp, gtk_settings_set_string_property)
+		if (fp) {
+			((void (CALLING_CONVENTION*)(GtkSettings *, const gchar *, const gchar *, const gchar *))fp)((GtkSettings *)arg0, (const gchar *)lparg1, (const gchar *)lparg2, (const gchar *)lparg3);
+		}
+	}
 fail:
 	if (arg3 && lparg3) (*env)->ReleaseByteArrayElements(env, arg3, lparg3, 0);
 	if (arg2 && lparg2) (*env)->ReleaseByteArrayElements(env, arg2, lparg2, 0);

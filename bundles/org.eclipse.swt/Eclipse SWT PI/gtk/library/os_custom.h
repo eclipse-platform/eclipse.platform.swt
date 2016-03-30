@@ -336,6 +336,7 @@
 #define gtk_selection_data_get_format_LIB LIB_GTK
 #define gtk_selection_data_get_length_LIB LIB_GTK
 #define gtk_selection_data_get_target_LIB LIB_GTK
+#define gtk_settings_set_string_property_LIB LIB_GTK
 #define gtk_status_icon_set_tooltip_LIB LIB_GTK
 #define gtk_status_icon_position_menu_LIB LIB_GTK
 #define gtk_window_get_group_LIB LIB_GTK

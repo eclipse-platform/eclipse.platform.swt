@@ -11449,6 +11449,7 @@ public static final long /*int*/ gtk_settings_get_default() {
 	}
 }
 /**
+ * @method flags=dynamic
  * @param settings cast=(GtkSettings *)
  * @param name cast=(const gchar *)
  * @param v_string cast=(const gchar *)
