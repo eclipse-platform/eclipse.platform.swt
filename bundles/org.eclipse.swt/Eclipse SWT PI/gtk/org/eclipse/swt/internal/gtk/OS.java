@@ -8975,6 +8975,7 @@ public static final long /*int*/ gtk_im_multicontext_new() {
 	}
 }
 /**
+ * @method flags=dynamic
  * @param menu_item cast=(GtkImageMenuItem *)
  * @param image cast=(GtkWidget *)
  */

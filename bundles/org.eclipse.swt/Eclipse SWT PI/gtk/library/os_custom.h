@@ -216,6 +216,7 @@
 #define gtk_icon_source_free_LIB LIB_GTK
 #define gtk_icon_source_new_LIB LIB_GTK
 #define gtk_icon_source_set_pixbuf_LIB LIB_GTK
+#define gtk_image_menu_item_set_image_LIB LIB_GTK
 #define gtk_image_set_from_gicon_LIB LIB_GTK
 #define gdk_keyboard_ungrab_LIB LIB_GDK
 #define gtk_icon_theme_get_default_LIB LIB_GTK

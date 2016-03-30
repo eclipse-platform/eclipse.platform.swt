@@ -12298,7 +12298,15 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1image_1menu_1item_1set_1image)
 	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1)
 {
 	OS_NATIVE_ENTER(env, that, _1gtk_1image_1menu_1item_1set_1image_FUNC);
+/*
 	gtk_image_menu_item_set_image((GtkImageMenuItem *)arg0, (GtkWidget *)arg1);
+*/
+	{
+		OS_LOAD_FUNCTION(fp, gtk_image_menu_item_set_image)
+		if (fp) {
+			((void (CALLING_CONVENTION*)(GtkImageMenuItem *, GtkWidget *))fp)((GtkImageMenuItem *)arg0, (GtkWidget *)arg1);
+		}
+	}
 	OS_NATIVE_EXIT(env, that, _1gtk_1image_1menu_1item_1set_1image_FUNC);
 }
 #endif
