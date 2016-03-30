@@ -1503,6 +1503,7 @@ public void setImage (int index, Image image) {
 		if (imageIndex == -1) imageIndex = imageList.add (image);
 		pixbuf = imageList.getPixbuf (imageIndex);
 	}
+	int modelIndex = parent.columnCount == 0 ? Tree.FIRST_COLUMN : parent.columns [index].modelIndex;
 	/*
 	 * Reset size of pixbufRenderer if we have an image being set that is larger
 	 * than the current size of the pixbufRenderer. Fix for Bug 469277 & 476419.
@@ -1529,6 +1530,19 @@ public void setImage (int index, Image image) {
 					parent.pixbufSizeSet = true;
 					columnSetHeight = iHeight;
 					columnSetWidth = iWidth;
+					parent.pixbufHeight = iHeight;
+					parent.pixbufWidth = iWidth;
+					/*
+					 * Feature in GTK: a Tree with the style SWT.VIRTUAL has
+					 * fixed-height-mode enabled. This will limit the size of
+					 * any cells, including renderers. In order to prevent
+					 * images from disappearing/being cropped, we re-create
+					 * the renderers when the first image is set. Fix for
+					 * bug 480261.
+					 */
+					if ((parent.style & SWT.VIRTUAL) != 0) {
+						parent.createRenderers(column, modelIndex, ((parent.style & SWT.CHECK) != 0) , parent.style);
+					}
 				}
 			}
 		} else {
@@ -1541,7 +1555,6 @@ public void setImage (int index, Image image) {
 			}
 		}
 	}
-	int modelIndex = parent.columnCount == 0 ? Tree.FIRST_COLUMN : parent.columns [index].modelIndex;
 	OS.gtk_tree_store_set (parent.modelHandle, handle, modelIndex + Tree.CELL_PIXBUF, pixbuf, -1);
 	/*
 	* Bug in GTK.  When using fixed-height-mode, GTK does not recalculate the cell renderer width

@@ -91,6 +91,7 @@ public class Tree extends Composite {
 	GdkColor drawForeground;
 	GdkRGBA background;
 	boolean ownerDraw, ignoreSize, ignoreAccessibility, pixbufSizeSet;
+	int pixbufHeight, pixbufWidth;
 
 	static final int ID_COLUMN = 0;
 	static final int CHECKED_COLUMN = 1;
@@ -865,9 +866,21 @@ void createRenderers (long /*int*/ columnHandle, int modelIndex, boolean check, 
 	} else {
 		// set default size this size is used for calculating the icon and text positions in a tree
 		if ((!ownerDraw) && (OS.GTK3)) {
-			// Set render size to 0x0 until we actually add images, fix for
-			// Bug 469277 & 476419.
-			OS.gtk_cell_renderer_set_fixed_size(pixbufRenderer, 0, 0);
+			/*
+			 * When SWT.VIRTUAL is specified, size the pixbuf renderer
+			 * according to the size of the first image set. If no image
+			 * is set, specify a size of 0x0 like for all other Tree
+			 * styles. Fix for bug 480261.
+			 */
+			if ((style & SWT.VIRTUAL) != 0 && pixbufSizeSet)  {
+				OS.gtk_cell_renderer_set_fixed_size(pixbufRenderer, pixbufHeight, pixbufWidth);
+			} else {
+				/*
+				 * For all other styles, set render size to 0x0 until we
+				 * actually add images, fix for bugs 469277 & 476419.
+				 */
+				OS.gtk_cell_renderer_set_fixed_size(pixbufRenderer, 0, 0);
+			}
 		}
 	}
 	long /*int*/ textRenderer = ownerDraw ? OS.g_object_new (display.gtk_cell_renderer_text_get_type (), 0) : OS.gtk_cell_renderer_text_new ();
