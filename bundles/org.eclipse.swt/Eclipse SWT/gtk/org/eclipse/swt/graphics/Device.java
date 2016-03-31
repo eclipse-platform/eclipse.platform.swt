@@ -714,11 +714,19 @@ protected void init () {
 					+ "GtkToolbar GtkMenuButton {padding: 1px 0px 1px 0px;}\n";
 			} else {
 				css =
-					"toolbar {padding-top: 4px; padding-bottom: 4px;}\n"
+					"toolbar {padding-top: 2x; padding-bottom: 2px;}\n"
 					+ "toolbar button {padding: 2px;}"
 					+ "toolbar button.popup {padding: 0px;}\n"
+					+ "toolbar toolbutton button {padding: 0px 0px 0px 0px;}"
 					+ "scrolledwindow undershoot.top, scrolledwindow undershoot.right, scrolledwindow undershoot.bottom, "
 					+ "scrolledwindow undershoot.left {background-image: none;}\n";
+				/*
+				 * Feature in GTK3.20: Entries have increased minimum heights
+				 * causing them to be larger than usual. The fix is to
+				 * adjust the minimum height to make them more like GTK3.18
+				 * and below.
+				 */
+				css += "entry {min-height: 26px;}";
 			}
 			if (css != null) {
 				OS.gtk_style_context_add_provider_for_screen (screen, provider, OS.GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
