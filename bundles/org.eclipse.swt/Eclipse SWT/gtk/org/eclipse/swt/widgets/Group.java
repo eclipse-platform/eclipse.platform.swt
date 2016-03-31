@@ -431,4 +431,29 @@ int setBounds(int x, int y, int width, int height, boolean move, boolean resize)
 
 	return super.setBounds(x, y, width, height, move, resize);
 }
+
+@Override
+long /*int*/ paintHandle() {
+	if (OS.GTK3) {
+		return super.paintHandle();
+	}
+	else {
+		long /*int*/ topHandle = topHandle ();
+		/* we draw all our children on the clientHandle*/
+		long /*int*/ paintHandle = clientHandle;
+		while (paintHandle != topHandle) {
+			if (OS.gtk_widget_get_has_window (paintHandle)) break;
+			paintHandle = OS.gtk_widget_get_parent (paintHandle);
+		}
+		return paintHandle;
+	}
+}
+
+@Override
+long /*int*/ paintWindow () {
+	long /*int*/ paintHandle = clientHandle;
+	OS.gtk_widget_realize (paintHandle);
+	return gtk_widget_get_window (paintHandle);
+}
+
 }
