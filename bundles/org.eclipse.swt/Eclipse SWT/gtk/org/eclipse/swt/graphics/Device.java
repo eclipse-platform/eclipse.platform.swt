@@ -1042,15 +1042,15 @@ int _getDPIx () {
  */
 protected int getDeviceZoom() {
 	long /*int*/ screen = OS.gdk_screen_get_default();
-	int scaleFactor = (int) OS.gdk_screen_get_resolution (screen);
-	if (scaleFactor <= 0) scaleFactor = 96; //gdk_screen_get_resolution returns -1 in case of error
+	int dpi = (int) OS.gdk_screen_get_resolution (screen);
+	if (dpi <= 0) dpi = 96; // gdk_screen_get_resolution returns -1 in case of error
 	if (OS.GTK_VERSION > OS.VERSION(3, 9, 0)) {
 		Rectangle rect = getBounds();
 		int monitor_num = OS.gdk_screen_get_monitor_at_point (screen, rect.x, rect.y);
 		int scale = OS.gdk_screen_get_monitor_scale_factor (screen, monitor_num);
-		scaleFactor = Math.max (scaleFactor, scale * 96); //scalefactor of 1 corresponds to 96 dpi
+		dpi = Math.max (dpi, scale * 96); // scale of 1 corresponds to 96 dpi
 	}
-	return DPIUtil.mapDPIToZoom (scaleFactor);
+	return DPIUtil.mapDPIToZoom (dpi);
 }
 /**
  * @noreference This method is not intended to be referenced by clients.
