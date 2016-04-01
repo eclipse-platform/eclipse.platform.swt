@@ -608,7 +608,32 @@ long /*int*/ findButtonHandle() {
 	* an instance of button.
 	*/
 	long /*int*/ result = 0;
-	OS.gtk_container_forall (handle, display.allChildrenProc, 0);
+	long /*int*/ childHandle = handle;
+
+	/*
+	 * The only direct child of GtkComboBox since 3.20 is GtkBox and
+	 * gtk_container_forall iterates over direct children only so handle for the
+	 * GtkBox has to be retrieved first.
+	 * As it's internal child one can't get it in other way.
+	 */
+	if (OS.GTK_VERSION >= OS.VERSION(3, 20, 0)) {
+		OS.gtk_container_forall(handle, display.allChildrenProc, 0);
+		if (display.allChildren != 0) {
+			long /*int*/ list = display.allChildren;
+			while (list != 0) {
+				long /*int*/ widget = OS.g_list_data(list);
+				if (widget != 0) {
+					childHandle = widget;
+					break;
+				}
+				list = OS.g_list_next(list);
+			}
+			OS.g_list_free(display.allChildren);
+			display.allChildren = 0;
+		}
+	}
+
+	OS.gtk_container_forall (childHandle, display.allChildrenProc, 0);
 	if (display.allChildren != 0) {
 		long /*int*/ list = display.allChildren;
 		while (list != 0) {
