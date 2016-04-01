@@ -597,7 +597,9 @@ void setBackgroundColor (long /*int*/ context, long /*int*/ handle, GdkRGBA rgba
 	if (OS.GTK_VERSION >= OS.VERSION(3, 16, 0)) {
 		// Form background string
 		String css = "GtkToolbar {background-color: " + display.gtk_rgba_to_css_string(rgba) + "}";
-
+		if (OS.GTK_VERSION >= OS.VERSION(3, 20, 0)) {
+			css = "toolbar {background-color: " + display.gtk_rgba_to_css_string(rgba) + "}";
+		}
 		// Cache background color
 		this.cssBackground = css;
 
