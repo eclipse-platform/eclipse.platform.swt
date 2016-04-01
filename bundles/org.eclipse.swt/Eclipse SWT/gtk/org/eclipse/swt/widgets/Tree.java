@@ -548,8 +548,11 @@ Point computeSizeInPixels (int wHint, int hHint, boolean changed) {
 
 	/*
 	 * In GTK 3, computeNativeSize(..) sometimes just returns the header
-	 * height as height. In that case, calculate the table height based on
-	 * the number of items in the table.
+	 * height as height. In that case, calculate the tree height based on
+	 * the number of items at the root of the tree.
+	 * FIXME: This calculation neglects children of expanded tree items.
+	 * When fixing that, be careful not to use getItems (), since that
+	 * would realize too many VIRTUAL TreeItems (similar to bug 490203).
 	 */
 	if (OS.GTK3 && hHint == SWT.DEFAULT && size.y == getHeaderHeight()) {
 		size.y = getItemCount() * getItemHeightInPixels() + getHeaderHeight();
