@@ -65,7 +65,7 @@ public static void main(String[] args) {
 	for (int i = 0; i < states.length; i++) {
 		button = new Button(group, SWT.RADIO);
 		button.setText(stateLabels[i]);
-		button.setData(new Integer(states[i]));
+		button.setData(Integer.valueOf(states[i]));
 		button.addListener(SWT.Selection, listener);
 		if (i==0) button.setSelection(true);
 	}
