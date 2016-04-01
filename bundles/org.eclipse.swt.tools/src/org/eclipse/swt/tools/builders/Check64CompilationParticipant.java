@@ -135,7 +135,7 @@ void createProblem(IResource resource, String message, int start, int end) throw
 	int severity = IMarker.SEVERITY_ERROR;
 	marker.setAttributes(
 		new String[] {IMarker.MESSAGE, IMarker.SEVERITY, IMarker.CHAR_START, IMarker.CHAR_END, IMarker.SOURCE_ID},
-		new Object[] {"[32/64] " + message, new Integer(severity), new Integer(start), new Integer(end), SOURCE_ID});
+		new Object[] {"[32/64] " + message, Integer.valueOf(severity), Integer.valueOf(start), Integer.valueOf(end), SOURCE_ID});
 }
 
 void createProblems(IJavaProject project, String root) throws CoreException {

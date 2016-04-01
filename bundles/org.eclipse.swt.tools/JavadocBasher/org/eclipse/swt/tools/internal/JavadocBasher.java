@@ -50,7 +50,7 @@ import org.eclipse.jface.text.*;
  * (Initial Developer) - don't keep the change suggested by the tool (the text
  * is fine as-is). - The ns*.java and some other *.java files in
  * internal/mozilla have 2 copyright lines and the tool tries to change the 1st
- * - don't keep the 1st change (Netscape 1998-1999), but update the 2nd (IBM)
+ * - don't keep the 1st change (Netscape 1998-2015), but update the 2nd (IBM)
  * manually.
  * 
  * NOTE: JavadocBasher now does a fairly good job of checking API consistency.

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2008, 2015 IBM Corporation and others.
+ * Copyright (c) 2008, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -22,7 +22,7 @@ public void generate(JNIClass clazz) {
 	String data = ((AbstractItem)clazz).flatten();
 	if (data != null && data.length() != 0) {
 		String doc = "/** @jniclass " + data + " */" + delimiter;
-		inserts.put(new Integer(((ASTClass)clazz).start), doc);
+		inserts.put(Integer.valueOf(((ASTClass)clazz).start), doc);
 	}
 	JNIField[] fields = clazz.getDeclaredFields();
 	generate(fields);
@@ -66,7 +66,7 @@ public void generate(JNIField field) {
 	String data = ((AbstractItem)field).flatten();
 	if (data != null && data.length() != 0) {
 		String doc = "/** @field " + data + " */" + delimiter + "\t";
-		inserts.put(new Integer(((ASTField)field).start), doc);
+		inserts.put(Integer.valueOf(((ASTField)field).start), doc);
 	}
 }
 
@@ -97,7 +97,7 @@ public void generate(JNIMethod method) {
 	if (tags.size() == 0) return;
 	if (tags.size() == 1) {
 		String doc = "/** " + tags.get(0) + " */" + delimiter;
-		inserts.put(new Integer(((ASTMethod)method).start), doc);
+		inserts.put(Integer.valueOf(((ASTMethod)method).start), doc);
 	} else {
 		StringBuffer buffer = new StringBuffer();
 		buffer.append("/**");
@@ -110,7 +110,7 @@ public void generate(JNIMethod method) {
 		}
 		buffer.append(" */");
 		buffer.append(delimiter);
-		inserts.put(new Integer(((ASTMethod)method).start), buffer.toString());
+		inserts.put(Integer.valueOf(((ASTMethod)method).start), buffer.toString());
 	}
 }
 }

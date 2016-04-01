@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2004, 2015 IBM Corporation and others.
+ * Copyright (c) 2004, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -152,7 +152,7 @@ public Map<String, NativeFunction[]> snapshot(String className, Map<String, Nati
 		NativeFunction[] funcs = new NativeFunction[count];
 		Object[] index = new Object[1];
 		for (int i = 0; i < count; i++) {
-			index[0] = new Integer(i);
+			index[0] = Integer.valueOf(i);
 			int callCount = ((Integer)functionCallCount.invoke(clazz, index)).intValue();
 			String name = (String)functionName.invoke(clazz, index);
 			funcs[i] = new NativeFunction(name, callCount);
