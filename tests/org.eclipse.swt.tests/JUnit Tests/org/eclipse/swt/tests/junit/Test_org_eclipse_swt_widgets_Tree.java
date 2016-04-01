@@ -21,6 +21,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.layout.FillLayout;
+import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeColumn;
 import org.eclipse.swt.widgets.TreeItem;
@@ -756,4 +759,51 @@ public void test_consistency_DragDetect () {
     consistencyEvent(30, 20, 50, 30, ConsistencyUtility.MOUSE_DRAG, events);
 }
 
+@Test
+public void test_Virtual() {
+	tree.dispose();
+	tree = new Tree(shell, SWT.VIRTUAL | SWT.BORDER);
+	setWidget(tree);
+	
+	int count = 10000;
+	int visibleCount = 10;
+	
+	shell.setLayout(new FillLayout());
+	final TreeItem[] top = { null };
+	final int[] dataCounter = { 0 };
+	tree.addListener(SWT.SetData, new Listener() {
+		@Override
+		public void handleEvent(Event event) {
+			TreeItem item = (TreeItem) event.item;
+			if (item.getParentItem() == null) {
+				top[0] = item;
+				item.setText("top");
+			} else {
+				int index = top[0].indexOf(item);
+				item.setText("Item " + index);
+			}
+			dataCounter[0]++;
+		}
+	});
+	
+	tree.setItemCount(1);
+	shell.setSize (200, tree.getItemHeight() * visibleCount);
+	shell.open ();
+	TreeItem item0 = tree.getItem(0);
+	item0.setItemCount(count);
+	item0.setExpanded(true);
+	long end = System.currentTimeMillis() + 3000;
+	while (!shell.isDisposed() && System.currentTimeMillis() < end) {
+		if (!shell.getDisplay().readAndDispatch ()) {
+			try {
+				Thread.sleep(10);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+	// the "* 2" allows some surplus for platforms that pre-fetch items to improve scrolling performance:
+	assertTrue("SetData callback count not in range: " + dataCounter[0],
+			dataCounter[0] > visibleCount / 2 && dataCounter[0] <= visibleCount * 2);
+}
 }

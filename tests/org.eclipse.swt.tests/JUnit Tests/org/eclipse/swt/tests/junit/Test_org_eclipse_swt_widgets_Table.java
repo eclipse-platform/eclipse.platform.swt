@@ -22,6 +22,9 @@ import java.util.List;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.SWTException;
+import org.eclipse.swt.layout.FillLayout;
+import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
@@ -1730,6 +1733,46 @@ public void test_consistency_DragDetect () {
     List<String> events = new ArrayList<>();
     createTable(events);
     consistencyEvent(30, 20, 50, 30, ConsistencyUtility.MOUSE_DRAG, events);
+}
+
+@Test
+public void test_Virtual() {
+	table.dispose();
+	table = new Table(shell, SWT.VIRTUAL | SWT.BORDER);
+	setWidget(table);
+	
+	int count = 1_000_000;
+	int visibleCount = 10;
+	
+	shell.setLayout(new FillLayout());
+	final int[] dataCounter = { 0 };
+	table.addListener(SWT.SetData, new Listener() {
+		@Override
+		public void handleEvent(Event event) {
+			TableItem item = (TableItem) event.item;
+			int index = table.indexOf(item);
+			item.setText("Item " + index);
+			dataCounter[0]++;
+		}
+	});
+	
+	shell.setSize (200, table.getItemHeight() * visibleCount);
+	shell.open ();
+	table.setItemCount(count);
+	
+	long end = System.currentTimeMillis() + 3000;
+	while (!shell.isDisposed() && System.currentTimeMillis() < end) {
+		if (!shell.getDisplay().readAndDispatch ()) {
+			try {
+				Thread.sleep(10);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+	// the "* 2" allows some surplus for platforms that pre-fetch items to improve scrolling performance:
+	assertTrue("SetData callback count not in range: " + dataCounter[0],
+			dataCounter[0] > visibleCount / 2 && dataCounter[0] <= visibleCount * 2);
 }
 
 }
