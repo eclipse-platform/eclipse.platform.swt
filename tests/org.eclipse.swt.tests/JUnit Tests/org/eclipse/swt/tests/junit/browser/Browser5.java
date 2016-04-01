@@ -48,7 +48,7 @@ public class Browser5 {
 				Shell newShell = new Shell(display);
 				newShell.setLayout(new FillLayout());
 				Browser browser = new Browser(newShell, SWT.NONE);
-				browser.setData("index", new Integer(index));
+				browser.setData("index", Integer.valueOf(index));
 				browser.addVisibilityWindowListener(new VisibilityWindowListener() {
 					@Override
 					public void hide(WindowEvent event) {
@@ -77,7 +77,7 @@ public class Browser5 {
 							}
 						} else {
 							if (verbose) System.out.println("Visibility.show browser "+index+" location "+location+" size "+size);
-							browser.setData("index", new Integer(-100-index));
+							browser.setData("index", Integer.valueOf(-100-index));
 
 							/* Certain browsers include decorations in addition to the expected size.
 							 * Accept sizes that are greater than or equal to the expected size.

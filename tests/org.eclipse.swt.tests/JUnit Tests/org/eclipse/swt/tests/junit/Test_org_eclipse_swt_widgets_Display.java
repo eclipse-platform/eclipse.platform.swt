@@ -1215,10 +1215,10 @@ public void test_setCursorLocationLorg_eclipse_swt_graphics_Point() {
 public void test_setDataLjava_lang_Object() {
 	Display display = new Display();
 	try {
-		display.setData(new Integer(10));
+		display.setData(Integer.valueOf(10));
 		Integer i = (Integer)display.getData();
 		assertNotNull(i);
-		assertTrue(i.equals(new Integer(10)));
+		assertTrue(i.equals(Integer.valueOf(10)));
 	} finally {
 		display.dispose();
 	}
@@ -1228,11 +1228,11 @@ public void test_setDataLjava_lang_Object() {
 public void test_setDataLjava_lang_StringLjava_lang_Object() {
 	Display display = new Display();
 	try {
-		display.setData("Integer", new Integer(10));
+		display.setData("Integer", Integer.valueOf(10));
 		display.setData("String", "xyz");
 		Integer i = (Integer)display.getData("Integer");
 		assertNotNull(i);
-		assertTrue(i.equals(new Integer(10)));
+		assertTrue(i.equals(Integer.valueOf(10)));
 		String s = (String)display.getData("String");
 		assertNotNull(s);
 		assertTrue(s.equals("xyz"));
