@@ -69,7 +69,7 @@ public class BarChart extends Canvas {
 			Rectangle rect = getClientArea();
 			Display display = getDisplay();
 			int count = data.size();
-			Point valueSize = gc.stringExtent (new Integer(valueMax).toString());
+			Point valueSize = gc.stringExtent (Integer.valueOf(valueMax).toString());
 			int leftX = rect.x + 2 * GAP + valueSize.x;
 			int bottomY = rect.y + rect.height - 2 * GAP - valueSize.y;
 			int unitWidth = (rect.width - 4 * GAP - valueSize.x - AXIS_WIDTH) / count - GAP;
@@ -85,7 +85,7 @@ public class BarChart extends Canvas {
 			for (int i1 = valueMin; i1 <= valueMax; i1+=valueIncrement) {
 				int y = bottomY - i1 * unitHeight;
 				gc.drawLine(leftX, y, leftX - GAP, y);
-				gc.drawString(new Integer(i1).toString(), rect.x + GAP, y - valueSize.y);
+				gc.drawString(Integer.valueOf(i1).toString(), rect.x + GAP, y - valueSize.y);
 			}
 			// draw the x axis and item labels
 			gc.drawLine(leftX, bottomY, rect.x + rect.width - GAP, bottomY);
@@ -239,7 +239,7 @@ public class BarChart extends Canvas {
 				int count = data.size();
 				Object[] children = new Object[count];
 				for (int i = 0; i < count; i++) {
-					children[i] = new Integer(i);
+					children[i] = Integer.valueOf(i);
 				}
 				e.children = children;
 			}
@@ -320,7 +320,7 @@ public class BarChart extends Canvas {
 		int count = data.size();
 		GC gc = new GC (this);
 		int titleWidth = gc.stringExtent (title).x;
-		Point valueSize = gc.stringExtent (new Integer(valueMax).toString());
+		Point valueSize = gc.stringExtent (Integer.valueOf(valueMax).toString());
 		int itemWidth = 0;
 		for (int i = 0; i < count; i++) {
 			Object [] dataItem = data.get(i);
@@ -345,7 +345,7 @@ public class BarChart extends Canvas {
 	 */
 	public void addData (String label, int value) {
 		checkWidget ();
-		data.add(new Object[] {label, new Integer(value)});
+		data.add(new Object[] {label, Integer.valueOf(value)});
 	}
 
 	/**
@@ -406,7 +406,7 @@ public class BarChart extends Canvas {
 	Rectangle itemBounds(int index) {
 		Rectangle rect = getClientArea();
 		GC gc = new GC (BarChart.this);
-		Point valueSize = gc.stringExtent (new Integer(valueMax).toString());
+		Point valueSize = gc.stringExtent (Integer.valueOf(valueMax).toString());
 		gc.dispose();
 		int leftX = rect.x + 2 * GAP + valueSize.x;
 		int bottomY = rect.y + rect.height - 2 * GAP - valueSize.y;

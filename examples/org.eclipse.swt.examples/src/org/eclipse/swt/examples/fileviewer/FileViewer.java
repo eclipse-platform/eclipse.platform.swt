@@ -972,7 +972,7 @@ public class FileViewer {
 		 */
 		if ((files != null) && (files.length != 0)) {
 			numObjectsLabel.setText(getResourceString("details.NumberOfSelectedFiles.text",
-				new Object[] { new Integer(files.length) }));
+				new Object[] { Integer.valueOf(files.length) }));
 			long fileSize = 0L;
 			for (int i = 0; i < files.length; ++i) {
 				fileSize += files[i].length();
@@ -985,7 +985,7 @@ public class FileViewer {
 			if (currentDirectory != null) {
 				int numObjects = getDirectoryList(currentDirectory).length;
 				numObjectsLabel.setText(getResourceString("details.DirNumberOfObjects.text",
-					new Object[] { new Integer(numObjects) }));
+					new Object[] { Integer.valueOf(numObjects) }));
 			} else {
 				numObjectsLabel.setText("");
 			}

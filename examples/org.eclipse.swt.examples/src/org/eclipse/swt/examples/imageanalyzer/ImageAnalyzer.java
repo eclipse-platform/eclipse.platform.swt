@@ -1240,7 +1240,7 @@ public class ImageAnalyzer {
 			boolean multi = false;
 			if (loader.data.length > 1) {
 				MessageBox box = new MessageBox(shell, SWT.ICON_QUESTION | SWT.YES | SWT.NO | SWT.CANCEL);
-				box.setMessage(createMsg(bundle.getString("Save_all"), new Integer(loader.data.length)));
+				box.setMessage(createMsg(bundle.getString("Save_all"), Integer.valueOf(loader.data.length)));
 				int result = box.open();
 				if (result == SWT.CANCEL) return;
 				if (result == SWT.YES) multi = true;
@@ -1571,9 +1571,9 @@ public class ImageAnalyzer {
 					Integer.toHexString(alphaValue)
 			};
 			Object[] args = {
-					new Integer(x),
-					new Integer(y),
-					new Integer(pixel),
+					Integer.valueOf(x),
+					Integer.valueOf(y),
+					Integer.valueOf(pixel),
 					Integer.toHexString(pixel),
 					createMsg(rgbMessageFormat, rgbArgs),
 					createMsg(rgbMessageFormat, rgbHexArgs),
@@ -1601,7 +1601,7 @@ public class ImageAnalyzer {
 						animateLoop();
 					} catch (final SWTException e) {
 						display.syncExec(() -> showErrorDialog(createMsg(bundle.getString("Creating_image"),
-								    new Integer(imageDataIndex+1)),
+								    Integer.valueOf(imageDataIndex+1)),
 								    currentName, e));
 					}
 
@@ -1837,20 +1837,20 @@ public class ImageAnalyzer {
 		if (imageDataArray.length > 1) {
 			string = createMsg(bundle.getString("Type_index"),
 			                   new Object[] {fileTypeString(imageData.type),
-			                                 new Integer(imageDataIndex + 1),
-			                                 new Integer(imageDataArray.length)});
+			                                 Integer.valueOf(imageDataIndex + 1),
+			                                 Integer.valueOf(imageDataArray.length)});
 		} else {
 			string = createMsg(bundle.getString("Type_string"), fileTypeString(imageData.type));
 		}
 		typeLabel.setText(string);
 
 		string = createMsg(bundle.getString("Size_value"),
-					 new Object[] {new Integer(imageData.width),
-							   new Integer(imageData.height)});
+					 new Object[] {Integer.valueOf(imageData.width),
+							   Integer.valueOf(imageData.height)});
 		sizeLabel.setText(string);
 
 		string = createMsg(bundle.getString("Depth_value"),
-				new Object[] {new Integer(imageData.depth), new Integer(display.getDepth())});
+				new Object[] {Integer.valueOf(imageData.depth), Integer.valueOf(display.getDepth())});
 		depthLabel.setText(string);
 
 		string = createMsg(bundle.getString("Transparent_pixel_value"), pixelInfo(imageData.transparentPixel));
@@ -1860,19 +1860,19 @@ public class ImageAnalyzer {
 		timeToLoadLabel.setText(string);
 
 		string = createMsg(bundle.getString("Animation_size_value"),
-		                      new Object[] {new Integer(loader.logicalScreenWidth),
-								new Integer(loader.logicalScreenHeight)});
+		                      new Object[] {Integer.valueOf(loader.logicalScreenWidth),
+								Integer.valueOf(loader.logicalScreenHeight)});
 		screenSizeLabel.setText(string);
 
 		string = createMsg(bundle.getString("Background_pixel_value"), pixelInfo(loader.backgroundPixel));
 		backgroundPixelLabel.setText(string);
 
 		string = createMsg(bundle.getString("Image_location_value"),
-		                      new Object[] {new Integer(imageData.x), new Integer(imageData.y)});
+		                      new Object[] {Integer.valueOf(imageData.x), Integer.valueOf(imageData.y)});
 		locationLabel.setText(string);
 
 		string = createMsg(bundle.getString("Disposal_value"),
-		                      new Object[] {new Integer(imageData.disposalMethod),
+		                      new Object[] {Integer.valueOf(imageData.disposalMethod),
 							      disposalString(imageData.disposalMethod)});
 		disposalMethodLabel.setText(string);
 
@@ -1880,31 +1880,31 @@ public class ImageAnalyzer {
 		int delayUsed = visibleDelay(delay);
 		if (delay != delayUsed) {
 			string = createMsg(bundle.getString("Delay_value"),
-			                   new Object[] {new Integer(delay), new Integer(delayUsed)});
+			                   new Object[] {Integer.valueOf(delay), Integer.valueOf(delayUsed)});
 		} else {
-			string = createMsg(bundle.getString("Delay_used"), new Integer(delay));
+			string = createMsg(bundle.getString("Delay_used"), Integer.valueOf(delay));
 		}
 		delayTimeLabel.setText(string);
 
 		if (loader.repeatCount == 0) {
-			string = createMsg( bundle.getString("Repeats_forever"), new Integer(loader.repeatCount));
+			string = createMsg( bundle.getString("Repeats_forever"), Integer.valueOf(loader.repeatCount));
 		} else {
-			string = createMsg(bundle.getString("Repeats_value"), new Integer(loader.repeatCount));
+			string = createMsg(bundle.getString("Repeats_value"), Integer.valueOf(loader.repeatCount));
 		}
 		repeatCountLabel.setText(string);
 
 		if (imageData.palette.isDirect) {
 			string = bundle.getString("Palette_direct");
 		} else {
-			string = createMsg(bundle.getString("Palette_value"), new Integer(imageData.palette.getRGBs().length));
+			string = createMsg(bundle.getString("Palette_value"), Integer.valueOf(imageData.palette.getRGBs().length));
 		}
 		paletteLabel.setText(string);
 
 		string = createMsg(
 				bundle.getString("Pixel_data_value"),
 				new Object[] {
-						new Integer(imageData.bytesPerLine),
-						new Integer(imageData.scanlinePad),
+						Integer.valueOf(imageData.bytesPerLine),
+						Integer.valueOf(imageData.scanlinePad),
 						depthInfo(imageData.depth),
 						(imageData.alphaData != null && imageData.alphaData.length > 0) ?
 								bundle.getString("Scroll_for_alpha") : "" });
@@ -2312,17 +2312,17 @@ public class ImageAnalyzer {
 		Button radio = new Button(dialog, SWT.RADIO);
 		radio.setText(bundle.getString("Save_as_type_no_compress"));
 		radio.setSelection(true);
-		radio.setData(new Integer(SWT.IMAGE_BMP));
+		radio.setData(Integer.valueOf(SWT.IMAGE_BMP));
 		radio.addSelectionListener(radioSelected);
 
 		radio = new Button(dialog, SWT.RADIO);
 		radio.setText(bundle.getString("Save_as_type_rle_compress"));
-		radio.setData(new Integer(SWT.IMAGE_BMP_RLE));
+		radio.setData(Integer.valueOf(SWT.IMAGE_BMP_RLE));
 		radio.addSelectionListener(radioSelected);
 
 		radio = new Button(dialog, SWT.RADIO);
 		radio.setText(bundle.getString("Save_as_type_os2"));
-		radio.setData(new Integer(SWT.IMAGE_OS2_BMP));
+		radio.setData(Integer.valueOf(SWT.IMAGE_OS2_BMP));
 		radio.addSelectionListener(radioSelected);
 
 		label = new Label(dialog, SWT.SEPARATOR | SWT.HORIZONTAL);
@@ -2354,31 +2354,31 @@ public class ImageAnalyzer {
 	 * in the hex dump.
 	 */
 	static String depthInfo(int depth) {
-		Object[] args = {new Integer(depth), ""};
+		Object[] args = {Integer.valueOf(depth), ""};
 		switch (depth) {
 			case 1:
 				args[1] = createMsg(bundle.getString("Multi_pixels"),
-				                    new Object[] {new Integer(8), " [01234567]"});
+				                    new Object[] {Integer.valueOf(8), " [01234567]"});
 				break;
 			case 2:
 				args[1] = createMsg(bundle.getString("Multi_pixels"),
-				                    new Object[] {new Integer(4), "[00112233]"});
+				                    new Object[] {Integer.valueOf(4), "[00112233]"});
 				break;
 			case 4:
 				args[1] = createMsg(bundle.getString("Multi_pixels"),
-				                    new Object[] {new Integer(2), "[00001111]"});
+				                    new Object[] {Integer.valueOf(2), "[00001111]"});
 				break;
 			case 8:
 				args[1] = bundle.getString("One_byte");
 				break;
 			case 16:
-				args[1] = createMsg(bundle.getString("Multi_bytes"), new Integer(2));
+				args[1] = createMsg(bundle.getString("Multi_bytes"), Integer.valueOf(2));
 				break;
 			case 24:
-				args[1] = createMsg(bundle.getString("Multi_bytes"), new Integer(3));
+				args[1] = createMsg(bundle.getString("Multi_bytes"), Integer.valueOf(3));
 				break;
 			case 32:
-				args[1] = createMsg(bundle.getString("Multi_bytes"), new Integer(4));
+				args[1] = createMsg(bundle.getString("Multi_bytes"), Integer.valueOf(4));
 				break;
 			default:
 				args[1] = bundle.getString("Unsupported_lc");

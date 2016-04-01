@@ -226,12 +226,12 @@ public class CountDownTab extends AnimatedGraphicsTab {
 			gc.fillPath(path);
 			path.dispose();
 
-			Point point = gc.stringExtent(new Integer(nextNumber).toString());
+			Point point = gc.stringExtent(Integer.valueOf(nextNumber).toString());
 			int textWidth = point.x;
 			int textHeight = point.y;
 
 			// draw the number
-			gc.drawString(new Integer(nextNumber).toString(),
+			gc.drawString(Integer.valueOf(nextNumber).toString(),
 					(width-textWidth)/2, (height-textHeight)/2, true);
 
 			// draw the rotating arm

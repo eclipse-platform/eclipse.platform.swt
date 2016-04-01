@@ -1855,7 +1855,7 @@ void initAccessibility () {
 			int childIdCount = columns.length > 0 ? columns.length + itemsCount * columns.length : itemsCount;
 			Object[] children = new Object[childIdCount];
 			for (int i = 0; i < childIdCount; i++) {
-				children[i] = new Integer(i);
+				children[i] = Integer.valueOf(i);
 			}
 			e.children = children;
 		}
@@ -1904,7 +1904,7 @@ void initAccessibility () {
 			for (int i = 0; i < selectionIndices.length; i++) {
 				int row = selectionIndices[i];
 				for (int col = 0; col < columnCount; col++) {
-					selectedChildren[i] = new Integer(row * columnCount + col);
+					selectedChildren[i] = Integer.valueOf(row * columnCount + col);
 				}
 			}
 			e.children = selectedChildren;

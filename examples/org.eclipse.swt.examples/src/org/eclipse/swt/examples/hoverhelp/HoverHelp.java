@@ -167,7 +167,7 @@ public class HoverHelp {
 		ToolBar bar = new ToolBar (frame, SWT.BORDER);
 		for (int i=0; i<5; i++) {
 			ToolItem item = new ToolItem (bar, SWT.PUSH);
-			item.setText (getResourceString("ToolItem.text", new Object[] { new Integer(i) }));
+			item.setText (getResourceString("ToolItem.text", new Object[] { Integer.valueOf(i) }));
 			item.setData ("TIP_TEXT", getResourceString("ToolItem.tooltip",
 				new Object[] { item.getText(), helpKey }));
 			item.setData ("TIP_HELPTEXTHANDLER", new ToolTipHelpTextHandler() {
@@ -186,9 +186,9 @@ public class HoverHelp {
 		Table table = new Table (frame, SWT.BORDER);
 		for (int i=0; i<4; i++) {
 			TableItem item = new TableItem (table, SWT.PUSH);
-			item.setText (getResourceString("Item", new Object[] { new Integer(i) }));
+			item.setText (getResourceString("Item", new Object[] { Integer.valueOf(i) }));
 			item.setData ("TIP_IMAGE", images[hhiInformation]);
-			item.setText (getResourceString("TableItem.text", new Object[] { new Integer(i) }));
+			item.setText (getResourceString("TableItem.text", new Object[] { Integer.valueOf(i) }));
 			item.setData ("TIP_TEXT", getResourceString("TableItem.tooltip",
 				new Object[] { item.getText(), helpKey }));
 			item.setData ("TIP_HELPTEXTHANDLER", new ToolTipHelpTextHandler() {
@@ -205,9 +205,9 @@ public class HoverHelp {
 		Tree tree = new Tree (frame, SWT.BORDER);
 		for (int i=0; i<4; i++) {
 			TreeItem item = new TreeItem (tree, SWT.PUSH);
-			item.setText (getResourceString("Item", new Object[] { new Integer(i) }));
+			item.setText (getResourceString("Item", new Object[] { Integer.valueOf(i) }));
 			item.setData ("TIP_IMAGE", images[hhiWarning]);
-			item.setText (getResourceString("TreeItem.text", new Object[] { new Integer(i) }));
+			item.setText (getResourceString("TreeItem.text", new Object[] { Integer.valueOf(i) }));
 			item.setData ("TIP_TEXT", getResourceString("TreeItem.tooltip",
 				new Object[] { item.getText(), helpKey}));
 			item.setData ("TIP_HELPTEXTHANDLER", new ToolTipHelpTextHandler() {

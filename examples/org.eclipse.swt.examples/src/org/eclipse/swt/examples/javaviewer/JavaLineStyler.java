@@ -259,7 +259,7 @@ public class JavaScanner {
 	 */
 	void initialize() {
 		fgKeys= new HashMap<>();
-		Integer k= new Integer(KEY);
+		Integer k= Integer.valueOf(KEY);
 		for (String word : fgKeywords)
 			fgKeys.put(word, k);
 	}

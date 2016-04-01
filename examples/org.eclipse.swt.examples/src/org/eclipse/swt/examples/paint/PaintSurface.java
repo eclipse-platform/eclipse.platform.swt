@@ -506,7 +506,7 @@ public class PaintSurface {
 	 */
 	public void setStatusCoord(Point coord) {
 		statusCoordInfo = (coord != null) ? PaintExample.getResourceString("status.Coord.format", new Object[]
-			{ new Integer(coord.x), new Integer(coord.y)}) : "";
+			{ Integer.valueOf(coord.x), Integer.valueOf(coord.y)}) : "";
 		updateStatus();
 	}
 
@@ -518,7 +518,7 @@ public class PaintSurface {
 	 */
 	public void setStatusCoordRange(Point a, Point b) {
 		statusCoordInfo = PaintExample.getResourceString("status.CoordRange.format", new Object[]
-			{ new Integer(a.x), new Integer(a.y), new Integer(b.x), new Integer(b.y)});
+			{ Integer.valueOf(a.x), Integer.valueOf(a.y), Integer.valueOf(b.x), Integer.valueOf(b.y)});
 		updateStatus();
 	}
 

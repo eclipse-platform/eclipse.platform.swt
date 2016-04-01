@@ -102,7 +102,7 @@ private void createTextWidgets() {
 		if (values[i] != null) {
 			text.setText(values[i]);
 		}
-		text.setData("index", new Integer(i));
+		text.setData("index", Integer.valueOf(i));
 		addTextListener(text);
 	}
 }

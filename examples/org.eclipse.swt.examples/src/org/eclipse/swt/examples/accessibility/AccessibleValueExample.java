@@ -72,15 +72,15 @@ public class AccessibleValueExample {
 			}
 			@Override
 			public void getMinimumValue(AccessibleValueEvent e) {
-				e.value = new Integer(min);
+				e.value = Integer.valueOf(min);
 			}
 			@Override
 			public void getMaximumValue(AccessibleValueEvent e) {
-				e.value = new Integer(max);
+				e.value = Integer.valueOf(max);
 			}
 			@Override
 			public void getCurrentValue(AccessibleValueEvent e) {
-				e.value = new Integer(value);
+				e.value = Integer.valueOf(value);
 			}
 		});
 

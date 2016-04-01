@@ -236,15 +236,15 @@ public void paint(GC gc, int width, int height) {
  */
 private List<Integer> moveLeft(int x1, int y1, int x2, int y2, int stepsize) {
 	List<Integer> coords = new ArrayList<>();
-	coords.add(new Integer(x1));
-	coords.add(new Integer(y1));
+	coords.add(Integer.valueOf(x1));
+	coords.add(Integer.valueOf(y1));
 	while(x1 - stepsize > x2) {
 		x1 = x1 - stepsize;
-		coords.add(new Integer(x1));
-		coords.add(new Integer(y1));
+		coords.add(Integer.valueOf(x1));
+		coords.add(Integer.valueOf(y1));
 	}
-	coords.add(new Integer(x2));
-	coords.add(new Integer(y2));
+	coords.add(Integer.valueOf(x2));
+	coords.add(Integer.valueOf(y2));
 	return coords;
 }
 
@@ -265,15 +265,15 @@ private List<Integer> moveLeft(int x1, int y1, int x2, int y2, int stepsize) {
  */
 private List<Integer> moveRight(int x1, int y1, int x2, int y2, int stepsize) {
 	List<Integer> coords = new ArrayList<>();
-	coords.add(new Integer(x1));
-	coords.add(new Integer(y1));
+	coords.add(Integer.valueOf(x1));
+	coords.add(Integer.valueOf(y1));
 	while(x1 + stepsize < x2) {
 		x1 = x1 + stepsize;
-		coords.add(new Integer(x1));
-		coords.add(new Integer(y1));
+		coords.add(Integer.valueOf(x1));
+		coords.add(Integer.valueOf(y1));
 	}
-	coords.add(new Integer(x2));
-	coords.add(new Integer(y2));
+	coords.add(Integer.valueOf(x2));
+	coords.add(Integer.valueOf(y2));
 	return coords;
 }
 
@@ -294,15 +294,15 @@ private List<Integer> moveRight(int x1, int y1, int x2, int y2, int stepsize) {
  */
 private List<Integer> moveUp(int x1, int y1, int x2, int y2, int stepsize) {
 	List<Integer> coords = new ArrayList<>();
-	coords.add(new Integer(x1));
-	coords.add(new Integer(y1));
+	coords.add(Integer.valueOf(x1));
+	coords.add(Integer.valueOf(y1));
 	while(y1 - stepsize > y2) {
 		y1 = y1 - stepsize;
-		coords.add(new Integer(x1));
-		coords.add(new Integer(y1));
+		coords.add(Integer.valueOf(x1));
+		coords.add(Integer.valueOf(y1));
 	}
-	coords.add(new Integer(x2));
-	coords.add(new Integer(y2));
+	coords.add(Integer.valueOf(x2));
+	coords.add(Integer.valueOf(y2));
 	return coords;
 }
 
@@ -323,15 +323,15 @@ private List<Integer> moveUp(int x1, int y1, int x2, int y2, int stepsize) {
  */
 private List<Integer> moveDown(int x1, int y1, int x2, int y2, int stepsize) {
 	List<Integer> coords = new ArrayList<>();
-	coords.add(new Integer(x1));
-	coords.add(new Integer(y1));
+	coords.add(Integer.valueOf(x1));
+	coords.add(Integer.valueOf(y1));
 	while(y1 + stepsize < y2) {
 		y1 = y1 + stepsize;
-		coords.add(new Integer(x1));
-		coords.add(new Integer(y1));
+		coords.add(Integer.valueOf(x1));
+		coords.add(Integer.valueOf(y1));
 	}
-	coords.add(new Integer(x2));
-	coords.add(new Integer(y2));
+	coords.add(Integer.valueOf(x2));
+	coords.add(Integer.valueOf(y2));
 	return coords;
 }
 

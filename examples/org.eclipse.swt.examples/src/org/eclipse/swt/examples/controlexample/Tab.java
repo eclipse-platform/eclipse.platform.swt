@@ -244,24 +244,24 @@ abstract class Tab {
 	};
 
 	static final Object [] DETAIL_VALUES = {
-		"SWT.COMPOSITION_CHANGED", new Integer(SWT.COMPOSITION_CHANGED),
-		"SWT.COMPOSITION_OFFSET", new Integer(SWT.COMPOSITION_OFFSET),
-		"SWT.COMPOSITION_SELECTION", new Integer(SWT.COMPOSITION_SELECTION),
-		"SWT.SELECTED", new Integer(SWT.SELECTED),
-		"SWT.FOCUSED", new Integer(SWT.FOCUSED),
-		"SWT.BACKGROUND", new Integer(SWT.BACKGROUND),
-		"SWT.FOREGROUND", new Integer(SWT.FOREGROUND),
-		"SWT.HOT", new Integer(SWT.HOT),
-		"SWT.TRAVERSE_NONE", new Integer(SWT.TRAVERSE_NONE),
-		"SWT.TRAVERSE_ESCAPE", new Integer(SWT.TRAVERSE_ESCAPE),
-		"SWT.TRAVERSE_RETURN", new Integer(SWT.TRAVERSE_RETURN),
-		"SWT.TRAVERSE_TAB_PREVIOUS", new Integer(SWT.TRAVERSE_TAB_PREVIOUS),
-		"SWT.TRAVERSE_TAB_NEXT", new Integer(SWT.TRAVERSE_TAB_NEXT),
-		"SWT.TRAVERSE_ARROW_PREVIOUS", new Integer(SWT.TRAVERSE_ARROW_PREVIOUS),
-		"SWT.TRAVERSE_ARROW_NEXT", new Integer(SWT.TRAVERSE_ARROW_NEXT),
-		"SWT.TRAVERSE_MNEMONIC", new Integer(SWT.TRAVERSE_MNEMONIC),
-		"SWT.TRAVERSE_PAGE_PREVIOUS", new Integer(SWT.TRAVERSE_PAGE_PREVIOUS),
-		"SWT.TRAVERSE_PAGE_NEXT", new Integer(SWT.TRAVERSE_PAGE_NEXT),
+		"SWT.COMPOSITION_CHANGED", Integer.valueOf(SWT.COMPOSITION_CHANGED),
+		"SWT.COMPOSITION_OFFSET", Integer.valueOf(SWT.COMPOSITION_OFFSET),
+		"SWT.COMPOSITION_SELECTION", Integer.valueOf(SWT.COMPOSITION_SELECTION),
+		"SWT.SELECTED", Integer.valueOf(SWT.SELECTED),
+		"SWT.FOCUSED", Integer.valueOf(SWT.FOCUSED),
+		"SWT.BACKGROUND", Integer.valueOf(SWT.BACKGROUND),
+		"SWT.FOREGROUND", Integer.valueOf(SWT.FOREGROUND),
+		"SWT.HOT", Integer.valueOf(SWT.HOT),
+		"SWT.TRAVERSE_NONE", Integer.valueOf(SWT.TRAVERSE_NONE),
+		"SWT.TRAVERSE_ESCAPE", Integer.valueOf(SWT.TRAVERSE_ESCAPE),
+		"SWT.TRAVERSE_RETURN", Integer.valueOf(SWT.TRAVERSE_RETURN),
+		"SWT.TRAVERSE_TAB_PREVIOUS", Integer.valueOf(SWT.TRAVERSE_TAB_PREVIOUS),
+		"SWT.TRAVERSE_TAB_NEXT", Integer.valueOf(SWT.TRAVERSE_TAB_NEXT),
+		"SWT.TRAVERSE_ARROW_PREVIOUS", Integer.valueOf(SWT.TRAVERSE_ARROW_PREVIOUS),
+		"SWT.TRAVERSE_ARROW_NEXT", Integer.valueOf(SWT.TRAVERSE_ARROW_NEXT),
+		"SWT.TRAVERSE_MNEMONIC", Integer.valueOf(SWT.TRAVERSE_MNEMONIC),
+		"SWT.TRAVERSE_PAGE_PREVIOUS", Integer.valueOf(SWT.TRAVERSE_PAGE_PREVIOUS),
+		"SWT.TRAVERSE_PAGE_NEXT", Integer.valueOf(SWT.TRAVERSE_PAGE_NEXT),
 	};
 
 	/**
@@ -1192,7 +1192,7 @@ abstract class Tab {
 				if (value.equals("null")) {
 					parameter = new Object[] {null};
 				} else if (typeName.equals("int")) {
-					parameter = new Object[] {new Integer(value)};
+					parameter = new Object[] {Integer.valueOf(value)};
 				} else if (typeName.equals("long")) {
 					parameter = new Object[] {new Long(value)};
 				} else if (typeName.equals("char")) {
@@ -1211,7 +1211,7 @@ abstract class Tab {
 					String strings[] = split(value, ',');
 					int[] ints = new int[strings.length];
 					for (int j = 0; j < strings.length; j++) {
-						ints[j] = new Integer(strings[j]).intValue();
+						ints[j] = Integer.valueOf(strings[j]).intValue();
 					}
 					parameter = new Object[] {ints};
 				} else if (typeName.equals("[C")) {

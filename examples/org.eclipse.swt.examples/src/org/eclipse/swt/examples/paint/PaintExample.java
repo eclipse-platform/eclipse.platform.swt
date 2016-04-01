@@ -89,13 +89,13 @@ public class PaintExample {
 		new Tool(RoundedRectangle_tool, "RoundedRectangle", "tool", SWT.RADIO),
 		new Tool(Ellipse_tool, "Ellipse", "tool", SWT.RADIO),
 		new Tool(Text_tool, "Text", "tool", SWT.RADIO),
-		new Tool(None_fill, "None", "fill", SWT.RADIO, new Integer(ToolSettings.ftNone)),
-		new Tool(Outline_fill, "Outline", "fill", SWT.RADIO, new Integer(ToolSettings.ftOutline)),
-		new Tool(Solid_fill, "Solid", "fill", SWT.RADIO, new Integer(ToolSettings.ftSolid)),
-		new Tool(Solid_linestyle, "Solid", "linestyle", SWT.RADIO, new Integer(SWT.LINE_SOLID)),
-		new Tool(Dash_linestyle, "Dash", "linestyle", SWT.RADIO, new Integer(SWT.LINE_DASH)),
-		new Tool(Dot_linestyle, "Dot", "linestyle", SWT.RADIO, new Integer(SWT.LINE_DOT)),
-		new Tool(DashDot_linestyle, "DashDot", "linestyle", SWT.RADIO, new Integer(SWT.LINE_DASHDOT)),
+		new Tool(None_fill, "None", "fill", SWT.RADIO, Integer.valueOf(ToolSettings.ftNone)),
+		new Tool(Outline_fill, "Outline", "fill", SWT.RADIO, Integer.valueOf(ToolSettings.ftOutline)),
+		new Tool(Solid_fill, "Solid", "fill", SWT.RADIO, Integer.valueOf(ToolSettings.ftSolid)),
+		new Tool(Solid_linestyle, "Solid", "linestyle", SWT.RADIO, Integer.valueOf(SWT.LINE_SOLID)),
+		new Tool(Dash_linestyle, "Dash", "linestyle", SWT.RADIO, Integer.valueOf(SWT.LINE_DASH)),
+		new Tool(Dot_linestyle, "Dot", "linestyle", SWT.RADIO, Integer.valueOf(SWT.LINE_DOT)),
+		new Tool(DashDot_linestyle, "DashDot", "linestyle", SWT.RADIO, Integer.valueOf(SWT.LINE_DASHDOT)),
 		new Tool(Font_options, "Font", "options", SWT.PUSH)
 	};
 

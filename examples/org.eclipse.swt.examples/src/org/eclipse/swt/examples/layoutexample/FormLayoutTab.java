@@ -487,7 +487,7 @@ class FormLayoutTab extends Tab {
 				widthText.setText (oldItem.getText (WIDTH_COL));
 			}
 			try {
-				new Integer(heightText.getText()).intValue();
+				Integer.valueOf(heightText.getText()).intValue();
 			} catch(NumberFormatException e) {
 				heightText.setText (oldItem.getText(HEIGHT_COL));
 			}
