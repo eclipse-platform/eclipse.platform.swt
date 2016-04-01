@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011 IBM Corporation and others.
+ * Copyright (c) 2011, 2013 IBM Corporation and others.
  * All rights reserved. This Example Content is intended to demonstrate
  * usage of Eclipse technology. It is provided to you under the terms and
  * conditions of the Eclipse Distribution License v1.0 which is available
