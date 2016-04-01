@@ -714,7 +714,7 @@ protected void init () {
 					+ "GtkToolbar GtkMenuButton {padding: 1px 0px 1px 0px;}\n";
 			} else {
 				css =
-					"toolbar {padding-top: 2x; padding-bottom: 2px;}\n"
+					"toolbar {padding-top: 2px; padding-bottom: 2px;}\n"
 					+ "toolbar button {padding: 2px;}"
 					+ "toolbar button.popup {padding: 0px;}\n"
 					+ "toolbar toolbutton button {padding: 0px 0px 0px 0px;}"
