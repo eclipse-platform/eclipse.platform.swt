@@ -3533,11 +3533,12 @@ long /*int*/ gtk_motion_notify_event (long /*int*/ widget, long /*int*/ event) {
 	if (OS.GTK3 && this != display.currentControl) {
 		if (display.currentControl != null && !display.currentControl.isDisposed ()) {
 			display.removeMouseHoverTimeout (display.currentControl.handle);
-			display.currentControl.sendMouseEvent (SWT.MouseExit,  0, gdkEvent.time, x, y, false, state);
+			Point pt = display.mapInPixels (this, display.currentControl, (int) x, (int) y);
+			display.currentControl.sendMouseEvent (SWT.MouseExit,  0, gdkEvent.time, pt.x, pt.y, gdkEvent.is_hint != 0, state);
 		}
 		if (!isDisposed ()) {
 			display.currentControl = this;
-			sendMouseEvent (SWT.MouseEnter, 0, gdkEvent.time, x, y, false, state);
+			sendMouseEvent (SWT.MouseEnter, 0, gdkEvent.time, x, y, gdkEvent.is_hint != 0, state);
 		}
 	}
 	int result = sendMouseEvent (SWT.MouseMove, 0, gdkEvent.time, x, y, gdkEvent.is_hint != 0, state) ? 0 : 1;
@@ -4116,6 +4117,7 @@ boolean sendMouseEvent (int type, int button, int count, int detail, boolean sen
 	event.detail = detail;
 	event.count = count;
 	if (is_hint) {
+		// coordinates are already window-relative, see #gtk_motion_notify_event(..) and bug 94502
 		Rectangle eventRect = new Rectangle ((int)x, (int)y, 0, 0);
 		event.setBounds (DPIUtil.autoScaleDown (eventRect));
 	} else {
