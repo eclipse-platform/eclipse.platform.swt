@@ -53,6 +53,7 @@ typedef enum {
 	GTK_1RANGE_1SLIDER_1START_FUNC,
 	GTK_1TEXTVIEW_1IM_1CONTEXT_FUNC,
 	GTK_1TYPE_1ACCESSIBLE_FUNC,
+	GTK_1WIDGET_1GET_1CLASS_FUNC,
 	GTK_1WIDGET_1REQUISITION_1HEIGHT_FUNC,
 	GTK_1WIDGET_1REQUISITION_1WIDTH_FUNC,
 	GTypeInfo_1sizeof_FUNC,
@@ -1377,6 +1378,7 @@ typedef enum {
 	_1gtk_1widget_1add_1accelerator_FUNC,
 	_1gtk_1widget_1add_1events_FUNC,
 	_1gtk_1widget_1child_1focus_FUNC,
+	_1gtk_1widget_1class_1get_1css_1name_FUNC,
 #ifndef JNI64
 	_1gtk_1widget_1create_1pango_1layout__II_FUNC,
 #else

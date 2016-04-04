@@ -43,6 +43,7 @@ char * OS_nativeFunctionNames[] = {
 	"GTK_1RANGE_1SLIDER_1START",
 	"GTK_1TEXTVIEW_1IM_1CONTEXT",
 	"GTK_1TYPE_1ACCESSIBLE",
+	"GTK_1WIDGET_1GET_1CLASS",
 	"GTK_1WIDGET_1REQUISITION_1HEIGHT",
 	"GTK_1WIDGET_1REQUISITION_1WIDTH",
 	"GTypeInfo_1sizeof",
@@ -1367,6 +1368,7 @@ char * OS_nativeFunctionNames[] = {
 	"_1gtk_1widget_1add_1accelerator",
 	"_1gtk_1widget_1add_1events",
 	"_1gtk_1widget_1child_1focus",
+	"_1gtk_1widget_1class_1get_1css_1name",
 #ifndef JNI64
 	"_1gtk_1widget_1create_1pango_1layout__II",
 #else

@@ -1906,6 +1906,34 @@ String gtk_rgba_to_css_string (GdkRGBA rgba) {
 	return new String (Converter.mbcsToWcs (null, buffer));
 }
 
+String gtk_widget_get_name(long /*int*/ handle) {
+	long /*int*/ str = OS.gtk_widget_get_name (handle);
+	String name;
+	if (str == 0) {
+		name = "*";
+	} else {
+		int length = OS.strlen (str);
+		byte [] buffer = new byte [length];
+		OS.memmove (buffer, str, length);
+		name = new String (Converter.mbcsToWcs (null, buffer));
+	}
+	return name;
+}
+
+String gtk_widget_class_get_css_name(long /*int*/ handle) {
+	long /*int*/ str = OS.gtk_widget_class_get_css_name (OS.GTK_WIDGET_GET_CLASS(handle));
+	String name;
+	if (str == 0) {
+		name = "*";
+	} else {
+		int length = OS.strlen (str);
+		byte [] buffer = new byte [length];
+		OS.memmove (buffer, str, length);
+		name = new String (Converter.mbcsToWcs (null, buffer));
+	}
+	return name;
+}
+
 /**
  * Returns the default display. One is created (making the
  * thread that invokes this method its user-interface thread)

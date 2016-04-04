@@ -861,6 +861,9 @@ public static final native int X_EVENT_TYPE(long /*int*/ xevent);
 /** @param xevent cast=(XAnyEvent *) */
 public static final native long /*int*/ X_EVENT_WINDOW(long /*int*/ xevent);
 
+/** @param widget cast=(GtkWidget *) */
+public static final native long /*int*/ GTK_WIDGET_GET_CLASS(long /*int*/ widget);
+
 /** X11 Native methods and constants */
 public static final int Above = 0;
 public static final int Below = 1;
@@ -1804,6 +1807,18 @@ public static final long /*int*/ gtk_widget_get_name(long /*int*/ widget) {
 	lock.lock();
 	try {
 		return _gtk_widget_get_name(widget);
+	} finally {
+		lock.unlock();
+	}
+}
+/** @method flags=dynamic
+ *  @param widget_class cast=(GtkWidgetClass *)
+ */
+public static final native long /*int*/ _gtk_widget_class_get_css_name(long /*int*/ widget_class);
+public static final long /*int*/ gtk_widget_class_get_css_name(long /*int*/ widget_class) {
+	lock.lock();
+	try {
+		return _gtk_widget_class_get_css_name(widget_class);
 	} finally {
 		lock.unlock();
 	}

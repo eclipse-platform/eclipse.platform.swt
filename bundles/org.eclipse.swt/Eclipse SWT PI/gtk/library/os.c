@@ -209,6 +209,18 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(GTK_1TYPE_1ACCESSIBLE)
 }
 #endif
 
+#ifndef NO_GTK_1WIDGET_1GET_1CLASS
+JNIEXPORT jintLong JNICALL OS_NATIVE(GTK_1WIDGET_1GET_1CLASS)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, GTK_1WIDGET_1GET_1CLASS_FUNC);
+	rc = (jintLong)GTK_WIDGET_GET_CLASS((GtkWidget *)arg0);
+	OS_NATIVE_EXIT(env, that, GTK_1WIDGET_1GET_1CLASS_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_GTK_1WIDGET_1REQUISITION_1HEIGHT
 JNIEXPORT jint JNICALL OS_NATIVE(GTK_1WIDGET_1REQUISITION_1HEIGHT)
 	(JNIEnv *env, jclass that, jintLong arg0)
@@ -18352,6 +18364,26 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(_1gtk_1widget_1child_1focus)
 	OS_NATIVE_ENTER(env, that, _1gtk_1widget_1child_1focus_FUNC);
 	rc = (jboolean)gtk_widget_child_focus((GtkWidget *)arg0, arg1);
 	OS_NATIVE_EXIT(env, that, _1gtk_1widget_1child_1focus_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1gtk_1widget_1class_1get_1css_1name
+JNIEXPORT jintLong JNICALL OS_NATIVE(_1gtk_1widget_1class_1get_1css_1name)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, _1gtk_1widget_1class_1get_1css_1name_FUNC);
+/*
+	rc = (jintLong)gtk_widget_class_get_css_name((GtkWidgetClass *)arg0);
+*/
+	{
+		OS_LOAD_FUNCTION(fp, gtk_widget_class_get_css_name)
+		if (fp) {
+			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(GtkWidgetClass *))fp)((GtkWidgetClass *)arg0);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, _1gtk_1widget_1class_1get_1css_1name_FUNC);
 	return rc;
 }
 #endif

@@ -743,6 +743,29 @@ void reskinChildren (int flags) {
 }
 
 @Override
+void setBackgroundColor (long /*int*/ context, long /*int*/ handle, GdkRGBA rgba) {
+    if (OS.GTK_VERSION >= OS.VERSION(3, 16, 0)) {
+            // Form background string
+            String name;
+            if (OS.GTK_VERSION >= OS.VERSION(3, 20, 0)) {
+                    name = "notebook header";
+            } else {
+                    name = "GtkNotebook";
+            }
+            String css = name + " {background-color: " + display.gtk_rgba_to_css_string (rgba) + ";}";
+
+            // Cache background
+            cssBackground = css;
+
+            // Apply background color and any cached foreground color
+            String finalCss = display.gtk_css_create_css_color_string (cssBackground, cssForeground, SWT.BACKGROUND);
+            gtk_css_provider_load_from_css (context, finalCss);
+    } else {
+            OS.gtk_widget_override_background_color (handle, OS.GTK_STATE_FLAG_NORMAL, rgba);
+    }
+}
+
+@Override
 int setBounds (int x, int y, int width, int height, boolean move, boolean resize) {
 	int result = super.setBounds (x, y, width, height, move, resize);
 	if ((result & RESIZED) != 0) {

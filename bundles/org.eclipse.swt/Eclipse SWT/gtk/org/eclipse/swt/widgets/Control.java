@@ -4222,20 +4222,25 @@ private void _setBackground (Color color) {
 }
 
 void setBackgroundColor (long /*int*/ context, long /*int*/ handle, GdkRGBA rgba) {
-	if (OS.GTK_VERSION >= OS.VERSION(3, 16, 0)) {
-		// Form background string
-		String name = gtk_widget_get_name(handle);
-		String css = name + " {background-color: " + display.gtk_rgba_to_css_string (rgba) + ";}";
+    if (OS.GTK_VERSION >= OS.VERSION(3, 16, 0)) {
+            // Form background string
+            String name;
+            if (OS.GTK_VERSION >= OS.VERSION(3, 20, 0)) {
+                    name = display.gtk_widget_class_get_css_name(handle);
+            } else {
+                    name = display.gtk_widget_get_name(handle);
+            }
+            String css = name + " {background-color: " + display.gtk_rgba_to_css_string (rgba) + ";}";
 
-		// Cache background
-		cssBackground = css;
+            // Cache background
+            cssBackground = css;
 
-		// Apply background color and any cached foreground color
-		String finalCss = display.gtk_css_create_css_color_string (cssBackground, cssForeground, SWT.BACKGROUND);
-		gtk_css_provider_load_from_css (context, finalCss);
-	} else {
-		OS.gtk_widget_override_background_color (handle, OS.GTK_STATE_FLAG_NORMAL, rgba);
-	}
+            // Apply background color and any cached foreground color
+            String finalCss = display.gtk_css_create_css_color_string (cssBackground, cssForeground, SWT.BACKGROUND);
+            gtk_css_provider_load_from_css (context, finalCss);
+    } else {
+            OS.gtk_widget_override_background_color (handle, OS.GTK_STATE_FLAG_NORMAL, rgba);
+    }
 }
 
 void setBackgroundColorGradient (long /*int*/ context, long /*int*/ handle, GdkRGBA rgba) {
