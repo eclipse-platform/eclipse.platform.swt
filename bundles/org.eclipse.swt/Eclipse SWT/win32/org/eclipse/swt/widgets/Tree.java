@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2015 IBM Corporation and others.
+ * Copyright (c) 2000, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -4716,6 +4716,16 @@ void setCheckboxImageList () {
 	OS.SelectObject (hDC, oldFont);
 	int itemWidth = Math.min (tm.tmHeight, width);
 	int itemHeight = Math.min (tm.tmHeight, height);
+	/*
+	 * On Windows when OS level custom zoom is more than 150% then OS
+	 * doesn't support auto-scaling of the native check-box images and hence
+	 * the size of native check-box never goes more than 20px wide. So, to
+	 * handle this special case in Table/Tree, need to apply the same upper
+	 * cap to the size of custom drawn check-box images, so check-box images
+	 * look in proper ratio. For more details refer bug 489828.
+	 */
+	itemWidth = Math.min (20, itemWidth);
+	itemHeight = Math.min (20, itemHeight);
 	int left = (width - itemWidth) / 2, top = (height - itemHeight) / 2 + 1;
 	OS.SetRect (rect, left + width, top, left + width + itemWidth, top + itemHeight);
 	if (OS.COMCTL32_MAJOR >= 6 && OS.IsAppThemed ()) {
