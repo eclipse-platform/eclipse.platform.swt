@@ -366,7 +366,7 @@
 #define gtk_widget_is_composited_LIB LIB_GTK
 #define gtk_widget_get_allocation_LIB LIB_GTK
 #define gtk_widget_get_name_LIB LIB_GTK
-#define gtk_widget_class_get_name_LIB LIB_GTK
+#define gtk_widget_class_get_css_name_LIB LIB_GTK
 #define gtk_widget_size_request_LIB LIB_GTK
 #define gtk_widget_get_default_style_LIB LIB_GTK
 #define gtk_widget_get_preferred_size_LIB LIB_GTK
