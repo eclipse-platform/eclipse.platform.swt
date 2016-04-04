@@ -124,5 +124,6 @@ public void test_getVersion() {
 	// Test that the version number which is returned is reasonable.
 	int ver = SWT.getVersion();
 	assertTrue ("unreasonable value returned", ver > 0 && ver < 1000000);
+	System.out.println("SWT.getVersion(): " + ver);
 }
 }

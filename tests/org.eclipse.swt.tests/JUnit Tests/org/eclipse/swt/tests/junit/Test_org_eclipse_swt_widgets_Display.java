@@ -26,6 +26,7 @@ import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.internal.DPIUtil;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
@@ -45,6 +46,8 @@ public class Test_org_eclipse_swt_widgets_Display {
 @Test
 public void test_Constructor() {
 	Display disp = new Display();
+	System.out.println("org.eclipse.swt.internal.DPIUtil.isAutoScaleEnable(): " + DPIUtil.isAutoScaleEnable());
+	System.out.println("org.eclipse.swt.internal.DPIUtil.getDeviceZoom(): " + DPIUtil.getDeviceZoom());
 	disp.dispose();
 	if (SwtTestUtil.isGTK) {
 		System.out.println("org.eclipse.swt.internal.gtk.version=" + System.getProperty("org.eclipse.swt.internal.gtk.version"));
