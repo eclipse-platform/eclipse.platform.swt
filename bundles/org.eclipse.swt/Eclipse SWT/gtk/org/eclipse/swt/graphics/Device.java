@@ -706,7 +706,7 @@ protected void init () {
 		long /*int*/ provider = OS.gtk_css_provider_new();
 		String css = "";
 		if (screen != 0 && provider != 0) {
-			if (OS.GTK_VERSION < OS.VERSION(3, 19, 0)) {
+			if (OS.GTK_VERSION < OS.VERSION(3, 20, 0)) {
 				css =
 					"GtkToolbar {padding-top: 4px; padding-bottom: 4px;}\n"
 					+ "GtkToolbar GtkButton {padding: 4px 4px 4px 4px;}\n"

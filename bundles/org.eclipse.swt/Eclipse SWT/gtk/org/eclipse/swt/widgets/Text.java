@@ -603,7 +603,7 @@ Rectangle computeTrimInPixels (int x, int y, int width, int height) {
 			trim.x -= tmp.left;
 			trim.y -= tmp.top;
 			trim.width += tmp.left + tmp.right;
-			if (OS.GTK_VERSION >= OS.VERSION (3, 19, 0)) {
+			if (OS.GTK_VERSION >= OS.VERSION (3, 20, 0)) {
 				Point widthNative = computeNativeSize(handle, trim.width, SWT.DEFAULT, true);
 				trim.height = widthNative.y;
 			} else {

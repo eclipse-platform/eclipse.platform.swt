@@ -768,7 +768,12 @@ public boolean open () {
 		if (OS.GTK_VERSION < OS.VERSION (3, 16, 0)) {
 			OS.gtk_widget_override_background_color (overlay, OS.GTK_STATE_FLAG_NORMAL, new GdkRGBA());
 		} else {
-			String css = "GtkWindow {background-color: rgb(0,0,0);}";
+			String css;
+			if (OS.GTK_VERSION >= OS.VERSION(3, 20, 0)) {
+				css = "window {background-color: rgb(0,0,0);}";
+			} else {
+				css = "GtkWindow {background-color: rgb(0,0,0);}";
+			}
 			long /*int*/ provider = 0;
 			long /*int*/ context = OS.gtk_widget_get_style_context (overlay);
 			if (provider == 0) {
