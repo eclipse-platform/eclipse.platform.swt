@@ -280,6 +280,7 @@ public static int getDeviceZoom() {
  */
 public static void setDeviceZoom(int deviceZoom) {
 	DPIUtil.deviceZoom = deviceZoom;
+	System.setProperty("org.eclipse.swt.internal.deviceZoom", Integer.toString(deviceZoom));
 }
 
 /**
