@@ -48,7 +48,7 @@ public final class TextLayout extends Resource {
 
 	Font font;
 	String text;
-	int ascent, descent;
+	int ascentInPoints, descentInPoints;
 	int indent, wrapIndent, wrapWidth;
 	int[] segments;
 	char[] segmentsChars;
@@ -87,7 +87,7 @@ public TextLayout (Device device) {
 	OS.pango_layout_set_tabs(layout, device.emptyTab);
 	OS.pango_layout_set_auto_dir(layout, false);
 	text = "";
-	wrapWidth = ascent = descent = -1;
+	wrapWidth = ascentInPoints = descentInPoints = -1;
 	styles = new StyleItem[2];
 	styles[0] = new StyleItem();
 	styles[1] = new StyleItem();
@@ -104,7 +104,7 @@ void computeRuns () {
 	String segmentsText = getSegmentsText();
 	byte[] buffer = Converter.wcsToMbcs(null, segmentsText, false);
 	OS.pango_layout_set_text (layout, buffer, buffer.length);
-	if (stylesCount == 2 && styles[0].style == null && ascent == -1 && descent == -1 && segments == null) return;
+	if (stylesCount == 2 && styles[0].style == null && ascentInPoints == -1 && descentInPoints == -1 && segments == null) return;
 	long /*int*/ ptr = OS.pango_layout_get_text(layout);
 	attrList = OS.pango_attr_list_new();
 	selAttrList = OS.pango_attr_list_new();
@@ -114,10 +114,10 @@ void computeRuns () {
 	int nSegments = segementsLength - text.length();
 	int offsetCount = nSegments;
 	int[] lineOffsets = null;
-	if ((ascent != -1  || descent != -1) && segementsLength > 0) {
+	if ((ascentInPoints != -1  || descentInPoints != -1) && segementsLength > 0) {
 		PangoRectangle rect = new PangoRectangle();
-		if (ascent != -1) rect.y =  -(ascent  * OS.PANGO_SCALE);
-		rect.height = (Math.max(0, ascent) + Math.max(0, descent)) * OS.PANGO_SCALE;
+		if (ascentInPoints != -1) rect.y =  -(DPIUtil.autoScaleUp(ascentInPoints)  * OS.PANGO_SCALE);
+		rect.height = DPIUtil.autoScaleUp((Math.max(0, ascentInPoints) + Math.max(0, descentInPoints))) * OS.PANGO_SCALE;
 		int lineCount = OS.pango_layout_get_line_count(layout);
 		chars = new char[segementsLength + lineCount * 2];
 		lineOffsets = new int [lineCount];
@@ -289,8 +289,8 @@ void computeRuns () {
 		GlyphMetrics metrics = style.metrics;
 		if (metrics != null) {
 			PangoRectangle rect = new PangoRectangle();
-			rect.y =  -(metrics.ascent * OS.PANGO_SCALE);
-			rect.height = (metrics.ascent + metrics.descent) * OS.PANGO_SCALE;
+			rect.y =  -(DPIUtil.autoScaleUp(metrics.ascent) * OS.PANGO_SCALE);
+			rect.height = DPIUtil.autoScaleUp((metrics.ascent + metrics.descent)) * OS.PANGO_SCALE;
 			rect.width = metrics.width * OS.PANGO_SCALE;
 			long /*int*/ attr = OS.pango_attr_shape_new (rect, rect);
 			OS.memmove (attribute, attr, PangoAttribute.sizeof);
@@ -302,7 +302,7 @@ void computeRuns () {
 		}
 		int rise = style.rise;
 		if (rise != 0) {
-			long /*int*/ attr = OS.pango_attr_rise_new (rise * OS.PANGO_SCALE);
+			long /*int*/ attr = OS.pango_attr_rise_new (DPIUtil.autoScaleUp(rise) * OS.PANGO_SCALE);
 			OS.memmove (attribute, attr, PangoAttribute.sizeof);
 			attribute.start_index = byteStart;
 			attribute.end_index = byteEnd;
@@ -495,8 +495,8 @@ void drawInPixels(GC gc, int x, int y, int selectionStart, int selectionEnd, Col
 				int lineX = x + OS.PANGO_PIXELS(rect.x) + OS.PANGO_PIXELS(rect.width);
 				int lineY = y + OS.PANGO_PIXELS(rect.y);
 				int height = OS.PANGO_PIXELS(rect.height);
-				if (ascent != -1 && descent != -1) {
-					height = Math.max (height, ascent + descent);
+				if (ascentInPoints != -1 && descentInPoints != -1) {
+					height = Math.max (height, DPIUtil.autoScaleUp(ascentInPoints + descentInPoints));
 				}
 				int width = (flags & SWT.FULL_SELECTION) != 0 ? 0x7fff : height / 3;
 				if (cairo != 0) {
@@ -775,7 +775,7 @@ public int getAlignment() {
  */
 public int getAscent () {
 	checkLayout();
-	return ascent;
+	return ascentInPoints;
 }
 
 /**
@@ -805,8 +805,8 @@ Rectangle getBoundsInPixels() {
 	w[0] = wrapWidth != -1 ? wrapWidth : w[0] + OS.pango_layout_get_indent(layout);
 	int width = OS.PANGO_PIXELS(w[0]);
 	int height = OS.PANGO_PIXELS(h[0]);
-	if (ascent != -1 && descent != -1) {
-		height = Math.max (height, ascent + descent);
+	if (ascentInPoints != -1 && descentInPoints != -1) {
+		height = Math.max (height, DPIUtil.autoScaleUp(ascentInPoints + descentInPoints));
 	}
 	height += OS.PANGO_PIXELS(OS.pango_layout_get_spacing(layout));
 	return new Rectangle(0, 0, width, height);
@@ -906,7 +906,7 @@ Rectangle getBoundsInPixels(int start, int end) {
  */
 public int getDescent () {
 	checkLayout();
-	return descent;
+	return descentInPoints;
 }
 
 /**
@@ -1036,8 +1036,8 @@ Rectangle getLineBoundsInPixels(int lineIndex) {
 	int y = OS.PANGO_PIXELS(rect.y);
 	int width = OS.PANGO_PIXELS(rect.width);
 	int height = OS.PANGO_PIXELS(rect.height);
-	if (ascent != -1 && descent != -1) {
-		height = Math.max (height, ascent + descent);
+	if (ascentInPoints != -1 && descentInPoints != -1) {
+		height = Math.max (height, DPIUtil.autoScaleUp(ascentInPoints + descentInPoints));
 	}
 	if (OS.pango_context_get_base_dir(context) == OS.PANGO_DIRECTION_RTL) {
 		x = width() - x - width;
@@ -1115,25 +1115,29 @@ public FontMetrics getLineMetrics (int lineIndex) {
 	computeRuns();
 	int lineCount = OS.pango_layout_get_line_count(layout);
 	if (!(0 <= lineIndex && lineIndex < lineCount)) SWT.error(SWT.ERROR_INVALID_RANGE);
-	int ascent = 0, descent = 0;
 	PangoLayoutLine line = new PangoLayoutLine();
 	OS.memmove(line, OS.pango_layout_get_line(layout, lineIndex), PangoLayoutLine.sizeof);
+	int heightInPoints;
+	int ascentInPoints;
 	if (line.runs == 0) {
 		long /*int*/ font = this.font != null ? this.font.handle : device.systemFont.handle;
 		long /*int*/ lang = OS.pango_context_get_language(context);
 		long /*int*/ metrics = OS.pango_context_get_metrics(context, font, lang);
-		ascent = OS.pango_font_metrics_get_ascent(metrics);
-		descent = OS.pango_font_metrics_get_descent(metrics);
+		int ascent = OS.pango_font_metrics_get_ascent(metrics);
+		int descent = OS.pango_font_metrics_get_descent(metrics);
+		ascentInPoints = DPIUtil.autoScaleDown(OS.PANGO_PIXELS(ascent));
+		heightInPoints = DPIUtil.autoScaleDown(OS.PANGO_PIXELS(ascent + descent));
 		OS.pango_font_metrics_unref(metrics);
 	} else {
 		PangoRectangle rect = new PangoRectangle();
 		OS.pango_layout_line_get_extents(OS.pango_layout_get_line(layout, lineIndex), null, rect);
-		ascent = -rect.y;
-		descent = rect.height - ascent;
+		ascentInPoints = DPIUtil.autoScaleDown(OS.PANGO_PIXELS(-rect.y));
+		heightInPoints = DPIUtil.autoScaleDown(OS.PANGO_PIXELS(rect.height));
 	}
-	ascent = Math.max(this.ascent, OS.PANGO_PIXELS(ascent));
-	descent = Math.max(this.descent, OS.PANGO_PIXELS(descent));
-	return FontMetrics.gtk_new(ascent, descent, 0, 0, ascent + descent);
+	heightInPoints = Math.max(this.ascentInPoints + this.descentInPoints, heightInPoints);
+	ascentInPoints = Math.max(this.ascentInPoints, ascentInPoints);
+	int descentInPoints = heightInPoints - ascentInPoints;
+	return FontMetrics.gtk_new(ascentInPoints, descentInPoints, 0);
 }
 
 /**
@@ -1765,9 +1769,9 @@ public void setAlignment (int alignment) {
 public void setAscent (int ascent) {
 	checkLayout();
 	if (ascent < -1) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-	if (this.ascent == ascent) return;
+	if (this.ascentInPoints == ascent) return;
 	freeRuns();
-	this.ascent = ascent;
+	this.ascentInPoints = ascent;
 }
 
 /**
@@ -1791,9 +1795,9 @@ public void setAscent (int ascent) {
 public void setDescent (int descent) {
 	checkLayout();
 	if (descent < -1) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-	if (this.descent == descent) return;
+	if (this.descentInPoints == descent) return;
 	freeRuns();
-	this.descent = descent;
+	this.descentInPoints = descent;
 }
 
 /**

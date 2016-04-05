@@ -10,8 +10,6 @@
  *******************************************************************************/
 package org.eclipse.swt.graphics;
 
-import org.eclipse.swt.internal.*;
-
 /**
  * Instances of this class provide measurement information
  * about fonts including ascent, descent, height, leading
@@ -23,7 +21,7 @@ import org.eclipse.swt.internal.*;
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  */
 public final class FontMetrics {
-	int ascent, descent, averageCharWidth, leading, height;
+	int ascentInPoints, descentInPoints, averageCharWidthInPoints;
 
 FontMetrics() {
 }
@@ -43,9 +41,8 @@ public boolean equals (Object object) {
 	if (object == this) return true;
 	if (!(object instanceof FontMetrics)) return false;
 	FontMetrics metrics = (FontMetrics)object;
-	return ascent == metrics.ascent && descent == metrics.descent &&
-		averageCharWidth == metrics.averageCharWidth && leading == metrics.leading &&
-		height == metrics.height;
+	return ascentInPoints == metrics.ascentInPoints && descentInPoints == metrics.descentInPoints &&
+		averageCharWidthInPoints == metrics.averageCharWidthInPoints;
 }
 
 /**
@@ -57,7 +54,7 @@ public boolean equals (Object object) {
  * @return the ascent of the font
  */
 public int getAscent() {
-	return DPIUtil.autoScaleDown(ascent);
+	return ascentInPoints;
 }
 
 /**
@@ -67,7 +64,7 @@ public int getAscent() {
  * @return the average character width of the font
  */
 public int getAverageCharWidth() {
-	return DPIUtil.autoScaleDown(averageCharWidth);
+	return averageCharWidthInPoints;
 }
 
 /**
@@ -79,7 +76,7 @@ public int getAverageCharWidth() {
  * @return the descent of the font
  */
 public int getDescent() {
-	return DPIUtil.autoScaleDown(descent);
+	return descentInPoints;
 }
 
 /**
@@ -94,7 +91,7 @@ public int getDescent() {
  * @see #getLeading
  */
 public int getHeight() {
-	return DPIUtil.autoScaleDown(height);
+	return ascentInPoints + descentInPoints;
 }
 
 /**
@@ -105,16 +102,26 @@ public int getHeight() {
  * @return the leading space of the font
  */
 public int getLeading() {
-	return DPIUtil.autoScaleDown(leading);
+	return 0; // Pango has no concept of "leading"
 }
 
-public static FontMetrics gtk_new(int ascent, int descent, int averageCharWidth, int leading, int height) {
+/**
+ * Invokes platform specific functionality to allocate a new font metrics.
+ * <p>
+ * <b>IMPORTANT:</b> This method is <em>not</em> part of the public
+ * API for <code>FontMetrics</code>. It is marked public only so that
+ * it can be shared within the packages provided by SWT. It is not
+ * available on all platforms, and should never be called from
+ * application code.
+ * </p>
+ *
+ * @noreference This method is not intended to be referenced by clients.
+ */
+public static FontMetrics gtk_new(int ascentInPoints, int descentInPoints, int averageCharWidthInPoints) {
 	FontMetrics fontMetrics = new FontMetrics();
-	fontMetrics.ascent = ascent;
-	fontMetrics.descent = descent;
-	fontMetrics.averageCharWidth = averageCharWidth;
-	fontMetrics.leading = leading;
-	fontMetrics.height = height;
+	fontMetrics.ascentInPoints = ascentInPoints;
+	fontMetrics.descentInPoints = descentInPoints;
+	fontMetrics.averageCharWidthInPoints = averageCharWidthInPoints;
 	return fontMetrics;
 }
 
@@ -130,7 +137,7 @@ public static FontMetrics gtk_new(int ascent, int descent, int averageCharWidth,
  */
 @Override
 public int hashCode() {
-	return ascent ^ descent ^ averageCharWidth ^ leading ^ height;
+	return ascentInPoints ^ descentInPoints ^ averageCharWidthInPoints;
 }
 
 }

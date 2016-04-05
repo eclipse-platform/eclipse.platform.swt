@@ -1561,6 +1561,14 @@
             </message_arguments>
         </filter>
     </resource>
+    <resource path="Eclipse SWT/gtk/org/eclipse/swt/graphics/FontMetrics.java" type="org.eclipse.swt.graphics.FontMetrics">
+        <filter comment="has never been API, but @noreference Javadoc was missing on GTK" id="338792546">
+            <message_arguments>
+                <message_argument value="org.eclipse.swt.graphics.FontMetrics"/>
+                <message_argument value="gtk_new(int, int, int, int, int)"/>
+            </message_arguments>
+        </filter>
+    </resource>
     <resource path="Eclipse SWT/gtk/org/eclipse/swt/graphics/GC.java" type="org.eclipse.swt.graphics.GC">
         <filter id="338792546">
             <message_arguments>
