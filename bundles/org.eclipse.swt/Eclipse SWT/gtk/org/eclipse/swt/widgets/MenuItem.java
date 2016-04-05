@@ -261,6 +261,14 @@ void createHandle (int index) {
 			if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 			break;
 		case SWT.RADIO:
+			if (OS.GTK_VERSION <= OS.VERSION (3, 10, 8)) {
+				/*
+				 * Bug in Ubuntu <= 14.04 with UBUNTU_MENUPROXY. GTK crashes when
+				 * label of radio button is empty, see https://bugs.eclipse.org/419729 .
+				 * The workaround is to initialize the label with a space.
+				 */
+				buffer = new byte [] { ' ', 0 };
+			}
 			/*
 			* Feature in GTK.  In GTK, radio button must always be part of
 			* a radio button group.  In a GTK radio group, one button is always
