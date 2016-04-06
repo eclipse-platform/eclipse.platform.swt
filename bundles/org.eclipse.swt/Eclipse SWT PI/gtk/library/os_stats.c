@@ -1437,6 +1437,7 @@ char * OS_nativeFunctionNames[] = {
 	"_1gtk_1widget_1set_1default_1direction",
 	"_1gtk_1widget_1set_1direction",
 	"_1gtk_1widget_1set_1double_1buffered",
+	"_1gtk_1widget_1set_1focus_1on_1click",
 	"_1gtk_1widget_1set_1halign",
 	"_1gtk_1widget_1set_1has_1window",
 	"_1gtk_1widget_1set_1mapped",

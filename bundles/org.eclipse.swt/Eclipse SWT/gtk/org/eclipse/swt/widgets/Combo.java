@@ -1394,9 +1394,17 @@ long /*int*/ gtk_event_after (long /*int*/ widget, long /*int*/ gdkEvent)  {
 				GdkEventFocus gdkEventFocus = new GdkEventFocus ();
 				OS.memmove (gdkEventFocus, gdkEvent, GdkEventFocus.sizeof);
 				if (gdkEventFocus.in != 0) {
-					OS.gtk_combo_box_set_focus_on_click (handle, false);
+					if (OS.GTK_VERSION >= OS.VERSION(3, 20, 0)) {
+						OS.gtk_widget_set_focus_on_click(handle, false);
+					} else {
+						OS.gtk_combo_box_set_focus_on_click (handle, false);
+					}
 				} else {
-					OS.gtk_combo_box_set_focus_on_click (handle, true);
+					if (OS.GTK_VERSION >= OS.VERSION(3, 20, 0)) {
+						OS.gtk_widget_set_focus_on_click(handle, true);
+					} else {
+						OS.gtk_combo_box_set_focus_on_click (handle, true);
+					}
 				}
 			}
 			break;

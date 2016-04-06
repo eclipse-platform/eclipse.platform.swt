@@ -10215,7 +10215,15 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1combo_1box_1set_1focus_1on_1click)
 	(JNIEnv *env, jclass that, jintLong arg0, jboolean arg1)
 {
 	OS_NATIVE_ENTER(env, that, _1gtk_1combo_1box_1set_1focus_1on_1click_FUNC);
+/*
 	gtk_combo_box_set_focus_on_click((GtkComboBox *)arg0, (gboolean)arg1);
+*/
+	{
+		OS_LOAD_FUNCTION(fp, gtk_combo_box_set_focus_on_click)
+		if (fp) {
+			((void (CALLING_CONVENTION*)(GtkComboBox *, gboolean))fp)((GtkComboBox *)arg0, (gboolean)arg1);
+		}
+	}
 	OS_NATIVE_EXIT(env, that, _1gtk_1combo_1box_1set_1focus_1on_1click_FUNC);
 }
 #endif
@@ -19394,6 +19402,24 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1widget_1set_1double_1buffered)
 	OS_NATIVE_ENTER(env, that, _1gtk_1widget_1set_1double_1buffered_FUNC);
 	gtk_widget_set_double_buffered((GtkWidget *)arg0, (gboolean)arg1);
 	OS_NATIVE_EXIT(env, that, _1gtk_1widget_1set_1double_1buffered_FUNC);
+}
+#endif
+
+#ifndef NO__1gtk_1widget_1set_1focus_1on_1click
+JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1widget_1set_1focus_1on_1click)
+	(JNIEnv *env, jclass that, jintLong arg0, jboolean arg1)
+{
+	OS_NATIVE_ENTER(env, that, _1gtk_1widget_1set_1focus_1on_1click_FUNC);
+/*
+	gtk_widget_set_focus_on_click((GtkWidget *)arg0, (gboolean)arg1);
+*/
+	{
+		OS_LOAD_FUNCTION(fp, gtk_widget_set_focus_on_click)
+		if (fp) {
+			((void (CALLING_CONVENTION*)(GtkWidget *, gboolean))fp)((GtkWidget *)arg0, (gboolean)arg1);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, _1gtk_1widget_1set_1focus_1on_1click_FUNC);
 }
 #endif
 

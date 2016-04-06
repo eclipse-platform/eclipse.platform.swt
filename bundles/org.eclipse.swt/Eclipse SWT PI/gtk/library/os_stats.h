@@ -1447,6 +1447,7 @@ typedef enum {
 	_1gtk_1widget_1set_1default_1direction_FUNC,
 	_1gtk_1widget_1set_1direction_FUNC,
 	_1gtk_1widget_1set_1double_1buffered_FUNC,
+	_1gtk_1widget_1set_1focus_1on_1click_FUNC,
 	_1gtk_1widget_1set_1halign_FUNC,
 	_1gtk_1widget_1set_1has_1window_FUNC,
 	_1gtk_1widget_1set_1mapped_FUNC,

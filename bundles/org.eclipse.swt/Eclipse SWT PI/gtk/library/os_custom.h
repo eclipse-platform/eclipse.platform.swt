@@ -171,6 +171,7 @@
 #define gtk_combo_box_text_remove_all_LIB LIB_GTK
 #define gtk_combo_box_text_new_LIB LIB_GTK
 #define gtk_combo_box_text_new_with_entry_LIB LIB_GTK
+#define gtk_combo_box_set_focus_on_click_LIB LIB_GTK
 #define gtk_drag_begin_LIB LIB_GTK
 #define gtk_entry_text_index_to_layout_index_LIB LIB_GTK
 #define gtk_entry_get_inner_border_LIB LIB_GTK
@@ -399,6 +400,7 @@
 #define gtk_widget_modify_style_LIB LIB_GTK
 #define gtk_widget_get_style_LIB LIB_GTK
 #define gtk_widget_get_modifier_style_LIB LIB_GTK
+#define gtk_widget_set_focus_on_click_LIB LIB_GTK
 #define gtk_range_get_slider_range_LIB LIB_GTK
 #define gdk_x11_screen_get_window_manager_name_LIB LIB_GDK
 #define gdk_x11_screen_lookup_visual_LIB LIB_GDK

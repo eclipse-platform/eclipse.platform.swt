@@ -7244,9 +7244,10 @@ public static final void gtk_color_selection_set_has_palette(long /*int*/ colors
 	}
 }
 /**
-* @param combo cast=(GtkComboBox *)
-* @param val cast=(gboolean)
-*/
+ * @method flags=dynamic
+ * @param combo cast=(GtkComboBox *)
+ * @param val cast=(gboolean)
+ */
 public static final native void _gtk_combo_box_set_focus_on_click(long /*int*/ combo, boolean val);
 public static final void gtk_combo_box_set_focus_on_click(long /*int*/ combo, boolean val) {
 	lock.lock();
@@ -14948,6 +14949,20 @@ public static final void gtk_widget_set_double_buffered(long /*int*/ widget, boo
 	lock.lock();
 	try {
 		_gtk_widget_set_double_buffered(widget, double_buffered);
+	} finally {
+		lock.unlock();
+	}
+}
+/**
+ * @method flags=dynamic
+ * @param widget cast=(GtkWidget *)
+ * @param val cast=(gboolean)
+ */
+public static final native void _gtk_widget_set_focus_on_click(long /*int*/ widget, boolean val);
+public static final void gtk_widget_set_focus_on_click(long /*int*/ widget, boolean val) {
+	lock.lock();
+	try {
+		_gtk_widget_set_focus_on_click(widget, val);
 	} finally {
 		lock.unlock();
 	}
