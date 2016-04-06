@@ -298,7 +298,7 @@ public class Snippet365 {
 
 		// Link
 		link = new Link(nativeGroup, SWT.NONE);
-		link.setText("<A>Sample link</A>");
+		link.setText("<a>Sample link</a>");
 
 		// List
 		list = new List(nativeGroup, SWT.BORDER);

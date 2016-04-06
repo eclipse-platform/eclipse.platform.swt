@@ -33,7 +33,7 @@ public class Snippet182 {
 		shell.setLayout(new RowLayout());
 		
 		Link link = new Link(shell, SWT.BORDER);
-		link.setText("This a very simple <A>link</A> widget.");
+		link.setText("This a very simple <a>link</a> widget.");
 		
 		Button setButton = new Button(shell, SWT.PUSH);
 		setButton.setText("Choose link color");

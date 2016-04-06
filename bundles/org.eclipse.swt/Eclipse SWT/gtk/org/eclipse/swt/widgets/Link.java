@@ -771,7 +771,7 @@ void setOrientation (boolean create) {
  * Sets the receiver's text.
  * <p>
  * The string can contain both regular text and hyperlinks.  A hyperlink
- * is delimited by an anchor tag, &lt;A&gt; and &lt;/A&gt;.  Within an
+ * is delimited by an anchor tag, &lt;a&gt; and &lt;/a&gt;.  Within an
  * anchor, a single HREF attribute is supported.  When a hyperlink is
  * selected, the text field of the selection event contains either the
  * text of the hyperlink or the value of its HREF, if one was specified.
