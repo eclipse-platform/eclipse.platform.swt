@@ -286,6 +286,31 @@ void scrollInPixels (int destX, int destY, int x, int y, int width, int height, 
 	GdkRectangle srcRect = new GdkRectangle ();
 	srcRect.x = x;
 	srcRect.y = y;
+	/*
+	 * Feature in GTK: for 3.16+ the "visible" region in Canvas includes
+	 * the scrollbar dimensions in its calculations. This means the "previous"
+	 * location the scrollbars are re-painted when scrolling, causing the
+	 * hopping effect. See bug 480458.
+	 */
+	if (OS.GTK_VERSION >= OS.VERSION(3, 16, 0)) {
+		long /*int*/ hBarHandle;
+		long /*int*/ vBarHandle;
+		hBarHandle = OS.gtk_scrolled_window_get_hscrollbar (scrolledHandle);
+		vBarHandle = OS.gtk_scrolled_window_get_vscrollbar (scrolledHandle);
+		GtkRequisition requisition = new GtkRequisition();
+		if (hBarHandle != 0) {
+			gtk_widget_get_preferred_size (hBarHandle, requisition);
+			if (requisition.height > 0) {
+				srcRect.y = y - requisition.height;
+			}
+		}
+		if (vBarHandle != 0) {
+			gtk_widget_get_preferred_size (vBarHandle, requisition);
+			if (requisition.width > 0) {
+				srcRect.x = x - requisition.width;
+			}
+		}
+	}
 	srcRect.width = width;
 	srcRect.height = height;
 	long /*int*/ copyRegion = OS.gdk_region_rectangle (srcRect);
