@@ -293,10 +293,12 @@ void scrollInPixels (int destX, int destY, int x, int y, int width, int height, 
 	 * hopping effect. See bug 480458.
 	 */
 	if (OS.GTK_VERSION >= OS.VERSION(3, 16, 0)) {
-		long /*int*/ hBarHandle;
-		long /*int*/ vBarHandle;
-		hBarHandle = OS.gtk_scrolled_window_get_hscrollbar (scrolledHandle);
-		vBarHandle = OS.gtk_scrolled_window_get_vscrollbar (scrolledHandle);
+		long /*int*/ hBarHandle = 0;
+		long /*int*/ vBarHandle = 0;
+		if (OS.GTK_IS_SCROLLED_WINDOW(scrolledHandle)) {
+			hBarHandle = OS.gtk_scrolled_window_get_hscrollbar (scrolledHandle);
+			vBarHandle = OS.gtk_scrolled_window_get_vscrollbar (scrolledHandle);
+		}
 		GtkRequisition requisition = new GtkRequisition();
 		if (hBarHandle != 0) {
 			gtk_widget_get_preferred_size (hBarHandle, requisition);
