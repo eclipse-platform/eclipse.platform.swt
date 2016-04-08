@@ -363,7 +363,9 @@ void createHandle () {
 			createHandleForDateTime ();
 		}
 		OS.gtk_editable_set_editable (textEntryHandle, (style & SWT.READ_ONLY) == 0);
-		OS.gtk_entry_set_has_frame (textEntryHandle, (style & SWT.BORDER) != 0);
+		if (OS.GTK_VERSION <= OS.VERSION(3, 20, 0)) {
+			OS.gtk_entry_set_has_frame (textEntryHandle, (style & SWT.BORDER) != 0);
+		}
 	}
 }
 

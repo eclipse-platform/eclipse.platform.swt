@@ -334,7 +334,9 @@ void createHandle (int index) {
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 	OS.gtk_container_add (fixedHandle, handle);
 	OS.gtk_editable_set_editable (handle, (style & SWT.READ_ONLY) == 0);
-	OS.gtk_entry_set_has_frame (handle, (style & SWT.BORDER) != 0);
+	if (OS.GTK_VERSION <= OS.VERSION(3, 20, 0)) {
+		OS.gtk_entry_set_has_frame (handle, (style & SWT.BORDER) != 0);
+	}
 	OS.gtk_spin_button_set_wrap (handle, (style & SWT.WRAP) != 0);
 	if (OS.GTK3) {
 		imContext = OS.imContextLast();
