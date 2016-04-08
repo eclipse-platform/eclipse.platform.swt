@@ -1,6 +1,6 @@
 #!/bin/sh
 #*******************************************************************************
-# Copyright (c) 2000, 2014 IBM Corporation and others.
+# Copyright (c) 2000, 2016 IBM Corporation and others.
 # All rights reserved. This program and the accompanying materials
 # are made available under the terms of the Eclipse Public License v1.0
 # which accompanies this distribution, and is available at
@@ -55,7 +55,9 @@ case $OS in
 		PROC=`uname -i`
 		MAKEFILE=make_solaris.mak
 		if [ "${MODEL}" = "" ]; then
-			if uname -p > /dev/null 2>&1; then
+			if [ "`isainfo -b`" = "64" ]; then
+				MODEL=x86_64
+			elif uname -p > /dev/null 2>&1; then
 				MODEL=`uname -p`
 			fi
 		fi
@@ -64,6 +66,10 @@ case $OS in
 				MAKEFILE=make_solaris_x86.mak
 				MAKE_TYPE=gmake
 				;;
+			"x86_64")
+				MAKEFILE=make_solaris_x86_64.mak
+ 				MAKE_TYPE=gmake
+ 				;;
 		esac
 		;;
 	"FreeBSD")
@@ -288,6 +294,35 @@ case $SWT_OS.$SWT_ARCH in
 			export XULRUNNER_LIBS="-L${XULRUNNER_SDK}/lib -lxpcomglue"
 		fi
 		;;
+	"solaris.x86_64")
+		if [ "${CC}" = "" ]; then
+			export CC="cc"
+		fi
+		if [ "${CXX}" = "" ]; then
+			export CXX="CC"
+		fi
+		if [ "${JAVA_HOME}" = "" ]; then
+			export JAVA_HOME="/bluebird/teamswt/swt-builddir/build/JRE/Solaris_x64/jdk1.8.0_71"
+		fi
+#		if [ "${MOZILLA_SDK}" = "" ]; then
+#			export MOZILLA_SDK="/bluebird/teamswt/bog/mozilla/solaris_x86/1.7/mozilla/dist/sdk"
+#		fi
+#		if [ "${XULRUNNER_SDK}" = "" ]; then
+#			export XULRUNNER_SDK="/bluebird/teamswt/swt-builddir/xulrunner/1.8.0.1/solaris-x86/mozilla/dist/sdk"
+#		fi
+#		if [ "${MOZILLA_INCLUDES}" = "" ]; then
+#			export MOZILLA_INCLUDES="-include ${MOZILLA_SDK}/include/mozilla-config.h -I${MOZILLA_SDK}/include"
+#		fi
+#		if [ "${MOZILLA_LIBS}" = "" ]; then
+#			export MOZILLA_LIBS="-L${MOZILLA_SDK}/lib -L${MOZILLA_SDK}/bin -lxpcom -lnspr4 -lplds4 -lplc4"
+#		fi
+#		if [ "${XULRUNNER_INCLUDES}" = "" ]; then
+#			export XULRUNNER_INCLUDES="-include ${XULRUNNER_SDK}/include/mozilla-config.h -I${XULRUNNER_SDK}/include"
+#		fi
+#		if [ "${XULRUNNER_LIBS}" = "" ]; then
+#			export XULRUNNER_LIBS="-L${XULRUNNER_SDK}/lib -lxpcomglue"
+#		fi
+ 		;;
 	"solaris.sparc64")
 #		export PATH="/export/home/SUNWspro/bin:/usr/ccs/bin:/usr/bin"
 		if [ "${CC}" = "" ]; then
@@ -482,6 +517,11 @@ if [ ${MODEL} = 'x86_64' -o ${MODEL} = 'ppc64' -o ${MODEL} = 'ia64' -o ${MODEL} 
 			SWT_CDE_64SUFFIX="/64"
 			export SWT_LFLAGS SWT_CDE_64SUFFIX
 	fi
+	if [ ${OS} = 'SunOS' ]; then
+			SWT_PTR_CFLAGS="${SWT_PTR_CFLAGS} -m64"
+			SWT_LFLAGS=-m64
+			export SWT_LFLAGS	
+	fi
 	export SWT_PTR_CFLAGS
 fi
 if [ ${MODEL} = 's390' ]; then
@@ -496,8 +536,10 @@ if [ ${MODEL} = 'x86' -a ${SWT_OS} = 'linux' ]; then
 fi
 
 if [ x`pkg-config --exists gnome-vfs-module-2.0 libgnome-2.0 libgnomeui-2.0 && echo YES` = "xYES"  -a ${MODEL} != "sparc64" -a ${MODEL} != 'ia64' -a ${GTK_VERSION} != '3.0' ]; then
-	echo "libgnomeui-2.0 found, compiling SWT program support using GNOME"
-	MAKE_GNOME=make_gnome
+	if [ "${SWT_OS}" != "solaris" -o "${MODEL}" != "x86_64" ]; then
+		echo "libgnomeui-2.0 found, compiling SWT program support using GNOME"
+		MAKE_GNOME=make_gnome
+	fi
 else
 	if [ ${GTK_VERSION} != '3.0' ]; then
 		echo "libgnome-2.0 and libgnomeui-2.0 not found:"
