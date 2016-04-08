@@ -205,7 +205,14 @@ void createHandle (int index) {
 		if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 		OS.gtk_container_add (fixedHandle, handle);
 		OS.gtk_editable_set_editable (handle, (style & SWT.READ_ONLY) == 0);
-		OS.gtk_entry_set_has_frame (handle, (style & SWT.BORDER) != 0);
+		/*
+		 * We need to handle borders differently in GTK3.20+. See bug 491319.
+		 * Leaving this call enabled on 3.20 causes an SWT.SINGLE Text widget
+		 * to have a blank background color.
+		 */
+		if (OS.GTK_VERSION < OS.VERSION(3, 20, 0)) {
+			OS.gtk_entry_set_has_frame (handle, (style & SWT.BORDER) != 0);
+		}
 		OS.gtk_entry_set_visibility (handle, (style & SWT.PASSWORD) == 0);
 		float alignment = 0.0f;
 		if ((style & SWT.CENTER) != 0) alignment = 0.5f;
@@ -2201,11 +2208,19 @@ void setBackgroundColor (long /*int*/ context, long /*int*/ handle, GdkRGBA rgba
 	if (OS.GTK_VERSION >= OS.VERSION(3, 16, 0)) {
 		String css;
         if (OS.GTK_VERSION >= OS.VERSION(3, 20, 0)) {
-                css = "textview text {background-color: " + display.gtk_rgba_to_css_string(background) + ";}\n"
-                                + "textview:selected {background-color: " + display.gtk_rgba_to_css_string(selectedBackground) + ";}";
+        	if ((style & SWT.SINGLE) != 0) {
+        		css = "entry {background: " + display.gtk_rgba_to_css_string(background) + ";}\n";
+        	} else {
+        		css = "textview text {background-color: " + display.gtk_rgba_to_css_string(background) + ";}\n"
+        				+ "textview:selected {background-color: " + display.gtk_rgba_to_css_string(selectedBackground) + ";}";
+        	}
         } else {
-                css = "GtkTextView {background-color: " + display.gtk_rgba_to_css_string(background) + ";}\n"
-                                + "GtkTextView:selected {background-color: " + display.gtk_rgba_to_css_string(selectedBackground) + ";}";
+        	if ((style & SWT.SINGLE) != 0) {
+        		css = "GtkEntry {background: " + display.gtk_rgba_to_css_string(background) + ";}\n";
+        	} else {
+        		css = "GtkTextView {background-color: " + display.gtk_rgba_to_css_string(background) + ";}\n"
+                		+ "GtkTextView:selected {background-color: " + display.gtk_rgba_to_css_string(selectedBackground) + ";}";
+        	}
         }
 		// Cache background color
 		cssBackground = css;
