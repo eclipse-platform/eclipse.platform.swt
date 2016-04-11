@@ -12,6 +12,7 @@ package org.eclipse.swt.widgets;
 
 
 import java.util.*;
+import java.util.prefs.*;
 import java.util.regex.*;
 import java.util.regex.Pattern;
 
@@ -457,11 +458,24 @@ public class Display extends Device {
 	Object [] values;
 
 	/* Initial Guesses for Shell Trimmings. */
-	int borderTrimWidth = 4, borderTrimHeight = 4;
-	int resizeTrimWidth = 6, resizeTrimHeight = 6;
-	int titleBorderTrimWidth = 5, titleBorderTrimHeight = 28;
-	int titleResizeTrimWidth = 6, titleResizeTrimHeight = 29;
-	int titleTrimWidth = 0, titleTrimHeight = 23;
+	static final int TRIM_NONE = 0;
+	static final int TRIM_BORDER = 1;
+	static final int TRIM_RESIZE = 2;
+	static final int TRIM_TITLE_BORDER = 3;
+	static final int TRIM_TITLE_RESIZE = 4;
+	static final int TRIM_TITLE = 5;
+	int [] trimWidths = new int [6];
+	int [] trimHeights = new int [6];
+	{
+		Preferences prefs = Preferences.userRoot().node("/org/eclipse/swt/widgets/Display");
+		Preferences node;
+		node = prefs.node("TRIM NONE"); trimWidths [TRIM_NONE] = node.getInt("W", 0); trimHeights [TRIM_NONE] = node.getInt("H", 0);
+		node = prefs.node("TRIM BORDER"); trimWidths [TRIM_BORDER] = node.getInt("W", 4); trimHeights [TRIM_BORDER] = node.getInt("H", 4);
+		node = prefs.node("TRIM RESIZE"); trimWidths [TRIM_RESIZE] = node.getInt("W", 6); trimHeights [TRIM_RESIZE] = node.getInt("H", 6);
+		node = prefs.node("TRIM TITLE BORDER"); trimWidths [TRIM_TITLE_BORDER] = node.getInt("W", 5); trimHeights [TRIM_TITLE_BORDER] = node.getInt("H", 28);
+		node = prefs.node("TRIM TITLE RESIZE"); trimWidths [TRIM_TITLE_RESIZE] = node.getInt("W", 6); trimHeights [TRIM_TITLE_RESIZE] = node.getInt("H", 29);
+		node = prefs.node("TRIM TITLE"); trimWidths [TRIM_TITLE] = node.getInt("W", 0); trimHeights [TRIM_TITLE] = node.getInt("H", 23);
+	}
 	boolean ignoreTrim;
 
 	/* Window Manager */
@@ -4306,6 +4320,21 @@ void releaseDisplay () {
 	flushRect = null;
 	exposeEvent = null;
 	idleLock = null;
+
+	/* Save window trim caches */
+	Preferences prefs = Preferences.userRoot().node("/org/eclipse/swt/widgets/Display");
+	Preferences node;
+	node = prefs.node("TRIM NONE"); node.putInt("W", trimWidths [TRIM_NONE]); node.putInt("H", trimHeights [TRIM_NONE]);
+	node = prefs.node("TRIM BORDER"); node.putInt("W", trimWidths [TRIM_BORDER]); node.putInt("H", trimHeights [TRIM_BORDER]);
+	node = prefs.node("TRIM RESIZE"); node.putInt("W", trimWidths [TRIM_RESIZE]); node.putInt("H", trimHeights [TRIM_RESIZE]);
+	node = prefs.node("TRIM TITLE BORDER"); node.putInt("W", trimWidths [TRIM_TITLE_BORDER]); node.putInt("H", trimHeights [TRIM_TITLE_BORDER]);
+	node = prefs.node("TRIM TITLE RESIZE"); node.putInt("W", trimWidths [TRIM_TITLE_RESIZE]); node.putInt("H", trimHeights [TRIM_TITLE_RESIZE]);
+	node = prefs.node("TRIM TITLE"); node.putInt("W", trimWidths [TRIM_TITLE]); node.putInt("H", trimHeights [TRIM_TITLE]);
+	try {
+		prefs.flush();
+	} catch (BackingStoreException e) {
+		// continue without saving
+	}
 }
 
 /**

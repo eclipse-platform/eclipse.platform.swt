@@ -498,31 +498,32 @@ void adjustTrim () {
 		hasResize = (style & SWT.RESIZE) != 0;
 		hasBorder = (style & SWT.BORDER) != 0;
 	}
+	int trimStyle;
 	if (hasTitle) {
-		if (hasResize)  {
-			display.titleResizeTrimWidth = trimWidth;
-			display.titleResizeTrimHeight = trimHeight;
-			return;
+		if (hasResize) {
+			trimStyle = Display.TRIM_TITLE_RESIZE;
+		} else if (hasBorder) {
+			trimStyle = Display.TRIM_TITLE_BORDER;
+		} else {
+			trimStyle = Display.TRIM_TITLE;
 		}
-		if (hasBorder) {
-			display.titleBorderTrimWidth = trimWidth;
-			display.titleBorderTrimHeight = trimHeight;
-			return;
-		}
-		display.titleTrimWidth = trimWidth;
-		display.titleTrimHeight = trimHeight;
-		return;
+	} else if (hasResize) {
+		trimStyle = Display.TRIM_RESIZE;
+	} else if (hasBorder) {
+		trimStyle = Display.TRIM_BORDER;
+	} else {
+		trimStyle = Display.TRIM_NONE;
 	}
-	if (hasResize) {
-		display.resizeTrimWidth = trimWidth;
-		display.resizeTrimHeight = trimHeight;
-		return;
-	}
-	if (hasBorder) {
-		display.borderTrimWidth = trimWidth;
-		display.borderTrimHeight = trimHeight;
-		return;
-	}
+	Rectangle bounds = getBoundsInPixels();
+	int widthAdjustment = display.trimWidths[trimStyle] - trimWidth;
+	int heightAdjustment = display.trimHeights[trimStyle] - trimHeight;
+	bounds.width += widthAdjustment;
+	bounds.height += heightAdjustment;
+	oldWidth += widthAdjustment;
+	oldHeight += heightAdjustment;
+	setBounds(bounds.x, bounds.y, bounds.width, bounds.height, false, true);
+	display.trimWidths[trimStyle] = trimWidth;
+	display.trimHeights[trimStyle] = trimHeight;
 }
 
 void bringToTop (boolean force) {
@@ -2507,13 +2508,13 @@ int trimHeight () {
 	hasResize = (style & SWT.RESIZE) != 0;
 	hasBorder = (style & SWT.BORDER) != 0;
 	if (hasTitle) {
-		if (hasResize) return display.titleResizeTrimHeight;
-		if (hasBorder) return display.titleBorderTrimHeight;
-		return display.titleTrimHeight;
+		if (hasResize) return display.trimHeights [Display.TRIM_TITLE_RESIZE];
+		if (hasBorder) return display.trimHeights [Display.TRIM_TITLE_BORDER];
+		return display.trimHeights [Display.TRIM_TITLE];
 	}
-	if (hasResize) return display.resizeTrimHeight;
-	if (hasBorder) return display.borderTrimHeight;
-	return 0;
+	if (hasResize) return display.trimHeights [Display.TRIM_RESIZE];
+	if (hasBorder) return display.trimHeights [Display.TRIM_BORDER];
+	return display.trimHeights [Display.TRIM_NONE];
 }
 
 int trimWidth () {
@@ -2524,13 +2525,13 @@ int trimWidth () {
 	hasResize = (style & SWT.RESIZE) != 0;
 	hasBorder = (style & SWT.BORDER) != 0;
 	if (hasTitle) {
-		if (hasResize) return display.titleResizeTrimWidth;
-		if (hasBorder) return display.titleBorderTrimWidth;
-		return display.titleTrimWidth;
+		if (hasResize) return display.trimWidths [Display.TRIM_TITLE_RESIZE];
+		if (hasBorder) return display.trimWidths [Display.TRIM_TITLE_BORDER];
+		return display.trimWidths [Display.TRIM_TITLE];
 	}
-	if (hasResize) return display.resizeTrimWidth;
-	if (hasBorder) return display.borderTrimWidth;
-	return 0;
+	if (hasResize) return display.trimWidths [Display.TRIM_RESIZE];
+	if (hasBorder) return display.trimWidths [Display.TRIM_BORDER];
+	return display.trimWidths [Display.TRIM_NONE];
 }
 
 void updateModal () {
