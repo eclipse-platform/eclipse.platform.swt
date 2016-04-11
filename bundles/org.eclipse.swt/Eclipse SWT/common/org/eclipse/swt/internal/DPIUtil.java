@@ -30,35 +30,68 @@ import org.eclipse.swt.graphics.*;
  */
 public class DPIUtil {
 
-	/* DPI Constants */
-	static final int DPI_ZOOM_100 = 96;
-	private static final double MIN_ZOOM_INTERVAL = 25;
+	private static final int DPI_ZOOM_100 = 96;
 
-	private static boolean autoScaleEnable = true;
 	private static int deviceZoom = 100;
 
-	/*
-	 * The AutoScale functionality is enabled by default on HighDPI monitors &
-	 * can be disabled by setting below system property to "false"(Ignore case).
+	private static enum AutoScaleMethod { AUTO, NEAREST, SMOOTH }
+	private static AutoScaleMethod autoScaleMethodSetting = AutoScaleMethod.AUTO;
+	private static AutoScaleMethod autoScaleMethod = AutoScaleMethod.NEAREST;
+
+	/**
+	 * System property that controls the autoScale functionality.
+	 * <ul>
+	 * <li><b>false</b>: deviceZoom is set to 100%</li>
+	 * <li><b>integer</b>: deviceZoom depends on the current display resolution,
+	 *     but only uses integer multiples of 100%. The detected native zoom is
+	 *     generally rounded down (e.g. at 150%, will use 100%), unless close to
+	 *     the next integer multiple (currently at 175%, will use 200%).</li>
+	 * <li><b>quarter</b>: deviceZoom depends on the current display resolution,
+	 *     but only uses integer multiples of 25%. The detected native zoom is
+	 *     rounded to the closest permissible value.</li>
+	 * <li><b>exact</b>: deviceZoom uses the native zoom (with 1% as minimal
+	 *     step).</li>
+	 * <li><i>&lt;value&gt;</i>: deviceZoom uses the given integer value in
+	 *     percent as zoom level.</li>
+	 * </ul>
+	 * The current default is "integer".
 	 */
-	static final String SWT_ENABLE_AUTOSCALE = "swt.enable.autoScale";
+	private static final String SWT_AUTOSCALE = "swt.autoScale";
+
+	/**
+	 * System property that controls the method for scaling images:
+	 * <ul>
+	 * <li>"nearest": nearest-neighbor interpolation, may look jagged</li>
+	 * <li>"smooth": smooth edges, may look blurry</li>
+	 * </ul>
+	 * The current default is to use "nearest", except on
+	 * GTK when the deviceZoom is not an integer multiple of 100%.
+	 * The smooth strategy currently doesn't work on Win32 and Cocoa, see
+	 * <a href="https://bugs.eclipse.org/493455">bug 493455</a>.
+	 */
+	private static final String SWT_AUTOSCALE_METHOD = "swt.autoScale.method";
 	static {
-		String value = System.getProperty (SWT_ENABLE_AUTOSCALE);
-		if (value != null && "false".equalsIgnoreCase (value))
-			autoScaleEnable = false;
+		String value = System.getProperty (SWT_AUTOSCALE_METHOD);
+		if (value != null) {
+			if (AutoScaleMethod.NEAREST.name().equalsIgnoreCase(value)) {
+				autoScaleMethod = autoScaleMethodSetting = AutoScaleMethod.NEAREST;
+			} else if (AutoScaleMethod.SMOOTH.name().equalsIgnoreCase(value)) {
+				autoScaleMethod = autoScaleMethodSetting = AutoScaleMethod.SMOOTH;
+			}
+		}
 	}
 
 /**
  * Auto-scale down ImageData
  */
-public static ImageData autoScaleDown (ImageData imageData) {
-	if (deviceZoom == 100 || !isAutoScaleEnable () || imageData == null) return imageData;
-	float scaleFactor = getScalingFactor ();
-	return imageData.scaledTo (Math.round ((float)imageData.width / scaleFactor), Math.round ((float)imageData.height / scaleFactor));
+public static ImageData autoScaleDown (Device device, final ImageData imageData) {
+	if (deviceZoom == 100 || imageData == null) return imageData;
+	float scaleFactor = 1.0f / getScalingFactor ();
+	return autoScaleImageData(device, imageData, scaleFactor);
 }
 
 public static int[] autoScaleDown(int[] pointArray) {
-	if (deviceZoom == 100 || !isAutoScaleEnable () || pointArray == null) return pointArray;
+	if (deviceZoom == 100 || pointArray == null) return pointArray;
 	float scaleFactor = getScalingFactor ();
 	int [] returnArray = new int[pointArray.length];
 	for (int i = 0; i < pointArray.length; i++) {
@@ -71,7 +104,7 @@ public static int[] autoScaleDown(int[] pointArray) {
  * Auto-scale up float array dimensions.
  */
 public static float[] autoScaleDown (float size[]) {
-	if (deviceZoom == 100 || !isAutoScaleEnable () || size == null) return size;
+	if (deviceZoom == 100 || size == null) return size;
 	float scaleFactor = getScalingFactor ();
 	float scaledSize[] = new float[size.length];
 	for (int i = 0; i < scaledSize.length; i++) {
@@ -83,7 +116,7 @@ public static float[] autoScaleDown (float size[]) {
  * Auto-scale down int dimensions.
  */
 public static int autoScaleDown (int size) {
-	if (deviceZoom == 100 || !isAutoScaleEnable ()||size == SWT.DEFAULT) return size;
+	if (deviceZoom == 100 || size == SWT.DEFAULT) return size;
 	float scaleFactor = getScalingFactor ();
 	return Math.round (size / scaleFactor);
 }
@@ -91,7 +124,7 @@ public static int autoScaleDown (int size) {
  * Auto-scale down float dimensions.
  */
 public static float autoScaleDown (float size) {
-	if (deviceZoom == 100 || !isAutoScaleEnable ()||size == SWT.DEFAULT) return size;
+	if (deviceZoom == 100 || size == SWT.DEFAULT) return size;
 	float scaleFactor = getScalingFactor ();
 	return (size / scaleFactor);
 }
@@ -100,7 +133,7 @@ public static float autoScaleDown (float size) {
  * Returns a new scaled down Point.
  */
 public static Point autoScaleDown (Point point) {
-	if (deviceZoom == 100 || !isAutoScaleEnable () || point == null) return point;
+	if (deviceZoom == 100 || point == null) return point;
 	float scaleFactor = getScalingFactor ();
 	Point scaledPoint = new Point (0,0);
 	scaledPoint.x = Math.round (point.x / scaleFactor);
@@ -112,7 +145,7 @@ public static Point autoScaleDown (Point point) {
  * Returns a new scaled down Rectangle.
  */
 public static Rectangle autoScaleDown (Rectangle rect) {
-	if (deviceZoom == 100 || !isAutoScaleEnable () || rect == null) return rect;
+	if (deviceZoom == 100 || rect == null) return rect;
 	Rectangle scaledRect = new Rectangle (0,0,0,0);
 	Point scaledTopLeft = DPIUtil.autoScaleDown (new Point (rect.x, rect.y));
 	Point scaledBottomRight = DPIUtil.autoScaleDown (new Point (rect.x + rect.width, rect.y + rect.height));
@@ -127,17 +160,60 @@ public static Rectangle autoScaleDown (Rectangle rect) {
 /**
  * Auto-scale image with ImageData
  */
-public static ImageData autoScaleImageData (ImageData imageData, int targetZoom, int currentZoom) {
-	if (!isAutoScaleEnable () || imageData == null || targetZoom == currentZoom) return imageData;
-	float scaleFactor = ((float) targetZoom)/((float) currentZoom);
-	return imageData.scaledTo (Math.round ((float)imageData.width * scaleFactor), Math.round ((float)imageData.height * scaleFactor));
+public static ImageData autoScaleImageData (Device device, final ImageData imageData, int targetZoom, int currentZoom) {
+	if (deviceZoom == 100 || imageData == null || targetZoom == currentZoom) return imageData;
+	float scaleFactor = (float) targetZoom / (float) currentZoom;
+	return autoScaleImageData(device, imageData, scaleFactor);
+}
+
+private static ImageData autoScaleImageData (Device device, final ImageData imageData, float scaleFactor) {
+	// Guards are already implemented in callers: if (deviceZoom == 100 || imageData == null || scaleFactor == 1.0f) return imageData;
+	int width = imageData.width;
+	int height = imageData.height;
+	int scaledWidth = Math.round ((float) width * scaleFactor);
+	int scaledHeight = Math.round ((float) height * scaleFactor);
+	switch (autoScaleMethod) {
+	case SMOOTH:
+		Image original = new Image (device, new ImageDataProvider () {
+			@Override
+			public ImageData getImageData (int zoom) {
+				return imageData;
+			}
+		});
+
+		/* Create a 24 bit image data with alpha channel */
+		final ImageData resultData = new ImageData (scaledWidth, scaledHeight, 24, new PaletteData (0xFF, 0xFF00, 0xFF0000));
+		resultData.alphaData = new byte [scaledWidth * scaledHeight];
+
+		Image resultImage = new Image (device, new ImageDataProvider () {
+			@Override
+			public ImageData getImageData (int zoom) {
+				return resultData;
+			}
+		});
+		GC gc = new GC (resultImage);
+		gc.setAntialias (SWT.ON);
+		gc.drawImage (original, 0, 0, DPIUtil.autoScaleDown (width), DPIUtil.autoScaleDown (height),
+				/* E.g. destWidth here is effectively DPIUtil.autoScaleDown (scaledWidth), but avoiding rounding errors.
+				 * Nevertheless, we still have some rounding errors due to the point-based API GC#drawImage(..).
+				 */
+				0, 0, Math.round (DPIUtil.autoScaleDown ((float) width * scaleFactor)), Math.round (DPIUtil.autoScaleDown ((float) height * scaleFactor)));
+		gc.dispose ();
+		original.dispose ();
+		ImageData result = resultImage.getImageDataAtCurrentZoom ();
+		resultImage.dispose ();
+		return result;
+	case NEAREST:
+	default:
+		return imageData.scaledTo (scaledWidth, scaledHeight);
+	}
 }
 
 /**
  * Returns a new rectangle as per the scaleFactor.
  */
 public static Rectangle autoScaleBounds (Rectangle rect, int targetZoom, int currentZoom) {
-	if (!isAutoScaleEnable () || rect == null || targetZoom == currentZoom) return rect;
+	if (deviceZoom == 100 || rect == null || targetZoom == currentZoom) return rect;
 	float scaleFactor = ((float)targetZoom) / (float)currentZoom;
 	Rectangle returnRect = new Rectangle (0,0,0,0);
 	returnRect.x = Math.round (rect.x * scaleFactor);
@@ -150,14 +226,14 @@ public static Rectangle autoScaleBounds (Rectangle rect, int targetZoom, int cur
 /**
  * Auto-scale up ImageData
  */
-public static ImageData autoScaleUp (ImageData imageData) {
-	if (deviceZoom == 100 || !isAutoScaleEnable () || imageData == null) return imageData;
+public static ImageData autoScaleUp (Device device, final ImageData imageData) {
+	if (deviceZoom == 100 || imageData == null) return imageData;
 	float scaleFactor = getScalingFactor ();
-	return imageData.scaledTo (Math.round ((float)imageData.width * scaleFactor), Math.round ((float)imageData.height * scaleFactor));
+	return autoScaleImageData(device, imageData, scaleFactor);
 }
 
 public static int[] autoScaleUp(int[] pointArray) {
-	if (deviceZoom == 100 || !isAutoScaleEnable () || pointArray == null) return pointArray;
+	if (deviceZoom == 100 || pointArray == null) return pointArray;
 	float scaleFactor = getScalingFactor ();
 	int [] returnArray = new int[pointArray.length];
 	for (int i = 0; i < pointArray.length; i++) {
@@ -170,13 +246,13 @@ public static int[] autoScaleUp(int[] pointArray) {
  * Auto-scale up int dimensions.
  */
 public static int autoScaleUp (int size) {
-	if (deviceZoom == 100 || !isAutoScaleEnable ()||size == SWT.DEFAULT) return size;
+	if (deviceZoom == 100 || size == SWT.DEFAULT) return size;
 	float scaleFactor = getScalingFactor ();
 	return Math.round (size * scaleFactor);
 }
 
 public static float autoScaleUp(float size) {
-	if (deviceZoom == 100 || !isAutoScaleEnable ()||size == SWT.DEFAULT) return size;
+	if (deviceZoom == 100 || size == SWT.DEFAULT) return size;
 	float scaleFactor = getScalingFactor ();
 	return (size * scaleFactor);
 }
@@ -185,7 +261,7 @@ public static float autoScaleUp(float size) {
  * Returns a new scaled up Point.
  */
 public static Point autoScaleUp (Point point) {
-	if (deviceZoom == 100 || !isAutoScaleEnable () || point == null) return point;
+	if (deviceZoom == 100 || point == null) return point;
 	float scaleFactor = getScalingFactor ();
 	Point scaledPoint = new Point (0,0);
 	scaledPoint.x = Math.round (point.x * scaleFactor);
@@ -197,7 +273,7 @@ public static Point autoScaleUp (Point point) {
  * Returns a new scaled up Rectangle.
  */
 public static Rectangle autoScaleUp (Rectangle rect) {
-	if (deviceZoom == 100 || !isAutoScaleEnable () || rect == null) return rect;
+	if (deviceZoom == 100 || rect == null) return rect;
 	Rectangle scaledRect = new Rectangle (0,0,0,0);
 	Point scaledTopLeft = DPIUtil.autoScaleUp (new Point (rect.x, rect.y));
 	Point scaledBottomRight = DPIUtil.autoScaleUp (new Point (rect.x + rect.width, rect.y + rect.height));
@@ -208,39 +284,24 @@ public static Rectangle autoScaleUp (Rectangle rect) {
 	scaledRect.height = scaledBottomRight.y - scaledTopLeft.y;
 	return scaledRect;
 }
-public static boolean isAutoScaleEnable () {
-	return autoScaleEnable;
-}
 
 /**
  * Returns Scaling factor from the display
  * @return float scaling factor
  */
 private static float getScalingFactor () {
-	float scalingFactor = 1;
-	if (isAutoScaleEnable ()) {
-		scalingFactor = getDeviceZoom ()/100f;
-	}
-	return scalingFactor;
+	return deviceZoom / 100f;
 }
 
-/**
- * Compute the zoom value based on the scaleFactor value.
- *
- * @return zoom
- */
-public static int mapSFToZoom (float scaleFactor) {
-	return mapDPIToZoom ((int) (scaleFactor * DPI_ZOOM_100));
-}
 /**
  * Compute the zoom value based on the DPI value.
  *
  * @return zoom
  */
 public static int mapDPIToZoom (int dpi) {
-	double zoom = (double)dpi * 100 / DPI_ZOOM_100; //convert to percentage
-	int roundedZoom = (int) (Math.round (zoom / MIN_ZOOM_INTERVAL) * MIN_ZOOM_INTERVAL); //rounding to MIN_ZOOM_INTERVAL steps
-	return Math.max(100, roundedZoom); //We are setting the minimum zoom value as 100%. below that it causing too many problems
+	double zoom = (double) dpi * 100 / DPI_ZOOM_100;
+	int roundedZoom = (int) Math.round (zoom);
+	return roundedZoom;
 }
 /**
  * Gets Image data at specified zoom level, if image is missing then
@@ -272,34 +333,59 @@ public static String validateAndGetImagePathAtZoom (ImageFileNameProvider provid
 	return filename;
 }
 
-/**
- * @return the deviceZoom
- */
 public static int getDeviceZoom() {
-	return isAutoScaleEnable () ? deviceZoom : 100;
+	return deviceZoom;
 }
 
-/**
- * @param deviceZoom the deviceZoom to set
- */
-public static void setDeviceZoom(int deviceZoom) {
+public static void setDeviceZoom (int nativeDeviceZoom) {
+	int deviceZoom = 0;
+	String value = System.getProperty (SWT_AUTOSCALE);
+ 	if (value != null) {
+		if ("false".equalsIgnoreCase (value)) {
+			deviceZoom = 100;
+		} else if ("quarter".equalsIgnoreCase (value)) {
+			deviceZoom = (int) (Math.round (nativeDeviceZoom / 25f) * 25);
+		} else if ("exact".equalsIgnoreCase (value)) {
+			deviceZoom = nativeDeviceZoom;
+		} else {
+			try {
+				int zoom = Integer.parseInt (value);
+				deviceZoom = Math.max (Math.min (zoom, 1600), 25);
+			} catch (NumberFormatException e) {
+				// unsupported value, use default
+			}
+		}
+	}
+ 	if (deviceZoom == 0) { // || "integer".equalsIgnoreCase (value)
+		deviceZoom = Math.max ((nativeDeviceZoom + 25) / 100 * 100, 100);
+	}
+
 	DPIUtil.deviceZoom = deviceZoom;
 	System.setProperty("org.eclipse.swt.internal.deviceZoom", Integer.toString(deviceZoom));
+	if (deviceZoom != 100 && autoScaleMethodSetting == AutoScaleMethod.AUTO) {
+		if (deviceZoom / 100 * 100 == deviceZoom || !"gtk".equals(SWT.getPlatform())) {
+			autoScaleMethod = AutoScaleMethod.NEAREST;
+		} else {
+			autoScaleMethod = AutoScaleMethod.SMOOTH;
+		}
+	}
 }
 
 /**
  * AutoScale ImageDataProvider.
  */
 public static final class AutoScaleImageDataProvider implements ImageDataProvider {
+	Device device;
 	ImageData imageData;
 	int currentZoom;
-	public AutoScaleImageDataProvider(ImageData data, int zoom){
+	public AutoScaleImageDataProvider(Device device, ImageData data, int zoom){
+		this.device = device;
 		this.imageData = data;
 		this.currentZoom = zoom;
 	}
 	@Override
 	public ImageData getImageData(int zoom) {
-		return DPIUtil.autoScaleImageData(imageData, zoom, currentZoom);
+		return DPIUtil.autoScaleImageData(device, imageData, zoom, currentZoom);
 	}
 }
 }

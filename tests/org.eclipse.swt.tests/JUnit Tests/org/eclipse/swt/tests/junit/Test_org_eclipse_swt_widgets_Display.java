@@ -48,7 +48,6 @@ private static final boolean BUG_492569 = SwtTestUtil.isCocoa || SwtTestUtil.isG
 @Test
 public void test_Constructor() {
 	Display disp = new Display();
-	System.out.println("org.eclipse.swt.internal.DPIUtil.isAutoScaleEnable(): " + DPIUtil.isAutoScaleEnable());
 	System.out.println("org.eclipse.swt.internal.DPIUtil.getDeviceZoom(): " + DPIUtil.getDeviceZoom());
 	disp.dispose();
 	if (SwtTestUtil.isGTK) {

@@ -724,7 +724,7 @@ Image createButtonImage(Display display, int button) {
 	final ImageData imageData = image.getImageDataAtCurrentZoom();
 	imageData.transparentPixel = imageData.palette.getPixel(transparent);
 	image.dispose();
-	image = new Image(display, new AutoScaleImageDataProvider(imageData, DPIUtil.getDeviceZoom()));
+	image = new Image(display, new AutoScaleImageDataProvider(display, imageData, DPIUtil.getDeviceZoom()));
 	return image;
 }
 void createItem (CTabItem item, int index) {

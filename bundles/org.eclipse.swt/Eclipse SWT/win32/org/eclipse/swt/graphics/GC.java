@@ -927,8 +927,8 @@ void drawFocusInPixels (int x, int y, int width, int height) {
  * </ul>
  */
 public void drawImage (Image image, int x, int y) {
-	x = (x != SWT.DEFAULT ? DPIUtil.autoScaleUp(x) : x);
-	y = (y != SWT.DEFAULT ? DPIUtil.autoScaleUp(y) : y);
+	x = DPIUtil.autoScaleUp(x);
+	y = DPIUtil.autoScaleUp(y);
 	drawImageInPixels(image, x, y);
 }
 
@@ -972,18 +972,6 @@ void drawImageInPixels(Image image, int x, int y) {
  * </ul>
  */
 public void drawImage (Image image, int srcX, int srcY, int srcWidth, int srcHeight, int destX, int destY, int destWidth, int destHeight) {
-	srcX = (srcX != SWT.DEFAULT ? DPIUtil.autoScaleUp(srcX) : srcX);
-	srcY = (srcY != SWT.DEFAULT ? DPIUtil.autoScaleUp(srcY) : srcY);
-	srcWidth = (srcWidth != SWT.DEFAULT ? DPIUtil.autoScaleUp(srcWidth) : srcWidth);
-	srcHeight = (srcHeight != SWT.DEFAULT ? DPIUtil.autoScaleUp(srcHeight) : srcHeight);
-	destX = (destX != SWT.DEFAULT ? DPIUtil.autoScaleUp(destX) : destX);
-	destY = (destY != SWT.DEFAULT ? DPIUtil.autoScaleUp(destY) : destY);
-	destWidth = (destWidth != SWT.DEFAULT ? DPIUtil.autoScaleUp(destWidth) : destWidth);
-	destHeight = (destHeight != SWT.DEFAULT ? DPIUtil.autoScaleUp(destHeight) : destHeight);
-	drawImageInPixels(image, srcX, srcY, srcWidth, srcHeight, destX, destY, destWidth, destHeight);
-}
-
-void drawImageInPixels(Image image, int srcX, int srcY, int srcWidth, int srcHeight, int destX, int destY, int destWidth, int destHeight) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (srcWidth == 0 || srcHeight == 0 || destWidth == 0 || destHeight == 0) return;
 	if (srcX < 0 || srcY < 0 || srcWidth < 0 || srcHeight < 0 || destWidth < 0 || destHeight < 0) {
@@ -991,7 +979,28 @@ void drawImageInPixels(Image image, int srcX, int srcY, int srcWidth, int srcHei
 	}
 	if (image == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
 	if (image.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-	drawImage(image, srcX, srcY, srcWidth, srcHeight, destX, destY, destWidth, destHeight, false);
+
+	Rectangle src = DPIUtil.autoScaleUp(new Rectangle(srcX, srcY, srcWidth, srcHeight));
+	Rectangle dest = DPIUtil.autoScaleUp(new Rectangle(destX, destY, destWidth, destHeight));
+	int deviceZoom = DPIUtil.getDeviceZoom();
+	if (deviceZoom != 100) {
+		/*
+		 * This is a HACK! Due to rounding errors at fractional scale factors,
+		 * the coordinates may be slightly off. The workaround is to restrict
+		 * coordinates to the allowed bounds.
+		 */
+		Rectangle b = image.getBoundsInPixels();
+		int errX = src.x + src.width - b.width;
+		int errY = src.y + src.height - b.height;
+		if (errX != 0 || errY != 0) {
+			if (errX <= deviceZoom / 100 && errY <= deviceZoom / 100) {
+				src.intersect(b);
+			} else {
+				SWT.error (SWT.ERROR_INVALID_ARGUMENT);
+			}
+		}
+	}
+	drawImage(image, src.x, src.y, src.width, src.height, dest.x, dest.y, dest.width, dest.height, false);
 }
 
 void drawImage(Image srcImage, int srcX, int srcY, int srcWidth, int srcHeight, int destX, int destY, int destWidth, int destHeight, boolean simple) {
@@ -1213,18 +1222,7 @@ void drawBitmap(Image srcImage, int srcX, int srcY, int srcWidth, int srcHeight,
 		srcHeight = destHeight = imgHeight;
 	} else {
 		if (srcX + srcWidth > imgWidth || srcY + srcHeight > imgHeight) {
-			/*
-			 * This is a HACK ! Due to auto-scale of dimensions at high DPI
-			 * display(specifically 150% zoom), rounding error of 1 pixel
-			 * gets introduced in srcX . Below check detects this particular
-			 * scenario and adjusts the dimension for 1 pixel grace value.
-			 */
-			if (DPIUtil.isAutoScaleEnable() && DPIUtil.getDeviceZoom() > 100 && ((srcX + srcWidth - imgWidth) == 1)) {
-				srcX--;
-			}
-			else {
-				SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-			}
+			SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 		}
 		simple = srcX == 0 && srcY == 0 &&
 			srcWidth == destWidth && destWidth == imgWidth &&

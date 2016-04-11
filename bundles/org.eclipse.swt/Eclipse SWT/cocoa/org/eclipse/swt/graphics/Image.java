@@ -971,7 +971,7 @@ public ImageData getImageDataAtCurrentZoom() {
 			NSBitmapImageRep imageRep = getRepresentation();
 			return _getImageData(imageRep);
 		}
-		return DPIUtil.autoScaleImageData(getImageData(), DPIUtil.getDeviceZoom(), 100);
+		return DPIUtil.autoScaleImageData(device, getImageData(), DPIUtil.getDeviceZoom(), 100);
 	} finally {
 		if (pool != null) pool.release();
 	}

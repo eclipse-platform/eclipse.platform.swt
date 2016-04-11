@@ -143,7 +143,8 @@ public class TreeDragSourceEffect extends DragSourceEffect {
 					} else {
 						data.transparentPixel = shdi.crColorKey << 8;
 					}
-					dragSourceImage = new Image (control.getDisplay (), new AutoScaleImageDataProvider(data, DPIUtil.getDeviceZoom()));
+					Display display = control.getDisplay ();
+					dragSourceImage = new Image (display, new AutoScaleImageDataProvider(display, data, DPIUtil.getDeviceZoom()));
 					OS.SelectObject (memHdc, oldMemBitmap);
 					OS.DeleteDC (memHdc);
 					OS.DeleteObject (memDib);

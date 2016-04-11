@@ -495,7 +495,7 @@ public Image(Device device, ImageData data) {
 	super(device);
 	if (data == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	currentDeviceZoom = DPIUtil.getDeviceZoom ();
-	data = DPIUtil.autoScaleUp (data);
+	data = DPIUtil.autoScaleUp (device, data);
 	init(data);
 	init();
 }
@@ -538,8 +538,8 @@ public Image(Device device, ImageData source, ImageData mask) {
 		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
 	currentDeviceZoom = DPIUtil.getDeviceZoom ();
-	source = DPIUtil.autoScaleUp(source);
-	mask = DPIUtil.autoScaleUp(mask);
+	source = DPIUtil.autoScaleUp(device, source);
+	mask = DPIUtil.autoScaleUp(device, mask);
 	mask = ImageData.convertMask(mask);
 	init(this.device, this, source, mask);
 	init();
@@ -601,7 +601,7 @@ public Image(Device device, ImageData source, ImageData mask) {
 public Image (Device device, InputStream stream) {
 	super(device);
 	currentDeviceZoom = DPIUtil.getDeviceZoom ();
-	ImageData data = DPIUtil.autoScaleUp(new ImageData(stream));
+	ImageData data = DPIUtil.autoScaleUp(device, new ImageData(stream));
 	init(data);
 	init();
 }
@@ -642,7 +642,7 @@ public Image (Device device, String filename) {
 	super(device);
 	if (filename == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	currentDeviceZoom = DPIUtil.getDeviceZoom ();
-	ImageData data = DPIUtil.autoScaleUp(new ImageData(filename));
+	ImageData data = DPIUtil.autoScaleUp(device, new ImageData(filename));
 	init(data);
 	init();
 }
@@ -686,7 +686,7 @@ public Image(Device device, ImageFileNameProvider imageFileNameProvider) {
 		initNative (fileName);
 		if (this.handle == 0) init(new ImageData (fileName));
 	} else {
-		ImageData resizedData = DPIUtil.autoScaleUp (new ImageData (fileName));
+		ImageData resizedData = DPIUtil.autoScaleUp (device, new ImageData (fileName));
 		init(resizedData);
 	}
 	init();
@@ -730,7 +730,7 @@ public Image(Device device, ImageDataProvider imageDataProvider) {
 	if (found[0]) {
 		init(data);
 	} else {
-		ImageData resizedData = DPIUtil.autoScaleUp(data);
+		ImageData resizedData = DPIUtil.autoScaleUp(device, data);
 		init (resizedData);
 	}
 	init();
@@ -760,7 +760,7 @@ boolean refreshImageForZoom () {
 			if (!found[0]) {
 				/* Release current native resources */
 				destroy ();
-				ImageData resizedData = DPIUtil.autoScaleUp (new ImageData (filename));
+				ImageData resizedData = DPIUtil.autoScaleUp (device, new ImageData (filename));
 				init(resizedData);
 				init ();
 				refreshed = true;
@@ -782,7 +782,7 @@ boolean refreshImageForZoom () {
 			if (!found[0]) {
 				/* Release current native resources */
 				destroy ();
-				ImageData resizedData = DPIUtil.autoScaleUp (data);
+				ImageData resizedData = DPIUtil.autoScaleUp (device, data);
 				init(resizedData);
 				init();
 				refreshed = true;
@@ -793,7 +793,7 @@ boolean refreshImageForZoom () {
 		if (deviceZoomLevel != currentDeviceZoom) {
 			ImageData data = getImageDataAtCurrentZoom();
 			destroy ();
-			ImageData resizedData = DPIUtil.autoScaleImageData(data, deviceZoomLevel, currentDeviceZoom);
+			ImageData resizedData = DPIUtil.autoScaleImageData(device, data, deviceZoomLevel, currentDeviceZoom);
 			init(resizedData);
 			init();
 			refreshed = true;
@@ -1470,7 +1470,7 @@ public ImageData getImageData() {
 }
 
 ImageData getImageData (int zoom) {
-	return DPIUtil.autoScaleImageData(this.getImageDataAtCurrentZoom(), zoom, currentDeviceZoom);
+	return DPIUtil.autoScaleImageData(device, this.getImageDataAtCurrentZoom(), zoom, currentDeviceZoom);
 }
 
 /**
