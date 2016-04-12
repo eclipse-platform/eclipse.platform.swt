@@ -110,6 +110,10 @@
 			<param name="fragment" value="org.eclipse.swt.gtk.solaris.x86"/>
 		</antcall>
 		<antcall target="check_fragment_libraries">
+			<param name="library_count" value="6"/>
+			<param name="fragment" value="org.eclipse.swt.gtk.solaris.x86_64"/>
+		</antcall>		
+		<antcall target="check_fragment_libraries">
 			<param name="library_count" value="4"/>
 			<param name="fragment" value="org.eclipse.swt.win32.win32.ia64"/>
 		</antcall>
