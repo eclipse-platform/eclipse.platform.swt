@@ -234,9 +234,8 @@ public static int mapSFToZoom (float scaleFactor) {
  * @return zoom
  */
 public static int mapDPIToZoom (int dpi) {
-	double zoom = dpi * 100 / DPI_ZOOM_100; //convert to percentage
-	int roundedZoom = (int) (Math.round (zoom / MIN_ZOOM_INTERVAL) * MIN_ZOOM_INTERVAL); //rounding to MIN_ZOOM_INTERVAL steps
-	return Math.max (100, roundedZoom);
+	double zoom = (double)dpi * 100 / DPI_ZOOM_100; //convert to percentage
+	return (int) (Math.round (zoom / MIN_ZOOM_INTERVAL) * MIN_ZOOM_INTERVAL); //rounding to MIN_ZOOM_INTERVAL steps
 }
 /**
  * Gets Image data at specified zoom level, if image is missing then
