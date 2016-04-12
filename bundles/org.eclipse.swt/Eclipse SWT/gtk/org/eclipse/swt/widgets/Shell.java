@@ -521,7 +521,9 @@ void adjustTrim () {
 	bounds.height += heightAdjustment;
 	oldWidth += widthAdjustment;
 	oldHeight += heightAdjustment;
-	setBounds(bounds.x, bounds.y, bounds.width, bounds.height, false, true);
+	if (!getMaximized()) {
+		setBounds(bounds.x, bounds.y, bounds.width, bounds.height, false, true);
+	}
 	display.trimWidths[trimStyle] = trimWidth;
 	display.trimHeights[trimStyle] = trimHeight;
 }

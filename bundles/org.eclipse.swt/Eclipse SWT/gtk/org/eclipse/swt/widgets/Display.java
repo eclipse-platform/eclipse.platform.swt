@@ -11,8 +11,8 @@
 package org.eclipse.swt.widgets;
 
 
+import java.io.*;
 import java.util.*;
-import java.util.prefs.*;
 import java.util.regex.*;
 import java.util.regex.Pattern;
 
@@ -467,15 +467,39 @@ public class Display extends Device {
 	int [] trimWidths = new int [6];
 	int [] trimHeights = new int [6];
 	{
-		Preferences prefs = Preferences.userRoot().node("/org/eclipse/swt/widgets/Display");
-		Preferences node;
-		node = prefs.node("TRIM NONE"); trimWidths [TRIM_NONE] = node.getInt("W", 0); trimHeights [TRIM_NONE] = node.getInt("H", 0);
-		node = prefs.node("TRIM BORDER"); trimWidths [TRIM_BORDER] = node.getInt("W", 4); trimHeights [TRIM_BORDER] = node.getInt("H", 4);
-		node = prefs.node("TRIM RESIZE"); trimWidths [TRIM_RESIZE] = node.getInt("W", 6); trimHeights [TRIM_RESIZE] = node.getInt("H", 6);
-		node = prefs.node("TRIM TITLE BORDER"); trimWidths [TRIM_TITLE_BORDER] = node.getInt("W", 5); trimHeights [TRIM_TITLE_BORDER] = node.getInt("H", 28);
-		node = prefs.node("TRIM TITLE RESIZE"); trimWidths [TRIM_TITLE_RESIZE] = node.getInt("W", 6); trimHeights [TRIM_TITLE_RESIZE] = node.getInt("H", 29);
-		node = prefs.node("TRIM TITLE"); trimWidths [TRIM_TITLE] = node.getInt("W", 0); trimHeights [TRIM_TITLE] = node.getInt("H", 23);
+		trimWidths [TRIM_NONE] = 0; trimHeights [TRIM_NONE] = 0;
+		trimWidths [TRIM_BORDER] = 4; trimHeights [TRIM_BORDER] = 4;
+		trimWidths [TRIM_RESIZE] = 6; trimHeights [TRIM_RESIZE] = 6;
+		trimWidths [TRIM_TITLE_BORDER] = 5; trimHeights [TRIM_TITLE_BORDER] = 28;
+		trimWidths [TRIM_TITLE_RESIZE] = 6; trimHeights [TRIM_TITLE_RESIZE] = 29;
+		trimWidths [TRIM_TITLE] = 0; trimHeights [TRIM_TITLE] = 23;
+
+		String path = System.getProperty ("user.home"); //$NON-NLS-1$
+		if (path != null) {
+			File file = new File (path, ".swt/trims.prefs");
+			if (file.exists () && file.isFile ()) {
+				Properties props = new Properties ();
+				try {
+					props.load (new FileInputStream (file));
+					String trimWidthsString = props.getProperty ("trimWidths");
+					String trimHeightsString = props.getProperty ("trimHeights");
+					if (trimWidthsString != null && trimHeightsString != null) {
+						StringTokenizer tok = new StringTokenizer (trimWidthsString);
+						for (int i = 0; i < trimWidths.length && tok.hasMoreTokens (); i++) {
+							trimWidths [i] = Integer.parseInt (tok.nextToken ());
+						}
+						tok = new StringTokenizer (trimHeightsString);
+						for (int i = 0; i < trimHeights.length && tok.hasMoreTokens (); i++) {
+							trimHeights [i] = Integer.parseInt (tok.nextToken ());
+						}
+					}
+				} catch (IOException | NumberFormatException e) {
+					// use default values
+				}
+			}
+		}
 	}
+
 	boolean ignoreTrim;
 
 	/* Window Manager */
@@ -4322,18 +4346,24 @@ void releaseDisplay () {
 	idleLock = null;
 
 	/* Save window trim caches */
-	Preferences prefs = Preferences.userRoot().node("/org/eclipse/swt/widgets/Display");
-	Preferences node;
-	node = prefs.node("TRIM NONE"); node.putInt("W", trimWidths [TRIM_NONE]); node.putInt("H", trimHeights [TRIM_NONE]);
-	node = prefs.node("TRIM BORDER"); node.putInt("W", trimWidths [TRIM_BORDER]); node.putInt("H", trimHeights [TRIM_BORDER]);
-	node = prefs.node("TRIM RESIZE"); node.putInt("W", trimWidths [TRIM_RESIZE]); node.putInt("H", trimHeights [TRIM_RESIZE]);
-	node = prefs.node("TRIM TITLE BORDER"); node.putInt("W", trimWidths [TRIM_TITLE_BORDER]); node.putInt("H", trimHeights [TRIM_TITLE_BORDER]);
-	node = prefs.node("TRIM TITLE RESIZE"); node.putInt("W", trimWidths [TRIM_TITLE_RESIZE]); node.putInt("H", trimHeights [TRIM_TITLE_RESIZE]);
-	node = prefs.node("TRIM TITLE"); node.putInt("W", trimWidths [TRIM_TITLE]); node.putInt("H", trimHeights [TRIM_TITLE]);
-	try {
-		prefs.flush();
-	} catch (BackingStoreException e) {
-		// continue without saving
+	String userHome = System.getProperty ("user.home"); //$NON-NLS-1$
+	if (userHome != null) {
+		File dir = new File (userHome, ".swt");
+		if ((dir.exists () && dir.isDirectory ()) || dir.mkdirs ()) {
+			File file = new File (dir, "trims.prefs");
+			Properties props = new Properties ();
+			StringBuilder buf = new StringBuilder ();
+			for (int w : trimWidths) buf.append (w).append (' ');
+			props.put ("trimWidths", buf.toString ());
+			buf = new StringBuilder();
+			for (int h : trimHeights) buf.append (h).append (' ');
+			props.put ("trimHeights", buf.toString ());
+			try {
+				props.store(new FileOutputStream (file), null);
+			} catch (IOException e) {
+				// skip saving trim caches
+			}
+		}
 	}
 }
 

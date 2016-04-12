@@ -382,6 +382,37 @@ public void test_setBoundsLorg_eclipse_swt_graphics_Rectangle() {
 //		}
 //	}
 }
+
+/**
+ * Regression test for Bug 445900: [GTK] Shell#computeTrim(..) wrong for
+ * first invisible shell (editor hovers jump when enriched)
+ */
+@Test
+public void test_setBounds() {
+	Rectangle bounds = new Rectangle(100, 200, 200, 200);
+	Rectangle bounds2 = new Rectangle(150, 250, 250, 250);
+
+	int[] styles = { SWT.NO_TRIM, SWT.BORDER, SWT.RESIZE, SWT.TITLE | SWT.BORDER, SWT.TITLE | SWT.RESIZE, SWT.TITLE };
+	for (int i = 0; i < styles.length; i++) {
+		Shell testShell = new Shell(shell, styles[i]);
+		try {
+			testShell.setBounds(bounds);
+			assertEquals(i + ".1: style 0x" + Integer.toHexString(styles[i]), bounds, testShell.getBounds());
+
+			testShell.open();
+			assertEquals(i + ".2: style 0x" + Integer.toHexString(styles[i]), bounds, testShell.getBounds());
+
+			testShell.setBounds(bounds);
+			assertEquals(i + ".3: style 0x" + Integer.toHexString(styles[i]), bounds, testShell.getBounds());
+
+			testShell.setBounds(bounds2);
+			assertEquals(i + ".4: style 0x" + Integer.toHexString(styles[i]), bounds2, testShell.getBounds());
+		} finally {
+			testShell.dispose();
+		}
+	}
+}
+
 //TODO This test was not hooked for running with the runTest override. It fails on GTK/Cocoa. Investigate.
 public void a_test_setRegion() {
 	Region region = new Region();
