@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2015 IBM Corporation and others.
+ * Copyright (c) 2000, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -7,6 +7,7 @@
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
+ *     Conrad Groth - Bug 23837 [FEEP] Button, do not respect foreground and background color on Windows
  *******************************************************************************/
 package org.eclipse.swt.widgets;
 
@@ -49,6 +50,9 @@ public class Button extends Control {
 	Image image, image2, disabledImage;
 	ImageList imageList;
 	boolean ignoreMouse, grayed;
+	int buttonBackground = -1;
+	// we need our own field, because setting Control.background causes two colored pixels around the button.
+	int buttonBackgroundAlpha = 255;
 	static final int MARGIN = 4;
 	static final int CHECK_WIDTH, CHECK_HEIGHT;
 	static final int ICON_WIDTH = 128, ICON_HEIGHT = 128;
@@ -373,6 +377,7 @@ void click () {
 	ignoreMouse = false;
 }
 
+// TODO: this method ignores the style LEFT, CENTER or RIGHT
 int computeLeftMargin () {
 	if (OS.COMCTL32_MAJOR < 6) return MARGIN;
 	if ((style & (SWT.PUSH | SWT.TOGGLE)) == 0) return MARGIN;
@@ -567,6 +572,18 @@ void createHandle () {
 	}
 }
 
+private boolean customBackgroundDrawing() {
+	return buttonBackground != -1 && !isRadioOrCheck();
+}
+
+private boolean customDrawing() {
+	return customBackgroundDrawing() || customForegroundDrawing();
+}
+
+private boolean customForegroundDrawing() {
+	return foreground != -1 && !text.isEmpty() && OS.IsWindowEnabled(handle);
+}
+
 @Override
 int defaultBackground () {
 	if ((style & (SWT.PUSH | SWT.TOGGLE)) != 0) {
@@ -641,6 +658,18 @@ public int getAlignment () {
 	if ((style & SWT.CENTER) != 0) return SWT.CENTER;
 	if ((style & SWT.RIGHT) != 0) return SWT.RIGHT;
 	return SWT.LEFT;
+}
+
+@Override
+public Color getBackground () {
+	if (isRadioOrCheck()) {
+		return super.getBackground();
+	}
+	checkWidget ();
+	if (buttonBackground != -1) {
+		return Color.win32_new (display, buttonBackground, buttonBackgroundAlpha);
+	}
+	return Color.win32_new (display, defaultBackground());
 }
 
 boolean getDefault () {
@@ -728,8 +757,7 @@ String getNameText () {
 public boolean getSelection () {
 	checkWidget ();
 	if ((style & (SWT.CHECK | SWT.RADIO | SWT.TOGGLE)) == 0) return false;
-	long /*int*/ flags = OS.SendMessage (handle, OS.BM_GETCHECK, 0, 0);
-	return flags != OS.BST_UNCHECKED;
+	return isChecked();
 }
 
 /**
@@ -748,6 +776,15 @@ public String getText () {
 	checkWidget ();
 	if ((style & SWT.ARROW) != 0) return "";
 	return text;
+}
+
+private boolean isChecked() {
+	long /*int*/ flags = OS.SendMessage (handle, OS.BM_GETCHECK, 0, 0);
+	return flags != OS.BST_UNCHECKED;
+}
+
+private boolean isRadioOrCheck() {
+	return (style & (SWT.RADIO | SWT.CHECK)) != 0;
 }
 
 @Override
@@ -901,6 +938,50 @@ public void setAlignment (int alignment) {
 	}
 }
 
+/**
+ * Sets the button's background color to the color specified
+ * by the argument, or to the default system color for the control
+ * if the argument is null.
+ * <p>
+ * Note: This is custom paint operation and only affects {@link SWT#PUSH} and {@link SWT#TOGGLE} buttons. If the native button
+ * has a 3D look an feel (e.g. Windows 7), this method will cause the button to look FLAT irrespective of the state of the
+ * {@link SWT#FLAT} style.
+ * For {@link SWT#CHECK} and {@link SWT#RADIO} buttons, this method delegates to {@link Control#setBackground(Color)}.
+ * </p>
+ * @param color the new color (or null)
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_ARGUMENT - if the argument has been disposed</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
+@Override
+public void setBackground (Color color) {
+	checkWidget ();
+	if (isRadioOrCheck()) {
+		super.setBackground(color);
+	} else {
+		setButtonBackground (color);
+	}
+}
+
+private void setButtonBackground (Color color) {
+	int pixel = -1;
+	int alpha = 255;
+	if (color != null) {
+		if (color.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
+		pixel = color.handle;
+		alpha = color.getAlpha();
+	}
+	if (pixel == buttonBackground && alpha == buttonBackgroundAlpha) return;
+	buttonBackground = pixel;
+	buttonBackgroundAlpha = alpha;
+	updateBackgroundColor ();
+}
+
 void setDefault (boolean value) {
 	if ((style & SWT.PUSH) == 0) return;
 	long /*int*/ hwndShell = menuShell ().handle;
@@ -923,7 +1004,7 @@ public boolean setFocus () {
 	* it selects the button in WM_SETFOCUS.  The fix is to
 	* not assign focus to an unselected radio button.
 	*/
-	if ((style & SWT.RADIO) != 0 && !getSelection () && display.fixFocus) return false;
+	if ((style & SWT.RADIO) != 0 && !isChecked () && display.fixFocus) return false;
 	return super.setFocus ();
 }
 
@@ -1240,7 +1321,7 @@ LRESULT WM_ERASEBKGND (long /*int*/ wParam, long /*int*/ lParam) {
 	* fix is to draw the background in WM_ERASEBKGND.
 	*/
 	if (OS.COMCTL32_MAJOR < 6) {
-		if ((style & (SWT.RADIO | SWT.CHECK)) != 0) {
+		if (isRadioOrCheck()) {
 			if (findImageControl () != null) {
 				drawBackground (wParam);
 				return LRESULT.ONE;
@@ -1384,7 +1465,9 @@ LRESULT WM_UPDATEUISTATE (long /*int*/ wParam, long /*int*/ lParam) {
 	* redraw the control when paint events are hooked.
 	*/
 	if ((style & (SWT.PUSH | SWT.TOGGLE)) != 0) {
-		if (hooks (SWT.Paint) || filters (SWT.Paint)) OS.InvalidateRect (handle, null, true);
+		if (hooks (SWT.Paint) || filters (SWT.Paint) || customDrawing()) {
+			OS.InvalidateRect (handle, null, true);
+		}
 	}
 	return result;
 }
@@ -1423,7 +1506,7 @@ LRESULT wmColorChild (long /*int*/ wParam, long /*int*/ lParam) {
 	*/
 	LRESULT result = super.wmColorChild (wParam, lParam);
 	if (OS.COMCTL32_MAJOR < 6) {
-		if ((style & (SWT.RADIO | SWT.CHECK)) != 0) {
+		if (isRadioOrCheck()) {
 			if (findImageControl () != null) {
 				OS.SetBkMode (wParam, OS.TRANSPARENT);
 				return new LRESULT (OS.GetStockObject (OS.NULL_BRUSH));
@@ -1431,6 +1514,102 @@ LRESULT wmColorChild (long /*int*/ wParam, long /*int*/ lParam) {
 		}
 	}
 	return result;
+}
+
+@Override
+LRESULT wmNotifyChild (NMHDR hdr, long /*int*/ wParam, long /*int*/ lParam) {
+	switch (hdr.code) {
+		case OS.NM_CUSTOMDRAW:
+			// this message will not appear for owner-draw buttons (currently the ARROW button).
+
+			if (OS.COMCTL32_MAJOR < 6) break;
+
+			NMCUSTOMDRAW nmcd = new NMCUSTOMDRAW ();
+			OS.MoveMemory (nmcd, lParam, NMCUSTOMDRAW.sizeof);
+
+			switch (nmcd.dwDrawStage) {
+				case OS.CDDS_PREPAINT: {
+					// buttons are ignoring SetBkColor, SetBkMode and SetTextColor
+					if (customBackgroundDrawing()) {
+						int pixel = buttonBackground;
+						if ((nmcd.uItemState & OS.CDIS_SELECTED) != 0) {
+							pixel = getDifferentColor(buttonBackground);
+						} else if ((nmcd.uItemState & OS.CDIS_HOT) != 0) {
+							pixel = getSlightlyDifferentColor(buttonBackground);
+						}
+						if ((style & SWT.TOGGLE) != 0 && isChecked()) {
+							pixel = getDifferentColor(buttonBackground);
+						}
+						RECT rect = new RECT ();
+						OS.SetRect (rect, nmcd.left+2, nmcd.top+2, nmcd.right-2, nmcd.bottom-2);
+						long brush = OS.CreateSolidBrush(pixel);
+						OS.FillRect(nmcd.hdc, rect, brush);
+						OS.DeleteObject(brush);
+					}
+					if (customForegroundDrawing()) {
+						int left = nmcd.left + 2; // subtract border
+						int right = nmcd.right - 2; // subtract border
+						if (image != null) {
+							GCData data = new GCData();
+							data.device = display;
+							GC gc = GC.win32_new (nmcd.hdc, data);
+
+							int margin = computeLeftMargin();
+							int imageWidth = image.getBoundsInPixels().width;
+							left += (imageWidth + MARGIN); // for SWT.RIGHT_TO_LEFT right and left are inverted
+
+							int x = margin + (isRadioOrCheck() ? 12 : 0);
+							int y = Math.max (0, (nmcd.bottom - image.getBoundsInPixels().height) / 2);
+							gc.drawImage (image, DPIUtil.autoScaleDown(x), DPIUtil.autoScaleDown(y));
+							gc.dispose ();
+						}
+
+						left += isRadioOrCheck() ? 12 : 0;
+						RECT rect = new RECT ();
+						OS.SetRect (rect, left, nmcd.top, right, nmcd.bottom);
+						long hdc = nmcd.hdc;
+
+						// draw text
+						int flags = OS.DT_VCENTER;
+						if ((style & SWT.WRAP) != 0) {
+							// Feature in Windows: WORDBREAK ignores VCENTER. So we have to calculate
+							flags |= OS.DT_WORDBREAK;
+							// Defining a height hint, returns the height hint:
+							Point textSize = computeSizeInPixels(rect.right, SWT.DEFAULT, false);
+							int yTop = ((nmcd.bottom - nmcd.top) - textSize.y) / 2 + MARGIN;
+							OS.SetRect (rect, left, yTop, right, nmcd.bottom);
+						} else {
+							flags |= OS.DT_SINGLELINE; // TODO: this always draws the prefix
+						}
+						if (image != null){
+							// The default button with an image doesn't respect the text alignment. So we do the same for styled buttons.
+							flags |= OS.DT_CENTER;
+						} else if ((style & SWT.LEFT) != 0) {
+							flags |= OS.DT_LEFT;
+						} else if ((style & SWT.RIGHT) != 0) {
+							flags |= OS.DT_RIGHT;
+						} else {
+							flags |= OS.DT_CENTER;
+						}
+						TCHAR buffer = new TCHAR (getCodePage (), text, false);
+						OS.SetBkMode(hdc, OS.TRANSPARENT);
+						OS.SetTextColor(hdc, foreground);
+						OS.DrawText(hdc, buffer, buffer.length(), rect, flags);
+
+						// draw focus rect
+						if ((nmcd.uItemState & OS.CDIS_FOCUS) != 0) {
+							RECT focusRect = new RECT ();
+							OS.SetRect (focusRect, nmcd.left+3, nmcd.top+3, nmcd.right-3, nmcd.bottom-3);
+							OS.DrawFocusRect(nmcd.hdc, focusRect);
+						}
+						return new LRESULT (OS.CDRF_SKIPDEFAULT);
+					}
+					return new LRESULT (OS.CDRF_DODEFAULT);
+				}
+			}
+			break;
+	}
+	return super.wmNotifyChild (hdr, wParam, lParam);
 }
 
 @Override

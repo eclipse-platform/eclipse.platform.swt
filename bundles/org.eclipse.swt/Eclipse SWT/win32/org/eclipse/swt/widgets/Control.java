@@ -1618,6 +1618,45 @@ Point getSizeInPixels () {
 }
 
 /**
+ * calculates a slightly different color, e.g. for highlighting the sort column
+ * in a column or the hot state of a button.
+ * @param pixel the color to start with
+ */
+int getSlightlyDifferentColor(int pixel) {
+	return getDifferentColor(pixel, 0.1);
+}
+
+/**
+ * calculates a different color, e.g. for the checked state of a toggle button
+ * or to highlight a selected button.
+ * @param pixel the color to start with
+ */
+int getDifferentColor(int pixel) {
+	return getDifferentColor(pixel, 0.2);
+}
+
+/**
+ * @param factor must be between [0..1]. The bounds are not checked
+ */
+int getDifferentColor(int pixel, double factor) {
+	int red = pixel & 0xFF;
+	int green = (pixel & 0xFF00) >> 8;
+	int blue = (pixel & 0xFF0000) >> 16;
+	red += calcDiff(red, factor);
+	green += calcDiff(green, factor);
+	blue += calcDiff(blue, factor);
+	return (red & 0xFF) | ((green & 0xFF) << 8) | ((blue & 0xFF) << 16);
+}
+
+long /* int */ calcDiff(int component, double factor) {
+	if (component > 127) {
+		return Math.round(component * -1 * factor);
+	} else {
+		return Math.round((255 - component) * factor);
+	}
+}
+
+/**
  * Returns the text direction of the receiver, which will be one of the
  * constants <code>SWT.LEFT_TO_RIGHT</code> or <code>SWT.RIGHT_TO_LEFT</code>.
  *
@@ -3077,7 +3116,7 @@ void setBackground () {
  * if the argument is null.
  * <p>
  * Note: This operation is a hint and may be overridden by the platform.
- * For example, on Windows the background of a Button cannot be changed.
+ * For example, on MAC the background of a Button cannot be changed.
  * </p>
  * @param color the new color (or null)
  *

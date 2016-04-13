@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2015 IBM Corporation and others.
+ * Copyright (c) 2000, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -422,10 +422,11 @@ public class OS extends C {
 	public static final int CDIS_CHECKED = 0x0008;
 	public static final int CDIS_FOCUS = 0x0010;
 	public static final int CDIS_DEFAULT = 0x0020;
-	public static final int CDIS_DROPHILITED = 0x1000;
 	public static final int CDIS_HOT = 0x0040;
 	public static final int CDIS_MARKED = 0x0080;
 	public static final int CDIS_INDETERMINATE = 0x0100;
+	public static final int CDIS_SHOWKEYBOARDCUES = 0x0200;
+	public static final int CDIS_DROPHILITED = 0x1000;
 	public static final int CDM_FIRST = 0x0400 + 100;
 	public static final int CDM_GETSPEC = CDM_FIRST;
 	public static final int CDN_FIRST = -601;
