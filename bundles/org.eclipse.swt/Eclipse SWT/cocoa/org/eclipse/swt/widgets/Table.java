@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2012 IBM Corporation and others.
+ * Copyright (c) 2000, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -77,6 +77,7 @@ public class Table extends Composite {
 	int columnCount, itemCount, lastIndexOf, sortDirection, selectedRowIndex = -1;
 	boolean ignoreSelect, fixScrollWidth, drawExpansion, didSelect, preventSelect, dragDetected;
 	Rectangle imageBounds;
+	double /*float*/ [] headerBackground, headerForeground;
 
 	/* Used to control drop feedback when FEEDBACK_SCROLL is set/not set */
 	boolean shouldScroll = true;
@@ -1461,6 +1462,46 @@ public int getGridLineWidth () {
 }
 
 /**
+ * Returns the header background color.
+ *
+ * @return the receiver's header background color.
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * @since 3.106
+ */
+public Color getHeaderBackground () {
+	checkWidget ();
+	return getHeaderBackgroundColor ();
+}
+
+private Color getHeaderBackgroundColor () {
+	return headerBackground != null ? Color.cocoa_new (display, headerBackground) : getBackgroundColor ();
+}
+
+/**
+ * Returns the header foreground color.
+ *
+ * @return the receiver's header foreground color.
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * @since 3.106
+ */
+public Color getHeaderForeground () {
+	checkWidget ();
+	return getHeaderForegroundColor ();
+}
+
+private Color getHeaderForegroundColor () {
+	return headerForeground != null ? Color.cocoa_new (display, headerForeground) : getForegroundColor ();
+}
+
+/**
  * Returns the height of the receiver's header
  *
  * @return the height of the header or zero if the header is not visible
@@ -2574,6 +2615,68 @@ void setFont (NSFont font) {
 	view.setNeedsDisplay (true);
 	clearCachedWidth (items);
 	setScrollWidth (items, true);
+}
+
+/**
+ * Sets the header background color to the color specified
+ * by the argument, or to the default system color if the argument is null.
+ * <p>
+ * Note: This is custom paint operation and only Windows table header background can be changed.
+ * If the native header has a 3D look an feel (e.g. Windows 7), this method will cause the header
+ * to look FLAT irrespective of the state of the table style.
+ * </p>
+ * @param color the new color (or null)
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_ARGUMENT - if the argument has been disposed</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * @since 3.106
+ */
+public void setHeaderBackground (Color color) {
+	checkWidget ();
+	if (color != null) {
+		if (color.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
+	}
+	double /*float*/ [] headerBackground = color != null ? color.handle : null;
+	if (equals (headerBackground, this.headerBackground)) return;
+	this.headerBackground = headerBackground;
+	if (getHeaderVisible()) {
+		redrawWidget (view, false);
+	}
+}
+
+/**
+ * Sets the header foreground color to the color specified
+ * by the argument, or to the default system color if the argument is null.
+ * <p>
+ * Note: This is custom paint operation and only Windows table header foreground can be changed.
+ * </p>
+ * @param color the new color (or null)
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_ARGUMENT - if the argument has been disposed</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * @since 3.106
+ */
+public void setHeaderForeground (Color color) {
+	checkWidget ();
+	if (color != null) {
+		if (color.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
+	}
+	double /*float*/ [] headerForeground = color != null ? color.handle : null;
+	if (equals (headerForeground, this.headerForeground)) return;
+	this.headerForeground = headerForeground;
+	if (getHeaderVisible()) {
+		redrawWidget (view, false);
+	}
 }
 
 /**

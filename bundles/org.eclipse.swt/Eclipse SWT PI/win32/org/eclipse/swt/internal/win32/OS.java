@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2016 IBM Corporation and others.
+ * Copyright (c) 2000, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -779,6 +779,7 @@ public class OS extends C {
 	public static final int HDF_JUSTIFYMASK = 0x3;
 	public static final int HDF_IMAGE = 0x0800;
 	public static final int HDF_LEFT = 0;
+	public static final int HDF_OWNERDRAW = 0x8000;
 	public static final int HDF_RIGHT = 1;
 	public static final int HDF_SORTUP = 0x0400;
 	public static final int HDF_SORTDOWN = 0x0200;
@@ -828,9 +829,15 @@ public class OS extends C {
 	public static final int HDN_ITEMDBLCLICKA = HDN_FIRST - 3;
 	public static final int HDN_ITEMDBLCLICK = IsUnicode ? HDN_ITEMDBLCLICKW : HDN_ITEMDBLCLICKA;
 	public static final int HDS_BUTTONS = 0x2;
+	public static final int HDS_CHECKBOXES = 0x400;
 	public static final int HDS_DRAGDROP = 0x0040;
+	public static final int HDS_FILTERBAR = 0x100;
+	public static final int HDS_FLAT = 0x200;
 	public static final int HDS_FULLDRAG = 0x80;
 	public static final int HDS_HIDDEN = 0x8;
+	public static final int HDS_HOTTRACK = 0x4;
+	public static final int HDS_NOSIZING = 0x800;
+	public static final int HDS_OVERFLOW = 0x1000;
 //	public static final int HEAP_ZERO_MEMORY = 0x8;
 	public static final int HELPINFO_MENUITEM = 0x2;
 	public static final int HHT_ONDIVIDER = 0x4;

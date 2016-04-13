@@ -81,6 +81,7 @@ public class Table extends Composite {
 	int drawState, drawFlags;
 	GdkColor drawForeground;
 	GdkRGBA background, foreground;
+	Color headerBackground, headerForeground;
 	boolean ownerDraw, ignoreSize, ignoreAccessibility, pixbufSizeSet;
 	int maxWidth = 0;
 	int topIndex;
@@ -1416,6 +1417,38 @@ public int getGridLineWidth () {
 int getGridLineWidthInPixels () {
 	checkWidget();
 	return 0;
+}
+
+/**
+ * Returns the header background color.
+ *
+ * @return the receiver's header background color.
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * @since 3.106
+ */
+public Color getHeaderBackground () {
+	checkWidget ();
+	return headerBackground != null ? headerBackground : getBackground();
+}
+
+/**
+ * Returns the header foreground color.
+ *
+ * @return the receiver's header foreground color.
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * @since 3.106
+ */
+public Color getHeaderForeground () {
+	checkWidget ();
+	return headerForeground != null ? headerForeground : getForeground();
 }
 
 /**
@@ -3298,6 +3331,66 @@ void setForegroundColor (GdkColor color) {
 		setForegroundColor (handle, rgba);
 	} else {
 		setForegroundColor (handle, color, false);
+	}
+}
+
+/**
+ * Sets the header background color to the color specified
+ * by the argument, or to the default system color if the argument is null.
+ * <p>
+ * Note: This is custom paint operation and only Windows table header background can be changed.
+ * If the native header has a 3D look an feel (e.g. Windows 7), this method will cause the header
+ * to look FLAT irrespective of the state of the table style.
+ * </p>
+ * @param color the new color (or null)
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_ARGUMENT - if the argument has been disposed</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * @since 3.106
+ */
+public void setHeaderBackground (Color color) {
+	checkWidget();
+	if (color != null) {
+		if (color.isDisposed ()) error(SWT.ERROR_INVALID_ARGUMENT);
+		if (color.equals(headerBackground)) return;
+	} else if (headerBackground == null) return;
+	headerBackground = color;
+	if (getHeaderVisible()) {
+		redraw();
+	}
+}
+
+/**
+ * Sets the header foreground color to the color specified
+ * by the argument, or to the default system color if the argument is null.
+ * <p>
+ * Note: This is custom paint operation and only Windows table header foreground can be changed.
+ * </p>
+ * @param color the new color (or null)
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_ARGUMENT - if the argument has been disposed</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * @since 3.106
+ */
+public void setHeaderForeground (Color color) {
+	checkWidget();
+	if (color != null) {
+		if (color.isDisposed ()) error(SWT.ERROR_INVALID_ARGUMENT);
+		if (color.equals(headerForeground)) return;
+	} else if (headerForeground == null) return;
+	headerForeground = color;
+	if (getHeaderVisible()) {
+		redraw();
 	}
 }
 

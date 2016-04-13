@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2016 IBM Corporation and others.
+ * Copyright (c) 2000, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -8,6 +8,7 @@
  * Contributors:
  *     IBM Corporation - initial API and implementation
  *     Roland Oldenburg <r.oldenburg@hsp-software.de> - Bug 292199
+ *     Conrad Groth - Bug 384906
  *******************************************************************************/
 package org.eclipse.swt.widgets;
 
@@ -79,11 +80,14 @@ public class Table extends Composite {
 	TableItem currentItem;
 	TableColumn sortColumn;
 	RECT focusRect;
-	long /*int*/ headerToolTipHandle;
+	long /*int*/ headerToolTipHandle, hwndHeader;
 	boolean ignoreCustomDraw, ignoreDrawForeground, ignoreDrawBackground, ignoreDrawFocus, ignoreDrawSelection, ignoreDrawHot;
 	boolean customDraw, dragStarted, explorerTheme, firstColumnImage, fixScrollWidth, tipRequested, wasSelected, wasResized, painted;
 	boolean ignoreActivate, ignoreSelect, ignoreShrink, ignoreResize, ignoreColumnMove, ignoreColumnResize, fullRowSelect, settingItemHeight;
+	boolean headerItemDragging;
 	int itemHeight, lastIndexOf, lastWidth, sortDirection, resizeCount, selectionForeground, hotIndex;
+	int headerBackground = -1;
+	int headerForeground = -1;
 	static /*final*/ long /*int*/ HeaderProc;
 	static final int INSET = 4;
 	static final int GRID_WIDTH = 1;
@@ -99,10 +103,13 @@ public class Table extends Composite {
 	static boolean COMPRESS_ITEMS = true;
 	static final long /*int*/ TableProc;
 	static final TCHAR TableClass = new TCHAR (0, OS.WC_LISTVIEW, true);
+	static final TCHAR HeaderClass = new TCHAR (0, OS.WC_HEADER, true);
 	static {
 		WNDCLASS lpWndClass = new WNDCLASS ();
 		OS.GetClassInfo (0, TableClass, lpWndClass);
 		TableProc = lpWndClass.lpfnWndProc;
+		OS.GetClassInfo (0, HeaderClass, lpWndClass);
+		HeaderProc = lpWndClass.lpfnWndProc;
 	}
 
 /**
@@ -448,7 +455,7 @@ long /*int*/ callWindowProc (long /*int*/ hwnd, int msg, long /*int*/ wParam, lo
 
 long /*int*/ callWindowProc (long /*int*/ hwnd, int msg, long /*int*/ wParam, long /*int*/ lParam, boolean forceSelect) {
 	if (handle == 0) return 0;
-	if (handle != hwnd) {
+	if (hwndHeader != 0 && hwnd == hwndHeader) {
 		return OS.CallWindowProc (HeaderProc, hwnd, msg, wParam, lParam);
 	}
 	int topIndex = 0;
@@ -1087,7 +1094,6 @@ LRESULT CDDS_SUBITEMPREPAINT (NMLVCUSTOMDRAW nmcd, long /*int*/ wParam, long /*i
 		boolean hasAttributes = true;
 		if (hFont == -1 && clrText == -1 && clrTextBk == -1) {
 			if (item.cellForeground == null && item.cellBackground == null && item.cellFont == null) {
-				long /*int*/ hwndHeader = OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
 				int count = (int)/*64*/OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0);
 				if (count == 1) hasAttributes = false;
 			}
@@ -1487,7 +1493,6 @@ public void clearAll () {
 //			OS.ReleaseDC (handle, hDC);
 //		}
 //	}
-	long /*int*/ hwndHeader = OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
 	RECT rect = new RECT ();
 	OS.GetWindowRect (hwndHeader, rect);
 	int height = rect.bottom - rect.top;
@@ -1536,11 +1541,8 @@ void createHandle () {
 		}
 	}
 
-	/* Get the header window proc */
-	if (HeaderProc == 0) {
-		long /*int*/ hwndHeader = OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
-		HeaderProc = OS.GetWindowLongPtr (hwndHeader, OS.GWLP_WNDPROC);
-	}
+	/* Get the header window handle */
+	hwndHeader = OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
 
 	/*
 	* Feature in Windows.  In version 5.8 of COMCTL32.DLL,
@@ -1623,7 +1625,6 @@ void createHandle () {
 	*/
 	if (OS.WIN32_VERSION >= OS.VERSION (4, 10)) {
 		if ((style & SWT.RIGHT_TO_LEFT) != 0) {
-			long /*int*/ hwndHeader = OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
 			int bits2 = OS.GetWindowLong (hwndHeader, OS.GWL_EXSTYLE);
 			OS.SetWindowLong (hwndHeader, OS.GWL_EXSTYLE, bits2 | OS.WS_EX_LAYOUTRTL);
 			long /*int*/ hwndTooltop = OS.SendMessage (handle, OS.LVM_GETTOOLTIPS, 0, 0);
@@ -1817,7 +1818,6 @@ void createItem (TableColumn column, int index) {
 	/* Add the tool tip item for the header */
 	if (headerToolTipHandle != 0) {
 		RECT rect = new RECT ();
-		long /*int*/ hwndHeader = OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
 		if (OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, index, rect) != 0) {
 			TOOLINFO lpti = new TOOLINFO ();
 			lpti.cbSize = TOOLINFO.sizeof;
@@ -1875,6 +1875,10 @@ void createWidget () {
 	columns = new TableColumn [4];
 }
 
+private boolean customHeaderDrawing() {
+	return headerBackground != -1 || headerForeground != -1;
+}
+
 @Override
 int defaultBackground () {
 	return OS.GetSysColor (OS.COLOR_WINDOW);
@@ -1883,7 +1887,6 @@ int defaultBackground () {
 @Override
 void deregister () {
 	super.deregister ();
-	long /*int*/ hwndHeader = OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
 	if (hwndHeader != 0) display.removeControl (hwndHeader);
 }
 
@@ -2291,9 +2294,8 @@ void fixItemHeight (boolean fixScroll) {
 	*/
 	if (itemHeight != -1) return;
 	if (OS.COMCTL32_VERSION >= OS.VERSION (5, 80)) return;
-	int bits = (int)/*64*/OS.SendMessage (handle, OS.LVM_GETEXTENDEDLISTVIEWSTYLE, 0, 0);
-	if ((bits & OS.LVS_EX_GRIDLINES) == 0) return;
-	bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
+	if (!_getLinesVisible()) return;
+	int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
 	if ((bits & OS.LVS_NOCOLUMNHEADER) != 0) return;
 	/*
 	* Bug in Windows.  Making any change to an item that
@@ -2311,7 +2313,6 @@ void fixItemHeight (boolean fixScroll) {
 	}
 	long /*int*/ hOldList = OS.SendMessage (handle, OS.LVM_GETIMAGELIST, OS.LVSIL_SMALL, 0);
 	if (hOldList != 0) return;
-	long /*int*/ hwndHeader = OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
 	RECT rect = new RECT ();
 	OS.GetWindowRect (hwndHeader, rect);
 	int height = rect.bottom - rect.top - 1;
@@ -2477,6 +2478,46 @@ int getGridLineWidthInPixels () {
 }
 
 /**
+ * Returns the header background color.
+ *
+ * @return the receiver's header background color.
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * @since 3.106
+ */
+public Color getHeaderBackground () {
+	checkWidget ();
+	return Color.win32_new (display, getHeaderBackgroundPixel());
+}
+
+private int getHeaderBackgroundPixel() {
+	return headerBackground != -1 ? headerBackground : defaultBackground();
+}
+
+/**
+ * Returns the header foreground color.
+ *
+ * @return the receiver's header foreground color.
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * @since 3.106
+ */
+public Color getHeaderForeground () {
+	checkWidget ();
+	return Color.win32_new (display, getHeaderForegroundPixel());
+}
+
+private int getHeaderForegroundPixel() {
+	return headerForeground != -1 ? headerForeground : defaultForeground();
+}
+
+/**
  * Returns the height of the receiver's header
  *
  * @return the height of the header or zero if the header is not visible
@@ -2494,7 +2535,6 @@ public int getHeaderHeight () {
 }
 
 int getHeaderHeightInPixels () {
-	long /*int*/ hwndHeader = OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
 	if (hwndHeader == 0) return 0;
 	RECT rect = new RECT ();
 	OS.GetWindowRect (hwndHeader, rect);
@@ -2628,7 +2668,6 @@ TableItem getItemInPixels (Point point) {
 		if (pinfo.iItem == 0) {
 			int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
 			if ((bits & OS.LVS_NOCOLUMNHEADER) == 0) {
-				long /*int*/ hwndHeader = OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
 				if (hwndHeader != 0) {
 					RECT rect = new RECT ();
 					OS.GetWindowRect (hwndHeader, rect);
@@ -2733,6 +2772,10 @@ public TableItem [] getItems () {
  */
 public boolean getLinesVisible () {
 	checkWidget ();
+	return _getLinesVisible();
+}
+
+private boolean _getLinesVisible() {
 	int bits = (int)/*64*/OS.SendMessage (handle, OS.LVM_GETEXTENDEDLISTVIEWSTYLE, 0, 0);
 	return (bits & OS.LVS_EX_GRIDLINES) != 0;
 }
@@ -2898,7 +2941,6 @@ public int getTopIndex () {
 }
 
 boolean hasChildren () {
-	long /*int*/ hwndHeader = OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
 	long /*int*/ hwndChild = OS.GetWindow (handle, OS.GW_CHILD);
 	while (hwndChild != 0) {
 		if (hwndChild != hwndHeader) return true;
@@ -2958,7 +3000,6 @@ int imageIndex (Image image, int column) {
 		}
 		OS.SendMessage (handle, OS.LVM_SETIMAGELIST, OS.LVSIL_SMALL, hImageList);
 		if (headerImageList != null) {
-			long /*int*/ hwndHeader = OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
 			long /*int*/ hHeaderImageList = headerImageList.getHandle ();
 			OS.SendMessage (hwndHeader, OS.HDM_SETIMAGELIST, 0, hHeaderImageList);
 		}
@@ -2983,7 +3024,6 @@ int imageIndexHeader (Image image) {
 		int index = headerImageList.indexOf (image);
 		if (index == -1) index = headerImageList.add (image);
 		long /*int*/ hImageList = headerImageList.getHandle ();
-		long /*int*/ hwndHeader = OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
 		OS.SendMessage (hwndHeader, OS.HDM_SETIMAGELIST, 0, hImageList);
 		return index;
 	}
@@ -3098,7 +3138,6 @@ public boolean isSelected (int index) {
 @Override
 void register () {
 	super.register ();
-	long /*int*/ hwndHeader = OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
 	if (hwndHeader != 0) display.addControl (hwndHeader, this);
 }
 
@@ -3166,7 +3205,6 @@ void releaseWidget () {
 		display.releaseImageList (imageList);
 	}
 	if (headerImageList != null) {
-		long /*int*/ hwndHeader = OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
 		OS.SendMessage (hwndHeader, OS.HDM_SETIMAGELIST, 0, 0);
 		display.releaseImageList (headerImageList);
 	}
@@ -3681,7 +3719,6 @@ void sendEraseItemEvent (TableItem item, NMLVCUSTOMDRAW nmcd, long /*int*/ lPara
 			OS.MoveMemory (lParam, nmcd, NMLVCUSTOMDRAW.sizeof);
 		}
 	}
-	long /*int*/ hwndHeader = OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
 	boolean firstColumn = nmcd.iSubItem == OS.SendMessage (hwndHeader, OS.HDM_ORDERTOINDEX, 0, 0);
 	if (ignoreDrawForeground && ignoreDrawHot && !drawDrophilited) {
 		if (!ignoreDrawBackground && drawBackground) {
@@ -4298,7 +4335,6 @@ void setBoundsInPixels (int x, int y, int width, int height, int flags, boolean 
 public void setColumnOrder (int [] order) {
 	checkWidget ();
 	if (order == null) error (SWT.ERROR_NULL_ARGUMENT);
-	long /*int*/ hwndHeader = OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
 	if (columnCount == 0) {
 		if (order.length != 0) error (SWT.ERROR_INVALID_ARGUMENT);
 		return;
@@ -4376,7 +4412,6 @@ void setDeferResize (boolean defer) {
 					OS.SendMessage (handle, OS.LVM_SETBKCOLOR, 0, OS.CLR_NONE);
 					OS.DefWindowProc (handle, OS.WM_SETREDRAW, 1, 0);
 					if (OS.IsWinCE) {
-						long /*int*/ hwndHeader = OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
 						if (hwndHeader != 0) OS.InvalidateRect (hwndHeader, null, true);
 						OS.InvalidateRect (handle, null, true);
 					} else {
@@ -4580,7 +4615,6 @@ public void setFont (Font font) {
 	* to be redrawn but not the column headers.  The fix is
 	* to force a redraw of the column headers.
 	*/
-	long /*int*/ hwndHeader = OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
 	OS.InvalidateRect (hwndHeader, null, true);
 }
 
@@ -4600,6 +4634,71 @@ void setForegroundPixel (int pixel) {
 	* WM_PAINT.  The fix is to force a redraw.
 	*/
 	OS.InvalidateRect (handle, null, true);
+	OS.InvalidateRect (hwndHeader, null, true);
+}
+
+/**
+ * Sets the header background color to the color specified
+ * by the argument, or to the default system color if the argument is null.
+ * <p>
+ * Note: This is custom paint operation and only Windows table header background can be changed.
+ * If the native header has a 3D look an feel (e.g. Windows 7), this method will cause the header
+ * to look FLAT irrespective of the state of the table style.
+ * </p>
+ * @param color the new color (or null)
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_ARGUMENT - if the argument has been disposed</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * @since 3.106
+ */
+public void setHeaderBackground (Color color) {
+	checkWidget ();
+	int pixel = -1;
+	if (color != null) {
+		if (color.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
+		pixel = color.handle;
+	}
+	if (pixel == headerBackground) return;
+	headerBackground = pixel;
+	if (getHeaderVisible()) {
+		OS.InvalidateRect (hwndHeader, null, true);
+	}
+}
+
+/**
+ * Sets the header foreground color to the color specified
+ * by the argument, or to the default system color if the argument is null.
+ * <p>
+ * Note: This is custom paint operation and only Windows table header foreground can be changed.
+ * </p>
+ * @param color the new color (or null)
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_ARGUMENT - if the argument has been disposed</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * @since 3.106
+ */
+public void setHeaderForeground (Color color) {
+	checkWidget ();
+	int pixel = -1;
+	if (color != null) {
+		if (color.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
+		pixel = color.handle;
+	}
+	if (pixel == headerForeground) return;
+	headerForeground = pixel;
+	if (getHeaderVisible()) {
+		OS.InvalidateRect (hwndHeader, null, true);
+	}
 }
 
 /**
@@ -4646,10 +4745,7 @@ public void setHeaderVisible (boolean show) {
 		setRedraw (false);
 		setTopIndex (0);
 	}
-	if (show) {
-		int bits = (int)/*64*/OS.SendMessage (handle, OS.LVM_GETEXTENDEDLISTVIEWSTYLE, 0, 0);
-		if ((bits & OS.LVS_EX_GRIDLINES) != 0) fixItemHeight (false);
-	}
+	if (show && _getLinesVisible()) fixItemHeight (false);
 	setTopIndex (oldIndex);
 	if (newIndex != 0) {
 		setRedraw (true);
@@ -4811,6 +4907,7 @@ public void setLinesVisible (boolean show) {
 		int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
 		if ((bits & OS.LVS_NOCOLUMNHEADER) == 0) fixItemHeight (true);
 	}
+	OS.InvalidateRect (hwndHeader, null, true);
 }
 
 @Override
@@ -4859,7 +4956,6 @@ public void setRedraw (boolean redraw) {
 			*/
 			setDeferResize (true);
 			OS.SendMessage (handle, OS.WM_SETREDRAW, 1, 0);
-			long /*int*/ hwndHeader = OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
 			if (hwndHeader != 0) OS.SendMessage (hwndHeader, OS.WM_SETREDRAW, 1, 0);
 			if ((state & HIDDEN) != 0) {
 				state &= ~HIDDEN;
@@ -4880,7 +4976,6 @@ public void setRedraw (boolean redraw) {
 	} else {
 		if (drawCount++ == 0) {
 			OS.SendMessage (handle, OS.WM_SETREDRAW, 0, 0);
-			long /*int*/ hwndHeader = OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
 			if (hwndHeader != 0) OS.SendMessage (hwndHeader, OS.WM_SETREDRAW, 0, 0);
 
 			/*
@@ -5420,8 +5515,7 @@ public void showColumn (TableColumn column) {
 	* get the new scroll position and redraw the new area.
 	*/
 	int oldPos = 0;
-	int bits = (int)/*64*/OS.SendMessage (handle, OS.LVM_GETEXTENDEDLISTVIEWSTYLE, 0, 0);
-	if ((bits & OS.LVS_EX_GRIDLINES) != 0) {
+	if (_getLinesVisible()) {
 		SCROLLINFO info = new SCROLLINFO ();
 		info.cbSize = SCROLLINFO.sizeof;
 		info.fMask = OS.SIF_POS;
@@ -5447,7 +5541,7 @@ public void showColumn (TableColumn column) {
 	* is to save the old scroll position, call the window proc,
 	* get the new scroll position and redraw the new area.
 	*/
-	if ((bits & OS.LVS_EX_GRIDLINES) != 0) {
+	if (_getLinesVisible()) {
 		SCROLLINFO info = new SCROLLINFO ();
 		info.cbSize = SCROLLINFO.sizeof;
 		info.fMask = OS.SIF_POS;
@@ -5585,7 +5679,6 @@ public void showSelection () {
 void subclass () {
 	super.subclass ();
 	if (HeaderProc != 0) {
-		long /*int*/ hwndHeader = OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
 		OS.SetWindowLongPtr (hwndHeader, OS.GWLP_WNDPROC, display.windowProc);
 	}
 }
@@ -5630,7 +5723,6 @@ String toolTipText (NMTTDISPINFO hdr) {
 void unsubclass () {
 	super.unsubclass ();
 	if (HeaderProc != 0) {
-		long /*int*/ hwndHeader = OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
 		OS.SetWindowLongPtr (hwndHeader, OS.GWLP_WNDPROC, HeaderProc);
 	}
 }
@@ -5650,7 +5742,6 @@ void update (boolean all) {
 	* current proc must be restored or header tooltips stop working.
 	*/
 	long /*int*/ oldHeaderProc = 0, oldTableProc = 0;
-	long /*int*/ hwndHeader = OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
 	boolean fixSubclass = isOptimizedRedraw ();
 	if (fixSubclass) {
 		oldTableProc = OS.SetWindowLongPtr (handle, OS.GWLP_WNDPROC, TableProc);
@@ -6456,7 +6547,6 @@ LRESULT WM_SETFONT (long /*int*/ wParam, long /*int*/ lParam) {
 	* the header so that all that is necessary here is to
 	* set the default first.
 	*/
-	long /*int*/ hwndHeader = OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
 	OS.SendMessage (hwndHeader, OS.WM_SETFONT, 0, lParam);
 
 	if (headerToolTipHandle != 0) {
@@ -6538,8 +6628,7 @@ LRESULT WM_HSCROLL (long /*int*/ wParam, long /*int*/ lParam) {
 	* get the new scroll position and redraw the new area.
 	*/
 	int oldPos = 0;
-	int bits = (int)/*64*/OS.SendMessage (handle, OS.LVM_GETEXTENDEDLISTVIEWSTYLE, 0, 0);
-	if ((bits & OS.LVS_EX_GRIDLINES) != 0) {
+	if (_getLinesVisible()) {
 		SCROLLINFO info = new SCROLLINFO ();
 		info.cbSize = SCROLLINFO.sizeof;
 		info.fMask = OS.SIF_POS;
@@ -6632,7 +6721,7 @@ LRESULT WM_HSCROLL (long /*int*/ wParam, long /*int*/ lParam) {
 	* is to save the old scroll position, call the window proc,
 	* get the new scroll position and redraw the new area.
 	*/
-	if ((bits & OS.LVS_EX_GRIDLINES) != 0) {
+	if (_getLinesVisible()) {
 		SCROLLINFO info = new SCROLLINFO ();
 		info.cbSize = SCROLLINFO.sizeof;
 		info.fMask = OS.SIF_POS;
@@ -6734,8 +6823,7 @@ LRESULT WM_VSCROLL (long /*int*/ wParam, long /*int*/ lParam) {
 	* table does not redraw the grid lines for newly exposed items.
 	* The fix is to invalidate the items.
 	*/
-	int bits = (int)/*64*/OS.SendMessage (handle, OS.LVM_GETEXTENDEDLISTVIEWSTYLE, 0, 0);
-	if ((bits & OS.LVS_EX_GRIDLINES) != 0) {
+	if (_getLinesVisible()) {
 		int code = OS.LOWORD (wParam);
 		switch (code) {
 			case OS.SB_ENDSCROLL:
@@ -6793,7 +6881,6 @@ LRESULT wmNotify (NMHDR hdr, long /*int*/ wParam, long /*int*/ lParam) {
 		LRESULT result = wmNotifyToolTip (hdr, wParam, lParam);
 		if (result != null) return result;
 	}
-	long /*int*/ hwndHeader = OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
 	if (hdr.hwndFrom == hwndHeader) {
 		LRESULT result = wmNotifyHeader (hdr, wParam, lParam);
 		if (result != null) return result;
@@ -7208,6 +7295,142 @@ LRESULT wmNotifyHeader (NMHDR hdr, long /*int*/ wParam, long /*int*/ lParam) {
 			}
 			break;
 		}
+		case OS.NM_CUSTOMDRAW: {
+			NMCUSTOMDRAW nmcd = new NMCUSTOMDRAW();
+			OS.MoveMemory(nmcd, lParam, NMCUSTOMDRAW.sizeof);
+			switch (nmcd.dwDrawStage) {
+				case OS.CDDS_PREPAINT: {
+					/* Drawing here will be deleted by further drawing steps, even with OS.CDRF_SKIPDEFAULT.
+					   Changing the TextColor and returning OS.CDRF_NEWFONT has no effect. */
+					return new LRESULT (customHeaderDrawing() ? OS.CDRF_NOTIFYITEMDRAW | OS.CDRF_NOTIFYPOSTPAINT : OS.CDRF_DODEFAULT);
+				}
+				case OS.CDDS_ITEMPREPAINT: {
+					// draw background
+					RECT rect = new RECT();
+					OS.SetRect(rect, nmcd.left, nmcd.top, nmcd.right, nmcd.bottom);
+					int pixel = getHeaderBackgroundPixel();
+					if ((nmcd.uItemState & OS.CDIS_SELECTED) != 0) {
+						pixel = getDifferentColor(pixel);
+					} else if (columns[(int) nmcd.dwItemSpec] == sortColumn && sortDirection != SWT.NONE) {
+						pixel = getSlightlyDifferentColor(pixel);
+					}
+					long /*int*/ brush = OS.CreateSolidBrush(pixel);
+					OS.FillRect(nmcd.hdc, rect, brush);
+					OS.DeleteObject(brush);
+
+					return new LRESULT(OS.CDRF_SKIPDEFAULT); // if we got here, we will paint everything ourself
+				}
+				case OS.CDDS_POSTPAINT: {
+					// get the cursor position
+					POINT cursorPos = new POINT();
+					OS.GetCursorPos(cursorPos);
+					OS.MapWindowPoints(0, hwndHeader, cursorPos, 1);
+
+					// drawing all cells
+					int highlightedHeaderDividerX = -1;
+					int lastColumnRight = -1;
+					RECT [] rects = new RECT [columnCount];
+					for (int i=0; i<columnCount; i++) {
+						rects [i] = new RECT ();
+						OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, i, rects [i]);
+						if (rects[i].right > lastColumnRight) {
+							lastColumnRight = rects[i].right;
+						}
+
+						if (columns[i] == sortColumn && sortDirection != SWT.NONE) {
+							// the display.getSortImage looks terrible after scaling up.
+							long /*int*/ pen = OS.CreatePen (OS.PS_SOLID, 1, OS.GetSysColor(OS.COLOR_3DDKSHADOW));
+							long /*int*/ oldPen = OS.SelectObject (nmcd.hdc, pen);
+							int center = rects[i].left + (rects[i].right - rects[i].left) / 2;
+							int leg = 3;
+							if (sortDirection == SWT.UP) {
+								OS.Polyline(nmcd.hdc, new int[] {center-leg, 1+leg, center+1, 0}, 2);
+								OS.Polyline(nmcd.hdc, new int[] {center+leg, 1+leg, center-1, 0}, 2);
+							} else if (sortDirection == SWT.DOWN) {
+								OS.Polyline(nmcd.hdc, new int[] {center-leg, 1, center+1, 1+leg+1}, 2);
+								OS.Polyline(nmcd.hdc, new int[] {center+leg, 1, center-1, 1+leg+1}, 2);
+							}
+							OS.SelectObject (nmcd.hdc, oldPen);
+							OS.DeleteObject (pen);
+						}
+
+						/* Windows 7 and 10 always draw a nearly invisible vertical line between the columns, even if lines are disabled.
+						   This line uses no fixed color constant, but calculates it from the background color.
+						   The method getSlightlyDifferentColor gives us a color, that is near enough to the windows algorithm. */
+						long /*int*/ pen = OS.CreatePen (OS.PS_SOLID, getGridLineWidthInPixels(), getSlightlyDifferentColor(getHeaderBackgroundPixel()));
+						long /*int*/ oldPen = OS.SelectObject (nmcd.hdc, pen);
+						OS.Polyline(nmcd.hdc, new int[] {rects[i].right-1, rects[i].top, rects[i].right-1, rects[i].bottom}, 2);
+						OS.SelectObject (nmcd.hdc, oldPen);
+						OS.DeleteObject (pen);
+
+						if (_getLinesVisible()) {
+							pen = OS.CreatePen (OS.PS_SOLID, getGridLineWidthInPixels(), OS.GetSysColor(OS.COLOR_3DFACE));
+							oldPen = OS.SelectObject (nmcd.hdc, pen);
+							OS.Polyline(nmcd.hdc, new int[] {rects[i].right, rects[i].top, rects[i].right, rects[i].bottom}, 2);
+							OS.SelectObject (nmcd.hdc, oldPen);
+							OS.DeleteObject (pen);
+						}
+
+						if (headerItemDragging && highlightedHeaderDividerX == -1) {
+							int distanceToLeftBorder = cursorPos.x - rects[i].left;
+							int distanceToRightBorder = rects[i].right - cursorPos.x;
+							if (distanceToLeftBorder >= 0 && distanceToRightBorder >= 0) {
+								// the cursor is in the current rectangle
+								highlightedHeaderDividerX = distanceToLeftBorder <= distanceToRightBorder ? rects[i].left-1 : rects[i].right;
+							}
+						}
+
+						int x = rects[i].left + INSET + 2;
+						if (columns[i].image != null) {
+							GCData data = new GCData();
+							data.device = display;
+							GC gc = GC.win32_new (nmcd.hdc, data);
+							int y = Math.max (0, (nmcd.bottom - columns[i].image.getBoundsInPixels().height) / 2);
+							gc.drawImage (columns[i].image, DPIUtil.autoScaleDown(x), DPIUtil.autoScaleDown(y));
+							x += columns[i].image.getBoundsInPixels().width + 12;
+							gc.dispose ();
+						}
+
+						if (columns[i].text != null) {
+							int flags = OS.DT_NOPREFIX | OS.DT_SINGLELINE | OS.DT_VCENTER;
+							if ((columns[i].style & SWT.CENTER) != 0) flags |= OS.DT_CENTER;
+							if ((columns[i].style & SWT.RIGHT) != 0) flags |= OS.DT_RIGHT;
+							TCHAR buffer = new TCHAR (getCodePage (), columns[i].text, false);
+							OS.SetBkMode(nmcd.hdc, OS.TRANSPARENT);
+							OS.SetTextColor(nmcd.hdc, getHeaderForegroundPixel());
+							RECT textRect = new RECT();
+							textRect.left = x;
+							textRect.top = rects[i].top;
+							textRect.right = rects[i].right;
+							textRect.bottom = rects[i].bottom;
+							OS.DrawText (nmcd.hdc, buffer, buffer.length (), textRect, flags);
+						}
+					}
+
+					if (lastColumnRight < nmcd.right) {
+						// draw background of the 'no column' area
+						RECT rect = new RECT();
+						lastColumnRight += _getLinesVisible() ? 1 : 0;
+						OS.SetRect(rect, lastColumnRight, nmcd.top, nmcd.right, nmcd.bottom);
+						long /*int*/ brush = OS.CreateSolidBrush(getHeaderBackgroundPixel());
+						OS.FillRect(nmcd.hdc, rect, brush);
+						OS.DeleteObject(brush);
+					}
+
+					// always draw the highlighted border at the end, to avoid overdrawing by other borders.
+					if (highlightedHeaderDividerX != -1) {
+						long /*int*/ pen = OS.CreatePen (OS.PS_SOLID, 4, OS.GetSysColor(OS.COLOR_HIGHLIGHT));
+						long /*int*/ oldPen = OS.SelectObject (nmcd.hdc, pen);
+						OS.Polyline(nmcd.hdc, new int[] {highlightedHeaderDividerX, nmcd.top, highlightedHeaderDividerX, nmcd.bottom}, 2);
+						OS.SelectObject (nmcd.hdc, oldPen);
+						OS.DeleteObject (pen);
+					}
+
+					return new LRESULT(OS.CDRF_DODEFAULT);
+				}
+			}
+			break;
+		}
 		case OS.NM_RELEASEDCAPTURE: {
 			if (!ignoreColumnMove) {
 				for (int i=0; i<columnCount; i++) {
@@ -7221,20 +7444,23 @@ LRESULT wmNotifyHeader (NMHDR hdr, long /*int*/ wParam, long /*int*/ lParam) {
 		case OS.HDN_BEGINDRAG: {
 			if (ignoreColumnMove) return LRESULT.ONE;
 			int bits = (int)/*64*/OS.SendMessage (handle, OS.LVM_GETEXTENDEDLISTVIEWSTYLE, 0, 0);
-			if ((bits & OS.LVS_EX_HEADERDRAGDROP) == 0) break;
-			if (columnCount == 0) return LRESULT.ONE;
-			NMHEADER phdn = new NMHEADER ();
-			OS.MoveMemory (phdn, lParam, NMHEADER.sizeof);
-			if (phdn.iItem != -1) {
-				TableColumn column = columns [phdn.iItem];
-				if (column != null && !column.getMoveable ()) {
-					ignoreColumnMove = true;
-					return LRESULT.ONE;
+			if ((bits & OS.LVS_EX_HEADERDRAGDROP) != 0) {
+				if (columnCount == 0) return LRESULT.ONE;
+				NMHEADER phdn = new NMHEADER ();
+				OS.MoveMemory (phdn, lParam, NMHEADER.sizeof);
+				if (phdn.iItem != -1) {
+					TableColumn column = columns [phdn.iItem];
+					if (column != null && !column.getMoveable ()) {
+						ignoreColumnMove = true;
+						return LRESULT.ONE;
+					}
 				}
+				headerItemDragging = true;
 			}
 			break;
 		}
 		case OS.HDN_ENDDRAG: {
+			headerItemDragging = false;
 			int bits = (int)/*64*/OS.SendMessage (handle, OS.LVM_GETEXTENDEDLISTVIEWSTYLE, 0, 0);
 			if ((bits & OS.LVS_EX_HEADERDRAGDROP) == 0) break;
 			NMHEADER phdn = new NMHEADER ();
@@ -7278,8 +7504,7 @@ LRESULT wmNotifyHeader (NMHDR hdr, long /*int*/ wParam, long /*int*/ lParam) {
 			*/
 			int width = (int)/*64*/OS.SendMessage (handle, OS.LVM_GETCOLUMNWIDTH, 0, 0);
 			if (lastWidth == 0 && width > 0) {
-				int bits = (int)/*64*/OS.SendMessage (handle, OS.LVM_GETEXTENDEDLISTVIEWSTYLE, 0, 0);
-				if ((bits & OS.LVS_EX_GRIDLINES) != 0) {
+				if (_getLinesVisible()) {
 					RECT rect = new RECT ();
 					OS.GetClientRect (handle, rect);
 					rect.right = rect.left + width;
