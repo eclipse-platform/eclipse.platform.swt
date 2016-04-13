@@ -2725,7 +2725,7 @@ GdkColor getContextBackground () {
 
 GdkColor getContextColor () {
 	long /*int*/ fontHandle = fontHandle ();
-	if (OS.GTK_VERSION >= OS.VERSION(3, 16, 0) && provider != 0) {
+	if (OS.GTK_VERSION >= OS.VERSION(3, 16, 0)) {
 		return display.gtk_css_parse_foreground(provider, null);
 	} else {
 		long /*int*/ context = OS.gtk_widget_get_style_context (fontHandle);

@@ -2028,6 +2028,7 @@ GdkColor gtk_css_parse_background (long /*int*/ provider, String precise) {
 }
 
 GdkColor gtk_css_parse_foreground (long /*int*/ provider, String precise) {
+	if (provider == 0) return COLOR_WIDGET_FOREGROUND;
 	String shortOutput;
 	int startIndex;
 	GdkRGBA rgba = new GdkRGBA ();
