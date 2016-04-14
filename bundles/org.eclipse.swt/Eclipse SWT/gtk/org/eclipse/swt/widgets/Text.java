@@ -2179,7 +2179,7 @@ void setBackgroundColor (GdkColor color) {
 
 @Override
 GdkColor getContextBackground () {
-	if (OS.GTK_VERSION >= OS.VERSION(3, 16, 0)) {
+	if (OS.GTK3) {
 		if (background != null) {
 			return display.toGdkColor (background);
 		} else {
@@ -2205,7 +2205,7 @@ void setBackgroundColor (long /*int*/ context, long /*int*/ handle, GdkRGBA rgba
 	}
 	GdkColor defaultColor = getDisplay().COLOR_LIST_SELECTION;
 	GdkRGBA selectedBackground = display.toGdkRGBA (defaultColor);
-	if (OS.GTK_VERSION >= OS.VERSION(3, 16, 0)) {
+	if (OS.GTK3) {
 		String css;
         if (OS.GTK_VERSION >= OS.VERSION(3, 20, 0)) {
         	if ((style & SWT.SINGLE) != 0) {
@@ -2228,9 +2228,6 @@ void setBackgroundColor (long /*int*/ context, long /*int*/ handle, GdkRGBA rgba
 		// Apply background color and any foreground color
 		String finalCss = display.gtk_css_create_css_color_string (cssBackground, cssForeground, SWT.BACKGROUND);
 		gtk_css_provider_load_from_css(context, finalCss);
-	} else {
-		super.setBackgroundColor(context, handle, rgba);
-		OS.gtk_widget_override_background_color(handle, OS.GTK_STATE_FLAG_SELECTED, selectedBackground);
 	}
 }
 
