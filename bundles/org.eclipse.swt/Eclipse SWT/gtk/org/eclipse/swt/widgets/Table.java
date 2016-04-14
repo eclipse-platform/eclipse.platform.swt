@@ -3175,14 +3175,10 @@ void setBackgroundColor (long /*int*/ context, long /*int*/ handle, GdkRGBA rgba
 	GdkColor defaultColor = getDisplay().COLOR_LIST_SELECTION;
 	GdkRGBA selectedBackground = display.toGdkRGBA (defaultColor);
 	if (OS.GTK_VERSION >= OS.VERSION(3, 16, 0)) {
-		String css;
-        if (OS.GTK_VERSION >= OS.VERSION(3, 20, 0)) {
-                css = "treeview {background-color: " + display.gtk_rgba_to_css_string(background) + ";}\n"
-                                + "treeview:selected {background-color: " + display.gtk_rgba_to_css_string(selectedBackground) + ";}";
-        } else {
-                css = "GtkTreeView {background-color: " + display.gtk_rgba_to_css_string(background) + ";}\n"
-                                + "GtkTreeView:selected {background-color: " + display.gtk_rgba_to_css_string(selectedBackground) + ";}";
-        }
+		String name = OS.GTK_VERSION >= OS.VERSION(3, 20, 0) ? "treeview" : "GtkTreeView";
+		String css = name + " {background-color: " + display.gtk_rgba_to_css_string(background) + ";}\n"
+                + name + ":selected {background-color: " + display.gtk_rgba_to_css_string(selectedBackground) + ";}";
+
 		// Cache background color
 		cssBackground = css;
 

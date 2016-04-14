@@ -954,12 +954,8 @@ void setForegroundColor (long /*int*/ handle, GdkRGBA rgba) {
 
 	// Form foreground string
 	String color = display.gtk_rgba_to_css_string(toSet);
-	String css;
-	if (OS.GTK_VERSION >= OS.VERSION(3, 20, 0)) {
-		css = "button {color: " + color + ";}";
-	} else {
-		css = "GtkButton {color: " + color + ";}";
-	}
+	String name = OS.GTK_VERSION >= OS.VERSION(3, 20, 0) ? "button" : "GtkButton";
+	String css = name + " {color: " + color + ";}";
 
 	// Cache foreground color
 	cssForeground = css;

@@ -270,15 +270,9 @@ void createHandle (int index) {
 		Color background = display.getSystemColor (SWT.COLOR_INFO_BACKGROUND);
 		if (OS.GTK3) {
 			long /*int*/ context = OS.gtk_widget_get_style_context (handle);
-			double alpha = (background.getAlpha() & 0xFFFF) / (float)0xFFFF;
-			String css;
-			if (OS.GTK_VERSION >= OS.VERSION(3, 20, 0)) {
-				css = "window {background-color: rgba(" + background.getRed() +", " +
-					background.getGreen() +", " + background.getBlue() +", " + alpha + ");}";
-			} else {
-				css = "GtkWindow {background-color: rgba(" + background.getRed() +", " +
-					background.getGreen() +", " + background.getBlue() +", " + alpha + ");}";
-			}
+			GdkRGBA bgRGBA = display.toGdkRGBA(display.COLOR_INFO_BACKGROUND);
+			String name = OS.GTK_VERSION >= OS.VERSION(3, 20, 0) ? "window" : "GtkWindow";
+			String css = name + " {background-color: " + display.gtk_rgba_to_css_string(bgRGBA) + ";}";
 			gtk_css_provider_load_from_css (context, css);
 			OS.gtk_style_context_invalidate (context);
 		} else {

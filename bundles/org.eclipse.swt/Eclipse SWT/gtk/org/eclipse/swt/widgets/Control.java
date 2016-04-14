@@ -4224,12 +4224,8 @@ private void _setBackground (Color color) {
 void setBackgroundColor (long /*int*/ context, long /*int*/ handle, GdkRGBA rgba) {
     if (OS.GTK_VERSION >= OS.VERSION(3, 16, 0)) {
             // Form background string
-            String name;
-            if (OS.GTK_VERSION >= OS.VERSION(3, 20, 0)) {
-                    name = display.gtk_widget_class_get_css_name(handle);
-            } else {
-                    name = display.gtk_widget_get_name(handle);
-            }
+            String name = OS.GTK_VERSION >= OS.VERSION(3, 20, 0) ? display.gtk_widget_class_get_css_name(handle)
+            		: display.gtk_widget_get_name(handle);
             String css = name + " {background-color: " + display.gtk_rgba_to_css_string (rgba) + ";}";
 
             // Cache background
