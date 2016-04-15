@@ -75,8 +75,16 @@ public class SelectionEvent extends TypedEvent {
 	public int height;
 
 	/**
-	 * The state of the keyboard modifier keys at the time
-	 * the event was generated.
+	 * The state of the keyboard modifier keys and mouse masks
+	 * at the time the event was generated.
+	 * <p>
+	 * <b>Note:</b> Mouse button states are currently not included consistently
+	 * for all widgets on all platforms. Clients should be prepared to receive
+	 * button states, but should not rely on getting them everywhere.
+	 * </p>
+	 *
+	 * @see org.eclipse.swt.SWT#MODIFIER_MASK
+	 * @see org.eclipse.swt.SWT#BUTTON_MASK
 	 */
 	public int stateMask;
 
