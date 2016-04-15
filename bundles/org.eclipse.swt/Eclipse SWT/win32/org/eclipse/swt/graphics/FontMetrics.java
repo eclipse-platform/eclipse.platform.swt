@@ -140,7 +140,20 @@ public int getHeight() {
  * @return the leading space of the font
  */
 public int getLeading() {
-	return DPIUtil.autoScaleDown(handle.tmInternalLeading);
+	/*
+	 * HiHPI rounding problem (bug 490743 comment 17):
+	 *
+	 * API clients expect this invariant:
+	 *    getHeight() == getLeading() + getAscent() + getDescent()
+	 *
+	 * Separate rounding of each RHS term can break the invariant.
+	 *
+	 * An additional problem is that ascent and descent are more important to
+	 * be as close as possible to the real value. Any necessary rounding
+	 * adjustment should go into leading, that's why compute this as a derived
+	 * value here:
+	 */
+	return getHeight() - getAscent() - getDescent();
 }
 
 /**
