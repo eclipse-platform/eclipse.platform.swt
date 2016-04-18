@@ -1191,7 +1191,10 @@ public void test_setAppNameLjava_lang_String() {
 public void test_setCursorLocationII() {
 	Display display = new Display();
 	try {
-		display.setCursorLocation(100, 100); // don't put cursor into a corner, since that could trigger special platform events
+		Point location = new Point(100, 100);
+		display.setCursorLocation(location.x, location.y); // don't put cursor into a corner, since that could trigger special platform events
+		Point actual = display.getCursorLocation();
+		assertEquals(location, actual);
 	} finally {
 		display.dispose();
 	}
@@ -1201,14 +1204,16 @@ public void test_setCursorLocationII() {
 public void test_setCursorLocationLorg_eclipse_swt_graphics_Point() {
 	Display display = new Display();
 	try {
+		Point location = new Point(100, 50);
 		display.setCursorLocation(new Point(100, 50)); // don't put cursor into a corner, since that could trigger special platform events
 		try {
 			display.setCursorLocation(null);
 			fail("No exception thrown for null argument");
-		}
-		catch (IllegalArgumentException e) {
+		} catch (IllegalArgumentException e) {
 			assertSWTProblem("Incorrect exception thrown for setCursorLocation with null argument", SWT.ERROR_NULL_ARGUMENT, e);
 		}
+		Point actual = display.getCursorLocation();
+		assertEquals(location, actual);
 	} finally {
 		display.dispose();
 	}

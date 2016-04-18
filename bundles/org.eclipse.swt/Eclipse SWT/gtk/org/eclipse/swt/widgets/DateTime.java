@@ -575,7 +575,7 @@ void dropDownCalendar (boolean drop) {
 
 	//To display popup calendar, we need to know where the parent is relative to the whole screen.
 	Rectangle coordsRelativeToScreen = display.mapInPixels (getParent (), null, getBoundsInPixels ());
-	Rectangle displayRect = getMonitor ().getClientArea ();
+	Rectangle displayRect = DPIUtil.autoScaleUp(getMonitor ().getClientArea ());
 
 	showPopupShell (containerBounds, calendarSize, coordsRelativeToScreen, displayRect);
 
@@ -1073,7 +1073,7 @@ void initAccessible () {
 
 		@Override
 		public void getLocation (AccessibleControlEvent e) {
-			Rectangle rect = display.mapInPixels (getParent (), null, getBoundsInPixels ());
+			Rectangle rect = display.map (getParent (), null, getBounds ());
 			e.x = rect.x;
 			e.y = rect.y;
 			e.width = rect.width;

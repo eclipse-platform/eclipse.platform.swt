@@ -113,12 +113,14 @@ public static Point autoScaleDown (Point point) {
  */
 public static Rectangle autoScaleDown (Rectangle rect) {
 	if (deviceZoom == 100 || !isAutoScaleEnable () || rect == null) return rect;
-	float scaleFactor = getScalingFactor ();
 	Rectangle scaledRect = new Rectangle (0,0,0,0);
-	scaledRect.x = Math.round (rect.x / scaleFactor);
-	scaledRect.y = Math.round (rect.y / scaleFactor);
-	scaledRect.width = Math.round (rect.width / scaleFactor);
-	scaledRect.height = Math.round (rect.height / scaleFactor);
+	Point scaledTopLeft = DPIUtil.autoScaleDown (new Point (rect.x, rect.y));
+	Point scaledBottomRight = DPIUtil.autoScaleDown (new Point (rect.x + rect.width, rect.y + rect.height));
+
+	scaledRect.x = scaledTopLeft.x;
+	scaledRect.y = scaledTopLeft.y;
+	scaledRect.width = scaledBottomRight.x - scaledTopLeft.x;
+	scaledRect.height = scaledBottomRight.y - scaledTopLeft.y;
 	return scaledRect;
 }
 
@@ -196,12 +198,14 @@ public static Point autoScaleUp (Point point) {
  */
 public static Rectangle autoScaleUp (Rectangle rect) {
 	if (deviceZoom == 100 || !isAutoScaleEnable () || rect == null) return rect;
-	float scaleFactor = getScalingFactor ();
 	Rectangle scaledRect = new Rectangle (0,0,0,0);
-	scaledRect.x = Math.round (rect.x * scaleFactor);
-	scaledRect.y = Math.round (rect.y * scaleFactor);
-	scaledRect.width = Math.round (rect.width * scaleFactor);
-	scaledRect.height = Math.round (rect.height * scaleFactor);
+	Point scaledTopLeft = DPIUtil.autoScaleUp (new Point (rect.x, rect.y));
+	Point scaledBottomRight = DPIUtil.autoScaleUp (new Point (rect.x + rect.width, rect.y + rect.height));
+
+	scaledRect.x = scaledTopLeft.x;
+	scaledRect.y = scaledTopLeft.y;
+	scaledRect.width = scaledBottomRight.x - scaledTopLeft.x;
+	scaledRect.height = scaledBottomRight.y - scaledTopLeft.y;
 	return scaledRect;
 }
 public static boolean isAutoScaleEnable () {

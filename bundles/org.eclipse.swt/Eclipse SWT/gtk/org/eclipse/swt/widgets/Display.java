@@ -3665,14 +3665,9 @@ boolean isValidThread () {
  * @since 2.1.2
  */
 public Point map (Control from, Control to, Point point) {
-	checkDevice();
-	return DPIUtil.autoScaleDown(mapInPixels(from, to, DPIUtil.autoScaleUp(point)));
-}
-
-Point mapInPixels (Control from, Control to, Point point) {
 	checkDevice ();
 	if (point == null) error (SWT.ERROR_NULL_ARGUMENT);
-	return mapInPixels (from, to, point.x, point.y);
+	return map (from, to, point.x, point.y);
 }
 
 /**
@@ -3712,8 +3707,24 @@ Point mapInPixels (Control from, Control to, Point point) {
  * @since 2.1.2
  */
 public Point map (Control from, Control to, int x, int y) {
-	checkDevice();
-	return map(from, to, new Point(x, y));
+	checkDevice ();
+	if (from != null && from.isDisposed()) error (SWT.ERROR_INVALID_ARGUMENT);
+	if (to != null && to.isDisposed()) error (SWT.ERROR_INVALID_ARGUMENT);
+	Point point = new Point (x, y);
+	if (from == to) return point;
+	if (from != null) {
+		Point origin = DPIUtil.autoScaleDown (from.getWindowOrigin ());
+		if ((from.style & SWT.MIRRORED) != 0) point.x = DPIUtil.autoScaleDown (from.getClientWidth ()) - point.x;
+		point.x += origin.x;
+		point.y += origin.y;
+	}
+	if (to != null) {
+		Point origin = DPIUtil.autoScaleDown (to.getWindowOrigin ());
+		point.x -= origin.x;
+		point.y -= origin.y;
+		if ((to.style & SWT.MIRRORED) != 0) point.x = DPIUtil.autoScaleDown (to.getClientWidth ()) - point.x;
+	}
+	return point;
 }
 
 Point mapInPixels (Control from, Control to, int x, int y) {
@@ -3775,7 +3786,8 @@ Point mapInPixels (Control from, Control to, int x, int y) {
  */
 public Rectangle map (Control from, Control to, Rectangle rectangle) {
 	checkDevice();
-	return DPIUtil.autoScaleDown(mapInPixels(from, to, DPIUtil.autoScaleUp(rectangle)));
+	if (rectangle == null) error (SWT.ERROR_NULL_ARGUMENT);
+	return map (from, to, rectangle.x, rectangle.y, rectangle.width, rectangle.height);
 }
 
 Rectangle mapInPixels (Control from, Control to, Rectangle rectangle) {
@@ -3847,7 +3859,26 @@ long /*int*/ menuPositionProc (long /*int*/ menu, long /*int*/ x, long /*int*/ y
  */
 public Rectangle map (Control from, Control to, int x, int y, int width, int height) {
 	checkDevice();
-	return map(from, to, new Rectangle(x, y, width, height));
+	if (from != null && from.isDisposed()) error (SWT.ERROR_INVALID_ARGUMENT);
+	if (to != null && to.isDisposed()) error (SWT.ERROR_INVALID_ARGUMENT);
+	Rectangle rect = new Rectangle (x, y, width, height);
+	if (from == to) return rect;
+	boolean fromRTL = false, toRTL = false;
+	if (from != null) {
+		Point origin = DPIUtil.autoScaleDown (from.getWindowOrigin ());
+		if (fromRTL = (from.style & SWT.MIRRORED) != 0) rect.x = DPIUtil.autoScaleDown (from.getClientWidth ()) - rect.x;
+		rect.x += origin.x;
+		rect.y += origin.y;
+	}
+	if (to != null) {
+		Point origin = DPIUtil.autoScaleDown (to.getWindowOrigin ());
+		rect.x -= origin.x;
+		rect.y -= origin.y;
+		if (toRTL = (to.style & SWT.MIRRORED) != 0) rect.x = DPIUtil.autoScaleDown (to.getClientWidth ()) - rect.x;
+	}
+
+	if (fromRTL != toRTL) rect.x -= rect.width;
+	return rect;
 }
 
 Rectangle mapInPixels (Control from, Control to, int x, int y, int width, int height) {
@@ -4672,17 +4703,20 @@ public static void setAppVersion (String version) {
  * @since 2.1
  */
 public void setCursorLocation (int x, int y) {
-	checkDevice ();
+	setCursorLocation(new Point (x, y));
+}
+
+void setCursorLocationInPixels (Point location) {
 	if (OS.GTK_VERSION < OS.VERSION(3, 0, 0)) {
 		long /*int*/ xDisplay = OS.gdk_x11_display_get_xdisplay(OS.gdk_display_get_default());
 		long /*int*/ xWindow = OS.XDefaultRootWindow (xDisplay);
-		OS.XWarpPointer (xDisplay, OS.None, xWindow, 0, 0, 0, 0, x, y);
+		OS.XWarpPointer (xDisplay, OS.None, xWindow, 0, 0, 0, 0, location.x, location.y);
 	} else {
 		long /*int*/ gdkDisplay = OS.gdk_display_get_default();
 		long /*int*/ gdkDeviceManager = OS.gdk_display_get_device_manager(gdkDisplay);
 		long /*int*/ gdkScreen = OS.gdk_screen_get_default();
 		long /*int*/ gdkPointer = OS.gdk_device_manager_get_client_pointer(gdkDeviceManager);
-		OS.gdk_device_warp(gdkPointer,gdkScreen,x,y);
+		OS.gdk_device_warp(gdkPointer, gdkScreen, location.x, location.y);
 	}
 }
 
@@ -4704,7 +4738,8 @@ public void setCursorLocation (int x, int y) {
 public void setCursorLocation (Point point) {
 	checkDevice ();
 	if (point == null) error (SWT.ERROR_NULL_ARGUMENT);
-	setCursorLocation (point.x, point.y);
+	point = DPIUtil.autoScaleUp(point);
+	setCursorLocationInPixels(point);
 }
 
 /**

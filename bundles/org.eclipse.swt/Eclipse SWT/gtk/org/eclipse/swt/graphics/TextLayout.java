@@ -794,7 +794,14 @@ public int getAscent () {
  */
 public Rectangle getBounds() {
 	checkLayout();
-	return DPIUtil.autoScaleDown(getBoundsInPixels());
+	Rectangle bounds = DPIUtil.autoScaleDown(getBoundsInPixels());
+	int lineCount = OS.pango_layout_get_line_count(layout);
+	int totalLineheight = 0;
+	for (int i = 0; i < lineCount; i++) {
+		totalLineheight += this.getLineBounds(i).height;
+	}
+	bounds.height = totalLineheight;
+	return bounds;
 }
 Rectangle getBoundsInPixels() {
 	checkLayout();

@@ -218,7 +218,7 @@ void initAccessible () {
 
 		@Override
 		public void getLocation (AccessibleControlEvent e) {
-			Rectangle rect = display.mapInPixels (getParent (), null, getBoundsInPixels ());
+			Rectangle rect = display.map (getParent (), null, getBounds ());
 			e.x = rect.x;
 			e.y = rect.y;
 			e.width = rect.width;

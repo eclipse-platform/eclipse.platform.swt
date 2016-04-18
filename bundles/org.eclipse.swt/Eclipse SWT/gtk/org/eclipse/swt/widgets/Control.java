@@ -1498,17 +1498,12 @@ public void setLayoutData (Object layoutData) {
  */
 public Point toControl (int x, int y) {
 	checkWidget ();
-	return toControl (new Point (x, y));
-}
-
-Point toControlInPixels (int x, int y) {
-	checkWidget ();
 	long /*int*/ window = eventWindow ();
 	int [] origin_x = new int [1], origin_y = new int [1];
 	OS.gdk_window_get_origin (window, origin_x, origin_y);
-	x -= origin_x [0];
-	y -= origin_y [0];
-	if ((style & SWT.MIRRORED) != 0) x = getClientWidth () - x;
+	x -= DPIUtil.autoScaleDown (origin_x [0]);
+	y -= DPIUtil.autoScaleDown (origin_y [0]);
+	if ((style & SWT.MIRRORED) != 0) x = DPIUtil.autoScaleDown (getClientWidth ()) - x;
 	return new Point (x, y);
 }
 
@@ -1535,14 +1530,7 @@ Point toControlInPixels (int x, int y) {
 public Point toControl (Point point) {
 	checkWidget ();
 	if (point == null) error (SWT.ERROR_NULL_ARGUMENT);
-	point = DPIUtil.autoScaleUp(point);
-	return DPIUtil.autoScaleDown(toControlInPixels (point.x, point.y));
-}
-
-Point toControlInPixels (Point point) {
-	checkWidget ();
-	if (point == null) error (SWT.ERROR_NULL_ARGUMENT);
-	return toControlInPixels (point.x, point.y);
+	return toControl (point.x, point.y);
 }
 
 /**
@@ -1567,7 +1555,13 @@ Point toControlInPixels (Point point) {
  */
 public Point toDisplay (int x, int y) {
 	checkWidget();
-	return toDisplay (new Point (x, y));
+	long /*int*/ window = eventWindow ();
+	int [] origin_x = new int [1], origin_y = new int [1];
+	OS.gdk_window_get_origin (window, origin_x, origin_y);
+	if ((style & SWT.MIRRORED) != 0) x = DPIUtil.autoScaleDown (getClientWidth ()) - x;
+	x += DPIUtil.autoScaleDown (origin_x [0]);
+	y += DPIUtil.autoScaleDown (origin_y [0]);
+	return new Point (x, y);
 }
 
 Point toDisplayInPixels (int x, int y) {
@@ -1604,8 +1598,7 @@ Point toDisplayInPixels (int x, int y) {
 public Point toDisplay (Point point) {
 	checkWidget();
 	if (point == null) error (SWT.ERROR_NULL_ARGUMENT);
-	point = DPIUtil.autoScaleUp(point);
-	return DPIUtil.autoScaleDown(toDisplayInPixels (point.x, point.y));
+	return toDisplay (point.x, point.y);
 }
 
 Point toDisplayInPixels (Point point) {

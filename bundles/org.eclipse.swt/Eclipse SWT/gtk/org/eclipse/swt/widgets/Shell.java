@@ -609,7 +609,7 @@ void center () {
 	Rectangle parentRect = display.mapInPixels (parent, null, parent.getClientAreaInPixels());
 	int x = Math.max (parentRect.x, parentRect.x + (parentRect.width - rect.width) / 2);
 	int y = Math.max (parentRect.y, parentRect.y + (parentRect.height - rect.height) / 2);
-	Rectangle monitorRect = parent.getMonitor ().getClientArea();
+	Rectangle monitorRect = DPIUtil.autoScaleUp(parent.getMonitor ().getClientArea());
 	if (x + rect.width > monitorRect.x + monitorRect.width) {
 		x = Math.max (monitorRect.x, monitorRect.x + monitorRect.width - rect.width);
 	} else {
