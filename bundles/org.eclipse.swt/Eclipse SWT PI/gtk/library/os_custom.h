@@ -126,6 +126,7 @@
 #define gtk_adjustment_get_value_LIB LIB_GTK
 #define gtk_adjustment_set_page_increment_LIB LIB_GTK
 #define gtk_adjustment_set_step_increment_LIB LIB_GTK
+#define gtk_scrollable_get_vadjustment_LIB LIB_GTK
 #define gtk_arrow_new_LIB LIB_GTK
 #define gtk_arrow_set_LIB LIB_GTK
 #define gtk_box_new_LIB LIB_GTK

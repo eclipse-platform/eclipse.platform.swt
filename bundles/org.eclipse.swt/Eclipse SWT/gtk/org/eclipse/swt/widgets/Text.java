@@ -102,6 +102,8 @@ public class Text extends Scrollable {
 	 * a global variable to keep track of its background color.
 	 */
 	GdkRGBA background;
+	long /*int*/ indexMark;
+	double cachedAdjustment, currentAdjustment;
 
 /**
  * Constructs a new instance of this class given its parent
@@ -1402,6 +1404,27 @@ public int getTopIndex () {
 	checkWidget ();
 	if ((style & SWT.SINGLE) != 0) return 0;
 	byte [] position = new byte [ITER_SIZEOF];
+	/*
+	 * Feature in GTK: GtkTextView widgets are subject to line validation
+	 * which happens during idle. This causes GtkTextIter to not update quickly
+	 * enough when changes are added to the text buffer. The fix is to use a
+	 * GtkTextMark to track the precise index, then convert it back to a
+	 * GtkTextIter when getTopIndex() is called. See bug 487467.
+	 *
+	 * NOTE: to cover cases where getTopIndex() is called without setTopIndex()
+	 * being called, we fetch the current GtkAdjustment value and cache it for
+	 * comparison. In getTopIndex() we compare the current value with the cached
+	 * one to see if the user has scrolled/moved the viewport using the GUI.
+	 * If so, we use the old method of fetching the top index.
+	 */
+	if (OS.GTK3) {
+		long /*int*/ vAdjustment = OS.gtk_scrollable_get_vadjustment (handle);
+		currentAdjustment = OS.gtk_adjustment_get_value (vAdjustment);
+		if (cachedAdjustment == currentAdjustment) {
+			OS.gtk_text_buffer_get_iter_at_mark (bufferHandle, position, indexMark);
+			return OS.gtk_text_iter_get_line (position);
+		}
+	}
 	GdkRectangle rect = new GdkRectangle ();
 	OS.gtk_text_view_get_visible_rect (handle, rect);
 	OS.gtk_text_view_get_line_at_y (handle, position, rect.y, null);
@@ -2710,7 +2733,23 @@ public void setTopIndex (int index) {
 	if ((style & SWT.SINGLE) != 0) return;
 	byte [] position = new byte [ITER_SIZEOF];
 	OS.gtk_text_buffer_get_iter_at_line (bufferHandle, position, index);
-	OS.gtk_text_view_scroll_to_iter (handle, position, 0, true, 0, 0);
+	if (OS.GTK3) {
+		/*
+		 * Feature in GTK: create a new GtkTextMark for the purposes of
+		 * keeping track of the top index. In getTopIndex() we can use this
+		 * without worrying about line validation. See bug 487467.
+		 *
+		 * We also cache the current GtkAdjustment value for future comparison
+		 * in getTopIndex().
+		 */
+		byte [] buffer = Converter.wcsToMbcs (null, "index_mark", true);
+		indexMark = OS.gtk_text_buffer_create_mark (bufferHandle, buffer, position, true);
+		OS.gtk_text_view_scroll_to_mark (handle, indexMark, 0, true, 0, 0);
+		long /*int*/ vAdjustment = OS.gtk_scrollable_get_vadjustment (handle);
+		cachedAdjustment = OS.gtk_adjustment_get_value (vAdjustment);
+	} else {
+		OS.gtk_text_view_scroll_to_iter (handle, position, 0, true, 0, 0);
+	}
 }
 
 /**

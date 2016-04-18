@@ -11335,6 +11335,19 @@ public static final void gtk_scale_set_draw_value(long /*int*/ scale, boolean dr
 	}
 }
 /**
+ * @method flags=dynamic
+ * @param scrollable cast=(GtkScrollable *)
+ */
+public static final native long _gtk_scrollable_get_vadjustment(long /*int*/ scrollable);
+public static final long gtk_scrollable_get_vadjustment(long /*int*/ scrollable) {
+	lock.lock();
+	try {
+		return _gtk_scrollable_get_vadjustment(scrollable);
+	} finally {
+		lock.unlock();
+	}
+}
+/**
  * @param style cast=(GtkRcStyle *)
  * @param color flags=no_out
  */
@@ -12251,6 +12264,21 @@ public static final void gtk_text_buffer_copy_clipboard(long /*int*/ buffer, lon
 	lock.lock();
 	try {
 		_gtk_text_buffer_copy_clipboard(buffer, clipboard);
+	} finally {
+		lock.unlock();
+	}
+}
+/**
+ * @param buffer cast=(GtkTextBuffer *)
+ * @param mark_name cast=(const gchar *)
+ * @param where cast=(GtkTextIter *)
+ * @param left_gravity cast=(gboolean)
+ */
+public static final native long /*int*/ _gtk_text_buffer_create_mark(long /*int*/ buffer, byte [] mark_name, byte [] where, boolean left_gravity);
+public static final long /*int*/ gtk_text_buffer_create_mark(long /*int*/ buffer, byte [] mark_name, byte [] where, boolean left_gravity) {
+	lock.lock();
+	try {
+		return _gtk_text_buffer_create_mark(buffer, mark_name, where, left_gravity);
 	} finally {
 		lock.unlock();
 	}

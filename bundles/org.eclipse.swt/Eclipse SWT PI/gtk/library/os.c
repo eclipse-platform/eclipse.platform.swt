@@ -14975,6 +14975,26 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1scale_1set_1draw_1value)
 }
 #endif
 
+#ifndef NO__1gtk_1scrollable_1get_1vadjustment
+JNIEXPORT jlong JNICALL OS_NATIVE(_1gtk_1scrollable_1get_1vadjustment)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	jlong rc = 0;
+	OS_NATIVE_ENTER(env, that, _1gtk_1scrollable_1get_1vadjustment_FUNC);
+/*
+	rc = (jlong)gtk_scrollable_get_vadjustment((GtkScrollable *)arg0);
+*/
+	{
+		OS_LOAD_FUNCTION(fp, gtk_scrollable_get_vadjustment)
+		if (fp) {
+			rc = (jlong)((jlong (CALLING_CONVENTION*)(GtkScrollable *))fp)((GtkScrollable *)arg0);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, _1gtk_1scrollable_1get_1vadjustment_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO__1gtk_1scrollbar_1new
 JNIEXPORT jintLong JNICALL OS_NATIVE(_1gtk_1scrollbar_1new)
 	(JNIEnv *env, jclass that, jint arg0, jintLong arg1)
@@ -16171,6 +16191,25 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1text_1buffer_1copy_1clipboard)
 	OS_NATIVE_ENTER(env, that, _1gtk_1text_1buffer_1copy_1clipboard_FUNC);
 	gtk_text_buffer_copy_clipboard((GtkTextBuffer *)arg0, (GtkClipboard *)arg1);
 	OS_NATIVE_EXIT(env, that, _1gtk_1text_1buffer_1copy_1clipboard_FUNC);
+}
+#endif
+
+#ifndef NO__1gtk_1text_1buffer_1create_1mark
+JNIEXPORT jintLong JNICALL OS_NATIVE(_1gtk_1text_1buffer_1create_1mark)
+	(JNIEnv *env, jclass that, jintLong arg0, jbyteArray arg1, jbyteArray arg2, jboolean arg3)
+{
+	jbyte *lparg1=NULL;
+	jbyte *lparg2=NULL;
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, _1gtk_1text_1buffer_1create_1mark_FUNC);
+	if (arg1) if ((lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL)) == NULL) goto fail;
+	if (arg2) if ((lparg2 = (*env)->GetByteArrayElements(env, arg2, NULL)) == NULL) goto fail;
+	rc = (jintLong)gtk_text_buffer_create_mark((GtkTextBuffer *)arg0, (const gchar *)lparg1, (GtkTextIter *)lparg2, (gboolean)arg3);
+fail:
+	if (arg2 && lparg2) (*env)->ReleaseByteArrayElements(env, arg2, lparg2, 0);
+	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+	OS_NATIVE_EXIT(env, that, _1gtk_1text_1buffer_1create_1mark_FUNC);
+	return rc;
 }
 #endif
 
