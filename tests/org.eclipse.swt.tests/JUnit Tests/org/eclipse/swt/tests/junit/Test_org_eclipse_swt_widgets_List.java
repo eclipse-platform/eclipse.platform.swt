@@ -732,11 +732,16 @@ public void test_getSelectionIndices() {
 
 @Test
 public void test_getTopIndex() {
-	String[] items = { "text1", "text2", "text3" };
+	String[] items = new String [10];
+	for (int i = 0; i < 10; i++) {
+		items[i] = "text" + String.valueOf(i);
+	}
 
 	list.setItems(items);
 	assertEquals(0, list.getTopIndex());
 
+	list.setTopIndex(5);
+	assertEquals(5, list.getTopIndex());
 	
 	setSingleList();
 

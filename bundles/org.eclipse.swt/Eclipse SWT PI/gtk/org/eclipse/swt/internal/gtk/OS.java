@@ -13975,6 +13975,19 @@ public static final boolean gtk_tree_view_get_headers_visible(long /*int*/ tree_
 	}
 }
 /**
+ * @method flags=dynamic
+ * @param tree_view cast=(GtkTreeView *)
+ */
+public static final native long /*int*/ _gtk_tree_view_get_vadjustment(long /*int*/ tree_view);
+public static final long /*int*/ gtk_tree_view_get_vadjustment(long /*int*/ tree_view) {
+	lock.lock();
+	try {
+		return _gtk_tree_view_get_vadjustment(tree_view);
+	} finally {
+		lock.unlock();
+	}
+}
+/**
  * @param tree_view cast=(GtkTreeView *)
  * @param x cast=(gint)
  * @param y cast=(gint)

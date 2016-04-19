@@ -1346,6 +1346,7 @@ char * OS_nativeFunctionNames[] = {
 	"_1gtk_1tree_1view_1get_1path_1at_1pos",
 	"_1gtk_1tree_1view_1get_1rules_1hint",
 	"_1gtk_1tree_1view_1get_1selection",
+	"_1gtk_1tree_1view_1get_1vadjustment",
 	"_1gtk_1tree_1view_1get_1visible_1rect",
 	"_1gtk_1tree_1view_1insert_1column",
 	"_1gtk_1tree_1view_1move_1column_1after",

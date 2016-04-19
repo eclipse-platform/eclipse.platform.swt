@@ -18111,6 +18111,26 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(_1gtk_1tree_1view_1get_1selection)
 }
 #endif
 
+#ifndef NO__1gtk_1tree_1view_1get_1vadjustment
+JNIEXPORT jintLong JNICALL OS_NATIVE(_1gtk_1tree_1view_1get_1vadjustment)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, _1gtk_1tree_1view_1get_1vadjustment_FUNC);
+/*
+	rc = (jintLong)gtk_tree_view_get_vadjustment((GtkTreeView *)arg0);
+*/
+	{
+		OS_LOAD_FUNCTION(fp, gtk_tree_view_get_vadjustment)
+		if (fp) {
+			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(GtkTreeView *))fp)((GtkTreeView *)arg0);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, _1gtk_1tree_1view_1get_1vadjustment_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO__1gtk_1tree_1view_1get_1visible_1rect
 JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1tree_1view_1get_1visible_1rect)
 	(JNIEnv *env, jclass that, jintLong arg0, jobject arg1)
