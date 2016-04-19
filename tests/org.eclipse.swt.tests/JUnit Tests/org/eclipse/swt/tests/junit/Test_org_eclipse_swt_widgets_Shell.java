@@ -30,6 +30,7 @@ import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -392,24 +393,35 @@ public void test_setBounds() {
 	Rectangle bounds = new Rectangle(100, 200, 200, 200);
 	Rectangle bounds2 = new Rectangle(150, 250, 250, 250);
 
+	StringBuilder log = new StringBuilder();
 	int[] styles = { SWT.NO_TRIM, SWT.BORDER, SWT.RESIZE, SWT.TITLE | SWT.BORDER, SWT.TITLE | SWT.RESIZE, SWT.TITLE };
 	for (int i = 0; i < styles.length; i++) {
 		Shell testShell = new Shell(shell, styles[i]);
 		try {
 			testShell.setBounds(bounds);
-			assertEquals(i + ".1: style 0x" + Integer.toHexString(styles[i]), bounds, testShell.getBounds());
+			logUnlessEquals(log, i + ".1: style 0x" + Integer.toHexString(styles[i]), bounds, testShell.getBounds());
 
 			testShell.open();
-			assertEquals(i + ".2: style 0x" + Integer.toHexString(styles[i]), bounds, testShell.getBounds());
+			logUnlessEquals(log, i + ".2: style 0x" + Integer.toHexString(styles[i]), bounds, testShell.getBounds());
 
 			testShell.setBounds(bounds);
-			assertEquals(i + ".3: style 0x" + Integer.toHexString(styles[i]), bounds, testShell.getBounds());
+			logUnlessEquals(log, i + ".3: style 0x" + Integer.toHexString(styles[i]), bounds, testShell.getBounds());
 
 			testShell.setBounds(bounds2);
-			assertEquals(i + ".4: style 0x" + Integer.toHexString(styles[i]), bounds2, testShell.getBounds());
+			logUnlessEquals(log, i + ".4: style 0x" + Integer.toHexString(styles[i]), bounds2, testShell.getBounds());
 		} finally {
 			testShell.dispose();
 		}
+	}
+	if (log.length() > 0) {
+		Assert.fail(log.toString());
+	}
+}
+
+private void logUnlessEquals(StringBuilder log, String message, Rectangle expected, Rectangle actual) {
+	if (!expected.equals(actual)) {
+			log.append(message).append("; expected: ").append(expected).append(", but was: ").append(actual)
+					.append("\n");
 	}
 }
 

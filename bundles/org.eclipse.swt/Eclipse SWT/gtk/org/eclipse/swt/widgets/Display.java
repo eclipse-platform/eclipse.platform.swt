@@ -479,8 +479,8 @@ public class Display extends Device {
 			File file = new File (path, ".swt/trims.prefs");
 			if (file.exists () && file.isFile ()) {
 				Properties props = new Properties ();
-				try {
-					props.load (new FileInputStream (file));
+				try (FileInputStream fis = new FileInputStream (file)) {
+					props.load (fis);
 					String trimWidthsString = props.getProperty ("trimWidths");
 					String trimHeightsString = props.getProperty ("trimHeights");
 					if (trimWidthsString != null && trimHeightsString != null) {
@@ -4359,8 +4359,8 @@ void releaseDisplay () {
 			buf = new StringBuilder();
 			for (int h : trimHeights) buf.append (h).append (' ');
 			props.put ("trimHeights", buf.toString ());
-			try {
-				props.store(new FileOutputStream (file), null);
+			try (FileOutputStream fos = new FileOutputStream (file)){
+				props.store (fos, null);
 			} catch (IOException e) {
 				// skip saving trim caches
 			}

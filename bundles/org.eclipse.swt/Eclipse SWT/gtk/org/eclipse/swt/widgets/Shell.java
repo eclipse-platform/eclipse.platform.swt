@@ -517,12 +517,14 @@ void adjustTrim () {
 	Rectangle bounds = getBoundsInPixels();
 	int widthAdjustment = display.trimWidths[trimStyle] - trimWidth;
 	int heightAdjustment = display.trimHeights[trimStyle] - trimHeight;
+	if (widthAdjustment == 0 && heightAdjustment == 0) return;
+
 	bounds.width += widthAdjustment;
 	bounds.height += heightAdjustment;
 	oldWidth += widthAdjustment;
 	oldHeight += heightAdjustment;
 	if (!getMaximized()) {
-		setBounds(bounds.x, bounds.y, bounds.width, bounds.height, false, true);
+		resizeBounds (width + widthAdjustment, height + heightAdjustment, false);
 	}
 	display.trimWidths[trimStyle] = trimWidth;
 	display.trimHeights[trimStyle] = trimHeight;
@@ -1886,6 +1888,21 @@ int setBounds (int x, int y, int width, int height, boolean move, boolean resize
 		int [] x_pos = new int [1], y_pos = new int [1];
 		OS.gtk_window_get_position (shellHandle, x_pos, y_pos);
 		OS.gtk_window_move (shellHandle, x, y);
+		/*
+		 * Bug in GTK: gtk_window_get_position () is not always up-to-date right after
+		 * gtk_window_move (). The random delays cause problems like bug 445900.
+		 *
+		 * The workaround is to wait for the position change to be processed.
+		 * The limit 1000 is an experimental value. I've seen cases where about 200
+		 * iterations were necessary.
+		 */
+		for (int i = 0; i < 1000; i++) {
+			int [] x2_pos = new int [1], y2_pos = new int [1];
+			OS.gtk_window_get_position (shellHandle, x2_pos, y2_pos);
+			if (x2_pos[0] == x && y2_pos[0] == y) {
+				break;
+			}
+		}
 		if (x_pos [0] != x || y_pos [0] != y) {
 			moved = true;
 			oldX = x;
