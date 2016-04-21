@@ -14976,18 +14976,18 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1scale_1set_1draw_1value)
 #endif
 
 #ifndef NO__1gtk_1scrollable_1get_1vadjustment
-JNIEXPORT jlong JNICALL OS_NATIVE(_1gtk_1scrollable_1get_1vadjustment)
+JNIEXPORT jintLong JNICALL OS_NATIVE(_1gtk_1scrollable_1get_1vadjustment)
 	(JNIEnv *env, jclass that, jintLong arg0)
 {
-	jlong rc = 0;
+	jintLong rc = 0;
 	OS_NATIVE_ENTER(env, that, _1gtk_1scrollable_1get_1vadjustment_FUNC);
 /*
-	rc = (jlong)gtk_scrollable_get_vadjustment((GtkScrollable *)arg0);
+	rc = (jintLong)gtk_scrollable_get_vadjustment((GtkScrollable *)arg0);
 */
 	{
 		OS_LOAD_FUNCTION(fp, gtk_scrollable_get_vadjustment)
 		if (fp) {
-			rc = (jlong)((jlong (CALLING_CONVENTION*)(GtkScrollable *))fp)((GtkScrollable *)arg0);
+			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(GtkScrollable *))fp)((GtkScrollable *)arg0);
 		}
 	}
 	OS_NATIVE_EXIT(env, that, _1gtk_1scrollable_1get_1vadjustment_FUNC);

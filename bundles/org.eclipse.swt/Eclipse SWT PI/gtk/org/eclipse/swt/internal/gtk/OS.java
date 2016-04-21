@@ -11338,8 +11338,8 @@ public static final void gtk_scale_set_draw_value(long /*int*/ scale, boolean dr
  * @method flags=dynamic
  * @param scrollable cast=(GtkScrollable *)
  */
-public static final native long _gtk_scrollable_get_vadjustment(long /*int*/ scrollable);
-public static final long gtk_scrollable_get_vadjustment(long /*int*/ scrollable) {
+public static final native long /*int*/ _gtk_scrollable_get_vadjustment(long /*int*/ scrollable);
+public static final long /*int*/ gtk_scrollable_get_vadjustment(long /*int*/ scrollable) {
 	lock.lock();
 	try {
 		return _gtk_scrollable_get_vadjustment(scrollable);
