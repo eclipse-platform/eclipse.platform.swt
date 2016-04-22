@@ -555,7 +555,7 @@ else
 	echo "    *** Advanced graphics support using cairo will not be compiled."
 fi
 
-if [ -z "${MOZILLA_INCLUDES}" -a -z "${MOZILLA_LIBS}" -a ${MODEL} != 'sparc64' ]; then
+if [ -z "${MOZILLA_INCLUDES}" -a -z "${MOZILLA_LIBS}" -a ${SWT_OS} != 'solaris' ]; then
 	if [ x`pkg-config --exists mozilla-xpcom && echo YES` = "xYES" ]; then
 		MOZILLA_INCLUDES=`pkg-config --cflags mozilla-xpcom`
 		MOZILLA_LIBS=`pkg-config --libs mozilla-xpcom`
