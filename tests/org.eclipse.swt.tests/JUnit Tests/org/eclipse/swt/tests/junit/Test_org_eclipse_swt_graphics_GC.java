@@ -119,7 +119,6 @@ public void test_ConstructorLorg_eclipse_swt_graphics_DrawableI() {
 	canvas.dispose();
 }
 
-@SuppressWarnings("restriction")
 @Test
 public void test_copyAreaIIIIII() {
 	Color white = display.getSystemColor(SWT.COLOR_WHITE);
@@ -158,7 +157,6 @@ public void test_copyAreaIIIIII() {
 	assertEquals(":d:", whiteRGB, palette.getRGB(pixel));
 }
 
-@SuppressWarnings("restriction")
 @Test
 public void test_copyAreaLorg_eclipse_swt_graphics_ImageII() {
 	Color white = display.getSystemColor(SWT.COLOR_WHITE);
