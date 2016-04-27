@@ -43,6 +43,8 @@ import org.junit.Test;
  */
 public class Test_org_eclipse_swt_widgets_Display {
 
+private static final boolean BUG_492569 = SwtTestUtil.isCocoa || SwtTestUtil.isGTK;
+
 @Test
 public void test_Constructor() {
 	Display disp = new Display();
@@ -1194,7 +1196,9 @@ public void test_setCursorLocationII() {
 		Point location = new Point(100, 100);
 		display.setCursorLocation(location.x, location.y); // don't put cursor into a corner, since that could trigger special platform events
 		Point actual = display.getCursorLocation();
-		assertEquals(location, actual);
+		if (!BUG_492569) {
+			assertEquals(location, actual);
+		}
 	} finally {
 		display.dispose();
 	}
@@ -1205,7 +1209,7 @@ public void test_setCursorLocationLorg_eclipse_swt_graphics_Point() {
 	Display display = new Display();
 	try {
 		Point location = new Point(100, 50);
-		display.setCursorLocation(new Point(100, 50)); // don't put cursor into a corner, since that could trigger special platform events
+		display.setCursorLocation(location); // don't put cursor into a corner, since that could trigger special platform events
 		try {
 			display.setCursorLocation(null);
 			fail("No exception thrown for null argument");
@@ -1213,7 +1217,9 @@ public void test_setCursorLocationLorg_eclipse_swt_graphics_Point() {
 			assertSWTProblem("Incorrect exception thrown for setCursorLocation with null argument", SWT.ERROR_NULL_ARGUMENT, e);
 		}
 		Point actual = display.getCursorLocation();
-		assertEquals(location, actual);
+		if (!BUG_492569) {
+			assertEquals(location, actual);
+		}
 	} finally {
 		display.dispose();
 	}
