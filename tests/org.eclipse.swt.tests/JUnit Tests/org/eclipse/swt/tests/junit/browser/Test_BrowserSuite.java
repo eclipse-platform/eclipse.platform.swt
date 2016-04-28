@@ -31,7 +31,7 @@ import org.junit.rules.TestName;
  */
 public class Test_BrowserSuite {
 	
-public static boolean isRunningOnEclipseOrgHudsonGTK = SwtTestUtil.isGTK && "hudsonbuild".equals(System.getProperty("user.name"));
+public static boolean isRunningOnEclipseOrgHudsonGTK = SwtTestUtil.isGTK && "hudsonbuild".equalsIgnoreCase(System.getProperty("user.name"));
 
 @Rule public TestName name = new TestName();
 
