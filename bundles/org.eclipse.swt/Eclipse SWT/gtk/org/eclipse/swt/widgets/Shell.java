@@ -514,17 +514,24 @@ void adjustTrim () {
 	} else {
 		trimStyle = Display.TRIM_NONE;
 	}
-	Rectangle bounds = getBoundsInPixels();
-	int widthAdjustment = display.trimWidths[trimStyle] - trimWidth;
-	int heightAdjustment = display.trimHeights[trimStyle] - trimHeight;
-	if (widthAdjustment == 0 && heightAdjustment == 0) return;
+	if (OS.GTK3) {
+		/*
+		 * The workaround for bug 445900 seems to cause problems for some
+		 * users on GTK2, see bug 492695. The fix is to only adjust the
+		 * shell size on GTK3.
+		 */
+		Rectangle bounds = getBoundsInPixels();
+		int widthAdjustment = display.trimWidths[trimStyle] - trimWidth;
+		int heightAdjustment = display.trimHeights[trimStyle] - trimHeight;
+		if (widthAdjustment == 0 && heightAdjustment == 0) return;
 
-	bounds.width += widthAdjustment;
-	bounds.height += heightAdjustment;
-	oldWidth += widthAdjustment;
-	oldHeight += heightAdjustment;
-	if (!getMaximized()) {
-		resizeBounds (width + widthAdjustment, height + heightAdjustment, false);
+		bounds.width += widthAdjustment;
+		bounds.height += heightAdjustment;
+		oldWidth += widthAdjustment;
+		oldHeight += heightAdjustment;
+		if (!getMaximized()) {
+			resizeBounds (width + widthAdjustment, height + heightAdjustment, false);
+		}
 	}
 	display.trimWidths[trimStyle] = trimWidth;
 	display.trimHeights[trimStyle] = trimHeight;

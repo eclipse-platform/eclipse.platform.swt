@@ -15,6 +15,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -40,6 +41,8 @@ import org.junit.Test;
  * @see org.eclipse.swt.widgets.Shell
  */
 public class Test_org_eclipse_swt_widgets_Shell extends Test_org_eclipse_swt_widgets_Decorations {
+
+private static final boolean IS_GTK_BUG_445900 = SwtTestUtil.isGTK;
 
 @Override
 @Before
@@ -389,7 +392,9 @@ public void test_setBoundsLorg_eclipse_swt_graphics_Rectangle() {
  * first invisible shell (editor hovers jump when enriched)
  */
 @Test
-public void test_setBounds() {
+public void test_setBounds() throws Exception {
+	if (IS_GTK_BUG_445900) System.out.println("Running Test_org_eclipse_swt_widgets_Shell.test_setBounds():");
+
 	Rectangle bounds = new Rectangle(100, 200, 200, 200);
 	Rectangle bounds2 = new Rectangle(150, 250, 250, 250);
 
@@ -402,7 +407,7 @@ public void test_setBounds() {
 			logUnlessEquals(log, i + ".1: style 0x" + Integer.toHexString(styles[i]), bounds, testShell.getBounds());
 
 			testShell.open();
-			logUnlessEquals(log, i + ".2: style 0x" + Integer.toHexString(styles[i]), bounds, testShell.getBounds());
+			logUnlessEquals(IS_GTK_BUG_445900 ? System.out : log, i + ".2: style 0x" + Integer.toHexString(styles[i]), bounds, testShell.getBounds());
 
 			testShell.setBounds(bounds);
 			logUnlessEquals(log, i + ".3: style 0x" + Integer.toHexString(styles[i]), bounds, testShell.getBounds());
@@ -418,10 +423,10 @@ public void test_setBounds() {
 	}
 }
 
-private void logUnlessEquals(StringBuilder log, String message, Rectangle expected, Rectangle actual) {
+private void logUnlessEquals(Appendable log, String message, Rectangle expected, Rectangle actual) throws IOException {
 	if (!expected.equals(actual)) {
-			log.append(message).append("; expected: ").append(expected).append(", but was: ").append(actual)
-					.append("\n");
+			log.append(message).append("; expected: ").append(expected.toString())
+					.append(", but was: ").append(actual.toString()).append("\n");
 	}
 }
 
