@@ -3694,8 +3694,8 @@ Rectangle getBoundsAtOffset(int offset) {
 	String line = content.getLine(lineIndex);
 	Rectangle bounds;
 	if (line.length() != 0) {
-		int offsetInLine = Math.max (0, offset - lineOffset);
 		TextLayout layout = renderer.getTextLayout(lineIndex);
+		int offsetInLine = Math.min (layout.getText().length(), Math.max (0, offset - lineOffset));
 		if (caretAlignment == PREVIOUS_OFFSET_TRAILING && offsetInLine != 0) {
 			offsetInLine = layout.getPreviousOffset(offsetInLine, SWT.MOVEMENT_CLUSTER);
 			Point point = layout.getLocation(offsetInLine, true);
