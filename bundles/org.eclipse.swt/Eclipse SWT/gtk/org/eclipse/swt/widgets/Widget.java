@@ -1619,10 +1619,12 @@ void setForegroundColor (long /*int*/ handle, GdkColor color) {
 void setForegroundColor (long /*int*/ handle, GdkColor color, boolean setStateActive) {
 	if (OS.GTK3) {
 		GdkRGBA rgba = null;
+		GdkRGBA selectedForeground = display.toGdkRGBA(display.COLOR_LIST_SELECTION_TEXT);
 		if (color != null) {
 			rgba = display.toGdkRGBA (color);
 		}
 		OS.gtk_widget_override_color (handle, OS.GTK_STATE_FLAG_NORMAL, rgba);
+		OS.gtk_widget_override_color (handle, OS.GTK_STATE_FLAG_SELECTED, selectedForeground);
 		long /*int*/ context = OS.gtk_widget_get_style_context (handle);
 		OS.gtk_style_context_invalidate (context);
 		return;

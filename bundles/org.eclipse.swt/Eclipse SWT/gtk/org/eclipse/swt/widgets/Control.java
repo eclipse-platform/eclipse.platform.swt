@@ -4720,7 +4720,12 @@ void setForegroundColor (long /*int*/ handle, GdkRGBA rgba) {
 	long /*int*/ context = OS.gtk_widget_get_style_context (handle);
 	// Form foreground string
 	String color = display.gtk_rgba_to_css_string(toSet);
-	String css = "* {color: " + color + ";}";
+	String name = OS.GTK_VERSION >= OS.VERSION(3, 20, 0) ? display.gtk_widget_class_get_css_name(handle)
+    		: display.gtk_widget_get_name(handle);
+	GdkRGBA selectedForeground = display.toGdkRGBA(getDisplay().COLOR_LIST_SELECTION_TEXT);
+	String selection = OS.GTK_VERSION >= OS.VERSION(3, 20, 0) ? " selection" : ":selected";
+	String css = "* {color: " + color + ";}\n"
+			+ name + selection + " {color: " + display.gtk_rgba_to_css_string(selectedForeground) + ";}";
 
 	// Cache foreground color
 	cssForeground = css;
