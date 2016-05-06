@@ -98,7 +98,8 @@ public class OS extends C {
 	public static final long /*int*/ sel_callJava = sel_registerName("callJava:index:token:arg:");
 	public static final long /*int*/ sel_callRunBeforeUnloadConfirmPanelWithMessage = sel_registerName("callRunBeforeUnloadConfirmPanelWithMessage:arg:");
 	public static final long /*int*/ sel_createPanelDidEnd = sel_registerName("createPanelDidEnd:returnCode:contextInfo:");
-	public static final long /*int*/ sel_systemSettingsChanged_ = sel_registerName("systemSettingsChanged:");
+	public static final long /*int*/ sel_systemColorSettingsChanged_ = sel_registerName("systemSettingsChanged:");
+	public static final long /*int*/ sel_screenParametersChanged_ = sel_registerName("screenParametersChanged:");
 	public static final long /*int*/ sel_panelDidEnd_returnCode_contextInfo_ = sel_registerName("panelDidEnd:returnCode:contextInfo:");
 	public static final long /*int*/ sel_updateOpenGLContext_ = sel_registerName("updateOpenGLContext:");
 

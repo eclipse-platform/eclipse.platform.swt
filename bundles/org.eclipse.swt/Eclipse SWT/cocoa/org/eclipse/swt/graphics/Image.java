@@ -14,6 +14,7 @@ package org.eclipse.swt.graphics;
 import java.io.*;
 
 import org.eclipse.swt.*;
+import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.cocoa.*;
 
 /**
@@ -966,8 +967,11 @@ public ImageData getImageDataAtCurrentZoom() {
 	NSAutoreleasePool pool = null;
 	if (!NSThread.isMainThread()) pool = (NSAutoreleasePool) new NSAutoreleasePool().alloc().init();
 	try {
-		NSBitmapImageRep imageRep = getRepresentation();
-		return _getImageData(imageRep);
+		if (imageFileNameProvider != null || imageDataProvider != null) {
+			NSBitmapImageRep imageRep = getRepresentation();
+			return _getImageData(imageRep);
+		}
+		return DPIUtil.autoScaleImageData(getImageData(), DPIUtil.getDeviceZoom(), 100);
 	} finally {
 		if (pool != null) pool.release();
 	}

@@ -2180,6 +2180,7 @@ protected void init () {
 	initClasses ();
 	initColors ();
 	initFonts ();
+	setDeviceZoom ();
 
 	/*
 	 * Create an application delegate for app-level notifications.  The AWT may have already set a delegate;
@@ -2261,8 +2262,8 @@ protected void init () {
 
 	settingsDelegate = (SWTWindowDelegate)new SWTWindowDelegate().alloc().init();
 	NSNotificationCenter defaultCenter = NSNotificationCenter.defaultCenter();
-	defaultCenter.addObserver(settingsDelegate, OS.sel_systemSettingsChanged_, OS.NSSystemColorsDidChangeNotification, null);
-	defaultCenter.addObserver(settingsDelegate, OS.sel_systemSettingsChanged_, OS.NSApplicationDidChangeScreenParametersNotification, null);
+	defaultCenter.addObserver(settingsDelegate, OS.sel_systemColorSettingsChanged_, OS.NSSystemColorsDidChangeNotification, null);
+	defaultCenter.addObserver(settingsDelegate, OS.sel_screenParametersChanged_, OS.NSApplicationDidChangeScreenParametersNotification, null);
 
 	NSTextView textView = (NSTextView)new NSTextView().alloc();
 	textView.init ();
@@ -2962,7 +2963,8 @@ void initClasses () {
 	OS.class_addMethod(cls, OS.sel_windowDidResignKey_, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_windowDidBecomeKey_, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_timerProc_, proc3, "@:@");
-	OS.class_addMethod(cls, OS.sel_systemSettingsChanged_, proc3, "@:@");
+	OS.class_addMethod(cls, OS.sel_systemColorSettingsChanged_, proc3, "@:@");
+	OS.class_addMethod(cls, OS.sel_screenParametersChanged_, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_windowDidMiniaturize_, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_windowDidDeminiaturize_, proc3, "@:@");
 	OS.objc_registerClassPair(cls);
@@ -4595,6 +4597,10 @@ public void setData (String key, Object value) {
 	values = newValues;
 }
 
+void setDeviceZoom() {
+	DPIUtil.setDeviceZoom (getDeviceZoom());
+}
+
 void setMenuBar (Menu menu) {
 	// If passed a null menu bar don't clear out the menu bar, but switch back to the
 	// application menu bar instead, if it exists.  If the app menu bar is already active
@@ -5672,7 +5678,15 @@ static long /*int*/ windowProc(long /*int*/ id, long /*int*/ sel, long /*int*/ a
 		if (display == null) return 0;
 		return display.timerProc (id, sel, arg0);
 	}
-	if (sel == OS.sel_systemSettingsChanged_) {
+	if (sel == OS.sel_screenParametersChanged_) {
+		//TODO optimize getting the display
+		Display display = getCurrent ();
+		if (display == null) return 0;
+		display.runSettings = true;
+		display.setDeviceZoom();
+		return 0;
+	}
+	if (sel == OS.sel_systemColorSettingsChanged_) {
 		//TODO optimize getting the display
 		Display display = getCurrent ();
 		if (display == null) return 0;

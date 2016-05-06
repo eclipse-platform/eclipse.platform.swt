@@ -779,4 +779,13 @@ public void setWarnings (boolean warnings) {
 	this.warnings = warnings;
 }
 
+/**
+ * @since 3.105
+ */
+protected int getDeviceZoom () {
+	NSScreen mainScreen = NSScreen.mainScreen();
+	int scaleFactor = (int) mainScreen.backingScaleFactor();
+	return scaleFactor * 100;
+}
+
 }
