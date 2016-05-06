@@ -36,6 +36,7 @@ import org.eclipse.swt.graphics.ImageFileNameProvider;
 import org.eclipse.swt.graphics.PaletteData;
 import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.internal.DPIUtil;
 import org.eclipse.swt.widgets.Display;
 import org.junit.Before;
 import org.junit.Test;
@@ -733,6 +734,89 @@ public void test_getBounds() {
 	assertEquals(":c:", bounds, bounds1);
 }
 
+@Test
+public void test_getBoundsInPixels() {
+	Rectangle bounds = new Rectangle(0, 0, 10, 20);
+	Image image = new Image(display, bounds.width, bounds.height);
+	image.dispose();
+	try {
+		image.getBoundsInPixels();
+		fail("No exception thrown for disposed image");
+	} catch (SWTException e) {
+		assertSWTProblem("Incorrect exception thrown for disposed image", SWT.ERROR_GRAPHIC_DISPOSED, e);
+	}
+
+	// creates bitmap image
+	image = new Image(display, bounds.width, bounds.height);
+	Rectangle boundsInPixels = image.getBoundsInPixels();
+	image.dispose();
+	assertEquals(":a: Image.getBoundsInPixels method doesn't return bounds in Pixel values.", boundsInPixels, DPIUtil.autoScaleUp(bounds));
+
+	// create icon image
+	ImageData imageData = new ImageData(bounds.width, bounds.height, 1, new PaletteData(new RGB[] {new RGB(0, 0, 0)}));
+	image = new Image(display, imageData);
+	boundsInPixels = image.getBoundsInPixels();
+	image.dispose();
+	assertEquals(":b: Image.getBoundsInPixels method doesn't return bounds in Pixel values.", boundsInPixels, DPIUtil.autoScaleUp(bounds));
+	
+	// create image with FileNameProvider
+	image = new Image(display, imageFileNameProvider);
+	boundsInPixels = image.getBoundsInPixels();
+	bounds = image.getBounds();
+	image.dispose();
+	assertEquals(":c: Image.getBoundsInPixels method doesn't return bounds in Pixel values.", boundsInPixels, DPIUtil.autoScaleUp(bounds));
+
+	// create image with ImageDataProvider
+	image = new Image(display, imageDataProvider);
+	boundsInPixels = image.getBoundsInPixels();
+	bounds = image.getBounds();
+	image.dispose();
+	assertEquals(":d: Image.getBoundsInPixels method doesn't return bounds in Pixel values.", boundsInPixels, DPIUtil.autoScaleUp(bounds));
+}
+
+@Test
+public void test_getImageDataCurrentZoom() {
+	Rectangle bounds = new Rectangle(0, 0, 10, 20);
+	Image image = new Image(display, bounds.width, bounds.height);
+	image.dispose();
+	try {
+		image.getImageDataAtCurrentZoom();
+		fail("No exception thrown for disposed image");
+	} catch (SWTException e) {
+		assertSWTProblem("Incorrect exception thrown for disposed image", SWT.ERROR_GRAPHIC_DISPOSED, e);
+	}
+
+	// creates bitmap image and compare size of imageData
+	image = new Image(display, bounds.width, bounds.height);
+	ImageData imageDataAtCurrentZoom = image.getImageDataAtCurrentZoom();
+	image.dispose();
+	Rectangle boundsAtCurrentZoom = new Rectangle(0, 0, imageDataAtCurrentZoom.width, imageDataAtCurrentZoom.height);
+	assertEquals(":a: Size of ImageData returned from Image.getImageDataAtCurrentZoom method doesn't return matches with bounds in Pixel values.", boundsAtCurrentZoom, DPIUtil.autoScaleUp(bounds));
+
+	// create icon image and compare size of imageData
+	ImageData imageData = new ImageData(bounds.width, bounds.height, 1, new PaletteData(new RGB[] {new RGB(0, 0, 0)}));
+	image = new Image(display, imageData);
+	imageDataAtCurrentZoom = image.getImageDataAtCurrentZoom();
+	image.dispose();
+	boundsAtCurrentZoom = new Rectangle(0, 0, imageDataAtCurrentZoom.width, imageDataAtCurrentZoom.height);
+	assertEquals(":b: Size of ImageData returned from Image.getImageDataAtCurrentZoom method doesn't return matches with bounds in Pixel values.", boundsAtCurrentZoom, DPIUtil.autoScaleUp(bounds));
+
+	// create image with FileNameProvider
+	image = new Image(display, imageFileNameProvider);
+	imageDataAtCurrentZoom = image.getImageDataAtCurrentZoom();
+	boundsAtCurrentZoom = new Rectangle(0, 0, imageDataAtCurrentZoom.width, imageDataAtCurrentZoom.height);
+	bounds = image.getBounds();
+	image.dispose();
+	assertEquals(":c: Size of ImageData returned from Image.getImageDataAtCurrentZoom method doesn't return matches with bounds in Pixel values.", boundsAtCurrentZoom, DPIUtil.autoScaleUp(bounds));
+
+	// create image with ImageDataProvider
+	image = new Image(display, imageDataProvider);
+	imageDataAtCurrentZoom = image.getImageDataAtCurrentZoom();
+	boundsAtCurrentZoom = new Rectangle(0, 0, imageDataAtCurrentZoom.width, imageDataAtCurrentZoom.height);
+	bounds = image.getBounds();
+	image.dispose();
+	assertEquals(":d: Size of ImageData returned from Image.getImageDataAtCurrentZoom method doesn't return matches with bounds in Pixel values.", boundsAtCurrentZoom, DPIUtil.autoScaleUp(bounds));
+}
 
 @Test
 public void test_getImageData() {	
