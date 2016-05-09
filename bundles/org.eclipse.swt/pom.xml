@@ -21,7 +21,7 @@
   <version>3.105.0-SNAPSHOT</version>
   <packaging>eclipse-plugin</packaging>
   <properties>
-    <forceContextQualifier>v20160506-0918</forceContextQualifier>
+    <forceContextQualifier>v20160509-1348</forceContextQualifier>
   </properties>
   <build>
     <plugins>
