@@ -4481,6 +4481,10 @@ public void sendPostExternalEventDispatchEvent () {
  */
 public void setCursorLocation (int x, int y) {
 	checkDevice ();
+	setCursorLocationInPixels (DPIUtil.autoScaleUp (x), DPIUtil.autoScaleUp (y));
+}
+
+void setCursorLocationInPixels (int x, int y) {
 	OS.SetCursorPos (x, y);
 }
 
