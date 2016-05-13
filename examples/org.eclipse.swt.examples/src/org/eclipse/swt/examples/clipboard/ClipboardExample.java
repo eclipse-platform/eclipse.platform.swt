@@ -71,29 +71,19 @@ static final class AutoScaleImageDataProvider implements ImageDataProvider {
 	}
 
 	static ImageData autoScaleImageData (ImageData imageData, int targetZoom, int currentZoom) {
-		if (!isAutoScaleEnable () || imageData == null || targetZoom == currentZoom) return imageData;
+		if (imageData == null || targetZoom == currentZoom) return imageData;
 		float scaleFactor = ((float) targetZoom)/((float) currentZoom);
 		return imageData.scaledTo (Math.round (imageData.width * scaleFactor), Math.round (imageData.height * scaleFactor));
 	}
 
-	static boolean isAutoScaleEnable () {
-		String value = System.getProperty ("swt.enable.autoScale");
-		if (value != null && "false".equalsIgnoreCase (value))
-			return false;
-		else
-			return true;
-	}
-
 	static int getDeviceZoom () {
 		int zoom = 100;
-		if (isAutoScaleEnable ()) {
-			String value = System.getProperty ("org.eclipse.swt.internal.deviceZoom");
-			if (value != null) {
-				try {
-					zoom = Integer.parseInt(value);
-				} catch (NumberFormatException e) {
-					e.printStackTrace();
-				}
+		String value = System.getProperty ("org.eclipse.swt.internal.deviceZoom");
+		if (value != null) {
+			try {
+				zoom = Integer.parseInt(value);
+			} catch (NumberFormatException e) {
+				e.printStackTrace();
 			}
 		}
 		return zoom;
