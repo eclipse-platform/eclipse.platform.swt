@@ -630,6 +630,26 @@ void swt_fixed_resize (SwtFixed *fixed, GtkWidget *widget, gint width, gint heig
 		if (child == widget) {
 			child_data->width = width;
 			child_data->height = height;
+
+			/*
+			 * Feature in GTK: sometimes the sizing of child SwtFixed widgets
+			 * does not happen quickly enough, causing miscalculations in SWT.
+			 * Allocate the size of the child directly when swt_fixed_resize()
+			 * is called. See bug 487160.
+			 */
+			GtkAllocation allocation, to_allocate;
+			GtkRequisition req;
+			gtk_widget_get_allocation(child, &allocation);
+
+			// Keep x and y values the same to prevent misplaced containers
+			to_allocate.x = allocation.x;
+			to_allocate.y = allocation.y;
+			to_allocate.width = width;
+			to_allocate.height = height;
+
+			// Call gtk_widget_get_preferred_size() and finish the allocation.
+			gtk_widget_get_preferred_size (child, &req, NULL);
+			gtk_widget_size_allocate(child, &to_allocate);
 			break;
 		}
 		list = list->next;
