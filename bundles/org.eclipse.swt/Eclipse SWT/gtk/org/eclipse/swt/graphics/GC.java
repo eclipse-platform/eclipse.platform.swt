@@ -3755,6 +3755,7 @@ public void setLineAttributes(LineAttributes attributes) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (attributes == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	attributes.width = DPIUtil.autoScaleUp(attributes.width);
+	setLineAttributesInPixels(attributes);
 }
 void setLineAttributesInPixels(LineAttributes attributes) {
 	int mask = 0;
