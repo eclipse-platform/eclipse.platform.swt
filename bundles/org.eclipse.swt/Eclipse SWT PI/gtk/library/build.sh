@@ -55,22 +55,13 @@ case $OS in
 		PROC=`uname -i`
 		MAKEFILE=make_solaris.mak
 		if [ "${MODEL}" = "" ]; then
-			if [ "`isainfo -b`" = "64" ]; then
+			MODEL=`isainfo -k`
+			if [ "${MODEL}" = "amd64" ]; then
 				MODEL=x86_64
-			elif uname -p > /dev/null 2>&1; then
-				MODEL=`uname -p`
+				MAKEFILE=make_solaris_x86_64.mak
+				MAKE_TYPE=gmake
 			fi
 		fi
-		case $MODEL in
-			"i386" | "x86")
-				MAKEFILE=make_solaris_x86.mak
-				MAKE_TYPE=gmake
-				;;
-			"x86_64")
-				MAKEFILE=make_solaris_x86_64.mak
- 				MAKE_TYPE=gmake
- 				;;
-		esac
 		;;
 	"FreeBSD")
 		SWT_OS=freebsd
@@ -97,10 +88,6 @@ case $MODEL in
 	"x86_64")
 		SWT_ARCH=x86_64
 		AWT_ARCH=amd64
-		;;
-	"sparc64")
-		SWT_ARCH=$MODEL
-		AWT_ARCH=sparcv9
 		;;
 	i?86)
 		SWT_ARCH=x86
@@ -323,23 +310,23 @@ case $SWT_OS.$SWT_ARCH in
 #			export XULRUNNER_LIBS="-L${XULRUNNER_SDK}/lib -lxpcomglue"
 #		fi
  		;;
-	"solaris.sparc64")
-#		export PATH="/export/home/SUNWspro/bin:/usr/ccs/bin:/usr/bin"
+	"solaris.sparcv9")
+		PATH="/usr/ccs/bin:/opt/csw/bin:$PATH"
 		if [ "${CC}" = "" ]; then
-			export CC="cc"
+			CC="cc"
 		fi	
 		if [ "${CXX}" = "" ]; then
-			export CXX="CC"
+			CXX="CC"
 		fi
 		if [ "${CDE_HOME}" = "" ]; then
-			export CDE_HOME="/usr/dt"
+			CDE_HOME="/usr/dt"
 		fi
 		if [ "${JAVA_HOME}" = "" ]; then
-			export JAVA_HOME="/bluebird/teamswt/swt-builddir/JDKs/SOLARIS/SPARC64/jdk1.5.0_22"
+			JAVA_HOME="/bluebird/teamswt/swt-builddir/JDKs/SOLARIS/SPARC64/jdk1.5.0_22"
 		fi
-#		if [ "${PKG_CONFIG_PATH}" = "" ]; then
-#			export PKG_CONFIG_PATH="/usr/local/cairo-1.4.10/lib/pkgconfig"
-#		fi
+		if [ "${PKG_CONFIG_PATH}" = "" ]; then
+			PKG_CONFIG_PATH="/opt/csw/lib/pkgconfig"
+		fi
 #		if [ "${MOZILLA_SDK}" = "" ]; then
 #			export MOZILLA_SDK="/bluebird/teamswt/swt-builddir/geckoSDK/1.4/gecko-sdk"
 #		fi
@@ -349,6 +336,7 @@ case $SWT_OS.$SWT_ARCH in
 #		if [ "${MOZILLA_LIBS}" = "" ]; then
 #			export MOZILLA_LIBS="${MOZILLA_SDK}/embedstring/bin/libembedstring.a -L${MOZILLA_SDK}/xpcom/bin -L${MOZILLA_SDK}/nspr/bin -lxpcom -lnspr4 -lplds4 -lplc4"
 #		fi
+		export PATH CC CXX CDE_HOME JAVA_HOME PKG_CONFIG_PATH;
 		;;
 	"solaris.sparc")
 		PATH="/export/home/SUNWspro/bin:/usr/ccs/bin:/usr/bin:$PATH"
@@ -486,7 +474,7 @@ esac
 
 
 # For 64-bit CPUs, we have a switch
-if [ ${MODEL} = 'x86_64' -o ${MODEL} = 'ppc64' -o ${MODEL} = 'ia64' -o ${MODEL} = 'sparc64'  -o ${MODEL} = 's390x' -o ${MODEL} = 'ppc64le' -o ${MODEL} = 'aarch64' ]; then
+if [ ${MODEL} = 'x86_64' -o ${MODEL} = 'ppc64' -o ${MODEL} = 'ia64' -o ${MODEL} = 'sparcv9'  -o ${MODEL} = 's390x' -o ${MODEL} = 'ppc64le' -o ${MODEL} = 'aarch64' ]; then
 	SWT_PTR_CFLAGS=-DJNI64
 	if [ -d /lib64 ]; then
 		XLIB64=-L/usr/X11R6/lib64
@@ -511,16 +499,11 @@ if [ ${MODEL} = 'x86_64' -o ${MODEL} = 'ppc64' -o ${MODEL} = 'ia64' -o ${MODEL} 
 			export SWT_LFLAGS
 		fi
 	fi
-	if [ ${MODEL} = 'sparc64' ]; then
-			SWT_PTR_CFLAGS="${SWT_PTR_CFLAGS} -xarch=v9"
-			SWT_LFLAGS="-xarch=v9"
-			SWT_CDE_64SUFFIX="/64"
-			export SWT_LFLAGS SWT_CDE_64SUFFIX
-	fi
 	if [ ${OS} = 'SunOS' ]; then
 			SWT_PTR_CFLAGS="${SWT_PTR_CFLAGS} -m64"
 			SWT_LFLAGS=-m64
-			export SWT_LFLAGS	
+			SWT_CDE_64SUFFIX="/64"
+			export SWT_LFLAGS SWT_CDE_64SUFFIX
 	fi
 	export SWT_PTR_CFLAGS
 fi
@@ -535,7 +518,7 @@ if [ ${MODEL} = 'x86' -a ${SWT_OS} = 'linux' ]; then
 	export SWT_LFLAGS SWT_PTR_CFLAGS
 fi
 
-if [ x`pkg-config --exists gnome-vfs-module-2.0 libgnome-2.0 libgnomeui-2.0 && echo YES` = "xYES"  -a ${MODEL} != "sparc64" -a ${MODEL} != 'ia64' -a ${GTK_VERSION} != '3.0' ]; then
+if [ x`pkg-config --exists gnome-vfs-module-2.0 libgnome-2.0 libgnomeui-2.0 && echo YES` = "xYES"  -a ${MODEL} != "sparcv9" -a ${MODEL} != 'ia64' -a ${GTK_VERSION} != '3.0' ]; then
 	if [ "${SWT_OS}" != "solaris" -o "${MODEL}" != "x86_64" ]; then
 		echo "libgnomeui-2.0 found, compiling SWT program support using GNOME"
 		MAKE_GNOME=make_gnome
