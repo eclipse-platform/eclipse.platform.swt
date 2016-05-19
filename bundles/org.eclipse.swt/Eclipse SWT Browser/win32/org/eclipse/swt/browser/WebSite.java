@@ -604,7 +604,7 @@ int ProcessUrlAction(long /*int*/ pwszUrl, int dwAction, long /*int*/ pPolicy, i
 			ignoreNextMessage = true;
 		}
 	}
-	if (dwAction == IE.URLACTION_ACTIVEX_RUN) {
+	if (dwAction == IE.URLACTION_ACTIVEX_RUN && pContext != 0) {
 		GUID guid = new GUID();
 		COM.MoveMemory(guid, pContext, GUID.sizeof);
 		if (COM.IsEqualGUID(guid, COM.IIDJavaBeansBridge) && !canExecuteApplets ()) {
