@@ -102,7 +102,7 @@ public class Text extends Scrollable {
 	 * a global variable to keep track of its background color.
 	 */
 	GdkRGBA background;
-	long /*int*/ indexMark;
+	long /*int*/ indexMark = 0;
 	double cachedAdjustment, currentAdjustment;
 
 /**
@@ -1421,8 +1421,11 @@ public int getTopIndex () {
 		long /*int*/ vAdjustment = OS.gtk_scrollable_get_vadjustment (handle);
 		currentAdjustment = OS.gtk_adjustment_get_value (vAdjustment);
 		if (cachedAdjustment == currentAdjustment) {
-			OS.gtk_text_buffer_get_iter_at_mark (bufferHandle, position, indexMark);
-			return OS.gtk_text_iter_get_line (position);
+			// If indexMark is 0, fetch topIndex using the old method
+			if (indexMark != 0) {
+				OS.gtk_text_buffer_get_iter_at_mark (bufferHandle, position, indexMark);
+				return OS.gtk_text_iter_get_line (position);
+			}
 		}
 	}
 	GdkRectangle rect = new GdkRectangle ();
