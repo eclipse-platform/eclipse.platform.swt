@@ -2137,6 +2137,25 @@ void updateParent (boolean visible) {
 				 */
 				if ((style & SWT.ON_TOP) != 0) {
 					window.setLevel(OS.NSStatusWindowLevel);
+				} else if (OS.VERSION_MMB >= OS.VERSION_MMB(10, 11, 0)) {
+					/*
+					 * Feature in Cocoa on 10.11: Second-level child windows of
+					 * a full-screen window are sometimes shown behind their
+					 * parent window, although they take keyboard focus.
+					 *
+					 * The exact circumstances are unknown. Could only be
+					 * reproduced when the app was launched with the Eclipse
+					 * launcher. This hack is a workaround for
+					 * https://bugs.eclipse.org/478975 .
+					 */
+					Shell parentShell = (Shell) parent;
+					while (parentShell.parent != null) {
+						parentShell = (Shell) parentShell.parent;
+						if (parentShell._getFullScreen()) {
+							window.setLevel(OS.NSSubmenuWindowLevel);
+							break;
+						}
+					}
 				}
 			}
 		} else {
