@@ -10,6 +10,8 @@
  *******************************************************************************/
 package org.eclipse.swt.graphics;
 
+import java.util.*;
+
 import org.eclipse.swt.*;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.gdip.*;
@@ -2579,6 +2581,10 @@ public TextStyle[] getStyles () {
  */
 public int[] getTabs () {
 	checkLayout();
+	return DPIUtil.autoScaleDown (getTabsInPixels ());
+}
+
+int[] getTabsInPixels () {
 	return tabs;
 }
 
@@ -3223,7 +3229,7 @@ public void setStyle (TextStyle style, int start, int end) {
 
 /**
  * Sets the receiver's tab list. Each value in the tab list specifies
- * the space in pixels from the origin of the text layout to the respective
+ * the space in points from the origin of the text layout to the respective
  * tab stop.  The last tab stop width is repeated continuously.
  *
  * @param tabs the new tab list
@@ -3235,15 +3241,11 @@ public void setStyle (TextStyle style, int start, int end) {
 public void setTabs (int[] tabs) {
 	checkLayout();
 	if (this.tabs == null && tabs == null) return;
-	if (this.tabs != null && tabs !=null) {
-		if (this.tabs.length == tabs.length) {
-			int i;
-			for (i = 0; i <tabs.length; i++) {
-				if (this.tabs[i] != tabs[i]) break;
-			}
-			if (i == tabs.length) return;
-		}
-	}
+	setTabsInPixels (DPIUtil.autoScaleUp (tabs));
+}
+
+void setTabsInPixels (int[] tabs) {
+	if (Arrays.equals (this.tabs, tabs)) return;
 	freeRuns();
 	this.tabs = tabs;
 }
