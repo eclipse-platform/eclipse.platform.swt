@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2014 IBM Corporation and others.
+ * Copyright (c) 2000, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -506,6 +506,12 @@ void getCurrentPointInPixels(float[] point) {
  */
 public PathData getPathData() {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	PathData result = getPathDataInPixels();
+	result.points = DPIUtil.autoScaleDown(result.points);
+	return result;
+}
+
+PathData getPathDataInPixels() {
 	int count = Gdip.GraphicsPath_GetPointCount(handle);
 	byte[] gdipTypes = new byte[count];
 	float[] points = new float[count * 2];
@@ -577,16 +583,16 @@ void init(PathData data) {
 	for (int i = 0, j = 0; i < types.length; i++) {
 		switch (types[i]) {
 			case SWT.PATH_MOVE_TO:
-				moveToInPixels(points[j++], points[j++]);
+				moveTo(points[j++], points[j++]);
 				break;
 			case SWT.PATH_LINE_TO:
-				lineToInPixels(points[j++], points[j++]);
+				lineTo(points[j++], points[j++]);
 				break;
 			case SWT.PATH_CUBIC_TO:
-				cubicToInPixels(points[j++], points[j++], points[j++], points[j++], points[j++], points[j++]);
+				cubicTo(points[j++], points[j++], points[j++], points[j++], points[j++], points[j++]);
 				break;
 			case SWT.PATH_QUAD_TO:
-				quadToInPixels(points[j++], points[j++], points[j++], points[j++]);
+				quadTo(points[j++], points[j++], points[j++], points[j++]);
 				break;
 			case SWT.PATH_CLOSE:
 				close();
