@@ -325,7 +325,12 @@ public void addString(String string, float x, float y, Font font) {
 	if (font.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	x = DPIUtil.autoScaleUp(x);
 	y = DPIUtil.autoScaleUp(y);
-	addStringInPixels(string, x, y, font);
+	// Scale up the font
+	FontData fd = font.getFontData()[0];
+	fd.setHeight(DPIUtil.autoScaleUp(fd.getHeight()));
+	Font scaledFont = new Font(font.getDevice(), fd);
+	addStringInPixels(string, x, y, scaledFont);
+	scaledFont.dispose(); // Dispose the scaled up font
 }
 void addStringInPixels(String string, float x, float y, Font font) {
 	moved = false;
@@ -419,6 +424,8 @@ public void cubicTo(float cx1, float cy1, float cx2, float cy2, float x, float y
 	cy1 = DPIUtil.autoScaleUp(cy1);
 	cx2 = DPIUtil.autoScaleUp(cx2);
 	cy2 = DPIUtil.autoScaleUp(cy2);
+	x = DPIUtil.autoScaleUp(x);
+	y = DPIUtil.autoScaleUp(y);
 	cubicToInPixels(cx1, cy1, cx2, cy2, x, y);
 }
 void cubicToInPixels(float cx1, float cy1, float cx2, float cy2, float x, float y) {
