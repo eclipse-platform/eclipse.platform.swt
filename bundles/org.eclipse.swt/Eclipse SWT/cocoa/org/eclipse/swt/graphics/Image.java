@@ -813,7 +813,7 @@ public Color getBackground() {
  * have x and y values of 0, and the width and height of the
  * image.
  *
- * @return a rectangle specifying the image's bounds at 100% zoom.
+ * @return a rectangle specifying the image's bounds in points.
  *
  * @exception SWTException <ul>
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
@@ -838,9 +838,9 @@ public Rectangle getBounds() {
 /**
  * Returns the bounds of the receiver. The rectangle will always
  * have x and y values of 0, and the width and height of the
- * image.
+ * image in pixels.
  *
- * @return a rectangle specifying the image's bounds in pixels
+ * @return a rectangle specifying the image's bounds in pixels.
  *
  * @exception SWTException <ul>
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
@@ -920,7 +920,7 @@ ImageData _getImageData(NSBitmapImageRep imageRep) {
 }
 
 /**
- * Returns an <code>ImageData</code> based on the receiver
+ * Returns an <code>ImageData</code> based on the receiver.
  * Modifications made to this <code>ImageData</code> will not
  * affect the Image.
  *
@@ -947,7 +947,7 @@ public ImageData getImageData() {
 }
 
 /**
- * Returns an <code>ImageData</code> based on the receiver
+ * Returns an <code>ImageData</code> based on the receiver.
  * Modifications made to this <code>ImageData</code> will not
  * affect the Image.
  *

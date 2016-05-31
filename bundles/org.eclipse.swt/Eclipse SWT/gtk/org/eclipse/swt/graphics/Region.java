@@ -156,7 +156,7 @@ static void gdk_region_get_rectangles(long /*int*/ region, long /*int*/[] rectan
  * </ul>
  *
  * @since 3.0
-*
+ *
  */
 public void add (int[] pointArray) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);

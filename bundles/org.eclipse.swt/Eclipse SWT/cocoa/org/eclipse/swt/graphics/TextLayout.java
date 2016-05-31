@@ -2071,7 +2071,7 @@ public void setStyle (TextStyle style, int start, int end) {
 
 /**
  * Sets the receiver's tab list. Each value in the tab list specifies
- * the space in pixels from the origin of the text layout to the respective
+ * the space in points from the origin of the text layout to the respective
  * tab stop.  The last tab stop width is repeated continuously.
  *
  * @param tabs the new tab list
@@ -2140,7 +2140,8 @@ public void setText (String text) {
 
 /**
  * Sets the text direction of the receiver, which must be one
- * of <code>SWT.LEFT_TO_RIGHT</code> or <code>SWT.RIGHT_TO_LEFT</code>.
+ * of <code>SWT.LEFT_TO_RIGHT</code>, <code>SWT.RIGHT_TO_LEFT</code>
+ * or <code>SWT.AUTO_TEXT_DIRECTION</code>.
  *
  * <p>
  * <b>Warning</b>: This API is currently only implemented on Windows.

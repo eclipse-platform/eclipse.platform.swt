@@ -562,7 +562,7 @@ void printWindow (boolean first, Control control, GC gc, long /*int*/ drawable, 
 }
 
 /**
- * Returns the preferred size(in Points) of the receiver.
+ * Returns the preferred size (in points) of the receiver.
  * <p>
  * The <em>preferred size</em> of a control is the size that it would
  * best be displayed at. The width hint and height hint arguments
@@ -871,8 +871,8 @@ Rectangle getBoundsInPixels () {
  * receiver to a negative number will cause that
  * value to be set to zero instead.
  * </p>
-  *<p>
- * Note: Attempting to set the width or height of the
+ * <p>
+ * Note: On GTK, attempting to set the width or height of the
  * receiver to a number higher or equal 2^14 will cause them to be
  * set to (2^14)-1 instead.
  * </p>
@@ -909,8 +909,8 @@ void setBoundsInPixels (Rectangle rect) {
  * receiver to a negative number will cause that
  * value to be set to zero instead.
  * </p>
-  *<p>
- * Note: Attempting to set the width or height of the
+ * <p>
+ * Note: On GTK, attempting to set the width or height of the
  * receiver to a number higher or equal 2^14 will cause them to be
  * set to (2^14)-1 instead.
  * </p>
@@ -1173,7 +1173,7 @@ void setLocationInPixels (Point location) {
  * the receiver is a shell. In this case, the point is
  * relative to the display.
  *
- * @param x the new x coordinate in for the receiver
+ * @param x the new x coordinate for the receiver
  * @param y the new y coordinate for the receiver
  *
  * @exception SWTException <ul>
@@ -1227,8 +1227,8 @@ Point getSizeInPixels () {
  * receiver to a negative number will cause them to be
  * set to zero instead.
  * </p>
-  *<p>
- * Note: Attempting to set the width or height of the
+ * <p>
+ * Note: On GTK, attempting to set the width or height of the
  * receiver to a number higher or equal 2^14 will cause them to be
  * set to (2^14)-1 instead.
  * </p>
@@ -1242,7 +1242,6 @@ Point getSizeInPixels () {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * @since 3.105
  */
 public void setSize (Point size) {
 	checkWidget ();
@@ -1314,8 +1313,8 @@ void setRelations () {
  * receiver to a negative number will cause that
  * value to be set to zero instead.
  * </p>
-  *<p>
- * Note: Attempting to set the width or height of the
+ * <p>
+ * Note: On GTK, attempting to set the width or height of the
  * receiver to a number higher or equal 2^14 will cause them to be
  * set to (2^14)-1 instead.
  * </p>

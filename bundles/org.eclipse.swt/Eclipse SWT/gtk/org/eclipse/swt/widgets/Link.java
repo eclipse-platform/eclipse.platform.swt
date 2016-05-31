@@ -731,7 +731,7 @@ void setFontDescription (long /*int*/ font) {
 
 /**
  * Sets the link foreground color to the color specified
- * by the argument, or to the default system color for the control
+ * by the argument, or to the default system color for the link
  * if the argument is null.
  * <p>
  * Note: This operation is a hint and may be overridden by the platform.

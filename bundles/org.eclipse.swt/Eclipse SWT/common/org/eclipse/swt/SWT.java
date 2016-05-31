@@ -1883,7 +1883,7 @@ public class SWT {
 	public static final int FLIP_TEXT_DIRECTION = 1 << 31;
 
 	/**
-	 * A bit masks to indicate Bidi "auto" text direction.
+	 * A bit mask to indicate Bidi "auto" text direction.
 	 * <p>
 	 * When the bit is set, text direction is derived from the direction of the
 	 * first strong Bidi character.

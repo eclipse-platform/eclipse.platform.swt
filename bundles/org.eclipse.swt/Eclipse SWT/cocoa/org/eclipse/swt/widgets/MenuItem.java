@@ -682,16 +682,18 @@ public void setID (int id) {
 }
 
 /**
- * Sets the image the receiver will display to the argument.
+ * Sets the receiver's image to the argument, which may be
+ * null indicating that no image should be displayed.
  * <p>
- * Note: This operation is a hint and is not supported on
+ * Note: This operation is a <em>HINT</em> and is not supported on
  * platforms that do not have this concept (for example, Windows NT).
- * Furthermore, some platforms (such as GTK), cannot display both
+ * Furthermore, some platforms (such as GTK2), cannot display both
  * a check box and an image at the same time.  Instead, they hide
- * the image and display the check box.
+ * the image and display the check box. Some platforms (such as GTK3)
+ * support images alongside check boxes.
  * </p>
  *
- * @param image the image to display
+ * @param image the image to display on the receiver (may be null)
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>

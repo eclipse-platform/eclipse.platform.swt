@@ -1385,7 +1385,7 @@ public Color getBackground() {
  * have x and y values of 0, and the width and height of the
  * image.
  *
- * @return a rectangle specifying the image's bounds at 100% zoom.
+ * @return a rectangle specifying the image's bounds in points.
  *
  * @exception SWTException <ul>
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
@@ -1408,7 +1408,7 @@ Rectangle getBounds(int zoom) {
 /**
  * Returns the bounds of the receiver. The rectangle will always
  * have x and y values of 0, and the width and height of the
- * image in Pixels.
+ * image in pixels.
  *
  * @return a rectangle specifying the image's bounds in pixels.
  *
@@ -1450,7 +1450,7 @@ public Rectangle getBoundsInPixels() {
 }
 
 /**
- * Returns an <code>ImageData</code> based on the receiver
+ * Returns an <code>ImageData</code> based on the receiver.
  * Modifications made to this <code>ImageData</code> will not
  * affect the Image.
  *
@@ -1474,7 +1474,7 @@ ImageData getImageData (int zoom) {
 }
 
 /**
- * Returns an <code>ImageData</code> based on the receiver
+ * Returns an <code>ImageData</code> based on the receiver.
  * Modifications made to this <code>ImageData</code> will not
  * affect the Image.
  *

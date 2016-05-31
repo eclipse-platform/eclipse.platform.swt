@@ -1451,6 +1451,17 @@ public Shell getActiveShell () {
 	return activeShell;
 }
 
+/**
+ * Returns a rectangle describing the receiver's size and location. Note that
+ * on multi-monitor systems the origin can be negative.
+ *
+ * @return the bounding rectangle
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ */
 @Override
 public Rectangle getBounds () {
 	checkDevice ();

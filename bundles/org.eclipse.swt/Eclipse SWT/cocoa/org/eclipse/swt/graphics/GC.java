@@ -1073,12 +1073,12 @@ public void drawImage(Image image, int x, int y) {
  * @param image the source image
  * @param srcX the x coordinate in the source image to copy from
  * @param srcY the y coordinate in the source image to copy from
- * @param srcWidth the width in pixels to copy from the source
- * @param srcHeight the height in pixels to copy from the source
+ * @param srcWidth the width in points to copy from the source
+ * @param srcHeight the height in points to copy from the source
  * @param destX the x coordinate in the destination to copy to
  * @param destY the y coordinate in the destination to copy to
- * @param destWidth the width in pixels of the destination rectangle
- * @param destHeight the height in pixels of the destination rectangle
+ * @param destWidth the width in points of the destination rectangle
+ * @param destHeight the height in points of the destination rectangle
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the image is null</li>

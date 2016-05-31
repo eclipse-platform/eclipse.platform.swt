@@ -189,6 +189,7 @@ public Shell () {
  * @see SWT#TITLE
  * @see SWT#TOOL
  * @see SWT#NO_TRIM
+ * @see SWT#NO_MOVE
  * @see SWT#SHELL_TRIM
  * @see SWT#DIALOG_TRIM
  * @see SWT#ON_TOP
@@ -262,6 +263,7 @@ public Shell (Display display) {
  * @see SWT#TITLE
  * @see SWT#TOOL
  * @see SWT#NO_TRIM
+ * @see SWT#NO_MOVE
  * @see SWT#SHELL_TRIM
  * @see SWT#DIALOG_TRIM
  * @see SWT#ON_TOP
@@ -362,6 +364,7 @@ public Shell (Shell parent) {
  * @see SWT#RESIZE
  * @see SWT#TITLE
  * @see SWT#NO_TRIM
+ * @see SWT#NO_MOVE
  * @see SWT#SHELL_TRIM
  * @see SWT#DIALOG_TRIM
  * @see SWT#ON_TOP

@@ -1089,7 +1089,7 @@ public boolean getMaximized () {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  *
- * @since 3.105
+ * @since 3.1
  */
 public Point getMinimumSize () {
 	checkWidget ();
@@ -2248,7 +2248,6 @@ public void setModified (boolean modified) {
  * </ul>
  *
  * @since 3.0
- *
  */
 @Override
 public void setRegion (Region region) {

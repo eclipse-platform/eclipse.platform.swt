@@ -2189,7 +2189,8 @@ public void setText (String text) {
 
 /**
  * Sets the text direction of the receiver, which must be one
- * of <code>SWT.LEFT_TO_RIGHT</code> or <code>SWT.RIGHT_TO_LEFT</code>.
+ * of <code>SWT.LEFT_TO_RIGHT</code>, <code>SWT.RIGHT_TO_LEFT</code>
+ * or <code>SWT.AUTO_TEXT_DIRECTION</code>.
  *
  * <p>
  * <b>Warning</b>: This API is currently only implemented on Windows.

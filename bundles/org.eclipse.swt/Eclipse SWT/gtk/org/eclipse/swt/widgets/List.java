@@ -84,7 +84,6 @@ public List (Composite parent, int style) {
  * Note: If control characters like '\n', '\t' etc. are used
  * in the string, then the behavior is platform dependent.
  * </p>
- *
  * @param string the new item
  *
  * @exception IllegalArgumentException <ul>

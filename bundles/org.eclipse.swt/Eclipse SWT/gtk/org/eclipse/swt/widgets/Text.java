@@ -1447,7 +1447,7 @@ public int getTopIndex () {
  * The top pixel does not include the widget trimming.
  * </p>
  *
- * @return the point position of the top line
+ * @return the pixel position of the top line
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -2581,7 +2581,6 @@ void setTabStops (int tabs) {
  * Note: If control characters like '\n', '\t' etc. are used
  * in the string, then the behavior is platform dependent.
  * </p>
- *
  * @param string the new text
  *
  * @exception IllegalArgumentException <ul>

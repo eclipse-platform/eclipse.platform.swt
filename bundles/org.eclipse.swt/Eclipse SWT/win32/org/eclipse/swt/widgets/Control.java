@@ -592,7 +592,7 @@ void checkMirrored () {
 }
 
 /**
- * Returns the preferred size of the receiver.
+ * Returns the preferred size (in points) of the receiver.
  * <p>
  * The <em>preferred size</em> of a control is the size that it would
  * best be displayed at. The width hint and height hint arguments
@@ -623,7 +623,7 @@ public Point computeSize (int wHint, int hHint) {
 }
 
 /**
- * Returns the preferred size of the receiver.
+ * Returns the preferred size (in points) of the receiver.
  * <p>
  * The <em>preferred size</em> of a control is the size that it would
  * best be displayed at. The width hint and height hint arguments
@@ -1218,7 +1218,7 @@ int getBackgroundPixel () {
 }
 
 /**
- * Returns the receiver's border width.
+ * Returns the receiver's border width in points.
  *
  * @return the border width
  *
@@ -1243,7 +1243,7 @@ int getBorderWidthInPixels () {
 }
 
 /**
- * Returns a rectangle describing the receiver's size and location
+ * Returns a rectangle describing the receiver's size and location in points
  * relative to its parent (or its display if its parent is null),
  * unless the receiver is a shell. In this case, the location is
  * relative to the display.
@@ -1422,7 +1422,7 @@ public Object getLayoutData () {
 
 /**
  * Returns a point describing the receiver's location relative
- * to its parent (or its display if its parent is null), unless
+ * to its parent in points (or its display if its parent is null), unless
  * the receiver is a shell. In this case, the point is
  * relative to the display.
  *
@@ -1591,7 +1591,7 @@ public Shell getShell () {
 }
 
 /**
- * Returns a point describing the receiver's size. The
+ * Returns a point describing the receiver's size in points. The
  * x coordinate of the result is the width of the receiver.
  * The y coordinate of the result is the height of the
  * receiver.
@@ -2370,7 +2370,7 @@ void printWidget (long /*int*/ hwnd, long /*int*/ hdc, GC gc) {
 }
 
 /**
- * Requests that this control and all of its ancestors be repositioned
+ * Requests that this control and all of its ancestors be repositioned by
  * their layouts at the earliest opportunity. This should be invoked after
  * modifying the control in order to inform any dependent layouts of
  * the change.
@@ -3167,7 +3167,7 @@ void setBackgroundPixel (int pixel) {
 }
 
 /**
- * Sets the receiver's size and location to the rectangular
+ * Sets the receiver's size and location in points to the rectangular
  * area specified by the arguments. The <code>x</code> and
  * <code>y</code> arguments are relative to the receiver's
  * parent (or its display if its parent is null), unless
@@ -3177,6 +3177,11 @@ void setBackgroundPixel (int pixel) {
  * Note: Attempting to set the width or height of the
  * receiver to a negative number will cause that
  * value to be set to zero instead.
+ * </p>
+ * <p>
+ * Note: On GTK, attempting to set the width or height of the
+ * receiver to a number higher or equal 2^14 will cause them to be
+ * set to (2^14)-1 instead.
  * </p>
  *
  * @param x the new x coordinate for the receiver
@@ -3247,7 +3252,7 @@ void setBoundsInPixels (int x, int y, int width, int height, int flags, boolean 
 }
 
 /**
- * Sets the receiver's size and location to the rectangular
+ * Sets the receiver's size and location in points to the rectangular
  * area specified by the argument. The <code>x</code> and
  * <code>y</code> fields of the rectangle are relative to
  * the receiver's parent (or its display if its parent is null).
@@ -3255,6 +3260,11 @@ void setBoundsInPixels (int x, int y, int width, int height, int flags, boolean 
  * Note: Attempting to set the width or height of the
  * receiver to a negative number will cause that
  * value to be set to zero instead.
+ * </p>
+ * <p>
+ * Note: On GTK, attempting to set the width or height of the
+ * receiver to a number higher or equal 2^14 will cause them to be
+ * set to (2^14)-1 instead.
  * </p>
  *
  * @param rect the new bounds for the receiver
@@ -3740,9 +3750,14 @@ boolean setSavedFocus () {
  * receiver to a negative number will cause that
  * value to be set to zero instead.
  * </p>
+ * <p>
+ * Note: On GTK, attempting to set the width or height of the
+ * receiver to a number higher or equal 2^14 will cause them to be
+ * set to (2^14)-1 instead.
+ * </p>
  *
- * @param width the new width for the receiver
- * @param height the new height for the receiver
+ * @param width the new width in points for the receiver
+ * @param height the new height in points for the receiver
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -3768,8 +3783,13 @@ void setSizeInPixels (int width, int height) {
  * receiver to a negative number will cause them to be
  * set to zero instead.
  * </p>
+ * <p>
+ * Note: On GTK, attempting to set the width or height of the
+ * receiver to a number higher or equal 2^14 will cause them to be
+ * set to (2^14)-1 instead.
+ * </p>
  *
- * @param size the new size for the receiver
+ * @param size the new size in points for the receiver
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the point is null</li>
@@ -3976,8 +3996,8 @@ void subclass () {
  * {@link Display#map(Control, Control, Rectangle)}.
  * </p>
  *
- * @param x the x coordinate to be translated
- * @param y the y coordinate to be translated
+ * @param x the x coordinate in points to be translated
+ * @param y the y coordinate in points to be translated
  * @return the translated coordinates
  *
  * @exception SWTException <ul>

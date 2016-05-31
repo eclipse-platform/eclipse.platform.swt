@@ -780,6 +780,11 @@ public void setWarnings (boolean warnings) {
 }
 
 /**
+ * Gets the scaling factor from the device and calculates the zoom level.
+ * @return zoom in percentage
+ *
+ * @noreference This method is not intended to be referenced by clients.
+ * @nooverride This method is not intended to be re-implemented or extended by clients.
  * @since 3.105
  */
 protected int getDeviceZoom () {
