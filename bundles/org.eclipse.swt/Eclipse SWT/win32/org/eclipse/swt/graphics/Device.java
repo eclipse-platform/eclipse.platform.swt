@@ -475,7 +475,7 @@ public Point getDPI () {
 	int dpiX = OS.GetDeviceCaps (hDC, OS.LOGPIXELSX);
 	int dpiY = OS.GetDeviceCaps (hDC, OS.LOGPIXELSY);
 	internal_dispose_GC (hDC, null);
-	return new Point (dpiX, dpiY);
+	return DPIUtil.autoScaleDown(new Point (dpiX, dpiY));
 }
 
 /**
