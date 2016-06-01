@@ -63,7 +63,7 @@ public class Spinner extends Composite {
 	* to stop the compiler from inlining.
 	*/
 	static {
-		LIMIT = 0x7FFFFFFF;
+		LIMIT = 0xFFFF;
 	}
 	/* Spinner uses non-standard CSS to set its background color, so we need
 	 * a global variable to keep track of its background color.
@@ -576,7 +576,7 @@ public String getText () {
 public int getTextLimit () {
 	checkWidget ();
 	int limit = OS.gtk_entry_get_max_length (handle);
-	return limit == 0 ? 0xFFFF : limit;
+	return limit == 0 ? LIMIT : limit;
 }
 
 /**
