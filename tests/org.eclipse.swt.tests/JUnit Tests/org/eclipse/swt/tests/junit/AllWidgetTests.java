@@ -41,7 +41,7 @@ import org.junit.runners.Suite;
 		Test_org_eclipse_swt_custom_StyleRange.class, Test_org_eclipse_swt_custom_CCombo.class,
 		Test_org_eclipse_swt_custom_TableTreeItem.class, Test_org_eclipse_swt_custom_CLabel.class,
 		Test_org_eclipse_swt_custom_CTabItem.class, Test_org_eclipse_swt_custom_StyledText.class,
-		Test_org_eclipse_swt_custom_CTabFolder.class })
+		Test_org_eclipse_swt_custom_CTabFolder.class, Test_org_eclipse_swt_widgets_Spinner.class })
 public class AllWidgetTests {
 	public static void main(String[] args) {
 		JUnitCore.main(AllWidgetTests.class.getName());
