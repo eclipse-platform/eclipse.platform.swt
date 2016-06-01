@@ -2224,11 +2224,6 @@ public Monitor getPrimaryMonitor () {
 		Monitor monitor = monitors [i];
 		OS.GetMonitorInfo (monitors [i].handle, lpmi);
 		if ((lpmi.dwFlags & OS.MONITORINFOF_PRIMARY) != 0) {
-			// Convert Monitor's bounds/client-area to Points.
-			Rectangle bounds = DPIUtil.autoScaleDown (monitor.getBounds ());
-			monitor.setBounds (bounds);
-			Rectangle clientArea = DPIUtil.autoScaleDown (monitor.getClientArea ());
-			monitor.setClientArea (clientArea);
 			result = monitor;
 			break;
 		}
