@@ -293,7 +293,7 @@ void computeRuns () {
 			PangoRectangle rect = new PangoRectangle();
 			rect.y =  -(DPIUtil.autoScaleUp(metrics.ascent) * OS.PANGO_SCALE);
 			rect.height = DPIUtil.autoScaleUp((metrics.ascent + metrics.descent)) * OS.PANGO_SCALE;
-			rect.width = metrics.width * OS.PANGO_SCALE;
+			rect.width = DPIUtil.autoScaleUp(metrics.width) * OS.PANGO_SCALE;
 			long /*int*/ attr = OS.pango_attr_shape_new (rect, rect);
 			OS.memmove (attribute, attr, PangoAttribute.sizeof);
 			attribute.start_index = byteStart;
