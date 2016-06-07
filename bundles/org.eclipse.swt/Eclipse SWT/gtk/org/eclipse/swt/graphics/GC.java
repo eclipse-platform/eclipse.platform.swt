@@ -246,14 +246,23 @@ void checkGC (int mask) {
 	long /*int*/ cairo = data.cairo;
 	if (cairo != 0) {
 		if ((state & (BACKGROUND | FOREGROUND)) != 0) {
-			GdkColor color;
+			GdkColor color = null;
+			GdkRGBA colorRGBA = null;
 			Pattern pattern;
 			if ((state & FOREGROUND) != 0) {
-				color = data.foreground;
+				if (OS.GTK3) {
+					colorRGBA = data.foregroundRGBA;
+				} else {
+					color = data.foreground;
+				}
 				pattern = data.foregroundPattern;
 				data.state &= ~BACKGROUND;
 			} else {
-				color = data.background;
+				if (OS.GTK3) {
+					colorRGBA = data.backgroundRGBA;
+				} else {
+					color = data.background;
+				}
 				pattern = data.backgroundPattern;
 				data.state &= ~FOREGROUND;
 			}
@@ -270,7 +279,11 @@ void checkGC (int mask) {
 					Cairo.cairo_set_source(cairo, pattern.handle);
 				}
 			} else {
-				Cairo.cairo_set_source_rgba(cairo, (color.red & 0xFFFF) / (float)0xFFFF, (color.green & 0xFFFF) / (float)0xFFFF, (color.blue & 0xFFFF) / (float)0xFFFF, data.alpha / (float)0xFF);
+				if (OS.GTK3) {
+					Cairo.cairo_set_source_rgba(cairo, colorRGBA.red, colorRGBA.green, colorRGBA.blue, colorRGBA.alpha);
+				} else {
+					Cairo.cairo_set_source_rgba(cairo, (color.red & 0xFFFF) / (float)0xFFFF, (color.green & 0xFFFF) / (float)0xFFFF, (color.blue & 0xFFFF) / (float)0xFFFF, data.alpha / (float)0xFF);
+				}
 			}
 		}
 		if ((state & FONT) != 0) {
@@ -2355,7 +2368,11 @@ public int getAntialias() {
  */
 public Color getBackground() {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	return Color.gtk_new(data.device, data.background);
+	if (OS.GTK3) {
+		return Color.gtk_new(data.device, data.backgroundRGBA);
+	} else {
+		return Color.gtk_new(data.device, data.background);
+	}
 }
 
 /**
@@ -2595,7 +2612,11 @@ public FontMetrics getFontMetrics() {
  */
 public Color getForeground() {
 	if (handle == 0) SWT.error(SWT.ERROR_WIDGET_DISPOSED);
-	return Color.gtk_new(data.device, data.foreground);
+	if (OS.GTK3) {
+		return Color.gtk_new(data.device, data.foregroundRGBA);
+	} else {
+		return Color.gtk_new(data.device, data.foreground);
+	}
 }
 
 /**
@@ -2952,10 +2973,14 @@ double[] identity() {
 }
 
 void init(Drawable drawable, GCData data, long /*int*/ gdkGC) {
-	if (data.foreground != null) data.state &= ~FOREGROUND;
-	if (data.background != null) data.state &= ~(BACKGROUND | BACKGROUND_BG);
+	if (OS.GTK3) {
+		if (data.foregroundRGBA != null) data.state &= ~FOREGROUND;
+		if (data.backgroundRGBA != null) data.state &= ~(BACKGROUND | BACKGROUND_BG);
+	} else {
+		if (data.foreground != null) data.state &= ~FOREGROUND;
+		if (data.background != null) data.state &= ~(BACKGROUND | BACKGROUND_BG);
+	}
 	if (data.font != null) data.state &= ~FONT;
-
 	Image image = data.image;
 	if (image != null) {
 		image.memGC = this;
@@ -3208,7 +3233,11 @@ public void setBackground(Color color) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (color == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (color.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-	data.background = color.handle;
+	if (OS.GTK3) {
+		data.backgroundRGBA = color.handleRGBA;
+	} else {
+		data.background = color.handle;
+	}
 	data.backgroundPattern = null;
 	data.state &= ~(BACKGROUND | BACKGROUND_BG);
 }
@@ -3275,12 +3304,17 @@ static void setCairoRegion(long /*int*/ cairo, long /*int*/ rgn) {
 }
 
 static void setCairoPatternColor(long /*int*/ pattern, int offset, Color c, int alpha) {
-	GdkColor color = c.handle;
-	double aa = (alpha & 0xFF) / (double)0xFF;
-	double red = ((color.red & 0xFFFF) / (double)0xFFFF);
-	double green = ((color.green & 0xFFFF) / (double)0xFFFF);
-	double blue = ((color.blue & 0xFFFF) / (double)0xFFFF);
-	Cairo.cairo_pattern_add_color_stop_rgba(pattern, offset, red, green, blue, aa);
+	if (OS.GTK3) {
+		GdkRGBA rgba = c.handleRGBA;
+		Cairo.cairo_pattern_add_color_stop_rgba(pattern, offset, rgba.red, rgba.green, rgba.blue, alpha / 255f);
+	} else {
+		GdkColor color = c.handle;
+		double aa = (alpha & 0xFF) / (double)0xFF;
+		double red = ((color.red & 0xFFFF) / (double)0xFFFF);
+		double green = ((color.green & 0xFFFF) / (double)0xFFFF);
+		double blue = ((color.blue & 0xFFFF) / (double)0xFFFF);
+		Cairo.cairo_pattern_add_color_stop_rgba(pattern, offset, red, green, blue, aa);
+	}
 }
 
 void setCairoClip(long /*int*/ damageRgn, long /*int*/ clipRgn) {
@@ -3545,7 +3579,11 @@ public void setForeground(Color color) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (color == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (color.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-	data.foreground = color.handle;
+	if (OS.GTK3) {
+		data.foregroundRGBA = color.handleRGBA;
+	} else {
+		data.foreground = color.handle;
+	}
 	data.foregroundPattern = null;
 	data.state &= ~FOREGROUND;
 }

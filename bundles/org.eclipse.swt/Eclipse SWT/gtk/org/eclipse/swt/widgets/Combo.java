@@ -848,8 +848,9 @@ long /*int*/ eventWindow () {
 }
 
 @Override
-GdkColor getBackgroundColor () {
-	return getBaseColor ();
+GdkColor getBackgroundGdkColor () {
+	assert !OS.GTK3 : "GTK2 code was run by GTK3";
+	return getBaseGdkColor ();
 }
 
 /**
@@ -913,20 +914,18 @@ public int getCaretPosition () {
 }
 
 @Override
-GdkColor getContextBackground () {
-	if (OS.GTK_VERSION >= OS.VERSION(3, 16, 0)) {
-		if (background != null) {
-			return display.toGdkColor (background);
-		} else {
-			return display.COLOR_WIDGET_BACKGROUND;
-		}
+GdkRGBA getContextBackgroundGdkRGBA () {
+	assert OS.GTK3 : "GTK3 code was run by GTK2";
+	if (background != null) {
+		return background;
 	} else {
-		return super.getContextBackground();
+		return display.COLOR_WIDGET_BACKGROUND_RGBA;
 	}
 }
 
 @Override
-GdkColor getForegroundColor () {
+GdkColor getForegroundGdkColor () {
+	assert !OS.GTK3 : "GTK2 code was run by GTK3";
 	return getTextColor ();
 }
 
@@ -1910,7 +1909,8 @@ public void select (int index) {
 
 
 @Override
-void setBackgroundColor (long /*int*/ context, long /*int*/ handle, GdkRGBA rgba) {
+void setBackgroundGdkRGBA (long /*int*/ context, long /*int*/ handle, GdkRGBA rgba) {
+	assert OS.GTK3 : "GTK3 code was run by GTK2";
 	// CSS to be parsed for various widgets within Combo
 	background = rgba;
 	String css = "* {\n";
@@ -1931,8 +1931,8 @@ void setBackgroundColor (long /*int*/ context, long /*int*/ handle, GdkRGBA rgba
 			gtk_css_provider_load_from_css (OS.gtk_widget_get_style_context(entryHandle), finalCss);
 		} else {
 			// Maintain GTK3.14- functionality
-			setBackgroundColorGradient (OS.gtk_widget_get_style_context (entryHandle), handle, rgba);
-			super.setBackgroundColor (OS.gtk_widget_get_style_context (entryHandle), entryHandle, rgba);
+			setBackgroundGradientGdkRGBA (OS.gtk_widget_get_style_context (entryHandle), handle, rgba);
+			super.setBackgroundGdkRGBA (OS.gtk_widget_get_style_context (entryHandle), entryHandle, rgba);
 		}
 	}
 	// Set the background color of the text of the drop down menu.
@@ -1940,17 +1940,15 @@ void setBackgroundColor (long /*int*/ context, long /*int*/ handle, GdkRGBA rgba
 }
 
 @Override
-void setBackgroundColor (GdkColor color) {
-	//Note: This function is reached by Gtk2 and Gtk3.
-	super.setBackgroundColor (color);
-	if (!OS.GTK3) {
-		if (entryHandle != 0) OS.gtk_widget_modify_base (entryHandle, 0, color);
-		if (cellHandle != 0) OS.g_object_set (cellHandle, OS.background_gdk, color, 0);
-		OS.g_object_set (textRenderer, OS.background_gdk, color, 0);
-	}
+void setBackgroundGdkColor (GdkColor color) {
+	assert !OS.GTK3 : "GTK2 code was run by GTK3";
+	super.setBackgroundGdkColor (color);
+	if (entryHandle != 0) OS.gtk_widget_modify_base (entryHandle, 0, color);
+	if (cellHandle != 0) OS.g_object_set (cellHandle, OS.background_gdk, color, 0);
+	OS.g_object_set (textRenderer, OS.background_gdk, color, 0);
 
-	if (entryHandle != 0) setBackgroundColor(entryHandle, color);
-	setBackgroundColor (fixedHandle, color);
+	if (entryHandle != 0) setBackgroundGdkColor(entryHandle, color);
+	setBackgroundGdkColor (fixedHandle, color);
 }
 
 @Override
@@ -2008,32 +2006,25 @@ void setFontDescription (long /*int*/ font) {
 }
 
 @Override
-void setForegroundColor (GdkColor color) {
-	if (OS.GTK_VERSION >= OS.VERSION(3, 16, 0)) {
-		GdkRGBA rgba = null;
-		if (color != null) {
-			rgba = display.toGdkRGBA (color);
-		}
-		if (entryHandle != 0) {
-			setForegroundColor (entryHandle, rgba);
-		}
-    	OS.g_object_set (textRenderer, OS.foreground_rgba, rgba, 0);
-	} else {
-		super.setForegroundColor (handle, color, false);
-		if (entryHandle != 0) {
-			setForegroundColor (entryHandle, color, false);
-		}
-	    if (OS.GTK3) {
-	    	GdkRGBA rgba = null;
-	    	if (color != null) {
-	    		rgba = display.toGdkRGBA (color);
-	    	}
-	    	OS.g_object_set (textRenderer, OS.foreground_rgba, rgba, 0);
-	    } else  {
-	    	OS.g_object_set (textRenderer, OS.foreground_gdk, color, 0);
-	    }
+void setForegroundGdkColor (GdkColor color) {
+	assert !OS.GTK3 : "GTK2 code was run by GTK3";
+	super.setForegroundColor (handle, color, false);
+	if (entryHandle != 0) {
+		setForegroundColor (entryHandle, color, false);
 	}
+	OS.g_object_set (textRenderer, OS.foreground_gdk, color, 0);
 }
+
+@Override
+void setForegroundGdkRGBA (GdkRGBA rgba) {
+	assert OS.GTK3 : "GTK3 code was run by GTK2";
+	if (entryHandle != 0) {
+		setForegroundGdkRGBA (entryHandle, rgba);
+	}
+	OS.g_object_set (textRenderer, OS.foreground_rgba, rgba, 0);
+	super.setForegroundGdkRGBA(rgba);
+}
+
 
 /**
  * Sets the text of the item in the receiver's list at the given

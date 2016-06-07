@@ -318,20 +318,42 @@ long /*int*/ gtk_preedit_changed (long /*int*/ imcontext) {
 				long /*int*/ attr = OS.pango_attr_iterator_get (iterator, OS.PANGO_ATTR_FOREGROUND);
 				if (attr != 0) {
 					OS.memmove (attrColor, attr, PangoAttrColor.sizeof);
-					GdkColor color = new GdkColor ();
-					color.red = attrColor.color_red;
-					color.green = attrColor.color_green;
-					color.blue = attrColor.color_blue;
-					styles [i].foreground = Color.gtk_new (display, color);
+					if (OS.GTK3) {
+						GdkRGBA rgba = new GdkRGBA ();
+						rgba.alpha = 1.0;
+						// Manual conversion since PangoAttrColor is a special case.
+						// It uses GdkColor style colors but is supported on GTK3.
+						rgba.red = (attrColor.color_red & 0xFFFF) / (float)0xFFFF;
+						rgba.green = (attrColor.color_green & 0xFFFF) / (float)0xFFFF;
+						rgba.blue = (attrColor.color_blue & 0xFFFF) / (float)0xFFFF;
+						styles [i].foreground = Color.gtk_new(display, rgba);
+					} else {
+						GdkColor color = new GdkColor ();
+						color.red = attrColor.color_red;
+						color.green = attrColor.color_green;
+						color.blue = attrColor.color_blue;
+						styles [i].foreground = Color.gtk_new (display, color);
+					}
 				}
 				attr = OS.pango_attr_iterator_get (iterator, OS.PANGO_ATTR_BACKGROUND);
 				if (attr != 0) {
 					OS.memmove (attrColor, attr, PangoAttrColor.sizeof);
-					GdkColor color = new GdkColor ();
-					color.red = attrColor.color_red;
-					color.green = attrColor.color_green;
-					color.blue = attrColor.color_blue;
-					styles [i].background = Color.gtk_new (display, color);
+					if (OS.GTK3) {
+						GdkRGBA rgba = new GdkRGBA ();
+						rgba.alpha = 1.0;
+						// Manual conversion since PangoAttrColor is a special case.
+						// It uses GdkColor style colors but is supported on GTK3.
+						rgba.red = (attrColor.color_red & 0xFFFF) / (float)0xFFFF;
+						rgba.green = (attrColor.color_green & 0xFFFF) / (float)0xFFFF;
+						rgba.blue = (attrColor.color_blue & 0xFFFF) / (float)0xFFFF;
+						styles [i].background = Color.gtk_new(display, rgba);
+					} else {
+						GdkColor color = new GdkColor ();
+						color.red = attrColor.color_red;
+						color.green = attrColor.color_green;
+						color.blue = attrColor.color_blue;
+						styles [i].background = Color.gtk_new (display, color);
+					}
 				}
 				attr = OS.pango_attr_iterator_get (iterator, OS.PANGO_ATTR_UNDERLINE);
 				if (attr != 0) {

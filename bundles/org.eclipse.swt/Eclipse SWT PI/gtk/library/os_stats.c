@@ -108,6 +108,7 @@ char * OS_nativeFunctionNames[] = {
 	"_1GDK_1PIXMAP_1XID",
 	"_1GDK_1TYPE_1COLOR",
 	"_1GDK_1TYPE_1PIXBUF",
+	"_1GDK_1TYPE_1RGBA",
 	"_1GET_1FUNCTION_1POINTER_1gtk_1false",
 	"_1GString_1len",
 	"_1GString_1str",
@@ -502,6 +503,8 @@ char * OS_nativeFunctionNames[] = {
 	"_1gdk_1region_1subtract",
 	"_1gdk_1region_1union",
 	"_1gdk_1region_1union_1with_1rect",
+	"_1gdk_1rgba_1free",
+	"_1gdk_1rgba_1hash",
 	"_1gdk_1rgba_1parse",
 	"_1gdk_1rgba_1to_1string",
 	"_1gdk_1screen_1get_1active_1window",
@@ -873,6 +876,11 @@ char * OS_nativeFunctionNames[] = {
 	"_1gtk_1list_1store_1set__JJILorg_eclipse_swt_internal_gtk_GdkColor_2I",
 #endif
 #ifndef JNI64
+	"_1gtk_1list_1store_1set__IIILorg_eclipse_swt_internal_gtk_GdkRGBA_2I",
+#else
+	"_1gtk_1list_1store_1set__JJILorg_eclipse_swt_internal_gtk_GdkRGBA_2I",
+#endif
+#ifndef JNI64
 	"_1gtk_1list_1store_1set__IIIZI",
 #else
 	"_1gtk_1list_1store_1set__JJIZI",
@@ -1214,6 +1222,11 @@ char * OS_nativeFunctionNames[] = {
 	"_1gtk_1tree_1store_1set__IIILorg_eclipse_swt_internal_gtk_GdkColor_2I",
 #else
 	"_1gtk_1tree_1store_1set__JJILorg_eclipse_swt_internal_gtk_GdkColor_2I",
+#endif
+#ifndef JNI64
+	"_1gtk_1tree_1store_1set__IIILorg_eclipse_swt_internal_gtk_GdkRGBA_2I",
+#else
+	"_1gtk_1tree_1store_1set__JJILorg_eclipse_swt_internal_gtk_GdkRGBA_2I",
 #endif
 #ifndef JNI64
 	"_1gtk_1tree_1store_1set__IIIZI",
@@ -1694,6 +1707,11 @@ char * OS_nativeFunctionNames[] = {
 	"memmove__Lorg_eclipse_swt_internal_gtk_GdkImage_2I",
 #else
 	"memmove__Lorg_eclipse_swt_internal_gtk_GdkImage_2J",
+#endif
+#ifndef JNI64
+	"memmove__Lorg_eclipse_swt_internal_gtk_GdkRGBA_2II",
+#else
+	"memmove__Lorg_eclipse_swt_internal_gtk_GdkRGBA_2JJ",
 #endif
 #ifndef JNI64
 	"memmove__Lorg_eclipse_swt_internal_gtk_GdkRectangle_2II",

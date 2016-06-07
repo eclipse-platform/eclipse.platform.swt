@@ -656,6 +656,7 @@ public class OS extends C {
 	public static final byte[] background_rgba = ascii("background-rgba");
 	public static final byte[] button_relief = ascii("button-relief");
 	public static final byte[] cell_background_gdk = ascii("cell-background-gdk");
+	public static final byte[] cell_background_rgba = ascii("cell-background-rgba");
 	public static final byte[] default_border = ascii("default-border");
 	public static final byte[] expander_size = ascii("expander-size");
 	public static final byte[] fixed_height_mode = ascii("fixed-height-mode");
@@ -1327,6 +1328,17 @@ public static final long /*int*/ GDK_TYPE_COLOR() {
 	lock.lock();
 	try {
 		return _GDK_TYPE_COLOR();
+	} finally {
+		lock.unlock();
+	}
+}
+/** @method flags=const */
+public static final native long /*int*/ _GDK_TYPE_RGBA();
+public static final long /*int*/ GDK_TYPE_RGBA() {
+	lock.lock();
+	assert OS.GTK3 : "GTK3 code was run by GTK2";
+	try {
+		return _GDK_TYPE_RGBA();
 	} finally {
 		lock.unlock();
 	}
@@ -3530,10 +3542,13 @@ public static final void gdk_cairo_set_source_window(long /*int*/ cairo, long /*
                 lock.unlock();
         }
 }
-/** @param color cast=(GdkColor *) */
+/**
+ * @method flags=dynamic
+ * @param color cast=(GdkColor *) */
 public static final native void _gdk_color_free(long /*int*/ color);
 public static final void gdk_color_free(long /*int*/ color) {
 	lock.lock();
+	assert !OS.GTK3 : "GTK2 code was run by GTK3";
 	try {
 		_gdk_color_free(color);
 	} finally {
@@ -3541,12 +3556,14 @@ public static final void gdk_color_free(long /*int*/ color) {
 	}
 }
 /**
+ * @method flags=dynamic
  * @param spec cast=(const gchar *)
  * @param color cast=(GdkColor *),flags=no_in
  */
 public static final native boolean _gdk_color_parse(byte[] spec, GdkColor color);
 public static final boolean gdk_color_parse(byte[] spec, GdkColor color) {
 	lock.lock();
+	assert !OS.GTK3 : "GTK2 code was run by GTK3";
 	try {
 		return _gdk_color_parse(spec, color);
 	} finally {
@@ -5010,8 +5027,37 @@ public static final void gdk_region_union_with_rect(long /*int*/ region, GdkRect
 public static final native long /*int*/ _gdk_rgba_to_string(GdkRGBA rgba);
 public static final long /*int*/ gdk_rgba_to_string(GdkRGBA rgba) {
 	lock.lock();
+	assert OS.GTK3 : "GTK3 code was run by GTK2";
 	try {
 		return _gdk_rgba_to_string(rgba);
+	} finally {
+		lock.unlock();
+	}
+}
+/**
+ * @method flags=dynamic
+ * @param rgba cast=(GdkRGBA *)
+ */
+public static final native void _gdk_rgba_free(long /*int*/ rgba);
+public static final void gdk_rgba_free(long /*int*/ rgba) {
+	lock.lock();
+	assert OS.GTK3 : "GTK3 code was run by GTK2";
+	try {
+		_gdk_rgba_free(rgba);
+	} finally {
+		lock.unlock();
+	}
+}
+/**
+ * @method flags=dynamic
+ * @param rgba cast=(GdkRGBA *)
+ */
+public static final native int _gdk_rgba_hash(GdkRGBA rgba);
+public static final int gdk_rgba_hash(GdkRGBA  rgba) {
+	lock.lock();
+	assert OS.GTK3 : "GTK3 code was run by GTK2";
+	try {
+		return _gdk_rgba_hash(rgba);
 	} finally {
 		lock.unlock();
 	}
@@ -5024,6 +5070,7 @@ public static final long /*int*/ gdk_rgba_to_string(GdkRGBA rgba) {
 public static final native long /*int*/ _gdk_rgba_parse(GdkRGBA rgba, byte[] property);
 public static final long /*int*/ gdk_rgba_parse(GdkRGBA rgba, byte[] property) {
 	lock.lock();
+	assert OS.GTK3 : "GTK3 code was run by GTK2";
 	try {
 		return _gdk_rgba_parse(rgba, property);
 	} finally {
@@ -9204,6 +9251,22 @@ public static final void gtk_list_store_set(long /*int*/ store, long /*int*/ ite
 public static final native void _gtk_list_store_set(long /*int*/ store, long /*int*/ iter, int column, GdkColor value, int terminator);
 public static final void gtk_list_store_set(long /*int*/ store, long /*int*/ iter, int column, GdkColor value, int terminator) {
 	lock.lock();
+	assert !OS.GTK3 : "GTK2 code was run by GTK3";
+	try {
+		_gtk_list_store_set(store, iter, column, value, terminator);
+	} finally {
+		lock.unlock();
+	}
+}
+/**
+ * @param store cast=(GtkListStore *)
+ * @param iter cast=(GtkTreeIter *)
+ * @param value flags=no_out
+ */
+public static final native void _gtk_list_store_set(long /*int*/ store, long /*int*/ iter, int column, GdkRGBA value, int terminator);
+public static final void gtk_list_store_set(long /*int*/ store, long /*int*/ iter, int column, GdkRGBA value, int terminator) {
+	lock.lock();
+	assert OS.GTK3 : "GTK3 code was run by GTK2";
 	try {
 		_gtk_list_store_set(store, iter, column, value, terminator);
 	} finally {
@@ -12885,6 +12948,22 @@ public static final void gtk_tree_store_set(long /*int*/ store, long /*int*/ ite
 public static final native void _gtk_tree_store_set(long /*int*/ store, long /*int*/ iter, int column, GdkColor value, int terminator);
 public static final void gtk_tree_store_set(long /*int*/ store, long /*int*/ iter, int column, GdkColor value, int terminator) {
 	lock.lock();
+	assert !OS.GTK3 : "GTK2 code was run by GTK3";
+	try {
+		_gtk_tree_store_set(store, iter, column, value, terminator);
+	} finally {
+		lock.unlock();
+	}
+}
+/**
+ * @param store cast=(GtkTreeStore *)
+ * @param iter cast=(GtkTreeIter *)
+ * @param value flags=no_out
+ */
+public static final native void _gtk_tree_store_set(long /*int*/ store, long /*int*/ iter, int column, GdkRGBA value, int terminator);
+public static final void gtk_tree_store_set(long /*int*/ store, long /*int*/ iter, int column, GdkRGBA value, int terminator) {
+	lock.lock();
+	assert OS.GTK3 : "GTK3 code was run by GTK2";
 	try {
 		_gtk_tree_store_set(store, iter, column, value, terminator);
 	} finally {
@@ -15124,12 +15203,14 @@ public static final native void memmove(long /*int*/ dest, GTypeInfo src, int si
  * @param size cast=(size_t)
  */
 public static final native void memmove(long /*int*/ dest, GtkTargetEntry src, long /*int*/ size);
+//NOTE: Call only on GTK2 as this uses GdkColor.
 /**
  * @param dest cast=(void *)
  * @param src cast=(const void *),flags=no_out
  * @param size cast=(size_t)
  */
 public static final native void memmove(long /*int*/ dest, GdkColor src, long /*int*/ size);
+//NOTE: Call only on GTK3 as this uses GdkRGBA.
 /**
  * @param dest cast=(void *)
  * @param src cast=(const void *),flags=no_out
@@ -15192,12 +15273,20 @@ public static final native void memmove(GtkWidgetClass dest, long /*int*/ src);
  * @param size cast=(size_t)
  */
 public static final native void memmove(GtkBorder dest, long /*int*/ src, long /*int*/ size);
+//NOTE: Call only on GTK2 as this uses GdkColor.
 /**
  * @param dest cast=(void *),flags=no_in
  * @param src cast=(const void *)
  * @param size cast=(size_t)
  */
 public static final native void memmove(GdkColor dest, long /*int*/ src, long /*int*/ size);
+//NOTE: Call only on GTK3 as this uses GdkRGBA.
+/**
+ * @param dest cast=(void *),flags=no_in
+ * @param src cast=(const void *)
+ * @param size cast=(size_t)
+ */
+public static final native void memmove(GdkRGBA dest, long /*int*/ src, long /*int*/ size);
 /**
  * @param dest cast=(void *),flags=no_in
  * @param src cast=(const void *)

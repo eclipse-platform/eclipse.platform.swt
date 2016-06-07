@@ -21,6 +21,7 @@
 package org.eclipse.swt.internal.cairo;
 
 import org.eclipse.swt.internal.*;
+import org.eclipse.swt.internal.gtk.*;
 
 public class Cairo extends Platform {
 	static {
@@ -1008,6 +1009,17 @@ public static final void cairo_set_source_rgb(long /*int*/ cr, double red, doubl
 	} finally {
 		lock.unlock();
 	}
+}
+/*
+ * In some cases we need to call cairo_set_source_rgba() on GTK2, which
+ * cannot use GdkRGBA objects. Convert the GdkColor object into doubles
+ * can call cairo_set_source_rgba() using those values instead.
+ */
+public static void cairo_set_source_rgba_compatibility (long /*int*/ cairo, GdkColor color) {
+	double red = (color.red & 0xFFFF) / (float)0xFFFF;
+	double green = (color.green & 0xFFFF) / (float)0xFFFF;
+	double blue = (color.blue & 0xFFFF) / (float)0xFFFF;
+	Cairo.cairo_set_source_rgba (cairo, red, green, blue, 1.0);
 }
 /** @param cr cast=(cairo_t *) */
 public static final native void _cairo_set_source_rgba(long /*int*/ cr, double red, double green, double blue, double alpha);

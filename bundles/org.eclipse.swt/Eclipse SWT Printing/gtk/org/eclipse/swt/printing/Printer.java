@@ -412,8 +412,13 @@ public long /*int*/ internal_new_GC(GCData data) {
 		}
 		data.device = this;
 		data.drawable = drawable;
-		data.background = getSystemColor (SWT.COLOR_WHITE).handle;
-		data.foreground = getSystemColor (SWT.COLOR_BLACK).handle;
+		if (OS.GTK3) {
+			data.backgroundRGBA = getSystemColor (SWT.COLOR_WHITE).handleRGBA;
+			data.foregroundRGBA = getSystemColor (SWT.COLOR_BLACK).handleRGBA;
+		} else {
+			data.background = getSystemColor (SWT.COLOR_WHITE).handle;
+			data.foreground = getSystemColor (SWT.COLOR_BLACK).handle;
+		}
 		data.font = getSystemFont ();
 		Point dpi = getDPI(), screenDPI = getIndependentDPI();
 		data.width = (int)(OS.gtk_page_setup_get_paper_width (pageSetup, OS.GTK_UNIT_POINTS) * dpi.x / screenDPI.x);

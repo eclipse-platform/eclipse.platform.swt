@@ -97,6 +97,14 @@ public TextLayout (Device device) {
 	init();
 }
 
+GdkColor toGdkColor (GdkRGBA rgba) {
+	GdkColor gdkColor = new GdkColor();
+	gdkColor.red = (short)(rgba.red * 0xFFFF);
+	gdkColor.green = (short)(rgba.green * 0xFFFF);
+	gdkColor.blue = (short)(rgba.blue * 0xFFFF);
+	return gdkColor;
+}
+
 void checkLayout() {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 }
@@ -237,7 +245,8 @@ void computeRuns () {
 			OS.pango_attr_list_insert(attrList, attr);
 			OS.pango_attr_list_insert(selAttrList, OS.pango_attribute_copy(attr));
 			if (style.underlineColor != null) {
-				GdkColor fg = style.underlineColor.handle;
+				GdkColor fg;
+				fg = OS.GTK3? toGdkColor(style.underlineColor.handleRGBA) : style.underlineColor.handle;
 				attr = OS.pango_attr_underline_color_new(fg.red, fg.green, fg.blue);
 				if (attr != 0) {
 					OS.memmove(attribute, attr, PangoAttribute.sizeof);
@@ -258,7 +267,8 @@ void computeRuns () {
 			OS.pango_attr_list_insert(attrList, attr);
 			OS.pango_attr_list_insert(selAttrList, OS.pango_attribute_copy(attr));
 			if (style.strikeoutColor != null) {
-				GdkColor fg = style.strikeoutColor.handle;
+				GdkColor fg;
+				fg = OS.GTK3? toGdkColor(style.strikeoutColor.handleRGBA) : style.strikeoutColor.handle;
 				attr = OS.pango_attr_strikethrough_color_new(fg.red, fg.green, fg.blue);
 				if (attr != 0) {
 					OS.memmove(attribute, attr, PangoAttribute.sizeof);
@@ -272,7 +282,8 @@ void computeRuns () {
 		}
 		Color foreground = style.foreground;
 		if (foreground != null && !foreground.isDisposed()) {
-			GdkColor fg = foreground.handle;
+			GdkColor fg;
+			fg = OS.GTK3? toGdkColor(foreground.handleRGBA) : foreground.handle;
 			long /*int*/ attr = OS.pango_attr_foreground_new(fg.red, fg.green, fg.blue);
 			OS.memmove (attribute, attr, PangoAttribute.sizeof);
 			attribute.start_index = byteStart;
@@ -282,7 +293,8 @@ void computeRuns () {
 		}
 		Color background = style.background;
 		if (background != null && !background.isDisposed()) {
-			GdkColor bg = background.handle;
+			GdkColor bg;
+			bg = OS.GTK3? toGdkColor(background.handleRGBA) : background.handle;
 			long /*int*/ attr = OS.pango_attr_background_new(bg.red, bg.green, bg.blue);
 			OS.memmove (attribute, attr, PangoAttribute.sizeof);
 			attribute.start_index = byteStart;
@@ -466,8 +478,13 @@ void drawInPixels(GC gc, int x, int y, int selectionStart, int selectionEnd, Col
 		if (selectionBackground == null) selectionBackground = device.getSystemColor(SWT.COLOR_LIST_SELECTION);
 		if (cairo != 0) {
 			Cairo.cairo_save(cairo);
-			GdkColor color = selectionBackground.handle;
-			Cairo.cairo_set_source_rgba(cairo, (color.red & 0xFFFF) / (float)0xFFFF, (color.green & 0xFFFF) / (float)0xFFFF, (color.blue & 0xFFFF) / (float)0xFFFF, data.alpha / (float)0xFF);
+			if (OS.GTK3) {
+				GdkRGBA rgba = selectionBackground.handleRGBA;
+				Cairo.cairo_set_source_rgba(cairo, rgba.red, rgba.green, rgba.blue, rgba.alpha);
+			} else {
+				GdkColor color = selectionBackground.handle;
+				Cairo.cairo_set_source_rgba(cairo, (color.red & 0xFFFF) / (float)0xFFFF, (color.green & 0xFFFF) / (float)0xFFFF, (color.blue & 0xFFFF) / (float)0xFFFF, data.alpha / (float)0xFF);
+			}
 		} else {
 			OS.gdk_gc_set_foreground(gc.handle, selectionBackground.handle);
 		}
@@ -555,13 +572,13 @@ void drawInPixels(GC gc, int x, int y, int selectionStart, int selectionEnd, Col
 					Cairo.cairo_scale(cairo, -1,  1);
 					Cairo.cairo_translate(cairo, -2 * x - width(), 0);
 				}
-				drawWithCairo(gc, x, y, 0, OS.strlen(ptr), fullSelection, selectionForeground.handle, selectionBackground.handle);
+				drawWithCairo(gc, x, y, 0, OS.strlen(ptr), fullSelection, selectionForeground, selectionBackground);
 				if ((data.style & SWT.MIRRORED) != 0) {
 					Cairo.cairo_restore(cairo);
 				}
 			} else {
 				OS.gdk_draw_layout_with_colors(data.drawable, gc.handle, x, y, layout, selectionForeground.handle, selectionBackground.handle);
-				drawBorder(gc, x, y, selectionForeground.handle);
+				drawBorder(gc, x, y, selectionForeground);
 			}
 		} else {
 			long /*int*/ ptr = OS.pango_layout_get_text(layout);
@@ -576,7 +593,7 @@ void drawInPixels(GC gc, int x, int y, int selectionStart, int selectionEnd, Col
 					Cairo.cairo_scale(cairo, -1,  1);
 					Cairo.cairo_translate(cairo, -2 * x - width(), 0);
 				}
-				drawWithCairo(gc, x, y, byteSelStart, byteSelEnd, fullSelection, selectionForeground.handle, selectionBackground.handle);
+				drawWithCairo(gc, x, y, byteSelStart, byteSelEnd, fullSelection, selectionForeground, selectionBackground);
 				if ((data.style & SWT.MIRRORED) != 0) {
 					Cairo.cairo_restore(cairo);
 				}
@@ -592,7 +609,7 @@ void drawInPixels(GC gc, int x, int y, int selectionStart, int selectionEnd, Col
 					OS.gdk_region_destroy(rgn);
 				}
 				OS.gdk_draw_layout_with_colors(data.drawable, gc.handle, x, y, layout, selectionForeground.handle, selectionBackground.handle);
-				drawBorder(gc, x, y, selectionForeground.handle);
+				drawBorder(gc, x, y, selectionForeground);
 				gc.setClipping(clipping);
 				clipping.dispose();
 			}
@@ -603,7 +620,9 @@ void drawInPixels(GC gc, int x, int y, int selectionStart, int selectionEnd, Col
 	}
 }
 
-void drawWithCairo(GC gc, int x, int y, int start, int end, boolean fullSelection, GdkColor fg, GdkColor bg) {
+// Bug 477950: In order to support GTK2 and GTK3 colors simultaneously, this method's parameters
+// were modified to accept SWT Color objects instead of GdkColor structs.
+void drawWithCairo(GC gc, int x, int y, int start, int end, boolean fullSelection, Color fg, Color bg) {
 	GCData data = gc.data;
 	long /*int*/ cairo = data.cairo;
 	Cairo.cairo_save(cairo);
@@ -617,11 +636,19 @@ void drawWithCairo(GC gc, int x, int y, int start, int end, boolean fullSelectio
 	if (rgn != 0) {
 		OS.gdk_cairo_region(cairo, rgn);
 		Cairo.cairo_clip(cairo);
-		Cairo.cairo_set_source_rgba(cairo, (bg.red & 0xFFFF) / (float)0xFFFF, (bg.green & 0xFFFF) / (float)0xFFFF, (bg.blue & 0xFFFF) / (float)0xFFFF, data.alpha / (float)0xFF);
+		if (OS.GTK3) {
+			Cairo.cairo_set_source_rgba(cairo, bg.handleRGBA.red, bg.handleRGBA.green, bg.handleRGBA.blue, bg.handleRGBA.alpha);
+		} else {
+			Cairo.cairo_set_source_rgba(cairo, (bg.handle.red & 0xFFFF) / (float)0xFFFF, (bg.handle.green & 0xFFFF) / (float)0xFFFF, (bg.handle.blue & 0xFFFF) / (float)0xFFFF, data.alpha / (float)0xFF);
+		}
 		Cairo.cairo_paint(cairo);
 		OS.gdk_region_destroy(rgn);
 	}
-	Cairo.cairo_set_source_rgba(cairo, (fg.red & 0xFFFF) / (float)0xFFFF, (fg.green & 0xFFFF) / (float)0xFFFF, (fg.blue & 0xFFFF) / (float)0xFFFF, data.alpha / (float)0xFF);
+	if (OS.GTK3) {
+		Cairo.cairo_set_source_rgba(cairo, fg.handleRGBA.red, fg.handleRGBA.green, fg.handleRGBA.blue, fg.handleRGBA.alpha);
+	} else {
+		Cairo.cairo_set_source_rgba(cairo, (fg.handle.red & 0xFFFF) / (float)0xFFFF, (fg.handle.green & 0xFFFF) / (float)0xFFFF, (fg.handle.blue & 0xFFFF) / (float)0xFFFF, data.alpha / (float)0xFF);
+	}
 	Cairo.cairo_move_to(cairo, x, y);
 	OS.pango_layout_set_attributes(layout, selAttrList);
 	OS.pango_cairo_show_layout(cairo, layout);
@@ -630,7 +657,9 @@ void drawWithCairo(GC gc, int x, int y, int start, int end, boolean fullSelectio
 	Cairo.cairo_restore(cairo);
 }
 
-void drawBorder(GC gc, int x, int y, GdkColor selectionColor) {
+//Bug 477950: In order to support GTK2 and GTK3 colors simultaneously, this method's parameters
+//were modified to accept SWT Color objects instead of GdkColor structs.
+void drawBorder(GC gc, int x, int y, Color selectionColor) {
 	GCData data = gc.data;
 	long /*int*/ cairo = data.cairo;
 	long /*int*/ gdkGC = gc.handle;
@@ -660,11 +689,19 @@ void drawBorder(GC gc, int x, int y, GdkColor selectionColor) {
 				long /*int*/[] rects = new long /*int*/[1];
 				Region.gdk_region_get_rectangles(rgn, rects, nRects);
 				GdkRectangle rect = new GdkRectangle();
+				GdkRGBA colorRGBA = null;
 				GdkColor color = null;
-				if (color == null && style.borderColor != null) color = style.borderColor.handle;
-				if (color == null && selectionColor != null) color = selectionColor;
-				if (color == null && style.foreground != null) color = style.foreground.handle;
-				if (color == null) color = data.foreground;
+				if (OS.GTK3) {
+					if (colorRGBA == null && style.borderColor != null) colorRGBA = style.borderColor.handleRGBA;
+					if (colorRGBA == null && selectionColor != null) colorRGBA = selectionColor.handleRGBA;
+					if (colorRGBA == null && style.foreground != null) colorRGBA = style.foreground.handleRGBA;
+					if (colorRGBA == null) colorRGBA = data.foregroundRGBA;
+				} else {
+					if (color == null && style.borderColor != null) color = style.borderColor.handle;
+					if (color == null && selectionColor != null) color = selectionColor.handle;
+					if (color == null && style.foreground != null) color = style.foreground.handle;
+					if (color == null) color = data.foreground;
+				}
 				int width = 1;
 				float[] dashes = null;
 				switch (style.borderStyle) {
@@ -673,7 +710,11 @@ void drawBorder(GC gc, int x, int y, GdkColor selectionColor) {
 					case SWT.BORDER_DOT: dashes = width != 0 ? GC.LINE_DOT : GC.LINE_DOT_ZERO; break;
 				}
 				if (cairo != 0) {
-					Cairo.cairo_set_source_rgba(cairo, (color.red & 0xFFFF) / (float)0xFFFF, (color.green & 0xFFFF) / (float)0xFFFF, (color.blue & 0xFFFF) / (float)0xFFFF, data.alpha / (float)0xFF);
+					if (OS.GTK3) {
+						Cairo.cairo_set_source_rgba(cairo, colorRGBA.red, colorRGBA.green, colorRGBA.blue, colorRGBA.alpha);
+					} else {
+						Cairo.cairo_set_source_rgba(cairo, (color.red & 0xFFFF) / (float)0xFFFF, (color.green & 0xFFFF) / (float)0xFFFF, (color.blue & 0xFFFF) / (float)0xFFFF, data.alpha / (float)0xFF);
+					}
 					Cairo.cairo_set_line_width(cairo, width);
 					if (dashes != null) {
 						double[] cairoDashes = new double[dashes.length];

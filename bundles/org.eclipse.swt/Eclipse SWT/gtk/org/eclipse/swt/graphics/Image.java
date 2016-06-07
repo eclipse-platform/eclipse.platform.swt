@@ -1880,8 +1880,13 @@ public long /*int*/ internal_new_GC (GCData data) {
 		}
 		data.device = device;
 		data.drawable = pixmap;
-		data.background = device.COLOR_WHITE.handle;
-		data.foreground = device.COLOR_BLACK.handle;
+		if (OS.GTK3) {
+			data.foregroundRGBA = device.COLOR_BLACK.handleRGBA;
+			data.backgroundRGBA = device.COLOR_WHITE.handleRGBA;
+		} else {
+			data.background = device.COLOR_WHITE.handle;
+			data.foreground = device.COLOR_BLACK.handle;
+		}
 		data.font = device.systemFont;
 		data.image = this;
 	}

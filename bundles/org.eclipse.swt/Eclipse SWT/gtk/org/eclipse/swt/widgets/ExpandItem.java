@@ -578,19 +578,17 @@ void setFontDescription (long /*int*/ font) {
 }
 
 void setForegroundColor (GdkColor color) {
-	if (OS.GTK_VERSION >= OS.VERSION(3, 16, 0)) {
-		GdkRGBA rgba = null;
-		if (color != null) {
-			rgba = display.toGdkRGBA (color);
-		}
-		parent.setForegroundColor (handle, rgba);
-		if (labelHandle != 0) parent.setForegroundColor (labelHandle, rgba);
-		if (imageHandle != 0) parent.setForegroundColor (imageHandle, rgba);
-	} else {
-		setForegroundColor (handle, color);
-		if (labelHandle != 0) setForegroundColor (labelHandle, color);
-		if (imageHandle != 0) setForegroundColor (imageHandle, color);
-	}
+	assert !OS.GTK3 : "GTK2 code was run by GTK3";
+	setForegroundColor (handle, color);
+	if (labelHandle != 0) setForegroundColor (labelHandle, color);
+	if (imageHandle != 0) setForegroundColor (imageHandle, color);
+}
+
+void setForegroundRGBA (GdkRGBA rgba) {
+	assert OS.GTK3 : "GTK3 code was run by GTK2";
+	parent.setForegroundGdkRGBA (handle, rgba);
+	if (labelHandle != 0) parent.setForegroundGdkRGBA (labelHandle, rgba);
+	if (imageHandle != 0) parent.setForegroundGdkRGBA (imageHandle, rgba);
 }
 
 /**

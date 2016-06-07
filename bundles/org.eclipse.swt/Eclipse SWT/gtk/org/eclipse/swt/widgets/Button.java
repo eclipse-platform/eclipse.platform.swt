@@ -129,11 +129,12 @@ static GtkBorder getBorder (byte[] border, long /*int*/ handle, int defaultBorde
 }
 
 @Override
-GdkColor getContextBackground () {
+GdkRGBA getContextBackgroundGdkRGBA () {
+	assert OS.GTK3 : "GTK3 code was run by GTK2";
 	if (background != null) {
-		return display.toGdkColor (background);
+		return background;
 	}
-	return display.COLOR_WIDGET_BACKGROUND;
+	return display.COLOR_WIDGET_BACKGROUND_RGBA;
 }
 
 /**
@@ -805,14 +806,14 @@ void _setAlignment (int alignment) {
 }
 
 @Override
-void setBackgroundColor (long /*int*/ context, long /*int*/ handle, GdkRGBA rgba) {
-	/* Note: this function is called on Gtk3 only */
+void setBackgroundGdkRGBA (long /*int*/ context, long /*int*/ handle, GdkRGBA rgba) {
+	assert OS.GTK3 : "GTK3 code was run by GTK2";
 
 	background = rgba;
-	//Pre Gtk 3.10 doesn't handle CSS background color very well for Gtk Check/Radio button.
-	// 3.10.3 as it was the latest to affect themeing in button.
+	//Pre GTK 3.10 doesn't handle CSS background color very well for GTK Check/Radio button.
+	// 3.10.3 as it was the latest to affect theming in button.
 	if (OS.GTK_VERSION < OS.VERSION(3, 10, 3) && (style & (SWT.CHECK | SWT.RADIO)) != 0) {
-		super.setBackgroundColor (context, handle, rgba);
+		super.setBackgroundGdkRGBA (context, handle, rgba);
 		return;
 	}
 	// Form background CSS string
@@ -829,13 +830,12 @@ void setBackgroundColor (long /*int*/ context, long /*int*/ handle, GdkRGBA rgba
 }
 
 @Override
-void setBackgroundColor (GdkColor color) {
-	super.setBackgroundColor (color);
-	setBackgroundColor(fixedHandle, color);
-	if (!OS.GTK3) {
-		if (labelHandle != 0) setBackgroundColor(labelHandle, color);
-		if (imageHandle != 0) setBackgroundColor(imageHandle, color);
-	}
+void setBackgroundGdkColor (GdkColor color) {
+	assert !OS.GTK3 : "GTK2 code was run by GTK3";
+	super.setBackgroundGdkColor (color);
+	setBackgroundGdkColor(fixedHandle, color);
+	if (labelHandle != 0) setBackgroundGdkColor(labelHandle, color);
+	if (imageHandle != 0) setBackgroundGdkColor(imageHandle, color);
 }
 
 @Override
@@ -918,38 +918,42 @@ boolean setRadioSelection (boolean value) {
 }
 
 @Override
-void setForegroundColor (GdkColor color) {
-	super.setForegroundColor (color);
-	if (OS.GTK_VERSION >= OS.VERSION (3, 16, 0)) {
-		GdkRGBA rgba = null;
-		if (color != null) {
-			rgba = display.toGdkRGBA (color);
-		}
-		setForegroundColor (fixedHandle, rgba);
-		if (labelHandle != 0) setForegroundColor (labelHandle, rgba);
-		if (imageHandle != 0) setForegroundColor (imageHandle, rgba);
-		//Pre 3.10 CSS didn't work. In 3.16 everything will be CSS controlled
-		//and themes should control check/radio border color then.
-	} else {
-		setForegroundColor (fixedHandle, color);
-		if (labelHandle != 0) setForegroundColor (labelHandle, color);
-		if (imageHandle != 0) setForegroundColor (imageHandle, color);
-		if (OS.GTK_VERSION >= OS.VERSION(3, 10, 0) && OS.GTK_VERSION < OS.VERSION (3, 16, 0) &&
-				(style & (SWT.CHECK | SWT.RADIO)) != 0) {
-			gtk_swt_set_border_color (color);
-		}
+void setForegroundGdkRGBA (GdkRGBA rgba) {
+	assert OS.GTK3 : "GTK3 code was run by GTK2";
+	super.setForegroundGdkRGBA(rgba);
+	setForegroundGdkRGBA (fixedHandle, rgba);
+	if (labelHandle != 0) setForegroundGdkRGBA (labelHandle, rgba);
+	if (imageHandle != 0) setForegroundGdkRGBA (imageHandle, rgba);
+
+	/*
+	 * Feature in GTK3: GtkCheckButton & its descendant GtkRadioButton are often invisible or
+	 * very hard to see with certain themes that don't define an icon for Check/Radio buttons.
+	 * Giving them a border color that matches the text color ensures consistent visibility
+	 * across most themes. See bug 463733.
+	 */
+	if (OS.GTK_VERSION >= OS.VERSION(3, 10, 0) && OS.GTK_VERSION < OS.VERSION (3, 16, 0) &&
+			(style & (SWT.CHECK | SWT.RADIO)) != 0) {
+		gtk_swt_set_border_color (rgba);
 	}
 }
 
 @Override
-void setForegroundColor (long /*int*/ handle, GdkRGBA rgba) {
-	GdkRGBA toSet;
-	if (rgba != null) {
-		toSet = rgba;
-	} else {
-		GdkColor defaultForeground = display.COLOR_WIDGET_FOREGROUND;
-		toSet = display.toGdkRGBA (defaultForeground);
+void setForegroundGdkColor (GdkColor color) {
+	assert !OS.GTK3 : "GTK2 code was run by GTK3";
+	super.setForegroundGdkColor (color);
+	setForegroundColor (fixedHandle, color);
+	if (labelHandle != 0) setForegroundColor (labelHandle, color);
+	if (imageHandle != 0) setForegroundColor (imageHandle, color);
+}
+
+@Override
+void setForegroundGdkRGBA (long /*int*/ handle, GdkRGBA rgba) {
+	assert OS.GTK3 : "GTK3 code was run by GTK2";
+	if (OS.GTK_VERSION < OS.VERSION(3, 16, 0)) {
+		super.setForegroundGdkRGBA(handle, rgba);
+		return;
 	}
+	GdkRGBA toSet = rgba == null ? display.COLOR_WIDGET_FOREGROUND_RGBA : rgba;
 	long /*int*/ context = OS.gtk_widget_get_style_context (handle);
 
 	// Form foreground string
@@ -965,29 +969,14 @@ void setForegroundColor (long /*int*/ handle, GdkRGBA rgba) {
 	gtk_css_provider_load_from_css(context, finalCss);
 }
 
-//GtkCheckButton & it's descendant GtkRadioButton are often invisible or
-// very hard to see with certain themes that don't define an icon for Check/Radio buttons.
-// Giving them a border color that matches the text color ensures consistent visibility across most themes.
-private void gtk_swt_set_border_color (GdkColor color) {
-	//Convert GtkColor to GdkRGBA
-	//TODO : Reactor in future commit. This and widget:setForegroundColor have duplicate code.
-	GdkRGBA rgba = null;
-	if (color != null) {
-		rgba = display.toGdkRGBA (color);
-	}
-
-	//Construct CSS String
-	//TODO : Reactor in future commit.
-	// This and Control:setBackgroundColorGradient(..). as there is similar code.
-	// ideally we should have a 'constructCssString(..) that accepts attribute-value pairs.
+private void gtk_swt_set_border_color (GdkRGBA rgba) {
+	assert OS.GTK3 : "GTK3 code was run by GTK2";
 	String css_string = "* {\n";
 	if (rgba != null) {
 		String css_color = display.gtk_rgba_to_css_string (rgba);
 		css_string += "border-color: " + css_color + ";\n";
 	}
 		css_string += "}\n";
-
-	//Apply CSS to widget.
 	long /*int*/context = OS.gtk_widget_get_style_context (handle);
 	gtk_css_provider_load_from_css (context, css_string);
 }

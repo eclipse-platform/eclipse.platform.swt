@@ -317,7 +317,7 @@ void createItem (TabItem item, int index) {
 	System.arraycopy (items, index, items, index + 1, itemCount++ - index);
 	items [index] = item;
 	if ((state & FOREGROUND) != 0) {
-		item.setForegroundColor (getForegroundColor());
+		item.setForegroundGdkColor (getForegroundGdkColor());
 	}
 	if ((state & FONT) != 0) {
 		item.setFontDescription (getFontDescription());
@@ -743,7 +743,8 @@ void reskinChildren (int flags) {
 }
 
 @Override
-void setBackgroundColor (long /*int*/ context, long /*int*/ handle, GdkRGBA rgba) {
+void setBackgroundGdkRGBA (long /*int*/ context, long /*int*/ handle, GdkRGBA rgba) {
+	assert OS.GTK3 : "GTK3 code was run by GTK2";
     if (OS.GTK_VERSION >= OS.VERSION(3, 16, 0)) {
     	// Form background string
     	String name = OS.GTK_VERSION >= OS.VERSION(3, 20, 0) ? "notebook header" : "GtkNotebook.header";
@@ -788,12 +789,25 @@ void setFontDescription (long /*int*/ font) {
 }
 
 @Override
-void setForegroundColor (GdkColor color) {
-	super.setForegroundColor (color);
+void setForegroundGdkRGBA (GdkRGBA rgba) {
+	assert OS.GTK3 : "GTK3 code was run by GTK2";
+	super.setForegroundGdkRGBA(rgba);
 	TabItem [] items = getItems ();
 	for (int i = 0; i < items.length; i++) {
 		if (items[i] != null) {
-			items[i].setForegroundColor (color);
+			items[i].setForegroundRGBA (rgba);
+		}
+	}
+}
+
+@Override
+void setForegroundGdkColor (GdkColor color) {
+	assert !OS.GTK3 : "GTK2 code was run by GTK3";
+	super.setForegroundGdkColor (color);
+	TabItem [] items = getItems ();
+	for (int i = 0; i < items.length; i++) {
+		if (items[i] != null) {
+			items[i].setForegroundGdkColor (color);
 		}
 	}
 }

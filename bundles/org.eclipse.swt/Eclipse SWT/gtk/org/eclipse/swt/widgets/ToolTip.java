@@ -277,7 +277,7 @@ void createHandle (int index) {
 		Color background = display.getSystemColor (SWT.COLOR_INFO_BACKGROUND);
 		if (OS.GTK3) {
 			long /*int*/ context = OS.gtk_widget_get_style_context (handle);
-			GdkRGBA bgRGBA = display.toGdkRGBA(display.COLOR_INFO_BACKGROUND);
+			GdkRGBA bgRGBA = display.COLOR_INFO_BACKGROUND_RGBA;
 			String name = OS.GTK_VERSION >= OS.VERSION(3, 20, 0) ? "window" : "GtkWindow";
 			String css = name + " {background-color: " + display.gtk_rgba_to_css_string(bgRGBA) + ";}";
 			gtk_css_provider_load_from_css (context, css);

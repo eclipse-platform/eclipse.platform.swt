@@ -170,9 +170,14 @@ void drawBackground (Control control, long /*int*/ window, long /*int*/ cr, long
 			Cairo.cairo_set_source (cairo, pattern);
 			Cairo.cairo_pattern_destroy (pattern);
 		} else {
-			GdkColor color = control.getBackgroundColor ();
-			GdkRGBA rgba = display.toGdkRGBA (color);
-			Cairo.cairo_set_source_rgba (cairo, rgba.red, rgba.green, rgba.blue, rgba.alpha);
+			GdkRGBA rgba;
+			if (OS.GTK3) {
+				rgba = control.getBackgroundGdkRGBA();
+				Cairo.cairo_set_source_rgba (cairo, rgba.red, rgba.green, rgba.blue, rgba.alpha);
+			} else {
+				GdkColor color = control.getBackgroundGdkColor ();
+				Cairo.cairo_set_source_rgba_compatibility (cairo, color);
+			}
 		}
 		Cairo.cairo_rectangle (cairo, x, y, width, height);
 		Cairo.cairo_fill (cairo);
@@ -188,7 +193,7 @@ void drawBackground (Control control, long /*int*/ window, long /*int*/ cr, long
 		OS.gdk_gc_set_tile (gdkGC, control.backgroundImage.pixmap);
 		OS.gdk_draw_rectangle (window, gdkGC, 1, x, y, width, height);
 	} else {
-		GdkColor color = control.getBackgroundColor ();
+		GdkColor color = control.getBackgroundGdkColor ();
 		OS.gdk_gc_set_foreground (gdkGC, color);
 		OS.gdk_draw_rectangle (window, gdkGC, 1, x, y, width, height);
 	}
@@ -273,7 +278,7 @@ void fixStyle (long /*int*/ handle) {
 		if (childStyle != 0) {
 			GdkColor color = new GdkColor();
 			OS.gtk_style_get_bg (childStyle, 0, color);
-			setBackgroundColor (color);
+			setBackgroundGdkColor (color);
 		}
 	}
 }
@@ -696,8 +701,8 @@ void checkForeground () {
 	*
 	* This can be removed on GTK3.16+.
 	*/
-	if (OS.GTK_VERSION < OS.VERSION(3, 16, 0)) {
-		setForegroundColor (topHandle (), display.COLOR_WIDGET_FOREGROUND);
+	if (OS.GTK_VERSION < OS.VERSION(3, 16, 0) && OS.GTK_VERSION >= OS.VERSION(3, 0, 0)) {
+		setForegroundGdkRGBA (topHandle (), display.COLOR_WIDGET_FOREGROUND_RGBA);
 	}
 }
 
@@ -2720,19 +2725,31 @@ boolean forceFocus (long /*int*/ focusHandle) {
  */
 public Color getBackground () {
 	checkWidget();
-	if (backgroundAlpha == 0) {
-		Color color = Color.gtk_new (display, this.getBackgroundColor (), 0);
+	Color color;
+	if (OS.GTK3) {
+		color = Color.gtk_new (display, this.getBackgroundGdkRGBA (), backgroundAlpha);
 		return color;
-	}
-	else {
-		Control control = findBackgroundControl ();
-		if (control == null) control = this;
-		return Color.gtk_new (display, control.getBackgroundColor (), backgroundAlpha);
+	} else {
+		if (backgroundAlpha == 0) {
+			color = Color.gtk_new (display, this.getBackgroundGdkColor (), 0);
+			return color;
+		}
+		else {
+			Control control = findBackgroundControl ();
+			if (control == null) control = this;
+			return Color.gtk_new (display, control.getBackgroundGdkColor (), backgroundAlpha);
+		}
 	}
 }
 
-GdkColor getBackgroundColor () {
-	return getBgColor ();
+GdkRGBA getBackgroundGdkRGBA () {
+	assert OS.GTK3 : "GTK3 code was run by GTK2";
+	return getBgGdkRGBA ();
+}
+
+GdkColor getBackgroundGdkColor () {
+	assert !OS.GTK3 : "GTK2 code was run by GTK3";
+	return getBgGdkColor ();
 }
 
 /**
@@ -2754,26 +2771,28 @@ public Image getBackgroundImage () {
 	return control.backgroundImage;
 }
 
-GdkColor getContextBackground () {
+GdkRGBA getContextBackgroundGdkRGBA () {
+	assert OS.GTK3 : "GTK3 code was run by GTK2";
 	long /*int*/ fontHandle = fontHandle ();
 	if (OS.GTK_VERSION >= OS.VERSION(3, 16, 0)) {
 		if (provider != 0) {
 			return display.gtk_css_parse_background (provider, null);
 		} else {
-			return display.COLOR_WIDGET_BACKGROUND;
+			return display.COLOR_WIDGET_BACKGROUND_RGBA;
 		}
 	} else {
 		long /*int*/ context = OS.gtk_widget_get_style_context (fontHandle);
 		GdkRGBA rgba = new GdkRGBA ();
 		OS.gtk_style_context_get_background_color (context, OS.GTK_STATE_FLAG_NORMAL, rgba);
-		if (rgba.alpha == 0) {
-			return display.COLOR_WIDGET_BACKGROUND;
+		if ((state & BACKGROUND) == 0) {
+			return display.COLOR_WIDGET_BACKGROUND_RGBA;
 		}
-		return display.toGdkColor (rgba);
+		return rgba;
 	}
 }
 
-GdkColor getContextColor () {
+GdkRGBA getContextColorGdkRGBA () {
+	assert OS.GTK3 : "GTK3 code was run by GTK2";
 	long /*int*/ fontHandle = fontHandle ();
 	if (OS.GTK_VERSION >= OS.VERSION(3, 16, 0)) {
 		return display.gtk_css_parse_foreground(provider, null);
@@ -2781,14 +2800,17 @@ GdkColor getContextColor () {
 		long /*int*/ context = OS.gtk_widget_get_style_context (fontHandle);
 		GdkRGBA rgba = new GdkRGBA ();
 		rgba = display.styleContextGetColor (context, OS.GTK_STATE_FLAG_NORMAL, rgba);
-		return display.toGdkColor (rgba);
+		return rgba;
 	}
 }
 
-GdkColor getBgColor () {
-	if (OS.GTK3) {
-		return getContextBackground ();
-	}
+GdkRGBA getBgGdkRGBA () {
+	assert OS.GTK3 : "GTK3 code was run by GTK2";
+	return getContextBackgroundGdkRGBA ();
+}
+
+GdkColor getBgGdkColor () {
+	assert !OS.GTK3 : "GTK2 code was run by GTK3";
 	long /*int*/ fontHandle = fontHandle ();
 	OS.gtk_widget_realize (fontHandle);
 	GdkColor color = new GdkColor ();
@@ -2801,10 +2823,13 @@ GdkColor getBgColor () {
 	return color;
 }
 
-GdkColor getBaseColor () {
-	if (OS.GTK3) {
-		return getContextBackground ();
-	}
+GdkRGBA getBaseGdkRGBA () {
+	assert OS.GTK3 : "GTK3 code was run by GTK2";
+	return getContextBackgroundGdkRGBA ();
+}
+
+GdkColor getBaseGdkColor () {
+	assert !OS.GTK3 : "GTK2 code was run by GTK3";
 	long /*int*/ fontHandle = fontHandle ();
 	OS.gtk_widget_realize (fontHandle);
 	GdkColor color = new GdkColor ();
@@ -2946,17 +2971,23 @@ long /*int*/ getFontDescription () {
  */
 public Color getForeground () {
 	checkWidget();
-	return Color.gtk_new (display, getForegroundColor ());
+	Color color;
+	color = OS.GTK3? Color.gtk_new (display, getForegroundGdkRGBA ()) : Color.gtk_new (display, getForegroundGdkColor ());
+	return color;
 }
 
-GdkColor getForegroundColor () {
+GdkRGBA getForegroundGdkRGBA () {
+	assert OS.GTK3 : "GTK3 code was run by GTK2";
+	return getContextColorGdkRGBA();
+}
+
+GdkColor getForegroundGdkColor () {
+	assert !OS.GTK3 : "GTK2 code was run by GTK3";
 	return getFgColor ();
 }
 
 GdkColor getFgColor () {
-	if (OS.GTK3) {
-		return getContextColor ();
-	}
+	assert !OS.GTK3 : "GTK2 code was run by GTK3";
 	long /*int*/ fontHandle = fontHandle ();
 	OS.gtk_widget_realize (fontHandle);
 	GdkColor color = new GdkColor ();
@@ -2973,9 +3004,7 @@ Point getIMCaretPos () {
 }
 
 GdkColor getTextColor () {
-	if (OS.GTK3) {
-		return getContextColor ();
-	}
+	assert !OS.GTK3 : "GTK2 code was run by GTK3";
 	long /*int*/ fontHandle = fontHandle ();
 	OS.gtk_widget_realize (fontHandle);
 	GdkColor color = new GdkColor ();
@@ -3764,11 +3793,17 @@ public long /*int*/ internal_new_GC (GCData data) {
 		}
 		data.drawable = window;
 		data.device = display;
-		data.foreground = getForegroundColor ();
+
 		Control control = findBackgroundControl ();
 		if (control == null) control = this;
-		data.background = control.getBackgroundColor ();
 		data.font = font != null ? font : defaultFont ();
+		if (OS.GTK3) {
+			data.foregroundRGBA = getForegroundGdkRGBA ();
+			data.backgroundRGBA = control.getBackgroundGdkRGBA ();
+		} else {
+			data.foreground = getForegroundGdkColor ();
+			data.background = control.getBackgroundGdkColor ();
+		}
 	}
 	return gc;
 }
@@ -4419,58 +4454,69 @@ public void setBackground (Color color) {
 
 private void _setBackground (Color color) {
 	if (((state & BACKGROUND) == 0) && color == null) return;
-	GdkColor gdkColor = null;
-	if (color != null) {
-		if (color.isDisposed ()) error(SWT.ERROR_INVALID_ARGUMENT);
-		gdkColor = color.handle;
-		backgroundAlpha = color.getAlpha ();
-	}
 	boolean set = false;
 	if (OS.GTK3) {
-		// TODO: Some widgets like GtkLabel (and others) are transparent
-		// in GTK3, so one needs to set their background. For now, always
-		// set the background. See bug 421836.
-		// set = !getBackground().equals(color);
+		GdkRGBA rgba = null;
+		if (color != null) {
+			rgba = color.handleRGBA;
+		}
 		set = true;
+		if (set) {
+			if (color == null) {
+				state &= ~BACKGROUND;
+			} else {
+				state |= BACKGROUND;
+			}
+			setBackgroundGdkRGBA (handle, rgba);
+		}
 	} else {
+		GdkColor gdkColor = null;
+		if (color != null) {
+			if (color.isDisposed ()) error(SWT.ERROR_INVALID_ARGUMENT);
+			gdkColor = color.handle;
+			backgroundAlpha = color.getAlpha ();
+		}
 		if (gdkColor == null) {
 			long /*int*/ style = OS.gtk_widget_get_modifier_style (handle);
 			set = (OS.gtk_rc_style_get_color_flags (style, OS.GTK_STATE_NORMAL) & OS.GTK_RC_BG) != 0;
 		} else {
-			GdkColor oldColor = getBackgroundColor ();
+			GdkColor oldColor = getBackgroundGdkColor ();
 			set = oldColor.pixel != gdkColor.pixel;
 		}
-	}
-	if (set) {
-		if (color == null) {
-			state &= ~BACKGROUND;
-		} else {
-			state |= BACKGROUND;
+		if (set) {
+
+			if (color == null) {
+				state &= ~BACKGROUND;
+			} else {
+				state |= BACKGROUND;
+			}
+			setBackgroundGdkColor (gdkColor);
 		}
-		setBackgroundColor (gdkColor);
-		redrawChildren ();
 	}
+	redrawChildren ();
 }
 
-void setBackgroundColor (long /*int*/ context, long /*int*/ handle, GdkRGBA rgba) {
+void setBackgroundGdkRGBA (long /*int*/ context, long /*int*/ handle, GdkRGBA rgba) {
+	assert OS.GTK3 : "GTK3 code was run by GTK2";
     if (OS.GTK_VERSION >= OS.VERSION(3, 16, 0)) {
-            // Form background string
-            String name = OS.GTK_VERSION >= OS.VERSION(3, 20, 0) ? display.gtk_widget_class_get_css_name(handle)
-            		: display.gtk_widget_get_name(handle);
-            String css = name + " {background-color: " + display.gtk_rgba_to_css_string (rgba) + ";}";
+    	// Form background string
+        String name = OS.GTK_VERSION >= OS.VERSION(3, 20, 0) ? display.gtk_widget_class_get_css_name(handle)
+        		: display.gtk_widget_get_name(handle);
+        String css = name + " {background-color: " + display.gtk_rgba_to_css_string (rgba) + ";}";
 
-            // Cache background
-            cssBackground = css;
+        // Cache background
+        cssBackground = css;
 
-            // Apply background color and any cached foreground color
-            String finalCss = display.gtk_css_create_css_color_string (cssBackground, cssForeground, SWT.BACKGROUND);
-            gtk_css_provider_load_from_css (context, finalCss);
+        // Apply background color and any cached foreground color
+        String finalCss = display.gtk_css_create_css_color_string (cssBackground, cssForeground, SWT.BACKGROUND);
+        gtk_css_provider_load_from_css (context, finalCss);
     } else {
-            OS.gtk_widget_override_background_color (handle, OS.GTK_STATE_FLAG_NORMAL, rgba);
+        OS.gtk_widget_override_background_color (handle, OS.GTK_STATE_FLAG_NORMAL, rgba);
     }
 }
 
-void setBackgroundColorGradient (long /*int*/ context, long /*int*/ handle, GdkRGBA rgba) {
+void setBackgroundGradientGdkRGBA (long /*int*/ context, long /*int*/ handle, GdkRGBA rgba) {
+	assert OS.GTK3 : "GTK3 code was run by GTK2";
 	String css ="* {\n";
 	if (rgba != null) {
 		String color = display.gtk_rgba_to_css_string (rgba);
@@ -4499,30 +4545,8 @@ void gtk_css_provider_load_from_css (long /*int*/ context, String css) {
 	OS.gtk_css_provider_load_from_data (provider, Converter.wcsToMbcs (css, true), -1, null);
 }
 
-void setBackgroundColor (long /*int*/ handle, GdkColor color) {
-	if (OS.GTK3) {
-		GdkRGBA rgba = null;
-		double alpha = 1.0;
-		if (color == null) {
-			if ((state & PARENT_BACKGROUND) != 0) {
-				alpha = 0;
-				Control control = findBackgroundControl();
-				if (control == null) control = this;
-				color = control.getBackgroundColor();
-			}
-		}
-		else {
-			alpha = backgroundAlpha;
-		}
-		if (color != null) {
-			rgba = display.toGdkRGBA (color);
-			rgba.alpha = alpha / (float)255;
-		}
-		long /*int*/ context = OS.gtk_widget_get_style_context (handle);
-		setBackgroundColor (context, handle, rgba);
-		OS.gtk_style_context_invalidate (context);
-		return;
-	}
+void setBackgroundGdkColor (long /*int*/ handle, GdkColor color) {
+	assert !OS.GTK3 : "GTK2 code was run by GTK3";
 	int index = OS.GTK_STATE_NORMAL;
 	long /*int*/ style = OS.gtk_widget_get_modifier_style (handle);
 	long /*int*/ ptr = OS.gtk_rc_style_get_bg_pixmap_name (style, index);
@@ -4552,10 +4576,30 @@ void setBackgroundColor (long /*int*/ handle, GdkColor color) {
 	modifyStyle (handle, style);
 }
 
-void setBackgroundColor (GdkColor color) {
-	setBackgroundColor (handle, color);
+void setBackgroundGdkColor (GdkColor color) {
+	assert !OS.GTK3 : "GTK2 code was run by GTK3";
+	setBackgroundGdkColor (handle, color);
 }
 
+void setBackgroundGdkRGBA (long /*int*/ handle, GdkRGBA rgba) {
+	assert OS.GTK3 : "GTK3 code was run by GTK2";
+	backgroundAlpha = 255;
+	if (rgba == null) {
+		if ((state & PARENT_BACKGROUND) != 0) {
+			backgroundAlpha = 0;
+			Control control = findBackgroundControl();
+			if (control == null) control = this;
+			rgba = control == this ? null : control.getBackgroundGdkRGBA();
+		}
+	} else {
+		backgroundAlpha = (int) (rgba.alpha * 255);
+	}
+	if (rgba != null) rgba.alpha = (float) backgroundAlpha / 255;
+	long /*int*/ context = OS.gtk_widget_get_style_context (handle);
+	setBackgroundGdkRGBA (context, handle, rgba);
+	OS.gtk_style_context_invalidate (context);
+	return;
+}
 /**
  * Sets the receiver's background image to the image specified
  * by the argument, or to the default system color for the control
@@ -4917,7 +4961,7 @@ public void setForeground (Color color) {
 			long /*int*/ style = OS.gtk_widget_get_modifier_style (handle);
 			set = (OS.gtk_rc_style_get_color_flags (style, OS.GTK_STATE_NORMAL) & OS.GTK_RC_FG) != 0;
 		} else {
-			GdkColor oldColor = getForegroundColor ();
+			GdkColor oldColor = getForegroundGdkColor ();
 			set = oldColor.pixel != gdkColor.pixel;
 		}
 	}
@@ -4927,46 +4971,58 @@ public void setForeground (Color color) {
 		} else {
 			state |= FOREGROUND;
 		}
-		setForegroundColor (gdkColor);
-	}
-}
-
-void setForegroundColor (GdkColor color) {
-	GdkRGBA rgba = null;
-	if (OS.GTK_VERSION >= OS.VERSION(3, 16, 0)) {
-		if (color != null) {
-			rgba = display.toGdkRGBA (color);
+		if (OS.GTK3) {
+			GdkRGBA rgba = color == null ? null : color.handleRGBA;
+			setForegroundGdkRGBA (rgba);
+		} else {
+			setForegroundGdkColor (gdkColor);
 		}
-		setForegroundColor(handle, rgba);
-	} else {
-		setForegroundColor (handle, color);
 	}
 }
 
-void setForegroundColor (long /*int*/ handle, GdkRGBA rgba) {
-	GdkRGBA toSet = new GdkRGBA();
-	if (rgba != null) {
-		toSet = rgba;
+void setForegroundGdkRGBA (GdkRGBA rgba) {
+	assert OS.GTK3 : "GTK3 code was run by GTK2";
+	setForegroundGdkRGBA (handle, rgba);
+}
+
+void setForegroundGdkColor (GdkColor color) {
+	assert !OS.GTK3 : "GTK2 code was run by GTK3";
+	setForegroundColor (handle, color);
+}
+
+void setForegroundGdkRGBA (long /*int*/ handle, GdkRGBA rgba) {
+	assert OS.GTK3 : "GTK3 code was run by GTK2";
+	if (OS.GTK_VERSION >= OS.VERSION(3, 16, 0)) {
+		GdkRGBA toSet = new GdkRGBA();
+		if (rgba != null) {
+			toSet = rgba;
+		} else {
+			toSet = display.COLOR_WIDGET_FOREGROUND_RGBA;
+		}
+		long /*int*/ context = OS.gtk_widget_get_style_context (handle);
+		// Form foreground string
+		String color = display.gtk_rgba_to_css_string(toSet);
+		String name = OS.GTK_VERSION >= OS.VERSION(3, 20, 0) ? display.gtk_widget_class_get_css_name(handle)
+	    		: display.gtk_widget_get_name(handle);
+		GdkRGBA selectedForeground = display.COLOR_LIST_SELECTION_TEXT_RGBA;
+		String selection = OS.GTK_VERSION >= OS.VERSION(3, 20, 0) ? " selection" : ":selected";
+		String css = "* {color: " + color + ";}\n"
+				+ name + selection + " {color: " + display.gtk_rgba_to_css_string(selectedForeground) + ";}";
+
+		// Cache foreground color
+		cssForeground = css;
+
+		// Apply foreground color and any cached background color
+		String finalCss = display.gtk_css_create_css_color_string (cssBackground, cssForeground, SWT.FOREGROUND);
+		gtk_css_provider_load_from_css(context, finalCss);
 	} else {
-		GdkColor defaultForeground = display.COLOR_WIDGET_FOREGROUND;
-		toSet = display.toGdkRGBA (defaultForeground);
+		GdkRGBA selectedForeground = display.COLOR_LIST_SELECTION_TEXT_RGBA;
+		OS.gtk_widget_override_color (handle, OS.GTK_STATE_FLAG_NORMAL, rgba);
+		OS.gtk_widget_override_color (handle, OS.GTK_STATE_FLAG_SELECTED, selectedForeground);
+		long /*int*/ context = OS.gtk_widget_get_style_context (handle);
+		OS.gtk_style_context_invalidate (context);
+		return;
 	}
-	long /*int*/ context = OS.gtk_widget_get_style_context (handle);
-	// Form foreground string
-	String color = display.gtk_rgba_to_css_string(toSet);
-	String name = OS.GTK_VERSION >= OS.VERSION(3, 20, 0) ? display.gtk_widget_class_get_css_name(handle)
-    		: display.gtk_widget_get_name(handle);
-	GdkRGBA selectedForeground = display.toGdkRGBA(getDisplay().COLOR_LIST_SELECTION_TEXT);
-	String selection = OS.GTK_VERSION >= OS.VERSION(3, 20, 0) ? " selection" : ":selected";
-	String css = "* {color: " + color + ";}\n"
-			+ name + selection + " {color: " + display.gtk_rgba_to_css_string(selectedForeground) + ";}";
-
-	// Cache foreground color
-	cssForeground = css;
-
-	// Apply foreground color and any cached background color
-	String finalCss = display.gtk_css_create_css_color_string (cssBackground, cssForeground, SWT.FOREGROUND);
-	gtk_css_provider_load_from_css(context, finalCss);
 }
 
 void setInitialBounds () {
@@ -5266,8 +5322,12 @@ public boolean setParent (Composite parent) {
 }
 
 void setParentBackground () {
-	setBackgroundColor (handle, null);
-	if (fixedHandle != 0) setBackgroundColor (fixedHandle, null);
+	if (OS.GTK3) {
+		backgroundAlpha = 0;
+	} else {
+		setBackgroundGdkColor (handle, null);
+		if (fixedHandle != 0) setBackgroundGdkColor (fixedHandle, null);
+	}
 }
 
 void setParentWindow (long /*int*/ widget) {
@@ -5629,9 +5689,15 @@ void setZOrder (Control sibling, boolean above, boolean fixRelations, boolean fi
 }
 
 void setWidgetBackground  () {
-	GdkColor color = (state & BACKGROUND) != 0 ? getBackgroundColor () : null;
-	if (fixedHandle != 0) setBackgroundColor (fixedHandle, color);
-	setBackgroundColor (handle, color);
+	if (OS.GTK3) {
+		GdkRGBA rgba = (state & BACKGROUND) != 0 ? getBackgroundGdkRGBA () : null;
+		if (fixedHandle != 0) setBackgroundGdkRGBA (fixedHandle, rgba);
+		setBackgroundGdkRGBA (handle, rgba);
+	} else {
+		GdkColor color = (state & BACKGROUND) != 0 ? getBackgroundGdkColor () : null;
+		if (fixedHandle != 0) setBackgroundGdkColor (fixedHandle, color);
+		setBackgroundGdkColor (handle, color);
+	}
 }
 
 boolean showMenu (int x, int y) {

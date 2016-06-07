@@ -324,29 +324,26 @@ void setFontDescription (long /*int*/ font) {
 	setFontDescription (imageHandle, font);
 }
 
-void setForegroundColor (GdkColor color) {
-	/* Don't set the color in vbox handle (it doesn't draw) */
-	if (OS.GTK_VERSION >= OS.VERSION (3, 16, 0)) {
-		GdkRGBA rgba = null;
-		if (color != null) {
-			rgba = display.toGdkRGBA (color);
-		}
-		setForegroundColor (labelHandle, rgba);
-		setForegroundColor (imageHandle, rgba);
-	} else {
-		setForegroundColor (labelHandle, color, false);
-		setForegroundColor (imageHandle, color, false);
-	}
-
+void setForegroundRGBA (GdkRGBA rgba) {
+	assert OS.GTK3 : "GTK3 code was run by GTK2";
+	setForegroundGdkRGBA (labelHandle, rgba);
+	setForegroundGdkRGBA (imageHandle, rgba);
 }
 
-void setForegroundColor (long /*int*/ handle, GdkRGBA rgba) {
+void setForegroundGdkColor (GdkColor color) {
+	assert !OS.GTK3 : "GTK2 code was run by GTK3";
+	/* Don't set the color in vbox handle (it doesn't draw) */
+	setForegroundColor (labelHandle, color, false);
+	setForegroundColor (imageHandle, color, false);
+}
+
+void setForegroundGdkRGBA (long /*int*/ handle, GdkRGBA rgba) {
+	assert OS.GTK3 : "GTK3 code was run by GTK2";
 	GdkRGBA toSet = new GdkRGBA();
 	if (rgba != null) {
 		toSet = rgba;
 	} else {
-		GdkColor defaultForeground = display.COLOR_WIDGET_FOREGROUND;
-		toSet = display.toGdkRGBA (defaultForeground);
+		toSet = display.COLOR_WIDGET_FOREGROUND_RGBA;
 	}
 	long /*int*/ context = OS.gtk_widget_get_style_context (handle);
 	// Form foreground string

@@ -593,7 +593,8 @@ int setBounds (int x, int y, int width, int height, boolean move, boolean resize
 }
 
 @Override
-void setBackgroundColor (long /*int*/ context, long /*int*/ handle, GdkRGBA rgba) {
+void setBackgroundGdkRGBA (long /*int*/ context, long /*int*/ handle, GdkRGBA rgba) {
+	assert OS.GTK3 : "GTK3 code was run by GTK2";
 	if (OS.GTK_VERSION >= OS.VERSION(3, 16, 0)) {
 		// Form background string
 		String name = OS.GTK_VERSION >= OS.VERSION(3, 20, 0) ? "toolbar" : "GtkToolbar";
@@ -606,35 +607,47 @@ void setBackgroundColor (long /*int*/ context, long /*int*/ handle, GdkRGBA rgba
 		String finalCss = display.gtk_css_create_css_color_string (this.cssBackground, this.cssForeground, SWT.BACKGROUND);
 		gtk_css_provider_load_from_css(context, finalCss);
 	} else {
-		super.setBackgroundColor(context, handle, rgba);
+		super.setBackgroundGdkRGBA(context, handle, rgba);
 	}
 }
 
 @Override
-void setForegroundColor (long /*int*/ handle, GdkRGBA rgba) {
-	GdkRGBA toSet = new GdkRGBA();
-	if (rgba != null) {
-		toSet = rgba;
-	} else {
-		GdkColor defaultForeground = display.COLOR_WIDGET_FOREGROUND;
-		toSet = display.toGdkRGBA (defaultForeground);
+void setParentBackground () {
+	if (OS.GTK3) {
+		setBackgroundGdkRGBA (handle, display.getSystemColor(SWT.COLOR_TRANSPARENT).handleRGBA);
 	}
-	long /*int*/ context = OS.gtk_widget_get_style_context (handle);
-	// Form foreground string
-	String color = display.gtk_rgba_to_css_string(toSet);
-	String name = OS.GTK_VERSION >= OS.VERSION(3, 20, 0) ? display.gtk_widget_class_get_css_name(handle)
-    		: display.gtk_widget_get_name(handle);
-	GdkRGBA selectedForeground = display.toGdkRGBA(getDisplay().COLOR_LIST_SELECTION_TEXT);
-	String selection = OS.GTK_VERSION >= OS.VERSION(3, 20, 0) ? " selection" : ":selected";
-	String css = "* {color: " + color + ";}\n"
-			+ name + selection + " {color: " + display.gtk_rgba_to_css_string(selectedForeground) + ";}";
+	super.setParentBackground();
+}
 
-	// Cache foreground color
-	this.cssForeground = css;
+@Override
+void setForegroundGdkRGBA (long /*int*/ handle, GdkRGBA rgba) {
+	assert OS.GTK3 : "GTK3 code was run by GTK2";
+	if (OS.GTK_VERSION >= OS.VERSION(3, 16, 0)) {
+		GdkRGBA toSet = new GdkRGBA();
+		if (rgba != null) {
+			toSet = rgba;
+		} else {
+			toSet = display.COLOR_WIDGET_FOREGROUND_RGBA;
+		}
+		long /*int*/ context = OS.gtk_widget_get_style_context (handle);
+		// Form foreground string
+		String color = display.gtk_rgba_to_css_string(toSet);
+		String name = OS.GTK_VERSION >= OS.VERSION(3, 20, 0) ? display.gtk_widget_class_get_css_name(handle)
+	    		: display.gtk_widget_get_name(handle);
+		GdkRGBA selectedForeground = display.COLOR_LIST_SELECTION_TEXT_RGBA;
+		String selection = OS.GTK_VERSION >= OS.VERSION(3, 20, 0) ? " selection" : ":selected";
+		String css = "* {color: " + color + ";}\n"
+				+ name + selection + " {color: " + display.gtk_rgba_to_css_string(selectedForeground) + ";}";
 
-	// Apply foreground color and any cached background color
-	String finalCss = display.gtk_css_create_css_color_string (this.cssBackground, this.cssForeground, SWT.FOREGROUND);
-	gtk_css_provider_load_from_css(context, finalCss);
+		// Cache foreground color
+		this.cssForeground = css;
+
+		// Apply foreground color and any cached background color
+		String finalCss = display.gtk_css_create_css_color_string (this.cssBackground, this.cssForeground, SWT.FOREGROUND);
+		gtk_css_provider_load_from_css(context, finalCss);
+	} else {
+		super.setForegroundGdkRGBA(handle, rgba);
+	}
 }
 
 @Override
@@ -654,13 +667,24 @@ void restoreBackground () {
 	 * (or replacing it with black).
 	 */
 	long /*int*/ context = OS.gtk_widget_get_style_context(handle);
-	String finalCss = display.gtk_css_create_css_color_string (this.cssBackground, cssForeground, SWT.BACKGROUND);
+	String finalCss = display.gtk_css_create_css_color_string (this.cssBackground, this.cssForeground, SWT.BACKGROUND);
 	gtk_css_provider_load_from_css (context, finalCss);
 }
 
 @Override
-void setForegroundColor (GdkColor color) {
-	super.setForegroundColor (color);
+void setForegroundGdkRGBA (GdkRGBA rgba) {
+	assert OS.GTK3 : "GTK3 code was run by GTK2";
+	super.setForegroundGdkRGBA (rgba);
+	ToolItem [] items = getItems ();
+	for (int i = 0; i < items.length; i++) {
+		items[i].setForegroundRGBA (rgba);
+	}
+}
+
+@Override
+void setForegroundGdkColor (GdkColor color) {
+	assert !OS.GTK3 : "GTK2 code was run by GTK3";
+	super.setForegroundGdkColor (color);
 	ToolItem [] items = getItems ();
 	for (int i = 0; i < items.length; i++) {
 		items[i].setForegroundColor (color);

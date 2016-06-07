@@ -118,6 +118,7 @@ typedef enum {
 	_1GDK_1PIXMAP_1XID_FUNC,
 	_1GDK_1TYPE_1COLOR_FUNC,
 	_1GDK_1TYPE_1PIXBUF_FUNC,
+	_1GDK_1TYPE_1RGBA_FUNC,
 	_1GET_1FUNCTION_1POINTER_1gtk_1false_FUNC,
 	_1GString_1len_FUNC,
 	_1GString_1str_FUNC,
@@ -512,6 +513,8 @@ typedef enum {
 	_1gdk_1region_1subtract_FUNC,
 	_1gdk_1region_1union_FUNC,
 	_1gdk_1region_1union_1with_1rect_FUNC,
+	_1gdk_1rgba_1free_FUNC,
+	_1gdk_1rgba_1hash_FUNC,
 	_1gdk_1rgba_1parse_FUNC,
 	_1gdk_1rgba_1to_1string_FUNC,
 	_1gdk_1screen_1get_1active_1window_FUNC,
@@ -883,6 +886,11 @@ typedef enum {
 	_1gtk_1list_1store_1set__JJILorg_eclipse_swt_internal_gtk_GdkColor_2I_FUNC,
 #endif
 #ifndef JNI64
+	_1gtk_1list_1store_1set__IIILorg_eclipse_swt_internal_gtk_GdkRGBA_2I_FUNC,
+#else
+	_1gtk_1list_1store_1set__JJILorg_eclipse_swt_internal_gtk_GdkRGBA_2I_FUNC,
+#endif
+#ifndef JNI64
 	_1gtk_1list_1store_1set__IIIZI_FUNC,
 #else
 	_1gtk_1list_1store_1set__JJIZI_FUNC,
@@ -1224,6 +1232,11 @@ typedef enum {
 	_1gtk_1tree_1store_1set__IIILorg_eclipse_swt_internal_gtk_GdkColor_2I_FUNC,
 #else
 	_1gtk_1tree_1store_1set__JJILorg_eclipse_swt_internal_gtk_GdkColor_2I_FUNC,
+#endif
+#ifndef JNI64
+	_1gtk_1tree_1store_1set__IIILorg_eclipse_swt_internal_gtk_GdkRGBA_2I_FUNC,
+#else
+	_1gtk_1tree_1store_1set__JJILorg_eclipse_swt_internal_gtk_GdkRGBA_2I_FUNC,
 #endif
 #ifndef JNI64
 	_1gtk_1tree_1store_1set__IIIZI_FUNC,
@@ -1704,6 +1717,11 @@ typedef enum {
 	memmove__Lorg_eclipse_swt_internal_gtk_GdkImage_2I_FUNC,
 #else
 	memmove__Lorg_eclipse_swt_internal_gtk_GdkImage_2J_FUNC,
+#endif
+#ifndef JNI64
+	memmove__Lorg_eclipse_swt_internal_gtk_GdkRGBA_2II_FUNC,
+#else
+	memmove__Lorg_eclipse_swt_internal_gtk_GdkRGBA_2JJ_FUNC,
 #endif
 #ifndef JNI64
 	memmove__Lorg_eclipse_swt_internal_gtk_GdkRectangle_2II_FUNC,

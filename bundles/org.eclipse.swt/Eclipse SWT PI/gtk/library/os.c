@@ -966,6 +966,18 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(_1GDK_1TYPE_1PIXBUF)
 }
 #endif
 
+#ifndef NO__1GDK_1TYPE_1RGBA
+JNIEXPORT jintLong JNICALL OS_NATIVE(_1GDK_1TYPE_1RGBA)
+	(JNIEnv *env, jclass that)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, _1GDK_1TYPE_1RGBA_FUNC);
+	rc = (jintLong)GDK_TYPE_RGBA;
+	OS_NATIVE_EXIT(env, that, _1GDK_1TYPE_1RGBA_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO__1GET_1FUNCTION_1POINTER_1gtk_1false
 JNIEXPORT jintLong JNICALL OS_NATIVE(_1GET_1FUNCTION_1POINTER_1gtk_1false)
 	(JNIEnv *env, jclass that)
@@ -3902,7 +3914,15 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gdk_1color_1free)
 	(JNIEnv *env, jclass that, jintLong arg0)
 {
 	OS_NATIVE_ENTER(env, that, _1gdk_1color_1free_FUNC);
+/*
 	gdk_color_free((GdkColor *)arg0);
+*/
+	{
+		OS_LOAD_FUNCTION(fp, gdk_color_free)
+		if (fp) {
+			((void (CALLING_CONVENTION*)(GdkColor *))fp)((GdkColor *)arg0);
+		}
+	}
 	OS_NATIVE_EXIT(env, that, _1gdk_1color_1free_FUNC);
 }
 #endif
@@ -3917,7 +3937,15 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(_1gdk_1color_1parse)
 	OS_NATIVE_ENTER(env, that, _1gdk_1color_1parse_FUNC);
 	if (arg0) if ((lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL)) == NULL) goto fail;
 	if (arg1) if ((lparg1 = &_arg1) == NULL) goto fail;
+/*
 	rc = (jboolean)gdk_color_parse((const gchar *)lparg0, (GdkColor *)lparg1);
+*/
+	{
+		OS_LOAD_FUNCTION(fp, gdk_color_parse)
+		if (fp) {
+			rc = (jboolean)((jboolean (CALLING_CONVENTION*)(const gchar *, GdkColor *))fp)((const gchar *)lparg0, (GdkColor *)lparg1);
+		}
+	}
 fail:
 	if (arg1 && lparg1) setGdkColorFields(env, arg1, lparg1);
 	if (arg0 && lparg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
@@ -5884,6 +5912,48 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gdk_1region_1union_1with_1rect)
 	gdk_region_union_with_rect((GdkRegion *)arg0, (GdkRectangle *)lparg1);
 fail:
 	OS_NATIVE_EXIT(env, that, _1gdk_1region_1union_1with_1rect_FUNC);
+}
+#endif
+
+#ifndef NO__1gdk_1rgba_1free
+JNIEXPORT void JNICALL OS_NATIVE(_1gdk_1rgba_1free)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	OS_NATIVE_ENTER(env, that, _1gdk_1rgba_1free_FUNC);
+/*
+	gdk_rgba_free((GdkRGBA *)arg0);
+*/
+	{
+		OS_LOAD_FUNCTION(fp, gdk_rgba_free)
+		if (fp) {
+			((void (CALLING_CONVENTION*)(GdkRGBA *))fp)((GdkRGBA *)arg0);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, _1gdk_1rgba_1free_FUNC);
+}
+#endif
+
+#ifndef NO__1gdk_1rgba_1hash
+JNIEXPORT jint JNICALL OS_NATIVE(_1gdk_1rgba_1hash)
+	(JNIEnv *env, jclass that, jobject arg0)
+{
+	GdkRGBA _arg0, *lparg0=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, _1gdk_1rgba_1hash_FUNC);
+	if (arg0) if ((lparg0 = getGdkRGBAFields(env, arg0, &_arg0)) == NULL) goto fail;
+/*
+	rc = (jint)gdk_rgba_hash((GdkRGBA *)lparg0);
+*/
+	{
+		OS_LOAD_FUNCTION(fp, gdk_rgba_hash)
+		if (fp) {
+			rc = (jint)((jint (CALLING_CONVENTION*)(GdkRGBA *))fp)((GdkRGBA *)lparg0);
+		}
+	}
+fail:
+	if (arg0 && lparg0) setGdkRGBAFields(env, arg0, lparg0);
+	OS_NATIVE_EXIT(env, that, _1gdk_1rgba_1hash_FUNC);
+	return rc;
 }
 #endif
 
@@ -10971,6 +11041,30 @@ fail:
 }
 #endif
 
+#if (!defined(NO__1gtk_1list_1store_1set__IIILorg_eclipse_swt_internal_gtk_GdkRGBA_2I) && !defined(JNI64)) || (!defined(NO__1gtk_1list_1store_1set__JJILorg_eclipse_swt_internal_gtk_GdkRGBA_2I) && defined(JNI64))
+#ifndef JNI64
+JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1list_1store_1set__IIILorg_eclipse_swt_internal_gtk_GdkRGBA_2I)(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jint arg2, jobject arg3, jint arg4)
+#else
+JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1list_1store_1set__JJILorg_eclipse_swt_internal_gtk_GdkRGBA_2I)(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jint arg2, jobject arg3, jint arg4)
+#endif
+{
+	GdkRGBA _arg3, *lparg3=NULL;
+#ifndef JNI64
+	OS_NATIVE_ENTER(env, that, _1gtk_1list_1store_1set__IIILorg_eclipse_swt_internal_gtk_GdkRGBA_2I_FUNC);
+#else
+	OS_NATIVE_ENTER(env, that, _1gtk_1list_1store_1set__JJILorg_eclipse_swt_internal_gtk_GdkRGBA_2I_FUNC);
+#endif
+	if (arg3) if ((lparg3 = getGdkRGBAFields(env, arg3, &_arg3)) == NULL) goto fail;
+	gtk_list_store_set((GtkListStore *)arg0, (GtkTreeIter *)arg1, arg2, lparg3, arg4);
+fail:
+#ifndef JNI64
+	OS_NATIVE_EXIT(env, that, _1gtk_1list_1store_1set__IIILorg_eclipse_swt_internal_gtk_GdkRGBA_2I_FUNC);
+#else
+	OS_NATIVE_EXIT(env, that, _1gtk_1list_1store_1set__JJILorg_eclipse_swt_internal_gtk_GdkRGBA_2I_FUNC);
+#endif
+}
+#endif
+
 #if (!defined(NO__1gtk_1list_1store_1set__IIIZI) && !defined(JNI64)) || (!defined(NO__1gtk_1list_1store_1set__JJIZI) && defined(JNI64))
 #ifndef JNI64
 JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1list_1store_1set__IIIZI)(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jint arg2, jboolean arg3, jint arg4)
@@ -15026,6 +15120,30 @@ fail:
 	OS_NATIVE_EXIT(env, that, _1gtk_1tree_1store_1set__IIILorg_eclipse_swt_internal_gtk_GdkColor_2I_FUNC);
 #else
 	OS_NATIVE_EXIT(env, that, _1gtk_1tree_1store_1set__JJILorg_eclipse_swt_internal_gtk_GdkColor_2I_FUNC);
+#endif
+}
+#endif
+
+#if (!defined(NO__1gtk_1tree_1store_1set__IIILorg_eclipse_swt_internal_gtk_GdkRGBA_2I) && !defined(JNI64)) || (!defined(NO__1gtk_1tree_1store_1set__JJILorg_eclipse_swt_internal_gtk_GdkRGBA_2I) && defined(JNI64))
+#ifndef JNI64
+JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1tree_1store_1set__IIILorg_eclipse_swt_internal_gtk_GdkRGBA_2I)(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jint arg2, jobject arg3, jint arg4)
+#else
+JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1tree_1store_1set__JJILorg_eclipse_swt_internal_gtk_GdkRGBA_2I)(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jint arg2, jobject arg3, jint arg4)
+#endif
+{
+	GdkRGBA _arg3, *lparg3=NULL;
+#ifndef JNI64
+	OS_NATIVE_ENTER(env, that, _1gtk_1tree_1store_1set__IIILorg_eclipse_swt_internal_gtk_GdkRGBA_2I_FUNC);
+#else
+	OS_NATIVE_ENTER(env, that, _1gtk_1tree_1store_1set__JJILorg_eclipse_swt_internal_gtk_GdkRGBA_2I_FUNC);
+#endif
+	if (arg3) if ((lparg3 = getGdkRGBAFields(env, arg3, &_arg3)) == NULL) goto fail;
+	gtk_tree_store_set((GtkTreeStore *)arg0, (GtkTreeIter *)arg1, arg2, lparg3, arg4);
+fail:
+#ifndef JNI64
+	OS_NATIVE_EXIT(env, that, _1gtk_1tree_1store_1set__IIILorg_eclipse_swt_internal_gtk_GdkRGBA_2I_FUNC);
+#else
+	OS_NATIVE_EXIT(env, that, _1gtk_1tree_1store_1set__JJILorg_eclipse_swt_internal_gtk_GdkRGBA_2I_FUNC);
 #endif
 }
 #endif
@@ -19699,6 +19817,32 @@ JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_gtk_GdkImage
 	OS_NATIVE_EXIT(env, that, memmove__Lorg_eclipse_swt_internal_gtk_GdkImage_2I_FUNC);
 #else
 	OS_NATIVE_EXIT(env, that, memmove__Lorg_eclipse_swt_internal_gtk_GdkImage_2J_FUNC);
+#endif
+}
+#endif
+
+#if (!defined(NO_memmove__Lorg_eclipse_swt_internal_gtk_GdkRGBA_2II) && !defined(JNI64)) || (!defined(NO_memmove__Lorg_eclipse_swt_internal_gtk_GdkRGBA_2JJ) && defined(JNI64))
+#ifndef JNI64
+JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_gtk_GdkRGBA_2II)(JNIEnv *env, jclass that, jobject arg0, jintLong arg1, jintLong arg2)
+#else
+JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_gtk_GdkRGBA_2JJ)(JNIEnv *env, jclass that, jobject arg0, jintLong arg1, jintLong arg2)
+#endif
+{
+	GdkRGBA _arg0, *lparg0=NULL;
+#ifndef JNI64
+	OS_NATIVE_ENTER(env, that, memmove__Lorg_eclipse_swt_internal_gtk_GdkRGBA_2II_FUNC);
+#else
+	OS_NATIVE_ENTER(env, that, memmove__Lorg_eclipse_swt_internal_gtk_GdkRGBA_2JJ_FUNC);
+#endif
+	if (!arg0) goto fail;
+	if ((lparg0 = &_arg0) == NULL) goto fail;
+	memmove((void *)lparg0, (const void *)arg1, (size_t)arg2);
+fail:
+	if (arg0 && lparg0) setGdkRGBAFields(env, arg0, lparg0);
+#ifndef JNI64
+	OS_NATIVE_EXIT(env, that, memmove__Lorg_eclipse_swt_internal_gtk_GdkRGBA_2II_FUNC);
+#else
+	OS_NATIVE_EXIT(env, that, memmove__Lorg_eclipse_swt_internal_gtk_GdkRGBA_2JJ_FUNC);
 #endif
 }
 #endif

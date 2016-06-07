@@ -11,8 +11,8 @@
 package org.eclipse.swt.graphics;
 
 
-import org.eclipse.swt.internal.gtk.*;
 import org.eclipse.swt.*;
+import org.eclipse.swt.internal.gtk.*;
 
 /**
  * Instances of this class manage the operating system resources that
@@ -46,7 +46,20 @@ public final class Color extends Resource {
 	 * @noreference This field is not intended to be referenced by clients.
 	 */
 	public GdkColor handle;
-	int alpha = 255;
+	/**
+	 * the handle to the OS color resource
+	 * (Warning: This field is platform dependent)
+	 * <p>
+	 * <b>IMPORTANT:</b> This field is <em>not</em> part of the SWT
+	 * public API. It is marked public only so that it can be shared
+	 * within the packages provided by SWT. It is not available on all
+	 * platforms and should never be accessed from application code.
+	 * </p>
+	 *
+	 * @noreference This field is not intended to be referenced by clients.
+	 */
+	public GdkRGBA handleRGBA;
+	int alpha = 0;
 
 Color(Device device) {
 	super(device);
@@ -207,18 +220,20 @@ public Color(Device device, RGB rgb, int alpha) {
 
 @Override
 void destroy() {
-	int pixel = handle.pixel;
-	if (device.colorRefCount != null) {
-		/* If this was the last reference, remove the color from the list */
-		if (--device.colorRefCount[pixel] == 0) {
-			device.gdkColors[pixel] = null;
+	if (OS.GTK3) {
+		handleRGBA = null;
+	} else {
+		int pixel = handle.pixel;
+		if (device.colorRefCount != null) {
+			/* If this was the last reference, remove the color from the list */
+			if (--device.colorRefCount[pixel] == 0) {
+				device.gdkColors[pixel] = null;
+			}
 		}
-	}
-	if (!OS.GTK3) {
 		long /*int*/ colormap = OS.gdk_colormap_get_system();
 		OS.gdk_colormap_free_colors(colormap, handle, 1);
+		handle = null;
 	}
-	handle = null;
 }
 
 /**
@@ -236,11 +251,19 @@ public boolean equals(Object object) {
 	if (object == this) return true;
 	if (!(object instanceof Color)) return false;
 	Color color = (Color)object;
-	GdkColor gdkColor = color.handle;
-	if (handle == gdkColor) return true;
-	return device == color.device && handle.red == gdkColor.red &&
-		handle.green == gdkColor.green && handle.blue == gdkColor.blue &&
-		alpha == color.alpha;
+	if (OS.GTK3) {
+		GdkRGBA gdkRGBA = color.handleRGBA;
+		if (handleRGBA == gdkRGBA) return true;
+		return device == color.device && Double.compare(handleRGBA.red, gdkRGBA.red) == 0 &&
+				Double.compare(handleRGBA.green, gdkRGBA.green) == 0 && Double.compare(handleRGBA.blue, gdkRGBA.blue) == 0 &&
+				Double.compare(handleRGBA.alpha, gdkRGBA.alpha) == 0;
+	} else {
+		GdkColor gdkColor = color.handle;
+		if (handle == gdkColor) return true;
+		return device == color.device && handle.red == gdkColor.red &&
+			handle.green == gdkColor.green && handle.blue == gdkColor.blue &&
+			alpha == color.alpha;
+	}
 }
 
 /**
@@ -269,7 +292,11 @@ public int getAlpha() {
  */
 public int getBlue() {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	return (handle.blue >> 8) & 0xFF;
+	if (OS.GTK3) {
+		return (int) (handleRGBA.blue * 255);
+	} else {
+		return (handle.blue >> 8) & 0xFF;
+	}
 }
 
 /**
@@ -283,7 +310,11 @@ public int getBlue() {
  */
 public int getGreen() {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	return (handle.green >> 8) & 0xFF;
+	if (OS.GTK3) {
+		return (int) (handleRGBA.green * 255);
+	} else {
+		return (handle.green >> 8) & 0xFF;
+	}
 }
 
 /**
@@ -297,7 +328,11 @@ public int getGreen() {
  */
 public int getRed() {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	return (handle.red >> 8) & 0xFF;
+	if (OS.GTK3) {
+		return (int) (handleRGBA.red * 255);
+	} else {
+		return (handle.red >> 8) & 0xFF;
+	}
 }
 
 /**
@@ -313,7 +348,12 @@ public int getRed() {
 @Override
 public int hashCode() {
 	if (isDisposed()) return 0;
-	return handle.red ^ handle.green ^ handle.blue ^ alpha;
+	if (OS.GTK3) {
+		return Double.hashCode(handleRGBA.red) ^ Double.hashCode(handleRGBA.green) ^ Double.hashCode(handleRGBA.blue)
+				^ Double.hashCode(handleRGBA.alpha);
+	} else {
+		return handle.red ^ handle.green ^ handle.blue ^ alpha;
+	}
 }
 
 /**
@@ -361,7 +401,31 @@ public RGBA getRGBA () {
  * @noreference This method is not intended to be referenced by clients.
  */
 public static Color gtk_new(Device device, GdkColor gdkColor) {
+	assert !OS.GTK3 : "GTK2 code was run by GTK3";
 	return gtk_new(device, gdkColor, 255);
+}
+
+/**
+ * Invokes platform specific functionality to allocate a new color.
+ * <p>
+ * <b>IMPORTANT:</b> This method is <em>not</em> part of the public
+ * API for <code>Color</code>. It is marked public only so that it
+ * can be shared within the packages provided by SWT. It is not
+ * available on all platforms, and should never be called from
+ * application code.
+ * </p>
+ *
+ * @param device the device on which to allocate the color
+ * @param gdkRGBA the handle for the color
+ *
+ * @noreference This method is not intended to be referenced by clients.
+ */
+public static Color gtk_new(Device device, GdkRGBA gdkRGBA) {
+	assert OS.GTK3 : "GTK3 code was run by GTK2";
+	Color color = new Color(device);
+	color.handleRGBA = gdkRGBA;
+	color.alpha = (int) (gdkRGBA.alpha * 255);
+	return color;
 }
 
 /**
@@ -381,8 +445,33 @@ public static Color gtk_new(Device device, GdkColor gdkColor) {
  * @noreference This method is not intended to be referenced by clients.
  */
 public static Color gtk_new(Device device, GdkColor gdkColor, int alpha) {
+	assert !OS.GTK3 : "GTK2 code was run by GTK3";
 	Color color = new Color(device);
 	color.handle = gdkColor;
+	color.alpha = alpha;
+	return color;
+}
+
+/**
+ * Invokes platform specific functionality to allocate a new color.
+ * <p>
+ * <b>IMPORTANT:</b> This method is <em>not</em> part of the public
+ * API for <code>Color</code>. It is marked public only so that it
+ * can be shared within the packages provided by SWT. It is not
+ * available on all platforms, and should never be called from
+ * application code.
+ * </p>
+ *
+ * @param device the device on which to allocate the color
+ * @param gdkRGBA the handle for the color
+ * @param alpha the int for the alpha content in the color(Currently SWT honors extreme values for alpha ie. 0 or 255)
+ *
+ * @noreference This method is not intended to be referenced by clients.
+ */
+public static Color gtk_new(Device device, GdkRGBA gdkRGBA, int alpha) {
+	assert OS.GTK3 : "GTK3 code was run by GTK2";
+	Color color = new Color(device);
+	color.handleRGBA = gdkRGBA;
 	color.alpha = alpha;
 	return color;
 }
@@ -410,31 +499,40 @@ void init(int red, int green, int blue, int alpha) {
 		(alpha > 255) || (alpha < 0)) {
 			SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
-	GdkColor gdkColor = new GdkColor();
-	gdkColor.red = (short)((red & 0xFF) | ((red & 0xFF) << 8));
-	gdkColor.green = (short)((green & 0xFF) | ((green & 0xFF) << 8));
-	gdkColor.blue = (short)((blue & 0xFF) | ((blue & 0xFF) << 8));
-	this.alpha = alpha;
-
 	if (!OS.GTK3) {
+		GdkColor gdkColor = new GdkColor();
+		gdkColor.red = (short)((red & 0xFF) | ((red & 0xFF) << 8));
+		gdkColor.green = (short)((green & 0xFF) | ((green & 0xFF) << 8));
+		gdkColor.blue = (short)((blue & 0xFF) | ((blue & 0xFF) << 8));
+		this.alpha = alpha;
 		long /*int*/ colormap = OS.gdk_colormap_get_system();
 		if (!OS.gdk_colormap_alloc_color(colormap, gdkColor, true, true)) {
 			/* Allocate black. */
 			gdkColor = new GdkColor();
 			OS.gdk_colormap_alloc_color(colormap, gdkColor, true, true);
 		}
+		handle = gdkColor;
+		if (device.colorRefCount != null) {
+			/* Make a copy of the color to put in the colors array */
+			GdkColor colorCopy = new GdkColor();
+			colorCopy.red = handle.red;
+			colorCopy.green = handle.green;
+			colorCopy.blue = handle.blue;
+			colorCopy.pixel = handle.pixel;
+			device.gdkColors[colorCopy.pixel] = colorCopy;
+			device.colorRefCount[colorCopy.pixel]++;
+		}
+	} else {
+		// GdkColormap is deprecated on GTK3, just create the handle directly
+		GdkRGBA rgba = new GdkRGBA ();
+		rgba.red = (double) red / 255;
+		rgba.green = (double) green / 255;
+		rgba.blue = (double) blue / 255;
+		rgba.alpha = (double) alpha / 255;
+		this.alpha = alpha;
+		handleRGBA = rgba;
 	}
-	handle = gdkColor;
-	if (device.colorRefCount != null) {
-		/* Make a copy of the color to put in the colors array */
-		GdkColor colorCopy = new GdkColor();
-		colorCopy.red = handle.red;
-		colorCopy.green = handle.green;
-		colorCopy.blue = handle.blue;
-		colorCopy.pixel = handle.pixel;
-		device.gdkColors[colorCopy.pixel] = colorCopy;
-		device.colorRefCount[colorCopy.pixel]++;
-	}
+
 }
 
 /**
@@ -449,7 +547,11 @@ void init(int red, int green, int blue, int alpha) {
  */
 @Override
 public boolean isDisposed() {
-	return handle == null;
+	if (OS.GTK3) {
+		return handleRGBA == null;
+	} else {
+		return handle == null;
+	}
 }
 
 /**

@@ -104,7 +104,7 @@ boolean drawCaret () {
 		if (OS.USE_CAIRO) {
 			long /*int*/ cairo = OS.gdk_cairo_create(window);
 			if (cairo == 0) error(SWT.ERROR_NO_HANDLES);
-			Cairo.cairo_set_source_rgb(cairo, 1, 1, 1);
+			Cairo.cairo_set_source_rgba(cairo, 1.0, 1.0, 1.0, 1.0);
 			Cairo.cairo_set_operator(cairo, Cairo.CAIRO_OPERATOR_DIFFERENCE);
 			if (image != null && !image.isDisposed() && image.mask == 0) {
 				long /*int*/ surface = Cairo.cairo_get_target(cairo);
@@ -128,7 +128,6 @@ boolean drawCaret () {
 				int nX = x;
 				if ((parent.style & SWT.MIRRORED) != 0) nX = parent.getClientWidth () - nWidth - nX;
 				Cairo.cairo_rectangle(cairo, nX, y, nWidth, nHeight);
-
 			}
 			Cairo.cairo_fill(cairo);
 			Cairo.cairo_destroy(cairo);

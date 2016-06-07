@@ -503,13 +503,12 @@ private void gtk_label_set_align (float xalign, float yalign) {
 }
 
 @Override
-void setBackgroundColor (GdkColor color) {
-	super.setBackgroundColor (color);
-	if (OS.GTK_VERSION < OS.VERSION(3, 16, 0)) {
-		setBackgroundColor(fixedHandle, color);
-		if (labelHandle != 0) setBackgroundColor(labelHandle, color);
-		if (imageHandle != 0) setBackgroundColor(imageHandle, color);
-	}
+void setBackgroundGdkColor (GdkColor color) {
+	assert !OS.GTK3 : "GTK2 code was run by GTK3";
+	super.setBackgroundGdkColor (color);
+	setBackgroundGdkColor(fixedHandle, color);
+	if (labelHandle != 0) setBackgroundGdkColor(labelHandle, color);
+	if (imageHandle != 0) setBackgroundGdkColor(imageHandle, color);
 }
 
 @Override
@@ -578,21 +577,21 @@ void setFontDescription (long /*int*/ font) {
 }
 
 @Override
-void setForegroundColor (GdkColor color) {
-	super.setForegroundColor (color);
-	if (OS.GTK_VERSION >= OS.VERSION (3, 16, 0)) {
-		GdkRGBA rgba = null;
-		if (color != null) {
-			rgba = display.toGdkRGBA (color);
-		}
-		setForegroundColor (fixedHandle, rgba);
-		if (labelHandle != 0) setForegroundColor (labelHandle, rgba);
-		if (imageHandle != 0) setForegroundColor (imageHandle, rgba);
-	} else {
-		setForegroundColor (fixedHandle, color);
-		if (labelHandle != 0) setForegroundColor (labelHandle, color);
-		if (imageHandle != 0) setForegroundColor (imageHandle, color);
-	}
+void setForegroundGdkColor (GdkColor color) {
+	assert !OS.GTK3 : "GTK2 code was run by GTK3";
+	super.setForegroundGdkColor(color);
+	setForegroundColor (fixedHandle, color);
+	if (labelHandle != 0) setForegroundColor (labelHandle, color);
+	if (imageHandle != 0) setForegroundColor (imageHandle, color);
+}
+
+@Override
+void setForegroundGdkRGBA (GdkRGBA rgba) {
+	assert OS.GTK3 : "GTK3 code was run by GTK2";
+	super.setForegroundGdkRGBA (rgba);
+	setForegroundGdkRGBA (fixedHandle, rgba);
+	if (labelHandle != 0) setForegroundGdkRGBA (labelHandle, rgba);
+	if (imageHandle != 0) setForegroundGdkRGBA (imageHandle, rgba);
 }
 
 @Override
@@ -688,8 +687,8 @@ public void setText (String string) {
 @Override
 void setWidgetBackground  () {
 	if (OS.GTK_VERSION >= OS.VERSION(3, 16, 0)) {
-		GdkColor color = (state & BACKGROUND) != 0 ? getBackgroundColor () : null;
-		super.setBackgroundColor (color);
+		GdkRGBA rgba = (state & BACKGROUND) != 0 ? getBackgroundGdkRGBA () : null;
+		super.setBackgroundGdkRGBA (handle, rgba);
 	} else {
 		super.setWidgetBackground();
 	}

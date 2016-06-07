@@ -154,6 +154,8 @@
 #define gdk_drawable_get_depth_LIB LIB_GDK
 #define gdk_pixmap_new_LIB LIB_GDK
 #define gdk_color_white_LIB LIB_GDK
+#define gdk_color_free_LIB LIB_GDK
+#define gdk_color_parse_LIB LIB_GDK
 #define gdk_colormap_get_system_LIB LIB_GDK
 #define gdk_bitmap_create_from_data_LIB LIB_GDK
 #define gdk_cursor_new_from_pixmap_LIB LIB_GDK
@@ -182,6 +184,8 @@
 #define gdk_region_polygon_LIB LIB_GDK
 #define gdk_region_get_rectangles_LIB LIB_GDK
 #define gdk_rgba_to_string_LIB LIB_GDK
+#define gdk_rgba_free_LIB LIB_GDK
+#define gdk_rgba_hash_LIB LIB_GDK
 #define gdk_rgba_parse_LIB LIB_GDK
 #define gdk_screen_get_default_LIB LIB_GDK
 #define gdk_screen_get_resolution_LIB LIB_GDK

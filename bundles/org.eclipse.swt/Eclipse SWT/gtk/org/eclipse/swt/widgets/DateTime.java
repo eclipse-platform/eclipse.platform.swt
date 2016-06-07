@@ -651,11 +651,12 @@ String formattedStringValue (int fieldName, int value, boolean adjust) {
 }
 
 @Override
-GdkColor getBackgroundColor () {
+GdkColor getBackgroundGdkColor () {
+	assert !OS.GTK3 : "GTK2 code was run by GTK3";
 	if (isCalendar ()) {
-		return getBaseColor ();
+		return getBaseGdkColor ();
 	} else {
-		return super.getBackgroundColor ();
+		return super.getBackgroundGdkColor ();
 	}
 }
 
@@ -1344,16 +1345,22 @@ public void setBackground (Color color) {
 }
 
 @Override
-void setBackgroundColor (GdkColor color) {
-	if (isCalendar () && !OS.GTK3) {
+void setBackgroundGdkColor (GdkColor color) {
+	assert !OS.GTK3 : "GTK2 code was run by GTK3";
+	if (isCalendar ()) {
 		OS.gtk_widget_modify_base (containerHandle, 0, color);
 	} else {
-		if (isCalendar() && (OS.GTK_VERSION >= OS.VERSION(3, 16, 0))) {
-			super.setBackgroundColor (calendarHandle, color);
-		} else {
-			super.setBackgroundColor (color);
-		}
+		super.setBackgroundGdkColor (color);
+	}
+}
 
+@Override
+void setBackgroundGdkRGBA (long /*int*/ context, long /*int*/ handle, GdkRGBA rgba) {
+	assert OS.GTK3 : "GTK3 code was run by GTK2";
+	if (rgba == null) {
+		super.setBackgroundGdkRGBA(context, handle, display.COLOR_LIST_BACKGROUND_RGBA);
+	} else {
+		super.setBackgroundGdkRGBA(context, handle, rgba);
 	}
 }
 
@@ -1373,16 +1380,15 @@ public void setFont (Font font) {
 }
 
 @Override
-void setForegroundColor (GdkColor color) {
-	if (OS.GTK_VERSION >= OS.VERSION (3, 16, 0)) {
-		GdkRGBA rgba = null;
-		if (color != null) {
-			rgba = display.toGdkRGBA (color);
-		}
-		setForegroundColor (containerHandle, rgba);
-	} else {
-		setForegroundColor (containerHandle, color, false);
-	}
+void setForegroundGdkColor (GdkColor color) {
+	assert !OS.GTK3 : "GTK2 code was run by GTK3";
+	setForegroundColor (containerHandle, color, false);
+}
+
+@Override
+void setForegroundGdkRGBA (GdkRGBA rgba) {
+	assert OS.GTK3 : "GTK3 code was run by GTK2";
+	setForegroundGdkRGBA (containerHandle, rgba);
 }
 
 @Override

@@ -1636,23 +1636,12 @@ void setFontDescription (long /*int*/ widget, long /*int*/ font) {
 }
 
 void setForegroundColor (long /*int*/ handle, GdkColor color) {
+	assert !OS.GTK3 : "GTK2 code was run by GTK3";
 	setForegroundColor (handle, color, true);
 }
 
 void setForegroundColor (long /*int*/ handle, GdkColor color, boolean setStateActive) {
-	if (OS.GTK3) {
-		GdkRGBA rgba = null;
-		GdkRGBA selectedForeground = display.toGdkRGBA(display.COLOR_LIST_SELECTION_TEXT);
-		if (color != null) {
-			rgba = display.toGdkRGBA (color);
-		}
-		OS.gtk_widget_override_color (handle, OS.GTK_STATE_FLAG_NORMAL, rgba);
-		OS.gtk_widget_override_color (handle, OS.GTK_STATE_FLAG_SELECTED, selectedForeground);
-		long /*int*/ context = OS.gtk_widget_get_style_context (handle);
-		OS.gtk_style_context_invalidate (context);
-		return;
-	}
-
+	assert !OS.GTK3 : "GTK2 code was run by GTK3";
 	/*
 	 * Feature in GTK. When the widget doesn't have focus, then
 	 * gtk_default_draw_flat_box () changes the background color state_type

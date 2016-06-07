@@ -435,8 +435,8 @@ void reskinChildren (int flags) {
 @Override
 void setWidgetBackground  () {
 	if (OS.GTK_VERSION >= OS.VERSION(3, 16, 0)) {
-		GdkColor color = (state & BACKGROUND) != 0 ? getBackgroundColor () : null;
-		super.setBackgroundColor (color);
+		GdkRGBA rgba = (state & BACKGROUND) != 0 ? getBackgroundGdkRGBA () : null;
+		super.setBackgroundGdkRGBA (handle, rgba);
 	} else {
 		super.setWidgetBackground();
 	}
@@ -452,10 +452,20 @@ void setFontDescription (long /*int*/ font) {
 }
 
 @Override
-void setForegroundColor (GdkColor color) {
-	super.setForegroundColor (color);
+void setForegroundGdkColor (GdkColor color) {
+	assert !OS.GTK3 : "GTK2 code was run by GTK3";
+	super.setForegroundGdkColor (color);
 	for (int i = 0; i < itemCount; i++) {
 		items[i].setForegroundColor (color);
+	}
+}
+
+@Override
+void setForegroundGdkRGBA (GdkRGBA rgba) {
+	assert OS.GTK3 : "GTK3 code was run by GTK2";
+	super.setForegroundGdkRGBA(rgba);
+	for (int i = 0; i < itemCount; i++) {
+		items[i].setForegroundRGBA (rgba);
 	}
 }
 

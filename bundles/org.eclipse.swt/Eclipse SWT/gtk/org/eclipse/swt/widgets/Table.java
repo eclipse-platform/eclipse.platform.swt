@@ -82,7 +82,7 @@ public class Table extends Composite {
 	boolean firstCustomDraw;
 	int drawState, drawFlags;
 	GdkColor drawForeground;
-	GdkRGBA background, foreground;
+	GdkRGBA background, foreground, drawForegroundRGBA;
 	Color headerBackground, headerForeground;
 	String headerCSSBackground, headerCSSForeground;
 	boolean ownerDraw, ignoreSize, ignoreAccessibility, pixbufSizeSet;
@@ -235,16 +235,26 @@ long /*int*/ cellDataProc (long /*int*/ tree_column, long /*int*/ cell, long /*i
 			ptr [0] = 0;
 			OS.gtk_tree_model_get (tree_model, iter, modelIndex + CELL_BACKGROUND, ptr, -1);
 			if (ptr [0] != 0) {
-				OS.g_object_set (cell, OS.cell_background_gdk, ptr [0], 0);
-				OS.gdk_color_free (ptr [0]);
+				if (OS.GTK3) {
+					OS.g_object_set (cell, OS.cell_background_rgba, ptr[0], 0);
+					OS.gdk_rgba_free (ptr [0]);
+				} else {
+					OS.g_object_set (cell, OS.cell_background_gdk, ptr[0], 0);
+					OS.gdk_color_free (ptr [0]);
+				}
 			}
 		}
 		if (!isPixbuf) {
 			ptr [0] = 0;
 			OS.gtk_tree_model_get (tree_model, iter, modelIndex + CELL_FOREGROUND, ptr, -1);
 			if (ptr [0] != 0) {
-				OS.g_object_set (cell, OS.foreground_gdk, ptr [0], 0);
-				OS.gdk_color_free (ptr [0]);
+				if (OS.GTK3) {
+					OS.g_object_set (cell, OS.foreground_rgba, ptr [0], 0);
+					OS.gdk_rgba_free (ptr [0]);
+				} else {
+					OS.g_object_set (cell, OS.foreground_gdk, ptr [0], 0);
+					OS.gdk_color_free (ptr [0]);
+				}
 			}
 			ptr [0] = 0;
 			OS.gtk_tree_model_get (tree_model, iter, modelIndex + CELL_FONT, ptr, -1);
@@ -568,10 +578,17 @@ void createColumn (TableColumn column, int index) {
 						OS.gtk_tree_model_get (oldModel, oldItem, j, ptr, -1);
 						OS.gtk_list_store_set (newModel, newItem, j, ptr [0], -1);
 						if (ptr [0] != 0) {
+							if (OS.GTK3) {
+								if (types[j] == OS.GDK_TYPE_RGBA()) {
+									OS.gdk_rgba_free(ptr[0]);
+								}
+							} else {
+								if (types[j] == OS.GDK_TYPE_COLOR()) {
+									OS.gdk_color_free(ptr[0]);
+								}
+							}
 							if (types [j] == OS.G_TYPE_STRING ()) {
 								OS.g_free ((ptr [0]));
-							} else if (types [j] == OS.GDK_TYPE_COLOR()) {
-								OS.gdk_color_free (ptr [0]);
 							} else if (types [j] == OS.GDK_TYPE_PIXBUF()) {
 								OS.g_object_unref (ptr [0]);
 							} else if (types [j] == OS.PANGO_TYPE_FONT_DESCRIPTION()) {
@@ -768,10 +785,15 @@ void createRenderers (long /*int*/ columnHandle, int modelIndex, boolean check, 
 		OS.gtk_tree_view_column_pack_start (columnHandle, checkRenderer, false);
 		OS.gtk_tree_view_column_add_attribute (columnHandle, checkRenderer, OS.active, CHECKED_COLUMN);
 		OS.gtk_tree_view_column_add_attribute (columnHandle, checkRenderer, OS.inconsistent, GRAYED_COLUMN);
-		if (!ownerDraw) OS.gtk_tree_view_column_add_attribute (columnHandle, checkRenderer, OS.cell_background_gdk, BACKGROUND_COLUMN);
 		if (ownerDraw) {
 			OS.gtk_tree_view_column_set_cell_data_func (columnHandle, checkRenderer, display.cellDataProc, handle, 0);
 			OS.g_object_set_qdata (checkRenderer, Display.SWT_OBJECT_INDEX1, columnHandle);
+		} else {
+			if (OS.GTK3) {
+				OS.gtk_tree_view_column_add_attribute (columnHandle, checkRenderer, OS.cell_background_rgba, BACKGROUND_COLUMN);
+			} else {
+				OS.gtk_tree_view_column_add_attribute (columnHandle, checkRenderer, OS.cell_background_gdk, BACKGROUND_COLUMN);
+			}
 		}
 	}
 	long /*int*/ pixbufRenderer = ownerDraw ? OS.g_object_new (display.gtk_cell_renderer_pixbuf_get_type (), 0) : OS.gtk_cell_renderer_pixbuf_new ();
@@ -828,11 +850,20 @@ void createRenderers (long /*int*/ columnHandle, int modelIndex, boolean check, 
 	 */
 	OS.gtk_tree_view_column_add_attribute (columnHandle, pixbufRenderer, OS.pixbuf, modelIndex + CELL_PIXBUF);
 	if (!ownerDraw) {
-		OS.gtk_tree_view_column_add_attribute (columnHandle, pixbufRenderer, OS.cell_background_gdk, BACKGROUND_COLUMN);
-		OS.gtk_tree_view_column_add_attribute (columnHandle, textRenderer, OS.cell_background_gdk, BACKGROUND_COLUMN);
+		if (OS.GTK3) {
+			OS.gtk_tree_view_column_add_attribute (columnHandle, pixbufRenderer, OS.cell_background_rgba, BACKGROUND_COLUMN);
+			OS.gtk_tree_view_column_add_attribute (columnHandle, textRenderer, OS.cell_background_rgba, BACKGROUND_COLUMN);
+		} else {
+			OS.gtk_tree_view_column_add_attribute (columnHandle, pixbufRenderer, OS.cell_background_gdk, BACKGROUND_COLUMN);
+			OS.gtk_tree_view_column_add_attribute (columnHandle, textRenderer, OS.cell_background_gdk, BACKGROUND_COLUMN);
+		}
 	}
 	OS.gtk_tree_view_column_add_attribute (columnHandle, textRenderer, OS.text, modelIndex + CELL_TEXT);
-	OS.gtk_tree_view_column_add_attribute (columnHandle, textRenderer, OS.foreground_gdk, FOREGROUND_COLUMN);
+	if (OS.GTK3) {
+		OS.gtk_tree_view_column_add_attribute (columnHandle, textRenderer, OS.foreground_rgba, FOREGROUND_COLUMN);
+	} else {
+		OS.gtk_tree_view_column_add_attribute (columnHandle, textRenderer, OS.foreground_gdk, FOREGROUND_COLUMN);
+	}
 	OS.gtk_tree_view_column_add_attribute (columnHandle, textRenderer, OS.font_desc, FONT_COLUMN);
 
 	boolean customDraw = firstCustomDraw;
@@ -866,14 +897,6 @@ void createWidget (int index) {
 @Override
 int applyThemeBackground () {
 	return -1; /* No Change */
-}
-
-GdkColor defaultBackground () {
-	return display.COLOR_LIST_BACKGROUND;
-}
-
-GdkColor defaultForeground () {
-	return display.COLOR_LIST_FOREGROUND;
 }
 
 @Override
@@ -1023,7 +1046,11 @@ void destroyItem (TableColumn column) {
 					OS.gtk_list_store_set (newModel, newItem, j, ptr [0], -1);
 					if (ptr [0] != 0) {
 						if (j == FOREGROUND_COLUMN || j == BACKGROUND_COLUMN) {
-							OS.gdk_color_free (ptr [0]);
+							if (OS.GTK3) {
+								OS.gdk_rgba_free (ptr [0]);
+							} else {
+								OS.gdk_color_free (ptr [0]);
+							}
 						} else if (j == FONT_COLUMN) {
 							OS.pango_font_description_free (ptr [0]);
 						}
@@ -1037,10 +1064,22 @@ void destroyItem (TableColumn column) {
 				OS.g_free (ptr [0]);
 				OS.gtk_tree_model_get (oldModel, oldItem, column.modelIndex + CELL_FOREGROUND, ptr, -1);
 				OS.gtk_list_store_set (newModel, newItem, FIRST_COLUMN + CELL_FOREGROUND, ptr [0], -1);
-				if (ptr [0] != 0) OS.gdk_color_free (ptr [0]);
+				if (ptr [0] != 0) {
+					if (OS.GTK3) {
+						OS.gdk_rgba_free (ptr [0]);
+					} else {
+						OS.gdk_color_free (ptr [0]);
+					}
+				}
 				OS.gtk_tree_model_get (oldModel, oldItem, column.modelIndex + CELL_BACKGROUND, ptr, -1);
 				OS.gtk_list_store_set (newModel, newItem, FIRST_COLUMN + CELL_BACKGROUND, ptr [0], -1);
-				if (ptr [0] != 0) OS.gdk_color_free (ptr [0]);
+				if (ptr [0] != 0) {
+					if (OS.GTK3) {
+						OS.gdk_rgba_free (ptr [0]);
+					} else {
+						OS.gdk_color_free (ptr [0]);
+					}
+				}
 				OS.gtk_tree_model_get (oldModel, oldItem, column.modelIndex + CELL_FONT, ptr, -1);
 				OS.gtk_list_store_set (newModel, newItem, FIRST_COLUMN + CELL_FONT, ptr [0], -1);
 				if (ptr [0] != 0) OS.pango_font_description_free (ptr [0]);
@@ -1184,8 +1223,8 @@ void fixChildren (Shell newShell, Shell oldShell, Decorations newDecorations, De
 }
 
 @Override
-GdkColor getBackgroundColor () {
-	return getBaseColor ();
+GdkColor getBackgroundGdkColor () {
+	return getBaseGdkColor ();
 }
 
 @Override
@@ -1276,15 +1315,15 @@ long /*int*/[] getColumnTypes (int columnCount) {
 	// per row data
 	types [CHECKED_COLUMN] = OS.G_TYPE_BOOLEAN ();
 	types [GRAYED_COLUMN] = OS.G_TYPE_BOOLEAN ();
-	types [FOREGROUND_COLUMN] = OS.GDK_TYPE_COLOR ();
-	types [BACKGROUND_COLUMN] = OS.GDK_TYPE_COLOR ();
+	types [FOREGROUND_COLUMN] = OS.GTK3? OS.GDK_TYPE_RGBA() : OS.GDK_TYPE_COLOR ();
+	types [BACKGROUND_COLUMN] = OS.GTK3? OS.GDK_TYPE_RGBA() : OS.GDK_TYPE_COLOR ();
 	types [FONT_COLUMN] = OS.PANGO_TYPE_FONT_DESCRIPTION ();
 	// per cell data
 	for (int i=FIRST_COLUMN; i<types.length; i+=CELL_TYPES) {
 		types [i + CELL_PIXBUF] = OS.GDK_TYPE_PIXBUF ();
 		types [i + CELL_TEXT] = OS.G_TYPE_STRING ();
-		types [i + CELL_FOREGROUND] = OS.GDK_TYPE_COLOR ();
-		types [i + CELL_BACKGROUND] = OS.GDK_TYPE_COLOR ();
+		types [i + CELL_FOREGROUND] = OS.GTK3? OS.GDK_TYPE_RGBA() : OS.GDK_TYPE_COLOR ();
+		types [i + CELL_BACKGROUND] = OS.GTK3? OS.GDK_TYPE_RGBA() : OS.GDK_TYPE_COLOR ();
 		types [i + CELL_FONT] = OS.PANGO_TYPE_FONT_DESCRIPTION ();
 	}
 	return types;
@@ -1377,30 +1416,32 @@ public TableColumn [] getColumns () {
 }
 
 @Override
-GdkColor getContextBackground () {
+GdkRGBA getContextBackgroundGdkRGBA () {
+	assert OS.GTK3 : "GTK3 code was run by GTK2";
 	if (OS.GTK_VERSION >= OS.VERSION(3, 16, 0)) {
 		if (background != null) {
-			return display.toGdkColor (background);
+			return background;
 		} else {
 			// For Tables and Trees, the default background is
 			// COLOR_LIST_BACKGROUND instead of COLOR_WIDGET_BACKGROUND.
-			return display.COLOR_LIST_BACKGROUND;
+			return display.COLOR_LIST_BACKGROUND_RGBA;
 		}
 	} else {
-		return super.getContextBackground ();
+		return super.getContextBackgroundGdkRGBA ();
 	}
 }
 
 @Override
-GdkColor getContextColor () {
+GdkRGBA getContextColorGdkRGBA () {
+	assert OS.GTK3 : "GTK3 code was run by GTK2";
 	if (OS.GTK_VERSION >= OS.VERSION(3, 16, 0)) {
 		if (foreground != null) {
-			return display.toGdkColor (foreground);
+			return foreground;
 		} else {
-			return display.COLOR_LIST_FOREGROUND;
+			return display.COLOR_LIST_FOREGROUND_RGBA;
 		}
 	} else {
-		return super.getContextColor ();
+		return super.getContextColorGdkRGBA ();
 	}
 }
 
@@ -1420,7 +1461,8 @@ TableItem getFocusItem () {
 }
 
 @Override
-GdkColor getForegroundColor () {
+GdkColor getForegroundGdkColor () {
+	assert !OS.GTK3 : "GTK2 code was run by GTK3";
 	return getTextColor ();
 }
 
@@ -2879,7 +2921,11 @@ void rendererRender (long /*int*/ cell, long /*int*/ cr, long /*int*/ window, lo
 			}
 			if (ptr [0] != 0) {
 				drawState |= SWT.BACKGROUND;
-				OS.gdk_color_free (ptr [0]);
+				if (OS.GTK3) {
+					OS.gdk_rgba_free (ptr [0]);
+				} else {
+					OS.gdk_color_free (ptr [0]);
+				}
 			}
 			if ((flags & OS.GTK_CELL_RENDERER_SELECTED) != 0) drawState |= SWT.SELECTED;
 			if (!OS.GTK3 || (flags & OS.GTK_CELL_RENDERER_SELECTED) == 0) {
@@ -2970,7 +3016,11 @@ void rendererRender (long /*int*/ cell, long /*int*/ cr, long /*int*/ window, lo
 				Rectangle eventRect = new Rectangle (rect.x, rect.y, rect.width, rect.height);
 				event.setBounds (DPIUtil.autoScaleDown (eventRect));
 				sendEvent (SWT.EraseItem, event);
-				drawForeground = null;
+				if (OS.GTK3) {
+					drawForegroundRGBA = null;
+				} else {
+					drawForeground = null;
+				}
 				drawState = event.doit ? event.detail : 0;
 				drawFlags &= ~(OS.GTK_CELL_RENDERER_FOCUSED | OS.GTK_CELL_RENDERER_SELECTED);
 				if ((drawState & SWT.SELECTED) != 0) drawFlags |= OS.GTK_CELL_RENDERER_SELECTED;
@@ -2993,7 +3043,13 @@ void rendererRender (long /*int*/ cell, long /*int*/ cr, long /*int*/ window, lo
 						OS.gtk_paint_flat_box (style, window, OS.GTK_STATE_SELECTED, OS.GTK_SHADOW_NONE, rect, widget, detail, rect.x, rect.y, rect.width, rect.height);
 					}
 				} else {
-					if (wasSelected) drawForeground = gc.getForeground ().handle;
+					if (wasSelected) {
+						if (OS.GTK3) {
+							drawForegroundRGBA = gc.getForeground ().handleRGBA;
+						} else {
+							drawForeground = gc.getForeground ().handle;
+						}
+					}
 				}
 				gc.dispose();
 			}
@@ -3011,8 +3067,10 @@ void rendererRender (long /*int*/ cell, long /*int*/ cr, long /*int*/ window, lo
 		long /*int*/ g_class = OS.g_type_class_peek_parent (OS.G_OBJECT_GET_CLASS (cell));
 		GtkCellRendererClass klass = new GtkCellRendererClass ();
 		OS.memmove (klass, g_class);
-		if (drawForeground != null && OS.GTK_IS_CELL_RENDERER_TEXT (cell)) {
+		if (drawForeground != null && OS.GTK_IS_CELL_RENDERER_TEXT (cell) && !OS.GTK3) {
 			OS.g_object_set (cell, OS.foreground_gdk, drawForeground, 0);
+		} else if (drawForegroundRGBA != null && OS.GTK_IS_CELL_RENDERER_TEXT (cell) && OS.GTK3) {
+			OS.g_object_set (cell, OS.foreground_rgba, drawForegroundRGBA, 0);
 		}
 		if (OS.GTK3) {
 			OS.call (klass.render, cell, cr, widget, background_area, cell_area, drawFlags);
@@ -3065,14 +3123,19 @@ void rendererRender (long /*int*/ cell, long /*int*/ cr, long /*int*/ window, lo
 						 * gtk_paint_flat_box () changes the background color state_type
 						 * to GTK_STATE_ACTIVE. The fix is to use the same values in the GC.
 						 */
-						background = Color.gtk_new (display, display.COLOR_LIST_SELECTION_INACTIVE);
-						foreground = Color.gtk_new (display, display.COLOR_LIST_SELECTION_TEXT_INACTIVE);
+						background = OS.GTK3 ? Color.gtk_new (display, display.COLOR_LIST_SELECTION_INACTIVE_RGBA) : Color.gtk_new (display, display.COLOR_LIST_SELECTION_INACTIVE);
+						foreground = OS.GTK3 ? Color.gtk_new (display, display.COLOR_LIST_SELECTION_TEXT_INACTIVE_RGBA) : Color.gtk_new (display, display.COLOR_LIST_SELECTION_TEXT_INACTIVE);
 					}
 					gc.setBackground (background);
 					gc.setForeground (foreground);
 				} else {
 					gc.setBackground (item.getBackground (columnIndex));
-					Color foreground = drawForeground != null ? Color.gtk_new (display, drawForeground) : item.getForeground (columnIndex);
+					Color foreground;
+					if (OS.GTK3) {
+						foreground = drawForegroundRGBA != null ? Color.gtk_new (display, drawForegroundRGBA) : item.getForeground (columnIndex);
+					} else {
+						foreground = drawForeground != null ? Color.gtk_new (display, drawForeground) : item.getForeground (columnIndex);
+					}
 					gc.setForeground (foreground);
 				}
 				gc.setFont (item.getFont (columnIndex));
@@ -3290,28 +3353,26 @@ void selectFocusIndex (int index) {
 }
 
 @Override
-void setBackgroundColor (GdkColor color) {
-	super.setBackgroundColor (color);
-	if (!OS.GTK3) {
-		OS.gtk_widget_modify_base (handle, 0, color);
-	}
+void setBackgroundGdkColor (GdkColor color) {
+	assert !OS.GTK3 : "GTK2 code was run by GTK3";
+	super.setBackgroundGdkColor (color);
+	OS.gtk_widget_modify_base (handle, 0, color);
 }
 
 @Override
-void setBackgroundColor (long /*int*/ context, long /*int*/ handle, GdkRGBA rgba) {
+void setBackgroundGdkRGBA (long /*int*/ context, long /*int*/ handle, GdkRGBA rgba) {
+	assert OS.GTK3 : "GTK3 code was run by GTK2";
 	/* Setting the background color overrides the selected background color.
 	 * To prevent this, we need to re-set the default. This can be done with CSS
 	 * on GTK3.16+, or by using GtkStateFlags as an argument to
 	 * gtk_widget_override_background_color() on versions of GTK3 less than 3.16.
 	 */
 	if (rgba == null) {
-		GdkColor temp = getDisplay().COLOR_LIST_BACKGROUND;
-		background = display.toGdkRGBA (temp);
+		background = display.COLOR_LIST_BACKGROUND_RGBA;
 	} else {
 		background = rgba;
 	}
-	GdkColor defaultColor = getDisplay().COLOR_LIST_SELECTION;
-	GdkRGBA selectedBackground = display.toGdkRGBA (defaultColor);
+	GdkRGBA selectedBackground = display.COLOR_LIST_SELECTION_RGBA;
 	if (OS.GTK_VERSION >= OS.VERSION(3, 16, 0)) {
 		String name = OS.GTK_VERSION >= OS.VERSION(3, 20, 0) ? "treeview" : "GtkTreeView";
 		String css = name + " {background-color: " + display.gtk_rgba_to_css_string(background) + ";}\n"
@@ -3324,7 +3385,7 @@ void setBackgroundColor (long /*int*/ context, long /*int*/ handle, GdkRGBA rgba
 		String finalCss = display.gtk_css_create_css_color_string (cssBackground, cssForeground, SWT.BACKGROUND);
 		gtk_css_provider_load_from_css(context, finalCss);
 	} else {
-		super.setBackgroundColor(context, handle, rgba);
+		super.setBackgroundGdkRGBA(context, handle, rgba);
 		OS.gtk_widget_override_background_color(handle, OS.GTK_STATE_FLAG_SELECTED, selectedBackground);
 	}
 }
@@ -3408,17 +3469,21 @@ void setFontDescription (long /*int*/ font) {
 }
 
 @Override
-void setForegroundColor (GdkColor color) {
+void setForegroundGdkRGBA (GdkRGBA rgba) {
+	assert OS.GTK3 : "GTK3 code was run by GTK2";
 	if (OS.GTK_VERSION >= OS.VERSION (3, 16, 0)) {
-		GdkRGBA rgba = null;
-		if (color != null) {
-			rgba = display.toGdkRGBA (color);
-		}
 		foreground = rgba;
-		setForegroundColor (handle, rgba);
+		GdkRGBA toSet = rgba == null ? display.COLOR_LIST_FOREGROUND_RGBA : rgba;
+		setForegroundGdkRGBA (handle, toSet);
 	} else {
-		setForegroundColor (handle, color, false);
+		super.setForegroundGdkRGBA(rgba);
 	}
+}
+
+@Override
+void setForegroundGdkColor (GdkColor color) {
+	assert !OS.GTK3 : "GTK2 code was run by GTK3";
+	setForegroundColor (handle, color, false);
 }
 
 /**
@@ -3452,9 +3517,9 @@ public void setHeaderBackground(Color color) {
 	if (OS.GTK3) {
 		GdkRGBA background;
 		if (headerBackground != null) {
-			background = display.toGdkRGBA(headerBackground.handle);
+			background = headerBackground.handleRGBA;
 		} else {
-			background = display.toGdkRGBA(display.COLOR_LIST_BACKGROUND);
+			background = display.COLOR_LIST_BACKGROUND_RGBA;
 		}
 		String name = OS.GTK_VERSION >= OS.VERSION(3, 20, 0) ? "button" : "GtkButton";
 		// background works for 3.18 and later, background-color only as of 3.20
@@ -3507,9 +3572,9 @@ public void setHeaderForeground (Color color) {
 	if (OS.GTK3) {
 		GdkRGBA foreground;
 		if (headerForeground != null) {
-			foreground = display.toGdkRGBA(headerForeground.handle);
+			foreground = headerForeground.handleRGBA;
 		} else {
-			foreground = display.toGdkRGBA(display.COLOR_LIST_FOREGROUND);
+			foreground = display.COLOR_LIST_FOREGROUND_RGBA;
 		}
 		String name = OS.GTK_VERSION >= OS.VERSION(3, 20, 0) ? "button" : "GtkButton";
 		String css = name + " {color: " + display.gtk_rgba_to_css_string(foreground) + ";}";

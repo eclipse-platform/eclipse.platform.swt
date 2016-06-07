@@ -467,20 +467,6 @@ int setBounds (int x, int y, int width, int height, boolean move, boolean resize
 	return result;
 }
 
-@Override
-void setForegroundColor (long /*int*/ handle, GdkRGBA rgba) {
-	/* For CSS foreground colors (GTK3.16+) we need to make sure the default
-	 * background color stays set if no background color is specified. If no
-	 * background color has been set, set cssBackground to be COLOR_WIDGET_BACKGROUND.
-	 */
-	if (cssBackground == null) {
-		GdkRGBA defaultBackground = display.toGdkRGBA (display.COLOR_WIDGET_BACKGROUND);
-		cssBackground = "SwtFixed {background-color: " +
-				display.gtk_rgba_to_css_string(defaultBackground) + ";}";
-	}
-	super.setForegroundColor (handle, rgba);
-}
-
 /**
  * Sets the receiver's caret.
  * <p>

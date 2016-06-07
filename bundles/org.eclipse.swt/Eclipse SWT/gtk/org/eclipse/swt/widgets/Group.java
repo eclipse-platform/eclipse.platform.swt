@@ -158,15 +158,32 @@ Rectangle getClientAreaInPixels () {
 }
 
 @Override
-GdkColor getContextColor () {
+GdkRGBA getContextColorGdkRGBA () {
+	assert OS.GTK3 : "GTK3 code was run by GTK2";
 	if (OS.GTK_VERSION >= OS.VERSION (3, 16, 0)) {
 		if (foreground != null) {
-			return display.toGdkColor (foreground);
+			return foreground;
 		} else {
-			return display.COLOR_WIDGET_FOREGROUND;
+			return display.COLOR_WIDGET_FOREGROUND_RGBA;
 		}
 	} else {
-		return super.getContextColor();
+		return super.getContextColorGdkRGBA();
+	}
+}
+
+@Override
+GdkRGBA getContextBackgroundGdkRGBA () {
+	assert OS.GTK3 : "GTK3 code was run by GTK2";
+	if (OS.GTK_VERSION >= OS.VERSION(3, 16, 0)) {
+		return super.getContextBackgroundGdkRGBA();
+	} else {
+		long /*int*/ context = OS.gtk_widget_get_style_context (fixedHandle);
+		GdkRGBA rgba = new GdkRGBA ();
+		OS.gtk_style_context_get_background_color (context, OS.GTK_STATE_FLAG_NORMAL, rgba);
+		if ((state & BACKGROUND) == 0) {
+			return display.COLOR_WIDGET_BACKGROUND_RGBA;
+		}
+		return rgba;
 	}
 }
 
@@ -317,18 +334,18 @@ void releaseWidget () {
 }
 
 @Override
-void setBackgroundColor (GdkColor color) {
-	if (OS.GTK_VERSION >= OS.VERSION(3, 16, 0)) {
-		// With CSS theming we only need to set the background color
-		// of the parent SwtFixed container.
-		setBackgroundColor (fixedHandle, color);
-		return;
-	} else {
-		super.setBackgroundColor (color);
-		setBackgroundColor (fixedHandle, color);
-		// Bug 453827 - client handle should also be painted as it's visible to the user now.
-		setBackgroundColor (clientHandle, color);
-	}
+void setBackgroundGdkColor (GdkColor color) {
+	assert !OS.GTK3 : "GTK2 code was run by GTK3";
+	super.setBackgroundGdkColor (color);
+	setBackgroundGdkColor (fixedHandle, color);
+	// Bug 453827 - client handle should also be painted as it's visible to the user now.
+	setBackgroundGdkColor (clientHandle, color);
+}
+
+@Override
+void setBackgroundGdkRGBA(long /*int*/ handle, GdkRGBA rgba) {
+	assert OS.GTK3 : "GTK3 code was run by GTK2";
+	super.setBackgroundGdkRGBA(fixedHandle, rgba);
 }
 
 @Override
@@ -338,28 +355,36 @@ void setFontDescription (long /*int*/ font) {
 }
 
 @Override
-void setForegroundColor (GdkColor color) {
-	if (OS.GTK_VERSION >= OS.VERSION(3, 16, 0)) {
-		GdkRGBA rgba = null;
-		if (color != null) {
-			rgba = display.toGdkRGBA (color);
-		}
-		/*
-		 * When using CSS, setting the foreground color on an empty label
-		 * widget prevents the background from being set. If a user wants
-		 * to specify a foreground color before the text is set, store the
-		 * color and wait until text is specified to apply it.
-		 */
-		if (text.isEmpty()) {
-			foreground = rgba;
-		} else {
-			setForegroundColor (labelHandle, rgba);
-			foreground = rgba;
-		}
-	} else {
-		super.setForegroundColor (color);
-		setForegroundColor(labelHandle, color);
+void setForegroundGdkRGBA (long /*int*/ handle, GdkRGBA rgba) {
+	assert OS.GTK3 : "GTK3 code was run by GTK2";
+	if (OS.GTK_VERSION < OS.VERSION(3, 16, 0)) {
+		super.setForegroundGdkRGBA(handle, rgba);
+		return;
 	}
+	/*
+	 * When using CSS, setting the foreground color on an empty label
+	 * widget prevents the background from being set. If a user wants
+	 * to specify a foreground color before the text is set, store the
+	 * color and wait until text is specified to apply it.
+	 */
+	if (!text.isEmpty()) {
+		super.setForegroundGdkRGBA (labelHandle, rgba);
+	}
+	foreground = rgba;
+}
+
+@Override
+void setForegroundGdkColor (GdkColor color) {
+	assert !OS.GTK3 : "GTK2 code was run by GTK3";
+	super.setForegroundGdkColor (color);
+	setForegroundColor(labelHandle, color);
+}
+
+@Override
+void setForegroundGdkRGBA (GdkRGBA rgba) {
+	assert OS.GTK3 : "GTK3 code was run by GTK2";
+	super.setForegroundGdkRGBA(rgba);
+	setForegroundGdkRGBA (labelHandle, rgba);
 }
 
 @Override
@@ -414,7 +439,7 @@ public void setText (String string) {
 	}
 	// Set the foreground now that the text has been set
 	if (OS.GTK_VERSION >= OS.VERSION (3, 16, 0)) {
-		setForegroundColor (labelHandle, foreground);
+		setForegroundGdkRGBA (labelHandle, foreground);
 	}
 }
 

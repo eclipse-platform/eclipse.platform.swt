@@ -134,8 +134,8 @@ public RGB open () {
 	}
 	Display display = parent != null ? parent.getDisplay (): Display.getCurrent ();
 	long /*int*/ colorsel = 0;
-	GdkColor color = new GdkColor ();
-	GdkRGBA rgba = new GdkRGBA ();
+	GdkRGBA rgba;
+	GdkColor color;
 	if (OS.GTK_VERSION <= OS.VERSION (3, 4, 0)) {
 		if (parent != null) {
 			long /*int*/ shellHandle = parent.topHandle ();
@@ -152,6 +152,7 @@ public RGB open () {
 
 		colorsel = OS.gtk_color_selection_dialog_get_color_selection (handle);
 		if (rgb != null) {
+			color = new GdkColor ();
 			color.red = (short)((rgb.red & 0xFF) | ((rgb.red & 0xFF) << 8));
 			color.green = (short)((rgb.green & 0xFF) | ((rgb.green & 0xFF) << 8));
 			color.blue = (short)((rgb.blue & 0xFF) | ((rgb.blue & 0xFF) << 8));
@@ -159,6 +160,7 @@ public RGB open () {
 		}
 		OS.gtk_color_selection_set_has_palette (colorsel, true);
 	} else {
+		rgba = new GdkRGBA ();
 		if (rgb != null) {
 			rgba.red = (double) rgb.red / 255;
 			rgba.green = (double) rgb.green / 255;
@@ -171,6 +173,7 @@ public RGB open () {
 		if (OS.GTK_VERSION >= OS.VERSION (3, 4, 0)) {
 			int colorsPerRow = 9;
 			long /*int*/ gdkRGBAS = OS.g_malloc(GdkRGBA.sizeof * rgbs.length);
+			rgba = new GdkRGBA ();
 			for (int i=0; i<rgbs.length; i++) {
 				RGB rgbS = rgbs[i];
 				if (rgbS != null) {
@@ -194,6 +197,7 @@ public RGB open () {
 			for (int i=0; i<rgbs.length; i++) {
 				RGB rgb = rgbs[i];
 				if (rgb != null) {
+					color = new GdkColor ();
 					color.red = (short)((rgb.red & 0xFF) | ((rgb.red & 0xFF) << 8));
 					color.green = (short)((rgb.green & 0xFF) | ((rgb.green & 0xFF) << 8));
 					color.blue = (short)((rgb.blue & 0xFF) | ((rgb.blue & 0xFF) << 8));
@@ -250,11 +254,13 @@ public RGB open () {
 		int green = 0;
 		int blue = 0;
 		if (OS.GTK_VERSION >= OS.VERSION (3, 4, 0)) {
+			rgba = new GdkRGBA ();
 			OS.gtk_color_chooser_get_rgba (handle, rgba);
 			red =  (int) (rgba.red * 255);
 			green = (int) (rgba.green * 255);
 			blue =  (int) (rgba.blue *  255);
 		} else {
+			color = new GdkColor ();
 			OS.gtk_color_selection_get_current_color (colorsel, color);
 			red = (color.red >> 8) & 0xFF;
 			green = (color.green >> 8) & 0xFF;

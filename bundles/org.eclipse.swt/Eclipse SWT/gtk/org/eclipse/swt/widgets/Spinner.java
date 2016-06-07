@@ -417,8 +417,9 @@ void fixIM () {
 }
 
 @Override
-GdkColor getBackgroundColor () {
-	return getBaseColor ();
+GdkColor getBackgroundGdkColor () {
+	assert !OS.GTK3 : "GTK2 code was run by GTK3";
+	return getBaseGdkColor ();
 }
 
 @Override
@@ -431,7 +432,8 @@ int getBorderWidthInPixels () {
 }
 
 @Override
-GdkColor getForegroundColor () {
+GdkColor getForegroundGdkColor () {
+	assert !OS.GTK3 : "GTK2 code was run by GTK3";
 	return getTextColor ();
 }
 
@@ -931,26 +933,27 @@ void removeVerifyListener (VerifyListener listener) {
 }
 
 @Override
-GdkColor getContextBackground () {
+GdkRGBA getContextBackgroundGdkRGBA () {
+	assert OS.GTK3 : "GTK3 code was run by GTK2";
 	if (background != null) {
-		return display.toGdkColor (background);
+		return background;
 	} else {
-		return display.COLOR_WIDGET_BACKGROUND;
+		return display.COLOR_WIDGET_BACKGROUND_RGBA;
 	}
 }
 
 @Override
-void setBackgroundColor (long /*int*/ context, long /*int*/ handle, GdkRGBA rgba) {
+void setBackgroundGdkRGBA (long /*int*/ context, long /*int*/ handle, GdkRGBA rgba) {
+	assert OS.GTK3 : "GTK3 code was run by GTK2";
 	background = rgba;
-	setBackgroundColorGradient (context, handle, rgba);
+	setBackgroundGradientGdkRGBA (context, handle, rgba);
 }
 
 @Override
-void setBackgroundColor (GdkColor color) {
-	super.setBackgroundColor (color);
-	if (!OS.GTK3) {
-		OS.gtk_widget_modify_base (handle, 0, color);
-	}
+void setBackgroundGdkColor (GdkColor color) {
+	assert !OS.GTK3 : "GTK2 code was run by GTK3";
+	super.setBackgroundGdkColor (color);
+	OS.gtk_widget_modify_base (handle, 0, color);
 }
 
 @Override
@@ -962,16 +965,9 @@ void setCursor (long /*int*/ cursor) {
 }
 
 @Override
-void setForegroundColor (GdkColor color) {
-	if (OS.GTK_VERSION >= OS.VERSION (3, 16, 0)) {
-		GdkRGBA rgba = null;
-		if (color != null) {
-			rgba = display.toGdkRGBA (color);
-		}
-		setForegroundColor (handle, rgba);
-	} else {
-		setForegroundColor (handle, color, false);
-	}
+void setForegroundGdkColor (GdkColor color) {
+	assert !OS.GTK3 : "GTK2 code was run by GTK3";
+	setForegroundColor (handle, color, false);
 }
 
 /**

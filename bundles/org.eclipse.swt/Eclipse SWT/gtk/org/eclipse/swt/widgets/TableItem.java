@@ -131,10 +131,17 @@ Color _getBackground () {
 	long /*int*/ [] ptr = new long /*int*/ [1];
 	OS.gtk_tree_model_get (parent.modelHandle, handle, Table.BACKGROUND_COLUMN, ptr, -1);
 	if (ptr [0] == 0) return parent.getBackground ();
-	GdkColor gdkColor = new GdkColor ();
-	OS.memmove (gdkColor, ptr [0], GdkColor.sizeof);
-	OS.gdk_color_free (ptr [0]);
-	return Color.gtk_new (display, gdkColor);
+	if (OS.GTK3) {
+		GdkRGBA gdkRGBA = new GdkRGBA ();
+		OS.memmove(gdkRGBA, ptr [0], GdkRGBA.sizeof);
+		OS.gdk_rgba_free (ptr [0]);
+		return Color.gtk_new(display, gdkRGBA);
+	} else {
+		GdkColor gdkColor = new GdkColor ();
+		OS.memmove (gdkColor, ptr [0], GdkColor.sizeof);
+		OS.gdk_color_free (ptr [0]);
+		return Color.gtk_new (display, gdkColor);
+	}
 }
 
 Color _getBackground (int index) {
@@ -144,10 +151,17 @@ Color _getBackground (int index) {
 	int modelIndex = parent.columnCount == 0 ? Table.FIRST_COLUMN : parent.columns [index].modelIndex;
 	OS.gtk_tree_model_get (parent.modelHandle, handle, modelIndex + Table.CELL_BACKGROUND, ptr, -1);
 	if (ptr [0] == 0) return _getBackground ();
-	GdkColor gdkColor = new GdkColor ();
-	OS.memmove (gdkColor, ptr [0], GdkColor.sizeof);
-	OS.gdk_color_free (ptr [0]);
-	return Color.gtk_new (display, gdkColor);
+	if (OS.GTK3) {
+		GdkRGBA gdkRGBA = new GdkRGBA ();
+		OS.memmove(gdkRGBA, ptr [0], GdkRGBA.sizeof);
+		OS.gdk_rgba_free (ptr [0]);
+		return Color.gtk_new(display, gdkRGBA);
+	} else {
+		GdkColor gdkColor = new GdkColor ();
+		OS.memmove (gdkColor, ptr [0], GdkColor.sizeof);
+		OS.gdk_color_free (ptr [0]);
+		return Color.gtk_new (display, gdkColor);
+	}
 }
 
 boolean _getChecked () {
@@ -160,10 +174,17 @@ Color _getForeground () {
 	long /*int*/ [] ptr = new long /*int*/ [1];
 	OS.gtk_tree_model_get (parent.modelHandle, handle, Table.FOREGROUND_COLUMN, ptr, -1);
 	if (ptr [0] == 0) return parent.getForeground ();
-	GdkColor gdkColor = new GdkColor ();
-	OS.memmove (gdkColor, ptr [0], GdkColor.sizeof);
-	OS.gdk_color_free (ptr [0]);
-	return Color.gtk_new (display, gdkColor);
+	if (OS.GTK3) {
+		GdkRGBA gdkRGBA = new GdkRGBA ();
+		OS.memmove(gdkRGBA, ptr [0], GdkRGBA.sizeof);
+		OS.gdk_rgba_free (ptr [0]);
+		return Color.gtk_new(display, gdkRGBA);
+	} else {
+		GdkColor gdkColor = new GdkColor ();
+		OS.memmove (gdkColor, ptr [0], GdkColor.sizeof);
+		OS.gdk_color_free (ptr [0]);
+		return Color.gtk_new (display, gdkColor);
+	}
 }
 
 Color _getForeground (int index) {
@@ -173,10 +194,17 @@ Color _getForeground (int index) {
 	int modelIndex =  parent.columnCount == 0 ? Table.FIRST_COLUMN : parent.columns [index].modelIndex;
 	OS.gtk_tree_model_get (parent.modelHandle, handle, modelIndex + Table.CELL_FOREGROUND, ptr, -1);
 	if (ptr [0] == 0) return _getForeground ();
-	GdkColor gdkColor = new GdkColor ();
-	OS.memmove (gdkColor, ptr [0], GdkColor.sizeof);
-	OS.gdk_color_free (ptr [0]);
-	return Color.gtk_new (display, gdkColor);
+	if (OS.GTK3) {
+		GdkRGBA gdkRGBA = new GdkRGBA ();
+		OS.memmove(gdkRGBA, ptr [0], GdkRGBA.sizeof);
+		OS.gdk_rgba_free (ptr [0]);
+		return Color.gtk_new(display, gdkRGBA);
+	} else {
+		GdkColor gdkColor = new GdkColor ();
+		OS.memmove (gdkColor, ptr [0], GdkColor.sizeof);
+		OS.gdk_color_free (ptr [0]);
+		return Color.gtk_new (display, gdkColor);
+	}
 }
 
 Image _getImage (int index) {
@@ -824,8 +852,13 @@ public void setBackground (Color color) {
 		error (SWT.ERROR_INVALID_ARGUMENT);
 	}
 	if (_getBackground ().equals (color)) return;
-	GdkColor gdkColor = color != null ? color.handle : null;
-	OS.gtk_list_store_set (parent.modelHandle, handle, Table.BACKGROUND_COLUMN, gdkColor, -1);
+	if (OS.GTK3) {
+		GdkRGBA gdkRGBA = color != null ? color.handleRGBA : null;
+		OS.gtk_list_store_set (parent.modelHandle, handle, Table.BACKGROUND_COLUMN, gdkRGBA, -1);
+	} else {
+		GdkColor gdkColor = color != null ? color.handle : null;
+		OS.gtk_list_store_set (parent.modelHandle, handle, Table.BACKGROUND_COLUMN, gdkColor, -1);
+	}
 	cached = true;
 }
 
@@ -856,8 +889,13 @@ public void setBackground (int index, Color color) {
 	int count = Math.max (1, parent.getColumnCount ());
 	if (0 > index || index > count - 1) return;
 	int modelIndex = parent.columnCount == 0 ? Table.FIRST_COLUMN : parent.columns [index].modelIndex;
-	GdkColor gdkColor = color != null ? color.handle : null;
-	OS.gtk_list_store_set (parent.modelHandle, handle, modelIndex + Table.CELL_BACKGROUND, gdkColor, -1);
+	if (OS.GTK3) {
+		GdkRGBA gdkRGBA = color != null ? color.handleRGBA : null;
+		OS.gtk_list_store_set (parent.modelHandle, handle, modelIndex + Table.CELL_BACKGROUND, gdkRGBA, -1);
+	} else {
+		GdkColor gdkColor = color != null ? color.handle : null;
+		OS.gtk_list_store_set (parent.modelHandle, handle, modelIndex + Table.CELL_BACKGROUND, gdkColor, -1);
+	}
 	cached = true;
 
 	if (color != null) {
@@ -1031,8 +1069,13 @@ public void setForeground (Color color){
 		error (SWT.ERROR_INVALID_ARGUMENT);
 	}
 	if (_getForeground ().equals (color)) return;
-	GdkColor gdkColor = color != null ? color.handle : null;
-	OS.gtk_list_store_set (parent.modelHandle, handle, Table.FOREGROUND_COLUMN, gdkColor, -1);
+	if (OS.GTK3) {
+		GdkRGBA gdkRGBA = color != null ? color.handleRGBA : null;
+		OS.gtk_list_store_set (parent.modelHandle, handle, Table.FOREGROUND_COLUMN, gdkRGBA, -1);
+	} else {
+		GdkColor gdkColor = color != null ? color.handle : null;
+		OS.gtk_list_store_set (parent.modelHandle, handle, Table.FOREGROUND_COLUMN, gdkColor, -1);
+	}
 	cached = true;
 }
 
@@ -1063,8 +1106,13 @@ public void setForeground (int index, Color color){
 	int count = Math.max (1, parent.getColumnCount ());
 	if (0 > index || index > count - 1) return;
 	int modelIndex = parent.columnCount == 0 ? Table.FIRST_COLUMN : parent.columns [index].modelIndex;
-	GdkColor gdkColor = color != null ? color.handle : null;
-	OS.gtk_list_store_set (parent.modelHandle, handle, modelIndex + Table.CELL_FOREGROUND, gdkColor, -1);
+	if (OS.GTK3) {
+		GdkRGBA gdkRGBA = color != null ? color.handleRGBA : null;
+		OS.gtk_list_store_set (parent.modelHandle, handle, modelIndex + Table.CELL_FOREGROUND, gdkRGBA, -1);
+	} else {
+		GdkColor gdkColor = color != null ? color.handle : null;
+		OS.gtk_list_store_set (parent.modelHandle, handle, modelIndex + Table.CELL_FOREGROUND, gdkColor, -1);
+	}
 	cached = true;
 
 	if (color != null) {
