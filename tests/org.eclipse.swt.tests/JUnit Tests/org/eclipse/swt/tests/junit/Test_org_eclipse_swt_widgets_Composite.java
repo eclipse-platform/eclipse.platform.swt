@@ -12,13 +12,17 @@ package org.eclipse.swt.tests.junit;
 
 
 import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.List;
+import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Widget;
 import org.junit.Before;
 import org.junit.Test;
@@ -69,13 +73,45 @@ public void test_getChildren() {
 
 	c2.dispose();
 	assertArrayEquals(":e:", new Control[]{c1, c3}, composite.getChildren());
-	
+
 	Control[] children = composite.getChildren();
 	for (int i = 0; i < children.length; i++)
 		children[i].dispose();
 
 	assertArrayEquals(":f:", new Control[]{}, composite.getChildren());
 }
+
+
+@Test
+public void test_setVisibility_and_sizing() {
+
+	// Note: This test needs it's own shell/composite because original bug is only
+	// reproduced if composite has style SWT.BORDER. (the setup() creates one without border).
+	Shell visibilityShell = new Shell();
+	visibilityShell.setSize(500, 500);
+	Composite visibilityComposite = new Composite(visibilityShell, SWT.BORDER);
+
+	visibilityShell.setLayout(new FillLayout());
+	visibilityComposite.setLayout(new FillLayout());
+
+	Button button = new Button(visibilityComposite, SWT.PUSH);
+	button.setText("Test Button");
+
+	visibilityComposite.setVisible(false);
+	visibilityComposite.setVisible(true);
+
+	visibilityShell.layout();
+
+// 	  // Useful for troubleshooting:											   // should be like:
+//    System.out.println("Shell size : " + visibilityShell.getSize().toString());  // >> 500,500
+//    System.out.println("SComp size : " + visibilityComposite.getSize().toString()); // >> 500, 463
+//    System.out.println("Button size: " + button.getSize().toString());			  // >> 500,463
+
+	Point compSize = visibilityComposite.getSize();
+	assertTrue("Composite should be aprox 500 by 463 px, but instead it is: " + compSize.toString(),
+			compSize.x > 100 && compSize.y > 100); // If this is 1x1 or 0x0 then there was some fault in layout.
+}
+
 
 @Test
 public void test_setTabList$Lorg_eclipse_swt_widgets_Control() {
