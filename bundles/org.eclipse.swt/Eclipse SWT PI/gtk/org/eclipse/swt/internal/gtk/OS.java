@@ -6543,7 +6543,10 @@ public static final void gtk_adjustment_set_page_increment(long /*int*/ adjustme
 		lock.unlock();
 	}
 }
-/** @param adjustment cast=(GtkAdjustment *) */
+/**
+ * @method flags=dynamic
+ * @param adjustment cast=(GtkAdjustment *)
+ * */
 public static final native void _gtk_adjustment_value_changed(long /*int*/ adjustment);
 public static final void gtk_adjustment_value_changed(long /*int*/ adjustment) {
 	lock.lock();

@@ -9139,7 +9139,15 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1adjustment_1value_1changed)
 	(JNIEnv *env, jclass that, jintLong arg0)
 {
 	OS_NATIVE_ENTER(env, that, _1gtk_1adjustment_1value_1changed_FUNC);
+/*
 	gtk_adjustment_value_changed((GtkAdjustment *)arg0);
+*/
+	{
+		OS_LOAD_FUNCTION(fp, gtk_adjustment_value_changed)
+		if (fp) {
+			((void (CALLING_CONVENTION*)(GtkAdjustment *))fp)((GtkAdjustment *)arg0);
+		}
+	}
 	OS_NATIVE_EXIT(env, that, _1gtk_1adjustment_1value_1changed_FUNC);
 }
 #endif
