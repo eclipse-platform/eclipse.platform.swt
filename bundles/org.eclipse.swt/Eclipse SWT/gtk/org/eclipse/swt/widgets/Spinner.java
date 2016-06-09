@@ -931,14 +931,10 @@ void removeVerifyListener (VerifyListener listener) {
 
 @Override
 GdkColor getContextBackground () {
-	if (OS.GTK_VERSION >= OS.VERSION(3, 16, 0)) {
-		if (background != null) {
-			return display.toGdkColor (background);
-		} else {
-			return display.COLOR_WIDGET_BACKGROUND;
-		}
+	if (background != null) {
+		return display.toGdkColor (background);
 	} else {
-		return super.getContextBackground ();
+		return display.COLOR_WIDGET_BACKGROUND;
 	}
 }
 
