@@ -1775,4 +1775,22 @@ public void test_Virtual() {
 			dataCounter[0] > visibleCount / 2 && dataCounter[0] <= visibleCount * 2);
 }
 
+@Test
+public void test_setTopIndex() {
+	for (int i = 0; i < 10; i++) {
+		new TableItem(table, 0);
+	}
+	TableItem top = new TableItem(table, 0);
+	for (int i = 0; i < 10; i++) {
+		new TableItem(table, 0);
+	}
+	table.setSize(50,50);
+	shell.open();
+	table.setTopIndex(5);
+	for (int i = 0; i < 10; i++) {
+		new TableItem(table, 0);
+	}
+	shell.setVisible(false);
+	assertEquals(5, table.getTopIndex());
+}
 }
