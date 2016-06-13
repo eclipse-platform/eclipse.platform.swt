@@ -1773,6 +1773,23 @@ public void test_Virtual() {
 	// the "* 2" allows some surplus for platforms that pre-fetch items to improve scrolling performance:
 	assertTrue("SetData callback count not in range: " + dataCounter[0],
 			dataCounter[0] > visibleCount / 2 && dataCounter[0] <= visibleCount * 2);
-	}
 }
 
+@Test
+public void test_setTopIndex() {
+	for (int i = 0; i < 10; i++) {
+		new TableItem(table, 0);
+	}
+	for (int i = 0; i < 10; i++) {
+		new TableItem(table, 0);
+	}
+	table.setSize(50,50);
+	shell.open();
+	table.setTopIndex(5);
+	for (int i = 0; i < 10; i++) {
+		new TableItem(table, 0);
+	}
+	shell.setVisible(false);
+	assertEquals(5, table.getTopIndex());
+}
+}

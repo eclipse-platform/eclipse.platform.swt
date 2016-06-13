@@ -92,6 +92,8 @@ public class Tree extends Composite {
 	GdkRGBA background;
 	boolean ownerDraw, ignoreSize, ignoreAccessibility, pixbufSizeSet;
 	int pixbufHeight, pixbufWidth;
+	TreeItem topItem;
+	double cachedAdjustment, currentAdjustment;
 
 	static final int ID_COLUMN = 0;
 	static final int CHECKED_COLUMN = 1;
@@ -1880,18 +1882,72 @@ long /*int*/ getTextRenderer (long /*int*/ column) {
  */
 public TreeItem getTopItem () {
 	checkWidget ();
-	long /*int*/ [] path = new long /*int*/ [1];
-	OS.gtk_widget_realize (handle);
-	if (!OS.gtk_tree_view_get_path_at_pos (handle, 1, 1, path, null, null, null)) return null;
-	if (path [0] == 0) return null;
-	TreeItem item = null;
-	long /*int*/ iter = OS.g_malloc (OS.GtkTreeIter_sizeof());
-	if (OS.gtk_tree_model_get_iter (modelHandle, iter, path [0])) {
-		item = _getItem (iter);
+	/*
+	 * Feature in GTK: fetch the topItem using the topItem global variable
+	 * if setTopItem() has been called and the widget has not been scrolled
+	 * using the UI. Otherwise, fetch topItem using GtkTreeView API.
+	 */
+	long /*int*/ vAdjustment;
+	if (OS.GTK3) {
+		vAdjustment = OS.gtk_scrollable_get_vadjustment(handle);
 	}
-	OS.g_free (iter);
-	OS.gtk_tree_path_free (path [0]);
-	return item;
+	else {
+		vAdjustment = OS.gtk_tree_view_get_vadjustment(handle);
+	}
+	currentAdjustment = OS._gtk_adjustment_get_value(vAdjustment);
+	if (cachedAdjustment == currentAdjustment) {
+		/*
+		 *  Check to see if the selected item is also the topItem. If it is, that means topItem is
+		 *  in sync with the GTK view. If not, the real top item should be the last selected item, which is caused
+		 *  by setSelection().
+		 */
+		long /*int*/ treeSelect = OS.gtk_tree_view_get_selection(handle);
+		long /*int*/ list = OS.gtk_tree_selection_get_selected_rows(treeSelect, null);
+		TreeItem treeSelection = null;
+		if (list != 0) {
+			long /*int*/ iter = OS.g_malloc (OS.GtkTreeIter_sizeof ());
+			long /*int*/ data = OS.g_list_data (list);
+			if (OS.gtk_tree_model_get_iter (modelHandle, iter, data)) {
+				 treeSelection = _getItem (iter);
+			}
+			OS.g_free (iter);
+			OS.gtk_tree_path_free (data);
+			if (topItem == treeSelection) {
+				return topItem;
+			}
+			else {
+				return treeSelection;
+			}
+		} else {
+			if (topItem == null) {
+				// if topItem isn't set and there is nothing selected, topItem is the first item on the Tree
+				TreeItem item = null;
+				long /*int*/ iter = OS.g_malloc (OS.GtkTreeIter_sizeof());
+				if (OS.gtk_tree_model_get_iter_first (modelHandle, iter)) {
+					item = _getItem (iter);
+				}
+				OS.g_free (iter);
+				return item;
+			} else {
+				return topItem;
+			}
+		}
+	} else {
+		// Use GTK method to get topItem if there has been changes to the vAdjustment
+		long /*int*/ [] path = new long /*int*/ [1];
+		OS.gtk_widget_realize (handle);
+		if (!OS.gtk_tree_view_get_path_at_pos (handle, 1, 1, path, null, null, null)) return null;
+		if (path [0] == 0) return null;
+		TreeItem item = null;
+		long /*int*/ iter = OS.g_malloc (OS.GtkTreeIter_sizeof());
+		if (OS.gtk_tree_model_get_iter (modelHandle, iter, path [0])) {
+			item = _getItem (iter);
+		}
+		OS.g_free (iter);
+		OS.gtk_tree_path_free (path [0]);
+		topItem = item;
+		return item;
+		}
 }
 
 @Override
@@ -3526,6 +3582,24 @@ public void setSortDirection  (int direction) {
  * @since 2.1
  */
 public void setTopItem (TreeItem item) {
+
+	/*
+	 * Feature in GTK: cache the GtkAdjustment value for future use in
+	 * getTopItem(). Set topItem to item.
+	 *
+	 * Use gtk_tree_view_get_view_get_vadjustment for GTK2, GtkScrollable
+	 * doesn't exist on GTK2.
+	 */
+	long /*int*/ vAdjustment;
+	if (OS.GTK3) {
+		vAdjustment = OS.gtk_scrollable_get_vadjustment(handle);
+	}
+	else {
+		vAdjustment = OS.gtk_tree_view_get_vadjustment(handle);
+	}
+	cachedAdjustment = OS.gtk_adjustment_get_value(vAdjustment);
+	topItem = item;
+
 	if (item == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (item.isDisposed ()) error(SWT.ERROR_INVALID_ARGUMENT);
 	if (item.parent != this) return;
