@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-Name: %pluginName
 Bundle-Vendor: %providerName
 Bundle-SymbolicName: org.eclipse.swt; singleton:=true
-Bundle-Version: 3.105.0.qualifier
+Bundle-Version: 3.106.0.qualifier
 Bundle-ManifestVersion: 2
 Bundle-Localization: plugin
 DynamicImport-Package: org.eclipse.swt.accessibility2, org.mozilla.xpcom
@@ -24,4 +24,4 @@ Export-Package:
  org.eclipse.swt.internal.image; x-internal:=true,
  org.eclipse.swt.internal.theme; x-internal:=true
 Eclipse-ExtensibleAPI: true
-Bundle-RequiredExecutionEnvironment: JavaSE-1.7
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
