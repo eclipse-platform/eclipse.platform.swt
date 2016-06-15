@@ -4556,11 +4556,7 @@ public void setEnabled (boolean enabled) {
 				enterNotifyEventId = OS.g_signal_add_emission_hook (enterNotifyEventSignalId, 0, enterNotifyEventFunc.getAddress (), enableWindow, 0);
 
 			OS.gdk_window_set_user_data (enableWindow, parentHandle);
-			if (!OS.GDK_WINDOWING_X11 ()) {
-				OS.gdk_window_raise (enableWindow);
-			} else {
-				restackWindow (enableWindow, gtk_widget_get_window (topHandle), true);
-			}
+			restackWindow (enableWindow, gtk_widget_get_window (topHandle), true);
 			if (OS.gtk_widget_get_visible (topHandle)) OS.gdk_window_show_unraised (enableWindow);
 		}
 	}
