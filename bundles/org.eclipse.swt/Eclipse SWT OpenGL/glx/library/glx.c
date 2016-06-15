@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2012 IBM Corporation and others.
+ * Copyright (c) 2000, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -69,16 +69,6 @@ fail:
 }
 #endif
 
-#ifndef NO__1glXCopyContext
-JNIEXPORT void JNICALL GLX_NATIVE(_1glXCopyContext)
-	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jintLong arg2, jint arg3)
-{
-	GLX_NATIVE_ENTER(env, that, _1glXCopyContext_FUNC);
-	glXCopyContext((Display *)arg0, (GLXContext)arg1, (GLXContext)arg2, arg3);
-	GLX_NATIVE_EXIT(env, that, _1glXCopyContext_FUNC);
-}
-#endif
-
 #ifndef NO__1glXCreateContext
 JNIEXPORT jintLong JNICALL GLX_NATIVE(_1glXCreateContext)
 	(JNIEnv *env, jclass that, jintLong arg0, jobject arg1, jintLong arg2, jboolean arg3)
@@ -95,22 +85,6 @@ fail:
 }
 #endif
 
-#ifndef NO__1glXCreateGLXPixmap
-JNIEXPORT jintLong JNICALL GLX_NATIVE(_1glXCreateGLXPixmap)
-	(JNIEnv *env, jclass that, jintLong arg0, jobject arg1, jintLong arg2)
-{
-	XVisualInfo _arg1, *lparg1=NULL;
-	jintLong rc = 0;
-	GLX_NATIVE_ENTER(env, that, _1glXCreateGLXPixmap_FUNC);
-	if (arg1) if ((lparg1 = getXVisualInfoFields(env, arg1, &_arg1)) == NULL) goto fail;
-	rc = (jintLong)glXCreateGLXPixmap((Display *)arg0, lparg1, (Pixmap)arg2);
-fail:
-	if (arg1 && lparg1) setXVisualInfoFields(env, arg1, lparg1);
-	GLX_NATIVE_EXIT(env, that, _1glXCreateGLXPixmap_FUNC);
-	return rc;
-}
-#endif
-
 #ifndef NO__1glXDestroyContext
 JNIEXPORT void JNICALL GLX_NATIVE(_1glXDestroyContext)
 	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1)
@@ -118,28 +92,6 @@ JNIEXPORT void JNICALL GLX_NATIVE(_1glXDestroyContext)
 	GLX_NATIVE_ENTER(env, that, _1glXDestroyContext_FUNC);
 	glXDestroyContext((Display *)arg0, (GLXContext)arg1);
 	GLX_NATIVE_EXIT(env, that, _1glXDestroyContext_FUNC);
-}
-#endif
-
-#ifndef NO__1glXDestroyGLXPixmap
-JNIEXPORT void JNICALL GLX_NATIVE(_1glXDestroyGLXPixmap)
-	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1)
-{
-	GLX_NATIVE_ENTER(env, that, _1glXDestroyGLXPixmap_FUNC);
-	glXDestroyGLXPixmap((Display *)arg0, (GLXPixmap)arg1);
-	GLX_NATIVE_EXIT(env, that, _1glXDestroyGLXPixmap_FUNC);
-}
-#endif
-
-#ifndef NO__1glXGetClientString
-JNIEXPORT jintLong JNICALL GLX_NATIVE(_1glXGetClientString)
-	(JNIEnv *env, jclass that, jintLong arg0, jint arg1)
-{
-	jintLong rc = 0;
-	GLX_NATIVE_ENTER(env, that, _1glXGetClientString_FUNC);
-	rc = (jintLong)glXGetClientString((Display *)arg0, arg1);
-	GLX_NATIVE_EXIT(env, that, _1glXGetClientString_FUNC);
-	return rc;
 }
 #endif
 
@@ -174,30 +126,6 @@ JNIEXPORT jintLong JNICALL GLX_NATIVE(_1glXGetCurrentContext)
 }
 #endif
 
-#ifndef NO__1glXGetCurrentDrawable
-JNIEXPORT jintLong JNICALL GLX_NATIVE(_1glXGetCurrentDrawable)
-	(JNIEnv *env, jclass that)
-{
-	jintLong rc = 0;
-	GLX_NATIVE_ENTER(env, that, _1glXGetCurrentDrawable_FUNC);
-	rc = (jintLong)glXGetCurrentDrawable();
-	GLX_NATIVE_EXIT(env, that, _1glXGetCurrentDrawable_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO__1glXIsDirect
-JNIEXPORT jboolean JNICALL GLX_NATIVE(_1glXIsDirect)
-	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1)
-{
-	jboolean rc = 0;
-	GLX_NATIVE_ENTER(env, that, _1glXIsDirect_FUNC);
-	rc = (jboolean)glXIsDirect((Display *)arg0, (GLXContext)arg1);
-	GLX_NATIVE_EXIT(env, that, _1glXIsDirect_FUNC);
-	return rc;
-}
-#endif
-
 #ifndef NO__1glXMakeCurrent
 JNIEXPORT jboolean JNICALL GLX_NATIVE(_1glXMakeCurrent)
 	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jintLong arg2)
@@ -210,68 +138,6 @@ JNIEXPORT jboolean JNICALL GLX_NATIVE(_1glXMakeCurrent)
 }
 #endif
 
-#ifndef NO__1glXQueryExtension
-JNIEXPORT jboolean JNICALL GLX_NATIVE(_1glXQueryExtension)
-	(JNIEnv *env, jclass that, jintLong arg0, jintArray arg1, jintArray arg2)
-{
-	jint *lparg1=NULL;
-	jint *lparg2=NULL;
-	jboolean rc = 0;
-	GLX_NATIVE_ENTER(env, that, _1glXQueryExtension_FUNC);
-	if (arg1) if ((lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL)) == NULL) goto fail;
-	if (arg2) if ((lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL)) == NULL) goto fail;
-	rc = (jboolean)glXQueryExtension((Display *)arg0, lparg1, lparg2);
-fail:
-	if (arg2 && lparg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
-	if (arg1 && lparg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
-	GLX_NATIVE_EXIT(env, that, _1glXQueryExtension_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO__1glXQueryExtensionsString
-JNIEXPORT jintLong JNICALL GLX_NATIVE(_1glXQueryExtensionsString)
-	(JNIEnv *env, jclass that, jintLong arg0, jint arg1)
-{
-	jintLong rc = 0;
-	GLX_NATIVE_ENTER(env, that, _1glXQueryExtensionsString_FUNC);
-	rc = (jintLong)glXQueryExtensionsString((Display *)arg0, arg1);
-	GLX_NATIVE_EXIT(env, that, _1glXQueryExtensionsString_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO__1glXQueryServerString
-JNIEXPORT jintLong JNICALL GLX_NATIVE(_1glXQueryServerString)
-	(JNIEnv *env, jclass that, jintLong arg0, jint arg1, jint arg2)
-{
-	jintLong rc = 0;
-	GLX_NATIVE_ENTER(env, that, _1glXQueryServerString_FUNC);
-	rc = (jintLong)glXQueryServerString((Display *)arg0, arg1, arg2);
-	GLX_NATIVE_EXIT(env, that, _1glXQueryServerString_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO__1glXQueryVersion
-JNIEXPORT jboolean JNICALL GLX_NATIVE(_1glXQueryVersion)
-	(JNIEnv *env, jclass that, jintLong arg0, jintArray arg1, jintArray arg2)
-{
-	jint *lparg1=NULL;
-	jint *lparg2=NULL;
-	jboolean rc = 0;
-	GLX_NATIVE_ENTER(env, that, _1glXQueryVersion_FUNC);
-	if (arg1) if ((lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL)) == NULL) goto fail;
-	if (arg2) if ((lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL)) == NULL) goto fail;
-	rc = (jboolean)glXQueryVersion((Display *)arg0, lparg1, lparg2);
-fail:
-	if (arg2 && lparg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
-	if (arg1 && lparg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
-	GLX_NATIVE_EXIT(env, that, _1glXQueryVersion_FUNC);
-	return rc;
-}
-#endif
-
 #ifndef NO__1glXSwapBuffers
 JNIEXPORT void JNICALL GLX_NATIVE(_1glXSwapBuffers)
 	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1)
@@ -279,26 +145,6 @@ JNIEXPORT void JNICALL GLX_NATIVE(_1glXSwapBuffers)
 	GLX_NATIVE_ENTER(env, that, _1glXSwapBuffers_FUNC);
 	glXSwapBuffers((Display *)arg0, (GLXDrawable)arg1);
 	GLX_NATIVE_EXIT(env, that, _1glXSwapBuffers_FUNC);
-}
-#endif
-
-#ifndef NO__1glXWaitGL
-JNIEXPORT void JNICALL GLX_NATIVE(_1glXWaitGL)
-	(JNIEnv *env, jclass that)
-{
-	GLX_NATIVE_ENTER(env, that, _1glXWaitGL_FUNC);
-	glXWaitGL();
-	GLX_NATIVE_EXIT(env, that, _1glXWaitGL_FUNC);
-}
-#endif
-
-#ifndef NO__1glXWaitX
-JNIEXPORT void JNICALL GLX_NATIVE(_1glXWaitX)
-	(JNIEnv *env, jclass that)
-{
-	GLX_NATIVE_ENTER(env, that, _1glXWaitX_FUNC);
-	glXWaitX();
-	GLX_NATIVE_EXIT(env, that, _1glXWaitX_FUNC);
 }
 #endif
 

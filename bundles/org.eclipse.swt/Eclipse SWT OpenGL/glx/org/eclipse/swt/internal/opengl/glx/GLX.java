@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2012 IBM Corporation and others.
+ * Copyright (c) 2000, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -242,20 +242,6 @@ public static final long /*int*/ glXChooseVisual(long /*int*/ dpy, int screen, i
 }
 /**
  * @param dpy cast=(Display *)
- * @param src cast=(GLXContext)
- * @param dst cast=(GLXContext)
- */
-public static final native void _glXCopyContext(long /*int*/ dpy, long /*int*/ src, long /*int*/ dst, int mask);
-public static final void glXCopyContext(long /*int*/ dpy, long /*int*/ src, long /*int*/ dst, int mask) {
-	lock.lock();
-	try {
-		_glXCopyContext(dpy, src, dst, mask);
-	} finally {
-		lock.unlock();
-	}
-}
-/**
- * @param dpy cast=(Display *)
  * @param shareList cast=(GLXContext)
  */
 public static final native long /*int*/ _glXCreateContext(long /*int*/ dpy, XVisualInfo vis, long /*int*/ shareList, boolean direct);
@@ -269,19 +255,6 @@ public static final long /*int*/ glXCreateContext(long /*int*/ dpy, XVisualInfo 
 }
 /**
  * @param dpy cast=(Display *)
- * @param pixmap cast=(Pixmap)
- */
-public static final native long /*int*/ _glXCreateGLXPixmap(long /*int*/ dpy, XVisualInfo vis, long /*int*/ pixmap);
-public static final long /*int*/ glXCreateGLXPixmap(long /*int*/ dpy, XVisualInfo vis, long /*int*/ pixmap) {
-	lock.lock();
-	try {
-		return _glXCreateGLXPixmap(dpy, vis, pixmap);
-	} finally {
-		lock.unlock();
-	}
-}
-/**
- * @param dpy cast=(Display *)
  * @param ctx cast=(GLXContext)
  */
 public static final native void _glXDestroyContext(long /*int*/ dpy, long /*int*/ ctx);
@@ -289,29 +262,6 @@ public static final void glXDestroyContext(long /*int*/ dpy, long /*int*/ ctx) {
 	lock.lock();
 	try {
 		_glXDestroyContext(dpy, ctx);
-	} finally {
-		lock.unlock();
-	}
-}
-/**
- * @param dpy cast=(Display *)
- * @param pix cast=(GLXPixmap)
- */
-public static final native void _glXDestroyGLXPixmap(long /*int*/ dpy, long /*int*/ pix);
-public static final void glXDestroyGLXPixmap(long /*int*/ dpy, long /*int*/ pix) {
-	lock.lock();
-	try {
-		_glXDestroyGLXPixmap(dpy, pix);
-	} finally {
-		lock.unlock();
-	}
-}
-/** @param dpy cast=(Display *) */
-public static final native long /*int*/ _glXGetClientString(long /*int*/ dpy, int name);
-public static final long /*int*/ glXGetClientString(long /*int*/ dpy, int name) {
-	lock.lock();
-	try {
-		return _glXGetClientString(dpy, name);
 	} finally {
 		lock.unlock();
 	}
@@ -335,28 +285,6 @@ public static final long /*int*/ glXGetCurrentContext() {
 		lock.unlock();
 	}
 }
-public static final native long /*int*/ _glXGetCurrentDrawable();
-public static final long /*int*/ glXGetCurrentDrawable() {
-	lock.lock();
-	try {
-		return _glXGetCurrentDrawable();
-	} finally {
-		lock.unlock();
-	}
-}
-/**
- * @param dpy cast=(Display *)
- * @param ctx cast=(GLXContext)
- */
-public static final native boolean _glXIsDirect(long /*int*/ dpy, long /*int*/ ctx);
-public static final boolean glXIsDirect(long /*int*/ dpy, long /*int*/ ctx) {
-	lock.lock();
-	try {
-		return _glXIsDirect(dpy, ctx);
-	} finally {
-		lock.unlock();
-	}
-}
 /**
  * @param dpy cast=(Display *)
  * @param drawable cast=(GLXDrawable)
@@ -371,50 +299,6 @@ public static final boolean glXMakeCurrent(long /*int*/ dpy, long /*int*/ drawab
 		lock.unlock();
 	}
 }
-/** @param dpy cast=(Display *) */
-public static final native boolean _glXQueryExtension(long /*int*/ dpy, int[] errorBase, int[] eventBase);
-public static final boolean glXQueryExtension(long /*int*/ dpy, int[] errorBase, int[] eventBase) {
-	lock.lock();
-	try {
-		return _glXQueryExtension(dpy, errorBase, eventBase);
-	} finally {
-		lock.unlock();
-	}
-}
-/** @param dpy cast=(Display *) */
-public static final native long /*int*/ _glXQueryExtensionsString(long /*int*/ dpy, int screen);
-public static final long /*int*/ glXQueryExtensionsString(long /*int*/ dpy, int screen) {
-	lock.lock();
-	try {
-		return _glXQueryExtensionsString(dpy, screen);
-	} finally {
-		lock.unlock();
-	}
-}
-/** @param dpy cast=(Display *) */
-public static final native long /*int*/ _glXQueryServerString(long /*int*/ dpy, int screen, int name);
-public static final long /*int*/ glXQueryServerString(long /*int*/ dpy, int screen, int name) {
-	lock.lock();
-	try {
-		return _glXQueryServerString(dpy, screen, name);
-	} finally {
-		lock.unlock();
-	}
-}
-/**
- * @param dpy cast=(Display *)
- * @param major flags=no_in
- * @param minor flags=no_in
- */
-public static final native boolean _glXQueryVersion(long /*int*/ dpy, int[] major, int[] minor);
-public static final boolean glXQueryVersion(long /*int*/ dpy, int[] major, int[] minor) {
-	lock.lock();
-	try {
-		return _glXQueryVersion(dpy, major, minor);
-	} finally {
-		lock.unlock();
-	}
-}
 /**
  * @param dpy cast=(Display *)
  * @param drawable cast=(GLXDrawable)
@@ -424,24 +308,6 @@ public static final void glXSwapBuffers(long /*int*/ dpy, long /*int*/ drawable)
 	lock.lock();
 	try {
 		_glXSwapBuffers(dpy, drawable);
-	} finally {
-		lock.unlock();
-	}
-}
-public static final native void _glXWaitGL();
-public static final void glXWaitGL() {
-	lock.lock();
-	try {
-		_glXWaitGL();
-	} finally {
-		lock.unlock();
-	}
-}
-public static final native void _glXWaitX();
-public static final void glXWaitX() {
-	lock.lock();
-	try {
-		_glXWaitX();
 	} finally {
 		lock.unlock();
 	}
