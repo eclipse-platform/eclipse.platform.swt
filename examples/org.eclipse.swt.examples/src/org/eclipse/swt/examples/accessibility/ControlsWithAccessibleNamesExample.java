@@ -225,10 +225,10 @@ public class ControlsWithAccessibleNamesExample {
 
 //		List list, overrideList;
 		list = new List(shell, SWT.SINGLE | SWT.BORDER);
-		list.setItems(new String[] {"Item0", "Item1", "Item2"});
+		list.setItems("Item0", "Item1", "Item2");
 
 		overrideList = new List(shell, SWT.SINGLE | SWT.BORDER);
-		overrideList.setItems(new String[] {"Item0", "Item1", "Item2"});
+		overrideList.setItems("Item0", "Item1", "Item2");
 		overrideList.setData("name", "List");
 		overrideList.setData("child", "List Item");
 		overrideList.getAccessible().addAccessibleListener(overrideAccessibleAdapter);

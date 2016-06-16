@@ -42,7 +42,7 @@ public static void main (String [] args) {
 	Button b2 = new Button (c1, SWT.PUSH);
 	b2.setText ("B2");
 	List l1 = new List (c1, SWT.SINGLE | SWT.BORDER);
-	l1.setItems (new String [] {"L1"});
+	l1.setItems ("L1");
 	Button b3 = new Button (c1, SWT.PUSH);
 	b3.setText ("B&3");
 	Button b4 = new Button (c1, SWT.PUSH);
@@ -56,7 +56,7 @@ public static void main (String [] args) {
 	b6.setText ("B&6");
 	
 	List l2 = new List (shell, SWT.SINGLE | SWT.BORDER);
-	l2.setItems (new String [] {"L2"});
+	l2.setItems ("L2");
 	
 	ToolBar tb1 = new ToolBar (shell, SWT.FLAT | SWT.BORDER);
 	ToolItem i1 = new ToolItem (tb1, SWT.RADIO);

@@ -1692,7 +1692,7 @@ public void test_setItemILjava_lang_String() {
 @Test
 public void test_setItems$Ljava_lang_String() {
 	try {
-		list.setItems(null);
+		list.setItems((String[])null);
 		fail("No exception thrown for items == null");
 	} catch (IllegalArgumentException e) {
 	}
@@ -1723,7 +1723,7 @@ public void test_setItems$Ljava_lang_String() {
 	}
 
 	try {
-		list.setItems(null);
+		list.setItems((String[])null);
 		fail("No exception thrown");
 	} catch (IllegalArgumentException e) {
 	}
@@ -1737,7 +1737,7 @@ public void test_setItems$Ljava_lang_String() {
 
 	
 	try {
-		list.setItems(null);
+		list.setItems((String[])null);
 		fail("No exception thrown");
 	} catch (IllegalArgumentException e) {
 	}

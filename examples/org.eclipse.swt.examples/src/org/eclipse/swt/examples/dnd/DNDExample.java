@@ -1271,7 +1271,7 @@ private Control createWidget(int type, Composite parent, String prefix){
 		}
 		case LIST: {
 			List list = new List(parent, SWT.BORDER);
-			list.setItems(new String[] {prefix+" Item a", prefix+" Item b",  prefix+" Item c",  prefix+" Item d"});
+			list.setItems(prefix+" Item a", prefix+" Item b",  prefix+" Item c",  prefix+" Item d");
 			return list;
 		}
 		case COMBO:{

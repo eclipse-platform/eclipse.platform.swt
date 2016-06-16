@@ -133,7 +133,7 @@ public class ControlsWithLabelsExample {
 
 		new Label(shell, SWT.NONE).setText("Label for List");
 		list = new List(shell, SWT.SINGLE | SWT.BORDER);
-		list.setItems(new String[] {"Item0", "Item1", "Item2"});
+		list.setItems("Item0", "Item1", "Item2");
 
 		new Label(shell, SWT.NONE).setText("Label for Spinner");
 		spinner = new Spinner(shell, SWT.BORDER);
