@@ -2346,6 +2346,14 @@ public void setVisible (boolean visible) {
 			display.clearModal (this);
 			OS.gtk_window_set_modal (shellHandle, false);
 		}
+		/*
+		 * When in full-screen mode, the OS will always consider it to be the top of the display stack unless it is a dialog.
+		 * This fix will give modal windows dialog-type priority if the parent is in full-screen, allowing it to be popped
+		 * up in front of the full-screen window.
+		 */
+		if (parent!=null && parent.getShell().getFullScreen()) {
+			OS.gtk_window_set_type_hint(shellHandle, OS.GDK_WINDOW_TYPE_HINT_DIALOG);
+		}
 	} else {
 		updateModal ();
 	}
