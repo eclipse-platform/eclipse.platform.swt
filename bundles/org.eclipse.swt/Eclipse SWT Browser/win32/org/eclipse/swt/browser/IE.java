@@ -104,6 +104,7 @@ class IE extends WebBrowser {
 	static final int DOCHOSTUIFLAG_NO3DBORDER  = 0x0000004;
 	static final int DOCHOSTUIFLAG_NO3DOUTERBORDER = 0x00200000;
 	static final int DOCHOSTUIFLAG_ENABLE_REDIRECT_NOTIFICATION = 0x04000000;
+	static final int DOCHOSTUIFLAG_DPI_AWARE = 0x40000000;
 
 	static final String ABOUT_BLANK = "about:blank"; //$NON-NLS-1$
 	static final String CLSID_SHELLEXPLORER1 = "{EAB22AC3-30C1-11CF-A7EB-0000C05BAE0B}"; //$NON-NLS-1$
