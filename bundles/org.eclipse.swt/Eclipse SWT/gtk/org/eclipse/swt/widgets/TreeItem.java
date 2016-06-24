@@ -1547,10 +1547,12 @@ public void setImage (int index, Image image) {
 			}
 		} else {
 			/*
-			 * We check to see if the cached value is greater than the size of the pixbufRenderer.
+			 * Bug 483112: We check to see if the cached value is greater than the size of the pixbufRenderer.
 			 * If it is, then we change the size of the pixbufRenderer accordingly.
+			 * Bug 489025: There is a corner case where the below is triggered when current(Width|Height) is -1,
+			 * which results in icons being set to 0. Fix is to compare only positive sizes.
 			 */
-			if (columnSetWidth > currentWidth [0] || columnSetHeight > currentHeight [0]) {
+			if (columnSetWidth > Math.max(currentWidth [0], 0) || columnSetHeight > Math.max(currentHeight [0], 0)) {
 				OS.gtk_cell_renderer_set_fixed_size (pixbufRenderer, columnSetWidth, columnSetHeight);
 			}
 		}
