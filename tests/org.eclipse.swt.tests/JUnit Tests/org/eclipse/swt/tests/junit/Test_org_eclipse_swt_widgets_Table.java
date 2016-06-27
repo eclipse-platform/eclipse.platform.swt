@@ -1780,7 +1780,6 @@ public void test_setTopIndex() {
 	for (int i = 0; i < 10; i++) {
 		new TableItem(table, 0);
 	}
-	TableItem top = new TableItem(table, 0);
 	for (int i = 0; i < 10; i++) {
 		new TableItem(table, 0);
 	}
