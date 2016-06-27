@@ -83,8 +83,6 @@ public class Table extends Composite {
 	GdkRGBA background;
 	boolean ownerDraw, ignoreSize, ignoreAccessibility, pixbufSizeSet;
 	int maxWidth = 0;
-	int topIndex;
-	double cachedAdjustment, currentAdjustment;
 
 	static final int CHECKED_COLUMN = 0;
 	static final int GRAYED_COLUMN = 1;
@@ -1892,31 +1890,15 @@ long /*int*/ getTextRenderer (long /*int*/ column) {
  */
 public int getTopIndex () {
 	checkWidget();
-	/*
-	 * Feature in GTK: fetch the topIndex using the topItem global variable
-	 * if setTopIndex() has been called and the widget has not been scrolled
-	 * using the UI. Otherwise, fetch topIndex using GtkTreeView API.
-	 */
-	long /*int*/ vAdjustment;
-	if (OS.GTK3){
-		vAdjustment = OS.gtk_scrollable_get_vadjustment(handle);
-	} else {
-		vAdjustment = OS.gtk_tree_view_get_vadjustment(handle);
-	}
-	currentAdjustment = OS.gtk_adjustment_get_value(vAdjustment);
-	if (cachedAdjustment == currentAdjustment){
-		return topIndex;
-	} else {
-		long /*int*/ [] path = new long /*int*/ [1];
-		OS.gtk_widget_realize (handle);
-		if (!OS.gtk_tree_view_get_path_at_pos (handle, 1, 1, path, null, null, null)) return 0;
-		if (path [0] == 0) return 0;
-		long /*int*/ indices = OS.gtk_tree_path_get_indices (path[0]);
-		int[] index = new int [1];
-		if (indices != 0) OS.memmove (index, indices, 4);
-		OS.gtk_tree_path_free (path [0]);
-		return index [0];
-	}
+	long /*int*/ [] path = new long /*int*/ [1];
+	OS.gtk_widget_realize (handle);
+	if (!OS.gtk_tree_view_get_path_at_pos (handle, 1, 1, path, null, null, null)) return 0;
+	if (path [0] == 0) return 0;
+	long /*int*/ indices = OS.gtk_tree_path_get_indices (path[0]);
+	int[] index = new int [1];
+	if (indices != 0) OS.memmove (index, indices, 4);
+	OS.gtk_tree_path_free (path [0]);
+	return index [0];
 }
 
 @Override
@@ -3699,21 +3681,6 @@ public void setSelection (TableItem [] items) {
 public void setTopIndex (int index) {
 	checkWidget();
 	if (!(0 <= index && index < itemCount)) return;
-	/*
-	 * Feature in GTK: cache the GtkAdjustment value for future use in
-	 * getTopIndex(). Set topIndex to index.
-	 *
-	 * Use gtk_tree_view_get_view_get_vadjustment for GTK2, GtkScrollable
-	 * doesn't exist on GTK2.
-	 */
-	long /*int*/ vAdjustment;
-	if (OS.GTK3){
-		vAdjustment = OS.gtk_scrollable_get_vadjustment(handle);
-	} else {
-		vAdjustment = OS.gtk_tree_view_get_vadjustment(handle);
-	}
-	cachedAdjustment = OS.gtk_adjustment_get_value(vAdjustment);
-	topIndex = index;
 	long /*int*/ path = OS.gtk_tree_model_get_path (modelHandle, _getItem (index).handle);
 	OS.gtk_tree_view_scroll_to_cell (handle, path, 0, true, 0f, 0f);
 	OS.gtk_tree_path_free (path);
