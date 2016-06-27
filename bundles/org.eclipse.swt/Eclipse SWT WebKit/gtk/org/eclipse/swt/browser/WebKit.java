@@ -94,6 +94,8 @@ class WebKit extends WebBrowser {
 
 	static final String KEY_CHECK_SUBWINDOW = "org.eclipse.swt.internal.control.checksubwindow"; //$NON-NLS-1$
 
+	static final String SWT_WEBKITGTK_VERSION = "org.eclipse.swt.internal.webkitgtk.version"; //$NON-NLS-1$
+
 	/* the following Callbacks are never freed */
 	static Callback Proc2, Proc3, Proc4, Proc5, Proc6;
 	static Callback JSObjectHasPropertyProc, JSObjectGetPropertyProc, JSObjectCallAsFunctionProc;
@@ -227,6 +229,24 @@ class WebKit extends WebBrowser {
 		}
 	}
 
+	/**
+	 * Gets the webkit version, within an <code>int[3]</code> array with
+	 * <code>{major, minor, micro}</code> version
+	 */
+	private static int[] internalGetWebkitVersion(){
+		int [] vers = new int[3];
+		if (WEBKIT2){
+			vers[0] = WebKitGTK.webkit_get_major_version ();
+			vers[1] = WebKitGTK.webkit_get_minor_version ();
+			vers[2] = WebKitGTK.webkit_get_micro_version ();
+		} else {
+			vers[0] = WebKitGTK.webkit_major_version ();
+			vers[1] = WebKitGTK.webkit_minor_version ();
+			vers[2] = WebKitGTK.webkit_micro_version ();
+		}
+		return vers;
+	}
+
 static String getString (long /*int*/ strPtr) {
 	int length = OS.strlen (strPtr);
 	byte [] buffer = new byte [length];
@@ -248,16 +268,8 @@ static boolean IsInstalled () {
 	// TODO webkit_check_version() should take care of the following, but for some
 	// reason this symbol is missing from the latest build.  If it is present in
 	// Linux distro-provided builds then replace the following with this call.
-	int major, minor, micro;
-	if (WEBKIT2){
-		major = WebKitGTK.webkit_get_major_version ();
-		minor = WebKitGTK.webkit_get_minor_version ();
-		micro = WebKitGTK.webkit_get_micro_version ();
-	} else {
-		major = WebKitGTK.webkit_major_version ();
-		minor = WebKitGTK.webkit_minor_version ();
-		micro = WebKitGTK.webkit_micro_version ();
-	}
+	int [] vers = internalGetWebkitVersion();
+	int major = vers[0], minor = vers[1], micro = vers[2];
 	IsWebKit14orNewer = major > 1 ||
 		(major == 1 && minor > 4) ||
 		(major == 1 && minor == 4 && micro >= 0);
@@ -558,18 +570,11 @@ long /*int*/ webViewProc (long /*int*/ handle, long /*int*/ arg0, long /*int*/ a
 @Override
 public void create (Composite parent, int style) {
 	if (ExternalClass == 0) {
+		int [] vers = internalGetWebkitVersion();
+		System.setProperty(SWT_WEBKITGTK_VERSION,
+				String.format("%s.%s.%s", vers[0], vers[1], vers[2])); // $NON-NLS-1$
 		if (Device.DEBUG) {
-			int major, minor, micro;
-			if (WEBKIT2){
-				major = WebKitGTK.webkit_get_major_version ();
-				minor = WebKitGTK.webkit_get_minor_version ();
-				micro = WebKitGTK.webkit_get_micro_version ();
-			} else {
-				major = WebKitGTK.webkit_major_version ();
-				minor = WebKitGTK.webkit_minor_version ();
-				micro = WebKitGTK.webkit_micro_version ();
-			}
-			System.out.println("WebKit version " + major + "." + minor + "." + micro); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+			System.out.println(String.format("WebKit version %s.%s.%s", vers[0], vers[1], vers[2])); //$NON-NLS-1$
 		}
 		JSClassDefinition jsClassDefinition = new JSClassDefinition ();
 		byte[] bytes = Converter.wcsToMbcs (null, CLASSNAME_EXTERNAL, true);
@@ -786,14 +791,8 @@ public void create (Composite parent, int style) {
 	 * it.  The workaround is to temporarily give it a size that forces
 	 * the native resize events to fire.
 	 */
-	int major, minor;
-	if (WEBKIT2){
-		major = WebKitGTK.webkit_get_major_version ();
-		minor = WebKitGTK.webkit_get_minor_version ();
-	} else {
-		major = WebKitGTK.webkit_major_version ();
-		minor = WebKitGTK.webkit_minor_version ();
-	}
+	int [] vers = internalGetWebkitVersion();
+	int major = vers[0], minor = vers[1];
 	if (major == 1 && minor >= 10) {
 		Rectangle minSize = browser.computeTrim (0, 0, 2, 2);
 		Point size = browser.getSize ();
