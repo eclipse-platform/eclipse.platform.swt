@@ -4141,6 +4141,11 @@ void gtk_widget_set_align(long /*int*/ widget, int hAlign, int vAlign) {
 	OS.gtk_widget_set_valign (widget, vAlign);
 }
 
+void gtk_label_set_align(long /*int*/ label, float xAlign, float yAlign) {
+	OS.gtk_label_set_xalign(label, xAlign);
+	OS.gtk_label_set_yalign(label, yAlign);
+}
+
 void setBackground () {
 	if ((state & BACKGROUND) == 0 && backgroundImage == null) {
 		if ((state & PARENT_BACKGROUND) != 0) {
