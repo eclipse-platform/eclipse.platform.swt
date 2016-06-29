@@ -393,7 +393,6 @@ public void test_setBoundsLorg_eclipse_swt_graphics_Rectangle() {
  */
 @Test
 public void test_setBounds() throws Exception {
-	if (IS_GTK_BUG_445900) System.out.println("Running Test_org_eclipse_swt_widgets_Shell.test_setBounds():");
 
 	Rectangle bounds = new Rectangle(100, 200, 200, 200);
 	Rectangle bounds2 = new Rectangle(150, 250, 250, 250);
