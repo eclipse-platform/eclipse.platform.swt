@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <!--
-    Copyright (c) 2009, 2014 IBM Corporation and others.
+    Copyright (c) 2009, 2016 IBM Corporation and others.
     All rights reserved. This program and the accompanying materials
     are made available under the terms of the Eclipse Public License v1.0
     which accompanies this distribution, and is available at
@@ -66,10 +66,6 @@
 			<param name="fragment" value="org.eclipse.swt.gtk.aix.ppc64"/>
 		</antcall>
 		<antcall target="check_fragment_libraries">
-			<param name="library_count" value="4"/>
-			<param name="fragment" value="org.eclipse.swt.gtk.hpux.ia64_32"/>
-		</antcall>
-		<antcall target="check_fragment_libraries">
 			<param name="library_count" value="5"/>
 			<param name="fragment" value="org.eclipse.swt.gtk.hpux.ia64"/>
 		</antcall>
@@ -102,25 +98,13 @@
 			<param name="fragment" value="org.eclipse.swt.gtk.linux.x86_64"/>
 		</antcall>
 		<antcall target="check_fragment_libraries">
-			<param name="library_count" value="9"/>
-			<param name="fragment" value="org.eclipse.swt.gtk.solaris.sparc"/>
-		</antcall>
-		<antcall target="check_fragment_libraries">
 			<param name="library_count" value="7"/>
 			<param name="fragment" value="org.eclipse.swt.gtk.solaris.sparcv9"/>
 		</antcall>		
 		<antcall target="check_fragment_libraries">
-			<param name="library_count" value="8"/>
-			<param name="fragment" value="org.eclipse.swt.gtk.solaris.x86"/>
-		</antcall>
-		<antcall target="check_fragment_libraries">
 			<param name="library_count" value="6"/>
 			<param name="fragment" value="org.eclipse.swt.gtk.solaris.x86_64"/>
 		</antcall>		
-		<antcall target="check_fragment_libraries">
-			<param name="library_count" value="4"/>
-			<param name="fragment" value="org.eclipse.swt.win32.win32.ia64"/>
-		</antcall>
 		<antcall target="check_fragment_libraries">
 			<param name="library_count" value="6"/>
 			<param name="fragment" value="org.eclipse.swt.win32.win32.x86"/>
@@ -128,10 +112,6 @@
 		<antcall target="check_fragment_libraries">
 			<param name="library_count" value="5"/>
 			<param name="fragment" value="org.eclipse.swt.win32.win32.x86_64"/>
-		</antcall>
-		<antcall target="check_fragment_libraries">
-			<param name="library_count" value="1"/>
-			<param name="fragment" value="org.eclipse.swt.win32.wce_ppc.arm"/>
 		</antcall>
 	</target>
 
