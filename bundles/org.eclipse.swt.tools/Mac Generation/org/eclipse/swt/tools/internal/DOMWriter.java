@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2008, 2015 IBM Corporation and others.
+ * Copyright (c) 2008, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -109,23 +109,20 @@ public class DOMWriter {
 						if (child.getNodeType() == Node.ELEMENT_NODE) nodes.add(child);
 					}
 					int count = nodes.size();
-					Collections.sort(nodes, new Comparator<Node>() {
-						@Override
-						public int compare(Node a, Node b) {
-							String nameA = a.getNodeName();
-							String nameB = b.getNodeName();
-							if ("arg".equals(nameA)) {
-								return 0;
-							} else {
-								int result = nameA.compareTo(nameB);
-								if (result == 0) {
-									Node idA = getIDAttribute(a);
-									Node idB = getIDAttribute(b);
-									if (idA == null || idB == null) return 0;
-									return idA.getNodeValue().compareTo(idB.getNodeValue());
-								}
-								return result;
+					Collections.sort(nodes, (a, b) -> {
+						String nameA = a.getNodeName();
+						String nameB = b.getNodeName();
+						if ("arg".equals(nameA)) {
+							return 0;
+						} else {
+							int result = nameA.compareTo(nameB);
+							if (result == 0) {
+								Node idA = getIDAttribute(a);
+								Node idB = getIDAttribute(b);
+								if (idA == null || idB == null) return 0;
+								return idA.getNodeValue().compareTo(idB.getNodeValue());
 							}
+							return result;
 						}
 					});
 					if (count > 0) println();
@@ -153,12 +150,7 @@ public class DOMWriter {
 		for (int i = 0; i < result.length; i++) {
 			result[i] = (Attr) attrs.item(i);
 		}
-		Arrays.sort(result, new Comparator<Node>() {
-			@Override
-			public int compare(Node arg0, Node arg1) {
-				return nodeName(arg0).compareTo(nodeName(arg1));
-			}
-		});
+		Arrays.sort(result, (arg0, arg1) -> nodeName(arg0).compareTo(nodeName(arg1)));
 		return result;
 	}
 

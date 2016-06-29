@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2004, 2015 IBM Corporation and others.
+ * Copyright (c) 2004, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -39,19 +39,16 @@ public class SpyView extends ViewPart {
 	public void createPartControl(Composite parent) {
 		output = new StyledText(parent, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL | SWT.READ_ONLY);
 		
-		keyFilter = new Listener() {
-			@Override
-			public void handleEvent(Event e) {
-				// If this accelerator changes, change the tooltip text
-				if (e.keyCode == '.' && e.stateMask == (SWT.ALT | SWT.SHIFT | SWT.CONTROL)) {
-					if (spyAction.isChecked()) {
-						spyAction.setChecked(false);
-					} else {
-						spyAction.setChecked(true);
-						spyAction.run();
-					}
-					e.type = SWT.None;
+		keyFilter = e -> {
+			// If this accelerator changes, change the tooltip text
+			if (e.keyCode == '.' && e.stateMask == (SWT.ALT | SWT.SHIFT | SWT.CONTROL)) {
+				if (spyAction.isChecked()) {
+					spyAction.setChecked(false);
+				} else {
+					spyAction.setChecked(true);
+					spyAction.run();
 				}
+				e.type = SWT.None;
 			}
 		};
 		parent.getDisplay().addFilter(SWT.KeyDown, keyFilter);

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2008, 2015 IBM Corporation and others.
+ * Copyright (c) 2008, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -68,33 +68,27 @@ public class MacGeneratorView extends ViewPart {
 		IWorkspace workspace = ResourcesPlugin.getWorkspace();
 		IWorkspaceRoot workspaceRoot = ResourcesPlugin.getWorkspace().getRoot();
 		root = workspaceRoot.findMember(new Path("org.eclipse.swt/Eclipse SWT PI/cocoa"));		
-		listener = new IResourceChangeListener() {
-			@Override
-			public void resourceChanged(IResourceChangeEvent event) {
-				if (job != null) return;
-				if (event.getType() != IResourceChangeEvent.POST_CHANGE) return;
-				IResourceDelta rootDelta = event.getDelta();
-				IResourceDelta piDelta = rootDelta.findMember(root.getFullPath());
-				if (piDelta == null) return;
-				final ArrayList<IResource> changed = new ArrayList<>();
-				IResourceDeltaVisitor visitor = new IResourceDeltaVisitor() {
-					@Override
-					public boolean visit(IResourceDelta delta) {
-						if (delta.getKind() != IResourceDelta.CHANGED) return true;
-						if ((delta.getFlags() & IResourceDelta.CONTENT) == 0) return true;
-						IResource resource = delta.getResource();
-						if (resource.getType() == IResource.FILE && "extras".equalsIgnoreCase(resource.getFileExtension())) {
-							changed.add(resource);
-						}
-						return true;
-					}
-				};
-				try {
-					piDelta.accept(visitor);
-				} catch (CoreException e) {}
-				if (changed.size() > 0) {
-					ui.refresh();
+		listener = event -> {
+			if (job != null) return;
+			if (event.getType() != IResourceChangeEvent.POST_CHANGE) return;
+			IResourceDelta rootDelta = event.getDelta();
+			IResourceDelta piDelta = rootDelta.findMember(root.getFullPath());
+			if (piDelta == null) return;
+			final ArrayList<IResource> changed = new ArrayList<>();
+			IResourceDeltaVisitor visitor = delta -> {
+				if (delta.getKind() != IResourceDelta.CHANGED) return true;
+				if ((delta.getFlags() & IResourceDelta.CONTENT) == 0) return true;
+				IResource resource = delta.getResource();
+				if (resource.getType() == IResource.FILE && "extras".equalsIgnoreCase(resource.getFileExtension())) {
+					changed.add(resource);
 				}
+				return true;
+			};
+			try {
+				piDelta.accept(visitor);
+			} catch (CoreException e) {}
+			if (changed.size() > 0) {
+				ui.refresh();
 			}
 		};
 		workspace.addResourceChangeListener(listener);

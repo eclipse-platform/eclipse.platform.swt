@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2008, 2015 IBM Corporation and others.
+ * Copyright (c) 2008, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -52,20 +52,17 @@ public class JNIBuilder extends IncrementalProjectBuilder {
 	protected IProject[] build(int kind, Map<String, String> args, final IProgressMonitor monitor) throws CoreException {
 		IResourceDelta delta = getDelta(getProject());
 		if (delta == null) return null;
-		delta.accept(new IResourceDeltaVisitor() {
-			@Override
-			public boolean visit(IResourceDelta delta) throws CoreException {
-				IPath ipath = delta.getFullPath();
-				if (!"java".equals(ipath.getFileExtension())) return true;
-				String path = ipath.toPortableString();
-				for (int i = 0; i < classes.length; i++) {
-					if (classes[i].build) continue;
-					if (path.startsWith(classes[i].sourceDir)) {
-						classes[i].build = true;
-					}
+		delta.accept(delta1 -> {
+			IPath ipath = delta1.getFullPath();
+			if (!"java".equals(ipath.getFileExtension())) return true;
+			String path = ipath.toPortableString();
+			for (int i = 0; i < classes.length; i++) {
+				if (classes[i].build) continue;
+				if (path.startsWith(classes[i].sourceDir)) {
+					classes[i].build = true;
 				}
-				return true;
 			}
+			return true;
 		});
 		final IWorkspaceRoot root = getProject().getWorkspace().getRoot();
 		for (int i = 0; i < classes.length; i++) {

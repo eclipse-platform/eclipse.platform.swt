@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2004, 2015 IBM Corporation and others.
+ * Copyright (c) 2004, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -174,12 +174,7 @@ void generateAll() {
 					@Override
 					public void setTotal(final int total) {
 						this.total = total;
-						display.syncExec(new Runnable() {
-							@Override
-							public void run() {
-								progressBar.setMaximum(maximum);
-							}
-						});
+						display.syncExec(() -> progressBar.setMaximum(maximum));
 					}
 					@Override
 					public void step() {
@@ -187,21 +182,13 @@ void generateAll() {
 						step++;
 						final int newValue = step * maximum / total;
 						if (oldValue == newValue) return;
-						display.syncExec(new Runnable() {
-							@Override
-							public void run() {
-								progressBar.setSelection(newValue);
-							}
-						});					
+						display.syncExec(() -> progressBar.setSelection(newValue));					
 					}
 					@Override
 					public void setMessage(final String message) {
-						display.syncExec(new Runnable() {
-							@Override
-							public void run() {
-								progressLabel.setText(message);
-								progressLabel.update();
-							}
+						display.syncExec(() -> {
+							progressLabel.setText(message);
+							progressLabel.update();
 						});
 					}
 				});
@@ -305,15 +292,12 @@ public void open () {
 	panelLayout.numColumns = 1;
 	panel.setLayout(panelLayout);
 	
-	Listener updateMainClassListener =  new Listener() {
-		@Override
-		public void handleEvent(Event e) {
-			updateMainClass();
-			if (!updateOutputDir()) return;
-			updateClasses();
-			updateMembers();
-			updateParameters();
-		}
+	Listener updateMainClassListener =  e -> {
+		updateMainClass();
+		if (!updateOutputDir()) return;
+		updateClasses();
+		updateMembers();
+		updateParameters();
 	};	
 	createMainClassPanel(panel, updateMainClassListener);
 	createClassesPanel(panel);
@@ -378,15 +362,12 @@ void createClassesPanel(Composite panel) {
 	data.heightHint = classesLt.getItemHeight() * 6;
 	classesLt.setLayoutData(data);
 	classesLt.setHeaderVisible(true);
-	classesLt.addListener(SWT.Selection, new Listener() {
-		@Override
-		public void handleEvent(Event e) {
-			if (e.detail == SWT.CHECK) {
-				updateGenerate((TableItem)e.item);
-			} else {
-				updateMembers();
-				updateParameters();
-			}
+	classesLt.addListener(SWT.Selection, e -> {
+		if (e.detail == SWT.CHECK) {
+			updateGenerate((TableItem)e.item);
+		} else {
+			updateMembers();
+			updateParameters();
 		}
 	});
 	TableColumn column;
@@ -403,29 +384,26 @@ void createClassesPanel(Composite panel) {
 	classTextEditor.grabHorizontal = true;
 	classEditorTx = new Text(classesLt, SWT.SINGLE);
 	classTextEditor.setEditor(classEditorTx);
-	Listener classTextListener = new Listener() {
-		@Override
-		public void handleEvent(Event e) {
-			if (e.type == SWT.Traverse) {
-				switch (e.detail) {
-					case SWT.TRAVERSE_ESCAPE:
-						classTextEditor.setItem(null);
-						break;
-					default:
-						return;
-				}
+	Listener classTextListener = e -> {
+		if (e.type == SWT.Traverse) {
+			switch (e.detail) {
+				case SWT.TRAVERSE_ESCAPE:
+					classTextEditor.setItem(null);
+					break;
+				default:
+					return;
 			}
-			classEditorTx.setVisible(false);
-			TableItem item = classTextEditor.getItem();
-			if (item == null) return;
-			int column = classTextEditor.getColumn();
-			JNIClass clazz = (JNIClass)item.getData();
-			if (column == CLASS_EXCLUDE_COLUMN) {
-				String text = classEditorTx.getText();
-				clazz.setExclude(text);
-				item.setText(column, clazz.getExclude());
-				classesLt.getColumn(column).pack();
-			}
+		}
+		classEditorTx.setVisible(false);
+		TableItem item = classTextEditor.getItem();
+		if (item == null) return;
+		int column1 = classTextEditor.getColumn();
+		JNIClass clazz = (JNIClass)item.getData();
+		if (column1 == CLASS_EXCLUDE_COLUMN) {
+			String text = classEditorTx.getText();
+			clazz.setExclude(text);
+			item.setText(column1, clazz.getExclude());
+			classesLt.getColumn(column1).pack();
 		}
 	};
 	classEditorTx.addListener(SWT.DefaultSelection, classTextListener);
@@ -438,82 +416,68 @@ void createClassesPanel(Composite panel) {
 	classEditorLt = new List(floater, SWT.MULTI | SWT.BORDER);
 	classEditorLt.setItems(JNIClass.FLAGS);
 	floater.pack();
-	floater.addListener(SWT.Close, new Listener() {
-		@Override
-		public void handleEvent(Event e) {
-			classListEditor.setItem(null);
-			e.doit = false;
-			floater.setVisible(false);
-		}
+	floater.addListener(SWT.Close, e -> {
+		classListEditor.setItem(null);
+		e.doit = false;
+		floater.setVisible(false);
 	});
-	Listener classesListListener = new Listener() {
-		@Override
-		public void handleEvent(Event e) {
-			if (e.type == SWT.Traverse) {
-				switch (e.detail) {
-					case SWT.TRAVERSE_RETURN:
-						break;
-					default:
-						return;
-				}
+	Listener classesListListener = e -> {
+		if (e.type == SWT.Traverse) {
+			switch (e.detail) {
+				case SWT.TRAVERSE_RETURN:
+					break;
+				default:
+					return;
 			}
-			floater.setVisible(false);
-			TableItem item = classListEditor.getItem();
-			if (item == null) return;
-			int column = classListEditor.getColumn();
-			JNIClass clazz = (JNIClass)item.getData();
-			if (column == CLASS_FLAGS_COLUMN) {
-				String[] flags = classEditorLt.getSelection();
-				clazz.setFlags(flags);
-				item.setText(column, getFlagsString(clazz.getFlags()));
-				item.setChecked(clazz.getGenerate());
-				classesLt.getColumn(column).pack();
-			}
+		}
+		floater.setVisible(false);
+		TableItem item = classListEditor.getItem();
+		if (item == null) return;
+		int column1 = classListEditor.getColumn();
+		JNIClass clazz = (JNIClass)item.getData();
+		if (column1 == CLASS_FLAGS_COLUMN) {
+			String[] flags = classEditorLt.getSelection();
+			clazz.setFlags(flags);
+			item.setText(column1, getFlagsString(clazz.getFlags()));
+			item.setChecked(clazz.getGenerate());
+			classesLt.getColumn(column1).pack();
 		}
 	};
 	classEditorLt.addListener(SWT.DefaultSelection, classesListListener);
 	classEditorLt.addListener(SWT.FocusOut, classesListListener);
 	classEditorLt.addListener(SWT.Traverse, classesListListener);
 
-	classesLt.addListener(SWT.MouseDown, new Listener() {
-		@Override
-		public void handleEvent(final Event e) {
-			e.display.asyncExec (new Runnable () {
-				@Override
-				public void run () {
-					if (classesLt.isDisposed ()) return;
-					if (e.button != 1) return;
-					Point pt = new Point(e.x, e.y);
-					TableItem item = classesLt.getItem(pt);
-					if (item == null) return;
-					int column = -1;
-					for (int i = 0; i < classesLt.getColumnCount(); i++) {
-						if (item.getBounds(i).contains(pt)) {
-							column = i;
-							break;
-						}				
-					}
-					if (column == -1) return;
-					JNIClass data = (JNIClass)item.getData();
-					if (column == CLASS_EXCLUDE_COLUMN) {
-						classTextEditor.setColumn(column);
-						classTextEditor.setItem(item);
-						classEditorTx.setText(data.getExclude());
-						classEditorTx.selectAll();
-						classEditorTx.setVisible(true);
-						classEditorTx.setFocus();
-					} else if (column == CLASS_FLAGS_COLUMN) {
-						classListEditor.setColumn(column);
-						classListEditor.setItem(item);
-						classEditorLt.setSelection(data.getFlags());
-						floater.setLocation(classesLt.toDisplay(e.x, e.y));
-						floater.setVisible(true);
-						classEditorLt.setFocus();
-					}
-				}
-			});
+	classesLt.addListener(SWT.MouseDown, e -> e.display.asyncExec (() -> {
+		if (classesLt.isDisposed ()) return;
+		if (e.button != 1) return;
+		Point pt = new Point(e.x, e.y);
+		TableItem item = classesLt.getItem(pt);
+		if (item == null) return;
+		int column1 = -1;
+		for (int i = 0; i < classesLt.getColumnCount(); i++) {
+			if (item.getBounds(i).contains(pt)) {
+				column1 = i;
+				break;
+			}				
 		}
-	});
+		if (column1 == -1) return;
+		JNIClass data1 = (JNIClass)item.getData();
+		if (column1 == CLASS_EXCLUDE_COLUMN) {
+			classTextEditor.setColumn(column1);
+			classTextEditor.setItem(item);
+			classEditorTx.setText(data1.getExclude());
+			classEditorTx.selectAll();
+			classEditorTx.setVisible(true);
+			classEditorTx.setFocus();
+		} else if (column1 == CLASS_FLAGS_COLUMN) {
+			classListEditor.setColumn(column1);
+			classListEditor.setItem(item);
+			classEditorLt.setSelection(data1.getFlags());
+			floater.setLocation(classesLt.toDisplay(e.x, e.y));
+			floater.setVisible(true);
+			classEditorLt.setFocus();
+		}
+	}));
 }
 
 void createMembersPanel(Composite panel) {
@@ -561,14 +525,11 @@ void createMembersPanel(Composite panel) {
 	data = new GridData(GridData.FILL_BOTH);
 	data.heightHint = membersLt.getItemHeight() * 6;
 	membersLt.setLayoutData(data);
-	membersLt.addListener(SWT.Selection, new Listener() {
-		@Override
-		public void handleEvent(Event e) {
-			if (e.detail == SWT.CHECK) {
-				updateGenerate((TableItem)e.item);
-			} else {
-				updateParameters();
-			}
+	membersLt.addListener(SWT.Selection, e -> {
+		if (e.detail == SWT.CHECK) {
+			updateGenerate((TableItem)e.item);
+		} else {
+			updateParameters();
 		}
 	});
 	
@@ -576,60 +537,57 @@ void createMembersPanel(Composite panel) {
 	memberTextEditor.grabHorizontal = true;
 	memberEditorTx = new Text(membersLt, SWT.SINGLE);
 	memberTextEditor.setEditor(memberEditorTx);
-	Listener memberTextListener = new Listener() {
-		@Override
-		public void handleEvent(Event e) {
-			if (e.type == SWT.Traverse) {
-				switch (e.detail) {
-					case SWT.TRAVERSE_ESCAPE:
-						memberTextEditor.setItem(null);
-						break;
-					default:
-						return;
+	Listener memberTextListener = e -> {
+		if (e.type == SWT.Traverse) {
+			switch (e.detail) {
+				case SWT.TRAVERSE_ESCAPE:
+					memberTextEditor.setItem(null);
+					break;
+				default:
+					return;
+			}
+		}
+		memberEditorTx.setVisible(false);
+		TableItem item = memberTextEditor.getItem();
+		if (item == null) return;
+		int column = memberTextEditor.getColumn();
+		JNIItem memberData = (JNIItem)item.getData();
+		String text = memberEditorTx.getText();
+		if (memberData instanceof JNIField) {
+			JNIField field = (JNIField)memberData;
+			switch (column) {
+				case FIELD_CAST_COLUMN: {
+					field.setCast(text);
+					item.setText(column, field.getCast());
+					break;
+				}
+				case FIELD_ACCESSOR_COLUMN: {
+					field.setAccessor(text.equals(field.getName()) ? "" : text);
+					item.setText(column, field.getAccessor());
+					break;
+				}
+				case FIELD_EXCLUDE_COLUMN: {
+					field.setExclude(text);
+					item.setText(column, field.getExclude());
+					break;
 				}
 			}
-			memberEditorTx.setVisible(false);
-			TableItem item = memberTextEditor.getItem();
-			if (item == null) return;
-			int column = memberTextEditor.getColumn();
-			JNIItem memberData = (JNIItem)item.getData();
-			String text = memberEditorTx.getText();
-			if (memberData instanceof JNIField) {
-				JNIField field = (JNIField)memberData;
-				switch (column) {
-					case FIELD_CAST_COLUMN: {
-						field.setCast(text);
-						item.setText(column, field.getCast());
-						break;
-					}
-					case FIELD_ACCESSOR_COLUMN: {
-						field.setAccessor(text.equals(field.getName()) ? "" : text);
-						item.setText(column, field.getAccessor());
-						break;
-					}
-					case FIELD_EXCLUDE_COLUMN: {
-						field.setExclude(text);
-						item.setText(column, field.getExclude());
-						break;
-					}
+			membersLt.getColumn(column).pack();
+		} else if (memberData instanceof JNIMethod) {
+			JNIMethod method = (JNIMethod)memberData;
+			switch (column) {
+				case METHOD_ACCESSOR_COLUMN: {
+					method.setAccessor(text.equals(method.getName()) ? "" : text);
+					item.setText(column, method.getAccessor());
+					break;
 				}
-				membersLt.getColumn(column).pack();
-			} else if (memberData instanceof JNIMethod) {
-				JNIMethod method = (JNIMethod)memberData;
-				switch (column) {
-					case METHOD_ACCESSOR_COLUMN: {
-						method.setAccessor(text.equals(method.getName()) ? "" : text);
-						item.setText(column, method.getAccessor());
-						break;
-					}
-					case METHOD_EXCLUDE_COLUMN: {
-						method.setExclude(text);
-						item.setText(column, method.getExclude());
-						break;
-					}
+				case METHOD_EXCLUDE_COLUMN: {
+					method.setExclude(text);
+					item.setText(column, method.getExclude());
+					break;
 				}
-				membersLt.getColumn(column).pack();
 			}
+			membersLt.getColumn(column).pack();
 		}
 	};
 	memberEditorTx.addListener(SWT.DefaultSelection, memberTextListener);
@@ -640,131 +598,117 @@ void createMembersPanel(Composite panel) {
 	floater.setLayout(new FillLayout());
 	memberListEditor = new FlagsEditor(membersLt);
 	memberEditorLt = new List(floater, SWT.MULTI | SWT.BORDER);
-	floater.addListener(SWT.Close, new Listener() {
-		@Override
-		public void handleEvent(Event e) {
-			memberListEditor.setItem(null);
-			e.doit = false;
-			floater.setVisible(false);
-		}
+	floater.addListener(SWT.Close, e -> {
+		memberListEditor.setItem(null);
+		e.doit = false;
+		floater.setVisible(false);
 	});
-	Listener memberListListener = new Listener() {
-		@Override
-		public void handleEvent(Event e) {
-			if (e.type == SWT.Traverse) {
-				switch (e.detail) {
-					case SWT.TRAVERSE_RETURN:
-						break;
-					default:
-						return;
-				}
+	Listener memberListListener = e -> {
+		if (e.type == SWT.Traverse) {
+			switch (e.detail) {
+				case SWT.TRAVERSE_RETURN:
+					break;
+				default:
+					return;
 			}
-			floater.setVisible(false);
-			TableItem item = memberListEditor.getItem();
-			if (item == null) return;
-			int column = memberListEditor.getColumn();
-			JNIItem data = (JNIItem)item.getData();
-			String[] flags = memberEditorLt.getSelection();
-			data.setFlags(flags);
-			item.setText(column, getFlagsString(data.getFlags()));
-			item.setChecked(data.getGenerate());
-			membersLt.getColumn(column).pack();
 		}
+		floater.setVisible(false);
+		TableItem item = memberListEditor.getItem();
+		if (item == null) return;
+		int column = memberListEditor.getColumn();
+		JNIItem data1 = (JNIItem)item.getData();
+		String[] flags = memberEditorLt.getSelection();
+		data1.setFlags(flags);
+		item.setText(column, getFlagsString(data1.getFlags()));
+		item.setChecked(data1.getGenerate());
+		membersLt.getColumn(column).pack();
 	};
 	memberEditorLt.addListener(SWT.DefaultSelection, memberListListener);
 	memberEditorLt.addListener(SWT.FocusOut, memberListListener);
 	memberEditorLt.addListener(SWT.Traverse, memberListListener);
 	
-	membersLt.addListener(SWT.MouseDown, new Listener() {
-		@Override
-		public void handleEvent(final Event e) {
-			e.display.asyncExec (new Runnable () {
-				@Override
-				public void run () {
-					if (membersLt.isDisposed ()) return;
-					if (e.button != 1) return;
-					Point pt = new Point(e.x, e.y);
-					TableItem item = membersLt.getItem(pt);
-					if (item == null) return;
-					int column = -1;
-					for (int i = 0; i < membersLt.getColumnCount(); i++) {
-						if (item.getBounds(i).contains(pt)) {
-							column = i;
-							break;
-						}				
-					}
-					if (column == -1) return;
-					Object itemData = item.getData();
-					if (itemData instanceof JNIField) {
-						JNIField field = (JNIField)itemData;
-						if (column == FIELD_CAST_COLUMN || column == FIELD_ACCESSOR_COLUMN || column == FIELD_EXCLUDE_COLUMN) {
-							memberTextEditor.setColumn(column);
-							memberTextEditor.setItem(item);
-							String text = "";
-							switch (column) {
-								case FIELD_CAST_COLUMN: text = field.getCast(); break;
-								case FIELD_ACCESSOR_COLUMN: {
-									text = field.getAccessor(); 
-									if (text.length() == 0) {
-										text = field.getName();
-										int index = text.lastIndexOf('_');
-										if (index != -1) {
-											char[] chars = text.toCharArray();
-											chars[index] = '.';
-											text = new String(chars);
-										}
-									}
-									break;
-								}
-								case FIELD_EXCLUDE_COLUMN: text = field.getExclude(); break;
-							}
-							memberEditorTx.setText(text);
-							memberEditorTx.selectAll();
-							memberEditorTx.setVisible(true);
-							memberEditorTx.setFocus();
-						} else if (column == FIELD_FLAGS_COLUMN) {
-							memberListEditor.setColumn(column);
-							memberListEditor.setItem(item);
-							memberEditorLt.setItems(JNIField.FLAGS);
-							memberEditorLt.setSelection(field.getFlags());
-							floater.setLocation(membersLt.toDisplay(e.x, e.y));
-							floater.pack();
-							floater.setVisible(true);
-							memberEditorLt.setFocus();
-						}
-					} else if (itemData instanceof JNIMethod) {
-						JNIMethod method = (JNIMethod)itemData;
-						if (column == METHOD_EXCLUDE_COLUMN || column == METHOD_ACCESSOR_COLUMN) {
-							memberTextEditor.setColumn(column);
-							memberTextEditor.setItem(item);
-							String text = "";
-							switch (column) {
-								case METHOD_ACCESSOR_COLUMN: {
-									text = method.getAccessor();
-									if (text.length() == 0) text = method.getName();
-									break;
-								}
-								case METHOD_EXCLUDE_COLUMN: text = method.getExclude(); break;
-							}
-							memberEditorTx.setText(text);
-							memberEditorTx.selectAll();
-							memberEditorTx.setVisible(true);
-							memberEditorTx.setFocus();
-						} else if (column == METHOD_FLAGS_COLUMN) {
-							memberListEditor.setColumn(column);
-							memberListEditor.setItem(item);
-							memberEditorLt.setItems(JNIMethod.FLAGS);
-							memberEditorLt.setSelection(method.getFlags());
-							floater.setLocation(membersLt.toDisplay(e.x, e.y));
-							floater.pack();
-							floater.setVisible(true);
-							memberEditorLt.setFocus();
-						}
-					}
-				}
-			});
+	membersLt.addListener(SWT.MouseDown, e -> e.display.asyncExec (() -> {
+		if (membersLt.isDisposed ()) return;
+		if (e.button != 1) return;
+		Point pt = new Point(e.x, e.y);
+		TableItem item = membersLt.getItem(pt);
+		if (item == null) return;
+		int column = -1;
+		for (int i = 0; i < membersLt.getColumnCount(); i++) {
+			if (item.getBounds(i).contains(pt)) {
+				column = i;
+				break;
+			}				
 		}
-	});
+		if (column == -1) return;
+		Object itemData = item.getData();
+		if (itemData instanceof JNIField) {
+			JNIField field = (JNIField)itemData;
+			if (column == FIELD_CAST_COLUMN || column == FIELD_ACCESSOR_COLUMN || column == FIELD_EXCLUDE_COLUMN) {
+				memberTextEditor.setColumn(column);
+				memberTextEditor.setItem(item);
+				String text1 = "";
+				switch (column) {
+					case FIELD_CAST_COLUMN: text1 = field.getCast(); break;
+					case FIELD_ACCESSOR_COLUMN: {
+						text1 = field.getAccessor(); 
+						if (text1.length() == 0) {
+							text1 = field.getName();
+							int index = text1.lastIndexOf('_');
+							if (index != -1) {
+								char[] chars = text1.toCharArray();
+								chars[index] = '.';
+								text1 = new String(chars);
+							}
+						}
+						break;
+					}
+					case FIELD_EXCLUDE_COLUMN: text1 = field.getExclude(); break;
+				}
+				memberEditorTx.setText(text1);
+				memberEditorTx.selectAll();
+				memberEditorTx.setVisible(true);
+				memberEditorTx.setFocus();
+			} else if (column == FIELD_FLAGS_COLUMN) {
+				memberListEditor.setColumn(column);
+				memberListEditor.setItem(item);
+				memberEditorLt.setItems(JNIField.FLAGS);
+				memberEditorLt.setSelection(field.getFlags());
+				floater.setLocation(membersLt.toDisplay(e.x, e.y));
+				floater.pack();
+				floater.setVisible(true);
+				memberEditorLt.setFocus();
+			}
+		} else if (itemData instanceof JNIMethod) {
+			JNIMethod method = (JNIMethod)itemData;
+			if (column == METHOD_EXCLUDE_COLUMN || column == METHOD_ACCESSOR_COLUMN) {
+				memberTextEditor.setColumn(column);
+				memberTextEditor.setItem(item);
+				String text2 = "";
+				switch (column) {
+					case METHOD_ACCESSOR_COLUMN: {
+						text2 = method.getAccessor();
+						if (text2.length() == 0) text2 = method.getName();
+						break;
+					}
+					case METHOD_EXCLUDE_COLUMN: text2 = method.getExclude(); break;
+				}
+				memberEditorTx.setText(text2);
+				memberEditorTx.selectAll();
+				memberEditorTx.setVisible(true);
+				memberEditorTx.setFocus();
+			} else if (column == METHOD_FLAGS_COLUMN) {
+				memberListEditor.setColumn(column);
+				memberListEditor.setItem(item);
+				memberEditorLt.setItems(JNIMethod.FLAGS);
+				memberEditorLt.setSelection(method.getFlags());
+				floater.setLocation(membersLt.toDisplay(e.x, e.y));
+				floater.pack();
+				floater.setVisible(true);
+				memberEditorLt.setFocus();
+			}
+		}
+	}));
 }
 
 void createParametersPanel(Composite panel) {
@@ -777,12 +721,9 @@ void createParametersPanel(Composite panel) {
 	int itemHeight = paramsLt.getItemHeight();
 	data.heightHint = itemHeight * 6;
 	paramsLt.setLayoutData(data);
-	paramsLt.addListener(SWT.Selection, new Listener() {
-		@Override
-		public void handleEvent(Event e) {
-			if (e.detail == SWT.CHECK) {
-				updateGenerate((TableItem)e.item);
-			}
+	paramsLt.addListener(SWT.Selection, e -> {
+		if (e.detail == SWT.CHECK) {
+			updateGenerate((TableItem)e.item);
 		}
 	});
 
@@ -799,29 +740,26 @@ void createParametersPanel(Composite panel) {
 	paramTextEditor.grabHorizontal = true;
 	paramEditorTx = new Text(paramsLt, SWT.SINGLE);
 	paramTextEditor.setEditor(paramEditorTx);
-	Listener paramTextListener = new Listener() {
-		@Override
-		public void handleEvent(Event e) {
-			if (e.type == SWT.Traverse) {
-				switch (e.detail) {
-					case SWT.TRAVERSE_ESCAPE:
-						paramTextEditor.setItem(null);
-						break;
-					default:
-						return;
-				}
+	Listener paramTextListener = e -> {
+		if (e.type == SWT.Traverse) {
+			switch (e.detail) {
+				case SWT.TRAVERSE_ESCAPE:
+					paramTextEditor.setItem(null);
+					break;
+				default:
+					return;
 			}
-			paramEditorTx.setVisible(false);
-			TableItem item = paramTextEditor.getItem();
-			if (item == null) return;
-			int column = paramTextEditor.getColumn();
-			JNIParameter param = (JNIParameter)item.getData();
-			if (column == PARAM_CAST_COLUMN) {
-				String text = paramEditorTx.getText();
-				param.setCast(text);
-				item.setText(column, param.getCast());
-				paramsLt.getColumn(column).pack();
-			}
+		}
+		paramEditorTx.setVisible(false);
+		TableItem item = paramTextEditor.getItem();
+		if (item == null) return;
+		int column1 = paramTextEditor.getColumn();
+		JNIParameter param = (JNIParameter)item.getData();
+		if (column1 == PARAM_CAST_COLUMN) {
+			String text = paramEditorTx.getText();
+			param.setCast(text);
+			item.setText(column1, param.getCast());
+			paramsLt.getColumn(column1).pack();
 		}
 	};
 	paramEditorTx.addListener(SWT.DefaultSelection, paramTextListener);
@@ -834,81 +772,67 @@ void createParametersPanel(Composite panel) {
 	paramEditorLt = new List(floater, SWT.MULTI | SWT.BORDER);
 	paramEditorLt.setItems(JNIParameter.FLAGS);
 	floater.pack();
-	floater.addListener(SWT.Close, new Listener() {
-		@Override
-		public void handleEvent(Event e) {
-			paramListEditor.setItem(null);
-			e.doit = false;
-			floater.setVisible(false);
-		}
+	floater.addListener(SWT.Close, e -> {
+		paramListEditor.setItem(null);
+		e.doit = false;
+		floater.setVisible(false);
 	});
-	Listener paramListListener = new Listener() {
-		@Override
-		public void handleEvent(Event e) {
-			if (e.type == SWT.Traverse) {
-				switch (e.detail) {
-					case SWT.TRAVERSE_RETURN:
-						break;
-					default:
-						return;
-				}
+	Listener paramListListener = e -> {
+		if (e.type == SWT.Traverse) {
+			switch (e.detail) {
+				case SWT.TRAVERSE_RETURN:
+					break;
+				default:
+					return;
 			}
-			floater.setVisible(false);
-			TableItem item = paramListEditor.getItem();
-			if (item == null) return;
-			int column = paramListEditor.getColumn();
-			JNIParameter param = (JNIParameter)item.getData();
-			if (column == PARAM_FLAGS_COLUMN) {
-				String[] flags = paramEditorLt.getSelection();
-				param.setFlags(flags);
-				item.setText(column, getFlagsString(param.getFlags()));
-				paramsLt.getColumn(column).pack();
-			}
+		}
+		floater.setVisible(false);
+		TableItem item = paramListEditor.getItem();
+		if (item == null) return;
+		int column1 = paramListEditor.getColumn();
+		JNIParameter param = (JNIParameter)item.getData();
+		if (column1 == PARAM_FLAGS_COLUMN) {
+			String[] flags = paramEditorLt.getSelection();
+			param.setFlags(flags);
+			item.setText(column1, getFlagsString(param.getFlags()));
+			paramsLt.getColumn(column1).pack();
 		}
 	};
 	paramEditorLt.addListener(SWT.DefaultSelection, paramListListener);
 	paramEditorLt.addListener(SWT.FocusOut, paramListListener);
 	paramEditorLt.addListener(SWT.Traverse, paramListListener);
 
-	paramsLt.addListener(SWT.MouseDown, new Listener() {
-		@Override
-		public void handleEvent(final Event e) {
-			e.display.asyncExec (new Runnable () {
-				@Override
-				public void run () {
-					if (paramsLt.isDisposed ()) return;
-					if (e.button != 1) return;
-					Point pt = new Point(e.x, e.y);
-					TableItem item = paramsLt.getItem(pt);
-					if (item == null) return;
-					int column = -1;
-					for (int i = 0; i < paramsLt.getColumnCount(); i++) {
-						if (item.getBounds(i).contains(pt)) {
-							column = i;
-							break;
-						}				
-					}
-					if (column == -1) return;
-					JNIParameter param = (JNIParameter)item.getData();
-					if (column == PARAM_CAST_COLUMN) {
-						paramTextEditor.setColumn(column);
-						paramTextEditor.setItem(item);
-						paramEditorTx.setText(param.getCast());
-						paramEditorTx.selectAll();
-						paramEditorTx.setVisible(true);
-						paramEditorTx.setFocus();
-					} else if (column == PARAM_FLAGS_COLUMN) {
-						paramListEditor.setColumn(column);
-						paramListEditor.setItem(item);
-						paramEditorLt.setSelection(param.getFlags());
-						floater.setLocation(paramsLt.toDisplay(e.x, e.y));
-						floater.setVisible(true);
-						paramEditorLt.setFocus();
-					}
-				}
-			});
+	paramsLt.addListener(SWT.MouseDown, e -> e.display.asyncExec (() -> {
+		if (paramsLt.isDisposed ()) return;
+		if (e.button != 1) return;
+		Point pt = new Point(e.x, e.y);
+		TableItem item = paramsLt.getItem(pt);
+		if (item == null) return;
+		int column1 = -1;
+		for (int i = 0; i < paramsLt.getColumnCount(); i++) {
+			if (item.getBounds(i).contains(pt)) {
+				column1 = i;
+				break;
+			}				
 		}
-	});
+		if (column1 == -1) return;
+		JNIParameter param = (JNIParameter)item.getData();
+		if (column1 == PARAM_CAST_COLUMN) {
+			paramTextEditor.setColumn(column1);
+			paramTextEditor.setItem(item);
+			paramEditorTx.setText(param.getCast());
+			paramEditorTx.selectAll();
+			paramEditorTx.setVisible(true);
+			paramEditorTx.setFocus();
+		} else if (column1 == PARAM_FLAGS_COLUMN) {
+			paramListEditor.setColumn(column1);
+			paramListEditor.setItem(item);
+			paramEditorLt.setSelection(param.getFlags());
+			floater.setLocation(paramsLt.toDisplay(e.x, e.y));
+			floater.setVisible(true);
+			paramEditorLt.setFocus();
+		}
+	}));
 }
 
 Button createActionButton(Composite parent, String text, Listener listener) {
@@ -930,12 +854,7 @@ void createActionButtons(Composite parent) {
 	actionsLayout.numColumns = 1;
 	actionsPanel.setLayout(actionsLayout);
 	
-	createActionButton(actionsPanel, "Generate &All", new Listener() {
-		@Override
-		public void handleEvent(Event e) {
-			generateAll();
-		}
-	});
+	createActionButton(actionsPanel, "Generate &All", e -> generateAll());
 	
 	Label separator = new Label(actionsPanel, SWT.SEPARATOR | SWT.HORIZONTAL);
 	data = new GridData(GridData.FILL_HORIZONTAL);
@@ -944,42 +863,12 @@ void createActionButtons(Composite parent) {
 	data = new GridData(GridData.FILL_HORIZONTAL);
 	separator.setLayoutData(data);
 	
-	createActionButton(actionsPanel, "Generate Structs &Header", new Listener() {
-		@Override
-		public void handleEvent(Event e) {
-			generateStructsHeader();
-		}
-	});
-	createActionButton(actionsPanel, "Generate &Structs", new Listener() {
-		@Override
-		public void handleEvent(Event e) {
-			generateStructs();
-		}
-	});
-	createActionButton(actionsPanel, "Generate &Natives", new Listener() {
-		@Override
-		public void handleEvent(Event e) {
-			generateNatives();
-		}
-	});
-	createActionButton(actionsPanel, "Generate Meta &Data", new Listener() {
-		@Override
-		public void handleEvent(Event e) {
-			generateMetaData();
-		}
-	});
-	createActionButton(actionsPanel, "Generate Cons&tants", new Listener() {
-		@Override
-		public void handleEvent(Event e) {
-			generateConstants();
-		}
-	});	
-	createActionButton(actionsPanel, "Generate Si&zeof", new Listener() {
-		@Override
-		public void handleEvent(Event e) {
-			generateSizeof();
-		}
-	});
+	createActionButton(actionsPanel, "Generate Structs &Header", e -> generateStructsHeader());
+	createActionButton(actionsPanel, "Generate &Structs", e -> generateStructs());
+	createActionButton(actionsPanel, "Generate &Natives", e -> generateNatives());
+	createActionButton(actionsPanel, "Generate Meta &Data", e -> generateMetaData());
+	createActionButton(actionsPanel, "Generate Cons&tants", e -> generateConstants());	
+	createActionButton(actionsPanel, "Generate Si&zeof", e -> generateSizeof());
 
 	Composite filler = new Composite(actionsPanel, SWT.NONE);
 	filler.setLayoutData(new GridData(GridData.FILL_BOTH));

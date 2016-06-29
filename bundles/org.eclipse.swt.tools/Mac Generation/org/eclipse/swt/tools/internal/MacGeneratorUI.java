@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2008, 2015 IBM Corporation and others.
+ * Copyright (c) 2008, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -185,18 +185,10 @@ public class MacGeneratorUI {
 		GridData data = new GridData(GridData.FILL_HORIZONTAL);
 		search.setLayoutData(data);
 		search.setText(".*");
-		search.addListener(SWT.DefaultSelection, new Listener() {
-			@Override
-			public void handleEvent(Event arg0) {
-				searchFor(search.getText());
-			}
-		});
-		search.addListener(SWT.KeyDown, new Listener() {
-			@Override
-			public void handleEvent(Event event) {
-				if (event.keyCode == SWT.F6) {
-					searchFor(search.getText());					
-				}
+		search.addListener(SWT.DefaultSelection, arg0 -> searchFor(search.getText()));
+		search.addListener(SWT.KeyDown, event -> {
+			if (event.keyCode == SWT.F6) {
+				searchFor(search.getText());					
 			}
 		});
 		
@@ -205,28 +197,20 @@ public class MacGeneratorUI {
 		data.horizontalSpan = 2;
 		nodesTree.setLayoutData(data);
 		
-		nodesTree.addListener(SWT.Selection, new Listener() {
-			@Override
-			public void handleEvent(Event event) {
-				TreeItem item = (TreeItem)event.item;
-				if (item == null) return;
-				if (event.detail != SWT.CHECK) {
-					selectChild(item);
-					return;
-				}
-				boolean checked = item.getChecked();
-				item.getParent().setRedraw(false);
-                checkItems(item, checked);
-                checkPath(item.getParentItem(), checked, false);
-                item.getParent().setRedraw(true);
+		nodesTree.addListener(SWT.Selection, event -> {
+			TreeItem item = (TreeItem)event.item;
+			if (item == null) return;
+			if (event.detail != SWT.CHECK) {
+				selectChild(item);
+				return;
 			}
+			boolean checked = item.getChecked();
+			item.getParent().setRedraw(false);
+		    checkItems(item, checked);
+		    checkPath(item.getParentItem(), checked, false);
+		    item.getParent().setRedraw(true);
 		});
-		nodesTree.addListener(SWT.Expand, new Listener() {
-			@Override
-			public void handleEvent(Event event) {
-				checkChildren((TreeItem)event.item);				
-			}
-		});
+		nodesTree.addListener(SWT.Expand, event -> checkChildren((TreeItem)event.item));
 		
 		return comp;
 	}
@@ -257,73 +241,65 @@ public class MacGeneratorUI {
 		final TableEditor editor = new TableEditor(attribTable);
 		editor.grabHorizontal = true;
 		editor.setEditor(editorTx);
-		Listener textListener = new Listener() {
-			@Override
-			public void handleEvent(Event e) {
-				if (e.type == SWT.KeyDown) {
-					if (e.keyCode != SWT.F6) return;
+		Listener textListener = e -> {
+			if (e.type == SWT.KeyDown) {
+				if (e.keyCode != SWT.F6) return;
+			}
+			if (e.type == SWT.Traverse) {
+				switch (e.detail) {
+					case SWT.TRAVERSE_ESCAPE:
+						editor.setItem(null);
+						break;
+					default:
+						return;
 				}
-				if (e.type == SWT.Traverse) {
-					switch (e.detail) {
-						case SWT.TRAVERSE_ESCAPE:
-							editor.setItem(null);
-							break;
-						default:
-							return;
-					}
-				}
-				editorTx.setVisible(false);
-				TableItem item = editor.getItem();
-				if (item == null) return;
-				int column = editor.getColumn();
-				String value = editorTx.getText();
-				item.setText(column, value);
-				Element node = (Element)item.getData();
-				String name = item.getText();
-				if (!name.startsWith("swt_")) {
-					name = "swt_" + name;
-				}
-				if (value.length() != 0) {
-					node.setAttribute(name, value);
-				} else {
-					node.removeAttribute(name);
-				}
+			}
+			editorTx.setVisible(false);
+			TableItem item = editor.getItem();
+			if (item == null) return;
+			int column = editor.getColumn();
+			String value = editorTx.getText();
+			item.setText(column, value);
+			Element node = (Element)item.getData();
+			String name = item.getText();
+			if (!name.startsWith("swt_")) {
+				name = "swt_" + name;
+			}
+			if (value.length() != 0) {
+				node.setAttribute(name, value);
+			} else {
+				node.removeAttribute(name);
 			}
 		};
 		editorTx.addListener(SWT.DefaultSelection, textListener);
 //		editorTx.addListener(SWT.FocusOut, textListener);
 		editorTx.addListener(SWT.KeyDown, textListener);
 		editorTx.addListener(SWT.Traverse, textListener);
-		attribTable.addListener(SWT.MouseDown, new Listener() {
+		attribTable.addListener(SWT.MouseDown, e -> e.display.asyncExec (new Runnable () {
 			@Override
-			public void handleEvent(final Event e) {
-				e.display.asyncExec (new Runnable () {
-					@Override
-					public void run () {
-						if (attribTable.isDisposed ()) return;
-						if (e.button != 1) return;
-						Point pt = new Point(e.x, e.y);
-						TableItem item = attribTable.getItem(pt);
-						if (item == null) return;
-						int column = -1;
-						for (int i = 0; i < attribTable.getColumnCount(); i++) {
-							if (item.getBounds(i).contains(pt)) {
-								column = i;
-								break;
-							}				
-						}
-						if (column == -1) return;
-						if (!getEditable(item, column)) return;
-						editor.setColumn(column);
-						editor.setItem(item);
-						editorTx.setText(item.getText(column));
-						editorTx.selectAll();
-						editorTx.setVisible(true);
-						editorTx.setFocus();
-					}
-				});
+			public void run () {
+				if (attribTable.isDisposed ()) return;
+				if (e.button != 1) return;
+				Point pt = new Point(e.x, e.y);
+				TableItem item = attribTable.getItem(pt);
+				if (item == null) return;
+				int column = -1;
+				for (int i = 0; i < attribTable.getColumnCount(); i++) {
+					if (item.getBounds(i).contains(pt)) {
+						column = i;
+						break;
+					}				
+				}
+				if (column == -1) return;
+				if (!getEditable(item, column)) return;
+				editor.setColumn(column);
+				editor.setItem(item);
+				editorTx.setText(item.getText(column));
+				editorTx.selectAll();
+				editorTx.setVisible(true);
+				editorTx.setFocus();
 			}
-		});
+		}));
 		
 		return comp;
 	}
@@ -336,12 +312,7 @@ public class MacGeneratorUI {
 		
 		Button generate = new Button(panel, SWT.PUSH);
 		generate.setText("Generate");
-		generate.addListener(SWT.Selection, new Listener() {
-			@Override
-			public void handleEvent(Event event) {
-				generate(null);
-			}
-		});
+		generate.addListener(SWT.Selection, event -> generate(null));
 		return panel;
 	}
 	
@@ -396,17 +367,14 @@ public class MacGeneratorUI {
 			actionsPanel.setLayoutData(data);
 		}
 		
-		sash.addListener(SWT.Selection, new Listener() {
-			@Override
-			public void handleEvent(Event event) {
-				Composite parent = sash.getParent();
-				Rectangle rect = parent.getClientArea();
-				event.x = Math.min (Math.max (event.x, 60), rect.width - 60);
-				if (event.detail != SWT.DRAG) {
-					FormData data = (FormData)sash.getLayoutData();
-					data.left.offset = event.x;
-					parent.layout(true);
-				}
+		sash.addListener(SWT.Selection, event -> {
+			Composite parent1 = sash.getParent();
+			Rectangle rect = parent1.getClientArea();
+			event.x = Math.min (Math.max (event.x, 60), rect.width - 60);
+			if (event.detail != SWT.DRAG) {
+				FormData data1 = (FormData)sash.getLayoutData();
+				data1.left.offset = event.x;
+				parent1.layout(true);
 			}
 		});
 
@@ -592,14 +560,11 @@ public class MacGeneratorUI {
 		if (nodesTree == null) return;
 		gen.setXmls(null);
 		flatNodes = null;
-		nodesTree.getDisplay().asyncExec(new Runnable() {
-			 @Override
-			public void run() {
-				 if (nodesTree == null || nodesTree.isDisposed()) return;
-				 nodesTree.removeAll();
-				 attribTable.removeAll();
-				 updateNodes();
-			}
+		nodesTree.getDisplay().asyncExec(() -> {
+			 if (nodesTree == null || nodesTree.isDisposed()) return;
+			 nodesTree.removeAll();
+			 attribTable.removeAll();
+			 updateNodes();
 		});
 	}
 	

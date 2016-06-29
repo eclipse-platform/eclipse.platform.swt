@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2007, 2015 IBM Corporation and others.
+ * Copyright (c) 2007, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -67,52 +67,22 @@ public static void main (String [] args) {
 
 public void create (Composite parent) {
 	list = new List (parent, SWT.BORDER | SWT.V_SCROLL);
-	list.addListener (SWT.Selection, new Listener () {
-		@Override
-		public void handleEvent (Event event) {
-			refreshObject ();
-		}
-	});
+	list.addListener (SWT.Selection, event -> refreshObject ());
 	text = new Text (parent, SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL);
 	canvas = new Canvas (parent, SWT.BORDER);
-	canvas.addListener (SWT.Paint, new Listener () {
-		@Override
-		public void handleEvent (Event event) {
-			paintCanvas (event);
-		}
-	});
+	canvas.addListener (SWT.Paint, event -> paintCanvas (event));
 	check = new Button (parent, SWT.CHECK);
 	check.setText ("Stack");
-	check.addListener (SWT.Selection, new Listener () {
-		@Override
-		public void handleEvent (Event e) {
-			toggleStackTrace ();
-		}
-	});
+	check.addListener (SWT.Selection, e -> toggleStackTrace ());
 	start = new Button (parent, SWT.PUSH);
 	start.setText ("Snap");
-	start.addListener (SWT.Selection, new Listener () {
-		@Override
-		public void handleEvent (Event event) {
-			refreshAll ();
-		}
-	});
+	start.addListener (SWT.Selection, event -> refreshAll ());
 	stop = new Button (parent, SWT.PUSH);
 	stop.setText ("Diff");
-	stop.addListener (SWT.Selection, new Listener () {
-		@Override
-		public void handleEvent (Event event) {
-			refreshDifference ();
-		}
-	});
+	stop.addListener (SWT.Selection, event -> refreshDifference ());
 	label = new Label (parent, SWT.BORDER);
 	label.setText ("0 object(s)");
-	parent.addListener (SWT.Resize, new Listener () {
-		@Override
-		public void handleEvent (Event e) {
-			layout ();
-		}
-	});
+	parent.addListener (SWT.Resize, e -> layout ());
 	check.setSelection (false);
 	text.setVisible (false);
 	layout();

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2004, 2015 IBM Corporation and others.
+ * Copyright (c) 2004, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -158,31 +158,18 @@ static String loadFile (String file) {
 }
 
 static void sort(JNIMethod[] methods) {
-	Arrays.sort(methods, new Comparator<JNIMethod>() {
-		@Override
-		public int compare(JNIMethod mth1, JNIMethod mth2) {
-			int result = mth1.getName().compareTo(mth2.getName());
-			return result != 0 ? result : getFunctionName(mth1).compareTo(getFunctionName(mth2));
-		}
+	Arrays.sort(methods, (mth1, mth2) -> {
+		int result = mth1.getName().compareTo(mth2.getName());
+		return result != 0 ? result : getFunctionName(mth1).compareTo(getFunctionName(mth2));
 	});
 }
 
 static void sort(JNIField[] fields) {
-	Arrays.sort(fields, new Comparator<JNIField>() {
-		@Override
-		public int compare(JNIField a, JNIField b) {
-			return a.getName().compareTo(b.getName());
-		}
-	});
+	Arrays.sort(fields, (a, b) -> a.getName().compareTo(b.getName()));
 }
 
 static void sort(JNIClass[] classes) {
-	Arrays.sort(classes, new Comparator<JNIClass>() {
-		@Override
-		public int compare(JNIClass a, JNIClass b) {
-			return a.getName().compareTo(b.getName());
-		}
-	});	
+	Arrays.sort(classes, (a, b) -> a.getName().compareTo(b.getName()));	
 }
 
 static String[] split(String str, String separator) {

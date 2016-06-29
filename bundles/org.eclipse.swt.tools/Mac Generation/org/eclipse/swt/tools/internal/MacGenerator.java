@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2008, 2015 IBM Corporation and others.
+ * Copyright (c) 2008, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -146,15 +146,12 @@ void merge(Document document, Document extraDocument) {
 	 * not found in the document.
 	 */
 	ArrayList<Node> sortedNodes = Collections.list(Collections.enumeration(extras.values()));
-	Collections.sort(sortedNodes, new Comparator<Object>() {
-		@Override
-		public int compare(Object arg0, Object arg1) {
-			int compare = getLevel((Node)arg0) - getLevel((Node)arg1);
-			if (compare == 0) {
-				return ((Node)arg0).getNodeName().compareTo(((Node)arg1).getNodeName());
-			}
-			return compare;
+	Collections.sort(sortedNodes, (arg0, arg1) -> {
+		int compare = getLevel(arg0) - getLevel(arg1);
+		if (compare == 0) {
+			return arg0.getNodeName().compareTo(arg1.getNodeName());
 		}
+		return compare;
 	});
 	String delimiter = System.getProperty("line.separator");
 	for (Iterator<Node> iterator = sortedNodes.iterator(); iterator.hasNext();) {
@@ -863,22 +860,12 @@ public String[] getXmls() {
 		} else {
 			String packageName = getPackageName(mainClassName);
 			File folder = new File(extrasDir != null ? extrasDir : outputDir + packageName.replace('.', '/'));
-			File[] files = folder.listFiles(new FilenameFilter() {
-				@Override
-				public boolean accept(File dir, String name) {
-					return name.endsWith("Full.bridgesupport");
-				}
-			});
+			File[] files = folder.listFiles((FilenameFilter) (dir, name) -> name.endsWith("Full.bridgesupport"));
 			for (int i = 0; i < files.length; i++) {
 				array.add(files[i].getAbsolutePath());
 			}
 		}
-		Collections.sort(array, new Comparator<Object>() {
-			@Override
-			public int compare(Object o1, Object o2) {
-				return new File((String)o1).getName().compareTo(new File((String)o2).getName());
-			}
-		});
+		Collections.sort(array, (o1, o2) -> new File(o1).getName().compareTo(new File(o2).getName()));
 		xmls = array.toArray(new String[array.size()]);
 	}
 	return xmls;
