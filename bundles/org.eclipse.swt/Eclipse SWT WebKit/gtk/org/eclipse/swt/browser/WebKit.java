@@ -597,9 +597,7 @@ public void create (Composite parent, int style) {
 		* thread.  Work around this crash by disabling the use of WebKitGTK's
 		* icon database, which should not affect the Browser in any way.
 		*/
-		if (WEBKIT2){
-			WebKitGTK.webkit_web_context_set_favicon_database_directory(WebKitGTK.webkit_web_context_get_default(), 0);
-		} else {
+		if (!WEBKIT2){
 			long /*int*/ database = WebKitGTK.webkit_get_favicon_database ();
 			if (database != 0) {
 				/* WebKitGTK version is >= 1.8.x */
