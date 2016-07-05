@@ -63,7 +63,7 @@ public void test_Constructor() {
 @Test
 public void test_ConstructorI() {
 	/* this should test various combinations of STYLE bits, for now just test individual bits */
-	int[] cases = {SWT.NO_TRIM, SWT.RESIZE, SWT.TITLE, SWT.CLOSE, SWT.MENU, SWT.MIN, SWT.BORDER, 
+	int[] cases = {SWT.NO_TRIM, SWT.RESIZE, SWT.TITLE, SWT.CLOSE, SWT.MENU, SWT.MIN, SWT.BORDER,
 				   SWT.CLIP_CHILDREN, SWT.CLIP_SIBLINGS, SWT.ON_TOP, SWT.FLAT, SWT.SMOOTH};
 	Shell newShell;
 	for (int i = 0; i < cases.length; i++) {
@@ -83,7 +83,7 @@ public void test_ConstructorLorg_eclipse_swt_widgets_Display() {
 
 @Test
 public void test_ConstructorLorg_eclipse_swt_widgets_DisplayI() {
-	int[] cases = {SWT.NO_TRIM, SWT.RESIZE, SWT.TITLE, SWT.CLOSE, SWT.MENU, SWT.MIN, SWT.BORDER, 
+	int[] cases = {SWT.NO_TRIM, SWT.RESIZE, SWT.TITLE, SWT.CLOSE, SWT.MENU, SWT.MIN, SWT.BORDER,
 				   SWT.CLIP_CHILDREN, SWT.CLIP_SIBLINGS, SWT.ON_TOP, SWT.FLAT, SWT.SMOOTH};
 	Shell newShell;
 	Display display = shell.getDisplay();
@@ -104,7 +104,7 @@ public void test_ConstructorLorg_eclipse_swt_widgets_Shell() {
 @Test
 public void test_ConstructorLorg_eclipse_swt_widgets_ShellI() {
 	/* this should test various combinations of STYLE bits, for now just test individual bits */
-	int[] cases = {SWT.NO_TRIM, SWT.RESIZE, SWT.TITLE, SWT.CLOSE, SWT.MENU, SWT.MIN, SWT.BORDER, 
+	int[] cases = {SWT.NO_TRIM, SWT.RESIZE, SWT.TITLE, SWT.CLOSE, SWT.MENU, SWT.MIN, SWT.BORDER,
 				   SWT.CLIP_CHILDREN, SWT.CLIP_SIBLINGS, SWT.ON_TOP, SWT.FLAT, SWT.SMOOTH};
 	Shell newShell;
 	for (int i = 0; i < cases.length; i++) {
@@ -148,7 +148,7 @@ public void test_addShellListenerLorg_eclipse_swt_events_ShellListener() {
 	shell.forceActive();
 	/* can't assume listener is synchronously called when forceActive returned */
 	/* assertTrue(":a:", listenerCalled == true); */
-	
+
 	listenerCalled = false;
 	shell.removeShellListener(listener);
 	shell.forceActive();
@@ -264,18 +264,18 @@ public void test_setActive() {
 	/* Create shell2 and make it active. */
 	Shell shell2 = new Shell();
 	shell2.open();
-	
+
 	/* Test setActive for visible shell. */
 	shell.setVisible(true);
 	shell.setActive();
 	assertTrue("visible shell was not made active", shell.getDisplay().getActiveShell() == shell);
-	
+
 	/* Test setActive for visible dialog shell. */
 	shell2.setActive();
 	testShell.setVisible(true);
 	testShell.setActive();
 	assertTrue("visible dialog shell was not made active", testShell.getDisplay().getActiveShell() == testShell);
-	
+
 	/* Test setActive for non-visible shell. */
 	shell2.setActive();
 	shell.setVisible(false);
@@ -287,7 +287,7 @@ public void test_setActive() {
 	testShell.setVisible(false);
 	testShell.setActive();
 	assertTrue("non-visible dialog shell was made active", testShell.getDisplay().getActiveShell() != testShell);
-	
+
 	shell2.dispose();
 }
 
@@ -472,7 +472,7 @@ public void test_setSizeII() {
 			newSize.y -= 100;
 		}
 	}
-	
+
 }
 
 @Override
@@ -509,7 +509,7 @@ private void createShell() {
 	testShell.setText("Shell");
     testShell.setLayout(new FillLayout());
     setWidget(testShell);
-   
+
 }
 
 @Test
@@ -533,11 +533,11 @@ public void test_consistency_Open() {
 				    }
 				});
 	    }}.start();
-	
+
 	    while(!shell.isDisposed()) {
 	        if(!display.readAndDispatch()) display.sleep();
 	    }
-	    setUp();        
+	    setUp();
 	    String[] results = events.toArray(new String[events.size()]);
 	    assertArrayEquals(getTestName() + " event ordering", temp, results);
 	}
@@ -575,5 +575,14 @@ public void test_consistency_Dispose() {
     Point pt = button.getLocation();
     consistencyEvent(pt.x, pt.y, 1, 0, ConsistencyUtility.MOUSE_CLICK, events);
     createShell();
+}
+
+@Test
+public void test_setAlpha() {
+    createShell();
+    testShell.setAlpha(128);
+    assertEquals(128, testShell.getAlpha());
+    testShell.setAlpha(255);
+    assertEquals(255, testShell.getAlpha());
 }
 }

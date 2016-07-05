@@ -1011,7 +1011,11 @@ void forceResize (int width, int height) {
 public int getAlpha () {
 	checkWidget ();
 	if (OS.gtk_widget_is_composited (shellHandle)) {
-		return (int) (OS.gtk_window_get_opacity (shellHandle) * 255);
+		/*
+		 * Feature in GTK: gtk_window_get_opacity() is deprecated on GTK3.8
+		 * onward. Use gtk_widget_get_opacity() instead.
+		 */
+		return (int) (OS.GTK_VERSION > OS.VERSION (3, 8, 0) ? OS.gtk_widget_get_opacity(shellHandle) * 255 : OS.gtk_window_get_opacity (shellHandle) * 255);
 	}
 	return 255;
 }
@@ -1839,8 +1843,16 @@ void setActiveControl (Control control, int type) {
 public void setAlpha (int alpha) {
 	checkWidget ();
 	if (OS.gtk_widget_is_composited (shellHandle)) {
-		alpha &= 0xFF;
-		OS.gtk_window_set_opacity (shellHandle, alpha / 255f);
+		/*
+		 * Feature in GTK: gtk_window_set_opacity() is deprecated on GTK3.8
+		 * onward. Use gtk_widget_set_opacity() instead.
+		 */
+		if (OS.GTK_VERSION > OS.VERSION (3, 8, 0)) {
+			OS.gtk_widget_set_opacity (shellHandle, (double) alpha / 255);
+		} else {
+			alpha &= 0xFF;
+			OS.gtk_window_set_opacity (shellHandle, alpha / 255f);
+		}
 	}
 }
 

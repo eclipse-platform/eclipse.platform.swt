@@ -15027,6 +15027,32 @@ public static final void gtk_widget_set_name(long /*int*/ widget, byte[] name) {
 	}
 }
 /**
+ * @method flags=dynamic
+ * @param widget cast=(GtkWidget *)
+ */
+public static final native void _gtk_widget_set_opacity(long /*int*/ widget, double opacity);
+public static final void gtk_widget_set_opacity(long /*int*/ widget, double opacity) {
+	lock.lock();
+	try {
+		_gtk_widget_set_opacity(widget, opacity);
+	} finally {
+		lock.unlock();
+	}
+}
+/**
+ * @method flags=dynamic
+ * @param widget cast=(GtkWidget *)
+ */
+public static final native double _gtk_widget_get_opacity(long /*int*/ widget);
+public static final double gtk_widget_get_opacity(long /*int*/ widget) {
+	lock.lock();
+	try {
+		return _gtk_widget_get_opacity(widget);
+	} finally {
+		lock.unlock();
+	}
+}
+/**
  * @param widget cast=(GtkWidget *)
  * @param redraw cast=(gboolean)
  */

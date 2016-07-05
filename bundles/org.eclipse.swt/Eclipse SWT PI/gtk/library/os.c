@@ -18731,6 +18731,26 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(_1gtk_1widget_1get_1name)
 }
 #endif
 
+#ifndef NO__1gtk_1widget_1get_1opacity
+JNIEXPORT jdouble JNICALL OS_NATIVE(_1gtk_1widget_1get_1opacity)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	jdouble rc = 0;
+	OS_NATIVE_ENTER(env, that, _1gtk_1widget_1get_1opacity_FUNC);
+/*
+	rc = (jdouble)gtk_widget_get_opacity((GtkWidget *)arg0);
+*/
+	{
+		OS_LOAD_FUNCTION(fp, gtk_widget_get_opacity)
+		if (fp) {
+			rc = (jdouble)((jdouble (CALLING_CONVENTION*)(GtkWidget *))fp)((GtkWidget *)arg0);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, _1gtk_1widget_1get_1opacity_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO__1gtk_1widget_1get_1pango_1context
 JNIEXPORT jintLong JNICALL OS_NATIVE(_1gtk_1widget_1get_1pango_1context)
 	(JNIEnv *env, jclass that, jintLong arg0)
@@ -19555,6 +19575,24 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1widget_1set_1name)
 fail:
 	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
 	OS_NATIVE_EXIT(env, that, _1gtk_1widget_1set_1name_FUNC);
+}
+#endif
+
+#ifndef NO__1gtk_1widget_1set_1opacity
+JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1widget_1set_1opacity)
+	(JNIEnv *env, jclass that, jintLong arg0, jdouble arg1)
+{
+	OS_NATIVE_ENTER(env, that, _1gtk_1widget_1set_1opacity_FUNC);
+/*
+	gtk_widget_set_opacity((GtkWidget *)arg0, arg1);
+*/
+	{
+		OS_LOAD_FUNCTION(fp, gtk_widget_set_opacity)
+		if (fp) {
+			((void (CALLING_CONVENTION*)(GtkWidget *, jdouble))fp)((GtkWidget *)arg0, arg1);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, _1gtk_1widget_1set_1opacity_FUNC);
 }
 #endif
 

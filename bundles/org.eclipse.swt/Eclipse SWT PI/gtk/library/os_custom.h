@@ -117,6 +117,8 @@
 #define g_variant_new_uint64_LIB LIB_GIO
 #define g_variant_n_children_LIB LIB_GIO
 #define gtk_widget_set_allocation_LIB LIB_GTK
+#define gtk_widget_set_opacity_LIB LIB_GTK
+#define gtk_widget_get_opacity_LIB LIB_GTK
 #define gtk_adjustment_configure_LIB LIB_GTK
 #define gtk_adjustment_get_lower_LIB LIB_GTK
 #define gtk_adjustment_get_page_increment_LIB LIB_GTK

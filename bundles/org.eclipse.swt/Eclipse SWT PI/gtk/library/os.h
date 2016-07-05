@@ -190,6 +190,8 @@
 #define NO__1gdk_1rgba_1to_1string
 #define NO__1gdk_1rgba_1parse
 #define NO__1gtk_1scrollable_1get_1vadjustment
+#define NO__1gtk_1widget_1set_1opacity
+#define NO__1gtk_1widget_1get_1opacity
 
 #define NO__1g_1object_1set__I_3BLorg_eclipse_swt_internal_gtk_GdkRGBA_2I
 #define NO__1g_1object_1set__J_3BLorg_eclipse_swt_internal_gtk_GdkRGBA_2J
