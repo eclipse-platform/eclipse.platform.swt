@@ -14,6 +14,7 @@ package org.eclipse.swt.browser;
 
 import java.io.*;
 import java.net.*;
+import java.nio.charset.*;
 import java.util.*;
 
 import org.eclipse.swt.*;
@@ -39,7 +40,6 @@ class WebKit extends WebBrowser {
 	static Map<LONG, LONG> WindowMappings = new HashMap<> ();
 
 	static final String ABOUT_BLANK = "about:blank"; //$NON-NLS-1$
-	static final String CHARSET_UTF8 = "UTF-8"; //$NON-NLS-1$
 	static final String CLASSNAME_EXTERNAL = "External"; //$NON-NLS-1$
 	static final String FUNCTIONNAME_CALLJAVA = "callJava"; //$NON-NLS-1$
 	static final String HEADER_CONTENTTYPE = "content-type"; //$NON-NLS-1$
@@ -292,12 +292,7 @@ static long /*int*/ JSObjectCallAsFunctionProc (long /*int*/ ctx, long /*int*/ f
 }
 
 static long /*int*/ JSObjectGetPropertyProc (long /*int*/ ctx, long /*int*/ object, long /*int*/ propertyName, long /*int*/ exception) {
-	byte[] bytes = null;
-	try {
-		bytes = (FUNCTIONNAME_CALLJAVA + '\0').getBytes (CHARSET_UTF8); //$NON-NLS-1$
-	} catch (UnsupportedEncodingException e) {
-		bytes = Converter.wcsToMbcs (null, FUNCTIONNAME_CALLJAVA, true);
-	}
+	byte[] bytes = (FUNCTIONNAME_CALLJAVA + '\0').getBytes (StandardCharsets.UTF_8); //$NON-NLS-1$
 	long /*int*/ name = WebKitGTK.JSStringCreateWithUTF8CString (bytes);
 	long /*int*/ function = WebKitGTK.JSObjectMakeFunctionWithCallback (ctx, name, JSObjectCallAsFunctionProc.getAddress ());
 	WebKitGTK.JSStringRelease (name);
@@ -305,12 +300,7 @@ static long /*int*/ JSObjectGetPropertyProc (long /*int*/ ctx, long /*int*/ obje
 }
 
 static long /*int*/ JSObjectHasPropertyProc (long /*int*/ ctx, long /*int*/ object, long /*int*/ propertyName) {
-	byte[] bytes = null;
-	try {
-		bytes = (FUNCTIONNAME_CALLJAVA + '\0').getBytes (CHARSET_UTF8); //$NON-NLS-1$
-	} catch (UnsupportedEncodingException e) {
-		bytes = Converter.wcsToMbcs (null, FUNCTIONNAME_CALLJAVA, true);
-	}
+	byte[] bytes = (FUNCTIONNAME_CALLJAVA + '\0').getBytes (StandardCharsets.UTF_8); //$NON-NLS-1$
 	return WebKitGTK.JSStringIsEqualToUTF8CString (propertyName, bytes);
 }
 
@@ -924,19 +914,10 @@ boolean close (boolean showPrompters) {
 
 @Override
 public boolean execute (String script) {
-	byte[] bytes = null;
-	try {
-		bytes = (script + '\0').getBytes (CHARSET_UTF8); //$NON-NLS-1$
-	} catch (UnsupportedEncodingException e) {
-		bytes = Converter.wcsToMbcs (null, script, true);
-	}
+	byte[] bytes = (script + '\0').getBytes (StandardCharsets.UTF_8); //$NON-NLS-1$
 	long /*int*/ scriptString = WebKitGTK.JSStringCreateWithUTF8CString (bytes);
 
-	try {
-		bytes = (getUrl () + '\0').getBytes (CHARSET_UTF8); //$NON-NLS-1$
-	} catch (UnsupportedEncodingException e) {
-		bytes = Converter.wcsToMbcs (null, getUrl (), true);
-	}
+	bytes = (getUrl () + '\0').getBytes (StandardCharsets.UTF_8); //$NON-NLS-1$
 	long /*int*/ result = 0;
 
 	if (WEBKIT2){
@@ -1473,7 +1454,7 @@ long /*int*/ handleLoadFinished (long /*int*/ uri, boolean top) {
 		if (url.startsWith(ABOUT_BLANK)) {
 			loadingText = true;
 			byte[] mimeType = Converter.wcsToMbcs (null, "text/html", true);  //$NON-NLS-1$
-			byte[] encoding = Converter.wcsToMbcs (null, CHARSET_UTF8, true);  //$NON-NLS-1$
+			byte[] encoding = Converter.wcsToMbcs (null, StandardCharsets.UTF_8.displayName(), true);  //$NON-NLS-1$
 			byte[] uriBytes;
 			if (untrustedText) {
 				uriBytes = Converter.wcsToMbcs (null, ABOUT_BLANK, true);
@@ -1656,12 +1637,7 @@ public void refresh () {
 @Override
 public boolean setText (String html, boolean trusted) {
 	/* convert the String containing HTML to an array of bytes with UTF-8 data */
-	byte[] bytes = null;
-	try {
-		bytes = (html + '\0').getBytes (CHARSET_UTF8); //$NON-NLS-1$
-	} catch (UnsupportedEncodingException e) {
-		bytes = Converter.wcsToMbcs (null, html, true);
-	}
+	byte[] bytes = (html + '\0').getBytes (StandardCharsets.UTF_8); //$NON-NLS-1$
 
 	/*
 	* If this.htmlBytes is not null then the about:blank page is already being loaded,
@@ -2298,12 +2274,7 @@ long /*int*/ webkit_web_view_ready (long /*int*/ web_view) {
 long /*int*/ webkit_window_object_cleared (long /*int*/ web_view, long /*int*/ frame, long /*int*/ context, long /*int*/ window_object) {
 	long /*int*/ globalObject = WebKitGTK.JSContextGetGlobalObject (context);
 	long /*int*/ externalObject = WebKitGTK.JSObjectMake (context, ExternalClass, webViewData);
-	byte[] bytes = null;
-	try {
-		bytes = (OBJECTNAME_EXTERNAL + '\0').getBytes (CHARSET_UTF8);
-	} catch (UnsupportedEncodingException e) {
-		bytes = Converter.wcsToMbcs (null, OBJECTNAME_EXTERNAL, true);
-	}
+	byte[] bytes = (OBJECTNAME_EXTERNAL + '\0').getBytes (StandardCharsets.UTF_8);
 	long /*int*/ name = WebKitGTK.JSStringCreateWithUTF8CString (bytes);
 	WebKitGTK.JSObjectSetProperty (context, globalObject, name, externalObject, 0, null);
 	WebKitGTK.JSStringRelease (name);
@@ -2366,12 +2337,7 @@ long /*int*/ convertToJS (long /*int*/ ctx, Object value) {
 		return WebKitGTK.JSValueMakeUndefined (ctx);
 	}
 	if (value instanceof String) {
-		byte[] bytes = null;
-		try {
-			bytes = ((String)value + '\0').getBytes (CHARSET_UTF8); //$NON-NLS-1$
-		} catch (UnsupportedEncodingException e) {
-			bytes = Converter.wcsToMbcs (null, (String)value, true);
-		}
+		byte[] bytes = ((String)value + '\0').getBytes (StandardCharsets.UTF_8); //$NON-NLS-1$
 		long /*int*/ stringRef = WebKitGTK.JSStringCreateWithUTF8CString (bytes);
 		long /*int*/ result = WebKitGTK.JSValueMakeString (ctx, stringRef);
 		WebKitGTK.JSStringRelease (stringRef);
@@ -2416,23 +2382,14 @@ Object convertToJava (long /*int*/ ctx, long /*int*/ value) {
 			byte[] bytes = new byte[(int)/*64*/length];
 			length = WebKitGTK.JSStringGetUTF8CString (string, bytes, length);
 			WebKitGTK.JSStringRelease (string);
-			try {
-				/* length-1 is needed below to exclude the terminator character */
-				return new String (bytes, 0, (int)/*64*/length - 1, CHARSET_UTF8);
-			} catch (UnsupportedEncodingException e) {
-				return new String (Converter.mbcsToWcs (null, bytes));
-			}
+			/* length-1 is needed below to exclude the terminator character */
+			return new String (bytes, 0, (int)/*64*/length - 1, StandardCharsets.UTF_8);
 		}
 		case WebKitGTK.kJSTypeNull:
 			// FALL THROUGH
 		case WebKitGTK.kJSTypeUndefined: return null;
 		case WebKitGTK.kJSTypeObject: {
-			byte[] bytes = null;
-			try {
-				bytes = (PROPERTY_LENGTH + '\0').getBytes (CHARSET_UTF8); //$NON-NLS-1$
-			} catch (UnsupportedEncodingException e) {
-				bytes = Converter.wcsToMbcs (null, PROPERTY_LENGTH, true);
-			}
+			byte[] bytes = (PROPERTY_LENGTH + '\0').getBytes (StandardCharsets.UTF_8); //$NON-NLS-1$
 			long /*int*/ propertyName = WebKitGTK.JSStringCreateWithUTF8CString (bytes);
 			long /*int*/ valuePtr = WebKitGTK.JSObjectGetProperty (ctx, value, propertyName, null);
 			WebKitGTK.JSStringRelease (propertyName);

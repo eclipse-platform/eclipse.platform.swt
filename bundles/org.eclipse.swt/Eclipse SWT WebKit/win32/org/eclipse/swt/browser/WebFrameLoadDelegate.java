@@ -11,8 +11,8 @@
 package org.eclipse.swt.browser;
 
 
-import java.io.*;
 import java.net.*;
+import java.nio.charset.*;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.events.*;
@@ -202,12 +202,7 @@ int didClearWindowObject (long /*int*/ webView, long /*int*/ context, long /*int
 	long /*int*/ globalObject = WebKit_win32.JSContextGetGlobalObject (context);
 	long /*int*/ privateData = ((WebKit)browser.webBrowser).webViewData;
 	long /*int*/ externalObject = WebKit_win32.JSObjectMake (context, WebKit.ExternalClass, privateData);
-	byte[] bytes = null;
-	try {
-		bytes = (OBJECTNAME_EXTERNAL + '\0').getBytes (WebKit.CHARSET_UTF8);
-	} catch (UnsupportedEncodingException e) {
-		bytes = (OBJECTNAME_EXTERNAL + '\0').getBytes ();
-	}
+	byte[] bytes = (OBJECTNAME_EXTERNAL + '\0').getBytes (StandardCharsets.UTF_8);
 	long /*int*/ name = WebKit_win32.JSStringCreateWithUTF8CString (bytes);
 	WebKit_win32.JSObjectSetProperty (context, globalObject, name, externalObject, 0, null);
 	WebKit_win32.JSStringRelease (name);

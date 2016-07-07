@@ -13,6 +13,7 @@ package org.eclipse.swt.browser;
 
 import java.io.*;
 import java.net.*;
+import java.nio.charset.*;
 import java.util.*;
 
 import org.eclipse.swt.*;
@@ -52,7 +53,6 @@ class WebKit extends WebBrowser {
 	static Callback JSObjectCallAsFunctionProc;
 	static final int MAX_PROGRESS = 100;
 	static final String ABOUT_BLANK = "about:blank"; //$NON-NLS-1$
-	static final String CHARSET_UTF8 = "UTF-8"; //$NON-NLS-1$
 	static final String CLASSNAME_EXTERNAL = "External"; //$NON-NLS-1$
 	static final String EMPTY_STRING = ""; //$NON-NLS-1$
 	static final String FUNCTIONNAME_CALLJAVA = "callJava"; //$NON-NLS-1$
@@ -325,12 +325,7 @@ static long /*int*/ JSObjectCallAsFunctionProc (long /*int*/ ctx, long /*int*/ f
 }
 
 static long /*int*/ JSObjectGetPropertyProc (long /*int*/ ctx, long /*int*/ object, long /*int*/ propertyName, long /*int*/ exception) {
-	byte[] bytes = null;
-	try {
-		bytes = (FUNCTIONNAME_CALLJAVA + '\0').getBytes (CHARSET_UTF8);
-	} catch (UnsupportedEncodingException e) {
-		bytes = (FUNCTIONNAME_CALLJAVA + '\0').getBytes ();
-	}
+	byte[] bytes = (FUNCTIONNAME_CALLJAVA + '\0').getBytes (StandardCharsets.UTF_8);
 	long /*int*/ name = WebKit_win32.JSStringCreateWithUTF8CString (bytes);
 	long /*int*/ addr = WebKit_win32.JSObjectCallAsFunctionProc_CALLBACK (WebKit.JSObjectCallAsFunctionProc.getAddress ());
 	long /*int*/ function = WebKit_win32.JSObjectMakeFunctionWithCallback (ctx, name, addr);
@@ -339,12 +334,7 @@ static long /*int*/ JSObjectGetPropertyProc (long /*int*/ ctx, long /*int*/ obje
 }
 
 static long /*int*/ JSObjectHasPropertyProc (long /*int*/ ctx, long /*int*/ object, long /*int*/ propertyName) {
-	byte[] bytes = null;
-	try {
-		bytes = (FUNCTIONNAME_CALLJAVA + '\0').getBytes (CHARSET_UTF8);
-	} catch (UnsupportedEncodingException e) {
-		bytes = (FUNCTIONNAME_CALLJAVA + '\0').getBytes ();
-	}
+	byte[] bytes = (FUNCTIONNAME_CALLJAVA + '\0').getBytes (StandardCharsets.UTF_8);
 	return WebKit_win32.JSStringIsEqualToUTF8CString (propertyName, bytes);
 }
 
@@ -466,23 +456,14 @@ Object convertToJava (long /*int*/ ctx, long /*int*/ value) {
 			byte[] bytes = new byte[(int)/*64*/length];
 			length = WebKit_win32.JSStringGetUTF8CString (string, bytes, length);
 			WebKit_win32.JSStringRelease (string);
-			try {
-				/* length-1 is needed below to exclude the terminator character */
-				return new String (bytes, 0, (int)/*64*/length - 1, CHARSET_UTF8);
-			} catch (UnsupportedEncodingException e) {
-				return new String (bytes);
-			}
+			/* length-1 is needed below to exclude the terminator character */
+			return new String (bytes, 0, (int)/*64*/length - 1, StandardCharsets.UTF_8);
 		}
 		case WebKit_win32.kJSTypeNull:
 			// FALL THROUGH
 		case WebKit_win32.kJSTypeUndefined: return null;
 		case WebKit_win32.kJSTypeObject: {
-			byte[] bytes = null;
-			try {
-				bytes = (PROPERTY_LENGTH + '\0').getBytes (CHARSET_UTF8);
-			} catch (UnsupportedEncodingException e) {
-				bytes = (PROPERTY_LENGTH + '\0').getBytes ();
-			}
+			byte[] bytes = (PROPERTY_LENGTH + '\0').getBytes (StandardCharsets.UTF_8);
 			long /*int*/ propertyName = WebKit_win32.JSStringCreateWithUTF8CString (bytes);
 			long /*int*/ valuePtr = WebKit_win32.JSObjectGetProperty (ctx, value, propertyName, null);
 			WebKit_win32.JSStringRelease (propertyName);
@@ -509,12 +490,7 @@ long /*int*/ convertToJS (long /*int*/ ctx, Object value) {
 		return WebKit_win32.JSValueMakeNull (ctx);
 	}
 	if (value instanceof String) {
-		byte[] bytes = null;
-		try {
-			bytes = ((String)value + '\0').getBytes (CHARSET_UTF8);
-		} catch (UnsupportedEncodingException e) {
-			bytes = ((String)value + '\0').getBytes ();
-		}
+		byte[] bytes = ((String)value + '\0').getBytes (StandardCharsets.UTF_8);
 		long /*int*/ stringRef = WebKit_win32.JSStringCreateWithUTF8CString (bytes);
 		long /*int*/ result = WebKit_win32.JSValueMakeString (ctx, stringRef);
 		WebKit_win32.JSStringRelease (stringRef);
@@ -701,19 +677,10 @@ public boolean execute (String script) {
 	if (context == 0) {
 		return false;
 	}
-	byte[] bytes = null;
-	try {
-		bytes = (script + '\0').getBytes ("UTF-8"); //$NON-NLS-1$
-	} catch (UnsupportedEncodingException e) {
-		bytes = (script + '\0').getBytes ();
-	}
+	byte[] bytes = (script + '\0').getBytes (StandardCharsets.UTF_8); //$NON-NLS-1$
 	long /*int*/ scriptString = WebKit_win32.JSStringCreateWithUTF8CString (bytes);
 	if (scriptString == 0) return false;
-	try {
-		bytes = (getUrl () + '\0').getBytes ("UTF-8"); //$NON-NLS-1$
-	} catch (UnsupportedEncodingException e) {
-		bytes = (getUrl () + '\0').getBytes ();
-	}
+	bytes = (getUrl () + '\0').getBytes (StandardCharsets.UTF_8); //$NON-NLS-1$
 	long /*int*/ urlString = WebKit_win32.JSStringCreateWithUTF8CString (bytes);
 	if (urlString == 0) {
 		WebKit_win32.JSStringRelease (scriptString);

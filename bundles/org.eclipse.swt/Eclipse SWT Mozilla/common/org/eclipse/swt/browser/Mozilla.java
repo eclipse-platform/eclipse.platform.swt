@@ -14,6 +14,7 @@ package org.eclipse.swt.browser;
 
 import java.io.*;
 import java.lang.reflect.*;
+import java.nio.charset.*;
 import java.util.*;
 import java.util.List;
 
@@ -450,11 +451,7 @@ class Mozilla extends WebBrowser {
 				if (pathBytes_NSFree == null) {
 					String mozillaPath = getMozillaPath ();
 					mozillaPath += MozillaDelegate.getLibraryName (mozillaPath) + '\0';
-					try {
-						pathBytes_NSFree = mozillaPath.getBytes ("UTF-8"); //$NON-NLS-1$
-					} catch (UnsupportedEncodingException e) {
-						pathBytes_NSFree = mozillaPath.getBytes ();
-					}
+					pathBytes_NSFree = mozillaPath.getBytes (StandardCharsets.UTF_8); //$NON-NLS-1$
 				}
 				if (!XPCOM.NS_Free (pathBytes_NSFree, cookieString)) {
 					C.free (cookieString);
@@ -1753,11 +1750,7 @@ static byte[] getJSLibPathBytes () {
 			File file = new File (getMozillaPath (), names[i]);
 			if (file.exists ()) {
 				String pathString = file.getAbsolutePath () + '\0';
-				try {
-					jsLibPathBytes = pathString.getBytes ("UTF-8"); //$NON-NLS-1$
-				} catch (UnsupportedEncodingException e) {
-					jsLibPathBytes = pathString.getBytes ();
-				}
+				jsLibPathBytes = pathString.getBytes (StandardCharsets.UTF_8); //$NON-NLS-1$
 				break;
 			}
 		}
@@ -3357,12 +3350,7 @@ public boolean setText (String html, boolean trusted) {
 	if (browser != browser.getDisplay ().getFocusControl ()) Deactivate ();
 
 	/* convert the String containing HTML to an array of bytes with UTF-8 data */
-	byte[] data = null;
-	try {
-		data = html.getBytes ("UTF-8"); //$NON-NLS-1$
-	} catch (UnsupportedEncodingException e) {
-		return false;
-	}
+	byte[] data = html.getBytes (StandardCharsets.UTF_8); //$NON-NLS-1$
 
 	/*
 	 * This could be the first content that is set into the browser, so

@@ -10,7 +10,7 @@
  *******************************************************************************/
 package org.eclipse.swt.browser;
 
-import java.io.*;
+import java.nio.charset.*;
 import java.util.*;
 
 import org.eclipse.swt.*;
@@ -483,19 +483,10 @@ public boolean execute (String script) {
 	WebFrame frame = webView.mainFrame();
 	long /*int*/ context = frame.globalContext();
 
-	byte[] bytes = null;
-	try {
-		bytes = (script + '\0').getBytes("UTF-8"); //$NON-NLS-1$
-	} catch (UnsupportedEncodingException e) {
-		bytes = (script + '\0').getBytes();
-	}
+	byte[] bytes = (script + '\0').getBytes(StandardCharsets.UTF_8); //$NON-NLS-1$
 	long /*int*/ scriptString = OS.JSStringCreateWithUTF8CString(bytes);
 
-	try {
-		bytes = (getUrl() + '\0').getBytes("UTF-8"); //$NON-NLS-1$
-	} catch (UnsupportedEncodingException e) {
-		bytes = (getUrl() + '\0').getBytes();
-	}
+	bytes = (getUrl() + '\0').getBytes(StandardCharsets.UTF_8); //$NON-NLS-1$
 	long /*int*/ urlString = OS.JSStringCreateWithUTF8CString(bytes);
 
 	long /*int*/ result = OS.JSEvaluateScript(context, scriptString, 0, urlString, 0, null);
