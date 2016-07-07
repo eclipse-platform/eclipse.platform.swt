@@ -18,9 +18,7 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
-import org.eclipse.swt.events.SegmentEvent;
 import org.eclipse.swt.events.SegmentListener;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
@@ -106,7 +104,7 @@ public void test_addLjava_lang_StringI() {
 	catch (IllegalArgumentException e) {
 	}
 	combo.removeAll();
-	
+
 	combo.add("fred", 0);
 	assertArrayEquals("fred", new String[]{"fred"}, combo.getItems());
 	combo.add("fred", 0);
@@ -114,7 +112,7 @@ public void test_addLjava_lang_StringI() {
 	combo.add("fred");
 	assertArrayEquals("fred fred fred", new String[]{"fred", "fred", "fred"}, combo.getItems());
 	combo.removeAll();
-	
+
 	int number = 3;
 	for (int i = 0; i < number; i++)
 		combo.add("fred" + i);
@@ -136,12 +134,7 @@ public void test_addLjava_lang_StringI() {
 @Test
 public void test_addModifyListenerLorg_eclipse_swt_events_ModifyListener() {
 	boolean exceptionThrown = false;
-	ModifyListener listener = new ModifyListener() {
-		@Override
-		public void modifyText(ModifyEvent event) {
-			listenerCalled = true;
-		}
-	};
+	ModifyListener listener = event -> listenerCalled = true;
 	try {
 		combo.addModifyListener(null);
 	}
@@ -150,11 +143,11 @@ public void test_addModifyListenerLorg_eclipse_swt_events_ModifyListener() {
 	}
 	assertTrue("Expected exception not thrown", exceptionThrown);
 	exceptionThrown = false;
-	
-	// test whether all content modifying API methods send a Modify event	
+
+	// test whether all content modifying API methods send a Modify event
 	combo.addModifyListener(listener);
 	listenerCalled = false;
-	combo.setText("new text");	
+	combo.setText("new text");
 	assertTrue("setText does not send event", listenerCalled);
 
 	if (SwtTestUtil.isCocoa) {
@@ -180,11 +173,11 @@ public void test_addModifyListenerLorg_eclipse_swt_events_ModifyListener() {
 		combo.remove(0, 1);
 		assertTrue("remove(int start, int end) for all items:", listenerCalled);
 	}
-	
-	listenerCalled = false;	
+
+	listenerCalled = false;
 	combo.removeModifyListener(listener);
-	// cause to call the listener. 
-	combo.setText("line");	
+	// cause to call the listener.
+	combo.setText("line");
 	assertTrue("Listener not removed", listenerCalled == false);
 	try {
 		combo.removeModifyListener(null);
@@ -304,7 +297,7 @@ public void test_deselectI() {
 	combo.deselect(10);
 	assertEquals(1, combo.getSelectionIndex());
 	combo.removeAll();
-	
+
 	combo.deselect(2);
 
 	int number = 10;
@@ -455,7 +448,7 @@ public void test_indexOfLjava_lang_String() {
 	catch (IllegalArgumentException e) {
 	}
 	combo.removeAll();
-	
+
 	int number = 5;
 	for (int i = 0; i < number; i++)
 		combo.add("fred" + i);
@@ -499,7 +492,7 @@ public void test_indexOfLjava_lang_StringI() {
 	}
 	assertEquals(-1, combo.indexOf("string0", -1));
 	combo.removeAll();
-	
+
 	int number = 5;
 	for (int i = 0; i < number; i++)
 		combo.add("fred" + i);
@@ -720,13 +713,13 @@ public void test_removeLjava_lang_String() {
 	combo.removeAll();
 	for (int i = 0; i < number; i++)
 		combo.add("fred" + i);
-	try {	
+	try {
 		combo.remove("fred");
 		fail("No exception thrown for item not found");
 	}
 	catch (IllegalArgumentException e) {
 	}
-	
+
 	assertEquals(number, combo.getItemCount());
 }
 
@@ -737,7 +730,7 @@ public void test_selectI() {
 	combo.add("789");
 	combo.select(1);
 	assertTrue(":a:", combo.getSelectionIndex()== 1);
-	
+
 	// indices out of range are ignored
 	combo.select(10);
 	assertEquals(1, combo.getSelectionIndex());
@@ -765,7 +758,7 @@ public void test_setItemILjava_lang_String() {
 	}
 	catch (IllegalArgumentException e) {
 	}
-	
+
 	combo.add("string0");
 	try {
 		combo.setItem(0, null);
@@ -780,9 +773,9 @@ public void test_setItemILjava_lang_String() {
 	}
 	catch (IllegalArgumentException e) {
 	}
-	
+
 	combo.add("joe");
-	combo.setItem(0, "fred");	
+	combo.setItem(0, "fred");
 	assertTrue("fred", combo.getItem(0).equals("fred"));
 
 	try {
@@ -835,7 +828,7 @@ public void test_setSelectionLorg_eclipse_swt_graphics_Point() {
 	}
 	catch (IllegalArgumentException e) {
 	}
-	
+
 	int number = 5;
 	for (int i = 0; i < number; i++)
 		combo.add("fred" + i);
@@ -867,7 +860,7 @@ public void test_setTextLjava_lang_String() {
 	}
 	catch (IllegalArgumentException e) {
 	}
-	
+
 	String[] cases = {"", "fred", "fred0"};
 	for (int i = 0; i < cases.length; i++) {
 		combo.setText(cases[i]);
@@ -950,7 +943,7 @@ private void add() {
 public void test_consistency_MouseSelection () {
     add();
     consistencyPrePackShell();
-    consistencyEvent(combo.getSize().x-10, 5, 30, combo.getItemHeight()*2, 
+    consistencyEvent(combo.getSize().x-10, 5, 30, combo.getItemHeight()*2,
             		 ConsistencyUtility.SELECTION);
 }
 
@@ -992,18 +985,15 @@ public void test_consistency_Segments () {
 		}
 		return;
 	}
-	final SegmentListener sl1 = new SegmentListener() {
-		@Override
-		public void getSegments(SegmentEvent event) {
-			if ((event.lineText.length() & 1) == 1) {
-				event.segments = new int [] {1, event.lineText.length()};
-				event.segmentsChars = null;
-			} else {
-				event.segments = new int [] {0, 0, event.lineText.length()};
-				event.segmentsChars = new char [] {':', '<', '>'};
-			}
-			listenerCalled = true;
+	final SegmentListener sl1 = event -> {
+		if ((event.lineText.length() & 1) == 1) {
+			event.segments = new int [] {1, event.lineText.length()};
+			event.segmentsChars = null;
+		} else {
+			event.segments = new int [] {0, 0, event.lineText.length()};
+			event.segmentsChars = new char [] {':', '<', '>'};
 		}
+		listenerCalled = true;
 	};
 	try {
 		combo.addSegmentListener(null);
@@ -1013,13 +1003,13 @@ public void test_consistency_Segments () {
 	}
 	combo.addSegmentListener(sl1);
 	doSegmentsTest(true);
-	
+
 	combo.addSegmentListener(sl1);
 	doSegmentsTest(true);
-	
+
 	combo.removeSegmentListener(sl1);
 	doSegmentsTest(true);
-	
+
 	combo.removeSegmentListener(sl1);
 	combo.setText(combo.getText());
 	doSegmentsTest(false);
@@ -1088,7 +1078,7 @@ private void doSegmentsTest (boolean isListening) {
 	combo.remove(1);
 	assertEquals(limit, combo.getTextLimit());
 	assertTrue(combo.getItemCount() == --count);
-	
+
 	combo.add(items[1], 1);
 	assertEquals(limit, combo.getTextLimit());
 	assertTrue(combo.getItemCount() == ++count);
@@ -1104,11 +1094,11 @@ private void doSegmentsTest (boolean isListening) {
 	combo.removeAll();
 	assertEquals(limit, combo.getTextLimit());
 	assertTrue(combo.getItemCount() == 0);
-	
+
 	combo.setItems(items);
 	count = items.length;
 	assertEquals(limit, combo.getTextLimit());
-	
+
 	combo.setTextLimit(Combo.LIMIT);
 	combo.setText(string);
 	assertEquals(string, combo.getText());
@@ -1122,7 +1112,7 @@ private void doSegmentsTest (boolean isListening) {
 	assertTrue(combo.getItemCount() == count);
 
 	combo.select(1);
-	
+
 	// Test remove item by name
 	combo.remove(items[1]);
 	assertEquals(--count, combo.getItemCount());
@@ -1151,7 +1141,7 @@ private void doSegmentsTest (boolean isListening) {
 	combo.paste();
 	assertEquals(isListening, listenerCalled);
 	listenerCalled = false;
-	
+
 	assertEquals(string.substring(0, pt.x) + substr + string.substring(pt.y), combo.getText());
 	pt.x = pt.y = pt.x + substr.length();
 	assertEquals(pt, combo.getSelection());

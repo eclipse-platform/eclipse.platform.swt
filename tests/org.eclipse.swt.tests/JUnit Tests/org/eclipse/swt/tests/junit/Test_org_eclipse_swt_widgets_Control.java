@@ -26,7 +26,6 @@ import org.eclipse.swt.events.ControlEvent;
 import org.eclipse.swt.events.ControlListener;
 import org.eclipse.swt.events.FocusEvent;
 import org.eclipse.swt.events.FocusListener;
-import org.eclipse.swt.events.HelpEvent;
 import org.eclipse.swt.events.HelpListener;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.KeyListener;
@@ -34,9 +33,7 @@ import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.MouseListener;
 import org.eclipse.swt.events.MouseMoveListener;
 import org.eclipse.swt.events.MouseTrackListener;
-import org.eclipse.swt.events.PaintEvent;
 import org.eclipse.swt.events.PaintListener;
-import org.eclipse.swt.events.TraverseEvent;
 import org.eclipse.swt.events.TraverseListener;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Cursor;
@@ -113,12 +110,7 @@ public void test_addFocusListenerLorg_eclipse_swt_events_FocusListener() {
 
 @Test
 public void test_addHelpListenerLorg_eclipse_swt_events_HelpListener() {
-	HelpListener listener = new HelpListener() {
-		@Override
-		public void helpRequested(HelpEvent e) {
-			eventOccurred = true;
-		}
-	};
+	HelpListener listener = e -> eventOccurred = true;
 	control.addHelpListener(listener);
 	eventOccurred = false;
 	control.notifyListeners(SWT.Help, new Event());
@@ -179,12 +171,7 @@ public void test_addMouseListenerLorg_eclipse_swt_events_MouseListener() {
 
 @Test
 public void test_addMouseMoveListenerLorg_eclipse_swt_events_MouseMoveListener() {
-	MouseMoveListener listener = new MouseMoveListener() {
-		@Override
-		public void mouseMove(MouseEvent e) {
-			eventOccurred = true;
-		}
-	};
+	MouseMoveListener listener = e -> eventOccurred = true;
 	control.addMouseMoveListener(listener);
 	eventOccurred = false;
 	control.notifyListeners(SWT.MouseMove, new Event());
@@ -222,16 +209,11 @@ public void test_addMouseTrackListenerLorg_eclipse_swt_events_MouseTrackListener
 }
 @Test
 public void test_addPaintListenerLorg_eclipse_swt_events_PaintListener() {
-	PaintListener listener = new PaintListener() {
-		@Override
-		public void paintControl(PaintEvent e) {
-			eventOccurred = true;
-		}
-	};
+	PaintListener listener = e -> eventOccurred = true;
 	control.addPaintListener(listener);
 	eventOccurred = false;
 	Event event = new Event();
-	GC gc = event.gc = new GC(control);	
+	GC gc = event.gc = new GC(control);
 	control.notifyListeners(SWT.Paint, event);
 	gc.dispose();
 	assertTrue(eventOccurred);
@@ -239,12 +221,7 @@ public void test_addPaintListenerLorg_eclipse_swt_events_PaintListener() {
 }
 @Test
 public void test_addTraverseListenerLorg_eclipse_swt_events_TraverseListener() {
-	TraverseListener listener = new TraverseListener() {
-		@Override
-		public void keyTraversed(TraverseEvent e) {
-			eventOccurred = true;
-		}
-	};
+	TraverseListener listener = e -> eventOccurred = true;
 	control.addTraverseListener(listener);
 	eventOccurred = false;
 	control.notifyListeners(SWT.Traverse, new Event());
@@ -489,7 +466,7 @@ public void test_setFontLorg_eclipse_swt_graphics_Font() {
 	Font font = control.getFont();
 	control.setFont(font);
 	assertEquals(font, control.getFont());
-	
+
 	font = new Font(control.getDisplay(), SwtTestUtil.testFontName, 10, SWT.NORMAL);
 	control.setFont(font);
 	assertEquals(font, control.getFont());
@@ -599,7 +576,7 @@ public void test_setSizeII() {
 	assertEquals(new Point(32, 43), control.getSize());
 
 	control.setSize(0, 0);
-	
+
 	control.setSize(10, 10);
 
 	control.setSize(10000, 10000);
@@ -619,7 +596,7 @@ public void test_setSizeLorg_eclipse_swt_graphics_Point() {
 	}
 
 	control.setSize(new Point(0, 0));
-	
+
 	control.setSize(new Point(10, 10));
 
 	control.setSize(new Point(10000, 10000));
@@ -698,10 +675,10 @@ protected void setWidget(Widget w) {
 	super.setWidget(w);
 }
 
-/* a different method in ConsistencyUtility is invoked depending on what method 
+/* a different method in ConsistencyUtility is invoked depending on what method
  * equals
  * ConsistencyUtility.MOUSE_CLICK:
- * 			paramA is the x coordinate offset from control 				  
+ * 			paramA is the x coordinate offset from control
  * 			paramB is the y coordinate offset from control
  * 			paramC is the mouse button to click.
  * 			paramD if it equals ConsistencyUtility.ESCAPE_MENU, then another click
@@ -709,7 +686,7 @@ protected void setWidget(Widget w) {
  * 			(ie right clicking in a text widget)
  * 			invokes ConsistencyUtility.postClick(Display, Point, int)
  * ConsistencyUtility.MOUSE_DOUBLECLICK
- * 			paramA is the x coordinate offset from control 				  
+ * 			paramA is the x coordinate offset from control
  * 			paramB is the y coordinate offset from control
  * 			paramC is the mouse button to click.
  * 			invokes ConsistencyUtility.postDoubleClick(Display, Point, int)
@@ -719,16 +696,16 @@ protected void setWidget(Widget w) {
  * 			paramC is the x coordinate offset from control of the destination of drag
  * 			paramD is the y coordinate offset from control of the destination of drag
  * 			invokes ConsistencyUtility.postDrag(Display, Point, Point)
- * ConsistencyUtility.KEY_PRESS:  
+ * ConsistencyUtility.KEY_PRESS:
  * 		 	paramA is the character to press
- * 			paramB is the keyCode 
+ * 			paramB is the keyCode
  * 			invokes ConsistencyUtility.postKeyPress(Display, int, int)
- * ConsistencyUtility.DOUBLE_KEY_PRESS:  
+ * ConsistencyUtility.DOUBLE_KEY_PRESS:
  * 		 	paramA is the character to press and hold
- * 			paramB is the keyCode 
+ * 			paramB is the keyCode
  * 			paramC is the second key to press while the first one is held (ie ctrl-a)
  * 			paramD is the second keycode
- * 			invokes ConsistencyUtility.postDoubleKeyPress(Display, int, int, int, int) 
+ * 			invokes ConsistencyUtility.postDoubleKeyPress(Display, int, int, int, int)
  * ConsistencyUtility.SELECTION:
  * 			paramA is the x coordinate offset from control of the first click
  * 			paramB is the y coordinate offset from control of the first click
@@ -739,15 +716,15 @@ protected void setWidget(Widget w) {
  * 			paramA is the button to click with
  * 			invokes ConsistencyUtility.postShellIconify(Display, Point, int)
  */
-protected void consistencyEvent(final int paramA, final int paramB, 
+protected void consistencyEvent(final int paramA, final int paramB,
         						final int paramC, final int paramD,
         						final int method, List<String> events, boolean focus) {
     if(SwtTestUtil.fTestConsistency) {
         final Display display = shell.getDisplay();
-        if(events == null) 
+        if(events == null)
             events = new ArrayList<>();
         final String test = getTestName();
-        
+
         shell.setLayout(new org.eclipse.swt.layout.FillLayout());
         shell.setText("Parent");
 
@@ -767,19 +744,19 @@ protected void consistencyEvent(final int paramA, final int paramB,
                 display.wake();
                 switch(method) {
                 	case ConsistencyUtility.MOUSE_CLICK:
-                		Assert.assertTrue(test, 
+                		Assert.assertTrue(test,
                             ConsistencyUtility.postClick(display, pt[0], paramC));
                 		if(paramD == ConsistencyUtility.ESCAPE_MENU) {
-                		    Assert.assertTrue(test, 
+                		    Assert.assertTrue(test,
 	                            ConsistencyUtility.postClick(display, pt[1], 1));
-                		}  
+                		}
                 		break;
                     case ConsistencyUtility.MOUSE_DOUBLECLICK:
-                        Assert.assertTrue(test, 
+                        Assert.assertTrue(test,
                                 ConsistencyUtility.postDoubleClick(display, pt[0], paramC));
                     	break;
                     case ConsistencyUtility.KEY_PRESS:
-                        Assert.assertTrue(test, 
+                        Assert.assertTrue(test,
                             ConsistencyUtility.postKeyPress(display, paramA, paramB));
                     	break;
                     case ConsistencyUtility.DOUBLE_KEY_PRESS:
@@ -787,14 +764,14 @@ protected void consistencyEvent(final int paramA, final int paramB,
                             ConsistencyUtility.postDoubleKeyPress(display, paramA, paramB, paramC, paramD));
                     	break;
                     case ConsistencyUtility.MOUSE_DRAG:
-                        Assert.assertTrue(test, 
-                            ConsistencyUtility.postDrag(display, 
+                        Assert.assertTrue(test,
+                            ConsistencyUtility.postDrag(display,
                                     pt[0], pt[1]));
                         break;
                     case ConsistencyUtility.SELECTION:
 
-                        Assert.assertTrue(test, 
-                            ConsistencyUtility.postSelection(display, 
+                        Assert.assertTrue(test,
+                            ConsistencyUtility.postSelection(display,
                                     pt[0], pt[1]));
                         break;
                     case ConsistencyUtility.SHELL_ICONIFY:
@@ -822,20 +799,20 @@ protected void consistencyEvent(final int paramA, final int paramB,
         while(!shell.isDisposed()) {
             if(!display.readAndDispatch()) display.sleep();
         }
-        setUp();        
+        setUp();
         String[] results = new String[events.size()];
         results = events.toArray(results);
         assertArrayEquals(test + " event ordering", expectedEvents, results);
     }
 }
 
-protected void consistencyEvent(int paramA, int paramB, 
+protected void consistencyEvent(int paramA, int paramB,
 								int paramC, int paramD,
 								int method, List<String> events) {
     consistencyEvent(paramA, paramB, paramC, paramD, method, events, true);
 }
 
-protected void consistencyEvent(int paramA, int paramB, 
+protected void consistencyEvent(int paramA, int paramB,
 								int paramC, int paramD,
 								int method) {
     consistencyEvent(paramA, paramB, paramC, paramD, method, null, true);
@@ -857,7 +834,7 @@ protected Point[] determineLocations(int paramA, int paramB,
     Point[] array = new Point[2];
     if(method >= ConsistencyUtility.MOUSE_CLICK)
         array[0] = control.toDisplay(paramA, paramB);
-    if(method >= ConsistencyUtility.MOUSE_DRAG) 
+    if(method >= ConsistencyUtility.MOUSE_DRAG)
         array[1] = control.toDisplay(paramC, paramD);
     if(method == ConsistencyUtility.MOUSE_CLICK && paramD == ConsistencyUtility.ESCAPE_MENU)
         array[1] = shell.toDisplay(25, -10);

@@ -16,13 +16,10 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
-import org.eclipse.swt.events.SegmentEvent;
 import org.eclipse.swt.events.SegmentListener;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
-import org.eclipse.swt.events.VerifyEvent;
 import org.eclipse.swt.events.VerifyListener;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.FontData;
@@ -58,7 +55,7 @@ public void test_ConstructorLorg_eclipse_swt_widgets_CompositeI() {
 	catch (IllegalArgumentException e) {
 	}
 
-	int[] cases = {0, SWT.SINGLE, SWT.MULTI, SWT.MULTI | SWT.V_SCROLL, SWT.MULTI | SWT.H_SCROLL, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL, 
+	int[] cases = {0, SWT.SINGLE, SWT.MULTI, SWT.MULTI | SWT.V_SCROLL, SWT.MULTI | SWT.H_SCROLL, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL,
 					SWT.WRAP};
 	for (int i = 0; i < cases.length; i++)
 		text = new Text(shell, cases[i]);
@@ -67,12 +64,7 @@ public void test_ConstructorLorg_eclipse_swt_widgets_CompositeI() {
 @Test
 public void test_addModifyListenerLorg_eclipse_swt_events_ModifyListener() {
 	boolean exceptionThrown = false;
-	ModifyListener listener = new ModifyListener() {
-		@Override
-		public void modifyText(ModifyEvent event) {
-			listenerCalled = true;
-		}
-	};
+	ModifyListener listener = event -> listenerCalled = true;
 	try {
 		text.addModifyListener(null);
 	}
@@ -81,17 +73,17 @@ public void test_addModifyListenerLorg_eclipse_swt_events_ModifyListener() {
 	}
 	assertTrue("Expected exception not thrown", exceptionThrown);
 	exceptionThrown = false;
-	
-	// test whether all content modifying API methods send a Modify event	
+
+	// test whether all content modifying API methods send a Modify event
 	text.addModifyListener(listener);
 	listenerCalled = false;
-	text.setText("new text");	
+	text.setText("new text");
 	assertTrue("setText does not send event", listenerCalled);
 
-	listenerCalled = false;	
+	listenerCalled = false;
 	text.removeModifyListener(listener);
-	// cause to call the listener. 
-	text.setText("line");	
+	// cause to call the listener.
+	text.setText("line");
 	assertTrue("Listener not removed", listenerCalled == false);
 	try {
 		text.removeModifyListener(null);
@@ -143,7 +135,7 @@ public void test_addVerifyListenerLorg_eclipse_swt_events_VerifyListener() {
 	final String newLine = "NewLine1";
 	boolean exceptionThrown = false;
 	text.setText("");
-	
+
 	// test null listener case
 	try {
 		text.addVerifyListener(null);
@@ -152,63 +144,54 @@ public void test_addVerifyListenerLorg_eclipse_swt_events_VerifyListener() {
 		exceptionThrown = true;
 	}
 	assertTrue("Expected exception not thrown", exceptionThrown);
-	
+
 	// test append case
-	VerifyListener listener = new VerifyListener() {
-		@Override
-		public void verifyText(VerifyEvent event) {
-			listenerCalled = true;
-			assertEquals("Verify event data invalid", 0, event.start);
-			assertEquals("Verify event data invalid", 0, event.end);
-			assertEquals("Verify event data invalid", line, event.text);
-			event.text = newLine;
-		}
-	};	
+	VerifyListener listener = event -> {
+		listenerCalled = true;
+		assertEquals("Verify event data invalid", 0, event.start);
+		assertEquals("Verify event data invalid", 0, event.end);
+		assertEquals("Verify event data invalid", line, event.text);
+		event.text = newLine;
+	};
 	text.addVerifyListener(listener);
 	listenerCalled = false;
-	text.append(line);	
+	text.append(line);
 	assertTrue("append does not send event", listenerCalled);
 	assertEquals("Listener failed", newLine, text.getText());
 	text.removeVerifyListener(listener);
 
 	// test insert case
-	listener = new VerifyListener() {
-		@Override
-		public void verifyText(VerifyEvent event) {
-			listenerCalled = true;
-			assertEquals("Verify event data invalid", 8, event.start);
-			assertEquals("Verify event data invalid", 8, event.end);
-			assertEquals("Verify event data invalid", line, event.text);
-			event.text = newLine;
-		}
-	};	
+	listener = event -> {
+		listenerCalled = true;
+		assertEquals("Verify event data invalid", 8, event.start);
+		assertEquals("Verify event data invalid", 8, event.end);
+		assertEquals("Verify event data invalid", line, event.text);
+		event.text = newLine;
+	};
 	text.addVerifyListener(listener);
 	listenerCalled = false;
-	text.insert(line);	
+	text.insert(line);
 	assertTrue("insert does not send event", listenerCalled);
 	assertEquals("Listener failed", newLine + newLine, text.getText());
 	text.removeVerifyListener(listener);
 
 	// test setText case
-	listener = new VerifyListener() {
-		@Override
-		public void verifyText(VerifyEvent event) {
-			listenerCalled = true;
-			assertEquals("Verify event data invalid", 0, event.start);
-			assertEquals("Verify event data invalid", 16, event.end);
-			assertEquals("Verify event data invalid", line, event.text);
-			event.text = newLine;
-		}
-	};	
+	listener = event -> {
+		listenerCalled = true;
+		assertEquals("Verify event data invalid", 0, event.start);
+		assertEquals("Verify event data invalid", 16, event.end);
+		assertEquals("Verify event data invalid", line, event.text);
+		event.text = newLine;
+	};
 	text.addVerifyListener(listener);
-	text.setText(line);	
+	text.setText(line);
 	assertTrue("setText does not send event", listenerCalled);
 	assertEquals("Listener failed", newLine, text.getText());
 
 	// test remove case
-	listenerCalled = false;	
+	listenerCalled = false;
 	text.removeVerifyListener(listener);
-	text.setText(line);	
+	text.setText(line);
 	assertTrue("Listener not removed", listenerCalled == false);
 }
 
@@ -241,7 +224,7 @@ public void test_appendLjava_lang_String() {
 
 	// tests a SINGLE line text editor
 	makeCleanEnvironment(true);
-	
+
 	try {
 		text.append(null);
 		fail("No exception thrown on string == null");
@@ -289,10 +272,10 @@ public void test_clearSelection() {
 	assertEquals("01234567890", text.getSelectionText());
 	text.clearSelection();
 	assertEquals("", text.getSelectionText());
-	
+
 	// tests a SINGLE line text editor
 	makeCleanEnvironment(true);
-	
+
 	text.setText("01234567890");
 	assertEquals("", text.getSelectionText());
 	text.selectAll();
@@ -332,10 +315,10 @@ public void test_copy() {
 	text.setText("");
 	text.paste();
 	assertEquals("00000", text.getText());
-	
+
 	// tests a SINGLE line text editor
 	makeCleanEnvironment(true);
-	
+
 	text.copy();
 
 	text.selectAll();
@@ -372,10 +355,10 @@ public void test_cut() {
 	text.selectAll();
 	text.cut();
 	assertEquals("", text.getText());
-	
+
 	// tests a SINGLE line text editor
 	makeCleanEnvironment(true);
-	
+
 	text.cut();
 
 	text.setText("01234567890");
@@ -458,7 +441,7 @@ public void test_getCharCount() {
 
 	text.setText("");
 	assertEquals(0, text.getCharCount());
-	
+
 	text.setText("01234\t567890");
 	assertEquals(12, text.getCharCount());
 
@@ -473,13 +456,13 @@ public void test_getCharCount() {
 
 	text.setText("");
 	assertEquals(0, text.getCharCount());
-	
+
 	text.setText("01234\t567890");
 	assertEquals(12, text.getCharCount());
-	
+
 	// tests a SINGLE line text editor
 	makeCleanEnvironment(true);
-	
+
 	assertEquals(0, text.getCharCount());
 	text.setText("");
 	assertEquals(0, text.getCharCount());
@@ -491,7 +474,7 @@ public void test_getCharCount() {
 	}
 	text.setText("");
 	assertEquals(0, text.getCharCount());
-	if (!SwtTestUtil.isAIX) {	
+	if (!SwtTestUtil.isAIX) {
 		text.setText("01234\t567890");
 		assertEquals(12, text.getCharCount());
 	}
@@ -501,16 +484,16 @@ public void test_getCharCount() {
 public void test_getDoubleClickEnabled() {
 	text.setDoubleClickEnabled(true);
 	assertTrue(text.getDoubleClickEnabled());
-	
+
 	text.setDoubleClickEnabled(false);
 	assertEquals(false, text.getDoubleClickEnabled());
-	
+
 	// this method tests a SINGLE line text editor
 	makeCleanEnvironment(true);
-	
+
 	text.setDoubleClickEnabled(true);
 	assertTrue(text.getDoubleClickEnabled());
-	
+
 	text.setDoubleClickEnabled(false);
 	assertEquals(false, text.getDoubleClickEnabled());
 }
@@ -519,7 +502,7 @@ public void test_getDoubleClickEnabled() {
 public void test_getEchoChar() {
 	// tests a SINGLE line text editor
 	makeCleanEnvironment(true);
-	
+
 	text.setEchoChar('a');
 	assertEquals('a', text.getEchoChar());
 }
@@ -545,10 +528,10 @@ public void test_getLineCount() {
 	assertEquals(2, text.getLineCount());
 	text.append("ddasdasdasdasd" + delimiterString);
 	assertEquals(3, text.getLineCount());
-	
+
 	// tests a SINGLE line text editor
 	makeCleanEnvironment(true);
-	
+
 	assertEquals(1, text.getLineCount());
 	text.append("dddasd" + delimiterString);
 	assertEquals(1, text.getLineCount());
@@ -584,8 +567,8 @@ public void test_getSelection() {
 	assertTrue(":a:", text.getSelection().equals(new Point(4, 4)));
 	text.setSelection(11);
 	assertTrue(":b:", text.getSelection().equals(new Point(11, 11)));
-	text.setSelection(new Point(3, 2));	
-	assertTrue(":c:", text.getSelection().equals(new Point(2, 3)));	
+	text.setSelection(new Point(3, 2));
+	assertTrue(":c:", text.getSelection().equals(new Point(2, 3)));
 }
 
 @Test
@@ -640,7 +623,7 @@ public void test_getText() {
 	String string = "012345" + delimiterString + "67890";
 	text.setText(string);
 	assertEquals(string, text.getText());
-	
+
 	// tests a SINGLE line text editor
 	makeCleanEnvironment(true);
 	assertEquals("", text.getText());
@@ -648,7 +631,7 @@ public void test_getText() {
 	assertEquals("01234567890", text.getText());
 	text.setText("");
 	assertEquals("", text.getText());
-	
+
 	// tests a SINGLE line text editor with border
 	makeCleanEnvironment(true, true);
 	assertEquals("", text.getText());
@@ -669,7 +652,7 @@ public void test_getTextII() {
 	assertEquals("", text.getText(0,0));
 	assertEquals("", text.getText(0,1));
 	assertEquals("", text.getText(10,20));
-	
+
 	text.setText("a");
 	assertEquals("", text.getText(-4,-4));
 	assertEquals("", text.getText(-4,-2));
@@ -679,17 +662,17 @@ public void test_getTextII() {
 	assertEquals("a", text.getText(0,0));
 	assertEquals("a", text.getText(0,1));
 	assertEquals("", text.getText(10,20));
-	
+
 	text.setText("01234567890");
 	assertEquals("345", text.getText(3, 5));
 	assertEquals("012", text.getText(-1, 2));
 	assertEquals("34567890", text.getText(3, 100));
 	assertEquals("", text.getText(5, 3));
 	assertEquals("0", text.getText(10,20));
-	
+
 	text.setText("");
 	text.setEchoChar('*');
-	
+
 	assertEquals("", text.getText());
 	assertEquals("", text.getText(-4,-4));
 	assertEquals("", text.getText(-4,-2));
@@ -699,7 +682,7 @@ public void test_getTextII() {
 	assertEquals("", text.getText(0,0));
 	assertEquals("", text.getText(0,1));
 	assertEquals("", text.getText(10,20));
-	
+
 	text.setText("a");
 	assertEquals("", text.getText(-4,-4));
 	assertEquals("", text.getText(-4,-2));
@@ -709,14 +692,14 @@ public void test_getTextII() {
 	assertEquals("a", text.getText(0,0));
 	assertEquals("a", text.getText(0,1));
 	assertEquals("", text.getText(10,20));
-	
+
 	text.setText("01234567890");
 	assertEquals("345", text.getText(3, 5));
 	assertEquals("012", text.getText(-1, 2));
 	assertEquals("34567890", text.getText(3, 100));
 	assertEquals("", text.getText(5, 3));
 	assertEquals("0", text.getText(10,20));
-	
+
 	// tests a SINGLE line text editor
 	makeCleanEnvironment(true);
 	assertEquals("", text.getText());
@@ -728,7 +711,7 @@ public void test_getTextII() {
 	assertEquals("", text.getText(0,0));
 	assertEquals("", text.getText(0,1));
 	assertEquals("", text.getText(10,20));
-	
+
 	text.setText("a");
 	assertEquals("", text.getText(-4,-4));
 	assertEquals("", text.getText(-4,-2));
@@ -738,17 +721,17 @@ public void test_getTextII() {
 	assertEquals("a", text.getText(0,0));
 	assertEquals("a", text.getText(0,1));
 	assertEquals("", text.getText(10,20));
-	
+
 	text.setText("01234567890");
 	assertEquals("345", text.getText(3, 5));
 	assertEquals("012", text.getText(-1, 2));
 	assertEquals("34567890", text.getText(3, 100));
 	assertEquals("", text.getText(5, 3));
 	assertEquals("0", text.getText(10,20));
-	
+
 	text.setText("");
 	text.setEchoChar('*');
-	
+
 	assertEquals("", text.getText());
 	assertEquals("", text.getText(-4,-4));
 	assertEquals("", text.getText(-4,-2));
@@ -758,7 +741,7 @@ public void test_getTextII() {
 	assertEquals("", text.getText(0,0));
 	assertEquals("", text.getText(0,1));
 	assertEquals("", text.getText(10,20));
-	
+
 	text.setText("a");
 	assertEquals("", text.getText(-4,-4));
 	assertEquals("", text.getText(-4,-2));
@@ -768,14 +751,14 @@ public void test_getTextII() {
 	assertEquals("a", text.getText(0,0));
 	assertEquals("a", text.getText(0,1));
 	assertEquals("", text.getText(10,20));
-	
+
 	text.setText("01234567890");
 	assertEquals("345", text.getText(3, 5));
 	assertEquals("012", text.getText(-1, 2));
 	assertEquals("34567890", text.getText(3, 100));
 	assertEquals("", text.getText(5, 3));
 	assertEquals("0", text.getText(10,20));
-	
+
 	// tests a SINGLE line text editor
 	makeCleanEnvironment(true, true);
 	assertEquals("", text.getText());
@@ -787,7 +770,7 @@ public void test_getTextII() {
 	assertEquals("", text.getText(0,0));
 	assertEquals("", text.getText(0,1));
 	assertEquals("", text.getText(10,20));
-	
+
 	text.setText("a");
 	assertEquals("", text.getText(-4,-4));
 	assertEquals("", text.getText(-4,-2));
@@ -797,17 +780,17 @@ public void test_getTextII() {
 	assertEquals("a", text.getText(0,0));
 	assertEquals("a", text.getText(0,1));
 	assertEquals("", text.getText(10,20));
-	
+
 	text.setText("01234567890");
 	assertEquals("345", text.getText(3, 5));
 	assertEquals("012", text.getText(-1, 2));
 	assertEquals("34567890", text.getText(3, 100));
 	assertEquals("", text.getText(5, 3));
 	assertEquals("0", text.getText(10,20));
-	
+
 	text.setText("");
 	text.setEchoChar('*');
-	
+
 	assertEquals("", text.getText());
 	assertEquals("", text.getText(-4,-4));
 	assertEquals("", text.getText(-4,-2));
@@ -817,7 +800,7 @@ public void test_getTextII() {
 	assertEquals("", text.getText(0,0));
 	assertEquals("", text.getText(0,1));
 	assertEquals("", text.getText(10,20));
-	
+
 	text.setText("a");
 	assertEquals("", text.getText(-4,-4));
 	assertEquals("", text.getText(-4,-2));
@@ -827,7 +810,7 @@ public void test_getTextII() {
 	assertEquals("a", text.getText(0,0));
 	assertEquals("a", text.getText(0,1));
 	assertEquals("", text.getText(10,20));
-	
+
 	text.setText("01234567890");
 	assertEquals("345", text.getText(3, 5));
 	assertEquals("012", text.getText(-1, 2));
@@ -922,7 +905,7 @@ public void test_insertLjava_lang_String() {
 
 	// tests a SINGLE line text editor
 	makeCleanEnvironment(true);
-	
+
 	try {
 		text.insert(null);
 		fail("No exception thrown on string == null");
@@ -932,7 +915,7 @@ public void test_insertLjava_lang_String() {
 
 	// tests a SINGLE line text editor
 	makeCleanEnvironment(true);
-	
+
 	assertEquals("", text.getText());
 	text.insert("");
 	assertEquals("", text.getText());
@@ -944,7 +927,7 @@ public void test_insertLjava_lang_String() {
 
 	// tests a SINGLE line text editor
 	makeCleanEnvironment(true);
-	
+
 	text.setText("01234567890");
 	text.setSelection(4);
 	assertEquals(1, text.getLineCount());
@@ -953,7 +936,7 @@ public void test_insertLjava_lang_String() {
 
 	// tests a SINGLE line text editor
 	makeCleanEnvironment(true);
-	
+
 	try {
 		text.insert(null);
 		fail("No exception thrown on string == null");
@@ -967,7 +950,7 @@ public void test_insertLjava_lang_String() {
 public void test_isVisible() {
 	// overriding test_isVisible() from Control
 	control.setVisible(true);
-	assertTrue(control.isVisible());  
+	assertTrue(control.isVisible());
 
 	control.setVisible(false);
 	assertTrue(!control.isVisible());
@@ -1009,10 +992,10 @@ public void test_paste() {
 	text.setSelection(0);
 	text.paste();
 	assertEquals("0" + delimiterString + "1" + "0" + delimiterString + "1", text.getText());
-	
+
 	// tests a SINGLE line text editor
 	makeCleanEnvironment(true);
-	
+
 	text.setText("01234567890");
 	text.setSelection(2, 4);
 	assertEquals("01234567890", text.getText());
@@ -1027,7 +1010,7 @@ public void test_paste() {
 
 	// tests a SINGLE line text editor
 	makeCleanEnvironment(true);
-	
+
 	text.setText("0" + delimiterString + "1");
 	text.selectAll();
 	text.copy();
@@ -1061,7 +1044,7 @@ public void test_selectAll() {
 	assertEquals("01234" + delimiterString+"567890", text.getSelectionText());
 	text.cut();
 	assertEquals("", text.getText());
-		
+
 	// tests a SINGLE line text editor
 	makeCleanEnvironment(true);
 
@@ -1087,16 +1070,16 @@ public void test_selectAll() {
 public void test_setDoubleClickEnabledZ() {
 	text.setDoubleClickEnabled(true);
 	assertTrue(text.getDoubleClickEnabled());
-	
+
 	text.setDoubleClickEnabled(false);
 	assertEquals(false, text.getDoubleClickEnabled());
-	
+
 	// tests a SINGLE line text editor
 	makeCleanEnvironment(true);
-	
+
 	text.setDoubleClickEnabled(true);
 	assertTrue(text.getDoubleClickEnabled());
-	
+
 	text.setDoubleClickEnabled(false);
 	assertEquals(false, text.getDoubleClickEnabled());
 }
@@ -1105,15 +1088,15 @@ public void test_setDoubleClickEnabledZ() {
 public void test_setEchoCharC() {
 	// tests a SINGLE line text editor
 	makeCleanEnvironment(true);
-	
+
 	for (int i=0; i<128; i++){
 		text.setEchoChar((char) i);
 		assertEquals((char)i, text.getEchoChar());
 	}
-	
+
 	// tests a SINGLE line text editor
 	makeCleanEnvironment(true);
-	
+
 	text.setEchoChar('a');
 	assertEquals('a', text.getEchoChar());
 
@@ -1147,7 +1130,7 @@ public void test_setFontLorg_eclipse_swt_graphics_Font() {
 	FontData fontData = text.getFont().getFontData()[0];
 	int lineHeight;
 	Font font;
-	
+
 	font = new Font(text.getDisplay(), fontData.getName(), 8, fontData.getStyle());
 	text.setFont(font);
 	lineHeight = text.getLineHeight();
@@ -1202,10 +1185,10 @@ public void test_setSelectionII() {
 	assertEquals(2, text.getSelectionCount());
 	text.setSelection(2, 100);
 	assertEquals(9 + delimiterString.length(), text.getSelectionCount());
-	
+
 	// tests a SINGLE line text editor
 	makeCleanEnvironment(true);
-	
+
 	text.setText("01234567890");
 	assertEquals(0, text.getSelectionCount());
 	text.setSelection(2, 4);
@@ -1215,7 +1198,7 @@ public void test_setSelectionII() {
 
 	// tests a SINGLE line text editor
 	makeCleanEnvironment(true);
-	
+
 	text.setText("0123"+ delimiterString+"4567890");
 	assertEquals(0, text.getSelectionCount());
 	text.setSelection(2, 4);
@@ -1252,10 +1235,10 @@ public void test_setSelectionLorg_eclipse_swt_graphics_Point() {
 
 	text.setSelection(100);
 	assertEquals(new Point(11, 11), text.getSelection());
-	
+
 	// tests a SINGLE line text editor
 	makeCleanEnvironment(true);
-	
+
 	text.setText("dsdsdasdslaasdas");
 	try {
 		text.setSelection((Point) null);
@@ -1266,7 +1249,7 @@ public void test_setSelectionLorg_eclipse_swt_graphics_Point() {
 
 	// tests a SINGLE line text editor
 	makeCleanEnvironment(true);
-	
+
 	text.setText("01234567890");
 
 	text.setSelection(new Point(2, 2));
@@ -1280,7 +1263,7 @@ public void test_setSelectionLorg_eclipse_swt_graphics_Point() {
 
 	// tests a SINGLE line text editor
 	makeCleanEnvironment(true);
-	
+
 	text.setText("01234567890");
 	text.setSelection(4);
 	assertEquals(new Point(4, 4), text.getSelection());
@@ -1307,7 +1290,7 @@ public void test_setTextLimitI() {
 		return;
 	}
 	boolean exceptionThrown = false;
-	
+
 	text.setTextLimit(10);
 	assertTrue(":a:", text.getTextLimit() == 10);
 
@@ -1333,10 +1316,10 @@ public void test_setTextLjava_lang_String() {
 	}
 
 	text.setText("");
-	
+
 	// tests a SINGLE line text editor
 	makeCleanEnvironment(true);
-	
+
 	assertEquals("", text.getText());
 	text.setText("01234567890");
 	assertEquals("01234567890", text.getText());
@@ -1349,7 +1332,7 @@ public void test_setTextLjava_lang_String() {
 
 	// tests a SINGLE line text editor
 	makeCleanEnvironment(true);
-	
+
 	assertEquals("", text.getText());
 
 	text.setText("01234567890");
@@ -1357,7 +1340,7 @@ public void test_setTextLjava_lang_String() {
 	assertEquals("012", text.getText(-1, 2));
 	assertEquals("34567890", text.getText(3, 100));
 	assertEquals("", text.getText(5, 3));
-	
+
 	text.setText("");
 	assertEquals("", text.getText(-1, 0));
 	assertEquals("", text.getText(0, 10));
@@ -1381,13 +1364,13 @@ public void test_setTopIndexI() {
 		text.setTopIndex(i);
 		assertEquals(i, text.getTopIndex());
 	}
-	
+
 	text.setTopIndex(number+5);
 	assertEquals(number, text.getTopIndex());
-	
+
 	// tests a SINGLE line text editor
 	makeCleanEnvironment(true);
-	
+
 	text.setText("01234567890");
 	text.append(Text.DELIMITER +"01234567890");
 	text.setTopIndex(0);
@@ -1397,7 +1380,7 @@ public void test_setTopIndexI() {
 	text.setTopIndex(17);
 	assertEquals(0, text.getTopIndex());
 
-	text.setText("");	
+	text.setText("");
 	for (int i = 0; i < number; i++) {
 		text.append("01234" + Text.DELIMITER);
 	}
@@ -1419,10 +1402,10 @@ public void test_showSelection() {
 	text.showSelection();
 	text.clearSelection();
 	text.showSelection();
-	
+
 	// this method tests a SINGLE line text editor
 	makeCleanEnvironment(true);
-	
+
 	text.showSelection();
 
 	text.selectAll();
@@ -1443,7 +1426,7 @@ String delimiterString;
 
 /**
  * Clean up the environment for a new test.
- * 
+ *
  * @param single true if the new text widget should be single-line.
  */
 
@@ -1456,7 +1439,7 @@ private void makeCleanEnvironment(boolean single, boolean border) {
 	if ( text != null ) text.dispose();
 
 	if ( single == true )
-		text = new Text(shell, SWT.SINGLE | (border ? SWT.BORDER : SWT.NULL));	
+		text = new Text(shell, SWT.SINGLE | (border ? SWT.BORDER : SWT.NULL));
 	else
 		text = new Text(shell, SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL | (border ? SWT.BORDER : SWT.NULL));
 	setWidget(text);
@@ -1503,18 +1486,15 @@ public void test_consistency_Segments () {
 		}
 		return;
 	}
-	final SegmentListener sl1 = new SegmentListener() {
-		@Override
-		public void getSegments(SegmentEvent event) {
-			if ((event.lineText.length() & 1) == 1) {
-				event.segments = new int [] {1, event.lineText.length()};
-				event.segmentsChars = null;
-			} else {
-				event.segments = new int [] {0, 0, event.lineText.length()};
-				event.segmentsChars = new char [] {':', '<', '>'};
-			}
-			listenerCalled = true;
+	final SegmentListener sl1 = event -> {
+		if ((event.lineText.length() & 1) == 1) {
+			event.segments = new int [] {1, event.lineText.length()};
+			event.segmentsChars = null;
+		} else {
+			event.segments = new int [] {0, 0, event.lineText.length()};
+			event.segmentsChars = new char [] {':', '<', '>'};
 		}
+		listenerCalled = true;
 	};
 	try {
 		text.addSegmentListener(null);
@@ -1527,13 +1507,13 @@ public void test_consistency_Segments () {
 		makeCleanEnvironment(singleLine[i]);
 		text.addSegmentListener(sl1);
 		doSegmentsTest(true);
-	
+
 		text.addSegmentListener(sl1);
 		doSegmentsTest(true);
-	
+
 		text.removeSegmentListener(sl1);
 		doSegmentsTest(true);
-	
+
 		text.removeSegmentListener(sl1);
 		text.setText(text.getText());
 		doSegmentsTest(false);
@@ -1585,7 +1565,7 @@ private void doSegmentsTest (boolean isListening) {
 	text.paste();
 	assertEquals(isListening, listenerCalled);
 	listenerCalled = false;
-	
+
 	assertEquals(string.substring(0, pt.x) + substr + string.substring(pt.y), text.getText());
 	pt.x = pt.y = pt.x + substr.length();
 	assertEquals(pt, text.getSelection());

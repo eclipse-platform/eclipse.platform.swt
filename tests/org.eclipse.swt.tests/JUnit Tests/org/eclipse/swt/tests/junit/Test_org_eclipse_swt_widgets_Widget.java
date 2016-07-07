@@ -17,7 +17,6 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.DisposeEvent;
 import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.widgets.Control;
@@ -40,7 +39,7 @@ public class Test_org_eclipse_swt_widgets_Widget{
 	// Use this variable to help validate callbacks
 	boolean listenerCalled;
 	@Rule public TestName name = new TestName();
-	
+
 @Before
 public void setUp() {
 	shell = new Shell();
@@ -64,10 +63,7 @@ public void test_ConstructorLorg_eclipse_swt_widgets_WidgetI() {
 }
 @Test
 public void test_addDisposeListenerLorg_eclipse_swt_events_DisposeListener() {
-	DisposeListener listener = new DisposeListener() {
-		@Override
-		public void widgetDisposed(DisposeEvent e) {
-		}
+	DisposeListener listener = e -> {
 	};
 	widget.addDisposeListener(listener);
 	widget.removeDisposeListener(listener);
@@ -81,10 +77,7 @@ public void test_addListenerILorg_eclipse_swt_widgets_Listener() {
 	catch (IllegalArgumentException e) {
 	}
 
-	Listener listener = new Listener() {
-		@Override
-		public void handleEvent(Event e) {
-		}
+	Listener listener = e -> {
 	};
 	widget.addListener(SWT.Dispose, listener);
 	widget.removeListener(SWT.Dispose, listener);
@@ -118,16 +111,10 @@ public void test_removeListenerILorg_eclipse_swt_widgets_Listener() {
 	catch (IllegalArgumentException e) {
 	}
 
-	widget.removeListener(SWT.Paint, new Listener() {
-		@Override
-		public void handleEvent(Event e) {
-		}
+	widget.removeListener(SWT.Paint, e -> {
 	});
-	
-	Listener listener = new Listener() {
-		@Override
-		public void handleEvent(Event e) {
-		}
+
+	Listener listener = e -> {
 	};
 	widget.addListener(SWT.Paint, listener);
 	widget.removeListener(SWT.Paint, listener);
@@ -179,19 +166,16 @@ protected String[] hookExpectedEvents(Widget w, String type, final java.util.Lis
 }
 
 protected void hookExpectedEvents(Widget w, String[] types, final java.util.List<String> events) {
-    hookListeners(w, ConsistencyUtility.convertEventNames(types), 
-	        new Listener() {
-	            @Override
-				public void handleEvent(Event e) {
-	                String temp = ConsistencyUtility.eventNames[e.type];
-	                if(e.type == SWT.Traverse)
-	                    temp += ":"+ConsistencyUtility.getTraversalType(e.detail);
-	                else if(e.type == SWT.Selection)
-	                    temp += ":"+ConsistencyUtility.getSelectionType(e.detail);
-                    events.add(temp);
-	                System.out.println(temp + e.widget);
-	            }
-	        });
+    hookListeners(w, ConsistencyUtility.convertEventNames(types),
+	        e -> {
+			    String temp = ConsistencyUtility.eventNames[e.type];
+			    if(e.type == SWT.Traverse)
+			        temp += ":"+ConsistencyUtility.getTraversalType(e.detail);
+			    else if(e.type == SWT.Selection)
+			        temp += ":"+ConsistencyUtility.getSelectionType(e.detail);
+			    events.add(temp);
+			    System.out.println(temp + e.widget);
+			});
 }
 
 protected String getTestName() {

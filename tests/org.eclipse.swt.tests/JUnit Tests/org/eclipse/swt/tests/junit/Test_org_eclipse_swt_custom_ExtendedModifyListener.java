@@ -15,7 +15,6 @@ package org.eclipse.swt.tests.junit;
 import static org.junit.Assert.assertTrue;
 
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.custom.ExtendedModifyEvent;
 import org.eclipse.swt.custom.ExtendedModifyListener;
 import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.widgets.Shell;
@@ -41,127 +40,124 @@ public void setUp() {
 
 @Test
 public void test_modifyTextLorg_eclipse_swt_custom_ExtendedModifyEvent() {
-	ExtendedModifyListener listener = new ExtendedModifyListener() {
-		@Override
-		public void modifyText(ExtendedModifyEvent event) {
-			switch(verify) {
-				case 1 : {
-					assertTrue(":1a:", event.start == 0);
-					assertTrue(":1b:", event.length == 1);
-					assertTrue(":1c:", event.replacedText.isEmpty());
-					break;
-				}
-				case 2 : {
-					assertTrue(":2a:", event.start == 0);
-					assertTrue(":2b:", event.length == 1);
-					assertTrue(":2c:", event.replacedText.equals("\n\n"));
-					break;
-				}
-				case 3 : {
-					assertTrue(":3a:", event.start == 0);
-					assertTrue(":3b:", event.length == 2);
-					assertTrue(":3c:", event.replacedText.equals("a"));
-					break;
-				}
-				case 4: {
-					assertTrue(":4:", false);
-					break;
-				}
-				case 5 : {
-					assertTrue(":5a:", event.start == 0);
-					assertTrue(":5b:", event.length == 1);
-					assertTrue(":5c:", event.replacedText.isEmpty());
-					break;
-				}
-				case 6 : {
-					assertTrue(":6a:", event.start == 21);
-					assertTrue(":6b:", event.length == 0);
-					assertTrue(":6c:", event.replacedText.equals("\nline 4"));
-					break;
-				}
-				case 7 : {
-					assertTrue(":7a:", event.start == 5);
-					assertTrue(":7b:", event.length == 0);
-					assertTrue(":7c:", event.replacedText.equals("is a test"));
-					break;
-				}
-				case 8 : {
-					assertTrue(":8a:", event.start == 7);
-					assertTrue(":8b:", event.length == 0);
-					assertTrue(":8c:", event.replacedText.equals("\r\n"));
-					break;
-				}
-				case 9 : {
-					assertTrue(":9a:", event.start == 2);
-					assertTrue(":9b:", event.length == 4);
-					assertTrue(":9c:", event.replacedText.equals("\r\n"));
-					break;
-				}
-				case 10:{
-					assertTrue(":10:", false);
-					break;
-				}
-				case 11: {
-					assertTrue(":11:", false);
-					break;
-				}
-				case 12: {
-					assertTrue(":12a:", event.start == 3);
-					assertTrue(":12b:", event.length == 1);
-					assertTrue(":12c:", event.replacedText.isEmpty());
-					break;
-				}
-				case 13: {
-					assertTrue(":13a:", event.start == 2);
-					assertTrue(":13b:", event.length == 1);
-					assertTrue(":13c:", event.replacedText.isEmpty());
-					break;
-				}
-				case 14: {
-					assertTrue(":14:", false);
-					break;
-				}
-				case 15: {
-					assertTrue(":15a:", event.start == 2);
-					assertTrue(":15b:", event.length == 6);
-					assertTrue(":15c:", event.replacedText.equals("\r\n"));
-					break;
-				}
-				case 16:{
-					assertTrue(":16:", false);
-					break;
-				}
-				case 17: {
-					assertTrue(":17:", false);
-					break;
-				}
-				case 18: {
-					assertTrue(":18a:", event.start == 3);
-					assertTrue(":18b:", event.length == 7);
-					assertTrue(":18c:", event.replacedText.isEmpty());
-					break;
-				}
-				case 19: {
-					assertTrue(":19a:", event.start == 2);
-					assertTrue(":19b:", event.length == 7);
-					assertTrue(":19c:", event.replacedText.isEmpty());
-					break;
-				}
-				case 20: {
-					assertTrue(":20:", false);
-					break;
-				}
-				case 21: {
-					assertTrue(":21a:", event.start == 0);
-					assertTrue(":21b:", event.length == 16);
-					assertTrue(":21c:", event.replacedText.equals("L1\r\nL2\r\nL3\r\nL4\r\n"));
-					break;
-				}
+	ExtendedModifyListener listener = event -> {
+		switch(verify) {
+			case 1 : {
+				assertTrue(":1a:", event.start == 0);
+				assertTrue(":1b:", event.length == 1);
+				assertTrue(":1c:", event.replacedText.isEmpty());
+				break;
+			}
+			case 2 : {
+				assertTrue(":2a:", event.start == 0);
+				assertTrue(":2b:", event.length == 1);
+				assertTrue(":2c:", event.replacedText.equals("\n\n"));
+				break;
+			}
+			case 3 : {
+				assertTrue(":3a:", event.start == 0);
+				assertTrue(":3b:", event.length == 2);
+				assertTrue(":3c:", event.replacedText.equals("a"));
+				break;
+			}
+			case 4: {
+				assertTrue(":4:", false);
+				break;
+			}
+			case 5 : {
+				assertTrue(":5a:", event.start == 0);
+				assertTrue(":5b:", event.length == 1);
+				assertTrue(":5c:", event.replacedText.isEmpty());
+				break;
+			}
+			case 6 : {
+				assertTrue(":6a:", event.start == 21);
+				assertTrue(":6b:", event.length == 0);
+				assertTrue(":6c:", event.replacedText.equals("\nline 4"));
+				break;
+			}
+			case 7 : {
+				assertTrue(":7a:", event.start == 5);
+				assertTrue(":7b:", event.length == 0);
+				assertTrue(":7c:", event.replacedText.equals("is a test"));
+				break;
+			}
+			case 8 : {
+				assertTrue(":8a:", event.start == 7);
+				assertTrue(":8b:", event.length == 0);
+				assertTrue(":8c:", event.replacedText.equals("\r\n"));
+				break;
+			}
+			case 9 : {
+				assertTrue(":9a:", event.start == 2);
+				assertTrue(":9b:", event.length == 4);
+				assertTrue(":9c:", event.replacedText.equals("\r\n"));
+				break;
+			}
+			case 10:{
+				assertTrue(":10:", false);
+				break;
+			}
+			case 11: {
+				assertTrue(":11:", false);
+				break;
+			}
+			case 12: {
+				assertTrue(":12a:", event.start == 3);
+				assertTrue(":12b:", event.length == 1);
+				assertTrue(":12c:", event.replacedText.isEmpty());
+				break;
+			}
+			case 13: {
+				assertTrue(":13a:", event.start == 2);
+				assertTrue(":13b:", event.length == 1);
+				assertTrue(":13c:", event.replacedText.isEmpty());
+				break;
+			}
+			case 14: {
+				assertTrue(":14:", false);
+				break;
+			}
+			case 15: {
+				assertTrue(":15a:", event.start == 2);
+				assertTrue(":15b:", event.length == 6);
+				assertTrue(":15c:", event.replacedText.equals("\r\n"));
+				break;
+			}
+			case 16:{
+				assertTrue(":16:", false);
+				break;
+			}
+			case 17: {
+				assertTrue(":17:", false);
+				break;
+			}
+			case 18: {
+				assertTrue(":18a:", event.start == 3);
+				assertTrue(":18b:", event.length == 7);
+				assertTrue(":18c:", event.replacedText.isEmpty());
+				break;
+			}
+			case 19: {
+				assertTrue(":19a:", event.start == 2);
+				assertTrue(":19b:", event.length == 7);
+				assertTrue(":19c:", event.replacedText.isEmpty());
+				break;
+			}
+			case 20: {
+				assertTrue(":20:", false);
+				break;
+			}
+			case 21: {
+				assertTrue(":21a:", event.start == 0);
+				assertTrue(":21b:", event.length == 16);
+				assertTrue(":21c:", event.replacedText.equals("L1\r\nL2\r\nL3\r\nL4\r\n"));
+				break;
 			}
 		}
 	};
 	styledText.addExtendedModifyListener(listener);
-	
+
 	boolean exceptionHandled = false;
 	verify = 0;
 	styledText.setText("testing");
@@ -216,7 +212,7 @@ public void test_modifyTextLorg_eclipse_swt_custom_ExtendedModifyEvent() {
 	verify = 0;
 	styledText.setText("L1\r\n");
 	verify = 10;
-	try {styledText.replaceTextRange(3, 1, "");} 
+	try {styledText.replaceTextRange(3, 1, "");}
 	catch (IllegalArgumentException ex) {
 		exceptionHandled = true;
 	}

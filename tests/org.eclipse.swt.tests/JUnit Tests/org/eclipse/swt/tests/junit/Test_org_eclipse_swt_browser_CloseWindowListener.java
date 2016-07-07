@@ -12,8 +12,6 @@ package org.eclipse.swt.tests.junit;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.browser.Browser;
-import org.eclipse.swt.browser.CloseWindowListener;
-import org.eclipse.swt.browser.WindowEvent;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.junit.Test;
@@ -30,10 +28,7 @@ public void test_closeLorg_eclipse_swt_browser_WindowEvent() {
 	Display display = Display.getCurrent();
 	Shell shell = new Shell(display);
 	Browser browser = new Browser(shell, SWT.NONE);
-	browser.addCloseWindowListener(new CloseWindowListener() {
-		@Override
-		public void close(WindowEvent event) {
-		}
+	browser.addCloseWindowListener(event -> {
 	});
 	shell.close();
 }

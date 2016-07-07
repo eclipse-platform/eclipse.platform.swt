@@ -21,7 +21,7 @@ import org.eclipse.swt.widgets.Shell;
 public class Browser8 {
 	public static boolean verbose = false;
 	public static boolean passed = false;
-	
+
 	static String html[] = {"<html><title>Snippet</title><body><p id='myid'>Best Friends</p><p id='myid2'>Cat and Dog</p></body></html>"};
 	static String script[] = {
 		"var newNode = document.createElement('P'); \r\n"+
@@ -30,11 +30,11 @@ public class Browser8 {
 		"document.getElementById('myid').appendChild(newNode);\r\n"+
 		"\r\n"+
 		"document.bgColor='yellow';"};
-	
+
 	public static boolean test(final int index) {
 		if (verbose) System.out.println("Javascript - verify execute() works on HTML rendered from memory with getText - script index "+index);
 		passed = false;
-		
+
 		final Display display = new Display();
 		final Shell shell = new Shell(display);
 		shell.setLayout(new FillLayout());
@@ -50,13 +50,13 @@ public class Browser8 {
 		});
 		shell.open();
 		browser.setText(html[index]);
-		
+
 		runLoopTimer(display, shell, 10);
 
 		display.dispose();
 		return passed;
 	}
-	 
+
 	static boolean runLoopTimer(final Display display, final Shell shell, final int seconds) {
 		final boolean[] timeout = {false};
 		new Thread() {
@@ -68,15 +68,12 @@ public class Browser8 {
 						if (display.isDisposed() || shell.isDisposed()) return;
 					}
 				}
-				catch (Exception e) {} 
+				catch (Exception e) {}
 				timeout[0] = true;
 				/* wake up the event loop */
 				if (!display.isDisposed()) {
-					display.asyncExec(new Runnable() {
-						@Override
-						public void run() {
-							if (!shell.isDisposed()) shell.redraw();						
-						}
+					display.asyncExec(() -> {
+						if (!shell.isDisposed()) shell.redraw();
 					});
 				}
 			}
@@ -84,10 +81,10 @@ public class Browser8 {
 		while (!timeout[0] && !shell.isDisposed()) if (!display.readAndDispatch()) display.sleep();
 		return timeout[0];
 	}
-	
+
 	public static boolean test() {
 		int fail = 0;
-				
+
 		String pluginPath = System.getProperty("PLUGIN_PATH");
 		if (verbose) System.out.println("PLUGIN_PATH <"+pluginPath+">");
 		String url;
@@ -95,13 +92,13 @@ public class Browser8 {
 		else url = pluginPath + "/data/browser7.html";
 		String[] urls = new String[] {url};
 		for (int i = 0; i < urls.length; i++) {
-			boolean result = test(i); 
+			boolean result = test(i);
 			if (verbose) System.out.print(result ? "." : "E");
 			if (!result) fail++;
 		}
 		return fail == 0;
 	}
-	
+
 	public static void main(String[] argv) {
 		System.out.println("\r\nTests Finished. SUCCESS: "+test());
 	}

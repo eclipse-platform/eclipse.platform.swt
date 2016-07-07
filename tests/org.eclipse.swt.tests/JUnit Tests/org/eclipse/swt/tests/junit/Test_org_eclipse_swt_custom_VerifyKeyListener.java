@@ -17,7 +17,6 @@ import static org.junit.Assert.assertTrue;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.custom.VerifyKeyListener;
-import org.eclipse.swt.events.VerifyEvent;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Shell;
 import org.junit.Before;
@@ -42,11 +41,8 @@ public void setUp() {
 
 @Test
 public void test_verifyKeyLorg_eclipse_swt_events_VerifyEvent() {
-	VerifyKeyListener listener = new VerifyKeyListener() {
-		@Override
-		public void verifyKey(VerifyEvent event) {
-			if (verify != 1) {event.doit = false;}
-		}
+	VerifyKeyListener listener = event -> {
+		if (verify != 1) {event.doit = false;}
 	};
 	styledText.addVerifyKeyListener(listener);
 	verify = 1;

@@ -13,8 +13,6 @@ package org.eclipse.swt.tests.junit;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.browser.Browser;
-import org.eclipse.swt.browser.TitleEvent;
-import org.eclipse.swt.browser.TitleListener;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.junit.Test;
@@ -30,10 +28,7 @@ public void test_changedLorg_eclipse_swt_browser_TitleEvent() {
 	Display display = Display.getCurrent();
 	Shell shell = new Shell(display);
 	Browser browser = new Browser(shell, SWT.NONE);
-	browser.addTitleListener(new TitleListener() {
-		@Override
-		public void changed(TitleEvent event) {
-		}
+	browser.addTitleListener(event -> {
 	});
 	shell.close();
 }

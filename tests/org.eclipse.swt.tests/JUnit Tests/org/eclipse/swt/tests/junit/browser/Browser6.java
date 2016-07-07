@@ -12,8 +12,6 @@ package org.eclipse.swt.tests.junit.browser;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.browser.Browser;
-import org.eclipse.swt.browser.TitleEvent;
-import org.eclipse.swt.browser.TitleListener;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
@@ -22,28 +20,52 @@ public class Browser6 {
 	public static boolean verbose = false;
 	public static boolean passed = false;
 	public static boolean isMozilla = false; //SwtTestUtil.isGTK;
-	
+
 	public static boolean test1(String url) {
 		if (verbose) System.out.println("URL Loading, verify get title event - args: "+url+" Expected Event Sequence: Title.changed");
 		passed = false;
-				
+
 		final Display display = new Display();
 		final Shell shell = new Shell(display);
 		shell.setLayout(new FillLayout());
 		Browser browser = new Browser(shell, SWT.NONE);
-		browser.addTitleListener(new TitleListener() {
-			@Override
-			public void changed(TitleEvent event) {
-				Browser browser = (Browser)event.widget;
-				String url = browser.getUrl();
-				if (verbose) System.out.println("Title changed <"+event.title+"> for location <"+url+">");
+		browser.addTitleListener(event -> {
+			Browser browser1 = (Browser)event.widget;
+			String url1 = browser1.getUrl();
+			if (verbose) System.out.println("Title changed <"+event.title+"> for location <"+url1+">");
+			passed = true;
+			Runnable runnable = () -> shell.close();
+			if (isMozilla) {
+				display.asyncExec(runnable);
+			} else {
+				runnable.run();
+			}
+		});
+
+		shell.open();
+		browser.setUrl(url);
+
+		boolean timeout = runLoopTimer(display, shell, 600);
+		if (timeout) passed = false;
+		display.dispose();
+		return passed;
+	}
+
+	public static boolean test2(String url, final String expectedTitle) {
+		if (verbose) System.out.println("URL Loading, verify get title event - args: "+url+" Expected Event Sequence: Title.changed");
+		passed = false;
+
+		final Display display = new Display();
+		final Shell shell = new Shell(display);
+		shell.setLayout(new FillLayout());
+		Browser browser = new Browser(shell, SWT.NONE);
+		browser.addTitleListener(event -> {
+			Browser browser1 = (Browser)event.widget;
+			String url1 = browser1.getUrl();
+			if (verbose) System.out.println("Title changed <"+event.title+"> for location <"+url1+">");
+			if (event.title.equals(expectedTitle)) {
 				passed = true;
-				Runnable runnable = new Runnable() {
-					@Override
-					public void run() {
-						shell.close();
-					}
-				};
+				Runnable runnable = () -> shell.close();
 				if (isMozilla) {
 					display.asyncExec(runnable);
 				} else {
@@ -51,55 +73,15 @@ public class Browser6 {
 				}
 			}
 		});
-		
 		shell.open();
 		browser.setUrl(url);
-		
+
 		boolean timeout = runLoopTimer(display, shell, 600);
 		if (timeout) passed = false;
 		display.dispose();
 		return passed;
 	}
-	
-	public static boolean test2(String url, final String expectedTitle) {
-		if (verbose) System.out.println("URL Loading, verify get title event - args: "+url+" Expected Event Sequence: Title.changed");
-		passed = false;
-		
-		final Display display = new Display();
-		final Shell shell = new Shell(display);
-		shell.setLayout(new FillLayout());
-		Browser browser = new Browser(shell, SWT.NONE);
-		browser.addTitleListener(new TitleListener() {
-			@Override
-			public void changed(TitleEvent event) {
-				Browser browser = (Browser)event.widget;
-				String url = browser.getUrl();
-				if (verbose) System.out.println("Title changed <"+event.title+"> for location <"+url+">");
-				if (event.title.equals(expectedTitle)) {
-					passed = true;
-					Runnable runnable = new Runnable() {
-						@Override
-						public void run() {
-							shell.close();
-						}
-					};
-					if (isMozilla) {
-						display.asyncExec(runnable);
-					} else {
-						runnable.run();
-					}
-				}
-			}
-		});
-		shell.open();
-		browser.setUrl(url);
-		
-		boolean timeout = runLoopTimer(display, shell, 600);
-		if (timeout) passed = false;
-		display.dispose();
-		return passed;
-	}
-	
+
 	static boolean runLoopTimer(final Display display, final Shell shell, final int seconds) {
 		final boolean[] timeout = {false};
 		new Thread() {
@@ -111,15 +93,12 @@ public class Browser6 {
 						if (display.isDisposed() || shell.isDisposed()) return;
 					}
 				}
-				catch (Exception e) {} 
+				catch (Exception e) {}
 				timeout[0] = true;
 				/* wake up the event loop */
 				if (!display.isDisposed()) {
-					display.asyncExec(new Runnable() {
-						@Override
-						public void run() {
-							if (!shell.isDisposed()) shell.redraw();						
-						}
+					display.asyncExec(() -> {
+						if (!shell.isDisposed()) shell.redraw();
 					});
 				}
 			}
@@ -127,17 +106,17 @@ public class Browser6 {
 		while (!timeout[0] && !shell.isDisposed()) if (!display.readAndDispatch()) display.sleep();
 		return timeout[0];
 	}
-	
+
 	public static boolean test() {
 		int fail = 0;
-		
+
 		String[] urls = {"http://www.google.com"};
 		for (int i = 0; i < urls.length; i++) {
-			boolean result = test1(urls[i]); 
+			boolean result = test1(urls[i]);
 			if (verbose) System.out.print(result ? "." : "E");
 			if (!result) fail++;
 		}
-		
+
 		String pluginPath = System.getProperty("PLUGIN_PATH");
 		if (verbose) System.out.println("PLUGIN_PATH <"+pluginPath+">");
 		String url;
@@ -146,15 +125,15 @@ public class Browser6 {
 		urls = new String[] {url};
 		String[] titles = {"This is a test title that must be carefully checked when that page is loaded"};
 		for (int i = 0; i < urls.length; i++) {
-			boolean result = test2(urls[i], titles[i]); 
+			boolean result = test2(urls[i], titles[i]);
 			if (verbose) System.out.print(result ? "." : "E");
 			if (!result) fail++;
 		}
-		
-		
+
+
 		return fail == 0;
 	}
-	
+
 	public static void main(String[] argv) {
 		System.out.println("\r\nTests Finished. SUCCESS: "+test());
 	}

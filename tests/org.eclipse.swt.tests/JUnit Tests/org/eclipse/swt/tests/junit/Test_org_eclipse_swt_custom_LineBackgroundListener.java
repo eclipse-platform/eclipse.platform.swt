@@ -15,7 +15,6 @@ package org.eclipse.swt.tests.junit;
 import static org.junit.Assert.assertTrue;
 
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.custom.LineBackgroundEvent;
 import org.eclipse.swt.custom.LineBackgroundListener;
 import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.widgets.Shell;
@@ -40,12 +39,9 @@ public void setUp() {
 
 @Test
 public void test_lineGetBackgroundLorg_eclipse_swt_custom_LineBackgroundEvent() {
-	LineBackgroundListener listener = new LineBackgroundListener() {
-		@Override
-		public void lineGetBackground(LineBackgroundEvent event) {
-			assertTrue(":1:", event.lineOffset==0);
-			assertTrue(":2:",event.lineText.equals("0123456789"));
-		}
+	LineBackgroundListener listener = event -> {
+		assertTrue(":1:", event.lineOffset==0);
+		assertTrue(":2:",event.lineText.equals("0123456789"));
 	};
 	styledText.addLineBackgroundListener(listener);
 	styledText.setText("0123456789");

@@ -23,9 +23,7 @@ import org.eclipse.swt.browser.LocationListener;
 import org.eclipse.swt.browser.OpenWindowListener;
 import org.eclipse.swt.browser.ProgressEvent;
 import org.eclipse.swt.browser.ProgressListener;
-import org.eclipse.swt.browser.StatusTextEvent;
 import org.eclipse.swt.browser.StatusTextListener;
-import org.eclipse.swt.browser.TitleEvent;
 import org.eclipse.swt.browser.TitleListener;
 import org.eclipse.swt.browser.VisibilityWindowListener;
 import org.eclipse.swt.browser.WindowEvent;
@@ -73,11 +71,8 @@ public void test_addCloseWindowListenerLorg_eclipse_swt_browser_CloseWindowListe
 	}
 	catch (IllegalArgumentException e) {
 	}
-	
-	CloseWindowListener listener = new CloseWindowListener() {
-		@Override
-		public void close(WindowEvent event) {
-		}
+
+	CloseWindowListener listener = event -> {
 	};
 	for (int i = 0; i < 100; i++) browser.addCloseWindowListener(listener);
 	for (int i = 0; i < 100; i++) browser.removeCloseWindowListener(listener);
@@ -92,7 +87,7 @@ public void test_addLocationListenerLorg_eclipse_swt_browser_LocationListener() 
 	}
 	catch (IllegalArgumentException e) {
 	}
-	
+
 	LocationListener listener = new LocationListener() {
 		@Override
 		public void changed(LocationEvent event) {
@@ -114,11 +109,8 @@ public void test_addOpenWindowListenerLorg_eclipse_swt_browser_OpenWindowListene
 	}
 	catch (IllegalArgumentException e) {
 	}
-	
-	OpenWindowListener listener = new OpenWindowListener() {
-		@Override
-		public void open(WindowEvent event) {
-		}
+
+	OpenWindowListener listener = event -> {
 	};
 	for (int i = 0; i < 100; i++) browser.addOpenWindowListener(listener);
 	for (int i = 0; i < 100; i++) browser.removeOpenWindowListener(listener);
@@ -133,7 +125,7 @@ public void test_addProgressListenerLorg_eclipse_swt_browser_ProgressListener() 
 	}
 	catch (IllegalArgumentException e) {
 	}
-	
+
 	ProgressListener listener = new ProgressListener() {
 		@Override
 		public void changed(ProgressEvent event) {
@@ -155,11 +147,8 @@ public void test_addStatusTextListenerLorg_eclipse_swt_browser_StatusTextListene
 	}
 	catch (IllegalArgumentException e) {
 	}
-	
-	StatusTextListener listener = new StatusTextListener() {
-		@Override
-		public void changed(StatusTextEvent event) {
-		}
+
+	StatusTextListener listener = event -> {
 	};
 	for (int i = 0; i < 100; i++) browser.addStatusTextListener(listener);
 	for (int i = 0; i < 100; i++) browser.removeStatusTextListener(listener);
@@ -174,11 +163,8 @@ public void test_addTitleListenerLorg_eclipse_swt_browser_TitleListener() {
 	}
 	catch (IllegalArgumentException e) {
 	}
-	
-	TitleListener listener = new TitleListener() {
-		@Override
-		public void changed(TitleEvent event) {
-		}
+
+	TitleListener listener = event -> {
 	};
 	for (int i = 0; i < 100; i++) browser.addTitleListener(listener);
 	for (int i = 0; i < 100; i++) browser.removeTitleListener(listener);
@@ -193,7 +179,7 @@ public void test_addVisibilityWindowListenerLorg_eclipse_swt_browser_VisibilityW
 	}
 	catch (IllegalArgumentException e) {
 	}
-	
+
 	VisibilityWindowListener listener = new VisibilityWindowListener() {
 		@Override
 		public void hide(WindowEvent event) {
@@ -227,7 +213,7 @@ public void test_executeLjava_lang_String() {
 	}
 	catch (IllegalArgumentException e) {
 	}
-	
+
 	/* Real testing is done in the tests that run the event loop
 	 * since a document must have been loaded to execute a script on it.
 	 */
@@ -255,10 +241,10 @@ public void test_getUrl() {
 @Test
 public void test_isBackEnabled() {
 	shell.setText("test_isBackEnabled");
-	
+
 	/* back should return the same value that isBackEnabled previously returned */
 	assertEquals(browser.isBackEnabled(), browser.back());
-	
+
 	for (int i = 0; i < 10; i++) {
 		browser.back();
 		runLoopTimer(1);
@@ -271,10 +257,10 @@ public void test_isBackEnabled() {
 @Test
 public void test_isForwardEnabled() {
 	shell.setText("test_isForwardEnabled");
-	
+
 	/* forward should return the same value that isForwardEnabled previously returned */
 	assertEquals(browser.isForwardEnabled(), browser.forward());
-	
+
 	for (int i = 0; i < 10; i++) {
 		browser.forward();
 		runLoopTimer(1);
@@ -373,7 +359,7 @@ public void test_removeVisibilityWindowListenerLorg_eclipse_swt_browser_Visibili
 @Test
 public void test_setTextLjava_lang_String() {
 	shell.setText("test_setTextLjava_lang_String");
-	
+
 	String html = "<HTML><HEAD><TITLE>HTML example 2</TITLE></HEAD><BODY><H1>HTML example 2</H1>";
 	for (int i = 0; i < 1000; i++) {
 		html +="<P>That is a test line with the number "+i+"</P>";
@@ -382,7 +368,7 @@ public void test_setTextLjava_lang_String() {
 	boolean result = browser.setText(html);
 	assertTrue(result);
 	runLoopTimer(10);
-	
+
 	try {
 		browser.setText(null);
 		fail("No exception thrown for text == null");
@@ -400,8 +386,8 @@ public void test_setUrlLjava_lang_String() {
 	}
 	catch (IllegalArgumentException e) {
 	}
-	
-	
+
+
 	/* THIS TEST REQUIRES WEB ACCESS! How else can we really test the http:// part of a browser widget? */
 	browser.setUrl("http://www.eclipse.org/swt");
 	runLoopTimer(10);
@@ -430,11 +416,8 @@ void runLoopTimer(final int seconds) {
 			/* wake up the event loop */
 			Display display = Display.getDefault();
 			if (!display.isDisposed()) {
-				display.asyncExec(new Runnable() {
-					@Override
-					public void run() {
-						if (!shell.isDisposed()) shell.redraw();						
-					}
+				display.asyncExec(() -> {
+					if (!shell.isDisposed()) shell.redraw();
 				});
 			}
 		}

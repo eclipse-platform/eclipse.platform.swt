@@ -14,21 +14,19 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.browser.Browser;
 import org.eclipse.swt.browser.ProgressEvent;
 import org.eclipse.swt.browser.ProgressListener;
-import org.eclipse.swt.browser.StatusTextEvent;
-import org.eclipse.swt.browser.StatusTextListener;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 
 public class Browser9 {
 	public static boolean verbose = false;
-	public static boolean passed = false;	
-	
+	public static boolean passed = false;
+
 	static String html[] = {"browser9.html"};
 	static String script[] = {
 		"changeStatus('new title');"};
 	static String status[] = {"new title"};
-	
+
 	public static boolean test(String url, final String script, final String status) {
 		if (verbose) System.out.println("Javascript - verify execute("+script+") works on a static HTML file "+url);
 		passed = false;
@@ -36,11 +34,7 @@ public class Browser9 {
 		final Shell shell = new Shell(display);
 		shell.setLayout(new FillLayout());
 		final Browser browser = new Browser(shell, SWT.NONE);
-		browser.addStatusTextListener(new StatusTextListener() {
-			@Override
-			public void changed(StatusTextEvent event) {
-				browser.setData("query", event.text);
-		}});
+		browser.addStatusTextListener(event -> browser.setData("query", event.text));
 		browser.addProgressListener(new ProgressListener() {
 			@Override
 			public void changed(ProgressEvent event) {
@@ -65,12 +59,12 @@ public class Browser9 {
 		});
 		shell.open();
 		browser.setUrl(url);
-		
+
 		runLoopTimer(display, shell, 10);
 		display.dispose();
 		return passed;
 	}
-	 
+
 	static boolean runLoopTimer(final Display display, final Shell shell, final int seconds) {
 		final boolean[] timeout = {false};
 		new Thread() {
@@ -82,15 +76,12 @@ public class Browser9 {
 						if (display.isDisposed() || shell.isDisposed()) return;
 					}
 				}
-				catch (Exception e) {} 
+				catch (Exception e) {}
 				timeout[0] = true;
 				/* wake up the event loop */
 				if (!display.isDisposed()) {
-					display.asyncExec(new Runnable() {
-						@Override
-						public void run() {
-							if (!shell.isDisposed()) shell.redraw();						
-						}
+					display.asyncExec(() -> {
+						if (!shell.isDisposed()) shell.redraw();
 					});
 				}
 			}
@@ -98,23 +89,23 @@ public class Browser9 {
 		while (!timeout[0] && !shell.isDisposed()) if (!display.readAndDispatch()) display.sleep();
 		return timeout[0];
 	}
-	
+
 	public static boolean test() {
 		int fail = 0;
-				
+
 		String pluginPath = System.getProperty("PLUGIN_PATH");
 		if (verbose) System.out.println("PLUGIN_PATH <"+pluginPath+">");
 		String url;
 		for (int i = 0; i < html.length; i++) {
 			if (pluginPath == null) url = Browser9.class.getClassLoader().getResource(html[i]).toString();
 			else url = pluginPath + "/data/"+html[i];
-			boolean result = test(url, script[i], status[i]); 
+			boolean result = test(url, script[i], status[i]);
 			if (verbose) System.out.print(result ? "." : "E");
-			if (!result) fail++; 
+			if (!result) fail++;
 		}
 		return fail == 0;
 	}
-	
+
 	public static void main(String[] argv) {
 		System.out.println("\r\nTests Finished. SUCCESS: "+test());
 	}

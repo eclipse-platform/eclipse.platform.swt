@@ -18,7 +18,6 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.HelpEvent;
 import org.eclipse.swt.events.HelpListener;
 import org.eclipse.swt.events.MenuEvent;
 import org.eclipse.swt.events.MenuListener;
@@ -63,7 +62,7 @@ public void test_ConstructorLorg_eclipse_swt_widgets_DecorationsI() {
 		fail("No exception thrown for parent == null");
 	} catch (IllegalArgumentException e) {
 	}
-	
+
 	newMenu = new Menu(shell, SWT.NULL);
 }
 
@@ -82,7 +81,7 @@ public void test_ConstructorLorg_eclipse_swt_widgets_MenuItem() {
 		fail("No exception thrown for parent == null");
 	} catch (IllegalArgumentException e) {
 	}
-	
+
 	mItem = new MenuItem(menu, SWT.NULL);
 	newMenu = new Menu(mItem);
 }
@@ -90,29 +89,24 @@ public void test_ConstructorLorg_eclipse_swt_widgets_MenuItem() {
 @Test
 public void test_addHelpListenerLorg_eclipse_swt_events_HelpListener() {
 	listenerCalled = false;
-	HelpListener listener = new HelpListener() {
-		@Override
-		public void helpRequested(HelpEvent e) {
-			listenerCalled = true;
-		}
-	};
-	
+	HelpListener listener = e -> listenerCalled = true;
+
 	try {
 		menu.addHelpListener(null);
 		fail("No exception thrown for addHelpListener with null argument");
 	} catch (IllegalArgumentException e) {
 	}
-	
+
 	menu.addHelpListener(listener);
 	menu.notifyListeners(SWT.Help, new Event());
 	assertTrue(listenerCalled);
-	
+
 	try {
 		menu.removeHelpListener(null);
 		fail("No exception thrown for removeHelpListener with null argument");
 	} catch (IllegalArgumentException e) {
 	}
-	
+
 	listenerCalled = false;
 	menu.removeHelpListener(listener);
 	menu.notifyListeners(SWT.Help, new Event());
@@ -138,7 +132,7 @@ public void test_addMenuListenerLorg_eclipse_swt_events_MenuListener() {
 		fail("No exception thrown for addMenuListener with null argument");
 	} catch (IllegalArgumentException e) {
 	}
-	
+
 	menu.addMenuListener(menuListener);
 	menu.notifyListeners(SWT.Show, new Event());
 	assertTrue(":a:", listenerCalled);
@@ -146,13 +140,13 @@ public void test_addMenuListenerLorg_eclipse_swt_events_MenuListener() {
 	listenerCalled = false;
 	menu.notifyListeners(SWT.Hide, new Event());
 	assertTrue(":b:", listenerCalled);
-	
+
 	try {
 		menu.removeMenuListener(null);
 		fail("No exception thrown for removeMenuListener with null argument");
 	} catch (IllegalArgumentException e) {
 	}
-	
+
 	listenerCalled = false;
 	menu.removeMenuListener(menuListener);
 	menu.notifyListeners(SWT.Show, new Event());
@@ -184,7 +178,7 @@ public void test_getItems() {
 	  	items[i] = new MenuItem(menu, 0);
 	}
 	assertArrayEquals(":a:", items, menu.getItems());
-	
+
 	menu.getItems()[0].dispose();
 	assertArrayEquals(":b:", new MenuItem[]{items[1], items[2], items[3], items[4]}, menu.getItems());
 
@@ -277,7 +271,7 @@ public void test_setLocationLorg_eclipse_swt_graphics_Point() {
 		fail("No exception thrown for null argument");
 	}
 	catch (IllegalArgumentException e) {
-	}	
+	}
 }
 
 /* custom */

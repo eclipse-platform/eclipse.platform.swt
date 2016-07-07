@@ -15,7 +15,6 @@ package org.eclipse.swt.tests.junit;
 import static org.junit.Assert.assertEquals;
 
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.custom.LineStyleEvent;
 import org.eclipse.swt.custom.LineStyleListener;
 import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.widgets.Shell;
@@ -41,12 +40,9 @@ public void setUp() {
 @Test
 public void test_lineGetStyleLorg_eclipse_swt_custom_LineStyleEvent() {
 	styledText.setText("0123456789");
-	LineStyleListener listener = new LineStyleListener() {
-		@Override
-		public void lineGetStyle(LineStyleEvent event) {
-			assertEquals(0, event.lineOffset);
-			assertEquals("0123456789",event.lineText);
-		}
+	LineStyleListener listener = event -> {
+		assertEquals(0, event.lineOffset);
+		assertEquals("0123456789",event.lineText);
 	};
 	styledText.addLineStyleListener(listener);
 	// force get line styles callback

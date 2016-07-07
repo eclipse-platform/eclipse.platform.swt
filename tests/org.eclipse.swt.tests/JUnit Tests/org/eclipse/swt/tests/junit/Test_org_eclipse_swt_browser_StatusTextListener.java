@@ -12,8 +12,6 @@ package org.eclipse.swt.tests.junit;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.browser.Browser;
-import org.eclipse.swt.browser.StatusTextEvent;
-import org.eclipse.swt.browser.StatusTextListener;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.junit.Test;
@@ -30,10 +28,7 @@ public void test_changedLorg_eclipse_swt_browser_StatusTextEvent() {
 	Display display = Display.getCurrent();
 	Shell shell = new Shell(display);
 	Browser browser = new Browser(shell, SWT.NONE);
-	browser.addStatusTextListener(new StatusTextListener() {
-		@Override
-		public void changed(StatusTextEvent event) {
-		}
+	browser.addStatusTextListener(event -> {
 	});
 	shell.close();
 }

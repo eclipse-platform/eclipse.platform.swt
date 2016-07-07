@@ -41,13 +41,8 @@ public void test_Constructor() {
 @Test
 public void test_addImageLoaderListenerLorg_eclipse_swt_graphics_ImageLoaderListener() {
 	ImageLoader loader = new ImageLoader();
-	ImageLoaderListener loaderListener = new ImageLoaderListener() {
-		@Override
-		public void imageDataLoaded(ImageLoaderEvent e) {
-			loaderListenerCalled = true;
-		}
-	};
-	
+	ImageLoaderListener loaderListener = e -> loaderListenerCalled = true;
+
 	try {
 		loader.addImageLoaderListener(null);
 		fail("No exception thrown for addImageLoaderListener with null argument");
@@ -125,7 +120,7 @@ public void test_saveLjava_io_OutputStreamI() {
 			fail("No exception thrown for save outputStream == null");
 		} catch (IllegalArgumentException e) {
 		}
-	
+
 		outStream = new ByteArrayOutputStream();
 		try {
 			loader.save(outStream, -1);
@@ -141,7 +136,7 @@ public void test_saveLjava_io_OutputStreamI() {
 		}
 		if (jpgSupported) {
 			String filename = SwtTestUtil.imageFilenames[0];
-			// must use jpg since save is not implemented yet in png format		
+			// must use jpg since save is not implemented yet in png format
 			String filetype = "jpg";
 			try (InputStream inStream = SwtTestUtil.class.getResourceAsStream(filename + "." + filetype)) {
 				loader.load(inStream);

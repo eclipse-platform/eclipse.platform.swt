@@ -22,8 +22,6 @@ import java.util.List;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.FillLayout;
-import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeColumn;
 import org.eclipse.swt.widgets.TreeItem;
@@ -80,12 +78,12 @@ public void test_deselectAll() {
 	TreeItem[] items = new TreeItem[number];
 	for (int i = 0; i < number; i++)
 		items[i] = new TreeItem(tree, 0);
-	
+
 	assertEquals(0, tree.getSelectionCount());
 	tree.setSelection(new TreeItem[] {items[2], items[4], items[5], items[10]});
-	
+
 	assertEquals(4, tree.getSelectionCount());
-	
+
 	tree.deselectAll();
 	assertEquals(0, tree.getSelectionCount());
 
@@ -195,7 +193,7 @@ public void test_getHeaderHeight() {
 public void test_getItemHeight() {
 	assertTrue(":a: Item height is 0", tree.getItemHeight() > 0);
 	new TreeItem(tree, 0);
-	assertTrue(":b: Item height is 0", tree.getItemHeight() > 0);	
+	assertTrue(":b: Item height is 0", tree.getItemHeight() > 0);
 }
 
 @Test
@@ -213,14 +211,14 @@ public void test_getItemI() {
 	}
 	catch (IllegalArgumentException e) {
 	}
-	
+
 	try {
 		tree.getItem(number+1);
 		fail("No exception thrown for illegal index argument");
 	}
 	catch (IllegalArgumentException e) {
 	}
-	
+
 	try {
 		tree.getItem(-1);
 		fail("No exception thrown for illegal index argument");
@@ -247,7 +245,7 @@ public void test_getItems() {
 	}
 
 	makeCleanEnvironment(false);
-	
+
 	for (int j = 0; j < cases.length; j++) {
 		for (int i = 0; i < cases[j]; i++) {
 			TreeItem ti = new TreeItem(tree, 0);
@@ -278,25 +276,25 @@ public void test_getSelectionCount() {
 
 	tree.setSelection(new TreeItem[]{items[2]});
 	assertEquals(1, tree.getSelectionCount());
-	
+
 	tree.setSelection(new TreeItem[]{items[number-1]});
 	assertEquals(1, tree.getSelectionCount());
-	
+
 	tree.setSelection(new TreeItem[]{items[10]});
 	assertEquals(1, tree.getSelectionCount());
-	
+
 	tree.setSelection(new TreeItem[]{items[2], items[number-1], items[10]});
 	assertEquals(3, tree.getSelectionCount());
-	
+
 	tree.setSelection(items);
 	assertEquals(15, tree.getSelectionCount());
 
 	tree.setSelection(new TreeItem[]{});
 	assertEquals(0, tree.getSelectionCount());
-	
-	
+
+
 	makeCleanEnvironment(true); // use single-selection tree.
-	
+
 	items = new TreeItem[number];
 	for (int i = 0; i < number; i++)
 		items[i] = new TreeItem(tree, 0);
@@ -305,16 +303,16 @@ public void test_getSelectionCount() {
 
 	tree.setSelection(new TreeItem[]{items[2]});
 	assertEquals(1, tree.getSelectionCount());
-	
+
 	tree.setSelection(new TreeItem[]{items[number-1]});
 	assertEquals(1, tree.getSelectionCount());
-	
+
 	tree.setSelection(new TreeItem[]{items[10]});
 	assertEquals(1, tree.getSelectionCount());
-	
+
 	tree.setSelection(new TreeItem[]{items[2], items[number-1], items[10]});
 	assertEquals(0, tree.getSelectionCount());
-	
+
 	tree.setSelection(items);
 	assertEquals(0, tree.getSelectionCount());
 
@@ -350,7 +348,7 @@ public void test_selectAll() {
 	assertEquals(number, tree.getSelectionCount());
 
 	makeCleanEnvironment(true); // single-selection tree
-		
+
 	items = new TreeItem[number];
 	for (int i = 0; i < number; i++)
 		items[i] = new TreeItem(tree, 0);
@@ -437,18 +435,18 @@ public void test_setSelection$Lorg_eclipse_swt_widgets_TreeItem() {
 
 	tree.setSelection(items);
 	assertArrayEquals(items, tree.getSelection());
-	
+
 	tree.setSelection(tree.getItems());
 	assertArrayEquals(tree.getItems(), tree.getSelection());
-	
+
 	tree.setSelection(new TreeItem[] {});
 	assertArrayEquals(new TreeItem[] {}, tree.getSelection());
 	assertEquals(0, tree.getSelectionCount());
-	
+
 	try {
 		tree.setSelection((TreeItem[]) null);
 		fail("No exception thrown for items == null");
-	} 
+	}
 	catch (IllegalArgumentException e) {
 	}
 
@@ -457,56 +455,56 @@ public void test_setSelection$Lorg_eclipse_swt_widgets_TreeItem() {
 
 	tree.setSelection(new TreeItem[]{items[10]});
 	assertArrayEquals(new TreeItem[] {items[10]}, tree.getSelection());
-	
+
 	tree.setSelection(new TreeItem[]{items[number-1]});
 	assertArrayEquals(new TreeItem[] {items[number-1]}, tree.getSelection());
-	
+
 	tree.setSelection(new TreeItem[]{items[2]});
 	assertArrayEquals(new TreeItem[] {items[2]}, tree.getSelection());
-	
+
 	tree.setSelection(new TreeItem[]{items[10], items[number-1], items[2]});
 	assertArrayEquals(new TreeItem[] {items[2], items[10], items[number - 1]}, tree.getSelection());
-	
+
 	tree.setSelection(new TreeItem[]{items[0], items[3], items[2]});
-	assertArrayEquals(new TreeItem[]{items[0], items[2], items[3]}, tree.getSelection());	
+	assertArrayEquals(new TreeItem[]{items[0], items[2], items[3]}, tree.getSelection());
 
 	tree.setSelection(new TreeItem[]{items[3], items[2], items[1]});
-	assertArrayEquals(new TreeItem[]{items[1], items[2], items[3]}, tree.getSelection());	
+	assertArrayEquals(new TreeItem[]{items[1], items[2], items[3]}, tree.getSelection());
 
 	tree.setSelection(new TreeItem[]{items[1], items[4], items[0]});
-	assertArrayEquals(new TreeItem[]{items[0], items[1], items[4]}, tree.getSelection());	
+	assertArrayEquals(new TreeItem[]{items[0], items[1], items[4]}, tree.getSelection());
 
 	tree.setSelection(new TreeItem[]{items[0], items[4], items[0]});
-	assertArrayEquals(new TreeItem[]{items[0], items[4]}, tree.getSelection());	
+	assertArrayEquals(new TreeItem[]{items[0], items[4]}, tree.getSelection());
 
 	tree.setSelection(new TreeItem[]{items[2], items[3], items[4]});
-	assertArrayEquals(new TreeItem[]{items[2], items[3], items[4]}, tree.getSelection());	
+	assertArrayEquals(new TreeItem[]{items[2], items[3], items[4]}, tree.getSelection());
 
 	tree.setSelection(new TreeItem[]{items[4], items[4], items[4], items[4], items[4], items[4]});
-	assertArrayEquals(new TreeItem[]{items[4]}, tree.getSelection());	
+	assertArrayEquals(new TreeItem[]{items[4]}, tree.getSelection());
 
 	tree.setSelection(new TreeItem[] {items[0]});
 	assertArrayEquals(new TreeItem[] {items[0]}, tree.getSelection());
 
 	tree.setSelection(new TreeItem[] {items[3]});
-	assertArrayEquals(new TreeItem[] {items[3]}, tree.getSelection());	
+	assertArrayEquals(new TreeItem[] {items[3]}, tree.getSelection());
 
 	tree.setSelection(new TreeItem[] {items[4]});
 	assertArrayEquals(new TreeItem[] {items[4]}, tree.getSelection());
 
 	tree.setSelection(new TreeItem[] {items[2]});
-	assertArrayEquals(new TreeItem[] {items[2]}, tree.getSelection());	
+	assertArrayEquals(new TreeItem[] {items[2]}, tree.getSelection());
 
 	tree.setSelection(new TreeItem[] {items[1]});
 	assertArrayEquals(new TreeItem[] {items[1]}, tree.getSelection());
-	
+
 	tree.removeAll();
 	tree.setSelection(new TreeItem[] {});
 	assertArrayEquals(new TreeItem[] {}, tree.getSelection());
-	
+
 
 	makeCleanEnvironment(true); // single-selection tree
-	
+
 	items = new TreeItem[number];
 	for (int i = 0; i < number; i++)
 		items[i] = new TreeItem(tree, 0);
@@ -518,66 +516,66 @@ public void test_setSelection$Lorg_eclipse_swt_widgets_TreeItem() {
 
 	tree.setSelection(items);
 	assertArrayEquals(new TreeItem[] {}, tree.getSelection());
-	
+
 	tree.setSelection(tree.getItems());
 	assertArrayEquals(new TreeItem[] {}, tree.getSelection());
-	
+
 	tree.setSelection(new TreeItem[] {});
 	assertArrayEquals(new TreeItem[] {}, tree.getSelection());
 	assertEquals(0, tree.getSelectionCount());
-	
+
 	try {
 		tree.setSelection((TreeItem[]) null);
 		fail("No exception thrown for items == null");
-	} 
+	}
 	catch (IllegalArgumentException e) {
 	}
 
 	tree.setSelection(new TreeItem[]{items[10]});
 	assertArrayEquals(new TreeItem[] {items[10]}, tree.getSelection());
-	
+
 	tree.setSelection(new TreeItem[]{items[number-1]});
 	assertArrayEquals(new TreeItem[] {items[number-1]}, tree.getSelection());
-	
+
 	tree.setSelection(new TreeItem[]{items[2]});
 	assertArrayEquals(new TreeItem[] {items[2]}, tree.getSelection());
-	
+
 	tree.setSelection(new TreeItem[]{items[10], items[number-1], items[2]});
 	assertArrayEquals(new TreeItem[] {}, tree.getSelection());
-	
+
 	tree.setSelection(new TreeItem[]{items[0], items[3], items[2]});
-	assertArrayEquals(new TreeItem[]{}, tree.getSelection());	
+	assertArrayEquals(new TreeItem[]{}, tree.getSelection());
 
 	tree.setSelection(new TreeItem[]{items[3], items[2], items[1]});
-	assertArrayEquals(new TreeItem[]{}, tree.getSelection());	
+	assertArrayEquals(new TreeItem[]{}, tree.getSelection());
 
 	tree.setSelection(new TreeItem[]{items[1], items[4], items[0]});
-	assertArrayEquals(new TreeItem[]{}, tree.getSelection());	
+	assertArrayEquals(new TreeItem[]{}, tree.getSelection());
 
 	tree.setSelection(new TreeItem[]{items[0], items[4], items[0]});
-	assertArrayEquals(new TreeItem[]{}, tree.getSelection());	
+	assertArrayEquals(new TreeItem[]{}, tree.getSelection());
 
 	tree.setSelection(new TreeItem[]{items[2], items[3], items[4]});
-	assertArrayEquals(new TreeItem[]{}, tree.getSelection());	
+	assertArrayEquals(new TreeItem[]{}, tree.getSelection());
 
 	tree.setSelection(new TreeItem[]{items[4], items[4], items[4], items[4], items[4], items[4]});
-	assertArrayEquals(new TreeItem[]{}, tree.getSelection());	
+	assertArrayEquals(new TreeItem[]{}, tree.getSelection());
 
 	tree.setSelection(new TreeItem[] {items[0]});
 	assertArrayEquals(new TreeItem[] {items[0]}, tree.getSelection());
 
 	tree.setSelection(new TreeItem[] {items[3]});
-	assertArrayEquals(new TreeItem[] {items[3]}, tree.getSelection());	
+	assertArrayEquals(new TreeItem[] {items[3]}, tree.getSelection());
 
 	tree.setSelection(new TreeItem[] {items[4]});
 	assertArrayEquals(new TreeItem[] {items[4]}, tree.getSelection());
 
 	tree.setSelection(new TreeItem[] {items[2]});
-	assertArrayEquals(new TreeItem[] {items[2]}, tree.getSelection());	
+	assertArrayEquals(new TreeItem[] {items[2]}, tree.getSelection());
 
 	tree.setSelection(new TreeItem[] {items[1]});
 	assertArrayEquals(new TreeItem[] {items[1]}, tree.getSelection());
-	
+
 	tree.removeAll();
 	tree.setSelection(new TreeItem[] {});
 	assertArrayEquals(new TreeItem[] {}, tree.getSelection());
@@ -587,17 +585,17 @@ public void test_setSelection$Lorg_eclipse_swt_widgets_TreeItem() {
 public void test_setTopItemLorg_eclipse_swt_widgets_TreeItem() {
 	tree.removeAll();
 	for (int i = 0; i < 10; i++) {
-		new TreeItem(tree, 0);	
+		new TreeItem(tree, 0);
 	}
 	TreeItem top = new TreeItem(tree, 0);
 	for (int i = 0; i < 10; i++) {
-		new TreeItem(tree, 0);	
+		new TreeItem(tree, 0);
 	}
 	tree.setSize(50,50);
 	shell.open();
 	tree.setTopItem(top);
 	for (int i = 0; i < 10; i++) {
-		new TreeItem(tree, 0);	
+		new TreeItem(tree, 0);
 	}
 	TreeItem top2 = tree.getTopItem();
 	shell.setVisible(false);
@@ -620,7 +618,7 @@ public void test_showItemLorg_eclipse_swt_widgets_TreeItem() {
 	}
 	catch (IllegalArgumentException e) {
 	}
-	
+
 	int number = 20;
 	TreeItem[] items = new TreeItem[number];
 	for (int i = 0; i < number; i++) {
@@ -633,7 +631,7 @@ public void test_showItemLorg_eclipse_swt_widgets_TreeItem() {
 
 	makeCleanEnvironment(false);
 	//showing somebody else's items
-	
+
 	items = new TreeItem[number];
 	for (int i = 0; i < number; i++) {
 		items[i] = new TreeItem(tree, 0);
@@ -654,11 +652,11 @@ public void test_showItemLorg_eclipse_swt_widgets_TreeItem() {
 @Test
 public void test_showSelection() {
 	TreeItem item;
-	
+
 	tree.showSelection();
 	item = new TreeItem(tree, 0);
 	tree.setSelection(new TreeItem[]{item});
-	tree.showSelection();	
+	tree.showSelection();
 }
 
 /* custom */
@@ -666,7 +664,7 @@ public Tree tree;
 
 /**
  * Clean up the environment for a new test.
- * 
+ *
  * @param single true if the new tree should be a single-selection one,
  * otherwise use multi-selection.
  */
@@ -727,7 +725,7 @@ public void test_consistency_DoubleClick () {
     List<String> events = new ArrayList<>();
     createTree(events);
     consistencyPrePackShell();
-    consistencyEvent(20, tree.getItemHeight()*2, 1, 0, 
+    consistencyEvent(20, tree.getItemHeight()*2, 1, 0,
             	     ConsistencyUtility.MOUSE_DOUBLECLICK, events);
 }
 
@@ -764,28 +762,25 @@ public void test_Virtual() {
 	tree.dispose();
 	tree = new Tree(shell, SWT.VIRTUAL | SWT.BORDER);
 	setWidget(tree);
-	
+
 	int count = 10000;
 	int visibleCount = 10;
-	
+
 	shell.setLayout(new FillLayout());
 	final TreeItem[] top = { null };
 	final int[] dataCounter = { 0 };
-	tree.addListener(SWT.SetData, new Listener() {
-		@Override
-		public void handleEvent(Event event) {
-			TreeItem item = (TreeItem) event.item;
-			if (item.getParentItem() == null) {
-				top[0] = item;
-				item.setText("top");
-			} else {
-				int index = top[0].indexOf(item);
-				item.setText("Item " + index);
-			}
-			dataCounter[0]++;
+	tree.addListener(SWT.SetData, event -> {
+		TreeItem item = (TreeItem) event.item;
+		if (item.getParentItem() == null) {
+			top[0] = item;
+			item.setText("top");
+		} else {
+			int index = top[0].indexOf(item);
+			item.setText("Item " + index);
 		}
+		dataCounter[0]++;
 	});
-	
+
 	tree.setItemCount(1);
 	shell.setSize (200, tree.getItemHeight() * visibleCount);
 	shell.open ();

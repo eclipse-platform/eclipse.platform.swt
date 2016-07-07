@@ -22,16 +22,16 @@ import org.eclipse.swt.widgets.Shell;
 
 public class Browser1 {
 	public static boolean verbose = false;
-	public static boolean passed = false;	
+	public static boolean passed = false;
 	public static boolean locationChanging = false;
 	public static boolean locationChanged = false;
 	public static boolean progressCompleted = false;
-	
+
 	public static boolean test1(String url) {
 		if (verbose) System.out.println("URL Loading - args: "+url+" Expected Event Sequence: Location.changing > Location.changed (top true)> Progress.completed");
 		passed = false;
 		locationChanging = locationChanged = progressCompleted = false;
-				
+
 		final Display display = new Display();
 		final Shell shell = new Shell(display);
 		shell.setLayout(new FillLayout());
@@ -72,7 +72,7 @@ public class Browser1 {
 /*				if (passed) {
 					 wait a little bit more before declaring it a success,
 					 * in case bogus events follow this one.
-					 
+
 					new Thread() {
 						public void run() {
 							if (verbose) System.out.println("timer start");
@@ -81,7 +81,7 @@ public class Browser1 {
 								display.asyncExec(new Runnable(){
 									public void run() {
 										if (verbose) System.out.println("timer asyncexec shell.close");
-										if (!shell.isDisposed()) shell.close();							
+										if (!shell.isDisposed()) shell.close();
 									}
 								});
 							if (verbose) System.out.println("timer over");
@@ -90,16 +90,16 @@ public class Browser1 {
 				}
 */			}
 		});
-		
+
 		shell.open();
 		browser.setUrl(url);
-		
+
 		boolean timeout = runLoopTimer(display, shell, 600);
 		if (timeout) passed = false;
 		display.dispose();
 		return passed;
 	}
-	
+
 	public static boolean test2(String url) {
 		if (verbose) System.out.println("URL Loading Filtering - args: "+url+" Expected Event Sequence: Location.changing cancel true > no Location.changed, no Progress.completed");
 		locationChanging = locationChanged = progressCompleted = false;
@@ -125,12 +125,9 @@ public class Browser1 {
 						if (verbose) System.out.println("timer start");
 						try { sleep(2000); } catch (Exception e) {}
 						if (!display.isDisposed())
-							display.asyncExec(new Runnable(){
-								@Override
-								public void run() {
-									if (verbose) System.out.println("timer asyncexec shell.close");
-									if (!shell.isDisposed()) shell.close();							
-								}
+							display.asyncExec(() -> {
+								if (verbose) System.out.println("timer asyncexec shell.close");
+								if (!shell.isDisposed()) shell.close();
 							});
 						if (verbose) System.out.println("timer over");
 					}
@@ -144,7 +141,7 @@ public class Browser1 {
 				 * since the URL in BeforeNavigate2 was correctly cancelled.
 				 * The test considers it is OK to send a Location.changed and a Progress.completed events after
 				 * a Location.changing cancel true - at the condition that the current location is empty,
-				 * otherwise it is considered that the location was not successfully cancelled. 
+				 * otherwise it is considered that the location was not successfully cancelled.
 				 */
 				passed = event.location.length() == 0;
 				if (verbose) System.out.println("changed "+event.location+" "+passed);
@@ -163,7 +160,7 @@ public class Browser1 {
 				 * since the URL in BeforeNavigate2 was correctly cancelled.
 				 * The test considers it is OK to send a Location.changed and a Progress.completed events after
 				 * a Location.changing cancel true - at the condition that the current location is empty,
-				 * otherwise it is considered that the location was not successfully cancelled. 
+				 * otherwise it is considered that the location was not successfully cancelled.
 				 */
 				String location = browser.getUrl();
 				passed = location.length() == 0;
@@ -178,7 +175,7 @@ public class Browser1 {
 		display.dispose();
 		return passed;
 	}
-	
+
 	static boolean runLoopTimer(final Display display, final Shell shell, final int seconds) {
 		final boolean[] timeout = {false};
 		new Thread() {
@@ -190,15 +187,12 @@ public class Browser1 {
 						if (display.isDisposed() || shell.isDisposed()) return;
 					}
 				}
-				catch (Exception e) {} 
+				catch (Exception e) {}
 				timeout[0] = true;
 				/* wake up the event loop */
 				if (!display.isDisposed()) {
-					display.asyncExec(new Runnable() {
-						@Override
-						public void run() {
-							if (!shell.isDisposed()) shell.redraw();						
-						}
+					display.asyncExec(() -> {
+						if (!shell.isDisposed()) shell.redraw();
 					});
 				}
 			}
@@ -206,23 +200,23 @@ public class Browser1 {
 		while (!timeout[0] && !shell.isDisposed()) if (!display.readAndDispatch()) display.sleep();
 		return timeout[0];
 	}
-	
+
 	public static boolean test() {
 		int fail = 0;
 		String[] urls = {"http://www.google.com"};
 		for (int i = 0; i < urls.length; i++) {
-			boolean result = test1(urls[i]); 
+			boolean result = test1(urls[i]);
 			if (verbose) System.out.print(result ? "." : "E");
-			if (!result) fail++; 
+			if (!result) fail++;
 		}
 		for (int i = 0; i < urls.length; i++) {
-			boolean result = test2(urls[i]); 
+			boolean result = test2(urls[i]);
 			if (verbose) System.out.print(result ? "." : "E");
-			if (!result) fail++; 
+			if (!result) fail++;
 		}
 		return fail == 0;
 	}
-	
+
 	public static void main(String[] argv) {
 		System.out.println("\r\nTests Finished. SUCCESS: "+test());
 	}

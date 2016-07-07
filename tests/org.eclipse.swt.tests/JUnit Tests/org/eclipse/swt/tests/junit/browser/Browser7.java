@@ -12,8 +12,6 @@ package org.eclipse.swt.tests.junit.browser;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.browser.Browser;
-import org.eclipse.swt.browser.CloseWindowListener;
-import org.eclipse.swt.browser.OpenWindowListener;
 import org.eclipse.swt.browser.VisibilityWindowListener;
 import org.eclipse.swt.browser.WindowEvent;
 import org.eclipse.swt.graphics.Point;
@@ -23,27 +21,27 @@ import org.eclipse.swt.widgets.Shell;
 
 public class Browser7 {
 	public static boolean verbose = false;
-	public static boolean passed = false;	
-	
+	public static boolean passed = false;
+
 	static int cntOpen = 0;
 	static int cntShow = 0;
-	
+
 	public static boolean test(String url) {
 		if (verbose) System.out.println("window.open, verify get Window.open and Window.show events - args: "+url+" Expected Event Sequence: Window.open, Window.show multiple times");
 		passed = false;
-		
+
 		cntOpen = 0;
 		cntShow = 0;
-		
+
 		final Display display = new Display();
 		final Shell shell = new Shell(display);
 		shell.setLayout(new FillLayout());
 		Browser browser = new Browser(shell, SWT.NONE);
 		initialize(display, browser);
-		
+
 		shell.open();
 		browser.setUrl(url);
-		
+
 		boolean timeout = runLoopTimer(display, shell, 10);
 		if (verbose) System.out.println("Window opened: "+cntOpen+" Window shown: "+cntShow);
 		/*
@@ -55,18 +53,15 @@ public class Browser7 {
 	}
 
 	static void initialize(final Display display, Browser browser) {
-		browser.addOpenWindowListener(new OpenWindowListener() {
-			@Override
-			public void open(WindowEvent event) {
-				if (verbose) System.out.println("VisibilityWindowListener.open");
-				Shell shell = new Shell(display);
-				shell.setText("New Window");
-				shell.setLayout(new FillLayout());
-				Browser browser = new Browser(shell, SWT.NONE);
-				initialize(display, browser);
-				event.browser = browser;
-				cntOpen++;
-			}
+		browser.addOpenWindowListener(event -> {
+			if (verbose) System.out.println("VisibilityWindowListener.open");
+			Shell shell = new Shell(display);
+			shell.setText("New Window");
+			shell.setLayout(new FillLayout());
+			Browser browser1 = new Browser(shell, SWT.NONE);
+			initialize(display, browser1);
+			event.browser = browser1;
+			cntOpen++;
 		});
 		browser.addVisibilityWindowListener(new VisibilityWindowListener() {
 			@Override
@@ -89,16 +84,13 @@ public class Browser7 {
 				shell.open();
 			}
 		});
-		browser.addCloseWindowListener(new CloseWindowListener() {
-			@Override
-			public void close(WindowEvent event) {
-				Browser browser = (Browser)event.widget;
-				Shell shell = browser.getShell();
-				shell.close();
-			}
+		browser.addCloseWindowListener(event -> {
+			Browser browser1 = (Browser)event.widget;
+			Shell shell = browser1.getShell();
+			shell.close();
 		});
 }
-	 
+
 	static boolean runLoopTimer(final Display display, final Shell shell, final int seconds) {
 		final boolean[] timeout = {false};
 		new Thread() {
@@ -110,15 +102,12 @@ public class Browser7 {
 						if (display.isDisposed() || shell.isDisposed()) return;
 					}
 				}
-				catch (Exception e) {} 
+				catch (Exception e) {}
 				timeout[0] = true;
 				/* wake up the event loop */
 				if (!display.isDisposed()) {
-					display.asyncExec(new Runnable() {
-						@Override
-						public void run() {
-							if (!shell.isDisposed()) shell.redraw();						
-						}
+					display.asyncExec(() -> {
+						if (!shell.isDisposed()) shell.redraw();
 					});
 				}
 			}
@@ -126,10 +115,10 @@ public class Browser7 {
 		while (!timeout[0] && !shell.isDisposed()) if (!display.readAndDispatch()) display.sleep();
 		return timeout[0];
 	}
-	
+
 	public static boolean test() {
 		int fail = 0;
-				
+
 		String pluginPath = System.getProperty("PLUGIN_PATH");
 		if (verbose) System.out.println("PLUGIN_PATH <"+pluginPath+">");
 		String url;
@@ -137,13 +126,13 @@ public class Browser7 {
 		else url = pluginPath + "/data/browser7.html";
 		String[] urls = new String[] {url};
 		for (int i = 0; i < urls.length; i++) {
-			boolean result = test(urls[i]); 
+			boolean result = test(urls[i]);
 			if (verbose) System.out.print(result ? "." : "E");
-			if (!result) fail++; 
+			if (!result) fail++;
 		}
 		return fail == 0;
 	}
-	
+
 	public static void main(String[] argv) {
 		System.out.println("\r\nTests Finished. SUCCESS: "+test());
 	}
