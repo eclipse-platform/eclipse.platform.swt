@@ -7,6 +7,7 @@
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
+ *     Lars Vogel <Lars.Vogel@vogella.com> - Bug 497575
  *******************************************************************************/
 package org.eclipse.swt.examples.controlexample;
 
@@ -88,7 +89,7 @@ abstract class Tab {
 
 	/* Common control buttons */
 	Button borderButton, enabledButton, visibleButton, backgroundImageButton, popupMenuButton;
-	Button preferredButton, tooSmallButton, smallButton, largeButton, fillHButton, fillVButton;
+	Button preferredButton, tooSmallButton, smallButton, largeButton, rectangleButton, fillHButton, fillVButton;
 
 	/* Common groups and composites */
 	Composite tabFolderPage;
@@ -99,6 +100,8 @@ abstract class Tab {
 
 	/* Sizing constants for the "Size" group */
 	static final int TOO_SMALL_SIZE	= 10;
+	static final int RETANGLE_SIZE_WIDTH	= 140;
+	static final int RETANGLE_SIZE_HEIGHT	= 30;
 	static final int SMALL_SIZE		= 50;
 	static final int LARGE_SIZE		= 100;
 
@@ -1301,6 +1304,8 @@ abstract class Tab {
 		smallButton.setText (SMALL_SIZE + " X " + SMALL_SIZE);
 		largeButton = new Button (sizeGroup, SWT.RADIO);
 		largeButton.setText (LARGE_SIZE + " X " + LARGE_SIZE);
+		rectangleButton = new Button (sizeGroup, SWT.RADIO);
+		rectangleButton.setText (RETANGLE_SIZE_WIDTH + " X " + RETANGLE_SIZE_HEIGHT);
 		fillHButton = new Button (sizeGroup, SWT.CHECK);
 		fillHButton.setText (ControlExample.getResourceString("Fill_X"));
 		fillVButton = new Button (sizeGroup, SWT.CHECK);
@@ -1317,6 +1322,7 @@ abstract class Tab {
 		tooSmallButton.addSelectionListener(selectionListener);
 		smallButton.addSelectionListener(selectionListener);
 		largeButton.addSelectionListener(selectionListener);
+		rectangleButton.addSelectionListener(selectionListener);
 		fillHButton.addSelectionListener(selectionListener);
 		fillVButton.addSelectionListener(selectionListener);
 
@@ -1861,6 +1867,9 @@ abstract class Tab {
 		Control [] controls = getExampleControls ();
 		for (Control control : controls) {
 			GridData gridData = new GridData(size, size);
+			if (rectangleButton.getSelection()) {
+				gridData = new GridData(RETANGLE_SIZE_WIDTH, RETANGLE_SIZE_HEIGHT);
+			}
 			gridData.grabExcessHorizontalSpace = fillHButton.getSelection();
 			gridData.grabExcessVerticalSpace = fillVButton.getSelection();
 			gridData.horizontalAlignment = fillHButton.getSelection() ? SWT.FILL : SWT.LEFT;
