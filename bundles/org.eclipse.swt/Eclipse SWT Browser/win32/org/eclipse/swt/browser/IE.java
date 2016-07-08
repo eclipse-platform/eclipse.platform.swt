@@ -1278,7 +1278,7 @@ public String getText() {
 	}
 	pVarResult = document.getProperty(rgdispid[0]);
 	document.dispose();
-	if (pVarResult == null || pVarResult.getType() == COM.VT_EMPTY) {
+	if (pVarResult == null || pVarResult.getType() == COM.VT_EMPTY || pVarResult.getType() == COM.VT_NULL) {
 		if (pVarResult != null) pVarResult.dispose ();
 		return ""; //$NON-NLS-1$
 	}
