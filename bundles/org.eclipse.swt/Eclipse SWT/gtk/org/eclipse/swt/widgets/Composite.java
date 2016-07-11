@@ -1496,6 +1496,31 @@ public void setBackgroundMode (int mode) {
 
 @Override
 int setBounds (int x, int y, int width, int height, boolean move, boolean resize) {
+
+	/* Bug 487757
+	 * Deal with bug where for Gtk3.8+, ScrolledComposites appear empty or internal widgets don't
+	 * get sized properly. When resizing shell, widgets appear or grow into correct size.
+	 *
+	 * The issue is that upon widget creation ZERO_HEIGHT/WIDTH is assigned to widget's state (createWidget());
+	 * then if you call setVisible(false), setVisible(true) before a layout operation,
+	 * in the setVisible(true) call, the widget is never shown. In Gtk3.8+ hidden widgets have a
+	 * size of 0x0, and as such allocation is not done correctly until you manually re-size the parent.
+	 *
+	 * To resolve the issue we check if widget is not HIDDEN on SWT side, but is hidden on GTK side. If it
+	 * is, then show it. This correctly initializes layout of internal widgets.
+	 *
+	 * Future note: If you observe non Composite widgets to have incorrect sizing on first display
+	 * but fix themselfes upon first resize by mouse, then
+	 * consider moving this fix higher into Control's setBound(...) method instead.
+	 */
+	long /*int*/ topHandle = topHandle ();
+	if (OS.GTK_VERSION >= OS.VERSION (3, 8, 0)
+			&& fixedHandle != 0 && handle != 0
+			&& getVisible() && !OS.gtk_widget_get_visible(topHandle) //if SWT State is not HIDDEN, but widget is hidden on GTK side.
+			&& topHandle == fixedHandle && width > 0 && height > 0 && resize) {
+		OS.gtk_widget_show(topHandle);
+	}
+
 	int result = super.setBounds (x, y, width, height, move, resize);
 	if ((result & RESIZED) != 0 && layout != null) {
 		markLayout (false, false);
