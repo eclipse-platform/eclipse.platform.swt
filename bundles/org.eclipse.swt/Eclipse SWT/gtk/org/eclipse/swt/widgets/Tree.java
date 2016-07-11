@@ -89,7 +89,7 @@ public class Tree extends Composite {
 	boolean expandAll;
 	int drawState, drawFlags;
 	GdkColor drawForeground;
-	GdkRGBA background;
+	GdkRGBA background, foreground;
 	boolean ownerDraw, ignoreSize, ignoreAccessibility, pixbufSizeSet;
 	int pixbufHeight, pixbufWidth;
 
@@ -1352,6 +1352,19 @@ public TreeColumn [] getColumns () {
 	TreeColumn [] result = new TreeColumn [columnCount];
 	System.arraycopy (columns, 0, result, 0, columnCount);
 	return result;
+}
+
+@Override
+GdkColor getContextColor () {
+	if (OS.GTK_VERSION >= OS.VERSION(3, 16, 0)) {
+		if (foreground != null) {
+			return display.toGdkColor (foreground);
+		} else {
+			return display.COLOR_LIST_FOREGROUND;
+		}
+	} else {
+		return super.getContextColor ();
+	}
 }
 
 @Override
@@ -3267,6 +3280,7 @@ void setForegroundColor (GdkColor color) {
 		if (color != null) {
 			rgba = display.toGdkRGBA (color);
 		}
+		foreground = rgba;
 		setForegroundColor (handle, rgba);
 	} else {
 		setForegroundColor (handle, color, false);

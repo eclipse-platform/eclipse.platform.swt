@@ -80,7 +80,7 @@ public class Table extends Composite {
 	boolean firstCustomDraw;
 	int drawState, drawFlags;
 	GdkColor drawForeground;
-	GdkRGBA background;
+	GdkRGBA background, foreground;
 	boolean ownerDraw, ignoreSize, ignoreAccessibility, pixbufSizeSet;
 	int maxWidth = 0;
 
@@ -1360,6 +1360,19 @@ GdkColor getContextBackground () {
 		}
 	} else {
 		return super.getContextBackground ();
+	}
+}
+
+@Override
+GdkColor getContextColor () {
+	if (OS.GTK_VERSION >= OS.VERSION(3, 16, 0)) {
+		if (foreground != null) {
+			return display.toGdkColor (foreground);
+		} else {
+			return display.COLOR_LIST_FOREGROUND;
+		}
+	} else {
+		return super.getContextColor ();
 	}
 }
 
@@ -3276,6 +3289,7 @@ void setForegroundColor (GdkColor color) {
 		if (color != null) {
 			rgba = display.toGdkRGBA (color);
 		}
+		foreground = rgba;
 		setForegroundColor (handle, rgba);
 	} else {
 		setForegroundColor (handle, color, false);
