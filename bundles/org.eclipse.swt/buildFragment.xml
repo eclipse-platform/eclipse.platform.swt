@@ -25,8 +25,8 @@
 		<property name="destination" value="${fragmentdir}/target" />
 		<property name="javacVerbose" value="false" />
 		<property name="logExtension" value=".xml" />
-		<property name="javacSource" value="1.7" />
-		<property name="javacTarget" value="1.7" />
+		<property name="javacSource" value="1.8" />
+		<property name="javacTarget" value="1.8" />
 		<condition property="bootclasspath" value="">
 			<equals arg1="${swt.os}" arg2="macosx"/>
 		</condition>
