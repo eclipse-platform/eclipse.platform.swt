@@ -7,6 +7,7 @@
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
+ *     Lars Vogel <Lars.Vogel@vogella.com> - Bug 497807
  *******************************************************************************/
 package org.eclipse.swt.dnd;
 
@@ -819,7 +820,7 @@ public void setDragSourceEffect(DragSourceEffect effect) {
  * @param transferAgents a list of Transfer objects which define the types of data that can be
  * dragged from this source
  */
-public void setTransfer(Transfer[] transferAgents){
+public void setTransfer(Transfer... transferAgents){
 	this.transferAgents = transferAgents;
 }
 

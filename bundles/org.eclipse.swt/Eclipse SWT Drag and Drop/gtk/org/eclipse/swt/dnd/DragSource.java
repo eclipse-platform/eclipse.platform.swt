@@ -7,15 +7,16 @@
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
+ *     Lars Vogel <Lars.Vogel@vogella.com> - Bug 497807
  *******************************************************************************/
 package org.eclipse.swt.dnd;
 
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.gtk.*;
+import org.eclipse.swt.widgets.*;
 
 /**
  *
@@ -568,7 +569,7 @@ public void setDragSourceEffect(DragSourceEffect effect) {
  * @param transferAgents a list of Transfer objects which define the types of data that can be
  * dragged from this source
  */
-public void setTransfer(Transfer[] transferAgents){
+public void setTransfer(Transfer... transferAgents){
 	if (targetList != 0) {
 		OS.gtk_target_list_unref(targetList);
 		targetList = 0;
