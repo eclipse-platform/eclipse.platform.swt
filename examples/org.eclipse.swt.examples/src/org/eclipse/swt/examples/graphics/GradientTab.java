@@ -71,9 +71,6 @@ public String getDescription() {
 	return GraphicsExample.getResourceString("GradientImageDescription"); //$NON-NLS-1$
 }
 
-/* (non-Javadoc)
- * @see org.eclipse.swt.examples.graphics.GraphicsTab#createControlPanel(org.eclipse.swt.widgets.Composite)
- */
 @Override
 public void createControlPanel(final Composite parent) {
 	final Display display = parent.getDisplay();

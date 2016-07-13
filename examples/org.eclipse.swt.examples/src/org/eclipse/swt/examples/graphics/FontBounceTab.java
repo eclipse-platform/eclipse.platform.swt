@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2014 IBM Corporation and others.
+ * Copyright (c) 2006, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -11,8 +11,12 @@
 
 package org.eclipse.swt.examples.graphics;
 
-import org.eclipse.swt.*;
-import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Device;
+import org.eclipse.swt.graphics.Font;
+import org.eclipse.swt.graphics.GC;
+import org.eclipse.swt.graphics.Path;
+import org.eclipse.swt.graphics.Point;
 
 /**
  * This tab is an animated graphic. It presents the word SWT in different fonts
@@ -49,9 +53,6 @@ public String getDescription() {
 	return GraphicsExample.getResourceString("FontBounceDescription"); //$NON-NLS-1$
 }
 
-/* (non-Javadoc)
- * @see org.eclipse.swt.examples.graphics.AnimatedGraphicsTab#next(int, int)
- */
 @Override
 public void next(int width, int height) {
 	x += incX;
@@ -101,9 +102,6 @@ public void next(int width, int height) {
 }
 
 
-/* (non-Javadoc)
- * @see org.eclipse.swt.examples.graphics.GraphicsTab#paint(org.eclipse.swt.graphics.GC, int, int)
- */
 @Override
 public void paint(GC gc, int width, int height) {
 	if (!example.checkAdvancedGraphics()) return;

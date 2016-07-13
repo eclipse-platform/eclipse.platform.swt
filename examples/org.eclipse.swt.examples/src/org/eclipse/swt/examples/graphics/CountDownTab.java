@@ -141,21 +141,11 @@ public class CountDownTab extends AnimatedGraphicsTab {
 		return GraphicsExample.getResourceString("CountdownDescription"); //$NON-NLS-1$
 	}
 
-	/*
-	 * (non-Javadoc)
-	 *
-	 * @see org.eclipse.swt.examples.graphics.AnimatedGraphicsTab#getAnimationTime()
-	 */
 	@Override
 	public int getInitialAnimationTime() {
 		return 28;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 *
-	 * @see org.eclipse.swt.examples.graphics.AnimatedGraphicsTab#next(int, int)
-	 */
 	@Override
 	public void next(int width, int height) {
 
@@ -170,12 +160,6 @@ public class CountDownTab extends AnimatedGraphicsTab {
 		angle += 10;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 *
-	 * @see org.eclipse.swt.examples.graphics.GraphicsTab#paint(org.eclipse.swt.graphics.GC,
-	 *      int, int)
-	 */
 	@Override
 	public void paint(GC gc, int width, int height) {
 		if (!example.checkAdvancedGraphics()) return;

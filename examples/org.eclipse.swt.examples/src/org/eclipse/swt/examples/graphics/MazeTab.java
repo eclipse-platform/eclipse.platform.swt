@@ -142,9 +142,6 @@ public void createControlPanel(Composite parent) {
 	});
 }
 
-/* (non-Javadoc)
- * @see org.eclipse.swt.examples.graphics.AnimatedGraphicsTab#next(int, int)
- */
 @Override
 public void next(int width, int height) {
 
@@ -175,9 +172,6 @@ public void next(int width, int height) {
 	}
 }
 
-/* (non-Javadoc)
- * @see org.eclipse.swt.examples.graphics.GraphicsTab#paint(org.eclipse.swt.graphics.GC, int, int)
- */
 @Override
 public void paint(GC gc, int width, int height) {
 	Device device = gc.getDevice();

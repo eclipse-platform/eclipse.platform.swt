@@ -147,9 +147,6 @@ public void createControlPanel(Composite parent) {
 	invertButton.addListener(SWT.Selection, event -> example.redraw());
 }
 
-/* (non-Javadoc)
- * @see org.eclipse.swt.examples.graphics.GraphicsTab#paint(org.eclipse.swt.graphics.GC, int, int)
- */
 @Override
 public void paint(GC gc, int width, int height) {
 	if (!example.checkAdvancedGraphics()) return;

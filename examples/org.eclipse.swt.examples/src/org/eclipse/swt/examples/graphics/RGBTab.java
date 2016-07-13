@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2013 IBM Corporation and others.
+ * Copyright (c) 2006, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -11,8 +11,13 @@
 
 package org.eclipse.swt.examples.graphics;
 
-import org.eclipse.swt.*;
-import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Device;
+import org.eclipse.swt.graphics.GC;
+import org.eclipse.swt.graphics.Path;
+import org.eclipse.swt.graphics.Pattern;
+import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.graphics.Transform;
 
 /**
  * Miscellaneous tab that demonstrates emerging colors from layering other
@@ -48,9 +53,6 @@ public String getDescription() {
 	return GraphicsExample.getResourceString("rgbDescription"); //$NON-NLS-1$
 }
 
-/* (non-Javadoc)
- * @see org.eclipse.swt.examples.graphics.AnimatedGraphicsTab#next(int, int)
- */
 @Override
 public void next(int width, int height) {
 	
@@ -67,9 +69,6 @@ public void next(int width, int height) {
 	diagTranslateY2 = -diagTranslateX2*(h/w) + h;
 }
 
-/* (non-Javadoc)
- * @see org.eclipse.swt.examples.graphics.GraphicsTab#paint(org.eclipse.swt.graphics.GC, int, int)
- */
 @Override
 public void paint(GC gc, int width, int height) {
 	if (!example.checkAdvancedGraphics()) return;
