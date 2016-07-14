@@ -584,7 +584,7 @@ fi
 # Announce our target
 echo "Building SWT/GTK+ for $SWT_OS $SWT_ARCH"
 if [ "x${OUTPUT_DIR}" = "x" ]; then
-	OUTPUT_DIR=../../../org.eclipse.swt.gtk.${SWT_OS}.${SWT_ARCH}
+	OUTPUT_DIR=../../../../../eclipse.platform.swt.binaries/bundles/org.eclipse.swt.gtk.${SWT_OS}.${SWT_ARCH}
 	export OUTPUT_DIR
 fi
 
