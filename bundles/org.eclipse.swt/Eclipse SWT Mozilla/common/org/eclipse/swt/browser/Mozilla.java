@@ -2231,35 +2231,11 @@ String initMozilla (String mozillaPath) {
 	}
 	if (Device.DEBUG) System.out.println ("Mozilla path: " + mozillaPath); //$NON-NLS-1$
 
-	/*
-	* Note.  Embedding a Mozilla GTK1.2 causes a crash.  The workaround
-	* is to check the version of GTK used by Mozilla by looking for
-	* the libwidget_gtk.so library used by Mozilla GTK1.2. Mozilla GTK2
-	* uses the libwidget_gtk2.so library.
-	*/
-	if (Compatibility.fileExists (mozillaPath, "components/libwidget_gtk.so")) { //$NON-NLS-1$
-		browser.dispose ();
-		SWT.error (SWT.ERROR_NO_HANDLES, null, " [Mozilla GTK2 required (GTK1.2 detected)]"); //$NON-NLS-1$
-	}
-
 	try {
 		Library.loadLibrary ("swt-mozilla"); //$NON-NLS-1$
 	} catch (UnsatisfiedLinkError e) {
-		try {
-			/*
-			 * The initial loadLibrary attempt may have failed as a result of the user's
-			 * system not having libstdc++.so.6 installed, so try to load the alternate
-			 * swt mozilla library that depends on libswtc++.so.5 instead.
-			 */
-			Library.loadLibrary ("swt-mozilla-gcc3"); //$NON-NLS-1$
-		} catch (UnsatisfiedLinkError ex) {
-			browser.dispose ();
-			/*
-			 * Print the error from the first failed attempt since at this point it's
-			 * known that the failure was not due to the libstdc++.so.6 dependency.
-			 */
-			SWT.error (SWT.ERROR_NO_HANDLES, e, " [MOZILLA_FIVE_HOME='" + mozillaPath + "']"); //$NON-NLS-1$ //$NON-NLS-2$
-		}
+		browser.dispose ();
+		SWT.error (SWT.ERROR_NO_HANDLES, e, " [MOZILLA_FIVE_HOME='" + mozillaPath + "']"); //$NON-NLS-1$ //$NON-NLS-2$
 	}
 
 	return mozillaPath;
