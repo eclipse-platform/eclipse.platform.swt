@@ -98,6 +98,10 @@ class StyledTextRenderer {
 			}
 		}
 	}
+	static int cap (TextLayout layout, int offset) {
+		if (layout == null) return offset;
+		return Math.min (layout.getText().length() -1, Math.max (0, offset));
+	}
 
 StyledTextRenderer(Device device, StyledText styledText) {
 	this.device = device;
@@ -943,9 +947,9 @@ TextLayout getTextLayout(int lineIndex, int orientation, int width, int lineSpac
 							TextStyle imeStyle = imeStyles[i], userStyle;
 							for (int j = start; j <= end; j++) {
 								if (!(0 <= j && j < length)) break;
-								userStyle = layout.getStyle(j);
-								if (userStyle == null && j > 0) userStyle = layout.getStyle(j - 1);
-								if (userStyle == null && j + 1 < length) userStyle = layout.getStyle(j + 1);
+								userStyle = layout.getStyle(cap(layout, j));
+								if (userStyle == null && j > 0) userStyle = layout.getStyle(cap(layout, j - 1));
+								if (userStyle == null && j + 1 < length) userStyle = layout.getStyle(cap(layout, j + 1));
 								if (userStyle == null) {
 									layout.setStyle(imeStyle, j, j);
 								} else {
@@ -960,10 +964,10 @@ TextLayout getTextLayout(int lineIndex, int orientation, int width, int lineSpac
 					} else {
 						int start = compositionOffset - lineOffset;
 						int end = start + compositionLength - 1;
-						TextStyle userStyle = layout.getStyle(start);
+						TextStyle userStyle = layout.getStyle(cap(layout, start));
 						if (userStyle == null) {
-							if (start > 0) userStyle = layout.getStyle(start - 1);
-							if (userStyle == null && end + 1 < length) userStyle = layout.getStyle(end + 1);
+							if (start > 0) userStyle = layout.getStyle(cap(layout, start - 1));
+							if (userStyle == null && end + 1 < length) userStyle = layout.getStyle(cap(layout, end + 1));
 							if (userStyle != null) {
 								TextStyle newStyle = new TextStyle();
 								newStyle.font = userStyle.font;
