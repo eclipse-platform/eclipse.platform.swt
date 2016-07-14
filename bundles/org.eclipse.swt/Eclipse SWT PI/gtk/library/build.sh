@@ -12,13 +12,62 @@
 #     Tom Tromey (Red Hat, Inc.)
 #*******************************************************************************
 
+HELP="
+Build Gtk2 or Gtk3 bindings and (optionally) copy them to binary repository.
+Paramaters (specified in this order):
+clean    - delete *.o and *.so files from current folder. If this is the only paramater, do nothing else.
+			But if other paramaters are given and this is the first one, then continue with other actions.
+
+One of the following 3:
+-gtk2   : Build bindings with GTK2.
+-gtk3   : Build bindings with GTK3.
+-gtk-all : Build bindings with GTK2 as well as GTK3. Note, this flag triggers cleanups before each build
+			because a cleanup is required when buliding different GTK versions for linking to be done correctly.
+			During active development, if you only want to compile updated files, use -gtk2/-gtk3 flags instead,
+			however do not forget to do a cleanup in between gtk2/gtk3.
+
+install  - copy *.so libraries to binary repository.
+
+-- Examples:
+Most commonly used:
+./build.sh -gtk-all install
+This will clean everything in your repository, build GTK2 and GTK3, then copy .so files to binary repository.
+
+Also:
+./build.sh     	  - only build .so files, do not copy them across. Build according to what GTK_VERSION is set to.
+./build.sh clean  	  - clean working directory of *.o and *.so files.
+./build.sh install	  - build.so files and copy to binary repository
+./build.sh -gtk3 install  - Build only updated files (or all), copy *.so libs to binary repository.
+
+Also note:
+Sometimes you might have to cleanup the binary repository manually as old *.so files are not automatically removed
+by clean command. Navigate to binary repository and:
+git clean -xdf #If new files were added to repo.
+git reset --hard  #If existing binary was overwritten.
+"
+
+if [[ "$1" == "-h" || "$1" == "--help" ]]; then
+	echo "$HELP"
+	exit
+fi
+
+func_echo_plus () {
+	# Echo function that prints output in green to distinguish it from sub-shell output.
+	GREEN='\033[0;32m'
+	NC='\033[0m' # No Color
+	echo -e "${GREEN}${@}${NC}"
+}
+
+func_echo_error () {
+	# As above, but in red. Also pre-appends '***' to output.
+	RED='\033[0;31m'
+	NC='\033[0m' # No Color
+echo -e "${RED}*** ${@}${NC}"
+}
+
 cd `dirname $0`
 
 MAKE_TYPE=make
-if [ "${GTK_VERSION}" = "" ]; then
-	GTK_VERSION=2.0
-	export GTK_VERSION
-fi
 
 # No longer necessary, but may be useful in future if we want to compile swt.idl rather than using a static one
 #
@@ -98,7 +147,6 @@ case $MODEL in
 		AWT_ARCH=$MODEL
 		;;
 esac
-echo "Building SWT OS=${SWT_OS} SWT ARCH=${SWT_ARCH}"
 
 case $SWT_OS.$SWT_ARCH in
 	"linux.x86")
@@ -138,7 +186,22 @@ case $SWT_OS.$SWT_ARCH in
 			export CC=gcc
 		fi
 		if [ "${JAVA_HOME}" = "" ]; then
-			export JAVA_HOME="/bluebird/teamswt/swt-builddir/JDKs/x86_64/jdk1.5.0"
+			# Validate that we set JAVA_HOME to an existing directory. If not try to look for a better one.
+			BLUEBIRD_JAVA_HOME="/bluebird/teamswt/swt-builddir/JDKs/x86_64/jdk1.5.0"
+			if [[ -d "$BLUEBIRD_JAVA_HOME" ]]; then
+				func_echo_plus "JAVA_HOME not set, configured to: $BLUEBIRD_JAVA_HOME"
+				export JAVA_HOME="$BLUEBIRD_JAVA_HOME"
+			else
+				# Cross-platform method of finding JAVA_HOME.
+				# Tested on Fedora 24 and Ubuntu 16
+				DYNAMIC_JAVA_HOME=`readlink -f /usr/bin/java | sed "s:jre/bin/java::"`
+				if [[ -n "$DYNAMIC_JAVA_HOME" ]]; then
+					func_echo_plus "JAVA_HOME not set, dynamically configured to $DYNAMIC_JAVA_HOME"
+					export JAVA_HOME="$DYNAMIC_JAVA_HOME"
+				else
+					func_echo_error "JAVA_HOME directory could not be located. You might get a compile error about include 'jni.h', set JAVA_HOME manually."
+				fi
+			fi
 		fi
 		if [ "${PKG_CONFIG_PATH}" = "" ]; then
 			export PKG_CONFIG_PATH="/usr/lib64/pkgconfig"
@@ -518,24 +581,12 @@ if [ ${MODEL} = 'x86' -a ${SWT_OS} = 'linux' ]; then
 	export SWT_LFLAGS SWT_PTR_CFLAGS
 fi
 
-if [ x`pkg-config --exists gnome-vfs-module-2.0 libgnome-2.0 libgnomeui-2.0 && echo YES` = "xYES"  -a ${MODEL} != "sparcv9" -a ${MODEL} != 'ia64' -a ${GTK_VERSION} != '3.0' ]; then
-	if [ "${SWT_OS}" != "solaris" -o "${MODEL}" != "x86_64" ]; then
-		echo "libgnomeui-2.0 found, compiling SWT program support using GNOME"
-		MAKE_GNOME=make_gnome
-	fi
-else
-	if [ ${GTK_VERSION} != '3.0' ]; then
-		echo "libgnome-2.0 and libgnomeui-2.0 not found:"
-		echo "    *** SWT Program support for GNOME will not be compiled."
-	fi
-fi
 
 if [ x`pkg-config --exists cairo && echo YES` = "xYES" ]; then
-	echo "Cairo found, compiling SWT support for the cairo graphics library."
+	func_echo_plus "Cairo found, compiling SWT support for the cairo graphics library."
 	MAKE_CAIRO=make_cairo
 else
-	echo "Cairo not found:"
-	echo "    *** Advanced graphics support using cairo will not be compiled."
+	func_echo_error "Cairo not found: Advanced graphics support using cairo will not be compiled."
 fi
 
 if [ -z "${MOZILLA_INCLUDES}" -a -z "${MOZILLA_LIBS}" -a ${SWT_OS} != 'solaris' ]; then
@@ -558,8 +609,8 @@ if [ -z "${MOZILLA_INCLUDES}" -a -z "${MOZILLA_LIBS}" -a ${SWT_OS} != 'solaris' 
 		export XULRUNNER_LIBS
 		MAKE_MOZILLA=make_xulrunner
 	else
-		echo "None of the following libraries were found:  Mozilla/XPCOM, Firefox/XPCOM, or XULRunner/XPCOM"
-		echo "    *** Mozilla embedding support will not be compiled."
+		func_echo_error "None of the following libraries were found:  Mozilla/XPCOM, Firefox/XPCOM, or XULRunner/XPCOM:"
+		func_echo_error "   >> Mozilla embedding support will not be compiled."
 	fi
 fi
 
@@ -575,21 +626,120 @@ if [ -z "${AWT_LIB_PATH}" ]; then
 fi
 
 if [ -f ${AWT_LIB_PATH}/libjawt.* ]; then
-	echo "libjawt.so found, the SWT/AWT integration library will be compiled."
+	func_echo_plus "libjawt.so found, the SWT/AWT integration library will be compiled."
 	MAKE_AWT=make_awt
 else
-	echo "libjawt.so not found, the SWT/AWT integration library will not be compiled."
+	func_echo_error "libjawt.so not found, the SWT/AWT integration library will not be compiled."
 fi
 
-# Announce our target
-echo "Building SWT/GTK+ for $SWT_OS $SWT_ARCH"
+
+func_configue_MAKE_GNOME () {
+	# Prerequisite: This function should only be called under gtk2.
+	if [ x`pkg-config --exists gnome-vfs-module-2.0 libgnome-2.0 libgnomeui-2.0 && echo YES` = "xYES"  -a ${MODEL} != "sparcv9" -a ${MODEL} != 'ia64' ]; then
+		if [ "${SWT_OS}" != "solaris" -o "${MODEL}" != "x86_64" ]; then
+			func_echo_plus "libgnomeui-2.0 found, compiling SWT program with GNOME 2.0 support"
+			MAKE_GNOME=make_gnome
+			fi
+	else
+		func_echo_error "libgnome-2.0 and libgnomeui-2.0 not found:"
+		func_echo_error "  >>> SWT Program support for GNOME will not be compiled."
+	fi
+}
+
+
+
+
+## Interaction(s) with makefile(s) below:
+
+# Configure OUTPUT_DIR 
 if [ "x${OUTPUT_DIR}" = "x" ]; then
 	OUTPUT_DIR=../../../../../eclipse.platform.swt.binaries/bundles/org.eclipse.swt.gtk.${SWT_OS}.${SWT_ARCH}
-	export OUTPUT_DIR
+	if [[ -d "$OUTPUT_DIR" ]]; then
+		export OUTPUT_DIR
+	fi
 fi
 
-if [ "x${1}" = "xclean" ]; then
+# Safety check:
+# If "install" was given as target, check that OUTPUT_DIR is a valid directory.
+for i in "$@"; do  # loop over all input paramaters
+	if [[ "$i" == "install" ]]; then
+		if [[ ! -d "${OUTPUT_DIR}" ]]; then   # if directory not valid.
+		func_echo_error "ERROR: 'install' was passed in as paramater, but OUTPUT_DIR :"
+		func_echo_error "(${OUTPUT_DIR}) "
+		func_echo_error "is not a valid directory."
+		func_echo_error "1) Maybe you forgot to checkout SWT binaries? See: https://git.eclipse.org/c/platform/eclipse.platform.swt.binaries.git/"
+		func_echo_error "2) SWT and SWT binary git repos have to be in the same folder, (usually ~/git/...). Maybe you put them in different folders?"
+		func_echo_error "Exit with failure"
+		exit 1
+		fi
+	fi
+done
+
+
+func_clean_up () {
+	func_echo_plus "Cleaning up..."
 	${MAKE_TYPE} -f $MAKEFILE clean
-else
-	${MAKE_TYPE} -f $MAKEFILE all $MAKE_GNOME $MAKE_CAIRO $MAKE_AWT $MAKE_MOZILLA ${1} ${2} ${3} ${4} ${5} ${6} ${7} ${8} ${9}
+}
+
+if [ "x${1}" = "xclean" ]; then
+	func_clean_up
+	shift
+
+	# if there are no more other parameters, exit.
+	# don't exit if there are more paramaters. Useful for one-liners like: ./build.sh clean -gtk-all install
+	if [[ "$1" == "" ]]; then
+		exit $?
+	fi
+fi
+
+
+# Announce our target
+func_echo_plus "Building SWT/GTK+ for Architectures: $SWT_OS $SWT_ARCH"
+
+func_build_gtk3 () {
+	export GTK_VERSION=3.0
+	func_echo_plus "Building GTK3 bindings:"
+	${MAKE_TYPE} -f $MAKEFILE all $MAKE_GNOME $MAKE_CAIRO $MAKE_AWT $MAKE_MOZILLA "${@}"
+	RETURN_VALUE=$?   #make can return 1 or 2 if it fails. Thus need to cache it in case it's used programmatically somewhere.
+	if [ "$RETURN_VALUE" -eq 0 ]; then
+		func_echo_plus "GTK3 Build succeeded"
+	else
+		func_echo_error "GTK3 Build failed, aborting further actions.."
+		exit $RETURN_VALUE
+	fi
+}
+
+func_build_gtk2 () {
+	func_echo_plus "Building GTK2 bindings:"
+	func_configue_MAKE_GNOME
+	export GTK_VERSION=2.0
+	${MAKE_TYPE} -f $MAKEFILE all $MAKE_GNOME $MAKE_CAIRO $MAKE_AWT $MAKE_MOZILLA "$@"
+	RETURN_VALUE=$?
+	if [ "$RETURN_VALUE" -eq 0 ]; then
+		func_echo_plus "GTK2 Build succeeded"
+	else
+		func_echo_error "GTK2 Build failed."
+		exit $RETURN_VALUE
+	fi
+}
+
+
+if [[ "$1" == "-gtk-all" ]]; then
+	shift
+	func_echo_plus "Note: When building multiple GTK versions, a cleanup is required (and automatically performed) between them."
+	func_clean_up
+	func_build_gtk3 "$@"
+	func_clean_up
+	func_build_gtk2 "$@"
+elif [[ "$1" == "-gtk3" ]]; then
+	shift
+	func_build_gtk3 "$@"
+elif [[ "$1" == "-gtk2" ]]; then
+	shift
+	func_build_gtk2 "$@"
+elif [[ "${GTK_VERSION}" == "3.0" ]]; then
+	func_build_gtk3 "$@"
+elif [[ "${GTK_VERSION}" == "2.0" || "${GTK_VERSION}" == "" ]]; then
+	export GTK_VERSION="2.0"
+	func_build_gtk2 "$@"
 fi
