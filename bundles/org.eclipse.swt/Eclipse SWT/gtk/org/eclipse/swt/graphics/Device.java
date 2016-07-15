@@ -711,13 +711,19 @@ protected void init () {
 					"GtkToolbar {padding-top: 4px; padding-bottom: 4px;}\n"
 					+ "GtkToolbar GtkButton {padding: 2px 4px 3px 4px;}\n"
 					+ ".undershoot.top, .undershoot.right, .undershoot.bottom, .undershoot.left {background-image: none;}\n"
-					+ "GtkToolbar GtkMenuButton {padding: 1px 0px 1px 0px;}\n";
+					+ "GtkToolbar GtkMenuButton {padding: 1px 0px 1px 0px;}\n"
+					+ "@binding-set SWTTreeViewBinding { bind \"Left\"     { \"expand-collapse-cursor-row\" (0,0,0) };"
+					+ "bind \"Right\"    { \"expand-collapse-cursor-row\" (0,1,0) }; }	"
+					+ "GtkTreeView	{  gtk-key-bindings: SWTTreeViewBinding;	}\n";
 			} else {
 				css =
 					"toolbar {padding-top: 2px; padding-bottom: 2px;}\n"
 					+ "toolbar button {padding: 2px;}"
 					+ "toolbar button.popup {padding: 0px;}\n"
 					+ "toolbar toolbutton button {padding: 0px 0px 0px 0px;}"
+					+ "@binding-set SWTTreeViewBinding { bind \"Left\"     { \"expand-collapse-cursor-row\" (0,0,0) };"
+					+ "bind \"Right\"    { \"expand-collapse-cursor-row\" (0,1,0) }; }	"
+					+ "treeview	{ -gtk-key-bindings: SWTTreeViewBinding;	}"
 					+ "scrolledwindow undershoot.top, scrolledwindow undershoot.right, scrolledwindow undershoot.bottom, "
 					+ "scrolledwindow undershoot.left {background-image: none;}\n";
 				/*
