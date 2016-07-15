@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2013 IBM Corporation and others.
+ * Copyright (c) 2000, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -19,22 +19,27 @@ package org.eclipse.swt.snippets;
  * For a list of all SWT example snippets see
  * http://www.eclipse.org/swt/snippets/
  */
-import java.awt.Frame;
+import java.awt.*;
 import java.awt.datatransfer.*;
-import java.awt.dnd.DnDConstants;
+import java.awt.dnd.*;
 import java.awt.dnd.DropTarget;
 import java.awt.dnd.DropTargetAdapter;
-import java.awt.dnd.DropTargetDropEvent;
 import java.awt.dnd.DropTargetListener;
 import java.io.*;
-import java.util.Date;
-import javax.swing.JLabel;
+import java.util.*;
+
+import javax.swing.*;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.awt.*;
 import org.eclipse.swt.dnd.*;
+import org.eclipse.swt.dnd.DragSource;
+import org.eclipse.swt.dnd.DragSourceAdapter;
+import org.eclipse.swt.dnd.DragSourceEvent;
 import org.eclipse.swt.layout.*;
 import org.eclipse.swt.widgets.*;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Label;
 
 public class Snippet319 {
 
@@ -61,8 +66,7 @@ public void go() {
 	swtLabel.setBounds(10,10,580,50);
 	swtLabel.setText("SWT drag source");
 	DragSource dragSource = new DragSource(swtLabel, DND.DROP_COPY);
-	Transfer[] transfers = new Transfer[] {new MyTypeTransfer()};
-	dragSource.setTransfer(transfers);
+	dragSource.setTransfer(new MyTypeTransfer());
 	dragSource.addDragListener(new DragSourceAdapter() {
 		@Override
 		public void dragSetData(DragSourceEvent event) {

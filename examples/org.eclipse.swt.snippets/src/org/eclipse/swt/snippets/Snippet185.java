@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2013 IBM Corporation and others.
+ * Copyright (c) 2000, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -38,7 +38,7 @@ public static void main (String [] args) {
 		if (i % 2 == 1) item.setText("Drop text");
 	}
 	DragSource dragSource = new DragSource(label1, DND.DROP_COPY);
-	dragSource.setTransfer(new Transfer[] {TextTransfer.getInstance(), FileTransfer.getInstance()});
+	dragSource.setTransfer(TextTransfer.getInstance(), FileTransfer.getInstance());
 	dragSource.addDragListener(new DragSourceAdapter() {
 		@Override
 		public void dragSetData(DragSourceEvent event) {

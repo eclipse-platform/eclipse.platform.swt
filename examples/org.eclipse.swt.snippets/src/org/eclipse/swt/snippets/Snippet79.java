@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2015 IBM Corporation and others.
+ * Copyright (c) 2000, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -142,7 +142,7 @@ public static void main (String [] args) {
 	label2.setText ("Drop Target for MyData[]");
 
 	DragSource source = new DragSource (label1, DND.DROP_COPY);
-	source.setTransfer (new Transfer [] {MyTransfer.getInstance ()});
+	source.setTransfer (MyTransfer.getInstance ());
 	source.addDragListener (new DragSourceAdapter () {
 		@Override
 		public void dragSetData (DragSourceEvent event) {

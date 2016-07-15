@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2013 IBM Corporation and others.
+ * Copyright (c) 2000, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -47,7 +47,7 @@ public static void main (String [] args) {
 	final StyledText text1 = new StyledText(shell, style);
 	text1.setText(string1);
 	DragSource source = new DragSource(text1, DND.DROP_COPY | DND.DROP_MOVE);
-	source.setTransfer(new Transfer[] {TextTransfer.getInstance()});
+	source.setTransfer(TextTransfer.getInstance());
 	source.addDragListener(new DragSourceAdapter() {
 		Point selection;
 		@Override

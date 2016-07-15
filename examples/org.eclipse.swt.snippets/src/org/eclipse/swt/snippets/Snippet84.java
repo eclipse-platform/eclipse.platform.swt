@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2013 IBM Corporation and others.
+ * Copyright (c) 2000, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -31,7 +31,7 @@ public static void main(String[] args) {
 	final Label label = new Label(shell, SWT.BORDER);
 	label.setText("Drag Source");
 	DragSource source = new DragSource(label, DND.DROP_COPY | DND.DROP_MOVE | DND.DROP_LINK);
-	source.setTransfer(new Transfer[] {TextTransfer.getInstance()});
+	source.setTransfer(TextTransfer.getInstance());
 	source.addDragListener(new DragSourceAdapter() {
 		@Override
 		public void dragSetData(DragSourceEvent event) {

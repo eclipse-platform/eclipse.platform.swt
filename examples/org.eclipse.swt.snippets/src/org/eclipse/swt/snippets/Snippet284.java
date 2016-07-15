@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2007, 2013 IBM Corporation and others.
+ * Copyright (c) 2007, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -44,7 +44,7 @@ public static void main (String [] args) {
 public static void setDragSource (final Label label) {
 	int operations = DND.DROP_MOVE | DND.DROP_COPY | DND.DROP_LINK;
 	final DragSource source = new DragSource (label, operations);
-	source.setTransfer(new Transfer[] {URLTransfer.getInstance()});
+	source.setTransfer(URLTransfer.getInstance());
 	source.addDragListener (new DragSourceListener () {
 		@Override
 		public void dragStart(DragSourceEvent e) {

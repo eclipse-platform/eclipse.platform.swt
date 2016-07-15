@@ -492,7 +492,7 @@ public class FileViewer {
 	 */
 	private DragSource createTreeDragSource(final Tree tree){
 		DragSource dragSource = new DragSource(tree, DND.DROP_MOVE | DND.DROP_COPY);
-		dragSource.setTransfer(new Transfer[] { FileTransfer.getInstance() });
+		dragSource.setTransfer(FileTransfer.getInstance());
 		dragSource.addDragListener(new DragSourceListener() {
 			TreeItem[] dndSelection = null;
 			String[] sourceNames = null;
@@ -803,7 +803,7 @@ public class FileViewer {
 	 */
 	private DragSource createTableDragSource(final Table table) {
 		DragSource dragSource = new DragSource(table, DND.DROP_MOVE | DND.DROP_COPY);
-		dragSource.setTransfer(new Transfer[] { FileTransfer.getInstance() });
+		dragSource.setTransfer(FileTransfer.getInstance());
 		dragSource.addDragListener(new DragSourceListener() {
 			TableItem[] dndSelection = null;
 			String[] sourceNames = null;
