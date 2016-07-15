@@ -492,8 +492,6 @@
 #define g_app_info_launch_default_for_uri_LIB LIB_GIO
 #define g_app_info_supports_uris_LIB LIB_GIO
 #define g_app_info_should_show_LIB LIB_GIO
-#define g_data_input_stream_new_LIB LIB_GIO
-#define g_data_input_stream_read_line_LIB LIB_GIO
 #define g_content_type_equals_LIB LIB_GIO
 #define g_content_type_get_mime_type_LIB LIB_GIO
 #define g_content_type_is_a_LIB LIB_GIO
@@ -503,11 +501,9 @@
 #define g_file_get_uri_LIB LIB_GIO
 #define g_file_icon_get_file_LIB LIB_GIO
 #define g_file_info_get_content_type_LIB LIB_GIO
-#define g_file_info_get_modification_time_LIB LIB_GIO
 #define g_file_new_for_commandline_arg_LIB LIB_GIO
 #define g_file_new_for_path_LIB LIB_GIO
 #define g_file_new_for_uri_LIB LIB_GIO
-#define g_file_read_LIB LIB_GIO
 #define g_file_test_LIB LIB_GIO
 #define g_icon_to_string_LIB LIB_GIO
 #define g_icon_new_for_string_LIB LIB_GIO

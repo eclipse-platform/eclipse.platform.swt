@@ -12,6 +12,8 @@ package org.eclipse.swt.program;
 
 
 import java.io.*;
+import java.nio.file.*;
+import java.nio.file.Path;
 import java.util.*;
 import java.util.List;
 
@@ -43,7 +45,7 @@ public final class Program {
 	 */
 	boolean gnomeExpectUri;
 
-	static long /*int*/ modTime;
+	static long modTime;
 	static Map<String, List<String>> mimeTable;
 
 	static long /*int*/ cdeShell;
@@ -663,74 +665,55 @@ ImageData gio_getImageData() {
 	return data;
 }
 
-static Map<String, List<String>> gio_getMimeInfo() {
-	long /*int*/ mimeDatabase = 0, fileInfo = 0;
-	/*
-	* The file 'globs' contain the file extensions
-	* associated to the mime-types. Each line that has
-	* to be parsed corresponds to a different extension
-	* of a mime-type. The template of such line is -
-	* application/pdf:*.pdf
-	*/
-	byte[] buffer = Converter.wcsToMbcs (null, "/usr/share/mime/globs", true);
-	mimeDatabase = OS.g_file_new_for_path (buffer);
-	long /*int*/ fileInputStream = OS.g_file_read (mimeDatabase, 0, 0);
-	try {
-		if (fileInputStream != 0) {
-			long /*int*/ [] modTimestamp = new long /*int*/ [2];
-			buffer = Converter.wcsToMbcs (null, "*", true);
-			fileInfo = OS.g_file_query_info(mimeDatabase, buffer, 0, 0, 0);
-			OS.g_file_info_get_modification_time(fileInfo, modTimestamp);
-			if (modTime != 0 && modTimestamp[0] == modTime) {
-				return mimeTable;
-			} else {
+	static Map<String, List<String>> gio_getMimeInfo() {
+		/*
+		 * The file 'globs' contain the file extensions associated to the
+		 * mime-types. Each line that has to be parsed corresponds to a
+		 * different extension of a mime-type. The template of such line is -
+		 * application/pdf:*.pdf
+		 */
+		Path path = Paths.get("/usr/share/mime/globs");
+		long lastModified = 0;
+		try {
+			lastModified = Files.getLastModifiedTime(path).toMillis();
+		} catch (IOException e) {
+			// ignore and reparse the file
+		}
+		if (modTime != 0 && modTime == lastModified) {
+			return mimeTable;
+		} else {
+			try {
 				mimeTable = new HashMap<>();
-				modTime = modTimestamp[0];
-				long /*int*/ reader = OS.g_data_input_stream_new (fileInputStream);
-				long /*int*/ [] length = new long /*int*/ [1];
-
-				if (reader != 0) {
-					long /*int*/ linePtr = OS.g_data_input_stream_read_line (reader, length, 0, 0);
-					while (linePtr != 0) {
-						byte[] lineBytes = new byte[(int) length[0]];
-						OS.memmove(lineBytes, linePtr, (int) length[0]);
-						String line = new String (Converter.mbcsToWcs (null, lineBytes));
-
-						int separatorIndex = line.indexOf (':');
-						if (separatorIndex > 0) {
-							List<String> mimeTypes = new ArrayList<> ();
-						    String mimeType = line.substring (0, separatorIndex);
-							String extensionFormat = line.substring (separatorIndex+1);
-							int extensionIndex = extensionFormat.indexOf (".");
-							if (extensionIndex > 0) {
-								String extension = extensionFormat.substring (extensionIndex);
-								if (mimeTable.containsKey (extension)) {
-									/*
-									 * If mimeType already exists, it is required to update
-									 * the existing key (mime-type) with the new extension.
-									 */
-									List<String> value = mimeTable.get (extension);
-									mimeTypes.addAll (value);
-								}
-								mimeTypes.add (mimeType);
-								mimeTable.put (extension, mimeTypes);
+				modTime = lastModified;
+				for (String line : Files.readAllLines(path)) {
+					int separatorIndex = line.indexOf(':');
+					if (separatorIndex > 0) {
+						List<String> mimeTypes = new ArrayList<>();
+						String mimeType = line.substring(0, separatorIndex);
+						String extensionFormat = line.substring(separatorIndex + 1);
+						int extensionIndex = extensionFormat.indexOf(".");
+						if (extensionIndex > 0) {
+							String extension = extensionFormat.substring(extensionIndex);
+							if (mimeTable.containsKey(extension)) {
+								/*
+								 * If mimeType already exists, it is required to
+								 * update the existing key (mime-type) with the
+								 * new extension.
+								 */
+								List<String> value = mimeTable.get(extension);
+								mimeTypes.addAll(value);
 							}
+							mimeTypes.add(mimeType);
+							mimeTable.put(extension, mimeTypes);
 						}
-						OS.g_free(linePtr);
-						linePtr = OS.g_data_input_stream_read_line (reader, length, 0, 0);
 					}
 				}
-				if (reader != 0) OS.g_object_unref (reader);
 				return mimeTable;
+			} catch (IOException e) {
 			}
 		}
 		return null;
-	} finally {
-		if (fileInfo != 0) OS.g_object_unref(fileInfo);
-		if (fileInputStream != 0) OS.g_object_unref(fileInputStream);
-		if (mimeDatabase != 0) 	OS.g_object_unref (mimeDatabase);
 	}
-}
 
 static String gio_getMimeType(String extension) {
 	String mimeType = null;
@@ -1090,4 +1073,6 @@ public int hashCode() {
 public String toString() {
 	return "Program {" + name + "}";
 }
+
+
 }

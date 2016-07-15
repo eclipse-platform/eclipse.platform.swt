@@ -2221,16 +2221,6 @@ public static final long /*int*/ g_dbus_proxy_new_sync (long /*int*/ connection,
 		lock.unlock();
 	}
 }
-/** @method flags=dynamic */
-public static final native long /*int*/ _g_data_input_stream_new(long /*int*/ input_stream);
-public static final long /*int*/ g_data_input_stream_new(long /*int*/ input_stream) {
-	lock.lock();
-	try {
-		return _g_data_input_stream_new(input_stream);
-	} finally {
-		lock.unlock();
-	}
-}
 /**
  * @param error cast=(GError *)
  */
@@ -2239,16 +2229,6 @@ public static final long /*int*/ g_error_get_message (long /*int*/ error) {
 	lock.lock();
 	try {
 		return _g_error_get_message (error);
-	} finally {
-		lock.unlock();
-	}
-}
-/** @method flags=dynamic */
-public static final native long /*int*/ _g_data_input_stream_read_line(long /*int*/ stream, long /*int*/ [] count, long /*int*/ cancellable, long /*int*/ error);
-public static final long /*int*/ g_data_input_stream_read_line(long /*int*/ stream, long /*int*/ [] count, long /*int*/ cancellable, long /*int*/ error) {
-	lock.lock();
-	try {
-		return _g_data_input_stream_read_line(stream, count, cancellable, error);
 	} finally {
 		lock.unlock();
 	}
@@ -2294,16 +2274,6 @@ public static final long /*int*/ g_file_get_uri (long /*int*/ file) {
 	}
 }
 /** @method flags=dynamic */
-public static final native void _g_file_info_get_modification_time(long /*int*/ info, long /*int*/[] result);
-public static final void g_file_info_get_modification_time(long /*int*/ info, long /*int*/[] result) {
-	lock.lock();
-	try {
-		_g_file_info_get_modification_time(info, result);
-	} finally {
-		lock.unlock();
-	}
-}
-/** @method flags=dynamic */
 public static final native long /*int*/ _g_file_new_for_path(byte[] fileName);
 public static final long /*int*/ g_file_new_for_path(byte[] fileName) {
 	lock.lock();
@@ -2339,17 +2309,6 @@ public static final long /*int*/ g_file_query_info  (long /*int*/ file,byte[] at
 	lock.lock();
 	try {
 		return _g_file_query_info (file, attributes, flags, cancellable, error);
-	} finally {
-		lock.unlock();
-	}
-}
-
-/** @method flags=dynamic */
-public static final native long /*int*/ _g_file_read(long /*int*/ file, long /*int*/ cancellable, long /*int*/ error);
-public static final long /*int*/ g_file_read(long /*int*/ file, long /*int*/ cancellable, long /*int*/ error) {
-	lock.lock();
-	try {
-		return _g_file_read(file, cancellable, error);
 	} finally {
 		lock.unlock();
 	}

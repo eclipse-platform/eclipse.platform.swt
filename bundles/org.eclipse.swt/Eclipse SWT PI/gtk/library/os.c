@@ -2488,50 +2488,6 @@ fail:
 }
 #endif
 
-#ifndef NO__1g_1data_1input_1stream_1new
-JNIEXPORT jintLong JNICALL OS_NATIVE(_1g_1data_1input_1stream_1new)
-	(JNIEnv *env, jclass that, jintLong arg0)
-{
-	jintLong rc = 0;
-	OS_NATIVE_ENTER(env, that, _1g_1data_1input_1stream_1new_FUNC);
-/*
-	rc = (jintLong)g_data_input_stream_new(arg0);
-*/
-	{
-		OS_LOAD_FUNCTION(fp, g_data_input_stream_new)
-		if (fp) {
-			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(jintLong))fp)(arg0);
-		}
-	}
-	OS_NATIVE_EXIT(env, that, _1g_1data_1input_1stream_1new_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO__1g_1data_1input_1stream_1read_1line
-JNIEXPORT jintLong JNICALL OS_NATIVE(_1g_1data_1input_1stream_1read_1line)
-	(JNIEnv *env, jclass that, jintLong arg0, jintLongArray arg1, jintLong arg2, jintLong arg3)
-{
-	jintLong *lparg1=NULL;
-	jintLong rc = 0;
-	OS_NATIVE_ENTER(env, that, _1g_1data_1input_1stream_1read_1line_FUNC);
-	if (arg1) if ((lparg1 = (*env)->GetIntLongArrayElements(env, arg1, NULL)) == NULL) goto fail;
-/*
-	rc = (jintLong)g_data_input_stream_read_line(arg0, lparg1, arg2, arg3);
-*/
-	{
-		OS_LOAD_FUNCTION(fp, g_data_input_stream_read_line)
-		if (fp) {
-			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(jintLong, jintLong *, jintLong, jintLong))fp)(arg0, lparg1, arg2, arg3);
-		}
-	}
-fail:
-	if (arg1 && lparg1) (*env)->ReleaseIntLongArrayElements(env, arg1, lparg1, 0);
-	OS_NATIVE_EXIT(env, that, _1g_1data_1input_1stream_1read_1line_FUNC);
-	return rc;
-}
-#endif
-
 #ifndef NO__1g_1dbus_1connection_1register_1object
 JNIEXPORT jint JNICALL OS_NATIVE(_1g_1dbus_1connection_1register_1object)
 	(JNIEnv *env, jclass that, jintLong arg0, jbyteArray arg1, jintLong arg2, jintLongArray arg3, jintLong arg4, jintLong arg5, jintLongArray arg6)
@@ -2841,28 +2797,6 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(_1g_1file_1info_1get_1content_1type)
 }
 #endif
 
-#ifndef NO__1g_1file_1info_1get_1modification_1time
-JNIEXPORT void JNICALL OS_NATIVE(_1g_1file_1info_1get_1modification_1time)
-	(JNIEnv *env, jclass that, jintLong arg0, jintLongArray arg1)
-{
-	jintLong *lparg1=NULL;
-	OS_NATIVE_ENTER(env, that, _1g_1file_1info_1get_1modification_1time_FUNC);
-	if (arg1) if ((lparg1 = (*env)->GetIntLongArrayElements(env, arg1, NULL)) == NULL) goto fail;
-/*
-	g_file_info_get_modification_time(arg0, lparg1);
-*/
-	{
-		OS_LOAD_FUNCTION(fp, g_file_info_get_modification_time)
-		if (fp) {
-			((void (CALLING_CONVENTION*)(jintLong, jintLong *))fp)(arg0, lparg1);
-		}
-	}
-fail:
-	if (arg1 && lparg1) (*env)->ReleaseIntLongArrayElements(env, arg1, lparg1, 0);
-	OS_NATIVE_EXIT(env, that, _1g_1file_1info_1get_1modification_1time_FUNC);
-}
-#endif
-
 #ifndef NO__1g_1file_1new_1for_1commandline_1arg
 JNIEXPORT jintLong JNICALL OS_NATIVE(_1g_1file_1new_1for_1commandline_1arg)
 	(JNIEnv *env, jclass that, jbyteArray arg0)
@@ -2955,26 +2889,6 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(_1g_1file_1query_1info)
 fail:
 	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
 	OS_NATIVE_EXIT(env, that, _1g_1file_1query_1info_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO__1g_1file_1read
-JNIEXPORT jintLong JNICALL OS_NATIVE(_1g_1file_1read)
-	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jintLong arg2)
-{
-	jintLong rc = 0;
-	OS_NATIVE_ENTER(env, that, _1g_1file_1read_FUNC);
-/*
-	rc = (jintLong)g_file_read(arg0, arg1, arg2);
-*/
-	{
-		OS_LOAD_FUNCTION(fp, g_file_read)
-		if (fp) {
-			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(jintLong, jintLong, jintLong))fp)(arg0, arg1, arg2);
-		}
-	}
-	OS_NATIVE_EXIT(env, that, _1g_1file_1read_FUNC);
 	return rc;
 }
 #endif
