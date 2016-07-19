@@ -210,7 +210,7 @@ long /*int*/ callWindowProc (long /*int*/ hwnd, int msg, long /*int*/ wParam, lo
 		int layoutWidth = layout.getWidth ();
 		//TEMPORARY CODE
 		if (wHint == 0) {
-			layout.setWidth (DPIUtil.autoScaleDown(1));
+			layout.setWidth (1);
 			Rectangle rect = DPIUtil.autoScaleUp(layout.getBounds ());
 			width = 0;
 			height = rect.height;
