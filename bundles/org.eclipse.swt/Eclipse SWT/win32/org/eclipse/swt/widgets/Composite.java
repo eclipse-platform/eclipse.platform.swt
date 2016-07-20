@@ -174,7 +174,12 @@ public void changed (Control[] changed) {
 	}
 	for (int i=0; i<changed.length; i++) {
 		Control child = changed [i];
-		Composite composite = child.parent;
+		Composite composite;
+		if (child instanceof Composite) {
+			composite = (Composite)child;
+		} else {
+			composite = child.parent;
+		}
 		while (child != this) {
 			if (composite.layout == null || !composite.layout.flushCache (child)) {
 				composite.state |= LAYOUT_CHANGED;
@@ -844,7 +849,12 @@ public void layout (Control [] changed, int flags) {
 		Composite [] update = new Composite [16];
 		for (int i=0; i<changed.length; i++) {
 			Control child = changed [i];
-			Composite composite = child.parent;
+			Composite composite;
+			if (child instanceof Composite) {
+				composite = (Composite)child;
+			} else {
+				composite = child.parent;
+			}
 			while (child != this) {
 				if (composite.layout != null) {
 					composite.state |= LAYOUT_NEEDED;
