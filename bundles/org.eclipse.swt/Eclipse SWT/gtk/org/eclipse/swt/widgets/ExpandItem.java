@@ -457,7 +457,13 @@ void resizeControl (int yScroll) {
 						width = allocation.width - parent.vScrollBarWidth () - 2 * parent.spacing;
 					}
 				}
-				control.setBounds (x, y - yScroll, width, Math.max (0, height), true, true);
+				// Bug 479242: Bound calculation is correct without needing to use yScroll in GTK3
+				if (OS.GTK3) {
+					control.setBounds (x, y, width, Math.max (0, height), true, true);
+				}
+				else {
+					control.setBounds (x, y - yScroll, width, Math.max (0, height), true, true);
+				}
 			}
 		}
 		control.setVisible (visible);
