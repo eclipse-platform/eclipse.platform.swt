@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2012 IBM Corporation and others.
+ * Copyright (c) 2000, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -13,7 +13,6 @@ package org.eclipse.swt.printing;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.win32.*;
 
 /**
@@ -483,11 +482,6 @@ public Point getDPI() {
  */
 @Override
 public Rectangle getBounds() {
-	checkDevice ();
-	return DPIUtil.autoScaleDown(getBoundsInPixels());
-}
-
-Rectangle getBoundsInPixels() {
 	checkDevice();
 	int width = OS.GetDeviceCaps(handle, OS.PHYSICALWIDTH);
 	int height = OS.GetDeviceCaps(handle, OS.PHYSICALHEIGHT);
@@ -513,10 +507,6 @@ Rectangle getBoundsInPixels() {
  */
 @Override
 public Rectangle getClientArea () {
-	checkDevice ();
-	return DPIUtil.autoScaleDown(getClientAreaInPixels());
-}
-Rectangle getClientAreaInPixels() {
 	checkDevice();
 	int width = OS.GetDeviceCaps(handle, OS.HORZRES);
 	int height = OS.GetDeviceCaps(handle, OS.VERTRES);
