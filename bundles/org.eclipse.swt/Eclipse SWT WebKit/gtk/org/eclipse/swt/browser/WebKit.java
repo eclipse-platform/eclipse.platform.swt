@@ -899,25 +899,28 @@ boolean close (boolean showPrompters) {
 
 @Override
 public boolean execute (String script) {
-	byte[] bytes = (script + '\0').getBytes (StandardCharsets.UTF_8); //$NON-NLS-1$
-	long /*int*/ scriptString = WebKitGTK.JSStringCreateWithUTF8CString (bytes);
+	byte[] scriptBytes = (script + '\0').getBytes (StandardCharsets.UTF_8); //$NON-NLS-1$
 
-	bytes = (getUrl () + '\0').getBytes (StandardCharsets.UTF_8); //$NON-NLS-1$
+
 	long /*int*/ result = 0;
-
 	if (WEBKIT2){
-		WebKitGTK.webkit_web_view_run_javascript (webView, scriptString, 0, 0, 0);
+		WebKitGTK.webkit_web_view_run_javascript (webView, scriptBytes, 0, 0, 0);
+		// TODO - this call is asynchronous, so no return vaulue. As result this call executes but
+		// returns false. Handling of return value to be implemented...
 	} else {
-		long /*int*/ urlString = WebKitGTK.JSStringCreateWithUTF8CString (bytes);
+		long /*int*/ jsScriptString = WebKitGTK.JSStringCreateWithUTF8CString (scriptBytes);
 
+		// Currently loaded website will be used as 'source file' of the javascript to be exucuted.
+		byte[] sourceUrlbytes = (getUrl () + '\0').getBytes (StandardCharsets.UTF_8); //$NON-NLS-1$
+
+		long /*int*/ jsSourceUrlString = WebKitGTK.JSStringCreateWithUTF8CString (sourceUrlbytes);
 		long /*int*/ frame = WebKitGTK.webkit_web_view_get_main_frame (webView);
 		long /*int*/ context = WebKitGTK.webkit_web_frame_get_global_context (frame);
-		result = WebKitGTK.JSEvaluateScript (context, scriptString, 0, urlString, 0, null);
+		result = WebKitGTK.JSEvaluateScript (context, jsScriptString, 0, jsSourceUrlString, 0, null);
 
-		WebKitGTK.JSStringRelease (urlString);
+		WebKitGTK.JSStringRelease (jsSourceUrlString);
+		WebKitGTK.JSStringRelease (jsScriptString);
 	}
-
-	WebKitGTK.JSStringRelease (scriptString);
 	return result != 0;
 }
 

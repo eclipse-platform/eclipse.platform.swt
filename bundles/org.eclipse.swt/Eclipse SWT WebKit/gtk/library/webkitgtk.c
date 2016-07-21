@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2009, 2014 IBM Corporation and others. All rights reserved.
+ * Copyright (c) 2009, 2016 IBM Corporation and others. All rights reserved.
  * The contents of this file are made available under the terms
  * of the GNU Lesser General Public License (LGPL) Version 2.1 that
  * accompanies this distribution (lgpl-v21.txt).  The LGPL is also
@@ -2793,18 +2793,22 @@ JNIEXPORT void JNICALL WebKitGTK_NATIVE(_1webkit_1web_1view_1reload)
 
 #ifndef NO__1webkit_1web_1view_1run_1javascript
 JNIEXPORT void JNICALL WebKitGTK_NATIVE(_1webkit_1web_1view_1run_1javascript)
-	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jintLong arg2, jintLong arg3, jintLong arg4)
+	(JNIEnv *env, jclass that, jintLong arg0, jbyteArray arg1, jintLong arg2, jintLong arg3, jintLong arg4)
 {
+	jbyte *lparg1=NULL;
 	WebKitGTK_NATIVE_ENTER(env, that, _1webkit_1web_1view_1run_1javascript_FUNC);
+	if (arg1) if ((lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL)) == NULL) goto fail;
 /*
-	webkit_web_view_run_javascript(arg0, arg1, arg2, arg3, arg4);
+	webkit_web_view_run_javascript(arg0, lparg1, arg2, arg3, arg4);
 */
 	{
 		WebKitGTK_LOAD_FUNCTION(fp, webkit_web_view_run_javascript)
 		if (fp) {
-			((void (CALLING_CONVENTION*)(jintLong, jintLong, jintLong, jintLong, jintLong))fp)(arg0, arg1, arg2, arg3, arg4);
+			((void (CALLING_CONVENTION*)(jintLong, jbyte *, jintLong, jintLong, jintLong))fp)(arg0, lparg1, arg2, arg3, arg4);
 		}
 	}
+fail:
+	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
 	WebKitGTK_NATIVE_EXIT(env, that, _1webkit_1web_1view_1run_1javascript_FUNC);
 }
 #endif

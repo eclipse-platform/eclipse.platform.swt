@@ -15,7 +15,7 @@
 package org.eclipse.swt.internal.webkit;
 
 
-import org.eclipse.swt.internal.C;
+import org.eclipse.swt.internal.*;
 
 public class WebKitGTK extends C {
 
@@ -1517,9 +1517,11 @@ public static final void webkit_web_view_reload (long /*int*/ web_view) {
 	}
 }
 
+
+//fyi: void webkit_web_view_run_javascript (WebKitWebView *web_view, const gchar *script, GCancellable *cancellable, GAsyncReadyCallback callback, gpointer user_data);
 /** @method flags=dynamic */
-public static final native void _webkit_web_view_run_javascript (long /*int*/ web_view, long /*int*/ script, long /*int*/ cancellable, long /*int*/  callback, long /*int*/ user_data);
-public static final void webkit_web_view_run_javascript (long /*int*/ web_view, long /*int*/ script, long /*int*/ cancellable, long /*int*/  callback, long /*int*/ user_data) {
+public static final native void _webkit_web_view_run_javascript (long /*int*/ web_view, byte [] script, long /*int*/ cancellable, long /*int*/  callback, long /*int*/ user_data);
+public static final void webkit_web_view_run_javascript (long /*int*/ web_view, byte[] script, long /*int*/ cancellable, long /*int*/  callback, long /*int*/ user_data) {
 	lock.lock();
 	try {
 		_webkit_web_view_run_javascript (web_view, script, cancellable, callback, user_data);
